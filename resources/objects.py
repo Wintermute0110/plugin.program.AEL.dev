@@ -709,7 +709,6 @@ def assets_search_local_cached_assets(launcher, ROMFile, enabled_ROM_asset_list)
 
     return local_asset_list
 
-
 #
 # Search for local assets and put found files into a list.
 # This function is used in _roms_add_new_rom() where there is no need for a file cache.
@@ -722,7 +721,7 @@ def assets_search_local_assets(launcher, ROMFile, enabled_ROM_asset_list):
         if not enabled_ROM_asset_list[i]:
             log_verb('assets_search_local_assets() Disabled {0:<9}'.format(AInfo.name))
             continue
-        asset_path = FileNameFactory.create(launcher[AInfo.path_key])
+        asset_path = FileName(launcher[AInfo.path_key])
         local_asset = misc_look_for_file(asset_path, ROMFile.getBase_noext(), AInfo.exts)
 
         if local_asset:
@@ -743,12 +742,12 @@ def assets_get_ROM_asset_path(launcher):
     ROM_asset_path = ''
     duplicated_bool_list = [False] * len(ROM_ASSET_LIST)
     AInfo_first = assets_get_info_scheme(ROM_ASSET_LIST[0])
-    path_first_asset_FN = FileNameFactory.create(launcher[AInfo_first.path_key])
+    path_first_asset_FN = FileName(launcher[AInfo_first.path_key])
     log_debug('assets_get_ROM_asset_path() path_first_asset OP  "{0}"'.format(path_first_asset_FN.getOriginalPath()))
     log_debug('assets_get_ROM_asset_path() path_first_asset Dir "{0}"'.format(path_first_asset_FN.getDir()))
     for i, asset_kind in enumerate(ROM_ASSET_LIST):
         AInfo = assets_get_info_scheme(asset_kind)
-        current_path_FN = FileNameFactory.create(launcher[AInfo.path_key])
+        current_path_FN = FileName(launcher[AInfo.path_key])
         if current_path_FN.getDir() == path_first_asset_FN.getDir():
             duplicated_bool_list[i] = True
 
@@ -1209,7 +1208,8 @@ ROMSET_DAT      = '_DAT'
 #      converted back the ordered dictionary into a list before saving the collection.
 # -------------------------------------------------------------------------------------------------
 class RomSetRepository(object):
-    def __init__(self, roms_dir, store_as_dictionary = True):
+    def __init__(self, PATHS, store_as_dictionary = True):
+        roms_dir = 'abc'
         self.roms_dir = roms_dir
         self.store_as_dictionary = store_as_dictionary
 
@@ -1499,7 +1499,7 @@ class MetaDataItemABC(object):
         path = self.entity_data[field]
         if path == '': return None
 
-        return FileNameFactory.create(path)
+        return FileName(path)
 
     # --- Metadata --------------------------------------------------------------------------------
     def get_name(self):
@@ -2076,7 +2076,7 @@ class LauncherABC(MetaDataItemABC):
             # B) If this path is the same as the ROM path then asset naming scheme 2 is used.
             # >> Create asset directories. Function detects if we are using naming scheme 1 or 2.
             # >> launcher is edited using Python passing by assignment.
-            assets_init_asset_dir(FileNameFactory.create(self.entity_data['assets_path']), self.entity_data)
+            assets_init_asset_dir(FileName(self.entity_data['assets_path']), self.entity_data)
 
         self.entity_data['timestamp_launcher'] = time.time()
 
@@ -2529,9 +2529,210 @@ class LauncherABC(MetaDataItemABC):
         return launcher[item_key] == 'BROWSE'
 
 # -------------------------------------------------------------------------------------------------
+# Standalone application launcher
+# -------------------------------------------------------------------------------------------------
+class StandaloneLauncher(LauncherABC):
+    def launch(self):
+        self.title = self.entity_data['m_name']
+        self.application = FileName(self.entity_data['application'])
+        self.arguments = self.entity_data['args']
+
+        # --- Check for errors and abort if errors found ---
+        if not self.application.exists():
+            log_error('Launching app not found "{0}"'.format(self.application.getPath()))
+            kodi_notify_warn('App {0} not found.'.format(self.application.getOriginalPath()))
+            return
+
+        # ~~~ Argument substitution ~~~
+        log_info('StandaloneLauncher() raw arguments   "{0}"'.format(self.arguments))
+        self.arguments = self.arguments.replace('$apppath%' , self.application.getDir())
+        log_info('StandaloneLauncher() final arguments "{0}"'.format(self.arguments))
+
+        super(StandaloneLauncher, self).launch()
+
+    def supports_launching_roms(self):
+        return False
+
+    def get_launcher_type(self):
+        return LAUNCHER_STANDALONE
+
+    def get_launcher_type_name(self):
+        return "Standalone launcher"
+
+    def change_application(self):
+        current_application = self.entity_data['application']
+        selected_application = xbmcgui.Dialog().browse(1, 'Select the launcher application', 'files',
+                                                      self._get_appbrowser_filter('application', self.entity_data), 
+                                                      False, False, current_application).decode('utf-8')
+
+        if selected_application is None or selected_application == current_application:
+            return False
+
+        self.entity_data['application'] = selected_application
+        return True
+
+    def change_arguments(self, args):
+        self.entity_data['args'] = args
+
+    def get_args(self):
+        return self.entity_data['args']
+
+    def get_additional_argument(self, index):
+        args = self.get_all_additional_arguments()
+        return args[index]
+
+    def get_all_additional_arguments(self):
+        return self.entity_data['args_extra']
+
+    def add_additional_argument(self, arg):
+        if not self.entity_data['args_extra']:
+            self.entity_data['args_extra'] = []
+
+        self.entity_data['args_extra'].append(arg)
+        log_debug('launcher.add_additional_argument() Appending extra_args to launcher {0}'.format(self.get_id()))
+
+    def set_additional_argument(self, index, arg):
+        if not self.entity_data['args_extra']:
+            self.entity_data['args_extra'] = []
+        self.entity_data['args_extra'][index] = arg
+        log_debug('launcher.set_additional_argument() Edited args_extra[{0}] to "{1}"'.format(index, self.entity_data['args_extra'][index]))
+
+    def remove_additional_argument(self, index):
+        del self.entity_data['args_extra'][index]
+        log_debug("launcher.remove_additional_argument() Deleted launcher['args_extra'][{0}]".format(index))
+
+    def get_edit_options(self):
+        options = collections.OrderedDict()
+        options['EDIT_METADATA']      = 'Edit Metadata ...'
+        options['EDIT_ASSETS']        = 'Edit Assets/Artwork ...'
+        options['SET_DEFAULT_ASSETS'] = 'Choose default Assets/Artwork ...'
+        options['CHANGE_CATEGORY']    = 'Change Category'
+        options['LAUNCHER_STATUS']    = 'Launcher status: {0}'.format(self.get_finished_str())
+        options['ADVANCED_MODS']      = 'Advanced Modifications ...'
+        options['EXPORT_LAUNCHER']    = 'Export Launcher XML configuration ...'
+        options['DELETE_LAUNCHER']    = 'Delete Launcher'
+
+        return options
+
+    def get_advanced_modification_options(self):
+        toggle_window_str = 'ON' if self.entity_data['toggle_window'] else 'OFF'
+        non_blocking_str  = 'ON' if self.entity_data['non_blocking'] else 'OFF'
+
+        options = super(ApplicationLauncher, self).get_advanced_modification_options()
+        options['CHANGE_APPLICATION']   = "Change Application: '{0}'".format(self.entity_data['application'])
+        options['MODIFY_ARGS']          = "Modify Arguments: '{0}'".format(self.entity_data['args'])
+        options['ADDITIONAL_ARGS']      = "Modify aditional arguments ..."
+        options['TOGGLE_WINDOWED']      = "Toggle Kodi into windowed mode (now {0})".format(toggle_window_str)
+        options['TOGGLE_NONBLOCKING']   = "Non-blocking launcher (now {0})".format(non_blocking_str)
+
+        return options
+
+    #
+    # Creates a new launcher using a wizard of dialogs.
+    #
+    def _get_builder_wizard(self, wizard):
+        wizard = KodiFileBrowseWizardDialog('application', 'Select the launcher application', 1, self._get_appbrowser_filter, wizard)
+        wizard = KodiDummyWizardDialog('args', '', wizard)
+        wizard = KodiKeyboardWizardDialog('args', 'Application arguments', wizard)
+        wizard = KodiDummyWizardDialog('m_name', '', wizard, self._get_title_from_app_path)
+        wizard = KodiKeyboardWizardDialog('m_name','Set the title of the launcher', wizard, self._get_title_from_app_path)
+        wizard = KodiSelectionWizardDialog('platform', 'Select the platform', AEL_platform_list, wizard)
+
+        return wizard
+
+# -------------------------------------------------------------------------------------------------
+# Kodi favorites launcher
+# Do not use, AEL must not access favoruites.xml directly.
+# -------------------------------------------------------------------------------------------------
+# class KodiLauncher(LauncherABC):
+#     def launch(self):
+#         self.title       = self.entity_data['m_name']
+#         self.application = FileName('xbmc.exe')
+#         self.arguments   = self.entity_data['application']
+#         super(KodiLauncher, self).launch()
+
+#     def supports_launching_roms(self):
+#         return False
+
+#     def get_launcher_type(self):
+#         return LAUNCHER_KODI_FAVOURITES
+
+#     def get_launcher_type_name(self):
+#         return "Kodi favourites launcher"
+
+#     def change_application(self):
+#         current_application = self.entity_data['application']
+#         dialog = KodiDictionaryDialog()
+#         selected_application = dialog.select('Select the favourite', self._get_kodi_favourites(), current_application)
+#         if selected_application is None or selected_application == current_application:
+#             return False
+#         self.entity_data['application'] = selected_application
+#         self.entity_data['original_favname'] = self._get_title_from_selected_favourite(selected_application, 'original_favname', self.entity_data)
+#
+#         return True
+
+#     def get_edit_options(self):
+#         options = collections.OrderedDict()
+#         options['EDIT_METADATA']      = 'Edit Metadata ...'
+#         options['EDIT_ASSETS']        = 'Edit Assets/Artwork ...'
+#         options['SET_DEFAULT_ASSETS'] = 'Choose default Assets/Artwork ...'
+#         options['CHANGE_CATEGORY']    = 'Change Category'
+#         options['LAUNCHER_STATUS']    = 'Launcher status: {0}'.format(self.get_state())
+#         options['ADVANCED_MODS']      = 'Advanced Modifications ...'
+#         options['EXPORT_LAUNCHER']    = 'Export Launcher XML configuration ...'
+#         options['DELETE_LAUNCHER']    = 'Delete Launcher'
+#
+#         return options
+
+#     def get_advanced_modification_options(self):
+#         toggle_window_str = 'ON' if self.entity_data['toggle_window'] else 'OFF'
+#         non_blocking_str  = 'ON' if self.entity_data['non_blocking'] else 'OFF'
+#         org_favname = self.entity_data['original_favname'] if 'original_favname' in self.entity_data else 'unknown'
+#         options = super(KodiLauncher, self).get_advanced_modification_options()
+#         options['CHANGE_APPLICATION']   = "Change favourite: '{0}'".format(org_favname)
+#         options['TOGGLE_WINDOWED']      = "Toggle Kodi into windowed mode (now {0})".format(toggle_window_str)
+#         options['TOGGLE_NONBLOCKING']   = "Non-blocking launcher (now {0})".format(non_blocking_str)
+#
+#         return options
+
+#     def _get_builder_wizard(self, wizard):
+#         wizard = DictionarySelectionWizardDialog('application', 'Select the favourite', self._get_kodi_favourites(), wizard)
+#         wizard = DummyWizardDialog('s_icon', '', wizard, self._get_icon_from_selected_favourite)
+#         wizard = DummyWizardDialog('original_favname', '', wizard, self._get_title_from_selected_favourite)
+#         wizard = DummyWizardDialog('m_name', '', wizard, self._get_title_from_selected_favourite)
+#         wizard = KeyboardWizardDialog('m_name','Set the title of the launcher', wizard)
+#         wizard = SelectionWizardDialog('platform', 'Select the platform', AEL_platform_list, wizard)
+#
+#         return wizard
+
+#     def _get_kodi_favourites(self):
+#         favourites = kodi_read_favourites()
+#         fav_options = {}
+#         for key in favourites:
+#             fav_options[key] = favourites[key][0]
+#
+#         return fav_options
+
+#     def _get_icon_from_selected_favourite(self, input, item_key, launcher):
+#         fav_action = launcher['application']
+#         favourites = kodi_read_favourites()
+#         for key in favourites:
+#             if fav_action == key:
+#                 return favourites[key][1]
+#
+#         return 'DefaultProgram.png'
+
+#     def _get_title_from_selected_favourite(self, input, item_key, launcher):
+#         fav_action = launcher['application']
+#         favourites = kodi_read_favourites()
+#         for key in favourites:
+#             if fav_action == key:
+#                 return favourites[key][0]
+#
+#         return _get_title_from_app_path(input, launcher)
+
+# -------------------------------------------------------------------------------------------------
 # Abstract base class for launching anything ROMs or item based.
-# Wintermute0110 Is it abstract? If RomLauncher objects can be instantiated then it's not abstract. 
-#                Confirm this point.
 #
 # This base class has methods to support launching applications with variable input
 # arguments or items like ROMs. Inherit from this base class to implement your own
@@ -2540,7 +2741,10 @@ class LauncherABC(MetaDataItemABC):
 class ROMLauncherABC(LauncherABC):
     __metaclass__ = abc.ABCMeta
 
-    def __init__(self, launcher_data, settings, executorFactory, romset_repository, statsStrategy, escape_romfile):
+    def __init__(self,
+        launcher_data, settings, executorFactory,
+        romset_repository, statsStrategy, escape_romfile
+    ):
         self.roms = {}
         self.romset_repository = romset_repository
         self.statsStrategy = statsStrategy
@@ -2645,7 +2849,7 @@ class ROMLauncherABC(LauncherABC):
         pass
 
     def supports_launching_roms(self):
-        return True  
+        return True
 
     def supports_parent_clone_roms(self):
         return False
@@ -2937,6 +3141,7 @@ class ROMLauncherABC(LauncherABC):
 
         self.entity_data['launcher_display_mode'] = mode
         log_debug('launcher_display_mode = {0}'.format(mode))
+
         return mode
 
     def get_nointro_display_mode(self):
@@ -2972,7 +3177,6 @@ class ROMLauncherABC(LauncherABC):
     def set_number_of_roms(self, num_of_roms = -1):
         if num_of_roms == -1:
             num_of_roms = self.actual_amount_of_roms()
-
         self.entity_data['num_roms'] = num_of_roms
 
     def supports_multidisc(self):
@@ -2980,6 +3184,7 @@ class ROMLauncherABC(LauncherABC):
 
     def set_multidisc_support(self, supports_multidisc):
         self.entity_data['multidisc'] = supports_multidisc
+
         return self.supports_multidisc()
 
     def _get_extensions_from_app_path(self, input, item_key ,launcher):
@@ -2987,7 +3192,7 @@ class ROMLauncherABC(LauncherABC):
             return input
 
         app = launcher['application']
-        appPath = FileNameFactory.create(app)
+        appPath = FileName(app)
 
         extensions = emudata_get_program_extensions(appPath.getBase())
         return extensions
@@ -2995,231 +3200,26 @@ class ROMLauncherABC(LauncherABC):
     def _get_arguments_from_application_path(self, input, item_key, launcher):
         if input:
             return input
-
         app = launcher['application']
-        appPath = FileNameFactory.create(app)
-
+        appPath = FileName(app)
         default_arguments = emudata_get_program_arguments(appPath.getBase())
+
         return default_arguments
 
     def _get_value_from_rompath(self, input, item_key, launcher):
         if input:
             return input
-
         romPath = launcher['rompath']
+
         return romPath
 
     def _get_value_from_assetpath(self, input, item_key, launcher):
         if input:
             return input
-
-        romPath = FileNameFactory.create(launcher['assets_path'])
+        romPath = FileName(launcher['assets_path'])
         romPath = romPath.pjoin('games')
 
         return romPath.getOriginalPath()
-
-# -------------------------------------------------------------------------------------------------
-# Standalone application launcher
-# -------------------------------------------------------------------------------------------------
-class StandaloneLauncher(LauncherABC):
-    def launch(self):
-        self.title = self.entity_data['m_name']
-        self.application = FileName(self.entity_data['application'])
-        self.arguments = self.entity_data['args']
-
-        # --- Check for errors and abort if errors found ---
-        if not self.application.exists():
-            log_error('Launching app not found "{0}"'.format(self.application.getPath()))
-            kodi_notify_warn('App {0} not found.'.format(self.application.getOriginalPath()))
-            return
-
-        # ~~~ Argument substitution ~~~
-        log_info('StandaloneLauncher() raw arguments   "{0}"'.format(self.arguments))
-        self.arguments = self.arguments.replace('$apppath%' , self.application.getDir())
-        log_info('StandaloneLauncher() final arguments "{0}"'.format(self.arguments))
-
-        super(StandaloneLauncher, self).launch()
-
-    def supports_launching_roms(self):
-        return False
-
-    def get_launcher_type(self):
-        return LAUNCHER_STANDALONE
-
-    def get_launcher_type_name(self):
-        return "Standalone launcher"
-
-    def change_application(self):
-        current_application = self.entity_data['application']
-        selected_application = xbmcgui.Dialog().browse(1, 'Select the launcher application', 'files',
-                                                      self._get_appbrowser_filter('application', self.entity_data), 
-                                                      False, False, current_application).decode('utf-8')
-
-        if selected_application is None or selected_application == current_application:
-            return False
-
-        self.entity_data['application'] = selected_application
-        return True
-
-    def change_arguments(self, args):
-        self.entity_data['args'] = args
-
-    def get_args(self):
-        return self.entity_data['args']
-
-    def get_additional_argument(self, index):
-        args = self.get_all_additional_arguments()
-        return args[index]
-
-    def get_all_additional_arguments(self):
-        return self.entity_data['args_extra']
-
-    def add_additional_argument(self, arg):
-        if not self.entity_data['args_extra']:
-            self.entity_data['args_extra'] = []
-
-        self.entity_data['args_extra'].append(arg)
-        log_debug('launcher.add_additional_argument() Appending extra_args to launcher {0}'.format(self.get_id()))
-
-    def set_additional_argument(self, index, arg):
-        if not self.entity_data['args_extra']:
-            self.entity_data['args_extra'] = []
-        self.entity_data['args_extra'][index] = arg
-        log_debug('launcher.set_additional_argument() Edited args_extra[{0}] to "{1}"'.format(index, self.entity_data['args_extra'][index]))
-
-    def remove_additional_argument(self, index):
-        del self.entity_data['args_extra'][index]
-        log_debug("launcher.remove_additional_argument() Deleted launcher['args_extra'][{0}]".format(index))
-
-    def get_edit_options(self):
-        options = collections.OrderedDict()
-        options['EDIT_METADATA']      = 'Edit Metadata ...'
-        options['EDIT_ASSETS']        = 'Edit Assets/Artwork ...'
-        options['SET_DEFAULT_ASSETS'] = 'Choose default Assets/Artwork ...'
-        options['CHANGE_CATEGORY']    = 'Change Category'
-        options['LAUNCHER_STATUS']    = 'Launcher status: {0}'.format(self.get_finished_str())
-        options['ADVANCED_MODS']      = 'Advanced Modifications ...'
-        options['EXPORT_LAUNCHER']    = 'Export Launcher XML configuration ...'
-        options['DELETE_LAUNCHER']    = 'Delete Launcher'
-
-        return options
-
-    def get_advanced_modification_options(self):
-        toggle_window_str = 'ON' if self.entity_data['toggle_window'] else 'OFF'
-        non_blocking_str  = 'ON' if self.entity_data['non_blocking'] else 'OFF'
-
-        options = super(ApplicationLauncher, self).get_advanced_modification_options()
-        options['CHANGE_APPLICATION']   = "Change Application: '{0}'".format(self.entity_data['application'])
-        options['MODIFY_ARGS']          = "Modify Arguments: '{0}'".format(self.entity_data['args'])
-        options['ADDITIONAL_ARGS']      = "Modify aditional arguments ..."
-        options['TOGGLE_WINDOWED']      = "Toggle Kodi into windowed mode (now {0})".format(toggle_window_str)
-        options['TOGGLE_NONBLOCKING']   = "Non-blocking launcher (now {0})".format(non_blocking_str)
-
-        return options
-
-    #
-    # Creates a new launcher using a wizard of dialogs.
-    #
-    def _get_builder_wizard(self, wizard):
-        wizard = KodiFileBrowseWizardDialog('application', 'Select the launcher application', 1, self._get_appbrowser_filter, wizard)
-        wizard = KodiDummyWizardDialog('args', '', wizard)
-        wizard = KodiKeyboardWizardDialog('args', 'Application arguments', wizard)
-        wizard = KodiDummyWizardDialog('m_name', '', wizard, self._get_title_from_app_path)
-        wizard = KodiKeyboardWizardDialog('m_name','Set the title of the launcher', wizard, self._get_title_from_app_path)
-        wizard = KodiSelectionWizardDialog('platform', 'Select the platform', AEL_platform_list, wizard)
-
-        return wizard
-
-# -------------------------------------------------------------------------------------------------
-# Kodi favorites launcher
-# Do not use, AEL must not access favoruites.xml directly.
-# -------------------------------------------------------------------------------------------------
-# class KodiLauncher(LauncherABC):
-#     def launch(self):
-#         self.title       = self.entity_data['m_name']
-#         self.application = FileNameFactory.create('xbmc.exe')
-#         self.arguments   = self.entity_data['application']
-#         super(KodiLauncher, self).launch()
-
-#     def supports_launching_roms(self):
-#         return False
-
-#     def get_launcher_type(self):
-#         return LAUNCHER_KODI_FAVOURITES
-
-#     def get_launcher_type_name(self):
-#         return "Kodi favourites launcher"
-
-#     def change_application(self):
-#         current_application = self.entity_data['application']
-#         dialog = KodiDictionaryDialog()
-#         selected_application = dialog.select('Select the favourite', self._get_kodi_favourites(), current_application)
-#         if selected_application is None or selected_application == current_application:
-#             return False
-#         self.entity_data['application'] = selected_application
-#         self.entity_data['original_favname'] = self._get_title_from_selected_favourite(selected_application, 'original_favname', self.entity_data)
-#
-#         return True
-
-#     def get_edit_options(self):
-#         options = collections.OrderedDict()
-#         options['EDIT_METADATA']      = 'Edit Metadata ...'
-#         options['EDIT_ASSETS']        = 'Edit Assets/Artwork ...'
-#         options['SET_DEFAULT_ASSETS'] = 'Choose default Assets/Artwork ...'
-#         options['CHANGE_CATEGORY']    = 'Change Category'
-#         options['LAUNCHER_STATUS']    = 'Launcher status: {0}'.format(self.get_state())
-#         options['ADVANCED_MODS']      = 'Advanced Modifications ...'
-#         options['EXPORT_LAUNCHER']    = 'Export Launcher XML configuration ...'
-#         options['DELETE_LAUNCHER']    = 'Delete Launcher'
-#
-#         return options
-
-#     def get_advanced_modification_options(self):
-#         toggle_window_str = 'ON' if self.entity_data['toggle_window'] else 'OFF'
-#         non_blocking_str  = 'ON' if self.entity_data['non_blocking'] else 'OFF'
-#         org_favname = self.entity_data['original_favname'] if 'original_favname' in self.entity_data else 'unknown'
-#         options = super(KodiLauncher, self).get_advanced_modification_options()
-#         options['CHANGE_APPLICATION']   = "Change favourite: '{0}'".format(org_favname)
-#         options['TOGGLE_WINDOWED']      = "Toggle Kodi into windowed mode (now {0})".format(toggle_window_str)
-#         options['TOGGLE_NONBLOCKING']   = "Non-blocking launcher (now {0})".format(non_blocking_str)
-#
-#         return options
-
-#     def _get_builder_wizard(self, wizard):
-#         wizard = DictionarySelectionWizardDialog('application', 'Select the favourite', self._get_kodi_favourites(), wizard)
-#         wizard = DummyWizardDialog('s_icon', '', wizard, self._get_icon_from_selected_favourite)
-#         wizard = DummyWizardDialog('original_favname', '', wizard, self._get_title_from_selected_favourite)
-#         wizard = DummyWizardDialog('m_name', '', wizard, self._get_title_from_selected_favourite)
-#         wizard = KeyboardWizardDialog('m_name','Set the title of the launcher', wizard)
-#         wizard = SelectionWizardDialog('platform', 'Select the platform', AEL_platform_list, wizard)
-#
-#         return wizard
-
-#     def _get_kodi_favourites(self):
-#         favourites = kodi_read_favourites()
-#         fav_options = {}
-#         for key in favourites:
-#             fav_options[key] = favourites[key][0]
-#
-#         return fav_options
-
-#     def _get_icon_from_selected_favourite(self, input, item_key, launcher):
-#         fav_action = launcher['application']
-#         favourites = kodi_read_favourites()
-#         for key in favourites:
-#             if fav_action == key:
-#                 return favourites[key][1]
-#
-#         return 'DefaultProgram.png'
-
-#     def _get_title_from_selected_favourite(self, input, item_key, launcher):
-#         fav_action = launcher['application']
-#         favourites = kodi_read_favourites()
-#         for key in favourites:
-#             if fav_action == key:
-#                 return favourites[key][0]
-#
-#         return _get_title_from_app_path(input, launcher)
 
 # -------------------------------------------------------------------------------------------------
 # Collection Launcher
@@ -3301,7 +3301,9 @@ class CollectionLauncher(ROMLauncherABC):
 # ------------------------------------------------------------------------------------------------- 
 class VirtualLauncher(ROMLauncherABC):
     def __init__(self, launcher_data, settings, romset_repository):
-        super(VirtualLauncher, self).__init__(launcher_data, settings, None, romset_repository, None, False)
+        super(VirtualLauncher, self).__init__(
+            launcher_data, settings, None, romset_repository, None, False
+        )
 
     def launch(self):
         pass
@@ -3338,6 +3340,7 @@ class VirtualLauncher(ROMLauncherABC):
         return options
 
     def _get_builder_wizard(self, wizard):
+
         return wizard
 
 # -------------------------------------------------------------------------------------------------
@@ -3485,9 +3488,9 @@ class StandardRomLauncher(ROMLauncherABC):
     def _selectApplicationToUse(self):
         if self.rom.has_alternative_application():
             log_info('StandardRomLauncher() Using ROM altapp')
-            self.application = FileNameFactory.create(self.rom.get_alternative_application())
+            self.application = FileName(self.rom.get_alternative_application())
         else:
-            self.application = FileNameFactory.create(self.entity_data['application'])
+            self.application = FileName(self.entity_data['application'])
 
         # --- Check for errors and abort if found --- todo: CHECK
         if not self.application.exists():
@@ -3535,7 +3538,7 @@ class StandardRomLauncher(ROMLauncherABC):
         log_info('StandardRomLauncher._selectRomFileToUse() Selected ROM "{0}"'.format(selected_rom_base))
 
         ROM_temp = self.rom.get_file()
-        ROM_dir = FileNameFactory.create(ROM_temp.getDir())
+        ROM_dir = FileName(ROM_temp.getDir())
         ROMFileName = ROM_dir.pjoin(selected_rom_base)
 
         log_info('StandardRomLauncher._selectRomFileToUse() ROMFileName OP "{0}"'.format(ROMFileName.getOriginalPath()))
@@ -3553,17 +3556,17 @@ class StandardRomLauncher(ROMLauncherABC):
     # Creates a new launcher using a wizard of dialogs.
     #
     def _get_builder_wizard(self, wizard):
-        wizard = FileBrowseWizardDialog('application', 'Select the launcher application', 1, self._get_appbrowser_filter, wizard) 
-        wizard = FileBrowseWizardDialog('rompath', 'Select the ROMs path', 0, '', wizard)
-        wizard = DummyWizardDialog('romext', '', wizard, self._get_extensions_from_app_path)
-        wizard = KeyboardWizardDialog('romext','Set files extensions, use "|" as separator. (e.g lnk|cbr)', wizard)
-        wizard = DummyWizardDialog('args', '', wizard, self._get_arguments_from_application_path)
-        wizard = KeyboardWizardDialog('args', 'Application arguments', wizard)
-        wizard = DummyWizardDialog('m_name', '', wizard, self._get_title_from_app_path)
-        wizard = KeyboardWizardDialog('m_name','Set the title of the launcher', wizard, self._get_title_from_app_path)
-        wizard = SelectionWizardDialog('platform', 'Select the platform', AEL_platform_list, wizard)
-        wizard = DummyWizardDialog('assets_path', '', wizard, self._get_value_from_rompath)
-        wizard = FileBrowseWizardDialog('assets_path', 'Select asset/artwork directory', 0, '', wizard) 
+        wizard = KodiFileBrowseWizardDialog('application', 'Select the launcher application', 1, self._get_appbrowser_filter, wizard)
+        wizard = KodiFileBrowseWizardDialog('rompath', 'Select the ROMs path', 0, '', wizard)
+        wizard = KodiDummyWizardDialog('romext', '', wizard, self._get_extensions_from_app_path)
+        wizard = KodiKeyboardWizardDialog('romext','Set files extensions, use "|" as separator. (e.g lnk|cbr)', wizard)
+        wizard = KodiDummyWizardDialog('args', '', wizard, self._get_arguments_from_application_path)
+        wizard = KodiKeyboardWizardDialog('args', 'Application arguments', wizard)
+        wizard = KodiDummyWizardDialog('m_name', '', wizard, self._get_title_from_app_path)
+        wizard = KodiKeyboardWizardDialog('m_name','Set the title of the launcher', wizard, self._get_title_from_app_path)
+        wizard = KodiSelectionWizardDialog('platform', 'Select the platform', AEL_platform_list, wizard)
+        wizard = KodiDummyWizardDialog('assets_path', '', wizard, self._get_value_from_rompath)
+        wizard = KodiFileBrowseWizardDialog('assets_path', 'Select asset/artwork directory', 0, '', wizard)
 
         return wizard
 
@@ -3725,12 +3728,12 @@ class RetroarchLauncher(StandardRomLauncher):
     def _selectApplicationToUse(self):
         
         if is_windows():
-            self.application = FileNameFactory.create(self.entity_data['application'])
+            self.application = FileName(self.entity_data['application'])
             self.application = self.application.append('retroarch.exe')  
             return True
 
         if is_android():
-            self.application = FileNameFactory.create('/system/bin/am')
+            self.application = FileName('/system/bin/am')
             return True
 
         #todo other os
@@ -3783,7 +3786,7 @@ class RetroarchLauncher(StandardRomLauncher):
     
     def _get_retroarch_app_folder(self, settings):
     
-        retroarch_folder = FileNameFactory.create(settings['io_retroarch_sys_dir'])      
+        retroarch_folder = FileName(settings['io_retroarch_sys_dir'])      
     
         if retroarch_folder.exists():
             return retroarch_folder.getOriginalPath()
@@ -3798,7 +3801,7 @@ class RetroarchLauncher(StandardRomLauncher):
 
         
             for retroach_folder_path in android_retroarch_folders:
-                retroarch_folder = FileNameFactory.create(retroach_folder_path)
+                retroarch_folder = FileName(retroach_folder_path)
                 if retroarch_folder.exists():
                     return retroarch_folder.getOriginalPath()
 
@@ -3810,13 +3813,13 @@ class RetroarchLauncher(StandardRomLauncher):
         configs['BROWSE'] = 'Browse for configuration'
 
         retroarch_folders = []
-        retroarch_folders.append(FileNameFactory.create(launcher['application']))
+        retroarch_folders.append(FileName(launcher['application']))
 
         if is_android():
-            retroarch_folders.append(FileNameFactory.create('/storage/emulated/0/Android/data/com.retroarch/'))
-            retroarch_folders.append(FileNameFactory.create('/data/data/com.retroarch/'))
-            retroarch_folders.append(FileNameFactory.create('/storage/sdcard0/Android/data/com.retroarch/'))
-            retroarch_folders.append(FileNameFactory.create('/data/user/0/com.retroarch/'))
+            retroarch_folders.append(FileName('/storage/emulated/0/Android/data/com.retroarch/'))
+            retroarch_folders.append(FileName('/data/data/com.retroarch/'))
+            retroarch_folders.append(FileName('/storage/sdcard0/Android/data/com.retroarch/'))
+            retroarch_folders.append(FileName('/data/user/0/com.retroarch/'))
         
         for retroarch_folder in retroarch_folders:
             log_debug("get_available_retroarch_configurations() scanning path '{0}'".format(retroarch_folder.getOriginalPath()))
@@ -3835,7 +3838,6 @@ class RetroarchLauncher(StandardRomLauncher):
         return configs
 
     def _get_available_retroarch_cores(self, item_key, launcher):
-    
         cores = collections.OrderedDict()
         cores['BROWSE'] = 'Manual enter path to core'
         cores_ext = '*.*'
@@ -3845,9 +3847,9 @@ class RetroarchLauncher(StandardRomLauncher):
         else:
             cores_ext = '*.so'
 
-        config_file     = FileNameFactory.create(launcher['retro_config'])
+        config_file     = FileName(launcher['retro_config'])
         parent_dir      = config_file.getDirAsFileName()
-        configuration   = config_file.readPropertyFile()    
+        configuration   = config_file.readPropertyFile()
         info_folder     = self._create_path_from_retroarch_setting(configuration['libretro_info_path'], parent_dir)
         cores_folder    = self._create_path_from_retroarch_setting(configuration['libretro_directory'], parent_dir)
         
@@ -3888,15 +3890,15 @@ class RetroarchLauncher(StandardRomLauncher):
             cores_ext = 'so'
 
         if input.endswith(cores_ext):
-            core_file = FileNameFactory.create(input)
+            core_file = FileName(input)
             launcher['retro_core']  = core_file.getOriginalPath()
             return input
 
-        config_file     = FileNameFactory.create(launcher['retro_config'])
+        config_file     = FileName(launcher['retro_config'])
         parent_dir      = config_file.getDirAsFileName()
-        configuration   = config_file.readPropertyFile()    
+        configuration   = config_file.readPropertyFile()
         cores_folder    = self._create_path_from_retroarch_setting(configuration['libretro_directory'], parent_dir)
-        info_file       = FileNameFactory.create(input)
+        info_file       = FileName(input)
         
         if not cores_folder.exists():
             log_warning('Retroarch cores folder not found {}'.format(cores_folder.getOriginalPath()))
@@ -3932,11 +3934,11 @@ class RetroarchLauncher(StandardRomLauncher):
             path_from_setting = path_from_setting[2:]
             return parent_dir.pjoin(path_from_setting)
         else:
-            folder = FileNameFactory.create(path_from_setting)
+            folder = FileName(path_from_setting)
             if '/data/user/0/' in folder.getOriginalPath():
                 alternative_folder = foldexr.getOriginalPath()
                 alternative_folder = alternative_folder.replace('/data/user/0/', '/data/data/')
-                folder = FileNameFactory.create(alternative_folder)
+                folder = FileName(alternative_folder)
 
             return folder
 
@@ -3997,10 +3999,10 @@ class SteamLauncher(ROMLauncherABC):
         return options
     
     def _selectApplicationToUse(self):
-        self.application = FileNameFactory.create('steam://rungameid/')
+        self.application = FileName('steam://rungameid/')
         return True
 
-    def _selectArgumentsToUse(self):        
+    def _selectArgumentsToUse(self):
         self.arguments = '$steamid$'
         return True
 
@@ -4015,7 +4017,7 @@ class SteamLauncher(ROMLauncherABC):
        #    
        #    url = 'steam://rungameid/'
        #
-       #    self.application = FileNameFactory.create('steam://rungameid/')
+       #    self.application = FileName('steam://rungameid/')
        #    self.arguments = str(self.rom['steamid'])
        #
        #    log_info('SteamLauncher() ROM ID {0}: @{1}"'.format(self.rom['steamid'], self.rom['m_name']))
@@ -4041,7 +4043,7 @@ class SteamLauncher(ROMLauncherABC):
         if input:
             return input
 
-        romPath = FileNameFactory.create(launcher['assets_path'])
+        romPath = FileName(launcher['assets_path'])
         romPath = romPath.pjoin('games')
 
         return romPath.getOriginalPath()
@@ -4086,7 +4088,7 @@ class NvidiaGameStreamLauncher(ROMLauncherABC):
 
         # java application selected (moonlight-pc)
         if '.jar' in streamClient:
-            self.application = FileNameFactory.create(os.getenv("JAVA_HOME"))
+            self.application = FileName(os.getenv("JAVA_HOME"))
             if is_windows():
                 self.application = self.application.pjoin('bin\\java.exe')
             else:
@@ -4095,11 +4097,11 @@ class NvidiaGameStreamLauncher(ROMLauncherABC):
             return True
 
         if is_windows():
-            self.application = FileNameFactory.create(streamClient)
+            self.application = FileName(streamClient)
             return True
 
         if is_android():
-            self.application = FileNameFactory.create('/system/bin/am')
+            self.application = FileName('/system/bin/am')
             return True
 
         return True
@@ -4184,14 +4186,14 @@ class NvidiaGameStreamLauncher(ROMLauncherABC):
 
     def _check_if_selected_gamestream_client_exists(self, input, item_key, launcher):
         if input == 'NVIDIA':
-            nvidiaDataFolder = FileNameFactory.create('/data/data/com.nvidia.tegrazone3/')
-            nvidiaAppFolder = FileNameFactory.create('/storage/emulated/0/Android/data/com.nvidia.tegrazone3/')
+            nvidiaDataFolder = FileName('/data/data/com.nvidia.tegrazone3/', isdir = True)
+            nvidiaAppFolder = FileName('/storage/emulated/0/Android/data/com.nvidia.tegrazone3/')
             if not nvidiaAppFolder.exists() and not nvidiaDataFolder.exists():
                 kodi_notify_warn('Could not find Nvidia Gamestream client. Make sure it\'s installed.')
 
         if input == 'MOONLIGHT':
-            moonlightDataFolder = FileNameFactory.create('/data/data/com.limelight/')
-            moonlightAppFolder = FileNameFactory.create('/storage/emulated/0/Android/data/com.limelight/')
+            moonlightDataFolder = FileName('/data/data/com.limelight/', isdir = True)
+            moonlightAppFolder = FileName('/storage/emulated/0/Android/data/com.limelight/')
             if not moonlightAppFolder.exists() and not moonlightDataFolder.exists():
                 kodi_notify_warn('Could not find Moonlight Gamestream client. Make sure it\'s installed.')
 
@@ -4202,7 +4204,7 @@ class NvidiaGameStreamLauncher(ROMLauncherABC):
         return path
 
     def _validate_nvidia_certificates(self, input, item_key, launcher):
-        certificates_path = FileNameFactory.create(input)
+        certificates_path = FileName(input)
         gs = GameStreamServer(input, certificates_path)
         if not gs.validate_certificates():
             kodi_notify_warn('Could not find certificates to validate. Make sure you already paired with the server with the Shield or Moonlight applications.')
@@ -4234,6 +4236,22 @@ class LauncherFactory(object):
         self.PATHS           = PATHS
         self.executorFactory = executorFactory
 
+        self.recently_played_roms_dic = {
+            'id': VLAUNCHER_RECENT_ID,
+            'm_name': 'Recently played',
+            'roms_base_noext': 'history'
+        }
+        self.most_played_roms_dic = {
+            'id': VLAUNCHER_MOST_PLAYED_ID,
+            'm_name': 'Most played',
+            'roms_base_noext': 'most_played'
+        }
+        self.favourites_roms_dic = {
+            'id': VLAUNCHER_FAVOURITES_ID,
+            'm_name': 'Favourites',
+            'roms_base_noext': 'favourites'
+        }
+
     #
     # launcher_type is mandatory.
     # launcher_data may be a dictionary or None
@@ -4241,31 +4259,16 @@ class LauncherFactory(object):
     def _load(self, launcher_type, launcher_data):
         # --- Virtual launchers ---
         if launcher_type == VLAUNCHER_RECENT_ID:
-            recently_played_roms_dic = {
-                'id': VLAUNCHER_RECENT_ID,
-                'm_name': 'Recently played',
-                'roms_base_noext': 'history'
-            }
-
-            return VirtualLauncher(recently_played_roms_dic, self.settings, RomSetRepository(self.plugin_data_dir))
+            return VirtualLauncher(
+                self.recently_played_roms_dic, self.settings, RomSetRepository(self.plugin_data_dir))
 
         elif launcher_type == VLAUNCHER_MOST_PLAYED_ID:
-            most_played_roms_dic = {
-                'id': VLAUNCHER_MOST_PLAYED_ID,
-                'm_name': 'Most played',
-                'roms_base_noext': 'most_played'
-            }
-
-            return VirtualLauncher(most_played_roms_dic, self.settings, RomSetRepository(self.plugin_data_dir))
+            return VirtualLauncher(
+                self.most_played_roms_dic, self.settings, RomSetRepository(self.plugin_data_dir))
 
         elif launcher_type == VLAUNCHER_FAVOURITES_ID:
-            favourites_roms_dic = {
-                'id': VLAUNCHER_FAVOURITES_ID,
-                'm_name': 'Favourites',
-                'roms_base_noext': 'favourites'
-            }
-
-            return VirtualLauncher(favourites_roms_dic, self.settings, RomSetRepository(self.plugin_data_dir))
+            return VirtualLauncher(
+                self.favourites_roms_dic, self.settings, RomSetRepository(self.plugin_data_dir))
 
         # --- Real launchers ---
         elif launcher_type == LAUNCHER_STANDALONE:
@@ -4276,11 +4279,15 @@ class LauncherFactory(object):
             return CollectionLauncher(launcher_data, self.settings, collection_romset_repository)
 
         elif launcher_type == LAUNCHER_ROM:
-            statsStrategy = RomStatisticsStrategy(self.virtual_launchers[VLAUNCHER_RECENT_ID],
-                                                  self.virtual_launchers[VLAUNCHER_MOST_PLAYED_ID])
+            statsStrategy = RomStatisticsStrategy(
+                VirtualLauncher(self.recently_played_roms_dic, self.settings, RomSetRepository(self.PATHS)),
+                VirtualLauncher(self.most_played_roms_dic, self.settings, RomSetRepository(self.PATHS))
+            )
             romset_repository = RomSetRepository(self.PATHS.ROMS_DIR)
-            return StandardRomLauncher(launcher_data, self.settings, self.executorFactory,
-                                       romset_repository, statsStrategy, self.settings['escape_romfile'])
+            return StandardRomLauncher(
+                launcher_data, self.settings, self.executorFactory,
+                romset_repository, statsStrategy, self.settings['escape_romfile']
+            )
 
         elif launcher_type == LAUNCHER_RETROPLAYER:
             statsStrategy = RomStatisticsStrategy(self.virtual_launchers[VLAUNCHER_RECENT_ID],
@@ -4590,9 +4597,9 @@ class GameStreamServer(object):
             self.certificate_file_path = self.certificates_path.pjoin('nvidia.crt')
             self.certificate_key_file_path = self.certificates_path.pjoin('nvidia.key')
         else:
-            self.certificates_path = FileNameFactory.create('')
-            self.certificate_file_path = FileNameFactory.create('')
-            self.certificate_key_file_path = FileNameFactory.create('')
+            self.certificates_path = FileName('')
+            self.certificate_file_path = FileName('')
+            self.certificate_key_file_path = FileName('')
 
         log_debug('GameStreamServer() Using certificate key file {}'.format(self.certificate_key_file_path.getOriginalPath()))
         log_debug('GameStreamServer() Using certificate file {}'.format(self.certificate_file_path.getOriginalPath()))
@@ -4924,7 +4931,7 @@ class GameStreamServer(object):
     @staticmethod
     def try_to_resolve_path_to_nvidia_certificates():
         home = expanduser("~")
-        homePath = FileNameFactory.create(home)
+        homePath = FileName(home)
 
         possiblePath = homePath.pjoin('Moonlight/')
         if possiblePath.exists():
@@ -4946,7 +4953,7 @@ class ExecutorFactory(object):
         self.logFile = g_PATHS.LAUNCHER_REPORT_FILE_PATH
 
     def create_from_pathstring(self, application_string):
-        app = FileNameFactory.create(application_string)
+        app = FileName(application_string)
         return self.create(app)
 
     def create(self, application):
@@ -5636,7 +5643,7 @@ class RomFolderScanner(RomScannerStrategy):
             self._updateProgress(num_items_checked * 100 / num_items)
             
             # --- Get all file name combinations ---
-            ROM = FileNameFactory.create(item)
+            ROM = FileName(item)
             launcher_report.write('>>> {0}'.format(ROM.getOriginalPath()).encode('utf-8'))
 
             # ~~~ Update progress dialog ~~~
@@ -5688,7 +5695,7 @@ class RomFolderScanner(RomScannerStrategy):
                 if not MultiDiscInROMs:
                     log_info('First ROM in the set. Adding to ROMs ...')
                     # >> Manipulate ROM so filename is the name of the set
-                    ROM_dir = FileNameFactory.create(ROM.getDir())
+                    ROM_dir = FileName(ROM.getDir())
                     ROM_temp = ROM_dir.pjoin(MDSet.setName)
                     log_info('ROM_temp OP "{0}"'.format(ROM_temp.getOriginalPath()))
                     log_info('ROM_temp  P "{0}"'.format(ROM_temp.getPath()))
