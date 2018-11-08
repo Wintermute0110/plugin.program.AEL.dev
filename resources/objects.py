@@ -1428,9 +1428,11 @@ class RomStatisticsStrategy(object):
         self.most_played_launcher.update_rom_set(most_played_roms)
 
 # -------------------------------------------------------------------------------------------------
-# Abstract base class for business objects which support the generic metadata fields and assets.
+# Abstract base class for business objects which support the generic
+# metadata fields and assets.
 #
 # --- Class hierarchy ---
+#
 # MetaDataItemABC(object) (abstract class)
 # |
 # |----- Category
@@ -1460,8 +1462,6 @@ class RomStatisticsStrategy(object):
 #        |      |----- NvidiaGameStreamLauncher
 #        |
 #        |----- StandaloneLauncher (Standalone launcher)
-#        |
-#        |----- KodiLauncher (Kodi favs launcher)
 #
 # -------------------------------------------------------------------------------------------------
 class MetaDataItemABC(object):
@@ -2010,9 +2010,6 @@ class LauncherFactory(object):
         elif launcher_type == LAUNCHER_STANDALONE:
             return StandaloneLauncher(launcher_data, self.settings, self.executorFactory)
 
-        elif launcher_type == LAUNCHER_FAVOURITES:
-            return KodiLauncher(launcher_data, self.settings, self.executorFactory)
-
         elif launcher_type == LAUNCHER_COLLECTION:
             collection_romset_repository = RomSetRepository(self.PATHS.COLLECTIONS_FILE_PATH, False)
             return CollectionLauncher(launcher_data, self.settings, collection_romset_repository)
@@ -2058,6 +2055,11 @@ class LauncherFactory(object):
             romset_repository = RomSetRepository(self.PATHS.ROMS_DIR)
             return NvidiaGameStreamLauncher(launcher_data, self.settings, self.executorFactory,
                                             romset_repository, statsStrategy)
+
+        # --- Disabled. AEL must not access favourites.xml ---
+        # elif launcher_type == LAUNCHER_KODI_FAVOURITES:
+        #     return KodiLauncher(launcher_data, self.settings, self.executorFactory)
+
         else:
             log_error('Unsupported launcher requested with type "{0}"'.format(launcher_type))
 
@@ -2065,16 +2067,17 @@ class LauncherFactory(object):
 
     def get_supported_types(self):
         typeOptions = collections.OrderedDict()
-        typeOptions[LAUNCHER_STANDALONE]   = 'Standalone launcher (Game/Application)'
-        typeOptions[LAUNCHER_ROM]          = 'ROM launcher (Emulator)'
-        typeOptions[LAUNCHER_RETROPLAYER]  = 'ROM launcher (Kodi Retroplayer)'
-        typeOptions[LAUNCHER_RETROARCH]    = 'ROM launcher (Retroarch)'
-        typeOptions[LAUNCHER_NVGAMESTREAM] = 'Nvidia GameStream'
+        typeOptions[LAUNCHER_STANDALONE]      = 'Standalone launcher (Game/Application)'
+        typeOptions[LAUNCHER_ROM]             = 'ROM launcher (Emulator)'
+        typeOptions[LAUNCHER_RETROPLAYER]     = 'ROM launcher (Kodi Retroplayer)'
+        typeOptions[LAUNCHER_RETROARCH]       = 'ROM launcher (Retroarch)'
+        typeOptions[LAUNCHER_NVGAMESTREAM]    = 'Nvidia GameStream'
         if not is_android():
-            typeOptions[LAUNCHER_STEAM]    = 'Steam launcher'
+            typeOptions[LAUNCHER_STEAM]       = 'Steam launcher'
         if is_windows():
-            typeOptions[LAUNCHER_LNK]      = 'LNK launcher (Windows only)'
-        typeOptions[LAUNCHER_FAVOURITES]   = 'Kodi favourite launcher'
+            typeOptions[LAUNCHER_LNK]         = 'LNK launcher (Windows only)'
+        # --- Disabled. AEL must not access favourites.xml ---
+        # typeOptions[LAUNCHER_KODI_FAVOURITES] = 'Kodi favourite launcher'
 
         return typeOptions
 
@@ -3217,21 +3220,20 @@ class StandaloneLauncher(LauncherABC):
     def set_additional_argument(self, index, arg):
         if not self.entity_data['args_extra']:
             self.entity_data['args_extra'] = []
-
         self.entity_data['args_extra'][index] = arg
         log_debug('launcher.set_additional_argument() Edited args_extra[{0}] to "{1}"'.format(index, self.entity_data['args_extra'][index]))
 
     def remove_additional_argument(self, index):
         del self.entity_data['args_extra'][index]
         log_debug("launcher.remove_additional_argument() Deleted launcher['args_extra'][{0}]".format(index))
-        
+
     def get_edit_options(self):
         options = collections.OrderedDict()
         options['EDIT_METADATA']      = 'Edit Metadata ...'
         options['EDIT_ASSETS']        = 'Edit Assets/Artwork ...'
         options['SET_DEFAULT_ASSETS'] = 'Choose default Assets/Artwork ...'
         options['CHANGE_CATEGORY']    = 'Change Category'
-        options['LAUNCHER_STATUS']    = 'Launcher status: {0}'.format(self.get_state())
+        options['LAUNCHER_STATUS']    = 'Launcher status: {0}'.format(self.get_finished_str())
         options['ADVANCED_MODS']      = 'Advanced Modifications ...'
         options['EXPORT_LAUNCHER']    = 'Export Launcher XML configuration ...'
         options['DELETE_LAUNCHER']    = 'Delete Launcher'
@@ -3266,103 +3268,94 @@ class StandaloneLauncher(LauncherABC):
 
 # -------------------------------------------------------------------------------------------------
 # Kodi favorites launcher
+# Do not use, AEL must not access favoruites.xml directly.
 # -------------------------------------------------------------------------------------------------
-class KodiLauncher(LauncherABC):
-    def launch(self):
-        self.title       = self.entity_data['m_name']
-        self.application = FileNameFactory.create('xbmc.exe')
-        self.arguments   = self.entity_data['application']       
+# class KodiLauncher(LauncherABC):
+#     def launch(self):
+#         self.title       = self.entity_data['m_name']
+#         self.application = FileNameFactory.create('xbmc.exe')
+#         self.arguments   = self.entity_data['application']
+#         super(KodiLauncher, self).launch()
 
-        super(KodiLauncher, self).launch()
+#     def supports_launching_roms(self):
+#         return False
 
-    def supports_launching_roms(self):
-        return False
+#     def get_launcher_type(self):
+#         return LAUNCHER_KODI_FAVOURITES
 
-    def get_launcher_type(self):
-        return LAUNCHER_FAVOURITES
+#     def get_launcher_type_name(self):
+#         return "Kodi favourites launcher"
 
-    def get_launcher_type_name(self):
-        return "Kodi favourite launcher"
+#     def change_application(self):
+#         current_application = self.entity_data['application']
+#         dialog = KodiDictionaryDialog()
+#         selected_application = dialog.select('Select the favourite', self._get_kodi_favourites(), current_application)
+#         if selected_application is None or selected_application == current_application:
+#             return False
+#         self.entity_data['application'] = selected_application
+#         self.entity_data['original_favname'] = self._get_title_from_selected_favourite(selected_application, 'original_favname', self.entity_data)
+#
+#         return True
 
-    def change_application(self):
-        current_application = self.entity_data['application']
-        dialog = KodiDictionaryDialog()
-        selected_application = dialog.select('Select the favourite', self._get_kodi_favourites(), current_application)
+#     def get_edit_options(self):
+#         options = collections.OrderedDict()
+#         options['EDIT_METADATA']      = 'Edit Metadata ...'
+#         options['EDIT_ASSETS']        = 'Edit Assets/Artwork ...'
+#         options['SET_DEFAULT_ASSETS'] = 'Choose default Assets/Artwork ...'
+#         options['CHANGE_CATEGORY']    = 'Change Category'
+#         options['LAUNCHER_STATUS']    = 'Launcher status: {0}'.format(self.get_state())
+#         options['ADVANCED_MODS']      = 'Advanced Modifications ...'
+#         options['EXPORT_LAUNCHER']    = 'Export Launcher XML configuration ...'
+#         options['DELETE_LAUNCHER']    = 'Delete Launcher'
+#
+#         return options
 
-        if selected_application is None or selected_application == current_application:
-            return False
+#     def get_advanced_modification_options(self):
+#         toggle_window_str = 'ON' if self.entity_data['toggle_window'] else 'OFF'
+#         non_blocking_str  = 'ON' if self.entity_data['non_blocking'] else 'OFF'
+#         org_favname = self.entity_data['original_favname'] if 'original_favname' in self.entity_data else 'unknown'
+#         options = super(KodiLauncher, self).get_advanced_modification_options()
+#         options['CHANGE_APPLICATION']   = "Change favourite: '{0}'".format(org_favname)
+#         options['TOGGLE_WINDOWED']      = "Toggle Kodi into windowed mode (now {0})".format(toggle_window_str)
+#         options['TOGGLE_NONBLOCKING']   = "Non-blocking launcher (now {0})".format(non_blocking_str)
+#
+#         return options
 
-        self.entity_data['application'] = selected_application
-        self.entity_data['original_favname'] = self._get_title_from_selected_favourite(selected_application, 'original_favname', self.entity_data)
-        return True
+#     def _get_builder_wizard(self, wizard):
+#         wizard = DictionarySelectionWizardDialog('application', 'Select the favourite', self._get_kodi_favourites(), wizard)
+#         wizard = DummyWizardDialog('s_icon', '', wizard, self._get_icon_from_selected_favourite)
+#         wizard = DummyWizardDialog('original_favname', '', wizard, self._get_title_from_selected_favourite)
+#         wizard = DummyWizardDialog('m_name', '', wizard, self._get_title_from_selected_favourite)
+#         wizard = KeyboardWizardDialog('m_name','Set the title of the launcher', wizard)
+#         wizard = SelectionWizardDialog('platform', 'Select the platform', AEL_platform_list, wizard)
+#
+#         return wizard
 
-    def get_edit_options(self):
-        options = collections.OrderedDict()
-        options['EDIT_METADATA']      = 'Edit Metadata ...'
-        options['EDIT_ASSETS']        = 'Edit Assets/Artwork ...'
-        options['SET_DEFAULT_ASSETS'] = 'Choose default Assets/Artwork ...'
-        options['CHANGE_CATEGORY']    = 'Change Category'
-        options['LAUNCHER_STATUS']    = 'Launcher status: {0}'.format(self.get_state())
-        options['ADVANCED_MODS']      = 'Advanced Modifications ...'
-        options['EXPORT_LAUNCHER']    = 'Export Launcher XML configuration ...'
-        options['DELETE_LAUNCHER']    = 'Delete Launcher'
+#     def _get_kodi_favourites(self):
+#         favourites = kodi_read_favourites()
+#         fav_options = {}
+#         for key in favourites:
+#             fav_options[key] = favourites[key][0]
+#
+#         return fav_options
 
-        return options
+#     def _get_icon_from_selected_favourite(self, input, item_key, launcher):
+#         fav_action = launcher['application']
+#         favourites = kodi_read_favourites()
+#         for key in favourites:
+#             if fav_action == key:
+#                 return favourites[key][1]
+#
+#         return 'DefaultProgram.png'
 
-    def get_advanced_modification_options(self):
-        toggle_window_str = 'ON' if self.entity_data['toggle_window'] else 'OFF'
-        non_blocking_str  = 'ON' if self.entity_data['non_blocking'] else 'OFF'
-
-        org_favname = self.entity_data['original_favname'] if 'original_favname' in self.entity_data else 'unknown'
-
-        options = super(KodiLauncher, self).get_advanced_modification_options()
-        options['CHANGE_APPLICATION']   = "Change favourite: '{0}'".format(org_favname)
-        options['TOGGLE_WINDOWED']      = "Toggle Kodi into windowed mode (now {0})".format(toggle_window_str)
-        options['TOGGLE_NONBLOCKING']   = "Non-blocking launcher (now {0})".format(non_blocking_str)
-
-        return options
-
-    #
-    # Creates a new launcher using a wizard of dialogs.
-    #
-    def _get_builder_wizard(self, wizard):
-        wizard = DictionarySelectionWizardDialog('application', 'Select the favourite', self._get_kodi_favourites(), wizard)
-        wizard = DummyWizardDialog('s_icon', '', wizard, self._get_icon_from_selected_favourite)
-        wizard = DummyWizardDialog('original_favname', '', wizard, self._get_title_from_selected_favourite)
-        wizard = DummyWizardDialog('m_name', '', wizard, self._get_title_from_selected_favourite)
-        wizard = KeyboardWizardDialog('m_name','Set the title of the launcher', wizard)
-        wizard = SelectionWizardDialog('platform', 'Select the platform', AEL_platform_list, wizard)
-
-        return wizard
-
-    def _get_kodi_favourites(self):
-        favourites = kodi_read_favourites()
-        fav_options = {}
-
-        for key in favourites:
-            fav_options[key] = favourites[key][0]
-
-        return fav_options
-
-    def _get_icon_from_selected_favourite(self, input, item_key, launcher):
-        fav_action = launcher['application']
-        favourites = kodi_read_favourites()
-
-        for key in favourites:
-            if fav_action == key:
-                return favourites[key][1]
-
-        return 'DefaultProgram.png'
-
-    def _get_title_from_selected_favourite(self, input, item_key, launcher):
-        fav_action = launcher['application']
-        favourites = kodi_read_favourites()
-
-        for key in favourites:
-            if fav_action == key:
-                return favourites[key][0]
-
-        return _get_title_from_app_path(input, launcher)
+#     def _get_title_from_selected_favourite(self, input, item_key, launcher):
+#         fav_action = launcher['application']
+#         favourites = kodi_read_favourites()
+#         for key in favourites:
+#             if fav_action == key:
+#                 return favourites[key][0]
+#
+#         return _get_title_from_app_path(input, launcher)
 
 # -------------------------------------------------------------------------------------------------
 # Collection Launcher
@@ -4408,6 +4401,7 @@ class ExecutorFactory(object):
             return OSXExecutor(self.logFile)
 
         else:
+            log_error('ExecutorFactory::create() Cannot determine the running platform')
             kodi_notify_warn('Cannot determine the running platform')
 
         return None

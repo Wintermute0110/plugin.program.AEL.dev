@@ -864,9 +864,10 @@ def m_command_edit_launcher(category_id, launcher_id):
     if launcher is None: return
 
     # --- Shows a select box with the options to edit ---
-    dialog = KodiDictionaryDialog()
     launcher_options = launcher.get_edit_options()
-    selected_option = dialog.select('Select action for Launcher {0}'.format(launcher.get_name()), launcher_options))
+    selected_option = KodiDictionaryDialog().select(
+        'Select action for Launcher {0}'.format(launcher.get_name()), launcher_options
+    )
 
     if selected_option is None:
         log_debug('_command_edit_launcher(): No selected option')
