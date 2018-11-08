@@ -1964,142 +1964,6 @@ class ROM(MetaDataItemABC):
         return json.dumps(self.entity_data)
 
 # -------------------------------------------------------------------------------------------------
-# Factory class for creating launchers object instances based upon the given type and 
-# dictionary with launcher data.
-# -------------------------------------------------------------------------------------------------
-class LauncherFactory(object):
-    def __init__(self, settings, PATHS, executorFactory):
-        self.settings        = settings
-        self.PATHS           = PATHS
-        self.executorFactory = executorFactory
-
-    #
-    # launcher_type is mandatory.
-    # launcher_data may be a dictionary or None
-    #
-    def _load(self, launcher_type, launcher_data):
-        # --- Virtual launchers ---
-        if launcher_type == VLAUNCHER_RECENT_ID:
-            recently_played_roms_dic = {
-                'id': VLAUNCHER_RECENT_ID,
-                'm_name': 'Recently played',
-                'roms_base_noext': 'history'
-            }
-
-            return VirtualLauncher(recently_played_roms_dic, self.settings, RomSetRepository(self.plugin_data_dir))
-
-        elif launcher_type == VLAUNCHER_MOST_PLAYED_ID:
-            most_played_roms_dic = {
-                'id': VLAUNCHER_MOST_PLAYED_ID,
-                'm_name': 'Most played',
-                'roms_base_noext': 'most_played'
-            }
-
-            return VirtualLauncher(most_played_roms_dic, self.settings, RomSetRepository(self.plugin_data_dir))
-
-        elif launcher_type == VLAUNCHER_FAVOURITES_ID:
-            favourites_roms_dic = {
-                'id': VLAUNCHER_FAVOURITES_ID,
-                'm_name': 'Favourites',
-                'roms_base_noext': 'favourites'
-            }
-
-            return VirtualLauncher(favourites_roms_dic, self.settings, RomSetRepository(self.plugin_data_dir))
-
-        # --- Real launchers ---
-        elif launcher_type == LAUNCHER_STANDALONE:
-            return StandaloneLauncher(launcher_data, self.settings, self.executorFactory)
-
-        elif launcher_type == LAUNCHER_COLLECTION:
-            collection_romset_repository = RomSetRepository(self.PATHS.COLLECTIONS_FILE_PATH, False)
-            return CollectionLauncher(launcher_data, self.settings, collection_romset_repository)
-
-        elif launcher_type == LAUNCHER_RETROPLAYER:
-            statsStrategy = RomStatisticsStrategy(self.virtual_launchers[VLAUNCHER_RECENT_ID],
-                                                  self.virtual_launchers[VLAUNCHER_MOST_PLAYED_ID])
-            romset_repository = RomSetRepository(self.PATHS.ROMS_DIR)
-            return RetroplayerLauncher(launcher_data, self.settings, None,
-                                       romset_repository, None, self.settings['escape_romfile'])
-
-        elif launcher_type == LAUNCHER_RETROARCH:
-            statsStrategy = RomStatisticsStrategy(self.virtual_launchers[VLAUNCHER_RECENT_ID],
-                                                  self.virtual_launchers[VLAUNCHER_MOST_PLAYED_ID])
-            romset_repository = RomSetRepository(self.PATHS.ROMS_DIR)
-            return RetroarchLauncher(launcher_data, self.settings, self.executorFactory,
-                                     romset_repository, statsStrategy, self.settings['escape_romfile'])
-
-        elif launcher_type == LAUNCHER_ROM:
-            statsStrategy = RomStatisticsStrategy(self.virtual_launchers[VLAUNCHER_RECENT_ID],
-                                                  self.virtual_launchers[VLAUNCHER_MOST_PLAYED_ID])
-            romset_repository = RomSetRepository(self.PATHS.ROMS_DIR)
-            return StandardRomLauncher(launcher_data, self.settings, self.executorFactory,
-                                       romset_repository, statsStrategy, self.settings['escape_romfile'])
-
-        elif launcher_type == LAUNCHER_LNK:
-            statsStrategy = RomStatisticsStrategy(self.virtual_launchers[VLAUNCHER_RECENT_ID],
-                                                  self.virtual_launchers[VLAUNCHER_MOST_PLAYED_ID])
-            romset_repository = RomSetRepository(self.PATHS.ROMS_DIR)
-            return LnkLauncher(launcher_data, self.settings, self.executorFactory,
-                               romset_repository, statsStrategy, self.settings['escape_romfile'])
-
-        elif launcher_type == LAUNCHER_STEAM:
-            statsStrategy = RomStatisticsStrategy(self.virtual_launchers[VLAUNCHER_RECENT_ID],
-                                                  self.virtual_launchers[VLAUNCHER_MOST_PLAYED_ID])
-            romset_repository = RomSetRepository(self.PATHS.ROMS_DIR)
-            return SteamLauncher(launcher_data, self.settings, self.executorFactory,
-                                 romset_repository, statsStrategy)
-
-        elif launcher_type == LAUNCHER_NVGAMESTREAM:
-            statsStrategy = RomStatisticsStrategy(self.virtual_launchers[VLAUNCHER_RECENT_ID],
-                                                  self.virtual_launchers[VLAUNCHER_MOST_PLAYED_ID])
-            romset_repository = RomSetRepository(self.PATHS.ROMS_DIR)
-            return NvidiaGameStreamLauncher(launcher_data, self.settings, self.executorFactory,
-                                            romset_repository, statsStrategy)
-
-        # --- Disabled. AEL must not access favourites.xml ---
-        # elif launcher_type == LAUNCHER_KODI_FAVOURITES:
-        #     return KodiLauncher(launcher_data, self.settings, self.executorFactory)
-
-        else:
-            log_error('Unsupported launcher requested with type "{0}"'.format(launcher_type))
-
-        return None
-
-    def get_supported_types(self):
-        typeOptions = collections.OrderedDict()
-        typeOptions[LAUNCHER_STANDALONE]      = 'Standalone launcher (Game/Application)'
-        typeOptions[LAUNCHER_ROM]             = 'ROM launcher (Emulator)'
-        typeOptions[LAUNCHER_RETROPLAYER]     = 'ROM launcher (Kodi Retroplayer)'
-        typeOptions[LAUNCHER_RETROARCH]       = 'ROM launcher (Retroarch)'
-        typeOptions[LAUNCHER_NVGAMESTREAM]    = 'Nvidia GameStream'
-        if not is_android():
-            typeOptions[LAUNCHER_STEAM]       = 'Steam launcher'
-        if is_windows():
-            typeOptions[LAUNCHER_LNK]         = 'LNK launcher (Windows only)'
-        # --- Disabled. AEL must not access favourites.xml ---
-        # typeOptions[LAUNCHER_KODI_FAVOURITES] = 'Kodi favourite launcher'
-
-        return typeOptions
-
-    #
-    # Creates a Launcher derived object when the data dictionary is available.
-    #
-    def create(self, launcher_dic):
-        launcher_type = launcher_dic['type'] if 'type' in launcher_dic else None
-        s = 'Creating launcher instance for launcher {0} with type {1}'
-        log_debug(s.format(launcher_dic['id'], launcher_type))
-
-        return self._load(launcher_type, launcher_dic)
-
-    #
-    # Creates an empty Launcher derived object with default values when only the launcher type
-    # is available, for example, when creating a new launcher in the context menu.
-    #
-    def create_new(self, launcher_type):
-        log_debug('Creating empty launcher instance with type {0}'.format(launcher_type))
-        return self._load(launcher_type, None)
-
-# -------------------------------------------------------------------------------------------------
 # Abstract base class for launching anything that is supported.
 # Implement classes that inherit this base class to support new ways of launching.
 # -------------------------------------------------------------------------------------------------
@@ -4218,9 +4082,8 @@ class NvidiaGameStreamLauncher(ROMLauncherABC):
         options['TOGGLE_NONBLOCKING'] = "Non-blocking launcher (now {0})".format(non_blocking_str)
         
     def _selectApplicationToUse(self):
-        
         streamClient = self.entity_data['application']
-        
+
         # java application selected (moonlight-pc)
         if '.jar' in streamClient:
             self.application = FileNameFactory.create(os.getenv("JAVA_HOME"))
@@ -4242,9 +4105,8 @@ class NvidiaGameStreamLauncher(ROMLauncherABC):
         return True
 
     def _selectArgumentsToUse(self):
-        
         streamClient = self.entity_data['application']
-            
+
         # java application selected (moonlight-pc)
         if '.jar' in streamClient:
             self.arguments =  '-jar "$application$" '
@@ -4281,16 +4143,15 @@ class NvidiaGameStreamLauncher(ROMLauncherABC):
   
     def _selectRomFileToUse(self):
         return True
-    
+
     def get_advanced_modification_options(self):
-        
         toggle_window_str = 'ON' if self.entity_data['toggle_window'] else 'OFF'
         non_blocking_str  = 'ON' if self.entity_data['non_blocking'] else 'OFF'
-        
+
         options = super(NvidiaGameStreamLauncher, self).get_advanced_modification_options()
         options['TOGGLE_WINDOWED'] = "Toggle Kodi into windowed mode (now {0})".format(toggle_window_str)
         options['TOGGLE_NONBLOCKING'] = "Non-blocking launcher (now {0})".format(non_blocking_str)
-        
+
         return options
 
     #
@@ -4360,52 +4221,151 @@ class NvidiaGameStreamLauncher(ROMLauncherABC):
 
         return input
 
+# -------------------------------------------------------------------------------------------------
+# Factory class for creating launchers object instances based upon the given type and 
+# dictionary with launcher data.
+#
+# Abstract Factory Pattern
+# See https://www.oreilly.com/library/view/head-first-design/0596007124/ch04.html
+# -------------------------------------------------------------------------------------------------
+class LauncherFactory(object):
+    def __init__(self, settings, PATHS, executorFactory):
+        self.settings        = settings
+        self.PATHS           = PATHS
+        self.executorFactory = executorFactory
+
+    #
+    # launcher_type is mandatory.
+    # launcher_data may be a dictionary or None
+    #
+    def _load(self, launcher_type, launcher_data):
+        # --- Virtual launchers ---
+        if launcher_type == VLAUNCHER_RECENT_ID:
+            recently_played_roms_dic = {
+                'id': VLAUNCHER_RECENT_ID,
+                'm_name': 'Recently played',
+                'roms_base_noext': 'history'
+            }
+
+            return VirtualLauncher(recently_played_roms_dic, self.settings, RomSetRepository(self.plugin_data_dir))
+
+        elif launcher_type == VLAUNCHER_MOST_PLAYED_ID:
+            most_played_roms_dic = {
+                'id': VLAUNCHER_MOST_PLAYED_ID,
+                'm_name': 'Most played',
+                'roms_base_noext': 'most_played'
+            }
+
+            return VirtualLauncher(most_played_roms_dic, self.settings, RomSetRepository(self.plugin_data_dir))
+
+        elif launcher_type == VLAUNCHER_FAVOURITES_ID:
+            favourites_roms_dic = {
+                'id': VLAUNCHER_FAVOURITES_ID,
+                'm_name': 'Favourites',
+                'roms_base_noext': 'favourites'
+            }
+
+            return VirtualLauncher(favourites_roms_dic, self.settings, RomSetRepository(self.plugin_data_dir))
+
+        # --- Real launchers ---
+        elif launcher_type == LAUNCHER_STANDALONE:
+            return StandaloneLauncher(launcher_data, self.settings, self.executorFactory)
+
+        elif launcher_type == LAUNCHER_COLLECTION:
+            collection_romset_repository = RomSetRepository(self.PATHS.COLLECTIONS_FILE_PATH, False)
+            return CollectionLauncher(launcher_data, self.settings, collection_romset_repository)
+
+        elif launcher_type == LAUNCHER_ROM:
+            statsStrategy = RomStatisticsStrategy(self.virtual_launchers[VLAUNCHER_RECENT_ID],
+                                                  self.virtual_launchers[VLAUNCHER_MOST_PLAYED_ID])
+            romset_repository = RomSetRepository(self.PATHS.ROMS_DIR)
+            return StandardRomLauncher(launcher_data, self.settings, self.executorFactory,
+                                       romset_repository, statsStrategy, self.settings['escape_romfile'])
+
+        elif launcher_type == LAUNCHER_RETROPLAYER:
+            statsStrategy = RomStatisticsStrategy(self.virtual_launchers[VLAUNCHER_RECENT_ID],
+                                                  self.virtual_launchers[VLAUNCHER_MOST_PLAYED_ID])
+            romset_repository = RomSetRepository(self.PATHS.ROMS_DIR)
+            return RetroplayerLauncher(launcher_data, self.settings, None,
+                                       romset_repository, None, self.settings['escape_romfile'])
+
+        elif launcher_type == LAUNCHER_RETROARCH:
+            statsStrategy = RomStatisticsStrategy(self.virtual_launchers[VLAUNCHER_RECENT_ID],
+                                                  self.virtual_launchers[VLAUNCHER_MOST_PLAYED_ID])
+            romset_repository = RomSetRepository(self.PATHS.ROMS_DIR)
+            return RetroarchLauncher(launcher_data, self.settings, self.executorFactory,
+                                     romset_repository, statsStrategy, self.settings['escape_romfile'])
+
+        elif launcher_type == LAUNCHER_LNK:
+            statsStrategy = RomStatisticsStrategy(self.virtual_launchers[VLAUNCHER_RECENT_ID],
+                                                  self.virtual_launchers[VLAUNCHER_MOST_PLAYED_ID])
+            romset_repository = RomSetRepository(self.PATHS.ROMS_DIR)
+            return LnkLauncher(launcher_data, self.settings, self.executorFactory,
+                               romset_repository, statsStrategy, self.settings['escape_romfile'])
+
+        elif launcher_type == LAUNCHER_STEAM:
+            statsStrategy = RomStatisticsStrategy(self.virtual_launchers[VLAUNCHER_RECENT_ID],
+                                                  self.virtual_launchers[VLAUNCHER_MOST_PLAYED_ID])
+            romset_repository = RomSetRepository(self.PATHS.ROMS_DIR)
+            return SteamLauncher(launcher_data, self.settings, self.executorFactory,
+                                 romset_repository, statsStrategy)
+
+        elif launcher_type == LAUNCHER_NVGAMESTREAM:
+            statsStrategy = RomStatisticsStrategy(self.virtual_launchers[VLAUNCHER_RECENT_ID],
+                                                  self.virtual_launchers[VLAUNCHER_MOST_PLAYED_ID])
+            romset_repository = RomSetRepository(self.PATHS.ROMS_DIR)
+            return NvidiaGameStreamLauncher(launcher_data, self.settings, self.executorFactory,
+                                            romset_repository, statsStrategy)
+
+        # --- Disabled. AEL must not access favourites.xml ---
+        # elif launcher_type == LAUNCHER_KODI_FAVOURITES:
+        #     return KodiLauncher(launcher_data, self.settings, self.executorFactory)
+
+        else:
+            log_error('Unsupported launcher requested with type "{0}"'.format(launcher_type))
+
+        return None
+
+    def get_supported_types(self):
+        typeOptions = collections.OrderedDict()
+        typeOptions[LAUNCHER_STANDALONE]      = 'Standalone launcher (Game/Application)'
+        typeOptions[LAUNCHER_ROM]             = 'ROM launcher (Emulator)'
+        if is_windows():
+            typeOptions[LAUNCHER_LNK]         = 'LNK launcher (Windows only)'
+        typeOptions[LAUNCHER_RETROPLAYER]     = 'ROM launcher (Kodi Retroplayer)'
+        typeOptions[LAUNCHER_RETROARCH]       = 'ROM launcher (Retroarch)'
+        typeOptions[LAUNCHER_NVGAMESTREAM]    = 'Nvidia GameStream'
+        if not is_android():
+            typeOptions[LAUNCHER_STEAM]       = 'Steam launcher'
+        # --- Disabled. AEL must not access favourites.xml ---
+        # typeOptions[LAUNCHER_KODI_FAVOURITES] = 'Kodi favourite launcher'
+
+        return typeOptions
+
+    #
+    # Creates a Launcher derived object when the data dictionary is available.
+    #
+    def create(self, launcher_dic):
+        launcher_type = launcher_dic['type'] if 'type' in launcher_dic else None
+        s = 'Creating launcher instance for launcher {0} with type {1}'
+        log_debug(s.format(launcher_dic['id'], launcher_type))
+
+        return self._load(launcher_type, launcher_dic)
+
+    #
+    # Creates an empty Launcher derived object with default values when only the launcher type
+    # is available, for example, when creating a new launcher in the context menu.
+    #
+    def create_new(self, launcher_type):
+        log_debug('Creating empty launcher instance with type {0}'.format(launcher_type))
+
+        return self._load(launcher_type, None)
+
 # #################################################################################################
 # #################################################################################################
 # Executors
 # #################################################################################################
 # #################################################################################################
-class ExecutorFactory(object):
-    def __init__(self, settings, g_PATHS):
-        self.settings = settings
-        self.logFile = g_PATHS.LAUNCHER_REPORT_FILE_PATH
-
-    def create_from_pathstring(self, application_string):
-        app = FileNameFactory.create(application_string)
-        return self.create(app)
-
-    def create(self, application):
-        if application.getBase().lower().replace('.exe' , '') == 'xbmc' \
-            or 'xbmc-fav-' in application.getPath() or 'xbmc-sea-' in application.getPath():
-            return XbmcExecutor(self.logFile)
-
-        if re.search('.*://.*', application.getOriginalPath()):
-            return WebBrowserExecutor(self.logFile)
-
-        if is_windows():
-            if application.getExt().lower() == '.bat' or application.getExt().lower() == '.cmd' :
-                return WindowsBatchFileExecutor(self.logFile, self.settings['show_batch_window'])
-            # >> Standalone launcher where application is a LNK file
-            if application.getExt().lower() == '.lnk': 
-                return WindowsLnkFileExecutor(self.logFile)
-
-            return WindowsExecutor(self.logFile, self.settings['windows_cd_apppath'], self.settings['windows_close_fds'])
-
-        elif is_android():
-            return AndroidExecutor()
-
-        elif is_linux():
-            return LinuxExecutor(self.logFile, self.settings['lirc_state'])
-
-        elif is_osx():
-            return OSXExecutor(self.logFile)
-
-        else:
-            log_error('ExecutorFactory::create() Cannot determine the running platform')
-            kodi_notify_warn('Cannot determine the running platform')
-
-        return None
-
 class Executor():
     __metaclass__ = abc.ABCMeta
 
@@ -4975,6 +4935,51 @@ class GameStreamServer(object):
             return possiblePath.getOriginalPath()
          
         return homePath.getOriginalPath()
+
+# -------------------------------------------------------------------------------------------------
+# Abstract Factory Pattern
+# See https://www.oreilly.com/library/view/head-first-design/0596007124/ch04.html
+# -------------------------------------------------------------------------------------------------
+class ExecutorFactory(object):
+    def __init__(self, settings, g_PATHS):
+        self.settings = settings
+        self.logFile = g_PATHS.LAUNCHER_REPORT_FILE_PATH
+
+    def create_from_pathstring(self, application_string):
+        app = FileNameFactory.create(application_string)
+        return self.create(app)
+
+    def create(self, application):
+        if application.getBase().lower().replace('.exe' , '') == 'xbmc' \
+            or 'xbmc-fav-' in application.getPath() or 'xbmc-sea-' in application.getPath():
+            return XbmcExecutor(self.logFile)
+
+        if re.search('.*://.*', application.getOriginalPath()):
+            return WebBrowserExecutor(self.logFile)
+
+        if is_windows():
+            if application.getExt().lower() == '.bat' or application.getExt().lower() == '.cmd' :
+                return WindowsBatchFileExecutor(self.logFile, self.settings['show_batch_window'])
+            # >> Standalone launcher where application is a LNK file
+            if application.getExt().lower() == '.lnk': 
+                return WindowsLnkFileExecutor(self.logFile)
+
+            return WindowsExecutor(self.logFile, self.settings['windows_cd_apppath'], self.settings['windows_close_fds'])
+
+        elif is_android():
+            return AndroidExecutor()
+
+        elif is_linux():
+            return LinuxExecutor(self.logFile, self.settings['lirc_state'])
+
+        elif is_osx():
+            return OSXExecutor(self.logFile)
+
+        else:
+            log_error('ExecutorFactory::create() Cannot determine the running platform')
+            kodi_notify_warn('Cannot determine the running platform')
+
+        return None
 
 # #################################################################################################
 # #################################################################################################
