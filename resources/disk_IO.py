@@ -87,7 +87,7 @@ def fs_new_category():
 def fs_new_launcher():
     return {
         'id' : '',
-        'type': OBJ_LAUNCHER_ROM,
+        'type': '',
         'm_name' : '',
         'm_year' : '',
         'm_genre' : '',
@@ -658,7 +658,7 @@ def fs_get_XML_root_from_str(data_str):
 #
 def fs_get_str_from_XML_root(xml_root):
     rough_string = ET.tostring(xml_root, 'utf-8')
-    reparsed = minidom.parseString(rough_string)
+    reparsed = xml.dom.minidom.parseString(rough_string)
     data_str = reparsed.toprettyxml(indent = "  ")
 
     return data_str
