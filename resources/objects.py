@@ -731,6 +731,9 @@ class XmlDataContext(object):
 
         return self._xml_root
 
+    def xml_exists(self):
+        return self.repo_fname.exists()
+
     #
     # If there is any problem with the filesystem then the functions display an error
     # dialog and produce an Addon_Error exception.
@@ -804,7 +807,7 @@ class CategoryRepository(object):
         # create an empty memory file to avoid concurrent writing problems (AEL maybe called
         # concurrently by skins). When the user creates a Category/Launcher then write
         # categories.xml to the filesystem.
-        # if data_context.file_exists():
+        self.XML_initialized = True if self.data_context.xml_exists() else False
 
     # -------------------------------------------------------------------------------------------------
     # Data model used in the plugin
@@ -857,13 +860,16 @@ class CategoryRepository(object):
     # Returns a list with all the Category objects. Each list element if a Category instance.
     def find_all(self):
         categories = []
-        category_elements = self.data_context.get_nodes('category')
-        log_debug('Found {0} categories'.format(len(category_elements)))
-        for category_element in category_elements:
-            category_dic = self._parse_xml_to_dictionary(category_element)
-            log_debug('Creating category instance for category {0}'.format(category_dic['id']))
-            category = category = self.obj_factory.create_from_dic(OBJ_CATEGORY, category_dic)
-            categories.append(category)
+        if self.XML_initialized:
+            category_elements = self.data_context.get_nodes('category')
+            log_debug('Found {0} categories'.format(len(category_elements)))
+            for category_element in category_elements:
+                category_dic = self._parse_xml_to_dictionary(category_element)
+                log_debug('Creating category instance for category {0}'.format(category_dic['id']))
+                category = category = self.obj_factory.create_from_dic(OBJ_CATEGORY, category_dic)
+                categories.append(category)
+        else:
+            log_debug('CategoryRepository not initialized.')
 
         return categories
 
@@ -904,6 +910,12 @@ class LauncherRepository(object):
     def __init__(self, data_context, obj_factory):
         self.data_context = data_context
         self.obj_factory = obj_factory
+
+        # When AEL is executed for the first time categories.xml does not exists. In this case,
+        # create an empty memory file to avoid concurrent writing problems (AEL maybe called
+        # concurrently by skins). When the user creates a Category/Launcher then write
+        # categories.xml to the filesystem.
+        self.XML_initialized = True if self.data_context.xml_exists() else False
 
     def _parse_xml_to_dictionary(self, launcher_element):
         __debug_xml_parser = False
@@ -958,44 +970,55 @@ class LauncherRepository(object):
 
     def find_all_ids(self):
         launcher_ids = []
-        launcher_id_elements = self.data_context.get_nodes('launcher/id')
-        for launcher_id_element in launcher_id_elements:
-            launcher_ids.append(launcher_id_element.text())
+        if self.XML_initialized:
+            launcher_id_elements = self.data_context.get_nodes('launcher/id')
+            for launcher_id_element in launcher_id_elements:
+                launcher_ids.append(launcher_id_element.text())
+        else:
+            log_debug('LauncherRepository not initialized.')
 
         return launcher_ids
 
     def find_all(self):
         launchers = []
-        launcher_elements = self.data_context.get_nodes('launcher')
-        for launcher_element in launcher_elements:
-            launcher_dic = self._parse_xml_to_dictionary(launcher_element)
-            launcher = self.obj_factory.create_from_dic(launcher_dic)
-            launchers.append(launcher)
+        if self.XML_initialized:
+            launcher_elements = self.data_context.get_nodes('launcher')
+            for launcher_element in launcher_elements:
+                launcher_dic = self._parse_xml_to_dictionary(launcher_element)
+                launcher = self.obj_factory.create_from_dic(launcher_dic)
+                launchers.append(launcher)
+        else:
+            log_debug('LauncherRepository not initialized.')
 
         return launchers
 
     def find_by_launcher_type(self, launcher_type):
         launchers = []
-        launcher_elements = self.data_context.get_nodes_by('launcher', 'type', launcher_type )
-        for launcher_element in launcher_elements:
-            launcher_dic = self._parse_xml_to_dictionary(launcher_element)
-            launcher = self.obj_factory.create_from_dic(launcher_dic)
-            launchers.append(launcher)
+        if self.XML_initialized:
+            launcher_elements = self.data_context.get_nodes_by('launcher', 'type', launcher_type )
+            for launcher_element in launcher_elements:
+                launcher_dic = self._parse_xml_to_dictionary(launcher_element)
+                launcher = self.obj_factory.create_from_dic(launcher_dic)
+                launchers.append(launcher)
+        else:
+            log_debug('LauncherRepository not initialized.')
 
         return launchers
 
     def find_by_category(self, category_id):
         launchers = []
-        launcher_elements = self.data_context.get_nodes_by('launcher', 'categoryID', category_id )
-        if launcher_elements is None or len(launcher_elements) == 0:
-            log_debug('No launchers found in category {0}'.format(category_id))
-            return launchers
-
-        log_debug('{0} launchers found in category {1}'.format(len(launcher_elements), category_id))
-        for launcher_element in launcher_elements:
-            launcher_dic = self._parse_xml_to_dictionary(launcher_element)
-            launcher = self.obj_factory.create_from_dic(launcher_dic)
-            launchers.append(launcher)
+        if self.XML_initialized:
+            launcher_elements = self.data_context.get_nodes_by('launcher', 'categoryID', category_id )
+            if launcher_elements is None or len(launcher_elements) == 0:
+                log_debug('No launchers found in category {0}'.format(category_id))
+                return launchers
+            log_debug('{0} launchers found in category {1}'.format(len(launcher_elements), category_id))
+            for launcher_element in launcher_elements:
+                launcher_dic = self._parse_xml_to_dictionary(launcher_element)
+                launcher = self.obj_factory.create_from_dic(launcher_dic)
+                launchers.append(launcher)
+        else:
+            log_debug('LauncherRepository not initialized.')
 
         return launchers
 
