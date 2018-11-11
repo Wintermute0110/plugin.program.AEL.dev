@@ -39,6 +39,7 @@ import binascii
 import base64
 # from base64 import b64decode
 # from base64 import b64encode
+import errno
 import fnmatch
 import hashlib
 import HTMLParser
@@ -1806,15 +1807,15 @@ class NewFileName:
             self.close()
         except OSError:
             log_error('(OSError) Exception in FileName::loadFileToStr()')
-            log_error('(OSError) Cannot write {0} file'.format(self.path_tr))
-            raise AEL_Error('(OSError) Cannot write {0} file'.format(self.path_tr))
-        except IOError:
+            log_error('(OSError) Cannot read {0} file'.format(self.path_tr))
+            raise AddonException('(OSError) Cannot read {0} file'.format(self.path_tr))
+        except IOError as Ex:
             log_error('(IOError) Exception in FileName::loadFileToStr()')
-            log_error('(IOError) errno = {0}'.format(e.errno))
-            if e.errno == errno.ENOENT: log_error('(IOError) No such file or directory.')
-            else:                       log_error('(IOError) Unhandled errno value.')
-            log_error('(IOError) Cannot write {0} file'.format(self.path_tr))
-            raise AEL_Error('(IOError) Cannot write {0} file'.format(self.path_tr))
+            log_error('(IOError) errno = {0}'.format(Ex.errno))
+            if Ex.errno == errno.ENOENT: log_error('(IOError) No such file or directory.')
+            else:                        log_error('(IOError) Unhandled errno value.')
+            log_error('(IOError) Cannot read {0} file'.format(self.path_tr))
+            raise AddonException('(IOError) Cannot read {0} file'.format(self.path_tr))
 
         # Return a Unicode string.
         return file_bytes.decode(encoding)

@@ -727,8 +727,7 @@ class XmlDataContext(object):
     # Lazy loading of xml data through property
     @property
     def xml_data(self):
-        if self._xml_root is None:
-            self._load_xml()
+        if self._xml_root is None: self._load_xml()
 
         return self._xml_root
 
@@ -737,7 +736,7 @@ class XmlDataContext(object):
     # dialog and produce an Addon_Error exception.
     #
     def _load_xml(self):
-        log_verb('XmlDataContext::_load_xml() Loading "{0}"'.format(self.repo_fname.getPath()))
+        log_debug('XmlDataContext::_load_xml() Loading "{0}"'.format(self.repo_fname.getPath()))
         xml_repo_str = self.repo_fname.loadFileToStr()
         self._xml_root = fs_get_XML_root_from_str(xml_repo_str)
 
@@ -792,13 +791,20 @@ class XmlDataContext(object):
         self.xml_data.remove(node_to_remove)
 
 # -------------------------------------------------------------------------------------------------
-# Repository class for Category objects.
+# --- Repository class for Category objects ---
 # Arranges retrieving and storing of the categories from and into the XML data file.
+# Creates Category objects with a reference to an instance of AELObjectFactory.
 # -------------------------------------------------------------------------------------------------
 class CategoryRepository(object):
-    def __init__(self, data_context):
-        log_debug('CategoryRepository::__init__()')
+    def __init__(self, data_context, obj_factory):
         self.data_context = data_context
+        self.obj_factory = obj_factory
+
+        # When AEL is executed for the first time categories.xml does not exists. In this case,
+        # create an empty memory file to avoid concurrent writing problems (AEL maybe called
+        # concurrently by skins). When the user creates a Category/Launcher then write
+        # categories.xml to the filesystem.
+        # if data_context.file_exists():
 
     # -------------------------------------------------------------------------------------------------
     # Data model used in the plugin
@@ -814,7 +820,6 @@ class CategoryRepository(object):
         category = {}
         # Parse child tags of category
         for category_child in category_element:
-            
             # By default read strings
             xml_text = category_child.text if category_child.text is not None else ''
             xml_text = text_unescape_XML(xml_text)
@@ -830,19 +835,26 @@ class CategoryRepository(object):
 
         return category
 
+    # Finds a Category by ID in the database. ID may be a Virtual/Special category.
+    # Returns a Category object instance or None if the category ID is not found in the DB.
     def find(self, category_id):
         if category_id == VCATEGORY_ADDONROOT_ID:
-            return Category.create_root_category()
-
-        category_element = self.data_context.get_node('category', category_id)
-        if category_element is None:
-            log_debug('Cannot find category with id {0}'.format(category_id))
-            return None
-        category_dic = self._parse_xml_to_dictionary(category_element)
-        category = Category(category_dic)
+            category_dic = fs_new_category()
+            category_dic['type'] = OBJ_CATEGORY_VIRTUAL
+            category_dic['id'] = VCATEGORY_ADDONROOT_ID
+            category_dic['m_name'] = 'Root category'
+        else:
+            category_element = self.data_context.get_node('category', category_id)
+            if category_element is None:
+                log_debug('Cannot find category with id {0}'.format(category_id))
+                return None
+            category_dic = self._parse_xml_to_dictionary(category_element)
+        # Create Category object instance.
+        category = self.obj_factory.create_from_dic(category_dic)
 
         return category
 
+    # Returns a list with all the Category objects. Each list element if a Category instance.
     def find_all(self):
         categories = []
         category_elements = self.data_context.get_nodes('category')
@@ -850,7 +862,7 @@ class CategoryRepository(object):
         for category_element in category_elements:
             category_dic = self._parse_xml_to_dictionary(category_element)
             log_debug('Creating category instance for category {0}'.format(category_dic['id']))
-            category = Category(category_dic)
+            category = category = self.obj_factory.create_from_dic(OBJ_CATEGORY, category_dic)
             categories.append(category)
 
         return categories
@@ -889,80 +901,14 @@ class CategoryRepository(object):
 # Arranges retrieving and storing of the launchers from and into the xml data file.
 # -------------------------------------------------------------------------------------------------
 class LauncherRepository(object):
-    def __init__(self, data_context, launcher_factory):
+    def __init__(self, data_context, obj_factory):
         self.data_context = data_context
-        self.launcher_factory = launcher_factory
-
-    def _new_launcher_dataset(self):
-        l = {'id' : '',
-             'm_name' : '',
-             'm_year' : '',
-             'm_genre' : '',
-             'm_developer' : '',
-             'm_rating' : '',
-             'm_plot' : '',
-             'platform' : '',
-             'categoryID' : '',
-             'application' : '',
-             'args' : '',
-             'args_extra' : [],
-             'rompath' : '',
-             'romext' : '',
-             'finished': False,
-             'toggle_window' : False, # Former 'minimize'
-             'non_blocking' : False,
-             'multidisc' : True,
-             'roms_base_noext' : '',
-             'nointro_xml_file' : '',
-             'nointro_display_mode' : NOINTRO_DMODE_ALL,
-             'launcher_display_mode' : LAUNCHER_DMODE_FLAT,
-             'num_roms' : 0,
-             'num_parents' : 0,
-             'num_clones' : 0,
-             'num_have' : 0,
-             'num_miss' : 0,
-             'num_unknown' : 0,
-             'timestamp_launcher' : 0.0,
-             'timestamp_report' : 0.0,
-             'default_icon' : 's_icon',
-             'default_fanart' : 's_fanart',
-             'default_banner' : 's_banner',
-             'default_poster' : 's_poster',
-             'default_clearlogo' : 's_clearlogo',
-             'default_controller' : 's_controller',
-             'Asset_Prefix' : '',
-             's_icon' : '',
-             's_fanart' : '',
-             's_banner' : '',
-             's_poster' : '',
-             's_clearlogo' : '',
-             's_controller' : '',
-             's_trailer' : '',
-             'roms_default_icon' : 's_boxfront',
-             'roms_default_fanart' : 's_fanart',
-             'roms_default_banner' : 's_banner',
-             'roms_default_poster' : 's_flyer',
-             'roms_default_clearlogo' : 's_clearlogo',
-             'ROM_asset_path' : '',
-             'path_title' : '',
-             'path_snap' : '',
-             'path_boxfront' : '',
-             'path_boxback' : '',
-             'path_cartridge' : '',
-             'path_fanart' : '',
-             'path_banner' : '',
-             'path_clearlogo' : '',
-             'path_flyer' : '',
-             'path_map' : '',
-             'path_manual' : '',
-             'path_trailer' : ''
-        }
-        return l
+        self.obj_factory = obj_factory
 
     def _parse_xml_to_dictionary(self, launcher_element):
         __debug_xml_parser = False
-        # Default values
-        launcher = self._new_launcher_dataset()
+        # Sensible default values
+        launcher = fs_new_launcher()
 
         if __debug_xml_parser: 
             log_debug('Element has {0} child elements'.format(len(launcher_element)))
@@ -1006,7 +952,7 @@ class LauncherRepository(object):
             log_debug('Launcher ID {} not found'.format(launcher_id))
             return None
         launcher_dic = self._parse_xml_to_dictionary(launcher_element)
-        launcher = self.launcher_factory.create(launcher_dic)
+        launcher = self.obj_factory.create_from_dic(launcher_dic)
 
         return launcher
 
@@ -1023,7 +969,7 @@ class LauncherRepository(object):
         launcher_elements = self.data_context.get_nodes('launcher')
         for launcher_element in launcher_elements:
             launcher_dic = self._parse_xml_to_dictionary(launcher_element)
-            launcher = launcher_factory.create(launcher_dic)
+            launcher = self.obj_factory.create_from_dic(launcher_dic)
             launchers.append(launcher)
 
         return launchers
@@ -1033,7 +979,7 @@ class LauncherRepository(object):
         launcher_elements = self.data_context.get_nodes_by('launcher', 'type', launcher_type )
         for launcher_element in launcher_elements:
             launcher_dic = self._parse_xml_to_dictionary(launcher_element)
-            launcher = launcher_factory.create(launcher_dic)
+            launcher = self.obj_factory.create_from_dic(launcher_dic)
             launchers.append(launcher)
 
         return launchers
@@ -1048,7 +994,7 @@ class LauncherRepository(object):
         log_debug('{0} launchers found in category {1}'.format(len(launcher_elements), category_id))
         for launcher_element in launcher_elements:
             launcher_dic = self._parse_xml_to_dictionary(launcher_element)
-            launcher = self.launcher_factory.create(launcher_dic)
+            launcher = self.obj_factory.create_from_dic(launcher_dic)
             launchers.append(launcher)
 
         return launchers
@@ -1083,10 +1029,10 @@ class LauncherRepository(object):
 # Arranges retrieving and storing of the Collection launchers from and into the xml data file.
 # -------------------------------------------------------------------------------------------------
 class CollectionRepository(object):
-    def __init__(self, data_context, launcher_factory):
-        log_debug('CollectionRepository::__init__()')
+    def __init__(self, data_context, obj_factory):
+        # log_debug('CollectionRepository::__init__()')
         self.data_context = data_context
-        self.launcher_factory = launcher_factory
+        self.obj_factory = obj_factory
 
     def _parse_xml_to_dictionary(self, collection_element):
         __debug_xml_parser = False
@@ -1156,14 +1102,14 @@ ROMSET_PARENTS  = '_parents'
 ROMSET_DAT      = '_DAT'
 
 # -------------------------------------------------------------------------------------------------
-# Repository class for Rom Set objects.
+# --- Repository class for Rom Set objects ---
 # Arranges retrieving and storing of roms belonging to a particular launcher.
 #
 # NOTE ROMs in a collection are stored as a list and ROMs in Favourites are stored as
 #      a dictionary. Convert the Collection list into an ordered dictionary and then
 #      converted back the ordered dictionary into a list before saving the collection.
 # -------------------------------------------------------------------------------------------------
-class RomSetRepository(object):
+class ROMSetRepository(object):
     def __init__(self, PATHS, store_as_dictionary = True):
         roms_dir = 'abc'
         self.roms_dir = roms_dir
@@ -1184,7 +1130,6 @@ class RomSetRepository(object):
         if not repository_file.exists():
             log_warning('Launcher "{0}" JSON not found.'.format(repository_file.getPath()))
             return None
-        
         log_info('RomSetRepository.find_by_launcher() Loading ROMs in Launcher ({}:{}) Mode: {}...'.format(launcher.get_launcher_type_name(), launcher.get_name(), view_mode))
 
         roms_data = {}
@@ -1423,7 +1368,14 @@ class RomStatisticsStrategy(object):
 class MetaDataItemABC(object):
     __metaclass__ = abc.ABCMeta
 
-    def __init__(self, entity_data):
+    #
+    # Addon PATHS is required to store/retrieve assets.
+    # Addon settings is required because the way the metadata is displayed may depend on
+    # some addon settings.
+    #
+    def __init__(self, PATHS, addon_settings, entity_data):
+        self.PATHS = PATHS
+        self.settings = addon_settings
         self.entity_data = entity_data
 
     # --- Database ID and utilities ---------------------------------------------------------------
@@ -1550,40 +1502,19 @@ class MetaDataItemABC(object):
         return g_assetFactory.get_asset_list_by_IDs(DEFAULTABLE_ASSET_ID_LIST)
 
 # -------------------------------------------------------------------------------------------------
-# Class representing the categories in AEL.
+# Class representing an AEL Cateogry.
 # Contains code to generate the context menus passed to Dialog.select()
 # -------------------------------------------------------------------------------------------------
 class Category(MetaDataItemABC):
-    def __init__(self, category_data = None):
+    def __init__(self, PATHS, addon_settings, category_dic = None):
         self.asset_kind = KIND_ASSET_CATEGORY
         self.obj_name = 'Category'
-
-        super(Category, self).__init__(category_data)
-        if self.entity_data is None:
-            # NOTE place all new databse dictionary generation code in disc_IO.py to have it
-            #      centralised in one place. Easier that have this code disperse over several objects.
-            self.entity_data = {
-             'id' : misc_generate_random_SID(),
-             'm_name' : '',
-             'm_year' : '',
-             'm_genre' : '',
-             'm_developer' : '',
-             'm_rating' : '',
-             'm_plot' : '',
-             'finished' : False,
-             'default_icon' : 's_icon',
-             'default_fanart' : 's_fanart',
-             'default_banner' : 's_banner',
-             'default_poster' : 's_poster',
-             'default_clearlogo' : 's_clearlogo',
-             'Asset_Prefix' : '',
-             's_icon' : '',
-             's_fanart' : '',
-             's_banner' : '',
-             's_poster' : '',
-             's_clearlogo' : '',
-             's_trailer' : ''
-             }
+        if category_dic is None:
+            entity_data = fs_new_category()
+            entity_data['id'] = misc_generate_random_SID()
+        else:
+            entity_data = category_dic
+        super(Category, self).__init__(PATHS, addon_settings, entity_data)
 
     def is_virtual(self):
         return False
@@ -1649,12 +1580,6 @@ class Category(MetaDataItemABC):
         options['SAVE_NFO_FILE']             = 'Save NFO file (default location)'
 
         return options
-
-    @staticmethod
-    def create_root_category():
-        c = {'id' : VCATEGORY_ADDONROOT_ID, 'm_name' : 'Root category' }
-
-        return Category(c)
 
 # -------------------------------------------------------------------------------------------------
 # Class representing the virtual categories in AEL.
@@ -1926,13 +1851,12 @@ class ROM(MetaDataItemABC):
 class LauncherABC(MetaDataItemABC):
     __metaclass__ = abc.ABCMeta
 
-    def __init__(self, launcher_data, settings, executorFactory):
+    def __init__(self, launcher_data, executorFactory):
         super(LauncherABC, self).__init__(launcher_data)
 
         if self.entity_data is None:
             self.entity_data = self._default_data()
 
-        self.settings        = settings
         self.executorFactory = executorFactory
         self.application     = None
         self.arguments       = None
@@ -4292,16 +4216,26 @@ class NvidiaGameStreamLauncher(ROMLauncherABC):
         return input
 
 # -------------------------------------------------------------------------------------------------
-# Factory class for creating launchers object instances based upon the given type and 
-# dictionary with launcher data.
+# --- AEL Object Factory --------------------------------------------------------------------------
+# Used to create an AEL object that is a child of MetaDataItemACB().
+#
+# A global and unique instance of AELObjectFactory is created in main.py to create all
+# required objects in the addon.
+#
+# AEL Objects are used in the ROM Scanner, Object Edit context menu and at launching time.
+#
+# For performance reasons the ListItem renderers access the databases directly using functions
+# from disk_IO.py.
 #
 # Abstract Factory Pattern
 # See https://www.oreilly.com/library/view/head-first-design/0596007124/ch04.html
 # -------------------------------------------------------------------------------------------------
-class LauncherFactory(object):
-    def __init__(self, settings, PATHS, executorFactory):
-        self.settings        = settings
+class AELObjectFactory(object):
+    def __init__(self, PATHS, settings, executorFactory):
+        # PATHS and settings are used in the creation of all object.
         self.PATHS           = PATHS
+        self.settings        = settings
+        # executorFactory is used in the creation of Launcher objects.
         self.executorFactory = executorFactory
 
         self.recently_played_roms_dic = {
@@ -4321,87 +4255,41 @@ class LauncherFactory(object):
         }
 
     #
-    # launcher_type is mandatory.
-    # launcher_data may be a dictionary or None
+    # Creates a Launcher derived object when the data dictionary is available.
+    # The type of object is the 'type' field in the dictionary.
     #
-    def _load(self, launcher_type, launcher_data):
-        # --- Virtual launchers ---
-        if launcher_type == VLAUNCHER_RECENT_ID:
-            return VirtualLauncher(
-                self.recently_played_roms_dic, self.settings, RomSetRepository(self.plugin_data_dir))
+    def create_from_dic(self, obj_type, obj_dic):
+        obj_type = obj_dic['type']
+        log_debug('AELObjectFactory::create_new() Creating {0}'.format(obj_type))
 
-        elif launcher_type == VLAUNCHER_MOST_PLAYED_ID:
-            return VirtualLauncher(
-                self.most_played_roms_dic, self.settings, RomSetRepository(self.plugin_data_dir))
+        return self._load(obj_type, obj_dic)
 
-        elif launcher_type == VLAUNCHER_FAVOURITES_ID:
-            return VirtualLauncher(
-                self.favourites_roms_dic, self.settings, RomSetRepository(self.plugin_data_dir))
+    #
+    # Creates an empty Launcher derived object with default values when only the launcher type
+    # is available, for example, when creating a new launcher in the context menu.
+    #
+    def create_new(self, obj_type):
+        log_debug('AELObjectFactory::create_new() Creating empty {0}'.format(obj_type))
 
-        # --- Real launchers ---
-        elif launcher_type == LAUNCHER_STANDALONE:
-            return StandaloneLauncher(launcher_data, self.settings, self.executorFactory)
+        return self._load(obj_type)
 
-        elif launcher_type == LAUNCHER_COLLECTION:
-            collection_romset_repository = RomSetRepository(self.PATHS.COLLECTIONS_FILE_PATH, False)
-            return CollectionLauncher(launcher_data, self.settings, collection_romset_repository)
-
-        elif launcher_type == LAUNCHER_ROM:
-            statsStrategy = RomStatisticsStrategy(
-                VirtualLauncher(self.recently_played_roms_dic, self.settings, RomSetRepository(self.PATHS)),
-                VirtualLauncher(self.most_played_roms_dic, self.settings, RomSetRepository(self.PATHS))
-            )
-            romset_repository = RomSetRepository(self.PATHS.ROMS_DIR)
-            return StandardRomLauncher(
-                launcher_data, self.settings, self.executorFactory,
-                romset_repository, statsStrategy, self.settings['escape_romfile']
-            )
-
-        elif launcher_type == LAUNCHER_RETROPLAYER:
-            statsStrategy = RomStatisticsStrategy(self.virtual_launchers[VLAUNCHER_RECENT_ID],
-                                                  self.virtual_launchers[VLAUNCHER_MOST_PLAYED_ID])
-            romset_repository = RomSetRepository(self.PATHS.ROMS_DIR)
-            return RetroplayerLauncher(launcher_data, self.settings, None,
-                                       romset_repository, None, self.settings['escape_romfile'])
-
-        elif launcher_type == LAUNCHER_RETROARCH:
-            statsStrategy = RomStatisticsStrategy(self.virtual_launchers[VLAUNCHER_RECENT_ID],
-                                                  self.virtual_launchers[VLAUNCHER_MOST_PLAYED_ID])
-            romset_repository = RomSetRepository(self.PATHS.ROMS_DIR)
-            return RetroarchLauncher(launcher_data, self.settings, self.executorFactory,
-                                     romset_repository, statsStrategy, self.settings['escape_romfile'])
-
-        elif launcher_type == LAUNCHER_LNK:
-            statsStrategy = RomStatisticsStrategy(self.virtual_launchers[VLAUNCHER_RECENT_ID],
-                                                  self.virtual_launchers[VLAUNCHER_MOST_PLAYED_ID])
-            romset_repository = RomSetRepository(self.PATHS.ROMS_DIR)
-            return LnkLauncher(launcher_data, self.settings, self.executorFactory,
-                               romset_repository, statsStrategy, self.settings['escape_romfile'])
-
-        elif launcher_type == LAUNCHER_STEAM:
-            statsStrategy = RomStatisticsStrategy(self.virtual_launchers[VLAUNCHER_RECENT_ID],
-                                                  self.virtual_launchers[VLAUNCHER_MOST_PLAYED_ID])
-            romset_repository = RomSetRepository(self.PATHS.ROMS_DIR)
-            return SteamLauncher(launcher_data, self.settings, self.executorFactory,
-                                 romset_repository, statsStrategy)
-
-        elif launcher_type == LAUNCHER_NVGAMESTREAM:
-            statsStrategy = RomStatisticsStrategy(self.virtual_launchers[VLAUNCHER_RECENT_ID],
-                                                  self.virtual_launchers[VLAUNCHER_MOST_PLAYED_ID])
-            romset_repository = RomSetRepository(self.PATHS.ROMS_DIR)
-            return NvidiaGameStreamLauncher(launcher_data, self.settings, self.executorFactory,
-                                            romset_repository, statsStrategy)
-
+    def get_object_types_odict(self):
+        typeOptions = collections.OrderedDict()
+        typeOptions[LAUNCHER_STANDALONE]      = 'Standalone launcher (Game/Application)'
+        typeOptions[LAUNCHER_ROM]             = 'ROM launcher (Emulator)'
+        if is_windows():
+            typeOptions[LAUNCHER_LNK]         = 'LNK launcher (Windows only)'
+        typeOptions[LAUNCHER_RETROPLAYER]     = 'ROM launcher (Kodi Retroplayer)'
+        typeOptions[LAUNCHER_RETROARCH]       = 'ROM launcher (Retroarch)'
+        typeOptions[LAUNCHER_NVGAMESTREAM]    = 'Nvidia GameStream'
+        if not is_android():
+            typeOptions[LAUNCHER_STEAM]       = 'Steam launcher'
         # --- Disabled. AEL must not access favourites.xml ---
-        # elif launcher_type == LAUNCHER_KODI_FAVOURITES:
-        #     return KodiLauncher(launcher_data, self.settings, self.executorFactory)
+        # typeOptions[LAUNCHER_KODI_FAVOURITES] = 'Kodi favourite launcher'
 
-        else:
-            log_error('Unsupported launcher requested with type "{0}"'.format(launcher_type))
+        return typeOptions
 
-        return None
-
-    def get_supported_types(self):
+    def get_launcher_types_odict(self):
         typeOptions = collections.OrderedDict()
         typeOptions[LAUNCHER_STANDALONE]      = 'Standalone launcher (Game/Application)'
         typeOptions[LAUNCHER_ROM]             = 'ROM launcher (Emulator)'
@@ -4418,23 +4306,103 @@ class LauncherFactory(object):
         return typeOptions
 
     #
-    # Creates a Launcher derived object when the data dictionary is available.
+    # obj_type is mandatory.
+    # obj_dic may be a dictionary or None
     #
-    def create(self, launcher_dic):
-        launcher_type = launcher_dic['type'] if 'type' in launcher_dic else None
-        s = 'Creating launcher instance for launcher {0} with type {1}'
-        log_debug(s.format(launcher_dic['id'], launcher_type))
+    def _load(self, obj_type, obj_dic = None):
+        # --- Categories ---
+        if obj_type == OBJ_CATEGORY:
+            return Category(self.PATHS, self.settings, obj_dic)
 
-        return self._load(launcher_type, launcher_dic)
+        elif obj_type == OBJ_CATEGORY_VIRTUAL:
+            return VirtualCategory(self.PATHS, self.settings, obj_dic)
 
-    #
-    # Creates an empty Launcher derived object with default values when only the launcher type
-    # is available, for example, when creating a new launcher in the context menu.
-    #
-    def create_new(self, launcher_type):
-        log_debug('Creating empty launcher instance with type {0}'.format(launcher_type))
+        # --- Virtual launchers ---
+        elif obj_type == VLAUNCHER_RECENT_ID:
+            return VirtualLauncher(
+                self.recently_played_roms_dic, self.settings, RomSetRepository(self.plugin_data_dir)
+            )
 
-        return self._load(launcher_type, None)
+        elif obj_type == VLAUNCHER_MOST_PLAYED_ID:
+            return VirtualLauncher(
+                self.most_played_roms_dic, self.settings, RomSetRepository(self.plugin_data_dir)
+            )
+
+        elif obj_type == VLAUNCHER_FAVOURITES_ID:
+            return VirtualLauncher(
+                self.favourites_roms_dic, self.settings, RomSetRepository(self.plugin_data_dir)
+            )
+
+        # --- Real launchers ---
+        elif obj_type == OBJ_LAUNCHER_STANDALONE:
+            return StandaloneLauncher(self.PATHS, self.settings, obj_dic, self.executorFactory)
+
+        elif obj_type == OBJ_LAUNCHER_COLLECTION:
+            romset_repository = RomSetRepository(self.PATHS.COLLECTIONS_FILE_PATH, False)
+            return CollectionLauncher(self.PATHS, self.settings, obj_dic, romset_repository)
+
+        elif obj_type == OBJ_LAUNCHER_ROM:
+            statsStrategy = RomStatisticsStrategy(
+                VirtualLauncher(self.recently_played_roms_dic, self.settings, RomSetRepository(self.PATHS)),
+                VirtualLauncher(self.most_played_roms_dic, self.settings, RomSetRepository(self.PATHS))
+            )
+            romset_repository = RomSetRepository(self.PATHS.ROMS_DIR)
+            return StandardRomLauncher(
+                launcher_data, self.settings, self.executorFactory,
+                romset_repository, statsStrategy, self.settings['escape_romfile']
+            )
+
+        elif obj_type == OBJ_LAUNCHER_RETROPLAYER:
+            statsStrategy = RomStatisticsStrategy(self.virtual_launchers[VLAUNCHER_RECENT_ID],
+                                                  self.virtual_launchers[VLAUNCHER_MOST_PLAYED_ID])
+            romset_repository = RomSetRepository(self.PATHS.ROMS_DIR)
+            return RetroplayerLauncher(launcher_data, self.settings, None,
+                                       romset_repository, None, self.settings['escape_romfile'])
+
+        elif obj_type == OBJ_LAUNCHER_RETROARCH:
+            statsStrategy = RomStatisticsStrategy(self.virtual_launchers[VLAUNCHER_RECENT_ID],
+                                                  self.virtual_launchers[VLAUNCHER_MOST_PLAYED_ID])
+            romset_repository = RomSetRepository(self.PATHS.ROMS_DIR)
+            return RetroarchLauncher(launcher_data, self.settings, self.executorFactory,
+                                     romset_repository, statsStrategy, self.settings['escape_romfile'])
+
+        # LNK launchers available only on Windows
+        elif obj_type == OBJ_LAUNCHER_LNK:
+            statsStrategy = RomStatisticsStrategy(self.virtual_launchers[VLAUNCHER_RECENT_ID],
+                                                  self.virtual_launchers[VLAUNCHER_MOST_PLAYED_ID])
+            romset_repository = RomSetRepository(self.PATHS.ROMS_DIR)
+            return LnkLauncher(launcher_data, self.settings, self.executorFactory,
+                               romset_repository, statsStrategy, self.settings['escape_romfile'])
+
+        elif obj_type == OBJ_LAUNCHER_STEAM:
+            statsStrategy = RomStatisticsStrategy(self.virtual_launchers[VLAUNCHER_RECENT_ID],
+                                                  self.virtual_launchers[VLAUNCHER_MOST_PLAYED_ID])
+            romset_repository = RomSetRepository(self.PATHS.ROMS_DIR)
+            return SteamLauncher(launcher_data, self.settings, self.executorFactory,
+                                 romset_repository, statsStrategy)
+
+        elif obj_type == OBJ_LAUNCHER_NVGAMESTREAM:
+            statsStrategy = RomStatisticsStrategy(self.virtual_launchers[VLAUNCHER_RECENT_ID],
+                                                  self.virtual_launchers[VLAUNCHER_MOST_PLAYED_ID])
+            romset_repository = RomSetRepository(self.PATHS.ROMS_DIR)
+            return NvidiaGameStreamLauncher(launcher_data, self.settings, self.executorFactory,
+                                            romset_repository, statsStrategy)
+
+        # --- Disabled. AEL must not access favourites.xml ---
+        # elif obj_type == OBJ_LAUNCHER_KODI_FAVOURITES:
+        #     return KodiLauncher(launcher_data, self.settings, self.executorFactory)
+
+        # --- Standard ROM ---
+        
+
+        # --- Favourite ROM ---
+        # NOTE do we need a Favourite ROM object? ROM objects have a reference to the Launcher
+        # object and hence the Favourite ROM can be created in place.
+
+        else:
+            log_error('Unsupported requested type "{0}"'.format(obj_type))
+
+        return None
 
 # #################################################################################################
 # #################################################################################################
