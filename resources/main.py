@@ -5349,13 +5349,13 @@ def m_gui_render_launcher_row(launcher):
     launcher_name = launcher_raw_name = launcher.get_name()
     launcher_type = launcher.get_launcher_type()
     if   launcher_type == LAUNCHER_STANDALONE:   launcher_desc = 'Std'
-    elif launcher_type == LAUNCHER_FAVOURITES:   launcher_desc = 'Fav'
-    elif launcher_type == LAUNCHER_RETROPLAYER:  launcher_desc = 'Rplay'
-    elif launcher_type == LAUNCHER_ROM:          launcher_desc = 'Roms'
+    # elif launcher_type == LAUNCHER_FAVOURITES:   launcher_desc = 'Fav'
+    elif launcher_type == LAUNCHER_RETROPLAYER:  launcher_desc = 'KRetro'
+    elif launcher_type == LAUNCHER_ROM:          launcher_desc = 'ROMs'
     elif launcher_type == LAUNCHER_RETROARCH:    launcher_desc = 'Retro'
     elif launcher_type == LAUNCHER_STEAM:        launcher_desc = 'Steam'
     elif launcher_type == LAUNCHER_NVGAMESTREAM: launcher_desc = 'Strm'
-    elif launcher_type == LAUNCHER_LNK:          launcher_desc = 'Lnks'
+    elif launcher_type == LAUNCHER_LNK:          launcher_desc = 'LNKs'
     else:                                        launcher_desc = '???'
 
     launcher_dic = launcher.get_data_dic()
@@ -5437,16 +5437,13 @@ def m_gui_render_launcher_row(launcher):
     commands.append(('View', m_misc_url_RunPlugin('VIEW', categoryID, launcherID) ))
     commands.append(('Edit/Export Launcher', m_misc_url_RunPlugin('EDIT_LAUNCHER', categoryID, launcherID) ))
     # >> ONLY for ROM launchers
-    #if launcher_dic['rompath']:
     if launcher.supports_launching_roms():
-        commands.append(('Add ROMs', m_misc_url_RunPlugin('ADD_ROMS', categoryID, launcherID) ))
+        commands.append(('Scan ROMs', m_misc_url_RunPlugin('SCAN_ROMS', categoryID, launcherID) ))
         commands.append(('Search ROMs in Launcher', m_misc_url_RunPlugin('SEARCH_LAUNCHER', categoryID, launcherID) ))
-    
     commands.append(('Add new Launcher', m_misc_url_RunPlugin('ADD_LAUNCHER', categoryID) ))
     # >> Launchers in addon root should be able to create a new category
     if categoryID == VCATEGORY_ADDONROOT_ID:
         commands.append(('Create new Category', m_misc_url_RunPlugin('ADD_CATEGORY')))
-
     commands.append(('Open Kodi file manager', 'ActivateWindow(filemanager)' ))
     commands.append(('AEL addon settings', 'Addon.OpenSettings({0})'.format(__addon_id__) ))
     listitem.addContextMenuItems(commands)

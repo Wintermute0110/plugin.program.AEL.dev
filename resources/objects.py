@@ -2486,6 +2486,28 @@ class LauncherABC(MetaDataItemABC):
 # Standalone application launcher
 # -------------------------------------------------------------------------------------------------
 class StandaloneLauncher(LauncherABC):
+    # --------------------------------------------------------------------------------------------
+    # Core functions
+    # --------------------------------------------------------------------------------------------
+    #
+    # Returns True if Launcher was sucesfully built.
+    # Returns False if Launcher was not built (user canceled the dialogs or some other
+    #
+    def build(self, category):
+        return super(StandaloneLauncher, self).build(category)
+
+    def supports_launching_roms(self):
+        return False
+
+    def get_launcher_type(self):
+        return LAUNCHER_STANDALONE
+
+    def get_launcher_type_name(self):
+        return "Standalone launcher"
+
+    # ---------------------------------------------------------------------------------------------
+    # Execution methods
+    # ---------------------------------------------------------------------------------------------
     def launch(self):
         self.title = self.entity_data['m_name']
         self.application = FileName(self.entity_data['application'])
@@ -2503,15 +2525,6 @@ class StandaloneLauncher(LauncherABC):
         log_info('StandaloneLauncher() final arguments "{0}"'.format(self.arguments))
 
         super(StandaloneLauncher, self).launch()
-
-    def supports_launching_roms(self):
-        return False
-
-    def get_launcher_type(self):
-        return LAUNCHER_STANDALONE
-
-    def get_launcher_type_name(self):
-        return "Standalone launcher"
 
     def change_application(self):
         current_application = self.entity_data['application']

@@ -34,6 +34,7 @@ import errno
 
 # ~~~ Using ElementTree seems to solve the problem
 import xml.etree.ElementTree as ET
+import xml.dom.minidom
 
 # --- AEL packages ---
 from constants import *
@@ -651,8 +652,14 @@ def fs_get_XML_root_from_str(data_str):
 
     return root
 
+#
+# Return a pretty-printed XML string for the Element.
+# See https://stackoverflow.com/questions/17402323/use-xml-etree-elementtree-to-print-nicely-formatted-xml-files/17402424
+#
 def fs_get_str_from_XML_root(xml_root):
-    data_str = ET.tostring(xml_root)
+    rough_string = ET.tostring(xml_root, 'utf-8')
+    reparsed = minidom.parseString(rough_string)
+    data_str = reparsed.toprettyxml(indent = "  ")
 
     return data_str
 
