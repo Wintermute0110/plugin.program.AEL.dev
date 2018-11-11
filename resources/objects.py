@@ -114,49 +114,6 @@ def asset_get_regexp_extension_list(exts):
 # -------------------------------------------------------------------------------------------------
 # Asset functions
 # -------------------------------------------------------------------------------------------------
-# Creates path for assets (artwork) and automatically fills in the path_ fields in the launcher
-# struct.
-# 
-def assets_init_asset_dir(assets_path_FName, launcher):
-    log_verb('assets_init_asset_dir() asset_path "{0}"'.format(assets_path_FName.getPath()))
-
-    # --- Fill in launcher fields and create asset directories ---
-    if launcher['platform'] == 'MAME':
-        assets_parse_asset_dir(launcher, assets_path_FName, 'path_title', 'titles')
-        assets_parse_asset_dir(launcher, assets_path_FName, 'path_snap', 'snaps')
-        assets_parse_asset_dir(launcher, assets_path_FName, 'path_boxfront', 'cabinets')
-        assets_parse_asset_dir(launcher, assets_path_FName, 'path_boxback', 'cpanels')
-        assets_parse_asset_dir(launcher, assets_path_FName, 'path_cartridge', 'PCBs')
-        assets_parse_asset_dir(launcher, assets_path_FName, 'path_fanart', 'fanarts')
-        assets_parse_asset_dir(launcher, assets_path_FName, 'path_banner', 'marquees')
-        assets_parse_asset_dir(launcher, assets_path_FName, 'path_clearlogo', 'clearlogos')
-        assets_parse_asset_dir(launcher, assets_path_FName, 'path_flyer', 'flyers')
-        assets_parse_asset_dir(launcher, assets_path_FName, 'path_map', 'maps')
-        assets_parse_asset_dir(launcher, assets_path_FName, 'path_manual', 'manuals')
-        assets_parse_asset_dir(launcher, assets_path_FName, 'path_trailer', 'trailers')
-    else:
-        assets_parse_asset_dir(launcher, assets_path_FName, 'path_title', 'titles')
-        assets_parse_asset_dir(launcher, assets_path_FName, 'path_snap', 'snaps')
-        assets_parse_asset_dir(launcher, assets_path_FName, 'path_boxfront', 'boxfronts')
-        assets_parse_asset_dir(launcher, assets_path_FName, 'path_boxback', 'boxbacks')
-        assets_parse_asset_dir(launcher, assets_path_FName, 'path_cartridge', 'cartridges')
-        assets_parse_asset_dir(launcher, assets_path_FName, 'path_fanart', 'fanarts')
-        assets_parse_asset_dir(launcher, assets_path_FName, 'path_banner', 'banners')
-        assets_parse_asset_dir(launcher, assets_path_FName, 'path_clearlogo', 'clearlogos')
-        assets_parse_asset_dir(launcher, assets_path_FName, 'path_flyer', 'flyers')
-        assets_parse_asset_dir(launcher, assets_path_FName, 'path_map', 'maps')
-        assets_parse_asset_dir(launcher, assets_path_FName, 'path_manual', 'manuals')
-        assets_parse_asset_dir(launcher, assets_path_FName, 'path_trailer', 'trailers')
-
-#
-# Create asset path and assign it to Launcher dictionary.
-#
-def assets_parse_asset_dir(launcher, assets_path_FName, key, pathName):
-    separator     = assets_path_FName.path_separator()
-    subPath       = assets_path_FName.pjoin(pathName + separator)
-    launcher[key] = subPath.getOriginalPath()
-    log_debug('assets_parse_asset_dir() Creating dir "{0}"'.format(subPath.getPath()))
-    subPath.makedirs()
 
 #
 # Get artwork user configured to be used as icon/fanart/... for Categories/Launchers
@@ -701,7 +658,7 @@ def assets_search_local_cached_assets(launcher, ROMFile, enabled_ROM_asset_list)
         local_asset = misc_search_file_cache(launcher[AInfo.path_key], rom_basename_noext, AInfo.exts)
 
         if local_asset:
-            local_asset_list[i] = local_asset.getOriginalPath()
+            local_asset_list[i] = local_asset.getPath()
             log_verb('assets_search_local_cached_assets() Found    {0:<9} "{1}"'.format(AInfo.name, local_asset_list[i]))
         else:
             local_asset_list[i] = ''
@@ -725,7 +682,7 @@ def assets_search_local_assets(launcher, ROMFile, enabled_ROM_asset_list):
         local_asset = misc_look_for_file(asset_path, ROMFile.getBase_noext(), AInfo.exts)
 
         if local_asset:
-            local_asset_list[i] = local_asset.getOriginalPath()
+            local_asset_list[i] = local_asset.getPath()
             log_verb('assets_search_local_assets() Found    {0:<9} "{1}"'.format(AInfo.name, local_asset_list[i]))
         else:
             local_asset_list[i] = ''
@@ -743,8 +700,7 @@ def assets_get_ROM_asset_path(launcher):
     duplicated_bool_list = [False] * len(ROM_ASSET_LIST)
     AInfo_first = assets_get_info_scheme(ROM_ASSET_LIST[0])
     path_first_asset_FN = FileName(launcher[AInfo_first.path_key])
-    log_debug('assets_get_ROM_asset_path() path_first_asset OP  "{0}"'.format(path_first_asset_FN.getOriginalPath()))
-    log_debug('assets_get_ROM_asset_path() path_first_asset Dir "{0}"'.format(path_first_asset_FN.getDir()))
+    log_debug('assets_get_ROM_asset_path() path_first_asset "{0}"'.format(path_first_asset_FN.getPath()))
     for i, asset_kind in enumerate(ROM_ASSET_LIST):
         AInfo = assets_get_info_scheme(asset_kind)
         current_path_FN = FileName(launcher[AInfo.path_key])
@@ -1226,7 +1182,7 @@ class RomSetRepository(object):
             repository_file = self.roms_dir.pjoin('{}_parents.json'.format(roms_base_noext))
 
         if not repository_file.exists():
-            log_warning('Launcher "{0}" JSON not found.'.format(repository_file.getOriginalPath()))
+            log_warning('Launcher "{0}" JSON not found.'.format(repository_file.getPath()))
             return None
         
         log_info('RomSetRepository.find_by_launcher() Loading ROMs in Launcher ({}:{}) Mode: {}...'.format(launcher.get_launcher_type_name(), launcher.get_name(), view_mode))
@@ -1236,13 +1192,13 @@ class RomSetRepository(object):
         # >> On Github issue #8 a user had an empty JSON file for ROMs. This raises
         #    exception exceptions.ValueError and launcher cannot be deleted. Deal
         #    with this exception so at least launcher can be rescanned.
-        log_verb('RomSetRepository.find_by_launcher(): Loading roms from file {0}'.format(repository_file.getOriginalPath()))
+        log_verb('RomSetRepository.find_by_launcher(): Loading roms from file {0}'.format(repository_file.getPath()))
         try:
             roms_data = repository_file.readJson()
         except ValueError:
             statinfo = repository_file.stat()
             log_error('RomSetRepository.find_by_launcher(): ValueError exception in json.load() function')
-            log_error('RomSetRepository.find_by_launcher(): Dir  {0}'.format(repository_file.getOriginalPath()))
+            log_error('RomSetRepository.find_by_launcher(): Dir  {0}'.format(repository_file.getPath()))
             log_error('RomSetRepository.find_by_launcher(): Size {0}'.format(statinfo.st_size))
             return None
 
@@ -1270,16 +1226,16 @@ class RomSetRepository(object):
         repository_file = self.roms_dir.pjoin('{}{}.json'.format(roms_base_noext, type))
 
         if not repository_file.exists():
-            log_warning('RomSetRepository.find_index_file_by_launcher(): File not found {0}'.format(repository_file.getOriginalPath()))
+            log_warning('RomSetRepository.find_index_file_by_launcher(): File not found {0}'.format(repository_file.getPath()))
             return None
 
-        log_verb('RomSetRepository.find_index_file_by_launcher(): Loading rom index from file {0}'.format(repository_file.getOriginalPath()))
+        log_verb('RomSetRepository.find_index_file_by_launcher(): Loading rom index from file {0}'.format(repository_file.getPath()))
         try:
             index_data = repository_file.readJson()
         except ValueError:
             statinfo = repository_file.stat()
             log_error('RomSetRepository.find_index_file_by_launcher(): ValueError exception in json.load() function')
-            log_error('RomSetRepository.find_index_file_by_launcher(): Dir  {0}'.format(repository_file.getOriginalPath()))
+            log_error('RomSetRepository.find_index_file_by_launcher(): Dir  {0}'.format(repository_file.getPath()))
             log_error('RomSetRepository.find_index_file_by_launcher(): Size {0}'.format(statinfo.st_size))
             return None
 
@@ -1315,8 +1271,8 @@ class RomSetRepository(object):
         else:
             repository_file = self.roms_dir.pjoin('{}_parents.json'.format(roms_base_noext))
 
-        log_verb('RomSetRepository.save_rom_set() Dir  {0}'.format(self.roms_dir.getOriginalPath()))
-        log_verb('RomSetRepository.save_rom_set() JSON {0}'.format(repository_file.getOriginalPath()))
+        log_verb('RomSetRepository.save_rom_set() Dir  {0}'.format(self.roms_dir.getPath()))
+        log_verb('RomSetRepository.save_rom_set() JSON {0}'.format(repository_file.getPath()))
 
         # >> Write ROMs JSON dictionary.
         # >> Do note that there is a bug in the json module where the ensure_ascii=False flag can produce
@@ -1325,11 +1281,11 @@ class RomSetRepository(object):
         try:
             repository_file.writeJson(raw_data)
         except OSError:
-            kodi_notify_warn('(OSError) Cannot write {0} file'.format(repository_file.getOriginalPath()))
-            log_error('RomSetRepository.save_rom_set() (OSError) Cannot write {0} file'.format(repository_file.getOriginalPath()))
+            kodi_notify_warn('(OSError) Cannot write {0} file'.format(repository_file.getPath()))
+            log_error('RomSetRepository.save_rom_set() (OSError) Cannot write {0} file'.format(repository_file.getPath()))
         except IOError:
-            kodi_notify_warn('(IOError) Cannot write {0} file'.format(repository_file.getOriginalPath()))
-            log_error('RomSetRepository.save_rom_set() (IOError) Cannot write {0} file'.format(repository_file.getOriginalPath()))       
+            kodi_notify_warn('(IOError) Cannot write {0} file'.format(repository_file.getPath()))
+            log_error('RomSetRepository.save_rom_set() (IOError) Cannot write {0} file'.format(repository_file.getPath()))
 
     # -------------------------------------------------------------------------------------------------
     # Standard ROM databases
@@ -1348,34 +1304,34 @@ class RomSetRepository(object):
         # >> Delete ROMs JSON file
         roms_json_FN = self.roms_dir.pjoin(roms_base_noext + '.json')
         if roms_json_FN.exists():
-            log_info('Deleting ROMs JSON    "{0}"'.format(roms_json_FN.getOriginalPath()))
+            log_info('Deleting ROMs JSON    "{0}"'.format(roms_json_FN.getPath()))
             roms_json_FN.unlink()
 
         # >> Delete ROMs info XML file
         roms_xml_FN = self.roms_dir.pjoin(roms_base_noext + '.xml')
         if roms_xml_FN.exists():
-            log_info('Deleting ROMs XML     "{0}"'.format(roms_xml_FN.getOriginalPath()))
+            log_info('Deleting ROMs XML     "{0}"'.format(roms_xml_FN.getPath()))
             roms_xml_FN.unlink()
 
         # >> Delete No-Intro/Redump stuff if exist
         roms_index_CParent_FN = self.roms_dir.pjoin(roms_base_noext + '_index_CParent.json')
         if roms_index_CParent_FN.exists():
-            log_info('Deleting CParent JSON "{0}"'.format(roms_index_CParent_FN.getOriginalPath()))
+            log_info('Deleting CParent JSON "{0}"'.format(roms_index_CParent_FN.getPath()))
             roms_index_CParent_FN.unlink()
 
         roms_index_PClone_FN = self.roms_dir.pjoin(roms_base_noext + '_index_PClone.json')
         if roms_index_PClone_FN.exists():
-            log_info('Deleting PClone JSON  "{0}"'.format(roms_index_PClone_FN.getOriginalPath()))
+            log_info('Deleting PClone JSON  "{0}"'.format(roms_index_PClone_FN.getPath()))
             roms_index_PClone_FN.unlink()
 
         roms_parents_FN = self.roms_dir.pjoin(roms_base_noext + '_parents.json')
         if roms_parents_FN.exists():
-            log_info('Deleting parents JSON "{0}"'.format(roms_parents_FN.getOriginalPath()))
+            log_info('Deleting parents JSON "{0}"'.format(roms_parents_FN.getPath()))
             roms_parents_FN.unlink()
 
         roms_DAT_FN = self.roms_dir.pjoin(roms_base_noext + '_DAT.json')
         if roms_DAT_FN.exists():
-            log_info('Deleting DAT JSON     "{0}"'.format(roms_DAT_FN.getOriginalPath()))
+            log_info('Deleting DAT JSON     "{0}"'.format(roms_DAT_FN.getPath()))
             roms_DAT_FN.unlink()
 
         return
@@ -1807,7 +1763,7 @@ class ROM(MetaDataItemABC):
         return self.entity_data['launch_count']
 
     def set_file(self, file):
-        self.entity_data['filename'] = file.getOriginalPath()
+        self.entity_data['filename'] = file.getPath()
 
     def add_disk(self, disk):
         self.entity_data['disks'].append(disk)
@@ -1919,7 +1875,7 @@ class ROM(MetaDataItemABC):
         if not nfo_file_path.exists():
             if verbose:
                 kodi_notify_warn('NFO file not found {0}'.format(nfo_file_path.getPath()))
-            log_debug("Rom.update_with_nfo_file() NFO file not found '{0}'".format(nfo_file_path.getOriginalPath()))
+            log_debug("Rom.update_with_nfo_file() NFO file not found '{0}'".format(nfo_file_path.getPath()))
             return False
 
         # todo: Replace with nfo_file_path.readXml() and just use XPath
@@ -1982,6 +1938,9 @@ class LauncherABC(MetaDataItemABC):
         self.arguments       = None
         self.title           = None
 
+    # --------------------------------------------------------------------------------------------
+    # Core functions
+    # --------------------------------------------------------------------------------------------
     def _default_data(self):
         l = {'id' : misc_generate_random_SID(),
              'm_name' : '',
@@ -2050,38 +2009,44 @@ class LauncherABC(MetaDataItemABC):
         return l
 
     #
-    # Build new launcher.
+    # Builds a new Launcher.
     # Leave category_id empty to add launcher to root folder.
+    # Returns True if Launcher was sucesfully built.
+    # Returns False if Launcher was not built (user canceled the dialogs or some other
+    # error happened).
     #
+    @abc.abstractmethod
     def build(self, category):
         wizard = KodiDummyWizardDialog('categoryID', category.get_id(), None)
         wizard = KodiDummyWizardDialog('type', self.get_launcher_type(), wizard)
         wizard = self._get_builder_wizard(wizard)
 
-        # --- Create new launcher. categories.xml is save at the end of this function ---
-        # NOTE than in the database original paths are always stored.
+        # --- Create new launcher ---
+        # 1) First run the wizard to ask for the application, extension, etc.
         self.entity_data = wizard.runWizard(self.entity_data)
         if not self.entity_data:
             return False
-
-        if self.supports_launching_roms():
-            # Choose launcher ROM XML filename. There may be launchers with same name in different categories, or
-            # even launcher with the same name in the same category.
-            roms_base_noext = fs_get_ROMs_basename(category.get_name(), self.entity_data['m_name'], self.get_id())
-            self.entity_data['roms_base_noext'] = roms_base_noext
-
-            # --- Selected asset path ---
-            # A) User chooses one and only one assets path
-            # B) If this path is different from the ROM path then asset naming scheme 1 is used.
-            # B) If this path is the same as the ROM path then asset naming scheme 2 is used.
-            # >> Create asset directories. Function detects if we are using naming scheme 1 or 2.
-            # >> launcher is edited using Python passing by assignment.
-            assets_init_asset_dir(FileName(self.entity_data['assets_path']), self.entity_data)
-
+        # 2) If launcher support ROMs then create roms_base_noext and ROM asset paths.
+        # 3) Update launcher timestamp.
         self.entity_data['timestamp_launcher'] = time.time()
 
         return True
 
+    @abc.abstractmethod
+    def supports_launching_roms(self):
+        pass
+
+    @abc.abstractmethod
+    def get_launcher_type(self):
+        pass
+
+    @abc.abstractmethod
+    def get_launcher_type_name(self):
+        pass
+
+    # ---------------------------------------------------------------------------------------------
+    # Execution methods
+    # ---------------------------------------------------------------------------------------------
     #
     # Launchs a ROM launcher or standalone launcher
     # For standalone launchers romext is the extension of the application (only used in Windoze)
@@ -2102,8 +2067,6 @@ class LauncherABC(MetaDataItemABC):
         self.preExecution(self.title, self.is_in_windowed_mode())
         executor.execute(self.application, self.arguments, self.is_non_blocking())
         self.postExecution(self.is_in_windowed_mode())
-
-        pass
 
     #
     # These two functions do things like stopping music before lunch, toggling full screen, etc.
@@ -2235,20 +2198,11 @@ class LauncherABC(MetaDataItemABC):
             xbmc.Player().play()
         log_debug('postExecution() function ENDS')
 
-    @abc.abstractmethod
-    def supports_launching_roms(self):
-        return False
-
-    @abc.abstractmethod
-    def get_launcher_type(self):
-        return LAUNCHER_STANDALONE
-
-    @abc.abstractmethod
-    def get_launcher_type_name(self):
-        return "Standalone launcher"
-
+    # ---------------------------------------------------------------------------------------------
+    # Launcher metadata related methods
+    # ---------------------------------------------------------------------------------------------
     def change_name(self, new_name):
-        if new_name == '': 
+        if new_name == '':
             return False
 
         old_launcher_name = self.get_name()
@@ -2259,8 +2213,8 @@ class LauncherABC(MetaDataItemABC):
 
         if old_launcher_name == new_launcher_name:
             return False
-
         self.entity_data['m_name'] = new_launcher_name
+
         return True
 
     def get_platform(self):
@@ -2399,7 +2353,7 @@ class LauncherABC(MetaDataItemABC):
     #
     def import_nfo_file(self, nfo_file_path):
         # --- Get NFO file name ---
-        log_debug('launcher.import_nfo_file() Importing launcher NFO "{0}"'.format(nfo_file_path.getOriginalPath()))
+        log_debug('launcher.import_nfo_file() Importing launcher NFO "{0}"'.format(nfo_file_path.getPath()))
 
         # --- Import data ---
         if nfo_file_path.exists():
@@ -2408,13 +2362,13 @@ class LauncherABC(MetaDataItemABC):
                 item_nfo = nfo_file_path.readAllUnicode()
                 item_nfo = item_nfo.replace('\r', '').replace('\n', '')
             except:
-                kodi_notify_warn('Exception reading NFO file {0}'.format(nfo_file_path.getOriginalPath()))
-                log_error("launcher.import_nfo_file() Exception reading NFO file '{0}'".format(nfo_file_path.getOriginalPath()))
+                kodi_notify_warn('Exception reading NFO file {0}'.format(nfo_file_path.getPath()))
+                log_error("launcher.import_nfo_file() Exception reading NFO file '{0}'".format(nfo_file_path.getPath()))
                 return False
             # log_debug("fs_import_launcher_NFO() item_nfo '{0}'".format(item_nfo))
         else:
             kodi_notify_warn('NFO file not found {0}'.format(nfo_file_path.getBase()))
-            log_info("launcher.import_nfo_file() NFO file not found '{0}'".format(nfo_file_path.getOriginalPath()))
+            log_info("launcher.import_nfo_file() NFO file not found '{0}'".format(nfo_file_path.getPath()))
             return False
 
         # Find data
@@ -2432,7 +2386,7 @@ class LauncherABC(MetaDataItemABC):
         if item_rating:    self.update_rating(text_unescape_XML(item_rating[0]))
         if item_plot:      self.update_plot(text_unescape_XML(item_plot[0]))
 
-        log_verb("import_nfo_file() Imported '{0}'".format(nfo_file_path.getOriginalPath()))
+        log_verb("import_nfo_file() Imported '{0}'".format(nfo_file_path.getPath()))
 
         return True
 
@@ -2446,7 +2400,7 @@ class LauncherABC(MetaDataItemABC):
     #
     def export_nfo_file(self, nfo_FileName):
         # --- Get NFO file name ---
-        log_debug('export_nfo_file() Exporting launcher NFO "{0}"'.format(nfo_FileName.getOriginalPath()))
+        log_debug('export_nfo_file() Exporting launcher NFO "{0}"'.format(nfo_FileName.getPath()))
 
         # If NFO file does not exist then create them. If it exists, overwrite.
         nfo_content = []
@@ -2464,9 +2418,9 @@ class LauncherABC(MetaDataItemABC):
             nfo_FileName.writeAll(full_string)
         except:
             kodi_notify_warn('Exception writing NFO file {0}'.format(nfo_FileName.getPath()))
-            log_error("export_nfo_file() Exception writing'{0}'".format(nfo_FileName.getOriginalPath()))
+            log_error("export_nfo_file() Exception writing'{0}'".format(nfo_FileName.getPath()))
             return False
-        log_debug("export_nfo_file() Created '{0}'".format(nfo_FileName.getOriginalPath()))
+        log_debug("export_nfo_file() Created '{0}'".format(nfo_FileName.getPath()))
 
         return True
 
@@ -2540,7 +2494,7 @@ class StandaloneLauncher(LauncherABC):
         # --- Check for errors and abort if errors found ---
         if not self.application.exists():
             log_error('Launching app not found "{0}"'.format(self.application.getPath()))
-            kodi_notify_warn('App {0} not found.'.format(self.application.getOriginalPath()))
+            kodi_notify_warn('App {0} not found.'.format(self.application.getPath()))
             return
 
         # ~~~ Argument substitution ~~~
@@ -2752,6 +2706,129 @@ class ROMLauncherABC(LauncherABC):
 
         super(ROMLauncherABC, self).__init__(launcher_data, settings, executorFactory)
 
+    # --------------------------------------------------------------------------------------------
+    # Core functions
+    # --------------------------------------------------------------------------------------------
+    #
+    # If launcher support ROMs then create:
+    #   a) ROM databases roms_base_noext
+    #   b) Initialize ROM asset directories to store ROM assets.
+    #
+    # Returns True if Launcher was sucesfully built.
+    # Returns False if Launcher was not built for any reason.
+    #
+    def build(self, category):
+        # --- Call parent method to create the New Launcher wizard ---
+        if not super(ROMLauncherABC, self).build(category):
+            return False
+
+        # Choose launcher ROM XML filename. There may be launchers with same name in different categories, or
+        # even launcher with the same name in the same category.
+        roms_base_noext = fs_get_ROMs_basename(category.get_name(), self.entity_data['m_name'], self.get_id())
+        self.entity_data['roms_base_noext'] = roms_base_noext
+
+        # --- Selected asset path ---
+        # A) User chooses one and only one assets path
+        # B) If this path is different from the ROM path then asset naming scheme 1 is used.
+        # B) If this path is the same as the ROM path then asset naming scheme 2 is used.
+        # >> Create asset directories. Function detects if we are using naming scheme 1 or 2.
+        # >> launcher is edited using Python passing by assignment.
+        self.rom_assets_init_dirs()
+
+        return True
+
+    def supports_launching_roms(self):
+        return True
+
+    # ---------------------------------------------------------------------------------------------
+    # Execution methods
+    # ---------------------------------------------------------------------------------------------
+    def launch(self):
+        self.title = self.rom.get_name()
+        self.selected_rom_file = None
+
+        applicationIsSet = self._selectApplicationToUse()
+        argumentsAreSet  = self._selectArgumentsToUse()
+        romIsSelected    = self._selectRomFileToUse()
+
+        if not applicationIsSet or not argumentsAreSet or not romIsSelected:
+            return
+
+        self._parseArguments()
+
+        if self.statsStrategy is not None:
+            self.statsStrategy.update_launched_rom_stats(self.rom)
+            self.save_rom(self.rom)
+
+        super(RomLauncher, self).launch()
+
+
+    # ---------------------------------------------------------------------------------------------
+    # ROM methods
+    # ---------------------------------------------------------------------------------------------
+
+
+    # ---------------------------------------------------------------------------------------------
+    # ROM asset methods
+    # ---------------------------------------------------------------------------------------------
+    #
+    # Creates path for assets (artwork) and automatically fills in the path_ fields in the
+    # launcher dictionary.
+    #
+    def rom_assets_init_dirs(self):
+        assets_dir_FN = FileName(self.entity_data['assets_path'], isdir = True)
+        log_verb('ROMLauncherABC::rom_assets_init_dirs() assets_dir_FN "{0}"'.format(assets_dir_FN.getPath()))
+
+        # --- Fill in launcher fields and create asset directories ---
+        if self.entity_data['platform'] == 'MAME':
+            log_verb('ROMLauncherABC::rom_assets_init_dirs() Creating MAME asset paths')
+            self.rom_assets_create_dir(assets_dir_FN, 'path_title', 'titles')
+            self.rom_assets_create_dir(assets_dir_FN, 'path_snap', 'snaps')
+            self.rom_assets_create_dir(assets_dir_FN, 'path_boxfront', 'cabinets')
+            self.rom_assets_create_dir(assets_dir_FN, 'path_boxback', 'cpanels')
+            self.rom_assets_create_dir(assets_dir_FN, 'path_cartridge', 'PCBs')
+            self.rom_assets_create_dir(assets_dir_FN, 'path_fanart', 'fanarts')
+            self.rom_assets_create_dir(assets_dir_FN, 'path_banner', 'marquees')
+            self.rom_assets_create_dir(assets_dir_FN, 'path_clearlogo', 'clearlogos')
+            self.rom_assets_create_dir(assets_dir_FN, 'path_flyer', 'flyers')
+            self.rom_assets_create_dir(assets_dir_FN, 'path_map', 'maps')
+            self.rom_assets_create_dir(assets_dir_FN, 'path_manual', 'manuals')
+            self.rom_assets_create_dir(assets_dir_FN, 'path_trailer', 'trailers')
+        else:
+            log_verb('ROMLauncherABC::rom_assets_init_dirs() Creating Standard asset paths')
+            self.rom_assets_create_dir(assets_dir_FN, 'path_title', 'titles')
+            self.rom_assets_create_dir(assets_dir_FN, 'path_snap', 'snaps')
+            self.rom_assets_create_dir(assets_dir_FN, 'path_boxfront', 'boxfronts')
+            self.rom_assets_create_dir(assets_dir_FN, 'path_boxback', 'boxbacks')
+            self.rom_assets_create_dir(assets_dir_FN, 'path_cartridge', 'cartridges')
+            self.rom_assets_create_dir(assets_dir_FN, 'path_fanart', 'fanarts')
+            self.rom_assets_create_dir(assets_dir_FN, 'path_banner', 'banners')
+            self.rom_assets_create_dir(assets_dir_FN, 'path_clearlogo', 'clearlogos')
+            self.rom_assets_create_dir(assets_dir_FN, 'path_flyer', 'flyers')
+            self.rom_assets_create_dir(assets_dir_FN, 'path_map', 'maps')
+            self.rom_assets_create_dir(assets_dir_FN, 'path_manual', 'manuals')
+            self.rom_assets_create_dir(assets_dir_FN, 'path_trailer', 'trailers')
+
+    #
+    # Create asset path and assign it to Launcher dictionary.
+    #
+    def rom_assets_create_dir(self, assets_dir_FN, key, path_name):
+        asset_dir_FN = assets_dir_FN.pjoin(path_name, isdir = True)
+        self.entity_data[key] = asset_dir_FN.getPath()
+        log_debug('ROMLauncherABC::rom_assets_create_dir() Creating "{0}"'.format(asset_dir_FN.getPath()))
+        asset_dir_FN.makedirs()
+
+
+    # ---------------------------------------------------------------------------------------------
+    # Utility functions of ROM Launchers
+    # ---------------------------------------------------------------------------------------------
+
+
+
+
+
+
+
     @abc.abstractmethod
     def _selectApplicationToUse(self):
         return True
@@ -2828,28 +2905,6 @@ class ROMLauncherABC(LauncherABC):
 
         log_info('RomLauncher() final arguments "{0}"'.format(self.arguments))
 
-    def launch(self):
-        self.title  = self.rom.get_name()
-        self.selected_rom_file = None
-
-        applicationIsSet    = self._selectApplicationToUse()
-        argumentsAreSet     = self._selectArgumentsToUse()
-        romIsSelected       = self._selectRomFileToUse()
-
-        if not applicationIsSet or not argumentsAreSet or not romIsSelected:
-            return
-
-        self._parseArguments()
-
-        if self.statsStrategy is not None:
-            self.statsStrategy.update_launched_rom_stats(self.rom)       
-            self.save_rom(self.rom)
-
-        super(RomLauncher, self).launch()
-        pass
-
-    def supports_launching_roms(self):
-        return True
 
     def supports_parent_clone_roms(self):
         return False
@@ -2967,7 +3022,7 @@ class ROMLauncherABC(LauncherABC):
         favourite.set_custom_attribute('application',           self.get_custom_attribute('application'))
         favourite.set_custom_attribute('args',                  self.get_custom_attribute('args'))
         favourite.set_custom_attribute('args_extra',            self.get_custom_attribute('args_extra'))
-        favourite.set_custom_attribute('rompath',               self.get_rom_path().getOriginalPath())
+        favourite.set_custom_attribute('rompath',               self.get_rom_path().getPath())
         favourite.set_custom_attribute('romext',                self.get_custom_attribute('romext'))
         favourite.set_custom_attribute('toggle_window',         self.is_in_windowed_mode())
         favourite.set_custom_attribute('non_blocking',          self.is_non_blocking())
@@ -3219,7 +3274,7 @@ class ROMLauncherABC(LauncherABC):
         romPath = FileName(launcher['assets_path'])
         romPath = romPath.pjoin('games')
 
-        return romPath.getOriginalPath()
+        return romPath.getPath()
 
 # -------------------------------------------------------------------------------------------------
 # Collection Launcher
@@ -3495,7 +3550,7 @@ class StandardRomLauncher(ROMLauncherABC):
         # --- Check for errors and abort if found --- todo: CHECK
         if not self.application.exists():
             log_error('StandardRomLauncher._selectApplicationToUse(): Launching app not found "{0}"'.format(self.application.getPath()))
-            kodi_notify_warn('Launching app not found {0}'.format(self.application.getOriginalPath()))
+            kodi_notify_warn('Launching app not found {0}'.format(self.application.getPath()))
             return False
 
         return True
@@ -3541,12 +3596,12 @@ class StandardRomLauncher(ROMLauncherABC):
         ROM_dir = FileName(ROM_temp.getDir())
         ROMFileName = ROM_dir.pjoin(selected_rom_base)
 
-        log_info('StandardRomLauncher._selectRomFileToUse() ROMFileName OP "{0}"'.format(ROMFileName.getOriginalPath()))
+        log_info('StandardRomLauncher._selectRomFileToUse() ROMFileName OP "{0}"'.format(ROMFileName.getPath()))
         log_info('StandardRomLauncher._selectRomFileToUse() ROMFileName  P "{0}"'.format(ROMFileName.getPath()))
 
         if not ROMFileName.exists():
             log_error('ROM not found "{0}"'.format(ROMFileName.getPath()))
-            kodi_notify_warn('ROM not found "{0}"'.format(ROMFileName.getOriginalPath()))
+            kodi_notify_warn('ROM not found "{0}"'.format(ROMFileName.getPath()))
             return False
 
         self.selected_rom_file = ROMFileName
@@ -3632,8 +3687,8 @@ class RetroplayerLauncher(StandardRomLauncher):
         listitem.setInfo('game', {'title'    : label_str,     'platform'  : 'Test platform',
                                     'genres'   : genre_list,    'developer' : rom['m_developer'],
                                     'overview' : rom['m_plot'], 'year'      : rom['m_year'] })
-        log_info('RetroplayerLauncher() application.getOriginalPath() "{0}"'.format(application.getOriginalPath()))
-        log_info('RetroplayerLauncher() ROMFileName.getOriginalPath() "{0}"'.format(ROMFileName.getOriginalPath()))
+        log_info('RetroplayerLauncher() application.getPath() "{0}"'.format(application.getPath()))
+        log_info('RetroplayerLauncher() ROMFileName.getPath() "{0}"'.format(ROMFileName.getPath()))
         log_info('RetroplayerLauncher() label_str                     "{0}"'.format(label_str))
 
         # --- User notification ---
@@ -3641,7 +3696,7 @@ class RetroplayerLauncher(StandardRomLauncher):
             kodi_notify('Launching "{0}" with Retroplayer'.format(self.title))
 
         log_verb('RetroplayerLauncher() Calling xbmc.Player().play() ...')
-        xbmc.Player().play(ROMFileName.getOriginalPath(), listitem)
+        xbmc.Player().play(ROMFileName.getPath(), listitem)
         log_verb('RetroplayerLauncher() Calling xbmc.Player().play() returned. Leaving function.')
         pass
     
@@ -3789,7 +3844,7 @@ class RetroarchLauncher(StandardRomLauncher):
         retroarch_folder = FileName(settings['io_retroarch_sys_dir'])      
     
         if retroarch_folder.exists():
-            return retroarch_folder.getOriginalPath()
+            return retroarch_folder.getPath()
 
         if is_android():
         
@@ -3803,7 +3858,7 @@ class RetroarchLauncher(StandardRomLauncher):
             for retroach_folder_path in android_retroarch_folders:
                 retroarch_folder = FileName(retroach_folder_path)
                 if retroarch_folder.exists():
-                    return retroarch_folder.getOriginalPath()
+                    return retroarch_folder.getPath()
 
         return '/'
 
@@ -3822,16 +3877,16 @@ class RetroarchLauncher(StandardRomLauncher):
             retroarch_folders.append(FileName('/data/user/0/com.retroarch/'))
         
         for retroarch_folder in retroarch_folders:
-            log_debug("get_available_retroarch_configurations() scanning path '{0}'".format(retroarch_folder.getOriginalPath()))
+            log_debug("get_available_retroarch_configurations() scanning path '{0}'".format(retroarch_folder.getPath()))
             files = retroarch_folder.recursiveScanFilesInPathAsFileNameObjects('*.cfg')
         
             if len(files) < 1:
                 continue
 
             for file in files:
-                log_debug("get_available_retroarch_configurations() adding config file '{0}'".format(file.getOriginalPath()))
+                log_debug("get_available_retroarch_configurations() adding config file '{0}'".format(file.getPath()))
                 
-                configs[file.getOriginalPath()] = file.getBase_noext()
+                configs[file.getPath()] = file.getBase_noext()
 
             return configs
 
@@ -3853,29 +3908,29 @@ class RetroarchLauncher(StandardRomLauncher):
         info_folder     = self._create_path_from_retroarch_setting(configuration['libretro_info_path'], parent_dir)
         cores_folder    = self._create_path_from_retroarch_setting(configuration['libretro_directory'], parent_dir)
         
-        log_debug("get_available_retroarch_cores() scanning path '{0}'".format(cores_folder.getOriginalPath()))
+        log_debug("get_available_retroarch_cores() scanning path '{0}'".format(cores_folder.getPath()))
 
         if not info_folder.exists():
-            log_warning('Retroarch info folder not found {}'.format(info_folder.getOriginalPath()))
+            log_warning('Retroarch info folder not found {}'.format(info_folder.getPath()))
             return cores
     
         if not cores_folder.exists():
-            log_warning('Retroarch cores folder not found {}'.format(cores_folder.getOriginalPath()))
+            log_warning('Retroarch cores folder not found {}'.format(cores_folder.getPath()))
             return cores
 
         files = cores_folder.scanFilesInPathAsFileNameObjects(cores_ext)
         for file in files:
                 
-            log_debug("get_available_retroarch_cores() adding core '{0}'".format(file.getOriginalPath()))    
+            log_debug("get_available_retroarch_cores() adding core '{0}'".format(file.getPath()))    
             info_file = self._switch_core_to_info_file(file, info_folder)
 
             if not info_file.exists():
-                log_warning('get_available_retroarch_cores() Cannot find "{}". Skipping core "{}"'.format(info_file.getOriginalPath(), file.getBase()))
+                log_warning('get_available_retroarch_cores() Cannot find "{}". Skipping core "{}"'.format(info_file.getPath(), file.getBase()))
                 continue
 
-            log_debug("get_available_retroarch_cores() using info '{0}'".format(info_file.getOriginalPath()))    
+            log_debug("get_available_retroarch_cores() using info '{0}'".format(info_file.getPath()))    
             core_info = info_file.readPropertyFile()
-            cores[info_file.getOriginalPath()] = core_info['display_name']
+            cores[info_file.getPath()] = core_info['display_name']
 
         return cores
 
@@ -3891,7 +3946,7 @@ class RetroarchLauncher(StandardRomLauncher):
 
         if input.endswith(cores_ext):
             core_file = FileName(input)
-            launcher['retro_core']  = core_file.getOriginalPath()
+            launcher['retro_core']  = core_file.getPath()
             return input
 
         config_file     = FileName(launcher['retro_config'])
@@ -3901,15 +3956,15 @@ class RetroarchLauncher(StandardRomLauncher):
         info_file       = FileName(input)
         
         if not cores_folder.exists():
-            log_warning('Retroarch cores folder not found {}'.format(cores_folder.getOriginalPath()))
-            kodi_notify_error('Retroarch cores folder not found {}'.format(cores_folder.getOriginalPath()))
+            log_warning('Retroarch cores folder not found {}'.format(cores_folder.getPath()))
+            kodi_notify_error('Retroarch cores folder not found {}'.format(cores_folder.getPath()))
             return ''
 
         core_file = self._switch_info_to_core_file(info_file, cores_folder, cores_ext)
         core_info = info_file.readPropertyFile()
 
-        launcher[item_key]      = info_file.getOriginalPath()
-        launcher['retro_core']  = core_file.getOriginalPath()
+        launcher[item_key]      = info_file.getPath()
+        launcher['retro_core']  = core_file.getPath()
         launcher['romext']      = core_info['supported_extensions']
         launcher['platform']    = core_info['systemname']
         launcher['m_developer'] = core_info['manufacturer']
@@ -3935,8 +3990,8 @@ class RetroarchLauncher(StandardRomLauncher):
             return parent_dir.pjoin(path_from_setting)
         else:
             folder = FileName(path_from_setting)
-            if '/data/user/0/' in folder.getOriginalPath():
-                alternative_folder = foldexr.getOriginalPath()
+            if '/data/user/0/' in folder.getPath():
+                alternative_folder = foldexr.getPath()
                 alternative_folder = alternative_folder.replace('/data/user/0/', '/data/data/')
                 folder = FileName(alternative_folder)
 
@@ -4046,7 +4101,7 @@ class SteamLauncher(ROMLauncherABC):
         romPath = FileName(launcher['assets_path'])
         romPath = romPath.pjoin('games')
 
-        return romPath.getOriginalPath()
+        return romPath.getPath()
  
 # -------------------------------------------------------------------------------------------------
 # Launcher to use with Nvidia Gamestream servers.
@@ -4209,7 +4264,7 @@ class NvidiaGameStreamLauncher(ROMLauncherABC):
         if not gs.validate_certificates():
             kodi_notify_warn('Could not find certificates to validate. Make sure you already paired with the server with the Shield or Moonlight applications.')
 
-        return certificates_path.getOriginalPath()
+        return certificates_path.getPath()
 
     def _validate_gamestream_server_connection(self, input, item_key, launcher):
         gs = GameStreamServer(input, None)
@@ -4575,7 +4630,7 @@ class WebBrowserExecutor(Executor):
     def execute(self, application, arguments, non_blocking):
         import webbrowser
         
-        command = application.getOriginalPath() + arguments
+        command = application.getPath() + arguments
         log_debug('WebBrowserExecutor.execute() Launching URL: {0}'.format(command))
         webbrowser.open(command)
 
@@ -4601,8 +4656,8 @@ class GameStreamServer(object):
             self.certificate_file_path = FileName('')
             self.certificate_key_file_path = FileName('')
 
-        log_debug('GameStreamServer() Using certificate key file {}'.format(self.certificate_key_file_path.getOriginalPath()))
-        log_debug('GameStreamServer() Using certificate file {}'.format(self.certificate_file_path.getOriginalPath()))
+        log_debug('GameStreamServer() Using certificate key file {}'.format(self.certificate_key_file_path.getPath()))
+        log_debug('GameStreamServer() Using certificate file {}'.format(self.certificate_file_path.getPath()))
 
         self.pem_cert_data = None
         self.key_cert_data = None
@@ -4617,7 +4672,7 @@ class GameStreamServer(object):
             for key, value in parameters.iteritems():
                 url = url + "&{0}={1}".format(key, value)
 
-        handler = HTTPSClientAuthHandler(self.certificate_key_file_path.getOriginalPath(), self.certificate_file_path.getOriginalPath())
+        handler = HTTPSClientAuthHandler(self.certificate_key_file_path.getPath(), self.certificate_file_path.getPath())
         page_data = net_get_URL_using_handler(url, handler)
     
         if page_data is None:
@@ -4882,7 +4937,7 @@ class GameStreamServer(object):
             log_info('Client certificate file does not exist. Creating')
             create_self_signed_cert("NVIDIA GameStream Client", self.certificate_file_path, self.certificate_key_file_path)
 
-        log_info('Loading client certificate data from {0}'.format(self.certificate_file_path.getOriginalPath()))
+        log_info('Loading client certificate data from {0}'.format(self.certificate_file_path.getPath()))
         self.pem_cert_data = self.certificate_file_path.readAll()
 
         return self.pem_cert_data
@@ -4897,7 +4952,7 @@ class GameStreamServer(object):
         if not self.certificate_key_file_path.exists():
             log_info('Client certificate file does not exist. Creating')
             create_self_signed_cert("NVIDIA GameStream Client", self.certificate_file_path, self.certificate_key_file_path)
-        log_info('Loading client certificate data from {0}'.format(self.certificate_key_file_path.getOriginalPath()))
+        log_info('Loading client certificate data from {0}'.format(self.certificate_key_file_path.getPath()))
         self.key_cert_data = self.certificate_key_file_path.readAll()
 
         return self.key_cert_data
@@ -4935,13 +4990,13 @@ class GameStreamServer(object):
 
         possiblePath = homePath.pjoin('Moonlight/')
         if possiblePath.exists():
-            return possiblePath.getOriginalPath()
+            return possiblePath.getPath()
 
         possiblePath = homePath.pjoin('Limelight/')
         if possiblePath.exists():
-            return possiblePath.getOriginalPath()
+            return possiblePath.getPath()
          
-        return homePath.getOriginalPath()
+        return homePath.getPath()
 
 # -------------------------------------------------------------------------------------------------
 # Abstract Factory Pattern
@@ -4961,7 +5016,7 @@ class ExecutorFactory(object):
             or 'xbmc-fav-' in application.getPath() or 'xbmc-sea-' in application.getPath():
             return XbmcExecutor(self.logFile)
 
-        if re.search('.*://.*', application.getOriginalPath()):
+        if re.search('.*://.*', application.getPath()):
             return WebBrowserExecutor(self.logFile)
 
         if is_windows():
@@ -5204,13 +5259,13 @@ class StandardRomSet(RomSet):
         # >> On Github issue #8 a user had an empty JSON file for ROMs. This raises
         #    exception exceptions.ValueError and launcher cannot be deleted. Deal
         #    with this exception so at least launcher can be rescanned.
-        log_verb('StandardRomSet.loadRoms() FILE  {0}'.format(self.repositoryFile.getOriginalPath()))
+        log_verb('StandardRomSet.loadRoms() FILE  {0}'.format(self.repositoryFile.getPath()))
         try:
             roms = self.repositoryFile.readJson()
         except ValueError:
             statinfo = roms_json_file.stat()
             log_error('StandardRomSet.loadRoms() ValueError exception in json.load() function')
-            log_error('StandardRomSet.loadRoms() Dir  {0}'.format(self.repositoryFile.getOriginalPath()))
+            log_error('StandardRomSet.loadRoms() Dir  {0}'.format(self.repositoryFile.getPath()))
             log_error('StandardRomSet.loadRoms() Size {0}'.format(statinfo.st_size))
 
         return roms
@@ -5580,7 +5635,7 @@ class RomFolderScanner(RomScannerStrategy):
         kodi_busydialog_ON()
         files = []
         launcher_path = self.launcher.get_rom_path()
-        launcher_report.write('Scanning files in {0}'.format(launcher_path.getOriginalPath()))
+        launcher_report.write('Scanning files in {0}'.format(launcher_path.getPath()))
 
         if self.settings['scan_recursive']:
             log_info('Recursive scan activated')
@@ -5611,12 +5666,12 @@ class RomFolderScanner(RomScannerStrategy):
             
         for rom in reversed(roms):
             fileName = rom.get_file()
-            log_debug('Searching {0}'.format(fileName.getOriginalPath()))
+            log_debug('Searching {0}'.format(fileName.getPath()))
             self._updateProgress(i * 100 / num_roms)
             
             if not fileName.exists():
                 log_debug('Not found')
-                log_debug('Deleting from DB {0}'.format(fileName.getOriginalPath()))
+                log_debug('Deleting from DB {0}'.format(fileName.getPath()))
                 roms.remove(rom)
                 num_removed_roms += 1
             i += 1
@@ -5644,7 +5699,7 @@ class RomFolderScanner(RomScannerStrategy):
             
             # --- Get all file name combinations ---
             ROM = FileName(item)
-            launcher_report.write('>>> {0}'.format(ROM.getOriginalPath()).encode('utf-8'))
+            launcher_report.write('>>> {0}'.format(ROM.getPath()).encode('utf-8'))
 
             # ~~~ Update progress dialog ~~~
             file_text = 'ROM {0}'.format(ROM.getBase())
@@ -5697,7 +5752,7 @@ class RomFolderScanner(RomScannerStrategy):
                     # >> Manipulate ROM so filename is the name of the set
                     ROM_dir = FileName(ROM.getDir())
                     ROM_temp = ROM_dir.pjoin(MDSet.setName)
-                    log_info('ROM_temp OP "{0}"'.format(ROM_temp.getOriginalPath()))
+                    log_info('ROM_temp OP "{0}"'.format(ROM_temp.getPath()))
                     log_info('ROM_temp  P "{0}"'.format(ROM_temp.getPath()))
                     ROM = ROM_temp
                 # >> If set already in ROMs, just add this disk into the set disks field.
@@ -6088,7 +6143,7 @@ class RomDatFileScanner(KodiProgressDialogStrategy):
         # --- Check if DAT file exists ---
         nointro_xml_file_FileName = launcher.get_nointro_xml_filepath()
         if not nointro_xml_file_FileName.exists():
-            log_warning('_roms_update_NoIntro_status() Not found {0}'.format(nointro_xml_file_FileName.getOriginalPath()))
+            log_warning('_roms_update_NoIntro_status() Not found {0}'.format(nointro_xml_file_FileName.getPath()))
             return False
         
         self._updateProgress(0, 'Loading No-Intro/Redump XML DAT file ...')

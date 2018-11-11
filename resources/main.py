@@ -848,15 +848,15 @@ def m_command_add_new_launcher(category_id):
     if launcher is None: return
 
     # Executes the "Add new Launcher" wizard dialog. The wizard fills in the launcher.entity_data
-    # dictionary with the required fields.
-    if not launcher.build(category):
-        return
+    # dictionary with the required fields. After that, it creates the Launcher asset paths.
+    # If the user cancels the dialog then False is returned.
+    if not launcher.build(category): return
 
     # >> Notify user, save categories.xml and update container contents so user sees the new
     # >> launcher inmmediately.
-    kodi_notify('Created {0} {1}'.format(launcher.get_launcher_type_name(), launcher.get_name()))
     g_launcherRepository.save(launcher)
     kodi_refresh_container()
+    kodi_notify('Created {0} {1}'.format(launcher.get_launcher_type_name(), launcher.get_name()))
 
 # CHANGE THIS FUNCTION ACCORDING TO m_command_edit_category()
 def m_command_edit_launcher(category_id, launcher_id):
