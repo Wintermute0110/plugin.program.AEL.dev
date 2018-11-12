@@ -860,6 +860,8 @@ def m_command_add_new_launcher(category_id):
 
 # Edits a Launcher.
 def m_command_edit_launcher(category_id, launcher_id):
+    log_debug('m_command_edit_launcher() category_id = {0}'.format(category_id))
+    log_debug('m_command_edit_launcher() launcher_id = {0}'.format(launcher_id))
     launcher = g_MainRepository.find_launcher(launcher_id)
     m_run_launcher_sub_command('EDIT_LAUNCHER', launcher)
     kodi_refresh_container()
@@ -1288,7 +1290,7 @@ def m_run_category_sub_command(command, category):
 
     # --- Submenu command ---
     elif command == 'EDIT_METADATA':
-        options = category.get_metadata_edit_options(g_settings)
+        options = category.get_metadata_edit_options()
         s = 'Edit Category "{0}" metadata'.format(category.get_name())
         selected_option = KodiDictionaryDialog().select(s, options)
         if selected_option is None:
@@ -1306,27 +1308,27 @@ def m_run_category_sub_command(command, category):
     # NOTE integrate subcommands using generic editing functions.
     elif command == 'EDIT_METADATA_TITLE':
         if m_gui_edit_metadata_str('Category', 'Title', category.get_name, category.set_name):
-            g_CategoryRepository.save(category)
+            g_MainRepository.save_category(category)
 
     elif command == 'EDIT_METADATA_RELEASEYEAR':
         if m_gui_edit_metadata_str('Category', 'Release Rear', category.get_releaseyear, category.set_releaseyear):
-            g_CategoryRepository.save(category)
+            g_MainRepository.save_category(category)
 
     elif command == 'EDIT_METADATA_GENRE':
         if m_gui_edit_metadata_str('Category', 'Genre', category.get_genre, category.set_genre):
-            g_CategoryRepository.save(category)
+            g_MainRepository.save_category(category)
 
     elif command == 'EDIT_METADATA_DEVELOPER':
         if m_gui_edit_metadata_str('Category', 'Developer', category.get_developer, category.set_developer):
-            g_CategoryRepository.save(category)
+            g_MainRepository.save_category(category)
 
     elif command == 'EDIT_METADATA_RATING':
-        if m_gui_edit_rating('ROM Collection', collection.get_rating, collection.set_rating):
-            g_collectionRepository.save(collection)
+        if m_gui_edit_rating('Category', category.get_rating, category.set_rating):
+            g_MainRepository.save_category(category)
 
     elif command == 'EDIT_METADATA_PLOT':
         if m_gui_edit_metadata_str('Category', 'Plot', category.get_plot, category.set_plot):
-            g_CategoryRepository.save(category)
+            g_MainRepository.save_category(category)
 
     elif command == 'IMPORT_NFO_FILE_DEFAULT':
         m_subcommand_edit_category_nfo_import_default(category)
@@ -1346,10 +1348,10 @@ def m_run_category_sub_command(command, category):
         m_gui_edit_object_default_assets(category)
 
     # --- Atomic commands ---
-    elif command == 'CATEGORY_STATUS':
+    elif command == 'EDIT_CATEGORY_STATUS':
         category.change_finished_status()
         kodi_dialog_OK('Category "{0}" status is now {1}'.format(category.get_name(), category.get_finished_str()))
-        g_CategoryRepository.save(category)
+        g_MainRepository.save_category(category)
 
     elif command == 'EXPORT_CATEGORY_XML':
         m_subcommand_export_category_xml(category)
@@ -1406,19 +1408,19 @@ def m_run_collection_sub_command(command, collection):
     # --- Atomic commands ---
     elif command == 'EDIT_METADATA_TITLE':
         if m_gui_edit_metadata_str('ROM Collection', 'Title', collection.get_name, collection.set_name):
-            g_collectionRepository.save(collection)
+            g_CollectionRepository.save(collection)
 
     elif command == 'EDIT_METADATA_GENRE':
         if m_gui_edit_metadata_str('ROM Collection', 'Genre', collection.get_genre, collection.set_genre):
-            g_collectionRepository.save(collection)
+            g_CollectionRepository.save(collection)
 
     elif command == 'EDIT_METADATA_RATING':
         if m_gui_edit_rating('ROM Collection', collection.get_rating, collection.set_rating):
-            g_collectionRepository.save(collection)
+            g_CollectionRepository.save(collection)
 
     elif command == 'EDIT_METADATA_PLOT':
         if m_gui_edit_metadata_str('ROM Collection', 'Plot', collection.get_plot, collection.set_plot):
-            g_collectionRepository.save(collection)
+            g_CollectionRepository.save(collection)
 
     # Add these commands IMPORT_NFO_FILE_DEFAULT, IMPORT_NFO_FILE_BROWSE, SAVE_NFO_FILE_DEFAULT.
     # Create a generic function for import/export NFO files.
@@ -1474,7 +1476,15 @@ def m_run_launcher_sub_command(command, launcher):
 
     # --- Submenu command ---
     elif command == 'EDIT_METADATA':
-        options = launcher.get_metadata_edit_options(g_settings)
+        options = launcher.get_metadata_edit_options()
+
+        # >> Make a list of available metadata scrapers
+        # todo: make a separate menu item 'Scrape' with after that a list to select instead of
+        # merging it now with other options.
+        # for scrap_obj in scrapers_metadata:
+        #     options['SCRAPE_' + scrap_obj.name] = 'Scrape metadata from {0} ...'.format(scrap_obj.name)
+        #     log_verb('Added metadata scraper {0}'.format(scrap_obj.name))
+
         s = 'Edit Launcher "{0}" metadata'.format(launcher.get_name())
         selected_option = KodiDictionaryDialog().select(s, options)
         if selected_option is None:
@@ -1491,8 +1501,90 @@ def m_run_launcher_sub_command(command, launcher):
     # --- Atomic commands ---
     # NOTE integrate subcommands using generic editing functions.
     elif command == 'EDIT_METADATA_TITLE':
-        if m_gui_edit_metadata_str('Launcher', 'Title', launcher.get_name, launcher.set_name):
-            g_LauncherRepository.save(launcher)
+        # For ROM Launchers database files must be renamed as well.
+        # if m_gui_edit_metadata_str('Launcher', 'Title', launcher.get_name, launcher.set_name):
+        #     g_MainRepository.save_launcher(launcher)
+        raise AddonError('Implement EDIT_METADATA_TITLE')
+        m_subcommand_change_launcher_name()
+
+    elif command == 'EDIT_LAUNCHER_PLATFORM':
+        changed = self._list_edit_launcher_metadata('Platform', AEL_platform_list, 'Unknown', launcher.get_platform, launcher.update_platform)
+        if changed:
+            g_MainRepository.save_launcher(launcher)
+
+    elif command == 'EDIT_METADATA_RELEASEYEAR':
+        if m_gui_edit_metadata_str('Launcher', 'Release Rear', launcher.get_releaseyear, launcher.set_releaseyear):
+            g_MainRepository.save_launcher(launcher)
+
+    elif command == 'EDIT_METADATA_GENRE':
+        if m_gui_edit_metadata_str('Launcher', 'Genre', launcher.get_genre, launcher.set_genre):
+            g_MainRepository.save_launcher(launcher)
+
+    elif command == 'EDIT_METADATA_DEVELOPER':
+        if m_gui_edit_metadata_str('Launcher', 'Developer', launcher.get_developer, launcher.set_developer):
+            g_MainRepository.save_launcher(launcher)
+
+    elif command == 'EDIT_METADATA_RATING':
+        if m_gui_edit_rating('Launcher', launcher.get_rating, launcher.set_rating):
+            g_MainRepository.save_launcher(launcher)
+
+    elif command == 'EDIT_METADATA_PLOT':
+        if m_gui_edit_metadata_str('Launcher', 'Plot', launcher.get_plot, launcher.set_plot):
+            g_MainRepository.save_launcher(launcher)
+
+    elif command == 'IMPORT_NFO_FILE_DEFAULT':
+        m_subcommand_edit_launcher_nfo_import_default(launcher)
+
+    elif command == 'IMPORT_NFO_FILE_BROWSE':
+        m_subcommand_edit_launcher_nfo_import_browse(launcher)
+
+    elif command == 'SAVE_NFO_FILE_DEFAULT':
+        m_subcommand_edit_launcher_nfo_save_default(launcher)
+
+    # --- Submenu command ---
+    elif command == 'EDIT_ASSETS':
+        m_gui_edit_object_assets(launcher)
+
+    # --- Submenu command ---
+    elif command == 'EDIT_DEFAULT_ASSETS':
+        m_gui_edit_object_default_assets(launcher)
+
+
+    elif command == 'EDIT_LAUNCHER_CATEGORY':
+        m_subcommand_edit_launcher_category(launcher)
+
+    # --- Atomic commands ---
+    elif command == 'EDIT_LAUNCHER_STATUS':
+        launcher.change_finished_status()
+        kodi_dialog_OK('Launcher "{0}" status is now {1}'.format(launcher.get_name(), launcher.get_finished_str()))
+        g_MainRepository.save_launcher(launcher)
+
+    # --- Submenu command (Manage ROMs) ---
+    elif command == 'LAUNCHER_MANAGE_ROMS':
+        options = launcher.get_manage_roms_options()
+        s = 'Manage Launcher "{0}" ROMs'.format(launcher.get_name())
+        selected_option = KodiDictionaryDialog().select(s, options)
+
+    # --- Submenu command (Audit ROMs / Launcher viewmode) ---
+    elif command == 'LAUNCHER_AUDIT_ROMS':
+        options = launcher.get_audit_roms_options()
+        s = 'Audit ROMs / Launcher view mode'
+        selected_option = KodiDictionaryDialog().select(s, options)
+
+    # --- Submenu command (Launcher advanced modifications) ---
+    elif command == 'LAUNCHER_ADVANCED_MODS':
+        options = launcher.get_advanced_modification_options()
+        s = 'Launcher "{0}" advanced modifications'.format(launcher.get_name())
+        selected_option = KodiDictionaryDialog().select(s, options)
+
+    elif command == 'EXPORT_LAUNCHER_XML':
+        m_subcommand_export_launcher_xml(launcher)
+
+    # Deleting a Launcher must exit the context menu!
+    # If the deletion was sucessful the Launcher does not exit any more.
+    elif command == 'DELETE_LAUNCHER':
+        if m_subcommand_delete_launcher(launcher):
+            return False
 
     else:
         log_warning('m_run_launcher_sub_command() Unsupported command "{0}"'.format(command))
@@ -1621,25 +1713,64 @@ def m_subcommand_delete_category(category):
 # -------------------------------------------------------------------------------------------------
 # Launcher context menu atomic comands.
 # -------------------------------------------------------------------------------------------------
+# --- Edition of the launcher name ---
+def m_subcommand_edit_launcher_name(launcher):
+    current_name = launcher.get_name()
+    keyboard = xbmc.Keyboard(current_name, 'Edit title')
+    keyboard.doModal()
+    if not keyboard.isConfirmed(): return
 
+    title = keyboard.getText().decode('utf-8')
+    if not launcher.change_name(title):
+        kodi_notify('Launcher Title not changed')
+        return
 
+    if launcher.supports_launching_roms():
+        # --- Rename ROMs XML/JSON file (if it exists) and change launcher ---
+        old_roms_base_noext = launcher.get_roms_base()
+        category = self.category_repository.find(launcher.get_category_id())
+        category_name = category.get_name()
 
+        new_roms_base_noext = fs_get_ROMs_basename(category_name, title, launcher.get_id())
+        fs_rename_ROMs_database(ROMS_DIR, old_roms_base_noext, new_roms_base_noext)
 
-# -------------------------------------------------------------------------------------------------
-# ROMs context menu atomic commands.
-# -------------------------------------------------------------------------------------------------
+        launcher.update_roms_base(new_roms_base_noext)
 
+    g_LauncherRepository.save(launcher)
+    kodi_refresh_container()
+    kodi_notify('Launcher Title is now {0}'.format(launcher.get_name()))
 
+# --- Import launcher metadata from NFO file (default location) ---
+def m_subcommand_edit_launcher_nfo_import_default(launcher):
+    # >> Get NFO file name for launcher
+    # >> Launcher is edited using Python passing by assigment
+    # >> Returns True if changes were made
+    NFO_file = fs_get_launcher_NFO_name(g_settings, launcher.get_data())
+    if launcher.import_nfo_file(NFO_file):
+        g_LauncherRepository.save(launcher)
+        kodi_notify('Imported Launcher NFO file {0}'.format(NFO_file.getPath()))
 
+# --- Browse for NFO file ---
+def m_subcommand_edit_launcher_nfo_import_browse(launcher):
+    NFO_file = xbmcgui.Dialog().browse(1, 'Select Launcher NFO file', 'files', '.nfo', False, False).decode('utf-8')
+    if not NFO_file: 
+        return
 
+    NFO_FileName = FileNameFactory.create(NFO_file)
+    if not NFO_FileName.exists(): 
+        return
 
+    # >> Launcher is edited using Python passing by assigment
+    # >> Returns True if changes were made
+    if launcher.import_nfo_file(NFO_FileName):
+        g_LauncherRepository.save(launcher)
+        kodi_notify('Imported Launcher NFO file {0}'.format(NFO_FileName.getPath()))
 
-
-
-
-
-
-
+# --- Export launcher metadata to NFO file ---
+def m_subcommand_edit_launcher_nfo_save_default(launcher):
+    NFO_FileName = fs_get_launcher_NFO_name(g_settings, launcher.get_data())
+    if launcher.export_nfo_file(NFO_FileName):
+        kodi_notify('Exported Launcher NFO file {0}'.format(NFO_FileName.getPath()))
 
 def m_subcommand_edit_launcher_category(launcher):
     current_category_ID = launcher.get_category_id()
@@ -1653,9 +1784,7 @@ def m_subcommand_edit_launcher_category(launcher):
     # Add special root cateogory at the beginning
     categories_id   = [VCATEGORY_ADDONROOT_ID]
     categories_name = ['Addon root (no category)']
-    
     category_list = self.category_repository.get_simple_list() 
-
     for key in category_list:
         categories_id.append(key)
         categories_name.append(category_list[key])
@@ -1686,214 +1815,40 @@ def m_subcommand_edit_launcher_category(launcher):
     kodi_notify('Launcher new Category is {0}'.format(categories_name[selected_cat]))
     kodi_refresh_container()
 
-# --- Edit Launcher Assets/Artwork ---
-def m_subcommand_edit_launcher_assets(launcher):
-    assets = launcher.get_assets()
-    list_items = []
 
-    for asset_kind in assets:
-        # >> Create ListItems and label2
-        label1_text = 'Edit {} ...'.format(asset_kind.name)
-        label2_text = assets[asset_kind] if assets[asset_kind] != '' else 'Not set'
-        list_item = xbmcgui.ListItem(label = label1_text, label2 = label2_text)
 
-        # >> Set artwork with setArt()
-        item_img = 'DefaultAddonNone.png'
-        if assets[asset_kind] != '':
-            item_path = FileNameFactory.create(assets[asset_kind])
-            if item_path.is_video_file():
-                item_img = 'DefaultAddonVideo.png'
-            else:
-                item_img = assets[asset_kind]
-        list_item.setArt({'icon' : item_img})
-        list_items.append(list_item)
 
-    # --- Execute select dialog ---
-    selected_option = xbmcgui.Dialog().select('Edit Launcher Assets/Artwork', list = list_items, useDetails = True)
-    if selected_option < 0: 
-        _command_edit_launcher(launcher.get_category_id(), launcher.get_id())
-    else:
-        selected_asset_kind = assets.keys()[selected_option]
-        # >> If this function returns False no changes were made. No need to save categories
-        # >> XML and update container.
-        if _gui_edit_asset(KIND_LAUNCHER, selected_asset_kind.kind, launcher.get_data()): 
-            g_LauncherRepository.save(launcher)
-        _subcommand_edit_launcher_assets(launcher)
 
-# --- Choose Launcher default icon/fanart/banner/poster/clearlogo ---
-def m_subcommand_edit_launcher_default_assets(launcher):
-    list_items = []
-    assets = launcher.get_assets()
-    asset_defaults = launcher.get_asset_defaults()
 
-    for asset_kind in asset_defaults:
-        mapped_asset_kind = asset_defaults[asset_kind]
 
-        mapped_asset_name = mapped_asset_kind.name if mapped_asset_kind else ''
-        mapped_asset = assets[mapped_asset_kind] if assets[mapped_asset_kind]  != '' else 'Not set'
-        
-        # >> Create ListItems and label2
-        label1_text = 'Choose asset for {0} (currently {1})'.format(asset_kind.name, mapped_asset_name)
-        list_item = xbmcgui.ListItem(label = label1_text, label2 = mapped_asset)
-            
-        # >> Set artwork with setArt()
-        item_img = 'DefaultAddonNone.png'
-        if assets[mapped_asset_kind] != '':
-            item_path = FileNameFactory.create(assets[mapped_asset_kind])
-            if item_path.is_video_file():
-                item_img = 'DefaultAddonVideo.png'
-            else:
-                item_img = assets[mapped_asset_kind]
 
-        list_item.setArt({'icon' : item_img})
-        list_items.append(list_item)
 
-    # >> Execute select dialog
-    selected_kind_index = xbmcgui.Dialog().select('Edit Launcher default Assets/Artwork', list = list_items, useDetails = True)
-    if selected_kind_index < 0: 
-        return self._command_edit_launcher(launcher.get_category_id(), launcher.get_id())
-        
-    selected_kind = asset_defaults.keys()[selected_kind_index]
-        
-    # >> Build ListItem of assets that can be mapped.
-    mappable_asset_list_items = []
-    for mappable_asset_kind in assets:
-        if mappable_asset_kind.kind == ASSET_TRAILER:
-            continue
 
-        list_item = xbmcgui.ListItem(label = mappable_asset_kind.name, 
-                                        label2 = assets[mappable_asset_kind] if assets[mappable_asset_kind] else 'Not set')
-        list_item.setArt({'icon' : assets[mappable_asset_kind] if assets[mappable_asset_kind] else 'DefaultAddonNone.png'})
-        mappable_asset_list_items.append(list_item)
-            
-    # >> Krypton feature: User preselected item in select() dialog.
-    preselected_index = asset_defaults.keys().index(selected_kind)
-    new_selected_kind_index = xbmcgui.Dialog().select('Choose Launcher default asset for {}'.format(selected_kind.name), 
-                                list = mappable_asset_list_items, useDetails = True, preselect = preselected_index)
+# -------------------------------------------------------------------------------------------------
+# ROMs context menu atomic commands.
+# -------------------------------------------------------------------------------------------------
 
-    if new_selected_kind_index < 0: 
-        return self._command_edit_launcher(launcher.get_category_id(), launcher.get_id())
-        
-    new_selected_kind = assets.keys()[new_selected_kind_index]            
-    launcher.set_default_asset(selected_kind, new_selected_kind)
-        
-    g_LauncherRepository.save(launcher)
-    kodi_notify('Launcher {0} mapped to {1}'.format(selected_kind.name, new_selected_kind.name))
-    
-    return self._subcommand_set_launcher_default_assets(launcher)
 
-# --- Launcher status (finished [bool]) ---
-def m_subcommand_change_launcher_status(launcher):
-    launcher.change_finished_status()
-    g_LauncherRepository.save(launcher)
-    kodi_refresh_container()
-    kodi_dialog_OK('Launcher "{0}" status is now {1}'.format(launcher.get_name(), launcher.get_state()))
-    return self._command_edit_launcher(launcher.get_category_id(), launcher.get_id())
 
-def m_subcommand_edit_launcher_metadata(launcher):
-    launcher_options = launcher.get_metadata_edit_options()
 
-    # >> Make a list of available metadata scrapers
-    # todo: make a separate menu item 'Scrape' with after that a list to select instead of
-    # merging it now with other options.
-    for scrap_obj in scrapers_metadata:
-        launcher_options['SCRAPE_' + scrap_obj.name] = 'Scrape metadata from {0} ...'.format(scrap_obj.name)
-        log_verb('Added metadata scraper {0}'.format(scrap_obj.name))
 
-    dialog = DictionaryDialog()
-    selected_option = dialog.select('Edit Launcher Metadata', launcher_options)
-     
-    if selected_option is None:
-        log_debug('_subcommand_edit_launcher_metadata(): Selected option = NONE')
-        return self._command_edit_launcher(launcher.get_category_id(), launcher.get_id())
-            
-    log_debug('_subcommand_edit_launcher_metadata(): Selected option = {0}'.format(selected_option))
-    self.run_sub_command(selected_option, None, launcher)
-    self._subcommand_edit_launcher_metadata(launcher)
-    return
 
-# --- Selection of the launcher platform from AEL "official" list ---
-def m_subcommand_edit_launcher_platform(launcher):
-    changed = self._list_edit_launcher_metadata('Platform', AEL_platform_list, 'Unknown', launcher.get_platform, launcher.update_platform)
-    if changed:
-        g_LauncherRepository.save(launcher)
 
-# --- Edition of the launcher release date (year) ---
-def m_subcommand_edit_launcher_releaseyear(launcher):
-    if self._text_edit_launcher_metadata('release year', launcher.get_releaseyear, launcher.update_releaseyear):
-        g_LauncherRepository.save(launcher)   
 
-# --- Edition of the launcher genre ---
-def m_subcommand_edit_launcher_genre(launcher):
-    if self._text_edit_launcher_metadata('genre', launcher.get_genre, launcher.update_genre):
-        g_LauncherRepository.save(launcher)
 
-def m_subcommand_edit_launcher_developer(launcher):
-    if self._text_edit_launcher_metadata('developer', launcher.get_developer, launcher.update_developer):
-        g_LauncherRepository.save(launcher)
 
-def m_subcommand_edit_launcher_rating(launcher):
-    options =  {}
-    options[-1] = 'Not set'
-    options[0] = 'Rating 0'
-    options[1] = 'Rating 1'
-    options[2] = 'Rating 2'
-    options[3] = 'Rating 3'
-    options[4] = 'Rating 4'
-    options[5] = 'Rating 5'
-    options[6] = 'Rating 6'
-    options[7] = 'Rating 7'
-    options[8] = 'Rating 8'
-    options[9] = 'Rating 9'
-    options[10] = 'Rating 10'
 
-    if self._list_edit_launcher_metadata('Rating', options, -1, launcher.get_rating, launcher.update_rating):
-        g_LauncherRepository.save(launcher)
 
-# --- Edit launcher description (plot) ---
-def m_subcommand_edit_launcher_plot(launcher):
-    if self._text_edit_launcher_metadata('Plot', launcher.get_plot, launcher.update_plot):
-        g_LauncherRepository.save(launcher)
 
-# --- Import launcher metadata from NFO file (default location) ---
-def m_subcommand_import_launcher_nfo_file(launcher):
-    # >> Get NFO file name for launcher
-    # >> Launcher is edited using Python passing by assigment
-    # >> Returns True if changes were made
-    NFO_file = fs_get_launcher_NFO_name(g_settings, launcher.get_data())
-    if launcher.import_nfo_file(NFO_file):
-        g_LauncherRepository.save(launcher)
-        kodi_notify('Imported Launcher NFO file {0}'.format(NFO_file.getPath()))
 
-# --- Browse for NFO file ---
-def m_subcommand_browse_import_launcher_nfo_file(launcher):
 
-    NFO_file = xbmcgui.Dialog().browse(1, 'Select Launcher NFO file', 'files', '.nfo', False, False).decode('utf-8')
-    if not NFO_file: 
-        return
 
-    NFO_FileName = FileNameFactory.create(NFO_file)
-    if not NFO_FileName.exists(): 
-        return
 
-    # >> Launcher is edited using Python passing by assigment
-    # >> Returns True if changes were made
-    if launcher.import_nfo_file(NFO_FileName):
-        g_LauncherRepository.save(launcher)
-        kodi_notify('Imported Launcher NFO file {0}'.format(NFO_FileName.getPath()))
 
-    return
 
-# --- Export launcher metadata to NFO file ---
-def m_subcommand_save_launcher_nfo_file(launcher):
-
-    NFO_FileName = fs_get_launcher_NFO_name(g_settings, launcher.get_data())
-    if launcher.export_nfo_file(NFO_FileName):
-        kodi_notify('Exported Launcher NFO file {0}'.format(NFO_FileName.getPath()))
 
 # --- Scrape launcher metadata ---
 def m_subcommand_scrape_launcher(launcher, selected_option):
-
     scraper_obj_name = selected_option.replace('SCRAPE_', '')
     scraper_obj = filter(lambda x: x.name == scraper_obj_name, scrapers_metadata)[0]
     log_debug('_subcommand_scrape_launcher() User chose scraper "{0}"'.format(scraper_obj.name))
@@ -1906,7 +1861,6 @@ def m_subcommand_scrape_launcher(launcher, selected_option):
     if self._gui_scrap_launcher_metadata(launcher.get_id(), scraper_obj): 
         g_LauncherRepository.save(launcher)
 
-    return
 
 # --- Audit ROMs / Launcher view mode ---
 # NOTE ONLY for ROM launchers, not for standalone launchers
@@ -2331,37 +2285,6 @@ def m_subcommand_change_launcher_category(launcher):
     
     kodi_refresh_container()
     return self._command_edit_launcher(launcher.get_category_id(), launcher.get_id())
-
-# --- Edition of the launcher name ---
-def m_subcommand_change_launcher_name(launcher):
-    current_name = launcher.get_name()
-    keyboard = xbmc.Keyboard(current_name, 'Edit title')
-    keyboard.doModal()
-
-    if not keyboard.isConfirmed():
-        return
-
-    title = keyboard.getText().decode('utf-8')
-    if not launcher.change_name(title):
-        kodi_notify('Launcher Title not changed')
-        return
-
-    if launcher.supports_launching_roms():
-        # --- Rename ROMs XML/JSON file (if it exists) and change launcher ---
-        old_roms_base_noext = launcher.get_roms_base()
-        category = self.category_repository.find(launcher.get_category_id())
-        category_name = category.get_name()
-
-        new_roms_base_noext = fs_get_ROMs_basename(category_name, title, launcher.get_id())
-        fs_rename_ROMs_database(ROMS_DIR, old_roms_base_noext, new_roms_base_noext)
-
-        launcher.update_roms_base(new_roms_base_noext)
-
-    g_LauncherRepository.save(launcher)
-    kodi_refresh_container()
-    kodi_notify('Launcher Title is now {0}'.format(launcher.get_name()))
-
-    return
 
 # --- Remove Launcher menu option ---
 def m_subcommand_delete_launcher(launcher):
