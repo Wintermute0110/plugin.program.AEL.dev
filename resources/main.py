@@ -148,8 +148,7 @@ g_ExecutorFactory = None
 g_ObjectFactory = None
 
 # --- Database objects ---
-g_CategoryRepository = None
-g_LauncherRepository = None
+g_MainRepository = None
 g_CollectionRepository = None
 
 # -------------------------------------------------------------------------------------------------
@@ -345,24 +344,24 @@ def m_bootstrap_instances():
     global g_ROMScannerFactory
     global g_ExecutorFactory
     global g_ObjectFactory
-
-    global g_CategoryRepository
-    global g_LauncherRepository
+    global g_MainRepository
     global g_CollectionRepository
 
     # --- Utility objects ---
-    g_ScraperFactory    = ScraperFactory(g_settings, g_PATHS)
-    g_ROMScannerFactory = RomScannersFactory(g_settings, g_PATHS)
-    g_ExecutorFactory   = ExecutorFactory(g_settings, g_PATHS)
-    g_ObjectFactory     = AELObjectFactory(g_settings, g_PATHS, g_ExecutorFactory)
+    g_ScraperFactory = ScraperFactory(g_PATHS, g_settings)
+    g_ROMScannerFactory = RomScannersFactory(g_PATHS, g_settings)
+    g_ExecutorFactory = ExecutorFactory(g_PATHS, g_settings)
+
+    # --- Creates any type of AEL object: Category, Launcher, Collection, ROM ---
+    # AELObjectFactory creates empty objects not linked to the database.
+    # It is used in the "New xxxxx" context menus.
+    g_ObjectFactory = AELObjectFactory(g_PATHS, g_settings, g_ExecutorFactory)
 
     # --- Load categories/launchers databases ---
-    main_data_context = XmlDataContext(g_PATHS.ADDON_DATA_DIR.pjoin('categories.xml'))
-    collections_data_context = XmlDataContext(g_PATHS.ADDON_DATA_DIR.pjoin('collections.xml'))
-
-    g_CategoryRepository = CategoryRepository(main_data_context, g_ObjectFactory)
-    g_LauncherRepository = LauncherRepository(main_data_context, g_ObjectFactory)
-    g_CollectionRepository = CollectionRepository(collections_data_context, g_ObjectFactory)
+    # Repositories are able to create objects that are linked to databases.
+    # They are used in the "Edit xxxxx", when scanning ROMs and when executing a launcher or ROM.
+    g_MainRepository = MainRepository(g_PATHS, g_settings, g_ObjectFactory)
+    g_CollectionRepository = CollectionRepository(g_PATHS, g_settings, g_ObjectFactory)
 
 #
 # This function may run concurrently
@@ -724,12 +723,12 @@ def m_command_add_new_category():
     # --- Save Category ---
     category = g_ObjectFactory.create_new(OBJ_CATEGORY)
     category.set_name(keyboard.getText().decode('utf-8'))
-    g_CategoryRepository.save(category)
+    g_MainRepository.save_category(category)
     kodi_notify('Category {0} created'.format(category.get_name()))
     kodi_refresh_container()
 
-def m_command_edit_category(categoryID):
-    category = g_CategoryRepository.find(categoryID)
+def m_command_edit_category(category_id):
+    category = g_MainRepository.find_category(category_id)
     m_run_category_sub_command('EDIT_CATEGORY', category)
     kodi_refresh_container()
 
@@ -827,21 +826,16 @@ def m_command_edit_collection(category_id, launcher_id):
 # Creates a new Launcher.
 #
 def m_command_add_new_launcher(category_id):
-    # >> If category_id not found user is creating a new launcher using the context menu
-    # >> of a launcher in addon root.
-    category = g_CategoryRepository.find(category_id)
-    if category is None:
-        log_info('Category ID not found. Creating laucher in addon root.')
-        category = Category.create_root_category()
+    category = g_MainRepository.find_category(category_id)
+    if category_id == VCATEGORY_ADDONROOT_ID:
+        log_info('Creating laucher in addon root.')
     else:
-        # --- Ask user if launcher is created on selected category or on root menu ---
+        # --- Ask user if Launcher is created on the selected Category or on root menu ---
         options = collections.OrderedDict()
         options[category_id] = 'Create Launcher in "{0}" category'.format(category.get_name())
         options[VCATEGORY_ADDONROOT_ID] = 'Create Launcher in root window (no Category)'
         selected_id = KodiDictionaryDialog().select('Choose Launcher Category', options)
         if selected_id is None: return
-        if selected_id is VCATEGORY_ADDONROOT_ID:
-            category = g_ObjectFactory.create_special(OBJ_CATEGORY_VIRTUAL, VCATEGORY_ADDONROOT_ID)
 
     # --- Show "Create New Launcher" dialog ---
     options = g_ObjectFactory.get_launcher_types_odict()
@@ -852,19 +846,21 @@ def m_command_add_new_launcher(category_id):
     if launcher is None: return
 
     # Executes the "Add new Launcher" wizard dialog. The wizard fills in the launcher.entity_data
-    # dictionary with the required fields. After that, it creates the Launcher asset paths.
+    # dictionary with the required fields. After that, it creates the Launcher asset paths if
+    # supported by the Launcher.
     # If the user cancels the dialog then False is returned.
+    # category.dump_data_dic_to_log()
     if not launcher.build(category): return
 
-    # >> Notify user, save categories.xml and update container contents so user sees the new
-    # >> launcher inmmediately.
-    g_LauncherRepository.save(launcher)
+    # Notify user, save categories.xml and update container contents so user sees the new
+    # launcher inmmediately.
+    g_MainRepository.save_launcher(launcher)
     kodi_refresh_container()
     kodi_notify('Created {0} {1}'.format(launcher.get_launcher_type_name(), launcher.get_name()))
 
-# CHANGE THIS FUNCTION ACCORDING TO m_command_edit_category()
+# Edits a Launcher.
 def m_command_edit_launcher(category_id, launcher_id):
-    launcher = g_LauncherRepository.find(launcher_id)
+    launcher = g_MainRepository.find_launcher(launcher_id)
     m_run_launcher_sub_command('EDIT_LAUNCHER', launcher)
     kodi_refresh_container()
 
@@ -1588,32 +1584,31 @@ def m_subcommand_export_category_xml(category):
 # Returns False if the Category was not deleted.
 #
 def m_subcommand_delete_category(category):
-    categoryID    = category.get_id()
+    category_id   = category.get_id()
     category_name = category.get_name()
-    launchers     = g_LauncherRepository.find_by_category(categoryID)
+    launchers     = g_MainRepository.find_launchers_by_category_id(category_id)
 
     if len(launchers) > 0:
         ret = kodi_dialog_yesno('Category "{0}" has {1} launchers. '.format(category_name, len(launchers)) +
                                 'Deleting it will also delete related launchers. ' +
                                 'Are you sure you want to delete "{0}"?'.format(category_name))
         if not ret: return False
-        log_info('Deleting category "{0}" id {1}'.format(category_name, category.get_id()))
+
         # --- Delete launchers and ROM JSON/XML files associated with them ---
+        log_info('Deleting category "{0}" ID {1}'.format(category_name, category.get_id()))
         for launcher in launchers:
-            log_info('Deleting linked launcher "{0}" id {1}'.format(launcher.get_name(), launcher.get_id()))
-            if launcher.supports_launching_roms():
-                launcher.clear_roms()
-            g_LauncherRepository.delete(launcher)
-        # --- Delete category from database ---
-        g_CategoryRepository.delete(category)
+            log_info('Deleting linked launcher "{0}" ID {1}'.format(launcher.get_name(), launcher.get_id()))
+            g_MainRepository.delete_launcher(launcher)
+        g_MainRepository.delete_category(category)
     else:
         ret = kodi_dialog_yesno('Category "{0}" has no launchers. '.format(category_name) +
                                 'Are you sure you want to delete "{0}"?'.format(category_name))
         if not ret: return False
-        log_info('Deleting category "{0}" id {1}'.format(category_name, category.get_id()))
+        log_info('Deleting category "{0}" ID {1}'.format(category_name, category.get_id()))
         log_info('Category has no launchers, so no launchers to delete.')
-        g_CategoryRepository.delete(category)
+        g_MainRepository.delete_category(category)
     kodi_notify('Deleted category {0}'.format(category_name))
+
     return True
 
 # -------------------------------------------------------------------------------------------------
@@ -4407,15 +4402,14 @@ def m_command_render_root():
     m_misc_set_AEL_Content(AEL_CONTENT_VALUE_LAUNCHERS)
     m_misc_clear_AEL_Launcher_Content()
 
-    categories = g_CategoryRepository.find_all()
-
     # >> For every category, add it to the listbox. Order alphabetically by name
-    for category in sorted(categories, key = lambda c : c.get_name()):
+    category_list = g_MainRepository.get_category_list()
+    for category in sorted(category_list, key = lambda c : c.get_name()):
         m_gui_render_category_row(category)
 
     # --- Render categoryless launchers. Order alphabetically by name ---
-    catless_launchers = g_LauncherRepository.find_by_category(VCATEGORY_ADDONROOT_ID)
-    for launcher in sorted(catless_launchers, key = lambda l : l.get_name()):
+    nocat_launcher_list = g_MainRepository.find_launchers_by_category_id(VCATEGORY_ADDONROOT_ID)
+    for launcher in sorted(nocat_launcher_list, key = lambda l : l.get_name()):
         m_gui_render_launcher_row(launcher)
 
     # --- AEL Favourites virtual launcher ---
@@ -5062,14 +5056,14 @@ def m_gui_render_GlobalReports_vlaunchers():
 #
 # Renders Launchers inside a Category.
 #
-def m_command_render_launchers(categoryID):
+def m_command_render_launchers(category_id):
     # >> Set content type
     m_misc_set_all_sorting_methods()
     m_misc_set_AEL_Content(AEL_CONTENT_VALUE_LAUNCHERS)
     m_misc_clear_AEL_Launcher_Content()
 
-    category = g_CategoryRepository.find(categoryID)
-    launchers = g_LauncherRepository.find_by_category(categoryID)
+    category = g_MainRepository.find_category(category_id)
+    launchers = g_MainRepository.find_launchers_by_category_id(category_id)
 
     # --- If the category has no launchers then render nothing ---
     if not launchers or len(launchers) == 0:

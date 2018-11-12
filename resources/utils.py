@@ -2205,8 +2205,8 @@ class KodiWizardDialog():
             output = self.customFunction(output, self.property_key, properties)
 
         if self.property_key:
-            properties[self.property_key] = output
             log_debug('Assigned properties[{0}] value: {1}'.format(self.property_key, output))
+            properties[self.property_key] = output
 
         return True
 
@@ -2373,12 +2373,15 @@ class KodiFormattedMessageWizardDialog(KodiWizardDialog):
 # It only sets a certain property with the predefined value.
 #
 class KodiDummyWizardDialog(KodiWizardDialog):
-    def __init__(self, property_key, predefinedValue, decoratorDialog, customFunction = None, conditionalFunction = None):
+    def __init__(self, property_key, predefinedValue, decoratorDialog,
+                 customFunction = None, conditionalFunction = None):
         self.predefinedValue = predefinedValue
-        super(KodiDummyWizardDialog, self).__init__(property_key, None, decoratorDialog, customFunction, conditionalFunction)
+        super(KodiDummyWizardDialog, self).__init__(
+            property_key, None, decoratorDialog, customFunction, conditionalFunction)
 
     def show(self, properties):
         log_debug('Executing dummy wizard dialog for key: {0}'.format(self.property_key))
+
         return self.predefinedValue
 
 #

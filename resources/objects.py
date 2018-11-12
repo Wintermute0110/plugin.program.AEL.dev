@@ -717,6 +717,7 @@ def assets_get_ROM_asset_path(launcher):
 # -------------------------------------------------------------------------------------------------
 # XmlDataContext should be a singleton and only used by the repository classes.
 # This class holds the actual XML data and reads/writes that data.
+# OBSOLETE CODE THAT WILL BE REMOVE.
 # -------------------------------------------------------------------------------------------------
 class XmlDataContext(object):
     def __init__(self, xml_file_path):
@@ -804,6 +805,7 @@ class XmlDataContext(object):
 # --- Repository class for Category objects ---
 # Arranges retrieving and storing of the categories from and into the XML data file.
 # Creates Category objects with a reference to an instance of AELObjectFactory.
+# OBSOLETE CODE THAT WILL BE REMOVE.
 # -------------------------------------------------------------------------------------------------
 class CategoryRepository(object):
     def __init__(self, data_context, obj_factory):
@@ -869,7 +871,6 @@ class CategoryRepository(object):
                 log_debug('Cannot find category with id {0}'.format(category_id))
                 return None
             category_dic = self._parse_xml_to_dictionary(category_element)
-        # Create Category object instance.
         category = self.obj_factory.create_from_dic(category_dic)
 
         return category
@@ -919,6 +920,7 @@ class CategoryRepository(object):
 # -------------------------------------------------------------------------------------------------
 # Repository class for Launchers objects.
 # Arranges retrieving and storing of the launchers from and into the xml data file.
+# OBSOLETE CODE THAT WILL BE REMOVE.
 # -------------------------------------------------------------------------------------------------
 class LauncherRepository(object):
     def __init__(self, data_context, obj_factory):
@@ -1047,13 +1049,113 @@ class LauncherRepository(object):
         self.data_context.commit()
 
 # -------------------------------------------------------------------------------------------------
+# Repository class for creating and retrieveing Categories and Launchers objects.
+# Basically, everything stored in categories.xml
+# It is also responsible for deleting objects from the database.
+# -------------------------------------------------------------------------------------------------
+class MainRepository(object):
+    def __init__(self, g_PATHS, g_settings, obj_factory):
+        self.PATHS = g_PATHS
+        self.settings = g_settings
+        self.obj_factory = obj_factory
+
+        # Categories/Launchers are needed for virtually every AEL operation so load it
+        # right now.
+        # When AEL is used for the first time and categories.xml does not exists, just create
+        # empty structures.
+        self.header_dic = {}
+        self.categories = {}
+        self.launchers  = {}
+        if not self.PATHS.CATEGORIES_FILE_PATH.exists():
+            log_debug('MainRepository::init() categories.xml does not exist. Creating empty data.')
+        else:
+            fs_load_catfile(self.PATHS.CATEGORIES_FILE_PATH,
+                            self.header_dic, self.categories, self.launchers)
+
+    # Finds a Category by ID in the database. ID may be a Virtual/Special Category.
+    # Returns a Category object instance or None if the category ID is not found in the DB.
+    # If the category is special then refer to AELObjectFactory() for object creation.
+    def find_category(self, category_id):
+        if category_id in self.categories:
+            category_dic = self.categories[category_id]
+            category = self.obj_factory.create_from_dic(category_dic)
+        elif category_id == VCATEGORY_ADDONROOT_ID:
+            category = self.obj_factory.create_special(OBJ_CATEGORY_VIRTUAL, VCATEGORY_ADDONROOT_ID)
+        else:
+            category = None
+
+        return category
+
+    # Finds a Launcher by ID in the database. ID may be a Virtual/Special Launcher.
+    def find_launcher(self, category_id):
+        pass
+
+    # Returns a list with all the Category objects. Each list element if a Category instance.
+    def get_category_list(self):
+        categories = []
+        for category_id in self.categories:
+            category = self.obj_factory.create_from_dic(self.categories[category_id])
+            categories.append(category)
+
+        return categories
+
+    # Returns a list of launchers belonging to category_id
+    def find_launchers_by_category_id(self, category_id):
+        launchers = []
+        for launcher_id in self.launchers:
+            this_cat_id = self.launchers[launcher_id]['categoryID']
+            if this_cat_id != category_id: continue
+            launcher = self.obj_factory.create_from_dic(self.launchers[launcher_id])
+            launchers.append(launcher)
+
+        return launchers
+
+    # Removes a category from the database.
+    # Launchers belonging to this Category must be deleted first, otherwise will become orphaned.
+    def delete_category(self, category):
+        category_id = category.get_id()
+        del self.categories[category_id]
+        self.commit_database()
+
+    # Removes a Launcher from the database.
+    # If Launcher supports ROMs it also removes all files associated with the Launcher.
+    def delete_launcher(self, launcher):
+        if launcher.supports_launching_roms():
+            launcher.clear_roms()
+        launcher_id = launcher.get_id()
+        del self.launchers[launcher_id]
+        self.commit_database()
+
+    def save_category(self, category):
+        category_id = category.get_id()
+        self.categories[category_id] = category.get_data_dic()
+        self.commit_database()
+
+    def save_launcher(self, launcher, update_launcher_timestamp = True):
+        if update_launcher_timestamp:
+            launcher.update_timestamp()
+        launcher_id = launcher.get_id()
+        self.launchers[launcher_id] = launcher.get_data_dic()
+        self.commit_database()
+
+    # Saves the Categories and Launchers in the categories.xml database.
+    # Updates the database timestamp.
+    def commit_database(self):
+        # >> time.time() returns a float. Usually precision is much better than a second,
+        # >> but not always.
+        # >> See https://docs.python.org/2/library/time.html#time.time
+        # NOTE When updating reports timestamp of categories/launchers this must not be modified.
+        self.header_dic['update_timestamp'] = time.time()
+        fs_write_catfile(self.PATHS.CATEGORIES_FILE_PATH,
+                         self.header_dic, self.categories, self.launchers)
+
+# -------------------------------------------------------------------------------------------------
 # Repository class for Collection objects.
 # Arranges retrieving and storing of the Collection launchers from and into the xml data file.
 # -------------------------------------------------------------------------------------------------
 class CollectionRepository(object):
-    def __init__(self, data_context, obj_factory):
+    def __init__(self, PATHS, settings, obj_factory):
         # log_debug('CollectionRepository::__init__()')
-        self.data_context = data_context
         self.obj_factory = obj_factory
 
     def _parse_xml_to_dictionary(self, collection_element):
@@ -1423,6 +1525,11 @@ class MetaDataItemABC(object):
         for key in data:
             self.entity_data[key] = data[key]
 
+    def dump_data_dic_to_log(self):
+        log_debug('Dumping object {0}'.format(self.__class__))
+        for key in self.entity_data:
+            log_debug('[{0}] = {1}'.format(key, unicode(self.entity_data[key])))
+
     # NOTE Rename to get_filename_from_field()
     def _get_value_as_filename(self, field):
         if not field in self.entity_data: return None
@@ -1528,7 +1635,7 @@ class MetaDataItemABC(object):
 # Contains code to generate the context menus passed to Dialog.select()
 # -------------------------------------------------------------------------------------------------
 class Category(MetaDataItemABC):
-    def __init__(self, PATHS, addon_settings, category_dic = None):
+    def __init__(self, PATHS, settings, category_dic = None):
         self.asset_kind = KIND_ASSET_CATEGORY
         self.obj_name = 'Category'
         if category_dic is None:
@@ -1536,7 +1643,7 @@ class Category(MetaDataItemABC):
             entity_data['id'] = misc_generate_random_SID()
         else:
             entity_data = category_dic
-        super(Category, self).__init__(PATHS, addon_settings, entity_data)
+        super(Category, self).__init__(PATHS, settings, entity_data)
 
     def is_virtual(self):
         return False
@@ -1607,14 +1714,22 @@ class Category(MetaDataItemABC):
 # Class representing the virtual categories in AEL.
 # -------------------------------------------------------------------------------------------------
 class VirtualCategory(MetaDataItemABC):
-    def __init__(self, PATHS, addon_settings, category_id):
+    #
+    # obj_dic is mandatory an must have:
+    #  1) id
+    #  2) type
+    #  3) m_name
+    #
+    def __init__(self, PATHS, settings, obj_dic):
         self.asset_kind = KIND_ASSET_CATEGORY
         self.obj_name = 'Virtual Category'
+
         # --- Create "fake" entity data and call base constructor ---
         entity_data = fs_new_category()
-        entity_data['id']   = category_id
-        entity_data['type'] = OBJ_CATEGORY_VIRTUAL
-        super(VirtualCategory, self).__init__(PATHS, addon_settings, entity_data)
+        entity_data['id'] = obj_dic['id']
+        entity_data['type'] = obj_dic['type']
+        entity_data['m_name'] = obj_dic['m_name']
+        super(VirtualCategory, self).__init__(PATHS, settings, entity_data)
 
     def is_virtual(self):
         return True
@@ -2377,13 +2492,13 @@ class StandaloneLauncher(LauncherABC):
     # --------------------------------------------------------------------------------------------
     # Core functions
     # --------------------------------------------------------------------------------------------
-    def __init__(self, PATHS, settings, launcher_data, executorFactory):
-        if launcher_data is None:
-            # --- Create default Standalone Launcher ---
-            launcher_data = fs_new_launcher()
-            launcher_data['id'] = misc_generate_random_SID()
-            launcher_data['type'] = OBJ_LAUNCHER_STANDALONE
-        super(StandaloneLauncher, self).__init__(PATHS, settings, launcher_data, executorFactory)
+    def __init__(self, PATHS, settings, launcher_dic, executorFactory):
+        # --- Create default Standalone Launcher if empty launcher_dic---
+        if launcher_dic is None:
+            launcher_dic = fs_new_launcher()
+            launcher_dic['id'] = misc_generate_random_SID()
+            launcher_dic['type'] = OBJ_LAUNCHER_STANDALONE
+        super(StandaloneLauncher, self).__init__(PATHS, settings, launcher_dic, executorFactory)
 
     #
     # Returns True if Launcher was sucesfully built.
@@ -2604,16 +2719,13 @@ class StandaloneLauncher(LauncherABC):
 class ROMLauncherABC(LauncherABC):
     __metaclass__ = abc.ABCMeta
 
-    def __init__(self,
-        launcher_data, settings, executorFactory,
-        romset_repository, statsStrategy, escape_romfile
-    ):
+    def __init__(self, PATHS, settings, launcher_data, executorFactory,
+                 romset_repository, statsStrategy):
         self.roms = {}
-        self.romset_repository = romset_repository
+        self.roms_repository = romset_repository
         self.statsStrategy = statsStrategy
-        self.escape_romfile = escape_romfile
-
-        super(ROMLauncherABC, self).__init__(launcher_data, settings, executorFactory)
+        self.escape_romfile = settings['escape_romfile']
+        super(ROMLauncherABC, self).__init__(PATHS, settings, launcher_data, executorFactory)
 
     # --------------------------------------------------------------------------------------------
     # Core functions
@@ -3308,12 +3420,27 @@ class VirtualLauncher(ROMLauncherABC):
         return wizard
 
 # -------------------------------------------------------------------------------------------------
-# Standard rom launcher where user can fully customize all settings.
-# The standard rom launcher also supports pclone/parent roms.
+# Standard ROM launcher where user can fully customize all settings.
+#
+# The standard ROM launcher also supports Parent/Clone view modes and No-Intro/REDUMP DAT audit.
 # -------------------------------------------------------------------------------------------------
 class StandardRomLauncher(ROMLauncherABC):
+    #
+    # Handle in this constructor the creation of a new empty ROM Launcher.
+    # Have a look at the constructor of StandaloneLauncher().
+    #
+    def __init__(self, PATHS, settings, launcher_dic, executorFactory,
+                 romset_repository, statsStrategy):
+        # --- Create default ROM Launcher if empty launcher_dic---
+        if launcher_dic is None:
+            launcher_dic = fs_new_launcher()
+            launcher_dic['id'] = misc_generate_random_SID()
+            launcher_dic['type'] = OBJ_LAUNCHER_ROM
+        super(StandardRomLauncher, self).__init__(
+            PATHS, settings, launcher_dic, executorFactory, romset_repository, statsStrategy)
+
     def get_launcher_type(self):
-        return LAUNCHER_ROM
+        return OBJ_LAUNCHER_ROM
 
     def get_launcher_type_name(self):
         return "ROM launcher"
@@ -3534,52 +3661,21 @@ class StandardRomLauncher(ROMLauncherABC):
 
         return wizard
 
-# -------------------------------------------------------------------------------------------------
-# Launcher for .lnk files (windows)
-# -------------------------------------------------------------------------------------------------
-class LnkLauncher(StandardRomLauncher):
-    def get_launcher_type(self):
-        return LAUNCHER_LNK
-
-    def get_launcher_type_name(self):
-        return "LNK launcher"
-
-    def get_edit_options(self):
-        options = super(LnkLauncher, self).get_edit_options()
-        del options['AUDIT_ROMS']
-
-        return options
-
-    def get_advanced_modification_options(self):
-        options = super(LnkLauncher, self).get_advanced_modification_options()
-        del options['CHANGE_APPLICATION']
-        del options['MODIFY_ARGS']
-        del options['ADDITIONAL_ARGS']
-        del options['CHANGE_ROMEXT']
-        del options['TOGGLE_MULTIDISC']
-
-        return options
-
-    #
-    # Creates a new launcher using a wizard of dialogs.
-    #
-    def _get_builder_wizard(self, wizard):
-        wizard = FileBrowseWizardDialog('rompath', 'Select the LNKs path', 0, '', wizard)
-        wizard = DummyWizardDialog('romext', 'lnk', wizard)
-        wizard = DummyWizardDialog('args', '%rom%', wizard)
-        wizard = DummyWizardDialog('m_name', '', wizard, self._get_title_from_app_path)
-        wizard = KeyboardWizardDialog('m_name','Set the title of the launcher', wizard, self._get_title_from_app_path)
-        wizard = SelectionWizardDialog('platform', 'Select the platform', AEL_platform_list, wizard)
-        wizard = DummyWizardDialog('assets_path', '', wizard, self._get_value_from_rompath)
-        wizard = FileBrowseWizardDialog('assets_path', 'Select asset/artwork directory', 0, '', wizard) 
-
-        return wizard
-
 # --- Execute Kodi Retroplayer if launcher configured to do so ---
 # See https://github.com/Wintermute0110/plugin.program.advanced.emulator.launcher/issues/33
 # See https://forum.kodi.tv/showthread.php?tid=295463&pid=2620489#pid2620489
 # -------------------------------------------------------------------------------------------------
 class RetroplayerLauncher(StandardRomLauncher):
+    def __init__(self, PATHS, settings, launcher_dic, executorFactory,
+                 romset_repository, statsStrategy):
+        # --- Create default ROM Launcher if empty launcher_dic---
+        if launcher_dic is None:
+            launcher_dic = fs_new_launcher()
+            launcher_dic['id'] = misc_generate_random_SID()
+            launcher_dic['type'] = OBJ_LAUNCHER_RETROPLAYER
+        super(StandardRomLauncher, self).__init__(
+            PATHS, settings, launcher_dic, executorFactory, romset_repository, statsStrategy)
+
     def launch(self):
         log_info('RetroplayerLauncher() Executing ROM with Kodi Retroplayer ...')
         self.title = self.rom.get_name()
@@ -3607,27 +3703,25 @@ class RetroplayerLauncher(StandardRomLauncher):
         log_verb('RetroplayerLauncher() Calling xbmc.Player().play() ...')
         xbmc.Player().play(ROMFileName.getPath(), listitem)
         log_verb('RetroplayerLauncher() Calling xbmc.Player().play() returned. Leaving function.')
-        pass
-    
+
     def get_launcher_type(self):
-        return LAUNCHER_RETROPLAYER
-    
-    def get_launcher_type_name(self):        
+        return OBJ_LAUNCHER_RETROPLAYER
+
+    def get_launcher_type_name(self):
         return "Retroplayer launcher"
-    
+
     def get_advanced_modification_options(self):
-        
         toggle_window_str = 'ON' if self.entity_data['toggle_window'] else 'OFF'
         non_blocking_str  = 'ON' if self.entity_data['non_blocking'] else 'OFF'
         multidisc_str     = 'ON' if self.entity_data['multidisc'] else 'OFF'
-        
+
         options = super(StandardRomLauncher, self).get_advanced_modification_options()
         options['CHANGE_ROMPATH'] = "Change ROM path: '{0}'".format(self.entity_data['rompath'])
         options['CHANGE_ROMEXT'] = "Modify ROM extensions: '{0}'".format(self.entity_data['romext'])
         options['TOGGLE_WINDOWED'] = "Toggle Kodi into windowed mode (now {0})".format(toggle_window_str)
         options['TOGGLE_NONBLOCKING'] = "Non-blocking launcher (now {0})".format(non_blocking_str)
         options['TOGGLE_MULTIDISC'] = "Multidisc ROM support (now {0})".format(multidisc_str)
-        
+
         return options
 
     #
@@ -3652,15 +3746,23 @@ class RetroplayerLauncher(StandardRomLauncher):
 # Read RetroarchLauncher.md
 # -------------------------------------------------------------------------------------------------
 class RetroarchLauncher(StandardRomLauncher):
-    
-    def get_launcher_type(self):
-        return LAUNCHER_RETROARCH
-    
-    def get_launcher_type_name(self):        
-        return "Retroarch launcher"
-    
-    def change_application(self):
+    def __init__(self, PATHS, settings, launcher_dic, executorFactory,
+                 romset_repository, statsStrategy):
+        # --- Create default ROM Launcher if empty launcher_dic---
+        if launcher_dic is None:
+            launcher_dic = fs_new_launcher()
+            launcher_dic['id'] = misc_generate_random_SID()
+            launcher_dic['type'] = OBJ_LAUNCHER_RETROARCH
+        super(StandardRomLauncher, self).__init__(
+            PATHS, settings, launcher_dic, executorFactory, romset_repository, statsStrategy)
 
+    def get_launcher_type(self):
+        return OBJ_LAUNCHER_RETROARCH
+
+    def get_launcher_type_name(self):
+        return "Retroarch launcher"
+
+    def change_application(self):
         current_application = self.entity_data['application']
         selected_application = xbmcgui.Dialog().browse(0, 'Select the Retroarch path', 'files',
                                                       '', False, False, current_application).decode('utf-8')
@@ -3672,11 +3774,10 @@ class RetroarchLauncher(StandardRomLauncher):
         return True
 
     def get_advanced_modification_options(self):
-        
         toggle_window_str = 'ON' if self.entity_data['toggle_window'] else 'OFF'
         non_blocking_str  = 'ON' if self.entity_data['non_blocking'] else 'OFF'
         multidisc_str     = 'ON' if self.entity_data['multidisc'] else 'OFF'
-        
+
         options = super(StandardRomLauncher, self).get_advanced_modification_options()
         options['CHANGE_APPLICATION']   = "Change Retroarch path: '{0}'".format(self.entity_data['application'])
         options['MODIFY_ARGS'] = "Modify Arguments: '{0}'".format(self.entity_data['args'])
@@ -3690,7 +3791,6 @@ class RetroarchLauncher(StandardRomLauncher):
         return options
 
     def _selectApplicationToUse(self):
-        
         if is_windows():
             self.application = FileName(self.entity_data['application'])
             self.application = self.application.append('retroarch.exe')  
@@ -3700,13 +3800,13 @@ class RetroarchLauncher(StandardRomLauncher):
             self.application = FileName('/system/bin/am')
             return True
 
-        #todo other os
+        # TODO other os
         self.application = ''
+
         return False
 
     def _selectArgumentsToUse(self):
-        
-        if is_windows() or is_linux():            
+        if is_windows() or is_linux():
             self.arguments =  '-L "$retro_core$" '
             self.arguments += '-c "$retro_config$" '
             self.arguments += '"$rom$"'
@@ -3714,7 +3814,6 @@ class RetroarchLauncher(StandardRomLauncher):
             return True
 
         if is_android():
-
             self.arguments =  'start --user 0 -a android.intent.action.MAIN -c android.intent.category.LAUNCHER '
             self.arguments += '-n com.retroarch/.browser.retroactivity.RetroActivityFuture '
             self.arguments += '-e ROM \'$rom$\' '
@@ -3725,12 +3824,11 @@ class RetroarchLauncher(StandardRomLauncher):
 
         #todo other os
         return False
-    
+
     #
     # Creates a new launcher using a wizard of dialogs.
     #
     def _get_builder_wizard(self, wizard):
-                
         wizard = DummyWizardDialog('application', self._get_retroarch_app_folder(self.settings), wizard)
         wizard = FileBrowseWizardDialog('application', 'Select the Retroarch path', 0, '', wizard) 
         wizard = DictionarySelectionWizardDialog('retro_config', 'Select the configuration', self._get_available_retroarch_configurations, wizard)
@@ -3749,7 +3847,6 @@ class RetroarchLauncher(StandardRomLauncher):
         return wizard
     
     def _get_retroarch_app_folder(self, settings):
-    
         retroarch_folder = FileName(settings['io_retroarch_sys_dir'])      
     
         if retroarch_folder.exists():
@@ -3772,7 +3869,6 @@ class RetroarchLauncher(StandardRomLauncher):
         return '/'
 
     def _get_available_retroarch_configurations(self, item_key, launcher):
-    
         configs = collections.OrderedDict()
         configs['BROWSE'] = 'Browse for configuration'
 
@@ -3844,7 +3940,6 @@ class RetroarchLauncher(StandardRomLauncher):
         return cores
 
     def _load_selected_core_info(self, input, item_key, launcher):
-
         if input == 'BROWSE':
             return input
     
@@ -3882,15 +3977,13 @@ class RetroarchLauncher(StandardRomLauncher):
         return input
 
     def _get_default_retroarch_arguments(self):
-
         args = ''
         if is_android():
             args += '-e IME com.android.inputmethod.latin/.LatinIME -e REFRESH 60'
 
         return args
-    
-    def _create_path_from_retroarch_setting(self, path_from_setting, parent_dir):
 
+    def _create_path_from_retroarch_setting(self, path_from_setting, parent_dir):
         if not path_from_setting.endswith('\\') and not path_from_setting.endswith('/'):
             path_from_setting = path_from_setting + parent_dir.path_separator()
 
@@ -3907,7 +4000,6 @@ class RetroarchLauncher(StandardRomLauncher):
             return folder
 
     def _switch_core_to_info_file(self, core_file, info_folder):
-    
         info_file = core_file.switchExtension('info')
    
         if is_android():
@@ -3918,16 +4010,55 @@ class RetroarchLauncher(StandardRomLauncher):
         return info_file
 
     def _switch_info_to_core_file(self, info_file, cores_folder, cores_ext):
-    
         core_file = info_file.switchExtension(cores_ext)
-
         if is_android():
             core_file = cores_folder.pjoin(core_file.getBase().replace('.', '_android.'))
         else:
             core_file = cores_folder.pjoin(core_file.getBase())
 
         return core_file
-    
+
+# -------------------------------------------------------------------------------------------------
+# Launcher for .lnk files (windows)
+# -------------------------------------------------------------------------------------------------
+class LnkLauncher(StandardRomLauncher):
+    def get_launcher_type(self):
+        return LAUNCHER_LNK
+
+    def get_launcher_type_name(self):
+        return "LNK launcher"
+
+    def get_edit_options(self):
+        options = super(LnkLauncher, self).get_edit_options()
+        del options['AUDIT_ROMS']
+
+        return options
+
+    def get_advanced_modification_options(self):
+        options = super(LnkLauncher, self).get_advanced_modification_options()
+        del options['CHANGE_APPLICATION']
+        del options['MODIFY_ARGS']
+        del options['ADDITIONAL_ARGS']
+        del options['CHANGE_ROMEXT']
+        del options['TOGGLE_MULTIDISC']
+
+        return options
+
+    #
+    # Creates a new launcher using a wizard of dialogs.
+    #
+    def _get_builder_wizard(self, wizard):
+        wizard = FileBrowseWizardDialog('rompath', 'Select the LNKs path', 0, '', wizard)
+        wizard = DummyWizardDialog('romext', 'lnk', wizard)
+        wizard = DummyWizardDialog('args', '%rom%', wizard)
+        wizard = DummyWizardDialog('m_name', '', wizard, self._get_title_from_app_path)
+        wizard = KeyboardWizardDialog('m_name','Set the title of the launcher', wizard, self._get_title_from_app_path)
+        wizard = SelectionWizardDialog('platform', 'Select the platform', AEL_platform_list, wizard)
+        wizard = DummyWizardDialog('assets_path', '', wizard, self._get_value_from_rompath)
+        wizard = FileBrowseWizardDialog('assets_path', 'Select asset/artwork directory', 0, '', wizard) 
+
+        return wizard
+
 # -------------------------------------------------------------------------------------------------
 # Launcher to use with a local Steam application and account.
 # -------------------------------------------------------------------------------------------------
@@ -4210,20 +4341,30 @@ class AELObjectFactory(object):
         # executorFactory is used in the creation of Launcher objects.
         self.executorFactory = executorFactory
 
+        # --- Pool of skeleton dictionaries to create virtual categories/launchers ---
+        self.category_addon_root_dic = {
+            'id' : VCATEGORY_ADDONROOT_ID,
+            'type' : OBJ_CATEGORY_VIRTUAL,
+            'm_name' : 'Root category',
+        }
+
         self.recently_played_roms_dic = {
-            'id': VLAUNCHER_RECENT_ID,
+            'id' : VLAUNCHER_RECENT_ID,
+            'type' : OBJ_CATEGORY_VIRTUAL,
             'm_name': 'Recently played',
-            'roms_base_noext': 'history'
+            'roms_base_noext': 'history',
         }
         self.most_played_roms_dic = {
-            'id': VLAUNCHER_MOST_PLAYED_ID,
+            'id' : VLAUNCHER_MOST_PLAYED_ID,
+            'type' : OBJ_CATEGORY_VIRTUAL,
             'm_name': 'Most played',
-            'roms_base_noext': 'most_played'
+            'roms_base_noext': 'most_played',
         }
         self.favourites_roms_dic = {
-            'id': VLAUNCHER_FAVOURITES_ID,
+            'id' : VLAUNCHER_FAVOURITES_ID,
+            'type' : OBJ_CATEGORY_VIRTUAL,
             'm_name': 'Favourites',
-            'roms_base_noext': 'favourites'
+            'roms_base_noext': 'favourites',
         }
 
     #
@@ -4231,8 +4372,9 @@ class AELObjectFactory(object):
     # The type of object is the 'type' field in the dictionary.
     #
     def create_from_dic(self, obj_dic):
+        id = obj_dic['id']
         obj_type = obj_dic['type']
-        log_debug('AELObjectFactory::create_new() Creating {0}'.format(obj_type))
+        log_debug('AELObjectFactory::create_new() Creating {0} ID {1}'.format(obj_type, id))
 
         return self._load(obj_type, obj_dic)
 
@@ -4255,7 +4397,7 @@ class AELObjectFactory(object):
         log_debug('AELObjectFactory::create_special() obj_id   "{0}"'.format(obj_id))
 
         if obj_type == OBJ_CATEGORY_VIRTUAL and obj_id == VCATEGORY_ADDONROOT_ID:
-            return VirtualCategory(self.PATHS, self.settings, VCATEGORY_ADDONROOT_ID)
+            return self.create_from_dic(self.category_addon_root_dic)
 
         else:
             log_error('Unsupported requested obj_type "{0}"'.format(obj_type))
@@ -4322,25 +4464,22 @@ class AELObjectFactory(object):
                 VirtualLauncher(self.recently_played_roms_dic, self.settings, ROMSetRepository(self.PATHS)),
                 VirtualLauncher(self.most_played_roms_dic, self.settings, ROMSetRepository(self.PATHS))
             )
-            romset_repository = ROMSetRepository(self.PATHS.ROMS_DIR)
-            return StandardRomLauncher(
-                launcher_data, self.settings, self.executorFactory,
-                romset_repository, statsStrategy, self.settings['escape_romfile']
-            )
+            return StandardRomLauncher(self.PATHS, self.settings, obj_dic, self.executorFactory,
+                                       ROMSetRepository(self.PATHS), statsStrategy)
 
         elif obj_type == OBJ_LAUNCHER_RETROPLAYER:
             statsStrategy = RomStatisticsStrategy(self.virtual_launchers[VLAUNCHER_RECENT_ID],
                                                   self.virtual_launchers[VLAUNCHER_MOST_PLAYED_ID])
             romset_repository = ROMSetRepository(self.PATHS.ROMS_DIR)
             return RetroplayerLauncher(launcher_data, self.settings, None,
-                                       romset_repository, None, self.settings['escape_romfile'])
+                                       romset_repository, None)
 
         elif obj_type == OBJ_LAUNCHER_RETROARCH:
             statsStrategy = RomStatisticsStrategy(self.virtual_launchers[VLAUNCHER_RECENT_ID],
                                                   self.virtual_launchers[VLAUNCHER_MOST_PLAYED_ID])
             romset_repository = ROMSetRepository(self.PATHS.ROMS_DIR)
             return RetroarchLauncher(launcher_data, self.settings, self.executorFactory,
-                                     romset_repository, statsStrategy, self.settings['escape_romfile'])
+                                     romset_repository, statsStrategy)
 
         # LNK launchers available only on Windows
         elif obj_type == OBJ_LAUNCHER_LNK:
@@ -4348,7 +4487,7 @@ class AELObjectFactory(object):
                                                   self.virtual_launchers[VLAUNCHER_MOST_PLAYED_ID])
             romset_repository = ROMSetRepository(self.PATHS.ROMS_DIR)
             return LnkLauncher(launcher_data, self.settings, self.executorFactory,
-                               romset_repository, statsStrategy, self.settings['escape_romfile'])
+                               romset_repository, statsStrategy)
 
         elif obj_type == OBJ_LAUNCHER_STEAM:
             statsStrategy = RomStatisticsStrategy(self.virtual_launchers[VLAUNCHER_RECENT_ID],
@@ -4960,7 +5099,7 @@ class GameStreamServer(object):
 # See https://www.oreilly.com/library/view/head-first-design/0596007124/ch04.html
 # -------------------------------------------------------------------------------------------------
 class ExecutorFactory(object):
-    def __init__(self, settings, g_PATHS):
+    def __init__(self, g_PATHS, settings):
         self.settings = settings
         self.logFile = g_PATHS.LAUNCHER_REPORT_FILE_PATH
 
@@ -5417,7 +5556,7 @@ class CollectionRomSet(RomSet):
 # #################################################################################################
 # #################################################################################################
 class RomScannersFactory():
-    def __init__(self, settings, PATHS):
+    def __init__(self, PATHS, settings):
         self.settings = settings
         self.reports_dir = PATHS.REPORTS_DIR
         self.addon_dir = PATHS.ADDON_DATA_DIR
