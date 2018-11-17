@@ -2237,9 +2237,10 @@ class KodiKeyboardWizardDialog(KodiWizardDialog):
 
 #
 # Wizard dialog which shows a list of options to select from.
-# 
+#
 class KodiSelectionWizardDialog(KodiWizardDialog):
-    def __init__(self, property_key, title, options, decoratorDialog, customFunction = None, conditionalFunction = None):
+    def __init__(self, property_key, title, options, decoratorDialog,
+                 customFunction = None, conditionalFunction = None):
         self.options = options
         super(KodiSelectionWizardDialog, self).__init__(
             property_key, title, decoratorDialog, customFunction, conditionalFunction
@@ -2249,12 +2250,11 @@ class KodiSelectionWizardDialog(KodiWizardDialog):
         log_debug('Executing selection wizard dialog for key: {0}'.format(self.property_key))
         dialog = xbmcgui.Dialog()
         selection = dialog.select(self.title, self.options)
-
         if selection < 0:
             self._cancel()
             return None
-
         output = self.options[selection]
+
         return output
 
 #
@@ -2275,9 +2275,7 @@ class KodiDictionarySelectionWizardDialog(KodiWizardDialog):
         dialog = DictionaryDialog()
         if callable(self.options):
             self.options = self.options(self.property_key, properties)
-
         output = dialog.select(self.title, self.options)
-
         if output is None:
             self._cancel()
             return None
@@ -2385,24 +2383,39 @@ class KodiDummyWizardDialog(KodiWizardDialog):
         return self.predefinedValue
 
 #
-# Kodi dialog with select box based on a dictionary
+# Kodi dialog with select box based on a list.
+# preselect is int
+# Returns the int index selected or None if dialog was canceled.
 #
-class KodiDictionaryDialog(object):
+class KodiListDialog(object):
     def __init__(self):
         self.dialog = xbmcgui.Dialog()
 
-    def select(self, title, dictOptions, preselect = None):
+    def select(self, title, options_list, preselect_idx = None):
+        selection = self.dialog.select(title, options_list, preselect = preselect_idx)
+        if selection < 0:
+            return None
+
+        return selection
+
+#
+# Kodi dialog with select box based on a dictionary
+#
+class KodiOrdDictionaryDialog(object):
+    def __init__(self):
+        self.dialog = xbmcgui.Dialog()
+
+    def select(self, title, options_odict, preselect = None):
         preselected_index = -1
         if preselect is not None:
-            preselected_value = dictOptions[preselect]
-            preselected_index = dictOptions.values().index(preselected_value)
-
-        selection = self.dialog.select(title, dictOptions.values(), preselect = preselected_index)
+            preselected_value = options_odict[preselect]
+            preselected_index = options_odict.values().index(preselected_value)
+        selection = self.dialog.select(title, options_odict.values(), preselect = preselected_index)
 
         if selection < 0:
             return None
-        
-        key = list(dictOptions.keys())[selection]
+        key = list(options_odict.keys())[selection]
+
         return key
 
 class KodiProgressDialogStrategy(object):
