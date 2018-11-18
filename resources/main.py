@@ -714,12 +714,12 @@ def m_command_add_new_category():
     # --- Save Category ---
     category = g_ObjectFactory.create_new(OBJ_CATEGORY)
     category.set_name(keyboard.getText().decode('utf-8'))
-    g_MainRepository.save_category(category)
+    category.save_to_disk()
     kodi_notify('Category {0} created'.format(category.get_name()))
     kodi_refresh_container()
 
 def m_command_edit_category(category_id):
-    category = g_MainRepository.find_category(category_id)
+    category = g_ObjectFactory.find_category(category_id)
     m_run_category_sub_command('EDIT_CATEGORY', category)
     kodi_refresh_container()
 
@@ -1264,9 +1264,9 @@ def m_run_category_sub_command(command, category):
 
     # --- Main menu command ---
     if command == 'EDIT_CATEGORY':
-        options = category.get_edit_options()
+        options = category.get_main_edit_options()
         s = 'Select action for Category "{0}"'.format(category.get_name())
-        selected_option = KodiDictionaryDialog().select(s, options)
+        selected_option = KodiOrdDictionaryDialog().select(s, options)
         if selected_option is None:
             # >> Exits context menu
             log_debug('m_run_category_sub_command(EDIT_CATEGORY) Selected None. Closing context menu')
@@ -1284,7 +1284,7 @@ def m_run_category_sub_command(command, category):
     elif command == 'EDIT_METADATA':
         options = category.get_metadata_edit_options()
         s = 'Edit Category "{0}" metadata'.format(category.get_name())
-        selected_option = KodiDictionaryDialog().select(s, options)
+        selected_option = KodiOrdDictionaryDialog().select(s, options)
         if selected_option is None:
             # >> Return recursively to parent menu.
             log_debug('m_run_category_sub_command(EDIT_METADATA) Selected NONE')
@@ -1299,28 +1299,22 @@ def m_run_category_sub_command(command, category):
     # --- Atomic commands ---
     # NOTE integrate subcommands using generic editing functions.
     elif command == 'EDIT_METADATA_TITLE':
-        if m_gui_edit_metadata_str('Category', 'Title', category.get_name, category.set_name):
-            g_MainRepository.save_category(category)
+        m_gui_edit_metadata_str(category, 'Title', category.get_name, category.set_name)
 
     elif command == 'EDIT_METADATA_RELEASEYEAR':
-        if m_gui_edit_metadata_str('Category', 'Release Rear', category.get_releaseyear, category.set_releaseyear):
-            g_MainRepository.save_category(category)
+        m_gui_edit_metadata_str(category, 'Release Rear', category.get_releaseyear, category.set_releaseyear)
 
     elif command == 'EDIT_METADATA_GENRE':
-        if m_gui_edit_metadata_str('Category', 'Genre', category.get_genre, category.set_genre):
-            g_MainRepository.save_category(category)
+        m_gui_edit_metadata_str(category, 'Genre', category.get_genre, category.set_genre)
 
     elif command == 'EDIT_METADATA_DEVELOPER':
-        if m_gui_edit_metadata_str('Category', 'Developer', category.get_developer, category.set_developer):
-            g_MainRepository.save_category(category)
+        m_gui_edit_metadata_str(category, 'Developer', category.get_developer, category.set_developer)
 
     elif command == 'EDIT_METADATA_RATING':
-        if m_gui_edit_rating('Category', category.get_rating, category.set_rating):
-            g_MainRepository.save_category(category)
+        m_gui_edit_rating(category, category.get_rating, category.set_rating)
 
     elif command == 'EDIT_METADATA_PLOT':
-        if m_gui_edit_metadata_str('Category', 'Plot', category.get_plot, category.set_plot):
-            g_MainRepository.save_category(category)
+        m_gui_edit_metadata_str(category, 'Plot', category.get_plot, category.set_plot)
 
     elif command == 'IMPORT_NFO_FILE_DEFAULT':
         m_subcommand_edit_category_nfo_import_default(category)
@@ -1351,8 +1345,7 @@ def m_run_category_sub_command(command, category):
     # Deleting a Category must exit the context menu!
     # If the deletion was sucessful the Category does not exit any more.
     elif command == 'DELETE_CATEGORY':
-        if m_subcommand_delete_category(category):
-            return False
+        if m_subcommand_delete_category(category): return False
 
     else:
         log_warning('m_run_category_sub_command() Unsupported command "{0}"'.format(command))
@@ -3576,26 +3569,26 @@ def m_subcommand_manage_collection_rom_position(launcher, rom):
         roms = new_roms
 
 #
-# Returns True if category was chaged.
-# Returns False if cateogry was not changed.
-# Example call:
-#   m_gui_edit_metadata_str('ROM Collection', 'Title', collection.get_title, collection.set_title)
+# Edits an object field which is a Unicode string.
 #
-def m_gui_edit_metadata_str(object_name, metadata_name, get_method, set_method):
+# Example call:
+#   m_gui_edit_metadata_str(collection, 'Title', collection.get_title, collection.set_title)
+#
+def m_gui_edit_metadata_str(obj_instance, metadata_name, get_method, set_method):
+    object_name = obj_instance.get_object_name()
     old_value = get_method()
     s = 'Edit {0} "{1}" {2}'.format(object_name, old_value, metadata_name)
     keyboard = xbmc.Keyboard(old_value, s)
     keyboard.doModal()
-    if not keyboard.isConfirmed(): return False
+    if not keyboard.isConfirmed(): return
 
     new_value = keyboard.getText().decode('utf-8')
     if old_value == new_value:
         kodi_notify('{0} {1} not changed'.format(object_name, metadata_name))
-        return False
+        return
     set_method(new_value)
+    obj_instance.save_to_disk()
     kodi_notify('{0} {1} is now {2}'.format(object_name, metadata_name, new_value))
-
-    return True
 
 #
 # The values of str_list are supposed to be unique.
@@ -3604,7 +3597,8 @@ def m_gui_edit_metadata_str(object_name, metadata_name, get_method, set_method):
 # m_gui_edit_metadata_list('Launcher', 'Platform', AEL_platform_list,
 #                          launcher.get_platform, launcher.set_platform)
 #
-def m_gui_edit_metadata_list(object_name, metadata_name, str_list, get_method, set_method):
+def m_gui_edit_metadata_list(obj_instance, metadata_name, str_list, get_method, set_method):
+    object_name = obj_instance.get_object_name()
     old_value = get_method()
     if old_value in str_list:
         preselect_idx = str_list.index(old_value)
@@ -3612,16 +3606,16 @@ def m_gui_edit_metadata_list(object_name, metadata_name, str_list, get_method, s
         preselect_idx = 0
     dialog_title = 'Edit {0} {1}'.format(object_name, metadata_name)
     selected = KodiListDialog().select(dialog_title, str_list, preselect_idx)
-    if selected is None:
-        return False
+    if selected is None: return
     new_value = str_list[selected]
     if old_value == new_value:
         kodi_notify('{0} {1} not changed'.format(object_name, metadata_name))
-        return False
+        return
+
     set_method(new_value)
+    obj_instance.save_to_disk()
     kodi_notify('{0} {1} is now {2}'.format(object_name, metadata_name, new_value))
 
-    return True
 
 #
 # Rating 'Not set' is stored as an empty string.
@@ -3631,12 +3625,13 @@ def m_gui_edit_metadata_list(object_name, metadata_name, str_list, get_method, s
 # Example call:
 #   m_gui_edit_rating('ROM Collection', collection.get_rating, collection.set_rating)
 #
-def m_gui_edit_rating(object_name, get_method, set_method):
+def m_gui_edit_rating(obj_instance, get_method, set_method):
     options_list = [
         'Not set',
         'Rating 0', 'Rating 1', 'Rating 2', 'Rating 3', 'Rating 4', 'Rating 5',
         'Rating 6', 'Rating 7', 'Rating 8', 'Rating 9', 'Rating 10'
     ]
+    object_name = obj_instance.get_object_name()
     current_rating_str = get_method()
     if not current_rating_str:
         preselected_value = 0
@@ -3644,10 +3639,10 @@ def m_gui_edit_rating(object_name, get_method, set_method):
         preselected_value = int(current_rating_str) + 1
     sel_value = KodiListDialog().select('Select the {0} Rating'.format(object_name),
                                         options_list, preselect_idx = preselected_value)
-    if sel_value is None: return False
+    if sel_value is None: return
     if sel_value == preselected_value:
         kodi_notify('{0} Rating not changed'.format(object_name))
-        return False
+        return
 
     if sel_value == 0:
         current_rating_str = ''
@@ -3655,11 +3650,12 @@ def m_gui_edit_rating(object_name, get_method, set_method):
         current_rating_str = '{0}'.format(sel_value - 1)
     elif sel_value < 0:
         kodi_notify('{0} Rating not changed'.format(object_name))
-        return False
+        return
+
     set_method(current_rating_str)
+    obj_instance.save_to_disk()
     kodi_notify('{0} rating is now {1}'.format(object_name, current_rating_str))
 
-    return True
 
 def m_gui_edit_object_assets(obj_instance, pre_select_idx = 0):
     log_debug('m_gui_edit_object_assets() obj_instance {0}'.format(obj_instance.__class__.__name__))

@@ -1149,20 +1149,18 @@ class ObjectRepository(object):
         del self.launchers[launcher_id]
         self.commit_database()
 
-    def save_category(self, category):
-        category_id = category.get_id()
-        self.categories[category_id] = category.get_data_dic()
-        self.commit_database()
+    def save_category(self, category_dic):
+        self.categories[category_dic['id']] = category_dic
+        self.save_main_database()
 
     #
     # Use this function instead of save_object() when the launcher timestamp must be controlled.
     #
-    def save_launcher(self, launcher, update_launcher_timestamp = True):
+    def save_launcher(self, launcher_dic, update_launcher_timestamp = True):
         if update_launcher_timestamp:
-            launcher.update_timestamp()
-        launcher_id = launcher.get_id()
-        self.launchers[launcher_id] = launcher.get_data_dic()
-        self.commit_database()
+            launcher_dic['timestamp_launcher'] = time.time()
+        self.launchers[launcher_dic['id']] = launcher_dic
+        self.save_main_database()
 
     # Saves the Categories and Launchers in the categories.xml database.
     # Updates the database timestamp.
@@ -1528,10 +1526,11 @@ class MetaDataItemABC(object):
     # Addon settings is required because the way the metadata is displayed may depend on
     # some addon settings.
     #
-    def __init__(self, PATHS, addon_settings, entity_data):
+    def __init__(self, PATHS, addon_settings, entity_data, objectRepository):
         self.PATHS = PATHS
         self.settings = addon_settings
         self.entity_data = entity_data
+        self.objectRepository = objectRepository
 
     # --------------------------------------------------------------------------------------------
     # Core functions
@@ -1541,6 +1540,9 @@ class MetaDataItemABC(object):
 
     @abc.abstractmethod
     def get_assets_kind(self): pass
+
+    @abc.abstractmethod
+    def save_to_disk(self): pass
 
     # --- Database ID and utilities ---------------------------------------------------------------
     def set_id(self, id):
@@ -1603,11 +1605,9 @@ class MetaDataItemABC(object):
     def set_developer(self, developer):
         self.entity_data['m_developer'] = developer
 
-    # Check in AEL 0.9.7 if rating was stored as string or int internally, and how was stored
-    # in the JSON file.
     # In AEL 0.9.7 m_rating is stored as a string.
     def get_rating(self):
-        return int(self.entity_data['m_rating']) if self.entity_data['m_rating'] else -1
+        return int(self.entity_data['m_rating']) if self.entity_data['m_rating'] else ''
 
     def set_rating(self, rating):
         try:
@@ -1675,19 +1675,52 @@ class MetaDataItemABC(object):
 # Contains code to generate the context menus passed to Dialog.select()
 # -------------------------------------------------------------------------------------------------
 class Category(MetaDataItemABC):
-    def __init__(self, PATHS, settings, category_dic = None):
+    def __init__(self, PATHS, settings, category_dic, objectRepository):
         # Concrete classes are responsible of creating a default entity_data dictionary
         # with sensible defaults.
         if category_dic is None:
             category_dic = fs_new_category()
             category_dic['id'] = misc_generate_random_SID()
-        super(Category, self).__init__(PATHS, settings, category_dic)
+        super(Category, self).__init__(PATHS, settings, category_dic, objectRepository)
 
     def get_object_name(self): return 'Category'
 
     def get_assets_kind(self): return KIND_ASSET_CATEGORY
 
     def is_virtual(self): return False
+
+    def save_to_disk(self): self.objectRepository.save_category(self.entity_data)
+
+    def get_main_edit_options(self):
+        options = collections.OrderedDict()
+        options['EDIT_METADATA']       = 'Edit Metadata ...'
+        options['EDIT_ASSETS']         = 'Edit Assets/Artwork ...'
+        options['EDIT_DEFAULT_ASSETS'] = 'Choose default Assets/Artwork ...'
+        options['CATEGORY_STATUS']     = 'Category status: {0}'.format(self.get_finished_str())
+        options['EXPORT_CATEGORY_XML'] = 'Export Category XML configuration ...'
+        options['DELETE_CATEGORY']     = 'Delete Category'
+
+        return options
+
+    def get_metadata_edit_options(self):
+        # NOTE The Category NFO file logic must be moved to this class. Settings not need to
+        #      be used as a parameter here.
+        NFO_FileName = fs_get_category_NFO_name(self.settings, self.entity_data)
+        NFO_found_str = 'NFO found' if NFO_FileName.exists() else 'NFO not found'
+        plot_str = text_limit_string(self.get_plot(), PLOT_STR_MAXSIZE)
+
+        options = collections.OrderedDict()
+        options['EDIT_METADATA_TITLE']       = "Edit Title: '{0}'".format(self.get_name())
+        options['EDIT_METADATA_RELEASEYEAR'] = "Edit Release Year: '{0}'".format(self.get_releaseyear())
+        options['EDIT_METADATA_GENRE']       = "Edit Genre: '{0}'".format(self.get_genre())
+        options['EDIT_METADATA_DEVELOPER']   = "Edit Developer: '{0}'".format(self.get_developer())
+        options['EDIT_METADATA_RATING']      = "Edit Rating: '{0}'".format(self.get_rating())
+        options['EDIT_METADATA_PLOT']        = "Edit Plot: '{0}'".format(plot_str)
+        options['IMPORT_NFO_FILE']           = 'Import NFO file (default, {0})'.format(NFO_found_str)
+        options['IMPORT_NFO_FILE_BROWSE']    = 'Import NFO file (browse NFO file) ...'
+        options['SAVE_NFO_FILE']             = 'Save NFO file (default location)'
+
+        return options
 
     #
     # Returns an ordered dictionary with all the object assets, ready to be edited.
@@ -1719,37 +1752,6 @@ class Category(MetaDataItemABC):
 
     def set_mapped_asset_key(self, asset_info, mapped_to_info):
         self.entity_data[asset_info.default_key] = mapped_to_info.key
-
-    def get_edit_options(self):
-        options = collections.OrderedDict()
-        options['EDIT_METADATA']       = 'Edit Metadata ...'
-        options['EDIT_ASSETS']         = 'Edit Assets/Artwork ...'
-        options['EDIT_DEFAULT_ASSETS'] = 'Choose default Assets/Artwork ...'
-        options['CATEGORY_STATUS']     = 'Category status: {0}'.format(self.get_finished_str())
-        options['EXPORT_CATEGORY_XML'] = 'Export Category XML configuration ...'
-        options['DELETE_CATEGORY']     = 'Delete Category'
-
-        return options
-
-    def get_metadata_edit_options(self, settings_dic):
-        # NOTE The Category NFO file logic must be moved to this class. Settings not need to
-        #      be used as a parameter here.
-        NFO_FileName = fs_get_category_NFO_name(settings_dic, self.entity_data)
-        NFO_found_str = 'NFO found' if NFO_FileName.exists() else 'NFO not found'
-        plot_str = text_limit_string(self.get_plot(), PLOT_STR_MAXSIZE)
-
-        options = collections.OrderedDict()
-        options['EDIT_METADATA_TITLE']       = "Edit Title: '{0}'".format(self.get_name())
-        options['EDIT_METADATA_RELEASEYEAR'] = "Edit Release Year: '{0}'".format(self.get_releaseyear())
-        options['EDIT_METADATA_GENRE']       = "Edit Genre: '{0}'".format(self.get_genre())
-        options['EDIT_METADATA_DEVELOPER']   = "Edit Developer: '{0}'".format(self.get_developer())
-        options['EDIT_METADATA_RATING']      = "Edit Rating: '{0}'".format(self.get_rating())
-        options['EDIT_METADATA_PLOT']        = "Edit Plot: '{0}'".format(plot_str)
-        options['IMPORT_NFO_FILE']           = 'Import NFO file (default, {0})'.format(NFO_found_str)
-        options['IMPORT_NFO_FILE_BROWSE']    = 'Import NFO file (browse NFO file) ...'
-        options['SAVE_NFO_FILE']             = 'Save NFO file (default location)'
-
-        return options
 
 # -------------------------------------------------------------------------------------------------
 # Class representing the virtual categories in AEL.
@@ -2046,13 +2048,12 @@ class LauncherABC(MetaDataItemABC):
     #
     # In an abstract class launcher_data is mandatory.
     #
-    def __init__(self, PATHS, settings, launcher_data, executorFactory):
+    def __init__(self, PATHS, settings, launcher_data, objectRepository, executorFactory):
         self.executorFactory = executorFactory
         self.application     = None
         self.arguments       = None
         self.title           = None
-
-        super(LauncherABC, self).__init__(PATHS, settings, launcher_data)
+        super(LauncherABC, self).__init__(PATHS, settings, launcher_data, objectRepository)
 
     # --------------------------------------------------------------------------------------------
     # Core methods
@@ -2550,6 +2551,8 @@ class StandaloneLauncher(LauncherABC):
 
     def supports_parent_clone_roms(self): return False
 
+    def save_to_disk(self): self.objectRepository.save_launcher(self.entity_data)
+
     # --------------------------------------------------------------------------------------------
     # Launcher build wizard methods
     # --------------------------------------------------------------------------------------------
@@ -2773,13 +2776,12 @@ class ROMLauncherABC(LauncherABC):
     __metaclass__ = abc.ABCMeta
 
     # launcher_data is always valid, concrete classes fill it with defaults.
-    def __init__(self, PATHS, settings, launcher_data, executorFactory,
-                 romset_repository, statsStrategy):
+    def __init__(self, PATHS, settings, launcher_data, objectRepository,
+                 executorFactory, romsetRepository, statsStrategy):
         self.roms = {}
-        self.roms_repository = romset_repository
+        self.romsetRepository = romsetRepository
         self.statsStrategy = statsStrategy
-        self.escape_romfile = settings['escape_romfile']
-        super(ROMLauncherABC, self).__init__(PATHS, settings, launcher_data, executorFactory)
+        super(ROMLauncherABC, self).__init__(PATHS, settings, launcher_data, objectRepository, executorFactory)
 
     # --------------------------------------------------------------------------------------------
     # Core functions
@@ -3481,14 +3483,14 @@ class StandardRomLauncher(ROMLauncherABC):
     # Concrete classes are responsible of creating a default entity_data dictionary
     # with sensible defaults.
     #
-    def __init__(self, PATHS, settings, launcher_dic,
-                 executorFactory, romset_repository, statsStrategy):
+    def __init__(self, PATHS, settings, launcher_dic, objectRepository,
+                 executorFactory, romsetRepository, statsStrategy):
         if launcher_dic is None:
             launcher_dic = fs_new_launcher()
             launcher_dic['id'] = misc_generate_random_SID()
             launcher_dic['type'] = OBJ_LAUNCHER_ROM
         super(StandardRomLauncher, self).__init__(
-            PATHS, settings, launcher_dic, executorFactory, romset_repository, statsStrategy
+            PATHS, settings, launcher_dic, objectRepository, executorFactory, romsetRepository, statsStrategy
         )
 
     # --------------------------------------------------------------------------------------------
@@ -3499,6 +3501,8 @@ class StandardRomLauncher(ROMLauncherABC):
     def get_assets_kind(self): return KIND_ASSET_LAUNCHER
 
     def get_launcher_type(self): return OBJ_LAUNCHER_ROM
+
+    def save_to_disk(self): self.objectRepository.save_launcher(self.entity_data)
 
     # --------------------------------------------------------------------------------------------
     # Launcher build wizard methods
@@ -4453,8 +4457,8 @@ class NvidiaGameStreamLauncher(ROMLauncherABC):
 # * Every object (Category, Launcher, ROM) must be able to save itself to disk. This is required
 #   to simplify the recursive Edit Object menu.
 #   For example:
-#      launcher.save()  Saves Launcher to disk
-#      rom.save()       Saves ROM to disk.
+#      launcher.save_to_disk()  Saves Launcher to disk
+#      rom.save_to_disk()       Saves ROM to disk.
 #
 # * Abstract Factory Pattern
 #   See https://www.oreilly.com/library/view/head-first-design/0596007124/ch04.html
@@ -4462,45 +4466,45 @@ class NvidiaGameStreamLauncher(ROMLauncherABC):
 # ---Examples ------------------------------------------------------------------------------------
 #  1. Create a new Category:
 #     category = AELObjectFactory.create_new(OBJ_CATEGORY)
-#     category.save()
+#     category.save_to_disk()
 #
 #  3. Retrieve a list of all Categories from disk, sorted alphabetically by Name:
 #     categories_list = AELObjectFactory.find_category_all()
 #
 #  2. Retrieve a Category from disk (for example, in Edit Category context menu):
 #     category = AELObjectFactory.find_category(category_id)
-#     category.save()
+#     category.save_to_disk()
 # ------------------------------------------------------------------------------------------------
 #  4. Create a new real Launcher:
 #     launcher = AELObjectFactory.create_new(OBJ_LAUNCHER_ROM, VCATEGORY_ADDONROOT_ID)
 #     OR
 #     launcher = AELObjectFactory.create_new(OBJ_LAUNCHER_ROM, category_id)
 #     launcher.set_name('MegaDrive')
-#     launcher.save()
+#     launcher.save_to_disk()
 #
 #  6. Retrieve a list of all real Launchers in a Category, sorted alphabetically by Name:
 #     launcher_list = AELObjectFactory.find_launchers_in_cat(category_id)
 #
 #  5. Retrieve a real Launcher from disk (real launcher can be edited):
 #     launcher = AELObjectFactory.find_launcher(VCATEGORY_ACTUAL_LAUN_ID, launcher_id)
-#     launcher.save()
+#     launcher.save_to_disk()
 # ------------------------------------------------------------------------------------------------
 #  7. Create a new ROM Collection. Category is implicit:
 #     collection = AELObjectFactory.create_new(OBJ_LAUNCHER_COLLECTION)
 #     collection.set_name('Sonic')
-#     collection.save()
+#     collection.save_to_disk()
 #
 #  7. Retrieve a list of all ROM Collection launchers from disk:
 #     collections_list = AELObjectFactory.find_launchers_in_cat(VCATEGORY_COLLECTIONS_ID)
 #
 #  8. Retrieve a ROM Collection from disk (for example, in Edit Collection context menu):
 #     collection = AELObjectFactory.find_launcher(VCATEGORY_COLLECTIONS_ID, launcher_id)
-#     collection.save()
+#     collection.save_to_disk()
 # ------------------------------------------------------------------------------------------------
 #  9. Create a new Virtual Launcher:
 #     vlauncher = AELObjectFactory.create_new(OBJ_LAUNCHER_VIRTUAL, VCATEGORY_TITLE_ID)
 #     vlauncher.set_name('A')
-#     vlauncher.save()
+#     vlauncher.save_to_disk()
 #
 # 10. Retrieve a list of all Virtual Launchers of a given type:
 #     vlauncher_list = AELObjectFactory.find_launchers_in_cat(VCATEGORY_TITLE_ID)
@@ -4525,21 +4529,21 @@ class NvidiaGameStreamLauncher(ROMLauncherABC):
 #     ROM = launcher.create_new_ROM()
 #     favourites = AELObjectFactory.find_launcher(VCATEGORY_FAVOURITES_ID) # Launcher ID implicit
 #     favourites.add_ROM(ROM)
-#     favourites.save()
+#     favourites.save_to_disk()
 #
 # 15. Add ROM to Collection:
 #     launcher = AELObjectFactory.find_launcher(VCATEGORY_ACTUAL_LAUN_ID, launcher_id)
 #     ROM = launcher.create_new_ROM()
 #     collection = AELObjectFactory.find_launcher(VCATEGORY_COLLECTIONS_ID, launcher_id)
 #     collection.add_ROM(ROM)
-#     collection.save()
+#     collection.save_to_disk()
 #
 # 16. Build Virtual Launchers:
 #     for name in names:
 #         vlauncher = AELObjectFactory.create_new(OBJ_LAUNCHER_VIRTUAL, VCATEGORY_TITLE_ID)
 #         vlauncher.set_name(name)
 #         vlauncher.add_ROM(ROM)
-#         vlauncher.save()
+#         vlauncher.save_to_disk()
 # ------------------------------------------------------------------------------------------------
 # 17. Render ROMs in a Launcher:
 #     launcher = AELObjectFactory.find_launcher(VCATEGORY_ACTUAL_LAUN_ID, launcher_id)
@@ -4719,7 +4723,7 @@ class AELObjectFactory(object):
     def _load(self, obj_type, obj_dic = None):
         # --- Categories ---
         if obj_type == OBJ_CATEGORY:
-            return Category(self.PATHS, self.settings, obj_dic)
+            return Category(self.PATHS, self.settings, obj_dic, self.objectRepository)
 
         elif obj_type == OBJ_CATEGORY_VIRTUAL:
             return VirtualCategory(self.PATHS, self.settings, obj_dic)
@@ -4742,7 +4746,8 @@ class AELObjectFactory(object):
 
         # --- Real launchers ---
         elif obj_type == OBJ_LAUNCHER_STANDALONE:
-            return StandaloneLauncher(self.PATHS, self.settings, obj_dic, self.executorFactory)
+            return StandaloneLauncher(self.PATHS, self.settings, obj_dic,
+                                      self.objectRepository, self.executorFactory)
 
         elif obj_type == OBJ_LAUNCHER_COLLECTION:
             # romset_repository = ROMSetRepository(self.PATHS.COLLECTIONS_FILE_PATH, False)
@@ -4755,8 +4760,8 @@ class AELObjectFactory(object):
             ROMRepository = ROMSetRepository(self.PATHS, self.settings)
             statsStrategy = ROMStatisticsStrategy(self.PATHS, self.settings)
 
-            return StandardRomLauncher(self.PATHS, self.settings, obj_dic, self.executorFactory,
-                                       ROMRepository, statsStrategy)
+            return StandardRomLauncher(self.PATHS, self.settings, obj_dic, self.objectRepository,
+                                       self.executorFactory, ROMRepository, statsStrategy)
 
         elif obj_type == OBJ_LAUNCHER_RETROPLAYER:
             statsStrategy = ROMStatisticsStrategy(self.virtual_launchers[VLAUNCHER_RECENT_ID],
