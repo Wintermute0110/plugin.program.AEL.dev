@@ -42,26 +42,29 @@ KIND_ASSET_LAUNCHER   = 3
 KIND_ASSET_ROM        = 4
 
 # --- Special Cateogry/Launcher IDs ---
-VCATEGORY_ADDONROOT_ID   = 'root_category'
-VCATEGORY_FAVOURITES_ID  = 'vcategory_favourites'
-VCATEGORY_COLLECTIONS_ID = 'vcategory_collections'
-VCATEGORY_RECENT_ID      = 'vcategory_recent'
-VCATEGORY_MOST_PLAYED_ID = 'vcategory_most_played'
-VCATEGORY_TITLE_ID       = 'vcategory_title'
-VCATEGORY_YEARS_ID       = 'vcategory_year'
-VCATEGORY_GENRE_ID       = 'vcategory_genre'
-VCATEGORY_DEVELOPER_ID   = 'vcategory_developer'
-VCATEGORY_NPLAYERS_ID    = 'vcategory_nplayer'
-VCATEGORY_ESRB_ID        = 'vcategory_esrb'
-VCATEGORY_RATING_ID      = 'vcategory_rating'
-VCATEGORY_CATEGORY_ID    = 'vcategory_category'
-VCATEGORY_OFF_SCRAPER_ID = 'vcategory_offline_scraper'
+VCATEGORY_ADDONROOT_ID      = 'root_category'
+VCATEGORY_ACTUAL_LAUN_ID    = 'actual_launchers'
+VCATEGORY_FAVOURITES_ID     = 'vcategory_favourites'
+VCATEGORY_COLLECTIONS_ID    = 'vcategory_collections'
+VCATEGORY_RECENT_ID         = 'vcategory_recent'
+VCATEGORY_MOST_PLAYED_ID    = 'vcategory_most_played'
+VCATEGORY_TITLE_ID          = 'vcategory_title'
+VCATEGORY_YEARS_ID          = 'vcategory_year'
+VCATEGORY_GENRE_ID          = 'vcategory_genre'
+VCATEGORY_DEVELOPER_ID      = 'vcategory_developer'
+VCATEGORY_NPLAYERS_ID       = 'vcategory_nplayer'
+VCATEGORY_ESRB_ID           = 'vcategory_esrb'
+VCATEGORY_RATING_ID         = 'vcategory_rating'
+VCATEGORY_CATEGORY_ID       = 'vcategory_category'
+VCATEGORY_OFFSCRAPER_AEL_ID = 'vcategory_offline_scraper'
+VCATEGORY_OFFSCRAPER_LB_ID  = 'vcategory_offline_scraper'
 
-VCATEGORY_PCLONES_ID     = 'vcat_pclone'
+# Do we need this?
+VCATEGORY_PCLONES_ID        = 'vcat_pclone'
 
-VLAUNCHER_FAVOURITES_ID  = 'vlauncher_favourites'
-VLAUNCHER_RECENT_ID      = 'vlauncher_recent'
-VLAUNCHER_MOST_PLAYED_ID = 'vlauncher_most_played'
+VLAUNCHER_FAVOURITES_ID     = 'vlauncher_favourites'
+VLAUNCHER_RECENT_ID         = 'vlauncher_recent'
+VLAUNCHER_MOST_PLAYED_ID    = 'vlauncher_most_played'
 
 # --- AEL OBJECT TYPES ---
 OBJ_CATEGORY                 = 'CATEGORY'

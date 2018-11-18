@@ -1050,11 +1050,10 @@ class LauncherRepository(object):
 
 # -------------------------------------------------------------------------------------------------
 # Repository class for creating and retrieveing Categories/Launchers/ROM objects.
-# It is also capable of creating Virtual Categories or Virtual Launchers.
 # Basically, everything stored in categories.xml, ROM JSON files, etc.
-# It is also responsible for deleting objects from the database.
-#
-# Note that other object (ROM Launchers) can also create objects, for example ROMs.
+# This object only retrieves database dictionaries. Actual objects are created by the
+# class AELObjectFactory().
+# ROM object can be created exclusively by Launcher objects.
 # -------------------------------------------------------------------------------------------------
 class ObjectRepository(object):
     def __init__(self, g_PATHS, g_settings, obj_factory):
@@ -1102,9 +1101,6 @@ class ObjectRepository(object):
             return self.obj_factory.create_from_dic(self.launchers[launcher_id])
         else:
             return None
-
-    def find_ROM(self, rom_id, launcher_id):
-        raise AddonError('Implement me')
 
     # Returns a list with all the Category objects. Each list element if a Category instance.
     def get_category_list(self):
@@ -4215,19 +4211,17 @@ class LnkLauncher(StandardRomLauncher):
 # -------------------------------------------------------------------------------------------------
 class SteamLauncher(ROMLauncherABC):
     def __init__(self, launcher_data, settings, executorFactory, romset_repository, statsStrategy):
-        super(SteamLauncher, self).__init__(launcher_data, settings, executorFactory, romset_repository, statsStrategy, False)
-    
-    def get_launcher_type(self):
-        return LAUNCHER_STEAM
-    
-    def get_launcher_type_name(self):        
-        return "Steam launcher"
-    
-    def get_steam_id(self):
-        return self.entity_data['steamid']
+        super(SteamLauncher, self).__init__(
+            launcher_data, settings, executorFactory, romset_repository, statsStrategy, False
+        )
+
+    def get_launcher_type(self): return LAUNCHER_STEAM
+
+    def get_launcher_type_name(self): return 'Steam launcher'
+
+    def get_steam_id(self): return self.entity_data['steamid']
 
     def get_edit_options(self):
-        
         options = super(SteamLauncher, self).get_edit_options()
         del options['AUDIT_ROMS']
 
@@ -4237,26 +4231,29 @@ class SteamLauncher(ROMLauncherABC):
         log_debug('SteamLauncher::get_advanced_modification_options() Returning edit options')
         toggle_window_str = 'ON' if self.entity_data['toggle_window'] else 'OFF'
         non_blocking_str  = 'ON' if self.entity_data['non_blocking'] else 'OFF'
-        
+
         options = super(SteamLauncher, self).get_advanced_modification_options()
         options['TOGGLE_WINDOWED'] = "Toggle Kodi into windowed mode (now {0})".format(toggle_window_str)
         options['TOGGLE_NONBLOCKING'] = "Non-blocking launcher (now {0})".format(non_blocking_str)
-        
+
         return options
-    
+
     def _selectApplicationToUse(self):
         self.application = FileName('steam://rungameid/')
+
         return True
 
     def _selectArgumentsToUse(self):
         self.arguments = '$steamid$'
+
         return True
 
     def _selectRomFileToUse(self):
         steam_id = self.rom.get_custom_attribute('steamid', '')
         log_info('SteamLauncher._selectRomFileToUse() ROM ID {0}: @{1}"'.format(steam_id, self.title))
+
         return True
-    
+
        #def launch(self):
        #    
        #    self.title  = self.rom['m_name']
@@ -4267,13 +4264,12 @@ class SteamLauncher(ROMLauncherABC):
        #    self.arguments = str(self.rom['steamid'])
        #
        #    log_info('SteamLauncher() ROM ID {0}: @{1}"'.format(self.rom['steamid'], self.rom['m_name']))
-       #    self.statsStrategy.updateRecentlyPlayedRom(self.rom)       
+       #    self.statsStrategy.updateRecentlyPlayedRom(self.rom)
        #    
        #    super(SteamLauncher, self).launch()
-       #    pass    
-    
+       #    pass
+
     def _get_builder_wizard(self, wizard):
-        
         wizard = DummyWizardDialog('application', 'Steam', wizard)
         wizard = KeyboardWizardDialog('steamid','Steam ID', wizard)
         wizard = DummyWizardDialog('m_name', 'Steam', wizard)
@@ -4281,11 +4277,10 @@ class SteamLauncher(ROMLauncherABC):
         wizard = SelectionWizardDialog('platform', 'Select the platform', AEL_platform_list, wizard)
         wizard = FileBrowseWizardDialog('assets_path', 'Select asset/artwork directory', 0, '', wizard)
         wizard = DummyWizardDialog('rompath', '', wizard, self._get_value_from_assetpath)         
-                    
-        return wizard
-    
-    def _get_value_from_assetpath(self, input, item_key, launcher):
 
+        return wizard
+
+    def _get_value_from_assetpath(self, input, item_key, launcher):
         if input:
             return input
 
@@ -4299,22 +4294,19 @@ class SteamLauncher(ROMLauncherABC):
 # -------------------------------------------------------------------------------------------------
 class NvidiaGameStreamLauncher(ROMLauncherABC):
     def __init__(self, launcher_data, settings, executorFactory, romset_repository, statsStrategy):
-        super(NvidiaGameStreamLauncher, self).__init__(launcher_data, settings, executorFactory, romset_repository, statsStrategy, False)
+        super(NvidiaGameStreamLauncher, self).__init__(
+            launcher_data, settings, executorFactory, romset_repository, statsStrategy, False
+        )
 
-    def get_launcher_type(self):
-        return LAUNCHER_NVGAMESTREAM
+    def get_launcher_type(self): return LAUNCHER_NVGAMESTREAM
 
-    def get_launcher_type_name(self):
-        return "Nvidia GameStream launcher"
+    def get_launcher_type_name(self): return 'NVIDIA GameStream launcher'
 
-    def get_server(self):
-        return self.entity_data['server']
+    def get_server(self): return self.entity_data['server']
 
-    def get_certificates_path(self):
-        return self._get_value_as_filename('certificates_path')
+    def get_certificates_path(self): return self._get_value_as_filename('certificates_path')
 
     def get_edit_options(self):
-
         options = super(NvidiaGameStreamLauncher, self).get_edit_options()
         del options['AUDIT_ROMS']
 
@@ -4365,14 +4357,13 @@ class NvidiaGameStreamLauncher(ROMLauncherABC):
             return True
 
         if is_android():
-
             if streamClient == 'NVIDIA':
                 self.arguments =  'start --user 0 -a android.intent.action.VIEW '
                 self.arguments += '-n com.nvidia.tegrazone3/com.nvidia.grid.UnifiedLaunchActivity '
                 self.arguments += '-d nvidia://stream/target/2/$streamid$'
                 return True
 
-            if streamClient == 'MOONLIGHT':
+            elif streamClient == 'MOONLIGHT':
                 self.arguments =  'start --user 0 -a android.intent.action.MAIN '
                 self.arguments += '-c android.intent.category.LAUNCHER ' 
                 self.arguments += '-n com.limelight/.Game '
@@ -4384,13 +4375,13 @@ class NvidiaGameStreamLauncher(ROMLauncherABC):
                 self.arguments += '-e UniqueId {} '.format(misc_generate_random_SID())
 
                 return True
-        
+
         # else
         self.arguments = self.entity_data['args']
+
         return True 
   
-    def _selectRomFileToUse(self):
-        return True
+    def _selectRomFileToUse(self): return True
 
     def get_advanced_modification_options(self):
         log_debug('NvidiaGameStreamLauncher::get_advanced_modification_options() Returning edit options')
@@ -4425,7 +4416,7 @@ class NvidiaGameStreamLauncher(ROMLauncherABC):
         wizard = DummyWizardDialog('certificates_path', None, wizard, self._try_to_resolve_path_to_nvidia_certificates)
         wizard = FileBrowseWizardDialog('certificates_path', 'Select the path with valid certificates', 0, '', wizard, self._validate_nvidia_certificates) 
         wizard = SelectionWizardDialog('platform', 'Select the platform', AEL_platform_list, wizard)       
-                    
+
         return wizard
 
     def _generatePairPinCode(self, input, item_key, launcher):
@@ -4436,25 +4427,28 @@ class NvidiaGameStreamLauncher(ROMLauncherABC):
             nvidiaDataFolder = FileName('/data/data/com.nvidia.tegrazone3/', isdir = True)
             nvidiaAppFolder = FileName('/storage/emulated/0/Android/data/com.nvidia.tegrazone3/')
             if not nvidiaAppFolder.exists() and not nvidiaDataFolder.exists():
-                kodi_notify_warn('Could not find Nvidia Gamestream client. Make sure it\'s installed.')
+                kodi_notify_warn("Could not find Nvidia Gamestream client. Make sure it's installed.")
 
-        if input == 'MOONLIGHT':
+        elif input == 'MOONLIGHT':
             moonlightDataFolder = FileName('/data/data/com.limelight/', isdir = True)
             moonlightAppFolder = FileName('/storage/emulated/0/Android/data/com.limelight/')
             if not moonlightAppFolder.exists() and not moonlightDataFolder.exists():
-                kodi_notify_warn('Could not find Moonlight Gamestream client. Make sure it\'s installed.')
+                kodi_notify_warn("Could not find Moonlight Gamestream client. Make sure it's installed.")
 
         return input
 
     def _try_to_resolve_path_to_nvidia_certificates(self, input, item_key, launcher):
         path = GameStreamServer.try_to_resolve_path_to_nvidia_certificates()
+
         return path
 
     def _validate_nvidia_certificates(self, input, item_key, launcher):
         certificates_path = FileName(input)
         gs = GameStreamServer(input, certificates_path)
         if not gs.validate_certificates():
-            kodi_notify_warn('Could not find certificates to validate. Make sure you already paired with the server with the Shield or Moonlight applications.')
+            kodi_notify_warn(
+                'Could not find certificates to validate. Make sure you already paired with '
+                'the server with the Shield or Moonlight applications.')
 
         return certificates_path.getPath()
 
@@ -4470,28 +4464,139 @@ class NvidiaGameStreamLauncher(ROMLauncherABC):
 
         return input
 
-# -------------------------------------------------------------------------------------------------
-# --- AEL Object Factory --------------------------------------------------------------------------
-# Used to create an AEL object that is a child of MetaDataItemACB().
+# ------------------------------------------------------------------------------------------------
+# --- AEL Object Factory -------------------------------------------------------------------------
+# * Used to create an AEL object that is a child of MetaDataItemACB().
 #
-# A global and unique instance of AELObjectFactory is created in main.py to create all
-# required objects in the addon.
+# * A global and unique instance of AELObjectFactory is created in main.py to create all
+#   required objects in the addon.
 #
-# AEL Objects are used in the ROM Scanner, Object Edit context menu and at launching time.
+# * For performance reasons the ListItem renderers access the databases directly using functions
+#   from disk_IO.py.
 #
-# For performance reasons the ListItem renderers access the databases directly using functions
-# from disk_IO.py.
+# * Only Launcher objects can create ROM objects.
 #
-# Abstract Factory Pattern
-# See https://www.oreilly.com/library/view/head-first-design/0596007124/ch04.html
+# * Every object (Category, Launcher, ROM) must be able to save itself to disk. This is required
+#   to simplify the recursive Edit Object menu.
+#   For example:
+#      launcher.save()  Saves Launcher to disk
+#      rom.save()       Saves ROM to disk.
+#
+# * Abstract Factory Pattern
+#   See https://www.oreilly.com/library/view/head-first-design/0596007124/ch04.html
+#
+# ---Examples ------------------------------------------------------------------------------------
+#  1. Create a new Category:
+#     category = AELObjectFactory.create_new(OBJ_CATEGORY)
+#     category.save()
+#
+#  3. Retrieve a list of all Categories from disk, sorted alphabetically by Name:
+#     categories_list = AELObjectFactory.find_category_all()
+#
+#  2. Retrieve a Category from disk (for example, in Edit Category context menu):
+#     category = AELObjectFactory.find_category(category_id)
+#     category.save()
+# ------------------------------------------------------------------------------------------------
+#  4. Create a new real Launcher:
+#     launcher = AELObjectFactory.create_new(OBJ_LAUNCHER_ROM, VCATEGORY_ADDONROOT_ID)
+#     OR
+#     launcher = AELObjectFactory.create_new(OBJ_LAUNCHER_ROM, category_id)
+#     launcher.set_name('MegaDrive')
+#     launcher.save()
+#
+#  6. Retrieve a list of all real Launchers in a Category, sorted alphabetically by Name:
+#     launcher_list = AELObjectFactory.find_launcher_in_cat(category_id)
+#
+#  5. Retrieve a real Launcher from disk (real launcher can be edited):
+#     launcher = AELObjectFactory.find_launcher(VCATEGORY_ACTUAL_LAUN_ID, launcher_id)
+#     launcher.save()
+# ------------------------------------------------------------------------------------------------
+#  7. Create a new ROM Collection. Category is implicit:
+#     collection = AELObjectFactory.create_new(OBJ_LAUNCHER_COLLECTION)
+#     collection.set_name('Sonic')
+#     collection.save()
+#
+#  7. Retrieve a list of all ROM Collection launchers from disk:
+#     collections_list = AELObjectFactory.find_launcher_in_cat(VCATEGORY_COLLECTIONS_ID)
+#
+#  8. Retrieve a ROM Collection from disk (for example, in Edit Collection context menu):
+#     collection = AELObjectFactory.find_launcher(VCATEGORY_COLLECTIONS_ID, launcher_id)
+#     collection.save()
+# ------------------------------------------------------------------------------------------------
+#  9. Create a new Virtual Launcher:
+#     vlauncher = AELObjectFactory.create_new(OBJ_LAUNCHER_VIRTUAL, VCATEGORY_TITLE_ID)
+#     vlauncher.set_name('A')
+#     vlauncher.save()
+#
+# 10. Retrieve a list of all Virtual Launchers of a given type:
+#     vlauncher_list = AELObjectFactory.find_launcher_in_cat(VCATEGORY_TITLE_ID)
+#
+# 11. Retrieve a Virtual Launcher from disk:
+#     vlauncher = AELObjectFactory.find_launcher(VCATEGORY_TITLE_ID, launcher_id)
+# ------------------------------------------------------------------------------------------------
+# 12. Create a new ROM:
+#     launcher = AELObjectFactory.create_new(OBJ_LAUNCHER_ROM, category_id)
+#     ROM = launcher.create_new_ROM()
+#
+# 13. Retrieve a list of ROMs in a Launcher (ROMs sorted alpahbetically by Title):
+#     launcher = AELObjectFactory.find_launcher(VCATEGORY_ACTUAL_LAUN_ID, launcher_id)
+#     ROM = launcher.find_ROM(rom_id)
+#
+# 13. Retrieve ROM from disk (for example, in Edit ROM context menu):
+#     launcher = AELObjectFactory.find_launcher(VCATEGORY_ACTUAL_LAUN_ID, launcher_id)
+#     ROM = launcher.find_ROM(rom_id)
+# ------------------------------------------------------------------------------------------------
+# 14. Add ROM to Favourites:
+#     launcher = AELObjectFactory.find_launcher(VCATEGORY_ACTUAL_LAUN_ID, launcher_id)
+#     ROM = launcher.create_new_ROM()
+#     favourites = AELObjectFactory.find_launcher(VCATEGORY_FAVOURITES_ID) # Launcher ID implicit
+#     favourites.add_ROM(ROM)
+#     favourites.save()
+#
+# 15. Add ROM to Collection:
+#     launcher = AELObjectFactory.find_launcher(VCATEGORY_ACTUAL_LAUN_ID, launcher_id)
+#     ROM = launcher.create_new_ROM()
+#     collection = AELObjectFactory.find_launcher(VCATEGORY_COLLECTIONS_ID, launcher_id)
+#     collection.add_ROM(ROM)
+#     collection.save()
+#
+# 16. Build Virtual Launchers:
+#     for name in names:
+#         vlauncher = AELObjectFactory.create_new(OBJ_LAUNCHER_VIRTUAL, VCATEGORY_TITLE_ID)
+#         vlauncher.set_name(name)
+#         vlauncher.add_ROM(ROM)
+#         vlauncher.save()
+# ------------------------------------------------------------------------------------------------
+# 17. Render ROMs in a Launcher:
+#     launcher = AELObjectFactory.find_launcher(VCATEGORY_ACTUAL_LAUN_ID, launcher_id)
+#     for rom in launcher.find_ROMs_all():
+#         rom.get_name()
+#
+# 18. Render ROMs in a Collection:
+#     collection = AELObjectFactory.find_launcher(VCATEGORY_COLLECTIONS_ID, launcher_id)
+#     for rom in collection.find_ROMs_all():
+#         rom.get_name()
+# ------------------------------------------------------------------------------------------------
+# 19. Render Category database information:
+#     category = AELObjectFactory.find_category(category_id)
+#
+# 20. Render Launcher database information (Category is required):
+#     launcher = AELObjectFactory.find_launcher(VCATEGORY_ACTUAL_LAUN_ID, launcher_id)
+#     category = AELObjectFactory.find_category(launcher.get_category_ID())
+#
+# 21. Render ROM database information (Category and Launcher required)
+#     launcher = AELObjectFactory.find_launcher(VCATEGORY_ACTUAL_LAUN_ID, launcher_id)
+#     category = AELObjectFactory.find_category(launcher.get_category_ID())
+#     ROM = launcher.find_ROM(rom_id)
 # -------------------------------------------------------------------------------------------------
 class AELObjectFactory(object):
-    def __init__(self, PATHS, settings, executorFactory):
+    def __init__(self, PATHS, settings, objectRepository, executorFactory):
         # PATHS and settings are used in the creation of all object.
-        self.PATHS           = PATHS
-        self.settings        = settings
         # executorFactory is used in the creation of Launcher objects.
-        self.executorFactory = executorFactory
+        self.PATHS            = PATHS
+        self.settings         = settings
+        self.objectRepository = objectRepository
+        self.executorFactory  = executorFactory
 
         # --- Pool of skeleton dictionaries to create virtual categories/launchers ---
         self.category_addon_root_dic = {
@@ -4520,17 +4625,6 @@ class AELObjectFactory(object):
         }
 
     #
-    # Creates a Launcher derived object when the data dictionary is available.
-    # The type of object is the 'type' field in the dictionary.
-    #
-    def create_from_dic(self, obj_dic):
-        id = obj_dic['id']
-        obj_type = obj_dic['type']
-        log_debug('AELObjectFactory::create_new() Creating {0} ID {1}'.format(obj_type, id))
-
-        return self._load(obj_type, obj_dic)
-
-    #
     # Creates an empty Launcher derived object with default values when only the launcher type
     # is available, for example, when creating a new launcher in the context menu.
     #
@@ -4555,6 +4649,37 @@ class AELObjectFactory(object):
             log_error('Unsupported requested obj_type "{0}"'.format(obj_type))
             log_error('Unsupported requested obj_id   "{0}"'.format(obj_id))
             return None
+
+    #
+    # Creates a Launcher derived object when the data dictionary is available.
+    # The type of object is the 'type' field in the dictionary.
+    #
+    def create_from_dic(self, obj_dic):
+        id = obj_dic['id']
+        obj_type = obj_dic['type']
+        log_debug('AELObjectFactory::create_new() Creating {0} ID {1}'.format(obj_type, id))
+
+        return self._load(obj_type, obj_dic)
+
+    #
+    # Retrieves a Category object from the database.
+    # This method also creates Virtual Category objects.
+    #
+    def find_category(self, category_id):
+        pass
+
+    #
+    # Retrieves a ROM Collection Launcher object from the database.
+    #
+    def find_collection(self, ):
+        pass
+
+    #
+    # Retrieves a Launcher object from the database.
+    # This method also creates virtual launchers (Favourites, 
+    #
+    def find_launcher(self, launcher_id):
+        pass
 
     #
     # To show "Select Launcher type" dialog. Only return real Launcher and not Virtual Launchers.

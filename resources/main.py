@@ -145,10 +145,8 @@ g_time_str = unicode(datetime.datetime.now())
 g_ScraperFactory = None
 g_ROMScannerFactory = None
 g_ExecutorFactory = None
-g_ObjectFactory = None
-
-# --- Database objects ---
 g_ObjectRepository = None
+g_ObjectFactory = None
 
 # -------------------------------------------------------------------------------------------------
 # Make AEL to run only 1 single instance
@@ -342,8 +340,8 @@ def m_bootstrap_instances():
     global g_ScraperFactory
     global g_ROMScannerFactory
     global g_ExecutorFactory
-    global g_ObjectFactory
     global g_ObjectRepository
+    global g_ObjectFactory
 
     # --- Utility objects ---
     g_ScraperFactory = ScraperFactory(g_PATHS, g_settings)
@@ -351,15 +349,10 @@ def m_bootstrap_instances():
     g_ExecutorFactory = ExecutorFactory(g_PATHS, g_settings)
 
     # --- Creates any type of AEL object: Category, Launcher, Collection, ROM ---
-    # AELObjectFactory creates empty objects not linked to the database.
-    # It is used in the "New xxxxx" context menus.
-    g_ObjectFactory = AELObjectFactory(g_PATHS, g_settings, g_ExecutorFactory)
-
-    # --- Load categories/launchers databases ---
-    # Repositories are able to create objects that are linked to databases.
-    # They are used in the "Edit xxxxx", when scanning ROMs and when executing a launcher or ROM.
-    # g_CollectionRepository = CollectionRepository(g_PATHS, g_settings, g_ObjectFactory)
-    g_ObjectRepository = ObjectRepository(g_PATHS, g_settings, g_ObjectFactory)
+    # AELObjectFactory creates empty objects not linked to the database or objects linked
+    # to the database.
+    g_ObjectRepository = ObjectRepository(g_PATHS, g_settings)
+    g_ObjectFactory = AELObjectFactory(g_PATHS, g_settings, g_ObjectRepository, g_ExecutorFactory)
 
 #
 # This function may run concurrently
