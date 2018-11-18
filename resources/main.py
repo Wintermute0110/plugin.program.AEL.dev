@@ -719,8 +719,53 @@ def m_command_add_new_category():
     kodi_refresh_container()
 
 def m_command_edit_category(category_id):
+    log_debug('m_command_edit_category() category_id = {0}'.format(category_id))
     category = g_ObjectFactory.find_category(category_id)
     m_run_category_sub_command('EDIT_CATEGORY', category)
+    kodi_refresh_container()
+
+#
+# Creates a new Launcher.
+#
+def m_command_add_new_launcher(category_id):
+    category = g_ObjectFactory.find_category(category_id)
+    if category_id == VCATEGORY_ADDONROOT_ID:
+        log_info('Creating laucher in addon root.')
+        selected_category_id = VCATEGORY_ADDONROOT_ID
+    else:
+        # --- Ask user if Launcher is created on the selected Category or on root menu ---
+        options = collections.OrderedDict()
+        options[category_id] = 'Create Launcher in "{0}" category'.format(category.get_name())
+        options[VCATEGORY_ADDONROOT_ID] = 'Create Launcher in root window (no Category)'
+        selected_category_id = KodiOrdDictionaryDialog().select('Choose Launcher Category', options)
+        if selected_category_id is None: return
+
+    # --- Show "Create New Launcher" dialog ---
+    options = g_ObjectFactory.get_launcher_types_odict()
+    launcher_type = KodiOrdDictionaryDialog().select('Create New Launcher', options)
+    if launcher_type is None: return None
+    log_info('m_command_add_new_launcher() New launcher (launcher_type = {0})'.format(launcher_type))
+    launcher = g_ObjectFactory.create_new(launcher_type)
+
+    # Executes the "Add new Launcher" wizard dialog. The wizard fills in the launcher.entity_data
+    # dictionary with the required fields. After that, it creates the Launcher asset paths if
+    # supported by the Launcher. If the user cancels the dialog then False is returned and the
+    # launcher is not created.
+    selected_category = g_ObjectFactory.find_category(selected_category_id)
+    if not launcher.build(selected_category): return
+
+    # Notify user, save categories.xml and update container contents so user sees the new
+    # launcher inmmediately.
+    launcher.save_to_disk()
+    kodi_notify('Created {0} {1}'.format(launcher.get_object_name(), launcher.get_name()))
+    kodi_refresh_container()
+
+# Edits a Launcher.
+def m_command_edit_launcher(category_id, launcher_id):
+    log_debug('m_command_edit_launcher() category_id = {0}'.format(category_id))
+    log_debug('m_command_edit_launcher() launcher_id = {0}'.format(launcher_id))
+    launcher = g_ObjectFactory.find_launcher(category_id, launcher_id)
+    m_run_launcher_sub_command('EDIT_LAUNCHER', launcher)
     kodi_refresh_container()
 
 def m_command_add_rom_to_collection(categoryID, launcherID, romID):
@@ -811,50 +856,6 @@ def m_command_edit_collection(category_id, launcher_id):
     # NEW CODE STYLE
     collection = g_collectionRepository.find(launcher_id)
     m_run_collection_sub_command('EDIT_COLLECTION', collection)
-    kodi_refresh_container()
-
-#
-# Creates a new Launcher.
-#
-def m_command_add_new_launcher(category_id):
-    category = g_ObjectRepository.find_category(category_id)
-    if category_id == VCATEGORY_ADDONROOT_ID:
-        log_info('Creating laucher in addon root.')
-    else:
-        # --- Ask user if Launcher is created on the selected Category or on root menu ---
-        options = collections.OrderedDict()
-        options[category_id] = 'Create Launcher in "{0}" category'.format(category.get_name())
-        options[VCATEGORY_ADDONROOT_ID] = 'Create Launcher in root window (no Category)'
-        selected_id = KodiDictionaryDialog().select('Choose Launcher Category', options)
-        if selected_id is None: return
-
-    # --- Show "Create New Launcher" dialog ---
-    options = g_ObjectFactory.get_launcher_types_odict()
-    launcher_type = KodiOrdDictionaryDialog().select('Create New Launcher', options)
-    if launcher_type is None: return None
-    log_info('m_command_add_new_launcher() New launcher (launcher_type = {0})'.format(launcher_type))
-    launcher = g_ObjectFactory.create_new(launcher_type)
-    if launcher is None: return
-
-    # Executes the "Add new Launcher" wizard dialog. The wizard fills in the launcher.entity_data
-    # dictionary with the required fields. After that, it creates the Launcher asset paths if
-    # supported by the Launcher.
-    # If the user cancels the dialog then False is returned.
-    # category.dump_data_dic_to_log()
-    if not launcher.build(category): return
-
-    # Notify user, save categories.xml and update container contents so user sees the new
-    # launcher inmmediately.
-    g_ObjectRepository.save_launcher(launcher)
-    kodi_refresh_container()
-    kodi_notify('Created {0} {1}'.format(launcher.get_launcher_type_name(), launcher.get_name()))
-
-# Edits a Launcher.
-def m_command_edit_launcher(category_id, launcher_id):
-    log_debug('m_command_edit_launcher() category_id = {0}'.format(category_id))
-    log_debug('m_command_edit_launcher() launcher_id = {0}'.format(launcher_id))
-    launcher = g_ObjectRepository.find_launcher(launcher_id)
-    m_run_launcher_sub_command('EDIT_LAUNCHER', launcher)
     kodi_refresh_container()
 
 #
@@ -1357,93 +1358,13 @@ def m_run_category_sub_command(command, category):
     log_debug('m_run_category_sub_command({0}) ENDS'.format(command))
     return True
 
-#
-# Look at m_run_category_sub_command() for a reference implementation.
-#
-def m_run_collection_sub_command(command, collection):
-    log_debug('m_run_collection_sub_command({0}) BEGIN'.format(command))
-
-    # --- Main menu command ---
-    if command == 'EDIT_COLLECTION':
-        options = collection.get_edit_options()
-        s = 'Select action for ROM Collection "{0}"'.format(collection.get_name())
-        selected_option = KodiDictionaryDialog().select(s, options)
-        if selected_option is None:
-            log_debug('m_run_collection_sub_command(EDIT_COLLECTION) Selected None. Closing context menu.')
-        else:
-            log_debug('m_run_collection_sub_command(EDIT_COLLECTION) Selected {0}'.format(selected_option))
-            if m_run_collection_sub_command(selected_option, collection):
-                m_run_collection_sub_command('EDIT_COLLECTION', collection)
-            else:
-                log_debug('m_run_collection_sub_command(EDIT_COLLECTION) m_run_collection_sub_command returned False')
-                log_debug('m_run_collection_sub_command(EDIT_COLLECTION) Closing context menu')
-
-    # --- Submenu command ---
-    elif command == 'EDIT_METADATA':
-        options = collection.get_metadata_edit_options()
-        s = 'Edit ROM Collection "{0}" metadata'.format(collection.get_name())
-        selected_option = KodiDictionaryDialog().select(s, options)
-        if selected_option is None:
-            log_debug('m_run_collection_sub_command(EDIT_METADATA) Selected None')
-        else:
-            log_debug('m_run_collection_sub_command(EDIT_METADATA) Selected {0}'.format(selected_option))
-            m_run_collection_sub_command(selected_option, collection)
-            m_run_collection_sub_command('EDIT_METADATA', collection)
-
-    # --- Atomic commands ---
-    elif command == 'EDIT_METADATA_TITLE':
-        if m_gui_edit_metadata_str('ROM Collection', 'Title', collection.get_name, collection.set_name):
-            g_CollectionRepository.save(collection)
-
-    elif command == 'EDIT_METADATA_GENRE':
-        if m_gui_edit_metadata_str('ROM Collection', 'Genre', collection.get_genre, collection.set_genre):
-            g_CollectionRepository.save(collection)
-
-    elif command == 'EDIT_METADATA_RATING':
-        if m_gui_edit_rating('ROM Collection', collection.get_rating, collection.set_rating):
-            g_CollectionRepository.save(collection)
-
-    elif command == 'EDIT_METADATA_PLOT':
-        if m_gui_edit_metadata_str('ROM Collection', 'Plot', collection.get_plot, collection.set_plot):
-            g_CollectionRepository.save(collection)
-
-    # Add these commands IMPORT_NFO_FILE_DEFAULT, IMPORT_NFO_FILE_BROWSE, SAVE_NFO_FILE_DEFAULT.
-    # Create a generic function for import/export NFO files.
-
-    # --- Submenu command ---
-    elif command == 'EDIT_ASSETS':
-        m_gui_edit_object_assets(collection)
-
-    # --- Submenu command ---
-    elif command == 'EDIT_DEFAULT_ASSETS':
-        m_gui_edit_object_default_assets(collection)
-
-    # --- Atomic commands ---
-    elif command == 'EXPORT_COLLECTION_XML':
-        m_subcommand_export_collection_xml(collection)
-
-    # Deleting a ROM Collection must exit the context menu!
-    # If the deletion was sucessful the ROM Collection does not exit any more.
-    elif command == 'DELETE_COLLECTION':
-        if m_subcommand_delete_collection(collection):
-            return False
-
-    else:
-        log_warning('m_run_collection_sub_command() Unsupported command "{0}"'.format(command))
-        kodi_dialog_OK('m_run_collection_sub_command() Unknown command {0}. '.format(command) +
-                       'Please report this bug.')
-
-    # Returns True if the parent menu must be shown again.
-    # Return False if context menu must be closed.
-    log_debug('m_run_collection_sub_command({0}) ENDS'.format(command))
-    return True
-
 def m_run_launcher_sub_command(command, launcher):
     log_debug('m_run_launcher_sub_command({0}) BEGIN'.format(command))
 
     # --- Main menu command ---
     if command == 'EDIT_LAUNCHER':
-        options = launcher.get_main_edit_options(g_ObjectRepository)
+        category = g_ObjectFactory.find_category(launcher.get_category_id())
+        options = launcher.get_main_edit_options(category)
         s = 'Select action for Launcher "{0}"'.format(launcher.get_name())
         selected_option = KodiOrdDictionaryDialog().select(s, options)
         if selected_option is None:
@@ -1489,29 +1410,23 @@ def m_run_launcher_sub_command(command, launcher):
         m_subcommand_change_launcher_name(launcher)
 
     elif command == 'EDIT_METADATA_PLATFORM':
-        if m_gui_edit_metadata_list('Launcher', 'Platform', AEL_platform_list,
-                                    launcher.get_platform, launcher.set_platform):
-            g_MainRepository.save_launcher(launcher)
+        m_gui_edit_metadata_list(launcher, 'Platform', AEL_platform_list,
+                                 launcher.get_platform, launcher.set_platform)
 
     elif command == 'EDIT_METADATA_RELEASEYEAR':
-        if m_gui_edit_metadata_str('Launcher', 'Release Rear', launcher.get_releaseyear, launcher.set_releaseyear):
-            g_MainRepository.save_launcher(launcher)
+        m_gui_edit_metadata_str(launcher, 'Release Rear', launcher.get_releaseyear, launcher.set_releaseyear)
 
     elif command == 'EDIT_METADATA_GENRE':
-        if m_gui_edit_metadata_str('Launcher', 'Genre', launcher.get_genre, launcher.set_genre):
-            g_MainRepository.save_launcher(launcher)
+        m_gui_edit_metadata_str(launcher, 'Genre', launcher.get_genre, launcher.set_genre)
 
     elif command == 'EDIT_METADATA_DEVELOPER':
-        if m_gui_edit_metadata_str('Launcher', 'Developer', launcher.get_developer, launcher.set_developer):
-            g_MainRepository.save_launcher(launcher)
+        m_gui_edit_metadata_str(launcher, 'Developer', launcher.get_developer, launcher.set_developer)
 
     elif command == 'EDIT_METADATA_RATING':
-        if m_gui_edit_rating('Launcher', launcher.get_rating, launcher.set_rating):
-            g_MainRepository.save_launcher(launcher)
+        m_gui_edit_rating(launcher, launcher.get_rating, launcher.set_rating)
 
     elif command == 'EDIT_METADATA_PLOT':
-        if m_gui_edit_metadata_str('Launcher', 'Plot', launcher.get_plot, launcher.set_plot):
-            g_MainRepository.save_launcher(launcher)
+        m_gui_edit_metadata_str(launcher, 'Plot', launcher.get_plot, launcher.set_plot)
 
     elif command == 'IMPORT_NFO_FILE_DEFAULT':
         m_subcommand_edit_launcher_nfo_import_default(launcher)
@@ -1603,6 +1518,87 @@ def m_run_launcher_sub_command(command, launcher):
     # Returns True if the parent menu must be shown again.
     # Return False if context menu must be closed.
     log_debug('m_run_launcher_sub_command({0}) ENDS'.format(command))
+    return True
+
+#
+# Look at m_run_category_sub_command() for a reference implementation.
+#
+def m_run_collection_sub_command(command, collection):
+    log_debug('m_run_collection_sub_command({0}) BEGIN'.format(command))
+
+    # --- Main menu command ---
+    if command == 'EDIT_COLLECTION':
+        options = collection.get_edit_options()
+        s = 'Select action for ROM Collection "{0}"'.format(collection.get_name())
+        selected_option = KodiDictionaryDialog().select(s, options)
+        if selected_option is None:
+            log_debug('m_run_collection_sub_command(EDIT_COLLECTION) Selected None. Closing context menu.')
+        else:
+            log_debug('m_run_collection_sub_command(EDIT_COLLECTION) Selected {0}'.format(selected_option))
+            if m_run_collection_sub_command(selected_option, collection):
+                m_run_collection_sub_command('EDIT_COLLECTION', collection)
+            else:
+                log_debug('m_run_collection_sub_command(EDIT_COLLECTION) m_run_collection_sub_command returned False')
+                log_debug('m_run_collection_sub_command(EDIT_COLLECTION) Closing context menu')
+
+    # --- Submenu command ---
+    elif command == 'EDIT_METADATA':
+        options = collection.get_metadata_edit_options()
+        s = 'Edit ROM Collection "{0}" metadata'.format(collection.get_name())
+        selected_option = KodiDictionaryDialog().select(s, options)
+        if selected_option is None:
+            log_debug('m_run_collection_sub_command(EDIT_METADATA) Selected None')
+        else:
+            log_debug('m_run_collection_sub_command(EDIT_METADATA) Selected {0}'.format(selected_option))
+            m_run_collection_sub_command(selected_option, collection)
+            m_run_collection_sub_command('EDIT_METADATA', collection)
+
+    # --- Atomic commands ---
+    elif command == 'EDIT_METADATA_TITLE':
+        if m_gui_edit_metadata_str('ROM Collection', 'Title', collection.get_name, collection.set_name):
+            g_CollectionRepository.save(collection)
+
+    elif command == 'EDIT_METADATA_GENRE':
+        if m_gui_edit_metadata_str('ROM Collection', 'Genre', collection.get_genre, collection.set_genre):
+            g_CollectionRepository.save(collection)
+
+    elif command == 'EDIT_METADATA_RATING':
+        if m_gui_edit_rating('ROM Collection', collection.get_rating, collection.set_rating):
+            g_CollectionRepository.save(collection)
+
+    elif command == 'EDIT_METADATA_PLOT':
+        if m_gui_edit_metadata_str('ROM Collection', 'Plot', collection.get_plot, collection.set_plot):
+            g_CollectionRepository.save(collection)
+
+    # Add these commands IMPORT_NFO_FILE_DEFAULT, IMPORT_NFO_FILE_BROWSE, SAVE_NFO_FILE_DEFAULT.
+    # Create a generic function for import/export NFO files.
+
+    # --- Submenu command ---
+    elif command == 'EDIT_ASSETS':
+        m_gui_edit_object_assets(collection)
+
+    # --- Submenu command ---
+    elif command == 'EDIT_DEFAULT_ASSETS':
+        m_gui_edit_object_default_assets(collection)
+
+    # --- Atomic commands ---
+    elif command == 'EXPORT_COLLECTION_XML':
+        m_subcommand_export_collection_xml(collection)
+
+    # Deleting a ROM Collection must exit the context menu!
+    # If the deletion was sucessful the ROM Collection does not exit any more.
+    elif command == 'DELETE_COLLECTION':
+        if m_subcommand_delete_collection(collection):
+            return False
+
+    else:
+        log_warning('m_run_collection_sub_command() Unsupported command "{0}"'.format(command))
+        kodi_dialog_OK('m_run_collection_sub_command() Unknown command {0}. '.format(command) +
+                       'Please report this bug.')
+
+    # Returns True if the parent menu must be shown again.
+    # Return False if context menu must be closed.
+    log_debug('m_run_collection_sub_command({0}) ENDS'.format(command))
     return True
 
 def m_run_rom_sub_command(command, rom):
@@ -4949,8 +4945,8 @@ def m_command_render_launchers(category_id):
     m_misc_set_AEL_Content(AEL_CONTENT_VALUE_LAUNCHERS)
     m_misc_clear_AEL_Launcher_Content()
 
-    category = g_MainRepository.find_category(category_id)
-    launchers = g_MainRepository.find_launchers_by_category_id(category_id)
+    category = g_ObjectFactory.find_category(category_id)
+    launchers = g_ObjectFactory.find_launchers_in_cat(category_id)
 
     # --- If the category has no launchers then render nothing ---
     if not launchers or len(launchers) == 0:
@@ -6761,13 +6757,13 @@ def m_command_view_menu(categoryID, launcherID, romID):
         slist = []
         if view_type == VIEW_CATEGORY:
             window_title = 'Category data'
-            category = g_CategoryRepository.find(categoryID)
+            category = g_ObjectFactory.find_category(categoryID)
             slist.append('[COLOR orange]Category information[/COLOR]')
             report_print_Category(slist, category.get_data_dic())
         elif view_type == VIEW_LAUNCHER:
             window_title = 'Launcher data'
-            launcher = g_LauncherRepository.find(launcherID)
-            category = self.category_repository.find(categoryID) if categoryID != VCATEGORY_ADDONROOT_ID else None
+            launcher = g_ObjectFactory.find_launcher(categoryID, launcherID)
+            category = g_ObjectFactory.find_category(launcher.get_id())
             slist.append('[COLOR orange]Launcher information[/COLOR]')
             report_print_Launcher(slist, launcher.get_data_dic())
             if category:

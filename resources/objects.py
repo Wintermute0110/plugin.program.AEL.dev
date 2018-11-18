@@ -1755,15 +1755,17 @@ class Category(MetaDataItemABC):
 
 # -------------------------------------------------------------------------------------------------
 # Class representing the virtual categories in AEL.
+# All ROM Collections is a Virtual Category.
+# ...
 # -------------------------------------------------------------------------------------------------
 class VirtualCategory(MetaDataItemABC):
     #
-    # obj_dic is mandatory an must have:
+    # obj_dic is mandatory in Virtual Categories an must have the following fields:
     #  1) id
     #  2) type
     #  3) m_name
     #
-    def __init__(self, PATHS, settings, obj_dic):
+    def __init__(self, PATHS, settings, obj_dic, objectRepository):
         # Concrete classes are responsible of creating a default entity_data dictionary
         # with sensible defaults.
         # This object is special, obj_dic must be not None and have certain fields.
@@ -1771,13 +1773,15 @@ class VirtualCategory(MetaDataItemABC):
         entity_data['id'] = obj_dic['id']
         entity_data['type'] = obj_dic['type']
         entity_data['m_name'] = obj_dic['m_name']
-        super(VirtualCategory, self).__init__(PATHS, settings, entity_data)
+        super(VirtualCategory, self).__init__(PATHS, settings, entity_data, objectRepository)
+
+    def is_virtual(self): return True
+
+    def save_to_disk(self): pass
 
     def get_object_name(self): return 'Virtual Category'
 
     def get_assets_kind(self): return KIND_ASSET_CATEGORY
-
-    def is_virtual(self): return True
 
 # -------------------------------------------------------------------------------------------------
 # Class representing a ROM file you can play through AEL.
@@ -2531,7 +2535,7 @@ class StandaloneLauncher(LauncherABC):
     # --------------------------------------------------------------------------------------------
     # Core methods
     # --------------------------------------------------------------------------------------------
-    def __init__(self, PATHS, settings, launcher_dic, executorFactory):
+    def __init__(self, PATHS, settings, launcher_dic, objectRepository, executorFactory):
         # --- Create default Standalone Launcher if empty launcher_dic---
         # Concrete classes are responsible of creating a default entity_data dictionary
         # with sensible defaults.
@@ -2539,7 +2543,7 @@ class StandaloneLauncher(LauncherABC):
             launcher_dic = fs_new_launcher()
             launcher_dic['id'] = misc_generate_random_SID()
             launcher_dic['type'] = OBJ_LAUNCHER_STANDALONE
-        super(StandaloneLauncher, self).__init__(PATHS, settings, launcher_dic, executorFactory)
+        super(StandaloneLauncher, self).__init__(PATHS, settings, launcher_dic, objectRepository, executorFactory)
 
     def get_object_name(self): return 'Standalone launcher'
 
@@ -3528,17 +3532,15 @@ class StandardRomLauncher(ROMLauncherABC):
     # --------------------------------------------------------------------------------------------
     # Launcher edit methods
     # --------------------------------------------------------------------------------------------
-    def get_main_edit_options(self, g_MainRepository):
+    def get_main_edit_options(self, category):
         log_debug('StandardRomLauncher::get_main_edit_options() Returning edit options')
-        category_name = g_MainRepository.find_category(self.get_category_id()).get_name()
-        finished_str = self.get_finished_str()
 
         options = collections.OrderedDict()
         options['EDIT_METADATA']          = 'Edit Metadata ...'
         options['EDIT_ASSETS']            = 'Edit Assets/Artwork ...'
         options['EDIT_DEFAULT_ASSETS']    = 'Choose default Assets/Artwork ...'
-        options['EDIT_LAUNCHER_CATEGORY'] = "Change Category: '{0}'".format(category_name)
-        options['EDIT_LAUNCHER_STATUS']   = 'Launcher status: {0}'.format(finished_str)
+        options['EDIT_LAUNCHER_CATEGORY'] = "Change Category: '{0}'".format(category.get_name())
+        options['EDIT_LAUNCHER_STATUS']   = 'Launcher status: {0}'.format(self.get_finished_str())
         options['LAUNCHER_ADVANCED_MODS'] = 'Advanced Modifications ...'
         options['LAUNCHER_MANAGE_ROMS']   = 'Manage ROMs ...'
         options['LAUNCHER_AUDIT_ROMS']    = 'Audit ROMs / Launcher view mode ...'
@@ -4476,17 +4478,17 @@ class NvidiaGameStreamLauncher(ROMLauncherABC):
 #     category.save_to_disk()
 # ------------------------------------------------------------------------------------------------
 #  4. Create a new real Launcher:
-#     launcher = AELObjectFactory.create_new(OBJ_LAUNCHER_ROM, VCATEGORY_ADDONROOT_ID)
+#     launcher = AELObjectFactory.create_new(OBJ_LAUNCHER_ROM)
 #     OR
-#     launcher = AELObjectFactory.create_new(OBJ_LAUNCHER_ROM, category_id)
-#     launcher.set_name('MegaDrive')
+#     launcher = AELObjectFactory.create_new(OBJ_LAUNCHER_ROM)
+#     launcher.build(category)
 #     launcher.save_to_disk()
 #
 #  6. Retrieve a list of all real Launchers in a Category, sorted alphabetically by Name:
 #     launcher_list = AELObjectFactory.find_launchers_in_cat(category_id)
 #
 #  5. Retrieve a real Launcher from disk (real launcher can be edited):
-#     launcher = AELObjectFactory.find_launcher(VCATEGORY_ACTUAL_LAUN_ID, launcher_id)
+#     launcher = AELObjectFactory.find_launcher(category_id, launcher_id)
 #     launcher.save_to_disk()
 # ------------------------------------------------------------------------------------------------
 #  7. Create a new ROM Collection. Category is implicit:
@@ -4612,25 +4614,6 @@ class AELObjectFactory(object):
         return self._load(obj_type)
 
     #
-    # DEPRECATED: Is this function really needed?
-    #
-    # Create special object, like Virtual Categories and Launchers. For example:
-    # 1) create_special(OBJ_CATEGORY_VIRTUAL, VCATEGORY_ADDONROOT_ID) used when creating a
-    #    Launcher in the addon root (no category).
-    #
-    def create_special(self, obj_type, obj_id):
-        log_debug('AELObjectFactory::create_special() obj_type "{0}"'.format(obj_type))
-        log_debug('AELObjectFactory::create_special() obj_id   "{0}"'.format(obj_id))
-
-        if obj_type == OBJ_CATEGORY_VIRTUAL and obj_id == VCATEGORY_ADDONROOT_ID:
-            return self.create_from_dic(self.category_addon_root_dic)
-
-        else:
-            log_error('Unsupported requested obj_type "{0}"'.format(obj_type))
-            log_error('Unsupported requested obj_id   "{0}"'.format(obj_id))
-            return None
-
-    #
     # DEPRECATED: this function must be internal callable only.
     # Creates a Launcher derived object when the data dictionary is available.
     # The type of object is the 'type' field in the dictionary.
@@ -4651,6 +4634,10 @@ class AELObjectFactory(object):
         category_dic = self.objectRepository.find_category(category_id)
         if category_dic is not None:
             category_obj = self._load(OBJ_CATEGORY, category_dic)
+
+        elif category_id == VCATEGORY_ADDONROOT_ID:
+            category_obj = self.create_from_dic(self.category_addon_root_dic)
+
         else:
             category_obj = None
 
@@ -4726,7 +4713,7 @@ class AELObjectFactory(object):
             return Category(self.PATHS, self.settings, obj_dic, self.objectRepository)
 
         elif obj_type == OBJ_CATEGORY_VIRTUAL:
-            return VirtualCategory(self.PATHS, self.settings, obj_dic)
+            return VirtualCategory(self.PATHS, self.settings, obj_dic, self.objectRepository)
 
         # --- Virtual launchers ---
         elif obj_type == VLAUNCHER_RECENT_ID:
@@ -4746,8 +4733,8 @@ class AELObjectFactory(object):
 
         # --- Real launchers ---
         elif obj_type == OBJ_LAUNCHER_STANDALONE:
-            return StandaloneLauncher(self.PATHS, self.settings, obj_dic,
-                                      self.objectRepository, self.executorFactory)
+            return StandaloneLauncher(self.PATHS, self.settings, obj_dic, self.objectRepository,
+                                      self.executorFactory)
 
         elif obj_type == OBJ_LAUNCHER_COLLECTION:
             # romset_repository = ROMSetRepository(self.PATHS.COLLECTIONS_FILE_PATH, False)

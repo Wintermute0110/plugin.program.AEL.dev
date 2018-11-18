@@ -43,7 +43,6 @@ KIND_ASSET_ROM        = 4
 
 # --- Special Cateogry/Launcher IDs ---
 VCATEGORY_ADDONROOT_ID      = 'root_category'
-VCATEGORY_ACTUAL_LAUN_ID    = 'actual_launchers'
 VCATEGORY_FAVOURITES_ID     = 'vcategory_favourites'
 VCATEGORY_COLLECTIONS_ID    = 'vcategory_collections'
 VCATEGORY_RECENT_ID         = 'vcategory_recent'
