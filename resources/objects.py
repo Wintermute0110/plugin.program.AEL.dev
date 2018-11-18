@@ -1056,10 +1056,9 @@ class LauncherRepository(object):
 # ROM object can be created exclusively by Launcher objects.
 # -------------------------------------------------------------------------------------------------
 class ObjectRepository(object):
-    def __init__(self, g_PATHS, g_settings, obj_factory):
+    def __init__(self, g_PATHS, g_settings):
         self.PATHS = g_PATHS
         self.settings = g_settings
-        self.obj_factory = obj_factory
 
         # Categories/Launchers are needed for virtually every AEL operation so load it
         # right now.
@@ -1069,7 +1068,7 @@ class ObjectRepository(object):
         self.categories = {}
         self.launchers  = {}
         if not self.PATHS.CATEGORIES_FILE_PATH.exists():
-            log_debug('MainRepository::init() categories.xml does not exist. Creating empty data.')
+            log_debug('ObjectRepository::init() categories.xml does not exist. Creating empty data.')
         else:
             fs_load_catfile(self.PATHS.CATEGORIES_FILE_PATH,
                             self.header_dic, self.categories, self.launchers)
@@ -1079,40 +1078,26 @@ class ObjectRepository(object):
     def num_launchers(self): return len(self.launchers)
 
     #
-    # Finds a Category by ID in the database. ID may be a Virtual/Special Category.
-    # If the category is special then refer to AELObjectFactory() for object creation.
-    # Returns a Category object instance or None if the category ID is not found in the DB.
+    # Finds an actual Category by ID in the database.
+    # Returns a Category database dictionary or None if not found.
     #
     def find_category(self, category_id):
         if category_id in self.categories:
             category_dic = self.categories[category_id]
-            category = self.obj_factory.create_from_dic(category_dic)
-        elif category_id == VCATEGORY_ADDONROOT_ID:
-            category = self.obj_factory.create_special(OBJ_CATEGORY_VIRTUAL, VCATEGORY_ADDONROOT_ID)
         else:
-            category = None
+            category_dic = None
 
-        return category
+        return category_dic
 
-    # Finds a Launcher by ID in the database. ID may be a Virtual/Special Launcher.
-    def find_launcher(self, launcher_id):
-        launcher = None
-        if launcher_id in self.launchers:
-            return self.obj_factory.create_from_dic(self.launchers[launcher_id])
-        else:
-            return None
+    def find_category_all(self):
+        category_dic_list = []
+        for category_key in sorted(self.categories, key = lambda c : self.categories[c]['m_name']):
+            category_dic_list.append(self.categories[category_key])
 
-    # Returns a list with all the Category objects. Each list element if a Category instance.
-    def get_category_list(self):
-        categories = []
-        for category_id in self.categories:
-            category = self.obj_factory.create_from_dic(self.categories[category_id])
-            categories.append(category)
+        return category_dic_list
 
-        return categories
-
-    # Returns an OrderedDict, key is category_id and value is the caregory name.
-    # Categories are ordered alphabetically by name.
+    # Returns an OrderedDict, key is category_id and value is the Category name.
+    # Categories are ordered alphabetically by m_name.
     # This function is useful for select dialogs.
     def get_categories_odict(self):
         categories_odict = collections.OrderedDict()
@@ -1122,16 +1107,31 @@ class ObjectRepository(object):
 
         return categories_odict
 
-    # Returns a list of launchers belonging to category_id
-    def find_launchers_by_category_id(self, category_id):
-        launchers = []
-        for launcher_id in self.launchers:
-            this_cat_id = self.launchers[launcher_id]['categoryID']
-            if this_cat_id != category_id: continue
-            launcher = self.obj_factory.create_from_dic(self.launchers[launcher_id])
-            launchers.append(launcher)
+    #
+    # Finds an actual Launcher by ID in the database.
+    # Returns a Launcher database dictionary or None if not found.
+    #
+    def find_launcher(self, launcher_id):
+        if launcher_id in self.launchers:
+            launcher_dic = self.launchers[launcher_id]
+        else:
+            launcher_dic = None
 
-        return launchers
+        return launcher_dic
+
+    # Returns a list of launchers belonging to category_id
+    # Launchers are sorted alphabetically by m_name.
+    def find_launchers_by_category_id(self, category_id):
+        launchers_dic_list = []
+        for launcher_id in self.launchers:
+            if self.launchers[launcher_id]['categoryID'] != category_id: continue
+            launchers_dic_list.append(self.launchers[launcher_id])
+
+        sorted_launcher_dic_list = []
+        for launcher_dic in sorted(launchers_dic_list, key = lambda c : c['m_name']):
+            sorted_launcher_dic_list.append(launcher_dic)
+
+        return sorted_launcher_dic_list
 
     # Removes a category from the database.
     # Launchers belonging to this Category must be deleted first, otherwise will become orphaned.
@@ -1148,33 +1148,6 @@ class ObjectRepository(object):
         launcher_id = launcher.get_id()
         del self.launchers[launcher_id]
         self.commit_database()
-
-    #
-    # Note that isinstance() is True if object is a child class.
-    def save_object(self, obj_instance):
-        if isinstance(obj_instance, Category):
-            self.categories[obj_instance.get_id()] = obj_instance.get_data_dic()
-            self.save_main_database()
-
-        # Special launchers
-        elif isinstance(obj_instance, CollectionLauncher):
-            raise AddonError('Implement me CollectionLauncher')
-
-        elif isinstance(obj_instance, VirtualLauncher):
-            raise AddonError('Implement me VirtualLauncher')
-
-        # Default to standard Launcher
-        elif isinstance(obj_instance, LauncherABC):
-            self.launchers[obj_instance.get_id()] = obj_instance.get_data_dic()
-            self.save_main_database()
-
-        elif isinstance(obj_instance, ROM):
-            raise AddonError('Implement me ROM')
-
-        else:
-            error_str = 'Unknown object instance {0}'.format(obj_instance.__class__.__name__)
-            log_error(error_str)
-            raise AddonError(error_str)
 
     def save_category(self, category):
         category_id = category.get_id()
@@ -1198,6 +1171,7 @@ class ObjectRepository(object):
         # >> but not always.
         # >> See https://docs.python.org/2/library/time.html#time.time
         # NOTE When updating reports timestamp of categories/launchers this must not be modified.
+        self.header_dic['database_version'] = '0.10.0'
         self.header_dic['update_timestamp'] = time.time()
         fs_write_catfile(self.PATHS.CATEGORIES_FILE_PATH,
                          self.header_dic, self.categories, self.launchers)
@@ -4505,7 +4479,7 @@ class NvidiaGameStreamLauncher(ROMLauncherABC):
 #     launcher.save()
 #
 #  6. Retrieve a list of all real Launchers in a Category, sorted alphabetically by Name:
-#     launcher_list = AELObjectFactory.find_launcher_in_cat(category_id)
+#     launcher_list = AELObjectFactory.find_launchers_in_cat(category_id)
 #
 #  5. Retrieve a real Launcher from disk (real launcher can be edited):
 #     launcher = AELObjectFactory.find_launcher(VCATEGORY_ACTUAL_LAUN_ID, launcher_id)
@@ -4517,7 +4491,7 @@ class NvidiaGameStreamLauncher(ROMLauncherABC):
 #     collection.save()
 #
 #  7. Retrieve a list of all ROM Collection launchers from disk:
-#     collections_list = AELObjectFactory.find_launcher_in_cat(VCATEGORY_COLLECTIONS_ID)
+#     collections_list = AELObjectFactory.find_launchers_in_cat(VCATEGORY_COLLECTIONS_ID)
 #
 #  8. Retrieve a ROM Collection from disk (for example, in Edit Collection context menu):
 #     collection = AELObjectFactory.find_launcher(VCATEGORY_COLLECTIONS_ID, launcher_id)
@@ -4529,7 +4503,7 @@ class NvidiaGameStreamLauncher(ROMLauncherABC):
 #     vlauncher.save()
 #
 # 10. Retrieve a list of all Virtual Launchers of a given type:
-#     vlauncher_list = AELObjectFactory.find_launcher_in_cat(VCATEGORY_TITLE_ID)
+#     vlauncher_list = AELObjectFactory.find_launchers_in_cat(VCATEGORY_TITLE_ID)
 #
 # 11. Retrieve a Virtual Launcher from disk:
 #     vlauncher = AELObjectFactory.find_launcher(VCATEGORY_TITLE_ID, launcher_id)
@@ -4634,6 +4608,8 @@ class AELObjectFactory(object):
         return self._load(obj_type)
 
     #
+    # DEPRECATED: Is this function really needed?
+    #
     # Create special object, like Virtual Categories and Launchers. For example:
     # 1) create_special(OBJ_CATEGORY_VIRTUAL, VCATEGORY_ADDONROOT_ID) used when creating a
     #    Launcher in the addon root (no category).
@@ -4651,6 +4627,7 @@ class AELObjectFactory(object):
             return None
 
     #
+    # DEPRECATED: this function must be internal callable only.
     # Creates a Launcher derived object when the data dictionary is available.
     # The type of object is the 'type' field in the dictionary.
     #
@@ -4664,22 +4641,55 @@ class AELObjectFactory(object):
     #
     # Retrieves a Category object from the database.
     # This method also creates Virtual Category objects.
+    # Returns a Category object or None.
     #
     def find_category(self, category_id):
-        pass
+        category_dic = self.objectRepository.find_category(category_id)
+        if category_dic is not None:
+            category_obj = self._load(OBJ_CATEGORY, category_dic)
+        else:
+            category_obj = None
+
+        return category_obj
 
     #
-    # Retrieves a ROM Collection Launcher object from the database.
+    # Retrieves a list of Category objects, sorted alphabetically by Name.
     #
-    def find_collection(self, ):
-        pass
+    def find_category_all(self):
+        category_obj_list = []
+        category_dic_list = self.objectRepository.find_category_all()
+        # dump_object_to_log('category_dic_list', category_dic_list)
+        for category_dic in category_dic_list:
+            category_obj_list.append(self._load(OBJ_CATEGORY, category_dic))
+
+        return category_obj_list
 
     #
     # Retrieves a Launcher object from the database.
-    # This method also creates virtual launchers (Favourites, 
+    # This method also creates Virtual Launchers (Favourites, ROM Collection, etc.)
+    # Returns a Launcher object or None.
     #
-    def find_launcher(self, launcher_id):
-        pass
+    def find_launcher(self, category_id, launcher_id):
+        category_dic = self.objectRepository.find_launcher(launcher_id)
+        if category_dic is not None:
+            category_obj = self._load(OBJ_LAUNCHER_ROM, category_dic)
+        else:
+            category_obj = None
+
+        return category_obj
+
+    #
+    # Retrieves a list of Launcher objects in a category.
+    # This method also works for Virtual Categories (ROM Collections, Browse by Title, etc.)
+    #
+    def find_launchers_in_cat(self, category_id):
+        launcher_obj_list = []
+        launcher_dic_list = self.objectRepository.find_launchers_by_category_id(category_id)
+        # dump_object_to_log('launcher_dic_list', launcher_dic_list)
+        for launcher_dic in launcher_dic_list:
+            launcher_obj_list.append(self._load(OBJ_LAUNCHER_ROM, launcher_dic))
+
+        return launcher_obj_list
 
     #
     # To show "Select Launcher type" dialog. Only return real Launcher and not Virtual Launchers.
@@ -4702,7 +4712,9 @@ class AELObjectFactory(object):
 
     #
     # obj_type is mandatory.
-    # obj_dic may be a dictionary or None
+    # obj_dic may be a dictionary (database objects) or None (new objest).
+    # Object constructor is responsible for filling the database dictionary with sensible
+    # defaults if obj_dic = None. 
     #
     def _load(self, obj_type, obj_dic = None):
         # --- Categories ---

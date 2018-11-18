@@ -4293,14 +4293,14 @@ def m_command_render_root():
     m_misc_set_AEL_Content(AEL_CONTENT_VALUE_LAUNCHERS)
     m_misc_clear_AEL_Launcher_Content()
 
-    # >> For every category, add it to the listbox. Order alphabetically by name
-    category_list = g_ObjectRepository.get_category_list()
-    for category in sorted(category_list, key = lambda c : c.get_name()):
+    # >> For every category, add it to the listbox.
+    category_list = g_ObjectFactory.find_category_all()
+    for category in category_list:
         m_gui_render_category_row(category)
 
     # --- Render categoryless launchers. Order alphabetically by name ---
-    nocat_launcher_list = g_ObjectRepository.find_launchers_by_category_id(VCATEGORY_ADDONROOT_ID)
-    for launcher in sorted(nocat_launcher_list, key = lambda l : l.get_name()):
+    nocat_launcher_list = g_ObjectFactory.find_launchers_in_cat(VCATEGORY_ADDONROOT_ID)
+    for launcher in nocat_launcher_list:
         m_gui_render_launcher_row(launcher)
 
     # --- AEL Favourites virtual launcher ---
