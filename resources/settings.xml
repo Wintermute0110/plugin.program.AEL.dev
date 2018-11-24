@@ -80,13 +80,17 @@
     <setting label="Hide [Most played ROMs]" type="bool" id="display_hide_mostplayed" default="false" />
 </category>
 <category label="Paths">
+    <setting id="separator" type="lsep" label="Retroarch paths/options"/>
+    <setting label="Retroarch executable" type="folder" id="retroarch_exec_path" default="" source="" />
+    <setting label="Retroarch cores directory" type="folder" id="retroarch_cores_dir" default="" source="" />    
+    <setting label="Retroarch system directory" type="folder" id="retroarch_system_dir" default="" source="" />
+    <setting label="Only check mandatory BIOSes" type="bool" id="retroarch_mandatory_BIOS" default="true"/>
+
+    <setting id="separator" type="lsep" label="AEL asset paths"/>
     <setting label="Category Asset directory" type="folder" id="categories_asset_dir" default="" source="" />
     <setting label="Launcher Asset directory" type="folder" id="launchers_asset_dir" default="" source="" />
     <setting label="Favourites Asset directory" type="folder" id="favourites_asset_dir" default="" source="" />
     <setting label="Collections Asset directory" type="folder" id="collections_asset_dir" default="" source="" />
-
-    <setting label="Retroarch System directory" type="folder" id="io_retroarch_sys_dir" default="" source="" />
-    <setting label="Only check mandatory BIOSes" type="bool" id="io_retroarch_only_mandatory" default="true"/>
 </category>
 <category label="I/O">
     <setting id="separator" type="lsep" label="Import/export configuration"/>

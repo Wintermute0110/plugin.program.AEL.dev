@@ -605,14 +605,14 @@ def m_get_settings():
     g_settings['display_hide_mostplayed']  = True if o.getSetting('display_hide_mostplayed') == 'true' else False
 
     # --- Paths tab ---
+    g_settings['retroarch_exec_path']      = o.getSetting('retroarch_exec_path').decode('utf-8')
+    g_settings['retroarch_cores_dir']      = o.getSetting('retroarch_cores_dir').decode('utf-8')
+    g_settings['retroarch_system_dir']     = o.getSetting('retroarch_system_dir').decode('utf-8')
+    g_settings['retroarch_mandatory_BIOS'] = True if o.getSetting('retroarch_mandatory_BIOS') == 'true' else False
     g_settings['categories_asset_dir']     = o.getSetting('categories_asset_dir').decode('utf-8')
     g_settings['launchers_asset_dir']      = o.getSetting('launchers_asset_dir').decode('utf-8')
     g_settings['favourites_asset_dir']     = o.getSetting('favourites_asset_dir').decode('utf-8')
     g_settings['collections_asset_dir']    = o.getSetting('collections_asset_dir').decode('utf-8')
-
-    # --- I/O tab ---
-    g_settings['io_retroarch_only_mandatory'] = True if o.getSetting('io_retroarch_only_mandatory') == 'true' else False
-    g_settings['io_retroarch_sys_dir']        = o.getSetting('io_retroarch_sys_dir').decode('utf-8')
 
     # --- Advanced tab ---
     g_settings['media_state_action']       = int(o.getSetting('media_state_action'))
