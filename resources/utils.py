@@ -623,9 +623,13 @@ class VersionNumber(object):
     def getBuild(self):
         return int(self.versionNumber[2])
 
-def dump_object_to_log(obj_name_str, obj):
-    log_debug('Dumping variable named "{0}"'.format(obj_name_str))
-    log_debug('obj.__class__.__name__ = {0}'.format(obj.__class__.__name__))
+# def dump_object_to_log_name(obj_name_str, obj):
+#     log_debug('Dumping variable named "{0}"'.format(obj_name_str))
+#     log_debug('obj.__class__.__name__ = {0}'.format(obj.__class__.__name__))
+#     log_debug(pprint.pformat(obj))
+
+def dump_object_to_log(obj):
+    log_debug('Dumping obj.__class__.__name__ = {0}'.format(obj.__class__.__name__))
     log_debug(pprint.pformat(obj))
 
 # -------------------------------------------------------------------------------------------------

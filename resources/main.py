@@ -587,6 +587,7 @@ def m_get_settings():
     # g_settings['scraper_fanart_order']     = int(o.getSetting('scraper_fanart_order'))
 
     # --- Display tab ---
+    g_settings['display_category_mode']    = int(o.getSetting('display_category_mode'))
     g_settings['display_launcher_notify']  = True if o.getSetting('display_launcher_notify') == 'true' else False
     g_settings['display_hide_finished']    = True if o.getSetting('display_hide_finished') == 'true' else False
     g_settings['display_launcher_roms']    = True if o.getSetting('display_launcher_roms') == 'true' else False
@@ -4285,10 +4286,22 @@ def m_command_render_root():
     m_misc_set_AEL_Content(AEL_CONTENT_VALUE_LAUNCHERS)
     m_misc_clear_AEL_Launcher_Content()
 
-    # >> For every category, add it to the listbox.
-    category_list = g_ObjectFactory.find_category_all()
-    for category in category_list:
-        m_gui_render_category_row(category)
+    # --- Render categories in classic mode or in flat mode ---
+    # <setting id="display_category_mode" values="Standard|Flat"/>
+    if g_settings['display_category_mode'] == 0:
+        # --- For every category, add it to the listbox ---
+        category_list = g_ObjectFactory.find_category_all()
+        for category in category_list:
+            m_gui_render_category_row(category)
+    else:
+        category_list = g_ObjectFactory.find_category_all()
+        for category in category_list:
+            # Get launchers in this category and render them
+            launcher_list = g_ObjectFactory.find_launchers_in_cat(category.get_id())
+            dump_object_to_log(launcher_list)
+            for launcher in launcher_list:
+                launcher_raw_name = '[COLOR thistle]{0}[/COLOR] - {1}'.format(category.get_name(), launcher.get_name())
+                m_gui_render_launcher_row(launcher, launcher_raw_name)
 
     # --- Render categoryless launchers. Order alphabetically by name ---
     nocat_launcher_list = g_ObjectFactory.find_launchers_in_cat(VCATEGORY_ADDONROOT_ID)
@@ -5002,7 +5015,7 @@ def m_command_render_all_launchers():
         self._gui_render_launcher_row(launcher)
     xbmcplugin.endOfDirectory(handle = g_addon_handle, succeeded = True, cacheToDisc = False)
 
-def m_gui_render_launcher_row(launcher):
+def m_gui_render_launcher_row(launcher, launcher_raw_name = None):
     # --- Do not render row if launcher finished ---
     if launcher.is_finished() and g_settings['display_hide_finished']:
         return
@@ -5010,18 +5023,7 @@ def m_gui_render_launcher_row(launcher):
     # --- Launcher tags ---
     # >> Do not plot ROM count on standalone launchers!
     # TODO add type in upgrade process
-    launcher_name = launcher_raw_name = launcher.get_name()
-    launcher_type = launcher.get_launcher_type()
-    if   launcher_type == OBJ_LAUNCHER_STANDALONE:      launcher_desc = 'Std'
-    elif launcher_type == OBJ_LAUNCHER_ROM:             launcher_desc = 'ROMs'
-    elif launcher_type == OBJ_LAUNCHER_RETROPLAYER:     launcher_desc = 'KRetro'
-    elif launcher_type == OBJ_LAUNCHER_RETROARCH:       launcher_desc = 'Retro'
-    elif launcher_type == OBJ_LAUNCHER_LNK:             launcher_desc = 'LNKs'
-    elif launcher_type == OBJ_LAUNCHER_STEAM:           launcher_desc = 'Steam'
-    elif launcher_type == OBJ_LAUNCHER_NVGAMESTREAM:    launcher_desc = 'Strm'
-    elif launcher_type == OBJ_LAUNCHER_KODI_FAVOURITES: launcher_desc = 'Fav'
-    else:                                               launcher_desc = '???'
-
+    if launcher_raw_name is None: launcher_raw_name = launcher.get_name()
     launcher_dic = launcher.get_data_dic()
     if launcher.supports_launching_roms() and g_settings['display_launcher_roms']:
         if launcher_dic['nointro_xml_file']:
@@ -5052,6 +5054,16 @@ def m_gui_render_launcher_row(launcher):
                 launcher_name = '{0} [COLOR orange]({1} ROMs)[/COLOR]'.format(launcher_raw_name, num_roms)
         # >> ROM launcher with DAT file and ROM audit information.
     else:
+        launcher_type = launcher.get_launcher_type()
+        if   launcher_type == OBJ_LAUNCHER_STANDALONE:      launcher_desc = 'Std'
+        elif launcher_type == OBJ_LAUNCHER_ROM:             launcher_desc = 'ROMs'
+        elif launcher_type == OBJ_LAUNCHER_RETROPLAYER:     launcher_desc = 'KRetro'
+        elif launcher_type == OBJ_LAUNCHER_RETROARCH:       launcher_desc = 'Retro'
+        elif launcher_type == OBJ_LAUNCHER_LNK:             launcher_desc = 'LNKs'
+        elif launcher_type == OBJ_LAUNCHER_STEAM:           launcher_desc = 'Steam'
+        elif launcher_type == OBJ_LAUNCHER_NVGAMESTREAM:    launcher_desc = 'Strm'
+        elif launcher_type == OBJ_LAUNCHER_KODI_FAVOURITES: launcher_desc = 'Fav'
+        else:                                               launcher_desc = '???'
         launcher_name = '{0} [COLOR chocolate]({1})[/COLOR]'.format(launcher_raw_name, launcher_desc)
 
     # --- Create listitem row ---

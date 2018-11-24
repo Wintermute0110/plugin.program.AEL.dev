@@ -1128,8 +1128,10 @@ class ObjectRepository(object):
 
         return launcher_dic
 
+    #
     # Returns a list of launchers belonging to category_id
     # Launchers are sorted alphabetically by m_name.
+    #
     def find_launchers_by_category_id(self, category_id):
         launchers_dic_list = []
         for launcher_id in self.launchers:
