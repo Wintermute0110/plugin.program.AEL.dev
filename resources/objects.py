@@ -1151,14 +1151,14 @@ class ObjectRepository(object):
         del self.categories[category_id]
         self.commit_database()
 
+    #
     # Removes a Launcher from the database.
     # If Launcher supports ROMs it also removes all files associated with the Launcher.
+    #
     def delete_launcher(self, launcher):
-        if launcher.supports_launching_roms():
-            launcher.clear_roms()
-        launcher_id = launcher.get_id()
-        del self.launchers[launcher_id]
-        self.commit_database()
+        if launcher.supports_launching_roms(): launcher.delete_ROM_databases()
+        del self.launchers[launcher.get_id()]
+        self.save_main_database()
 
     def save_category(self, category_dic):
         self.categories[category_dic['id']] = category_dic
@@ -1262,8 +1262,8 @@ ROMSET_PARENTS  = '_parents'
 ROMSET_DAT      = '_DAT'
 
 # -------------------------------------------------------------------------------------------------
-# --- Repository class for Rom Set objects ---
-# Arranges retrieving and storing of roms belonging to a particular launcher.
+# --- Repository class for ROM set objects of Standard ROM Launchers ---
+# Arranges retrieving and storing of roms belonging to a particular standard ROM launcher.
 #
 # NOTE ROMs in a collection are stored as a list and ROMs in Favourites are stored as
 #      a dictionary. Convert the Collection list into an ordered dictionary and then
@@ -1275,11 +1275,14 @@ class ROMSetRepository(object):
         self.roms_dir = roms_dir
         self.store_as_dictionary = store_as_dictionary
 
-    def find_by_launcher(self, launcher, view_mode = None):
+    #
+    # Loads ROM databases from disk
+    #
+    def load_ROMs(self, launcher, view_mode = None):
         roms_base_noext = launcher.get_roms_base()
         if view_mode is None:
             view_mode = launcher.get_display_mode()
-        
+
         if roms_base_noext is None:
             repository_file = self.roms_dir
         elif view_mode == LAUNCHER_DMODE_FLAT:
@@ -1328,7 +1331,7 @@ class ROMSetRepository(object):
 
     def find_index_file_by_launcher(self, launcher, type):
         roms_base_noext = launcher.get_roms_base()
-        repository_file = self.roms_dir.pjoin('{}{}.json'.format(roms_base_noext, type))
+        repository_file = self.roms_dir.pjoin('{0}{1}.json'.format(roms_base_noext, type))
 
         if not repository_file.exists():
             log_warning('RomSetRepository.find_index_file_by_launcher(): File not found {0}'.format(repository_file.getPath()))
@@ -1345,7 +1348,6 @@ class ROMSetRepository(object):
             return None
 
         return index_data
-
 
     def save_rom_set(self, launcher, roms, view_mode = None):
         romdata = None
@@ -1555,6 +1557,9 @@ class MetaDataItemABC(object):
     @abc.abstractmethod
     def save_to_disk(self): pass
 
+    @abc.abstractmethod
+    def delete_from_disk(self): pass
+
     # --- Database ID and utilities ---------------------------------------------------------------
     def set_id(self, id):
         self.entity_data['id'] = id
@@ -1698,9 +1703,15 @@ class Category(MetaDataItemABC):
 
     def get_assets_kind(self): return KIND_ASSET_CATEGORY
 
-    def is_virtual(self): return False
-
     def save_to_disk(self): self.objectRepository.save_category(self.entity_data)
+
+    def delete_from_disk(self):
+        # Object becomes invalid after deletion.
+        self.objectRepository.delete_category(self.entity_data)
+        self.entity_data = None
+        self.objectRepository = None
+
+    def is_virtual(self): return False
 
     def num_launchers(self):
         return self.objectRepository.num_launchers_in_cat(self.entity_data['id'])
@@ -1789,13 +1800,13 @@ class VirtualCategory(MetaDataItemABC):
         entity_data['m_name'] = obj_dic['m_name']
         super(VirtualCategory, self).__init__(PATHS, settings, entity_data, objectRepository)
 
-    def is_virtual(self): return True
-
-    def save_to_disk(self): pass
-
     def get_object_name(self): return 'Virtual Category'
 
     def get_assets_kind(self): return KIND_ASSET_CATEGORY
+
+    def save_to_disk(self): pass
+
+    def is_virtual(self): return True
 
 # -------------------------------------------------------------------------------------------------
 # Class representing a ROM file you can play through AEL.
@@ -2344,9 +2355,8 @@ class LauncherABC(MetaDataItemABC):
         self.entity_data['non_blocking'] = is_non_blocking
         return self.is_non_blocking()
 
-    # Change the application this launcher uses. Override if changeable.
-    def change_application(self):
-        return False
+    # Change the application this launcher uses. Override if application is changeable.
+    def change_application(self): return False
 
     def get_timestamp(self):
         timestamp = self.entity_data['timestamp_launcher']
@@ -2355,8 +2365,7 @@ class LauncherABC(MetaDataItemABC):
 
         return float(timestamp)
 
-    def update_timestamp(self):
-        self.entity_data['timestamp_launcher'] = time.time()
+    def update_timestamp(self): self.entity_data['timestamp_launcher'] = time.time()
 
     def get_report_timestamp(self):
         timestamp = self.entity_data['timestamp_report']
@@ -2365,8 +2374,7 @@ class LauncherABC(MetaDataItemABC):
 
         return float(timestamp)
 
-    def update_report_timestamp(self):
-        self.entity_data['timestamp_report'] = time.time()
+    def update_report_timestamp(self): self.entity_data['timestamp_report'] = time.time()
 
     # ---------------------------------------------------------------------------------------------
     # Launcher asset methods
@@ -2546,9 +2554,6 @@ class LauncherABC(MetaDataItemABC):
 # Standalone application launcher
 # -------------------------------------------------------------------------------------------------
 class StandaloneLauncher(LauncherABC):
-    # --------------------------------------------------------------------------------------------
-    # Core methods
-    # --------------------------------------------------------------------------------------------
     def __init__(self, PATHS, settings, launcher_dic, objectRepository, executorFactory):
         # --- Create default Standalone Launcher if empty launcher_dic---
         # Concrete classes are responsible of creating a default entity_data dictionary
@@ -2559,17 +2564,26 @@ class StandaloneLauncher(LauncherABC):
             launcher_dic['type'] = OBJ_LAUNCHER_STANDALONE
         super(StandaloneLauncher, self).__init__(PATHS, settings, launcher_dic, objectRepository, executorFactory)
 
+    # --------------------------------------------------------------------------------------------
+    # Core methods
+    # --------------------------------------------------------------------------------------------
     def get_object_name(self): return 'Standalone launcher'
 
     def get_assets_kind(self): return KIND_ASSET_LAUNCHER
 
     def get_launcher_type(self): return OBJ_LAUNCHER_STANDALONE
 
+    def save_to_disk(self): self.objectRepository.save_launcher(self.entity_data)
+
+    # Object becomes invalid after deletion
+    def delete_from_disk(self):
+        self.objectRepository.delete_launcher(self.entity_data)
+        self.entity_data = None
+        self.objectRepository = None
+
     def supports_launching_roms(self): return False
 
     def supports_parent_clone_roms(self): return False
-
-    def save_to_disk(self): self.objectRepository.save_launcher(self.entity_data)
 
     # --------------------------------------------------------------------------------------------
     # Launcher build wizard methods
@@ -2598,18 +2612,18 @@ class StandaloneLauncher(LauncherABC):
     # --------------------------------------------------------------------------------------------
     # Launcher edit methods
     # --------------------------------------------------------------------------------------------
-    def get_main_edit_options(self):
+    def get_main_edit_options(self, category):
         log_debug('StandaloneLauncher::get_main_edit_options() Starting ...')
 
         options = collections.OrderedDict()
-        options['EDIT_METADATA']      = 'Edit Metadata ...'
-        options['EDIT_ASSETS']        = 'Edit Assets/Artwork ...'
-        options['SET_DEFAULT_ASSETS'] = 'Choose default Assets/Artwork ...'
-        options['CHANGE_CATEGORY']    = 'Change Category'
-        options['LAUNCHER_STATUS']    = 'Launcher status: {0}'.format(self.get_finished_str())
-        options['ADVANCED_MODS']      = 'Advanced Modifications ...'
-        options['EXPORT_LAUNCHER']    = 'Export Launcher XML configuration ...'
-        options['DELETE_LAUNCHER']    = 'Delete Launcher'
+        options['EDIT_METADATA']          = 'Edit Metadata ...'
+        options['EDIT_ASSETS']            = 'Edit Assets/Artwork ...'
+        options['EDIT_DEFAULT_ASSETS']    = 'Choose default Assets/Artwork ...'
+        options['EDIT_LAUNCHER_CATEGORY'] = "Change Category: '{0}'".format(category.get_name())
+        options['EDIT_LAUNCHER_STATUS']   = 'Launcher status: {0}'.format(self.get_finished_str())
+        options['LAUNCHER_ADVANCED_MODS'] = 'Advanced Modifications ...'
+        options['EXPORT_LAUNCHER']        = 'Export Launcher XML configuration ...'
+        options['DELETE_LAUNCHER']        = 'Delete Launcher'
 
         return options
 
@@ -2663,11 +2677,9 @@ class StandaloneLauncher(LauncherABC):
 
         self.entity_data['application'] = selected_application
 
-    def change_arguments(self, args):
-        self.entity_data['args'] = args
+    def set_args(self, args): self.entity_data['args'] = args
 
-    def get_args(self):
-        return self.entity_data['args']
+    def get_args(self): return self.entity_data['args']
 
     def get_additional_argument(self, index):
         args = self.get_all_additional_arguments()
@@ -2810,6 +2822,8 @@ class ROMLauncherABC(LauncherABC):
 
     def supports_parent_clone_roms(self): return True
 
+    def supports_parent_clone_roms(self): return False
+
     def supports_ROM_audit(self): return True
 
     # --------------------------------------------------------------------------------------------
@@ -2847,8 +2861,7 @@ class ROMLauncherABC(LauncherABC):
     # Launcher edit methods
     # --------------------------------------------------------------------------------------------
     @abc.abstractmethod
-    def get_main_edit_options(self):
-        pass
+    def get_main_edit_options(self): pass
 
     # get_metadata_edit_options() has a general implementation in LauncherABC class for 
     # all launchers.
@@ -2857,8 +2870,7 @@ class ROMLauncherABC(LauncherABC):
     # get_advanced_modification_options() is custom for every concrete launcher class.
     #
     @abc.abstractmethod
-    def get_advanced_modification_options(self):
-        pass
+    def get_advanced_modification_options(self): pass
 
     # Returns the dialog options to choose from when managing the roms.
     def get_manage_roms_options(self):
@@ -2899,9 +2911,9 @@ class ROMLauncherABC(LauncherABC):
         self.title = self.rom.get_name()
         self.selected_rom_file = None
 
-        applicationIsSet = self._selectApplicationToUse()
-        argumentsAreSet  = self._selectArgumentsToUse()
-        romIsSelected    = self._selectRomFileToUse()
+        applicationIsSet = self._launch_selectApplicationToUse()
+        argumentsAreSet  = self._launch_selectArgumentsToUse()
+        romIsSelected    = self._launch_selectRomFileToUse()
 
         if not applicationIsSet or not argumentsAreSet or not romIsSelected:
             return
@@ -2912,122 +2924,19 @@ class ROMLauncherABC(LauncherABC):
             self.statsStrategy.update_launched_rom_stats(self.rom)
             self.save_rom(self.rom)
 
-        super(RomLauncher, self).launch()
-
-
-    # ---------------------------------------------------------------------------------------------
-    # ROM methods
-    # ---------------------------------------------------------------------------------------------
-
-
-    # ---------------------------------------------------------------------------------------------
-    # ROM asset methods
-    # ---------------------------------------------------------------------------------------------
-    #
-    # Creates path for assets (artwork) and automatically fills in the path_ fields in the
-    # launcher dictionary.
-    #
-    def rom_assets_init_dirs(self):
-        assets_dir_FN = FileName(self.entity_data['assets_path'], isdir = True)
-        log_verb('ROMLauncherABC::rom_assets_init_dirs() assets_dir_FN "{0}"'.format(assets_dir_FN.getPath()))
-
-        # --- Fill in launcher fields and create asset directories ---
-        if self.entity_data['platform'] == 'MAME':
-            log_verb('ROMLauncherABC::rom_assets_init_dirs() Creating MAME asset paths')
-            self.rom_assets_create_dir(assets_dir_FN, 'path_title', 'titles')
-            self.rom_assets_create_dir(assets_dir_FN, 'path_snap', 'snaps')
-            self.rom_assets_create_dir(assets_dir_FN, 'path_boxfront', 'cabinets')
-            self.rom_assets_create_dir(assets_dir_FN, 'path_boxback', 'cpanels')
-            self.rom_assets_create_dir(assets_dir_FN, 'path_cartridge', 'PCBs')
-            self.rom_assets_create_dir(assets_dir_FN, 'path_fanart', 'fanarts')
-            self.rom_assets_create_dir(assets_dir_FN, 'path_banner', 'marquees')
-            self.rom_assets_create_dir(assets_dir_FN, 'path_clearlogo', 'clearlogos')
-            self.rom_assets_create_dir(assets_dir_FN, 'path_flyer', 'flyers')
-            self.rom_assets_create_dir(assets_dir_FN, 'path_map', 'maps')
-            self.rom_assets_create_dir(assets_dir_FN, 'path_manual', 'manuals')
-            self.rom_assets_create_dir(assets_dir_FN, 'path_trailer', 'trailers')
-        else:
-            log_verb('ROMLauncherABC::rom_assets_init_dirs() Creating Standard asset paths')
-            self.rom_assets_create_dir(assets_dir_FN, 'path_title', 'titles')
-            self.rom_assets_create_dir(assets_dir_FN, 'path_snap', 'snaps')
-            self.rom_assets_create_dir(assets_dir_FN, 'path_boxfront', 'boxfronts')
-            self.rom_assets_create_dir(assets_dir_FN, 'path_boxback', 'boxbacks')
-            self.rom_assets_create_dir(assets_dir_FN, 'path_cartridge', 'cartridges')
-            self.rom_assets_create_dir(assets_dir_FN, 'path_fanart', 'fanarts')
-            self.rom_assets_create_dir(assets_dir_FN, 'path_banner', 'banners')
-            self.rom_assets_create_dir(assets_dir_FN, 'path_clearlogo', 'clearlogos')
-            self.rom_assets_create_dir(assets_dir_FN, 'path_flyer', 'flyers')
-            self.rom_assets_create_dir(assets_dir_FN, 'path_map', 'maps')
-            self.rom_assets_create_dir(assets_dir_FN, 'path_manual', 'manuals')
-            self.rom_assets_create_dir(assets_dir_FN, 'path_trailer', 'trailers')
-
-    #
-    # Create asset path and assign it to Launcher dictionary.
-    #
-    def rom_assets_create_dir(self, assets_dir_FN, key, path_name):
-        asset_dir_FN = assets_dir_FN.pjoin(path_name, isdir = True)
-        self.entity_data[key] = asset_dir_FN.getPath()
-        log_debug('ROMLauncherABC::rom_assets_create_dir() Creating "{0}"'.format(asset_dir_FN.getPath()))
-        asset_dir_FN.makedirs()
-
-    def get_rom_assets(self):
-        assets = {}
-        assets[ASSET_BANNER]     = self.entity_data['s_banner']      if self.entity_data['s_banner']     else ''
-        assets[ASSET_ICON]       = self.entity_data['s_icon']        if self.entity_data['s_icon']       else ''
-        assets[ASSET_FANART]     = self.entity_data['s_fanart']      if self.entity_data['s_fanart']     else ''
-        assets[ASSET_POSTER]     = self.entity_data['s_poster']      if self.entity_data['s_poster']     else ''
-        assets[ASSET_CLEARLOGO]  = self.entity_data['s_clearlogo']   if self.entity_data['s_clearlogo']  else ''
-        assets[ASSET_CONTROLLER] = self.entity_data['s_controller']  if self.entity_data['s_controller'] else ''
-        assets[ASSET_TRAILER]    = self.entity_data['s_trailer']     if self.entity_data['s_trailer']    else ''
-
-        return assets
-
-    def get_rom_asset_default(self, asset_info):
-        return self.entity_data[asset_info.rom_default_key] if asset_info.rom_default_key in self.entity_data else None
-
-    def get_rom_asset_defaults(self):
-        default_assets = {}
-        default_assets[ASSET_BANNER]     = ASSET_KEYS_TO_CONSTANTS[self.entity_data['roms_default_banner']]    if self.entity_data['roms_default_banner']     else ''
-        default_assets[ASSET_ICON]       = ASSET_KEYS_TO_CONSTANTS[self.entity_data['roms_default_icon']]      if self.entity_data['roms_default_icon']       else ''
-        default_assets[ASSET_FANART]     = ASSET_KEYS_TO_CONSTANTS[self.entity_data['roms_default_fanart']]    if self.entity_data['roms_default_fanart']     else ''
-        default_assets[ASSET_POSTER]     = ASSET_KEYS_TO_CONSTANTS[self.entity_data['roms_default_poster']]    if self.entity_data['roms_default_poster']     else ''
-        default_assets[ASSET_CLEARLOGO]  = ASSET_KEYS_TO_CONSTANTS[self.entity_data['roms_default_clearlogo']] if self.entity_data['roms_default_clearlogo']  else ''
-
-        return default_assets
-
-
-
-
-
-
-
-
-
-
-    # ---------------------------------------------------------------------------------------------
-    # Utility functions of ROM Launchers
-    # ---------------------------------------------------------------------------------------------
-
-
-
-
-
-
+        super(RomLauncherABC, self).launch()
 
     @abc.abstractmethod
-    def _selectApplicationToUse(self):
-        return True
+    def _launch_selectApplicationToUse(self): return True
 
     @abc.abstractmethod
-    def _selectArgumentsToUse(self):
-        return True
+    def _launch_selectArgumentsToUse(self): return True
 
     @abc.abstractmethod
-    def _selectRomFileToUse(self):
-        return True
+    def _launch_selectRomFileToUse(self): return True
 
-    # ~~~~ Argument substitution ~~~~~
-    def _parseArguments(self):
+    # --- Argument substitution ---
+    def _launch_parseArguments(self):
         log_info('RomLauncher() raw arguments   "{0}"'.format(self.arguments))
 
         # Application based arguments replacements
@@ -3090,17 +2999,116 @@ class ROMLauncherABC(LauncherABC):
 
         log_info('RomLauncher() final arguments "{0}"'.format(self.arguments))
 
+    # ---------------------------------------------------------------------------------------------
+    # ROM methods
+    # ---------------------------------------------------------------------------------------------
 
-    def supports_parent_clone_roms(self):
-        return False
 
-    def load_roms(self):
-        self.roms = self.romset_repository.find_by_launcher(self)
+    # ---------------------------------------------------------------------------------------------
+    # ROM asset methods
+    # ---------------------------------------------------------------------------------------------
+    #
+    # Creates path for assets (artwork) and automatically fills in the path_ fields in the
+    # launcher dictionary.
+    #
+    def rom_assets_init_dirs(self):
+        assets_dir_FN = FileName(self.entity_data['assets_path'], isdir = True)
+        log_verb('ROMLauncherABC::rom_assets_init_dirs() assets_dir_FN "{0}"'.format(assets_dir_FN.getPath()))
 
-    def select_rom(self, rom_id):
-        if not self.has_roms():
-            self.load_roms()
+        # --- Fill in launcher fields and create asset directories ---
+        if self.entity_data['platform'] == 'MAME':
+            log_verb('ROMLauncherABC::rom_assets_init_dirs() Creating MAME asset paths')
+            self.rom_assets_create_dir(assets_dir_FN, 'path_title', 'titles')
+            self.rom_assets_create_dir(assets_dir_FN, 'path_snap', 'snaps')
+            self.rom_assets_create_dir(assets_dir_FN, 'path_boxfront', 'cabinets')
+            self.rom_assets_create_dir(assets_dir_FN, 'path_boxback', 'cpanels')
+            self.rom_assets_create_dir(assets_dir_FN, 'path_cartridge', 'PCBs')
+            self.rom_assets_create_dir(assets_dir_FN, 'path_fanart', 'fanarts')
+            self.rom_assets_create_dir(assets_dir_FN, 'path_banner', 'marquees')
+            self.rom_assets_create_dir(assets_dir_FN, 'path_clearlogo', 'clearlogos')
+            self.rom_assets_create_dir(assets_dir_FN, 'path_flyer', 'flyers')
+            self.rom_assets_create_dir(assets_dir_FN, 'path_map', 'maps')
+            self.rom_assets_create_dir(assets_dir_FN, 'path_manual', 'manuals')
+            self.rom_assets_create_dir(assets_dir_FN, 'path_trailer', 'trailers')
+        else:
+            log_verb('ROMLauncherABC::rom_assets_init_dirs() Creating Standard asset paths')
+            self.rom_assets_create_dir(assets_dir_FN, 'path_title', 'titles')
+            self.rom_assets_create_dir(assets_dir_FN, 'path_snap', 'snaps')
+            self.rom_assets_create_dir(assets_dir_FN, 'path_boxfront', 'boxfronts')
+            self.rom_assets_create_dir(assets_dir_FN, 'path_boxback', 'boxbacks')
+            self.rom_assets_create_dir(assets_dir_FN, 'path_cartridge', 'cartridges')
+            self.rom_assets_create_dir(assets_dir_FN, 'path_fanart', 'fanarts')
+            self.rom_assets_create_dir(assets_dir_FN, 'path_banner', 'banners')
+            self.rom_assets_create_dir(assets_dir_FN, 'path_clearlogo', 'clearlogos')
+            self.rom_assets_create_dir(assets_dir_FN, 'path_flyer', 'flyers')
+            self.rom_assets_create_dir(assets_dir_FN, 'path_map', 'maps')
+            self.rom_assets_create_dir(assets_dir_FN, 'path_manual', 'manuals')
+            self.rom_assets_create_dir(assets_dir_FN, 'path_trailer', 'trailers')
 
+    #
+    # Create asset path and assign it to Launcher dictionary.
+    #
+    def rom_assets_create_dir(self, assets_dir_FN, key, path_name):
+        asset_dir_FN = assets_dir_FN.pjoin(path_name, isdir = True)
+        self.entity_data[key] = asset_dir_FN.getPath()
+        log_debug('ROMLauncherABC::rom_assets_create_dir() Creating "{0}"'.format(asset_dir_FN.getPath()))
+        asset_dir_FN.makedirs()
+
+    def get_ROM_assets(self):
+        assets = {}
+        assets[ASSET_BANNER]     = self.entity_data['s_banner']      if self.entity_data['s_banner']     else ''
+        assets[ASSET_ICON]       = self.entity_data['s_icon']        if self.entity_data['s_icon']       else ''
+        assets[ASSET_FANART]     = self.entity_data['s_fanart']      if self.entity_data['s_fanart']     else ''
+        assets[ASSET_POSTER]     = self.entity_data['s_poster']      if self.entity_data['s_poster']     else ''
+        assets[ASSET_CLEARLOGO]  = self.entity_data['s_clearlogo']   if self.entity_data['s_clearlogo']  else ''
+        assets[ASSET_CONTROLLER] = self.entity_data['s_controller']  if self.entity_data['s_controller'] else ''
+        assets[ASSET_TRAILER]    = self.entity_data['s_trailer']     if self.entity_data['s_trailer']    else ''
+
+        return assets
+
+    def get_ROM_asset_default(self, asset_info):
+        return self.entity_data[asset_info.rom_default_key] if asset_info.rom_default_key in self.entity_data else None
+
+    def get_ROM_asset_defaults(self):
+        default_assets = {}
+        default_assets[ASSET_BANNER]     = ASSET_KEYS_TO_CONSTANTS[self.entity_data['roms_default_banner']]    if self.entity_data['roms_default_banner']     else ''
+        default_assets[ASSET_ICON]       = ASSET_KEYS_TO_CONSTANTS[self.entity_data['roms_default_icon']]      if self.entity_data['roms_default_icon']       else ''
+        default_assets[ASSET_FANART]     = ASSET_KEYS_TO_CONSTANTS[self.entity_data['roms_default_fanart']]    if self.entity_data['roms_default_fanart']     else ''
+        default_assets[ASSET_POSTER]     = ASSET_KEYS_TO_CONSTANTS[self.entity_data['roms_default_poster']]    if self.entity_data['roms_default_poster']     else ''
+        default_assets[ASSET_CLEARLOGO]  = ASSET_KEYS_TO_CONSTANTS[self.entity_data['roms_default_clearlogo']] if self.entity_data['roms_default_clearlogo']  else ''
+
+        return default_assets
+
+    # ---------------------------------------------------------------------------------------------
+    # Utility functions of ROM Launchers
+    # Use the same function names as in ObjectRepository class.
+    # ---------------------------------------------------------------------------------------------
+    def load_ROMs(self): self.roms = self.romsetRepository.load_ROMs(self)
+
+    def save_current_ROMs(self):
+        self.romset_repository.save_rom_set(self, self.roms)
+
+    def save_ROM(self, rom):
+        if not self.has_roms(): self.load_roms()
+        self.roms[rom.get_id()] = rom
+        self.romset_repository.save_rom_set(self, self.roms)
+
+    def update_ROM_set(self, roms):
+        if not isinstance(roms, dict):
+            roms = dict((rom.get_id(), rom) for rom in roms)
+        self.romset_repository.save_rom_set(self, roms)
+        self.roms = roms
+
+    def delete_ROM_databases(self):
+        self.romset_repository.delete_all_by_launcher(self)
+
+    def delete_ROM(self, rom_id):
+        if not self.has_roms(): self.load_roms()
+        self.roms.pop(rom_id)
+        self.romset_repository.save_rom_set(self, self.roms)
+
+    def select_ROM(self, rom_id):
+        if not self.has_roms(): self.load_roms()
         if self.roms is None:
             log_error('Unable to load romset')
             return None
@@ -3108,71 +3116,40 @@ class ROMLauncherABC(LauncherABC):
         if not rom_id in self.roms:
             log_error('RomID {0} not found in romset'.format(rom_id))
             return None
-
         self.rom = self.roms[rom_id]
+
         return self.rom
 
-    def has_roms(self):
+    def has_ROMs(self):
         return self.roms is not None and len(self.roms) > 0
 
-    def has_rom(self, rom_id):
-        if not self.has_roms():
-            self.load_roms()
+    def has_ROM(self, rom_id):
+        if not self.has_roms(): self.load_roms()
 
         return rom_id in self.roms
 
-    def get_number_of_roms(self):
+    def get_number_of_ROMs(self):
         return self.entity_data['num_roms']
 
-    def actual_amount_of_roms(self):
-        if not self.has_roms():
-            self.load_roms()
-        num_roms = len(self.roms) if self.roms else 0
-        return num_roms
+    def actual_amount_of_ROMs(self):
+        if not self.has_roms(): self.load_roms()
+
+        return len(self.roms)
 
     def get_roms(self):
-        if not self.has_roms():
-            self.load_roms()
+        if not self.has_roms(): self.load_roms()
 
         return self.roms.values() if self.roms else None
 
-    def get_rom_ids(self):
-        if not self.has_roms():
-            self.load_roms()
+    def get_ROM_IDs(self):
+        if not self.has_roms(): self.load_roms()
 
         return self.roms.keys() if self.roms else None
 
-    def update_rom_set(self, roms):
-        if not isinstance(roms,dict):
-            roms = dict((rom.get_id(), rom) for rom in roms)
-
-        self.romset_repository.save_rom_set(self, roms)
-        self.roms = roms
-
-    def save_current_roms(self):
-        self.romset_repository.save_rom_set(self, self.roms)
-
-    def save_rom(self, rom):
-        if not self.has_roms():
-            self.load_roms()
-
-        self.roms[rom.get_id()] = rom
-        self.romset_repository.save_rom_set(self, self.roms)
-
-    def delete_rom_set(self):
-        self.romset_repository.delete_all_by_launcher(self)
-
-    def reset_parent_and_clone_roms(self):
+    def reset_PClone_ROMs(self):
         self.romset_repository.delete_by_launcher(self, ROMSET_CPARENT)
         self.romset_repository.delete_by_launcher(self, ROMSET_PCLONE)
         self.romset_repository.delete_by_launcher(self, ROMSET_PARENTS)
-
-    def remove_rom(self, rom_id):
-        if not self.has_roms():
-            self.load_roms()
-
-        self.roms.pop(rom_id)
-        self.romset_repository.save_rom_set(self, self.roms)
 
     # -------------------------------------------------------------------------------------------------
     # Favourite ROM creation/management
@@ -3404,6 +3381,14 @@ class CollectionLauncher(ROMLauncherABC):
 
     def get_launcher_type(self): return OBJ_LAUNCHER_COLLECTION
 
+    def save_to_disk(self): self.objectRepository.save_collection(self.entity_data)
+
+    def delete_from_disk(self):
+        # Object becomes invalid after deletion
+        self.objectRepository.delete_collection(self.entity_data)
+        self.entity_data = None
+        self.objectRepository = None
+
     def supports_launching_roms(self): return True
 
     def supports_parent_clone_roms(self): return False
@@ -3474,6 +3459,8 @@ class VirtualLauncher(ROMLauncherABC):
 
     def supports_parent_clone_roms(self): return False
 
+    def supports_ROM_audit(self): return True
+
     def _get_builder_wizard(self, wizard): return wizard
 
     def get_main_edit_options(self): pass
@@ -3482,13 +3469,13 @@ class VirtualLauncher(ROMLauncherABC):
 
     def launch(self): pass
 
-    def has_nointro_xml(self): return False
-
     def _selectApplicationToUse(self): return False
 
     def _selectArgumentsToUse(self): return False
 
     def _selectRomFileToUse(self): return False
+
+    def has_nointro_xml(self): return False
 
 # -------------------------------------------------------------------------------------------------
 # Standard ROM launcher where user can fully customize all settings.
@@ -3521,6 +3508,12 @@ class StandardRomLauncher(ROMLauncherABC):
     def get_launcher_type(self): return OBJ_LAUNCHER_ROM
 
     def save_to_disk(self): self.objectRepository.save_launcher(self.entity_data)
+
+    # Object becomes invalid after deletion
+    def delete_from_disk(self):
+        self.objectRepository.delete_launcher(self.entity_data)
+        self.entity_data = None
+        self.objectRepository = None
 
     # --------------------------------------------------------------------------------------------
     # Launcher build wizard methods
@@ -3587,66 +3580,76 @@ class StandardRomLauncher(ROMLauncherABC):
     # ---------------------------------------------------------------------------------------------
     # Execution methods
     # ---------------------------------------------------------------------------------------------
+    def _launch_selectApplicationToUse(self):
+        if self.rom.has_alternative_application():
+            log_info('StandardRomLauncher() Using ROM altapp')
+            self.application = FileName(self.rom.get_alternative_application())
+        else:
+            self.application = FileName(self.entity_data['application'])
+
+        # --- Check for errors and abort if found --- todo: CHECK
+        if not self.application.exists():
+            log_error('StandardRomLauncher::_selectApplicationToUse(): Launching app not found "{0}"'.format(self.application.getPath()))
+            kodi_notify_warn('Launching app not found {0}'.format(self.application.getPath()))
+            return False
+
+        return True
+
+    def _launch_selectArgumentsToUse(self):
+        if self.rom.has_alternative_arguments():
+            log_info('StandardRomLauncher() Using ROM altarg')
+            self.arguments = self.rom.get_alternative_arguments()
+        elif self.entity_data['args_extra']:
+             # >> Ask user what arguments to launch application
+            log_info('StandardRomLauncher() Using Launcher args_extra')
+            launcher_args = self.entity_data['args']
+            arg_list = [self.entity_data_args] + self.entity_data['args_extra']
+            dialog = xbmcgui.Dialog()
+            dselect_ret = dialog.select('Select launcher arguments', arg_list)
+            if dselect_ret < 0:
+                return False
+            log_info('StandardRomLauncher() User chose args index {0} ({1})'.format(dselect_ret, arg_list[dselect_ret]))
+            self.arguments = arg_list[dselect_ret]
+        else:
+            self.arguments = self.entity_data['args']
+
+        return True
+
+    def _launch_selectRomFileToUse(self):
+        if not self.rom.has_multiple_disks():
+            self.selected_rom_file = self.rom.get_file()
+            return True
+
+        disks = self.rom.get_disks()
+        log_info('StandardRomLauncher._selectRomFileToUse() Multidisc ROM set detected')
+        dialog = xbmcgui.Dialog()
+        dselect_ret = dialog.select('Select ROM to launch in multidisc set', disks)
+        if dselect_ret < 0:
+           return False
+
+        selected_rom_base = disks[dselect_ret]
+        log_info('StandardRomLauncher._selectRomFileToUse() Selected ROM "{0}"'.format(selected_rom_base))
+
+        ROM_temp = self.rom.get_file()
+        ROM_dir = FileName(ROM_temp.getDir())
+        ROMFileName = ROM_dir.pjoin(selected_rom_base)
+
+        log_info('StandardRomLauncher._selectRomFileToUse() ROMFileName OP "{0}"'.format(ROMFileName.getPath()))
+        log_info('StandardRomLauncher._selectRomFileToUse() ROMFileName  P "{0}"'.format(ROMFileName.getPath()))
+
+        if not ROMFileName.exists():
+            log_error('ROM not found "{0}"'.format(ROMFileName.getPath()))
+            kodi_notify_warn('ROM not found "{0}"'.format(ROMFileName.getPath()))
+            return False
+
+        self.selected_rom_file = ROMFileName
+
+        return True
 
     # ---------------------------------------------------------------------------------------------
     # Launcher metadata and flags related methods
     # ---------------------------------------------------------------------------------------------
-    # All Launcher metadata functions must be in parent class Launcher ABC.
-
-    # ---------------------------------------------------------------------------------------------
-    # Launcher asset methods
-    # ---------------------------------------------------------------------------------------------
-    # All Launcher asset functions must be in parent class Launcher ABC.
-
-    # ---------------------------------------------------------------------------------------------
-    # NFO files for metadata
-    # ---------------------------------------------------------------------------------------------
-
-    # ---------------------------------------------------------------------------------------------
-    # Misc functions
-    # ---------------------------------------------------------------------------------------------
-
-    # ---------------------------------------------------------------------------------------------
-    # ROM methods
-    # ---------------------------------------------------------------------------------------------
-    def get_roms_filtered(self):
-        if not self.has_roms():
-            self.load_roms()
-
-        filtered_roms = []
-        view_mode     = self.get_display_mode()
-        dp_mode       = self.get_nointro_display_mode()
-        pclone_index  = self.get_pclone_indices()
-
-        dp_modes_for_have    = [NOINTRO_DMODE_HAVE, NOINTRO_DMODE_HAVE_UNK, NOINTRO_DMODE_HAVE_MISS]
-        dp_modes_for_miss    = [NOINTRO_DMODE_HAVE_MISS, NOINTRO_DMODE_MISS, NOINTRO_DMODE_MISS_UNK]
-        dp_modes_for_unknown = [NOINTRO_DMODE_HAVE_UNK, NOINTRO_DMODE_MISS_UNK, NOINTRO_DMODE_UNK]
-
-        for rom_id in self.roms:
-            rom = self.roms[rom_id]
-            nointro_status = rom.get_nointro_status()
-
-            # >> Filter ROM
-            # >> Always include a parent ROM regardless of filters in 'Parent/Clone mode'
-            # >> and '1G1R mode' launcher_display_mode if it has 1 or more clones.
-            if not view_mode == LAUNCHER_DMODE_FLAT and len(pclone_index[rom_id]):
-                filtered_roms.append(rom)
-
-            elif nointro_status == NOINTRO_STATUS_HAVE and dp_mode in dp_mode_for_have:
-                filtered_roms.append(rom)
-
-            elif nointro_status == NOINTRO_STATUS_MISS and dp_mode in dp_modes_for_miss:
-                filtered_roms.append(rom)
-
-            elif nointro_status == NOINTRO_STATUS_UNKNOWN and dp_mode in dp_modes_for_unknown:
-                filtered_roms.append(rom)
-
-            # >> Always copy roms with unknown status (NOINTRO_STATUS_NONE)
-            else:
-                filtered_roms.append(rom)
-
-        return filtered_roms
-
+    # All of the in the parent class LauncherABC.
     def change_application(self):
         current_application = self.entity_data['application']
         selected_application = xbmcgui.Dialog().browse(1, 'Select the launcher application', 'files',
@@ -3691,6 +3694,61 @@ class StandardRomLauncher(ROMLauncherABC):
         del self.entity_data['args_extra'][index]
         log_debug("launcher.remove_additional_argument() Deleted launcher['args_extra'][{0}]".format(index))
 
+    # ---------------------------------------------------------------------------------------------
+    # Launcher asset methods
+    # ---------------------------------------------------------------------------------------------
+    # All Launcher asset functions must be in parent class LauncherABC.
+
+    # ---------------------------------------------------------------------------------------------
+    # NFO files for metadata
+    # ---------------------------------------------------------------------------------------------
+
+    # ---------------------------------------------------------------------------------------------
+    # Misc functions
+    # ---------------------------------------------------------------------------------------------
+
+    # ---------------------------------------------------------------------------------------------
+    # ROM methods
+    # ---------------------------------------------------------------------------------------------
+    # Move ROMs method to parent class ROMLauncherABC.
+    def get_roms_filtered(self):
+        if not self.has_roms():
+            self.load_roms()
+
+        filtered_roms = []
+        view_mode     = self.get_display_mode()
+        dp_mode       = self.get_nointro_display_mode()
+        pclone_index  = self.get_pclone_indices()
+
+        dp_modes_for_have    = [NOINTRO_DMODE_HAVE, NOINTRO_DMODE_HAVE_UNK, NOINTRO_DMODE_HAVE_MISS]
+        dp_modes_for_miss    = [NOINTRO_DMODE_HAVE_MISS, NOINTRO_DMODE_MISS, NOINTRO_DMODE_MISS_UNK]
+        dp_modes_for_unknown = [NOINTRO_DMODE_HAVE_UNK, NOINTRO_DMODE_MISS_UNK, NOINTRO_DMODE_UNK]
+
+        for rom_id in self.roms:
+            rom = self.roms[rom_id]
+            nointro_status = rom.get_nointro_status()
+
+            # >> Filter ROM
+            # >> Always include a parent ROM regardless of filters in 'Parent/Clone mode'
+            # >> and '1G1R mode' launcher_display_mode if it has 1 or more clones.
+            if not view_mode == LAUNCHER_DMODE_FLAT and len(pclone_index[rom_id]):
+                filtered_roms.append(rom)
+
+            elif nointro_status == NOINTRO_STATUS_HAVE and dp_mode in dp_mode_for_have:
+                filtered_roms.append(rom)
+
+            elif nointro_status == NOINTRO_STATUS_MISS and dp_mode in dp_modes_for_miss:
+                filtered_roms.append(rom)
+
+            elif nointro_status == NOINTRO_STATUS_UNKNOWN and dp_mode in dp_modes_for_unknown:
+                filtered_roms.append(rom)
+
+            # >> Always copy roms with unknown status (NOINTRO_STATUS_NONE)
+            else:
+                filtered_roms.append(rom)
+
+        return filtered_roms
+
     def get_rom_extensions_combined(self):
         return self.entity_data['romext']
 
@@ -3718,94 +3776,102 @@ class StandardRomLauncher(ROMLauncherABC):
 
         self.romset_repository.save_rom_set(self, roms, LAUNCHER_DMODE_PCLONE)
 
-    def _selectApplicationToUse(self):
-        if self.rom.has_alternative_application():
-            log_info('StandardRomLauncher() Using ROM altapp')
-            self.application = FileName(self.rom.get_alternative_application())
-        else:
-            self.application = FileName(self.entity_data['application'])
-
-        # --- Check for errors and abort if found --- todo: CHECK
-        if not self.application.exists():
-            log_error('StandardRomLauncher::_selectApplicationToUse(): Launching app not found "{0}"'.format(self.application.getPath()))
-            kodi_notify_warn('Launching app not found {0}'.format(self.application.getPath()))
-            return False
-
-        return True
-
-    def _selectArgumentsToUse(self):
-        if self.rom.has_alternative_arguments():
-            log_info('StandardRomLauncher() Using ROM altarg')
-            self.arguments = self.rom.get_alternative_arguments()
-        elif self.entity_data['args_extra']:
-             # >> Ask user what arguments to launch application
-            log_info('StandardRomLauncher() Using Launcher args_extra')
-            launcher_args = self.entity_data['args']
-            arg_list = [self.entity_data_args] + self.entity_data['args_extra']
-            dialog = xbmcgui.Dialog()
-            dselect_ret = dialog.select('Select launcher arguments', arg_list)
-            if dselect_ret < 0:
-                return False
-            log_info('StandardRomLauncher() User chose args index {0} ({1})'.format(dselect_ret, arg_list[dselect_ret]))
-            self.arguments = arg_list[dselect_ret]
-        else:
-            self.arguments = self.entity_data['args']
-
-        return True
-
-    def _selectRomFileToUse(self):
-        if not self.rom.has_multiple_disks():
-            self.selected_rom_file = self.rom.get_file()
-            return True
-
-        disks = self.rom.get_disks()
-        log_info('StandardRomLauncher._selectRomFileToUse() Multidisc ROM set detected')
-        dialog = xbmcgui.Dialog()
-        dselect_ret = dialog.select('Select ROM to launch in multidisc set', disks)
-        if dselect_ret < 0:
-           return False
-
-        selected_rom_base = disks[dselect_ret]
-        log_info('StandardRomLauncher._selectRomFileToUse() Selected ROM "{0}"'.format(selected_rom_base))
-
-        ROM_temp = self.rom.get_file()
-        ROM_dir = FileName(ROM_temp.getDir())
-        ROMFileName = ROM_dir.pjoin(selected_rom_base)
-
-        log_info('StandardRomLauncher._selectRomFileToUse() ROMFileName OP "{0}"'.format(ROMFileName.getPath()))
-        log_info('StandardRomLauncher._selectRomFileToUse() ROMFileName  P "{0}"'.format(ROMFileName.getPath()))
-
-        if not ROMFileName.exists():
-            log_error('ROM not found "{0}"'.format(ROMFileName.getPath()))
-            kodi_notify_warn('ROM not found "{0}"'.format(ROMFileName.getPath()))
-            return False
-
-        self.selected_rom_file = ROMFileName
-        return True
 
 # --- Retroplayer launcher ---
 # See https://github.com/Wintermute0110/plugin.program.advanced.emulator.launcher/issues/33
 # See https://forum.kodi.tv/showthread.php?tid=295463&pid=2620489#pid2620489
 # -------------------------------------------------------------------------------------------------
 class RetroplayerLauncher(ROMLauncherABC):
-    def __init__(self, PATHS, settings, launcher_dic, executorFactory,
-                 romset_repository, statsStrategy):
-        # Concrete classes are responsible of creating a default entity_data dictionary
-        # with sensible defaults.
+    #
+    # Handle in this constructor the creation of a new empty ROM Launcher.
+    # Concrete classes are responsible of creating a default entity_data dictionary
+    # with sensible defaults.
+    #
+    def __init__(self, PATHS, settings, launcher_dic, objectRepository,
+                 executorFactory, romsetRepository, statsStrategy):
         if launcher_dic is None:
             launcher_dic = fs_new_launcher()
             launcher_dic['id'] = misc_generate_random_SID()
             launcher_dic['type'] = OBJ_LAUNCHER_RETROPLAYER
         super(RetroplayerLauncher, self).__init__(
-            PATHS, settings, launcher_dic, executorFactory, romset_repository, statsStrategy
+            PATHS, settings, launcher_dic, objectRepository, executorFactory, romsetRepository, statsStrategy
         )
 
+    # --------------------------------------------------------------------------------------------
+    # Core functions
+    # --------------------------------------------------------------------------------------------
     def get_object_name(self): return 'Retroplayer launcher'
 
     def get_assets_kind(self): return KIND_ASSET_LAUNCHER
 
     def get_launcher_type(self): return OBJ_LAUNCHER_RETROPLAYER
 
+    def save_to_disk(self): self.objectRepository.save_launcher(self.entity_data)
+
+    def delete_from_disk(self):
+        # Object becomes invalid after deletion.
+        self.objectRepository.delete_launcher(self.entity_data)
+        self.entity_data = None
+        self.objectRepository = None
+
+    # --------------------------------------------------------------------------------------------
+    # Launcher build wizard methods
+    # --------------------------------------------------------------------------------------------
+    #
+    # Creates a new launcher using a wizard of dialogs. Called by build()
+    #
+    def _get_builder_wizard(self, wizard):
+        wizard = KodiDummyWizardDialog('application', RETROPLAYER_LAUNCHER_APP_NAME, wizard)
+        wizard = KodiFileBrowseWizardDialog('rompath', 'Select the ROMs path', 0, '', wizard)
+        wizard = KodiDummyWizardDialog('romext', '', wizard, self._get_extensions_from_app_path)
+        wizard = KodiKeyboardWizardDialog('romext','Set files extensions, use "|" as separator. (e.g lnk|cbr)', wizard)
+        wizard = KodiDummyWizardDialog('args', '$rom$', wizard)
+        wizard = KodiDummyWizardDialog('m_name', '', wizard, self._get_title_from_app_path)
+        wizard = KodiKeyboardWizardDialog('m_name','Set the title of the launcher', wizard, self._get_title_from_app_path)
+        wizard = KodiSelectionWizardDialog('platform', 'Select the platform', AEL_platform_list, wizard)
+        wizard = KodiDummyWizardDialog('assets_path', '', wizard, self._get_value_from_rompath)
+        wizard = KodiFileBrowseWizardDialog('assets_path', 'Select asset/artwork directory', 0, '', wizard) 
+
+        return wizard
+
+    # --------------------------------------------------------------------------------------------
+    # Launcher edit methods
+    # --------------------------------------------------------------------------------------------
+    def get_main_edit_options(self, category):
+        log_debug('StandardRomLauncher::get_main_edit_options() Returning edit options')
+
+        options = collections.OrderedDict()
+        options['EDIT_METADATA']          = 'Edit Metadata ...'
+        options['EDIT_ASSETS']            = 'Edit Assets/Artwork ...'
+        options['EDIT_DEFAULT_ASSETS']    = 'Choose default Assets/Artwork ...'
+        options['EDIT_LAUNCHER_CATEGORY'] = "Change Category: '{0}'".format(category.get_name())
+        options['EDIT_LAUNCHER_STATUS']   = 'Launcher status: {0}'.format(self.get_finished_str())
+        options['LAUNCHER_ADVANCED_MODS'] = 'Advanced Modifications ...'
+        options['LAUNCHER_MANAGE_ROMS']   = 'Manage ROMs ...'
+        options['LAUNCHER_AUDIT_ROMS']    = 'Audit ROMs / Launcher view mode ...'
+        options['EXPORT_LAUNCHER_XML']    = 'Export Launcher XML configuration ...'
+        options['DELETE_LAUNCHER']        = 'Delete Launcher'
+
+        return options
+
+    def get_advanced_modification_options(self):
+        log_debug('RetroplayerLauncher::get_advanced_modification_options() Returning edit options')
+        toggle_window_str = 'ON' if self.entity_data['toggle_window'] else 'OFF'
+        non_blocking_str  = 'ON' if self.entity_data['non_blocking'] else 'OFF'
+        multidisc_str     = 'ON' if self.entity_data['multidisc'] else 'OFF'
+
+        options = collections.OrderedDict()
+        options['EDIT_ROMPATH']            = "Change ROM path: '{0}'".format(self.entity_data['rompath'])
+        options['EDIT_ROMEXT']             = "Modify ROM extensions: '{0}'".format(self.entity_data['romext'])
+        options['EDIT_TOGGLE_WINDOWED']    = "Toggle Kodi into windowed mode (now {0})".format(toggle_window_str)
+        options['EDIT_TOGGLE_NONBLOCKING'] = "Non-blocking launcher (now {0})".format(non_blocking_str)
+        options['EDIT_TOGGLE_MULTIDISC']   = "Multidisc ROM support (now {0})".format(multidisc_str)
+
+        return options
+
+    # ---------------------------------------------------------------------------------------------
+    # Execution methods
+    # ---------------------------------------------------------------------------------------------
     def launch(self):
         log_info('RetroplayerLauncher() Executing ROM with Kodi Retroplayer ...')
         self.title = self.rom.get_name()
@@ -3820,11 +3886,11 @@ class RetroplayerLauncher(ROMLauncherABC):
         # >> How to fill gameclient = string (game.libretro.fceumm) ???
         genre_list = list(rom['m_genre'])
         listitem.setInfo('game', {'title'    : label_str,     'platform'  : 'Test platform',
-                                    'genres'   : genre_list,    'developer' : rom['m_developer'],
-                                    'overview' : rom['m_plot'], 'year'      : rom['m_year'] })
+                                  'genres'   : genre_list,    'developer' : rom['m_developer'],
+                                  'overview' : rom['m_plot'], 'year'      : rom['m_year'] })
         log_info('RetroplayerLauncher() application.getPath() "{0}"'.format(application.getPath()))
         log_info('RetroplayerLauncher() ROMFileName.getPath() "{0}"'.format(ROMFileName.getPath()))
-        log_info('RetroplayerLauncher() label_str                     "{0}"'.format(label_str))
+        log_info('RetroplayerLauncher() label_str             "{0}"'.format(label_str))
 
         # --- User notification ---
         if self.settings['display_launcher_notify']:
@@ -3834,71 +3900,95 @@ class RetroplayerLauncher(ROMLauncherABC):
         xbmc.Player().play(ROMFileName.getPath(), listitem)
         log_verb('RetroplayerLauncher() Calling xbmc.Player().play() returned. Leaving function.')
 
-    def get_advanced_modification_options(self):
-        log_debug('RetroplayerLauncher::get_advanced_modification_options() Returning edit options')
-        toggle_window_str = 'ON' if self.entity_data['toggle_window'] else 'OFF'
-        non_blocking_str  = 'ON' if self.entity_data['non_blocking'] else 'OFF'
-        multidisc_str     = 'ON' if self.entity_data['multidisc'] else 'OFF'
+    def _launch_selectApplicationToUse(self): raise AddonError('Implement me!')
 
-        options = super(StandardRomLauncher, self).get_advanced_modification_options()
-        options['CHANGE_ROMPATH'] = "Change ROM path: '{0}'".format(self.entity_data['rompath'])
-        options['CHANGE_ROMEXT'] = "Modify ROM extensions: '{0}'".format(self.entity_data['romext'])
-        options['TOGGLE_WINDOWED'] = "Toggle Kodi into windowed mode (now {0})".format(toggle_window_str)
-        options['TOGGLE_NONBLOCKING'] = "Non-blocking launcher (now {0})".format(non_blocking_str)
-        options['TOGGLE_MULTIDISC'] = "Multidisc ROM support (now {0})".format(multidisc_str)
+    def _launch_selectArgumentsToUse(self): raise AddonError('Implement me!')
 
-        return options
+    def _launch_selectRomFileToUse(self): raise AddonError('Implement me!')
 
-    #
-    # Creates a new launcher using a wizard of dialogs.
-    #
-    def _get_builder_wizard(self, wizard):
-        
-        wizard = DummyWizardDialog('application', RETROPLAYER_LAUNCHER_APP_NAME, wizard)
-        wizard = FileBrowseWizardDialog('rompath', 'Select the ROMs path', 0, '', wizard)
-        wizard = DummyWizardDialog('romext', '', wizard, self._get_extensions_from_app_path)
-        wizard = KeyboardWizardDialog('romext','Set files extensions, use "|" as separator. (e.g lnk|cbr)', wizard)
-        wizard = DummyWizardDialog('args', '$rom$', wizard)
-        wizard = DummyWizardDialog('m_name', '', wizard, self._get_title_from_app_path)
-        wizard = KeyboardWizardDialog('m_name','Set the title of the launcher', wizard, self._get_title_from_app_path)
-        wizard = SelectionWizardDialog('platform', 'Select the platform', AEL_platform_list, wizard)
-        wizard = DummyWizardDialog('assets_path', '', wizard, self._get_value_from_rompath)
-        wizard = FileBrowseWizardDialog('assets_path', 'Select asset/artwork directory', 0, '', wizard) 
-
-        return wizard
+    # ---------------------------------------------------------------------------------------------
+    # Misc methods
+    # ---------------------------------------------------------------------------------------------
 
 # -------------------------------------------------------------------------------------------------
 # Read RetroarchLauncher.md
 # -------------------------------------------------------------------------------------------------
 class RetroarchLauncher(StandardRomLauncher):
-    def __init__(self, PATHS, settings, launcher_dic, executorFactory,
-                 romset_repository, statsStrategy):
-        # Concrete classes are responsible of creating a default entity_data dictionary
-        # with sensible defaults.
+    #
+    # Handle in this constructor the creation of a new empty ROM Launcher.
+    # Concrete classes are responsible of creating a default entity_data dictionary
+    # with sensible defaults.
+    #
+    def __init__(self, PATHS, settings, launcher_dic, objectRepository,
+                 executorFactory, romsetRepository, statsStrategy):
         if launcher_dic is None:
             launcher_dic = fs_new_launcher()
             launcher_dic['id'] = misc_generate_random_SID()
             launcher_dic['type'] = OBJ_LAUNCHER_RETROARCH
         super(RetroarchLauncher, self).__init__(
-            PATHS, settings, launcher_dic, executorFactory, romset_repository, statsStrategy
+            PATHS, settings, launcher_dic, objectRepository, executorFactory, romsetRepository, statsStrategy
         )
 
+    # --------------------------------------------------------------------------------------------
+    # Core functions
+    # --------------------------------------------------------------------------------------------
     def get_object_name(self): return 'Retroarch launcher'
 
     def get_assets_kind(self): return KIND_ASSET_LAUNCHER
 
     def get_launcher_type(self): return OBJ_LAUNCHER_RETROARCH
 
-    def change_application(self):
-        current_application = self.entity_data['application']
-        selected_application = xbmcgui.Dialog().browse(0, 'Select the Retroarch path', 'files',
-                                                      '', False, False, current_application).decode('utf-8')
+    def save_to_disk(self): self.objectRepository.save_launcher(self.entity_data)
 
-        if selected_application is None or selected_application == current_application:
-            return False
+    def delete_from_disk(self):
+        # Object becomes invalid after deletion.
+        self.objectRepository.delete_launcher(self.entity_data)
+        self.entity_data = None
+        self.objectRepository = None
 
-        self.entity_data['application'] = selected_application
-        return True
+    # --------------------------------------------------------------------------------------------
+    # Launcher build wizard methods
+    # --------------------------------------------------------------------------------------------
+    #
+    # Creates a new launcher using a wizard of dialogs.
+    #
+    def _get_builder_wizard(self, wizard):
+        wizard = KodiDummyWizardDialog('application', self._get_retroarch_app_folder(self.settings), wizard)
+        wizard = KodiFileBrowseWizardDialog('application', 'Select the Retroarch path', 0, '', wizard) 
+        wizard = KodiDictionarySelectionWizardDialog('retro_config', 'Select the configuration', self._get_available_retroarch_configurations, wizard)
+        wizard = KodiFileBrowseWizardDialog('retro_config', 'Select the configuration', 0, '', wizard, None, self._user_selected_custom_browsing) 
+        wizard = KodiDictionarySelectionWizardDialog('retro_core_info', 'Select the core', self._get_available_retroarch_cores, wizard, self._load_selected_core_info)
+        wizard = KodiKeyboardWizardDialog('retro_core_info', 'Enter path to core file', wizard, self._load_selected_core_info, self._user_selected_custom_browsing)
+        wizard = KodiFileBrowseWizardDialog('rompath', 'Select the ROMs path', 0, '', wizard) 
+        wizard = KodiKeyboardWizardDialog('romext','Set files extensions, use "|" as separator. (e.g nes|zip)', wizard)
+        wizard = KodiDummyWizardDialog('args', self._get_default_retroarch_arguments(), wizard)
+        wizard = KodiKeyboardWizardDialog('args', 'Extra application arguments', wizard)
+        wizard = KodiKeyboardWizardDialog('m_name','Set the title of the launcher', wizard, self._get_title_from_app_path)
+        wizard = KodiSelectionWizardDialog('platform', 'Select the platform', AEL_platform_list, wizard)
+        wizard = KodiDummyWizardDialog('assets_path', '', wizard, self._get_value_from_rompath)
+        wizard = KodiFileBrowseWizardDialog('assets_path', 'Select asset/artwork directory', 0, '', wizard) 
+
+        return wizard
+
+    # --------------------------------------------------------------------------------------------
+    # Launcher edit methods
+    # --------------------------------------------------------------------------------------------
+    def get_main_edit_options(self, category):
+        log_debug('StandardRomLauncher::get_main_edit_options() Returning edit options')
+
+        options = collections.OrderedDict()
+        options['EDIT_METADATA']          = 'Edit Metadata ...'
+        options['EDIT_ASSETS']            = 'Edit Assets/Artwork ...'
+        options['EDIT_DEFAULT_ASSETS']    = 'Choose default Assets/Artwork ...'
+        options['EDIT_LAUNCHER_CATEGORY'] = "Change Category: '{0}'".format(category.get_name())
+        options['EDIT_LAUNCHER_STATUS']   = 'Launcher status: {0}'.format(self.get_finished_str())
+        options['LAUNCHER_ADVANCED_MODS'] = 'Advanced Modifications ...'
+        options['LAUNCHER_MANAGE_ROMS']   = 'Manage ROMs ...'
+        options['LAUNCHER_AUDIT_ROMS']    = 'Audit ROMs / Launcher view mode ...'
+        options['EXPORT_LAUNCHER_XML']    = 'Export Launcher XML configuration ...'
+        options['DELETE_LAUNCHER']        = 'Delete Launcher'
+
+        return options
 
     def get_advanced_modification_options(self):
         log_debug('RetroarchLauncher::get_advanced_modification_options() Returning edit options')
@@ -3915,10 +4005,13 @@ class RetroarchLauncher(StandardRomLauncher):
         options['TOGGLE_WINDOWED'] = "Toggle Kodi into windowed mode (now {0})".format(toggle_window_str)
         options['TOGGLE_NONBLOCKING'] = "Non-blocking launcher (now {0})".format(non_blocking_str)
         options['TOGGLE_MULTIDISC'] = "Multidisc ROM support (now {0})".format(multidisc_str)
-        
+
         return options
 
-    def _selectApplicationToUse(self):
+    # ---------------------------------------------------------------------------------------------
+    # Execution methods
+    # ---------------------------------------------------------------------------------------------
+    def _launch_selectApplicationToUse(self):
         if is_windows():
             self.application = FileName(self.entity_data['application'])
             self.application = self.application.append('retroarch.exe')  
@@ -3933,7 +4026,7 @@ class RetroarchLauncher(StandardRomLauncher):
 
         return False
 
-    def _selectArgumentsToUse(self):
+    def _launch_selectArgumentsToUse(self):
         if is_windows() or is_linux():
             self.arguments =  '-L "$retro_core$" '
             self.arguments += '-c "$retro_config$" '
@@ -3950,45 +4043,37 @@ class RetroarchLauncher(StandardRomLauncher):
             self.arguments += self.entity_data['args'] if 'args' in self.entity_data else ''
             return True
 
-        #todo other os
+        # TODO: other OSes
         return False
 
-    #
-    # Creates a new launcher using a wizard of dialogs.
-    #
-    def _get_builder_wizard(self, wizard):
-        wizard = DummyWizardDialog('application', self._get_retroarch_app_folder(self.settings), wizard)
-        wizard = FileBrowseWizardDialog('application', 'Select the Retroarch path', 0, '', wizard) 
-        wizard = DictionarySelectionWizardDialog('retro_config', 'Select the configuration', self._get_available_retroarch_configurations, wizard)
-        wizard = FileBrowseWizardDialog('retro_config', 'Select the configuration', 0, '', wizard, None, self._user_selected_custom_browsing) 
-        wizard = DictionarySelectionWizardDialog('retro_core_info', 'Select the core', self._get_available_retroarch_cores, wizard, self._load_selected_core_info)
-        wizard = KeyboardWizardDialog('retro_core_info', 'Enter path to core file', wizard, self._load_selected_core_info, self._user_selected_custom_browsing)
-        wizard = FileBrowseWizardDialog('rompath', 'Select the ROMs path', 0, '', wizard) 
-        wizard = KeyboardWizardDialog('romext','Set files extensions, use "|" as separator. (e.g nes|zip)', wizard)
-        wizard = DummyWizardDialog('args', self._get_default_retroarch_arguments(), wizard)
-        wizard = KeyboardWizardDialog('args', 'Extra application arguments', wizard)
-        wizard = KeyboardWizardDialog('m_name','Set the title of the launcher', wizard, self._get_title_from_app_path)
-        wizard = SelectionWizardDialog('platform', 'Select the platform', AEL_platform_list, wizard)
-        wizard = DummyWizardDialog('assets_path', '', wizard, self._get_value_from_rompath)
-        wizard = FileBrowseWizardDialog('assets_path', 'Select asset/artwork directory', 0, '', wizard) 
-                    
-        return wizard
-    
+    def _launch_selectRomFileToUse(self): raise AddonError('Implement me!')
+
+    # ---------------------------------------------------------------------------------------------
+    # Misc methods
+    # ---------------------------------------------------------------------------------------------
+    def change_application(self):
+        current_application = self.entity_data['application']
+        selected_application = xbmcgui.Dialog().browse(0, 'Select the Retroarch path', 'files',
+                                                      '', False, False, current_application).decode('utf-8')
+
+        if selected_application is None or selected_application == current_application:
+            return False
+
+        self.entity_data['application'] = selected_application
+        return True
+
     def _get_retroarch_app_folder(self, settings):
         retroarch_folder = FileName(settings['io_retroarch_sys_dir'])      
-    
         if retroarch_folder.exists():
             return retroarch_folder.getPath()
 
         if is_android():
-        
             android_retroarch_folders = [
                 '/storage/emulated/0/Android/data/com.retroarch/',
                 '/data/data/com.retroarch/',
                 '/storage/sdcard0/Android/data/com.retroarch/',
                 '/data/user/0/com.retroarch']
 
-        
             for retroach_folder_path in android_retroarch_folders:
                 retroarch_folder = FileName(retroach_folder_path)
                 if retroarch_folder.exists():
@@ -4012,7 +4097,7 @@ class RetroarchLauncher(StandardRomLauncher):
         for retroarch_folder in retroarch_folders:
             log_debug("get_available_retroarch_configurations() scanning path '{0}'".format(retroarch_folder.getPath()))
             files = retroarch_folder.recursiveScanFilesInPathAsFileNameObjects('*.cfg')
-        
+
             if len(files) < 1:
                 continue
 
@@ -4150,48 +4235,42 @@ class RetroarchLauncher(StandardRomLauncher):
 # Launcher for .lnk files (windows)
 # -------------------------------------------------------------------------------------------------
 class LnkLauncher(StandardRomLauncher):
-    def __init__(self, PATHS, settings, launcher_dic, executorFactory,
-                 romset_repository, statsStrategy):
-        # Concrete classes are responsible of creating a default entity_data dictionary
-        # with sensible defaults.
+    #
+    # Handle in this constructor the creation of a new empty ROM Launcher.
+    # Concrete classes are responsible of creating a default entity_data dictionary
+    # with sensible defaults.
+    #
+    def __init__(self, PATHS, settings, launcher_dic, objectRepository,
+                 executorFactory, romsetRepository, statsStrategy):
         if launcher_dic is None:
             launcher_dic = fs_new_launcher()
             launcher_dic['id'] = misc_generate_random_SID()
             launcher_dic['type'] = OBJ_LAUNCHER_RETROARCH
         super(LnkLauncher, self).__init__(
-            PATHS, settings, launcher_dic, executorFactory, romset_repository, statsStrategy
+            PATHS, settings, launcher_dic, objectRepository, executorFactory, romsetRepository, statsStrategy
         )
 
+    # --------------------------------------------------------------------------------------------
+    # Core functions
+    # --------------------------------------------------------------------------------------------
     def get_object_name(self): return 'LNK launcher'
 
     def get_assets_kind(self): return KIND_ASSET_LAUNCHER
 
     def get_launcher_type(self): return OBJ_LAUNCHER_LNK
 
-    def get_edit_options(self):
-        options = super(LnkLauncher, self).get_edit_options()
-        del options['AUDIT_ROMS']
+    def save_to_disk(self): self.objectRepository.save_launcher(self.entity_data)
 
-        return options
-
-    def get_advanced_modification_options(self):
-        log_debug('LnkLauncher::get_advanced_modification_options() Returning edit options')
-        options = super(LnkLauncher, self).get_advanced_modification_options()
-        del options['CHANGE_APPLICATION']
-        del options['MODIFY_ARGS']
-        del options['ADDITIONAL_ARGS']
-        del options['CHANGE_ROMEXT']
-        del options['TOGGLE_MULTIDISC']
-
-        return options
-
+    # --------------------------------------------------------------------------------------------
+    # Launcher build wizard methods
+    # --------------------------------------------------------------------------------------------
     #
     # Creates a new launcher using a wizard of dialogs.
     #
     def _get_builder_wizard(self, wizard):
         wizard = FileBrowseWizardDialog('rompath', 'Select the LNKs path', 0, '', wizard)
         wizard = DummyWizardDialog('romext', 'lnk', wizard)
-        wizard = DummyWizardDialog('args', '%rom%', wizard)
+        wizard = DummyWizardDialog('args', '$rom$', wizard)
         wizard = DummyWizardDialog('m_name', '', wizard, self._get_title_from_app_path)
         wizard = KeyboardWizardDialog('m_name','Set the title of the launcher', wizard, self._get_title_from_app_path)
         wizard = SelectionWizardDialog('platform', 'Select the platform', AEL_platform_list, wizard)
@@ -4199,6 +4278,49 @@ class LnkLauncher(StandardRomLauncher):
         wizard = FileBrowseWizardDialog('assets_path', 'Select asset/artwork directory', 0, '', wizard) 
 
         return wizard
+
+    # --------------------------------------------------------------------------------------------
+    # Launcher edit methods
+    # --------------------------------------------------------------------------------------------
+    def get_main_edit_options(self, category):
+        log_debug('LnkLauncher::get_main_edit_options() Returning edit options')
+
+        options = collections.OrderedDict()
+        options['EDIT_METADATA']          = 'Edit Metadata ...'
+        options['EDIT_ASSETS']            = 'Edit Assets/Artwork ...'
+        options['EDIT_DEFAULT_ASSETS']    = 'Choose default Assets/Artwork ...'
+        options['EDIT_LAUNCHER_CATEGORY'] = "Change Category: '{0}'".format(category.get_name())
+        options['EDIT_LAUNCHER_STATUS']   = 'Launcher status: {0}'.format(self.get_finished_str())
+        options['LAUNCHER_ADVANCED_MODS'] = 'Advanced Modifications ...'
+        options['LAUNCHER_MANAGE_ROMS']   = 'Manage ROMs ...'
+        options['EXPORT_LAUNCHER_XML']    = 'Export Launcher XML configuration ...'
+        options['DELETE_LAUNCHER']        = 'Delete Launcher'
+
+        return options
+
+    def get_advanced_modification_options(self):
+        log_debug('LnkLauncher::get_advanced_modification_options() Returning edit options')
+        toggle_window_str = 'ON' if self.entity_data['toggle_window'] else 'OFF'
+        non_blocking_str  = 'ON' if self.entity_data['non_blocking'] else 'OFF'
+        multidisc_str     = 'ON' if self.entity_data['multidisc'] else 'OFF'
+
+        options = collections.OrderedDict()
+        options['EDIT_ROMPATH']            = "Change ROM path: '{0}'".format(self.entity_data['rompath'])
+        options['EDIT_ROMEXT']             = "Modify ROM extensions: '{0}'".format(self.entity_data['romext'])
+        options['EDIT_TOGGLE_WINDOWED']    = "Toggle Kodi into windowed mode (now {0})".format(toggle_window_str)
+        options['EDIT_TOGGLE_NONBLOCKING'] = "Non-blocking launcher (now {0})".format(non_blocking_str)
+        options['EDIT_TOGGLE_MULTIDISC']   = "Multidisc ROM support (now {0})".format(multidisc_str)
+
+        return options
+
+    # ---------------------------------------------------------------------------------------------
+    # Execution methods
+    # ---------------------------------------------------------------------------------------------
+
+    # ---------------------------------------------------------------------------------------------
+    # Misc methods
+    # ---------------------------------------------------------------------------------------------
+
 
 # -------------------------------------------------------------------------------------------------
 # Launcher to use with a local Steam application and account.
@@ -4675,9 +4797,9 @@ class AELObjectFactory(object):
     # Returns a Launcher object or None.
     #
     def find_launcher(self, category_id, launcher_id):
-        category_dic = self.objectRepository.find_launcher(launcher_id)
-        if category_dic is not None:
-            category_obj = self._load(OBJ_LAUNCHER_ROM, category_dic)
+        launcher_dic = self.objectRepository.find_launcher(launcher_id)
+        if launcher_dic is not None:
+            category_obj = self._load(launcher_dic['type'], launcher_dic)
         else:
             category_obj = None
 
@@ -4692,7 +4814,7 @@ class AELObjectFactory(object):
         launcher_dic_list = self.objectRepository.find_launchers_by_category_id(category_id)
         # dump_object_to_log('launcher_dic_list', launcher_dic_list)
         for launcher_dic in launcher_dic_list:
-            launcher_obj_list.append(self._load(OBJ_LAUNCHER_ROM, launcher_dic))
+            launcher_obj_list.append(self._load(launcher_dic['type'], launcher_dic))
 
         return launcher_obj_list
 
@@ -4703,10 +4825,10 @@ class AELObjectFactory(object):
         typeOptions = collections.OrderedDict()
         typeOptions[OBJ_LAUNCHER_STANDALONE]      = 'Standalone launcher (Game/Application)'
         typeOptions[OBJ_LAUNCHER_ROM]             = 'ROM launcher (Emulator)'
-        if is_windows():
-            typeOptions[OBJ_LAUNCHER_LNK]         = 'LNK launcher (Windows only)'
         typeOptions[OBJ_LAUNCHER_RETROPLAYER]     = 'ROM launcher (Kodi Retroplayer)'
         typeOptions[OBJ_LAUNCHER_RETROARCH]       = 'ROM launcher (Retroarch)'
+        if is_windows():
+            typeOptions[OBJ_LAUNCHER_LNK]         = 'LNK launcher (Windows only)'
         typeOptions[OBJ_LAUNCHER_NVGAMESTREAM]    = 'Nvidia GameStream'
         if not is_android():
             typeOptions[OBJ_LAUNCHER_STEAM]       = 'Steam launcher'
@@ -4719,7 +4841,8 @@ class AELObjectFactory(object):
     # obj_type is mandatory.
     # obj_dic may be a dictionary (database objects) or None (new objest).
     # Object constructor is responsible for filling the database dictionary with sensible
-    # defaults if obj_dic = None. 
+    # defaults if obj_dic = None.
+    # ROM objects are created by Launcher objects and NOT here.
     #
     def _load(self, obj_type, obj_dic = None):
         # --- Categories ---
@@ -4765,51 +4888,44 @@ class AELObjectFactory(object):
                                        self.executorFactory, ROMRepository, statsStrategy)
 
         elif obj_type == OBJ_LAUNCHER_RETROPLAYER:
-            statsStrategy = ROMStatisticsStrategy(self.virtual_launchers[VLAUNCHER_RECENT_ID],
-                                                  self.virtual_launchers[VLAUNCHER_MOST_PLAYED_ID])
-            romset_repository = ROMSetRepository(self.PATHS.ROMS_DIR)
-            return RetroplayerLauncher(launcher_data, self.settings, None,
-                                       romset_repository, None)
+            ROMRepository = ROMSetRepository(self.PATHS, self.settings)
+            statsStrategy = ROMStatisticsStrategy(self.PATHS, self.settings)
+
+            return RetroplayerLauncher(self.PATHS, self.settings, obj_dic, self.objectRepository,
+                                       self.executorFactory, ROMRepository, statsStrategy)
 
         elif obj_type == OBJ_LAUNCHER_RETROARCH:
-            statsStrategy = RomStatisticsStrategy(self.virtual_launchers[VLAUNCHER_RECENT_ID],
-                                                  self.virtual_launchers[VLAUNCHER_MOST_PLAYED_ID])
-            romset_repository = ROMSetRepository(self.PATHS.ROMS_DIR)
-            return RetroarchLauncher(launcher_data, self.settings, self.executorFactory,
-                                     romset_repository, statsStrategy)
+            ROMRepository = ROMSetRepository(self.PATHS, self.settings)
+            statsStrategy = ROMStatisticsStrategy(self.PATHS, self.settings)
+
+            return RetroarchLauncher(self.PATHS, self.settings, obj_dic, self.objectRepository,
+                                     self.executorFactory, ROMRepository, statsStrategy)
 
         # LNK launchers available only on Windows
         elif obj_type == OBJ_LAUNCHER_LNK:
-            statsStrategy = RomStatisticsStrategy(self.virtual_launchers[VLAUNCHER_RECENT_ID],
-                                                  self.virtual_launchers[VLAUNCHER_MOST_PLAYED_ID])
-            romset_repository = ROMSetRepository(self.PATHS.ROMS_DIR)
-            return LnkLauncher(launcher_data, self.settings, self.executorFactory,
-                               romset_repository, statsStrategy)
+            ROMRepository = ROMSetRepository(self.PATHS, self.settings)
+            statsStrategy = ROMStatisticsStrategy(self.PATHS, self.settings)
+
+            return LnkLauncher(self.PATHS, self.settings, obj_dic, self.objectRepository,
+                               self.executorFactory, ROMRepository, statsStrategy)
 
         elif obj_type == OBJ_LAUNCHER_STEAM:
-            statsStrategy = RomStatisticsStrategy(self.virtual_launchers[VLAUNCHER_RECENT_ID],
-                                                  self.virtual_launchers[VLAUNCHER_MOST_PLAYED_ID])
-            romset_repository = ROMSetRepository(self.PATHS.ROMS_DIR)
-            return SteamLauncher(launcher_data, self.settings, self.executorFactory,
-                                 romset_repository, statsStrategy)
+            ROMRepository = ROMSetRepository(self.PATHS, self.settings)
+            statsStrategy = ROMStatisticsStrategy(self.PATHS, self.settings)
+
+            return SteamLauncher(self.PATHS, self.settings, obj_dic, self.objectRepository,
+                                 self.executorFactory, ROMRepository, statsStrategy)
 
         elif obj_type == OBJ_LAUNCHER_NVGAMESTREAM:
-            statsStrategy = RomStatisticsStrategy(self.virtual_launchers[VLAUNCHER_RECENT_ID],
-                                                  self.virtual_launchers[VLAUNCHER_MOST_PLAYED_ID])
-            romset_repository = ROMSetRepository(self.PATHS.ROMS_DIR)
-            return NvidiaGameStreamLauncher(launcher_data, self.settings, self.executorFactory,
-                                            romset_repository, statsStrategy)
+            ROMRepository = ROMSetRepository(self.PATHS, self.settings)
+            statsStrategy = ROMStatisticsStrategy(self.PATHS, self.settings)
+
+            return NvidiaGameStreamLauncher(self.PATHS, self.settings, obj_dic, self.objectRepository,
+                                            self.executorFactory, ROMRepository, statsStrategy)
 
         # --- Disabled. AEL must not access favourites.xml ---
         # elif obj_type == OBJ_LAUNCHER_KODI_FAVOURITES:
         #     return KodiLauncher(launcher_data, self.settings, self.executorFactory)
-
-        # --- Standard ROM ---
-        
-
-        # --- Favourite ROM ---
-        # NOTE do we need a Favourite ROM object? ROM objects have a reference to the Launcher
-        # object and hence the Favourite ROM can be created in place.
 
         else:
             log_error('Unsupported requested type "{0}"'.format(obj_type))
