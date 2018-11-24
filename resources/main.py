@@ -4348,19 +4348,28 @@ def m_gui_render_category_row(category):
     # --- Do not render row if category finished ---
     if category.is_finished() and g_settings['display_hide_finished']: return
 
+    category_raw_name = category.get_name()
+    num_launchers = category.num_launchers()
+    if num_launchers == 0:
+        launcher_name = '{0} [COLOR tomato](No launchers)[/COLOR]'.format(category_raw_name)
+    elif num_launchers == 1:
+        launcher_name = '{0} [COLOR tomato]({1} launcher)[/COLOR]'.format(category_raw_name, num_launchers)
+    else:
+        launcher_name = '{0} [COLOR tomato]({1} launchers)[/COLOR]'.format(category_raw_name, num_launchers)
+
     # --- Create listitem row ---
     ICON_OVERLAY = 5 if category.is_finished() else 4
-    listitem = xbmcgui.ListItem(category.get_name())
+    listitem = xbmcgui.ListItem(launcher_name)
     if category.get_releaseyear():
         listitem.setInfo('video', {
-            'title'   : category.get_name(),    'year'    : category.get_releaseyear(),
+            'title'   : launcher_name,          'year'    : category.get_releaseyear(),
             'genre'   : category.get_genre(),   'studio'  : category.get_developer(),
             'rating'  : category.get_rating(),  'plot'    : category.get_plot(),
             'trailer' : category.get_trailer(), 'overlay' : ICON_OVERLAY
         })
     else:
         listitem.setInfo('video', {
-            'title'   : category.get_name(),
+            'title'   : launcher_name,
             'genre'   : category.get_genre(),   'studio'  : category.get_developer(),
             'rating'  : category.get_rating(),  'plot'    : category.get_plot(),
             'trailer' : category.get_trailer(), 'overlay' : ICON_OVERLAY

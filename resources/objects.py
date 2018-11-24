@@ -1077,6 +1077,15 @@ class ObjectRepository(object):
 
     def num_launchers(self): return len(self.launchers)
 
+    def num_launchers_in_cat(self, category_id):
+        # This implementation is slow, must be optimised.
+        num_launchers = 0
+        for launcher_id in self.launchers:
+            if self.launchers[launcher_id]['categoryID'] != category_id: continue
+            num_launchers += 1
+
+        return num_launchers
+
     #
     # Finds an actual Category by ID in the database.
     # Returns a Category database dictionary or None if not found.
@@ -1690,6 +1699,9 @@ class Category(MetaDataItemABC):
     def is_virtual(self): return False
 
     def save_to_disk(self): self.objectRepository.save_category(self.entity_data)
+
+    def num_launchers(self):
+        return self.objectRepository.num_launchers_in_cat(self.entity_data['id'])
 
     def get_main_edit_options(self):
         options = collections.OrderedDict()
