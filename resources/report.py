@@ -78,6 +78,7 @@ def report_print_ROM_additional(slist, rom):
 
 def report_print_Launcher(slist, launcher_dic):
     slist.append("[COLOR violet]id[/COLOR]: '{0}'".format(launcher_dic['id']))
+    slist.append("[COLOR violet]type[/COLOR]: '{0}'".format(launcher_dic['type']))
     slist.append("[COLOR violet]m_name[/COLOR]: '{0}'".format(launcher_dic['m_name']))
     slist.append("[COLOR violet]m_year[/COLOR]: '{0}'".format(launcher_dic['m_year']))
     slist.append("[COLOR violet]m_genre[/COLOR]: '{0}'".format(launcher_dic['m_genre']))
