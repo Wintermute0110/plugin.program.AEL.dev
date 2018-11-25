@@ -125,7 +125,7 @@ AEL_PCLONE_STAT_VALUE_NONE           = 'PClone_None'
 # --- ID of the fake ROM parent of all Unknown ROMs ---
 UNKNOWN_ROMS_PARENT_ID = 'Unknown_ROMs_Parent'
 
-# launcher['nointro_display_mode'] values default NOINTRO_DMODE_ALL
+# launcher['display_filter'] default value NOINTRO_DMODE_ALL
 NOINTRO_DMODE_ALL       = 'All ROMs'
 NOINTRO_DMODE_HAVE      = 'Have ROMs'
 NOINTRO_DMODE_HAVE_UNK  = 'Have or Unknown ROMs'
@@ -137,17 +137,14 @@ NOINTRO_DMODE_LIST      = [NOINTRO_DMODE_ALL, NOINTRO_DMODE_HAVE, NOINTRO_DMODE_
                            NOINTRO_DMODE_HAVE_MISS, NOINTRO_DMODE_MISS, NOINTRO_DMODE_MISS_UNK,
                            NOINTRO_DMODE_UNK]
 
-# launcher['launcher_display_mode'] values default LAUNCHER_DMODE_FLAT
+# launcher['display_mode'] default value LAUNCHER_DMODE_FLAT
 LAUNCHER_DMODE_FLAT   = 'Flat mode'
 LAUNCHER_DMODE_PCLONE = 'Parent/Clone mode'
 LAUNCHER_DMODE_1G1R   = '1G1R mode'
 LAUNCHER_DMODE_LIST   = [LAUNCHER_DMODE_FLAT, LAUNCHER_DMODE_PCLONE, LAUNCHER_DMODE_1G1R]
 
 # Mandatory variables in XML:
-# id              string MD5 hash
-# name            string ROM name
-# finished        bool default False
-# nointro_status  string ['Have', 'Miss', 'Added', 'Unknown', 'None'] default 'None'
+# launcher['nointro_status'] default value NOINTRO_STATUS_NONE
 NOINTRO_STATUS_HAVE    = 'Have'
 NOINTRO_STATUS_MISS    = 'Miss'
 NOINTRO_STATUS_UNKNOWN = 'Unknown'

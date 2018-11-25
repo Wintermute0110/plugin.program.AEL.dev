@@ -5218,9 +5218,11 @@ def m_command_render_clone_roms(categoryID, launcherID, romID):
 
 #
 # Renders the ROMs listbox for a given standard launcher or the Parent ROMs of a PClone launcher.
+# Have a look at AML and decompose this function into three:
+# 1) Load ROMs, 2) Prepare ROMs, 3) Render ROMs.
 #
 def m_command_render_roms(categoryID, launcherID):
-    launcher = g_LauncherRepository.find(launcherID)
+    launcher = g_ObjectFactory.find_launcher(categoryID, launcherID)
 
     # --- Check for errors ---
     if launcher is None:
@@ -5236,21 +5238,19 @@ def m_command_render_roms(categoryID, launcherID):
     # --- Set content type and sorting methods ---
     m_misc_set_all_sorting_methods()
     m_misc_set_AEL_Content(AEL_CONTENT_VALUE_ROMS)
-    self._misc_set_AEL_Launcher_Content(selectedLauncher)
+    # m_misc_set_AEL_Launcher_Content(selectedLauncher)
 
     # --- Render in Flat mode (all ROMs) or Parent/Clone or 1G1R mode---
     # >> Parent/Clone mode and 1G1R modes are very similar in terms of programming.
     loading_ticks_start = time.time()
-    
-    launcher.load_roms()
+    launcher.load_ROMs()
     if not launcher.has_roms():
         kodi_notify('Launcher XML/JSON empty. Add ROMs to launcher.')
         xbmcplugin.endOfDirectory(handle = g_addon_handle, succeeded = True, cacheToDisc = False)
         return
-            
     view_mode = launcher.get_display_mode()
     dp_mode   = launcher.get_nointro_display_mode()
-    
+
     # --- ROM display filter ---
     if launcher.has_nointro_xml() and dp_mode != NOINTRO_DMODE_ALL:
         roms = launcher.get_roms_filtered()
@@ -5264,24 +5264,26 @@ def m_command_render_roms(categoryID, launcherID):
     # --- Load favourites ---
     # >> Optimisation: Transform the dictionary keys into a set. Sets are the fastest
     #    when checking if an element exists.
-    fav_launcher = g_LauncherRepository.find(VLAUNCHER_FAVOURITES_ID)
+    fav_launcher = g_ObjectFactory.find_launcher(VCATEGORY_FAVOURITES_ID, VLAUNCHER_FAVOURITES_ID)
     fav_roms = fav_launcher.get_roms()
     fav_rom_ids = set(f.get_id() for f in fav_roms)
-
-    #roms_fav = fs_load_Favourites_JSON(FAV_JSON_FILE_PATH)
-    #roms_fav_set = set(roms_fav.keys())
-
-    # --- Display ROMs ---
+    # roms_fav = fs_load_Favourites_JSON(FAV_JSON_FILE_PATH)
+    # roms_fav_set = set(roms_fav.keys())
     loading_ticks_end = time.time()
-    rendering_ticks_start = time.time()
+
+    # --- Prepare ROMs ---
     
+
+    # --- Render ROMs ---
+    rendering_ticks_start = time.time()
     for rom in sorted(roms, key = lambda r : r.get_name()):
         if view_mode == LAUNCHER_DMODE_FLAT:
-            self._gui_render_rom_row(categoryID, launcherID, rom.get_data(), rom.get_id() in fav_rom_ids, view_mode, False)
+            m_gui_render_rom_row(categoryID, launcherID, rom.get_data(),
+                                 rom.get_id() in fav_rom_ids, view_mode, False)
         else:
             num_clones = len(pclone_index[key])
-            self._gui_render_rom_row(categoryID, launcherID, rom.get_data(), rom.get_id() in fav_rom_ids, view_mode, True, num_clones)
-
+            m_gui_render_rom_row(categoryID, launcherID, rom.get_data(),
+                                 rom.get_id() in fav_rom_ids, view_mode, True, num_clones)
     xbmcplugin.endOfDirectory(handle = g_addon_handle, succeeded = True, cacheToDisc = False)
     rendering_ticks_end = time.time()
 
@@ -5290,7 +5292,6 @@ def m_command_render_roms(categoryID, launcherID):
     log_debug('Rendering seconds {0}'.format(rendering_ticks_end - rendering_ticks_start))
 
 #
-# Former _add_rom()
 # Note that if we are rendering favourites, categoryID = VCATEGORY_FAVOURITES_ID
 # Note that if we are rendering virtual launchers, categoryID = VCATEGORY_*_ID
 #

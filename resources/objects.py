@@ -717,14 +717,14 @@ def assets_get_ROM_asset_path(launcher):
 # Data storage objects.
 # #################################################################################################
 # #################################################################################################
-
-# -------------------------------------------------------------------------------------------------
-# Repository class for creating and retrieveing Categories/Launchers/ROM objects.
-# Basically, everything stored in categories.xml, ROM JSON files, etc.
-# This object only retrieves database dictionaries. Actual objects are created by the
-# class AELObjectFactory().
-# ROM object can be created exclusively by Launcher objects.
-# -------------------------------------------------------------------------------------------------
+#
+# * Repository class for creating and retrieveing Categories/Launchers/ROM Collection objects.
+#
+# * This object only retrieves database dictionaries. Actual objects are created by the
+#   class AELObjectFactory().
+#
+# * ROM objects can be created exclusively by Launcher objects using the ROMSetRepository class.
+#
 class ObjectRepository(object):
     def __init__(self, g_PATHS, g_settings):
         self.PATHS = g_PATHS
@@ -734,9 +734,11 @@ class ObjectRepository(object):
         # right now.
         # When AEL is used for the first time and categories.xml does not exists, just create
         # empty structures.
-        self.header_dic = {}
-        self.categories = {}
-        self.launchers  = {}
+        # ROM Collection index is loaded lazily if needed.
+        self.header_dic  = {}
+        self.categories  = {}
+        self.launchers   = {}
+        self.collections = None
         if not self.PATHS.CATEGORIES_FILE_PATH.exists():
             log_debug('ObjectRepository::init() categories.xml does not exist. Creating empty data.')
         else:
@@ -940,30 +942,32 @@ ROMSET_DAT      = '_DAT'
 #      converted back the ordered dictionary into a list before saving the collection.
 # -------------------------------------------------------------------------------------------------
 class ROMSetRepository(object):
-    def __init__(self, PATHS, store_as_dictionary = True):
-        roms_dir = 'abc'
-        self.roms_dir = roms_dir
+    def __init__(self, PATHS, settings, store_as_dictionary = True):
+        self.PATHS = PATHS
+        self.settings = settings
         self.store_as_dictionary = store_as_dictionary
+        self.ROMs_dir = self.PATHS.ROMS_DIR
 
     #
     # Loads ROM databases from disk
     #
     def load_ROMs(self, launcher, view_mode = None):
+        log_debug('ROMSetRepository::load_ROMs() Starting ...')
         roms_base_noext = launcher.get_roms_base()
-        if view_mode is None:
-            view_mode = launcher.get_display_mode()
+        if view_mode is None: view_mode = launcher.get_display_mode()
 
         if roms_base_noext is None:
-            repository_file = self.roms_dir
+            repository_file = self.ROMs_dir
         elif view_mode == LAUNCHER_DMODE_FLAT:
-            repository_file = self.roms_dir.pjoin('{}.json'.format(roms_base_noext))
+            repository_file = self.ROMs_dir.pjoin('{}.json'.format(roms_base_noext))
         else:
-            repository_file = self.roms_dir.pjoin('{}_parents.json'.format(roms_base_noext))
-
+            repository_file = self.ROMs_dir.pjoin('{}_parents.json'.format(roms_base_noext))
         if not repository_file.exists():
-            log_warning('Launcher "{0}" JSON not found.'.format(repository_file.getPath()))
+            log_warning('Launcher JSON not found "{0}"'.format(repository_file.getPath()))
             return None
-        log_info('ROMSetRepository::find_by_launcher() Loading ROMs in Launcher ({}:{}) Mode: {}...'.format(launcher.get_launcher_type_name(), launcher.get_name(), view_mode))
+        log_info('Loading ROMs in Launcher ({0}:{1}) ...'.format(
+            launcher.get_launcher_type_name(), launcher.get_name()))
+        log_info('View mode {0}...'.format(view_mode))
 
         roms_data = {}
         # --- Parse using json module ---
@@ -3138,10 +3142,10 @@ class StandardRomLauncher(ROMLauncherABC):
             1, self._builder_get_appbrowser_filter)
         wizard = WizardDialog_FileBrowse(wizard, 'rompath', 'Select the ROMs path',
             0, '')
-        wizard = WizardDialog_Dummy('romext', '', wizard,
+        wizard = WizardDialog_Dummy(wizard, 'romext', '',
             self._builder_get_extensions_from_app_path)
-        wizard = WizardDialog_Keyboard('romext','Set files extensions, use "|" as separator. (e.g lnk|cbr)', wizard)
-        wizard = KodiDummyWizardDialog('args', '', wizard,
+        wizard = WizardDialog_Keyboard(wizard, 'romext','Set files extensions, use "|" as separator. (e.g lnk|cbr)')
+        wizard = WizardDialog_Dummy(wizard, 'args', '',
             self._builder_get_arguments_from_application_path)
         wizard = WizardDialog_Keyboard(wizard, 'args', 'Application arguments')
         wizard = WizardDialog_Dummy(wizard, 'm_name', '',
@@ -4288,6 +4292,7 @@ class NvidiaGameStreamLauncher(ROMLauncherABC):
 
 # ------------------------------------------------------------------------------------------------
 # --- AEL Object Factory -------------------------------------------------------------------------
+#
 # * Used to create an AEL object that is a child of MetaDataItemACB().
 #
 # * A global and unique instance of AELObjectFactory is created in main.py to create all
@@ -4307,7 +4312,8 @@ class NvidiaGameStreamLauncher(ROMLauncherABC):
 # * Abstract Factory Pattern
 #   See https://www.oreilly.com/library/view/head-first-design/0596007124/ch04.html
 #
-# ---Examples ------------------------------------------------------------------------------------
+# --- Category creation and edition --------------------------------------------------------------
+#
 #  1. Create a new Category:
 #     category = AELObjectFactory.create_new(OBJ_CATEGORY)
 #     category.save_to_disk()
@@ -4318,7 +4324,9 @@ class NvidiaGameStreamLauncher(ROMLauncherABC):
 #  2. Retrieve a Category from disk (for example, in Edit Category context menu):
 #     category = AELObjectFactory.find_category(category_id)
 #     category.save_to_disk()
-# ------------------------------------------------------------------------------------------------
+#
+# --- Launcher creation and edition --------------------------------------------------------------
+#
 #  4. Create a new real Launcher:
 #     launcher = AELObjectFactory.create_new(OBJ_LAUNCHER_ROM)
 #     OR
@@ -4326,91 +4334,109 @@ class NvidiaGameStreamLauncher(ROMLauncherABC):
 #     launcher.build(category)
 #     launcher.save_to_disk()
 #
-#  6. Retrieve a list of all real Launchers in a Category, sorted alphabetically by Name:
+#  5. Retrieve a list of all real Launchers in a Category, sorted alphabetically by Name:
 #     launcher_list = AELObjectFactory.find_launchers_in_cat(category_id)
 #
-#  5. Retrieve a real Launcher from disk (real launcher can be edited):
+#  6. Retrieve a real Launcher from disk (real launcher can be edited):
 #     launcher = AELObjectFactory.find_launcher(category_id, launcher_id)
 #     launcher.save_to_disk()
-# ------------------------------------------------------------------------------------------------
+#
+# --- ROM Collection creation and edition --------------------------------------------------------
+#
 #  7. Create a new ROM Collection. Category is implicit:
 #     collection = AELObjectFactory.create_new(OBJ_LAUNCHER_COLLECTION)
 #     collection.set_name('Sonic')
 #     collection.save_to_disk()
 #
-#  7. Retrieve a list of all ROM Collection launchers from disk:
+#  8. Retrieve a list of all ROM Collection launchers from disk:
 #     collections_list = AELObjectFactory.find_launchers_in_cat(VCATEGORY_COLLECTIONS_ID)
 #
-#  8. Retrieve a ROM Collection from disk (for example, in Edit Collection context menu):
+#  9. Retrieve a ROM Collection from disk (for example, in Edit Collection context menu):
 #     collection = AELObjectFactory.find_launcher(VCATEGORY_COLLECTIONS_ID, launcher_id)
 #     collection.save_to_disk()
-# ------------------------------------------------------------------------------------------------
-#  9. Create a new Virtual Launcher:
+#
+# --- Virtual Launcher related functions ---------------------------------------------------------
+#
+# 10. Create a new Virtual Launcher:
 #     vlauncher = AELObjectFactory.create_new(OBJ_LAUNCHER_VIRTUAL, VCATEGORY_TITLE_ID)
 #     vlauncher.set_name('A')
 #     vlauncher.save_to_disk()
 #
-# 10. Retrieve a list of all Virtual Launchers of a given type:
+# 11. Retrieve a list of all Virtual Launchers of a given type:
 #     vlauncher_list = AELObjectFactory.find_launchers_in_cat(VCATEGORY_TITLE_ID)
 #
-# 11. Retrieve a Virtual Launcher from disk:
+# 12. Retrieve a Virtual Launcher from disk:
 #     vlauncher = AELObjectFactory.find_launcher(VCATEGORY_TITLE_ID, launcher_id)
-# ------------------------------------------------------------------------------------------------
-# 12. Create a new ROM:
+#
+# --- Creation of ROMs ---------------------------------------------------------------------------
+#
+# 13. Create a new ROM:
 #     launcher = AELObjectFactory.create_new(OBJ_LAUNCHER_ROM, category_id)
 #     ROM = launcher.create_new_ROM()
 #
-# 13. Retrieve a list of ROMs in a Launcher (ROMs sorted alpahbetically by Title):
+# 14. Retrieve a ROM in a Launcher for edition:
 #     launcher = AELObjectFactory.find_launcher(VCATEGORY_ACTUAL_LAUN_ID, launcher_id)
+#     launcher.load_ROMs()
 #     ROM = launcher.find_ROM(rom_id)
+#     launcher.save_ROMs_disk()
 #
-# 13. Retrieve ROM from disk (for example, in Edit ROM context menu):
-#     launcher = AELObjectFactory.find_launcher(VCATEGORY_ACTUAL_LAUN_ID, launcher_id)
-#     ROM = launcher.find_ROM(rom_id)
-# ------------------------------------------------------------------------------------------------
-# 14. Add ROM to Favourites:
+# --- Favourite ROM creation ---------------------------------------------------------------------
+#
+# 16. Add ROM to Favourites:
 #     launcher = AELObjectFactory.find_launcher(VCATEGORY_ACTUAL_LAUN_ID, launcher_id)
 #     ROM = launcher.create_new_ROM()
 #     favourites = AELObjectFactory.find_launcher(VCATEGORY_FAVOURITES_ID) # Launcher ID implicit
 #     favourites.add_ROM(ROM)
 #     favourites.save_to_disk()
 #
-# 15. Add ROM to Collection:
+# 17. Add ROM to Collection:
 #     launcher = AELObjectFactory.find_launcher(VCATEGORY_ACTUAL_LAUN_ID, launcher_id)
 #     ROM = launcher.create_new_ROM()
 #     collection = AELObjectFactory.find_launcher(VCATEGORY_COLLECTIONS_ID, launcher_id)
 #     collection.add_ROM(ROM)
 #     collection.save_to_disk()
 #
-# 16. Build Virtual Launchers:
+# 18. Build Virtual Launchers:
+#     launcher_list = ...
+#     all_ROMs = []
+#     for launcher in launcher_list:
+#         roms = launcher...
+#         for rom in roms:
+#             all_ROMs.insert(rom)
 #     for name in names:
 #         vlauncher = AELObjectFactory.create_new(OBJ_LAUNCHER_VIRTUAL, VCATEGORY_TITLE_ID)
 #         vlauncher.set_name(name)
 #         vlauncher.add_ROM(ROM)
 #         vlauncher.save_to_disk()
-# ------------------------------------------------------------------------------------------------
-# 17. Render ROMs in a Launcher:
+#
+# --- Render of ROMs in a Standard ROM Launcher --------------------------------------------------
+#
+# 19. Render ROMs in a Launcher:
 #     launcher = AELObjectFactory.find_launcher(VCATEGORY_ACTUAL_LAUN_ID, launcher_id)
 #     for rom in launcher.find_ROMs_all():
 #         rom.get_name()
 #
-# 18. Render ROMs in a Collection:
+# 20. Render ROMs in a Launcher (filtered):
+#
+# 21. Render ROMs in a Collection:
 #     collection = AELObjectFactory.find_launcher(VCATEGORY_COLLECTIONS_ID, launcher_id)
 #     for rom in collection.find_ROMs_all():
 #         rom.get_name()
-# ------------------------------------------------------------------------------------------------
-# 19. Render Category database information:
+#
+# --- View context menu --------------------------------------------------------------------------
+#
+# 22. Render Category database information:
 #     category = AELObjectFactory.find_category(category_id)
 #
-# 20. Render Launcher database information (Category is required):
+# 23. Render Launcher database information (Category is required):
 #     launcher = AELObjectFactory.find_launcher(VCATEGORY_ACTUAL_LAUN_ID, launcher_id)
 #     category = AELObjectFactory.find_category(launcher.get_category_ID())
 #
-# 21. Render ROM database information (Category and Launcher required)
+# 24. Render ROM database information (Category and Launcher required)
 #     launcher = AELObjectFactory.find_launcher(VCATEGORY_ACTUAL_LAUN_ID, launcher_id)
 #     category = AELObjectFactory.find_category(launcher.get_category_ID())
 #     ROM = launcher.find_ROM(rom_id)
-# -------------------------------------------------------------------------------------------------
+#
 class AELObjectFactory(object):
     def __init__(self, PATHS, settings, objectRepository, executorFactory):
         # PATHS and settings are used in the creation of all object.
