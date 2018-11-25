@@ -543,7 +543,6 @@ def m_get_settings():
     g_settings['scan_asset_policy']        = int(o.getSetting('scan_asset_policy'))
     g_settings['metadata_scraper_mode']    = int(o.getSetting('metadata_scraper_mode'))
     g_settings['asset_scraper_mode']       = int(o.getSetting('asset_scraper_mode'))
-    g_settings['steam-api-key']            = o.getSetting('steam-api-key')
 
     # --- ROM scraping tab ---
     g_settings['scraper_metadata']       = int(o.getSetting('scraper_metadata'))
@@ -604,11 +603,15 @@ def m_get_settings():
     g_settings['display_hide_recent']      = True if o.getSetting('display_hide_recent') == 'true' else False
     g_settings['display_hide_mostplayed']  = True if o.getSetting('display_hide_mostplayed') == 'true' else False
 
+    # --- Misc tab ---
+    g_settings['retroarch_mandatory_BIOS'] = True if o.getSetting('retroarch_mandatory_BIOS') == 'true' else False
+    g_settings['steam_api_key']            = o.getSetting('steam_api_key')
+
     # --- Paths tab ---
     g_settings['retroarch_exec_path']      = o.getSetting('retroarch_exec_path').decode('utf-8')
     g_settings['retroarch_cores_dir']      = o.getSetting('retroarch_cores_dir').decode('utf-8')
     g_settings['retroarch_system_dir']     = o.getSetting('retroarch_system_dir').decode('utf-8')
-    g_settings['retroarch_mandatory_BIOS'] = True if o.getSetting('retroarch_mandatory_BIOS') == 'true' else False
+
     g_settings['categories_asset_dir']     = o.getSetting('categories_asset_dir').decode('utf-8')
     g_settings['launchers_asset_dir']      = o.getSetting('launchers_asset_dir').decode('utf-8')
     g_settings['favourites_asset_dir']     = o.getSetting('favourites_asset_dir').decode('utf-8')
