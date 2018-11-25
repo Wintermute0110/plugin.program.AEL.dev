@@ -1370,6 +1370,8 @@ class Category(MetaDataItemABC):
 
     def get_assets_kind(self): return KIND_ASSET_CATEGORY
 
+    def is_virtual(self): return False
+
     def save_to_disk(self): self.objectRepository.save_category(self.entity_data)
 
     def delete_from_disk(self):
@@ -1377,8 +1379,6 @@ class Category(MetaDataItemABC):
         self.objectRepository.delete_category(self.entity_data)
         self.entity_data = None
         self.objectRepository = None
-
-    def is_virtual(self): return False
 
     def num_launchers(self):
         return self.objectRepository.num_launchers_in_cat(self.entity_data['id'])
@@ -1471,9 +1471,11 @@ class VirtualCategory(MetaDataItemABC):
 
     def get_assets_kind(self): return KIND_ASSET_CATEGORY
 
+    def is_virtual(self): return True
+
     def save_to_disk(self): pass
 
-    def is_virtual(self): return True
+    def delete_from_disk(self): pass
 
 # -------------------------------------------------------------------------------------------------
 # Class representing a ROM file you can play through AEL.
@@ -1809,7 +1811,6 @@ class LauncherABC(MetaDataItemABC):
 
     def _builder_get_title_from_app_path(self, input, item_key, launcher):
         if input: return input
-
         appPath = FileName(launcher['application'])
         title = appPath.getBaseNoExt()
         title_formatted = title.replace('.' + title.split('.')[-1], '').replace('.', ' ')
@@ -1872,8 +1873,7 @@ class LauncherABC(MetaDataItemABC):
     # get_advanced_modification_options() is custom for every concrete launcher class.
     #
     @abc.abstractmethod
-    def get_advanced_modification_options(self):
-        pass
+    def get_advanced_modification_options(self): pass
 
     # ---------------------------------------------------------------------------------------------
     # Execution methods
@@ -1884,20 +1884,24 @@ class LauncherABC(MetaDataItemABC):
     #
     @abc.abstractmethod
     def launch(self):
+        log_debug('LauncherABC::launch() Starting ...')
+
+        # --- Create executor object ---
         executor = self.executorFactory.create(self.application) if self.executorFactory is not None else None
         if executor is None:
-            log_error("Cannot create an executor for {0}".format(self.application.getPath()))
+            log_error('Cannot create an executor for {0}'.format(self.application.getPath()))
             kodi_notify_error('Cannot execute application')
             return
 
-        log_debug('Launcher launching = "{0}"'.format(self.title))
-        log_debug('Launcher application = "{0}"'.format(self.application.getPath()))
-        log_debug('Launcher arguments = "{0}"'.format(self.arguments))
-        log_debug('Launcher executor = "{0}"'.format(executor.__class__.__name__))
+        log_debug('Name        = "{0}"'.format(self.title))
+        log_debug('Application = "{0}"'.format(self.application.getPath()))
+        log_debug('Arguments   = "{0}"'.format(self.arguments))
+        log_debug('Executor    = "{0}"'.format(executor.__class__.__name__))
 
-        self.preExecution(self.title, self.is_in_windowed_mode())
+        # --- Execute app ---
+        self._launch_pre_exec(self.title, self.is_in_windowed_mode())
         executor.execute(self.application, self.arguments, self.is_non_blocking())
-        self.postExecution(self.is_in_windowed_mode())
+        self._launch_post_exec(self.is_in_windowed_mode())
 
     #
     # These two functions do things like stopping music before lunch, toggling full screen, etc.
@@ -1905,8 +1909,9 @@ class LauncherABC(MetaDataItemABC):
     # self.kodi_was_playing      True if Kodi player was ON, False otherwise
     # self.kodi_audio_suspended  True if Kodi audio suspended before launching
     #
-    # def _run_before_execution(self, rom_title, toggle_screen_flag):
-    def launch_pre_exec(self, title, toggle_screen_flag):
+    def _launch_pre_exec(self, title, toggle_screen_flag):
+        log_debug('LauncherABC::_launch_pre_exec() Starting ...')
+
         # --- User notification ---
         if self.settings['display_launcher_notify']:
             kodi_notify('Launching {0}'.format(title))
@@ -1916,14 +1921,14 @@ class LauncherABC(MetaDataItemABC):
         # id="media_state_action" default="0" values="Stop|Pause|Let Play"
         media_state_action = self.settings['media_state_action']
         media_state_str = ['Stop', 'Pause', 'Let Play'][media_state_action]
-        log_verb('_run_before_execution() media_state_action is "{0}" ({1})'.format(media_state_str, media_state_action))
+        log_verb('_launch_pre_exec() media_state_action is "{0}" ({1})'.format(media_state_str, media_state_action))
         if media_state_action == 0 and xbmc.Player().isPlaying():
-            log_verb('_run_before_execution() Calling xbmc.Player().stop()')
+            log_verb('_launch_pre_exec() Calling xbmc.Player().stop()')
             xbmc.Player().stop()
             xbmc.sleep(100)
             self.kodi_was_playing = True
         elif media_state_action == 1 and xbmc.Player().isPlaying():
-            log_verb('_run_before_execution() Calling xbmc.Player().pause()')
+            log_verb('_launch_pre_exec() Calling xbmc.Player().pause()')
             xbmc.Player().pause()
             xbmc.sleep(100)
             self.kodi_was_playing = True
@@ -1932,13 +1937,13 @@ class LauncherABC(MetaDataItemABC):
         # >> See http://forum.kodi.tv/showthread.php?tid=164522
         self.kodi_audio_suspended = False
         if self.settings['suspend_audio_engine']:
-            log_verb('_run_before_execution() Suspending Kodi audio engine')
+            log_verb('_launch_pre_exec() Suspending Kodi audio engine')
             xbmc.audioSuspend()
             xbmc.enableNavSounds(False)
             xbmc.sleep(100)
             self.kodi_audio_suspended = True
         else:
-            log_verb('_run_before_execution() DO NOT suspend Kodi audio engine')
+            log_verb('_launch_pre_exec() DO NOT suspend Kodi audio engine')
 
         # --- Force joystick suspend if requested in "Settings" --> "Advanced"
         # >> See https://forum.kodi.tv/showthread.php?tid=287826&pid=2627128#pid2627128
@@ -1946,7 +1951,7 @@ class LauncherABC(MetaDataItemABC):
         # >> See https://forum.kodi.tv/showthread.php?tid=313615
         self.kodi_joystick_suspended = False
         # if self.settings['suspend_joystick_engine']:
-            # log_verb('_run_before_execution() Suspending Kodi joystick engine')
+            # log_verb('_launch_pre_exec() Suspending Kodi joystick engine')
             # >> Research. Get the value of the setting first
             # >> Apparently input.enablejoystick is not supported on Kodi Krypton anymore.
             # c_str = ('{"id" : 1, "jsonrpc" : "2.0",'
@@ -1964,35 +1969,37 @@ class LauncherABC(MetaDataItemABC):
             # log_debug('Response  ''{0}'''.format(response))
             # self.kodi_joystick_suspended = True
 
-            # log_error('_run_before_execution() Suspending Kodi joystick engine not supported on Kodi Krypton!')
+            # log_error('_launch_pre_exec() Suspending Kodi joystick engine not supported on Kodi Krypton!')
         # else:
-            # log_verb('_run_before_execution() DO NOT suspend Kodi joystick engine')
+            # log_verb('_launch_pre_exec() DO NOT suspend Kodi joystick engine')
 
         # --- Toggle Kodi windowed/fullscreen if requested ---
         if toggle_screen_flag:
-            log_verb('_run_before_execution() Toggling Kodi fullscreen')
+            log_verb('_launch_pre_exec() Toggling Kodi fullscreen')
             kodi_toogle_fullscreen()
         else:
-            log_verb('_run_before_execution() Toggling Kodi fullscreen DEACTIVATED in Launcher')
+            log_verb('_launch_pre_exec() Toggling Kodi fullscreen DEACTIVATED in Launcher')
 
         # --- Pause Kodi execution some time ---
         delay_tempo_ms = self.settings['delay_tempo']
-        log_verb('_run_before_execution() Pausing {0} ms'.format(delay_tempo_ms))
+        log_verb('_launch_pre_exec() Pausing {0} ms'.format(delay_tempo_ms))
         xbmc.sleep(delay_tempo_ms)
-        log_debug('_run_before_execution() function ENDS')
+        log_debug('LauncherABC::_launch_pre_exec() function ENDS')
 
-    def launch_post_exec(self, toggle_screen_flag):
+    def _launch_post_exec(self, toggle_screen_flag):
+        log_debug('LauncherABC::_launch_post_exec() Starting ...')
+
         # --- Stop Kodi some time ---
         delay_tempo_ms = self.settings['delay_tempo']
-        log_verb('postExecution() Pausing {0} ms'.format(delay_tempo_ms))
+        log_verb('_launch_post_exec() Pausing {0} ms'.format(delay_tempo_ms))
         xbmc.sleep(delay_tempo_ms)
 
         # --- Toggle Kodi windowed/fullscreen if requested ---
         if toggle_screen_flag:
-            log_verb('postExecution() Toggling Kodi fullscreen')
+            log_verb('_launch_post_exec() Toggling Kodi fullscreen')
             kodi_toogle_fullscreen()
         else:
-            log_verb('postExecution() Toggling Kodi fullscreen DEACTIVATED in Launcher')
+            log_verb('_launch_post_exec() Toggling Kodi fullscreen DEACTIVATED in Launcher')
 
         # --- Resume audio engine if it was suspended ---
         # Calling xmbc.audioResume() takes a loong time (2/4 secs) if audio was not properly suspended!
@@ -2000,34 +2007,34 @@ class LauncherABC(MetaDataItemABC):
         # WARNING: CActiveAE::StateMachine - signal: 0 from port: OutputControlPort not handled for state: 7
         #   ERROR: ActiveAE::Resume - failed to init
         if self.kodi_audio_suspended:
-            log_verb('postExecution() Kodi audio engine was suspended before launching')
-            log_verb('postExecution() Resuming Kodi audio engine')
+            log_verb('_launch_post_exec() Kodi audio engine was suspended before launching')
+            log_verb('_launch_post_exec() Resuming Kodi audio engine')
             xbmc.audioResume()
             xbmc.enableNavSounds(True)
             xbmc.sleep(100)
         else:
-            log_verb('_run_before_execution() DO NOT resume Kodi audio engine')
+            log_verb('_launch_post_exec() DO NOT resume Kodi audio engine')
 
         # --- Resume joystick engine if it was suspended ---
         if self.kodi_joystick_suspended:
-            log_verb('postExecution() Kodi joystick engine was suspended before launching')
-            log_verb('postExecution() Resuming Kodi joystick engine')
+            log_verb('_launch_post_exec() Kodi joystick engine was suspended before launching')
+            log_verb('_launch_post_exec() Resuming Kodi joystick engine')
             # response = xbmc.executeJSONRPC(c_str)
             # log_debug('JSON      ''{0}'''.format(c_str))
             # log_debug('Response  ''{0}'''.format(response))
-            log_verb('postExecution() Not supported on Kodi Krypton!')
+            log_verb('_launch_post_exec() Not supported on Kodi Krypton!')
         else:
-            log_verb('postExecution() DO NOT resume Kodi joystick engine')
+            log_verb('_launch_post_exec() DO NOT resume Kodi joystick engine')
 
         # --- Resume Kodi playing if it was paused. If it was stopped, keep it stopped. ---
         media_state_action = self.settings['media_state_action']
         media_state_str = ['Stop', 'Pause', 'Let Play'][media_state_action]
-        log_verb('postExecution() media_state_action is "{0}" ({1})'.format(media_state_str, media_state_action))
-        log_verb('postExecution() self.kodi_was_playing is {0}'.format(self.kodi_was_playing))
+        log_verb('_launch_post_exec() media_state_action is "{0}" ({1})'.format(media_state_str, media_state_action))
+        log_verb('_launch_post_exec() self.kodi_was_playing is {0}'.format(self.kodi_was_playing))
         if self.kodi_was_playing and media_state_action == 1:
-            log_verb('postExecution() Calling xbmc.Player().play()')
+            log_verb('_launch_post_exec() Calling xbmc.Player().play()')
             xbmc.Player().play()
-        log_debug('postExecution() function ENDS')
+        log_debug('LauncherABC::_launch_post_exec() function ENDS')
 
     # ---------------------------------------------------------------------------------------------
     # Launcher metadata and flags related methods
@@ -2271,11 +2278,12 @@ class StandaloneLauncher(LauncherABC):
 
     #
     # Creates a new launcher using a wizard of dialogs.
-    # _get_builder_wizard() is always defined in Launcher concrete classes and it's called by
-    # parent methods.
+    # _builder_get_wizard() is always defined in Launcher concrete classes and it's called by
+    # parent build() method.
+    #
     def _builder_get_wizard(self, wizard):
         wizard = WizardDialog_FileBrowse(wizard, 'application', 'Select the launcher application',
-            1, self._get_appbrowser_filter)
+            1, self._builder_get_appbrowser_filter)
         wizard = WizardDialog_Dummy(wizard, 'args', '')
         wizard = WizardDialog_Keyboard(wizard, 'args', 'Application arguments')
         wizard = WizardDialog_Dummy(wizard, 'm_name', '',
@@ -2311,11 +2319,10 @@ class StandaloneLauncher(LauncherABC):
 
     def get_advanced_modification_options(self):
         log_debug('StandaloneLauncher::get_advanced_modification_options() Starting ...')
-
         toggle_window_str = 'ON' if self.entity_data['toggle_window'] else 'OFF'
         non_blocking_str  = 'ON' if self.entity_data['non_blocking'] else 'OFF'
 
-        options = super(ApplicationLauncher, self).get_advanced_modification_options()
+        options = collections.OrderedDict()
         options['CHANGE_APPLICATION']   = "Change Application: '{0}'".format(self.entity_data['application'])
         options['MODIFY_ARGS']          = "Modify Arguments: '{0}'".format(self.entity_data['args'])
         options['ADDITIONAL_ARGS']      = "Modify aditional arguments ..."
@@ -2328,9 +2335,10 @@ class StandaloneLauncher(LauncherABC):
     # Execution methods
     # ---------------------------------------------------------------------------------------------
     def launch(self):
-        self.title = self.entity_data['m_name']
+        log_debug('StandaloneLauncher::launch() Starting ...')
+        self.title       = self.entity_data['m_name']
         self.application = FileName(self.entity_data['application'])
-        self.arguments = self.entity_data['args']
+        self.arguments   = self.entity_data['args']
 
         # --- Check for errors and abort if errors found ---
         if not self.application.exists():
@@ -2338,12 +2346,14 @@ class StandaloneLauncher(LauncherABC):
             kodi_notify_warn('App {0} not found.'.format(self.application.getPath()))
             return
 
-        # ~~~ Argument substitution ~~~
-        log_info('StandaloneLauncher() raw arguments   "{0}"'.format(self.arguments))
-        self.arguments = self.arguments.replace('$apppath%' , self.application.getDir())
-        log_info('StandaloneLauncher() final arguments "{0}"'.format(self.arguments))
+        # --- Argument substitution ---
+        log_info('Raw arguments   "{0}"'.format(self.arguments))
+        self.arguments = self.arguments.replace('$apppath$' , self.application.getDir())
+        log_info('Final arguments "{0}"'.format(self.arguments))
 
+        # --- Call LauncherABC.launch(). Executor object is created there and invoked ---
         super(StandaloneLauncher, self).launch()
+        log_debug('StandaloneLauncher::launch() END ...')
 
     # ---------------------------------------------------------------------------------------------
     # Launcher metadata and flags related methods
@@ -2351,7 +2361,7 @@ class StandaloneLauncher(LauncherABC):
     def change_application(self):
         current_application = self.entity_data['application']
         selected_application = xbmcgui.Dialog().browse(1, 'Select the launcher application', 'files',
-                                                      self._get_appbrowser_filter('application', self.entity_data), 
+                                                      self._get_appbrowser_filter('application', self.entity_data),
                                                       False, False, current_application).decode('utf-8')
 
         if selected_application is None or selected_application == current_application:
@@ -4481,6 +4491,7 @@ class AELObjectFactory(object):
     #
     # Retrieves a Launcher object from the database.
     # This method also creates Virtual Launchers (Favourites, ROM Collection, etc.)
+    # category_id is not used for Standard Launchers, but is is important for Virtual Launchers.
     # Returns a Launcher object or None.
     #
     def find_launcher(self, category_id, launcher_id):

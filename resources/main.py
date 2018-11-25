@@ -7336,20 +7336,20 @@ def m_command_update_virtual_category_db(virtual_categoryID, all_roms_external =
 # Launchs a standalone application.
 #
 def m_command_run_standalone_launcher(categoryID, launcherID):
-    
-    log_info('_command_run_standalone_launcher() Launching Standalone Launcher ...')
-    launcher = g_LauncherRepository.find(launcherID)
+    log_info('m_command_run_standalone_launcher() Launching Standalone Launcher ...')
+    launcher = g_ObjectFactory.find_launcher(categoryID, launcherID)
 
     # --- Check launcher is OK ---
     if launcher is None:
-        kodi_dialog_OK('Could not start launcher. Check the logs')
+        kodi_dialog_OK('Could not start launcher. Check the logs.')
         return
 
+    # --- Launch application ---
     launcher.launch()
 
 #
 # Launchs a ROM
-# NOTE args_extre maybe present or not in Favourite ROM. In newer version of AEL always present.
+# NOTE args_extra maybe present or not in Favourite ROM. In newer version of AEL always present.
 #
 def m_command_run_rom(categoryID, launcherID, romID):
     # --- ROM in Favourites ---
