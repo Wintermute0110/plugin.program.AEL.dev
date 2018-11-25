@@ -5228,7 +5228,7 @@ class ExecutorFactory(object):
 # ROM scanners
 # #################################################################################################
 # #################################################################################################
-class RomScannersFactory(objecy):
+class RomScannersFactory(object):
     def __init__(self, PATHS, settings):
         self.settings = settings
         self.reports_dir = PATHS.REPORTS_DIR

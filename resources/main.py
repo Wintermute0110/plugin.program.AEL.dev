@@ -5006,8 +5006,7 @@ def m_command_render_all_launchers():
 
 def m_gui_render_launcher_row(launcher, launcher_raw_name = None):
     # --- Do not render row if launcher finished ---
-    if launcher.is_finished() and g_settings['display_hide_finished']:
-        return
+    if launcher.is_finished() and g_settings['display_hide_finished']: return
 
     # --- Launcher tags ---
     # >> Do not plot ROM count on standalone launchers!
@@ -5015,14 +5014,16 @@ def m_gui_render_launcher_row(launcher, launcher_raw_name = None):
     if launcher_raw_name is None: launcher_raw_name = launcher.get_name()
     launcher_type = launcher.get_launcher_type()
     if   launcher_type == OBJ_LAUNCHER_STANDALONE:      launcher_desc = 'Std'
-    elif launcher_type == OBJ_LAUNCHER_ROM:             launcher_desc = 'ROMs'
-    elif launcher_type == OBJ_LAUNCHER_RETROPLAYER:     launcher_desc = 'KRetro'
-    elif launcher_type == OBJ_LAUNCHER_RETROARCH:       launcher_desc = 'Retro'
-    elif launcher_type == OBJ_LAUNCHER_LNK:             launcher_desc = 'LNKs'
+    elif launcher_type == OBJ_LAUNCHER_ROM:             launcher_desc = 'ROM'
+    elif launcher_type == OBJ_LAUNCHER_RETROPLAYER:     launcher_desc = 'RP'
+    elif launcher_type == OBJ_LAUNCHER_RETROARCH:       launcher_desc = 'RA'
+    elif launcher_type == OBJ_LAUNCHER_LNK:             launcher_desc = 'LNK'
     elif launcher_type == OBJ_LAUNCHER_STEAM:           launcher_desc = 'Steam'
-    elif launcher_type == OBJ_LAUNCHER_NVGAMESTREAM:    launcher_desc = 'Strm'
+    elif launcher_type == OBJ_LAUNCHER_NVGAMESTREAM:    launcher_desc = 'GS'
     elif launcher_type == OBJ_LAUNCHER_KODI_FAVOURITES: launcher_desc = 'Fav'
     else:                                               launcher_desc = '???'
+    launcher_raw_name = '{0} [COLOR chocolate][{1}][/COLOR]'.format(launcher_raw_name, launcher_desc)
+
     launcher_dic = launcher.get_data_dic()
     if launcher.supports_launching_roms() and g_settings['display_launcher_roms']:
         if launcher_dic['nointro_xml_file']:
@@ -5053,7 +5054,7 @@ def m_gui_render_launcher_row(launcher, launcher_raw_name = None):
             else:
                 launcher_name = '{0} [COLOR orange]({1} ROMs)[/COLOR]'.format(launcher_raw_name, num_roms)
     else:
-        launcher_name = '{0} [COLOR chocolate]({1})[/COLOR]'.format(launcher_raw_name, launcher_desc)
+        launcher_name = launcher_raw_name
 
     # --- Create listitem row ---
     ICON_OVERLAY = 5 if launcher_dic['finished'] else 4
