@@ -23,6 +23,9 @@ from __future__ import unicode_literals
 from __future__ import division
 import abc
 import collections
+import shlex
+import subprocess
+import webbrowser
 
 # --- AEL packages ---
 from utils import *
@@ -1887,7 +1890,13 @@ class LauncherABC(MetaDataItemABC):
         log_debug('LauncherABC::launch() Starting ...')
 
         # --- Create executor object ---
-        executor = self.executorFactory.create(self.application) if self.executorFactory is not None else None
+        if self.executorFactory is None:
+            log_error('LauncherABC::launch() self.executorFactory is None')
+            log_error('Cannot create an executor for {0}'.format(self.application.getPath()))
+            kodi_notify_error('LauncherABC::launch() self.executorFactory is None'
+                              'This is a bug, please report it.')
+            return
+        executor = self.executorFactory.create(self.application)
         if executor is None:
             log_error('Cannot create an executor for {0}'.format(self.application.getPath()))
             kodi_notify_error('Cannot execute application')
@@ -4642,32 +4651,28 @@ class ExecutorABC():
         self.logFile = logFile
 
     @abc.abstractmethod
-    def execute(self, application, arguments, non_blocking):
-        pass
+    def execute(self, application, arguments, non_blocking): pass
 
 class XbmcExecutor(ExecutorABC):
     # --- Execute Kodi built-in function under certain conditions ---
     def execute(self, application, arguments, non_blocking):
         xbmc.executebuiltin('XBMC.{0}'.format(arguments))
 
-# >> Linux
-# >> New in AEL 0.9.7: always close all file descriptions except 0, 1 and 2 on the child
-# >> process. This is to avoid Kodi opens sockets be inherited by the child process. A
-# >> wrapper script may terminate Kodi using JSON RPC and if file descriptors are not
-# >> closed Kodi will complain that the remote interfacte cannot be initialised. I believe
-# >> the cause is that the socket is kept open by the wrapper script.
+#
+# --- Linux ---
+# New in AEL 0.9.7: always close all file descriptions except 0, 1 and 2 on the child
+# process. This is to avoid Kodi opens sockets be inherited by the child process. A
+# wrapper script may terminate Kodi using JSON RPC and if file descriptors are not
+# closed Kodi will complain that the remote interfacte cannot be initialised. I believe
+# the cause is that the socket is kept open by the wrapper script.
+#
 class LinuxExecutor(ExecutorABC):
     def __init__(self, logFile, lirc_state):
         self.lirc_state = lirc_state
         super(LinuxExecutor, self).__init__(logFile)
 
     def execute(self, application, arguments, non_blocking):
-        import subprocess
-        import shlex
-
-        if self.lirc_state:
-           xbmc.executebuiltin('LIRC.stop')
-
+        log_debug('LinuxExecutor::execute() Starting ...')
         arg_list  = shlex.split(arguments, posix = True)
         command = [application.getPath()] + arg_list
 
@@ -4678,65 +4683,61 @@ class LinuxExecutor(ExecutorABC):
          # >> New way of launching, uses subproces module. Also, save child process stdout.
         if non_blocking:
             # >> In a non-blocking launch stdout/stderr of child process cannot be recorded.
-            log_info('LinuxExecutor: Launching non-blocking process subprocess.Popen()')
+            log_info('Launching non-blocking process subprocess.Popen()')
             p = subprocess.Popen(command, close_fds = True)
         else:
+            if self.lirc_state: xbmc.executebuiltin('LIRC.stop')
             with open(self.logFile.getPath(), 'w') as f:
-                retcode = subprocess.call(command, stdout = f, stderr = subprocess.STDOUT, close_fds = True)
-            log_info('LinuxExecutor: Process retcode = {0}'.format(retcode))
-            if self.lirc_state:
-                xbmc.executebuiltin('LIRC.start')
-
+                retcode = subprocess.call(
+                    command, stdout = f, stderr = subprocess.STDOUT, close_fds = True)
+            log_info('Process retcode = {0}'.format(retcode))
+            if self.lirc_state: xbmc.executebuiltin('LIRC.start')
+        log_debug('LinuxExecutor::execute() function ENDS')
 
 class AndroidExecutor(ExecutorABC):
     def __init__(self):
         super(AndroidExecutor, self).__init__(None)
 
     def execute(self, application, arguments, non_blocking):
+        log_debug('AndroidExecutor::execute() Starting ...')
         retcode = os.system("{0} {1}".format(application.getPath(), arguments).encode('utf-8'))
-
-        log_info('AndroidExecutor: Process retcode = {0}'.format(retcode))
-        pass
+        log_info('Process retcode = {0}'.format(retcode))
+        log_debug('AndroidExecutor::execute() function ENDS')
 
 class OSXExecutor(ExecutorABC):
     def execute(self, application, arguments, non_blocking):
-        import subprocess
-        import shlex
-        
+        log_debug('OSXExecutor::execute() Starting ...')
         arg_list  = shlex.split(arguments, posix = True)
         command = [application.getPath()] + arg_list
-        
-        # >> Old way
+
+        # >> Old way.
         # os.system('"{0}" {1}'.format(application, arguments).encode('utf-8'))
-            
+
         # >> New way.
         with open(self.logFile.getPath(), 'w') as f:
             retcode = subprocess.call(command, stdout = f, stderr = subprocess.STDOUT)
-
-        log_info('OSXExecutor: Process retcode = {0}'.format(retcode))
-
-        pass
+        log_info('Process retcode = {0}'.format(retcode))
+        log_debug('OSXExecutor::execute() function ENDS')
 
 class WindowsLnkFileExecutor(ExecutorABC):
     def execute(self, application, arguments, non_blocking):
-                
-        log_debug('Executor (Windows) Launching LNK application')
+        log_debug('WindowsLnkFileExecutor::execute() Starting ...')
+        log_debug('Launching LNK application')
         # os.system('start "AEL" /b "{0}"'.format(application).encode('utf-8'))
         retcode = subprocess.call('start "AEL" /b "{0}"'.format(application.getPath()).encode('utf-8'), shell = True)
-        log_info('Executor (Windows) LNK app retcode = {0}'.format(retcode))
-        pass
+        log_info('LNK app retcode = {0}'.format(retcode))
+        log_debug('WindowsLnkFileExecutor::execute() function ENDS')
 
-# >> CMD/BAT files in Windows
+#
+# CMD/BAT files in Windows
+#
 class WindowsBatchFileExecutor(ExecutorABC):
     def __init__(self, logFile, show_batch_window):
         self.show_batch_window = show_batch_window
-
         super(WindowsBatchFileExecutor, self).__init__(logFile)
 
     def execute(self, application, arguments, non_blocking):
-        import subprocess
-        import shlex
-
+        log_debug('WindowsBatchFileExecutor::execute() Starting ...')
         arg_list  = shlex.split(arguments, posix = True)
         command = [application.getPath()] + arg_list
         apppath = application.getDir()
@@ -4761,40 +4762,37 @@ class WindowsBatchFileExecutor(ExecutorABC):
         info.wShowWindow = 5 if self.show_batch_window else 0
         retcode = subprocess.call(command, cwd = apppath.encode('utf-8'), close_fds = True, startupinfo = info)
         log_info('Executor (Windows BatchFile) Process BAR retcode = {0}'.format(retcode))
+        log_debug('WindowsBatchFileExecutor::execute() function ENDS')
 
-        pass
-
+#
+# --- Windoze ---
+# NOTE subprocess24_hack.py was hacked to always set CreateProcess() bInheritHandles to 0.
+# bInheritHandles [in] If this parameter TRUE, each inheritable handle in the calling 
+# process is inherited by the new process. If the parameter is FALSE, the handles are not 
+# inherited. Note that inherited handles have the same value and access rights as the original handles.
+# See https://msdn.microsoft.com/en-us/library/windows/desktop/ms682425(v=vs.85).aspx
+#
+# Same behaviour can be achieved in current version of subprocess with close_fds.
+# If close_fds is true, all file descriptors except 0, 1 and 2 will be closed before the 
+# child process is executed. (Unix only). Or, on Windows, if close_fds is true then no handles 
+# will be inherited by the child process. Note that on Windows, you cannot set close_fds to 
+# true and also redirect the standard handles by setting stdin, stdout or stderr.
+#
+# If I keep old launcher behaviour in Windows (close_fds = True) then program output cannot
+# be redirected to a file.
+#
 class WindowsExecutor(ExecutorABC):
     def __init__(self, logFile, cd_apppath, close_fds):
         self.windows_cd_apppath = cd_apppath
         self.windows_close_fds  = close_fds
-
         super(WindowsExecutor, self).__init__(logFile)
 
-    # >> Windoze
-    # NOTE subprocess24_hack.py was hacked to always set CreateProcess() bInheritHandles to 0.
-    # bInheritHandles [in] If this parameter TRUE, each inheritable handle in the calling 
-    # process is inherited by the new process. If the parameter is FALSE, the handles are not 
-    # inherited. Note that inherited handles have the same value and access rights as the original handles.
-    # See https://msdn.microsoft.com/en-us/library/windows/desktop/ms682425(v=vs.85).aspx
-    #
-    # Same behaviour can be achieved in current version of subprocess with close_fds.
-    # If close_fds is true, all file descriptors except 0, 1 and 2 will be closed before the 
-    # child process is executed. (Unix only). Or, on Windows, if close_fds is true then no handles 
-    # will be inherited by the child process. Note that on Windows, you cannot set close_fds to 
-    # true and also redirect the standard handles by setting stdin, stdout or stderr.
-    #
-    # If I keep old launcher behaviour in Windows (close_fds = True) then program output cannot
-    # be redirected to a file.
-    #
     def execute(self, application, arguments, non_blocking):
-        import subprocess
-        import shlex
-        
+        log_debug('WindowsExecutor::execute() Starting ...')
         arg_list  = shlex.split(arguments, posix = True)
         command = [application.getPath()] + arg_list
         apppath = application.getDir()
-        
+
         # --- Workaround to run UNC paths in Windows ---
         # >> Retroarch now support ROMs in UNC paths (Samba remotes)
         new_command = list(command)
@@ -4809,9 +4807,9 @@ class WindowsExecutor(ExecutorABC):
         # >> cwd = apppath.encode('utf-8') fails if application path has Unicode on Windows
         # >> A workaraound is to use cwd = apppath.encode(sys.getfilesystemencoding()) --> DOES NOT WORK
         # >> For the moment AEL cannot launch executables on Windows having Unicode paths.
-        log_debug('Executor (Windows) Launching regular application')
-        log_debug('Executor (Windows) windows_cd_apppath = {0}'.format(self.windows_cd_apppath))
-        log_debug('Executor (Windows) windows_close_fds  = {0}'.format(self.windows_close_fds))
+        log_debug('Launching regular application')
+        log_debug('windows_cd_apppath = {0}'.format(self.windows_cd_apppath))
+        log_debug('windows_close_fds  = {0}'.format(self.windows_close_fds))
 
         # >> Note that on Windows, you cannot set close_fds to true and also redirect the 
         # >> standard handles by setting stdin, stdout or stderr.
@@ -4827,367 +4825,17 @@ class WindowsExecutor(ExecutorABC):
             with open(self.logFile.getPath(), 'w') as f:
                 retcode = subprocess.call(command, close_fds = False, stdout = f, stderr = subprocess.STDOUT)
         else:
-            raise Exception('Logical error')
-        
-        log_info('Executor (Windows) Process retcode = {0}'.format(retcode))
-           
-        pass
+            raise AddonError('Logical error')
+        log_info('Process retcode = {0}'.format(retcode))
+        log_debug('WindowsExecutor::execute() function ENDS')
 
 class WebBrowserExecutor(ExecutorABC):
     def execute(self, application, arguments, non_blocking):
-        import webbrowser
-        
+        log_debug('WebBrowserExecutor::execute() Starting ...')
         command = application.getPath() + arguments
-        log_debug('WebBrowserExecutor.execute() Launching URL: {0}'.format(command))
+        log_debug('Launching URL "{0}"'.format(command))
         webbrowser.open(command)
-
-        pass
-
-# #################################################################################################
-# #################################################################################################
-# Gamestream
-# #################################################################################################
-# #################################################################################################
-class GameStreamServer(object):
-    def __init__(self, host, certificates_path):
-        self.host = host
-        self.unique_id = random.getrandbits(16)
-
-        if certificates_path:
-            self.certificates_path = certificates_path
-            self.certificate_file_path = self.certificates_path.pjoin('nvidia.crt')
-            self.certificate_key_file_path = self.certificates_path.pjoin('nvidia.key')
-        else:
-            self.certificates_path = FileName('')
-            self.certificate_file_path = FileName('')
-            self.certificate_key_file_path = FileName('')
-
-        log_debug('GameStreamServer() Using certificate key file {}'.format(self.certificate_key_file_path.getPath()))
-        log_debug('GameStreamServer() Using certificate file {}'.format(self.certificate_file_path.getPath()))
-
-        self.pem_cert_data = None
-        self.key_cert_data = None
-
-    def _perform_server_request(self, end_point,  useHttps=True, parameters = None):
-        if useHttps:
-            url = "https://{0}:47984/{1}?uniqueid={2}&uuid={3}".format(self.host, end_point, self.unique_id, uuid.uuid4().hex)
-        else:
-            url = "http://{0}:47989/{1}?uniqueid={2}&uuid={3}".format(self.host, end_point, self.unique_id, uuid.uuid4().hex)
-
-        if parameters:
-            for key, value in parameters.iteritems():
-                url = url + "&{0}={1}".format(key, value)
-
-        handler = HTTPSClientAuthHandler(self.certificate_key_file_path.getPath(), self.certificate_file_path.getPath())
-        page_data = net_get_URL_using_handler(url, handler)
-    
-        if page_data is None:
-            return None
-
-        root = ET.fromstring(page_data)
-        #log_debug(ET.tostring(root,encoding='utf8',method='xml'))
-        return root
-
-    def connect(self):
-        log_debug('Connecting to gamestream server {}'.format(self.host))
-        self.server_info = self._perform_server_request("serverinfo")
-        
-        if not self.is_connected():
-            self.server_info = self._perform_server_request("serverinfo", False)
-        
-        return self.is_connected()
-
-    def is_connected(self):
-        if self.server_info is None:
-            log_debug('No succesfull connection to the server has been made')
-            return False
-
-        if self.server_info.find('state') is None:
-            log_debug('Server state {0}'.format(self.server_info.attrib['status_code']))
-        else:
-            log_debug('Server state {0}'.format(self.server_info.find('state').text))
-
-        return self.server_info.attrib['status_code'] == '200'
-
-    def get_server_version(self):
-        appVersion = self.server_info.find('appversion')
-        return VersionNumber(appVersion.text)
-    
-    def get_uniqueid(self):
-        uniqueid = self.server_info.find('uniqueid').text
-        return uniqueid
-    
-    def get_hostname(self):
-        hostname = self.server_info.find('hostname').text
-        return hostname
-
-    def generatePincode(self):
-        i1 = random.randint(1, 9)
-        i2 = random.randint(1, 9)
-        i3 = random.randint(1, 9)
-        i4 = random.randint(1, 9)
-    
-        return '{0}{1}{2}{3}'.format(i1, i2, i3, i4)
-
-    def is_paired(self):
-        if not self.is_connected():
-            log_warning('Connect first')
-            return False
-
-        pairStatus = self.server_info.find('PairStatus')
-        return pairStatus.text == '1'
-
-    def pairServer(self, pincode):
-        if not self.is_connected():
-            log_warning('Connect first')
-            return False
-
-        version = self.get_server_version()
-        log_info("Pairing with server generation: {0}".format(version.getFullString()))
-
-        majorVersion = version.getMajor()
-        if majorVersion >= 7:
-            # Gen 7+ uses SHA-256 hashing
-            hashAlgorithm = HashAlgorithm(256)
-        else:
-            # Prior to Gen 7, SHA-1 is used
-            hashAlgorithm = HashAlgorithm(1)
-        log_debug('Pin {0}'.format(pincode))
-
-        # Generate a salt for hashing the PIN
-        salt = randomBytes(16)
-        # Combine the salt and pin
-        saltAndPin = salt + bytearray(pincode, 'utf-8')
-        # Create an AES key from them
-        aes_cypher = AESCipher(saltAndPin, hashAlgorithm)
-
-        # get certificates ready
-        log_debug('Getting local certificate files')
-        client_certificate      = self.getCertificateBytes()
-        client_key_certificate  = self.getCertificateKeyBytes()
-        certificate_signature   = getCertificateSignature(client_certificate)
-
-        # Start pairing with server
-        log_debug('Start pairing with server')
-        pairing_result = self._perform_server_request('pair', False, {
-            'devicename': 'ael', 
-            'updateState': 1, 
-            'phrase': 'getservercert', 
-            'salt': binascii.hexlify(salt),
-            'clientcert': binascii.hexlify(client_certificate)
-            })
-
-        if pairing_result is None:
-            log_error('Failed to pair with server. No XML received.')
-            return False
-
-        isPaired = pairing_result.find('paired').text
-        if isPaired != '1':
-            log_error('Failed to pair with server. Server returned failed state.')
-            return False
-
-        server_cert_data = pairing_result.find('plaincert').text
-        if server_cert_data is None:
-            log_error('Failed to pair with server. A different pairing session might be in progress.')
-            return False
-        
-        # Generate a random challenge and encrypt it with our AES key
-        challenge = randomBytes(16)
-        encrypted_challenge = aes_cypher.encryptToHex(challenge)
-        
-        # Send the encrypted challenge to the server
-        log_debug('Sending encrypted challenge to the server')
-        pairing_challenge_result = self._perform_server_request('pair', False, {
-            'devicename': 'ael', 
-            'updateState': 1, 
-            'clientchallenge': encrypted_challenge })
-        
-        if pairing_challenge_result is None:
-            log_error('Failed to pair with server. No XML received.')
-            return False
-
-        isPaired = pairing_challenge_result.find('paired').text
-        if isPaired != '1':
-            log_error('Failed to pair with server. Server returned failed state.')
-            self._perform_server_request('unpair', False)
-            return False
-
-        # Decode the server's response and subsequent challenge
-        log_debug('Decoding server\'s response and challenge response')
-        server_challenge_hex = pairing_challenge_result.find('challengeresponse').text
-        server_challenge_bytes = bytearray.fromhex(server_challenge_hex)
-        server_challenge_decrypted = aes_cypher.decrypt(server_challenge_bytes)
-        
-        server_challenge_firstbytes = server_challenge_decrypted[:hashAlgorithm.digest_size()]
-        server_challenge_lastbytes  = server_challenge_decrypted[hashAlgorithm.digest_size():hashAlgorithm.digest_size()+16]
-
-        # Using another 16 bytes secret, compute a challenge response hash using the secret, our cert sig, and the challenge
-        client_secret               = randomBytes(16)
-        challenge_response          = server_challenge_lastbytes + certificate_signature + client_secret
-        challenge_response_hashed   = hashAlgorithm.hash(challenge_response)
-        challenge_response_encrypted= aes_cypher.encryptToHex(challenge_response_hashed)
-        
-        # Send the challenge response to the server
-        log_debug('Sending the challenge response to the server')
-        pairing_secret_response = self._perform_server_request('pair', False, {
-            'devicename': 'ael', 
-            'updateState': 1, 
-            'serverchallengeresp': challenge_response_encrypted })
-        
-        if pairing_secret_response is None:
-            log_error('Failed to pair with server. No XML received.')
-            return False
-
-        isPaired = pairing_secret_response.find('paired').text
-        if isPaired != '1':
-            log_error('Failed to pair with server. Server returned failed state.')
-            self._perform_server_request('unpair', False)
-            return False
-
-        # Get the server's signed secret
-        log_debug('Verifiying server signature')
-        server_secret_response  = bytearray.fromhex(pairing_secret_response.find('pairingsecret').text)
-        server_secret           = server_secret_response[:16]
-        server_signature        = server_secret_response[16:272]
-
-        server_cert = server_cert_data.decode('hex')
-        is_verified = verify_signature(str(server_secret), server_signature, server_cert)
-
-        if not is_verified:
-            # Looks like a MITM, Cancel the pairing process
-            log_error('Failed to verify signature. (MITM warning)')
-            self._perform_server_request('unpair', False)
-            return False
-
-        # Ensure the server challenge matched what we expected (aka the PIN was correct)
-        log_debug('Confirming PIN with entered value')
-        server_cert_signature       = getCertificateSignature(server_cert)
-        server_secret_combination   = challenge + server_cert_signature + server_secret
-        server_secret_hashed        = hashAlgorithm.hash(server_secret_combination)
-
-        if server_secret_hashed != server_challenge_firstbytes:
-            # Probably got the wrong PIN
-            log_error("Wrong PIN entered")
-            self._perform_server_request('unpair', False)
-            return False
-
-        log_debug('Pin is confirmed')
-
-        # Send the server our signed secret
-        log_debug('Sending server our signed secret')
-        signed_client_secret = sign_data(client_secret, client_key_certificate)
-        client_pairing_secret = client_secret + signed_client_secret
-
-        client_pairing_secret_response = self._perform_server_request('pair', False, {
-            'devicename': 'ael', 
-            'updateState': 1, 
-            'clientpairingsecret':  binascii.hexlify(client_pairing_secret)})
-        
-        isPaired = client_pairing_secret_response.find('paired').text
-        if isPaired != '1':
-            log_error('Failed to pair with server. Server returned failed state.')
-            self._perform_server_request('unpair', False)
-            return False
-
-        # Do the initial challenge over https
-        log_debug('Initial challenge again')
-        pair_challenge_response = self._perform_server_request('pair', True, {
-            'devicename': 'ael', 
-            'updateState': 1, 
-            'phrase':  'pairchallenge'})
-
-        isPaired = pair_challenge_response.find('paired').text
-        if isPaired != '1':
-            log_error('Failed to pair with server. Server returned failed state.')
-            self._perform_server_request('unpair', False)
-            return False
-
-        return True
-
-    def getApps(self):
-        apps_response = self._perform_server_request('applist', True)
-        appnodes = apps_response.findall('App')
-        apps = []
-        for appnode in appnodes:
-            app = {}
-            for appnode_attr in appnode:
-                if len(list(appnode_attr)) > 1:
-                    continue
-                
-                xml_text = appnode_attr.text if appnode_attr.text is not None else ''
-                xml_text = text_unescape_XML(xml_text)
-                xml_tag  = appnode_attr.tag
-           
-                app[xml_tag] = xml_text
-            apps.append(app)
-
-        return apps
-
-    def getCertificateBytes(self):
-        if self.pem_cert_data:
-            return self.pem_cert_data
-
-        if not self.certificate_file_path.exists():
-            log_info('Client certificate file does not exist. Creating')
-            create_self_signed_cert("NVIDIA GameStream Client", self.certificate_file_path, self.certificate_key_file_path)
-
-        log_info('Loading client certificate data from {0}'.format(self.certificate_file_path.getPath()))
-        self.pem_cert_data = self.certificate_file_path.readAll()
-
-        return self.pem_cert_data
-
-    def getCertificateKeyBytes(self):
-        if self.key_cert_data:
-            return self.key_cert_data
-
-        if not self.certificate_key_file_path.exists():
-            log_info('Client certificate file does not exist. Creating')
-            create_self_signed_cert("NVIDIA GameStream Client", self.certificate_file_path, self.certificate_key_file_path)
-        log_info('Loading client certificate data from {0}'.format(self.certificate_key_file_path.getPath()))
-        self.key_cert_data = self.certificate_key_file_path.readAll()
-
-        return self.key_cert_data
-
-    def validate_certificates(self):
-        if self.certificate_file_path.exists() and self.certificate_key_file_path.exists():
-            log_debug('validate_certificates(): Certificate files exist. Done')
-            return True
-
-        certificate_files = self.certificates_path.scanFilesInPathAsFileNameObjects('*.crt')
-        key_files = self.certificates_path.scanFilesInPathAsFileNameObjects('*.key')
-
-        if len(certificate_files) < 1:
-            log_warning('validate_certificates(): No .crt files found at given location.')
-            return False
-
-        if not self.certificate_file_path.exists():
-            log_debug('validate_certificates(): Copying .crt file to nvidia.crt')
-            certificate_files[0].copy(self.certificate_file_path)
-
-        if len(key_files) < 1:
-            log_warning('validate_certificates(): No .key files found at given location.')
-            return False
-
-        if not self.certificate_key_file_path.exists():
-            log_debug('validate_certificates(): Copying .key file to nvidia.key')
-            key_files[0].copy(certificate_key_file_path)
-
-        return True
-
-    @staticmethod
-    def try_to_resolve_path_to_nvidia_certificates():
-        home = expanduser("~")
-        homePath = FileName(home)
-
-        possiblePath = homePath.pjoin('Moonlight/')
-        if possiblePath.exists():
-            return possiblePath.getPath()
-
-        possiblePath = homePath.pjoin('Limelight/')
-        if possiblePath.exists():
-            return possiblePath.getPath()
-         
-        return homePath.getPath()
+        log_debug('WebBrowserExecutor::execute() function ENDS')
 
 # -------------------------------------------------------------------------------------------------
 # Abstract Factory Pattern
@@ -5196,28 +4844,30 @@ class GameStreamServer(object):
 class ExecutorFactory(object):
     def __init__(self, g_PATHS, settings):
         self.settings = settings
-        self.logFile = g_PATHS.LAUNCHER_REPORT_FILE_PATH
+        self.logFile  = g_PATHS.LAUNCHER_REPORT_FILE_PATH
 
     def create_from_pathstring(self, application_string):
-        app = FileName(application_string)
-        return self.create(app)
+        return self.create(FileName(application_string))
 
     def create(self, application):
         if application.getBase().lower().replace('.exe' , '') == 'xbmc' \
             or 'xbmc-fav-' in application.getPath() or 'xbmc-sea-' in application.getPath():
             return XbmcExecutor(self.logFile)
 
-        if re.search('.*://.*', application.getPath()):
+        elif re.search('.*://.*', application.getPath()):
             return WebBrowserExecutor(self.logFile)
 
-        if is_windows():
+        elif is_windows():
+            # >> BAT/CMD file.
             if application.getExt().lower() == '.bat' or application.getExt().lower() == '.cmd' :
                 return WindowsBatchFileExecutor(self.logFile, self.settings['show_batch_window'])
             # >> Standalone launcher where application is a LNK file
-            if application.getExt().lower() == '.lnk': 
+            elif application.getExt().lower() == '.lnk': 
                 return WindowsLnkFileExecutor(self.logFile)
 
-            return WindowsExecutor(self.logFile, self.settings['windows_cd_apppath'], self.settings['windows_close_fds'])
+            # >> Standard Windows executor
+            return WindowsExecutor(self.logFile,
+                self.settings['windows_cd_apppath'], self.settings['windows_close_fds'])
 
         elif is_android():
             return AndroidExecutor()
@@ -6192,3 +5842,349 @@ class RomDatFileScanner(KodiProgressDialogStrategy):
             log_info('_roms_delete_missing_ROMs() Launcher is empty. No dead ROM check.')
 
         return num_removed_roms
+
+# #################################################################################################
+# #################################################################################################
+# Gamestream
+# #################################################################################################
+# #################################################################################################
+class GameStreamServer(object):
+    def __init__(self, host, certificates_path):
+        self.host = host
+        self.unique_id = random.getrandbits(16)
+
+        if certificates_path:
+            self.certificates_path = certificates_path
+            self.certificate_file_path = self.certificates_path.pjoin('nvidia.crt')
+            self.certificate_key_file_path = self.certificates_path.pjoin('nvidia.key')
+        else:
+            self.certificates_path = FileName('')
+            self.certificate_file_path = FileName('')
+            self.certificate_key_file_path = FileName('')
+
+        log_debug('GameStreamServer() Using certificate key file {}'.format(self.certificate_key_file_path.getPath()))
+        log_debug('GameStreamServer() Using certificate file {}'.format(self.certificate_file_path.getPath()))
+
+        self.pem_cert_data = None
+        self.key_cert_data = None
+
+    def _perform_server_request(self, end_point,  useHttps=True, parameters = None):
+        if useHttps:
+            url = "https://{0}:47984/{1}?uniqueid={2}&uuid={3}".format(self.host, end_point, self.unique_id, uuid.uuid4().hex)
+        else:
+            url = "http://{0}:47989/{1}?uniqueid={2}&uuid={3}".format(self.host, end_point, self.unique_id, uuid.uuid4().hex)
+
+        if parameters:
+            for key, value in parameters.iteritems():
+                url = url + "&{0}={1}".format(key, value)
+
+        handler = HTTPSClientAuthHandler(self.certificate_key_file_path.getPath(), self.certificate_file_path.getPath())
+        page_data = net_get_URL_using_handler(url, handler)
+    
+        if page_data is None:
+            return None
+
+        root = ET.fromstring(page_data)
+        #log_debug(ET.tostring(root,encoding='utf8',method='xml'))
+        return root
+
+    def connect(self):
+        log_debug('Connecting to gamestream server {}'.format(self.host))
+        self.server_info = self._perform_server_request("serverinfo")
+        
+        if not self.is_connected():
+            self.server_info = self._perform_server_request("serverinfo", False)
+        
+        return self.is_connected()
+
+    def is_connected(self):
+        if self.server_info is None:
+            log_debug('No succesfull connection to the server has been made')
+            return False
+
+        if self.server_info.find('state') is None:
+            log_debug('Server state {0}'.format(self.server_info.attrib['status_code']))
+        else:
+            log_debug('Server state {0}'.format(self.server_info.find('state').text))
+
+        return self.server_info.attrib['status_code'] == '200'
+
+    def get_server_version(self):
+        appVersion = self.server_info.find('appversion')
+        return VersionNumber(appVersion.text)
+    
+    def get_uniqueid(self):
+        uniqueid = self.server_info.find('uniqueid').text
+        return uniqueid
+    
+    def get_hostname(self):
+        hostname = self.server_info.find('hostname').text
+        return hostname
+
+    def generatePincode(self):
+        i1 = random.randint(1, 9)
+        i2 = random.randint(1, 9)
+        i3 = random.randint(1, 9)
+        i4 = random.randint(1, 9)
+    
+        return '{0}{1}{2}{3}'.format(i1, i2, i3, i4)
+
+    def is_paired(self):
+        if not self.is_connected():
+            log_warning('Connect first')
+            return False
+
+        pairStatus = self.server_info.find('PairStatus')
+        return pairStatus.text == '1'
+
+    def pairServer(self, pincode):
+        if not self.is_connected():
+            log_warning('Connect first')
+            return False
+
+        version = self.get_server_version()
+        log_info("Pairing with server generation: {0}".format(version.getFullString()))
+
+        majorVersion = version.getMajor()
+        if majorVersion >= 7:
+            # Gen 7+ uses SHA-256 hashing
+            hashAlgorithm = HashAlgorithm(256)
+        else:
+            # Prior to Gen 7, SHA-1 is used
+            hashAlgorithm = HashAlgorithm(1)
+        log_debug('Pin {0}'.format(pincode))
+
+        # Generate a salt for hashing the PIN
+        salt = randomBytes(16)
+        # Combine the salt and pin
+        saltAndPin = salt + bytearray(pincode, 'utf-8')
+        # Create an AES key from them
+        aes_cypher = AESCipher(saltAndPin, hashAlgorithm)
+
+        # get certificates ready
+        log_debug('Getting local certificate files')
+        client_certificate      = self.getCertificateBytes()
+        client_key_certificate  = self.getCertificateKeyBytes()
+        certificate_signature   = getCertificateSignature(client_certificate)
+
+        # Start pairing with server
+        log_debug('Start pairing with server')
+        pairing_result = self._perform_server_request('pair', False, {
+            'devicename': 'ael', 
+            'updateState': 1, 
+            'phrase': 'getservercert', 
+            'salt': binascii.hexlify(salt),
+            'clientcert': binascii.hexlify(client_certificate)
+            })
+
+        if pairing_result is None:
+            log_error('Failed to pair with server. No XML received.')
+            return False
+
+        isPaired = pairing_result.find('paired').text
+        if isPaired != '1':
+            log_error('Failed to pair with server. Server returned failed state.')
+            return False
+
+        server_cert_data = pairing_result.find('plaincert').text
+        if server_cert_data is None:
+            log_error('Failed to pair with server. A different pairing session might be in progress.')
+            return False
+        
+        # Generate a random challenge and encrypt it with our AES key
+        challenge = randomBytes(16)
+        encrypted_challenge = aes_cypher.encryptToHex(challenge)
+        
+        # Send the encrypted challenge to the server
+        log_debug('Sending encrypted challenge to the server')
+        pairing_challenge_result = self._perform_server_request('pair', False, {
+            'devicename': 'ael', 
+            'updateState': 1, 
+            'clientchallenge': encrypted_challenge })
+        
+        if pairing_challenge_result is None:
+            log_error('Failed to pair with server. No XML received.')
+            return False
+
+        isPaired = pairing_challenge_result.find('paired').text
+        if isPaired != '1':
+            log_error('Failed to pair with server. Server returned failed state.')
+            self._perform_server_request('unpair', False)
+            return False
+
+        # Decode the server's response and subsequent challenge
+        log_debug('Decoding server\'s response and challenge response')
+        server_challenge_hex = pairing_challenge_result.find('challengeresponse').text
+        server_challenge_bytes = bytearray.fromhex(server_challenge_hex)
+        server_challenge_decrypted = aes_cypher.decrypt(server_challenge_bytes)
+        
+        server_challenge_firstbytes = server_challenge_decrypted[:hashAlgorithm.digest_size()]
+        server_challenge_lastbytes  = server_challenge_decrypted[hashAlgorithm.digest_size():hashAlgorithm.digest_size()+16]
+
+        # Using another 16 bytes secret, compute a challenge response hash using the secret, our cert sig, and the challenge
+        client_secret               = randomBytes(16)
+        challenge_response          = server_challenge_lastbytes + certificate_signature + client_secret
+        challenge_response_hashed   = hashAlgorithm.hash(challenge_response)
+        challenge_response_encrypted= aes_cypher.encryptToHex(challenge_response_hashed)
+        
+        # Send the challenge response to the server
+        log_debug('Sending the challenge response to the server')
+        pairing_secret_response = self._perform_server_request('pair', False, {
+            'devicename': 'ael', 
+            'updateState': 1, 
+            'serverchallengeresp': challenge_response_encrypted })
+        
+        if pairing_secret_response is None:
+            log_error('Failed to pair with server. No XML received.')
+            return False
+
+        isPaired = pairing_secret_response.find('paired').text
+        if isPaired != '1':
+            log_error('Failed to pair with server. Server returned failed state.')
+            self._perform_server_request('unpair', False)
+            return False
+
+        # Get the server's signed secret
+        log_debug('Verifiying server signature')
+        server_secret_response  = bytearray.fromhex(pairing_secret_response.find('pairingsecret').text)
+        server_secret           = server_secret_response[:16]
+        server_signature        = server_secret_response[16:272]
+
+        server_cert = server_cert_data.decode('hex')
+        is_verified = verify_signature(str(server_secret), server_signature, server_cert)
+
+        if not is_verified:
+            # Looks like a MITM, Cancel the pairing process
+            log_error('Failed to verify signature. (MITM warning)')
+            self._perform_server_request('unpair', False)
+            return False
+
+        # Ensure the server challenge matched what we expected (aka the PIN was correct)
+        log_debug('Confirming PIN with entered value')
+        server_cert_signature       = getCertificateSignature(server_cert)
+        server_secret_combination   = challenge + server_cert_signature + server_secret
+        server_secret_hashed        = hashAlgorithm.hash(server_secret_combination)
+
+        if server_secret_hashed != server_challenge_firstbytes:
+            # Probably got the wrong PIN
+            log_error("Wrong PIN entered")
+            self._perform_server_request('unpair', False)
+            return False
+
+        log_debug('Pin is confirmed')
+
+        # Send the server our signed secret
+        log_debug('Sending server our signed secret')
+        signed_client_secret = sign_data(client_secret, client_key_certificate)
+        client_pairing_secret = client_secret + signed_client_secret
+
+        client_pairing_secret_response = self._perform_server_request('pair', False, {
+            'devicename': 'ael', 
+            'updateState': 1, 
+            'clientpairingsecret':  binascii.hexlify(client_pairing_secret)})
+        
+        isPaired = client_pairing_secret_response.find('paired').text
+        if isPaired != '1':
+            log_error('Failed to pair with server. Server returned failed state.')
+            self._perform_server_request('unpair', False)
+            return False
+
+        # Do the initial challenge over https
+        log_debug('Initial challenge again')
+        pair_challenge_response = self._perform_server_request('pair', True, {
+            'devicename': 'ael', 
+            'updateState': 1, 
+            'phrase':  'pairchallenge'})
+
+        isPaired = pair_challenge_response.find('paired').text
+        if isPaired != '1':
+            log_error('Failed to pair with server. Server returned failed state.')
+            self._perform_server_request('unpair', False)
+            return False
+
+        return True
+
+    def getApps(self):
+        apps_response = self._perform_server_request('applist', True)
+        appnodes = apps_response.findall('App')
+        apps = []
+        for appnode in appnodes:
+            app = {}
+            for appnode_attr in appnode:
+                if len(list(appnode_attr)) > 1:
+                    continue
+                
+                xml_text = appnode_attr.text if appnode_attr.text is not None else ''
+                xml_text = text_unescape_XML(xml_text)
+                xml_tag  = appnode_attr.tag
+           
+                app[xml_tag] = xml_text
+            apps.append(app)
+
+        return apps
+
+    def getCertificateBytes(self):
+        if self.pem_cert_data:
+            return self.pem_cert_data
+
+        if not self.certificate_file_path.exists():
+            log_info('Client certificate file does not exist. Creating')
+            create_self_signed_cert("NVIDIA GameStream Client", self.certificate_file_path, self.certificate_key_file_path)
+
+        log_info('Loading client certificate data from {0}'.format(self.certificate_file_path.getPath()))
+        self.pem_cert_data = self.certificate_file_path.readAll()
+
+        return self.pem_cert_data
+
+    def getCertificateKeyBytes(self):
+        if self.key_cert_data:
+            return self.key_cert_data
+
+        if not self.certificate_key_file_path.exists():
+            log_info('Client certificate file does not exist. Creating')
+            create_self_signed_cert("NVIDIA GameStream Client", self.certificate_file_path, self.certificate_key_file_path)
+        log_info('Loading client certificate data from {0}'.format(self.certificate_key_file_path.getPath()))
+        self.key_cert_data = self.certificate_key_file_path.readAll()
+
+        return self.key_cert_data
+
+    def validate_certificates(self):
+        if self.certificate_file_path.exists() and self.certificate_key_file_path.exists():
+            log_debug('validate_certificates(): Certificate files exist. Done')
+            return True
+
+        certificate_files = self.certificates_path.scanFilesInPathAsFileNameObjects('*.crt')
+        key_files = self.certificates_path.scanFilesInPathAsFileNameObjects('*.key')
+
+        if len(certificate_files) < 1:
+            log_warning('validate_certificates(): No .crt files found at given location.')
+            return False
+
+        if not self.certificate_file_path.exists():
+            log_debug('validate_certificates(): Copying .crt file to nvidia.crt')
+            certificate_files[0].copy(self.certificate_file_path)
+
+        if len(key_files) < 1:
+            log_warning('validate_certificates(): No .key files found at given location.')
+            return False
+
+        if not self.certificate_key_file_path.exists():
+            log_debug('validate_certificates(): Copying .key file to nvidia.key')
+            key_files[0].copy(certificate_key_file_path)
+
+        return True
+
+    @staticmethod
+    def try_to_resolve_path_to_nvidia_certificates():
+        home = expanduser("~")
+        homePath = FileName(home)
+
+        possiblePath = homePath.pjoin('Moonlight/')
+        if possiblePath.exists():
+            return possiblePath.getPath()
+
+        possiblePath = homePath.pjoin('Limelight/')
+        if possiblePath.exists():
+            return possiblePath.getPath()
+
+        return homePath.getPath()
