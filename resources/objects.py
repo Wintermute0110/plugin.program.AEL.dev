@@ -4964,7 +4964,7 @@ class GameStreamServer(object):
             self._perform_server_request('unpair', False)
             return False
         
-		# Decode the server's response and subsequent challenge
+        # Decode the server's response and subsequent challenge
         log_debug('Decoding server\'s response and challenge response')
         server_challenge_hex = pairing_challenge_result.find('challengeresponse').text
         server_challenge_bytes = bytearray.fromhex(server_challenge_hex)
