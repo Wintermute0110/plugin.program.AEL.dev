@@ -470,6 +470,24 @@ class Scraper(object):
         
         self.fallbackScraper = fallbackScraper
 
+    def scrape_metadata(self, search_term, rom_path, rom):
+        
+        results = self._get_candidates(search_term, rom_path, rom)
+        log_debug('Scraper \'{0}\' found {1} result/s'.format(self.getName(), len(results)))
+
+        if not results or len(results) == 0:
+            log_verb('Scraper \'{0}\' found no games after searching.'.format(self.getName()))
+            
+            if self.fallbackScraper:
+                return self.fallbackScraper.scrape(search_term, romPath, rom)
+
+            return False
+        
+        return False
+
+    def scrape_asset(self, search_term, asset_info_to_scrape, rom_path, rom):
+        return False
+
     def scrape(self, search_term, romPath, rom):
                 
         results = self._get_candidates(search_term, romPath, rom)
