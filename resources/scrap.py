@@ -366,6 +366,14 @@ class ScraperFactory(KodiProgressDialogStrategy):
             if scraper_index == 1:
                 onlineScraper = TheGamesDbScraper(self.settings, launcher, True, [], cleanTitleScraper)
                 log_verb('Loaded metadata scraper "{0}"'.format(onlineScraper.getName()))
+                
+            elif scraper_index == 2:
+                onlineScraper = GameFaqScraper(self.settings, launcher, True, [], cleanTitleScraper)
+                log_verb('Loaded metadata scraper "{0}"'.format(onlineScraper.getName()))
+                
+            elif scraper_index == 3:
+                onlineScraper = MobyGamesScraper(self.settings, launcher, True, [], cleanTitleScraper)
+                log_verb('Loaded metadata scraper "{0}"'.format(onlineScraper.getName()))
             else:
                 scraper_implementation = scrapers_metadata[scraper_index]
                 scraper_implementation.set_addon_dir(self.addon_dir.getPath())
@@ -384,6 +392,13 @@ class ScraperFactory(KodiProgressDialogStrategy):
                 onlineScraper = TheGamesDbScraper(self.settings, launcher, True, [], cleanTitleScraper)
                 log_verb('Loaded metadata scraper "{0}"'.format(onlineScraper.getName()))
                 return onlineScraper
+            elif scraper_index == 2:
+                onlineScraper = GameFaqScraper(self.settings, launcher, True, [], cleanTitleScraper)
+                log_verb('Loaded metadata scraper "{0}"'.format(onlineScraper.getName()))
+                
+            elif scraper_index == 3:
+                onlineScraper = MobyGamesScraper(self.settings, launcher, True, [], cleanTitleScraper)
+                log_verb('Loaded metadata scraper "{0}"'.format(onlineScraper.getName()))
             else:
                 scraper_implementation = scrapers_metadata[scraper_index]
                 scraper_implementation.set_addon_dir(self.addon_dir.getPath())

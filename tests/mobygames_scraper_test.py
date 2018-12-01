@@ -70,6 +70,7 @@ class Test_mobygames_scraper(unittest.TestCase):
         settings['scan_ignore_scrap_title'] = False
         settings['scraper_metadata'] = 0 # NullScraper
         settings['mobygames_apikey'] = 'abc123'
+        settings['escape_romfile'] = False
 
         return settings
 

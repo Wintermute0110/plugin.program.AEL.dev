@@ -4,7 +4,7 @@ from resources.objects import *
 from resources.utils import *
 from resources.scrap import *
 
-class FakeRomSetRepository(RomSetRepository):
+class FakeRomSetRepository(ROMSetRepository):
     
     def __init__(self, roms):
         self.roms = roms
