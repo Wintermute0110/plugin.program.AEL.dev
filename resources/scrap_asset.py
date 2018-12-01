@@ -23,7 +23,6 @@ import pprint
 # --- AEL modules ---
 from platforms import *
 from scrap import *
-from assets import *
 
 # -------------------------------------------------------------------------------------------------
 # NULL scraper, does nothing, but it's very fast :)

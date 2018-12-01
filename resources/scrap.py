@@ -16,8 +16,10 @@
 
 # --- Python standard library ---
 from __future__ import unicode_literals
+from __future__ import division
 import abc
-import datetime, time
+import datetime
+import time
 
 # --- AEL packages ---
 from utils import *
@@ -278,20 +280,16 @@ def getMameScraper(asset_kind, settings):
     return NULL_obj
 
 class ScraperFactory(KodiProgressDialogStrategy):
-    def __init__(self, settings, PATHS):
+    def __init__(self, PATHS, settings):
         self.settings = settings
         self.addon_dir = PATHS.ADDON_DATA_DIR
-    
         super(ScraperFactory, self).__init__()
-        
+
     def create(self, launcher):
-        
         scan_metadata_policy    = self.settings['scan_metadata_policy']
         scan_asset_policy       = self.settings['scan_asset_policy']
 
         scrapers = []
-
-
         metadata_scraper = self._get_metadata_scraper(scan_metadata_policy, launcher)
         scrapers.append(metadata_scraper)
 
@@ -299,7 +297,7 @@ class ScraperFactory(KodiProgressDialogStrategy):
             return None
 
         self._startProgressPhase('Advanced Emulator Launcher', 'Preparing scrapers ...')
-        
+
         # --- Assets/artwork stuff ----------------------------------------------------------------
         # ~~~ Check asset dirs and disable scanning for unset dirs ~~~
         unconfigured_name_list = []
@@ -330,11 +328,10 @@ class ScraperFactory(KodiProgressDialogStrategy):
             kodi_dialog_OK('Assets directories not set: {0}. '.format(unconfigured_asset_srt) +
                            'Asset scanner will be disabled for this/those.')
         return scrapers
-     
+
     # ~~~ Ensure there is no duplicate asset dirs ~~~
     # >> Abort scanning of assets if duplicates found
     def _hasDuplicateArtworkDirs(self, launcher):
-        
         log_info('Checking for duplicated artwork directories ...')
         duplicated_name_list = launcher.get_duplicated_asset_dirs()
 
@@ -344,16 +341,14 @@ class ScraperFactory(KodiProgressDialogStrategy):
             kodi_dialog_OK('Duplicated asset directories: {0}. '.format(duplicated_asset_srt) +
                            'Change asset directories before continuing.')
             return True
-        
+
         log_info('No duplicated asset dirs found')
-        return False        
+        return False
 
     # >> Determine metadata action based on configured metadata policy
     # >> scan_metadata_policy -> values="None|NFO Files|NFO Files + Scrapers|Scrapers"    
     def _get_metadata_scraper(self, scan_metadata_policy, launcher):
-
         cleanTitleScraper = CleanTitleScraper(self.settings, launcher)
-
         if scan_metadata_policy == 0:
             log_verb('Metadata policy: No NFO reading, no scraper. Only cleaning ROM name.')
             return cleanTitleScraper
@@ -1153,18 +1148,16 @@ class TheGamesDbScraper(Scraper):
 
         return assets_list
 
-
     asset_name_mapping = {
-        'fanart' : ASSET_FANART,
-        'clearlogo': ASSET_CLEARLOGO,
-        'banner': ASSET_BANNER,
-        'boxartfront': ASSET_BOXFRONT,
-        'boxartback': ASSET_BOXBACK,
-        'screenshot': ASSET_SNAP
+        'fanart' : ASSET_FANART_ID,
+        'clearlogo': ASSET_CLEARLOGO_ID,
+        'banner': ASSET_BANNER_ID,
+        'boxartfront': ASSET_BOXFRONT_ID,
+        'boxartback': ASSET_BOXBACK_ID,
+        'screenshot': ASSET_SNAP_ID
     }
-    
-    def _convert_to_asset_kind(self, type, side):
 
+    def _convert_to_asset_kind(self, type, side):
         if side is not None:
             type = type + side
 
@@ -1427,12 +1420,12 @@ class MobyGamesScraper(Scraper):
 
         log_debug('Found {} cover assets for candidate #{}'.format(len(assets_list), candidate['id']))    
         return assets_list
-        
+
     asset_name_mapping = {
-        'media' : ASSET_CARTRIDGE,
-        'manual': ASSET_MANUAL,
-        'front cover': ASSET_BOXFRONT,
-        'back cover': ASSET_BOXBACK,
+        'media' : ASSET_CARTRIDGE_ID,
+        'manual': ASSET_MANUAL_ID,
+        'front cover': ASSET_BOXFRONT_ID,
+        'back cover': ASSET_BOXBACK_ID,
         'spine/sides': 0 # not supported by AEL?
     }
 

@@ -39,6 +39,7 @@ import binascii
 import base64
 # from base64 import b64decode
 # from base64 import b64encode
+import errno
 import fnmatch
 import hashlib
 import HTMLParser
@@ -118,7 +119,7 @@ from constants import *
 #         # >> Message to be printed in the GUI
 #         raise AEL_Error('Error writing file (OSError)')
 #
-class Addon_Error(Exception):
+class AddonException(Exception):
     def __init__(self, err_str):
         self.err_str = err_str
 
@@ -329,6 +330,22 @@ def text_remove_HTML_tags(s):
 def text_unescape_and_untag_HTML(s):
     s = text_unescape_HTML(s)
     s = text_remove_HTML_tags(s)
+
+    return s
+
+# See https://www.freeformatter.com/json-escape.html
+# The following characters are reserved in JSON and must be properly escaped to be used in strings:
+#   Backspace is replaced with \b
+#   Form feed is replaced with \f
+#   Newline is replaced with \n
+#   Carriage return is replaced with \r
+#   Tab is replaced with \t
+#   Double quote is replaced with \"
+#   Backslash is replaced with \\
+#
+def text_escape_JSON(s):
+    s = s.replace('\\', '\\\\') # >> Must be done first
+    s = s.replace('"', '\\"')
 
     return s
 
@@ -591,7 +608,6 @@ def misc_generate_random_SID():
 # Version helper class
 #
 class VersionNumber(object):
-
     def __init__(self, versionString):
         self.versionNumber = versionString.split('.')
 
@@ -606,6 +622,11 @@ class VersionNumber(object):
 
     def getBuild(self):
         return int(self.versionNumber[2])
+
+def dump_object_to_log(obj_name_str, obj):
+    log_debug('Dumping variable named "{0}"'.format(obj_name_str))
+    log_debug('obj.__class__.__name__ = {0}'.format(obj.__class__.__name__))
+    log_debug(pprint.pformat(obj))
 
 # -------------------------------------------------------------------------------------------------
 # Utilities to test scrapers
@@ -818,24 +839,19 @@ class AESCipher(object):
 # Filesystem utilities
 # #################################################################################################
 # #################################################################################################
-
-# -------------------------------------------------------------------------------------------------
-# Factory for creating new FileName instances.
-# Can either create a FileName base on xmbcvfs or just normal os operations.
-# -------------------------------------------------------------------------------------------------
-class FileNameFactory():
-    @staticmethod
-    def create(pathString, no_xbmcvfs = False):
-
-        if no_xbmcvfs:
-            return StandardFileName(pathString)
-        
-        return KodiFileName(pathString)
-
 # -------------------------------------------------------------------------------------------------
 # Filesystem abstract base class
 # This class and classes that inherit this one always take and return Unicode string paths.
 # Decoding Unicode to UTF-8 or whatever must be done in the caller code.
+#
+# --- Function reference ---
+# FileName.getOriginalPath() Full path                                     /home/Wintermute/Sonic.zip
+# FileName.getPath()         Full path                                     /home/Wintermute/Sonic.zip
+# FileName.getPathNoExt()    Full path with no extension                   /home/Wintermute/Sonic
+# FileName.getDir()          Directory name of file. Does not end in '/'   /home/Wintermute/
+# FileName.getBase()         File name with no path                        Sonic.zip
+# FileName.getBaseNoExt()    File name with no path and no extension       Sonic
+# FileName.getExt()          File extension                                .zip
 #
 # IMPROVE THE DOCUMENTATION OF THIS CLASS AND HOW IT HANDLES EXCEPTIONS AND ERROR REPORTING!!!
 #
@@ -844,14 +860,17 @@ class FileNameFactory():
 # C) Uses xbmcvfs wherever possible
 #
 # -------------------------------------------------------------------------------------------------
-class FileName():
+class FileNameBase():
     __metaclass__ = abc.ABCMeta
 
+    # ---------------------------------------------------------------------------------------------
+    # Core functions.
+    # ---------------------------------------------------------------------------------------------
     # pathString must be a Unicode string object
     def __init__(self, pathString):
         self.originalPath = pathString
-        self.path         = pathString
-        
+        self.path = pathString
+
         # --- Path transformation ---
         if self.originalPath.lower().startswith('smb:'):
             self.path = self.path.replace('smb:', '')
@@ -862,38 +881,54 @@ class FileName():
         elif self.originalPath.lower().startswith('special:'):
             self.path = xbmc.translatePath(self.path)
 
-    # abstract protected method, to be implemented in child classes.
+    # Abstract protected method, to be implemented in child classes.
     # Will return a new instance of the desired child implementation.
-    @abc.abstractmethod
-    def __create__(self, pathString):
-        return FileName(pathString)
+    # NOTE No fancy stuff in this class. This class must be as efficient as possible, otherwise
+    # AEL will have a serious performance hit.
+    # @abc.abstractmethod
+    # def __create__(self, pathString):
+    #     return FileName(pathString)
 
-    def _join_raw(self, arg):
-        self.path         = os.path.join(self.path, arg)
-        self.originalPath = os.path.join(self.originalPath, arg)
+    def _decodeName(self, name):
+        if type(name) == str:
+            try:
+                name = name.decode('utf8')
+            except:
+                name = name.decode('windows-1252')
 
-        return self
+        return name
 
     # Appends a string to path. Returns self FileName object
     def append(self, arg):
-        self.path         = self.path + arg
+        self.path = self.path + arg
         self.originalPath = self.originalPath + arg
 
         return self
 
-    # >> Joins paths. Returns a new FileName object
+    # Joins paths and returns a new object.
+    @abc.abstractmethod
     def pjoin(self, *args):
-        child = self.__create__(self.originalPath)
-        for arg in args:
-            child._join_raw(arg)
+        return None
 
-        return child
+    def escapeQuotes(self):
+        self.path = self.path.replace("'", "\\'")
+        self.path = self.path.replace('"', '\\"')
 
-    # Behaves like os.path.join()
-    #
+    def path_separator(self):
+        count_backslash = self.originalPath.count('\\')
+        count_forwardslash = self.originalPath.count('/')
+        if count_backslash > count_forwardslash:
+            return '\\'
+
+        return '/'
+
+    # ---------------------------------------------------------------------------------------------
+    # Operator overloads
+    # ---------------------------------------------------------------------------------------------
+    # Overloaded operator + behaves like self pjoin()
     # See http://blog.teamtreehouse.com/operator-overloading-python
-    # other is a FileName object. other originalPath is expected to be a subdirectory (path
-    # transformation not required)
+    # Argument other is a FileName object. other originalPath is expected to be a
+    # subdirectory (path transformation not required)
     def __add__(self, other):
         current_path = self.originalPath
         if type(other) is FileName:  other_path = other.originalPath
@@ -904,29 +939,24 @@ class FileName():
         child    = self.__create__(new_path)
 
         return child
-        
-    def escapeQuotes(self):
-        self.path = self.path.replace("'", "\\'")
-        self.path = self.path.replace('"', '\\"')
 
-    def path_separator(self):
-        count_backslash = self.originalPath.count('\\')
-        count_forwardslash = self.originalPath.count('/')
+    def __str__(self):
+        """Overrides the default implementation"""
+        return self.getOriginalPath()
 
-        if count_backslash > count_forwardslash:
-            return '\\'
-        
-        return '/'
+    def __eq__(self, other):
+        """Overrides the default implementation"""
+        if isinstance(other, FileName):
+            return self.getOriginalPath().lower() == other.getOriginalPath().lower()
+
+        return False
+
+    def __ne__(self, other):
+        """Overrides the default implementation (unnecessary in Python 3)"""
+        return not self.__eq__(other)
 
     # ---------------------------------------------------------------------------------------------
-    # Decomposes a file name path or directory into its constituents
-    #   FileName.getOriginalPath()  Full path                                     /home/Wintermute/Sonic.zip
-    #   FileName.getPath()          Full path                                     /home/Wintermute/Sonic.zip
-    #   FileName.getPath_noext()    Full path with no extension                   /home/Wintermute/Sonic
-    #   FileName.getDir()           Directory name of file. Does not end in '/'   /home/Wintermute/
-    #   FileName.getBase()          File name with no path                        Sonic.zip
-    #   FileName.getBase_noext()    File name with no path and no extension       Sonic
-    #   FileName.getExt()           File extension                                .zip
+    # Path manipulation.
     # ---------------------------------------------------------------------------------------------
     def getOriginalPath(self):
         return self.originalPath
@@ -934,7 +964,7 @@ class FileName():
     def getPath(self):
         return self.path
 
-    def getPath_noext(self):
+    def getPathNoExt(self):
         root, ext = os.path.splitext(self.path)
 
         return root
@@ -942,16 +972,17 @@ class FileName():
     def getDir(self):
         return os.path.dirname(self.path)
 
-    def getDirAsFileName(self):
-        return self.__create__(self.getDir())
+    # Returns a new FileName object.
+    # def getDirAsFileName(self):
+    #     return self.__init__(self.getDir())
 
     def getBase(self):
         return os.path.basename(self.path)
 
-    def getBase_noext(self):
+    def getBaseNoExt(self):
         basename  = os.path.basename(self.path)
         root, ext = os.path.splitext(basename)
-        
+
         return root
 
     def getExt(self):
@@ -959,57 +990,23 @@ class FileName():
         return ext
 
     def switchExtension(self, targetExt):
-        
         ext = self.getExt()
         copiedPath = self.originalPath
-        
         if not targetExt.startswith('.'):
             targetExt = '.{0}'.format(targetExt)
-
         new_path = self.__create__(copiedPath.replace(ext, targetExt))
         return new_path
-    
-    # Checks the extension to determine the type of the file
+
+    # Checks the extension to determine the type of the file.
     def is_image_file(self):
-        ext = self.getExt()
-        return ext.lower() in ['png', 'jpg', 'gif', 'bmp']
+        return '.' + self.getExt().lower() in IMAGE_EXTENSION_LIST
+
+    def is_manual(self):
+        return '.' + self.getExt().lower() in MANUAL_EXTENSION_LIST
 
     def is_video_file(self):
-        ext = self.getExt()
-        return ext.lower() in ['mov', 'divx', 'xvid', 'wmv', 'avi', 'mpg', 'mpeg', 'mp4', 'mkv', 'avc']
-    
-    def is_document(self):
-        ext = self.getExt()
-        return ext.lower() in ['txt', 'pdf', 'doc']
-    
-    # ---------------------------------------------------------------------------------------------
-    # Scanner functions
-    # ---------------------------------------------------------------------------------------------
-    @abc.abstractmethod
-    def scanFilesInPath(self, mask = '*.*'):
-        return []
+        return '.' + self.getExt().lower() in TRAILER_EXTENSION_LIST
 
-    @abc.abstractmethod
-    def scanFilesInPathAsFileNameObjects(self, mask = '*.*'):
-        return []
-    
-    @abc.abstractmethod
-    def recursiveScanFilesInPath(self, mask = '*.*'):
-        return []
-
-    @abc.abstractmethod
-    def recursiveScanFilesInPathAsFileNameObjects(self, mask = '*.*'):
-        return []
-
-    def _decodeName(self, name):
-        if type(name) == str:
-            try:
-                name = name.decode('utf8')
-            except:
-                name = name.decode('windows-1252')
-        
-        return name
-    
     # ---------------------------------------------------------------------------------------------
     # Filesystem functions
     # ---------------------------------------------------------------------------------------------
@@ -1046,8 +1043,24 @@ class FileName():
         pass
 
     # ---------------------------------------------------------------------------------------------
-    # File IO functions
+    # File I/O functions
     # ---------------------------------------------------------------------------------------------
+    @abc.abstractmethod
+    def open(self, flags):
+        pass
+
+    @abc.abstractmethod
+    def close(self):
+        pass
+
+    @abc.abstractmethod
+    def read(self, bytes):
+        pass
+
+    @abc.abstractmethod
+    def write(self, bytes):
+        pass
+
     @abc.abstractmethod
     def readline(self):
         return None
@@ -1057,34 +1070,48 @@ class FileName():
         return None
 
     @abc.abstractmethod
-    def readAllUnicode(self, encoding='utf-8'):
+    def readAllUnicode(self, encoding = 'utf-8'):
         return None
 
     @abc.abstractmethod
-    def writeAll(self, bytes, flags='w'):
+    def writeAll(self, bytes, flags = 'w'):
         pass
+
+    # ---------------------------------------------------------------------------------------------
+    # Scanner functions
+    # ---------------------------------------------------------------------------------------------
+    @abc.abstractmethod
+    def scanFilesInPath(self, mask = '*.*'):
+        return []
 
     @abc.abstractmethod
-    def write(self, bytes):
-        pass
+    def scanFilesInPathAsFileNameObjects(self, mask = '*.*'):
+        return []
 
     @abc.abstractmethod
-    def open(self, flags):
-        pass
+    def recursiveScanFilesInPath(self, mask = '*.*'):
+        return []
 
     @abc.abstractmethod
-    def close(self):
-        pass
+    def recursiveScanFilesInPathAsFileNameObjects(self, mask = '*.*'):
+        return []
 
+    # ---------------------------------------------------------------------------------------------
+    # High-level file read functions (XML, JSON, etc.)
+    # ---------------------------------------------------------------------------------------------
+    # NOTE I think this high-level functions to read specific files must be in disk_IO.py
+    # and not here. FileName class must be simple to avoid performance hits.
     # Opens file and reads xml. Returns the root of the XML!
     def readXml(self):
         data = self.readAll()
         root = ET.fromstring(data)
+
         return root
 
     # Opens JSON file and reads it
     def readJson(self):
         contents = self.readAllUnicode()
+
         return json.loads(contents)
 
     # Opens INI file and reads it
@@ -1097,7 +1124,8 @@ class FileName():
         return config
 
     # Opens a propery file and reads it
-    # Reads a given properties file with each line of the format key=value.  Returns a dictionary containing the pairs.
+    # Reads a given properties file with each line of the format key=value.
+    # Returns a dictionary containing the pairs.
     def readPropertyFile(self):
         import csv
 
@@ -1110,7 +1138,7 @@ class FileName():
             if len(row) != 2:
                 raise csv.Error("Too many fields on row with contents: "+str(row))
             result[row[0].strip()] = row[1].strip().lstrip('"').rstrip('"')
-        
+
         return result
 
     # --- Configure JSON writer ---
@@ -1128,78 +1156,26 @@ class FileName():
         data = ET.tostring(xml_root)
         self.writeAll(data)
 
-    def __str__(self):
-        """Overrides the default implementation"""
-        return self.getOriginalPath()
-
-    def __eq__(self, other):
-        """Overrides the default implementation"""
-        if isinstance(other, FileName):
-            return self.getOriginalPath().lower() == other.getOriginalPath().lower()
-        
-        return False
-
-    def __ne__(self, other):
-        """Overrides the default implementation (unnecessary in Python 3)"""
-        return not self.__eq__(other)
-
 # -------------------------------------------------------------------------------------------------
 # Kodi Virtual Filesystem helper class.
 # Implementation of the FileName helper class which supports the xbmcvfs libraries.
 #
 # -------------------------------------------------------------------------------------------------
-class KodiFileName(FileName):
-    def __create__(self, pathString):
-        return KodiFileName(pathString)
-
+class KodiFileName(FileNameBase):
     # ---------------------------------------------------------------------------------------------
-    # Scanner functions
+    # Core functions.
     # ---------------------------------------------------------------------------------------------
-    def scanFilesInPath(self, mask = '*.*'):
-        files = []
+    def __init__(self, pathString):
+        super(KodiFileName, self).__init__(pathString)
 
-        subdirectories, filenames = xbmcvfs.listdir(self.originalPath)
-        for filename in fnmatch.filter(filenames, mask):
-            files.append(os.path.join(self.originalPath, self._decodeName(filename)))
+    # Joins paths and returns a new object.
+    def pjoin(self, *args):
+        child = KodiFileName(self.originalPath)
+        for arg in args:
+            child.path = os.path.join(child.path, arg)
+            child.originalPath = os.path.join(child.originalPath, arg)
 
-        return files
-
-    def scanFilesInPathAsFileNameObjects(self, mask = '*.*'):
-        files = []
-        subdirectories, filenames = xbmcvfs.listdir(self.originalPath)
-        for filename in fnmatch.filter(filenames, mask):
-            filePath = self.pjoin(self._decodeName(filename))
-            files.append(self.__create__(filePath.getOriginalPath()))
-
-        return files
-
-    def recursiveScanFilesInPath(self, mask = '*.*'):
-        files = []
-        subdirectories, filenames = xbmcvfs.listdir(str(self.originalPath))
-        for filename in fnmatch.filter(filenames, mask):
-            filePath = self.pjoin(self._decodeName(filename))
-            files.append(filePath.getOriginalPath())
-
-        for subdir in subdirectories:
-            subPath = self.pjoin(self._decodeName(subdir))
-            subPathFiles = subPath.recursiveScanFilesInPath(mask)
-            files.extend(subPathFiles)
-
-        return files
-
-    def recursiveScanFilesInPathAsFileNameObjects(self, mask = '*.*'):
-        files = []
-        subdirectories, filenames = xbmcvfs.listdir(str(self.originalPath))
-        for filename in fnmatch.filter(filenames, mask):
-            filePath = self.pjoin(self._decodeName(filename))
-            files.append(self.__create__(filePath.getOriginalPath()))
-
-        for subdir in subdirectories:
-            subPath = self.pjoin(self._decodeName(subdir))
-            subPathFiles = subPath.recursiveScanFilesInPathAsFileNameObjects(mask)
-            files.extend(subPathFiles)
-
-        return files
+        return child
 
     # ---------------------------------------------------------------------------------------------
     # Filesystem functions
@@ -1207,27 +1183,26 @@ class KodiFileName(FileName):
     def stat(self):
         return xbmcvfs.Stat(self.originalPath)
 
+    # NOTE In xbmcvfs.exists() requires folders to end with slash or backslash. 
     def exists(self):
         return xbmcvfs.exists(self.originalPath)
 
-    # Warning: not suitable for xbmcvfs paths yet
+    # isdir() is not included in Kodi xbmcvfs module yet.
+    # See https://forum.kodi.tv/showthread.php?tid=337009
     def isdir(self):
-        
-        if not self.exists():
-            return False
-
+        if not self.exists(): return False
         try:
             self.open('r')
             self.close()
         except:
             return True
-        
+
         return False
         #return os.path.isdir(self.path)
-        
-    # Warning: not suitable for xbmcvfs paths yet
-    def isfile(self):
 
+    # isdir() is not included in Kodi xbmcvfs module yet.
+    # See https://forum.kodi.tv/showthread.php?tid=337009
+    def isfile(self):
         if not self.exists():
             return False
 
@@ -1235,12 +1210,10 @@ class KodiFileName(FileName):
         #return os.path.isfile(self.path)
 
     def makedirs(self):
-        
         if not self.exists():
             xbmcvfs.mkdirs(self.originalPath)
 
     def unlink(self):
-
         if self.isfile():
             xbmcvfs.delete(self.originalPath)
 
@@ -1252,19 +1225,38 @@ class KodiFileName(FileName):
             xbmcvfs.rmdir(self.originalPath)
 
     def rename(self, to):
-
         if self.isfile():
             xbmcvfs.rename(self.originalPath, to.getOriginalPath())
         else:
             os.rename(self.path, to.getPath())
 
-    def copy(self, to):        
+    def copy(self, to):
         xbmcvfs.copy(self.getOriginalPath(), to.getOriginalPath())
-                    
+
     # ---------------------------------------------------------------------------------------------
     # File IO functions
+    # Kodi VFS documentation in https://alwinesch.github.io/group__python__xbmcvfs.html
     # ---------------------------------------------------------------------------------------------
-    
+    def open(self, flags):
+        self.fileHandle = xbmcvfs.File(self.originalPath, flags)
+
+        return self
+
+    def close(self):
+        if self.fileHandle is None: raise OSError('file not opened')
+        self.fileHandle.close()
+        self.fileHandle = None
+
+    def read(self, bytes):
+       if self.fileHandle is None: raise OSError('file not opened')
+
+       self.fileHandle.read(bytes)
+
+    def write(self, bytes):
+       if self.fileHandle is None: raise OSError('file not opened')
+
+       self.fileHandle.write(bytes)
+
     def readline(self, encoding='utf-8'):
         if self.fileHandle is None:
             raise OSError('file not opened')
@@ -1287,7 +1279,7 @@ class KodiFileName(FileName):
         file.close()
 
         return contents
-    
+
     def readAllUnicode(self, encoding='utf-8'):
         contents = None
         file = xbmcvfs.File(self.originalPath)
@@ -1295,38 +1287,11 @@ class KodiFileName(FileName):
         file.close()
 
         return unicode(contents, encoding)
-    
+
     def writeAll(self, bytes, flags='w'):
         file = xbmcvfs.File(self.originalPath, flags)
         file.write(bytes)
         file.close()
-
-    def write(self, bytes):
-       if self.fileHandle is None:
-           raise OSError('file not opened')
-
-       self.fileHandle.write(bytes)
-
-    def open(self, flags):
-        self.fileHandle = xbmcvfs.File(self.originalPath, flags)
-        return self
-        
-    def close(self):
-        if self.fileHandle is None:
-           raise OSError('file not opened')
-
-        self.fileHandle.close()
-        self.fileHandle = None
-        
-# -------------------------------------------------------------------------------------------------
-# Standard Filesystem helper class.
-# Implementation of the FileName helper class which just uses standard os operations.
-#
-# -------------------------------------------------------------------------------------------------
-class StandardFileName(FileName):
-    
-    def __create__(self, pathString):
-        return StandardFileName(pathString)
 
     # ---------------------------------------------------------------------------------------------
     # Scanner functions
@@ -1334,41 +1299,68 @@ class StandardFileName(FileName):
     def scanFilesInPath(self, mask = '*.*'):
         files = []
 
-        entries = os.listdir(self.path)
-        for filename in fnmatch.filter(entries, mask):
-            files.append(os.path.join(self.path, self._decodeName(filename)))
+        subdirectories, filenames = xbmcvfs.listdir(self.originalPath)
+        for filename in fnmatch.filter(filenames, mask):
+            files.append(os.path.join(self.originalPath, self._decodeName(filename)))
 
         return files
 
     def scanFilesInPathAsFileNameObjects(self, mask = '*.*'):
         files = []
-        
-        entries = os.listdir(self.path)
-        for filename in fnmatch.filter(entries, mask):
+        subdirectories, filenames = xbmcvfs.listdir(self.originalPath)
+        for filename in fnmatch.filter(filenames, mask):
             filePath = self.pjoin(self._decodeName(filename))
-            files.append(self.__create__(filePath.getPath()))
+            files.append(self.__init__(filePath.getOriginalPath()))
 
         return files
 
     def recursiveScanFilesInPath(self, mask = '*.*'):
         files = []
+        subdirectories, filenames = xbmcvfs.listdir(str(self.originalPath))
+        for filename in fnmatch.filter(filenames, mask):
+            filePath = self.pjoin(self._decodeName(filename))
+            files.append(filePath.getOriginalPath())
 
-        for root, dirs, foundfiles in os.walk(self.path):
-            for filename in fnmatch.filter(foundfiles, mask):
-                filePath = self.pjoin(self._decodeName(filename))
-                files.append(filePath.getPath())
+        for subdir in subdirectories:
+            subPath = self.pjoin(self._decodeName(subdir))
+            subPathFiles = subPath.recursiveScanFilesInPath(mask)
+            files.extend(subPathFiles)
 
         return files
-        
+
     def recursiveScanFilesInPathAsFileNameObjects(self, mask = '*.*'):
         files = []
-        
-        for root, dirs, foundfiles in os.walk(self.path):
-            for filename in fnmatch.filter(foundfiles, mask):
-                filePath = self.__create__(fileName)
-                files.append(filePath)
+        subdirectories, filenames = xbmcvfs.listdir(str(self.originalPath))
+        for filename in fnmatch.filter(filenames, mask):
+            filePath = self.pjoin(self._decodeName(filename))
+            files.append(self.__init__(filePath.getOriginalPath()))
+
+        for subdir in subdirectories:
+            subPath = self.pjoin(self._decodeName(subdir))
+            subPathFiles = subPath.recursiveScanFilesInPathAsFileNameObjects(mask)
+            files.extend(subPathFiles)
 
         return files
+
+# -------------------------------------------------------------------------------------------------
+# PythonFileName is an implementation of FileNameBase that uses the Python standard library
+# for I/O functions.
+# -------------------------------------------------------------------------------------------------
+class PythonFileName(FileNameBase):
+    # ---------------------------------------------------------------------------------------------
+    # Core functions.
+    # ---------------------------------------------------------------------------------------------
+    def __init__(self, pathString):
+        super(PythonFileName, self).__init__(pathString)
+
+    # Joins paths and returns a new object.
+    def pjoin(self, *args):
+        child = PythonFileName(self.originalPath)
+        for arg in args:
+            child.path = os.path.join(child.path, arg)
+            child.originalPath = os.path.join(child.originalPath, arg)
+
+        return child
 
     # ---------------------------------------------------------------------------------------------
     # Filesystem functions
@@ -1396,13 +1388,29 @@ class StandardFileName(FileName):
     def rename(self, to):
         os.rename(self.path, to.getPath())
 
-    def copy(self, to):        
+    def copy(self, to):
         shutil.copy2(self.getPath(), to.getPath())
-     
+
     # ---------------------------------------------------------------------------------------------
     # File IO functions
     # ---------------------------------------------------------------------------------------------
-    
+    def open(self, flags):
+        self.fileHandle = open(self.path, flags)
+        return self
+
+    def close(self):
+        if self.fileHandle is None: raise OSError('file not opened')
+        self.fileHandle.close()
+        self.fileHandle = None
+
+    def read(self, bytes):
+       if self.fileHandle is None: raise OSError('file not opened')
+       self.fileHandle.read(bytes)
+
+    def write(self, bytes):
+       if self.fileHandle is None: raise OSError('file not opened')
+       self.fileHandle.write(bytes)
+
     def readline(self):
         if self.fileHandle is None:
             raise OSError('file not opened')
@@ -1415,47 +1423,440 @@ class StandardFileName(FileName):
             contents = f.read()
         
         return contents
-    
-    def readAllUnicode(self, encoding='utf-8'):
-        contents = None        
+
+    def readAllUnicode(self, encoding = 'utf-8'):
+        contents = None
         with open(self.path, 'r') as f:
             contents = f.read()
-        
+
         return unicode(contents, encoding)
-    
-    def writeAll(self, bytes, flags='w'):
+
+    def writeAll(self, bytes, flags = 'w'):
         with open(self.path, flags) as file:
             file.write(bytes)
 
-    def write(self, bytes):
+    # ---------------------------------------------------------------------------------------------
+    # Scanner functions
+    # ---------------------------------------------------------------------------------------------
+    def scanFilesInPath(self, mask = '*.*'):
+        files = []
+        entries = os.listdir(self.path)
+        for filename in fnmatch.filter(entries, mask):
+            files.append(os.path.join(self.path, self._decodeName(filename)))
+
+        return files
+
+    def scanFilesInPathAsFileNameObjects(self, mask = '*.*'):
+        files = []
+        entries = os.listdir(self.path)
+        for filename in fnmatch.filter(entries, mask):
+            filePath = self.pjoin(self._decodeName(filename))
+            files.append(self.__create__(filePath.getPath()))
+
+        return files
+
+    def recursiveScanFilesInPath(self, mask = '*.*'):
+        files = []
+        for root, dirs, foundfiles in os.walk(self.path):
+            for filename in fnmatch.filter(foundfiles, mask):
+                filePath = self.pjoin(self._decodeName(filename))
+                files.append(filePath.getPath())
+
+        return files
+        
+    def recursiveScanFilesInPathAsFileNameObjects(self, mask = '*.*'):
+        files = []
+        for root, dirs, foundfiles in os.walk(self.path):
+            for filename in fnmatch.filter(foundfiles, mask):
+                filePath = self.__create__(fileName)
+                files.append(filePath)
+
+        return files
+
+# -------------------------------------------------------------------------------------------------
+# --- New Filesystem class ---
+#
+# 1. Automatically uses Python standard library for local files and Kodi VFS for remote files.
+#
+# 2. All paths on all platforms use the slash '/' to separate directories.
+#
+# 3. Directories always end in a '/' character.
+#
+# 3. Decoding Unicode to the filesystem encoding is done in this class.
+#
+# 4. Tested with the following remote protocols:
+#
+#     a) special://
+#
+#     b) smb://
+#
+# --- Function reference ---
+# FileName.getPath()         Full path                                     /home/Wintermute/Sonic.zip
+# FileName.getPathNoExt()    Full path with no extension                   /home/Wintermute/Sonic
+# FileName.getDir()          Directory name of file. Does not end in '/'   /home/Wintermute/
+# FileName.getBase()         File name with no path                        Sonic.zip
+# FileName.getBaseNoExt()    File name with no path and no extension       Sonic
+# FileName.getExt()          File extension                                .zip
+#
+#
+# A) Transform paths like smb://server/directory/ into \\server\directory\
+# B) Use xbmc.translatePath() for paths starting with special://
+# C) Uses xbmcvfs wherever possible
+#
+# -------------------------------------------------------------------------------------------------
+# Once everything is working like a charm comment all the debug code to speed up.
+DEBUG_NEWFILENAME_CLASS = True
+
+class NewFileName:
+    # ---------------------------------------------------------------------------------------------
+    # Constructor
+    # path_str is an Unicode string.
+    # ---------------------------------------------------------------------------------------------
+    def __init__(self, path_str, isdir = False):
+        self.path_str = path_str
+        self.isdir = isdir
+
+        # --- Check if path needs translation ---
+        # Note that internally path_tr is always used as the filename.
+        if self.path_str.lower().startswith('special://'):
+            self.is_translated = True
+            self.path_tr = xbmc.translatePath(self.path_str)
+            # Check translated path does not contain '\'
+            # NOTE We don't care if the translated paths has '\' characters or not. The translated
+            #      path is internal to the class and never used outside the class. In the JSON
+            #      databases and config files the original path path_str is used always.
+            # if self.path_tr.find('\\'):
+            #     log_error('(NewFileName) path_str "{0}"'.format(self.path_str))
+            #     log_error('(NewFileName) path_tr  "{0}"'.format(self.path_tr))
+            #     e_str = '(NewFileName) Translated path has \\ characters'
+            #     log_error(e_str)
+            #     raise Addon_Error(e_str)
+        else:
+            self.is_translated = False
+            self.path_tr = self.path_str
+
+        # --- Ensure directory separator is the '/' character for all OSes ---
+        self.path_str = self.path_str.replace('\\', '/')
+        self.path_tr = self.path_tr.replace('\\', '/')
+
+        # --- If a directory, ensure path ends with '/' ---
+        if self.isdir:
+            if not self.path_str[:-1] == '/': self.path_str = self.path_str + '/'
+            if not self.path_tr[:-1] == '/': self.path_tr = self.path_tr + '/'
+
+        # if DEBUG_NEWFILENAME_CLASS:
+        #     log_debug('NewFileName() path_str "{0}"'.format(self.path_str))
+        #     log_debug('NewFileName() path_tr  "{0}"'.format(self.path_tr))
+
+        # --- Check if file is local or remote and needs translation ---
+        if self.path_str.lower().startswith('smb://'):
+            self.is_local = False
+        else:
+            self.is_local = True
+
+        # --- Assume that translated paths are always local ---
+        if self.is_translated and not self.is_local:
+            e_str = '(NewFileName) File is translated and remote.'
+            log_error(e_str)
+            raise Addon_Error(e_str)
+
+        # --- Use Pyhton for local paths and Kodi VFS for remote paths ---
+        if self.is_local:
+            # --- Filesystem functions ---
+            self.exists   = self.exists_python
+            self.makedirs = self.makedirs_python
+
+            # --- File low-level IO functions ---
+            self.open     = self.open_python
+            self.read     = self.read_python
+            self.write    = self.write_python
+            self.close    = self.close_python
+        else:
+            self.exists   = self.exists_kodivfs
+            self.makedirs = self.makedirs_kodivfs
+
+            self.open     = self.open_kodivfs
+            self.read     = self.read_kodivfs
+            self.write    = self.write_kodivfs
+            self.close    = self.close_kodivfs
+
+    # ---------------------------------------------------------------------------------------------
+    # Core functions
+    # ---------------------------------------------------------------------------------------------
+    #
+    # Wheter the path stored in the FileName class is a directory or a regular file is handled
+    # internally. This is to avoid a design flaw of the Kodi VFS library.
+    #
+    def isdir(self):
+        return self.isdir
+
+    #
+    # Allow late setting of isdir() if using the constructor call is not available, for example
+    # when using FileName.pjoin().
+    #
+    def set_isdir(self, isdir):
+        self.__init__(self.path_str, isdir)
+
+    #
+    # Appends a string to path
+    # Returns self FileName object
+    #
+    def append(self, arg):
+        self.path_str = self.path_str + arg
+        self.path_tr = self.path_tr + arg
+
+        return self
+
+    #
+    # Joins paths and returns a new filename object.
+    #
+    def pjoin(self, path_str, isdir = False):
+        return FileName(os.path.join(self.path_str, path_str), isdir)
+
+    # ---------------------------------------------------------------------------------------------
+    # Operator overloads
+    # ---------------------------------------------------------------------------------------------
+    def __str__(self):
+        return self.path_str
+
+    # Overloaded operator + behaves like self pjoin()
+    # See http://blog.teamtreehouse.com/operator-overloading-python
+    # Argument other is a FileName object. other originalPath is expected to be a
+    # subdirectory (path transformation not required)
+    def __add__(self, path_str):
+        return self.pjoin(path_str)
+
+    def __eq__(self, other):
+        return self.path_str == other.path_str
+
+    def __ne__(self, other):
+        return not self.__eq__(other)
+
+    # ---------------------------------------------------------------------------------------------
+    # Path manipulation and file information
+    # ---------------------------------------------------------------------------------------------
+    def getPath(self):
+        return self.path_str
+
+    def getPathNoExt(self):
+        root, ext = os.path.splitext(self.path_str)
+
+        return root
+
+    def getDir(self):
+        return os.path.dirname(self.path_str)
+
+    # Returns a new FileName object.
+    # def getDirAsFileName(self):
+    #     return self.__init__(self.getDir())
+
+    def getBase(self):
+        return os.path.basename(self.path_str)
+
+    def getBaseNoExt(self):
+        basename  = os.path.basename(self.path_str)
+        root, ext = os.path.splitext(basename)
+
+        return root
+
+    def getExt(self):
+        root, ext = os.path.splitext(self.path_str)
+        return ext
+
+    def changeExtension(self, targetExt):
+        raise AddonException('Implement me.')
+        ext = self.getExt()
+        copiedPath = self.originalPath
+        if not targetExt.startswith('.'):
+            targetExt = '.{0}'.format(targetExt)
+        new_path = self.__create__(copiedPath.replace(ext, targetExt))
+        return new_path
+
+    # Checks the extension to determine the type of the file.
+    def isImageFile(self):
+        return '.' + self.getExt().lower() in IMAGE_EXTENSION_LIST
+
+    def isManual(self):
+        return '.' + self.getExt().lower() in MANUAL_EXTENSION_LIST
+
+    def isVideoFile(self):
+        return '.' + self.getExt().lower() in TRAILER_EXTENSION_LIST
+
+    # ---------------------------------------------------------------------------------------------
+    # Filesystem functions. Python Standard Library implementation
+    # ---------------------------------------------------------------------------------------------
+    def exists_python(self):
+        return os.path.exists(self.path_tr)
+
+    def makedirs_python(self):
+        if not os.path.exists(self.path_tr): 
+            if DEBUG_NEWFILENAME_CLASS:
+                log_debug('NewFileName::makedirs_python() path_tr "{0}"'.format(self.path_tr))
+            os.makedirs(self.path_tr)
+
+    # ---------------------------------------------------------------------------------------------
+    # Filesystem functions. Kodi VFS implementation.
+    # Kodi VFS functions always work with path_str, not with the translated path.
+    # ---------------------------------------------------------------------------------------------
+    def exists_kodivfs(self):
+        return xbmcvfs.exists(self.path_str)
+
+    def makedirs_kodivfs(self):
+        raise AddonException('Not implemented yet')
+
+    # ---------------------------------------------------------------------------------------------
+    # File low-level IO functions. Python Standard Library implementation
+    # ---------------------------------------------------------------------------------------------
+    def open_python(self, flags):
+        log_debug('NewFileName::open_python() path_tr "{0}"'.format(self.path_tr))
+        log_debug('NewFileName::open_python() flags   "{0}"'.format(flags))
+
+        # open() is a built-in function.
+        # See https://docs.python.org/3/library/functions.html#open
+        self.fileHandle = open(self.path_tr, flags)
+
+        return self
+
+    def close_python(self):
+        if self.fileHandle is None:
+            raise OSError('file not opened')
+        self.fileHandle.close()
+        self.fileHandle = None
+
+    def read_python(self):
        if self.fileHandle is None:
            raise OSError('file not opened')
 
+       return self.fileHandle.read()
+
+    def write_python(self, bytes):
+       if self.fileHandle is None:
+           raise OSError('file not opened')
        self.fileHandle.write(bytes)
 
-    def open(self, flags):
-        self.fileHandle = os.open(self.path, flags)
-        return self
-        
-    def close(self):
-        if self.fileHandle is None:
-           raise OSError('file not opened')
+    # ---------------------------------------------------------------------------------------------
+    # File low-level IO functions. Kodi VFS implementation.
+    # ---------------------------------------------------------------------------------------------
+    def open_kodivfs(self, flags):
+        raise AddonException('Not implemented yet')
 
-        self.fileHandle.close()
-        self.fileHandle = None
+    def read_kodivfs(self):
+        raise AddonException('Not implemented yet')
+
+    def write_kodivfs(self):
+        raise AddonException('Not implemented yet')
+
+    def close_kodivfs(self, bytes):
+        raise AddonException('Not implemented yet')
+
+    # ---------------------------------------------------------------------------------------------
+    # File high-level IO functions
+    # These functions are independent of the filesystem implementation.
+    # For compatibility with Python 3, use the terms str for Unicode strings and bytes for
+    # encoded strings.
+    # ---------------------------------------------------------------------------------------------
+    #
+    # If both files are local use Python SL. Otherwise use Kodi VFS.
+    # shutil.copy2() preserves metadata, including atime and mtime. We do not want that.
+    #
+    # See https://docs.python.org/2/library/shutil.html#shutil.copy
+    # See https://docs.python.org/2/library/shutil.html#shutil.copy2
+    # See https://docs.python.org/2/library/sys.html#sys.getfilesystemencoding
+    #
+    def copy(self, to_FN):
+        if self.is_local and dest_FN.is_local:
+            fs_encoding = sys.getfilesystemencoding()
+            source_bytes = self.getPath().decode(fs_encoding)
+            dest_bytes = to_FN.getPath().decode(fs_encoding)
+            if DEBUG_NEWFILENAME_CLASS:
+                log_debug('NewFileName::copy() Using Python Standard Library')
+                log_debug('NewFileName::copy() fs encoding "{0}"'.format(fs_encoding))
+                log_debug('NewFileName::copy() Copy "{0}"'.format(source_bytes))
+                log_debug('NewFileName::copy() into "{0}"'.format(dest_bytes))
+            try:
+                shutil.copy(source_bytes, dest_bytes)
+            except OSError:
+                log_error('NewFileName::copy() OSError exception copying image')
+                raise AddonException('OSError exception copying image')
+            except IOError:
+                log_error('NewFileName::copy() IOError exception copying image')
+                raise AddonException('IOError exception copying image')
+        else:
+            if DEBUG_NEWFILENAME_CLASS:
+                log_debug('NewFileName::copy() Using Kodi VFS')
+                log_debug('NewFileName::copy() Copy "{0}"'.format(self.getPath()))
+                log_debug('NewFileName::copy() into "{0}"'.format(to_FN.getPath()))
+            # >> If xbmcvfs.copy() fails what exceptions raise???
+            xbmcvfs.copy(self.getPath(), to_FN.getPath())
+
+    #
+    # Loads a file into a Unicode string.
+    # By default all files are assumed to be encoded in UTF-8.
+    # Returns a Unicode string.
+    #
+    def loadFileToStr(self, encoding = 'utf-8'):
+        if DEBUG_NEWFILENAME_CLASS:
+            log_debug('NewFileName::loadFileToStr() Loading path_str "{0}"'.format(self.path_str))
+
+        # NOTE Exceptions should be catched, reported and re-raised in the low-level
+        # functions, not here!!!
+        file_bytes = None
+        try:
+            self.open('r')
+            file_bytes = self.read()
+            self.close()
+        except OSError:
+            log_error('(OSError) Exception in FileName::loadFileToStr()')
+            log_error('(OSError) Cannot read {0} file'.format(self.path_tr))
+            raise AddonException('(OSError) Cannot read {0} file'.format(self.path_tr))
+        except IOError as Ex:
+            log_error('(IOError) Exception in FileName::loadFileToStr()')
+            log_error('(IOError) errno = {0}'.format(Ex.errno))
+            if Ex.errno == errno.ENOENT: log_error('(IOError) No such file or directory.')
+            else:                        log_error('(IOError) Unhandled errno value.')
+            log_error('(IOError) Cannot read {0} file'.format(self.path_tr))
+            raise AddonException('(IOError) Cannot read {0} file'.format(self.path_tr))
+
+        # Return a Unicode string.
+        return file_bytes.decode(encoding)
+
+    #
+    # data_str is a Unicode string. Encode it in UTF-8 for file writing.
+    #
+    def saveStrToFile(self, data_str, encoding = 'utf-8'):
+        if DEBUG_NEWFILENAME_CLASS:
+            log_debug('NewFileName::loadFileToStr() Loading path_str "{0}"'.format(self.path_str))
+            log_debug('NewFileName::loadFileToStr() Loading path_tr  "{0}"'.format(self.path_tr))
+
+        # --- Catch exceptions in the FilaName class ---
+        try:
+            self.open('w')
+            self.write(data_str.encode(encoding))
+            self.close()
+        except OSError:
+            log_error('(OSError) Exception in saveStrToFile()')
+            log_error('(OSError) Cannot write {0} file'.format(self.path_tr))
+            raise AEL_Error('(OSError) Cannot write {0} file'.format(self.path_tr))
+        except IOError:
+            log_error('(IOError) Exception in saveStrToFile()')
+            log_error('(IOError) errno = {0}'.format(e.errno))
+            if e.errno == errno.ENOENT: log_error('(IOError) No such file or directory.')
+            else:                       log_error('(IOError) Unhandled errno value.')
+            log_error('(IOError) Cannot write {0} file'.format(self.path_tr))
+            raise AEL_Error('(IOError) Cannot write {0} file'.format(self.path_tr))
+
+# -------------------------------------------------------------------------------------------------
+# Decide which class to use for managing filenames.
+# -------------------------------------------------------------------------------------------------
+# FileName = PythonFileName
+# FileName = KodiFileName
+FileName = NewFileName
 
 # #################################################################################################
 # #################################################################################################
 # Kodi utilities
 # #################################################################################################
 # #################################################################################################
-
-# --- Constants -----------------------------------------------------------------------------------
-LOG_ERROR   = 0
-LOG_WARNING = 1
-LOG_INFO    = 2
-LOG_VERB    = 3
-LOG_DEBUG   = 4
 
 # --- Internal globals ----------------------------------------------------------------------------
 current_log_level = LOG_INFO
@@ -1465,6 +1866,7 @@ current_log_level = LOG_INFO
 # -------------------------------------------------------------------------------------------------
 def set_log_level(level):
     global current_log_level
+
     current_log_level = level
 
 #
@@ -1563,25 +1965,28 @@ def kodi_notify_error(text, title = 'Advanced Emulator Launcher error', time = 7
     xbmcgui.Dialog().notification(title, text, xbmcgui.NOTIFICATION_ERROR, time)
 
 #
-# NOTE I think Krypton introduced new API functions to activate the busy dialog window. Check that
-#      out!
-# NOTE Deprecated in Leia! Do not use busydialogs anymore!!!!!
+# Deprecated in Leia! Do not use busydialogs anymore!!!!!
+# See https://forum.kodi.tv/showthread.php?tid=303073&pid=2739256#pid2739256
+# See https://github.com/xbmc/xbmc/pull/13954
+# See https://github.com/xbmc/xbmc/pull/13958
 #
-def kodi_busydialog_ON():
-    xbmc.executebuiltin('ActivateWindow(busydialog)')
+# def kodi_busydialog_ON():
+#     xbmc.executebuiltin('ActivateWindow(busydialog)')
 
-def kodi_busydialog_OFF():
-    xbmc.executebuiltin('Dialog.Close(busydialog)')
+# def kodi_busydialog_OFF():
+#     xbmc.executebuiltin('Dialog.Close(busydialog)')
 
 def kodi_refresh_container():
     log_debug('kodi_refresh_container()')
     xbmc.executebuiltin('Container.Refresh')
 
 def kodi_toogle_fullscreen():
-    json_str = ('{"jsonrpc" : "2.0", "id" : "1",'
-                '"method" : "Input.ExecuteAction",'
-                '"params" : {"action" : "togglefullscreen"}}')
-
+    json_str = ('{'
+        '"jsonrpc" : "2.0", "id" : "1", '
+        '"method" : "Input.ExecuteAction", '
+        '"params" : { "action" : "togglefullscreen" }'
+        '}'
+    )
     xbmc.executeJSONRPC(json_str)
 
 #
@@ -1608,20 +2013,36 @@ def kodi_toogle_fullscreen():
 #     }
 # }
 #
-def kodi_jsonrpc_query(method, params):
-    # log_debug('kodi_jsonrpc_query() method "{0}"'.format(method))
-    # log_debug('kodi_jsonrpc_query() params "{0}"'.format(params))
+# Query response ERROR:
+# {
+#     "id" : null,
+#     "jsonrpc" : "2.0",
+#     "error" : { "code":-32700, "message" : "Parse error."}
+# }
+#
+def kodi_jsonrpc_query(method_str, params_str, verbose = False):
+    if verbose:
+        log_debug('kodi_jsonrpc_query() method_str "{0}"'.format(method_str))
+        log_debug('kodi_jsonrpc_query() params_str "{0}"'.format(params_str))
+        params_dic = json.loads(params_str)
+        log_debug('kodi_jsonrpc_query() params_dic = \n{0}'.format(pprint.pformat(params_dic)))
 
-    # >> Do query
-    query_str = '{{"id" : 1, "jsonrpc" : "2.0", "method" : "{0}", "params" : {{ {1} }}}}'.format(method, params)
-    # # log_debug('kodi_jsonrpc_query() query_str "{0}"'.format(query_str))
+    # --- Do query ---
+    query_str = '{{"id" : 1, "jsonrpc" : "2.0", "method" : "{0}", "params" : {1} }}'.format(method_str, params_str)
+    # if verbose: log_debug('kodi_jsonrpc_query() query_str "{0}"'.format(query_str))
     response_json_str = xbmc.executeJSONRPC(query_str)
-    # log_debug('kodi_jsonrpc_query() response "{0}"'.format(response_json_str))
+    # if verbose: log_debug('kodi_jsonrpc_query() response "{0}"'.format(response_json_str))
 
-    # >> Parse JSON response
+    # --- Parse JSON response ---
     response_dic = json.loads(response_json_str)
-    result_dic = response_dic['result']
-    # log_debug('kodi_jsonrpc_query() result_dic = \n{0}'.format(pprint.pformat(result_dic)))
+    # if verbose: log_debug('kodi_jsonrpc_query() response_dic = \n{0}'.format(pprint.pformat(response_dic)))
+    if 'error' in response_dic:
+        result_dic = response_dic['error']
+        log_warning('kodi_jsonrpc_query() JSONRPC ERROR {0}'.format(result_dic['message']))
+    else:
+        result_dic = response_dic['result']
+    if verbose:
+        log_debug('kodi_jsonrpc_query() result_dic = \n{0}'.format(pprint.pformat(result_dic)))
 
     return result_dic
 
@@ -1640,6 +2061,91 @@ def kodi_display_text_window_mono(window_title, info_text):
 #
 def kodi_display_text_window(window_title, info_text):
     xbmcgui.Dialog().textviewer(window_title, info_text)
+
+#
+# Kodi dialog to select a file
+# Documentation in https://alwinesch.github.io/group__python___dialog.html
+#
+def kodi_dialog_GetDirectory(title_str, ext_list, current_dir):
+    new_dir = xbmcgui.Dialog().browse(0, title_str, 'files', ext_list, True, False, current_dir)
+
+    return new_dir.decode('utf-8')
+
+def kodi_dialog_GetFile(title_str, ext_list, current_dir):
+    new_file = xbmcgui.Dialog().browse(1, title_str, 'files', ext_list, True, False, current_dir)
+
+    return new_file.decode('utf-8')
+
+def kodi_dialog_GetImage(title_str, ext_list, current_dir):
+    new_image = xbmcgui.Dialog().browse(2, title_str, 'files', ext_list, True, False, current_dir)
+
+    return new_image.decode('utf-8')
+
+#
+# See https://kodi.wiki/view/JSON-RPC_API/v8#Textures
+# See https://forum.kodi.tv/showthread.php?tid=337014
+# See https://forum.kodi.tv/showthread.php?tid=236320
+#
+def kodi_delete_cache_texture(database_path_str):
+    log_debug('kodi_delete_cache_texture() Deleting texture "{0}:'.format(database_path_str))
+
+    # --- Query texture database ---
+    json_fname_str = text_escape_JSON(database_path_str)
+    prop_str = (
+        '{' +
+        '"properties" : [ "url", "cachedurl", "lasthashcheck", "imagehash", "sizes"], ' +
+        '"filter" : {{ "field" : "url", "operator" : "is", "value" : "{0}" }}'.format(json_fname_str) +
+        '}'
+    )
+    r_dic = kodi_jsonrpc_query('Textures.GetTextures', prop_str, verbose = False)
+
+    # --- Delete cached texture ---
+    num_textures = len(r_dic['textures'])
+    log_debug('kodi_delete_cache_texture() Returned list with {0} textures'.format(num_textures))
+    if num_textures == 1:
+        textureid = r_dic['textures'][0]['textureid']
+        log_debug('kodi_delete_cache_texture() Deleting texture with id {0}'.format(textureid))
+        prop_str = '{{ "textureid" : {0} }}'.format(textureid)
+        r_dic = kodi_jsonrpc_query('Textures.RemoveTexture', prop_str, verbose = False)
+    else:
+        log_warning('kodi_delete_cache_texture() Number of textures different from 1. No texture deleted from cache')
+
+def kodi_print_texture_info(database_path_str):
+    log_debug('kodi_print_texture_info() File "{0}"'.format(database_path_str))
+
+    # --- Query texture database ---
+    json_fname_str = text_escape_JSON(database_path_str)
+    prop_str = (
+        '{' +
+        '"properties" : [ "url", "cachedurl", "lasthashcheck", "imagehash", "sizes"], ' +
+        '"filter" : {{ "field" : "url", "operator" : "is", "value" : "{0}" }}'.format(json_fname_str) +
+        '}'
+    )
+    r_dic = kodi_jsonrpc_query('Textures.GetTextures', prop_str, verbose = False)
+
+    # --- Delete cached texture ---
+    num_textures = len(r_dic['textures'])
+    log_debug('kodi_print_texture_info() Returned list with {0} textures'.format(num_textures))
+    if num_textures == 1:
+        log_debug('Cached URL  {0}'.format(r_dic['textures'][0]['cachedurl']))
+        log_debug('Hash        {0}'.format(r_dic['textures'][0]['imagehash']))
+        log_debug('Last check  {0}'.format(r_dic['textures'][0]['lasthashcheck']))
+        log_debug('Texture ID  {0}'.format(r_dic['textures'][0]['textureid']))
+        log_debug('Texture URL {0}'.format(r_dic['textures'][0]['url']))
+
+# -------------------------------------------------------------------------------------------------
+# Determine Kodi version and create some constants to allow version-dependent code.
+# This if useful to work around bugs in Kodi core.
+# -------------------------------------------------------------------------------------------------
+def kodi_get_Kodi_major_version():
+    rpc_dic = kodi_jsonrpc_query('Application.GetProperties', '{ "properties" : ["version"] }')
+
+    return int(rpc_dic['version']['major'])
+kodi_running_version = kodi_get_Kodi_major_version()
+
+# --- Version constants. Minimum required version is Kodi Krypton ---
+KODI_VERSION_KRYPTON = 17
+KODI_VERSION_LEIA    = 18
 
 # -------------------------------------------------------------------------------------------------
 # Kodi Wizards (by Chrisism)
@@ -1699,8 +2205,8 @@ class KodiWizardDialog():
             output = self.customFunction(output, self.property_key, properties)
 
         if self.property_key:
-            properties[self.property_key] = output
             log_debug('Assigned properties[{0}] value: {1}'.format(self.property_key, output))
+            properties[self.property_key] = output
 
         return True
 
@@ -1735,7 +2241,9 @@ class KodiKeyboardWizardDialog(KodiWizardDialog):
 class KodiSelectionWizardDialog(KodiWizardDialog):
     def __init__(self, property_key, title, options, decoratorDialog, customFunction = None, conditionalFunction = None):
         self.options = options
-        super(KodiSelectionWizardDialog, self).__init__(property_key, title, decoratorDialog, customFunction, conditionalFunction)
+        super(KodiSelectionWizardDialog, self).__init__(
+            property_key, title, decoratorDialog, customFunction, conditionalFunction
+        )
 
     def show(self, properties):
         log_debug('Executing selection wizard dialog for key: {0}'.format(self.property_key))
@@ -1755,9 +2263,12 @@ class KodiSelectionWizardDialog(KodiWizardDialog):
 # list as the selectable options. The selected key will be used.
 # 
 class KodiDictionarySelectionWizardDialog(KodiWizardDialog):
-    def __init__(self, property_key, title, options, decoratorDialog, customFunction = None, conditionalFunction = None):
+    def __init__(self, property_key, title, options, decoratorDialog,
+                 customFunction = None, conditionalFunction = None):
         self.options = options
-        super(KodiDictionarySelectionWizardDialog, self).__init__(property_key, title, decoratorDialog, customFunction, conditionalFunction)
+        super(KodiDictionarySelectionWizardDialog, self).__init__(
+            property_key, title, decoratorDialog, customFunction, conditionalFunction
+        )
 
     def show(self, properties):
         log_debug('Executing dict selection wizard dialog for key: {0}'.format(self.property_key))
@@ -1777,10 +2288,13 @@ class KodiDictionarySelectionWizardDialog(KodiWizardDialog):
 # Wizard dialog which shows a filebrowser.
 #
 class KodiFileBrowseWizardDialog(KodiWizardDialog):
-    def __init__(self, property_key, title, browseType, filter, decoratorDialog, customFunction = None, conditionalFunction = None):
+    def __init__(self, property_key, title, browseType, filter, decoratorDialog,
+                 customFunction = None, conditionalFunction = None):
         self.browseType = browseType
         self.filter = filter
-        super(KodiFileBrowseWizardDialog, self).__init__(property_key, title, decoratorDialog, customFunction, conditionalFunction)
+        super(KodiFileBrowseWizardDialog, self).__init__(
+            property_key, title, decoratorDialog, customFunction, conditionalFunction
+        )
 
     def show(self, properties):
         log_debug('Executing file browser wizard dialog for key: {0}'.format(self.property_key))
@@ -1806,9 +2320,12 @@ class KodiFileBrowseWizardDialog(KodiWizardDialog):
 #    - xbmcgui.INPUT_PASSWORD (return md5 hash of input, input is masked)
 #
 class KodiInputWizardDialog(KodiWizardDialog):
-    def __init__(self, property_key, title, inputType, decoratorDialog, customFunction = None, conditionalFunction = None):
+    def __init__(self, property_key, title, inputType, decoratorDialog,
+                 customFunction = None, conditionalFunction = None):
         self.inputType = inputType
-        super(InputWizardDialog, self).__init__(property_key, title, decoratorDialog, customFunction, conditionalFunction)
+        super(KodiInputWizardDialog, self).__init__(
+            property_key, title, decoratorDialog, customFunction, conditionalFunction
+        )
 
     def show(self, properties):
         log_debug('Executing {0} input wizard dialog for key: {1}'.format(self.inputType, self.property_key))
@@ -1835,7 +2352,9 @@ class KodiInputWizardDialog(KodiWizardDialog):
 class KodiFormattedMessageWizardDialog(KodiWizardDialog):
     def __init__(self, property_key, title, text, decoratorDialog, customFunction = None, conditionalFunction = None):
         self.text = text
-        super(FormattedMessageWizardDialog, self).__init__(property_key, title, decoratorDialog, customFunction, conditionalFunction)
+        super(KodiFormattedMessageWizardDialog, self).__init__(
+            property_key, title, decoratorDialog, customFunction, conditionalFunction
+        )
 
     def show(self, properties):
         log_debug('Executing message wizard dialog for key: {0}'.format(self.property_key))
@@ -1854,13 +2373,15 @@ class KodiFormattedMessageWizardDialog(KodiWizardDialog):
 # It only sets a certain property with the predefined value.
 #
 class KodiDummyWizardDialog(KodiWizardDialog):
-    def __init__(self, property_key, predefinedValue, decoratorDialog, customFunction = None, conditionalFunction = None):
+    def __init__(self, property_key, predefinedValue, decoratorDialog,
+                 customFunction = None, conditionalFunction = None):
         self.predefinedValue = predefinedValue
-        super(DummyWizardDialog, self).__init__(property_key, None, decoratorDialog, customFunction, conditionalFunction)
+        super(KodiDummyWizardDialog, self).__init__(
+            property_key, None, decoratorDialog, customFunction, conditionalFunction)
 
     def show(self, properties):
-        
         log_debug('Executing dummy wizard dialog for key: {0}'.format(self.property_key))
+
         return self.predefinedValue
 
 #
@@ -1890,20 +2411,17 @@ class KodiProgressDialogStrategy(object):
         self.progressDialog = xbmcgui.DialogProgress()
         self.verbose = True
 
-    def _startProgressPhase(self, title, message):        
+    def _startProgressPhase(self, title, message):
         self.progressDialog.create(title, message)
 
     def _updateProgress(self, progress, message1 = None, message2 = None):
-        
         self.progress = progress
-
         if not self.verbose:
             self.progressDialog.update(progress)
         else:
             self.progressDialog.update(progress, message1, message2)
 
     def _updateProgressMessage(self, message1, message2 = None):
-
         if not self.verbose:
             return
 
@@ -1912,11 +2430,9 @@ class KodiProgressDialogStrategy(object):
     def _isProgressCanceled(self):
         return self.progressDialog.iscanceled()
 
-    def _endProgressPhase(self, canceled=False):
-        
+    def _endProgressPhase(self, canceled = False):
         if not canceled:
             self.progressDialog.update(100)
-
         self.progressDialog.close()
 
 # -------------------------------------------------------------------------------------------------
