@@ -74,6 +74,7 @@ class Test_gamefaq_scraper(unittest.TestCase):
         settings['scan_ignore_scrap_title'] = False
         settings['scraper_metadata'] = 0 # NullScraper
         settings['thegamesdb_apikey'] = 'abc123'
+        settings['escape_romfile'] = False
 
         return settings
 
@@ -93,7 +94,7 @@ class Test_gamefaq_scraper(unittest.TestCase):
         launcher.set_asset_path(asset_factory.get_asset_info(ASSET_BOXFRONT),'/my/nice/assets/fronts/')
         launcher.set_asset_path(asset_factory.get_asset_info(ASSET_SNAP),'/my/nice/assets/snaps/')
         
-        rom = Rom({'id': 1234})
+        rom = ROM({'id': 1234})
         fakeRomPath = FakeFile('/my/nice/roms/castlevania.zip')
 
         target = GameFaqScraper(settings, launcher, True, assets_to_scrape)

@@ -81,6 +81,7 @@ class Test_gamesdb_scraper(unittest.TestCase):
         settings['scan_ignore_scrap_title'] = False
         settings['scraper_metadata'] = 0 # NullScraper
         settings['thegamesdb_apikey'] = 'abc123'
+        settings['escape_romfile'] = False
 
         return settings
 
