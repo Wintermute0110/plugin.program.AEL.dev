@@ -161,6 +161,44 @@ def net_get_URL_original(url):
 
     return page_data
 
+def net_post_URL_original(url, params):
+    page_data = ''
+    
+    req = urllib2.Request(url, params)
+    req.add_unredirected_header('User-Agent', USER_AGENT)
+    req.add_header("Content-type", "application/x-www-form-urlencoded")
+    req.add_header("Acept", "text/plain")
+
+    log_debug('net_post_URL_original() POSTING URL "{0}"'.format(req.get_full_url()))
+    
+    try:
+        f = urllib2.urlopen(req)
+        encoding = f.headers['content-type'].split('charset=')[-1]
+        page_bytes = f.read()
+        f.close()
+    except IOError as e:    
+        log_error('(IOError) Exception in net_get_URL_original()')
+        log_error('(IOError) {0}'.format(str(e)))
+        return page_data
+
+    num_bytes = len(page_bytes)
+    log_debug('net_get_URL_original() Read {0} bytes'.format(num_bytes))
+
+    # --- Convert to Unicode ---    
+    if encoding == 'text/html': encoding = 'utf-8'
+    if encoding == 'text/plain' and 'UTF-8' in page_bytes: encoding = 'utf-8'
+    if encoding == 'text/plain' and 'UTF-16' in page_bytes: encoding = 'utf-16'
+    if encoding == 'application/json': encoding = 'utf-8'
+    
+    log_debug('net_get_URL_original() encoding = "{0}"'.format(encoding))
+    if encoding != 'utf-16':
+        page_data = unicode(page_bytes, encoding)
+
+    if encoding == 'utf-16':
+        page_data = page_bytes.encode('utf-16')
+
+    return page_data
+
 def net_get_URL_using_handler(url, handler = None):
 
     page_data = None
