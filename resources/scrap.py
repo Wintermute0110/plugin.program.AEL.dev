@@ -473,19 +473,64 @@ class ScrapeResult(object):
 class Scraper(object):
     __metaclass__ = abc.ABCMeta
     
-    def __init__(self, scraper_settings, launcher, scrape_metadata, assets_to_scrape, fallbackScraper = None):
+    def __init__(self, scraper_settings, launcher, fallbackScraper = None):
         
         self.cache = {}
         
         self.scraper_settings = scraper_settings
         self.launcher = launcher
                 
-        self.scrape_metadata = scrape_metadata
-        self.assets_to_scrape = assets_to_scrape
-        
         self.fallbackScraper = fallbackScraper
 
     def scrape_metadata(self, search_term, rom_path, rom):
+        
+        candidates = self._get_candidates(search_term, rom_path, rom)
+        log_debug('Scraper \'{0}\' found {1} result/s'.format(self.getName(), len(candidates)))
+
+        if not candidates or len(candidates) == 0:
+            log_verb('Scraper \'{0}\' found no games after searching.'.format(self.getName()))
+            
+            if self.fallbackScraper:
+                return self.fallbackScraper.scrape_metadata(search_term, rom_path, rom)
+
+            return False
+        
+        selected_candidate = 0
+        if len(candidates) > 1 and self.scraper_settings.metadata_scraping_mode == 0:
+            log_debug('Metadata semi-automatic scraping')
+            # >> Close progress dialog (and check it was not canceled)
+            # ?? todo again
+
+            # >> Display corresponding game list found so user choses
+            dialog = xbmcgui.Dialog()
+            rom_name_list = []
+            for game in candidates: 
+                rom_name_list.append(game['display_name'])
+
+            selected_candidate = dialog.select('Select game for ROM {0}'.format(rom_path.getBase_noext()), rom_name_list)
+            if selected_candidate < 0: 
+                selected_candidate = 0
+
+            # >> Open progress dialog again
+            # ?? todo again
+
+        candidate = candidates[selected_candidate]
+
+        # Update cache so future searches will automatically select this candidate for this particular search term
+        self._update_cache(search_term, candidate)
+        
+        game_data = self._new_gamedata_dic()
+        self._load_metadata(candidate, rom_path, rom, game_data)
+        
+        scraper_applied = self._apply_candidate_on_metadata(rom_path, rom, game_data)
+                
+        if not scraper_applied and self.fallbackScraper is not None:
+            log_verb('Scraper \'{0}\' did not get the correct data. Using fallback scraping method: {1}.'.format(self.getName(), self.fallbackScraper.getName()))
+            return self.fallbackScraper.scrape_metadata(search_term, rom_path, rom)
+        
+        return scraper_applied
+
+    def scrape_asset(self, search_term, asset_info_to_scrape, rom_path, rom):
         
         results = self._get_candidates(search_term, rom_path, rom)
         log_debug('Scraper \'{0}\' found {1} result/s'.format(self.getName(), len(results)))
@@ -494,14 +539,36 @@ class Scraper(object):
             log_verb('Scraper \'{0}\' found no games after searching.'.format(self.getName()))
             
             if self.fallbackScraper:
-                return self.fallbackScraper.scrape(search_term, romPath, rom)
+                return self.fallbackScraper.scrape_asset(search_term, rom_path, rom)
 
             return False
         
-        return False
+        selected_candidate = 0
+        if len(results) > 1 and self.scraper_settings.metadata_scraping_mode == 0:
+            log_debug('Metadata semi-automatic scraping')
+            # >> Close progress dialog (and check it was not canceled)
+            # ?? todo again
 
-    def scrape_asset(self, search_term, asset_info_to_scrape, rom_path, rom):
-        return False
+            # >> Display corresponding game list found so user choses
+            dialog = xbmcgui.Dialog()
+            rom_name_list = []
+            for game in results: 
+                rom_name_list.append(game['display_name'])
+
+            selected_candidate = dialog.select('Select game for ROM {0}'.format(rom_path.getBase_noext()), rom_name_list)
+            if selected_candidate < 0: selected_candidate = 0
+
+            # >> Open progress dialog again
+            # ?? todo again
+        
+        self._load_assets(candidate, rom_path, rom)                
+        scraper_applied = self._apply_candidate_on_asset(rom_path, rom, asset_info_to_scrape)
+                
+        if not scraper_applied and self.fallbackScraper is not None:
+            log_verb('Scraper \'{0}\' did not get the correct data. Using fallback scraping method: {1}.'.format(self.getName(), self.fallbackScraper.getName()))
+            return self.fallbackScraper.scrape_asset(search_term, rom_path, rom)
+        
+        return scraper_applied
 
     def scrape(self, search_term, romPath, rom):
                 
@@ -564,14 +631,116 @@ class Scraper(object):
         if self.assets_to_scrape is not None and len(self.assets_to_scrape) > 0:
             self._load_assets(candidate, romPath, rom)
     
+            
     @abc.abstractmethod
-    def _load_metadata(self, candidate, romPath, rom):        
+    def _load_metadata(self, candidate, romPath, rom, game_data):        
         pass
     
     @abc.abstractmethod
     def _load_assets(self, candidate, romPath, rom):        
         pass
+    
+    def _apply_candidate_on_metadata(self, rom_path, rom, candidate_data):
+
+        # --- Put metadata into ROM dictionary ---
+        if self.scraper_settings.ignore_scraped_title:
+            rom_name = text_format_ROM_title(rom.getBase_noext(), self.scraper_settings.scan_clean_tags)
+            rom.set_name(rom_name)
+            log_debug("User wants to ignore scraper name. Setting name to '{0}'".format(rom_name))
+        else:
+            rom_name = candidate_data['title']
+            rom.set_name(rom_name)
+            log_debug("User wants scrapped name. Setting name to '{0}'".format(rom_name))
+
+        rom.set_releaseyear(candidate_data['year'])           # <year>
+        rom.set_genre(candidate_data['genre'])                # <genre>
+        rom.set_developer(candidate_data['developer'])        # <developer>
+        rom.set_number_of_players(candidate_data['nplayers']) # <nplayers>
+        rom.set_esrb_rating(candidate_data['esrb'])           # <esrb>
+        rom.set_plot(candidate_data['plot'])                  # <plot>
+
+        return True
+    
+    def apply_candidate_on_asset(self, rom_path, rom, asset_info, candidate_data):
+   
+        image_list = candidate_data['assets']    
+        if not image_list:
+            log_debug('{0} scraper has not collected images.'.format(self.getName()))
+            return False
+                
+        asset_directory     = self.launcher.get_asset_path(asset_info)
+        asset_path_noext_FN = assets_get_path_noext_DIR(asset_info, asset_directory, rom_path)
+        log_debug('Scraper.apply_candidate_on_asset() asset_path_noext "{0}"'.format(asset_path_noext_FN.getOriginalPath()))
+
+        specific_images_list = [image_entry for image_entry in image_list if image_entry['type'].kind == asset_info.kind]
+
+        log_debug('{} scraper has collected {} assets of type {}.'.format(self.getName(), len(specific_images_list), asset_info.name))
+        if len(specific_images_list) == 0:
+            log_debug('{0} scraper has not collected images for asset {}.'.format(self.getName(), asset_info.name))
+            return False
+
+        # --- Semi-automatic scraping (user choses an image from a list) ---
+        if self.scraper_settings.asset_scraping_mode == 0:
+            # >> If specific_images_list has only 1 element do not show select dialog. Note that the length
+            # >> of specific_images_list is 1 only if scraper returned 1 image and a local image does not exist.
+            if len(specific_images_list) == 1:
+                image_selected_index = 0
+            else:
+                # >> Close progress dialog before opening image chosing dialog
+                #if self.pDialog.iscanceled(): self.pDialog_canceled = True
+                #self.pDialog.close()
+
+                # >> Convert list returned by scraper into a list the select window uses
+                ListItem_list = []
+                for item in specific_images_list:
+                    listitem_obj = xbmcgui.ListItem(label = item['name'], label2 = item['url'])
+                    listitem_obj.setArt({'icon' : item['url']})
+                    ListItem_list.append(listitem_obj)
+
+                image_selected_index = xbmcgui.Dialog().select('Select {0} image'.format(asset_info.name),
+                                                                list = ListItem_list, useDetails = True)
+                log_debug('{0} dialog returned index {1}'.format(asset_info.name, image_selected_index))
+
+            if image_selected_index < 0:
+                return False
+
+            # >> Reopen progress dialog
+            #self.pDialog.create('Advanced Emulator Launcher')
+            #if not self.pDialog_verbose: self.pDialog.update(self.progress_number, self.file_text)
+
+        # --- Automatic scraping. Pick first image. ---
+        else:
+            image_selected_index = 0
+
+            selected_image = specific_images_list[image_selected_index]
+
+            # --- Update progress dialog ---
+            #if self.pDialog_verbose:
+            #    scraper_text = 'Scraping {0} with {1}. Downloading image ...'.format(A.name, scraper_obj.name)
+            #    self.pDialog.update(self.progress_number, self.file_text, scraper_text)
+
+            log_debug('Scraper.apply_candidate_on_asset() Downloading selected image ...')
+
+            # --- Resolve image URL ---
+            if selected_image['is_online']:
+                    
+                if selected_image['is_on_page']:
+                    image_url = self._get_image_url_from_page(selected_image, asset_info)
+                else:
+                    image_url = selected_image['url']
+
+                image_path = self._download_image(asset_info, image_url, asset_path_noext_FN)
+
+            else:
+                log_debug('{0} scraper: user chose local image "{1}"'.format(self.asset_info.name, selected_image['url']))
+                image_path = FileNameFactory.create(selected_image['url'])
+
+            if image_path:
+                rom.set_asset(asset_info, image_path)        
         
+        return True
+ 
+
     def _apply_candidate(self, romPath, rom):
         
         if not self.gamedata:
@@ -1010,7 +1179,7 @@ class OnlineAssetScraper(Scraper):
 
 class TheGamesDbScraper(Scraper): 
 
-    def __init__(self, settings, launcher, scrape_metadata, assets_to_scrape, fallbackScraper = None):
+    def __init__(self, settings, launcher, fallbackScraper = None):
 
         self.publishers = None
         self.genres = None
@@ -1019,7 +1188,7 @@ class TheGamesDbScraper(Scraper):
         self.api_key = settings['thegamesdb_apikey']
         scraper_settings = ScraperSettings.create_from_settings(settings)
 
-        super(TheGamesDbScraper, self).__init__(scraper_settings, launcher, scrape_metadata, assets_to_scrape, fallbackScraper)
+        super(TheGamesDbScraper, self).__init__(scraper_settings, launcher, fallbackScraper)
         
     def getName(self):
         return 'TheGamesDB'
@@ -1035,10 +1204,10 @@ class TheGamesDbScraper(Scraper):
         log_debug('TheGamesDbScraper::_get_candidates() TheGamesDB platform "{0}"'.format(scraper_platform))
         
         # >> Check if search term page data is in cache. If so it's a cache hit.
-        game_id_from_cache = self._get_from_cache(search_term)
+        candidate_from_cache = self._get_from_cache(search_term)
         
-        if game_id_from_cache is not None and game_id_from_cache > 0:
-            return [{ 'id' : game_id_from_cache, 'display_name' : 'cached', 'order': 1 }]
+        if candidate_from_cache is not None:
+            return candidate_from_cache
 
         game_list = []
         # >> quote_plus() will convert the spaces into '+'. Note that quote_plus() requires an
@@ -1062,7 +1231,7 @@ class TheGamesDbScraper(Scraper):
 
         return game_list
         
-    def _load_metadata(self, candidate, romPath, rom):
+    def _load_metadata(self, candidate, romPath, rom, game_data):
 
         url = 'https://api.thegamesdb.net/Games/ByGameID?apikey={}&id={}&fields=players%2Cpublishers%2Cgenres%2Coverview%2Crating%2Cplatform%2Ccoop%2Cyoutube'.format(
                 self.api_key, candidate['id'])
@@ -1072,13 +1241,13 @@ class TheGamesDbScraper(Scraper):
         online_data = page_data['data']['games'][0]
 
         # --- Parse game page data ---
-        self.gamedata['title']      = online_data['game_title'] if 'game_title' in online_data else '' 
-        self.gamedata['nplayers']   = online_data['players'] if 'players' in online_data else '' 
-        self.gamedata['esrb']       = online_data['rating'] if 'rating' in online_data else '' 
-        self.gamedata['plot']       = online_data['overview'] if 'overview' in online_data else '' 
-        self.gamedata['genre']      = self._get_genres(online_data['genres']) if 'genres' in online_data else '' 
-        self.gamedata['developer']  = self._get_developers(online_data['developers']) if 'developers' in online_data else '' 
-        self.gamedata['year']       = online_data['release_date'][:4] if 'release_date' in online_data and online_data['release_date'] is not None and online_data['release_date'] != '' else ''
+        game_data['title']      = online_data['game_title'] if 'game_title' in online_data else '' 
+        game_data['nplayers']   = online_data['players'] if 'players' in online_data else '' 
+        game_data['esrb']       = online_data['rating'] if 'rating' in online_data else '' 
+        game_data['plot']       = online_data['overview'] if 'overview' in online_data else '' 
+        game_data['genre']      = self._get_genres(online_data['genres']) if 'genres' in online_data else '' 
+        game_data['developer']  = self._get_developers(online_data['developers']) if 'developers' in online_data else '' 
+        game_data['year']       = online_data['release_date'][:4] if 'release_date' in online_data and online_data['release_date'] is not None and online_data['release_date'] != '' else ''
 
     def _load_assets(self, candidate, romPath, rom):
         
@@ -1267,14 +1436,14 @@ class TheGamesDbScraper(Scraper):
 
 class MobyGamesScraper(Scraper): 
         
-    def __init__(self, settings, launcher, scrape_metadata, assets_to_scrape, fallbackScraper = None):
+    def __init__(self, settings, launcher, fallbackScraper = None):
 
         self.api_key = settings['mobygames_apikey']
         scraper_settings = ScraperSettings.create_from_settings(settings)
 
         self.last_http_call = datetime.datetime.now()
 
-        super(MobyGamesScraper, self).__init__(scraper_settings, launcher, scrape_metadata, assets_to_scrape, fallbackScraper)
+        super(MobyGamesScraper, self).__init__(scraper_settings, launcher, fallbackScraper)
         
     def getName(self):
         return 'MobyGames'
@@ -1290,10 +1459,10 @@ class MobyGamesScraper(Scraper):
         log_debug('MobyGamesScraper::_get_candidates() MobyGames platform  "{0}"'.format(scraper_platform))
         
         # >> Check if search term page data is in cache. If so it's a cache hit.
-        game_id_from_cache = self._get_from_cache(search_term)
+        candidate_from_cache = self._get_from_cache(search_term)
         
-        if game_id_from_cache is not None and game_id_from_cache > 0:
-            return [{ 'id' : game_id_from_cache, 'display_name' : 'cached', 'order': 1 }]
+        if candidate_from_cache is not None:
+            return candidate_from_cache
 
         game_list = []            
         search_string_encoded = urllib.quote_plus(search_term.encode('utf8'))
@@ -1330,7 +1499,7 @@ class MobyGamesScraper(Scraper):
 
         return game_list
 
-    def _load_metadata(self, candidate, romPath, rom):
+    def _load_metadata(self, candidate, romPath, rom, game_data):
 
         url = 'https://api.mobygames.com/v1/games/{}?api_key={}'.format(candidate['id'], self.api_key)
                 
@@ -1345,10 +1514,10 @@ class MobyGamesScraper(Scraper):
         scraper_platform = AEL_platform_to_MobyGames(platform)
         
         # --- Parse game page data ---
-        self.gamedata['title']      = online_data['title'] if 'title' in online_data else '' 
-        self.gamedata['plot']       = online_data['description'] if 'description' in online_data else '' 
-        self.gamedata['genre']      = self._get_genres(online_data['genres']) if 'genres' in online_data else '' 
-        self.gamedata['year']       = self._get_year_by_platform(online_data['platforms'], scraper_platform)
+        game_data['title']      = online_data['title'] if 'title' in online_data else '' 
+        game_data['plot']       = online_data['description'] if 'description' in online_data else '' 
+        game_data['genre']      = self._get_genres(online_data['genres']) if 'genres' in online_data else '' 
+        game_data['year']       = self._get_year_by_platform(online_data['platforms'], scraper_platform)
 
     def _get_genres(self, genre_data):
 
@@ -1477,10 +1646,10 @@ class MobyGamesScraper(Scraper):
 #            
 class GameFaqScraper(Scraper):
          
-    def __init__(self, settings, launcher, scrape_metadata, assets_to_scrape, fallbackScraper = None):
+    def __init__(self, settings, launcher, fallbackScraper = None):
 
         scraper_settings = ScraperSettings.create_from_settings(settings)
-        super(GameFaqScraper, self).__init__(scraper_settings, launcher, scrape_metadata, assets_to_scrape, fallbackScraper)
+        super(GameFaqScraper, self).__init__(scraper_settings, launcher, fallbackScraper)
         
     def getName(self):
         return 'GameFaq'
@@ -1496,10 +1665,10 @@ class GameFaqScraper(Scraper):
         log_debug('GamesFaqScraper::_get_candidates() GameFAQs platform   "{0}"'.format(scraper_platform))
         
         # >> Check if search term page data is in cache. If so it's a cache hit.
-        game_id_from_cache = self._get_from_cache(search_term)
+        candidate_from_cache = self._get_from_cache(search_term)
         
-        if game_id_from_cache is not None and game_id_from_cache > 0:
-            return [{ 'id' : game_id_from_cache, 'display_name' : 'cached', 'order': 1 }]
+        if candidate_from_cache is not None:
+            return candidate_from_cache
 
         game_list = []                        
         game_list = self._get_candidates_from_page(search_term, scraper_platform)
@@ -1555,7 +1724,7 @@ class GameFaqScraper(Scraper):
         
         return game_list
             
-    def _load_metadata(self, candidate, romPath, rom):
+    def _load_metadata(self, candidate, romPath, rom, game_data):
         
         url = 'https://gamefaqs.gamespot.com{}'.format(candidate['id'])
         
@@ -1584,11 +1753,11 @@ class GameFaqScraper(Scraper):
         game_plot = re.findall('Description</h2></div><div class="body game_desc"><div class="desc">(.*?)</div>', page_data)
             
         # --- Set game page data ---
-        self.gamedata['title']      = candidate['game_name'] 
-        self.gamedata['plot']       = text_unescape_and_untag_HTML(game_plot[0]) if game_plot else ''        
-        self.gamedata['genre']      = game_genre[0][3] if game_genre else '' 
-        self.gamedata['year']       = game_release[0][1][-4:] if game_release else ''
-        self.gamedata['developer']  = game_developer
+        game_data['title']      = candidate['game_name'] 
+        game_data['plot']       = text_unescape_and_untag_HTML(game_plot[0]) if game_plot else ''        
+        game_data['genre']      = game_genre[0][3] if game_genre else '' 
+        game_data['year']       = game_release[0][1][-4:] if game_release else ''
+        game_data['developer']  = game_developer
 
         log_debug('GamesFaqScraper::_load_metadata() Collected all metadata from {}'.format(url))
 

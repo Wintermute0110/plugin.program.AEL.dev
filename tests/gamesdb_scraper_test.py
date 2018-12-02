@@ -9,8 +9,8 @@ from resources.utils import *
 from resources.net_IO import *
 from resources.scrap import *
 from resources.scrap_metadata import *
-from resources.assets import *
-        
+from resources.objects import *
+
 def read_file(path):
     with open(path, 'r') as f:
         return f.read()
@@ -108,6 +108,29 @@ class Test_gamesdb_scraper(unittest.TestCase):
 
         # act
         actual = target.scrape('castlevania', fakeRomPath, rom)
+                
+        # assert
+        self.assertTrue(actual)
+        self.assertEqual(u'Castlevania - The Lecarde Chronicles', rom.get_name())
+        print rom
+
+    @patch('resources.scrap.net_get_URL_as_json', side_effect = mocked_gamesdb)
+    def test_scraping_for_metadata_of_game(self, mock_json_downloader):
+        
+        # arrange
+        settings = self.get_test_settings()
+        asset_factory = g_assetFactory
+        
+        launcher = StandardRomLauncher(None, settings, None, None, None, False)
+        launcher.update_platform('Nintendo NES')
+        
+        rom = ROM({'id': 1234})
+        fakeRomPath = FakeFile('/my/nice/roms/castlevania.zip')
+
+        target = TheGamesDbScraper(settings, launcher)
+
+        # act
+        actual = target.scrape_metadata('castlevania', fakeRomPath, rom)
                 
         # assert
         self.assertTrue(actual)

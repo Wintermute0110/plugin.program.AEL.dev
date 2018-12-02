@@ -9,7 +9,7 @@ from resources.utils import *
 from resources.net_IO import *
 from resources.scrap import *
 from resources.scrap_metadata import *
-from resources.assets import *
+from resources.objects import *
         
 def read_file(path):
     with open(path, 'r') as f:
@@ -101,6 +101,28 @@ class Test_mobygames_scraper(unittest.TestCase):
 
         # act
         actual = target.scrape('castlevania', fakeRomPath, rom)
+                
+        # assert
+        self.assertTrue(actual)
+        self.assertEqual(u'Castlevania', rom.get_name())
+        print rom
+
+    @patch('resources.scrap.net_get_URL_as_json', side_effect = mocked_gamesdb)
+    def test_scraping_metadata_for_game(self, mock_json_downloader):
+        
+        # arrange
+        settings = self.get_test_settings()
+
+        launcher = StandardRomLauncher(None, settings, None, None, None, False)
+        launcher.update_platform('Nintendo NES')
+        
+        rom = ROM({'id': 1234})
+        fakeRomPath = FakeFile('/my/nice/roms/castlevania.zip')
+
+        target = MobyGamesScraper(settings, launcher)
+
+        # act
+        actual = target.scrape_metadata('castlevania', fakeRomPath, rom)
                 
         # assert
         self.assertTrue(actual)

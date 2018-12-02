@@ -1744,7 +1744,7 @@ class VirtualCategory(MetaDataItemABC):
 # -------------------------------------------------------------------------------------------------
 class ROM(MetaDataItemABC):
     def __init__(self, rom_data = None):
-        super(ROM, self).__init__(rom_data)
+        super(ROM, self).__init__(None, None, rom_data) #todo
         if self.entity_data is None:
             self.entity_data = {
              'id' : misc_generate_random_SID(),
@@ -3512,6 +3512,9 @@ class StandardRomLauncher(ROMLauncherABC):
         options['TOGGLE_MULTIDISC'] = "Multidisc ROM support (now {0})".format(multidisc_str)
 
         return options
+
+    def get_main_edit_options(self):
+        pass
 
     def supports_parent_clone_roms(self):
         return True
