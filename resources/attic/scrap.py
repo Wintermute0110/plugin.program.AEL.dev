@@ -283,3 +283,124 @@ def getMameScraper(asset_kind, settings):
     # >> Manual (not supported yet, use a null scraper)
     # >> Trailer (not supported yet, use a null scraper)
     return NULL_obj
+
+
+# -------------------------------------------------- #
+# Needs to be divided into separate classes for each actual scraper.
+# Could only inherit OnlineScraper and implement _get_candidates()
+# and _get_candidate()
+# -------------------------------------------------- #
+class OnlineMetadataScraper(Scraper):
+    
+    def __init__(self, scraper_implementation, settings, launcher, fallbackScraper = None): 
+        
+        self.scraper_implementation = scraper_implementation 
+        scraper_settings = ScraperSettings.create_from_settings(settings)
+
+        super(OnlineMetadataScraper, self).__init__(scraper_settings, launcher, True, [], fallbackScraper)
+        
+    def getName(self):
+        return 'Online Metadata scraper using {0}'.format(self.scraper_implementation.name)
+
+    def _get_candidates(self, search_term, romPath, rom):
+        
+        platform = self.launcher.get_platform()
+        results = self.scraper_implementation.get_search(search_term, romPath.getBase_noext(), platform)
+
+        return results
+    
+    def _load_metadata(self, candidate, romPath, rom):
+        self.gamedata = self.scraper_implementation.get_metadata(candidate)
+
+    def _load_assets(self, candidate, romPath, rom):
+        pass
+    
+    def _get_image_url_from_page(self, candidate, asset_info):        
+        return candidate['url']
+
+class OnlineAssetScraper(Scraper):
+    
+    scrap_asset_cached_dic = None
+
+    def __init__(self, scraper_implementation, asset_kind, asset_info, settings, launcher, fallbackScraper = None): 
+
+        self.scraper_implementation = scraper_implementation
+
+        # >> id(object)
+        # >> This is an integer (or long integer) which is guaranteed to be unique and constant for 
+        # >> this object during its lifetime.
+        self.scraper_id = id(scraper_implementation)
+        
+        self.asset_kind = asset_kind
+        self.asset_info = asset_info
+
+        self.asset_directory = launcher.get_asset_path(asset_info)
+        
+        
+        # --- Initialise cache used in OnlineAssetScraper() as a static variable ---
+        # >> This cache is used to store the selected game from the get_search() returned list.
+        # >> The idea is that get_search() is used only once for each asset.
+        if OnlineAssetScraper.scrap_asset_cached_dic is None:
+            OnlineAssetScraper.scrap_asset_cached_dic = {}
+        
+        scraper_settings = ScraperSettings.create_from_settings(settings)
+        super(OnlineAssetScraper, self).__init__(scraper_settings, launcher, False, [asset_info], fallbackScraper)
+    
+    def getName(self):
+        return 'Online assets scraper for \'{0}\' ({1})'.format(self.asset_info.name, self.scraper_implementation.name)
+
+    def _get_candidates(self, search_term, romPath, rom):
+        log_verb('OnlineAssetScraper._get_candidates(): Scraping {0} with {1}. Searching for matching games ...'.format(self.asset_info.name, self.scraper_implementation.name))
+        platform = self.launcher.get_platform()
+
+        # --- Check cache to check if user choose a game previously ---
+        log_debug('_get_candidates() Scraper ID          "{0}"'.format(self.scraper_id))
+        log_debug('_get_candidates() Scraper obj name    "{0}"'.format(self.scraper_implementation.name))
+        log_debug('_get_candidates() search_term          "{0}"'.format(search_term))
+        log_debug('_get_candidates() ROM.getBase_noext() "{0}"'.format(romPath.getBase_noext()))
+        log_debug('_get_candidates() platform            "{0}"'.format(platform))
+        log_debug('_get_candidates() Entries in cache    {0}'.format(len(self.scrap_asset_cached_dic)))
+
+        if self.scraper_id in OnlineAssetScraper.scrap_asset_cached_dic and \
+           OnlineAssetScraper.scrap_asset_cached_dic[self.scraper_id]['ROM_base_noext'] == romPath.getBase_noext() and \
+           OnlineAssetScraper.scrap_asset_cached_dic[self.scraper_id]['platform'] == platform:
+            cached_game = OnlineAssetScraper.scrap_asset_cached_dic[self.scraper_id]['game_dic']
+            log_debug('OnlineAssetScraper._get_candidates() Cache HIT. Using cached game "{0}"'.format(cached_game['display_name']))
+            return [cached_game]
+        
+        log_debug('OnlineAssetScraper._get_candidates() Cache MISS. Calling scraper_implementation.get_search()')
+
+        # --- Call scraper and get a list of games ---
+        search_results = self.scraper_implementation.get_search(search_term, romPath.getBase_noext(), platform)
+        return search_results
+
+    def _loadCandidate(self, candidate, romPath):
+        
+         # --- Cache selected game from get_search() ---
+        OnlineAssetScraper.scrap_asset_cached_dic[self.scraper_id] = {
+            'ROM_base_noext' : romPath.getBase_noext(),
+            'platform' : self.launcher.get_platform(),
+            'game_dic' : candidate
+        }
+
+        log_error('_loadCandidate() Caching selected game "{0}"'.format(candidate['display_name']))
+        log_error('_loadCandidate() Scraper object ID {0} (name {1})'.format(self.scraper_id, self.scraper_implementation.name))
+        
+        self.selected_game = OnlineAssetScraper.scrap_asset_cached_dic[self.scraper_id]['game_dic']
+        
+    def _load_metadata(self, candidate, romPath, rom):
+        pass
+
+    def _load_assets(self, candidate, romPath, rom):
+        
+        asset_file = candidate['file']
+        asset_data = self._new_assetdata_dic()
+        asset_data['name'] = asset_file.getBase()
+        asset_data['url'] = asset_file.getOriginalPath()
+        asset_data['is_online'] = False
+        asset_data['type'] = self.assets_to_scrape[0]
+
+        self.gamedata['assets'].append(asset_data)
+
+    def _get_image_url_from_page(self, candidate, asset_info):        
+        return candidate['url']
