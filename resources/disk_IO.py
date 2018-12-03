@@ -380,12 +380,13 @@ def fs_write_catfile(categories_FN, header_dic, categories, launchers):
     # It is much faster to create a list of string and them join them!
     # See https://waymoot.org/home/python_string/
     str_list = []
-    str_list.append('<?xml version="1.0" encoding="utf-8" standalone="yes"?>\n')
-    str_list.append('<advanced_emulator_launcher version="{0}">\n'.format(AEL_STORAGE_FORMAT))
+    str_list.append('<?xml version="1.0" encoding="utf-8" ?>\n')
+    str_list.append('<advanced_emulator_launcher>\n')
 
     # >> Write a timestamp when file is created. This enables the Virtual Launchers to know if
     # >> it's time for an update.
     str_list.append('<control>\n')
+    str_list.append(text_XML_line('database_version', unicode(header_dic['database_version'])))
     str_list.append(text_XML_line('update_timestamp', unicode(header_dic['update_timestamp'])))
     str_list.append('</control>\n')
 
@@ -507,6 +508,7 @@ def fs_load_catfile(categories_FN, header_dic, categories, launchers):
     __debug_xml_parser = 0
 
     # --- Create data structures ---
+    header_dic['database_version'] = '0.0.0'
     header_dic['update_timestamp'] = 0.0
 
     # --- Parse using cElementTree ---

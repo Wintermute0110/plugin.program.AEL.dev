@@ -42,33 +42,35 @@ KIND_ASSET_LAUNCHER   = 3
 KIND_ASSET_ROM        = 4
 
 # --- Special Cateogry/Launcher IDs ---
-VCATEGORY_ADDONROOT_ID   = 'root_category'
-VCATEGORY_FAVOURITES_ID  = 'vcategory_favourites'
-VCATEGORY_COLLECTIONS_ID = 'vcategory_collections'
-VCATEGORY_RECENT_ID      = 'vcategory_recent'
-VCATEGORY_MOST_PLAYED_ID = 'vcategory_most_played'
-VCATEGORY_TITLE_ID       = 'vcategory_title'
-VCATEGORY_YEARS_ID       = 'vcategory_year'
-VCATEGORY_GENRE_ID       = 'vcategory_genre'
-VCATEGORY_DEVELOPER_ID   = 'vcategory_developer'
-VCATEGORY_NPLAYERS_ID    = 'vcategory_nplayer'
-VCATEGORY_ESRB_ID        = 'vcategory_esrb'
-VCATEGORY_RATING_ID      = 'vcategory_rating'
-VCATEGORY_CATEGORY_ID    = 'vcategory_category'
-VCATEGORY_OFF_SCRAPER_ID = 'vcategory_offline_scraper'
+VCATEGORY_ADDONROOT_ID      = 'root_category'
+VCATEGORY_FAVOURITES_ID     = 'vcategory_favourites'
+VCATEGORY_COLLECTIONS_ID    = 'vcategory_collections'
+VCATEGORY_RECENT_ID         = 'vcategory_recent'
+VCATEGORY_MOST_PLAYED_ID    = 'vcategory_most_played'
+VCATEGORY_TITLE_ID          = 'vcategory_title'
+VCATEGORY_YEARS_ID          = 'vcategory_year'
+VCATEGORY_GENRE_ID          = 'vcategory_genre'
+VCATEGORY_DEVELOPER_ID      = 'vcategory_developer'
+VCATEGORY_NPLAYERS_ID       = 'vcategory_nplayer'
+VCATEGORY_ESRB_ID           = 'vcategory_esrb'
+VCATEGORY_RATING_ID         = 'vcategory_rating'
+VCATEGORY_CATEGORY_ID       = 'vcategory_category'
+VCATEGORY_OFFSCRAPER_AEL_ID = 'vcategory_offline_scraper'
+VCATEGORY_OFFSCRAPER_LB_ID  = 'vcategory_offline_scraper'
 
-VCATEGORY_PCLONES_ID     = 'vcat_pclone'
+# Do we need this?
+VCATEGORY_PCLONES_ID        = 'vcat_pclone'
 
-VLAUNCHER_FAVOURITES_ID  = 'vlauncher_favourites'
-VLAUNCHER_RECENT_ID      = 'vlauncher_recent'
-VLAUNCHER_MOST_PLAYED_ID = 'vlauncher_most_played'
+VLAUNCHER_FAVOURITES_ID     = 'vlauncher_favourites'
+VLAUNCHER_RECENT_ID         = 'vlauncher_recent'
+VLAUNCHER_MOST_PLAYED_ID    = 'vlauncher_most_played'
 
 # --- AEL OBJECT TYPES ---
 OBJ_CATEGORY                 = 'CATEGORY'
 OBJ_CATEGORY_VIRTUAL         = 'VIRTUAL_CATEGORY'
-OBJ_LAUNCHER_VIRTUAL         = 'VIRTUAL_LAUNCHER'
 OBJ_LAUNCHER_STANDALONE      = 'STANDALONE_LAUNCHER'
 OBJ_LAUNCHER_COLLECTION      = 'COLLECTION_LAUNCHER'
+OBJ_LAUNCHER_VIRTUAL         = 'VIRTUAL_LAUNCHER'
 OBJ_LAUNCHER_ROM             = 'ROM_LAUNCHER'
 OBJ_LAUNCHER_RETROPLAYER     = 'RETROPLAYER_LAUNCHER'
 OBJ_LAUNCHER_RETROARCH       = 'RETROARCH_LAUNCHER'
@@ -123,7 +125,7 @@ AEL_PCLONE_STAT_VALUE_NONE           = 'PClone_None'
 # --- ID of the fake ROM parent of all Unknown ROMs ---
 UNKNOWN_ROMS_PARENT_ID = 'Unknown_ROMs_Parent'
 
-# launcher['nointro_display_mode'] values default NOINTRO_DMODE_ALL
+# launcher['display_filter'] default value NOINTRO_DMODE_ALL
 NOINTRO_DMODE_ALL       = 'All ROMs'
 NOINTRO_DMODE_HAVE      = 'Have ROMs'
 NOINTRO_DMODE_HAVE_UNK  = 'Have or Unknown ROMs'
@@ -135,17 +137,14 @@ NOINTRO_DMODE_LIST      = [NOINTRO_DMODE_ALL, NOINTRO_DMODE_HAVE, NOINTRO_DMODE_
                            NOINTRO_DMODE_HAVE_MISS, NOINTRO_DMODE_MISS, NOINTRO_DMODE_MISS_UNK,
                            NOINTRO_DMODE_UNK]
 
-# launcher['launcher_display_mode'] values default LAUNCHER_DMODE_FLAT
+# launcher['display_mode'] default value LAUNCHER_DMODE_FLAT
 LAUNCHER_DMODE_FLAT   = 'Flat mode'
 LAUNCHER_DMODE_PCLONE = 'Parent/Clone mode'
 LAUNCHER_DMODE_1G1R   = '1G1R mode'
 LAUNCHER_DMODE_LIST   = [LAUNCHER_DMODE_FLAT, LAUNCHER_DMODE_PCLONE, LAUNCHER_DMODE_1G1R]
 
 # Mandatory variables in XML:
-# id              string MD5 hash
-# name            string ROM name
-# finished        bool default False
-# nointro_status  string ['Have', 'Miss', 'Added', 'Unknown', 'None'] default 'None'
+# launcher['nointro_status'] default value NOINTRO_STATUS_NONE
 NOINTRO_STATUS_HAVE    = 'Have'
 NOINTRO_STATUS_MISS    = 'Miss'
 NOINTRO_STATUS_UNKNOWN = 'Unknown'
