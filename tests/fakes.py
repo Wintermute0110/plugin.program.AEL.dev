@@ -62,6 +62,15 @@ class FakeFile(KodiFileName):
     def pjoin(self, *args):
         return self
 
+    def switchExtension(self, targetExt):
+        switched_fake = super(FakeFile, self).switchExtension(targetExt)
+        switched_fake.setFakeContent(self.fakeContent)
+        return switched_fake
+
+    #backwards compatiblity
+    def __create__(self, path):
+        return FakeFile(path)
+
 class FakeScraper(Scraper):
     
     def __init__(self, settings, launcher, rom_data_to_apply = None):

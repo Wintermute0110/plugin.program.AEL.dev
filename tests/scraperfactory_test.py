@@ -7,9 +7,9 @@ import xml.etree.ElementTree as ET
 
 from resources.utils import *
 from resources.scrap import *
-from resources.assets import *
+from resources.objects import *
 
-class Test_scrapertests(unittest.TestCase):
+class Test_scraperfactorytests(unittest.TestCase):
     
     ROOT_DIR = ''
     TEST_DIR = ''
@@ -40,13 +40,14 @@ class Test_scrapertests(unittest.TestCase):
     def test_with_no_actual_scraperpaths_set_only_the_cleantitlescraper_will_be_loaded(self):
         
         # arrange
-        addon_dir = FileNameFactory.create('')
+        addon_dir = FakeFile('')
 
         settings = {}
         settings['scan_metadata_policy'] = 0
         settings['scan_asset_policy'] = 0
         settings['metadata_scraper_mode'] = 0
         settings['scan_clean_tags'] = True
+        settings['escape_romfile'] = False
 
         launcher = StandardRomLauncher(None, settings, None, None, None, False)
         
@@ -65,7 +66,7 @@ class Test_scrapertests(unittest.TestCase):
     def test_with_one_scraperpaths_set_two_scrapers_will_be_loaded_and_one_is_a_localfiles_scraper(self):
         
         # arrange
-        addon_dir = FileNameFactory.create('')
+        addon_dir = FakeFile('')
 
         settings = {}
         settings['scan_metadata_policy'] = 0
@@ -73,6 +74,7 @@ class Test_scrapertests(unittest.TestCase):
         settings['metadata_scraper_mode'] = 0
         settings['asset_scraper_mode'] = 0
         settings['scan_clean_tags'] = True
+        settings['escape_romfile'] = False
 
         settings['scraper_title'] = 1 # TheGamesDB
         
@@ -96,7 +98,7 @@ class Test_scrapertests(unittest.TestCase):
     def test_when_using_online_metadata_the_correct_scraper_will_be_loaded(self):
         
         # arrange
-        addon_dir = FileNameFactory.create('')
+        addon_dir = FakeFile('')
 
         settings = {}
         settings['scan_metadata_policy'] = 3 # OnlineScraper only
@@ -105,6 +107,7 @@ class Test_scrapertests(unittest.TestCase):
         settings['scan_clean_tags'] = True
         settings['scan_ignore_scrap_title'] = False
         settings['scraper_metadata'] = 0 # NullScraper
+        settings['escape_romfile'] = False
 
         launcher = StandardRomLauncher(None, settings, None, None, None, False)
         launcher.update_platform('nintendo')
@@ -134,6 +137,7 @@ class Test_scrapertests(unittest.TestCase):
         settings['scan_clean_tags'] = True
         settings['scan_ignore_scrap_title'] = False
         settings['scraper_metadata'] = 0 # NullScraper
+        settings['escape_romfile'] = False
 
         launcher = StandardRomLauncher(None, settings, None, None, None, False)
         launcher.update_platform('dummy')
@@ -157,10 +161,11 @@ class Test_scrapertests(unittest.TestCase):
         settings = {}
         settings['scan_clean_tags'] = True
         settings['metadata_scraper_mode'] = 0
+        settings['escape_romfile'] = False
         
         launcher = StandardRomLauncher(None, settings, None, None, None, False)
         
-        rom = Rom()
+        rom = ROM({'id': 1234})
         romPath = FileNameFactory.create('/don/el_juan [DUMMY].zip')
 
         target = CleanTitleScraper(settings, launcher)
@@ -185,11 +190,12 @@ class Test_scrapertests(unittest.TestCase):
         settings = {}
         settings['scan_clean_tags'] = True
         settings['metadata_scraper_mode'] = 0
+        settings['escape_romfile'] = False
         
         launcher = StandardRomLauncher(None, settings, None, None, None, False)
         launcher.update_platform('Sega 32X')
         
-        rom = Rom()
+        rom = ROM({'id': 1234})
         romPath = FileNameFactory.create('/don/el_juan [DUMMY].zip')
 
         target = NfoScraper(settings, launcher)
@@ -219,11 +225,12 @@ class Test_scrapertests(unittest.TestCase):
         settings['scan_clean_tags'] = True
         settings['metadata_scraper_mode'] = 0
         settings['scan_ignore_scrap_title'] = False
+        settings['escape_romfile'] = False
 
         launcher = StandardRomLauncher(None, settings, None, None, None, False)
         launcher.update_platform('Sega 32X')
-
-        rom = Rom()
+        
+        rom = ROM({'id': 1234})
         romPath = FileNameFactory.create('/roms/Pitfall.zip')
 
         target = OnlineMetadataScraper(scraper_obj, settings, launcher)
@@ -257,12 +264,13 @@ class Test_scrapertests(unittest.TestCase):
         settings['asset_scraper_mode'] = 0
         settings['metadata_scraper_mode'] = 0
         settings['scan_ignore_scrap_title'] = 0
+        settings['escape_romfile'] = False
         
         launcher = StandardRomLauncher(None, settings, None, None, None, False)
         launcher.update_platform('Sega 32X')
         launcher.set_custom_attribute('path_title', '/fake/title/')
-
-        rom = Rom()
+        
+        rom = ROM({'id': 1234})
 
         romPath = FileNameFactory.create('/roms/Pitfall.zip')
         asset_kind = ASSET_TITLE
@@ -297,16 +305,17 @@ class Test_scrapertests(unittest.TestCase):
         settings['asset_scraper_mode'] = 0
         settings['metadata_scraper_mode'] = 0
         settings['scan_ignore_scrap_title'] = 0
+        settings['escape_romfile'] = False
 
         launcher = StandardRomLauncher(None, settings, None, None, None, False)
         launcher.update_platform('Sega 32X')
         launcher.set_custom_attribute('path_title','/fake/title/')
-
-        rom = Rom()
+        
+        rom = ROM({'id': 1234})
 
         romPath = FileNameFactory.create('/roms/Pitfall.zip')
-        asset_kind = ASSET_TITLE
-        asset_info = assets_get_info_scheme(asset_kind)
+        asset_kind = ASSET_TITLE_ID
+        asset_info = g_assetFactory.get_asset_info(asset_kind)
         
         target = OnlineAssetScraper(scraper_obj, asset_kind, asset_info, settings, launcher)
         
@@ -341,15 +350,16 @@ class Test_scrapertests(unittest.TestCase):
         settings['asset_scraper_mode'] = 0
         settings['metadata_scraper_mode'] = 0
         settings['scan_ignore_scrap_title'] = 0
+        settings['escape_romfile'] = False
         
         launcher = StandardRomLauncher(None, settings, None, None, None, False)
         launcher.update_platform('Sega 32X')
         launcher.set_custom_attribute('path_title','/fake/title/')
         
-        rom = Rom()
+        rom = ROM({'id': 1234})
         romPath = FakeFile('/roms/Pitfall.zip')
-        asset_kind = ASSET_TITLE
-        asset_info = assets_get_info_scheme(asset_kind)
+        asset_kind = ASSET_TITLE_ID
+        asset_info = g_assetFactory.get_asset_info(asset_kind)
 
         target = LocalAssetScraper(asset_kind, asset_info, settings, launcher)
         expected = '/fake/title/pitfall.jpg'

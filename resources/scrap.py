@@ -20,6 +20,7 @@ from __future__ import division
 import abc
 import datetime
 import time
+import urllib
 
 # --- AEL packages ---
 from utils import *
@@ -264,9 +265,7 @@ class Scraper(object):
         # Update cache so future searches will automatically select this candidate for this particular search term
         self._update_cache(search_term, candidate)
         
-        game_data = self._new_gamedata_dic()
-        self._load_metadata(candidate, rom_path, rom, game_data)
-        
+        game_data = self._load_metadata(candidate, rom_path, rom)        
         scraper_applied = self._apply_candidate_on_metadata(rom_path, rom, game_data)
                 
         if not scraper_applied and self.fallbackScraper is not None:
@@ -340,8 +339,8 @@ class Scraper(object):
         return []
             
     @abc.abstractmethod
-    def _load_metadata(self, candidate, romPath, rom, game_data):        
-        pass
+    def _load_metadata(self, candidate, romPath, rom):        
+        return self._new_gamedata_dic()
     
     @abc.abstractmethod
     def _load_assets(self, candidate, romPath, rom):        
@@ -625,7 +624,7 @@ class Scraper(object):
 class NullScraper(Scraper):
 
     def __init__(self):
-        super(NullScraper, self).__init__(None, None, False, None)
+        super(NullScraper, self).__init__(None, None)
         
     def scrape(self, search_term, romPath, rom):
         return True
@@ -636,11 +635,14 @@ class NullScraper(Scraper):
     def _get_candidates(self, search_term, romPath, rom):
         return []
 
-    def _load_metadata(self, candidate, romPath, rom):        
-        pass
+    def _load_metadata(self, candidate, romPath, rom):
+        return self._new_gamedata_dic()
     
     def _load_assets(self, candidate, romPath, rom):
         pass
+    
+    def _get_image_url_from_page(self, candidate, asset_info):        
+        return ''
 
 class CleanTitleScraper(Scraper):
 
@@ -650,23 +652,26 @@ class CleanTitleScraper(Scraper):
         scraper_settings.metadata_scraping_mode = 1
         scraper_settings.ignore_scraped_title = False
 
-        super(CleanTitleScraper, self).__init__(scraper_settings, launcher, True, [])
+        super(CleanTitleScraper, self).__init__(scraper_settings, launcher)
 
     def getName(self):
         return 'Clean title only scraper'
 
     def _get_candidates(self, search_term, romPath, rom):
         games = []
-        games.append('dummy')
+        games.append({ 'id' : 'DUMMY', 'display_name' : 'CleanTitleDummy', 'order': 1 })
         return games
     
     def _load_metadata(self, candidate, romPath, rom):        
-        if self.launcher.get_launcher_type() == LAUNCHER_STEAM:
+        
+        game_data = self._new_gamedata_dic()
+        if self.launcher.get_launcher_type() == OBJ_LAUNCHER_STEAM:
             log_debug('CleanTitleScraper: Detected Steam launcher, leaving rom name untouched.')
-            return
+            return game_data
 
-        log_debug('Only cleaning ROM name.')
-        self.gamedata['title'] = text_format_ROM_title(romPath.getBase_noext(), self.scraper_settings.scan_clean_tags)
+        log_debug('Only cleaning ROM name. Original: {}'.format(romPath.getBaseNoExt()))
+        game_data['title'] = text_format_ROM_title(romPath.getBaseNoExt(), self.scraper_settings.scan_clean_tags)
+        return game_data
 
     def _load_assets(self, candidate, romPath, rom):
         pass
@@ -681,7 +686,7 @@ class NfoScraper(Scraper):
         scraper_settings = ScraperSettings.create_from_settings(settings)
         scraper_settings.metadata_scraping_mode = 1
 
-        super(NfoScraper, self).__init__(scraper_settings, launcher, True, [], fallbackScraper)
+        super(NfoScraper, self).__init__(scraper_settings, launcher, fallbackScraper)
 
     def getName(self):
         return 'NFO scraper'
@@ -692,7 +697,7 @@ class NfoScraper(Scraper):
         games = []
 
         if NFO_file.exists():
-            games.append(NFO_file)
+            games.append({ 'id' : NFO_file.getPath(), 'display_name' : NFO_file.getBase(), 'order': 1 , 'file': NFO_file })
             log_debug('NFO file found "{0}"'.format(NFO_file.getOriginalPath()))
         else:
             log_debug('NFO file NOT found "{0}"'.format(NFO_file.getOriginalPath()))
@@ -704,7 +709,8 @@ class NfoScraper(Scraper):
         log_debug('Reading NFO file')
         # NOTE <platform> is chosen by AEL, never read from NFO files. Indeed, platform
         #      is a Launcher property, not a ROM property.
-        self.gamedata = fs_import_ROM_NFO_file_scanner(candidate)
+        game_data = fs_import_ROM_NFO_file_scanner(candidate['file'])
+        return game_data
 
     def _load_assets(self, candidate, romPath, rom):
         pass
@@ -947,7 +953,7 @@ class TheGamesDbScraper(Scraper):
 
         return game_list
         
-    def _load_metadata(self, candidate, romPath, rom, game_data):
+    def _load_metadata(self, candidate, romPath, rom):
 
         url = 'https://api.thegamesdb.net/Games/ByGameID?apikey={}&id={}&fields=players%2Cpublishers%2Cgenres%2Coverview%2Crating%2Cplatform%2Ccoop%2Cyoutube'.format(
                 self.api_key, candidate['id'])
@@ -955,6 +961,8 @@ class TheGamesDbScraper(Scraper):
         log_debug('Get metadata from {}'.format(url))
         page_data = net_get_URL_as_json(url)
         online_data = page_data['data']['games'][0]
+        
+        game_data = self._new_gamedata_dic()
 
         # --- Parse game page data ---
         game_data['title']      = online_data['game_title'] if 'game_title' in online_data else '' 
@@ -964,6 +972,8 @@ class TheGamesDbScraper(Scraper):
         game_data['genre']      = self._get_genres(online_data['genres']) if 'genres' in online_data else '' 
         game_data['developer']  = self._get_developers(online_data['developers']) if 'developers' in online_data else '' 
         game_data['year']       = online_data['release_date'][:4] if 'release_date' in online_data and online_data['release_date'] is not None and online_data['release_date'] != '' else ''
+        
+        return game_data
 
     def _load_assets(self, candidate, romPath, rom):
         
@@ -1209,7 +1219,7 @@ class MobyGamesScraper(Scraper):
 
         return game_list
 
-    def _load_metadata(self, candidate, romPath, rom, game_data):
+    def _load_metadata(self, candidate, romPath, rom):
 
         url = 'https://api.mobygames.com/v1/games/{}?api_key={}'.format(candidate['id'], self.api_key)
                 
@@ -1223,11 +1233,15 @@ class MobyGamesScraper(Scraper):
         platform = self.launcher.get_platform()
         scraper_platform = AEL_platform_to_MobyGames(platform)
         
+        game_data = self._new_gamedata_dic()
+
         # --- Parse game page data ---
         game_data['title']      = online_data['title'] if 'title' in online_data else '' 
         game_data['plot']       = online_data['description'] if 'description' in online_data else '' 
         game_data['genre']      = self._get_genres(online_data['genres']) if 'genres' in online_data else '' 
         game_data['year']       = self._get_year_by_platform(online_data['platforms'], scraper_platform)
+
+        return game_data
 
     def _get_genres(self, genre_data):
 
@@ -1353,6 +1367,8 @@ class MobyGamesScraper(Scraper):
 # Scraper implementation for GameFaq website
 #     
 #            
+
+
 class GameFaqScraper(Scraper):
          
     def __init__(self, settings, launcher, fallbackScraper = None):
@@ -1434,7 +1450,7 @@ class GameFaqScraper(Scraper):
         
         return game_list
             
-    def _load_metadata(self, candidate, romPath, rom, game_data):
+    def _load_metadata(self, candidate, romPath, rom):
         
         url = 'https://gamefaqs.gamespot.com{}'.format(candidate['id'])
         
@@ -1461,6 +1477,8 @@ class GameFaqScraper(Scraper):
             game_developer = p.sub('', game_studio[0][1])
 
         game_plot = re.findall('Description</h2></div><div class="body game_desc"><div class="desc">(.*?)</div>', page_data)
+        
+        game_data = self._new_gamedata_dic()
             
         # --- Set game page data ---
         game_data['title']      = candidate['game_name'] 
@@ -1470,6 +1488,7 @@ class GameFaqScraper(Scraper):
         game_data['developer']  = game_developer
 
         log_debug('GamesFaqScraper::_load_metadata() Collected all metadata from {}'.format(url))
+        return game_data
 
         
     def _load_assets(self, candidate, romPath, rom):
@@ -1575,3 +1594,63 @@ class GameFaqScraper(Scraper):
             return [ASSET_BOXFRONT_ID, ASSET_BOXBACK_ID]
 
         return [ASSET_SNAP_ID]
+
+    
+class ArcadeDbScraper(Scraper): 
+
+    def __init__(self, settings, launcher, fallbackScraper = None):
+
+        scraper_settings = ScraperSettings.create_from_settings(settings)
+
+        super(ArcadeDbScraper, self).__init__(scraper_settings, launcher, fallbackScraper)
+        
+    def getName(self):
+        return 'ArcadeDB'
+    
+    def _get_candidates(self, search_term, romPath, rom):
+        
+        platform = self.launcher.get_platform()
+        #scraper_platform = AEL_platform_to_TheGamesDB(platform)
+        
+        log_debug('ArcadeDbScraper::_get_candidates() search_term         "{0}"'.format(search_term))
+        log_debug('ArcadeDbScraper::_get_candidates() rom_base_noext      "{0}"'.format(self.launcher.get_roms_base()))
+        log_debug('ArcadeDbScraper::_get_candidates() AEL platform        "{0}"'.format(platform))
+        log_debug('ArcadeDbScraper::_get_candidates() TheGamesDB platform "{0}"'.format(scraper_platform))
+        
+        # >> Check if search term page data is in cache. If so it's a cache hit.
+        candidate_from_cache = self._get_from_cache(search_term)
+        
+        if candidate_from_cache is not None:
+            log_debug('Using a cached candidate')
+            return [candidate_from_cache]
+
+        game_list = []
+        # >> quote_plus() will convert the spaces into '+'. Note that quote_plus() requires an
+        # >> UTF-8 encoded string and does not work with Unicode strings.
+        # added encoding 
+        # https://stackoverflow.com/questions/22415345/using-pythons-urllib-quote-plus-on-utf-8-strings-with-safe-arguments
+            
+        search_string_encoded = urllib.quote_plus(search_term.encode('utf8'))
+        url = 'https://api.thegamesdb.net/Games/ByGameName?apikey={}&name={}'.format(self.api_key, search_string_encoded)
+            
+        game_list = self._read_games_from_url(url, search_term, scraper_platform)
+        
+        if len(game_list) == 0:
+            altered_search_term = self._cleanup_searchterm(search_term, romPath, rom)
+            if altered_search_term != search_term:
+                log_debug('TheGamesDbScraper::_get_candidates() No hits, trying again with altered search terms: {}'.format(altered_search_term))
+                return self._get_candidates(altered_search_term, romPath, rom)
+
+        # >> Order list based on score
+        game_list.sort(key = lambda result: result['order'], reverse = True)
+
+        return game_list
+        
+    def _load_metadata(self, candidate, romPath, rom):
+        pass
+
+    def _load_assets(self, candidate, romPath, rom):
+        pass
+
+    def _get_image_url_from_page(self, candidate, asset_info):        
+        return candidate['url']
