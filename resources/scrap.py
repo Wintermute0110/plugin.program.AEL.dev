@@ -349,6 +349,9 @@ class Scraper(object):
     
     def _apply_candidate_on_metadata(self, rom_path, rom, candidate_data):
 
+        if candidate_data is None:
+            return False
+
         # --- Put metadata into ROM dictionary ---
         if self.scraper_settings.ignore_scraped_title:
             rom_name = text_format_ROM_title(rom.getBase_noext(), self.scraper_settings.scan_clean_tags)
@@ -734,7 +737,7 @@ class LocalAssetScraper(Scraper):
         # >> Files in the cache can be searched with misc_search_file_cache()
         all_assets = g_assetFactory.get_all()
         for supported_asset in all_assets:
-            asset_path = launcher.get_asset_path(asset_info)
+            asset_path = launcher.get_asset_path(supported_asset)
             if asset_path:
                 misc_add_file_cache(asset_path)
 
@@ -749,8 +752,8 @@ class LocalAssetScraper(Scraper):
         games.append({ 'id' : search_term, 'display_name' : 'LocalAssetsDummy', 'order': 1 })
         return games
 
-    def _load_metadata(self, candidate, romPath, rom):
-        pass
+    def _load_metadata(self, candidate, romPath, rom):      
+        return None
 
     def _load_assets(self, candidate, romPath, rom):
         

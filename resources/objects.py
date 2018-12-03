@@ -508,12 +508,12 @@ ASSET_INFO_KEY_DICT = {
 class AssetInfoFactory(object):
         
     def get_all(self):
-        return list(asset_infos.values())
+        return list(ASSET_INFO_DICT.values())
 
     def get_asset_kinds_for_roms(self):
         rom_asset_kinds = []
         for rom_asset_kind in ROM_ASSET_LIST:
-            rom_asset_kinds.append(asset_infos[rom_asset_kind])
+            rom_asset_kinds.append(ASSET_INFO_DICT[rom_asset_kind])
 
         return rom_asset_kinds
 
