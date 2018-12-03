@@ -2140,9 +2140,13 @@ def kodi_print_texture_info(database_path_str):
 # This if useful to work around bugs in Kodi core.
 # -------------------------------------------------------------------------------------------------
 def kodi_get_Kodi_major_version():
-    rpc_dic = kodi_jsonrpc_query('Application.GetProperties', '{ "properties" : ["version"] }')
+    try:
+        rpc_dic = kodi_jsonrpc_query('Application.GetProperties', '{ "properties" : ["version"] }')
+        return int(rpc_dic['version']['major'])
+    except:
+        # default fallback
+        return 17
 
-    return int(rpc_dic['version']['major'])
 kodi_running_version = kodi_get_Kodi_major_version()
 
 # --- Version constants. Minimum required version is Kodi Krypton ---

@@ -1,15 +1,10 @@
 from abc import ABCMeta, abstractmethod
 
-from resources.launchers import *
-from resources.romsets import *
-from resources.executors import *
-from resources.scrapers import *
+from resources.objects import *
+from resources.utils import *
+from resources.scrap import *
 
-#from ressources.utils import *
-from resources.utils_kodi import *
-from resources.filename import *
-
-class FakeRomSetRepository(RomSetRepository):
+class FakeRomSetRepository(ROMSetRepository):
     
     def __init__(self, roms):
         self.roms = roms

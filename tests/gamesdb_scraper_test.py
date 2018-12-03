@@ -6,12 +6,10 @@ from fakes import *
 import xml.etree.ElementTree as ET
 
 from resources.utils import *
-from resources.utils_kodi import *
 from resources.net_IO import *
 from resources.scrap import *
 from resources.scrap_metadata import *
 from resources.assets import *
-from resources.filename import *
         
 def read_file(path):
     with open(path, 'r') as f:
@@ -29,7 +27,6 @@ class Test_gamesdb_scraper(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls):
-        set_use_print(True)
         set_log_level(LOG_DEBUG)
         
         cls.TEST_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -84,14 +81,14 @@ class Test_gamesdb_scraper(unittest.TestCase):
         settings['scan_ignore_scrap_title'] = False
         settings['scraper_metadata'] = 0 # NullScraper
         settings['thegamesdb_apikey'] = 'abc123'
+        settings['escape_romfile'] = False
 
         return settings
 
     # add actual gamesdb apikey above and comment out patch attributes to do live tests
-    @patch('resources.scrapers.net_get_URL_as_json', side_effect = mocked_gamesdb)
-    @patch('resources.scrapers.net_download_img')
-    @patch('resources.scrapers.kodi_update_image_cache')
-    def test_scraping_for_game(self, mock_cache, mock_img_downloader, mock_json_downloader):
+    @patch('resources.scrap.net_get_URL_as_json', side_effect = mocked_gamesdb)
+    @patch('resources.scrap.net_download_img')
+    def test_scraping_for_game(self, mock_img_downloader, mock_json_downloader):
 
         # arrange
         settings = self.get_test_settings()

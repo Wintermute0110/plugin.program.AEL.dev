@@ -8,7 +8,7 @@ import xbmcaddon
 
 import resources.main as main
 from resources.constants import *
-from resources.utils_kodi import *
+from resources.utils import *
 
 class Test_maintests(unittest.TestCase):
     
@@ -18,7 +18,6 @@ class Test_maintests(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls):
-        set_use_print(True)
         set_log_level(LOG_DEBUG)
         
         cls.TEST_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -65,7 +64,7 @@ class Test_maintests(unittest.TestCase):
         return '1'
            
     @patch('resources.main.sys')
-    @patch('resources.filename.FileName.readXml')
+    @patch('resources.utils.FileName.readXml')
     @patch('resources.main.__addon_obj__.getSetting', side_effect = mocked_settings)       
     def test_when_running_the_plugin_no_errors_occur(self, mock_addon, mock_xmlreader, mock_sys):
         
@@ -82,8 +81,8 @@ class Test_maintests(unittest.TestCase):
         # assert
         pass
     
-    @patch('resources.filename.FileName.writeXml')        
-    @patch('resources.filename.FileName.readXml')
+    @patch('resources.utils.FileName.writeXml')        
+    @patch('resources.utils.FileName.readXml')
     @patch('resources.main.xbmc.Keyboard.getText', autospec=True)
     @patch('resources.main.__addon_obj__.getSetting', side_effect = mocked_settings)
     def test_when_adding_new_category_the_correct_data_gets_stored(self, mock_addon, mock_keyboard,mock_xmlreader,mock_xmlwriter):
@@ -111,7 +110,7 @@ class Test_maintests(unittest.TestCase):
         self.assertIn(expected, actual)
             
     @patch('resources.main.__addon_obj__.getSetting', side_effect = mocked_settings)
-    @patch('resources.filename.FileName.readXml')
+    @patch('resources.utils.FileName.readXml')
     def test_when_rendering_roms_it_will_return_a_proper_result(self, mock_xmlreader, mock_addon):
         
         # arrange
@@ -128,7 +127,7 @@ class Test_maintests(unittest.TestCase):
         target._command_render_roms(None, launcherID)
      
     @patch('resources.main.__addon_obj__.getSetting', side_effect = mocked_settings)
-    @patch('resources.filename.FileName.readXml')
+    @patch('resources.utils.FileName.readXml')
     def test_rendering_categories(self, mock_xmlreader, mock_addon):
         
         # arrange

@@ -6,11 +6,8 @@ from fakes import *
 import xml.etree.ElementTree as ET
 
 from resources.utils import *
-from resources.utils_kodi import *
-from resources.scrapers import *
 from resources.scrap import *
 from resources.assets import *
-from resources.filename import *
 
 class Test_scrapertests(unittest.TestCase):
     
@@ -20,7 +17,6 @@ class Test_scrapertests(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls):
-        set_use_print(True)
         set_log_level(LOG_DEBUG)
         
         cls.TEST_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -100,7 +96,6 @@ class Test_scrapertests(unittest.TestCase):
     def test_when_using_online_metadata_the_correct_scraper_will_be_loaded(self):
         
         # arrange
-        set_use_print(True)
         addon_dir = FileNameFactory.create('')
 
         settings = {}
@@ -181,7 +176,7 @@ class Test_scrapertests(unittest.TestCase):
 
         self.assertEqual(expected, rom.get_name())
         
-    @patch('resources.filename.KodiFileName.readAllUnicode')
+    @patch('resources.utils.KodiFileName.readAllUnicode')
     def test_when_scraping_with_nfoscraper_it_will_give_the_correct_result(self, mock_filename):
 
          # arrange
@@ -211,7 +206,7 @@ class Test_scrapertests(unittest.TestCase):
         actual = rom.get_name()
         self.assertEqual(actual, expected)
      
-    @patch('resources.filename.KodiFileName.readXml')
+    @patch('resources.utils.KodiFileName.readXml')
     def test_when_scraping_online_metadata_it_will_give_the_correct_result(self, mock_xmlreader):
         
         # arrange
@@ -245,12 +240,11 @@ class Test_scrapertests(unittest.TestCase):
         actual = rom.get_custom_attribute('m_name')
         self.assertEqual(actual, expected)
         
-    @patch('resources.scrapers.kodi_update_image_cache')
-    @patch('resources.scrapers.net_download_img')
+    @patch('resources.scrap.net_download_img')
     @patch('resources.scrap_asset.net_get_URL_oneline')
     @patch('resources.scrap_common.net_get_URL_oneline')
     @unittest.skip('GamesDB deprecated version')
-    def test_when_scraping_online_assets_it_will_give_the_correct_result(self, mock_search, mock_singlehit, mock_imgdownload, mock_cache):
+    def test_when_scraping_online_assets_it_will_give_the_correct_result(self, mock_search, mock_singlehit, mock_imgdownload):
         
         # arrange
         mock_search.return_value = self.read_file(self.TEST_ASSETS_DIR + "\\gamesdb_search.xml").replace('\r\n', '').replace('\n', '')
@@ -290,10 +284,9 @@ class Test_scrapertests(unittest.TestCase):
 
         self.assertEqual(actual, expected)
     
-    @patch('resources.scrapers.kodi_update_image_cache')
-    @patch('resources.scrapers.net_download_img')
+    @patch('resources.scrap.net_download_img')
     @unittest.skip('Actual HTTP call')
-    def test_when_scraping_online_assets_for_a_cached_result_it_will_load_that_one(self, mock_imgdownload, mock_cache):
+    def test_when_scraping_online_assets_for_a_cached_result_it_will_load_that_one(self, mock_imgdownload):
         
         # arrange
       
@@ -337,9 +330,8 @@ class Test_scrapertests(unittest.TestCase):
         self.assertTrue(actualResult)
         mock_imgdownload.assert_called_with(expectedUrl, ANY)
     
-    @patch('resources.filename.KodiFileName.scanFilesInPathAsFileNameObjects')
-    @patch('resources.scrapers.kodi_update_image_cache')
-    def test_when_scraping_local_assets_it_will_give_the_correct_result(self, mock_cache, mock_filescan):
+    @patch('resources.utils.KodiFileName.scanFilesInPathAsFileNameObjects')
+    def test_when_scraping_local_assets_it_will_give_the_correct_result(self, mock_filescan):
         
         # arrange
         mock_filescan.return_value = [FakeFile('x.jpg'),FakeFile('y.jpg'), FakeFile('pitfall.jpg'), FakeFile('donkeykong.jpg')]

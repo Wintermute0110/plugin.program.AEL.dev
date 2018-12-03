@@ -22,11 +22,9 @@ if __name__ == "__main__":
 host = sys.argv[1]
 path = sys.argv[2]
     
-from gamestream import *
+from objects import *
 from utils import *
-from utils_kodi import *
 
-set_use_print(True)
 set_log_level(LOG_INFO)
 
 certs_path = StandardFileName(path)

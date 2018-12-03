@@ -5,15 +5,16 @@ from fakes import *
 
 import os
 
-from resources.utils_cryptography import *
 from resources.utils import *
 
-
+# pip install pyopenssl
 from OpenSSL import crypto, SSL
 
 from cryptography.hazmat.backends import default_backend
 from cryptography.hazmat.primitives import serialization
 
+# pip install pycrypto
+# http://aka.ms/vcpython27
 from Crypto.PublicKey import RSA 
 from Crypto.Signature import PKCS1_v1_5 
 from Crypto.Hash import SHA256 
@@ -22,7 +23,6 @@ class Test_cryptography_test(unittest.TestCase):
     
     @classmethod
     def setUpClass(cls):
-        set_use_print(True)
         set_log_level(LOG_DEBUG)
         
     def test_get_public_key_from_certificate(self):
