@@ -23,6 +23,7 @@ import time
 
 # --- AEL packages ---
 from utils import *
+from objects import *
 
 # -------------------------------------------------------------------------------------------------
 # We support online an offline scrapers.
@@ -476,6 +477,7 @@ class Scraper(object):
     def __init__(self, scraper_settings, launcher, fallbackScraper = None):
         
         self.cache = {}
+        self.assets_cache = {}
         
         self.scraper_settings = scraper_settings
         self.launcher = launcher
@@ -514,6 +516,8 @@ class Scraper(object):
             # >> Open progress dialog again
             # ?? todo again
 
+        
+            
         candidate = candidates[selected_candidate]
 
         # Update cache so future searches will automatically select this candidate for this particular search term
@@ -532,10 +536,10 @@ class Scraper(object):
 
     def scrape_asset(self, search_term, asset_info_to_scrape, rom_path, rom):
         
-        results = self._get_candidates(search_term, rom_path, rom)
-        log_debug('Scraper \'{0}\' found {1} result/s'.format(self.getName(), len(results)))
+        candidates = self._get_candidates(search_term, rom_path, rom)
+        log_debug('Scraper \'{0}\' found {1} result/s'.format(self.getName(), len(candidates)))
 
-        if not results or len(results) == 0:
+        if not candidates or len(candidates) == 0:
             log_verb('Scraper \'{0}\' found no games after searching.'.format(self.getName()))
             
             if self.fallbackScraper:
@@ -544,15 +548,15 @@ class Scraper(object):
             return False
         
         selected_candidate = 0
-        if len(results) > 1 and self.scraper_settings.metadata_scraping_mode == 0:
-            log_debug('Metadata semi-automatic scraping')
+        if len(candidates) > 1 and self.scraper_settings.asset_scraping_mode == 0:
+            log_debug('Asset semi-automatic scraping')
             # >> Close progress dialog (and check it was not canceled)
             # ?? todo again
 
             # >> Display corresponding game list found so user choses
             dialog = xbmcgui.Dialog()
             rom_name_list = []
-            for game in results: 
+            for game in candidates: 
                 rom_name_list.append(game['display_name'])
 
             selected_candidate = dialog.select('Select game for ROM {0}'.format(rom_path.getBase_noext()), rom_name_list)
@@ -560,9 +564,23 @@ class Scraper(object):
 
             # >> Open progress dialog again
             # ?? todo again
+
+        candidate = candidates[selected_candidate]
+
+        # Update cache so future searches will automatically select this candidate for this particular search term
+        self._update_cache(search_term, candidate)
         
-        self._load_assets(candidate, rom_path, rom)                
-        scraper_applied = self._apply_candidate_on_asset(rom_path, rom, asset_info_to_scrape)
+        found_assets = self._get_from_assets_cache(candidate['id'])
+        # Cache hit?
+        if found_assets is None:
+            log_debug('No assets matching candidate id in cache. Scraping source for assets.')
+            found_assets = self._load_assets(candidate, rom_path, rom)
+            # Update assets cache so future searches will automatically select these found assets for this particular search term
+            self._update_assets_cache(candidate['id'], found_assets)
+        else:
+            log_debug('Found cached asset candidates.')
+            
+        scraper_applied = self._apply_candidate_on_asset(rom_path, rom, asset_info_to_scrape, found_assets)
                 
         if not scraper_applied and self.fallbackScraper is not None:
             log_verb('Scraper \'{0}\' did not get the correct data. Using fallback scraping method: {1}.'.format(self.getName(), self.fallbackScraper.getName()))
@@ -661,18 +679,17 @@ class Scraper(object):
 
         return True
     
-    def apply_candidate_on_asset(self, rom_path, rom, asset_info, candidate_data):
+    def _apply_candidate_on_asset(self, rom_path, rom, asset_info, found_assets):
    
-        image_list = candidate_data['assets']    
-        if not image_list:
+        if not found_assets:
             log_debug('{0} scraper has not collected images.'.format(self.getName()))
             return False
                 
         asset_directory     = self.launcher.get_asset_path(asset_info)
         asset_path_noext_FN = assets_get_path_noext_DIR(asset_info, asset_directory, rom_path)
-        log_debug('Scraper.apply_candidate_on_asset() asset_path_noext "{0}"'.format(asset_path_noext_FN.getOriginalPath()))
+        log_debug('Scraper.apply_candidate_on_asset() asset_path_noext "{0}"'.format(asset_path_noext_FN.getPath()))
 
-        specific_images_list = [image_entry for image_entry in image_list if image_entry['type'].kind == asset_info.kind]
+        specific_images_list = [image_entry for image_entry in found_assets if image_entry['type'].id == asset_info.id]
 
         log_debug('{} scraper has collected {} assets of type {}.'.format(self.getName(), len(specific_images_list), asset_info.name))
         if len(specific_images_list) == 0:
@@ -740,7 +757,6 @@ class Scraper(object):
         
         return True
  
-
     def _apply_candidate(self, romPath, rom):
         
         if not self.gamedata:
@@ -856,7 +872,7 @@ class Scraper(object):
         # ~~~ Download image ~~~
         image_path = destination_folder.append(image_ext)
         log_verb('Downloading URL  "{0}"'.format(image_url))
-        log_verb('Into local file  "{0}"'.format(image_path.getOriginalPath()))
+        log_verb('Into local file  "{0}"'.format(image_path.getPath()))
         try:
             net_download_img(image_url, image_path)
         except socket.timeout:
@@ -877,12 +893,23 @@ class Scraper(object):
         
         return None
 
+    def _get_from_assets_cache(self, candidate_id):
+
+        if candidate_id in self.assets_cache:
+            return self.assets_cache[candidate_id]
+        
+        return None
+
     def _update_cache(self, search_term, data):
         self.cache[search_term] = data
+        
+    def _update_assets_cache(self, candidate_id, data):
+        self.assets_cache[candidate_id] = data
 
     def _reset_cache(self):
         self.cache = {}
-
+        self.assets_cache = {}
+        
     def _new_gamedata_dic(self):
         gamedata = {
             'title'     : '',
@@ -891,8 +918,7 @@ class Scraper(object):
             'developer' : '',
             'nplayers'  : '',
             'esrb'      : '',
-            'plot'      : '',
-            'assets'    : []
+            'plot'      : ''
         }
 
         return gamedata
@@ -1207,7 +1233,8 @@ class TheGamesDbScraper(Scraper):
         candidate_from_cache = self._get_from_cache(search_term)
         
         if candidate_from_cache is not None:
-            return candidate_from_cache
+            log_debug('Using a cached candidate')
+            return [candidate_from_cache]
 
         game_list = []
         # >> quote_plus() will convert the spaces into '+'. Note that quote_plus() requires an
@@ -1255,15 +1282,7 @@ class TheGamesDbScraper(Scraper):
         asset_list = self._read_assets_from_url(url, candidate['id'])
 
         log_debug('Found {} assets for candidate #{}'.format(len(asset_list), candidate['id']))
-
-        for asset in asset_list:
-            
-            allowed_asset = next((allowed_asset for allowed_asset in self.assets_to_scrape if allowed_asset.kind == asset['type']), None)
-            if allowed_asset is not None:
-                asset['type'] = allowed_asset
-                self.gamedata['assets'].append(asset)
-
-        log_debug('After filtering {} assets left for candidate #{}'.format(len(self.gamedata['assets']), candidate['id']))
+        return asset_list
 
     # --- Parse list of games ---
     #{
@@ -1337,11 +1356,13 @@ class TheGamesDbScraper(Scraper):
             if asset_kind is None:
                 continue
 
-            asset_data['type']  = asset_kind
+            asset_info = g_assetFactory.get_asset_info(asset_kind)
+
+            asset_data['type']  = asset_info
             asset_data['url']   = base_url + image_data['filename']
             asset_data['name']  = ' '.join(filter(None, [image_data['type'], image_data['side'], image_data['resolution']]))
 
-            log_debug('TheGamesDbScraper:: found asset {}'.format(asset_data))
+            log_debug('TheGamesDbScraper:: found asset {}: {}'.format(asset_data['name'], asset_data['url']))
             assets_list.append(asset_data)
             
         next_url = page_data['pages']['next']
@@ -1462,7 +1483,7 @@ class MobyGamesScraper(Scraper):
         candidate_from_cache = self._get_from_cache(search_term)
         
         if candidate_from_cache is not None:
-            return candidate_from_cache
+            return [candidate_from_cache]
 
         game_list = []            
         search_string_encoded = urllib.quote_plus(search_term.encode('utf8'))
@@ -1553,20 +1574,11 @@ class MobyGamesScraper(Scraper):
         cover_assets = self._load_cover_assets(candidate, scraper_platform)
         assets_list = snap_assets + cover_assets
 
-        for asset in assets_list:
-            
-            allowed_asset = next((allowed_asset for allowed_asset in self.assets_to_scrape if allowed_asset.kind == asset['type']), None)
-            if allowed_asset is not None:
-                asset['type'] = allowed_asset
-                self.gamedata['assets'].append(asset)
-
-        log_debug('After filtering {} assets left for candidate #{}'.format(len(self.gamedata['assets']), candidate['id']))
+        log_debug('A total of {} assets found for candidate #{}'.format(len(assets_list), candidate['id']))
+        return assets_list
 
 
     def _load_snap_assets(self, candidate, platform_id):
-
-        if len(filter(lambda a: a.kind == ASSET_SNAP, self.assets_to_scrape)) < 1:
-            return []
 
         url = 'https://api.mobygames.com/v1/games/{}/platforms/{}/screenshots?api_key={}'.format(candidate['id'], platform_id, self.api_key)        
         log_debug('Get screenshot image data from {}'.format(url))
@@ -1576,16 +1588,17 @@ class MobyGamesScraper(Scraper):
         page_data   = net_get_URL_as_json(url)
         online_data = page_data['screenshots']
 
+        asset_snap = g_assetFactory.get_asset_info(ASSET_SNAP_ID)
         assets_list = []
         # --- Parse images page data ---
         for image_data in online_data:
             asset_data = self._new_assetdata_dic()
 
-            asset_data['type']  = ASSET_SNAP
+            asset_data['type']  = asset_snap
             asset_data['url']   = image_data['image']
             asset_data['name']  = image_data['caption']
-
-            log_debug('MobyGamesScraper:: found asset {}'.format(asset_data))
+            
+            log_debug('MobyGamesScraper:: found asset {} @ {}'.format(asset_data['name'], asset_data['url']))
             assets_list.append(asset_data)
 
         log_debug('Found {} snap assets for candidate #{}'.format(len(assets_list), candidate['id']))    
@@ -1610,14 +1623,19 @@ class MobyGamesScraper(Scraper):
             for image_data in group_data['covers']:
                 asset_data = self._new_assetdata_dic()
                 
-                asset_type = image_data['scan_of']
-                asset_kind = MobyGamesScraper.asset_name_mapping[asset_type.lower()]
+                asset_type  = image_data['scan_of']
+                asset_id    = MobyGamesScraper.asset_name_mapping[asset_type.lower()]
+                asset_info  = g_assetFactory.get_asset_info(asset_id)
 
-                asset_data['type']  = asset_kind
+                if asset_info is None:
+                    log_debug('Unsupported asset kind for {}'.format(asset_data['name']))
+                    continue
+
+                asset_data['type']  = asset_info
                 asset_data['url']   = image_data['image']
                 asset_data['name']  = '{} - {} ({})'.format(image_data['scan_of'], image_data['description'], country_names)
 
-                log_debug('MobyGamesScraper:: found asset {}'.format(asset_data))
+                log_debug('MobyGamesScraper:: found asset {} @ {}'.format(asset_data['name'], asset_data['url']))
                 assets_list.append(asset_data)
 
         log_debug('Found {} cover assets for candidate #{}'.format(len(assets_list), candidate['id']))    
@@ -1668,7 +1686,8 @@ class GameFaqScraper(Scraper):
         candidate_from_cache = self._get_from_cache(search_term)
         
         if candidate_from_cache is not None:
-            return candidate_from_cache
+            log_debug('Using a cached candidate')
+            return [candidate_from_cache]
 
         game_list = []                        
         game_list = self._get_candidates_from_page(search_term, scraper_platform)

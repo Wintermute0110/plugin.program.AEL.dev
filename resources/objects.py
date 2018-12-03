@@ -506,6 +506,7 @@ ASSET_INFO_KEY_DICT = {
 # This class uses the asset_infos, dictionary of AssetInfo indexed by asset_ID
 #
 class AssetInfoFactory(object):
+        
     def get_all(self):
         return list(asset_infos.values())
 
@@ -525,7 +526,7 @@ class AssetInfoFactory(object):
         return asset_info_list
 
     def get_asset_info(self, asset_kind):
-        asset_info = asset_infos.get(asset_kind, None)
+        asset_info = ASSET_INFO_DICT.get(asset_kind, None)
 
         if asset_info is None:
             log_error('get_asset_info() Wrong asset_kind = {0}'.format(asset_kind))
@@ -553,7 +554,7 @@ g_assetFactory = AssetInfoFactory()
 # Returns a FileName object
 #
 def assets_get_path_noext_DIR(Asset, AssetPath, ROM):
-    return AssetPath + ROM.getBase_noext()
+    return AssetPath + ROM.getBaseNoExt()
 
 #
 # Scheme SUFIX uses suffixes for artwork. All artwork assets are stored in the same directory.

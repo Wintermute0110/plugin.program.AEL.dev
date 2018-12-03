@@ -518,7 +518,7 @@ def text_get_multidisc_info(ROM_FN):
 #
 def text_get_URL_extension(url):
     
-    urlPath = FileNameFactory.create(url)
+    urlPath = FileName(url)
     return urlPath.getExt()
 
 #

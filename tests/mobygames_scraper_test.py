@@ -74,39 +74,6 @@ class Test_mobygames_scraper(unittest.TestCase):
 
         return settings
 
-    # add actual mobygames apikey above and comment out patch attributes to do live tests
-    @patch('resources.scrap.net_get_URL_as_json', side_effect = mocked_gamesdb)
-    @patch('resources.scrap.net_download_img')
-    def test_scraping_for_game(self, mock_img_downloader, mock_json_downloader):
-
-        # arrange
-        settings = self.get_test_settings()
-        asset_factory = AssetInfoFactory.create()
-
-        assets_to_scrape = [
-            asset_factory.get_asset_info(ASSET_BOXFRONT), 
-            asset_factory.get_asset_info(ASSET_BOXBACK), 
-            asset_factory.get_asset_info(ASSET_SNAP)]
-
-        launcher = StandardRomLauncher(None, settings, None, None, None, False)
-        launcher.update_platform('Nintendo NES')
-        launcher.set_asset_path(asset_factory.get_asset_info(ASSET_BOXFRONT),'/my/nice/assets/front/')
-        launcher.set_asset_path(asset_factory.get_asset_info(ASSET_BOXBACK),'/my/nice/assets/back/')
-        launcher.set_asset_path(asset_factory.get_asset_info(ASSET_SNAP),'/my/nice/assets/snaps/')
-        
-        rom = Rom({'id': 1234})
-        fakeRomPath = FakeFile('/my/nice/roms/castlevania.zip')
-
-        target = MobyGamesScraper(settings, launcher, True, assets_to_scrape)
-
-        # act
-        actual = target.scrape('castlevania', fakeRomPath, rom)
-                
-        # assert
-        self.assertTrue(actual)
-        self.assertEqual(u'Castlevania', rom.get_name())
-        print rom
-
     @patch('resources.scrap.net_get_URL_as_json', side_effect = mocked_gamesdb)
     def test_scraping_metadata_for_game(self, mock_json_downloader):
         
@@ -127,4 +94,41 @@ class Test_mobygames_scraper(unittest.TestCase):
         # assert
         self.assertTrue(actual)
         self.assertEqual(u'Castlevania', rom.get_name())
+        print rom
+
+        
+    # add actual mobygames apikey above and comment out patch attributes to do live tests
+    @patch('resources.scrap.net_get_URL_as_json', side_effect = mocked_gamesdb)
+    @patch('resources.scrap.net_download_img')
+    def test_scraping_assets_for_game(self, mock_img_downloader, mock_json_downloader):
+
+        # arrange
+        settings = self.get_test_settings()
+        
+        assets_to_scrape = [
+            g_assetFactory.get_asset_info(ASSET_BOXFRONT_ID), 
+            g_assetFactory.get_asset_info(ASSET_BOXBACK_ID), 
+            g_assetFactory.get_asset_info(ASSET_SNAP_ID)]
+        
+        launcher = StandardRomLauncher(None, settings, None, None, None, False)
+        launcher.update_platform('Nintendo NES')
+        launcher.set_asset_path(g_assetFactory.get_asset_info(ASSET_BOXFRONT_ID),'/my/nice/assets/front/')
+        launcher.set_asset_path(g_assetFactory.get_asset_info(ASSET_BOXBACK_ID),'/my/nice/assets/back/')
+        launcher.set_asset_path(g_assetFactory.get_asset_info(ASSET_SNAP_ID),'/my/nice/assets/snaps/')
+        
+        rom = ROM({'id': 1234})
+        fakeRomPath = FakeFile('/my/nice/roms/castlevania.zip')
+
+        target = MobyGamesScraper(settings, launcher)
+
+        # act
+        actuals = []
+        for asset_to_scrape in assets_to_scrape:
+            an_actual = target.scrape_asset('castlevania', asset_to_scrape, fakeRomPath, rom)
+            actuals.append(an_actual)
+                
+        # assert
+        for actual in actuals:
+            self.assertTrue(actual)
+        
         print rom
