@@ -108,7 +108,6 @@ class Test_gamesdb_scraper(unittest.TestCase):
         self.assertTrue(actual)
         self.assertEqual(u'Castlevania - The Lecarde Chronicles', rom.get_name())
         print rom
-
         
     # add actual gamesdb apikey above and comment out patch attributes to do live tests
     @patch('resources.scrap.net_get_URL_as_json', side_effect = mocked_gamesdb)

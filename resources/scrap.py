@@ -1648,8 +1648,7 @@ class MobyGamesScraper(Scraper):
         'back cover': ASSET_BOXBACK_ID,
         'spine/sides': 0 # not supported by AEL?
     }
-
-    
+        
     def _get_image_url_from_page(self, candidate, asset_info):        
         return candidate['url']
 
@@ -1658,9 +1657,12 @@ class MobyGamesScraper(Scraper):
         now = datetime.datetime.now()
         if (now-self.last_http_call).total_seconds() < 1:
             time.sleep(1)
-        
+
+#
+
 #
 # Scraper implementation for GameFaq website
+#     
 #            
 class GameFaqScraper(Scraper):
          
@@ -1785,9 +1787,9 @@ class GameFaqScraper(Scraper):
         
         url = 'https://gamefaqs.gamespot.com{}/images'.format(candidate['id'])
         assets_list = self._load_assets_from_url(url)
-        self.gamedata['assets'] = assets_list
         
         log_debug('GamesFaqScraper:: Found {} assets for candidate #{}'.format(len(assets_list), candidate['id']))    
+        return assets_list
         
     def _load_assets_from_url(self, url):
         log_debug('GamesFaqScraper::_load_assets_from_url() Get asset data from {}'.format(url))
@@ -1796,28 +1798,51 @@ class GameFaqScraper(Scraper):
 
         asset_blocks = re.findall('<div class=\"head\"><h2 class=\"title\">((\w|\s)+?)</h2></div><div class=\"body\"><table class=\"contrib\">(.*?)</table></div>', page_data)
         for asset_block in asset_blocks:
-            remote_asset_type = asset_block[0]
-            assets_page_data = asset_block[2]
-            asset_kind = self._parse_asset_type(remote_asset_type)
-            
-            allowed_asset = next((allowed_asset for allowed_asset in self.assets_to_scrape if allowed_asset.kind == asset_kind), None)
-            if allowed_asset is None:
-                continue
+            remote_asset_type   = asset_block[0]
+            assets_page_data    = asset_block[2]
             
             log_debug('Collecting assets from {}'.format(remote_asset_type))
-            
+            asset_infos = []
+
+            # The Game Images URL shows a page with boxart and screenshots thumbnails.
+            # Boxart can be diferent depending on the ROM/game region. Each region has then a 
+            # separate page with the full size artwork (boxfront, boxback, etc.)
+            #
+            # URL Example:
+            # http://www.gamefaqs.com/snes/588741-super-metroid/images
+            if 'Box' in remote_asset_type:
+                asset_infos = [g_assetFactory.get_asset_info(ASSET_BOXFRONT_ID), g_assetFactory.get_asset_info(ASSET_BOXBACK_ID)]
+                
+            # In an screenshot artwork page there is only one image.
+            # >> Title is usually the first or first snapshots in GameFAQs.
+            title_snap_taken = True
+            if 'Screenshots' in remote_asset_type:
+                asset_infos = [g_assetFactory.get_asset_info(ASSET_SNAP_ID)]
+                
+                if not('?page=' in url):
+                    asset_infos.append(g_assetFactory.get_asset_info(ASSET_TITLE_ID))
+                    title_snap_taken = False
+                                    
             # <a href="/nes/578318-castlevania/images/135454"><img class="img100 imgboxart" src="https://gamefaqs.akamaized.net/box/2/7/6/2276_thumb.jpg" alt="Castlevania (US)" /></a>
             block_items = re.finditer('<a href=\"(?P<lnk>.+?)\"><img class=\"(img100\s)?imgboxart\" src=\"(.+?)\" (alt=\"(?P<alt>.+?)\")?\s?/></a>', assets_page_data)
             for m in block_items:
                 image_data = m.groupdict()
-                asset_data = self._new_assetdata_dic()
-                
-                asset_data['type']  = allowed_asset
-                asset_data['url']   = image_data['lnk']
-                asset_data['name']  = image_data['alt'] if 'alt' in image_data else image_data['link']
-                asset_data['is_on_page'] = True
 
-                assets_list.append(asset_data)
+                for asset_info in asset_infos:
+
+                    if asset_info.id == ASSET_TITLE_ID and title_snap_taken:
+                        continue
+
+                    asset_data = self._new_assetdata_dic()
+                
+                    asset_data['type']  = asset_info
+                    asset_data['url']   = image_data['lnk']
+                    asset_data['name']  = image_data['alt'] if 'alt' in image_data else image_data['link']
+                    asset_data['is_on_page'] = True
+                    
+                    assets_list.append(asset_data)
+                    if asset_info.id == ASSET_TITLE_ID:
+                        title_snap_taken = True
 
         next_page_result = re.findall('<li><a href="(\S*?)">Next Page\s<i', page_data, re.MULTILINE)
         if len(next_page_result) > 0:
@@ -1836,26 +1861,28 @@ class GameFaqScraper(Scraper):
         images_on_page = re.finditer('<img (class="full_boxshot cte" )?data-img-width="\d+" data-img-height="\d+" data-img="(?P<url>.+?)" (class="full_boxshot cte" )?src=".+?" alt="(?P<alt>.+?)"(\s/)?>', page_data)
         
         for image_data in images_on_page:
-            image_on_page = image_data.groupdict()
-            image_asset_kind = self._parse_asset_type(image_on_page['alt'])
-            log_verb('Found "{}" type {} with url {}'.format(image_on_page['alt'], image_asset_kind, image_on_page['url']))
             
-            if asset_info.kind == image_asset_kind:
+            image_on_page   = image_data.groupdict()
+            image_asset_ids = self._parse_asset_type(image_on_page['alt'])
+
+            log_verb('Found "{}" of types {} with url {}'.format(image_on_page['alt'], image_asset_ids, image_on_page['url']))
+            
+            if asset_info.id in image_asset_ids:
                 log_debug('GamesFaqScraper::_get_image_url_from_page() Found match {}'.format(image_on_page['alt']))
                 return image_on_page['url']
 
         log_debug('GamesFaqScraper::_get_image_url_from_page() No correct match')
         return ''
-
+    
     def _parse_asset_type(self, header):
 
         if 'Screenshots' in header:
-            return ASSET_SNAP
+            return [ASSET_SNAP_ID, ASSET_TITLE_ID]
         if 'Box Back' in header:
-            return ASSET_BOXBACK
+            return [ASSET_BOXBACK_ID]
         if 'Box Front' in header:
-            return ASSET_BOXFRONT
+            return [ASSET_BOXFRONT_ID]
         if 'Box' in header:
-            return ASSET_BOXFRONT
+            return [ASSET_BOXFRONT_ID, ASSET_BOXBACK_ID]
 
-        return ASSET_SNAP
+        return [ASSET_SNAP_ID]
