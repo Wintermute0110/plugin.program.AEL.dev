@@ -36,9 +36,7 @@ class ScraperFactory(KodiProgressDialogStrategy):
         scan_metadata_policy    = self.settings['scan_metadata_policy']
         scan_asset_policy       = self.settings['scan_asset_policy']
 
-        scrapers = []
         metadata_scraper = self._get_metadata_scraper(scan_metadata_policy, launcher)
-        scrapers.append(metadata_scraper)
 
         if self._hasDuplicateArtworkDirs(launcher):
             return None
@@ -48,10 +46,10 @@ class ScraperFactory(KodiProgressDialogStrategy):
         # --- Assets/artwork stuff ----------------------------------------------------------------
         # ~~~ Check asset dirs and disable scanning for unset dirs ~~~
         unconfigured_name_list = []
-        asset_factory = AssetInfoFactory.create()
-        rom_asset_infos = asset_factory.get_asset_kinds_for_roms()
+        rom_asset_infos = g_assetFactory.get_asset_kinds_for_roms()
         i = 0;
 
+        asset_scrapers = {}
         for asset_info in rom_asset_infos:
             
             asset_path = launcher.get_asset_path(asset_info)
@@ -63,7 +61,7 @@ class ScraperFactory(KodiProgressDialogStrategy):
                 asset_scraper = self._get_asset_scraper(scan_asset_policy, asset_info.kind, asset_info, launcher)
                 
                 if asset_scraper:
-                    scrapers.append(asset_scraper)
+                    asset_scrapers[asset_info] = asset_scraper
                 
             self._updateProgress((100*i)/len(ROM_ASSET_LIST))
             i += 1
@@ -74,7 +72,9 @@ class ScraperFactory(KodiProgressDialogStrategy):
             unconfigured_asset_srt = ', '.join(unconfigured_name_list)
             kodi_dialog_OK('Assets directories not set: {0}. '.format(unconfigured_asset_srt) +
                            'Asset scanner will be disabled for this/those.')
-        return scrapers
+
+        strategy = ScrapingStrategy(metadata_scraper, asset_scrapers)
+        return strategy
 
     # ~~~ Ensure there is no duplicate asset dirs ~~~
     # >> Abort scanning of assets if duplicates found
@@ -95,6 +95,7 @@ class ScraperFactory(KodiProgressDialogStrategy):
     # >> Determine metadata action based on configured metadata policy
     # >> scan_metadata_policy -> values="None|NFO Files|NFO Files + Scrapers|Scrapers"    
     def _get_metadata_scraper(self, scan_metadata_policy, launcher):
+        
         cleanTitleScraper = CleanTitleScraper(self.settings, launcher)
         if scan_metadata_policy == 0:
             log_verb('Metadata policy: No NFO reading, no scraper. Only cleaning ROM name.')
@@ -111,22 +112,25 @@ class ScraperFactory(KodiProgressDialogStrategy):
             scraper_index = self.settings['scraper_metadata']
 
             if scraper_index == 1:
-                onlineScraper = TheGamesDbScraper(self.settings, launcher, True, [], cleanTitleScraper)
+                onlineScraper = TheGamesDbScraper(self.settings, launcher, cleanTitleScraper)
                 log_verb('Loaded metadata scraper "{0}"'.format(onlineScraper.getName()))
                 
             elif scraper_index == 2:
-                onlineScraper = GameFaqScraper(self.settings, launcher, True, [], cleanTitleScraper)
+                onlineScraper = GameFaqScraper(self.settings, launcher, cleanTitleScraper)
                 log_verb('Loaded metadata scraper "{0}"'.format(onlineScraper.getName()))
                 
             elif scraper_index == 3:
-                onlineScraper = MobyGamesScraper(self.settings, launcher, True, [], cleanTitleScraper)
+                onlineScraper = MobyGamesScraper(self.settings, launcher, cleanTitleScraper)
                 log_verb('Loaded metadata scraper "{0}"'.format(onlineScraper.getName()))
-            else:
-                scraper_implementation = scrapers_metadata[scraper_index]
-                scraper_implementation.set_addon_dir(self.addon_dir.getPath())
-                log_verb('Loaded metadata scraper "{0}"'.format(scraper_implementation.name))
-                onlineScraper = OnlineMetadataScraper(scraper_implementation, self.settings, launcher, cleanTitleScraper)
             
+            elif scraper_index == 4:
+                onlineScraper = ArcadeDbScraper(self.settings, launcher, cleanTitleScraper)
+                log_verb('Loaded metadata scraper "{0}"'.format(onlineScraper.getName()))
+            
+            else:
+                onlineScraper = NullScraper()
+                log_verb('Loaded metadata scraper "{0}"'.format(onlineScraper.getName()))
+                
             return NfoScraper(self.settings, launcher, onlineScraper)
 
 
@@ -134,26 +138,27 @@ class ScraperFactory(KodiProgressDialogStrategy):
             log_verb('Metadata policy: Read NFO file OFF | Scraper ON')
             log_verb('Metadata policy: Forced scraper ON')
             scraper_index = self.settings['scraper_metadata']
-
+            
             if scraper_index == 1:
-                onlineScraper = TheGamesDbScraper(self.settings, launcher, True, [], cleanTitleScraper)
+                onlineScraper = TheGamesDbScraper(self.settings, launcher, cleanTitleScraper)
                 log_verb('Loaded metadata scraper "{0}"'.format(onlineScraper.getName()))
                 return onlineScraper
+                
             elif scraper_index == 2:
-                onlineScraper = GameFaqScraper(self.settings, launcher, True, [], cleanTitleScraper)
+                onlineScraper = GameFaqScraper(self.settings, launcher, cleanTitleScraper)
                 log_verb('Loaded metadata scraper "{0}"'.format(onlineScraper.getName()))
+                return onlineScraper
                 
             elif scraper_index == 3:
-                onlineScraper = MobyGamesScraper(self.settings, launcher, True, [], cleanTitleScraper)
+                onlineScraper = MobyGamesScraper(self.settings, launcher, cleanTitleScraper)
                 log_verb('Loaded metadata scraper "{0}"'.format(onlineScraper.getName()))
-            else:
-                scraper_implementation = scrapers_metadata[scraper_index]
-                scraper_implementation.set_addon_dir(self.addon_dir.getPath())
-
-                log_verb('Loaded metadata scraper "{0}"'.format(scraper_implementation.name))
-
-                return OnlineMetadataScraper(scraper_implementation, self.settings, launcher, cleanTitleScraper)
-        
+                return onlineScraper
+            
+            elif scraper_index == 4:
+                onlineScraper = ArcadeDbScraper(self.settings, launcher, cleanTitleScraper)
+                log_verb('Loaded metadata scraper "{0}"'.format(onlineScraper.getName()))
+                return onlineScraper
+            
         log_error('Invalid scan_metadata_policy value = {0}. Fallback on clean title only'.format(scan_metadata_policy))
         return cleanTitleScraper
 
@@ -194,6 +199,42 @@ class ScraperFactory(KodiProgressDialogStrategy):
         # self.scraper_asset.set_options(region, thumb_imgsize)
 
         return NullScraper()
+
+class ScrapingStrategy(object):
+
+    # metadata_scraper = single instance of a scraper
+    # assets_scrapers = dictionary of asset info id & scraper to use
+    def __init__(self, metadata_scraper, asset_scrapers):
+        self.metadata_scraper = metadata_scraper
+        self.asset_scrapers = asset_scrapers
+
+    def scrape(self, search_term, rom_path, rom):
+                
+        #self._updateProgressMessage(file_text, 'Scraping {0}...'.format(scraper.getName()))
+        if self.metadata_scraper:
+            log_debug('ScrapingStrategy:: Scraping metadata with scraper \'{0}\''.format(self.metadata_scraper.getName()))
+            self.metadata_scraper.scrape_metadata(search_term, rom_path, rom)
+
+        for asset_info in self.asset_scrapers.keys():
+            scraper = self.asset_scrapers[asset_info]
+
+            log_debug('ScrapingStrategy:: Scraping asset {} with scraper \'{}\''.format(asset_info.name, scraper.getName()))
+            scraper.scrape_asset(search_term, asset_info, rom_path, rom)
+            
+        romdata = rom.get_data()
+        log_verb('Set Title     file "{0}"'.format(romdata['s_title']))
+        log_verb('Set Snap      file "{0}"'.format(romdata['s_snap']))
+        log_verb('Set Boxfront  file "{0}"'.format(romdata['s_boxfront']))
+        log_verb('Set Boxback   file "{0}"'.format(romdata['s_boxback']))
+        log_verb('Set Cartridge file "{0}"'.format(romdata['s_cartridge']))
+        log_verb('Set Fanart    file "{0}"'.format(romdata['s_fanart']))
+        log_verb('Set Banner    file "{0}"'.format(romdata['s_banner']))
+        log_verb('Set Clearlogo file "{0}"'.format(romdata['s_clearlogo']))
+        log_verb('Set Flyer     file "{0}"'.format(romdata['s_flyer']))
+        log_verb('Set Map       file "{0}"'.format(romdata['s_map']))
+        log_verb('Set Manual    file "{0}"'.format(romdata['s_manual']))
+        log_verb('Set Trailer   file "{0}"'.format(romdata['s_trailer']))
+
 
 class ScraperSettings(object):
     
