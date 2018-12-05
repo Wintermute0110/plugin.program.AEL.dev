@@ -623,9 +623,13 @@ class VersionNumber(object):
     def getBuild(self):
         return int(self.versionNumber[2])
 
-def dump_object_to_log(obj_name_str, obj):
-    log_debug('Dumping variable named "{0}"'.format(obj_name_str))
-    log_debug('obj.__class__.__name__ = {0}'.format(obj.__class__.__name__))
+# def dump_object_to_log_name(obj_name_str, obj):
+#     log_debug('Dumping variable named "{0}"'.format(obj_name_str))
+#     log_debug('obj.__class__.__name__ = {0}'.format(obj.__class__.__name__))
+#     log_debug(pprint.pformat(obj))
+
+def dump_object_to_log(obj):
+    log_debug('Dumping obj.__class__.__name__ = {0}'.format(obj.__class__.__name__))
     log_debug(pprint.pformat(obj))
 
 # -------------------------------------------------------------------------------------------------
@@ -1970,11 +1974,9 @@ def kodi_notify_error(text, title = 'Advanced Emulator Launcher error', time = 7
 # See https://github.com/xbmc/xbmc/pull/13954
 # See https://github.com/xbmc/xbmc/pull/13958
 #
-# def kodi_busydialog_ON():
-#     xbmc.executebuiltin('ActivateWindow(busydialog)')
+# def kodi_busydialog_ON(): xbmc.executebuiltin('ActivateWindow(busydialog)')
 
-# def kodi_busydialog_OFF():
-#     xbmc.executebuiltin('Dialog.Close(busydialog)')
+# def kodi_busydialog_OFF(): xbmc.executebuiltin('Dialog.Close(busydialog)')
 
 def kodi_refresh_container():
     log_debug('kodi_refresh_container()')
@@ -2171,13 +2173,13 @@ KODI_VERSION_LEIA    = 18
 # specific dialog. It also has a conditionalFunction which can be called before
 # executing this dialog which will indicate if this dialog may be shown (True return value).
 #
-class KodiWizardDialog():
+class WizardDialog():
     __metaclass__ = abc.ABCMeta
 
-    def __init__(self, property_key, title, decoratorDialog, customFunction = None, conditionalFunction = None):
-        self.title = title
-        self.property_key = property_key
+    def __init__(self, decoratorDialog, property_key, title, customFunction = None, conditionalFunction = None):
         self.decoratorDialog = decoratorDialog
+        self.property_key = property_key
+        self.title = title
         self.customFunction = customFunction
         self.conditionalFunction = conditionalFunction
         self.cancelled = False
@@ -2186,7 +2188,7 @@ class KodiWizardDialog():
         if not self.executeDialog(properties):
             log_warning('User stopped wizard')
             return None
-        
+
         return properties
 
     def executeDialog(self, properties):
@@ -2201,64 +2203,56 @@ class KodiWizardDialog():
                 return True
 
         output = self.show(properties)
-        
-        if self.cancelled:
-            return False
+        if self.cancelled: return False
 
         if self.customFunction is not None:
             output = self.customFunction(output, self.property_key, properties)
 
         if self.property_key:
-            log_debug('Assigned properties[{0}] value: {1}'.format(self.property_key, output))
+            log_debug('WizardDialog::executeDialog() props[{0}] =  {1}'.format(self.property_key, output))
             properties[self.property_key] = output
 
         return True
 
     @abc.abstractmethod
-    def show(self, properties):
-        return True
+    def show(self, properties): return True
 
-    def _cancel(self):
-        self.cancelled = True
+    def _cancel(self): self.cancelled = True
 
 #
 # Wizard dialog which accepts a keyboard user input.
 # 
-class KodiKeyboardWizardDialog(KodiWizardDialog):
+class WizardDialog_Keyboard(WizardDialog):
     def show(self, properties):
         log_debug('Executing keyboard wizard dialog for key: {0}'.format(self.property_key))
         originalText = properties[self.property_key] if self.property_key in properties else ''
-
         textInput = xbmc.Keyboard(originalText, self.title)
         textInput.doModal()
-
         if not textInput.isConfirmed(): 
             self._cancel()
             return None
-
         output = textInput.getText().decode('utf-8')
+
         return output
 
 #
 # Wizard dialog which shows a list of options to select from.
-# 
-class KodiSelectionWizardDialog(KodiWizardDialog):
-    def __init__(self, property_key, title, options, decoratorDialog, customFunction = None, conditionalFunction = None):
+#
+class WizardDialog_Selection(WizardDialog):
+    def __init__(self, decoratorDialog, property_key, title, options,
+                 customFunction = None, conditionalFunction = None):
         self.options = options
-        super(KodiSelectionWizardDialog, self).__init__(
-            property_key, title, decoratorDialog, customFunction, conditionalFunction
-        )
+        super(WizardDialog_Selection, self).__init__(
+            decoratorDialog, property_key, title, customFunction, conditionalFunction)
 
     def show(self, properties):
         log_debug('Executing selection wizard dialog for key: {0}'.format(self.property_key))
-        dialog = xbmcgui.Dialog()
-        selection = dialog.select(self.title, self.options)
-
+        selection = xbmcgui.Dialog().select(self.title, self.options)
         if selection < 0:
             self._cancel()
             return None
-
         output = self.options[selection]
+
         return output
 
 #
@@ -2266,22 +2260,19 @@ class KodiSelectionWizardDialog(KodiWizardDialog):
 # In comparison with the normal SelectionWizardDialog, this version allows a dictionary or key/value
 # list as the selectable options. The selected key will be used.
 # 
-class KodiDictionarySelectionWizardDialog(KodiWizardDialog):
-    def __init__(self, property_key, title, options, decoratorDialog,
+class WizardDialog_DictionarySelection(WizardDialog):
+    def __init__(self, decoratorDialog, property_key, title, options,
                  customFunction = None, conditionalFunction = None):
         self.options = options
-        super(KodiDictionarySelectionWizardDialog, self).__init__(
-            property_key, title, decoratorDialog, customFunction, conditionalFunction
-        )
+        super(WizardDialog_DictionarySelection, self).__init__(
+            decoratorDialog, property_key, title, customFunction, conditionalFunction)
 
     def show(self, properties):
         log_debug('Executing dict selection wizard dialog for key: {0}'.format(self.property_key))
         dialog = DictionaryDialog()
         if callable(self.options):
             self.options = self.options(self.property_key, properties)
-
         output = dialog.select(self.title, self.options)
-
         if output is None:
             self._cancel()
             return None
@@ -2291,17 +2282,17 @@ class KodiDictionarySelectionWizardDialog(KodiWizardDialog):
 #
 # Wizard dialog which shows a filebrowser.
 #
-class KodiFileBrowseWizardDialog(KodiWizardDialog):
-    def __init__(self, property_key, title, browseType, filter, decoratorDialog,
+class WizardDialog_FileBrowse(WizardDialog):
+    def __init__(self, decoratorDialog, property_key, title, browseType, filter,
                  customFunction = None, conditionalFunction = None):
         self.browseType = browseType
         self.filter = filter
-        super(KodiFileBrowseWizardDialog, self).__init__(
-            property_key, title, decoratorDialog, customFunction, conditionalFunction
+        super(WizardDialog_FileBrowse, self).__init__(
+            decoratorDialog, property_key, title, customFunction, conditionalFunction
         )
 
     def show(self, properties):
-        log_debug('Executing file browser wizard dialog for key: {0}'.format(self.property_key))
+        log_debug('WizardDialog_FileBrowse::show() key = {0}'.format(self.property_key))
         originalPath = properties[self.property_key] if self.property_key in properties else ''
 
         if callable(self.filter):
@@ -2323,20 +2314,17 @@ class KodiFileBrowseWizardDialog(KodiWizardDialog):
 #    - xbmcgui.INPUT_IPADDRESS (format: #.#.#.#)
 #    - xbmcgui.INPUT_PASSWORD (return md5 hash of input, input is masked)
 #
-class KodiInputWizardDialog(KodiWizardDialog):
-    def __init__(self, property_key, title, inputType, decoratorDialog,
+class WizardDialog_Input(WizardDialog):
+    def __init__(self, decoratorDialog, property_key, title, inputType,
                  customFunction = None, conditionalFunction = None):
         self.inputType = inputType
-        super(KodiInputWizardDialog, self).__init__(
-            property_key, title, decoratorDialog, customFunction, conditionalFunction
-        )
+        super(WizardDialog_Input, self).__init__(
+            decoratorDialog, property_key, title, customFunction, conditionalFunction)
 
     def show(self, properties):
-        log_debug('Executing {0} input wizard dialog for key: {1}'.format(self.inputType, self.property_key))
+        log_debug('WizardDialog_Input::show() {0} key = {0}'.format(self.inputType, self.property_key))
         originalValue = properties[self.property_key] if self.property_key in properties else ''
-
         output = xbmcgui.Dialog().input(self.title, originalValue, self.inputType)
-
         if not output:
             self._cancel()
             return None
@@ -2353,12 +2341,12 @@ class KodiInputWizardDialog(KodiWizardDialog):
 #
 # Formatting is optional
 #
-class KodiFormattedMessageWizardDialog(KodiWizardDialog):
-    def __init__(self, property_key, title, text, decoratorDialog, customFunction = None, conditionalFunction = None):
+class WizardDialog_FormattedMessage(WizardDialog):
+    def __init__(self, decoratorDialog, property_key, title, text,
+                 customFunction = None, conditionalFunction = None):
         self.text = text
-        super(KodiFormattedMessageWizardDialog, self).__init__(
-            property_key, title, decoratorDialog, customFunction, conditionalFunction
-        )
+        super(WizardDialog_FormattedMessage, self).__init__(
+            decoratorDialog, property_key, title, customFunction, conditionalFunction)
 
     def show(self, properties):
         log_debug('Executing message wizard dialog for key: {0}'.format(self.property_key))
@@ -2376,37 +2364,52 @@ class KodiFormattedMessageWizardDialog(KodiWizardDialog):
 # Wizard dialog which does nothing or shows anything.
 # It only sets a certain property with the predefined value.
 #
-class KodiDummyWizardDialog(KodiWizardDialog):
-    def __init__(self, property_key, predefinedValue, decoratorDialog,
+class WizardDialog_Dummy(WizardDialog):
+    def __init__(self, decoratorDialog, property_key, predefinedValue,
                  customFunction = None, conditionalFunction = None):
         self.predefinedValue = predefinedValue
-        super(KodiDummyWizardDialog, self).__init__(
-            property_key, None, decoratorDialog, customFunction, conditionalFunction)
+        super(WizardDialog_Dummy, self).__init__(
+            decoratorDialog, property_key, None, customFunction, conditionalFunction)
 
     def show(self, properties):
-        log_debug('Executing dummy wizard dialog for key: {0}'.format(self.property_key))
+        log_debug('WizardDialog_Dummy::show() {0} key = {0}'.format(self.property_key))
 
         return self.predefinedValue
 
 #
-# Kodi dialog with select box based on a dictionary
+# Kodi dialog with select box based on a list.
+# preselect is int
+# Returns the int index selected or None if dialog was canceled.
 #
-class KodiDictionaryDialog(object):
+class KodiListDialog(object):
     def __init__(self):
         self.dialog = xbmcgui.Dialog()
 
-    def select(self, title, dictOptions, preselect = None):
+    def select(self, title, options_list, preselect_idx = None):
+        selection = self.dialog.select(title, options_list, preselect = preselect_idx)
+        if selection < 0:
+            return None
+
+        return selection
+
+#
+# Kodi dialog with select box based on a dictionary
+#
+class KodiOrdDictionaryDialog(object):
+    def __init__(self):
+        self.dialog = xbmcgui.Dialog()
+
+    def select(self, title, options_odict, preselect = None):
         preselected_index = -1
         if preselect is not None:
-            preselected_value = dictOptions[preselect]
-            preselected_index = dictOptions.values().index(preselected_value)
-
-        selection = self.dialog.select(title, dictOptions.values(), preselect = preselected_index)
+            preselected_value = options_odict[preselect]
+            preselected_index = options_odict.values().index(preselected_value)
+        selection = self.dialog.select(title, options_odict.values(), preselect = preselected_index)
 
         if selection < 0:
             return None
-        
-        key = list(dictOptions.keys())[selection]
+        key = list(options_odict.keys())[selection]
+
         return key
 
 class KodiProgressDialogStrategy(object):
