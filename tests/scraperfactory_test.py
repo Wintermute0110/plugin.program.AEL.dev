@@ -41,6 +41,7 @@ class Test_scraperfactorytests(unittest.TestCase):
         
         # arrange
         addon_dir = FakeFile('')
+        paths = Fake_Paths('//abc')
 
         settings = {}
         settings['scan_metadata_policy'] = 0
@@ -51,13 +52,13 @@ class Test_scraperfactorytests(unittest.TestCase):
 
         launcher = StandardRomLauncher(None, settings, None, None, None, False)
         
-        target = ScraperFactory(settings, addon_dir)
+        target = ScraperFactory(paths, settings)
 
         expected = 'CleanTitleScraper'
 
         # act
-        actuals = target.create(launcher)
-        actual_name = actuals[0].__class__.__name__
+        actual = target.create(launcher)
+        actual_name = actual.metadata_scraper.__class__.__name__
 
         # assert
         self.assertIsNotNone(actuals)
@@ -67,6 +68,7 @@ class Test_scraperfactorytests(unittest.TestCase):
         
         # arrange
         addon_dir = FakeFile('')
+        paths = Fake_Paths('//abc')
 
         settings = {}
         settings['scan_metadata_policy'] = 0
@@ -82,7 +84,7 @@ class Test_scraperfactorytests(unittest.TestCase):
         launcher.update_platform('nintendo')
         launcher.set_custom_attribute('path_title', '//abc/a/b/c')
         
-        target = ScraperFactory(settings, addon_dir)
+        target = ScraperFactory(paths, settings)
         expected = 'LocalAssetScraper'
 
         # act
@@ -98,7 +100,7 @@ class Test_scraperfactorytests(unittest.TestCase):
     def test_when_using_online_metadata_the_correct_scraper_will_be_loaded(self):
         
         # arrange
-        addon_dir = FakeFile('')
+        paths = Fake_Paths('//abc')
 
         settings = {}
         settings['scan_metadata_policy'] = 3 # OnlineScraper only
@@ -128,7 +130,7 @@ class Test_scraperfactorytests(unittest.TestCase):
     def test_when_using_local_nfo_metadata_the_correct_scraper_will_be_loaded(self):
         
         # arrange
-        addon_dir = FileNameFactory.create('')
+        paths = Fake_Paths('//abc')
 
         settings = {}
         settings['scan_metadata_policy'] = 2 # NFO with Online as decorator

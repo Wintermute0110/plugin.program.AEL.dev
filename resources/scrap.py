@@ -36,10 +36,11 @@ class ScraperFactory(KodiProgressDialogStrategy):
         scan_metadata_policy    = self.settings['scan_metadata_policy']
         scan_asset_policy       = self.settings['scan_asset_policy']
 
-        metadata_scraper = self._get_metadata_scraper(scan_metadata_policy, launcher)
-
         if self._hasDuplicateArtworkDirs(launcher):
             return None
+
+        available_scrapers = self._initialize_possible_scrapers(launcher)
+        metadata_scraper = self._get_metadata_scraper(scan_metadata_policy, launcher, available_scrapers)
 
         self._startProgressPhase('Advanced Emulator Launcher', 'Preparing scrapers ...')
 
@@ -58,7 +59,7 @@ class ScraperFactory(KodiProgressDialogStrategy):
                 log_verb('ScraperFactory.create() {0:<9} path unconfigured'.format(asset_info.name))
             else:
                 log_debug('ScraperFactory.create() {0:<9} path configured'.format(asset_info.name))
-                asset_scraper = self._get_asset_scraper(scan_asset_policy, asset_info.kind, asset_info, launcher)
+                asset_scraper = self._get_asset_scraper(scan_asset_policy, asset_info, launcher)
                 
                 if asset_scraper:
                     asset_scrapers[asset_info] = asset_scraper
@@ -92,112 +93,110 @@ class ScraperFactory(KodiProgressDialogStrategy):
         log_info('No duplicated asset dirs found')
         return False
 
+    #
+    # Initializes all the possible scraper instances beforehand for the launcher.
+    # This way the same instances can be reused between metadata and different asset types
+    # when the user wants the same scraper source for those. 
+    # This way the cached search hits and asset hits will be reused and less web calls need
+    # to be performed.
+    #
+    def _initialize_possible_scrapers(self, launcher):
+
+        # default scrapers
+        cleanTitleScraper = CleanTitleScraper(self.settings, launcher)
+
+        available_scrapers = {}
+        available_scrapers[0] = cleanTitleScraper
+        available_scrapers[1] = TheGamesDbScraper(self.settings, launcher, cleanTitleScraper)
+        available_scrapers[2] = GameFaqScraper(self.settings, launcher, cleanTitleScraper)
+        available_scrapers[3] = MobyGamesScraper(self.settings, launcher, cleanTitleScraper)
+        available_scrapers[3] = ArcadeDbScraper(self.settings, launcher, cleanTitleScraper)
+        
+        return available_scrapers
+    
     # >> Determine metadata action based on configured metadata policy
     # >> scan_metadata_policy -> values="None|NFO Files|NFO Files + Scrapers|Scrapers"    
-    def _get_metadata_scraper(self, scan_metadata_policy, launcher):
+    # 
+    def _get_metadata_scraper(self, scan_metadata_policy, launcher, available_scrapers):
         
-        cleanTitleScraper = CleanTitleScraper(self.settings, launcher)
         if scan_metadata_policy == 0:
             log_verb('Metadata policy: No NFO reading, no scraper. Only cleaning ROM name.')
-            return cleanTitleScraper
+            return available_scrapers[0]
 
         elif scan_metadata_policy == 1:
             log_verb('Metadata policy: Read NFO file only | Scraper OFF')
-            return NfoScraper(self.settings, launcher, cleanTitleScraper)
+            return NfoScraper(self.settings, launcher, available_scrapers[0])
 
         elif scan_metadata_policy == 2:
             log_verb('Metadata policy: Read NFO file ON, if not NFO then Scraper ON')
             
             # --- Metadata scraper ---
             scraper_index = self.settings['scraper_metadata']
-
-            if scraper_index == 1:
-                onlineScraper = TheGamesDbScraper(self.settings, launcher, cleanTitleScraper)
-                log_verb('Loaded metadata scraper "{0}"'.format(onlineScraper.getName()))
-                
-            elif scraper_index == 2:
-                onlineScraper = GameFaqScraper(self.settings, launcher, cleanTitleScraper)
-                log_verb('Loaded metadata scraper "{0}"'.format(onlineScraper.getName()))
-                
-            elif scraper_index == 3:
-                onlineScraper = MobyGamesScraper(self.settings, launcher, cleanTitleScraper)
-                log_verb('Loaded metadata scraper "{0}"'.format(onlineScraper.getName()))
-            
-            elif scraper_index == 4:
-                onlineScraper = ArcadeDbScraper(self.settings, launcher, cleanTitleScraper)
-                log_verb('Loaded metadata scraper "{0}"'.format(onlineScraper.getName()))
-            
-            else:
-                onlineScraper = NullScraper()
-                log_verb('Loaded metadata scraper "{0}"'.format(onlineScraper.getName()))
-                
+            onlineScraper = available_scrapers[scraper_index]
+            log_verb('Loaded metadata scraper "{0}"'.format(onlineScraper.getName()))
             return NfoScraper(self.settings, launcher, onlineScraper)
-
 
         elif scan_metadata_policy == 3:
             log_verb('Metadata policy: Read NFO file OFF | Scraper ON')
             log_verb('Metadata policy: Forced scraper ON')
+            
+            # --- Metadata scraper ---
             scraper_index = self.settings['scraper_metadata']
-            
-            if scraper_index == 1:
-                onlineScraper = TheGamesDbScraper(self.settings, launcher, cleanTitleScraper)
-                log_verb('Loaded metadata scraper "{0}"'.format(onlineScraper.getName()))
-                return onlineScraper
-                
-            elif scraper_index == 2:
-                onlineScraper = GameFaqScraper(self.settings, launcher, cleanTitleScraper)
-                log_verb('Loaded metadata scraper "{0}"'.format(onlineScraper.getName()))
-                return onlineScraper
-                
-            elif scraper_index == 3:
-                onlineScraper = MobyGamesScraper(self.settings, launcher, cleanTitleScraper)
-                log_verb('Loaded metadata scraper "{0}"'.format(onlineScraper.getName()))
-                return onlineScraper
-            
-            elif scraper_index == 4:
-                onlineScraper = ArcadeDbScraper(self.settings, launcher, cleanTitleScraper)
-                log_verb('Loaded metadata scraper "{0}"'.format(onlineScraper.getName()))
-                return onlineScraper
-            
+            onlineScraper = available_scrapers[scraper_index]
+            log_verb('Loaded metadata scraper "{0}"'.format(onlineScraper.getName()))            
+            return onlineScraper
+
         log_error('Invalid scan_metadata_policy value = {0}. Fallback on clean title only'.format(scan_metadata_policy))
-        return cleanTitleScraper
+        return available_scrapers[0]
+    
+    # todo
+    # NOTE: previously AEL had per asset type (and MAME) an array with possible scrapers.
+    # The actual scraper was selected by getting the correct index from the settings for that particular type.
+    # I propose we give each scraper class an unique id and just store that id in the settings. 
+    #
+    # >> Scrapers for MAME platform are different than rest of the platforms
+    def _get_asset_scraper(self, scan_asset_policy, asset_info, launcher):
 
-    def _get_asset_scraper(self, scan_asset_policy, asset_kind, asset_info, launcher):
-                
-        # >> Scrapers for MAME platform are different than rest of the platforms
-        scraper_implementation = getScraper(asset_kind, self.settings, launcher.get_platform() == 'MAME')
-        
-        # --- If scraper does not support particular asset return inmediately ---
-        if scraper_implementation and not scraper_implementation.supports_asset(asset_kind):
-            log_debug('ScraperFactory._get_asset_scraper() Scraper {0} does not support asset {1}. '
-                      'Skipping.'.format(scraper_implementation.name, asset_info.name))
-            return NullScraper()
-
-        log_verb('Loaded {0:<10} asset scraper "{1}"'.format(asset_info.name, scraper_implementation.name if scraper_implementation else 'NONE'))
-        if not scraper_implementation:
-            return NullScraper()
         
         # ~~~ Asset scraping ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
         # settings.xml -> id="scan_asset_policy" default="0" values="Local Assets|Local Assets + Scrapers|Scrapers only"
         if scan_asset_policy == 0:
             log_verb('Asset policy: local images only | Scraper OFF')
-            return LocalAssetScraper(asset_kind, asset_info, self.settings, launcher)
-        
-        elif scan_asset_policy == 1:
-            log_verb('Asset policy: if not Local Image then Scraper ON')
+            return LocalAssetScraper(self.settings, launcher)
+                
+        key = ASSET_SETTING_KEYS[asset_info.id]
+        if key == '':
+            return None
             
-            if scraper_implementation.name == 'TheGamesDB':
-                onlineScraper = TheGamesDbScraper(self.settings, launcher, False, [asset_info])
-                return LocalAssetScraper(asset_kind, asset_info, self.settings, launcher, onlineScraper)
+        if key not in settings:
+            log_warning("Scraper with key {} not set in settings".format(key))
+            return None
 
-            onlineScraper = OnlineAssetScraper(scraper_implementation, asset_kind, asset_info, self.settings, launcher)
-            return LocalAssetScraper(asset_kind, asset_info, self.settings, launcher, onlineScraper)
+        scraper_index = settings[key]
+
+        # --- Asset scraper ---
+        onlineScraper = available_scrapers[scraper_index]
+
+        if not onlineScraper:
+            log_verb('Loaded {0:<10} asset scraper "NONE"'.format(asset_info.name))
+            return NullScraper()
+
+        # --- If scraper does not support particular asset return inmediately ---
+        if not onlineScraper.supports_asset(asset_info):
+            log_debug('ScraperFactory._get_asset_scraper() Scraper {0} does not support asset {1}. '
+                      'Skipping.'.format(onlineScraper.name, asset_info.name))
+            return NullScraper()
+                
+        log_verb('Loaded {0:<10} asset scraper "{1}"'.format(asset_info.name, onlineScraper.name))
+                
+        if scan_asset_policy == 1:
+            log_verb('Asset policy: if not Local Image then Scraper ON')
+            return LocalAssetScraper(self.settings, launcher, onlineScraper)
         
         # >> Initialise options of the thumb scraper (NOT SUPPORTED YET)
         # region = self.settings['scraper_region']
         # thumb_imgsize = self.settings['scraper_thumb_size']
         # self.scraper_asset.set_options(region, thumb_imgsize)
-
         return NullScraper()
 
 class ScrapingStrategy(object):
@@ -373,6 +372,10 @@ class Scraper(object):
     @abc.abstractmethod
     def getName(self):
         return ''
+
+    @abc.abstractmethod
+    def supports_asset_type(self, asset_info):
+        return True
 
     # search for candidates and return list with following item data:
     # { 'id' : <unique id>, 'display_name' : <name to be displayed>, 'order': <number to sort by/relevance> }
@@ -679,6 +682,9 @@ class NullScraper(Scraper):
 
     def getName(self):
         return 'Empty scraper'
+    
+    def supports_asset_type(self, asset_info):
+        return True
 
     def _get_candidates(self, search_term, romPath, rom):
         return []
@@ -704,6 +710,9 @@ class CleanTitleScraper(Scraper):
 
     def getName(self):
         return 'Clean title only scraper'
+    
+    def supports_asset_type(self, asset_info):
+        return False
 
     def _get_candidates(self, search_term, romPath, rom):
         games = []
@@ -738,6 +747,9 @@ class NfoScraper(Scraper):
 
     def getName(self):
         return 'NFO scraper'
+    
+    def supports_asset_type(self, asset_info):
+        return False
 
     def _get_candidates(self, search_term, romPath, rom):
 
@@ -786,6 +798,9 @@ class LocalAssetScraper(Scraper):
         
     def getName(self):
         return 'Local assets scraper'
+    
+    def supports_asset_type(self, asset_info):
+        return True
 
     def _get_candidates(self, search_term, romPath, rom):
 
@@ -851,6 +866,13 @@ class TheGamesDbScraper(Scraper):
     def getName(self):
         return 'TheGamesDB'
     
+    def supports_asset_type(self, asset_info):
+
+        if asset_info.id == ASSET_CARTRIDGE_ID or asset_info.id == ASSET_FLYER_ID:
+            return False
+
+        return True
+
     def _get_candidates(self, search_term, romPath, rom):
         
         platform = self.launcher.get_platform()
@@ -1106,8 +1128,15 @@ class MobyGamesScraper(Scraper):
         super(MobyGamesScraper, self).__init__(scraper_settings, launcher, fallbackScraper)
         
     def getName(self):
-        return 'MobyGames'
+        return 'MobyGames'    
     
+    def supports_asset_type(self, asset_info):
+
+        if asset_info.id == ASSET_FANART_ID or asset_info.id == ASSET_BANNER_ID or asset_info.id == ASSET_CLEARLOGO_ID or asset_info.id == ASSET_FLYER_ID:
+            return False
+
+        return True
+
     def _get_candidates(self, search_term, romPath, rom):
         
         platform = self.launcher.get_platform()
@@ -1301,6 +1330,8 @@ class MobyGamesScraper(Scraper):
         if (now-self.last_http_call).total_seconds() < 1:
             time.sleep(1)
 
+        pass
+
 # -----------------------------------------------------------------------------
 # GameFAQs online scraper
 # -----------------------------------------------------------------------------
@@ -1313,6 +1344,13 @@ class GameFaqScraper(Scraper):
         
     def getName(self):
         return 'GameFaq'
+    
+    def supports_asset_type(self, asset_info):
+
+        if asset_info.id == ASSET_FANART_ID or asset_info.id == ASSET_BANNER_ID or asset_info.id == ASSET_CLEARLOGO_ID or asset_info.id == ASSET_FLYER_ID or asset_info.id == ASSET_CARTRIDGE_ID:
+            return False
+
+        return True
 
     def _get_candidates(self, search_term, romPath, rom):
                
@@ -1544,7 +1582,14 @@ class ArcadeDbScraper(Scraper):
         
     def getName(self):
         return 'Arcade Database'
-    
+        
+    def supports_asset_type(self, asset_info):
+
+        if asset_info.id == ASSET_FANART_ID:
+            return False
+
+        return True
+
     def _get_candidates(self, search_term, romPath, rom):
         
         platform = self.launcher.get_platform()
