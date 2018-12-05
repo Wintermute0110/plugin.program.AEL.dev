@@ -92,8 +92,8 @@ class Test_gamesdb_scraper(unittest.TestCase):
         settings = self.get_test_settings()
         asset_factory = g_assetFactory
         
-        launcher = StandardRomLauncher(None, settings, None, None, None, False)
-        launcher.update_platform('Nintendo NES')
+        launcher = StandardRomLauncher(None, settings, None, None, None, None, None)
+        launcher.set_platform('Nintendo NES')
         
         rom = ROM({'id': 1234})
         fakeRomPath = FakeFile('/my/nice/roms/castlevania.zip')
@@ -117,9 +117,9 @@ class Test_gamesdb_scraper(unittest.TestCase):
         settings = self.get_test_settings()
         
         assets_to_scrape = [g_assetFactory.get_asset_info(ASSET_BANNER_ID), g_assetFactory.get_asset_info(ASSET_FANART_ID)]
-
-        launcher = StandardRomLauncher(None, settings, None, None, None, False)
-        launcher.update_platform('Nintendo NES')
+        
+        launcher = StandardRomLauncher(None, settings, None, None, None, None, None)
+        launcher.set_platform('Nintendo NES')
         launcher.set_asset_path(g_assetFactory.get_asset_info(ASSET_BANNER_ID),'/my/nice/assets/banners/')
         launcher.set_asset_path(g_assetFactory.get_asset_info(ASSET_FANART_ID),'/my/nice/assets/fans/')
         

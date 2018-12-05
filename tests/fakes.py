@@ -18,7 +18,7 @@ class FakeRomSetRepository(ROMSetRepository):
     def delete_all_by_launcher(self, launcher):
         self.roms = {}      
 
-class FakeExecutor(Executor):
+class FakeExecutor(ExecutorABC):
     
     def getActualApplication(self):
         return self.actualApplication

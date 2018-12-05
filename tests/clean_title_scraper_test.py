@@ -47,10 +47,10 @@ class Test_clean_title_scraper(unittest.TestCase):
     def test_scraping_metadata_for_game(self):
         
         # arrange
-        settings = self.get_test_settings()
-
-        launcher = StandardRomLauncher(None, settings, None, None, None, False)
-        launcher.update_platform('Nintendo NES')
+        settings = self.get_test_settings()        
+        
+        launcher = StandardRomLauncher(None, settings, None, None, None, None, None)
+        launcher.set_platform('Nintendo NES')
         
         rom = ROM({'id': 1234})
         fakeRomPath = FakeFile('/my/nice/roms/castlevania [ROM] (test) v2.zip')
@@ -76,8 +76,8 @@ class Test_clean_title_scraper(unittest.TestCase):
             g_assetFactory.get_asset_info(ASSET_BOXBACK_ID), 
             g_assetFactory.get_asset_info(ASSET_SNAP_ID)]
         
-        launcher = StandardRomLauncher(None, settings, None, None, None, False)
-        launcher.update_platform('Nintendo NES')
+        launcher = StandardRomLauncher(None, settings, None, None, None, None, None)
+        launcher.set_platform('Nintendo NES')
         launcher.set_asset_path(g_assetFactory.get_asset_info(ASSET_BOXFRONT_ID),'/my/nice/assets/front/')
         launcher.set_asset_path(g_assetFactory.get_asset_info(ASSET_BOXBACK_ID),'/my/nice/assets/back/')
         launcher.set_asset_path(g_assetFactory.get_asset_info(ASSET_SNAP_ID),'/my/nice/assets/snaps/')
