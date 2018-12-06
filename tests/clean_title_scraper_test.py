@@ -10,15 +10,7 @@ from resources.net_IO import *
 from resources.scrap import *
 from resources.objects import *
         
-def read_file(path):
-    with open(path, 'r') as f:
-        return f.read()
-    
-def read_file_as_json(path):
-    file_data = read_file(path)
-    return json.loads(file_data, encoding = 'utf-8')
-
-class Test_mobygames_scraper(unittest.TestCase):
+class Test_clean_title_scraper(unittest.TestCase):
     
     ROOT_DIR = ''
     TEST_DIR = ''
@@ -37,27 +29,6 @@ class Test_mobygames_scraper(unittest.TestCase):
         print 'TEST ASSETS DIR: {}'.format(cls.TEST_ASSETS_DIR)
         print '---------------------------------------------------------------------------'
 
-    def mocked_gamesdb(url):
-
-        mocked_json_file = '';
-
-        if 'format=brief&title=' in url:
-            mocked_json_file = Test_mobygames_scraper.TEST_ASSETS_DIR + "\\mobygames_castlevania_list.json"
-    
-        if 'screenshots' in url:
-            mocked_json_file = Test_mobygames_scraper.TEST_ASSETS_DIR + "\\mobygames_castlevania_screenshots.json"
-    
-        if 'covers' in url:
-            mocked_json_file = Test_mobygames_scraper.TEST_ASSETS_DIR + "\\mobygames_castlevania_covers.json"
-                            
-        if re.search('/games/(\d*)\?', url):
-            mocked_json_file = Test_mobygames_scraper.TEST_ASSETS_DIR + "\\mobygames_castlevania.json"
-            
-        if mocked_json_file == '':
-            return net_get_URL_as_json(url)
-
-        print 'reading mocked data from file: {}'.format(mocked_json_file)
-        return read_file_as_json(mocked_json_file)
 
     def get_test_settings(self):
         settings = {}
@@ -73,33 +44,29 @@ class Test_mobygames_scraper(unittest.TestCase):
 
         return settings
 
-    @patch('resources.scrap.net_get_URL_as_json', side_effect = mocked_gamesdb)
-    def test_scraping_metadata_for_game(self, mock_json_downloader):
+    def test_scraping_metadata_for_game(self):
         
         # arrange
-        settings = self.get_test_settings()
+        settings = self.get_test_settings()        
         
         launcher = StandardRomLauncher(None, settings, None, None, None, None, None)
         launcher.set_platform('Nintendo NES')
         
         rom = ROM({'id': 1234})
-        fakeRomPath = FakeFile('/my/nice/roms/castlevania.zip')
+        fakeRomPath = FakeFile('/my/nice/roms/castlevania [ROM] (test) v2.zip')
 
-        target = MobyGamesScraper(settings, launcher)
+        target = CleanTitleScraper(settings, launcher)
 
         # act
-        actual = target.scrape_metadata('castlevania', fakeRomPath, rom)
+        actual = target.scrape_metadata('castlevania x', fakeRomPath, rom)
                 
         # assert
         self.assertTrue(actual)
-        self.assertEqual(u'Castlevania', rom.get_name())
+        self.assertEqual(u'castlevania v2', rom.get_name())
         print rom
 
         
-    # add actual mobygames apikey above and comment out patch attributes to do live tests
-    @patch('resources.scrap.net_get_URL_as_json', side_effect = mocked_gamesdb)
-    @patch('resources.scrap.net_download_img')
-    def test_scraping_assets_for_game(self, mock_img_downloader, mock_json_downloader):
+    def test_scraping_assets_for_game(self):
 
         # arrange
         settings = self.get_test_settings()
@@ -117,8 +84,8 @@ class Test_mobygames_scraper(unittest.TestCase):
         
         rom = ROM({'id': 1234})
         fakeRomPath = FakeFile('/my/nice/roms/castlevania.zip')
-
-        target = MobyGamesScraper(settings, launcher)
+        
+        target = CleanTitleScraper(settings, launcher)
 
         # act
         actuals = []
@@ -128,6 +95,6 @@ class Test_mobygames_scraper(unittest.TestCase):
                 
         # assert
         for actual in actuals:
-            self.assertTrue(actual)
+            self.assertFalse(actual)
         
         print rom
