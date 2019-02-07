@@ -1,9 +1,8 @@
 ﻿<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<addon id="plugin.program.AEL" name="Advanced Emulator Launcher" version="0.10.0-alpha" provider-name="Wintermute0110">
+<addon id="plugin.program.AEL" name="Advanced Emulator Launcher (dev version)" version="0.10.0-alpha" provider-name="Wintermute0110">
   <requires>
-    <!--
-        Check addon versions in https://github.com/xbmc/xbmc/tree/master/addons
-        Change the branch according to the Kodi version.
+    <!-- Check addon versions in https://github.com/xbmc/xbmc/tree/master/addons
+         Change the branch according to the Kodi version.
     -->
     <!-- 2.25.0 Krypton 17 -->
     <import addon="xbmc.python" version="2.25.0" />
@@ -12,10 +11,9 @@
     <provides>executable</provides>
   </extension>
   <extension point="xbmc.addon.metadata">
-    <!--
-        This must be commented when releasing the addon.
-        Kodi must be restarted if this setting is changed.
-        See https://github.com/xbmc/xbmc/pull/13814
+    <!-- This must be commented when releasing the addon.
+         Kodi must be restarted if this setting is changed.
+         See https://github.com/xbmc/xbmc/pull/13814
     -->
     <reuselanguageinvoker>false</reuselanguageinvoker>
     <summary lang="en_GB">Launch any emulators/apps from Kodi.</summary>
