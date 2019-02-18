@@ -509,13 +509,14 @@ ASSET_INFO_KEY_DICT = {
 # This class uses the asset_infos, dictionary of AssetInfo indexed by asset_ID
 #
 class AssetInfoFactory(object):
+        
     def get_all(self):
-        return list(asset_infos.values())
+        return list(ASSET_INFO_DICT.values())
 
     def get_asset_kinds_for_roms(self):
         rom_asset_kinds = []
         for rom_asset_kind in ROM_ASSET_LIST:
-            rom_asset_kinds.append(asset_infos[rom_asset_kind])
+            rom_asset_kinds.append(ASSET_INFO_DICT[rom_asset_kind])
 
         return rom_asset_kinds
 
@@ -528,7 +529,7 @@ class AssetInfoFactory(object):
         return asset_info_list
 
     def get_asset_info(self, asset_kind):
-        asset_info = asset_infos.get(asset_kind, None)
+        asset_info = ASSET_INFO_DICT.get(asset_kind, None)
 
         if asset_info is None:
             log_error('get_asset_info() Wrong asset_kind = {0}'.format(asset_kind))
@@ -556,7 +557,7 @@ g_assetFactory = AssetInfoFactory()
 # Returns a FileName object
 #
 def assets_get_path_noext_DIR(Asset, AssetPath, ROM):
-    return AssetPath + ROM.getBase_noext()
+    return AssetPath + ROM.getBaseNoExt()
 
 #
 # Scheme SUFIX uses suffixes for artwork. All artwork assets are stored in the same directory.
@@ -1490,7 +1491,7 @@ class VirtualCategory(MetaDataItemABC):
 # -------------------------------------------------------------------------------------------------
 class ROM(MetaDataItemABC):
     def __init__(self, rom_data = None):
-        super(ROM, self).__init__(rom_data)
+        super(ROM, self).__init__(None, None, rom_data) #todo
         if self.entity_data is None:
             self.entity_data = {
              'id' : misc_generate_random_SID(),
@@ -4922,7 +4923,7 @@ class RomScannersFactory(object):
         self.reports_dir = PATHS.REPORTS_DIR
         self.addon_dir = PATHS.ADDON_DATA_DIR
 
-    def create(self, launcher, scrapers):
+    def create(self, launcher, scraping_strategy):
         launcherType = launcher.get_launcher_type()
         log_info('RomScannersFactory: Creating romscanner for {}'.format(launcherType))
 
@@ -4930,12 +4931,12 @@ class RomScannersFactory(object):
             return NullScanner(launcher, self.settings)
         
         if launcherType == LAUNCHER_STEAM:
-            return SteamScanner(self.reports_dir, self.addon_dir, launcher, self.settings, scrapers)
+            return SteamScanner(self.reports_dir, self.addon_dir, launcher, self.settings, scraping_strategy)
 
         if launcherType == LAUNCHER_NVGAMESTREAM:
-            return NvidiaStreamScanner(self.reports_dir, self.addon_dir, launcher, romset, self.settings, scrapers)
-
-        return RomFolderScanner(self.reports_dir, self.addon_dir, launcher, self.settings, scrapers)
+            return NvidiaStreamScanner(self.reports_dir, self.addon_dir, launcher, romset, self.settings, scraping_strategy)
+                
+        return RomFolderScanner(self.reports_dir, self.addon_dir, launcher, self.settings, scraping_strategy)
 
 class ScannerStrategyABC(KodiProgressDialogStrategy):
     __metaclass__ = abc.ABCMeta
@@ -4970,12 +4971,12 @@ class NullScanner(ScannerStrategyABC):
 class RomScannerStrategy(ScannerStrategyABC):
     __metaclass__ = abc.ABCMeta
 
-    def __init__(self, reports_dir, addon_dir, launcher, settings, scrapers):
+    def __init__(self, reports_dir, addon_dir, launcher, settings, scraping_strategy):
         
         self.reports_dir = reports_dir
         self.addon_dir = addon_dir
                 
-        self.scrapers = scrapers
+        self.scraping_strategy = scraping_strategy
 
         super(RomScannerStrategy, self).__init__(launcher, settings)
 
@@ -5256,25 +5257,28 @@ class RomFolderScanner(RomScannerStrategy):
             new_rom.set_file(ROM)
 
             searchTerm = text_format_ROM_name_for_scraping(ROM.getBase_noext())
-
-            if self.scrapers:
-                for scraper in self.scrapers:
-                    self._updateProgressMessage(file_text, 'Scraping {0}...'.format(scraper.getName()))
-                    scraper.scrape(searchTerm, ROM, new_rom)
-            
-            romdata = new_rom.get_data()
-            log_verb('Set Title     file "{0}"'.format(romdata['s_title']))
-            log_verb('Set Snap      file "{0}"'.format(romdata['s_snap']))
-            log_verb('Set Boxfront  file "{0}"'.format(romdata['s_boxfront']))
-            log_verb('Set Boxback   file "{0}"'.format(romdata['s_boxback']))
-            log_verb('Set Cartridge file "{0}"'.format(romdata['s_cartridge']))
-            log_verb('Set Fanart    file "{0}"'.format(romdata['s_fanart']))
-            log_verb('Set Banner    file "{0}"'.format(romdata['s_banner']))
-            log_verb('Set Clearlogo file "{0}"'.format(romdata['s_clearlogo']))
-            log_verb('Set Flyer     file "{0}"'.format(romdata['s_flyer']))
-            log_verb('Set Map       file "{0}"'.format(romdata['s_map']))
-            log_verb('Set Manual    file "{0}"'.format(romdata['s_manual']))
-            log_verb('Set Trailer   file "{0}"'.format(romdata['s_trailer']))
+            self._updateProgressMessage(steamGame['name'], 'Scraping {0}...'.format(ROM.getBase_noext()))
+            self.scraping_strategy.scrape(searchTerm, ROM, new_rom)
+            # !!!! MOVED CODE BELOW TO SCRAPING_STRATEGY UNTILL PROPERLY MERGED !!!
+            #
+            #if self.scrapers:
+            #    for scraper in self.scrapers:
+            #        self._updateProgressMessage(file_text, 'Scraping {0}...'.format(scraper.getName()))
+            #        scraper.scrape(searchTerm, ROM, new_rom)
+            #
+            #romdata = new_rom.get_data()
+            #log_verb('Set Title     file "{0}"'.format(romdata['s_title']))
+            #log_verb('Set Snap      file "{0}"'.format(romdata['s_snap']))
+            #log_verb('Set Boxfront  file "{0}"'.format(romdata['s_boxfront']))
+            #log_verb('Set Boxback   file "{0}"'.format(romdata['s_boxback']))
+            #log_verb('Set Cartridge file "{0}"'.format(romdata['s_cartridge']))
+            #log_verb('Set Fanart    file "{0}"'.format(romdata['s_fanart']))
+            #log_verb('Set Banner    file "{0}"'.format(romdata['s_banner']))
+            #log_verb('Set Clearlogo file "{0}"'.format(romdata['s_clearlogo']))
+            #log_verb('Set Flyer     file "{0}"'.format(romdata['s_flyer']))
+            #log_verb('Set Map       file "{0}"'.format(romdata['s_map']))
+            #log_verb('Set Manual    file "{0}"'.format(romdata['s_manual']))
+            #log_verb('Set Trailer   file "{0}"'.format(romdata['s_trailer']))
             
             # --- This was the first ROM in a multidisc set ---
             if launcher_multidisc and MDSet.isMultiDisc and not MultiDiscInROMs:
@@ -5393,24 +5397,27 @@ class SteamScanner(RomScannerStrategy):
 
                 searchTerm = steamGame['name']
                 
-                if self.scrapers:
-                    for scraper in self.scrapers:
-                        self._updateProgressMessage(steamGame['name'], 'Scraping {0}...'.format(scraper.getName()))
-                        scraper.scrape(searchTerm, romPath, new_rom)
-                
-                romdata = new_rom.get_data()
-                log_verb('Set Title     file "{0}"'.format(romdata['s_title']))
-                log_verb('Set Snap      file "{0}"'.format(romdata['s_snap']))
-                log_verb('Set Boxfront  file "{0}"'.format(romdata['s_boxfront']))
-                log_verb('Set Boxback   file "{0}"'.format(romdata['s_boxback']))
-                log_verb('Set Cartridge file "{0}"'.format(romdata['s_cartridge']))
-                log_verb('Set Fanart    file "{0}"'.format(romdata['s_fanart']))
-                log_verb('Set Banner    file "{0}"'.format(romdata['s_banner']))
-                log_verb('Set Clearlogo file "{0}"'.format(romdata['s_clearlogo']))
-                log_verb('Set Flyer     file "{0}"'.format(romdata['s_flyer']))
-                log_verb('Set Map       file "{0}"'.format(romdata['s_map']))
-                log_verb('Set Manual    file "{0}"'.format(romdata['s_manual']))
-                log_verb('Set Trailer   file "{0}"'.format(romdata['s_trailer']))
+                self._updateProgressMessage(steamGame['name'], 'Scraping {0}...'.format(steamGame['name']))
+                self.scraping_strategy.scrape(searchTerm, romPath, new_rom)
+                # !!!! MOVED CODE BELOW TO SCRAPING_STRATEGY UNTILL PROPERLY MERGED !!!
+                #if self.scrapers:
+                #    for scraper in self.scrapers:
+                #        self._updateProgressMessage(steamGame['name'], 'Scraping {0}...'.format(scraper.getName()))
+                #        scraper.scrape(searchTerm, romPath, new_rom)
+                #
+                #romdata = new_rom.get_data()
+                #log_verb('Set Title     file "{0}"'.format(romdata['s_title']))
+                #log_verb('Set Snap      file "{0}"'.format(romdata['s_snap']))
+                #log_verb('Set Boxfront  file "{0}"'.format(romdata['s_boxfront']))
+                #log_verb('Set Boxback   file "{0}"'.format(romdata['s_boxback']))
+                #log_verb('Set Cartridge file "{0}"'.format(romdata['s_cartridge']))
+                #log_verb('Set Fanart    file "{0}"'.format(romdata['s_fanart']))
+                #log_verb('Set Banner    file "{0}"'.format(romdata['s_banner']))
+                #log_verb('Set Clearlogo file "{0}"'.format(romdata['s_clearlogo']))
+                #log_verb('Set Flyer     file "{0}"'.format(romdata['s_flyer']))
+                #log_verb('Set Map       file "{0}"'.format(romdata['s_map']))
+                #log_verb('Set Manual    file "{0}"'.format(romdata['s_manual']))
+                #log_verb('Set Trailer   file "{0}"'.format(romdata['s_trailer']))
             
                 new_roms.append(new_rom)
                             
@@ -5526,24 +5533,26 @@ class NvidiaStreamScanner(RomScannerStrategy):
                 
                 searchTerm = streamableGame['AppTitle']
                 
-                if self.scrapers:
-                    for scraper in self.scrapers:
-                        self._updateProgressMessage(streamableGame['AppTitle'], 'Scraping {0}...'.format(scraper.getName()))
-                        scraper.scrape(searchTerm, romPath, new_rom)
-            
-                romdata = new_rom.get_data()
-                log_verb('Set Title     file "{0}"'.format(romdata['s_title']))
-                log_verb('Set Snap      file "{0}"'.format(romdata['s_snap']))
-                log_verb('Set Boxfront  file "{0}"'.format(romdata['s_boxfront']))
-                log_verb('Set Boxback   file "{0}"'.format(romdata['s_boxback']))
-                log_verb('Set Cartridge file "{0}"'.format(romdata['s_cartridge']))
-                log_verb('Set Fanart    file "{0}"'.format(romdata['s_fanart']))
-                log_verb('Set Banner    file "{0}"'.format(romdata['s_banner']))
-                log_verb('Set Clearlogo file "{0}"'.format(romdata['s_clearlogo']))
-                log_verb('Set Flyer     file "{0}"'.format(romdata['s_flyer']))
-                log_verb('Set Map       file "{0}"'.format(romdata['s_map']))
-                log_verb('Set Manual    file "{0}"'.format(romdata['s_manual']))
-                log_verb('Set Trailer   file "{0}"'.format(romdata['s_trailer']))
+                self._updateProgressMessage(steamGame['name'], 'Scraping {0}...'.format(streamableGame['AppTitle']))
+                self.scraping_strategy.scrape(searchTerm, romPath, new_rom)
+                #if self.scrapers:
+                #    for scraper in self.scrapers:
+                #        self._updateProgressMessage(streamableGame['AppTitle'], 'Scraping {0}...'.format(scraper.getName()))
+                #        scraper.scrape(searchTerm, romPath, new_rom)
+                #
+                #romdata = new_rom.get_data()
+                #log_verb('Set Title     file "{0}"'.format(romdata['s_title']))
+                #log_verb('Set Snap      file "{0}"'.format(romdata['s_snap']))
+                #log_verb('Set Boxfront  file "{0}"'.format(romdata['s_boxfront']))
+                #log_verb('Set Boxback   file "{0}"'.format(romdata['s_boxback']))
+                #log_verb('Set Cartridge file "{0}"'.format(romdata['s_cartridge']))
+                #log_verb('Set Fanart    file "{0}"'.format(romdata['s_fanart']))
+                #log_verb('Set Banner    file "{0}"'.format(romdata['s_banner']))
+                #log_verb('Set Clearlogo file "{0}"'.format(romdata['s_clearlogo']))
+                #log_verb('Set Flyer     file "{0}"'.format(romdata['s_flyer']))
+                #log_verb('Set Map       file "{0}"'.format(romdata['s_map']))
+                #log_verb('Set Manual    file "{0}"'.format(romdata['s_manual']))
+                #log_verb('Set Trailer   file "{0}"'.format(romdata['s_trailer']))
             
                 new_roms.append(new_rom)
                             

@@ -518,7 +518,7 @@ def text_get_multidisc_info(ROM_FN):
 #
 def text_get_URL_extension(url):
     
-    urlPath = FileNameFactory.create(url)
+    urlPath = FileName(url)
     return urlPath.getExt()
 
 #
@@ -541,7 +541,7 @@ def misc_add_file_cache(dir_FN):
         log_debug('misc_add_file_cache() Empty dir_str. Exiting')
         return
 
-    log_debug('misc_add_file_cache() Scanning OP "{0}"'.format(dir_FN.getOriginalPath()))
+    log_debug('misc_add_file_cache() Scanning OP "{0}"'.format(dir_FN.getPath()))
 
     file_list = dir_FN.scanFilesInPathAsFileNameObjects()
     # lower all filenames for easier matching
