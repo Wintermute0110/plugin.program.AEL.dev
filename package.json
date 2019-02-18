@@ -1,9 +1,9 @@
 {
     "name": "plugin.program.AEL",
-    "version": "0.10.0-alpha",
+    "version": "0.10.0-alpha.0",
     "scripts": {
         "build": "addon build",
-        "build-alpha": "addon versioning --semver prelease --tag alpha && npm run build",
+        "build-alpha": "addon versioning --semver prerelease --tag alpha && npm run build",
         "build-patch": "addon versioning --semver patch && npm run build",
         "build-minor": "addon versioning --semver minor && npm run build",
         "build-major": "addon versioning --semver major && npm run build",
@@ -24,7 +24,7 @@
         "build-install-major": "npm run build-major && addon install"
     },
     "devDependencies": {
-        "kodi-addon-builder": "^1.2.1"
+        "kodi-addon-builder": "^1.2.3"
     },
     "dependencies": {},
     "repository": {
