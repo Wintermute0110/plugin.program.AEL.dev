@@ -4281,15 +4281,18 @@ class Main:
             listitem.setInfo('video', {'title'   : rom_name,         'year'    : rom['m_year'],
                                        'genre'   : rom['m_genre'],   'studio'  : rom['m_developer'],
                                        'rating'  : rom['m_rating'],  'plot'    : rom['m_plot'],
-                                       'trailer' : rom['s_trailer'], 'overlay' : ICON_OVERLAY })
+                                       'trailer' : rom['s_trailer'], 'overlay' : ICON_OVERLAY,
+                                       'path'    : rom['filename'] })
         else:
             listitem.setInfo('video', {'title'   : rom_name,
                                        'genre'   : rom['m_genre'],   'studio'  : rom['m_developer'],
                                        'rating'  : rom['m_rating'],  'plot'    : rom['m_plot'],
-                                       'trailer' : rom['s_trailer'], 'overlay' : ICON_OVERLAY })
+                                       'trailer' : rom['s_trailer'], 'overlay' : ICON_OVERLAY,
+                                       'path'    : rom['filename'] })
         listitem.setProperty('nplayers', rom['m_nplayers'])
         listitem.setProperty('esrb', rom['m_esrb'])
         listitem.setProperty('platform', platform)
+        listitem.setProperty('filename', rom['filename'])
         listitem.setProperty(AEL_CONTENT_LABEL, AEL_CONTENT_VALUE_ROM)
 
         # --- Set ROM artwork ---
