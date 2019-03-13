@@ -501,6 +501,7 @@ class Main:
         # self.settings['scraper_fanart_order']     = int(o.getSetting('scraper_fanart_order'))
 
         # --- Display ---
+        self.settings['display_category_mode']    = int(o.getSetting('display_category_mode'))
         self.settings['display_launcher_notify']  = True if o.getSetting('display_launcher_notify') == 'true' else False
         self.settings['display_hide_finished']    = True if o.getSetting('display_hide_finished') == 'true' else False
         self.settings['display_launcher_roms']    = True if o.getSetting('display_launcher_roms') == 'true' else False
@@ -3287,9 +3288,25 @@ class Main:
         self._misc_set_AEL_Content(AEL_CONTENT_VALUE_LAUNCHERS)
         self._misc_clear_AEL_Launcher_Content()
 
-        # --- For every category, add it to the listbox. Order alphabetically by name ---
-        for key in sorted(self.categories, key = lambda x : self.categories[x]['m_name']):
-            self._gui_render_category_row(self.categories[key], key)
+        # --- Render categories in classic mode or in flat mode ---
+        # <setting id="display_category_mode" values="Standard|Flat"/>
+        if self.settings['display_category_mode'] == 0:
+            # For every category, add it to the listbox. Order alphabetically by name.
+            for cat_id in sorted(self.categories, key = lambda x : self.categories[x]['m_name']):
+                self._gui_render_category_row(self.categories[cat_id], cat_id)
+        else:
+            # Traverse categories and sort alphabetically.
+            for cat_id in sorted(self.categories, key = lambda x : self.categories[x]['m_name']):
+                # Get launchers of this category alphabetically sorted.
+                launcher_list = []
+                for launcher_id in sorted(self.launchers, key = lambda x : self.launchers[x]['m_name']):
+                    launcher = self.launchers[launcher_id]
+                    if launcher['categoryID'] == cat_id: launcher_list.append(launcher)
+                # Render list of launchers for this category.
+                cat_name = self.categories[cat_id]['m_name']
+                for launcher in launcher_list:
+                    launcher_name = '[COLOR thistle]{0}[/COLOR] - {1}'.format(cat_name, launcher['m_name'])
+                    self._gui_render_launcher_row(launcher, launcher_name)
 
         # --- Render categoryless launchers. Order alphabetically by name ---
         catless_launchers = {}
@@ -3792,14 +3809,14 @@ class Main:
             self._gui_render_launcher_row(self.launchers[key])
         xbmcplugin.endOfDirectory(handle = self.addon_handle, succeeded = True, cacheToDisc = False)
 
-    def _gui_render_launcher_row(self, launcher_dic):
+    def _gui_render_launcher_row(self, launcher_dic, launcher_raw_name = None):
         # --- Do not render row if launcher finished ---
         if launcher_dic['finished'] and self.settings['display_hide_finished']:
             return
 
         # --- Launcher tags ---
         # >> Do not plot ROM count on standalone launchers! Launcher is standalone if rompath = ''
-        launcher_name = launcher_raw_name = launcher_dic['m_name']
+        if launcher_raw_name is None: launcher_raw_name = launcher_dic['m_name']
         if self.settings['display_launcher_roms']:
             if launcher_dic['rompath']:
                 # >> ROM launcher with DAT file and ROM audit information.
