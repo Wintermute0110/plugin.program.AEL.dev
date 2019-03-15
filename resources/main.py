@@ -86,8 +86,8 @@ class AEL_Paths:
         self.ADDON_DATA_DIR   = self.ADDONS_DATA_DIR.pjoin(__addon_id__, isdir = True)
         self.PROFILE_DIR      = FileName('special://profile', isdir = True)
         self.HOME_DIR         = FileName('special://home', isdir = True)
-        self.ADDONS_DIR       = self.HOME_DIR.pjoin('addons', isdir = True)
-        self.ADDON_CODE_DIR   = self.ADDONS_DIR.pjoin(__addon_id__, isdir = True)
+        self.ADDONS_CODE_DIR  = self.HOME_DIR.pjoin('addons', isdir = True)
+        self.ADDON_CODE_DIR   = self.ADDONS_CODE_DIR.pjoin(__addon_id__, isdir = True)
         self.ICON_FILE_PATH   = self.ADDON_CODE_DIR.pjoin('media/icon.png')
         self.FANART_FILE_PATH = self.ADDON_CODE_DIR.pjoin('media/fanart.jpg')
 
