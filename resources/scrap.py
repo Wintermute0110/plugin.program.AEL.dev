@@ -48,7 +48,7 @@ class ScraperFactory(KodiProgressDialogStrategy):
         # ~~~ Check asset dirs and disable scanning for unset dirs ~~~
         unconfigured_name_list = []
         rom_asset_infos = g_assetFactory.get_asset_kinds_for_roms()
-        i = 0;
+        i = 0
 
         asset_scrapers = {}
         for asset_info in rom_asset_infos:
@@ -207,14 +207,20 @@ class ScrapingStrategy(object):
         self.metadata_scraper = metadata_scraper
         self.asset_scrapers = asset_scrapers
 
-    def scrape(self, search_term, rom_path, rom):
+    # Actual scrape process
+    # Leave assets_to_scrape with none value if you want to scrape all available assets
+    def scrape(self, search_term, rom_path, rom, scrape_metadata = True, assets_to_scrape = None):
                 
         #self._updateProgressMessage(file_text, 'Scraping {0}...'.format(scraper.getName()))
-        if self.metadata_scraper:
+        if scrape_metadata and self.metadata_scraper:
             log_debug('ScrapingStrategy:: Scraping metadata with scraper \'{0}\''.format(self.metadata_scraper.getName()))
             self.metadata_scraper.scrape_metadata(search_term, rom_path, rom)
 
         for asset_info in self.asset_scrapers.keys():
+            
+            if not asset_info in assets_to_scrape:
+                continue
+                
             scraper = self.asset_scrapers[asset_info]
 
             log_debug('ScrapingStrategy:: Scraping asset {} with scraper \'{}\''.format(asset_info.name, scraper.getName()))
