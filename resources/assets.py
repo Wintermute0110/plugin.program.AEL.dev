@@ -18,48 +18,7 @@ from __future__ import unicode_literals
 import os
 
 # --- AEL packages ---
-from utils import *
-from utils_kodi import *
-
-# --- Define "constants" ---
-ASSET_ICON       = 100
-ASSET_FANART     = 200
-ASSET_BANNER     = 300
-ASSET_POSTER     = 400
-ASSET_CLEARLOGO  = 500
-ASSET_CONTROLLER = 600
-ASSET_TRAILER    = 700
-ASSET_TITLE      = 800
-ASSET_SNAP       = 900
-ASSET_BOXFRONT   = 1000
-ASSET_BOXBACK    = 1100
-ASSET_CARTRIDGE  = 1200
-ASSET_FLYER      = 1300  # ROMs have FLYER, Categories/Launchers/Collections have POSTER
-ASSET_MAP        = 1400
-ASSET_MANUAL     = 1500
-
-#
-# The order of this list must match order in dialog.select() in the GUI, or bad things will happen.
-#
-CATEGORY_ASSET_LIST = [
-    ASSET_ICON, ASSET_FANART, ASSET_BANNER, ASSET_POSTER, ASSET_CLEARLOGO, ASSET_TRAILER
-]
-
-LAUNCHER_ASSET_LIST = [
-    ASSET_ICON, ASSET_FANART, ASSET_BANNER, ASSET_POSTER, ASSET_CLEARLOGO, ASSET_CONTROLLER, ASSET_TRAILER
-]
-
-ROM_ASSET_LIST = [
-    ASSET_TITLE,     ASSET_SNAP,   ASSET_BOXFRONT, ASSET_BOXBACK,
-    ASSET_CARTRIDGE, ASSET_FANART, ASSET_BANNER,   ASSET_CLEARLOGO,  
-    ASSET_FLYER,     ASSET_MAP,    ASSET_MANUAL,   ASSET_TRAILER
-]
-
-# --- Plugin will search these file extensions for assets ---
-# >> Check http://kodi.wiki/view/advancedsettings.xml#videoextensions
-IMAGE_EXTENSIONS   = ['png', 'jpg', 'gif', 'bmp']
-MANUAL_EXTENSIONS  = ['pdf']
-TRAILER_EXTENSIONS = ['mov', 'divx', 'xvid', 'wmv', 'avi', 'mpg', 'mpeg', 'mp4', 'mkv', 'avc']
+from .utils import *
 
 #
 # Get extensions to search for files
