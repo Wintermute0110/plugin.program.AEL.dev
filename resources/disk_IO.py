@@ -496,6 +496,7 @@ def fs_write_catfile(categories_file, categories, launchers, update_timestamp = 
             str_list.append(XML_text('roms_default_poster', launcher['roms_default_poster']))
             str_list.append(XML_text('roms_default_clearlogo', launcher['roms_default_clearlogo']))
             str_list.append(XML_text('ROM_asset_path', launcher['ROM_asset_path']))
+            str_list.append(XML_text('path_3dbox', launcher['path_3dbox']))
             str_list.append(XML_text('path_title', launcher['path_title']))
             str_list.append(XML_text('path_snap', launcher['path_snap']))
             str_list.append(XML_text('path_boxfront', launcher['path_boxfront']))

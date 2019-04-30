@@ -6759,6 +6759,7 @@ class Main:
         info_text += "[COLOR violet]pclone_status[/COLOR]: '{0}'\n".format(rom['pclone_status'])
         info_text += "[COLOR violet]cloneof[/COLOR]: '{0}'\n".format(rom['cloneof'])
         # >> Assets/artwork
+        info_text += "[COLOR violet]s_3dbox[/COLOR]: '{0}'\n".format(rom['s_3dbox'])
         info_text += "[COLOR violet]s_title[/COLOR]: '{0}'\n".format(rom['s_title'])
         info_text += "[COLOR violet]s_snap[/COLOR]: '{0}'\n".format(rom['s_snap'])
         info_text += "[COLOR violet]s_boxfront[/COLOR]: '{0}'\n".format(rom['s_boxfront'])
@@ -6856,6 +6857,7 @@ class Main:
         info_text += "[COLOR violet]roms_default_poster[/COLOR]: '{0}'\n".format(launcher['roms_default_poster'])
         info_text += "[COLOR violet]roms_default_clearlogo[/COLOR]: '{0}'\n".format(launcher['roms_default_clearlogo'])
         info_text += "[COLOR violet]ROM_asset_path[/COLOR]: '{0}'\n".format(launcher['ROM_asset_path'])
+        info_text += "[COLOR violet]path_3dbox[/COLOR]: '{0}'\n".format(launcher['path_3dbox'])
         info_text += "[COLOR violet]path_title[/COLOR]: '{0}'\n".format(launcher['path_title'])
         info_text += "[COLOR violet]path_snap[/COLOR]: '{0}'\n".format(launcher['path_snap'])
         info_text += "[COLOR violet]path_boxfront[/COLOR]: '{0}'\n".format(launcher['path_boxfront'])
