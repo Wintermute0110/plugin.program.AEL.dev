@@ -1,26 +1,32 @@
 ﻿<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<addon id="plugin.program.advanced.emulator.launcher" name="Advanced Emulator Launcher"
-       version="0.9.8-alpha" provider-name="Wintermute0110">
+<addon id="plugin.program.advanced.emulator.launcher" name="Advanced Emulator Launcher" version="0.9.8-alpha" provider-name="Wintermute0110">
   <requires>
-    <!-- See https://github.com/xbmc/xbmc/blob/master/addons/xbmc.python/addon.xml
-         2.25.0  Krypton 17.x
-         x.yy.z  Leia 18.x
-         x.yy.z  M**** 19.x
+    <!--
+        See https://github.com/xbmc/xbmc/blob/master/addons/xbmc.python/addon.xml
+        2.25.0 Kodi 17 Krypton
+        2.26.0 Kodi 18 Leia
+        2.27.0 Kodi 19 Matrix (actual version not fixed yet).
     -->
     <import addon="xbmc.python" version="2.25.0" />
   </requires>
   <extension point="xbmc.python.pluginsource" library="addon.py">
-    <provides>executable</provides>
+    <provides>executable game</provides>
   </extension>
   <extension point="xbmc.addon.metadata">
-    <summary lang="en">Start any emulators/apps from Kodi.</summary>
-    <description lang="en">Multi-emulator front-end and general application launcher for Kodi. Includes offline scrapers for MAME and No-Intro ROM sets and also supports scrapping ROM metadata and artwork online. ROM auditing for No-Intro ROMs using No-Intro or Redump XML DAT files. Launching of games and standalone applications is also available.</description>
-    <platform>all</platform>
+    <!--
+        This must be commented when releasing the addon.
+        Kodi must be restarted if this setting is changed.
+        See https://github.com/xbmc/xbmc/pull/13814
+    -->
+    <reuselanguageinvoker>false</reuselanguageinvoker>
+    <summary lang="en_GB">Start any emulators/apps from Kodi.</summary>
+    <description lang="en_GB">Multi-emulator front-end and general application launcher for Kodi. Includes offline scrapers for MAME and No-Intro ROM sets and also supports scrapping ROM metadata and artwork online. ROM auditing for No-Intro ROMs using No-Intro or Redump XML DAT files. Launching of games and standalone applications is also available.</description>
+    <platform>android freebsd ios linux osx windows</platform>
     <license>GNU General Public License version 2</license>
-    <email>wintermute0110@gmail.com</email>    
+    <email>wintermute0110@gmail.com</email>
     <forum>http://forum.kodi.tv/showthread.php?tid=287826</forum>
-    <website>https://github.com/Wintermute0110/plugin.program.advanced.emulator.launcher/wiki</website>
-    <source>https://github.com/Wintermute0110/plugin.program.advanced.emulator.launcher</source>
+    <website>https://github.com/Wintermute0110/plugin.program.AEL/wiki</website>
+    <source>https://github.com/Wintermute0110/plugin.program.AEL</source>
     <assets>
       <icon>media/icon.png</icon>
       <fanart>media/fanart.jpg</fanart>
