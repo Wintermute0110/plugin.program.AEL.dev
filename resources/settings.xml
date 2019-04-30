@@ -59,7 +59,7 @@
 -->
 <category label="Display">
     <setting id="separator" type="lsep" label="General"/>
-    <setting label="Category display mode" type="enum" id="display_category_mode" default="0" values="Standard|Flat"/>
+    <setting label="Categories display mode" type="enum" id="display_category_mode" default="0" values="Standard|Flat"/>
     <setting label="Launching application notification" type="bool" id="display_launcher_notify" default="true" />
     <setting label="Hide categories/launchers/ROMs marked as finished" type="bool" id="display_hide_finished" default="false" />
     <setting label="Display number of ROMs in launchers" type="bool" id="display_launcher_roms" default="true" />
