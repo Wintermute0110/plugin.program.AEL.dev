@@ -3731,13 +3731,13 @@ class Main:
         vlauncher_icon   = AEL_ADDON_DIR.pjoin('media/theme/Browse_LaunchBox_Offline_icon.png').getPath()
         vlauncher_fanart = AEL_FANART_FILE_PATH.getPath()
         vlauncher_poster = AEL_ADDON_DIR.pjoin('media/theme/Browse_LaunchBox_Offline_poster.png').getPath()
-        listitem.setProperty(AEL_CONTENT_LABEL, AEL_CONTENT_VALUE_ROM_LAUNCHER)
 
         listitem = xbmcgui.ListItem(title_str)
         listitem.setInfo('video', {'title' : title_str, 'plot' : plot_text, 'overlay' : 4 })
         listitem.setArt({'icon' : vlauncher_icon, 'fanart' : vlauncher_fanart, 'poster' : vlauncher_poster})
         # >> Set platform property to render platform icon on skins.
         listitem.setProperty('platform', platform)
+        listitem.setProperty(AEL_CONTENT_LABEL, AEL_CONTENT_VALUE_ROM_LAUNCHER)
 
         commands = []
         commands.append(('Kodi File Manager', 'ActivateWindow(filemanager)'))
