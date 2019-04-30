@@ -1,8 +1,9 @@
 # -*- coding: utf-8 -*-
+#
 # Advanced Emulator Launcher XML autoconfiguration stuff.
 #
 
-# Copyright (c) 2016-2017 Wintermute0110 <wintermute0110@gmail.com>
+# Copyright (c) 2016-2019 Wintermute0110 <wintermute0110@gmail.com>
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -31,7 +32,6 @@ import xbmc, xbmcgui, xbmcplugin, xbmcaddon
 # --- AEL packages ---
 from constants import *
 from utils import *
-from utils_kodi import *
 from disk_IO import *
 from assets import *
 from platforms import *
@@ -894,9 +894,9 @@ def autoconfig_import_launcher(ROMS_DIR, categories, launchers, categoryID, laun
         file_list = []
 
     # >> Traverse list of category assets and search for image files for each asset
-    for laun_asset in LAUNCHER_ASSET_LIST:
+    for laun_asset in LAUNCHER_ASSET_ID_LIST:
         # >> Bypass trailers now
-        if laun_asset == ASSET_TRAILER: continue
+        if laun_asset == ASSET_TRAILER_ID: continue
 
         # >> Look for assets
         AInfo = assets_get_info_scheme(laun_asset)
@@ -989,7 +989,7 @@ def autoconfig_search_asset_file_list(asset_prefix, AInfo, norm_asset_dir_FN, fi
     # >> Traverse list of filenames (no paths)
     filename_noext = asset_prefix + '_' + AInfo.fname_infix
     # log_debug('filename_noext "{0}"'.format(filename_noext))
-    img_ext_regexp = asset_get_regexp_extension_list(IMAGE_EXTENSIONS)
+    img_ext_regexp = asset_get_regexp_extension_list(IMAGE_EXTENSION_LIST)
     # log_debug('img_ext_regexp "{0}"'.format(img_ext_regexp))
     pattern = '({0})([ \w]*?)\.{1}'.format(filename_noext, img_ext_regexp)
     log_debug('autoconfig_search_asset_file_list() pattern "{0}"'.format(pattern))

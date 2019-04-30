@@ -222,8 +222,9 @@ ASSET_BOXFRONT_ID   = 1000
 ASSET_BOXBACK_ID    = 1100
 ASSET_CARTRIDGE_ID  = 1200
 ASSET_FLYER_ID      = 1300
-ASSET_MAP_ID        = 1400
-ASSET_MANUAL_ID     = 1500
+ASSET_3DBOX_ID      = 1400
+ASSET_MAP_ID        = 1500
+ASSET_MANUAL_ID     = 1600
 
 #
 # The order of this list must match order in dialog.select() in the GUI, or bad things will happen.
@@ -241,7 +242,7 @@ LAUNCHER_ASSET_ID_LIST = [
 ROM_ASSET_ID_LIST = [
     ASSET_TITLE_ID,     ASSET_SNAP_ID,   ASSET_BOXFRONT_ID, ASSET_BOXBACK_ID,
     ASSET_CARTRIDGE_ID, ASSET_FANART_ID, ASSET_BANNER_ID,   ASSET_CLEARLOGO_ID,
-    ASSET_FLYER_ID,     ASSET_MAP_ID,    ASSET_MANUAL_ID,   ASSET_TRAILER_ID,
+    ASSET_FLYER_ID,     ASSET_3DBOX_ID,  ASSET_MAP_ID,      ASSET_MANUAL_ID,   ASSET_TRAILER_ID,
 ]
 
 # --- Addon will search these file extensions for assets ---
