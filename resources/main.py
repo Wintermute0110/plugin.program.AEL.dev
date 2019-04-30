@@ -8646,6 +8646,11 @@ class Main:
         # >> Create a dictionary with references to the asset srapers
         self.scraper_dic = {}
 
+        # Chrisism, can you please write some mockup code about how to use the new
+        # scraper factory???
+        # How to use ScraperFactory(), ScrapingStrategy(), etc.
+        # Just a simple example, mockup code.
+
         # >> Scrapers for MAME platform are different than rest of the platforms
         if launcher['platform'] == 'MAME':
             # --- Metadata scraper ---

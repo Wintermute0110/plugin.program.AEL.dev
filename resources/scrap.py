@@ -66,8 +66,8 @@ class ScraperFactory(KodiProgressDialogStrategy):
         super(ScraperFactory, self).__init__()
 
     def create(self, launcher):
-        scan_metadata_policy    = self.settings['scan_metadata_policy']
-        scan_asset_policy       = self.settings['scan_asset_policy']
+        scan_metadata_policy = self.settings['scan_metadata_policy']
+        scan_asset_policy    = self.settings['scan_asset_policy']
 
         if self._hasDuplicateArtworkDirs(launcher):
             return None
@@ -85,7 +85,6 @@ class ScraperFactory(KodiProgressDialogStrategy):
 
         asset_scrapers = {}
         for asset_info in rom_asset_infos:
-            
             asset_path = launcher.get_asset_path(asset_info)
             if not asset_path:
                 unconfigured_name_list.append(asset_info.name)
@@ -99,9 +98,8 @@ class ScraperFactory(KodiProgressDialogStrategy):
                 
             self._updateProgress((100*i)/len(ROM_ASSET_LIST))
             i += 1
-
         self._endProgressPhase()
-        
+
         if unconfigured_name_list:
             unconfigured_asset_srt = ', '.join(unconfigured_name_list)
             kodi_dialog_OK('Assets directories not set: {0}. '.format(unconfigured_asset_srt) +
@@ -134,7 +132,6 @@ class ScraperFactory(KodiProgressDialogStrategy):
     # to be performed.
     #
     def _initialize_possible_scrapers(self, launcher):
-
         # default scrapers
         cleanTitleScraper = CleanTitleScraper(self.settings, launcher)
 
@@ -144,11 +141,11 @@ class ScraperFactory(KodiProgressDialogStrategy):
         available_scrapers[2] = GameFaqScraper(self.settings, launcher, cleanTitleScraper)
         available_scrapers[3] = MobyGamesScraper(self.settings, launcher, cleanTitleScraper)
         available_scrapers[3] = ArcadeDbScraper(self.settings, launcher, cleanTitleScraper)
-        
+
         return available_scrapers
-    
+
     # >> Determine metadata action based on configured metadata policy
-    # >> scan_metadata_policy -> values="None|NFO Files|NFO Files + Scrapers|Scrapers"    
+    # >> scan_metadata_policy -> values="None|NFO Files|NFO Files + Scrapers|Scrapers"
     # 
     def _get_metadata_scraper(self, scan_metadata_policy, launcher, available_scrapers):
         if scan_metadata_policy == 0:
@@ -193,11 +190,9 @@ class ScraperFactory(KodiProgressDialogStrategy):
         if scan_asset_policy == 0:
             log_verb('Asset policy: local images only | Scraper OFF')
             return LocalAssetScraper(self.settings, launcher)
-                
         key = ASSET_SETTING_KEYS[asset_info.id]
         if key == '':
             return None
-            
         if key not in settings:
             log_warning("Scraper with key {} not set in settings".format(key))
             return None
@@ -247,7 +242,6 @@ class ScrapingStrategy(object):
 
             log_debug('ScrapingStrategy:: Scraping asset {} with scraper \'{}\''.format(asset_info.name, scraper.getName()))
             scraper.scrape_asset(search_term, asset_info, rom_path, rom)
-            
         romdata = rom.get_data()
         log_verb('Set Title     file "{0}"'.format(romdata['s_title']))
         log_verb('Set Snap      file "{0}"'.format(romdata['s_snap']))
