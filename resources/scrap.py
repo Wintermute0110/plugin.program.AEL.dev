@@ -218,7 +218,7 @@ class ScrapingStrategy(object):
 
         for asset_info in self.asset_scrapers.keys():
             
-            if not asset_info in assets_to_scrape:
+            if assets_to_scrape is not None and not asset_info in assets_to_scrape:
                 continue
                 
             scraper = self.asset_scrapers[asset_info]
