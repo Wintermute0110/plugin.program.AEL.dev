@@ -2272,7 +2272,7 @@ class WizardDialog_DictionarySelection(WizardDialog):
 
     def show(self, properties):
         log_debug('Executing dict selection wizard dialog for key: {0}'.format(self.property_key))
-        dialog = DictionaryDialog()
+        dialog = KodiOrdDictionaryDialog()
         if callable(self.options):
             self.options = self.options(self.property_key, properties)
         output = dialog.select(self.title, self.options)
