@@ -42,7 +42,6 @@ import base64
 import errno
 import fnmatch
 import hashlib
-import HTMLParser
 import json
 import os
 import pprint
@@ -52,7 +51,11 @@ import shutil
 import string
 import sys
 import time
-import urlparse
+
+from html.parser import HTMLParser
+from urllib.parse import urlparse
+from datetime import timedelta
+from datetime import datetime
 
 # --- Python standard library named imports ---
 import xml.etree.ElementTree as ET
@@ -94,7 +97,7 @@ except:
     UTILS_KODI_RUNTIME_AVAILABLE = False
 
 # --- AEL modules ---
-from constants import *
+from resources.constants import *
 
 # -------------------------------------------------------------------------------------------------
 # A universal AEL error reporting exception
@@ -218,7 +221,7 @@ def text_str_2_Uni(string):
 #
 def text_escape_XML(data_str):
 
-    if not isinstance(data_str, basestring):
+    if not isinstance(data_str, str):
         data_str = str(data_str)
 
     # Ampersand MUST BE replaced FIRST
@@ -311,7 +314,7 @@ def text_unescape_HTML(s):
     # s = s.replace('&#x16B;', "ū")
 
     # >> Use HTMLParser module to decode HTML entities.
-    s = HTMLParser.HTMLParser().unescape(s)
+    s = HTMLParser().unescape(s)
 
     if __debug_text_unescape_HTML:
         log_debug('text_unescape_HTML() output "{0}"'.format(s))
@@ -475,7 +478,7 @@ def text_get_multidisc_info(ROM_FN):
         matchObj = re.match(r'\(Dis[ck] ([0-9]+)\)', token)
         if matchObj:
             log_debug('text_get_multidisc_info() ### Matched Redump multidisc ROM ###')
-            tokens_idx = range(0, len(tokens))
+            tokens_idx = list(range(0, len(tokens)))
             tokens_idx.remove(index)
             tokens_nodisc_idx = list(tokens_idx)
             tokens_mdisc = [tokens[x] for x in tokens_nodisc_idx]
@@ -486,7 +489,7 @@ def text_get_multidisc_info(ROM_FN):
         matchObj = re.match(r'\(Dis[ck] ([0-9]+) of ([0-9]+)\)', token)
         if matchObj:
             log_debug('text_get_multidisc_info() ### Matched TOSEC/Trurip multidisc ROM ###')
-            tokens_idx = range(0, len(tokens))
+            tokens_idx = list(range(0, len(tokens)))
             tokens_idx.remove(index)
             tokens_nodisc_idx = list(tokens_idx)
             # log_debug('text_get_multidisc_info() tokens_idx         = {0}'.format(tokens_idx))
@@ -936,7 +939,7 @@ class FileNameBase():
     def __add__(self, other):
         current_path = self.originalPath
         if type(other) is FileName:  other_path = other.originalPath
-        elif type(other) is unicode: other_path = other
+        #elif type(other) is unicode: other_path = other -- Not available in Python 3?
         elif type(other) is str:     other_path = other.decode('utf-8')
         else: raise NameError('Unknown type for overloaded + in FileName object')
         new_path = os.path.join(current_path, other_path)
@@ -1153,7 +1156,7 @@ class FileNameBase():
     def writeJson(self, raw_data, JSON_indent = 1, JSON_separators = (',', ':')):
         json_data = json.dumps(raw_data, ensure_ascii = False, sort_keys = True, 
                                 indent = JSON_indent, separators = JSON_separators)
-        self.writeAll(unicode(json_data).encode('utf-8'))
+        self.writeAll(str(json_data, 'utf-8'))
 
     # Opens file and writes xml. Give xml root element.
     def writeXml(self, xml_root):
@@ -1271,7 +1274,7 @@ class KodiFileName(FileNameBase):
             return ''
 
         while char and char != u'\n':
-            line += unicode(char, encoding)
+            line += str(char, encoding)
             char = self.fileHandle.read(1)
 
         return line
@@ -1290,7 +1293,7 @@ class KodiFileName(FileNameBase):
         contents = file.read()
         file.close()
 
-        return unicode(contents, encoding)
+        return str(contents, encoding)
 
     def writeAll(self, bytes, flags='w'):
         file = xbmcvfs.File(self.originalPath, flags)
@@ -1433,7 +1436,7 @@ class PythonFileName(FileNameBase):
         with open(self.path, 'r') as f:
             contents = f.read()
 
-        return unicode(contents, encoding)
+        return str(contents, encoding)
 
     def writeAll(self, bytes, flags = 'w'):
         with open(self.path, flags) as file:
@@ -1768,7 +1771,7 @@ class NewFileName:
     # See https://docs.python.org/2/library/sys.html#sys.getfilesystemencoding
     #
     def copy(self, to_FN):
-        if self.is_local and dest_FN.is_local:
+        if self.is_local and to_FN.is_local:
             fs_encoding = sys.getfilesystemencoding()
             source_bytes = self.getPath().decode(fs_encoding)
             dest_bytes = to_FN.getPath().decode(fs_encoding)
@@ -1841,7 +1844,7 @@ class NewFileName:
             log_error('(OSError) Exception in saveStrToFile()')
             log_error('(OSError) Cannot write {0} file'.format(self.path_tr))
             raise AEL_Error('(OSError) Cannot write {0} file'.format(self.path_tr))
-        except IOError:
+        except IOError as e:
             log_error('(IOError) Exception in saveStrToFile()')
             log_error('(IOError) errno = {0}'.format(e.errno))
             if e.errno == errno.ENOENT: log_error('(IOError) No such file or directory.')
@@ -2322,7 +2325,7 @@ class WizardDialog_Input(WizardDialog):
             decoratorDialog, property_key, title, customFunction, conditionalFunction)
 
     def show(self, properties):
-        log_debug('WizardDialog_Input::show() {0} key = {0}'.format(self.inputType, self.property_key))
+        log_debug('WizardDialog_Input::show() {} key = {}'.format(self.inputType, self.property_key))
         originalValue = properties[self.property_key] if self.property_key in properties else ''
         output = xbmcgui.Dialog().input(self.title, originalValue, self.inputType)
         if not output:

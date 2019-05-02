@@ -1305,7 +1305,7 @@ def fs_load_VCategory_XML(roms_xml_file):
     log_verb('fs_load_VCategory_XML() Loading XML file {0}'.format(roms_xml_file.getPath()))
     try:
         xml_root = roms_xml_file.readXml()
-    except ET.ParseError, e:
+    except ET.ParseError as e:
         log_error('(ParseError) Exception parsing XML categories.xml')
         log_error('(ParseError) {0}'.format(str(e)))
         return roms
@@ -1434,7 +1434,7 @@ def fs_load_legacy_AL_launchers(AL_launchers_filepath, categories, launchers):
     log_info('fs_load_legacy_AL_launchers() Loading "{0}"'.format(AL_launchers_filepath.getPath()))
     try:
         xml_root = AL_launchers_filepath.readXml()
-    except ET.ParseError, e:
+    except ET.ParseError as e:
         log_error('ParseError exception parsing XML categories.xml')
         log_error('ParseError: {0}'.format(str(e)))
         kodi_notify_warn('ParseError exception reading launchers.xml')

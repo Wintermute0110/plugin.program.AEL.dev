@@ -6,7 +6,8 @@ from fakes import *
 import os
 
 from resources.utils import *
-
+from resources.constants import *
+        
 class Test_filename_test(unittest.TestCase):
      
     ROOT_DIR = ''
@@ -21,10 +22,10 @@ class Test_filename_test(unittest.TestCase):
         cls.ROOT_DIR = os.path.abspath(os.path.join(cls.TEST_DIR, os.pardir))
         cls.TEST_ASSETS_DIR = os.path.abspath(os.path.join(cls.TEST_DIR,'assets/'))
                 
-        print 'ROOT DIR: {}'.format(cls.ROOT_DIR)
-        print 'TEST DIR: {}'.format(cls.TEST_DIR)
-        print 'TEST ASSETS DIR: {}'.format(cls.TEST_ASSETS_DIR)
-        print '---------------------------------------------------------------------------'
+        print('ROOT DIR: {}'.format(cls.ROOT_DIR))
+        print('TEST DIR: {}'.format(cls.TEST_DIR))
+        print('TEST ASSETS DIR: {}'.format(cls.TEST_ASSETS_DIR))
+        print('---------------------------------------------------------------------------')
 
     @patch('resources.utils.xbmcvfs.File')
     def test_reading_line_for_line(self, file_mock):

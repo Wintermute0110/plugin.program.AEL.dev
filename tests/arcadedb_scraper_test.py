@@ -2,13 +2,14 @@ import unittest, mock, os, sys, re
 
 from mock import *
 from mock import ANY
-from fakes import *
+from fakes import FakeFile
 import xml.etree.ElementTree as ET
 
 from resources.utils import *
 from resources.net_IO import *
 from resources.scrap import *
 from resources.objects import *
+from resources.constants import *
         
 def read_file(path):
     with open(path, 'r') as f:
@@ -31,13 +32,13 @@ class Test_arcadedb_scraper(unittest.TestCase):
         cls.TEST_DIR = os.path.dirname(os.path.abspath(__file__))
         cls.ROOT_DIR = os.path.abspath(os.path.join(cls.TEST_DIR, os.pardir))
         cls.TEST_ASSETS_DIR = os.path.abspath(os.path.join(cls.TEST_DIR,'assets/'))
-                
-        print 'ROOT DIR: {}'.format(cls.ROOT_DIR)
-        print 'TEST DIR: {}'.format(cls.TEST_DIR)
-        print 'TEST ASSETS DIR: {}'.format(cls.TEST_ASSETS_DIR)
-        print '---------------------------------------------------------------------------'
+        
+        print('ROOT DIR: {}'.format(cls.ROOT_DIR))
+        print('TEST DIR: {}'.format(cls.TEST_DIR))
+        print('TEST ASSETS DIR: {}'.format(cls.TEST_ASSETS_DIR))
+        print('---------------------------------------------------------------------------')
 
-    def mocked_arcade_db(url):
+    def mocked_arcade_db(self, url):
         
         mocked_html_file = ''
                 
@@ -45,13 +46,13 @@ class Test_arcadedb_scraper(unittest.TestCase):
             mocked_html_file = Test_arcadedb_scraper.TEST_ASSETS_DIR + "\\faek.htm"
 
         elif '.jpg' in url:
-            print 'reading fake image file'
+            print('reading fake image file')
             return read_file(Test_arcadedb_scraper.TEST_ASSETS_DIR + "\\test.jpg")
 
         if mocked_html_file == '':
             return net_get_URL_oneline(url)
 
-        print 'reading mocked data from file: {}'.format(mocked_html_file)
+        print('reading mocked data from file: {}'.format(mocked_html_file))
         return read_file(mocked_html_file)
 
     def get_test_settings(self):
@@ -74,8 +75,8 @@ class Test_arcadedb_scraper(unittest.TestCase):
         # arrange
         settings = self.get_test_settings()
 
-        launcher = StandardRomLauncher(None, settings, None, None, None, False)
-        launcher.update_platform('MAME')
+        launcher = StandardRomLauncher(None, settings, None, None, None, None, None)
+        launcher.set_platform('MAME')
         
         rom = ROM({'id': 1234})
         fakeRomPath = FakeFile('/my/nice/roms/dino.zip')
@@ -88,8 +89,7 @@ class Test_arcadedb_scraper(unittest.TestCase):
         # assert
         self.assertTrue(actual)
         self.assertEqual(u'Cadillacs and Dinosaurs (World 930201)', rom.get_name())
-        print rom
-
+        print(rom)
         
     @patch('resources.scrap.net_get_URL_as_json', side_effect = mocked_arcade_db)
     @patch('resources.scrap.net_download_img')
@@ -103,8 +103,8 @@ class Test_arcadedb_scraper(unittest.TestCase):
             g_assetFactory.get_asset_info(ASSET_BOXBACK_ID), 
             g_assetFactory.get_asset_info(ASSET_SNAP_ID)]
         
-        launcher = StandardRomLauncher(None, settings, None, None, None, False)
-        launcher.update_platform('MAME')
+        launcher = StandardRomLauncher(None, settings, None, None, None, None, None)
+        launcher.set_platform('MAME')
         launcher.set_asset_path(g_assetFactory.get_asset_info(ASSET_BOXFRONT_ID),'/my/nice/assets/front/')
         launcher.set_asset_path(g_assetFactory.get_asset_info(ASSET_BOXBACK_ID),'/my/nice/assets/back/')
         launcher.set_asset_path(g_assetFactory.get_asset_info(ASSET_SNAP_ID),'/my/nice/assets/snaps/')
@@ -124,4 +124,4 @@ class Test_arcadedb_scraper(unittest.TestCase):
         for actual in actuals:
             self.assertTrue(actual)
         
-        print rom
+        print(rom)

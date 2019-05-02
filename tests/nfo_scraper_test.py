@@ -9,6 +9,7 @@ from resources.utils import *
 from resources.net_IO import *
 from resources.scrap import *
 from resources.objects import *
+from resources.constants import *
         
 class Test_nfo_scraper(unittest.TestCase):
     
@@ -24,11 +25,10 @@ class Test_nfo_scraper(unittest.TestCase):
         cls.ROOT_DIR = os.path.abspath(os.path.join(cls.TEST_DIR, os.pardir))
         cls.TEST_ASSETS_DIR = os.path.abspath(os.path.join(cls.TEST_DIR,'assets/'))
                 
-        print 'ROOT DIR: {}'.format(cls.ROOT_DIR)
-        print 'TEST DIR: {}'.format(cls.TEST_DIR)
-        print 'TEST ASSETS DIR: {}'.format(cls.TEST_ASSETS_DIR)
-        print '---------------------------------------------------------------------------'
-
+        print('ROOT DIR: {}'.format(cls.ROOT_DIR))
+        print('TEST DIR: {}'.format(cls.TEST_DIR))
+        print('TEST ASSETS DIR: {}'.format(cls.TEST_ASSETS_DIR))
+        print('---------------------------------------------------------------------------')
 
     def get_test_settings(self):
         settings = {}

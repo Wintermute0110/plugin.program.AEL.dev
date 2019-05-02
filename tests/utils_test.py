@@ -4,6 +4,7 @@ from mock import *
 import xbmcaddon, xbmc
 
 from resources.utils import *
+from resources.constants import *
 
 class Test_utilstests(unittest.TestCase):
     
@@ -19,10 +20,10 @@ class Test_utilstests(unittest.TestCase):
         cls.ROOT_DIR = os.path.abspath(os.path.join(cls.TEST_DIR, os.pardir))
         cls.TEST_ASSETS_DIR = os.path.abspath(os.path.join(cls.TEST_DIR,'assets/'))
                 
-        print 'ROOT DIR: {}'.format(cls.ROOT_DIR)
-        print 'TEST DIR: {}'.format(cls.TEST_DIR)
-        print 'TEST ASSETS DIR: {}'.format(cls.TEST_ASSETS_DIR)
-        print '---------------------------------------------------------------------------'
+        print('ROOT DIR: {}'.format(cls.ROOT_DIR))
+        print('TEST DIR: {}'.format(cls.TEST_DIR))
+        print('TEST ASSETS DIR: {}'.format(cls.TEST_ASSETS_DIR))
+        print('---------------------------------------------------------------------------')
 
     def test_when_getting_url_extension_it_returns_the_correct_extension(self):
 

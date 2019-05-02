@@ -9637,6 +9637,7 @@ def m_buildMenuItem(key, name, action, thumb, fanart, count, ui):
 def m_execute_migrations(last_migrated_to_version, to_version = None):
     import migrations
     import migrations.main
+    import distutils.version.LooseVersion
 
     pDialog = xbmcgui.DialogProgress()
     pDialog.create('Advanced Emulator Launcher', 'Performing version upgrade migrations ...')
@@ -9685,7 +9686,6 @@ def m_select_applicable_migration_files(migration_files, last_migrated_to_versio
 
         if migration_version > last_migrated_to_version and (to_version is None or migration_version <= to_version):
             applicable_migrations[version_part] = migration_file
-
-    applicable_migrations = OrderedDict(sorted(applicable_migrations.iteritems(), key=lambda (k,v): LooseVersion(k)))
-
+    
+    applicable_migrations = OrderedDict(sorted(applicable_migrations.items(), key = lambda k: LooseVersion(k)))
     return applicable_migrations

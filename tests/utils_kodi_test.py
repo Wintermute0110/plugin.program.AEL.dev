@@ -22,10 +22,10 @@ class Test_utils_kodi_tests(unittest.TestCase):
         cls.ROOT_DIR = os.path.abspath(os.path.join(cls.TEST_DIR, os.pardir))
         cls.TEST_ASSETS_DIR = os.path.abspath(os.path.join(cls.TEST_DIR,'assets/'))
                 
-        print 'ROOT DIR: {}'.format(cls.ROOT_DIR)
-        print 'TEST DIR: {}'.format(cls.TEST_DIR)
-        print 'TEST ASSETS DIR: {}'.format(cls.TEST_ASSETS_DIR)
-        print '---------------------------------------------------------------------------'
+        print('ROOT DIR: {}'.format(cls.ROOT_DIR))
+        print('TEST DIR: {}'.format(cls.TEST_DIR))
+        print('TEST ASSETS DIR: {}'.format(cls.TEST_ASSETS_DIR))
+        print('---------------------------------------------------------------------------')
 
     def test_building_a_wizards_works(self):
         

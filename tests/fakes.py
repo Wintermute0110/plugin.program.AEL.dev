@@ -51,7 +51,7 @@ class FakeFile(KodiFileName):
     
     def readAllUnicode(self, encoding='utf-8'):
         contents = self.fakeContent
-        return unicode(contents, encoding)
+        return str(contents, encoding)
 
     def write(self, bytes):
        self.fakeContent = self.fakeContent + bytes
@@ -136,19 +136,23 @@ class FakeScraper(Scraper):
     def getName(self):
         return 'FakeScraper'
 
+    def supports_asset_type(self, asset_info):
+        return True
+
     def _get_candidates(self, searchTerm, romPath, rom):
         return ['fake']
-
+            
     def _load_metadata(self, candidate, romPath, rom):
-        if self.rom_data_to_apply :
-            self.gamedata['title']      = self.rom_data_to_apply['m_name'] if 'm_name' in self.rom_data_to_apply else ''
-            self.gamedata['year']      = self.rom_data_to_apply['m_year'] if 'm_year' in self.rom_data_to_apply else ''   
-            self.gamedata['genre']     = self.rom_data_to_apply['m_genre'] if 'm_genre' in self.rom_data_to_apply else ''
-            self.gamedata['developer'] = self.rom_data_to_apply['m_developer']if 'm_developer' in self.rom_data_to_apply else ''
-            self.gamedata['plot']      = self.rom_data_to_apply['m_plot'] if 'm_plot' in self.rom_data_to_apply else ''
-        else:
-            self.gamedata['title'] = romPath.getBase_noext()
+        gamedata = self._new_gamedata_dic()
 
+        if self.rom_data_to_apply :
+            gamedata['title']     = self.rom_data_to_apply['m_name'] if 'm_name' in self.rom_data_to_apply else ''
+            gamedata['year']      = self.rom_data_to_apply['m_year'] if 'm_year' in self.rom_data_to_apply else ''   
+            gamedata['genre']     = self.rom_data_to_apply['m_genre'] if 'm_genre' in self.rom_data_to_apply else ''
+            gamedata['developer'] = self.rom_data_to_apply['m_developer']if 'm_developer' in self.rom_data_to_apply else ''
+            gamedata['plot']      = self.rom_data_to_apply['m_plot'] if 'm_plot' in self.rom_data_to_apply else ''
+        else:
+            gamedata['title'] = romPath.getBase_noext()
     
     def _load_assets(self, candidate, romPath, rom):
         pass

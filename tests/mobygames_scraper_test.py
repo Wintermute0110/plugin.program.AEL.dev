@@ -9,6 +9,7 @@ from resources.utils import *
 from resources.net_IO import *
 from resources.scrap import *
 from resources.objects import *
+from resources.constants import *
         
 def read_file(path):
     with open(path, 'r') as f:
@@ -32,10 +33,10 @@ class Test_mobygames_scraper(unittest.TestCase):
         cls.ROOT_DIR = os.path.abspath(os.path.join(cls.TEST_DIR, os.pardir))
         cls.TEST_ASSETS_DIR = os.path.abspath(os.path.join(cls.TEST_DIR,'assets/'))
                 
-        print 'ROOT DIR: {}'.format(cls.ROOT_DIR)
-        print 'TEST DIR: {}'.format(cls.TEST_DIR)
-        print 'TEST ASSETS DIR: {}'.format(cls.TEST_ASSETS_DIR)
-        print '---------------------------------------------------------------------------'
+        print('ROOT DIR: {}'.format(cls.ROOT_DIR))
+        print('TEST DIR: {}'.format(cls.TEST_DIR))
+        print('TEST ASSETS DIR: {}'.format(cls.TEST_ASSETS_DIR))
+        print('---------------------------------------------------------------------------')
 
     def mocked_gamesdb(url):
 

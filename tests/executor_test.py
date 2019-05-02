@@ -1,11 +1,14 @@
 import unittest, mock, os, sys 
+
 from mock import *
+from fakes import FakeFile
 
 from resources.main import *
 from resources.utils import *
-from resources.disk_IO import *
+#from resources.disk_IO import *
 from resources.objects import *
-
+from resources.constants import *
+        
 class Test_executortests(unittest.TestCase):
     
     ROOT_DIR = ''
@@ -20,10 +23,10 @@ class Test_executortests(unittest.TestCase):
         cls.ROOT_DIR = os.path.abspath(os.path.join(cls.TEST_DIR, os.pardir))
         cls.TEST_ASSETS_DIR = os.path.abspath(os.path.join(cls.TEST_DIR,'assets/'))
                 
-        print 'ROOT DIR: {}'.format(cls.ROOT_DIR)
-        print 'TEST DIR: {}'.format(cls.TEST_DIR)
-        print 'TEST ASSETS DIR: {}'.format(cls.TEST_ASSETS_DIR)
-        print '---------------------------------------------------------------------------'
+        print('ROOT DIR: {}'.format(cls.ROOT_DIR))
+        print('TEST DIR: {}'.format(cls.TEST_DIR))
+        print('TEST ASSETS DIR: {}'.format(cls.TEST_ASSETS_DIR))
+        print('---------------------------------------------------------------------------')
         
     @patch('resources.objects.is_windows')
     @patch('resources.objects.is_linux')            
@@ -33,7 +36,7 @@ class Test_executortests(unittest.TestCase):
         is_linux_mock.return_value = True
         is_windows_mock.return_value = False
         
-        launcherPath = FileNameFactory.create('path')
+        launcherPath = FakeFile('path')
 
         settings = {}
         settings['lirc_state'] = True
@@ -57,7 +60,7 @@ class Test_executortests(unittest.TestCase):
         is_windows_mock.return_value = True
         is_osx_mock.return_value = False
 
-        launcherPath = FileNameFactory.create('path')
+        launcherPath = FakeFile('path')
 
         settings = {}
         settings['windows_cd_apppath'] = ''
@@ -82,7 +85,7 @@ class Test_executortests(unittest.TestCase):
         is_windows_mock.return_value = True
         is_osx_mock.return_value = False
                 
-        launcherPath = FileNameFactory.create('c:\\app\\testcase.bat')
+        launcherPath = FakeFile('c:\\app\\testcase.bat')
 
         settings = {}
         settings['show_batch_window'] = False
@@ -106,7 +109,7 @@ class Test_executortests(unittest.TestCase):
         is_windows_mock.return_value = True
         is_osx_mock.return_value = False
         
-        launcherPath = FileNameFactory.create('c:\\app\\testcase.lnk')
+        launcherPath = FakeFile('c:\\app\\testcase.lnk')
 
         settings = {}
 
@@ -124,7 +127,7 @@ class Test_executortests(unittest.TestCase):
         # arrange
         set_log_level(LOG_VERB)
         
-        launcherPath = FileNameFactory.create('c:\\boop\\xbmc.exe')
+        launcherPath = FakeFile('c:\\boop\\xbmc.exe')
 
         settings = {}
 
@@ -147,7 +150,7 @@ class Test_executortests(unittest.TestCase):
         is_windows_mock.return_value = False
         is_osx_mock.return_value = True
 
-        launcherPath = FileNameFactory.create('durp\\apple\\durp')
+        launcherPath = FakeFile('durp\\apple\\durp')
 
         settings = {}
 
@@ -163,13 +166,13 @@ class Test_executortests(unittest.TestCase):
     def test_when_using_urls_the_correct_web_executor_loads(self):
         
         # arrange
-        launcherPath = FileNameFactory.create('durp\\apple\\durp')
+        launcherPath = FakeFile('durp\\apple\\durp')
 
         settings = {}
 
         # act
         factory = ExecutorFactory(settings, AEL_Paths())
-        executor = factory.create(FileNameFactory.create('steam://rungameid/'))
+        executor = factory.create(FakeFile('steam://rungameid/'))
 
         # assert
         actual = executor.__class__.__name__

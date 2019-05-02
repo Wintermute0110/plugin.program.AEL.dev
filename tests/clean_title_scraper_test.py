@@ -2,13 +2,14 @@ import unittest, mock, os, sys, re
 
 from mock import *
 from mock import ANY
-from fakes import *
+from fakes import FakeFile, FakeScraper
 import xml.etree.ElementTree as ET
 
 from resources.utils import *
 from resources.net_IO import *
 from resources.scrap import *
 from resources.objects import *
+from resources.constants import *        
         
 class Test_clean_title_scraper(unittest.TestCase):
     
@@ -24,10 +25,10 @@ class Test_clean_title_scraper(unittest.TestCase):
         cls.ROOT_DIR = os.path.abspath(os.path.join(cls.TEST_DIR, os.pardir))
         cls.TEST_ASSETS_DIR = os.path.abspath(os.path.join(cls.TEST_DIR,'assets/'))
                 
-        print 'ROOT DIR: {}'.format(cls.ROOT_DIR)
-        print 'TEST DIR: {}'.format(cls.TEST_DIR)
-        print 'TEST ASSETS DIR: {}'.format(cls.TEST_ASSETS_DIR)
-        print '---------------------------------------------------------------------------'
+        print('ROOT DIR: {}'.format(cls.ROOT_DIR))
+        print('TEST DIR: {}'.format(cls.TEST_DIR))
+        print('TEST ASSETS DIR: {}'.format(cls.TEST_ASSETS_DIR))
+        print('---------------------------------------------------------------------------')
 
 
     def get_test_settings(self):
@@ -63,7 +64,7 @@ class Test_clean_title_scraper(unittest.TestCase):
         # assert
         self.assertTrue(actual)
         self.assertEqual(u'castlevania v2', rom.get_name())
-        print rom
+        print(rom)
 
         
     def test_scraping_assets_for_game(self):
@@ -97,4 +98,4 @@ class Test_clean_title_scraper(unittest.TestCase):
         for actual in actuals:
             self.assertFalse(actual)
         
-        print rom
+        print(rom)
