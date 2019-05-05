@@ -28,11 +28,11 @@ import subprocess
 import webbrowser
 
 # --- AEL packages ---
-from utils import *
-from disk_IO import *
-from net_IO import *
-from platforms import *
-from constants import *
+from resources.utils import *
+from resources.net_IO import *
+from resources.disk_IO import FileName, fs_new_launcher
+from resources.platforms import *
+from resources.constants import *
 
 # #################################################################################################
 # #################################################################################################
@@ -516,8 +516,8 @@ class AssetInfoFactory(object):
 
     def get_asset_kinds_for_roms(self):
         rom_asset_kinds = []
-        for rom_asset_kind in ROM_ASSET_LIST:
-            rom_asset_kinds.append(ASSET_INFO_DICT[rom_asset_kind])
+        for rom_asset_id in ROM_ASSET_ID_LIST:
+            rom_asset_kinds.append(ASSET_INFO_DICT[rom_asset_id])
 
         return rom_asset_kinds
 
@@ -605,11 +605,11 @@ def assets_get_path_noext_SUFIX(asset_ID, AssetPath, asset_base_noext, objectID 
 # unconfigured_name_list  List of disabled asset names
 #
 def asset_get_configured_dir_list(launcher):
-    configured_bool_list   = [False] * len(ROM_ASSET_LIST)
+    configured_bool_list   = [False] * len(ROM_ASSET_ID_LIST)
     unconfigured_name_list = []
 
     # >> Check if asset paths are configured or not
-    for i, asset in enumerate(ROM_ASSET_LIST):
+    for i, asset in enumerate(ROM_ASSET_ID_LIST):
         A = assets_get_info_scheme(asset)
         configured_bool_list[i] = True if launcher[A.path_key] else False
         if not configured_bool_list[i]: 
@@ -624,13 +624,13 @@ def asset_get_configured_dir_list(launcher):
 # Get a list of assets with duplicated paths. Refuse to do anything if duplicated paths found.
 #
 def asset_get_duplicated_dir_list(launcher):
-    duplicated_bool_list   = [False] * len(ROM_ASSET_LIST)
+    duplicated_bool_list   = [False] * len(ROM_ASSET_ID_LIST)
     duplicated_name_list   = []
 
     # >> Check for duplicated asset paths
-    for i, asset_i in enumerate(ROM_ASSET_LIST[:-1]):
+    for i, asset_i in enumerate(ROM_ASSET_ID_LIST[:-1]):
         A_i = assets_get_info_scheme(asset_i)
-        for j, asset_j in enumerate(ROM_ASSET_LIST[i+1:]):
+        for j, asset_j in enumerate(ROM_ASSET_ID_LIST[i+1:]):
             A_j = assets_get_info_scheme(asset_j)
             # >> Exclude unconfigured assets (empty strings).
             if not launcher[A_i.path_key] or not launcher[A_j.path_key]: continue
@@ -1492,7 +1492,8 @@ class VirtualCategory(MetaDataItemABC):
 # -------------------------------------------------------------------------------------------------
 class ROM(MetaDataItemABC):
     def __init__(self, rom_data = None):
-        super(ROM, self).__init__(None, None, rom_data) #todo
+        #super(PATHS, addon_settings, entity_data, objectRepository)
+        super(ROM, self).__init__(None, None, rom_data, None) #todo
         if self.entity_data is None:
             self.entity_data = {
              'id' : misc_generate_random_SID(),
@@ -1627,6 +1628,18 @@ class ROM(MetaDataItemABC):
     def copy(self):
         data = self.copy_of_data()
         return Rom(data)
+
+    def delete_from_disk(self):
+        raise NotImplementedError
+        
+    def get_assets_kind(self): 
+        raise NotImplementedError
+	
+    def get_object_name(self): 
+        return "ROM"
+	
+    def save_to_disk(self): 
+        raise NotImplementedError
 
     def get_edit_options(self, category_id):
         delete_rom_txt = 'Delete ROM'

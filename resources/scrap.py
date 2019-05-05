@@ -18,13 +18,20 @@
 from __future__ import unicode_literals
 from __future__ import division
 import abc
-import datetime
-import time
-import urllib
+from datetime import datetime
+from time import time
+
+from urllib import quote_plus, urlencode
 
 # --- AEL packages ---
-from utils import *
-from objects import *
+from resources.constants import *
+from resources.platforms import *
+from resources.utils import *
+from resources.net_IO import *
+from resources.disk_IO import FileName, fs_import_ROM_NFO_file_scanner
+
+from resources.objects import LauncherABC, ROMLauncherABC, ROM
+from resources.objects import g_assetFactory, assets_get_path_noext_DIR, ASSET_SETTING_KEYS
 
 class ScraperFactory(KodiProgressDialogStrategy):
     def __init__(self, PATHS, settings):
@@ -64,7 +71,7 @@ class ScraperFactory(KodiProgressDialogStrategy):
                 if asset_scraper:
                     asset_scrapers[asset_info] = asset_scraper
                 
-            self._updateProgress((100*i)/len(ROM_ASSET_LIST))
+            self._updateProgress((100*i)/len(ROM_ASSET_ID_LIST))
             i += 1
 
         self._endProgressPhase()
@@ -322,6 +329,7 @@ class Scraper(object):
 
     def scrape_asset(self, search_term, asset_info_to_scrape, rom_path, rom):
         
+        log_debug('Scraper \'{0}\' searching for asset {1}'.format(self.getName(), asset_info_to_scrape.name))
         candidates = self._get_candidates(search_term, rom_path, rom)
         log_debug('Scraper \'{0}\' found {1} result/s'.format(self.getName(), len(candidates)))
 
@@ -492,7 +500,7 @@ class Scraper(object):
 
             else:
                 log_debug('{0} scraper: user chose local image "{1}"'.format(self.asset_info.name, selected_image['url']))
-                image_path = FileNameFactory.create(selected_image['url'])
+                image_path = FileName(selected_image['url'])
 
             if image_path:
                 rom.set_asset(asset_info, image_path)        
@@ -595,7 +603,7 @@ class Scraper(object):
 
                 else:
                     log_debug('{0} scraper: user chose local image "{1}"'.format(self.asset_info.name, selected_image['url']))
-                    image_path = FileNameFactory.create(selected_image['url'])
+                    image_path = FileName(selected_image['url'])
 
                 if image_path:
                     rom.set_asset(asset_info, image_path)        
@@ -609,7 +617,7 @@ class Scraper(object):
             return None
 
         image_ext = text_get_image_URL_extension(image_url)
-        log_debug('Downloading image URL "{1}"'.format(asset_info.name, image_url))
+        log_debug('Downloading  {} from image URL "{}"'.format(asset_info.name, image_url))
 
         # ~~~ Download image ~~~
         image_path = destination_folder.append(image_ext)
@@ -821,11 +829,11 @@ class LocalAssetScraper(Scraper):
         
         assets_list = []
         # ~~~~~ Search for local artwork/assets ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-        rom_basename_noext = romPath.getBase_noext()
+        rom_basename_noext = romPath.getBaseNoExt()
         
         all_assets = g_assetFactory.get_all()
         for supported_asset in all_assets:
-            asset_path = launcher.get_asset_path(asset_info)
+            asset_path = self.launcher.get_asset_path(supported_asset)
             if not asset_path:
                 log_verb('LocalAssetScraper._load_assets() Not supported  {0:<9}'.format(supported_asset.name))
                 continue
@@ -902,7 +910,7 @@ class TheGamesDbScraper(Scraper):
         # added encoding 
         # https://stackoverflow.com/questions/22415345/using-pythons-urllib-quote-plus-on-utf-8-strings-with-safe-arguments
             
-        search_string_encoded = urllib.quote_plus(search_term.encode('utf8'))
+        search_string_encoded = quote_plus(search_term.encode('utf8'))
         url = 'https://api.thegamesdb.net/Games/ByGameName?apikey={}&name={}'.format(self.api_key, search_string_encoded)
             
         game_list = self._read_games_from_url(url, search_term, scraper_platform)
@@ -1129,7 +1137,7 @@ class MobyGamesScraper(Scraper):
         self.api_key = settings['mobygames_apikey']
         scraper_settings = ScraperSettings.create_from_settings(settings)
 
-        self.last_http_call = datetime.datetime.now()
+        self.last_http_call = datetime.now()
 
         super(MobyGamesScraper, self).__init__(scraper_settings, launcher, fallbackScraper)
         
@@ -1160,7 +1168,7 @@ class MobyGamesScraper(Scraper):
             return [candidate_from_cache]
 
         game_list = []            
-        search_string_encoded = urllib.quote_plus(search_term.encode('utf8'))
+        search_string_encoded = quote_plus(search_term.encode('utf8'))
         url = 'https://api.mobygames.com/v1/games?api_key={}&format=brief&title={}&platform={}'.format(self.api_key, search_string_encoded, scraper_platform)
             
         game_list = self._read_games_from_url(url, search_term, scraper_platform)
@@ -1175,7 +1183,7 @@ class MobyGamesScraper(Scraper):
         self._do_toomanyrequests_check()
             
         page_data = net_get_URL_as_json(url)
-        self.last_http_call = datetime.datetime.now()
+        self.last_http_call = datetime.now()
 
         # >> If nothing is returned maybe a timeout happened. In this case, reset the cache.
         if page_data is None:
@@ -1203,7 +1211,7 @@ class MobyGamesScraper(Scraper):
         log_debug('Get metadata from {}'.format(url))
         online_data = net_get_URL_as_json(url)
 
-        self.last_http_call = datetime.datetime.now()
+        self.last_http_call = datetime.now()
         
         platform = self.launcher.get_platform()
         scraper_platform = AEL_platform_to_MobyGames(platform)
@@ -1332,7 +1340,7 @@ class MobyGamesScraper(Scraper):
 
     def _do_toomanyrequests_check(self):
         # make sure we dont go over the TooManyRequests limit of 1 second
-        now = datetime.datetime.now()
+        now = datetime.now()
         if (now-self.last_http_call).total_seconds() < 1:
             time.sleep(1)
 
@@ -1385,7 +1393,7 @@ class GameFaqScraper(Scraper):
 
     def _get_candidates_from_page(self, search_term, platform, url = None, no_platform=False):
         
-        search_params = urllib.urlencode({'game': search_term}) if no_platform else urllib.urlencode({'game': search_term, 'platform': platform})
+        search_params = urlencode({'game': search_term}) if no_platform else urlencode({'game': search_term, 'platform': platform})
         if url is None:
             url = 'https://gamefaqs.gamespot.com/search_advanced'
             page_data = net_post_URL_original(url, search_params)
@@ -1412,7 +1420,7 @@ class GameFaqScraper(Scraper):
             title = game_name
             if title.lower() == search_term.lower():            game['order'] += 1
             if title.lower().find(search_term.lower()) != -1:   game['order'] += 1
-            if platform > 0 and game_platform == platform:      game['order'] += 1
+            if len(platform)> 0 and game_platform == platform: game['order'] += 1
 
             game_list.append(game)
 
@@ -1625,7 +1633,7 @@ class ArcadeDbScraper(Scraper):
         game_list = []
         m = re.findall('<h2>Error: Game not found</h2>', page_data)
         if m:
-            log_debug('Scraper_ArcadeDB::get_search Game NOT found "{0}"'.format(rom_base_noext))
+            log_debug('Scraper_ArcadeDB::get_search Game NOT found "{0}"'.format(romPath.getBaseNoExt()))
             log_debug('Scraper_ArcadeDB::get_search Returning empty game_list')
         else:
             # >> Example URL: http://adb.arcadeitalia.net/dettaglio_mame.php?game_name=dino&lang=en

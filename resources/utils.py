@@ -52,10 +52,14 @@ import string
 import sys
 import time
 
-from html.parser import HTMLParser
-from urllib.parse import urlparse
+from HTMLParser import HTMLParser
+from urlparse import urlparse
 from datetime import timedelta
 from datetime import datetime
+
+# Python 3
+# from html.parser import HTMLParser
+# from urllib.parse import urlparse
 
 # --- Python standard library named imports ---
 import xml.etree.ElementTree as ET
@@ -102,7 +106,7 @@ from resources.constants import *
 # -------------------------------------------------------------------------------------------------
 # A universal AEL error reporting exception
 # This exception is raised to report errors in the GUI.
-# Unhandled exceptions must not raise AEL_Error() so the addon crashes and the traceback is printed
+# Unhandled exceptions must not raise AddonException() so the addon crashes and the traceback is printed
 # in the Kodi log file.
 # -------------------------------------------------------------------------------------------------
 # >> Top-level GUI code looks like this
@@ -120,7 +124,7 @@ from resources.constants import *
 #     except OSError:
 #         log_error('(OSError) Cannot write {0} file'.format(export_FN.getBase()))
 #         # >> Message to be printed in the GUI
-#         raise AEL_Error('Error writing file (OSError)')
+#         raise AddonException('Error writing file (OSError)')
 #
 class AddonException(Exception):
     def __init__(self, err_str):
@@ -602,7 +606,8 @@ def misc_look_for_file(rootPath, filename_noext, file_exts):
 def misc_generate_random_SID():
     t1 = time.time()
     t2 = t1 + random.getrandbits(32)
-    base = hashlib.md5( str(t1 + t2) )
+    t3 = str(t1 + t2).encode('utf-8')
+    base = hashlib.md5(t3)
     sid = base.hexdigest()
 
     return sid
@@ -891,11 +896,11 @@ class FileNameBase():
     # Abstract protected method, to be implemented in child classes.
     # Will return a new instance of the desired child implementation.
     # NOTE No fancy stuff in this class. This class must be as efficient as possible, otherwise
-    # AEL will have a serious performance hit.
-    # @abc.abstractmethod
-    # def __create__(self, pathString):
-    #     return FileName(pathString)
-
+    # AEL will have a serious performance hit. Temporary implementation
+    @abc.abstractmethod
+    def __create__(self, pathString):
+        return FileName(pathString)
+    
     def _decodeName(self, name):
         if type(name) == str:
             try:
@@ -1475,7 +1480,7 @@ class PythonFileName(FileNameBase):
         files = []
         for root, dirs, foundfiles in os.walk(self.path):
             for filename in fnmatch.filter(foundfiles, mask):
-                filePath = self.__create__(fileName)
+                filePath = self.__create__(filename)
                 files.append(filePath)
 
         return files
@@ -1521,7 +1526,7 @@ class NewFileName:
     # ---------------------------------------------------------------------------------------------
     def __init__(self, path_str, isdir = False):
         self.path_str = path_str
-        self.isdir = isdir
+        self.is_a_dir = isdir
 
         # --- Check if path needs translation ---
         # Note that internally path_tr is always used as the filename.
@@ -1547,7 +1552,7 @@ class NewFileName:
         self.path_tr = self.path_tr.replace('\\', '/')
 
         # --- If a directory, ensure path ends with '/' ---
-        if self.isdir:
+        if self.is_a_dir:
             if not self.path_str[:-1] == '/': self.path_str = self.path_str + '/'
             if not self.path_tr[:-1] == '/': self.path_tr = self.path_tr + '/'
 
@@ -1565,7 +1570,7 @@ class NewFileName:
         if self.is_translated and not self.is_local:
             e_str = '(NewFileName) File is translated and remote.'
             log_error(e_str)
-            raise Addon_Error(e_str)
+            raise AddonException(e_str)
 
         # --- Use Pyhton for local paths and Kodi VFS for remote paths ---
         if self.is_local:
@@ -1595,7 +1600,7 @@ class NewFileName:
     # internally. This is to avoid a design flaw of the Kodi VFS library.
     #
     def isdir(self):
-        return self.isdir
+        return self.is_a_dir
 
     #
     # Allow late setting of isdir() if using the constructor call is not available, for example
@@ -1673,10 +1678,11 @@ class NewFileName:
     def changeExtension(self, targetExt):
         raise AddonException('Implement me.')
         ext = self.getExt()
-        copiedPath = self.originalPath
+        copiedPath = self.path_str
         if not targetExt.startswith('.'):
             targetExt = '.{0}'.format(targetExt)
-        new_path = self.__create__(copiedPath.replace(ext, targetExt))
+        #new_path = self.__create__(copiedPath.replace(ext, targetExt))
+        new_path = NewFileName(copiedPath.replace(ext, targetExt))
         return new_path
 
     # Checks the extension to determine the type of the file.
@@ -1843,14 +1849,29 @@ class NewFileName:
         except OSError:
             log_error('(OSError) Exception in saveStrToFile()')
             log_error('(OSError) Cannot write {0} file'.format(self.path_tr))
-            raise AEL_Error('(OSError) Cannot write {0} file'.format(self.path_tr))
+            raise AddonException('(OSError) Cannot write {0} file'.format(self.path_tr))
         except IOError as e:
             log_error('(IOError) Exception in saveStrToFile()')
             log_error('(IOError) errno = {0}'.format(e.errno))
             if e.errno == errno.ENOENT: log_error('(IOError) No such file or directory.')
             else:                       log_error('(IOError) Unhandled errno value.')
             log_error('(IOError) Cannot write {0} file'.format(self.path_tr))
-            raise AEL_Error('(IOError) Cannot write {0} file'.format(self.path_tr))
+            raise AddonException('(IOError) Cannot write {0} file'.format(self.path_tr))
+
+    # ---------------------------------------------------------------------------------------------
+    # Scanner functions
+    # ---------------------------------------------------------------------------------------------
+    def scanFilesInPath(self, mask = '*.*'):
+        raise NotImplementedError
+
+    def scanFilesInPathAsFileNameObjects(self, mask = '*.*'):
+        raise NotImplementedError
+    
+    def recursiveScanFilesInPath(self, mask = '*.*'):
+        raise NotImplementedError
+        
+    def recursiveScanFilesInPathAsFileNameObjects(self, mask = '*.*'):
+        raise NotImplementedError
 
 # -------------------------------------------------------------------------------------------------
 # Decide which class to use for managing filenames.

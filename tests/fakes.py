@@ -51,7 +51,7 @@ class FakeFile(KodiFileName):
     
     def readAllUnicode(self, encoding='utf-8'):
         contents = self.fakeContent
-        return str(contents, encoding)
+        return contents
 
     def write(self, bytes):
        self.fakeContent = self.fakeContent + bytes
@@ -64,9 +64,16 @@ class FakeFile(KodiFileName):
 
     def switchExtension(self, targetExt):
         switched_fake = super(FakeFile, self).switchExtension(targetExt)
+        #switched_fake = FakeFile(switched_type.getPath())
         switched_fake.setFakeContent(self.fakeContent)
         return switched_fake
 
+    def exists(self):
+        return True
+
+    def scanFilesInPathAsFileNameObjects(self, mask = '*.*'):
+        return []
+    
     #backwards compatiblity
     def __create__(self, path):
         return FakeFile(path)

@@ -2,14 +2,17 @@ import unittest, mock, os, sys, re
 
 from mock import *
 from mock import ANY
-from fakes import *
 import xml.etree.ElementTree as ET
 
-from resources.utils import *
 from resources.net_IO import *
 from resources.scrap import *
-from resources.objects import *
+from resources.objects import StandardRomLauncher
+from resources.utils import FileName
 from resources.constants import *
+
+from tests.fakes import FakeFile
+
+FileName = FakeFile
         
 class Test_local_assets_scraper(unittest.TestCase):
     
@@ -62,10 +65,11 @@ class Test_local_assets_scraper(unittest.TestCase):
                 
         # assert
         self.assertFalse(actual)
-        print rom
+        print(rom)
 
-        
-    def test_scraping_assets_for_game(self):
+    @patch('resources.scrap.misc_add_file_cache')
+    @patch('resources.scrap.misc_search_file_cache')
+    def test_scraping_assets_for_game(self, cache_mock, search_cache_mock):
 
         # arrange
         settings = self.get_test_settings()
@@ -96,4 +100,4 @@ class Test_local_assets_scraper(unittest.TestCase):
         for actual in actuals:
             self.assertFalse(actual)
         
-        print rom
+        print(rom)

@@ -1,7 +1,7 @@
 import unittest
 import mock
 from mock import *
-from fakes import *
+from tests.fakes import *
 
 import os
 
@@ -62,7 +62,7 @@ class Test_filename_test(unittest.TestCase):
         f = target.open('r')
         for x in range(0, 10):
             line = target.readline()
-            print '{}: {}'.format(x, line)
+            print('{}: {}'.format(x, line))
 
         actual = target.readline()
         
@@ -82,8 +82,8 @@ class Test_filename_test(unittest.TestCase):
 
         # act
         propfile = target.readPropertyFile()
-        for key, value in propfile.iteritems():
-            print '{}={}'.format(key, value)
+        for key, value in propfile.items():
+            print('{}={}'.format(key, value))
 
         actual = propfile['content_database_path']
 

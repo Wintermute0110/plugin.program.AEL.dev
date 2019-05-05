@@ -1,7 +1,7 @@
 import unittest
 import mock
 from mock import *
-from fakes import *
+from tests.fakes import *
 
 import os, binascii
 
@@ -76,9 +76,9 @@ class Test_gamestream(unittest.TestCase):
         actual = server.getApps()
 
         for app in actual:
-            print '----------'
+            print('----------')
             for key in app:
-                print '{} = {}'.format(key, app[key])
+                print('{} = {}'.format(key, app[key]))
 
         # arranges
         self.assertEquals(expected, len(actual))
@@ -119,9 +119,9 @@ class Test_gamestream(unittest.TestCase):
         actual = server.getApps()
 
         for app in actual:
-            print '----------'
+            print('----------')
             for key in app:
-                print '{} = {}'.format(key, app[key])
+                print('{} = {}'.format(key, app[key]))
 
         # arranges
         self.assertEquals(expected, len(actual))

@@ -20,17 +20,22 @@ from __future__ import unicode_literals
 from __future__ import division
 import sys
 import random
-import urllib2
 import json
-import httplib
 import ssl
 import xml.etree.ElementTree as ET
 
+from httplib import HTTPSConnection
+from urllib2 import urlopen, build_opener, Request, HTTPSHandler
+
+# Python3 
+# import http
+# from urllib.request import urlopen
+
 # --- AEL packages ---
-from utils import *
+from resources.utils import log_debug, log_warning, log_error, log_info
 
 # --- GLOBALS -----------------------------------------------------------------
-USER_AGENT = 'Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.31 (KHTML, like Gecko) Chrome/26.0.1410.64 Safari/537.31';
+USER_AGENT = 'Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.31 (KHTML, like Gecko) Chrome/26.0.1410.64 Safari/537.31'
 
 # ---  -----------------------------------------------------------------
 def net_get_random_UserAgent():
@@ -77,10 +82,10 @@ def net_get_random_UserAgent():
 
 def net_download_img(img_url, file_path):
     try:
-        req = urllib2.Request(img_url)
+        req = Request(img_url)
         req.add_unredirected_header('User-Agent', net_get_random_UserAgent())
 
-        file_path.writeAll(urllib2.urlopen(req).read(),'wb')
+        file_path.writeAll(urlopen(req).read(),'wb')
     except IOError as e:    
         log_error('(IOError) Exception in net_download_img()')
         log_error('(IOError) {0}'.format(str(e)))
@@ -90,13 +95,13 @@ def net_download_img(img_url, file_path):
 #
 def net_get_URL_oneline(url):
     page_data = ''
-    req = urllib2.Request(url)
+    req = Request(url)
     req.add_unredirected_header('User-Agent', USER_AGENT)
     log_debug('net_get_URL_oneline() Reading URL "{0}"'.format(req.get_full_url()))
 
     try:
         # --- Open network connection (socket) ---
-        f = urllib2.urlopen(req)
+        f = urlopen(req)
 
         # --- Read data from socket ---
         encoding = f.headers['content-type'].split('charset=')[-1]
@@ -118,7 +123,8 @@ def net_get_URL_oneline(url):
     # --- Convert to Unicode ---
     num_bytes = len(page_bytes)
     log_debug('net_get_URL_oneline() Read {0} bytes'.format(num_bytes))
-    page_data = unicode(page_bytes, encoding)
+    #python 3: page_data = str(page_bytes, encoding)
+    page_data = str(page_bytes).encode(encoding)
 
     # --- Put all page text into one line ---
     page_data = page_data.replace('\r\n', '')
@@ -129,12 +135,12 @@ def net_get_URL_oneline(url):
 def net_get_URL_original(url):
     page_data = ''
     
-    req = urllib2.Request(url)
+    req = Request(url)
     req.add_unredirected_header('User-Agent', USER_AGENT)
     log_debug('net_get_URL_original() Reading URL "{0}"'.format(req.get_full_url()))
 
     try:
-        f = urllib2.urlopen(req)
+        f = urlopen(req)
         encoding = f.headers['content-type'].split('charset=')[-1]
         page_bytes = f.read()
         f.close()
@@ -154,7 +160,8 @@ def net_get_URL_original(url):
     
     log_debug('net_get_URL_original() encoding = "{0}"'.format(encoding))
     if encoding != 'utf-16':
-        page_data = unicode(page_bytes, encoding)
+        #python 3: page_data = str(page_bytes, encoding)
+        page_data = str(page_bytes).encode(encoding)
 
     if encoding == 'utf-16':
         page_data = page_bytes.encode('utf-16')
@@ -164,7 +171,7 @@ def net_get_URL_original(url):
 def net_post_URL_original(url, params):
     page_data = ''
     
-    req = urllib2.Request(url, params)
+    req = Request(url, params)
     req.add_unredirected_header('User-Agent', USER_AGENT)
     req.add_header("Content-type", "application/x-www-form-urlencoded")
     req.add_header("Acept", "text/plain")
@@ -172,17 +179,17 @@ def net_post_URL_original(url, params):
     log_debug('net_post_URL_original() POSTING URL "{0}"'.format(req.get_full_url()))
     
     try:
-        f = urllib2.urlopen(req)
+        f = urlopen(req)
         encoding = f.headers['content-type'].split('charset=')[-1]
         page_bytes = f.read()
         f.close()
     except IOError as e:    
-        log_error('(IOError) Exception in net_get_URL_original()')
+        log_error('(IOError) Exception in net_post_URL_original()')
         log_error('(IOError) {0}'.format(str(e)))
         return page_data
 
     num_bytes = len(page_bytes)
-    log_debug('net_get_URL_original() Read {0} bytes'.format(num_bytes))
+    log_debug('net_post_URL_original() Read {0} bytes'.format(num_bytes))
 
     # --- Convert to Unicode ---    
     if encoding == 'text/html': encoding = 'utf-8'
@@ -190,9 +197,10 @@ def net_post_URL_original(url, params):
     if encoding == 'text/plain' and 'UTF-16' in page_bytes: encoding = 'utf-16'
     if encoding == 'application/json': encoding = 'utf-8'
     
-    log_debug('net_get_URL_original() encoding = "{0}"'.format(encoding))
+    log_debug('net_post_URL_original() encoding = "{0}"'.format(encoding))
     if encoding != 'utf-16':
-        page_data = unicode(page_bytes, encoding)
+        #python3: page_data = str(page_bytes, encoding)
+        page_data = str(page_bytes).encode(encoding)
 
     if encoding == 'utf-16':
         page_data = page_bytes.encode('utf-16')
@@ -202,7 +210,7 @@ def net_post_URL_original(url, params):
 def net_get_URL_using_handler(url, handler = None):
 
     page_data = None
-    opener = urllib2.build_opener(handler)
+    opener = build_opener(handler)
     
     log_debug('net_get_URL_using_handler() Reading URL "{0}"'.format(url))
     try:
@@ -225,7 +233,7 @@ def net_get_URL_using_handler(url, handler = None):
     
     log_debug('net_get_URL_using_handler() encoding = "{0}"'.format(encoding))
     if encoding != 'utf-16':
-        page_data = unicode(page_bytes, encoding)
+        page_data = str(page_bytes, encoding)
 
     if encoding == 'utf-16':
         page_data = page_bytes.encode('utf-16')
@@ -236,15 +244,15 @@ def net_get_URL_as_json(url):
     page_data = net_get_URL_original(url)
     return json.loads(page_data)
 
-class HTTPSClientAuthHandler(urllib2.HTTPSHandler):
+class HTTPSClientAuthHandler(HTTPSHandler):
     def __init__(self, key, cert):
         ctx = ssl._create_unverified_context()
         ctx.check_hostname = False
         ctx.verify_mode = ssl.CERT_NONE
     
-        urllib2.HTTPSHandler.__init__(self, context = ctx)
+        HTTPSHandler.__init__(self, context = ctx)
         
-        self.context = ctx;
+        self.context = ctx
         self.key = key
         self.cert = cert
 
@@ -252,4 +260,4 @@ class HTTPSClientAuthHandler(urllib2.HTTPSHandler):
         return self.do_open(self.getConnection, req)
 
     def getConnection(self, host, timeout=300):
-        return httplib.HTTPSConnection(host, key_file=self.key, cert_file=self.cert, context = self.context)
+        return HTTPSConnection(host, key_file=self.key, cert_file=self.cert, context = self.context)

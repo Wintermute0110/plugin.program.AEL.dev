@@ -58,15 +58,15 @@ import xbmcplugin
 #                        net_IO      platforms     constants
 #   main <-- objects <-- disk_IO <-- assets    <-- utils
 #
-from constants import *
-from utils import *
-from audit import *
-from autoconfig import *
-from disk_IO import *
-from net_IO import *
-from objects import *
-from report import *
-from scrap import *
+from resources.constants import *
+from resources.utils import *
+from resources.audit import *
+from resources.autoconfig import *
+from resources.disk_IO import *
+from resources.net_IO import *
+from resources.objects import *
+from resources.report import *
+from resources.scrap import *
 
 # --- Addon object (used to access settings) ---
 __addon__         = xbmcaddon.Addon()
@@ -6420,7 +6420,7 @@ def m_command_export_collection(categoryID, launcherID):
     # --- Export collection assets (Optional) ---
     if export_type == 1:
         output_FileName = output_dir_FileName.pjoin(collection['m_name'] + '_assets.json')
-        fs_export_ROM_collection_assets(output_FileName, collection, collection_rom_list, collections_asset_dir_FN)
+        fs_export_ROM_collection_assets(output_FileName, collection, collection_rom_list, collections_asset_dir_FN, CATEGORY_ASSET_LIST)
 
     # >> User info
     if   export_type == 0:

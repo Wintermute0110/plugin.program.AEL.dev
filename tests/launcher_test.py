@@ -1,6 +1,7 @@
 import unittest, mock, os, sys
 from mock import *
-from fakes import *
+
+from tests.fakes import FakeFile, FakeExecutor, Fake_Paths
 
 from resources.objects import *
 
@@ -43,10 +44,12 @@ class Test_Launcher(unittest.TestCase):
         # arrange
         launcher_data = {'id': 'aap'}
         plugin_dir = FakeFile(self.TEST_ASSETS_DIR)
-
+        settings = self._get_test_settings()
+        
         # act
-        factory = LauncherFactory(None, None, plugin_dir)
-        actual = factory.create(launcher_data)
+        factory = AELObjectFactory(Fake_Paths(self.TEST_ASSETS_DIR), settings, None, None)
+        #LauncherFactory(None, None, plugin_dir)
+        actual = factory.create_from_dic(launcher_data)
         
         # assert
         self.assertIsNone(actual)
@@ -129,8 +132,8 @@ class Test_Launcher(unittest.TestCase):
         
         settings = self._get_test_settings()
 
-        factory = LauncherFactory(settings, mock_exeFactory, FakeFile(self.TEST_ASSETS_DIR))
-        launcher = factory.create(launcher_data)
+        #factory = ObjectRepository.(settings, mock_exeFactory, FakeFile(self.TEST_ASSETS_DIR))
+        launcher = StandaloneLauncher(settings, Fake_Paths('\\fake\\'), launcher_data, None, mock_exeFactory)
 
         # act
         launcher.launch()

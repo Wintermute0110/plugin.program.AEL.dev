@@ -2,14 +2,16 @@ import unittest, mock, os, sys, re
 
 from mock import *
 from mock import ANY
-from fakes import FakeFile
+from tests.fakes import FakeFile
 import xml.etree.ElementTree as ET
 
+from resources.constants import *
 from resources.utils import *
 from resources.net_IO import *
-from resources.scrap import *
-from resources.objects import *
-from resources.constants import *
+from resources.scrap import ArcadeDbScraper
+from resources.objects import StandardRomLauncher, ROM
+
+FileName = FakeFile
         
 def read_file(path):
     with open(path, 'r') as f:
@@ -18,6 +20,24 @@ def read_file(path):
 def read_file_as_json(path):
     file_data = read_file(path)
     return json.loads(file_data, encoding = 'utf-8')
+
+def mocked_arcade_db(url):
+    
+    mocked_html_file = ''
+            
+    if 'game_name=dino' in url:
+        mocked_html_file = Test_arcadedb_scraper.TEST_ASSETS_DIR + "\\arcadedb_dinos.html"
+
+    elif '.jpg' in url:
+        print('reading fake image file')
+        return read_file(Test_arcadedb_scraper.TEST_ASSETS_DIR + "\\test.jpg")
+
+    if mocked_html_file == '':
+        print('reading actual url')
+        return net_get_URL_oneline(url)
+
+    print('reading mocked data from file: {}'.format(mocked_html_file))
+    return read_file(mocked_html_file)
 
 class Test_arcadedb_scraper(unittest.TestCase):
     
@@ -38,23 +58,6 @@ class Test_arcadedb_scraper(unittest.TestCase):
         print('TEST ASSETS DIR: {}'.format(cls.TEST_ASSETS_DIR))
         print('---------------------------------------------------------------------------')
 
-    def mocked_arcade_db(self, url):
-        
-        mocked_html_file = ''
-                
-        if '/xxx' in url:
-            mocked_html_file = Test_arcadedb_scraper.TEST_ASSETS_DIR + "\\faek.htm"
-
-        elif '.jpg' in url:
-            print('reading fake image file')
-            return read_file(Test_arcadedb_scraper.TEST_ASSETS_DIR + "\\test.jpg")
-
-        if mocked_html_file == '':
-            return net_get_URL_oneline(url)
-
-        print('reading mocked data from file: {}'.format(mocked_html_file))
-        return read_file(mocked_html_file)
-
     def get_test_settings(self):
         settings = {}
         settings['scan_metadata_policy'] = 3 # OnlineScraper only
@@ -69,7 +72,7 @@ class Test_arcadedb_scraper(unittest.TestCase):
 
         return settings
 
-    @patch('resources.scrap.net_get_URL_as_json', side_effect = mocked_arcade_db)
+    @patch('resources.scrap.net_get_URL_oneline', side_effect = mocked_arcade_db)
     def test_scraping_metadata_for_game(self, mock_json_downloader):
         
         # arrange
@@ -91,7 +94,7 @@ class Test_arcadedb_scraper(unittest.TestCase):
         self.assertEqual(u'Cadillacs and Dinosaurs (World 930201)', rom.get_name())
         print(rom)
         
-    @patch('resources.scrap.net_get_URL_as_json', side_effect = mocked_arcade_db)
+    @patch('resources.scrap.net_get_URL_oneline', side_effect = mocked_arcade_db)
     @patch('resources.scrap.net_download_img')
     def test_scraping_assets_for_game(self, mock_img_downloader, mock_json_downloader):
 

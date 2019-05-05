@@ -1,13 +1,11 @@
 import unittest, mock, os, sys
 from mock import *
-from fakes import *
 
 from resources.objects import *
-
-from resources.utils import *
 from resources.disk_IO import *
-
 from resources.constants import *
+
+from tests.fakes import FakeFile
 
 class Test_LauncherRepository(unittest.TestCase):
     
@@ -31,7 +29,7 @@ class Test_LauncherRepository(unittest.TestCase):
     def test_when_finding_launchers_by_category_it_will_give_the_correct_result(self):
         
         # arrange
-        xml_path = StandardFileName(self.TEST_ASSETS_DIR + "\\ms_categories.xml")
+        xml_path = FakeFile(self.TEST_ASSETS_DIR + "\\ms_categories.xml")
         context = XmlDataContext(xml_path)
         factory = LauncherFactory( {}, None, FakeFile(self.TEST_ASSETS_DIR))
         target = LauncherRepository(context, factory)
@@ -50,7 +48,7 @@ class Test_LauncherRepository(unittest.TestCase):
     def test_when_finding_categories_it_will_give_the_correct_result(self):
         
         # arrange
-        xml_path = StandardFileName(self.TEST_ASSETS_DIR + "\\ms_categories.xml")
+        xml_path = FakeFile(self.TEST_ASSETS_DIR + "\\ms_categories.xml")
         context = XmlDataContext(xml_path)
         target = CategoryRepository(context)
 
@@ -150,4 +148,4 @@ class Test_LauncherRepository(unittest.TestCase):
         target.save_rom_set(launcher, roms)
                 
         # assert
-        print fake.getFakeContent()
+        print(fake.getFakeContent())

@@ -2,7 +2,7 @@ import unittest, mock, os, sys, re
 
 from mock import *
 from mock import ANY
-from fakes import *
+from tests.fakes import *
 import xml.etree.ElementTree as ET
 
 from resources.utils import *
@@ -64,9 +64,8 @@ class Test_null_scraper(unittest.TestCase):
         # assert
         self.assertFalse(actual)
         self.assertEqual(u'Unknown', rom.get_name())
-        print rom
-
-        
+        print(rom)
+                
     def test_scraping_assets_for_game(self):
 
         # arrange
@@ -98,4 +97,4 @@ class Test_null_scraper(unittest.TestCase):
         for actual in actuals:
             self.assertFalse(actual)
         
-        print rom
+        print(rom)

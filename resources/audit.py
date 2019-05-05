@@ -19,8 +19,8 @@ from __future__ import unicode_literals
 import xml.etree.ElementTree as ET
 
 # --- Modules/packages in this plugin ---
-from constants import *
-from utils import *
+from resources.constants import *
+from resources.utils import *
 
 # -------------------------------------------------------------------------------------------------
 # Data structures

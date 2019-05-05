@@ -12,6 +12,6 @@
     "python.testing.pyTestArgs": [
         "tests"
     ],
-    "python.pythonPath": "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\Python36_64\\python.exe",
+    "python.pythonPath": "C:\\Python27amd64\\python.exe",
     "pythonTestExplorer.testFramework": "unittest"
 }

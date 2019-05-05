@@ -2,7 +2,7 @@ import unittest, mock, os, sys, re
 
 from mock import *
 from mock import ANY
-from fakes import *
+from tests.fakes import *
 import xml.etree.ElementTree as ET
 
 from resources.utils import *
@@ -18,6 +18,28 @@ def read_file(path):
 def read_file_as_json(path):
     file_data = read_file(path)
     return json.loads(file_data, encoding = 'utf-8')
+
+def mocked_gamesdb(url):
+
+    mocked_json_file = ''
+
+    if 'format=brief&title=' in url:
+        mocked_json_file = Test_mobygames_scraper.TEST_ASSETS_DIR + "\\mobygames_castlevania_list.json"
+
+    if 'screenshots' in url:
+        mocked_json_file = Test_mobygames_scraper.TEST_ASSETS_DIR + "\\mobygames_castlevania_screenshots.json"
+
+    if 'covers' in url:
+        mocked_json_file = Test_mobygames_scraper.TEST_ASSETS_DIR + "\\mobygames_castlevania_covers.json"
+                        
+    if re.search('/games/(\d*)\?', url):
+        mocked_json_file = Test_mobygames_scraper.TEST_ASSETS_DIR + "\\mobygames_castlevania.json"
+        
+    if mocked_json_file == '':
+        return net_get_URL_as_json(url)
+
+    print('reading mocked data from file: {}'.format(mocked_json_file))
+    return read_file_as_json(mocked_json_file)
 
 class Test_mobygames_scraper(unittest.TestCase):
     
@@ -37,28 +59,6 @@ class Test_mobygames_scraper(unittest.TestCase):
         print('TEST DIR: {}'.format(cls.TEST_DIR))
         print('TEST ASSETS DIR: {}'.format(cls.TEST_ASSETS_DIR))
         print('---------------------------------------------------------------------------')
-
-    def mocked_gamesdb(url):
-
-        mocked_json_file = '';
-
-        if 'format=brief&title=' in url:
-            mocked_json_file = Test_mobygames_scraper.TEST_ASSETS_DIR + "\\mobygames_castlevania_list.json"
-    
-        if 'screenshots' in url:
-            mocked_json_file = Test_mobygames_scraper.TEST_ASSETS_DIR + "\\mobygames_castlevania_screenshots.json"
-    
-        if 'covers' in url:
-            mocked_json_file = Test_mobygames_scraper.TEST_ASSETS_DIR + "\\mobygames_castlevania_covers.json"
-                            
-        if re.search('/games/(\d*)\?', url):
-            mocked_json_file = Test_mobygames_scraper.TEST_ASSETS_DIR + "\\mobygames_castlevania.json"
-            
-        if mocked_json_file == '':
-            return net_get_URL_as_json(url)
-
-        print 'reading mocked data from file: {}'.format(mocked_json_file)
-        return read_file_as_json(mocked_json_file)
 
     def get_test_settings(self):
         settings = {}
@@ -94,7 +94,7 @@ class Test_mobygames_scraper(unittest.TestCase):
         # assert
         self.assertTrue(actual)
         self.assertEqual(u'Castlevania', rom.get_name())
-        print rom
+        print(rom)
 
         
     # add actual mobygames apikey above and comment out patch attributes to do live tests
@@ -131,4 +131,4 @@ class Test_mobygames_scraper(unittest.TestCase):
         for actual in actuals:
             self.assertTrue(actual)
         
-        print rom
+        print(rom)
