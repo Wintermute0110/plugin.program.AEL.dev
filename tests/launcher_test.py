@@ -267,9 +267,10 @@ class Test_Launcher(unittest.TestCase):
         expected = 'StandardRomLauncher'
         self.assertEqual(actual, expected)
                 
+    @patch('resources.objects.FileName', side_effect = FakeFile)
     @patch('resources.objects.xbmcgui.Dialog.select')
     @patch('resources.objects.ExecutorFactory')
-    def test_if_rom_launcher_will_apply_the_correct_disc_in_a_multidisc_situation(self, mock_exeFactory, mock_dialog):
+    def test_if_rom_launcher_will_apply_the_correct_disc_in_a_multidisc_situation(self, mock_exeFactory, mock_dialog, mock_file):
 
         # arrange
         settings = self._get_test_settings()
@@ -304,11 +305,15 @@ class Test_Launcher(unittest.TestCase):
         mock = FakeExecutor()
         mock_exeFactory.create.return_value = mock
         
+        paths = Fake_Paths('\\fake\\')
+        paths.ROMS_DIR = rom_dir
+        
+        repository = ROMSetRepository(paths, settings)
+        launcher = StandardRomLauncher(paths, settings, launcher_data, None, mock_exeFactory, repository, None)
+        launcher.select_ROM(rom_id)
+
         expected = launcher_data['application']
         expectedArgs = '-a -b -c -d -e d:\\games\\disc02.zip -yes'
-
-        launcher = StandardRomLauncher(Fake_Paths('\\fake\\'), settings, launcher_data, None, mock_exeFactory, None, None)
-        launcher.select_ROM(rom_id)
 
         # act
         launcher.launch()

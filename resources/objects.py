@@ -656,7 +656,7 @@ def asset_get_duplicated_dir_list(launcher):
 def assets_search_local_cached_assets(launcher, ROMFile, enabled_ROM_asset_list):
     log_verb('assets_search_local_cached_assets() Searching for ROM local assets...')
     local_asset_list = [''] * len(ROM_ASSET_LIST)
-    rom_basename_noext = ROMFile.getBase_noext()
+    rom_basename_noext = ROMFile.getBaseNoExt()
     for i, asset_kind in enumerate(ROM_ASSET_LIST):
         AInfo = g_assetFactory.get_asset_info(asset_kind)
         if not enabled_ROM_asset_list[i]:
@@ -686,7 +686,7 @@ def assets_search_local_assets(launcher, ROMFile, enabled_ROM_asset_list):
             log_verb('assets_search_local_assets() Disabled {0:<9}'.format(AInfo.name))
             continue
         asset_path = FileName(launcher[AInfo.path_key])
-        local_asset = misc_look_for_file(asset_path, ROMFile.getBase_noext(), AInfo.exts)
+        local_asset = misc_look_for_file(asset_path, ROMFile.getBaseNoExt(), AInfo.exts)
 
         if local_asset:
             local_asset_list[i] = local_asset.getPath()
@@ -2573,13 +2573,13 @@ class ROMLauncherABC(LauncherABC):
         if not applicationIsSet or not argumentsAreSet or not romIsSelected:
             return
 
-        self._parseArguments()
+        self._launch_parseArguments()
 
         if self.statsStrategy is not None:
             self.statsStrategy.update_launched_rom_stats(self.rom)
             self.save_rom(self.rom)
 
-        super(RomLauncherABC, self).launch()
+        super(ROMLauncherABC, self).launch()
 
     @abc.abstractmethod
     def _launch_selectApplicationToUse(self): return True
@@ -2594,8 +2594,8 @@ class ROMLauncherABC(LauncherABC):
     def _launch_parseArguments(self):
         log_info('RomLauncher() raw arguments   "{0}"'.format(self.arguments))
 
-        # Application based arguments replacements
-        if self.application and isinstance(self.application, FileName):
+        # Application based arguments replacements  TODO: isinstance(FileNameBase) or NewFileName?
+        if self.application and isinstance(self.application, FileNameBase):
             apppath = self.application.getDir()
 
             log_info('RomLauncher() application  "{0}"'.format(self.application.getPath()))
@@ -2609,13 +2609,13 @@ class ROMLauncherABC(LauncherABC):
         if self.selected_rom_file:
             # --- Escape quotes and double quotes in ROMFileName ---
             # >> This maybe useful to Android users with complex command line arguments
-            if self.escape_romfile:
+            if self.settings['escape_romfile']:
                 log_info("RomLauncher() Escaping ROMFileName ' and \"")
                 self.selected_rom_file.escapeQuotes()
 
             rompath       = self.selected_rom_file.getDir()
             rombase       = self.selected_rom_file.getBase()
-            rombase_noext = self.selected_rom_file.getBase_noext()
+            rombase_noext = self.selected_rom_file.getBaseNoExt()
 
             log_info('RomLauncher() romfile      "{0}"'.format(self.selected_rom_file.getPath()))
             log_info('RomLauncher() rompath      "{0}"'.format(rompath))
@@ -3718,7 +3718,7 @@ class RetroarchLauncher(StandardRomLauncher):
             if len(files) < 1: continue
             for file in files:
                 log_debug("get_available_retroarch_configurations() adding config file '{0}'".format(file.getPath()))
-                configs[file.getPath()] = file.getBase_noext()
+                configs[file.getPath()] = file.getBaseNoExt()
 
             return configs
 
@@ -5271,8 +5271,8 @@ class RomFolderScanner(RomScannerStrategy):
             new_rom = Rom()
             new_rom.set_file(ROM)
 
-            searchTerm = text_format_ROM_name_for_scraping(ROM.getBase_noext())
-            self._updateProgressMessage(steamGame['name'], 'Scraping {0}...'.format(ROM.getBase_noext()))
+            searchTerm = text_format_ROM_name_for_scraping(ROM.getBaseNoExt())
+            self._updateProgressMessage(steamGame['name'], 'Scraping {0}...'.format(ROM.getBaseNoExt()))
             self.scraping_strategy.scrape(searchTerm, ROM, new_rom)
             # !!!! MOVED CODE BELOW TO SCRAPING_STRATEGY UNTILL PROPERLY MERGED !!!
             #
@@ -5667,7 +5667,7 @@ class RomDatFileScanner(KodiProgressDialogStrategy):
         for rom in roms:
             # >> Use the ROM basename.
             ROMFileName = rom.get_file()
-            roms_set.add(ROMFileName.getBase_noext())
+            roms_set.add(ROMFileName.getBaseNoExt())
         self._updateProgress(100)
         if __debug_progress_dialogs: time.sleep(0.5)
 
@@ -5677,14 +5677,14 @@ class RomDatFileScanner(KodiProgressDialogStrategy):
         item_counter = 0
         for rom in roms:
             ROMFileName = rom.get_file()
-            if ROMFileName.getBase_noext() in roms_nointro_set:
+            if ROMFileName.getBaseNoExt() in roms_nointro_set:
                 rom.set_nointro_status(NOINTRO_STATUS_HAVE)
                 audit_have += 1
-                log_debug('_roms_update_NoIntro_status() HAVE    "{0}"'.format(ROMFileName.getBase_noext()))
+                log_debug('_roms_update_NoIntro_status() HAVE    "{0}"'.format(ROMFileName.getBaseNoExt()))
             else:
                 rom.set_nointro_status(NOINTRO_STATUS_UNKNOWN)
                 audit_unknown += 1
-                log_debug('_roms_update_NoIntro_status() UNKNOWN "{0}"'.format(ROMFileName.getBase_noext()))
+                log_debug('_roms_update_NoIntro_status() UNKNOWN "{0}"'.format(ROMFileName.getBaseNoExt()))
             item_counter += 1
             self._updateProgress((item_counter*100)/num_items)
             if __debug_progress_dialogs: time.sleep(__debug_time_step)
@@ -5699,7 +5699,7 @@ class RomDatFileScanner(KodiProgressDialogStrategy):
             if not ROMFileName.exists():
                 rom.set_nointro_status(NOINTRO_STATUS_MISS)
                 audit_miss += 1
-                log_debug('_roms_update_NoIntro_status() MISSING "{0}"'.format(ROMFileName.getBase_noext()))
+                log_debug('_roms_update_NoIntro_status() MISSING "{0}"'.format(ROMFileName.getBaseNoExt()))
             item_counter += 1
             self._updateProgress((item_counter*100)/num_items)
             if __debug_progress_dialogs: time.sleep(__debug_time_step)
