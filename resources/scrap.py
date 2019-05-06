@@ -66,7 +66,7 @@ class ScraperFactory(KodiProgressDialogStrategy):
                 log_verb('ScraperFactory.create() {0:<9} path unconfigured'.format(asset_info.name))
             else:
                 log_debug('ScraperFactory.create() {0:<9} path configured'.format(asset_info.name))
-                asset_scraper = self._get_asset_scraper(scan_asset_policy, asset_info, launcher)
+                asset_scraper = self._get_asset_scraper(scan_asset_policy, asset_info, launcher, available_scrapers)
                 
                 if asset_scraper:
                     asset_scrapers[asset_info] = asset_scraper
@@ -162,7 +162,7 @@ class ScraperFactory(KodiProgressDialogStrategy):
     # I propose we give each scraper class an unique id and just store that id in the settings. 
     #
     # >> Scrapers for MAME platform are different than rest of the platforms
-    def _get_asset_scraper(self, scan_asset_policy, asset_info, launcher):
+    def _get_asset_scraper(self, scan_asset_policy, asset_info, launcher, available_scrapers):
 
         
         # ~~~ Asset scraping ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -175,11 +175,11 @@ class ScraperFactory(KodiProgressDialogStrategy):
         if key == '':
             return None
             
-        if key not in settings:
+        if key not in self.settings:
             log_warning("Scraper with key {} not set in settings".format(key))
             return None
 
-        scraper_index = settings[key]
+        scraper_index = self.settings[key]
 
         # --- Asset scraper ---
         onlineScraper = available_scrapers[scraper_index]
@@ -189,12 +189,12 @@ class ScraperFactory(KodiProgressDialogStrategy):
             return NullScraper()
 
         # --- If scraper does not support particular asset return inmediately ---
-        if not onlineScraper.supports_asset(asset_info):
+        if not onlineScraper.supports_asset_type(asset_info):
             log_debug('ScraperFactory._get_asset_scraper() Scraper {0} does not support asset {1}. '
                       'Skipping.'.format(onlineScraper.name, asset_info.name))
             return NullScraper()
                 
-        log_verb('Loaded {0:<10} asset scraper "{1}"'.format(asset_info.name, onlineScraper.name))
+        log_verb('Loaded {0:<10} asset scraper "{1}"'.format(asset_info.name, onlineScraper.getName()))
                 
         if scan_asset_policy == 1:
             log_verb('Asset policy: if not Local Image then Scraper ON')

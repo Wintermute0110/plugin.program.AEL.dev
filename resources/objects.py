@@ -611,7 +611,7 @@ def asset_get_configured_dir_list(launcher):
 
     # >> Check if asset paths are configured or not
     for i, asset in enumerate(ROM_ASSET_ID_LIST):
-        A = assets_get_info_scheme(asset)
+        A = g_assetFactory.get_asset_info(asset)
         configured_bool_list[i] = True if launcher[A.path_key] else False
         if not configured_bool_list[i]: 
             unconfigured_name_list.append(A.name)
@@ -630,9 +630,9 @@ def asset_get_duplicated_dir_list(launcher):
 
     # >> Check for duplicated asset paths
     for i, asset_i in enumerate(ROM_ASSET_ID_LIST[:-1]):
-        A_i = assets_get_info_scheme(asset_i)
+        A_i = g_assetFactory.get_asset_info(asset_i)
         for j, asset_j in enumerate(ROM_ASSET_ID_LIST[i+1:]):
-            A_j = assets_get_info_scheme(asset_j)
+            A_j = g_assetFactory.get_asset_info(asset_j)
             # >> Exclude unconfigured assets (empty strings).
             if not launcher[A_i.path_key] or not launcher[A_j.path_key]: continue
             # log_debug('asset_get_duplicated_asset_list() Checking {0:<9} vs {1:<9}'.format(A_i.name, A_j.name))
@@ -658,7 +658,7 @@ def assets_search_local_cached_assets(launcher, ROMFile, enabled_ROM_asset_list)
     local_asset_list = [''] * len(ROM_ASSET_LIST)
     rom_basename_noext = ROMFile.getBase_noext()
     for i, asset_kind in enumerate(ROM_ASSET_LIST):
-        AInfo = assets_get_info_scheme(asset_kind)
+        AInfo = g_assetFactory.get_asset_info(asset_kind)
         if not enabled_ROM_asset_list[i]:
             log_verb('assets_search_local_cached_assets() Disabled {0:<9}'.format(AInfo.name))
             continue
@@ -681,7 +681,7 @@ def assets_search_local_assets(launcher, ROMFile, enabled_ROM_asset_list):
     log_verb('assets_search_local_assets() Searching for ROM local assets...')
     local_asset_list = [''] * len(ROM_ASSET_LIST)
     for i, asset_kind in enumerate(ROM_ASSET_LIST):
-        AInfo = assets_get_info_scheme(asset_kind)
+        AInfo = g_assetFactory.get_asset_info(asset_kind)
         if not enabled_ROM_asset_list[i]:
             log_verb('assets_search_local_assets() Disabled {0:<9}'.format(AInfo.name))
             continue
@@ -704,12 +704,12 @@ def assets_search_local_assets(launcher, ROMFile, enabled_ROM_asset_list):
 #
 def assets_get_ROM_asset_path(launcher):
     ROM_asset_path = ''
-    duplicated_bool_list = [False] * len(ROM_ASSET_LIST)
-    AInfo_first = assets_get_info_scheme(ROM_ASSET_LIST[0])
+    duplicated_bool_list = [False] * len(ROM_ASSET_ID_LIST)
+    AInfo_first = g_assetFactory.get_asset_info(ROM_ASSET_ID_LIST[0])
     path_first_asset_FN = FileName(launcher[AInfo_first.path_key])
     log_debug('assets_get_ROM_asset_path() path_first_asset "{0}"'.format(path_first_asset_FN.getPath()))
-    for i, asset_kind in enumerate(ROM_ASSET_LIST):
-        AInfo = assets_get_info_scheme(asset_kind)
+    for i, asset_kind in enumerate(ROM_ASSET_ID_LIST):
+        AInfo = g_assetFactory.get_asset_info(asset_kind)
         current_path_FN = FileName(launcher[AInfo.path_key])
         if current_path_FN.getDir() == path_first_asset_FN.getDir():
             duplicated_bool_list[i] = True
@@ -2856,14 +2856,14 @@ class ROMLauncherABC(LauncherABC):
         return favourite
 
     def get_duplicated_asset_dirs(self):
-        duplicated_bool_list   = [False] * len(ROM_ASSET_LIST)
+        duplicated_bool_list   = [False] * len(ROM_ASSET_ID_LIST)
         duplicated_name_list   = []
 
         # >> Check for duplicated asset paths
-        for i, asset_i in enumerate(ROM_ASSET_LIST[:-1]):
-            A_i = assets_get_info_scheme(asset_i)
-            for j, asset_j in enumerate(ROM_ASSET_LIST[i+1:]):
-                A_j = assets_get_info_scheme(asset_j)
+        for i, asset_i in enumerate(ROM_ASSET_ID_LIST[:-1]):
+            A_i = g_assetFactory.get_asset_info(asset_i)
+            for j, asset_j in enumerate(ROM_ASSET_ID_LIST[i+1:]):
+                A_j = g_assetFactory.get_asset_info(asset_j)
                 # >> Exclude unconfigured assets (empty strings).
                 if not self.entity_data[A_i.path_key] or not self.entity_data[A_j.path_key]: continue
                 # log_debug('asset_get_duplicated_asset_list() Checking {0:<9} vs {1:<9}'.format(A_i.name, A_j.name))
