@@ -20,6 +20,11 @@ class FakeRomSetRepository(ROMSetRepository):
 
 class FakeExecutor(ExecutorABC):
     
+    def __init__(self):
+        self.actualApplication = None
+        self.actualArgs = None
+        super(FakeExecutor, self).__init__(None)
+    
     def getActualApplication(self):
         return self.actualApplication
 

@@ -28,10 +28,11 @@ import subprocess
 import webbrowser
 
 # --- AEL packages ---
-from resources.utils import *
 from resources.net_IO import *
-from resources.disk_IO import FileName, fs_new_launcher
+from resources.disk_IO import *
 from resources.platforms import *
+
+from resources.utils import FileName
 from resources.constants import *
 
 # #################################################################################################
@@ -969,7 +970,7 @@ class ROMSetRepository(object):
             log_warning('Launcher JSON not found "{0}"'.format(repository_file.getPath()))
             return None
         log_info('Loading ROMs in Launcher ({0}:{1}) ...'.format(
-            launcher.get_launcher_type_name(), launcher.get_name()))
+            launcher.get_launcher_type(), launcher.get_name()))
         log_info('View mode {0}...'.format(view_mode))
 
         roms_data = {}
@@ -996,19 +997,19 @@ class ROMSetRepository(object):
         roms = {}
         if isinstance(roms_data, list):
             for rom_data in roms_data:
-                r = Rom(rom_data)
+                r = ROM(rom_data)
                 key = r.get_id()
                 roms[key] = r
         else:
             for key in roms_data:
-                r = Rom(roms_data[key])
+                r = ROM(roms_data[key])
                 roms[key] = r
 
         return roms
 
     def find_index_file_by_launcher(self, launcher, type):
         roms_base_noext = launcher.get_roms_base()
-        repository_file = self.roms_dir.pjoin('{0}{1}.json'.format(roms_base_noext, type))
+        repository_file = self.ROMs_dir.pjoin('{0}{1}.json'.format(roms_base_noext, type))
 
         if not repository_file.exists():
             log_warning('RomSetRepository.find_index_file_by_launcher(): File not found {0}'.format(repository_file.getPath()))
@@ -1049,13 +1050,13 @@ class ROMSetRepository(object):
             view_mode = launcher.get_display_mode()
 
         if roms_base_noext is None:
-            repository_file = self.roms_dir
+            repository_file = self.ROMs_dir
         elif view_mode == LAUNCHER_DMODE_FLAT:
-            repository_file = self.roms_dir.pjoin('{}.json'.format(roms_base_noext))
+            repository_file = self.ROMs_dir.pjoin('{}.json'.format(roms_base_noext))
         else:
-            repository_file = self.roms_dir.pjoin('{}_parents.json'.format(roms_base_noext))
+            repository_file = self.ROMs_dir.pjoin('{}_parents.json'.format(roms_base_noext))
 
-        log_verb('RomSetRepository.save_rom_set() Dir  {0}'.format(self.roms_dir.getPath()))
+        log_verb('RomSetRepository.save_rom_set() Dir  {0}'.format(self.ROMs_dir.getPath()))
         log_verb('RomSetRepository.save_rom_set() JSON {0}'.format(repository_file.getPath()))
 
         # >> Write ROMs JSON dictionary.
@@ -1086,34 +1087,34 @@ class ROMSetRepository(object):
         roms_base_noext = launcher.get_roms_base()
 
         # >> Delete ROMs JSON file
-        roms_json_FN = self.roms_dir.pjoin(roms_base_noext + '.json')
+        roms_json_FN = self.ROMs_dir.pjoin(roms_base_noext + '.json')
         if roms_json_FN.exists():
             log_info('Deleting ROMs JSON    "{0}"'.format(roms_json_FN.getPath()))
             roms_json_FN.unlink()
 
         # >> Delete ROMs info XML file
-        roms_xml_FN = self.roms_dir.pjoin(roms_base_noext + '.xml')
+        roms_xml_FN = self.ROMs_dir.pjoin(roms_base_noext + '.xml')
         if roms_xml_FN.exists():
             log_info('Deleting ROMs XML     "{0}"'.format(roms_xml_FN.getPath()))
             roms_xml_FN.unlink()
 
         # >> Delete No-Intro/Redump stuff if exist
-        roms_index_CParent_FN = self.roms_dir.pjoin(roms_base_noext + '_index_CParent.json')
+        roms_index_CParent_FN = self.ROMs_dir.pjoin(roms_base_noext + '_index_CParent.json')
         if roms_index_CParent_FN.exists():
             log_info('Deleting CParent JSON "{0}"'.format(roms_index_CParent_FN.getPath()))
             roms_index_CParent_FN.unlink()
 
-        roms_index_PClone_FN = self.roms_dir.pjoin(roms_base_noext + '_index_PClone.json')
+        roms_index_PClone_FN = self.ROMs_dir.pjoin(roms_base_noext + '_index_PClone.json')
         if roms_index_PClone_FN.exists():
             log_info('Deleting PClone JSON  "{0}"'.format(roms_index_PClone_FN.getPath()))
             roms_index_PClone_FN.unlink()
 
-        roms_parents_FN = self.roms_dir.pjoin(roms_base_noext + '_parents.json')
+        roms_parents_FN = self.ROMs_dir.pjoin(roms_base_noext + '_parents.json')
         if roms_parents_FN.exists():
             log_info('Deleting parents JSON "{0}"'.format(roms_parents_FN.getPath()))
             roms_parents_FN.unlink()
 
-        roms_DAT_FN = self.roms_dir.pjoin(roms_base_noext + '_DAT.json')
+        roms_DAT_FN = self.ROMs_dir.pjoin(roms_base_noext + '_DAT.json')
         if roms_DAT_FN.exists():
             log_info('Deleting DAT JSON     "{0}"'.format(roms_DAT_FN.getPath()))
             roms_DAT_FN.unlink()
@@ -1123,7 +1124,7 @@ class ROMSetRepository(object):
     def delete_by_launcher(self, launcher, kind):
         roms_base_noext     = launcher.get_roms_base()
         rom_set_file_name   = roms_base_noext + kind
-        rom_set_path        = self.roms_dir.pjoin(rom_set_file_name + '.json')
+        rom_set_path        = self.ROMs_dir.pjoin(rom_set_file_name + '.json')
 
         if rom_set_path.exists():
             log_info('delete_by_launcher() Deleting {0}'.format(rom_set_path.getPath()))
@@ -2740,29 +2741,29 @@ class ROMLauncherABC(LauncherABC):
     def load_ROMs(self): self.roms = self.romsetRepository.load_ROMs(self)
 
     def save_current_ROMs(self):
-        self.romset_repository.save_rom_set(self, self.roms)
+        self.romsetRepository.save_rom_set(self, self.roms)
 
     def save_ROM(self, rom):
-        if not self.has_roms(): self.load_roms()
+        if not self.has_ROMs(): self.load_ROMs()
         self.roms[rom.get_id()] = rom
-        self.romset_repository.save_rom_set(self, self.roms)
+        self.romsetRepository.save_rom_set(self, self.roms)
 
     def update_ROM_set(self, roms):
         if not isinstance(roms, dict):
             roms = dict((rom.get_id(), rom) for rom in roms)
-        self.romset_repository.save_rom_set(self, roms)
+        self.romsetRepository.save_rom_set(self, roms)
         self.roms = roms
 
     def delete_ROM_databases(self):
-        self.romset_repository.delete_all_by_launcher(self)
+        self.romsetRepository.delete_all_by_launcher(self)
 
     def delete_ROM(self, rom_id):
-        if not self.has_roms(): self.load_roms()
+        if not self.has_ROMs(): self.load_ROMs()
         self.roms.pop(rom_id)
-        self.romset_repository.save_rom_set(self, self.roms)
+        self.romsetRepository.save_rom_set(self, self.roms)
 
     def select_ROM(self, rom_id):
-        if not self.has_roms(): self.load_roms()
+        if not self.has_ROMs(): self.load_ROMs()
         if self.roms is None:
             log_error('Unable to load romset')
             return None
@@ -2778,7 +2779,7 @@ class ROMLauncherABC(LauncherABC):
         return self.roms is not None and len(self.roms) > 0
 
     def has_ROM(self, rom_id):
-        if not self.has_roms(): self.load_roms()
+        if not self.has_ROMs(): self.load_ROMs()
 
         return rom_id in self.roms
 
@@ -2786,24 +2787,24 @@ class ROMLauncherABC(LauncherABC):
         return self.entity_data['num_roms']
 
     def actual_amount_of_ROMs(self):
-        if not self.has_roms(): self.load_roms()
+        if not self.has_ROMs(): self.load_ROMs()
 
         return len(self.roms)
 
     def get_roms(self):
-        if not self.has_roms(): self.load_roms()
+        if not self.has_ROMs(): self.load_ROMs()
 
         return self.roms.values() if self.roms else None
 
     def get_ROM_IDs(self):
-        if not self.has_roms(): self.load_roms()
+        if not self.has_ROMs(): self.load_ROMs()
 
         return self.roms.keys() if self.roms else None
 
     def reset_PClone_ROMs(self):
-        self.romset_repository.delete_by_launcher(self, ROMSET_CPARENT)
-        self.romset_repository.delete_by_launcher(self, ROMSET_PCLONE)
-        self.romset_repository.delete_by_launcher(self, ROMSET_PARENTS)
+        self.romsetRepository.delete_by_launcher(self, ROMSET_CPARENT)
+        self.romsetRepository.delete_by_launcher(self, ROMSET_PCLONE)
+        self.romsetRepository.delete_by_launcher(self, ROMSET_PARENTS)
 
     # -------------------------------------------------------------------------------------------------
     # Favourite ROM creation/management
@@ -2910,7 +2911,7 @@ class ROMLauncherABC(LauncherABC):
     def clear_roms(self):
         self.entity_data['num_roms'] = 0
         self.roms = {}
-        self.romset_repository.delete_all_by_launcher(self)
+        self.romsetRepository.delete_all_by_launcher(self)
 
     def get_display_mode(self):
         return self.entity_data['launcher_display_mode'] if 'launcher_display_mode' in self.entity_data else LAUNCHER_DMODE_FLAT
@@ -2985,14 +2986,14 @@ class ROMLauncherABC(LauncherABC):
 # ------------------------------------------------------------------------------------------------- 
 class CollectionLauncher(ROMLauncherABC):
     def __init__(self, PATHS, settings, collection_dic, 
-                 executorFactory, romset_repository, statsStrategy):
+                 executorFactory, romsetRepository, statsStrategy):
         # Concrete classes are responsible of creating a default entity_data dictionary
         # with sensible defaults.
         if collection_dic is None:
             collection_dic = fs_new_collection()
             collection_dic['id'] = misc_generate_random_SID()
         super(CollectionLauncher, self).__init__(
-            PATHS, settings, collection_dic, None, romset_repository, None, False
+            PATHS, settings, collection_dic, None, romsetRepository, None, False
         )
 
     def get_object_name(self): return 'ROM Collection'
@@ -3071,10 +3072,10 @@ class CollectionLauncher(ROMLauncherABC):
 # ------------------------------------------------------------------------------------------------- 
 class VirtualLauncher(ROMLauncherABC):
     def __init__(self, PATHS, settings, collection_dic, 
-                 executorFactory, romset_repository, statsStrategy):
+                 executorFactory, romsetRepository, statsStrategy):
         # Look at the VirtualCategory construction for complete this.
         super(VirtualLauncher, self).__init__(
-            launcher_data, settings, None, romset_repository, None, False
+            launcher_data, settings, None, romsetRepository, None, False
         )
 
     def get_object_name(self): return 'Virtual launcher'
@@ -3363,8 +3364,8 @@ class StandardRomLauncher(ROMLauncherABC):
     # ---------------------------------------------------------------------------------------------
     # Move ROMs method to parent class ROMLauncherABC.
     def get_roms_filtered(self):
-        if not self.has_roms():
-            self.load_roms()
+        if not self.has_ROMs():
+            self.load_ROMs()
 
         filtered_roms = []
         view_mode     = self.get_display_mode()
@@ -3385,7 +3386,7 @@ class StandardRomLauncher(ROMLauncherABC):
             if not view_mode == LAUNCHER_DMODE_FLAT and len(pclone_index[rom_id]):
                 filtered_roms.append(rom)
 
-            elif nointro_status == NOINTRO_STATUS_HAVE and dp_mode in dp_mode_for_have:
+            elif nointro_status == NOINTRO_STATUS_HAVE and dp_mode in dp_modes_for_have:
                 filtered_roms.append(rom)
 
             elif nointro_status == NOINTRO_STATUS_MISS and dp_mode in dp_modes_for_miss:
@@ -3413,19 +3414,19 @@ class StandardRomLauncher(ROMLauncherABC):
         self.entity_data['romext'] = ext
 
     def get_parent_roms(self):
-        return self.romset_repository.find_by_launcher(self, LAUNCHER_DMODE_PCLONE)
+        return self.romsetRepository.find_by_launcher(self, LAUNCHER_DMODE_PCLONE)
 
     def get_pclone_indices(self):
-        return self.romset_repository.find_index_file_by_launcher(self, ROMSET_PCLONE)
+        return self.romsetRepository.find_index_file_by_launcher(self, ROMSET_PCLONE)
 
     def get_parent_indices(self):
-        return self.romset_repository.find_index_file_by_launcher(self, ROMSET_CPARENT)
+        return self.romsetRepository.find_index_file_by_launcher(self, ROMSET_CPARENT)
 
     def update_parent_rom_set(self, roms):
         if not isinstance(roms,dict):
             roms = dict((rom.get_id(), rom) for rom in roms)
 
-        self.romset_repository.save_rom_set(self, roms, LAUNCHER_DMODE_PCLONE)
+        self.romsetRepository.save_rom_set(self, roms, LAUNCHER_DMODE_PCLONE)
 
 
 # --- Retroplayer launcher ---
@@ -4037,9 +4038,9 @@ class LnkLauncher(StandardRomLauncher):
 # Launcher to use with a local Steam application and account.
 # -------------------------------------------------------------------------------------------------
 class SteamLauncher(ROMLauncherABC):
-    def __init__(self, launcher_data, settings, executorFactory, romset_repository, statsStrategy):
+    def __init__(self, launcher_data, settings, executorFactory, romsetRepository, statsStrategy):
         super(SteamLauncher, self).__init__(
-            launcher_data, settings, executorFactory, romset_repository, statsStrategy, False
+            launcher_data, settings, executorFactory, romsetRepository, statsStrategy, False
         )
 
     def get_launcher_type(self): return LAUNCHER_STEAM
@@ -4123,9 +4124,9 @@ class SteamLauncher(ROMLauncherABC):
 # Launcher to use with Nvidia Gamestream servers.
 # -------------------------------------------------------------------------------------------------
 class NvidiaGameStreamLauncher(ROMLauncherABC):
-    def __init__(self, launcher_data, settings, executorFactory, romset_repository, statsStrategy):
+    def __init__(self, launcher_data, settings, executorFactory, romsetRepository, statsStrategy):
         super(NvidiaGameStreamLauncher, self).__init__(
-            launcher_data, settings, executorFactory, romset_repository, statsStrategy, False)
+            launcher_data, settings, executorFactory, romsetRepository, statsStrategy, False)
 
     def get_launcher_type(self): return LAUNCHER_NVGAMESTREAM
 
@@ -4623,11 +4624,11 @@ class AELObjectFactory(object):
                                       self.executorFactory)
 
         elif obj_type == OBJ_LAUNCHER_COLLECTION:
-            # romset_repository = ROMSetRepository(self.PATHS.COLLECTIONS_FILE_PATH, False)
+            # romsetRepository = ROMSetRepository(self.PATHS.COLLECTIONS_FILE_PATH, False)
             ROMRepository = ROMSetRepository(self.PATHS, self.settings)
             statsStrategy = ROMStatisticsStrategy(self.PATHS, self.settings)
 
-            return CollectionLauncher(self.PATHS, self.settings, obj_dic, romset_repository)
+            return CollectionLauncher(self.PATHS, self.settings, obj_dic, romsetRepository)
 
         elif obj_type == OBJ_LAUNCHER_ROM:
             ROMRepository = ROMSetRepository(self.PATHS, self.settings)
@@ -5809,7 +5810,7 @@ class RomDatFileScanner(KodiProgressDialogStrategy):
 
         # --- Save JSON databases ---
         self._updateProgress(0, 'Saving NO-Intro/Redump JSON databases ...')
-        fs_write_JSON_file(ROMS_DIR, launcher['roms_base_noext'] + '_index_PClone', roms_pclone_index)
+        fs_write_JSON_file(ROMs_dir, launcher['roms_base_noext'] + '_index_PClone', roms_pclone_index)
         self._updateProgress(30)
         fs_write_JSON_file(ROMS_DIR, launcher['roms_base_noext'] + '_index_CParent', clone_parent_dic)
         self._updateProgress(60)

@@ -1368,7 +1368,11 @@ class PythonFileName(FileNameBase):
     # ---------------------------------------------------------------------------------------------
     def __init__(self, pathString):
         super(PythonFileName, self).__init__(pathString)
-
+   
+    # TODO: remove when possible
+    def __create__(self, pathString):
+        return PythonFileName(pathString)
+    
     # Joins paths and returns a new object.
     def pjoin(self, *args):
         child = PythonFileName(self.originalPath)
@@ -1445,7 +1449,7 @@ class PythonFileName(FileNameBase):
         with open(self.path, 'r') as f:
             contents = f.read()
 
-        return str(contents).encode(encoding)
+        return str(contents).decode(encoding)
 
     def writeAll(self, bytes, flags = 'w'):
         with open(self.path, flags) as file:

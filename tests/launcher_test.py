@@ -4,9 +4,7 @@ from mock import *
 from tests.fakes import FakeFile, FakeExecutor, Fake_Paths
 
 from resources.objects import *
-
-from resources.utils import *
-from resources.disk_IO import *
+from resources.utils import FileName
 
 from resources.constants import *
 
@@ -54,15 +52,16 @@ class Test_Launcher(unittest.TestCase):
         # assert
         self.assertIsNone(actual)
                 
+    @patch('resources.objects.FileName', side_effect = FakeFile)
     @patch('resources.objects.ExecutorFactory')    
-    def test_when_its_an_app_factory_loads_with_correct_launcher(self, mock_exeFactory):
+    def test_when_its_an_app_factory_loads_with_correct_launcher(self, mock_exeFactory, filename_mock):
 
         # arrange
-        mock_exeFactory.create.return_value = FakeExecutor(None)
+        mock_exeFactory.create.return_value = FakeExecutor()
         
         launcher_data = {}
         launcher_data['id'] = 'ABC'
-        launcher_data['type'] = LAUNCHER_STANDALONE
+        launcher_data['type'] = OBJ_LAUNCHER_STANDALONE
         launcher_data['application'] = 'path'
         launcher_data['toggle_window'] = True
         launcher_data['romext'] = ''
@@ -75,6 +74,7 @@ class Test_Launcher(unittest.TestCase):
 
         # act
         factory = LauncherFactory(settings, mock_exeFactory, FakeFile(self.TEST_ASSETS_DIR))
+        #launcher = StandaloneLauncher(Fake_Paths('\\fake\\'), settings, launcher_data, None, mock_exeFactory)
         launcher = factory.create(launcher_data)
         
         # assert        
@@ -82,8 +82,9 @@ class Test_Launcher(unittest.TestCase):
         expected = 'ApplicationLauncher'
         self.assertEqual(actual, expected)
         
+    @patch('resources.objects.FileName', side_effect = FakeFile)
     @patch('resources.objects.ExecutorFactory')
-    def test_if_app_launcher_will_correctly_passthrough_parameters_when_launching(self, mock_exeFactory):
+    def test_if_app_launcher_will_correctly_passthrough_parameters_when_launching(self, mock_exeFactory, filename_mock):
 
         # arrange
         expectedApp = 'AbcDefGhiJlkMnoPqrStuVw'
@@ -91,7 +92,7 @@ class Test_Launcher(unittest.TestCase):
 
         launcher_data = {}
         launcher_data['id'] = 'ABC'
-        launcher_data['type'] = LAUNCHER_STANDALONE
+        launcher_data['type'] = OBJ_LAUNCHER_STANDALONE
         launcher_data['application'] = expectedApp
         launcher_data['toggle_window'] = True
         launcher_data['args'] = expectedArgs
@@ -99,21 +100,23 @@ class Test_Launcher(unittest.TestCase):
 
         settings = self._get_test_settings()
         
-        mock = FakeExecutor(None)
+        mock = FakeExecutor()
         mock_exeFactory.create.return_value = mock
 
-        factory = LauncherFactory(settings, mock_exeFactory, FakeFile(self.TEST_ASSETS_DIR))
-        launcher = factory.create(launcher_data)
+        launcher = StandaloneLauncher(Fake_Paths('\\fake\\'), settings, launcher_data, None, mock_exeFactory)
 
         # act
         launcher.launch()
 
         # assert
+        self.assertIsNotNone(expectedApp)
         self.assertEqual(expectedApp, mock.actualApplication.getOriginalPath())
+        self.assertIsNotNone(expectedArgs)
         self.assertEqual(expectedArgs, mock.actualArgs)
         
+    @patch('resources.objects.FileName', side_effect = FakeFile)
     @patch('resources.objects.ExecutorFactory')
-    def test_if_app_launcher_will_correctly_alter_arguments_when_launching(self, mock_exeFactory):
+    def test_if_app_launcher_will_correctly_alter_arguments_when_launching(self, mock_exeFactory, filename_mock):
 
         # arrange
         expectedApp = 'C:\Sparta\Action.exe'
@@ -124,22 +127,25 @@ class Test_Launcher(unittest.TestCase):
         launcher_data['type'] = 'STANDALONE'
         launcher_data['application'] = expectedApp
         launcher_data['toggle_window'] = True
-        launcher_data['args'] = 'this is $apppath%'
+        launcher_data['args'] = 'this is $apppath$'
         launcher_data['m_name'] = 'MyApp'
+        launcher_data['display_launcher_notify'] = False
         
-        mock = FakeExecutor(None)
+        mock = FakeExecutor()
         mock_exeFactory.create.return_value = mock
         
         settings = self._get_test_settings()
 
-        #factory = ObjectRepository.(settings, mock_exeFactory, FakeFile(self.TEST_ASSETS_DIR))
-        launcher = StandaloneLauncher(settings, Fake_Paths('\\fake\\'), launcher_data, None, mock_exeFactory)
+        launcher = StandaloneLauncher(Fake_Paths('\\fake\\'), settings, launcher_data, None, mock_exeFactory)
 
         # act
         launcher.launch()
 
         # assert
+        self.assertIsNotNone(mock.actualApplication)
         self.assertEqual(expectedApp, mock.actualApplication.getOriginalPath())
+        
+        self.assertIsNotNone(mock.actualArgs)
         self.assertEqual(expectedArgs, mock.actualArgs)
             
     @patch('resources.objects.ExecutorFactory')
@@ -151,7 +157,7 @@ class Test_Launcher(unittest.TestCase):
         launcher_data = {}
         launcher_data['id'] = 'ABC'
         launcher_data['application'] = 'path'
-        launcher_data['type'] = LAUNCHER_ROM
+        launcher_data['type'] = OBJ_LAUNCHER_ROM
         launcher_data['toggle_window'] = True
         launcher_data['romext'] = ''
         launcher_data['application'] = ''
@@ -167,10 +173,13 @@ class Test_Launcher(unittest.TestCase):
         rom_dir = FakeFile(self.TEST_ASSETS_DIR)
         rom_dir.setFakeContent(json_data)
 
+        paths = Fake_Paths('\\fake\\')
+        paths.ROMS_DIR = PythonFileName(self.TEST_ASSETS_DIR)                
+        repository = ROMSetRepository(paths, settings)
+
         # act
-        factory = LauncherFactory(settings, mock_exeFactory, rom_dir)
-        launcher = factory.create(launcher_data)
-        launcher.select_rom(rom_id)
+        launcher = StandardRomLauncher(paths, settings, launcher_data, None, mock_exeFactory, repository, None)
+        launcher.select_ROM(rom_id)
         
         # assert
         actual = launcher.__class__.__name__
@@ -185,7 +194,7 @@ class Test_Launcher(unittest.TestCase):
 
         launcher_data= {}
         launcher_data['id'] = 'ABC'
-        launcher_data['type'] = LAUNCHER_ROM
+        launcher_data['type'] = OBJ_LAUNCHER_ROM
         launcher_data['application'] = 'path'
         launcher_data['toggle_window'] = True
         launcher_data['romext'] = ''
@@ -202,20 +211,21 @@ class Test_Launcher(unittest.TestCase):
         rom_dir = FakeFile(self.TEST_ASSETS_DIR)
         rom_dir.setFakeContent(json_data)
 
-        mock = FakeExecutor(None)
+        mock = FakeExecutor()
         mock_exeFactory.create.return_value = mock
 
         expected = launcher_data['application']
         expectedArgs = '-a -b -c -d -e testing.zip -yes'
 
-        factory = LauncherFactory(settings, mock_exeFactory, rom_dir)
-        launcher = factory.create(launcher_data)
-        launcher.select_rom(rom_id)
+        #factory = LauncherFactory(settings, mock_exeFactory, rom_dir)
+        launcher = StandardRomLauncher(Fake_Paths('\\fake\\'), settings, launcher_data, None, mock_exeFactory, None, None)
+        launcher.select_ROM(rom_id)
 
         # act
         launcher.launch()
 
         # assert
+        self.assertIsNotNone(mock.actualApplication)
         self.assertEqual(expected, mock.actualApplication.getOriginalPath())
         self.assertEqual(expectedArgs, mock.actualArgs)
                 
@@ -227,7 +237,7 @@ class Test_Launcher(unittest.TestCase):
 
         launcher_data = {}
         launcher_data['id'] = 'ABC'
-        launcher_data['type'] = LAUNCHER_ROM
+        launcher_data['type'] = OBJ_LAUNCHER_ROM
         launcher_data['application'] = 'path'
         launcher_data['toggle_window'] = True
         launcher_data['romext'] = ''
@@ -244,13 +254,13 @@ class Test_Launcher(unittest.TestCase):
         rom_dir = FakeFile(self.TEST_ASSETS_DIR)
         rom_dir.setFakeContent(json_data)
 
-        mock = FakeExecutor(None)
+        mock = FakeExecutor()
         mock_exeFactory.create.return_value = mock
 
+        launcher = StandardRomLauncher(Fake_Paths('\\fake\\'), settings, launcher_data, None, mock_exeFactory, None, None)
+        
         # act
-        factory = LauncherFactory(settings, mock_exeFactory, rom_dir)
-        launcher = factory.create(launcher_data)
-        launcher.select_rom(rom_id)
+        launcher.select_ROM(rom_id)
         
         # assert        
         actual = launcher.__class__.__name__
@@ -266,7 +276,7 @@ class Test_Launcher(unittest.TestCase):
 
         launcher_data = {}
         launcher_data['id'] = 'ABC'
-        launcher_data['type'] = LAUNCHER_ROM
+        launcher_data['type'] = OBJ_LAUNCHER_ROM
         launcher_data['application'] = 'c:\\temp\\'
         launcher_data['toggle_window'] = True
         launcher_data['romext'] = ''
@@ -291,15 +301,14 @@ class Test_Launcher(unittest.TestCase):
         rom_dir.setFakeContent(json_data)
 
         mock_dialog.return_value = 1
-        mock = FakeExecutor(None)
+        mock = FakeExecutor()
         mock_exeFactory.create.return_value = mock
         
         expected = launcher_data['application']
         expectedArgs = '-a -b -c -d -e d:\\games\\disc02.zip -yes'
 
-        factory = LauncherFactory(settings, mock_exeFactory, rom_dir)
-        launcher = factory.create(launcher_data)
-        launcher.select_rom(rom_id)
+        launcher = StandardRomLauncher(Fake_Paths('\\fake\\'), settings, launcher_data, None, mock_exeFactory, None, None)
+        launcher.select_ROM(rom_id)
 
         # act
         launcher.launch()
@@ -321,7 +330,7 @@ class Test_Launcher(unittest.TestCase):
         settings = self._get_test_settings()
 
         launcher_data = {}
-        launcher_data['type'] = LAUNCHER_RETROARCH
+        launcher_data['type'] = OBJ_LAUNCHER_RETROARCH
         launcher_data['id'] = 'ABC'
         launcher_data['toggle_window'] = True
         launcher_data['romext'] = None
@@ -343,16 +352,18 @@ class Test_Launcher(unittest.TestCase):
         rom_dir = FakeFile(self.TEST_ASSETS_DIR)
         rom_dir.setFakeContent(json_data)
 
-        mock = FakeExecutor(None)
+        mock = FakeExecutor()
         mock_exeFactory.create.return_value = mock
+        paths = Fake_Paths('\\fake\\')
+        paths.ROMS_DIR = rom_dir
+                
+        repository = ROMSetRepository(paths, settings)
+        launcher = RetroarchLauncher(paths, settings, launcher_data, None, mock_exeFactory, repository, None)
+        launcher.select_ROM(rom_id)
 
         expected = '/system/bin/am'
         expectedArgs = "start --user 0 -a android.intent.action.MAIN -c android.intent.category.LAUNCHER -n com.retroarch/.browser.retroactivity.RetroActivityFuture -e ROM 'superrom.zip' -e LIBRETRO /data/data/com.retroarch/cores/mame_libretro_android.so -e CONFIGFILE /storage/emulated/0/Android/data/com.retroarch/files/retroarch.cfg "
-
-        factory = LauncherFactory(settings, mock_exeFactory, rom_dir)
-        launcher = factory.create(launcher_data)
-        launcher.select_rom(rom_id)
-
+                 
         # act
         launcher.launch()
 
@@ -374,7 +385,7 @@ class Test_Launcher(unittest.TestCase):
         settings = self._get_test_settings()
 
         launcher_data = {}
-        launcher_data['type'] = LAUNCHER_RETROARCH
+        launcher_data['type'] = OBJ_LAUNCHER_RETROARCH
         launcher_data['id'] = 'ABC'
         launcher_data['toggle_window'] = True
         launcher_data['romext'] = None
@@ -382,13 +393,15 @@ class Test_Launcher(unittest.TestCase):
         launcher_data['roms_base_noext'] = 'roms_Sega_32X_518519'
         launcher_data['application'] = 'app'
 
-        mock = FakeExecutor(None)
+        mock = FakeExecutor()
         mock_exeFactory.create.return_value = mock
+                        
+        paths = Fake_Paths('\\fake\\')
+        paths.ROMS_DIR = PythonFileName(self.TEST_ASSETS_DIR)
                 
-        rom_dir = StandardFileName(self.TEST_ASSETS_DIR)
-        repository = RomSetRepository(rom_dir)
-        target = StandardRomLauncher(launcher_data, settings, mock_exeFactory, repository, None, False)
-        
+        repository = ROMSetRepository(paths, settings)
+        target = RetroarchLauncher(paths, settings, launcher_data, None, mock_exeFactory, repository, None)        
+
         expected = 35
 
         # act
@@ -412,7 +425,7 @@ class Test_Launcher(unittest.TestCase):
         settings = self._get_test_settings()
 
         launcher_data = {}
-        launcher_data['type'] = LAUNCHER_RETROARCH
+        launcher_data['type'] = OBJ_LAUNCHER_RETROARCH
         launcher_data['id'] = 'ABC'
         launcher_data['toggle_window'] = True
         launcher_data['romext'] = None
@@ -420,12 +433,14 @@ class Test_Launcher(unittest.TestCase):
         launcher_data['roms_base_noext'] = 'roms_Sega_32X_518519'
         launcher_data['application'] = 'app'
 
-        mock = FakeExecutor(None)
+        mock = FakeExecutor()
         mock_exeFactory.create.return_value = mock
 
-        rom_dir = StandardFileName(self.TEST_ASSETS_DIR)
-        repository = RomSetRepository(rom_dir)
-        target = StandardRomLauncher(launcher_data, settings, mock_exeFactory, repository, None, False)
+        paths = Fake_Paths('\\fake\\')
+        paths.ROMS_DIR = PythonFileName(self.TEST_ASSETS_DIR)
+                
+        repository = ROMSetRepository(paths, settings)
+        target = StandardRomLauncher(paths, settings, launcher_data, None, mock_exeFactory, repository, None)        
 
         expected = 35
 
