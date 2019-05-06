@@ -606,8 +606,7 @@ def misc_look_for_file(rootPath, filename_noext, file_exts):
 def misc_generate_random_SID():
     t1 = time.time()
     t2 = t1 + random.getrandbits(32)
-    t3 = str(t1 + t2).encode('utf-8')
-    base = hashlib.md5(t3)
+    base = hashlib.md5(str(t1 + t2))
     sid = base.hexdigest()
 
     return sid
@@ -944,7 +943,7 @@ class FileNameBase():
     def __add__(self, other):
         current_path = self.originalPath
         if type(other) is FileName:  other_path = other.originalPath
-        #elif type(other) is unicode: other_path = other -- Not available in Python 3?
+        elif type(other) is unicode: other_path = other # Not available in Python 3?
         elif type(other) is str:     other_path = other.decode('utf-8')
         else: raise NameError('Unknown type for overloaded + in FileName object')
         new_path = os.path.join(current_path, other_path)
@@ -1283,7 +1282,7 @@ class KodiFileName(FileNameBase):
             return ''
 
         while char and char != u'\n':
-            line += str(char).encode(encoding)
+            line += unicode(char, encoding)
             char = self.fileHandle.read(1)
 
         return line
@@ -1302,7 +1301,7 @@ class KodiFileName(FileNameBase):
         contents = file.read()
         file.close()
 
-        return str(contents).encode(encoding)
+        return unicode(contents, encoding)
 
     def writeAll(self, bytes, flags='w'):
         file = xbmcvfs.File(self.originalPath, flags)
@@ -1449,7 +1448,7 @@ class PythonFileName(FileNameBase):
         with open(self.path, 'r') as f:
             contents = f.read()
 
-        return str(contents).decode(encoding)
+        return unicode(contents, encoding)
 
     def writeAll(self, bytes, flags = 'w'):
         with open(self.path, flags) as file:

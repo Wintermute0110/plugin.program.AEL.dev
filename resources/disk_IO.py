@@ -663,7 +663,7 @@ def fs_write_JSON_file(file_dir, file_base_noext, data):
     try:
         json_data = json.dumps(data, ensure_ascii = False, sort_keys = True, 
                                 indent = JSON_indent, separators = JSON_separators)
-        json_file.writeAll(str(json_data, "utf-8"))
+        json_file.writeAll(unicode(json_data).encode("utf-8"))
     except OSError:
         kodi_notify_warn('(OSError) Cannot write {0} file'.format(json_file.getPath()))
     except IOError:
@@ -841,7 +841,7 @@ def fs_write_ROMs_JSON(roms_dir_FN, launcher, roms):
         json_data = json.dumps(roms, ensure_ascii = False, sort_keys = True,
                                 indent = JSON_indent, separators = JSON_separators)
 
-        roms_json_file.writeAll(str(json_data, "utf-8"))
+        roms_json_file.writeAll(unicode(json_data).encode("utf-8"))
     except OSError:
         kodi_notify_warn('(OSError) Cannot write {0} file'.format(roms_json_file.getPath()))
         log_error('fs_write_ROMs_JSON() (OSError) Cannot write {0} file'.format(roms_json_file.getPath()))

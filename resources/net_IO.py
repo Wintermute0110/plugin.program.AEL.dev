@@ -124,7 +124,7 @@ def net_get_URL_oneline(url):
     num_bytes = len(page_bytes)
     log_debug('net_get_URL_oneline() Read {0} bytes'.format(num_bytes))
     #python 3: page_data = str(page_bytes, encoding)
-    page_data = str(page_bytes).encode(encoding)
+    page_data = unicode(page_bytes, encoding)
 
     # --- Put all page text into one line ---
     page_data = page_data.replace('\r\n', '')
@@ -161,7 +161,7 @@ def net_get_URL_original(url):
     log_debug('net_get_URL_original() encoding = "{0}"'.format(encoding))
     if encoding != 'utf-16':
         #python 3: page_data = str(page_bytes, encoding)
-        page_data = str(page_bytes).encode(encoding)
+        page_data = unicode(page_bytes, encoding)
 
     if encoding == 'utf-16':
         page_data = page_bytes.encode('utf-16')
@@ -200,7 +200,7 @@ def net_post_URL_original(url, params):
     log_debug('net_post_URL_original() encoding = "{0}"'.format(encoding))
     if encoding != 'utf-16':
         #python3: page_data = str(page_bytes, encoding)
-        page_data = str(page_bytes).encode(encoding)
+        page_data = unicode(page_bytes, encoding)
 
     if encoding == 'utf-16':
         page_data = page_bytes.encode('utf-16')
@@ -233,7 +233,7 @@ def net_get_URL_using_handler(url, handler = None):
     
     log_debug('net_get_URL_using_handler() encoding = "{0}"'.format(encoding))
     if encoding != 'utf-16':
-        page_data = str(page_bytes, encoding)
+        page_data = unicode(page_bytes, encoding)
 
     if encoding == 'utf-16':
         page_data = page_bytes.encode('utf-16')
