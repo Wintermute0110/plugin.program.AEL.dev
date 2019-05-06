@@ -386,8 +386,8 @@ def fs_write_catfile(categories_FN, header_dic, categories, launchers):
     # >> Write a timestamp when file is created. This enables the Virtual Launchers to know if
     # >> it's time for an update.
     str_list.append('<control>\n')
-    str_list.append(text_XML_line('database_version', str(header_dic['database_version'], 'utf-8')))
-    str_list.append(text_XML_line('update_timestamp', str(header_dic['update_timestamp'], 'utf-8')))
+    str_list.append(text_XML_line('database_version', unicode(header_dic['database_version'])))
+    str_list.append(text_XML_line('update_timestamp', unicode(header_dic['update_timestamp'])))
     str_list.append('</control>\n')
 
     # --- Create Categories XML list ---
@@ -404,7 +404,7 @@ def fs_write_catfile(categories_FN, header_dic, categories, launchers):
         str_list.append(text_XML_line('m_developer', category['m_developer']))
         str_list.append(text_XML_line('m_rating', category['m_rating']))
         str_list.append(text_XML_line('m_plot', category['m_plot']))
-        str_list.append(text_XML_line('finished', str(category['finished'], 'utf-8')))
+        str_list.append(text_XML_line('finished', unicode(category['finished'])))
         str_list.append(text_XML_line('default_icon', category['default_icon']))
         str_list.append(text_XML_line('default_fanart', category['default_fanart']))
         str_list.append(text_XML_line('default_banner', category['default_banner']))
@@ -442,22 +442,22 @@ def fs_write_catfile(categories_FN, header_dic, categories, launchers):
                 str_list.append(text_XML_line('args_extra', extra_arg))
         str_list.append(text_XML_line('rompath', launcher['rompath']))
         str_list.append(text_XML_line('romext', launcher['romext']))
-        str_list.append(text_XML_line('finished', str(launcher['finished'], 'utf-8')))
-        str_list.append(text_XML_line('toggle_window', str(launcher['toggle_window'], 'utf-8')))
-        str_list.append(text_XML_line('non_blocking', str(launcher['non_blocking'], 'utf-8')))
-        str_list.append(text_XML_line('multidisc', str(launcher['multidisc'], 'utf-8')))
-        str_list.append(text_XML_line('roms_base_noext', launcher['roms_base_noext'], 'utf-8'))
+        str_list.append(text_XML_line('finished', unicode(launcher['finished'])))
+        str_list.append(text_XML_line('toggle_window', unicode(launcher['toggle_window'])))
+        str_list.append(text_XML_line('non_blocking', unicode(launcher['non_blocking'])))
+        str_list.append(text_XML_line('multidisc', unicode(launcher['multidisc'])))
+        str_list.append(text_XML_line('roms_base_noext', launcher['roms_base_noext']))
         str_list.append(text_XML_line('nointro_xml_file', launcher['nointro_xml_file']))
         str_list.append(text_XML_line('nointro_display_mode', launcher['nointro_display_mode']))
-        str_list.append(text_XML_line('launcher_display_mode', str(launcher['launcher_display_mode'], 'utf-8')))
-        str_list.append(text_XML_line('num_roms', str(launcher['num_roms'], 'utf-8')))
-        str_list.append(text_XML_line('num_parents', str(launcher['num_parents'], 'utf-8')))
-        str_list.append(text_XML_line('num_clones', str(launcher['num_clones'], 'utf-8')))
-        str_list.append(text_XML_line('num_have', str(launcher['num_have'], 'utf-8')))
-        str_list.append(text_XML_line('num_miss', str(launcher['num_miss'], 'utf-8')))
-        str_list.append(text_XML_line('num_unknown', str(launcher['num_unknown'], 'utf-8')))
-        str_list.append(text_XML_line('timestamp_launcher', str(launcher['timestamp_launcher'], 'utf-8')))
-        str_list.append(text_XML_line('timestamp_report', str(launcher['timestamp_report'], 'utf-8')))
+        str_list.append(text_XML_line('launcher_display_mode', unicode(launcher['launcher_display_mode'])))
+        str_list.append(text_XML_line('num_roms', unicode(launcher['num_roms'])))
+        str_list.append(text_XML_line('num_parents', unicode(launcher['num_parents'])))
+        str_list.append(text_XML_line('num_clones', unicode(launcher['num_clones'])))
+        str_list.append(text_XML_line('num_have', unicode(launcher['num_have'])))
+        str_list.append(text_XML_line('num_miss', unicode(launcher['num_miss'])))
+        str_list.append(text_XML_line('num_unknown', unicode(launcher['num_unknown'])))
+        str_list.append(text_XML_line('timestamp_launcher', unicode(launcher['timestamp_launcher'])))
+        str_list.append(text_XML_line('timestamp_report', unicode(launcher['timestamp_report'])))
         # >> Launcher artwork
         str_list.append(text_XML_line('default_icon', launcher['default_icon']))
         str_list.append(text_XML_line('default_fanart', launcher['default_fanart']))
@@ -942,7 +942,7 @@ def fs_write_Collection_index_XML(collections_xml_file, collections):
         # --- Control information ---
         _t = time.time()
         str_list.append('<control>\n')
-        str_list.append(text_XML_line('update_timestamp', str(_t, 'utf-8')))
+        str_list.append(text_XML_line('update_timestamp', unicode(_t)))
         str_list.append('</control>\n')
 
         # --- Virtual Launchers ---
@@ -1270,7 +1270,7 @@ def fs_write_VCategory_XML(roms_xml_file, roms):
         # --- Control information ---
         _t = time.time()
         str_list.append('<control>\n')
-        str_list.append(text_XML_line('update_timestamp', str(_t, 'utf-8')))
+        str_list.append(text_XML_line('update_timestamp', unicode(_t)))
         str_list.append('</control>\n')
 
         # --- Virtual Launchers ---
