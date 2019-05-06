@@ -15,3 +15,5 @@ __pychache__/
 /.vscode/
 .addon
 prod.env
+package.json
+package-lock.json
