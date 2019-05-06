@@ -13,3 +13,4 @@ __pychache__/
 /.dist/
 /node_modules/
 .addon
+prod.env

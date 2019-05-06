@@ -499,7 +499,7 @@ class Scraper(object):
                 image_path = self._download_image(asset_info, image_url, asset_path_noext_FN)
 
             else:
-                log_debug('{0} scraper: user chose local image "{1}"'.format(self.asset_info.name, selected_image['url']))
+                log_debug('{0} scraper: user chose local image "{1}"'.format(asset_info.name, selected_image['url']))
                 image_path = FileName(selected_image['url'])
 
             if image_path:

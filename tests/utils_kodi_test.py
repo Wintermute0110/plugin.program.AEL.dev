@@ -1,6 +1,6 @@
 import unittest, mock, os, sys
 from mock import *
-from fakes import *
+from tests.fakes import *
 
 import xbmcaddon
 
@@ -29,9 +29,9 @@ class Test_utils_kodi_tests(unittest.TestCase):
 
     def test_building_a_wizards_works(self):
         
-        page1 = KodiKeyboardWizardDialog('x', 'abc', None)
-        page2 = KodiSelectionWizardDialog('x2',['aa'], 'abc2', page1)
-        page3 = KodiKeyboardWizardDialog('x3', 'abc3', page2)
+        page1 = WizardDialog_Keyboard(None, 'x', 'abc')
+        page2 = WizardDialog_Selection(page1, 'x2',['aa'], 'abc2')
+        page3 = WizardDialog_Keyboard(page2, 'x3', 'abc3')
 
         props = {}
 
@@ -43,9 +43,9 @@ class Test_utils_kodi_tests(unittest.TestCase):
         # arrange
         mock_keyboard.getText().return_value = 'test'
 
-        wizard = KodiKeyboardWizardDialog('x1', 'expected1', None)
-        wizard = KodiKeyboardWizardDialog('x2', 'expected2', wizard)
-        wizard = KodiKeyboardWizardDialog('x3', 'expected3', wizard)
+        wizard = WizardDialog_Keyboard(None, 'x1', 'expected1')
+        wizard = WizardDialog_Keyboard(wizard, 'x2', 'expected2')
+        wizard = WizardDialog_Keyboard(wizard, 'x3', 'expected3')
 
         props = {}
 
@@ -67,7 +67,7 @@ class Test_utils_kodi_tests(unittest.TestCase):
         fake = FakeClass()
 
         props = {}
-        page1 = KodiKeyboardWizardDialog('key','title1', None, fake.FakeMethod)
+        page1 = WizardDialog_Keyboard(None, 'key','title1', fake.FakeMethod)
 
         # act
         page1.runWizard(props)
@@ -79,7 +79,7 @@ class Test_utils_kodi_tests(unittest.TestCase):
     def test_when_using_dictionary_select_dialog_it_gives_me_the_correct_result(self, mocked_dialog):
 
         # arrange
-        dialog = KodiDictionaryDialog()
+        dialog = KodiOrdDictionaryDialog()
 
         options = {}
         options['10'] = 'A'
@@ -100,7 +100,7 @@ class Test_utils_kodi_tests(unittest.TestCase):
 
         # arrange
         expected = 'expected'
-        target = KodiDummyWizardDialog('actual', expected, None, None, lambda p1, p2: True)
+        target = WizardDialog_Dummy(None, 'actual', expected, None, lambda p1, p2: True)
         props = {}
 
         # act

@@ -1180,6 +1180,10 @@ class KodiFileName(FileNameBase):
     def __init__(self, pathString):
         super(KodiFileName, self).__init__(pathString)
 
+    # TODO: remove again
+    def __create__(self, pathString):
+        return KodiFileName(pathString)
+    
     # Joins paths and returns a new object.
     def pjoin(self, *args):
         child = KodiFileName(self.originalPath)
@@ -1279,7 +1283,7 @@ class KodiFileName(FileNameBase):
             return ''
 
         while char and char != u'\n':
-            line += str(char, encoding)
+            line += str(char).encode(encoding)
             char = self.fileHandle.read(1)
 
         return line
@@ -1298,7 +1302,7 @@ class KodiFileName(FileNameBase):
         contents = file.read()
         file.close()
 
-        return str(contents, encoding)
+        return str(contents).encode(encoding)
 
     def writeAll(self, bytes, flags='w'):
         file = xbmcvfs.File(self.originalPath, flags)
@@ -1441,7 +1445,7 @@ class PythonFileName(FileNameBase):
         with open(self.path, 'r') as f:
             contents = f.read()
 
-        return str(contents, encoding)
+        return str(contents).encode(encoding)
 
     def writeAll(self, bytes, flags = 'w'):
         with open(self.path, flags) as file:

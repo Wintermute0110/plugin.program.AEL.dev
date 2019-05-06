@@ -13,6 +13,9 @@ from resources.constants import *
 from tests.fakes import FakeFile
 
 FileName = FakeFile
+
+def mocked_cache_search(dir_path, filename_noext, file_exts):
+    return None
         
 class Test_local_assets_scraper(unittest.TestCase):
     
@@ -68,7 +71,7 @@ class Test_local_assets_scraper(unittest.TestCase):
         print(rom)
 
     @patch('resources.scrap.misc_add_file_cache')
-    @patch('resources.scrap.misc_search_file_cache')
+    @patch('resources.scrap.misc_search_file_cache', side_effect = mocked_cache_search)
     def test_scraping_assets_for_game(self, cache_mock, search_cache_mock):
 
         # arrange

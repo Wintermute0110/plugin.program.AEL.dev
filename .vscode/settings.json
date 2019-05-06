@@ -13,5 +13,6 @@
         "tests"
     ],
     "python.pythonPath": "C:\\Python27amd64\\python.exe",
-    "pythonTestExplorer.testFramework": "unittest"
+    "pythonTestExplorer.testFramework": "unittest",
+    "python.envFile": "${workspaceFolder}/prod.env"    
 }
