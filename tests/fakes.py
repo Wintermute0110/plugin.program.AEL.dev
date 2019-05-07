@@ -55,7 +55,7 @@ class FakeFile(KodiFileName):
         return self.fakeContent
     
     def readAllUnicode(self, encoding='utf-8'):
-        contents = self.fakeContent
+        contents = unicode(self.fakeContent)
         return contents
 
     def write(self, bytes):
@@ -65,8 +65,14 @@ class FakeFile(KodiFileName):
        self.fakeContent = self.fakeContent + bytes
        
     def pjoin(self, *args):
-        return self
+        child = FakeFile(self.originalPath)
+        child.setFakeContent(self.fakeContent)
+        for arg in args:
+            child.path = os.path.join(child.path, arg)
+            child.originalPath = os.path.join(child.originalPath, arg)
 
+        return child    
+    
     def switchExtension(self, targetExt):
         switched_fake = super(FakeFile, self).switchExtension(targetExt)
         #switched_fake = FakeFile(switched_type.getPath())

@@ -1030,9 +1030,9 @@ class ROMSetRepository(object):
     def save_rom_set(self, launcher, roms, view_mode = None):
         romdata = None
         if self.store_as_dictionary:
-            romdata = {key: roms[key].get_data() for (key) in roms}
+            romdata = {key: roms[key].get_data_dic() for (key) in roms}
         else:
-            romdata = [roms[key].get_data() for (key) in roms]
+            romdata = [roms[key].get_data_dic() for (key) in roms]
 
         # --- Create JSON data structure, including version number ---
         control_dic = {
@@ -1628,7 +1628,7 @@ class ROM(MetaDataItemABC):
 
     def copy(self):
         data = self.copy_of_data()
-        return Rom(data)
+        return ROM(data)
 
     def delete_from_disk(self):
         raise NotImplementedError
@@ -1668,7 +1668,7 @@ class ROM(MetaDataItemABC):
 
     # >> Metadata edit dialog
     def get_metadata_edit_options(self):
-        NFO_FileName = fs_get_ROM_NFO_name(self.get_data())
+        NFO_FileName = fs_get_ROM_NFO_name(self.get_data_dic())
         NFO_found_str = 'NFO found' if NFO_FileName.exists() else 'NFO not found'
         plot_str = text_limit_string(self.entity_data['m_plot'], PLOT_STR_MAXSIZE)
 
@@ -2073,7 +2073,7 @@ class LauncherABC(MetaDataItemABC):
 
     def set_platform(self, platform): self.entity_data['platform'] = platform
 
-    def get_category_id(self): return self.entity_data['categoryID']
+    def get_category_id(self): return self.entity_data['categoryID'] if 'categoryID' in self.entity_data else None
 
     def update_category(self, category_id): self.entity_data['categoryID'] = category_id
 
@@ -2577,7 +2577,7 @@ class ROMLauncherABC(LauncherABC):
 
         if self.statsStrategy is not None:
             self.statsStrategy.update_launched_rom_stats(self.rom)
-            self.save_rom(self.rom)
+            self.save_ROM(self.rom)
 
         super(ROMLauncherABC, self).launch()
 
@@ -2643,7 +2643,7 @@ class ROMLauncherABC(LauncherABC):
         self.arguments = self.arguments.replace('$romtitle$', self.title)
 
         # automatic substitution of rom values
-        for rom_key, rom_value in self.rom.get_data().iteritems():
+        for rom_key, rom_value in self.rom.get_data_dic().iteritems():
             if isinstance(rom_value, basestring):
                 self.arguments = self.arguments.replace('${}$'.format(rom_key), rom_value)        
 
@@ -3885,7 +3885,8 @@ class RetroarchLauncher(StandardRomLauncher):
         # TODO: other OSes
         return False
 
-    def _launch_selectRomFileToUse(self): raise AddonError('Implement me!')
+    # Probably just use parent implementation
+    #def _launch_selectRomFileToUse(self): raise AddonError('Implement me!')
 
     # ---------------------------------------------------------------------------------------------
     # Misc methods
@@ -4998,7 +4999,7 @@ class RomScannerStrategy(ScannerStrategyABC):
     def scan(self):
         
         # --- Open ROM scanner report file ---
-        launcher_report = FileReporter(self.reports_dir, self.launcher.get_data(), LogReporter(self.launcher.get_data()))
+        launcher_report = FileReporter(self.reports_dir, self.launcher.get_data_dic(), LogReporter(self.launcher.get_data_dic()))
         launcher_report.open('RomScanner() Starting ROM scanner')
 
         # >> Check if there is an XML for this launcher. If so, load it.
@@ -5057,7 +5058,7 @@ class RomScannerStrategy(ScannerStrategyABC):
         return roms
 
     def cleanup(self):
-        launcher_report = LogReporter(self.launcher.get_data())
+        launcher_report = LogReporter(self.launcher.get_data_dic())
         launcher_report.open('RomScanner() Starting Dead ROM cleaning')
         log_debug('RomScanner() Starting Dead ROM cleaning')
 
