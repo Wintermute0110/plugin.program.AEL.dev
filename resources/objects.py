@@ -1036,7 +1036,7 @@ class ROMSetRepository(object):
 
         # --- Create JSON data structure, including version number ---
         control_dic = {
-            'control' : 'Advanced Emulator {} ROMs'.format(launcher.get_launcher_type_name()),
+            'control' : 'Advanced Emulator {} ROMs'.format(launcher.get_launcher_type()),
             'version' : AEL_STORAGE_FORMAT
         }
         raw_data = []

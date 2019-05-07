@@ -1119,6 +1119,38 @@ class FileNameBase():
 
         return root
 
+    #
+    # Loads a file into a Unicode string.
+    # By default all files are assumed to be encoded in UTF-8.
+    # Returns a Unicode string.
+    #
+    def loadFileToStr(self, encoding = 'utf-8'):
+        if DEBUG_NEWFILENAME_CLASS:
+            log_debug('NewFileName::loadFileToStr() Loading path_str "{0}"'.format(self.path_str))
+
+        # NOTE Exceptions should be catched, reported and re-raised in the low-level
+        # functions, not here!!!
+        file_bytes = None
+        try:
+            self.open('r')
+            file_bytes = self.read()
+            self.close()
+        except OSError:
+            log_error('(OSError) Exception in FileName::loadFileToStr()')
+            log_error('(OSError) Cannot read {0} file'.format(self.path_tr))
+            raise AddonException('(OSError) Cannot read {0} file'.format(self.path_tr))
+        except IOError as Ex:
+            log_error('(IOError) Exception in FileName::loadFileToStr()')
+            log_error('(IOError) errno = {0}'.format(Ex.errno))
+            if Ex.errno == errno.ENOENT: log_error('(IOError) No such file or directory.')
+            else:                        log_error('(IOError) Unhandled errno value.')
+            log_error('(IOError) Cannot read {0} file'.format(self.path_tr))
+            raise AddonException('(IOError) Cannot read {0} file'.format(self.path_tr))
+
+        # Return a Unicode string.
+        return file_bytes.decode(encoding)
+
+
     # Opens JSON file and reads it
     def readJson(self):
         contents = self.readAllUnicode()
@@ -1160,7 +1192,7 @@ class FileNameBase():
     def writeJson(self, raw_data, JSON_indent = 1, JSON_separators = (',', ':')):
         json_data = json.dumps(raw_data, ensure_ascii = False, sort_keys = True, 
                                 indent = JSON_indent, separators = JSON_separators)
-        self.writeAll(str(json_data, 'utf-8'))
+        self.writeAll(unicode(json_data).encode('utf-8'))
 
     # Opens file and writes xml. Give xml root element.
     def writeXml(self, xml_root):

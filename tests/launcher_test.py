@@ -38,20 +38,22 @@ class Test_Launcher(unittest.TestCase):
         settings['delay_tempo'] = 1
         return settings
 
-    def test_when_creating_a_launcher_with_not_exisiting_id_it_will_fail(self):
-        # arrange
-        launcher_data = {'id': 'aap'}
-        plugin_dir = FakeFile(self.TEST_ASSETS_DIR)
-        settings = self._get_test_settings()
+    # todo: Move to repository tests
+    #def test_when_creating_a_launcher_with_not_exisiting_id_it_will_fail(self):
+    #    # arrange
+    #    launcher_data = {'id': 'aap'}
+    #    plugin_dir = FakeFile(self.TEST_ASSETS_DIR)
+    #    settings = self._get_test_settings()
+    #    
+    #    # act
+    #    factory = AELObjectFactory(Fake_Paths(self.TEST_ASSETS_DIR), settings, None, None)
+    #    #LauncherFactory(None, None, plugin_dir)
+    #    actual = factory.create_from_dic(launcher_data)
+    #    
+    #    # assert
+    #    self.assertIsNone(actual)
         
-        # act
-        factory = AELObjectFactory(Fake_Paths(self.TEST_ASSETS_DIR), settings, None, None)
-        #LauncherFactory(None, None, plugin_dir)
-        actual = factory.create_from_dic(launcher_data)
-        
-        # assert
-        self.assertIsNone(actual)
-                
+    # Todo: move to AELObjectFactory tests        
     @patch('resources.objects.FileName', side_effect = FakeFile)
     @patch('resources.objects.ExecutorFactory')    
     def test_when_its_an_app_factory_loads_with_correct_launcher(self, mock_exeFactory, filename_mock):
@@ -73,13 +75,12 @@ class Test_Launcher(unittest.TestCase):
         settings['lirc_state'] = True
 
         # act
-        factory = LauncherFactory(settings, mock_exeFactory, FakeFile(self.TEST_ASSETS_DIR))
-        #launcher = StandaloneLauncher(Fake_Paths('\\fake\\'), settings, launcher_data, None, mock_exeFactory)
-        launcher = factory.create(launcher_data)
+        factory = AELObjectFactory(Fake_Paths(self.TEST_ASSETS_DIR), settings, None, None)
+        launcher = factory.create_from_dic(launcher_data)
         
         # assert        
         actual = launcher.__class__.__name__
-        expected = 'ApplicationLauncher'
+        expected = 'StandaloneLauncher'
         self.assertEqual(actual, expected)
         
     @patch('resources.objects.FileName', side_effect = FakeFile)
