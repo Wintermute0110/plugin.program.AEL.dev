@@ -1,12 +1,13 @@
 import unittest
 import mock
 from mock import *
-from fakes import *
+from tests.fakes import *
 
 import os
 
 from resources.utils import *
-
+from resources.constants import *
+        
 class Test_filename_test(unittest.TestCase):
      
     ROOT_DIR = ''
@@ -21,10 +22,10 @@ class Test_filename_test(unittest.TestCase):
         cls.ROOT_DIR = os.path.abspath(os.path.join(cls.TEST_DIR, os.pardir))
         cls.TEST_ASSETS_DIR = os.path.abspath(os.path.join(cls.TEST_DIR,'assets/'))
                 
-        print 'ROOT DIR: {}'.format(cls.ROOT_DIR)
-        print 'TEST DIR: {}'.format(cls.TEST_DIR)
-        print 'TEST ASSETS DIR: {}'.format(cls.TEST_ASSETS_DIR)
-        print '---------------------------------------------------------------------------'
+        print('ROOT DIR: {}'.format(cls.ROOT_DIR))
+        print('TEST DIR: {}'.format(cls.TEST_DIR))
+        print('TEST ASSETS DIR: {}'.format(cls.TEST_ASSETS_DIR))
+        print('---------------------------------------------------------------------------')
 
     @patch('resources.utils.xbmcvfs.File')
     def test_reading_line_for_line(self, file_mock):
@@ -61,7 +62,7 @@ class Test_filename_test(unittest.TestCase):
         f = target.open('r')
         for x in range(0, 10):
             line = target.readline()
-            print '{}: {}'.format(x, line)
+            print('{}: {}'.format(x, line))
 
         actual = target.readline()
         
@@ -81,8 +82,8 @@ class Test_filename_test(unittest.TestCase):
 
         # act
         propfile = target.readPropertyFile()
-        for key, value in propfile.iteritems():
-            print '{}={}'.format(key, value)
+        for key, value in propfile.items():
+            print('{}={}'.format(key, value))
 
         actual = propfile['content_database_path']
 

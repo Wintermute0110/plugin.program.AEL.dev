@@ -32,10 +32,10 @@ import xml.etree.ElementTree as ET
 import xbmc, xbmcgui, xbmcplugin, xbmcaddon
 
 # --- AEL packages ---
-from constants import *
-from platforms import *
-from utils import *
-from disk_IO import *
+from resources.constants import *
+from resources.platforms import *
+from resources.utils import *
+from resources.disk_IO import *
 
 # -------------------------------------------------------------------------------------------------
 # Exports launchers to an XML file.

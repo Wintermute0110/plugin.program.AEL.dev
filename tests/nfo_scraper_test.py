@@ -2,14 +2,17 @@ import unittest, mock, os, sys, re
 
 from mock import *
 from mock import ANY
-from fakes import *
+from tests.fakes import FakeFile
 import xml.etree.ElementTree as ET
 
-from resources.utils import *
 from resources.net_IO import *
 from resources.scrap import *
-from resources.objects import *
+from resources.utils import FileName
+from resources.objects import StandardRomLauncher
+from resources.constants import *
         
+FileName = FakeFile
+
 class Test_nfo_scraper(unittest.TestCase):
     
     ROOT_DIR = ''
@@ -24,11 +27,10 @@ class Test_nfo_scraper(unittest.TestCase):
         cls.ROOT_DIR = os.path.abspath(os.path.join(cls.TEST_DIR, os.pardir))
         cls.TEST_ASSETS_DIR = os.path.abspath(os.path.join(cls.TEST_DIR,'assets/'))
                 
-        print 'ROOT DIR: {}'.format(cls.ROOT_DIR)
-        print 'TEST DIR: {}'.format(cls.TEST_DIR)
-        print 'TEST ASSETS DIR: {}'.format(cls.TEST_ASSETS_DIR)
-        print '---------------------------------------------------------------------------'
-
+        print('ROOT DIR: {}'.format(cls.ROOT_DIR))
+        print('TEST DIR: {}'.format(cls.TEST_DIR))
+        print('TEST ASSETS DIR: {}'.format(cls.TEST_ASSETS_DIR))
+        print('---------------------------------------------------------------------------')
 
     def get_test_settings(self):
         settings = {}
@@ -53,8 +55,8 @@ class Test_nfo_scraper(unittest.TestCase):
         launcher.set_platform('Nintendo SNES')
         
         rom = ROM({'id': 1234})
-        fakeRomPath = FakeFile('/my/nice/roms/dr_mario.zip')
-        with open(Test_nfo_scraper.TEST_ASSETS_DIR + "\\mario.nfo", 'r') as f:
+        fakeRomPath = FakeFile(Test_nfo_scraper.TEST_ASSETS_DIR + '\\dr_mario.zip')
+        with open(Test_nfo_scraper.TEST_ASSETS_DIR + "\\dr_mario.nfo", 'r') as f:
             fakeRomPath.setFakeContent(f.read())
 
         target = NfoScraper(settings, launcher)
@@ -66,9 +68,8 @@ class Test_nfo_scraper(unittest.TestCase):
         self.assertTrue(actual)
         self.assertEqual(u'Dr. Mario', rom.get_name())
         self.assertEqual(u'Puzzle', rom.get_genre())
-        print rom
+        print(rom)
 
-        
     def test_scraping_assets_for_game(self):
 
         # arrange
@@ -100,4 +101,4 @@ class Test_nfo_scraper(unittest.TestCase):
         for actual in actuals:
             self.assertFalse(actual)
         
-        print rom
+        print(rom)

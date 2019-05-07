@@ -6,6 +6,7 @@ from fakes import *
 import os
 
 from resources.utils import *
+from resources.constants import *
 
 # pip install pyopenssl
 from OpenSSL import crypto, SSL

@@ -42,7 +42,6 @@ import base64
 import errno
 import fnmatch
 import hashlib
-import HTMLParser
 import json
 import os
 import pprint
@@ -52,7 +51,15 @@ import shutil
 import string
 import sys
 import time
-import urlparse
+
+from HTMLParser import HTMLParser
+from urlparse import urlparse
+from datetime import timedelta
+from datetime import datetime
+
+# Python 3
+# from html.parser import HTMLParser
+# from urllib.parse import urlparse
 
 # --- Python standard library named imports ---
 import xml.etree.ElementTree as ET
@@ -94,12 +101,12 @@ except:
     UTILS_KODI_RUNTIME_AVAILABLE = False
 
 # --- AEL modules ---
-from constants import *
+from resources.constants import *
 
 # -------------------------------------------------------------------------------------------------
 # A universal AEL error reporting exception
 # This exception is raised to report errors in the GUI.
-# Unhandled exceptions must not raise AEL_Error() so the addon crashes and the traceback is printed
+# Unhandled exceptions must not raise AddonException() so the addon crashes and the traceback is printed
 # in the Kodi log file.
 # -------------------------------------------------------------------------------------------------
 # >> Top-level GUI code looks like this
@@ -117,7 +124,7 @@ from constants import *
 #     except OSError:
 #         log_error('(OSError) Cannot write {0} file'.format(export_FN.getBase()))
 #         # >> Message to be printed in the GUI
-#         raise AEL_Error('Error writing file (OSError)')
+#         raise AddonException('Error writing file (OSError)')
 #
 class AddonException(Exception):
     def __init__(self, err_str):
@@ -218,7 +225,7 @@ def text_str_2_Uni(string):
 #
 def text_escape_XML(data_str):
 
-    if not isinstance(data_str, basestring):
+    if not isinstance(data_str, str):
         data_str = str(data_str)
 
     # Ampersand MUST BE replaced FIRST
@@ -311,7 +318,7 @@ def text_unescape_HTML(s):
     # s = s.replace('&#x16B;', "ū")
 
     # >> Use HTMLParser module to decode HTML entities.
-    s = HTMLParser.HTMLParser().unescape(s)
+    s = HTMLParser().unescape(s)
 
     if __debug_text_unescape_HTML:
         log_debug('text_unescape_HTML() output "{0}"'.format(s))
@@ -475,7 +482,7 @@ def text_get_multidisc_info(ROM_FN):
         matchObj = re.match(r'\(Dis[ck] ([0-9]+)\)', token)
         if matchObj:
             log_debug('text_get_multidisc_info() ### Matched Redump multidisc ROM ###')
-            tokens_idx = range(0, len(tokens))
+            tokens_idx = list(range(0, len(tokens)))
             tokens_idx.remove(index)
             tokens_nodisc_idx = list(tokens_idx)
             tokens_mdisc = [tokens[x] for x in tokens_nodisc_idx]
@@ -486,7 +493,7 @@ def text_get_multidisc_info(ROM_FN):
         matchObj = re.match(r'\(Dis[ck] ([0-9]+) of ([0-9]+)\)', token)
         if matchObj:
             log_debug('text_get_multidisc_info() ### Matched TOSEC/Trurip multidisc ROM ###')
-            tokens_idx = range(0, len(tokens))
+            tokens_idx = list(range(0, len(tokens)))
             tokens_idx.remove(index)
             tokens_nodisc_idx = list(tokens_idx)
             # log_debug('text_get_multidisc_info() tokens_idx         = {0}'.format(tokens_idx))
@@ -599,7 +606,7 @@ def misc_look_for_file(rootPath, filename_noext, file_exts):
 def misc_generate_random_SID():
     t1 = time.time()
     t2 = t1 + random.getrandbits(32)
-    base = hashlib.md5( str(t1 + t2) )
+    base = hashlib.md5(str(t1 + t2))
     sid = base.hexdigest()
 
     return sid
@@ -888,11 +895,11 @@ class FileNameBase():
     # Abstract protected method, to be implemented in child classes.
     # Will return a new instance of the desired child implementation.
     # NOTE No fancy stuff in this class. This class must be as efficient as possible, otherwise
-    # AEL will have a serious performance hit.
-    # @abc.abstractmethod
-    # def __create__(self, pathString):
-    #     return FileName(pathString)
-
+    # AEL will have a serious performance hit. Temporary implementation
+    @abc.abstractmethod
+    def __create__(self, pathString):
+        return FileName(pathString)
+    
     def _decodeName(self, name):
         if type(name) == str:
             try:
@@ -936,7 +943,7 @@ class FileNameBase():
     def __add__(self, other):
         current_path = self.originalPath
         if type(other) is FileName:  other_path = other.originalPath
-        elif type(other) is unicode: other_path = other
+        elif type(other) is unicode: other_path = other # Not available in Python 3?
         elif type(other) is str:     other_path = other.decode('utf-8')
         else: raise NameError('Unknown type for overloaded + in FileName object')
         new_path = os.path.join(current_path, other_path)
@@ -1153,7 +1160,7 @@ class FileNameBase():
     def writeJson(self, raw_data, JSON_indent = 1, JSON_separators = (',', ':')):
         json_data = json.dumps(raw_data, ensure_ascii = False, sort_keys = True, 
                                 indent = JSON_indent, separators = JSON_separators)
-        self.writeAll(unicode(json_data).encode('utf-8'))
+        self.writeAll(str(json_data, 'utf-8'))
 
     # Opens file and writes xml. Give xml root element.
     def writeXml(self, xml_root):
@@ -1172,6 +1179,10 @@ class KodiFileName(FileNameBase):
     def __init__(self, pathString):
         super(KodiFileName, self).__init__(pathString)
 
+    # TODO: remove again
+    def __create__(self, pathString):
+        return KodiFileName(pathString)
+    
     # Joins paths and returns a new object.
     def pjoin(self, *args):
         child = KodiFileName(self.originalPath)
@@ -1356,7 +1367,11 @@ class PythonFileName(FileNameBase):
     # ---------------------------------------------------------------------------------------------
     def __init__(self, pathString):
         super(PythonFileName, self).__init__(pathString)
-
+   
+    # TODO: remove when possible
+    def __create__(self, pathString):
+        return PythonFileName(pathString)
+    
     # Joins paths and returns a new object.
     def pjoin(self, *args):
         child = PythonFileName(self.originalPath)
@@ -1472,7 +1487,7 @@ class PythonFileName(FileNameBase):
         files = []
         for root, dirs, foundfiles in os.walk(self.path):
             for filename in fnmatch.filter(foundfiles, mask):
-                filePath = self.__create__(fileName)
+                filePath = self.__create__(filename)
                 files.append(filePath)
 
         return files
@@ -1518,7 +1533,7 @@ class NewFileName:
     # ---------------------------------------------------------------------------------------------
     def __init__(self, path_str, isdir = False):
         self.path_str = path_str
-        self.isdir = isdir
+        self.is_a_dir = isdir
 
         # --- Check if path needs translation ---
         # Note that internally path_tr is always used as the filename.
@@ -1544,7 +1559,7 @@ class NewFileName:
         self.path_tr = self.path_tr.replace('\\', '/')
 
         # --- If a directory, ensure path ends with '/' ---
-        if self.isdir:
+        if self.is_a_dir:
             if not self.path_str[:-1] == '/': self.path_str = self.path_str + '/'
             if not self.path_tr[:-1] == '/': self.path_tr = self.path_tr + '/'
 
@@ -1562,7 +1577,7 @@ class NewFileName:
         if self.is_translated and not self.is_local:
             e_str = '(NewFileName) File is translated and remote.'
             log_error(e_str)
-            raise Addon_Error(e_str)
+            raise AddonException(e_str)
 
         # --- Use Pyhton for local paths and Kodi VFS for remote paths ---
         if self.is_local:
@@ -1592,7 +1607,7 @@ class NewFileName:
     # internally. This is to avoid a design flaw of the Kodi VFS library.
     #
     def isdir(self):
-        return self.isdir
+        return self.is_a_dir
 
     #
     # Allow late setting of isdir() if using the constructor call is not available, for example
@@ -1670,10 +1685,11 @@ class NewFileName:
     def changeExtension(self, targetExt):
         raise AddonException('Implement me.')
         ext = self.getExt()
-        copiedPath = self.originalPath
+        copiedPath = self.path_str
         if not targetExt.startswith('.'):
             targetExt = '.{0}'.format(targetExt)
-        new_path = self.__create__(copiedPath.replace(ext, targetExt))
+        #new_path = self.__create__(copiedPath.replace(ext, targetExt))
+        new_path = NewFileName(copiedPath.replace(ext, targetExt))
         return new_path
 
     # Checks the extension to determine the type of the file.
@@ -1768,7 +1784,7 @@ class NewFileName:
     # See https://docs.python.org/2/library/sys.html#sys.getfilesystemencoding
     #
     def copy(self, to_FN):
-        if self.is_local and dest_FN.is_local:
+        if self.is_local and to_FN.is_local:
             fs_encoding = sys.getfilesystemencoding()
             source_bytes = self.getPath().decode(fs_encoding)
             dest_bytes = to_FN.getPath().decode(fs_encoding)
@@ -1840,14 +1856,29 @@ class NewFileName:
         except OSError:
             log_error('(OSError) Exception in saveStrToFile()')
             log_error('(OSError) Cannot write {0} file'.format(self.path_tr))
-            raise AEL_Error('(OSError) Cannot write {0} file'.format(self.path_tr))
-        except IOError:
+            raise AddonException('(OSError) Cannot write {0} file'.format(self.path_tr))
+        except IOError as e:
             log_error('(IOError) Exception in saveStrToFile()')
             log_error('(IOError) errno = {0}'.format(e.errno))
             if e.errno == errno.ENOENT: log_error('(IOError) No such file or directory.')
             else:                       log_error('(IOError) Unhandled errno value.')
             log_error('(IOError) Cannot write {0} file'.format(self.path_tr))
-            raise AEL_Error('(IOError) Cannot write {0} file'.format(self.path_tr))
+            raise AddonException('(IOError) Cannot write {0} file'.format(self.path_tr))
+
+    # ---------------------------------------------------------------------------------------------
+    # Scanner functions
+    # ---------------------------------------------------------------------------------------------
+    def scanFilesInPath(self, mask = '*.*'):
+        raise NotImplementedError
+
+    def scanFilesInPathAsFileNameObjects(self, mask = '*.*'):
+        raise NotImplementedError
+    
+    def recursiveScanFilesInPath(self, mask = '*.*'):
+        raise NotImplementedError
+        
+    def recursiveScanFilesInPathAsFileNameObjects(self, mask = '*.*'):
+        raise NotImplementedError
 
 # -------------------------------------------------------------------------------------------------
 # Decide which class to use for managing filenames.
@@ -2269,7 +2300,7 @@ class WizardDialog_DictionarySelection(WizardDialog):
 
     def show(self, properties):
         log_debug('Executing dict selection wizard dialog for key: {0}'.format(self.property_key))
-        dialog = DictionaryDialog()
+        dialog = KodiOrdDictionaryDialog()
         if callable(self.options):
             self.options = self.options(self.property_key, properties)
         output = dialog.select(self.title, self.options)
@@ -2322,7 +2353,7 @@ class WizardDialog_Input(WizardDialog):
             decoratorDialog, property_key, title, customFunction, conditionalFunction)
 
     def show(self, properties):
-        log_debug('WizardDialog_Input::show() {0} key = {0}'.format(self.inputType, self.property_key))
+        log_debug('WizardDialog_Input::show() {} key = {}'.format(self.inputType, self.property_key))
         originalValue = properties[self.property_key] if self.property_key in properties else ''
         output = xbmcgui.Dialog().input(self.title, originalValue, self.inputType)
         if not output:

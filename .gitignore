@@ -10,3 +10,10 @@
 /.vs/plugin.program.advanced.emulator.launcher/v14/.suo
 __pychache__/
 /.cache/
+/.dist/
+/node_modules/
+/.vscode/
+.addon
+prod.env
+package.json
+package-lock.json

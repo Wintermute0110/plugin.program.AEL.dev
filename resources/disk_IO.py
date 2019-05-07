@@ -37,8 +37,8 @@ import xml.etree.ElementTree as ET
 import xml.dom.minidom
 
 # --- AEL packages ---
-from constants import *
-from utils import *
+from resources.constants import *
+from resources.utils import *
 
 # --- AEL ROM storage version format ---
 # >> An integer number incremented whenever there is a change in the ROM storage format.
@@ -510,7 +510,8 @@ def fs_load_catfile(categories_FN, header_dic, categories, launchers):
     # --- Create data structures ---
     header_dic['database_version'] = '0.0.0'
     header_dic['update_timestamp'] = 0.0
-
+    update_timestamp = header_dic['update_timestamp']
+    
     # --- Parse using cElementTree ---
     # >> If there are issues in the XML file (for example, invalid XML chars) ET.parse will fail
     log_verb('fs_load_catfile() Loading {0}'.format(categories_FN.getPath()))
@@ -617,11 +618,11 @@ def fs_write_str_list_to_file(str_list, export_FN):
     except OSError:
         log_error('(OSError) exception in fs_write_str_list_to_file()')
         log_error('Cannot write {0} file'.format(export_FN.getBase()))
-        raise AEL_Error('(OSError) Cannot write {0} file'.format(export_FN.getBase()))
+        raise AddonException('(OSError) Cannot write {0} file'.format(export_FN.getBase()))
     except IOError:
         log_error('(IOError) exception in fs_write_str_list_to_file()')
         log_error('Cannot write {0} file'.format(export_FN.getBase()))
-        raise AEL_Error('(IOError) Cannot write {0} file'.format(export_FN.getBase()))
+        raise AddonException('(IOError) Cannot write {0} file'.format(export_FN.getBase()))
 
 # -------------------------------------------------------------------------------------------------
 # Generic XML load/writer.
@@ -1117,9 +1118,9 @@ def fs_export_ROM_collection_assets(output_FileName, collection, collection_rom_
     # --- Export Collection assets ---
     assets_dic = {}
     log_debug('fs_export_ROM_collection_assets() Exporting Collecion assets')
-    for asset_kind in CATEGORY_ASSET_LIST:
+    for asset_kind in CATEGORY_ASSET_ID_LIST:
         AInfo    = assets_get_info_scheme(asset_kind)
-        asset_FN = FileNameFactory.create(collection[AInfo.key])
+        asset_FN = FileName.create(collection[AInfo.key])
         if not collection[AInfo.key]:
             log_debug('{0:<9s} not set'.format(AInfo.name))
             continue
@@ -1305,10 +1306,10 @@ def fs_load_VCategory_XML(roms_xml_file):
     log_verb('fs_load_VCategory_XML() Loading XML file {0}'.format(roms_xml_file.getPath()))
     try:
         xml_root = roms_xml_file.readXml()
-    except ET.ParseError, e:
+    except ET.ParseError as e:
         log_error('(ParseError) Exception parsing XML categories.xml')
         log_error('(ParseError) {0}'.format(str(e)))
-        return roms
+        return (update_timestamp, VLaunchers)
 
     for root_element in xml_root:
         if __debug_xml_parser: log_debug('Root child {0}'.format(root_element.tag))
@@ -1434,7 +1435,7 @@ def fs_load_legacy_AL_launchers(AL_launchers_filepath, categories, launchers):
     log_info('fs_load_legacy_AL_launchers() Loading "{0}"'.format(AL_launchers_filepath.getPath()))
     try:
         xml_root = AL_launchers_filepath.readXml()
-    except ET.ParseError, e:
+    except ET.ParseError as e:
         log_error('ParseError exception parsing XML categories.xml')
         log_error('ParseError: {0}'.format(str(e)))
         kodi_notify_warn('ParseError exception reading launchers.xml')

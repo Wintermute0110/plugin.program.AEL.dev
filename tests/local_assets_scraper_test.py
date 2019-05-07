@@ -2,13 +2,20 @@ import unittest, mock, os, sys, re
 
 from mock import *
 from mock import ANY
-from fakes import *
 import xml.etree.ElementTree as ET
 
-from resources.utils import *
 from resources.net_IO import *
 from resources.scrap import *
-from resources.objects import *
+from resources.objects import StandardRomLauncher
+from resources.utils import FileName
+from resources.constants import *
+
+from tests.fakes import FakeFile
+
+FileName = FakeFile
+
+def mocked_cache_search(dir_path, filename_noext, file_exts):
+    return None
         
 class Test_local_assets_scraper(unittest.TestCase):
     
@@ -24,11 +31,10 @@ class Test_local_assets_scraper(unittest.TestCase):
         cls.ROOT_DIR = os.path.abspath(os.path.join(cls.TEST_DIR, os.pardir))
         cls.TEST_ASSETS_DIR = os.path.abspath(os.path.join(cls.TEST_DIR,'assets/'))
                 
-        print 'ROOT DIR: {}'.format(cls.ROOT_DIR)
-        print 'TEST DIR: {}'.format(cls.TEST_DIR)
-        print 'TEST ASSETS DIR: {}'.format(cls.TEST_ASSETS_DIR)
-        print '---------------------------------------------------------------------------'
-
+        print('ROOT DIR: {}'.format(cls.ROOT_DIR))
+        print('TEST DIR: {}'.format(cls.TEST_DIR))
+        print('TEST ASSETS DIR: {}'.format(cls.TEST_ASSETS_DIR))
+        print('---------------------------------------------------------------------------')
 
     def get_test_settings(self):
         settings = {}
@@ -62,10 +68,11 @@ class Test_local_assets_scraper(unittest.TestCase):
                 
         # assert
         self.assertFalse(actual)
-        print rom
+        print(rom)
 
-        
-    def test_scraping_assets_for_game(self):
+    @patch('resources.scrap.misc_add_file_cache')
+    @patch('resources.scrap.misc_search_file_cache', side_effect = mocked_cache_search)
+    def test_scraping_assets_for_game(self, cache_mock, search_cache_mock):
 
         # arrange
         settings = self.get_test_settings()
@@ -96,4 +103,4 @@ class Test_local_assets_scraper(unittest.TestCase):
         for actual in actuals:
             self.assertFalse(actual)
         
-        print rom
+        print(rom)
