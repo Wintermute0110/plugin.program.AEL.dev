@@ -26,7 +26,7 @@ from __future__ import unicode_literals
 from __future__ import division
 import abc
 import collections
-import datetime
+from datetime import datetime
 import exceptions
 import fnmatch
 import hashlib
@@ -39,9 +39,9 @@ import string
 import sys
 import time
 import traceback
-import urllib
-import urllib2
-import urlparse
+#import urllib
+#import urllib2
+from urlparse import parse_qs
 
 # --- Python standard library named imports ---
 from distutils.version import LooseVersion
@@ -139,7 +139,7 @@ g_settings = {}
 g_base_url = ''
 g_addon_handle = 0
 g_content_type = ''
-g_time_str = unicode(datetime.datetime.now())
+g_time_str = unicode(datetime.now())
 
 # --- Global objects ---
 g_ScraperFactory = None
@@ -278,7 +278,7 @@ def run_plugin(addon_argv):
     # --- Process URL ---
     g_base_url = addon_argv[0]
     g_addon_handle = int(addon_argv[1])
-    args = urlparse.parse_qs(addon_argv[2][1:])
+    args = parse_qs(addon_argv[2][1:])
     # log_debug('args = {0}'.format(args))
     # >> Interestingly, if plugin is called as type executable/program then content_type is empty.
     # >> However, if plugin is called as type video then Kodi adds the following
@@ -413,7 +413,7 @@ def m_run_concurrent(command, args):
     # >> Do not render virtual launchers.
     elif command == 'SHOW_ALL_CATEGORIES': m_command_render_all_categories()
     elif command == 'SHOW_ALL_LAUNCHERS':  m_command_render_all_launchers()
-    elif command == 'SHOW_ALL_ROMS':       m_command_render_all_ROMs()
+    elif command == 'SHOW_ALL_ROMS':       m_command_render_all_roms()
 
     # >> Command to build/fill the menu with categories or launcher using skinshortcuts
     elif command == 'BUILD_GAMES_MENU': m_command_buildMenu()
@@ -458,9 +458,9 @@ def m_run_protected(command, args):
 
     # --- Favourite/ROM Collection management ---
     elif command == 'ADD_TO_FAV':
-        m_command_add_to_favourites(args['catID'][0], args['launID'][0], args['romID'][0])
+        m_command_add_rom_to_favourites(args['catID'][0], args['launID'][0], args['romID'][0])
     elif command == 'ADD_TO_COLLECTION':
-        m_command_add_ROM_to_collection(args['catID'][0], args['launID'][0], args['romID'][0])
+        m_command_add_rom_to_collection(args['catID'][0], args['launID'][0], args['romID'][0])
     elif command == 'ADD_COLLECTION':
         m_command_add_collection()
     elif command == 'EDIT_COLLECTION':
@@ -846,9 +846,9 @@ def m_command_add_collection():
     if not keyboard.isConfirmed(): return
 
     # --- Save Collection ---
-    collection = g_LauncherFactory.create_new(LAUNCHER_COLLECTION)
+    collection = g_ObjectFactory.create_new(LAUNCHER_COLLECTION)
     collection.set_name(keyboard.getText().decode('utf-8'))
-    g_collectionRepository.save(collection)
+    g_ObjectRepository.save_launcher(collection)
     kodi_notify('Created ROM Collection {0}'.format(collection.get_name()))
     kodi_refresh_container()
 
@@ -858,7 +858,7 @@ def m_command_add_collection():
 #
 def m_command_edit_collection(category_id, launcher_id):
     # NEW CODE STYLE
-    collection = g_collectionRepository.find(launcher_id)
+    collection = g_ObjectRepository.find_launcher(launcher_id)
     m_run_collection_sub_command('EDIT_COLLECTION', collection)
     kodi_refresh_container()
 
@@ -888,15 +888,15 @@ def m_command_edit_rom(categoryID, launcherID, romID):
         kodi_dialog_OK('You cannot edit this ROM!')
         return
 
-    category = self.category_repository.find(categoryID)
-    launcher = g_LauncherRepository.find(launcherID)
+    category = g_ObjectRepository.find_category(categoryID)
+    launcher = g_ObjectRepository.find_launcher(launcherID)
 
     # --- Load ROMs ---
     rom = launcher.select_rom(romID)
 
     # --- Show a dialog with ROM editing options ---
     rom_options = rom.get_edit_options(categoryID)
-    dialog = DictionaryDialog()
+    dialog = KodiDictionaryDialog()
     selected_option = dialog.select('Edit ROM {0}'.format(rom.get_name()), rom_options)
     
     if selected_option is None:
@@ -916,7 +916,7 @@ def m_command_edit_rom(categoryID, launcherID, romID):
 #
 def m_command_add_rom_to_favourites(categoryID, launcherID, romID):
     # >> ROMs in standard launcher
-    launcher = g_LauncherRepository.find(launcherID)
+    launcher = g_ObjectRepository.find_launcher(launcherID)
     rom = launcher.select_rom(romID)
 
     # >> Sanity check
@@ -926,10 +926,10 @@ def m_command_add_rom_to_favourites(categoryID, launcherID, romID):
 
     if launcher.get_launcher_type() == LAUNCHER_VIRTUAL:
         actual_launcher_id = rom.get_launcher_id()
-        launcher = g_LauncherRepository.find(actual_launcher_id)
+        launcher = g_ObjectRepository.find_launcher(actual_launcher_id)
 
     # --- Load favourites ---
-    favlauncher = g_LauncherRepository.find(VLAUNCHER_FAVOURITES_ID)
+    favlauncher = g_ObjectRepository.find_launcher(VLAUNCHER_FAVOURITES_ID)
     roms_fav = favlauncher.get_roms()
 
     # --- DEBUG info ---
@@ -969,7 +969,7 @@ def m_command_edit_rom_favourite(categoryID, launcherID, romID):
     # --- Load ROMs ---
     if categoryID == VCATEGORY_FAVOURITES_ID:
         log_debug('_command_manage_favourites() Managing Favourite ROMs')
-        fav_launcher = g_LauncherRepository.find(VLAUNCHER_FAVOURITES_ID)
+        fav_launcher = g_ObjectRepository.find_launchers_by_category_id(VLAUNCHER_FAVOURITES_ID)
         roms_fav = fav_launcher.get_roms()
     elif categoryID == VCATEGORY_COLLECTIONS_ID:
         log_debug('_command_manage_favourites() Managing Collection ROMs')
@@ -1069,7 +1069,7 @@ def m_command_edit_rom_favourite(categoryID, launcherID, romID):
             filename_found  = False
             parent_rom      = None
 
-            launchers = g_LauncherRepository.find_all()
+            launchers = g_ObjectRepository.find_all()
             for launcher in launchers:
                 # >> Load launcher ROMs
                 roms = launcher.get_roms()
@@ -1096,7 +1096,7 @@ def m_command_edit_rom_favourite(categoryID, launcherID, romID):
 
             # >> Add ROM to the list of ROMs to be repaired.
             if filename_found:
-                parent_launcher = g_LauncherRepository.find(new_fav_rom_laun_ID)
+                parent_launcher = g_ObjectFactory.find_launcher(new_fav_rom_laun_ID)
 
                 rom_repair = {}
                 rom_repair['old_fav_rom_ID']      = rom_fav_ID
@@ -1164,7 +1164,7 @@ def m_command_edit_rom_favourite(categoryID, launcherID, romID):
         log_verb('_command_manage_favourites() Repair mode {0}'.format(repair_mode))
 
         # >> Refreshing Favourite status will locate Unlinked ROMs.
-        self._fav_check_favourites(roms_fav)
+        _fav_check_favourites(roms_fav)
 
         # >> Repair Unlinked ROMs
         pDialog = xbmcgui.DialogProgress()
@@ -1187,14 +1187,14 @@ def m_command_edit_rom_favourite(categoryID, launcherID, romID):
 
             # >> Get ROMs of launcher
             launcher_id   = rom_fav['launcherID']
-            launcher      = g_LauncherRepository.find(launcher_id)
+            launcher      = g_ObjectRepository.find_launcher(launcher_id)
             launcher_roms = fs_load_ROMs_JSON(ROMS_DIR, launcher.get_data())
 
             # >> Is there a ROM with same basename (including extension) as the Favourite ROM?
             filename_found = False
-            ROM_FAV_FN = FileNameFactory.create(rom_fav['filename'])
+            ROM_FAV_FN = FileName(rom_fav['filename'])
             for rom_id in launcher_roms:
-                ROM_FN = FileNameFactory.create(launcher_roms[rom_id]['filename'])
+                ROM_FN = FileName(launcher_roms[rom_id]['filename'])
                 if ROM_FAV_FN.getBase() == ROM_FN.getBase():
                     filename_found = True
                     new_fav_rom_ID = rom_id
@@ -1322,13 +1322,13 @@ def m_run_category_sub_command(command, category):
         m_gui_edit_metadata_str(category, 'Plot', category.get_plot, category.set_plot)
 
     elif command == 'IMPORT_NFO_FILE_DEFAULT':
-        m_subcommand_edit_category_nfo_import_default(category)
+        m_subcommand_category_import_nfo_file(category)
 
     elif command == 'IMPORT_NFO_FILE_BROWSE':
-        m_subcommand_edit_category_nfo_import_browse(category)
+        m_subcommand_category_browse_import_nfo_file(category)
 
     elif command == 'SAVE_NFO_FILE_DEFAULT':
-        m_subcommand_edit_category_nfo_save_default(category)
+        m_subcommand_category_save_nfo_file(category)
 
     # --- Submenu command ---
     elif command == 'EDIT_ASSETS':
@@ -1342,15 +1342,15 @@ def m_run_category_sub_command(command, category):
     elif command == 'EDIT_CATEGORY_STATUS':
         category.change_finished_status()
         kodi_dialog_OK('Category "{0}" status is now {1}'.format(category.get_name(), category.get_finished_str()))
-        g_MainRepository.save_category(category)
+        g_ObjectRepository.save_category(category)
 
     elif command == 'EXPORT_CATEGORY_XML':
-        m_subcommand_export_category_xml(category)
+        m_subcommand_category_export_xml(category)
 
     # Deleting a Category must exit the context menu!
     # If the deletion was sucessful the Category does not exit any more.
     elif command == 'DELETE_CATEGORY':
-        if m_subcommand_delete_category(category): return False
+        if m_subcommand_category_delete(category): return False
 
     else:
         log_warning('m_run_category_sub_command() Unsupported command "{0}"'.format(command))
@@ -1458,7 +1458,7 @@ def m_run_launcher_sub_command(command, launcher):
         launcher.change_finished_status()
         kodi_dialog_OK('Launcher "{0}" status is now {1}'.format(
             launcher.get_name(), launcher.get_finished_str()))
-        g_MainRepository.save_launcher(launcher)
+        g_ObjectRepository.save_launcher(launcher)
 
     # --- Submenu command (Launcher advanced modifications) ---
     elif command == 'LAUNCHER_ADVANCED_MODS':
@@ -1506,7 +1506,8 @@ def m_run_launcher_sub_command(command, launcher):
                 log_debug('m_run_launcher_sub_command(LAUNCHER_AUDIT_ROMS) Closing context menu')
 
     elif command == 'EXPORT_LAUNCHER_XML':
-        m_subcommand_export_launcher_xml(launcher)
+        #m_subcommand_export_launcher_xml(launcher)
+        m_command_export_collection(categoryID, launcherID)
 
     # Deleting a Launcher must exit the context menu!
     # If the deletion was sucessful the Launcher does not exit any more.
@@ -1592,7 +1593,8 @@ def m_run_collection_sub_command(command, collection):
     # Deleting a ROM Collection must exit the context menu!
     # If the deletion was sucessful the ROM Collection does not exit any more.
     elif command == 'DELETE_COLLECTION':
-        if m_subcommand_delete_collection(collection):
+        if m_command_delete_collection(categoryID, launcherID):
+        #if m_subcommand_delete_collection(collection):
             return False
 
     else:
@@ -1661,7 +1663,7 @@ def m_subcommand_category_export_xml(category):
     if not dir_path: return
 
     # --- If XML exists then warn user about overwriting it ---
-    export_FN = FileNameFactory.create(dir_path).pjoin(category_fn_str)
+    export_FN = FileName(dir_path).pjoin(category_fn_str)
     if export_FN.exists():
         ret = kodi_dialog_yesno('Overwrite file {0}?'.format(export_FN.getPath()))
         if not ret:
@@ -1809,7 +1811,7 @@ def m_subcommand_launcher_edit_category(launcher):
     log_debug('m_subcommand_edit_launcher_category() new     category name "{0}"'.format(categories_name[selected_cat]))
 
     # >> Save cateogries/launchers
-    g_MainRepository.save_launcher(launcher)
+    g_ObjectRepository.save_launcher(launcher)
 
     # >> Display new category where launcher has moved
     # For some reason ReplaceWindow() does not work, bu Container.Update() does.
