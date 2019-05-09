@@ -655,9 +655,9 @@ def asset_get_duplicated_dir_list(launcher):
 # todo: !!!! Orphaned method?
 def assets_search_local_cached_assets(launcher, ROMFile, enabled_ROM_asset_list):
     log_verb('assets_search_local_cached_assets() Searching for ROM local assets...')
-    local_asset_list = [''] * len(ROM_ASSET_LIST)
+    local_asset_list = [''] * len(ROM_ASSET_ID_LIST)
     rom_basename_noext = ROMFile.getBaseNoExt()
-    for i, asset_kind in enumerate(ROM_ASSET_LIST):
+    for i, asset_kind in enumerate(ROM_ASSET_ID_LIST):
         AInfo = g_assetFactory.get_asset_info(asset_kind)
         if not enabled_ROM_asset_list[i]:
             log_verb('assets_search_local_cached_assets() Disabled {0:<9}'.format(AInfo.name))
@@ -679,8 +679,8 @@ def assets_search_local_cached_assets(launcher, ROMFile, enabled_ROM_asset_list)
 #
 def assets_search_local_assets(launcher, ROMFile, enabled_ROM_asset_list):
     log_verb('assets_search_local_assets() Searching for ROM local assets...')
-    local_asset_list = [''] * len(ROM_ASSET_LIST)
-    for i, asset_kind in enumerate(ROM_ASSET_LIST):
+    local_asset_list = [''] * len(ROM_ASSET_ID_LIST)
+    for i, asset_kind in enumerate(ROM_ASSET_ID_LIST):
         AInfo = g_assetFactory.get_asset_info(asset_kind)
         if not enabled_ROM_asset_list[i]:
             log_verb('assets_search_local_assets() Disabled {0:<9}'.format(AInfo.name))
@@ -825,7 +825,7 @@ class ObjectRepository(object):
     def delete_category(self, category):
         category_id = category.get_id()
         del self.categories[category_id]
-        self.commit_database()
+        self.save_main_database()
 
     #
     # Removes a Launcher from the database.
@@ -872,7 +872,7 @@ class CollectionRepository(object):
 
     def _parse_xml_to_dictionary(self, collection_element):
         __debug_xml_parser = False
-        collection = { 'type': LAUNCHER_COLLECTION }
+        collection = { 'type': OBJ_LAUNCHER_COLLECTION }
         # Parse child tags of category
         for collection_child in collection_element:
             # By default read strings

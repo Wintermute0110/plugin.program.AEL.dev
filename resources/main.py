@@ -374,9 +374,9 @@ def m_run_concurrent(command, args):
     elif command == 'SHOW_VIRTUAL_CATEGORY':
         m_command_render_virtual_category(args['catID'][0])
     elif command == 'SHOW_RECENTLY_PLAYED':
-        m_command_render_recently_played()
+        m_command_render_recently_played_roms()
     elif command == 'SHOW_MOST_PLAYED':
-        m_command_render_most_played()
+        m_command_render_most_played_roms()
 
     elif command == 'SHOW_UTILITIES_VLAUNCHERS':     m_gui_render_Utilities_vlaunchers()
     elif command == 'SHOW_GLOBALREPORTS_VLAUNCHERS': m_gui_render_GlobalReports_vlaunchers()
@@ -400,7 +400,8 @@ def m_run_concurrent(command, args):
         m_command_render_favourite_roms()
 
     elif command == 'SHOW_VLAUNCHER_ROMS':
-        m_command_render_Browse_by_roms(args['catID'][0], args['launID'][0])
+        m_command_render_Browse_by_roms(args['catID'][0])
+        #m_command_render_Browse_by_roms(args['catID'][0], args['launID'][0])
     elif command == 'SHOW_COLLECTION_ROMS':
         m_command_render_Collection_roms(args['catID'][0], args['launID'][0])
     elif command == 'SHOW_AEL_SCRAPER_ROMS':
@@ -774,13 +775,13 @@ def m_command_edit_launcher(category_id, launcher_id):
 
 def m_command_add_rom_to_collection(categoryID, launcherID, romID):
     # >> ROMs in standard launcher
-    launcher = g_LauncherRepository.find(launcherID)
+    launcher = g_ObjectRepository.find_launcher(launcherID)
     rom = launcher.select_rom(romID)
 
     if rom.is_virtual_rom():
         # >> ROM in Virtual Launcher
         actual_launcher_id = rom.get_launcher_id()
-        launcher = g_LauncherRepository.find(actual_launcher_id)
+        launcher = g_ObjectRepository.find_launcher(actual_launcher_id)
 
     # --- Load Collection index ---
     collections = self.collection_repository.find_all()
@@ -791,7 +792,7 @@ def m_command_add_rom_to_collection(categoryID, launcherID, romID):
         return
 
     # --- Ask user which Collection wants to add the ROM to ---
-    dialog = DictionaryDialog()
+    dialog = KodiOrdDictionaryDialog()
     collection_options = OrderedDict()
     for collection in sorted(collections, key = lambda c : c.get_name()):
         collection_options[collection.get_id()] = collection.get_name()
@@ -896,7 +897,7 @@ def m_command_edit_rom(categoryID, launcherID, romID):
 
     # --- Show a dialog with ROM editing options ---
     rom_options = rom.get_edit_options(categoryID)
-    dialog = KodiDictionaryDialog()
+    dialog = KodiOrdDictionaryDialog()
     selected_option = dialog.select('Edit ROM {0}'.format(rom.get_name()), rom_options)
     
     if selected_option is None:
@@ -924,7 +925,7 @@ def m_command_add_rom_to_favourites(categoryID, launcherID, romID):
         kodi_dialog_OK('Empty roms launcher in _command_add_to_favourites(). This is a bug, please report it.')
         return
 
-    if launcher.get_launcher_type() == LAUNCHER_VIRTUAL:
+    if launcher.get_launcher_type() == OBJ_LAUNCHER_VIRTUAL:
         actual_launcher_id = rom.get_launcher_id()
         launcher = g_ObjectRepository.find_launcher(actual_launcher_id)
 
@@ -1433,10 +1434,10 @@ def m_run_launcher_sub_command(command, launcher):
         m_gui_edit_metadata_str(launcher, 'Plot', launcher.get_plot, launcher.set_plot)
 
     elif command == 'IMPORT_NFO_FILE_DEFAULT':
-        m_subcommand_edit_launcher_nfo_import_default(launcher)
+        m_subcommand_launcher_import_nfo_file(launcher)
 
     elif command == 'IMPORT_NFO_FILE_BROWSE':
-        m_subcommand_edit_launcher_nfo_import_browse(launcher)
+        m_subcommand_launcher_browse_import_nfo_file(launcher)
 
     elif command == 'SAVE_NFO_FILE_DEFAULT':
         m_subcommand_edit_launcher_nfo_save_default(launcher)
@@ -1535,7 +1536,7 @@ def m_run_collection_sub_command(command, collection):
     if command == 'EDIT_COLLECTION':
         options = collection.get_edit_options()
         s = 'Select action for ROM Collection "{0}"'.format(collection.get_name())
-        selected_option = KodiDictionaryDialog().select(s, options)
+        selected_option = KodiOrdDictionaryDialog().select(s, options)
         if selected_option is None:
             log_debug('m_run_collection_sub_command(EDIT_COLLECTION) Selected None. Closing context menu.')
         else:
@@ -1550,7 +1551,7 @@ def m_run_collection_sub_command(command, collection):
     elif command == 'EDIT_METADATA':
         options = collection.get_metadata_edit_options()
         s = 'Edit ROM Collection "{0}" metadata'.format(collection.get_name())
-        selected_option = KodiDictionaryDialog().select(s, options)
+        selected_option = KodiOrdDictionaryDialog().select(s, options)
         if selected_option is None:
             log_debug('m_run_collection_sub_command(EDIT_METADATA) Selected None')
         else:
@@ -1626,19 +1627,19 @@ def m_subcommand_category_import_nfo_file(category):
     # >> Returns True if changes were made
     NFO_file = fs_get_category_NFO_name(g_settings, category.get_data())
     if not fs_import_category_NFO(NFO_file, category.get_data()): return
-    kodi_notify('Imported Category NFO file {0}'.format(NFO_FileName.getPath()))
-    g_CategoryRepository.save(category)
+    kodi_notify('Imported Category NFO file {0}'.format(NFO_file.getPath()))
+    g_ObjectRepository.save_category(category)
 
 def m_subcommand_category_browse_import_nfo_file(category):
     NFO_file = xbmcgui.Dialog().browse(1, 'Select NFO description file', 'files', '.nfo', False, False).decode('utf-8')
     log_debug('_command_edit_category() Dialog().browse returned "{0}"'.format(NFO_file))
     if not NFO_file: return
-    NFO_FileName = FileNameFactory.create(NFO_file)
+    NFO_FileName = FileName(NFO_file)
     if not NFO_FileName.exists(): return
     # >> Returns True if changes were made
     if not fs_import_category_NFO(NFO_FileName, category.get_data()): return
     kodi_notify('Imported Category NFO file {0}'.format(NFO_FileName.getPath()))   
-    g_CategoryRepository.save(category)
+    g_ObjectRepository.save_category(category)
 
 def m_subcommand_category_save_nfo_file(category):
     NFO_FileName = fs_get_category_NFO_name(g_settings, category.get_data())
@@ -1689,7 +1690,7 @@ def m_subcommand_category_export_xml(category):
 def m_subcommand_category_delete(category):
     category_id   = category.get_id()
     category_name = category.get_name()
-    launchers     = g_MainRepository.find_launchers_by_category_id(category_id)
+    launchers     = g_ObjectRepository.find_launchers_by_category_id(category_id)
 
     if len(launchers) > 0:
         ret = kodi_dialog_yesno('Category "{0}" has {1} launchers. '.format(category_name, len(launchers)) +
@@ -1701,15 +1702,15 @@ def m_subcommand_category_delete(category):
         log_info('Deleting category "{0}" ID {1}'.format(category_name, category.get_id()))
         for launcher in launchers:
             log_info('Deleting linked launcher "{0}" ID {1}'.format(launcher.get_name(), launcher.get_id()))
-            g_MainRepository.delete_launcher(launcher)
-        g_MainRepository.delete_category(category)
+            g_ObjectRepository.delete_launcher(launcher)
+        g_ObjectRepository.delete_category(category)
     else:
         ret = kodi_dialog_yesno('Category "{0}" has no launchers. '.format(category_name) +
                                 'Are you sure you want to delete "{0}"?'.format(category_name))
         if not ret: return False
         log_info('Deleting category "{0}" ID {1}'.format(category_name, category.get_id()))
         log_info('Category has no launchers, so no launchers to delete.')
-        g_MainRepository.delete_category(category)
+        g_ObjectRepository.delete_category(category)
     kodi_notify('Deleted category {0}'.format(category_name))
 
     return True
@@ -1750,7 +1751,7 @@ def m_subcommand_launcher_edit_name(launcher):
 
         launcher.update_roms_base(new_roms_base_noext)
 
-    g_LauncherRepository.save(launcher)
+    g_ObjectRepository.save_launcher(launcher)
     kodi_refresh_container()
     kodi_notify('Launcher Title is now {0}'.format(launcher.get_name()))
 
@@ -1761,7 +1762,7 @@ def m_subcommand_launcher_import_nfo_file(launcher):
     # >> Returns True if changes were made
     NFO_file = fs_get_launcher_NFO_name(g_settings, launcher.get_data())
     if launcher.import_nfo_file(NFO_file):
-        g_LauncherRepository.save(launcher)
+        g_ObjectRepository.save_launcher(launcher)
         kodi_notify('Imported Launcher NFO file {0}'.format(NFO_file.getPath()))
 
 # --- Browse for NFO file ---
@@ -1770,14 +1771,14 @@ def m_subcommand_launcher_browse_import_nfo_file(launcher):
     if not NFO_file: 
         return
 
-    NFO_FileName = FileNameFactory.create(NFO_file)
+    NFO_FileName = FileName(NFO_file)
     if not NFO_FileName.exists(): 
         return
 
     # >> Launcher is edited using Python passing by assigment
     # >> Returns True if changes were made
     if launcher.import_nfo_file(NFO_FileName):
-        g_LauncherRepository.save(launcher)
+        g_ObjectRepository.save_launcher(launcher)
         kodi_notify('Imported Launcher NFO file {0}'.format(NFO_FileName.getPath()))
 
 # --- Export launcher metadata to NFO file ---
@@ -1795,7 +1796,7 @@ def m_subcommand_launcher_edit_category(launcher):
     # Add special root cateogory at the beginning
     categories_id   = [VCATEGORY_ADDONROOT_ID]
     categories_name = ['Addon root (no Category)']
-    category_list = g_MainRepository.get_categories_odict()
+    category_list = g_ObjectRepository.get_categories_odict()
     for key in category_list:
         categories_id.append(key)
         categories_name.append(category_list[key])
@@ -1834,16 +1835,16 @@ def m_subcommand_launcher_export_XML(launcher):
     dir_path = xbmcgui.Dialog().browse(0, 'Select XML export directory', 'files', 
                                         '', False, False).decode('utf-8')
         
-    category = self.category_repository.find(launcher.get_category_id())
+    category = g_ObjectRepository.find_category(launcher.get_category_id())
     launcher.export_configuration(dir_path, category)
-    return self._command_edit_launcher(launcher.get_category_id(), launcher.get_id())
+    return _command_edit_launcher(launcher.get_category_id(), launcher.get_id())
 
 # --- Remove Launcher menu option ---
 def m_subcommand_launcher_delete(launcher):
     # >> ROMs launcher
     confirmed = False
     if launcher.supports_launching_roms():
-        launcher.get_roms()
+        roms = launcher.get_roms()
         num_roms = len(roms)
         confirmed = kodi_dialog_yesno(
             'Launcher "{0}" has {1} ROMs. '.format(launcher.get_name(), num_roms) +
@@ -1896,7 +1897,7 @@ def m_subcommand_scrape_launcher(launcher, selected_option):
     
     # >> If this returns False there were no changes so no need to save categories.xml
     if self._gui_scrap_launcher_metadata(launcher.get_id(), scraper_obj): 
-        g_LauncherRepository.save(launcher)
+        g_ObjectRepository.save_launcher(launcher)
 
 
 # --- Audit ROMs / Launcher view mode ---
@@ -1916,7 +1917,7 @@ def m_subcommand_scrape_launcher(launcher, selected_option):
 #
 def m_subcommand_audit_roms(launcher):
     # --- Shows a select box with the options to edit ---
-    dialog = DictionaryDialog()
+    dialog = KodiOrdDictionaryDialog()
     launcher_options = launcher.get_audit_roms_options()
     selected_option = dialog.select('Audit ROMs / Launcher view mode', launcher_options),
     
@@ -1995,7 +1996,7 @@ def m_subcommand_add_no_intro(launcher):
     # Fixed in Krypton Beta 6 http://forum.kodi.tv/showthread.php?tid=298161
                     
     dat_file = xbmcgui.Dialog().browse(1, 'Select No-Intro XML DAT (XML|DAT)', 'files', '.dat|.xml').decode('utf-8')
-    if not FileNameFactory.create(dat_file).exists(): 
+    if not FileName(dat_file).exists(): 
         return
         
     launcher.set_nointro_xml_file(dat_file)
@@ -2017,7 +2018,7 @@ def m_subcommand_add_no_intro(launcher):
         kodi_notify_warn('Error auditing ROMs. XML DAT file not set.')
         
     launcher.set_number_of_roms(len(roms))
-    g_LauncherRepository.save(launcher)
+    g_ObjectRepository.save_launcher(launcher)
     return
 
 # --- Create Parent/Clone DAT based on ROM filenames ---
@@ -2054,7 +2055,7 @@ def m_subcommand_change_display_roms(launcher):
         return
 
     launcher.change_nointro_display_mode(selected_mode)
-    g_LauncherRepository.save(launcher)
+    g_ObjectFactory.save_launcher(launcher)
     kodi_notify('Display ROMs changed to "{0}"'.format(selected_mode))       
     return
 
@@ -2084,7 +2085,7 @@ def m_subcommand_update_rom_audit(launcher):
         return
        
     launcher.set_number_of_roms(len(roms))
-    g_LauncherRepository.save(launcher)
+    g_ObjectRepository.save_launcher(launcher)
     return
 
 # --- Launcher Advanced Modifications menu option ---
@@ -2110,7 +2111,7 @@ def m_subcommand_advanced_modifications(launcher):
 # >> Choose launching mechanism. Command: CHANGE_APPLICATION
 def m_subcommand_change_launcher_application(launcher):
     if launcher.change_application():
-        g_LauncherRepository.save(launcher)
+        g_ObjectRepository.save_launcher(launcher)
         kodi_notify('Changed launcher application')
 
     return
@@ -2126,7 +2127,7 @@ def m_subcommand_modify_launcher_arguments(launcher):
         
     launcher.change_arguments(altered_args)
 
-    g_LauncherRepository.save(launcher)
+    g_ObjectRepository.save_launcher(launcher)
     kodi_notify('Changed launcher arguments')
 
 # --- Launcher Additional arguments. Command: ADDITIONAL_ARGS ---
@@ -2150,7 +2151,7 @@ def m_subcommand_change_launcher_additional_arguments(launcher):
         new_argument = keyboard.getText().decode('utf-8')
         launcher.add_additional_argument(new_argument)
             
-        g_LauncherRepository.save(launcher)
+        g_ObjectRepository.save_launcher(launcher)
         kodi_notify('Added additional arguments to launcher {0}'.format(launcher.get_name()))
         return
         
@@ -2171,7 +2172,7 @@ def m_subcommand_change_launcher_additional_arguments(launcher):
         altered_arg = keyboard.getText().decode('utf-8')
         launcher.set_additional_argument(selected_arg_idx, altered_arg)
             
-        g_LauncherRepository.save(launcher)
+        g_ObjectRepository.save_launcher(launcher)
         kodi_notify('Changed extra arguments in launcher {0}'.format(launcher.get_name()))
 
     elif edit_action == 1:
@@ -2179,7 +2180,7 @@ def m_subcommand_change_launcher_additional_arguments(launcher):
         if not ret: return
         launcher.remove_additional_argument(selected_arg_idx)
             
-        g_LauncherRepository.save(launcher)
+        g_ObjectRepository.save_launcher(launcher)
         kodi_notify('Removed argument from extra arguments in launcher {0}'.format(launcher.get_name()))
 
     return
@@ -2196,7 +2197,7 @@ def m_subcommand_change_launcher_rompath(launcher):
         return
 
     launcher.change_rom_path(rom_path)
-    g_LauncherRepository.save(launcher)
+    g_ObjectRepository.save_launcher(launcher)
 
     kodi_notify('Changed ROM path')
     return
@@ -2215,7 +2216,7 @@ def m_subcommand_change_launcher_rom_extensions(launcher):
 
     launcher.change_rom_extensions(keyboard.getText().decode('utf-8'))
 
-    g_LauncherRepository.save(launcher)
+    g_ObjectRepository.save_launcher(launcher)
     kodi_notify('Changed ROM extensions')
 
 # --- Minimise Kodi window flag. Command: TOGGLE_WINDOWED ---
@@ -2229,7 +2230,7 @@ def m_subcommand_toggle_windowed(launcher):
     is_windowed = launcher.set_windowed_mode(type3 > 0)
     minimise_str = 'ON' if is_windowed else 'OFF'
         
-    g_LauncherRepository.save(launcher)
+    g_ObjectRepository.save_launcher(launcher)
     kodi_notify('Toggle Kodi into windowed mode {0}'.format(minimise_str))
 
 # --- Non-blocking launcher flag. Command: TOGGLE_NONBLOCKING ---_
@@ -2243,7 +2244,7 @@ def m_subcommand_toggle_nonblocking(launcher):
     is_non_blocking = launcher.set_non_blocking(type3 > 0)
     non_blocking_str = 'ON' if is_non_blocking else 'OFF'
 
-    g_LauncherRepository.save(launcher)
+    g_ObjectRepository.save_launcher(launcher)
     kodi_notify('Launcher Non-blocking is now {0}'.format(non_blocking_str))
 
 # --- Multidisc ROM support (Only ROM launchers) Command: TOGGLE_MULTIDISC ---
@@ -2260,7 +2261,7 @@ def m_subcommand_toggle_multidisc(launcher):
     supports_multidisc = launcher.set_multidisc_support(type3 > 0)
     multidisc_str = 'ON' if supports_multidisc else 'OFF'
         
-    g_LauncherRepository.save(launcher)
+    g_ObjectRepository.save_launcher(launcher)
     kodi_notify('Launcher Multidisc support is now {0}'.format(multidisc_str))
 
     return
