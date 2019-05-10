@@ -1851,7 +1851,7 @@ def fs_import_category_NFO(nfo_FileName, category_data):
     # --- Import data ---
     if nfo_FileName.exists():
         try:
-            item_nfo = nfo_FileName.readAllUnicode()
+            item_nfo = nfo_FileName.loadFileToStr()
             item_nfo = item_nfo.replace('\r', '').replace('\n', '')
         except:
             kodi_notify_warn('Exception reading NFO file {0}'.format(nfo_FileName.getPath()))
@@ -1923,7 +1923,7 @@ def fs_import_collection_NFO(nfo_FileName, collections, launcherID):
     # --- Import data ---
     if nfo_FileName.exists():
         try:
-            item_nfo = nfo_FileName.readAllUnicode()
+            item_nfo = nfo_FileName.loadFileToStr()
             item_nfo = item_nfo.replace('\r', '').replace('\n', '')
         except:
             kodi_notify_warn('Exception reading NFO file {0}'.format(nfo_FileName.getName()))
