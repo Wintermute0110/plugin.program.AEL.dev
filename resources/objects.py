@@ -655,9 +655,9 @@ def asset_get_duplicated_dir_list(launcher):
 # todo: !!!! Orphaned method?
 def assets_search_local_cached_assets(launcher, ROMFile, enabled_ROM_asset_list):
     log_verb('assets_search_local_cached_assets() Searching for ROM local assets...')
-    local_asset_list = [''] * len(ROM_ASSET_LIST)
+    local_asset_list = [''] * len(ROM_ASSET_ID_LIST)
     rom_basename_noext = ROMFile.getBaseNoExt()
-    for i, asset_kind in enumerate(ROM_ASSET_LIST):
+    for i, asset_kind in enumerate(ROM_ASSET_ID_LIST):
         AInfo = g_assetFactory.get_asset_info(asset_kind)
         if not enabled_ROM_asset_list[i]:
             log_verb('assets_search_local_cached_assets() Disabled {0:<9}'.format(AInfo.name))
@@ -679,8 +679,8 @@ def assets_search_local_cached_assets(launcher, ROMFile, enabled_ROM_asset_list)
 #
 def assets_search_local_assets(launcher, ROMFile, enabled_ROM_asset_list):
     log_verb('assets_search_local_assets() Searching for ROM local assets...')
-    local_asset_list = [''] * len(ROM_ASSET_LIST)
-    for i, asset_kind in enumerate(ROM_ASSET_LIST):
+    local_asset_list = [''] * len(ROM_ASSET_ID_LIST)
+    for i, asset_kind in enumerate(ROM_ASSET_ID_LIST):
         AInfo = g_assetFactory.get_asset_info(asset_kind)
         if not enabled_ROM_asset_list[i]:
             log_verb('assets_search_local_assets() Disabled {0:<9}'.format(AInfo.name))
@@ -825,7 +825,7 @@ class ObjectRepository(object):
     def delete_category(self, category):
         category_id = category.get_id()
         del self.categories[category_id]
-        self.commit_database()
+        self.save_main_database()
 
     #
     # Removes a Launcher from the database.
@@ -872,7 +872,7 @@ class CollectionRepository(object):
 
     def _parse_xml_to_dictionary(self, collection_element):
         __debug_xml_parser = False
-        collection = { 'type': LAUNCHER_COLLECTION }
+        collection = { 'type': OBJ_LAUNCHER_COLLECTION }
         # Parse child tags of category
         for collection_child in collection_element:
             # By default read strings
@@ -1030,13 +1030,13 @@ class ROMSetRepository(object):
     def save_rom_set(self, launcher, roms, view_mode = None):
         romdata = None
         if self.store_as_dictionary:
-            romdata = {key: roms[key].get_data() for (key) in roms}
+            romdata = {key: roms[key].get_data_dic() for (key) in roms}
         else:
-            romdata = [roms[key].get_data() for (key) in roms]
+            romdata = [roms[key].get_data_dic() for (key) in roms]
 
         # --- Create JSON data structure, including version number ---
         control_dic = {
-            'control' : 'Advanced Emulator {} ROMs'.format(launcher.get_launcher_type_name()),
+            'control' : 'Advanced Emulator {} ROMs'.format(launcher.get_launcher_type()),
             'version' : AEL_STORAGE_FORMAT
         }
         raw_data = []
@@ -1573,7 +1573,7 @@ class ROM(MetaDataItemABC):
 
     def get_nfo_file(self):
         ROMFileName = self.get_file()
-        nfo_file_path = ROMFileName.switchExtension('.nfo')
+        nfo_file_path = ROMFileName.changeExtension('.nfo')
         return nfo_file_path
 
     def get_number_of_players(self):
@@ -1628,7 +1628,7 @@ class ROM(MetaDataItemABC):
 
     def copy(self):
         data = self.copy_of_data()
-        return Rom(data)
+        return ROM(data)
 
     def delete_from_disk(self):
         raise NotImplementedError
@@ -1668,7 +1668,7 @@ class ROM(MetaDataItemABC):
 
     # >> Metadata edit dialog
     def get_metadata_edit_options(self):
-        NFO_FileName = fs_get_ROM_NFO_name(self.get_data())
+        NFO_FileName = fs_get_ROM_NFO_name(self.get_data_dic())
         NFO_found_str = 'NFO found' if NFO_FileName.exists() else 'NFO not found'
         plot_str = text_limit_string(self.entity_data['m_plot'], PLOT_STR_MAXSIZE)
 
@@ -2073,7 +2073,7 @@ class LauncherABC(MetaDataItemABC):
 
     def set_platform(self, platform): self.entity_data['platform'] = platform
 
-    def get_category_id(self): return self.entity_data['categoryID']
+    def get_category_id(self): return self.entity_data['categoryID'] if 'categoryID' in self.entity_data else None
 
     def update_category(self, category_id): self.entity_data['categoryID'] = category_id
 
@@ -2577,7 +2577,7 @@ class ROMLauncherABC(LauncherABC):
 
         if self.statsStrategy is not None:
             self.statsStrategy.update_launched_rom_stats(self.rom)
-            self.save_rom(self.rom)
+            self.save_ROM(self.rom)
 
         super(ROMLauncherABC, self).launch()
 
@@ -2643,7 +2643,7 @@ class ROMLauncherABC(LauncherABC):
         self.arguments = self.arguments.replace('$romtitle$', self.title)
 
         # automatic substitution of rom values
-        for rom_key, rom_value in self.rom.get_data().iteritems():
+        for rom_key, rom_value in self.rom.get_data_dic().iteritems():
             if isinstance(rom_value, basestring):
                 self.arguments = self.arguments.replace('${}$'.format(rom_key), rom_value)        
 
@@ -3714,7 +3714,7 @@ class RetroarchLauncher(StandardRomLauncher):
 
         for retroarch_folder in retroarch_folders:
             log_debug("get_available_retroarch_configurations() scanning path '{0}'".format(retroarch_folder.getPath()))
-            files = retroarch_folder.recursiveScanFilesInPathAsFileNameObjects('*.cfg')
+            files = retroarch_folder.recursiveScanFilesInPath('*.cfg')
             if len(files) < 1: continue
             for file in files:
                 log_debug("get_available_retroarch_configurations() adding config file '{0}'".format(file.getPath()))
@@ -3735,7 +3735,7 @@ class RetroarchLauncher(StandardRomLauncher):
             cores_ext = '*.so'
 
         config_file   = FileName(launcher['retro_config'])
-        parent_dir    = config_file.getDirAsFileName()
+        parent_dir    = FileName(config_file.getDir())
         configuration = config_file.readPropertyFile()
         info_folder   = self._create_path_from_retroarch_setting(configuration['libretro_info_path'], parent_dir)
         cores_folder  = self._create_path_from_retroarch_setting(configuration['libretro_directory'], parent_dir)
@@ -3749,7 +3749,7 @@ class RetroarchLauncher(StandardRomLauncher):
             log_warning('Retroarch cores folder not found {}'.format(cores_folder.getPath()))
             return cores
 
-        files = cores_folder.scanFilesInPathAsFileNameObjects(cores_ext)
+        files = cores_folder.scanFilesInPath(cores_ext)
         for file in files:
                 
             log_debug("get_available_retroarch_cores() adding core '{0}'".format(file.getPath()))    
@@ -3780,7 +3780,7 @@ class RetroarchLauncher(StandardRomLauncher):
             return input
 
         config_file     = FileName(launcher['retro_config'])
-        parent_dir      = config_file.getDirAsFileName()
+        parent_dir      = FileName(config_file.getDir())
         configuration   = config_file.readPropertyFile()
         cores_folder    = self._create_path_from_retroarch_setting(configuration['libretro_directory'], parent_dir)
         info_file       = FileName(input)
@@ -3885,7 +3885,8 @@ class RetroarchLauncher(StandardRomLauncher):
         # TODO: other OSes
         return False
 
-    def _launch_selectRomFileToUse(self): raise AddonError('Implement me!')
+    # Probably just use parent implementation
+    #def _launch_selectRomFileToUse(self): raise AddonError('Implement me!')
 
     # ---------------------------------------------------------------------------------------------
     # Misc methods
@@ -3902,23 +3903,24 @@ class RetroarchLauncher(StandardRomLauncher):
         return True
 
     def _create_path_from_retroarch_setting(self, path_from_setting, parent_dir):
-        if not path_from_setting.endswith('\\') and not path_from_setting.endswith('/'):
-            path_from_setting = path_from_setting + parent_dir.path_separator()
+        #if not path_from_setting.endswith('\\') and not path_from_setting.endswith('/'):
+        #    path_from_setting = path_from_setting + '/' #parent_dir.path_separator()
+        # obsolete with isdir=True?
 
         if path_from_setting.startswith(':\\'):
             path_from_setting = path_from_setting[2:]
-            return parent_dir.pjoin(path_from_setting)
+            return parent_dir.pjoin(path_from_setting, isdir=True)
         else:
-            folder = FileName(path_from_setting)
+            folder = FileName(path_from_setting, isdir=True)
             if '/data/user/0/' in folder.getPath():
-                alternative_folder = foldexr.getPath()
+                alternative_folder = folder.getPath()
                 alternative_folder = alternative_folder.replace('/data/user/0/', '/data/data/')
-                folder = FileName(alternative_folder)
+                folder = FileName(alternative_folder, isdir=True)
 
             return folder
 
     def _switch_core_to_info_file(self, core_file, info_folder):
-        info_file = core_file.switchExtension('info')
+        info_file = core_file.changeExtension('info')
    
         if is_android():
             info_file = info_folder.pjoin(info_file.getBase().replace('_android.', '.'))
@@ -3928,7 +3930,7 @@ class RetroarchLauncher(StandardRomLauncher):
         return info_file
 
     def _switch_info_to_core_file(self, info_file, cores_folder, cores_ext):
-        core_file = info_file.switchExtension(cores_ext)
+        core_file = info_file.changeExtension(cores_ext)
         if is_android():
             core_file = cores_folder.pjoin(core_file.getBase().replace('.', '_android.'))
         else:
@@ -4998,7 +5000,7 @@ class RomScannerStrategy(ScannerStrategyABC):
     def scan(self):
         
         # --- Open ROM scanner report file ---
-        launcher_report = FileReporter(self.reports_dir, self.launcher.get_data(), LogReporter(self.launcher.get_data()))
+        launcher_report = FileReporter(self.reports_dir, self.launcher.get_data_dic(), LogReporter(self.launcher.get_data_dic()))
         launcher_report.open('RomScanner() Starting ROM scanner')
 
         # >> Check if there is an XML for this launcher. If so, load it.
@@ -5057,7 +5059,7 @@ class RomScannerStrategy(ScannerStrategyABC):
         return roms
 
     def cleanup(self):
-        launcher_report = LogReporter(self.launcher.get_data())
+        launcher_report = LogReporter(self.launcher.get_data_dic())
         launcher_report.open('RomScanner() Starting Dead ROM cleaning')
         log_debug('RomScanner() Starting Dead ROM cleaning')
 
@@ -6204,8 +6206,8 @@ class GameStreamServer(object):
             log_debug('validate_certificates(): Certificate files exist. Done')
             return True
 
-        certificate_files = self.certificates_path.scanFilesInPathAsFileNameObjects('*.crt')
-        key_files = self.certificates_path.scanFilesInPathAsFileNameObjects('*.key')
+        certificate_files = self.certificates_path.scanFilesInPath('*.crt')
+        key_files = self.certificates_path.scanFilesInPath('*.key')
 
         if len(certificate_files) < 1:
             log_warning('validate_certificates(): No .crt files found at given location.')

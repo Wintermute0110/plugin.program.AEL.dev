@@ -225,7 +225,7 @@ def text_str_2_Uni(string):
 #
 def text_escape_XML(data_str):
 
-    if not isinstance(data_str, str):
+    if not isinstance(data_str, basestring):
         data_str = str(data_str)
 
     # Ampersand MUST BE replaced FIRST
@@ -1119,6 +1119,38 @@ class FileNameBase():
 
         return root
 
+    #
+    # Loads a file into a Unicode string.
+    # By default all files are assumed to be encoded in UTF-8.
+    # Returns a Unicode string.
+    #
+    def loadFileToStr(self, encoding = 'utf-8'):
+        if DEBUG_NEWFILENAME_CLASS:
+            log_debug('NewFileName::loadFileToStr() Loading path_str "{0}"'.format(self.path_str))
+
+        # NOTE Exceptions should be catched, reported and re-raised in the low-level
+        # functions, not here!!!
+        file_bytes = None
+        try:
+            self.open('r')
+            file_bytes = self.read()
+            self.close()
+        except OSError:
+            log_error('(OSError) Exception in FileName::loadFileToStr()')
+            log_error('(OSError) Cannot read {0} file'.format(self.path_tr))
+            raise AddonException('(OSError) Cannot read {0} file'.format(self.path_tr))
+        except IOError as Ex:
+            log_error('(IOError) Exception in FileName::loadFileToStr()')
+            log_error('(IOError) errno = {0}'.format(Ex.errno))
+            if Ex.errno == errno.ENOENT: log_error('(IOError) No such file or directory.')
+            else:                        log_error('(IOError) Unhandled errno value.')
+            log_error('(IOError) Cannot read {0} file'.format(self.path_tr))
+            raise AddonException('(IOError) Cannot read {0} file'.format(self.path_tr))
+
+        # Return a Unicode string.
+        return file_bytes.decode(encoding)
+
+
     # Opens JSON file and reads it
     def readJson(self):
         contents = self.readAllUnicode()
@@ -1160,7 +1192,7 @@ class FileNameBase():
     def writeJson(self, raw_data, JSON_indent = 1, JSON_separators = (',', ':')):
         json_data = json.dumps(raw_data, ensure_ascii = False, sort_keys = True, 
                                 indent = JSON_indent, separators = JSON_separators)
-        self.writeAll(str(json_data, 'utf-8'))
+        self.writeAll(unicode(json_data).encode('utf-8'))
 
     # Opens file and writes xml. Give xml root element.
     def writeXml(self, xml_root):
@@ -1582,8 +1614,10 @@ class NewFileName:
         # --- Use Pyhton for local paths and Kodi VFS for remote paths ---
         if self.is_local:
             # --- Filesystem functions ---
-            self.exists   = self.exists_python
-            self.makedirs = self.makedirs_python
+            self.exists         = self.exists_python
+            self.makedirs       = self.makedirs_python
+            self.list           = self.list_python
+            self.recursive_list = self.recursive_list_python
 
             # --- File low-level IO functions ---
             self.open     = self.open_python
@@ -1591,14 +1625,25 @@ class NewFileName:
             self.write    = self.write_python
             self.close    = self.close_python
         else:
-            self.exists   = self.exists_kodivfs
-            self.makedirs = self.makedirs_kodivfs
+            self.exists         = self.exists_kodivfs
+            self.makedirs       = self.makedirs_kodivfs
+            self.list           = self.list_kodivfs
+            self.recursive_list = self.recursive_list_kodivfs
 
             self.open     = self.open_kodivfs
             self.read     = self.read_kodivfs
             self.write    = self.write_kodivfs
             self.close    = self.close_kodivfs
 
+    def _decodeName(self, name):
+        if type(name) == str:
+            try:
+                name = name.decode('utf8')
+            except:
+                name = name.decode('windows-1252')
+
+        return name
+    
     # ---------------------------------------------------------------------------------------------
     # Core functions
     # ---------------------------------------------------------------------------------------------
@@ -1683,13 +1728,12 @@ class NewFileName:
         return ext
 
     def changeExtension(self, targetExt):
-        raise AddonException('Implement me.')
+        #raise AddonException('Implement me.')
         ext = self.getExt()
         copiedPath = self.path_str
         if not targetExt.startswith('.'):
             targetExt = '.{0}'.format(targetExt)
-        #new_path = self.__create__(copiedPath.replace(ext, targetExt))
-        new_path = NewFileName(copiedPath.replace(ext, targetExt))
+        new_path = FileName(copiedPath.replace(ext, targetExt))
         return new_path
 
     # Checks the extension to determine the type of the file.
@@ -1714,6 +1758,17 @@ class NewFileName:
                 log_debug('NewFileName::makedirs_python() path_tr "{0}"'.format(self.path_tr))
             os.makedirs(self.path_tr)
 
+    def list_python(self):        
+        return os.listdir(self.path_tr)
+
+    def recursive_list_python(self):
+        files = []
+        for root, dirs, foundfiles in os.walk(self.path_tr):
+            for filename in foundfiles:
+                files.append(filename)
+
+        return files
+    
     # ---------------------------------------------------------------------------------------------
     # Filesystem functions. Kodi VFS implementation.
     # Kodi VFS functions always work with path_str, not with the translated path.
@@ -1723,6 +1778,30 @@ class NewFileName:
 
     def makedirs_kodivfs(self):
         raise AddonException('Not implemented yet')
+
+    def list_kodivfs(self):
+        subdirectories, filenames = xbmcvfs.listdir(self.path_tr)
+        return filenames
+    
+    def recursive_list_kodivfs(self):
+        files = self.recursive_list_kodivfs_folders(self.path_tr, None)
+        return files
+    
+    def recursive_list_kodivfs_folders(self, fullPath, parentFolder):
+        files = []
+        subdirectories, filenames = xbmcvfs.listdir(fullPath)
+        
+        for filename in filenames:
+            filePath = os.path.join(parentFolder, filename) if parentFolder is not None else filename
+            files.append(filePath)
+
+        for subdir in subdirectories:
+            subPath = os.path.join(parentFolder, subdir) if parentFolder is not None else subdir
+            subFullPath = os.path.join(fullPath, subdir)
+            subPathFiles = self.recursive_list_kodivfs_folders(subFullPath, subPath)
+            files.extend(subPathFiles)
+
+        return files
 
     # ---------------------------------------------------------------------------------------------
     # File low-level IO functions. Python Standard Library implementation
@@ -1865,20 +1944,44 @@ class NewFileName:
             log_error('(IOError) Cannot write {0} file'.format(self.path_tr))
             raise AddonException('(IOError) Cannot write {0} file'.format(self.path_tr))
 
+    # Opens a propery file and reads it
+    # Reads a given properties file with each line of the format key=value.
+    # Returns a dictionary containing the pairs.
+    def readPropertyFile(self):
+        import csv
+
+        file_contents = self.loadFileToStr()
+        file_lines = file_contents.splitlines()
+
+        result={ }
+        reader = csv.reader(file_lines, delimiter=str('='), quoting=csv.QUOTE_NONE)
+        for row in reader:
+            if len(row) != 2:
+                raise csv.Error("Too many fields on row with contents: "+str(row))
+            result[row[0].strip()] = row[1].strip().lstrip('"').rstrip('"')
+
+        return result
+
     # ---------------------------------------------------------------------------------------------
     # Scanner functions
     # ---------------------------------------------------------------------------------------------
     def scanFilesInPath(self, mask = '*.*'):
-        raise NotImplementedError
-
-    def scanFilesInPathAsFileNameObjects(self, mask = '*.*'):
-        raise NotImplementedError
+        files = []
+        all_files = self.list()
+        
+        for filename in fnmatch.filter(all_files, mask):
+            files.append(self.pjoin(self._decodeName(filename)))
+            
+        return files
     
     def recursiveScanFilesInPath(self, mask = '*.*'):
-        raise NotImplementedError
+        files = []
+        all_files = self.recursive_list()
         
-    def recursiveScanFilesInPathAsFileNameObjects(self, mask = '*.*'):
-        raise NotImplementedError
+        for filename in fnmatch.filter(all_files, mask):
+            files.append(self.pjoin(self._decodeName(filename)))
+            
+        return files
 
 # -------------------------------------------------------------------------------------------------
 # Decide which class to use for managing filenames.

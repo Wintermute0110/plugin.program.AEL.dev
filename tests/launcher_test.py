@@ -38,20 +38,22 @@ class Test_Launcher(unittest.TestCase):
         settings['delay_tempo'] = 1
         return settings
 
-    def test_when_creating_a_launcher_with_not_exisiting_id_it_will_fail(self):
-        # arrange
-        launcher_data = {'id': 'aap'}
-        plugin_dir = FakeFile(self.TEST_ASSETS_DIR)
-        settings = self._get_test_settings()
+    # todo: Move to repository tests
+    #def test_when_creating_a_launcher_with_not_exisiting_id_it_will_fail(self):
+    #    # arrange
+    #    launcher_data = {'id': 'aap'}
+    #    plugin_dir = FakeFile(self.TEST_ASSETS_DIR)
+    #    settings = self._get_test_settings()
+    #    
+    #    # act
+    #    factory = AELObjectFactory(Fake_Paths(self.TEST_ASSETS_DIR), settings, None, None)
+    #    #LauncherFactory(None, None, plugin_dir)
+    #    actual = factory.create_from_dic(launcher_data)
+    #    
+    #    # assert
+    #    self.assertIsNone(actual)
         
-        # act
-        factory = AELObjectFactory(Fake_Paths(self.TEST_ASSETS_DIR), settings, None, None)
-        #LauncherFactory(None, None, plugin_dir)
-        actual = factory.create_from_dic(launcher_data)
-        
-        # assert
-        self.assertIsNone(actual)
-                
+    # Todo: move to AELObjectFactory tests        
     @patch('resources.objects.FileName', side_effect = FakeFile)
     @patch('resources.objects.ExecutorFactory')    
     def test_when_its_an_app_factory_loads_with_correct_launcher(self, mock_exeFactory, filename_mock):
@@ -73,13 +75,12 @@ class Test_Launcher(unittest.TestCase):
         settings['lirc_state'] = True
 
         # act
-        factory = LauncherFactory(settings, mock_exeFactory, FakeFile(self.TEST_ASSETS_DIR))
-        #launcher = StandaloneLauncher(Fake_Paths('\\fake\\'), settings, launcher_data, None, mock_exeFactory)
-        launcher = factory.create(launcher_data)
+        factory = AELObjectFactory(Fake_Paths(self.TEST_ASSETS_DIR), settings, None, None)
+        launcher = factory.create_from_dic(launcher_data)
         
         # assert        
         actual = launcher.__class__.__name__
-        expected = 'ApplicationLauncher'
+        expected = 'StandaloneLauncher'
         self.assertEqual(actual, expected)
         
     @patch('resources.objects.FileName', side_effect = FakeFile)
@@ -186,8 +187,9 @@ class Test_Launcher(unittest.TestCase):
         expected = 'StandardRomLauncher'
         self.assertEqual(actual, expected)
                 
+    @patch('resources.objects.FileName', side_effect = FakeFile)
     @patch('resources.objects.ExecutorFactory')
-    def test_if_rom_launcher_will_correctly_passthrough_the_application_when_launching(self, mock_exeFactory):
+    def test_if_rom_launcher_will_correctly_passthrough_the_application_when_launching(self, mock_exeFactory, mock_file):
         
         # arrange
         settings = self._get_test_settings()
@@ -214,12 +216,15 @@ class Test_Launcher(unittest.TestCase):
         mock = FakeExecutor()
         mock_exeFactory.create.return_value = mock
 
+        paths = Fake_Paths('\\fake\\')
+        paths.ROMS_DIR = rom_dir
+        
+        repository = ROMSetRepository(paths, settings)
+        launcher = StandardRomLauncher(paths, settings, launcher_data, None, mock_exeFactory, repository, None)
+        launcher.select_ROM(rom_id)
+
         expected = launcher_data['application']
         expectedArgs = '-a -b -c -d -e testing.zip -yes'
-
-        #factory = LauncherFactory(settings, mock_exeFactory, rom_dir)
-        launcher = StandardRomLauncher(Fake_Paths('\\fake\\'), settings, launcher_data, None, mock_exeFactory, None, None)
-        launcher.select_ROM(rom_id)
 
         # act
         launcher.launch()
@@ -229,8 +234,9 @@ class Test_Launcher(unittest.TestCase):
         self.assertEqual(expected, mock.actualApplication.getOriginalPath())
         self.assertEqual(expectedArgs, mock.actualArgs)
                 
+    @patch('resources.objects.FileName', side_effect = FakeFile)
     @patch('resources.objects.ExecutorFactory')
-    def test_if_rom_launcher_will_use_the_multidisk_launcher_when_romdata_has_disks_field_filled_in(self, mock_exeFactory):
+    def test_if_rom_launcher_will_use_the_multidisk_launcher_when_romdata_has_disks_field_filled_in(self, mock_exeFactory, mock_file):
         
         # arrange
         settings = self._get_test_settings()
@@ -257,7 +263,11 @@ class Test_Launcher(unittest.TestCase):
         mock = FakeExecutor()
         mock_exeFactory.create.return_value = mock
 
-        launcher = StandardRomLauncher(Fake_Paths('\\fake\\'), settings, launcher_data, None, mock_exeFactory, None, None)
+        paths = Fake_Paths('\\fake\\')
+        paths.ROMS_DIR = rom_dir
+        
+        repository = ROMSetRepository(paths, settings)
+        launcher = StandardRomLauncher(paths, settings, launcher_data, None, mock_exeFactory, repository, None)
         
         # act
         launcher.select_ROM(rom_id)
@@ -297,7 +307,7 @@ class Test_Launcher(unittest.TestCase):
         rom_id = rom['id']
         roms = { rom_id: rom }
         json_data = json.dumps(roms, ensure_ascii = False, indent = 1, separators = (',', ':'))
-                
+        
         rom_dir = FakeFile(self.TEST_ASSETS_DIR)
         rom_dir.setFakeContent(json_data)
 
@@ -321,11 +331,12 @@ class Test_Launcher(unittest.TestCase):
         # assert
         self.assertEqual(expectedArgs, mock.actualArgs)
     
+    @patch('resources.objects.FileName', side_effect = FakeFile)
     @patch('resources.objects.is_windows')
     @patch('resources.objects.is_android')
     @patch('resources.objects.is_linux')    
     @patch('resources.objects.ExecutorFactory')
-    def test_if_retroarch_launcher_will_apply_the_correct_arguments_when_running_on_android(self, mock_exeFactory, is_linux_mock,is_android_mock, is_win_mock):
+    def test_if_retroarch_launcher_will_apply_the_correct_arguments_when_running_on_android(self, mock_exeFactory, is_linux_mock,is_android_mock, is_win_mock, mock_file):
         
         # arrange
         is_linux_mock.return_value = False
