@@ -5110,7 +5110,8 @@ def m_gui_render_launcher_row(launcher, launcher_raw_name = None):
     commands.append(('Edit/Export Launcher', m_misc_url_RunPlugin('EDIT_LAUNCHER', categoryID, launcherID) ))
     # >> ONLY for ROM launchers
     if launcher.supports_launching_roms():
-        commands.append(('Scan ROMs', m_misc_url_RunPlugin('SCAN_ROMS', categoryID, launcherID) ))
+        #commands.append(('Scan ROMs', m_misc_url_RunPlugin('SCAN_ROMS', categoryID, launcherID) ))
+        commands.append(('Scan ROMs', m_misc_url_RunPlugin('ADD_ROMS', categoryID, launcherID) ))
         commands.append(('Search ROMs in Launcher', m_misc_url_RunPlugin('SEARCH_LAUNCHER', categoryID, launcherID) ))
     commands.append(('Add new Launcher', m_misc_url_RunPlugin('ADD_LAUNCHER', categoryID) ))
     # >> Launchers in addon root should be able to create a new category
@@ -8213,35 +8214,36 @@ def m_roms_add_new_rom(launcherID):
 def m_roms_import_roms(launcherID):
     log_debug('========== _roms_import_roms() BEGIN ==================================================')
 
+    # --- Grab launcher information ---
+    launcher = g_LauncherRepository.find(launcherID)
+    
     # --- Get information from launcher ---
-    launcher           = self.launchers[launcherID]
-    launcher_path      = FileName(launcher['rompath'])
-    launcher_exts      = launcher['romext']
-    launcher_multidisc = launcher['multidisc']
+    launcher_path       = launcher.get_rom_path()
+    launcher_exts       = launcher.get_rom_extensions_combined()
+    launcher_multidisc  = launcher.supports_multidisc()
     log_info('_roms_import_roms() Starting ROM scanner ...')
-    log_info('Launcher name "{0}"'.format(launcher['m_name']))
-    log_info('launcher ID   "{0}"'.format(launcher['id']))
+    log_info('Launcher name "{0}"'.format(launcher.get_name()))
+    log_info('launcher ID   "{0}"'.format(launcher.get_id()))
     log_info('ROM path      "{0}"'.format(launcher_path.getPath()))
     log_info('ROM exts      "{0}"'.format(launcher_exts))
     log_info('Multidisc     {0}'.format(launcher_multidisc))
-    log_info('Platform      "{0}"'.format(launcher['platform']))
+    log_info('Platform      "{0}"'.format(launcher.get_platform()))
 
     # --- Open ROM scanner report file ---
-    launcher_report_FN = REPORTS_DIR.pjoin(launcher['roms_base_noext'] + '_report.txt')
+    launcher_report_FN = REPORTS_DIR.pjoin(launcher.get_roms_base() + '_report.txt')
     log_info('Report file OP "{0}"'.format(launcher_report_FN.getOriginalPath()))
     log_info('Report file  P "{0}"'.format(launcher_report_FN.getPath()))
     report_fobj = open(launcher_report_FN.getPath(), "w")
     report_fobj.write('*** Starting ROM scanner ... ***\n'.format())
-    report_fobj.write('  Launcher name "{0}"\n'.format(launcher['m_name']))
-    report_fobj.write('  launcher ID   "{0}"\n'.format(launcher['id']))
+    report_fobj.write('  Launcher name "{0}"\n'.format(launcher.get_name()))
+    report_fobj.write('  launcher ID   "{0}"\n'.format(launcher.get_id()))
     report_fobj.write('  ROM path      "{0}"\n'.format(launcher_path.getPath()))
     report_fobj.write('  ROM ext       "{0}"\n'.format(launcher_exts))
-    report_fobj.write('  Platform      "{0}"\n'.format(launcher['platform']))
+    report_fobj.write('  Platform      "{0}"\n'.format(launcher.get_platform()))
 
-    # >> Check if there is an XML for this launcher. If so, load it.
-    # >> If file does not exist or is empty then return an empty dictionary.
+    # --- Load ROMs for this launcher ---
     report_fobj.write('Loading launcher ROMs ...\n')
-    roms = fs_load_ROMs_JSON(ROMS_DIR, launcher)
+    roms = launcher.get_roms()
     num_roms = len(roms)
     report_fobj.write('{0} ROMs currently in database\n'.format(num_roms))
     log_info('Launcher ROM database contain {0} items'.format(num_roms))

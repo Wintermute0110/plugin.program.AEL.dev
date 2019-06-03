@@ -1148,7 +1148,7 @@ class FileNameBase():
             raise AddonException('(IOError) Cannot read {0} file'.format(self.path_tr))
 
         # Return a Unicode string.
-        return file_bytes.decode(encoding)
+        return unicode(file_bytes, encoding)
 
 
     # Opens JSON file and reads it
@@ -1915,8 +1915,11 @@ class NewFileName:
             else:                        log_error('(IOError) Unhandled errno value.')
             log_error('(IOError) Cannot read {0} file'.format(self.path_tr))
             raise AddonException('(IOError) Cannot read {0} file'.format(self.path_tr))
-
+        
         # Return a Unicode string.
+        if encoding is None:
+            return file_bytes
+        
         return file_bytes.decode(encoding)
 
     #

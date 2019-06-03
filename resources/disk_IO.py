@@ -499,7 +499,7 @@ def fs_write_catfile(categories_FN, header_dic, categories, launchers):
     # Strings in the list are Unicode. Encode to UTF-8.
     # Join string, and save categories.xml file.
     # Exceptions are catched inside FileName objects.
-    categories_FN.saveStrToFile(''.join(str_list).encode('utf-8'))
+    categories_FN.saveStrToFile(''.join(str_list))
 
 #
 # Loads categories.xml from disk and fills dictionary self.categories
@@ -516,7 +516,7 @@ def fs_load_catfile(categories_FN, header_dic, categories, launchers):
     # >> If there are issues in the XML file (for example, invalid XML chars) ET.parse will fail
     log_verb('fs_load_catfile() Loading {0}'.format(categories_FN.getPath()))
     try:
-        xml_root = fs_get_XML_root_from_str(categories_FN.loadFileToStr())
+        xml_root = fs_get_XML_root_from_str(categories_FN.loadFileToStr(encoding=None))
     except IOError as e:
         log_debug('fs_load_catfile() (IOError) errno = {0}'.format(e.errno))
         # log_debug(unicode(errno.errorcode))
@@ -533,6 +533,9 @@ def fs_load_catfile(categories_FN, header_dic, categories, launchers):
         kodi_dialog_OK('(ParseError) Exception reading categories.xml. '
                        'Maybe XML file is corrupt or contains invalid characters.')
         return update_timestamp
+    
+    if xml_root is None:
+        return
 
     for category_element in xml_root:
         if __debug_xml_parser: log_debug('Root child {0}'.format(category_element.tag))
