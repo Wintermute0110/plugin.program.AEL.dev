@@ -5267,10 +5267,15 @@ def m_command_render_roms(categoryID, launcherID):
     # >> Optimisation: Transform the dictionary keys into a set. Sets are the fastest
     #    when checking if an element exists.
     fav_launcher = g_ObjectFactory.find_launcher(VCATEGORY_FAVOURITES_ID, VLAUNCHER_FAVOURITES_ID)
-    fav_roms = fav_launcher.get_roms()
-    fav_rom_ids = set(f.get_id() for f in fav_roms)
-    # roms_fav = fs_load_Favourites_JSON(FAV_JSON_FILE_PATH)
-    # roms_fav_set = set(roms_fav.keys())
+    
+    if fav_launcher is not None:
+        fav_roms = fav_launcher.get_roms()
+        fav_rom_ids = set(f.get_id() for f in fav_roms)
+        # roms_fav = fs_load_Favourites_JSON(FAV_JSON_FILE_PATH)
+        # roms_fav_set = set(roms_fav.keys())
+    else:
+        fav_rom_ids = set()
+        
     loading_ticks_end = time.time()
 
     # --- Prepare ROMs ---
@@ -5411,16 +5416,15 @@ def m_gui_render_rom_row(categoryID, launcherID, rom,
     # --- Standard launcher ---
     else:
         # >> If ROM has no fanart then use launcher fanart
-        launcher = g_LauncherRepository.find(launcherID)
-        launcher_data  = launcher.get_data_dic()
-
+        launcher_data = g_ObjectRepository.find_launcher(launcherID)
+        
         kodi_def_icon = launcher_data['s_icon'] if launcher_data['s_icon'] else 'DefaultProgram.png'
         icon_path      = asset_get_default_asset_Launcher_ROM(rom, launcher_data, 'roms_default_icon', kodi_def_icon)
         fanart_path    = asset_get_default_asset_Launcher_ROM(rom, launcher_data, 'roms_default_fanart', launcher_data['s_fanart'])
         banner_path    = asset_get_default_asset_Launcher_ROM(rom, launcher_data, 'roms_default_banner')
         poster_path    = asset_get_default_asset_Launcher_ROM(rom, launcher_data, 'roms_default_poster')
         clearlogo_path = asset_get_default_asset_Launcher_ROM(rom, launcher_data, 'roms_default_clearlogo')
-        platform = launcher.get_platform()
+        platform = launcher_data['platform']
 
         # --- parent_launcher is True when rendering Parent ROMs in Parent/Clone view mode ---
         nstat = rom['nointro_status']
