@@ -231,11 +231,11 @@ class FileReporter(Reporter):
         super(FileReporter, self).__init__(launcher_data, decoratorReporter)
 
     def open(self, report_title):
-        log_info('Report file OP "{0}"'.format(self.report_file.getOriginalPath()))
+        log_info('Report file path "{0}"'.format(self.report_file.getPath()))
         self.report_file.open('w')
 
         # --- Get information from launcher ---
-        launcher_path = FileNameFactory.create(self.launcher_data['rompath'])
+        launcher_path = FileName(self.launcher_data['rompath'])
         
         self.write('******************** Report: {} ...  ********************'.format(report_title))
         self.write('  Launcher name "{0}"'.format(self.launcher_data['m_name']))

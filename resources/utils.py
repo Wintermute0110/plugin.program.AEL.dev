@@ -469,7 +469,7 @@ def text_get_multidisc_info(ROM_FN):
     MDSet = MultiDiscInfo(ROM_FN)
     
     # --- Parse ROM base_noext into tokens ---
-    tokens = text_get_ROM_basename_tokens(ROM_FN.getBase_noext())
+    tokens = text_get_ROM_basename_tokens(ROM_FN.getBaseNoExt())
 
     # --- Check if ROM belongs to a multidisc set and get set name and order ---
     # Algortihm:
@@ -548,21 +548,21 @@ def misc_add_file_cache(dir_FN):
         log_debug('misc_add_file_cache() Empty dir_str. Exiting')
         return
 
-    log_debug('misc_add_file_cache() Scanning OP "{0}"'.format(dir_FN.getPath()))
+    log_debug('misc_add_file_cache() Scanning path "{0}"'.format(dir_FN.getPath()))
 
-    file_list = dir_FN.scanFilesInPathAsFileNameObjects()
+    file_list = dir_FN.scanFilesInPath()
     # lower all filenames for easier matching
     file_set = [file.getBase().lower() for file in file_list]
 
     log_debug('misc_add_file_cache() Adding {0} files to cache'.format(len(file_set)))
-    file_cache[dir_FN.getOriginalPath()] = file_set
+    file_cache[dir_FN.getPath()] = file_set
 
 #
 # See misc_look_for_file() documentation below.
 #
 def misc_search_file_cache(dir_path, filename_noext, file_exts):
     # log_debug('misc_search_file_cache() Searching in  "{0}"'.format(dir_str))
-    dir_str = dir_path.getOriginalPath()
+    dir_str = dir_path.getPath()
     if dir_str not in file_cache:
         log_warning('Directory {0} not in file_cache'.format(dir_str))
         return None
@@ -740,11 +740,11 @@ def create_self_signed_cert(cert_name, cert_file_path, key_file_path):
     cert.set_pubkey(k)
     cert.sign(k, 'sha1')
 
-    log_debug('Creating certificate file {0}'.format(cert_file_path.getOriginalPath()))
+    log_debug('Creating certificate file {0}'.format(cert_file_path.getPath()))
     data = crypto.dump_certificate(crypto.FILETYPE_PEM, cert)
     cert_file_path.writeAll(data, 'wt')
 
-    log_debug('Creating certificate key file {0}'.format(key_file_path.getOriginalPath()))
+    log_debug('Creating certificate key file {0}'.format(key_file_path.getPath()))
     data = crypto.dump_privatekey(crypto.FILETYPE_PEM, k)
     key_file_path.writeAll(data, 'wt')
 
@@ -1965,6 +1965,26 @@ class NewFileName:
 
         return result
 
+    # Opens JSON file and reads it
+    def readJson(self):
+        contents = self.loadFileToStr()
+        return json.loads(contents)
+        
+    # --- Configure JSON writer ---
+    # >> json_unicode is either str or unicode
+    # >> See https://docs.python.org/2.7/library/json.html#json.dumps
+    # unicode(json_data) auto-decodes data to unicode if str
+    # NOTE More compact JSON files (less blanks) load faster because size is smaller.
+    def writeJson(self, raw_data, JSON_indent = 1, JSON_separators = (',', ':')):
+        json_data = json.dumps(raw_data, ensure_ascii = False, sort_keys = True, 
+                                indent = JSON_indent, separators = JSON_separators)
+        self.saveStrToFile(json_data)
+
+    # Opens file and writes xml. Give xml root element.
+    def writeXml(self, xml_root):
+        data = ET.tostring(xml_root)
+        self.saveStrToFile(data)
+        
     # ---------------------------------------------------------------------------------------------
     # Scanner functions
     # ---------------------------------------------------------------------------------------------
@@ -2559,11 +2579,11 @@ class KodiProgressDialogStrategy(object):
         self.progressDialog.create(title, message)
 
     def _updateProgress(self, progress, message1 = None, message2 = None):
-        self.progress = progress
+        self.progress = int(progress)
         if not self.verbose:
-            self.progressDialog.update(progress)
+            self.progressDialog.update(self.progress)
         else:
-            self.progressDialog.update(progress, message1, message2)
+            self.progressDialog.update(self.progress, message1, message2)
 
     def _updateProgressMessage(self, message1, message2 = None):
         if not self.verbose:

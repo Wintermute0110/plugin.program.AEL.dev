@@ -233,7 +233,7 @@ class ScrapingStrategy(object):
             log_debug('ScrapingStrategy:: Scraping asset {} with scraper \'{}\''.format(asset_info.name, scraper.getName()))
             scraper.scrape_asset(search_term, asset_info, rom_path, rom)
             
-        romdata = rom.get_data()
+        romdata = rom.get_data_dic()
         log_verb('Set Title     file "{0}"'.format(romdata['s_title']))
         log_verb('Set Snap      file "{0}"'.format(romdata['s_snap']))
         log_verb('Set Boxfront  file "{0}"'.format(romdata['s_boxfront']))
@@ -443,7 +443,7 @@ class Scraper(object):
 
         log_debug('{} scraper has collected {} assets of type {}.'.format(self.getName(), len(specific_images_list), asset_info.name))
         if len(specific_images_list) == 0:
-            log_debug('{0} scraper has not collected images for asset {}.'.format(self.getName(), asset_info.name))
+            log_debug('{0} scraper has not collected images for asset {1}.'.format(self.getName(), asset_info.name))
             return False
 
         # --- Semi-automatic scraping (user choses an image from a list) ---
@@ -541,7 +541,7 @@ class Scraper(object):
                 
                 asset_directory     = self.launcher.get_asset_path(asset_info)
                 asset_path_noext_FN = assets_get_path_noext_DIR(asset_info, asset_directory, romPath)
-                log_debug('Scraper._apply_candidate() asset_path_noext "{0}"'.format(asset_path_noext_FN.getOriginalPath()))
+                log_debug('Scraper._apply_candidate() asset_path_noext "{0}"'.format(asset_path_noext_FN.getPath()))
 
                 specific_images_list = [image_entry for image_entry in image_list if image_entry['type'].kind == asset_info.kind]
 
@@ -772,9 +772,9 @@ class NfoScraper(Scraper):
 
         if NFO_file.exists():
             games.append({ 'id' : NFO_file.getPath(), 'display_name' : NFO_file.getBase(), 'order': 1 , 'file': NFO_file })
-            log_debug('NFO file found "{0}"'.format(NFO_file.getOriginalPath()))
+            log_debug('NFO file found "{0}"'.format(NFO_file.getPath()))
         else:
-            log_debug('NFO file NOT found "{0}"'.format(NFO_file.getOriginalPath()))
+            log_debug('NFO file NOT found "{0}"'.format(NFO_file.getPath()))
 
         return games
 
@@ -849,7 +849,7 @@ class LocalAssetScraper(Scraper):
             asset_data = self._new_assetdata_dic()
 
             asset_data['name']      = local_asset.getBase()
-            asset_data['url']       = local_asset.getOriginalPath()
+            asset_data['url']       = local_asset.getPath()
             asset_data['is_online'] = False
             asset_data['type']      = supported_asset
             
