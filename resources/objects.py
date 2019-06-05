@@ -1148,8 +1148,11 @@ class ROMStatisticsStrategy(object):
         # self.most_played_launcher = most_played_launcher
 
     def update_launched_rom_stats(self, recent_rom):
+        if True:
+            return #TODO
+        
         # --- Compute ROM recently played list ---
-        recently_played_roms = self.recent_played_launcher.get_roms()
+        recently_played_roms = None #TODO: self.recent_played_launcher.get_roms()
         recently_played_roms = [rom for rom in recently_played_roms if rom.get_id() != recent_rom.get_id()]
         recently_played_roms.insert(0, recent_rom)
 
@@ -1160,18 +1163,18 @@ class ROMStatisticsStrategy(object):
             temp_list            = recently_played_roms[:self.MAX_RECENT_PLAYED_ROMS]
             recently_played_roms = temp_list
 
-        self.recent_played_launcher.update_rom_set(recently_played_roms)
+        #TODO: self.recent_played_launcher.update_rom_set(recently_played_roms)
 
         recent_rom.increase_launch_count()
 
         # --- Compute most played ROM statistics ---
-        most_played_roms = self.most_played_launcher.get_roms()
+        most_played_roms = None #TODO: self.most_played_launcher.get_roms()
         if most_played_roms is None:
             most_played_roms = []
         else:
             most_played_roms = [rom for rom in most_played_roms if rom.get_id() != recent_rom.get_id()]
         most_played_roms.append(recent_rom)
-        self.most_played_launcher.update_rom_set(most_played_roms)
+        #TODO: self.most_played_launcher.update_rom_set(most_played_roms)
 
 # -------------------------------------------------------------------------------------------------
 # Abstract base class for business objects which support the generic
@@ -2823,7 +2826,7 @@ class ROMLauncherABC(LauncherABC):
     #  'Broken'            ROM filename does not exist. ROM is unplayable
     #
     def convert_rom_to_favourite(self, rom_id):
-        rom = self.select_rom(rom_id)
+        rom = self.select_ROM(rom_id)
         # >> Copy original rom     
         # todo: Should we make a FavouriteRom class inheriting Rom?
         favourite = rom.copy()
