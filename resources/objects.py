@@ -31,6 +31,7 @@ import webbrowser
 from resources.net_IO import *
 from resources.disk_IO import *
 from resources.platforms import *
+from resources.report import *
 
 from resources.utils import FileName
 from resources.constants import *
@@ -2969,7 +2970,7 @@ class ROMLauncherABC(LauncherABC):
 
     def set_number_of_roms(self, num_of_roms = -1):
         if num_of_roms == -1:
-            num_of_roms = self.actual_amount_of_roms()
+            num_of_roms = self.actual_amount_of_ROMs()
         self.entity_data['num_roms'] = num_of_roms
 
     def supports_multidisc(self):
@@ -4947,10 +4948,10 @@ class RomScannersFactory(object):
         if not launcher.supports_launching_roms():
             return NullScanner(launcher, self.settings)
         
-        if launcherType == LAUNCHER_STEAM:
+        if launcherType == OBJ_LAUNCHER_STEAM:
             return SteamScanner(self.reports_dir, self.addon_dir, launcher, self.settings, scraping_strategy)
 
-        if launcherType == LAUNCHER_NVGAMESTREAM:
+        if launcherType == OBJ_LAUNCHER_NVGAMESTREAM:
             return NvidiaStreamScanner(self.reports_dir, self.addon_dir, launcher, romset, self.settings, scraping_strategy)
                 
         return RomFolderScanner(self.reports_dir, self.addon_dir, launcher, self.settings, scraping_strategy)
@@ -4961,7 +4962,7 @@ class ScannerStrategyABC(KodiProgressDialogStrategy):
     def __init__(self, launcher, settings):
         self.launcher = launcher
         self.settings = settings
-        super(ScannerStrategy, self).__init__()
+        super(ScannerStrategyABC, self).__init__()
 
     #
     # Scans for new roms based on the type of launcher.
@@ -5107,7 +5108,6 @@ class RomScannerStrategy(ScannerStrategyABC):
 class RomFolderScanner(RomScannerStrategy):
     # ~~~ Scan for new files (*.*) and put them in a list ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def _getCandidates(self, launcher_report):
-        kodi_busydialog_ON()
         files = []
         launcher_path = self.launcher.get_rom_path()
         launcher_report.write('Scanning files in {0}'.format(launcher_path.getPath()))
@@ -5118,8 +5118,6 @@ class RomFolderScanner(RomScannerStrategy):
         else:
             log_info('Recursive scan not activated')
             files = launcher_path.scanFilesInPath('*.*')
-
-        kodi_busydialog_OFF()
 
         num_files = len(files)
         launcher_report.write('  File scanner found {0} files'.format(num_files))
@@ -5169,15 +5167,14 @@ class RomFolderScanner(RomScannerStrategy):
         allowedExtensions = self.launcher.get_rom_extensions()
         launcher_multidisc = self.launcher.supports_multidisc()
 
-        for item in sorted(items):
+        for ROM_file in sorted(items):
             self._updateProgress(num_items_checked * 100 / num_items)
             
             # --- Get all file name combinations ---
-            ROM = FileName(item)
-            launcher_report.write('>>> {0}'.format(ROM.getPath()).encode('utf-8'))
+            launcher_report.write('>>> {0}'.format(ROM_file.getPath()).encode('utf-8'))
 
             # ~~~ Update progress dialog ~~~
-            file_text = 'ROM {0}'.format(ROM.getBase())
+            file_text = 'ROM {0}'.format(ROM_file.getBase())
             self._updateProgressMessage(file_text, 'Checking if has ROM extension ...')
                         
             # --- Check if filename matchs ROM extensions ---
@@ -5186,7 +5183,7 @@ class RomFolderScanner(RomScannerStrategy):
             processROM = False
 
             for ext in allowedExtensions:
-                if ROM.getExt() == '.' + ext:
+                if ROM_file.getExt() == '.' + ext:
                     launcher_report.write("  Expected '{0}' extension detected".format(ext))
                     processROM = True
                     break
@@ -5199,7 +5196,7 @@ class RomFolderScanner(RomScannerStrategy):
             self._updateProgressMessage(file_text, 'Checking if ROM belongs to multidisc set..')
                        
             MultiDiscInROMs = False
-            MDSet = text_get_multidisc_info(ROM)
+            MDSet = text_get_multidisc_info(ROM_file)
             if MDSet.isMultiDisc and launcher_multidisc:
                 log_info('ROM belongs to a multidisc set.')
                 log_info('isMultiDisc "{0}"'.format(MDSet.isMultiDisc))
@@ -5225,11 +5222,11 @@ class RomFolderScanner(RomScannerStrategy):
                 if not MultiDiscInROMs:
                     log_info('First ROM in the set. Adding to ROMs ...')
                     # >> Manipulate ROM so filename is the name of the set
-                    ROM_dir = FileName(ROM.getDir())
+                    ROM_dir = FileName(ROM_file.getDir())
                     ROM_temp = ROM_dir.pjoin(MDSet.setName)
                     log_info('ROM_temp OP "{0}"'.format(ROM_temp.getPath()))
                     log_info('ROM_temp  P "{0}"'.format(ROM_temp.getPath()))
-                    ROM = ROM_temp
+                    ROM_file = ROM_temp
                 # >> If set already in ROMs, just add this disk into the set disks field.
                 else:
                     log_info('Adding additional disk "{0}"'.format(MDSet.discName))
@@ -5262,26 +5259,26 @@ class RomFolderScanner(RomScannerStrategy):
             # --- Ignore BIOS ROMs ---
             # Name of bios is: '[BIOS] Rom name example (Rev A).zip'
             if self.settings['scan_ignore_bios']:
-                BIOS_re = re.findall('\[BIOS\]', ROM.getBase())
+                BIOS_re = re.findall('\[BIOS\]', ROM_file.getBase())
                 if len(BIOS_re) > 0:
-                    log_info("BIOS detected. Skipping ROM '{0}'".format(ROM.path))
+                    log_info("BIOS detected. Skipping ROM '{0}'".format(ROM_file.path))
                     continue
 
             # ~~~~~ Process new ROM and add to the list ~~~~~
             # --- Create new rom dictionary ---
             # >> Database always stores the original (non transformed/manipulated) path
-            new_rom = Rom()
-            new_rom.set_file(ROM)
+            new_rom = ROM()
+            new_rom.set_file(ROM_file)
 
-            searchTerm = text_format_ROM_name_for_scraping(ROM.getBaseNoExt())
-            self._updateProgressMessage(steamGame['name'], 'Scraping {0}...'.format(ROM.getBaseNoExt()))
-            self.scraping_strategy.scrape(searchTerm, ROM, new_rom)
+            searchTerm = text_format_ROM_name_for_scraping(ROM_file.getBaseNoExt())
+            self._updateProgressMessage(file_text, 'Scraping {0}...'.format(ROM_file.getBaseNoExt()))
+            self.scraping_strategy.scrape(searchTerm, ROM_file, new_rom)
             # !!!! MOVED CODE BELOW TO SCRAPING_STRATEGY UNTILL PROPERLY MERGED !!!
             #
             #if self.scrapers:
             #    for scraper in self.scrapers:
             #        self._updateProgressMessage(file_text, 'Scraping {0}...'.format(scraper.getName()))
-            #        scraper.scrape(searchTerm, ROM, new_rom)
+            #        scraper.scrape(searchTerm, ROM_file, new_rom)
             #
             #romdata = new_rom.get_data()
             #log_verb('Set Title     file "{0}"'.format(romdata['s_title']))
