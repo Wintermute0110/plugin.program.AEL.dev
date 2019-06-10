@@ -103,7 +103,7 @@ def net_get_URL_oneline(url):
         log_debug('net_get_URL_oneline() Encoding = "{0}"'.format(encoding))
         page_bytes = f.read()
         f.close()
-    except IOError as e:    
+    except IOError as e:
         log_error('(IOError) Exception in net_get_URL_oneline()')
         log_error('(IOError) {0}'.format(str(e)))
         return page_data
@@ -148,3 +148,8 @@ def net_get_URL_original(url):
     page_data = unicode(page_bytes, encoding)
 
     return page_data
+
+def net_get_URL_as_json(url):
+    page_data = net_get_URL_original(url)
+
+    return json.loads(page_data)

@@ -15,7 +15,8 @@ WIP      [SCRAPERS] Advanced fuzzy search engine based on the Levenshtein Distan
 [B]Planned features / TODO[/B]
 
 WIP      [CORE] Rename the plugin from `plugin.program.advanced.emulator.launcher` to
-         `plugin.program.AEL`.
+         `plugin.program.AEL`. Create a development version `plugin.program.AEL.dev` that
+         can coexist with the stable version. See how AML does it.
 
 WIP      [CORE] Check out the ListItem constructor offscreen parameter in Leia. It can
          dramatically speed up ListItem creation and population.
@@ -86,29 +87,26 @@ WIP      [SCRAPERS] Option to rescrape all ROM assets in a similar fashion to
          options as the ROM Scanner.
          See https://github.com/Wintermute0110/plugin.program.advanced.emulator.launcher/issues/72
 
+WIP      [SCRAPERS] Fix GameFAQs scraper. It has been a while since this scraper is not working
+         any more.
+
+
+[B]Advanced Emulator Launcher | version 0.9.8 | XX June 2019[/B]
+
+FEATURE  New ROMs artwork type 3D Boxes, asked by Rufoo.
+
+FEATURE  [SCRAPERS] Copy scraper stuff from master branch by Chrisism.
+
 WIP      [SCRAPERS] Fix TheGamesDB scraper. There has been a change in the web site including
          a new API. I'm not sure wether AEL will need an API key.
          See https://github.com/Wintermute0110/plugin.program.advanced.emulator.launcher/issues/75
 
-WIP      [SCRAPERS] Fix GameFAQs scraper. It has been a while since this scraper is not working
-         any more.
-
-WIP      [SCRAPERS] MobyGames now has an API. I'm not sure if a key is needed.
+WIP NOW  [SCRAPERS] Fix MobyGames scraper and use new API.
          See http://www.mobygames.com/info/api
-
-
-[B]Advanced Emulator Launcher | version 0.9.8 | XX May 2019[/B]
-
-FEATURE  [SCRAPERS] Copy scraper stuff from master branch.
-
-FEATURE  New ROMs artowork type 3D Boxes, asked by Rufoo.
-
-WIP      
 
 WIP      [CORE] Support for Advanced MAME Launcher exported virtual launchers.
          This feature requires AML 0.9.X
          AML creates the Category "Arcade (AML)" and places the exported launchers there.
-
 
 WIP      [CORE] New properties to notify skins about Std launchers, ROM launchers, Categories,
          and number of items in a Launcher.
