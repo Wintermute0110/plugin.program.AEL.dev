@@ -1734,7 +1734,7 @@ class ROM(MetaDataItemABC):
         # >> Read file, put in a string and remove line endings.
         # >> We assume NFO files are UTF-8. Decode data to Unicode.
         # file = open(nfo_file_path, 'rt')
-        nfo_str = nfo_file_path.readAllUnicode()
+        nfo_str = nfo_file_path.loadFileToStr()
         nfo_str = nfo_str.replace('\r', '').replace('\n', '')
 
         # Search for metadata tags. Regular expression is non-greedy.
@@ -2176,7 +2176,7 @@ class LauncherABC(MetaDataItemABC):
         if nfo_file_path.exists():
             # >> Read NFO file data
             try:
-                item_nfo = nfo_file_path.readAllUnicode()
+                item_nfo = nfo_file_path.loadFileToStr()
                 item_nfo = item_nfo.replace('\r', '').replace('\n', '')
             except:
                 kodi_notify_warn('Exception reading NFO file {0}'.format(nfo_file_path.getPath()))
@@ -6236,9 +6236,9 @@ class GameStreamServer(object):
             create_self_signed_cert("NVIDIA GameStream Client", self.certificate_file_path, self.certificate_key_file_path)
 
         log_info('Loading client certificate data from {0}'.format(self.certificate_file_path.getPath()))
-        self.pem_cert_data = self.certificate_file_path.readAll()
+        self.pem_cert_data = self.certificate_file_path.loadFileToStr('ascii')
 
-        return self.pem_cert_data
+        return str(self.pem_cert_data)
 
     def getCertificateKeyBytes(self):
         if self.key_cert_data:
@@ -6248,9 +6248,9 @@ class GameStreamServer(object):
             log_info('Client certificate file does not exist. Creating')
             create_self_signed_cert("NVIDIA GameStream Client", self.certificate_file_path, self.certificate_key_file_path)
         log_info('Loading client certificate data from {0}'.format(self.certificate_key_file_path.getPath()))
-        self.key_cert_data = self.certificate_key_file_path.readAll()
+        self.key_cert_data = self.certificate_key_file_path.loadFileToStr('ascii')
 
-        return self.key_cert_data
+        return str(self.key_cert_data)
 
     def validate_certificates(self):
         if self.certificate_file_path.exists() and self.certificate_key_file_path.exists():
