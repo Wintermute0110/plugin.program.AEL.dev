@@ -1559,8 +1559,8 @@ def fs_load_legacy_AL_launchers(AL_launchers_filepath, categories, launchers):
 def fs_export_ROM_NFO(rom, verbose = True):
     # >> Skip No-Intro Added ROMs. rom['filename'] will be empty.
     if not rom['filename']: return
-    ROMFileName = FileNameFactory.create(rom['filename'])
-    nfo_file_path = ROMFileName.switchExtension('.nfo')
+    ROMFileName = FileName(rom['filename'])
+    nfo_file_path = ROMFileName.changeExtension('.nfo')
     log_debug('fs_export_ROM_NFO() Exporting "{0}"'.format(nfo_file_path.getPath()))
 
     # Always overwrite NFO files.
@@ -1601,8 +1601,8 @@ def fs_export_ROM_NFO(rom, verbose = True):
 #
 # DEPRECATED METHOD - Not called anymore
 def fs_import_ROM_NFO(roms, romID, verbose = True):
-    ROMFileName = FileNameFactory.create(roms[romID]['filename'])
-    nfo_file_path = ROMFileName.switchExtension('.nfo')
+    ROMFileName = FileName(roms[romID]['filename'])
+    nfo_file_path = ROMFileName.changeExtension('.nfo')
     log_debug('fs_import_ROM_NFO() Loading "{0}"'.format(nfo_file_path.getPath()))
 
     # --- Import data ---
@@ -1610,7 +1610,7 @@ def fs_import_ROM_NFO(roms, romID, verbose = True):
         # >> Read file, put in a string and remove line endings.
         # >> We assume NFO files are UTF-8. Decode data to Unicode.
         # file = open(nfo_file_path, 'rt')
-        nfo_str = nfo_file_path.readAllUnicode()
+        nfo_str = nfo_file_path.loadFileToStr()
         nfo_str = nfo_str.replace('\r', '').replace('\n', '')
 
         # Search for metadata tags. Regular expression is non-greedy.
@@ -1657,7 +1657,7 @@ def fs_import_ROM_NFO_file_scanner(nfo_file_path):
     }
 
     # >> Read file, put in a string and remove line endings
-    nfo_str = nfo_file_path.readAllUnicode()
+    nfo_str = nfo_file_path.loadFileToStr()
     nfo_str = nfo_str.replace('\r', '').replace('\n', '')
 
     # Search for items
@@ -1789,7 +1789,7 @@ def fs_read_launcher_NFO(nfo_FileName):
     if nfo_FileName.exists():
         # >> Read NFO file data
         try:
-            item_nfo = nfo_FileName.readAllUnicode()
+            item_nfo = nfo_FileName.loadFileToStr()
             item_nfo = item_nfo.replace('\r', '').replace('\n', '')
         except:
             kodi_notify_warn('Exception reading NFO file {0}'.format(nfo_FileName.getBase()))

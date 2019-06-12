@@ -1765,7 +1765,7 @@ class NewFileName:
         files = []
         for root, dirs, foundfiles in os.walk(self.path_tr):
             for filename in foundfiles:
-                files.append(filename)
+                files.append(os.path.join(root, filename))
 
         return files
     

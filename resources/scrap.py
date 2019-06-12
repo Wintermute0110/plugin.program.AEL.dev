@@ -191,7 +191,7 @@ class ScraperFactory(KodiProgressDialogStrategy):
         # --- If scraper does not support particular asset return inmediately ---
         if not onlineScraper.supports_asset_type(asset_info):
             log_debug('ScraperFactory._get_asset_scraper() Scraper {0} does not support asset {1}. '
-                      'Skipping.'.format(onlineScraper.name, asset_info.name))
+                      'Skipping.'.format(onlineScraper.getName(), asset_info.name))
             return NullScraper()
                 
         log_verb('Loaded {0:<10} asset scraper "{1}"'.format(asset_info.name, onlineScraper.getName()))
@@ -304,7 +304,7 @@ class Scraper(object):
             for game in candidates: 
                 rom_name_list.append(game['display_name'])
 
-            selected_candidate = dialog.select('Select game for ROM {0}'.format(rom_path.getBase_noext()), rom_name_list)
+            selected_candidate = dialog.select('Select game for ROM {0}'.format(rom_path.getBaseNoExt()), rom_name_list)
             if selected_candidate < 0: 
                 selected_candidate = 0
 
@@ -353,7 +353,7 @@ class Scraper(object):
             for game in candidates: 
                 rom_name_list.append(game['display_name'])
 
-            selected_candidate = dialog.select('Select game for ROM {0}'.format(rom_path.getBase_noext()), rom_name_list)
+            selected_candidate = dialog.select('Select game for ROM {0}'.format(rom_path.getBaseNoExt()), rom_name_list)
             if selected_candidate < 0: selected_candidate = 0
 
             # >> Open progress dialog again
@@ -412,7 +412,7 @@ class Scraper(object):
 
         # --- Put metadata into ROM dictionary ---
         if self.scraper_settings.ignore_scraped_title:
-            rom_name = text_format_ROM_title(rom.getBase_noext(), self.scraper_settings.scan_clean_tags)
+            rom_name = text_format_ROM_title(rom_path.getBaseNoExt(), self.scraper_settings.scan_clean_tags)
             rom.set_name(rom_name)
             log_debug("User wants to ignore scraper name. Setting name to '{0}'".format(rom_name))
         else:
@@ -516,7 +516,7 @@ class Scraper(object):
         if self.scrape_metadata:
             # --- Put metadata into ROM dictionary ---
             if self.scraper_settings.ignore_scraped_title:
-                rom_name = text_format_ROM_title(rom.getBase_noext(), self.scraper_settings.scan_clean_tags)
+                rom_name = text_format_ROM_title(rom.getBaseNoExt(), self.scraper_settings.scan_clean_tags)
                 rom.set_name(rom_name)
                 log_debug("User wants to ignore scraper name. Setting name to '{0}'".format(rom_name))
             else:
@@ -767,7 +767,7 @@ class NfoScraper(Scraper):
 
     def _get_candidates(self, search_term, romPath, rom):
 
-        NFO_file = romPath.switchExtension('nfo')
+        NFO_file = romPath.changeExtension('nfo')
         games = []
 
         if NFO_file.exists():

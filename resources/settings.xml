@@ -36,6 +36,11 @@
     <setting label="Marquee scraper" type="enum" id="scraper_marquee_MAME" default="0"      values="None|TheGamesDB|ArcadeDB"/>
     <setting label="Clearlogo scraper" type="enum" id="scraper_clearlogo_MAME" default="0"  values="None|TheGamesDB|ArcadeDB"/>
     <setting label="Flyer scraper" type="enum" id="scraper_flyer_MAME" default="0"          values="None|ArcadeDB"/>
+
+    <setting id="separator" type="lsep" label="Scraper API keys"/>
+    <setting label="MobyGames" type="text" id="mobygames_apikey" default="" visible="true"/>
+    <setting label="TheGamesDB" type="text" id="thegamesdb_apikey" default="" visible="true"/>
+    
 </category>
 <category label="ROM audit">
     <setting label="Unkown ROMs are" type="enum" id="audit_unknown_roms" default="0" values="Parents|Clones" />

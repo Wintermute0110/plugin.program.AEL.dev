@@ -1439,6 +1439,9 @@ def m_run_launcher_sub_command(command, launcher):
     elif command == 'IMPORT_NFO_FILE_BROWSE':
         m_subcommand_launcher_browse_import_nfo_file(launcher)
 
+    elif command == 'IMPORT_ROMS':
+        m_subcommand_import_roms(launcher)
+
     elif command == 'SAVE_NFO_FILE_DEFAULT':
         m_subcommand_edit_launcher_nfo_save_default(launcher)
 
@@ -1488,7 +1491,7 @@ def m_run_launcher_sub_command(command, launcher):
             if m_run_launcher_sub_command(selected_option, launcher):
                 m_run_launcher_sub_command('LAUNCHER_MANAGE_ROMS', launcher)
             else:
-                log_debug('m_run_launcher_sub_command(LAUNCHER_MANAGE_ROMS) m_run_launcher_sub_command returned False')
+                log_debug('un_launcher_sub_command(LAUNCHER_MANAGE_ROMS) m_run_launcher_sub_command returned False')
                 log_debug('m_run_launcher_sub_command(LAUNCHER_MANAGE_ROMS) Closing context menu')
 
     # --- Submenu command (Audit ROMs / Launcher viewmode) ---
@@ -2357,7 +2360,7 @@ def m_subcommand_scan_local_artwork(launcher):
                 # asset_dir = FileNameFactory.create(launcher[AInfo.path_key])
                 # local_asset = misc_look_for_file(asset_dir, rom_basename_noext, AInfo.exts)
                 # >> New implementation using a cache.
-                asset_path = FileNameFactory.create(launcher_data[AInfo.path_key])
+                asset_path = FileName(launcher_data[AInfo.path_key])
                 local_asset = misc_search_file_cache(asset_path, rom_basename_noext, AInfo.exts)
                 if local_asset:
                     rom.set_asset(AInfo, local_asset)
@@ -2523,7 +2526,6 @@ def m_subcommand_remove_dead_roms(launcher):
 
 # --- Import ROM metadata from NFO files ---
 def m_subcommand_import_roms(launcher):
-
     # >> Load ROMs, iterate and import NFO files
     roms = launcher.get_roms()
     num_read_NFO_files = 0

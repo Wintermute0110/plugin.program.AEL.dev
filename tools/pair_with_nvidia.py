@@ -12,22 +12,28 @@
 # pair up with that computer and generate certificates needed to keep on communicating with
 # the geforce experience computer. These certificates can be used in a Gamestream Launcher.
 #
+# pip install pycrypto
+# or pip install pycryptodome
+# pip install cryptographic
+# pip install pyopenssl
+#
 #from __future__ import unicode_literals
 import sys, os
 
 if __name__ == "__main__":
-    root = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
-    sys.path.append(os.path.join(root, 'resources'))
+   root = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
+   sys.path.append(root)
+#   sys.path.append(os.path.join(root, 'resources'))
 
 host = sys.argv[1]
 path = sys.argv[2]
     
-from objects import *
-from utils import *
+from resources.objects import *
+from resources.utils import *
 
 set_log_level(LOG_INFO)
 
-certs_path = StandardFileName(path)
+certs_path = FileName(path)
 print "Going to connect with '{}'".format(host)
 
 server = GameStreamServer(host, certs_path)

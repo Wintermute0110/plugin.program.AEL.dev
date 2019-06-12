@@ -1,7 +1,7 @@
 import unittest
 import mock
 from mock import *
-from fakes import *
+from tests.fakes import *
 
 import os
 
@@ -14,7 +14,7 @@ from OpenSSL import crypto, SSL
 from cryptography.hazmat.backends import default_backend
 from cryptography.hazmat.primitives import serialization
 
-# pip install pycrypto
+# pip install pycrypto or pycryptodome
 # http://aka.ms/vcpython27
 from Crypto.PublicKey import RSA 
 from Crypto.Signature import PKCS1_v1_5 
@@ -70,11 +70,11 @@ class Test_cryptography_test(unittest.TestCase):
         cert.sign(k, 'sha1')
 
         data = crypto.dump_certificate(crypto.FILETYPE_PEM, cert)
-        with open(cert_file_path, "wb") as f:
+        with open(cert_file_path, "wb+") as f:
             f.write(data)
 
         data = crypto.dump_privatekey(crypto.FILETYPE_PEM, k)
-        with open(key_file_path, "wb") as f:
+        with open(key_file_path, "wb+") as f:
             f.write(data)
 
     def test_hashing_a_value(self):
