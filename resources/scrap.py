@@ -736,8 +736,9 @@ class CleanTitleScraper(Scraper):
     def _load_metadata(self, candidate, romPath, rom):        
         
         game_data = self._new_gamedata_dic()
-        if self.launcher.get_launcher_type() == OBJ_LAUNCHER_STEAM:
-            log_debug('CleanTitleScraper: Detected Steam launcher, leaving rom name untouched.')
+        if self.launcher.get_launcher_type() == OBJ_LAUNCHER_STEAM or self.launcher.get_launcher_type() == OBJ_LAUNCHER_NVGAMESTREAM:
+            log_debug('CleanTitleScraper: Detected Steam or Stream launcher, leaving rom name untouched.')
+            game_data['title'] = rom.get_name()
             return game_data
 
         log_debug('Only cleaning ROM name. Original: {}'.format(romPath.getBaseNoExt()))

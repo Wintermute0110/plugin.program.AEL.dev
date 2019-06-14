@@ -4181,6 +4181,12 @@ class NvidiaGameStreamLauncher(ROMLauncherABC):
     # Creates a new launcher using a wizard of dialogs.
     #
     def _builder_get_wizard(self, wizard):
+        
+        #UTILS_OPENSSL_AVAILABLE
+        log_debug('NvidiaGameStreamLauncher::_builder_get_wizard() SSL: "{0}"'.format(UTILS_OPENSSL_AVAILABLE))
+        log_debug('NvidiaGameStreamLauncher::_builder_get_wizard() Crypto: "{0}"'.format(UTILS_CRYPTOGRAPHY_AVAILABLE))
+        log_debug('NvidiaGameStreamLauncher::_builder_get_wizard() PyCrypto: "{0}"'.format(UTILS_PYCRYPTO_AVAILABLE))
+        
         info_txt  = 'To pair with your Geforce Experience Computer we need to make use of valid certificates. '
         info_txt += 'Unfortunately at this moment we cannot create these certificates directly from within Kodi.'
         info_txt += 'Please read the wiki for details how to create them before you go further.'
@@ -5005,7 +5011,7 @@ class RomScannersFactory(object):
             return SteamScanner(self.reports_dir, self.addon_dir, launcher, self.settings, scraping_strategy)
 
         if launcherType == OBJ_LAUNCHER_NVGAMESTREAM:
-            return NvidiaStreamScanner(self.reports_dir, self.addon_dir, launcher, romset, self.settings, scraping_strategy)
+            return NvidiaStreamScanner(self.reports_dir, self.addon_dir, launcher, self.settings, scraping_strategy)
                 
         return RomFolderScanner(self.reports_dir, self.addon_dir, launcher, self.settings, scraping_strategy)
 
@@ -5503,8 +5509,6 @@ class NvidiaStreamScanner(RomScannerStrategy):
 
     # ~~~ Scan for new items not yet in the rom collection ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def _getCandidates(self, launcher_report):
-        from gamestream import GameStreamServer
-
         log_debug('Reading Nvidia GameStream server')
         self._startProgressPhase('Advanced Emulator Launcher', 'Reading Nvidia GameStream server...')
 
@@ -5584,13 +5588,13 @@ class NvidiaStreamScanner(RomScannerStrategy):
         
                 log_debug('Not found. Item {0} is new'.format(streamableGame['AppTitle']))
 
-                launcher_path = launcher.get_rom_path()
+                launcher_path = self.launcher.get_rom_path()
                 romPath = launcher_path.pjoin('{0}.rom'.format(streamableGame['ID']))
 
                 # ~~~~~ Process new ROM and add to the list ~~~~~
                 # --- Create new rom dictionary ---
                 # >> Database always stores the original (non transformed/manipulated) path
-                new_rom  = Rom()
+                new_rom  = ROM()
                 new_rom.set_file(romPath)
 
                 new_rom.set_custom_attribute('streamid',        streamableGame['ID'])
@@ -5599,8 +5603,9 @@ class NvidiaStreamScanner(RomScannerStrategy):
                 
                 searchTerm = streamableGame['AppTitle']
                 
-                self._updateProgressMessage(steamGame['name'], 'Scraping {0}...'.format(streamableGame['AppTitle']))
+                self._updateProgressMessage(streamableGame['AppTitle'], 'Scraping {0}...'.format(streamableGame['AppTitle']))
                 self.scraping_strategy.scrape(searchTerm, romPath, new_rom)
+                
                 #if self.scrapers:
                 #    for scraper in self.scrapers:
                 #        self._updateProgressMessage(streamableGame['AppTitle'], 'Scraping {0}...'.format(scraper.getName()))
