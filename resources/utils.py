@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
-# Advanced Emulator Launcher miscellaneous functions
-#
 
-# Copyright (c) 2016-2017 Wintermute0110 <wintermute0110@gmail.com>
+# Advanced Emulator Launcher miscellaneous functions
+
+# Copyright (c) 2016-2019 Wintermute0110 <wintermute0110@gmail.com>
 # Portions (c) 2010-2015 Angelscry and others
 #
 # This program is free software; you can redistribute it and/or modify
@@ -11,8 +11,8 @@
 #
 # This program is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-# GNU General Public License for more details.
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+# See the GNU General Public License for more details.
 
 #
 # Utility functions which does not depend on Kodi modules (except log_* functions)
@@ -39,46 +39,45 @@ from utils_kodi import *
 # --- AEL modules ---
 # >> utils.py and utils_kodi.py must not depend on any other AEL module to avoid circular dependencies.
 
-
 # OS utils
 # >> Determine platform
 # >> See http://stackoverflow.com/questions/446209/possible-values-from-sys-platform
-def is_windows():    
+def is_windows():
     return sys.platform == 'win32' or sys.platform == 'win64' or sys.platform == 'cygwin'
 
 def is_osx():
     return sys.platform.startswith('darwin')
 
 def is_linux():
-     return sys.platform.startswith('linux') and not is_android()
+    return sys.platform.startswith('linux') and not is_android()
 
 def is_android():
-    if not sys.platform.startswith('linux'):
-        return False
-    
+    if not sys.platform.startswith('linux'): return False
+
     return 'ANDROID_ROOT' in os.environ or 'ANDROID_DATA' in os.environ or 'XBMC_ANDROID_APK' in os.environ
 
 # -------------------------------------------------------------------------------------------------
 # Strings and text
 # -------------------------------------------------------------------------------------------------
+# Limits the length of a string for printing. If max_length == -1 do nothing (string has no
+# length limit). The string is trimmed by cutting it and adding three dots ... at the end.
+# Including these three dots the length of the returned string is max_length or less.
+# Example: 'asdfasdfdasf' -> 'asdfsda...'
 #
-# If max_length == -1 do nothing (no length limit).
-#
+# @param string: [str] String to be trimmed.
+# @param max_length: [int] Integer maximum length of the string.
+# @return [str] Trimmed string.
 def text_limit_string(string, max_length):
-  if max_length > 5 and len(string) > max_length:
-    string = string[0:max_length-3] + '...'
+    if max_length > 5 and len(string) > max_length:
+        string = string[0:max_length-3] + '...'
+    return string
 
-  return string
-
-#
 # Given a Category/Launcher name clean it so the cleaned srt can be used as a filename.
-#  1) Convert any non-printable character into '_'
-#  2) Convert spaces ' ' into '_'
-#
+# 1) Convert any non-printable character into '_'
+# 2) Convert spaces ' ' into '_'
 def text_title_to_filename_str(title_str):
     cleaned_str_1 = ''.join([i if i in string.printable else '_' for i in title_str])
     cleaned_str_2 = cleaned_str_1.replace(' ', '_')
-
     return cleaned_str_2
 
 #
