@@ -464,34 +464,14 @@ class Main:
         self.settings['asset_scraper_mode']       = int(o.getSetting('asset_scraper_mode'))
 
         # --- ROM scraping ---
-        self.settings['scraper_metadata']       = int(o.getSetting('scraper_metadata'))
-        self.settings['scraper_metadata_MAME']  = int(o.getSetting('scraper_metadata_MAME'))
-
-        self.settings['scraper_title']          = int(o.getSetting('scraper_title'))
-        self.settings['scraper_snap']           = int(o.getSetting('scraper_snap'))
-        self.settings['scraper_boxfront']       = int(o.getSetting('scraper_boxfront'))
-        self.settings['scraper_boxback']        = int(o.getSetting('scraper_boxback'))
-        self.settings['scraper_cart']           = int(o.getSetting('scraper_cart'))
-        self.settings['scraper_fanart']         = int(o.getSetting('scraper_fanart'))
-        self.settings['scraper_banner']         = int(o.getSetting('scraper_banner'))
-        self.settings['scraper_clearlogo']      = int(o.getSetting('scraper_clearlogo'))
-
-        self.settings['scraper_title_MAME']     = int(o.getSetting('scraper_title_MAME'))
-        self.settings['scraper_snap_MAME']      = int(o.getSetting('scraper_snap_MAME'))
-        self.settings['scraper_cabinet_MAME']   = int(o.getSetting('scraper_cabinet_MAME'))
-        self.settings['scraper_cpanel_MAME']    = int(o.getSetting('scraper_cpanel_MAME'))
-        self.settings['scraper_pcb_MAME']       = int(o.getSetting('scraper_pcb_MAME'))
-        self.settings['scraper_fanart_MAME']    = int(o.getSetting('scraper_fanart_MAME'))
-        self.settings['scraper_marquee_MAME']   = int(o.getSetting('scraper_marquee_MAME'))
-        self.settings['scraper_clearlogo_MAME'] = int(o.getSetting('scraper_clearlogo_MAME'))
-        self.settings['scraper_flyer_MAME']     = int(o.getSetting('scraper_flyer_MAME'))
-
-        # --- ROM audit ---
-        self.settings['audit_unknown_roms']         = int(o.getSetting('audit_unknown_roms'))
-        # self.settings['audit_create_pclone_groups'] = True if o.getSetting('audit_create_pclone_groups') == 'true' else False
-        self.settings['audit_pclone_assets']        = True if o.getSetting('audit_pclone_assets') == 'true' else False
-        # self.settings['audit_1G1R_main_region']     = int(o.getSetting('audit_1G1R_main_region'))
-        # self.settings['audit_1G1R_second_region']   = int(o.getSetting('audit_1G1R_second_region'))
+        self.settings['scraper_metadata_1']      = int(o.getSetting('scraper_metadata_1'))
+        self.settings['scraper_metadata_2']      = int(o.getSetting('scraper_metadata_2'))
+        self.settings['scraper_asset_1']         = int(o.getSetting('scraper_asset_1'))
+        self.settings['scraper_asset_2']         = int(o.getSetting('scraper_asset_2'))
+        self.settings['scraper_metadata_MAME_1'] = int(o.getSetting('scraper_metadata_MAME_1'))
+        self.settings['scraper_metadata_MAME_2'] = int(o.getSetting('scraper_metadata_MAME_2'))
+        self.settings['scraper_asset_MAME_1']    = int(o.getSetting('scraper_asset_MAME_1'))
+        self.settings['scraper_asset_MAME_2']    = int(o.getSetting('scraper_asset_MAME_2'))
 
         # --- Scrapers ---
         # self.settings['scraper_region']           = int(o.getSetting('scraper_region'))
@@ -499,6 +479,13 @@ class Main:
         # self.settings['scraper_fanart_size']      = int(o.getSetting('scraper_fanart_size'))
         # self.settings['scraper_image_type']       = int(o.getSetting('scraper_image_type'))
         # self.settings['scraper_fanart_order']     = int(o.getSetting('scraper_fanart_order'))
+
+        # --- ROM audit ---
+        self.settings['audit_unknown_roms']         = int(o.getSetting('audit_unknown_roms'))
+        # self.settings['audit_create_pclone_groups'] = True if o.getSetting('audit_create_pclone_groups') == 'true' else False
+        self.settings['audit_pclone_assets']        = True if o.getSetting('audit_pclone_assets') == 'true' else False
+        # self.settings['audit_1G1R_main_region']     = int(o.getSetting('audit_1G1R_main_region'))
+        # self.settings['audit_1G1R_second_region']   = int(o.getSetting('audit_1G1R_second_region'))
 
         # --- Display ---
         self.settings['display_category_mode']    = int(o.getSetting('display_category_mode'))
