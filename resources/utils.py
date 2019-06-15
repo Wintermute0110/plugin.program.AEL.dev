@@ -738,15 +738,15 @@ def create_self_signed_cert(cert_name, cert_file_path, key_file_path):
     cert.set_notAfter(expire.strftime("%Y%m%d%H%M%SZ").encode())
     cert.set_issuer(cert.get_subject())
     cert.set_pubkey(k)
-    cert.sign(k, 'sha1')
+    cert.sign(k, str('sha1'))
 
     log_debug('Creating certificate file {0}'.format(cert_file_path.getPath()))
     data = crypto.dump_certificate(crypto.FILETYPE_PEM, cert)
-    cert_file_path.writeAll(data, 'wt')
+    cert_file_path.saveStrToFile(data, 'ascii')
 
     log_debug('Creating certificate key file {0}'.format(key_file_path.getPath()))
     data = crypto.dump_privatekey(crypto.FILETYPE_PEM, k)
-    key_file_path.writeAll(data, 'wt')
+    key_file_path.saveStrToFile(data, 'ascii')
 
 def getCertificatePublicKeyBytes(certificate_data):
     pk_data = getCertificatePublicKey(certificate_data)
@@ -1765,7 +1765,7 @@ class NewFileName:
         files = []
         for root, dirs, foundfiles in os.walk(self.path_tr):
             for filename in foundfiles:
-                files.append(filename)
+                files.append(os.path.join(root, filename))
 
         return files
     

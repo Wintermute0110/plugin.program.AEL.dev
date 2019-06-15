@@ -27,6 +27,11 @@ import shlex
 import subprocess
 import webbrowser
 
+from os.path import expanduser
+import uuid
+import random
+import binascii
+
 # --- AEL packages ---
 from resources.net_IO import *
 from resources.disk_IO import *
@@ -1148,8 +1153,11 @@ class ROMStatisticsStrategy(object):
         # self.most_played_launcher = most_played_launcher
 
     def update_launched_rom_stats(self, recent_rom):
+        if True:
+            return #TODO
+        
         # --- Compute ROM recently played list ---
-        recently_played_roms = self.recent_played_launcher.get_roms()
+        recently_played_roms = None #TODO: self.recent_played_launcher.get_roms()
         recently_played_roms = [rom for rom in recently_played_roms if rom.get_id() != recent_rom.get_id()]
         recently_played_roms.insert(0, recent_rom)
 
@@ -1160,18 +1168,18 @@ class ROMStatisticsStrategy(object):
             temp_list            = recently_played_roms[:self.MAX_RECENT_PLAYED_ROMS]
             recently_played_roms = temp_list
 
-        self.recent_played_launcher.update_rom_set(recently_played_roms)
+        #TODO: self.recent_played_launcher.update_rom_set(recently_played_roms)
 
         recent_rom.increase_launch_count()
 
         # --- Compute most played ROM statistics ---
-        most_played_roms = self.most_played_launcher.get_roms()
+        most_played_roms = None #TODO: self.most_played_launcher.get_roms()
         if most_played_roms is None:
             most_played_roms = []
         else:
             most_played_roms = [rom for rom in most_played_roms if rom.get_id() != recent_rom.get_id()]
         most_played_roms.append(recent_rom)
-        self.most_played_launcher.update_rom_set(most_played_roms)
+        #TODO: self.most_played_launcher.update_rom_set(most_played_roms)
 
 # -------------------------------------------------------------------------------------------------
 # Abstract base class for business objects which support the generic
@@ -1726,7 +1734,7 @@ class ROM(MetaDataItemABC):
         # >> Read file, put in a string and remove line endings.
         # >> We assume NFO files are UTF-8. Decode data to Unicode.
         # file = open(nfo_file_path, 'rt')
-        nfo_str = nfo_file_path.readAllUnicode()
+        nfo_str = nfo_file_path.loadFileToStr()
         nfo_str = nfo_str.replace('\r', '').replace('\n', '')
 
         # Search for metadata tags. Regular expression is non-greedy.
@@ -2168,7 +2176,7 @@ class LauncherABC(MetaDataItemABC):
         if nfo_file_path.exists():
             # >> Read NFO file data
             try:
-                item_nfo = nfo_file_path.readAllUnicode()
+                item_nfo = nfo_file_path.loadFileToStr()
                 item_nfo = item_nfo.replace('\r', '').replace('\n', '')
             except:
                 kodi_notify_warn('Exception reading NFO file {0}'.format(nfo_file_path.getPath()))
@@ -2823,7 +2831,7 @@ class ROMLauncherABC(LauncherABC):
     #  'Broken'            ROM filename does not exist. ROM is unplayable
     #
     def convert_rom_to_favourite(self, rom_id):
-        rom = self.select_rom(rom_id)
+        rom = self.select_ROM(rom_id)
         # >> Copy original rom     
         # todo: Should we make a FavouriteRom class inheriting Rom?
         favourite = rom.copy()
@@ -4046,7 +4054,7 @@ class SteamLauncher(ROMLauncherABC):
             launcher_data, settings, executorFactory, romsetRepository, statsStrategy, False
         )
 
-    def get_launcher_type(self): return LAUNCHER_STEAM
+    def get_launcher_type(self): return OBJ_LAUNCHER_STEAM
 
     def get_launcher_type_name(self): return 'Steam launcher'
 
@@ -4105,7 +4113,7 @@ class SteamLauncher(ROMLauncherABC):
         wizard = WizardDialog_Keyboard(wizard, 'steamid','Steam ID')
         wizard = WizardDialog_Dummy(wizard, 'm_name', 'Steam')
         wizard = WizardDialog_Keyboard(wizard, 'm_name','Set the title of the launcher',
-            self._get_title_from_app_path)
+            self._builder_get_title_from_app_path)
         wizard = WizardDialog_Selection(wizard, 'platform', 'Select the platform',
             AEL_platform_list, wizard)
         wizard = WizardDialog_FileBrowse(wizard, 'assets_path', 'Select asset/artwork directory',
@@ -4127,21 +4135,163 @@ class SteamLauncher(ROMLauncherABC):
 # Launcher to use with Nvidia Gamestream servers.
 # -------------------------------------------------------------------------------------------------
 class NvidiaGameStreamLauncher(ROMLauncherABC):
-    def __init__(self, launcher_data, settings, executorFactory, romsetRepository, statsStrategy):
+    #
+    # Handle in this constructor the creation of a new empty ROM Launcher.
+    # Concrete classes are responsible of creating a default entity_data dictionary
+    # with sensible defaults.
+    #
+    def __init__(self, PATHS, settings, launcher_dic, objectRepository,
+                 executorFactory, romsetRepository, statsStrategy):
+        if launcher_dic is None:
+            launcher_dic = fs_new_launcher()
+            launcher_dic['id'] = misc_generate_random_SID()
+            launcher_dic['type'] = OBJ_LAUNCHER_NVGAMESTREAM
         super(NvidiaGameStreamLauncher, self).__init__(
-            launcher_data, settings, executorFactory, romsetRepository, statsStrategy, False)
+            PATHS, settings, launcher_dic, objectRepository, executorFactory, romsetRepository, statsStrategy
+        )
+        
+    # --------------------------------------------------------------------------------------------
+    # Core functions
+    # --------------------------------------------------------------------------------------------
+    def get_object_name(self): return 'NVIDIA GameStream launcher'
 
-    def get_launcher_type(self): return LAUNCHER_NVGAMESTREAM
+    def get_assets_kind(self): return KIND_ASSET_LAUNCHER
 
-    def get_launcher_type_name(self): return 'NVIDIA GameStream launcher'
+    def get_launcher_type(self): return OBJ_LAUNCHER_NVGAMESTREAM
 
+    def save_to_disk(self): self.objectRepository.save_launcher(self.entity_data)
+
+    def delete_from_disk(self):
+        # Object becomes invalid after deletion.
+        self.objectRepository.delete_launcher(self.entity_data)
+        self.entity_data = None
+        self.objectRepository = None   
+
+    # --------------------------------------------------------------------------------------------
+    # Launcher specific functions
+    # --------------------------------------------------------------------------------------------
     def get_server(self): return self.entity_data['server']
 
     def get_certificates_path(self): return self._get_value_as_filename('certificates_path')
 
-    def get_edit_options(self):
-        options = super(NvidiaGameStreamLauncher, self).get_edit_options()
-        del options['AUDIT_ROMS']
+    # --------------------------------------------------------------------------------------------
+    # Launcher build wizard methods
+    # --------------------------------------------------------------------------------------------
+    #
+    # Creates a new launcher using a wizard of dialogs.
+    #
+    def _builder_get_wizard(self, wizard):
+        
+        #UTILS_OPENSSL_AVAILABLE
+        log_debug('NvidiaGameStreamLauncher::_builder_get_wizard() SSL: "{0}"'.format(UTILS_OPENSSL_AVAILABLE))
+        log_debug('NvidiaGameStreamLauncher::_builder_get_wizard() Crypto: "{0}"'.format(UTILS_CRYPTOGRAPHY_AVAILABLE))
+        log_debug('NvidiaGameStreamLauncher::_builder_get_wizard() PyCrypto: "{0}"'.format(UTILS_PYCRYPTO_AVAILABLE))
+        
+        info_txt  = 'To pair with your Geforce Experience Computer we need to make use of valid certificates. '
+        info_txt += 'Unfortunately at this moment we cannot create these certificates directly from within Kodi.'
+        info_txt += 'Please read the wiki for details how to create them before you go further.'
+
+        wizard = WizardDialog_FormattedMessage(wizard, 'certificates_path', 'Pairing with Gamestream PC',
+            info_txt)
+        wizard = WizardDialog_DictionarySelection(wizard, 'application', 'Select the client',
+            {'NVIDIA': 'Nvidia', 'MOONLIGHT': 'Moonlight'}, 
+            self._builder_check_if_selected_gamestream_client_exists, lambda pk, p: is_android())
+        wizard = WizardDialog_DictionarySelection(wizard, 'application', 'Select the client',
+            {'JAVA': 'Moonlight-PC (java)', 'EXE': 'Moonlight-Chrome (not supported yet)'},
+            None, lambda pk,p: not is_android())
+        wizard = WizardDialog_FileBrowse(wizard, 'application', 'Select the Gamestream client jar',
+            1, self._builder_get_appbrowser_filter, None, lambda pk, p: not is_android())
+        wizard = WizardDialog_Keyboard(wizard, 'args', 'Additional arguments', 
+            None, lambda pk, p: not is_android())
+        wizard = WizardDialog_Input(wizard, 'server', 'Gamestream Server',
+            xbmcgui.INPUT_IPADDRESS, self._builder_validate_gamestream_server_connection)
+        wizard = WizardDialog_Keyboard(wizard, 'm_name','Set the title of the launcher', 
+            self._builder_get_title_from_app_path)
+        wizard = WizardDialog_FileBrowse(wizard, 'assets_path', 'Select asset/artwork directory', 0, '')
+        wizard = WizardDialog_Dummy(wizard, 'rompath', '', 
+            self._builder_get_value_from_assetpath)
+        # Pairing with pin code will be postponed untill crypto and certificate support in kodi
+        # wizard = WizardDialog_Dummy(wizard, 'pincode', None, _builder_generatePairPinCode)
+        wizard = WizardDialog_Dummy(wizard, 'certificates_path', None,
+            self._builder_try_to_resolve_path_to_nvidia_certificates)
+        wizard = WizardDialog_FileBrowse(wizard, 'certificates_path', 'Select the path with valid certificates', 
+            0, '', self._builder_validate_nvidia_certificates) 
+        wizard = WizardDialog_Selection(wizard, 'platform', 'Select the platform',
+            AEL_platform_list)
+
+        return wizard
+    
+    def _build_pre_wizard_hook(self):
+        log_debug('NvidiaGameStreamLauncher::_build_pre_wizard_hook() Starting ...')
+
+        return True
+
+    def _build_post_wizard_hook(self):
+        log_debug('NvidiaGameStreamLauncher::_build_post_wizard_hook() Starting ...')
+
+        return super(NvidiaGameStreamLauncher, self)._build_post_wizard_hook()
+    
+    def _builder_generatePairPinCode(self, input, item_key, launcher):
+        return GameStreamServer(None, None).generatePincode()
+
+    def _builder_check_if_selected_gamestream_client_exists(self, input, item_key, launcher):
+        if input == 'NVIDIA':
+            nvidiaDataFolder = FileName('/data/data/com.nvidia.tegrazone3/', isdir = True)
+            nvidiaAppFolder = FileName('/storage/emulated/0/Android/data/com.nvidia.tegrazone3/')
+            if not nvidiaAppFolder.exists() and not nvidiaDataFolder.exists():
+                kodi_notify_warn("Could not find Nvidia Gamestream client. Make sure it's installed.")
+
+        elif input == 'MOONLIGHT':
+            moonlightDataFolder = FileName('/data/data/com.limelight/', isdir = True)
+            moonlightAppFolder = FileName('/storage/emulated/0/Android/data/com.limelight/')
+            if not moonlightAppFolder.exists() and not moonlightDataFolder.exists():
+                kodi_notify_warn("Could not find Moonlight Gamestream client. Make sure it's installed.")
+
+        return input
+
+    def _builder_try_to_resolve_path_to_nvidia_certificates(self, input, item_key, launcher):
+        path = GameStreamServer.try_to_resolve_path_to_nvidia_certificates()
+
+        return path
+
+    def _builder_validate_nvidia_certificates(self, input, item_key, launcher):
+        certificates_path = FileName(input)
+        gs = GameStreamServer(input, certificates_path)
+        if not gs.validate_certificates():
+            kodi_notify_warn(
+                'Could not find certificates to validate. Make sure you already paired with '
+                'the server with the Shield or Moonlight applications.')
+
+        return certificates_path.getPath()
+
+    def _builder_validate_gamestream_server_connection(self, input, item_key, launcher):
+        gs = GameStreamServer(input, None)
+        if not gs.connect():
+            kodi_notify_warn('Could not connect to gamestream server')
+
+        launcher['server_id'] = gs.get_uniqueid()
+        launcher['server_hostname'] = gs.get_hostname()
+
+        log_debug('validate_gamestream_server_connection() Found correct gamestream server with id "{}" and hostname "{}"'.format(launcher['server_id'],launcher['server_hostname']))
+
+        return input
+    
+    # --------------------------------------------------------------------------------------------
+    # Launcher edit methods
+    # --------------------------------------------------------------------------------------------
+    def get_main_edit_options(self, category):
+        log_debug('NvidiaGameStreamLauncher::get_main_edit_options() Returning edit options')
+
+        options = collections.OrderedDict()
+        options['EDIT_METADATA']          = 'Edit Metadata ...'
+        options['EDIT_ASSETS']            = 'Edit Assets/Artwork ...'
+        options['EDIT_DEFAULT_ASSETS']    = 'Choose default Assets/Artwork ...'
+        options['EDIT_LAUNCHER_CATEGORY'] = "Change Category: '{0}'".format(category.get_name())
+        options['EDIT_LAUNCHER_STATUS']   = 'Launcher status: {0}'.format(self.get_finished_str())
+        options['LAUNCHER_ADVANCED_MODS'] = 'Advanced Modifications ...'
+        options['LAUNCHER_MANAGE_ROMS']   = 'Manage ROMs ...'
+        options['EXPORT_LAUNCHER_XML']    = 'Export Launcher XML configuration ...'
+        options['DELETE_LAUNCHER']        = 'Delete Launcher'
 
         return options
 
@@ -4150,11 +4300,14 @@ class NvidiaGameStreamLauncher(ROMLauncherABC):
         toggle_window_str = 'ON' if self.entity_data['toggle_window'] else 'OFF'
         non_blocking_str  = 'ON' if self.entity_data['non_blocking'] else 'OFF'
         
-        options = super(SteamLauncher, self).get_advanced_modification_options()
+        options = super(NvidiaGameStreamLauncher, self).get_advanced_modification_options()
         options['TOGGLE_WINDOWED'] = "Toggle Kodi into windowed mode (now {0})".format(toggle_window_str)
         options['TOGGLE_NONBLOCKING'] = "Non-blocking launcher (now {0})".format(non_blocking_str)
 
-    def _selectApplicationToUse(self):
+    # ---------------------------------------------------------------------------------------------
+    # Execution methods
+    # ---------------------------------------------------------------------------------------------
+    def _launch_selectApplicationToUse(self):
         streamClient = self.entity_data['application']
 
         # java application selected (moonlight-pc)
@@ -4177,7 +4330,7 @@ class NvidiaGameStreamLauncher(ROMLauncherABC):
 
         return True
 
-    def _selectArgumentsToUse(self):
+    def _launch_selectArgumentsToUse(self):
         streamClient = self.entity_data['application']
 
         # java application selected (moonlight-pc)
@@ -4213,102 +4366,8 @@ class NvidiaGameStreamLauncher(ROMLauncherABC):
         self.arguments = self.entity_data['args']
 
         return True 
-  
-    def _selectRomFileToUse(self): return True
-
-    def get_advanced_modification_options(self):
-        log_debug('NvidiaGameStreamLauncher::get_advanced_modification_options() Returning edit options')
-        toggle_window_str = 'ON' if self.entity_data['toggle_window'] else 'OFF'
-        non_blocking_str  = 'ON' if self.entity_data['non_blocking'] else 'OFF'
-
-        options = super(NvidiaGameStreamLauncher, self).get_advanced_modification_options()
-        options['TOGGLE_WINDOWED'] = "Toggle Kodi into windowed mode (now {0})".format(toggle_window_str)
-        options['TOGGLE_NONBLOCKING'] = "Non-blocking launcher (now {0})".format(non_blocking_str)
-
-        return options
-
-    #
-    # Creates a new launcher using a wizard of dialogs.
-    #
-    def _get_builder_wizard(self, wizard):
-        info_txt  = 'To pair with your Geforce Experience Computer we need to make use of valid certificates. '
-        info_txt += 'Unfortunately at this moment we cannot create these certificates directly from within Kodi.\n'
-        info_txt += 'Please read the wiki for details how to create them before you go further.'
-
-        wizard = WizardDialog_FormattedMessage(wizard, 'certificates_path', 'Pairing with Gamestream PC',
-            info_txt)
-        wizard = WizardDialog_DictionarySelection(wizard, 'application', 'Select the client',
-            {'NVIDIA': 'Nvidia', 'MOONLIGHT': 'Moonlight'}, 
-            self._check_if_selected_gamestream_client_exists, lambda pk, p: is_android())
-        wizard = WizardDialog_DictionarySelection(wizard, 'application', 'Select the client',
-            {'JAVA': 'Moonlight-PC (java)', 'EXE': 'Moonlight-Chrome (not supported yet)'},
-            None, lambda pk,p: not is_android())
-        wizard = WizardDialog_FileBrowse(wizard, 'application', 'Select the Gamestream client jar',
-            1, self._get_appbrowser_filter, None, lambda pk, p: not is_android())
-        wizard = WizardDialog_Keyboard(wizard, 'args', 'Additional arguments', 
-            None, lambda pk, p: not is_android())
-        wizard = WizardDialog_Input(wizard, 'server', 'Gamestream Server',
-            xbmcgui.INPUT_IPADDRESS, self._validate_gamestream_server_connection)
-        wizard = WizardDialog_Keyboard(wizard, 'm_name','Set the title of the launcher', 
-            self._get_title_from_app_path)
-        wizard = WizardDialog_FileBrowse(wizard, 'assets_path', 'Select asset/artwork directory', 0, '')
-        wizard = WizardDialog_Dummy(wizard, 'rompath', '', 
-            self._get_value_from_assetpath)
-        # Pairing with pin code will be postponed untill crypto and certificate support in kodi
-        # wizard = WizardDialog_Dummy(wizard, 'pincode', None, generatePairPinCode)
-        wizard = WizardDialog_Dummy(wizard, 'certificates_path', None,
-            self._try_to_resolve_path_to_nvidia_certificates)
-        wizard = WizardDialog_FileBrowse(wizard, 'certificates_path', 'Select the path with valid certificates', 
-            0, '', self._validate_nvidia_certificates) 
-        wizard = WizardDialog_Selection(wizard, 'platform', 'Select the platform',
-            AEL_platform_list)
-
-        return wizard
-
-    def _generatePairPinCode(self, input, item_key, launcher):
-        return gamestreamServer(None, None).generatePincode()
-
-    def _check_if_selected_gamestream_client_exists(self, input, item_key, launcher):
-        if input == 'NVIDIA':
-            nvidiaDataFolder = FileName('/data/data/com.nvidia.tegrazone3/', isdir = True)
-            nvidiaAppFolder = FileName('/storage/emulated/0/Android/data/com.nvidia.tegrazone3/')
-            if not nvidiaAppFolder.exists() and not nvidiaDataFolder.exists():
-                kodi_notify_warn("Could not find Nvidia Gamestream client. Make sure it's installed.")
-
-        elif input == 'MOONLIGHT':
-            moonlightDataFolder = FileName('/data/data/com.limelight/', isdir = True)
-            moonlightAppFolder = FileName('/storage/emulated/0/Android/data/com.limelight/')
-            if not moonlightAppFolder.exists() and not moonlightDataFolder.exists():
-                kodi_notify_warn("Could not find Moonlight Gamestream client. Make sure it's installed.")
-
-        return input
-
-    def _try_to_resolve_path_to_nvidia_certificates(self, input, item_key, launcher):
-        path = GameStreamServer.try_to_resolve_path_to_nvidia_certificates()
-
-        return path
-
-    def _validate_nvidia_certificates(self, input, item_key, launcher):
-        certificates_path = FileName(input)
-        gs = GameStreamServer(input, certificates_path)
-        if not gs.validate_certificates():
-            kodi_notify_warn(
-                'Could not find certificates to validate. Make sure you already paired with '
-                'the server with the Shield or Moonlight applications.')
-
-        return certificates_path.getPath()
-
-    def _validate_gamestream_server_connection(self, input, item_key, launcher):
-        gs = GameStreamServer(input, None)
-        if not gs.connect():
-            kodi_notify_warn('Could not connect to gamestream server')
-
-        launcher['server_id'] = gs.get_uniqueid()
-        launcher['server_hostname'] = gs.get_hostname()
-
-        log_debug('validate_gamestream_server_connection() Found correct gamestream server with id "{}" and hostname "{}"'.format(launcher['server_id'],launcher['server_hostname']))
-
-        return input
+        
+    def _launch_selectRomFileToUse(self): return True
 
 # ------------------------------------------------------------------------------------------------
 # --- AEL Object Factory -------------------------------------------------------------------------
@@ -4952,7 +5011,7 @@ class RomScannersFactory(object):
             return SteamScanner(self.reports_dir, self.addon_dir, launcher, self.settings, scraping_strategy)
 
         if launcherType == OBJ_LAUNCHER_NVGAMESTREAM:
-            return NvidiaStreamScanner(self.reports_dir, self.addon_dir, launcher, romset, self.settings, scraping_strategy)
+            return NvidiaStreamScanner(self.reports_dir, self.addon_dir, launcher, self.settings, scraping_strategy)
                 
         return RomFolderScanner(self.reports_dir, self.addon_dir, launcher, self.settings, scraping_strategy)
 
@@ -5224,8 +5283,7 @@ class RomFolderScanner(RomScannerStrategy):
                     # >> Manipulate ROM so filename is the name of the set
                     ROM_dir = FileName(ROM_file.getDir())
                     ROM_temp = ROM_dir.pjoin(MDSet.setName)
-                    log_info('ROM_temp OP "{0}"'.format(ROM_temp.getPath()))
-                    log_info('ROM_temp  P "{0}"'.format(ROM_temp.getPath()))
+                    log_info('ROM_temp P "{0}"'.format(ROM_temp.getPath()))
                     ROM_file = ROM_temp
                 # >> If set already in ROMs, just add this disk into the set disks field.
                 else:
@@ -5451,8 +5509,6 @@ class NvidiaStreamScanner(RomScannerStrategy):
 
     # ~~~ Scan for new items not yet in the rom collection ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def _getCandidates(self, launcher_report):
-        from gamestream import GameStreamServer
-
         log_debug('Reading Nvidia GameStream server')
         self._startProgressPhase('Advanced Emulator Launcher', 'Reading Nvidia GameStream server...')
 
@@ -5532,13 +5588,13 @@ class NvidiaStreamScanner(RomScannerStrategy):
         
                 log_debug('Not found. Item {0} is new'.format(streamableGame['AppTitle']))
 
-                launcher_path = launcher.get_rom_path()
+                launcher_path = self.launcher.get_rom_path()
                 romPath = launcher_path.pjoin('{0}.rom'.format(streamableGame['ID']))
 
                 # ~~~~~ Process new ROM and add to the list ~~~~~
                 # --- Create new rom dictionary ---
                 # >> Database always stores the original (non transformed/manipulated) path
-                new_rom  = Rom()
+                new_rom  = ROM()
                 new_rom.set_file(romPath)
 
                 new_rom.set_custom_attribute('streamid',        streamableGame['ID'])
@@ -5547,8 +5603,9 @@ class NvidiaStreamScanner(RomScannerStrategy):
                 
                 searchTerm = streamableGame['AppTitle']
                 
-                self._updateProgressMessage(steamGame['name'], 'Scraping {0}...'.format(streamableGame['AppTitle']))
+                self._updateProgressMessage(streamableGame['AppTitle'], 'Scraping {0}...'.format(streamableGame['AppTitle']))
                 self.scraping_strategy.scrape(searchTerm, romPath, new_rom)
+                
                 #if self.scrapers:
                 #    for scraper in self.scrapers:
                 #        self._updateProgressMessage(streamableGame['AppTitle'], 'Scraping {0}...'.format(scraper.getName()))
@@ -5899,6 +5956,7 @@ class RomDatFileScanner(KodiProgressDialogStrategy):
 # #################################################################################################
 # #################################################################################################
 class GameStreamServer(object):
+    
     def __init__(self, host, certificates_path):
         self.host = host
         self.unique_id = random.getrandbits(16)
@@ -5919,6 +5977,7 @@ class GameStreamServer(object):
         self.key_cert_data = None
 
     def _perform_server_request(self, end_point,  useHttps=True, parameters = None):
+        
         if useHttps:
             url = "https://{0}:47984/{1}?uniqueid={2}&uuid={3}".format(self.host, end_point, self.unique_id, uuid.uuid4().hex)
         else:
@@ -6182,9 +6241,9 @@ class GameStreamServer(object):
             create_self_signed_cert("NVIDIA GameStream Client", self.certificate_file_path, self.certificate_key_file_path)
 
         log_info('Loading client certificate data from {0}'.format(self.certificate_file_path.getPath()))
-        self.pem_cert_data = self.certificate_file_path.readAll()
+        self.pem_cert_data = self.certificate_file_path.loadFileToStr('ascii')
 
-        return self.pem_cert_data
+        return str(self.pem_cert_data)
 
     def getCertificateKeyBytes(self):
         if self.key_cert_data:
@@ -6194,9 +6253,9 @@ class GameStreamServer(object):
             log_info('Client certificate file does not exist. Creating')
             create_self_signed_cert("NVIDIA GameStream Client", self.certificate_file_path, self.certificate_key_file_path)
         log_info('Loading client certificate data from {0}'.format(self.certificate_key_file_path.getPath()))
-        self.key_cert_data = self.certificate_key_file_path.readAll()
+        self.key_cert_data = self.certificate_key_file_path.loadFileToStr('ascii')
 
-        return self.key_cert_data
+        return str(self.key_cert_data)
 
     def validate_certificates(self):
         if self.certificate_file_path.exists() and self.certificate_key_file_path.exists():

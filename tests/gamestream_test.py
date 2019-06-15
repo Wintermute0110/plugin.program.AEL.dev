@@ -46,6 +46,7 @@ class Test_gamestream(unittest.TestCase):
         # assert
         self.assertTrue(actual)
 
+
     @patch('resources.objects.net_get_URL_using_handler')
     def test_get_the_version_of_the_gamestream_server(self, http_mock):
          
