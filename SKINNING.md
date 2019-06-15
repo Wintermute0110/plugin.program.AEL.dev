@@ -5,9 +5,9 @@
  * Look in [Pydocs_setArt] for valid setArt() infoLabels.
 
  * Look in [Pydocs_setProperty] for valid setProperty() infoLabels.
- 
+
  * Look in [Kodi_wiki_artwork] for supported Kodi artwork.
- 
+
 [Pydocs_setInfo]: http://mirrors.xbmc.org/docs/python-docs/16.x-jarvis/xbmcgui.html#ListItem-setInfo
 [Pydocs_setArt]: http://mirrors.xbmc.org/docs/python-docs/16.x-jarvis/xbmcgui.html#ListItem-setArt
 [Pydocs_setProperty]: http://mirrors.xbmc.org/docs/python-docs/16.x-jarvis/xbmcgui.html#ListItem-setProperty
@@ -48,12 +48,12 @@
 
  * `setInfo()` first argument is `video`. 
 
-| Metadata name | AEL name  | `setInfo()` | `setProperty()`| Infolabel               | Type                 |
-|---------------|-----------|-------------|----------------|-------------------------|----------------------|
-| Title         | m_name    | title       |                | `$INFO[ListItem.Label]` | string               |
-| Genre         | m_genre   | genre       |                | `$INFO[ListItem.Genre]` | string               |
-| Plot          | m_plot    | plot        |                | `$INFO[ListItem.Plot]`  | string               |
-| Rating        | m_rating  | rating      |                |                         | string from 0 to 10  |
+| Metadata name | AEL name  | `setInfo()` | `setProperty()` | Infolabel               | Type                 |
+|---------------|-----------|-------------|-----------------|-------------------------|----------------------|
+| Title         | m_name    | title       |                 | `$INFO[ListItem.Label]` | string               |
+| Genre         | m_genre   | genre       |                 | `$INFO[ListItem.Genre]` | string               |
+| Plot          | m_plot    | plot        |                 | `$INFO[ListItem.Plot]`  | string               |
+| Rating        | m_rating  | rating      |                 |                         | string from 0 to 10  |
 
 ## Categories asset labels ##
 
@@ -88,17 +88,16 @@
    If Year and Rating are not set they are the empty strings, which is different from integer 0. 
    Kodi seems to handle this behaviour well.
 
-| Metadata name | AEL name  | setInfo | setProperty | Type                 |
-|---------------|-----------|---------|-------------|----------------------|
-| Title         | m_name    | title   |             | string               |
-| Year          | m_year    | year    |             | string               |
-| Genre         | m_genre   | genre   |             | string               |
-| Plot          | m_plot    | plot    |             | string               |
-| Studio        | m_studio  | studio  |             | string               |
-| Rating        | m_rating  | rating  |             | string range 0 to 10 |
-| Trailer       | s_trailer | trailer |             | string               |
-| Platform      | platform  |         | platform    | string               |
-|               |           | overlay |             | int range 0 to 8     |
+| Metadata name | AEL name  | `setInfo()` | `setProperty()` | Infolabel                            | Type                 |
+|---------------|-----------|-------------|-----------------|--------------------------------------|----------------------|
+| Title         | m_name    | title       |                 | `$INFO[ListItem.Label]`              | string               |
+| Year          | m_year    | year        |                 | `$INFO[ListItem.Year]`               | string               |
+| Genre         | m_genre   | genre       |                 | `$INFO[ListItem.Genre]`              | string               |
+| Plot          | m_plot    | plot        |                 | `$INFO[ListItem.Plot]`               | string               |
+| Studio        | m_studio  | studio      |                 | `$INFO[ListItem.Studio]`             | string               |
+| Rating        | m_rating  | rating      |                 | `$INFO[ListItem.Rating]`             | string range 0 to 10 |
+| Platform      | platform  |             | platform        | `$INFO[ListItem.Property(platform)]` | string               |
+|               |           | overlay     |                 |                                      |  int range 0 to 8    |
 
 ## Launchers asset labels ##
 
@@ -108,15 +107,17 @@
 
  * `extrafanart` is a Python list.
 
-| Asset name  | AEL name    | setArt label | setInfo label |
-|-------------|-------------|--------------|---------------|
-| Thumb       | s_thumb     | thumb        |               |
-| Fanart      | s_fanart    | fanart       |               |
-| Banner      | s_banner    | banner       |               |
-| Flyer       | s_flyer     | poster       |               |
-| Trailer     | s_trailer   |              | trailer       |
-| Extrafanart | extrafanart | extrafanart1 |               |
-| Extrafanart | extrafanart | extrafanart2 |               |
+| Asset name  | AEL name     | `setArt()` | `setInfo()`   | Infolabel                         |
+|-------------|--------------|------------|---------------|-----------------------------------|
+| Icon        | s_icon       | icon       |               | `$INFO[ListItem.Icon]`            |
+| Fanart      | s_fanart     | fanart     |               | `$INFO[ListItem.Fanart]`          |
+| Banner      | s_banner     | banner     |               | `$INFO[ListItem.Art(banner)]`     |
+| Flyer       | s_flyer      | poster     |               | `$INFO[ListItem.Art(poster)]`     |
+| Clearlogo   | s_clearlogo  | clearlogo  |               | `$INFO[ListItem.Art(clearlogo)]`  |
+| Controller  | s_controller | controller |               | `$INFO[ListItem.Art(controller)]` |
+| Trailer     | s_trailer    |            | trailer       | `$INFO[ListItem.trailer]`         |
+| Extrafanart | extrafanart  | ---        |               | `Not implemented yet`             |
+| Extrafanart | extrafanart  | ---        |               | `Not implemented yet`             |
 
 ## ROMs metadata infolabels ##
 
@@ -129,17 +130,18 @@
    If Year and Rating are not set they are the empty strings, which is different from integer 0. 
    Kodi seems to handle this behaviour well.
 
-| Metadata name | AEL name  | setInfo | setProperty | Type                 |
-|---------------|-----------|---------|-------------|----------------------|
-| Title         | m_name    | title   |             | string               |
-| Year          | m_year    | year    |             | string               |
-| Genre         | m_genre   | genre   |             | string               |
-| Plot          | m_plot    | plot    |             | string               |
-| Studio        | m_studio  | studio  |             | string               |
-| Rating        | m_rating  | rating  |             | string range 0 to 10 |
-| Trailer       | s_trailer | trailer |             | string               |
-| Platform      | platform  |         | platform    | string               |
-|               |           | overlay |             | int range 0 to 8     |
+| Metadata name | AEL name   | `setInfo()` | `setProperty()` | Infolabel                            | Type                 |
+|---------------|------------|-------------|-----------------|--------------------------------------|----------------------|
+| Title         | m_name     | title       |                 | `$INFO[ListItem.Label]`              | string               |
+| Year          | m_year     | year        |                 | `$INFO[ListItem.Year]`               | string               |
+| Genre         | m_genre    | genre       |                 | `$INFO[ListItem.Genre]`              | string               |
+| Plot          | m_plot     | plot        |                 | `$INFO[ListItem.Plot]`               | string               |
+| Studio        | m_studio   | studio      |                 | `$INFO[ListItem.Studio]`             | string               |
+| Rating        | m_rating   | rating      |                 | `$INFO[ListItem.Rating]`             | string range 0 to 10 |
+| NPlayers      | m_nplayers | ---         |                 | `$INFO[ListItem.Property(nplayers)]` | |
+| ESRB          | m_esrb     | ---         |                 | `$INFO[ListItem.Property(esrb)]`     | |
+| Platform      | platform   |             | platform        | `$INFO[ListItem.Property(platform)]` | string               |
+|               |            | overlay     |                 |                                      | int range 0 to 8     |
 
 ## ROMs asset infolabels ##
 
@@ -152,24 +154,25 @@
 
  * `extrafanart` is a Python list.
 
-| Asset name  | AEL name    | setArt label | setInfo label | MAME mapping for MAME views |
-|-------------|-------------|--------------|---------------|-----------------------------|
-| Title       | s_title     | title/thumb  |               | title                       |
-| Snap        | s_snap      | snap         |               | snap                        |
-| Fanart      | s_fanart    | fanart       |               | fanart                      |
-| Banner      | s_banner    | banner       |               | marquee                     |
-| Clearlogo   | s_clearlogo | clearlogo    |               | clearlogo                   |
-| Boxfront    | s_boxfront  | boxfront     |               | cabinet                     |
-| Boxback     | s_boxback   | boxback      |               | cpanel                      |
-| Cartridge   | s_cartridge | cartridge    |               | pcb                         |
-| Flyer       | s_flyer     | poster       |               | flyer                       |
-| Map         | s_map       | map          |               |                             |
-| Manual      | s_manual    |              |               | manual                      |
-| Trailer     | s_trailer   |              | trailer       | trailer                     |
-| (*) Extrafanart | extrafanart | extrafanart1 |               | extrafanart                 |
-| (*) Extrafanart | extrafanart | extrafanart2 |               | extrafanart                 |
+| Asset name  | AEL name    | `setArt()`   | `setInfo()` | Infolabel                        | MAME mapping |
+|-------------|-------------|--------------|-------------|----------------------------------|--------------|
+| Icon        | (1)         | icon         |             | `$INFO[ListItem.Icon]`           |              |
+| Title       | s_title     | title        |             | `$INFO[ListItem.Art(title)]`     | title        |
+| Snap        | s_snap      | snap         |             | `$INFO[ListItem.Art(snap)]`      | snap         |
+| Fanart      | s_fanart    | fanart       |             |                                  | fanart       |
+| Banner      | s_banner    | banner       |             | `$INFO[ListItem.Art(banner)]`    | marquee      |
+| Clearlogo   | s_clearlogo | clearlogo    |             | `$INFO[ListItem.Art(clearlogo)]` | clearlogo    |
+| Boxfront    | s_boxfront  | boxfront     |             | `$INFO[ListItem.Art(boxfront)]`  | cabinet      |
+| Boxback     | s_boxback   | boxback      |             | `$INFO[ListItem.Art(boxback)]`   | cpanel       |
+| Cartridge   | s_cartridge | cartridge    |             | `$INFO[ListItem.Art(cartridge)]` | pcb          |
+| Flyer       | s_flyer     | poster       |             | `$INFO[ListItem.Art(poster)]`    | flyer        |
+| Map         | s_map       | map          |             |                                  |              |
+| Manual      | s_manual    |              |             |                                  | manual       |
+| Trailer     | s_trailer   |              | trailer     | `$INFO[ListItem.trailer]`        | trailer      |
+| Extrafanart | extrafanart | extrafanart1 |             | `Not implemented yet`            |              |
+| Extrafanart | extrafanart | extrafanart2 |             | `Not implemented yet`            |              |
 
-(*) Not implemented yet.
+(1) Kodi standard field mapped.
 
 ## Launchers/Categories artwork supported by Kodi plugins ##
 
