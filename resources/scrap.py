@@ -1,8 +1,6 @@
 # -*- coding: utf-8 -*-
-#
-# Advanced Emulator Launcher scraping engine
-#
 
+# Advanced Emulator Launcher scraping engine.
 # MAKE THIS CODE AS 0.10.0 READY AS POSSIBLE.
 
 # Copyright (c) 2016-2019 Wintermute0110 <wintermute0110@gmail.com>
@@ -46,8 +44,7 @@ class KodiProgressDialogStrategy(object):
             self.progressDialog.update(progress, message1, message2)
 
     def _updateProgressMessage(self, message1, message2 = None):
-        if not self.verbose:
-            return
+        if not self.verbose: return
 
         self.progressDialog.update(self.progress, message1, message2)
 
@@ -55,16 +52,108 @@ class KodiProgressDialogStrategy(object):
         return self.progressDialog.iscanceled()
 
     def _endProgressPhase(self, canceled = False):
-        if not canceled:
-            self.progressDialog.update(100)
+        if not canceled: self.progressDialog.update(100)
         self.progressDialog.close()
 
+class ScraperSettings(object):
+    def __init__(self, metadata_scraping_mode=1, asset_scraping_mode=1, ignore_scraped_title=False, scan_clean_tags=True):
+        # --- Set scraping mode ---
+        # values="Semi-automatic|Automatic"
+        self.metadata_scraping_mode  = metadata_scraping_mode
+        self.asset_scraping_mode = asset_scraping_mode
+        self.ignore_scraped_title = ignore_scraped_title
+        self.scan_clean_tags = scan_clean_tags
+
+    @staticmethod
+    def create_from_settings(settings):
+        return ScraperSettings(
+            settings['metadata_scraper_mode'] if 'metadata_scraper_mode' in settings else 1,
+            settings['asset_scraper_mode'] if 'asset_scraper_mode' in settings else 1,
+            settings['scan_ignore_scrap_title'] if 'scan_ignore_scrap_title' in settings else False,
+            settings['scan_clean_tags'] if 'scan_clean_tags' in settings else True)
+
+# --- Scraper use cases ---------------------------------------------------------------------------
+# --- Use case A: ROM scanner ---------------------------------------------------------------------
+# The metadata scraper is unique for each Launcher. However, each asset type may have a
+# different scraper depending on the plugin settings. Asset scrapers could be disabled for
+# specific assets if paths are not configured.
+#
+# The ROM scanner case also applies when the user selects "Rescrape ROM assets" in the Launcher
+# context menu.
+#
+# --- Algorithm ---
+# 1) Create a ScraperFactory global object g_scraper_factory.
+# 1.1) For each scraper class one and only one object is instantiated and initialised.
+#      This per-scraper unique object simplifies the coding of the scraper cache.
+#      The unique scraper objects are stored inside the global g_scraper_factory and can
+#      be reused.
+#
+# 2) Create a ScraperStrategy object with the g_scraper_factory object.
+# 2.1) g_scraper_factory checks for unset artwork directories. Disable unconfigured assets.
+# 2.2) Check for duplicate artwork directories. Disable assets for duplicated directories.
+# 2.3) Read the addon settings and create the metadata scraper to process ROMs.
+# 2.4) For each asset type not disabled create the asset scraper.
+# 2.5) Finally, create and return the ScraperStrategy object.
+#
+# 3) For each ROM object scrape the metadata and assets with the ScraperStrategy object.
+#
+# --- Code example ---
+# process_ROM_assets() scrapes all enabled assets in sequence.
+#
+# g_scraper_factory = ScraperFactory(g_PATHS, g_settings)
+# scraper_strategy = g_scraper_factory.create_scanner(launcher_obj, progress_dialog_obj)
+# scraper_strategy.process_ROM_metadata(rom_obj)
+# scraper_strategy.process_ROM_assets(rom_obj)
+#
+# --- Use case B: ROM context menu ---------------------------------------------------------------
+# In the ROM context menu the scraper object may be called multiple times by the recursive
+# context menu. Scrapers should report the assets they support to build the dynamic context
+# menu.
+#
+# --- Code example ---
+# g_scraper_factory is a global object created when the addon is initialised.
+# g_scraper_factory._supports_asset(scraper_ID, asset_ID) is an internal function.
+#
+# g_scraper_factory = ScraperFactory(g_PATHS, g_settings)
+# g_scraper_factory.get_scraper_menu_list(asset_ID)
+# index = dialog.select( ... )
+# scraper_ID = g_scraper_factory.get_scraper_ID_from_index(index - num_common_menu_items)
+#
+# THIS (may be called multiple times)
+# scraper_strategy = g_scraper_factory.create_metadata(launcher_obj, scraper_ID, progress_dialog_obj)
+# scraper_strategy.scrape_metadata(rom_obj)
+#
+# OR THIS (may be called multiple times)
+# scraper_strategy = g_scraper_factory.create_asset(launcher_obj, scraper_ID, progress_dialog_obj)
+# scraper_strategy.scrape_asset(rom_obj)
+#
+# --- Use case C: Standalone Launcher context menu -----------------------------------------------
+# In the Standalone Launcher context menu the situation is similar to the ROM context menu.
+# The difference is that rom_obj is a Launcher object instance instead of a ROM object.
+#
+# --- NOTES ---------------------------------------------------------------------------------------
+# 1) There is one and only one global ScraperFactory object named g_scraper_factory.
+#
+# 2) g_scraper_factory keeps a list of instantiated scraper objects. Scrapers are identified
+#    with a numerical list index. This is required to identify a concrete scraper object
+#    from the addon settings.
+#
+# 3) g_scraper_factory must be able to report each scraper capabilities
+#
+# 4) The actual object metadata/asset scraping is done by an scraper_strategy object instance.
+#
+# 5) progress_dialog_obj object instance is passed to the scraper_strategy instance.
+#    In the ROM scanner the progress dialog is created in the scanner instance and 
+#    changed by the scanner/scraper objects.
+#
+# ------------------------------------------------------------------------------------------------
 class ScraperFactory(KodiProgressDialogStrategy):
     def __init__(self, PATHS, settings):
         self.settings = settings
         self.addon_dir = PATHS.ADDON_DATA_DIR
         super(ScraperFactory, self).__init__()
 
+    # Returns a ScrapingStrategy object.
     def create(self, launcher):
         scan_metadata_policy = self.settings['scan_metadata_policy']
         scan_asset_policy    = self.settings['scan_asset_policy']
@@ -104,8 +193,8 @@ class ScraperFactory(KodiProgressDialogStrategy):
             unconfigured_asset_srt = ', '.join(unconfigured_name_list)
             kodi_dialog_OK('Assets directories not set: {0}. '.format(unconfigured_asset_srt) +
                            'Asset scanner will be disabled for this/those.')
-
         strategy = ScrapingStrategy(metadata_scraper, asset_scrapers)
+
         return strategy
 
     # ~~~ Ensure there is no duplicate asset dirs ~~~
@@ -124,7 +213,6 @@ class ScraperFactory(KodiProgressDialogStrategy):
         log_info('No duplicated asset dirs found')
         return False
 
-    #
     # Initializes all the possible scraper instances beforehand for the launcher.
     # This way the same instances can be reused between metadata and different asset types
     # when the user wants the same scraper source for those. 
@@ -255,53 +343,25 @@ class ScrapingStrategy(object):
         log_verb('Set Manual    file "{0}"'.format(romdata['s_manual']))
         log_verb('Set Trailer   file "{0}"'.format(romdata['s_trailer']))
 
-class ScraperSettings(object):
-    def __init__(self, metadata_scraping_mode=1, asset_scraping_mode=1, ignore_scraped_title=False, scan_clean_tags=True):
-        # --- Set scraping mode ---
-        # values="Semi-automatic|Automatic"
-        self.metadata_scraping_mode  = metadata_scraping_mode
-        self.asset_scraping_mode = asset_scraping_mode
-        self.ignore_scraped_title = ignore_scraped_title
-        self.scan_clean_tags = scan_clean_tags
-
-    @staticmethod
-    def create_from_settings(settings):
-        return ScraperSettings(
-            settings['metadata_scraper_mode'] if 'metadata_scraper_mode' in settings else 1,
-            settings['asset_scraper_mode'] if 'asset_scraper_mode' in settings else 1,
-            settings['scan_ignore_scrap_title'] if 'scan_ignore_scrap_title' in settings else False,
-            settings['scan_clean_tags'] if 'scan_clean_tags' in settings else True)
-
 #
 # Base class for all scrapers (offline or online, metadata or assets).
 #
-# --- Scraper use cases ---
-# A) In the ROM scanner.
-#    The scraper is called multiple times for each ROM.
-# B) In the ROM context menu.
-#    The scraper object may be called multiple times by the recursive context menu.
-# C) In the Standalone Launcher context menu.
-#    Write me.
-#
-# --- Use case A examples ---
-#
-# --- Use case B examples ---
-#
-# --- Use case C examples ---
-#
-# ------------------------------------------------------------------------------------------------
 # launcher object is needed to:
-# 1) self.launcher.get_asset_path(asset_info)
-# 2) self.launcher.get_launcher_type()
-# 3) self.launcher.get_platform()
-# 4) self.launcher.get_rom_extensions()
+#   1) self.launcher.get_asset_path(asset_info)
+#   2) self.launcher.get_launcher_type()
+#   3) self.launcher.get_platform()
+#   4) self.launcher.get_rom_extensions()
 #
 # rom object is needed to:
-# 1) rom.get_path() ROM path.
+#   1) rom.get_path() ROM path.
 #
 class Scraper(object):
     __metaclass__ = abc.ABCMeta
 
+    ## The constructor.
+    #  @param scraper_settings Parameter description.
+    #  @param launcher Parameter description.
+    #  @param fallbackScraper Parameter description.
     def __init__(self, scraper_settings, launcher, fallbackScraper = None):
         self.cache = {}
         self.assets_cache = {}
@@ -309,10 +369,10 @@ class Scraper(object):
         self.launcher = launcher
         self.fallbackScraper = fallbackScraper
 
-    #
-    # This method is called when scraping metadata for a ROM or Launcher objects.
-    # Note that scraper support only Standalone Launchers.
-    #
+    ## This method is called when scraping metadata for a ROM or Launcher objects.
+    #  Note that the metadata scraper supports only Standalone Launchers.
+    #  @param search_term String with the search term, for example "Sonic"
+    #  @param rom ROM object to be scrapped.
     def scrape_metadata(self, search_term, rom):
         # --- Step 1: search for matching term candidates ---
         candidates = self._get_candidates(search_term, rom)

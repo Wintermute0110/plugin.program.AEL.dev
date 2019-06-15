@@ -97,12 +97,12 @@ FEATURE  New ROMs artwork type 3D Boxes, asked by Rufoo.
 
 FEATURE  [SCRAPERS] Copy scraper stuff from master branch by Chrisism.
 
+WIP NOW  [SCRAPERS] Fix MobyGames scraper and use new API.
+         See http://www.mobygames.com/info/api
+
 WIP      [SCRAPERS] Fix TheGamesDB scraper. There has been a change in the web site including
          a new API. I'm not sure wether AEL will need an API key.
          See https://github.com/Wintermute0110/plugin.program.advanced.emulator.launcher/issues/75
-
-WIP NOW  [SCRAPERS] Fix MobyGames scraper and use new API.
-         See http://www.mobygames.com/info/api
 
 WIP      [CORE] Support for Advanced MAME Launcher exported virtual launchers.
          This feature requires AML 0.9.X
