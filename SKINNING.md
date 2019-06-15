@@ -40,11 +40,11 @@
 
  * Inside **Browse LaunchBox Offline Scraper**, every platform name is a Virtual Launcher.
 
- * Inside **Browse ROMs by Title**, etc., every category is a Virtual Launcher.
+ * Inside **Browse ROMs by Title**, **Browse ROMs by Year**, etc., every category is a Virtual Launcher.
 
-## Category metadata labels ##
+## Category metadata infolabels ##
 
- * Properties set by AEL when a **Category** or **Virtual Category** is selected.
+ * Infolabels set by AEL when a **Category** or **Virtual Category** is selected.
 
  * `setInfo()` first argument is `video`. 
 
@@ -55,9 +55,9 @@
 | Plot          | m_plot    | plot        |                 | `$INFO[ListItem.Plot]`  | string               |
 | Rating        | m_rating  | rating      |                 |                         | string from 0 to 10  |
 
-## Categories asset labels ##
+## Categories asset infolabels ##
 
- * Properties set by AEL when a **Category** or **Virtual Category** is selected.
+ * Infolabels set by AEL when a **Category** or **Virtual Category** is selected.
 
  * `thumb = DefaultFolder.png` is the default for categories.
 
@@ -74,7 +74,7 @@
 | Extrafanart | extrafanart | extrafanart1 |               | `Not implemented yet`            |
 | Extrafanart | extrafanart | extrafanart2 |               | `Not implemented yet`            |
 
-## Launcher metadata labels ##
+## Launcher metadata infolabels ##
 
  * Properties set by AEL when a **Launcher** or **Virtual Launcher** is selected.
 
@@ -99,9 +99,9 @@
 | Platform      | platform  |             | platform        | `$INFO[ListItem.Property(platform)]` | string               |
 |               |           | overlay     |                 |                                      |  int range 0 to 8    |
 
-## Launchers asset labels ##
+## Launchers asset infolabels ##
 
- * `thumb` label is set to `DefaultProgram.png` or `DefaultFolder.png`.
+ * `icon` label is set to `DefaultProgram.png` or `DefaultFolder.png`.
 
  * Trailer is an asset, however label is set with `setInfo()` instead of `setArt()`.
 
@@ -121,14 +121,14 @@
 
 ## ROMs metadata infolabels ##
 
- * setInfo first argument is `video`. 
+ * `setInfo` first argument is `video`. 
 
- * Platform is a launcher property, not a ROM property. Also, `setProperty()` is used instead 
-   of `setInfo()`.
+ * Platform is a **Launcher** property, not a **ROM** property. Also, `setProperty()` is used
+   to set the platform and not `setInfo()`.
 
- * Year and Rating are integers according to Kodi Pydocs. However, they are stored as string. 
-   If Year and Rating are not set they are the empty strings, which is different from integer 0. 
-   Kodi seems to handle this behaviour well.
+ * **Year** and **Rating** are integers according to Kodi Pydocs. However, they are stored
+   as string. If Year and Rating are not set they are the empty strings, which is different
+   from integer 0. Kodi seems to handle this behaviour well.
 
 | Metadata name | AEL name   | `setInfo()` | `setProperty()` | Infolabel                            | Type                 |
 |---------------|------------|-------------|-----------------|--------------------------------------|----------------------|
@@ -145,9 +145,9 @@
 
 ## ROMs asset infolabels ##
 
- * `thumb` label is set to `DefaultProgram.png`.
+ * `icon` label is set to `DefaultProgram.png`.
 
- * For Confluence/Estuary, user will be able to configure what artwork will be set as `thumb`
+ * For Confluence/Estuary, user will be able to configure what artwork will be set as `icon`
    and `fanart`. 
 
  * Trailer is an asset, however label is set with setInfo() instead of setArt()
