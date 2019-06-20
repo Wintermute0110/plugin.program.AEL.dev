@@ -116,11 +116,13 @@ WIP      [SCRAPERS] Fix GameFAQs scraper. It has been a while since this scraper
 
 [B]Advanced Emulator Launcher | version 0.9.8 | XX June 2019[/B]
 
-FEATURE  New ROMs artwork type 3D Boxes, asked by Rufoo.
+FEATURE  [CORE] New ROMs artwork type 3D Boxes, asked by Rufoo.
+
+FEATURE  [CORE] New entry in root menu named "Global Reports."
 
 FEATURE  [SCRAPERS] Copy scraper stuff from master branch by Chrisism.
 
-WIP NOW  [SCRAPERS] Fix MobyGames scraper and use new API.
+WIP NOW  [SCRAPERS] Fix MobyGames scraper and use new MobyGames API.
          See http://www.mobygames.com/info/api
 
 WIP      [SCRAPERS] Fix TheGamesDB scraper. There has been a change in the web site including

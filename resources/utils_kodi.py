@@ -282,20 +282,18 @@ def kodi_toogle_fullscreen():
     # >> Frodo and up compatible
     xbmc.executeJSONRPC('{"jsonrpc":"2.0", "method":"Input.ExecuteAction", "params":{"action":"togglefullscreen"}, "id":"1"}')
 
-def kodi_kodi_read_favourites():
-    favourites = []
-    fav_names = []
-    if os.path.isfile(FAVOURITES_PATH):
-        fav_xml = parse(FAVOURITES_PATH)
-        fav_doc = fav_xml.documentElement.getElementsByTagName( 'favourite' )
-        for count, favourite in enumerate(fav_doc):
-            try:
-                fav_icon = favourite.attributes[ 'thumb' ].nodeValue
-            except:
-                fav_icon = "DefaultProgram.png"
-            favourites.append((favourite.childNodes[ 0 ].nodeValue.encode('utf8','ignore'),
-                               fav_icon.encode('utf8','ignore'),
-                               favourite.attributes[ 'name' ].nodeValue.encode('utf8','ignore')))
-            fav_names.append(favourite.attributes[ 'name' ].nodeValue.encode('utf8','ignore'))
+#
+# Displays a text window and requests a monospaced font.
+#
+def kodi_display_text_window_mono(window_title, info_text):
+    log_debug('Setting Window(10000) Property "FontWidth" = "monospaced"')
+    xbmcgui.Window(10000).setProperty('FontWidth', 'monospaced')
+    xbmcgui.Dialog().textviewer(window_title, info_text)
+    log_debug('Setting Window(10000) Property "FontWidth" = "proportional"')
+    xbmcgui.Window(10000).setProperty('FontWidth', 'proportional')
 
-    return favourites, fav_names
+#
+# Displays a text window with a proportional font (default).
+#
+def kodi_display_text_window(window_title, info_text):
+    xbmcgui.Dialog().textviewer(window_title, info_text)

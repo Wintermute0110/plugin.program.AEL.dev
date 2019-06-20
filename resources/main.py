@@ -274,14 +274,23 @@ class Main:
         # --- Commands that do not modify the databases are allowed to run concurrently ---
         if command == 'SHOW_ADDON_ROOT' or \
            command == 'SHOW_VCATEGORIES_ROOT' or \
-           command == 'SHOW_AEL_OFFLINE_LAUNCHERS_ROOT' or command == 'SHOW_LB_OFFLINE_LAUNCHERS_ROOT' or \
-           command == 'SHOW_FAVOURITES' or command == 'SHOW_VIRTUAL_CATEGORY' or \
-           command == 'SHOW_RECENTLY_PLAYED' or command == 'SHOW_MOST_PLAYED' or \
-           command == 'SHOW_COLLECTIONS' or command == 'SHOW_COLLECTION_ROMS' or \
-           command == 'SHOW_LAUNCHERS' or command == 'SHOW_ROMS' or \
+           command == 'SHOW_AEL_OFFLINE_LAUNCHERS_ROOT' or \
+           command == 'SHOW_LB_OFFLINE_LAUNCHERS_ROOT' or \
+           command == 'SHOW_FAVOURITES' or \
+           command == 'SHOW_VIRTUAL_CATEGORY' or \
+           command == 'SHOW_RECENTLY_PLAYED' or \
+           command == 'SHOW_MOST_PLAYED' or \
+           command == 'SHOW_UTILITIES_VLAUNCHERS' or \
+           command == 'SHOW_GLOBALREPORTS_VLAUNCHERS' or \
+           command == 'SHOW_COLLECTIONS' or \
+           command == 'SHOW_COLLECTION_ROMS' or \
+           command == 'SHOW_LAUNCHERS' or \
+           command == 'SHOW_ROMS' or \
            command == 'SHOW_VLAUNCHER_ROMS' or \
-           command == 'SHOW_AEL_SCRAPER_ROMS' or command == 'SHOW_LB_SCRAPER_ROMS' or \
-           command == 'EXEC_SHOW_CLONE_ROMS' or command == 'SHOW_CLONE_ROMS' or \
+           command == 'SHOW_AEL_SCRAPER_ROMS' or \
+           command == 'SHOW_LB_SCRAPER_ROMS' or \
+           command == 'EXEC_SHOW_CLONE_ROMS' or \
+           command == 'SHOW_CLONE_ROMS' or \
            command == 'SHOW_ALL_CATEGORIES' or \
            command == 'SHOW_ALL_LAUNCHERS' or \
            command == 'SHOW_ALL_ROMS' or \
@@ -318,6 +327,11 @@ class Main:
             self._command_render_recently_played()
         elif command == 'SHOW_MOST_PLAYED':
             self._command_render_most_played()
+        elif command == 'SHOW_UTILITIES_VLAUNCHERS':
+            self._gui_render_Utilities_vlaunchers()
+        elif command == 'SHOW_GLOBALREPORTS_VLAUNCHERS':
+            self._gui_render_GlobalReports_vlaunchers()
+
         elif command == 'SHOW_COLLECTIONS':
             self._command_render_collections()
         elif command == 'SHOW_COLLECTION_ROMS':
@@ -446,7 +460,11 @@ class Main:
         elif command == 'CHECK_RETRO_BIOS':    self._command_check_retro_BIOS()
         elif command == 'IMPORT_AL_LAUNCHERS': self._command_import_legacy_AL()
 
-        # >> Unknown command
+        # Commands called from Global Reports menu.
+        elif command == 'EXECUTE_GLOBAL_ROM_STATS':   self._command_exec_global_rom_stats()
+        elif command == 'EXECUTE_GLOBAL_AUDIT_STATS': self._command_exec_global_audit_stats()
+
+        # Unknown command
         else:
             kodi_dialog_OK('Unknown command {0}'.format(args['com'][0]) )
         log_debug('Advanced Emulator Launcher run_protected() END')
@@ -3335,6 +3353,9 @@ class Main:
         if not self.settings['display_hide_mostplayed']:
             self._gui_render_category_most_played_row()
 
+        # self._gui_render_Utilities_root()
+        self._gui_render_GlobalReports_root()
+
         xbmcplugin.endOfDirectory(handle = self.addon_handle, succeeded = True, cacheToDisc = False)
 
     #
@@ -3557,6 +3578,25 @@ class Main:
         url_str = self._misc_url('SHOW_MOST_PLAYED')
         xbmcplugin.addDirectoryItem(handle = self.addon_handle, url = url_str, listitem = listitem, isFolder = True)
 
+    def _gui_render_GlobalReports_root(self):
+        vcategory_name   = '[COLOR thistle]Global Reports[/COLOR]'
+        vcategory_plot   = 'Generate and view [COLOR orange]Global Reports[/COLOR].'
+        vcategory_icon   = g_PATHS.ICON_FILE_PATH.getPath()
+        vcategory_fanart = g_PATHS.FANART_FILE_PATH.getPath()
+
+        listitem = xbmcgui.ListItem(vcategory_name)
+        listitem.setInfo('video', {'title': vcategory_name, 'plot' : vcategory_plot, 'overlay': 4})
+        listitem.setArt({'icon' : vcategory_icon, 'fanart' : vcategory_fanart})
+        listitem.setProperty(AEL_CONTENT_LABEL, AEL_CONTENT_VALUE_CATEGORY)
+
+        commands = []
+        commands.append(('Open Kodi file manager', 'ActivateWindow(filemanager)'))
+        commands.append(('AEL addon settings', 'Addon.OpenSettings({0})'.format(__addon_id__)))
+        listitem.addContextMenuItems(commands)
+
+        url_str = self._misc_url('SHOW_GLOBALREPORTS_VLAUNCHERS')
+        xbmcplugin.addDirectoryItem(handle = self.addon_handle, url = url_str, listitem = listitem, isFolder = True)
+
     # ---------------------------------------------------------------------------------------------
     # Virtual categories [Browse by ...]
     # ---------------------------------------------------------------------------------------------
@@ -3741,6 +3781,42 @@ class Main:
 
         url_str = self._misc_url('SHOW_LB_SCRAPER_ROMS', platform)
         xbmcplugin.addDirectoryItem(handle = self.addon_handle, url = url_str, listitem = listitem, isFolder = True)
+
+    def _gui_render_GlobalReports_vlaunchers(self):
+        # --- Common context menu for all VLaunchers ---
+        commands = []
+        commands.append(('Kodi File Manager', 'ActivateWindow(filemanager)'))
+        commands.append(('AEL addon settings', 'Addon.OpenSettings({0})'.format(__addon_id__)))
+
+        # --- Global ROM statistics ---
+        vcategory_name   = 'Global ROM statistics'
+        vcategory_plot   = ('Shows a report of all ROM Launchers with number of ROMs.')
+        vcategory_icon   = g_PATHS.ICON_FILE_PATH.getPath()
+        vcategory_fanart = g_PATHS.FANART_FILE_PATH.getPath()
+        listitem = xbmcgui.ListItem(vcategory_name)
+        listitem.setInfo('video', {'title': vcategory_name, 'plot' : vcategory_plot, 'overlay': 4})
+        listitem.setArt({'icon' : vcategory_icon, 'fanart' : vcategory_fanart})
+        listitem.setProperty(AEL_CONTENT_LABEL, AEL_CONTENT_VALUE_ROM_LAUNCHER)
+        listitem.addContextMenuItems(commands)
+        url_str = self._misc_url('EXECUTE_GLOBAL_ROM_STATS')
+        xbmcplugin.addDirectoryItem(handle = self.addon_handle, url = url_str, listitem = listitem, isFolder = False)
+
+        # --- Global ROM Audit statistics ---
+        vcategory_name   = 'Global ROM Audit statistics'
+        vcategory_plot   = ('Shows a report of all audited ROM Launchers, with Have, Miss and Unknown '
+                            'statistics.')
+        vcategory_icon   = g_PATHS.ICON_FILE_PATH.getPath()
+        vcategory_fanart = g_PATHS.FANART_FILE_PATH.getPath()
+        listitem = xbmcgui.ListItem(vcategory_name)
+        listitem.setInfo('video', {'title': vcategory_name, 'plot' : vcategory_plot, 'overlay': 4})
+        listitem.setArt({'icon' : vcategory_icon, 'fanart' : vcategory_fanart})
+        listitem.setProperty(AEL_CONTENT_LABEL, AEL_CONTENT_VALUE_ROM_LAUNCHER)
+        listitem.addContextMenuItems(commands)
+        url_str = self._misc_url('EXECUTE_GLOBAL_AUDIT_STATS')
+        xbmcplugin.addDirectoryItem(handle = self.addon_handle, url = url_str, listitem = listitem, isFolder = False)
+
+        # --- End of directory ---
+        xbmcplugin.endOfDirectory(handle = self.addon_handle, succeeded = True, cacheToDisc = False)
 
     # ---------------------------------------------------------------------------------------------
     # Launcher LisItem rendering
@@ -10072,6 +10148,104 @@ class Main:
         kodi_dialog_OK('Imported {0} Category/s, {1} Launcher/s '.format(num_categories, num_launchers) +
                        'and {0} ROM/s.'.format(num_ROMs))
         kodi_refresh_container()
+
+    def _command_exec_global_rom_stats(self):
+        log_debug('_command_exec_global_rom_stats() BEGIN')
+        window_title = 'Global ROM statistics'
+        slist = []
+        # slist.append('[COLOR violet]Launcher ROM report.[/COLOR]')
+        # slist.append('')
+
+        # --- Table header ---
+        # Table cell padding: left, right
+        table_str = [
+            ['left', 'left', 'right'],
+            ['Category', 'Launcher', 'ROMs'],
+        ]
+
+        # Traverse categories and sort alphabetically.
+        log_debug('Number of categories {0}'.format(len(self.categories)))
+        log_debug('Number of launchers {0}'.format(len(self.launchers)))
+        for cat_id in sorted(self.categories, key = lambda x : self.categories[x]['m_name']):
+            # Get launchers of this category alphabetically sorted.
+            launcher_list = []
+            for launcher_id in sorted(self.launchers, key = lambda x : self.launchers[x]['m_name']):
+                launcher = self.launchers[launcher_id]
+                # Skip Standalone Launchers
+                if not launcher['rompath']: continue
+                if launcher['categoryID'] == cat_id: launcher_list.append(launcher)
+            # Render list of launchers for this category.
+            cat_name = self.categories[cat_id]['m_name']
+            for launcher in launcher_list:
+                table_str.append([cat_name, launcher['m_name'], str(launcher['num_roms'])])
+        # Traverse categoryless launchers.
+        catless_launchers = {}
+        for launcher_id, launcher in self.launchers.iteritems():
+            if launcher['categoryID'] == VCATEGORY_ADDONROOT_ID:
+                catless_launchers[launcher_id] = launcher
+        for launcher_id in sorted(catless_launchers, key = lambda x : catless_launchers[x]['m_name']):
+            launcher = self.launchers[launcher_id]
+            # Skip Standalone Launchers
+            if not launcher['rompath']: continue
+            table_str.append(['', launcher['m_name'], str(launcher['num_roms'])])
+
+        # Generate table and print report
+        log_debug(unicode(table_str))
+        table_str_list = text_render_table_str(table_str)
+        slist.extend(table_str_list)
+        kodi_display_text_window_mono(window_title, '\n'.join(slist))
+
+    def _command_exec_global_audit_stats(self):
+        log_debug('_command_exec_global_audit_stats() BEGIN')
+        window_title = 'Global ROM Audit statistics'
+        slist = []
+
+        # --- Table header ---
+        # Table cell padding: left, right
+        table_str = [
+            ['left', 'left', 'right', 'right', 'right', 'right', 'right', 'right'],
+            ['Category', 'Launcher', 'ROMs', 'Parents', 'Clones', 'Have', 'Miss', 'Unknown'],
+        ]
+
+        # Traverse categories and sort alphabetically.
+        log_debug('Number of categories {0}'.format(len(self.categories)))
+        log_debug('Number of launchers {0}'.format(len(self.launchers)))
+        for cat_id in sorted(self.categories, key = lambda x : self.categories[x]['m_name']):
+            # Get launchers of this category alphabetically sorted.
+            launcher_list = []
+            for launcher_id in sorted(self.launchers, key = lambda x : self.launchers[x]['m_name']):
+                launcher = self.launchers[launcher_id]
+                # Skip Standalone Launchers
+                if not launcher['rompath']: continue
+                if launcher['categoryID'] == cat_id: launcher_list.append(launcher)
+            # Render list of launchers for this category.
+            cat_name = self.categories[cat_id]['m_name']
+            for launcher in launcher_list:
+                table_str.append([
+                    cat_name, launcher['m_name'],
+                    str(launcher['num_roms']), str(launcher['num_parents']), str(launcher['num_clones']),
+                    str(launcher['num_have']), str(launcher['num_miss']), str(launcher['num_unknown']),
+                ])
+        # Traverse categoryless launchers.
+        catless_launchers = {}
+        for launcher_id, launcher in self.launchers.iteritems():
+            if launcher['categoryID'] == VCATEGORY_ADDONROOT_ID:
+                catless_launchers[launcher_id] = launcher
+        for launcher_id in sorted(catless_launchers, key = lambda x : catless_launchers[x]['m_name']):
+            launcher = self.launchers[launcher_id]
+            # Skip Standalone Launchers
+            if not launcher['rompath']: continue
+            table_str.append([
+                '', launcher['m_name'],
+                    str(launcher['num_roms']), str(launcher['num_parents']), str(launcher['num_clones']),
+                    str(launcher['num_have']), str(launcher['num_miss']), str(launcher['num_unknown']),
+            ])
+
+        # Generate table and print report
+        log_debug(unicode(table_str))
+        table_str_list = text_render_table_str(table_str)
+        slist.extend(table_str_list)
+        kodi_display_text_window_mono(window_title, '\n'.join(slist))
 
     #
     # A set of functions to help making plugin URLs
