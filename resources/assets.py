@@ -470,15 +470,15 @@ def assets_get_path_noext_SUFIX(Asset, AssetPath, asset_base_noext, objectID = '
 # Get a list of enabled assets.
 #
 # Returns tuple:
-# configured_bool_list    List of boolean values. It has all assets defined in ROM_ASSET_LIST
+# configured_bool_list    List of boolean values. It has all assets defined in ROM_ASSET_ID_LIST
 # unconfigured_name_list  List of disabled asset names
 #
 def asset_get_configured_dir_list(launcher):
-    configured_bool_list   = [False] * len(ROM_ASSET_LIST)
+    configured_bool_list   = [False] * len(ROM_ASSET_ID_LIST)
     unconfigured_name_list = []
 
     # >> Check if asset paths are configured or not
-    for i, asset in enumerate(ROM_ASSET_LIST):
+    for i, asset in enumerate(ROM_ASSET_ID_LIST):
         A = assets_get_info_scheme(asset)
         configured_bool_list[i] = True if launcher[A.path_key] else False
         if not configured_bool_list[i]: 
@@ -493,13 +493,13 @@ def asset_get_configured_dir_list(launcher):
 # Get a list of assets with duplicated paths. Refuse to do anything if duplicated paths found.
 #
 def asset_get_duplicated_dir_list(launcher):
-    duplicated_bool_list   = [False] * len(ROM_ASSET_LIST)
+    duplicated_bool_list   = [False] * len(ROM_ASSET_ID_LIST)
     duplicated_name_list   = []
 
     # >> Check for duplicated asset paths
-    for i, asset_i in enumerate(ROM_ASSET_LIST[:-1]):
+    for i, asset_i in enumerate(ROM_ASSET_ID_LIST[:-1]):
         A_i = assets_get_info_scheme(asset_i)
-        for j, asset_j in enumerate(ROM_ASSET_LIST[i+1:]):
+        for j, asset_j in enumerate(ROM_ASSET_ID_LIST[i+1:]):
             A_j = assets_get_info_scheme(asset_j)
             # >> Exclude unconfigured assets (empty strings).
             if not launcher[A_i.path_key] or not launcher[A_j.path_key]: continue
@@ -513,20 +513,20 @@ def asset_get_duplicated_dir_list(launcher):
 
 #
 # Search for local assets and place found files into a list.
-# Returned list all has assets as defined in ROM_ASSET_LIST.
+# Returned list all has assets as defined in ROM_ASSET_ID_LIST.
 # This function is used in the ROM Scanner.
 #
 # launcher               -> launcher dictionary
 # ROMFile                -> FileName object
-# enabled_ROM_asset_list -> list of booleans
+# enabled_ROM_ASSET_ID_LIST -> list of booleans
 #
-def assets_search_local_cached_assets(launcher, ROMFile, enabled_ROM_asset_list):
+def assets_search_local_cached_assets(launcher, ROMFile, enabled_ROM_ASSET_ID_LIST):
     log_verb('assets_search_local_cached_assets() Searching for ROM local assets...')
-    local_asset_list = [''] * len(ROM_ASSET_LIST)
+    local_asset_list = [''] * len(ROM_ASSET_ID_LIST)
     rom_basename_noext = ROMFile.getBase_noext()
-    for i, asset_kind in enumerate(ROM_ASSET_LIST):
+    for i, asset_kind in enumerate(ROM_ASSET_ID_LIST):
         AInfo = assets_get_info_scheme(asset_kind)
-        if not enabled_ROM_asset_list[i]:
+        if not enabled_ROM_ASSET_ID_LIST[i]:
             log_verb('assets_search_local_cached_assets() Disabled {0:<9}'.format(AInfo.name))
             continue
         local_asset = misc_search_file_cache(launcher[AInfo.path_key], rom_basename_noext, AInfo.exts)
@@ -544,12 +544,12 @@ def assets_search_local_cached_assets(launcher, ROMFile, enabled_ROM_asset_list)
 # Search for local assets and put found files into a list.
 # This function is used in _roms_add_new_rom() where there is no need for a file cache.
 #
-def assets_search_local_assets(launcher, ROMFile, enabled_ROM_asset_list):
+def assets_search_local_assets(launcher, ROMFile, enabled_ROM_ASSET_ID_LIST):
     log_verb('assets_search_local_assets() Searching for ROM local assets...')
-    local_asset_list = [''] * len(ROM_ASSET_LIST)
-    for i, asset_kind in enumerate(ROM_ASSET_LIST):
+    local_asset_list = [''] * len(ROM_ASSET_ID_LIST)
+    for i, asset_kind in enumerate(ROM_ASSET_ID_LIST):
         AInfo = assets_get_info_scheme(asset_kind)
-        if not enabled_ROM_asset_list[i]:
+        if not enabled_ROM_ASSET_ID_LIST[i]:
             log_verb('assets_search_local_assets() Disabled {0:<9}'.format(AInfo.name))
             continue
         asset_path = FileName(launcher[AInfo.path_key])
@@ -571,12 +571,12 @@ def assets_search_local_assets(launcher, ROMFile, enabled_ROM_asset_list):
 #
 def assets_get_ROM_asset_path(launcher):
     ROM_asset_path = ''
-    duplicated_bool_list = [False] * len(ROM_ASSET_LIST)
-    AInfo_first = assets_get_info_scheme(ROM_ASSET_LIST[0])
+    duplicated_bool_list = [False] * len(ROM_ASSET_ID_LIST)
+    AInfo_first = assets_get_info_scheme(ROM_ASSET_ID_LIST[0])
     path_first_asset_FN = FileName(launcher[AInfo_first.path_key])
     log_debug('assets_get_ROM_asset_path() path_first_asset OP  "{0}"'.format(path_first_asset_FN.getOriginalPath()))
     log_debug('assets_get_ROM_asset_path() path_first_asset Dir "{0}"'.format(path_first_asset_FN.getDir()))
-    for i, asset_kind in enumerate(ROM_ASSET_LIST):
+    for i, asset_kind in enumerate(ROM_ASSET_ID_LIST):
         AInfo = assets_get_info_scheme(asset_kind)
         current_path_FN = FileName(launcher[AInfo.path_key])
         if current_path_FN.getDir() == path_first_asset_FN.getDir():
