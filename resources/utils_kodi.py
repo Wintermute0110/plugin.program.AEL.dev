@@ -30,7 +30,7 @@ except:
     from utils_kodi_standalone import *
 
 # --- AEL modules ---
-# >> utils.py and utils_kodi.py must not depend on any other AEL module to avoid circular dependencies.
+# utils.py and utils_kodi.py must not depend on any other AEL module to avoid circular dependencies.
 
 # --- Constants ---------------------------------------------------------------
 LOG_ERROR   = 0
@@ -126,19 +126,81 @@ def kodi_notify_warn(text, title = 'Advanced Emulator Launcher warning', time = 
 def kodi_notify_error(text, title = 'Advanced Emulator Launcher error', time = 7000):
     xbmcgui.Dialog().notification(title, text, xbmcgui.NOTIFICATION_ERROR, time)
 
-#
-# NOTE I think Krypton introduced new API functions to activate the busy dialog window. Check that
-#      out!
-#
-def kodi_busydialog_ON():
-    xbmc.executebuiltin('ActivateWindow(busydialog)')
-
-def kodi_busydialog_OFF():
-    xbmc.executebuiltin('Dialog.Close(busydialog)')
-
 def kodi_refresh_container():
     log_debug('kodi_refresh_container()')
     xbmc.executebuiltin('Container.Refresh')
+
+class KodiProgressDialog(object):
+    def __init__(self):
+        self.title = 'Advanced Emulator Launcher'
+        self.progress = 0
+        self.progressDialog = xbmcgui.DialogProgress()
+
+    def startProgress(self, message, num_steps):
+        self.num_steps = num_steps
+        self.progressDialog.create(self.title, message)
+
+    # Update progress and optionally update messages as well.
+    def updateProgress(self, step_index, message1 = None, message2 = None):
+        self.progress = (step_index * 100) / self.num_steps
+        if message2:
+            self.message1 = message1
+            self.progressDialog.update(self.progress, message1, message2)
+        elif message1:
+            self.message1 = message1
+            self.progressDialog.update(self.progress, message1)
+        else:
+            self.progressDialog.update(self.progress)
+
+    # Update dialog message but keep same progress.
+    def updateMessages(self, message1, message2):
+        self.message1 = message1
+        self.progressDialog.update(self.progress, message1, message2)
+
+    # Update dialog message but keep same progress.
+    def updateMessage(self, message1):
+        self.message1 = message1
+        self.progressDialog.update(self.progress, message1)
+
+    # Update message2 and keeps same progress and message1
+    def updateMessage2(self, message2):
+        self.progressDialog.update(self.progress, self.message1, message2)
+
+    def isCanceled(self):
+        return self.progressDialog.iscanceled()
+
+    def endProgress(self, canceled = False):
+        self.progressDialog.update(100)
+        self.progressDialog.close()
+
+# To be used as a base class.
+class KodiProgressDialog_Chrisism(object):
+    def __init__(self):
+        self.progress = 0
+        self.progressDialog = xbmcgui.DialogProgress()
+        self.verbose = True
+
+    def _startProgressPhase(self, title, message):
+        self.progressDialog.create(title, message)
+
+    def _updateProgress(self, progress, message1 = None, message2 = None):
+        self.progress = progress
+        if not self.verbose:
+            self.progressDialog.update(progress)
+        else:
+            self.progressDialog.update(progress, message1, message2)
+
+    def _updateProgressMessage(self, message1, message2 = None):
+        if not self.verbose: return
+
+        self.progressDialog.update(self.progress, message1, message2)
+
+    def _isProgressCanceled(self):
+        return self.progressDialog.iscanceled()
+
+    def _endProgressPhase(self, canceled = False):
+        if not canceled: self.progressDialog.update(100)
+        self.progressDialog.close()
 
 # -----------------------------------------------------------------------------
 # Kodi specific stuff

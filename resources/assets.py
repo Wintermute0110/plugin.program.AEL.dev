@@ -471,23 +471,31 @@ def assets_get_path_noext_SUFIX(Asset, AssetPath, asset_base_noext, objectID = '
 #
 # Returns tuple:
 # configured_bool_list    List of boolean values. It has all assets defined in ROM_ASSET_ID_LIST
-# unconfigured_name_list  List of disabled asset names
 #
-def asset_get_configured_dir_list(launcher):
+def asset_get_enabled_asset_list(launcher):
     configured_bool_list   = [False] * len(ROM_ASSET_ID_LIST)
-    unconfigured_name_list = []
 
     # >> Check if asset paths are configured or not
     for i, asset in enumerate(ROM_ASSET_ID_LIST):
         A = assets_get_info_scheme(asset)
         configured_bool_list[i] = True if launcher[A.path_key] else False
-        if not configured_bool_list[i]: 
-            unconfigured_name_list.append(A.name)
+        if not configured_bool_list[i]:
             log_verb('asset_get_enabled_asset_list() {0:<9} path unconfigured'.format(A.name))
         else:
             log_debug('asset_get_enabled_asset_list() {0:<9} path configured'.format(A.name))
 
-    return (configured_bool_list, unconfigured_name_list)
+    return configured_bool_list
+
+# unconfigured_name_list  List of disabled asset names
+def asset_get_unconfigured_name_list(configured_bool_list):
+    unconfigured_name_list = []
+
+    for i, asset in enumerate(ROM_ASSET_ID_LIST):
+        A = assets_get_info_scheme(asset)
+        if not configured_bool_list[i]:
+            unconfigured_name_list.append(A.name)
+
+    return unconfigured_name_list
 
 #
 # Get a list of assets with duplicated paths. Refuse to do anything if duplicated paths found.
