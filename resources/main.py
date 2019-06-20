@@ -2515,7 +2515,7 @@ class Main:
         # >> Save categories and update container contents so user sees those changes inmediately.
         # NOTE Update edited launcher timestamp only if launcher was not deleted!
         if launcherID in self.launchers: self.launchers[launcherID]['timestamp_launcher'] = time.time()
-        fs_write_catfile(CATEGORIES_FILE_PATH, self.categories, self.launchers)
+        fs_write_catfile(g_PATHS.CATEGORIES_FILE_PATH, self.categories, self.launchers)
         kodi_refresh_container()
 
     # Add ROMS to launcher
@@ -2540,13 +2540,13 @@ class Main:
         # --- Load ROMs ---
         if categoryID == VCATEGORY_FAVOURITES_ID:
             log_debug('_command_edit_rom() Editing Favourite ROM')
-            roms = fs_load_Favourites_JSON(FAV_JSON_FILE_PATH)
+            roms = fs_load_Favourites_JSON(g_PATHS.FAV_JSON_FILE_PATH)
         elif categoryID == VCATEGORY_COLLECTIONS_ID:
             log_debug('_command_edit_rom() Editing Collection ROM')
-            (collections, update_timestamp) = fs_load_Collection_index_XML(COLLECTIONS_FILE_PATH)
+            (collections, update_timestamp) = fs_load_Collection_index_XML(g_PATHS.COLLECTIONS_FILE_PATH)
             collection = collections[launcherID]
 
-            roms_json_file = COLLECTIONS_DIR.pjoin(collection['roms_base_noext'] + '.json')
+            roms_json_file = g_PATHS.COLLECTIONS_DIR.pjoin(collection['roms_base_noext'] + '.json')
             collection_rom_list = fs_load_Collection_ROMs_JSON(roms_json_file)
             # NOTE ROMs in a collection are stored as a list and ROMs in Favourites are stored as
             #      a dictionary. Convert the Collection list into an ordered dictionary and then
@@ -2588,10 +2588,10 @@ class Main:
             # >> Make a list of available metadata scrapers
             scraper_obj_list  = []
             scraper_menu_list = []
-            for scrap_obj in scrapers_metadata:
-                scraper_obj_list.append(scrap_obj)
-                scraper_menu_list.append('Scrape metadata from {0} ...'.format(scrap_obj.name))
-                log_verb('Added metadata scraper {0}'.format(scrap_obj.name))
+            # for scrap_obj in scrapers_metadata:
+            #     scraper_obj_list.append(scrap_obj)
+            #     scraper_menu_list.append('Scrape metadata from {0} ...'.format(scrap_obj.name))
+            #     log_verb('Added metadata scraper {0}'.format(scrap_obj.name))
 
             # >> Metadata edit dialog
             NFO_FileName = fs_get_ROM_NFO_name(roms[romID])

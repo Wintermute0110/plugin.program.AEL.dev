@@ -98,10 +98,10 @@ WIP      [SCRAPERS] Fix GameFAQs scraper. It has been a while since this scraper
  1.1) [DONE] Make sure the ROM scanner works with 
       "Metadata scan policy" set to "None" and "Asset scan policy" set to "Local images"
 
- 1.2) [WIP] Make sure the ROM scanner works with
+ 1.2) [DONE] Make sure the ROM scanner works with
       "Metadata scan policy" set to "NFO files" and "Asset scan policy" set to "Local images"
 
- 1.3) Make sure the ROM scanner works with
+ 1.3) [WIP] Make sure the ROM scanner works with
       "Metadata scan policy" set to "Scrapers" and "Asset scan policy" set to "Local images"
 
  1.4) Make sure the ROM scanner works with

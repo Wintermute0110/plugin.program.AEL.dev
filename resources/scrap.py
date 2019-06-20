@@ -26,6 +26,7 @@ import urllib
 from .constants import *
 from .utils import *
 from .assets import *
+from .disk_IO import *
 
 # --- Scraper use cases ---------------------------------------------------------------------------
 # The ScraperFactory class is resposible to create a ScraperStrategy object according to the
@@ -213,23 +214,33 @@ class ScrapeStrategy(object):
         # Action depends configured metadata policy and wheter the NFO files was found or not.
         metadata_action = ACTION_META_TITLE_ONLY
         if self.scan_metadata_policy == 0:
-            log_verb('Metadata policy: Read NFO file ON | Scraper OFF. Only cleaning ROM name.')
+            log_verb('Metadata policy: Read NFO file OFF | Scraper OFF')
+            log_verb('Metadata policy: Only cleaning ROM name.')
             metadata_action = ACTION_META_TITLE_ONLY
+
         elif self.scan_metadata_policy == 1:
-            log_verb('Metadata policy: Read NFO file only | Scraper OFF')
-            metadata_action = ACTION_META_NFO_FILE
+            log_verb('Metadata policy: Read NFO file ON | Scraper OFF')
+            if NFO_file_found:
+                log_verb('Metadata policy: NFO file found.')
+                metadata_action = ACTION_META_NFO_FILE
+            else:
+                log_verb('Metadata policy: NFO file not found. Only cleaning ROM name')
+                metadata_action = ACTION_META_TITLE_ONLY
+
         elif self.scan_metadata_policy == 2 and NFO_file_found:
-            log_verb('Metadata policy: Read NFO file ON, if not found Scraper ON')
-            log_verb('Metadata policy: NFO file found | Scraper OFF')
-            metadata_action = ACTION_META_NFO_FILE
-        elif self.scan_metadata_policy == 2 and not NFO_file_found:
-            log_verb('Metadata policy: Read NFO file ON, if not found Scraper ON')
-            log_verb('Metadata policy: NFO file not found | Scraper ON')
-            metadata_action = ACTION_META_SCRAPER
+            log_verb('Metadata policy: Read NFO file ON | Scraper ON')
+            if NFO_file_found:
+                log_verb('Metadata policy: NFO file found. Scraper not used.')
+                metadata_action = ACTION_META_NFO_FILE
+            else:
+                log_verb('Metadata policy: NFO file not found. Using scraper.')
+                metadata_action = ACTION_META_SCRAPER
+
         elif self.scan_metadata_policy == 3:
             log_verb('Metadata policy: Read NFO file OFF | Scraper ON')
-            log_verb('Metadata policy: Forced scraper ON')
+            log_verb('Metadata policy: Using metadata scraper.')
             metadata_action = ACTION_META_SCRAPER
+
         else:
             log_error('Invalid scan_metadata_policy value = {0}'.format(self.scan_metadata_policy))
 
@@ -238,6 +249,7 @@ class ScrapeStrategy(object):
             if self.pdialog_verbose:
                 self.pdialog.updateMessage2('Formatting ROM name...')
             romdata['m_name'] = text_format_ROM_title(ROM.getBase_noext(), self.scan_clean_tags)
+
         elif metadata_action == ACTION_META_NFO_FILE:
             if self.pdialog_verbose:
                 self.pdialog.updateMessage2('Loading NFO file {0}'.format(NFO_file.getPath()))
@@ -254,8 +266,10 @@ class ScrapeStrategy(object):
             romdata['m_esrb']      = nfo_dic['esrb']      # <esrb>
             romdata['m_rating']    = nfo_dic['rating']    # <rating>
             romdata['m_plot']      = nfo_dic['plot']      # <plot>
+
         elif metadata_action == ACTION_META_SCRAPER:
             self._scrap_ROM_metadata_scanner()
+
         else:
             log_error('Invalid metadata_action value = {0}'.format(metadata_action))
 
@@ -270,13 +284,13 @@ class ScrapeStrategy(object):
 
         # --- Asset scraping ---
         if self.scan_asset_policy == 0:
-            log_verb('Asset policy: local images only | Scraper OFF')
+            log_verb('Asset policy: Local images ON | Scraper OFF')
             for i, asset_kind in enumerate(ROM_ASSET_ID_LIST):
                 A = assets_get_info_scheme(asset_kind)
                 romdata[A.key] = local_asset_list[i]
 
         elif self.scan_asset_policy == 1:
-            log_verb('Asset policy: if not Local Image then Scraper ON')
+            log_verb('Asset policy: Local images ON | Scraper ON')
             for i, asset_kind in enumerate(ROM_ASSET_ID_LIST):
                 A = assets_get_info_scheme(asset_kind)
                 if not self.enabled_asset_list[i]:
@@ -293,7 +307,7 @@ class ScrapeStrategy(object):
                         self.scraper_dic[A.key], asset_kind, local_asset_list[i], ROM, self.launcher)
 
         elif self.scan_asset_policy == 2:
-            log_verb('Asset policy: scraper will overwrite local assets | Scraper ON')
+            log_verb('Asset policy: Local images OFF | Scraper ON')
             for i, asset_kind in enumerate(ROM_ASSET_ID_LIST):
                 A = assets_get_info_scheme(asset_kind)
                 if not self.enabled_asset_list[i]:
