@@ -271,7 +271,7 @@ class ScrapeStrategy(object):
             romdata['m_plot']      = nfo_dic['plot']      # <plot>
 
         elif metadata_action == ACTION_META_SCRAPER:
-            self._scrap_ROM_metadata_scanner()
+            self._scrap_ROM_metadata_scanner(romdata, ROM)
 
         else:
             log_error('Invalid metadata_action value = {0}'.format(metadata_action))
@@ -342,7 +342,7 @@ class ScrapeStrategy(object):
     #
     # Scraps ROM metadata in the ROM scanner.
     #
-    def _scrap_ROM_metadata_scanner(self):
+    def _scrap_ROM_metadata_scanner(self, romdata, ROM):
         log_debug('ScrapeStrategy::_scrap_ROM_metadata_scanner() BEGIN ...')
 
         # For now just use the first scraper
@@ -355,66 +355,45 @@ class ScrapeStrategy(object):
             self.pdialog.updateMessage2(scraper_text)
 
         # --- Do a search and get a list of games ---
-        rom_name_scraping = text_format_ROM_name_for_scraping(ROM.getBase_noext())
-        candidates = scraper_obj._get_candidates(search_term, rom)
+        search_term = text_format_ROM_name_for_scraping(ROM.getBase_noext())
+        candidates = scraper_obj.get_candidates(search_term)
         log_debug('Metadata scraper {0} found {1} candidate/s'.format(scraper_obj.get_name(), len(candidates)))
         if not candidates:
-            log_verb('Found no candidates after searching. Only cleaning ROM name.')
-            romdata['m_name'] = text_format_ROM_title(ROM.getBase_noext(), scan_clean_tags)
+            log_verb('Found no candidates after searching. Cleaning ROM name only.')
+            romdata['m_name'] = text_format_ROM_title(ROM.getBase_noext(), self.scan_clean_tags)
             return
 
         # metadata_scraper_mode values="Semi-automatic|Automatic"
-        if self.settings['metadata_scraper_mode'] == 0:
+        if self.metadata_scraper_mode == 0:
             log_debug('Metadata semi-automatic scraping')
             # Close scanner progress dialog (and check it was not canceled)
-            if self.pDialog.iscanceled(): self.pDialog_canceled = True
-            self.pDialog.close()
+            if self.pdialog.iscanceled(): self.pDialog_canceled = True
+            self.pdialog.close()
 
-            # Display corresponding game list found so user choses
+            # Display corresponding game list found so user chooses.
             dialog = xbmcgui.Dialog()
-            rom_name_list = []
-            for game in results: rom_name_list.append(game['display_name'])
+            rom_name_list = [game['display_name'] for game in candidates]
             selected_candidate = dialog.select(
                 'Select game for ROM {0}'.format(ROM.getBase_noext()), rom_name_list)
             if selected_candidate < 0: selected_candidate = 0
 
             # Open scanner progress dialog again
-            self.pDialog.create('Advanced Emulator Launcher')
-            if not self.pdialog_verbose: self.pDialog.update(self.progress_number, self.file_text)
-
-        elif self.settings['metadata_scraper_mode'] == 1:
+            self.pdialog.create('Advanced Emulator Launcher')
+            if not self.pdialog_verbose: self.pdialog.update(self.progress_number, self.file_text)
+        elif self.metadata_scraper_mode == 1:
             log_debug('Metadata automatic scraping. Selecting first result.')
             selected_candidate = 0
-
         else:
-            log_error('Invalid metadata_scraper_mode {0}'.format(self.settings['metadata_scraper_mode']))
-            selected_candidate = 0
+            raise AddonError('Invalid metadata_scraper_mode {0}'.format(self.metadata_scraper_mode))
 
         # --- Update scanner progress dialog ---
         if self.pdialog_verbose:
-            scraper_text = 'Scraping metadata with {0}. Getting metadata ...'.format(self.scraper_data.name)
-            self.pDialog.update(self.progress_number, self.file_text, scraper_text)
+            scraper_text = 'Scraping metadata with {0} (Getting metadata ...)'.format(self.scraper_data.name)
+            self.pdialog.updateMessage2(scraper_text)
 
-        # --- Grab metadata for selected game ---
-        # gamedata = self.scraper_data.get_metadata(results[selected_candidate])
-        candidate = candidates[selected_candidate]
-        game_data = self._load_metadata(candidate, rom_path, rom)
-
-        # --- Put metadata into ROM dictionary ---
-        scraper_applied = self._apply_candidate_on_metadata(rom_path, rom, game_data)
-
-        if scan_ignore_scrapped_title:
-            romdata['m_name'] = text_format_ROM_title(ROM.getBase_noext(), scan_clean_tags)
-            log_debug("User wants to ignore scraper name. Setting name to '{0}'".format(romdata['m_name']))
-        else:
-            romdata['m_name'] = gamedata['title']
-            log_debug("User wants scrapped name. Setting name to '{0}'".format(romdata['m_name']))
-        romdata['m_year']      = gamedata['year']
-        romdata['m_genre']     = gamedata['genre']
-        romdata['m_developer'] = gamedata['developer']
-        romdata['m_nplayers']  = gamedata['nplayers']
-        romdata['m_esrb']      = gamedata['esrb']
-        romdata['m_plot']      = gamedata['plot']
+        # --- Grab metadata for selected game and put into ROM ---
+        game_data = scraper_obj.get_metadata(candidates[selected_candidate], rom_path, rom)
+        scraper_applied = self._apply_candidate_on_metadata_old(game_data, romdata)
 
         # --- Update ROM NFO file after scraping ---
         if self.settings['scan_update_NFO_files']:
@@ -604,10 +583,38 @@ class ScrapeStrategy(object):
         # --- Returned value ---
         return ret_asset_path
 
-    def _apply_candidate_on_metadata(self, rom_path, rom, candidate_data):
+    # This function to be used in AEL 0.9.x series.
+    #
+    # @param game_data: Dictionary with game data.
+    # @param romdata: ROM/Launcher data dictionary.
+    # @return: True if metadata is valid an applied, False otherwise.
+    def _apply_candidate_on_metadata_old(self, game_data, romdata):
         if candidate_data is None: return False
 
-        # --- Put metadata into ROM dictionary ---
+        # --- Put metadata into ROM/Launcher dictionary ---
+        if scan_ignore_scrapped_title:
+            romdata['m_name'] = text_format_ROM_title(ROM.getBase_noext(), scan_clean_tags)
+            log_debug("User wants to ignore scraper name. Setting name to '{0}'".format(romdata['m_name']))
+        else:
+            romdata['m_name'] = gamedata['title']
+            log_debug("User wants scrapped name. Setting name to '{0}'".format(romdata['m_name']))
+        romdata['m_year']      = gamedata['year']
+        romdata['m_genre']     = gamedata['genre']
+        romdata['m_developer'] = gamedata['developer']
+        romdata['m_nplayers']  = gamedata['nplayers']
+        romdata['m_esrb']      = gamedata['esrb']
+        romdata['m_plot']      = gamedata['plot']
+        return True
+
+    # This function to be used in AEL 0.10.x series.
+    #
+    # @param game_data: Dictionary with game data.
+    # @param rom: ROM/Launcher object to apply metadata.
+    # @return: True if metadata is valid an applied, False otherwise.
+    def _apply_candidate_on_metadata_new(self, game_data, rom):
+        if candidate_data is None: return False
+
+        # --- Put metadata into ROM/Launcher object ---
         if self.scraper_settings.ignore_scraped_title:
             rom_name = text_format_ROM_title(rom.getBase_noext(), self.scraper_settings.scan_clean_tags)
             rom.set_name(rom_name)
@@ -623,7 +630,6 @@ class ScrapeStrategy(object):
         rom.set_number_of_players(candidate_data['nplayers']) # <nplayers>
         rom.set_esrb_rating(candidate_data['esrb'])           # <esrb>
         rom.set_plot(candidate_data['plot'])                  # <plot>
-
         return True
 
     def _apply_candidate_on_asset(self, rom_path, rom, asset_info, found_assets):
@@ -802,7 +808,7 @@ class Scraper(object):
         if search_term == self.cache_search_term:
             candidate_list = self.cache_search_candidates
         else:
-            candidate_list = _scraper_get_candidates(search_term)
+            candidate_list = self._scraper_get_candidates(search_term)
             self.cache_search_term = search_term
             self.cache_search_candidates = candidate_list
 
@@ -812,14 +818,14 @@ class Scraper(object):
     # Caches all searches. If search is not cached then call abstract method and update the cache.
     #
     # @param candidate: [dict] Candidate returned by get_candidates()
-    # @return: [dict] Dictionary _new_gamedata_dic()
+    # @return: [dict] Dictionary _new_gamedata_dic(). None if error getting the metadata.
     def get_metadata(self, candidate):
         return self._scraper_get_metadata(candidate)
 
     # Returns a list of assets for a candidate (search result).
     #
     # @param candidate: [dict] Candidate returned by get_candidates()
-    # @return: [dict] List of dictionaries _new_assetdata_dic()
+    # @return: [dict] Dictionary _new_assetdata_dic(). None if error getting the metadata.
     def get_assets(self, candidate):
         return self._scraper_get_assets(candidate)
 
@@ -828,9 +834,13 @@ class Scraper(object):
     @abc.abstractmethod
     def _scraper_get_candidates(self, search_term): pass
 
+    # @param candidate: [dict] Candidate returned by get_candidates()
+    # @return: [dict] Dictionary _new_gamedata_dic(). None if error getting the metadata.
     @abc.abstractmethod
     def _scraper_get_metadata(self, candidate): pass
 
+    # @param candidate: [dict] Candidate returned by get_candidates()
+    # @return: [dict] Dictionary _new_assetdata_dic(). None if error getting the metadata.
     @abc.abstractmethod
     def _scraper_get_assets(self, candidate): pass
 
@@ -913,6 +923,7 @@ class Scraper(object):
 class NullScraper(Scraper):
     # @param settings: [dict] Addon settings. Particular scraper settings taken from here.
     def __init__(self, settings):
+        # Pass down settings that apply to all scrapers.
         super(NullScraper, self).__init__(settings)
 
     def get_name(self): return 'Null'
@@ -921,11 +932,13 @@ class NullScraper(Scraper):
 
     def supports_asset(self, asset_ID): return True
 
-    def _scraper_get_candidates(self, search_term, romPath, rom): return []
+    # Null scraper never finds candidates.
+    def _scraper_get_candidates(self, search_term): return []
 
-    def _scraper_get_metadata(self, candidate, romPath, rom): return self._new_gamedata_dic()
+    # Null scraper never returns valid scraped metadata.
+    def _scraper_get_metadata(self, candidate, romPath, rom): return None
 
-    def _scraper_get_assets(self, candidate, romPath, rom): pass
+    def _scraper_get_assets(self, candidate, romPath, rom): return None
 
     def _get_image_url_from_page(self, candidate, asset_info): return ''
 
