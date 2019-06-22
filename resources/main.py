@@ -499,6 +499,8 @@ class Main:
         self.settings['scraper_asset_MAME_2']    = int(o.getSetting('scraper_asset_MAME_2'))
 
         # --- Scrapers ---
+        self.settings['scraper_mobygames_apikey']  = o.getSetting('scraper_mobygames_apikey').decode('utf-8')
+        self.settings['scraper_thegamesdb_apikey'] = o.getSetting('scraper_thegamesdb_apikey').decode('utf-8')
         # self.settings['scraper_region']           = int(o.getSetting('scraper_region'))
         # self.settings['scraper_thumb_size']       = int(o.getSetting('scraper_thumb_size'))
         # self.settings['scraper_fanart_size']      = int(o.getSetting('scraper_fanart_size'))
