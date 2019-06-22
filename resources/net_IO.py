@@ -17,13 +17,13 @@
 
 # --- Python standard library ---
 from __future__ import unicode_literals
-import sys, random, urllib2
+# import json
+import sys
+import random
+import urllib2
 
 # --- AEL packages ---
-try:
-    from utils_kodi import *
-except:
-    from utils_kodi_standalone import *
+from .utils import *
 
 # --- GLOBALS -----------------------------------------------------------------
 USER_AGENT = 'Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.31 (KHTML, like Gecko) Chrome/26.0.1410.64 Safari/537.31';
@@ -133,7 +133,10 @@ def net_get_URL_original(url):
     try:
         f = urllib2.urlopen(req)
         encoding = f.headers['content-type'].split('charset=')[-1]
+        # Default encoding is UTF-8
         if encoding == 'text/html': encoding = 'utf-8'
+        elif encoding == 'application/json': encoding = 'utf-8'
+        else: encoding = 'utf-8'
         log_debug('net_get_URL_original() Encoding = "{0}"'.format(encoding))
         page_bytes = f.read()
         f.close()
@@ -148,8 +151,3 @@ def net_get_URL_original(url):
     page_data = unicode(page_bytes, encoding)
 
     return page_data
-
-def net_get_URL_as_json(url):
-    page_data = net_get_URL_original(url)
-
-    return json.loads(page_data)

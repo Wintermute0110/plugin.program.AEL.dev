@@ -379,6 +379,7 @@ def text_unescape_and_untag_HTML(s):
     return s
 
 def text_dump_str_to_file(filename, full_string):
+    log_debug('Dumping file {0}'.format(filename))
     file_obj = open(filename, 'w')
     file_obj.write(full_string.encode('utf-8'))
     file_obj.close()
@@ -787,65 +788,78 @@ class FileName:
 # -------------------------------------------------------------------------------------------------
 # Utilities to test scrapers
 # -------------------------------------------------------------------------------------------------
-ID_LENGTH     = 70
-NAME_LENGTH   = 60
-GENRE_LENGTH  = 20
-YEAR_LENGTH   = 4
-STUDIO_LENGTH = 20
-PLOT_LENGTH   = 70
-URL_LENGTH    = 70
+# Candidates
+NAME_L      = 60
+SCORE_L     = 5
+ID_L        = 10
+PLATFORM_L  = 15
+SPLATFORM_L = 15
+URL_L       = 70
 
-def print_scraper_list(scraper_obj_list):
-    print('Scraper name')
-    print('--------------------------------')
-    for scraper_obj in scraper_obj_list:
-        print('{0}'.format(scraper_obj.name))
-    print('')
+# Metadata
+TITLE_L     = 50
+YEAR_L      = 4
+GENRE_L     = 20
+DEVELOPER_L = 10
+NPLAYERS_L  = 10
+ESRB_L      = 20
+PLOT_L      = 70
+
+# Assets
 
 # PUT functions to print things returned by Scraper object (which are common to all scrapers)
 # into util.py, to be resused by all scraper tests.
-def print_games_search(results):
-    print('\nFound {0} game/s'.format(len(results)))
-    print("{0} {1}".format('Display name'.ljust(NAME_LENGTH), 'Id'.ljust(ID_LENGTH)))
-    print("{0} {1}".format('-'*NAME_LENGTH, '-'*ID_LENGTH))
+def print_candidate_list(results):
+    print('Found {0} candidate/s'.format(len(results)))
+    p_str = "{0} {1} {2} {3} {4}"
+    print(p_str.format(
+        'Display name'.ljust(NAME_L), 'Score'.ljust(SCORE_L),
+        'Id'.ljust(ID_L), 'Platform'.ljust(PLATFORM_L), 'SPlatform'.ljust(SPLATFORM_L)))
+    print(p_str.format(
+        '-'*NAME_L, '-'*SCORE_L, '-'*ID_L, '-'*PLATFORM_L, '-'*SPLATFORM_L))
     for game in results:
-        display_name = text_limit_string(game['display_name'], NAME_LENGTH)
-        id           = text_limit_string(game['id'], ID_LENGTH)
-        print("{0} {1}".format(display_name.ljust(NAME_LENGTH), id.ljust(ID_LENGTH)))
+        display_name = text_limit_string(game['display_name'], NAME_L)
+        score = text_limit_string(str(game['order']), SCORE_L)
+        id = text_limit_string(str(game['id']), ID_L)
+        platform = text_limit_string(str(game['platform']), PLATFORM_L)
+        splatform = text_limit_string(str(game['scraper_platform']), SPLATFORM_L)
+        print(p_str.format(
+            display_name.ljust(NAME_L), score.ljust(SCORE_L), id.ljust(ID_L),
+            platform.ljust(PLATFORM_L), splatform.ljust(SPLATFORM_L)))
     print('')
 
-def print_game_metadata(scraperObj, results):
-    # --- Get metadata of first game ---
-    if results:
-        metadata = scraperObj.get_metadata(results[0])
+def print_game_metadata(metadata):
+    title     = text_limit_string(metadata['title'], TITLE_L)
+    year      = metadata['year']
+    genre     = text_limit_string(metadata['genre'], GENRE_L)
+    developer = text_limit_string(metadata['developer'], DEVELOPER_L)
+    nplayers  = text_limit_string(metadata['nplayers'], NPLAYERS_L)
+    esrb      = text_limit_string(metadata['esrb'], ESRB_L)
+    plot      = text_limit_string(metadata['plot'], PLOT_L)
 
-        title  = text_limit_string(metadata['title'], NAME_LENGTH)
-        genre  = text_limit_string(metadata['genre'], GENRE_LENGTH)
-        year   = metadata['year']
-        studio = text_limit_string(metadata['studio'], STUDIO_LENGTH)
-        plot   = text_limit_string(metadata['plot'], PLOT_LENGTH)
-        print('\nDisplaying metadata for title "{0}"'.format(title))
-        print("{0} {1} {2} {3} {4}".format('Title'.ljust(NAME_LENGTH), 'Genre'.ljust(GENRE_LENGTH), 
-                                           'Year'.ljust(YEAR_LENGTH), 'Studio'.ljust(STUDIO_LENGTH),
-                                           'Plot'.ljust(PLOT_LENGTH)))
-        print("{0} {1} {2} {3} {4}".format('-'*NAME_LENGTH, '-'*GENRE_LENGTH, '-'*YEAR_LENGTH, 
-                                           '-'*STUDIO_LENGTH, '-'*PLOT_LENGTH))
-        print("{0} {1} {2} {3} {4}".format(title.ljust(NAME_LENGTH), genre.ljust(GENRE_LENGTH), 
-                                           year.ljust(YEAR_LENGTH), studio.ljust(STUDIO_LENGTH),
-                                           plot.ljust(PLOT_LENGTH)))
+    print('Displaying metadata for title "{0}"'.format(title))
+    p_str = "{0} {1} {2} {3} {4} {5} {6}"
+    print(p_str.format(
+        'Title'.ljust(TITLE_L), 'Year'.ljust(YEAR_L), 'Genre'.ljust(GENRE_L),
+        'Developer'.ljust(DEVELOPER_L), 'NPlayers'.ljust(NPLAYERS_L), 'ESRB'.ljust(ESRB_L),
+        'Plot'.ljust(PLOT_L)))
+    print(p_str.format(
+        '-'*TITLE_L, '-'*YEAR_L, '-'*GENRE_L, '-'*DEVELOPER_L, '-'*NPLAYERS_L, '-'*ESRB_L, '-'*PLOT_L))
+    print(p_str.format(
+        title.ljust(TITLE_L), year.ljust(YEAR_L), genre.ljust(GENRE_L),  developer.ljust(DEVELOPER_L),
+        developer.ljust(NPLAYERS_L), developer.ljust(ESRB_L), plot.ljust(PLOT_L) ))
+    print('')
 
-def print_game_image_list(scraperObj, results, asset_kind):
-    # --- Get image list of first game ---
-    if results:
-        image_list = scraperObj.get_images(results[0], asset_kind)
-        print('Found {0} image/s'.format(len(image_list)))
-        print("{0} {1} {2}".format('Display name'.ljust(NAME_LENGTH),
-                                   'ID'.ljust(ID_LENGTH), 
-                                   'URL'.ljust(URL_LENGTH)))
-        print("{0} {1} {2}".format('-'*NAME_LENGTH, '-'*URL_LENGTH, '-'*URL_LENGTH))
-        for image in image_list:
-            display_name  = text_limit_string(image['name'], NAME_LENGTH)
-            id            = text_limit_string(image['id'], ID_LENGTH)
-            url           = text_limit_string(image['URL'], URL_LENGTH)
-            print("{0} {1} {2}".format(display_name.ljust(NAME_LENGTH), id.ljust(ID_LENGTH), url.ljust(URL_LENGTH)))
-        print('\n')
+def print_game_assets(image_list):
+    image_list = scraperObj.get_images(results[0], asset_kind)
+    print('Found {0} image/s'.format(len(image_list)))
+    print("{0} {1} {2}".format('Display name'.ljust(NAME_LENGTH),
+                               'ID'.ljust(ID_LENGTH), 
+                               'URL'.ljust(URL_LENGTH)))
+    print("{0} {1} {2}".format('-'*NAME_LENGTH, '-'*URL_LENGTH, '-'*URL_LENGTH))
+    for image in image_list:
+        display_name  = text_limit_string(image['name'], NAME_LENGTH)
+        id            = text_limit_string(image['id'], ID_LENGTH)
+        url           = text_limit_string(image['URL'], URL_LENGTH)
+        print("{0} {1} {2}".format(display_name.ljust(NAME_LENGTH), id.ljust(ID_LENGTH), url.ljust(URL_LENGTH)))
+    print('')
