@@ -379,7 +379,7 @@ def text_unescape_and_untag_HTML(s):
     return s
 
 def text_dump_str_to_file(filename, full_string):
-    log_debug('Dumping file {0}'.format(filename))
+    log_debug('Dumping file "{0}"'.format(filename))
     file_obj = open(filename, 'w')
     file_obj.write(full_string.encode('utf-8'))
     file_obj.close()
@@ -806,12 +806,16 @@ ESRB_L      = 20
 PLOT_L      = 70
 
 # Assets
+ASSET_ID_L        = 8
+ASSET_NAME_L      = 60
+ASSET_URL_L       = 70
+ASSET_URL_THUMB_L = 50
 
 # PUT functions to print things returned by Scraper object (which are common to all scrapers)
 # into util.py, to be resused by all scraper tests.
 def print_candidate_list(results):
-    print('Found {0} candidate/s'.format(len(results)))
     p_str = "{0} {1} {2} {3} {4}"
+    print('Found {0} candidate/s'.format(len(results)))
     print(p_str.format(
         'Display name'.ljust(NAME_L), 'Score'.ljust(SCORE_L),
         'Id'.ljust(ID_L), 'Platform'.ljust(PLATFORM_L), 'SPlatform'.ljust(SPLATFORM_L)))
@@ -837,8 +841,8 @@ def print_game_metadata(metadata):
     esrb      = text_limit_string(metadata['esrb'], ESRB_L)
     plot      = text_limit_string(metadata['plot'], PLOT_L)
 
-    print('Displaying metadata for title "{0}"'.format(title))
     p_str = "{0} {1} {2} {3} {4} {5} {6}"
+    print('Displaying metadata for title "{0}"'.format(title))
     print(p_str.format(
         'Title'.ljust(TITLE_L), 'Year'.ljust(YEAR_L), 'Genre'.ljust(GENRE_L),
         'Developer'.ljust(DEVELOPER_L), 'NPlayers'.ljust(NPLAYERS_L), 'ESRB'.ljust(ESRB_L),
@@ -851,15 +855,18 @@ def print_game_metadata(metadata):
     print('')
 
 def print_game_assets(image_list):
-    image_list = scraperObj.get_images(results[0], asset_kind)
+    p_str = "{0} {1} {2} {3}"
     print('Found {0} image/s'.format(len(image_list)))
-    print("{0} {1} {2}".format('Display name'.ljust(NAME_LENGTH),
-                               'ID'.ljust(ID_LENGTH), 
-                               'URL'.ljust(URL_LENGTH)))
-    print("{0} {1} {2}".format('-'*NAME_LENGTH, '-'*URL_LENGTH, '-'*URL_LENGTH))
+    print(p_str.format(
+        'Asset ID'.ljust(ASSET_ID_L), 'Name'.ljust(ASSET_NAME_L),
+        'URL'.ljust(ASSET_URL_L), 'URL thumb'.ljust(ASSET_URL_THUMB_L)))
+    print(p_str.format('-'*ASSET_ID_L, '-'*ASSET_NAME_L, '-'*ASSET_URL_L, '-'*ASSET_URL_THUMB_L))
     for image in image_list:
-        display_name  = text_limit_string(image['name'], NAME_LENGTH)
-        id            = text_limit_string(image['id'], ID_LENGTH)
-        url           = text_limit_string(image['URL'], URL_LENGTH)
-        print("{0} {1} {2}".format(display_name.ljust(NAME_LENGTH), id.ljust(ID_LENGTH), url.ljust(URL_LENGTH)))
+        id           = text_limit_string(str(image['asset_id']), ASSET_ID_L)
+        display_name = text_limit_string(image['name'], ASSET_NAME_L)
+        url          = text_limit_string(image['url'], ASSET_URL_L)
+        url_thumb    = text_limit_string(image['url_thumb'], ASSET_URL_THUMB_L)
+        print(p_str.format(
+            id.ljust(ASSET_ID_L), display_name.ljust(ASSET_NAME_L),
+            url.ljust(ASSET_URL_L), url_thumb.ljust(ASSET_URL_THUMB_L)))
     print('')

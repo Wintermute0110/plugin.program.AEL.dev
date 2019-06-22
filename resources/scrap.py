@@ -734,15 +734,20 @@ class Scraper(object):
     def __init__(self, settings):
         self.settings = settings
         self._reset_caches()
-        self.debug_flag = False
+        self.verbose_flag = False
+        self.dump_file_flag = False
 
         # --- Initialize common scraper settings ---
         # None at the moment. Note that settings that affect the scraping policy belong
         # in the ScrapeStrategy class and not here.
 
+    # Scraper is much more verbose (even more than AEL Debug level).
+    def set_verbose_mode(self, verbose_flag):
+        self.verbose_flag = verbose_flag
+
     # Dump scraper data into files for debugging.
-    def set_debug_mode(self, debug_flag, dump_dir):
-        self.debug_flag = debug_flag
+    def set_debug_file_dump(self, dump_file_flag, dump_dir):
+        self.dump_file_flag = dump_file_flag
         self.dump_dir = dump_dir
 
     @abc.abstractmethod
@@ -942,9 +947,10 @@ class Scraper(object):
 
     def _new_assetdata_dic(self):
         return {
-            'type'       : '',
+            'asset_id'   : None,
             'name'       : '',
             'url'        : '',
+            'url_thumb'  : '',
             'is_online'  : True,
             'is_on_page' : False
         }
@@ -1343,7 +1349,7 @@ class MobyGames_Scraper(Scraper):
         page_data_raw = net_get_URL_original(url)
         self.last_http_call = datetime.datetime.now()
         page_data = json.loads(page_data_raw)
-        if self.debug_flag:
+        if self.dump_file_flag:
             file_path = os.path.join(self.dump_dir, 'mobygames_get_candidates.txt')
             text_dump_str_to_file(file_path, page_data_raw)
 
@@ -1375,7 +1381,7 @@ class MobyGames_Scraper(Scraper):
         page_data_raw = net_get_URL_original(url)
         self.last_http_call = datetime.datetime.now()
         online_data = json.loads(page_data_raw)
-        if self.debug_flag:
+        if self.dump_file_flag:
             file_path = os.path.join(self.dump_dir, 'mobygames_get_metadata.txt')
             text_dump_str_to_file(file_path, page_data_raw)
 
@@ -1411,82 +1417,79 @@ class MobyGames_Scraper(Scraper):
         return year_data[:4]
 
     def _scraper_get_assets(self, candidate):
-        platform = self.launcher.get_platform()
-        scraper_platform = AEL_platform_to_MobyGames(platform)
+        log_debug('MobyGames_Scraper::_scraper_get_assets() Getting MobyGames Snaps...')
+        snap_assets = self._load_snap_assets(candidate, candidate['scraper_platform'])
+        log_debug('MobyGames_Scraper::_scraper_get_assets() Getting MobyGames Covers...')
+        cover_assets = self._load_cover_assets(candidate, candidate['scraper_platform'])
+        asset_list = snap_assets + cover_assets
+        log_debug('A total of {0} assets found for candidate ID {1}'.format(
+            len(asset_list), candidate['id']))
 
-        #only snaps and covers are supported as assets
-        snap_assets = self._load_snap_assets(candidate, scraper_platform)
-        cover_assets = self._load_cover_assets(candidate, scraper_platform)
-        assets_list = snap_assets + cover_assets
-
-        log_debug('A total of {0} assets found for candidate #{}'.format(
-            len(assets_list), candidate['id']))
-
-        return assets_list
+        return asset_list
 
     def _load_snap_assets(self, candidate, platform_id):
         url = 'https://api.mobygames.com/v1/games/{0}/platforms/{1}/screenshots?api_key={2}'.format(
             candidate['id'], platform_id, self.api_key)
-        log_debug('Get screenshot image data from {0}'.format(url))
         self._do_toomanyrequests_check()
+        page_data_raw = net_get_URL_original(url)
+        self.last_http_call = datetime.datetime.now()
+        page_data = json.loads(page_data_raw)
+        if self.dump_file_flag:
+            file_path = os.path.join(self.dump_dir, 'mobygames_snap_assets.txt')
+            text_dump_str_to_file(file_path, page_data_raw)
 
-        page_data   = net_get_URL_as_json(url)
-        online_data = page_data['screenshots']
-
-        asset_snap = g_assetFactory.get_asset_info(ASSET_SNAP_ID)
-        assets_list = []
         # --- Parse images page data ---
-        for image_data in online_data:
+        asset_list = []
+        for image_data in page_data['screenshots']:
             asset_data = self._new_assetdata_dic()
-            asset_data['type']  = asset_snap
-            asset_data['url']   = image_data['image']
-            asset_data['name']  = image_data['caption']
-            log_debug('MobyGamesScraper:: found asset {} @ {}'.format(asset_data['name'], asset_data['url']))
-            assets_list.append(asset_data)
-        log_debug('Found {} snap assets for candidate #{}'.format(len(assets_list), candidate['id']))
+            asset_data['asset_id']  = ASSET_SNAP_ID
+            asset_data['name']      = image_data['caption']
+            asset_data['url']       = image_data['image']
+            asset_data['url_thumb'] = image_data['thumbnail_image']
+            if self.verbose_flag:
+                log_debug('MobyGamesScraper:: found Snap {0}'.format(asset_data['url']))
+            asset_list.append(asset_data)
+        log_debug('Found {0} snap assets for candidate #{1}'.format(len(asset_list), candidate['id']))
 
-        return assets_list
+        return asset_list
 
     def _load_cover_assets(self, candidate, platform_id):
-        url = 'https://api.mobygames.com/v1/games/{}/platforms/{}/covers?api_key={}'.format(candidate['id'], platform_id, self.api_key)        
-        log_debug('Get cover image data from {}'.format(url))
+        url = 'https://api.mobygames.com/v1/games/{0}/platforms/{1}/covers?api_key={2}'.format(
+            candidate['id'], platform_id, self.api_key)
         self._do_toomanyrequests_check()
+        page_data_raw = net_get_URL_original(url)
+        self.last_http_call = datetime.datetime.now()
+        page_data = json.loads(page_data_raw)
+        if self.dump_file_flag:
+            file_path = os.path.join(self.dump_dir, 'mobygames_cover_assets.txt')
+            text_dump_str_to_file(file_path, page_data_raw)
 
-        page_data   = net_get_URL_as_json(url)
-        online_data = page_data['cover_groups']
-
-        assets_list = []
         # --- Parse images page data ---
-        for group_data in online_data:
+        asset_list = []
+        for group_data in page_data['cover_groups']:
             country_names = ' / '.join(group_data['countries'])
             for image_data in group_data['covers']:
+                asset_name = '{0} - {1} ({2})'.format(
+                    image_data['scan_of'], image_data['description'], country_names)
                 asset_data = self._new_assetdata_dic()
+                asset_id   = MobyGames_Scraper.asset_name_mapping[image_data['scan_of'].lower()]
+                asset_data['asset_id']  = asset_id
+                asset_data['name']      = asset_name
+                asset_data['url']       = image_data['image']
+                asset_data['url_thumb'] = image_data['thumbnail_image']
+                if self.verbose_flag:
+                    log_debug('MobyGamesScraper:: found Cover {0}'.format(asset_data['url']))
+                asset_list.append(asset_data)
+        log_debug('Found {0} cover assets for candidate #{1}'.format(len(asset_list), candidate['id']))
 
-                asset_type  = image_data['scan_of']
-                asset_id    = MobyGamesScraper.asset_name_mapping[asset_type.lower()]
-                asset_info  = g_assetFactory.get_asset_info(asset_id)
+        return asset_list
 
-                if asset_info is None:
-                    log_debug('Unsupported asset kind for {}'.format(asset_data['name']))
-                    continue
-
-                asset_data['type']  = asset_info
-                asset_data['url']   = image_data['image']
-                asset_data['name']  = '{} - {} ({})'.format(image_data['scan_of'], image_data['description'], country_names)
-
-                log_debug('MobyGamesScraper:: found asset {} @ {}'.format(asset_data['name'], asset_data['url']))
-                assets_list.append(asset_data)
-
-        log_debug('Found {} cover assets for candidate #{}'.format(len(assets_list), candidate['id']))
-
-        return assets_list
-
-    def _scraper_get_image_url_from_page(self, candidate, asset_info): return candidate['url']
+    def _scraper_get_image_url_from_page(self, candidate, asset_id): return candidate['url']
 
     def _do_toomanyrequests_check(self):
         # Make sure we dont go over the TooManyRequests limit of 1 second.
         now = datetime.datetime.now()
-        if (now-self.last_http_call).total_seconds() < 1:
+        if (now - self.last_http_call).total_seconds() < 1:
             log_debug('MobyGames_Scraper:: Sleeping 1 second to avoid overloading...')
             time.sleep(1)
 
