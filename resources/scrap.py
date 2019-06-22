@@ -282,7 +282,6 @@ class ScrapeStrategy(object):
             romdata['m_plot']      = nfo_dic['plot']      # <plot>
 
         elif metadata_action == ACTION_META_SCRAPER:
-            
             self._scrap_ROM_metadata_scanner(romdata, ROM)
 
         else:
@@ -315,13 +314,11 @@ class ScrapeStrategy(object):
                     log_verb('Skipped {0} (dir not configured)'.format(A.name))
                     continue
                 if local_asset_list[i]:
-                    log_verb('Asset policy: local {0} FOUND | Scraper OFF'.format(A.name))
+                    log_verb('Local {0} FOUND'.format(A.name))
                     romdata[A.key] = local_asset_list[i]
                 else:
-                    log_verb('Asset policy: local {0} NOT found | Scraper ON'.format(A.name))
-                    # Set the asset-specific scraper before calling _roms_scrap_asset()
-                    romdata[A.key] = self._roms_scrap_asset(
-                        self.scraper_dic[A.key], asset_kind, local_asset_list[i], ROM, self.launcher)
+                    log_verb('Local {0} NOT found. Scraping...'.format(A.name))
+                    romdata[A.key] = self._roms_scrap_asset(asset_kind, local_asset_list[i], ROM)
 
         elif self.scan_asset_policy == 2:
             log_verb('Asset policy: Local images OFF | Scraper ON')
@@ -331,10 +328,7 @@ class ScrapeStrategy(object):
                     romdata[A.key] = ''
                     log_verb('Skipped {0} (dir not configured)'.format(A.name))
                     continue
-                log_verb('Asset policy: local {0} NOT found | Scraper ON'.format(A.name))
-                # Set the asset-specific scraper before calling _roms_scrap_asset()
-                romdata[A.key] = self._roms_scrap_asset(
-                    self.scraper_dic[A.key], asset_kind, local_asset_list[i], ROM, self.launcher)
+                romdata[A.key] = self._roms_scrap_asset(asset_kind, local_asset_list[i], ROM)
 
         log_verb('Set Title     file "{0}"'.format(romdata['s_title']))
         log_verb('Set Snap      file "{0}"'.format(romdata['s_snap']))
@@ -404,8 +398,8 @@ class ScrapeStrategy(object):
             self.pdialog.updateMessage2(scraper_text)
 
         # --- Grab metadata for selected game and put into ROM ---
-        game_data = scraper_obj.get_metadata(candidates[selected_candidate], rom_path, rom)
-        scraper_applied = self._apply_candidate_on_metadata_old(game_data, romdata)
+        game_data = scraper_obj.get_metadata(candidates[selected_candidate])
+        scraper_applied = self._apply_candidate_on_metadata_old(game_data, romdata, ROM)
 
         # --- Update ROM NFO file after scraping ---
         if self.settings['scan_update_NFO_files']:
@@ -416,9 +410,16 @@ class ScrapeStrategy(object):
     # Returns a valid filename of the downloaded scrapped image, filename of local image
     # or empty string if scraper finds nothing or download failed.
     #
-    # def _roms_scrap_asset(self, scraper_obj, asset_kind, local_asset_path, ROM, launcher):
-    def _scrap_ROM_asset_scanner(self):
+    # @param asset_ID
+    # @param local_asset_path: [str]
+    # @param ROM: [Filename object]
+    # @return: [str] Filename string with the asset path.
+    def _scrap_ROM_asset_scanner(self, asset_ID, local_asset_path, ROM):
         log_debug('ScrapeStrategy::_scrap_ROM_asset_scanner() BEGIN ...')
+
+        # For now just use the first scraper
+        scraper_obj = self.metadata_scraper_list[0]
+        log_debug('Using metadata scraper "{0}"'.format(scraper_obj.get_name()))
 
         # By default always use local image if found in case scraper fails.
         ret_asset_path = local_asset_path
@@ -597,34 +598,35 @@ class ScrapeStrategy(object):
 
     # This function to be used in AEL 0.9.x series.
     #
-    # @param game_data: Dictionary with game data.
+    # @param gamedata: Dictionary with game data.
     # @param romdata: ROM/Launcher data dictionary.
     # @return: True if metadata is valid an applied, False otherwise.
-    def _apply_candidate_on_metadata_old(self, game_data, romdata):
-        if candidate_data is None: return False
+    def _apply_candidate_on_metadata_old(self, gamedata, romdata, ROM):
+        if not gamedata: return False
 
         # --- Put metadata into ROM/Launcher dictionary ---
-        if scan_ignore_scrapped_title:
-            romdata['m_name'] = text_format_ROM_title(ROM.getBase_noext(), scan_clean_tags)
-            log_debug("User wants to ignore scraper name. Setting name to '{0}'".format(romdata['m_name']))
+        if self.scan_ignore_scrap_title:
+            romdata['m_name'] = text_format_ROM_title(ROM.getBase_noext(), self.scan_clean_tags)
+            log_debug('User wants to ignore scraper name. Setting name to "{0}"'.format(romdata['m_name']))
         else:
             romdata['m_name'] = gamedata['title']
-            log_debug("User wants scrapped name. Setting name to '{0}'".format(romdata['m_name']))
+            log_debug('User wants scrapped name. Setting name to "{0}"'.format(romdata['m_name']))
         romdata['m_year']      = gamedata['year']
         romdata['m_genre']     = gamedata['genre']
         romdata['m_developer'] = gamedata['developer']
         romdata['m_nplayers']  = gamedata['nplayers']
         romdata['m_esrb']      = gamedata['esrb']
         romdata['m_plot']      = gamedata['plot']
+
         return True
 
     # This function to be used in AEL 0.10.x series.
     #
-    # @param game_data: Dictionary with game data.
+    # @param gamedata: Dictionary with game data.
     # @param rom: ROM/Launcher object to apply metadata.
     # @return: True if metadata is valid an applied, False otherwise.
-    def _apply_candidate_on_metadata_new(self, game_data, rom):
-        if candidate_data is None: return False
+    def _apply_candidate_on_metadata_new(self, gamedata, rom):
+        if not gamedata: return False
 
         # --- Put metadata into ROM/Launcher object ---
         if self.scraper_settings.ignore_scraped_title:
@@ -632,16 +634,17 @@ class ScrapeStrategy(object):
             rom.set_name(rom_name)
             log_debug("User wants to ignore scraper name. Setting name to '{0}'".format(rom_name))
         else:
-            rom_name = candidate_data['title']
+            rom_name = gamedata['title']
             rom.set_name(rom_name)
             log_debug("User wants scrapped name. Setting name to '{0}'".format(rom_name))
 
-        rom.set_releaseyear(candidate_data['year'])           # <year>
-        rom.set_genre(candidate_data['genre'])                # <genre>
-        rom.set_developer(candidate_data['developer'])        # <developer>
-        rom.set_number_of_players(candidate_data['nplayers']) # <nplayers>
-        rom.set_esrb_rating(candidate_data['esrb'])           # <esrb>
-        rom.set_plot(candidate_data['plot'])                  # <plot>
+        rom.set_releaseyear(gamedata['year'])           # <year>
+        rom.set_genre(gamedata['genre'])                # <genre>
+        rom.set_developer(gamedata['developer'])        # <developer>
+        rom.set_number_of_players(gamedata['nplayers']) # <nplayers>
+        rom.set_esrb_rating(gamedata['esrb'])           # <esrb>
+        rom.set_plot(gamedata['plot'])                  # <plot>
+
         return True
 
     def _apply_candidate_on_asset(self, rom_path, rom, asset_info, found_assets):

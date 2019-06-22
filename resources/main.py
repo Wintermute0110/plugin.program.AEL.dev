@@ -6299,15 +6299,15 @@ class Main:
         log_debug('_command_view_menu() view_type = {0}'.format(view_type))
 
         # --- Build menu base on view_type ---
-        if LAUNCH_LOG_FILE_PATH.exists():
-            stat_stdout = LAUNCH_LOG_FILE_PATH.stat()
+        if g_PATHS.LAUNCH_LOG_FILE_PATH.exists():
+            stat_stdout = g_PATHS.LAUNCH_LOG_FILE_PATH.stat()
             size_stdout = stat_stdout.st_size
             STD_status = '{0} bytes'.format(size_stdout)
         else:
             STD_status = 'not found'
         if view_type == VIEW_LAUNCHER or view_type == VIEW_ROM_LAUNCHER:
             launcher = self.launchers[launcherID]
-            launcher_report_FN = REPORTS_DIR.pjoin(launcher['roms_base_noext'] + '_report.txt')
+            launcher_report_FN = g_PATHS.REPORTS_DIR.pjoin(launcher['roms_base_noext'] + '_report.txt')
             if launcher_report_FN.exists():
                 stat_stdout = launcher_report_FN.stat()
                 size_stdout = stat_stdout.st_size
