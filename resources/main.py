@@ -7782,7 +7782,7 @@ class Main:
             else:
                 if self.settings['lirc_state']: xbmc.executebuiltin('LIRC.stop')
                 log_info('_run_process() (Linux) Launching blocking process subprocess.call()')
-                with open(LAUNCH_LOG_FILE_PATH.getPath(), 'w') as f:
+                with open(g_PATHS.LAUNCH_LOG_FILE_PATH.getPath(), 'w') as f:
                     retcode = subprocess.call(exec_list, stdout = f, stderr = subprocess.STDOUT, close_fds = True)
                 log_info('_run_process() Process retcode = {0}'.format(retcode))
                 if self.settings['lirc_state']: xbmc.executebuiltin('LIRC.start')
@@ -7791,7 +7791,7 @@ class Main:
         elif sys.platform.startswith('darwin'):
             # >> Old way
             # os.system('"{0}" {1}'.format(application, arguments).encode('utf-8'))
-            
+
             # >> New way.
             with open(LAUNCH_LOG_FILE_PATH.getPath(), 'w') as f:
                 retcode = subprocess.call(exec_list, stdout = f, stderr = subprocess.STDOUT)
