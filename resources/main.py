@@ -10074,7 +10074,7 @@ class Main:
             table_str.append(['', launcher['m_name'], str(launcher['num_roms'])])
 
         # Generate table and print report
-        log_debug(unicode(table_str))
+        # log_debug(unicode(table_str))
         table_str_list = text_render_table_str(table_str)
         slist.extend(table_str_list)
         kodi_display_text_window_mono(window_title, '\n'.join(slist))
@@ -10126,7 +10126,7 @@ class Main:
             ])
 
         # Generate table and print report
-        log_debug(unicode(table_str))
+        # log_debug(unicode(table_str))
         table_str_list = text_render_table_str(table_str)
         slist.extend(table_str_list)
         kodi_display_text_window_mono(window_title, '\n'.join(slist))

@@ -801,9 +801,12 @@ class ScrapeStrategy(object):
     def scrap_asset_CM(self, object_dic, asset_ID, data_dic):
         # In AEL 0.10.x this data is grabed from the objects, not passed using a dictionary.
         AInfo = assets_get_info_scheme(asset_ID)
-        asset_name = AInfo.name
         current_asset_FN = data_dic['current_asset_FN']
         asset_path_noext = data_dic['asset_path_noext']
+
+        # --- Cached frequent used things ---
+        scraper_name = self.scraper_obj.get_name()
+        asset_name = AInfo.name
 
         # --- Ask user to edit the image search string ---
         # If ROM title has tags remove them for scraping.
@@ -813,19 +816,17 @@ class ScrapeStrategy(object):
         if not keyboard.isConfirmed(): return False
         search_term = keyboard.getText().decode('utf-8')
 
-        # --- Progress dialog ---
-        pdialog = KodiProgressDialog()
-
         # --- Call scraper and get a list of candidate games --------------------------------------
-        pdialog.startProgress('{0} scraper. Getting games...'.format(self.scraper_obj.get_name()), 100)
+        pdialog = KodiProgressDialog()
+        pdialog.startProgress('{0} {1} scraper. Getting games...'.format(scraper_name, asset_name), 100)
         candidates = self.scraper_obj.get_candidates(
             search_term, data_dic['rom_base_noext'], data_dic['platform'])
         pdialog.endProgress()
         log_debug('Metadata scraper {0} found {1} candidate/s'.format(
             self.scraper_obj.get_name(), len(candidates)))
         if not candidates:
-            kodi_dialog_OK('Scraper found no matching games.')
-            log_debug('{0} scraper did not found any game'.format(asset_name))
+            kodi_dialog_OK('{0} {1} scraper found no matching games.'.format(scraper_name, asset_name))
+            log_debug('{0} {1} scraper did not found any game'.format(scraper_name, asset_name))
             return False
 
         # --- Choose game to scrape image from candidate list ---
@@ -836,19 +837,20 @@ class ScrapeStrategy(object):
             selected_candiate_idx = 0
         else:
             selected_candiate_idx = xbmcgui.Dialog().select(
-                'Select game for "{0}"'.format(search_term), 
+                'Select game for "{0}"'.format(search_term),
                 [candidate['display_name'] for candidate in candidates])
             if selected_candiate_idx < 0: return False
 
         # --- Grab list of images for the selected game -------------------------------------------
         candidate = candidates[selected_candiate_idx]
-        pdialog.startProgress('{0} scraper. Getting assets...'.format(self.scraper_obj.get_name()), 100)
+        pdialog.startProgress('{0} {1} scraper. Getting assets...'.format(scraper_name, asset_name), 100)
         assetdata_list = self.scraper_obj.get_assets(candidate, asset_ID)
         pdialog.endProgress()
-        log_verb('{0} scraper returned {1} images'.format(asset_name, len(assetdata_list)))
+        log_verb('{0} {1} scraper returned {2} images'.format(
+            scraper_name, asset_name, len(assetdata_list)))
         if not assetdata_list:
-            kodi_dialog_OK('Scraper found no {0} '.format(asset_name) +
-                           'images for game "{0}".'.format(candidate['display_name']))
+            kodi_dialog_OK('{0} {1} scraper found no '.format(scraper_name, asset_name) +
+                           'images for game "{2}".'.format(candidate['display_name']))
             return False
 
         # If there is a local image add it to the list and show it to the user.
@@ -878,26 +880,29 @@ class ScrapeStrategy(object):
         else:
             image_selected_index = xbmcgui.Dialog().select(
                 'Select image', list = ListItem_list, useDetails = True)
-            log_debug('{0} dialog returned index {1}'.format(AInfo.name, image_selected_index))
+            log_debug('{0} dialog returned index {1}'.format(asset_name, image_selected_index))
         # User cancelled dialog
         if image_selected_index < 0:
             log_debug('_gui_edit_asset() User cancelled image select dialog. Returning.')
             return False
         selected_asset = assetdata_list[image_selected_index]
+
+        # FIX THIS: detect if the local asset exists and was added to the list and the user
+        # detected position 0.
         if selected_asset['url_thumb'] == current_asset_FN.getPath():
            log_debug('_gui_edit_asset() Selected current image "{0}"'.format(current_asset_FN.getPath()))
            return False
 
         # --- Download scraped image (or use local image) ----------------------------------------
         # --- Resolve asset URL ---
-        pdialog.startProgress('{0} scraper. Resolving asset...'.format(self.scraper_obj.get_name()), 100)
+        pdialog.startProgress('{0} {1} scraper. Resolving asset...'.format(scraper_name, asset_name), 100)
         image_url = self.scraper_obj.resolve_asset_URL(selected_asset)
         pdialog.endProgress()
         if not image_url:
             log_error('_gui_edit_asset() Error in scraper.resolve_asset_URL()')
             return False
         image_ext = text_get_image_URL_extension(image_url)
-        log_debug('Resolved {0} to URL "{1}"'.format(AInfo.name, image_url))
+        log_debug('Resolved {0} to URL "{1}"'.format(asset_name, image_url))
         log_debug('URL extension "{0}"'.format(image_ext))
         if not image_url or not image_ext:
             log_error('_gui_edit_asset() image_url or image_ext empty/not set')
@@ -908,20 +913,21 @@ class ScrapeStrategy(object):
         image_local_path = asset_path_noext.append(image_ext).getPath()
         log_verb('Downloading URL "{0}"'.format(image_url))
         log_verb('Into local file "{0}"'.format(image_local_path))
+        pdialog.startProgress('Downloading {0}...'.format(asset_name), 100)
         try:
-            pdialog.startProgress('Downloading {0}...'.format(AInfo.name), 100)
             net_download_img(image_url, image_local_path)
-            pdialog.endProgress()
         except socket.timeout:
             pdialog.endProgress()
             kodi_notify_warn('Cannot download {0} image (Timeout)'.format(image_name))
+        else:
+            pdialog.endProgress()
 
         # --- Update Kodi cache with downloaded image ---
         # Recache only if local image is in the Kodi cache, this function takes care of that.
         # kodi_update_image_cache(image_local_path)
 
         # --- Notify user ---
-        kodi_notify('Downloaded {0} with {1} scraper'.format(AInfo.name, self.scraper_obj.get_name()))
+        kodi_notify('Downloaded {0} with {1} scraper'.format(asset_name, self.scraper_obj.get_name()))
 
         # --- Edit using Python pass by assigment ---
         # If we reach this point is because an image was downloaded.
