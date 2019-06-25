@@ -3256,14 +3256,14 @@ class Main:
         # --- Save ROMs or Favourites ROMs or Collection ROMs ---
         # >> Always save if we reach this point of the function
         if launcherID == VLAUNCHER_FAVOURITES_ID:
-            fs_write_Favourites_JSON(FAV_JSON_FILE_PATH, roms)
+            fs_write_Favourites_JSON(g_PATHS.FAV_JSON_FILE_PATH, roms)
         elif categoryID == VCATEGORY_COLLECTIONS_ID:
             # >> Convert back the OrderedDict into a list and save Collection
             collection_rom_list = []
             for key in roms:
                 collection_rom_list.append(roms[key])
 
-            json_file_path = COLLECTIONS_DIR.pjoin(collection['roms_base_noext'] + '.json')
+            json_file_path = g_PATHS.COLLECTIONS_DIR.pjoin(collection['roms_base_noext'] + '.json')
             fs_write_Collection_ROMs_JSON(json_file_path, collection_rom_list)
         else:
             # >> Save categories/launchers to update timestamp
@@ -4656,14 +4656,14 @@ class Main:
         self._misc_set_AEL_Content(AEL_CONTENT_VALUE_ROMS)
 
         # --- Load virtual launchers in this category ---
-        if   virtual_categoryID == VCATEGORY_TITLE_ID:     vcategory_db_dir = VIRTUAL_CAT_TITLE_DIR
-        elif virtual_categoryID == VCATEGORY_YEARS_ID:     vcategory_db_dir = VIRTUAL_CAT_YEARS_DIR
-        elif virtual_categoryID == VCATEGORY_GENRE_ID:     vcategory_db_dir = VIRTUAL_CAT_GENRE_DIR
-        elif virtual_categoryID == VCATEGORY_DEVELOPER_ID: vcategory_db_dir = VIRTUAL_CAT_DEVELOPER_DIR
-        elif virtual_categoryID == VCATEGORY_NPLAYERS_ID:  vcategory_db_dir = VIRTUAL_CAT_NPLAYERS_DIR
-        elif virtual_categoryID == VCATEGORY_ESRB_ID:      vcategory_db_dir = VIRTUAL_CAT_ESRB_DIR
-        elif virtual_categoryID == VCATEGORY_RATING_ID:    vcategory_db_dir = VIRTUAL_CAT_RATING_DIR
-        elif virtual_categoryID == VCATEGORY_CATEGORY_ID:  vcategory_db_dir = VIRTUAL_CAT_CATEGORY_DIR
+        if   virtual_categoryID == VCATEGORY_TITLE_ID:     vcategory_db_dir = g_PATHS.VIRTUAL_CAT_TITLE_DIR
+        elif virtual_categoryID == VCATEGORY_YEARS_ID:     vcategory_db_dir = g_PATHS.VIRTUAL_CAT_YEARS_DIR
+        elif virtual_categoryID == VCATEGORY_GENRE_ID:     vcategory_db_dir = g_PATHS.VIRTUAL_CAT_GENRE_DIR
+        elif virtual_categoryID == VCATEGORY_DEVELOPER_ID: vcategory_db_dir = g_PATHS.VIRTUAL_CAT_DEVELOPER_DIR
+        elif virtual_categoryID == VCATEGORY_NPLAYERS_ID:  vcategory_db_dir = g_PATHS.VIRTUAL_CAT_NPLAYERS_DIR
+        elif virtual_categoryID == VCATEGORY_ESRB_ID:      vcategory_db_dir = g_PATHS.VIRTUAL_CAT_ESRB_DIR
+        elif virtual_categoryID == VCATEGORY_RATING_ID:    vcategory_db_dir = g_PATHS.VIRTUAL_CAT_RATING_DIR
+        elif virtual_categoryID == VCATEGORY_CATEGORY_ID:  vcategory_db_dir = g_PATHS.VIRTUAL_CAT_CATEGORY_DIR
         else:
             log_error('_command_render_virtual_launcher_roms() Wrong virtual_category_kind = {0}'.format(virtual_categoryID))
             kodi_dialog_OK('Wrong virtual_category_kind = {0}'.format(virtual_categoryID))
@@ -4682,7 +4682,7 @@ class Main:
         # --- Load favourites ---
         # >> Optimisation: Transform the dictionary keys into a set. Sets are the fastest
         #    when checking if an element exists.
-        roms_fav = fs_load_Favourites_JSON(FAV_JSON_FILE_PATH)
+        roms_fav = fs_load_Favourites_JSON(g_PATHS.FAV_JSON_FILE_PATH)
         roms_fav_set = set(roms_fav.keys())
 
         # --- Display Favourites ---
@@ -4862,7 +4862,7 @@ class Main:
             return
 
         # --- Load favourites ---
-        roms_fav = fs_load_Favourites_JSON(FAV_JSON_FILE_PATH)
+        roms_fav = fs_load_Favourites_JSON(g_PATHS.FAV_JSON_FILE_PATH)
 
         # --- DEBUG info ---
         log_verb('_command_add_to_favourites() Adding ROM to Favourites')
@@ -4892,7 +4892,7 @@ class Main:
         # >> If thumb is empty then use launcher thum. / If fanart is empty then use launcher fanart.
         # if roms_fav[romID]['thumb']  == '': roms_fav[romID]['thumb']  = launcher['thumb']
         # if roms_fav[romID]['fanart'] == '': roms_fav[romID]['fanart'] = launcher['fanart']
-        fs_write_Favourites_JSON(FAV_JSON_FILE_PATH, roms_fav)
+        fs_write_Favourites_JSON(g_PATHS.FAV_JSON_FILE_PATH, roms_fav)
         kodi_notify('ROM {0} added to Favourites'.format(roms[romID]['m_name']))
         kodi_refresh_container()
 
@@ -5359,9 +5359,9 @@ class Main:
         self._misc_set_AEL_Content(AEL_CONTENT_VALUE_ROMS)
 
         # --- Load Collection index and ROMs ---
-        (collections, update_timestamp) = fs_load_Collection_index_XML(COLLECTIONS_FILE_PATH)
+        (collections, update_timestamp) = fs_load_Collection_index_XML(g_PATHS.COLLECTIONS_FILE_PATH)
         collection = collections[launcherID]
-        roms_json_file = COLLECTIONS_DIR.pjoin(collection['roms_base_noext'] + '.json')
+        roms_json_file = g_PATHS.COLLECTIONS_DIR.pjoin(collection['roms_base_noext'] + '.json')
         collection_rom_list = fs_load_Collection_ROMs_JSON(roms_json_file)
         if not collection_rom_list:
             kodi_notify('Collection is empty. Add ROMs to this collection first.')
@@ -5378,7 +5378,7 @@ class Main:
     #
     def _command_add_collection(self):
         # --- Load collection index ---
-        (collections, update_timestamp) = fs_load_Collection_index_XML(COLLECTIONS_FILE_PATH)
+        (collections, update_timestamp) = fs_load_Collection_index_XML(g_PATHS.COLLECTIONS_FILE_PATH)
 
         # --- Get new collection name ---
         dialog = xbmcgui.Dialog()
@@ -5980,32 +5980,32 @@ class Main:
     def _command_add_ROM_to_collection(self, categoryID, launcherID, romID):
         # >> ROM in Favourites
         if categoryID == VCATEGORY_FAVOURITES_ID:
-            roms = fs_load_Favourites_JSON(FAV_JSON_FILE_PATH)
+            roms = fs_load_Favourites_JSON(g_PATHS.FAV_JSON_FILE_PATH)
             new_collection_rom = roms[romID]
         # >> ROM in Virtual Launcher
         elif categoryID == VCATEGORY_TITLE_ID:
-            roms = fs_load_VCategory_ROMs_JSON(VIRTUAL_CAT_TITLE_DIR, launcherID)
+            roms = fs_load_VCategory_ROMs_JSON(g_PATHS.VIRTUAL_CAT_TITLE_DIR, launcherID)
             new_collection_rom = roms[romID]
         elif categoryID == VCATEGORY_YEARS_ID:
-            roms = fs_load_VCategory_ROMs_JSON(VIRTUAL_CAT_YEARS_DIR, launcherID)
+            roms = fs_load_VCategory_ROMs_JSON(g_PATHS.VIRTUAL_CAT_YEARS_DIR, launcherID)
             new_collection_rom = roms[romID]
         elif categoryID == VCATEGORY_GENRE_ID:
-            roms = fs_load_VCategory_ROMs_JSON(VIRTUAL_CAT_GENRE_DIR, launcherID)
+            roms = fs_load_VCategory_ROMs_JSON(g_PATHS.VIRTUAL_CAT_GENRE_DIR, launcherID)
             new_collection_rom = roms[romID]
         elif categoryID == VCATEGORY_DEVELOPER_ID:
-            roms = fs_load_VCategory_ROMs_JSON(VIRTUAL_CAT_DEVELOPER_DIR, launcherID)
+            roms = fs_load_VCategory_ROMs_JSON(g_PATHS.VIRTUAL_CAT_DEVELOPER_DIR, launcherID)
             new_collection_rom = roms[romID]
         elif categoryID == VCATEGORY_NPLAYERS_ID:
-            roms = fs_load_VCategory_ROMs_JSON(VIRTUAL_CAT_NPLAYERS_DIR, launcherID)
+            roms = fs_load_VCategory_ROMs_JSON(g_PATHS.VIRTUAL_CAT_NPLAYERS_DIR, launcherID)
             new_collection_rom = roms[romID]
         elif categoryID == VCATEGORY_ESRB_ID:
-            roms = fs_load_VCategory_ROMs_JSON(VIRTUAL_CAT_ESRB_DIR, launcherID)
+            roms = fs_load_VCategory_ROMs_JSON(g_PATHS.VIRTUAL_CAT_ESRB_DIR, launcherID)
             new_collection_rom = roms[romID]
         elif categoryID == VCATEGORY_RATING_ID:
-            roms = fs_load_VCategory_ROMs_JSON(VIRTUAL_CAT_RATING_DIR, launcherID)
+            roms = fs_load_VCategory_ROMs_JSON(g_PATHS.VIRTUAL_CAT_RATING_DIR, launcherID)
             new_collection_rom = roms[romID]
         elif categoryID == VCATEGORY_CATEGORY_ID:
-            roms = fs_load_VCategory_ROMs_JSON(VIRTUAL_CAT_CATEGORY_DIR, launcherID)
+            roms = fs_load_VCategory_ROMs_JSON(g_PATHS.VIRTUAL_CAT_CATEGORY_DIR, launcherID)
             new_collection_rom = roms[romID]
         else:
             # >> ROMs in standard launcher
@@ -6014,7 +6014,7 @@ class Main:
             new_collection_rom = fs_get_Favourite_from_ROM(roms[romID], launcher)
 
         # --- Load Collection index ---
-        (collections, update_timestamp) = fs_load_Collection_index_XML(COLLECTIONS_FILE_PATH)
+        (collections, update_timestamp) = fs_load_Collection_index_XML(g_PATHS.COLLECTIONS_FILE_PATH)
 
         # --- If no collections so long and thanks for all the fish ---
         if not collections:
@@ -6034,7 +6034,7 @@ class Main:
 
         # --- Load Collection ROMs ---
         collection = collections[collectionID]
-        roms_json_file = COLLECTIONS_DIR.pjoin(collection['roms_base_noext'] + '.json')
+        roms_json_file = g_PATHS.COLLECTIONS_DIR.pjoin(collection['roms_base_noext'] + '.json')
         collection_rom_list = fs_load_Collection_ROMs_JSON(roms_json_file)
         log_info('Adding ROM to Collection')
         log_info('Collection {0}'.format(collection['m_name']))
@@ -6067,7 +6067,7 @@ class Main:
         # --- Add ROM to favourites ROMs and save to disk ---
         # >> Add ROM to the last position in the collection
         collection_rom_list.append(new_collection_rom)
-        collection_json_FN = COLLECTIONS_DIR.pjoin(collection['roms_base_noext'] + '.json')
+        collection_json_FN = g_PATHS.COLLECTIONS_DIR.pjoin(collection['roms_base_noext'] + '.json')
         fs_write_Collection_ROMs_JSON(collection_json_FN, collection_rom_list)
         kodi_refresh_container()
         kodi_notify('Added ROM to Collection "{0}"'.format(collection['m_name']))
@@ -6081,17 +6081,17 @@ class Main:
 
         # --- Load ROMs ---
         if categoryID == VCATEGORY_FAVOURITES_ID:
-            roms = fs_load_Favourites_JSON(FAV_JSON_FILE_PATH)
+            roms = fs_load_Favourites_JSON(g_PATHS.FAV_JSON_FILE_PATH)
         elif categoryID == VCATEGORY_TITLE_ID:
-            roms = fs_load_VCategory_ROMs_JSON(VIRTUAL_CAT_TITLE_DIR, launcherID)
+            roms = fs_load_VCategory_ROMs_JSON(g_PATHS.VIRTUAL_CAT_TITLE_DIR, launcherID)
         elif categoryID == VCATEGORY_YEARS_ID:
-            roms = fs_load_VCategory_ROMs_JSON(VIRTUAL_CAT_YEARS_DIR, launcherID)
+            roms = fs_load_VCategory_ROMs_JSON(g_PATHS.VIRTUAL_CAT_YEARS_DIR, launcherID)
         elif categoryID == VCATEGORY_GENRE_ID:
-            roms = fs_load_VCategory_ROMs_JSON(VIRTUAL_CAT_GENRE_DIR, launcherID)
+            roms = fs_load_VCategory_ROMs_JSON(g_PATHS.VIRTUAL_CAT_GENRE_DIR, launcherID)
         elif categoryID == VCATEGORY_DEVELOPER_ID:
-            roms = fs_load_VCategory_ROMs_JSON(VIRTUAL_CAT_DEVELOPER_DIR, launcherID)
+            roms = fs_load_VCategory_ROMs_JSON(g_PATHS.VIRTUAL_CAT_DEVELOPER_DIR, launcherID)
         elif categoryID == VCATEGORY_CATEGORY_ID:
-            roms = fs_load_VCategory_ROMs_JSON(VIRTUAL_CAT_CATEGORY_DIR, launcherID)
+            roms = fs_load_VCategory_ROMs_JSON(g_PATHS.VIRTUAL_CAT_CATEGORY_DIR, launcherID)
         else:
             rom_file_path = g_PATHS.ROMS_DIR.pjoin(self.launchers[launcherID]['roms_base_noext'] + '.json')
             log_debug('_command_search_launcher() rom_file_path "{0}"'.format(rom_file_path.getOriginalPath()))
@@ -7143,50 +7143,50 @@ class Main:
         # --- Customise function depending on virtual category ---
         if virtual_categoryID == VCATEGORY_TITLE_ID:
             log_info('_command_update_virtual_category_db() Updating Title DB')
-            vcategory_db_directory = VIRTUAL_CAT_TITLE_DIR
-            vcategory_db_filename  = VCAT_TITLE_FILE_PATH
+            vcategory_db_directory = g_PATHS.VIRTUAL_CAT_TITLE_DIR
+            vcategory_db_filename  = g_PATHS.VCAT_TITLE_FILE_PATH
             vcategory_field_name   = 'm_name'
             vcategory_name         = 'Titles'
         elif virtual_categoryID == VCATEGORY_YEARS_ID:
             log_info('_command_update_virtual_category_db() Updating Year DB')
-            vcategory_db_directory = VIRTUAL_CAT_YEARS_DIR
-            vcategory_db_filename  = VCAT_YEARS_FILE_PATH
+            vcategory_db_directory = g_PATHS.VIRTUAL_CAT_YEARS_DIR
+            vcategory_db_filename  = g_PATHS.VCAT_YEARS_FILE_PATH
             vcategory_field_name   = 'm_year'
             vcategory_name         = 'Years'
         elif virtual_categoryID == VCATEGORY_GENRE_ID:
             log_info('_command_update_virtual_category_db() Updating Genre DB')
-            vcategory_db_directory = VIRTUAL_CAT_GENRE_DIR
-            vcategory_db_filename  = VCAT_GENRE_FILE_PATH
+            vcategory_db_directory = g_PATHS.VIRTUAL_CAT_GENRE_DIR
+            vcategory_db_filename  = g_PATHS.VCAT_GENRE_FILE_PATH
             vcategory_field_name   = 'm_genre'
             vcategory_name         = 'Genres'
         elif virtual_categoryID == VCATEGORY_DEVELOPER_ID:
             log_info('_command_update_virtual_category_db() Updating Developer DB')
-            vcategory_db_directory = VIRTUAL_CAT_DEVELOPER_DIR
-            vcategory_db_filename  = VCAT_DEVELOPER_FILE_PATH
+            vcategory_db_directory = g_PATHS.VIRTUAL_CAT_DEVELOPER_DIR
+            vcategory_db_filename  = g_PATHS.VCAT_DEVELOPER_FILE_PATH
             vcategory_field_name   = 'm_developer'
             vcategory_name         = 'Developers'
         elif virtual_categoryID == VCATEGORY_NPLAYERS_ID:
             log_info('_command_update_virtual_category_db() Updating NPlayer DB')
-            vcategory_db_directory = VIRTUAL_CAT_NPLAYERS_DIR
-            vcategory_db_filename  = VCAT_NPLAYERS_FILE_PATH
+            vcategory_db_directory = g_PATHS.VIRTUAL_CAT_NPLAYERS_DIR
+            vcategory_db_filename  = g_PATHS.VCAT_NPLAYERS_FILE_PATH
             vcategory_field_name   = 'm_nplayers'
             vcategory_name         = 'NPlayers'
         elif virtual_categoryID == VCATEGORY_ESRB_ID:
             log_info('_command_update_virtual_category_db() Updating ESRB DB')
-            vcategory_db_directory = VIRTUAL_CAT_ESRB_DIR
-            vcategory_db_filename  = VCAT_ESRB_FILE_PATH
+            vcategory_db_directory = g_PATHS.VIRTUAL_CAT_ESRB_DIR
+            vcategory_db_filename  = g_PATHS.VCAT_ESRB_FILE_PATH
             vcategory_field_name   = 'm_esrb'
             vcategory_name         = 'ESRB'
         elif virtual_categoryID == VCATEGORY_RATING_ID:
             log_info('_command_update_virtual_category_db() Updating Rating DB')
-            vcategory_db_directory = VIRTUAL_CAT_RATING_DIR
-            vcategory_db_filename  = VCAT_RATING_FILE_PATH
+            vcategory_db_directory = g_PATHS.VIRTUAL_CAT_RATING_DIR
+            vcategory_db_filename  = g_PATHS.VCAT_RATING_FILE_PATH
             vcategory_field_name   = 'm_rating'
             vcategory_name         = 'Rating'
         elif virtual_categoryID == VCATEGORY_CATEGORY_ID:
             log_info('_command_update_virtual_category_db() Updating Category DB')
-            vcategory_db_directory = VIRTUAL_CAT_CATEGORY_DIR
-            vcategory_db_filename  = VCAT_CATEGORY_FILE_PATH
+            vcategory_db_directory = g_PATHS.VIRTUAL_CAT_CATEGORY_DIR
+            vcategory_db_filename  = g_PATHS.VCAT_CATEGORY_FILE_PATH
             vcategory_field_name   = ''
             vcategory_name         = 'Categories'
         else:
@@ -7383,7 +7383,7 @@ class Main:
         # --- ROM in Favourites ---
         if categoryID == VCATEGORY_FAVOURITES_ID and launcherID == VLAUNCHER_FAVOURITES_ID:
             log_info('_command_run_rom() Launching ROM in Favourites ...')
-            roms = fs_load_Favourites_JSON(FAV_JSON_FILE_PATH)
+            roms = fs_load_Favourites_JSON(g_PATHS.FAV_JSON_FILE_PATH)
             rom = roms[romID]
             recent_rom = rom
             minimize_flag     = rom['toggle_window']
@@ -7395,7 +7395,7 @@ class Main:
         # --- ROM in Recently played ROMs list ---
         elif categoryID == VCATEGORY_MOST_PLAYED_ID and launcherID == VLAUNCHER_MOST_PLAYED_ID:
             log_info('_command_run_rom() Launching ROM in Recently Played ROMs ...')
-            recent_roms_list = fs_load_Collection_ROMs_JSON(RECENT_PLAYED_FILE_PATH)
+            recent_roms_list = fs_load_Collection_ROMs_JSON(g_PATHS.RECENT_PLAYED_FILE_PATH)
             current_ROM_position = fs_collection_ROM_index_by_romID(romID, recent_roms_list)
             if current_ROM_position < 0:
                 kodi_dialog_OK('Collection ROM not found in list. This is a bug!')
@@ -7411,7 +7411,7 @@ class Main:
         # --- ROM in Most played ROMs ---
         elif categoryID == VCATEGORY_RECENT_ID and launcherID == VLAUNCHER_RECENT_ID:
             log_info('_command_run_rom() Launching ROM in Most played ROMs ...')
-            most_played_roms = fs_load_Favourites_JSON(MOST_PLAYED_FILE_PATH)
+            most_played_roms = fs_load_Favourites_JSON(g_PATHS.MOST_PLAYED_FILE_PATH)
             rom = most_played_roms[romID]
             recent_rom = rom
             minimize_flag     = rom['toggle_window']
@@ -7423,9 +7423,9 @@ class Main:
         # --- ROM in Collection ---
         elif categoryID == VCATEGORY_COLLECTIONS_ID:
             log_info('_command_run_rom() Launching ROM in Collection ...')
-            (collections, update_timestamp) = fs_load_Collection_index_XML(COLLECTIONS_FILE_PATH)
+            (collections, update_timestamp) = fs_load_Collection_index_XML(g_PATHS.COLLECTIONS_FILE_PATH)
             collection = collections[launcherID]
-            roms_json_file = COLLECTIONS_DIR.pjoin(collection['roms_base_noext'] + '.json')
+            roms_json_file = g_PATHS.COLLECTIONS_DIR.pjoin(collection['roms_base_noext'] + '.json')
             collection_rom_list = fs_load_Collection_ROMs_JSON(roms_json_file)
             current_ROM_position = fs_collection_ROM_index_by_romID(romID, collection_rom_list)
             if current_ROM_position < 0:
@@ -7445,19 +7445,19 @@ class Main:
              categoryID == VCATEGORY_CATEGORY_ID:
             if categoryID == VCATEGORY_TITLE_ID:
                 log_info('_command_run_rom() Launching ROM in Virtual Launcher ...')
-                roms = fs_load_VCategory_ROMs_JSON(VIRTUAL_CAT_TITLE_DIR, launcherID)
+                roms = fs_load_VCategory_ROMs_JSON(g_PATHS.VIRTUAL_CAT_TITLE_DIR, launcherID)
             elif categoryID == VCATEGORY_YEARS_ID:
                 log_info('_command_run_rom() Launching ROM in Year Virtual Launcher ...')
-                roms = fs_load_VCategory_ROMs_JSON(VIRTUAL_CAT_YEARS_DIR, launcherID)
+                roms = fs_load_VCategory_ROMs_JSON(g_PATHS.VIRTUAL_CAT_YEARS_DIR, launcherID)
             elif categoryID == VCATEGORY_GENRE_ID:
                 log_info('_command_run_rom() Launching ROM in Gender Virtual Launcher ...')
-                roms = fs_load_VCategory_ROMs_JSON(VIRTUAL_CAT_GENRE_DIR, launcherID)
+                roms = fs_load_VCategory_ROMs_JSON(g_PATHS.VIRTUAL_CAT_GENRE_DIR, launcherID)
             elif categoryID == VCATEGORY_DEVELOPER_ID:
                 log_info('_command_run_rom() Launching ROM in Developer Virtual Launcher ...')
-                roms = fs_load_VCategory_ROMs_JSON(VIRTUAL_CAT_DEVELOPER_DIR, launcherID)
+                roms = fs_load_VCategory_ROMs_JSON(g_PATHS.VIRTUAL_CAT_DEVELOPER_DIR, launcherID)
             elif categoryID == VCATEGORY_CATEGORY_ID:
                 log_info('_command_run_rom() Launching ROM in Category Virtual Launcher ...')
-                roms = fs_load_VCategory_ROMs_JSON(VIRTUAL_CAT_CATEGORY_DIR, launcherID)
+                roms = fs_load_VCategory_ROMs_JSON(g_PATHS.VIRTUAL_CAT_CATEGORY_DIR, launcherID)
 
             rom = roms[romID]
             recent_rom = rom
@@ -7590,7 +7590,7 @@ class Main:
 
         # --- Compute ROM recently played list ---
         MAX_RECENT_PLAYED_ROMS = 100
-        recent_roms_list = fs_load_Collection_ROMs_JSON(RECENT_PLAYED_FILE_PATH)
+        recent_roms_list = fs_load_Collection_ROMs_JSON(g_PATHS.RECENT_PLAYED_FILE_PATH)
         recent_roms_list = [rom for rom in recent_roms_list if rom['id'] != recent_rom['id']]
         recent_roms_list.insert(0, recent_rom)
         if len(recent_roms_list) > MAX_RECENT_PLAYED_ROMS:
@@ -7598,10 +7598,10 @@ class Main:
             log_debug('_command_run_rom() Trimming list to {0} ROMs'.format(MAX_RECENT_PLAYED_ROMS))
             temp_list        = recent_roms_list[:MAX_RECENT_PLAYED_ROMS]
             recent_roms_list = temp_list
-        fs_write_Collection_ROMs_JSON(RECENT_PLAYED_FILE_PATH, recent_roms_list)
+        fs_write_Collection_ROMs_JSON(g_PATHS.RECENT_PLAYED_FILE_PATH, recent_roms_list)
 
         # --- Compute most played ROM statistics ---
-        most_played_roms = fs_load_Favourites_JSON(MOST_PLAYED_FILE_PATH)
+        most_played_roms = fs_load_Favourites_JSON(g_PATHS.MOST_PLAYED_FILE_PATH)
         if recent_rom['id'] in most_played_roms:
             rom_id = recent_rom['id']
             most_played_roms[rom_id]['launch_count'] += 1
@@ -7609,7 +7609,7 @@ class Main:
             # >> Add field launch_count to recent_rom to count how many times have been launched.
             recent_rom['launch_count'] = 1
             most_played_roms[recent_rom['id']] = recent_rom
-        fs_write_Favourites_JSON(MOST_PLAYED_FILE_PATH, most_played_roms)
+        fs_write_Favourites_JSON(g_PATHS.MOST_PLAYED_FILE_PATH, most_played_roms)
 
         # --- Execute Kodi Retroplayer if launcher configured to do so ---
         # See https://github.com/Wintermute0110/plugin.program.advanced.emulator.launcher/issues/33
