@@ -244,7 +244,8 @@ def assets_get_ROM_mapped_asset_idx(dict_object, key):
 # Returns an object with all the information
 # -------------------------------------------------------------------------------------------------
 class AssetInfo:
-    kind        = 0
+    # Careful! Class variables do not work like C++
+    ID          = 0
     key         = ''
     name        = ''
     fname_infix = '' # Used only when searching assets when importing XML
@@ -257,7 +258,7 @@ def assets_get_info_scheme(asset_kind):
     A = AssetInfo()
 
     if asset_kind == ASSET_ICON_ID:
-        A.kind        = ASSET_ICON_ID
+        A.ID          = ASSET_ICON_ID
         A.key         = 's_icon'
         A.name        = 'Icon'
         A.fname_infix = 'icon'
@@ -266,7 +267,7 @@ def assets_get_info_scheme(asset_kind):
         A.exts_dialog = asset_get_dialog_extension_list(IMAGE_EXTENSION_LIST)
         A.path_key    = 'path_icon'
     elif asset_kind == ASSET_FANART_ID:
-        A.kind        = ASSET_FANART_ID
+        A.ID          = ASSET_FANART_ID
         A.key         = 's_fanart'
         A.name        = 'Fanart'
         A.fname_infix = 'fanart'
@@ -275,7 +276,7 @@ def assets_get_info_scheme(asset_kind):
         A.exts_dialog = asset_get_dialog_extension_list(IMAGE_EXTENSION_LIST)
         A.path_key    = 'path_fanart'
     elif asset_kind == ASSET_BANNER_ID:
-        A.kind        = ASSET_BANNER_ID
+        A.ID          = ASSET_BANNER_ID
         A.key         = 's_banner'
         A.name        = 'Banner'
         A.fname_infix = 'banner'
@@ -284,7 +285,7 @@ def assets_get_info_scheme(asset_kind):
         A.exts_dialog = asset_get_dialog_extension_list(IMAGE_EXTENSION_LIST)
         A.path_key    = 'path_banner'
     elif asset_kind == ASSET_POSTER_ID:
-        A.kind        = ASSET_POSTER_ID
+        A.ID          = ASSET_POSTER_ID
         A.key         = 's_poster'
         A.name        = 'Poster'
         A.fname_infix = 'poster'
@@ -293,7 +294,7 @@ def assets_get_info_scheme(asset_kind):
         A.exts_dialog = asset_get_dialog_extension_list(IMAGE_EXTENSION_LIST)
         A.path_key    = 'path_poster'
     elif asset_kind == ASSET_CLEARLOGO_ID:
-        A.kind        = ASSET_CLEARLOGO_ID
+        A.ID          = ASSET_CLEARLOGO_ID
         A.key         = 's_clearlogo'
         A.name        = 'Clearlogo'
         A.fname_infix = 'clearlogo'
@@ -302,7 +303,7 @@ def assets_get_info_scheme(asset_kind):
         A.exts_dialog = asset_get_dialog_extension_list(IMAGE_EXTENSION_LIST)
         A.path_key    = 'path_clearlogo'
     elif asset_kind == ASSET_CONTROLLER_ID:
-        A.kind        = ASSET_CONTROLLER_ID
+        A.ID          = ASSET_CONTROLLER_ID
         A.key         = 's_controller'
         A.name        = 'Controller'
         A.fname_infix = 'controller'
@@ -311,7 +312,7 @@ def assets_get_info_scheme(asset_kind):
         A.exts_dialog = asset_get_dialog_extension_list(IMAGE_EXTENSION_LIST)
         A.path_key    = 'path_controller'
     elif asset_kind == ASSET_TRAILER_ID:
-        A.kind        = ASSET_TRAILER_ID
+        A.ID          = ASSET_TRAILER_ID
         A.key         = 's_trailer'
         A.name        = 'Trailer'
         A.fname_infix = 'trailer'
@@ -320,7 +321,7 @@ def assets_get_info_scheme(asset_kind):
         A.exts_dialog = asset_get_dialog_extension_list(TRAILER_EXTENSION_LIST)
         A.path_key    = 'path_trailer'
     elif asset_kind == ASSET_TITLE_ID:
-        A.kind        = ASSET_TITLE_ID
+        A.ID          = ASSET_TITLE_ID
         A.key         = 's_title'
         A.name        = 'Title'
         A.fname_infix = 'title'
@@ -329,7 +330,7 @@ def assets_get_info_scheme(asset_kind):
         A.exts_dialog = asset_get_dialog_extension_list(IMAGE_EXTENSION_LIST)
         A.path_key    = 'path_title'
     elif asset_kind == ASSET_SNAP_ID:
-        A.kind        = ASSET_SNAP_ID
+        A.ID          = ASSET_SNAP_ID
         A.key         = 's_snap'
         A.name        = 'Snap'
         A.fname_infix = 'snap'
@@ -338,7 +339,7 @@ def assets_get_info_scheme(asset_kind):
         A.exts_dialog = asset_get_dialog_extension_list(IMAGE_EXTENSION_LIST)
         A.path_key    = 'path_snap'
     elif asset_kind == ASSET_BOXFRONT_ID:
-        A.kind        = ASSET_BOXFRONT_ID
+        A.ID          = ASSET_BOXFRONT_ID
         A.key         = 's_boxfront'
         A.name        = 'Boxfront'
         A.fname_infix = 'boxfront'
@@ -347,7 +348,7 @@ def assets_get_info_scheme(asset_kind):
         A.exts_dialog = asset_get_dialog_extension_list(IMAGE_EXTENSION_LIST)
         A.path_key    = 'path_boxfront'
     elif asset_kind == ASSET_BOXBACK_ID:
-        A.kind        = ASSET_BOXBACK_ID
+        A.ID          = ASSET_BOXBACK_ID
         A.key         = 's_boxback'
         A.name        = 'Boxback'
         A.fname_infix = 'boxback'
@@ -356,7 +357,7 @@ def assets_get_info_scheme(asset_kind):
         A.exts_dialog = asset_get_dialog_extension_list(IMAGE_EXTENSION_LIST)
         A.path_key    = 'path_boxback'
     elif asset_kind == ASSET_CARTRIDGE_ID:
-        A.kind        = ASSET_CARTRIDGE_ID
+        A.ID          = ASSET_CARTRIDGE_ID
         A.key         = 's_cartridge'
         A.name        = 'Cartridge'
         A.fname_infix = 'cartridge'
@@ -365,7 +366,7 @@ def assets_get_info_scheme(asset_kind):
         A.exts_dialog = asset_get_dialog_extension_list(IMAGE_EXTENSION_LIST)
         A.path_key    = 'path_cartridge'
     elif asset_kind == ASSET_FLYER_ID:
-        A.kind        = ASSET_FLYER_ID
+        A.ID          = ASSET_FLYER_ID
         A.key         = 's_flyer'
         A.name        = 'Flyer'
         A.fname_infix = 'flyer'
@@ -374,7 +375,7 @@ def assets_get_info_scheme(asset_kind):
         A.exts_dialog = asset_get_dialog_extension_list(IMAGE_EXTENSION_LIST)
         A.path_key    = 'path_flyer'
     elif asset_kind == ASSET_3DBOX_ID:
-        A.kind        = ASSET_3DBOX_ID
+        A.ID          = ASSET_3DBOX_ID
         A.key         = 's_3dbox'
         A.name        = '3D Box'
         A.fname_infix = '3dbox'
@@ -383,7 +384,7 @@ def assets_get_info_scheme(asset_kind):
         A.exts_dialog = asset_get_dialog_extension_list(IMAGE_EXTENSION_LIST)
         A.path_key    = 'path_3dbox'
     elif asset_kind == ASSET_MAP_ID:
-        A.kind        = ASSET_MAP_ID
+        A.ID          = ASSET_MAP_ID
         A.key         = 's_map'
         A.name        = 'Map'
         A.fname_infix = 'map'
@@ -392,7 +393,7 @@ def assets_get_info_scheme(asset_kind):
         A.exts_dialog = asset_get_dialog_extension_list(IMAGE_EXTENSION_LIST)
         A.path_key    = 'path_map'
     elif asset_kind == ASSET_MANUAL_ID:
-        A.kind        = ASSET_MANUAL_ID
+        A.ID          = ASSET_MANUAL_ID
         A.key         = 's_manual'
         A.name        = 'Manual'
         A.fname_infix = 'manual'

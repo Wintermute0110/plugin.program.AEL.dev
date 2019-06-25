@@ -91,29 +91,45 @@ WIP      [SCRAPERS] Fix GameFAQs scraper. It has been a while since this scraper
          any more.
 
 
+
 --- TODO LIST ---
 
- 1) Fix the ROM scanner metadata scraper:
+ 1) Fix the ROM scanner metadata scraper.
 
- 1.1) [DONE] Make sure the ROM scanner work with 
+ 1.1) [DONE] Make sure the ROM scanner works with:
       "Metadata scan policy" set to "None" and "Asset scan policy" set to "Local images"
 
- 1.2) [DONE] Make sure the ROM scanner work with
+ 1.2) [DONE] Make sure the ROM scanner works with:
       "Metadata scan policy" set to "NFO files" and "Asset scan policy" set to "Local images"
 
- 1.3) [WIP] Make sure the ROM scanner work with
+ 1.3) [DONE] Make sure the ROM scanner works with:
       "Metadata scan policy" set to "Scrapers" and "Asset scan policy" set to "Local images"
       General First metadata scraper set to "MobyGames"
 
- 1.4) Make sure the ROM scanner work with
+ 1.4) Make sure the ROM scanner works with:
       "Metadata scan policy" set to "Scrapers" and "Asset scan policy" set to "Local images"
       General First metadata scraper set to "AEL offline"
 
- 2) Fix the context menu metadata scraper:
- 
- 3) Is it possible to scrape individual metadata components??? Think about this.
+ 2) Fix the ROM context menu metadata scraper.
 
- 4) Asset scraper ...
+ 2.1) Make sure the MobyGames metadata scraper in the CM works.
+
+ 3) Fix the ROM context menu asset scraper. The CM scraper is easier than the scanner.
+
+ 3.1) [DONE] Make sure the MobyGames asset scraper in the CM works.
+
+ 4) Fix the ROM scanner asset scraper.
+
+ 4.1) [WIP] Make sure the ROM scanner works with:
+      "Metadata scan policy" set to "None" and "Asset scan policy" set to "Scrapers"
+      General First metadata scraper set to "MobyGames"
+
+ 4.2) Make sure the ROM scanner works with:
+      "Metadata scan policy" set to "None" and "Asset scan policy" set to "Local images + Scrapers"
+      General First metadata scraper set to "MobyGames"
+
+ 5) Is it possible to scrape individual metadata components??? Think about this.
+
 
 
 [B]Advanced Emulator Launcher | version 0.9.8 | XX June 2019[/B]
@@ -147,6 +163,13 @@ WIP      [CORE] Create a couple of new ROM context menus, "Manage Recently playe
          "Delete all Unlinked/Broken ROMs".
          See https://forum.kodi.tv/showthread.php?tid=287826&pid=2698811#pid2698811
 
+WIP      New section Utilities. Move stuff from addon settings.
+
+WIP      New section Global Reports.
+
+WIP      Make sure AEL never crshes, even if categories.xml is corruped. Ask user to update
+         the database (in the case the crash is due to a missing key in dictionary).
+
 FEATURE  [CORE] Add Year and Developer for Categories.
          See https://forum.kodi.tv/showthread.php?tid=287826&pid=2688653#pid2688653
 
@@ -154,8 +177,8 @@ FEATURE  [CORE] Per-launcher setting to disable multi-disc ROM support.
 
 FEATURE  [CORE] Added "Edit Category" context menu, "Export Category XML configuration".
 
-FEATURE  New AEL Theme of Icons/Fanarts for the Virtual Launchers. Kudos to Sagrath for this
-         contribution.
+FEATURE  [CORE] New AEL Theme of Icons/Fanarts for the Virtual Launchers. Kudos to Sagrath for
+         this contribution.
 
 FIX      Fix crash in _gui_scrap_launcher_metadata() when scraping Launcher metadata.
 

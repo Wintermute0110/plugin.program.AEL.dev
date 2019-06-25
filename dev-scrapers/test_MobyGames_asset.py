@@ -36,15 +36,15 @@ set_log_level(LOG_DEBUG) # >> LOG_INFO, LOG_VERB, LOG_DEBUG
 settings = {
     'scraper_mobygames_apikey' : '', # Do not forget to set the API key.
 }
-MobyGames = MobyGames_Scraper(settings)
-MobyGames.set_verbose_mode(False)
-MobyGames.set_debug_file_dump(True, os.path.dirname(__file__))
+mobygames_obj = MobyGames(settings)
+mobygames_obj.set_verbose_mode(False)
+mobygames_obj.set_debug_file_dump(True, os.path.dirname(__file__))
 
 # --- Get candidates ---
-# candidate_list = MobyGames.get_candidates(*games['metroid'])
-# candidate_list = MobyGames.get_candidates(*games['mworld'])
-# candidate_list = MobyGames.get_candidates(*games['sonic'])
-candidate_list = MobyGames.get_candidates(*games['chakan'])
+# candidate_list = mobygames_obj.get_candidates(*games['metroid'])
+# candidate_list = mobygames_obj.get_candidates(*games['mworld'])
+candidate_list = mobygames_obj.get_candidates(*games['sonic'])
+# candidate_list = mobygames_obj.get_candidates(*games['chakan'])
 
 # Cases with unknown platform must be tested as well.
 # Cases with unknown API key must be tested as well.
@@ -58,19 +58,23 @@ if not candidate_list:
 
 # --- Print list of assets found ---
 print('*** MobyGames game images *****************************************************************')
-assets = MobyGames.get_assets(candidate_list[0])
+# --- Get all assets ---
+# assets = mobygames_obj.get_assets_all(candidate_list[0])
 # pprint.pprint(assets)
-print_game_assets(assets)
+# print_game_assets(assets)
 
-# print_game_image_list(MobyGames, results, ASSET_TITLE)
-# print_game_image_list(MobyGames, results, ASSET_SNAP)
-# print_game_image_list(MobyGames, results, ASSET_FANART)
-# print_game_image_list(MobyGames, results, ASSET_BANNER)
-# print_game_image_list(MobyGames, results, ASSET_CLEARLOGO)
-# print_game_image_list(MobyGames, results, ASSET_BOXFRONT)
-# print_game_image_list(MobyGames, results, ASSET_BOXBACK)
-# print_game_image_list(MobyGames, results, ASSET_CARTRIDGE)
-# print_game_image_list(MobyGames, results, ASSET_FLYER)
-# print_game_image_list(MobyGames, results, ASSET_MAP)
-# print_game_image_list(MobyGames, results, ASSET_MANUAL)
-# print_game_image_list(MobyGames, results, ASSET_TRAILER)
+# --- Get specific assets ---
+candidate = candidate_list[0]
+print_game_assets(mobygames_obj.get_assets(candidate, ASSET_TITLE_ID))
+print_game_assets(mobygames_obj.get_assets(candidate, ASSET_SNAP_ID))
+print_game_assets(mobygames_obj.get_assets(candidate, ASSET_BOXFRONT_ID))
+print_game_assets(mobygames_obj.get_assets(candidate, ASSET_BOXBACK_ID))
+print_game_assets(mobygames_obj.get_assets(candidate, ASSET_CARTRIDGE_ID))
+print_game_assets(mobygames_obj.get_assets(candidate, ASSET_FANART_ID))
+# print_game_assets(mobygames_obj.get_assets(candidate, ASSET_BANNER_ID))
+# print_game_assets(mobygames_obj.get_assets(candidate, ASSET_CLEARLOGO_ID))
+# print_game_assets(mobygames_obj.get_assets(candidate, ASSET_FLYER_ID))
+# print_game_assets(mobygames_obj.get_assets(candidate, ASSET_3DBOX_ID))
+# print_game_assets(mobygames_obj.get_assets(candidate, ASSET_MAP_ID))
+# print_game_assets(mobygames_obj.get_assets(candidate, ASSET_MANUAL_ID))
+# print_game_assets(mobygames_obj.get_assets(candidate, ASSET_TRAILER_ID))
