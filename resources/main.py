@@ -9470,7 +9470,7 @@ class Main:
             kodi_notify('Exported AEL Categories and Launchers XML configuration')
 
     #
-    # Checks all databases and tries to update to newer version if possible
+    # Checks all databases and updates to newer version if possible
     #
     def _command_check_database(self):
         log_debug('_command_check_database() Beginning ....')
@@ -9482,7 +9482,7 @@ class Main:
         pDialog.create('Advanced Emulator Launcher', 'Checking Categories/Launchers ...')
         self.categories = {}
         self.launchers = {}
-        self.update_timestamp = fs_load_catfile(CATEGORIES_FILE_PATH, self.categories, self.launchers)
+        self.update_timestamp = fs_load_catfile(g_PATHS.CATEGORIES_FILE_PATH, self.categories, self.launchers)
 
         # >> Traverse and fix Categories.
         for category_id in self.categories:
@@ -9504,7 +9504,7 @@ class Main:
         # >> Traverse and fix Launchers.
         for launcher_id in self.launchers:
             launcher = self.launchers[launcher_id]
-            # >> Fix s_thumb -> s_icon renaming
+            # Fix s_thumb -> s_icon renaming
             if launcher['default_icon'] == 's_thumb':       launcher['default_icon'] = 's_icon'
             if launcher['default_fanart'] == 's_thumb':     launcher['default_fanart'] = 's_icon'
             if launcher['default_banner'] == 's_thumb':     launcher['default_banner'] = 's_icon'
@@ -9512,7 +9512,7 @@ class Main:
             if launcher['default_clearlogo'] == 's_thumb':  launcher['default_clearlogo'] = 's_icon'
             if launcher['default_controller'] == 's_thumb': launcher['default_controller'] = 's_icon'
 
-            # >> Fix s_flyer -> s_poster renaming
+            # Fix s_flyer -> s_poster renaming
             if launcher['default_icon'] == 's_flyer':       launcher['default_icon'] = 's_poster'
             if launcher['default_fanart'] == 's_flyer':     launcher['default_fanart'] = 's_poster'
             if launcher['default_banner'] == 's_flyer':     launcher['default_banner'] = 's_poster'
@@ -9520,8 +9520,11 @@ class Main:
             if launcher['default_clearlogo'] == 's_flyer':  launcher['default_clearlogo'] = 's_poster'
             if launcher['default_controller'] == 's_flyer': launcher['default_controller'] = 's_poster'
 
+            # Add new fields.
+            if 'path_3dbox' not in launcher: launcher['path_3dbox'] = ''
+
         # >> Save categories.xml
-        fs_write_catfile(CATEGORIES_FILE_PATH, self.categories, self.launchers)
+        fs_write_catfile(g_PATHS.CATEGORIES_FILE_PATH, self.categories, self.launchers)
         pDialog.update(100)
 
         # >> Traverse all launchers. Load ROMs and check every ROMs.
@@ -9543,20 +9546,20 @@ class Main:
                 for rom_id in roms: self._misc_fix_rom_object(roms[rom_id])
                 fs_write_JSON_file(g_PATHS.ROMS_DIR, parents_roms_base_noext, roms)
 
-            # >> This updates timestamps and forces regeneration of Virtual Launchers.
-            self.launchers[launcher_id]['timestamp_launcher'] = time.time()            
+            # This updates timestamps and forces regeneration of Virtual Launchers.
+            self.launchers[launcher_id]['timestamp_launcher'] = time.time()
 
-            # >> Update dialog
+            # Update dialog
             processed_launchers += 1
             update_number = (processed_launchers * 100) / num_launchers
             pDialog.update(update_number)
         # >> Save categories.xml because launcher timestamps changed
-        fs_write_catfile(CATEGORIES_FILE_PATH, self.categories, self.launchers)
+        fs_write_catfile(g_PATHS.CATEGORIES_FILE_PATH, self.categories, self.launchers)
         pDialog.update(100)
 
         # >> Load Favourite ROMs and update JSON
         pDialog.update(0, 'Checking Favourite ROMs ...')
-        roms_fav = fs_load_Favourites_JSON(FAV_JSON_FILE_PATH)
+        roms_fav = fs_load_Favourites_JSON(g_PATHS.FAV_JSON_FILE_PATH)
         num_fav_roms = len(roms_fav)
         processed_fav_roms = 0
         for rom_id in roms_fav:
@@ -9567,11 +9570,11 @@ class Main:
             processed_fav_roms += 1
             update_number = (float(processed_fav_roms) / float(num_fav_roms)) * 100 
             pDialog.update(int(update_number))
-        fs_write_Favourites_JSON(FAV_JSON_FILE_PATH, roms_fav)
+        fs_write_Favourites_JSON(g_PATHS.FAV_JSON_FILE_PATH, roms_fav)
         pDialog.update(100)
 
         # >> Traverse every ROM Collection database and check/update Favourite ROMs.
-        (collections, update_timestamp) = fs_load_Collection_index_XML(COLLECTIONS_FILE_PATH)
+        (collections, update_timestamp) = fs_load_Collection_index_XML(g_PATHS.COLLECTIONS_FILE_PATH)
         pDialog.update(0, 'Checking Collection ROMs ...')
         num_collections = len(collections)
         processed_collections = 0
@@ -9601,7 +9604,7 @@ class Main:
             if collection['default_clearlogo'] == 's_flyer': collection['default_clearlogo'] = 's_poster'
 
             # >> Fix collection ROMs
-            roms_json_file = COLLECTIONS_DIR.pjoin(collection['roms_base_noext'] + '.json')
+            roms_json_file = g_PATHS.COLLECTIONS_DIR.pjoin(collection['roms_base_noext'] + '.json')
             collection_rom_list = fs_load_Collection_ROMs_JSON(roms_json_file)
             for rom in collection_rom_list: self._misc_fix_Favourite_rom_object(rom)
             fs_write_Collection_ROMs_JSON(roms_json_file, collection_rom_list)
@@ -9610,23 +9613,23 @@ class Main:
             update_number = (float(processed_collections) / float(num_collections)) * 100 
             pDialog.update(int(update_number))
         # >> Save ROM Collection index
-        fs_write_Collection_index_XML(COLLECTIONS_FILE_PATH, collections)
+        fs_write_Collection_index_XML(g_PATHS.COLLECTIONS_FILE_PATH, collections)
         pDialog.update(100)
 
         # >> Load Most Played ROMs and check/update.
         pDialog.update(0, 'Checking Most Played ROMs ...')
-        most_played_roms = fs_load_Favourites_JSON(MOST_PLAYED_FILE_PATH)
+        most_played_roms = fs_load_Favourites_JSON(g_PATHS.MOST_PLAYED_FILE_PATH)
         for rom_id in most_played_roms:
             rom = most_played_roms[rom_id]
             self._misc_fix_Favourite_rom_object(rom)
-        fs_write_Favourites_JSON(MOST_PLAYED_FILE_PATH, most_played_roms)
+        fs_write_Favourites_JSON(g_PATHS.MOST_PLAYED_FILE_PATH, most_played_roms)
         pDialog.update(100)
 
         # >> Load Recently Played ROMs and check/update.
         pDialog.update(0, 'Checking Recently Played ROMs ...')
-        recent_roms_list = fs_load_Collection_ROMs_JSON(RECENT_PLAYED_FILE_PATH)
+        recent_roms_list = fs_load_Collection_ROMs_JSON(g_PATHS.RECENT_PLAYED_FILE_PATH)
         for rom in recent_roms_list: self._misc_fix_Favourite_rom_object(rom)
-        fs_write_Collection_ROMs_JSON(RECENT_PLAYED_FILE_PATH, recent_roms_list)
+        fs_write_Collection_ROMs_JSON(g_PATHS.RECENT_PLAYED_FILE_PATH, recent_roms_list)
         pDialog.update(100)
         pDialog.close()
 
@@ -9644,6 +9647,7 @@ class Main:
         if 'disks'         not in rom: rom['disks']         = []
         if 'pclone_status' not in rom: rom['pclone_status'] = PCLONE_STATUS_NONE
         if 'cloneof'       not in rom: rom['cloneof']       = ''
+        if 's_3dbox'       not in rom: rom['s_3dbox']       = ''
         # --- Delete unwanted/obsolete stuff ---
         if 'nointro_isClone' in rom: rom.pop('nointro_isClone')
         # --- DB field renamings ---
