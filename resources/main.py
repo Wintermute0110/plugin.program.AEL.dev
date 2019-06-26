@@ -9356,9 +9356,9 @@ class Main:
         elif type2 >= 3:
             # --- Create ScrapeFactory object ---
             scraper_index = type2 - 3
+            log_debug('_gui_edit_asset() Scraper index {0}'.format(scraper_index))
             scraper_ID = g_scrap_factory.get_asset_scraper_ID_from_menu_idx(scraper_index)
             scraper_strategy = g_scrap_factory.create_CM_asset(scraper_ID)
-            log_debug('_gui_edit_asset() Scraper index {0}'.format(scraper_index))
 
             # --- Scrape! ---
             data_dic = {

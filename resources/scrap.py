@@ -717,6 +717,7 @@ class ScrapeStrategy(object):
 
         return True
 
+    # Legacy Chrisism code.
     def _apply_candidate_on_asset(self, rom_path, rom, asset_info, found_assets):
         if not found_assets:
             log_debug('{0} scraper has not collected images.'.format(self.getName()))
@@ -793,6 +794,27 @@ class ScrapeStrategy(object):
                 rom.set_asset(asset_info, image_path)
 
         return True
+
+    def _download_image(self, asset_info, image_url, destination_folder):
+        if image_url is None or image_url == '':
+            log_debug('No image to download. Skipping')
+            return None
+
+        image_ext = text_get_image_URL_extension(image_url)
+        log_debug('Downloading image URL "{1}"'.format(asset_info.name, image_url))
+
+        # ~~~ Download image ~~~
+        image_path = destination_folder.append(image_ext)
+        log_verb('Downloading URL  "{0}"'.format(image_url))
+        log_verb('Into local file  "{0}"'.format(image_path.getPath()))
+        try:
+            net_download_img(image_url, image_path)
+        except socket.timeout:
+            log_error('Cannot download {0} image (Timeout)'.format(asset_info.name))
+            kodi_notify_warn('Cannot download {0} image (Timeout)'.format(asset_info.name))
+            return None
+
+        return image_path
 
     # Called when scraping an asset in the context menu.
     # In the future object_dic will be a Launcher/ROM object, not a dictionary.
@@ -1060,27 +1082,6 @@ class Scraper(object):
     @abc.abstractmethod
     def _scraper_resolve_asset_URL(self, candidate): pass
 
-    def _download_image(self, asset_info, image_url, destination_folder):
-        if image_url is None or image_url == '':
-            log_debug('No image to download. Skipping')
-            return None
-
-        image_ext = text_get_image_URL_extension(image_url)
-        log_debug('Downloading image URL "{1}"'.format(asset_info.name, image_url))
-
-        # ~~~ Download image ~~~
-        image_path = destination_folder.append(image_ext)
-        log_verb('Downloading URL  "{0}"'.format(image_url))
-        log_verb('Into local file  "{0}"'.format(image_path.getPath()))
-        try:
-            net_download_img(image_url, image_path)
-        except socket.timeout:
-            log_error('Cannot download {0} image (Timeout)'.format(asset_info.name))
-            kodi_notify_warn('Cannot download {0} image (Timeout)'.format(asset_info.name))
-            return None
-
-        return image_path
-
     def _reset_caches(self):
         self.cache_candidates = {}
         self.cache_metadata = {}
@@ -1103,11 +1104,11 @@ class Scraper(object):
     # See https://stackoverflow.com/questions/5884066/hashing-a-dictionary
     def _new_candidate_dic(self):
         return {
-            'id'                : '',
-            'display_name'      : '',
-            'platform'          : '',
+            'id'               : '',
+            'display_name'     : '',
+            'platform'         : '',
             'scraper_platform' : '',
-            'order'             : 0,
+            'order'            : 0,
         }
 
     def _new_gamedata_dic(self):
