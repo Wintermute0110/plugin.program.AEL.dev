@@ -94,41 +94,49 @@ WIP      [SCRAPERS] Fix GameFAQs scraper. It has been a while since this scraper
 
 --- TODO LIST ---
 
- 1) Fix the ROM scanner metadata scraper.
+ 1. Fix the ROM context menu metadata scraper.
 
- 1.1) [DONE] Make sure the ROM scanner works with:
+ 1.1. [WIP] Make sure the MobyGames metadata scraper in the CM works.
+
+ 1.2. Make sure the TheGamesDB metadata scraper in the CM works.
+
+ 1.3. Make sure the AEL Offline metadata scraper in the CM works.
+
+ 2. Fix the ROM context menu asset scraper. The CM scraper is easier than the scanner.
+
+ 2.1. [DONE] Make sure the MobyGames asset scraper in the CM works.
+
+ 2.2. Make sure the TheGamesDB asset scraper in the CM works.
+
+
+ 3. Fix the ROM scanner metadata scraper.
+
+ 3.1. [DONE] Make sure the ROM scanner works with:
       "Metadata scan policy" set to "None" and "Asset scan policy" set to "Local images"
 
- 1.2) [DONE] Make sure the ROM scanner works with:
+ 3.2. [DONE] Make sure the ROM scanner works with:
       "Metadata scan policy" set to "NFO files" and "Asset scan policy" set to "Local images"
 
- 1.3) [DONE] Make sure the ROM scanner works with:
+ 3.3. [DONE] Make sure the ROM scanner works with:
       "Metadata scan policy" set to "Scrapers" and "Asset scan policy" set to "Local images"
       General First metadata scraper set to "MobyGames"
 
- 1.4) Make sure the ROM scanner works with:
+ 3.4. Make sure the ROM scanner works with:
       "Metadata scan policy" set to "Scrapers" and "Asset scan policy" set to "Local images"
       General First metadata scraper set to "AEL offline"
 
- 2) Fix the ROM context menu metadata scraper.
 
- 2.1) Make sure the MobyGames metadata scraper in the CM works.
+ 4. Fix the ROM scanner asset scraper.
 
- 3) Fix the ROM context menu asset scraper. The CM scraper is easier than the scanner.
-
- 3.1) [DONE] Make sure the MobyGames asset scraper in the CM works.
-
- 4) Fix the ROM scanner asset scraper.
-
- 4.1) [WIP] Make sure the ROM scanner works with:
+ 4.1. [WIP] Make sure the ROM scanner works with:
       "Metadata scan policy" set to "None" and "Asset scan policy" set to "Scrapers"
       General First metadata scraper set to "MobyGames"
 
- 4.2) Make sure the ROM scanner works with:
+ 4.2. Make sure the ROM scanner works with:
       "Metadata scan policy" set to "None" and "Asset scan policy" set to "Local images + Scrapers"
       General First metadata scraper set to "MobyGames"
 
- 5) Is it possible to scrape individual metadata components??? Think about this.
+ 5. Is it possible to scrape individual metadata components??? Think about this.
 
 
 

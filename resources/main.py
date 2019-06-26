@@ -9007,166 +9007,19 @@ class Main:
         pdialog.endProgress()
         kodi_refresh_container()
 
-    # ---------------------------------------------------------------------------------------------
-    # Metadata scrapers
-    # ---------------------------------------------------------------------------------------------
-    #
-    # Called when editing a ROM by _command_edit_rom()
-    # Always do semi-automatic scraping when editing ROMs/Launchers.
-    # launcherID = '0' if scraping ROM in Favourites
-    # roms are editing using Python arguments passed by assignment. Caller is responsible of
-    # saving the ROMs XML file.
-    #
-    # Returns:
-    #   True   Changes were made.
-    #   False  Changes not made. No need to save ROMs XML/Update container
-    #
-    def _gui_scrap_rom_metadata(self, categoryID, launcherID, romID, roms, scraper_obj):
-        # --- Grab ROM info and metadata scraper settings ---
-        # >> ROM in favourites
-        if categoryID == VCATEGORY_FAVOURITES_ID:
-            platform = roms[romID]['platform']
-        elif categoryID == VCATEGORY_COLLECTIONS_ID:
-            platform = roms[romID]['platform']
-        else:
-            launcher = self.launchers[launcherID]
-            platform = launcher['platform']
-        ROM      = FileName(roms[romID]['filename'])
-        rom_name = roms[romID]['m_name']
-        scan_clean_tags            = self.settings['scan_clean_tags']
-        scan_ignore_scrapped_title = self.settings['scan_ignore_scrap_title']
-        log_info('_gui_scrap_rom_metadata() ROM "{0}"'.format(rom_name))
-
-        # --- Ask user to enter ROM metadata search string ---
-        keyboard = xbmc.Keyboard(rom_name, 'Enter the ROM search string ...')
-        keyboard.doModal()
-        if not keyboard.isConfirmed(): return False
-        search_string = keyboard.getText().decode('utf-8')
-
-        # --- Do a search and get a list of games ---
-        # >> Prevent race conditions
-        kodi_busydialog_ON()
-        results = scraper_obj.get_search(search_string, ROM.getBase_noext(), platform)
-        kodi_busydialog_OFF()
-        log_verb('_gui_scrap_rom_metadata() Metadata scraper found {0} result/s'.format(len(results)))
-        if not results:
-            kodi_notify_warn('Scraper found no game matches')
-            return False
-
-        # --- Display corresponding game list found so user choses ---
-        rom_name_list = []
-        for game in results: rom_name_list.append(game['display_name'])
-        # >> If there is only one item in the list then don't show select dialog
-        if len(rom_name_list) == 1:
-            selectgame = 0
-        else:
-            selectgame = xbmcgui.Dialog().select('Select game for ROM {0}'.format(rom_name), rom_name_list)
-            if selectgame < 0: return False
-        log_verb('_gui_scrap_rom_metadata() User chose game "{0}"'.format(rom_name_list[selectgame]))
-
-        # --- Grab metadata for selected game ---
-        # >> Prevent race conditions
-        kodi_busydialog_ON()
-        gamedata = scraper_obj.get_metadata(results[selectgame])
-        kodi_busydialog_OFF()
-        if not gamedata:
-            kodi_notify_warn('Cannot download game metadata.')
-            return False
-
-        # --- Put metadata into ROM dictionary ---
-        # >> Ignore scraped title
-        if scan_ignore_scrapped_title:
-            roms[romID]['m_name'] = text_format_ROM_title(ROM.getBase_noext(), scan_clean_tags)
-            log_debug('User wants to ignore scraper name. Setting name to "{0}"'.format(roms[romID]['m_name']))
-        # >> Use scraped title
-        else:
-            roms[romID]['m_name'] = gamedata['title']
-            log_debug('User wants scrapped name. Setting name to "{0}"'.format(roms[romID]['m_name']))
-        roms[romID]['m_year']      = gamedata['year']
-        roms[romID]['m_genre']     = gamedata['genre']
-        roms[romID]['m_developer'] = gamedata['developer']
-        roms[romID]['m_nplayers']  = gamedata['nplayers']
-        roms[romID]['m_esrb']      = gamedata['esrb']
-        roms[romID]['m_plot']      = gamedata['plot']
-
-        # >> Changes were made, return True
-        kodi_notify('ROM metadata updated')
-
-        return True
-
-    #
-    # Called when editing a launcher by _command_edit_launcher()
-    # Note that launcher maybe a ROM launcher or a standalone launcher (game, app)
-    # Scrap standalone launcher (typically a game) metadata
-    # Called when editing a launcher...
-    # Always do semi-automatic scraping when editing ROMs/Launchers
-    #
-    # Returns:
-    #   True   Changes were made.
-    #   False  Changes not made. No need to save ROMs XML/Update container
-    #
-    def _gui_scrap_launcher_metadata(self, launcherID, scraper_obj):
-        launcher = self.launchers[launcherID]
-        launcher_name = launcher['m_name']
-        platform = launcher['platform']
-
-        # Edition of the launcher name
-        keyboard = xbmc.Keyboard(launcher_name, 'Enter the launcher search string ...')
-        keyboard.doModal()
-        if not keyboard.isConfirmed(): return False
-        search_string = keyboard.getText().decode('utf-8')
-
-        # Scrap and get a list of matches
-        kodi_busydialog_ON()
-        results = scraper_obj.get_search(search_string, '', platform)
-        kodi_busydialog_OFF()
-        log_debug('_gui_scrap_launcher_metadata() Metadata scraper found {0} result/s'.format(len(results)))
-        if not results:
-            kodi_notify('Scraper found no matches')
-            return False
-
-        # --- Display corresponding game list found so user choses ---
-        rom_name_list = []
-        for game in results: rom_name_list.append(game['display_name'])
-        if len(rom_name_list) == 1:
-            selectgame = 0
-        else:
-            selectgame = xbmcgui.Dialog().select('Select item for Launcher {0}'.format(launcher_name), rom_name_list)
-            if selectgame < 0: return False
-
-        # --- Grab metadata for selected game ---
-        kodi_busydialog_ON()
-        gamedata = scraper_obj.get_metadata(results[selectgame])
-        kodi_busydialog_OFF()
-        if not gamedata:
-            kodi_notify_warn('Cannot download game metadata.')
-            return False
-
-        # --- Put metadata into launcher dictionary ---
-        # >> Scraper should not change launcher title
-        # >> 'nplayers' and 'esrb' ignored for launchers
-        launcher['m_year']      = gamedata['year']
-        launcher['m_genre']     = gamedata['genre']
-        launcher['m_developer'] = gamedata['developer']
-        launcher['m_plot']      = gamedata['plot']
-
-        # >> Changes were made
-        return True
-
     #
     # Edit category/launcher/rom asset.
     #
-    # NOTE Scrapers are loaded by the _command_edit_* functions (caller of this function).
-    # NOTE When editing ROMs optional parameter launcher_dic is required.
-    # NOTE Caller is responsible for saving the Categories/Launchers/ROMs.
-    # NOTE if image is changed container should be updated so the user sees new image instantly.
-    # NOTE object_dic is edited by assigment.
-    # NOTE A ROM in Favourites has categoryID = VCATEGORY_FAVOURITES_ID.
-    #      a ROM in a collection categoryID = VCATEGORY_COLLECTIONS_ID.
+    # When editing ROMs optional parameter launcher_dic is required.
+    # Caller is responsible for saving the Categories/Launchers/ROMs.
+    # If image is changed container should be updated so the user sees new image instantly.
+    # object_dic is edited by assigment.
+    # A ROM in Favourites has categoryID = VCATEGORY_FAVOURITES_ID.
+    # A ROM in a collection categoryID = VCATEGORY_COLLECTIONS_ID.
     #
-    # Returns:
-    #   True   Changes made. Categories/Launchers/ROMs must be saved and container updated
-    #   False  No changes were made. No necessary to refresh container
+    # --- Returns ---
+    # True   Changes made. Categories/Launchers/ROMs must be saved and container updated
+    # False  No changes were made. No necessary to refresh container
     #
     def _gui_edit_asset(self, object_kind, asset_ID, object_dic, categoryID = '', launcherID = ''):
         # --- Get asset object information ---
@@ -9261,9 +9114,11 @@ class Main:
         # --- Show image editing options ---
         # Scrapers only supported for ROMs (for the moment)
         dialog = xbmcgui.Dialog()
-        common_menu_list = ['Select local {0}'.format(AInfo.kind_str),
-                            'Import local {0} (copy and rename)'.format(AInfo.kind_str),
-                            'Unset artwork/asset',]
+        common_menu_list = [
+            'Select local {0}'.format(AInfo.kind_str),
+            'Import local {0} (copy and rename)'.format(AInfo.kind_str),
+            'Unset artwork/asset',
+        ]
         if object_kind == KIND_ROM:
             type2 = dialog.select('Change {0} {1}'.format(AInfo.name, AInfo.kind_str),
                 common_menu_list + scraper_menu_list)
@@ -9355,7 +9210,7 @@ class Main:
         # --- Manual scrape and choose from a list of images ---
         elif type2 >= 3:
             # --- Create ScrapeFactory object ---
-            scraper_index = type2 - 3
+            scraper_index = type2 - len(common_menu_list)
             log_debug('_gui_edit_asset() Scraper index {0}'.format(scraper_index))
             scraper_ID = g_scrap_factory.get_asset_scraper_ID_from_menu_idx(scraper_index)
             scraper_strategy = g_scrap_factory.create_CM_asset(scraper_ID)
@@ -9367,7 +9222,7 @@ class Main:
                 'current_asset_FN' : current_asset_FN,
                 'asset_path_noext' : asset_path_noext,
             }
-            return scraper_strategy.scrap_asset_CM(object_dic, asset_ID, data_dic)
+            return scraper_strategy.scrap_CM_asset(object_dic, asset_ID, data_dic)
 
         # If we reach this point, changes were made.
         # Categories/Launchers/ROMs must be saved, container must be refreshed.

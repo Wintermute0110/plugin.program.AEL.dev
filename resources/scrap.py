@@ -53,9 +53,9 @@ from .net_IO import *
 #
 # 3) g_scraper_factory must be able to report each scraper capabilities.
 #
-# 4) The actual object metadata/asset scraping is done by an scraper_strategy object instance.
+# 4) The actual object metadata/asset scraping is done by an scrap_strategy object instance.
 #
-# 5) progress_dialog_obj object instance is passed to the scraper_strategy instance.
+# 5) progress_dialog_obj object instance is passed to the scrap_strategy instance.
 #    In the ROM scanner the progress dialog is created in the scanner instance and 
 #    changed by the scanner/scraper objects.
 #
@@ -80,36 +80,42 @@ from .net_IO import *
 # 3) For each ROM object scrape the metadata and assets with the ScraperStrategy object.
 #
 # --- Code example ---
-# scraper_strategy.process_ROM_assets() scrapes all enabled assets in sequence using all the
+# scrap_strategy.process_ROM_assets() scrapes all enabled assets in sequence using all the
 # configured scrapers (primary, secondary).
 #
 # g_scraper_factory = ScraperFactory(g_PATHS, g_settings)
-# scraper_strategy = g_scraper_factory.create_scanner(launcher_obj, progress_dialog_obj)
-# scraper_strategy.process_ROM_metadata(rom_obj)
-# scraper_strategy.process_ROM_assets(rom_obj)
+# scrap_strategy = g_scraper_factory.create_scanner(launcher_obj, progress_dialog_obj)
+# scrap_strategy.process_ROM_metadata(rom_obj)
+# scrap_strategy.process_ROM_assets(rom_obj)
 #
 # --- Use case B: ROM context menu ---------------------------------------------------------------
 # In the ROM context menu the scraper object may be called multiple times by the recursive
-# context menu. Scrapers should report the assets they support to build the dynamic context
-# menu.
+# context menu.
 #
-# --- Code example ---
-# g_scraper_factory is a global object created when the addon is initialised.
-# g_scraper_factory.supports_asset(scraper_ID, asset_ID)
-# g_scraper_factory.get_name(scraper_ID)
+# Scrapers should report the assets they support to build the dynamic context menu.
 #
-# g_scraper_factory = ScraperFactory(g_PATHS, g_settings)
-# g_scraper_factory.get_scraper_menu_list(asset_ID)
-# index = dialog.select( ... )
-# scraper_ID = g_scraper_factory.get_scraper_ID_from_index(index - num_common_menu_items)
+# The scraping mode when using the context menu is always manual.
 #
-# THIS (may be called multiple times)
-# scraper_strategy = g_scraper_factory.create_metadata(launcher_obj, scraper_ID, progress_dialog_obj)
-# scraper_strategy.scrape_metadata(rom_obj)
+# --- Code example METADATA ---
+# >> g_scraper_factory is a global object created when the addon is initialised.
+# g_scrap_factory = ScraperFactory(g_PATHS, self.settings)
+# scraper_menu_list = g_scrap_factory.get_metadata_scraper_menu_list(asset_ID)
+# scraper_index = dialog.select( ... )
+# scraper_ID = g_scrap_factory.get_metadata_scraper_ID_from_menu_idx(scraper_index)
+# scrap_strategy = g_scrap_factory.create_CM_metadata(scraper_ID)
+# >> data_dic has auxiliar data to do the scraping process.
+# scrap_strategy.scrap_CM_metadata_ROM(object_dic, asset_ID, data_dic)
+# scrap_strategy.scrap_CM_metadata_Launcher(object_dic, asset_ID, data_dic)
 #
-# OR THIS (may be called multiple times)
-# scraper_strategy = g_scraper_factory.create_asset(launcher_obj, scraper_ID, progress_dialog_obj)
-# scraper_strategy.scrape_asset(rom_obj)
+# --- Code example ASSETS ---
+# >> g_scraper_factory is a global object created when the addon is initialised.
+# g_scrap_factory = ScraperFactory(g_PATHS, self.settings)
+# scraper_menu_list = g_scrap_factory.get_asset_scraper_menu_list(asset_ID)
+# scraper_index = dialog.select( ... )
+# scraper_ID = g_scrap_factory.get_asset_scraper_ID_from_menu_idx(scraper_index)
+# scrap_strategy = g_scrap_factory.create_CM_asset(scraper_ID)
+# >> data_dic has auxiliar data to do the scraping process.
+# scrap_strategy.scrap_CM_asset(object_dic, asset_ID, data_dic)
 #
 # --- Use case C: Standalone Launcher context menu -----------------------------------------------
 # In the Standalone Launcher context menu the situation is similar to the ROM context menu.
@@ -816,11 +822,137 @@ class ScrapeStrategy(object):
 
         return image_path
 
+    # Called when editing a ROM by _command_edit_rom()
+    # Always do MANUAL scraping mode when editing ROMs/Launchers.
+    # In the future object_dic will be a Launcher/ROM object, not a dictionary.
+    # TODO Merge scrap_CM_metadata_ROM() and scrap_CM_metadata_launcher() into a generic function.
+    #
+    # @return: [bool] True if metadata was changed, False otherwise (no need to save DB).
+    def scrap_CM_metadata_ROM(self, object_dic, data_dic):
+    #def _gui_scrap_rom_metadata(self, categoryID, launcherID, romID, roms, scraper_obj):
+        # --- Grab ROM info and metadata scraper settings ---
+        # >> ROM in favourites
+        if categoryID == VCATEGORY_FAVOURITES_ID:
+            platform = roms[romID]['platform']
+        elif categoryID == VCATEGORY_COLLECTIONS_ID:
+            platform = roms[romID]['platform']
+        else:
+            launcher = self.launchers[launcherID]
+            platform = launcher['platform']
+        ROM      = FileName(roms[romID]['filename'])
+        rom_name = roms[romID]['m_name']
+        scan_clean_tags            = self.settings['scan_clean_tags']
+        scan_ignore_scrapped_title = self.settings['scan_ignore_scrap_title']
+        log_info('_gui_scrap_rom_metadata() ROM "{0}"'.format(rom_name))
+
+        # --- Ask user to enter ROM metadata search string ---
+        keyboard = xbmc.Keyboard(rom_name, 'Enter the ROM search string ...')
+        keyboard.doModal()
+        if not keyboard.isConfirmed(): return False
+        search_string = keyboard.getText().decode('utf-8')
+
+        # --- Do a search and get a list of games ---
+        # >> Prevent race conditions
+        results = scraper_obj.get_search(search_string, ROM.getBase_noext(), platform)
+        log_verb('_gui_scrap_rom_metadata() Metadata scraper found {0} result/s'.format(len(results)))
+        if not results:
+            kodi_notify_warn('Scraper found no game matches')
+            return False
+
+        # --- Display corresponding game list found so user choses ---
+        rom_name_list = []
+        for game in results: rom_name_list.append(game['display_name'])
+        # >> If there is only one item in the list then don't show select dialog
+        if len(rom_name_list) == 1:
+            selectgame = 0
+        else:
+            selectgame = xbmcgui.Dialog().select('Select game for ROM {0}'.format(rom_name), rom_name_list)
+            if selectgame < 0: return False
+        log_verb('_gui_scrap_rom_metadata() User chose game "{0}"'.format(rom_name_list[selectgame]))
+
+        # --- Grab metadata for selected game ---
+        # >> Prevent race conditions
+        gamedata = scraper_obj.get_metadata(results[selectgame])
+        if not gamedata:
+            kodi_notify_warn('Cannot download game metadata.')
+            return False
+
+        # --- Put metadata into ROM dictionary ---
+        # >> Ignore scraped title
+        if scan_ignore_scrapped_title:
+            roms[romID]['m_name'] = text_format_ROM_title(ROM.getBase_noext(), scan_clean_tags)
+            log_debug('User wants to ignore scraper name. Setting name to "{0}"'.format(roms[romID]['m_name']))
+        # >> Use scraped title
+        else:
+            roms[romID]['m_name'] = gamedata['title']
+            log_debug('User wants scrapped name. Setting name to "{0}"'.format(roms[romID]['m_name']))
+        roms[romID]['m_year']      = gamedata['year']
+        roms[romID]['m_genre']     = gamedata['genre']
+        roms[romID]['m_developer'] = gamedata['developer']
+        roms[romID]['m_nplayers']  = gamedata['nplayers']
+        roms[romID]['m_esrb']      = gamedata['esrb']
+        roms[romID]['m_plot']      = gamedata['plot']
+
+        # Changes were made, return True
+        kodi_notify('ROM metadata updated')
+        return True
+
+    # Called when editing a launcher by _command_edit_launcher()
+    # Note that launcher maybe a ROM launcher or a standalone launcher (game, app)
+    # Scrap standalone launcher (typically a game) metadata
+    # Always do manual scraping when editing ROMs/Launchers
+    #
+    # @return: [bool] True if metadata was changed, False otherwise (no need to save DB).
+    def scrap_CM_metadata_Launcher(self, object_dic, data_dic):
+        launcher = self.launchers[launcherID]
+        launcher_name = launcher['m_name']
+        platform = launcher['platform']
+
+        # Edition of the launcher name
+        keyboard = xbmc.Keyboard(launcher_name, 'Enter the launcher search string ...')
+        keyboard.doModal()
+        if not keyboard.isConfirmed(): return False
+        search_string = keyboard.getText().decode('utf-8')
+
+        # Scrap and get a list of matches
+        results = scraper_obj.get_search(search_string, '', platform)
+        log_debug('_gui_scrap_launcher_metadata() Metadata scraper found {0} result/s'.format(len(results)))
+        if not results:
+            kodi_notify('Scraper found no matches')
+            return False
+
+        # --- Display corresponding game list found so user choses ---
+        rom_name_list = []
+        for game in results: rom_name_list.append(game['display_name'])
+        if len(rom_name_list) == 1:
+            selectgame = 0
+        else:
+            selectgame = xbmcgui.Dialog().select('Select item for Launcher {0}'.format(launcher_name), rom_name_list)
+            if selectgame < 0: return False
+
+        # --- Grab metadata for selected game ---
+        gamedata = scraper_obj.get_metadata(results[selectgame])
+        if not gamedata:
+            kodi_notify_warn('Cannot download game metadata.')
+            return False
+
+        # --- Put metadata into launcher dictionary ---
+        # >> Scraper should not change launcher title
+        # >> 'nplayers' and 'esrb' ignored for launchers
+        launcher['m_year']      = gamedata['year']
+        launcher['m_genre']     = gamedata['genre']
+        launcher['m_developer'] = gamedata['developer']
+        launcher['m_plot']      = gamedata['plot']
+
+        # Changes were made
+        kodi_notify('Launcher metadata updated')
+        return True
+
     # Called when scraping an asset in the context menu.
     # In the future object_dic will be a Launcher/ROM object, not a dictionary.
     #
     # @return: [bool] True if image was changed, False otherwise.
-    def scrap_asset_CM(self, object_dic, asset_ID, data_dic):
+    def scrap_CM_asset(self, object_dic, asset_ID, data_dic):
         # In AEL 0.10.x this data is grabed from the objects, not passed using a dictionary.
         AInfo = assets_get_info_scheme(asset_ID)
         current_asset_FN = data_dic['current_asset_FN']
