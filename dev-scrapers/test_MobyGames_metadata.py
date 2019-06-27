@@ -33,15 +33,15 @@ set_log_level(LOG_DEBUG) # >> LOG_INFO, LOG_VERB, LOG_DEBUG
 settings = {
     'scraper_mobygames_apikey' : '', # Do not forget to set the API key.
 }
-MobyGames = MobyGames_Scraper(settings)
-MobyGames.set_verbose_mode(False)
-MobyGames.set_debug_file_dump(True, os.path.dirname(__file__))
+scraper_obj = MobyGames(settings)
+scraper_obj.set_verbose_mode(False)
+scraper_obj.set_debug_file_dump(True, os.path.dirname(__file__))
 
 # --- Get candidates ---
-candidate_list = MobyGames.get_candidates(*games['metroid'])
-# candidate_list = MobyGames.get_candidates(*games['mworld'])
-# candidate_list = MobyGames.get_candidates(*games['sonic'])
 # Cases with unknown platform must be tested as well.
+candidate_list = scraper_obj.get_candidates(*games['metroid'])
+# candidate_list = scraper_obj.get_candidates(*games['mworld'])
+# candidate_list = scraper_obj.get_candidates(*games['sonic'])
 
 # --- Print search results ---
 # pprint.pprint(candidate_list)
@@ -52,6 +52,6 @@ if not candidate_list:
 
 # --- Print metadata of first candidate ---
 print('*** MobyGames game metadata ***************************************************************')
-metadata = MobyGames.get_metadata(candidate_list[0])
+metadata = scraper_obj.get_metadata(candidate_list[0])
 # pprint.pprint(metadata)
 print_game_metadata(metadata)
