@@ -950,7 +950,7 @@ class ScrapeStrategy(object):
     #
     # @return: [bool] True if image was changed, False otherwise.
     def scrap_CM_asset(self, object_dic, asset_ID, data_dic):
-        log_info('::scrap_CM_metadata_ROM() ROM "{0}"'.format(data_dic['rom_name']))
+        log_info('::scrap_CM_asset() ROM "{0}"'.format(object_dic['m_name']))
         # In AEL 0.10.x this data is grabed from the objects, not passed using a dictionary.
         rom_base_noext = data_dic['rom_base_noext']
         platform = data_dic['platform']
