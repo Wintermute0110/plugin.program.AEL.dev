@@ -1223,30 +1223,28 @@ class Main:
         # --- Edition of the launcher metadata ---
         type_nb = 0
         if type == type_nb:
-            # >> Make a list of available metadata scrapers
-            scraper_obj_list  = []
-            scraper_menu_list = []
-            for scrap_obj in scrapers_metadata:
-                scraper_obj_list.append(scrap_obj)
-                scraper_menu_list.append('Scrape metadata from {0} ...'.format(scrap_obj.name))
-                log_verb('Added metadata scraper {0}'.format(scrap_obj.name))
+            # --- Make a menu list of available metadata scrapers ---
+            g_scrap_factory = ScraperFactory(g_PATHS, self.settings)
+            scraper_menu_list = g_scrap_factory.get_metadata_scraper_menu_list()
 
-            # >> Metadata edit dialog
+            # --- Metadata edit dialog ---
             NFO_FileName = fs_get_launcher_NFO_name(self.settings, self.launchers[launcherID])
             NFO_found_str = 'NFO found' if NFO_FileName.exists() else 'NFO not found'
             plot_str = text_limit_string(self.launchers[launcherID]['m_plot'], PLOT_STR_MAXSIZE)
-            menu_list = ["Edit Title: '{0}'".format(self.launchers[launcherID]['m_name']),
-                         "Edit Platform: {0}".format(self.launchers[launcherID]['platform']),
-                         "Edit Release Year: '{0}'".format(self.launchers[launcherID]['m_year']),
-                         "Edit Genre: '{0}'".format(self.launchers[launcherID]['m_genre']),
-                         "Edit Developer: '{0}'".format(self.launchers[launcherID]['m_developer']),
-                         "Edit Rating: '{0}'".format(self.launchers[launcherID]['m_rating']),
-                         "Edit Plot: '{0}'".format(plot_str),
-                         'Import NFO file (default, {0})'.format(NFO_found_str),
-                         'Import NFO file (browse NFO file) ...',
-                         'Save NFO file (default location)']
+            common_menu_list = [
+                "Edit Title: '{0}'".format(self.launchers[launcherID]['m_name']),
+                "Edit Platform: {0}".format(self.launchers[launcherID]['platform']),
+                "Edit Release Year: '{0}'".format(self.launchers[launcherID]['m_year']),
+                "Edit Genre: '{0}'".format(self.launchers[launcherID]['m_genre']),
+                "Edit Developer: '{0}'".format(self.launchers[launcherID]['m_developer']),
+                "Edit Rating: '{0}'".format(self.launchers[launcherID]['m_rating']),
+                "Edit Plot: '{0}'".format(plot_str),
+                'Import NFO file (default, {0})'.format(NFO_found_str),
+                'Import NFO file (browse NFO file) ...',
+                'Save NFO file (default location)',
+            ]
             dialog = xbmcgui.Dialog()
-            type2 = dialog.select('Edit Launcher Metadata', menu_list + scraper_menu_list)
+            type2 = dialog.select('Edit Launcher Metadata', common_menu_list + scraper_menu_list)
             if type2 < 0: return
 
             # --- Edition of the launcher name ---
@@ -1384,17 +1382,23 @@ class Main:
             # --- Scrape launcher metadata ---
             elif type2 >= 10:
                 # --- Use the scraper chosen by user ---
-                scraper_index = type2 - 10
-                scraper_obj   = scraper_obj_list[scraper_index]
-                log_debug('_command_edit_launcher() Scraper index {0}'.format(scraper_index))
-                log_debug('_command_edit_launcher() User chose scraper "{0}"'.format(scraper_obj.name))
+                scraper_index = type2 - len(common_menu_list)
+                scraper_ID = g_scrap_factory.get_metadata_scraper_ID_from_menu_idx(scraper_index)
+                scrap_strategy = g_scrap_factory.create_CM_metadata(scraper_ID)
 
-                # --- Initialise asset scraper ---
-                scraper_obj.set_addon_dir(g_PATHS.ADDON_CODE_DIR.getPath())
-                log_debug('_command_edit_launcher() Initialised scraper "{0}"'.format(scraper_obj.name))
+                # --- Grab data ---
+                object_dic = self.launchers[launcherID]
+                platform = self.launchers[launcherID]['platform']
+                data_dic = {
+                    'rom_base_noext' : self.launchers[launcherID]['m_name'],
+                    'platform' : platform,
+                }
 
-                # >> If this returns False there were no changes so no need to save categories.xml
-                if not self._gui_scrap_launcher_metadata(launcherID, scraper_obj): return
+                # --- Scrape! ---
+                # If this returns False there were no changes so no need to save database.
+                op_dic = scrap_strategy.scrap_CM_metadata_Launcher(object_dic, data_dic)
+                kodi_display_user_message(op_dic)
+                if not op_dic['status']: return
 
         # --- Edit Launcher Assets/Artwork ---
         type_nb = type_nb + 1
@@ -2587,31 +2591,29 @@ class Main:
 
         # --- Edit ROM metadata ---
         if type == 0:
-            # >> Make a list of available metadata scrapers
-            scraper_obj_list  = []
-            scraper_menu_list = []
-            # for scrap_obj in scrapers_metadata:
-            #     scraper_obj_list.append(scrap_obj)
-            #     scraper_menu_list.append('Scrape metadata from {0} ...'.format(scrap_obj.name))
-            #     log_verb('Added metadata scraper {0}'.format(scrap_obj.name))
+            # --- Make a menu list of available metadata scrapers ---
+            g_scrap_factory = ScraperFactory(g_PATHS, self.settings)
+            scraper_menu_list = g_scrap_factory.get_metadata_scraper_menu_list()
 
-            # >> Metadata edit dialog
+            # --- Metadata edit dialog ---
             NFO_FileName = fs_get_ROM_NFO_name(roms[romID])
             NFO_found_str = 'NFO found' if NFO_FileName.exists() else 'NFO not found'
             plot_str = text_limit_string(roms[romID]['m_plot'], PLOT_STR_MAXSIZE)
-            menu_list = ["Edit Title: '{0}'".format(roms[romID]['m_name']),
-                         "Edit Release Year: '{0}'".format(roms[romID]['m_year']),
-                         "Edit Genre: '{0}'".format(roms[romID]['m_genre']),
-                         "Edit Developer: '{0}'".format(roms[romID]['m_developer']),
-                         "Edit NPlayers: '{0}'".format(roms[romID]['m_nplayers']),
-                         "Edit ESRB rating: '{0}'".format(roms[romID]['m_esrb']),
-                         "Edit Rating: '{0}'".format(roms[romID]['m_rating']),
-                         "Edit Plot: '{0}'".format(plot_str),
-                         'Load Plot from TXT file ...',
-                         'Import NFO file ({0})'.format(NFO_found_str),
-                         'Save NFO file']
+            common_menu_list = [
+                "Edit Title: '{0}'".format(roms[romID]['m_name']),
+                "Edit Release Year: '{0}'".format(roms[romID]['m_year']),
+                "Edit Genre: '{0}'".format(roms[romID]['m_genre']),
+                "Edit Developer: '{0}'".format(roms[romID]['m_developer']),
+                "Edit NPlayers: '{0}'".format(roms[romID]['m_nplayers']),
+                "Edit ESRB rating: '{0}'".format(roms[romID]['m_esrb']),
+                "Edit Rating: '{0}'".format(roms[romID]['m_rating']),
+                "Edit Plot: '{0}'".format(plot_str),
+                'Load Plot from TXT file ...',
+                'Import NFO file ({0})'.format(NFO_found_str),
+                'Save NFO file',
+            ]
             dialog = xbmcgui.Dialog()
-            type2 = dialog.select('Modify ROM metadata', menu_list + scraper_menu_list)
+            type2 = dialog.select('Modify ROM metadata', common_menu_list + scraper_menu_list)
             if type2 < 0: return
 
             # --- Edit of the rom title ---
@@ -2732,23 +2734,32 @@ class Main:
                     kodi_dialog_OK('Exporting NFO file is not allowed for ROMs in Favourites.')
                     return
                 fs_export_ROM_NFO(roms[romID])
-                # >> No need to save ROMs
-                return
+                return # No need to save ROMs
 
             # --- Scrap ROM metadata ---
             elif type2 >= 11:
                 # --- Use the scraper chosen by user ---
-                scraper_index = type2 - 11
-                scraper_obj   = scraper_obj_list[scraper_index]
-                log_debug('_command_edit_rom() Scraper index {0}'.format(scraper_index))
-                log_debug('_command_edit_rom() User chose scraper "{0}"'.format(scraper_obj.name))
+                scraper_index = type2 - len(common_menu_list)
+                scraper_ID = g_scrap_factory.get_metadata_scraper_ID_from_menu_idx(scraper_index)
+                scrap_strategy = g_scrap_factory.create_CM_metadata(scraper_ID)
 
-                # --- Initialise asset scraper ---
-                scraper_obj.set_addon_dir(g_PATHS.ADDON_CODE_DIR.getPath())
-                log_debug('_command_edit_rom() Initialised scraper "{0}"'.format(scraper_obj.name))
+                # --- Grab data ---
+                object_dic = roms[romID]
+                ROM = FileName(roms[romID]['filename'])
+                if categoryID == VCATEGORY_FAVOURITES_ID or categoryID == VCATEGORY_COLLECTIONS_ID:
+                    platform = roms[romID]['platform']
+                else:
+                    platform = self.launchers[launcherID]['platform']
+                data_dic = {
+                    'rom_base_noext' : ROM.getBase_noext(),
+                    'platform' : platform,
+                }
 
-                # >> If this returns False there were no changes so no need to save ROMs JSON.
-                if not self._gui_scrap_rom_metadata(categoryID, launcherID, romID, roms, scraper_obj): return
+                # --- Scrape! ---
+                # If this returns False there were no changes so no need to save ROMs JSON.
+                op_dic = scrap_strategy.scrap_CM_metadata_ROM(object_dic, data_dic)
+                kodi_display_user_message(op_dic)
+                if not op_dic['status']: return
 
         # --- Edit Launcher Assets/Artwork ---
         elif type == 1:
@@ -2838,10 +2849,11 @@ class Main:
         # --- Advanced ROM Modifications ---
         elif type == 3:
             dialog = xbmcgui.Dialog()
-            type2 = dialog.select('Advanced ROM Modifications',
-                                  ["Change ROM file: '{0}'".format(roms[romID]['filename']),
-                                   "Alternative application: '{0}'".format(roms[romID]['altapp']),
-                                   "Alternative arguments: '{0}'".format(roms[romID]['altarg']) ])
+            type2 = dialog.select('Advanced ROM Modifications', [
+                "Change ROM file: '{0}'".format(roms[romID]['filename']),
+                "Alternative application: '{0}'".format(roms[romID]['altapp']),
+                "Alternative arguments: '{0}'".format(roms[romID]['altarg']),
+            ])
             if type2 < 0: return
 
             # >> Change ROM file
@@ -9158,7 +9170,7 @@ class Main:
         # --- Import an image ---
         # Copy and rename a local image into asset directory.
         elif type2 == 1:
-            # >> If assets exists start file dialog from current asset directory
+            # If assets exists start file dialog from current asset directory
             image_dir = ''
             if object_dic[AInfo.key]: image_dir = FileName(object_dic[AInfo.key]).getDir()
             log_debug('_gui_edit_asset() Initial path "{0}"'.format(image_dir))
@@ -9222,7 +9234,10 @@ class Main:
                 'current_asset_FN' : current_asset_FN,
                 'asset_path_noext' : asset_path_noext,
             }
-            return scraper_strategy.scrap_CM_asset(object_dic, asset_ID, data_dic)
+            # If this returns False there were no changes so no need to save ROMs JSON.
+            op_dic = scraper_strategy.scrap_CM_asset(object_dic, asset_ID, data_dic)
+            kodi_display_user_message(op_dic)
+            if not op_dic['status']: return
 
         # If we reach this point, changes were made.
         # Categories/Launchers/ROMs must be saved, container must be refreshed.

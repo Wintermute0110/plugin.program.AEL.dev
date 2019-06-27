@@ -136,7 +136,7 @@ class KodiProgressDialog(object):
         self.progress = 0
         self.progressDialog = xbmcgui.DialogProgress()
 
-    def startProgress(self, message, num_steps):
+    def startProgress(self, message, num_steps = 100):
         self.num_steps = num_steps
         self.progressDialog.create(self.title, message)
 
@@ -201,6 +201,21 @@ class KodiProgressDialog_Chrisism(object):
     def _endProgressPhase(self, canceled = False):
         if not canceled: self.progressDialog.update(100)
         self.progressDialog.close()
+
+KODI_MESSAGE_NONE        = 100
+KODI_MESSAGE_NOTIFY      = 200
+KODI_MESSAGE_NOTIFY_WARN = 300
+KODI_MESSAGE_DIALOG      = 400
+
+def kodi_display_user_message(op_dic):
+    if op_dic['dialog'] == KODI_MESSAGE_NONE:
+        return
+    elif op_dic['dialog'] == KODI_MESSAGE_NOTIFY:
+        kodi_notify(op_dic['msg'])
+    elif op_dic['dialog'] == KODI_MESSAGE_NOTIFY_WARN:
+        kodi_notify(op_dic['msg'])
+    elif op_dic['dialog'] == KODI_MESSAGE_DIALOG:
+        kodi_dialog_OK(op_dic['msg'])
 
 # -----------------------------------------------------------------------------
 # Kodi specific stuff
@@ -279,7 +294,7 @@ def kodi_update_image_cache(img_path):
     # xbmc.executebuiltin('XBMC.ReloadSkin()')
 
 def kodi_toogle_fullscreen():
-    # >> Frodo and up compatible
+    # Frodo and up compatible
     xbmc.executeJSONRPC('{"jsonrpc":"2.0", "method":"Input.ExecuteAction", "params":{"action":"togglefullscreen"}, "id":"1"}')
 
 #
