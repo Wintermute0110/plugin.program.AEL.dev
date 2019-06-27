@@ -8757,7 +8757,7 @@ class Main:
         # --- Check asset dirs and disable scanning for unset dirs ---
         scraper_strategy.check_launcher_unset_asset_dirs()
         if scraper_strategy.unconfigured_name_list:
-            unconfigured_asset_srt = ', '.join(unconfigured_name_list)
+            unconfigured_asset_srt = ', '.join(scraper_strategy.unconfigured_name_list)
             kodi_dialog_OK(
                 'Assets directories not set: {0}. '.format(unconfigured_asset_srt) +
                 'Asset scanner will be disabled for this/those.')
@@ -9146,7 +9146,7 @@ class Main:
             log_debug('_gui_edit_asset() Initial path "{0}"'.format(image_dir))
             # >> ShowAndGetFile dialog
             dialog = xbmcgui.Dialog()
-            if asset_kind == ASSET_MANUAL or asset_kind == ASSET_TRAILER:
+            if asset_ID == ASSET_MANUAL or asset_ID == ASSET_TRAILER:
                 image_file = dialog.browse(1, 'Select {0} {1}'.format(AInfo.name, AInfo.kind_str), 'files',
                                            AInfo.exts_dialog, True, False, image_dir)
             # >> ShowAndGetImage dialog

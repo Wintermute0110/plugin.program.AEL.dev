@@ -144,18 +144,16 @@ class ScraperFactory(object):
             self.scraper_objs[SCRAPER_NULL_ID] = Null_Scraper(self.settings)
         if SCRAPER_AEL_OFFLINE_ID in SCRAPER_LIST:
             self.scraper_objs[SCRAPER_AEL_OFFLINE_ID] = AEL_Offline(self.settings)
-        if SCRAPER_LB_OFFLINE_ID in SCRAPER_LIST:
-            self.scraper_objs[SCRAPER_LB_OFFLINE_ID] = LB_Offline(self.settings)
         if SCRAPER_THEGAMESDB_ID in SCRAPER_LIST:
             self.scraper_objs[SCRAPER_THEGAMESDB_ID] = TheGamesDB(self.settings)
         if SCRAPER_MOBYGAMES_ID in SCRAPER_LIST:
             self.scraper_objs[SCRAPER_MOBYGAMES_ID] = MobyGames(self.settings)
+        if SCRAPER_SCREENSCRAPER_ID in SCRAPER_LIST:
+           self.scraper_objs[SCRAPER_SCREENSCRAPER_ID] = ScreenScraper_v1(self.settings)
         if SCRAPER_GAMEFAQS_ID in SCRAPER_LIST:
             self.scraper_objs[SCRAPER_GAMEFAQS_ID] = GameFAQs(self.settings)
         if SCRAPER_ARCADEDB_ID in SCRAPER_LIST:
             self.scraper_objs[SCRAPER_ARCADEDB_ID] = ArcadeDB(self.settings)
-        if SCRAPER_SCREENSCRAPER_ID in SCRAPER_LIST:
-           self.scraper_objs[SCRAPER_SCREENSCRAPER_ID] = ScreenScraper(self.settings)
         if SCRAPER_LIBRETRO_ID in SCRAPER_LIST:
            self.scraper_objs[SCRAPER_LIBRETRO_ID] = Libretro(self.settings)
 
@@ -875,7 +873,7 @@ class ScrapeStrategy(object):
             op_dic['status'] = False
             op_dic['dialog'] = KODI_MESSAGE_DIALOG
             op_dic['msg'] = '{0} {1} scraper found no '.format(scraper_name, asset_name) + \
-                            'images for game "{2}".'.format(candidate['display_name'])
+                            'images for game "{0}".'.format(candidate['display_name'])
             return op_dic
 
         # If there is a local image add it to the list and show it to the user.
@@ -1547,11 +1545,15 @@ class MobyGames(Scraper):
         ASSET_BOXFRONT_ID, ASSET_BOXBACK_ID, ASSET_CARTRIDGE_ID, ASSET_MANUAL_ID,
     ]
     asset_name_mapping = {
-        'media'       : ASSET_CARTRIDGE_ID,
-        'manual'      : ASSET_MANUAL_ID,
-        'front cover' : ASSET_BOXFRONT_ID,
-        'back cover'  : ASSET_BOXBACK_ID,
-        'spine/sides' : 0 # not supported by AEL?
+        'media'         : ASSET_CARTRIDGE_ID,
+        'manual'        : ASSET_MANUAL_ID,
+        'front cover'   : ASSET_BOXFRONT_ID,
+        'back cover'    : ASSET_BOXBACK_ID,
+        'spine/sides'   : None, # not supported by AEL?
+        'other'         : None,
+        'advertisement' : None,
+        'extras'        : None,
+        'inside cover'  : None,
     }
 
     def __init__(self, settings):
