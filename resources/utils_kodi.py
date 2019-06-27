@@ -130,10 +130,12 @@ def kodi_refresh_container():
     log_debug('kodi_refresh_container()')
     xbmc.executebuiltin('Container.Refresh')
 
+# Progress dialog that can be closed and reopened.
 class KodiProgressDialog(object):
     def __init__(self):
         self.title = 'Advanced Emulator Launcher'
         self.progress = 0
+        self.flag_dialog_canceled = False
         self.progressDialog = xbmcgui.DialogProgress()
 
     def startProgress(self, message, num_steps = 100):
@@ -141,20 +143,19 @@ class KodiProgressDialog(object):
         self.progressDialog.create(self.title, message)
 
     # Update progress and optionally update messages as well.
-    def updateProgress(self, step_index, message1 = None, message2 = None):
+    def updateProgress(self, step_index, message1 = '', message2 = ''):
         self.progress = (step_index * 100) / self.num_steps
+        self.message1 = message1
+        self.message2 = message2
         if message2:
-            self.message1 = message1
             self.progressDialog.update(self.progress, message1, message2)
-        elif message1:
-            self.message1 = message1
-            self.progressDialog.update(self.progress, message1)
         else:
-            self.progressDialog.update(self.progress)
+            self.progressDialog.update(self.progress, message1)
 
     # Update dialog message but keep same progress.
     def updateMessages(self, message1, message2):
         self.message1 = message1
+        self.message2 = message2
         self.progressDialog.update(self.progress, message1, message2)
 
     # Update dialog message but keep same progress.
@@ -164,14 +165,35 @@ class KodiProgressDialog(object):
 
     # Update message2 and keeps same progress and message1
     def updateMessage2(self, message2):
+        self.message2 = message2
         self.progressDialog.update(self.progress, self.message1, message2)
 
     def isCanceled(self):
-        return self.progressDialog.iscanceled()
+        # If the user pressed the cancel button before then return it now.
+        if self.flag_dialog_canceled:
+            return True
+        else:
+            return self.progressDialog.iscanceled()
 
-    def endProgress(self, canceled = False):
+    def close(self):
+        # Before closing the dialog check if the user pressed the Cancel button and remember
+        # the user decision.
+        if self.progressDialog.iscanceled(): self.flag_dialog_canceled = True
+        self.progressDialog.close()
+
+    def endProgress(self):
+        # Before closing the dialog check if the user pressed the Cancel button and remember
+        # the user decision.
+        if self.progressDialog.iscanceled(): self.flag_dialog_canceled = True
         self.progressDialog.update(100)
         self.progressDialog.close()
+
+    def reopen(self):
+        if not self.message2:
+            self.progressDialog.create(self.title, self.message1, self.message2)
+        else:
+            self.progressDialog.create(self.title, self.message1)
+        self.progressDialog.update(self.progress)
 
 # To be used as a base class.
 class KodiProgressDialog_Chrisism(object):
