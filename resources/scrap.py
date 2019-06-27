@@ -175,7 +175,7 @@ class ScraperFactory(object):
             scraper_obj = self.scraper_objs[scraper_ID]
             s_name = scraper_obj.get_name()
             if scraper_obj.supports_metadata_any():
-                scraper_menu_list.append('Scrape with {1}'.format(s_name))
+                scraper_menu_list.append('Scrape with {0}'.format(s_name))
                 self.metadata_menu_ID_list.append(scraper_ID)
                 log_verb('Scraper {0} supports metadata (ENABLED)'.format(s_name))
             else:
@@ -863,12 +863,12 @@ class ScrapeStrategy(object):
         scraper_name = self.scraper_obj.get_name()
 
         # If status if True scraping was OK. If status is False there was some problem.
-        # dialog is the type of message to show the user
+        # dialog is the type of message to show the user (notify, OK dialog, etc.)
         # msg always has a message to display.
         op_dic = {
-            'status'  : True,
-            'message' : KODI_MESSAGE_NOTIFY,
-            'msg'     : 'ROM metadata updated',
+            'status' : True,
+            'dialog' : KODI_MESSAGE_NOTIFY,
+            'msg'    : 'ROM metadata updated',
         }
 
         # --- Grab candidate game ---
@@ -878,16 +878,16 @@ class ScrapeStrategy(object):
 
         # --- Grab metadata ---
         pdialog = KodiProgressDialog()
-        pdialog.startProgress('{0} scraper. Getting assets...'.format(scraper_name))
-        gamedata = self.scraper_obj.get_metadata(candiate)
+        pdialog.startProgress('{0} scraper. Getting ROM metadata...'.format(scraper_name))
+        gamedata = self.scraper_obj.get_metadata(candidate)
         pdialog.endProgress()
         if not gamedata:
             op_dic['status'] = False
-            op_dic['message'] = KODI_MESSAGE_NOTIFY_WARN
+            op_dic['dialog'] = KODI_MESSAGE_NOTIFY_WARN
             op_dic['msg'] = 'Cannot download game metadata'
 
         # --- Put metadata into ROM dictionary ---
-        if self.scan_ignore_scrapped_title:
+        if self.scan_ignore_scrap_title:
             log_debug('User wants to ignore scraper name.')
             object_dic['m_name'] = text_format_ROM_title(rom_base_noext, self.scan_clean_tags)
         else:
@@ -915,9 +915,9 @@ class ScrapeStrategy(object):
 
         # See scrap_CM_metadata_ROM() for documentation of op_dic.
         op_dic = {
-            'status'  : True,
-            'message' : KODI_MESSAGE_NOTIFY,
-            'msg'     : 'Launcher metadata updated',
+            'status' : True,
+            'dialog' : KODI_MESSAGE_NOTIFY,
+            'msg' : 'Launcher metadata updated',
         }
 
         # --- Grab candidate game ---
@@ -927,12 +927,12 @@ class ScrapeStrategy(object):
 
         # --- Grab metadata ---
         pdialog = KodiProgressDialog()
-        pdialog.startProgress('{0} scraper. Getting assets...'.format(scraper_name))
+        pdialog.startProgress('{0} scraper. Getting Launcher metadata...'.format(scraper_name))
         gamedata = self.scraper_obj.get_metadata(candiate)
         pdialog.endProgress()
         if not gamedata:
             op_dic['status'] = False
-            op_dic['message'] = KODI_MESSAGE_NOTIFY_WARN
+            op_dic['dialog'] = KODI_MESSAGE_NOTIFY_WARN
             op_dic['msg'] = 'Cannot download game metadata'
 
         # --- Put metadata into launcher dictionary ---
@@ -966,9 +966,9 @@ class ScrapeStrategy(object):
         # dialog is the type of message to show the user.
         # msg always has a message to display.
         op_dic = {
-            'status'  : True,
-            'message' : KODI_MESSAGE_NOTIFY,
-            'msg'     : 'Asset updated',
+            'status' : True,
+            'dialog' : KODI_MESSAGE_NOTIFY,
+            'msg' : 'Asset updated',
         }
 
         # --- Grab candidate game ---
@@ -984,11 +984,10 @@ class ScrapeStrategy(object):
         log_verb('{0} {1} scraper returned {2} images'.format(
             scraper_name, asset_name, len(assetdata_list)))
         if not assetdata_list:
-            kodi_dialog_OK(
-                '{0} {1} scraper found no '.format(scraper_name, asset_name) +
-                'images for game "{2}".'.format(candidate['display_name']))
             op_dic['status'] = False
-            op_dic['msg'] = 'No games found'
+            op_dic['dialog'] = KODI_MESSAGE_DIALOG
+            op_dic['msg'] = '{0} {1} scraper found no '.format(scraper_name, asset_name) + \
+                            'images for game "{2}".'.format(candidate['display_name'])
             return op_dic
 
         # If there is a local image add it to the list and show it to the user.
@@ -1089,8 +1088,8 @@ class ScrapeStrategy(object):
     # When scraping metadata or assets in the context menu, introduce the search strin,
     # grab candidate games, and select a candidate for scraping.
     #
-    # @param obj_name: [str] SCRAPE_ROM, SCRAPE_LAUNCHER.
-    def _scrap_CM_get_candidate(self, obj_name, obj_dic, data_dic, op_dic):
+    # @param object_name: [str] SCRAPE_ROM, SCRAPE_LAUNCHER.
+    def _scrap_CM_get_candidate(self, object_name, object_dic, data_dic, op_dic):
         # In AEL 0.10.x this data is grabed from the objects, not passed using a dictionary.
         rom_base_noext = data_dic['rom_base_noext']
         platform = data_dic['platform']
@@ -1103,18 +1102,18 @@ class ScrapeStrategy(object):
         keyboard.doModal()
         if not keyboard.isConfirmed():
             op_dic['status'] = False
-            op_dic['msg'] = '{0} metadata unchanged'.format(obj_name)
+            op_dic['msg'] = '{0} metadata unchanged'.format(object_name)
             return op_dic
         search_term = keyboard.getText().decode('utf-8')
 
         # --- Do a search and get a list of games ---
         pdialog = KodiProgressDialog()
         pdialog.startProgress('{0} scraper. Getting games...'.format(scraper_name))
-        candidate_list = scraper_obj.get_candidates(search_term, ROM.getBase_noext(), platform)
-        log_verb('Scraper found {0} result/s'.format(len(results)))
-        if not results:
+        candidate_list = self.scraper_obj.get_candidates(search_term, rom_base_noext, platform)
+        log_verb('Scraper found {0} result/s'.format(len(candidate_list)))
+        if not candidate_list:
             op_dic['status'] = False
-            op_dic['message'] = KODI_MESSAGE_NOTIFY_WARN
+            op_dic['dialog'] = KODI_MESSAGE_NOTIFY_WARN
             op_dic['msg'] = 'Scraper found no matching games'
             return op_dic
 
@@ -1125,10 +1124,10 @@ class ScrapeStrategy(object):
             select_candidate_idx = 0
         else:
             select_candidate_idx = xbmcgui.Dialog().select(
-                'Select game for ROM {0}'.format(rom_name), game_name_list)
+                'Select game for ROM {0}'.format(object_dic['m_name']), game_name_list)
             if select_candidate_idx < 0:
                 op_dic['status'] = False
-                op_dic['msg'] = '{0} metadata unchanged'.format(obj_name)
+                op_dic['msg'] = '{0} metadata unchanged'.format(object_name)
                 return op_dic
         log_verb('User chose game "{0}"'.format(game_name_list[select_candidate_idx]))
         candiate = game_name_list[select_candidate_idx]
@@ -1344,9 +1343,9 @@ class Null_Scraper(Scraper):
     def _scraper_get_candidates(self, search_term, rombase_noext, platform): return []
 
     # Null scraper never returns valid scraped metadata.
-    def _scraper_get_metadata(self, candidate): return None
+    def _scraper_get_metadata(self, candidate): return {}
 
-    def _scraper_get_assets(self, candidate, asset_ID): return None
+    def _scraper_get_assets(self, candidate, asset_ID): return {}
 
     def _scraper_resolve_asset_URL(self, candidate): pass
 
@@ -1361,7 +1360,7 @@ class AEL_Offline(Scraper):
 
     def get_name(self): return 'AEL Offline'
 
-    def supports_metadata(self, asset_ID): return True
+    def supports_metadata(self, metadata_ID): return True
 
     def supports_metadata_any(self): return True
 
@@ -1369,13 +1368,11 @@ class AEL_Offline(Scraper):
 
     def supports_asset_any(self): return False
 
-    # Null scraper never finds candidates.
     def _scraper_get_candidates(self, search_term, rombase_noext, platform): return []
 
-    # Null scraper never returns valid scraped metadata.
-    def _scraper_get_metadata(self, candidate): return None
+    def _scraper_get_metadata(self, candidate): return {}
 
-    def _scraper_get_assets(self, candidate, asset_ID): return None
+    def _scraper_get_assets(self, candidate, asset_ID): return {}
 
     def _scraper_resolve_asset_URL(self, candidate): pass
 
@@ -1390,17 +1387,19 @@ class LB_Offline(Scraper):
 
     def get_name(self): return 'LB Offline'
 
-    def supports_metadata(self, asset_ID): return True
+    def supports_metadata(self, metadata_ID): return True
+
+    def supports_metadata_any(self): return True
 
     def supports_asset(self, asset_ID): return False
 
-    # Null scraper never finds candidates.
+    def supports_asset_any(self): return False
+
     def _scraper_get_candidates(self, search_term, rombase_noext, platform): return []
 
-    # Null scraper never returns valid scraped metadata.
-    def _scraper_get_metadata(self, candidate): return None
+    def _scraper_get_metadata(self, candidate): return {}
 
-    def _scraper_get_assets(self, candidate, asset_ID): return None
+    def _scraper_get_assets(self, candidate, asset_ID): return {}
 
     def _scraper_resolve_asset_URL(self, candidate): pass
 

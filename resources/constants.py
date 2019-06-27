@@ -279,7 +279,8 @@ SCRAPER_LIBRETRO_ID      = 90
 # will be instantiated and cached in the ScraperFactory object.
 # To disable an scraper just remove it from this list.
 SCRAPER_LIST = [
-    SCRAPER_NULL_ID, SCRAPER_AEL_OFFLINE_ID, SCRAPER_LB_OFFLINE_ID,
+    SCRAPER_NULL_ID,
+    SCRAPER_AEL_OFFLINE_ID,
     SCRAPER_MOBYGAMES_ID,
 ]
 
