@@ -100,6 +100,9 @@ WIP      [SCRAPERS] Have a look at ScreenScraper and consider it for an online s
 WIP      [SCRAPERS] Fix GameFAQs scraper.
          It has been a while since this scraper is not working any more.
 
+WIP      [SCRAPERS] Fix ArcadeDB scraper. Use the API.
+         It has been a while since this scraper is not working any more.
+
 WIP      [SCRAPERS] Update MAME Offline Scraper database to version latest version.
 
 WIP      [SCRAPERS] Massive upgrade of AEL Offline scraper database.
