@@ -1205,9 +1205,7 @@ class Scraper(object):
 # ------------------------------------------------------------------------------------------------
 class Null_Scraper(Scraper):
     # @param settings: [dict] Addon settings. Particular scraper settings taken from here.
-    def __init__(self, settings):
-        # Pass down settings that apply to all scrapers.
-        super(Null_Scraper, self).__init__(settings)
+    def __init__(self, settings): super(Null_Scraper, self).__init__(settings)
 
     def get_name(self): return 'Null'
 
@@ -1258,12 +1256,11 @@ class AEL_Offline(Scraper):
 
 # ------------------------------------------------------------------------------------------------
 # LaunchBox offline metadata scraper.
+# Do not implement this scraper. It is better to have one good offline scraper than many bad.
+# Users will be encouraged to improve the AEL Offline scraper.
 # ------------------------------------------------------------------------------------------------
 class LB_Offline(Scraper):
-    # @param settings: [dict] Addon settings. Particular scraper settings taken from here.
-    def __init__(self, settings):
-        # Pass down settings that apply to all scrapers.
-        super(LB_Offline, self).__init__(settings)
+    def __init__(self, settings): super(LB_Offline, self).__init__(settings)
 
     def get_name(self): return 'LB Offline'
 
@@ -1285,80 +1282,85 @@ class LB_Offline(Scraper):
 
 # ------------------------------------------------------------------------------------------------
 # TheGamesDB online scraper (metadata and assets)
+#
+# | Site     | https://thegamesdb.net      |
+# | API info | https://api.thegamesdb.net/ |
 # ------------------------------------------------------------------------------------------------
 class TheGamesDB(Scraper):
-    def __init__(self, settings, launcher):
+    # Class variables
+    supported_metadata_list = [
+        # META_TITLE_ID, META_YEAR_ID, META_GENRE_ID, META_PLOT_ID,
+    ]
+    supported_asset_list = [
+        # ASSET_TITLE_ID, ASSET_SNAP_ID,
+        # ASSET_BOXFRONT_ID, ASSET_BOXBACK_ID, ASSET_CARTRIDGE_ID, ASSET_MANUAL_ID,
+    ]
+    asset_name_mapping = {
+        'fanart' : ASSET_FANART_ID,
+        'clearlogo': ASSET_CLEARLOGO_ID,
+        'banner': ASSET_BANNER_ID,
+        'boxartfront': ASSET_BOXFRONT_ID,
+        'boxartback': ASSET_BOXBACK_ID,
+        'screenshot': ASSET_SNAP_ID,
+    }
+
+    def __init__(self, settings):
+        # --- This scraper settings ---
+        self.api_key = settings['scraper_thegamesdb_apikey']
+        # --- Misc stuff ---
         self.publishers = None
         self.genres = None
         self.developers = None
+        # --- Pass down common scraper settings ---
+        super(TheGamesDB, self).__init__(settings)
 
-        self.api_key = settings['thegamesdb_apikey']
-        scraper_settings = ScraperSettings.create_from_settings(settings)
-
-        super(TheGamesDB, self).__init__(scraper_settings, launcher, fallbackScraper)
-
+    # --- Base class abstract methods ------------------------------------------------------------
     def get_name(self): return 'TheGamesDB'
 
-    def supports_metadata(self, metadata_ID): return True
+    def supports_metadata(self, metadata_ID):
+        return True if asset_ID in TheGamesDB.supported_metadata_list else False
 
     def supports_metadata_any(self): return True
 
     def supports_asset(self, asset_ID):
-        if asset_info.id == ASSET_CARTRIDGE_ID or asset_info.id == ASSET_FLYER_ID:
-            return False
-        return True
+        return True if asset_ID in TheGamesDB.supported_asset_list else False
 
-    def supports_asset_any(self): return False
+    def supports_asset_any(self): return True
 
-    def _get_candidates(self, search_term, romPath, rom):
-        platform = self.launcher.get_platform()
+    def _scraper_get_candidates(self, search_term, rombase_noext, platform):
         scraper_platform = AEL_platform_to_TheGamesDB(platform)
-        
-        log_debug('TheGamesDB_Scraper::_get_candidates() search_term         "{0}"'.format(search_term))
-        log_debug('TheGamesDB_Scraper::_get_candidates() rom_base_noext      "{0}"'.format(romPath.getBaseNoExt()))
-        log_debug('TheGamesDB_Scraper::_get_candidates() AEL platform        "{0}"'.format(platform))
-        log_debug('TheGamesDB_Scraper::_get_candidates() TheGamesDB platform "{0}"'.format(scraper_platform))
-        
-        # >> Check if search term page data is in cache. If so it's a cache hit.
-        candidate_from_cache = self._get_from_cache(search_term)
-        
-        if candidate_from_cache is not None:
-            log_debug('Using a cached candidate')
-            return [candidate_from_cache]
+        log_debug('TheGamesDB::_scraper_get_candidates() search_term         "{0}"'.format(search_term))
+        log_debug('TheGamesDB::_scraper_get_candidates() rom_base_noext      "{0}"'.format(rombase_noext))
+        log_debug('TheGamesDB::_scraper_get_candidates() AEL platform        "{0}"'.format(platform))
+        log_debug('TheGamesDB::_scraper_get_candidates() TheGamesDB platform "{0}"'.format(scraper_platform))
 
-        game_list = []
-        # >> quote_plus() will convert the spaces into '+'. Note that quote_plus() requires an
-        # >> UTF-8 encoded string and does not work with Unicode strings.
-        # added encoding 
+        # quote_plus() will convert the spaces into '+'. Note that quote_plus() requires an
+        # UTF-8 encoded string and does not work with Unicode strings.
         # https://stackoverflow.com/questions/22415345/using-pythons-urllib-quote-plus-on-utf-8-strings-with-safe-arguments
-            
         search_string_encoded = urllib.quote_plus(search_term.encode('utf8'))
-        url = 'https://api.thegamesdb.net/Games/ByGameName?apikey={}&name={}'.format(self.api_key, search_string_encoded)
-            
+        url = 'https://api.thegamesdb.net/Games/ByGameName?apikey={}&name={}'.format(
+            self.api_key, search_string_encoded)
         game_list = self._read_games_from_url(url, search_term, scraper_platform)
-        
         if len(game_list) == 0:
-            altered_search_term = self._cleanup_searchterm(search_term, romPath, rom)
+            altered_search_term = self._cleanup_searchterm(search_term, rombase_noext, platform)
             if altered_search_term != search_term:
-                log_debug('TheGamesDbScraper::_get_candidates() No hits, trying again with altered search terms: {}'.format(altered_search_term))
-                return self._get_candidates(altered_search_term, romPath, rom)
-
-        # >> Order list based on score
+                log_debug('No matches, trying again with altered search terms: {0}'.format(
+                    altered_search_term))
+                return self._get_candidates(altered_search_term, rombase_noext, platform)
+        # Order list based on score. High score goes first.
         game_list.sort(key = lambda result: result['order'], reverse = True)
 
         return game_list
 
-    def _load_metadata(self, candidate, romPath, rom):
+    def _scraper_get_metadata(self, candidate):
         url = 'https://api.thegamesdb.net/Games/ByGameID?apikey={}&id={}&fields=players%2Cpublishers%2Cgenres%2Coverview%2Crating%2Cplatform%2Ccoop%2Cyoutube'.format(
-                self.api_key, candidate['id'])
-        
-        log_debug('Get metadata from {}'.format(url))
+            self.api_key, candidate['id'])
+        log_debug('Get metadata from {0}'.format(url))
         page_data = net_get_URL_as_json(url)
         online_data = page_data['data']['games'][0]
-        
-        game_data = self._new_gamedata_dic()
 
         # --- Parse game page data ---
+        game_data = self._new_gamedata_dic()
         game_data['title']      = online_data['game_title'] if 'game_title' in online_data else '' 
         game_data['nplayers']   = online_data['players'] if 'players' in online_data else '' 
         game_data['esrb']       = online_data['rating'] if 'rating' in online_data else '' 
@@ -1366,15 +1368,20 @@ class TheGamesDB(Scraper):
         game_data['genre']      = self._get_genres(online_data['genres']) if 'genres' in online_data else '' 
         game_data['developer']  = self._get_developers(online_data['developers']) if 'developers' in online_data else '' 
         game_data['year']       = online_data['release_date'][:4] if 'release_date' in online_data and online_data['release_date'] is not None and online_data['release_date'] != '' else ''
-        
+
         return game_data
 
-    def _load_assets(self, candidate, romPath, rom):
+    def _scraper_get_assets(self, candidate, asset_ID):
         url = 'https://api.thegamesdb.net/Games/Images?apikey={}&games_id={}'.format(self.api_key, candidate['id'])
         asset_list = self._read_assets_from_url(url, candidate['id'])
         log_debug('Found {} assets for candidate #{}'.format(len(asset_list), candidate['id']))
+
         return asset_list
 
+    def _scraper_resolve_asset_URL(self, candidate):
+        return candidate['url']
+
+    # --- This class methods ---------------------------------------------------------------------
     # --- Parse list of games ---
     #{
     #  "code": 200,
@@ -1403,29 +1410,35 @@ class TheGamesDB(Scraper):
     #        ]
     #},
     def _read_games_from_url(self, url, search_term, scraper_platform):
-        page_data = net_get_URL_as_json(url)
+        page_data_raw = net_get_URL_original(url)
+        page_data = json.loads(page_data_raw)
+        if self.dump_file_flag:
+            file_path = os.path.join(self.dump_dir, 'thegamesdb_get_candidates.txt')
+            text_dump_str_to_file(file_path, page_data_raw)
 
         # If nothing is returned maybe a timeout happened. In this case, reset the cache.
-        if page_data is None:
-            self._reset_cache()
+        if page_data is None: self._reset_cache()
 
+        # --- Parse game list ---
         games = page_data['data']['games']
         game_list = []
         for item in games:
-            title    = item['game_title']
+            title = item['game_title']
             platform = item['platform']
             display_name = '{} / {}'.format(title, platform)
             game = self._new_candidate_dic()
             game['id'] = item['id']
             game['display_name'] = display_name
+            game['platform'] = platform
+            game['scraper_platform'] = scraper_platform
             game['order'] = 1
             # Increase search score based on our own search
             if title.lower() == search_term.lower():                  game['order'] += 2
             if title.lower().find(search_term.lower()) != -1:         game['order'] += 1
             if scraper_platform > 0 and platform == scraper_platform: game['order'] += 1
-
             game_list.append(game)
 
+        # --- Recursively load more games ---
         next_url = page_data['pages']['next']
         if next_url is not None:
             game_list = game_list + self._read_games_from_url(next_url, search_term, scraper_platform)
@@ -1462,15 +1475,6 @@ class TheGamesDB(Scraper):
             assets_list = assets_list + self._read_assets_from_url(next_url, candidate_id)
 
         return assets_list
-
-    asset_name_mapping = {
-        'fanart' : ASSET_FANART_ID,
-        'clearlogo': ASSET_CLEARLOGO_ID,
-        'banner': ASSET_BANNER_ID,
-        'boxartfront': ASSET_BOXFRONT_ID,
-        'boxartback': ASSET_BOXBACK_ID,
-        'screenshot': ASSET_SNAP_ID
-    }
 
     def _convert_to_asset_kind(self, type, side):
         if side is not None:
@@ -1537,11 +1541,8 @@ class TheGamesDB(Scraper):
 
         return ' / '.join(developer_names)
 
-    def _get_image_url_from_page(self, candidate, asset_info):
-        return candidate['url']
-
 # ------------------------------------------------------------------------------------------------
-# MobyGames http://www.mobygames.com
+# MobyGames online scraper http://www.mobygames.com
 #
 # TODO
 # 1) Detect 401 Unauthorized and warn user.
@@ -1549,7 +1550,7 @@ class TheGamesDB(Scraper):
 # 2) Detect 429 Too Many Requests and disable scraper. We never do more than one call per second
 #    so if we get 429 is because the 360 API requests per hour are consumed.
 #
-# MobiGames API https://www.mobygames.com/info/api
+# MobiGames API info https://www.mobygames.com/info/api
 # ------------------------------------------------------------------------------------------------
 class MobyGames(Scraper):
     # Class variables
@@ -1569,15 +1570,15 @@ class MobyGames(Scraper):
     }
 
     def __init__(self, settings):
-        # This scraper settings
+        # --- This scraper settings ---
         self.api_key = settings['scraper_mobygames_apikey']
-        # Reset asset cache.
+        # --- Misc stuff ---
         self.all_asset_cache = {}
-        # Misc stuff
         self.last_http_call = datetime.datetime.now()
-        # Pass down settings that apply to all scrapers.
+        # --- Pass down common scraper settings ---
         super(MobyGames, self).__init__(settings)
 
+    # --- Base class abstract methods ------------------------------------------------------------
     def get_name(self): return 'MobyGames'
 
     def supports_metadata(self, metadata_ID):
@@ -1608,36 +1609,6 @@ class MobyGames(Scraper):
 
         return game_list
 
-    def _read_games_from_url(self, url, search_term, platform, scraper_platform):
-        self._do_toomanyrequests_check()
-        page_data_raw = net_get_URL_original(url)
-        self.last_http_call = datetime.datetime.now()
-        page_data = json.loads(page_data_raw)
-        if self.dump_file_flag:
-            file_path = os.path.join(self.dump_dir, 'mobygames_get_candidates.txt')
-            text_dump_str_to_file(file_path, page_data_raw)
-
-        # If nothing is returned maybe a timeout happened. In this case, reset the cache.
-        if page_data is None: self._reset_cache()
-
-        games = page_data['games']
-        game_list = []
-        for item in games:
-            title = item['title']
-            game = self._new_candidate_dic()
-            game['id'] = item['game_id']
-            game['display_name'] = title
-            game['platform'] = platform
-            game['scraper_platform'] = scraper_platform
-            game['order'] = 1
-
-            # Increase search score based on our own search.
-            if title.lower() == search_term.lower():          game['order'] += 2
-            if title.lower().find(search_term.lower()) != -1: game['order'] += 1
-            game_list.append(game)
-
-        return game_list
-
     def _scraper_get_metadata(self, candidate):
         self._do_toomanyrequests_check()
         url = 'https://api.mobygames.com/v1/games/{}?api_key={}'.format(candidate['id'], self.api_key)
@@ -1657,6 +1628,64 @@ class MobyGames(Scraper):
         game_data['year']  = self._get_year_by_platform(online_data['platforms'], candidate['scraper_platform'])
 
         return game_data
+
+    # Get assets of a particular type. Note that this function maybe called many times for
+    # the same candidate but different asset type, so cache data if necessary.
+    #
+    # In the MobyGames scraper is convenient to grab all the available assets for a candidate,
+    # cache the assets, and then select the assets of a specific type from the cached list.
+    #
+    def _scraper_get_assets(self, candidate, asset_ID):
+        # log_debug('MobyGames::_scraper_get_assets() asset_ID = {0} ...'.format(asset_ID))
+        # Get all assets for candidate. _scraper_get_assets_all() caches all assets for a candidate.
+        # Then select asset of a particular type.
+        all_asset_list = self._scraper_get_assets_all(candidate)
+        asset_list = [asset_dic for asset_dic in all_asset_list if asset_dic['asset_ID'] == asset_ID]
+        log_debug('MobyGames::_scraper_get_assets() Total assets {0} / Returned assets {1}'.format(
+            len(all_asset_list), len(asset_list)))
+
+        return asset_list
+
+    # Mobygames returns both the asset thumbnail URL and the full resolution URL so in
+    # this scraper this method is trivial.
+    def _scraper_resolve_asset_URL(self, candidate):
+        # Transform http to https
+        url = candidate['url']
+        if url[0:4] == 'http': url = 'https' + url[4:]
+
+        return url
+
+    # --- This class methods ---------------------------------------------------------------------
+    def _read_games_from_url(self, url, search_term, platform, scraper_platform):
+        self._do_toomanyrequests_check()
+        page_data_raw = net_get_URL_original(url)
+        self.last_http_call = datetime.datetime.now()
+        page_data = json.loads(page_data_raw)
+        if self.dump_file_flag:
+            file_path = os.path.join(self.dump_dir, 'mobygames_get_candidates.txt')
+            text_dump_str_to_file(file_path, page_data_raw)
+
+        # If nothing is returned maybe a timeout happened. In this case, reset the cache.
+        if page_data is None: self._reset_cache()
+
+        # --- Parse game list ---
+        games = page_data['games']
+        game_list = []
+        for item in games:
+            title = item['title']
+            game = self._new_candidate_dic()
+            game['id'] = item['game_id']
+            game['display_name'] = title
+            game['platform'] = platform
+            game['scraper_platform'] = scraper_platform
+            game['order'] = 1
+
+            # Increase search score based on our own search.
+            if title.lower() == search_term.lower():          game['order'] += 2
+            if title.lower().find(search_term.lower()) != -1: game['order'] += 1
+            game_list.append(game)
+
+        return game_list
 
     def _get_genres(self, genre_data):
         genre_names = []
@@ -1694,23 +1723,6 @@ class MobyGames(Scraper):
             log_debug('A total of {0} assets found for candidate ID {1}'.format(
                 len(asset_list), candidate['id']))
             self.all_asset_cache[cache_key] = asset_list
-
-        return asset_list
-
-    # Get assets of a particular type. Note that this function maybe called many times for
-    # the same candidate but different asset type, so cache data if necessary.
-    #
-    # In the MobyGames scraper is convenient to grab all the available assets for a candidate,
-    # cache the assets, and then select the assets of a specific type from the cached list.
-    #
-    def _scraper_get_assets(self, candidate, asset_ID):
-        # log_debug('MobyGames::_scraper_get_assets() asset_ID = {0} ...'.format(asset_ID))
-        # Get all assets for candidate. _scraper_get_assets_all() caches all assets for a candidate.
-        # Then select asset of a particular type.
-        all_asset_list = self._scraper_get_assets_all(candidate)
-        asset_list = [asset_dic for asset_dic in all_asset_list if asset_dic['asset_ID'] == asset_ID]
-        log_debug('MobyGames::_scraper_get_assets() Total assets {0} / Returned assets {1}'.format(
-            len(all_asset_list), len(asset_list)))
 
         return asset_list
 
@@ -1782,14 +1794,6 @@ class MobyGames(Scraper):
 
         return asset_list
 
-    # Mobygames returns both the asset thumbnail URL and the full resolution URL so in
-    # this scraper this method is trivial.
-    def _scraper_resolve_asset_URL(self, candidate):
-        url = candidate['url']
-        if url[0:4] == 'http':
-            url = 'https' + url[4:]
-        return url
-
     def _do_toomanyrequests_check(self):
         # Make sure we dont go over the TooManyRequests limit of 1 second.
         now = datetime.datetime.now()
@@ -1797,13 +1801,50 @@ class MobyGames(Scraper):
             log_debug('MobyGames_Scraper:: Sleeping 1 second to avoid overloading...')
             time.sleep(1)
 
-# -----------------------------------------------------------------------------
+# ------------------------------------------------------------------------------------------------
+# ScreenScraper online scraper.
+#
+# | Site     | https://www.screenscraper.fr             |
+# | API info | https://www.screenscraper.fr/webapi.php  |
+# ------------------------------------------------------------------------------------------------
+class ScreenScraper_v1(Scraper):
+    def __init__(self, settings): super(ScreenScraper_v1, self).__init__(settings)
+
+    def get_name(self): return 'ScreenScraper v1'
+
+    def supports_metadata(self, metadata_ID): return False
+
+    def supports_metadata_any(self): return False
+
+    def supports_asset(self, asset_ID): return False
+
+    def supports_asset_any(self): return False
+
+    def _scraper_get_candidates(self, search_term, rombase_noext, platform): return []
+
+    def _scraper_get_metadata(self, candidate): return {}
+
+    def _scraper_get_assets(self, candidate, asset_ID): return {}
+
+    def _scraper_resolve_asset_URL(self, candidate): pass
+
+# ------------------------------------------------------------------------------------------------
+# ScreenScraper online scraper.
+# Uses version 2 of the API.
+#
+# | Site     | https://www.screenscraper.fr             |
+# | API info | https://www.screenscraper.fr/webapi2.php |
+# ------------------------------------------------------------------------------------------------
+class ScreenScraper_v2(Scraper):
+    pass
+
+# ------------------------------------------------------------------------------------------------
 # GameFAQs online scraper
-# -----------------------------------------------------------------------------
-class GameFAQs_Scraper(Scraper):
+# ------------------------------------------------------------------------------------------------
+class GameFAQs(Scraper):
     def __init__(self, settings, launcher, fallbackScraper = None):
         scraper_settings = ScraperSettings.create_from_settings(settings)
-        super(GameFAQs_Scraper, self).__init__(scraper_settings, launcher, fallbackScraper)
+        super(GameFAQs, self).__init__(scraper_settings, launcher, fallbackScraper)
 
     def get_name(self): return 'GameFAQs'
 
@@ -2019,10 +2060,10 @@ class GameFAQs_Scraper(Scraper):
 # -----------------------------------------------------------------------------
 # Arcade Database (for MAME) http://adb.arcadeitalia.net/
 # -----------------------------------------------------------------------------   
-class ArcadeDbScraper(Scraper): 
+class ArcadeDB(Scraper): 
     def __init__(self, settings, launcher, fallbackScraper = None):
         scraper_settings = ScraperSettings.create_from_settings(settings)
-        super(ArcadeDbScraper, self).__init__(scraper_settings, launcher, fallbackScraper)
+        super(ArcadeDB, self).__init__(scraper_settings, launcher, fallbackScraper)
 
     def getName(self):
         return 'Arcade Database'
@@ -2035,9 +2076,9 @@ class ArcadeDbScraper(Scraper):
 
     def _get_candidates(self, search_term, romPath, rom):
         platform = self.launcher.get_platform()
-        log_debug('ArcadeDbScraper::_get_candidates() search_term         "{0}"'.format(search_term))
-        log_debug('ArcadeDbScraper::_get_candidates() rom_base_noext      "{0}"'.format(romPath.getBaseNoExt()))
-        log_debug('ArcadeDbScraper::_get_candidates() AEL platform        "{0}"'.format(platform))
+        log_debug('ArcadeDB::_get_candidates() search_term         "{0}"'.format(search_term))
+        log_debug('ArcadeDB::_get_candidates() rom_base_noext      "{0}"'.format(romPath.getBaseNoExt()))
+        log_debug('ArcadeDB::_get_candidates() AEL platform        "{0}"'.format(platform))
 
         # >> Check if search term page data is in cache. If so it's a cache hit.
         candidate_from_cache = self._get_from_cache(search_term)
