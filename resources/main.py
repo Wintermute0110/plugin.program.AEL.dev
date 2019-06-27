@@ -8819,7 +8819,7 @@ class Main:
 
         # --- Now go processing file by file -----------------------------------------------------
         pdialog.startProgress('Scanning {0}'.format(launcher_path), num_files)
-        log_debug('============================== Processing ROMs ==============================')
+        log_info('============================== Processing ROMs ==============================')
         report_fobj.write('Processing files ...\n')
         num_new_roms = 0
         num_files_checked = 0
@@ -8862,12 +8862,12 @@ class Main:
             MultiDiscInROMs = False
             MDSet = text_get_multidisc_info(ROM)
             if MDSet.isMultiDisc and launcher_multidisc:
-                log_info('ROM belongs to a multidisc set.')
-                log_info('isMultiDisc "{0}"'.format(MDSet.isMultiDisc))
-                log_info('setName     "{0}"'.format(MDSet.setName))
-                log_info('discName    "{0}"'.format(MDSet.discName))
-                log_info('extension   "{0}"'.format(MDSet.extension))
-                log_info('order       "{0}"'.format(MDSet.order))
+                log_debug('ROM belongs to a multidisc set.')
+                log_debug('isMultiDisc "{0}"'.format(MDSet.isMultiDisc))
+                log_debug('setName     "{0}"'.format(MDSet.setName))
+                log_debug('discName    "{0}"'.format(MDSet.discName))
+                log_debug('extension   "{0}"'.format(MDSet.extension))
+                log_debug('order       "{0}"'.format(MDSet.order))
                 report_fobj.write('  ROM belongs to a multidisc set.\n')
 
                 # >> Check if the set is already in launcher ROMs.
@@ -8878,32 +8878,32 @@ class Main:
                         MultiDiscInROMs  = True
                         MultiDisc_rom_id = rom_id
                         break
-                log_info('MultiDiscInROMs is {0}'.format(MultiDiscInROMs))
+                log_debug('MultiDiscInROMs is {0}'.format(MultiDiscInROMs))
 
                 # >> If the set is not in the ROMs then this ROM is the first of the set.
                 # >> Add the set
                 if not MultiDiscInROMs:
-                    log_info('First ROM in the multidisc set.')
+                    log_debug('First ROM in the multidisc set.')
                     # >> Manipulate ROM so filename is the name of the set
                     ROM_dir = FileName(ROM.getDir())
                     ROM_temp = ROM_dir.pjoin(MDSet.setName)
-                    log_info('ROM_temp OP "{0}"'.format(ROM_temp.getOriginalPath()))
-                    log_info('ROM_temp  P "{0}"'.format(ROM_temp.getPath()))
+                    log_debug('ROM_temp OP "{0}"'.format(ROM_temp.getOriginalPath()))
+                    log_debug('ROM_temp  P "{0}"'.format(ROM_temp.getPath()))
                     ROM = ROM_temp
                 # >> If set already in ROMs, just add this disk into the set disks field.
                 else:
-                    log_info('Adding additional disk "{0}" to set'.format(MDSet.discName))
+                    log_debug('Adding additional disk "{0}" to set'.format(MDSet.discName))
                     roms[MultiDisc_rom_id]['disks'].append(MDSet.discName)
                     # >> Reorder disks like Disk 1, Disk 2, ...
                     
                     # >> Process next file
-                    log_info('Processing next file ...')
+                    log_debug('Processing next file ...')
                     continue
             elif MDSet.isMultiDisc and not launcher_multidisc:
-                log_info('ROM belongs to a multidisc set but Multidisc support is disabled.')
+                log_debug('ROM belongs to a multidisc set but Multidisc support is disabled.')
                 report_fobj.write('  ROM belongs to a multidisc set but Multidisc support is disabled.\n')
             else:
-                log_info('ROM does not belong to a multidisc set.')
+                log_debug('ROM does not belong to a multidisc set.')
                 report_fobj.write('  ROM does not belong to a multidisc set.\n')
 
             # --- Check that ROM is not already in the list of ROMs ---

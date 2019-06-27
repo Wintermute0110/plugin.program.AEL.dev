@@ -282,7 +282,7 @@ class ScrapeStrategy(object):
     # @param pdialog: [KodiProgressDialog] object instance.
     # @param pdialog_verbose: [bool] verbose progress dialog.
     def __init__(self, PATHS, settings):
-        log_info('ScrapeStrategy::__init__() BEGIN ...')
+        log_debug('ScrapeStrategy::__init__() BEGIN ...')
         self.PATHS = PATHS
         self.settings = settings
 
@@ -308,7 +308,7 @@ class ScrapeStrategy(object):
         self.pdialog_verbose = pdialog_verbose
 
     def check_launcher_unset_asset_dirs(self):
-        log_info('ScrapeStrategy::check_launcher_unset_asset_dirs() BEGIN ...')
+        log_debug('ScrapeStrategy::check_launcher_unset_asset_dirs() BEGIN ...')
         self.enabled_asset_list = asset_get_enabled_asset_list(self.launcher)
         self.unconfigured_name_list = asset_get_unconfigured_name_list(self.enabled_asset_list)
 
@@ -1554,6 +1554,8 @@ class MobyGames(Scraper):
         'advertisement' : None,
         'extras'        : None,
         'inside cover'  : None,
+        'full cover'    : None,
+        'soundtrack'    : None,
     }
 
     def __init__(self, settings):
