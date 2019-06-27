@@ -267,16 +267,15 @@ TRAILER_EXTENSION_LIST = ['mov', 'divx', 'xvid', 'wmv', 'avi', 'mpg', 'mpeg', 'm
 # --- Scrapers -----------------------------------------------------------------------------------
 SCRAPER_NULL_ID          = 10
 SCRAPER_AEL_OFFLINE_ID   = 20
-SCRAPER_LB_OFFLINE_ID    = 30
-SCRAPER_THEGAMESDB_ID    = 40
-SCRAPER_MOBYGAMES_ID     = 50
+SCRAPER_THEGAMESDB_ID    = 30
+SCRAPER_MOBYGAMES_ID     = 40
+SCRAPER_SCREENSCRAPER_ID = 50
 SCRAPER_GAMEFAQS_ID      = 60
 SCRAPER_ARCADEDB_ID      = 70
-SCRAPER_SCREENSCRAPER_ID = 80
-SCRAPER_LIBRETRO_ID      = 90
+SCRAPER_LIBRETRO_ID      = 80
 
 # List of enabled scrapers. If a scraper ID is in this list then a unique scraper object
-# will be instantiated and cached in the ScraperFactory object.
+# will be instantiated and cached in the global ScraperFactory object.
 # To disable an scraper just remove it from this list.
 SCRAPER_LIST = [
     SCRAPER_NULL_ID,

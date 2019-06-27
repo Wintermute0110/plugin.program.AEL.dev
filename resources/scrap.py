@@ -1259,26 +1259,7 @@ class AEL_Offline(Scraper):
 # Do not implement this scraper. It is better to have one good offline scraper than many bad.
 # Users will be encouraged to improve the AEL Offline scraper.
 # ------------------------------------------------------------------------------------------------
-class LB_Offline(Scraper):
-    def __init__(self, settings): super(LB_Offline, self).__init__(settings)
-
-    def get_name(self): return 'LB Offline'
-
-    def supports_metadata(self, metadata_ID): return True
-
-    def supports_metadata_any(self): return True
-
-    def supports_asset(self, asset_ID): return False
-
-    def supports_asset_any(self): return False
-
-    def _scraper_get_candidates(self, search_term, rombase_noext, platform): return []
-
-    def _scraper_get_metadata(self, candidate): return {}
-
-    def _scraper_get_assets(self, candidate, asset_ID): return {}
-
-    def _scraper_resolve_asset_URL(self, candidate): pass
+class LB_Offline(Scraper): pass
 
 # ------------------------------------------------------------------------------------------------
 # TheGamesDB online scraper (metadata and assets)
@@ -2058,7 +2039,11 @@ class GameFAQs(Scraper):
 
 
 # -----------------------------------------------------------------------------
-# Arcade Database (for MAME) http://adb.arcadeitalia.net/
+# Arcade Database (for MAME)
+# THIS SCRAPER MUST BE REWRITTEN USING THE API.
+#
+# | Site     | http://adb.arcadeitalia.net/                    |
+# | API info | http://adb.arcadeitalia.net/service_scraper.php |
 # -----------------------------------------------------------------------------   
 class ArcadeDB(Scraper): 
     def __init__(self, settings, launcher, fallbackScraper = None):
