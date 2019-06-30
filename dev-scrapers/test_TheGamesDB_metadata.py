@@ -52,7 +52,7 @@ if not candidate_list:
     sys.exit(0)
 
 # --- Print metadata of first candidate ---
-print('*** MobyGames game metadata ***************************************************************')
+print('*** TheGamesDB game metadata **************************************************************')
 metadata = scraper_obj.get_metadata(candidate_list[0])
 # pprint.pprint(metadata)
 print_game_metadata(metadata)

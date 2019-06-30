@@ -1291,6 +1291,7 @@ class TheGamesDB(Scraper):
     ]
     asset_name_mapping = {
         'screenshot': ASSET_SNAP_ID,
+        'boxart' : ASSET_BOXFRONT_ID,
         'boxartfront': ASSET_BOXFRONT_ID,
         'boxartback': ASSET_BOXBACK_ID,
         'fanart' : ASSET_FANART_ID,
@@ -1305,6 +1306,7 @@ class TheGamesDB(Scraper):
         self.genres_cached = {}
         self.developers_cached = {}
         self.publishers_cached = {}
+        self.all_asset_cache = {}
         # --- Pass down common scraper settings ---
         super(TheGamesDB, self).__init__(settings)
 
@@ -1380,10 +1382,13 @@ class TheGamesDB(Scraper):
         return game_data
 
     def _scraper_get_assets(self, candidate, asset_ID):
-        url = 'https://api.thegamesdb.net/Games/Images?apikey={}&games_id={}'.format(self.api_key, candidate['id'])
-        asset_list = self._read_assets_from_url(url, candidate['id'])
-        log_debug('Found {} assets for candidate #{}'.format(len(asset_list), candidate['id']))
-
+        # log_debug('TheGamesDB::_scraper_get_assets() asset_ID = {0} ...'.format(asset_ID))
+        # Get all assets for candidate. _scraper_get_assets_all() caches all assets for a candidate.
+        # Then select asset of a particular type.
+        all_asset_list = self._scraper_get_assets_all(candidate)
+        asset_list = [asset_dic for asset_dic in all_asset_list if asset_dic['asset_ID'] == asset_ID]
+        log_debug('TheGamesDB::_scraper_get_assets() Total assets {0} / Returned assets {1}'.format(
+            len(all_asset_list), len(asset_list)))
         return asset_list
 
     def _scraper_resolve_asset_URL(self, candidate):
@@ -1446,52 +1451,12 @@ class TheGamesDB(Scraper):
         if next_url is not None:
             log_debug('TheGamesDB::_read_games_from_url() Recursively loading games page')
             game_list = game_list + self._read_games_from_url(next_url, search_term, scraper_platform)
-
         return game_list
-
-    def _read_assets_from_url(self, url, candidate_id):
-        log_debug('Get image data from {}'.format(url))
-
-        page_data   = net_get_URL_as_json(url)
-        online_data = page_data['data']['images'][str(candidate_id)]
-        base_url    = page_data['data']['base_url']['original']
-
-        assets_list = []
-        # --- Parse images page data ---
-        for image_data in online_data:
-            asset_data = self._new_assetdata_dic()
-            asset_kind = self._convert_to_asset_kind(image_data['type'], image_data['side'])
-
-            if asset_kind is None:
-                continue
-
-            asset_info = g_assetFactory.get_asset_info(asset_kind)
-
-            asset_data['type']  = asset_info
-            asset_data['url']   = base_url + image_data['filename']
-            asset_data['name']  = ' '.join(filter(None, [image_data['type'], image_data['side'], image_data['resolution']]))
-
-            log_debug('TheGamesDbScraper:: found asset {}: {}'.format(asset_data['name'], asset_data['url']))
-            assets_list.append(asset_data)
-            
-        next_url = page_data['pages']['next']
-        if next_url is not None:
-            assets_list = assets_list + self._read_assets_from_url(next_url, candidate_id)
-
-        return assets_list
-
-    def _convert_to_asset_kind(self, type, side):
-        if side is not None:
-            type = type + side
-
-        asset_key = TheGamesDbScraper.asset_name_mapping[type]
-        return asset_key
 
     def _cleanup_searchterm(self, search_term, rom_path, rom):
         altered_term = search_term.lower().strip()
         for ext in self.launcher.get_rom_extensions():
             altered_term = altered_term.replace(ext, '')
-
         return altered_term
 
     def _parse_metadata_year(self, online_data):
@@ -1561,6 +1526,61 @@ class TheGamesDB(Scraper):
 
         publisher_names = [self.publishers[publisher_id] for publisher_id in publisher_ids]
         return ' / '.join(publisher_names)
+
+    # Get ALL available assets for game.
+    # Cache the results because this function may be called multiple times.
+    def _scraper_get_assets_all(self, candidate):
+        # log_debug('TheGamesDB::_scraper_get_assets_all() BEGIN ...')
+        cache_key = str(candidate['id'])
+        if cache_key in self.all_asset_cache:
+            log_debug('TheGamesDB::_scraper_get_assets_all() Cache hit "{0}"'.format(cache_key))
+            asset_list = self.all_asset_cache[cache_key]
+            return asset_list
+
+        # --- Cache miss ---
+        log_debug('TheGamesDB::_scraper_get_assets_all() Cache miss "{0}"'.format(cache_key))
+        url = 'https://api.thegamesdb.net/Games/Images?apikey={}&games_id={}'.format(
+            self.api_key, candidate['id'])
+        asset_list = self._read_assets_from_url(url, candidate['id'])
+        log_debug('A total of {0} assets found for candidate ID {1}'.format(
+            len(asset_list), candidate['id']))
+        self.all_asset_cache[cache_key] = asset_list
+
+        return asset_list
+
+    def _read_assets_from_url(self, url, candidate_id):
+        # --- Read URL JSON data ---
+        page_data_raw = net_get_URL_original(url)
+        page_data = json.loads(page_data_raw)
+        self._dump_json_debug('thegamesdb_get_assets.txt', page_data)
+
+        # --- Parse images page data ---
+        base_url_thumb = page_data['data']['base_url']['thumb']
+        base_url = page_data['data']['base_url']['original']
+        assets_list = []
+        for image_data in page_data['data']['images'][str(candidate_id)]:
+            asset_name = '{0} ID {1}'.format(image_data['type'], image_data['id'])
+            asset_ID = TheGamesDB.asset_name_mapping[image_data['type']]
+            asset_fname = image_data['filename']
+
+            # url_thumb is mandatory.
+            # url is not mandatory here but MobyGames provides it anyway.
+            asset_data = self._new_assetdata_dic()
+            asset_data['asset_ID'] = asset_ID
+            asset_data['display_name'] = asset_name
+            asset_data['url_thumb'] = base_url_thumb + asset_fname
+            asset_data['url'] = base_url + asset_fname
+            if self.verbose_flag:
+                log_debug('TheGamesDB:: Found Asset {0}'.format(asset_data['name']))
+            assets_list.append(asset_data)
+
+        # --- Recursively load more assets ---
+        next_url = page_data['pages']['next']
+        if next_url is not None:
+            log_debug('TheGamesDB::_read_assets_from_url() Recursively loading games page')
+            assets_list = assets_list + self._read_assets_from_url(next_url, candidate_id)
+
+        return assets_list
 
 # ------------------------------------------------------------------------------------------------
 # MobyGames online scraper http://www.mobygames.com
@@ -1670,7 +1690,6 @@ class MobyGames(Scraper):
         asset_list = [asset_dic for asset_dic in all_asset_list if asset_dic['asset_ID'] == asset_ID]
         log_debug('MobyGames::_scraper_get_assets() Total assets {0} / Returned assets {1}'.format(
             len(all_asset_list), len(asset_list)))
-
         return asset_list
 
     # Mobygames returns both the asset thumbnail URL and the full resolution URL so in
@@ -1679,7 +1698,6 @@ class MobyGames(Scraper):
         # Transform http to https
         url = candidate['url']
         if url[0:4] == 'http': url = 'https' + url[4:]
-
         return url
 
     # --- This class methods ---------------------------------------------------------------------
@@ -1728,7 +1746,6 @@ class MobyGames(Scraper):
             if platform['platform_id'] == int(platform_id):
                 year_data = platform['first_release_date']
                 break
-
         if year_data is None:
             year_data = platform_data[0]['first_release_date']
 
@@ -1742,14 +1759,16 @@ class MobyGames(Scraper):
         if cache_key in self.all_asset_cache:
             log_debug('MobyGames::_scraper_get_assets_all() Cache hit "{0}"'.format(cache_key))
             asset_list = self.all_asset_cache[cache_key]
-        else:
-            log_debug('MobyGames::_scraper_get_assets_all() Cache miss "{0}"'.format(cache_key))
-            snap_assets = self._load_snap_assets(candidate, candidate['scraper_platform'])
-            cover_assets = self._load_cover_assets(candidate, candidate['scraper_platform'])
-            asset_list = snap_assets + cover_assets
-            log_debug('A total of {0} assets found for candidate ID {1}'.format(
-                len(asset_list), candidate['id']))
-            self.all_asset_cache[cache_key] = asset_list
+            return asset_list
+
+        # --- Cache miss ---
+        log_debug('MobyGames::_scraper_get_assets_all() Cache miss "{0}"'.format(cache_key))
+        snap_assets = self._load_snap_assets(candidate, candidate['scraper_platform'])
+        cover_assets = self._load_cover_assets(candidate, candidate['scraper_platform'])
+        asset_list = snap_assets + cover_assets
+        log_debug('A total of {0} assets found for candidate ID {1}'.format(
+            len(asset_list), candidate['id']))
+        self.all_asset_cache[cache_key] = asset_list
 
         return asset_list
 
@@ -1759,11 +1778,9 @@ class MobyGames(Scraper):
             candidate['id'], platform_id, self.api_key)
         self._do_toomanyrequests_check()
         page_data_raw = net_get_URL_original(url)
-        self.last_http_call = datetime.datetime.now()
         page_data = json.loads(page_data_raw)
-        if self.dump_file_flag:
-            file_path = os.path.join(self.dump_dir, 'mobygames_snap_assets.txt')
-            text_dump_str_to_file(file_path, page_data_raw)
+        self.last_http_call = datetime.datetime.now()
+        self._dump_json_debug('mobygames_snap_assets.txt', page_data)
 
         # --- Parse images page data ---
         asset_list = []
@@ -1794,11 +1811,9 @@ class MobyGames(Scraper):
             candidate['id'], platform_id, self.api_key)
         self._do_toomanyrequests_check()
         page_data_raw = net_get_URL_original(url)
-        self.last_http_call = datetime.datetime.now()
         page_data = json.loads(page_data_raw)
-        if self.dump_file_flag:
-            file_path = os.path.join(self.dump_dir, 'mobygames_cover_assets.txt')
-            text_dump_str_to_file(file_path, page_data_raw)
+        self.last_http_call = datetime.datetime.now()
+        self._dump_json_debug('mobygames_cover_assets.txt', page_data)
 
         # --- Parse images page data ---
         asset_list = []
@@ -1807,15 +1822,17 @@ class MobyGames(Scraper):
             for image_data in group_data['covers']:
                 asset_name = '{0} - {1} ({2})'.format(
                     image_data['scan_of'], image_data['description'], country_names)
-                asset_data = self._new_assetdata_dic()
                 asset_ID = MobyGames.asset_name_mapping[image_data['scan_of'].lower()]
+
+                # url_thumb is mandatory.
+                # url is not mandatory here but MobyGames provides it anyway.
+                asset_data = self._new_assetdata_dic()
                 asset_data['asset_ID'] = asset_ID
                 asset_data['display_name'] = asset_name
                 asset_data['url_thumb'] = image_data['thumbnail_image']
-                # URL is not mandatory here but MobyGames provides it anyway.
                 asset_data['url'] = image_data['image']
                 if self.verbose_flag:
-                    log_debug('MobyGamesScraper:: Found Cover {0}'.format(asset_data['url_thumb']))
+                    log_debug('MobyGames:: Found Cover {0}'.format(asset_data['url_thumb']))
                 asset_list.append(asset_data)
         log_debug('Found {0} cover assets for candidate #{1}'.format(len(asset_list), candidate['id']))
 
