@@ -31,11 +31,12 @@ set_log_level(LOG_DEBUG) # >> LOG_INFO, LOG_VERB, LOG_DEBUG
 
 # --- Create scraper object ---
 settings = {
-    'scraper_thegamesdb_apikey' : '', # Do not forget to set the API key.
+    # Make sure this is the Public key.
+    'scraper_thegamesdb_apikey' : '828be1fb8f3182d055f1aed1f7d4da8bd4ebc160c3260eae8ee57ea823b42415',
 }
 scraper_obj = TheGamesDB(settings)
 scraper_obj.set_verbose_mode(False)
-scraper_obj.set_debug_file_dump(True, os.path.dirname(__file__))
+scraper_obj.set_debug_file_dump(True, os.path.join(os.path.dirname(__file__), 'assets'))
 
 # --- Get candidates ---
 # Cases with unknown platform must be tested as well.

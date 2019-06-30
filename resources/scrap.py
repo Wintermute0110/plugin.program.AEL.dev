@@ -149,7 +149,7 @@ class ScraperFactory(object):
         if SCRAPER_MOBYGAMES_ID in SCRAPER_LIST:
             self.scraper_objs[SCRAPER_MOBYGAMES_ID] = MobyGames(self.settings)
         if SCRAPER_SCREENSCRAPER_ID in SCRAPER_LIST:
-           self.scraper_objs[SCRAPER_SCREENSCRAPER_ID] = ScreenScraper_v1(self.settings)
+           self.scraper_objs[SCRAPER_SCREENSCRAPER_ID] = ScreenScraper_V1(self.settings)
         if SCRAPER_GAMEFAQS_ID in SCRAPER_LIST:
             self.scraper_objs[SCRAPER_GAMEFAQS_ID] = GameFAQs(self.settings)
         if SCRAPER_ARCADEDB_ID in SCRAPER_LIST:
@@ -1038,12 +1038,22 @@ class Scraper(object):
 
     # Scraper is much more verbose (even more than AEL Debug level).
     def set_verbose_mode(self, verbose_flag):
+        log_debug('Scraper::set_verbose_mode() verbose_flag {0}'.format(verbose_flag))
         self.verbose_flag = verbose_flag
 
     # Dump scraper data into files for debugging.
     def set_debug_file_dump(self, dump_file_flag, dump_dir):
+        log_debug('Scraper::set_verbose_mode() dump_file_flag {0}'.format(dump_file_flag))
+        log_debug('Scraper::set_verbose_mode() dump_dir {0}'.format(dump_dir))
         self.dump_file_flag = dump_file_flag
         self.dump_dir = dump_dir
+
+    # Dump dictionary as JSON for debugging purposes.
+    def _dump_json_debug(self, file_name, data_dic):
+        if not self.dump_file_flag: return
+        file_path = os.path.join(self.dump_dir, file_name)
+        json_str = json.dumps(data_dic, indent = 1, separators = (', ', ' : '))
+        text_dump_str_to_file(file_path, json_str)
 
     @abc.abstractmethod
     def get_name(self): pass
@@ -1070,7 +1080,7 @@ class Scraper(object):
     # @return: [list] List of _new_candidate_dic() dictionaries.
     def get_candidates(self, search_term, rombase_noext, platform):
         # Check if search term is in the cache.
-        cache_str = search_term + '_' + rombase_noext + '_' + platform
+        cache_str = search_term + '__' + rombase_noext + '__' + platform
         if cache_str in self.cache_candidates:
             log_debug('Scraper::get_candidates() Cache hit "{0}"'.format(cache_str))
             candidate_list = self.cache_candidates[cache_str]
@@ -1108,7 +1118,7 @@ class Scraper(object):
     def get_assets(self, candidate, asset_ID):
         AInfo = assets_get_info_scheme(asset_ID)
         log_debug('Scraper::get_assets() asset_ID = {0} ID {1}'.format(AInfo.name, asset_ID))
-        cache_key = str(candidate['id']) + '_' + str(AInfo.name)
+        cache_key = str(candidate['id']) + '__' + str(AInfo.name)
         if cache_key in self.cache_assets:
             log_debug('Scraper::get_assets() Cache hit "{0}"'.format(cache_key))
             assetdata_list = self.cache_assets[cache_key]
@@ -1270,30 +1280,31 @@ class LB_Offline(Scraper): pass
 # | API info | https://api.thegamesdb.net/ |
 # ------------------------------------------------------------------------------------------------
 class TheGamesDB(Scraper):
-    # Class variables
+    # --- Class variables ---
     supported_metadata_list = [
-        # META_TITLE_ID, META_YEAR_ID, META_GENRE_ID, META_PLOT_ID,
+        META_TITLE_ID, META_YEAR_ID, META_GENRE_ID, META_DEVELOPER_ID,
+        META_NPLAYERS_ID, META_ESRB_ID, META_PLOT_ID
     ]
     supported_asset_list = [
-        # ASSET_TITLE_ID, ASSET_SNAP_ID,
-        # ASSET_BOXFRONT_ID, ASSET_BOXBACK_ID, ASSET_CARTRIDGE_ID, ASSET_MANUAL_ID,
+        ASSET_SNAP_ID, ASSET_BOXFRONT_ID, ASSET_BOXBACK_ID,
+        ASSET_FANART_ID, ASSET_CLEARLOGO_ID, ASSET_BANNER_ID,
     ]
     asset_name_mapping = {
+        'screenshot': ASSET_SNAP_ID,
+        'boxartfront': ASSET_BOXFRONT_ID,
+        'boxartback': ASSET_BOXBACK_ID,
         'fanart' : ASSET_FANART_ID,
         'clearlogo': ASSET_CLEARLOGO_ID,
         'banner': ASSET_BANNER_ID,
-        'boxartfront': ASSET_BOXFRONT_ID,
-        'boxartback': ASSET_BOXBACK_ID,
-        'screenshot': ASSET_SNAP_ID,
     }
 
     def __init__(self, settings):
         # --- This scraper settings ---
         self.api_key = settings['scraper_thegamesdb_apikey']
-        # --- Misc stuff ---
-        self.publishers = None
-        self.genres = None
-        self.developers = None
+        # --- Cached TGDB metadata ---
+        self.genres_cached = {}
+        self.developers_cached = {}
+        self.publishers_cached = {}
         # --- Pass down common scraper settings ---
         super(TheGamesDB, self).__init__(settings)
 
@@ -1321,16 +1332,24 @@ class TheGamesDB(Scraper):
         # UTF-8 encoded string and does not work with Unicode strings.
         # https://stackoverflow.com/questions/22415345/using-pythons-urllib-quote-plus-on-utf-8-strings-with-safe-arguments
         search_string_encoded = urllib.quote_plus(search_term.encode('utf8'))
-        url = 'https://api.thegamesdb.net/Games/ByGameName?apikey={}&name={}'.format(
-            self.api_key, search_string_encoded)
+        # --- Include platform in query
+        url_str = 'https://api.thegamesdb.net/Games/ByGameName?apikey={0}&name={1}&filter[platform]={2}'
+        url = url_str.format(self.api_key, search_string_encoded, '18')
+        # --- No platform in query
+        # url_str = 'https://api.thegamesdb.net/Games/ByGameName?apikey={0}&name={1}'
+        # url = url_str.format(self.api_key, search_string_encoded)
         game_list = self._read_games_from_url(url, search_term, scraper_platform)
-        if len(game_list) == 0:
-            altered_search_term = self._cleanup_searchterm(search_term, rombase_noext, platform)
-            if altered_search_term != search_term:
-                log_debug('No matches, trying again with altered search terms: {0}'.format(
-                    altered_search_term))
-                return self._get_candidates(altered_search_term, rombase_noext, platform)
-        # Order list based on score. High score goes first.
+
+        # if len(game_list) == 0:
+        #     altered_search_term = self._cleanup_searchterm(search_term, rombase_noext, platform)
+        #     log_debug('Cleaning search term. Before "{0}"'.format(search_term))
+        #     log_debug('After "{0}"'.format(altered_search_term))
+        #     if altered_search_term != search_term:
+        #         log_debug('No matches, trying again with altered search terms: {0}'.format(
+        #             altered_search_term))
+        #         return self._get_candidates(altered_search_term, rombase_noext, platform)
+
+        # --- Order list based on score. High score goes first ---
         game_list.sort(key = lambda result: result['order'], reverse = True)
 
         return game_list
@@ -1338,19 +1357,25 @@ class TheGamesDB(Scraper):
     def _scraper_get_metadata(self, candidate):
         url = 'https://api.thegamesdb.net/Games/ByGameID?apikey={}&id={}&fields=players%2Cpublishers%2Cgenres%2Coverview%2Crating%2Cplatform%2Ccoop%2Cyoutube'.format(
             self.api_key, candidate['id'])
-        log_debug('Get metadata from {0}'.format(url))
-        page_data = net_get_URL_as_json(url)
-        online_data = page_data['data']['games'][0]
+        # log_debug('Get metadata from {0}'.format(url))
+        page_data_raw = net_get_URL_original(url)
+        page_data = json.loads(page_data_raw)
+        if self.dump_file_flag:
+            file_path = os.path.join(self.dump_dir, 'thegamesdb_get_metadata.txt')
+            text_dump_str_to_file(file_path, json.dumps(
+                page_data, indent = 1, separators = (', ', ' : ')))
 
         # --- Parse game page data ---
+        log_debug('TheGamesDB::_scraper_get_metadata() Parsing game metadata...')
+        online_data = page_data['data']['games'][0]
         game_data = self._new_gamedata_dic()
-        game_data['title']      = online_data['game_title'] if 'game_title' in online_data else '' 
-        game_data['nplayers']   = online_data['players'] if 'players' in online_data else '' 
-        game_data['esrb']       = online_data['rating'] if 'rating' in online_data else '' 
-        game_data['plot']       = online_data['overview'] if 'overview' in online_data else '' 
-        game_data['genre']      = self._get_genres(online_data['genres']) if 'genres' in online_data else '' 
-        game_data['developer']  = self._get_developers(online_data['developers']) if 'developers' in online_data else '' 
-        game_data['year']       = online_data['release_date'][:4] if 'release_date' in online_data and online_data['release_date'] is not None and online_data['release_date'] != '' else ''
+        game_data['title']     = online_data['game_title'] if 'game_title' in online_data else ''
+        game_data['year']      = self._parse_metadata_year(online_data)
+        game_data['genre']     = self._parse_metadata_genres(online_data)
+        game_data['developer'] = self._parse_metadata_developer(online_data)
+        game_data['nplayers']  = str(online_data['players']) if 'players' in online_data else ''
+        game_data['esrb']      = online_data['rating'] if 'rating' in online_data else ''
+        game_data['plot']      = online_data['overview'] if 'overview' in online_data else ''
 
         return game_data
 
@@ -1395,12 +1420,7 @@ class TheGamesDB(Scraper):
     def _read_games_from_url(self, url, search_term, scraper_platform):
         page_data_raw = net_get_URL_original(url)
         page_data = json.loads(page_data_raw)
-        if self.dump_file_flag:
-            file_path = os.path.join(self.dump_dir, 'thegamesdb_get_candidates.txt')
-            text_dump_str_to_file(file_path, page_data_raw)
-
-        # If nothing is returned maybe a timeout happened. In this case, reset the cache.
-        if page_data is None: self._reset_cache()
+        self._dump_json_debug('thegamesdb_get_candidates.txt', page_data)
 
         # --- Parse game list ---
         games = page_data['data']['games']
@@ -1424,6 +1444,7 @@ class TheGamesDB(Scraper):
         # --- Recursively load more games ---
         next_url = page_data['pages']['next']
         if next_url is not None:
+            log_debug('TheGamesDB::_read_games_from_url() Recursively loading games page')
             game_list = game_list + self._read_games_from_url(next_url, search_term, scraper_platform)
 
         return game_list
@@ -1473,56 +1494,73 @@ class TheGamesDB(Scraper):
 
         return altered_term
 
+    def _parse_metadata_year(self, online_data):
+        if 'release_date' in online_data and \
+           online_data['release_date'] is not None and \
+           online_data['release_date'] != '':
+           year_str = online_data['release_date'][:4]
+        else:
+            year_str = ''
+        return year_str
+
+    def _parse_metadata_genres(self, online_data):
+        if 'genres' not in online_data: return ''
+        # "genres" : [ 1 , 15 ],
+        genre_ids = online_data['genres']
+        TGDB_genres = self._get_genres()
+        genre_list = [TGDB_genres[genre_id] for genre_id in genre_ids]
+        return ', '.join(genre_list)
+
+    # Get a dictionary of TGDB genres (integers) to AEL genres (strings).
+    # TGDB genres are cached in an object variable.
+    def _get_genres(self):
+        # If genres are cached return immediately.
+        if self.genres_cached: return self.genres_cached
+        log_debug('TheGamesDB::_get_genres() No cached genres. Retrieving...')
+        url = 'https://api.thegamesdb.net/Genres?apikey={}'.format(self.api_key)
+        page_data_raw = net_get_URL_original(url)
+        page_data = json.loads(page_data_raw)
+        self._dump_json_debug('thegamesdb_get_genres.txt', page_data)
+        self.genres_cached = {}
+        for genre_id in page_data['data']['genres']:
+            self.genres_cached[int(genre_id)] = page_data['data']['genres'][genre_id]['name']
+        return self.genres_cached
+
+    def _parse_metadata_developer(self, online_data):
+        if 'developers' not in online_data: return ''
+        # "developers" : [ 7979 ],
+        developers_ids = online_data['developers']
+        TGDB_developers = self._get_developers()
+        developer_list = [TGDB_developers[dev_id] for dev_id in developers_ids]
+        return ', '.join(developer_list)
+
+    def _get_developers(self):
+        # If developers are cached return immediately.
+        if self.developers_cached: return self.developers_cached
+        log_debug('TheGamesDB::_get_developers() No cached developers. Retrieving...')
+        url = 'https://api.thegamesdb.net/Developers?apikey={}'.format(self.api_key)
+        page_data_raw = net_get_URL_original(url)
+        page_data = json.loads(page_data_raw)
+        self._dump_json_debug('thegamesdb_get_developers.txt', page_data)
+        self.developers_cached = {}
+        for developer_id in page_data['data']['developers']:
+            self.developers_cached[int(developer_id)] = page_data['data']['developers'][developer_id]['name']
+        return self.developers_cached
+
+    # Publishers is not used in AEL at the moment.
     def _get_publishers(self, publisher_ids):
         if publisher_ids is None: return ''
 
         if self.publishers is None:
-            log_debug('TheGamesDbScraper::No cached publishers. Retrieving from online.')
+            log_debug('TheGamesDB:: No cached publishers. Retrieving from online.')
             self.publishers = {}
             url = 'https://api.thegamesdb.net/Publishers?apikey={}'.format(self.api_key)
             publishers_json = net_get_URL_as_json(url)
             for publisher_id in publishers_json['data']['publishers']:
                 self.publishers[int(publisher_id)] = publishers_json['data']['publishers'][publisher_id]['name']
 
-        publisher_names = []
-        for publisher_id in publisher_ids:
-            publisher_names.append(self.publishers[publisher_id])
-
+        publisher_names = [self.publishers[publisher_id] for publisher_id in publisher_ids]
         return ' / '.join(publisher_names)
-
-    def _get_genres(self, genre_ids):
-        if genre_ids is None: return ''
-
-        if self.genres is None:
-            log_debug('TheGamesDbScraper::No cached genres. Retrieving from online.')
-            self.genres = {}
-            url = 'https://api.thegamesdb.net/Genres?apikey={}'.format(self.api_key)
-            genre_json = net_get_URL_as_json(url)
-            for genre_id in genre_json['data']['genres']:
-                self.genres[int(genre_id)] = genre_json['data']['genres'][genre_id]['name']
-
-        genre_names = []
-        for genre_id in genre_ids:
-            genre_names.append(self.genres[genre_id])
-
-        return ' / '.join(genre_names)
-
-    def _get_developers(self, developer_ids):
-        if developer_ids is None: return ''
-
-        if self.developers is None:
-            log_debug('TheGamesDbScraper::No cached developers. Retrieving from online.')
-            self.developers = {}
-            url = 'https://api.thegamesdb.net/Developers?apikey={}'.format(self.api_key)
-            developers_json = net_get_URL_as_json(url)
-            for developer_id in developers_json['data']['developers']:
-                self.developers[int(developer_id)] = developers_json['data']['developers'][developer_id]['name']
-
-        developer_names = []
-        for developer_id in developer_ids:
-            developer_names.append(self.developers[developer_id])
-
-        return ' / '.join(developer_names)
 
 # ------------------------------------------------------------------------------------------------
 # MobyGames online scraper http://www.mobygames.com
@@ -1796,7 +1834,7 @@ class MobyGames(Scraper):
 # | Site     | https://www.screenscraper.fr             |
 # | API info | https://www.screenscraper.fr/webapi.php  |
 # ------------------------------------------------------------------------------------------------
-class ScreenScraper_v1(Scraper):
+class ScreenScraper_V1(Scraper):
     def __init__(self, settings): super(ScreenScraper_v1, self).__init__(settings)
 
     def get_name(self): return 'ScreenScraper v1'
