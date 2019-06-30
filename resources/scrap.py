@@ -1334,12 +1334,8 @@ class TheGamesDB(Scraper):
         # UTF-8 encoded string and does not work with Unicode strings.
         # https://stackoverflow.com/questions/22415345/using-pythons-urllib-quote-plus-on-utf-8-strings-with-safe-arguments
         search_string_encoded = urllib.quote_plus(search_term.encode('utf8'))
-        # --- Include platform in query
         url_str = 'https://api.thegamesdb.net/Games/ByGameName?apikey={0}&name={1}&filter[platform]={2}'
-        url = url_str.format(self.api_key, search_string_encoded, '18')
-        # --- No platform in query
-        # url_str = 'https://api.thegamesdb.net/Games/ByGameName?apikey={0}&name={1}'
-        # url = url_str.format(self.api_key, search_string_encoded)
+        url = url_str.format(self.api_key, search_string_encoded, scraper_platform)
         game_list = self._read_games_from_url(url, search_term, scraper_platform)
 
         # if len(game_list) == 0:
@@ -1363,7 +1359,7 @@ class TheGamesDB(Scraper):
         page_data_raw = net_get_URL_original(url)
         page_data = json.loads(page_data_raw)
         if self.dump_file_flag:
-            file_path = os.path.join(self.dump_dir, 'thegamesdb_get_metadata.txt')
+            file_path = os.path.join(self.dump_dir, 'TGDB_get_metadata.txt')
             text_dump_str_to_file(file_path, json.dumps(
                 page_data, indent = 1, separators = (', ', ' : ')))
 
@@ -1395,6 +1391,14 @@ class TheGamesDB(Scraper):
         return candidate['url']
 
     # --- This class methods ---------------------------------------------------------------------
+    def get_platforms(self):
+        log_debug('TheGamesDB::get_platforms() BEGIN...')
+        url = 'https://api.thegamesdb.net/Platforms?apikey={}'.format(self.api_key)
+        page_data = json.loads(net_get_URL_original(url))
+        self._dump_json_debug('TGDB_get_platforms.txt', page_data)
+
+        return page_data
+
     # --- Parse list of games ---
     #{
     #  "code": 200,
@@ -1425,7 +1429,7 @@ class TheGamesDB(Scraper):
     def _read_games_from_url(self, url, search_term, scraper_platform):
         page_data_raw = net_get_URL_original(url)
         page_data = json.loads(page_data_raw)
-        self._dump_json_debug('thegamesdb_get_candidates.txt', page_data)
+        self._dump_json_debug('TGDB_get_candidates.txt', page_data)
 
         # --- Parse game list ---
         games = page_data['data']['games']
@@ -1485,7 +1489,7 @@ class TheGamesDB(Scraper):
         url = 'https://api.thegamesdb.net/Genres?apikey={}'.format(self.api_key)
         page_data_raw = net_get_URL_original(url)
         page_data = json.loads(page_data_raw)
-        self._dump_json_debug('thegamesdb_get_genres.txt', page_data)
+        self._dump_json_debug('TGDB_get_genres.txt', page_data)
         self.genres_cached = {}
         for genre_id in page_data['data']['genres']:
             self.genres_cached[int(genre_id)] = page_data['data']['genres'][genre_id]['name']
@@ -1506,7 +1510,7 @@ class TheGamesDB(Scraper):
         url = 'https://api.thegamesdb.net/Developers?apikey={}'.format(self.api_key)
         page_data_raw = net_get_URL_original(url)
         page_data = json.loads(page_data_raw)
-        self._dump_json_debug('thegamesdb_get_developers.txt', page_data)
+        self._dump_json_debug('TGDB_get_developers.txt', page_data)
         self.developers_cached = {}
         for developer_id in page_data['data']['developers']:
             self.developers_cached[int(developer_id)] = page_data['data']['developers'][developer_id]['name']
@@ -1552,7 +1556,7 @@ class TheGamesDB(Scraper):
         # --- Read URL JSON data ---
         page_data_raw = net_get_URL_original(url)
         page_data = json.loads(page_data_raw)
-        self._dump_json_debug('thegamesdb_get_assets.txt', page_data)
+        self._dump_json_debug('TGDB_get_assets.txt', page_data)
 
         # --- Parse images page data ---
         base_url_thumb = page_data['data']['base_url']['thumb']
