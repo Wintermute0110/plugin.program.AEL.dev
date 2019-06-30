@@ -489,14 +489,10 @@ class Main:
         self.settings['asset_scraper_mode']       = int(o.getSetting('asset_scraper_mode'))
 
         # --- ROM scraping ---
-        self.settings['scraper_metadata_1']      = int(o.getSetting('scraper_metadata_1'))
-        self.settings['scraper_metadata_2']      = int(o.getSetting('scraper_metadata_2'))
-        self.settings['scraper_asset_1']         = int(o.getSetting('scraper_asset_1'))
-        self.settings['scraper_asset_2']         = int(o.getSetting('scraper_asset_2'))
-        self.settings['scraper_metadata_MAME_1'] = int(o.getSetting('scraper_metadata_MAME_1'))
-        self.settings['scraper_metadata_MAME_2'] = int(o.getSetting('scraper_metadata_MAME_2'))
-        self.settings['scraper_asset_MAME_1']    = int(o.getSetting('scraper_asset_MAME_1'))
-        self.settings['scraper_asset_MAME_2']    = int(o.getSetting('scraper_asset_MAME_2'))
+        self.settings['scraper_metadata']      = int(o.getSetting('scraper_metadata'))
+        self.settings['scraper_asset']         = int(o.getSetting('scraper_asset'))
+        self.settings['scraper_metadata_MAME'] = int(o.getSetting('scraper_metadata_MAME'))
+        self.settings['scraper_asset_MAME']    = int(o.getSetting('scraper_asset_MAME'))
 
         # --- Scrapers ---
         self.settings['scraper_thegamesdb_apikey']    = o.getSetting('scraper_thegamesdb_apikey').decode('utf-8')
@@ -556,7 +552,7 @@ class Main:
         self.settings['windows_cd_apppath']       = True if o.getSetting('windows_cd_apppath') == 'true' else False
         self.settings['log_level']                = int(o.getSetting('log_level'))
 
-        # >> Check if user changed default artwork paths for categories/launchers. If not, set defaults.
+        # Check if user changed default artwork paths for categories/launchers. If not, set defaults.
         if self.settings['categories_asset_dir'] == '':
             self.settings['categories_asset_dir'] = g_PATHS.DEFAULT_CAT_ASSET_DIR.getOriginalPath()
         if self.settings['launchers_asset_dir'] == '':
@@ -565,6 +561,11 @@ class Main:
             self.settings['favourites_asset_dir'] = g_PATHS.DEFAULT_FAV_ASSET_DIR.getOriginalPath()
         if self.settings['collections_asset_dir'] == '':
             self.settings['collections_asset_dir'] = g_PATHS.DEFAULT_COL_ASSET_DIR.getOriginalPath()
+
+        # Fake settings.
+        self.settings['scraper_screenscraper_dev_id'] = ''
+        self.settings['scraper_screenscraper_dev_pass'] = ''
+        self.settings['scraper_screenscraper_AEL_softname'] = 'AEL_{0}'.format(__addon_version__)
 
         # --- Dump settings for DEBUG ---
         # log_debug('Settings dump BEGIN')

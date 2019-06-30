@@ -832,8 +832,10 @@ class ScrapeStrategy(object):
     # Called when scraping an asset in the context menu.
     # In the future object_dic will be a Launcher/ROM object, not a dictionary.
     #
-    # @return: [bool] True if image was changed, False otherwise.
+    # @return: [dict] op_dic with status flag and error message.
     def scrap_CM_asset(self, object_dic, asset_ID, data_dic):
+        # log_debug('ScrapeStrategy::scrap_CM_asset() BEGIN...')
+
         # --- Cached frequent used things ---
         asset_info = assets_get_info_scheme(asset_ID)
         asset_name = asset_info.name
@@ -842,7 +844,7 @@ class ScrapeStrategy(object):
         platform = data_dic['platform']
         current_asset_FN = data_dic['current_asset_FN']
         asset_path_noext_FN = data_dic['asset_path_noext']
-        log_info('::scrap_CM_asset() Scraping {0}...'.format(object_dic['m_name']))
+        log_info('ScrapeStrategy::scrap_CM_asset() Scraping {0}...'.format(object_dic['m_name']))
 
         # --- Cached frequent used things ---
         scraper_name = self.scraper_obj.get_name()
@@ -917,6 +919,8 @@ class ScrapeStrategy(object):
 
         # --- Download scraped image (or use local image) ----------------------------------------
         selected_asset = assetdata_list[image_selected_index]
+        log_debug('Selected asset_ID {0}'.format(selected_asset['asset_ID']))
+        log_debug('Selected display_name {0}'.format(selected_asset['display_name']))
 
         # --- Resolve asset URL ---
         log_debug('Resolving asset URL...')
@@ -971,7 +975,10 @@ class ScrapeStrategy(object):
     # grab candidate games, and select a candidate for scraping.
     #
     # @param object_name: [str] SCRAPE_ROM, SCRAPE_LAUNCHER.
+    # @return: [dict] Dictionary with candidate data. None if error.
     def _scrap_CM_get_candidate(self, object_name, object_dic, data_dic, op_dic):
+        log_debug('ScrapeStrategy::_scrap_CM_get_candidate() BEGIN...')
+
         # In AEL 0.10.x this data is grabed from the objects, not passed using a dictionary.
         rom_base_noext = data_dic['rom_base_noext']
         platform = data_dic['platform']
@@ -985,7 +992,7 @@ class ScrapeStrategy(object):
         if not keyboard.isConfirmed():
             op_dic['status'] = False
             op_dic['msg'] = '{0} metadata unchanged'.format(object_name)
-            return op_dic
+            return
         search_term = keyboard.getText().decode('utf-8')
 
         # --- Do a search and get a list of games ---
@@ -997,11 +1004,11 @@ class ScrapeStrategy(object):
             op_dic['status'] = False
             op_dic['dialog'] = KODI_MESSAGE_NOTIFY_WARN
             op_dic['msg'] = 'Scraper found no matching games'
-            return op_dic
+            return
 
         # --- Display corresponding game list found so user choses ---
         # If there is only one item in the list then don't show select dialog
-        game_name_list = [candidate['display_name'] for candidate in candidate_list]
+        game_name_list = [c['display_name'] for c in candidate_list]
         if len(game_name_list) == 1:
             select_candidate_idx = 0
         else:
@@ -1010,9 +1017,10 @@ class ScrapeStrategy(object):
             if select_candidate_idx < 0:
                 op_dic['status'] = False
                 op_dic['msg'] = '{0} metadata unchanged'.format(object_name)
-                return op_dic
-        log_verb('User chose game "{0}"'.format(game_name_list[select_candidate_idx]))
-        candiate = game_name_list[select_candidate_idx]
+                return
+        # log_debug('select_candidate_idx {0}'.format(select_candidate_idx))
+        candidate = candidate_list[select_candidate_idx]
+        log_verb('User chose game "{0}"'.format(candidate['display_name']))
 
         return candidate
 
@@ -1116,9 +1124,10 @@ class Scraper(object):
     # @param candidate: [dict] Candidate returned by get_candidates()
     # @return: [list] List of _new_assetdata_dic() dictionaries. None if error getting the metadata.
     def get_assets(self, candidate, asset_ID):
-        AInfo = assets_get_info_scheme(asset_ID)
-        log_debug('Scraper::get_assets() asset_ID = {0} ID {1}'.format(AInfo.name, asset_ID))
-        cache_key = str(candidate['id']) + '__' + str(AInfo.name)
+        asset_info = assets_get_info_scheme(asset_ID)
+        log_debug('Scraper::get_assets() candidate ID = {0}'.format(candidate['id']))
+        log_debug('Scraper::get_assets() asset_ID = {0} (ID {1})'.format(asset_info.name, asset_ID))
+        cache_key = str(candidate['id']) + '__' + str(asset_ID)
         if cache_key in self.cache_assets:
             log_debug('Scraper::get_assets() Cache hit "{0}"'.format(cache_key))
             assetdata_list = self.cache_assets[cache_key]
@@ -1886,7 +1895,7 @@ class ScreenScraper_V1(Scraper):
         self.api_key = settings['scraper_screenscraper_apikey']
         self.dev_id = settings['scraper_screenscraper_dev_id']
         self.dev_pass = settings['scraper_screenscraper_dev_pass']
-        self.softname = settings['AEL_softname']
+        self.softname = settings['scraper_screenscraper_AEL_softname']
 
         # --- Internal stuff ---
 
