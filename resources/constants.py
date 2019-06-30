@@ -282,6 +282,7 @@ SCRAPER_LIST = [
     SCRAPER_AEL_OFFLINE_ID,
     SCRAPER_THEGAMESDB_ID,
     SCRAPER_MOBYGAMES_ID,
+    SCRAPER_SCREENSCRAPER_ID,
 ]
 
 # Make sure this matches the scraper list in settings.xml or bad things will happen.

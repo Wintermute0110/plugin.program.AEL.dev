@@ -1395,7 +1395,7 @@ class TheGamesDB(Scraper):
     def _scraper_resolve_asset_URL(self, candidate):
         return candidate['url']
 
-    # --- This class methods ---------------------------------------------------------------------
+    # --- This class methods own -----------------------------------------------------------------
     def get_platforms(self):
         log_debug('TheGamesDB::get_platforms() BEGIN...')
         api_key = self._get_API_key()
@@ -1873,25 +1873,77 @@ class MobyGames(Scraper):
 # | API info | https://www.screenscraper.fr/webapi.php  |
 # ------------------------------------------------------------------------------------------------
 class ScreenScraper_V1(Scraper):
-    def __init__(self, settings): super(ScreenScraper_v1, self).__init__(settings)
+    # --- Class variables ---
+    supported_metadata_list = [
+    ]
+    supported_asset_list = [
+    ]
+    asset_name_mapping = {
+    }
 
-    def get_name(self): return 'ScreenScraper v1'
+    def __init__(self, settings):
+        # --- This scraper settings ---
+        self.api_key = settings['scraper_screenscraper_apikey']
+        self.dev_id = settings['scraper_screenscraper_dev_id']
+        self.dev_pass = settings['scraper_screenscraper_dev_pass']
+        self.softname = settings['AEL_softname']
 
-    def supports_metadata(self, metadata_ID): return False
+        # --- Internal stuff ---
 
-    def supports_metadata_any(self): return False
+        # --- Pass down common scraper settings ---
+        super(ScreenScraper_V1, self).__init__(settings)
 
-    def supports_asset(self, asset_ID): return False
+    # --- Base class abstract methods ------------------------------------------------------------
+    def get_name(self): return 'ScreenScraper'
+
+    def supports_metadata(self, metadata_ID):
+        return True if asset_ID in ScreenScraper_V1.supported_metadata_list else False
+
+    def supports_metadata_any(self): return True
+
+    def supports_asset(self, asset_ID):
+        return True if asset_ID in ScreenScraper_V1.supported_asset_list else False
 
     def supports_asset_any(self): return False
 
-    def _scraper_get_candidates(self, search_term, rombase_noext, platform): return []
+    def _scraper_get_candidates(self, search_term, rombase_noext, platform):
+        scraper_platform = AEL_platform_to_ScreenScraper(platform)
+        log_debug('ScreenScraper_V1::_scraper_get_candidates() search_term            "{0}"'.format(search_term))
+        log_debug('ScreenScraper_V1::_scraper_get_candidates() rom_base_noext         "{0}"'.format(rombase_noext))
+        log_debug('ScreenScraper_V1::_scraper_get_candidates() AEL platform           "{0}"'.format(platform))
+        log_debug('ScreenScraper_V1::_scraper_get_candidates() ScreenScraper platform "{0}"'.format(scraper_platform))
+
+        return []
 
     def _scraper_get_metadata(self, candidate): return {}
 
     def _scraper_get_assets(self, candidate, asset_ID): return {}
 
     def _scraper_resolve_asset_URL(self, candidate): pass
+
+    # --- This class own methods -----------------------------------------------------------------
+    # Some functions to grab data from ScreenScraper.
+    def get_ROM_types(self):
+        log_debug('ScreenScraper_V1::get_ROM_types() BEGIN...')
+        url_str = 'https://www.screenscraper.fr/api/romTypesListe.php?devid={}&devpassword={}&softname={}&output=json'
+        url = url_str.format(self.dev_id, self.dev_pass, self.softname)
+        page_raw_data = net_get_URL_original(url)
+        # log_debug(unicode(page_raw_data))
+        page_data = json.loads(page_raw_data)
+        self._dump_json_debug('ScreenScraper_get_ROM_types.txt', page_data)
+
+        return page_data
+
+    def get_genres_list(self):
+        log_debug('ScreenScraper_V1::get_ROM_types() BEGIN...')
+        url_str = 'https://www.screenscraper.fr/api/genresListe.php?devid={}&devpassword={}&softname={}&output=json'
+        url = url_str.format(self.dev_id, self.dev_pass, self.softname)
+        page_raw_data = net_get_URL_original(url)
+        # log_debug(unicode(page_raw_data))
+        page_data = json.loads(page_raw_data)
+        self._dump_json_debug('ScreenScraper_get_genres_list.txt', page_data)
+
+        return page_data
 
 # ------------------------------------------------------------------------------------------------
 # ScreenScraper online scraper.
@@ -2129,13 +2181,13 @@ class GameFAQs(Scraper):
 # | Site     | http://adb.arcadeitalia.net/                    |
 # | API info | http://adb.arcadeitalia.net/service_scraper.php |
 # -----------------------------------------------------------------------------   
-class ArcadeDB(Scraper): 
+class ArcadeDB(Scraper):
     def __init__(self, settings, launcher, fallbackScraper = None):
         scraper_settings = ScraperSettings.create_from_settings(settings)
         super(ArcadeDB, self).__init__(scraper_settings, launcher, fallbackScraper)
 
     def getName(self):
-        return 'Arcade Database'
+        return 'ArcadeDB'
 
     def supports_asset_type(self, asset_info):
         if asset_info.id == ASSET_FANART_ID:
