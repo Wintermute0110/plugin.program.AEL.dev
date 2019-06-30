@@ -1302,11 +1302,14 @@ class TheGamesDB(Scraper):
     def __init__(self, settings):
         # --- This scraper settings ---
         self.api_key = settings['scraper_thegamesdb_apikey']
+        self.api_public_key = '828be1fb8f3182d055f1aed1f7d4da8bd4ebc160c3260eae8ee57ea823b42415'
+
         # --- Cached TGDB metadata ---
         self.genres_cached = {}
         self.developers_cached = {}
         self.publishers_cached = {}
         self.all_asset_cache = {}
+
         # --- Pass down common scraper settings ---
         super(TheGamesDB, self).__init__(settings)
 
@@ -1334,8 +1337,9 @@ class TheGamesDB(Scraper):
         # UTF-8 encoded string and does not work with Unicode strings.
         # https://stackoverflow.com/questions/22415345/using-pythons-urllib-quote-plus-on-utf-8-strings-with-safe-arguments
         search_string_encoded = urllib.quote_plus(search_term.encode('utf8'))
+        api_key = self._get_API_key()
         url_str = 'https://api.thegamesdb.net/Games/ByGameName?apikey={0}&name={1}&filter[platform]={2}'
-        url = url_str.format(self.api_key, search_string_encoded, scraper_platform)
+        url = url_str.format(api_key, search_string_encoded, scraper_platform)
         game_list = self._read_games_from_url(url, search_term, scraper_platform)
 
         # if len(game_list) == 0:
@@ -1353,8 +1357,9 @@ class TheGamesDB(Scraper):
         return game_list
 
     def _scraper_get_metadata(self, candidate):
+        api_key = self._get_API_key()
         url = 'https://api.thegamesdb.net/Games/ByGameID?apikey={}&id={}&fields=players%2Cpublishers%2Cgenres%2Coverview%2Crating%2Cplatform%2Ccoop%2Cyoutube'.format(
-            self.api_key, candidate['id'])
+            api_key, candidate['id'])
         # log_debug('Get metadata from {0}'.format(url))
         page_data_raw = net_get_URL_original(url)
         page_data = json.loads(page_data_raw)
@@ -1393,11 +1398,18 @@ class TheGamesDB(Scraper):
     # --- This class methods ---------------------------------------------------------------------
     def get_platforms(self):
         log_debug('TheGamesDB::get_platforms() BEGIN...')
-        url = 'https://api.thegamesdb.net/Platforms?apikey={}'.format(self.api_key)
+        api_key = self._get_API_key()
+        url = 'https://api.thegamesdb.net/Platforms?apikey={}'.format(api_key)
         page_data = json.loads(net_get_URL_original(url))
         self._dump_json_debug('TGDB_get_platforms.txt', page_data)
 
         return page_data
+
+    def _get_API_key(self):
+        if self.api_key:
+            return self.api_key
+        else:
+            return self.api_public_key
 
     # --- Parse list of games ---
     #{
@@ -1437,7 +1449,7 @@ class TheGamesDB(Scraper):
         for item in games:
             title = item['game_title']
             platform = item['platform']
-            display_name = '{} / {}'.format(title, platform)
+            display_name = title
             game = self._new_candidate_dic()
             game['id'] = item['id']
             game['display_name'] = display_name
@@ -1486,7 +1498,8 @@ class TheGamesDB(Scraper):
         # If genres are cached return immediately.
         if self.genres_cached: return self.genres_cached
         log_debug('TheGamesDB::_get_genres() No cached genres. Retrieving...')
-        url = 'https://api.thegamesdb.net/Genres?apikey={}'.format(self.api_key)
+        api_key = self._get_API_key()
+        url = 'https://api.thegamesdb.net/Genres?apikey={}'.format(api_key)
         page_data_raw = net_get_URL_original(url)
         page_data = json.loads(page_data_raw)
         self._dump_json_debug('TGDB_get_genres.txt', page_data)
@@ -1501,34 +1514,37 @@ class TheGamesDB(Scraper):
         developers_ids = online_data['developers']
         TGDB_developers = self._get_developers()
         developer_list = [TGDB_developers[dev_id] for dev_id in developers_ids]
+
         return ', '.join(developer_list)
 
     def _get_developers(self):
         # If developers are cached return immediately.
         if self.developers_cached: return self.developers_cached
         log_debug('TheGamesDB::_get_developers() No cached developers. Retrieving...')
-        url = 'https://api.thegamesdb.net/Developers?apikey={}'.format(self.api_key)
+        api_key = self._get_API_key()
+        url = 'https://api.thegamesdb.net/Developers?apikey={}'.format(api_key)
         page_data_raw = net_get_URL_original(url)
         page_data = json.loads(page_data_raw)
         self._dump_json_debug('TGDB_get_developers.txt', page_data)
         self.developers_cached = {}
         for developer_id in page_data['data']['developers']:
             self.developers_cached[int(developer_id)] = page_data['data']['developers'][developer_id]['name']
+
         return self.developers_cached
 
     # Publishers is not used in AEL at the moment.
     def _get_publishers(self, publisher_ids):
         if publisher_ids is None: return ''
-
         if self.publishers is None:
             log_debug('TheGamesDB:: No cached publishers. Retrieving from online.')
-            self.publishers = {}
-            url = 'https://api.thegamesdb.net/Publishers?apikey={}'.format(self.api_key)
+            api_key = self._get_API_key()
+            url = 'https://api.thegamesdb.net/Publishers?apikey={}'.format(api_key)
             publishers_json = net_get_URL_as_json(url)
+            self.publishers = {}
             for publisher_id in publishers_json['data']['publishers']:
                 self.publishers[int(publisher_id)] = publishers_json['data']['publishers'][publisher_id]['name']
-
         publisher_names = [self.publishers[publisher_id] for publisher_id in publisher_ids]
+
         return ' / '.join(publisher_names)
 
     # Get ALL available assets for game.
@@ -1543,8 +1559,9 @@ class TheGamesDB(Scraper):
 
         # --- Cache miss ---
         log_debug('TheGamesDB::_scraper_get_assets_all() Cache miss "{0}"'.format(cache_key))
+        api_key = self._get_API_key()
         url = 'https://api.thegamesdb.net/Games/Images?apikey={}&games_id={}'.format(
-            self.api_key, candidate['id'])
+            api_key, candidate['id'])
         asset_list = self._read_assets_from_url(url, candidate['id'])
         log_debug('A total of {0} assets found for candidate ID {1}'.format(
             len(asset_list), candidate['id']))

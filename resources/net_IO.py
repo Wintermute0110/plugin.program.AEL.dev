@@ -136,7 +136,7 @@ def net_get_URL_original(url):
         if encoding == 'text/html': encoding = 'utf-8'
         elif encoding == 'application/json': encoding = 'utf-8'
         else: encoding = 'utf-8'
-        log_debug('net_get_URL_original() Encoding = "{0}"'.format(encoding))
+        # log_debug('net_get_URL_original() Encoding = "{0}"'.format(encoding))
         page_bytes = f.read()
         f.close()
     except IOError as e:
