@@ -3365,8 +3365,9 @@ class Main:
         # --- Browse Offline Scraper database ---
         if not self.settings['display_hide_AEL_scraper']:
             self._gui_render_category_AEL_offline_scraper_row()
-        if not self.settings['display_hide_LB_scraper']:
-            self._gui_render_category_LB_offline_scraper_row()
+        # LaunchBox scraper not used any more
+        # if not self.settings['display_hide_LB_scraper']:
+        #     self._gui_render_category_LB_offline_scraper_row()
 
         # --- Recently played and most played ROMs ---
         if not self.settings['display_hide_recent']:
