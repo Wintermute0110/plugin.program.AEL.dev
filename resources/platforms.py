@@ -616,6 +616,8 @@ def AEL_platform_to_MobyGames(platform_AEL):
 
     return platform_MobyGames
 
+def AEL_platform_to_ScreenScraper(platform_AEL): return ''
+
 def AEL_platform_to_GameFAQs(AEL_gamesys):
     try:
         platform_GameFAQs = platform_AEL_to_GameFAQs_dic[AEL_gamesys]

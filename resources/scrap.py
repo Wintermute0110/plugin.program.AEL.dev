@@ -1060,7 +1060,7 @@ class Scraper(object):
     def _dump_json_debug(self, file_name, data_dic):
         if not self.dump_file_flag: return
         file_path = os.path.join(self.dump_dir, file_name)
-        json_str = json.dumps(data_dic, indent = 1, separators = (', ', ' : '))
+        json_str = json.dumps(data_dic, indent = 4, separators = (', ', ' : '))
         text_dump_str_to_file(file_path, json_str)
 
     @abc.abstractmethod
@@ -1880,6 +1880,18 @@ class MobyGames(Scraper):
 #
 # | Site     | https://www.screenscraper.fr             |
 # | API info | https://www.screenscraper.fr/webapi.php  |
+#
+# Some API functions can be called to test, for example:
+# https://www.screenscraper.fr/api/genresListe.php?devid=xxx&devpassword=yyy&softname=zzz&output=xml
+# https://www.screenscraper.fr/api/regionsListe.php?devid=xxx&devpassword=yyy&softname=zzz&output=xml
+# https://www.screenscraper.fr/api/systemesListe.php?devid=xxx&devpassword=yyy&softname=zzz&output=xml
+#
+# https://www.screenscraper.fr/api/mediaSysteme.php?devid=xxx&devpassword=yyy&softname=zzz&ssid=test&sspassword=test&crc=&md5=&sha1=&systemeid=1&media=wheel(wor)
+# https://www.screenscraper.fr/api/mediaVideoSysteme.php?devid=xxx&devpassword=yyy&softname=zzz&ssid=test&sspassword=test&crc=&md5=&sha1=&systemeid=1&media=video
+#
+# https://www.screenscraper.fr/api/jeuInfos.php?devid=xxx&devpassword=yyy&softname=zzz&output=xml&ssid=test&sspassword=test&crc=50ABC90A&systemeid=1&romtype=rom&romnom=Sonic%20The%20Hedgehog%202%20(World).zip&romtaille=749652
+# https://www.screenscraper.fr/api/mediaJeu.php?devid=xxx&devpassword=yyy&softname=zzz&ssid=test&sspassword=test&crc=&md5=&sha1=&systemeid=1&jeuid=3&media=wheel-hd(wor)
+# https://www.screenscraper.fr/api/mediaVideoJeu.php?devid=xxx&devpassword=yyy&softname=zzz&ssid=test&sspassword=test&crc=&md5=&sha1=&systemeid=1&jeuid=3&media=video
 # ------------------------------------------------------------------------------------------------
 class ScreenScraper_V1(Scraper):
     # --- Class variables ---
@@ -1922,6 +1934,50 @@ class ScreenScraper_V1(Scraper):
         log_debug('ScreenScraper_V1::_scraper_get_candidates() AEL platform           "{0}"'.format(platform))
         log_debug('ScreenScraper_V1::_scraper_get_candidates() ScreenScraper platform "{0}"'.format(scraper_platform))
 
+        # --- Prepare scraping data ---
+        # Example from ScreenScraper API info page.
+        # crc=50ABC90A&systemeid=1&romtype=rom&romnom=Sonic%20The%20Hedgehog%202%20(World).zip&romtaille=749652
+        # NOTE that if the CRC is all zeros and the filesize also 0 it seems to work!
+        # Also, if no file extension is passed it seems to work. SS is capable of fuzzy searches.
+        # ScreenScraper jeuInfos.php returns absolutely everything about a single ROM: metadata,
+        # artwork, etc. jeuInfos.php returns one game or nothing at all.
+        # The data returned by SS must be cached in this object for every game.
+
+        # --- Test data
+        # crc_str = '50ABC90A'
+        # system_id = 1
+        # rom_type = 'rom'
+        # rom_name = urllib.quote('Sonic The Hedgehog 2 (World).zip')
+        # rom_size = 749652
+        # --- Actual data for scraping in AEL
+        crc_str = '00000000'
+        system_id = 1
+        rom_type = 'rom'
+        rom_name = urllib.quote(rombase_noext)
+        rom_size = 0
+
+        # --- Build URL ---
+        # It is more convenient to dump XML files for development. For regular scraping
+        # JSON is more efficient.
+        url_a = 'https://www.screenscraper.fr/api/jeuInfos.php?'
+        url_b = 'devid={}&devpassword={}&softname={}&output=json'.format(
+            self.dev_id, self.dev_pass, self.softname)
+        url_c = '&crc={}&systemeid={}&romtype={}&romnom={}&romtaille={}'.format(
+            crc_str, system_id, rom_type, rom_name, rom_size)
+
+        # --- Grab and parse URL data ---
+        page_raw_data = net_get_URL_original(url_a + url_b + url_c)
+        try:
+            page_data = json.loads(page_raw_data)
+        except ValueError as ex:
+            page_data = page_raw_data
+            log_error('(Exception ValueError) {0}'.format(ex))
+        self._dump_json_debug('ScreenScraper_get_gameInfo.txt', page_data)
+
+        game_dic = page_data['response']['jeu']
+        log_debug('Game {} (ID {})'.format(game_dic['nom'], game_dic['id']))
+        log_debug('Num ROMs {}'.format(len(game_dic['roms'])))
+
         return []
 
     def _scraper_get_metadata(self, candidate): return {}
@@ -1937,20 +1993,31 @@ class ScreenScraper_V1(Scraper):
         url_str = 'https://www.screenscraper.fr/api/romTypesListe.php?devid={}&devpassword={}&softname={}&output=json'
         url = url_str.format(self.dev_id, self.dev_pass, self.softname)
         page_raw_data = net_get_URL_original(url)
-        # log_debug(unicode(page_raw_data))
+        log_debug(unicode(page_raw_data))
         page_data = json.loads(page_raw_data)
         self._dump_json_debug('ScreenScraper_get_ROM_types.txt', page_data)
 
         return page_data
 
     def get_genres_list(self):
-        log_debug('ScreenScraper_V1::get_ROM_types() BEGIN...')
+        log_debug('ScreenScraper_V1::get_genres_list() BEGIN...')
         url_str = 'https://www.screenscraper.fr/api/genresListe.php?devid={}&devpassword={}&softname={}&output=json'
         url = url_str.format(self.dev_id, self.dev_pass, self.softname)
         page_raw_data = net_get_URL_original(url)
         # log_debug(unicode(page_raw_data))
         page_data = json.loads(page_raw_data)
         self._dump_json_debug('ScreenScraper_get_genres_list.txt', page_data)
+
+        return page_data
+
+    def get_regions_list(self):
+        log_debug('ScreenScraper_V1::get_regions_list() BEGIN...')
+        url_str = 'https://www.screenscraper.fr/api/regionsListe.php?devid={}&devpassword={}&softname={}&output=json'
+        url = url_str.format(self.dev_id, self.dev_pass, self.softname)
+        page_raw_data = net_get_URL_original(url)
+        # log_debug(unicode(page_raw_data))
+        page_data = json.loads(page_raw_data)
+        self._dump_json_debug('ScreenScraper_get_regions_list.txt', page_data)
 
         return page_data
 
