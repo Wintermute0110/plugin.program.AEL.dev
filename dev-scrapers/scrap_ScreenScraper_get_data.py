@@ -1,5 +1,6 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
+
 #
 # Get all ScreenScraper ROM types.
 #
@@ -17,24 +18,18 @@ if __name__ == "__main__" and __package__ is None:
     sys.path.append(path)
 from resources.scrap import *
 from resources.utils import *
+import common
 
 # --- main ----------------------------------------------------------------------------------------
- # LOG_INFO, LOG_VERB, LOG_DEBUG
 set_log_level(LOG_DEBUG)
 
 # --- Create scraper object ---
-# NEVER PUBLISH THIS INFO
-settings = {
-    'scraper_screenscraper_apikey' : '',
-    'scraper_screenscraper_dev_id' : '',
-    'scraper_screenscraper_dev_pass' : '',
-    'AEL_softname' : 'AEL_0.9.8',
-}
-scraper_obj = ScreenScraper_V1(settings)
+scraper_obj = ScreenScraper_V1(common.settings)
 scraper_obj.set_verbose_mode(False)
 scraper_obj.set_debug_file_dump(True, os.path.join(os.path.dirname(__file__), 'assets'))
 
 # --- Get ROM types ---
-online_data = scraper_obj.get_ROM_types()
-online_data = scraper_obj.get_ROM_types()
+# online_data = scraper_obj.get_ROM_types() # Not working at the moment.
+# online_data = scraper_obj.get_genres_list() # Works OK.
+online_data = scraper_obj.get_regions_list() # Works OK.
 pprint.pprint(online_data)
