@@ -533,15 +533,7 @@ def m_run_protected(command, args):
 def m_get_settings():
     global g_settings
     o = __addon__
-
-
-        # --- Scrapers ---
-        # self.settings['scraper_region']           = int(o.getSetting('scraper_region'))
-        # self.settings['scraper_thumb_size']       = int(o.getSetting('scraper_thumb_size'))
-        # self.settings['scraper_fanart_size']      = int(o.getSetting('scraper_fanart_size'))
-        # self.settings['scraper_image_type']       = int(o.getSetting('scraper_image_type'))
-        # self.settings['scraper_fanart_order']     = int(o.getSetting('scraper_fanart_order'))
-
+    
     # --- ROM Scanner settings ---
     g_settings['scan_recursive']           = True if o.getSetting('scan_recursive') == 'true' else False
     g_settings['scan_ignore_bios']         = True if o.getSetting('scan_ignore_bios') == 'true' else False
@@ -562,7 +554,7 @@ def m_get_settings():
     g_settings['scraper_metadata_MAME_2'] = int(o.getSetting('scraper_metadata_MAME_2'))
     g_settings['scraper_asset_MAME_1']    = int(o.getSetting('scraper_asset_MAME_1'))
     g_settings['scraper_asset_MAME_2']    = int(o.getSetting('scraper_asset_MAME_2'))
-    
+            
     # todo: change to use actual key from settings
     g_settings['thegamesdb_apikey']      = '<ACTUAL_API_KEY>'
     g_settings['mobygames_apikey']       = '<ACTUAL_API_KEY>'
@@ -574,14 +566,14 @@ def m_get_settings():
     # self.settings['audit_1G1R_main_region']     = int(o.getSetting('audit_1G1R_main_region'))
     # self.settings['audit_1G1R_second_region']   = int(o.getSetting('audit_1G1R_second_region'))
 
-    # --- Scrapers tab ---
+    # --- Scrapers ---
     # g_settings['scraper_region']           = int(o.getSetting('scraper_region'))
     # g_settings['scraper_thumb_size']       = int(o.getSetting('scraper_thumb_size'))
     # g_settings['scraper_fanart_size']      = int(o.getSetting('scraper_fanart_size'))
     # g_settings['scraper_image_type']       = int(o.getSetting('scraper_image_type'))
     # g_settings['scraper_fanart_order']     = int(o.getSetting('scraper_fanart_order'))
 
-    # --- Display tab ---
+    # --- Display ---
     g_settings['display_category_mode']    = int(o.getSetting('display_category_mode'))
     g_settings['display_launcher_notify']  = True if o.getSetting('display_launcher_notify') == 'true' else False
     g_settings['display_hide_finished']    = True if o.getSetting('display_hide_finished') == 'true' else False
