@@ -4,8 +4,10 @@
 #
 
 # This file has contants that define the addon behaviour. 
+# This module has no external dependencies.
+#
 
-# Copyright (c) 2016-2018 Wintermute0110 <wintermute0110@gmail.com>
+# Copyright (c) 2016-2019 Wintermute0110 <wintermute0110@gmail.com>
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -18,7 +20,33 @@
 
 # --- Python standard library ---
 from __future__ import unicode_literals
-from __future__ import division
+
+# -------------------------------------------------------------------------------------------------
+# A universal addon error reporting exception
+# This exception is raised to report errors in the GUI.
+# Unhandled exceptions must not raise AddonError() so the addon crashes and the traceback is
+# printed in the Kodi log file.
+# -------------------------------------------------------------------------------------------------
+# Top-level GUI code looks like this
+# try:
+#     autoconfig_export_category(category, export_FN)
+# except AddonError as E:
+#     kodi_notify_warn('{0}'.format(E))
+# else:
+#     kodi_notify('Exported Category "{0}" XML config'.format(category['m_name']))
+#
+# Low-level code looks like this
+# def autoconfig_export_category(category, export_FN):
+#     try:
+#         do_something_that_may_fail()
+#     except OSError:
+#         log_error('(OSError) Cannot write {0} file'.format(export_FN.getBase()))
+#         # Message to be printed in the GUI
+#         raise AddonError('Error writing file (OSError)')
+#
+class AddonError(Exception):
+    def __init__(self, err_str): self.err_str = err_str
+    def __str__(self): return self.err_str
 
 # -------------------------------------------------------------------------------------------------
 # Addon constants
@@ -133,15 +161,25 @@ NOINTRO_DMODE_HAVE_MISS = 'Have or Missing ROMs'
 NOINTRO_DMODE_MISS      = 'Missing ROMs'
 NOINTRO_DMODE_MISS_UNK  = 'Missing or Unknown ROMs'
 NOINTRO_DMODE_UNK       = 'Unknown ROMs'
-NOINTRO_DMODE_LIST      = [NOINTRO_DMODE_ALL, NOINTRO_DMODE_HAVE, NOINTRO_DMODE_HAVE_UNK, 
-                           NOINTRO_DMODE_HAVE_MISS, NOINTRO_DMODE_MISS, NOINTRO_DMODE_MISS_UNK,
-                           NOINTRO_DMODE_UNK]
+NOINTRO_DMODE_LIST = [
+    NOINTRO_DMODE_ALL,
+    NOINTRO_DMODE_HAVE,
+    NOINTRO_DMODE_HAVE_UNK, 
+    NOINTRO_DMODE_HAVE_MISS,
+    NOINTRO_DMODE_MISS,
+    NOINTRO_DMODE_MISS_UNK,
+    NOINTRO_DMODE_UNK
+]
 
 # launcher['display_mode'] default value LAUNCHER_DMODE_FLAT
 LAUNCHER_DMODE_FLAT   = 'Flat mode'
 LAUNCHER_DMODE_PCLONE = 'Parent/Clone mode'
 LAUNCHER_DMODE_1G1R   = '1G1R mode'
-LAUNCHER_DMODE_LIST   = [LAUNCHER_DMODE_FLAT, LAUNCHER_DMODE_PCLONE, LAUNCHER_DMODE_1G1R]
+LAUNCHER_DMODE_LIST = [
+    LAUNCHER_DMODE_FLAT,
+    LAUNCHER_DMODE_PCLONE,
+    LAUNCHER_DMODE_1G1R
+]
 
 # Mandatory variables in XML:
 # launcher['nointro_status'] default value NOINTRO_STATUS_NONE
@@ -149,13 +187,21 @@ NOINTRO_STATUS_HAVE    = 'Have'
 NOINTRO_STATUS_MISS    = 'Miss'
 NOINTRO_STATUS_UNKNOWN = 'Unknown'
 NOINTRO_STATUS_NONE    = 'None'
-NOINTRO_STATUS_LIST    = [NOINTRO_STATUS_HAVE, NOINTRO_STATUS_MISS, NOINTRO_STATUS_UNKNOWN, 
-                          NOINTRO_STATUS_NONE]
+NOINTRO_STATUS_LIST = [
+    NOINTRO_STATUS_HAVE,
+    NOINTRO_STATUS_MISS,
+    NOINTRO_STATUS_UNKNOWN,
+    NOINTRO_STATUS_NONE
+]
 
 PCLONE_STATUS_PARENT = 'Parent'
 PCLONE_STATUS_CLONE  = 'Clone'
 PCLONE_STATUS_NONE   = 'None'
-PCLONE_STATUS_LIST   = [PCLONE_STATUS_PARENT, PCLONE_STATUS_CLONE, PCLONE_STATUS_NONE]
+PCLONE_STATUS_LIST = [
+    PCLONE_STATUS_PARENT,
+    PCLONE_STATUS_CLONE,
+    PCLONE_STATUS_NONE
+]
 
 # m_esrb string ESRB_LIST default ESRB_PENDING
 ESRB_PENDING     = 'RP (Rating Pending)'
@@ -165,8 +211,14 @@ ESRB_EVERYONE_10 = 'E10+ (Everyone 10+)'
 ESRB_TEEN        = 'T (Teen)'
 ESRB_MATURE      = 'M (Mature)'
 ESRB_ADULTS_ONLY = 'AO (Adults Only)'
-ESRB_LIST        = [ESRB_PENDING, ESRB_EARLY, ESRB_EVERYONE, ESRB_EVERYONE_10, ESRB_TEEN,
-                    ESRB_MATURE, ESRB_ADULTS_ONLY]
+ESRB_LIST = [
+    ESRB_PENDING,
+    ESRB_EARLY,
+    ESRB_EVERYONE,
+    ESRB_EVERYONE_10,
+    ESRB_TEEN,
+    ESRB_MATURE, ESRB_ADULTS_ONLY
+]
 
 # m_nplayers values default ''
 NP_1P     = '1P'
@@ -181,9 +233,11 @@ NP_6P_ALT = '6P alt'
 NP_8P_SIM = '8P sim'
 NP_8P_ALT = '8P alt'
 NPLAYERS_LIST = [NP_1P, NP_2P_SIM, NP_2P_ALT, NP_3P_SIM, NP_3P_ALT, NP_4P_SIM, NP_4P_ALT, 
-                 NP_6P_SIM, NP_6P_ALT, NP_8P_SIM, NP_8P_ALT]
+                        NP_6P_SIM, NP_6P_ALT, NP_8P_SIM, NP_8P_ALT]
 
-# --- Assets --------------------------------------------------------------------------------------
+# -------------------------------------------------------------------------------------------------
+# Assets
+# -------------------------------------------------------------------------------------------------
 # ROMs have FLYER, Categories/Launchers/Collections have POSTER
 ASSET_ICON_ID       = 100
 ASSET_FANART_ID     = 200
@@ -198,26 +252,27 @@ ASSET_BOXFRONT_ID   = 1000
 ASSET_BOXBACK_ID    = 1100
 ASSET_CARTRIDGE_ID  = 1200
 ASSET_FLYER_ID      = 1300
-ASSET_MAP_ID        = 1400
-ASSET_MANUAL_ID     = 1500
+ASSET_3DBOX_ID      = 1400
+ASSET_MAP_ID        = 1500
+ASSET_MANUAL_ID     = 1600
 
 #
 # The order of this list must match order in dialog.select() in the GUI, or bad things will happen.
 #
 CATEGORY_ASSET_ID_LIST = [
-    ASSET_ICON_ID, ASSET_FANART_ID, ASSET_BANNER_ID,
-    ASSET_POSTER_ID, ASSET_CLEARLOGO_ID, ASSET_TRAILER_ID
+    ASSET_ICON_ID,   ASSET_FANART_ID,    ASSET_BANNER_ID,
+    ASSET_POSTER_ID, ASSET_CLEARLOGO_ID, ASSET_TRAILER_ID,
 ]
 
 LAUNCHER_ASSET_ID_LIST = [
-    ASSET_ICON_ID, ASSET_FANART_ID, ASSET_BANNER_ID, ASSET_POSTER_ID,
-    ASSET_CLEARLOGO_ID, ASSET_CONTROLLER_ID, ASSET_TRAILER_ID
+    ASSET_ICON_ID,      ASSET_FANART_ID,     ASSET_BANNER_ID, ASSET_POSTER_ID,
+    ASSET_CLEARLOGO_ID, ASSET_CONTROLLER_ID, ASSET_TRAILER_ID,
 ]
 
 ROM_ASSET_ID_LIST = [
     ASSET_TITLE_ID,     ASSET_SNAP_ID,   ASSET_BOXFRONT_ID, ASSET_BOXBACK_ID,
     ASSET_CARTRIDGE_ID, ASSET_FANART_ID, ASSET_BANNER_ID,   ASSET_CLEARLOGO_ID,
-    ASSET_FLYER_ID,     ASSET_MAP_ID,    ASSET_MANUAL_ID,   ASSET_TRAILER_ID
+    ASSET_FLYER_ID,     ASSET_3DBOX_ID,  ASSET_MAP_ID,    ASSET_MANUAL_ID,   ASSET_TRAILER_ID
 ]
 
 #
