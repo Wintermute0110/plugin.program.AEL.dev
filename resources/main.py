@@ -534,7 +534,15 @@ def m_get_settings():
     global g_settings
     o = __addon__
 
-    # --- ROM Scanner settings tab ---
+
+        # --- Scrapers ---
+        # self.settings['scraper_region']           = int(o.getSetting('scraper_region'))
+        # self.settings['scraper_thumb_size']       = int(o.getSetting('scraper_thumb_size'))
+        # self.settings['scraper_fanart_size']      = int(o.getSetting('scraper_fanart_size'))
+        # self.settings['scraper_image_type']       = int(o.getSetting('scraper_image_type'))
+        # self.settings['scraper_fanart_order']     = int(o.getSetting('scraper_fanart_order'))
+
+    # --- ROM Scanner settings ---
     g_settings['scan_recursive']           = True if o.getSetting('scan_recursive') == 'true' else False
     g_settings['scan_ignore_bios']         = True if o.getSetting('scan_ignore_bios') == 'true' else False
     g_settings['scan_update_NFO_files']    = True if o.getSetting('scan_update_NFO_files') == 'true' else False
@@ -544,30 +552,17 @@ def m_get_settings():
     g_settings['scan_asset_policy']        = int(o.getSetting('scan_asset_policy'))
     g_settings['metadata_scraper_mode']    = int(o.getSetting('metadata_scraper_mode'))
     g_settings['asset_scraper_mode']       = int(o.getSetting('asset_scraper_mode'))
-
-    # --- ROM scraping tab ---
-    g_settings['scraper_metadata']       = int(o.getSetting('scraper_metadata'))
-    g_settings['scraper_metadata_MAME']  = int(o.getSetting('scraper_metadata_MAME'))
-
-    g_settings['scraper_title']          = int(o.getSetting('scraper_title'))
-    g_settings['scraper_snap']           = int(o.getSetting('scraper_snap'))
-    g_settings['scraper_boxfront']       = int(o.getSetting('scraper_boxfront'))
-    g_settings['scraper_boxback']        = int(o.getSetting('scraper_boxback'))
-    g_settings['scraper_cart']           = int(o.getSetting('scraper_cart'))
-    g_settings['scraper_fanart']         = int(o.getSetting('scraper_fanart'))
-    g_settings['scraper_banner']         = int(o.getSetting('scraper_banner'))
-    g_settings['scraper_clearlogo']      = int(o.getSetting('scraper_clearlogo'))
-
-    g_settings['scraper_title_MAME']     = int(o.getSetting('scraper_title_MAME'))
-    g_settings['scraper_snap_MAME']      = int(o.getSetting('scraper_snap_MAME'))
-    g_settings['scraper_cabinet_MAME']   = int(o.getSetting('scraper_cabinet_MAME'))
-    g_settings['scraper_cpanel_MAME']    = int(o.getSetting('scraper_cpanel_MAME'))
-    g_settings['scraper_pcb_MAME']       = int(o.getSetting('scraper_pcb_MAME'))
-    g_settings['scraper_fanart_MAME']    = int(o.getSetting('scraper_fanart_MAME'))
-    g_settings['scraper_marquee_MAME']   = int(o.getSetting('scraper_marquee_MAME'))
-    g_settings['scraper_clearlogo_MAME'] = int(o.getSetting('scraper_clearlogo_MAME'))
-    g_settings['scraper_flyer_MAME']     = int(o.getSetting('scraper_flyer_MAME'))
-
+    
+    # --- ROM scraping --
+    g_settings['scraper_metadata_1']      = int(o.getSetting('scraper_metadata_1'))
+    g_settings['scraper_metadata_2']      = int(o.getSetting('scraper_metadata_2'))
+    g_settings['scraper_asset_1']         = int(o.getSetting('scraper_asset_1'))
+    g_settings['scraper_asset_2']         = int(o.getSetting('scraper_asset_2'))
+    g_settings['scraper_metadata_MAME_1'] = int(o.getSetting('scraper_metadata_MAME_1'))
+    g_settings['scraper_metadata_MAME_2'] = int(o.getSetting('scraper_metadata_MAME_2'))
+    g_settings['scraper_asset_MAME_1']    = int(o.getSetting('scraper_asset_MAME_1'))
+    g_settings['scraper_asset_MAME_2']    = int(o.getSetting('scraper_asset_MAME_2'))
+    
     # todo: change to use actual key from settings
     g_settings['thegamesdb_apikey']      = '<ACTUAL_API_KEY>'
     g_settings['mobygames_apikey']       = '<ACTUAL_API_KEY>'
