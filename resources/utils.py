@@ -2687,18 +2687,17 @@ def print_game_metadata(metadata):
     print('')
 
 def print_game_assets(image_list):
-    p_str = "{0} {1} {2} {3}"
+    p_str = "{0} {1} {2}"
     print('Found {0} image/s'.format(len(image_list)))
     print(p_str.format(
         'Asset ID'.ljust(ASSET_ID_L), 'Name'.ljust(ASSET_NAME_L),
-        'URL'.ljust(ASSET_URL_L), 'URL thumb'.ljust(ASSET_URL_THUMB_L)))
-    print(p_str.format('-'*ASSET_ID_L, '-'*ASSET_NAME_L, '-'*ASSET_URL_L, '-'*ASSET_URL_THUMB_L))
+        'URL thumb'.ljust(ASSET_URL_THUMB_L)))
+    print(p_str.format('-'*ASSET_ID_L, '-'*ASSET_NAME_L, '-'*ASSET_URL_THUMB_L))
     for image in image_list:
-        id           = text_limit_string(str(image['asset_id']), ASSET_ID_L)
-        display_name = text_limit_string(image['name'], ASSET_NAME_L)
-        url          = text_limit_string(image['url'], ASSET_URL_L)
+        id           = text_limit_string(str(image['asset_ID']), ASSET_ID_L)
+        display_name = text_limit_string(image['display_name'], ASSET_NAME_L)
         url_thumb    = text_limit_string(image['url_thumb'], ASSET_URL_THUMB_L)
         print(p_str.format(
             id.ljust(ASSET_ID_L), display_name.ljust(ASSET_NAME_L),
-            url.ljust(ASSET_URL_L), url_thumb.ljust(ASSET_URL_THUMB_L)))
+            url_thumb.ljust(ASSET_URL_THUMB_L)))
     print('')

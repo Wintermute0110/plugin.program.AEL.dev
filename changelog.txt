@@ -7,9 +7,16 @@ WIP      [CORE] Think about exporting the AEL platform database using JSON-LD in
          Garbear's idea.
          See https://forum.kodi.tv/showthread.php?tid=295463&pid=2625754#pid2625754
 
-WIP      [SCRAPERS] Advanced fuzzy search engine based on the Levenshtein Distance algorithm, for both
-         online and offline scrapers. There is a Python implementation of the algorithm here:
-         https://github.com/seatgeek/fuzzywuzzy
+WIP      [SCRAPERS] Advanced fuzzy search engine based on the Levenshtein Distance algorithm,
+         for both online and offline scrapers. There is a Python implementation of
+         the algorithm here: https://github.com/seatgeek/fuzzywuzzy
+
+WIP      [SCRAPERS] LaunchBox Games Database scraper.
+         NOTE Do not implement this. AEL offline scraper is more than enough.
+         Apparently LaunchBox GamesDB started as a copy of TheGamesDB. Currently there is no
+         API to access LaunchBox GamesDB but an XML with all the database info can be downloaded.
+         See http://gamesdb.launchbox-app.com/
+         See https://bitbucket.org/jasondavidcarr/launchbox/issues/902/api-access-to-launchbox
 
 
 [B]Planned features / TODO[/B]
@@ -86,59 +93,14 @@ WIP      [ROM AUDIT] Create a "fake" Parent/Clone list from filenames ala NARS (
 WIP      [ROM AUDIT] Options to generate the 1G1R parent list, like prefer ROMs from Europe,
          Japan or USA. This resembles what NARS No-Intro filtering does.
 
-WIP      [SCRAPERS] Massive upgrade of AEL Offline scraper database.
-
-WIP      [SCRAPERS] Update MAME Offline Scraper database to version latest version.
-
-WIP      [SCRAPERS] Add support for ScummVM platform in the Offline Scraper.
-         See https://forum.kodi.tv/showthread.php?tid=287826&pid=2629084#pid2629084
-
 WIP      [SCRAPERS] Asset scrapers are disabled/not working for standalone launchers. Fix this.
          See https://github.com/Wintermute0110/plugin.program.advanced.emulator.launcher/issues/62
-
-WIP      [SCRAPERS] LaunchBox Games Database scraper.
-         Apparently LaunchBox GamesDB started as a copy of TheGamesDB. Currently there is no
-         API to access LaunchBox GamesDB but an XML with all the database info can be downloaded.
-         See http://gamesdb.launchbox-app.com/
-         See https://bitbucket.org/jasondavidcarr/launchbox/issues/902/api-access-to-launchbox
-
-WIP      [SCRAPERS] Have a look at https://www.screenscraper.fr/ and consider it for an
-         online scraper.
-         See https://forum.kodi.tv/showthread.php?tid=287826&pid=2622839#pid2622839
 
 WIP      [SCRAPERS] Option to rescrape all ROM assets in a similar fashion to
          "Scan ROMs local artwork". Create a menu entry in "Edit Launcher", "Manage ROMs",
          "Scrape ROMs artwork". "Scrape ROMs artwork" will use the same scraper settings in
          options as the ROM Scanner.
          See https://github.com/Wintermute0110/plugin.program.advanced.emulator.launcher/issues/72
-
-WIP      [SCRAPERS] Fix GameFAQs scraper. It has been a while since this scraper is not working
-         any more.
-
-
---- TODO LIST ---
-
- 1) Fix the ROM scanner metadata scraper:
-
- 1.1) [DONE] Make sure the ROM scanner work with 
-      "Metadata scan policy" set to "None" and "Asset scan policy" set to "Local images"
-
- 1.2) [DONE] Make sure the ROM scanner work with
-      "Metadata scan policy" set to "NFO files" and "Asset scan policy" set to "Local images"
-
- 1.3) [WIP] Make sure the ROM scanner work with
-      "Metadata scan policy" set to "Scrapers" and "Asset scan policy" set to "Local images"
-      General First metadata scraper set to "MobyGames"
-
- 1.4) Make sure the ROM scanner work with
-      "Metadata scan policy" set to "Scrapers" and "Asset scan policy" set to "Local images"
-      General First metadata scraper set to "AEL offline"
-
- 2) Fix the context menu metadata scraper:
- 
- 3) Is it possible to scrape individual metadata components??? Think about this.
-
- 4) Asset scraper ...
 
 
 [B]Advanced Emulator Launcher | version 0.9.8 | XX June 2019[/B]
@@ -149,12 +111,30 @@ FEATURE  [CORE] New entry in root menu named "Global Reports."
 
 FEATURE  [SCRAPERS] Copy scraper stuff from master branch by Chrisism.
 
-WIP NOW  [SCRAPERS] Fix MobyGames scraper and use new MobyGames API.
+FEATURE  [SCRAPERS] Fix MobyGames scraper and use new MobyGames API.
          See http://www.mobygames.com/info/api
 
-WIP      [SCRAPERS] Fix TheGamesDB scraper. There has been a change in the web site including
-         a new API. I'm not sure wether AEL will need an API key.
+FEATURE  [SCRAPERS] Fix TheGamesDB scraper.
+         There has been a change in the web site including a new API.
          See https://github.com/Wintermute0110/plugin.program.advanced.emulator.launcher/issues/75
+
+WIP NOW  [SCRAPERS] Have a look at ScreenScraper and consider it for an online scraper.
+         See https://www.screenscraper.fr/
+         See https://forum.kodi.tv/showthread.php?tid=287826&pid=2622839#pid2622839
+
+WIP      [SCRAPERS] Fix ArcadeDB scraper. Use the API.
+         It has been a while since this scraper is not working any more.
+
+WIP      [SCRAPERS] Fix GameFAQs scraper.
+         It has been a while since this scraper is not working any more.
+         GameFAQs does not have an API. Should this scraper being removed???
+
+WIP      [SCRAPERS] Update MAME Offline Scraper database to version latest version.
+
+WIP      [SCRAPERS] Massive upgrade of AEL Offline scraper database.
+
+WIP      [SCRAPERS] Add support for ScummVM platform in the Offline Scraper.
+         See https://forum.kodi.tv/showthread.php?tid=287826&pid=2629084#pid2629084
 
 WIP      [CORE] Support for Advanced MAME Launcher exported virtual launchers.
          This feature requires AML 0.9.X
@@ -172,6 +152,14 @@ WIP      [CORE] Create a couple of new ROM context menus, "Manage Recently playe
          "Delete all Unlinked/Broken ROMs".
          See https://forum.kodi.tv/showthread.php?tid=287826&pid=2698811#pid2698811
 
+WIP      New section Utilities. Move stuff from addon settings.
+
+WIP      New section Global Reports.
+
+WIP      Make sure AEL never crashes when rendering the root window, even if categories.xml
+         is corruped. In case of crash when rendering the root window, ask the user to update
+         the databases (in the case the crash is due to a missing key in dictionary).
+
 FEATURE  [CORE] Add Year and Developer for Categories.
          See https://forum.kodi.tv/showthread.php?tid=287826&pid=2688653#pid2688653
 
@@ -179,14 +167,10 @@ FEATURE  [CORE] Per-launcher setting to disable multi-disc ROM support.
 
 FEATURE  [CORE] Added "Edit Category" context menu, "Export Category XML configuration".
 
-FEATURE  [CORE] New AEL Theme of Icons/Fanarts for the Virtual Launchers. Kudos to Sagrath for this
-         contribution.
+FEATURE  [CORE] New AEL Theme of Icons/Fanarts for the Virtual Launchers. Kudos to Sagrath for
+         this contribution.
 
-WIP      [SCRAPERS] Fix TheGamesDB scraper. There has been a change in the web site including
-         a new API. I'm not sure wether AEL will need an API key.
-         See https://github.com/Wintermute0110/plugin.program.advanced.emulator.launcher/issues/75
-
-FIX      Fix crash in _gui_scrap_launcher_metadata() when scraping Launcher metadata.
+FIX      Fix crash in _gui_scrap_launcher_metadata() when scraping Launcher metadata with the CM.
 
 FIX      Fix metadata and artwork scrapers when ROM name has Unicode characters.
          See Github issue #52
@@ -197,7 +181,7 @@ FIX      Fixed display_fav_status label in settings.xml
 FIX      Unicode fixes in kodi_update_image_cache()
 
 FIX      Fixed MobyGames scraper.
-         See https://github.com/Wintermute0110/plugin.program.advanced.emulator.launcher/issues/60
+         See Github issue #60
 
 
 [B]Advanced Emulator Launcher | version 0.9.7 | 23 November 2017[/B]

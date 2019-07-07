@@ -314,7 +314,8 @@ MAPPABLE_LAUNCHER_ASSET_ID_LIST = [
 MAPPABLE_ROMS_ASSET_ID_LIST = [
     ASSET_TITLE_ID,     ASSET_SNAP_ID,   ASSET_BOXFRONT_ID, ASSET_BOXBACK_ID,
     ASSET_CARTRIDGE_ID, ASSET_FANART_ID, ASSET_BANNER_ID,   ASSET_CLEARLOGO_ID,
-    ASSET_FLYER_ID,     ASSET_MAP_ID
+    ASSET_FLYER_ID,     ASSET_3DBOX_ID,  ASSET_MAP_ID,      ASSET_MANUAL_ID,
+    ASSET_TRAILER_ID,
 ]
 
 # --- Addon will search these file extensions for assets ---
@@ -326,20 +327,22 @@ TRAILER_EXTENSION_LIST = ['mov', 'divx', 'xvid', 'wmv', 'avi', 'mpg', 'mpeg', 'm
 # --- Scrapers -----------------------------------------------------------------------------------
 SCRAPER_NULL_ID          = 10
 SCRAPER_AEL_OFFLINE_ID   = 20
-SCRAPER_LB_OFFLINE_ID    = 30
-SCRAPER_THEGAMESDB_ID    = 40
-SCRAPER_MOBYGAMES_ID     = 50
+SCRAPER_THEGAMESDB_ID    = 30
+SCRAPER_MOBYGAMES_ID     = 40
+SCRAPER_SCREENSCRAPER_ID = 50
 SCRAPER_GAMEFAQS_ID      = 60
 SCRAPER_ARCADEDB_ID      = 70
-SCRAPER_SCREENSCRAPER_ID = 80
-SCRAPER_LIBRETRO_ID      = 90
+SCRAPER_LIBRETRO_ID      = 80
 
 # List of enabled scrapers. If a scraper ID is in this list then a unique scraper object
-# will be instantiated and cached in the ScraperFactory object.
+# will be instantiated and cached in the global ScraperFactory object.
 # To disable an scraper just remove it from this list.
 SCRAPER_LIST = [
-    SCRAPER_NULL_ID, SCRAPER_AEL_OFFLINE_ID, SCRAPER_LB_OFFLINE_ID,
+    SCRAPER_NULL_ID,
+    SCRAPER_AEL_OFFLINE_ID,
+    SCRAPER_THEGAMESDB_ID,
     SCRAPER_MOBYGAMES_ID,
+    SCRAPER_SCREENSCRAPER_ID,
 ]
 
 # Make sure this matches the scraper list in settings.xml or bad things will happen.

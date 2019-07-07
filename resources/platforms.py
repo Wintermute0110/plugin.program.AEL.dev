@@ -336,297 +336,92 @@ platform_AEL_to_Offline_GameDBInfo_XML = {
 }
 
 #
-# LaunchBox XML database files.
-#
-platform_AEL_to_LB_XML = {
-    '3DO Interactive Multiplayer' : '',
-
-    'Amstrad CPC'                 : '',
-
-    'Atari 2600'                  : '',
-    'Atari 5200'                  : '',
-    'Atari 7800'                  : '',
-    'Atari Jaguar'                : '',
-    'Atari Jaguar CD'             : '',
-    'Atari Lynx'                  : '',
-    'Atari 8-bit'                 : '',
-    'Atari ST'                    : '',
-
-    'Bandai WonderSwan'           : '',
-    'Bandai WonderSwan Color'     : '',
-
-    'Colecovision'                : '',
-
-    'Commodore 64'                : '',
-    'Commodore Amiga'             : '',
-    'Commodore Amiga CD32'        : '',
-    'Commodore Plus-4'            : '',
-    'Commodore VIC-20'            : '',
-
-    'Emerson Arcadia 2001'        : '',
-
-    'Fairchild Channel F'         : '',
-
-    'Fujitsu FM Towns Marty'      : '',
-
-    'GCE Vectrex'                 : '',
-
-    'Magnavox Odyssey2'           : '',
-
-    'MAME'                        : '',
-
-    'Mattel Intellivision'        : '',
-
-    'Microsoft MS-DOS'            : '',
-    'Microsoft MSX'               : '',
-    'Microsoft MSX2'              : '',
-    'Microsoft Windows'           : '',
-    'Microsoft Xbox'              : '',
-    'Microsoft Xbox 360'          : '',
-    'Microsoft Xbox One'          : '',
-
-    'NEC PC Engine'               : '',
-    'NEC PC Engine CDROM2'        : '',
-    'NEC TurboGrafx 16'           : '',
-    'NEC TurboGrafx CD'           : '',
-    'NEC SuperGrafx'              : '',
-    'NEC PC-FX'                   : '',
-
-    'Nintendo 3DS'                : '',
-    'Nintendo 64'                 : '',
-    'Nintendo 64DD'               : '',
-    'Nintendo DS'                 : '',
-    'Nintendo DSi'                : '',
-    'Nintendo Famicom'            : '',
-    'Nintendo Famicom Disk System': '',
-    'Nintendo GameBoy'            : '',
-    'Nintendo GameBoy Advance'    : '',
-    'Nintendo GameBoy Color'      : '',
-    'Nintendo GameCube'           : '',
-    'Nintendo NES'                : '',
-    'Nintendo Pokemon Mini'       : '',
-    'Nintendo SNES'               : '',
-    'Nintendo Switch'             : '',
-    'Nintendo Virtual Boy'        : '',
-    'Nintendo Wii'                : '',
-    'Nintendo Wii U'              : '',
-
-    'Philips Videopac G7000'      : '',
-    'Philips Videopac Plus G7400' : '',
-
-    'RCA Studio II'               : '',
-
-    'ScummVM'                     : '',
-
-    'Sega 32X'                    : '',
-    'Sega Dreamcast'              : '',
-    'Sega Game Gear'              : '',
-    'Sega Genesis'                : 'LaunchBox/Sega Genesis.xml',
-    'Sega Master System'          : '',
-    'Sega MegaCD'                 : '',
-    'Sega MegaDrive'              : 'LaunchBox/Sega Genesis.xml',
-    'Sega PICO'                   : '',
-    'Sega Saturn'                 : '',
-    'Sega SC-3000'                : '',
-    'Sega SegaCD'                 : '',
-    'Sega SG-1000'                : '',
-
-    'Sharp X68000'                : '',
-
-    'Sinclair ZX Spectrum'        : '',
-
-    'SNK Neo-Geo AES'             : '',
-    'SNK Neo-Geo CD'              : '',
-    'SNK Neo-Geo MVS'             : '',
-    'SNK Neo-Geo Pocket'          : '',
-    'SNK Neo-Geo Pocket Color'    : '',
-
-    'Sony PlayStation'            : '',
-    'Sony PlayStation 2'          : '',
-    'Sony PlayStation 3'          : '',
-    'Sony PlayStation 4'          : '',
-    'Sony PlayStation Portable'   : '',
-    'Sony PlayStation Vita'       : '',
-
-    'Watara Supervision'          : '',
-
-    'Unknown'                     : ''
-}
-
-#
-# Get platform list from http://thegamesdb.net/api/GetPlatformsList.php
-# Platform name is inside <name> tag.
+# Get platform list from TGDB using script scrap_TGDB_get_platforms.py.
+# API key is required to grab the platform data.
+# '0' means any platform in TGDB and must be returned when there is no platform matching.
 #
 platform_AEL_to_TheGamesDB_dic = {
-    '3DO Interactive Multiplayer' : 25,
-    'Amstrad CPC'                 : 4914,
-    'Atari 2600'                  : 22,
-    'Atari 5200'                  : 26,
-    'Atari 7800'                  : 27,
-    'Atari Jaguar'                : 28,
-    'Atari Jaguar CD'             : 29,
-    'Atari Lynx'                  : 4924,
-    'Atari ST'                    : 4937,
-    'Bandai WonderSwan'           : 4925,
-    'Bandai WonderSwan Color'     : 4926,
-    'Colecovision'                : 31,
-    'Commodore 64'                : 40,
-    'Commodore Amiga'             : 4911,
-    'Commodore Amiga CD32'        : 4947,
-    'Commodore Plus-4'            : 0, #  Not found in TheGamesDB
-    'Commodore VIC-20'            : 4945,
-    'Fujitsu FM Towns Marty'      : 4932,
-    'GCE Vectrex'                 : 4939,
-    'Magnavox Odyssey2'           : 4927,
-    'MAME'                        : 23,
-    'Mattel Intellivision'        : 32,
-    'Microsoft MS-DOS'            : 'PC',
-    'Microsoft MSX'               : 'MSX',
-    'Microsoft MSX2'              : 'MSX',
-    'Microsoft Windows'           : 'PC',
-    'Microsoft Xbox'              : 14,
-    'Microsoft Xbox 360'          : 15,
-    'Microsoft Xbox One'          : 4920,
-    'NEC PC Engine'               : 34,
-    'NEC PC Engine CDROM2'        : 4955,
-    'NEC TurboGrafx 16'           : 34,
-    'NEC TurboGrafx CD'           : 4955,
-    'NEC SuperGrafx'              : 34,
-    'NEC PC-FX'                   : 4930,
-    'Nintendo 3DS'                : 4912,
-    'Nintendo 64'                 : 3,
-    'Nintendo 64DD'               : 3, # Not found in TheGamesDB
-    'Nintendo DS'                 : 8,
-    'Nintendo DSi'                : 8, # Not found in TheGamesDB
-    'Nintendo Famicom'            : 7,
-    'Nintendo Famicom Disk System': 4936,
-    'Nintendo GameBoy'            : 4,
-    'Nintendo GameBoy Advance'    : 5,
-    'Nintendo GameBoy Color'      : 41,
-    'Nintendo GameCube'           : 2,
-    'Nintendo NES'                : 7,
-    'Nintendo Pokemon Mini'       : 4957,
-    'Nintendo SNES'               : 6,
-    'Nintendo Switch'             : 4971,
-    'Nintendo Virtual Boy'        : 4918,
-    'Nintendo Wii'                : 9,
-    'Nintendo Wii U'              : 38,
-    'Philips Videopac G7000'      : 4927,
-    'Philips Videopac Plus G7400' : 4927, # Not found in TheGamesDB
-    'ScummVM'                     : 0, # Not found in TheGamesDB
-    'Sega 32X'                    : 33,
-    'Sega Dreamcast'              : 16,
-    'Sega Game Gear'              : 20,
-    'Sega Genesis'                : 18,
-    'Sega Master System'          : 35,
-    'Sega MegaCD'                 : 21,
-    'Sega MegaDrive'              : 36,
-    'Sega PICO'                   : 4958,
-    'Sega Saturn'                 : 17,
-    'Sega SC-3000'                : 0, # Not found in TheGamesDB
-    'Sega SegaCD'                 : 21,
-    'Sega SG-1000'                : 4949,
-    'Sharp X68000'                : 4931,
-    'Sinclair ZX Spectrum'        : 4913,
-    'SNK Neo-Geo AES'             : 24,
-    'SNK Neo-Geo CD'              : 4956,
-    'SNK Neo-Geo MVS'             : 23,
-    'SNK Neo-Geo Pocket'          : 4922,
-    'SNK Neo-Geo Pocket Color'    : 4923,
-    'Sony PlayStation'            : 10,
-    'Sony PlayStation 2'          : 11,
-    'Sony PlayStation 3'          : 12,
-    'Sony PlayStation 4'          : 4919,
-    'Sony PlayStation Portable'   : 13,
-    'Sony PlayStation Vita'       : 39,
-}
-
-#
-# Platform '0' means all platforms
-# Get platform names from https://www.gamefaqs.com/search_advanced?game=ar
-#
-platform_AEL_to_GameFAQs_dic = {
-    '3DO Interactive Multiplayer' : '61',  # <option label="3DO" value="61">3DO</option>
-    'Amstrad CPC'                 : '46',  # <option label="Amstrad CPC" value="46">Amstrad CPC</option>
-    'Atari 2600'                  : '6',   # <option label="Atari 2600" value="6">Atari 2600</option>
-    'Atari 5200'                  : '20',  # <option label="Atari 5200" value="20">Atari 5200</option>
-    'Atari 7800'                  : '51',  # <option label="Atari 7800" value="51">Atari 7800</option>
-    'Atari Jaguar'                : '72',  # <option label="Jaguar" value="72">Jaguar</option>
-    'Atari Jaguar CD'             : '82',  # <option label="Jaguar CD" value="82">Jaguar CD</option>
-    'Atari Lynx'                  : '58',  # <option label="Lynx" value="58">Lynx</option>
-    'Atari ST'                    : '38',  # <option label="Atari ST" value="38">Atari ST</option>
-    'Bandai WonderSwan'           : '90',  # <option label="WonderSwan" value="90">WonderSwan</option>
-    'Bandai WonderSwan Color'     : '95',  # <option label="WonderSwan Color" value="95">WonderSwan Color</option>
-    'Colecovision'                : '29',  # <option label="Colecovision" value="29">Colecovision</option>
-    'Commodore 64'                : '24',  # <option label="Commodore 64" value="24">Commodore 64</option>
-    'Commodore Amiga'             : '39',  # <option label="Amiga" value="39">Amiga</option>
-    'Commodore Amiga CD32'        : '70',  # <option label="Amiga CD32" value="70">Amiga CD32</option>
-    'Commodore Plus-4'            : '0',   # Not found in GameFAQs
-    'Commodore VIC-20'            : '11',  # <option label="VIC-20" value="11">VIC-20</option>
-    'Fujitsu FM Towns Marty'      : '55',  # <option label="FM Towns" value="55">FM Towns</option>
-    'GCE Vectrex'                 : '34',  # <option label="Vectrex" value="34">Vectrex</option>
-    'Magnavox Odyssey2'           : '9',   # <option label="Odyssey^2" value="9">Odyssey^2</option>
-    'MAME'                        : '2',   # <option label="Arcade Games" value="2">Arcade Games</option>
-    'Mattel Intellivision'        : '16',  # <option label="Intellivision" value="16">Intellivision</option>
-    'Microsoft MS-DOS'            : '19',  # <option label="PC" value="19">PC</option>
-    'Microsoft MSX'               : '40',  # <option label="MSX" value="40">MSX</option>
-    'Microsoft MSX2'              : '40',
-    'Microsoft Windows'           : '19',  # <option label="PC" value="19">PC</option>
-    'Microsoft Xbox'              : '98',  # <option label="Xbox" value="98">Xbox</option>
-    'Microsoft Xbox 360'          : '111', # <option label="Xbox 360" value="111">Xbox 360</option>
-    'Microsoft Xbox One'          : '121', # <option label="Xbox One" value="121">Xbox One</option>
-    'NEC PC Engine'               : '53',  # <option label="TurboGrafx-16" value="53">TurboGrafx-16</option>
-    'NEC PC Engine CDROM2'        : '56',  # <option label="Turbo CD" value="56">Turbo CD</option>
-    'NEC TurboGrafx 16'           : '53',  # <option label="TurboGrafx-16" value="53">TurboGrafx-16</option>
-    'NEC TurboGrafx CD'           : '56',  # <option label="Turbo CD" value="56">Turbo CD</option>
-    'NEC SuperGrafx'              : '53',  # Didn't found SuperGrafx on GameFAQs
-    'NEC PC-FX'                   : '79',  # <option label="PC-FX" value="79" selected="selected">PC-FX</option>
-    'Nintendo 3DS'                : '116', # <option label="3DS" value="116">3DS</option>
-    'Nintendo 64'                 : '84',  # <option label="Nintendo 64" value="84">Nintendo 64</option>
-    'Nintendo 64DD'               : '92',  # <option label="Nintendo 64DD" value="92">Nintendo 64DD</option>
-    'Nintendo DS'                 : '108', # <option label="DS" value="108">DS</option>
-    'Nintendo DSi'                : '108', # Not found in GameFAQs
-    'Nintendo Famicom'            : '41',  # <option label="NES" value="41">NES</option>
-    'Nintendo Famicom Disk System': '47',  # <option label="Famicom Disk System" value="47">Famicom Disk System</option>
-    'Nintendo GameBoy'            : '59',  # <option label="Game Boy" value="59">Game Boy</option>
-    'Nintendo GameBoy Advance'    : '91',  # <option label="Game Boy Advance" value="91">Game Boy Advance</option>
-    'Nintendo GameBoy Color'      : '57',  # <option label="Game Boy Color" value="57">Game Boy Color</option>
-    'Nintendo GameCube'           : '99',  # <option label="GameCube" value="99">GameCube</option>
-    'Nintendo NES'                : '41',  # <option label="NES" value="41">NES</option>
-    'Nintendo Pokemon Mini'       : '0',   # Not found in GameFAQs
-    'Nintendo SNES'               : '63',  # <option label="Super Nintendo" value="63">Super Nintendo</option>
-    'Nintendo Switch'             : '124', # <option label="Nintendo Switch" value="124">Nintendo Switch</option>
-    'Nintendo Virtual Boy'        : '83',  # <option label="Virtual Boy" value="83">Virtual Boy</option>
-    'Nintendo Wii'                : '114', # <option label="Wii" value="114">Wii</option>
-    'Nintendo Wii U'              : '118', # <option label="Wii U" value="118">Wii U</option>
-    'Philips Videopac G7000'      : '9',   # Alias of Odyssey^2
-    'Philips Videopac Plus G7400' : '0',   # Not found in GameFAQs
-    'ScummVM'                     : '0',   # Not found in GameFAQs
-    'Sega 32X'                    : '74',  # <option label="Sega 32X" value="74">Sega 32X</option>
-    'Sega Dreamcast'              : '67',  # <option label="Dreamcast" value="67">Dreamcast</option>
-    'Sega Game Gear'              : '62',  # <option label="GameGear" value="62">GameGear</option>
-    'Sega Genesis'                : '54',  # <option label="Genesis" value="54">Genesis</option>
-    'Sega Master System'          : '49',  # <option label="Sega Master System" value="49">Sega Master System</option>
-    'Sega MegaCD'                 : '65',  # <option label="Sega CD" value="65">Sega CD</option>
-    'Sega MegaDrive'              : '54',  # <option label="Genesis" value="54">Genesis</option>
-    'Sega PICO'                   : '0',   # Not found in GameFAQs
-    'Sega Saturn'                 : '76',  # <option label="Saturn" value="76">Saturn</option>
-    'Sega SC-3000'                : '0',   # Not found in GameFAQs
-    'Sega SegaCD'                 : '65',  # <option label="Sega CD" value="65">Sega CD</option>
-    'Sega SG-1000'                : '43',  # <option label="SG-1000" value="43">SG-1000</option>
-    'Sharp X68000'                : '52',  # <option label="Sharp X68000" value="52">Sharp X68000</option>
-    'Sinclair ZX Spectrum'        : '35',  # <option label="Sinclair ZX81/Spectrum" value="35">Sinclair ZX81/Spectrum</option>
-    'SNK Neo-Geo AES'             : '64',  # <option label="NeoGeo" value="64">NeoGeo</option>
-    'SNK Neo-Geo CD'              : '68',  # <option label="Neo-Geo CD" value="68">Neo-Geo CD</option>
-    'SNK Neo-Geo MVS'             : '2',   # Alias of "Arcade Games" (MAME)
-    'SNK Neo-Geo Pocket'          : '0',   # Not found in GameFAQs
-    'SNK Neo-Geo Pocket Color'    : '89',  # <option label="NeoGeo Pocket Color" value="89">NeoGeo Pocket Color</option>
-    'Sony PlayStation'            : '78',  # <option label="PlayStation" value="78">PlayStation</option>
-    'Sony PlayStation 2'          : '94',  # <option label="PlayStation 2" value="94">PlayStation 2</option>
-    'Sony PlayStation 3'          : '113', # <option label="PlayStation 3" value="113">PlayStation 3</option>
-    'Sony PlayStation 4'          : '120', # <option label="PlayStation 4" value="120">PlayStation 4</option>
-    'Sony PlayStation Portable'   : '109', # <option label="PSP" value="109">PSP</option>
-    'Sony PlayStation Vita'       : '117', # <option label="PlayStation Vita" value="117">PlayStation Vita</option>
+    '3DO Interactive Multiplayer' : '25',
+    'Amstrad CPC'                 : '0',
+    'Atari 2600'                  : '0',
+    'Atari 5200'                  : '0',
+    'Atari 7800'                  : '0',
+    'Atari Jaguar'                : '0',
+    'Atari Jaguar CD'             : '0',
+    'Atari Lynx'                  : '0',
+    'Atari ST'                    : '0',
+    'Bandai WonderSwan'           : '0',
+    'Bandai WonderSwan Color'     : '0',
+    'Colecovision'                : '0',
+    'Commodore 64'                : '0',
+    'Commodore Amiga'             : '0',
+    'Commodore Amiga CD32'        : '0',
+    'Commodore Plus-4'            : '0',
+    'Commodore VIC-20'            : '0',
+    'Fujitsu FM Towns Marty'      : '0',
+    'GCE Vectrex'                 : '0',
+    'Magnavox Odyssey2'           : '0',
+    'MAME'                        : '0',
+    'Mattel Intellivision'        : '0',
+    'Microsoft MS-DOS'            : '0',
+    'Microsoft MSX'               : '0',
+    'Microsoft MSX2'              : '0',
+    'Microsoft Windows'           : '0',
+    'Microsoft Xbox'              : '0',
+    'Microsoft Xbox 360'          : '0',
+    'Microsoft Xbox One'          : '0',
+    'NEC PC Engine'               : '0',
+    'NEC PC Engine CDROM2'        : '0',
+    'NEC TurboGrafx 16'           : '0',
+    'NEC TurboGrafx CD'           : '0',
+    'NEC SuperGrafx'              : '0',
+    'NEC PC-FX'                   : '0',
+    'Nintendo 3DS'                : '4912',
+    'Nintendo 64'                 : '3',
+    'Nintendo 64DD'               : '3', # Not found on TGDB, same as N64.
+    'Nintendo DS'                 : '8',
+    'Nintendo DSi'                : '8', # Not found on TGDB, same as NDS.
+    'Nintendo Famicom'            : '7',
+    'Nintendo Famicom Disk System': '0',
+    'Nintendo GameBoy'            : '4',
+    'Nintendo GameBoy Advance'    : '5',
+    'Nintendo GameBoy Color'      : '41',
+    'Nintendo GameCube'           : '2',
+    'Nintendo NES'                : '7',
+    'Nintendo Pokemon Mini'       : '4957',
+    'Nintendo SNES'               : '6',
+    'Nintendo Switch'             : '4971',
+    'Nintendo Virtual Boy'        : '4918',
+    'Nintendo Wii'                : '9',
+    'Nintendo Wii U'              : '38',
+    'Philips Videopac G7000'      : '0',
+    'Philips Videopac Plus G7400' : '0',
+    'ScummVM'                     : '0',
+    'Sega 32X'                    : '33',
+    'Sega Dreamcast'              : '0',
+    'Sega Game Gear'              : '0',
+    'Sega Genesis'                : '18',
+    'Sega Master System'          : '35',
+    'Sega MegaCD'                 : '0',
+    'Sega MegaDrive'              : '36',
+    'Sega PICO'                   : '4958',
+    'Sega Saturn'                 : '17',
+    'Sega SC-3000'                : '0',
+    'Sega SegaCD'                 : '0',
+    'Sega SG-1000'                : '0',
+    'Sharp X68000'                : '0',
+    'Sinclair ZX Spectrum'        : '0',
+    'SNK Neo-Geo AES'             : '0',
+    'SNK Neo-Geo CD'              : '0',
+    'SNK Neo-Geo MVS'             : '0',
+    'SNK Neo-Geo Pocket'          : '0',
+    'SNK Neo-Geo Pocket Color'    : '0',
+    'Sony PlayStation'            : '10',
+    'Sony PlayStation 2'          : '11',
+    'Sony PlayStation 3'          : '12',
+    'Sony PlayStation 4'          : '4919',
+    'Sony PlayStation Portable'   : '13',
+    'Sony PlayStation Vita'       : '39',
 }
 
 #
@@ -717,23 +512,120 @@ platform_AEL_to_MobyGames_dic = {
     'Sony PlayStation Vita'       : '105', # <option value="105">PS Vita</option>
 }
 
+#
+# Platform '0' means all platforms
+# Get platform names from https://www.gamefaqs.com/search_advanced?game=ar
+#
+platform_AEL_to_GameFAQs_dic = {
+    '3DO Interactive Multiplayer' : '61',  # <option label="3DO" value="61">3DO</option>
+    'Amstrad CPC'                 : '46',  # <option label="Amstrad CPC" value="46">Amstrad CPC</option>
+    'Atari 2600'                  : '6',   # <option label="Atari 2600" value="6">Atari 2600</option>
+    'Atari 5200'                  : '20',  # <option label="Atari 5200" value="20">Atari 5200</option>
+    'Atari 7800'                  : '51',  # <option label="Atari 7800" value="51">Atari 7800</option>
+    'Atari Jaguar'                : '72',  # <option label="Jaguar" value="72">Jaguar</option>
+    'Atari Jaguar CD'             : '82',  # <option label="Jaguar CD" value="82">Jaguar CD</option>
+    'Atari Lynx'                  : '58',  # <option label="Lynx" value="58">Lynx</option>
+    'Atari ST'                    : '38',  # <option label="Atari ST" value="38">Atari ST</option>
+    'Bandai WonderSwan'           : '90',  # <option label="WonderSwan" value="90">WonderSwan</option>
+    'Bandai WonderSwan Color'     : '95',  # <option label="WonderSwan Color" value="95">WonderSwan Color</option>
+    'Colecovision'                : '29',  # <option label="Colecovision" value="29">Colecovision</option>
+    'Commodore 64'                : '24',  # <option label="Commodore 64" value="24">Commodore 64</option>
+    'Commodore Amiga'             : '39',  # <option label="Amiga" value="39">Amiga</option>
+    'Commodore Amiga CD32'        : '70',  # <option label="Amiga CD32" value="70">Amiga CD32</option>
+    'Commodore Plus-4'            : '0',   # Not found in GameFAQs
+    'Commodore VIC-20'            : '11',  # <option label="VIC-20" value="11">VIC-20</option>
+    'Fujitsu FM Towns Marty'      : '55',  # <option label="FM Towns" value="55">FM Towns</option>
+    'GCE Vectrex'                 : '34',  # <option label="Vectrex" value="34">Vectrex</option>
+    'Magnavox Odyssey2'           : '9',   # <option label="Odyssey^2" value="9">Odyssey^2</option>
+    'MAME'                        : '2',   # <option label="Arcade Games" value="2">Arcade Games</option>
+    'Mattel Intellivision'        : '16',  # <option label="Intellivision" value="16">Intellivision</option>
+    'Microsoft MS-DOS'            : '19',  # <option label="PC" value="19">PC</option>
+    'Microsoft MSX'               : '40',  # <option label="MSX" value="40">MSX</option>
+    'Microsoft MSX2'              : '40',
+    'Microsoft Windows'           : '19',  # <option label="PC" value="19">PC</option>
+    'Microsoft Xbox'              : '98',  # <option label="Xbox" value="98">Xbox</option>
+    'Microsoft Xbox 360'          : '111', # <option label="Xbox 360" value="111">Xbox 360</option>
+    'Microsoft Xbox One'          : '121', # <option label="Xbox One" value="121">Xbox One</option>
+    'NEC PC Engine'               : '53',  # <option label="TurboGrafx-16" value="53">TurboGrafx-16</option>
+    'NEC PC Engine CDROM2'        : '56',  # <option label="Turbo CD" value="56">Turbo CD</option>
+    'NEC TurboGrafx 16'           : '53',  # <option label="TurboGrafx-16" value="53">TurboGrafx-16</option>
+    'NEC TurboGrafx CD'           : '56',  # <option label="Turbo CD" value="56">Turbo CD</option>
+    'NEC SuperGrafx'              : '53',  # Didn't found SuperGrafx on GameFAQs
+    'NEC PC-FX'                   : '79',  # <option label="PC-FX" value="79" selected="selected">PC-FX</option>
+    'Nintendo 3DS'                : '116', # <option label="3DS" value="116">3DS</option>
+    'Nintendo 64'                 : '84',  # <option label="Nintendo 64" value="84">Nintendo 64</option>
+    'Nintendo 64DD'               : '92',  # <option label="Nintendo 64DD" value="92">Nintendo 64DD</option>
+    'Nintendo DS'                 : '108', # <option label="DS" value="108">DS</option>
+    'Nintendo DSi'                : '108', # Not found in GameFAQs
+    'Nintendo Famicom'            : '41',  # <option label="NES" value="41">NES</option>
+    'Nintendo Famicom Disk System': '47',  # <option label="Famicom Disk System" value="47">Famicom Disk System</option>
+    'Nintendo GameBoy'            : '59',  # <option label="Game Boy" value="59">Game Boy</option>
+    'Nintendo GameBoy Advance'    : '91',  # <option label="Game Boy Advance" value="91">Game Boy Advance</option>
+    'Nintendo GameBoy Color'      : '57',  # <option label="Game Boy Color" value="57">Game Boy Color</option>
+    'Nintendo GameCube'           : '99',  # <option label="GameCube" value="99">GameCube</option>
+    'Nintendo NES'                : '41',  # <option label="NES" value="41">NES</option>
+    'Nintendo Pokemon Mini'       : '0',   # Not found in GameFAQs
+    'Nintendo SNES'               : '63',  # <option label="Super Nintendo" value="63">Super Nintendo</option>
+    'Nintendo Switch'             : '124', # <option label="Nintendo Switch" value="124">Nintendo Switch</option>
+    'Nintendo Virtual Boy'        : '83',  # <option label="Virtual Boy" value="83">Virtual Boy</option>
+    'Nintendo Wii'                : '114', # <option label="Wii" value="114">Wii</option>
+    'Nintendo Wii U'              : '118', # <option label="Wii U" value="118">Wii U</option>
+    'Philips Videopac G7000'      : '9',   # Alias of Odyssey^2
+    'Philips Videopac Plus G7400' : '0',   # Not found in GameFAQs
+    'ScummVM'                     : '0',   # Not found in GameFAQs
+    'Sega 32X'                    : '74',  # <option label="Sega 32X" value="74">Sega 32X</option>
+    'Sega Dreamcast'              : '67',  # <option label="Dreamcast" value="67">Dreamcast</option>
+    'Sega Game Gear'              : '62',  # <option label="GameGear" value="62">GameGear</option>
+    'Sega Genesis'                : '54',  # <option label="Genesis" value="54">Genesis</option>
+    'Sega Master System'          : '49',  # <option label="Sega Master System" value="49">Sega Master System</option>
+    'Sega MegaCD'                 : '65',  # <option label="Sega CD" value="65">Sega CD</option>
+    'Sega MegaDrive'              : '54',  # <option label="Genesis" value="54">Genesis</option>
+    'Sega PICO'                   : '0',   # Not found in GameFAQs
+    'Sega Saturn'                 : '76',  # <option label="Saturn" value="76">Saturn</option>
+    'Sega SC-3000'                : '0',   # Not found in GameFAQs
+    'Sega SegaCD'                 : '65',  # <option label="Sega CD" value="65">Sega CD</option>
+    'Sega SG-1000'                : '43',  # <option label="SG-1000" value="43">SG-1000</option>
+    'Sharp X68000'                : '52',  # <option label="Sharp X68000" value="52">Sharp X68000</option>
+    'Sinclair ZX Spectrum'        : '35',  # <option label="Sinclair ZX81/Spectrum" value="35">Sinclair ZX81/Spectrum</option>
+    'SNK Neo-Geo AES'             : '64',  # <option label="NeoGeo" value="64">NeoGeo</option>
+    'SNK Neo-Geo CD'              : '68',  # <option label="Neo-Geo CD" value="68">Neo-Geo CD</option>
+    'SNK Neo-Geo MVS'             : '2',   # Alias of "Arcade Games" (MAME)
+    'SNK Neo-Geo Pocket'          : '0',   # Not found in GameFAQs
+    'SNK Neo-Geo Pocket Color'    : '89',  # <option label="NeoGeo Pocket Color" value="89">NeoGeo Pocket Color</option>
+    'Sony PlayStation'            : '78',  # <option label="PlayStation" value="78">PlayStation</option>
+    'Sony PlayStation 2'          : '94',  # <option label="PlayStation 2" value="94">PlayStation 2</option>
+    'Sony PlayStation 3'          : '113', # <option label="PlayStation 3" value="113">PlayStation 3</option>
+    'Sony PlayStation 4'          : '120', # <option label="PlayStation 4" value="120">PlayStation 4</option>
+    'Sony PlayStation Portable'   : '109', # <option label="PSP" value="109">PSP</option>
+    'Sony PlayStation Vita'       : '117', # <option label="PlayStation Vita" value="117">PlayStation Vita</option>
+}
+
 def AEL_platform_to_TheGamesDB(platform_AEL):
-    try:    platform_TheGamesDB = platform_AEL_to_TheGamesDB_dic[platform_AEL]
-    except: platform_TheGamesDB = ''
-        
+    try:
+        platform_TheGamesDB = platform_AEL_to_TheGamesDB_dic[platform_AEL]
+    except:
+        # Platform '0' means any platform in TGDB
+        platform_TheGamesDB = ''
+
     return platform_TheGamesDB
 
+def AEL_platform_to_MobyGames(platform_AEL):
+    try:
+        platform_MobyGames = platform_AEL_to_MobyGames_dic[platform_AEL]
+    except:
+        platform_MobyGames = ''
+
+    return platform_MobyGames
+
+def AEL_platform_to_ScreenScraper(platform_AEL): return ''
+
 def AEL_platform_to_GameFAQs(AEL_gamesys):
-    try:    platform_GameFAQs = platform_AEL_to_GameFAQs_dic[AEL_gamesys]
-    except: platform_GameFAQs = '0' # Platform '0' means all platforms
+    try:
+        platform_GameFAQs = platform_AEL_to_GameFAQs_dic[AEL_gamesys]
+    except:
+        platform_GameFAQs = '0' # Platform '0' means all platforms
 
     return platform_GameFAQs
-
-def AEL_platform_to_MobyGames(platform_AEL):
-    try:    platform_MobyGames = platform_AEL_to_MobyGames_dic[platform_AEL]
-    except: platform_MobyGames = ''
-        
-    return platform_MobyGames
 
 # -------------------------------------------------------------------------------------------------
 # Miscellaneous emulator and gamesys (platforms) supported.

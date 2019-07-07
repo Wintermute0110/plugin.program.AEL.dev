@@ -1,9 +1,7 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 #
-# Test AEL Mobybgames asset scraper.
-# This testing file is intended for scraper development and file dumping.
-# For more thorough tests sett the unittest_MobyGames_* scrips.
+# Test AEL TheGamesDB asset scraper.
 #
 
 # --- Python standard library ---
@@ -29,35 +27,33 @@ games = {
 }
 
 # --- main ----------------------------------------------------------------------------------------
-print('*** MobyGames search **********************************************************************')
+print('*** TheGamesDB search *********************************************************************')
 set_log_level(LOG_DEBUG) # >> LOG_INFO, LOG_VERB, LOG_DEBUG
 
 # --- Create scraper object ---
 settings = {
-    'scraper_mobygames_apikey' : '', # Do not forget to set the API key.
+    # Make sure this is the Public key.
+    'scraper_thegamesdb_apikey' : '828be1fb8f3182d055f1aed1f7d4da8bd4ebc160c3260eae8ee57ea823b42415',
 }
-scraper_obj = MobyGames(settings)
+scraper_obj = TheGamesDB(settings)
 scraper_obj.set_verbose_mode(False)
-scraper_obj.set_debug_file_dump(True, os.path.dirname(__file__))
+scraper_obj.set_debug_file_dump(True, os.path.join(os.path.dirname(__file__), 'assets'))
 
 # --- Get candidates ---
-# candidate_list = scraper_obj.get_candidates(*games['metroid'])
-# candidate_list = scraper_obj.get_candidates(*games['mworld'])
-candidate_list = scraper_obj.get_candidates(*games['sonic'])
-# candidate_list = scraper_obj.get_candidates(*games['chakan'])
-
 # Cases with unknown platform must be tested as well.
-# Cases with unknown API key must be tested as well.
+# candidate_list = scraper_obj.get_candidates(*games['metroid'])
+candidate_list = scraper_obj.get_candidates(*games['mworld'])
+# candidate_list = scraper_obj.get_candidates(*games['sonic'])
 
 # --- Print search results ---
 # pprint.pprint(candidate_list)
 print_candidate_list(candidate_list)
 if not candidate_list:
-    print('No candidates found.')
+    print('No candidate games found.')
     sys.exit(0)
 
 # --- Print list of assets found ---
-print('*** MobyGames game images *****************************************************************')
+print('*** TheGamesDB game images ****************************************************************')
 # --- Get all assets ---
 # assets = scraper_obj.get_assets_all(candidate_list[0])
 # pprint.pprint(assets)
