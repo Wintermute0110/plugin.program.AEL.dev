@@ -13,26 +13,29 @@
 </category>
 <category label="ROM scraping">
     <setting id="separator" type="lsep" label="General scrapers"/>
-    <setting label="First metadata scraper" type="enum"  id="scraper_metadata_1" default="1" values="None|Offline scraper|TheGamesDB|MobyGames|GameFAQs"/>
-    <setting label="Second metadata scraper" type="enum" id="scraper_metadata_2" default="2" values="None|Offline scraper|TheGamesDB|MobyGames|GameFAQs"/>
+    <setting label="First metadata scraper" type="enum"  id="scraper_metadata_1" default="1" values="None|AEL Offline|TheGamesDB|MobyGames|GameFAQs"/>
+    <setting label="Second metadata scraper" type="enum" id="scraper_metadata_2" default="3" values="None|AEL Offline|TheGamesDB|MobyGames|GameFAQs"/>
     <setting label="First asset scraper" type="enum"     id="scraper_asset_1"    default="2" values="None|TheGamesDB|MobyGames|GameFAQs"/>
     <setting label="Second asset scraper" type="enum"    id="scraper_asset_2"    default="1" values="None|TheGamesDB|MobyGames|GameFAQs"/>
 
     <setting id="separator" type="lsep" label="MAME scrapers"/>
-    <setting label="First metadata scraper" type="enum"  id="scraper_metadata_MAME_1" default="1" values="None|Offline scraper|ArcadeDB|MobyGames|TheGamesDB|GameFAQs"/>
-    <setting label="Second metadata scraper" type="enum" id="scraper_metadata_MAME_2" default="2" values="None|Offline scraper|ArcadeDB|MobyGames|TheGamesDB|GameFAQs"/>
+    <setting label="First metadata scraper" type="enum"  id="scraper_metadata_MAME_1" default="1" values="None|AEL Offline|ArcadeDB|MobyGames|TheGamesDB|GameFAQs"/>
+    <setting label="Second metadata scraper" type="enum" id="scraper_metadata_MAME_2" default="2" values="None|AEL Offline|ArcadeDB|MobyGames|TheGamesDB|GameFAQs"/>
     <setting label="First asset scraper" type="enum"     id="scraper_asset_MAME_1"    default="1" values="None|ArcadeDB|MobyGames|TheGamesDB|GameFAQs"/>
-    <setting label="Second asset scraper" type="enum"    id="scraper_asset_MAME_2"    default="0" values="None|ArcadeDB|MobyGames|TheGamesDB|GameFAQs"/>
+    <setting label="Second asset scraper" type="enum"    id="scraper_asset_MAME_2"    default="2" values="None|ArcadeDB|MobyGames|TheGamesDB|GameFAQs"/>
 </category>
+<category label="Scraper settings">
+    <setting id="separator" type="lsep" label="Scraper API keys"/>
+    <setting label="MobyGames" type="text" id="scraper_mobygames_apikey" default="" />
+    <setting label="TheGamesDB" type="text" id="scraper_thegamesdb_apikey" default="" />
 <!--
-<category label="Scrapers">
     <setting label="Region" type="enum" id="scraper_region" default="0" values="World|Europe|Japan|America"/>
     <setting label="Thumb Images Size" type="enum" id="scraper_thumb_size" default="0" values="All|Icon|Small|Medium|Large|XLarge|XXLarge|Huge"/>
     <setting label="Fanart Images Size" type="enum" id="scraper_fanart_size" default="0" values="All|Icon|Small|Medium|Large|XLarge|XXLarge|Huge"/>
     <setting label="Preferred arcade images" type="enum" id="scraper_image_type" default="0" values="Snapshots|Flyers"/>
     <setting label="Selected fanart image" type="enum" id="scraper_fanart_order" default="1" values="First|Half|Last"/>
-</category>
 -->
+</category>
 <category label="ROM audit">
     <setting label="Unkown ROMs are" type="enum" id="audit_unknown_roms" default="0" values="Parents|Clones" />
 <!--

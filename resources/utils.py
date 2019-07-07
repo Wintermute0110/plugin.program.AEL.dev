@@ -2615,3 +2615,90 @@ else:
     log_info    = log_info_Python
     log_warning = log_warning_Python
     log_error   = log_error_Python
+
+
+# -------------------------------------------------------------------------------------------------
+# Utilities to test scrapers
+# -------------------------------------------------------------------------------------------------
+# Candidates
+NAME_L      = 60
+SCORE_L     = 5
+ID_L        = 10
+PLATFORM_L  = 15
+SPLATFORM_L = 15
+URL_L       = 70
+
+# Metadata
+TITLE_L     = 50
+YEAR_L      = 4
+GENRE_L     = 20
+DEVELOPER_L = 10
+NPLAYERS_L  = 10
+ESRB_L      = 20
+PLOT_L      = 70
+
+# Assets
+ASSET_ID_L        = 8
+ASSET_NAME_L      = 60
+ASSET_URL_L       = 70
+ASSET_URL_THUMB_L = 50
+
+# PUT functions to print things returned by Scraper object (which are common to all scrapers)
+# into util.py, to be resused by all scraper tests.
+def print_candidate_list(results):
+    p_str = "{0} {1} {2} {3} {4}"
+    print('Found {0} candidate/s'.format(len(results)))
+    print(p_str.format(
+        'Display name'.ljust(NAME_L), 'Score'.ljust(SCORE_L),
+        'Id'.ljust(ID_L), 'Platform'.ljust(PLATFORM_L), 'SPlatform'.ljust(SPLATFORM_L)))
+    print(p_str.format(
+        '-'*NAME_L, '-'*SCORE_L, '-'*ID_L, '-'*PLATFORM_L, '-'*SPLATFORM_L))
+    for game in results:
+        display_name = text_limit_string(game['display_name'], NAME_L)
+        score = text_limit_string(str(game['order']), SCORE_L)
+        id = text_limit_string(str(game['id']), ID_L)
+        platform = text_limit_string(str(game['platform']), PLATFORM_L)
+        splatform = text_limit_string(str(game['scraper_platform']), SPLATFORM_L)
+        print(p_str.format(
+            display_name.ljust(NAME_L), score.ljust(SCORE_L), id.ljust(ID_L),
+            platform.ljust(PLATFORM_L), splatform.ljust(SPLATFORM_L)))
+    print('')
+
+def print_game_metadata(metadata):
+    title     = text_limit_string(metadata['title'], TITLE_L)
+    year      = metadata['year']
+    genre     = text_limit_string(metadata['genre'], GENRE_L)
+    developer = text_limit_string(metadata['developer'], DEVELOPER_L)
+    nplayers  = text_limit_string(metadata['nplayers'], NPLAYERS_L)
+    esrb      = text_limit_string(metadata['esrb'], ESRB_L)
+    plot      = text_limit_string(metadata['plot'], PLOT_L)
+
+    p_str = "{0} {1} {2} {3} {4} {5} {6}"
+    print('Displaying metadata for title "{0}"'.format(title))
+    print(p_str.format(
+        'Title'.ljust(TITLE_L), 'Year'.ljust(YEAR_L), 'Genre'.ljust(GENRE_L),
+        'Developer'.ljust(DEVELOPER_L), 'NPlayers'.ljust(NPLAYERS_L), 'ESRB'.ljust(ESRB_L),
+        'Plot'.ljust(PLOT_L)))
+    print(p_str.format(
+        '-'*TITLE_L, '-'*YEAR_L, '-'*GENRE_L, '-'*DEVELOPER_L, '-'*NPLAYERS_L, '-'*ESRB_L, '-'*PLOT_L))
+    print(p_str.format(
+        title.ljust(TITLE_L), year.ljust(YEAR_L), genre.ljust(GENRE_L),  developer.ljust(DEVELOPER_L),
+        developer.ljust(NPLAYERS_L), developer.ljust(ESRB_L), plot.ljust(PLOT_L) ))
+    print('')
+
+def print_game_assets(image_list):
+    p_str = "{0} {1} {2} {3}"
+    print('Found {0} image/s'.format(len(image_list)))
+    print(p_str.format(
+        'Asset ID'.ljust(ASSET_ID_L), 'Name'.ljust(ASSET_NAME_L),
+        'URL'.ljust(ASSET_URL_L), 'URL thumb'.ljust(ASSET_URL_THUMB_L)))
+    print(p_str.format('-'*ASSET_ID_L, '-'*ASSET_NAME_L, '-'*ASSET_URL_L, '-'*ASSET_URL_THUMB_L))
+    for image in image_list:
+        id           = text_limit_string(str(image['asset_id']), ASSET_ID_L)
+        display_name = text_limit_string(image['name'], ASSET_NAME_L)
+        url          = text_limit_string(image['url'], ASSET_URL_L)
+        url_thumb    = text_limit_string(image['url_thumb'], ASSET_URL_THUMB_L)
+        print(p_str.format(
+            id.ljust(ASSET_ID_L), display_name.ljust(ASSET_NAME_L),
+            url.ljust(ASSET_URL_L), url_thumb.ljust(ASSET_URL_THUMB_L)))
+    print('')

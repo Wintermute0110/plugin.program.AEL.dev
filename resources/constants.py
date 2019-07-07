@@ -236,6 +236,18 @@ NPLAYERS_LIST = [NP_1P, NP_2P_SIM, NP_2P_ALT, NP_3P_SIM, NP_3P_ALT, NP_4P_SIM, N
                         NP_6P_SIM, NP_6P_ALT, NP_8P_SIM, NP_8P_ALT]
 
 # -------------------------------------------------------------------------------------------------
+# Metadata
+# -------------------------------------------------------------------------------------------------
+META_TITLE_ID     = 10
+META_YEAR_ID      = 20
+META_GENRE_ID     = 30
+META_DEVELOPER_ID = 40
+META_NPLAYERS_ID  = 50
+META_ESRB_ID      = 60
+META_RATING_ID    = 70
+META_PLOT_ID      = 80
+
+# -------------------------------------------------------------------------------------------------
 # Assets
 # -------------------------------------------------------------------------------------------------
 # ROMs have FLYER, Categories/Launchers/Collections have POSTER
@@ -312,24 +324,22 @@ MANUAL_EXTENSION_LIST  = ['pdf', 'cbz', 'cbr']
 TRAILER_EXTENSION_LIST = ['mov', 'divx', 'xvid', 'wmv', 'avi', 'mpg', 'mpeg', 'mp4', 'mkv', 'avc']
 
 # --- Scrapers -----------------------------------------------------------------------------------
-SCRAPER_NULL_ID          =  10
-SCRAPER_CLEAN_TITLE_ID   =  20
-SCRAPER_NFO_ID           =  30
-SCRAPER_AEL_OFFLINE_ID   =  40
-SCRAPER_LB_OFFLINE_ID    =  50
-SCRAPER_LOCAL_ASSETS_ID  =  60
-SCRAPER_THEGAMESDB_ID    =  70
-SCRAPER_MOBYGAMES_ID     =  80
-SCRAPER_GAMEFAQS_ID      =  90
-SCRAPER_ARCADEDB_ID      = 100
-SCRAPER_SCREENSCRAPER_ID = 110
-SCRAPER_LIBRETRO_ID      = 120
+SCRAPER_NULL_ID          = 10
+SCRAPER_AEL_OFFLINE_ID   = 20
+SCRAPER_LB_OFFLINE_ID    = 30
+SCRAPER_THEGAMESDB_ID    = 40
+SCRAPER_MOBYGAMES_ID     = 50
+SCRAPER_GAMEFAQS_ID      = 60
+SCRAPER_ARCADEDB_ID      = 70
+SCRAPER_SCREENSCRAPER_ID = 80
+SCRAPER_LIBRETRO_ID      = 90
 
 # List of enabled scrapers. If a scraper ID is in this list then a unique scraper object
 # will be instantiated and cached in the ScraperFactory object.
 # To disable an scraper just remove it from this list.
 SCRAPER_LIST = [
-    SCRAPER_NULL_ID,
+    SCRAPER_NULL_ID, SCRAPER_AEL_OFFLINE_ID, SCRAPER_LB_OFFLINE_ID,
+    SCRAPER_MOBYGAMES_ID,
 ]
 
 # Make sure this matches the scraper list in settings.xml or bad things will happen.

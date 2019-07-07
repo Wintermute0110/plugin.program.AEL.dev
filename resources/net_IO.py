@@ -142,6 +142,11 @@ def net_get_URL_original(url):
     try:
         f = urlopen(req)
         encoding = f.headers['content-type'].split('charset=')[-1]
+        # Default encoding is UTF-8
+        if encoding == 'text/html': encoding = 'utf-8'
+        elif encoding == 'application/json': encoding = 'utf-8'
+        else: encoding = 'utf-8'
+        log_debug('net_get_URL_original() Encoding = "{0}"'.format(encoding))
         page_bytes = f.read()
         f.close()
     except IOError as e:    
