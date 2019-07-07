@@ -6,10 +6,10 @@
     <setting label="Update NFO files after ROM scraping" type="bool" id="scan_update_NFO_files" default="false" />
     <setting label="Ignore Scrapped Titles (use ROM filenames instead)" type="bool" id="scan_ignore_scrap_title" default="true" />
     <setting label="Clean No-Intro/TOSEC Title Tags (tag) [tag] {tag}" type="bool" id="scan_clean_tags" default="false" />
-    <setting label="Metadata scan policy" type="enum" id="scan_metadata_policy" default="3" values="None|NFO Files|NFO Files + Scrapers|Scrapers" />
-    <setting label="Asset scan policy" type="enum" id="scan_asset_policy" default="0" values="Local Images|Local Images + Scrapers|Scrapers" />
-    <setting label="Metadata scraping mode" type="enum" id="metadata_scraper_mode" default="1" values="Semi-automatic|Automatic"/>
-    <setting label="Asset scraping mode" type="enum" id="asset_scraper_mode" default="1" values="Semi-automatic|Automatic"/>
+    <setting label="Metadata scan policy" type="enum" id="scan_metadata_policy" default="3" values="None|NFO files|NFO files + Scrapers|Scrapers" />
+    <setting label="Asset scan policy" type="enum" id="scan_asset_policy" default="0" values="Local images|Local images + Scrapers|Scrapers" />
+    <setting label="Metadata scraping mode" type="enum" id="metadata_scraper_mode" default="1" values="Manual|Automatic"/>
+    <setting label="Asset scraping mode" type="enum" id="asset_scraper_mode" default="1" values="Manual|Automatic"/>
 </category>
 <category label="ROM scraping">
     <setting id="separator" type="lsep" label="General scrapers"/>
@@ -19,10 +19,10 @@
     <setting label="Second asset scraper" type="enum"    id="scraper_asset_2"    default="1" values="None|TheGamesDB|MobyGames|GameFAQs"/>
 
     <setting id="separator" type="lsep" label="MAME scrapers"/>
-    <setting label="First metadata scraper" type="enum"  id="scraper_metadata_MAME_1" default="1" values="None|Offline scraper|ArcadeDB|TheGamesDB|GameFAQs|MobyGames"/>
-    <setting label="Second metadata scraper" type="enum" id="scraper_metadata_MAME_2" default="2" values="None|Offline scraper|ArcadeDB|TheGamesDB|GameFAQs|MobyGames"/>
-    <setting label="First asset scraper" type="enum"     id="scraper_asset_MAME_1"    default="1" values="None|ArcadeDB|TheGamesDB|MobyGames|GameFAQs"/>
-    <setting label="Second asset scraper" type="enum"    id="scraper_asset_MAME_2"    default="2" values="None|ArcadeDB|TheGamesDB|MobyGames|GameFAQs"/>
+    <setting label="First metadata scraper" type="enum"  id="scraper_metadata_MAME_1" default="1" values="None|Offline scraper|ArcadeDB|MobyGames|TheGamesDB|GameFAQs"/>
+    <setting label="Second metadata scraper" type="enum" id="scraper_metadata_MAME_2" default="2" values="None|Offline scraper|ArcadeDB|MobyGames|TheGamesDB|GameFAQs"/>
+    <setting label="First asset scraper" type="enum"     id="scraper_asset_MAME_1"    default="1" values="None|ArcadeDB|MobyGames|TheGamesDB|GameFAQs"/>
+    <setting label="Second asset scraper" type="enum"    id="scraper_asset_MAME_2"    default="0" values="None|ArcadeDB|MobyGames|TheGamesDB|GameFAQs"/>
 </category>
 <!--
 <category label="Scrapers">
