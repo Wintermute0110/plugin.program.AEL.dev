@@ -65,10 +65,6 @@
     <setting label="Hide [Recently played ROMs]" type="bool" id="display_hide_recent" default="false" />
     <setting label="Hide [Most played ROMs]" type="bool" id="display_hide_mostplayed" default="false" />
 </category>
-<category label="Miscellaneous">
-    <setting label="Only check mandatory Retroarch BIOSes" type="bool" id="retroarch_mandatory_BIOS" default="true"/>
-    <setting label="Steam API key" type="text" id="steam_api_key" default="123abc" />
-</category>
 <category label="Paths">
     <setting id="separator" type="lsep" label="Retroarch paths/options"/>
     <setting label="Retroarch executable" type="folder" id="retroarch_exec_path" default="" source="" />
@@ -88,7 +84,13 @@
 
     <setting id="separator" type="lsep" label="Utilities"/>
     <setting label="Check/Update all databases ..." type="action" option="close" action="RunPlugin(plugin://plugin.program.AEL/?com=EXECUTE_CHECK_DATABASES)"/>
+    <setting label="Check Launchers ..." type="action" option="close" action="RunPlugin(plugin://plugin.program.AEL/?com=CHECK_LAUNCHERS)"/>
+    <setting label="Check Retroarch BIOSes ..." type="action" option="close" action="RunPlugin(plugin://plugin.program.AEL/?com=CHECK_RETRO_BIOS)"/>
+    <setting label="Only check mandatory BIOSes" type="bool" id="io_retroarch_only_mandatory" default="true"/>
+    <setting label="Retroarch System directory" type="folder" id="io_retroarch_sys_dir" default="" source="" />
     <setting label="Import AL launchers.xml ..." type="action" option="close" action="RunPlugin(plugin://plugin.program.AEL/?com=EXECUTE_IMPORT_AL_LAUNCHERS)"/>
+    <setting label="Only check mandatory Retroarch BIOSes" type="bool" id="retroarch_mandatory_BIOS" default="true"/>
+    <setting label="Steam API key" type="text" id="steam_api_key" default="123abc" />
 </category>
 <category label="Advanced">
     <setting label="Action on Kodi playing media" type="enum" id="media_state_action" default="0" values="Stop|Pause|Let Play" />

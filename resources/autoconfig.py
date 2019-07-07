@@ -1,16 +1,9 @@
 # -*- coding: utf-8 -*-
-<<<<<<< HEAD
-#
-# Advanced Emulator Launcher
-# Copyright (c) 2016-2018 Wintermute0110 <wintermute0110@gmail.com>
-# Portions (c) 2010-2015 Angelscry and others
-=======
 #
 # Advanced Emulator Launcher XML autoconfiguration stuff.
 #
 
 # Copyright (c) 2016-2019 Wintermute0110 <wintermute0110@gmail.com>
->>>>>>> a755c8c7f2a7da88a16abdcad3ce5664a183bd78
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by

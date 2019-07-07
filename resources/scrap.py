@@ -25,7 +25,6 @@ import urllib
 from .constants import *
 from .platforms import *
 from .utils import *
-from .assets import *
 from .disk_IO import *
 from .net_IO import *
 
@@ -1217,29 +1216,6 @@ class Scraper(object):
 
     # Abstrac method called by resolve_asset_URL()
     @abc.abstractmethod
-    def _scraper_get_image_url_from_page(self, candidate, asset_info): pass
-
-    def _download_image(self, asset_info, image_url, destination_folder):
-
-        if image_url is None or image_url == '':
-            log_debug('No image to download. Skipping')
-            return None
-
-        image_ext = text_get_image_URL_extension(image_url)
-        log_debug('Downloading  {} from image URL "{}"'.format(asset_info.name, image_url))
-
-        # ~~~ Download image ~~~
-        image_path = destination_folder.append(image_ext)
-        log_verb('Downloading URL  "{0}"'.format(image_url))
-        log_verb('Into local file  "{0}"'.format(image_path.getPath()))
-        try:
-            net_download_img(image_url, image_path)
-        except socket.timeout:
-            log_error('Cannot download {0} image (Timeout)'.format(asset_info.name))
-            kodi_notify_warn('Cannot download {0} image (Timeout)'.format(asset_info.name))
-            return None
-
-        return image_path
     def _scraper_resolve_asset_URL(self, candidate): pass
 
     def _reset_caches(self):
@@ -1726,7 +1702,7 @@ class MobyGames(Scraper):
         self.api_key = settings['scraper_mobygames_apikey']
         # --- Misc stuff ---
         self.all_asset_cache = {}
-        self.last_http_call = datetime.datetime.now()
+        self.last_http_call = datetime.now()
         # --- Pass down common scraper settings ---
         super(MobyGames, self).__init__(settings)
 

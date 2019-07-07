@@ -546,18 +546,14 @@ def m_get_settings():
     g_settings['asset_scraper_mode']       = int(o.getSetting('asset_scraper_mode'))
     
     # --- ROM scraping --
-    g_settings['scraper_metadata_1']      = int(o.getSetting('scraper_metadata_1'))
-    g_settings['scraper_metadata_2']      = int(o.getSetting('scraper_metadata_2'))
-    g_settings['scraper_asset_1']         = int(o.getSetting('scraper_asset_1'))
-    g_settings['scraper_asset_2']         = int(o.getSetting('scraper_asset_2'))
-    g_settings['scraper_metadata_MAME_1'] = int(o.getSetting('scraper_metadata_MAME_1'))
-    g_settings['scraper_metadata_MAME_2'] = int(o.getSetting('scraper_metadata_MAME_2'))
-    g_settings['scraper_asset_MAME_1']    = int(o.getSetting('scraper_asset_MAME_1'))
-    g_settings['scraper_asset_MAME_2']    = int(o.getSetting('scraper_asset_MAME_2'))
-            
-    # todo: change to use actual key from settings
-    g_settings['thegamesdb_apikey']      = '<ACTUAL_API_KEY>'
-    g_settings['mobygames_apikey']       = '<ACTUAL_API_KEY>'
+    g_settings['scraper_metadata']      = int(o.getSetting('scraper_metadata'))
+    g_settings['scraper_asset']         = int(o.getSetting('scraper_asset'))
+    g_settings['scraper_metadata_MAME'] = int(o.getSetting('scraper_metadata_MAME'))
+    g_settings['scraper_asset_MAME']    = int(o.getSetting('scraper_asset_MAME'))
+    
+    g_settings['scraper_mobygames_apikey']  = o.getSetting('scraper_mobygames_apikey').decode('utf-8')
+    g_settings['scraper_thegamesdb_apikey'] = o.getSetting('scraper_thegamesdb_apikey').decode('utf-8')
+    g_settings['scraper_screenscraper_apikey'] = o.getSetting('scraper_screenscraper_apikey').decode('utf-8')
 
     # --- ROM audit ---
     g_settings['audit_unknown_roms']         = int(o.getSetting('audit_unknown_roms'))
@@ -628,6 +624,11 @@ def m_get_settings():
         g_settings['launchers_asset_dir'] = g_PATHS.LAUNCHERS_ASSET_DIR.getPath()
     if g_settings['favourites_asset_dir']  == '':
         g_settings['favourites_asset_dir'] = g_PATHS.FAVOURITES_ASSET_DIR.getPath()
+
+        # Fake settings.
+    g_settings['scraper_screenscraper_dev_id'] = ''
+    g_settings['scraper_screenscraper_dev_pass'] = ''
+    g_settings['scraper_screenscraper_AEL_softname'] = 'AEL_{0}'.format(__addon_version__)
 
     # --- Dump settings for DEBUG ---
     # log_debug('Settings dump BEGIN')
