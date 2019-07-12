@@ -2413,35 +2413,6 @@ class ArcadeDB(Scraper):
         }
         return assetdata
 
-# -----------------------------------------------------------------------------
-# NULL scraper, does nothing
-# -----------------------------------------------------------------------------
-class NullScraper(Scraper):
-
-    def __init__(self):
-        super(NullScraper, self).__init__(None, None)
-        
-    def scrape(self, search_term, romPath, rom):
-        return True
-
-    def getName(self):
-        return 'Empty scraper'
-    
-    def supports_asset_type(self, asset_info):
-        return True
-
-    def _get_candidates(self, search_term, romPath, rom):
-        return []
-
-    def _load_metadata(self, candidate, romPath, rom):
-        return self._new_gamedata_dic()
-    
-    def _load_assets(self, candidate, romPath, rom):
-        pass
-    
-    def _get_image_url_from_page(self, candidate, asset_info):        
-        return ''
-
 class CleanTitleScraper(Scraper):
 
     def __init__(self, settings, launcher):

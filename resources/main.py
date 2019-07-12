@@ -877,7 +877,7 @@ def m_command_edit_rom(categoryID, launcherID, romID):
         kodi_dialog_OK('You cannot edit this ROM!')
         return
 
-    category = g_ObjectRepository.find_category(categoryID)
+    category = g_ObjectFactory.find_category(categoryID)
     launcher = g_ObjectRepository.find_launcher(launcherID)
 
     # --- Load ROMs ---
@@ -1753,7 +1753,7 @@ def m_subcommand_launcher_import_nfo_file(launcher):
     # >> Returns True if changes were made
     NFO_file = fs_get_launcher_NFO_name(g_settings, launcher.get_data_dic())
     if launcher.import_nfo_file(NFO_file):
-        g_ObjectRepository.save_launcher(launcher)
+        g_ObjectFactory.save_launcher(launcher)
         kodi_notify('Imported Launcher NFO file {0}'.format(NFO_file.getPath()))
 
 # --- Browse for NFO file ---
@@ -1769,7 +1769,7 @@ def m_subcommand_launcher_browse_import_nfo_file(launcher):
     # >> Launcher is edited using Python passing by assigment
     # >> Returns True if changes were made
     if launcher.import_nfo_file(NFO_FileName):
-        g_ObjectRepository.save_launcher(launcher)
+        launcher.save_to_disk()
         kodi_notify('Imported Launcher NFO file {0}'.format(NFO_FileName.getPath()))
 
 # --- Export launcher metadata to NFO file ---

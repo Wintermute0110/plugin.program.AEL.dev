@@ -2197,11 +2197,11 @@ class LauncherABC(MetaDataItemABC):
 
         # >> Careful about object mutability! This should modify the dictionary
         # >> passed as argument outside this function.
-        if item_year:      self.update_releaseyear(text_unescape_XML(item_year[0]))
-        if item_genre:     self.update_genre(text_unescape_XML(item_genre[0]))
-        if item_developer: self.update_developer(text_unescape_XML(item_developer[0]))
-        if item_rating:    self.update_rating(text_unescape_XML(item_rating[0]))
-        if item_plot:      self.update_plot(text_unescape_XML(item_plot[0]))
+        if item_year:      self.set_releaseyear(text_unescape_XML(item_year[0]))
+        if item_genre:     self.set_genre(text_unescape_XML(item_genre[0]))
+        if item_developer: self.set_developer(text_unescape_XML(item_developer[0]))
+        if item_rating:    self.set_rating(text_unescape_XML(item_rating[0]))
+        if item_plot:      self.set_plot(text_unescape_XML(item_plot[0]))
 
         log_verb("import_nfo_file() Imported '{0}'".format(nfo_file_path.getPath()))
 
