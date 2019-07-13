@@ -849,8 +849,8 @@ def print_game_metadata(metadata):
     print(p_str.format(
         '-'*TITLE_L, '-'*YEAR_L, '-'*GENRE_L, '-'*DEVELOPER_L, '-'*NPLAYERS_L, '-'*ESRB_L, '-'*PLOT_L))
     print(p_str.format(
-        title.ljust(TITLE_L), year.ljust(YEAR_L), genre.ljust(GENRE_L),  developer.ljust(DEVELOPER_L),
-        developer.ljust(NPLAYERS_L), developer.ljust(ESRB_L), plot.ljust(PLOT_L) ))
+        title.ljust(TITLE_L), year.ljust(YEAR_L), genre.ljust(GENRE_L), developer.ljust(DEVELOPER_L),
+        nplayers.ljust(NPLAYERS_L), esrb.ljust(ESRB_L), plot.ljust(PLOT_L) ))
     print('')
 
 def print_game_assets(image_list):

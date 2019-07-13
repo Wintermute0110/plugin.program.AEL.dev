@@ -31,8 +31,8 @@ scraper_obj.set_debug_file_dump(True, os.path.join(os.path.dirname(__file__), 'a
 # --- Get candidates ---
 # candidate_list = scraper_obj.get_candidates(*common.games['metroid'])
 # candidate_list = scraper_obj.get_candidates(*common.games['mworld'])
-# candidate_list = scraper_obj.get_candidates(*common.games['sonic'])
-candidate_list = scraper_obj.get_candidates(*common.games['chakan'])
+candidate_list = scraper_obj.get_candidates(*common.games['sonic'])
+# candidate_list = scraper_obj.get_candidates(*common.games['chakan'])
 
 # --- Print search results ---
 # pprint.pprint(candidate_list)
