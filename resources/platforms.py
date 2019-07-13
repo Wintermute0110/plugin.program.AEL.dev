@@ -512,6 +512,93 @@ platform_AEL_to_MobyGames_dic = {
 }
 
 #
+# Get platform names from https://www.screenscraper.fr/api/systemesListe.php?devid=xxx&devpassword=yyy&softname=zzz&output=XML&ssid=test&sspassword=test
+#
+platform_AEL_to_ScreenScraper_dic = {
+    '3DO Interactive Multiplayer' : '29',
+    'Amstrad CPC'                 : '65',
+    'Atari 2600'                  : '26',
+    'Atari 5200'                  : '40',
+    'Atari 7800'                  : '41',
+    'Atari Jaguar'                : '27',
+    'Atari Jaguar CD'             : '',
+    'Atari Lynx'                  : '28',
+    'Atari ST'                    : '42',
+    'Bandai WonderSwan'           : '45',
+    'Bandai WonderSwan Color'     : '46',
+    'Colecovision'                : '48',
+    'Commodore 64'                : '66',
+    'Commodore Amiga'             : '64',
+    'Commodore Amiga CD32'        : '',
+    'Commodore Plus-4'            : '',
+    'Commodore VIC-20'            : '73',
+    'Fujitsu FM Towns Marty'      : '',
+    'GCE Vectrex'                 : '102',
+    'Magnavox Odyssey2'           : '',
+    'MAME'                        : '75',
+    'Mattel Intellivision'        : '',
+    'Microsoft MS-DOS'            : '',
+    'Microsoft MSX'               : '',
+    'Microsoft MSX2'              : '',
+    'Microsoft Windows'           : '',
+    'Microsoft Xbox'              : '32',
+    'Microsoft Xbox 360'          : '33',
+    'Microsoft Xbox One'          : '',
+    'NEC PC Engine'               : '31',
+    'NEC PC Engine CDROM2'        : '',
+    'NEC TurboGrafx 16'           : '',
+    'NEC TurboGrafx CD'           : '',
+    'NEC SuperGrafx'              : '',
+    'NEC PC-FX'                   : '72',
+    'Nintendo 3DS'                : '17',
+    'Nintendo 64'                 : '14',
+    'Nintendo 64DD'               : '',
+    'Nintendo DS'                 : '15',
+    'Nintendo DSi'                : '',
+    'Nintendo Famicom'            : '3',
+    'Nintendo Famicom Disk System': '',
+    'Nintendo GameBoy'            : '9',
+    'Nintendo GameBoy Advance'    : '12',
+    'Nintendo GameBoy Color'      : '10',
+    'Nintendo GameCube'           : '13',
+    'Nintendo NES'                : '3',
+    'Nintendo Pokemon Mini'       : '',
+    'Nintendo SNES'               : '4',
+    'Nintendo Switch'             : '',
+    'Nintendo Virtual Boy'        : '11',
+    'Nintendo Wii'                : '16',
+    'Nintendo Wii U'              : '18',
+    'Philips Videopac G7000'      : '',
+    'Philips Videopac Plus G7400' : '',
+    'ScummVM'                     : '',
+    'Sega 32X'                    : '19',
+    'Sega Dreamcast'              : '23',
+    'Sega Game Gear'              : '21',
+    'Sega Genesis'                : '1',
+    'Sega Master System'          : '2',
+    'Sega MegaCD'                 : '20',
+    'Sega MegaDrive'              : '1',
+    'Sega PICO'                   : '',
+    'Sega Saturn'                 : '22',
+    'Sega SC-3000'                : '',
+    'Sega SegaCD'                 : '20',
+    'Sega SG-1000'                : '',
+    'Sharp X68000'                : '79',
+    'Sinclair ZX Spectrum'        : '76',
+    'SNK Neo-Geo AES'             : '',
+    'SNK Neo-Geo CD'              : '70',
+    'SNK Neo-Geo MVS'             : '68',
+    'SNK Neo-Geo Pocket'          : '25',
+    'SNK Neo-Geo Pocket Color'    : '82',
+    'Sony PlayStation'            : '57',
+    'Sony PlayStation 2'          : '58',
+    'Sony PlayStation 3'          : '59',
+    'Sony PlayStation 4'          : '',
+    'Sony PlayStation Portable'   : '61',
+    'Sony PlayStation Vita'       : '62',
+}
+
+#
 # Platform '0' means all platforms
 # Get platform names from https://www.gamefaqs.com/search_advanced?game=ar
 #
@@ -616,7 +703,13 @@ def AEL_platform_to_MobyGames(platform_AEL):
 
     return platform_MobyGames
 
-def AEL_platform_to_ScreenScraper(platform_AEL): return ''
+def AEL_platform_to_ScreenScraper(platform_AEL):
+    try:
+        platform_MobyGames = platform_AEL_to_ScreenScraper_dic[platform_AEL]
+    except:
+        platform_MobyGames = ''
+
+    return platform_MobyGames
 
 def AEL_platform_to_GameFAQs(AEL_gamesys):
     try:

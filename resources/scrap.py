@@ -1960,7 +1960,7 @@ class ScreenScraper_V1(Scraper):
             gameInfos_dic = self.cache_jeuInfos[cache_str]
         else:
             log_debug('ScreenScraper_V1::_scraper_get_candidates() Cache miss "{0}"'.format(cache_str))
-            gameInfos_dic = self._scraper_get_gameInfos(search_term, rombase_noext, scraper_platform)
+            gameInfos_dic = self._get_gameInfos(search_term, rombase_noext, scraper_platform)
             self.cache_jeuInfos[cache_str] = gameInfos_dic
 
         # --- Some debug code ---
@@ -2059,7 +2059,7 @@ class ScreenScraper_V1(Scraper):
         return page_data
 
     # Call to SS jeuInfos.php
-    def _scraper_get_gameInfos(self, search_term, rombase_noext, scraper_platform):
+    def _get_gameInfos(self, search_term, rombase_noext, scraper_platform):
         # --- Test data
         # Example from ScreenScraper API info page.
         # crc=50ABC90A&systemeid=1&romtype=rom&romnom=Sonic%20The%20Hedgehog%202%20(World).zip&romtaille=749652
@@ -2077,11 +2077,11 @@ class ScreenScraper_V1(Scraper):
         crc_str = '00000000'
         rom_name = urllib.quote(rombase_noext)
         rom_size = 0
-        log_debug('ScreenScraper_V1::_scraper_get_gameInfos() system_id "{0}"'.format(system_id))
-        log_debug('ScreenScraper_V1::_scraper_get_gameInfos() rom_type  "{0}"'.format(rom_type))
-        log_debug('ScreenScraper_V1::_scraper_get_gameInfos() crc_str   "{0}"'.format(crc_str))
-        log_debug('ScreenScraper_V1::_scraper_get_gameInfos() rom_name  "{0}"'.format(rom_name))
-        log_debug('ScreenScraper_V1::_scraper_get_gameInfos() rom_size  "{0}"'.format(rom_size))
+        log_debug('ScreenScraper_V1::_get_gameInfos() system_id "{0}"'.format(system_id))
+        log_debug('ScreenScraper_V1::_get_gameInfos() rom_type  "{0}"'.format(rom_type))
+        log_debug('ScreenScraper_V1::_get_gameInfos() crc_str   "{0}"'.format(crc_str))
+        log_debug('ScreenScraper_V1::_get_gameInfos() rom_name  "{0}"'.format(rom_name))
+        log_debug('ScreenScraper_V1::_get_gameInfos() rom_size  "{0}"'.format(rom_size))
 
         # --- Build URL ---
         # It is more convenient to dump XML files for development. For regular scraping
