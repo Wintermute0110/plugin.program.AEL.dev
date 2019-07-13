@@ -1916,6 +1916,36 @@ class ScreenScraper_V1(Scraper):
         ASSET_MAP_ID, ASSET_MANUAL_ID,
     ]
 
+    # List of country/region suffixes supported by ScreenScraper.
+    # Get list with https://www.screenscraper.fr/api/regionsListe.php?devid=xxx&devpassword=yyy&softname=zzz&output=xml&ssid=test&sspassword=test
+    # Items at the beginning will be searched first.
+    # Creation of this must be automatised...
+    region_list = [
+        '_wor', # World
+        '_eu',  # Europe
+        '_us',  # USA
+        '_ame', # America
+        '_oce', # Oceania
+        '_jp',  # Japan
+        '_asi', # Asia
+        '_de',  # Germany
+        '_au',  # Australia
+        '_br',  # Brazil
+        '_bg',  # Bulgarie
+        '_ca',  # Canada
+        '_cl',  # Chile
+        '_kr',  # Korea
+        '_dk',  # Denmark
+        '_sp',  # Spain
+        '_fi',  # Finland
+        '_fr',  # France
+        '_gr',  # Greece
+        '_uk',  # United Kingdom
+        '_cus', # Custom
+        '_ss',  # ScreenScraper
+        '',     # Empty string. Use as a last resource.
+    ]
+
     def __init__(self, settings):
         # --- This scraper settings ---
         self.api_key = settings['scraper_screenscraper_apikey']
@@ -2017,8 +2047,9 @@ class ScreenScraper_V1(Scraper):
     def _scraper_resolve_asset_URL(self, candidate): return candidate['url']
 
     # --- This class own methods -----------------------------------------------------------------
+    # Plumbing function to the the raw game dictionary returned by ScreenScraper.
+    # Scraper::get_candiates() must be called before this function.
     def get_gameInfos_dic(self, candidate):
-        # --- Retrieve gameInfos_dic from cache ---
         log_debug('ScreenScraper_V1::get_gameInfos_dic() Cache retrieving "{}"'.format(candidate['cache_str']))
         gameInfos_dic = self.cache_jeuInfos[candidate['cache_str']]
 
@@ -2104,13 +2135,29 @@ class ScreenScraper_V1(Scraper):
         return gameInfos_dic
 
     def _get_meta_title(self, jeu_dic):
+        # First search for regional name.
+        for region in ScreenScraper_V1.region_list:
+            key = 'nom' + region
+            if key in jeu_dic['noms']: return jeu_dic['noms'][key]
+
+        # Default name
         return jeu_dic['nom']
 
     def _get_meta_year(self, jeu_dic):
-        return jeu_dic['dates']['date_eu'][0:4]
+        # Search regional dates. Only return year (first 4 characters)
+        for region in ScreenScraper_V1.region_list:
+            key = 'date' + region
+            if key in jeu_dic['dates']: return jeu_dic['dates'][key][0:4]
+
+        return ''
 
     def _get_meta_genre(self, jeu_dic):
-        return jeu_dic['genres']['genres_en'][0]
+        # Only the first gender in the list is supported now.
+        for region in ScreenScraper_V1.region_list:
+            key = 'genres' + region
+            if key in jeu_dic['genres']: return jeu_dic['genres'][key][0]
+
+        return ''
 
     def _get_meta_developer(self, jeu_dic):
         return jeu_dic['developpeur']
@@ -2122,73 +2169,66 @@ class ScreenScraper_V1(Scraper):
         return jeu_dic['classifications']['ESRB']
 
     def _get_meta_plot(self, jeu_dic):
-        return jeu_dic['synopsis']['synopsis_en']
+        for region in ScreenScraper_V1.region_list:
+            key = 'synopsis' + region
+            if key in jeu_dic['synopsis']: return jeu_dic['synopsis'][key]
+
+        return ''
 
     # Returns all assets found in the jeu_dic dictionary.
     def _get_assets_all(self, jeu_dic):
         all_asset_list = []
         medias_dic = jeu_dic['medias']
 
-        # Fanart
-        if 'media_fanart' in medias_dic:
-            asset_data = self._get_asset_dic(
-                medias_dic, ASSET_FANART_ID, 'Fanart', 'media_fanart')
-            all_asset_list.append(asset_data)
+        # --- Fanart ---
+        asset_data = self._get_asset_simple(medias_dic, ASSET_FANART_ID, 'Fanart', 'media_fanart')
+        if asset_data is not None: all_asset_list.append(asset_data)
 
-        # Clearlogos are called Wheels in ScreenScraper.
+        # --- Clearlogos are called Wheels in ScreenScraper ---
         # SS supports Normal, Carbon and Steel Wheels.
         # media_wheels, media_wheelscarbon, media_wheelssteel
-        if 'media_wheels' in medias_dic:
-            asset_data = self._get_asset_dic(
-                medias_dic, ASSET_CLEARLOGO_ID, 'Clearlogo (Normal wheel)', 'media_wheels', 'media_wheel_wor')
-            all_asset_list.append(asset_data)
+        asset_data = self._get_asset_anidated(
+            medias_dic, ASSET_CLEARLOGO_ID, 'Clearlogo (Normal wheel)', 'media_wheels', 'media_wheel')
+        if asset_data is not None: all_asset_list.append(asset_data)
 
-        # Trailer (media_video)
+        # --- Trailer (media_video) ---
 
-        # SS seems to support only one Title screenshot.
-        if 'media_screenshottitle' in medias_dic:
-            asset_data = self._get_asset_dic(
-                medias_dic, ASSET_TITLE_ID, 'Title screenshot', 'media_screenshottitle')
-            all_asset_list.append(asset_data)
+        # --- SS seems to support only one Title screenshot ---
+        asset_data = self._get_asset_simple(medias_dic, ASSET_TITLE_ID, 'Title screenshot', 'media_screenshottitle')
+        if asset_data is not None: all_asset_list.append(asset_data)
 
         # SS seems to support only one Snap screenshot.
-        if 'media_screenshot' in medias_dic:
-            asset_data = self._get_asset_dic(
-                medias_dic, ASSET_SNAP_ID, 'Snap screenshot', 'media_screenshot')
-            all_asset_list.append(asset_data)
+        asset_data = self._get_asset_simple(medias_dic, ASSET_SNAP_ID, 'Snap screenshot', 'media_screenshot')
+        if asset_data is not None: all_asset_list.append(asset_data)
 
         if 'media_boxs' in medias_dic:
             boxs_dic = medias_dic['media_boxs']
-            # Boxfront
-            if 'media_boxs2d' in boxs_dic:
-                asset_data = self._get_asset_dic(
-                    boxs_dic, ASSET_BOXFRONT_ID, 'BoxFront Europe', 'media_boxs2d', 'media_box2d_eu')
-                all_asset_list.append(asset_data)
+            # --- Boxfront ---
+            asset_data = self._get_asset_anidated(
+                boxs_dic, ASSET_BOXFRONT_ID, 'BoxFront Europe', 'media_boxs2d', 'media_box2d')
+            if asset_data is not None: all_asset_list.append(asset_data)
 
-            # Boxback
-            if 'media_boxs2d-back' in boxs_dic:
-                asset_data = self._get_asset_dic(
-                    boxs_dic, ASSET_BOXBACK_ID, 'BoxBack Europe', 'media_boxs2d-back', 'media_box2d-back_eu')
-                all_asset_list.append(asset_data)
+            # --- Boxback ---
+            asset_data = self._get_asset_anidated(
+                boxs_dic, ASSET_BOXBACK_ID, 'BoxBack Europe', 'media_boxs2d-back', 'media_box2d-back')
+            if asset_data is not None: all_asset_list.append(asset_data)
 
             # Spine (not supported by AEL at the moment)
 
-            # 3D box
-            if 'media_boxs3d' in boxs_dic:
-                asset_data = self._get_asset_dic(
-                    boxs_dic, ASSET_3DBOX_ID, '3D Box Europe', 'media_boxs3d', 'media_box3d_eu')
-                all_asset_list.append(asset_data)
+            # --- 3D box ---
+            asset_data = self._get_asset_anidated(
+                boxs_dic, ASSET_3DBOX_ID, '3D Box Europe', 'media_boxs3d', 'media_box3d')
+            if asset_data is not None: all_asset_list.append(asset_data)
 
-            # Box texture (not supported by AEL at the moment)
+            # --- Box texture (not supported by AEL at the moment) ---
 
         # Cartridge are called Supports in SS.
         if 'media_supports' in medias_dic:
             supports_dic = medias_dic['media_supports']
             # Boxfront
-            if 'media_supports2d' in boxs_dic:
-                asset_data = self._get_asset_dic(
-                    supports_dic, ASSET_CARTRIDGE_ID, 'Cartridge Europe', 'media_supports2d', 'media_support2d_eu')
-                all_asset_list.append(asset_data)
+            asset_data = self._get_asset_anidated(
+                supports_dic, ASSET_CARTRIDGE_ID, 'Cartridge Europe', 'media_supports2d', 'media_support2d')
+            if asset_data is not None: all_asset_list.append(asset_data)
 
         # Maps ()
 
@@ -2196,18 +2236,35 @@ class ScreenScraper_V1(Scraper):
 
         return all_asset_list
 
-    def _get_asset_dic(self, data_dic, asset_ID, title_str, key, subkey = None):
+    # Search for regional assets.
+    # If asset cannot be found then return None.
+    # Now, this function only returns the first regional asset found. Would not be interesting
+    # to return ALL the regional assets so the user chooses.
+    def _get_asset_simple(self, data_dic, asset_ID, title_str, key):
         asset_data = self._new_assetdata_dic()
         asset_data['asset_ID']     = asset_ID
         asset_data['display_name'] = title_str
-        if subkey == None:
-            asset_data['url_thumb'] = data_dic[key]
-            asset_data['url']       = data_dic[key]
-        else:
-            asset_data['url_thumb'] = data_dic[key][subkey]
-            asset_data['url']       = data_dic[key][subkey]
+        for region_str in ScreenScraper_V1.region_list:
+            region_key = key + region_str
+            if region_key in data_dic:
+                asset_data['url_thumb'] = data_dic[region_key]
+                asset_data['url'] = data_dic[region_key]
+                return asset_data
 
-        return asset_data
+        return None
+
+    def _get_asset_anidated(self, data_dic, asset_ID, title_str, key, subkey):
+        asset_data = self._new_assetdata_dic()
+        asset_data['asset_ID']     = asset_ID
+        asset_data['display_name'] = title_str
+        for region_str in ScreenScraper_V1.region_list:
+            region_subkey = subkey + region_str
+            if region_subkey in data_dic[key]:
+                asset_data['url_thumb'] = data_dic[key][region_subkey]
+                asset_data['url'] = data_dic[key][region_subkey]
+                return asset_data
+
+        return None
 
 # ------------------------------------------------------------------------------------------------
 # ScreenScraper online scraper.
