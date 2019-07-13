@@ -13,12 +13,12 @@
 </category>
 <category label="ROM scraping">
     <setting id="separator" type="lsep" label="General scrapers"/>
-    <setting label="Metadata scraper" type="enum"  id="scraper_metadata" default="1" values="None|AEL Offline|TheGamesDB|MobyGames|GameFAQs"/>
-    <setting label="Asset scraper" type="enum"     id="scraper_asset"    default="2" values="None|TheGamesDB|MobyGames|GameFAQs"/>
+    <setting label="Metadata scraper" type="enum"  id="scraper_metadata" default="1" values="None|AEL Offline|TheGamesDB|MobyGames|ScreenScraper"/>
+    <setting label="Asset scraper" type="enum"     id="scraper_asset"    default="2" values="None|TheGamesDB|MobyGames|ScreenScraper"/>
 
     <setting id="separator" type="lsep" label="MAME scrapers"/>
-    <setting label="Metadata scraper" type="enum"  id="scraper_metadata_MAME" default="1" values="None|AEL Offline|ArcadeDB|MobyGames|TheGamesDB|GameFAQs"/>
-    <setting label="Asset scraper" type="enum"     id="scraper_asset_MAME"    default="1" values="None|ArcadeDB|MobyGames|TheGamesDB|GameFAQs"/>
+    <setting label="Metadata scraper" type="enum"  id="scraper_metadata_MAME" default="1" values="None|AEL Offline|ArcadeDB|ScreenScraper|TheGamesDB|MobyGames"/>
+    <setting label="Asset scraper" type="enum"     id="scraper_asset_MAME"    default="1" values="None|ArcadeDB|ScreenScraper|TheGamesDB|MobyGames"/>
 </category>
 <category label="Scraper settings">
     <setting id="separator" type="lsep" label="Scraper API keys"/>

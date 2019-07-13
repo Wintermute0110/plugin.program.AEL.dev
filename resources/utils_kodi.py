@@ -131,16 +131,21 @@ def kodi_refresh_container():
     xbmc.executebuiltin('Container.Refresh')
 
 # Progress dialog that can be closed and reopened.
+# If the dialog is canceled this class remembers it forever.
 class KodiProgressDialog(object):
     def __init__(self):
         self.title = 'Advanced Emulator Launcher'
         self.progress = 0
         self.flag_dialog_canceled = False
+        self.dialog_active = False
         self.progressDialog = xbmcgui.DialogProgress()
 
     def startProgress(self, message, num_steps = 100):
         self.num_steps = num_steps
+        self.progress = 0
+        self.dialog_active = True
         self.progressDialog.create(self.title, message)
+        self.progressDialog.update(self.progress)
 
     # Update progress and optionally update messages as well.
     def updateProgress(self, step_index, message1 = '', message2 = ''):
@@ -173,13 +178,15 @@ class KodiProgressDialog(object):
         if self.flag_dialog_canceled:
             return True
         else:
-            return self.progressDialog.iscanceled()
+            self.flag_dialog_canceled = self.progressDialog.iscanceled()
+            return self.flag_dialog_canceled
 
     def close(self):
         # Before closing the dialog check if the user pressed the Cancel button and remember
         # the user decision.
         if self.progressDialog.iscanceled(): self.flag_dialog_canceled = True
         self.progressDialog.close()
+        self.dialog_active = False
 
     def endProgress(self):
         # Before closing the dialog check if the user pressed the Cancel button and remember
@@ -187,7 +194,9 @@ class KodiProgressDialog(object):
         if self.progressDialog.iscanceled(): self.flag_dialog_canceled = True
         self.progressDialog.update(100)
         self.progressDialog.close()
+        self.dialog_active = False
 
+    # Reopens a previously closed dialog, remembering the messages and the progress.
     def reopen(self):
         if not self.message2:
             self.progressDialog.create(self.title, self.message1, self.message2)
