@@ -854,8 +854,8 @@ def print_game_metadata(metadata):
     print('')
 
 def print_game_assets(image_list):
+    # print('Found {0} image/s'.format(len(image_list)))
     p_str = "{0} {1} {2}"
-    print('Found {0} image/s'.format(len(image_list)))
     print(p_str.format(
         'Asset ID'.ljust(ASSET_ID_L), 'Name'.ljust(ASSET_NAME_L),
         'URL thumb'.ljust(ASSET_URL_THUMB_L)))

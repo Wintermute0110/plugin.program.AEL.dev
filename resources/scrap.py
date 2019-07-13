@@ -1720,6 +1720,7 @@ class MobyGames(Scraper):
         asset_list = [asset_dic for asset_dic in all_asset_list if asset_dic['asset_ID'] == asset_ID]
         log_debug('MobyGames::_scraper_get_assets() Total assets {0} / Returned assets {1}'.format(
             len(all_asset_list), len(asset_list)))
+
         return asset_list
 
     # Mobygames returns both the asset thumbnail URL and the full resolution URL so in
@@ -1728,6 +1729,7 @@ class MobyGames(Scraper):
         # Transform http to https
         url = candidate['url']
         if url[0:4] == 'http': url = 'https' + url[4:]
+
         return url
 
     # --- This class methods ---------------------------------------------------------------------
@@ -1908,9 +1910,11 @@ class ScreenScraper_V1(Scraper):
         META_NPLAYERS_ID, META_ESRB_ID, META_RATING_ID, META_PLOT_ID,
     ]
     supported_asset_list = [
+        ASSET_FANART_ID, ASSET_CLEARLOGO_ID, ASSET_TRAILER_ID,
+        ASSET_TITLE_ID, ASSET_SNAP_ID, ASSET_BOXFRONT_ID,
+        ASSET_BOXBACK_ID, ASSET_3DBOX_ID, ASSET_CARTRIDGE_ID,
+        ASSET_MAP_ID, ASSET_MANUAL_ID,
     ]
-    asset_name_mapping = {
-    }
 
     def __init__(self, settings):
         # --- This scraper settings ---
@@ -1984,7 +1988,7 @@ class ScreenScraper_V1(Scraper):
         gameInfos_dic = self.cache_jeuInfos[candidate['cache_str']]
         jeu_dic = gameInfos_dic['response']['jeu']
 
-        # --- Parse game page data ---
+        # --- Parse game metadata ---
         gamedata = self._new_gamedata_dic()
         gamedata['title']     = self._get_meta_title(jeu_dic)
         gamedata['year']      = self._get_meta_year(jeu_dic)
@@ -1996,11 +2000,30 @@ class ScreenScraper_V1(Scraper):
 
         return gamedata
 
-    def _scraper_get_assets(self, candidate, asset_ID): return {}
+    def _scraper_get_assets(self, candidate, asset_ID):
+        # --- Retrieve gameInfos_dic from cache ---
+        log_debug('ScreenScraper_V1::_scraper_get_metadata() Cache retrieving "{}"'.format(candidate['cache_str']))
+        gameInfos_dic = self.cache_jeuInfos[candidate['cache_str']]
+        jeu_dic = gameInfos_dic['response']['jeu']
 
-    def _scraper_resolve_asset_URL(self, candidate): pass
+        # --- Parse game assets ---
+        all_asset_list = self._get_assets_all(jeu_dic)
+        asset_list = [asset_dic for asset_dic in all_asset_list if asset_dic['asset_ID'] == asset_ID]
+        log_debug('ScreenScraper_V1::_scraper_get_assets() Total assets {0} / Returned assets {1}'.format(
+            len(all_asset_list), len(asset_list)))
+
+        return asset_list
+
+    def _scraper_resolve_asset_URL(self, candidate): return candidate['url']
 
     # --- This class own methods -----------------------------------------------------------------
+    def get_gameInfos_dic(self, candidate):
+        # --- Retrieve gameInfos_dic from cache ---
+        log_debug('ScreenScraper_V1::get_gameInfos_dic() Cache retrieving "{}"'.format(candidate['cache_str']))
+        gameInfos_dic = self.cache_jeuInfos[candidate['cache_str']]
+
+        return gameInfos_dic
+
     # Some functions to grab data from ScreenScraper.
     def get_ROM_types(self):
         log_debug('ScreenScraper_V1::get_ROM_types() BEGIN...')
@@ -2100,6 +2123,91 @@ class ScreenScraper_V1(Scraper):
 
     def _get_meta_plot(self, jeu_dic):
         return jeu_dic['synopsis']['synopsis_en']
+
+    # Returns all assets found in the jeu_dic dictionary.
+    def _get_assets_all(self, jeu_dic):
+        all_asset_list = []
+        medias_dic = jeu_dic['medias']
+
+        # Fanart
+        if 'media_fanart' in medias_dic:
+            asset_data = self._get_asset_dic(
+                medias_dic, ASSET_FANART_ID, 'Fanart', 'media_fanart')
+            all_asset_list.append(asset_data)
+
+        # Clearlogos are called Wheels in ScreenScraper.
+        # SS supports Normal, Carbon and Steel Wheels.
+        # media_wheels, media_wheelscarbon, media_wheelssteel
+        if 'media_wheels' in medias_dic:
+            asset_data = self._get_asset_dic(
+                medias_dic, ASSET_CLEARLOGO_ID, 'Clearlogo (Normal wheel)', 'media_wheels', 'media_wheel_wor')
+            all_asset_list.append(asset_data)
+
+        # Trailer (media_video)
+
+        # SS seems to support only one Title screenshot.
+        if 'media_screenshottitle' in medias_dic:
+            asset_data = self._get_asset_dic(
+                medias_dic, ASSET_TITLE_ID, 'Title screenshot', 'media_screenshottitle')
+            all_asset_list.append(asset_data)
+
+        # SS seems to support only one Snap screenshot.
+        if 'media_screenshot' in medias_dic:
+            asset_data = self._get_asset_dic(
+                medias_dic, ASSET_SNAP_ID, 'Snap screenshot', 'media_screenshot')
+            all_asset_list.append(asset_data)
+
+        if 'media_boxs' in medias_dic:
+            boxs_dic = medias_dic['media_boxs']
+            # Boxfront
+            if 'media_boxs2d' in boxs_dic:
+                asset_data = self._get_asset_dic(
+                    boxs_dic, ASSET_BOXFRONT_ID, 'BoxFront Europe', 'media_boxs2d', 'media_box2d_eu')
+                all_asset_list.append(asset_data)
+
+            # Boxback
+            if 'media_boxs2d-back' in boxs_dic:
+                asset_data = self._get_asset_dic(
+                    boxs_dic, ASSET_BOXBACK_ID, 'BoxBack Europe', 'media_boxs2d-back', 'media_box2d-back_eu')
+                all_asset_list.append(asset_data)
+
+            # Spine (not supported by AEL at the moment)
+
+            # 3D box
+            if 'media_boxs3d' in boxs_dic:
+                asset_data = self._get_asset_dic(
+                    boxs_dic, ASSET_3DBOX_ID, '3D Box Europe', 'media_boxs3d', 'media_box3d_eu')
+                all_asset_list.append(asset_data)
+
+            # Box texture (not supported by AEL at the moment)
+
+        # Cartridge are called Supports in SS.
+        if 'media_supports' in medias_dic:
+            supports_dic = medias_dic['media_supports']
+            # Boxfront
+            if 'media_supports2d' in boxs_dic:
+                asset_data = self._get_asset_dic(
+                    supports_dic, ASSET_CARTRIDGE_ID, 'Cartridge Europe', 'media_supports2d', 'media_support2d_eu')
+                all_asset_list.append(asset_data)
+
+        # Maps ()
+
+        # Manuals (media_manuels)
+
+        return all_asset_list
+
+    def _get_asset_dic(self, data_dic, asset_ID, title_str, key, subkey = None):
+        asset_data = self._new_assetdata_dic()
+        asset_data['asset_ID']     = asset_ID
+        asset_data['display_name'] = title_str
+        if subkey == None:
+            asset_data['url_thumb'] = data_dic[key]
+            asset_data['url']       = data_dic[key]
+        else:
+            asset_data['url_thumb'] = data_dic[key][subkey]
+            asset_data['url']       = data_dic[key][subkey]
+
+        return asset_data
 
 # ------------------------------------------------------------------------------------------------
 # ScreenScraper online scraper.
