@@ -6,16 +6,15 @@
 
 settings = {
     # --- MobyGames ---
-    'scraper_mobygames_apikey' : '',  # NEVER COMMIT THIS PASSWORD
+    'scraper_mobygames_apikey' : '', # NEVER COMMIT THIS PASSWORD
 
     # --- TheGamesDB ---
     # Make sure this is the Public key.
     'scraper_thegamesdb_apikey' : '828be1fb8f3182d055f1aed1f7d4da8bd4ebc160c3260eae8ee57ea823b42415',
 
     # --- ScreenScraper ---
-    'scraper_screenscraper_apikey' : '',
-    'scraper_screenscraper_dev_id' : 'Wintermute0110',
-    'scraper_screenscraper_dev_pass' : '', # NEVER COMMIT THIS PASSWORD
+    'scraper_screenscraper_ssid' : 'Wintermute0110',
+    'scraper_screenscraper_sspass' : '',  # NEVER COMMIT THIS PASSWORD
     'scraper_screenscraper_AEL_softname' : 'AEL_0.9.8',
 }
 

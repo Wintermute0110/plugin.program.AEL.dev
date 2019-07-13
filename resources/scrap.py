@@ -22,6 +22,7 @@
 from __future__ import unicode_literals
 from __future__ import division
 import abc
+import base64
 import collections
 import datetime
 import json
@@ -1948,10 +1949,11 @@ class ScreenScraper_V1(Scraper):
 
     def __init__(self, settings):
         # --- This scraper settings ---
-        self.api_key = settings['scraper_screenscraper_apikey']
-        self.dev_id = settings['scraper_screenscraper_dev_id']
-        self.dev_pass = settings['scraper_screenscraper_dev_pass']
-        self.softname = settings['scraper_screenscraper_AEL_softname']
+        self.dev_id     = 'V2ludGVybXV0ZTAxMTA='
+        self.dev_pass   = 'VDlwU3J6akZCbWZRbWM4Yg=='
+        self.ssid       = settings['scraper_screenscraper_ssid']
+        self.sspassword = settings['scraper_screenscraper_sspass']
+        self.softname   = settings['scraper_screenscraper_AEL_softname']
 
         # --- Internal stuff ---
         # Cache all data returned by jeuInfos.php
@@ -2059,7 +2061,7 @@ class ScreenScraper_V1(Scraper):
     def get_ROM_types(self):
         log_debug('ScreenScraper_V1::get_ROM_types() BEGIN...')
         url_str = 'https://www.screenscraper.fr/api/romTypesListe.php?devid={}&devpassword={}&softname={}&output=json'
-        url = url_str.format(self.dev_id, self.dev_pass, self.softname)
+        url = url_str.format(base64.b64decode(self.dev_id), base64.b64decode(self.dev_pass), self.softname)
         page_raw_data = net_get_URL_original(url)
         log_debug(unicode(page_raw_data))
         page_data = json.loads(page_raw_data)
@@ -2070,7 +2072,7 @@ class ScreenScraper_V1(Scraper):
     def get_genres_list(self):
         log_debug('ScreenScraper_V1::get_genres_list() BEGIN...')
         url_str = 'https://www.screenscraper.fr/api/genresListe.php?devid={}&devpassword={}&softname={}&output=json'
-        url = url_str.format(self.dev_id, self.dev_pass, self.softname)
+        url = url_str.format(base64.b64decode(self.dev_id), base64.b64decode(self.dev_pass), self.softname)
         page_raw_data = net_get_URL_original(url)
         # log_debug(unicode(page_raw_data))
         page_data = json.loads(page_raw_data)
@@ -2081,7 +2083,7 @@ class ScreenScraper_V1(Scraper):
     def get_regions_list(self):
         log_debug('ScreenScraper_V1::get_regions_list() BEGIN...')
         url_str = 'https://www.screenscraper.fr/api/regionsListe.php?devid={}&devpassword={}&softname={}&output=json'
-        url = url_str.format(self.dev_id, self.dev_pass, self.softname)
+        url = url_str.format(base64.b64decode(self.dev_id), base64.b64decode(self.dev_pass), self.softname)
         page_raw_data = net_get_URL_original(url)
         # log_debug(unicode(page_raw_data))
         page_data = json.loads(page_raw_data)
@@ -2097,39 +2099,45 @@ class ScreenScraper_V1(Scraper):
         # NOTE that if the CRC is all zeros and the filesize also 0 it seems to work.
         # Also, if no file extension is passed it seems to work. Looks like SS is capable of
         # fuzzy searches.
+        # ssid = 
+        # sspassword = 
         # system_id = 1
         # rom_type = 'rom'
         # crc_str = '50ABC90A'
         # rom_name = urllib.quote('Sonic The Hedgehog 2 (World).zip')
         # rom_size = 749652
         # --- Actual data for scraping in AEL
-        system_id = 1
+        system_id = scraper_platform
         rom_type = 'rom'
         crc_str = '00000000'
         rom_name = urllib.quote(rombase_noext)
         rom_size = 0
-        log_debug('ScreenScraper_V1::_get_gameInfos() system_id "{0}"'.format(system_id))
-        log_debug('ScreenScraper_V1::_get_gameInfos() rom_type  "{0}"'.format(rom_type))
-        log_debug('ScreenScraper_V1::_get_gameInfos() crc_str   "{0}"'.format(crc_str))
-        log_debug('ScreenScraper_V1::_get_gameInfos() rom_name  "{0}"'.format(rom_name))
-        log_debug('ScreenScraper_V1::_get_gameInfos() rom_size  "{0}"'.format(rom_size))
+        log_debug('ScreenScraper_V1::_get_gameInfos() ssid       "{0}"'.format(self.ssid))
+        log_debug('ScreenScraper_V1::_get_gameInfos() sspassword "{0}"'.format('********'))
+        log_debug('ScreenScraper_V1::_get_gameInfos() system_id  "{0}"'.format(system_id))
+        log_debug('ScreenScraper_V1::_get_gameInfos() rom_type   "{0}"'.format(rom_type))
+        log_debug('ScreenScraper_V1::_get_gameInfos() crc_str    "{0}"'.format(crc_str))
+        log_debug('ScreenScraper_V1::_get_gameInfos() rom_name   "{0}"'.format(rom_name))
+        log_debug('ScreenScraper_V1::_get_gameInfos() rom_size   "{0}"'.format(rom_size))
 
         # --- Build URL ---
         # It is more convenient to dump XML files for development. For regular scraping
         # JSON is more efficient.
         url_a = 'https://www.screenscraper.fr/api/jeuInfos.php?'
         url_b = 'devid={}&devpassword={}&softname={}&output=json'.format(
-            self.dev_id, self.dev_pass, self.softname)
-        url_c = '&crc={}&systemeid={}&romtype={}&romnom={}&romtaille={}'.format(
-            crc_str, system_id, rom_type, rom_name, rom_size)
+            base64.b64decode(self.dev_id), base64.b64decode(self.dev_pass), self.softname)
+        url_c = '&ssid={}&sspassword={}&systemeid={}&romtype={}'.format(
+            self.ssid, self.sspassword, system_id, rom_type)
+        url_d = '&crc={}&romnom={}&romtaille={}'.format(crc_str, rom_name, rom_size)
 
         # --- Grab and parse URL data ---
-        page_raw_data = net_get_URL_original(url_a + url_b + url_c)
+        page_raw_data = net_get_URL_original(url_a + url_b + url_c + url_d)
         try:
             gameInfos_dic = json.loads(page_raw_data)
         except ValueError as ex:
             gameInfos_dic = page_raw_data
             log_error('(Exception ValueError) {0}'.format(ex))
+            log_error('Message "{}"'.format(page_raw_data))
         self._dump_json_debug('ScreenScraper_get_gameInfo.txt', gameInfos_dic)
 
         return gameInfos_dic
