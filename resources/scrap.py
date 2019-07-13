@@ -2069,7 +2069,7 @@ class ScreenScraper_V1(Scraper):
         # log_debug(unicode(url_args))
         image_ext = url_args['mediaformat'][0] if 'mediaformat' in url_args else ''
 
-        return image_ext
+        return '.' + image_ext
 
     # --- This class own methods -----------------------------------------------------------------
     # Plumbing function to the the raw game dictionary returned by ScreenScraper.
@@ -2236,19 +2236,19 @@ class ScreenScraper_V1(Scraper):
             boxs_dic = medias_dic['media_boxs']
             # --- Boxfront ---
             asset_data = self._get_asset_anidated(
-                boxs_dic, ASSET_BOXFRONT_ID, 'BoxFront Europe', 'media_boxs2d', 'media_box2d')
+                boxs_dic, ASSET_BOXFRONT_ID, 'BoxFront', 'media_boxs2d', 'media_box2d')
             if asset_data is not None: all_asset_list.append(asset_data)
 
             # --- Boxback ---
             asset_data = self._get_asset_anidated(
-                boxs_dic, ASSET_BOXBACK_ID, 'BoxBack Europe', 'media_boxs2d-back', 'media_box2d-back')
+                boxs_dic, ASSET_BOXBACK_ID, 'BoxBack', 'media_boxs2d-back', 'media_box2d-back')
             if asset_data is not None: all_asset_list.append(asset_data)
 
             # Spine (not supported by AEL at the moment)
 
             # --- 3D box ---
             asset_data = self._get_asset_anidated(
-                boxs_dic, ASSET_3DBOX_ID, '3D Box Europe', 'media_boxs3d', 'media_box3d')
+                boxs_dic, ASSET_3DBOX_ID, '3D Box', 'media_boxs3d', 'media_box3d')
             if asset_data is not None: all_asset_list.append(asset_data)
 
             # --- Box texture (not supported by AEL at the moment) ---
@@ -2258,7 +2258,7 @@ class ScreenScraper_V1(Scraper):
             supports_dic = medias_dic['media_supports']
             # Boxfront
             asset_data = self._get_asset_anidated(
-                supports_dic, ASSET_CARTRIDGE_ID, 'Cartridge Europe', 'media_supports2d', 'media_support2d')
+                supports_dic, ASSET_CARTRIDGE_ID, 'Cartridge', 'media_supports2d', 'media_support2d')
             if asset_data is not None: all_asset_list.append(asset_data)
 
         # Maps ()
@@ -2272,12 +2272,12 @@ class ScreenScraper_V1(Scraper):
     # Now, this function only returns the first regional asset found. Would not be interesting
     # to return ALL the regional assets so the user chooses.
     def _get_asset_simple(self, data_dic, asset_ID, title_str, key):
-        asset_data = self._new_assetdata_dic()
-        asset_data['asset_ID']     = asset_ID
-        asset_data['display_name'] = title_str
         for region_str in ScreenScraper_V1.region_list:
             region_key = key + region_str
             if region_key in data_dic:
+                asset_data = self._new_assetdata_dic()
+                asset_data['asset_ID'] = asset_ID
+                asset_data['display_name'] = title_str + ' ' + region_str
                 asset_data['url_thumb'] = data_dic[region_key]
                 asset_data['url'] = data_dic[region_key]
                 return asset_data
@@ -2285,12 +2285,12 @@ class ScreenScraper_V1(Scraper):
         return None
 
     def _get_asset_anidated(self, data_dic, asset_ID, title_str, key, subkey):
-        asset_data = self._new_assetdata_dic()
-        asset_data['asset_ID']     = asset_ID
-        asset_data['display_name'] = title_str
         for region_str in ScreenScraper_V1.region_list:
             region_subkey = subkey + region_str
             if region_subkey in data_dic[key]:
+                asset_data = self._new_assetdata_dic()
+                asset_data['asset_ID'] = asset_ID
+                asset_data['display_name'] = title_str + ' ' + region_str
                 asset_data['url_thumb'] = data_dic[key][region_subkey]
                 asset_data['url'] = data_dic[key][region_subkey]
                 return asset_data
