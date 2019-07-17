@@ -435,10 +435,10 @@ def assets_get_path_noext_DIR(Asset, AssetPath, ROM):
 # First 3 characters of the objectID are added to avoid overwriting of images. For example, in the
 # Favourites special category there could be ROMs with the same name for different systems.
 #
-# Assets    -> Assets info object
-# AssetPath -> FileName object
-# asset_base_noext -> Unicode string
-# objectID -> Object MD5 ID fingerprint (Unicode string)
+# Asset             AssetInfo object
+# AssetPath         FileName object
+# asset_base_noext  Unicode string
+# objectID          Object MD5 ID fingerprint (Unicode string)
 #
 # Returns a FileName object
 #
@@ -447,23 +447,24 @@ def assets_get_path_noext_SUFIX(Asset, AssetPath, asset_base_noext, objectID = '
     asset_path_noext_FileName = FileName('')
     objectID_str = '_' + objectID[0:3]
 
-    if   Asset.kind == ASSET_ICON:       asset_path_noext_FileName = AssetPath.pjoin(asset_base_noext + objectID_str + '_icon')
-    elif Asset.kind == ASSET_FANART:     asset_path_noext_FileName = AssetPath.pjoin(asset_base_noext + objectID_str + '_fanart')
-    elif Asset.kind == ASSET_BANNER:     asset_path_noext_FileName = AssetPath.pjoin(asset_base_noext + objectID_str + '_banner')
-    elif Asset.kind == ASSET_POSTER:     asset_path_noext_FileName = AssetPath.pjoin(asset_base_noext + objectID_str + '_poster')
-    elif Asset.kind == ASSET_CLEARLOGO:  asset_path_noext_FileName = AssetPath.pjoin(asset_base_noext + objectID_str + '_clearlogo')
-    elif Asset.kind == ASSET_CONTROLLER: asset_path_noext_FileName = AssetPath.pjoin(asset_base_noext + objectID_str + '_controller')
-    elif Asset.kind == ASSET_TRAILER:    asset_path_noext_FileName = AssetPath.pjoin(asset_base_noext + objectID_str + '_trailer')
-    elif Asset.kind == ASSET_TITLE:      asset_path_noext_FileName = AssetPath.pjoin(asset_base_noext + objectID_str + '_title')
-    elif Asset.kind == ASSET_SNAP:       asset_path_noext_FileName = AssetPath.pjoin(asset_base_noext + objectID_str + '_snap')
-    elif Asset.kind == ASSET_BOXFRONT:   asset_path_noext_FileName = AssetPath.pjoin(asset_base_noext + objectID_str + '_boxfront')
-    elif Asset.kind == ASSET_BOXBACK:    asset_path_noext_FileName = AssetPath.pjoin(asset_base_noext + objectID_str + '_boxback')
-    elif Asset.kind == ASSET_CARTRIDGE:  asset_path_noext_FileName = AssetPath.pjoin(asset_base_noext + objectID_str + '_cartridge')
-    elif Asset.kind == ASSET_FLYER:      asset_path_noext_FileName = AssetPath.pjoin(asset_base_noext + objectID_str + '_flyer')
-    elif Asset.kind == ASSET_MAP:        asset_path_noext_FileName = AssetPath.pjoin(asset_base_noext + objectID_str + '_map')
-    elif Asset.kind == ASSET_MANUAL:     asset_path_noext_FileName = AssetPath.pjoin(asset_base_noext + objectID_str + '_manual')
+    if   Asset.ID == ASSET_ICON_ID:       asset_path_noext_FileName = AssetPath.pjoin(asset_base_noext + objectID_str + '_icon')
+    elif Asset.ID == ASSET_FANART_ID:     asset_path_noext_FileName = AssetPath.pjoin(asset_base_noext + objectID_str + '_fanart')
+    elif Asset.ID == ASSET_BANNER_ID:     asset_path_noext_FileName = AssetPath.pjoin(asset_base_noext + objectID_str + '_banner')
+    elif Asset.ID == ASSET_POSTER_ID:     asset_path_noext_FileName = AssetPath.pjoin(asset_base_noext + objectID_str + '_poster')
+    elif Asset.ID == ASSET_CLEARLOGO_ID:  asset_path_noext_FileName = AssetPath.pjoin(asset_base_noext + objectID_str + '_clearlogo')
+    elif Asset.ID == ASSET_CONTROLLER_ID: asset_path_noext_FileName = AssetPath.pjoin(asset_base_noext + objectID_str + '_controller')
+    elif Asset.ID == ASSET_TRAILER_ID:    asset_path_noext_FileName = AssetPath.pjoin(asset_base_noext + objectID_str + '_trailer')
+    elif Asset.ID == ASSET_TITLE_ID:      asset_path_noext_FileName = AssetPath.pjoin(asset_base_noext + objectID_str + '_title')
+    elif Asset.ID == ASSET_SNAP_ID:       asset_path_noext_FileName = AssetPath.pjoin(asset_base_noext + objectID_str + '_snap')
+    elif Asset.ID == ASSET_BOXFRONT_ID:   asset_path_noext_FileName = AssetPath.pjoin(asset_base_noext + objectID_str + '_boxfront')
+    elif Asset.ID == ASSET_BOXBACK_ID:    asset_path_noext_FileName = AssetPath.pjoin(asset_base_noext + objectID_str + '_boxback')
+    elif Asset.ID == ASSET_3DBOX_ID:      asset_path_noext_FileName = AssetPath.pjoin(asset_base_noext + objectID_str + '_3dbox')
+    elif Asset.ID == ASSET_CARTRIDGE_ID:  asset_path_noext_FileName = AssetPath.pjoin(asset_base_noext + objectID_str + '_cartridge')
+    elif Asset.ID == ASSET_FLYER_ID:      asset_path_noext_FileName = AssetPath.pjoin(asset_base_noext + objectID_str + '_flyer')
+    elif Asset.ID == ASSET_MAP_ID:        asset_path_noext_FileName = AssetPath.pjoin(asset_base_noext + objectID_str + '_map')
+    elif Asset.ID == ASSET_MANUAL_ID:     asset_path_noext_FileName = AssetPath.pjoin(asset_base_noext + objectID_str + '_manual')
     else:
-        log_error('assets_get_path_noext_SUFIX() Wrong asset kind = {0}'.format(Asset.kind))
+        raise AddonError('assets_get_path_noext_SUFIX() Wrong asset ID = {0}'.format(Asset.ID))
 
     return asset_path_noext_FileName
 

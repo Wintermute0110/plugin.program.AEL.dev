@@ -4406,13 +4406,13 @@ class Main:
         listitem.setProperty(AEL_CONTENT_LABEL, AEL_CONTENT_VALUE_ROM)
 
         # --- Set ROM artwork ---
-        # >> AEL custom artwork fields
-        listitem.setArt({'title'     : rom['s_title'],     'snap'    : rom['s_snap'],
-                         'boxfront'  : rom['s_boxfront'],  'boxback' : rom['s_boxback'], 
-                         'cartridge' : rom['s_cartridge'], 'flyer'   : rom['s_flyer'],
-                         'map'       : rom['s_map'] })
+        # AEL custom artwork fields
+        listitem.setArt({'title'    : rom['s_title'],    'snap'      : rom['s_snap'],
+                         'boxfront' : rom['s_boxfront'], 'boxback'   : rom['s_boxback'], 
+                         '3dbox'    : rom['s_3dbox'],    'cartridge' : rom['s_cartridge'], 
+                         'flyer'    : rom['s_flyer'],    'map'       : rom['s_map'] })
 
-        # >> Kodi official artwork fields
+        #  Kodi official artwork fields
         listitem.setArt({'icon'   : icon_path,   'fanart' : fanart_path, 'banner' : banner_path,
                          'poster' : poster_path, 'clearlogo' : clearlogo_path})
 
@@ -5416,7 +5416,7 @@ class Main:
         log_debug('_command_add_collection() roms_base_noext "{0}"'.format(collection['roms_base_noext']))
 
         # --- Save collections XML database ---
-        fs_write_Collection_index_XML(COLLECTIONS_FILE_PATH, collections)
+        fs_write_Collection_index_XML(g_PATHS.COLLECTIONS_FILE_PATH, collections)
         kodi_refresh_container()
         kodi_notify('Created ROM Collection "{0}"'.format(collection_name))
 
@@ -5425,7 +5425,7 @@ class Main:
     #
     def _command_edit_collection(self, categoryID, launcherID):
         # --- Load collection index ---
-        (collections, update_timestamp) = fs_load_Collection_index_XML(COLLECTIONS_FILE_PATH)
+        (collections, update_timestamp) = fs_load_Collection_index_XML(g_PATHS.COLLECTIONS_FILE_PATH)
         collection = collections[launcherID]
 
         # --- Shows a select box with the options to edit ---
