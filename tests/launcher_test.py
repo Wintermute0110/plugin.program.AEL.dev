@@ -111,7 +111,7 @@ class Test_Launcher(unittest.TestCase):
 
         # assert
         self.assertIsNotNone(expectedApp)
-        self.assertEqual(expectedApp, mock.actualApplication.getOriginalPath())
+        self.assertEqual(expectedApp, mock.actualApplication.getPath())
         self.assertIsNotNone(expectedArgs)
         self.assertEqual(expectedArgs, mock.actualArgs)
         
@@ -144,7 +144,7 @@ class Test_Launcher(unittest.TestCase):
 
         # assert
         self.assertIsNotNone(mock.actualApplication)
-        self.assertEqual(expectedApp, mock.actualApplication.getOriginalPath())
+        self.assertEqual(expectedApp, mock.actualApplication.getPath())
         
         self.assertIsNotNone(mock.actualArgs)
         self.assertEqual(expectedArgs, mock.actualArgs)
@@ -231,7 +231,7 @@ class Test_Launcher(unittest.TestCase):
 
         # assert
         self.assertIsNotNone(mock.actualApplication)
-        self.assertEqual(expected, mock.actualApplication.getOriginalPath())
+        self.assertEqual(expected, mock.actualApplication.getPath())
         self.assertEqual(expectedArgs, mock.actualArgs)
                 
     @patch('resources.objects.FileName', side_effect = FakeFile)

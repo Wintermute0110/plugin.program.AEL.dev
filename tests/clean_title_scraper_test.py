@@ -48,54 +48,40 @@ class Test_clean_title_scraper(unittest.TestCase):
     def test_scraping_metadata_for_game(self):
         
         # arrange
-        settings = self.get_test_settings()        
-        
-        launcher = StandardRomLauncher(None, settings, None, None, None, None, None)
-        launcher.set_platform('Nintendo NES')
-        
-        rom = ROM({'id': 1234})
-        fakeRomPath = FakeFile('/my/nice/roms/castlevania [ROM] (test) v2.zip')
-
-        target = CleanTitleScraper(settings, launcher)
-
+        settings = self.get_test_settings()
+        fakeBase = 'castlevania [ROM] (test) v2'                
+        target = CleanTitle(settings)
+                
         # act
-        actual = target.scrape_metadata('castlevania x', fakeRomPath, rom)
+        candidates = target.get_candidates('castlevania x', fakeBase, 'Nintendo NES')
+        actual = target.get_metadata(candidates[0])
                 
         # assert
         self.assertTrue(actual)
-        self.assertEqual(u'castlevania v2', rom.get_name())
-        print(rom)
-
+        self.assertEqual(u'castlevania v2', actual['title'])
+        print(actual)
         
     def test_scraping_assets_for_game(self):
 
         # arrange
         settings = self.get_test_settings()
+        fakeBase = 'castlevania'
         
         assets_to_scrape = [
             g_assetFactory.get_asset_info(ASSET_BOXFRONT_ID), 
             g_assetFactory.get_asset_info(ASSET_BOXBACK_ID), 
             g_assetFactory.get_asset_info(ASSET_SNAP_ID)]
         
-        launcher = StandardRomLauncher(None, settings, None, None, None, None, None)
-        launcher.set_platform('Nintendo NES')
-        launcher.set_asset_path(g_assetFactory.get_asset_info(ASSET_BOXFRONT_ID),'/my/nice/assets/front/')
-        launcher.set_asset_path(g_assetFactory.get_asset_info(ASSET_BOXBACK_ID),'/my/nice/assets/back/')
-        launcher.set_asset_path(g_assetFactory.get_asset_info(ASSET_SNAP_ID),'/my/nice/assets/snaps/')
-        
-        rom = ROM({'id': 1234})
-        fakeRomPath = FakeFile('/my/nice/roms/castlevania.zip')
-        
-        target = CleanTitleScraper(settings, launcher)
+        target = CleanTitle(settings)
 
         # act
+        candidates = target.get_candidates('castlevania x', fakeBase, 'Nintendo NES')        
         actuals = []
         for asset_to_scrape in assets_to_scrape:
-            an_actual = target.scrape_asset('castlevania', asset_to_scrape, fakeRomPath, rom)
+            an_actual = target.get_assets(candidates[0], asset_to_scrape)
             actuals.append(an_actual)
                 
         # assert
         for actual in actuals:
             self.assertFalse(actual)
         
-        print(rom)

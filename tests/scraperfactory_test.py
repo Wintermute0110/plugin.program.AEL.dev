@@ -45,10 +45,15 @@ class Test_scraperfactorytests(unittest.TestCase):
         settings['scan_metadata_policy'] = 0
         settings['scan_asset_policy'] = 0
         settings['metadata_scraper_mode'] = 0
+        settings['asset_scraper_mode'] = 0        
         settings['scan_clean_tags'] = True
         settings['escape_romfile'] = False
-        settings['thegamesdb_apikey'] = '1234ABCDEFG'
-        settings['mobygames_apikey'] = '1234ABCDEFG'
+        settings['scraper_thegamesdb_apikey'] = '1234ABCDEFG'
+        settings['scraper_mobygames_apikey'] = '1234ABCDEFG'
+        settings['scraper_screenscraper_apikey'] = '1234ABCDEFG'
+        settings['scraper_screenscraper_dev_id'] = '1234'
+        settings['scraper_screenscraper_dev_pass'] = '1234'
+        settings['scraper_screenscraper_AEL_softname'] = 'ael'
            
         paths = Fake_Paths('\\fake\\')
         paths.ROMS_DIR = FakeFile('')
@@ -59,7 +64,7 @@ class Test_scraperfactorytests(unittest.TestCase):
         expected = 'CleanTitleScraper'
 
         # act
-        actual = target.create(launcher)
+        actual = target.create_scanner(launcher)
         actual_name = actual.metadata_scraper.__class__.__name__
 
         # assert
@@ -79,8 +84,12 @@ class Test_scraperfactorytests(unittest.TestCase):
         settings['escape_romfile'] = False
 
         settings['scraper_title'] = 1 # TheGamesDB
-        settings['thegamesdb_apikey'] = '1234ABCDEFG'
-        settings['mobygames_apikey'] = '1234ABCDEFG'
+        settings['scraper_thegamesdb_apikey'] = '1234ABCDEFG'
+        settings['scraper_mobygames_apikey'] = '1234ABCDEFG'
+        settings['scraper_screenscraper_apikey'] = '1234ABCDEFG'
+        settings['scraper_screenscraper_dev_id'] = '1234'
+        settings['scraper_screenscraper_dev_pass'] = '1234'
+        settings['scraper_screenscraper_AEL_softname'] = 'ael'
         
         paths = Fake_Paths('\\fake\\')
         paths.ROMS_DIR = FakeFile('')
@@ -93,7 +102,7 @@ class Test_scraperfactorytests(unittest.TestCase):
         expected = 'LocalAssetScraper'
 
         # act
-        actual = target.create(launcher)
+        actual = target.create_scanner(launcher)
         actuals = actual.asset_scrapers
         
         # assert
@@ -110,12 +119,17 @@ class Test_scraperfactorytests(unittest.TestCase):
         settings['scan_metadata_policy'] = 3 # OnlineScraper only
         settings['scan_asset_policy'] = 0
         settings['metadata_scraper_mode'] = 1
+        settings['asset_scraper_mode'] = 0
         settings['scan_clean_tags'] = True
         settings['scan_ignore_scrap_title'] = False
         settings['scraper_metadata'] = 0 # NullScraper
         settings['escape_romfile'] = False
-        settings['thegamesdb_apikey'] = '1234ABCDEFG'
-        settings['mobygames_apikey'] = '1234ABCDEFG'
+        settings['scraper_thegamesdb_apikey'] = '1234ABCDEFG'
+        settings['scraper_mobygames_apikey'] = '1234ABCDEFG'
+        settings['scraper_screenscraper_apikey'] = '1234ABCDEFG'
+        settings['scraper_screenscraper_dev_id'] = '1234'
+        settings['scraper_screenscraper_dev_pass'] = '1234'
+        settings['scraper_screenscraper_AEL_softname'] = 'ael'
         
         paths = Fake_Paths('\\fake\\')
         paths.ROMS_DIR = FakeFile('')
@@ -127,7 +141,7 @@ class Test_scraperfactorytests(unittest.TestCase):
         expected = 'OnlineMetadataScraper'
 
         # act
-        strategy = target.create(launcher)
+        strategy = target.create_scanner(launcher)
         actual = strategy.metadata_scraper
 
         # assert
@@ -143,12 +157,17 @@ class Test_scraperfactorytests(unittest.TestCase):
         settings['scan_metadata_policy'] = 2 # NFO with Online as decorator
         settings['scan_asset_policy'] = 0
         settings['metadata_scraper_mode'] = 1
+        settings['asset_scraper_mode'] = 0
         settings['scan_clean_tags'] = True
         settings['scan_ignore_scrap_title'] = False
         settings['scraper_metadata'] = 0 # NullScraper
         settings['escape_romfile'] = False
-        settings['thegamesdb_apikey'] = '1234ABCDEFG'
-        settings['mobygames_apikey'] = '1234ABCDEFG'
+        settings['scraper_thegamesdb_apikey'] = '1234ABCDEFG'
+        settings['scraper_mobygames_apikey'] = '1234ABCDEFG'
+        settings['scraper_screenscraper_apikey'] = '1234ABCDEFG'
+        settings['scraper_screenscraper_dev_id'] = '1234'
+        settings['scraper_screenscraper_dev_pass'] = '1234'
+        settings['scraper_screenscraper_AEL_softname'] = 'ael'
         
         paths = Fake_Paths('\\fake\\')
         paths.ROMS_DIR = FakeFile('')
@@ -160,7 +179,7 @@ class Test_scraperfactorytests(unittest.TestCase):
         expected = 'NfoScraper'
 
         # act
-        strategy = target.create(launcher)
+        strategy = target.create_scanner(launcher)
         actual = strategy.metadata_scraper
 
         # assert

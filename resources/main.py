@@ -2571,7 +2571,7 @@ def m_subcommand_delete_roms_nfo(launcher):
     # --- Delete NFO files ---
     for file in nfo_scanned_files:
         log_verb('_command_edit_launcher() RM "{0}"'.format(file))
-        FileNameFactory.create(file).unlink()
+        FileName(file).unlink()
 
     # >> No need to save launchers XML / Update container
     kodi_notify('Deleted {0} NFO files'.format(len(nfo_scanned_files)))
@@ -3025,7 +3025,7 @@ def m_subcommand_import_rom_plot_from_txt(launcher, rom):
     dialog = xbmcgui.Dialog()
     text_file = dialog.browse(1, 'Select description file (TXT|DAT)', 
                                 'files', '.txt|.dat', False, False).decode('utf-8')
-    text_file_path = FileNameFactory.create(text_file)
+    text_file_path = FileName(text_file)
     if text_file_path.exists():
         file_data = self._gui_import_TXT_file(text_file_path)
         rom.set_plot(file_data)
@@ -5995,7 +5995,7 @@ def m_fav_check_favourites(roms_fav):
     for rom_fav_ID in roms_fav:
         pDialog.update(i * 100 / num_progress_items)
         i += 1
-        romFile = FileNameFactory.create(roms_fav[rom_fav_ID]['filename'])
+        romFile = FileName(roms_fav[rom_fav_ID]['filename'])
         if not romFile.exists():
             log_verb('Fav ROM "{0}" broken because filename does not exist'.format(roms_fav[rom_fav_ID]['m_name']))
             roms_fav[rom_fav_ID]['fav_status'] = 'Broken'
@@ -6133,7 +6133,7 @@ def m_command_import_collection():
     if not collection_file_str: return
 
     # --- Load ROM Collection file ---
-    collection_FN = FileNameFactory.create(collection_file_str)
+    collection_FN = FileName(collection_file_str)
     control_dic, collection_dic, collection_rom_list = fs_import_ROM_collection(collection_FN)
     if not collection_dic:
         kodi_dialog_OK('Error reading Collection JSON file. JSON file corrupted or wrong.')
@@ -6146,7 +6146,7 @@ def m_command_import_collection():
         return
 
     # --- Check if asset JSON exist. If so, ask the user about importing it. ---
-    collection_asset_FN = FileNameFactory.create(collection_FN.getPath_noext() + '_assets.json')
+    collection_asset_FN = FileName(collection_FN.getPath_noext() + '_assets.json')
     log_debug('_command_import_collection() collection_asset_FN "{0}"'.format(collection_asset_FN.getPath()))
     import_collection_assets = False
     if collection_asset_FN.exists():
@@ -6174,7 +6174,7 @@ def m_command_import_collection():
 
     # --- Also import assets if loaded ---
     if import_collection_assets:
-        collections_asset_dir_FN = FileNameFactory.create(g_settings['collections_asset_dir'])
+        collections_asset_dir_FN = FileName(g_settings['collections_asset_dir'])
 
         # --- Import Collection assets ---
         log_info('_command_import_collection() Importing ROM Collection assets ...')
@@ -6221,7 +6221,7 @@ def m_command_import_collection():
             for asset_kind in ROM_ASSET_LIST:
                 # >> Get assets filename with no extension
                 AInfo = assets_get_info_scheme(asset_kind)
-                ROM_FN = FileNameFactory.create(rom_item['filename'])                    
+                ROM_FN = FileName(rom_item['filename'])                    
                 ROM_asset_noext_FN = assets_get_path_noext_SUFIX(AInfo, collections_asset_dir_FN, 
                                                                  ROM_FN.getBase_noext(), rom_item['id'])
                 ROM_asset_FN = ROM_asset_noext_FN.append(ROM_asset_noext_FN.getExt())
@@ -6282,7 +6282,7 @@ def m_command_export_collection(categoryID, launcherID):
     dialog = xbmcgui.Dialog()
     output_dir = dialog.browse(3, 'Select Collection output directory', 'files').decode('utf-8')
     if not output_dir: return
-    output_dir_FileName = FileNameFactory.create(output_dir)
+    output_dir_FileName = FileName(output_dir)
 
     # --- Load collection ROMs ---
     (collections, update_timestamp) = fs_load_Collection_index_XML(COLLECTIONS_FILE_PATH)
@@ -6309,11 +6309,11 @@ def m_command_export_collection(categoryID, launcherID):
 
         # --- Copy Collection assets to Collection asset directory ---
         log_info('_command_export_collection() Copying ROM Collection assets ...')
-        collections_asset_dir_FN = FileNameFactory.create(g_settings['collections_asset_dir'])
+        collections_asset_dir_FN = FileName(g_settings['collections_asset_dir'])
         collection_assets_were_copied = False
         for asset_kind in CATEGORY_ASSET_LIST:
             AInfo = assets_get_info_scheme(asset_kind)
-            asset_FileName = FileNameFactory.create(collection[AInfo.key])
+            asset_FileName = FileName(collection[AInfo.key])
             new_asset_noext_FileName = assets_get_path_noext_SUFIX(AInfo, collections_asset_dir_FN,
                                                                    collection['m_name'], collection['id'])
             new_asset_FileName = new_asset_noext_FileName.append(asset_FileName.getExt())
@@ -6360,8 +6360,8 @@ def m_command_export_collection(categoryID, launcherID):
             log_debug('_command_export_collection() ROM "{0}"'.format(rom_item['m_name']))
             for asset_kind in ROM_ASSET_LIST:
                 AInfo = assets_get_info_scheme(asset_kind)
-                asset_FileName = FileNameFactory.create(rom_item[AInfo.key])
-                ROM_FileName = FileNameFactory.create(rom_item['filename'])
+                asset_FileName = FileName(rom_item[AInfo.key])
+                ROM_FileName = FileName(rom_item['filename'])
                 new_asset_noext_FileName = assets_get_path_noext_SUFIX(AInfo, collections_asset_dir_FN, 
                                                                        ROM_FileName.getBase_noext(), rom_item['id'])
                 new_asset_FileName = new_asset_noext_FileName.append(asset_FileName.getExt())
@@ -6431,7 +6431,7 @@ def m_command_search_launcher(categoryID, launcherID):
     log_debug('_command_search_launcher() categoryID {0}'.format(categoryID))
     log_debug('_command_search_launcher() launcherID {0}'.format(launcherID))
     
-    launcher = g_LauncherRepository.find(launcherID)
+    launcher = g_ObjectFactory.find_launcher(launcherID)
     
     # --- Load ROMs ---
     roms = launcher.get_roms()
@@ -8149,7 +8149,7 @@ def m_roms_add_new_rom(launcherID):
 
     # --- Format title ---
     scan_clean_tags = g_settings['scan_clean_tags']
-    ROMFile = FileNameFactory.create(romfile)
+    ROMFile = FileName(romfile)
     rom_name = text_format_ROM_title(ROMFile.getBase_noext(), scan_clean_tags)
 
     # ~~~ Check asset dirs and disable scanning for unset dirs ~~~
@@ -8755,7 +8755,7 @@ def m_command_exec_import_launchers():
     for xml_file in file_list:
         xml_file_unicode = xml_file.decode('utf-8')
         log_debug('m_command_exec_import_launchers() Importing "{0}"'.format(xml_file_unicode))
-        import_FN = FileNameFactory.create(xml_file_unicode)
+        import_FN = FileName(xml_file_unicode)
         if not import_FN.exists(): continue
 
         # >> This function edits self.categories, self.launchers dictionaries
@@ -8800,7 +8800,7 @@ def m_command_exec_export_launchers():
     if not dir_path: return
 
     # --- If XML exists then warn user about overwriting it ---
-    export_FN = FileNameFactory.create(dir_path).pjoin('AEL_configuration.xml')
+    export_FN = FileName(dir_path).pjoin('AEL_configuration.xml')
     if export_FN.exists():
         ret = kodi_dialog_yesno('AEL_configuration.xml found in the selected directory. Overwrite?')
         if not ret:
@@ -8835,7 +8835,7 @@ def m_command_exec_import_legacy_AL():
     if not ret: return
 
     kodi_notify('Importing AL launchers.xml ...')
-    AL_DATA_DIR = FileNameFactory.create('special://profile/addon_data/plugin.program.advanced.launcher')
+    AL_DATA_DIR = FileName('special://profile/addon_data/plugin.program.advanced.launcher')
     LAUNCHERS_FILE_PATH = AL_DATA_DIR.pjoin('launchers.xml')
     FIXED_LAUNCHERS_FILE_PATH = ADDON_DATA_DIR.pjoin('fixed_launchers.xml')
 
@@ -9204,7 +9204,7 @@ def m_command_exec_check_launchers():
                 l_str.append('Category not found (unlinked launcher)\n')
 
         # >> Check that application exists
-        app_FN = FileNameFactory.create(launcher['application'])
+        app_FN = FileName(launcher['application'])
         if not app_FN.exists():
             l_str.append('Application "{0}" not found\n'.format(app_FN.getPath()))
             
@@ -9276,7 +9276,7 @@ def m_command_exec_check_launchers():
 
 def m_aux_check_for_file(str_list, dic_key_name, launcher):
     path = launcher[dic_key_name]
-    path_FN = FileNameFactory.create(path)
+    path_FN = FileName(path)
     if path and not path_FN.exists():
         problems_found = True
         str_list.append('{0} "{1}" not found\n'.format(dic_key_name, path_FN.getPath()))
@@ -9303,7 +9303,7 @@ def m_command_exec_check_Retroarch_BIOS():
     log_info('m_command_exec_check_Retroarch_BIOS() check_only_mandatory = {0}'.format(check_only_mandatory))
 
     # >> If Retroarch System dir not configured or found abort.
-    sys_dir_FN = FileNameFactory.create(g_settings['io_retroarch_sys_dir'])
+    sys_dir_FN = FileName(g_settings['io_retroarch_sys_dir'])
     if not sys_dir_FN.exists():
         kodi_dialog_OK('Retroarch System directory "{0}" not found. '.format(sys_dir_FN.getPath()) +
                        'Please configure it in the addons settings.')
@@ -9516,13 +9516,13 @@ def m_command_buildMenu():
     path = ""
     try:
         skinshortcutsAddon = xbmcaddon.Addon('script.skinshortcuts')
-        path = FileNameFactory.create(skinshortcutsAddon.getAddonInfo('path'))
+        path = FileName(skinshortcutsAddon.getAddonInfo('path'))
 
         libPath = path.pjoin('resources', 'lib')
         sys.path.append(libPath.getPath())
 
         unidecodeModule = xbmcaddon.Addon('script.module.unidecode')
-        libPath = FileNameFactory.create(unidecodeModule.getAddonInfo('path'))
+        libPath = FileName(unidecodeModule.getAddonInfo('path'))
         libPath = libPath.pjoin('lib')
         sys.path.append(libPath.getPath())
 
@@ -9650,7 +9650,7 @@ def m_buildMenuItem(key, name, action, thumb, fanart, count, ui):
 def m_execute_migrations(last_migrated_to_version, to_version = None):
     import migrations
     import migrations.main
-    import distutils.version.LooseVersion
+    from distutils.version import LooseVersion
 
     pDialog = xbmcgui.DialogProgress()
     pDialog.create('Advanced Emulator Launcher', 'Performing version upgrade migrations ...')
@@ -9687,6 +9687,8 @@ def m_execute_migrations(last_migrated_to_version, to_version = None):
 # Iterates through the migration files and selects those which
 # version number is higher/newer than the last run migration version.
 def m_select_applicable_migration_files(migration_files, last_migrated_to_version, to_version):
+    from collections import OrderedDict
+    
     applicable_migrations = {}
     for migration_file in migration_files:
         if migration_file.getBase_noext() == '__init__' or migration_file.getBase_noext() == 'main':

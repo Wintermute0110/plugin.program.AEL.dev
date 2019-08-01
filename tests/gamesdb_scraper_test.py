@@ -21,6 +21,7 @@ def read_file_as_json(path):
 
 def mocked_gamesdb(url):
 
+    print(url)
     mocked_json_file = ''
 
     if '/Developers' in url:
@@ -80,7 +81,7 @@ class Test_gamesdb_scraper(unittest.TestCase):
         settings['scan_clean_tags'] = True
         settings['scan_ignore_scrap_title'] = False
         settings['scraper_metadata'] = 0 # NullScraper
-        settings['thegamesdb_apikey'] = 'abc123'
+        settings['scraper_thegamesdb_apikey'] = 'abc123'
         settings['escape_romfile'] = False
 
         return settings
@@ -90,23 +91,16 @@ class Test_gamesdb_scraper(unittest.TestCase):
         
         # arrange
         settings = self.get_test_settings()
-        asset_factory = g_assetFactory
-        
-        launcher = StandardRomLauncher(None, settings, None, None, None, None, None)
-        launcher.set_platform('Nintendo NES')
-        
-        rom = ROM({'id': 1234})
-        fakeRomPath = FakeFile('/my/nice/roms/castlevania.zip')
-
-        target = TheGamesDbScraper(settings, launcher)
+        target = TheGamesDB(settings)
 
         # act
-        actual = target.scrape_metadata('castlevania', fakeRomPath, rom)
+        candidates = target.get_candidates('castlevania', 'castlevania', 'Nintendo NES')
+        actual = target.get_metadata(candidates[0])
                 
         # assert
         self.assertTrue(actual)
-        self.assertEqual(u'Castlevania - The Lecarde Chronicles', rom.get_name())
-        print(rom)
+        self.assertEqual(u'Castlevania - The Lecarde Chronicles', actual['title'])
+        print(actual)
         
     # add actual gamesdb apikey above and comment out patch attributes to do live tests
     @patch('resources.scrap.net_get_URL_as_json', side_effect = mocked_gamesdb)
@@ -115,27 +109,18 @@ class Test_gamesdb_scraper(unittest.TestCase):
 
         # arrange
         settings = self.get_test_settings()
-        
         assets_to_scrape = [g_assetFactory.get_asset_info(ASSET_BANNER_ID), g_assetFactory.get_asset_info(ASSET_FANART_ID)]
-        
-        launcher = StandardRomLauncher(None, settings, None, None, None, None, None)
-        launcher.set_platform('Nintendo NES')
-        launcher.set_asset_path(g_assetFactory.get_asset_info(ASSET_BANNER_ID),'/my/nice/assets/banners/')
-        launcher.set_asset_path(g_assetFactory.get_asset_info(ASSET_FANART_ID),'/my/nice/assets/fans/')
-        
-        rom = ROM({'id': 1234})
-        fakeRomPath = FakeFile('/my/nice/roms/castlevania.zip')
-
-        target = TheGamesDbScraper(settings, launcher)
+        target = TheGamesDB(settings)
 
         # act
         actuals = []
+        candidates = target.get_candidates('castlevania', 'castlevania', 'Nintendo NES')   
         for asset_to_scrape in assets_to_scrape:
-            an_actual = target.scrape_asset('castlevania', asset_to_scrape, fakeRomPath, rom)
+            an_actual = target.get_assets(candidates[0], asset_to_scrape)
             actuals.append(an_actual)
                 
         # assert
         for actual in actuals:
             self.assertTrue(actual)
         
-        print(rom)
+        print(actuals)       

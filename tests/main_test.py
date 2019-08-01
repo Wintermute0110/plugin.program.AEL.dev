@@ -7,6 +7,8 @@ import xml.etree.ElementTree as ET
 import xbmcaddon
 
 import resources.main as main
+from resources.main import AEL_Paths
+
 from resources.constants import *
 from resources.utils import *
 
@@ -64,8 +66,8 @@ class Test_maintests(unittest.TestCase):
         return '1'
            
     @patch('resources.main.sys')
-    @patch('resources.utils.FileName.readXml')
-    @patch('resources.main.__addon_obj__.getSetting', side_effect = mocked_settings)       
+    @patch('resources.utils.FileName.loadFileToStr')
+    @patch('resources.main.__addon__.getSetting', side_effect = mocked_settings)       
     def test_when_running_the_plugin_no_errors_occur(self, mock_addon, mock_xmlreader, mock_sys):
         
         # arrange
@@ -73,7 +75,7 @@ class Test_maintests(unittest.TestCase):
 
         mock_sys.args.return_value = ['contenttype', 'noarg']
         main.__addon_version__ = '0.0.0'
-        target = main.Main()
+        target = main()
         
         # act
         target.run_plugin()
@@ -81,44 +83,43 @@ class Test_maintests(unittest.TestCase):
         # assert
         pass
     
-    @patch('resources.utils.FileName.writeXml')        
-    @patch('resources.utils.FileName.readXml')
     @patch('resources.main.xbmc.Keyboard.getText', autospec=True)
-    @patch('resources.main.__addon_obj__.getSetting', side_effect = mocked_settings)
-    def test_when_adding_new_category_the_correct_data_gets_stored(self, mock_addon, mock_keyboard,mock_xmlreader,mock_xmlwriter):
+    @patch('resources.main.__addon__.getSetting', side_effect = mocked_settings)
+    def test_when_adding_new_category_the_correct_data_gets_stored(self, mock_addon, mock_keyboard):
         
         # arrange
-        mock_xmlreader.return_value = self._read_file_xml(self.TEST_ASSETS_DIR + "\\ms_categories.xml")
-
+        catfile = FakeFile('categories.xml')
+        catfile.setFakeContent(self._read_file(self.TEST_ASSETS_DIR + "\\ms_categories.xml"))
+    
         expected =  'MyTestCategory'
 
         mock_keyboard.return_value = expected
-        target = main.Main()
-        target._get_settings()
-        target._bootstrap_instances()
+        target = main
+        target.g_PATHS.CATEGORIES_FILE_PATH = catfile
+        target.m_get_settings()
+        target.m_bootstrap_instances()
         
         # act
-        target._command_add_new_category()
+        target.m_command_add_new_category()
 
-        args = mock_xmlwriter.call_args
-        stored_xml_tree = args[0][0]
-        actual = ET.tostring(stored_xml_tree, encoding='utf8', method='xml')
+        contents = catfile.getFakeContent()
+        root = ET.fromstring(unicode(contents))
+        actual = root[0][0]
         print(actual)
 
         # assert
-        self.assertTrue(mock_xmlwriter.called)
         self.assertIn(expected, actual)
             
-    @patch('resources.main.__addon_obj__.getSetting', side_effect = mocked_settings)
-    @patch('resources.utils.FileName.readXml')
+    @patch('resources.main.__addon__.getSetting', side_effect = mocked_settings)
+    @patch('resources.utils.FileName.loadFileToStr')
     def test_when_rendering_roms_it_will_return_a_proper_result(self, mock_xmlreader, mock_addon):
         
         # arrange
         mock_xmlreader.return_value = self._read_file_xml(self.TEST_ASSETS_DIR + "\\ms_categories.xml")
 
-        target = main.Main()
-        target._get_settings()
-        target._bootstrap_instances()
+        target = main
+        target.m_get_settings()
+        target.m_bootstrap_instances()
         target.addon_handle = 0
 
         launcherID = '2220af27d0937d78ce7bc8317f5e853a'
@@ -126,21 +127,23 @@ class Test_maintests(unittest.TestCase):
         # act
         target._command_render_roms(None, launcherID)
      
-    @patch('resources.main.__addon_obj__.getSetting', side_effect = mocked_settings)
-    @patch('resources.utils.FileName.readXml')
+    @patch('resources.main.__addon__.getSetting', side_effect = mocked_settings)
+    @patch('resources.utils.FileName.loadFileToStr')
     def test_rendering_categories(self, mock_xmlreader, mock_addon):
         
         # arrange
-        mock_xmlreader.return_value = self._read_file_xml(self.TEST_ASSETS_DIR + "\\ms_categories.xml")
+        mock_xmlreader.return_value = self._read_file(self.TEST_ASSETS_DIR + "\\ms_categories.xml")
         
-        target = main.Main()
-        target._get_settings()
-        target._bootstrap_instances()
+        target = main
+        target.m_get_settings()
+        target.m_bootstrap_instances()
         target.base_url = ''
         target.addon_handle = 0
 
         # act
-        target._command_render_categories()
+        category_list = target.g_ObjectFactory.find_category_all()
+        for category in category_list:
+            target.m_gui_render_category_row(category)
         
 
     def test_migrations(self):
@@ -149,14 +152,15 @@ class Test_maintests(unittest.TestCase):
         shutil.copy2(self.TEST_ASSETS_DIR + "\\ms_categories.xml", self.TEST_ASSETS_DIR + "\\categories.xml")
         main.__addon_version__ = '0.9.9-alpha'
 
-        target = main.Main()
-        main.CURRENT_ADDON_DIR = StandardFileName(self.ROOT_DIR)
-        main.PLUGIN_DATA_DIR = StandardFileName(self.TEST_ASSETS_DIR)
+        #target = main.Main()
+        main.g_PATHS = AEL_Paths()
+        main.g_PATHS.ADDON_CODE_DIR = FakeFile(self.ROOT_DIR)
+        main.g_PATHS.ADDON_DATA_DIR = FakeFile(self.TEST_ASSETS_DIR)
 
         v_from = LooseVersion('0.0.0')
 
         # act
-        target.execute_migrations(v_from)
+        main.m_execute_migrations(v_from)
 
 
 if __name__ == '__main__':
