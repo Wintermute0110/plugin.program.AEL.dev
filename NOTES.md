@@ -53,20 +53,20 @@ GameFAQs scraper: detect when web server is blocked.
 
 ### Naming conventions
 
-[TOSEC Naming Convention]
+[No-Intro](http://www.no-intro.org/index.html)
 
-[TOSEC Naming Convention]: http://www.tosecdev.org/tosec-naming-convention
+[TOSEC naming convention](http://www.tosecdev.org/tosec-naming-convention)
 
-| Organisation | Name example                                                |
-|--------------|-------------------------------------------------------------|
-| TOSEC        | Final Fantasy VII (1999)(Square)(NTSC)(US)(Disc 1 of 2).cue |
-|              | Final Fantasy VII (1999)(Square)(NTSC)(US)(Disc 2 of 2).cue |
-| Trurip       | Final Fantasy VII (EU) - (Disc 1 of 3).cue                  |
-|              | Final Fantasy VII (EU) - (Disc 2 of 3).cue                  |
-|              | Final Fantasy VII (EU) - (Disc 3 of 3).cue                  |
-| Redump       | Final Fantasy VII (USA) (Disc 1).cue                        |
-|              | Final Fantasy VII (USA) (Disc 2).cue                        |
-|              | Final Fantasy VII (USA) (Disc 3).cue                        |
+| Organisation | Name example                                                  |
+|--------------|---------------------------------------------------------------|
+| **TOSEC**    | `Final Fantasy VII (1999)(Square)(NTSC)(US)(Disc 1 of 2).cue` |
+|              | `Final Fantasy VII (1999)(Square)(NTSC)(US)(Disc 2 of 2).cue` |
+| **Trurip**   | `Final Fantasy VII (EU) - (Disc 1 of 3).cue`                  |
+|              | `Final Fantasy VII (EU) - (Disc 2 of 3).cue`                  |
+|              | `Final Fantasy VII (EU) - (Disc 3 of 3).cue`                  |
+| **Redump**   | `Final Fantasy VII (USA) (Disc 1).cue`                        |
+|              | `Final Fantasy VII (USA) (Disc 2).cue`                        |
+|              | `Final Fantasy VII (USA) (Disc 3).cue`                        |
 
 
 ### TOSEC/Trurip/Redump image formats
@@ -83,13 +83,15 @@ Kodi Krypton Estuary displays a small icon to the left of the listitem title tha
 with the overlay property value. Overlay values are defined in [GUIListItem],
 
 ```
-enum GUIIconOverlay { ICON_OVERLAY_NONE = 0,
-                      ICON_OVERLAY_RAR,
-                      ICON_OVERLAY_ZIP,
-                      ICON_OVERLAY_LOCKED,
-                      ICON_OVERLAY_UNWATCHED,
-                      ICON_OVERLAY_WATCHED,
-                      ICON_OVERLAY_HD};
+enum GUIIconOverlay {
+    ICON_OVERLAY_NONE = 0,
+    ICON_OVERLAY_RAR,
+    ICON_OVERLAY_ZIP,
+    ICON_OVERLAY_LOCKED,
+    ICON_OVERLAY_UNWATCHED,
+    ICON_OVERLAY_WATCHED,
+    ICON_OVERLAY_HD
+};
 ```
 
 [setInfo]: http://mirrors.xbmc.org/docs/python-docs/16.x-jarvis/xbmcgui.html#ListItem-setInfo
