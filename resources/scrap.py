@@ -15,6 +15,7 @@
 from __future__ import unicode_literals
 from __future__ import division
 import abc
+import base64
 import collections
 import datetime
 import json
@@ -1200,6 +1201,9 @@ class Scraper(object):
     def resolve_asset_URL(self, candidate):
         return self._scraper_resolve_asset_URL(candidate)
 
+    def resolve_asset_URL_extension(self, image_url):
+        return self._scraper_resolve_asset_URL_extension(image_url)
+
     # Called by get_candidates().
     # Search for candidates and return a list of dictionaries _new_candidate_dic()
     @abc.abstractmethod
@@ -1301,6 +1305,8 @@ class Null_Scraper(Scraper):
 
     def _scraper_resolve_asset_URL(self, candidate): pass
 
+    def _scraper_resolve_asset_URL_extension(self, image_url): return text_get_URL_extension(image_url)
+
 # ------------------------------------------------------------------------------------------------
 # AEL offline metadata scraper.
 # ------------------------------------------------------------------------------------------------
@@ -1327,6 +1333,8 @@ class AEL_Offline(Scraper):
     def _scraper_get_assets(self, candidate, asset_ID): return {}
 
     def _scraper_resolve_asset_URL(self, candidate): pass
+
+    def _scraper_resolve_asset_URL_extension(self, image_url): return text_get_URL_extension(image_url)
 
 # ------------------------------------------------------------------------------------------------
 # LaunchBox offline metadata scraper.
@@ -1510,6 +1518,9 @@ class TheGamesDB(Scraper):
 
     def _scraper_resolve_asset_URL(self, candidate):
         return candidate['url']
+
+    def _scraper_resolve_asset_URL_extension(self, image_url):
+        return text_get_URL_extension(image_url)
 
     # --- This class methods own -----------------------------------------------------------------
     def get_platforms(self):
@@ -1822,6 +1833,7 @@ class MobyGames(Scraper):
         asset_list = [asset_dic for asset_dic in all_asset_list if asset_dic['asset_ID'] == asset_info.id]
         log_debug('MobyGames::_scraper_get_assets() Total assets {0} / Returned assets {1}'.format(
             len(all_asset_list), len(asset_list)))
+
         return asset_list
 
     # Mobygames returns both the asset thumbnail URL and the full resolution URL so in
@@ -1830,7 +1842,11 @@ class MobyGames(Scraper):
         # Transform http to https
         url = candidate['url']
         if url[0:4] == 'http': url = 'https' + url[4:]
+
         return url
+
+    def _scraper_resolve_asset_URL_extension(self, image_url):
+        return text_get_URL_extension(image_url)
 
     # --- This class methods ---------------------------------------------------------------------
     def _read_games_from_url(self, url, search_term, platform, scraper_platform):
@@ -1987,27 +2003,72 @@ class MobyGames(Scraper):
 # https://www.screenscraper.fr/api/mediaSysteme.php?devid=xxx&devpassword=yyy&softname=zzz&ssid=test&sspassword=test&crc=&md5=&sha1=&systemeid=1&media=wheel(wor)
 # https://www.screenscraper.fr/api/mediaVideoSysteme.php?devid=xxx&devpassword=yyy&softname=zzz&ssid=test&sspassword=test&crc=&md5=&sha1=&systemeid=1&media=video
 #
-# https://www.screenscraper.fr/api/jeuInfos.php?devid=xxx&devpassword=yyy&softname=zzz&output=xml&ssid=test&sspassword=test&crc=50ABC90A&systemeid=1&romtype=rom&romnom=Sonic%20The%20Hedgehog%202%20(World).zip&romtaille=749652
+# https://www.screenscraper.fr/api/jeuInfos.php?
+#     devid=xxx&devpassword=yyy&softname=zzz&output=xml
+#     &ssid=test&sspassword=test
+#     &systemeid=1
+#     &romtype=rom
+#     &crc=50ABC90A
+#     &romnom=Sonic%20The%20Hedgehog%202%20(World).zip
+#     &romtaille=749652
+#
 # https://www.screenscraper.fr/api/mediaJeu.php?devid=xxx&devpassword=yyy&softname=zzz&ssid=test&sspassword=test&crc=&md5=&sha1=&systemeid=1&jeuid=3&media=wheel-hd(wor)
 # https://www.screenscraper.fr/api/mediaVideoJeu.php?devid=xxx&devpassword=yyy&softname=zzz&ssid=test&sspassword=test&crc=&md5=&sha1=&systemeid=1&jeuid=3&media=video
 # ------------------------------------------------------------------------------------------------
 class ScreenScraper_V1(Scraper):
     # --- Class variables ---
     supported_metadata_list = [
+        META_TITLE_ID, META_YEAR_ID, META_GENRE_ID, META_DEVELOPER_ID,
+        META_NPLAYERS_ID, META_ESRB_ID, META_RATING_ID, META_PLOT_ID,
     ]
     supported_asset_list = [
+        ASSET_FANART_ID, ASSET_CLEARLOGO_ID, ASSET_TRAILER_ID,
+        ASSET_TITLE_ID, ASSET_SNAP_ID, ASSET_BOXFRONT_ID,
+        ASSET_BOXBACK_ID, ASSET_3DBOX_ID, ASSET_CARTRIDGE_ID,
+        ASSET_MAP_ID, ASSET_MANUAL_ID,
     ]
-    asset_name_mapping = {
-    }
+
+    # List of country/region suffixes supported by ScreenScraper.
+    # Get list with https://www.screenscraper.fr/api/regionsListe.php?devid=xxx&devpassword=yyy&softname=zzz&output=xml&ssid=test&sspassword=test
+    # Items at the beginning will be searched first.
+    # Creation of this must be automatised...
+    region_list = [
+        '_wor', # World
+        '_eu',  # Europe
+        '_us',  # USA
+        '_ame', # America
+        '_oce', # Oceania
+        '_jp',  # Japan
+        '_asi', # Asia
+        '_de',  # Germany
+        '_au',  # Australia
+        '_br',  # Brazil
+        '_bg',  # Bulgarie
+        '_ca',  # Canada
+        '_cl',  # Chile
+        '_kr',  # Korea
+        '_dk',  # Denmark
+        '_sp',  # Spain
+        '_fi',  # Finland
+        '_fr',  # France
+        '_gr',  # Greece
+        '_uk',  # United Kingdom
+        '_cus', # Custom
+        '_ss',  # ScreenScraper
+        '',     # Empty string. Use as a last resource.
+    ]
 
     def __init__(self, settings):
         # --- This scraper settings ---
-        self.api_key = settings['scraper_screenscraper_apikey']
-        self.dev_id = settings['scraper_screenscraper_dev_id']
-        self.dev_pass = settings['scraper_screenscraper_dev_pass']
-        self.softname = settings['scraper_screenscraper_AEL_softname']
+        self.dev_id     = 'V2ludGVybXV0ZTAxMTA='
+        self.dev_pass   = 'VDlwU3J6akZCbWZRbWM4Yg=='
+        self.ssid       = settings['scraper_screenscraper_ssid']
+        self.sspassword = settings['scraper_screenscraper_sspass']
+        self.softname   = settings['scraper_screenscraper_AEL_softname']
 
         # --- Internal stuff ---
+        # Cache all data returned by jeuInfos.php
+        self.cache_jeuInfos = {}
 
         # --- Pass down common scraper settings ---
         super(ScreenScraper_V1, self).__init__(settings)
@@ -2027,69 +2088,100 @@ class ScreenScraper_V1(Scraper):
 
     def _scraper_get_candidates(self, search_term, rombase_noext, platform):
         scraper_platform = AEL_platform_to_ScreenScraper(platform)
-        log_debug('ScreenScraper_V1::_scraper_get_candidates() search_term            "{0}"'.format(search_term))
-        log_debug('ScreenScraper_V1::_scraper_get_candidates() rom_base_noext         "{0}"'.format(rombase_noext))
-        log_debug('ScreenScraper_V1::_scraper_get_candidates() AEL platform           "{0}"'.format(platform))
-        log_debug('ScreenScraper_V1::_scraper_get_candidates() ScreenScraper platform "{0}"'.format(scraper_platform))
+        log_debug('ScreenScraper_V1::_scraper_get_candidates() search_term    "{0}"'.format(search_term))
+        log_debug('ScreenScraper_V1::_scraper_get_candidates() rom_base_noext "{0}"'.format(rombase_noext))
+        log_debug('ScreenScraper_V1::_scraper_get_candidates() AEL platform   "{0}"'.format(platform))
+        log_debug('ScreenScraper_V1::_scraper_get_candidates() SS platform    "{0}"'.format(scraper_platform))
 
         # --- Prepare scraping data ---
-        # Example from ScreenScraper API info page.
-        # crc=50ABC90A&systemeid=1&romtype=rom&romnom=Sonic%20The%20Hedgehog%202%20(World).zip&romtaille=749652
-        # NOTE that if the CRC is all zeros and the filesize also 0 it seems to work!
-        # Also, if no file extension is passed it seems to work. SS is capable of fuzzy searches.
-        # ScreenScraper jeuInfos.php returns absolutely everything about a single ROM: metadata,
-        # artwork, etc. jeuInfos.php returns one game or nothing at all.
-        # The data returned by SS must be cached in this object for every game.
+        # ScreenScraper jeuInfos.php returns absolutely everything about a single ROM, including
+        # metadata, artwork, etc. jeuInfos.php returns one game or nothing at all.
+        # The data returned by jeuInfos.php must be cached in this object for every request done.
+        cache_str = search_term + '__' + rombase_noext + '__' + scraper_platform
+        if cache_str in self.cache_jeuInfos:
+            log_debug('ScreenScraper_V1::_scraper_get_candidates() Cache hit "{0}"'.format(cache_str))
+            gameInfos_dic = self.cache_jeuInfos[cache_str]
+        else:
+            log_debug('ScreenScraper_V1::_scraper_get_candidates() Cache miss "{0}"'.format(cache_str))
+            gameInfos_dic = self._get_gameInfos(search_term, rombase_noext, scraper_platform)
+            self.cache_jeuInfos[cache_str] = gameInfos_dic
 
-        # --- Test data
-        # crc_str = '50ABC90A'
-        # system_id = 1
-        # rom_type = 'rom'
-        # rom_name = urllib.quote('Sonic The Hedgehog 2 (World).zip')
-        # rom_size = 749652
-        # --- Actual data for scraping in AEL
-        crc_str = '00000000'
-        system_id = 1
-        rom_type = 'rom'
-        rom_name = urllib.quote(rombase_noext)
-        rom_size = 0
+        # --- Some debug code ---
+        jeu_dic = gameInfos_dic['response']['jeu']
+        log_debug('Game "{}" (ID {}, ROMID {})'.format(jeu_dic['nom'], jeu_dic['id'], jeu_dic['romid']))
+        log_debug('Num ROMs {}'.format(len(jeu_dic['roms'])))
 
-        # --- Build URL ---
-        # It is more convenient to dump XML files for development. For regular scraping
-        # JSON is more efficient.
-        url_a = 'https://www.screenscraper.fr/api/jeuInfos.php?'
-        url_b = 'devid={}&devpassword={}&softname={}&output=json'.format(
-            self.dev_id, self.dev_pass, self.softname)
-        url_c = '&crc={}&systemeid={}&romtype={}&romnom={}&romtaille={}'.format(
-            crc_str, system_id, rom_type, rom_name, rom_size)
+        # --- Build candidate_list from ScreenScraper gameInfos_dic returned by jeuInfos.php ---
+        # ScreenScraper only returns one game or nothing at all.
+        candidate = self._new_candidate_dic()
+        candidate['id'] = jeu_dic['id']
+        candidate['display_name'] = jeu_dic['nom']
+        candidate['platform'] = platform
+        candidate['scraper_platform'] = scraper_platform
+        candidate['order'] = 1
+        # Special field to retrieve game from self.cache_jeuInfos
+        candidate['cache_str'] = cache_str
 
-        # --- Grab and parse URL data ---
-        page_raw_data = net_get_URL_original(url_a + url_b + url_c)
-        try:
-            page_data = json.loads(page_raw_data)
-        except ValueError as ex:
-            page_data = page_raw_data
-            log_error('(Exception ValueError) {0}'.format(ex))
-        self._dump_json_debug('ScreenScraper_get_gameInfo.txt', page_data)
+        # Always return a list, even if only with 1 element.
+        return [ candidate ]
 
-        game_dic = page_data['response']['jeu']
-        log_debug('Game {} (ID {})'.format(game_dic['nom'], game_dic['id']))
-        log_debug('Num ROMs {}'.format(len(game_dic['roms'])))
+    def _scraper_get_metadata(self, candidate):
+        # --- Retrieve gameInfos_dic from cache ---
+        log_debug('ScreenScraper_V1::_scraper_get_metadata() Cache retrieving "{}"'.format(candidate['cache_str']))
+        gameInfos_dic = self.cache_jeuInfos[candidate['cache_str']]
+        jeu_dic = gameInfos_dic['response']['jeu']
 
-        return []
+        # --- Parse game metadata ---
+        gamedata = self._new_gamedata_dic()
+        gamedata['title']     = self._get_meta_title(jeu_dic)
+        gamedata['year']      = self._get_meta_year(jeu_dic)
+        gamedata['genre']     = self._get_meta_genre(jeu_dic)
+        gamedata['developer'] = self._get_meta_developer(jeu_dic)
+        gamedata['nplayers']  = self._get_meta_nplayers(jeu_dic)
+        gamedata['esrb']      = self._get_meta_esrb(jeu_dic)
+        gamedata['plot']      = self._get_meta_plot(jeu_dic)
 
-    def _scraper_get_metadata(self, candidate): return {}
+        return gamedata
 
-    def _scraper_get_assets(self, candidate, asset_ID): return {}
+    def _scraper_get_assets(self, candidate, asset_ID):
+        # --- Retrieve gameInfos_dic from cache ---
+        log_debug('ScreenScraper_V1::_scraper_get_assets() Cache retrieving "{}"'.format(candidate['cache_str']))
+        gameInfos_dic = self.cache_jeuInfos[candidate['cache_str']]
+        jeu_dic = gameInfos_dic['response']['jeu']
 
-    def _scraper_resolve_asset_URL(self, candidate): pass
+        # --- Parse game assets ---
+        all_asset_list = self._get_assets_all(jeu_dic)
+        asset_list = [asset_dic for asset_dic in all_asset_list if asset_dic['asset_ID'] == asset_ID]
+        log_debug('ScreenScraper_V1::_scraper_get_assets() Total assets {0} / Returned assets {1}'.format(
+            len(all_asset_list), len(asset_list)))
+
+        return asset_list
+
+    def _scraper_resolve_asset_URL(self, candidate): return candidate['url']
+
+    def _scraper_resolve_asset_URL_extension(self, image_url):
+        o = urlparse.urlparse(image_url)
+        url_args = urlparse.parse_qs(o.query)
+        # log_debug(unicode(o))
+        # log_debug(unicode(url_args))
+        image_ext = url_args['mediaformat'][0] if 'mediaformat' in url_args else ''
+
+        return '.' + image_ext
 
     # --- This class own methods -----------------------------------------------------------------
+    # Plumbing function to the the raw game dictionary returned by ScreenScraper.
+    # Scraper::get_candiates() must be called before this function.
+    def get_gameInfos_dic(self, candidate):
+        log_debug('ScreenScraper_V1::get_gameInfos_dic() Cache retrieving "{}"'.format(candidate['cache_str']))
+        gameInfos_dic = self.cache_jeuInfos[candidate['cache_str']]
+
+        return gameInfos_dic
+
     # Some functions to grab data from ScreenScraper.
     def get_ROM_types(self):
         log_debug('ScreenScraper_V1::get_ROM_types() BEGIN...')
         url_str = 'https://www.screenscraper.fr/api/romTypesListe.php?devid={}&devpassword={}&softname={}&output=json'
-        url = url_str.format(self.dev_id, self.dev_pass, self.softname)
+        url = url_str.format(base64.b64decode(self.dev_id), base64.b64decode(self.dev_pass), self.softname)
         page_raw_data = net_get_URL_original(url)
         log_debug(unicode(page_raw_data))
         page_data = json.loads(page_raw_data)
@@ -2100,7 +2192,7 @@ class ScreenScraper_V1(Scraper):
     def get_genres_list(self):
         log_debug('ScreenScraper_V1::get_genres_list() BEGIN...')
         url_str = 'https://www.screenscraper.fr/api/genresListe.php?devid={}&devpassword={}&softname={}&output=json'
-        url = url_str.format(self.dev_id, self.dev_pass, self.softname)
+        url = url_str.format(base64.b64decode(self.dev_id), base64.b64decode(self.dev_pass), self.softname)
         page_raw_data = net_get_URL_original(url)
         # log_debug(unicode(page_raw_data))
         page_data = json.loads(page_raw_data)
@@ -2111,13 +2203,196 @@ class ScreenScraper_V1(Scraper):
     def get_regions_list(self):
         log_debug('ScreenScraper_V1::get_regions_list() BEGIN...')
         url_str = 'https://www.screenscraper.fr/api/regionsListe.php?devid={}&devpassword={}&softname={}&output=json'
-        url = url_str.format(self.dev_id, self.dev_pass, self.softname)
+        url = url_str.format(base64.b64decode(self.dev_id), base64.b64decode(self.dev_pass), self.softname)
         page_raw_data = net_get_URL_original(url)
         # log_debug(unicode(page_raw_data))
         page_data = json.loads(page_raw_data)
         self._dump_json_debug('ScreenScraper_get_regions_list.txt', page_data)
 
         return page_data
+
+    # Call to SS jeuInfos.php
+    def _get_gameInfos(self, search_term, rombase_noext, scraper_platform):
+        # --- Test data
+        # Example from ScreenScraper API info page.
+        # crc=50ABC90A&systemeid=1&romtype=rom&romnom=Sonic%20The%20Hedgehog%202%20(World).zip&romtaille=749652
+        # NOTE that if the CRC is all zeros and the filesize also 0 it seems to work.
+        # Also, if no file extension is passed it seems to work. Looks like SS is capable of
+        # fuzzy searches.
+        # ssid = 
+        # sspassword = 
+        # system_id = 1
+        # rom_type = 'rom'
+        # crc_str = '50ABC90A'
+        # rom_name = urllib.quote('Sonic The Hedgehog 2 (World).zip')
+        # rom_size = 749652
+        # --- Actual data for scraping in AEL
+        system_id = scraper_platform
+        rom_type = 'rom'
+        crc_str = '00000000'
+        rom_name = urllib.quote(rombase_noext)
+        rom_size = 0
+        log_debug('ScreenScraper_V1::_get_gameInfos() ssid       "{0}"'.format(self.ssid))
+        log_debug('ScreenScraper_V1::_get_gameInfos() sspassword "{0}"'.format('********'))
+        log_debug('ScreenScraper_V1::_get_gameInfos() system_id  "{0}"'.format(system_id))
+        log_debug('ScreenScraper_V1::_get_gameInfos() rom_type   "{0}"'.format(rom_type))
+        log_debug('ScreenScraper_V1::_get_gameInfos() crc_str    "{0}"'.format(crc_str))
+        log_debug('ScreenScraper_V1::_get_gameInfos() rom_name   "{0}"'.format(rom_name))
+        log_debug('ScreenScraper_V1::_get_gameInfos() rom_size   "{0}"'.format(rom_size))
+
+        # --- Build URL ---
+        # It is more convenient to dump XML files for development. For regular scraping
+        # JSON is more efficient.
+        url_a = 'https://www.screenscraper.fr/api/jeuInfos.php?'
+        url_b = 'devid={}&devpassword={}&softname={}&output=json'.format(
+            base64.b64decode(self.dev_id), base64.b64decode(self.dev_pass), self.softname)
+        url_c = '&ssid={}&sspassword={}&systemeid={}&romtype={}'.format(
+            self.ssid, self.sspassword, system_id, rom_type)
+        url_d = '&crc={}&romnom={}&romtaille={}'.format(crc_str, rom_name, rom_size)
+
+        # --- Grab and parse URL data ---
+        page_raw_data = net_get_URL_original(url_a + url_b + url_c + url_d)
+        try:
+            gameInfos_dic = json.loads(page_raw_data)
+        except ValueError as ex:
+            gameInfos_dic = page_raw_data
+            log_error('(Exception ValueError) {0}'.format(ex))
+            log_error('Message "{}"'.format(page_raw_data))
+        self._dump_json_debug('ScreenScraper_get_gameInfo.txt', gameInfos_dic)
+
+        return gameInfos_dic
+
+    def _get_meta_title(self, jeu_dic):
+        # First search for regional name.
+        for region in ScreenScraper_V1.region_list:
+            key = 'nom' + region
+            if key in jeu_dic['noms']: return jeu_dic['noms'][key]
+
+        # Default name
+        return jeu_dic['nom']
+
+    def _get_meta_year(self, jeu_dic):
+        # Search regional dates. Only return year (first 4 characters)
+        for region in ScreenScraper_V1.region_list:
+            key = 'date' + region
+            if key in jeu_dic['dates']: return jeu_dic['dates'][key][0:4]
+
+        return ''
+
+    def _get_meta_genre(self, jeu_dic):
+        # Only the first gender in the list is supported now.
+        for region in ScreenScraper_V1.region_list:
+            key = 'genres' + region
+            if key in jeu_dic['genres']: return jeu_dic['genres'][key][0]
+
+        return ''
+
+    def _get_meta_developer(self, jeu_dic):
+        return jeu_dic['developpeur']
+
+    def _get_meta_nplayers(self, jeu_dic):
+        return jeu_dic['joueurs']
+
+    def _get_meta_esrb(self, jeu_dic):
+        return jeu_dic['classifications']['ESRB']
+
+    def _get_meta_plot(self, jeu_dic):
+        for region in ScreenScraper_V1.region_list:
+            key = 'synopsis' + region
+            if key in jeu_dic['synopsis']: return jeu_dic['synopsis'][key]
+
+        return ''
+
+    # Returns all assets found in the jeu_dic dictionary.
+    def _get_assets_all(self, jeu_dic):
+        all_asset_list = []
+        medias_dic = jeu_dic['medias']
+
+        # --- Fanart ---
+        asset_data = self._get_asset_simple(medias_dic, ASSET_FANART_ID, 'Fanart', 'media_fanart')
+        if asset_data is not None: all_asset_list.append(asset_data)
+
+        # --- Clearlogos are called Wheels in ScreenScraper ---
+        # SS supports Normal, Carbon and Steel Wheels.
+        # media_wheels, media_wheelscarbon, media_wheelssteel
+        asset_data = self._get_asset_anidated(
+            medias_dic, ASSET_CLEARLOGO_ID, 'Clearlogo (Normal wheel)', 'media_wheels', 'media_wheel')
+        if asset_data is not None: all_asset_list.append(asset_data)
+
+        # --- Trailer (media_video) ---
+
+        # --- SS seems to support only one Title screenshot ---
+        asset_data = self._get_asset_simple(medias_dic, ASSET_TITLE_ID, 'Title screenshot', 'media_screenshottitle')
+        if asset_data is not None: all_asset_list.append(asset_data)
+
+        # SS seems to support only one Snap screenshot.
+        asset_data = self._get_asset_simple(medias_dic, ASSET_SNAP_ID, 'Snap screenshot', 'media_screenshot')
+        if asset_data is not None: all_asset_list.append(asset_data)
+
+        if 'media_boxs' in medias_dic:
+            boxs_dic = medias_dic['media_boxs']
+            # --- Boxfront ---
+            asset_data = self._get_asset_anidated(
+                boxs_dic, ASSET_BOXFRONT_ID, 'BoxFront', 'media_boxs2d', 'media_box2d')
+            if asset_data is not None: all_asset_list.append(asset_data)
+
+            # --- Boxback ---
+            asset_data = self._get_asset_anidated(
+                boxs_dic, ASSET_BOXBACK_ID, 'BoxBack', 'media_boxs2d-back', 'media_box2d-back')
+            if asset_data is not None: all_asset_list.append(asset_data)
+
+            # Spine (not supported by AEL at the moment)
+
+            # --- 3D box ---
+            asset_data = self._get_asset_anidated(
+                boxs_dic, ASSET_3DBOX_ID, '3D Box', 'media_boxs3d', 'media_box3d')
+            if asset_data is not None: all_asset_list.append(asset_data)
+
+            # --- Box texture (not supported by AEL at the moment) ---
+
+        # Cartridge are called Supports in SS.
+        if 'media_supports' in medias_dic:
+            supports_dic = medias_dic['media_supports']
+            # Boxfront
+            asset_data = self._get_asset_anidated(
+                supports_dic, ASSET_CARTRIDGE_ID, 'Cartridge', 'media_supports2d', 'media_support2d')
+            if asset_data is not None: all_asset_list.append(asset_data)
+
+        # Maps ()
+
+        # Manuals (media_manuels)
+
+        return all_asset_list
+
+    # Search for regional assets.
+    # If asset cannot be found then return None.
+    # Now, this function only returns the first regional asset found. Would not be interesting
+    # to return ALL the regional assets so the user chooses.
+    def _get_asset_simple(self, data_dic, asset_ID, title_str, key):
+        for region_str in ScreenScraper_V1.region_list:
+            region_key = key + region_str
+            if region_key in data_dic:
+                asset_data = self._new_assetdata_dic()
+                asset_data['asset_ID'] = asset_ID
+                asset_data['display_name'] = title_str + ' ' + region_str
+                asset_data['url_thumb'] = data_dic[region_key]
+                asset_data['url'] = data_dic[region_key]
+                return asset_data
+
+        return None
+
+    def _get_asset_anidated(self, data_dic, asset_ID, title_str, key, subkey):
+        for region_str in ScreenScraper_V1.region_list:
+            region_subkey = subkey + region_str
+            if region_subkey in data_dic[key]:
+                asset_data = self._new_assetdata_dic()
+                asset_data['asset_ID'] = asset_ID
+                asset_data['display_name'] = title_str + ' ' + region_str
+                asset_data['url_thumb'] = data_dic[key][region_subkey]
+                asset_data['url'] = data_dic[key][region_subkey]
+                return asset_data
+
+        return None
 
 # ------------------------------------------------------------------------------------------------
 # ScreenScraper online scraper.

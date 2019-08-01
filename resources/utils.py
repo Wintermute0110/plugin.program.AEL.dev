@@ -524,9 +524,10 @@ def text_get_multidisc_info(ROM_FN):
 # Get extension of URL. Returns '' if not found.
 #
 def text_get_URL_extension(url):
-    
-    urlPath = FileName(url)
-    return urlPath.getExt()
+    path = urlparse.urlparse(url).path
+    ext = os.path.splitext(path)[1]
+
+    return ext
 
 #
 # Defaults to .jpg if URL extension cannot be determined
@@ -2682,13 +2683,13 @@ def print_game_metadata(metadata):
     print(p_str.format(
         '-'*TITLE_L, '-'*YEAR_L, '-'*GENRE_L, '-'*DEVELOPER_L, '-'*NPLAYERS_L, '-'*ESRB_L, '-'*PLOT_L))
     print(p_str.format(
-        title.ljust(TITLE_L), year.ljust(YEAR_L), genre.ljust(GENRE_L),  developer.ljust(DEVELOPER_L),
-        developer.ljust(NPLAYERS_L), developer.ljust(ESRB_L), plot.ljust(PLOT_L) ))
+        title.ljust(TITLE_L), year.ljust(YEAR_L), genre.ljust(GENRE_L), developer.ljust(DEVELOPER_L),
+        nplayers.ljust(NPLAYERS_L), esrb.ljust(ESRB_L), plot.ljust(PLOT_L) ))
     print('')
 
 def print_game_assets(image_list):
+    # print('Found {0} image/s'.format(len(image_list)))
     p_str = "{0} {1} {2}"
-    print('Found {0} image/s'.format(len(image_list)))
     print(p_str.format(
         'Asset ID'.ljust(ASSET_ID_L), 'Name'.ljust(ASSET_NAME_L),
         'URL thumb'.ljust(ASSET_URL_THUMB_L)))
