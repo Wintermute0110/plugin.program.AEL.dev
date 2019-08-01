@@ -20,6 +20,7 @@ import datetime
 import json
 import time
 import urllib
+import urlparse
 
 # --- AEL packages ---
 from .constants import *
@@ -663,9 +664,9 @@ class ScrapeStrategy(object):
                 asset_name, scraper_name)
             self.pdialog.updateMessage2(scraper_text)
         image_url = scraper_obj.resolve_asset_URL(selected_asset)
-        image_ext = text_get_image_URL_extension(image_url)
+        image_ext = self.scraper_obj.resolve_asset_URL_extension(image_url)
         log_debug('Resolved {0} to URL "{1}"'.format(asset_name, image_url))
-        log_debug('URL extension "{0}"'.format(image_ext))
+        log_debug('Resolved URL extension "{0}"'.format(image_ext))
         if not image_url or not image_ext:
             log_debug('Error resolving URL')
             return ret_asset_path
@@ -978,17 +979,17 @@ class ScrapeStrategy(object):
         log_debug('Resolving asset URL...')
         pdialog.startProgress('{0} scraper (Resolving asset...)'.format(scraper_name), 100)
         image_url = self.scraper_obj.resolve_asset_URL(selected_asset)
+        log_debug('Resolved {0} to URL "{1}"'.format(asset_name, image_url))
         pdialog.endProgress()
         if not image_url:
             log_error('_gui_edit_asset() Error in scraper.resolve_asset_URL()')
             op_dic['status'] = False
             op_dic['msg'] = 'Error downloading asset'
-            return op_dic
-        image_ext = text_get_image_URL_extension(image_url)
-        log_debug('Resolved {0} to URL "{1}"'.format(asset_name, image_url))
-        log_debug('URL extension "{0}"'.format(image_ext))
-        if not image_url or not image_ext:
-            log_error('_gui_edit_asset() image_url or image_ext empty/not set')
+            return op_dic        
+        image_ext = self.scraper_obj.resolve_asset_URL_extension(image_url)
+        log_debug('Resolved URL extension "{0}"'.format(image_ext))
+        if not image_ext:
+            log_error('_gui_edit_asset() Error in scraper.resolve_asset_URL_extension()')
             op_dic['status'] = False
             op_dic['msg'] = 'Error downloading asset'
             return op_dic
@@ -1176,9 +1177,8 @@ class Scraper(object):
     # @param candidate: [dict] Candidate returned by get_candidates()
     # @return: [list] List of _new_assetdata_dic() dictionaries. None if error getting the metadata.
     def get_assets(self, candidate, asset_info):
-        #asset_info = assets_get_info_scheme(asset_ID)
-        log_debug('Scraper::get_assets() candidate ID = {0}'.format(candidate['id']))
-        log_debug('Scraper::get_assets() asset_ID = {0} (ID {1})'.format(asset_info.name, asset_info.id))
+        log_debug('Scraper::get_assets() candidate ID = {0}, asset {1} (ID {2})'.format(
+        candidate['id'], asset_info.name, asset_info.id))
         cache_key = str(candidate['id']) + '__' + str(asset_info.id)
         if cache_key in self.cache_assets:
             log_debug('Scraper::get_assets() Cache hit "{0}"'.format(cache_key))
@@ -1800,13 +1800,13 @@ class MobyGames(Scraper):
         self.last_http_call = datetime.now()
         
         # --- Parse game page data ---
-        game_data = self._new_gamedata_dic()
-        game_data['title'] = online_data['title'] if 'title' in online_data else ''
-        game_data['plot']  = online_data['description'] if 'description' in online_data else ''
-        game_data['genre'] = self._get_genres(online_data['genres']) if 'genres' in online_data else ''
-        game_data['year']  = self._get_year_by_platform(online_data['platforms'], candidate['scraper_platform'])
+        gamedata = self._new_gamedata_dic()
+        gamedata['title'] = online_data['title'] if 'title' in online_data else ''
+        gamedata['plot']  = online_data['description'] if 'description' in online_data else ''
+        gamedata['genre'] = self._get_genres(online_data['genres']) if 'genres' in online_data else ''
+        gamedata['year']  = self._get_year_by_platform(online_data['platforms'], candidate['scraper_platform'])
 
-        return game_data
+        return gamedata
 
     # Get assets of a particular type. Note that this function maybe called many times for
     # the same candidate but different asset type, so cache data if necessary.
