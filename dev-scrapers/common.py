@@ -20,8 +20,16 @@ settings = {
 
 # --- Test data -----------------------------------------------------------------------------------
 games = {
-    'metroid' : ('Metroid', 'Metroid', 'Nintendo SNES'),
-    'mworld' : ('Super Mario World', 'Super Mario World', 'Nintendo SNES'),
-    'sonic' : ('Sonic The Hedgehog', 'Sonic The Hedgehog (USA, Europe)', 'Sega MegaDrive'),
-    'chakan' : ('Chakan', 'Chakan (USA, Europe)', 'Sega MegaDrive'),
+    # Console games
+    'metroid'         : ('Metroid', 'Metroid', 'Nintendo SNES'),
+    'mworld'          : ('Super Mario World', 'Super Mario World', 'Nintendo SNES'),
+    'sonic'           : ('Sonic The Hedgehog', 'Sonic The Hedgehog (USA, Europe)', 'Sega MegaDrive'),
+    'chakan'          : ('Chakan', 'Chakan (USA, Europe)', 'Sega MegaDrive'),
+    'console_invalid' : ('Console invalid game', 'mjhyewqr', 'Sega MegaDrive'),
+
+    # MAME games
+    'tetris'          : ('Tetris (set 1)', 'atetris', 'MAME'),
+    'mslug'           : ('Metal Slug - Super Vehicle-001', 'mslug', 'MAME'),
+    'dino'            : ('Cadillacs and Dinosaurs (World 930201)', 'dino', 'MAME'),
+    'MAME_invalid'    : ('MAME invalid game', 'mjhyewqr', 'MAME'),
 }
