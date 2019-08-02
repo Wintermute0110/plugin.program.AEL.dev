@@ -220,41 +220,60 @@ META_PLOT_ID      = 80
 # -------------------------------------------------------------------------------------------------
 # Assets
 # -------------------------------------------------------------------------------------------------
-# ROMs have FLYER, Categories/Launchers/Collections have POSTER
+# --- Kodi standard artwork types. Mappable to any other artwork type including itself ---
 ASSET_ICON_ID       = 100
 ASSET_FANART_ID     = 200
-ASSET_BANNER_ID     = 300
+ASSET_CLEARLOGO_ID  = 300
 ASSET_POSTER_ID     = 400
-ASSET_CLEARLOGO_ID  = 500
-ASSET_CONTROLLER_ID = 600
-ASSET_TRAILER_ID    = 700
-ASSET_TITLE_ID      = 800
-ASSET_SNAP_ID       = 900
-ASSET_BOXFRONT_ID   = 1000
-ASSET_BOXBACK_ID    = 1100
-ASSET_3DBOX_ID      = 1200
-ASSET_CARTRIDGE_ID  = 1300
-ASSET_FLYER_ID      = 1400
-ASSET_MAP_ID        = 1500
-ASSET_MANUAL_ID     = 1600
+ASSET_BANNER_ID     = 500  # Marquee in MAME
+ASSET_TRAILER_ID    = 600
+# --- AEL artwork types ---
+ASSET_TITLE_ID      = 700
+ASSET_SNAP_ID       = 800
+ASSET_BOXFRONT_ID   = 900  # Cabinet in MAME
+ASSET_BOXBACK_ID    = 1000 # CPanel in MAME
+ASSET_3DBOX_ID      = 1100
+ASSET_CARTRIDGE_ID  = 1200 # PCB in MAME
+ASSET_FLYER_ID      = 1300
+ASSET_MAP_ID        = 1400
+ASSET_MANUAL_ID     = 1500
+ASSET_CONTROLLER_ID = 1600
 
 #
 # The order of this list must match order in dialog.select() in the GUI, or bad things will happen.
 #
 CATEGORY_ASSET_ID_LIST = [
-    ASSET_ICON_ID,   ASSET_FANART_ID,    ASSET_BANNER_ID,
-    ASSET_POSTER_ID, ASSET_CLEARLOGO_ID, ASSET_TRAILER_ID,
+    ASSET_ICON_ID,
+    ASSET_FANART_ID,
+    ASSET_CLEARLOGO_ID,
+    ASSET_POSTER_ID,
+    ASSET_BANNER_ID,
+    ASSET_TRAILER_ID,
 ]
 
 LAUNCHER_ASSET_ID_LIST = [
-    ASSET_ICON_ID,      ASSET_FANART_ID,     ASSET_BANNER_ID, ASSET_POSTER_ID,
-    ASSET_CLEARLOGO_ID, ASSET_CONTROLLER_ID, ASSET_TRAILER_ID,
+    ASSET_ICON_ID,
+    ASSET_FANART_ID,
+    ASSET_CLEARLOGO_ID,
+    ASSET_POSTER_ID,
+    ASSET_BANNER_ID,
+    ASSET_CONTROLLER_ID,
+    ASSET_TRAILER_ID,
 ]
 
 ROM_ASSET_ID_LIST = [
-    ASSET_TITLE_ID,     ASSET_SNAP_ID,   ASSET_BOXFRONT_ID, ASSET_BOXBACK_ID,
-    ASSET_CARTRIDGE_ID, ASSET_FANART_ID, ASSET_BANNER_ID,   ASSET_CLEARLOGO_ID,
-    ASSET_FLYER_ID,     ASSET_3DBOX_ID,  ASSET_MAP_ID,      ASSET_MANUAL_ID,
+    ASSET_FANART_ID,
+    ASSET_BANNER_ID,
+    ASSET_CLEARLOGO_ID,
+    ASSET_TITLE_ID,
+    ASSET_SNAP_ID,
+    ASSET_BOXFRONT_ID,
+    ASSET_BOXBACK_ID,
+    ASSET_3DBOX_ID,
+    ASSET_CARTRIDGE_ID,
+    ASSET_FLYER_ID,
+    ASSET_MAP_ID,
+    ASSET_MANUAL_ID,
     ASSET_TRAILER_ID,
 ]
 

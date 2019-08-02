@@ -1,7 +1,7 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 #
-# Test AEL Arcade DB metadata scraper.
+# Test AEL Arcade DB asset scraper.
 #
 
 # --- Python standard library ---
@@ -43,8 +43,10 @@ if not candidate_list:
     sys.exit(0)
 candidate = candidate_list[0]
 
-# --- Print metadata of first candidate ---
-print('*** ScreenScraper game metadata *********************************************************')
-metadata = scraper_obj.get_metadata(candidate_list[0])
-# pprint.pprint(metadata)
-print_game_metadata(metadata)
+# --- Print list of assets found -----------------------------------------------------------------
+print('*** Arcade Database game images *********************************************************')
+print_game_assets(scraper_obj.get_assets(candidate, ASSET_TITLE_ID))
+print_game_assets(scraper_obj.get_assets(candidate, ASSET_SNAP_ID))
+# print_game_assets(scraper_obj.get_assets(candidate, ASSET_BOXFRONT_ID))
+# print_game_assets(scraper_obj.get_assets(candidate, ASSET_BOXBACK_ID))
+# print_game_assets(scraper_obj.get_assets(candidate, ASSET_CARTRIDGE_ID))

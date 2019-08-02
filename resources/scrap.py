@@ -1922,7 +1922,7 @@ class ScreenScraper_V1(Scraper):
     # --- Class variables ------------------------------------------------------------------------
     supported_metadata_list = [
         META_TITLE_ID, META_YEAR_ID, META_GENRE_ID, META_DEVELOPER_ID,
-        META_NPLAYERS_ID, META_ESRB_ID, META_RATING_ID, META_PLOT_ID,
+        META_NPLAYERS_ID, META_ESRB_ID, META_PLOT_ID,
     ]
     supported_asset_list = [
         ASSET_FANART_ID, ASSET_CLEARLOGO_ID, ASSET_TRAILER_ID,
@@ -2230,11 +2230,13 @@ class ScreenScraper_V1(Scraper):
         # --- Trailer (media_video) ---
 
         # --- SS seems to support only one Title screenshot ---
-        asset_data = self._get_asset_simple(medias_dic, ASSET_TITLE_ID, 'Title screenshot', 'media_screenshottitle')
+        asset_data = self._get_asset_simple(
+            medias_dic, ASSET_TITLE_ID, 'Title screenshot', 'media_screenshottitle')
         if asset_data is not None: all_asset_list.append(asset_data)
 
-        # SS seems to support only one Snap screenshot.
-        asset_data = self._get_asset_simple(medias_dic, ASSET_SNAP_ID, 'Snap screenshot', 'media_screenshot')
+        # --- SS seems to support only one Snap screenshot ---
+        asset_data = self._get_asset_simple(
+            medias_dic, ASSET_SNAP_ID, 'Snap screenshot', 'media_screenshot')
         if asset_data is not None: all_asset_list.append(asset_data)
 
         if 'media_boxs' in medias_dic:
@@ -2540,8 +2542,20 @@ class GameFAQs(Scraper):
 # -------------------------------------------------------------------------------------------------
 class ArcadeDB(Scraper):
     # --- Class variables ------------------------------------------------------------------------
-    supported_metadata_list = []
-    supported_asset_list = []
+    supported_metadata_list = [
+        META_TITLE_ID,
+        META_YEAR_ID,
+        META_GENRE_ID,
+        META_DEVELOPER_ID,
+        META_NPLAYERS_ID,
+        META_PLOT_ID,
+    ]
+    supported_asset_list = [
+        ASSET_TITLE_ID,
+        ASSET_SNAP_ID,
+        ASSET_BOXFRONT_ID,
+        ASSET_FLYER_ID,
+    ]
 
     # --- Constructor ----------------------------------------------------------------------------
     def __init__(self, settings):
@@ -2622,14 +2636,25 @@ class ArcadeDB(Scraper):
 
         return gamedata
 
-    def _scraper_get_assets(self, candidate, romPath, rom):
-        assets_list = []
+    def _scraper_get_assets(self, candidate, asset_ID):
+        # --- Retrieve game data from cache ---
+        log_debug('ArcadeDB::_scraper_get_assets() Cache retrieving "{}"'.format(candidate['cache_str']))
+        json_response_dic = self.cache_QUERY_MAME[candidate['cache_str']]
+        gameinfo_dic = json_response_dic['result'][0]
 
-        return assets_list
+        # --- Parse game assets ---
+        all_asset_list = self._get_assets_all(gameinfo_dic)
+        asset_list = [asset_dic for asset_dic in all_asset_list if asset_dic['asset_ID'] == asset_ID]
+        log_debug('ArcadeDB::_scraper_get_assets() Total assets {0} / Returned assets {1}'.format(
+            len(all_asset_list), len(asset_list)))
+
+        return asset_list
 
     def _scraper_resolve_asset_URL(self, candidate): return candidate['url']
 
-    def _scraper_resolve_asset_URL_extension(self, image_url): return None
+    def _scraper_resolve_asset_URL_extension(self, image_url):
+        # All ArcadeDB images are in PNG format
+        return '.png'
 
     # --- This class own methods -----------------------------------------------------------------
     # Call ArcadeDB API only function to retrieve all game metadata.
@@ -2655,6 +2680,58 @@ class ArcadeDB(Scraper):
             log_error('(Generic Exception) {0}'.format(ex))
             log_error('Message "{0}"'.format(page_raw_data))
         # Dump file if debug flag is True.
-        self._dump_json_debug('ArcadeDB_get_QUERY_MAME.txt', json_response_dic)
+        self._dump_json_debug('ArcadeDB_get_QUERY_MAME.json', json_response_dic)
 
         return json_response_dic
+
+    # Returns all assets found in the gameinfo_dic dictionary.
+    def _get_assets_all(self, gameinfo_dic):
+        all_asset_list = []
+
+        # --- Banner (Marquee in MAME) ---
+        asset_data = self._get_asset_simple(
+            gameinfo_dic, ASSET_BANNER_ID, 'Banner (Marquee)', 'url_image_marquee')
+        if asset_data is not None: all_asset_list.append(asset_data)
+
+        # --- Title ---
+        asset_data = self._get_asset_simple(
+            gameinfo_dic, ASSET_TITLE_ID, 'Title screenshot', 'url_image_title')
+        if asset_data is not None: all_asset_list.append(asset_data)
+
+        # --- Snap ---
+        asset_data = self._get_asset_simple(
+            gameinfo_dic, ASSET_SNAP_ID, 'Snap screenshot', 'url_image_ingame')
+        if asset_data is not None: all_asset_list.append(asset_data)
+
+        # --- BoxFront (Cabinet in MAME) ---
+        asset_data = self._get_asset_simple(
+            gameinfo_dic, ASSET_BOXFRONT_ID, 'BoxFront (Cabinet)', 'url_image_cabinet')
+        if asset_data is not None: all_asset_list.append(asset_data)
+
+        # --- BoxBack (CPanel in MAME) ---
+        # asset_data = self._get_asset_simple(
+        #     gameinfo_dic, ASSET_BOXBACK_ID, 'BoxBack (CPanel)', '')
+        # if asset_data is not None: all_asset_list.append(asset_data)
+
+        # --- Cartridge (PCB in MAME) ---
+        # asset_data = self._get_asset_simple(
+        #     gameinfo_dic, ASSET_CARTRIDGE_ID, 'Cartridge (PCB)', '')
+        # if asset_data is not None: all_asset_list.append(asset_data)
+
+        # --- Flyer ---
+        asset_data = self._get_asset_simple(
+            gameinfo_dic, ASSET_FLYER_ID, 'Flyer', 'url_image_flyer')
+        if asset_data is not None: all_asset_list.append(asset_data)
+
+        return all_asset_list
+
+    def _get_asset_simple(self, data_dic, asset_ID, title_str, key):
+        if key in data_dic:
+            asset_data = self._new_assetdata_dic()
+            asset_data['asset_ID'] = asset_ID
+            asset_data['display_name'] = title_str
+            asset_data['url_thumb'] = data_dic[key]
+            asset_data['url'] = data_dic[key]
+            return asset_data
+        else:
+            return None
