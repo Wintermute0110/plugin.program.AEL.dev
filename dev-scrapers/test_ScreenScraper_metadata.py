@@ -19,8 +19,8 @@ from resources.scrap import *
 from resources.utils import *
 import common
 
-# --- main ----------------------------------------------------------------------------------------
-print('*** ScreenScraper search ******************************************************************')
+# --- main ---------------------------------------------------------------------------------------
+print('*** ScreenScraper search ****************************************************************')
 set_log_level(LOG_DEBUG)
 
 # --- Create scraper object ---
@@ -41,8 +41,8 @@ if not candidate_list:
     print('No candidates found.')
     sys.exit(0)
 
-# --- Print metadata of first candidate ---
-print('*** ScreenScraper game metadata ***********************************************************')
+# --- Print metadata of first candidate ----------------------------------------------------------
+print('*** ScreenScraper game metadata *********************************************************')
 metadata = scraper_obj.get_metadata(candidate_list[0])
 # pprint.pprint(metadata)
 print_game_metadata(metadata)

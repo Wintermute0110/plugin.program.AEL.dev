@@ -6,7 +6,6 @@
 
 # --- Python standard library ---
 from __future__ import unicode_literals
-
 import os
 import pprint
 import sys
@@ -21,7 +20,7 @@ from resources.utils import *
 import common
 
 # --- main ---------------------------------------------------------------------------------------
-print('*** Arcade Database *********************************************************************')
+print('*** Fetching candidate game list ********************************************************')
 set_log_level(LOG_DEBUG)
 
 # --- Create scraper object ---

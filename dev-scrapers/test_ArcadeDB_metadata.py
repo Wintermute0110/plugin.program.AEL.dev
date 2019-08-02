@@ -6,7 +6,6 @@
 
 # --- Python standard library ---
 from __future__ import unicode_literals
-
 import os
 import pprint
 import sys
@@ -43,7 +42,7 @@ if not candidate_list:
     sys.exit(0)
 candidate = candidate_list[0]
 
-# --- Print metadata of first candidate ---
+# --- Print metadata of first candidate ----------------------------------------------------------
 print('*** ScreenScraper game metadata *********************************************************')
 metadata = scraper_obj.get_metadata(candidate_list[0])
 # pprint.pprint(metadata)

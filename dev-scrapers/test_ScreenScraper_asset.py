@@ -20,8 +20,8 @@ from resources.scrap import *
 from resources.utils import *
 import common
 
-# --- main ----------------------------------------------------------------------------------------
-print('*** ScreenScraper search ******************************************************************')
+# --- main ---------------------------------------------------------------------------------------
+print('*** ScreenScraper search ****************************************************************')
 set_log_level(LOG_DEBUG)
 
 # --- Create scraper object ---
@@ -42,8 +42,8 @@ if not candidate_list:
     print('No candidates found.')
     sys.exit(0)
 
-# --- Print list of assets found ---
-print('*** ScreenScraper game images *************************************************************')
+# --- Print list of assets found -----------------------------------------------------------------
+print('*** ScreenScraper game images ***********************************************************')
 candidate = candidate_list[0]
 print_game_assets(scraper_obj.get_assets(candidate, ASSET_TITLE_ID))
 print_game_assets(scraper_obj.get_assets(candidate, ASSET_SNAP_ID))
