@@ -97,10 +97,10 @@ FEATURE  [SCRAPERS] Have a look at ScreenScraper and consider it for an online s
          See https://www.screenscraper.fr/
          See https://forum.kodi.tv/showthread.php?tid=287826&pid=2622839#pid2622839
 
-WIP NOW  [SCRAPERS] Fix ArcadeDB scraper. Use the API.
+FEATURE  [SCRAPERS] Fix ArcadeDB scraper. Use the new ArcadeDB API.
          It has been a while since this scraper is not working any more.
 
-WIP      [SCRAPERS] Fix GameFAQs scraper.
+WIP NOW  [SCRAPERS] Fix GameFAQs scraper.
          It has been a while since this scraper is not working any more.
          GameFAQs does not have an API. Should this scraper being removed???
 

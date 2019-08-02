@@ -1065,6 +1065,11 @@ class Scraper(object):
         json_str = json.dumps(data_dic, indent = 4, separators = (', ', ' : '))
         text_dump_str_to_file(file_path, json_str)
 
+    def _dump_file_debug(self, file_name, page_data):
+        if not self.dump_file_flag: return
+        file_path = os.path.join(self.dump_dir, file_name)
+        text_dump_str_to_file(file_path, page_data)
+
     @abc.abstractmethod
     def get_name(self): pass
 
@@ -1460,6 +1465,7 @@ class TheGamesDB(Scraper):
     #        ]
     #},
     def _read_games_from_url(self, url, search_term, scraper_platform):
+        # --- Get URL data as JSON ---
         page_data_raw = net_get_URL_original(url)
         page_data = json.loads(page_data_raw)
         self._dump_json_debug('TGDB_get_candidates.txt', page_data)
@@ -1477,7 +1483,7 @@ class TheGamesDB(Scraper):
             game['platform'] = platform
             game['scraper_platform'] = scraper_platform
             game['order'] = 1
-            # Increase search score based on our own search
+            # Increase search score based on our own search.
             if title.lower() == search_term.lower():                  game['order'] += 2
             if title.lower().find(search_term.lower()) != -1:         game['order'] += 1
             if scraper_platform > 0 and platform == scraper_platform: game['order'] += 1
@@ -1488,6 +1494,10 @@ class TheGamesDB(Scraper):
         if next_url is not None:
             log_debug('TheGamesDB::_read_games_from_url() Recursively loading games page')
             game_list = game_list + self._read_games_from_url(next_url, search_term, scraper_platform)
+
+        # --- Sort game list based on the score ---
+        game_list.sort(key = lambda result: result['order'], reverse = True)
+
         return game_list
 
     def _cleanup_searchterm(self, search_term, rom_path, rom):
@@ -1921,14 +1931,26 @@ class MobyGames(Scraper):
 class ScreenScraper_V1(Scraper):
     # --- Class variables ------------------------------------------------------------------------
     supported_metadata_list = [
-        META_TITLE_ID, META_YEAR_ID, META_GENRE_ID, META_DEVELOPER_ID,
-        META_NPLAYERS_ID, META_ESRB_ID, META_PLOT_ID,
+        META_TITLE_ID,
+        META_YEAR_ID,
+        META_GENRE_ID,
+        META_DEVELOPER_ID,
+        META_NPLAYERS_ID,
+        META_ESRB_ID,
+        META_PLOT_ID,
     ]
     supported_asset_list = [
-        ASSET_FANART_ID, ASSET_CLEARLOGO_ID, ASSET_TRAILER_ID,
-        ASSET_TITLE_ID, ASSET_SNAP_ID, ASSET_BOXFRONT_ID,
-        ASSET_BOXBACK_ID, ASSET_3DBOX_ID, ASSET_CARTRIDGE_ID,
-        ASSET_MAP_ID, ASSET_MANUAL_ID,
+        ASSET_FANART_ID,
+        ASSET_CLEARLOGO_ID,
+        ASSET_TRAILER_ID,
+        ASSET_TITLE_ID,
+        ASSET_SNAP_ID,
+        ASSET_BOXFRONT_ID,
+        ASSET_BOXBACK_ID,
+        ASSET_3DBOX_ID,
+        ASSET_CARTRIDGE_ID,
+        ASSET_MAP_ID,
+        ASSET_MANUAL_ID,
     ]
 
     # List of country/region suffixes supported by ScreenScraper.
@@ -1992,10 +2014,10 @@ class ScreenScraper_V1(Scraper):
 
     def _scraper_get_candidates(self, search_term, rombase_noext, platform):
         scraper_platform = AEL_platform_to_ScreenScraper(platform)
-        log_debug('ScreenScraper_V1::_scraper_get_candidates() search_term    "{0}"'.format(search_term))
-        log_debug('ScreenScraper_V1::_scraper_get_candidates() rom_base_noext "{0}"'.format(rombase_noext))
-        log_debug('ScreenScraper_V1::_scraper_get_candidates() AEL platform   "{0}"'.format(platform))
-        log_debug('ScreenScraper_V1::_scraper_get_candidates() SS platform    "{0}"'.format(scraper_platform))
+        log_debug('ScreenScraper_V1::_scraper_get_candidates() search_term   "{0}"'.format(search_term))
+        log_debug('ScreenScraper_V1::_scraper_get_candidates() rombase_noext "{0}"'.format(rombase_noext))
+        log_debug('ScreenScraper_V1::_scraper_get_candidates() AEL platform  "{0}"'.format(platform))
+        log_debug('ScreenScraper_V1::_scraper_get_candidates() SS platform   "{0}"'.format(scraper_platform))
 
         # --- Get scraping data and cache it ---
         # ScreenScraper jeuInfos.php returns absolutely everything about a single ROM, including
@@ -2309,107 +2331,72 @@ class ScreenScraper_V1(Scraper):
 # Uses version 2 of the API.
 #
 # | Site     | https://www.screenscraper.fr             |
-# | API info | https://www.screenscraper.fr/webapi2.php |
+# | API info | complete                                 |
 # ------------------------------------------------------------------------------------------------
 class ScreenScraper_v2(Scraper):
     pass
 
 # ------------------------------------------------------------------------------------------------
-# GameFAQs online scraper
+# GameFAQs online scraper.
+#
+# | Site     | https://gamefaqs.gamespot.com/ |
+# | API info | GameFAQs has no API            |
 # ------------------------------------------------------------------------------------------------
 class GameFAQs(Scraper):
-    def __init__(self, settings, launcher, fallbackScraper = None):
-        scraper_settings = ScraperSettings.create_from_settings(settings)
-        super(GameFAQs, self).__init__(scraper_settings, launcher, fallbackScraper)
+    # --- Class variables ------------------------------------------------------------------------
+    supported_metadata_list = [
+    ]
+    supported_asset_list = [
+    ]
 
+    # --- Constructor ----------------------------------------------------------------------------
+    def __init__(self, settings):
+        # --- This scraper settings ---
+
+        # --- Internal stuff ---
+
+        # --- Pass down common scraper settings ---
+        super(GameFAQs, self).__init__(settings)
+
+    # --- Base class abstract methods ------------------------------------------------------------
     def get_name(self): return 'GameFAQs'
 
-    def supports_asset_type(self, asset_info):
-        if asset_info.id == ASSET_FANART_ID or asset_info.id == ASSET_BANNER_ID or asset_info.id == ASSET_CLEARLOGO_ID or asset_info.id == ASSET_FLYER_ID or asset_info.id == ASSET_CARTRIDGE_ID:
-            return False
+    def supports_metadata_ID(self, metadata_ID):
+        return True if asset_ID in ScreenScraper_V1.supported_metadata_list else False
 
-        return True
+    def supports_metadata(self): return True
 
-    def _get_candidates(self, search_term, romPath, rom):
-        platform = self.launcher.get_platform()
+    def supports_asset_ID(self, asset_ID):
+        return True if asset_ID in ScreenScraper_V1.supported_asset_list else False
+
+    def supports_assets(self): return True
+
+    def _scraper_get_candidates(self, search_term, rombase_noext, platform):
         scraper_platform = AEL_platform_to_GameFAQs(platform)
+        log_debug('GameFAQs::_scraper_get_candidates() search_term      "{0}"'.format(search_term))
+        log_debug('GameFAQs::_scraper_get_candidates() rombase_noext    "{0}"'.format(rombase_noext))
+        log_debug('GameFAQs::_scraper_get_candidates() platform         "{0}"'.format(platform))
+        log_debug('GameFAQs::_scraper_get_candidates() scraper_platform "{0}"'.format(scraper_platform))
 
-        log_debug('GamesFaqScraper::_get_candidates() search_term         "{0}"'.format(search_term))
-        log_debug('GamesFaqScraper::_get_candidates() rom_base_noext      "{0}"'.format(romPath.getBaseNoExt()))
-        log_debug('GamesFaqScraper::_get_candidates() AEL platform        "{0}"'.format(platform))
-        log_debug('GamesFaqScraper::_get_candidates() GameFAQs platform   "{0}"'.format(scraper_platform))
-
-        # >> Check if search term page data is in cache. If so it's a cache hit.
-        candidate_from_cache = self._get_from_cache(search_term)
-
-        if candidate_from_cache is not None:
-            log_debug('Using a cached candidate')
-            return [candidate_from_cache]
-
-        game_list = []
-        game_list = self._get_candidates_from_page(search_term, scraper_platform)
-
-        # >> Order list based on score
+        # Order list based on score
+        game_list = self._get_candidates_from_page(search_term, platform, scraper_platform)
         game_list.sort(key = lambda result: result['order'], reverse = True)
 
         return game_list
 
-    def _get_candidates_from_page(self, search_term, platform, url = None, no_platform=False):
-        search_params = urllib.urlencode({'game': search_term}) if no_platform else urllib.urlencode({'game': search_term, 'platform': platform})
-        if url is None:
-            url = 'https://gamefaqs.gamespot.com/search_advanced'
-            page_data = net_post_URL_original(url, search_params)
-        else:
-            page_data = net_get_URL_original(url)
-
-        # <div class="sr_row"><div class="sr_cell sr_platform">NES</div><div class="sr_cell sr_title"><a href="/nes/578318-castlevania">Castlevania</a></div><div class="sr_cell sr_release">1987</div>
-        regex_results = re.findall(r'<div class="sr_cell sr_platform">(.*?)</div>\s*<div class="sr_cell sr_title"><a href="(.*?)">(.*?)</a>', page_data, re.MULTILINE)
-        game_list = []
-        for result in regex_results:
-            game = {}
-            game_name            = text_unescape_HTML(result[2])
-            game_platform        = result[0]
-            game['id']           = result[1]
-            game['display_name'] = game_name + ' / ' + game_platform.capitalize()
-            game['game_name']    = game_name # Additional GameFAQs scraper field
-            game['order']        = 1         # Additional GameFAQs scraper field
-        
-            if game_name == 'Game':
-                continue
-
-            # Increase search score based on our own search
-            # In the future use an scoring algortihm based on Levenshtein Distance
-            title = game_name
-            if title.lower() == search_term.lower():            game['order'] += 1
-            if title.lower().find(search_term.lower()) != -1:   game['order'] += 1
-            if platform > 0 and game_platform == platform:      game['order'] += 1
-
-            game_list.append(game)
-
-        if len(game_list) == 0 and not no_platform:
-            return self._get_candidates_from_page(search_term, platform, no_platform=True)
-
-        next_page_result = re.findall('<li><a href="(\S*?)">Next Page\s<i', page_data, re.MULTILINE)
-        if len(next_page_result) > 0:
-            link = next_page_result[0].replace('&amp;', '&')
-            new_url = 'https://gamefaqs.gamespot.com' + link
-            game_list = game_list + self._get_candidates_from_page(search_term, no_platform, new_url)
-
-        game_list.sort(key = lambda result: result['order'], reverse = True)
-        
-        return game_list
-            
-    def _load_metadata(self, candidate, romPath, rom):
-        
+    # Example URLs:
+    # https://gamefaqs.gamespot.com/snes/519824-super-mario-world
+    def _scraper_get_metadata(self, candidate):
+        # --- Grab game information page ---
+        log_debug('GameFAQs::_scraper_get_metadata() Get metadata from {}'.format(candidate['id']))
         url = 'https://gamefaqs.gamespot.com{}'.format(candidate['id'])
-        
-        log_debug('GamesFaqScraper::_load_metadata() Get metadata from {}'.format(url))
-        page_data = net_get_URL_oneline(url)
+        page_data = net_get_URL(url)
+        self._dump_file_debug('GameFAQs_get_metadata.html', page_data)
 
-        # Parse data
+        # --- Parse data ---
         # <li><b>Release:</b> <a href="/snes/588699-street-fighter-alpha-2/data">November 1996 ?</a></li>
         game_release = re.findall('<li><b>Release:</b> <a href="(.*?)">(.*?) &raquo;</a></li>', page_data)
-        
+
         # <ol class="crumbs">
         # <li class="crumb top-crumb"><a href="/snes">Super Nintendo</a></li>
         # <li class="crumb"><a href="/snes/category/54-action">Action</a></li>
@@ -2417,7 +2404,7 @@ class GameFAQs(Scraper):
         # <li class="crumb"><a href="/snes/category/86-action-fighting-2d">2D</a></li>
         # </ol>
         game_genre = re.findall('<ol class="crumbs"><li class="crumb top-crumb"><a href="(.*?)">(.*?)</a></li><li class="crumb"><a href="(.*?)">(.*?)</a></li>', page_data)
-        
+
         game_developer = ''
         # <li><a href="/company/2324-capcom">Capcom</a></li>
         game_studio = re.findall('<li><a href="/company/(.*?)">(.*?)</a>', page_data)
@@ -2425,25 +2412,107 @@ class GameFAQs(Scraper):
             p = re.compile(r'<.*?>')
             game_developer = p.sub('', game_studio[0][1])
 
-        game_plot = re.findall('Description</h2></div><div class="body game_desc"><div class="desc">(.*?)</div>', page_data)
+        # game_plot = re.findall('<h2 class="title">Description</h2></div><div class="body game_desc" style=".*?">(.*?)</div>', page_data)
+        game_plot = re.findall('<h2 class="title">Description</h2></div><div class="body game_desc">(.*?)</div>', page_data)
+
+        # --- Build metadata dictionary ---
         game_data = self._new_gamedata_dic()
+        game_data['title']     = candidate['game_name'] 
+        game_data['plot']      = text_unescape_and_untag_HTML(game_plot[0]) if game_plot else ''
+        game_data['genre']     = game_genre[0][3] if game_genre else '' 
+        game_data['year']      = game_release[0][1][-4:] if game_release else ''
+        game_data['developer'] = game_developer
 
-        # --- Set game page data ---
-        game_data['title']      = candidate['game_name'] 
-        game_data['plot']       = text_unescape_and_untag_HTML(game_plot[0]) if game_plot else ''        
-        game_data['genre']      = game_genre[0][3] if game_genre else '' 
-        game_data['year']       = game_release[0][1][-4:] if game_release else ''
-        game_data['developer']  = game_developer
-
-        log_debug('GamesFaqScraper::_load_metadata() Collected all metadata from {}'.format(url))
         return game_data
 
-    def _load_assets(self, candidate, romPath, rom):
+    def _scraper_get_assets(self, candidate, asset_ID):
         url = 'https://gamefaqs.gamespot.com{}/images'.format(candidate['id'])
         assets_list = self._load_assets_from_url(url)
         log_debug('GamesFaqScraper:: Found {} assets for candidate #{}'.format(len(assets_list), candidate['id']))    
 
         return assets_list
+
+    def _scraper_resolve_asset_URL(self, candidate): return candidate['url']
+
+    def _scraper_resolve_asset_URL_extension(self, image_url): return None
+
+    def _get_image_url_from_page(self, candidate, asset_info):
+        url = 'https://gamefaqs.gamespot.com{}'.format(candidate['url'])
+        log_debug('GamesFaqScraper::_get_image_url_from_page() Get image from "{}" for asset type {}'.format(url, asset_info.name))
+        page_data = net_get_URL_oneline(url)
+        images_on_page = re.finditer('<img (class="full_boxshot cte" )?data-img-width="\d+" data-img-height="\d+" data-img="(?P<url>.+?)" (class="full_boxshot cte" )?src=".+?" alt="(?P<alt>.+?)"(\s/)?>', page_data)
+        for image_data in images_on_page:
+            image_on_page   = image_data.groupdict()
+            image_asset_ids = self._parse_asset_type(image_on_page['alt'])
+            log_verb('Found "{}" of types {} with url {}'.format(image_on_page['alt'], image_asset_ids, image_on_page['url']))
+            if asset_info.id in image_asset_ids:
+                log_debug('GamesFaqScraper::_get_image_url_from_page() Found match {}'.format(image_on_page['alt']))
+                return image_on_page['url']
+        log_debug('GamesFaqScraper::_get_image_url_from_page() No correct match')
+
+        return ''
+
+    # --- This class own methods -----------------------------------------------------------------
+    # Deactivate the recursive search with no platform if no games found with platform.
+    # Could be added later.
+    def _get_candidates_from_page(self, search_term, platform, scraper_platform, url = None):
+        # --- Get URL data as a text string ---
+        if url is None:
+            url = 'https://gamefaqs.gamespot.com/search_advanced'
+            data = urllib.urlencode({'game': search_term, 'platform': scraper_platform})
+            page_data = net_post_URL(url, data)
+        else:
+            page_data = net_get_URL(url)
+        self._dump_file_debug('GameFAQs_get_candidates.html', page_data)
+
+        # --- Parse game list ---
+        # --- First row ---
+        # <div class="sr_cell sr_platform">Platform</div>
+        # <div class="sr_cell sr_title">Game</div>
+        # <div class="sr_cell sr_release">Release</div>
+        #
+        # --- Game row ---
+        # <div class="sr_cell sr_platform">SNES</div>
+        # <div class="sr_cell sr_title"><a class="log_search" data-row="1" data-col="1" data-pid="519824" href="/snes/519824-super-mario-world">Super Mario World</a></div>
+        # <div class="sr_cell sr_release">1990</div>
+        #
+        r = r'<div class="sr_cell sr_platform">(.*?)</div>\s*<div class="sr_cell sr_title"><a class="log_search" data-row="[0-9]+" data-col="1" data-pid="[0-9]+" href="(.*?)">(.*?)</a></div>'
+        regex_results = re.findall(r, page_data, re.MULTILINE)
+        game_list = []
+        for result in regex_results:
+            game = self._new_candidate_dic()
+            game_platform = result[0]
+            game_id       = result[1]
+            game_name     = text_unescape_HTML(result[2])
+            game['id']               = result[1]
+            game['display_name']     = game_name + ' / ' + game_platform.capitalize()
+            game['platform']         = platform
+            game['scraper_platform'] = scraper_platform
+            game['order']            = 1
+            game['game_name']        = game_name # Additional GameFAQs scraper field
+            # Skip first row of the games table.
+            if game_name == 'Game': continue
+            # Increase search score based on our own search.
+            # In the future use an scoring algortihm based on Levenshtein distance.
+            title = game_name
+            if title.lower() == search_term.lower():          game['order'] += 1
+            if title.lower().find(search_term.lower()) != -1: game['order'] += 1
+            if platform > 0 and game_platform == platform:    game['order'] += 1
+            game_list.append(game)
+
+        # --- Recursively load more games ---
+        # Deactivate for now, just get all the games on the first page which should be
+        # more than enough.
+        # next_page_result = re.findall('<li><a href="(\S*?)">Next Page\s<i', page_data, re.MULTILINE)
+        # if len(next_page_result) > 0:
+        #     link = next_page_result[0].replace('&amp;', '&')
+        #     new_url = 'https://gamefaqs.gamespot.com' + link
+        #     game_list = game_list + self._get_candidates_from_page(search_term, no_platform, new_url)
+
+        # --- Sort game list based on the score ---
+        game_list.sort(key = lambda result: result['order'], reverse = True)
+
+        return game_list
 
     def _load_assets_from_url(self, url):
         log_debug('GamesFaqScraper::_load_assets_from_url() Get asset data from {}'.format(url))
@@ -2504,22 +2573,6 @@ class GameFAQs(Scraper):
 
         return assets_list
 
-    def _get_image_url_from_page(self, candidate, asset_info):
-        url = 'https://gamefaqs.gamespot.com{}'.format(candidate['url'])
-        log_debug('GamesFaqScraper::_get_image_url_from_page() Get image from "{}" for asset type {}'.format(url, asset_info.name))
-        page_data = net_get_URL_oneline(url)
-        images_on_page = re.finditer('<img (class="full_boxshot cte" )?data-img-width="\d+" data-img-height="\d+" data-img="(?P<url>.+?)" (class="full_boxshot cte" )?src=".+?" alt="(?P<alt>.+?)"(\s/)?>', page_data)
-        for image_data in images_on_page:
-            image_on_page   = image_data.groupdict()
-            image_asset_ids = self._parse_asset_type(image_on_page['alt'])
-            log_verb('Found "{}" of types {} with url {}'.format(image_on_page['alt'], image_asset_ids, image_on_page['url']))
-            if asset_info.id in image_asset_ids:
-                log_debug('GamesFaqScraper::_get_image_url_from_page() Found match {}'.format(image_on_page['alt']))
-                return image_on_page['url']
-        log_debug('GamesFaqScraper::_get_image_url_from_page() No correct match')
-
-        return ''
-
     def _parse_asset_type(self, header):
         if 'Screenshots' in header:
             return [ASSET_SNAP_ID, ASSET_TITLE_ID]
@@ -2532,10 +2585,8 @@ class GameFAQs(Scraper):
 
         return [ASSET_SNAP_ID]
 
-
 # -------------------------------------------------------------------------------------------------
-# Arcade Database (for MAME)
-# THIS SCRAPER MUST BE REWRITTEN USING THE API.
+# Arcade Database online scraper (for MAME).
 #
 # | Site     | http://adb.arcadeitalia.net/                    |
 # | API info | http://adb.arcadeitalia.net/service_scraper.php |
