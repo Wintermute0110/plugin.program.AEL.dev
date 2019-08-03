@@ -1,8 +1,13 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
-#
+
 # Test AEL GameFAQs metadata scraper.
 #
+# --- GameGAQs test URLs ---
+# https://gamefaqs.gamespot.com/snes/519824-super-mario-world
+# https://gamefaqs.gamespot.com/snes/588741-super-metroid
+# https://gamefaqs.gamespot.com/snes/588699-street-fighter-alpha-2
+# https://gamefaqs.gamespot.com/genesis/454495-sonic-the-hedgehog
 
 # --- Python standard library ---
 from __future__ import unicode_literals
@@ -29,8 +34,8 @@ scraper_obj.set_verbose_mode(False)
 scraper_obj.set_debug_file_dump(True, os.path.join(os.path.dirname(__file__), 'assets'))
 
 # --- Get candidates ---
-candidate_list = scraper_obj.get_candidates(*common.games['metroid'])
-# candidate_list = scraper_obj.get_candidates(*common.games['mworld'])
+# candidate_list = scraper_obj.get_candidates(*common.games['metroid'])
+candidate_list = scraper_obj.get_candidates(*common.games['mworld'])
 # candidate_list = scraper_obj.get_candidates(*common.games['sonic'])
 # candidate_list = scraper_obj.get_candidates(*common.games['chakan'])
 # candidate_list = scraper_obj.get_candidates(*common.games['console_invalid'])

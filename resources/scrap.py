@@ -2384,7 +2384,7 @@ class GameFAQs(Scraper):
 
         return game_list
 
-    # Example URLs:
+    # --- Example URLs ---
     # https://gamefaqs.gamespot.com/snes/519824-super-mario-world
     def _scraper_get_metadata(self, candidate):
         # --- Grab game information page ---
@@ -2394,41 +2394,27 @@ class GameFAQs(Scraper):
         self._dump_file_debug('GameFAQs_get_metadata.html', page_data)
 
         # --- Parse data ---
-        # <li><b>Release:</b> <a href="/snes/588699-street-fighter-alpha-2/data">November 1996 ?</a></li>
-        game_release = re.findall('<li><b>Release:</b> <a href="(.*?)">(.*?) &raquo;</a></li>', page_data)
-
-        # <ol class="crumbs">
-        # <li class="crumb top-crumb"><a href="/snes">Super Nintendo</a></li>
-        # <li class="crumb"><a href="/snes/category/54-action">Action</a></li>
-        # <li class="crumb"><a href="/snes/category/57-action-fighting">Fighting</a></li>
-        # <li class="crumb"><a href="/snes/category/86-action-fighting-2d">2D</a></li>
-        # </ol>
-        game_genre = re.findall('<ol class="crumbs"><li class="crumb top-crumb"><a href="(.*?)">(.*?)</a></li><li class="crumb"><a href="(.*?)">(.*?)</a></li>', page_data)
-
-        game_developer = ''
-        # <li><a href="/company/2324-capcom">Capcom</a></li>
-        game_studio = re.findall('<li><a href="/company/(.*?)">(.*?)</a>', page_data)
-        if game_studio:
-            p = re.compile(r'<.*?>')
-            game_developer = p.sub('', game_studio[0][1])
-
-        # game_plot = re.findall('<h2 class="title">Description</h2></div><div class="body game_desc" style=".*?">(.*?)</div>', page_data)
-        game_plot = re.findall('<h2 class="title">Description</h2></div><div class="body game_desc">(.*?)</div>', page_data)
+        game_year      = self._parse_year(page_data)
+        game_genre     = self._parse_genre(page_data)
+        game_developer = self._parse_developer(page_data)
+        game_plot      = self._parse_plot(page_data)
 
         # --- Build metadata dictionary ---
         game_data = self._new_gamedata_dic()
-        game_data['title']     = candidate['game_name'] 
-        game_data['plot']      = text_unescape_and_untag_HTML(game_plot[0]) if game_plot else ''
-        game_data['genre']     = game_genre[0][3] if game_genre else '' 
-        game_data['year']      = game_release[0][1][-4:] if game_release else ''
+        game_data['title']     = candidate['game_name']
+        game_data['year']      = game_year
+        game_data['genre']     = game_genre
         game_data['developer'] = game_developer
+        game_data['nplayers']  = ''
+        game_data['esrb']      = ''
+        game_data['plot']      = game_plot
 
         return game_data
 
     def _scraper_get_assets(self, candidate, asset_ID):
         url = 'https://gamefaqs.gamespot.com{}/images'.format(candidate['id'])
         assets_list = self._load_assets_from_url(url)
-        log_debug('GamesFaqScraper:: Found {} assets for candidate #{}'.format(len(assets_list), candidate['id']))    
+        log_debug('GamesFaqScraper:: Found {} assets for candidate #{}'.format(len(assets_list), candidate['id']))
 
         return assets_list
 
@@ -2475,7 +2461,6 @@ class GameFAQs(Scraper):
         # <div class="sr_cell sr_platform">SNES</div>
         # <div class="sr_cell sr_title"><a class="log_search" data-row="1" data-col="1" data-pid="519824" href="/snes/519824-super-mario-world">Super Mario World</a></div>
         # <div class="sr_cell sr_release">1990</div>
-        #
         r = r'<div class="sr_cell sr_platform">(.*?)</div>\s*<div class="sr_cell sr_title"><a class="log_search" data-row="[0-9]+" data-col="1" data-pid="[0-9]+" href="(.*?)">(.*?)</a></div>'
         regex_results = re.findall(r, page_data, re.MULTILINE)
         game_list = []
@@ -2513,6 +2498,57 @@ class GameFAQs(Scraper):
         game_list.sort(key = lambda result: result['order'], reverse = True)
 
         return game_list
+
+    #
+    # Functions to parse metadata from game web page.
+    #
+    def _parse_year(self, page_data):
+        # <li><b>Release:</b> <a href="/snes/519824-super-mario-world/data">August 13, 1991</a></li>
+        # <li><b>Release:</b> <a href="/snes/588699-street-fighter-alpha-2/data">November 1996</a></li>
+        re_str = '<li><b>Release:</b> <a href=".*?">(.*?)</a></li>'
+        m_date = re.search(re_str, page_data)
+        game_year = ''
+        if m_date:
+            # Matches the year in the date string.
+            date_str = m_date.group(1)
+            m_year = re.search('\d\d\d\d', date_str)
+            if m_year: game_year = m_year.group(0)
+
+        return game_year
+
+    def _parse_genre(self, page_data):
+        # Parse only the first genre. Later versions will parse all the genres and return a list.
+        # <li><b>Genre:</b> <a href="/snes/category/163-action-adventure">Action Adventure</a> &raquo; <a href="/snes/category/292-action-adventure-open-world">Open-World</a>
+        m_genre = re.search('<li><b>Genre:</b> <a href=".*?">(.*?)</a>', page_data)
+        if m_genre: game_genre = m_genre.group(1)
+
+        return game_genre
+
+    def _parse_developer(self, page_data):
+        # --- Developer and publisher are the same
+        # <li><b>Developer/Publisher: </b><a href="/company/2324-capcom">Capcom</a></li>
+        # --- Developer and publisher separated
+        # <li><b>Developer:</b> <a href="/company/45872-intelligent-systems">Intelligent Systems</a></li>
+        # <li><b>Publisher:</b> <a href="/company/1143-nintendo">Nintendo</a></li>
+        m_dev_a = re.search('<li><b>Developer/Publisher: </b><a href=".*?">(.*?)</a></li>', page_data)
+        m_dev_b = re.search('<li><b>Developer: </b><a href=".*?">(.*?)</a></li>', page_data)
+        if   m_dev_a: game_developer = m_dev_a.group(1)
+        elif m_dev_b: game_developer = m_dev_b.group(1)
+        else:         game_developer = ''
+
+        return game_developer
+
+    def _parse_plot(self, page_data):
+        # <script type="application/ld+json">
+        # {
+        #     "name":"Super Metroid",
+        #     "description":"Take on a legion of Space Pirates ....",
+        #     "keywords":"" }
+        # </script>
+        m_plot = re.search('"description":"(.*?)",', page_data)
+        if m_plot: game_plot = m_plot.group(1)
+
+        return game_plot
 
     def _load_assets_from_url(self, url):
         log_debug('GamesFaqScraper::_load_assets_from_url() Get asset data from {}'.format(url))
