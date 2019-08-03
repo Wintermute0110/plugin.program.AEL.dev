@@ -789,9 +789,9 @@ class FileName:
 # Utilities to test scrapers
 # -------------------------------------------------------------------------------------------------
 # Candidates
-NAME_L      = 60
+NAME_L      = 65
 SCORE_L     = 5
-ID_L        = 10
+ID_L        = 55
 PLATFORM_L  = 15
 SPLATFORM_L = 15
 URL_L       = 70
