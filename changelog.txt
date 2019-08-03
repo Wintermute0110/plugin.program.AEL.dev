@@ -77,6 +77,13 @@ WIP      [SCRAPERS] Option to rescrape all ROM assets in a similar fashion to
          options as the ROM Scanner.
          See https://github.com/Wintermute0110/plugin.program.advanced.emulator.launcher/issues/72
 
+WIP      [SCRAPERS] Fix GameFAQs scraper.
+         It has been a while since this scraper is not working any more.
+         GameFAQs does not have an API. Should this scraper being removed???
+         Currently the GameFAQs metadata scraper works well. The GameFAQs asset scraper
+         does not work due to changes in GameFAQs. See the comments of method
+         GameFAQs._load_assets_from_page()
+
 
 [B]Advanced Emulator Launcher | version 0.9.8 | XX June 2019[/B]
 
@@ -100,11 +107,7 @@ FEATURE  [SCRAPERS] Have a look at ScreenScraper and consider it for an online s
 FEATURE  [SCRAPERS] Fix ArcadeDB scraper. Use the new ArcadeDB API.
          It has been a while since this scraper is not working any more.
 
-WIP NOW  [SCRAPERS] Fix GameFAQs scraper.
-         It has been a while since this scraper is not working any more.
-         GameFAQs does not have an API. Should this scraper being removed???
-
-WIP      [SCRAPERS] Fix AEL Offline Scraper.
+WIP NOW  [SCRAPERS] Fix AEL Offline Scraper.
 
 WIP      [SCRAPERS] Update MAME Offline Scraper database to version latest version.
 

@@ -1809,23 +1809,21 @@ class MobyGames(Scraper):
         return year_data[:4]
 
     # Get ALL available assets for game.
-    # Cache the results because this function may be called multiple times.
+    # Cache the results because this function may be called multiple times for the
+    # same candidate game.
     def _scraper_get_assets_all(self, candidate):
-        # log_debug('MobyGames::_scraper_get_assets_all() BEGIN ...')
         cache_key = str(candidate['id'])
         if cache_key in self.all_asset_cache:
             log_debug('MobyGames::_scraper_get_assets_all() Cache hit "{0}"'.format(cache_key))
             asset_list = self.all_asset_cache[cache_key]
-            return asset_list
-
-        # --- Cache miss ---
-        log_debug('MobyGames::_scraper_get_assets_all() Cache miss "{0}"'.format(cache_key))
-        snap_assets = self._load_snap_assets(candidate, candidate['scraper_platform'])
-        cover_assets = self._load_cover_assets(candidate, candidate['scraper_platform'])
-        asset_list = snap_assets + cover_assets
-        log_debug('A total of {0} assets found for candidate ID {1}'.format(
-            len(asset_list), candidate['id']))
-        self.all_asset_cache[cache_key] = asset_list
+        else:
+            log_debug('MobyGames::_scraper_get_assets_all() Cache miss "{0}"'.format(cache_key))
+            snap_assets = self._load_snap_assets(candidate, candidate['scraper_platform'])
+            cover_assets = self._load_cover_assets(candidate, candidate['scraper_platform'])
+            asset_list = snap_assets + cover_assets
+            log_debug('A total of {0} assets found for candidate ID {1}'.format(
+                len(asset_list), candidate['id']))
+            self.all_asset_cache[cache_key] = asset_list
 
         return asset_list
 
@@ -1834,10 +1832,10 @@ class MobyGames(Scraper):
         url = 'https://api.mobygames.com/v1/games/{0}/platforms/{1}/screenshots?api_key={2}'.format(
             candidate['id'], platform_id, self.api_key)
         self._do_toomanyrequests_check()
-        page_data_raw = net_get_URL_original(url)
+        page_data_raw = net_get_URL(url)
         page_data = json.loads(page_data_raw)
         self.last_http_call = datetime.datetime.now()
-        self._dump_json_debug('mobygames_snap_assets.txt', page_data)
+        self._dump_json_debug('MobyGames_snap_assets.json', page_data)
 
         # --- Parse images page data ---
         asset_list = []
@@ -2192,7 +2190,7 @@ class ScreenScraper_V1(Scraper):
 
         return gameInfos_dic
 
-    def _get_meta_title(self, jeu_dic):
+    def _parse_meta_title(self, jeu_dic):
         # First search for regional name.
         for region in ScreenScraper_V1.region_list:
             key = 'nom' + region
@@ -2201,7 +2199,7 @@ class ScreenScraper_V1(Scraper):
         # Default name
         return jeu_dic['nom']
 
-    def _get_meta_year(self, jeu_dic):
+    def _parse_meta_year(self, jeu_dic):
         # Search regional dates. Only return year (first 4 characters)
         for region in ScreenScraper_V1.region_list:
             key = 'date' + region
@@ -2209,7 +2207,7 @@ class ScreenScraper_V1(Scraper):
 
         return ''
 
-    def _get_meta_genre(self, jeu_dic):
+    def _parse_meta_genre(self, jeu_dic):
         # Only the first gender in the list is supported now.
         for region in ScreenScraper_V1.region_list:
             key = 'genres' + region
@@ -2217,16 +2215,16 @@ class ScreenScraper_V1(Scraper):
 
         return ''
 
-    def _get_meta_developer(self, jeu_dic):
+    def _parse_meta_developer(self, jeu_dic):
         return jeu_dic['developpeur']
 
-    def _get_meta_nplayers(self, jeu_dic):
+    def _parse_meta_nplayers(self, jeu_dic):
         return jeu_dic['joueurs']
 
-    def _get_meta_esrb(self, jeu_dic):
+    def _parse_meta_esrb(self, jeu_dic):
         return jeu_dic['classifications']['ESRB']
 
-    def _get_meta_plot(self, jeu_dic):
+    def _parse_meta_plot(self, jeu_dic):
         for region in ScreenScraper_V1.region_list:
             key = 'synopsis' + region
             if key in jeu_dic['synopsis']: return jeu_dic['synopsis'][key]
@@ -2345,8 +2343,17 @@ class ScreenScraper_v2(Scraper):
 class GameFAQs(Scraper):
     # --- Class variables ------------------------------------------------------------------------
     supported_metadata_list = [
+        META_TITLE_ID,
+        META_YEAR_ID,
+        META_GENRE_ID,
+        META_DEVELOPER_ID,
+        META_PLOT_ID,
     ]
     supported_asset_list = [
+        ASSET_TITLE_ID,
+        ASSET_SNAP_ID,
+        ASSET_BOXFRONT_ID,
+        ASSET_BOXBACK_ID,
     ]
 
     # --- Constructor ----------------------------------------------------------------------------
@@ -2354,6 +2361,7 @@ class GameFAQs(Scraper):
         # --- This scraper settings ---
 
         # --- Internal stuff ---
+        self.all_asset_cache = {}
 
         # --- Pass down common scraper settings ---
         super(GameFAQs, self).__init__(settings)
@@ -2412,33 +2420,58 @@ class GameFAQs(Scraper):
         return game_data
 
     def _scraper_get_assets(self, candidate, asset_ID):
-        url = 'https://gamefaqs.gamespot.com{}/images'.format(candidate['id'])
-        assets_list = self._load_assets_from_url(url)
-        log_debug('GamesFaqScraper:: Found {} assets for candidate #{}'.format(len(assets_list), candidate['id']))
+        # log_debug('GameFAQs::_scraper_get_assets() asset_ID = {0} ...'.format(asset_ID))
+        # Get all assets for candidate. _scraper_get_assets_all() caches all assets for a candidate.
+        # Then select asset of a particular type.
+        all_asset_list = self._scraper_get_assets_all(candidate)
+        asset_list = [asset_dic for asset_dic in all_asset_list if asset_dic['asset_ID'] == asset_ID]
+        log_debug('GameFAQs::_scraper_get_assets() Total assets {0} / Returned assets {1}'.format(
+            len(all_asset_list), len(asset_list)))
 
-        return assets_list
+        return asset_list
 
-    def _scraper_resolve_asset_URL(self, candidate): return candidate['url']
-
-    def _scraper_resolve_asset_URL_extension(self, image_url): return None
-
-    def _get_image_url_from_page(self, candidate, asset_info):
+    # In GameFAQs the candidate['url'] field is the URL of the image page.
+    # For screenshots, the image page contains one image (the screenshot).
+    # For boxart, the image page contains boxfront, boxback and spine.
+    #
+    # Boxart examples:
+    # https://gamefaqs.gamespot.com/snes/519824-super-mario-world/images/158851
+    # https://gamefaqs.gamespot.com/snes/588741-super-metroid/images/149897
+    #
+    # Screenshot examples:
+    # https://gamefaqs.gamespot.com/snes/519824-super-mario-world/images/21
+    # https://gamefaqs.gamespot.com/snes/519824-super-mario-world/images/29
+    def _scraper_resolve_asset_URL(self, candidate):
         url = 'https://gamefaqs.gamespot.com{}'.format(candidate['url'])
-        log_debug('GamesFaqScraper::_get_image_url_from_page() Get image from "{}" for asset type {}'.format(url, asset_info.name))
-        page_data = net_get_URL_oneline(url)
-        images_on_page = re.finditer('<img (class="full_boxshot cte" )?data-img-width="\d+" data-img-height="\d+" data-img="(?P<url>.+?)" (class="full_boxshot cte" )?src=".+?" alt="(?P<alt>.+?)"(\s/)?>', page_data)
+        log_debug('GameFAQs::_scraper_resolve_asset_URL() Get image from "{}" for asset type {}'.format(
+            url, asset_info.name))
+        page_data = net_get_URL(url)
+        self._dump_json_debug('GameFAQs_scraper_resolve_asset_URL.html', page_data)
+
+        r_str = '<img (class="full_boxshot cte" )?data-img-width="\d+" data-img-height="\d+" data-img="(?P<url>.+?)" (class="full_boxshot cte" )?src=".+?" alt="(?P<alt>.+?)"(\s/)?>'
+        images_on_page = re.finditer(r_str, page_data)
         for image_data in images_on_page:
-            image_on_page   = image_data.groupdict()
+            image_on_page = image_data.groupdict()
             image_asset_ids = self._parse_asset_type(image_on_page['alt'])
             log_verb('Found "{}" of types {} with url {}'.format(image_on_page['alt'], image_asset_ids, image_on_page['url']))
             if asset_info.id in image_asset_ids:
-                log_debug('GamesFaqScraper::_get_image_url_from_page() Found match {}'.format(image_on_page['alt']))
+                log_debug('GameFAQs::_scraper_resolve_asset_URL() Found match {}'.format(image_on_page['alt']))
                 return image_on_page['url']
-        log_debug('GamesFaqScraper::_get_image_url_from_page() No correct match')
+        log_debug('GameFAQs::_scraper_resolve_asset_URL() No correct match')
 
         return ''
 
+    def _scraper_resolve_asset_URL_extension(self, image_url): return None
+
     # --- This class own methods -----------------------------------------------------------------
+    def _parse_asset_type(self, header):
+        if 'Screenshots' in header: return [ASSET_SNAP_ID, ASSET_TITLE_ID]
+        elif 'Box Back' in header:  return [ASSET_BOXBACK_ID]
+        elif 'Box Front' in header: return [ASSET_BOXFRONT_ID]
+        elif 'Box' in header:       return [ASSET_BOXFRONT_ID, ASSET_BOXBACK_ID]
+
+        return [ASSET_SNAP_ID]
+
     # Deactivate the recursive search with no platform if no games found with platform.
     # Could be added later.
     def _get_candidates_from_page(self, search_term, platform, scraper_platform, url = None):
@@ -2550,76 +2583,119 @@ class GameFAQs(Scraper):
 
         return game_plot
 
-    def _load_assets_from_url(self, url):
-        log_debug('GamesFaqScraper::_load_assets_from_url() Get asset data from {}'.format(url))
-        page_data = net_get_URL_oneline(url)
+    # Get ALL available assets for game.
+    # Cache the results because this function may be called multiple times for the
+    # same candidate game.
+    def _scraper_get_assets_all(self, candidate):
+        cache_key = str(candidate['id'])
+        if cache_key in self.all_asset_cache:
+            log_debug('MobyGames::_scraper_get_assets_all() Cache hit "{0}"'.format(cache_key))
+            asset_list = self.all_asset_cache[cache_key]
+        else:
+            log_debug('MobyGames::_scraper_get_assets_all() Cache miss "{0}"'.format(cache_key))
+            asset_list = self._load_assets_from_page(candidate)
+            log_debug('A total of {0} assets found for candidate ID {1}'.format(
+                len(asset_list), candidate['id']))
+            self.all_asset_cache[cache_key] = asset_list
+
+        return asset_list
+
+    # Load assets from assets web page.
+    # The Game Images URL shows a page with boxart and screenshots thumbnails.
+    # Boxart can be diferent depending on the ROM/game region. Each region has then a 
+    # separate page with the full size artwork (boxfront, boxback, etc.)
+    #
+    # TODO In the assets web page only the Boxfront is shown. The Boxback and Spine are in the
+    #      image web page. Currently I do not know how to solve this...
+    #      The easiest thing to do is to support only Boxfront.
+    #
+    # https://gamefaqs.gamespot.com/snes/519824-super-mario-world/images
+    # https://gamefaqs.gamespot.com/snes/588741-super-metroid/images
+    # https://gamefaqs.gamespot.com/genesis/563316-chakan/images
+    #
+    # <div class="pod game_imgs">
+    #   <div class="head"><h2 class="title">Game Box Shots</h2></div>
+    #   <div class="body">
+    #   <table class="contrib">
+    #   <tr>
+    #     <td class="thumb index:0 modded:0 iteration:1 modded:1">
+    #       <div class="img boxshot">
+    #         <a href="/genesis/563316-chakan/images/145463">
+    #           <img class="img100 imgboxart" src="https://gamefaqs.akamaized.net/box/3/1/7/2317_thumb.jpg" alt="Chakan (US)" />
+    #         </a>
+    #         <div class="region">US 1992</div>
+    #       </div>
+    #     </td>
+    #   ......
+    #     <td></td>
+    #   </tr>
+    #   </table>
+    #   </div>
+    #   <div class="head"><h2 class="title">GameFAQs Reader Screenshots</h2></div>
+    #   <div class="body"><table class="contrib">
+    #   <tr>
+    #     <td class="thumb">
+    #     <a href="/genesis/563316-chakan/images/21">
+    #       <img class="imgboxart" src="https://gamefaqs.akamaized.net/screens/f/c/b/gfs_45463_1_1_thm.jpg" />
+    #     </a>
+    #   </td>
+    def _load_assets_from_page(self, candidate):
+        url = 'https://gamefaqs.gamespot.com{}/images'.format(candidate['id'])
+        log_debug('GameFAQs::_scraper_get_assets_all() Get asset data from {}'.format(url))
+        page_data = net_get_URL(url)
+        self._dump_file_debug('GameFAQs_load_assets_from_page.html', page_data)
+
+        # --- Parse all assets ---
+        # findall() returns a list of strings OR a list of tuples of strings (re with groups).
+        # This RE picks the contents inside the screenshoots tables.
+        r_str = '<div class="head"><h2 class="title">([\w\s]+?)</h2></div><div class="body"><table class="contrib">(.*?)</table></div>'
+        m_asset_blocks = re.findall(r_str, page_data)
         assets_list = []
+        for asset_block in m_asset_blocks:
+            asset_table_title = asset_block[0]
+            asset_table_data = asset_block[1]
+            log_debug('Collecting assets from "{}"'.format(asset_table_title))
 
-        asset_blocks = re.findall('<div class=\"head\"><h2 class=\"title\">((\w|\s)+?)</h2></div><div class=\"body\"><table class=\"contrib\">(.*?)</table></div>', page_data)
-        for asset_block in asset_blocks:
-            remote_asset_type   = asset_block[0]
-            assets_page_data    = asset_block[2]
-            log_debug('Collecting assets from {}'.format(remote_asset_type))
-            asset_infos = []
-
-            # The Game Images URL shows a page with boxart and screenshots thumbnails.
-            # Boxart can be diferent depending on the ROM/game region. Each region has then a 
-            # separate page with the full size artwork (boxfront, boxback, etc.)
-            #
-            # URL Example:
-            # http://www.gamefaqs.com/snes/588741-super-metroid/images
-            if 'Box' in remote_asset_type:
-                asset_infos = [g_assetFactory.get_asset_info(ASSET_BOXFRONT_ID), g_assetFactory.get_asset_info(ASSET_BOXBACK_ID)]
-                
-            # In an screenshot artwork page there is only one image.
-            # >> Title is usually the first or first snapshots in GameFAQs.
+            # --- Depending on the table title select assets ---
             title_snap_taken = True
-            if 'Screenshots' in remote_asset_type:
-                asset_infos = [g_assetFactory.get_asset_info(ASSET_SNAP_ID)]
-                
+            if 'Box' in asset_table_title:
+                asset_infos = [ASSET_BOXFRONT_ID, ASSET_BOXBACK_ID]
+            # Title is usually the first or first snapshots in GameFAQs.
+            elif 'Screenshots' in asset_table_title:
+                asset_infos = [ASSET_SNAP_ID]
                 if not('?page=' in url):
-                    asset_infos.append(g_assetFactory.get_asset_info(ASSET_TITLE_ID))
+                    asset_infos.append(ASSET_TITLE_ID)
                     title_snap_taken = False
-                                    
-            # <a href="/nes/578318-castlevania/images/135454"><img class="img100 imgboxart" src="https://gamefaqs.akamaized.net/box/2/7/6/2276_thumb.jpg" alt="Castlevania (US)" /></a>
-            block_items = re.finditer('<a href=\"(?P<lnk>.+?)\"><img class=\"(img100\s)?imgboxart\" src=\"(.+?)\" (alt=\"(?P<alt>.+?)\")?\s?/></a>', assets_page_data)
+
+            # --- Parse all image links in table ---
+            # <a href="/nes/578318-castlevania/images/135454">
+            # <img class="img100 imgboxart" src="https://gamefaqs.akamaized.net/box/2/7/6/2276_thumb.jpg" alt="Castlevania (US)" />
+            # </a>
+            r_str = '<a href="(?P<lnk>.+?)"><img class="(img100\s)?imgboxart" src="(?P<thumb>.+?)" (alt="(?P<alt>.+?)")?\s?/></a>'
+            block_items = re.finditer(r_str, asset_table_data)
             for m in block_items:
                 image_data = m.groupdict()
-
-                for asset_info in asset_infos:
-
-                    if asset_info.id == ASSET_TITLE_ID and title_snap_taken:
-                        continue
-
+                # log_variable('image_data', image_data)
+                for asset_id in asset_infos:
+                    if asset_id == ASSET_TITLE_ID and title_snap_taken: continue
+                    if asset_id == ASSET_TITLE_ID: title_snap_taken = True
                     asset_data = self._new_assetdata_dic()
-                
-                    asset_data['type']  = asset_info
-                    asset_data['url']   = image_data['lnk']
-                    asset_data['name']  = image_data['alt'] if 'alt' in image_data else image_data['link']
-                    asset_data['is_on_page'] = True
-                    
+                    asset_data['asset_ID']     = asset_id
+                    asset_data['display_name'] = image_data['alt'] if image_data['alt'] else ''
+                    asset_data['url_thumb']    = image_data['thumb']
+                    asset_data['url']          = image_data['lnk']
+                    asset_data['is_on_page']   = True
                     assets_list.append(asset_data)
-                    if asset_info.id == ASSET_TITLE_ID:
-                        title_snap_taken = True
+                    # log_variable('asset_data', asset_data)
 
-        next_page_result = re.findall('<li><a href="(\S*?)">Next Page\s<i', page_data, re.MULTILINE)
-        if len(next_page_result) > 0:
-            new_url = 'https://gamefaqs.gamespot.com{}'.format(next_page_result[0])
-            assets_list = assets_list + self._load_assets_from_url(new_url)
+        # --- Recursively load more image pages ---
+        # Deactivated for now. Images on the first page should me more than enough.
+        # next_page_result = re.findall('<li><a href="(\S*?)">Next Page\s<i', page_data, re.MULTILINE)
+        # if len(next_page_result) > 0:
+        #     new_url = 'https://gamefaqs.gamespot.com{}'.format(next_page_result[0])
+        #     assets_list = assets_list + self._load_assets_from_url(new_url)
 
         return assets_list
-
-    def _parse_asset_type(self, header):
-        if 'Screenshots' in header:
-            return [ASSET_SNAP_ID, ASSET_TITLE_ID]
-        if 'Box Back' in header:
-            return [ASSET_BOXBACK_ID]
-        if 'Box Front' in header:
-            return [ASSET_BOXFRONT_ID]
-        if 'Box' in header:
-            return [ASSET_BOXFRONT_ID, ASSET_BOXBACK_ID]
-
-        return [ASSET_SNAP_ID]
 
 # -------------------------------------------------------------------------------------------------
 # Arcade Database online scraper (for MAME).

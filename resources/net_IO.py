@@ -100,15 +100,6 @@ def net_download_img(img_url, file_path):
 # User agent is fixed and defined in global var USER_AGENT
 # Returns a Unicode string.
 #
-def net_get_URL_oneline(url):
-    page_data = net_get_URL(url)
-
-    # --- Put all page text into one line ---
-    page_data = page_data.replace('\r\n', '')
-    page_data = page_data.replace('\n', '')
-
-    return page_data
-
 def net_get_URL(url):
     page_data = ''
     req = urllib2.Request(url)
@@ -135,6 +126,15 @@ def net_get_URL(url):
     # --- Convert to Unicode ---
     encoding = f.headers['content-type'].split('charset=')[-1]
     page_data = net_decode_URL_data(page_bytes, encoding)
+
+    return page_data
+
+def net_get_URL_oneline(url):
+    page_data = net_get_URL(url)
+
+    # --- Put all page text into one line ---
+    page_data = page_data.replace('\r\n', '')
+    page_data = page_data.replace('\n', '')
 
     return page_data
 
