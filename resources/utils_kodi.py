@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
-#
-# Advanced Emulator Launcher miscellaneous functions
-#
 
-# Copyright (c) 2016-2017 Wintermute0110 <wintermute0110@gmail.com>
+# Advanced Emulator Launcher miscellaneous functions.
+# Utility functions which DEPEND on Kodi modules
+
+# Copyright (c) 2016-2019 Wintermute0110 <wintermute0110@gmail.com>
 # Portions (c) 2010-2015 Angelscry
 #
 # This program is free software; you can redistribute it and/or modify
@@ -12,16 +12,13 @@
 #
 # This program is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-# GNU General Public License for more details.
-
-#
-# Utility functions which DEPEND on Kodi modules
-#
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+# See theGNU General Public License for more details.
 
 # --- Python standard library ---
 from __future__ import unicode_literals
 import sys, os, shutil, time, random, hashlib, urlparse
+import pprint
 
 # --- Kodi modules ---
 try:
@@ -32,59 +29,65 @@ except:
 # --- AEL modules ---
 # utils.py and utils_kodi.py must not depend on any other AEL module to avoid circular dependencies.
 
-# --- Constants ---------------------------------------------------------------
+# --- Constants ----------------------------------------------------------------------------------
 LOG_ERROR   = 0
 LOG_WARNING = 1
 LOG_INFO    = 2
 LOG_VERB    = 3
 LOG_DEBUG   = 4
 
-# --- Internal globals --------------------------------------------------------
+# --- Internal globals ---------------------------------------------------------------------------
 current_log_level = LOG_INFO
 
-# -------------------------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------------------------
 # Logging functions
-# -------------------------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------------------------
 def set_log_level(level):
     global current_log_level
 
     current_log_level = level
 
-# For Unicode stuff in Kodi log see http://forum.kodi.tv/showthread.php?tid=144677
-#
-def log_debug(str_text):
-    if current_log_level >= LOG_DEBUG:
-        # if it is str we assume it's "utf-8" encoded.
-        # will fail if called with other encodings (latin, etc).
-        if isinstance(str_text, str): str_text = str_text.decode('utf-8')
+def log_variable(var_name, var):
+    if current_log_level < LOG_DEBUG: return
+    log_text = 'AEL DUMP: "{}"\n{}'.format(var_name, pprint.pformat(var))
+    xbmc.log(log_text.encode('utf-8'), level = xbmc.LOGERROR)
 
-        # At this point we are sure str_text is a unicode string.
-        log_text = 'AEL DEBUG: ' + str_text
-        xbmc.log(log_text.encode('utf-8'), level=xbmc.LOGERROR)
+# For Unicode stuff in Kodi log see http://forum.kodi.tv/showthread.php?tid=144677
+def log_debug(str_text):
+    # Return inmediately is log level is less than this function level.
+    if current_log_level < LOG_DEBUG: return
+
+    # If str_text has type str then we assume it is utf-8 encoded.
+    # This will fail if str_text has other encoding (latin, etc).
+    if isinstance(str_text, str): str_text = str_text.decode('utf-8')
+
+    # At this point we are sure str_text is a unicode string.
+    log_text = 'AEL DEBUG: ' + str_text
+    xbmc.log(log_text.encode('utf-8'), level = xbmc.LOGERROR)
 
 def log_verb(str_text):
-    if current_log_level >= LOG_VERB:
-        if isinstance(str_text, str): str_text = str_text.decode('utf-8')
-        log_text = 'AEL VERB : ' + str_text
-        xbmc.log(log_text.encode('utf-8'), level=xbmc.LOGERROR)
+    if current_log_level < LOG_VERB: return
+    if isinstance(str_text, str): str_text = str_text.decode('utf-8')
+    log_text = 'AEL VERB : ' + str_text
+    xbmc.log(log_text.encode('utf-8'), level=xbmc.LOGERROR)
 
 def log_info(str_text):
-    if current_log_level >= LOG_INFO:
-        if isinstance(str_text, str): str_text = str_text.decode('utf-8')
-        log_text = 'AEL INFO : ' + str_text
-        xbmc.log(log_text.encode('utf-8'), level=xbmc.LOGERROR)
+    if current_log_level < LOG_INFO: return
+    if isinstance(str_text, str): str_text = str_text.decode('utf-8')
+    log_text = 'AEL INFO : ' + str_text
+    xbmc.log(log_text.encode('utf-8'), level=xbmc.LOGERROR)
 
 def log_warning(str_text):
-    if current_log_level >= LOG_WARNING:
-        if isinstance(str_text, str): str_text = str_text.decode('utf-8')
-        log_text = 'AEL WARN : ' + str_text
-        xbmc.log(log_text.encode('utf-8'), level=xbmc.LOGERROR)
+    if current_log_level < LOG_WARNING: return
+    if isinstance(str_text, str): str_text = str_text.decode('utf-8')
+    log_text = 'AEL WARN : ' + str_text
+    xbmc.log(log_text.encode('utf-8'), level=xbmc.LOGERROR)
 
 def log_error(str_text):
-    if current_log_level >= LOG_ERROR:
-        if isinstance(str_text, str): str_text = str_text.decode('utf-8')
-        log_text = 'AEL ERROR: ' + str_text
-        xbmc.log(log_text.encode('utf-8'), level=xbmc.LOGERROR)
+    # Errors are always printed to log.
+    if isinstance(str_text, str): str_text = str_text.decode('utf-8')
+    log_text = 'AEL ERROR: ' + str_text
+    xbmc.log(log_text.encode('utf-8'), level=xbmc.LOGERROR)
 
 # -----------------------------------------------------------------------------
 # Kodi notifications and dialogs
