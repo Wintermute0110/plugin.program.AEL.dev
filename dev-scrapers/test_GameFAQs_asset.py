@@ -1,8 +1,7 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
-#
+
 # Test AEL GameFAQs asset scraper.
-#
 
 # --- Python standard library ---
 from __future__ import unicode_literals

@@ -43,7 +43,7 @@ if not candidate_list:
 candidate = candidate_list[0]
 
 # --- Print list of assets found -----------------------------------------------------------------
-print('*** Arcade Database game images *********************************************************')
+print('*** Fetching game assets ****************************************************************')
 print_game_assets(scraper_obj.get_assets(candidate, ASSET_TITLE_ID))
 print_game_assets(scraper_obj.get_assets(candidate, ASSET_SNAP_ID))
 # print_game_assets(scraper_obj.get_assets(candidate, ASSET_BOXFRONT_ID))

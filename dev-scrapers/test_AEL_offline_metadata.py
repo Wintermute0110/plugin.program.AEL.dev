@@ -1,13 +1,9 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 
-# Test AEL GameFAQs metadata scraper.
-#
-# --- GameGAQs test URLs ---
-# https://gamefaqs.gamespot.com/snes/519824-super-mario-world
-# https://gamefaqs.gamespot.com/snes/588741-super-metroid
-# https://gamefaqs.gamespot.com/snes/588699-street-fighter-alpha-2
-# https://gamefaqs.gamespot.com/genesis/454495-sonic-the-hedgehog
+# Test AEL Offline metadata scraper.
+# First time a platform is used the XML database is loaded and cached for subsequent
+# calls until the scraper object is destroyed or the platform is changed.
 
 # --- Python standard library ---
 from __future__ import unicode_literals
@@ -29,7 +25,8 @@ print('*** Fetching candidate game list ****************************************
 set_log_level(LOG_DEBUG)
 
 # --- Create scraper object ---
-scraper_obj = GameFAQs(common.settings)
+scraper_obj = AEL_Offline(common.settings)
+scraper_obj.set_addon_dir('/cygdrive/e/AEL-test/AEL-offline-scraper/AEL/')
 scraper_obj.set_verbose_mode(False)
 scraper_obj.set_debug_file_dump(True, os.path.join(os.path.dirname(__file__), 'assets'))
 
@@ -39,6 +36,12 @@ candidate_list = scraper_obj.get_candidates(*common.games['mworld'])
 # candidate_list = scraper_obj.get_candidates(*common.games['sonic'])
 # candidate_list = scraper_obj.get_candidates(*common.games['chakan'])
 # candidate_list = scraper_obj.get_candidates(*common.games['console_invalid'])
+
+# --- Get candidates MAME ---
+# candidate_list = scraper_obj.get_candidates(*common.games['tetris'])
+# candidate_list = scraper_obj.get_candidates(*common.games['mslug'])
+# candidate_list = scraper_obj.get_candidates(*common.games['dino'])
+# candidate_list = scraper_obj.get_candidates(*common.games['MAME_invalid'])
 
 # --- Print search results ---
 # pprint.pprint(candidate_list)

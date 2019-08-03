@@ -111,10 +111,15 @@ WIP NOW  [SCRAPERS] Fix AEL Offline Scraper.
 
 WIP      [SCRAPERS] Update MAME Offline Scraper database to version latest version.
 
-WIP      [SCRAPERS] Massive upgrade of AEL Offline scraper database.
+WIP      [SCRAPERS] Upgrade and fix  AEL Offline scraper databases. Do the best you can
+         for a decent 0.9.8 release.
 
 WIP      [SCRAPERS] Add support for ScummVM platform in the Offline Scraper.
          See https://forum.kodi.tv/showthread.php?tid=287826&pid=2629084#pid2629084
+
+WIP      [SCRAPERS] Warn user if missing API keys, etc., before scraping.
+
+WIP      [CORE] Unified ROM artwork directory. See Kodi forum.
 
 WIP      [CORE] Support for Advanced MAME Launcher exported virtual launchers.
          This feature requires AML 0.9.X
@@ -132,11 +137,11 @@ WIP      [CORE] Create a couple of new ROM context menus, "Manage Recently playe
          "Delete all Unlinked/Broken ROMs".
          See https://forum.kodi.tv/showthread.php?tid=287826&pid=2698811#pid2698811
 
-WIP      New section Utilities. Move stuff from addon settings.
+WIP      [CORE] New section Utilities. Move stuff from addon settings.
 
-WIP      New section Global Reports.
+WIP      [CORE] New section Global Reports.
 
-WIP      Make sure AEL never crashes when rendering the root window, even if categories.xml
+WIP      [CORE] Make sure AEL never crashes when rendering the root window, even if categories.xml
          is corruped. In case of crash when rendering the root window, ask the user to update
          the databases (in the case the crash is due to a missing key in dictionary).
 

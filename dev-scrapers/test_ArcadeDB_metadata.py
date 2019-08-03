@@ -20,7 +20,7 @@ from resources.utils import *
 import common
 
 # --- main ---------------------------------------------------------------------------------------
-print('*** Arcade Database *********************************************************************')
+print('*** Fetching candidate game list ********************************************************')
 set_log_level(LOG_DEBUG)
 
 # --- Create scraper object ---
@@ -43,7 +43,7 @@ if not candidate_list:
 candidate = candidate_list[0]
 
 # --- Print metadata of first candidate ----------------------------------------------------------
-print('*** ScreenScraper game metadata *********************************************************')
-metadata = scraper_obj.get_metadata(candidate_list[0])
+print('*** Fetching game metadata **************************************************************')
+metadata = scraper_obj.get_metadata(candidate)
 # pprint.pprint(metadata)
 print_game_metadata(metadata)

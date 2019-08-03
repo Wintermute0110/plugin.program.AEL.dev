@@ -21,7 +21,7 @@ from resources.utils import *
 import common
 
 # --- main ---------------------------------------------------------------------------------------
-print('*** ScreenScraper search ****************************************************************')
+print('*** Fetching candidate game list ********************************************************')
 set_log_level(LOG_DEBUG)
 
 # --- Create scraper object ---
@@ -31,9 +31,10 @@ scraper_obj.set_debug_file_dump(True, os.path.join(os.path.dirname(__file__), 'a
 
 # --- Get candidates ---
 # candidate_list = scraper_obj.get_candidates(*common.games['metroid'])
-# candidate_list = scraper_obj.get_candidates(*common.games['mworld'])
-candidate_list = scraper_obj.get_candidates(*common.games['sonic'])
+candidate_list = scraper_obj.get_candidates(*common.games['mworld'])
+# candidate_list = scraper_obj.get_candidates(*common.games['sonic'])
 # candidate_list = scraper_obj.get_candidates(*common.games['chakan'])
+# candidate_list = scraper_obj.get_candidates(*common.games['console_invalid'])
 
 # --- Print search results ---
 # pprint.pprint(candidate_list)
@@ -41,10 +42,10 @@ print_candidate_list(candidate_list)
 if not candidate_list:
     print('No candidates found.')
     sys.exit(0)
+candidate = candidate_list[0]
 
 # --- Print list of assets found -----------------------------------------------------------------
-print('*** ScreenScraper game images ***********************************************************')
-candidate = candidate_list[0]
+print('*** Fetching game assets ****************************************************************')
 print_game_assets(scraper_obj.get_assets(candidate, ASSET_TITLE_ID))
 print_game_assets(scraper_obj.get_assets(candidate, ASSET_SNAP_ID))
 print_game_assets(scraper_obj.get_assets(candidate, ASSET_BOXFRONT_ID))
