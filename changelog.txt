@@ -71,12 +71,6 @@ WIP      [ROM AUDIT] Options to generate the 1G1R parent list, like prefer ROMs 
 WIP      [SCRAPERS] Asset scrapers are disabled/not working for standalone launchers. Fix this.
          See https://github.com/Wintermute0110/plugin.program.advanced.emulator.launcher/issues/62
 
-WIP      [SCRAPERS] Option to rescrape all ROM assets in a similar fashion to
-         "Scan ROMs local artwork". Create a menu entry in "Edit Launcher", "Manage ROMs",
-         "Scrape ROMs artwork". "Scrape ROMs artwork" will use the same scraper settings in
-         options as the ROM Scanner.
-         See https://github.com/Wintermute0110/plugin.program.advanced.emulator.launcher/issues/72
-
 WIP      [SCRAPERS] Fix GameFAQs scraper.
          It has been a while since this scraper is not working any more.
          GameFAQs does not have an API. Should this scraper being removed???
@@ -120,12 +114,20 @@ FEATURE  [SCRAPERS] Fix ArcadeDB scraper. Use the new ArcadeDB API.
 
 FEATURE  [SCRAPERS] Fix AEL Offline Scraper.
 
-WIP      [SCRAPERS] Add support for ScummVM platform in the Offline Scraper.
+FEATURE  [SCRAPERS] Add support for ScummVM platform in the Offline Scraper.
          See https://forum.kodi.tv/showthread.php?tid=287826&pid=2629084#pid2629084
 
 WIP      [SCRAPERS] Warn user if missing API keys, etc., before scraping.
 
-WIP      [CORE] Unified ROM artwork directory. See Kodi forum.
+WIP      [SCRAPERS] Option to rescrape all ROM assets in a similar fashion to
+         "Scan ROMs local artwork". Create a menu entry in "Edit Launcher", "Manage ROMs",
+         "Scrape ROMs artwork". "Scrape ROMs artwork" will use the same scraper settings in
+         options as the ROM Scanner.
+         See https://github.com/Wintermute0110/plugin.program.advanced.emulator.launcher/issues/72
+
+WIP      [CORE] Unified ROM artwork directory.
+         See https://forum.kodi.tv/showthread.php?tid=287826&pid=2865413#pid2865413
+         See https://forum.kodi.tv/showthread.php?tid=287826&pid=2867785#pid2867785
 
 WIP      [CORE] Support for Advanced MAME Launcher exported virtual launchers.
          This feature requires AML 0.9.X
@@ -134,9 +136,11 @@ WIP      [CORE] Support for Advanced MAME Launcher exported virtual launchers.
 WIP      [CORE] New properties to notify skins about Std launchers, ROM launchers, Categories,
          and number of items in a Launcher.
 
-WIP      [CORE] Option to clean dead ROMs in "Recently played ROMs" and "Most played ROMs"
+WIP      [CORE] Option to clean dead ROMs in "Recently played ROMs" and "Most played ROMs".
+         See AML for an implementation.
 
-WIP      [CORE] Option to clean individual ROMs in "Recently played ROMs" and "Most played ROMs"
+WIP      [CORE] Option to clean individual ROMs in "Recently played ROMs" and "Most played ROMs".
+         See AML for an implementation.
 
 WIP      [CORE] Create a couple of new ROM context menus, "Manage Recently played ROM" and 
          "Manage Most played ROM". Both will have the following options: "Delete this ROM",
