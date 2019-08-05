@@ -31,7 +31,7 @@ games = {
     'console_invalid' : ('Console invalid game', 'mjhyewqr', 'Sega MegaDrive'),
 
     # MAME games
-    'tetris'          : ('Tetris (set 1)', 'atetris', 'MAME'),
+    'atetris'         : ('Tetris (set 1)', 'atetris', 'MAME'),
     'mslug'           : ('Metal Slug - Super Vehicle-001', 'mslug', 'MAME'),
     'dino'            : ('Cadillacs and Dinosaurs (World 930201)', 'dino', 'MAME'),
     'MAME_invalid'    : ('MAME invalid game', 'mjhyewqr', 'MAME'),
