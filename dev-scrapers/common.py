@@ -5,6 +5,9 @@
 #
 
 settings = {
+    # --- AEL Offline ---
+    'scraper_aeloffline_addon_code_dir' : '',
+
     # --- MobyGames ---
     'scraper_mobygames_apikey' : '', # NEVER COMMIT THIS PASSWORD
 
@@ -23,7 +26,7 @@ games = {
     # Console games
     'metroid'         : ('Metroid', 'Metroid', 'Nintendo SNES'),
     'mworld'          : ('Super Mario World', 'Super Mario World', 'Nintendo SNES'),
-    'sonic'           : ('Sonic The Hedgehog', 'Sonic The Hedgehog (USA, Europe)', 'Sega MegaDrive'),
+    'sonic'           : ('Sonic the Hedgehog', 'Sonic the Hedgehog (USA, Europe)', 'Sega MegaDrive'),
     'chakan'          : ('Chakan', 'Chakan (USA, Europe)', 'Sega MegaDrive'),
     'console_invalid' : ('Console invalid game', 'mjhyewqr', 'Sega MegaDrive'),
 

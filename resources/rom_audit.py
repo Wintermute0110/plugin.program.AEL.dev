@@ -211,7 +211,7 @@ def audit_load_LB_metadata_XML(filename_FN, games_dic, platforms_dic, gameimages
 # Loads offline scraper information XML file.
 #
 def audit_load_OfflineScraper_XML(xml_file):
-    __debug_xml_parser = 0
+    __debug_xml_parser = False
     games = {}
 
     # --- Check that file exists ---
@@ -220,7 +220,7 @@ def audit_load_OfflineScraper_XML(xml_file):
         return games
 
     # --- Parse using cElementTree ---
-    log_verb('audit_load_OfflineScraper_XML() Loading "{0}"'.format(xml_file))
+    log_debug('audit_load_OfflineScraper_XML() Loading "{0}"'.format(xml_file))
     try:
         xml_tree = ET.parse(xml_file)
     except ET.ParseError, e:

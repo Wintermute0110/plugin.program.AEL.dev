@@ -24,21 +24,24 @@ import common
 print('*** Fetching candidate game list ********************************************************')
 set_log_level(LOG_DEBUG)
 
+# Set addon dir
+common.settings['scraper_aeloffline_addon_code_dir'] = path
+print('Setting scraper_aeloffline_addon_code_dir = "{}"'.format(path))
+
 # --- Create scraper object ---
 scraper_obj = AEL_Offline(common.settings)
-scraper_obj.set_addon_dir('/cygdrive/e/AEL-test/AEL-offline-scraper/AEL/')
 scraper_obj.set_verbose_mode(False)
 scraper_obj.set_debug_file_dump(True, os.path.join(os.path.dirname(__file__), 'assets'))
 
 # --- Get candidates non-MAME ---
 # candidate_list = scraper_obj.get_candidates(*common.games['metroid'])
-candidate_list = scraper_obj.get_candidates(*common.games['mworld'])
+# candidate_list = scraper_obj.get_candidates(*common.games['mworld'])
 # candidate_list = scraper_obj.get_candidates(*common.games['sonic'])
 # candidate_list = scraper_obj.get_candidates(*common.games['chakan'])
 # candidate_list = scraper_obj.get_candidates(*common.games['console_invalid'])
 
 # --- Get candidates MAME ---
-# candidate_list = scraper_obj.get_candidates(*common.games['tetris'])
+candidate_list = scraper_obj.get_candidates(*common.games['tetris'])
 # candidate_list = scraper_obj.get_candidates(*common.games['mslug'])
 # candidate_list = scraper_obj.get_candidates(*common.games['dino'])
 # candidate_list = scraper_obj.get_candidates(*common.games['MAME_invalid'])

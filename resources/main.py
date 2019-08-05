@@ -563,8 +563,9 @@ class Main:
         if self.settings['collections_asset_dir'] == '':
             self.settings['collections_asset_dir'] = g_PATHS.DEFAULT_COL_ASSET_DIR.getOriginalPath()
 
-        # Fake settings.
+        # Settings required by the scrapers (they are not really settings).
         self.settings['scraper_screenscraper_AEL_softname'] = 'AEL_{0}'.format(__addon_version__)
+        self.settings['scraper_aeloffline_addon_code_dir'] = g_PATHS.ADDON_CODE_DIR..getOriginalPath()
 
         # --- Dump settings for DEBUG ---
         # log_debug('Settings dump BEGIN')
