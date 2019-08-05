@@ -228,17 +228,27 @@ class ScraperFactory(object):
 
         # --- Read addon settings and configure the scrapers selected -----------------------------
         if launcher['platform'] == 'MAME':
-            metadata_scraper_list = [ self.scraper_objs[SCRAPER_NULL_ID] ]
-            asset_scraper_list = [ self.scraper_objs[SCRAPER_NULL_ID] ]
+            log_debug('ScraperFactory::create_scanner() Platform is MAME. Using MAME scrapers from settings.xml')
+            scraper_metadata_index = self.settings['scraper_metadata']
+            scraper_metadata_ID = SCRAP_METADATA_SETTINGS_LIST[scraper_metadata_index]
+            scraper_asset_index = self.settings['scraper_asset']
+            scraper_asset_ID = SCRAP_ASSET_SETTINGS_LIST[scraper_asset_index]
         else:
-            # Force Null scraper
-            # metadata_scraper_list = [ self.scraper_objs[SCRAPER_NULL_ID] ]
-            # asset_scraper_list = [ self.scraper_objs[SCRAPER_NULL_ID] ]
-            # Force Mobygames scraper
-            metadata_scraper_list = [ self.scraper_objs[SCRAPER_MOBYGAMES_ID] ]
-            asset_scraper_list = [ self.scraper_objs[SCRAPER_MOBYGAMES_ID] ]
-        strategy_obj.metadata_scraper_list = metadata_scraper_list
-        strategy_obj.asset_scraper_list = asset_scraper_list
+            log_debug('ScraperFactory::create_scanner() Platform is NON-MAME. Using standard scrapers from settings.xml')
+            scraper_metadata_index = self.settings['scraper_metadata_MAME']
+            scraper_metadata_ID = SCRAP_METADATA_MAME_SETTINGS_LIST[scraper_metadata_index]
+            scraper_asset_index = self.settings['scraper_asset_MAME']
+            scraper_asset_ID = SCRAP_ASSET_MAME_SETTINGS_LIST[scraper_asset_index]
+        log_debug('scraper metadata name {} (index {}, ID {})'.format(
+            self.scraper_objs[scraper_metadata_ID].get_name(), scraper_metadata_index, scraper_metadata_ID))
+        log_debug('scraper asset name    {} (index {}, ID {})'.format(
+            self.scraper_objs[scraper_asset_ID].get_name(), scraper_asset_index, scraper_asset_ID))
+
+        # For now the ScraperStrategy object will use the first scraper of this list. In the
+        # future maybe multiple scrapers can be used and these lists will have more than one
+        # object.
+        strategy_obj.metadata_scraper_list = [ self.scraper_objs[scraper_metadata_ID] ]
+        strategy_obj.asset_scraper_list = [ self.scraper_objs[scraper_asset_ID] ]
 
         # --- Add launcher properties to ScrapeStrategy object ---
         strategy_obj.platform = launcher['platform']
@@ -1558,7 +1568,7 @@ class TheGamesDB(Scraper):
         url = 'https://api.thegamesdb.net/Games/ByGameID?apikey={}&id={}&fields=players%2Cpublishers%2Cgenres%2Coverview%2Crating%2Cplatform%2Ccoop%2Cyoutube'.format(
             api_key, candidate['id'])
         # log_debug('Get metadata from {0}'.format(url))
-        page_data_raw = net_get_URL_original(url)
+        page_data_raw = net_get_URL(url)
         page_data = json.loads(page_data_raw)
         if self.dump_file_flag:
             file_path = os.path.join(self.dump_dir, 'TGDB_get_metadata.txt')
@@ -1600,7 +1610,7 @@ class TheGamesDB(Scraper):
         log_debug('TheGamesDB::get_platforms() BEGIN...')
         api_key = self._get_API_key()
         url = 'https://api.thegamesdb.net/Platforms?apikey={}'.format(api_key)
-        page_data = json.loads(net_get_URL_original(url))
+        page_data = json.loads(net_get_URL(url))
         self._dump_json_debug('TGDB_get_platforms.txt', page_data)
 
         return page_data
@@ -1640,7 +1650,7 @@ class TheGamesDB(Scraper):
     #},
     def _read_games_from_url(self, url, search_term, scraper_platform):
         # --- Get URL data as JSON ---
-        page_data_raw = net_get_URL_original(url)
+        page_data_raw = net_get_URL(url)
         page_data = json.loads(page_data_raw)
         self._dump_json_debug('TGDB_get_candidates.txt', page_data)
 
@@ -1705,7 +1715,7 @@ class TheGamesDB(Scraper):
         log_debug('TheGamesDB::_get_genres() No cached genres. Retrieving...')
         api_key = self._get_API_key()
         url = 'https://api.thegamesdb.net/Genres?apikey={}'.format(api_key)
-        page_data_raw = net_get_URL_original(url)
+        page_data_raw = net_get_URL(url)
         page_data = json.loads(page_data_raw)
         self._dump_json_debug('TGDB_get_genres.txt', page_data)
         self.genres_cached = {}
@@ -1728,7 +1738,7 @@ class TheGamesDB(Scraper):
         log_debug('TheGamesDB::_get_developers() No cached developers. Retrieving...')
         api_key = self._get_API_key()
         url = 'https://api.thegamesdb.net/Developers?apikey={}'.format(api_key)
-        page_data_raw = net_get_URL_original(url)
+        page_data_raw = net_get_URL(url)
         page_data = json.loads(page_data_raw)
         self._dump_json_debug('TGDB_get_developers.txt', page_data)
         self.developers_cached = {}
@@ -1776,7 +1786,7 @@ class TheGamesDB(Scraper):
 
     def _read_assets_from_url(self, url, candidate_id):
         # --- Read URL JSON data ---
-        page_data_raw = net_get_URL_original(url)
+        page_data_raw = net_get_URL(url)
         page_data = json.loads(page_data_raw)
         self._dump_json_debug('TGDB_get_assets.txt', page_data)
 
@@ -1886,7 +1896,7 @@ class MobyGames(Scraper):
         self._do_toomanyrequests_check()
         url = 'https://api.mobygames.com/v1/games/{}?api_key={}'.format(candidate['id'], self.api_key)
         log_debug('Get metadata from {0}'.format(url))
-        page_data_raw = net_get_URL_original(url)
+        page_data_raw = net_get_URL(url)
         self.last_http_call = datetime.datetime.now()
         online_data = json.loads(page_data_raw)
         if self.dump_file_flag:
@@ -1934,7 +1944,7 @@ class MobyGames(Scraper):
     # --- This class methods ---------------------------------------------------------------------
     def _read_games_from_url(self, url, search_term, platform, scraper_platform):
         self._do_toomanyrequests_check()
-        page_data_raw = net_get_URL_original(url)
+        page_data_raw = net_get_URL(url)
         self.last_http_call = datetime.datetime.now()
         page_data = json.loads(page_data_raw)
         if self.dump_file_flag:
@@ -2039,7 +2049,7 @@ class MobyGames(Scraper):
         url = 'https://api.mobygames.com/v1/games/{0}/platforms/{1}/covers?api_key={2}'.format(
             candidate['id'], platform_id, self.api_key)
         self._do_toomanyrequests_check()
-        page_data_raw = net_get_URL_original(url)
+        page_data_raw = net_get_URL(url)
         page_data = json.loads(page_data_raw)
         self.last_http_call = datetime.datetime.now()
         self._dump_json_debug('mobygames_cover_assets.txt', page_data)
@@ -2277,7 +2287,7 @@ class ScreenScraper_V1(Scraper):
         log_debug('ScreenScraper_V1::get_ROM_types() BEGIN...')
         url_str = 'https://www.screenscraper.fr/api/romTypesListe.php?devid={}&devpassword={}&softname={}&output=json'
         url = url_str.format(base64.b64decode(self.dev_id), base64.b64decode(self.dev_pass), self.softname)
-        page_raw_data = net_get_URL_original(url)
+        page_raw_data = net_get_URL(url)
         log_debug(unicode(page_raw_data))
         page_data = json.loads(page_raw_data)
         self._dump_json_debug('ScreenScraper_get_ROM_types.txt', page_data)
@@ -2288,7 +2298,7 @@ class ScreenScraper_V1(Scraper):
         log_debug('ScreenScraper_V1::get_genres_list() BEGIN...')
         url_str = 'https://www.screenscraper.fr/api/genresListe.php?devid={}&devpassword={}&softname={}&output=json'
         url = url_str.format(base64.b64decode(self.dev_id), base64.b64decode(self.dev_pass), self.softname)
-        page_raw_data = net_get_URL_original(url)
+        page_raw_data = net_get_URL(url)
         # log_debug(unicode(page_raw_data))
         page_data = json.loads(page_raw_data)
         self._dump_json_debug('ScreenScraper_get_genres_list.txt', page_data)
@@ -2299,7 +2309,7 @@ class ScreenScraper_V1(Scraper):
         log_debug('ScreenScraper_V1::get_regions_list() BEGIN...')
         url_str = 'https://www.screenscraper.fr/api/regionsListe.php?devid={}&devpassword={}&softname={}&output=json'
         url = url_str.format(base64.b64decode(self.dev_id), base64.b64decode(self.dev_pass), self.softname)
-        page_raw_data = net_get_URL_original(url)
+        page_raw_data = net_get_URL(url)
         # log_debug(unicode(page_raw_data))
         page_data = json.loads(page_raw_data)
         self._dump_json_debug('ScreenScraper_get_regions_list.txt', page_data)
@@ -2348,7 +2358,7 @@ class ScreenScraper_V1(Scraper):
         url = url_a + url_b + url_c + url_d
 
         # --- Grab and parse URL data ---
-        page_raw_data = net_get_URL_original(url)
+        page_raw_data = net_get_URL(url)
         try:
             gameInfos_dic = json.loads(page_raw_data)
         except ValueError as ex:
@@ -3005,7 +3015,7 @@ class ArcadeDB(Scraper):
         url = url_a + url_b
 
         # --- Grab and parse URL data ---
-        page_raw_data = net_get_URL_original(url)
+        page_raw_data = net_get_URL(url)
         try:
             json_response_dic = json.loads(page_raw_data)
         except ValueError as ex:
