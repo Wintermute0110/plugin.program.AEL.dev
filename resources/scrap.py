@@ -1572,12 +1572,16 @@ class TheGamesDB(Scraper):
         url = 'https://api.thegamesdb.net/Games/ByGameID?apikey={}&id={}&fields=players%2Cpublishers%2Cgenres%2Coverview%2Crating%2Cplatform%2Ccoop%2Cyoutube'.format(
             api_key, candidate['id'])
         # log_debug('Get metadata from {0}'.format(url))
-        page_data_raw = net_get_URL(url)
-        page_data = json.loads(page_data_raw)
-        if self.dump_file_flag:
-            file_path = os.path.join(self.dump_dir, 'TGDB_get_metadata.txt')
-            text_dump_str_to_file(file_path, json.dumps(
-                page_data, indent = 1, separators = (', ', ' : ')))
+        page_data_raw = net_get_URL(url, self._clean_URL_for_log(url))
+        try:
+            page_data = json.loads(page_data_raw)
+        except Exception as ex:
+            log_error('(Exception) In TheGamesDB::_scraper_get_metadata()')
+            log_error('(Exception) Object type "{}"'.format(type(ex)))
+            log_error('(Exception) Message "{}"'.format(str(ex)))
+            log_error('Problem in json.loads(url). Returning empty dictionary.')
+            return {}
+        self._dump_json_debug('TGDB_get_metadata.json', page_data)
 
         # --- Parse game page data ---
         log_debug('TheGamesDB::_scraper_get_metadata() Parsing game metadata...')
@@ -1651,9 +1655,16 @@ class TheGamesDB(Scraper):
     #},
     def _read_games_from_url(self, url, search_term, scraper_platform):
         # --- Get URL data as JSON ---
-        page_data_raw = net_get_URL(url)
-        page_data = json.loads(page_data_raw)
-        self._dump_json_debug('TGDB_get_candidates.txt', page_data)
+        page_data_raw = net_get_URL(url, self._clean_URL_for_log(url))
+        try:
+            page_data = json.loads(page_data_raw)
+        except Exception as ex:
+            log_error('(Exception) In TheGamesDB::_read_games_from_url()')
+            log_error('(Exception) Object type "{}"'.format(type(ex)))
+            log_error('(Exception) Message "{}"'.format(str(ex)))
+            log_error('Problem in json.loads(url). Returning empty list of candidate games.')
+            return []
+        self._dump_json_debug('TGDB_get_candidates.json', page_data)
 
         # --- Parse game list ---
         games = page_data['data']['games']
@@ -1819,6 +1830,16 @@ class TheGamesDB(Scraper):
 
         return assets_list
 
+    # TGDB URLs are safe for printing, however the API key is too long.
+    # Clean URLs for safe logging.
+    def _clean_URL_for_log(self, url):
+        clean_url = url
+        clean_url = re.sub('apikey=[^&]*&', 'apikey=***&', clean_url)
+        # log_variable('url', url)
+        # log_variable('clean_url', clean_url)
+
+        return clean_url
+
 # ------------------------------------------------------------------------------------------------
 # MobyGames online scraper http://www.mobygames.com
 #
@@ -1945,7 +1966,7 @@ class MobyGames(Scraper):
     # --- This class methods ---------------------------------------------------------------------
     def _read_games_from_url(self, url, search_term, platform, scraper_platform):
         self._do_toomanyrequests_check()
-        page_data_raw = net_get_URL(url)
+        page_data_raw = net_get_URL(url, self._clean_URL_for_log(url))
         self.last_http_call = datetime.datetime.now()
         # If the MobyGames API key is wrong, MobyGames will reply with an 
         # "HTTP Error 401: UNAUTHORIZED" response which is an IOError expection in net_get_URL().
@@ -1958,9 +1979,7 @@ class MobyGames(Scraper):
             log_error('(Exception) Message "{}"'.format(str(ex)))
             log_error('Problem in json.loads(url). Returning empty list of candidate games.')
             return []
-        if self.dump_file_flag:
-            file_path = os.path.join(self.dump_dir, 'mobygames_get_candidates.txt')
-            text_dump_str_to_file(file_path, page_data_raw)
+        self._dump_json_debug('MobyGames_get_candidates.json', page_data)
 
         # If nothing is returned maybe a timeout happened. In this case, reset the cache.
         if page_data is None: self._reset_cache()
@@ -2094,6 +2113,16 @@ class MobyGames(Scraper):
         if (now - self.last_http_call).total_seconds() < 1:
             log_debug('MobyGames_Scraper:: Sleeping 1 second to avoid overloading...')
             time.sleep(1)
+
+    # MobyGames URLs have the API developer id and password.
+    # Clean URLs for safe logging.
+    def _clean_URL_for_log(self, url):
+        clean_url = url
+        # clean_url = re.sub('apikey=[^&]*&', 'apikey=***&', clean_url)
+        # log_variable('url', url)
+        # log_variable('clean_url', clean_url)
+
+        return clean_url
 
 # ------------------------------------------------------------------------------------------------
 # ScreenScraper online scraper.
@@ -2531,8 +2560,8 @@ class ScreenScraper_V1(Scraper):
 
         return None
 
-    # ScreenScraper URL have the developer password and the user password.
-    # Clean SS URLs for safe logging.
+    # ScreenScraper URLs have the developer password and the user password.
+    # Clean URLs for safe logging.
     #
     # https://docs.python.org/2/library/urlparse.html
     # Note: The urlparse module is renamed to urllib.parse in Python 3. The 2to3 tool will
