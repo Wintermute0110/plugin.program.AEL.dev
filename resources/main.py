@@ -494,7 +494,6 @@ class Main:
         self.settings['scraper_asset_MAME']    = int(o.getSetting('scraper_asset_MAME'))
 
         # --- Scrapers ---
-        self.settings['scraper_thegamesdb_apikey']    = o.getSetting('scraper_thegamesdb_apikey').decode('utf-8')
         self.settings['scraper_mobygames_apikey']     = o.getSetting('scraper_mobygames_apikey').decode('utf-8')
         self.settings['scraper_screenscraper_ssid']   = o.getSetting('scraper_screenscraper_ssid').decode('utf-8')
         self.settings['scraper_screenscraper_sspass'] = o.getSetting('scraper_screenscraper_sspass').decode('utf-8')
