@@ -49,7 +49,7 @@ def set_log_level(level):
 
 def log_variable(var_name, var):
     if current_log_level < LOG_DEBUG: return
-    log_text = 'AEL DUMP: "{}"\n{}'.format(var_name, pprint.pformat(var))
+    log_text = 'AEL DUMP : Dumping variable "{}"\n{}'.format(var_name, pprint.pformat(var))
     xbmc.log(log_text.encode('utf-8'), level = xbmc.LOGERROR)
 
 # For Unicode stuff in Kodi log see http://forum.kodi.tv/showthread.php?tid=144677

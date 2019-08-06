@@ -99,12 +99,16 @@ def net_download_img(img_url, file_path):
 #
 # User agent is fixed and defined in global var USER_AGENT
 # Returns a Unicode string.
-#
-def net_get_URL(url):
+# @param url: [Unicode string] URL to open
+# @param url_log: [Unicode string] If not None this URL will be used in the logs.
+def net_get_URL(url, url_log = None):
     page_data = ''
     req = urllib2.Request(url)
     req.add_unredirected_header('User-Agent', USER_AGENT)
-    log_debug('net_get_URL() GET URL "{0}"'.format(req.get_full_url()))
+    if url_log is None:
+        log_debug('net_get_URL() GET URL "{0}"'.format(req.get_full_url()))
+    else:
+        log_debug('net_get_URL() GET URL "{0}"'.format(url_log))
 
     try:
         f = urllib2.urlopen(req)
@@ -116,9 +120,7 @@ def net_get_URL(url):
         log_error('(Exception) Object type "{}"'.format(type(ex)))
         log_error('(Exception) Message "{}"'.format(str(ex)))
         return page_data
-
-    num_bytes = len(page_bytes)
-    log_debug('net_get_URL() Read {0} bytes'.format(num_bytes))
+    log_debug('net_get_URL() Read {0} bytes'.format(len(page_bytes)))
 
     # --- Convert to Unicode ---
     encoding = f.headers['content-type'].split('charset=')[-1]

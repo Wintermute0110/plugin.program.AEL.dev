@@ -1947,16 +1947,16 @@ class MobyGames(Scraper):
         self._do_toomanyrequests_check()
         page_data_raw = net_get_URL(url)
         self.last_http_call = datetime.datetime.now()
-        # If the API key is wrong, MobyGames will reply with a "HTTP Error 401: UNAUTHORIZED"
-        # response which is an IOError expection in net_get_URL(). Generally, if a JSON
-        # object cannot be decoded some error happened in net_get_URL().
+        # If the MobyGames API key is wrong, MobyGames will reply with an 
+        # "HTTP Error 401: UNAUTHORIZED" response which is an IOError expection in net_get_URL().
+        # Generally, if a JSON object cannot be decoded some error happened in net_get_URL().
         try:
             page_data = json.loads(page_data_raw)
         except Exception as ex:
             log_error('(Exception) In MobyGames::_read_games_from_url()')
             log_error('(Exception) Object type "{}"'.format(type(ex)))
             log_error('(Exception) Message "{}"'.format(str(ex)))
-            log_error('Problem in net_get_URL(url). Returning empty list of candidate games.')
+            log_error('Problem in json.loads(url). Returning empty list of candidate games.')
             return []
         if self.dump_file_flag:
             file_path = os.path.join(self.dump_dir, 'mobygames_get_candidates.txt')
@@ -2225,6 +2225,10 @@ class ScreenScraper_V1(Scraper):
             log_debug('ScreenScraper_V1::_scraper_get_candidates() Cache miss "{0}"'.format(cache_str))
             gameInfos_dic = self._get_gameInfos(search_term, rombase_noext, scraper_platform)
             self.cache_jeuInfos[cache_str] = gameInfos_dic
+
+        # --- Deal with errors returned by api/jeuInfos.php ---
+        # If the JSON could not be decoded gameInfos_dic is an empty dictionary.
+        # Do not forget to reset the cache to clear the empty dictionary from the cache.
         jeu_dic = gameInfos_dic['response']['jeu']
         log_debug('Game "{}" (ID {}, ROMID {})'.format(jeu_dic['nom'], jeu_dic['id'], jeu_dic['romid']))
         log_debug('Num ROMs {}'.format(len(jeu_dic['roms'])))
@@ -2249,13 +2253,13 @@ class ScreenScraper_V1(Scraper):
 
         # --- Parse game metadata ---
         gamedata = self._new_gamedata_dic()
-        gamedata['title']     = self._get_meta_title(jeu_dic)
-        gamedata['year']      = self._get_meta_year(jeu_dic)
-        gamedata['genre']     = self._get_meta_genre(jeu_dic)
-        gamedata['developer'] = self._get_meta_developer(jeu_dic)
-        gamedata['nplayers']  = self._get_meta_nplayers(jeu_dic)
-        gamedata['esrb']      = self._get_meta_esrb(jeu_dic)
-        gamedata['plot']      = self._get_meta_plot(jeu_dic)
+        gamedata['title']     = self._parse_meta_title(jeu_dic)
+        gamedata['year']      = self._parse_meta_year(jeu_dic)
+        gamedata['genre']     = self._parse_meta_genre(jeu_dic)
+        gamedata['developer'] = self._parse_meta_developer(jeu_dic)
+        gamedata['nplayers']  = self._parse_meta_nplayers(jeu_dic)
+        gamedata['esrb']      = self._parse_meta_esrb(jeu_dic)
+        gamedata['plot']      = self._parse_meta_plot(jeu_dic)
 
         return gamedata
 
@@ -2350,7 +2354,9 @@ class ScreenScraper_V1(Scraper):
         rom_name = urllib.quote(rombase_noext)
         rom_size = 0
         log_debug('ScreenScraper_V1::_get_gameInfos() ssid       "{0}"'.format(self.ssid))
-        log_debug('ScreenScraper_V1::_get_gameInfos() sspassword "{0}"'.format('********'))
+        # log_debug('ScreenScraper_V1::_get_gameInfos() ssid       "{0}"'.format('***'))
+        # log_debug('ScreenScraper_V1::_get_gameInfos() sspassword "{0}"'.format(self.sspassword))
+        log_debug('ScreenScraper_V1::_get_gameInfos() sspassword "{0}"'.format('***'))
         log_debug('ScreenScraper_V1::_get_gameInfos() system_id  "{0}"'.format(system_id))
         log_debug('ScreenScraper_V1::_get_gameInfos() rom_type   "{0}"'.format(rom_type))
         log_debug('ScreenScraper_V1::_get_gameInfos() crc_str    "{0}"'.format(crc_str))
@@ -2369,19 +2375,16 @@ class ScreenScraper_V1(Scraper):
         url = url_a + url_b + url_c + url_d
 
         # --- Grab and parse URL data ---
-        page_raw_data = net_get_URL(url)
+        page_raw_data = net_get_URL(url, self._clean_URL_for_log(url))
         try:
             gameInfos_dic = json.loads(page_raw_data)
-        except ValueError as ex:
-            gameInfos_dic = page_raw_data
-            log_error('(ValueError Exception) {0}'.format(ex))
-            log_error('Message "{0}"'.format(page_raw_data))
         except Exception as ex:
+            log_error('(Exception) In ScreenScraper_V1::_get_gameInfos()')
+            log_error('(Exception) Object type "{}"'.format(type(ex)))
+            log_error('(Exception) Message "{}"'.format(str(ex)))
+            log_error('Problem in json.loads(url). Returning empty list of candidate games.')
             gameInfos_dic = page_raw_data
-            log_error('(Generic Exception) {0}'.format(ex))
-            log_error('Message "{0}"'.format(page_raw_data))
-        # Dump file if debug flag is True.
-        self._dump_json_debug('ScreenScraper_get_gameInfo.txt', gameInfos_dic)
+        self._dump_json_debug('ScreenScraper_get_gameInfo.json', gameInfos_dic)
 
         return gameInfos_dic
 
@@ -2392,7 +2395,9 @@ class ScreenScraper_V1(Scraper):
             if key in jeu_dic['noms']: return jeu_dic['noms'][key]
 
         # Default name
-        return jeu_dic['nom']
+        if 'nom' in jeu_dic: return jeu_dic['nom']
+
+        return ''
 
     def _parse_meta_year(self, jeu_dic):
         # Search regional dates. Only return year (first 4 characters)
@@ -2411,13 +2416,20 @@ class ScreenScraper_V1(Scraper):
         return ''
 
     def _parse_meta_developer(self, jeu_dic):
-        return jeu_dic['developpeur']
+        if 'developpeur' in jeu_dic: return jeu_dic['developpeur']
+
+        return ''
 
     def _parse_meta_nplayers(self, jeu_dic):
-        return jeu_dic['joueurs']
+        if 'joueurs' in jeu_dic: return jeu_dic['joueurs']
+
+        return ''
 
     def _parse_meta_esrb(self, jeu_dic):
-        return jeu_dic['classifications']['ESRB']
+        if 'classifications' in jeu_dic and 'ESRB' in jeu_dic['classifications']:
+            return jeu_dic['classifications']['ESRB']
+
+        return ''
 
     def _parse_meta_plot(self, jeu_dic):
         for region in ScreenScraper_V1.region_list:
@@ -2518,6 +2530,34 @@ class ScreenScraper_V1(Scraper):
                 return asset_data
 
         return None
+
+    # ScreenScraper URL have the developer password and the user password.
+    # Clean SS URLs for safe logging.
+    #
+    # https://docs.python.org/2/library/urlparse.html
+    # Note: The urlparse module is renamed to urllib.parse in Python 3. The 2to3 tool will
+    # automatically adapt imports when converting your sources to Python 3. 
+    def _clean_URL_for_log(self, url):
+        # This is too complicated and the order of the parameters in the query is changed.
+        # o = urlparse.urlparse(url)
+        # log_variable('o', o)
+        # query_dic = urlparse.parse_qs(o.query)
+        # query_dic['devpassword'] = 'ooo'
+        # query_dic['sspassword'] = 'ooo'
+        # query_qs = urllib.urlencode(query_dic)
+        # clean_url = urlparse.urlunparse((o.scheme, o.netloc, o.path, o.params, query_qs, o.fragment))
+        # log_variable('clean_url', clean_url)
+
+        # --- Keep things simple! ---
+        clean_url = url
+        clean_url = re.sub('devid=[^&]*&', 'devid=***&', clean_url)
+        clean_url = re.sub('devpassword=[^&]*&', 'devpassword=***&', clean_url)
+        clean_url = re.sub('ssid=[^&]*&', 'ssid=***&', clean_url)
+        clean_url = re.sub('sspassword=[^&]*&', 'sspassword=***&', clean_url)
+        # log_variable('url', url)
+        # log_variable('clean_url', clean_url)
+
+        return clean_url
 
 # ------------------------------------------------------------------------------------------------
 # ScreenScraper online scraper.
