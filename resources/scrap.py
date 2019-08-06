@@ -1619,11 +1619,8 @@ class TheGamesDB(Scraper):
 
         return page_data
 
-    def _get_API_key(self):
-        if self.api_key:
-            return self.api_key
-        else:
-            return self.api_public_key
+    # Always use the developer public key which is limited per IP address.
+    def _get_API_key(self): return self.api_public_key
 
     # --- Parse list of games ---
     #{
@@ -1950,7 +1947,17 @@ class MobyGames(Scraper):
         self._do_toomanyrequests_check()
         page_data_raw = net_get_URL(url)
         self.last_http_call = datetime.datetime.now()
-        page_data = json.loads(page_data_raw)
+        # If the API key is wrong, MobyGames will reply with a "HTTP Error 401: UNAUTHORIZED"
+        # response which is an IOError expection in net_get_URL(). Generally, if a JSON
+        # object cannot be decoded some error happened in net_get_URL().
+        try:
+            page_data = json.loads(page_data_raw)
+        except Exception as ex:
+            log_error('(Exception) In MobyGames::_read_games_from_url()')
+            log_error('(Exception) Object type "{}"'.format(type(ex)))
+            log_error('(Exception) Message "{}"'.format(str(ex)))
+            log_error('Problem in net_get_URL(url). Returning empty list of candidate games.')
+            return []
         if self.dump_file_flag:
             file_path = os.path.join(self.dump_dir, 'mobygames_get_candidates.txt')
             text_dump_str_to_file(file_path, page_data_raw)
