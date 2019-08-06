@@ -537,16 +537,16 @@ def assets_search_local_cached_assets(launcher, ROMFile, enabled_ROM_ASSET_ID_LI
     for i, asset_kind in enumerate(ROM_ASSET_ID_LIST):
         AInfo = assets_get_info_scheme(asset_kind)
         if not enabled_ROM_ASSET_ID_LIST[i]:
-            log_verb('assets_search_local_cached_assets() Disabled {0:<9}'.format(AInfo.name))
+            log_verb('Disabled {0:<9}'.format(AInfo.name))
             continue
         local_asset = misc_search_file_cache(launcher[AInfo.path_key], rom_basename_noext, AInfo.exts)
 
         if local_asset:
             local_asset_list[i] = local_asset.getOriginalPath()
-            log_verb('assets_search_local_cached_assets() Found    {0:<9} "{1}"'.format(AInfo.name, local_asset_list[i]))
+            log_verb('Found    {0:<9} "{1}"'.format(AInfo.name, local_asset_list[i]))
         else:
             local_asset_list[i] = ''
-            log_verb('assets_search_local_cached_assets() Missing  {0:<9}'.format(AInfo.name))
+            log_verb('Missing  {0:<9}'.format(AInfo.name))
 
     return local_asset_list
 

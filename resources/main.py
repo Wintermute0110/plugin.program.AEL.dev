@@ -563,7 +563,7 @@ class Main:
 
         # Settings required by the scrapers (they are not really settings).
         self.settings['scraper_screenscraper_AEL_softname'] = 'AEL_{0}'.format(__addon_version__)
-        self.settings['scraper_aeloffline_addon_code_dir'] = g_PATHS.ADDON_CODE_DIR.getOriginalPath()
+        self.settings['scraper_aeloffline_addon_code_dir'] = g_PATHS.ADDON_CODE_DIR.getPath()
 
         # --- Dump settings for DEBUG ---
         # log_debug('Settings dump BEGIN')
