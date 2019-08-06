@@ -129,7 +129,7 @@ from .rom_audit import *
 # ------------------------------------------------------------------------------------------------
 class ScraperFactory(object):
     def __init__(self, PATHS, settings):
-        log_debug('ScraperFactory::__init__() BEGIN ...')
+        # log_debug('ScraperFactory::__init__() BEGIN ...')
         self.PATHS = PATHS
         self.settings = settings
 
@@ -141,6 +141,7 @@ class ScraperFactory(object):
         # Keep instantiated scrapers in an OrderedDictionary.
         # The order is necessary when checking the scraper capabilities and building menus for
         # the scrapers to show always in the same order.
+        log_debug('ScraperFactory::__init__() Creating scraper objects...')
         self.scraper_objs = collections.OrderedDict()
         if SCRAPER_NULL_ID in SCRAPER_LIST:
             self.scraper_objs[SCRAPER_NULL_ID] = Null_Scraper(self.settings)
@@ -223,22 +224,24 @@ class ScraperFactory(object):
     #
     # Returns a ScrapeStrategy object which is used for the actual scraping.
     def create_scanner(self, launcher):
-        log_debug('ScraperFactory::create_scanner() BEGIN ...')
+        # log_debug('ScraperFactory::create_scanner() BEGIN ...')
         strategy_obj = ScrapeStrategy(self.PATHS, self.settings)
 
         # --- Read addon settings and configure the scrapers selected -----------------------------
         if launcher['platform'] == 'MAME':
-            log_debug('ScraperFactory::create_scanner() Platform is MAME. Using MAME scrapers from settings.xml')
-            scraper_metadata_index = self.settings['scraper_metadata']
-            scraper_metadata_ID = SCRAP_METADATA_SETTINGS_LIST[scraper_metadata_index]
-            scraper_asset_index = self.settings['scraper_asset']
-            scraper_asset_ID = SCRAP_ASSET_SETTINGS_LIST[scraper_asset_index]
-        else:
-            log_debug('ScraperFactory::create_scanner() Platform is NON-MAME. Using standard scrapers from settings.xml')
+            log_debug('ScraperFactory::create_scanner() Platform is MAME.')
+            log_debug('Using MAME scrapers from settings.xml')
             scraper_metadata_index = self.settings['scraper_metadata_MAME']
-            scraper_metadata_ID = SCRAP_METADATA_MAME_SETTINGS_LIST[scraper_metadata_index]
             scraper_asset_index = self.settings['scraper_asset_MAME']
+            scraper_metadata_ID = SCRAP_METADATA_MAME_SETTINGS_LIST[scraper_metadata_index]
             scraper_asset_ID = SCRAP_ASSET_MAME_SETTINGS_LIST[scraper_asset_index]
+        else:
+            log_debug('ScraperFactory::create_scanner() Platform is NON-MAME.')
+            log_debug('Using standard scrapers from settings.xml')
+            scraper_metadata_index = self.settings['scraper_metadata']
+            scraper_asset_index = self.settings['scraper_asset']
+            scraper_metadata_ID = SCRAP_METADATA_SETTINGS_LIST[scraper_metadata_index]
+            scraper_asset_ID = SCRAP_ASSET_SETTINGS_LIST[scraper_asset_index]
         log_debug('scraper metadata name {} (index {}, ID {})'.format(
             self.scraper_objs[scraper_metadata_ID].get_name(), scraper_metadata_index, scraper_metadata_ID))
         log_debug('scraper asset name    {} (index {}, ID {})'.format(
@@ -307,7 +310,8 @@ class ScrapeStrategy(object):
         # asset_scraper_mode values="Manual|Automatic"
         self.metadata_scraper_mode   = self.settings['metadata_scraper_mode']
         self.asset_scraper_mode      = self.settings['asset_scraper_mode']
-        # Scanner boolean options
+
+        # Boolean options used by the scanner.
         self.scan_ignore_scrap_title = self.settings['scan_ignore_scrap_title']
         self.scan_clean_tags         = self.settings['scan_clean_tags']
 
@@ -1508,7 +1512,7 @@ class TheGamesDB(Scraper):
 
     def __init__(self, settings):
         # --- This scraper settings ---
-        self.api_key = settings['scraper_thegamesdb_apikey']
+        # Make sure this is the public key (limited by IP) and not the private key.
         self.api_public_key = '828be1fb8f3182d055f1aed1f7d4da8bd4ebc160c3260eae8ee57ea823b42415'
 
         # --- Cached TGDB metadata ---

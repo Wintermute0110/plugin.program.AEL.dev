@@ -117,7 +117,7 @@ FEATURE  [SCRAPERS] Fix AEL Offline Scraper.
 FEATURE  [SCRAPERS] Add support for ScummVM platform in the Offline Scraper.
          See https://forum.kodi.tv/showthread.php?tid=287826&pid=2629084#pid2629084
 
-WIP      [SCRAPERS] Warn user if missing API keys, etc., before scraping.
+WIP      [SCRAPERS] Warn user if missing scraper API keys, etc., before scraping.
 
 WIP      [SCRAPERS] Option to rescrape all ROM assets in a similar fashion to
          "Scan ROMs local artwork". Create a menu entry in "Edit Launcher", "Manage ROMs",
@@ -125,7 +125,7 @@ WIP      [SCRAPERS] Option to rescrape all ROM assets in a similar fashion to
          options as the ROM Scanner.
          See https://github.com/Wintermute0110/plugin.program.advanced.emulator.launcher/issues/72
 
-WIP      [CORE] Unified ROM artwork directory.
+WIP      [CORE] Unified ROM artwork directory. This will require heavy changes in categories.xml.
          See https://forum.kodi.tv/showthread.php?tid=287826&pid=2865413#pid2865413
          See https://forum.kodi.tv/showthread.php?tid=287826&pid=2867785#pid2867785
 
@@ -136,23 +136,19 @@ WIP      [CORE] Support for Advanced MAME Launcher exported virtual launchers.
 WIP      [CORE] New properties to notify skins about Std launchers, ROM launchers, Categories,
          and number of items in a Launcher.
 
-WIP      [CORE] Option to clean dead ROMs in "Recently played ROMs" and "Most played ROMs".
-         See AML for an implementation.
-
-WIP      [CORE] Option to clean individual ROMs in "Recently played ROMs" and "Most played ROMs".
-         See AML for an implementation.
-
 WIP      [CORE] Create a couple of new ROM context menus, "Manage Recently played ROM" and 
          "Manage Most played ROM". Both will have the following options: "Delete this ROM",
          "Delete all Unlinked/Broken ROMs".
+         See AML for an implementation.
          See https://forum.kodi.tv/showthread.php?tid=287826&pid=2698811#pid2698811
 
-WIP      [CORE] New section Utilities. Move stuff from addon settings.
+WIP      [CORE] New section Utilities. Move stuff from addon settings into this menu.
 
 WIP      [CORE] New section Global Reports.
 
-WIP      [CORE] Make sure AEL never crashes when rendering the root window, even if categories.xml
-         is corruped. In case of crash when rendering the root window, ask the user to update
+WIP      [CORE] Make sure AEL never crashes when rendering the root window, even if 
+         categories.xml is corruped. Users must be able to access the Utilities menu always.
+         In case of crash when rendering the root window, ask the user to update
          the databases (in the case the crash is due to a missing key in dictionary).
 
 FEATURE  [CORE] Add Year and Developer for Categories.
