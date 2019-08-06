@@ -111,13 +111,10 @@ def net_get_URL(url):
         page_bytes = f.read()
         f.close()
     # If an exception happens return empty data.
-    except IOError as ex:
-        log_error('(IOError exception) In net_get_URL()')
-        log_error('Message: {0}'.format(str(ex)))
-        return page_data
     except Exception as ex:
-        log_error('(General exception) In net_get_URL()')
-        log_error('Message: {0}'.format(str(ex)))
+        log_error('(Exception) In net_get_URL()')
+        log_error('(Exception) Object type "{}"'.format(type(ex)))
+        log_error('(Exception) Message "{}"'.format(str(ex)))
         return page_data
 
     num_bytes = len(page_bytes)
