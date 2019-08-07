@@ -822,7 +822,7 @@ def m_command_add_rom_to_collection(categoryID, launcherID, romID):
 
     # --- Add ROM to favourites ROMs and save to disk ---
     # >> Add ROM to the last position in the collection --> todo
-    collection.save_rom(rom)
+    collection.save_ROM(rom)
     kodi_refresh_container()
     kodi_notify('Added ROM to Collection "{0}"'.format(collection.get_name()))
 
@@ -949,7 +949,7 @@ def m_command_add_rom_to_favourites(categoryID, launcherID, romID):
         
     # --- Add ROM to favourites ROMs and save to disk ---
     fav_rom = launcher.convert_rom_to_favourite(romID)
-    favlauncher.save_rom(fav_rom)
+    favlauncher.save_ROM(fav_rom)
 
     kodi_notify('ROM {0} added to Favourites'.format(fav_rom.get_name()))
     kodi_refresh_container()
@@ -1604,7 +1604,53 @@ def m_run_collection_sub_command(command, collection):
 
 def m_run_rom_sub_command(command, launcher, rom):
     log_debug('m_run_rom_sub_command({0}) BEGIN'.format(command))
+      
+    # --- Submenu command ---
+    if command == 'EDIT_METADATA':
+        options = rom.get_metadata_edit_options()
+        s = 'Edit ROM "{0}" metadata'.format(rom.get_name())
+        selected_option = KodiOrdDictionaryDialog().select(s, options)
+        if selected_option is None:
+            log_debug('m_run_rom_sub_command(EDIT_METADATA) Selected None')
+        else:
+            log_debug('m_run_rom_sub_command(EDIT_METADATA) Selected {0}'.format(selected_option))
+            m_run_rom_sub_command(selected_option, launcher, rom)
+            m_run_rom_sub_command('EDIT_METADATA', launcher, rom)
+
+    # --- Atomic commands ---
+    elif command == 'EDIT_METADATA_TITLE':
+        m_subcommand_edit_rom_title(launcher, rom)
+            
+    elif command == 'EDIT_METADATA_RELEASEYEAR':
+        m_subcommand_edit_rom_release_year(launcher, rom)
+                 
+    elif command == 'EDIT_METADATA_GENRE':
+        m_subcommand_edit_rom_release_year(launcher, rom)
+            
+    elif command == 'EDIT_METADATA_DEVELOPER':
+        m_subcommand_edit_rom_developer(launcher, rom)
+
+    elif command == 'EDIT_METADATA_NPLAYERS':
+        m_subcommand_edit_rom_number_of_players(launcher, rom)
+
+    elif command == 'EDIT_METADATA_ESRB':
+        m_subcommand_edit_rom_esrb_rating(launcher, rom)
+        
+    elif command == 'EDIT_METADATA_RATING':
+        m_subcommand_edit_rom_rating(launcher, rom)
+
+    elif command == 'EDIT_METADATA_PLOT':
+        m_subcommand_edit_rom_description(launcher, rom)
     
+    elif  command == 'LOAD_PLOT':
+        m_subcommand_import_rom_plot_from_txt(launcher, rom)
+        
+    elif command == 'IMPORT_NFO_FILE':
+        m_subcommand_import_rom_metadata(launcher, rom)
+
+    elif command == 'SAVE_NFO_FILE':
+        m_subcommand_export_rom_metadata(launcher, rom)
+
     # Returns True if the parent menu must be shown again.
     # Return False if context menu must be closed.
     log_debug('m_run_rom_sub_command({0}) ENDS'.format(command))
@@ -2899,7 +2945,7 @@ def m_subcommand_set_rom_asset_dirs(launcher):
 # --- Edit status ---
 def m_subcommand_change_rom_status(launcher, rom):
     rom.change_finished_status()
-    launcher.save_rom(rom)
+    launcher.save_ROM(rom)
     kodi_dialog_OK('ROM "{0}" status is now {1}'.format(rom.get_name(), rom.get_state()))
 
 # --- Edit ROM metadata ---
@@ -2926,22 +2972,22 @@ def m_subcommand_edit_rom_metadata(launcher, rom):
 # --- Edit of the rom title ---
 def m_subcommand_edit_rom_title(launcher, rom):
     if self._text_edit_rom_metadata('Title', rom.get_name, rom.set_name):
-        launcher.save_rom(rom)
+        launcher.save_ROM(rom)
 
 # --- Edition of the rom release year ---    
 def m_subcommand_edit_rom_release_year(launcher, rom):
     if self._text_edit_rom_metadata('Release Year', rom.get_releaseyear, rom.update_releaseyear):
-        launcher.save_rom(rom)
+        launcher.save_ROM(rom)
 
 # --- Edition of the rom game genre ---
 def m_subcommand_edit_rom_genre(launcher, rom):
     if self._text_edit_rom_metadata('genre', rom.get_genre, rom.update_genre):
-        launcher.save_rom(rom)
+        launcher.save_ROM(rom)
 
 # --- Edition of the rom developer ---
 def m_subcommand_edit_rom_developer(launcher, rom):
     if self._text_edit_rom_metadata('developer', rom.get_developer, rom.update_developer):
-        launcher.save_rom(rom)
+        launcher.save_ROM(rom)
 
 # --- Edition of launcher NPlayers ---
 def m_subcommand_edit_rom_number_of_players(launcher, rom):
@@ -2957,7 +3003,7 @@ def m_subcommand_edit_rom_number_of_players(launcher, rom):
 
     if np_idx == 0:
         rom.set_number_of_players('')
-        launcher.save_rom(rom)
+        launcher.save_ROM(rom)
         kodi_notify('Launcher NPlayers change to Not Set')
         return
 
@@ -2965,12 +3011,12 @@ def m_subcommand_edit_rom_number_of_players(launcher, rom):
         # >> Manual entry. Open a text entry dialog.
         
         if self._text_edit_rom_metadata('NPlayers', rom.get_number_of_players, rom.set_number_of_players):
-            launcher.save_rom(rom)
+            launcher.save_ROM(rom)
         return
 
     list_idx = np_idx - 2
     rom.set_number_of_players(NPLAYERS_LIST[list_idx])
-    launcher.save_rom(rom)
+    launcher.save_ROM(rom)
     kodi_notify('Changed Launcher NPlayers')
 
 # --- Edition of launcher ESRB rating ---
@@ -2979,7 +3025,7 @@ def m_subcommand_edit_rom_esrb_rating(launcher, rom):
     # >> Kodi Krypton: preselect current rating in select list        
 
     if self._list_edit_rom_metadata('ESRB rating', ESRB_LIST, -1, rom.get_esrb_rating, rom.set_esrb_rating):
-        launcher.save_rom(rom)
+        launcher.save_ROM(rom)
 
 # --- Edition of the ROM rating ---
 def m_subcommand_edit_rom_rating(launcher, rom):
@@ -2998,12 +3044,12 @@ def m_subcommand_edit_rom_rating(launcher, rom):
     options[10] = 'Rating 10'
 
     if self._list_edit_rom_metadata('Rating', options, -1, rom.get_rating, rom.update_rating):
-        launcher.save_rom(rom)
+        launcher.save_ROM(rom)
 
 # --- Edit ROM description (plot) ---
 def m_subcommand_edit_rom_description(launcher, rom):
     if self._text_edit_rom_metadata('plot', rom.get_plot, rom.update_plot):
-        launcher.save_rom(rom)
+        launcher.save_ROM(rom)
 
 # --- Import of the rom game plot from TXT file ---
 def m_subcommand_import_rom_plot_from_txt(launcher, rom):
@@ -3014,7 +3060,7 @@ def m_subcommand_import_rom_plot_from_txt(launcher, rom):
     if text_file_path.exists():
         file_data = self._gui_import_TXT_file(text_file_path)
         rom.set_plot(file_data)
-        launcher.save_rom(rom)
+        launcher.save_ROM(rom)
         kodi_notify('Imported ROM Plot')
         return
     desc_str = text_limit_string(rom.get_plot(), PLOT_STR_MAXSIZE)
@@ -3029,7 +3075,7 @@ def m_subcommand_import_rom_metadata(launcher, rom):
         
     nfo_filepath = rom.get_nfo_file()
     if rom.update_with_nfo_file(nfo_filepath):
-        launcher.save_rom(rom)
+        launcher.save_ROM(rom)
     return
 
 # --- Export ROM metadata to NFO file ---
@@ -3054,7 +3100,7 @@ def m_subcommand_scrape_rom_metadata(launcher, rom, command):
     
     # >> If this returns False there were no changes so no need to save ROMs JSON.
     if self._gui_scrap_rom_metadata(launcher, rom, scraper_obj): 
-        launcher.save_rom(rom)
+        launcher.save_ROM(rom)
 
     return
 
@@ -3094,7 +3140,7 @@ def m_subcommand_edit_rom_assets(launcher, rom):
     # >> If this function returns False no changes were made. No need to save categories
     # >> XML and update container.
     if self._gui_edit_asset(KIND_ROM, selected_asset_info.kind, rom.get_data_dic(), launcher.get_category_id(), launcher.get_id()): 
-        launcher.save_rom(rom)
+        launcher.save_ROM(rom)
 
     self._subcommand_edit_rom_assets(launcher, rom)
     return
@@ -3131,7 +3177,7 @@ def m_subcommand_change_rom_file(launcher, rom):
 
     item_file_FN = FileFactory.create(item_file)
     rom.set_filename(item_file_FN)
-    launcher.save_rom(rom)
+    launcher.save_ROM(rom)
 
 # >> Alternative launcher application file path
 def m_subcommand_edit_rom_alternative_application(launcher, rom):
@@ -3144,12 +3190,12 @@ def m_subcommand_edit_rom_alternative_application(launcher, rom):
         return
 
     rom.set_alternative_application(altapp)
-    launcher.save_rom(rom)
+    launcher.save_ROM(rom)
 
 # >> Alternative launcher arguments
 def m_subcommand_edit_rom_alternative_arguments(launcher, rom):
     if self._text_edit_rom_metadata('altarg', rom.get_alternative_arguments, rom.set_alternative_arguments):
-        launcher.save_rom(rom)
+        launcher.save_ROM(rom)
 
 # --- Delete ROM ---
 def m_subcommand_delete_rom(launcher, rom):
@@ -8196,7 +8242,7 @@ def m_roms_add_new_rom(launcherID):
 
     # ~~~ Save ROMs XML file ~~~
     # >> Also save categories/launchers to update timestamp
-    self.launcher.save_rom(rom)
+    self.launcher.save_ROM(rom)
 
     launcher.set_number_of_roms()
     g_LauncherRepository.save(launcher)

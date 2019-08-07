@@ -1686,17 +1686,17 @@ class ROM(MetaDataItemABC):
             rating = 'not rated'
 
         options = collections.OrderedDict()
-        options['EDIT_TITLE']             = u"Edit Title: '{0}'".format(self.get_name()).encode('utf-8')
-        options['EDIT_RELEASEYEAR']       = u"Edit Release Year: '{0}'".format(self.get_releaseyear()).encode('utf-8')
-        options['EDIT_GENRE']             = u"Edit Genre: '{0}'".format(self.get_genre()).encode('utf-8')
-        options['EDIT_DEVELOPER']         = u"Edit Developer: '{0}'".format(self.get_developer()).encode('utf-8')
-        options['EDIT_NPLAYERS']          = u"Edit NPlayers: '{0}'".format(self.get_number_of_players()).encode('utf-8')
-        options['EDIT_ESRB']              = u"Edit ESRB rating: '{0}'".format(self.get_esrb_rating()).encode('utf-8')
-        options['EDIT_RATING']            = u"Edit Rating: '{0}'".format(rating).encode('utf-8')
-        options['EDIT_PLOT']              = u"Edit Plot: '{0}'".format(plot_str).encode('utf-8')
-        options['LOAD_PLOT']              = "Load Plot from TXT file ..."
-        options['IMPORT_NFO_FILE']        = u"Import NFO file (default, {0})".format(NFO_found_str).encode('utf-8')
-        options['SAVE_NFO_FILE']          = "Save NFO file (default location)"
+        options['EDIT_METADATA_TITLE']       = u"Edit Title: '{0}'".format(self.get_name()).encode('utf-8')
+        options['EDIT_METADATA_RELEASEYEAR'] = u"Edit Release Year: '{0}'".format(self.get_releaseyear()).encode('utf-8')
+        options['EDIT_METADATA_GENRE']       = u"Edit Genre: '{0}'".format(self.get_genre()).encode('utf-8')
+        options['EDIT_METADATA_DEVELOPER']   = u"Edit Developer: '{0}'".format(self.get_developer()).encode('utf-8')
+        options['EDIT_METADATA_NPLAYERS']    = u"Edit NPlayers: '{0}'".format(self.get_number_of_players()).encode('utf-8')
+        options['EDIT_METADATA_ESRB']        = u"Edit ESRB rating: '{0}'".format(self.get_esrb_rating()).encode('utf-8')
+        options['EDIT_METADATA_RATING']      = u"Edit Rating: '{0}'".format(rating).encode('utf-8')
+        options['EDIT_METADATA_PLOT']        = u"Edit Plot: '{0}'".format(plot_str).encode('utf-8')
+        options['LOAD_PLOT']                 = "Load Plot from TXT file ..."
+        options['IMPORT_NFO_FILE']           = u"Import NFO file (default, {0})".format(NFO_found_str).encode('utf-8')
+        options['SAVE_NFO_FILE']             = "Save NFO file (default location)"
 
         return options
 

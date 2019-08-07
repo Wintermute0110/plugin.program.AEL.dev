@@ -1686,8 +1686,8 @@ def fs_import_ROM_NFO_file_scanner(nfo_file_path):
 # Returns a FileName object
 #
 def fs_get_ROM_NFO_name(rom):
-    ROMFileName = FileNameFactory.create(rom['filename'])
-    nfo_file_path = FileNameFactory.create(ROMFileName.getPath_noext() + '.nfo')
+    ROMFileName = FileName(rom['filename'])
+    nfo_file_path = FileName(ROMFileName.getPathNoExt() + '.nfo')
     log_debug("fs_get_ROM_NFO_name() nfo_file_path = '{0}'".format(nfo_file_path.getPath()))
 
     return nfo_file_path
