@@ -49,52 +49,10 @@ class Test_null_scraper(unittest.TestCase):
         
         # arrange
         settings = self.get_test_settings()
-
-        launcher = StandardRomLauncher(None, settings, None, None, None, None, None)
-        launcher.set_platform('Nintendo NES')
-        
-        rom = ROM({'id': 1234})
-        fakeRomPath = FakeFile('/my/nice/roms/castlevania.zip')
-
-        target = NullScraper()
+        target = Null_Scraper(settings)
 
         # act
-        actual = target.scrape_metadata('castlevania', fakeRomPath, rom)
-                
+        candidates = target.get_candidates('castlevania', 'castlevania', 'Nintendo NES')
+                                  
         # assert
-        self.assertFalse(actual)
-        self.assertEqual(u'Unknown', rom.get_name())
-        print(rom)
-                
-    def test_scraping_assets_for_game(self):
-
-        # arrange
-        settings = self.get_test_settings()
-        
-        assets_to_scrape = [
-            g_assetFactory.get_asset_info(ASSET_BOXFRONT_ID), 
-            g_assetFactory.get_asset_info(ASSET_BOXBACK_ID), 
-            g_assetFactory.get_asset_info(ASSET_SNAP_ID)]
-        
-        launcher = StandardRomLauncher(None, settings, None, None, None, None, None)
-        launcher.set_platform('Nintendo NES')
-        launcher.set_asset_path(g_assetFactory.get_asset_info(ASSET_BOXFRONT_ID),'/my/nice/assets/front/')
-        launcher.set_asset_path(g_assetFactory.get_asset_info(ASSET_BOXBACK_ID),'/my/nice/assets/back/')
-        launcher.set_asset_path(g_assetFactory.get_asset_info(ASSET_SNAP_ID),'/my/nice/assets/snaps/')
-        
-        rom = ROM({'id': 1234})
-        fakeRomPath = FakeFile('/my/nice/roms/castlevania.zip')
-        
-        target = NullScraper()
-
-        # act
-        actuals = []
-        for asset_to_scrape in assets_to_scrape:
-            an_actual = target.scrape_asset('castlevania', asset_to_scrape, fakeRomPath, rom)
-            actuals.append(an_actual)
-                
-        # assert
-        for actual in actuals:
-            self.assertFalse(actual)
-        
-        print(rom)
+        self.assertFalse(candidates)

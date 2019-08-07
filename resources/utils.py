@@ -524,7 +524,7 @@ def text_get_multidisc_info(ROM_FN):
 # Get extension of URL. Returns '' if not found.
 #
 def text_get_URL_extension(url):
-    path = urlparse.urlparse(url).path
+    path = urlparse(url).path
     ext = os.path.splitext(path)[1]
 
     return ext
@@ -1960,7 +1960,10 @@ class NewFileName:
         result={ }
         reader = csv.reader(file_lines, delimiter=str('='), quoting=csv.QUOTE_NONE)
         for row in reader:
-            if len(row) != 2:
+            if len(row) < 2:
+                continue
+                                    
+            if len(row) > 2:
                 raise csv.Error("Too many fields on row with contents: "+str(row))
             result[row[0].strip()] = row[1].strip().lstrip('"').rstrip('"')
 
@@ -1985,6 +1988,24 @@ class NewFileName:
     def writeXml(self, xml_root):
         data = ET.tostring(xml_root)
         self.saveStrToFile(data)
+
+    def writeAll(self, bytes, flags = 'w'):
+         # --- Catch exceptions in the FilaName class ---
+        try:
+            self.open(flags)
+            self.write(bytes)
+            self.close()
+        except OSError:
+            log_error('(OSError) Exception in writeAll()')
+            log_error('(OSError) Cannot write {0} file'.format(self.path_tr))
+            raise AddonException('(OSError) Cannot write {0} file'.format(self.path_tr))
+        except IOError as e:
+            log_error('(IOError) Exception in writeAll()')
+            log_error('(IOError) errno = {0}'.format(e.errno))
+            if e.errno == errno.ENOENT: log_error('(IOError) No such file or directory.')
+            else:                       log_error('(IOError) Unhandled errno value.')
+            log_error('(IOError) Cannot write {0} file'.format(self.path_tr))
+            raise AddonException('(IOError) Cannot write {0} file'.format(self.path_tr))
         
     # ---------------------------------------------------------------------------------------------
     # Scanner functions
@@ -2570,7 +2591,82 @@ class KodiOrdDictionaryDialog(object):
 
         return key
 
-class KodiProgressDialogStrategy(object):
+# Progress dialog that can be closed and reopened.
+# If the dialog is canceled this class remembers it forever.
+class KodiProgressDialog(object):
+    def __init__(self):
+        self.title = 'Advanced Emulator Launcher'
+        self.progress = 0
+        self.flag_dialog_canceled = False
+        self.dialog_active = False
+        self.progressDialog = xbmcgui.DialogProgress()
+
+    def startProgress(self, message, num_steps = 100):
+        self.num_steps = num_steps
+        self.progress = 0
+        self.dialog_active = True
+        self.progressDialog.create(self.title, message)
+        self.progressDialog.update(self.progress)
+
+    # Update progress and optionally update messages as well.
+    def updateProgress(self, step_index, message1 = '', message2 = ''):
+        self.progress = int((step_index * 100) / self.num_steps)
+        self.message1 = message1
+        self.message2 = message2
+        if message2:
+            self.progressDialog.update(self.progress, message1, message2)
+        else:
+            self.progressDialog.update(self.progress, message1)
+
+    # Update dialog message but keep same progress.
+    def updateMessages(self, message1, message2):
+        self.message1 = message1
+        self.message2 = message2
+        self.progressDialog.update(self.progress, message1, message2)
+
+    # Update dialog message but keep same progress.
+    def updateMessage(self, message1):
+        self.message1 = message1
+        self.progressDialog.update(self.progress, message1)
+
+    # Update message2 and keeps same progress and message1
+    def updateMessage2(self, message2):
+        self.message2 = message2
+        self.progressDialog.update(self.progress, self.message1, message2)
+
+    def isCanceled(self):
+        # If the user pressed the cancel button before then return it now.
+        if self.flag_dialog_canceled:
+            return True
+        else:
+            self.flag_dialog_canceled = self.progressDialog.iscanceled()
+            return self.flag_dialog_canceled
+
+    def close(self):
+        # Before closing the dialog check if the user pressed the Cancel button and remember
+        # the user decision.
+        if self.progressDialog.iscanceled(): self.flag_dialog_canceled = True
+        self.progressDialog.close()
+        self.dialog_active = False
+
+    def endProgress(self):
+        # Before closing the dialog check if the user pressed the Cancel button and remember
+        # the user decision.
+        if self.progressDialog.iscanceled(): self.flag_dialog_canceled = True
+        self.progressDialog.update(100)
+        self.progressDialog.close()
+        self.dialog_active = False
+
+    # Reopens a previously closed dialog, remembering the messages and the progress.
+    def reopen(self):
+        if not self.message2:
+            self.progressDialog.create(self.title, self.message1, self.message2)
+        else:
+            self.progressDialog.create(self.title, self.message1)
+        self.progressDialog.update(self.progress)
+
+# To be used as a base class.
+class KodiProgressDialog_Chrisism(object):
     def __init__(self):
         self.progress = 0
         self.progressDialog = xbmcgui.DialogProgress()
@@ -2580,15 +2676,14 @@ class KodiProgressDialogStrategy(object):
         self.progressDialog.create(title, message)
 
     def _updateProgress(self, progress, message1 = None, message2 = None):
-        self.progress = int(progress)
+        self.progress = progress
         if not self.verbose:
-            self.progressDialog.update(self.progress)
+            self.progressDialog.update(progress)
         else:
-            self.progressDialog.update(self.progress, message1, message2)
+            self.progressDialog.update(progress, message1, message2)
 
     def _updateProgressMessage(self, message1, message2 = None):
-        if not self.verbose:
-            return
+        if not self.verbose: return
 
         self.progressDialog.update(self.progress, message1, message2)
 
@@ -2596,10 +2691,9 @@ class KodiProgressDialogStrategy(object):
         return self.progressDialog.iscanceled()
 
     def _endProgressPhase(self, canceled = False):
-        if not canceled:
-            self.progressDialog.update(100)
+        if not canceled: self.progressDialog.update(100)
         self.progressDialog.close()
-
+        
 # -------------------------------------------------------------------------------------------------
 # If runnining with Kodi Python interpreter use Kodi proper functions.
 # If running with the standard Python interpreter use replacement functions.
