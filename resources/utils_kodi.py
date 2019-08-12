@@ -236,10 +236,24 @@ class KodiProgressDialog_Chrisism(object):
         if not canceled: self.progressDialog.update(100)
         self.progressDialog.close()
 
+# -------------------------------------------------------------------------------------------------
+# Kodi error reporting
+# -------------------------------------------------------------------------------------------------
 KODI_MESSAGE_NONE        = 100
+# Kodi notifications must be short.
 KODI_MESSAGE_NOTIFY      = 200
 KODI_MESSAGE_NOTIFY_WARN = 300
+# Kodi OK dialog to display a message.
 KODI_MESSAGE_DIALOG      = 400
+
+# If status_dic['status'] is True then everything is OK. If status_dic['status'] is False,
+# then display the notification.
+def kodi_new_status_dic(message):
+    return {
+        'status' : True,
+        'dialog' : KODI_MESSAGE_NOTIFY,
+        'msg'    : message,
+    }
 
 def kodi_display_user_message(op_dic):
     if op_dic['dialog'] == KODI_MESSAGE_NONE:
@@ -251,9 +265,9 @@ def kodi_display_user_message(op_dic):
     elif op_dic['dialog'] == KODI_MESSAGE_DIALOG:
         kodi_dialog_OK(op_dic['msg'])
 
-# -----------------------------------------------------------------------------
+# -------------------------------------------------------------------------------------------------
 # Kodi specific stuff
-# -----------------------------------------------------------------------------
+# -------------------------------------------------------------------------------------------------
 # About Kodi image cache
 #
 # See http://kodi.wiki/view/Caches_explained
