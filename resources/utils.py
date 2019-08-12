@@ -544,21 +544,23 @@ def text_get_multidisc_info(ROM_FN):
 # URLs
 # -------------------------------------------------------------------------------------------------
 #
-# Get extension of URL. Returns '' if not found.
+# Get extension of URL. Returns '' if not found. Examples: 'png', 'jpg', 'gif'.
 #
 def text_get_URL_extension(url):
     path = urlparse.urlparse(url).path
     ext = os.path.splitext(path)[1]
+    if ext[0] == '.': ext = ext[1:] # Remove initial dot
 
     return ext
 
 #
-# Defaults to .jpg if URL extension cannot be determined
+# Defaults to 'jpg' if URL extension cannot be determined
 #
 def text_get_image_URL_extension(url):
     path = urlparse.urlparse(url).path
     ext = os.path.splitext(path)[1]
-    ret = '.jpg' if ext == '' else ext
+    if ext[0] == '.': ext = ext[1:] # Remove initial dot
+    ret = 'jpg' if ext == '' else ext
 
     return ret
 

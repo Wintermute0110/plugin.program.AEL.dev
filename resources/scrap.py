@@ -558,7 +558,7 @@ class ScrapeStrategy(object):
         ret_asset_path = local_asset_path
 
         # --- If scraper does not support particular asset return inmediately ---
-        if not scraper_obj.supports_asset(asset_ID):
+        if not scraper_obj.supports_asset_ID(asset_ID):
             log_debug('Scraper {0} does not support asset {1}.'.format(scraper_name, asset_name))
             return ret_asset_path
 
@@ -864,7 +864,7 @@ class ScrapeStrategy(object):
 
         # --- Grab list of images for the selected game -------------------------------------------
         pdialog = KodiProgressDialog()
-        pdialog.startProgress('{0} scraper (Getting assets...)'.format(scraper_name))
+        pdialog.startProgress('{} scraper (Getting {} assets...)'.format(scraper_name, asset_name))
         assetdata_list = self.scraper_obj.get_assets(candidate, asset_ID, status_dic)
         pdialog.endProgress()
         # Error/exception.
@@ -924,18 +924,20 @@ class ScrapeStrategy(object):
         log_debug('Selected display_name {0}'.format(selected_asset['display_name']))
 
         # --- Resolve asset URL ---
-        log_debug('Resolving asset URL...')
-        pdialog.startProgress('{0} scraper (Resolving asset...)'.format(scraper_name), 100)
+        log_debug('Resolving asset URL ...')
+        pdialog.startProgress('{} scraper (Resolving asset URL...)'.format(scraper_name), 100)
         image_url = self.scraper_obj.resolve_asset_URL(selected_asset, status_dic)
-        log_debug('Resolved {0} to URL "{1}"'.format(asset_name, image_url))
         pdialog.endProgress()
+        log_debug('Resolved {} to URL "{}"'.format(asset_name, image_url))
         if not image_url:
             log_error('_gui_edit_asset() Error in scraper.resolve_asset_URL()')
             status_dic['status'] = False
             status_dic['msg'] = 'Error downloading asset'
             return status_dic
+        pdialog.startProgress('{} scraper (Resolving URL extension...)'.format(scraper_name), 100)
         image_ext = self.scraper_obj.resolve_asset_URL_extension(image_url, status_dic)
-        log_debug('Resolved URL extension "{0}"'.format(image_ext))
+        pdialog.endProgress()        
+        log_debug('Resolved URL extension "{}"'.format(image_ext))
         if not image_ext:
             log_error('_gui_edit_asset() Error in scraper.resolve_asset_URL_extension()')
             status_dic['status'] = False
@@ -944,7 +946,7 @@ class ScrapeStrategy(object):
 
         # --- Download image ---
         log_debug('Downloading image ...')
-        image_local_path = asset_path_noext_FN.append(image_ext).getPath()
+        image_local_path = asset_path_noext_FN.append('.' + image_ext).getPath()
         log_verb('Downloading URL "{0}"'.format(image_url))
         log_verb('Into local file "{0}"'.format(image_local_path))
         pdialog.startProgress('Downloading {0}...'.format(asset_name), 100)
@@ -978,7 +980,7 @@ class ScrapeStrategy(object):
     # @param object_name: [str] SCRAPE_ROM, SCRAPE_LAUNCHER.
     # @return: [dict] Dictionary with candidate data. None if error.
     def _scrap_CM_get_candidate(self, object_name, object_dic, data_dic, status_dic):
-        log_debug('ScrapeStrategy::_scrap_CM_get_candidate() BEGIN...')
+        # log_debug('ScrapeStrategy::_scrap_CM_get_candidate() BEGIN...')
 
         # In AEL 0.10.x this data is grabed from the objects, not passed using a dictionary.
         rom_base_noext = data_dic['rom_base_noext']
@@ -999,7 +1001,7 @@ class ScrapeStrategy(object):
 
         # --- Do a search and get a list of games ---
         pdialog = KodiProgressDialog()
-        pdialog.startProgress('{0} scraper (Getting games...)'.format(scraper_name))
+        pdialog.startProgress('{0} scraper (Search game candidates...)'.format(scraper_name))
         candidate_list = self.scraper_obj.get_candidates(
             search_term, rom_base_noext, platform, status_dic)
         # If the there was an error in the scraper return immediately.
@@ -1174,7 +1176,7 @@ class Scraper(object):
     #
     # @param image_url: [str] URL of the asset.
     # @param status_dic: [dict] kodi_new_status_dic() status dictionary.
-    # @return: [str] String with the image extension in lowercase '.png', 'jpg', etc.
+    # @return: [str] String with the image extension in lowercase 'png', 'jpg', etc.
     #          None is returned in case or error/exception and status_dic updated.
     @abc.abstractmethod
     def resolve_asset_URL_extension(self, image_url, status_dic): pass
@@ -1482,7 +1484,7 @@ class AEL_Offline(Scraper):
 # Do not implement this scraper. It is better to have one good offline scraper than many bad.
 # Users will be encouraged to improve the AEL Offline scraper.
 # ------------------------------------------------------------------------------------------------
-class LB_Offline(Scraper): pass
+# class LB_Offline(Scraper): pass
 
 # ------------------------------------------------------------------------------------------------
 # TheGamesDB online scraper (metadata and assets).
@@ -1845,18 +1847,17 @@ class TheGamesDB(Scraper):
     # Get ALL available assets for game.
     # Cache the results because this function may be called multiple times.
     def _scraper_get_assets_all(self, candidate):
-        # log_debug('TheGamesDB::_scraper_get_assets_all() BEGIN ...')
+        # --- Cache hit ---
         cache_key = str(candidate['id'])
         if cache_key in self.all_asset_cache:
             log_debug('TheGamesDB::_scraper_get_assets_all() Cache hit "{0}"'.format(cache_key))
             asset_list = self.all_asset_cache[cache_key]
             return asset_list
 
-        # --- Cache miss ---
+        # --- Cache miss. Retrieve data and update cache ---
         log_debug('TheGamesDB::_scraper_get_assets_all() Cache miss "{0}"'.format(cache_key))
-        api_key = self._get_API_key()
         url = 'https://api.thegamesdb.net/Games/Images?apikey={}&games_id={}'.format(
-            api_key, candidate['id'])
+            self._get_API_key(), candidate['id'])
         asset_list = self._read_assets_from_url(url, candidate['id'])
         log_debug('A total of {0} assets found for candidate ID {1}'.format(
             len(asset_list), candidate['id']))
@@ -1866,7 +1867,7 @@ class TheGamesDB(Scraper):
 
     def _read_assets_from_url(self, url, candidate_id):
         # --- Read URL JSON data ---
-        page_data_raw = net_get_URL(url)
+        page_data_raw = net_get_URL(url, self._clean_URL_for_log(url))
         page_data = json.loads(page_data_raw)
         self._dump_json_debug('TGDB_get_assets.txt', page_data)
 
@@ -1980,8 +1981,9 @@ class MobyGames(Scraper):
         status_dic['status'] = False
         status_dic['dialog'] = KODI_MESSAGE_DIALOG
         status_dic['msg'] = (
-            'MobyGames scraper API key is not configured in AEL settings. Visit '
-            'https://www.mobygames.com/info/api for directions about how to get your key.'
+            'AEL requires your MobyGames API key. '
+            'Visit https://www.mobygames.com/info/api for directions about how to get your key '
+            'and introduce the API key in AEL addon settings.'
         )
 
     def get_candidates(self, search_term, rombase_noext, platform, status_dic):
@@ -2329,8 +2331,9 @@ class ScreenScraper_V1(Scraper):
         status_dic['status'] = False
         status_dic['dialog'] = KODI_MESSAGE_DIALOG
         status_dic['msg'] = (
-            'ScreenScraper requires that you create a user account in https://www.screenscraper.fr/ '
-            'Then, introduce you user name and password in AEL settings.'
+            'AEL requires your ScreenScraper user name and password. '
+            'Create a user account in https://www.screenscraper.fr/ '
+            'and set you user name and password in AEL addon settings.'
         )
 
     def get_candidates(self, search_term, rombase_noext, platform, status_dic):

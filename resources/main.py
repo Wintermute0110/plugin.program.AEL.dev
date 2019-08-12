@@ -2770,57 +2770,59 @@ class Main:
             rom = roms[romID]
 
             # >> Build asset image list for dialog
+            label2_fanart    = rom['s_fanart']    if rom['s_fanart']    else 'Not set'
+            label2_banner    = rom['s_banner']    if rom['s_banner']    else 'Not set'
+            label2_clearlogo = rom['s_clearlogo'] if rom['s_clearlogo'] else 'Not set'
             label2_title     = rom['s_title']     if rom['s_title']     else 'Not set'
             label2_snap      = rom['s_snap']      if rom['s_snap']      else 'Not set'
             label2_boxfront  = rom['s_boxfront']  if rom['s_boxfront']  else 'Not set'
             label2_boxback   = rom['s_boxback']   if rom['s_boxback']   else 'Not set'
-            label2_cartridge = rom['s_cartridge'] if rom['s_cartridge'] else 'Not set'
-            label2_fanart    = rom['s_fanart']    if rom['s_fanart']    else 'Not set'
-            label2_banner    = rom['s_banner']    if rom['s_banner']    else 'Not set'
-            label2_clearlogo = rom['s_clearlogo'] if rom['s_clearlogo'] else 'Not set'
-            label2_flyer     = rom['s_flyer']     if rom['s_flyer']     else 'Not set'
             label2_3dbox     = rom['s_3dbox']     if rom['s_3dbox']     else 'Not set'
+            label2_cartridge = rom['s_cartridge'] if rom['s_cartridge'] else 'Not set'
+            label2_flyer     = rom['s_flyer']     if rom['s_flyer']     else 'Not set'
             label2_map       = rom['s_map']       if rom['s_map']       else 'Not set'
             label2_manual    = rom['s_manual']    if rom['s_manual']    else 'Not set'
             label2_trailer   = rom['s_trailer']   if rom['s_trailer']   else 'Not set'
+
+            img_fanart       = rom['s_fanart']          if rom['s_fanart']    else 'DefaultAddonNone.png'
+            img_banner       = rom['s_banner']          if rom['s_banner']    else 'DefaultAddonNone.png'
+            img_clearlogo    = rom['s_clearlogo']       if rom['s_clearlogo'] else 'DefaultAddonNone.png'
             img_title        = rom['s_title']           if rom['s_title']     else 'DefaultAddonNone.png'
             img_snap         = rom['s_snap']            if rom['s_snap']      else 'DefaultAddonNone.png'
             img_boxfront     = rom['s_boxfront']        if rom['s_boxfront']  else 'DefaultAddonNone.png'
             img_boxback      = rom['s_boxback']         if rom['s_boxback']   else 'DefaultAddonNone.png'
-            img_cartridge    = rom['s_cartridge']       if rom['s_cartridge'] else 'DefaultAddonNone.png'
-            img_fanart       = rom['s_fanart']          if rom['s_fanart']    else 'DefaultAddonNone.png'
-            img_banner       = rom['s_banner']          if rom['s_banner']    else 'DefaultAddonNone.png'
-            img_clearlogo    = rom['s_clearlogo']       if rom['s_clearlogo'] else 'DefaultAddonNone.png'
-            img_flyer        = rom['s_flyer']           if rom['s_flyer']     else 'DefaultAddonNone.png'
             img_3dbox        = rom['s_3dbox']           if rom['s_3dbox']     else 'DefaultAddonNone.png'
+            img_cartridge    = rom['s_cartridge']       if rom['s_cartridge'] else 'DefaultAddonNone.png'
+            img_flyer        = rom['s_flyer']           if rom['s_flyer']     else 'DefaultAddonNone.png'
             img_map          = rom['s_map']             if rom['s_map']       else 'DefaultAddonNone.png'
             img_manual       = 'DefaultAddonImages.png' if rom['s_manual']    else 'DefaultAddonNone.png'
             img_trailer      = 'DefaultAddonVideo.png'  if rom['s_trailer']   else 'DefaultAddonNone.png'
 
             # >> Create ListItem objects for select dialog
+            fanart_listitem    = xbmcgui.ListItem(label = 'Edit Fanart ...',             label2 = label2_fanart)
+            banner_listitem    = xbmcgui.ListItem(label = 'Edit Banner / Marquee ...',   label2 = label2_banner)
+            clearlogo_listitem = xbmcgui.ListItem(label = 'Edit Clearlogo ...',          label2 = label2_clearlogo)
             title_listitem     = xbmcgui.ListItem(label = 'Edit Title ...',              label2 = label2_title)
             snap_listitem      = xbmcgui.ListItem(label = 'Edit Snap ...',               label2 = label2_snap)
             boxfront_listitem  = xbmcgui.ListItem(label = 'Edit Boxfront / Cabinet ...', label2 = label2_boxfront)
             boxback_listitem   = xbmcgui.ListItem(label = 'Edit Boxback / CPanel ...',   label2 = label2_boxback)
-            cartridge_listitem = xbmcgui.ListItem(label = 'Edit Cartridge / PCB ...',    label2 = label2_cartridge)
-            fanart_listitem    = xbmcgui.ListItem(label = 'Edit Fanart ...',             label2 = label2_fanart)
-            banner_listitem    = xbmcgui.ListItem(label = 'Edit Banner / Marquee ...',   label2 = label2_banner)
-            clearlogo_listitem = xbmcgui.ListItem(label = 'Edit Clearlogo ...',          label2 = label2_clearlogo)
-            flyer_listitem     = xbmcgui.ListItem(label = 'Edit Flyer ...',              label2 = label2_flyer)
             tdbox_listitem     = xbmcgui.ListItem(label = 'Edit 3D Box ...',             label2 = label2_3dbox)
+            cartridge_listitem = xbmcgui.ListItem(label = 'Edit Cartridge / PCB ...',    label2 = label2_cartridge)
+            flyer_listitem     = xbmcgui.ListItem(label = 'Edit Flyer ...',              label2 = label2_flyer)
             map_listitem       = xbmcgui.ListItem(label = 'Edit Map ...',                label2 = label2_map)
             manual_listitem    = xbmcgui.ListItem(label = 'Edit Manual ...',             label2 = label2_manual)
             trailer_listitem   = xbmcgui.ListItem(label = 'Edit Trailer ...',            label2 = label2_trailer)
+
+            fanart_listitem.setArt({'icon' : img_fanart})
+            banner_listitem.setArt({'icon' : img_banner})
+            clearlogo_listitem.setArt({'icon' : img_clearlogo})
             title_listitem.setArt({'icon' : img_title})
             snap_listitem.setArt({'icon' : img_snap})
             boxfront_listitem.setArt({'icon' : img_boxfront})
             boxback_listitem.setArt({'icon' : img_boxback})
-            cartridge_listitem.setArt({'icon' : img_cartridge})
-            fanart_listitem.setArt({'icon' : img_fanart})
-            banner_listitem.setArt({'icon' : img_banner})
-            clearlogo_listitem.setArt({'icon' : img_clearlogo})
-            flyer_listitem.setArt({'icon' : img_flyer})
             tdbox_listitem.setArt({'icon' : img_3dbox})
+            cartridge_listitem.setArt({'icon' : img_cartridge})
+            flyer_listitem.setArt({'icon' : img_flyer})
             map_listitem.setArt({'icon' : img_map})
             manual_listitem.setArt({'icon' : img_manual})
             trailer_listitem.setArt({'icon' : img_trailer})
@@ -2828,9 +2830,18 @@ class Main:
             # --- Execute select dialog ---
             # Make sure this follows the same order as ROM_ASSET_ID_LIST
             listitems = [
-                title_listitem, snap_listitem, boxfront_listitem, boxback_listitem,
-                cartridge_listitem, fanart_listitem, banner_listitem, clearlogo_listitem, 
-                flyer_listitem, tdbox_listitem, map_listitem, manual_listitem,
+                fanart_listitem,
+                banner_listitem,
+                clearlogo_listitem, 
+                title_listitem,
+                snap_listitem,
+                boxfront_listitem,
+                boxback_listitem,
+                tdbox_listitem,
+                cartridge_listitem, 
+                flyer_listitem,
+                map_listitem,
+                manual_listitem,
                 trailer_listitem, 
             ]
             type2 = dialog.select('Edit ROM Assets/Artwork', list = listitems, useDetails = True)
