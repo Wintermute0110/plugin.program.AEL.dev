@@ -2759,10 +2759,11 @@ class Main:
                 }
 
                 # --- Scrape! ---
-                # If this returns False there were no changes so no need to save ROMs JSON.
-                op_dic = scrap_strategy.scrap_CM_metadata_ROM(object_dic, data_dic)
-                kodi_display_user_message(op_dic)
-                if not op_dic['status']: return
+                # If status_dic['status'] is False then some error happened. Do not save
+                # the database and return immediately.
+                status_dic = scrap_strategy.scrap_CM_metadata_ROM(object_dic, data_dic)
+                kodi_display_user_message(status_dic)
+                if not status_dic['status']: return
 
         # --- Edit Launcher Assets/Artwork ---
         elif type == 1:
@@ -6357,9 +6358,9 @@ class Main:
             ]
         elif view_type == VIEW_ROM_LAUNCHER:
             d_list = [
+                'View ROM data',
                 'View ROM manual',
                 'View ROM map',
-                'View ROM data',
                 'View Launcher statistics',
                 'View Launcher metadata/audit report',
                 'View Launcher assets report',
@@ -6382,7 +6383,8 @@ class Main:
                 'View last execution output ({0})'.format(STD_status),
             ]
         else:
-            kodi_dialog_OK('Wrong view_type = {0}. This is a bug, please report it.'.format(view_type))
+            kodi_dialog_OK(
+                'Wrong view_type = {0}. This is a bug, please report it.'.format(view_type))
             return
         selected_value = xbmcgui.Dialog().select('View', d_list)
         if selected_value < 0: return
@@ -6392,8 +6394,9 @@ class Main:
             if   selected_value == 0: action = ACTION_VIEW_CATEGORY
             elif selected_value == 1: action = ACTION_VIEW_EXEC_OUTPUT
             else:
-                kodi_dialog_OK('view_type == VIEW_CATEGORY and selected_value = {0}. '.format(selected_value) +
-                               'This is a bug, please report it.')
+                kodi_dialog_OK(
+                    'view_type == VIEW_CATEGORY and selected_value = {0}. '.format(selected_value) +
+                    'This is a bug, please report it.')
                 return
         elif view_type == VIEW_LAUNCHER:
             if   selected_value == 0: action = ACTION_VIEW_LAUNCHER
@@ -6403,28 +6406,31 @@ class Main:
             elif selected_value == 4: action = ACTION_VIEW_LAUNCHER_SCANNER
             elif selected_value == 5: action = ACTION_VIEW_EXEC_OUTPUT
             else:
-                kodi_dialog_OK('view_type == VIEW_LAUNCHER and selected_value = {0}. '.format(selected_value) +
-                               'This is a bug, please report it.')
+                kodi_dialog_OK(
+                    'view_type == VIEW_LAUNCHER and selected_value = {0}. '.format(selected_value) +
+                    'This is a bug, please report it.')
                 return
         elif view_type == VIEW_COLLECTION:
             if   selected_value == 0: action = ACTION_VIEW_COLLECTION
             elif selected_value == 1: action = ACTION_VIEW_EXEC_OUTPUT
             else:
-                kodi_dialog_OK('view_type == VIEW_COLLECTION and selected_value = {0}. '.format(selected_value) +
-                               'This is a bug, please report it.')
+                kodi_dialog_OK(
+                    'view_type == VIEW_COLLECTION and selected_value = {0}. '.format(selected_value) +
+                    'This is a bug, please report it.')
                 return
         elif view_type == VIEW_ROM_LAUNCHER:
-            if   selected_value == 0: action = ACTION_VIEW_MANUAL
-            elif selected_value == 1: action = ACTION_VIEW_MAP
-            elif selected_value == 2: action = ACTION_VIEW_ROM
+            if   selected_value == 0: action = ACTION_VIEW_ROM
+            elif selected_value == 1: action = ACTION_VIEW_MANUAL
+            elif selected_value == 2: action = ACTION_VIEW_MAP
             elif selected_value == 3: action = ACTION_VIEW_LAUNCHER_STATS
             elif selected_value == 4: action = ACTION_VIEW_LAUNCHER_METADATA
             elif selected_value == 5: action = ACTION_VIEW_LAUNCHER_ASSETS
             elif selected_value == 6: action = ACTION_VIEW_LAUNCHER_SCANNER
             elif selected_value == 7: action = ACTION_VIEW_EXEC_OUTPUT
             else:
-                kodi_dialog_OK('view_type == VIEW_ROM_LAUNCHER and selected_value = {0}. '.format(selected_value) +
-                               'This is a bug, please report it.')
+                kodi_dialog_OK(
+                    'view_type == VIEW_ROM_LAUNCHER and selected_value = {0}. '.format(selected_value) +
+                    'This is a bug, please report it.')
                 return
         elif view_type == VIEW_ROM_VLAUNCHER:
             if   selected_value == 0: action = ACTION_VIEW_MANUAL
@@ -6432,8 +6438,9 @@ class Main:
             elif selected_value == 2: action = ACTION_VIEW_ROM
             elif selected_value == 3: action = ACTION_VIEW_EXEC_OUTPUT
             else:
-                kodi_dialog_OK('view_type == VIEW_ROM_VLAUNCHER and selected_value = {0}. '.format(selected_value) +
-                               'This is a bug, please report it.')
+                kodi_dialog_OK(
+                    'view_type == VIEW_ROM_VLAUNCHER and selected_value = {0}. '.format(selected_value) +
+                    'This is a bug, please report it.')
                 return
         elif view_type == VIEW_ROM_COLLECTION:
             if   selected_value == 0: action = ACTION_VIEW_MANUAL
@@ -6441,8 +6448,9 @@ class Main:
             elif selected_value == 2: action = ACTION_VIEW_ROM
             elif selected_value == 3: action = ACTION_VIEW_EXEC_OUTPUT
             else:
-                kodi_dialog_OK('view_type == VIEW_ROM_COLLECTION and selected_value = {0}. '.format(selected_value) +
-                               'This is a bug, please report it.')
+                kodi_dialog_OK(
+                    'view_type == VIEW_ROM_COLLECTION and selected_value = {0}. '.format(selected_value) +
+                    'This is a bug, please report it.')
                 return
         else:
             kodi_dialog_OK('Wrong view_type == {0}. '.format(view_type) +
