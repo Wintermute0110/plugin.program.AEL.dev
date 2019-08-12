@@ -406,7 +406,7 @@ class ScrapeStrategy(object):
             romdata['m_plot']      = nfo_dic['plot']      # <plot>
 
         elif metadata_action == ACTION_META_SCRAPER:
-            self._scrap_ROM_metadata_scanner(romdata, ROM)
+            self._scanner_scrap_ROM_metadata(romdata, ROM)
 
         else:
             log_error('Invalid metadata_action value = {0}'.format(metadata_action))
@@ -452,7 +452,7 @@ class ScrapeStrategy(object):
                     romdata[A.key] = ''
                     log_verb('Skipped {0} (dir not configured)'.format(A.name))
                     continue
-                romdata[A.key] = self._scrap_ROM_asset_scanner(asset_ID, local_asset_list[i], ROM)
+                romdata[A.key] = self._scanner_scrap_ROM_asset(asset_ID, local_asset_list[i], ROM)
 
         log_verb('Set Title     file "{0}"'.format(romdata['s_title']))
         log_verb('Set Snap      file "{0}"'.format(romdata['s_snap']))
@@ -476,6 +476,7 @@ class ScrapeStrategy(object):
         log_debug('ScrapeStrategy::_scanner_scrap_ROM_metadata() BEGIN...')
 
         # For now just use the first scraper
+        status_dic = kodi_new_status_dic('ROM metadata updated')
         scraper_obj = self.metadata_scraper_list[0]
         scraper_name = scraper_obj.get_name()
         log_debug('Using scraper "{0}"'.format(scraper_name))
@@ -487,7 +488,8 @@ class ScrapeStrategy(object):
 
         # --- Do a search and get a list of games ---
         rom_name_scraping = text_format_ROM_name_for_scraping(ROM.getBase_noext())
-        candidates = scraper_obj.get_candidates(rom_name_scraping, ROM.getBase_noext(), self.platform)
+        candidates = scraper_obj.get_candidates(
+            rom_name_scraping, ROM.getBase_noext(), self.platform, status_dic)
         log_debug('Scraper {0} found {1} candidate/s'.format(scraper_name, len(candidates)))
         if not candidates:
             log_verb('Found no candidates after searching. Cleaning ROM name only.')
@@ -518,11 +520,11 @@ class ScrapeStrategy(object):
 
         # --- Update scanner progress dialog ---
         if self.pdialog_verbose:
-            scraper_text = 'Scraping metadata with {0} (Getting metadata...)'.format(scraper_obj.get_name())
+            scraper_text = 'Scraping metadata with {0} (Getting metadata...)'.format(scraper_name)
             self.pdialog.updateMessage2(scraper_text)
 
         # --- Grab metadata for selected game and put into ROM ---
-        game_data = scraper_obj.get_metadata(candidates[select_candidate_idx])
+        game_data = scraper_obj.get_metadata(candidates[select_candidate_idx], status_dic)
         scraper_applied = self._apply_candidate_on_metadata_old(game_data, romdata, ROM)
 
         # --- Update ROM NFO file after scraping ---
@@ -547,6 +549,7 @@ class ScrapeStrategy(object):
         log_debug('ScrapeStrategy::_scanner_scrap_ROM_asset() Scraping {0}...'.format(asset_name))
 
         # --- For now just use the first configured asset scraper ---
+        status_dic = kodi_new_status_dic('ROM metadata updated')
         scraper_obj = self.metadata_scraper_list[0]
         scraper_name = scraper_obj.get_name()
         log_debug('Using scraper "{0}"'.format(scraper_name))
@@ -571,7 +574,8 @@ class ScrapeStrategy(object):
         # Note that scraper_obj.get_candidates() always caches information so no need to worry
         # about caches here.
         rom_name_scraping = text_format_ROM_name_for_scraping(ROM.getBase_noext())
-        candidates = scraper_obj.get_candidates(rom_name_scraping, ROM.getBase_noext(), self.platform)
+        candidates = scraper_obj.get_candidates(
+            rom_name_scraping, ROM.getBase_noext(), self.platform, status_dic)
         log_debug('Scraper {0} found {1} candidate/s'.format(scraper_name, len(candidates)))
         if not candidates:
             log_verb('Found no candidates after searching.')
@@ -592,7 +596,7 @@ class ScrapeStrategy(object):
                 # Display game list found so user choses.
                 rom_name_list = [candidate['display_name'] for candidate in candidates]
                 selected_game_index = xbmcgui.Dialog().select(
-                    '{0} game for ROM "{1}"'.format(scraper_obj.name, ROM.getBase_noext()),
+                    '{0} game for ROM "{1}"'.format(scraper_name, ROM.getBase_noext()),
                     rom_name_list)
                 if selected_game_index < 0: selected_game_index = 0
                 self.pdialog.reopen()
@@ -610,7 +614,7 @@ class ScrapeStrategy(object):
             self.pdialog.updateMessage2(scraper_text)
 
         # --- Grab list of images/assets for the selected candidate ---
-        assetdata_list = scraper_obj.get_assets(candidate, asset_ID)
+        assetdata_list = scraper_obj.get_assets(candidate, asset_ID, status_dic)
         log_verb('{0} scraper returned {1} images'.format(asset_name, len(assetdata_list)))
         if not assetdata_list:
             log_debug('{0} scraper get_images() returned no images.'.format(asset_name))
@@ -672,8 +676,8 @@ class ScrapeStrategy(object):
             scraper_text = 'Scraping {0} with {1} (Resolving URL...)'.format(
                 asset_name, scraper_name)
             self.pdialog.updateMessage2(scraper_text)
-        image_url = scraper_obj.resolve_asset_URL(selected_asset)
-        image_ext = self.scraper_obj.resolve_asset_URL_extension(image_url)
+        image_url = scraper_obj.resolve_asset_URL(selected_asset, status_dic)
+        image_ext = scraper_obj.resolve_asset_URL_extension(image_url, status_dic)
         log_debug('Resolved {0} to URL "{1}"'.format(asset_name, image_url))
         log_debug('Resolved URL extension "{0}"'.format(image_ext))
         if not image_url or not image_ext:
