@@ -117,7 +117,9 @@ FEATURE  [SCRAPERS] Fix AEL Offline Scraper.
 FEATURE  [SCRAPERS] Add support for ScummVM platform in the Offline Scraper.
          See https://forum.kodi.tv/showthread.php?tid=287826&pid=2629084#pid2629084
 
-WIP      [SCRAPERS] Warn user if missing scraper API keys, required stuff, etc., before scraping.
+WIP NOW  [SCRAPERS] Warn user if missing scraper API keys, required stuff, etc., before scraping.
+         Also, improve the scraper error reporting and the disabling of the scraper object
+         if the web site is overloaded.
 
 WIP      [SCRAPERS] Option to rescrape all ROM assets in a similar fashion to
          "Scan ROMs local artwork". Create a menu entry in "Edit Launcher", "Manage ROMs",
