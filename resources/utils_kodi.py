@@ -166,7 +166,7 @@ class KodiProgressDialog(object):
         self.message2 = message2
         self.progressDialog.update(self.progress, message1, message2)
 
-    # Update dialog message but keep same progress.
+    # Update dialog message but keep same progress. message2 is removed if any.
     def updateMessage(self, message1):
         self.message1 = message1
         self.progressDialog.update(self.progress, message1)
