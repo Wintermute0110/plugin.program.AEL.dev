@@ -102,7 +102,6 @@ def net_download_img(img_url, file_path):
 # @param url: [Unicode string] URL to open
 # @param url_log: [Unicode string] If not None this URL will be used in the logs.
 def net_get_URL(url, url_log = None):
-    page_data = ''
     req = urllib2.Request(url)
     req.add_unredirected_header('User-Agent', USER_AGENT)
     if url_log is None:
@@ -119,7 +118,7 @@ def net_get_URL(url, url_log = None):
         log_error('(Exception) In net_get_URL()')
         log_error('(Exception) Object type "{}"'.format(type(ex)))
         log_error('(Exception) Message "{}"'.format(str(ex)))
-        return page_data
+        return ''
     log_debug('net_get_URL() Read {0} bytes'.format(len(page_bytes)))
 
     # --- Convert to Unicode ---
