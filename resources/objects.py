@@ -2187,6 +2187,7 @@ class LauncherABC(MetaDataItemABC):
     # Function asumes that the NFO file already exists.
     #
     def import_nfo_file(self, nfo_file_path):
+        import traceback
         # --- Get NFO file name ---
         log_debug('launcher.import_nfo_file() Importing launcher NFO "{0}"'.format(nfo_file_path.getPath()))
 
@@ -2195,12 +2196,16 @@ class LauncherABC(MetaDataItemABC):
             # >> Read NFO file data
             try:
                 item_nfo = nfo_file_path.loadFileToStr()
-                item_nfo = item_nfo.replace('\r', '').replace('\n', '')
+            except AddonException as e:
+                kodi_notify_warn('Exception reading NFO file {0}'.format(nfo_file_path.getPath()))
+                log_error("launcher.import_nfo_file() Exception reading NFO file '{0}': {1}".format(nfo_file_path.getPath(), str(e)))
+                return False
             except:
                 kodi_notify_warn('Exception reading NFO file {0}'.format(nfo_file_path.getPath()))
                 log_error("launcher.import_nfo_file() Exception reading NFO file '{0}'".format(nfo_file_path.getPath()))
                 return False
-            # log_debug("fs_import_launcher_NFO() item_nfo '{0}'".format(item_nfo))
+                
+            item_nfo = item_nfo.replace('\r', '').replace('\n', '')
         else:
             kodi_notify_warn('NFO file not found {0}'.format(nfo_file_path.getBase()))
             log_info("launcher.import_nfo_file() NFO file not found '{0}'".format(nfo_file_path.getPath()))
@@ -5365,8 +5370,8 @@ class RomFolderScanner(RomScannerStrategy):
             self.progress_dialog.updateMessages(file_text, 'Checking if ROM is not already in collection...')
             repeatedROM = False
             for rom in roms:
-                rpath = rom.get_filename() 
-                if rpath == item: 
+                rpath = rom.get_file() 
+                if rpath == ROM_file: 
                     repeatedROM = True
         
             if repeatedROM:

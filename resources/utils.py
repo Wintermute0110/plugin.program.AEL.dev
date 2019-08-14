@@ -1148,9 +1148,10 @@ class FileNameBase():
             log_error('(IOError) Cannot read {0} file'.format(self.path_tr))
             raise AddonException('(IOError) Cannot read {0} file'.format(self.path_tr))
 
+        if file_bytes is None:
+            return None
         # Return a Unicode string.
         return unicode(file_bytes, encoding)
-
 
     # Opens JSON file and reads it
     def readJson(self):
@@ -1778,7 +1779,7 @@ class NewFileName:
         return xbmcvfs.exists(self.path_str)
 
     def makedirs_kodivfs(self):
-        raise AddonException('Not implemented yet')
+        xbmcvfs.mkdirs(self.path_tr)
 
     def list_kodivfs(self):
         subdirectories, filenames = xbmcvfs.listdir(self.path_tr)
@@ -1836,19 +1837,28 @@ class NewFileName:
 
     # ---------------------------------------------------------------------------------------------
     # File low-level IO functions. Kodi VFS implementation.
+    # Kodi VFS documentation in https://alwinesch.github.io/group__python__xbmcvfs.html
     # ---------------------------------------------------------------------------------------------
     def open_kodivfs(self, flags):
-        raise AddonException('Not implemented yet')
+        log_debug('NewFileName::open_kodivfs() path_tr "{0}"'.format(self.path_tr))
+        log_debug('NewFileName::open_kodivfs() flags   "{0}"'.format(flags))
 
+        self.fileHandle = xbmcvfs.File(self.path_tr, flags)
+        return self
+    
     def read_kodivfs(self):
-        raise AddonException('Not implemented yet')
+        if self.fileHandle is None: raise OSError('file not opened')
+        return self.fileHandle.read()
+ 
+    def write_kodivfs(self, bytes):
+        if self.fileHandle is None: raise OSError('file not opened')
+        self.fileHandle.write(bytes)
 
-    def write_kodivfs(self):
-        raise AddonException('Not implemented yet')
-
-    def close_kodivfs(self, bytes):
-        raise AddonException('Not implemented yet')
-
+    def close_kodivfs(self):
+        if self.fileHandle is None: raise OSError('file not opened')
+        self.fileHandle.close()
+        self.fileHandle = None
+        
     # ---------------------------------------------------------------------------------------------
     # File high-level IO functions
     # These functions are independent of the filesystem implementation.
@@ -1918,11 +1928,11 @@ class NewFileName:
             raise AddonException('(IOError) Cannot read {0} file'.format(self.path_tr))
         
         # Return a Unicode string.
-        if encoding is None:
+        if encoding is None or file_bytes is None:
             return file_bytes
         
         return file_bytes.decode(encoding)
-
+    
     #
     # data_str is a Unicode string. Encode it in UTF-8 for file writing.
     #
@@ -1958,13 +1968,13 @@ class NewFileName:
         file_lines = file_contents.splitlines()
 
         result={ }
-        reader = csv.reader(file_lines, delimiter=str('='), quoting=csv.QUOTE_NONE)
+        reader = csv.reader(file_lines, delimiter=str('='), quotechar=str('"'), quoting=csv.QUOTE_MINIMAL, skipinitialspace=True)
         for row in reader:
             if len(row) < 2:
-                continue
-                                    
+               continue
+                                   
             if len(row) > 2:
-                raise csv.Error("Too many fields on row with contents: "+str(row))
+               raise csv.Error("Too many fields on row with contents: "+str(row))
             result[row[0].strip()] = row[1].strip().lstrip('"').rstrip('"')
 
         return result

@@ -71,14 +71,10 @@ class Test_filename_test(unittest.TestCase):
         # assert
         self.assertEquals('', actual)
 
-    @patch('resources.utils.xbmcvfs.File')
-    def test_reading_property_file_successfull(self, file_mock):
-        import ConfigParser
-
+    def test_reading_property_file_successfull(self):
         # arrange
         p = self.TEST_ASSETS_DIR + "\\retroarch.cfg"
-        file_mock.return_value = open(p, 'r')
-        target = KodiFileName(p)       
+        target = NewFileName(p)       
 
         # act
         propfile = target.readPropertyFile()
