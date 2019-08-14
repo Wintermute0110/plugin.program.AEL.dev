@@ -309,7 +309,7 @@ class Main:
         
         # --- Name says it all ---
         if command == 'SHOW_ADDON_ROOT':
-            self._command_render_categories()
+            self._command_render_root_window()
 
         # --- Render launchers stuff ---
         elif command == 'SHOW_VCATEGORIES_ROOT':
@@ -347,7 +347,7 @@ class Main:
             self._command_render_AEL_scraper_roms(args['catID'][0])
         elif command == 'SHOW_LB_SCRAPER_ROMS':
             self._command_render_LB_scraper_roms(args['catID'][0])
-        # >> Auxiliar command to render clone ROM list from context menu in 1G1R mode
+        # Auxiliar command to render clone ROM list from context menu in 1G1R mode
         elif command == 'EXEC_SHOW_CLONE_ROMS':
             url = self._misc_url('SHOW_CLONE_ROMS', args['catID'][0], args['launID'][0], args['romID'][0])
             xbmc.executebuiltin('Container.Update({0})'.format(url))
@@ -355,8 +355,9 @@ class Main:
             self._command_render_clone_roms(args['catID'][0], args['launID'][0], args['romID'][0])
 
         # --- Skin commands ---
-        # >> This commands render Categories/Launcher/ROMs and are used by skins to build shortcuts.
-        # >> Do not render virtual launchers.
+        # This commands render Categories/Launcher/ROMs and are used by skins to build shortcuts.
+        # Do not render virtual launchers.
+        # NOTE Renamed this to follow a scheme like in AML, _skin_zxczxcxzc()
         elif command == 'SHOW_ALL_CATEGORIES':
             self._command_render_all_categories()
         elif command == 'SHOW_ALL_LAUNCHERS':
@@ -458,6 +459,10 @@ class Main:
         elif command == 'CHECK_LAUNCHERS':     self._command_check_launchers()
         elif command == 'CHECK_RETRO_BIOS':    self._command_check_retro_BIOS()
         elif command == 'IMPORT_AL_LAUNCHERS': self._command_import_legacy_AL()
+
+        # Commands called from Utilities menu.
+        elif command == 'EXECUTE_UTILS_TGDB_ALLOWANCE':      self._command_exec_utils_TGDB_allowance()
+        elif command == 'EXECUTE_UTILS_MOBYGAMES_ALLOWANCE': self._command_exec_utils_MobyGames_allowance()
 
         # Commands called from Global Reports menu.
         elif command == 'EXECUTE_GLOBAL_ROM_STATS':   self._command_exec_global_rom_stats()
@@ -3328,14 +3333,16 @@ class Main:
     # Categories LisItem rendering
     # ---------------------------------------------------------------------------------------------
     #
-    # Renders the addon Root window. Categories, categoryless launchers, Favourites, etc.
+    # Renders the addon Root window.
     #
-    def _command_render_categories(self):
+    def _command_render_root_window(self):
         self._misc_set_all_sorting_methods()
         self._misc_set_AEL_Content(AEL_CONTENT_VALUE_LAUNCHERS)
         self._misc_clear_AEL_Launcher_Content()
 
         # --- Render categories in classic mode or in flat mode ---
+        # This code must never fail. If categories.xml cannot be read because an upgrade
+        # is necessary the user must be able to go to the "Utilities" menu.
         # <setting id="display_category_mode" values="Standard|Flat"/>
         if self.settings['display_category_mode'] == 0:
             # For every category, add it to the listbox. Order alphabetically by name.
@@ -3344,7 +3351,7 @@ class Main:
         else:
             # Traverse categories and sort alphabetically.
             for cat_id in sorted(self.categories, key = lambda x : self.categories[x]['m_name']):
-                # Get launchers of this category alphabetically sorted.
+                # Get launchers in this category alphabetically sorted.
                 launcher_list = []
                 for launcher_id in sorted(self.launchers, key = lambda x : self.launchers[x]['m_name']):
                     launcher = self.launchers[launcher_id]
@@ -3388,7 +3395,7 @@ class Main:
         if not self.settings['display_hide_mostplayed']:
             self._gui_render_category_most_played_row()
 
-        # self._gui_render_Utilities_root()
+        self._gui_render_Utilities_root()
         self._gui_render_GlobalReports_root()
 
         xbmcplugin.endOfDirectory(handle = self.addon_handle, succeeded = True, cacheToDisc = False)
@@ -3613,8 +3620,27 @@ class Main:
         url_str = self._misc_url('SHOW_MOST_PLAYED')
         xbmcplugin.addDirectoryItem(handle = self.addon_handle, url = url_str, listitem = listitem, isFolder = True)
 
+    def _gui_render_Utilities_root(self):
+        vcategory_name   = '[COLOR orangered]Utilities[/COLOR]'
+        vcategory_plot   = 'A set of useful [COLOR orange]Utilities[/COLOR].'
+        vcategory_icon   = g_PATHS.ICON_FILE_PATH.getPath()
+        vcategory_fanart = g_PATHS.FANART_FILE_PATH.getPath()
+
+        listitem = xbmcgui.ListItem(vcategory_name)
+        listitem.setInfo('video', {'title': vcategory_name, 'plot' : vcategory_plot, 'overlay': 4})
+        listitem.setArt({'icon' : vcategory_icon, 'fanart' : vcategory_fanart})
+        listitem.setProperty(AEL_CONTENT_LABEL, AEL_CONTENT_VALUE_CATEGORY)
+
+        commands = []
+        commands.append(('Open Kodi file manager', 'ActivateWindow(filemanager)'))
+        commands.append(('AEL addon settings', 'Addon.OpenSettings({0})'.format(__addon_id__)))
+        listitem.addContextMenuItems(commands)
+
+        url_str = self._misc_url('SHOW_UTILITIES_VLAUNCHERS')
+        xbmcplugin.addDirectoryItem(handle = self.addon_handle, url = url_str, listitem = listitem, isFolder = True)
+
     def _gui_render_GlobalReports_root(self):
-        vcategory_name   = '[COLOR thistle]Global Reports[/COLOR]'
+        vcategory_name   = '[COLOR salmon]Global Reports[/COLOR]'
         vcategory_plot   = 'Generate and view [COLOR orange]Global Reports[/COLOR].'
         vcategory_icon   = g_PATHS.ICON_FILE_PATH.getPath()
         vcategory_fanart = g_PATHS.FANART_FILE_PATH.getPath()
@@ -3816,6 +3842,48 @@ class Main:
 
         url_str = self._misc_url('SHOW_LB_SCRAPER_ROMS', platform)
         xbmcplugin.addDirectoryItem(handle = self.addon_handle, url = url_str, listitem = listitem, isFolder = True)
+
+    def _gui_render_Utilities_vlaunchers(self):
+        # --- Common context menu for all VLaunchers ---
+        commands = []
+        commands.append(('Kodi File Manager', 'ActivateWindow(filemanager)'))
+        commands.append(('AEL addon settings', 'Addon.OpenSettings({0})'.format(__addon_id__)))
+
+        # NOTE Move the utilities from the addon settings into here, including the code
+        #      to upgrade the addon databases.
+
+        # --- Check TheGamesDB scraper allowance ---
+        vcategory_name   = 'Check TheGamesDB scraper allowance'
+        vcategory_plot   = ('Connects to TheGamesDB and checks you monthly allowance.')
+        vcategory_icon   = g_PATHS.ICON_FILE_PATH.getPath()
+        vcategory_fanart = g_PATHS.FANART_FILE_PATH.getPath()
+        listitem = xbmcgui.ListItem(vcategory_name)
+        listitem.setInfo('video', {'title': vcategory_name, 'plot' : vcategory_plot, 'overlay': 4})
+        listitem.setArt({'icon' : vcategory_icon, 'fanart' : vcategory_fanart})
+        listitem.setProperty(AEL_CONTENT_LABEL, AEL_CONTENT_VALUE_ROM_LAUNCHER)
+        listitem.addContextMenuItems(commands)
+        url_str = self._misc_url('EXECUTE_UTILS_TGDB_ALLOWANCE')
+        xbmcplugin.addDirectoryItem(handle = self.addon_handle, url = url_str, listitem = listitem, isFolder = False)
+
+        # --- Check MobyGames scraper allowance Does this make sense/Can be checked? ---
+        # vcategory_name   = 'Check MobyGames scraper allowance'
+        # vcategory_plot   = ('Connects to MobyGames and checks you monthly allowance.')
+        # vcategory_icon   = g_PATHS.ICON_FILE_PATH.getPath()
+        # vcategory_fanart = g_PATHS.FANART_FILE_PATH.getPath()
+        # listitem = xbmcgui.ListItem(vcategory_name)
+        # listitem.setInfo('video', {'title': vcategory_name, 'plot' : vcategory_plot, 'overlay': 4})
+        # listitem.setArt({'icon' : vcategory_icon, 'fanart' : vcategory_fanart})
+        # listitem.setProperty(AEL_CONTENT_LABEL, AEL_CONTENT_VALUE_ROM_LAUNCHER)
+        # listitem.addContextMenuItems(commands)
+        # url_str = self._misc_url('EXECUTE_UTILS_MOBYGAMES_ALLOWANCE')
+        # xbmcplugin.addDirectoryItem(handle = self.addon_handle, url = url_str, listitem = listitem, isFolder = False)
+
+        # --- Check ScreenScraper scraper allowance Does this make sense/Can be checked? ---
+
+        # --- Check ArcadeDB scraper allowance? Does this make sense/Can be checked? ---
+
+        # --- End of directory ---
+        xbmcplugin.endOfDirectory(handle = self.addon_handle, succeeded = True, cacheToDisc = False)
 
     def _gui_render_GlobalReports_vlaunchers(self):
         # --- Common context menu for all VLaunchers ---
@@ -9929,6 +9997,15 @@ class Main:
         kodi_dialog_OK('Imported {0} Category/s, {1} Launcher/s '.format(num_categories, num_launchers) +
                        'and {0} ROM/s.'.format(num_ROMs))
         kodi_refresh_container()
+
+    # Use TGDB scraper to get the monthly allowance and report to the user.
+    def _command_exec_utils_TGDB_allowance(self):
+        window_title = 'TheGamesDB scraper monthly allowance'
+        slist = []
+        slist.append('Not implemented yet. Sorry.')
+        kodi_display_text_window_mono(window_title, '\n'.join(slist))
+
+    def _command_exec_utils_MobyGames_allowance(self): pass
 
     def _command_exec_global_rom_stats(self):
         log_debug('_command_exec_global_rom_stats() BEGIN')
