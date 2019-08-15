@@ -461,8 +461,10 @@ class Main:
         elif command == 'IMPORT_AL_LAUNCHERS': self._command_import_legacy_AL()
 
         # Commands called from Utilities menu.
-        elif command == 'EXECUTE_UTILS_TGDB_ALLOWANCE':      self._command_exec_utils_TGDB_allowance()
-        elif command == 'EXECUTE_UTILS_MOBYGAMES_ALLOWANCE': self._command_exec_utils_MobyGames_allowance()
+        elif command == 'EXECUTE_UTILS_TGDB_CHECK':          self._command_exec_utils_TGDB_check()
+        elif command == 'EXECUTE_UTILS_MOBYGAMES_CHECK':     self._command_exec_utils_MobyGames_check()
+        elif command == 'EXECUTE_UTILS_SCREENSCRAPER_CHECK': self._command_exec_utils_ScreenScraper_check()
+        elif command == 'EXECUTE_UTILS_ARCADEDB_CHECK':      self._command_exec_utils_ArcadeDB_check()
 
         # Commands called from Global Reports menu.
         elif command == 'EXECUTE_GLOBAL_ROM_STATS':   self._command_exec_global_rom_stats()
@@ -3852,8 +3854,8 @@ class Main:
         # NOTE Move the utilities from the addon settings into here, including the code
         #      to upgrade the addon databases.
 
-        # --- Check TheGamesDB scraper allowance ---
-        vcategory_name   = 'Check TheGamesDB scraper allowance'
+        # --- Check TheGamesDB scraper ---
+        vcategory_name   = 'Check TheGamesDB scraper'
         vcategory_plot   = ('Connects to TheGamesDB and checks you monthly allowance.')
         vcategory_icon   = g_PATHS.ICON_FILE_PATH.getPath()
         vcategory_fanart = g_PATHS.FANART_FILE_PATH.getPath()
@@ -3862,25 +3864,47 @@ class Main:
         listitem.setArt({'icon' : vcategory_icon, 'fanart' : vcategory_fanart})
         listitem.setProperty(AEL_CONTENT_LABEL, AEL_CONTENT_VALUE_ROM_LAUNCHER)
         listitem.addContextMenuItems(commands)
-        url_str = self._misc_url('EXECUTE_UTILS_TGDB_ALLOWANCE')
+        url_str = self._misc_url('EXECUTE_UTILS_TGDB_CHECK')
         xbmcplugin.addDirectoryItem(handle = self.addon_handle, url = url_str, listitem = listitem, isFolder = False)
 
-        # --- Check MobyGames scraper allowance Does this make sense/Can be checked? ---
-        # vcategory_name   = 'Check MobyGames scraper allowance'
-        # vcategory_plot   = ('Connects to MobyGames and checks you monthly allowance.')
-        # vcategory_icon   = g_PATHS.ICON_FILE_PATH.getPath()
-        # vcategory_fanart = g_PATHS.FANART_FILE_PATH.getPath()
-        # listitem = xbmcgui.ListItem(vcategory_name)
-        # listitem.setInfo('video', {'title': vcategory_name, 'plot' : vcategory_plot, 'overlay': 4})
-        # listitem.setArt({'icon' : vcategory_icon, 'fanart' : vcategory_fanart})
-        # listitem.setProperty(AEL_CONTENT_LABEL, AEL_CONTENT_VALUE_ROM_LAUNCHER)
-        # listitem.addContextMenuItems(commands)
-        # url_str = self._misc_url('EXECUTE_UTILS_MOBYGAMES_ALLOWANCE')
-        # xbmcplugin.addDirectoryItem(handle = self.addon_handle, url = url_str, listitem = listitem, isFolder = False)
+        # --- Check MobyGames scraper ---
+        vcategory_name   = 'Check MobyGames scraper'
+        vcategory_plot   = ('Connects to MobyGames and checks if it works.')
+        vcategory_icon   = g_PATHS.ICON_FILE_PATH.getPath()
+        vcategory_fanart = g_PATHS.FANART_FILE_PATH.getPath()
+        listitem = xbmcgui.ListItem(vcategory_name)
+        listitem.setInfo('video', {'title': vcategory_name, 'plot' : vcategory_plot, 'overlay': 4})
+        listitem.setArt({'icon' : vcategory_icon, 'fanart' : vcategory_fanart})
+        listitem.setProperty(AEL_CONTENT_LABEL, AEL_CONTENT_VALUE_ROM_LAUNCHER)
+        listitem.addContextMenuItems(commands)
+        url_str = self._misc_url('EXECUTE_UTILS_MOBYGAMES_CHECK')
+        xbmcplugin.addDirectoryItem(handle = self.addon_handle, url = url_str, listitem = listitem, isFolder = False)
 
-        # --- Check ScreenScraper scraper allowance Does this make sense/Can be checked? ---
+        # --- Check ScreenScraper scraper ---
+        vcategory_name   = 'Check ScreenScraper scraper'
+        vcategory_plot   = ('Connects to ScreenScraper and checks if it works.')
+        vcategory_icon   = g_PATHS.ICON_FILE_PATH.getPath()
+        vcategory_fanart = g_PATHS.FANART_FILE_PATH.getPath()
+        listitem = xbmcgui.ListItem(vcategory_name)
+        listitem.setInfo('video', {'title': vcategory_name, 'plot' : vcategory_plot, 'overlay': 4})
+        listitem.setArt({'icon' : vcategory_icon, 'fanart' : vcategory_fanart})
+        listitem.setProperty(AEL_CONTENT_LABEL, AEL_CONTENT_VALUE_ROM_LAUNCHER)
+        listitem.addContextMenuItems(commands)
+        url_str = self._misc_url('EXECUTE_UTILS_SCREENSCRAPER_CHECK')
+        xbmcplugin.addDirectoryItem(handle = self.addon_handle, url = url_str, listitem = listitem, isFolder = False)
 
-        # --- Check ArcadeDB scraper allowance? Does this make sense/Can be checked? ---
+        # --- Check ArcadeDB scraper ---
+        vcategory_name   = 'Check Arcade DB scraper'
+        vcategory_plot   = ('Connects to Arcade DB and checks if it works.')
+        vcategory_icon   = g_PATHS.ICON_FILE_PATH.getPath()
+        vcategory_fanart = g_PATHS.FANART_FILE_PATH.getPath()
+        listitem = xbmcgui.ListItem(vcategory_name)
+        listitem.setInfo('video', {'title': vcategory_name, 'plot' : vcategory_plot, 'overlay': 4})
+        listitem.setArt({'icon' : vcategory_icon, 'fanart' : vcategory_fanart})
+        listitem.setProperty(AEL_CONTENT_LABEL, AEL_CONTENT_VALUE_ROM_LAUNCHER)
+        listitem.addContextMenuItems(commands)
+        url_str = self._misc_url('EXECUTE_UTILS_ARCADEDB_CHECK')
+        xbmcplugin.addDirectoryItem(handle = self.addon_handle, url = url_str, listitem = listitem, isFolder = False)
 
         # --- End of directory ---
         xbmcplugin.endOfDirectory(handle = self.addon_handle, succeeded = True, cacheToDisc = False)
@@ -10000,12 +10024,12 @@ class Main:
 
     # Use TGDB scraper to get the monthly allowance and report to the user.
     # TGDB API docs https://api.thegamesdb.net/
-    def _command_exec_utils_TGDB_info(self):
+    def _command_exec_utils_TGDB_check(self):
         # --- Get TGDB scraper object and retrieve information ---
         # Treat any error message returned by the scraper as an OK dialog.
         status_dic = kodi_new_status_dic('No error')
         g_scraper_factory = ScraperFactory(g_PATHS, self.settings)
-        TGDB = get_scraper_object(SCRAPER_THEGAMESDB_ID)
+        TGDB = g_scraper_factory.get_scraper_object(SCRAPER_THEGAMESDB_ID)
         TGDB.check_before_scraping(status_dic)
         if not status_dic['status']:
             kodi_dialog_OK(status_dic['msg'])
@@ -10013,7 +10037,10 @@ class Main:
 
         # To check the scraper monthly allowance, get the list of platforms as JSON. This JSON
         # data contains the monthly allowance.
+        pdialog = KodiProgressDialog()
+        pdialog.startProgress('Retrieving info from TheGamesDB...', 100)
         json_data = TGDB.get_genres(status_dic)
+        pdialog.endProgress()
         if not status_dic['status']:
             kodi_dialog_OK(status_dic['msg'])
             return
@@ -10033,7 +10060,14 @@ class Main:
 
     # MobyGames API docs https://www.mobygames.com/info/api
     # Currently there is no way to check the MobyGames allowance.
-    def _command_exec_utils_MobyGames_info(self): pass
+    def _command_exec_utils_MobyGames_check(self):
+        kodi_dialog_OK('Not implemented yet. Sorry.')
+
+    def _command_exec_utils_ScreenScraper_check(self):
+        kodi_dialog_OK('Not implemented yet. Sorry.')
+
+    def _command_exec_utils_ArcadeDB_check(self):
+        kodi_dialog_OK('Not implemented yet. Sorry.')
 
     # ScreenScraper V1 API docs https://www.screenscraper.fr/webapi.php
     # I'm not sure how to check ScreenScraper allowance.
