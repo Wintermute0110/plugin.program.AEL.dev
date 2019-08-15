@@ -9999,20 +9999,54 @@ class Main:
         kodi_refresh_container()
 
     # Use TGDB scraper to get the monthly allowance and report to the user.
-    def _command_exec_utils_TGDB_allowance(self):
-        window_title = 'TheGamesDB scraper monthly allowance'
-        slist = []
-        slist.append('Not implemented yet. Sorry.')
-        kodi_display_text_window_mono(window_title, '\n'.join(slist))
+    # TGDB API docs https://api.thegamesdb.net/
+    def _command_exec_utils_TGDB_info(self):
+        # --- Get TGDB scraper object and retrieve information ---
+        # Treat any error message returned by the scraper as an OK dialog.
+        status_dic = kodi_new_status_dic('No error')
+        g_scraper_factory = ScraperFactory(g_PATHS, self.settings)
+        TGDB = get_scraper_object(SCRAPER_THEGAMESDB_ID)
+        TGDB.check_before_scraping(status_dic)
+        if not status_dic['status']:
+            kodi_dialog_OK(status_dic['msg'])
+            return
 
-    def _command_exec_utils_MobyGames_allowance(self): pass
+        # To check the scraper monthly allowance, get the list of platforms as JSON. This JSON
+        # data contains the monthly allowance.
+        json_data = TGDB.get_genres(status_dic)
+        if not status_dic['status']:
+            kodi_dialog_OK(status_dic['msg'])
+            return
+        extra_allowance = json_data['extra_allowance']
+        remaining_monthly_allowance = json_data['remaining_monthly_allowance']
+        allowance_refresh_timer = json_data['allowance_refresh_timer']
+        allowance_refresh_timer_str = str(datetime.timedelta(seconds = allowance_refresh_timer))
+
+        # --- Print and display report ---
+        window_title = 'TheGamesDB scraper information'
+        sl = []
+        sl.append('extra_allowance              {}'.format(extra_allowance))
+        sl.append('remaining_monthly_allowance  {}'.format(remaining_monthly_allowance))
+        sl.append('allowance_refresh_timer      {}'.format(allowance_refresh_timer))
+        sl.append('allowance_refresh_timer_str  {}'.format(allowance_refresh_timer_str))
+        kodi_display_text_window_mono(window_title, '\n'.join(sl))
+
+    # MobyGames API docs https://www.mobygames.com/info/api
+    # Currently there is no way to check the MobyGames allowance.
+    def _command_exec_utils_MobyGames_info(self): pass
+
+    # ScreenScraper V1 API docs https://www.screenscraper.fr/webapi.php
+    # I'm not sure how to check ScreenScraper allowance.
+    def _command_exec_utils_ScreenScraper_info(self): pass
+
+    def _command_exec_utils_ArcadeDB_info(self): pass
 
     def _command_exec_global_rom_stats(self):
         log_debug('_command_exec_global_rom_stats() BEGIN')
         window_title = 'Global ROM statistics'
-        slist = []
-        # slist.append('[COLOR violet]Launcher ROM report.[/COLOR]')
-        # slist.append('')
+        sl = []
+        # sl.append('[COLOR violet]Launcher ROM report.[/COLOR]')
+        # sl.append('')
 
         # --- Table header ---
         # Table cell padding: left, right
@@ -10050,13 +10084,13 @@ class Main:
         # Generate table and print report
         # log_debug(unicode(table_str))
         table_str_list = text_render_table_str(table_str)
-        slist.extend(table_str_list)
-        kodi_display_text_window_mono(window_title, '\n'.join(slist))
+        sl.extend(table_str_list)
+        kodi_display_text_window_mono(window_title, '\n'.join(sl))
 
     def _command_exec_global_audit_stats(self):
         log_debug('_command_exec_global_audit_stats() BEGIN')
         window_title = 'Global ROM Audit statistics'
-        slist = []
+        sl = []
 
         # --- Table header ---
         # Table cell padding: left, right
@@ -10102,8 +10136,8 @@ class Main:
         # Generate table and print report
         # log_debug(unicode(table_str))
         table_str_list = text_render_table_str(table_str)
-        slist.extend(table_str_list)
-        kodi_display_text_window_mono(window_title, '\n'.join(slist))
+        sl.extend(table_str_list)
+        kodi_display_text_window_mono(window_title, '\n'.join(sl))
 
     #
     # A set of functions to help making plugin URLs

@@ -160,9 +160,13 @@ class ScraperFactory(object):
         if SCRAPER_LIBRETRO_ID in SCRAPER_LIST:
            self.scraper_objs[SCRAPER_LIBRETRO_ID] = Libretro(self.settings)
 
-    # Return a list with instantiated scrapers. List always has same order.
+    # Return a list with instantiated scrapers IDs. List always has same order.
     def get_scraper_list(self):
         return list(self.scraper_objs.keys())
+
+    # Returns a scraper object reference.
+    def get_scraper_object(self, scraper_ID):
+        return self.scraper_objs[scraper_ID]
 
     def get_name(self, scraper_ID):
         return self.scraper_objs[scraper_ID].get_name()
@@ -192,7 +196,7 @@ class ScraperFactory(object):
     def get_metadata_scraper_ID_from_menu_idx(self, menu_index):
         return self.metadata_menu_ID_list[menu_index]
 
-    # Traverses all valid scraper objects and checks if the scraper supports the particular
+    # Traverses all instantiated scraper objects and checks if the scraper supports the particular
     # kind of asset. If so, it adds the scraper name to the list.
     #
     # @return: [list of strings]
@@ -1713,13 +1717,21 @@ class TheGamesDB(Scraper):
         return text_get_URL_extension(image_url)
 
     # --- This class own methods -----------------------------------------------------------------
-    def get_platforms(self):
+    def get_genres(self, status_dic):
+        log_debug('TheGamesDB::get_genres() BEGIN...')
+        url = 'https://api.thegamesdb.net/Genres?apikey={}'.format(self._get_API_key())
+        json_data = self._retrieve_URL_as_JSON(url, status_dic)
+        self._dump_json_debug('TGDB_get_genres.json', json_data)
+
+        return json_data
+
+    def get_platforms(self, status_dic):
         log_debug('TheGamesDB::get_platforms() BEGIN...')
         url = 'https://api.thegamesdb.net/Platforms?apikey={}'.format(self._get_API_key())
-        page_data = json.loads(net_get_URL(url))
-        self._dump_json_debug('TGDB_get_platforms.txt', page_data)
+        json_data = self._retrieve_URL_as_JSON(url, status_dic)
+        self._dump_json_debug('TGDB_get_platforms.json', json_data)
 
-        return page_data
+        return json_data
 
     # Always use the developer public key which is limited per IP address. This function
     # may return the private key during scraper development for debugging purposes.
