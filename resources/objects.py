@@ -3824,7 +3824,7 @@ class RetroarchLauncher(StandardRomLauncher):
         
         if not cores_folder.exists():
             log_warning('Retroarch cores folder not found {}'.format(cores_folder.getPath()))
-            kodi_notify_error('Retroarch cores folder not found {}'.format(cores_folder.getPath()))
+            kodi_notify_error('Retroarch cores folder not found {}. Read documentation'.format(cores_folder.getPath()))
             return ''
 
         core_file = self._switch_info_to_core_file(info_file, cores_folder, cores_ext)

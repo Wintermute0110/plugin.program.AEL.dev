@@ -640,72 +640,6 @@ def dump_object_to_log(obj):
     log_debug('Dumping obj.__class__.__name__ = {0}'.format(obj.__class__.__name__))
     log_debug(pprint.pformat(obj))
 
-# -------------------------------------------------------------------------------------------------
-# Utilities to test scrapers
-# -------------------------------------------------------------------------------------------------
-ID_LENGTH     = 70
-NAME_LENGTH   = 60
-GENRE_LENGTH  = 20
-YEAR_LENGTH   = 4
-STUDIO_LENGTH = 20
-PLOT_LENGTH   = 70
-URL_LENGTH    = 70
-
-def print_scraper_list(scraper_obj_list):
-    print('Scraper name')
-    print('--------------------------------')
-    for scraper_obj in scraper_obj_list:
-        print('{0}'.format(scraper_obj.name))
-    print('')
-
-# PUT functions to print things returned by Scraper object (which are common to all scrapers)
-# into util.py, to be resused by all scraper tests.
-def print_games_search(results):
-    print('\nFound {0} game/s'.format(len(results)))
-    print("{0} {1}".format('Display name'.ljust(NAME_LENGTH), 'Id'.ljust(ID_LENGTH)))
-    print("{0} {1}".format('-'*NAME_LENGTH, '-'*ID_LENGTH))
-    for game in results:
-        display_name = text_limit_string(game['display_name'], NAME_LENGTH)
-        id           = text_limit_string(game['id'], ID_LENGTH)
-        print("{0} {1}".format(display_name.ljust(NAME_LENGTH), id.ljust(ID_LENGTH)))
-    print('')
-
-def print_game_metadata(scraperObj, results):
-    # --- Get metadata of first game ---
-    if results:
-        metadata = scraperObj.get_metadata(results[0])
-
-        title  = text_limit_string(metadata['title'], NAME_LENGTH)
-        genre  = text_limit_string(metadata['genre'], GENRE_LENGTH)
-        year   = metadata['year']
-        studio = text_limit_string(metadata['studio'], STUDIO_LENGTH)
-        plot   = text_limit_string(metadata['plot'], PLOT_LENGTH)
-        print('\nDisplaying metadata for title "{0}"'.format(title))
-        print("{0} {1} {2} {3} {4}".format('Title'.ljust(NAME_LENGTH), 'Genre'.ljust(GENRE_LENGTH), 
-                                           'Year'.ljust(YEAR_LENGTH), 'Studio'.ljust(STUDIO_LENGTH),
-                                           'Plot'.ljust(PLOT_LENGTH)))
-        print("{0} {1} {2} {3} {4}".format('-'*NAME_LENGTH, '-'*GENRE_LENGTH, '-'*YEAR_LENGTH, 
-                                           '-'*STUDIO_LENGTH, '-'*PLOT_LENGTH))
-        print("{0} {1} {2} {3} {4}".format(title.ljust(NAME_LENGTH), genre.ljust(GENRE_LENGTH), 
-                                           year.ljust(YEAR_LENGTH), studio.ljust(STUDIO_LENGTH),
-                                           plot.ljust(PLOT_LENGTH)))
-
-def print_game_image_list(scraperObj, results, asset_kind):
-    # --- Get image list of first game ---
-    if results:
-        image_list = scraperObj.get_images(results[0], asset_kind)
-        print('Found {0} image/s'.format(len(image_list)))
-        print("{0} {1} {2}".format('Display name'.ljust(NAME_LENGTH),
-                                   'ID'.ljust(ID_LENGTH), 
-                                   'URL'.ljust(URL_LENGTH)))
-        print("{0} {1} {2}".format('-'*NAME_LENGTH, '-'*URL_LENGTH, '-'*URL_LENGTH))
-        for image in image_list:
-            display_name  = text_limit_string(image['name'], NAME_LENGTH)
-            id            = text_limit_string(image['id'], ID_LENGTH)
-            url           = text_limit_string(image['URL'], URL_LENGTH)
-            print("{0} {1} {2}".format(display_name.ljust(NAME_LENGTH), id.ljust(ID_LENGTH), url.ljust(URL_LENGTH)))
-        print('\n')
-
 # #################################################################################################
 # #################################################################################################
 # Cryptographic utilities
@@ -1594,8 +1528,8 @@ class NewFileName:
 
         # --- If a directory, ensure path ends with '/' ---
         if self.is_a_dir:
-            if not self.path_str[:-1] == '/': self.path_str = self.path_str + '/'
-            if not self.path_tr[:-1] == '/': self.path_tr = self.path_tr + '/'
+            if not self.path_str[-1:] == '/': self.path_str = self.path_str + '/'
+            if not self.path_tr[-1:] == '/': self.path_tr = self.path_tr + '/'
 
         # if DEBUG_NEWFILENAME_CLASS:
         #     log_debug('NewFileName() path_str "{0}"'.format(self.path_str))
@@ -2721,14 +2655,13 @@ else:
     log_warning = log_warning_Python
     log_error   = log_error_Python
 
-
 # -------------------------------------------------------------------------------------------------
 # Utilities to test scrapers
 # -------------------------------------------------------------------------------------------------
 # Candidates
-NAME_L      = 60
+NAME_L      = 65
 SCORE_L     = 5
-ID_L        = 10
+ID_L        = 55
 PLATFORM_L  = 15
 SPLATFORM_L = 15
 URL_L       = 70
@@ -2745,8 +2678,7 @@ PLOT_L      = 70
 # Assets
 ASSET_ID_L        = 8
 ASSET_NAME_L      = 60
-ASSET_URL_L       = 70
-ASSET_URL_THUMB_L = 50
+ASSET_URL_THUMB_L = 100
 
 # PUT functions to print things returned by Scraper object (which are common to all scrapers)
 # into util.py, to be resused by all scraper tests.
