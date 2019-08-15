@@ -2,7 +2,8 @@
 # -*- coding: utf-8 -*-
 
 #
-# Get all ScreenScraper ROM types.
+# Plumbing command to retrieve data from ScreenScraper.
+# Data in JSON format will be saved in ./assets/ subdirectory.
 #
 
 # --- Python standard library ---
@@ -27,9 +28,11 @@ set_log_level(LOG_DEBUG)
 scraper_obj = ScreenScraper_V1(common.settings)
 scraper_obj.set_verbose_mode(False)
 scraper_obj.set_debug_file_dump(True, os.path.join(os.path.dirname(__file__), 'assets'))
+status_dic = kodi_new_status_dic('Scraper test was OK')
 
 # --- Get ROM types ---
-# online_data = scraper_obj.get_ROM_types() # Not working at the moment.
-# online_data = scraper_obj.get_genres_list() # Works OK.
-online_data = scraper_obj.get_regions_list() # Works OK.
+online_data = scraper_obj.get_user_info(status_dic) # Not working at the moment.
+# online_data = scraper_obj.get_ROM_types(status_dic) # Not working at the moment.
+# online_data = scraper_obj.get_genres_list(status_dic) # Works OK.
+# online_data = scraper_obj.get_regions_list(status_dic) # Works OK.
 pprint.pprint(online_data)

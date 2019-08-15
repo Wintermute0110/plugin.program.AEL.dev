@@ -17,19 +17,16 @@ if __name__ == "__main__" and __package__ is None:
     sys.path.append(path)
 from resources.scrap import *
 from resources.utils import *
+import common
 
 # --- main ----------------------------------------------------------------------------------------
- # >> LOG_INFO, LOG_VERB, LOG_DEBUG
-set_log_level(LOG_INFO)
+set_log_level(LOG_DEBUG)
 
 # --- Create scraper object ---
-settings = {
-    # Make sure this is the Public key.
-    'scraper_thegamesdb_apikey' : '828be1fb8f3182d055f1aed1f7d4da8bd4ebc160c3260eae8ee57ea823b42415',
-}
-scraper_obj = TheGamesDB(settings)
+scraper_obj = TheGamesDB(common.settings)
 scraper_obj.set_verbose_mode(False)
 scraper_obj.set_debug_file_dump(True, os.path.join(os.path.dirname(__file__), 'assets'))
+status_dic = kodi_new_status_dic('Scraper test was OK')
 
 # --- Get platforms ---
 # platform_dic = {
@@ -43,7 +40,7 @@ scraper_obj.set_debug_file_dump(True, os.path.join(os.path.dirname(__file__), 'a
 #    "id" : 24, 
 #    "name" : "Neo Geo"
 #   },
-online_data = scraper_obj.get_platforms()
+online_data = scraper_obj.get_platforms(status_dic)
 platforms_dic = online_data['data']['platforms']
 # pprint.pprint(platforms_dic)
 pname_dic = {platforms_dic[platform]['name'] : platform for platform in platforms_dic}
