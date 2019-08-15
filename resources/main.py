@@ -10025,7 +10025,7 @@ class Main:
     # Use TGDB scraper to get the monthly allowance and report to the user.
     # TGDB API docs https://api.thegamesdb.net/
     def _command_exec_utils_TGDB_check(self):
-        # --- Get TGDB scraper object and retrieve information ---
+        # --- Get scraper object and retrieve information ---
         # Treat any error message returned by the scraper as an OK dialog.
         status_dic = kodi_new_status_dic('No error')
         g_scraper_factory = ScraperFactory(g_PATHS, self.settings)
@@ -10061,11 +10061,69 @@ class Main:
     # MobyGames API docs https://www.mobygames.com/info/api
     # Currently there is no way to check the MobyGames allowance.
     def _command_exec_utils_MobyGames_check(self):
-        kodi_dialog_OK('Not implemented yet. Sorry.')
+        # --- Get scraper object and retrieve information ---
+        # Treat any error message returned by the scraper as an OK dialog.
+        status_dic = kodi_new_status_dic('No error')
+        g_scraper_factory = ScraperFactory(g_PATHS, self.settings)
+        MobyGames = g_scraper_factory.get_scraper_object(SCRAPER_MOBYGAMES_ID)
+        MobyGames.check_before_scraping(status_dic)
+        if not status_dic['status']:
+            kodi_dialog_OK(status_dic['msg'])
+            return
 
+        # TTBOMK, there is no way to know the current limits of MobyGames scraper.
+        # Just get the list of platforms and report to the user.
+        pdialog = KodiProgressDialog()
+        pdialog.startProgress('Retrieving info from MobyGames...', 100)
+        json_data = MobyGames.get_platforms(status_dic)
+        pdialog.endProgress()
+        if not status_dic['status']:
+            kodi_dialog_OK(status_dic['msg'])
+            return
+
+        # --- Print and display report ---
+        window_title = 'MobyGames scraper information'
+        sl = []
+        sl.append('The API allowance of MobyGames cannot be currently checked.')
+        sl.append('')
+        sl.append('MobyGames has {} platforms.'.format(len(json_data['platforms'])))
+        kodi_display_text_window_mono(window_title, '\n'.join(sl))
+
+    # ScreenScraper API docs https://www.screenscraper.fr/webapi.php
     def _command_exec_utils_ScreenScraper_check(self):
-        kodi_dialog_OK('Not implemented yet. Sorry.')
+        # --- Get scraper object and retrieve information ---
+        # Treat any error message returned by the scraper as an OK dialog.
+        status_dic = kodi_new_status_dic('No error')
+        g_scraper_factory = ScraperFactory(g_PATHS, self.settings)
+        ScreenScraper = g_scraper_factory.get_scraper_object(SCRAPER_SCREENSCRAPER_ID)
+        ScreenScraper.check_before_scraping(status_dic)
+        if not status_dic['status']:
+            kodi_dialog_OK(status_dic['msg'])
+            return
 
+        # Get ScreenScraper user information
+        pdialog = KodiProgressDialog()
+        pdialog.startProgress('Retrieving info from ScreenScraper...', 100)
+        json_data = ScreenScraper.get_user_info(status_dic)
+        pdialog.endProgress()
+        if not status_dic['status']:
+            kodi_dialog_OK(status_dic['msg'])
+            return
+
+        # --- Print and display report ---
+        ssuser = json_data['response']['ssuser']
+        window_title = 'ScreenScraper scraper information'
+        sl = []
+        sl.append('maxthreads          {}'.format(ssuser['maxthreads']))
+        sl.append('niveau              {}'.format(ssuser['niveau']))
+        sl.append('visites             {}'.format(ssuser['visites']))
+        sl.append('maxdownloadspeed    {}'.format(ssuser['maxdownloadspeed']))
+        sl.append('favregion           {}'.format(ssuser['favregion']))
+        sl.append('datedernierevisite  {}'.format(ssuser['datedernierevisite']))
+        sl.append('id                  {}'.format(ssuser['id']))
+        kodi_display_text_window_mono(window_title, '\n'.join(sl))
+
+    # SCRAPER_ARCADEDB_ID
     def _command_exec_utils_ArcadeDB_check(self):
         kodi_dialog_OK('Not implemented yet. Sorry.')
 

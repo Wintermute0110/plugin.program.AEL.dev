@@ -1717,19 +1717,19 @@ class TheGamesDB(Scraper):
         return text_get_URL_extension(image_url)
 
     # --- This class own methods -----------------------------------------------------------------
-    def get_genres(self, status_dic):
-        log_debug('TheGamesDB::get_genres() BEGIN...')
-        url = 'https://api.thegamesdb.net/Genres?apikey={}'.format(self._get_API_key())
-        json_data = self._retrieve_URL_as_JSON(url, status_dic)
-        self._dump_json_debug('TGDB_get_genres.json', json_data)
-
-        return json_data
-
     def get_platforms(self, status_dic):
         log_debug('TheGamesDB::get_platforms() BEGIN...')
         url = 'https://api.thegamesdb.net/Platforms?apikey={}'.format(self._get_API_key())
         json_data = self._retrieve_URL_as_JSON(url, status_dic)
         self._dump_json_debug('TGDB_get_platforms.json', json_data)
+
+        return json_data
+
+    def get_genres(self, status_dic):
+        log_debug('TheGamesDB::get_genres() BEGIN...')
+        url = 'https://api.thegamesdb.net/Genres?apikey={}'.format(self._get_API_key())
+        json_data = self._retrieve_URL_as_JSON(url, status_dic)
+        self._dump_json_debug('TGDB_get_genres.json', json_data)
 
         return json_data
 
@@ -1985,7 +1985,7 @@ class TheGamesDB(Scraper):
 
         return clean_url
 
-    # Retrieve TGDB URL and decode JSON object.
+    # Retrieve URL and decode JSON object.
     def _retrieve_URL_as_JSON(self, url, status_dic):
         page_data_raw = net_get_URL(url, self._clean_URL_for_log(url))
         try:
@@ -2157,6 +2157,15 @@ class MobyGames(Scraper):
         return text_get_URL_extension(image_url)
 
     # --- This class own methods -----------------------------------------------------------------
+    def get_platforms(self, status_dic):
+        log_debug('MobyGames::get_platforms() BEGIN...')
+        url_str = 'https://api.mobygames.com/v1/platforms?api_key={}'
+        url = url_str.format(self.api_key)
+        json_data = self._retrieve_URL_as_JSON(url, status_dic)
+        self._dump_json_debug('MobyGames_get_platforms.json', json_data)
+
+        return json_data
+
     def _read_games_from_url(self, url, search_term, platform, scraper_platform):
         self._do_toomanyrequests_check()
         page_data_raw = net_get_URL(url, self._clean_URL_for_log(url))
@@ -2317,11 +2326,30 @@ class MobyGames(Scraper):
 
         return clean_url
 
+    # Retrieve URL and decode JSON object.
+    def _retrieve_URL_as_JSON(self, url, status_dic):
+        page_data_raw = net_get_URL(url, self._clean_URL_for_log(url))
+        try:
+            page_data = json.loads(page_data_raw)
+        except Exception as ex:
+            self._handle_exception(ex, status_dic, KODI_MESSAGE_DIALOG,
+                'Exception decoding JSON data.',
+                ['Exception in json.loads(page_data_raw).'])
+            return None
+        # Check for scraper overloading. Scraper is disabled if overloaded.
+        # TODO
+        # self._check_overloading(page_data, status_dic)
+        # Does the scraper return valid JSON when it is overloaded??? I have to confirm this point.
+        if not status_dic['status']: return None
+
+        return page_data
+
 # ------------------------------------------------------------------------------------------------
 # ScreenScraper online scraper.
 #
-# | Site     | https://www.screenscraper.fr             |
-# | API info | https://www.screenscraper.fr/webapi.php  |
+# | Site        | https://www.screenscraper.fr             |
+# | API V1 docs | https://www.screenscraper.fr/webapi.php  |
+# | API V2 docs | |
 #
 # Some API functions can be called to test, for example:
 # https://www.screenscraper.fr/api/genresListe.php?devid=xxx&devpassword=yyy&softname=zzz&output=xml
@@ -2403,9 +2431,9 @@ class ScreenScraper_V1(Scraper):
         # --- This scraper settings ---
         self.dev_id     = 'V2ludGVybXV0ZTAxMTA='
         self.dev_pass   = 'VDlwU3J6akZCbWZRbWM4Yg=='
+        self.softname   = settings['scraper_screenscraper_AEL_softname']
         self.ssid       = settings['scraper_screenscraper_ssid']
         self.sspassword = settings['scraper_screenscraper_sspass']
-        self.softname   = settings['scraper_screenscraper_AEL_softname']
 
         # --- Internal stuff ---
         # Cache all data returned by jeuInfos.php
@@ -2432,9 +2460,9 @@ class ScreenScraper_V1(Scraper):
     # limited.
     def check_before_scraping(self, status_dic):
         if self.ssid and self.sspassword:
-            log_error('ScreenScraper_V1::check_before_scraping() ScreenScraper user name and pass OK.')
+            log_debug('ScreenScraper_V1::check_before_scraping() ScreenScraper user name and pass OK.')
             return
-        log_error('ScreenScraper_V1::check_before_scraping() ScreenScraper user name and/or pass not configure.')
+        log_error('ScreenScraper_V1::check_before_scraping() ScreenScraper user name and/or pass not configured.')
         log_error('ScreenScraper_V1::check_before_scraping() Disabling ScreenScraper scraper.')
         self.scraper_deactivated = True
         status_dic['status'] = False
@@ -2537,6 +2565,21 @@ class ScreenScraper_V1(Scraper):
 
         return gameInfos_dic
 
+    def get_user_info(self, status_dic):
+        log_debug('ScreenScraper_V1::get_ROM_types() BEGIN...')
+        url_a = 'https://www.screenscraper.fr/api/ssuserInfos.php'
+        url_b = '?devid={}&devpassword={}&softname={}&output=json'
+        url_c = '&ssid={}&sspassword={}'
+        url = url_a + \
+            url_b.format(base64.b64decode(self.dev_id), base64.b64decode(self.dev_pass), self.softname) + \
+            url_c.format(self.ssid, self.sspassword)
+        page_raw_data = net_get_URL(url)
+        log_debug(unicode(page_raw_data))
+        json_data = json.loads(page_raw_data)
+        self._dump_json_debug('ScreenScraper_get_user_info.json', json_data)
+
+        return json_data
+
     # Some functions to grab data from ScreenScraper.
     def get_ROM_types(self):
         log_debug('ScreenScraper_V1::get_ROM_types() BEGIN...')
@@ -2544,10 +2587,10 @@ class ScreenScraper_V1(Scraper):
         url = url_str.format(base64.b64decode(self.dev_id), base64.b64decode(self.dev_pass), self.softname)
         page_raw_data = net_get_URL(url)
         log_debug(unicode(page_raw_data))
-        page_data = json.loads(page_raw_data)
-        self._dump_json_debug('ScreenScraper_get_ROM_types.txt', page_data)
+        json_data = json.loads(page_raw_data)
+        self._dump_json_debug('ScreenScraper_get_ROM_types.txt', json_data)
 
-        return page_data
+        return json_data
 
     def get_genres_list(self):
         log_debug('ScreenScraper_V1::get_genres_list() BEGIN...')
