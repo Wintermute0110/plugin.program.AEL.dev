@@ -349,8 +349,10 @@ class ScrapeStrategy(object):
         # --- Test if NFO file exists ---
         NFO_file = FileName(ROM.getPath_noext() + '.nfo')
         NFO_file_found = True if NFO_file.exists() else False
-        if NFO_file_found: log_debug('NFO file found "{0}"'.format(NFO_file.getPath()))
-        else:              log_debug('NFO file NOT found "{0}"'.format(NFO_file.getPath()))
+        if NFO_file_found:
+            log_debug('NFO file found "{0}"'.format(NFO_file.getPath()))
+        else:
+            log_debug('NFO file NOT found "{0}"'.format(NFO_file.getPath()))
 
         # --- Determine metadata action -----------------------------------------------------------
         # Action depends configured metadata policy and wheter the NFO files was found or not.
@@ -384,7 +386,7 @@ class ScrapeStrategy(object):
             metadata_action = ACTION_META_SCRAPER
 
         else:
-            log_error('Invalid scan_metadata_policy value = {0}'.format(self.scan_metadata_policy))
+            raise ValueError('Invalid scan_metadata_policy value {0}'.format(self.scan_metadata_policy))
 
         # --- Execute metadata action -------------------------------------------------------------
         if metadata_action == ACTION_META_TITLE_ONLY:
@@ -413,7 +415,7 @@ class ScrapeStrategy(object):
             self._scanner_scrap_ROM_metadata(romdata, ROM)
 
         else:
-            log_error('Invalid metadata_action value = {0}'.format(metadata_action))
+            raise ValueError('Invalid metadata_action value {0}'.format(metadata_action))
 
     # Called by the ROM scanner.
     #
@@ -457,6 +459,9 @@ class ScrapeStrategy(object):
                     log_verb('Skipped {0} (dir not configured)'.format(A.name))
                     continue
                 romdata[A.key] = self._scanner_scrap_ROM_asset(asset_ID, local_asset_list[i], ROM)
+
+        else:
+            raise ValueError('Invalid scan_asset_policy value {0}'.format(self.scan_asset_policy))
 
         log_verb('Set Title     file "{0}"'.format(romdata['s_title']))
         log_verb('Set Snap      file "{0}"'.format(romdata['s_snap']))
@@ -530,7 +535,7 @@ class ScrapeStrategy(object):
             log_debug('Metadata automatic scraping. Selecting first result.')
             select_candidate_idx = 0
         else:
-            raise AddonError('Invalid metadata_scraper_mode {0}'.format(self.metadata_scraper_mode))
+            raise ValueError('Invalid metadata_scraper_mode {0}'.format(self.metadata_scraper_mode))
 
         # --- Update scanner progress dialog ---
         if self.pdialog_verbose:
@@ -569,7 +574,7 @@ class ScrapeStrategy(object):
 
         # --- For now just use the first configured asset scraper ---
         status_dic = kodi_new_status_dic('No error')
-        scraper_obj = self.metadata_scraper_list[0]
+        scraper_obj = self.asset_scraper_list[0]
         scraper_name = scraper_obj.get_name()
         # By default always use local image if found in case scraper fails.
         ret_asset_path = local_asset_path
