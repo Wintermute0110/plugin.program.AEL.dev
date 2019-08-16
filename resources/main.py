@@ -8934,14 +8934,14 @@ class Main:
 
         # --- Now go processing file by file -----------------------------------------------------
         pdialog.startProgress('Scanning {0}'.format(launcher_path), num_files)
-        log_info('============================== Processing ROMs ==============================')
+        log_info('============================== Processing ROMs ===============================')
         report_fobj.write('Processing files ...\n')
         num_new_roms = 0
         num_files_checked = 0
         for f_path in sorted(files):
             # --- Get all file name combinations ---
             ROM = FileName(f_path)
-            log_debug('------------------------------ Processing cached file ------------------------------')
+            log_debug('------------------------------ Processing cached file -------------------')
             log_debug('ROM.getPath()         "{0}"'.format(ROM.getPath()))
             log_debug('ROM.getOriginalPath() "{0}"'.format(ROM.getOriginalPath()))
             # log_debug('ROM.getPath_noext()   "{0}"'.format(ROM.getPath_noext()))
