@@ -25,16 +25,18 @@ DAT_REDUMP  = 'Redump'
 DAT_NONE    = ''
 class Platform:
     def __init__(self, name, shortname, DAT, aliasof = ''):
-        self.name      = name
-        self.shortname = shortname
-        self.DAT       = DAT
-        self.aliasof   = aliasof
+        self.long_name    = name
+        self.short_name   = shortname
+        self.compact_name = shortname
+        self.DAT          = DAT
+        self.aliasof      = aliasof
 
-#
-# From this list create simplified list to access platform information
-#
+# From this list create simplified list to access platform information.
+# Shorted alphabetically by long name.
+# To be compatible with Retroplayer and Kodi artwork database, anything that can be launched
+# by Retroarch must be a platform, including Doom, CaveStory, etc.
 AEL_platforms = [
-    # --- MAME/Arcade ---
+    # --- Arcade is an alias of MAME ---
     Platform('MAME', 'mame', DAT_MAME),
 
     # --- Amstrad ---
@@ -50,15 +52,13 @@ AEL_platforms = [
 AEL_p_list = []
 AEL_p_short_list = []
 for p_obj in AEL_platforms:
-    AEL_p_list.append(p_obj.name)
-    AEL_p_short_list.append(p_obj.shortname)
+    AEL_p_list.append(p_obj.long_name)
+    AEL_p_short_list.append(p_obj.short_name)
 
 # -------------------------------------------------------------------------------------------------
 # Old platform engine
 # -------------------------------------------------------------------------------------------------
-# >> When possible user No-Intro DAT-o-MATIC names
-# >> Fallback to Wikipedia names
-#
+# When possible user No-Intro DAT-o-MATIC names. Fallback to Wikipedia names.
 AEL_platform_list = [
     # --- 3DO ---
     '3DO Interactive Multiplayer',
