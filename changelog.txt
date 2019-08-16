@@ -90,7 +90,7 @@ WIP      [SCRAPERS] Upgrade and fix  AEL Offline scraper databases.
          Do the best you can for a decent 0.9.8 release.
 
 
-[B]Advanced Emulator Launcher | version 0.9.8 | XX June 2019[/B]
+[B]Advanced Emulator Launcher | version 0.9.8-beta1 | XX August 2019[/B]
 
 FEATURE  [SCRAPERS] Copy scraper stuff from master branch by Chrisism.
 

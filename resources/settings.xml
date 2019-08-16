@@ -14,8 +14,8 @@
     <setting id="separator" type="lsep" label="Scanner settings"/>
     <setting label="Metadata scan policy" type="enum" id="scan_metadata_policy" default="3" values="None|NFO files|NFO files + Scrapers|Scrapers" />
     <setting label="Asset scan policy" type="enum" id="scan_asset_policy" default="0" values="Local images|Local images + Scrapers|Scrapers" />
-    <setting label="Metadata scraping mode" type="enum" id="metadata_scraper_mode" default="1" values="Manual|Automatic" />
-    <setting label="Asset scraping mode" type="enum" id="asset_scraper_mode" default="1" values="Manual|Automatic" />
+    <setting label="Game selection mode" type="enum" id="game_selection_mode" default="1" values="Manual|Automatic" />
+    <setting label="Asset selection mode" type="enum" id="asset_selection_mode" default="1" values="Manual|Automatic" />
 
     <setting id="separator" type="lsep" label="Scanner scrapers"/>
     <setting label="Metadata scraper" type="enum" id="scraper_metadata" default="0" values="AEL Offline|TheGamesDB|ScreenScraper|MobyGames" />

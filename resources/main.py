@@ -492,10 +492,10 @@ class Main:
 
         # --- ROM scraping ---
         # Scanner settings
-        self.settings['scan_metadata_policy']  = int(o.getSetting('scan_metadata_policy'))
-        self.settings['scan_asset_policy']     = int(o.getSetting('scan_asset_policy'))
-        self.settings['metadata_scraper_mode'] = int(o.getSetting('metadata_scraper_mode'))
-        self.settings['asset_scraper_mode']    = int(o.getSetting('asset_scraper_mode'))
+        self.settings['scan_metadata_policy'] = int(o.getSetting('scan_metadata_policy'))
+        self.settings['scan_asset_policy']    = int(o.getSetting('scan_asset_policy'))
+        self.settings['game_selection_mode']  = int(o.getSetting('game_selection_mode'))
+        self.settings['asset_selection_mode'] = int(o.getSetting('asset_selection_mode'))
         # Scanner scrapers
         self.settings['scraper_metadata']      = int(o.getSetting('scraper_metadata'))
         self.settings['scraper_asset']         = int(o.getSetting('scraper_asset'))
@@ -8941,7 +8941,7 @@ class Main:
         for f_path in sorted(files):
             # --- Get all file name combinations ---
             ROM = FileName(f_path)
-            log_debug('---------- Processing cached file ----------')
+            log_debug('------------------------------ Processing cached file ------------------------------')
             log_debug('ROM.getPath()         "{0}"'.format(ROM.getPath()))
             log_debug('ROM.getOriginalPath() "{0}"'.format(ROM.getOriginalPath()))
             # log_debug('ROM.getPath_noext()   "{0}"'.format(ROM.getPath_noext()))
@@ -9051,6 +9051,7 @@ class Main:
             romdata  = fs_new_rom()
             romdata['id'] = misc_generate_random_SID()
             romdata['filename'] = ROM.getOriginalPath()
+            scraper_strategy.process_ROM_begin(romdata, ROM)
             scraper_strategy.process_ROM_metadata(romdata, ROM)
             scraper_strategy.process_ROM_assets(romdata, ROM)
 

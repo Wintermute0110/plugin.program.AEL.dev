@@ -297,6 +297,18 @@ SCRAPE_LAUNCHER = 'Launcher'
 # Main scraping logic.
 #
 class ScrapeStrategy(object):
+    # --- Class variables ------------------------------------------------------------------------
+    # --- Metadata actions ---
+    ACTION_META_TITLE_ONLY = 100
+    ACTION_META_NFO_FILE   = 200
+    ACTION_META_SCRAPER    = 300
+
+    # --- Asset actions ---
+    ACTION_ASSET_UNSET       = 100
+    ACTION_ASSET_LOCAL_ASSET = 200
+    ACTION_ASSET_SCRAPER     = 300
+
+    # --- Constructor ----------------------------------------------------------------------------
     # @param PATHS: PATH object.
     # @param settings: [dict] Addon settings.
     # @param launcher: [dict] Launcher dictionary.
@@ -329,23 +341,32 @@ class ScrapeStrategy(object):
         self.pdialog = pdialog
         self.pdialog_verbose = pdialog_verbose
 
+        # --- Metadata scraper ---
+        # For now just use the first scraper
+        self.meta_scraper_obj = self.metadata_scraper_list[0]
+        self.meta_scraper_name = self.meta_scraper_obj.get_name()
+        log_debug('Using metadata scraper "{0}"'.format(self.meta_scraper_name))
+
+        # --- Asset scraper ---
+        self.asset_scraper_obj = self.asset_scraper_list[0]
+        self.asset_scraper_name = self.asset_scraper_obj.get_name()
+        log_debug('Using asset scraper "{0}"'.format(self.asset_scraper_name))
+
+        # This will be used later
+        self.flag_meta_and_asset_scraper_same = self.meta_scraper_obj is self.asset_scraper_obj
+        log_debug('Are metadata and asset scrapers the same? {}'.format(self.flag_meta_and_asset_scraper_same))
+
     def check_launcher_unset_asset_dirs(self):
         log_debug('ScrapeStrategy::check_launcher_unset_asset_dirs() BEGIN ...')
         self.enabled_asset_list     = asset_get_enabled_asset_list(self.launcher)
         self.unconfigured_name_list = asset_get_unconfigured_name_list(self.enabled_asset_list)
 
-    # Called by the ROM scanner. Fills in the ROM metadata.
-    #
-    # @param romdata: [dict] ROM data dictionary. Mutable and edited by assignment.
-    # @param ROM: [Filename] ROM filename object.
-    def process_ROM_metadata(self, romdata, ROM):
-        log_debug('ScrapeStrategy::process_ROM_metadata() BEGIN ...')
+    # Determine the actions to be carried out by process_ROM_metadata() and process_ROM_assets().
+    # Must be called before the aforementioned methods.
+    def process_ROM_begin(self, romdata, ROM):
+        log_debug('ScrapeStrategy::process_ROM_begin() BEGIN ...')
 
-        # --- Metadata actions ---
-        ACTION_META_TITLE_ONLY = 100
-        ACTION_META_NFO_FILE   = 200
-        ACTION_META_SCRAPER    = 300
-
+        # --- Determine metadata action ----------------------------------------------------------
         # --- Test if NFO file exists ---
         NFO_file = FileName(ROM.getPath_noext() + '.nfo')
         NFO_file_found = True if NFO_file.exists() else False
@@ -354,41 +375,108 @@ class ScrapeStrategy(object):
         else:
             log_debug('NFO file NOT found "{0}"'.format(NFO_file.getPath()))
 
-        # --- Determine metadata action -----------------------------------------------------------
         # Action depends configured metadata policy and wheter the NFO files was found or not.
-        metadata_action = ACTION_META_TITLE_ONLY
+        self.metadata_action = ACTION_META_TITLE_ONLY
         if self.scan_metadata_policy == 0:
             log_verb('Metadata policy: Read NFO file OFF | Scraper OFF')
             log_verb('Metadata policy: Only cleaning ROM name.')
-            metadata_action = ACTION_META_TITLE_ONLY
+            self.metadata_action = ACTION_META_TITLE_ONLY
 
         elif self.scan_metadata_policy == 1:
             log_verb('Metadata policy: Read NFO file ON | Scraper OFF')
             if NFO_file_found:
                 log_verb('Metadata policy: NFO file found.')
-                metadata_action = ACTION_META_NFO_FILE
+                self.metadata_action = ACTION_META_NFO_FILE
             else:
                 log_verb('Metadata policy: NFO file not found. Only cleaning ROM name')
-                metadata_action = ACTION_META_TITLE_ONLY
+                self.metadata_action = ACTION_META_TITLE_ONLY
 
         elif self.scan_metadata_policy == 2 and NFO_file_found:
             log_verb('Metadata policy: Read NFO file ON | Scraper ON')
             if NFO_file_found:
                 log_verb('Metadata policy: NFO file found. Scraper not used.')
-                metadata_action = ACTION_META_NFO_FILE
+                self.metadata_action = ACTION_META_NFO_FILE
             else:
                 log_verb('Metadata policy: NFO file not found. Using scraper.')
-                metadata_action = ACTION_META_SCRAPER
+                self.metadata_action = ACTION_META_SCRAPER
 
         elif self.scan_metadata_policy == 3:
             log_verb('Metadata policy: Read NFO file OFF | Scraper ON')
             log_verb('Metadata policy: Using metadata scraper.')
-            metadata_action = ACTION_META_SCRAPER
+            self.metadata_action = ACTION_META_SCRAPER
 
         else:
             raise ValueError('Invalid scan_metadata_policy value {0}'.format(self.scan_metadata_policy))
 
-        # --- Execute metadata action -------------------------------------------------------------
+        # --- Determine Asset action -------------------------------------------------------------
+        # --- Search for local artwork/assets ---
+        # Always look for local assets whatever the scanner settings.
+        local_asset_list = assets_search_local_cached_assets(self.launcher, ROM, self.enabled_asset_list)
+        self.asset_action_list = * len(ROM_ASSET_ID_LIST)
+        if self.scan_asset_policy == 0:
+            log_verb('Asset policy: Local images ON | Scraper OFF')
+            for i, asset_ID in enumerate(ROM_ASSET_ID_LIST):
+                AInfo = assets_get_info_scheme(asset_ID)
+                if not self.enabled_asset_list[i]:
+                    log_verb('Skipping {0} (dir not configured)'.format(AInfo.name))
+                    self.asset_action_list[i] = ScrapeStrategy.ACTION_ASSET_UNSET
+                elif local_asset_list[i]:
+                    log_verb('Local {0} FOUND'.format(AInfo.name))
+                    self.asset_action_list[i] = ScrapeStrategy.ACTION_ASSET_LOCAL_ASSET
+                else:
+                    log_verb('Local {0} NOT found. Unsetting...'.format(AInfo.name))
+                    self.asset_action_list[i] = ScrapeStrategy.ACTION_ASSET_UNSET
+
+        elif self.scan_asset_policy == 1:
+            log_verb('Asset policy: Local images ON | Scraper ON')
+            for i, asset_ID in enumerate(ROM_ASSET_ID_LIST):
+                AInfo = assets_get_info_scheme(asset_ID)
+                if not self.enabled_asset_list[i]:
+                    log_verb('Skipping {0} (dir not configured)'.format(AInfo.name))
+                    self.asset_action_list[i] = ScrapeStrategy.ACTION_ASSET_UNSET
+                elif local_asset_list[i]:
+                    log_verb('Local {0} FOUND'.format(AInfo.name))
+                    self.asset_action_list[i] = ScrapeStrategy.ACTION_ASSET_LOCAL_ASSET
+                else:
+                    log_verb('Local {0} NOT found. Scraping...'.format(AInfo.name))
+                    self.asset_action_list[i] = ScrapeStrategy.ACTION_ASSET_SCRAPER
+
+        elif self.scan_asset_policy == 2:
+            log_verb('Asset policy: Local images OFF | Scraper ON')
+            for i, asset_ID in enumerate(ROM_ASSET_ID_LIST):
+                AInfo = assets_get_info_scheme(asset_ID)
+                if not self.enabled_asset_list[i]:
+                    log_verb('Skipping {0} (dir not configured)'.format(AInfo.name))
+                    self.asset_action_list[i] = ScrapeStrategy.ACTION_ASSET_UNSET
+                else:
+                    log_verb('Scraping {0}...'.format(AInfo.name))
+                    self.asset_action_list[i] = ScrapeStrategy.ACTION_ASSET_SCRAPER
+
+        else:
+            raise ValueError('Invalid scan_asset_policy value {0}'.format(self.scan_asset_policy))
+
+        # --- If metadata or any asset is scraped then select the game among the candidates ---
+        # Note that the metadata and asset scrapers may be different. If so, candidates
+        # must be selected for both scrapers.
+        if self.metadata_action == ACTION_META_SCRAPER:
+            self.candidate_metadata = self._scanner_get_candidate()
+        else:
+            self.candidate_metadata = None
+
+        temp_asset_list = [x == ACTION_ASSET_SCRAPER for x in self.asset_action_list]
+        if any(temp_asset_list) and self.flag_meta_and_asset_scraper_same:
+            self.candidate_asset = self.candidate_metadata
+        elif any(temp_asset_list) and not self.flag_meta_and_asset_scraper_same:
+            self.candidate_asset = self._scanner_get_candidate()
+        else:
+            self.candidate_asset = None
+
+    # Called by the ROM scanner. Fills in the ROM metadata.
+    #
+    # @param romdata: [dict] ROM data dictionary. Mutable and edited by assignment.
+    # @param ROM: [Filename] ROM filename object.
+    def process_ROM_metadata(self, romdata, ROM):
+        log_debug('ScrapeStrategy::process_ROM_metadata() BEGIN ...')
         if metadata_action == ACTION_META_TITLE_ONLY:
             if self.pdialog_verbose:
                 self.pdialog.updateMessage2('Formatting ROM name...')
@@ -423,46 +511,26 @@ class ScrapeStrategy(object):
     # @param ROM: [Filename] ROM filename object.
     def process_ROM_assets(self, romdata, ROM):
         log_debug('ScrapeStrategy::process_ROM_assets() BEGIN ...')
+        # --- Process asset by asset actions ---
+        for i, asset_ID in enumerate(ROM_ASSET_ID_LIST):
+            AInfo = assets_get_info_scheme(asset_ID)
+            if self.asset_action_list[i] == ScrapeStrategy.ACTION_ASSET_UNSET:
+                log_debug('Unsetting asset {}'.format(AInfo.name))
+                romdata[AInfo.key] = ''
 
-        # --- Search for local artwork/assets ---
-        # Always look for local assets whatever the scanner settings.
-        local_asset_list = assets_search_local_cached_assets(self.launcher, ROM, self.enabled_asset_list)
+            elif self.asset_action_list[i] == ScrapeStrategy.ACTION_ASSET_LOCAL_ASSET:
+                log_debug('Using local asset for {}'.format(AInfo.name))
+                romdata[AInfo.key] = local_asset_list[i]
 
-        # --- Asset scraping ---
-        if self.scan_asset_policy == 0:
-            log_verb('Asset policy: Local images ON | Scraper OFF')
-            for i, asset_ID in enumerate(ROM_ASSET_ID_LIST):
-                A = assets_get_info_scheme(asset_ID)
-                romdata[A.key] = local_asset_list[i]
-
-        elif self.scan_asset_policy == 1:
-            log_verb('Asset policy: Local images ON | Scraper ON')
-            for i, asset_ID in enumerate(ROM_ASSET_ID_LIST):
-                A = assets_get_info_scheme(asset_ID)
-                if not self.enabled_asset_list[i]:
-                    romdata[A.key] = ''
-                    log_verb('Skipped {0} (dir not configured)'.format(A.name))
-                    continue
-                if local_asset_list[i]:
-                    log_verb('Local {0} FOUND'.format(A.name))
-                    romdata[A.key] = local_asset_list[i]
-                else:
-                    log_verb('Local {0} NOT found. Scraping...'.format(A.name))
-                    romdata[A.key] = self._scanner_scrap_ROM_asset(asset_ID, local_asset_list[i], ROM)
-
-        elif self.scan_asset_policy == 2:
-            log_verb('Asset policy: Local images OFF | Scraper ON')
-            for i, asset_ID in enumerate(ROM_ASSET_ID_LIST):
-                A = assets_get_info_scheme(asset_ID)
-                if not self.enabled_asset_list[i]:
-                    romdata[A.key] = ''
-                    log_verb('Skipped {0} (dir not configured)'.format(A.name))
-                    continue
+            elif self.asset_action_list[i] == ScrapeStrategy.ACTION_ASSET_SCRAPER:
+                log_verb('Scraping {}...'.format(AInfo.name))
                 romdata[A.key] = self._scanner_scrap_ROM_asset(asset_ID, local_asset_list[i], ROM)
 
-        else:
-            raise ValueError('Invalid scan_asset_policy value {0}'.format(self.scan_asset_policy))
+            else:
+                raise ValueError('Asset {} index {} ID {} unknown action {}'.format(
+                    AInfo.name, i, asset_ID, self.asset_action_list[i]))
 
+        # --- Print some debug info ---
         log_verb('Set Title     file "{0}"'.format(romdata['s_title']))
         log_verb('Set Snap      file "{0}"'.format(romdata['s_snap']))
         log_verb('Set Boxfront  file "{0}"'.format(romdata['s_boxfront']))
@@ -478,24 +546,16 @@ class ScrapeStrategy(object):
 
         return romdata
 
-    #
-    # Scraps ROM metadata in the ROM scanner.
-    #
-    def _scanner_scrap_ROM_metadata(self, romdata, ROM):
-        log_debug('ScrapeStrategy::_scanner_scrap_ROM_metadata() BEGIN...')
-
-        # For now just use the first scraper
-        status_dic = kodi_new_status_dic('No error')
-        scraper_obj = self.metadata_scraper_list[0]
-        scraper_name = scraper_obj.get_name()
-        log_debug('Using scraper "{0}"'.format(scraper_name))
-
+    # Get a candidate game in the ROM scanner.
+    def _scanner_get_candidate(self, romdata, ROM):
         # --- Update scanner progress dialog ---
         if self.pdialog_verbose:
-            scraper_text = 'Scraping metadata with {0} (Searching games...)'.format(scraper_name)
+            scraper_text = 'Searching games with scaper {}...'.format(scraper_name)
             self.pdialog.updateMessage2(scraper_text)
+        log_debug('Searching games with scaper {}'.format(scraper_name))
 
-        # --- Do a search and get a list of games ---
+        # --- Call scraper and get a list of games ---
+        status_dic = kodi_new_status_dic('No error')
         rom_name_scraping = text_format_ROM_name_for_scraping(ROM.getBase_noext())
         candidates = scraper_obj.get_candidates(
             rom_name_scraping, ROM.getBase_noext(), self.platform, status_dic)
@@ -523,9 +583,9 @@ class ScrapeStrategy(object):
                 log_debug('get_candidates() returned 1 game. Automatically selected.')
                 select_candidate_idx = 0
             else:
+                # Display game list found so user choses.
                 log_debug('Metadata manual scraping. User chooses game.')
                 self.pdialog.close()
-                # Display game list found so user choses.
                 game_name_list = [candidate['display_name'] for candidate in candidates]
                 select_candidate_idx = xbmcgui.Dialog().select(
                     'Select game for ROM {0}'.format(ROM.getBase_noext()), game_name_list)
@@ -536,6 +596,15 @@ class ScrapeStrategy(object):
             select_candidate_idx = 0
         else:
             raise ValueError('Invalid metadata_scraper_mode {0}'.format(self.metadata_scraper_mode))
+        candidate = candidates[selected_game_index]
+
+        return candidate
+
+    #
+    # Scraps ROM metadata in the ROM scanner.
+    #
+    def _scanner_scrap_ROM_metadata(self, romdata, ROM):
+        log_debug('ScrapeStrategy::_scanner_scrap_ROM_metadata() BEGIN...')
 
         # --- Update scanner progress dialog ---
         if self.pdialog_verbose:
@@ -543,7 +612,7 @@ class ScrapeStrategy(object):
             self.pdialog.updateMessage2(scraper_text)
 
         # --- Grab metadata for selected game and put into ROM ---
-        game_data = scraper_obj.get_metadata(candidates[select_candidate_idx], status_dic)
+        game_data = scraper_obj.get_metadata(candidate, status_dic)
         if not status_dic['status']:
             self.pdialog.close()
             kodi_dialog_OK(status_dic['msg'])
@@ -571,73 +640,17 @@ class ScrapeStrategy(object):
         asset_dir_FN  = FileName(self.launcher[asset_info.path_key])
         asset_path_noext_FN = assets_get_path_noext_DIR(asset_info, asset_dir_FN, ROM)
         log_debug('ScrapeStrategy::_scanner_scrap_ROM_asset() Scraping {0}...'.format(asset_name))
-
-        # --- For now just use the first configured asset scraper ---
         status_dic = kodi_new_status_dic('No error')
-        scraper_obj = self.asset_scraper_list[0]
-        scraper_name = scraper_obj.get_name()
-        # By default always use local image if found in case scraper fails.
         ret_asset_path = local_asset_path
+        candidate = self.candidate_asset
+        log_debug('Scraping {} with scraper {}'.format(asset_name, scraper_name))
+        log_debug('local_asset_path "{}"'.format(local_asset_path))
+        log_debug('asset_path_noext "{}"'.format(asset_path_noext_FN.getPath()))
 
         # --- If scraper does not support particular asset return inmediately ---
         if not scraper_obj.supports_asset_ID(asset_ID):
             log_debug('Scraper {0} does not support asset {1}.'.format(scraper_name, asset_name))
             return ret_asset_path
-
-        # --- Updated progress dialog ---
-        if self.pdialog_verbose:
-            scraper_text = 'Scraping {0} with {1} (Searching games...)'.format(asset_name, scraper_name)
-            self.pdialog.updateMessage2(scraper_text)
-        log_debug('Scraping {} with scraper {}'.format(asset_name, scraper_name))
-        log_debug('local_asset_path "{}"'.format(local_asset_path))
-        log_debug('asset_path_noext "{}"'.format(asset_path_noext_FN.getPath()))
-
-        # --- Call scraper and get a list of games ---
-        # Note that scraper_obj.get_candidates() always caches information so no need to worry
-        # about retrieving duplicate information here.
-        rom_name_scraping = text_format_ROM_name_for_scraping(ROM.getBase_noext())
-        candidates = scraper_obj.get_candidates(
-            rom_name_scraping, ROM.getBase_noext(), self.platform, status_dic)
-        # * If the scraper produced an error notification show it and continue operation.
-        #   Note that if a number of errors/exceptions happen (for example, network is down) then
-        #   the scraper will disable itself and only a limited number of messages will be shown.
-        # * In the scanner treat any scraper error message as an OK dialog.
-        # * Once the error is displayed reset status_dic
-        if not status_dic['status']:
-            self.pdialog.close()
-            kodi_dialog_OK(status_dic['msg'])
-            status_dic = kodi_new_status_dic('No error')
-            self.pdialog.reopen()
-        if candidates is None or not candidates:
-            log_verb('Found no candidates after searching.')
-            return ret_asset_path
-        log_debug('Scraper {} found {} candidate/s'.format(scraper_name, len(candidates)))
-
-        # --- Choose game to download image ---
-        # TODO This function is called many times so if the user chose a game before remember
-        #      the election. Now the user is asked to choose a candidate for each asset for the
-        #      same game.
-        if self.asset_scraper_mode == 0:
-            log_debug('Asset manual scraping')
-            if len(candidates) == 1:
-                log_debug('get_candidates() returned 1 game. Automatically selected.')
-                selected_game_index = 0
-            else:
-                log_debug('{0} manual scraping. User chooses game.'.format(asset_name))
-                self.pdialog.close()
-                # Display game list found so user choses.
-                rom_name_list = [candidate['display_name'] for candidate in candidates]
-                selected_game_index = xbmcgui.Dialog().select(
-                    '{0} game for ROM "{1}"'.format(scraper_name, ROM.getBase_noext()),
-                    rom_name_list)
-                if selected_game_index < 0: selected_game_index = 0
-                self.pdialog.reopen()
-        elif self.asset_scraper_mode == 1:
-            log_debug('{0} automatic scraping. Selecting first result.'.format(asset_name))
-            selected_game_index = 0
-        else:
-            raise AddonError('Invalid asset_scraper_mode {0}'.format(self.asset_scraper_mode))
-        candidate = candidates[selected_game_index]
 
         # --- Update scanner progress dialog ---
         if self.pdialog_verbose:
@@ -735,7 +748,7 @@ class ScrapeStrategy(object):
         # --- Download image ---
         log_debug('Downloading {0} ...'.format(image_url))
         if self.pdialog_verbose:
-            scraper_text = 'Scraping {0} with {1} (Downloading asset...)'.format(
+            scraper_text = 'Downloading {} from {}...)'.format(
                 asset_name, scraper_name)
             self.pdialog.updateMessage2(scraper_text)
         image_local_path = asset_path_noext_FN.append('.' + image_ext).getPath()
@@ -1610,12 +1623,6 @@ class TheGamesDB(Scraper):
     # This function may be called many times in the ROM Scanner. All calls to this function
     # must be cached. See comments for this function in the Scraper abstract class.
     def get_candidates(self, search_term, rombase_noext, platform, status_dic):
-        scraper_platform = AEL_platform_to_TheGamesDB(platform)
-        log_debug('TheGamesDB::get_candidates() search_term         "{0}"'.format(search_term))
-        log_debug('TheGamesDB::get_candidates() rom_base_noext      "{0}"'.format(rombase_noext))
-        log_debug('TheGamesDB::get_candidates() AEL platform        "{0}"'.format(platform))
-        log_debug('TheGamesDB::get_candidates() TheGamesDB platform "{0}"'.format(scraper_platform))
-
         # --- If scraper is disabled return immediately ---
         if self.scraper_disabled:
             log_debug('TheGamesDB::get_candidates() Scraper disabled. Returning empty data.')
@@ -1630,6 +1637,11 @@ class TheGamesDB(Scraper):
 
         # --- Request is not cached. Get candidates and introduce in the cache ---
         log_debug('TheGamesDB::get_candidates() Cache miss "{0}"'.format(cache_key))
+        scraper_platform = AEL_platform_to_TheGamesDB(platform)
+        log_debug('TheGamesDB::get_candidates() search_term         "{0}"'.format(search_term))
+        log_debug('TheGamesDB::get_candidates() rom_base_noext      "{0}"'.format(rombase_noext))
+        log_debug('TheGamesDB::get_candidates() AEL platform        "{0}"'.format(platform))
+        log_debug('TheGamesDB::get_candidates() TheGamesDB platform "{0}"'.format(scraper_platform))
         candidate_list = self._search_candidates(search_term, rombase_noext, scraper_platform, status_dic)
         # If an error happened do not update the cache.
         if not status_dic['status']: return None
