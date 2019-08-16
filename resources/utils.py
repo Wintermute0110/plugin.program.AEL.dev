@@ -108,6 +108,23 @@ def text_str_2_Uni(string):
 
     return unicode_str
 
+# Renders a list of list of strings table into a CSV list of strings.
+# The list of strings must be joined with '\n'.join()
+def text_render_table_CSV_slist(table_str):
+    rows = len(table_str)
+    cols = len(table_str[0])
+    table_str_list = []
+    for i in range(1, rows):
+        row_str = ''
+        for j in range(cols):
+            if j < cols - 1:
+                row_str += '{},'.format(table_str[i][j])
+            else:
+                row_str += '{}'.format(table_str[i][j])
+        table_str_list.append(row_str)
+
+    return table_str_list
+
 #
 # First row            column aligment 'right' or 'left'
 # Second row           column titles
