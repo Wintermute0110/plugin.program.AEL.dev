@@ -96,18 +96,26 @@ WIP      [ROM AUDIT] Options to generate the 1G1R parent list, like prefer ROMs 
 WIP      [SCRAPERS] Asset scrapers are disabled/not working for standalone launchers. Fix this.
          See https://github.com/Wintermute0110/plugin.program.advanced.emulator.launcher/issues/62
 
-WIP      [SCRAPERS] Option to rescrape all ROM assets in a similar fashion to
-         "Scan ROMs local artwork". Create a menu entry in "Edit Launcher", "Manage ROMs",
-         "Scrape ROMs artwork". "Scrape ROMs artwork" will use the same scraper settings in
-         options as the ROM Scanner.
-         See https://github.com/Wintermute0110/plugin.program.advanced.emulator.launcher/issues/72
+WIP      [SCRAPERS] Fix GameFAQs scraper.
+         It has been a while since this scraper is not working any more.
+         GameFAQs does not have an API. Should this scraper being removed???
+         Currently the GameFAQs metadata scraper works well. The GameFAQs asset scraper
+         does not work due to changes in GameFAQs. See the comments of method
+         GameFAQs._load_assets_from_page()
+
+WIP      [SCRAPERS] MAME offline scraper: include NPlayers field. Take it from nplayers.ini
+
+WIP      [SCRAPERS] MAME offline scraper: include ESRB field. Take it from GameInfoDB.
+
+WIP      [SCRAPERS] MAME offline scraper: include plot field. Take it from GameInfoDB.
+
+WIP      [SCRAPERS] Update MAME Offline Scraper database to version latest version 0.212
+
+WIP      [SCRAPERS] Upgrade and fix  AEL Offline scraper databases.
+         Do the best you can for a decent 0.9.8 release.
 
 
-[B]Advanced Emulator Launcher | version 0.9.8 | XX June 2019[/B]
-
-FEATURE  [CORE] New ROMs artwork type 3D Boxes, asked by Rufoo.
-
-FEATURE  [CORE] New entry in root menu named "Global Reports."
+[B]Advanced Emulator Launcher | version 0.9.8-beta1 | XX August 2019[/B]
 
 FEATURE  [SCRAPERS] Copy scraper stuff from master branch by Chrisism.
 
@@ -122,21 +130,49 @@ FEATURE  [SCRAPERS] Have a look at ScreenScraper and consider it for an online s
          See https://www.screenscraper.fr/
          See https://forum.kodi.tv/showthread.php?tid=287826&pid=2622839#pid2622839
 
-WIP NOW  [SCRAPERS] Fix ArcadeDB scraper. Use the API.
+FEATURE  [SCRAPERS] Fix ArcadeDB scraper. Use the new ArcadeDB API.
          It has been a while since this scraper is not working any more.
 
-WIP      [SCRAPERS] Fix GameFAQs scraper.
-         It has been a while since this scraper is not working any more.
-         GameFAQs does not have an API. Should this scraper being removed???
+FEATURE  [SCRAPERS] Fix AEL Offline Scraper.
 
-WIP      [SCRAPERS] Fix AEL Offline Scraper.
-
-WIP      [SCRAPERS] Update MAME Offline Scraper database to version latest version.
-
-WIP      [SCRAPERS] Massive upgrade of AEL Offline scraper database.
-
-WIP      [SCRAPERS] Add support for ScummVM platform in the Offline Scraper.
+FEATURE  [SCRAPERS] Add support for ScummVM platform in the Offline Scraper.
          See https://forum.kodi.tv/showthread.php?tid=287826&pid=2629084#pid2629084
+
+WIP NOW  [SCRAPERS] Warn user if missing scraper API keys, required stuff, etc., before scraping.
+         Also, improve the scraper error reporting and the disabling of the scraper object
+         if the web site is overloaded.
+
+WIP      [SCRAPERS] Utility to check TheGamesDB monthly allowance.
+
+WIP      [SCRAPERS] Utility to check MobyGames monthly allowance.
+
+WIP      [SCRAPERS] Utility to check ScreenScraper monthly allowance.
+
+WIP      [SCRAPERS] Option to rescrape all ROM assets in a similar fashion to
+         "Scan ROMs local artwork". Create a menu entry in "Edit Launcher", "Manage ROMs",
+         "Scrape ROMs artwork". "Scrape ROMs artwork" will use the same scraper settings in
+         options as the ROM Scanner.
+         I think the best location for the code is in the ScraperStrategy class.
+         See https://github.com/Wintermute0110/plugin.program.advanced.emulator.launcher/issues/72
+
+FEATURE  [CORE] New ROMs artwork type 3D Boxes, asked by Rufoo.
+
+FEATURE  [CORE] New entry in root menu named "Global Reports"
+
+FEATURE  [CORE] New entry in root menu named "Utilities"
+
+WIP      [CORE] Move stuff from addon settings into the Utilities menu, including the
+         database upgrading functions.
+
+WIP      [CORE] Make sure AEL never crashes when rendering the root window, even if 
+         categories.xml is corruped. Users must be able to access the Utilities menu always.
+         In case of crash when rendering the root window, ask the user to update
+         the databases (in the case the crash is due to a missing key in dictionary).
+
+WIP      [CORE] Unified ROM artwork directory. This will require heavy changes in categories.xml.
+         I still have to think how to properly implement this.
+         See https://forum.kodi.tv/showthread.php?tid=287826&pid=2865413#pid2865413
+         See https://forum.kodi.tv/showthread.php?tid=287826&pid=2867785#pid2867785
 
 WIP      [CORE] Support for Advanced MAME Launcher exported virtual launchers.
          This feature requires AML 0.9.X
@@ -145,22 +181,11 @@ WIP      [CORE] Support for Advanced MAME Launcher exported virtual launchers.
 WIP      [CORE] New properties to notify skins about Std launchers, ROM launchers, Categories,
          and number of items in a Launcher.
 
-WIP      [CORE] Option to clean dead ROMs in "Recently played ROMs" and "Most played ROMs"
-
-WIP      [CORE] Option to clean individual ROMs in "Recently played ROMs" and "Most played ROMs"
-
 WIP      [CORE] Create a couple of new ROM context menus, "Manage Recently played ROM" and 
          "Manage Most played ROM". Both will have the following options: "Delete this ROM",
          "Delete all Unlinked/Broken ROMs".
+         See AML for an implementation.
          See https://forum.kodi.tv/showthread.php?tid=287826&pid=2698811#pid2698811
-
-WIP      New section Utilities. Move stuff from addon settings.
-
-WIP      New section Global Reports.
-
-WIP      Make sure AEL never crashes when rendering the root window, even if categories.xml
-         is corruped. In case of crash when rendering the root window, ask the user to update
-         the databases (in the case the crash is due to a missing key in dictionary).
 
 FEATURE  [CORE] Add Year and Developer for Categories.
          See https://forum.kodi.tv/showthread.php?tid=287826&pid=2688653#pid2688653

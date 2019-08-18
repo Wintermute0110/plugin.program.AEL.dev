@@ -215,6 +215,172 @@ def text_str_2_Uni(string):
 
     return unicode_str
 
+# Renders a list of list of strings table into a CSV list of strings.
+# The list of strings must be joined with '\n'.join()
+def text_render_table_CSV_slist(table_str):
+    rows = len(table_str)
+    cols = len(table_str[0])
+    table_str_list = []
+    for i in range(1, rows):
+        row_str = ''
+        for j in range(cols):
+            if j < cols - 1:
+                row_str += '{},'.format(table_str[i][j])
+            else:
+                row_str += '{}'.format(table_str[i][j])
+        table_str_list.append(row_str)
+
+    return table_str_list
+
+#
+# First row            column aligment 'right' or 'left'
+# Second row           column titles
+# Third and next rows  table data
+#
+# Returns a list of strings that must be joined with '\n'.join()
+#
+def text_render_table_str(table_str):
+    rows = len(table_str)
+    cols = len(table_str[0])
+    table_str_list = []
+    col_sizes = text_get_table_str_col_sizes(table_str, rows, cols)
+    col_padding = table_str[0]
+
+    # --- Table header ---
+    row_str = ''
+    for j in range(cols):
+        if j < cols - 1:
+            row_str += text_print_padded_left(table_str[1][j], col_sizes[j]) + '  '
+        else:
+            row_str += text_print_padded_left(table_str[1][j], col_sizes[j])
+    table_str_list.append(row_str)
+    # >> Table -----
+    total_size = sum(col_sizes) + 2*(cols-1)
+    table_str_list.append('{0}'.format('-' * total_size))
+
+    # --- Data rows ---
+    for i in range(2, rows):
+        row_str = ''
+        for j in range(cols):
+            if j < cols - 1:
+                if col_padding[j] == 'right':
+                    row_str += text_print_padded_right(table_str[i][j], col_sizes[j]) + '  '
+                else:
+                    row_str += text_print_padded_left(table_str[i][j], col_sizes[j]) + '  '
+            else:
+                if col_padding[j] == 'right':
+                    row_str += text_print_padded_right(table_str[i][j], col_sizes[j])
+                else:
+                    row_str += text_print_padded_left(table_str[i][j], col_sizes[j])
+        table_str_list.append(row_str)
+
+    return table_str_list
+
+#
+# First row             column aligment 'right' or 'left'
+# Second and next rows  table data
+#
+def text_render_table_str_NO_HEADER(table_str):
+    rows = len(table_str)
+    cols = len(table_str[0])
+    table_str_list = []
+    # >> Ignore row 0 when computing sizes.
+    col_sizes = text_get_table_str_col_sizes(table_str, rows, cols)
+    col_padding = table_str[0]
+
+    # --- Data rows ---
+    for i in range(1, rows):
+        row_str = ''
+        for j in range(cols):
+            if j < cols - 1:
+                if col_padding[j] == 'right':
+                    row_str += text_print_padded_right(table_str[i][j], col_sizes[j]) + '  '
+                else:
+                    row_str += text_print_padded_left(table_str[i][j], col_sizes[j]) + '  '
+            else:
+                if col_padding[j] == 'right':
+                    row_str += text_print_padded_right(table_str[i][j], col_sizes[j])
+                else:
+                    row_str += text_print_padded_left(table_str[i][j], col_sizes[j])
+        table_str_list.append(row_str)
+
+    return table_str_list
+
+#
+# Removed Kodi colour tags before computing size (substitute by ''):
+#   A) [COLOR skyblue]
+#   B) [/COLOR]
+#
+def text_get_table_str_col_sizes(table_str, rows, cols):
+    col_sizes = [0] * cols
+    for j in range(cols):
+        col_max_size = 0
+        for i in range(1, rows):
+            cell_str = re.sub(r'\[COLOR \w+?\]', '', table_str[i][j])
+            cell_str = re.sub(r'\[/COLOR\]', '', cell_str)
+            str_size = len('{0}'.format(cell_str))
+            if str_size > col_max_size: col_max_size = str_size
+        col_sizes[j] = col_max_size
+
+    return col_sizes
+
+def text_str_list_size(str_list):
+    max_str_size = 0
+    for str_item in str_list:
+        str_size = len('{0}'.format(str_item))
+        if str_size > max_str_size: max_str_size = str_size
+
+    return max_str_size
+
+def text_str_dic_max_size(dictionary_list, dic_key, title_str = ''):
+    max_str_size = 0
+    for item in dictionary_list:
+        str_size = len('{0}'.format(item[dic_key]))
+        if str_size > max_str_size: max_str_size = str_size
+    if title_str:
+        str_size = len(title_str)
+        if str_size > max_str_size: max_str_size = str_size
+
+    return max_str_size
+
+def text_print_padded_left(str, str_max_size):
+    formatted_str = '{0}'.format(str)
+    padded_str =  formatted_str + ' ' * (str_max_size - len(formatted_str))
+
+    return padded_str
+
+def text_print_padded_right(str, str_max_size):
+    formatted_str = '{0}'.format(str)
+    padded_str = ' ' * (str_max_size - len(formatted_str)) + formatted_str
+
+    return padded_str
+
+def text_remove_color_tags_slist(slist):
+    # Iterate list of strings and remove the following tags
+    # 1) [COLOR colorname]
+    # 2) [/COLOR]
+    #
+    # Modifying list already seen is OK when iterating the list. Do not change the size of the
+    # list when iterating.
+    for i, s in enumerate(slist):
+        modified = False
+        s_temp = s
+
+        # >> Remove [COLOR colorname]
+        m = re.search('(\[COLOR \w+?\])', s_temp)
+        if m:
+            s_temp = s_temp.replace(m.group(1), '')
+            modified = True
+
+        # >> Remove [/COLOR]
+        if s_temp.find('[/COLOR]') >= 0:
+            s_temp = s_temp.replace('[/COLOR]', '')
+            modified = True
+
+        # >> Update list
+        if modified:
+            slist[i] = s_temp
+
 # Some XML encoding of special characters:
 #   {'\n': '&#10;', '\r': '&#13;', '\t':'&#9;'}
 #
@@ -521,20 +687,23 @@ def text_get_multidisc_info(ROM_FN):
 # URLs
 # -------------------------------------------------------------------------------------------------
 #
-# Get extension of URL. Returns '' if not found.
+# Get extension of URL. Returns '' if not found. Examples: 'png', 'jpg', 'gif'.
 #
 def text_get_URL_extension(url):
     path = urlparse(url).path
     ext = os.path.splitext(path)[1]
+    if ext[0] == '.': ext = ext[1:] # Remove initial dot
 
     return ext
 
 #
-# Defaults to .jpg if URL extension cannot be determined
+# Defaults to 'jpg' if URL extension cannot be determined
 #
 def text_get_image_URL_extension(url):
-    ext = text_get_URL_extension(url)
-    ret = '.jpg' if ext == '' else ext
+    path = urlparse.urlparse(url).path
+    ext = os.path.splitext(path)[1]
+    if ext[0] == '.': ext = ext[1:] # Remove initial dot
+    ret = 'jpg' if ext == '' else ext
 
     return ret
 
@@ -1375,8 +1544,16 @@ class PythonFileName(FileNameBase):
     def rename(self, to):
         os.rename(self.path, to.getPath())
 
-    def copy(self, to):
-        shutil.copy2(self.getPath(), to.getPath())
+# -------------------------------------------------------------------------------------------------
+# Utilities to test scrapers
+# -------------------------------------------------------------------------------------------------
+# Candidates
+NAME_L      = 65
+SCORE_L     = 5
+ID_L        = 55
+PLATFORM_L  = 15
+SPLATFORM_L = 15
+URL_L       = 70
 
     # ---------------------------------------------------------------------------------------------
     # File IO functions

@@ -35,7 +35,12 @@ from urllib2 import urlopen, build_opener, Request, HTTPSHandler
 from resources.utils import log_debug, log_warning, log_error, log_info
 
 # --- GLOBALS -----------------------------------------------------------------
-USER_AGENT = 'Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.31 (KHTML, like Gecko) Chrome/26.0.1410.64 Safari/537.31'
+# Firefox user agents
+# USER_AGENT = 'Mozilla/5.0 (Windows NT 6.1; WOW64; rv:54.0) Gecko/20100101 Firefox/68.0'
+USER_AGENT = 'Mozilla/5.0 (X11; Linux i586; rv:31.0) Gecko/20100101 Firefox/68.0'
+
+# Where did this user agent come from?
+# USER_AGENT = 'Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.31 (KHTML, like Gecko) Chrome/26.0.1410.64 Safari/537.31';
 
 # ---  -----------------------------------------------------------------
 def net_get_random_UserAgent():
@@ -43,17 +48,18 @@ def net_get_random_UserAgent():
     if platform == 'Macintosh':
         os  = random.choice(['68K', 'PPC'])
     elif platform == 'Windows':
-        os  = random.choice(['Win3.11', 'WinNT3.51', 'WinNT4.0', 'Windows NT 5.0', 'Windows NT 5.1', 
-                             'Windows NT 5.2', 'Windows NT 6.0', 'Windows NT 6.1', 'Windows NT 6.2', 
-                             'Win95', 'Win98', 'Win 9x 4.90', 'WindowsCE'])
+        os  = random.choice([
+            'Win3.11', 'WinNT3.51', 'WinNT4.0', 'Windows NT 5.0', 'Windows NT 5.1', 
+            'Windows NT 5.2', 'Windows NT 6.0', 'Windows NT 6.1', 'Windows NT 6.2', 
+            'Win95', 'Win98', 'Win 9x 4.90', 'WindowsCE'])
     elif platform == 'X11':
         os  = random.choice(['Linux i686', 'Linux x86_64'])
-
     browser = random.choice(['chrome', 'firefox', 'ie'])
     if browser == 'chrome':
         webkit = str(random.randint(500, 599))
         version = str(random.randint(0, 24)) + '.0' + str(random.randint(0, 1500)) + '.' + str(random.randint(0, 999))
         return 'Mozilla/5.0 (' + os + ') AppleWebKit/' + webkit + '.0 (KHTML, live Gecko) Chrome/' + version + ' Safari/' + webkit
+
     elif browser == 'firefox':
         year = str(random.randint(2000, 2012))
         month = random.randint(1, 12)
@@ -67,9 +73,11 @@ def net_get_random_UserAgent():
         else:
             day = str(day)
         gecko = year + month + day
-        version = random.choice(['1.0', '2.0', '3.0', '4.0', '5.0', '6.0', '7.0', '8.0', 
-                                 '9.0', '10.0', '11.0', '12.0', '13.0', '14.0', '15.0'])
+        version = random.choice([
+            '1.0', '2.0', '3.0', '4.0', '5.0', '6.0', '7.0', '8.0', 
+            '9.0', '10.0', '11.0', '12.0', '13.0', '14.0', '15.0'])
         return 'Mozilla/5.0 (' + os + '; rv:' + version + ') Gecko/' + gecko + ' Firefox/' + version
+
     elif browser == 'ie':
         version = str(random.randint(1, 10)) + '.0'
         engine = str(random.randint(1, 5)) + '.0'
@@ -82,49 +90,53 @@ def net_get_random_UserAgent():
 
 def net_download_img(img_url, file_path):
     try:
-        req = Request(img_url)
-        req.add_unredirected_header('User-Agent', net_get_random_UserAgent())
-
+        req = urllib2.Request(img_url)
+        # req.add_unredirected_header('User-Agent', net_get_random_UserAgent())
+        req.add_unredirected_header('User-Agent', USER_AGENT)
         file_path.writeAll(urlopen(req).read(),'wb')
-    except IOError as e:    
-        log_error('(IOError) Exception in net_download_img()')
-        log_error('(IOError) {0}'.format(str(e)))
+    # If an exception happens record it in the log and do nothing.
+    # This must be fixed. If an error happened when downloading stuff caller code must
+    # known to take action.
+    except IOError as ex:
+        log_error('(IOError exception) In net_download_img()')
+        log_error('Message: {0}'.format(str(ex)))
+    except Exception as ex:
+        log_error('(General exception) In net_download_img()')
+        log_error('Message: {0}'.format(str(ex)))
 
+#
 # User agent is fixed and defined in global var USER_AGENT
 # Returns a Unicode string.
-#
-def net_get_URL_oneline(url):
-    page_data = ''
-    req = Request(url)
+# @param url: [Unicode string] URL to open
+# @param url_log: [Unicode string] If not None this URL will be used in the logs.
+def net_get_URL(url, url_log = None):
+    req = urllib2.Request(url)
     req.add_unredirected_header('User-Agent', USER_AGENT)
-    log_debug('net_get_URL_oneline() Reading URL "{0}"'.format(req.get_full_url()))
+    if url_log is None:
+        log_debug('net_get_URL() GET URL "{0}"'.format(req.get_full_url()))
+    else:
+        log_debug('net_get_URL() GET URL "{0}"'.format(url_log))
 
     try:
-        # --- Open network connection (socket) ---
-        f = urlopen(req)
-
-        # --- Read data from socket ---
-        encoding = f.headers['content-type'].split('charset=')[-1]
-        # >> Fix for wrong encodings...
-        if encoding == 'text/html': encoding = 'utf-8'
-        log_debug('net_get_URL_oneline() Encoding = "{0}"'.format(encoding))
+        f = urllib2.urlopen(req)
         page_bytes = f.read()
         f.close()
-    except IOError as e:
-        log_error('(IOError) Exception in net_get_URL_oneline()')
-        log_error('(IOError) {0}'.format(str(e)))
-        return page_data
-    except Exception as e:
-        log_error('(Error) Exception in net_get_URL_oneline()')
-        log_error('(Error) {0}'.format(str(e)))
-        return page_data
-
+    # If an exception happens return empty data.
+    except Exception as ex:
+        log_error('(Exception) In net_get_URL()')
+        log_error('(Exception) Object type "{}"'.format(type(ex)))
+        log_error('(Exception) Message "{}"'.format(str(ex)))
+        return ''
+    log_debug('net_get_URL() Read {0} bytes'.format(len(page_bytes)))
 
     # --- Convert to Unicode ---
-    num_bytes = len(page_bytes)
-    log_debug('net_get_URL_oneline() Read {0} bytes'.format(num_bytes))
-    #python 3: page_data = str(page_bytes, encoding)
-    page_data = unicode(page_bytes, encoding)
+    encoding = f.headers['content-type'].split('charset=')[-1]
+    page_data = net_decode_URL_data(page_bytes, encoding)
+
+    return page_data
+
+def net_get_URL_oneline(url):
+    page_data = net_get_URL(url)
 
     # --- Put all page text into one line ---
     page_data = page_data.replace('\r\n', '')
@@ -132,30 +144,53 @@ def net_get_URL_oneline(url):
 
     return page_data
 
-def net_get_URL_original(url):
+# Do HTTP request with POST: https://docs.python.org/2/library/urllib2.html#urllib2.Request
+def net_post_URL(url, data):
     page_data = ''
-    
-    req = Request(url)
+    req = urllib2.Request(url, data)
     req.add_unredirected_header('User-Agent', USER_AGENT)
-    log_debug('net_get_URL_original() Reading URL "{0}"'.format(req.get_full_url()))
+    req.add_header("Content-type", "application/x-www-form-urlencoded")
+    req.add_header("Acept", "text/plain")
+    log_debug('net_post_URL() POST URL "{0}"'.format(req.get_full_url()))
 
     try:
-        f = urlopen(req)
-        encoding = f.headers['content-type'].split('charset=')[-1]
-        # Default encoding is UTF-8
-        if encoding == 'text/html': encoding = 'utf-8'
-        elif encoding == 'application/json': encoding = 'utf-8'
-        else: encoding = 'utf-8'
-        # log_debug('net_get_URL_original() Encoding = "{0}"'.format(encoding))
+        f = urllib2.urlopen(req)
         page_bytes = f.read()
         f.close()
-    except IOError as e:    
-        log_error('(IOError) Exception in net_get_URL_original()')
-        log_error('(IOError) {0}'.format(str(e)))
+    # If an exception happens return empty data.
+    except IOError as ex:
+        log_error('(IOError exception) In net_get_URL()')
+        log_error('Message: {0}'.format(str(ex)))
+        return page_data
+    except Exception as ex:
+        log_error('(General exception) In net_get_URL()')
+        log_error('Message: {0}'.format(str(ex)))
         return page_data
 
     num_bytes = len(page_bytes)
-    log_debug('net_get_URL_original() Read {0} bytes'.format(num_bytes))
+    log_debug('net_post_URL() Read {0} bytes'.format(num_bytes))
+
+    # --- Convert page data to Unicode ---
+    encoding = f.headers['content-type'].split('charset=')[-1]
+    page_data = net_decode_URL_data(page_bytes, encoding)
+
+    return page_data
+
+def net_decode_URL_data(page_bytes, encoding):
+    # --- Try to guess enconding ---
+    if   encoding == 'text/html':                             encoding = 'utf-8'
+    elif encoding == 'application/json':                      encoding = 'utf-8'
+    elif encoding == 'text/plain' and 'UTF-8' in page_bytes:  encoding = 'utf-8'
+    elif encoding == 'text/plain' and 'UTF-16' in page_bytes: encoding = 'utf-16'
+    else:                                                     encoding = 'utf-8'
+    # log_debug('net_decode_URL_data() encoding = "{0}"'.format(encoding))
+
+    # --- Decode ---
+    if encoding == 'utf-16':
+        page_data = page_bytes.encode('utf-16')
+    else:
+        # python3: page_data = str(page_bytes, encoding)
+        page_data = unicode(page_bytes, encoding)
 
     # --- Convert to Unicode ---    
     if encoding == 'text/html': encoding = 'utf-8'

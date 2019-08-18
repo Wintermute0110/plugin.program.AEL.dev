@@ -1,28 +1,19 @@
-#### Table of Contents
+## AEL technical notes ##
 
-[TODO](./NOTES.md#todo)  
-[Multidisc support](./NOTES.md#multidisc-support)  
-[TOSEC/Trurip/Redump image formats](./NOTES.md#tosectruripredump-image-formats)  
-[AL subprocess module hack](./NOTES.md#al-subprocess-module-hack)  
-[listitem.setInfo() overlay values and effects](./NOTES.md#listitemsetinfo-overlay-values-and-effects)  
-[Development environment](./NOTES.md#development-environment)  
-[Installing the addon from Github](./NOTES.md#installing-the-addon-from-github)  
+### Misc stuff
 
+GameFAQs scraper: detect when web server is blocked.
 
-## TODO
-
- * GameFAQs: detect when web server is blocked.
- 
    Blocked IP Address
    Your IP address has been temporarily blocked due to a large number of HTTP requests. The most 
    common causes of this issue are:
- 
+
    http://forum.kodi.tv/showthread.php?tid=287826&pid=2403674#pid2403674
 
 
-## Multidisc support
+### Multidisc support
 
-### ROM scanner implementation
+#### ROM scanner implementation
 
  1. If the ROM scanner finds a multidisc image belonging to a set, for example
     `Final Fantasy VII (USA) (Disc 3).cue`.
@@ -57,36 +48,31 @@
 
  4. This implementation is safe if there are missing ROMs in the set.
 
- 5. At launching time, users selects from a select dialog of the basenames of the roms of the
-    set which one to launch.
-
 ### Naming conventions
 
-[TOSEC Naming Convention](http://www.tosecdev.org/tosec-naming-convention)
+[No-Intro](http://www.no-intro.org/index.html)
 
-| Organisation | Name example                                                |
-|--------------|-------------------------------------------------------------|
-| TOSEC        | Final Fantasy VII (1999)(Square)(NTSC)(US)(Disc 1 of 2).cue |
-|              | Final Fantasy VII (1999)(Square)(NTSC)(US)(Disc 2 of 2).cue |
-| Trurip       | Final Fantasy VII (EU) - (Disc 1 of 3).cue                  |
-|              | Final Fantasy VII (EU) - (Disc 2 of 3).cue                  |
-|              | Final Fantasy VII (EU) - (Disc 3 of 3).cue                  |
-| Redump       | Final Fantasy VII (USA) (Disc 1).cue                        |
-|              | Final Fantasy VII (USA) (Disc 2).cue                        |
-|              | Final Fantasy VII (USA) (Disc 3).cue                        |
+[TOSEC naming convention](http://www.tosecdev.org/tosec-naming-convention)
+
+| Organisation | Name example                                                  |
+|--------------|---------------------------------------------------------------|
+| **TOSEC**    | `Final Fantasy VII (1999)(Square)(NTSC)(US)(Disc 1 of 2).cue` |
+|              | `Final Fantasy VII (1999)(Square)(NTSC)(US)(Disc 2 of 2).cue` |
+| **Trurip**   | `Final Fantasy VII (EU) - (Disc 1 of 3).cue`                  |
+|              | `Final Fantasy VII (EU) - (Disc 2 of 3).cue`                  |
+|              | `Final Fantasy VII (EU) - (Disc 3 of 3).cue`                  |
+| **Redump**   | `Final Fantasy VII (USA) (Disc 1).cue`                        |
+|              | `Final Fantasy VII (USA) (Disc 2).cue`                        |
+|              | `Final Fantasy VII (USA) (Disc 3).cue`                        |
 
 
-## TOSEC/Trurip/Redump image formats
+### TOSEC/Trurip/Redump image formats
 
 | TOSEC       | Redump  | Trurip          |
 |-------------|---------|-----------------|
 | cue,iso,wav | cue,bin | cue,img,ccd,sub |
 
-
-## AL subprocess module hack
-
-
-## listitem.setInfo() overlay values and effects
+### listitem.setInfo() overlay values and effects
 
 `listitem.setInfo('video', {'overlay'  : 4})`
 
@@ -94,45 +80,16 @@ Kodi Krypton Estuary displays a small icon to the left of the listitem title tha
 with the overlay property value. Overlay values are defined in [GUIListItem],
 
 ```
-enum GUIIconOverlay { ICON_OVERLAY_NONE = 0,
-                      ICON_OVERLAY_RAR,
-                      ICON_OVERLAY_ZIP,
-                      ICON_OVERLAY_LOCKED,
-                      ICON_OVERLAY_UNWATCHED,
-                      ICON_OVERLAY_WATCHED,
-                      ICON_OVERLAY_HD};
+enum GUIIconOverlay {
+    ICON_OVERLAY_NONE = 0,
+    ICON_OVERLAY_RAR,
+    ICON_OVERLAY_ZIP,
+    ICON_OVERLAY_LOCKED,
+    ICON_OVERLAY_UNWATCHED,
+    ICON_OVERLAY_WATCHED,
+    ICON_OVERLAY_HD
+};
 ```
 
 [setInfo]: http://mirrors.xbmc.org/docs/python-docs/16.x-jarvis/xbmcgui.html#ListItem-setInfo
 [GUIListItem]: https://github.com/cisco-open-source/kodi/blob/master/xbmc/guilib/GUIListItem.h
-
-
-## Development environment
-
-  1. Installed the packages `kodi` and `kodi-visualization-spectrum` in Debian.
-
-  2. Kodi can be run from the command line in windowed mode.
-
-  3. Created a basic package for AEL and install it from zip file.
-
-  4. Once installed, addon code is located in `~/.kodi/addons/plugin.addon.name`
-
-  5. Once installed, addon can be developed in place. A repository can be cloned in
-     `~/.kodi/addons/plugin.addon.name`.
-
-
-## Installing the addon from Github
-
-It is very important that the addon files are inside the correct directory
-`~/.kodi/addons/plugin.program.AEL`.
-
-To install the plugin from Github, click on `Clone or download` -- `Download ZIP`.
-This will download the repository contents to a ZIP file named
-`plugin.program.AEL-master.zip`. Also, addon is
-packed inside directory `plugin.program.AEL-master`.
-
-This ZIP file should be decompressed, the directory renamed to `plugin.program.AEL`, and
-packed into a ZIP file again. Then, install the ZIP file.
-
-Addons can be copied into Kodi addons directory. Kodi must be restarted. By default, addons
-installed this way are disable and must be enabled before they can be used.

@@ -3,26 +3,28 @@
 <category label="ROM scanner">
     <setting label="Recursive scan" type="bool" id="scan_recursive" default="true" />
     <setting label="Ignore BIOS files" type="bool" id="scan_ignore_bios" default="true"/>
-    <setting label="Update NFO files after ROM scraping" type="bool" id="scan_update_NFO_files" default="false" />
-    <setting label="Ignore Scrapped Titles (use ROM filenames instead)" type="bool" id="scan_ignore_scrap_title" default="true" />
+    <setting label="Ignore Scrapped Titles (use ROM filenames)" type="bool" id="scan_ignore_scrap_title" default="true" />
     <setting label="Clean No-Intro/TOSEC Title Tags (tag) [tag] {tag}" type="bool" id="scan_clean_tags" default="false" />
+    <setting label="Update NFO files after ROM scraping" type="bool" id="scan_update_NFO_files" default="false" />
+</category>
+<!--
+    Make sure the scraper lists match the variables in constants.py
+-->
+<category label="ROM scraping">
+    <setting id="separator" type="lsep" label="Scanner settings"/>
     <setting label="Metadata scan policy" type="enum" id="scan_metadata_policy" default="3" values="None|NFO files|NFO files + Scrapers|Scrapers" />
     <setting label="Asset scan policy" type="enum" id="scan_asset_policy" default="0" values="Local images|Local images + Scrapers|Scrapers" />
-    <setting label="Metadata scraping mode" type="enum" id="metadata_scraper_mode" default="1" values="Manual|Automatic"/>
-    <setting label="Asset scraping mode" type="enum" id="asset_scraper_mode" default="1" values="Manual|Automatic"/>
-</category>
-<category label="ROM scraping">
-    <setting id="separator" type="lsep" label="General scrapers"/>
-    <setting label="Metadata scraper" type="enum"  id="scraper_metadata" default="1" values="None|AEL Offline|TheGamesDB|MobyGames|ScreenScraper"/>
-    <setting label="Asset scraper" type="enum"     id="scraper_asset"    default="2" values="None|TheGamesDB|MobyGames|ScreenScraper"/>
+    <setting label="Game selection mode" type="enum" id="game_selection_mode" default="1" values="Manual|Automatic" />
+    <setting label="Asset selection mode" type="enum" id="asset_selection_mode" default="1" values="Manual|Automatic" />
 
-    <setting id="separator" type="lsep" label="MAME scrapers"/>
-    <setting label="Metadata scraper" type="enum"  id="scraper_metadata_MAME" default="1" values="None|AEL Offline|ArcadeDB|ScreenScraper|TheGamesDB|MobyGames"/>
-    <setting label="Asset scraper" type="enum"     id="scraper_asset_MAME"    default="1" values="None|ArcadeDB|ScreenScraper|TheGamesDB|MobyGames"/>
+    <setting id="separator" type="lsep" label="Scanner scrapers"/>
+    <setting label="Metadata scraper" type="enum" id="scraper_metadata" default="0" values="AEL Offline|TheGamesDB|ScreenScraper|MobyGames" />
+    <setting label="Asset scraper" type="enum" id="scraper_asset" default="0" values="TheGamesDB|ScreenScraper|MobyGames" />
+    <setting label="MAME metadata scraper" type="enum" id="scraper_metadata_MAME" default="0" values="AEL Offline|ArcadeDB|TheGamesDB|ScreenScraper|MobyGames" />
+    <setting label="MAME asset scraper" type="enum" id="scraper_asset_MAME" default="0" values="ArcadeDB|TheGamesDB|ScreenScraper|MobyGames" />
 </category>
 <category label="Scraper settings">
     <setting id="separator" type="lsep" label="Scraper API keys"/>
-    <setting label="TheGamesDB API key" type="text" id="scraper_thegamesdb_apikey" default="" />
     <setting label="MobyGames API key" type="text" id="scraper_mobygames_apikey" default="" />
     <setting label="ScreenScraper Username" type="text" id="scraper_screenscraper_ssid" default="" />
     <setting label="ScreenScraper Pass" type="text" id="scraper_screenscraper_sspass" default="" />
