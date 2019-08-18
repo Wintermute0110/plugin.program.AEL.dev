@@ -1737,6 +1737,7 @@ class MobyGames(Scraper):
         'inside cover'  : None,
         'full cover'    : None,
         'soundtrack'    : None,
+        'map'           : ASSET_MAP_ID
     }
 
     def __init__(self, settings):
@@ -1943,7 +1944,10 @@ class MobyGames(Scraper):
             for image_data in group_data['covers']:
                 asset_name = '{0} - {1} ({2})'.format(
                     image_data['scan_of'], image_data['description'], country_names)
-                asset_ID = MobyGames.asset_name_mapping[image_data['scan_of'].lower()]
+                if image_data['scan_of'].lower() in MobyGames.asset_name_mapping:
+                    asset_ID = MobyGames.asset_name_mapping[image_data['scan_of'].lower()]
+                else:
+                    log_warning('Scan type "{}" not implemented yet.'.format(image_data['scan_of']))
 
                 # url_thumb is mandatory.
                 # url is not mandatory here but MobyGames provides it anyway.
