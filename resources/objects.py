@@ -1282,6 +1282,14 @@ class MetaDataItemABC(object):
 
         return FileName(path)
 
+    def _get_directory_filename_from_field(self, field):
+        if not field in self.entity_data: return None
+        path = self.entity_data[field]
+        if path == '': return None
+
+        return FileName(path, isdir=True)
+
+
     # --- Metadata --------------------------------------------------------------------------------
     def get_name(self):
         return self.entity_data['m_name'] if 'm_name' in self.entity_data else 'Unknown'
@@ -1357,7 +1365,9 @@ class MetaDataItemABC(object):
         return self.entity_data[asset_info.key] if asset_info.key in self.entity_data else ''
 
     def get_asset_FN(self, asset_info):
-        return FileName(self.get_asset_str(asset_info))
+        if not asset_info or not asset_info.key in self.entity_data :
+            return None
+        return self._get_value_as_filename(asset_info.key)
 
     def set_asset(self, asset_info, path_FN):
         path = path_FN.getPath() if path_FN else ''
@@ -1365,6 +1375,9 @@ class MetaDataItemABC(object):
         
     def clear_asset(self, asset_info):
         self.entity_data[asset_info.key] = ''
+
+    def get_assets_path_FN(self):
+        return self._get_directory_filename_from_field('assets_path')        
 
     #
     # Get a list of the assets that can be mapped.
@@ -3940,27 +3953,22 @@ class RetroarchLauncher(StandardRomLauncher):
         return True
 
     def _create_path_from_retroarch_setting(self, path_from_setting, parent_dir):
-        #if not path_from_setting.endswith('\\') and not path_from_setting.endswith('/'):
-        #    path_from_setting = path_from_setting + '/' #parent_dir.path_separator()
-        # obsolete with isdir=True?
-
         if path_from_setting.startswith(':\\'):
             path_from_setting = path_from_setting[2:]
             return parent_dir.pjoin(path_from_setting, isdir=True)
         else:
             folder = FileName(path_from_setting, isdir=True)
-            if '/data/user/0/' in folder.getPath():
-                alternative_folder = folder.getPath()
-                alternative_folder = alternative_folder.replace('/data/user/0/', '/data/data/')
-                folder = FileName(alternative_folder, isdir=True)
-
+            # if '/data/user/0/' in folder.getPath():
+            #     alternative_folder = folder.getPath()
+            #     alternative_folder = alternative_folder.replace('/data/user/0/', '/data/data/')
+            #     folder = FileName(alternative_folder, isdir=True)
             return folder
 
     def _switch_core_to_info_file(self, core_file, info_folder):
         info_file = core_file.changeExtension('info')
    
         if is_android():
-            info_file = info_folder.pjoin(info_file.getBase().replace('_android.', '.'))
+            info_file = info_folder.pjoin(info_file.getBase().replace('_android', ''))
         else:
             info_file = info_folder.pjoin(info_file.getBase())
 

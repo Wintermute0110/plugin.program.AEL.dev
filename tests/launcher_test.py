@@ -467,5 +467,28 @@ class Test_Launcher(unittest.TestCase):
         self.assertIsNotNone(actual)
         self.assertEqual(len(actual), expected)
 
+    @patch('resources.objects.is_android')
+    def test_retroarchlauncher_switching_core_to_info_file(self, is_android_mock):
+        # arrange
+        is_android_mock.return_value = True
+        
+        settings = self._get_test_settings()
+        launcher_data = {}
+        launcher_data['type'] = OBJ_LAUNCHER_RETROARCH
+        paths = Fake_Paths('\\fake\\')
+                
+        info_path = NewFileName('/data/user/0/infos/')
+        core_path = NewFileName('/data/user/0/cores/mycore_libretro_android.so')
+        
+        target = RetroarchLauncher(paths, settings, launcher_data, None, None, None, None)
+                
+        # act
+        actual = target._switch_core_to_info_file(core_path, info_path)
+        
+        # assert
+        print actual.path_tr
+        self.assertIsNotNone(actual)
+        self.assertEquals(u'/data/user/0/infos/mycore_libretro.info', actual.path_tr)
+
 if __name__ == '__main__':
    unittest.main()

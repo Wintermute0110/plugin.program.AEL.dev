@@ -206,6 +206,10 @@ def run_plugin(addon_argv):
     # --- Some debug stuff for development ---
     log_debug('------------ Called Advanced Emulator Launcher run_plugin(addon_argv) ------------')
     log_debug('sys.platform   "{0}"'.format(sys.platform))
+    if is_android(): log_debug('OS             "Android"')
+    if is_windows(): log_debug('OS             "Windows"')
+    if is_osx(): log_debug('OS             "OSX"')
+    if is_linux(): log_debug('OS             "Linux"')
     # log_debug('WindowId       "{0}"'.format(xbmcgui.getCurrentWindowId()))
     # log_debug('WindowName     "{0}"'.format(xbmc.getInfoLabel('Window.Property(xmlfile)')))
     log_debug('Python version "' + sys.version.replace('\n', '') + '"')
@@ -3900,7 +3904,10 @@ def m_gui_edit_asset(obj_instance, asset_info):
     # --- Link to a local image ---
     if svalue == 0:
         current_image_file = obj_instance.get_asset_FN(asset_info)
-        current_image_dir = FileName(current_image_file.getDir(), isdir = True)
+        if current_image_file is None:
+            current_image_dir = obj_instance.get_assets_path_FN()
+        else: 
+            current_image_dir = FileName(current_image_file.getDir(), isdir = True)
         log_debug('m_gui_edit_asset() Asset initial dir "{0}"'.format(current_image_dir.getPath()))
         title_str = 'Select {0} {1}'.format(obj_instance.get_object_name(), asset_info.name)
         ext_list = asset_info.exts_dialog

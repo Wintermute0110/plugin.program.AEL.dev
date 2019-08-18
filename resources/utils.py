@@ -158,10 +158,10 @@ def is_osx():
     return is_osx_bool
 
 def is_android():
-    return is_linux_bool
+    return is_android_bool
 
 def is_linux():
-    return is_android_bool
+    return is_linux_bool
 
 # -------------------------------------------------------------------------------------------------
 # Strings and text

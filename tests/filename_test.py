@@ -89,27 +89,15 @@ class Test_filename_test(unittest.TestCase):
         
     def test_parsing_strings_to_folders(self):
         # arrange
-        path_from_setting = '/data/user/0/com.retroarch/cores/'
-        config_file = NewFileName('/storage/emulated/0/Android/data/com.retroarch/files/retroarch.cfg')
+        path = '/data/user/0/com.retroarch/cores/'
         
         # act       
-        actual = NewFileName('')         
-        if path_from_setting.startswith(':\\'):
-            path_from_setting = path_from_setting[2:]
-            actual = config_file.pjoin(path_from_setting, isdir=True)
-        else:
-            folder = NewFileName(path_from_setting, isdir=True)
-            if '/data/user/0/' in folder.getPath():
-                alternative_folder = folder.getPath()
-                alternative_folder = alternative_folder.replace('/data/user/0/', '/data/data/')
-                folder = NewFileName(alternative_folder, isdir=True)
-
-            actual = folder
-            
+        actual = NewFileName(path, isdir=True) 
+                
         # assert
         self.assertIsNotNone(actual)
+        self.assertEquals(u'/data/user/0/com.retroarch/cores/', actual.path_tr)
         print actual.path_tr
         
-
 if __name__ == '__main__':
     unittest.main()
