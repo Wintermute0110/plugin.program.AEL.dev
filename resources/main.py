@@ -1195,7 +1195,7 @@ class Main:
 
         # >> If this point is reached then changes to metadata/images were made.
         # >> Save categories and update container contents so user sees those changes inmediately.
-        fs_write_catfile(CATEGORIES_FILE_PATH, self.categories, self.launchers)
+        fs_write_catfile(g_PATHS.CATEGORIES_FILE_PATH, self.categories, self.launchers)
         kodi_refresh_container()
 
     def _command_edit_launcher(self, categoryID, launcherID):
