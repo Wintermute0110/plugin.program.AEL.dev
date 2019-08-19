@@ -452,15 +452,12 @@ class Main:
         elif command == 'UPDATE_ALL_VCATEGORIES':
             self._command_update_virtual_category_db_all()
 
-        # >> Commands called from addon settings window
-        elif command == 'IMPORT_LAUNCHERS':    self._command_import_launchers()
-        elif command == 'EXPORT_LAUNCHERS':    self._command_export_launchers()
-        elif command == 'CHECK_DATABASE':      self._command_check_database()
-        elif command == 'CHECK_LAUNCHERS':     self._command_check_launchers()
-        elif command == 'CHECK_RETRO_BIOS':    self._command_check_retro_BIOS()
-        elif command == 'IMPORT_AL_LAUNCHERS': self._command_import_legacy_AL()
-
         # Commands called from Utilities menu.
+        elif command == 'IMPORT_LAUNCHERS':                  self._command_exec_utils_import_launchers()
+        elif command == 'EXPORT_LAUNCHERS':                  self._command_exec_utils_export_launchers()
+        elif command == 'CHECK_DATABASE':                    self._command_exec_utils_check_database()
+        elif command == 'CHECK_LAUNCHERS':                   self._command_exec_utils_check_launchers()
+        elif command == 'CHECK_RETRO_BIOS':                  self._command_exec_utils_check_retro_BIOS()
         elif command == 'EXECUTE_UTILS_TGDB_CHECK':          self._command_exec_utils_TGDB_check()
         elif command == 'EXECUTE_UTILS_MOBYGAMES_CHECK':     self._command_exec_utils_MobyGames_check()
         elif command == 'EXECUTE_UTILS_SCREENSCRAPER_CHECK': self._command_exec_utils_ScreenScraper_check()
@@ -502,7 +499,7 @@ class Main:
         self.settings['scraper_metadata_MAME'] = int(o.getSetting('scraper_metadata_MAME'))
         self.settings['scraper_asset_MAME']    = int(o.getSetting('scraper_asset_MAME'))
 
-        # --- Scrapers ---
+        # --- Misc settings ---
         self.settings['scraper_mobygames_apikey']     = o.getSetting('scraper_mobygames_apikey').decode('utf-8')
         self.settings['scraper_screenscraper_ssid']   = o.getSetting('scraper_screenscraper_ssid').decode('utf-8')
         self.settings['scraper_screenscraper_sspass'] = o.getSetting('scraper_screenscraper_sspass').decode('utf-8')
@@ -512,6 +509,9 @@ class Main:
         # self.settings['scraper_fanart_size']      = int(o.getSetting('scraper_fanart_size'))
         # self.settings['scraper_image_type']       = int(o.getSetting('scraper_image_type'))
         # self.settings['scraper_fanart_order']     = int(o.getSetting('scraper_fanart_order'))
+
+        self.settings['io_retroarch_only_mandatory'] = True if o.getSetting('io_retroarch_only_mandatory') == 'true' else False
+        self.settings['io_retroarch_sys_dir']        = o.getSetting('io_retroarch_sys_dir').decode('utf-8')
 
         # --- ROM audit ---
         self.settings['audit_unknown_roms']         = int(o.getSetting('audit_unknown_roms'))
@@ -543,10 +543,6 @@ class Main:
         self.settings['launchers_asset_dir']      = o.getSetting('launchers_asset_dir').decode('utf-8')
         self.settings['favourites_asset_dir']     = o.getSetting('favourites_asset_dir').decode('utf-8')
         self.settings['collections_asset_dir']    = o.getSetting('collections_asset_dir').decode('utf-8')
-
-        # --- I/O ---
-        self.settings['io_retroarch_only_mandatory'] = True if o.getSetting('io_retroarch_only_mandatory') == 'true' else False
-        self.settings['io_retroarch_sys_dir']        = o.getSetting('io_retroarch_sys_dir').decode('utf-8')
 
         # --- Advanced ---
         self.settings['media_state_action']       = int(o.getSetting('media_state_action'))
@@ -3851,8 +3847,84 @@ class Main:
         commands.append(('Kodi File Manager', 'ActivateWindow(filemanager)'))
         commands.append(('AEL addon settings', 'Addon.OpenSettings({0})'.format(__addon_id__)))
 
-        # NOTE Move the utilities from the addon settings into here, including the code
-        #      to upgrade the addon databases.
+        # <setting label="Import category/launcher configuration ..."
+        #  action="RunPlugin(plugin://plugin.program.advanced.emulator.launcher/?com=IMPORT_LAUNCHERS)"/>
+        vcategory_name   = 'Import category/launcher XML configuration file'
+        vcategory_plot   = (
+            'Imports XML files having AEL categories and/or launcher configuration.')
+        vcategory_icon   = g_PATHS.ICON_FILE_PATH.getPath()
+        vcategory_fanart = g_PATHS.FANART_FILE_PATH.getPath()
+        listitem = xbmcgui.ListItem(vcategory_name)
+        listitem.setInfo('video', {'title': vcategory_name, 'plot' : vcategory_plot, 'overlay': 4})
+        listitem.setArt({'icon' : vcategory_icon, 'fanart' : vcategory_fanart})
+        listitem.setProperty(AEL_CONTENT_LABEL, AEL_CONTENT_VALUE_ROM_LAUNCHER)
+        listitem.addContextMenuItems(commands)
+        url_str = self._misc_url('EXECUTE_UTILS_IMPORT_LAUNCHERS')
+        xbmcplugin.addDirectoryItem(handle = self.addon_handle, url = url_str, listitem = listitem, isFolder = False)
+
+        # <setting label="Export category/launcher configuration ..."
+        #  action="RunPlugin(plugin://plugin.program.advanced.emulator.launcher/?com=EXPORT_LAUNCHERS)"/>
+        vcategory_name   = 'Export category/launcher XML configuration file'
+        vcategory_plot   = (
+            'Exports all AEL categories and launchers into an XML configuration file. '
+            'You can later reimport this XML file.')
+        vcategory_icon   = g_PATHS.ICON_FILE_PATH.getPath()
+        vcategory_fanart = g_PATHS.FANART_FILE_PATH.getPath()
+        listitem = xbmcgui.ListItem(vcategory_name)
+        listitem.setInfo('video', {'title': vcategory_name, 'plot' : vcategory_plot, 'overlay': 4})
+        listitem.setArt({'icon' : vcategory_icon, 'fanart' : vcategory_fanart})
+        listitem.setProperty(AEL_CONTENT_LABEL, AEL_CONTENT_VALUE_ROM_LAUNCHER)
+        listitem.addContextMenuItems(commands)
+        url_str = self._misc_url('EXECUTE_UTILS_EXPORT_LAUNCHERS')
+        xbmcplugin.addDirectoryItem(handle = self.addon_handle, url = url_str, listitem = listitem, isFolder = False)
+
+        # <setting label="Check/Update all databases ..."
+        #  action="RunPlugin(plugin://plugin.program.advanced.emulator.launcher/?com=CHECK_DATABASE)"/>
+        vcategory_name   = 'Check/Update all databases'
+        vcategory_plot   = ('Checks and updates all AEL databases.')
+        vcategory_icon   = g_PATHS.ICON_FILE_PATH.getPath()
+        vcategory_fanart = g_PATHS.FANART_FILE_PATH.getPath()
+        listitem = xbmcgui.ListItem(vcategory_name)
+        listitem.setInfo('video', {'title': vcategory_name, 'plot' : vcategory_plot, 'overlay': 4})
+        listitem.setArt({'icon' : vcategory_icon, 'fanart' : vcategory_fanart})
+        listitem.setProperty(AEL_CONTENT_LABEL, AEL_CONTENT_VALUE_ROM_LAUNCHER)
+        listitem.addContextMenuItems(commands)
+        url_str = self._misc_url('EXECUTE_UTILS_CHECK_DATABASE')
+        xbmcplugin.addDirectoryItem(handle = self.addon_handle, url = url_str, listitem = listitem, isFolder = False)
+
+
+        # <setting label="Check Launchers ..."
+        #  action="RunPlugin(plugin://plugin.program.advanced.emulator.launcher/?com=CHECK_LAUNCHERS)"/>
+        vcategory_name   = 'Check Launchers'
+        vcategory_plot   = ('Check Launchers.')
+        vcategory_icon   = g_PATHS.ICON_FILE_PATH.getPath()
+        vcategory_fanart = g_PATHS.FANART_FILE_PATH.getPath()
+        listitem = xbmcgui.ListItem(vcategory_name)
+        listitem.setInfo('video', {'title': vcategory_name, 'plot' : vcategory_plot, 'overlay': 4})
+        listitem.setArt({'icon' : vcategory_icon, 'fanart' : vcategory_fanart})
+        listitem.setProperty(AEL_CONTENT_LABEL, AEL_CONTENT_VALUE_ROM_LAUNCHER)
+        listitem.addContextMenuItems(commands)
+        url_str = self._misc_url('EXECUTE_UTILS_CHECK_LAUNCHERS')
+        xbmcplugin.addDirectoryItem(handle = self.addon_handle, url = url_str, listitem = listitem, isFolder = False)
+
+        # <setting label="Check Retroarch BIOSes ..."
+        #  action="RunPlugin(plugin://plugin.program.advanced.emulator.launcher/?com=CHECK_RETRO_BIOS)"/>
+        vcategory_name   = 'Check Retroarch BIOSes'
+        vcategory_plot   = ('Check Retroarch BIOSes.')
+        vcategory_icon   = g_PATHS.ICON_FILE_PATH.getPath()
+        vcategory_fanart = g_PATHS.FANART_FILE_PATH.getPath()
+        listitem = xbmcgui.ListItem(vcategory_name)
+        listitem.setInfo('video', {'title': vcategory_name, 'plot' : vcategory_plot, 'overlay': 4})
+        listitem.setArt({'icon' : vcategory_icon, 'fanart' : vcategory_fanart})
+        listitem.setProperty(AEL_CONTENT_LABEL, AEL_CONTENT_VALUE_ROM_LAUNCHER)
+        listitem.addContextMenuItems(commands)
+        url_str = self._misc_url('EXECUTE_UTILS_CHECK_RETRO_BIOS')
+        xbmcplugin.addDirectoryItem(handle = self.addon_handle, url = url_str, listitem = listitem, isFolder = False)
+
+        # Importing AL configuration is not supported any more. It will cause a lot of trouble
+        # because AL and AEL have diverged too much.
+        # <setting label="Import AL launchers.xml ..."
+        #  action="RunPlugin(plugin://plugin.program.advanced.emulator.launcher/?com=IMPORT_AL_LAUNCHERS)"/>
 
         # --- Check TheGamesDB scraper ---
         vcategory_name   = 'Check TheGamesDB scraper'
@@ -9408,15 +9480,14 @@ class Main:
 
         return file_data
 
-    def _command_import_launchers(self):
-        # >> If enableMultiple = True this function always returns a list of strings in UTF-8
-        file_list = xbmcgui.Dialog().browse(1, 'Select XML category/launcher configuration file',
-                                            'files', '.xml', enableMultiple = True)
-
-        # >> Process file by file
+    def _command_exec_utils_import_launchers(self):
+        # If enableMultiple = True this function always returns a list of strings in UTF-8
+        file_list = xbmcgui.Dialog().browse(
+            1, 'Select XML category/launcher configuration file', 'files', '.xml', enableMultiple = True)
+        # Process file by file
         for xml_file in file_list:
             xml_file_unicode = xml_file.decode('utf-8')
-            log_debug('_command_import_launchers() Importing "{0}"'.format(xml_file_unicode))
+            log_debug('_command_exec_utils_import_launchers() Importing "{0}"'.format(xml_file_unicode))
             import_FN = FileName(xml_file_unicode)
             if not import_FN.exists(): continue
             # >> This function edits self.categories, self.launchers dictionaries
@@ -9429,14 +9500,14 @@ class Main:
         kodi_notify('Finished importing Categories/Launchers')
 
     #
-    # Export AEL launcher configuration
+    # Export AEL launcher configuration.
     #
-    def _command_export_launchers(self):
-        log_debug('_command_export_launchers() Exporting Category/Launcher XML configuration')
+    def _command_exec_utils_export_launchers(self):
+        log_debug('_command_exec_utils_export_launchers() Exporting Category/Launcher XML configuration')
 
         # --- Ask path to export XML configuration ---
-        dir_path = xbmcgui.Dialog().browse(0, 'Select XML export directory', 'files',
-                                           '', False, False).decode('utf-8')
+        dir_path = xbmcgui.Dialog().browse(
+            0, 'Select XML export directory', 'files', '', False, False).decode('utf-8')
         if not dir_path: return
 
         # --- If XML exists then warn user about overwriting it ---
@@ -9458,8 +9529,8 @@ class Main:
     #
     # Checks all databases and updates to newer version if possible
     #
-    def _command_check_database(self):
-        log_debug('_command_check_database() Beginning ....')
+    def _command_exec_utils_check_database(self):
+        log_debug('_command_exec_utils_check_database() Beginning ....')
         pDialog = xbmcgui.DialogProgress()
         pDialog_canceled = False
 
@@ -9655,8 +9726,8 @@ class Main:
             rom['toggle_window'] = rom['minimize']
             rom.pop('minimize')
 
-    def _command_check_launchers(self):
-        log_info('_command_check_launchers() Checking all Launchers configuration ...')
+    def _command_exec_utils_check_launchers(self):
+        log_info('_command_exec_utils_check_launchers() Checking all Launchers configuration ...')
 
         main_str_list = []
         main_str_list.append('Number of launchers: {0}\n\n'.format(len(self.launchers)))
@@ -9737,14 +9808,7 @@ class Main:
         file = open(LAUNCHER_REPORT_FILE_PATH.getPath(), 'w')
         file.write(full_string)
         file.close()
-
-        # >> Display report TXT file.
-        log_debug('Setting Window(10000) Property "FontWidth" = "monospaced"')
-        xbmcgui.Window(10000).setProperty('FontWidth', 'monospaced')
-        dialog = xbmcgui.Dialog()
-        dialog.textviewer('Launchers report', full_string)
-        log_debug('Setting Window(10000) Property "FontWidth" = "proportional"')
-        xbmcgui.Window(10000).setProperty('FontWidth', 'proportional')
+        kodi_display_text_window_mono('Launchers report', full_string)
 
     def _aux_check_for_file(self, str_list, dic_key_name, launcher):
         path = launcher[dic_key_name]
@@ -9753,10 +9817,10 @@ class Main:
             problems_found = True
             str_list.append('{0} "{1}" not found\n'.format(dic_key_name, path_FN.getPath()))
 
-    def _command_check_retro_BIOS(self):
-        log_info('_command_check_retro_BIOS() Checking Retroarch BIOSes ...')
+    def _command_exec_utils_check_retro_BIOS(self):
+        log_info('_command_exec_utils_check_retro_BIOS() Checking Retroarch BIOSes ...')
         check_only_mandatory = self.settings['io_retroarch_only_mandatory']
-        log_info('_command_check_retro_BIOS() check_only_mandatory = {0}'.format(check_only_mandatory))
+        log_info('_command_exec_utils_check_retro_BIOS() check_only_mandatory = {0}'.format(check_only_mandatory))
 
         # >> If Retroarch System dir not configured or found abort.
         sys_dir_FN = FileName(self.settings['io_retroarch_sys_dir'])
@@ -9771,13 +9835,13 @@ class Main:
         num_BIOS = len(Libretro_BIOS_list)
         file_count = 0
 
-        # >> Algorithm:
-        #    1) Traverse list of BIOS. For every BIOS:
-        #    2) Check if file exists. If not exists -> missing BIOS.
-        #    3) If BIOS exists check file size.
-        #    3) If BIOS exists check MD5
-        #    4) Unknwon files in Retroarch System dir are ignored and non-reported.
-        #    5) Write results into a report TXT file.
+        # Algorithm:
+        # 1) Traverse list of BIOS. For every BIOS:
+        # 2) Check if file exists. If not exists -> missing BIOS.
+        # 3) If BIOS exists check file size.
+        # 3) If BIOS exists check MD5
+        # 4) Unknwon files in Retroarch System dir are ignored and non-reported.
+        # 5) Write results into a report TXT file.
         BIOS_status_dic = {}
         BIOS_status_dic_colour = {}
         for BIOS_dic in Libretro_BIOS_list:
@@ -9886,20 +9950,15 @@ class Main:
                         line_str = '{0}  {1}\n'.format(' ' * num_spaces, beautiful_core_name)
                         str_list.append(line_str)
 
-        # >> Stats report
+        # Stats report
         log_info('Writing report file "{0}"'.format(BIOS_REPORT_FILE_PATH.getPath()))
         full_string = ''.join(str_list).encode('utf-8')
         file = open(BIOS_REPORT_FILE_PATH.getPath(), 'w')
         file.write(full_string)
         file.close()
 
-        # >> Display report TXT file.
-        log_debug('Setting Window(10000) Property "FontWidth" = "monospaced"')
-        xbmcgui.Window(10000).setProperty('FontWidth', 'monospaced')
-        dialog = xbmcgui.Dialog()
-        dialog.textviewer('Retroarch BIOS report', full_string)
-        log_debug('Setting Window(10000) Property "FontWidth" = "proportional"')
-        xbmcgui.Window(10000).setProperty('FontWidth', 'proportional')
+        # Display report TXT file.
+        kodi_display_text_window_mono('Retroarch BIOS report', full_string)
 
     #
     # Import legacy Advanced Launcher launchers.xml
