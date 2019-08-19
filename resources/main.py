@@ -453,11 +453,11 @@ class Main:
             self._command_update_virtual_category_db_all()
 
         # Commands called from Utilities menu.
-        elif command == 'IMPORT_LAUNCHERS':                  self._command_exec_utils_import_launchers()
-        elif command == 'EXPORT_LAUNCHERS':                  self._command_exec_utils_export_launchers()
-        elif command == 'CHECK_DATABASE':                    self._command_exec_utils_check_database()
-        elif command == 'CHECK_LAUNCHERS':                   self._command_exec_utils_check_launchers()
-        elif command == 'CHECK_RETRO_BIOS':                  self._command_exec_utils_check_retro_BIOS()
+        elif command == 'EXECUTE_UTILS_IMPORT_LAUNCHERS':    self._command_exec_utils_import_launchers()
+        elif command == 'EXECUTE_UTILS_EXPORT_LAUNCHERS':    self._command_exec_utils_export_launchers()
+        elif command == 'EXECUTE_UTILS_CHECK_DATABASE':      self._command_exec_utils_check_database()
+        elif command == 'EXECUTE_UTILS_CHECK_LAUNCHERS':     self._command_exec_utils_check_launchers()
+        elif command == 'EXECUTE_UTILS_CHECK_RETRO_BIOS':    self._command_exec_utils_check_retro_BIOS()
         elif command == 'EXECUTE_UTILS_TGDB_CHECK':          self._command_exec_utils_TGDB_check()
         elif command == 'EXECUTE_UTILS_MOBYGAMES_CHECK':     self._command_exec_utils_MobyGames_check()
         elif command == 'EXECUTE_UTILS_SCREENSCRAPER_CHECK': self._command_exec_utils_ScreenScraper_check()
@@ -9803,9 +9803,9 @@ class Main:
             main_str_list.append('\n')
 
         # >> Stats report
-        log_info('Writing report file "{0}"'.format(LAUNCHER_REPORT_FILE_PATH.getPath()))
+        log_info('Writing report file "{0}"'.format(g_PATHS.LAUNCHER_REPORT_FILE_PATH.getPath()))
         full_string = ''.join(main_str_list).encode('utf-8')
-        file = open(LAUNCHER_REPORT_FILE_PATH.getPath(), 'w')
+        file = open(g_PATHS.LAUNCHER_REPORT_FILE_PATH.getPath(), 'w')
         file.write(full_string)
         file.close()
         kodi_display_text_window_mono('Launchers report', full_string)
@@ -9951,9 +9951,9 @@ class Main:
                         str_list.append(line_str)
 
         # Stats report
-        log_info('Writing report file "{0}"'.format(BIOS_REPORT_FILE_PATH.getPath()))
+        log_info('Writing report file "{0}"'.format(g_PATHS.BIOS_REPORT_FILE_PATH.getPath()))
         full_string = ''.join(str_list).encode('utf-8')
-        file = open(BIOS_REPORT_FILE_PATH.getPath(), 'w')
+        file = open(g_PATHS.BIOS_REPORT_FILE_PATH.getPath(), 'w')
         file.write(full_string)
         file.close()
 
