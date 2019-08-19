@@ -9977,7 +9977,7 @@ class Main:
         # data contains the monthly allowance.
         pdialog = KodiProgressDialog()
         pdialog.startProgress('Retrieving info from TheGamesDB...', 100)
-        json_data = TGDB.get_genres(status_dic)
+        json_data = TGDB.debug_get_genres(status_dic)
         pdialog.endProgress()
         if not status_dic['status']:
             kodi_dialog_OK(status_dic['msg'])
