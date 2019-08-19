@@ -648,7 +648,7 @@ class ScrapeStrategy(object):
         asset_name = asset_info.name
         asset_dir_FN  = FileName(self.launcher[asset_info.path_key])
         asset_path_noext_FN = assets_get_path_noext_DIR(asset_info, asset_dir_FN, ROM)
-        log_debug('ScrapeStrategy::_scanner_scrap_ROM_asset() Scraping {0} with scraper{}...'.format(
+        log_debug('ScrapeStrategy::_scanner_scrap_ROM_asset() Scraping {} with scraper {}...'.format(
             asset_name, self.asset_scraper_name))
         status_dic = kodi_new_status_dic('No error')
         ret_asset_path = local_asset_path
@@ -1309,12 +1309,11 @@ class Scraper(object):
             'is_on_page'   : False
         }
 
-    # This function is called when an exception happens.
-    def _handle_exception(self, ex, status_dic, user_msg_type, user_msg, log_msg_list):
-        log_error('(Exception) Object type "{}"'.format(type(ex)))
-        log_error('(Exception) Message "{}"'.format(str(ex)))
-        for msg_line in log_msg_list: log_error(msg_line)
-        # Record the number of exceptions produced in the scraper and disable the scraper
+    # This functions is called when an error that is not an exception and needs to increase
+    # the scraper error limit happens.
+    # All messages generated in the scrapers are KODI_MESSAGE_DIALOG.
+    def _handle_error(self, status_dic, user_msg):
+        # Record the number of error/exceptions produced in the scraper and disable the scraper
         # if the number of errors is higher than a threshold.
         self.exception_counter += 1
         if self.exception_counter > Scraper.EXCEPTION_COUNTER_THRESHOLD:
@@ -1323,8 +1322,15 @@ class Scraper(object):
         # Fill in the status dictionary so the error message will be propagated up in the
         # stack and the error message printed in the GUI.
         status_dic['status'] = False
-        status_dic['dialog'] = user_msg_type
+        status_dic['dialog'] = KODI_MESSAGE_DIALOG
         status_dic['msg']    = user_msg
+
+    # This function is called when an exception in the scraper code happens.
+    # All messages from the scrapers are KODI_MESSAGE_DIALOG.
+    def _handle_exception(self, ex, status_dic, user_msg):
+        log_error('(Exception) Object type "{}"'.format(type(ex)))
+        log_error('(Exception) Message "{}"'.format(str(ex)))
+        self._handle_error(status_dic, user_msg)
 
 # ------------------------------------------------------------------------------------------------
 # NULL scraper, does nothing.
@@ -1642,7 +1648,7 @@ class TheGamesDB(Scraper):
     # This function may be called many times in the ROM Scanner. All calls to this function
     # must be cached. See comments for this function in the Scraper abstract class.
     def get_candidates(self, search_term, rombase_noext, platform, status_dic):
-        # --- If scraper is disabled return immediately ---
+        # --- If scraper is disabled return immediately and silently ---
         if self.scraper_disabled:
             log_debug('TheGamesDB::get_candidates() Scraper disabled. Returning empty data.')
             return []
@@ -1695,8 +1701,8 @@ class TheGamesDB(Scraper):
         url_a = url_a.format(self._get_API_key(), candidate['id'])
         url = url_a + url_b
         page_data = self._retrieve_URL_as_JSON(url, status_dic)
-        self._dump_json_debug('TGDB_get_metadata.json', page_data)
         if not status_dic['status']: return None
+        self._dump_json_debug('TGDB_get_metadata.json', page_data)
 
         # --- Parse game page data ---
         log_debug('TheGamesDB::get_metadata() Parsing game metadata...')
@@ -1753,18 +1759,20 @@ class TheGamesDB(Scraper):
         return text_get_URL_extension(image_url)
 
     # --- This class own methods -----------------------------------------------------------------
-    def get_platforms(self, status_dic):
-        log_debug('TheGamesDB::get_platforms() BEGIN...')
+    def debug_get_platforms(self, status_dic):
+        log_debug('TheGamesDB::debug_get_platforms() BEGIN...')
         url = 'https://api.thegamesdb.net/Platforms?apikey={}'.format(self._get_API_key())
         json_data = self._retrieve_URL_as_JSON(url, status_dic)
+        if not status_dic['status']: return None
         self._dump_json_debug('TGDB_get_platforms.json', json_data)
 
         return json_data
 
-    def get_genres(self, status_dic):
-        log_debug('TheGamesDB::get_genres() BEGIN...')
+    def debug_get_genres(self, status_dic):
+        log_debug('TheGamesDB::debug_get_platforms() BEGIN...')
         url = 'https://api.thegamesdb.net/Genres?apikey={}'.format(self._get_API_key())
         json_data = self._retrieve_URL_as_JSON(url, status_dic)
+        if not status_dic['status']: return None
         self._dump_json_debug('TGDB_get_genres.json', json_data)
 
         return json_data
@@ -1807,6 +1815,8 @@ class TheGamesDB(Scraper):
         search_string_encoded = urllib.quote_plus(search_term.encode('utf8'))
         url_str = 'https://api.thegamesdb.net/Games/ByGameName?apikey={0}&name={1}&filter[platform]={2}'
         url = url_str.format(self._get_API_key(), search_string_encoded, scraper_platform)
+        # _retrieve_games_from_url() may load files recursively from several pages so this code
+        # must be in a separate function.
         candidate_list = self._retrieve_games_from_url(url, search_term, scraper_platform, status_dic)
         if not status_dic['status']: return None
 
@@ -1819,8 +1829,8 @@ class TheGamesDB(Scraper):
     def _retrieve_games_from_url(self, url, search_term, scraper_platform, status_dic):
         # --- Get URL data as JSON ---
         page_data = self._retrieve_URL_as_JSON(url, status_dic)
-        self._dump_json_debug('TGDB_get_candidates.json', page_data)
         if not status_dic['status']: return None
+        self._dump_json_debug('TGDB_get_candidates.json', page_data)
 
         # --- Parse game list ---
         games = page_data['data']['games']
@@ -1870,7 +1880,7 @@ class TheGamesDB(Scraper):
         # "genres" : [ 1 , 15 ],
         genre_ids = online_data['genres']
         # log_variable('genre_ids', genre_ids)
-        # For some games genre_ids is None. In that case return empty string.
+        # For some games genre_ids is None. In that case return an empty string (default DB value).
         if not genre_ids: return ''
         TGDB_genres = self._retrieve_genres(status_dic)
         if not status_dic['status']: return None
@@ -1899,8 +1909,8 @@ class TheGamesDB(Scraper):
         log_debug('TheGamesDB::_retrieve_genres() Genres cache miss. Retrieving genres...')
         url = 'https://api.thegamesdb.net/Genres?apikey={}'.format(self._get_API_key())
         page_data = self._retrieve_URL_as_JSON(url, status_dic)
-        self._dump_json_debug('TGDB_get_genres.json', page_data)
         if not status_dic['status']: return None
+        self._dump_json_debug('TGDB_get_genres.json', page_data)
 
         # --- Update cache ---
         self.genres_cached = {}
@@ -1920,8 +1930,8 @@ class TheGamesDB(Scraper):
         log_debug('TheGamesDB::_retrieve_developers() Developers cache miss. Retrieving developers...')
         url = 'https://api.thegamesdb.net/Developers?apikey={}'.format(self._get_API_key())
         page_data = self._retrieve_URL_as_JSON(url, status_dic)
-        self._dump_json_debug('TGDB_get_developers.json', page_data)
         if not status_dic['status']: return None
+        self._dump_json_debug('TGDB_get_developers.json', page_data)
 
         # --- Update cache ---
         self.developers_cached = {}
@@ -1958,7 +1968,8 @@ class TheGamesDB(Scraper):
             return asset_list
 
         # --- Cache miss. Retrieve data and update cache ---
-        log_debug('TheGamesDB::_retrieve_all_assets() Cache miss "{0}". Retrieving all assets...'.format(cache_key))
+        log_debug('TheGamesDB::_retrieve_all_assets() Cache miss "{0}". Retrieving all assets...'.format(
+            cache_key))
         url = 'https://api.thegamesdb.net/Games/Images?apikey={}&games_id={}'.format(
             self._get_API_key(), candidate['id'])
         asset_list = self._retrieve_assets_from_url(url, candidate['id'], status_dic)
@@ -1972,8 +1983,8 @@ class TheGamesDB(Scraper):
     def _retrieve_assets_from_url(self, url, candidate_id, status_dic):
         # --- Read URL JSON data ---
         page_data = self._retrieve_URL_as_JSON(url, status_dic)
-        self._dump_json_debug('TGDB_get_assets.json', page_data)
         if not status_dic['status']: return None
+        self._dump_json_debug('TGDB_get_assets.json', page_data)
 
         # --- Parse images page data ---
         base_url_thumb = page_data['data']['base_url']['thumb']
@@ -2023,29 +2034,30 @@ class TheGamesDB(Scraper):
 
     # Retrieve URL and decode JSON object.
     def _retrieve_URL_as_JSON(self, url, status_dic):
-        page_data_raw = net_get_URL(url, self._clean_URL_for_log(url))
+        page_data_raw, http_code = net_get_URL(url, self._clean_URL_for_log(url))
+        if page_data_raw is None:
+            self._handle_error(status_dic, 'Network error in net_get_URL()')
+            return None
         try:
-            page_data = json.loads(page_data_raw)
+            json_data = json.loads(page_data_raw)
         except Exception as ex:
-            self._handle_exception(ex, status_dic, KODI_MESSAGE_DIALOG,
-                'Error decoding JSON data when getting TheGamesDB game list.',
-                ['Exception in json.loads(page_data_raw).'])
+            self._handle_exception(ex, status_dic, 'Error decoding JSON data from TheGamesDB.')
             return None
         # Check for scraper overloading. Scraper is disabled if overloaded.
-        self._check_overloading(page_data, status_dic)
         # Does the scraper return valid JSON when it is overloaded??? I have to confirm this point.
+        self._check_overloading(json_data, status_dic)
         if not status_dic['status']: return None
 
-        return page_data
+        return json_data
 
     # Checks if TDGB scraper is overloaded (maximum number of API requests exceeded).
     # If the scraper is overloaded is immediately disabled.
     #
-    # @param page_data: [dict] Dictionary with JSON data retrieved from TGDB.
+    # @param json_data: [dict] Dictionary with JSON data retrieved from TGDB.
     # @returns: [None]
-    def _check_overloading(self, page_data, status_dic):
+    def _check_overloading(self, json_data, status_dic):
         # This is an integer.
-        remaining_monthly_allowance = page_data['remaining_monthly_allowance']
+        remaining_monthly_allowance = json_data['remaining_monthly_allowance']
         log_debug('TheGamesDB::_check_overloading() remaining_monthly_allowance = {}'.format(
             remaining_monthly_allowance))
         if remaining_monthly_allowance > 0: return

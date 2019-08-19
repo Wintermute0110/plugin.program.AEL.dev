@@ -98,43 +98,50 @@ def net_download_img(img_url, file_path):
 
 #
 # User agent is fixed and defined in global var USER_AGENT
-# Returns a Unicode string.
+#
 # @param url: [Unicode string] URL to open
 # @param url_log: [Unicode string] If not None this URL will be used in the logs.
+# @return: [tuple] Tuple of strings. First tuple element is a string with the web content as 
+#          a Unicode string or None if network error/exception. Second tuple element is the 
+#          HTTP status code as integer or None if network error/exception.
 def net_get_URL(url, url_log = None):
     req = urllib2.Request(url)
     req.add_unredirected_header('User-Agent', USER_AGENT)
     if url_log is None:
-        log_debug('net_get_URL() GET URL "{0}"'.format(req.get_full_url()))
+        log_debug('net_get_URL() GET URL "{}"'.format(req.get_full_url()))
     else:
-        log_debug('net_get_URL() GET URL "{0}"'.format(url_log))
+        log_debug('net_get_URL() GET URL "{}"'.format(url_log))
 
+    page_bytes = http_code = None
     try:
         f = urllib2.urlopen(req)
         page_bytes = f.read()
+        http_code = f.getcode()
         f.close()
     # If an exception happens return empty data.
     except Exception as ex:
         log_error('(Exception) In net_get_URL()')
         log_error('(Exception) Object type "{}"'.format(type(ex)))
         log_error('(Exception) Message "{}"'.format(str(ex)))
-        return ''
-    log_debug('net_get_URL() Read {0} bytes'.format(len(page_bytes)))
+        return page_data, http_code
+    log_debug('net_get_URL() Read {} bytes'.format(len(page_bytes)))
+    log_debug('net_get_URL() HTTP status code {}'.format(http_code))
 
     # --- Convert to Unicode ---
     encoding = f.headers['content-type'].split('charset=')[-1]
     page_data = net_decode_URL_data(page_bytes, encoding)
 
-    return page_data
+    return page_data, http_code
 
-def net_get_URL_oneline(url):
-    page_data = net_get_URL(url)
+def net_get_URL_oneline(url, url_log = None):
+    page_data, http_code = net_get_URL(url, url_log)
+    if page_data is None: return (page_data, http_code)
 
     # --- Put all page text into one line ---
     page_data = page_data.replace('\r\n', '')
     page_data = page_data.replace('\n', '')
 
-    return page_data
+    return page_data, http_code
 
 # Do HTTP request with POST: https://docs.python.org/2/library/urllib2.html#urllib2.Request
 def net_post_URL(url, data):
