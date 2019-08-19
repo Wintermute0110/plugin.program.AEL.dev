@@ -439,6 +439,6 @@
         "current": "https://api.thegamesdb.net/Games/ByGameName?apikey=ABC&name=castlevania&fields=players%2Cpublishers%2Cgenres%2Coverview%2Crating%2Cplatform%2Ccoop%2Cyoutube&page=1",
         "next": null
     },
-    "remaining_monthly_allowance": 0,
+    "remaining_monthly_allowance": 200,
     "extra_allowance": 5958
 }

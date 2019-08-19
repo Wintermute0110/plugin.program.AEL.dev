@@ -79,11 +79,12 @@ class Test_mobygames_scraper(unittest.TestCase):
         
         # arrange
         settings = self.get_test_settings()
+        status_dic = {}
         target = MobyGames(settings)
 
         # act
-        candidates = target.get_candidates('castlevania', 'castlevania', 'Nintendo NES')
-        actual = target.get_metadata(candidates[0])
+        candidates = target.get_candidates('castlevania', 'castlevania', 'Nintendo NES', status_dic)
+        actual = target.get_metadata(candidates[0], status_dic)
                           
         # assert
         self.assertTrue(actual)
@@ -98,18 +99,19 @@ class Test_mobygames_scraper(unittest.TestCase):
 
         # arrange
         settings = self.get_test_settings()
+        status_dic = {}
         target = MobyGames(settings)
         
         assets_to_scrape = [
             g_assetFactory.get_asset_info(ASSET_BOXFRONT_ID), 
             g_assetFactory.get_asset_info(ASSET_BOXBACK_ID), 
             g_assetFactory.get_asset_info(ASSET_SNAP_ID)]
-
+        
         # act
         actuals = []
-        candidates = target.get_candidates('castlevania', 'castlevania', 'Nintendo NES')   
+        candidates = target.get_candidates('castlevania', 'castlevania', 'Nintendo NES', status_dic)   
         for asset_to_scrape in assets_to_scrape:
-            an_actual = target.get_assets(candidates[0], asset_to_scrape)
+            an_actual = target.get_assets(candidates[0], asset_to_scrape, status_dic)
             actuals.append(an_actual)
                 
         # assert

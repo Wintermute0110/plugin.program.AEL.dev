@@ -2,7 +2,7 @@
     "status": "Success",
     "code": 200,
     "extra_allowance": 5916,
-    "remaining_monthly_allowance": 0,
+    "remaining_monthly_allowance": 230,
     "data": {
         "count": 1,
         "images": {

@@ -50,9 +50,10 @@ class Test_null_scraper(unittest.TestCase):
         # arrange
         settings = self.get_test_settings()
         target = Null_Scraper(settings)
+        status_dic = {}
 
         # act
-        candidates = target.get_candidates('castlevania', 'castlevania', 'Nintendo NES')
+        candidates = target.get_candidates('castlevania', 'castlevania', 'Nintendo NES', status_dic)
                                   
         # assert
         self.assertFalse(candidates)

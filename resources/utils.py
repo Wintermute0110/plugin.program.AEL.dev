@@ -1544,17 +1544,6 @@ class PythonFileName(FileNameBase):
     def rename(self, to):
         os.rename(self.path, to.getPath())
 
-# -------------------------------------------------------------------------------------------------
-# Utilities to test scrapers
-# -------------------------------------------------------------------------------------------------
-# Candidates
-NAME_L      = 65
-SCORE_L     = 5
-ID_L        = 55
-PLATFORM_L  = 15
-SPLATFORM_L = 15
-URL_L       = 70
-
     # ---------------------------------------------------------------------------------------------
     # File IO functions
     # ---------------------------------------------------------------------------------------------
@@ -2831,6 +2820,36 @@ else:
     log_info    = log_info_Python
     log_warning = log_warning_Python
     log_error   = log_error_Python
+
+
+# -------------------------------------------------------------------------------------------------
+# Kodi error reporting
+# -------------------------------------------------------------------------------------------------
+KODI_MESSAGE_NONE        = 100
+# Kodi notifications must be short.
+KODI_MESSAGE_NOTIFY      = 200
+KODI_MESSAGE_NOTIFY_WARN = 300
+# Kodi OK dialog to display a message.
+KODI_MESSAGE_DIALOG      = 400
+
+# If status_dic['status'] is True then everything is OK. If status_dic['status'] is False,
+# then display the notification.
+def kodi_new_status_dic(message):
+    return {
+        'status' : True,
+        'dialog' : KODI_MESSAGE_NOTIFY,
+        'msg'    : message,
+    }
+
+def kodi_display_user_message(op_dic):
+    if op_dic['dialog'] == KODI_MESSAGE_NONE:
+        return
+    elif op_dic['dialog'] == KODI_MESSAGE_NOTIFY:
+        kodi_notify(op_dic['msg'])
+    elif op_dic['dialog'] == KODI_MESSAGE_NOTIFY_WARN:
+        kodi_notify(op_dic['msg'])
+    elif op_dic['dialog'] == KODI_MESSAGE_DIALOG:
+        kodi_dialog_OK(op_dic['msg'])
 
 # -------------------------------------------------------------------------------------------------
 # Utilities to test scrapers

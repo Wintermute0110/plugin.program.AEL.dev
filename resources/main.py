@@ -214,7 +214,7 @@ def run_plugin(addon_argv):
     # log_debug('WindowName     "{0}"'.format(xbmc.getInfoLabel('Window.Property(xmlfile)')))
     log_debug('Python version "' + sys.version.replace('\n', '') + '"')
     # log_debug('__a_name__     "{0}"'.format(__addon_name__))
-    # log_debug('__a_id__       "{0}"'.format(__addon_id__))
+    log_debug('__a_id__       "{0}"'.format(__addon_id__))
     log_debug('__a_version__  "{0}"'.format(__addon_version__))
     # log_debug('__a_author__   "{0}"'.format(__addon_author__))
     # log_debug('__a_profile__  "{0}"'.format(__addon_profile__))
@@ -544,12 +544,15 @@ def m_get_settings():
     g_settings['scan_update_NFO_files']    = True if o.getSetting('scan_update_NFO_files') == 'true' else False
     g_settings['scan_ignore_scrap_title']  = True if o.getSetting('scan_ignore_scrap_title') == 'true' else False
     g_settings['scan_clean_tags']          = True if o.getSetting('scan_clean_tags') == 'true' else False
-    g_settings['scan_metadata_policy']     = int(o.getSetting('scan_metadata_policy'))
-    g_settings['scan_asset_policy']        = int(o.getSetting('scan_asset_policy'))
-    g_settings['metadata_scraper_mode']    = int(o.getSetting('metadata_scraper_mode'))
-    g_settings['asset_scraper_mode']       = int(o.getSetting('asset_scraper_mode'))
     
-    # --- ROM scraping --
+    # --- ROM scraping ---
+    # Scanner settings
+    g_settings['scan_metadata_policy']  = int(o.getSetting('scan_metadata_policy'))
+    g_settings['scan_asset_policy']     = int(o.getSetting('scan_asset_policy'))
+    g_settings['metadata_scraper_mode'] = int(o.getSetting('metadata_scraper_mode'))
+    g_settings['asset_scraper_mode']    = int(o.getSetting('asset_scraper_mode'))
+
+    # Scanner scrapers
     g_settings['scraper_metadata']      = int(o.getSetting('scraper_metadata'))
     g_settings['scraper_asset']         = int(o.getSetting('scraper_asset'))
     g_settings['scraper_metadata_MAME'] = int(o.getSetting('scraper_metadata_MAME'))

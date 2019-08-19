@@ -19,7 +19,7 @@ def read_file_as_json(path):
     file_data = read_file(path)
     return json.loads(file_data, encoding = 'utf-8')
 
-def mocked_gamesdb(url):
+def mocked_gamesdb(url, url_clean=None):
 
     print(url)
     mocked_json_file = ''
@@ -91,11 +91,13 @@ class Test_gamesdb_scraper(unittest.TestCase):
         
         # arrange
         settings = self.get_test_settings()
+        status_dic = {}
+        status_dic['status'] = True
         target = TheGamesDB(settings)
 
         # act
-        candidates = target.get_candidates('castlevania', 'castlevania', 'Nintendo NES')
-        actual = target.get_metadata(candidates[0])
+        candidates = target.get_candidates('castlevania', 'castlevania', 'Nintendo NES', status_dic)
+        actual = target.get_metadata(candidates[0], status_dic)
                 
         # assert
         self.assertTrue(actual)
@@ -109,14 +111,16 @@ class Test_gamesdb_scraper(unittest.TestCase):
 
         # arrange
         settings = self.get_test_settings()
+        status_dic = {}
+        status_dic['status'] = True
         assets_to_scrape = [g_assetFactory.get_asset_info(ASSET_BANNER_ID), g_assetFactory.get_asset_info(ASSET_FANART_ID)]
         target = TheGamesDB(settings)
 
         # act
         actuals = []
-        candidates = target.get_candidates('castlevania', 'castlevania', 'Nintendo NES')   
+        candidates = target.get_candidates('castlevania', 'castlevania', 'Nintendo NES', status_dic)   
         for asset_to_scrape in assets_to_scrape:
-            an_actual = target.get_assets(candidates[0], asset_to_scrape)
+            an_actual = target.get_assets(candidates[0], asset_to_scrape, status_dic)
             actuals.append(an_actual)
                 
         # assert

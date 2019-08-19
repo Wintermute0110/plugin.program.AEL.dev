@@ -8,7 +8,7 @@ import xml.etree.ElementTree as ET
 from resources.constants import *
 from resources.utils import *
 from resources.net_IO import *
-from resources.scrap import ArcadeDB
+from resources.scrap import *
 from resources.objects import *
 
 FileName = FakeFile
@@ -84,7 +84,7 @@ class Test_arcadedb_scraper(unittest.TestCase):
         rom = ROM({'id': 1234})
         fakeRomPath = FakeFile('/my/nice/roms/dino.zip')
 
-        target = ArcadeDB(settings, launcher)
+        target = ArcadeDB(settings)
 
         # act
         actual = target.scrape_metadata('dino', fakeRomPath, rom)

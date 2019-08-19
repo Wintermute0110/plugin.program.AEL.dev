@@ -25,6 +25,6 @@
         "current": "https:\/\/api.thegamesdb.net\/Games\/ByGameID?apikey=8c1fba5b0f980c616554f1ad0b01341708f2e8800d4176e4f4250ed0093e1a5b&id=23213&fields=players%2Cpublishers%2Cgenres%2Coverview%2Crating%2Cplatform%2Ccoop%2Cyoutube&page=1",
         "next": null
     },
-    "remaining_monthly_allowance": 0,
+    "remaining_monthly_allowance": 200,
     "extra_allowance": 5921
 }

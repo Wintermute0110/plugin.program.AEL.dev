@@ -90,7 +90,7 @@ def net_get_random_UserAgent():
 
 def net_download_img(img_url, file_path):
     try:
-        req = urllib2.Request(img_url)
+        req = Request(img_url)
         # req.add_unredirected_header('User-Agent', net_get_random_UserAgent())
         req.add_unredirected_header('User-Agent', USER_AGENT)
         file_path.writeAll(urlopen(req).read(),'wb')
@@ -110,7 +110,7 @@ def net_download_img(img_url, file_path):
 # @param url: [Unicode string] URL to open
 # @param url_log: [Unicode string] If not None this URL will be used in the logs.
 def net_get_URL(url, url_log = None):
-    req = urllib2.Request(url)
+    req = Request(url)
     req.add_unredirected_header('User-Agent', USER_AGENT)
     if url_log is None:
         log_debug('net_get_URL() GET URL "{0}"'.format(req.get_full_url()))
@@ -118,7 +118,7 @@ def net_get_URL(url, url_log = None):
         log_debug('net_get_URL() GET URL "{0}"'.format(url_log))
 
     try:
-        f = urllib2.urlopen(req)
+        f = urlopen(req)
         page_bytes = f.read()
         f.close()
     # If an exception happens return empty data.
@@ -147,14 +147,14 @@ def net_get_URL_oneline(url):
 # Do HTTP request with POST: https://docs.python.org/2/library/urllib2.html#urllib2.Request
 def net_post_URL(url, data):
     page_data = ''
-    req = urllib2.Request(url, data)
+    req = Request(url, data)
     req.add_unredirected_header('User-Agent', USER_AGENT)
     req.add_header("Content-type", "application/x-www-form-urlencoded")
     req.add_header("Acept", "text/plain")
     log_debug('net_post_URL() POST URL "{0}"'.format(req.get_full_url()))
 
     try:
-        f = urllib2.urlopen(req)
+        f = urlopen(req)
         page_bytes = f.read()
         f.close()
     # If an exception happens return empty data.
@@ -279,9 +279,8 @@ def net_get_URL_using_handler(url, handler = None):
         page_data = page_bytes.encode('utf-16')
     return page_data
     
-def net_get_URL_as_json(url):
-
-    page_data = net_get_URL_original(url)
+def net_get_URL_as_json(url, url_log = None):
+    page_data = net_get_URL(url, url_log)
     return json.loads(page_data)
 
 class HTTPSClientAuthHandler(HTTPSHandler):
