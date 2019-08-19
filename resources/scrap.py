@@ -306,9 +306,8 @@ class ScrapeStrategy(object):
     ACTION_META_SCRAPER    = 300
 
     # --- Asset actions ---
-    ACTION_ASSET_UNSET       = 100
-    ACTION_ASSET_LOCAL_ASSET = 200
-    ACTION_ASSET_SCRAPER     = 300
+    ACTION_ASSET_LOCAL_ASSET = 100
+    ACTION_ASSET_SCRAPER     = 200
 
     # --- Constructor ----------------------------------------------------------------------------
     # @param PATHS: PATH object.
@@ -317,7 +316,7 @@ class ScrapeStrategy(object):
     # @param pdialog: [KodiProgressDialog] object instance.
     # @param pdialog_verbose: [bool] verbose progress dialog.
     def __init__(self, PATHS, settings):
-        log_debug('ScrapeStrategy::__init__() BEGIN ...')
+        log_debug('ScrapeStrategy::__init__() Initializing ScrapeStrategy...')
         self.PATHS = PATHS
         self.settings = settings
 
@@ -344,12 +343,12 @@ class ScrapeStrategy(object):
         # For now just use the first scraper
         self.meta_scraper_obj = self.metadata_scraper_list[0]
         self.meta_scraper_name = self.meta_scraper_obj.get_name()
-        log_debug('Using metadata scraper "{0}"'.format(self.meta_scraper_name))
+        # log_debug('Using metadata scraper "{0}"'.format(self.meta_scraper_name))
 
         # --- Asset scraper ---
         self.asset_scraper_obj = self.asset_scraper_list[0]
         self.asset_scraper_name = self.asset_scraper_obj.get_name()
-        log_debug('Using asset scraper "{0}"'.format(self.asset_scraper_name))
+        # log_debug('Using asset scraper "{0}"'.format(self.asset_scraper_name))
 
         # This will be used later
         self.flag_meta_and_asset_scraper_same = self.meta_scraper_obj is self.asset_scraper_obj
@@ -412,41 +411,40 @@ class ScrapeStrategy(object):
         # local_asset_list will have the default database value empty string ''.
         self.local_asset_list = assets_search_local_cached_assets(self.launcher, ROM, self.enabled_asset_list)
         self.asset_action_list = [ScrapeStrategy.ACTION_ASSET_LOCAL_ASSET] * len(ROM_ASSET_ID_LIST)
+        # Print information to the log
         if self.scan_asset_policy == 0:
             log_error('Asset policy: Local images ON | Scraper OFF')
-            for i, asset_ID in enumerate(ROM_ASSET_ID_LIST):
-                AInfo = assets_get_info_scheme(asset_ID)
-                if not self.enabled_asset_list[i]:
-                    log_error('Skipping {0} (dir not configured)'.format(AInfo.name))
-                    self.asset_action_list[i] = ScrapeStrategy.ACTION_ASSET_UNSET
-                elif self.local_asset_list[i]:
-                    log_error('Local {0} FOUND'.format(AInfo.name))
-                    self.asset_action_list[i] = ScrapeStrategy.ACTION_ASSET_LOCAL_ASSET
-                else:
-                    log_error('Local {0} NOT found. Unsetting...'.format(AInfo.name))
-                    self.asset_action_list[i] = ScrapeStrategy.ACTION_ASSET_UNSET
-
         elif self.scan_asset_policy == 1:
             log_error('Asset policy: Local images ON | Scraper ON')
-            for i, asset_ID in enumerate(ROM_ASSET_ID_LIST):
-                AInfo = assets_get_info_scheme(asset_ID)
+        elif self.scan_asset_policy == 2:
+            log_error('Asset policy: Local images OFF | Scraper ON')
+        else:
+            raise ValueError('Invalid scan_asset_policy value {0}'.format(self.scan_asset_policy))
+        # Process asset by asset
+        for i, asset_ID in enumerate(ROM_ASSET_ID_LIST):
+            AInfo = assets_get_info_scheme(asset_ID)
+            if self.scan_asset_policy == 0:
                 if not self.enabled_asset_list[i]:
                     log_error('Skipping {0} (dir not configured).'.format(AInfo.name))
-                    self.asset_action_list[i] = ScrapeStrategy.ACTION_ASSET_UNSET
+                elif self.local_asset_list[i]:
+                    log_error('Local {0} FOUND'.format(AInfo.name))
+                else:
+                    log_error('Local {0} NOT found.'.format(AInfo.name))
+                self.asset_action_list[i] = ScrapeStrategy.ACTION_ASSET_LOCAL_ASSET
+            elif self.scan_asset_policy == 1:
+                if not self.enabled_asset_list[i]:
+                    log_error('Skipping {0} (dir not configured).'.format(AInfo.name))
+                    self.asset_action_list[i] = ScrapeStrategy.ACTION_ASSET_LOCAL_ASSET
                 elif self.local_asset_list[i]:
                     log_error('Local {0} FOUND'.format(AInfo.name))
                     self.asset_action_list[i] = ScrapeStrategy.ACTION_ASSET_LOCAL_ASSET
                 else:
                     log_error('Local {0} NOT found. Scraping.'.format(AInfo.name))
                     self.asset_action_list[i] = ScrapeStrategy.ACTION_ASSET_SCRAPER
-
-        elif self.scan_asset_policy == 2:
-            log_error('Asset policy: Local images OFF | Scraper ON')
-            for i, asset_ID in enumerate(ROM_ASSET_ID_LIST):
-                AInfo = assets_get_info_scheme(asset_ID)
+            elif self.scan_asset_policy == 2:
                 if not self.enabled_asset_list[i]:
                     log_error('Skipping {0} (dir not configured).'.format(AInfo.name))
-                    self.asset_action_list[i] = ScrapeStrategy.ACTION_ASSET_UNSET
+                    self.asset_action_list[i] = ScrapeStrategy.ACTION_ASSET_LOCAL_ASSET
                 # Scraper does not support asset but local asset found.
                 elif not self.asset_scraper_obj.supports_asset_ID(asset_ID) and self.local_asset_list[i]:
                     log_error('Scraper {} does not support {}. Using local asset.'.format(
@@ -456,16 +454,13 @@ class ScrapeStrategy(object):
                 elif not self.asset_scraper_obj.supports_asset_ID(asset_ID) and not self.local_asset_list[i]:
                     log_error('Scraper {} does not support {}. Local asset not found.'.format(
                         self.asset_scraper_name, AInfo.name))
-                    self.asset_action_list[i] = ScrapeStrategy.ACTION_ASSET_UNSET
+                    self.asset_action_list[i] = ScrapeStrategy.ACTION_ASSET_LOCAL_ASSET
                 # Scraper supports asset. Scrape wheter local asset is found or not.
                 elif self.asset_scraper_obj.supports_asset_ID(asset_ID):
                     log_error('Scraping {} with {}.'.format(AInfo.name, self.asset_scraper_name))
                     self.asset_action_list[i] = ScrapeStrategy.ACTION_ASSET_SCRAPER
                 else:
                     raise ValueError('Logical error')
-
-        else:
-            raise ValueError('Invalid scan_asset_policy value {0}'.format(self.scan_asset_policy))
 
         # --- If metadata or any asset is scraped then select the game among the candidates ---
         # Note that the metadata and asset scrapers may be different. If so, candidates
@@ -480,7 +475,7 @@ class ScrapeStrategy(object):
 
         temp_asset_list = [x == ScrapeStrategy.ACTION_ASSET_SCRAPER for x in self.asset_action_list]
         if any(temp_asset_list) and self.flag_meta_and_asset_scraper_same:
-            log_debug('Asset candidate game same as metadata.')
+            log_debug('Asset candidate game same as metadata candidate.')
             self.candidate_asset = self.candidate_metadata
         elif any(temp_asset_list) and not self.flag_meta_and_asset_scraper_same:
             log_debug('Getting asset candidate game.')
@@ -533,20 +528,12 @@ class ScrapeStrategy(object):
         # --- Asset scraping ---
         for i, asset_ID in enumerate(ROM_ASSET_ID_LIST):
             AInfo = g_assetFactory.get_asset_info(asset_ID)
-                        
-            # Remove this action. It is equivalent to ACTION_ASSET_LOCAL_ASSET
-            if self.asset_action_list[i] == ScrapeStrategy.ACTION_ASSET_UNSET:
-                log_debug('Unsetting asset {}'.format(AInfo.name))
-                ROM.set_asset(asset_info, None)
-
-            elif self.asset_action_list[i] == ScrapeStrategy.ACTION_ASSET_LOCAL_ASSET:
+            if self.asset_action_list[i] == ScrapeStrategy.ACTION_ASSET_LOCAL_ASSET:
                 log_debug('Using local asset for {}'.format(AInfo.name))
-                ROM.set_asset(asset_info, local_asset_list[i])
-
-            elif self.asset_action_list[i] == ScrapeStrategy.ACTION_ASSET_SCRAPER:
-                log_verb('Scraping {}...'.format(AInfo.name))
-                ROM.set_asset(asset_info, self._scanner_scrap_ROM_asset(asset_info, self.local_asset_list[i], ROM))
-
+                ROM.set_asset(AInfo, self.local_asset_list[i])
+            elif self.asset_action_list[i] == ScrapeStrategy.ACTION_ASSET_SCRAPER:                
+                ROM.set_asset(AInfo, self._scanner_scrap_ROM_asset(
+                    AInfo, self.local_asset_list[i], ROM))
             else:
                 raise ValueError('Asset {} index {} ID {} unknown action {}'.format(
                     AInfo.name, i, asset_ID, self.asset_action_list[i]))
@@ -621,17 +608,16 @@ class ScrapeStrategy(object):
 
     # Scraps ROM metadata in the ROM scanner.
     def _scanner_scrap_ROM_metadata(self, romdata, ROM):
-        log_debug('ScrapeStrategy::_scanner_scrap_ROM_metadata() BEGIN...')
+        log_debug('ScrapeStrategy::_scanner_scrap_ROM_metadata() Scraping metadata...')
 
         # --- Update scanner progress dialog ---
         if self.pdialog_verbose:
-            scraper_text = 'Scraping metadata with {0} (Getting metadata...)'.format(
-                self.meta_scraper_name)
+            scraper_text = 'Scraping metadata with {}...'.format(self.meta_scraper_name)
             self.pdialog.updateMessage2(scraper_text)
 
         # --- If no candidates available just clean the ROM Title and return ---
-        if self.candidate_metadata is None  or not self.candidate_metadata:
-            log_verb('No metadata candidates. Cleaning ROM name only.')
+        if self.candidate_metadata is None and not self.candidate_metadata:
+            log_verb('No medatada candidates (or previous error). Cleaning ROM name only.')
             romdata['m_name'] = text_format_ROM_title(ROM.getBase_noext(), self.scan_clean_tags)
             return
 
@@ -665,29 +651,36 @@ class ScrapeStrategy(object):
         asset_name = asset_info.name
         asset_dir_FN  = self.launcher.get_asset_path(asset_info)
         asset_path_noext_FN = assets_get_path_noext_DIR(asset_info, asset_dir_FN, ROM.get_file())
-        log_debug('ScrapeStrategy::_scrap_ROM_asset_scanner() Scraping {0}...'.format(asset_name))
+        log_debug('ScrapeStrategy::_scanner_scrap_ROM_asset() Scraping {} with scraper {}...'.format(
+            asset_name, self.asset_scraper_name))
         status_dic = kodi_new_status_dic('No error')
         
         # By default always use local image if found in case scraper fails.
         ret_asset_path = local_asset_path
         candidate = self.candidate_asset
-        log_debug('Scraping {} with scraper {}'.format(asset_name, scraper_name))
         log_debug('local_asset_path "{}"'.format(local_asset_path))
         log_debug('asset_path_noext "{}"'.format(asset_path_noext_FN.getPath()))
 
+        # --- If no candidates available just clean the ROM Title and return ---
+        if self.candidate_asset is None or not self.candidate_asset:
+            log_verb('No asset candidates (or previous error). Cleaning ROM name only.')
+            romdata['m_name'] = text_format_ROM_title(ROM.getBase_noext(), self.scan_clean_tags)
+            return
+
         # --- If scraper does not support particular asset return inmediately ---
-        if not scraper_obj.supports_asset(asset_info.id):
-            log_debug('Scraper {0} does not support asset {1}.'.format(scraper_name, asset_name))
+        if not self.asset_scraper_obj.supports_asset_ID(asset_info.id):
+            log_debug('Scraper {0} does not support asset {1}.'.format(
+                self.asset_scraper_name, asset_name))
             return ret_asset_path
 
         # --- Update scanner progress dialog ---
         if self.pdialog_verbose:
             scraper_text = 'Scraping {0} with {1} (Getting images...)'.format(
-                asset_name, scraper_name)
+                asset_name, self.asset_scraper_name)
             self.pdialog.updateMessage2(scraper_text)
 
         # --- Grab list of images/assets for the selected candidate ---
-        assetdata_list = scraper_obj.get_assets(candidate, asset_info, status_dic)
+        assetdata_list = self.asset_scraper_obj.get_assets(candidate, asset_info, status_dic)
         if not status_dic['status']:
             self.pdialog.close()
             kodi_dialog_OK(status_dic['msg'])
@@ -695,12 +688,12 @@ class ScrapeStrategy(object):
             self.pdialog.reopen()
         if assetdata_list is None or not assetdata_list:
             # If scraper returns no images return current local asset.
-            log_debug('{0} {1} found no images.'.format(scraper_name, asset_name))
-            return ret_asset_path        
+            log_debug('{0} {1} found no images.'.format(self.asset_scraper_name, asset_name))
+            return ret_asset_path
         log_verb('{0} scraper returned {1} images.'.format(asset_name, len(assetdata_list)))
 
         # --- Semi-automatic scraping (user choses an image from a list) ---
-        if self.asset_scraper_mode == 0:
+        if self.asset_selection_mode == 0:
             # If there is a local image add it to the list and show it to the user
             local_asset_in_list_flag = False
             if local_asset_path:
@@ -736,10 +729,10 @@ class ScrapeStrategy(object):
                 log_debug('User chose local asset. Returning.')
                 return ret_asset_path
         # --- Automatic scraping. Pick first image. ---
-        elif self.asset_scraper_mode == 1:
+        elif self.asset_selection_mode == 1:
             image_selected_index = 0
         else:
-            raise AddonError('Invalid asset_scraper_mode {0}'.format(self.asset_scraper_mode))
+            raise AddonError('Invalid asset_selection_mode {0}'.format(self.asset_selection_mode))
 
         # --- Download scraped image --------------------------------------------------------------
         selected_asset = assetdata_list[image_selected_index]
@@ -748,9 +741,9 @@ class ScrapeStrategy(object):
         log_debug('Resolving asset URL...')
         if self.pdialog_verbose:
             scraper_text = 'Scraping {0} with {1} (Resolving URL...)'.format(
-                asset_name, scraper_name)
+                asset_name, self.asset_scraper_name)
             self.pdialog.updateMessage2(scraper_text)
-        image_url = scraper_obj.resolve_asset_URL(selected_asset)
+        image_url = self.asset_scraper_obj.resolve_asset_URL(selected_asset, status_dic)
         if not status_dic['status']:
             self.pdialog.close()
             kodi_dialog_OK(status_dic['msg'])
@@ -762,7 +755,8 @@ class ScrapeStrategy(object):
         log_debug('Resolved {0} to URL "{1}"'.format(asset_name, image_url))
 
         # --- Resolve URL extension ---
-        image_ext = scraper_obj.resolve_asset_URL_extension(image_url, status_dic)
+        log_debug('Resolving asset URL extension...')
+        image_ext = self.asset_scraper_obj.resolve_asset_URL_extension(image_url, status_dic)
         if not status_dic['status']:
             self.pdialog.close()
             kodi_dialog_OK(status_dic['msg'])
@@ -774,10 +768,9 @@ class ScrapeStrategy(object):
         log_debug('Resolved URL extension "{0}"'.format(image_ext))
 
         # --- Download image ---
-        log_debug('Downloading {0} ...'.format(image_url))
         if self.pdialog_verbose:
-            scraper_text = 'Downloading {} from {}...)'.format(
-                asset_name, scraper_name)
+            scraper_text = 'Downloading {} from {}...'.format(
+                asset_name, self.asset_scraper_name)
             self.pdialog.updateMessage2(scraper_text)
         image_local_path = asset_path_noext_FN.append('.' + image_ext)
         log_verb('Downloading URL  "{0}"'.format(image_url))
@@ -785,7 +778,9 @@ class ScrapeStrategy(object):
         try:
             net_download_img(image_url, image_local_path)
         except socket.timeout:
-            kodi_notify_warn('Cannot download {0} image (Timeout)'.format(asset_name))
+            self.pdialog.close()
+            kodi_dialog_OK('Cannot download {0} image (Timeout)'.format(asset_name))
+            self.pdialog.reopen()
 
         # --- Update Kodi cache with downloaded image ---
         # Recache only if local image is in the Kodi cache, this function takes care of that.
@@ -805,10 +800,11 @@ class ScrapeStrategy(object):
         # --- Put metadata into ROM/Launcher dictionary ---
         if self.scan_ignore_scrap_title:
             romdata['m_name'] = text_format_ROM_title(ROM.getBase_noext(), self.scan_clean_tags)
-            log_debug('User wants to ignore scraper name. Setting name to "{0}"'.format(romdata['m_name']))
+            log_debug('User wants to ignore scraped name and use filename.')
         else:
             romdata['m_name'] = gamedata['title']
-            log_debug('User wants scrapped name. Setting name to "{0}"'.format(romdata['m_name']))
+            log_debug('User wants scrapped name and not filename.')
+        log_debug('Setting ROM name to "{0}"'.format(romdata['m_name']))
         romdata['m_year']      = gamedata['year']
         romdata['m_genre']     = gamedata['genre']
         romdata['m_developer'] = gamedata['developer']
@@ -1317,12 +1313,11 @@ class Scraper(object):
             'is_on_page'   : False
         }
 
-    # This function is called when an exception happens.
-    def _handle_exception(self, ex, status_dic, user_msg_type, user_msg, log_msg_list):
-        log_error('(Exception) Object type "{}"'.format(type(ex)))
-        log_error('(Exception) Message "{}"'.format(str(ex)))
-        for msg_line in log_msg_list: log_error(msg_line)
-        # Record the number of exceptions produced in the scraper and disable the scraper
+    # This functions is called when an error that is not an exception and needs to increase
+    # the scraper error limit happens.
+    # All messages generated in the scrapers are KODI_MESSAGE_DIALOG.
+    def _handle_error(self, status_dic, user_msg):
+        # Record the number of error/exceptions produced in the scraper and disable the scraper
         # if the number of errors is higher than a threshold.
         self.exception_counter += 1
         if self.exception_counter > Scraper.EXCEPTION_COUNTER_THRESHOLD:
@@ -1331,8 +1326,15 @@ class Scraper(object):
         # Fill in the status dictionary so the error message will be propagated up in the
         # stack and the error message printed in the GUI.
         status_dic['status'] = False
-        status_dic['dialog'] = user_msg_type
+        status_dic['dialog'] = KODI_MESSAGE_DIALOG
         status_dic['msg']    = user_msg
+
+    # This function is called when an exception in the scraper code happens.
+    # All messages from the scrapers are KODI_MESSAGE_DIALOG.
+    def _handle_exception(self, ex, status_dic, user_msg):
+        log_error('(Exception) Object type "{}"'.format(type(ex)))
+        log_error('(Exception) Message "{}"'.format(str(ex)))
+        self._handle_error(status_dic, user_msg)
 
 # ------------------------------------------------------------------------------------------------
 # NULL scraper, does nothing.
@@ -1650,7 +1652,7 @@ class TheGamesDB(Scraper):
     # This function may be called many times in the ROM Scanner. All calls to this function
     # must be cached. See comments for this function in the Scraper abstract class.
     def get_candidates(self, search_term, rombase_noext, platform, status_dic):
-        # --- If scraper is disabled return immediately ---
+        # --- If scraper is disabled return immediately and silently ---
         if self.scraper_disabled:
             log_debug('TheGamesDB::get_candidates() Scraper disabled. Returning empty data.')
             return []
@@ -1703,9 +1705,9 @@ class TheGamesDB(Scraper):
         url_a = url_a.format(self._get_API_key(), candidate['id'])
         url = url_a + url_b
         page_data = self._retrieve_URL_as_JSON(url, status_dic)
-        self._dump_json_debug('TGDB_get_metadata.json', page_data)
         if not status_dic['status']: return None
-        
+        self._dump_json_debug('TGDB_get_metadata.json', page_data)
+
         # --- Parse game page data ---
         log_debug('TheGamesDB::get_metadata() Parsing game metadata...')
         online_data = page_data['data']['games'][0]
@@ -1760,18 +1762,20 @@ class TheGamesDB(Scraper):
         return text_get_URL_extension(image_url)
 
     # --- This class own methods -----------------------------------------------------------------
-    def get_platforms(self, status_dic):
-        log_debug('TheGamesDB::get_platforms() BEGIN...')
+    def debug_get_platforms(self, status_dic):
+        log_debug('TheGamesDB::debug_get_platforms() BEGIN...')
         url = 'https://api.thegamesdb.net/Platforms?apikey={}'.format(self._get_API_key())
         json_data = self._retrieve_URL_as_JSON(url, status_dic)
+        if not status_dic['status']: return None
         self._dump_json_debug('TGDB_get_platforms.json', json_data)
 
         return json_data
 
-    def get_genres(self, status_dic):
-        log_debug('TheGamesDB::get_genres() BEGIN...')
+    def debug_get_genres(self, status_dic):
+        log_debug('TheGamesDB::debug_get_platforms() BEGIN...')
         url = 'https://api.thegamesdb.net/Genres?apikey={}'.format(self._get_API_key())
         json_data = self._retrieve_URL_as_JSON(url, status_dic)
+        if not status_dic['status']: return None
         self._dump_json_debug('TGDB_get_genres.json', json_data)
 
         return json_data
@@ -1814,6 +1818,8 @@ class TheGamesDB(Scraper):
         search_string_encoded = urllib.quote_plus(search_term.encode('utf8'))
         url_str = 'https://api.thegamesdb.net/Games/ByGameName?apikey={0}&name={1}&filter[platform]={2}'
         url = url_str.format(self._get_API_key(), search_string_encoded, scraper_platform)
+        # _retrieve_games_from_url() may load files recursively from several pages so this code
+        # must be in a separate function.
         candidate_list = self._retrieve_games_from_url(url, search_term, scraper_platform, status_dic)
         if not status_dic['status']: return None
 
@@ -1826,8 +1832,8 @@ class TheGamesDB(Scraper):
     def _retrieve_games_from_url(self, url, search_term, scraper_platform, status_dic):
         # --- Get URL data as JSON ---
         page_data = self._retrieve_URL_as_JSON(url, status_dic)
-        self._dump_json_debug('TGDB_get_candidates.json', page_data)
         if not status_dic['status']: return None
+        self._dump_json_debug('TGDB_get_candidates.json', page_data)
 
         # --- Parse game list ---
         games = page_data['data']['games']
@@ -1878,7 +1884,7 @@ class TheGamesDB(Scraper):
         # "genres" : [ 1 , 15 ],
         genre_ids = online_data['genres']
         # log_variable('genre_ids', genre_ids)
-        # For some games genre_ids is None. In that case return empty string.
+        # For some games genre_ids is None. In that case return an empty string (default DB value).
         if not genre_ids: return ''
         TGDB_genres = self._retrieve_genres(status_dic)
         if not status_dic['status']: return None
@@ -1907,8 +1913,8 @@ class TheGamesDB(Scraper):
         log_debug('TheGamesDB::_retrieve_genres() Genres cache miss. Retrieving genres...')
         url = 'https://api.thegamesdb.net/Genres?apikey={}'.format(self._get_API_key())
         page_data = self._retrieve_URL_as_JSON(url, status_dic)
-        self._dump_json_debug('TGDB_get_genres.json', page_data)
         if not status_dic['status']: return None
+        self._dump_json_debug('TGDB_get_genres.json', page_data)
 
         # --- Update cache ---
         self.genres_cached = {}
@@ -1928,8 +1934,8 @@ class TheGamesDB(Scraper):
         log_debug('TheGamesDB::_retrieve_developers() Developers cache miss. Retrieving developers...')
         url = 'https://api.thegamesdb.net/Developers?apikey={}'.format(self._get_API_key())
         page_data = self._retrieve_URL_as_JSON(url, status_dic)
-        self._dump_json_debug('TGDB_get_developers.json', page_data)
         if not status_dic['status']: return None
+        self._dump_json_debug('TGDB_get_developers.json', page_data)
 
         # --- Update cache ---
         self.developers_cached = {}
@@ -1966,7 +1972,8 @@ class TheGamesDB(Scraper):
             return asset_list
 
         # --- Cache miss. Retrieve data and update cache ---
-        log_debug('TheGamesDB::_retrieve_all_assets() Cache miss "{0}". Retrieving all assets...'.format(cache_key))
+        log_debug('TheGamesDB::_retrieve_all_assets() Cache miss "{0}". Retrieving all assets...'.format(
+            cache_key))
         url = 'https://api.thegamesdb.net/Games/Images?apikey={}&games_id={}'.format(
             self._get_API_key(), candidate['id'])
         asset_list = self._retrieve_assets_from_url(url, candidate['id'], status_dic)
@@ -1980,8 +1987,8 @@ class TheGamesDB(Scraper):
     def _retrieve_assets_from_url(self, url, candidate_id, status_dic):
         # --- Read URL JSON data ---
         page_data = self._retrieve_URL_as_JSON(url, status_dic)
-        self._dump_json_debug('TGDB_get_assets.json', page_data)
         if not status_dic['status']: return None
+        self._dump_json_debug('TGDB_get_assets.json', page_data)
 
         # --- Parse images page data ---
         base_url_thumb = page_data['data']['base_url']['thumb']
@@ -2031,28 +2038,30 @@ class TheGamesDB(Scraper):
 
     # Retrieve URL and decode JSON object.
     def _retrieve_URL_as_JSON(self, url, status_dic):
+        page_data_raw, http_code = net_get_URL(url, self._clean_URL_for_log(url))
+        if page_data_raw is None:
+            self._handle_error(status_dic, 'Network error in net_get_URL()')
+            return None
         try:
-            page_data = net_get_URL_as_json(url, self._clean_URL_for_log(url))
+            json_data = json.loads(page_data_raw)
         except Exception as ex:
-            self._handle_exception(ex, status_dic, KODI_MESSAGE_DIALOG,
-                'Error decoding JSON data when getting TheGamesDB game list.',
-                ['Exception in json.loads(page_data_raw).'])
+            self._handle_exception(ex, status_dic, 'Error decoding JSON data from TheGamesDB.')
             return None
         # Check for scraper overloading. Scraper is disabled if overloaded.
-        self._check_overloading(page_data, status_dic)
         # Does the scraper return valid JSON when it is overloaded??? I have to confirm this point.
+        self._check_overloading(json_data, status_dic)
         if not status_dic['status']: return None
 
-        return page_data
+        return json_data
 
     # Checks if TDGB scraper is overloaded (maximum number of API requests exceeded).
     # If the scraper is overloaded is immediately disabled.
     #
-    # @param page_data: [dict] Dictionary with JSON data retrieved from TGDB.
+    # @param json_data: [dict] Dictionary with JSON data retrieved from TGDB.
     # @returns: [None]
-    def _check_overloading(self, page_data, status_dic):
+    def _check_overloading(self, json_data, status_dic):
         # This is an integer.
-        remaining_monthly_allowance = page_data['remaining_monthly_allowance']
+        remaining_monthly_allowance = json_data['remaining_monthly_allowance']
         log_debug('TheGamesDB::_check_overloading() remaining_monthly_allowance = {}'.format(
             remaining_monthly_allowance))
         if remaining_monthly_allowance > 0: return
