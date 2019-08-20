@@ -93,7 +93,7 @@ def net_download_img(img_url, file_path):
         req = Request(img_url)
         # req.add_unredirected_header('User-Agent', net_get_random_UserAgent())
         req.add_unredirected_header('User-Agent', USER_AGENT)
-        file_path.writeAll(urlopen(req).read(),'wb')
+        file_path.writeAll(urlopen(req, timeout = 120).read(),'wb')
     # If an exception happens record it in the log and do nothing.
     # This must be fixed. If an error happened when downloading stuff caller code must
     # known to take action.
@@ -122,7 +122,7 @@ def net_get_URL(url, url_log = None):
 
     page_bytes = http_code = None
     try:
-        f = urlopen(req)
+        f = urlopen(req, timeout = 120)
         page_bytes = f.read()
         http_code = f.getcode()
         f.close()
@@ -131,7 +131,7 @@ def net_get_URL(url, url_log = None):
         log_error('(Exception) In net_get_URL()')
         log_error('(Exception) Object type "{}"'.format(type(ex)))
         log_error('(Exception) Message "{}"'.format(str(ex)))
-        return page_data, http_code
+        return page_bytes, http_code
     log_debug('net_get_URL() Read {} bytes'.format(len(page_bytes)))
     log_debug('net_get_URL() HTTP status code {}'.format(http_code))
 
@@ -161,7 +161,7 @@ def net_post_URL(url, data):
     log_debug('net_post_URL() POST URL "{0}"'.format(req.get_full_url()))
 
     try:
-        f = urlopen(req)
+        f = urlopen(req, timeout = 120)
         page_bytes = f.read()
         f.close()
     # If an exception happens return empty data.

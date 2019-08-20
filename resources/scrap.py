@@ -667,9 +667,8 @@ class ScrapeStrategy(object):
 
         # --- If no candidates available just clean the ROM Title and return ---
         if self.candidate_asset is None or not self.candidate_asset:
-            log_verb('No asset candidates (or previous error). Cleaning ROM name only.')
-            ROM.set_name(text_format_ROM_title(ROM.getBaseNoExt(), self.scan_clean_tags))
-            return
+            log_verb('No asset candidates (or previous error).')
+            return ret_asset_path
 
         # --- If scraper does not support particular asset return inmediately ---
         if not self.asset_scraper_obj.supports_asset_ID(asset_info.id):
@@ -679,7 +678,7 @@ class ScrapeStrategy(object):
 
         # --- Update scanner progress dialog ---
         if self.pdialog_verbose:
-            scraper_text = 'Scraping {0} with {1} (Getting images...)'.format(
+            scraper_text = 'Getting {0} images with {1}...'.format(
                 asset_name, self.asset_scraper_name)
             self.pdialog.updateMessage2(scraper_text)
 
@@ -1321,17 +1320,24 @@ class Scraper(object):
     # the scraper error limit happens.
     # All messages generated in the scrapers are KODI_MESSAGE_DIALOG.
     def _handle_error(self, status_dic, user_msg):
-        # Record the number of error/exceptions produced in the scraper and disable the scraper
-        # if the number of errors is higher than a threshold.
-        self.exception_counter += 1
-        if self.exception_counter > Scraper.EXCEPTION_COUNTER_THRESHOLD:
-            log_error('Maximun number of errors exceeded. Disabling scraper.')
-            self.scraper_disabled = True
+        # Print error message to the log.
+        log_error('Scraper::_handle_error() user_msg "{}"'.format(user_msg))
+
         # Fill in the status dictionary so the error message will be propagated up in the
         # stack and the error message printed in the GUI.
         status_dic['status'] = False
         status_dic['dialog'] = KODI_MESSAGE_DIALOG
-        status_dic['msg']    = user_msg
+        status_dic['msg'] = user_msg
+        
+        # Record the number of error/exceptions produced in the scraper and disable the scraper
+        # if the number of errors is higher than a threshold.
+        self.exception_counter += 1
+        if self.exception_counter > Scraper.EXCEPTION_COUNTER_THRESHOLD:
+            err_m = 'Maximun number of errors exceeded. Disabling scraper.'
+            log_error(err_m)
+            self.scraper_disabled = True
+            # Replace error message witht the one that the scraper is disabled.
+            status_dic['msg'] = err_m
 
     # This function is called when an exception in the scraper code happens.
     # All messages from the scrapers are KODI_MESSAGE_DIALOG.
@@ -1776,7 +1782,7 @@ class TheGamesDB(Scraper):
         return json_data
 
     def debug_get_genres(self, status_dic):
-        log_debug('TheGamesDB::debug_get_platforms() BEGIN...')
+        log_debug('TheGamesDB::debug_get_genres() BEGIN...')
         url = 'https://api.thegamesdb.net/Genres?apikey={}'.format(self._get_API_key())
         json_data = self._retrieve_URL_as_JSON(url, status_dic)
         if not status_dic['status']: return None
@@ -1899,6 +1905,8 @@ class TheGamesDB(Scraper):
         if 'developers' not in online_data: return ''
         # "developers" : [ 7979 ],
         developers_ids = online_data['developers']
+        # For some games developers_ids is None. In that case return an empty string (default DB value).
+        if not developers_ids: return ''
         TGDB_developers = self._retrieve_developers(status_dic)
         if not status_dic['status']: return None
         developer_list = [TGDB_developers[dev_id] for dev_id in developers_ids]
