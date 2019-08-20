@@ -250,6 +250,7 @@ ASSET_POSTER_ID     = 400
 ASSET_BANNER_ID     = 500  # Marquee in MAME
 ASSET_TRAILER_ID    = 600
 # --- AEL artwork types ---
+# What about supporting BOXSPINE and composite box (fron, spine and back in one image).
 ASSET_TITLE_ID      = 700
 ASSET_SNAP_ID       = 800
 ASSET_BOXFRONT_ID   = 900  # Cabinet in MAME

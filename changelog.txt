@@ -116,7 +116,10 @@ FEATURE  [SCRAPERS] Add support for ScummVM platform in the Offline Scraper.
 WIP NOW  [SCRAPERS] Warn user if missing scraper API keys, required stuff, etc., before scraping.
          Also, improve the scraper error reporting and the disabling of the scraper object
          if the web site is overloaded.
-         Make sure TGDB scraper works like a charm. Then, propagate changes to the other scrapers.
+         Make sure TGDB scraper works like a charm. [DONE]
+         Update MobyGames scraper. [WIP NOW]
+         Update ScreenSraper scraper.
+         Update ArcadeDB scraper.
 
 FEATURE  [SCRAPERS] Utility to check TheGamesDB monthly allowance.
 
