@@ -51,7 +51,7 @@ class Test_local_assets_scraper(unittest.TestCase):
         
         # arrange
         settings = self.get_test_settings()        
-        target = LocalAssets(settings)
+        target = AEL_Offline(settings)
 
         # act
         candidates = target.get_candidates('doctor mario', 'doctor mario', 'Nintendo NES')
@@ -67,7 +67,7 @@ class Test_local_assets_scraper(unittest.TestCase):
 
         # arrange
         settings = self.get_test_settings()
-        target = LocalAssets(settings)
+        target = AEL_Offline(settings)
         
         assets_to_scrape = [
             g_assetFactory.get_asset_info(ASSET_BOXFRONT_ID), 

@@ -655,12 +655,13 @@ def asset_get_configured_dir_list(launcher):
 # This function is used in the ROM Scanner.
 #
 # launcher               -> launcher dictionary
-# ROMFile                -> FileName object
+# ROMFile                -> Rom object
 # enabled_ROM_asset_list -> list of booleans
 #
-def assets_search_local_cached_assets(launcher, ROMFile, enabled_ROM_asset_list):
+def assets_search_local_cached_assets(launcher, ROM, enabled_ROM_asset_list):
     log_verb('assets_search_local_cached_assets() Searching for ROM local assets...')
     local_asset_list = [None] * len(ROM_ASSET_ID_LIST)
+    ROMFile = ROM.get_file()
     rom_basename_noext = ROMFile.getBaseNoExt()
     for i, asset_kind in enumerate(ROM_ASSET_ID_LIST):
         AInfo = g_assetFactory.get_asset_info(asset_kind)
@@ -5403,6 +5404,7 @@ class RomFolderScanner(RomScannerStrategy):
             new_rom.set_file(ROM_file)
 
             self.progress_dialog.updateMessages(file_text, 'Scraping {0}...'.format(ROM_file.getBaseNoExt()))
+            self.scraping_strategy.process_ROM_begin(new_rom)
             self.scraping_strategy.process_ROM_metadata(new_rom)
             self.scraping_strategy.process_ROM_assets(new_rom)
             
@@ -5800,7 +5802,7 @@ class RomDatFileScanner(object):
         for rom in roms:
             # >> Use the ROM basename.
             ROMFileName = rom.get_file()
-            roms_set.add(ROMFileName.getBaseNoExt())
+            roms_set.add(ROMFileName.getBase_noext())
         self._updateProgress(100)
         if __debug_progress_dialogs: time.sleep(0.5)
 

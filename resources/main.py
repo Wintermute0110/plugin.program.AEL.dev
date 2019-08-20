@@ -551,6 +551,8 @@ def m_get_settings():
     g_settings['scan_asset_policy']     = int(o.getSetting('scan_asset_policy'))
     g_settings['metadata_scraper_mode'] = int(o.getSetting('metadata_scraper_mode'))
     g_settings['asset_scraper_mode']    = int(o.getSetting('asset_scraper_mode'))
+    g_settings['game_selection_mode']   = int(o.getSetting('game_selection_mode'))
+    g_settings['asset_selection_mode']  = int(o.getSetting('asset_selection_mode'))
 
     # Scanner scrapers
     g_settings['scraper_metadata']      = int(o.getSetting('scraper_metadata'))
@@ -638,9 +640,10 @@ def m_get_settings():
     if g_settings['favourites_asset_dir']  == '':
         g_settings['favourites_asset_dir'] = g_PATHS.FAVOURITES_ASSET_DIR.getPath()
 
-    # Fake settings.
+    # Settings required by the scrapers (they are not really settings).
     g_settings['scraper_screenscraper_AEL_softname'] = 'AEL_{0}'.format(__addon_version__)
-
+    g_settings['scraper_aeloffline_addon_code_dir'] = g_PATHS.ADDON_CODE_DIR.getPath()
+    
     # --- Dump settings for DEBUG ---
     # log_debug('Settings dump BEGIN')
     # for key in sorted(g_settings):

@@ -700,7 +700,7 @@ def text_get_URL_extension(url):
 # Defaults to 'jpg' if URL extension cannot be determined
 #
 def text_get_image_URL_extension(url):
-    path = urlparse.urlparse(url).path
+    path = urlparse(url).path
     ext = os.path.splitext(path)[1]
     if ext[0] == '.': ext = ext[1:] # Remove initial dot
     ret = 'jpg' if ext == '' else ext
@@ -1838,6 +1838,10 @@ class NewFileName:
         new_path = FileName(copiedPath.replace(ext, targetExt))
         return new_path
 
+    def escapeQuotes(self):
+        self.path_tr = self.path_tr.replace("'", "\\'")
+        self.path_tr = self.path_tr.replace('"', '\\"')
+        
     # Checks the extension to determine the type of the file.
     def isImageFile(self):
         return '.' + self.getExt().lower() in IMAGE_EXTENSION_LIST

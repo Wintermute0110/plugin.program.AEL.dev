@@ -1,8 +1,10 @@
 ﻿# -*- coding: utf-8 -*-
-
+#
 # Advanced Emulator Launcher main script file
+#
 
-# Copyright (c) 2016-2019 Wintermute0110 <wintermute0110@gmail.com>
+# Copyright (c) 2016-2018 Wintermute0110 <wintermute0110@gmail.com>
+# Portions (c) 2018 Chrisism
 # Portions (c) 2010-2015 Angelscry and others
 #
 # This program is free software; you can redistribute it and/or modify
@@ -11,8 +13,8 @@
 #
 # This program is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-# See the GNU General Public License for more details.
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
 
 # --- Python standard library ---
 from __future__ import unicode_literals
@@ -35,4 +37,5 @@ import resources.main
 # This way, the Python interpreter will precompile them into bytecode (files PYC/PYO) so
 # loading time is faster compared to loading PY files.
 # See http://www.network-theory.co.uk/docs/pytut/CompiledPythonfiles.html
-main.Main().run_plugin()
+#
+resources.main.run_plugin(sys.argv)

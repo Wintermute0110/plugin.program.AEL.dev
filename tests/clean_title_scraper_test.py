@@ -49,39 +49,16 @@ class Test_clean_title_scraper(unittest.TestCase):
         
         # arrange
         settings = self.get_test_settings()
+        paths = Fake_Paths('\\fake\\')
+        
         fakeBase = 'castlevania [ROM] (test) v2'                
-        target = CleanTitle(settings)
+        target = ScrapeStrategy(paths,settings)
                 
         # act
-        candidates = target.get_candidates('castlevania x', fakeBase, 'Nintendo NES')
-        actual = target.get_metadata(candidates[0])
+        actual = target.process_ROM_metadata( ,)
                 
         # assert
         self.assertTrue(actual)
         self.assertEqual(u'castlevania v2', actual['title'])
         print(actual)
-        
-    def test_scraping_assets_for_game(self):
-
-        # arrange
-        settings = self.get_test_settings()
-        fakeBase = 'castlevania'
-        
-        assets_to_scrape = [
-            g_assetFactory.get_asset_info(ASSET_BOXFRONT_ID), 
-            g_assetFactory.get_asset_info(ASSET_BOXBACK_ID), 
-            g_assetFactory.get_asset_info(ASSET_SNAP_ID)]
-        
-        target = CleanTitle(settings)
-
-        # act
-        candidates = target.get_candidates('castlevania x', fakeBase, 'Nintendo NES')        
-        actuals = []
-        for asset_to_scrape in assets_to_scrape:
-            an_actual = target.get_assets(candidates[0], asset_to_scrape)
-            actuals.append(an_actual)
-                
-        # assert
-        for actual in actuals:
-            self.assertFalse(actual)
         

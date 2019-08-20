@@ -80,8 +80,8 @@ class Test_gamefaq_scraper(unittest.TestCase):
 
         return settings
 
-    @patch('resources.scrap.net_get_URL_oneline', side_effect = mocked_gamesfaq)
-    @patch('resources.scrap.net_post_URL_original', side_effect = mocked_gamesfaq)
+    @patch('resources.scrap.net_get_URL', side_effect = mocked_gamesfaq)
+    @patch('resources.scrap.net_post_URL', side_effect = mocked_gamesfaq)
     def test_scraping_metadata_for_game(self, mock_htmlpost_downloader, mock_html_downloader):
         
         # arrange
@@ -98,8 +98,8 @@ class Test_gamefaq_scraper(unittest.TestCase):
         self.assertEqual(u'Castlevania', actual['title'])
         print(actual)
 
-    @patch('resources.scrap.net_get_URL_oneline', side_effect = mocked_gamesfaq)
-    @patch('resources.scrap.net_post_URL_original', side_effect = mocked_gamesfaq)
+    @patch('resources.scrap.net_get_URL', side_effect = mocked_gamesfaq)
+    @patch('resources.scrap.net_post_URL', side_effect = mocked_gamesfaq)
     @patch('resources.scrap.net_download_img')
     def test_scraping_assets_for_game(self, mock_img_downloader, mock_htmlpost_downloader, mock_html_downloader):
 

@@ -175,7 +175,7 @@ class Test_Launcher(unittest.TestCase):
         rom_dir.setFakeContent(json_data)
 
         paths = Fake_Paths('\\fake\\')
-        paths.ROMS_DIR = PythonFileName(self.TEST_ASSETS_DIR)                
+        paths.ROMS_DIR = NewFileName(self.TEST_ASSETS_DIR)                
         repository = ROMSetRepository(paths, settings)
 
         # act
@@ -413,7 +413,7 @@ class Test_Launcher(unittest.TestCase):
         mock_exeFactory.create.return_value = mock
                         
         paths = Fake_Paths('\\fake\\')
-        paths.ROMS_DIR = PythonFileName(self.TEST_ASSETS_DIR)
+        paths.ROMS_DIR = NewFileName(self.TEST_ASSETS_DIR)
                 
         repository = ROMSetRepository(paths, settings)
         target = RetroarchLauncher(paths, settings, launcher_data, None, mock_exeFactory, repository, None)        
@@ -453,7 +453,7 @@ class Test_Launcher(unittest.TestCase):
         mock_exeFactory.create.return_value = mock
 
         paths = Fake_Paths('\\fake\\')
-        paths.ROMS_DIR = PythonFileName(self.TEST_ASSETS_DIR)
+        paths.ROMS_DIR = NewFileName(self.TEST_ASSETS_DIR)
                 
         repository = ROMSetRepository(paths, settings)
         target = StandardRomLauncher(paths, settings, launcher_data, None, mock_exeFactory, repository, None)        
