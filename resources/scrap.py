@@ -1701,9 +1701,29 @@ class TheGamesDB(Scraper):
             return gamedata
 
         # --- Request is not cached. Get candidates and introduce in the cache ---
+        # | Mandatory field | JSON example                          | Used |
+        # |-----------------|---------------------------------------|------|
+        # | id              | "id": 1                               | N/A  |
+        # | game_title      | "game_title": "Halo: Combat Evolved"  | N/A  |
+        # | release_date    | "release_date": "2001-11-15"          | N/A  |
+        # | developers      | "developers": [ 1389 ]                | N/A  |
+        # |-----------------|---------------------------------------|------|
+        # | Optional field  | JSON example                          | Used |
+        # |-----------------|---------------------------------------|------|
+        # | players         | "players" : 1                         | Yes  |
+        # | publishers      | "publishers": [ 1 ]                   | No   |
+        # | genres          | "genres": [ 8 ]                       | Yes  |
+        # | overview        | "overview": "In Halo's ..."           | Yes  |
+        # | last_updated    | "last_updated": "2018-07-11 21:05:01" | No   |
+        # | rating          | "rating": "M - Mature"                | Yes  |
+        # | platform        | "platform": 1                         | No   |
+        # | coop            | "coop": "No"                          | No   |
+        # | youtube         | "youtube": "dR3Hm8scbEw"              | No   |
+        # | alternates      | "alternates": null                    | No   |
+        # |-----------------|---------------------------------------|------|
         log_debug('TheGamesDB::get_metadata() Cache miss "{0}"'.format(cache_key))
         url_a = 'https://api.thegamesdb.net/Games/ByGameID?apikey={0}&id={1}'
-        url_b = '&fields=players%2Cpublishers%2Cgenres%2Coverview%2Crating%2Cplatform%2Ccoop%2Cyoutube'
+        url_b = '&fields=players%2Cgenres%2Coverview%2Crating'
         url_a = url_a.format(self._get_API_key(), candidate['id'])
         url = url_a + url_b
         page_data = self._retrieve_URL_as_JSON(url, status_dic)
@@ -1714,15 +1734,15 @@ class TheGamesDB(Scraper):
         log_debug('TheGamesDB::get_metadata() Parsing game metadata...')
         online_data = page_data['data']['games'][0]
         gamedata = self._new_gamedata_dic()
-        gamedata['title']     = online_data['game_title'] if 'game_title' in online_data else ''
+        gamedata['title']     = self._parse_metadata_title(online_data)
         gamedata['year']      = self._parse_metadata_year(online_data)
         gamedata['genre']     = self._parse_metadata_genres(online_data, status_dic)
         if not status_dic['status']: return None
         gamedata['developer'] = self._parse_metadata_developer(online_data, status_dic)
         if not status_dic['status']: return None
-        gamedata['nplayers']  = str(online_data['players']) if 'players' in online_data else ''
-        gamedata['esrb']      = online_data['rating'] if 'rating' in online_data else ''
-        gamedata['plot']      = online_data['overview'] if 'overview' in online_data else ''
+        gamedata['nplayers']  = self._parse_metadata_nplayers(online_data)
+        gamedata['esrb']      = self._parse_metadata_esrb(online_data)
+        gamedata['plot']      = self._parse_metadata_plot(online_data)
 
         # --- Put metadata in the cache ---
         self.cache_metadata[cache_key] = gamedata
@@ -1872,11 +1892,17 @@ class TheGamesDB(Scraper):
             altered_term = altered_term.replace(ext, '')
         return altered_term
 
+    def _parse_metadata_title(self, online_data):
+        if 'game_title' in online_data: title_str = online_data['game_title']
+        else:                           title_str = DEFAULT_META_TITLE
+
+        return title_str
+
     def _parse_metadata_year(self, online_data):
         if 'release_date' in online_data and \
            online_data['release_date'] is not None and \
            online_data['release_date'] != '':
-           year_str = online_data['release_date'][:4]
+            year_str = online_data['release_date'][:4]
         else:
             year_str = ''
         return year_str
@@ -1904,6 +1930,24 @@ class TheGamesDB(Scraper):
         developer_list = [TGDB_developers[dev_id] for dev_id in developers_ids]
 
         return ', '.join(developer_list)
+
+    def _parse_metadata_nplayers(self, online_data):
+        if 'players' in online_data: nplayers_str = str(online_data['players'])
+        else:                        nplayers_str = DEFAULT_META_NPLAYERS
+
+        return nplayers_str
+
+    def _parse_metadata_esrb(self, online_data):
+        if 'rating' in online_data: esrb_str = online_data['rating']
+        else:                       esrb_str = DEFAULT_META_ESRB
+
+        return esrb_str
+
+    def _parse_metadata_plot(self, online_data):
+        if 'overview' in online_data: plot_str = online_data['overview']
+        else:                         plot_str = DEFAULT_META_PLOT
+
+        return plot_str
 
     # Get a dictionary of TGDB genres (integers) to AEL genres (strings).
     # TGDB genres are cached in an object variable.
