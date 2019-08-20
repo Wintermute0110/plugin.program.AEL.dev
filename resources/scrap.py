@@ -203,7 +203,7 @@ class ScraperFactory(object):
     # @return: [list of strings]
     def get_asset_scraper_menu_list(self, asset_ID):
         log_debug('ScraperFactory::get_asset_scraper_menu_list() Building scraper list...')
-        AInfo = assets_get_info_scheme(asset_ID)
+        AInfo = g_assetFactory.get_asset_info(asset_ID)
         scraper_menu_list = []
         self.asset_menu_ID_list = []
         for scraper_ID in self.scraper_objs:
@@ -388,7 +388,7 @@ class ScrapeStrategy(object):
                 log_verb('Metadata policy: NFO file not found. Only cleaning ROM name')
                 self.metadata_action = ScrapeStrategy.ACTION_META_TITLE_ONLY
 
-        elif self.scan_metadata_policy == 2 and NFO_file_found:
+        elif self.scan_metadata_policy == 2:
             log_verb('Metadata policy: Read NFO file ON | Scraper ON')
             if NFO_file_found:
                 log_verb('Metadata policy: NFO file found. Scraper not used.')
@@ -563,9 +563,9 @@ class ScrapeStrategy(object):
     def _scanner_get_candidate(self, ROM, scraper_obj, scraper_name, status_dic):
         # --- Update scanner progress dialog ---
         if self.pdialog_verbose:
-            scraper_text = 'Searching games with scaper {}...'.format(scraper_name)
+            scraper_text = 'Searching games with scraper {}...'.format(scraper_name)
             self.pdialog.updateMessage2(scraper_text)
-        log_debug('Searching games with scaper {}'.format(scraper_name))
+        log_debug('Searching games with scraper {}'.format(scraper_name))
         
         # --- Call scraper and get a list of games ---
         ROM_path = ROM.get_file()
@@ -622,7 +622,8 @@ class ScrapeStrategy(object):
         # --- If no candidates available just clean the ROM Title and return ---
         if self.candidate_metadata is None and not self.candidate_metadata:
             log_verb('No medatada candidates (or previous error). Cleaning ROM name only.')
-            ROM.set_name(text_format_ROM_title(ROM.getBaseNoExt(), self.scan_clean_tags))
+            ROM_file = ROM.get_file()
+            ROM.set_name(text_format_ROM_title(ROM_file.getBaseNoExt(), self.scan_clean_tags))
             return
 
         # --- Grab metadata for selected game and put into ROM ---
@@ -650,7 +651,7 @@ class ScrapeStrategy(object):
     # @param local_asset_path: [str]
     # @param ROM: [Rom object]
     # @return: [str] Filename string with the asset path.
-    def _scrap_ROM_asset_scanner(self, asset_info, local_asset_path, ROM):
+    def _scanner_scrap_ROM_asset(self, asset_info, local_asset_path, ROM):
         # --- Cached frequent used things ---
         asset_name = asset_info.name
         asset_dir_FN  = self.launcher.get_asset_path(asset_info)
@@ -822,12 +823,13 @@ class ScrapeStrategy(object):
     # @param gamedata: Dictionary with game data.
     # @param rom: ROM/Launcher object to apply metadata.
     # @return: True if metadata is valid an applied, False otherwise.
-    def _apply_candidate_on_metadata_new(self, gamedata, rom):
+    def _apply_candidate_on_metadata(self, gamedata, rom):
         if not gamedata: return False
 
         # --- Put metadata into ROM/Launcher object ---
-        if self.ignore_scraped_title:
-            rom_name = text_format_ROM_title(rom.getBaseNoExt(), self.scan_clean_tags)
+        if self.scan_ignore_scrap_title:
+            rom_file = rom.get_file()
+            rom_name = text_format_ROM_title(rom_file.getBaseNoExt(), self.scan_clean_tags)
             rom.set_name(rom_name)
             log_debug("User wants to ignore scraper name. Setting name to '{0}'".format(rom_name))
         else:
@@ -1042,7 +1044,7 @@ class ScrapeStrategy(object):
             net_download_img(image_url, image_local_path)
         except socket.timeout:
             pdialog.endProgress()
-            kodi_notify_warn('Cannot download {0} image (Timeout)'.format(image_name))
+            kodi_notify_warn('Cannot download {0} image (Timeout)'.format(asset_name))
             status_dic['status'] = False
             status_dic['msg'] = 'Network timeout'
             return status_dic
@@ -1646,7 +1648,7 @@ class TheGamesDB(Scraper):
     def get_name(self): return 'TheGamesDB'
 
     def supports_metadata_ID(self, metadata_ID):
-        return True if asset_ID in TheGamesDB.supported_metadata_list else False
+        return True if metadata_ID in TheGamesDB.supported_metadata_list else False
 
     def supports_metadata(self): return True
 
@@ -2384,9 +2386,10 @@ class MobyGames(Scraper):
     # Clean URLs for safe logging.
     def _clean_URL_for_log(self, url):
         clean_url = url
-        # clean_url = re.sub('apikey=[^&]*&', 'apikey=***&', clean_url)
-        # log_variable('url', url)
-        # log_variable('clean_url', clean_url)
+        # apikey is followed by more arguments
+        clean_url = re.sub('api_key=[^&]*&', 'api_key=***&', clean_url)
+        # apikey is at the end of the string
+        clean_url = re.sub('api_key=[^&]*$', 'api_key=***', clean_url)
 
         return clean_url
 
