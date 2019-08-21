@@ -5403,41 +5403,29 @@ class RomFolderScanner(RomScannerStrategy):
             new_rom = ROM()
             new_rom.set_file(ROM_file)
 
+            scraping_succeeded = True
             self.progress_dialog.updateMessages(file_text, 'Scraping {0}...'.format(ROM_file.getBaseNoExt()))
-            self.scraping_strategy.process_ROM_begin(new_rom)
-            self.scraping_strategy.process_ROM_metadata(new_rom)
-            self.scraping_strategy.process_ROM_assets(new_rom)
+            try:
+                self.scraping_strategy.process_ROM_begin(new_rom)
+                self.scraping_strategy.process_ROM_metadata(new_rom)
+                self.scraping_strategy.process_ROM_assets(new_rom)
+            except Exception as ex:
+                scraping_succeeded = False        
+                log_error('(Exception) Object type "{}"'.format(type(ex)))
+                log_error('(Exception) Message "{}"'.format(str(ex)))
+                log_warning('Could not scrape "{}". Skip ROM completely from scan'.format(ROM_file.getBaseNoExt()))
+                kodi_display_user_message({
+                    'dialog': KODI_MESSAGE_NOTIFY_WARN,
+                    'msg': 'Scraping "{}" failed. Skipping.'.format(ROM_file.getBaseNoExt())
+                })
             
-            #searchTerm = text_format_ROM_name_for_scraping(ROM_file.getBaseNoExt())
-            #self.scraping_strategy.scrape(searchTerm, ROM_file, new_rom)
-            
-            # !!!! MOVED CODE BELOW TO SCRAPING_STRATEGY UNTILL PROPERLY MERGED !!!
-            #
-            #if self.scrapers:
-            #    for scraper in self.scrapers:
-            #        self._updateProgressMessage(file_text, 'Scraping {0}...'.format(scraper.getName()))
-            #        scraper.scrape(searchTerm, ROM_file, new_rom)
-            #
-            #romdata = new_rom.get_data()
-            #log_verb('Set Title     file "{0}"'.format(romdata['s_title']))
-            #log_verb('Set Snap      file "{0}"'.format(romdata['s_snap']))
-            #log_verb('Set Boxfront  file "{0}"'.format(romdata['s_boxfront']))
-            #log_verb('Set Boxback   file "{0}"'.format(romdata['s_boxback']))
-            #log_verb('Set Cartridge file "{0}"'.format(romdata['s_cartridge']))
-            #log_verb('Set Fanart    file "{0}"'.format(romdata['s_fanart']))
-            #log_verb('Set Banner    file "{0}"'.format(romdata['s_banner']))
-            #log_verb('Set Clearlogo file "{0}"'.format(romdata['s_clearlogo']))
-            #log_verb('Set Flyer     file "{0}"'.format(romdata['s_flyer']))
-            #log_verb('Set Map       file "{0}"'.format(romdata['s_map']))
-            #log_verb('Set Manual    file "{0}"'.format(romdata['s_manual']))
-            #log_verb('Set Trailer   file "{0}"'.format(romdata['s_trailer']))
-            
-            # --- This was the first ROM in a multidisc set ---
-            if launcher_multidisc and MDSet.isMultiDisc and not MultiDiscInROMs:
-                log_info('Adding to ROMs dic first disk "{0}"'.format(MDSet.discName))
-                new_rom.add_disk(MDSet.discName)
-            
-            new_roms.append(new_rom)
+            if scraping_succeeded:
+                # --- This was the first ROM in a multidisc set ---
+                if launcher_multidisc and MDSet.isMultiDisc and not MultiDiscInROMs:
+                    log_info('Adding to ROMs dic first disk "{0}"'.format(MDSet.discName))
+                    new_rom.add_disk(MDSet.discName)
+                
+                new_roms.append(new_rom)
             
             # ~~~ Check if user pressed the cancel button ~~~
             if self.progress_dialog.isCanceled():

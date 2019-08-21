@@ -1136,6 +1136,9 @@ class Scraper(object):
     # messages in case something is wrong (for example, the internet connection is broken or
     # the number of API calls is exceeded).
     EXCEPTION_COUNTER_THRESHOLD = 3
+    
+    # Maximum amount of retries of certain requests
+    RETRY_THRESHOLD = 4
 
     # --- Constructor ----------------------------------------------------------------------------
     # @param settings: [dict] Addon settings.
@@ -1630,7 +1633,9 @@ class TheGamesDB(Scraper):
         # --- This scraper settings ---
         # Make sure this is the public key (limited by IP) and not the private key.
         self.api_public_key = '828be1fb8f3182d055f1aed1f7d4da8bd4ebc160c3260eae8ee57ea823b42415'
-
+        if settings['scraper_thegamesdb_apikey'] is not None:
+            self.api_public_key = settings['scraper_thegamesdb_apikey']
+            
         # --- Cached TGDB metadata ---
         self.cache_candidates = {}
         self.cache_metadata = {}
@@ -1866,7 +1871,7 @@ class TheGamesDB(Scraper):
             if scraper_platform > 0 and platform == scraper_platform: game['order'] += 1
             candidate_list.append(game)
 
-        log_debug('TheGamesDB:: Found {0} titles on {1}'.format(len(candidate_list),url))
+        log_debug('TheGamesDB:: Found {0} titles with last request'.format(len(candidate_list)))
         # --- Recursively load more games ---
         next_url = page_data['pages']['next']
         if next_url is not None:
@@ -1963,15 +1968,15 @@ class TheGamesDB(Scraper):
     # THIS FUNCTION CODE MUST BE UPDATED.
     def _retrieve_publishers(self, publisher_ids):
         if publisher_ids is None: return ''
-        if self.publishers is None:
+        if self.publishers_cached is None:
             log_debug('TheGamesDB:: No cached publishers. Retrieving from online.')
             url = 'https://api.thegamesdb.net/Publishers?apikey={}'.format(self._get_API_key())
             page_data_raw = net_get_URL(url, self._clean_URL_for_log(url))
             publishers_json = json.loads(page_data_raw)
-            self.publishers = {}
+            self.publishers_cached = {}
             for publisher_id in publishers_json['data']['publishers']:
-                self.publishers[int(publisher_id)] = publishers_json['data']['publishers'][publisher_id]['name']
-        publisher_names = [self.publishers[publisher_id] for publisher_id in publisher_ids]
+                self.publishers_cached[int(publisher_id)] = publishers_json['data']['publishers'][publisher_id]['name']
+        publisher_names = [self.publishers_cached[publisher_id] for publisher_id in publisher_ids]
 
         return ' / '.join(publisher_names)
 
@@ -2054,7 +2059,7 @@ class TheGamesDB(Scraper):
     def _retrieve_URL_as_JSON(self, url, status_dic):
         page_data_raw, http_code = net_get_URL(url, self._clean_URL_for_log(url))
         if page_data_raw is None:
-            self._handle_error(status_dic, 'Network error in net_get_URL()')
+            self._handle_error(status_dic, 'TGDB: Network error in net_get_URL()')
             return None
         try:
             json_data = json.loads(page_data_raw)
@@ -2076,9 +2081,14 @@ class TheGamesDB(Scraper):
     def _check_overloading(self, json_data, status_dic):
         # This is an integer.
         remaining_monthly_allowance = json_data['remaining_monthly_allowance']
+        extra_allowance = json_data['extra_allowance']
         log_debug('TheGamesDB::_check_overloading() remaining_monthly_allowance = {}'.format(
             remaining_monthly_allowance))
-        if remaining_monthly_allowance > 0: return
+        if extra_allowance:
+            log_debug('TheGamesDB::_check_overloading() extra_allowance = {}'.format(
+                extra_allowance))
+        else: extra_allowance = 0
+        if remaining_monthly_allowance > 0 or extra_allowance > 0: return
         log_error('TheGamesDB::_check_overloading() remaining_monthly_allowance <= 0')
         log_error('Disabling TGDB scraper.')
         self.scraper_disabled = True
@@ -2179,11 +2189,9 @@ class MobyGames(Scraper):
         return candidate_list
 
     def get_metadata(self, candidate, status_dic):
-        self._do_toomanyrequests_check()
         url = 'https://api.mobygames.com/v1/games/{}?api_key={}'.format(candidate['id'], self.api_key)
         log_debug('Get metadata from {0}'.format(url))
         online_data = self._retrieve_URL_as_JSON(url, status_dic)
-        self.last_http_call = datetime.now()
         if self.dump_file_flag:
             file_path = os.path.join(self.dump_dir, 'mobygames_get_metadata.txt')
             text_dump_str_to_file(file_path, online_data)
@@ -2233,7 +2241,6 @@ class MobyGames(Scraper):
         return json_data
 
     def _read_games_from_url(self, url, search_term, platform, scraper_platform, status_dic):
-        self._do_toomanyrequests_check()
         # If the MobyGames API key is wrong, MobyGames will reply with an 
         # "HTTP Error 401: UNAUTHORIZED" response which is an IOError expection in net_get_URL().
         # Generally, if a JSON object cannot be decoded some error happened in net_get_URL().
@@ -2245,11 +2252,12 @@ class MobyGames(Scraper):
             log_error('(Exception) Message "{}"'.format(str(ex)))
             log_error('Problem in json.loads(url). Returning empty list of candidate games.')
             return []
-        self.last_http_call = datetime.now()
         self._dump_json_debug('MobyGames_get_candidates.json', page_data)
 
         # If nothing is returned maybe a timeout happened. In this case, reset the cache.
-        if page_data is None: self._reset_cache()
+        if page_data is None: 
+            self._reset_cache()
+            return []
 
         # --- Parse game list ---
         games = page_data['games']
@@ -2312,9 +2320,7 @@ class MobyGames(Scraper):
         log_debug('MobyGames::_load_snap_assets() Getting Snaps...')
         url = 'https://api.mobygames.com/v1/games/{0}/platforms/{1}/screenshots?api_key={2}'.format(
             candidate['id'], platform_id, self.api_key)
-        self._do_toomanyrequests_check()
         page_data = self._retrieve_URL_as_JSON(url, status_dic)        
-        self.last_http_call = datetime.now()
         self._dump_json_debug('MobyGames_snap_assets.json', page_data)
 
         # --- Parse images page data ---
@@ -2344,9 +2350,7 @@ class MobyGames(Scraper):
         log_debug('MobyGames::_load_cover_assets() Getting Covers...')
         url = 'https://api.mobygames.com/v1/games/{0}/platforms/{1}/covers?api_key={2}'.format(
             candidate['id'], platform_id, self.api_key)
-        self._do_toomanyrequests_check()
         page_data = self._retrieve_URL_as_JSON(url, status_dic)
-        self.last_http_call = datetime.now()
         self._dump_json_debug('mobygames_cover_assets.txt', page_data)
 
         # --- Parse images page data ---
@@ -2394,18 +2398,31 @@ class MobyGames(Scraper):
         return clean_url
 
     # Retrieve URL and decode JSON object.
-    def _retrieve_URL_as_JSON(self, url, status_dic):
+    def _retrieve_URL_as_JSON(self, url, status_dic, retry=0):
+        self._do_toomanyrequests_check()
         page_data_raw, http_code = net_get_URL(url, self._clean_URL_for_log(url))
         if page_data_raw is None:
-            self._handle_error(status_dic, 'Network error in net_get_URL()')
+            self.last_http_call = datetime.now()
+            
+            if http_code == 429 and retry < RETRY_THRESHOLD:
+                # 360 per hour limit, wait at least 16 minutes
+                wait_till_time = datetime.now() + datetime.timedelta(seconds=960)
+                kodi_dialog_OK('You\'ve exceeded the max rate limit of 360 requests/hour.',
+                                'Respect the website and wait at least till {}.'.format(wait_till_time))
+                if (datetime.now() - wait_till_time).total_seconds() > 1:
+                    return self._retrieve_URL_as_JSON(url, status_dic, retry+1)
+                
+            self._handle_error(status_dic, 'MobyGames: Network error in net_get_URL()')            
             return None
         try:
             json_data = json.loads(page_data_raw)
         except Exception as ex:
+            self.last_http_call = datetime.now()
             self._handle_exception(ex, status_dic, 'Error decoding JSON data from TheGamesDB.')
             return None
         # Check for scraper overloading. Scraper is disabled if overloaded.
         # Does the scraper return valid JSON when it is overloaded??? I have to confirm this point.
+        self.last_http_call = datetime.now()
         self._check_overloading(json_data, status_dic)
         if not status_dic['status']: return None
 
@@ -2414,6 +2431,9 @@ class MobyGames(Scraper):
     # NULL
     def _check_overloading(self, json_data, status_dic):
         return True
+    
+    def _reset_cache(self):
+        return
 
 # ------------------------------------------------------------------------------------------------
 # ScreenScraper online scraper.

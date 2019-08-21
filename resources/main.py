@@ -1084,7 +1084,7 @@ def m_command_edit_rom_favourite(categoryID, launcherID, romID):
                     elif type == 2 and ROM_FN_FAV.getBase().lower() == ROM_FN.getBase().lower():
                         log_info('_command_manage_favourites() Favourite {0} matched by basename!'.format(fav_name))
                         log_info('_command_manage_favourites() Launcher {0}'.format(launcher.get_id()))
-                        log_info('_command_manage_favourites() ROM {0}'.format(rom_id))
+                        log_info('_command_manage_favourites() ROM {0}'.format(rom.get_id()))
                     else:
                         continue
                     # >> Match found. Break all for loops inmediately.
