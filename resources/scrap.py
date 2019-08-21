@@ -2294,10 +2294,11 @@ class MobyGames(Scraper):
 
     # --- This class own methods -----------------------------------------------------------------
     def debug_get_platforms(self, status_dic):
-        log_debug('MobyGames::get_platforms() BEGIN...')
+        log_debug('MobyGames::debug_get_platforms() BEGIN...')
         url_str = 'https://api.mobygames.com/v1/platforms?api_key={}'
         url = url_str.format(self.api_key)
         json_data = self._retrieve_URL_as_JSON(url, status_dic)
+        if not status_dic['status']: return None
         self._dump_json_debug('MobyGames_get_platforms.json', json_data)
 
         return json_data
@@ -2468,6 +2469,8 @@ class MobyGames(Scraper):
         return clean_url
 
     # Retrieve URL and decode JSON object.
+    # When the API key is not configured or invalid MobyGames returns "HTTP Error 401: UNAUTHORIZED"
+    # When the API number of calls is exhausted ...
     def _retrieve_URL_as_JSON(self, url, status_dic):
         self._wait_for_API_request()
         # If the MobyGames API key is wrong or empty string, MobyGames will reply with an 
