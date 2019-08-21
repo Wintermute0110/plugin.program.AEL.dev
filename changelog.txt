@@ -142,8 +142,8 @@ WIP NOW  [SCRAPERS] Warn user if missing scraper API keys, required stuff, etc.,
          Also, improve the scraper error reporting and the disabling of the scraper object
          if the web site is overloaded.
          Make sure TGDB scraper works like a charm. [DONE]
-         Update MobyGames scraper. [WIP NOW]
-         Update ScreenSraper scraper.
+         Update MobyGames scraper. [DONE]
+         Update ScreenSraper scraper. [WIP NOW]
          Update ArcadeDB scraper.
 
 FEATURE  [SCRAPERS] Utility to check TheGamesDB monthly allowance.
@@ -151,6 +151,8 @@ FEATURE  [SCRAPERS] Utility to check TheGamesDB monthly allowance.
 FEATURE  [SCRAPERS] Utility to check MobyGames monthly allowance.
 
 FEATURE  [SCRAPERS] Utility to check ScreenScraper monthly allowance.
+
+WIP      [SCRAPERS] Make sure all scraper platforms are OK and synchronised with AEL platforms.
 
 WIP      [SCRAPERS] Option to rescrape all ROM assets in a similar fashion to
          "Scan ROMs local artwork". Create a menu entry in "Edit Launcher", "Manage ROMs",
