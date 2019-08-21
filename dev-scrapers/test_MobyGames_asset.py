@@ -1,7 +1,7 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 
-# Test AEL Mobybgames asset scraper.
+# Test AEL MobyGames asset scraper.
 # This testing file is intended for scraper development and file dumping.
 # For more thorough tests sett the unittest_MobyGames_* scrips.
 
@@ -25,15 +25,17 @@ print('*** Fetching candidate game list ****************************************
 set_log_level(LOG_DEBUG)
 
 # --- Create scraper object ---
-scraper_obj = GameFAQs(common.settings)
+scraper_obj = MobyGames(common.settings)
 scraper_obj.set_verbose_mode(False)
 scraper_obj.set_debug_file_dump(True, os.path.join(os.path.dirname(__file__), 'assets'))
+status_dic = kodi_new_status_dic('Scraper test was OK')
 
 # --- Get candidates ---
-# candidate_list = scraper_obj.get_candidates(*games['metroid'])
-# candidate_list = scraper_obj.get_candidates(*games['mworld'])
-candidate_list = scraper_obj.get_candidates(*games['sonic'])
-# candidate_list = scraper_obj.get_candidates(*games['chakan'])
+# candidate_list = scraper_obj.get_candidates(*common.games['metroid'], status_dic = status_dic)
+# candidate_list = scraper_obj.get_candidates(*common.games['mworld'], status_dic = status_dic)
+candidate_list = scraper_obj.get_candidates(*common.games['sonic'], status_dic = status_dic)
+# candidate_list = scraper_obj.get_candidates(*common.games['chakan'], status_dic = status_dic)
+# candidate_list = scraper_obj.get_candidates(*common.games['console_invalid'], status_dic = status_dic)
 
 # --- Print search results ---
 # pprint.pprint(candidate_list)
@@ -45,22 +47,9 @@ candidate = candidate_list[0]
 
 # --- Print list of assets found -----------------------------------------------------------------
 print('*** Fetching game assets ****************************************************************')
-# --- Get all assets (MB scraper custom function) ---
-# assets = scraper_obj.get_assets_all(candidate)
-# pprint.pprint(assets)
-# print_game_assets(assets)
-
 # --- Get specific assets ---
-print_game_assets(scraper_obj.get_assets(candidate, ASSET_TITLE_ID))
-print_game_assets(scraper_obj.get_assets(candidate, ASSET_SNAP_ID))
-print_game_assets(scraper_obj.get_assets(candidate, ASSET_BOXFRONT_ID))
-print_game_assets(scraper_obj.get_assets(candidate, ASSET_BOXBACK_ID))
-print_game_assets(scraper_obj.get_assets(candidate, ASSET_CARTRIDGE_ID))
-print_game_assets(scraper_obj.get_assets(candidate, ASSET_FANART_ID))
-# print_game_assets(scraper_obj.get_assets(candidate, ASSET_BANNER_ID))
-# print_game_assets(scraper_obj.get_assets(candidate, ASSET_CLEARLOGO_ID))
-# print_game_assets(scraper_obj.get_assets(candidate, ASSET_FLYER_ID))
-# print_game_assets(scraper_obj.get_assets(candidate, ASSET_3DBOX_ID))
-# print_game_assets(scraper_obj.get_assets(candidate, ASSET_MAP_ID))
-# print_game_assets(scraper_obj.get_assets(candidate, ASSET_MANUAL_ID))
-# print_game_assets(scraper_obj.get_assets(candidate, ASSET_TRAILER_ID))
+print_game_assets(scraper_obj.get_assets(candidate, ASSET_TITLE_ID, status_dic))
+print_game_assets(scraper_obj.get_assets(candidate, ASSET_SNAP_ID, status_dic))
+print_game_assets(scraper_obj.get_assets(candidate, ASSET_BOXFRONT_ID, status_dic))
+print_game_assets(scraper_obj.get_assets(candidate, ASSET_BOXBACK_ID, status_dic))
+print_game_assets(scraper_obj.get_assets(candidate, ASSET_CARTRIDGE_ID, status_dic))
