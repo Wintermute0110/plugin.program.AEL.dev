@@ -124,7 +124,7 @@ AEL_LAUNCHER_NAME_LABEL        = 'AEL_Launch_Name'
 AEL_LAUNCHER_ICON_LABEL        = 'AEL_Launch_Icon'
 AEL_LAUNCHER_CLEARLOGO_LABEL   = 'AEL_Launch_Clearlogo'
 
-# >> Value is the number of items inside a launcher.
+# Value is the number of items inside a launcher.
 AEL_NUMITEMS_LABEL             = 'AEL_NumItems'
 
 # --- ROM flags used by skins to display status icons ---
@@ -153,7 +153,10 @@ AEL_PCLONE_STAT_VALUE_NONE           = 'PClone_None'
 # --- ID of the fake ROM parent of all Unknown ROMs ---
 UNKNOWN_ROMS_PARENT_ID = 'Unknown_ROMs_Parent'
 
-# launcher['display_filter'] default value NOINTRO_DMODE_ALL
+# -------------------------------------------------------------------------------------------------
+# Metadata
+# -------------------------------------------------------------------------------------------------
+# launcher['nointro_display_mode'] values default NOINTRO_DMODE_ALL
 NOINTRO_DMODE_ALL       = 'All ROMs'
 NOINTRO_DMODE_HAVE      = 'Have ROMs'
 NOINTRO_DMODE_HAVE_UNK  = 'Have or Unknown ROMs'
@@ -220,27 +223,37 @@ ESRB_LIST = [
     ESRB_EVERYONE,
     ESRB_EVERYONE_10,
     ESRB_TEEN,
-    ESRB_MATURE, ESRB_ADULTS_ONLY
+    ESRB_MATURE,
+    ESRB_ADULTS_ONLY
 ]
 
 # m_nplayers values default ''
-NP_1P     = '1P'
-NP_2P_SIM = '2P sim'
-NP_2P_ALT = '2P alt'
-NP_3P_SIM = '3P sim'
-NP_3P_ALT = '3P alt'
-NP_4P_SIM = '4P sim'
-NP_4P_ALT = '4P alt'
-NP_6P_SIM = '6P sim'
-NP_6P_ALT = '6P alt'
-NP_8P_SIM = '8P sim'
-NP_8P_ALT = '8P alt'
-NPLAYERS_LIST = [NP_1P, NP_2P_SIM, NP_2P_ALT, NP_3P_SIM, NP_3P_ALT, NP_4P_SIM, NP_4P_ALT, 
-                        NP_6P_SIM, NP_6P_ALT, NP_8P_SIM, NP_8P_ALT]
+NP_NOT_SET = ''
+NP_1P      = '1P'
+NP_2P_SIM  = '2P sim'
+NP_2P_ALT  = '2P alt'
+NP_3P_SIM  = '3P sim'
+NP_3P_ALT  = '3P alt'
+NP_4P_SIM  = '4P sim'
+NP_4P_ALT  = '4P alt'
+NP_6P_SIM  = '6P sim'
+NP_6P_ALT  = '6P alt'
+NP_8P_SIM  = '8P sim'
+NP_8P_ALT  = '8P alt'
+NPLAYERS_LIST = [
+    NP_1P,
+    NP_2P_SIM,
+    NP_2P_ALT,
+    NP_3P_SIM,
+    NP_3P_ALT,
+    NP_4P_SIM,
+    NP_4P_ALT,
+    NP_6P_SIM,
+    NP_6P_ALT,
+    NP_8P_SIM,
+    NP_8P_ALT,
+]
 
-# -------------------------------------------------------------------------------------------------
-# Metadata
-# -------------------------------------------------------------------------------------------------
 META_TITLE_ID     = 10
 META_YEAR_ID      = 20
 META_GENRE_ID     = 30
@@ -249,6 +262,15 @@ META_NPLAYERS_ID  = 50
 META_ESRB_ID      = 60
 META_RATING_ID    = 70
 META_PLOT_ID      = 80
+
+DEFAULT_META_TITLE     = ''
+DEFAULT_META_YEAR      = ''
+DEFAULT_META_GENRE     = ''
+DEFAULT_META_DEVELOPER = ''
+DEFAULT_META_NPLAYERS  = ''
+DEFAULT_META_ESRB      = ESRB_PENDING
+DEFAULT_META_RATING    = ''
+DEFAULT_META_PLOT      = ''
 
 # -------------------------------------------------------------------------------------------------
 # Assets
@@ -261,6 +283,7 @@ ASSET_POSTER_ID     = 400
 ASSET_BANNER_ID     = 500  # Marquee in MAME
 ASSET_TRAILER_ID    = 600
 # --- AEL artwork types ---
+# What about supporting BOXSPINE and composite box (fron, spine and back in one image).
 ASSET_TITLE_ID      = 700
 ASSET_SNAP_ID       = 800
 ASSET_BOXFRONT_ID   = 900  # Cabinet in MAME

@@ -491,11 +491,9 @@ def text_unescape_HTML(s):
 
     return s
 
-#
-# Remove HTML tags
-#
+# Remove HTML tags from string.
 def text_remove_HTML_tags(s):
-    p = re.compile(r'<.*?>')
+    p = re.compile('<.*?>')
     s = p.sub('', s)
 
     return s

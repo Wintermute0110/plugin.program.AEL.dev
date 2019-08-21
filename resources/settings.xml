@@ -6,6 +6,7 @@
     <setting label="Ignore Scrapped Titles (use ROM filenames)" type="bool" id="scan_ignore_scrap_title" default="true" />
     <setting label="Clean No-Intro/TOSEC Title Tags (tag) [tag] {tag}" type="bool" id="scan_clean_tags" default="false" />
     <setting label="Update NFO files after ROM scraping" type="bool" id="scan_update_NFO_files" default="false" />
+    <setting label="Skip scanning if scraping fails" type="bool" id="scan_skip_on_scraping_failure" default="true" />
 </category>
 <!--
     Make sure the scraper lists match the variables in constants.py

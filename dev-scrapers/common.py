@@ -20,15 +20,17 @@ settings = {
 # --- Test data -----------------------------------------------------------------------------------
 games = {
     # Console games
-    'metroid'         : ('Metroid', 'Metroid', 'Nintendo SNES'),
-    'mworld'          : ('Super Mario World', 'Super Mario World', 'Nintendo SNES'),
-    'sonic'           : ('Sonic the Hedgehog', 'Sonic the Hedgehog (USA, Europe)', 'Sega MegaDrive'),
-    'chakan'          : ('Chakan', 'Chakan (USA, Europe)', 'Sega MegaDrive'),
-    'console_invalid' : ('Console invalid game', 'mjhyewqr', 'Sega MegaDrive'),
+    'metroid'                : ('Metroid', 'Metroid', 'Nintendo SNES'),
+    'mworld'                 : ('Super Mario World', 'Super Mario World', 'Nintendo SNES'),
+    'sonic'                  : ('Sonic the Hedgehog', 'Sonic the Hedgehog (USA, Europe)', 'Sega MegaDrive'),
+    'chakan'                 : ('Chakan', 'Chakan (USA, Europe)', 'Sega MegaDrive'),
+    'console_wrong_title'    : ('Console invalid game', 'mjhyewqr', 'Sega MegaDrive'),
+    'console_wrong_platform' : ('Sonic the Hedgehog', 'Sonic the Hedgehog (USA, Europe)', 'mjhyewqr'),
 
     # MAME games
-    'atetris'         : ('Tetris (set 1)', 'atetris', 'MAME'),
-    'mslug'           : ('Metal Slug - Super Vehicle-001', 'mslug', 'MAME'),
-    'dino'            : ('Cadillacs and Dinosaurs (World 930201)', 'dino', 'MAME'),
-    'MAME_invalid'    : ('MAME invalid game', 'mjhyewqr', 'MAME'),
+    'atetris'             : ('Tetris (set 1)', 'atetris', 'MAME'),
+    'mslug'               : ('Metal Slug - Super Vehicle-001', 'mslug', 'MAME'),
+    'dino'                : ('Cadillacs and Dinosaurs (World 930201)', 'dino', 'MAME'),
+    'MAME_wrong_title'    : ('MAME invalid game', 'mjhyewqr', 'MAME'),
+    'MAME_wrong_platform' : ('Tetris (set 1)', 'atetris', 'mjhyewqr'),
 }

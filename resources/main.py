@@ -544,6 +544,7 @@ def m_get_settings():
     g_settings['scan_update_NFO_files']    = True if o.getSetting('scan_update_NFO_files') == 'true' else False
     g_settings['scan_ignore_scrap_title']  = True if o.getSetting('scan_ignore_scrap_title') == 'true' else False
     g_settings['scan_clean_tags']          = True if o.getSetting('scan_clean_tags') == 'true' else False
+    g_settings['scan_skip_on_scraping_failure'] = True if o.getSetting('scan_skip_on_scraping_failure') == 'true' else False
     
     # --- ROM scraping ---
     # Scanner settings

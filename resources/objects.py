@@ -5301,6 +5301,7 @@ class RomFolderScanner(RomScannerStrategy):
         allowedExtensions = self.launcher.get_rom_extensions()
         launcher_multidisc = self.launcher.supports_multidisc()
 
+        skip_if_scraping_failed = self.settings['scan_skip_on_scraping_failure']
         for ROM_file in sorted(items):
             self.progress_dialog.updateProgress(num_items_checked)
             
@@ -5413,13 +5414,14 @@ class RomFolderScanner(RomScannerStrategy):
                 scraping_succeeded = False        
                 log_error('(Exception) Object type "{}"'.format(type(ex)))
                 log_error('(Exception) Message "{}"'.format(str(ex)))
-                log_warning('Could not scrape "{}". Skip ROM completely from scan'.format(ROM_file.getBaseNoExt()))
+                log_warning('Could not scrape "{}"'.format(ROM_file.getBaseNoExt()))
+            
+            if not scraping_succeeded and skip_if_scraping_failed:
                 kodi_display_user_message({
                     'dialog': KODI_MESSAGE_NOTIFY_WARN,
                     'msg': 'Scraping "{}" failed. Skipping.'.format(ROM_file.getBaseNoExt())
                 })
-            
-            if scraping_succeeded:
+            else:
                 # --- This was the first ROM in a multidisc set ---
                 if launcher_multidisc and MDSet.isMultiDisc and not MultiDiscInROMs:
                     log_info('Adding to ROMs dic first disk "{0}"'.format(MDSet.discName))
