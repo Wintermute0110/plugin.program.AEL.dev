@@ -1338,7 +1338,7 @@ class Scraper(object):
         # if the number of errors is higher than a threshold.
         self.exception_counter += 1
         if self.exception_counter > Scraper.EXCEPTION_COUNTER_THRESHOLD:
-            err_m = 'Maximun number of errors exceeded. Disabling scraper.'
+            err_m = 'Maximum number of errors exceeded. Disabling scraper.'
             log_error(err_m)
             self.scraper_disabled = True
             # Replace error message witht the one that the scraper is disabled.
@@ -2446,6 +2446,9 @@ class MobyGames(Scraper):
         page_data = self._retrieve_URL_as_JSON(url, status_dic)
         self._dump_json_debug('mobygames_cover_assets.txt', page_data)
 
+        if page_data is None:
+            return []
+
         # --- Parse images page data ---
         asset_list = []
         for group_data in page_data['cover_groups']:
@@ -2492,9 +2495,9 @@ class MobyGames(Scraper):
         page_data_raw, http_code = net_get_URL(url, self._clean_URL_for_log(url))
         self.last_http_call = datetime.now()
         if page_data_raw is None:
-            if http_code == 429 and retry < RETRY_THRESHOLD:
+            if http_code == 429 and retry < Scraper.RETRY_THRESHOLD:
                 # 360 per hour limit, wait at least 16 minutes
-                wait_till_time = datetime.now() + datetime.timedelta(seconds=960)
+                wait_till_time = datetime.now() + timedelta(seconds=960)
                 kodi_dialog_OK('You\'ve exceeded the max rate limit of 360 requests/hour.',
                                 'Respect the website and wait at least till {}.'.format(wait_till_time))
                 # waited long enough? Try again

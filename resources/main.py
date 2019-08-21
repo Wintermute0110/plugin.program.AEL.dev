@@ -1441,6 +1441,9 @@ def m_run_launcher_sub_command(command, launcher):
     elif command == 'IMPORT_NFO_FILE_BROWSE':
         m_subcommand_launcher_browse_import_nfo_file(launcher)
 
+    elif command == 'SCRAPE_ROMS_SCRAPER':
+        m_roms_scrape_roms(launcher.get_category_id(), launcher.get_id())
+
     elif command == 'IMPORT_ROMS':
         m_subcommand_import_roms(launcher)
 
@@ -1454,7 +1457,6 @@ def m_run_launcher_sub_command(command, launcher):
     # --- Submenu command ---
     elif command == 'EDIT_DEFAULT_ASSETS':
         m_gui_edit_object_default_assets(launcher)
-
 
     elif command == 'EDIT_LAUNCHER_CATEGORY':
         m_subcommand_edit_launcher_category(launcher)
@@ -8273,6 +8275,45 @@ def m_roms_import_roms(categoryID, launcherID):
     launcher            = g_ObjectFactory.find_launcher(categoryID, launcherID)
     scraper_strategy    = g_ScraperFactory.create_scanner(launcher)
     rom_scanner         = g_ROMScannerFactory.create(launcher, scraper_strategy, pdialog)
+
+    scraper_strategy.begin_ROM_scanner(launcher, pdialog, False)
+    roms = rom_scanner.scan()
+    pdialog.endProgress()
+    
+    if roms is None:
+        return
+
+    # --- If we have a No-Intro XML then audit roms after scanning ----------------------------
+    if launcher.has_nointro_xml():
+        self._audit_no_intro_roms(launcher, roms)
+    else:
+        log_info('No-Intro/Redump DAT not configured. Do not audit ROMs.')
+
+    pdialog.startProgress('Saving ROM JSON database ...')
+
+    # ~~~ Save ROMs XML file ~~~
+    # >> Also save categories/launchers to update timestamp.
+    # >> Update launcher timestamp to update VLaunchers and reports.
+    log_debug('Saving {0} ROMS'.format(len(roms)))
+    launcher.update_ROM_set(roms)
+
+    pdialog.updateProgress(80)
+    
+    launcher.set_number_of_roms()
+    launcher.save_to_disk()
+
+    pdialog.updateProgress(100)
+    pdialog.close()
+
+#
+# ROM scraper. Called when user chooses Launcher CM, "Scrape ROMs"
+#
+def m_roms_scrape_roms(categoryID, launcherID):
+    log_debug('========== m_roms_scrape_roms() BEGIN ==================================================')
+    pdialog             = KodiProgressDialog()
+    launcher            = g_ObjectFactory.find_launcher(categoryID, launcherID)
+    scraper_strategy    = g_ScraperFactory.create_scanner(launcher)
+    rom_scanner         = g_ROMScannerFactory.create(launcher, scraper_strategy, pdialog, scrape_only=True)
 
     scraper_strategy.begin_ROM_scanner(launcher, pdialog, False)
     roms = rom_scanner.scan()
