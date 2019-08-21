@@ -5095,12 +5095,12 @@ class Main:
         # --- Load ROMs ---
         if categoryID == VCATEGORY_FAVOURITES_ID:
             log_debug('_command_manage_favourites() Managing Favourite ROMs')
-            roms_fav = fs_load_Favourites_JSON(FAV_JSON_FILE_PATH)
+            roms_fav = fs_load_Favourites_JSON(g_PATHS.FAV_JSON_FILE_PATH)
         elif categoryID == VCATEGORY_COLLECTIONS_ID:
             log_debug('_command_manage_favourites() Managing Collection ROMs')
-            (collections, update_timestamp) = fs_load_Collection_index_XML(COLLECTIONS_FILE_PATH)
+            (collections, update_timestamp) = fs_load_Collection_index_XML(g_PATHS.COLLECTIONS_FILE_PATH)
             collection = collections[launcherID]
-            roms_json_file = COLLECTIONS_DIR.pjoin(collection['roms_base_noext'] + '.json')
+            roms_json_file = g_PATHS.COLLECTIONS_DIR.pjoin(collection['roms_base_noext'] + '.json')
             collection_rom_list = fs_load_Collection_ROMs_JSON(roms_json_file)
             # NOTE ROMs in a collection are stored as a list and ROMs in Favourites are stored as
             #      a dictionary. Convert the Collection list into an ordered dictionary and then
@@ -5372,13 +5372,13 @@ class Main:
 
         # --- If we reach this point save favourites and refresh container ---
         if categoryID == VCATEGORY_FAVOURITES_ID:
-            fs_write_Favourites_JSON(FAV_JSON_FILE_PATH, roms_fav)
+            fs_write_Favourites_JSON(g_PATHS.FAV_JSON_FILE_PATH, roms_fav)
         elif categoryID == VCATEGORY_COLLECTIONS_ID:
             # >> Convert back the OrderedDict into a list and save Collection
             collection_rom_list = []
             for key in roms_fav:
                 collection_rom_list.append(roms_fav[key])
-            json_file = COLLECTIONS_DIR.pjoin(collection['roms_base_noext'] + '.json')
+            json_file = g_PATHS.COLLECTIONS_DIR.pjoin(collection['roms_base_noext'] + '.json')
             fs_write_Collection_ROMs_JSON(json_file, collection_rom_list)
         kodi_refresh_container()
 
@@ -6545,16 +6545,16 @@ class Main:
         elif view_type == VIEW_ROM_VLAUNCHER:
             # >> ROM in Favourites or Virtual Launcher (no launcher report)
             d_list = [
+                'View ROM data',
                 'View ROM manual',
                 'View ROM map',
-                'View ROM data',
                 'View last execution output ({0})'.format(STD_status),
             ]
         elif view_type == VIEW_ROM_COLLECTION:
             d_list = [
+                'View ROM data',
                 'View ROM manual',
                 'View ROM map',
-                'View ROM data',
                 'View last execution output ({0})'.format(STD_status),
             ]
         else:
@@ -6608,9 +6608,9 @@ class Main:
                     'This is a bug, please report it.')
                 return
         elif view_type == VIEW_ROM_VLAUNCHER:
-            if   selected_value == 0: action = ACTION_VIEW_MANUAL
-            elif selected_value == 1: action = ACTION_VIEW_MAP
-            elif selected_value == 2: action = ACTION_VIEW_ROM
+            if   selected_value == 0: action = ACTION_VIEW_ROM
+            elif selected_value == 1: action = ACTION_VIEW_MANUAL
+            elif selected_value == 2: action = ACTION_VIEW_MAP
             elif selected_value == 3: action = ACTION_VIEW_EXEC_OUTPUT
             else:
                 kodi_dialog_OK(
@@ -6618,9 +6618,9 @@ class Main:
                     'This is a bug, please report it.')
                 return
         elif view_type == VIEW_ROM_COLLECTION:
-            if   selected_value == 0: action = ACTION_VIEW_MANUAL
+            if   selected_value == 2: action = ACTION_VIEW_ROM
+            elif selected_value == 0: action = ACTION_VIEW_MANUAL
             elif selected_value == 1: action = ACTION_VIEW_MAP
-            elif selected_value == 2: action = ACTION_VIEW_ROM
             elif selected_value == 3: action = ACTION_VIEW_EXEC_OUTPUT
             else:
                 kodi_dialog_OK(
@@ -6662,7 +6662,7 @@ class Main:
                 regular_launcher = True
                 if categoryID == VCATEGORY_FAVOURITES_ID:
                     log_info('_command_view_menu() Viewing ROM in Favourites ...')
-                    roms = fs_load_Favourites_JSON(FAV_JSON_FILE_PATH)
+                    roms = fs_load_Favourites_JSON(g_PATHS.FAV_JSON_FILE_PATH)
                     rom = roms[romID]
                     window_title = 'Favourite ROM data'
                     regular_launcher = False
@@ -6670,7 +6670,7 @@ class Main:
 
                 elif categoryID == VCATEGORY_MOST_PLAYED_ID:
                     log_info('_command_view_menu() Viewing ROM in Most played ROMs list ...')
-                    most_played_roms = fs_load_Favourites_JSON(MOST_PLAYED_FILE_PATH)
+                    most_played_roms = fs_load_Favourites_JSON(g_PATHS.MOST_PLAYED_FILE_PATH)
                     rom = most_played_roms[romID]
                     window_title = 'Most Played ROM data'
                     regular_launcher = False
@@ -6678,7 +6678,7 @@ class Main:
 
                 elif categoryID == VCATEGORY_RECENT_ID:
                     log_info('_command_view_menu() Viewing ROM in Recently played ROMs ...')
-                    recent_roms_list = fs_load_Collection_ROMs_JSON(RECENT_PLAYED_FILE_PATH)
+                    recent_roms_list = fs_load_Collection_ROMs_JSON(g_PATHS.RECENT_PLAYED_FILE_PATH)
                     current_ROM_position = fs_collection_ROM_index_by_romID(romID, recent_roms_list)
                     if current_ROM_position < 0:
                         kodi_dialog_OK('Collection ROM not found in list. This is a bug!')
@@ -6690,12 +6690,12 @@ class Main:
 
                 elif categoryID == VCATEGORY_TITLE_ID:
                     log_info('_command_view_menu() Viewing ROM in Title Virtual Launcher ...')
-                    hashed_db_filename = VIRTUAL_CAT_TITLE_DIR.pjoin(launcherID + '.json')
+                    hashed_db_filename = g_PATHS.VIRTUAL_CAT_TITLE_DIR.pjoin(launcherID + '.json')
                     if not hashed_db_filename.exists():
                         log_error('_command_view_menu() Cannot find file "{0}"'.format(hashed_db_filename.getPath()))
                         kodi_dialog_OK('Virtual launcher XML/JSON file not found.')
                         return
-                    roms = fs_load_VCategory_ROMs_JSON(VIRTUAL_CAT_TITLE_DIR, launcherID)
+                    roms = fs_load_VCategory_ROMs_JSON(g_PATHS.VIRTUAL_CAT_TITLE_DIR, launcherID)
                     rom = roms[romID]
                     window_title = 'Virtual Launcher Title ROM data'
                     regular_launcher = False
@@ -6703,12 +6703,12 @@ class Main:
 
                 elif categoryID == VCATEGORY_YEARS_ID:
                     log_info('_command_view_menu() Viewing ROM in Year Virtual Launcher ...')
-                    hashed_db_filename = VIRTUAL_CAT_YEARS_DIR.pjoin(launcherID + '.json')
+                    hashed_db_filename = g_PATHS.VIRTUAL_CAT_YEARS_DIR.pjoin(launcherID + '.json')
                     if not hashed_db_filename.exists():
                         log_error('_command_view_menu() Cannot find file "{0}"'.format(hashed_db_filename.getPath()))
                         kodi_dialog_OK('Virtual launcher XML/JSON file not found.')
                         return
-                    roms = fs_load_VCategory_ROMs_JSON(VIRTUAL_CAT_YEARS_DIR, launcherID)
+                    roms = fs_load_VCategory_ROMs_JSON(g_PATHS.VIRTUAL_CAT_YEARS_DIR, launcherID)
                     rom = roms[romID]
                     window_title = 'Virtual Launcher Year ROM data'
                     regular_launcher = False
@@ -6716,12 +6716,12 @@ class Main:
 
                 elif categoryID == VCATEGORY_GENRE_ID:
                     log_info('_command_view_menu() Viewing ROM in Genre Virtual Launcher ...')
-                    hashed_db_filename = VIRTUAL_CAT_GENRE_DIR.pjoin(launcherID + '.json')
+                    hashed_db_filename = g_PATHS.VIRTUAL_CAT_GENRE_DIR.pjoin(launcherID + '.json')
                     if not hashed_db_filename.exists():
                         log_error('_command_view_menu() Cannot find file "{0}"'.format(hashed_db_filename.getPath()))
                         kodi_dialog_OK('Virtual launcher XML/JSON file not found.')
                         return
-                    roms = fs_load_VCategory_ROMs_JSON(VIRTUAL_CAT_GENRE_DIR, launcherID)
+                    roms = fs_load_VCategory_ROMs_JSON(g_PATHS.VIRTUAL_CAT_GENRE_DIR, launcherID)
                     rom = roms[romID]
                     window_title = 'Virtual Launcher Genre ROM data'
                     regular_launcher = False
@@ -6729,12 +6729,12 @@ class Main:
 
                 elif categoryID == VCATEGORY_DEVELOPER_ID:
                     log_info('_command_view_menu() Viewing ROM in Developer Virtual Launcher ...')
-                    hashed_db_filename = VIRTUAL_CAT_DEVELOPER_DIR.pjoin(launcherID + '.json')
+                    hashed_db_filename = g_PATHS.VIRTUAL_CAT_DEVELOPER_DIR.pjoin(launcherID + '.json')
                     if not hashed_db_filename.exists():
                         log_error('_command_view_menu() Cannot find file "{0}"'.format(hashed_db_filename.getPath()))
                         kodi_dialog_OK('Virtual launcher XML/JSON file not found.')
                         return
-                    roms = fs_load_VCategory_ROMs_JSON(VIRTUAL_CAT_DEVELOPER_DIR, launcherID)
+                    roms = fs_load_VCategory_ROMs_JSON(g_PATHS.VIRTUAL_CAT_DEVELOPER_DIR, launcherID)
                     rom = roms[romID]
                     window_title = 'Virtual Launcher Studio ROM data'
                     regular_launcher = False
@@ -6742,12 +6742,12 @@ class Main:
 
                 elif categoryID == VCATEGORY_NPLAYERS_ID:
                     log_info('_command_view_menu() Viewing ROM in NPlayers Virtual Launcher ...')
-                    hashed_db_filename = VIRTUAL_CAT_NPLAYERS_DIR.pjoin(launcherID + '.json')
+                    hashed_db_filename = g_PATHS.VIRTUAL_CAT_NPLAYERS_DIR.pjoin(launcherID + '.json')
                     if not hashed_db_filename.exists():
                         log_error('_command_view_menu() Cannot find file "{0}"'.format(hashed_db_filename.getPath()))
                         kodi_dialog_OK('Virtual launcher XML/JSON file not found.')
                         return
-                    roms = fs_load_VCategory_ROMs_JSON(VIRTUAL_CAT_NPLAYERS_DIR, launcherID)
+                    roms = fs_load_VCategory_ROMs_JSON(g_PATHS.VIRTUAL_CAT_NPLAYERS_DIR, launcherID)
                     rom = roms[romID]
                     window_title = 'Virtual Launcher NPlayer ROM data'
                     regular_launcher = False
@@ -6755,12 +6755,12 @@ class Main:
 
                 elif categoryID == VCATEGORY_ESRB_ID:
                     log_info('_command_view_menu() Viewing ROM in ESRB Launcher ...')
-                    hashed_db_filename = VIRTUAL_CAT_ESRB_DIR.pjoin(launcherID + '.json')
+                    hashed_db_filename = g_PATHS.VIRTUAL_CAT_ESRB_DIR.pjoin(launcherID + '.json')
                     if not hashed_db_filename.exists():
                         log_error('_command_view_menu() Cannot find file "{0}"'.format(hashed_db_filename.getPath()))
                         kodi_dialog_OK('Virtual launcher XML/JSON file not found.')
                         return
-                    roms = fs_load_VCategory_ROMs_JSON(VIRTUAL_CAT_ESRB_DIR, launcherID)
+                    roms = fs_load_VCategory_ROMs_JSON(g_PATHS.VIRTUAL_CAT_ESRB_DIR, launcherID)
                     rom = roms[romID]
                     window_title = 'Virtual Launcher ESRB ROM data'
                     regular_launcher = False
@@ -6768,12 +6768,12 @@ class Main:
 
                 elif categoryID == VCATEGORY_RATING_ID:
                     log_info('_command_view_menu() Viewing ROM in Rating Launcher ...')
-                    hashed_db_filename = VIRTUAL_CAT_RATING_DIR.pjoin(launcherID + '.json')
+                    hashed_db_filename = g_PATHS.VIRTUAL_CAT_RATING_DIR.pjoin(launcherID + '.json')
                     if not hashed_db_filename.exists():
                         log_error('_command_view_menu() Cannot find file "{0}"'.format(hashed_db_filename.getPath()))
                         kodi_dialog_OK('Virtual launcher XML/JSON file not found.')
                         return
-                    roms = fs_load_VCategory_ROMs_JSON(VIRTUAL_CAT_RATING_DIR, launcherID)
+                    roms = fs_load_VCategory_ROMs_JSON(g_PATHS.VIRTUAL_CAT_RATING_DIR, launcherID)
                     rom = roms[romID]
                     window_title = 'Virtual Launcher Rating ROM data'
                     regular_launcher = False
@@ -6781,12 +6781,12 @@ class Main:
 
                 elif categoryID == VCATEGORY_CATEGORY_ID:
                     log_info('_command_view_menu() Viewing ROM in Category Virtual Launcher ...')
-                    hashed_db_filename = VIRTUAL_CAT_CATEGORY_DIR.pjoin(launcherID + '.json')
+                    hashed_db_filename = g_PATHS.VIRTUAL_CAT_CATEGORY_DIR.pjoin(launcherID + '.json')
                     if not hashed_db_filename.exists():
                         log_error('_command_view_menu() Cannot find file "{0}"'.format(hashed_db_filename.getPath()))
                         kodi_dialog_OK('Virtual launcher XML/JSON file not found.')
                         return
-                    roms = fs_load_VCategory_ROMs_JSON(VIRTUAL_CAT_CATEGORY_DIR, launcherID)
+                    roms = fs_load_VCategory_ROMs_JSON(g_PATHS.VIRTUAL_CAT_CATEGORY_DIR, launcherID)
                     rom = roms[romID]
                     window_title = 'Virtual Launcher Category ROM data'
                     regular_launcher = False
@@ -6795,9 +6795,9 @@ class Main:
                 # --- ROM in Collection ---
                 elif categoryID == VCATEGORY_COLLECTIONS_ID:
                     log_info('_command_view_menu() Viewing ROM in Collection ...')
-                    (collections, update_timestamp) = fs_load_Collection_index_XML(COLLECTIONS_FILE_PATH)
+                    (collections, update_timestamp) = fs_load_Collection_index_XML(g_PATHS.COLLECTIONS_FILE_PATH)
                     collection = collections[launcherID]
-                    roms_json_file = COLLECTIONS_DIR.pjoin(collection['roms_base_noext'] + '.json')
+                    roms_json_file = g_PATHS.COLLECTIONS_DIR.pjoin(collection['roms_base_noext'] + '.json')
                     collection_rom_list = fs_load_Collection_ROMs_JSON(roms_json_file)
                     current_ROM_position = fs_collection_ROM_index_by_romID(romID, collection_rom_list)
                     if current_ROM_position < 0:
@@ -10013,7 +10013,7 @@ class Main:
         # Just get the list of platforms and report to the user.
         pdialog = KodiProgressDialog()
         pdialog.startProgress('Retrieving info from MobyGames...', 100)
-        json_data = MobyGames.get_platforms(status_dic)
+        json_data = MobyGames.debug_get_platforms(status_dic)
         pdialog.endProgress()
         if not status_dic['status']:
             kodi_dialog_OK(status_dic['msg'])
@@ -10042,7 +10042,7 @@ class Main:
         # Get ScreenScraper user information
         pdialog = KodiProgressDialog()
         pdialog.startProgress('Retrieving info from ScreenScraper...', 100)
-        json_data = ScreenScraper.get_user_info(status_dic)
+        json_data = ScreenScraper.debug_get_user_info(status_dic)
         pdialog.endProgress()
         if not status_dic['status']:
             kodi_dialog_OK(status_dic['msg'])

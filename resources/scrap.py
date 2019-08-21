@@ -364,12 +364,12 @@ class ScrapeStrategy(object):
 
         # --- Determine metadata action ----------------------------------------------------------
         # --- Test if NFO file exists ---
-        NFO_file = FileName(ROM.getPath_noext() + '.nfo')
-        NFO_file_found = True if NFO_file.exists() else False
+        self.NFO_file = FileName(ROM.getPath_noext() + '.nfo')
+        NFO_file_found = True if self.NFO_file.exists() else False
         if NFO_file_found:
-            log_debug('NFO file found "{0}"'.format(NFO_file.getPath()))
+            log_debug('NFO file found "{0}"'.format(self.NFO_file.getPath()))
         else:
-            log_debug('NFO file NOT found "{0}"'.format(NFO_file.getPath()))
+            log_debug('NFO file NOT found "{0}"'.format(self.NFO_file.getPath()))
 
         # Action depends configured metadata policy and wheter the NFO files was found or not.
         if self.scan_metadata_policy == 0:
@@ -386,7 +386,7 @@ class ScrapeStrategy(object):
                 log_verb('Metadata policy: NFO file not found. Only cleaning ROM name')
                 self.metadata_action = ScrapeStrategy.ACTION_META_TITLE_ONLY
 
-        elif self.scan_metadata_policy == 2 and NFO_file_found:
+        elif self.scan_metadata_policy == 2:
             log_verb('Metadata policy: Read NFO file ON | Scraper ON')
             if NFO_file_found:
                 log_verb('Metadata policy: NFO file found. Scraper not used.')
@@ -495,10 +495,10 @@ class ScrapeStrategy(object):
 
         elif self.metadata_action == ScrapeStrategy.ACTION_META_NFO_FILE:
             if self.pdialog_verbose:
-                self.pdialog.updateMessage2('Loading NFO file {0}'.format(NFO_file.getPath()))
+                self.pdialog.updateMessage2('Loading NFO file {0}'.format(self.NFO_file.getPath()))
             # If this point is reached the NFO file was found previosly.
-            log_debug('Loading NFO P "{0}"'.format(NFO_file.getPath()))
-            nfo_dic = fs_import_ROM_NFO_file_scanner(NFO_file)
+            log_debug('Loading NFO P "{0}"'.format(self.NFO_file.getPath()))
+            nfo_dic = fs_import_ROM_NFO_file_scanner(self.NFO_file)
             # NOTE <platform> is chosen by AEL, never read from NFO files. Indeed, platform
             #      is a Launcher property, not a ROM property.
             romdata['m_name']      = nfo_dic['title']     # <title>
@@ -615,6 +615,9 @@ class ScrapeStrategy(object):
         if self.candidate_metadata is None and not self.candidate_metadata:
             log_verb('No medatada candidates (or previous error). Cleaning ROM name only.')
             romdata['m_name'] = text_format_ROM_title(ROM.getBase_noext(), self.scan_clean_tags)
+            # Update the empty NFO file to mark the ROM as scraped and avoid rescraping
+            # if launcher is scanned again.
+            self._scanner_update_NFO_file(romdata)
             return
 
         # --- Grab metadata for selected game and put into ROM ---
@@ -626,8 +629,10 @@ class ScrapeStrategy(object):
             self.pdialog.reopen()
             return
         scraper_applied = self._apply_candidate_on_metadata_old(game_data, romdata, ROM)
+        self._scanner_update_NFO_file(romdata)
 
-        # --- Update ROM NFO file after scraping ---
+    # Update ROM NFO file after scraping.
+    def _scanner_update_NFO_file(self, romdata):
         if self.scan_update_NFO_files:
             log_debug('User wants to update NFO file after scraping.')
             fs_export_ROM_NFO(romdata, False)
