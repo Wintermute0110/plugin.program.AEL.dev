@@ -30,11 +30,11 @@ scraper_obj.set_debug_file_dump(True, os.path.join(os.path.dirname(__file__), 'a
 status_dic = kodi_new_status_dic('Scraper test was OK')
 
 # --- Get candidates non-MAME ---
-# candidate_list = scraper_obj.get_candidates(*common.games['metroid'])
-# candidate_list = scraper_obj.get_candidates(*common.games['mworld'])
+# candidate_list = scraper_obj.get_candidates(*common.games['metroid'], status_dic = status_dic)
+# candidate_list = scraper_obj.get_candidates(*common.games['mworld'], status_dic = status_dic)
 candidate_list = scraper_obj.get_candidates(*common.games['sonic'], status_dic = status_dic)
-# candidate_list = scraper_obj.get_candidates(*common.games['chakan'])
-# candidate_list = scraper_obj.get_candidates(*common.games['console_invalid'])
+# candidate_list = scraper_obj.get_candidates(*common.games['chakan'], status_dic = status_dic)
+# candidate_list = scraper_obj.get_candidates(*common.games['console_invalid'], status_dic = status_dic)
 
 # --- Print search results ---
 # pprint.pprint(candidate_list)

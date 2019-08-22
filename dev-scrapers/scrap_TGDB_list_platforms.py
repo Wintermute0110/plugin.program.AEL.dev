@@ -36,7 +36,7 @@ status_dic = kodi_new_status_dic('Scraper test was OK')
 # Call to this function will write file 'assets/TGDB_get_platforms.json'
 json_data = scraper_obj.debug_get_platforms(status_dic)
 if not status_dic['status']:
-    print('FATAL ERROR: "' + status_dic['msg'] + '"')
+    print('SCRAPER ERROR: "' + status_dic['msg'] + '"')
     sys.exit(0)
 platforms_dic = json_data['data']['platforms']
 pname_dic = {platforms_dic[platform]['name'] : platform for platform in platforms_dic}

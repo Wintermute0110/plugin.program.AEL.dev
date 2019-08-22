@@ -36,7 +36,7 @@ status_dic = kodi_new_status_dic('Scraper test was OK')
 # Call to this function will write file 'assets/MobyGames_get_platforms.json'
 json_data = scraper_obj.debug_get_platforms(status_dic)
 if not status_dic['status']:
-    print('FATAL ERROR: "' + status_dic['msg'] + '"')
+    print('SCRAPER ERROR: "' + status_dic['msg'] + '"')
     sys.exit(0)
 platform_list = json_data['platforms']
 platform_dic = {p_dic['platform_name'] : p_dic['platform_id'] for p_dic in platform_list}
