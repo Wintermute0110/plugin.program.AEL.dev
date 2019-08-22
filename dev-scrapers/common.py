@@ -15,6 +15,8 @@ settings = {
     'scraper_screenscraper_ssid' : 'Wintermute0110',
     'scraper_screenscraper_sspass' : '',  # NEVER COMMIT THIS PASSWORD
     'scraper_screenscraper_AEL_softname' : 'AEL_0.9.8',
+    'scraper_screenscraper_region' : 0, # Default World
+    'scraper_screenscraper_language' : 0, # Default English
 }
 
 # --- Test data -----------------------------------------------------------------------------------

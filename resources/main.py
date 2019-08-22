@@ -504,6 +504,9 @@ class Main:
         self.settings['scraper_screenscraper_ssid']   = o.getSetting('scraper_screenscraper_ssid').decode('utf-8')
         self.settings['scraper_screenscraper_sspass'] = o.getSetting('scraper_screenscraper_sspass').decode('utf-8')
 
+        self.settings['scraper_screenscraper_region']   = int(o.getSetting('scraper_screenscraper_region'))
+        self.settings['scraper_screenscraper_language'] = int(o.getSetting('scraper_screenscraper_language'))
+
         # self.settings['scraper_region']           = int(o.getSetting('scraper_region'))
         # self.settings['scraper_thumb_size']       = int(o.getSetting('scraper_thumb_size'))
         # self.settings['scraper_fanart_size']      = int(o.getSetting('scraper_fanart_size'))

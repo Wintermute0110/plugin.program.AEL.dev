@@ -31,8 +31,8 @@ status_dic = kodi_new_status_dic('Scraper test was OK')
 
 # --- Get candidates non-MAME ---
 # candidate_list = scraper_obj.get_candidates(*common.games['metroid'], status_dic = status_dic)
-candidate_list = scraper_obj.get_candidates(*common.games['mworld'], status_dic = status_dic)
-# candidate_list = scraper_obj.get_candidates(*common.games['sonic'], status_dic = status_dic)
+# candidate_list = scraper_obj.get_candidates(*common.games['mworld'], status_dic = status_dic)
+candidate_list = scraper_obj.get_candidates(*common.games['sonic'], status_dic = status_dic)
 # candidate_list = scraper_obj.get_candidates(*common.games['chakan'], status_dic = status_dic)
 # candidate_list = scraper_obj.get_candidates(*common.games['console_invalid'], status_dic = status_dic)
 
