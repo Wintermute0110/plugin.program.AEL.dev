@@ -152,7 +152,7 @@ class ScraperFactory(object):
         if SCRAPER_MOBYGAMES_ID in SCRAPER_LIST:
             self.scraper_objs[SCRAPER_MOBYGAMES_ID] = MobyGames(self.settings)
         if SCRAPER_SCREENSCRAPER_ID in SCRAPER_LIST:
-           self.scraper_objs[SCRAPER_SCREENSCRAPER_ID] = ScreenScraper_V1(self.settings)
+           self.scraper_objs[SCRAPER_SCREENSCRAPER_ID] = ScreenScraper(self.settings)
         if SCRAPER_GAMEFAQS_ID in SCRAPER_LIST:
             self.scraper_objs[SCRAPER_GAMEFAQS_ID] = GameFAQs(self.settings)
         if SCRAPER_ARCADEDB_ID in SCRAPER_LIST:
@@ -2503,12 +2503,9 @@ class MobyGames(Scraper):
 
     # Retrieve URL and decode JSON object.
     # When the API key is not configured or invalid MobyGames returns "HTTP Error 401: UNAUTHORIZED"
-    # When the API number of calls is exhausted ...
+    # When the API number of calls is exhausted MobyGames returns ...
     def _retrieve_URL_as_JSON(self, url, status_dic):
         self._wait_for_API_request()
-        # If the MobyGames API key is wrong or empty string, MobyGames will reply with an 
-        # "HTTP Error 401: UNAUTHORIZED" response which is an IOError expection in net_get_URL().
-        # Generally, if a JSON object cannot be decoded some error happened in net_get_URL().
         page_data_raw, http_code = net_get_URL(url, self._clean_URL_for_log(url))
         self.last_http_call = datetime.datetime.now()
         if page_data_raw is None:
@@ -2532,11 +2529,11 @@ class MobyGames(Scraper):
             time.sleep(1)
 
 # ------------------------------------------------------------------------------------------------
-# ScreenScraper online scraper.
+# ScreenScraper online scraper. Uses V2 API.
 #
 # | Site        | https://www.screenscraper.fr             |
 # | API V1 docs | https://www.screenscraper.fr/webapi.php  |
-# | API V2 docs | |
+# | API V2 docs | https://www.screenscraper.fr/webapi2.php |
 #
 # Some API functions can be called to test, for example:
 # https://www.screenscraper.fr/api/genresListe.php?devid=xxx&devpassword=yyy&softname=zzz&output=xml
@@ -2558,7 +2555,7 @@ class MobyGames(Scraper):
 # https://www.screenscraper.fr/api/mediaJeu.php?devid=xxx&devpassword=yyy&softname=zzz&ssid=test&sspassword=test&crc=&md5=&sha1=&systemeid=1&jeuid=3&media=wheel-hd(wor)
 # https://www.screenscraper.fr/api/mediaVideoJeu.php?devid=xxx&devpassword=yyy&softname=zzz&ssid=test&sspassword=test&crc=&md5=&sha1=&systemeid=1&jeuid=3&media=video
 # ------------------------------------------------------------------------------------------------
-class ScreenScraper_V1(Scraper):
+class ScreenScraper(Scraper):
     # --- Class variables ------------------------------------------------------------------------
     supported_metadata_list = [
         META_TITLE_ID,
@@ -2572,7 +2569,6 @@ class ScreenScraper_V1(Scraper):
     supported_asset_list = [
         ASSET_FANART_ID,
         ASSET_CLEARLOGO_ID,
-        ASSET_TRAILER_ID,
         ASSET_TITLE_ID,
         ASSET_SNAP_ID,
         ASSET_BOXFRONT_ID,
@@ -2581,6 +2577,7 @@ class ScreenScraper_V1(Scraper):
         ASSET_CARTRIDGE_ID,
         ASSET_MAP_ID,
         ASSET_MANUAL_ID,
+        ASSET_TRAILER_ID,
     ]
 
     # List of country/region suffixes supported by ScreenScraper.
@@ -2627,7 +2624,7 @@ class ScreenScraper_V1(Scraper):
         self.cache_jeuInfos = {}
 
         # --- Pass down common scraper settings ---
-        super(ScreenScraper_V1, self).__init__(settings)
+        super(ScreenScraper, self).__init__(settings)
 
     # --- Base class abstract methods ------------------------------------------------------------
     def get_name(self): return 'ScreenScraper'
@@ -2746,15 +2743,15 @@ class ScreenScraper_V1(Scraper):
     # --- This class own methods -----------------------------------------------------------------
     # Plumbing function to get the cached raw game dictionary returned by ScreenScraper.
     # Scraper::get_candiates() must be called before this function to fill the cache.
-    def get_gameInfos_dic(self, candidate):
+    def debug_get_gameInfos_dic(self, candidate):
         log_debug('ScreenScraper_V1::get_gameInfos_dic() Cache retrieving "{}"'.format(candidate['cache_str']))
         gameInfos_dic = self.cache_jeuInfos[candidate['cache_str']]
 
         return gameInfos_dic
 
-    def get_user_info(self, status_dic):
+    def debug_get_user_info(self, status_dic):
         log_debug('ScreenScraper_V1::get_ROM_types() BEGIN...')
-        url_a = 'https://www.screenscraper.fr/api/ssuserInfos.php'
+        url_a = 'https://www.screenscraper.fr/api2/ssuserInfos.php'
         url_b = '?devid={}&devpassword={}&softname={}&output=json'
         url_c = '&ssid={}&sspassword={}'
         url = url_a + \
@@ -2768,9 +2765,9 @@ class ScreenScraper_V1(Scraper):
         return json_data
 
     # Some functions to grab data from ScreenScraper.
-    def get_ROM_types(self):
+    def debug_get_ROM_types(self):
         log_debug('ScreenScraper_V1::get_ROM_types() BEGIN...')
-        url_str = 'https://www.screenscraper.fr/api/romTypesListe.php?devid={}&devpassword={}&softname={}&output=json'
+        url_str = 'https://www.screenscraper.fr/api2/romTypesListe.php?devid={}&devpassword={}&softname={}&output=json'
         url = url_str.format(base64.b64decode(self.dev_id), base64.b64decode(self.dev_pass), self.softname)
         page_raw_data = net_get_URL(url)
         log_debug(unicode(page_raw_data))
@@ -2779,9 +2776,9 @@ class ScreenScraper_V1(Scraper):
 
         return json_data
 
-    def get_genres_list(self):
+    def debug_get_genres(self):
         log_debug('ScreenScraper_V1::get_genres_list() BEGIN...')
-        url_str = 'https://www.screenscraper.fr/api/genresListe.php?devid={}&devpassword={}&softname={}&output=json'
+        url_str = 'https://www.screenscraper.fr/api2/genresListe.php?devid={}&devpassword={}&softname={}&output=json'
         url = url_str.format(base64.b64decode(self.dev_id), base64.b64decode(self.dev_pass), self.softname)
         page_raw_data = net_get_URL(url)
         # log_debug(unicode(page_raw_data))
@@ -2790,9 +2787,9 @@ class ScreenScraper_V1(Scraper):
 
         return page_data
 
-    def get_regions_list(self):
+    def debug_get_regions(self):
         log_debug('ScreenScraper_V1::get_regions_list() BEGIN...')
-        url_str = 'https://www.screenscraper.fr/api/regionsListe.php?devid={}&devpassword={}&softname={}&output=json'
+        url_str = 'https://www.screenscraper.fr/api2/regionsListe.php?devid={}&devpassword={}&softname={}&output=json'
         url = url_str.format(base64.b64decode(self.dev_id), base64.b64decode(self.dev_pass), self.softname)
         page_raw_data = net_get_URL(url)
         # log_debug(unicode(page_raw_data))
@@ -2800,6 +2797,18 @@ class ScreenScraper_V1(Scraper):
         self._dump_json_debug('ScreenScraper_get_regions_list.txt', page_data)
 
         return page_data
+
+    def debug_get_platforms(self, status_dic):
+        log_debug('ScreenScraper::debug_get_platforms() Getting SS platforms...')
+        url_a = 'https://www.screenscraper.fr/api2/systemesListe.php?'
+        url_b = 'devid={}&devpassword={}&softname={}&output=json'
+        url = url_a + \
+              url_b.format(base64.b64decode(self.dev_id), base64.b64decode(self.dev_pass), self.softname)
+        json_data = self._retrieve_URL_as_JSON(url, status_dic)
+        if not status_dic['status']: return None
+        self._dump_json_debug('ScreenScraper_get_platforms.json', json_data)
+
+        return json_data
 
     # Call to ScreenScraper jeuInfos.php
     def _get_gameInfos(self, search_term, rombase_noext, scraper_platform):
@@ -3028,6 +3037,53 @@ class ScreenScraper_V1(Scraper):
         # log_variable('clean_url', clean_url)
 
         return clean_url
+
+    # Reimplementation of base class.
+    # ScreenScraper needs URL cleaning in JSON before dumping because URL have passwords.
+    # Only clean data if JSON file is dumped.
+    def _dump_json_debug(self, file_name, json_data):
+        log_debug('ScreenScraper::_dump_json_debug() Cleaning JSON URLs not working yet.')
+        # if not self.dump_file_flag: return
+        # json_data_clean = self._clean_JSON_for_dumping(json_data)
+        super(ScreenScraper, self)._dump_json_debug(file_name, json_data)
+
+    # JSON recursive iterator generator. Keeps also track of JSON keys.
+    # FINISH THIS!!!
+    # https://stackoverflow.com/questions/38397285/iterate-over-all-items-in-json-object
+    def _recursive_iter(self, obj):
+        if isinstance(obj, dict):
+            for item in obj.values():
+                yield self._recursive_iter(item)
+        elif any(isinstance(obj, t) for t in (list, tuple)):
+            for item in obj:
+                yield self._recursive_iter(item)
+        else:
+            yield obj
+
+    # Recursively cleans URLs in a JSON data structure for safe JSON file data dumping.
+    def _clean_JSON_for_dumping(self, json_data):
+        # Recursively iterate data
+        for item in self._recursive_iter(json_data):
+            print(item)
+
+        return json_data
+
+    # Retrieve URL and decode JSON object.
+    # When the API user/pass is not configured or invalid SS returns ...
+    # When the API number of calls is exhausted SS returns ...
+    def _retrieve_URL_as_JSON(self, url, status_dic):
+        page_data_raw, http_code = net_get_URL(url, self._clean_URL_for_log(url))
+        # self._dump_file_debug('ScreenScraper_data_raw.txt', page_data_raw)
+        if page_data_raw is None:
+            self._handle_error(status_dic, 'Network error in net_get_URL()')
+            return None
+        try:
+            json_data = json.loads(page_data_raw)
+        except Exception as ex:
+            self._handle_exception(ex, status_dic, 'Error decoding JSON data from ScreenScraper.')
+            return None
+
+        return json_data
 
 # ------------------------------------------------------------------------------------------------
 # ScreenScraper online scraper.
