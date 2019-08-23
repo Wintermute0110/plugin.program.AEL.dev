@@ -31,17 +31,21 @@ status_dic = kodi_new_status_dic('Scraper test was OK')
 
 # --- Get candidates ---
 # candidate_list = scraper_obj.get_candidates(*common.games['metroid'], status_dic = status_dic)
-# candidate_list = scraper_obj.get_candidates(*common.games['mworld'], status_dic = status_dic)
-candidate_list = scraper_obj.get_candidates(*common.games['sonic'], status_dic = status_dic)
+candidate_list = scraper_obj.get_candidates(*common.games['mworld'], status_dic = status_dic)
+# candidate_list = scraper_obj.get_candidates(*common.games['sonic'], status_dic = status_dic)
 # candidate_list = scraper_obj.get_candidates(*common.games['chakan'], status_dic = status_dic)
-# candidate_list = scraper_obj.get_candidates(*common.games['console_invalid'], status_dic = status_dic)
+# candidate_list = scraper_obj.get_candidates(*common.games['console_wrong_title'], status_dic = status_dic)
+# candidate_list = scraper_obj.get_candidates(*common.games['console_wrong_platform'], status_dic = status_dic)
 
 # --- Print search results ---
 # pprint.pprint(candidate_list)
-print_candidate_list(candidate_list)
-if not candidate_list:
-    print('No candidates found.')
+if candidate_list is None:
+    print('Error/exception in get_candidates(). Exiting.')
     sys.exit(0)
+if not candidate_list:
+    print('No candidates found. Exiting.')
+    sys.exit(0)
+print_candidate_list(candidate_list)
 candidate = candidate_list[0]
 
 # --- Print metadata of first candidate ----------------------------------------------------------

@@ -690,7 +690,7 @@ def AEL_platform_to_TheGamesDB(platform_AEL):
         platform_TheGamesDB = platform_AEL_to_TheGamesDB_dic[platform_AEL]
     except:
         # Platform '0' means any platform in TGDB
-        platform_TheGamesDB = ''
+        platform_TheGamesDB = '0'
 
     return platform_TheGamesDB
 
@@ -706,7 +706,7 @@ def AEL_platform_to_ScreenScraper(platform_AEL):
     try:
         platform_MobyGames = platform_AEL_to_ScreenScraper_dic[platform_AEL]
     except:
-        platform_MobyGames = ''
+        platform_MobyGames = '0'
 
     return platform_MobyGames
 

@@ -1863,7 +1863,9 @@ class TheGamesDB(Scraper):
             candidate['id'] = item['id']
             candidate['display_name'] = title
             candidate['platform'] = platform
-            candidate['scraper_platform'] = scraper_platform
+            # Candidate platform may be different from scraper_platform if scraper_platform = 0
+            # Always trust TGDB API about the platform of the returned candidates.
+            candidate['scraper_platform'] = item['platform']
             candidate['order'] = 1
             # Increase search score based on our own search.
             if title.lower() == search_term.lower():                  candidate['order'] += 2
@@ -1876,7 +1878,8 @@ class TheGamesDB(Scraper):
         if next_url is not None:
             log_debug('TheGamesDB::_retrieve_games_from_url() Recursively loading game page')
             candidate_list = candidate_list + self._retrieve_games_from_url(
-                next_url, search_term, scraper_platform)
+                next_url, search_term, platform, scraper_platform, status_dic)
+            if not status_dic['status']: return None
 
         return candidate_list
 
@@ -1894,14 +1897,15 @@ class TheGamesDB(Scraper):
     #     ...
     # ]
     def _parse_metadata_title(self, jeu_dic):
-        if 'game_title' in jeu_dic: title_str = jeu_dic['game_title']
-        else:                       title_str = DEFAULT_META_TITLE
+        if 'game_title' in jeu_dic and jeu_dic['game_title'] is not None:
+            title_str = jeu_dic['game_title']
+        else:
+            title_str = DEFAULT_META_TITLE
 
         return title_str
 
     def _parse_metadata_year(self, online_data):
-        if 'release_date' in online_data and \
-           online_data['release_date'] is not None and \
+        if 'release_date' in online_data and online_data['release_date'] is not None and \
            online_data['release_date'] != '':
             year_str = online_data['release_date'][:4]
         else:
@@ -1933,20 +1937,26 @@ class TheGamesDB(Scraper):
         return ', '.join(developer_list)
 
     def _parse_metadata_nplayers(self, online_data):
-        if 'players' in online_data: nplayers_str = str(online_data['players'])
-        else:                        nplayers_str = DEFAULT_META_NPLAYERS
+        if 'players' in online_data and online_data['players'] is not None:
+            nplayers_str = str(online_data['players'])
+        else:
+            nplayers_str = DEFAULT_META_NPLAYERS
 
         return nplayers_str
 
     def _parse_metadata_esrb(self, online_data):
-        if 'rating' in online_data: esrb_str = online_data['rating']
-        else:                       esrb_str = DEFAULT_META_ESRB
+        if 'rating' in online_data and online_data['rating'] is not None:
+            esrb_str = online_data['rating']
+        else:
+            esrb_str = DEFAULT_META_ESRB
 
         return esrb_str
 
     def _parse_metadata_plot(self, online_data):
-        if 'overview' in online_data: plot_str = online_data['overview']
-        else:                         plot_str = DEFAULT_META_PLOT
+        if 'overview' in online_data and online_data['overview'] is not None:
+            plot_str = online_data['overview']
+        else:
+            plot_str = DEFAULT_META_PLOT
 
         return plot_str
 
@@ -2544,6 +2554,11 @@ class MobyGames(Scraper):
 #
 # In the API documentation page some API function can be called as a test. Other test functions
 # fail when called (invalid data, no user name/pass, etc.).
+#
+# * If no games are found with jeuInfos.php an HTTP status code 404 is returned.
+# * If no platform (platform id = 0) is used ScreenScraper returns garbage, a totally unrelated
+#   game to the one being searched. It is not advisable to use this scraper with a wrong
+#   platform.
 #
 # ssuserInfos.php : Informations sur l'utilisateur ScreenScraper
 # userlevelsListe.php : Liste des niveaux utilisateurs de ScreenScraper 
