@@ -3154,62 +3154,82 @@ class ScreenScraper(Scraper):
 
     # ScreenScraper URLs have the developer password and the user password.
     # Clean URLs for safe logging.
-    #
-    # https://docs.python.org/2/library/urlparse.html
-    # Note: The urlparse module is renamed to urllib.parse in Python 3. The 2to3 tool will
-    # automatically adapt imports when converting your sources to Python 3. 
     def _clean_URL_for_log(self, url):
-        # This is too complicated and the order of the parameters in the query is changed.
-        # o = urlparse.urlparse(url)
-        # log_variable('o', o)
-        # query_dic = urlparse.parse_qs(o.query)
-        # query_dic['devpassword'] = 'ooo'
-        # query_dic['sspassword'] = 'ooo'
-        # query_qs = urllib.urlencode(query_dic)
-        # clean_url = urlparse.urlunparse((o.scheme, o.netloc, o.path, o.params, query_qs, o.fragment))
-        # log_variable('clean_url', clean_url)
-
         # --- Keep things simple! ---
         clean_url = url
-        clean_url = re.sub('devid=[^&]*&', 'devid=***&', clean_url)
-        clean_url = re.sub('devpassword=[^&]*&', 'devpassword=***&', clean_url)
-        clean_url = re.sub('ssid=[^&]*&', 'ssid=***&', clean_url)
-        clean_url = re.sub('sspassword=[^&]*&', 'sspassword=***&', clean_url)
-        clean_url = re.sub('sspassword=[^&]*$', 'sspassword=***', clean_url)
+        # --- Basic cleaning ---
+        # clean_url = re.sub('devid=[^&]*&', 'devid=***&', clean_url)
+        # clean_url = re.sub('devpassword=[^&]*&', 'devpassword=***&', clean_url)
+        # clean_url = re.sub('ssid=[^&]*&', 'ssid=***&', clean_url)
+        # clean_url = re.sub('sspassword=[^&]*&', 'sspassword=***&', clean_url)
+        # clean_url = re.sub('sspassword=[^&]*$', 'sspassword=***', clean_url)
+        # --- Mr Propoer. SS URLs are very long ---
+        clean_url = re.sub('devid=[^&]*&', '', clean_url)
+        clean_url = re.sub('devpassword=[^&]*&', '', clean_url)
+        clean_url = re.sub('ssid=[^&]*&', '', clean_url)
+        clean_url = re.sub('sspassword=[^&]*&', '', clean_url)
+        clean_url = re.sub('sspassword=[^&]*$', '', clean_url)
         # log_variable('url', url)
         # log_variable('clean_url', clean_url)
 
         return clean_url
 
-    # Reimplementation of base class.
+    # Reimplementation of base class method.
     # ScreenScraper needs URL cleaning in JSON before dumping because URL have passwords.
     # Only clean data if JSON file is dumped.
     def _dump_json_debug(self, file_name, json_data):
-        log_debug('ScreenScraper::_dump_json_debug() Cleaning JSON URLs not working yet.')
-        # if not self.dump_file_flag: return
-        # json_data_clean = self._clean_JSON_for_dumping(json_data)
+        if not self.dump_file_flag: return
+        json_data_clean = self._clean_JSON_for_dumping(json_data)
         super(ScreenScraper, self)._dump_json_debug(file_name, json_data)
 
     # JSON recursive iterator generator. Keeps also track of JSON keys.
-    # FINISH THIS!!!
+    # yield from added in Python 3.3
     # https://stackoverflow.com/questions/38397285/iterate-over-all-items-in-json-object
-    def _recursive_iter(self, obj):
+    # https://stackoverflow.com/questions/14692690/access-nested-dictionary-items-via-a-list-of-keys
+    def _recursive_iter(self, obj, keys = ()):
         if isinstance(obj, dict):
-            for item in obj.values():
-                yield self._recursive_iter(item)
+            for k, v in obj.iteritems():
+                # yield from self._recursive_iter(item)
+                for k_t, v_t in self._recursive_iter(v, keys + (k,)):
+                    yield k_t, v_t
         elif any(isinstance(obj, t) for t in (list, tuple)):
-            for item in obj:
-                yield self._recursive_iter(item)
+            for idx, item in enumerate(obj):
+                # yield from recursive_iter(item, keys + (idx,))
+                for k_t, v_t in self._recursive_iter(item, keys + (idx,)):
+                    yield k_t, v_t
         else:
-            yield obj
+            yield keys, obj
 
     # Recursively cleans URLs in a JSON data structure for safe JSON file data dumping.
     def _clean_JSON_for_dumping(self, json_data):
-        # Recursively iterate data
-        for item in self._recursive_iter(json_data):
-            print(item)
+        # --- Recursively iterate data ---
+        # Do not modify dictionary when it is recursively iterated.
+        URL_key_list = []
+        log_debug('ScreenScraper::_dump_json_debug() Cleaning JSON URLs.')
+        for keys, item in self._recursive_iter(json_data):
+            # log_debug('{} "{}"'.format(keys, item))
+            if item.startswith('http'):
+                # log_debug('Adding URL "{}"'.format(item))
+                URL_key_list.append(keys)
+        # --- Do the actual cleaning ---
+        for keys in URL_key_list:
+            # log_debug('Cleaning "{}"'.format(keys))
+            url = self._getFromDict(json_data, keys)
+            clean_url = self._clean_URL_for_log(url)
+            self._setInDict(json_data, keys, clean_url)
+        log_debug('ScreenScraper::_dump_json_debug() Cleaned {} URLs'.format(len(URL_key_list)))
 
-        return json_data
+    # Get a given data from a dictionary with position provided as a list (iterable)
+    # Example maplist = ["b", "v", "y"] or ("b", "v", "y")
+    def _getFromDict(self, dataDict, mapList):
+        for k in mapList: dataDict = dataDict[k]
+
+        return dataDict
+
+    # Set a given data in a dictionary with position provided as a list (iterable)
+    def _setInDict(self, dataDict, mapList, value):
+        for k in mapList[:-1]: dataDict = dataDict[k]
+        dataDict[mapList[-1]] = value
 
     # Retrieve URL and decode JSON object.
     # When the API user/pass is not configured or invalid SS returns ...
