@@ -20,6 +20,7 @@ from __future__ import unicode_literals
 import sys
 import random
 import urllib2
+import os
 
 # --- AEL packages ---
 from .utils import *
@@ -36,19 +37,19 @@ USER_AGENT = 'Mozilla/5.0 (X11; Linux i586; rv:31.0) Gecko/20100101 Firefox/68.0
 def net_get_random_UserAgent():
     platform = random.choice(['Macintosh', 'Windows', 'X11'])
     if platform == 'Macintosh':
-        os  = random.choice(['68K', 'PPC'])
+        os_str  = random.choice(['68K', 'PPC'])
     elif platform == 'Windows':
-        os  = random.choice([
+        os_str  = random.choice([
             'Win3.11', 'WinNT3.51', 'WinNT4.0', 'Windows NT 5.0', 'Windows NT 5.1', 
             'Windows NT 5.2', 'Windows NT 6.0', 'Windows NT 6.1', 'Windows NT 6.2', 
             'Win95', 'Win98', 'Win 9x 4.90', 'WindowsCE'])
     elif platform == 'X11':
-        os  = random.choice(['Linux i686', 'Linux x86_64'])
+        os_str  = random.choice(['Linux i686', 'Linux x86_64'])
     browser = random.choice(['chrome', 'firefox', 'ie'])
     if browser == 'chrome':
         webkit = str(random.randint(500, 599))
         version = str(random.randint(0, 24)) + '.0' + str(random.randint(0, 1500)) + '.' + str(random.randint(0, 999))
-        return 'Mozilla/5.0 (' + os + ') AppleWebKit/' + webkit + '.0 (KHTML, live Gecko) Chrome/' + version + ' Safari/' + webkit
+        return 'Mozilla/5.0 (' + os_str + ') AppleWebKit/' + webkit + '.0 (KHTML, live Gecko) Chrome/' + version + ' Safari/' + webkit
 
     elif browser == 'firefox':
         year = str(random.randint(2000, 2012))
@@ -66,7 +67,7 @@ def net_get_random_UserAgent():
         version = random.choice([
             '1.0', '2.0', '3.0', '4.0', '5.0', '6.0', '7.0', '8.0', 
             '9.0', '10.0', '11.0', '12.0', '13.0', '14.0', '15.0'])
-        return 'Mozilla/5.0 (' + os + '; rv:' + version + ') Gecko/' + gecko + ' Firefox/' + version
+        return 'Mozilla/5.0 (' + os_str + '; rv:' + version + ') Gecko/' + gecko + ' Firefox/' + version
 
     elif browser == 'ie':
         version = str(random.randint(1, 10)) + '.0'
@@ -76,7 +77,7 @@ def net_get_random_UserAgent():
             token = random.choice(['.NET CLR', 'SV1', 'Tablet PC', 'Win64; IA64', 'Win64; x64', 'WOW64']) + '; '
         elif option == False:
             token = ''
-        return 'Mozilla/5.0 (compatible; MSIE ' + version + '; ' + os + '; ' + token + 'Trident/' + engine + ')'
+        return 'Mozilla/5.0 (compatible; MSIE ' + version + '; ' + os_str + '; ' + token + 'Trident/' + engine + ')'
 
 def net_download_img(img_url, file_path):
     try:
@@ -86,15 +87,26 @@ def net_download_img(img_url, file_path):
         f = open(file_path, 'wb')
         f.write(urllib2.urlopen(req, timeout = 120).read())
         f.close()
+        remove_destination_file = False
     # If an exception happens record it in the log and do nothing.
     # This must be fixed. If an error happened when downloading stuff caller code must
     # known to take action.
     except IOError as ex:
         log_error('(IOError exception) In net_download_img()')
         log_error('Message: {0}'.format(str(ex)))
+        remove_destination_file = True
     except Exception as ex:
         log_error('(General exception) In net_download_img()')
         log_error('Message: {0}'.format(str(ex)))
+        remove_destination_file = True
+
+    # Remove destination file to avoid 0 sized files or corrupt files.
+    # On Windows os.remove() causes a exceptions.WindowsError 
+    # WindowsError: [Error 32] The process cannot access the file because it is being used
+    # by another process
+    # if remove_destination_file:
+    #     log_error('Deleting file "{}"'.format(file_path))
+    #     os.remove(file_path)
 
 #
 # User agent is fixed and defined in global var USER_AGENT

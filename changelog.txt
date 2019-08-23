@@ -60,6 +60,11 @@ WIP      [CORE] Unified ROM artwork directory. This will require heavy changes i
          See https://forum.kodi.tv/showthread.php?tid=287826&pid=2865413#pid2865413
          See https://forum.kodi.tv/showthread.php?tid=287826&pid=2867785#pid2867785
 
+WIP      [CORE] Sometimes the scrapers download wrong/corrupt data, or produce 0 sized files
+         if a file is open() and there is an exception. It would be nice to have an
+         utility to check asset images and delete corrupt images so they can be rescraped
+         again.
+
 WIP      [COLLECTIONS] Current way of storing the collection artwork, in a unified XML file,
          is not good. Think of a good way to exporting collections (for example, store the
          artwork in a subdirectory). Possible way of solving filename collisions

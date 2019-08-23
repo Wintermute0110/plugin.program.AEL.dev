@@ -2039,14 +2039,18 @@ class Main:
                             # --- Determine if asset must be scraped or not ---
                             AInfo = assets_get_info_scheme(asset_ID)
                             if not enabled_asset_list[i]:
-                                log_error('Skipping {0} (dir not configured).'.format(AInfo.name))
+                                log_debug('Skipping {0} (dir not configured).'.format(AInfo.name))
                                 asset_action_list[i] = ScrapeStrategy.ACTION_ASSET_LOCAL_ASSET
                             elif local_asset_list[i]:
-                                log_error('Local {0} FOUND'.format(AInfo.name))
+                                log_debug('Local {0} FOUND'.format(AInfo.name))
                                 asset_action_list[i] = ScrapeStrategy.ACTION_ASSET_LOCAL_ASSET
-                            else:
-                                log_error('Local {0} NOT found. Scraping.'.format(AInfo.name))
+                            elif asset_scraper_obj.supports_asset_ID(asset_ID):
+                                # Scrape only if scraper supports asset.
+                                log_debug('Local {0} NOT found. Scraping.'.format(AInfo.name))
                                 asset_action_list[i] = ScrapeStrategy.ACTION_ASSET_SCRAPER
+                            else:
+                                log_debug('Local {0} NOT found. No scraper support.'.format(AInfo.name))
+                                asset_action_list[i] = ScrapeStrategy.ACTION_ASSET_LOCAL_ASSET
 
                         # --- If any asset is going to be scraped then get candidate game ---
                         temp_asset_list = [x == ScrapeStrategy.ACTION_ASSET_SCRAPER for x in asset_action_list]
@@ -9047,7 +9051,7 @@ class Main:
             log_info('No duplicated asset dirs found')
 
         # --- Check asset dirs and disable scanning for unset dirs ---
-        scraper_strategy.check_launcher_unset_asset_dirs()
+        scraper_strategy.scanner_check_launcher_unset_asset_dirs()
         if scraper_strategy.unconfigured_name_list:
             unconfigured_asset_srt = ', '.join(scraper_strategy.unconfigured_name_list)
             kodi_dialog_OK(
@@ -9228,9 +9232,9 @@ class Main:
             romdata  = fs_new_rom()
             romdata['id'] = misc_generate_random_SID()
             romdata['filename'] = ROM.getOriginalPath()
-            scraper_strategy.process_ROM_begin(romdata, ROM)
-            scraper_strategy.process_ROM_metadata(romdata, ROM)
-            scraper_strategy.process_ROM_assets(romdata, ROM)
+            scraper_strategy.scanner_process_ROM_begin(romdata, ROM)
+            scraper_strategy.scanner_process_ROM_metadata(romdata, ROM)
+            scraper_strategy.scanner_process_ROM_assets(romdata, ROM)
 
             # --- Add ROM to database ------------------------------------------------------------
             roms[romdata['id']] = romdata
