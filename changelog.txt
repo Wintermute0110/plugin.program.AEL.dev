@@ -89,6 +89,14 @@ WIP      [SCRAPERS] Update MAME Offline Scraper database to version latest versi
 WIP      [SCRAPERS] Upgrade and fix  AEL Offline scraper databases.
          Do the best you can for a decent 0.9.8 release.
 
+WIP      [SCRAPERS] Persistent scraper cache. Currently scrapers are very inefficient. If
+         the context menu is use to scrape, candidate games are searched again and again. It
+         should be good to implement some kind of offline scraper cache in a similar fashion
+         to Skyscraper (https://github.com/muldjord/skyscraper).
+
+WIP      [SCRAPERS] Persistent scraper cache browser. Ability to browse the stored scraper
+         searches. Also, context menu to delete stored cached data.
+
 
 [B]Advanced Emulator Launcher | version 0.9.8-beta1 | XX August 2019[/B]
 
@@ -118,8 +126,8 @@ WIP NOW  [SCRAPERS] Warn user if missing scraper API keys, required stuff, etc.,
          if the web site is overloaded.
          Make sure TGDB scraper works like a charm. [DONE]
          Update MobyGames scraper. [DONE]
-         Update ScreenSraper scraper. [WIP NOW]
-         Update ArcadeDB scraper.
+         Update ScreenSraper scraper. [DONE]
+         Update ArcadeDB scraper. [WIP NOW]
 
 FEATURE  [SCRAPERS] Utility to check TheGamesDB monthly allowance.
 

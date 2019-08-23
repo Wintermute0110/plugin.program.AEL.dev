@@ -2723,10 +2723,6 @@ class ScreenScraper(Scraper):
 
         # --- Internal stuff ---
         self.cache_candidates = {}
-        # self.cache_metadata = {}
-        # self.cache_assets = {}
-        self.all_asset_cache = {}
-
         # Cache all data returned by jeuInfos.php
         self.cache_jeuInfos = {}
 
@@ -2774,13 +2770,15 @@ class ScreenScraper(Scraper):
 
     # This function may be called many times in the ROM Scanner. All calls to this function
     # must be cached. See comments for this function in the Scraper abstract class.
+    #
+    # ScreenScraper uses a dobule cache, one cache for candidates and another for jeu_dic.
     def get_candidates(self, search_term, rombase_noext, platform, status_dic):
         # --- If scraper is disabled return immediately and silently ---
         if self.scraper_disabled:
             log_debug('ScreenScraper::get_candidates() Scraper disabled. Returning empty data.')
             return []
 
-        # --- Check if search term is in the cache ---
+        # --- Check if search term is in the candidates cache ---
         cache_key = search_term + '__' + rombase_noext + '__' + platform
         if cache_key in self.cache_candidates:
             log_debug('ScreenScraper::get_candidates() Cache hit "{0}"'.format(cache_key))
@@ -2788,36 +2786,31 @@ class ScreenScraper(Scraper):
             return candidate_list
 
         # --- Request is not cached. Get candidates and introduce in the cache ---
+        # ScreenScraper jeuInfos.php returns absolutely everything about a single ROM, including
+        # metadata, artwork, etc. jeuInfos.php returns one game or nothing at all.
+        # The data returned by jeuInfos.php must be cached in this object for every request done.
+        # ScreenScraper returns only one game or nothing at all.
+        # The candidates and the jeu_dic caches are synchronised. If there is a candidates
+        # cache miss then it is also a jeu_dic cache miss.
         log_debug('ScreenScraper::get_candidates() Cache miss "{0}"'.format(cache_key))
         scraper_platform = AEL_platform_to_ScreenScraper(platform)
         log_debug('ScreenScraper::get_candidates() search_term   "{0}"'.format(search_term))
         log_debug('ScreenScraper::get_candidates() rombase_noext "{0}"'.format(rombase_noext))
         log_debug('ScreenScraper::get_candidates() AEL platform  "{0}"'.format(platform))
         log_debug('ScreenScraper::get_candidates() SS platform   "{0}"'.format(scraper_platform))
-
-        # --- Get scraping data and cache it ---
-        # ScreenScraper jeuInfos.php returns absolutely everything about a single ROM, including
-        # metadata, artwork, etc. jeuInfos.php returns one game or nothing at all.
-        # The data returned by jeuInfos.php must be cached in this object for every request done.
-        # ScreenScraper returns only one game or nothing at all.
-        SS_cache_str = search_term + '__' + rombase_noext + '__' + scraper_platform
-        if SS_cache_str in self.cache_jeuInfos:
-            log_debug('ScreenScraper::get_candidates() SS cache hit "{0}"'.format(SS_cache_str))
-            jeu_dic = self.cache_jeuInfos[SS_cache_str]
-        else:
-            log_debug('ScreenScraper::get_candidates() SS cache miss "{0}"'.format(SS_cache_str))
-            jeu_dic = self._get_gameInfos(search_term, rombase_noext, scraper_platform, status_dic)
-            if not status_dic['status']: return None
-            # What happens if not games found???
-            jeu_dic = jeu_dic['response']['jeu']
-            self.cache_jeuInfos[SS_cache_str] = jeu_dic
+        jeu_dic = self._get_gameInfos(search_term, rombase_noext, scraper_platform, status_dic)
+        if not status_dic['status']: return None
+        # What happens if not games found???
+        jeu_dic = jeu_dic['response']['jeu']
+        # Remove clutter (the ROM list) from dictionary before inserting in the cache.
+        jeu_dic['roms'] = []
 
         # --- Deal with errors returned by api/jeuInfos.php ---
         id_str = str(jeu_dic['id'])
         title = jeu_dic['noms'][0]['text']
         log_debug('Game "{}" (ID {})'.format(title, id_str))
-        log_debug('Number of ROMs {}'.format(len(jeu_dic['roms'])))
-        log_debug('Number of assets {}'.format(len(jeu_dic['medias'])))
+        log_debug('Number of ROMs {} / Number of assets {}'.format(
+            len(jeu_dic['roms']), len(jeu_dic['medias'])))
 
         # --- Build candidate_list from ScreenScraper jeu_dic returned by jeuInfos.php ---
         # SS returns one candidate or no candidate.
@@ -2827,10 +2820,19 @@ class ScreenScraper(Scraper):
         candidate['platform'] = platform
         candidate['scraper_platform'] = scraper_platform
         candidate['order'] = 1
-        candidate['SS_cache_str'] = SS_cache_str # Special field to retrieve game from SS cache.
+        candidate['SS_cache_str'] = cache_key # Special field to retrieve game from SS cache.
+        candidate_list = [ candidate ]
+
+        # --- Add candidate games to the cache ---
+        # Add data to both candidates and internal caches or no cache at all. Boths caches
+        # are synchronised.
+        log_debug('ScreenScraper::get_candidates() Adding to cache "{0}"'.format(cache_key))
+        self.cache_candidates[cache_key] = candidate_list
+        log_debug('ScreenScraper::get_candidates() Adding to internal cache')
+        self.cache_jeuInfos[cache_key] = jeu_dic
 
         # Always return a list, even if only with 1 element.
-        return [ candidate ]
+        return candidate_list
 
     # This function may be called many times in the ROM Scanner. All calls to this function
     # must be cached. See comments for this function in the Scraper abstract class.
@@ -2840,8 +2842,9 @@ class ScreenScraper(Scraper):
             log_debug('TheGamesDB::get_metadata() Scraper disabled. Returning empty data.')
             return self._new_gamedata_dic()
 
-        # --- Retrieve gameInfos_dic from cache ---
-        log_debug('ScreenScraper::get_metadata() Cache retrieving "{}"'.format(candidate['SS_cache_str']))
+        # --- Retrieve jeu_dic from internal cache ---
+        log_debug('ScreenScraper::get_metadata() Internal cache retrieving "{}"'.format(
+            candidate['SS_cache_str']))
         jeu_dic = self.cache_jeuInfos[candidate['SS_cache_str']]
 
         # --- Parse game metadata ---
@@ -2868,8 +2871,9 @@ class ScreenScraper(Scraper):
         log_debug('ScreenScraper::get_assets() Getting assets {} (ID {}) for candidate ID = {}'.format(
             asset_info.name, asset_ID, candidate['id']))
 
-        # --- Retrieve gameInfos_dic from cache ---
-        log_debug('ScreenScraper::get_assets() Cache retrieving "{}"'.format(candidate['SS_cache_str']))
+        # --- Retrieve jeu_dic from internal cache ---
+        log_debug('ScreenScraper::get_assets() Internal cache retrieving "{}"'.format(
+            candidate['SS_cache_str']))
         jeu_dic = self.cache_jeuInfos[candidate['SS_cache_str']]
 
         # --- Parse game assets ---
@@ -3067,15 +3071,12 @@ class ScreenScraper(Scraper):
         return jeu_dic['noms'][0]['text']
 
     def _parse_meta_year(self, jeu_dic):
-        # First search for the user preferred region.
         for n in jeu_dic['dates']:
             if n['region'] == self.user_region: return n['text'][0:4]
-        # If nothing found then search in the sorted list of regions.
         for region in ScreenScraper.region_list:
             for n in jeu_dic['dates']:
                 if n['region'] == region: return n['text'][0:4]
 
-        # Default name is first of the list. In theory we will never reach this point.
         return jeu_dic['dates'][0]['text'][0:4]
 
     # Use first genre only for now.
@@ -3118,6 +3119,7 @@ class ScreenScraper(Scraper):
     # Returns all assets found in the jeu_dic dictionary. It is not necessary to cache this
     # because it can be easily generated.
     # For now asset do not support region or language settings.
+    #
     # Examples:
     # https://www.screenscraper.fr/gameinfos.php?plateforme=1&gameid=5    # Sonic 1 Megadrive
     # https://www.screenscraper.fr/gameinfos.php?plateforme=1&gameid=3    # Sonic 2 Megadrive
