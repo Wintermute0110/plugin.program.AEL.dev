@@ -18,6 +18,13 @@ WIP      [SCRAPERS] LaunchBox Games Database scraper.
          See http://gamesdb.launchbox-app.com/
          See https://bitbucket.org/jasondavidcarr/launchbox/issues/902/api-access-to-launchbox
 
+WIP      [SCRAPERS] Fix GameFAQs scraper.
+         It has been a while since this scraper is not working any more.
+         GameFAQs does not have an API. Should this scraper being removed???
+         Currently the GameFAQs metadata scraper works well. The GameFAQs asset scraper
+         does not work due to changes in GameFAQs. See the comments of method
+         GameFAQs._load_assets_from_page()
+
 
 [B]Planned features / TODO[/B]
 
@@ -47,6 +54,18 @@ WIP      [CORE] Filtering of BIOSes not working properly for MAME ROMs.
          Use the offline scraper DB to determine what is a BIOS/Device in MAME.
          See https://forum.kodi.tv/showthread.php?tid=287826&pid=2697000#pid2697000
 
+WIP      [CORE] Unified ROM artwork directory. This will require heavy changes in categories.xml.
+         I still have to think how to properly implement this. This is related to the
+         desing of a prototype Kodi games database.
+         See https://forum.kodi.tv/showthread.php?tid=287826&pid=2865413#pid2865413
+         See https://forum.kodi.tv/showthread.php?tid=287826&pid=2867785#pid2867785
+
+WIP      [COLLECTIONS] Current way of storing the collection artwork, in a unified XML file,
+         is not good. Think of a good way to exporting collections (for example, store the
+         artwork in a subdirectory). Possible way of solving filename collisions
+         ROM_name_platform_fanart.png, platform is the short name and it's only used if
+         there is filename amgibuity (same ROM name in different platforms in the collection).
+
 WIP      [MULTIDISC] Edit multi-disc ROMs.
 
 WIP      [MULTIDISC] Fix artwork support for mult-disc ROMs.
@@ -71,12 +90,8 @@ WIP      [ROM AUDIT] Options to generate the 1G1R parent list, like prefer ROMs 
 WIP      [SCRAPERS] Asset scrapers are disabled/not working for standalone launchers. Fix this.
          See https://github.com/Wintermute0110/plugin.program.advanced.emulator.launcher/issues/62
 
-WIP      [SCRAPERS] Fix GameFAQs scraper.
-         It has been a while since this scraper is not working any more.
-         GameFAQs does not have an API. Should this scraper being removed???
-         Currently the GameFAQs metadata scraper works well. The GameFAQs asset scraper
-         does not work due to changes in GameFAQs. See the comments of method
-         GameFAQs._load_assets_from_page()
+WIP      [SCRAPERS] Store the offline scraper databases in JSON and not in XML. This will make
+         the loading of the databases faster.
 
 WIP      [SCRAPERS] MAME offline scraper: include NPlayers field. Take it from nplayers.ini
 
@@ -87,7 +102,6 @@ WIP      [SCRAPERS] MAME offline scraper: include plot field. Take it from GameI
 WIP      [SCRAPERS] Update MAME Offline Scraper database to version latest version 0.212
 
 WIP      [SCRAPERS] Upgrade and fix  AEL Offline scraper databases.
-         Do the best you can for a decent 0.9.8 release.
 
 WIP      [SCRAPERS] Persistent scraper cache. Currently scrapers are very inefficient. If
          the context menu is use to scrape, candidate games are searched again and again. It
@@ -121,13 +135,10 @@ FEATURE  [SCRAPERS] Fix AEL Offline Scraper.
 FEATURE  [SCRAPERS] Add support for ScummVM platform in the Offline Scraper.
          See https://forum.kodi.tv/showthread.php?tid=287826&pid=2629084#pid2629084
 
-WIP NOW  [SCRAPERS] Warn user if missing scraper API keys, required stuff, etc., before scraping.
+FEATURE  [SCRAPERS] Warn user if missing scraper API keys, required stuff, etc., before scraping.
          Also, improve the scraper error reporting and the disabling of the scraper object
          if the web site is overloaded.
-         Make sure TGDB scraper works like a charm. [DONE]
-         Update MobyGames scraper. [DONE]
-         Update ScreenSraper scraper. [DONE]
-         Update ArcadeDB scraper. [WIP NOW]
+         Make sure TGDB scraper works like a charm. And then update the rest.
 
 FEATURE  [SCRAPERS] Utility to check TheGamesDB monthly allowance.
 
@@ -135,14 +146,24 @@ FEATURE  [SCRAPERS] Utility to check MobyGames monthly allowance.
 
 FEATURE  [SCRAPERS] Utility to check ScreenScraper monthly allowance.
 
-WIP      [SCRAPERS] Make sure all scraper platforms are OK and synchronised with AEL platforms.
+FETURE   [SCRAPERS] Make sure all scraper platforms are OK and synchronised with AEL platforms.
 
 WIP      [SCRAPERS] Option to rescrape all ROM assets in a similar fashion to
          "Scan ROMs local artwork". Create a menu entry in "Edit Launcher", "Manage ROMs",
-         "Scrape ROMs artwork". "Scrape ROMs artwork" will use the same scraper settings in
-         options as the ROM Scanner.
+         "Scrape ROMs artwork".
+         "Scrape ROMs artwork" will use the same scraper settings in options as the ROM Scanner.
          I think the best location for the code is in the ScraperStrategy class.
          See https://github.com/Wintermute0110/plugin.program.advanced.emulator.launcher/issues/72
+
+WIP      [CORE] Create a couple of new ROM context menus, "Manage Recently played ROM" and 
+         "Manage Most played ROM". Both will have the following options: "Delete this ROM",
+         "Delete all Unlinked/Broken ROMs".
+         See AML for an implementation.
+         See https://forum.kodi.tv/showthread.php?tid=287826&pid=2698811#pid2698811
+
+WIP      [CORE] Support for Advanced MAME Launcher exported virtual launchers.
+         This feature requires AML 0.9.X
+         AML creates the Category "Arcade (AML)" and places the exported launchers there.
 
 FEATURE  [CORE] New ROMs artwork type 3D Boxes, asked by Rufoo.
 
@@ -150,31 +171,17 @@ FEATURE  [CORE] New entry in root menu named "Global Reports"
 
 FEATURE  [CORE] New entry in root menu named "Utilities"
 
-WIP      [CORE] Move stuff from addon settings into the Utilities menu, including the
+FEATURE  [CORE] Move stuff from addon settings into the Utilities menu, including the
          database upgrading functions.
 
 WIP      [CORE] Make sure AEL never crashes when rendering the root window, even if 
-         categories.xml is corruped. Users must be able to access the Utilities menu always.
-         In case of crash when rendering the root window, ask the user to update
-         the databases (in the case the crash is due to a missing key in dictionary).
-
-WIP      [CORE] Unified ROM artwork directory. This will require heavy changes in categories.xml.
-         I still have to think how to properly implement this.
-         See https://forum.kodi.tv/showthread.php?tid=287826&pid=2865413#pid2865413
-         See https://forum.kodi.tv/showthread.php?tid=287826&pid=2867785#pid2867785
-
-WIP      [CORE] Support for Advanced MAME Launcher exported virtual launchers.
-         This feature requires AML 0.9.X
-         AML creates the Category "Arcade (AML)" and places the exported launchers there.
+         categories.xml is corruped. Users must be able to access the Utilities menu always to
+         be able to upgrade the database. In case of crash when rendering the root window,
+         ask the user to update the databases (in the case the crash is due to a missing 
+         key in dictionary).
 
 WIP      [CORE] New properties to notify skins about Std launchers, ROM launchers, Categories,
-         and number of items in a Launcher.
-
-WIP      [CORE] Create a couple of new ROM context menus, "Manage Recently played ROM" and 
-         "Manage Most played ROM". Both will have the following options: "Delete this ROM",
-         "Delete all Unlinked/Broken ROMs".
-         See AML for an implementation.
-         See https://forum.kodi.tv/showthread.php?tid=287826&pid=2698811#pid2698811
+         and number of items in a Launcher. Upgrade documentation in SKINNING.md.
 
 FEATURE  [CORE] Add Year and Developer for Categories.
          See https://forum.kodi.tv/showthread.php?tid=287826&pid=2688653#pid2688653

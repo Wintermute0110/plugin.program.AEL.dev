@@ -2804,7 +2804,10 @@ class ScreenScraper(Scraper):
         log_debug('ScreenScraper::get_candidates() SS platform   "{0}"'.format(scraper_platform))
         json_data = self._get_gameInfos(search_term, rombase_noext, scraper_platform, status_dic)
         if not status_dic['status']: return None
-        # What happens if not games found???
+        # * If no games were found server replied with a HTTP 404 error. json_data is None and
+        #  status_dic signals operation succesfull. Return empty list of candidates.
+        # * If an error/exception happened then it is marked in status_dic.
+        if json_data is None: return []
         jeu_dic = json_data['response']['jeu']
 
         # --- Deal with errors returned by api/jeuInfos.php ---
@@ -3012,7 +3015,7 @@ class ScreenScraper(Scraper):
 
         return json_data
 
-    # Call to ScreenScraper jeuInfos.php
+    # Call to ScreenScraper jeuInfos.php.
     def _get_gameInfos(self, search_term, rombase_noext, scraper_platform, status_dic):
         # --- Test data ---
         # Example from ScreenScraper API info page.
@@ -3057,7 +3060,7 @@ class ScreenScraper(Scraper):
 
         # --- Grab and parse URL data ---
         json_data = self._retrieve_URL_as_JSON(url, status_dic)
-        if not status_dic['status']: return None
+        if json_data is None or not status_dic['status']: return None
         self._dump_json_debug('ScreenScraper_get_gameInfo.json', json_data)
 
         return json_data
@@ -3232,14 +3235,30 @@ class ScreenScraper(Scraper):
         dataDict[mapList[-1]] = value
 
     # Retrieve URL and decode JSON object.
-    # When the API user/pass is not configured or invalid SS returns ...
-    # When the API number of calls is exhausted SS returns ...
+    # * When the API user/pass is not configured or invalid SS returns ...
+    # * When the API number of calls is exhausted SS returns ...
+    # * When the a game search is not succesfull SS returns a "HTTP Error 404: Not Found" error.
+    #   Return None but status_dic marks no error.
     def _retrieve_URL_as_JSON(self, url, status_dic):
         page_data_raw, http_code = net_get_URL(url, self._clean_URL_for_log(url))
+        if http_code == 404:
+            # Code 404 in SS means the ROM was not found.
+            log_debug('ScreenScraper::_retrieve_URL_as_JSON() HTTP status 404: no candidates found.')
+            return None
+        elif http_code != 200:
+            # Unknown HTTP status code.
+            self._handle_exception(ex, status_dic,
+                'Bad HTTP status code {} in net_get_URL()'.format(http_code))
+            return None
         # self._dump_file_debug('ScreenScraper_data_raw.txt', page_data_raw)
+
+        # If page_data_raw is None at this point is because of an exception which is not
+        # urllib2.HTTPError.
         if page_data_raw is None:
             self._handle_error(status_dic, 'Network error in net_get_URL()')
             return None
+
+        # Convert data to JSON
         try:
             json_data = json.loads(page_data_raw)
         except Exception as ex:
