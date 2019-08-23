@@ -35,6 +35,8 @@ class Platform:
 # Shorted alphabetically by long name.
 # To be compatible with Retroplayer and Kodi artwork database, anything that can be launched
 # by Retroarch must be a platform, including Doom, CaveStory, etc.
+#
+# When designing this put as an example a complete platform and a platform alias.
 AEL_platforms = [
     # --- Arcade is an alias of MAME ---
     Platform('MAME', 'mame', DAT_MAME),
@@ -334,53 +336,53 @@ platform_AEL_to_Offline_GameDBInfo_XML = {
 }
 
 #
-# Get platform list from TGDB using script scrap_TGDB_get_platforms.py.
+# Get platform list from TGDB using script scrap_TGDB_list_platforms.py.
 # API key is required to grab the platform data.
 # '0' means any platform in TGDB and must be returned when there is no platform matching.
 #
 platform_AEL_to_TheGamesDB_dic = {
     '3DO Interactive Multiplayer' : '25',
-    'Amstrad CPC'                 : '0',
-    'Atari 2600'                  : '0',
-    'Atari 5200'                  : '0',
-    'Atari 7800'                  : '0',
-    'Atari Jaguar'                : '0',
-    'Atari Jaguar CD'             : '0',
-    'Atari Lynx'                  : '0',
-    'Atari ST'                    : '0',
-    'Bandai WonderSwan'           : '0',
-    'Bandai WonderSwan Color'     : '0',
-    'Colecovision'                : '0',
-    'Commodore 64'                : '0',
-    'Commodore Amiga'             : '0',
-    'Commodore Amiga CD32'        : '0',
+    'Amstrad CPC'                 : '4914',
+    'Atari 2600'                  : '22',
+    'Atari 5200'                  : '26',
+    'Atari 7800'                  : '27',
+    'Atari Jaguar'                : '28',
+    'Atari Jaguar CD'             : '29',
+    'Atari Lynx'                  : '4924',
+    'Atari ST'                    : '4937',
+    'Bandai WonderSwan'           : '4925',
+    'Bandai WonderSwan Color'     : '4926',
+    'Colecovision'                : '31',
+    'Commodore 64'                : '40',
+    'Commodore Amiga'             : '4911',
+    'Commodore Amiga CD32'        : '4947',
     'Commodore Plus-4'            : '0',
-    'Commodore VIC-20'            : '0',
-    'Fujitsu FM Towns Marty'      : '0',
-    'GCE Vectrex'                 : '0',
-    'Magnavox Odyssey2'           : '0',
-    'MAME'                        : '0',
-    'Mattel Intellivision'        : '0',
-    'Microsoft MS-DOS'            : '0',
-    'Microsoft MSX'               : '0',
-    'Microsoft MSX2'              : '0',
-    'Microsoft Windows'           : '0',
-    'Microsoft Xbox'              : '0',
-    'Microsoft Xbox 360'          : '0',
-    'Microsoft Xbox One'          : '0',
-    'NEC PC Engine'               : '0',
-    'NEC PC Engine CDROM2'        : '0',
-    'NEC TurboGrafx 16'           : '0',
-    'NEC TurboGrafx CD'           : '0',
-    'NEC SuperGrafx'              : '0',
-    'NEC PC-FX'                   : '0',
+    'Commodore VIC-20'            : '4945',
+    'Fujitsu FM Towns Marty'      : '4932',
+    'GCE Vectrex'                 : '4939',
+    'Magnavox Odyssey2'           : '4927',
+    'MAME'                        : '23',
+    'Mattel Intellivision'        : '32',
+    'Microsoft MS-DOS'            : '1',
+    'Microsoft MSX'               : '4929',
+    'Microsoft MSX2'              : '4929',
+    'Microsoft Windows'           : '1',
+    'Microsoft Xbox'              : '14',
+    'Microsoft Xbox 360'          : '15',
+    'Microsoft Xbox One'          : '4920',
+    'NEC PC Engine'               : '34',
+    'NEC PC Engine CDROM2'        : '4955',
+    'NEC TurboGrafx 16'           : '34',
+    'NEC TurboGrafx CD'           : '4955',
+    'NEC SuperGrafx'              : '34',
+    'NEC PC-FX'                   : '4930',
     'Nintendo 3DS'                : '4912',
     'Nintendo 64'                 : '3',
     'Nintendo 64DD'               : '3', # Not found on TGDB, same as N64.
     'Nintendo DS'                 : '8',
     'Nintendo DSi'                : '8', # Not found on TGDB, same as NDS.
     'Nintendo Famicom'            : '7',
-    'Nintendo Famicom Disk System': '0',
+    'Nintendo Famicom Disk System': '4936',
     'Nintendo GameBoy'            : '4',
     'Nintendo GameBoy Advance'    : '5',
     'Nintendo GameBoy Color'      : '41',
@@ -396,24 +398,24 @@ platform_AEL_to_TheGamesDB_dic = {
     'Philips Videopac Plus G7400' : '0',
     'ScummVM'                     : '0',
     'Sega 32X'                    : '33',
-    'Sega Dreamcast'              : '0',
-    'Sega Game Gear'              : '0',
+    'Sega Dreamcast'              : '16',
+    'Sega Game Gear'              : '20',
     'Sega Genesis'                : '18',
     'Sega Master System'          : '35',
-    'Sega MegaCD'                 : '0',
+    'Sega MegaCD'                 : '21',
     'Sega MegaDrive'              : '36',
     'Sega PICO'                   : '4958',
     'Sega Saturn'                 : '17',
-    'Sega SC-3000'                : '0',
-    'Sega SegaCD'                 : '0',
-    'Sega SG-1000'                : '0',
-    'Sharp X68000'                : '0',
-    'Sinclair ZX Spectrum'        : '0',
-    'SNK Neo-Geo AES'             : '0',
-    'SNK Neo-Geo CD'              : '0',
-    'SNK Neo-Geo MVS'             : '0',
-    'SNK Neo-Geo Pocket'          : '0',
-    'SNK Neo-Geo Pocket Color'    : '0',
+    'Sega SC-3000'                : '4949',
+    'Sega SegaCD'                 : '21',
+    'Sega SG-1000'                : '4949',
+    'Sharp X68000'                : '4931',
+    'Sinclair ZX Spectrum'        : '4913',
+    'SNK Neo-Geo AES'             : '24',
+    'SNK Neo-Geo CD'              : '4956',
+    'SNK Neo-Geo MVS'             : '24',
+    'SNK Neo-Geo Pocket'          : '4922',
+    'SNK Neo-Geo Pocket Color'    : '4923',
     'Sony PlayStation'            : '10',
     'Sony PlayStation 2'          : '11',
     'Sony PlayStation 3'          : '12',
@@ -423,7 +425,7 @@ platform_AEL_to_TheGamesDB_dic = {
 }
 
 #
-# Get platform names from http://www.mobygames.com/search/quick?q=ar
+# Get platform list from TGDB using script scrap_MobyGames_list_platforms.py.
 #
 platform_AEL_to_MobyGames_dic = {
     '3DO Interactive Multiplayer' : '35',  # <option value="35">3DO</option>
