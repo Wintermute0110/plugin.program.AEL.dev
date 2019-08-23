@@ -8,7 +8,7 @@ Atari 2600                                                      0           28  
 Atari 5200                                                      0           33         40           
 Atari 7800                                                      0           34         41           
 Atari Jaguar                                                    0           17         27           
-Atari Jaguar CD                                                 0           17                      
+Atari Jaguar CD                                                 0           17         171          
 Atari Lynx                                                      0           18         28           
 Atari 8-bit                                                                                         
 Atari ST                                                        0           24         42           
@@ -17,51 +17,51 @@ Bandai WonderSwan Color                                         0           49  
 Colecovision                                                    0           29         48           
 Commodore 64                                                    0           27         66           
 Commodore Amiga                                                 0           19         64           
-Commodore Amiga CD32                                            0           56                      
+Commodore Amiga CD32                                            0           56         130          
 Commodore Plus-4                                                0           115                     
 Commodore VIC-20                                                0           43         73           
 Emerson Arcadia 2001                                                                                
 Fairchild Channel F                                                                                 
-Fujitsu FM Towns Marty                                          0           102                     
+Fujitsu FM Towns Marty                                          0           102        97           
 GCE Vectrex                                                     0           37         102          
 Magnavox Odyssey2                                               0           78                      
 MAME                                                            0           143        75           
-Mattel Intellivision                                            0           30                      
-Microsoft MS-DOS                                                0           2                       
-Microsoft MSX                                                   0           57                      
-Microsoft MSX2                                                  0           57                      
-Microsoft Windows                                               0           3                       
+Mattel Intellivision                                            0           30         115          
+Microsoft MS-DOS                                                0           2          135          
+Microsoft MSX                                                   0           57         113          
+Microsoft MSX2                                                  0           57         116          
+Microsoft Windows                                               0           3          136          
 Microsoft Xbox                                                  0           13         32           
 Microsoft Xbox 360                                              0           69         33           
 Microsoft Xbox One                                              0           142                     
 NEC PC Engine                                                   0           40         31           
-NEC PC Engine CDROM2                                            0           45                      
-NEC TurboGrafx 16                                               0           40                      
-NEC TurboGrafx CD                                               0           45                      
-NEC SuperGrafx                                                  0           127                     
+NEC PC Engine CDROM2                                            0           45         114          
+NEC TurboGrafx 16                                               0           40         31           
+NEC TurboGrafx CD                                               0           45         114          
+NEC SuperGrafx                                                  0           127        105          
 NEC PC-FX                                                       0           59         72           
 Nintendo 3DS                                                    4912        101        17           
 Nintendo 64                                                     3           9          14           
-Nintendo 64DD                                                   3           9                       
+Nintendo 64DD                                                   3           9          122          
 Nintendo DS                                                     8           44         15           
-Nintendo DSi                                                    8           87                      
+Nintendo DSi                                                    8           87         15           
 Nintendo Famicom                                                7           22         3            
-Nintendo Famicom Disk System                                    0           22                      
+Nintendo Famicom Disk System                                    0           22         106          
 Nintendo GameBoy                                                4           10         9            
 Nintendo GameBoy Advance                                        5           12         12           
 Nintendo GameBoy Color                                          41          11         10           
 Nintendo GameCube                                               2           14         13           
 Nintendo NES                                                    7           22         3            
-Nintendo Pokemon Mini                                           4957        152                     
+Nintendo Pokemon Mini                                           4957        152        211          
 Nintendo SNES                                                   6           15         4            
 Nintendo Switch                                                 4971        203                     
 Nintendo Virtual Boy                                            4918        38         11           
 Nintendo Wii                                                    9           82         16           
 Nintendo Wii U                                                  38          132        18           
-Philips Videopac G7000                                          0           78                      
-Philips Videopac Plus G7400                                     0           128                     
+Philips Videopac G7000                                          0           78         104          
+Philips Videopac Plus G7400                                     0           128        104          
 RCA Studio II                                                                                       
-ScummVM                                                         0                                   
+ScummVM                                                         0                      123          
 Sega 32X                                                        33          21         19           
 Sega Dreamcast                                                  0           8          23           
 Sega Game Gear                                                  0           25         21           
@@ -73,10 +73,10 @@ Sega PICO                                                       4958        103
 Sega Saturn                                                     17          23         22           
 Sega SC-3000                                                    0                                   
 Sega SegaCD                                                     0           20         20           
-Sega SG-1000                                                    0           114                     
+Sega SG-1000                                                    0           114        109          
 Sharp X68000                                                    0           106        79           
 Sinclair ZX Spectrum                                            0           41         76           
-SNK Neo-Geo AES                                                 0           36                      
+SNK Neo-Geo AES                                                 0           36         142          
 SNK Neo-Geo CD                                                  0           54         70           
 SNK Neo-Geo MVS                                                 0           143        68           
 SNK Neo-Geo Pocket                                              0           52         25           
