@@ -2353,8 +2353,13 @@ class MobyGames(Scraper):
     def _search_candidates(self, search_term, rombase_noext, platform, scraper_platform, status_dic):
         # --- Retrieve JSON data with list of games ---
         search_string_encoded = urllib.quote_plus(search_term.encode('utf8'))
-        url_str = 'https://api.mobygames.com/v1/games?api_key={0}&format=brief&title={1}&platform={2}'
-        url = url_str.format(self.api_key, search_string_encoded, scraper_platform)
+        if scraper_platform == '0':
+            # Unkwnon or wrong platform case.
+            url_str = 'https://api.mobygames.com/v1/games?api_key={}&format=brief&title={}'
+            url = url_str.format(self.api_key, search_string_encoded)
+        else:
+            url_str = 'https://api.mobygames.com/v1/games?api_key={}&format=brief&title={}&platform={}'
+            url = url_str.format(self.api_key, search_string_encoded, scraper_platform)
         json_data = self._retrieve_URL_as_JSON(url, status_dic)
         if not status_dic['status']: return None
         self._dump_json_debug('MobyGames_get_candidates.json', json_data)
@@ -2390,14 +2395,12 @@ class MobyGames(Scraper):
     def _parse_metadata_year(self, json_data, scraper_platform):
         platform_data = json_data['platforms']
         if len(platform_data) == 0: return DEFAULT_META_YEAR
-        year_data = None
         for platform in platform_data:
             if platform['platform_id'] == int(scraper_platform):
-                year_data = platform['first_release_date']
-                break
-        if year_data is None: year_data = platform_data[0]['first_release_date']
+                return platform['first_release_date'][0:4]
 
-        return year_data[:4]
+        # If platform not found then take first result.
+        return platform_data[0]['first_release_date'][0:4]
 
     def _parse_metadata_genre(self, json_data):
         if 'genres' in json_data:

@@ -698,7 +698,14 @@ def AEL_platform_to_MobyGames(platform_AEL):
     try:
         platform_MobyGames = platform_AEL_to_MobyGames_dic[platform_AEL]
     except:
-        platform_MobyGames = ''
+        # * MobyGames API cannot be used withouth a valid platform.
+        # * If '0' is used as the Unknown platform then MobyGames returns an HTTP error
+        #    "HTTP Error 422: UNPROCESSABLE ENTITY"
+        # * If '' is used as the Unknwon platform then MobyGames returns and HTTP error
+        #   "HTTP Error 400: BAD REQUEST"
+        # * The solution is to use '0' as the unknwon platform. AEL will detect this and
+        #   will remove the '&platform={}' parameter from the search URL.
+        platform_MobyGames = '0'
 
     return platform_MobyGames
 
@@ -714,7 +721,8 @@ def AEL_platform_to_GameFAQs(AEL_gamesys):
     try:
         platform_GameFAQs = platform_AEL_to_GameFAQs_dic[AEL_gamesys]
     except:
-        platform_GameFAQs = '0' # Platform '0' means all platforms
+        # Platform '0' means all platforms in GameFAQs.
+        platform_GameFAQs = '0'
 
     return platform_GameFAQs
 
