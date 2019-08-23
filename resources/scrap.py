@@ -2806,8 +2806,6 @@ class ScreenScraper(Scraper):
         if not status_dic['status']: return None
         # What happens if not games found???
         jeu_dic = json_data['response']['jeu']
-        # Remove clutter (the ROM list) from dictionary before inserting in the cache.
-        jeu_dic['roms'] = []
 
         # --- Deal with errors returned by api/jeuInfos.php ---
         id_str = str(jeu_dic['id'])
@@ -2833,6 +2831,8 @@ class ScreenScraper(Scraper):
         log_debug('ScreenScraper::get_candidates() Adding to cache "{0}"'.format(cache_key))
         self.cache_candidates[cache_key] = candidate_list
         log_debug('ScreenScraper::get_candidates() Adding to internal cache')
+        # Remove clutter (the ROM list) from jeu_dic dictionary before inserting in the cache.
+        jeu_dic['roms'] = []
         self.cache_jeuInfos[cache_key] = jeu_dic
 
         # Always return a list, even if only with 1 element.
