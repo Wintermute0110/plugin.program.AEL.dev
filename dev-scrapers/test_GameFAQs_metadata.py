@@ -42,15 +42,13 @@ candidate_list = scraper_obj.get_candidates(*common.games['mworld'], status_dic 
 # candidate_list = scraper_obj.get_candidates(*common.games['console_invalid'], status_dic = status_dic)
 
 # --- Print search results ---
+common.handle_get_candidates(candidate_list)
 # pprint.pprint(candidate_list)
 print_candidate_list(candidate_list)
-if not candidate_list:
-    print('No candidates found.')
-    sys.exit(0)
 candidate = candidate_list[0]
 
 # --- Print metadata of first candidate ----------------------------------------------------------
 print('*** Fetching game metadata **************************************************************')
-metadata = scraper_obj.get_metadata(candidate)
+metadata = scraper_obj.get_metadata(candidate, status_dic)
 # pprint.pprint(metadata)
 print_game_metadata(metadata)

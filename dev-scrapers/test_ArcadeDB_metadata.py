@@ -32,15 +32,14 @@ status_dic = kodi_new_status_dic('Scraper test was OK')
 # --- Get candidates ---
 # candidate_list = scraper_obj.get_candidates(*common.games['tetris'], status_dic = status_dic)
 # candidate_list = scraper_obj.get_candidates(*common.games['mslug'], status_dic = status_dic)
-candidate_list = scraper_obj.get_candidates(*common.games['dino'], status_dic = status_dic)
-# candidate_list = scraper_obj.get_candidates(*common.games['MAME_invalid'], status_dic = status_dic)
+# candidate_list = scraper_obj.get_candidates(*common.games['dino'], status_dic = status_dic)
+# candidate_list = scraper_obj.get_candidates(*common.games['MAME_wrong_title'], status_dic = status_dic)
+candidate_list = scraper_obj.get_candidates(*common.games['MAME_wrong_platform'], status_dic = status_dic)
 
 # --- Print search results ---
+common.handle_get_candidates(candidate_list)
 # pprint.pprint(candidate_list)
 print_candidate_list(candidate_list)
-if not candidate_list:
-    print('No candidates found.')
-    sys.exit(0)
 candidate = candidate_list[0]
 
 # --- Print metadata of first candidate ----------------------------------------------------------

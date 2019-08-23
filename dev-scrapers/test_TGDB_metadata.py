@@ -38,13 +38,8 @@ candidate_list = scraper_obj.get_candidates(*common.games['mworld'], status_dic 
 # candidate_list = scraper_obj.get_candidates(*common.games['console_wrong_platform'], status_dic = status_dic)
 
 # --- Print search results ---
+common.handle_get_candidates(candidate_list)
 # pprint.pprint(candidate_list)
-if candidate_list is None:
-    print('Error/exception in get_candidates(). Exiting.')
-    sys.exit(0)
-if not candidate_list:
-    print('No candidates found. Exiting.')
-    sys.exit(0)
 print_candidate_list(candidate_list)
 candidate = candidate_list[0]
 

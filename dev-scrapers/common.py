@@ -3,6 +3,8 @@
 #
 # Common data to test the scrapers.
 #
+from __future__ import unicode_literals
+import sys
 
 settings = {
     # --- AEL Offline ---
@@ -36,3 +38,11 @@ games = {
     'MAME_wrong_title'    : ('MAME invalid game', 'mjhyewqr', 'MAME'),
     'MAME_wrong_platform' : ('Tetris (set 1)', 'atetris', 'mjhyewqr'),
 }
+
+def handle_get_candidates(candidate_list):
+    if candidate_list is None:
+        print('Error/exception in get_candidates(). Exiting.')
+        sys.exit(0)
+    if not candidate_list:
+        print('No candidates found. Exiting.')
+        sys.exit(0)
