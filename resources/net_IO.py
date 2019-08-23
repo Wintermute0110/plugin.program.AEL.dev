@@ -118,7 +118,17 @@ def net_get_URL(url, url_log = None):
         page_bytes = f.read()
         http_code = f.getcode()
         f.close()
-    # If an exception happens return empty data.
+    # If the server returns an HTTP status code then make sure http_code has the error code
+    # and page_bytes the message.
+    except urllib2.HTTPError as ex:
+        http_code = ex.code
+        page_bytes = unicode(ex.reason)
+        log_error('(HTTPError) In net_get_URL()')
+        log_error('(HTTPError) Object type "{}"'.format(type(ex)))
+        log_error('(HTTPError) Message "{}"'.format(str(ex)))
+        log_error('(HTTPError) Code {}'.format(http_code))
+        return page_bytes, http_code
+    # If an unknown exception happens return empty data.
     except Exception as ex:
         log_error('(Exception) In net_get_URL()')
         log_error('(Exception) Object type "{}"'.format(type(ex)))
