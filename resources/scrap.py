@@ -2929,7 +2929,17 @@ class ScreenScraper(Scraper):
 
         return asset_list
 
-    def resolve_asset_URL(self, candidate, status_dic): return candidate['url']
+    # Sometimes ScreenScraper URLs have spaces. One example is the map images of Genesis Sonic 1.
+    # https://www.screenscraper.fr/gameinfos.php?plateforme=1&gameid=5
+    # Make sure to escape the spaces in the returned URL.
+    def resolve_asset_URL(self, candidate, status_dic):
+        # For some reason this code does not work well...
+        # url = candidate['url']
+        # if url.startswith('http://'):    return 'http://' + urllib.quote(url[7:])
+        # elif url.startswith('https://'): return 'https://' + urllib.quote(url[8:])
+        # else:                            raise ValueError
+
+        return candidate['url']
 
     def resolve_asset_URL_extension(self, candidate, url, status_dic): return candidate['SS_format']
 
