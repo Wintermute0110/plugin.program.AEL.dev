@@ -329,7 +329,7 @@ class ScrapeStrategy(object):
         self.scan_clean_tags         = self.settings['scan_clean_tags']
         self.scan_update_NFO_files   = self.settings['scan_update_NFO_files']
 
-    # Call this function before the scanner starts.
+    # Call this function before the ROM Scanning starts.
     def begin_ROM_scanner(self, launcher, pdialog, pdialog_verbose):
         log_debug('ScrapeStrategy::begin_ROM_scanner() Initialising ROM Scanner engine...')
         self.launcher = launcher
@@ -352,14 +352,25 @@ class ScrapeStrategy(object):
         self.flag_meta_and_asset_scraper_same = self.meta_scraper_obj is self.asset_scraper_obj
         log_debug('Are metadata and asset scrapers the same? {}'.format(self.flag_meta_and_asset_scraper_same))
 
-    def check_launcher_unset_asset_dirs(self):
+    # Check if scraper is ready for operation (missing API keys, etc.). If not disable scraper.
+    # Display error as progress dialog
+    def scanner_check_before_scraping(self):
+        status_dic = kodi_new_status_dic('No error')
+        self.meta_scraper_obj.check_before_scraping(status_dic)
+        if not status_dic['status']: kodi_dialog_OK(op_dic['msg'])
+
+        status_dic = kodi_new_status_dic('No error')
+        self.asset_scraper_obj.check_before_scraping(status_dic)
+        if not status_dic['status']: kodi_dialog_OK(op_dic['msg'])
+
+    def scanner_check_launcher_unset_asset_dirs(self):
         log_debug('ScrapeStrategy::check_launcher_unset_asset_dirs() BEGIN ...')
         self.enabled_asset_list = asset_get_enabled_asset_list(self.launcher)
         self.unconfigured_name_list = asset_get_unconfigured_name_list(self.enabled_asset_list)
 
     # Determine the actions to be carried out by process_ROM_metadata() and process_ROM_assets().
     # Must be called before the aforementioned methods.
-    def process_ROM_begin(self, romdata, ROM):
+    def scanner_process_ROM_begin(self, romdata, ROM):
         log_debug('ScrapeStrategy::process_ROM_begin() Determining metadata and asset actions...')
 
         # --- Determine metadata action ----------------------------------------------------------
@@ -463,9 +474,10 @@ class ScrapeStrategy(object):
         # --- If metadata or any asset is scraped then select the game among the candidates ---
         # Note that the metadata and asset scrapers may be different. If so, candidates
         # must be selected for both scrapers.
-        status_dic = kodi_new_status_dic('No error')
         if self.metadata_action == ScrapeStrategy.ACTION_META_SCRAPER:
             log_debug('Getting metadata candidate game')
+            # What if status_dic reports and error here? It is ignored?
+            status_dic = kodi_new_status_dic('No error')
             self.candidate_metadata = self._scanner_get_candidate(
                 romdata, ROM, self.meta_scraper_obj, self.meta_scraper_name, status_dic)
         else:
@@ -477,6 +489,8 @@ class ScrapeStrategy(object):
             self.candidate_asset = self.candidate_metadata
         elif any(temp_asset_list) and not self.flag_meta_and_asset_scraper_same:
             log_debug('Getting asset candidate game.')
+            # What if status_dic reports and error here? It is ignored?
+            status_dic = kodi_new_status_dic('No error')
             self.candidate_asset = self._scanner_get_candidate(
                 romdata, ROM, self.asset_scraper_obj, self.asset_scraper_name, status_dic)
         else:
@@ -486,7 +500,7 @@ class ScrapeStrategy(object):
     #
     # @param romdata: [dict] ROM data dictionary. Mutable and edited by assignment.
     # @param ROM: [Filename] ROM filename object.
-    def process_ROM_metadata(self, romdata, ROM):
+    def scanner_process_ROM_metadata(self, romdata, ROM):
         log_debug('ScrapeStrategy::process_ROM_metadata() Processing metadata action...')
         if self.metadata_action == ScrapeStrategy.ACTION_META_TITLE_ONLY:
             if self.pdialog_verbose:
@@ -520,7 +534,7 @@ class ScrapeStrategy(object):
     #
     # @param romdata: [dict] ROM data dictionary. Mutable and edited by assignment.
     # @param ROM: [Filename] ROM filename object.
-    def process_ROM_assets(self, romdata, ROM):
+    def scanner_process_ROM_assets(self, romdata, ROM):
         log_debug('ScrapeStrategy::process_ROM_assets() Processing asset actions...')
         # --- Process asset by asset actions ---
         for i, asset_ID in enumerate(ROM_ASSET_ID_LIST):

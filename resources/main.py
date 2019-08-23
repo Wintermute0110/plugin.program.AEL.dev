@@ -1475,16 +1475,16 @@ class Main:
             label2_banner       = launcher[launcher['default_banner']]    if launcher[launcher['default_banner']]    else 'Not set'
             label2_poster       = launcher[launcher['default_poster']]    if launcher[launcher['default_poster']]    else 'Not set'
             label2_clearlogo    = launcher[launcher['default_clearlogo']] if launcher[launcher['default_clearlogo']] else 'Not set'
-            icon_listitem       = xbmcgui.ListItem(label = 'Choose asset for Icon (currently {0})'.format(asset_icon_str),
-                                                   label2 = label2_icon)
-            fanart_listitem     = xbmcgui.ListItem(label = 'Choose asset for Fanart (currently {0})'.format(asset_fanart_str),
-                                                   label2 = label2_fanart)
-            banner_listitem     = xbmcgui.ListItem(label = 'Choose asset for Banner (currently {0})'.format(asset_banner_str),
-                                                   label2 = label2_banner)
-            poster_listitem     = xbmcgui.ListItem(label = 'Choose asset for Poster (currently {0})'.format(asset_poster_str),
-                                                   label2 = label2_poster)
-            clearlogo_listitem  = xbmcgui.ListItem(label = 'Choose asset for Clearlogo (currently {0})'.format(asset_clearlogo_str),
-                                                   label2 = label2_clearlogo)
+            icon_listitem       = xbmcgui.ListItem(
+                label = 'Choose asset for Icon (currently {0})'.format(asset_icon_str), label2 = label2_icon)
+            fanart_listitem     = xbmcgui.ListItem(
+                label = 'Choose asset for Fanart (currently {0})'.format(asset_fanart_str), label2 = label2_fanart)
+            banner_listitem     = xbmcgui.ListItem(
+                label = 'Choose asset for Banner (currently {0})'.format(asset_banner_str), label2 = label2_banner)
+            poster_listitem     = xbmcgui.ListItem(
+                label = 'Choose asset for Poster (currently {0})'.format(asset_poster_str), label2 = label2_poster)
+            clearlogo_listitem  = xbmcgui.ListItem(
+                label = 'Choose asset for Clearlogo (currently {0})'.format(asset_clearlogo_str), label2 = label2_clearlogo)
 
             # >> Asset image
             img_icon            = launcher[launcher['default_icon']]      if launcher[launcher['default_icon']]      else 'DefaultAddonNone.png'
@@ -1778,56 +1778,58 @@ class Main:
                     duplicated_name_list = asset_get_duplicated_dir_list(self.launchers[launcherID])
                     if duplicated_name_list:
                         duplicated_asset_srt = ', '.join(duplicated_name_list)
-                        kodi_dialog_OK('Duplicated asset directories: {0}. '.format(duplicated_asset_srt) +
-                                       'AEL will refuse to add/edit ROMs if there are duplicate asset directories.')
+                        kodi_dialog_OK(
+                            'Duplicated asset directories: {0}. '.format(duplicated_asset_srt) +
+                            'AEL will refuse to add/edit ROMs if there are duplicate asset directories.')
 
                 # --- Rescan ROMs local artwork ---
-                # >> A) First, local assets are searched for every ROM based on the filename.
-                # >> B) Next, missing assets are searched in the Parent/Clone group using the files
-                #       found in the previous step. This is much faster than searching for files again.
-                #
+                # A) First, local assets are searched for every ROM based on the filename.
+                # B) Next, missing assets are searched in the Parent/Clone group using the files
+                #    found in the previous step. This is much faster than searching for files again.
                 elif type2 == 2:
                     log_info('_command_edit_launcher() Rescanning local assets ...')
                     launcher = self.launchers[launcherID]
 
-                    # ~~~ Check asset dirs and disable scanning for unset dirs ~~~
-                    (enabled_asset_list, unconfigured_name_list) = asset_get_configured_dir_list(launcher)
-                    if unconfigured_name_list:
-                        unconfigure_asset_srt = ', '.join(unconfigured_name_list)
-                        kodi_dialog_OK('Assets directories not set: {0}. '.format(unconfigure_asset_srt) +
-                                       'Asset scanner will be disabled for this/those.')
-
-                    # ~~~ Ensure there is no duplicate asset dirs ~~~
-                    # >> Cancel scanning if duplicates found
+                    # --- Ensure there is no duplicate asset dirs ---
+                    # Cancel scanning if duplicates found
                     duplicated_name_list = asset_get_duplicated_dir_list(launcher)
                     if duplicated_name_list:
                         duplicated_asset_srt = ', '.join(duplicated_name_list)
                         log_info('Duplicated asset dirs: {0}'.format(duplicated_asset_srt))
-                        kodi_dialog_OK('Duplicated asset directories: {0}. '.format(duplicated_asset_srt) +
-                                       'Change asset directories before continuing.')
+                        kodi_dialog_OK(
+                            'Duplicated asset directories: {0}. '.format(duplicated_asset_srt) +
+                            'Change asset directories before continuing.')
                         return
                     else:
                         log_info('No duplicated asset dirs found')
 
+                    # --- Check asset dirs and disable scanning for unset dirs ---
+                    enabled_asset_list = asset_get_enabled_asset_list(launcher)
+                    unconfigured_name_list = asset_get_unconfigured_name_list(enabled_asset_list)
+                    if unconfigured_name_list:
+                        unconfigure_asset_srt = ', '.join(unconfigured_name_list)
+                        kodi_dialog_OK(
+                            'Assets directories not set: {0}. '.format(unconfigure_asset_srt) +
+                            'Asset scanner will be disabled for this/those.')
+
                     # --- Create a cache of assets ---
-                    # >> misc_add_file_cache() creates a set with all files in a given directory.
-                    # >> That set is stored in a function internal cache associated with the path.
-                    # >> Files in the cache can be searched with misc_search_file_cache()
-                    pDialog = xbmcgui.DialogProgress()
-                    pDialog.create('Advanced Emulator Launcher', 'Scanning files in asset directories ...')
+                    pdialog = KodiProgressDialog()
+                    pdialog.startProgress('Scanning files in asset directories ...', len(ROM_ASSET_ID_LIST))
                     for i, asset_kind in enumerate(ROM_ASSET_ID_LIST):
+                        pdialog.updateProgress(i)
                         AInfo = assets_get_info_scheme(asset_kind)
                         misc_add_file_cache(launcher[AInfo.path_key])
-                        pDialog.update((100*i)/len(ROM_ASSET_ID_LIST))
-                    pDialog.update(100)
-                    pDialog.close()
+                    pdialog.endProgress()
 
                     # --- Traverse ROM list and check local asset/artwork ---
-                    pDialog.create('Advanced Emulator Launcher', 'Searching for local assets/artwork ...')
                     roms = fs_load_ROMs_JSON(g_PATHS.ROMS_DIR, launcher)
-                    num_items = len(roms)
                     item_counter = 0
+                    pdialog.startProgress('Searching for local assets/artwork...', len(roms))
                     for rom_id in roms:
+                        # --- Update progress dialog ---
+                        pdialog.updateProgress(item_counter)
+                        item_counter += 1
+
                         # --- Search assets for current ROM ---
                         rom = roms[rom_id]
                         ROMFile = FileName(rom['filename'])
@@ -1869,15 +1871,11 @@ class Main:
                             else:
                                 rom[AInfo.key] = ''
                                 log_debug('Miss  {0:<9}'.format(AInfo.name))
-                        # --- Update progress dialog ---
-                        item_counter += 1
-                        pDialog.update((item_counter*100)/num_items)
-                    pDialog.update(100)
-                    pDialog.close()
+                    pdialog.endProgress()
 
                     # --- Crete Parent/Clone dictionaries ---
                     # --- Traverse ROM list and check assets in the PClone group ---
-                    # >> This is only available if a No-Intro/Redump DAT is configured. If not, warn the user.
+                    # This is only available if a No-Intro/Redump DAT is configured. If not, warn the user.
                     if self.settings['audit_pclone_assets'] and not launcher['nointro_xml_file']:
                         log_info('Use assets in the Parent/Clone group is ON. No-Intro/Redump DAT not configured.')
                         kodi_dialog_OK('No-Intro/Redump DAT not configured and audit_pclone_assets is True. ' +
@@ -1886,10 +1884,13 @@ class Main:
                         log_info('Use assets in the Parent/Clone group is ON. Loading Parent/Clone dictionaries.')
                         roms_pclone_index = fs_load_JSON_file(g_PATHS.ROMS_DIR, launcher['roms_base_noext'] + '_index_PClone')
                         clone_parent_dic  = fs_load_JSON_file(g_PATHS.ROMS_DIR, launcher['roms_base_noext'] + '_index_CParent')
-                        pDialog.create('Advanced Emulator Launcher', 'Searching for assets/artwork in the Parent/Clone group ...')
-                        num_items = len(roms)
                         item_counter = 0
+                        pdialog.startProgress('Searching for assets/artwork in the Parent/Clone group...', len(roms))
                         for rom_id in roms:
+                            # --- Update progress dialog ---
+                            pdialog.updateProgress(item_counter)
+                            item_counter += 1
+
                             # --- Search assets for current ROM ---
                             rom = roms[rom_id]
                             ROMFile = FileName(rom['filename'])
@@ -1937,20 +1938,16 @@ class Main:
                                         log_debug('Miss  {0:<9}'.format(AInfo.name))
                                 else:
                                     log_debug('Has   {0:<9}'.format(AInfo.name))
-                            # >> Update progress dialog
-                            item_counter += 1
-                            pDialog.update((item_counter*100)/num_items)
-                        pDialog.update(100)
-                        pDialog.close()
+                        pdialog.endProgress()
 
                     # --- Update assets on _parents.json ---
-                    # >> Here only assets s_* are changed. I think it is not necessary to audit ROMs again.
-                    pDialog.create('Advanced Emulator Launcher', 'Saving ROM JSON database ...')
+                    # Here only assets s_* are changed. I think it is not necessary to audit ROMs again.
+                    pdialog.startProgress('Saving ROM JSON database ...')
                     if launcher['nointro_xml_file']:
                         log_verb('Updating artwork on parent JSON database.')
                         parents_roms_base_noext = launcher['roms_base_noext'] + '_parents'
                         parent_roms = fs_load_JSON_file(g_PATHS.ROMS_DIR, parents_roms_base_noext)
-                        pDialog.update(25)
+                        pdialog.updateProgress(25)
                         for parent_rom_id in parent_roms:
                             parent_roms[parent_rom_id]['s_banner']    = roms[parent_rom_id]['s_banner']
                             parent_roms[parent_rom_id]['s_boxback']   = roms[parent_rom_id]['s_boxback']
@@ -1966,26 +1963,131 @@ class Main:
                             parent_roms[parent_rom_id]['s_trailer']   = roms[parent_rom_id]['s_trailer']
                         fs_write_JSON_file(g_PATHS.ROMS_DIR, parents_roms_base_noext, parent_roms)
 
-                    # ~~~ Save ROMs XML file ~~~
-                    pDialog.update(50)
+                    # --- Save ROMs XML file ---
+                    pdialog.updateProgress(50)
                     fs_write_ROMs_JSON(g_PATHS.ROMS_DIR, launcher, roms)
-                    pDialog.update(100)
-                    pDialog.close()
+                    pdialog.endProgress()
                     kodi_notify('Rescaning of ROMs local artwork finished')
 
                 # --- Scrape ROMs artwork ---
-                # >> Mimic what the ROM scanner does. Use same settings as the ROM scanner.
-                # >> Like the ROM scanner, only scrape artwork not found locally.
+                # Mimic what the ROM scanner does. Use same settings as the ROM scanner.
+                # Like the ROM scanner, only scrape artwork not found locally.
                 elif type2 == 3:
-                    kodi_dialog_OK('WIP feature not coded yet, sorry.')
-                    return
+                    log_info('_command_edit_launcher() Rescraping local assets ...')
+                    launcher = self.launchers[launcherID]
+                    pdialog_verbose = True
+                    pdialog = KodiProgressDialog()
+
+                    # --- Load metadata/asset scrapers ---
+                    g_scraper_factory = ScraperFactory(g_PATHS, self.settings)
+                    scraper_strategy = g_scraper_factory.create_scanner(launcher)
+                    scraper_strategy.begin_ROM_scanner(launcher, pdialog, pdialog_verbose)
+                    scraper_strategy.scanner_check_before_scraping()
+
+                    # --- Ensure there is no duplicate asset dirs ---
+                    duplicated_name_list = asset_get_duplicated_dir_list(launcher)
+                    if duplicated_name_list:
+                        duplicated_asset_srt = ', '.join(duplicated_name_list)
+                        log_info('Duplicated asset dirs: {0}'.format(duplicated_asset_srt))
+                        kodi_dialog_OK(
+                            'Duplicated asset directories: {0}. '.format(duplicated_asset_srt) +
+                            'Change asset directories before continuing.')
+                        return
+                    else:
+                        log_info('No duplicated asset dirs found')
+
+                    # --- Check asset dirs and disable scanning for unset dirs ---
+                    scraper_strategy.scanner_check_launcher_unset_asset_dirs()
+                    if scraper_strategy.unconfigured_name_list:
+                        unconfigured_asset_srt = ', '.join(scraper_strategy.unconfigured_name_list)
+                        kodi_dialog_OK(
+                            'Assets directories not set: {0}. '.format(unconfigured_asset_srt) +
+                            'Asset scanner will be disabled for this/those.')
+
+                    # --- Prepare ScannerStrategy variables ---
+                    enabled_asset_list = scraper_strategy.enabled_asset_list
+                    asset_scraper_name = scraper_strategy.asset_scraper_name
+                    asset_scraper_obj  = scraper_strategy.asset_scraper_obj
+
+                    # --- Create a cache of assets ---
+                    log_info('Scanning and caching files in asset directories ...')
+                    pdialog.startProgress('Scanning files in asset directories ...', len(ROM_ASSET_ID_LIST))
+                    for i, asset_kind in enumerate(ROM_ASSET_ID_LIST):
+                        pdialog.updateProgress(i)
+                        AInfo = assets_get_info_scheme(asset_kind)
+                        misc_add_file_cache(launcher[AInfo.path_key])
+                    pdialog.endProgress()
+
+                    # --- Traverse ROM list and check local asset/artwork ---
+                    roms = fs_load_ROMs_JSON(g_PATHS.ROMS_DIR, launcher)
+                    item_counter = 0
+                    pdialog.startProgress('Scraping assets...', len(roms))
+                    for rom_id in roms:
+                        # --- Update progress dialog ---
+                        pdialog.updateProgress(item_counter)
+                        item_counter += 1
+
+                        # --- Search for local artwork/assets ---
+                        rom = roms[rom_id]
+                        ROMFile = FileName(rom['filename'])
+                        log_debug('Checking ROM "{0}" (ID {1})'.format(ROMFile.getBase(), rom_id))
+                        local_asset_list = assets_search_local_cached_assets(launcher, ROMFile, enabled_asset_list)
+                        asset_action_list = [ScrapeStrategy.ACTION_ASSET_LOCAL_ASSET] * len(ROM_ASSET_ID_LIST)
+
+                        # --- Process asset by asset ---
+                        for i, asset_ID in enumerate(ROM_ASSET_ID_LIST):
+                            # --- Determine if asset must be scraped or not ---
+                            AInfo = assets_get_info_scheme(asset_ID)
+                            if not enabled_asset_list[i]:
+                                log_error('Skipping {0} (dir not configured).'.format(AInfo.name))
+                                asset_action_list[i] = ScrapeStrategy.ACTION_ASSET_LOCAL_ASSET
+                            elif local_asset_list[i]:
+                                log_error('Local {0} FOUND'.format(AInfo.name))
+                                asset_action_list[i] = ScrapeStrategy.ACTION_ASSET_LOCAL_ASSET
+                            else:
+                                log_error('Local {0} NOT found. Scraping.'.format(AInfo.name))
+                                asset_action_list[i] = ScrapeStrategy.ACTION_ASSET_SCRAPER
+
+                        # --- If any asset is going to be scraped then get candidate game ---
+                        temp_asset_list = [x == ScrapeStrategy.ACTION_ASSET_SCRAPER for x in asset_action_list]
+                        if any(temp_asset_list):
+                            log_debug('Getting asset candidate game.')
+                            # What if status_dic reports and error here? It is ignored?
+                            status_dic = kodi_new_status_dic('No error')
+                            candidate_asset = scraper_strategy._scanner_get_candidate(
+                                rom, ROMFile, asset_scraper_obj, asset_scraper_name, status_dic)
+                            scraper_strategy.candidate_asset = candidate_asset
+                        else:
+                            log_debug('Setting candidate game to None.')
+                            scraper_strategy.candidate_asset = None
+
+                        # --- Process asset by asset actions ---
+                        for i, asset_ID in enumerate(ROM_ASSET_ID_LIST):
+                            AInfo = assets_get_info_scheme(asset_ID)
+                            if asset_action_list[i] == ScrapeStrategy.ACTION_ASSET_LOCAL_ASSET:
+                                log_debug('Using local asset for {}'.format(AInfo.name))
+                                rom[AInfo.key] = local_asset_list[i]
+                            elif asset_action_list[i] == ScrapeStrategy.ACTION_ASSET_SCRAPER:
+                                rom[AInfo.key] = scraper_strategy._scanner_scrap_ROM_asset(
+                                    asset_ID, local_asset_list[i], ROMFile)
+                            else:
+                                raise ValueError('Asset {} index {} ID {} unknown action {}'.format(
+                                    AInfo.name, i, asset_ID, asset_action_list[i]))
+                    pdialog.endProgress()
+
+                    # --- Save ROMs XML file ---
+                    pdialog.startProgress('Saving ROM JSON database ...')
+                    fs_write_ROMs_JSON(g_PATHS.ROMS_DIR, launcher, roms)
+                    pdialog.endProgress()
+                    kodi_notify('Rescaning of ROMs local artwork finished')
 
                 # --- Remove Remove dead/missing ROMs ROMs ---
                 elif type2 == 4:
                     if self.launchers[launcherID]['nointro_xml_file']:
-                        ret = kodi_dialog_yesno('This launcher has an XML DAT configured. Removing '
-                                                'dead ROMs will disable the DAT file. '
-                                                'Are you sure you want to remove missing/dead ROMs?')
+                        ret = kodi_dialog_yesno(
+                            'This launcher has an XML DAT configured. Removing '
+                            'dead ROMs will disable the DAT file. '
+                            'Are you sure you want to remove missing/dead ROMs?')
                     else:
                         ret = kodi_dialog_yesno('Are you sure you want to remove missing/dead ROMs?')
                     if not ret: return
@@ -2001,13 +2103,11 @@ class Main:
                         log_info('Deleting XML DAT file and forcing launcher to Normal view mode.')
                         self.launchers[launcherID]['nointro_xml_file'] = ''
 
-                    # ~~~ Save ROMs XML file ~~~
-                    # >> Launcher saved at the end of the function / launcher timestamp updated.
+                    # --- Save ROMs XML file ---
                     pDialog = xbmcgui.DialogProgress()
-                    pDialog.create('Advanced Emulator Launcher', 'Saving ROM JSON database ...')
+                    pDialog.startProgress('Saving ROM JSON database ...')
                     fs_write_ROMs_JSON(g_PATHS.ROMS_DIR, self.launchers[launcherID], roms)
-                    pDialog.update(100)
-                    pDialog.close()
+                    pdialog.endProgress()
                     self.launchers[launcherID]['num_roms'] = len(roms)
                     kodi_notify('Removed {0} dead ROMs'.format(num_removed_roms))
 
@@ -8930,6 +9030,8 @@ class Main:
         g_scraper_factory = ScraperFactory(g_PATHS, self.settings)
         scraper_strategy = g_scraper_factory.create_scanner(launcher)
         scraper_strategy.begin_ROM_scanner(launcher, pdialog, pdialog_verbose)
+        # Check if scraper is ready for operation. Otherwise disable it.
+        scraper_strategy.scanner_check_before_scraping()
 
         # --- Assets/artwork stuff ----------------------------------------------------------------
         # Ensure there is no duplicate asset dirs. Abort scanning of assets if duplicate dirs found.

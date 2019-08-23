@@ -146,9 +146,9 @@ FEATURE  [SCRAPERS] Utility to check MobyGames monthly allowance.
 
 FEATURE  [SCRAPERS] Utility to check ScreenScraper monthly allowance.
 
-FETURE   [SCRAPERS] Make sure all scraper platforms are OK and synchronised with AEL platforms.
+FEATURE  [SCRAPERS] Make sure all scraper platforms are OK and synchronised with AEL platforms.
 
-WIP      [SCRAPERS] Option to rescrape all ROM assets in a similar fashion to
+FEATURE  [SCRAPERS] Option to rescrape all ROM assets in a similar fashion to
          "Scan ROMs local artwork". Create a menu entry in "Edit Launcher", "Manage ROMs",
          "Scrape ROMs artwork".
          "Scrape ROMs artwork" will use the same scraper settings in options as the ROM Scanner.
