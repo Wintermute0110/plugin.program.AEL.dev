@@ -2915,11 +2915,13 @@ class ScreenScraper(Scraper):
     def resolve_asset_URL_extension(self, candidate, url, status_dic): return candidate['SS_format']
 
     # --- This class own methods -----------------------------------------------------------------
-    # Plumbing function to get the cached raw game dictionary returned by ScreenScraper.
+    # Plumbing function to get the cached jeu_dic dictionary returned by ScreenScraper.
+    # This is cached in the internal cache
     # Scraper::get_candiates() must be called before this function to fill the cache.
     def debug_get_gameInfos_dic(self, candidate):
-        log_debug('ScreenScraper::get_gameInfos_dic() Cache retrieving "{}"'.format(candidate['cache_str']))
-        gameInfos_dic = self.cache_jeuInfos[candidate['cache_str']]
+        log_debug('ScreenScraper::get_gameInfos_dic() Internal cache retrieving "{}"'.format(
+            candidate['SS_cache_str']))
+        gameInfos_dic = self.cache_jeuInfos[candidate['SS_cache_str']]
 
         return gameInfos_dic
 
@@ -3826,6 +3828,16 @@ class ArcadeDB(Scraper):
         return 'png'
 
     # --- This class own methods -----------------------------------------------------------------
+    # Plumbing function to get the cached jeu_dic dictionary returned by ScreenScraper.
+    # This is cached in the internal cache
+    # Scraper::get_candiates() must be called before this function to fill the cache.
+    def debug_get_QUERY_MAME_dic(self, candidate):
+        log_debug('ArcadeDB::debug_get_QUERY_MAME_dic() Internal cache retrieving "{}"'.format(
+            candidate['ADB_cache_str']))
+        json_response_dic = self.cache_QUERY_MAME[candidate['ADB_cache_str']]
+
+        return json_response_dic
+
     # Call ArcadeDB API only function to retrieve all game metadata.
     def _get_QUERY_MAME(self, search_term, rombase_noext, platform, status_dic):
         game_name = rombase_noext

@@ -10064,15 +10064,40 @@ class Main:
         sl.append('id                  {}'.format(ssuser['id']))
         kodi_display_text_window_mono(window_title, '\n'.join(sl))
 
-    # SCRAPER_ARCADEDB_ID
+    # Retrieve an example game to test if ArcadeDB works.
+    # TTBOMK there are not API retrictions at the moment (August 2019).
     def _command_exec_utils_ArcadeDB_check(self):
-        kodi_dialog_OK('Not implemented yet. Sorry.')
+        status_dic = kodi_new_status_dic('No error')
+        g_scraper_factory = ScraperFactory(g_PATHS, self.settings)
+        ArcadeDB = g_scraper_factory.get_scraper_object(SCRAPER_ARCADEDB_ID)
+        ArcadeDB.check_before_scraping(status_dic)
+        if not status_dic['status']:
+            kodi_dialog_OK(status_dic['msg'])
+            return
 
-    # ScreenScraper V1 API docs https://www.screenscraper.fr/webapi.php
-    # I'm not sure how to check ScreenScraper allowance.
-    def _command_exec_utils_ScreenScraper_info(self): pass
+        pdialog = KodiProgressDialog()
+        pdialog.startProgress('Retrieving info from ArcadeDB...', 100)
+        candidates = ArcadeDB.get_candidates('atetris', 'atetris', 'MAME', status_dic)
+        json_response_dic = ArcadeDB.debug_get_QUERY_MAME_dic(candidates[0])
+        pdialog.endProgress()
+        if not status_dic['status']:
+            kodi_dialog_OK(status_dic['msg'])
+            return
 
-    def _command_exec_utils_ArcadeDB_info(self): pass
+        # --- Print and display report ---
+        num_games = len(json_response_dic['result'])
+        window_title = 'ArcadeDB scraper information'
+        sl = []
+        sl.append('num_games      {}'.format(num_games))
+        sl.append('game_name      {}'.format(json_response_dic['result'][0]['game_name']))
+        sl.append('title          {}'.format(json_response_dic['result'][0]['title']))
+        sl.append('emulator_name  {}'.format(json_response_dic['result'][0]['emulator_name']))
+        if num_games == 1:
+            sl.append('')
+            sl.append('ArcadeDB seems to be working OK.')
+            sl.append('Remember this scraper only works with platform MAME. It will only return')
+            sl.append('valid data for MAME games.')
+        kodi_display_text_window_mono(window_title, '\n'.join(sl))
 
     def _command_exec_global_rom_stats(self):
         log_debug('_command_exec_global_rom_stats() BEGIN')
