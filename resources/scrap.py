@@ -2554,17 +2554,21 @@ class MobyGames(Scraper):
 # regionsListe.php : Liste des regions
 # languesListe.php : Liste des langues
 # classificationListe.php : Liste des Classification (Game Rating)
+#
 # mediaGroup.php : Téléchargement des médias images des groupes de jeux
 # mediaCompagnie.php : Téléchargement des médias images des groupes de jeux
+#
 # systemesListe.php : Liste des systèmes / informations systèmes / informations médias systèmes
 # mediaSysteme.php : Téléchargement des médias images des systèmes
 # mediaVideoSysteme.php : Téléchargement des médias vidéos des systèmes
+#
 # jeuRecherche.php : Recherche d'un jeu avec son nom (retourne une table de jeux (limité a 30 jeux)
 #                    classés par probabilité)
 # jeuInfos.php : Informations sur un jeu / Médias d'un jeu
 # mediaJeu.php : Téléchargement des médias images des jeux
 # mediaVideoJeu.php : Téléchargement des médias vidéos des jeux
 # mediaManuelJeu.php : Téléchargement des manuels des jeux
+#
 # botNote.php : Système pour l'automatisation d'envoi de note de jeu d'un membre ScreenScraper
 # botProposition.php : Système pour automatisation d'envoi de propositions d'infos ou de médias
 #                      a ScreenScraper
@@ -2798,10 +2802,10 @@ class ScreenScraper(Scraper):
         log_debug('ScreenScraper::get_candidates() rombase_noext "{0}"'.format(rombase_noext))
         log_debug('ScreenScraper::get_candidates() AEL platform  "{0}"'.format(platform))
         log_debug('ScreenScraper::get_candidates() SS platform   "{0}"'.format(scraper_platform))
-        jeu_dic = self._get_gameInfos(search_term, rombase_noext, scraper_platform, status_dic)
+        json_data = self._get_gameInfos(search_term, rombase_noext, scraper_platform, status_dic)
         if not status_dic['status']: return None
         # What happens if not games found???
-        jeu_dic = jeu_dic['response']['jeu']
+        jeu_dic = json_data['response']['jeu']
         # Remove clutter (the ROM list) from dictionary before inserting in the cache.
         jeu_dic['roms'] = []
 
@@ -2839,7 +2843,7 @@ class ScreenScraper(Scraper):
     def get_metadata(self, candidate, status_dic):
         # --- If scraper is disabled return immediately and silently ---
         if self.scraper_disabled:
-            log_debug('TheGamesDB::get_metadata() Scraper disabled. Returning empty data.')
+            log_debug('ScreenScraper::get_metadata() Scraper disabled. Returning empty data.')
             return self._new_gamedata_dic()
 
         # --- Retrieve jeu_dic from internal cache ---
@@ -3004,7 +3008,7 @@ class ScreenScraper(Scraper):
               url_b.format(self.softname, self.ssid, self.sspassword)
         json_data = self._retrieve_URL_as_JSON(url, status_dic)
         if not status_dic['status']: return None
-        self._dump_json_debug('ScreenScraper_get_platforms.json', json_data)
+        self._dump_json_debug('ScreenScraper_get_platform_list.json', json_data)
 
         return json_data
 
@@ -3053,8 +3057,8 @@ class ScreenScraper(Scraper):
 
         # --- Grab and parse URL data ---
         json_data = self._retrieve_URL_as_JSON(url, status_dic)
-        self._dump_json_debug('ScreenScraper_get_gameInfo.json', json_data)
         if not status_dic['status']: return None
+        self._dump_json_debug('ScreenScraper_get_gameInfo.json', json_data)
 
         return json_data
 
@@ -3604,6 +3608,7 @@ class GameFAQs(Scraper):
 
 # -------------------------------------------------------------------------------------------------
 # Arcade Database online scraper (for MAME).
+# Implementation logic of this scraper is very similar to ScreenScraper.
 #
 # | Site     | http://adb.arcadeitalia.net/                    |
 # | API info | http://adb.arcadeitalia.net/service_scraper.php |
@@ -3628,6 +3633,7 @@ class ArcadeDB(Scraper):
     # --- Constructor ----------------------------------------------------------------------------
     def __init__(self, settings):
         # --- Internal stuff ---
+        self.cache_candidates = {}
         # Cache all data returned by API QUERY_MAME function.
         self.cache_QUERY_MAME = {}
 
@@ -3650,23 +3656,33 @@ class ArcadeDB(Scraper):
     # ArcadeDB does not require any API keys.
     def check_before_scraping(self, status_dic): return status_dic
 
+    # This function may be called many times in the ROM Scanner. All calls to this function
+    # must be cached. See comments for this function in the Scraper abstract class.
+    #
+    # ArcadeDB uses a dobule cache, one cache for candidates and another for jeu_dic.
     def get_candidates(self, search_term, rombase_noext, platform, status_dic):
+        # --- If scraper is disabled return immediately and silently ---
+        if self.scraper_disabled:
+            log_debug('ArcadeDB::get_candidates() Scraper disabled. Returning empty data.')
+            return []
+
+        # --- Check if search term is in the candidates cache ---
+        cache_key = search_term + '__' + rombase_noext + '__' + platform
+        if cache_key in self.cache_candidates:
+            log_debug('ArcadeDB::get_candidates() Cache hit "{0}"'.format(cache_key))
+            candidate_list = self.cache_candidates[cache_key]
+            return candidate_list
+
+        # --- Request is not cached. Get candidates and introduce in the cache ---
+        # ArcadeDB QUERY_MAME returns absolutely everything about a single ROM, including
+        # metadata, artwork, etc. This data must be cached in this object for every request done.
+        # See ScreenScraper comments for more info about the implementation.
+        log_debug('ArcadeDB::get_candidates() Cache miss "{0}"'.format(cache_key))
         log_debug('ArcadeDB::get_candidates() search_term    "{0}"'.format(search_term))
         log_debug('ArcadeDB::get_candidates() rom_base_noext "{0}"'.format(rombase_noext))
         log_debug('ArcadeDB::get_candidates() AEL platform   "{0}"'.format(platform))
-
-        # --- Get scraping data and cache it ---
-        # ArcadeDB QUERY_MAME returns absolutely everything about a single ROM, including
-        # metadata, artwork, etc.
-        # This data must be cached in this object for every request done.
-        cache_str = search_term + '__' + rombase_noext + '__' + platform
-        if cache_str in self.cache_QUERY_MAME:
-            log_debug('ArcadeDB::get_candidates() Cache hit "{0}"'.format(cache_str))
-            json_response_dic = self.cache_QUERY_MAME[cache_str]
-        else:
-            log_debug('ArcadeDB::get_candidates() Cache miss "{0}"'.format(cache_str))
-            json_response_dic = self._get_QUERY_MAME(search_term, rombase_noext, platform)
-            self.cache_QUERY_MAME[cache_str] = json_response_dic
+        json_response_dic = self._get_QUERY_MAME(search_term, rombase_noext, platform, status_dic)
+        if not status_dic['status']: return None
 
         # --- Return cadidate list ---
         num_games = len(json_response_dic['result'])
@@ -3682,17 +3698,31 @@ class ArcadeDB(Scraper):
             candidate['platform'] = platform
             candidate['scraper_platform'] = platform
             candidate['order'] = 1
-            candidate['cache_str'] = cache_str # Special field to retrieve game from cache.
+            candidate['ADB_cache_str'] = cache_key # Special field to retrieve game from cache.
             candidate_list.append(candidate)
+
+            # --- Add candidate games to the cache ---
+            # Add data to both candidates and internal caches or no cache at all. Boths caches
+            # are synchronised.
+            log_debug('ArcadeDB::get_candidates() Adding to cache "{0}"'.format(cache_key))
+            self.cache_candidates[cache_key] = candidate_list
+            log_debug('ArcadeDB::get_candidates() Adding to internal cache')
+            self.cache_QUERY_MAME[cache_key] = json_response_dic
         else:
-            raise AddonError('Unexpected number of games returned (more than one).')
+            raise ValueError('Unexpected number of games returned (more than one).')
 
         return candidate_list
 
     def get_metadata(self, candidate, status_dic):
+        # --- If scraper is disabled return immediately and silently ---
+        if self.scraper_disabled:
+            log_debug('ArcadeDB::get_metadata() Scraper disabled. Returning empty data.')
+            return self._new_gamedata_dic()
+
         # --- Retrieve game data from cache ---
-        log_debug('ArcadeDB::get_metadata() Cache retrieving "{}"'.format(candidate['cache_str']))
-        json_response_dic = self.cache_QUERY_MAME[candidate['cache_str']]
+        log_debug('ArcadeDB::get_metadata() Internal cache retrieving "{}"'.format(
+            candidate['ADB_cache_str']))
+        json_response_dic = self.cache_QUERY_MAME[candidate['ADB_cache_str']]
         gameinfo_dic = json_response_dic['result'][0]
 
         # --- Parse game metadata ---
@@ -3702,27 +3732,37 @@ class ArcadeDB(Scraper):
         gamedata['genre']     = gameinfo_dic['genre']
         gamedata['developer'] = gameinfo_dic['manufacturer']
         gamedata['nplayers']  = str(gameinfo_dic['players'])
-        gamedata['esrb']      = ''
+        gamedata['esrb']      = DEFAULT_META_ESRB
         gamedata['plot']      = gameinfo_dic['history']
 
         return gamedata
 
     def get_assets(self, candidate, asset_ID, status_dic):
+        # --- If scraper is disabled return immediately and silently ---
+        if self.scraper_disabled:
+            log_debug('ArcadeDB::get_assets() Scraper disabled. Returning empty data.')
+            return []
+
+        asset_info = assets_get_info_scheme(asset_ID)
+        log_debug('ArcadeDB::get_assets() Getting assets {} (ID {}) for candidate ID = {}'.format(
+            asset_info.name, asset_ID, candidate['id']))
+
         # --- Retrieve game data from cache ---
-        log_debug('ArcadeDB::_scraper_get_assets() Cache retrieving "{}"'.format(candidate['cache_str']))
-        json_response_dic = self.cache_QUERY_MAME[candidate['cache_str']]
+        log_debug('ArcadeDB::get_assets() Internal cache retrieving "{}"'.format(
+            candidate['ADB_cache_str']))
+        json_response_dic = self.cache_QUERY_MAME[candidate['ADB_cache_str']]
         gameinfo_dic = json_response_dic['result'][0]
 
         # --- Parse game assets ---
-        all_asset_list = self._get_assets_all(gameinfo_dic)
+        all_asset_list = self._retrieve_all_assets(gameinfo_dic, status_dic)
+        if not status_dic['status']: return None
         asset_list = [asset_dic for asset_dic in all_asset_list if asset_dic['asset_ID'] == asset_ID]
-        log_debug('ArcadeDB::_scraper_get_assets() Total assets {0} / Returned assets {1}'.format(
+        log_debug('ArcadeDB::get_assets() Total assets {0} / Returned assets {1}'.format(
             len(all_asset_list), len(asset_list)))
 
         return asset_list
 
-    def resolve_asset_URL(self, candidate, status_dic):
-        return candidate['url']
+    def resolve_asset_URL(self, candidate, status_dic): return candidate['url']
 
     def resolve_asset_URL_extension(self, candidate, image_url, status_dic):
         # All ArcadeDB images are in PNG format?
@@ -3730,7 +3770,7 @@ class ArcadeDB(Scraper):
 
     # --- This class own methods -----------------------------------------------------------------
     # Call ArcadeDB API only function to retrieve all game metadata.
-    def _get_QUERY_MAME(self, search_term, rombase_noext, platform):
+    def _get_QUERY_MAME(self, search_term, rombase_noext, platform, status_dic):
         game_name = rombase_noext
         log_debug('ArcadeDB::_get_QUERY_MAME() game_name "{0}"'.format(game_name))
 
@@ -3740,24 +3780,14 @@ class ArcadeDB(Scraper):
         url = url_a + url_b
 
         # --- Grab and parse URL data ---
-        page_raw_data = net_get_URL(url)
-        try:
-            json_response_dic = json.loads(page_raw_data)
-        except ValueError as ex:
-            json_response_dic = page_raw_data
-            log_error('(ValueError Exception) {0}'.format(ex))
-            log_error('Message "{0}"'.format(page_raw_data))
-        except Exception as ex:
-            json_response_dic = page_raw_data
-            log_error('(Generic Exception) {0}'.format(ex))
-            log_error('Message "{0}"'.format(page_raw_data))
-        # Dump file if debug flag is True.
-        self._dump_json_debug('ArcadeDB_get_QUERY_MAME.json', json_response_dic)
+        json_data = self._retrieve_URL_as_JSON(url, status_dic)
+        if not status_dic['status']: return None
+        self._dump_json_debug('ArcadeDB_get_QUERY_MAME.json', json_data)
 
-        return json_response_dic
+        return json_data
 
     # Returns all assets found in the gameinfo_dic dictionary.
-    def _get_assets_all(self, gameinfo_dic):
+    def _retrieve_all_assets(self, gameinfo_dic, status_dic):
         all_asset_list = []
 
         # --- Banner (Marquee in MAME) ---
@@ -3807,3 +3837,23 @@ class ArcadeDB(Scraper):
             return asset_data
         else:
             return None
+
+    # No need for URL cleaning in ArcadeDB.
+    def _clean_URL_for_log(self, url): return url
+
+    # Retrieve URL and decode JSON object.
+    # When the API user/pass is not configured or invalid ArcadeDB returns ...
+    # When the API number of calls is exhausted ArcadeDB returns ...
+    def _retrieve_URL_as_JSON(self, url, status_dic):
+        page_data_raw, http_code = net_get_URL(url, self._clean_URL_for_log(url))
+        # self._dump_file_debug('ArcadeDB_data_raw.txt', page_data_raw)
+        if page_data_raw is None:
+            self._handle_error(status_dic, 'Network error in net_get_URL()')
+            return None
+        try:
+            json_data = json.loads(page_data_raw)
+        except Exception as ex:
+            self._handle_exception(ex, status_dic, 'Error decoding JSON data from ArcadeDB.')
+            return None
+
+        return json_data

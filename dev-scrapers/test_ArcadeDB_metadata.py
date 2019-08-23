@@ -27,12 +27,13 @@ set_log_level(LOG_DEBUG)
 scraper_obj = ArcadeDB(common.settings)
 scraper_obj.set_verbose_mode(False)
 scraper_obj.set_debug_file_dump(True, os.path.join(os.path.dirname(__file__), 'assets'))
+status_dic = kodi_new_status_dic('Scraper test was OK')
 
 # --- Get candidates ---
-# candidate_list = scraper_obj.get_candidates(*common.games['tetris'])
-# candidate_list = scraper_obj.get_candidates(*common.games['mslug'])
-candidate_list = scraper_obj.get_candidates(*common.games['dino'])
-# candidate_list = scraper_obj.get_candidates(*common.games['MAME_invalid'])
+# candidate_list = scraper_obj.get_candidates(*common.games['tetris'], status_dic = status_dic)
+# candidate_list = scraper_obj.get_candidates(*common.games['mslug'], status_dic = status_dic)
+candidate_list = scraper_obj.get_candidates(*common.games['dino'], status_dic = status_dic)
+# candidate_list = scraper_obj.get_candidates(*common.games['MAME_invalid'], status_dic = status_dic)
 
 # --- Print search results ---
 # pprint.pprint(candidate_list)
@@ -44,6 +45,6 @@ candidate = candidate_list[0]
 
 # --- Print metadata of first candidate ----------------------------------------------------------
 print('*** Fetching game metadata **************************************************************')
-metadata = scraper_obj.get_metadata(candidate)
+metadata = scraper_obj.get_metadata(candidate, status_dic)
 # pprint.pprint(metadata)
 print_game_metadata(metadata)

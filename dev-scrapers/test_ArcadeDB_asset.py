@@ -27,12 +27,13 @@ set_log_level(LOG_DEBUG)
 scraper_obj = ArcadeDB(common.settings)
 scraper_obj.set_verbose_mode(False)
 scraper_obj.set_debug_file_dump(True, os.path.join(os.path.dirname(__file__), 'assets'))
+status_dic = kodi_new_status_dic('Scraper test was OK')
 
 # --- Get candidates ---
-# candidate_list = scraper_obj.get_candidates(*common.games['tetris'])
-# candidate_list = scraper_obj.get_candidates(*common.games['mslug'])
-candidate_list = scraper_obj.get_candidates(*common.games['dino'])
-# candidate_list = scraper_obj.get_candidates(*common.games['MAME_invalid'])
+# candidate_list = scraper_obj.get_candidates(*common.games['tetris'], status_dic = status_dic)
+# candidate_list = scraper_obj.get_candidates(*common.games['mslug'], status_dic = status_dic)
+candidate_list = scraper_obj.get_candidates(*common.games['dino'], status_dic = status_dic)
+# candidate_list = scraper_obj.get_candidates(*common.games['MAME_invalid'], status_dic = status_dic)
 
 # --- Print search results ---
 # pprint.pprint(candidate_list)
@@ -44,8 +45,8 @@ candidate = candidate_list[0]
 
 # --- Print list of assets found -----------------------------------------------------------------
 print('*** Fetching game assets ****************************************************************')
-print_game_assets(scraper_obj.get_assets(candidate, ASSET_TITLE_ID))
-print_game_assets(scraper_obj.get_assets(candidate, ASSET_SNAP_ID))
-# print_game_assets(scraper_obj.get_assets(candidate, ASSET_BOXFRONT_ID))
-# print_game_assets(scraper_obj.get_assets(candidate, ASSET_BOXBACK_ID))
-# print_game_assets(scraper_obj.get_assets(candidate, ASSET_CARTRIDGE_ID))
+# --- Get specific assets ---
+print_game_assets(scraper_obj.get_assets(candidate, ASSET_TITLE_ID, status_dic))
+print_game_assets(scraper_obj.get_assets(candidate, ASSET_SNAP_ID, status_dic))
+print_game_assets(scraper_obj.get_assets(candidate, ASSET_BOXFRONT_ID, status_dic))
+print_game_assets(scraper_obj.get_assets(candidate, ASSET_FLYER_ID, status_dic))
