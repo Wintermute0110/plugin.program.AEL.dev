@@ -7100,13 +7100,13 @@ class Main:
             log_debug('_command_view_menu() Executing action == ACTION_VIEW_EXEC_OUTPUT')
 
             # --- Ckeck for errors and read file ---
-            if not LAUNCH_LOG_FILE_PATH.exists():
+            if not g_PATHS.LAUNCH_LOG_FILE_PATH.exists():
                 kodi_dialog_OK('Log file not found. Try to run the emulator/application.')
                 return
             # >> Kodi BUG: if the log file size is 0 (it is empty) then Kodi displays in the
             # >> text window the last displayed text.
             info_text = ''
-            with open(LAUNCH_LOG_FILE_PATH.getPath(), 'r') as myfile:
+            with open(g_PATHS.LAUNCH_LOG_FILE_PATH.getPath(), 'r') as myfile:
                 log_debug('_command_view_menu() Reading launcher.log ...')
                 info_text = myfile.read()
 
