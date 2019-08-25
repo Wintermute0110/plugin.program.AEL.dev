@@ -5839,7 +5839,7 @@ class Main:
                          clearlogo_listitem, trailer_listitem]
             type2 = dialog.select('Edit Collection Assets/Artwork', list = listitems, useDetails = True)
             if type2 < 0: return
-            asset_list = [ASSET_ICON, ASSET_FANART, ASSET_BANNER, ASSET_POSTER, ASSET_CLEARLOGO, ASSET_TRAILER]
+            asset_list = [ASSET_ICON_ID, ASSET_FANART_ID, ASSET_BANNER_ID, ASSET_POSTER_ID, ASSET_CLEARLOGO_ID, ASSET_TRAILER_ID]
             asset_kind = asset_list[type2]
             if not self._gui_edit_asset(KIND_COLLECTION, asset_kind, collection): return
 
