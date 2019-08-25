@@ -9443,7 +9443,7 @@ class Main:
             log_debug('_gui_edit_asset() Initial path "{0}"'.format(image_dir))
             # >> ShowAndGetFile dialog
             dialog = xbmcgui.Dialog()
-            if asset_ID == ASSET_MANUAL or asset_ID == ASSET_TRAILER:
+            if asset_ID == ASSET_MANUAL_ID or asset_ID == ASSET_TRAILER_ID:
                 image_file = dialog.browse(1, 'Select {0} {1}'.format(AInfo.name, AInfo.kind_str), 'files',
                                            AInfo.exts_dialog, True, False, image_dir)
             # >> ShowAndGetImage dialog
