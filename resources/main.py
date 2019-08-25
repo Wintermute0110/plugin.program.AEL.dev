@@ -5941,7 +5941,7 @@ class Main:
                 kodi_notify('ROM Collection Clearlogo mapped to {0}'.format(asset_name))
 
         # --- Save collection index and refresh view ---
-        fs_write_Collection_index_XML(COLLECTIONS_FILE_PATH, collections)
+        fs_write_Collection_index_XML(g_PATHS.COLLECTIONS_FILE_PATH, collections)
         kodi_refresh_container()
 
     #
@@ -5949,9 +5949,9 @@ class Main:
     #
     def _command_delete_collection(self, categoryID, launcherID):
         # --- Load collection index and ROMs ---
-        (collections, update_timestamp) = fs_load_Collection_index_XML(COLLECTIONS_FILE_PATH)
+        (collections, update_timestamp) = fs_load_Collection_index_XML(g_PATHS.COLLECTIONS_FILE_PATH)
         collection = collections[launcherID]
-        roms_json_file = COLLECTIONS_DIR.pjoin(collection['roms_base_noext'] + '.json')
+        roms_json_file = g_PATHS.COLLECTIONS_DIR.pjoin(collection['roms_base_noext'] + '.json')
         collection_rom_list = fs_load_Collection_ROMs_JSON(roms_json_file)
 
         # --- Confirm deletion ---
@@ -5962,7 +5962,7 @@ class Main:
         if not ret: return
 
         # --- Remove JSON file and delete collection object ---
-        collection_file_path = COLLECTIONS_DIR.pjoin(collection['roms_base_noext'] + '.json')
+        collection_file_path = g_PATHS.COLLECTIONS_DIR.pjoin(collection['roms_base_noext'] + '.json')
         log_debug('Removing Collection JSON "{0}"'.format(collection_file_path.getOriginalPath()))
         try:
             if collection_file_path.exists(): collection_file_path.unlink()
@@ -5970,7 +5970,7 @@ class Main:
             log_error('_gui_remove_launcher() (OSError) exception deleting "{0}"'.format(collection_file_path.getOriginalPath()))
             kodi_notify_warn('OSError exception deleting collection JSON')
         collections.pop(launcherID)
-        fs_write_Collection_index_XML(COLLECTIONS_FILE_PATH, collections)
+        fs_write_Collection_index_XML(g_PATHS.COLLECTIONS_FILE_PATH, collections)
         kodi_refresh_container()
         kodi_notify('Deleted ROM Collection "{0}"'.format(collection_name))
 
@@ -6113,8 +6113,8 @@ class Main:
         log_info('_command_import_collection() Imported Collection "{0}" (id {1})'.format(collection_dic['m_name'], collection_dic['id']))
 
         # --- Write ROM Collection databases ---
-        fs_write_Collection_index_XML(COLLECTIONS_FILE_PATH, collections)
-        fs_write_Collection_ROMs_JSON(COLLECTIONS_DIR.pjoin(collection_base_name + '.json'), collection_rom_list)
+        fs_write_Collection_index_XML(g_PATHS.COLLECTIONS_FILE_PATH, collections)
+        fs_write_Collection_ROMs_JSON(g_PATHS.COLLECTIONS_DIR.pjoin(collection_base_name + '.json'), collection_rom_list)
         if import_collection_assets:
             kodi_dialog_OK("Imported ROM Collection '{0}' metadata and assets.".format(collection_dic['m_name']))
         else:
@@ -6139,7 +6139,7 @@ class Main:
         # --- Load collection ROMs ---
         (collections, update_timestamp) = fs_load_Collection_index_XML(COLLECTIONS_FILE_PATH)
         collection = collections[launcherID]
-        roms_json_file = COLLECTIONS_DIR.pjoin(collection['roms_base_noext'] + '.json')
+        roms_json_file = g_PATHS.COLLECTIONS_DIR.pjoin(collection['roms_base_noext'] + '.json')
         collection_rom_list = fs_load_Collection_ROMs_JSON(roms_json_file)
         if not collection_rom_list:
             kodi_notify('Collection is empty. Add ROMs to this collection first.')
@@ -6254,10 +6254,10 @@ class Main:
 
             # >> Write ROM Collection DB.
             if collection_assets_were_copied:
-                fs_write_Collection_index_XML(COLLECTIONS_FILE_PATH, collections)
+                fs_write_Collection_index_XML(g_PATHS.COLLECTIONS_FILE_PATH, collections)
                 log_info('_command_export_collection() Collection assets were copied. Saving Collection index ...')
             if ROM_assets_were_copied:
-                json_file = COLLECTIONS_DIR.pjoin(collection['roms_base_noext'] + '.json')
+                json_file = g_PATHS.COLLECTIONS_DIR.pjoin(collection['roms_base_noext'] + '.json')
                 fs_write_Collection_ROMs_JSON(json_file, collection_rom_list)
                 log_info('_command_export_collection() Collection ROM assets were copied. Saving Collection database ...')
 
