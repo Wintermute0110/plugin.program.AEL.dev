@@ -693,7 +693,7 @@ class ScrapeStrategy(object):
 
         # --- Update scanner progress dialog ---
         if self.pdialog_verbose:
-            scraper_text = 'Getting {0} images with {1}...'.format(
+            scraper_text = 'Getting {} images from {}...'.format(
                 asset_name, self.asset_scraper_name)
             self.pdialog.updateMessage2(scraper_text)
 
@@ -882,7 +882,7 @@ class ScrapeStrategy(object):
 
         # --- Grab metadata ---
         pdialog = KodiProgressDialog()
-        pdialog.startProgress('{0} scraper. Getting ROM metadata...'.format(scraper_name))
+        pdialog.startProgress('Scraping metadata with {}...'.format(scraper_name))
         gamedata = self.scraper_obj.get_metadata(candidate, status_dic)
         pdialog.endProgress()
         if not status_dic['status']: return status_dic
@@ -923,7 +923,7 @@ class ScrapeStrategy(object):
 
         # --- Grab metadata ---
         pdialog = KodiProgressDialog()
-        pdialog.startProgress('{0} scraper. Getting Launcher metadata...'.format(scraper_name))
+        pdialog.startProgress('Scraping metadata with {}...'.format(scraper_name))
         gamedata = self.scraper_obj.get_metadata(candiate)
         pdialog.endProgress()
         if not status_dic['status']: return status_dic
@@ -967,7 +967,7 @@ class ScrapeStrategy(object):
 
         # --- Grab list of images for the selected game -------------------------------------------
         pdialog = KodiProgressDialog()
-        pdialog.startProgress('{} scraper (Getting {} assets...)'.format(scraper_name, asset_name))
+        pdialog.startProgress('Getting {} images from {}...'.format(asset_name, scraper_name))
         assetdata_list = self.scraper_obj.get_assets(candidate, asset_ID, status_dic)
         pdialog.endProgress()
         # Error/exception.
@@ -1027,7 +1027,7 @@ class ScrapeStrategy(object):
         log_debug('Selected display_name {0}'.format(selected_asset['display_name']))
 
         # --- Resolve asset URL ---
-        pdialog.startProgress('Resolving asset URL with scraper {}'.format(scraper_name), 100)
+        pdialog.startProgress('Resolving asset URL with {}...'.format(scraper_name))
         image_url = self.scraper_obj.resolve_asset_URL(selected_asset, status_dic)
         pdialog.endProgress()
         log_debug('Resolved {} to URL "{}"'.format(asset_name, image_url))
@@ -1036,7 +1036,7 @@ class ScrapeStrategy(object):
             status_dic['status'] = False
             status_dic['msg'] = 'Error downloading asset'
             return status_dic
-        pdialog.startProgress('{} scraper (Resolving URL extension...)'.format(scraper_name), 100)
+        pdialog.startProgress('Resolving URL extension with {}...'.format(scraper_name))
         image_ext = self.scraper_obj.resolve_asset_URL_extension(selected_asset, image_url, status_dic)
         pdialog.endProgress()        
         log_debug('Resolved URL extension "{}"'.format(image_ext))
@@ -1047,11 +1047,11 @@ class ScrapeStrategy(object):
             return status_dic
 
         # --- Download image ---
-        log_debug('Downloading image ...')
+        log_debug('Downloading image from {}...'.format(scraper_name))
         image_local_path = asset_path_noext_FN.append('.' + image_ext).getPath()
         log_verb('Downloading URL "{0}"'.format(image_url))
         log_verb('Into local file "{0}"'.format(image_local_path))
-        pdialog.startProgress('Downloading {0}...'.format(asset_name), 100)
+        pdialog.startProgress('Downloading {}...'.format(asset_name))
         try:
             net_download_img(image_url, image_local_path)
         except socket.timeout:
@@ -1071,7 +1071,7 @@ class ScrapeStrategy(object):
         # If we reach this point is because an image was downloaded.
         # Caller is responsible to save Categories/Launchers/ROMs databases.
         object_dic[asset_info.key] = image_local_path
-        status_dic['msg'] = 'Downloaded {0} with {1} scraper'.format(asset_name, scraper_name)
+        status_dic['msg'] = 'Downloaded {} with {} scraper'.format(asset_name, scraper_name)
 
         return status_dic
 
@@ -1103,7 +1103,7 @@ class ScrapeStrategy(object):
 
         # --- Do a search and get a list of games ---
         pdialog = KodiProgressDialog()
-        pdialog.startProgress('{0} scraper (Search game candidates...)'.format(scraper_name))
+        pdialog.startProgress('Searching games with scaper {}...'.format(scraper_name))
         candidate_list = self.scraper_obj.get_candidates(
             search_term, rom_base_noext, platform, status_dic)
         # If the there was an error in the scraper return immediately.
@@ -1162,6 +1162,10 @@ class Scraper(object):
         # If this is True the scraper is internally disabled. A disabled scraper alwats returns
         # empty data like the NULL scraper.
         self.scraper_disabled = False
+        # Directory to store on-disk scraper caches.
+        self.scraper_cache_dir = settings['scraper_cache_dir']
+        # Do not log here. Otherwise the same thing will be printed for every scraper instantiated.
+        # log_debug('Scraper::__init__() scraper_cache_dir "{}"'.format(self.scraper_cache_dir))
 
     # --- Methods --------------------------------------------------------------------------------
     # Scraper is much more verbose (even more than AEL Debug level).

@@ -78,8 +78,11 @@ class AEL_Paths:
         # --- Offline scraper databases ---
         self.GAMEDB_INFO_DIR           = self.ADDON_CODE_DIR.pjoin('GameDBInfo')
         self.GAMEDB_JSON_BASE_NOEXT    = 'GameDB_info'
-        self.LAUNCHBOX_INFO_DIR        = self.ADDON_CODE_DIR.pjoin('LaunchBox')
-        self.LAUNCHBOX_JSON_BASE_NOEXT = 'LaunchBox_info'
+        # self.LAUNCHBOX_INFO_DIR        = self.ADDON_CODE_DIR.pjoin('LaunchBox')
+        # self.LAUNCHBOX_JSON_BASE_NOEXT = 'LaunchBox_info'
+
+        # --- Online scraper on-disk cache ---
+        self.SCRAPER_CACHE_DIR = self.ADDON_DATA_DIR.pjoin('ScraperCache')
 
         # --- Artwork and NFO for Categories and Launchers ---
         self.DEFAULT_CAT_ASSET_DIR     = self.ADDON_DATA_DIR.pjoin('asset-categories')
@@ -223,6 +226,7 @@ class Main:
 
         # --- Addon data paths creation ---
         if not g_PATHS.ADDON_DATA_DIR.exists():            g_PATHS.ADDON_DATA_DIR.makedirs()
+        if not g_PATHS.SCRAPER_CACHE_DIR.exists():         g_PATHS.SCRAPER_CACHE_DIR.makedirs()
         if not g_PATHS.DEFAULT_CAT_ASSET_DIR.exists():     g_PATHS.DEFAULT_CAT_ASSET_DIR.makedirs()
         if not g_PATHS.DEFAULT_COL_ASSET_DIR.exists():     g_PATHS.DEFAULT_COL_ASSET_DIR.makedirs()
         if not g_PATHS.DEFAULT_LAUN_ASSET_DIR.exists():    g_PATHS.DEFAULT_LAUN_ASSET_DIR.makedirs()
@@ -572,6 +576,7 @@ class Main:
         # Settings required by the scrapers (they are not really settings).
         self.settings['scraper_screenscraper_AEL_softname'] = 'AEL_{0}'.format(__addon_version__)
         self.settings['scraper_aeloffline_addon_code_dir'] = g_PATHS.ADDON_CODE_DIR.getPath()
+        self.settings['scraper_cache_dir'] = g_PATHS.SCRAPER_CACHE_DIR.getPath()
 
         # --- Dump settings for DEBUG ---
         # log_debug('Settings dump BEGIN')
