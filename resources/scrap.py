@@ -3307,8 +3307,9 @@ class ScreenScraper(Scraper):
                 continue
             # Build thumb URL
             game_ID = jeu_dic['id']
-            media_type  = media_dic['type']
             region = media_dic['region'] if 'region' in media_dic else ''
+            if region: media_type  = media_dic['type'] + ' ' + region
+            else:      media_type  = media_dic['type']
             url_thumb_a = 'https://www.screenscraper.fr/image.php?'
             url_thumb_b = 'gameid={}&media={}&region={}'.format(game_ID, media_type, region)
             url_thumb_c = '&hd=0&num=&version=&maxwidth=320&maxheight=200'
