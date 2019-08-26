@@ -433,6 +433,7 @@ class ScrapeStrategy(object):
         # Process asset by asset
         for i, asset_ID in enumerate(ROM_ASSET_ID_LIST):
             AInfo = assets_get_info_scheme(asset_ID)
+            # Local artwork.
             if self.scan_asset_policy == 0:
                 if not self.enabled_asset_list[i]:
                     log_debug('Skipping {0} (dir not configured).'.format(AInfo.name))
@@ -441,6 +442,7 @@ class ScrapeStrategy(object):
                 else:
                     log_debug('Local {0} NOT found.'.format(AInfo.name))
                 self.asset_action_list[i] = ScrapeStrategy.ACTION_ASSET_LOCAL_ASSET
+            # Local artwork + Scrapers.
             elif self.scan_asset_policy == 1:
                 if not self.enabled_asset_list[i]:
                     log_debug('Skipping {0} (dir not configured).'.format(AInfo.name))
@@ -448,13 +450,14 @@ class ScrapeStrategy(object):
                 elif self.local_asset_list[i]:
                     log_debug('Local {0} FOUND'.format(AInfo.name))
                     self.asset_action_list[i] = ScrapeStrategy.ACTION_ASSET_LOCAL_ASSET
-                elif asset_scraper_obj.supports_asset_ID(asset_ID):
+                elif self.asset_scraper_obj.supports_asset_ID(asset_ID):
                     # Scrape only if scraper supports asset.
                     log_debug('Local {0} NOT found. Scraping.'.format(AInfo.name))
                     self.asset_action_list[i] = ScrapeStrategy.ACTION_ASSET_SCRAPER
                 else:
                     log_debug('Local {0} NOT found. No scraper support.'.format(AInfo.name))
                     self.asset_action_list[i] = ScrapeStrategy.ACTION_ASSET_LOCAL_ASSET
+            # Scrapers.
             elif self.scan_asset_policy == 2:
                 if not self.enabled_asset_list[i]:
                     log_debug('Skipping {0} (dir not configured).'.format(AInfo.name))
@@ -486,19 +489,24 @@ class ScrapeStrategy(object):
             self.candidate_metadata = self._scanner_get_candidate(
                 romdata, ROM, self.meta_scraper_obj, self.meta_scraper_name, status_dic)
         else:
+            log_debug('Metadata candidate game is None')
             self.candidate_metadata = None
 
         temp_asset_list = [x == ScrapeStrategy.ACTION_ASSET_SCRAPER for x in self.asset_action_list]
-        if any(temp_asset_list) and self.flag_meta_and_asset_scraper_same:
+        # Asset scraper is needed, metadata and asset scrapers same and the metadata candidate is valid.
+        if any(temp_asset_list) and self.flag_meta_and_asset_scraper_same and self.candidate_metadata is not None:
             log_debug('Asset candidate game same as metadata candidate.')
             self.candidate_asset = self.candidate_metadata
-        elif any(temp_asset_list) and not self.flag_meta_and_asset_scraper_same:
+        # Otherwise search for an asset scraper candidate if needed.
+        elif any(temp_asset_list):
             log_debug('Getting asset candidate game.')
             # What if status_dic reports and error here? It is ignored?
             status_dic = kodi_new_status_dic('No error')
             self.candidate_asset = self._scanner_get_candidate(
                 romdata, ROM, self.asset_scraper_obj, self.asset_scraper_name, status_dic)
+        # Asset scraper not needed.
         else:
+            log_debug('Asset candidate game is None')
             self.candidate_asset = None
 
     # Called by the ROM scanner. Fills in the ROM metadata.
