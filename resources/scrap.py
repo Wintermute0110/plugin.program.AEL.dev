@@ -353,6 +353,11 @@ class ScrapeStrategy(object):
         self.flag_meta_and_asset_scraper_same = self.meta_scraper_obj is self.asset_scraper_obj
         log_debug('Are metadata and asset scrapers the same? {}'.format(self.flag_meta_and_asset_scraper_same))
 
+        # DEBUG, never use in a release.
+        # log_debug('ScrapeStrategy::begin_ROM_scanner() DEBUG dumping of scraper data ON.')
+        # self.meta_scraper_obj.set_debug_file_dump(True, '/home/kodi/')
+        # self.asset_scraper_obj.set_debug_file_dump(True, '/home/kodi/')
+
     # Check if scraper is ready for operation (missing API keys, etc.). If not disable scraper.
     # Display error as progress dialog
     def scanner_check_before_scraping(self):
