@@ -80,33 +80,37 @@ def net_get_random_UserAgent():
         return 'Mozilla/5.0 (compatible; MSIE ' + version + '; ' + os_str + '; ' + token + 'Trident/' + engine + ')'
 
 def net_download_img(img_url, file_path):
+    # --- Download image to a buffer in memory ---
+    # If an exception happens here no file is created (avoid creating files with 0 bytes).
     try:
         req = urllib2.Request(img_url)
         # req.add_unredirected_header('User-Agent', net_get_random_UserAgent())
         req.add_unredirected_header('User-Agent', USER_AGENT)
-        f = open(file_path, 'wb')
-        f.write(urllib2.urlopen(req, timeout = 120).read())
-        f.close()
-        remove_destination_file = False
+        img_buf = urllib2.urlopen(req, timeout = 120).read()
     # If an exception happens record it in the log and do nothing.
     # This must be fixed. If an error happened when downloading stuff caller code must
     # known to take action.
     except IOError as ex:
-        log_error('(IOError exception) In net_download_img()')
+        log_error('(IOError) In net_download_img(), network code.')
         log_error('Message: {0}'.format(str(ex)))
-        remove_destination_file = True
+        return
     except Exception as ex:
-        log_error('(General exception) In net_download_img()')
+        log_error('(Exception) In net_download_img(), network code.')
         log_error('Message: {0}'.format(str(ex)))
-        remove_destination_file = True
+        return
 
-    # Remove destination file to avoid 0 sized files or corrupt files.
-    # On Windows os.remove() causes a exceptions.WindowsError 
-    # WindowsError: [Error 32] The process cannot access the file because it is being used
-    # by another process
-    # if remove_destination_file:
-    #     log_error('Deleting file "{}"'.format(file_path))
-    #     os.remove(file_path)
+    # --- Write image file to disk ---
+    # There should be no more 0 size files with this code.
+    try:
+        f = open(file_path, 'wb')
+        f.write(img_buf)
+        f.close()
+    except IOError as ex:
+        log_error('(IOError) In net_download_img(), disk code.')
+        log_error('Message: {0}'.format(str(ex)))
+    except Exception as ex:
+        log_error('(Exception) In net_download_img(), disk code.')
+        log_error('Message: {0}'.format(str(ex)))
 
 #
 # User agent is fixed and defined in global var USER_AGENT
