@@ -3285,11 +3285,15 @@ class ScreenScraper(Scraper):
     # https://www.screenscraper.fr/gameinfos.php?gameid=3     # Sonic 2 Megadrive
     # https://www.screenscraper.fr/gameinfos.php?gameid=1187  # Sonic 3 Megadrive
     # https://www.screenscraper.fr/gameinfos.php?gameid=19249 # Final Fantasy VII PSX
+    #
+    # Example of URL for thumbs used web SS id displaying media in the website:
+    # https://www.screenscraper.fr/image.php?gameid=5&media=sstitle&hd=0&region=wor&num=&version=&maxwidth=338&maxheight=190
+    # https://www.screenscraper.fr/image.php?gameid=5&media=fanart&hd=0&region=&num=&version=&maxwidth=320&maxheight=200
+    #
     # TODO: support Manuals and Trailers.
     def _retrieve_all_assets(self, jeu_dic, status_dic):
         asset_list = []
         medias_list = jeu_dic['medias']
-
         for media_dic in medias_list:
             # Find known asset types. ScreenScraper has really a lot of different assets.
             if media_dic['type'] in ScreenScraper.asset_name_mapping:
@@ -3297,10 +3301,19 @@ class ScreenScraper(Scraper):
             else:
                 # Skip unknwon assets
                 continue
+            # Build thumb URL
+            game_ID = jeu_dic['id']
+            media_type  = media_dic['type']
+            region = media_dic['region'] if 'region' in media_dic else ''
+            url_thumb_a = 'https://www.screenscraper.fr/image.php?'
+            url_thumb_b = 'gameid={}&media={}&region={}'.format(game_ID, media_type, region)
+            url_thumb_c = '&hd=0&num=&version=&maxwidth=320&maxheight=200'
+            url_thumb = url_thumb_a + url_thumb_b + url_thumb_c
+            # Create asset dictionary
             asset_data = self._new_assetdata_dic()
             asset_data['asset_ID'] = asset_ID
-            asset_data['display_name'] = media_dic['type']
-            asset_data['url_thumb'] = media_dic['url']
+            asset_data['display_name'] = media_type
+            asset_data['url_thumb'] = url_thumb
             asset_data['url'] = media_dic['url']
             # Special ScreenScraper field to resolve URL extension later.
             asset_data['SS_format'] = media_dic['format']
