@@ -1,7 +1,12 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
-#
+
 # Test AEL ScreenScraper metadata scraper.
+#
+# * ScreenScraper works bad for ISO-based platforms. Why?
+# * For Playstation games, changing rom_type = 'rom' to 'iso' does not help.
+# * jeuRecherche works well, returns several candidates, but ignores the ROM name. For
+#   example, searching for FF7 ISO first result returned is FF4.
 #
 
 # --- Python standard library ---
@@ -34,8 +39,12 @@ status_dic = kodi_new_status_dic('Scraper test was OK')
 # candidate_list = scraper_obj.get_candidates(*common.games['mworld'], status_dic = status_dic)
 candidate_list = scraper_obj.get_candidates(*common.games['sonic'], status_dic = status_dic)
 # candidate_list = scraper_obj.get_candidates(*common.games['chakan'], status_dic = status_dic)
+# candidate_list = scraper_obj.get_candidates(*common.games['ff7'], status_dic = status_dic)
 # candidate_list = scraper_obj.get_candidates(*common.games['console_wrong_title'], status_dic = status_dic)
 # candidate_list = scraper_obj.get_candidates(*common.games['console_wrong_platform'], status_dic = status_dic)
+
+# --- Debug call to test API function jeuRecherche.php ---
+# scraper_obj.debug_game_search(*common.games['ff7'], status_dic = status_dic)
 
 # --- Print search results ---
 common.handle_get_candidates(candidate_list)

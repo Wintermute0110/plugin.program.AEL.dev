@@ -28,6 +28,7 @@ games = {
     'mworld'                 : ('Super Mario World', 'Super Mario World', 'Nintendo SNES'),
     'sonic'                  : ('Sonic the Hedgehog', 'Sonic the Hedgehog (USA, Europe)', 'Sega MegaDrive'),
     'chakan'                 : ('Chakan', 'Chakan (USA, Europe)', 'Sega MegaDrive'),
+    'ff7'                    : ('Final Fantasy VII', 'Final Fantasy VII (USA) (Disc 1).iso', 'Sony PlayStation'),
     'console_wrong_title'    : ('Console invalid game', 'mjhyewqr', 'Sega MegaDrive'),
     'console_wrong_platform' : ('Sonic the Hedgehog', 'Sonic the Hedgehog (USA, Europe)', 'mjhyewqr'),
 

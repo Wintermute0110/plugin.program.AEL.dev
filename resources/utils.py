@@ -809,8 +809,8 @@ class FileName:
 NAME_L      = 65
 SCORE_L     = 5
 ID_L        = 55
-PLATFORM_L  = 15
-SPLATFORM_L = 15
+PLATFORM_L  = 20
+SPLATFORM_L = 20
 URL_L       = 70
 
 # Metadata

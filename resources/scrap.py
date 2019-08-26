@@ -2620,14 +2620,24 @@ class MobyGames(Scraper):
 # ...
 #
 # --- API call examples ---
-# https://www.screenscraper.fr/api/jeuInfos.php?
-#     devid=xxx&devpassword=yyy&softname=zzz&output=xml
-#     &ssid=test&sspassword=test
-#     &systemeid=1
-#     &romtype=rom
-#     &crc=50ABC90A
-#     &romnom=Sonic%20The%20Hedgehog%202%20(World).zip
-#     &romtaille=749652
+# * All API calls have parameters devid, devpassword, softname, output, ssid, sspassword
+#   so I do not include them in the examples.
+#
+# * API call to get all game information. This API call return one game or fails.
+#
+#   https://www.screenscraper.fr/api/jeuInfos.php?
+#   &crc=50ABC90A
+#   &systemeid=1
+#   &romtype=rom
+#   &romnom=Sonic%20The%20Hedgehog%202%20(World).zip
+#   &romtaille=749652
+#   &gameid=1234 (Forces game, ROM info not necessary in this case).
+#
+# * API call to search for games:
+#
+#   https://www.screenscraper.fr/api/jeuRecherche.php?
+#   &systemeid  (Optional)
+#   &recherche  (Mandatory)
 #
 # ------------------------------------------------------------------------------------------------
 class ScreenScraper(Scraper):
@@ -2772,7 +2782,7 @@ class ScreenScraper(Scraper):
         log_debug('ScreenScraper::__init__() User preferred region "{}"'.format(self.user_region))
 
         # Create list of languages to search stuff. Put the user preference first.
-        self.user_language = ScreenScraper.region_list[self.language_idx]
+        self.user_language = ScreenScraper.language_list[self.language_idx]
         log_debug('ScreenScraper::__init__() User preferred language "{}"'.format(self.user_language))
 
         # --- Pass down common scraper settings ---
@@ -2839,41 +2849,19 @@ class ScreenScraper(Scraper):
         log_debug('ScreenScraper::get_candidates() rombase_noext "{0}"'.format(rombase_noext))
         log_debug('ScreenScraper::get_candidates() AEL platform  "{0}"'.format(platform))
         log_debug('ScreenScraper::get_candidates() SS platform   "{0}"'.format(scraper_platform))
-        json_data = self._get_gameInfos(search_term, rombase_noext, scraper_platform, status_dic)
+        candidate_list = self._search_candidates_jeuInfos(
+            search_term, rombase_noext, platform, scraper_platform, status_dic)
+        # _search_candidates_jeuRecherche() does not work for get_metadata() and get_assets()
+        # because jeu_dic is not introduced in the internal cache.
+        # candidate_list = self._search_candidates_jeuRecherche(
+        #     search_term, rombase_noext, platform, scraper_platform, status_dic)
         if not status_dic['status']: return None
-        # * If no games were found server replied with a HTTP 404 error. json_data is None and
-        #  status_dic signals operation succesfull. Return empty list of candidates.
-        # * If an error/exception happened then it is marked in status_dic.
-        if json_data is None: return []
-        jeu_dic = json_data['response']['jeu']
-
-        # --- Deal with errors returned by api/jeuInfos.php ---
-        id_str = str(jeu_dic['id'])
-        title = jeu_dic['noms'][0]['text']
-        log_debug('Game "{}" (ID {})'.format(title, id_str))
-        log_debug('Number of ROMs {} / Number of assets {}'.format(
-            len(jeu_dic['roms']), len(jeu_dic['medias'])))
-
-        # --- Build candidate_list from ScreenScraper jeu_dic returned by jeuInfos.php ---
-        # SS returns one candidate or no candidate.
-        candidate = self._new_candidate_dic()
-        candidate['id'] = id_str
-        candidate['display_name'] = title
-        candidate['platform'] = platform
-        candidate['scraper_platform'] = scraper_platform
-        candidate['order'] = 1
-        candidate['SS_cache_str'] = cache_key # Special field to retrieve game from SS cache.
-        candidate_list = [ candidate ]
 
         # --- Add candidate games to the cache ---
         # Add data to both candidates and internal caches or no cache at all. Boths caches
         # are synchronised.
         log_debug('ScreenScraper::get_candidates() Adding to cache "{0}"'.format(cache_key))
         self.cache_candidates[cache_key] = candidate_list
-        log_debug('ScreenScraper::get_candidates() Adding to internal cache')
-        # Remove clutter (the ROM list) from jeu_dic dictionary before inserting in the cache.
-        jeu_dic['roms'] = []
-        self.cache_jeuInfos[cache_key] = jeu_dic
 
         # Always return a list, even if only with 1 element.
         return candidate_list
@@ -3054,65 +3042,181 @@ class ScreenScraper(Scraper):
 
     def debug_get_platforms(self, status_dic):
         log_debug('ScreenScraper::debug_get_platforms() Getting SS platforms...')
-        url_a = 'https://www.screenscraper.fr/api2/systemesListe.php?devid={}&devpassword={}'
-        url_b = '&softname={}&output=json&ssid={}&sspassword={}'
-        url = url_a.format(base64.b64decode(self.dev_id), base64.b64decode(self.dev_pass), ) + \
-              url_b.format(self.softname, self.ssid, self.sspassword)
+        url_a = 'https://www.screenscraper.fr/api2/systemesListe.php?'
+        url_b = 'devid={}&devpassword={}&softname={}&output=json&ssid={}&sspassword={}'.format(
+            base64.b64decode(self.dev_id), base64.b64decode(self.dev_pass),
+            self.softname, self.ssid, self.sspassword)
+        url = url_a + url_b
         json_data = self._retrieve_URL_as_JSON(url, status_dic)
         if not status_dic['status']: return None
         self._dump_json_debug('ScreenScraper_get_platform_list.json', json_data)
 
         return json_data
 
+    # Debug test function for jeuRecherche.php (game search).
+    def debug_game_search(self, search_term, rombase_noext, platform, status_dic):
+        log_debug('ScreenScraper::debug_game_search() Calling jeuRecherche.php...')
+        scraper_platform = AEL_platform_to_ScreenScraper(platform)
+        system_id = scraper_platform
+        recherche = urllib.quote(rombase_noext)
+        log_debug('ScreenScraper::debug_game_search() system_id  "{0}"'.format(system_id))
+        log_debug('ScreenScraper::debug_game_search() recherche  "{0}"'.format(recherche))
+
+        url_a = 'https://www.screenscraper.fr/api2/jeuRecherche.php?'
+        url_b = 'devid={}&devpassword={}&softname={}&output=json&ssid={}&sspassword={}'.format(
+            base64.b64decode(self.dev_id), base64.b64decode(self.dev_pass),
+            self.softname, self.ssid, self.sspassword)
+        url_c = '&systemeid={}&recherche={}'.format(system_id, recherche)
+        url = url_a + url_b + url_c
+        json_data = self._retrieve_URL_as_JSON(url, status_dic)
+        if json_data is None or not status_dic['status']: return None
+        self._dump_json_debug('ScreenScraper_gameSearch.json', json_data)
+
     # Call to ScreenScraper jeuInfos.php.
-    def _get_gameInfos(self, search_term, rombase_noext, scraper_platform, status_dic):
+    def _search_candidates_jeuInfos(self, search_term, rombase_noext, platform, scraper_platform, status_dic):
         # --- Test data ---
-        # Example from ScreenScraper API info page.
-        # crc=50ABC90A&systemeid=1&romtype=rom&romnom=Sonic%20The%20Hedgehog%202%20(World).zip&romtaille=749652
-        # NOTE that if the CRC is all zeros and the filesize also 0 it seems to work.
-        # Also, if no file extension is passed it seems to work. Looks like SS is capable of
-        # fuzzy searches.
-        # ssid = 
-        # sspassword = 
+        # * Example from ScreenScraper API info page.
+        #   #crc=50ABC90A&systemeid=1&romtype=rom&romnom=Sonic%20The%20Hedgehog%202%20(World).zip&romtaille=749652
+        # * Note that if the CRC is all zeros and the filesize also 0 it seems to work.
+        #   Also, if no file extension is passed it seems to work. Looks like SS is capable of
+        #   fuzzy searches to some degree.
+        # * If rom_type = 'rom' SS returns gargabe for CD-based platforms like Playstation.
+        #
+        # ssid = ScreenScraper user name.
+        # sspassword = ScreenScraper user password.
         # system_id = 1
-        # rom_type = 'rom'
+        # rom_type = 'rom' or 'iso' or 'dossier' or 'fichier'
         # crc_str = '50ABC90A'
         # rom_name = urllib.quote('Sonic The Hedgehog 2 (World).zip')
         # rom_size = 749652
 
-        # --- Actual data for scraping in AEL ---
-        system_id = scraper_platform
-        rom_type = 'rom'
-        crc_str = '00000000'
-        rom_name = urllib.quote(rombase_noext)
-        rom_size = 0
-        log_debug('ScreenScraper::_get_gameInfos() ssid       "{0}"'.format(self.ssid))
-        # log_debug('ScreenScraper::_get_gameInfos() ssid       "{0}"'.format('***'))
-        # log_debug('ScreenScraper::_get_gameInfos() sspassword "{0}"'.format(self.sspassword))
-        log_debug('ScreenScraper::_get_gameInfos() sspassword "{0}"'.format('***'))
-        log_debug('ScreenScraper::_get_gameInfos() system_id  "{0}"'.format(system_id))
-        log_debug('ScreenScraper::_get_gameInfos() rom_type   "{0}"'.format(rom_type))
-        log_debug('ScreenScraper::_get_gameInfos() crc_str    "{0}"'.format(crc_str))
-        log_debug('ScreenScraper::_get_gameInfos() rom_name   "{0}"'.format(rom_name))
-        log_debug('ScreenScraper::_get_gameInfos() rom_size   "{0}"'.format(rom_size))
+        # ISO-based platform set.
+        ISO_platform_set = set([
+            'Fujitsu FM Towns Marty',
+            'NEC PC Engine CDROM2',
+            'NEC TurboGrafx CD',
+            'Nintendo GameCube',
+            'Nintendo Wii',
+            'Sega Dreamcast',
+            'Sega Saturn',
+            'Sony PlayStation',
+            'Sony PlayStation 2',
+            'Sony PlayStation Portable',
+        ])
 
-        # --- Build URL ---
+        # --- Actual data for scraping in AEL ---
+        # Change rom_type for ISO-based platforms
+        if platform in ISO_platform_set: rom_type = 'iso'
+        else:                            rom_type = 'rom'
+        system_id = scraper_platform
+        crc_str = '00000000'
+        # rom_name = urllib.quote(rombase_noext)
+        rom_name = urllib.quote_plus(rombase_noext)
+        rom_size = 0
+        log_debug('ScreenScraper::_search_candidates_jeuInfos() ssid       "{0}"'.format(self.ssid))
+        # log_debug('ScreenScraper::_search_candidates_jeuInfos() ssid       "{0}"'.format('***'))
+        # log_debug('ScreenScraper::_search_candidates_jeuInfos() sspassword "{0}"'.format(self.sspassword))
+        log_debug('ScreenScraper::_search_candidates_jeuInfos() sspassword "{0}"'.format('***'))
+        log_debug('ScreenScraper::_search_candidates_jeuInfos() rom_type   "{0}"'.format(rom_type))
+        log_debug('ScreenScraper::_search_candidates_jeuInfos() system_id  "{0}"'.format(system_id))
+        log_debug('ScreenScraper::_search_candidates_jeuInfos() crc_str    "{0}"'.format(crc_str))
+        log_debug('ScreenScraper::_search_candidates_jeuInfos() rom_name   "{0}"'.format(rom_name))
+        log_debug('ScreenScraper::_search_candidates_jeuInfos() rom_size   "{0}"'.format(rom_size))
+
+        # --- Build URL and retrieve JSON ---
         # It is more convenient to dump XML files for development.
         # For regular scraping JSON is more efficient.
         url_a = 'https://www.screenscraper.fr/api2/jeuInfos.php?'
-        url_b = 'devid={}&devpassword={}&softname={}&output=json'.format(
-            base64.b64decode(self.dev_id), base64.b64decode(self.dev_pass), self.softname)
-        url_c = '&ssid={}&sspassword={}&systemeid={}&romtype={}'.format(
-            self.ssid, self.sspassword, system_id, rom_type)
-        url_d = '&crc={}&romnom={}&romtaille={}'.format(crc_str, rom_name, rom_size)
-        url = url_a + url_b + url_c + url_d
-
-        # --- Grab and parse URL data ---
+        url_b = 'devid={}&devpassword={}&softname={}&output=json&ssid={}&sspassword={}'.format(
+            base64.b64decode(self.dev_id), base64.b64decode(self.dev_pass),
+            self.softname, self.ssid, self.sspassword)
+        url_c = '&romtype={}&systemeid={}&crc={}&romnom={}&romtaille={}'.format(
+            rom_type, system_id, crc_str, rom_name, rom_size)
+        url = url_a + url_b + url_c
         json_data = self._retrieve_URL_as_JSON(url, status_dic)
         if json_data is None or not status_dic['status']: return None
-        self._dump_json_debug('ScreenScraper_get_gameInfo.json', json_data)
+        self._dump_json_debug('ScreenScraper_gameInfo.json', json_data)
 
-        return json_data
+        # * If no games were found server replied with a HTTP 404 error. json_data is None and
+        #  status_dic signals operation succesfull. Return empty list of candidates.
+        # * If an error/exception happened then it is marked in status_dic.
+        if json_data is None: return []
+        jeu_dic = json_data['response']['jeu']
+
+        # --- Deal with errors returned by api/jeuInfos.php ---
+        id_str = str(jeu_dic['id'])
+        title = jeu_dic['noms'][0]['text']
+        log_debug('Game "{}" (ID {})'.format(title, id_str))
+        log_debug('Number of ROMs {} / Number of assets {}'.format(
+            len(jeu_dic['roms']), len(jeu_dic['medias'])))
+
+        # --- Build candidate_list from ScreenScraper jeu_dic returned by jeuInfos.php ---
+        # SS returns one candidate or no candidate.
+        cache_key = search_term + '__' + rombase_noext + '__' + platform
+        candidate = self._new_candidate_dic()
+        candidate['id'] = id_str
+        candidate['display_name'] = title
+        candidate['platform'] = platform
+        candidate['scraper_platform'] = scraper_platform
+        candidate['order'] = 1
+        candidate['SS_cache_str'] = cache_key # Special field to retrieve game from SS cache.
+
+        # --- Add candidate games to the internal cache ---
+        # Remove clutter (the ROM list) from jeu_dic dictionary before inserting in the cache.
+        log_debug('ScreenScraper::_search_candidates_jeuInfos() Adding to internal cache')
+        jeu_dic['roms'] = []
+        self.cache_jeuInfos[cache_key] = jeu_dic
+
+        return [ candidate ]
+
+    # Call to ScreenScraper jeuRecherche.php.
+    def _search_candidates_jeuRecherche(self, search_term, rombase_noext, platform, scraper_platform, status_dic):
+        # --- Actual data for scraping in AEL ---
+        log_debug('ScreenScraper::_search_candidates_jeuRecherche() Calling jeuRecherche.php...')
+        scraper_platform = AEL_platform_to_ScreenScraper(platform)
+        system_id = scraper_platform
+        recherche = urllib.quote_plus(rombase_noext)
+        log_debug('ScreenScraper::_search_candidates_jeuRecherche() system_id  "{0}"'.format(system_id))
+        log_debug('ScreenScraper::_search_candidates_jeuRecherche() recherche  "{0}"'.format(recherche))
+
+        # --- Build URL and retrieve JSON ---
+        url_a = 'https://www.screenscraper.fr/api2/jeuRecherche.php?'
+        url_b = 'devid={}&devpassword={}&softname={}&output=json&ssid={}&sspassword={}'.format(
+            base64.b64decode(self.dev_id), base64.b64decode(self.dev_pass),
+            self.softname, self.ssid, self.sspassword)
+        url_c = '&systemeid={}&recherche={}'.format(system_id, recherche)
+        url = url_a + url_b + url_c
+        json_data = self._retrieve_URL_as_JSON(url, status_dic)
+        if json_data is None or not status_dic['status']: return None
+        self._dump_json_debug('ScreenScraper_gameSearch.json', json_data)
+
+        # * If no games were found server replied with a HTTP 404 error. json_data is None and
+        #  status_dic signals operation succesfull. Return empty list of candidates.
+        # * If an error/exception happened then it is marked in status_dic.
+        if json_data is None: return []
+        jeu_list = json_data['response']['jeux']
+        log_debug('Number of games {}'.format(len(jeu_list)))
+
+        # --- Build candidate_list ---
+        # cache_key = search_term + '__' + rombase_noext + '__' + platform
+        candidate_list = []
+        for jeu_dic in jeu_list:
+            id_str = jeu_dic['id']
+            title = jeu_dic['noms'][0]['text']
+            candidate = self._new_candidate_dic()
+            candidate['id'] = id_str
+            candidate['display_name'] = title
+            candidate['platform'] = platform
+            candidate['scraper_platform'] = scraper_platform
+            candidate['order'] = 1
+            # candidate['SS_cache_str'] = cache_key # Special field to retrieve game from SS cache.
+            candidate_list.append(candidate)
+
+        # --- Add candidate games to the internal cache ---
+        # log_debug('ScreenScraper::_search_candidates_jeuInfos() Adding to internal cache')
+        # self.cache_jeuInfos[cache_key] = jeu_dic
+
+        return candidate_list
 
     def _parse_meta_title(self, jeu_dic):
         # First search for the user preferred region.
@@ -3177,10 +3281,10 @@ class ScreenScraper(Scraper):
     # For now asset do not support region or language settings.
     #
     # Examples:
-    # https://www.screenscraper.fr/gameinfos.php?plateforme=1&gameid=5    # Sonic 1 Megadrive
-    # https://www.screenscraper.fr/gameinfos.php?plateforme=1&gameid=3    # Sonic 2 Megadrive
-    # https://www.screenscraper.fr/gameinfos.php?plateforme=1&gameid=1187 # Sonic 3 Megadrive
-    #
+    # https://www.screenscraper.fr/gameinfos.php?gameid=5     # Sonic 1 Megadrive
+    # https://www.screenscraper.fr/gameinfos.php?gameid=3     # Sonic 2 Megadrive
+    # https://www.screenscraper.fr/gameinfos.php?gameid=1187  # Sonic 3 Megadrive
+    # https://www.screenscraper.fr/gameinfos.php?gameid=19249 # Final Fantasy VII PSX
     # TODO: support Manuals and Trailers.
     def _retrieve_all_assets(self, jeu_dic, status_dic):
         asset_list = []
@@ -3260,6 +3364,8 @@ class ScreenScraper(Scraper):
         log_debug('ScreenScraper::_dump_json_debug() Cleaning JSON URLs.')
         for keys, item in self._recursive_iter(json_data):
             # log_debug('{} "{}"'.format(keys, item))
+            # Skip non string objects.
+            if not isinstance(item, str) or not isinstance(item, unicode): continue
             if item.startswith('http'):
                 # log_debug('Adding URL "{}"'.format(item))
                 URL_key_list.append(keys)
