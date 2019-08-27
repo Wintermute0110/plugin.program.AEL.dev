@@ -4068,11 +4068,6 @@ class ArcadeDB(Scraper):
 
     # --- Constructor ----------------------------------------------------------------------------
     def __init__(self, settings):
-        # --- Internal stuff ---
-        self.cache_candidates = {}
-        # Cache all data returned by API QUERY_MAME function.
-        self.cache_QUERY_MAME = {}
-
         # --- Pass down common scraper settings ---
         super(ArcadeDB, self).__init__(settings)
 
@@ -4104,18 +4099,10 @@ class ArcadeDB(Scraper):
             log_debug('ArcadeDB::get_candidates() Scraper disabled. Returning empty data.')
             return []
 
-        # --- Check if search term is in the candidates cache ---
-        cache_key = search_term + '__' + rombase_noext + '__' + platform
-        if cache_key in self.cache_candidates:
-            log_debug('ArcadeDB::get_candidates() Cache hit "{0}"'.format(cache_key))
-            candidate_list = self.cache_candidates[cache_key]
-            return candidate_list
-
         # --- Request is not cached. Get candidates and introduce in the cache ---
         # ArcadeDB QUERY_MAME returns absolutely everything about a single ROM, including
         # metadata, artwork, etc. This data must be cached in this object for every request done.
         # See ScreenScraper comments for more info about the implementation.
-        log_debug('ArcadeDB::get_candidates() Cache miss "{0}"'.format(cache_key))
         log_debug('ArcadeDB::get_candidates() search_term    "{0}"'.format(search_term))
         log_debug('ArcadeDB::get_candidates() rom_base_noext "{0}"'.format(rombase_noext))
         log_debug('ArcadeDB::get_candidates() AEL platform   "{0}"'.format(platform))
@@ -4136,16 +4123,11 @@ class ArcadeDB(Scraper):
             candidate['platform'] = platform
             candidate['scraper_platform'] = platform
             candidate['order'] = 1
-            candidate['ADB_cache_str'] = cache_key # Special field to retrieve game from cache.
             candidate_list.append(candidate)
 
             # --- Add candidate games to the cache ---
-            # Add data to both candidates and internal caches or no cache at all. Boths caches
-            # are synchronised.
-            log_debug('ArcadeDB::get_candidates() Adding to cache "{0}"'.format(cache_key))
-            self.cache_candidates[cache_key] = candidate_list
             log_debug('ArcadeDB::get_candidates() Adding to internal cache')
-            self.cache_QUERY_MAME[cache_key] = json_response_dic
+            self._update_disk_cache(Scraper.CACHE_INTERNAL, self.cache_key, json_response_dic)
         else:
             raise ValueError('Unexpected number of games returned (more than one).')
 
@@ -4154,16 +4136,18 @@ class ArcadeDB(Scraper):
     def get_metadata(self, status_dic):
         # --- If scraper is disabled return immediately and silently ---
         if self.scraper_disabled:
-            log_debug('ArcadeDB::get_metadata() Scraper disabled. Returning empty data.')
+            log_debug('ArcadeDB.get_metadata() Scraper disabled. Returning empty data.')
             return self._new_gamedata_dic()
 
-        # --- Retrieve game data from cache ---
-        log_debug('ArcadeDB::get_metadata() Internal cache retrieving "{}"'.format(
-            candidate['ADB_cache_str']))
-        json_response_dic = self.cache_QUERY_MAME[candidate['ADB_cache_str']]
-        gameinfo_dic = json_response_dic['result'][0]
+        # --- Retrieve json_response_dic from internal cache ---
+        if self._check_disk_cache(Scraper.CACHE_INTERNAL, self.cache_key):
+            log_debug('ArcadeDB.get_metadata() Internal cache hit "{0}"'.format(self.cache_key))
+            json_response_dic = self._retrieve_from_disk_cache(Scraper.CACHE_INTERNAL, self.cache_key)
+        else:
+            raise ValueError('Logic error')
 
         # --- Parse game metadata ---
+        gameinfo_dic = json_response_dic['result'][0]
         gamedata = self._new_gamedata_dic()
         gamedata['title']     = gameinfo_dic['title']
         gamedata['year']      = gameinfo_dic['year']
@@ -4178,24 +4162,26 @@ class ArcadeDB(Scraper):
     def get_assets(self, asset_ID, status_dic):
         # --- If scraper is disabled return immediately and silently ---
         if self.scraper_disabled:
-            log_debug('ArcadeDB::get_assets() Scraper disabled. Returning empty data.')
+            log_debug('ArcadeDB.get_assets() Scraper disabled. Returning empty data.')
             return []
 
         asset_info = assets_get_info_scheme(asset_ID)
-        log_debug('ArcadeDB::get_assets() Getting assets {} (ID {}) for candidate ID = {}'.format(
-            asset_info.name, asset_ID, candidate['id']))
+        log_debug('ArcadeDB.get_assets() Getting assets {} (ID {}) for candidate ID = {}'.format(
+            asset_info.name, asset_ID, self.candidate['id']))
 
-        # --- Retrieve game data from cache ---
-        log_debug('ArcadeDB::get_assets() Internal cache retrieving "{}"'.format(
-            candidate['ADB_cache_str']))
-        json_response_dic = self.cache_QUERY_MAME[candidate['ADB_cache_str']]
-        gameinfo_dic = json_response_dic['result'][0]
+        # --- Retrieve json_response_dic from internal cache ---
+        if self._check_disk_cache(Scraper.CACHE_INTERNAL, self.cache_key):
+            log_debug('ArcadeDB.get_metadata() Internal cache hit "{0}"'.format(self.cache_key))
+            json_response_dic = self._retrieve_from_disk_cache(Scraper.CACHE_INTERNAL, self.cache_key)
+        else:
+            raise ValueError('Logic error')
 
         # --- Parse game assets ---
+        gameinfo_dic = json_response_dic['result'][0]
         all_asset_list = self._retrieve_all_assets(gameinfo_dic, status_dic)
         if not status_dic['status']: return None
         asset_list = [asset_dic for asset_dic in all_asset_list if asset_dic['asset_ID'] == asset_ID]
-        log_debug('ArcadeDB::get_assets() Total assets {0} / Returned assets {1}'.format(
+        log_debug('ArcadeDB.get_assets() Total assets {0} / Returned assets {1}'.format(
             len(all_asset_list), len(asset_list)))
 
         return asset_list
