@@ -3567,7 +3567,8 @@ class ScreenScraper(Scraper):
     #
     # Example of URL for thumbs used web SS id displaying media in the website:
     # https://www.screenscraper.fr/image.php?gameid=5&media=sstitle&hd=0&region=wor&num=&version=&maxwidth=338&maxheight=190
-    # https://www.screenscraper.fr/image.php?gameid=5&media=fanart&hd=0&region=&num=&version=&maxwidth=320&maxheight=200
+    # https://www.screenscraper.fr/image.php?gameid=5&media=fanart&hd=0&region=&num=&version=&maxwidth=338&maxheight=190
+    # https://www.screenscraper.fr/image.php?gameid=5&media=steamgrid&hd=0&region=&num=&version=&maxwidth=338&maxheight=190
     #
     # TODO: support Manuals and Trailers.
     def _retrieve_all_assets(self, jeu_dic, status_dic):
@@ -3587,7 +3588,7 @@ class ScreenScraper(Scraper):
             else:      media_type  = media_dic['type']
             url_thumb_a = 'https://www.screenscraper.fr/image.php?'
             url_thumb_b = 'gameid={}&media={}&region={}'.format(game_ID, media_type, region)
-            url_thumb_c = '&hd=0&num=&version=&maxwidth=320&maxheight=200'
+            url_thumb_c = '&hd=0&num=&version=&maxwidth=338&maxheight=190'
             url_thumb = url_thumb_a + url_thumb_b + url_thumb_c
             # Create asset dictionary
             asset_data = self._new_assetdata_dic()
