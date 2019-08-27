@@ -233,7 +233,7 @@ class ScraperFactory(object):
     # Returns a ScrapeStrategy object which is used for the actual scraping.
     def create_scanner(self, launcher):
         # log_debug('ScraperFactory::create_scanner() BEGIN ...')
-        strategy_obj = ScrapeStrategy(self.PATHS, self.settings)
+        self.strategy_obj = ScrapeStrategy(self.PATHS, self.settings)
 
         # --- Read addon settings and configure the scrapers selected -----------------------------
         if launcher['platform'] == 'MAME':
@@ -258,13 +258,28 @@ class ScraperFactory(object):
         # For now the ScraperStrategy object will use the first scraper of this list. In the
         # future maybe multiple scrapers can be used and these lists will have more than one
         # object.
-        strategy_obj.metadata_scraper_list = [ self.scraper_objs[scraper_metadata_ID] ]
-        strategy_obj.asset_scraper_list = [ self.scraper_objs[scraper_asset_ID] ]
+        self.strategy_obj.meta_scraper_obj   = self.scraper_objs[scraper_metadata_ID]
+        self.strategy_obj.meta_scraper_name  = self.strategy_obj.meta_scraper_obj.get_name()
+        self.strategy_obj.asset_scraper_obj  = self.scraper_objs[scraper_asset_ID]
+        self.strategy_obj.asset_scraper_name = self.strategy_obj.asset_scraper_obj.get_name()
 
         # --- Add launcher properties to ScrapeStrategy object ---
-        strategy_obj.platform = launcher['platform']
+        self.strategy_obj.platform = launcher['platform']
 
-        return strategy_obj
+        return self.strategy_obj
+
+    # * Flush caches before dereferencing object.
+    def destroy_scanner(self):
+        log_debug('ScraperFactory.destroy_scanner() Flushing disk caches...')
+        self.strategy_obj.meta_scraper_obj.flush_disk_cache()
+        # Only flush asset cache if object is different from metadata.
+        if not self.strategy_obj.meta_scraper_obj is self.strategy_obj.asset_scraper_obj:
+            self.strategy_obj.asset_scraper_obj.flush_disk_cache()
+        else:
+            log_debug('Metadata and asset scraper same. Not flushing asset disk cache.')
+        self.strategy_obj.meta_scraper_obj = None
+        self.strategy_obj.asset_scraper_obj = None
+        self.strategy_obj = None
 
     # * Create a ScraperStrategy object to be used in the "Edit metadata" context menu.
     # * The scraper disk cache is organised by platform. The scraper object is restricted
@@ -361,17 +376,6 @@ class ScrapeStrategy(object):
         self.platform = launcher['platform']
         self.pdialog = pdialog
         self.pdialog_verbose = pdialog_verbose
-
-        # --- Metadata scraper ---
-        # For now just use the first scraper
-        self.meta_scraper_obj = self.metadata_scraper_list[0]
-        self.meta_scraper_name = self.meta_scraper_obj.get_name()
-        # log_debug('Using metadata scraper "{0}"'.format(self.meta_scraper_name))
-
-        # --- Asset scraper ---
-        self.asset_scraper_obj = self.asset_scraper_list[0]
-        self.asset_scraper_name = self.asset_scraper_obj.get_name()
-        # log_debug('Using asset scraper "{0}"'.format(self.asset_scraper_name))
 
         # This will be used later
         self.flag_meta_and_asset_scraper_same = self.meta_scraper_obj is self.asset_scraper_obj
@@ -515,28 +519,27 @@ class ScrapeStrategy(object):
             log_debug('Getting metadata candidate game')
             # What if status_dic reports and error here? It is ignored?
             status_dic = kodi_new_status_dic('No error')
-            self.candidate_metadata = self._scanner_get_candidate(
+            self._scanner_get_candidate(
                 romdata, ROM, self.meta_scraper_obj, self.meta_scraper_name, status_dic)
         else:
             log_debug('Metadata candidate game is None')
-            self.candidate_metadata = None
 
         temp_asset_list = [x == ScrapeStrategy.ACTION_ASSET_SCRAPER for x in self.asset_action_list]
-        # Asset scraper is needed, metadata and asset scrapers same and the metadata candidate is valid.
-        if any(temp_asset_list) and self.flag_meta_and_asset_scraper_same and self.candidate_metadata is not None:
-            log_debug('Asset candidate game same as metadata candidate.')
-            self.candidate_asset = self.candidate_metadata
+        # Asset scraper is needed and metadata and asset scrapers same.
+        # Do nothing because both scraper objects are really the same object and candidate has been
+        # set internally.
+        if any(temp_asset_list) and self.flag_meta_and_asset_scraper_same:
+            log_debug('Asset candidate game same as metadata candidate. Doing nothing.')
         # Otherwise search for an asset scraper candidate if needed.
         elif any(temp_asset_list):
             log_debug('Getting asset candidate game.')
             # What if status_dic reports and error here? It is ignored?
             status_dic = kodi_new_status_dic('No error')
-            self.candidate_asset = self._scanner_get_candidate(
+            self._scanner_get_candidate(
                 romdata, ROM, self.asset_scraper_obj, self.asset_scraper_name, status_dic)
         # Asset scraper not needed.
         else:
             log_debug('Asset candidate game is None')
-            self.candidate_asset = None
 
     # Called by the ROM scanner. Fills in the ROM metadata.
     #
@@ -615,48 +618,73 @@ class ScrapeStrategy(object):
             self.pdialog.updateMessage2(scraper_text)
         log_debug('Searching games with scaper {}'.format(scraper_name))
 
-        # --- Call scraper and get a list of games ---
-        rom_name_scraping = text_format_ROM_name_for_scraping(ROM.getBase_noext())
-        candidates = scraper_obj.get_candidates(
-            rom_name_scraping, ROM.getBase_noext(), self.platform, status_dic)
-        # * If the scraper produced an error notification show it and continue operation.
-        #   Note that if a number of errors/exceptions happen (for example, network is down) then
-        #   the scraper will disable itself and only a limited number of messages will be shown.
-        # * In the scanner treat any scraper error message as an OK dialog.
-        # * Once the error is displayed reset status_dic
-        if not status_dic['status']:
-            self.pdialog.close()
-            kodi_dialog_OK(status_dic['msg'])
-            status_dic = kodi_new_status_dic('No error')
-            self.pdialog.reopen()
-        if candidates is None or not candidates:
-            log_verb('Found no candidates after searching.')
-            return None
-        log_debug('Scraper {0} found {1} candidate/s'.format(scraper_name, len(candidates)))
+        # The scanner uses the cached ROM candidate always.
+        rom_base_noext = ROM.getBase_noext()
+        if scraper_obj.check_candidates_cache(rom_base_noext, self.platform):
+            log_debug('ROM "{}" in candidates cache.'.format(rom_base_noext))
+            use_from_cache = True
+        else:
+            log_debug('ROM "{}" NOT in candidates cache.'.format(rom_base_noext))
+            use_from_cache = False
+        log_debug('use_from_cache "{}"'.format(use_from_cache))
 
-        # --- Choose game to download metadata ---
-        if self.game_selection_mode == 0:
-            log_debug('Metadata manual scraping')
-            if len(candidates) == 1:
-                log_debug('get_candidates() returned 1 game. Automatically selected.')
+        if use_from_cache:
+            scraper_obj.set_candidate_from_cache(rom_base_noext, self.platform)
+        else:
+            # --- Call scraper and get a list of games ---
+            rom_name_scraping = text_format_ROM_name_for_scraping(ROM.getBase_noext())
+            candidates = scraper_obj.get_candidates(
+                rom_name_scraping, ROM.getBase_noext(), self.platform, status_dic)
+            # * If the scraper produced an error notification show it and continue operation.
+            #   Note that if a number of errors/exceptions happen (for example, network is down) then
+            #   the scraper will disable itself and only a limited number of messages will be shown.
+            # * In the scanner treat any scraper error message as an OK dialog.
+            # * Once the error is displayed reset status_dic
+            if not status_dic['status']:
+                self.pdialog.close()
+                kodi_dialog_OK(status_dic['msg'])
+                status_dic = kodi_new_status_dic('No error')
+                self.pdialog.reopen()
+            # If candidates is None some kind of error happened.
+            # Set the candidate to None in the scraper object so later calls to get_metadata()
+            # and get_assets() do not fail.
+            # It will NOT be introduced in the cache to be rescraped.
+            if candidates is None:
+                log_debug('Error getting the candidate (None).')
+                scraper_obj.set_candidate(rom_base_noext, self.platform, candidate)
+                return
+            # In candidates list is empty scraper operation was correct but no candidate was
+            # found. In this case set the candidate in the scraper object and store in cache.
+            if not candidates:
+                log_debug('Found no candidates after searching.')
+                scraper_obj.set_candidate(rom_base_noext, self.platform, candidate)
+                return
+            log_debug('Scraper {0} found {1} candidate/s'.format(scraper_name, len(candidates)))
+
+            # --- Choose game to download metadata ---
+            if self.game_selection_mode == 0:
+                log_debug('Metadata manual scraping')
+                if len(candidates) == 1:
+                    log_debug('get_candidates() returned 1 game. Automatically selected.')
+                    select_candidate_idx = 0
+                else:
+                    # Display game list found so user choses.
+                    log_debug('Metadata manual scraping. User chooses game.')
+                    self.pdialog.close()
+                    game_name_list = [candidate['display_name'] for candidate in candidates]
+                    select_candidate_idx = xbmcgui.Dialog().select(
+                        'Select game for ROM {0}'.format(ROM.getBase_noext()), game_name_list)
+                    if select_candidate_idx < 0: select_candidate_idx = 0
+                    self.pdialog.reopen()
+            elif self.game_selection_mode == 1:
+                log_debug('Metadata automatic scraping. Selecting first result.')
                 select_candidate_idx = 0
             else:
-                # Display game list found so user choses.
-                log_debug('Metadata manual scraping. User chooses game.')
-                self.pdialog.close()
-                game_name_list = [candidate['display_name'] for candidate in candidates]
-                select_candidate_idx = xbmcgui.Dialog().select(
-                    'Select game for ROM {0}'.format(ROM.getBase_noext()), game_name_list)
-                if select_candidate_idx < 0: select_candidate_idx = 0
-                self.pdialog.reopen()
-        elif self.game_selection_mode == 1:
-            log_debug('Metadata automatic scraping. Selecting first result.')
-            select_candidate_idx = 0
-        else:
-            raise ValueError('Invalid game_selection_mode {0}'.format(self.game_selection_mode))
-        candidate = candidates[select_candidate_idx]
+                raise ValueError('Invalid game_selection_mode {0}'.format(self.game_selection_mode))
+            candidate = candidates[select_candidate_idx]
 
-        return candidate
+            # --- Set candidate. This will introduce it in the cache ---
+            scraper_obj.set_candidate(rom_base_noext, self.platform, candidate)
 
     # Scraps ROM metadata in the ROM scanner.
     def _scanner_scrap_ROM_metadata(self, romdata, ROM):
@@ -668,8 +696,12 @@ class ScrapeStrategy(object):
             self.pdialog.updateMessage2(scraper_text)
 
         # --- If no candidates available just clean the ROM Title and return ---
-        if self.candidate_metadata is None and not self.candidate_metadata:
-            log_verb('No medatada candidates (or previous error). Cleaning ROM name only.')
+        if self.meta_scraper_obj.candidate is None:
+            log_verb('Medatada candidates is None. Cleaning ROM name only.')
+            romdata['m_name'] = text_format_ROM_title(ROM.getBase_noext(), self.scan_clean_tags)
+            return
+        if not self.meta_scraper_obj.candidate:
+            log_verb('Medatada candidate is empty (no candidates found). Cleaning ROM name only.')
             romdata['m_name'] = text_format_ROM_title(ROM.getBase_noext(), self.scan_clean_tags)
             # Update the empty NFO file to mark the ROM as scraped and avoid rescraping
             # if launcher is scanned again.
@@ -678,7 +710,7 @@ class ScrapeStrategy(object):
 
         # --- Grab metadata for selected game and put into ROM ---
         status_dic = kodi_new_status_dic('No error')
-        game_data = self.meta_scraper_obj.get_metadata(self.candidate_metadata, status_dic)
+        game_data = self.meta_scraper_obj.get_metadata(status_dic)
         if not status_dic['status']:
             self.pdialog.close()
             kodi_dialog_OK(status_dic['msg'])
@@ -713,13 +745,15 @@ class ScrapeStrategy(object):
             asset_name, self.asset_scraper_name))
         status_dic = kodi_new_status_dic('No error')
         ret_asset_path = local_asset_path
-        candidate = self.candidate_asset
         log_debug('local_asset_path "{}"'.format(local_asset_path))
         log_debug('asset_path_noext "{}"'.format(asset_path_noext_FN.getPath()))
 
         # --- If no candidates available just clean the ROM Title and return ---
-        if self.candidate_asset is None or not self.candidate_asset:
-            log_verb('No asset candidates (or previous error).')
+        if self.asset_scraper_obj.candidate is None:
+            log_verb('Asset candidate is None (previous error). Doing nothing.')
+            return ret_asset_path
+        if not self.asset_scraper_obj.candidate:
+            log_verb('Asset candidate is empty (no candidates found). Doing nothing.')
             return ret_asset_path
 
         # --- If scraper does not support particular asset return inmediately ---
@@ -735,7 +769,7 @@ class ScrapeStrategy(object):
             self.pdialog.updateMessage2(scraper_text)
 
         # --- Grab list of images/assets for the selected candidate ---
-        assetdata_list = self.asset_scraper_obj.get_assets(candidate, asset_ID, status_dic)
+        assetdata_list = self.asset_scraper_obj.get_assets(asset_ID, status_dic)
         if not status_dic['status']:
             self.pdialog.close()
             kodi_dialog_OK(status_dic['msg'])
@@ -1507,14 +1541,20 @@ class Scraper(object):
 
     def set_candidate_from_cache(self, rom_base_noext, platform):
         self.cache_key = rom_base_noext
-        self.platform = platform
+        self.platform  = platform
         self.candidate = self.disk_caches[Scraper.CACHE_CANDIDATES][rom_base_noext]
 
     def set_candidate(self, rom_base_noext, platform, candidate):
-        self.disk_caches[Scraper.CACHE_CANDIDATES][rom_base_noext] = candidate
         self.cache_key = rom_base_noext
-        self.platform = platform
+        self.platform  = platform
         self.candidate = candidate
+        # Do not introduce None candidates in the cache so the game will be rescraped later.
+        # Keep the None candidate in the object internal variables so later calls to 
+        # get_metadata() and get_assets() will know an error happened.
+        # Note that candidate may be an empty dictionary if the scraper did not found
+        # any candidate games.
+        if candidate is None: return
+        self.disk_caches[Scraper.CACHE_CANDIDATES][rom_base_noext] = candidate
 
     # Only write to disk non-empty caches.
     def flush_disk_cache(self):

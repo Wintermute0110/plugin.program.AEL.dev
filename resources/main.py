@@ -9260,6 +9260,8 @@ class Main:
                 log_info('User pressed Cancel button when scanning ROMs. ROM scanning stopped.')
                 return
         pdialog.endProgress()
+        # Flush scraper disk caches.
+        g_scraper_factory.destroy_scanner()
         log_info('******************** ROM scanner finished. Report ********************')
         log_info('Removed dead ROMs {0:6d}'.format(num_removed_roms))
         log_info('Files checked     {0:6d}'.format(num_files_checked))
