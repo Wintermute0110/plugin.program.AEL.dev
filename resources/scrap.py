@@ -645,19 +645,22 @@ class ScrapeStrategy(object):
                 kodi_dialog_OK(status_dic['msg'])
                 status_dic = kodi_new_status_dic('No error')
                 self.pdialog.reopen()
-            # If candidates is None some kind of error happened.
-            # Set the candidate to None in the scraper object so later calls to get_metadata()
-            # and get_assets() do not fail.
-            # It will NOT be introduced in the cache to be rescraped.
+            # * If candidates is None some kind of error happened.
+            # * None also returned if the scraper is disabled (also no error in status_dic).
+            # * Set the candidate to None in the scraper object so later calls to get_metadata()
+            #   and get_assets() do not fail (they will return None immediately).
+            # * It will NOT be introduced in the cache to be rescraped. Objects with None value are
+            #   never introduced in the cache.
             if candidates is None:
                 log_debug('Error getting the candidate (None).')
-                scraper_obj.set_candidate(rom_base_noext, self.platform, candidate)
+                scraper_obj.set_candidate(rom_base_noext, self.platform, None)
                 return
             # In candidates list is empty scraper operation was correct but no candidate was
-            # found. In this case set the candidate in the scraper object and store in cache.
+            # found. In this case set the candidate in the scraper object to an empty
+            # dictionary and introduce it in the cache.
             if not candidates:
                 log_debug('Found no candidates after searching.')
-                scraper_obj.set_candidate(rom_base_noext, self.platform, candidate)
+                scraper_obj.set_candidate(rom_base_noext, self.platform, dict())
                 return
             log_debug('Scraper {0} found {1} candidate/s'.format(scraper_name, len(candidates)))
 
@@ -1199,6 +1202,8 @@ class ScrapeStrategy(object):
                 search_term, rom_base_noext, platform, status_dic)
             # If the there was an error in the scraper return immediately.
             if not status_dic['status']: return status_dic
+            # If the scraper is disabled candidate_list will be None. However, it is impossible
+            # that the scraper is disabled when scraping from the context menu.
             log_verb('Scraper found {0} result/s'.format(len(candidate_list)))
             if not candidate_list:
                 status_dic['status'] = False
@@ -1630,7 +1635,6 @@ class Scraper(object):
         # --- Lazy load disk cache ---
         if not self._is_disk_cache_loaded(cache_type):
             self._load_disk_cache(cache_type, self.platform)
-
         # --- Check cache ---
         if cache_key in self.disk_caches[cache_type]:
             return True
@@ -1643,7 +1647,13 @@ class Scraper(object):
     def _delete_from_disk_cache(self, cache_type, cache_key):
         del self.disk_caches[cache_type][cache_key]
 
+    # Lazy loading should be done here because the internal cache for ScreenScraper
+    # could be updated withouth being loaded first with _check_disk_cache().
     def _update_disk_cache(self, cache_type, cache_key, data):
+        # --- Lazy load disk cache ---
+        if not self._is_disk_cache_loaded(cache_type):
+            self._load_disk_cache(cache_type, self.platform)
+        # --- Update cache ---
         self.disk_caches[cache_type][cache_key] = data
 
     # --- Global disk caches ---------------------------------------------------------------------
@@ -2007,8 +2017,9 @@ class TheGamesDB(Scraper):
     def get_candidates(self, search_term, rombase_noext, platform, status_dic):
         # --- If scraper is disabled return immediately and silently ---
         if self.scraper_disabled:
+            # If the scraper is disabled return None and do not mark error in status_dic.
             log_debug('TheGamesDB.get_candidates() Scraper disabled. Returning empty data.')
-            return []
+            return None
 
         # --- Request is not cached. Get candidates and introduce in the cache ---
         scraper_platform = AEL_platform_to_TheGamesDB(platform)
@@ -2553,8 +2564,9 @@ class MobyGames(Scraper):
     def get_candidates(self, search_term, rombase_noext, platform, status_dic):
         # --- If scraper is disabled return immediately and silently ---
         if self.scraper_disabled:
+            # If the scraper is disabled return None and do not mark error in status_dic.
             log_debug('MobyGames.get_candidates() Scraper disabled. Returning empty data.')
-            return []
+            return None
 
         # --- Request is not cached. Get candidates and introduce in the cache ---
         scraper_platform = AEL_platform_to_MobyGames(platform)
@@ -3104,9 +3116,10 @@ class ScreenScraper(Scraper):
     # with the internal cache.
     def get_candidates(self, search_term, rombase_noext, platform, status_dic):
         # --- If scraper is disabled return immediately and silently ---
+        # If the scraper is disabled return None and do not mark error in status_dic.
         if self.scraper_disabled:
             log_debug('ScreenScraper.get_candidates() Scraper disabled. Returning empty data.')
-            return []
+            return None
 
         # --- Request is not cached. Get candidates and introduce in the cache ---
         # ScreenScraper jeuInfos.php returns absolutely everything about a single ROM, including
@@ -3703,16 +3716,6 @@ class ScreenScraper(Scraper):
         return json_data
 
 # ------------------------------------------------------------------------------------------------
-# ScreenScraper online scraper.
-# Uses version 2 of the API.
-#
-# | Site     | https://www.screenscraper.fr             |
-# | API info | complete                                 |
-# ------------------------------------------------------------------------------------------------
-class ScreenScraper_v2(Scraper):
-    pass
-
-# ------------------------------------------------------------------------------------------------
 # GameFAQs online scraper.
 #
 # | Site     | https://gamefaqs.gamespot.com/ |
@@ -4140,8 +4143,9 @@ class ArcadeDB(Scraper):
     def get_candidates(self, search_term, rombase_noext, platform, status_dic):
         # --- If scraper is disabled return immediately and silently ---
         if self.scraper_disabled:
+            # If the scraper is disabled return None and do not mark error in status_dic.
             log_debug('ArcadeDB::get_candidates() Scraper disabled. Returning empty data.')
-            return []
+            return None
 
         # --- Request is not cached. Get candidates and introduce in the cache ---
         # ArcadeDB QUERY_MAME returns absolutely everything about a single ROM, including
