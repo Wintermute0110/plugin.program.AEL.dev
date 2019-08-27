@@ -2859,7 +2859,6 @@ class Main:
                 # --- Use the scraper chosen by user ---
                 scraper_index = type2 - len(common_menu_list)
                 scraper_ID = g_scrap_factory.get_metadata_scraper_ID_from_menu_idx(scraper_index)
-                scrap_strategy = g_scrap_factory.create_CM_metadata(scraper_ID)
 
                 # --- Grab data ---
                 object_dic = roms[romID]
@@ -2876,7 +2875,11 @@ class Main:
                 # --- Scrape! ---
                 # If status_dic['status'] is False then some error happened. Do not save
                 # the database and return immediately.
+                # Scraper caches are flushed. An error here could mean that no metadata
+                # was found, however the cache can have valid data for the candidates.
+                scrap_strategy = g_scrap_factory.create_CM_metadata(scraper_ID)
                 status_dic = scrap_strategy.scrap_CM_metadata_ROM(object_dic, data_dic)
+                g_scrap_factory.destroy_CM_metadata()
                 kodi_display_user_message(status_dic)
                 if not status_dic['status']: return
 
@@ -9527,7 +9530,6 @@ class Main:
             scraper_index = type2 - len(common_menu_list)
             log_debug('_gui_edit_asset() Scraper index {0}'.format(scraper_index))
             scraper_ID = g_scrap_factory.get_asset_scraper_ID_from_menu_idx(scraper_index)
-            scraper_strategy = g_scrap_factory.create_CM_asset(scraper_ID)
 
             # --- Scrape! ---
             data_dic = {
@@ -9537,7 +9539,12 @@ class Main:
                 'asset_path_noext' : asset_path_noext,
             }
             # If this returns False there were no changes so no need to save ROMs JSON.
+            # Scraper disk caches are flushed (written to disk) even if there is a message
+            # to be printed here. A message here is that no images were found, however the
+            # caches (internal, etc.) may have valid data.
+            scraper_strategy = g_scrap_factory.create_CM_asset(scraper_ID)
             op_dic = scraper_strategy.scrap_CM_asset(object_dic, asset_ID, data_dic)
+            g_scrap_factory.destroy_CM_asset()
             kodi_display_user_message(op_dic)
             if not op_dic['status']: return
 
