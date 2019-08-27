@@ -1327,6 +1327,9 @@ class Scraper(object):
     def get_filename(self): pass
 
     @abc.abstractmethod
+    def uses_disk_cache(self): pass
+
+    @abc.abstractmethod
     def supports_metadata_ID(self, metadata_ID): pass
 
     @abc.abstractmethod
@@ -1495,28 +1498,15 @@ class Scraper(object):
         self._handle_error(status_dic, user_msg)
 
     # --- Scraper on-disk cache ------------------------------------------------------------------
-    # Load candidate cache from disk for the given platform.
-    # This function not used at the moment, lazy loading is done.
-    # def load_candidates_cache(self, platform):
-    #     # --- Get filename ---
-    #     json_file_path = self._get_scraper_file_name(Scraper.CACHE_CANDIDATES, platform)
-    #     log_debug('Scraper::load_candidates_cache() Loading "{}"'.format(json_file_path))
-    #     # --- Load cache if file exists ---
-    #     if os.path.isfile(json_file_path):
-    #         file = open(json_file_path)
-    #         file_contents = file.read()
-    #         file.close()
-    #         self.disk_caches[Scraper.CACHE_CANDIDATES] = json.loads(file_contents)
-    #     else:
-    #         log_debug('Cache file not found. Resetting cache.')
-    #         self.disk_caches[Scraper.CACHE_CANDIDATES] = {}
-    #     self.disk_caches_loaded[Scraper.CACHE_CANDIDATES] = True
-
     # Returns True if candidate is in disk cache, False otherwise.
     # Lazy loads candidate cache from disk.
     def check_candidates_cache(self, rom_base_noext, platform):
         self.cache_key = rom_base_noext
         self.platform = platform
+
+        # If scraper does not use disk cache (notably AEL Offline) return False
+        # so get_candidates() is called always.
+        if not self.uses_disk_cache(): return False
 
         # --- Lazy load disk cache ---
         if not self._is_disk_cache_loaded(Scraper.CACHE_CANDIDATES):
@@ -1707,6 +1697,8 @@ class Null_Scraper(Scraper):
 
     def get_filename(self): return 'Null'
 
+    def uses_disk_cache(self): return False
+
     def supports_metadata_ID(self, metadata_ID): return False
 
     def supports_metadata(self): return False
@@ -1763,6 +1755,8 @@ class AEL_Offline(Scraper):
 
     def get_filename(self): return 'AEL_Offline'
 
+    def uses_disk_cache(self): return False
+
     def supports_metadata_ID(self, metadata_ID):
         return True if asset_ID in ScreenScraper_V1.supported_metadata_list else False
 
@@ -1798,7 +1792,7 @@ class AEL_Offline(Scraper):
 
         if self.cached_platform == 'MAME':
             # --- MAME scraper ---
-            key_id = candidate['id']
+            key_id = self.candidate['id']
             log_verb("AEL_Offline::get_metadata() Mode MAME id = '{0}'".format(key_id))
             gamedata['title']     = self.cached_games[key_id]['description']
             gamedata['year']      = self.cached_games[key_id]['year']
@@ -1809,7 +1803,7 @@ class AEL_Offline(Scraper):
             log_verb("AEL_Offline::get_metadata() Mode Unknown. Doing nothing.")
         else:
             # --- No-Intro scraper ---
-            key_id = candidate['id']
+            key_id = self.candidate['id']
             log_verb("AEL_Offline::get_metadata() Mode No-Intro id = '{0}'".format(key_id))
             gamedata['title']     = self.cached_games[key_id]['description']
             gamedata['year']      = self.cached_games[key_id]['year']
@@ -1991,6 +1985,8 @@ class TheGamesDB(Scraper):
     def get_name(self): return 'TheGamesDB'
 
     def get_filename(self): return 'TGDB'
+
+    def uses_disk_cache(self): return True
 
     def supports_metadata_ID(self, metadata_ID):
         return True if asset_ID in TheGamesDB.supported_metadata_list else False
@@ -2522,6 +2518,8 @@ class MobyGames(Scraper):
     def get_name(self): return 'MobyGames'
 
     def get_filename(self): return 'MobyGames'
+
+    def uses_disk_cache(self): return True
 
     def supports_metadata_ID(self, metadata_ID):
         return True if asset_ID in MobyGames.supported_metadata_list else False
@@ -3069,6 +3067,8 @@ class ScreenScraper(Scraper):
     def get_name(self): return 'ScreenScraper'
 
     def get_filename(self): return 'ScreenScraper'
+
+    def uses_disk_cache(self): return True
 
     def supports_metadata_ID(self, metadata_ID):
         return True if asset_ID in ScreenScraper.supported_metadata_list else False
@@ -3749,6 +3749,8 @@ class GameFAQs(Scraper):
 
     def get_filename(self): return 'GameFAQs'
 
+    def uses_disk_cache(self): return True
+
     def supports_metadata_ID(self, metadata_ID):
         return True if asset_ID in ScreenScraper_V1.supported_metadata_list else False
 
@@ -4115,6 +4117,8 @@ class ArcadeDB(Scraper):
     def get_name(self): return 'ArcadeDB'
 
     def get_filename(self): return 'ADB'
+
+    def uses_disk_cache(self): return True
 
     def supports_metadata_ID(self, metadata_ID):
         return True if asset_ID in ArcadeDB.supported_metadata_list else False
