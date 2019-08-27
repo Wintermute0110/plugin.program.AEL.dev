@@ -1944,12 +1944,6 @@ class TheGamesDB(Scraper):
         # Make sure this is the public key (limited by IP) and not the private key.
         self.api_public_key = '828be1fb8f3182d055f1aed1f7d4da8bd4ebc160c3260eae8ee57ea823b42415'
 
-        # --- Cached TGDB metadata ---
-        # self.cache_candidates = {}
-        # self.cache_metadata = {}
-        # self.cache_assets = {}
-        # self.all_asset_cache = {}
-
         # --- Pass down common scraper settings ---
         super(TheGamesDB, self).__init__(settings)
 
@@ -1977,15 +1971,15 @@ class TheGamesDB(Scraper):
     def get_candidates(self, search_term, rombase_noext, platform, status_dic):
         # --- If scraper is disabled return immediately and silently ---
         if self.scraper_disabled:
-            log_debug('TheGamesDB::get_candidates() Scraper disabled. Returning empty data.')
+            log_debug('TheGamesDB.get_candidates() Scraper disabled. Returning empty data.')
             return []
 
         # --- Request is not cached. Get candidates and introduce in the cache ---
         scraper_platform = AEL_platform_to_TheGamesDB(platform)
-        log_debug('TheGamesDB::get_candidates() search_term         "{0}"'.format(search_term))
-        log_debug('TheGamesDB::get_candidates() rom_base_noext      "{0}"'.format(rombase_noext))
-        log_debug('TheGamesDB::get_candidates() AEL platform        "{0}"'.format(platform))
-        log_debug('TheGamesDB::get_candidates() TheGamesDB platform "{0}"'.format(scraper_platform))
+        log_debug('TheGamesDB.get_candidates() search_term         "{0}"'.format(search_term))
+        log_debug('TheGamesDB.get_candidates() rom_base_noext      "{0}"'.format(rombase_noext))
+        log_debug('TheGamesDB.get_candidates() AEL platform        "{0}"'.format(platform))
+        log_debug('TheGamesDB.get_candidates() TheGamesDB platform "{0}"'.format(scraper_platform))
         candidate_list = self._search_candidates(
             search_term, rombase_noext, platform, scraper_platform, status_dic)
         if not status_dic['status']: return None
@@ -2007,12 +2001,12 @@ class TheGamesDB(Scraper):
     def get_metadata(self, status_dic):
         # --- If scraper is disabled return immediately and silently ---
         if self.scraper_disabled:
-            log_debug('TheGamesDB::get_metadata() Scraper disabled. Returning empty data.')
+            log_debug('TheGamesDB.get_metadata() Scraper disabled. Returning empty data.')
             return self._new_gamedata_dic()
 
         # --- Check if search term is in the cache ---
         if self._check_disk_cache(Scraper.CACHE_METADATA, self.cache_key):
-            log_debug('TheGamesDB::get_metadata() Metadata cache hit "{0}"'.format(self.cache_key))
+            log_debug('TheGamesDB.get_metadata() Metadata cache hit "{0}"'.format(self.cache_key))
             return self._retrieve_from_disk_cache(Scraper.CACHE_METADATA, self.cache_key)
 
         # --- Request is not cached. Get candidates and introduce in the cache ---
@@ -2036,7 +2030,7 @@ class TheGamesDB(Scraper):
         # | youtube         | "youtube": "dR3Hm8scbEw"              | No   |
         # | alternates      | "alternates": null                    | No   |
         # |-----------------|---------------------------------------|------|
-        log_debug('TheGamesDB::get_metadata() Metadata cache miss "{0}"'.format(self.cache_key))
+        log_debug('TheGamesDB.get_metadata() Metadata cache miss "{0}"'.format(self.cache_key))
         url_a = 'https://api.thegamesdb.net/Games/ByGameID?apikey={0}&id={1}'
         url_b = '&fields=players%2Cgenres%2Coverview%2Crating'
         url_a = url_a.format(self._get_API_key(), self.candidate['id'])
@@ -2046,7 +2040,7 @@ class TheGamesDB(Scraper):
         self._dump_json_debug('TGDB_get_metadata.json', json_data)
 
         # --- Parse game page data ---
-        log_debug('TheGamesDB::get_metadata() Parsing game metadata...')
+        log_debug('TheGamesDB.get_metadata() Parsing game metadata...')
         online_data = json_data['data']['games'][0]
         gamedata = self._new_gamedata_dic()
         gamedata['title']     = self._parse_metadata_title(online_data)
@@ -2060,7 +2054,7 @@ class TheGamesDB(Scraper):
         gamedata['plot']      = self._parse_metadata_plot(online_data)
 
         # --- Put metadata in the cache ---
-        log_debug('TheGamesDB::get_metadata() Adding to metadata cache "{0}"'.format(self.cache_key))
+        log_debug('TheGamesDB.get_metadata() Adding to metadata cache "{0}"'.format(self.cache_key))
         self._update_disk_cache(Scraper.CACHE_METADATA, self.cache_key, gamedata)
 
         return gamedata
@@ -2080,7 +2074,7 @@ class TheGamesDB(Scraper):
         # --- Check if search term is in the cache ---
         cache_key = self.cache_key + '__' + str(asset_ID)
         if self._check_disk_cache(Scraper.CACHE_ASSETS, cache_key):
-            log_debug('TheGamesDB.get_metadata() Asset cache hit "{0}"'.format(cache_key))
+            log_debug('TheGamesDB.get_assets() Asset cache hit "{0}"'.format(cache_key))
             return self._retrieve_from_disk_cache(Scraper.CACHE_ASSETS, cache_key)
 
         # --- Request is not cached. Get candidates and introduce in the cache ---
@@ -2320,7 +2314,7 @@ class TheGamesDB(Scraper):
     def _retrieve_publishers(self, publisher_ids):
         if publisher_ids is None: return ''
         if self.publishers is None:
-            log_debug('TheGamesDB:: No cached publishers. Retrieving from online.')
+            log_debug('TheGamesDB. No cached publishers. Retrieving from online.')
             url = 'https://api.thegamesdb.net/Publishers?apikey={}'.format(self._get_API_key())
             page_data_raw = net_get_URL(url, self._clean_URL_for_log(url))
             publishers_json = json.loads(page_data_raw)
@@ -2340,7 +2334,7 @@ class TheGamesDB(Scraper):
             return self._retrieve_from_disk_cache(Scraper.CACHE_INTERNAL, self.cache_key)
 
         # --- Cache miss. Retrieve data and update cache ---
-        log_debug('TheGamesDB::_retrieve_all_assets() Cache miss "{0}"'.format(self.cache_key))
+        log_debug('TheGamesDB._retrieve_all_assets() Cache miss "{0}"'.format(self.cache_key))
         url = 'https://api.thegamesdb.net/Games/Images?apikey={}&games_id={}'.format(
             self._get_API_key(), candidate['id'])
         asset_list = self._retrieve_assets_from_url(url, candidate['id'], status_dic)
@@ -2349,7 +2343,7 @@ class TheGamesDB(Scraper):
             len(asset_list), candidate['id']))
 
         # --- Put metadata in the cache ---
-        log_debug('TheGamesDB::_retrieve_all_assets() Adding to cache "{0}"'.format(self.cache_key))
+        log_debug('TheGamesDB._retrieve_all_assets() Adding to cache "{0}"'.format(self.cache_key))
         self._update_disk_cache(Scraper.CACHE_INTERNAL, self.cache_key, asset_list)
 
         return asset_list
@@ -2388,7 +2382,7 @@ class TheGamesDB(Scraper):
         # --- Recursively load more assets ---
         next_url = page_data['pages']['next']
         if next_url is not None:
-            log_debug('TheGamesDB::_retrieve_assets_from_url() Recursively loading assets page')
+            log_debug('TheGamesDB._retrieve_assets_from_url() Recursively loading assets page')
             assets_list = assets_list + self._retrieve_assets_from_url(next_url, candidate_id)
 
         return assets_list
@@ -2432,10 +2426,10 @@ class TheGamesDB(Scraper):
     def _check_overloading(self, json_data, status_dic):
         # This is an integer.
         remaining_monthly_allowance = json_data['remaining_monthly_allowance']
-        log_debug('TheGamesDB::_check_overloading() remaining_monthly_allowance = {}'.format(
+        log_debug('TheGamesDB._check_overloading() remaining_monthly_allowance = {}'.format(
             remaining_monthly_allowance))
         if remaining_monthly_allowance > 0: return
-        log_error('TheGamesDB::_check_overloading() remaining_monthly_allowance <= 0')
+        log_error('TheGamesDB._check_overloading() remaining_monthly_allowance <= 0')
         log_error('Disabling TGDB scraper.')
         self.scraper_disabled = True
         status_dic['status'] = False
@@ -2490,11 +2484,6 @@ class MobyGames(Scraper):
         self.api_key = settings['scraper_mobygames_apikey']
 
         # --- Misc stuff ---
-        self.cache_candidates = {}
-        self.cache_metadata = {}
-        self.cache_assets = {}
-        self.all_asset_cache = {}
-
         self.last_http_call = datetime.datetime.now()
 
         # --- Pass down common scraper settings ---
@@ -2532,35 +2521,23 @@ class MobyGames(Scraper):
             'and introduce the API key in AEL addon settings.'
         )
 
-    # This function may be called many times in the ROM Scanner. All calls to this function
-    # must be cached. See comments for this function in the Scraper abstract class.
+    # This function is not cached. If called is because the candidate game is not in the
+    # disk cache.
     def get_candidates(self, search_term, rombase_noext, platform, status_dic):
         # --- If scraper is disabled return immediately and silently ---
         if self.scraper_disabled:
-            log_debug('MobyGames::get_candidates() Scraper disabled. Returning empty data.')
+            log_debug('MobyGames.get_candidates() Scraper disabled. Returning empty data.')
             return []
 
-        # --- Check if search term is in the cache ---
-        cache_key = search_term + '__' + rombase_noext + '__' + platform
-        if cache_key in self.cache_candidates:
-            log_debug('MobyGames::get_candidates() Cache hit "{0}"'.format(cache_key))
-            candidate_list = self.cache_candidates[cache_key]
-            return candidate_list
-
         # --- Request is not cached. Get candidates and introduce in the cache ---
-        log_debug('MobyGames::get_candidates() Cache miss "{0}"'.format(cache_key))
         scraper_platform = AEL_platform_to_MobyGames(platform)
-        log_debug('MobyGames::get_candidates() search_term        "{0}"'.format(search_term))
-        log_debug('MobyGames::get_candidates() rom_base_noext     "{0}"'.format(rombase_noext))
-        log_debug('MobyGames::get_candidates() AEL platform       "{0}"'.format(platform))
-        log_debug('MobyGames::get_candidates() MobyGames platform "{0}"'.format(scraper_platform))
+        log_debug('MobyGames.get_candidates() search_term        "{0}"'.format(search_term))
+        log_debug('MobyGames.get_candidates() rom_base_noext     "{0}"'.format(rombase_noext))
+        log_debug('MobyGames.get_candidates() AEL platform       "{0}"'.format(platform))
+        log_debug('MobyGames.get_candidates() MobyGames platform "{0}"'.format(scraper_platform))
         candidate_list = self._search_candidates(
             search_term, rombase_noext, platform, scraper_platform, status_dic)
         if not status_dic['status']: return None
-
-        # --- Add candidate games to the cache ---
-        log_debug('MobyGames::get_candidates() Adding to cache "{0}"'.format(cache_key))
-        self.cache_candidates[cache_key] = candidate_list
 
         return candidate_list
 
@@ -2569,19 +2546,17 @@ class MobyGames(Scraper):
     def get_metadata(self, status_dic):
         # --- If scraper is disabled return immediately and silently ---
         if self.scraper_disabled:
-            log_debug('MobyGames::get_metadata() Scraper disabled. Returning empty data.')
+            log_debug('MobyGames.get_metadata() Scraper disabled. Returning empty data.')
             return self._new_gamedata_dic()
 
         # --- Check if search term is in the cache ---
-        cache_key = str(candidate['id'])
-        if cache_key in self.cache_metadata:
-            log_debug('MobyGames::get_metadata() Cache hit "{0}"'.format(cache_key))
-            gamedata = self.cache_metadata[cache_key]
-            return gamedata
+        if self._check_disk_cache(Scraper.CACHE_METADATA, self.cache_key):
+            log_debug('MobyGames.get_metadata() Metadata cache hit "{0}"'.format(self.cache_key))
+            return self._retrieve_from_disk_cache(Scraper.CACHE_METADATA, self.cache_key)
 
         # --- Request is not cached. Get candidates and introduce in the cache ---
-        log_debug('TheGamesDB::get_metadata() Cache miss "{0}"'.format(cache_key))
-        url = 'https://api.mobygames.com/v1/games/{}?api_key={}'.format(candidate['id'], self.api_key)
+        log_debug('TheGamesDB::get_metadata() Metadata cache miss "{0}"'.format(self.cache_key))
+        url = 'https://api.mobygames.com/v1/games/{}?api_key={}'.format(self.candidate['id'], self.api_key)
         json_data = self._retrieve_URL_as_JSON(url, status_dic)
         if not status_dic['status']: return None
         self._dump_json_debug('MobyGames_get_metadata.json', json_data)
@@ -2589,13 +2564,13 @@ class MobyGames(Scraper):
         # --- Parse game page data ---
         gamedata = self._new_gamedata_dic()
         gamedata['title'] = self._parse_metadata_title(json_data)
-        gamedata['year']  = self._parse_metadata_year(json_data, candidate['scraper_platform'])
+        gamedata['year']  = self._parse_metadata_year(json_data, self.candidate['scraper_platform'])
         gamedata['genre'] = self._parse_metadata_genre(json_data)
         gamedata['plot']  = self._parse_metadata_plot(json_data)
 
         # --- Put metadata in the cache ---
-        log_debug('MobyGames::get_metadata() Adding to cache "{0}"'.format(cache_key))
-        self.cache_metadata[cache_key] = gamedata
+        log_debug('MobyGames.get_metadata() Adding to metadata cache "{0}"'.format(self.cache_key))
+        self._update_disk_cache(Scraper.CACHE_METADATA, self.cache_key, gamedata)
 
         return gamedata
 
@@ -2607,46 +2582,45 @@ class MobyGames(Scraper):
     def get_assets(self, asset_ID, status_dic):
         # --- If scraper is disabled return immediately and silently ---
         if self.scraper_disabled:
-            log_debug('MobyGames::get_assets() Scraper disabled. Returning empty data.')
+            log_debug('MobyGames.get_assets() Scraper disabled. Returning empty data.')
             return []
 
         asset_info = assets_get_info_scheme(asset_ID)
-        log_debug('MobyGames::get_assets() Getting assets {} (ID {}) for candidate ID = {}'.format(
-            asset_info.name, asset_ID, candidate['id']))
+        log_debug('MobyGames.get_assets() Getting assets {} (ID {}) for candidate ID = {}'.format(
+            asset_info.name, asset_ID, self.candidate['id']))
 
         # --- Check if search term is in the cache ---
-        cache_key = str(candidate['id']) + '__' + asset_info.name + '__' + str(asset_ID)
-        if cache_key in self.cache_assets:
-            log_debug('MobyGames::get_assets() Cache hit "{}"'.format(cache_key))
-            asset_list = self.cache_assets[cache_key]
-            return asset_list
+        cache_key = self.cache_key + '__' + str(asset_ID)
+        if self._check_disk_cache(Scraper.CACHE_ASSETS, cache_key):
+            log_debug('MobyGames.get_assets() Asset cache hit "{0}"'.format(cache_key))
+            return self._retrieve_from_disk_cache(Scraper.CACHE_ASSETS, cache_key)
 
         # --- Request is not cached. Get candidates and introduce in the cache ---
-        log_debug('MobyGames::get_assets() Cache miss "{}"'.format(cache_key))
+        log_debug('MobyGames.get_assets() Asset cache miss "{}"'.format(cache_key))
         # Get all assets for candidate. _retrieve_all_assets() caches all assets for a candidate.
         # Then select asset of a particular type.
-        all_asset_list = self._retrieve_all_assets(candidate, status_dic)
+        all_asset_list = self._retrieve_all_assets(self.candidate, status_dic)
         if not status_dic['status']: return None
         asset_list = [asset_dic for asset_dic in all_asset_list if asset_dic['asset_ID'] == asset_ID]
-        log_debug('MobyGames::get_assets() Total assets {} / Returned assets {}'.format(
+        log_debug('MobyGames.get_assets() Total assets {} / Returned assets {}'.format(
             len(all_asset_list), len(asset_list)))
 
         # --- Put metadata in the cache ---
-        log_debug('MobyGames::get_assets() Adding to cache "{0}"'.format(cache_key))
-        self.cache_assets[cache_key] = asset_list
+        log_debug('MobyGames.get_assets() Adding to asset cache "{}"'.format(cache_key))
+        self._update_disk_cache(Scraper.CACHE_ASSETS, cache_key, asset_list)
 
         return asset_list
 
     # Mobygames returns both the asset thumbnail URL and the full resolution URL so in
     # this scraper this method is trivial.
-    def resolve_asset_URL(self, candidate, status_dic):
+    def resolve_asset_URL(self, selected_asset, status_dic):
         # Transform http to https
-        url = candidate['url']
+        url = selected_asset['url']
         if url[0:4] == 'http': url = 'https' + url[4:]
 
         return url
 
-    def resolve_asset_URL_extension(self, candidate, image_url, status_dic):
+    def resolve_asset_URL_extension(self, selected_asset, image_url, status_dic):
         return text_get_URL_extension(image_url)
 
     # --- This class own methods -----------------------------------------------------------------
@@ -2733,34 +2707,31 @@ class MobyGames(Scraper):
         return plot_str
 
     # Get ALL available assets for game.
-    # Cache the results because this function may be called multiple times for the
-    # same candidate game.
+    # Cache all assets in the internal disk cache.
     def _retrieve_all_assets(self, candidate, status_dic):
         # --- Cache hit ---
-        cache_key = str(candidate['id'])
-        if cache_key in self.all_asset_cache:
-            log_debug('MobyGames::_retrieve_all_assets() Cache hit "{0}"'.format(cache_key))
-            asset_list = self.all_asset_cache[cache_key]
-            return asset_list
+        if self._check_disk_cache(Scraper.CACHE_INTERNAL, self.cache_key):
+            log_debug('MobyGames._retrieve_all_assets() Internal cache hit "{0}"'.format(self.cache_key))
+            return self._retrieve_from_disk_cache(Scraper.CACHE_INTERNAL, self.cache_key)
 
         # --- Cache miss. Retrieve data and update cache ---
-        log_debug('MobyGames::_retrieve_all_assets() Cache miss "{0}"'.format(cache_key))
+        log_debug('MobyGames._retrieve_all_assets() Internal cache miss "{0}"'.format(self.cache_key))
         snap_assets = self._retrieve_snap_assets(candidate, candidate['scraper_platform'], status_dic)
         if not status_dic['status']: return None
         cover_assets = self._retrieve_cover_assets(candidate, candidate['scraper_platform'], status_dic)
         if not status_dic['status']: return None
         asset_list = snap_assets + cover_assets
-        log_debug('MobyGames::_retrieve_all_assets() A total of {0} assets found for candidate ID {1}'.format(
+        log_debug('MobyGames._retrieve_all_assets() A total of {0} assets found for candidate ID {1}'.format(
             len(asset_list), candidate['id']))
 
         # --- Put metadata in the cache ---
-        log_debug('MobyGames::_retrieve_all_assets() Adding to cache "{0}"'.format(cache_key))
-        self.all_asset_cache[cache_key] = asset_list
+        log_debug('MobyGames._retrieve_all_assets() Adding to cache "{0}"'.format(self.cache_key))
+        self._update_disk_cache(Scraper.CACHE_INTERNAL, self.cache_key, asset_list)
 
         return asset_list
 
     def _retrieve_snap_assets(self, candidate, platform_id, status_dic):
-        log_debug('MobyGames::_retrieve_snap_assets() Getting Snaps...')
+        log_debug('MobyGames._retrieve_snap_assets() Getting Snaps...')
         url = 'https://api.mobygames.com/v1/games/{}/platforms/{}/screenshots?api_key={}'.format(
             candidate['id'], platform_id, self.api_key)
         json_data = self._retrieve_URL_as_JSON(url, status_dic)
@@ -2785,13 +2756,13 @@ class MobyGames(Scraper):
             asset_data['url'] = image_data['image']
             if self.verbose_flag: log_debug('Found Snap {0}'.format(asset_data['url_thumb']))
             asset_list.append(asset_data)
-        log_debug('MobyGames::_retrieve_snap_assets() Found {} snap assets for candidate #{}'.format(
+        log_debug('MobyGames._retrieve_snap_assets() Found {} snap assets for candidate #{}'.format(
             len(asset_list), candidate['id']))
 
         return asset_list
 
     def _retrieve_cover_assets(self, candidate, platform_id, status_dic):
-        log_debug('MobyGames::_retrieve_cover_assets() Getting Covers...')
+        log_debug('MobyGames._retrieve_cover_assets() Getting Covers...')
         url = 'https://api.mobygames.com/v1/games/{}/platforms/{}/covers?api_key={}'.format(
             candidate['id'], platform_id, self.api_key)
         json_data = self._retrieve_URL_as_JSON(url, status_dic)
@@ -2816,7 +2787,7 @@ class MobyGames(Scraper):
                 asset_data['url'] = image_data['image']
                 if self.verbose_flag: log_debug('Found Cover {0}'.format(asset_data['url_thumb']))
                 asset_list.append(asset_data)
-        log_debug('MobyGames::_retrieve_cover_assets() Found {} cover assets for candidate #{}'.format(
+        log_debug('MobyGames._retrieve_cover_assets() Found {} cover assets for candidate #{}'.format(
             len(asset_list), candidate['id']))
 
         return asset_list
@@ -2856,7 +2827,7 @@ class MobyGames(Scraper):
         # Make sure we dont go over the TooManyRequests limit of 1 second.
         now = datetime.datetime.now()
         if (now - self.last_http_call).total_seconds() < 1:
-            log_debug('MobyGames::_wait_for_API_request() Sleeping 1 second to avoid overloading...')
+            log_debug('MobyGames._wait_for_API_request() Sleeping 1 second to avoid overloading...')
             time.sleep(1)
 
 # ------------------------------------------------------------------------------------------------
