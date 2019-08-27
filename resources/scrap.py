@@ -2071,14 +2071,7 @@ class TheGamesDB(Scraper):
         log_debug('TheGamesDB.get_assets() Getting assets {} (ID {}) for candidate ID = {}'.format(
             asset_info.name, asset_ID, self.candidate['id']))
 
-        # --- Check if search term is in the cache ---
-        cache_key = self.cache_key + '__' + str(asset_ID)
-        if self._check_disk_cache(Scraper.CACHE_ASSETS, cache_key):
-            log_debug('TheGamesDB.get_assets() Asset cache hit "{0}"'.format(cache_key))
-            return self._retrieve_from_disk_cache(Scraper.CACHE_ASSETS, cache_key)
-
         # --- Request is not cached. Get candidates and introduce in the cache ---
-        log_debug('TheGamesDB.get_assets() Asset cache miss "{0}"'.format(cache_key))
         # Get all assets for candidate. _scraper_get_assets_all() caches all assets for a
         # candidate. Then select asset of a particular type.
         all_asset_list = self._retrieve_all_assets(self.candidate, status_dic)
@@ -2086,10 +2079,6 @@ class TheGamesDB(Scraper):
         asset_list = [asset_dic for asset_dic in all_asset_list if asset_dic['asset_ID'] == asset_ID]
         log_debug('TheGamesDB.get_assets() Total assets {0} / Returned assets {1}'.format(
             len(all_asset_list), len(asset_list)))
-
-        # --- Put metadata in the cache ---
-        log_debug('TheGamesDB.get_assets() Adding to asset cache "{}"'.format(cache_key))
-        self._update_disk_cache(Scraper.CACHE_ASSETS, cache_key, asset_list)
 
         return asset_list
 
@@ -2330,11 +2319,11 @@ class TheGamesDB(Scraper):
     def _retrieve_all_assets(self, candidate, status_dic):
         # --- Cache hit ---
         if self._check_disk_cache(Scraper.CACHE_INTERNAL, self.cache_key):
-            log_debug('TheGamesDB._retrieve_all_assets() Cache hit "{0}"'.format(self.cache_key))
+            log_debug('TheGamesDB._retrieve_all_assets() Internal cache hit "{0}"'.format(self.cache_key))
             return self._retrieve_from_disk_cache(Scraper.CACHE_INTERNAL, self.cache_key)
 
         # --- Cache miss. Retrieve data and update cache ---
-        log_debug('TheGamesDB._retrieve_all_assets() Cache miss "{0}"'.format(self.cache_key))
+        log_debug('TheGamesDB._retrieve_all_assets() Internal cache miss "{0}"'.format(self.cache_key))
         url = 'https://api.thegamesdb.net/Games/Images?apikey={}&games_id={}'.format(
             self._get_API_key(), candidate['id'])
         asset_list = self._retrieve_assets_from_url(url, candidate['id'], status_dic)
@@ -2343,7 +2332,7 @@ class TheGamesDB(Scraper):
             len(asset_list), candidate['id']))
 
         # --- Put metadata in the cache ---
-        log_debug('TheGamesDB._retrieve_all_assets() Adding to cache "{0}"'.format(self.cache_key))
+        log_debug('TheGamesDB._retrieve_all_assets() Adding to internal cache "{0}"'.format(self.cache_key))
         self._update_disk_cache(Scraper.CACHE_INTERNAL, self.cache_key, asset_list)
 
         return asset_list
@@ -2589,14 +2578,7 @@ class MobyGames(Scraper):
         log_debug('MobyGames.get_assets() Getting assets {} (ID {}) for candidate ID = {}'.format(
             asset_info.name, asset_ID, self.candidate['id']))
 
-        # --- Check if search term is in the cache ---
-        cache_key = self.cache_key + '__' + str(asset_ID)
-        if self._check_disk_cache(Scraper.CACHE_ASSETS, cache_key):
-            log_debug('MobyGames.get_assets() Asset cache hit "{0}"'.format(cache_key))
-            return self._retrieve_from_disk_cache(Scraper.CACHE_ASSETS, cache_key)
-
         # --- Request is not cached. Get candidates and introduce in the cache ---
-        log_debug('MobyGames.get_assets() Asset cache miss "{}"'.format(cache_key))
         # Get all assets for candidate. _retrieve_all_assets() caches all assets for a candidate.
         # Then select asset of a particular type.
         all_asset_list = self._retrieve_all_assets(self.candidate, status_dic)
@@ -2604,10 +2586,6 @@ class MobyGames(Scraper):
         asset_list = [asset_dic for asset_dic in all_asset_list if asset_dic['asset_ID'] == asset_ID]
         log_debug('MobyGames.get_assets() Total assets {} / Returned assets {}'.format(
             len(all_asset_list), len(asset_list)))
-
-        # --- Put metadata in the cache ---
-        log_debug('MobyGames.get_assets() Adding to asset cache "{}"'.format(cache_key))
-        self._update_disk_cache(Scraper.CACHE_ASSETS, cache_key, asset_list)
 
         return asset_list
 
@@ -2725,7 +2703,7 @@ class MobyGames(Scraper):
             len(asset_list), candidate['id']))
 
         # --- Put metadata in the cache ---
-        log_debug('MobyGames._retrieve_all_assets() Adding to cache "{0}"'.format(self.cache_key))
+        log_debug('MobyGames._retrieve_all_assets() Adding to internal cache "{0}"'.format(self.cache_key))
         self._update_disk_cache(Scraper.CACHE_INTERNAL, self.cache_key, asset_list)
 
         return asset_list
@@ -3036,10 +3014,6 @@ class ScreenScraper(Scraper):
         self.language_idx = settings['scraper_screenscraper_language']
 
         # --- Internal stuff ---
-        self.cache_candidates = {}
-        # Cache all data returned by jeuInfos.php
-        self.cache_jeuInfos = {}
-
         # Create list of regions to search stuff. Put the user preference first.
         self.user_region = ScreenScraper.region_list[self.region_idx]
         log_debug('ScreenScraper::__init__() User preferred region "{}"'.format(self.user_region))
@@ -3084,22 +3058,15 @@ class ScreenScraper(Scraper):
             'and set you user name and password in AEL addon settings.'
         )
 
-    # This function may be called many times in the ROM Scanner. All calls to this function
-    # must be cached. See comments for this function in the Scraper abstract class.
-    #
-    # ScreenScraper uses a dobule cache, one cache for candidates and another for jeu_dic.
+    # _search_candidates_jeuInfos() uses the internal cache.
+    # ScreenScraper uses the candidates and internal cache. It does not use the
+    # medatada and asset caches at all because the metadata and assets are generated
+    # with the internal cache.
     def get_candidates(self, search_term, rombase_noext, platform, status_dic):
         # --- If scraper is disabled return immediately and silently ---
         if self.scraper_disabled:
-            log_debug('ScreenScraper::get_candidates() Scraper disabled. Returning empty data.')
+            log_debug('ScreenScraper.get_candidates() Scraper disabled. Returning empty data.')
             return []
-
-        # --- Check if search term is in the candidates cache ---
-        cache_key = search_term + '__' + rombase_noext + '__' + platform
-        if cache_key in self.cache_candidates:
-            log_debug('ScreenScraper::get_candidates() Cache hit "{0}"'.format(cache_key))
-            candidate_list = self.cache_candidates[cache_key]
-            return candidate_list
 
         # --- Request is not cached. Get candidates and introduce in the cache ---
         # ScreenScraper jeuInfos.php returns absolutely everything about a single ROM, including
@@ -3108,12 +3075,11 @@ class ScreenScraper(Scraper):
         # ScreenScraper returns only one game or nothing at all.
         # The candidates and the jeu_dic caches are synchronised. If there is a candidates
         # cache miss then it is also a jeu_dic cache miss.
-        log_debug('ScreenScraper::get_candidates() Cache miss "{0}"'.format(cache_key))
         scraper_platform = AEL_platform_to_ScreenScraper(platform)
-        log_debug('ScreenScraper::get_candidates() search_term   "{0}"'.format(search_term))
-        log_debug('ScreenScraper::get_candidates() rombase_noext "{0}"'.format(rombase_noext))
-        log_debug('ScreenScraper::get_candidates() AEL platform  "{0}"'.format(platform))
-        log_debug('ScreenScraper::get_candidates() SS platform   "{0}"'.format(scraper_platform))
+        log_debug('ScreenScraper.get_candidates() search_term   "{0}"'.format(search_term))
+        log_debug('ScreenScraper.get_candidates() rombase_noext "{0}"'.format(rombase_noext))
+        log_debug('ScreenScraper.get_candidates() AEL platform  "{0}"'.format(platform))
+        log_debug('ScreenScraper.get_candidates() SS platform   "{0}"'.format(scraper_platform))
         candidate_list = self._search_candidates_jeuInfos(
             search_term, rombase_noext, platform, scraper_platform, status_dic)
         # _search_candidates_jeuRecherche() does not work for get_metadata() and get_assets()
@@ -3121,12 +3087,6 @@ class ScreenScraper(Scraper):
         # candidate_list = self._search_candidates_jeuRecherche(
         #     search_term, rombase_noext, platform, scraper_platform, status_dic)
         if not status_dic['status']: return None
-
-        # --- Add candidate games to the cache ---
-        # Add data to both candidates and internal caches or no cache at all. Boths caches
-        # are synchronised.
-        log_debug('ScreenScraper::get_candidates() Adding to cache "{0}"'.format(cache_key))
-        self.cache_candidates[cache_key] = candidate_list
 
         # Always return a list, even if only with 1 element.
         return candidate_list
@@ -3136,13 +3096,15 @@ class ScreenScraper(Scraper):
     def get_metadata(self, status_dic):
         # --- If scraper is disabled return immediately and silently ---
         if self.scraper_disabled:
-            log_debug('ScreenScraper::get_metadata() Scraper disabled. Returning empty data.')
+            log_debug('ScreenScraper.get_metadata() Scraper disabled. Returning empty data.')
             return self._new_gamedata_dic()
 
         # --- Retrieve jeu_dic from internal cache ---
-        log_debug('ScreenScraper::get_metadata() Internal cache retrieving "{}"'.format(
-            candidate['SS_cache_str']))
-        jeu_dic = self.cache_jeuInfos[candidate['SS_cache_str']]
+        if self._check_disk_cache(Scraper.CACHE_INTERNAL, self.cache_key):
+            log_debug('ScreenScraper.get_metadata() Internal cache hit "{0}"'.format(self.cache_key))
+            jeu_dic = self._retrieve_from_disk_cache(Scraper.CACHE_INTERNAL, self.cache_key)
+        else:
+            raise ValueError('Logic error')
 
         # --- Parse game metadata ---
         gamedata = self._new_gamedata_dic()
@@ -3166,18 +3128,20 @@ class ScreenScraper(Scraper):
 
         asset_info = assets_get_info_scheme(asset_ID)
         log_debug('ScreenScraper::get_assets() Getting assets {} (ID {}) for candidate ID = {}'.format(
-            asset_info.name, asset_ID, candidate['id']))
+            asset_info.name, asset_ID, self.candidate['id']))
 
         # --- Retrieve jeu_dic from internal cache ---
-        log_debug('ScreenScraper::get_assets() Internal cache retrieving "{}"'.format(
-            candidate['SS_cache_str']))
-        jeu_dic = self.cache_jeuInfos[candidate['SS_cache_str']]
+        if self._check_disk_cache(Scraper.CACHE_INTERNAL, self.cache_key):
+            log_debug('ScreenScraper.get_assets() Internal cache hit "{0}"'.format(self.cache_key))
+            jeu_dic = self._retrieve_from_disk_cache(Scraper.CACHE_INTERNAL, self.cache_key)
+        else:
+            raise ValueError('Logic error')
 
         # --- Parse game assets ---
         all_asset_list = self._retrieve_all_assets(jeu_dic, status_dic)
         if not status_dic['status']: return None
         asset_list = [asset_dic for asset_dic in all_asset_list if asset_dic['asset_ID'] == asset_ID]
-        log_debug('ScreenScraper::get_assets() Total assets {} / Returned assets {}'.format(
+        log_debug('ScreenScraper.get_assets() Total assets {} / Returned assets {}'.format(
             len(all_asset_list), len(asset_list)))
 
         return asset_list
@@ -3378,15 +3342,15 @@ class ScreenScraper(Scraper):
         # rom_name = urllib.quote(rombase_noext)
         rom_name = urllib.quote_plus(rombase_noext)
         rom_size = 0
-        log_debug('ScreenScraper::_search_candidates_jeuInfos() ssid       "{0}"'.format(self.ssid))
+        log_debug('ScreenScraper._search_candidates_jeuInfos() ssid       "{0}"'.format(self.ssid))
         # log_debug('ScreenScraper::_search_candidates_jeuInfos() ssid       "{0}"'.format('***'))
         # log_debug('ScreenScraper::_search_candidates_jeuInfos() sspassword "{0}"'.format(self.sspassword))
-        log_debug('ScreenScraper::_search_candidates_jeuInfos() sspassword "{0}"'.format('***'))
-        log_debug('ScreenScraper::_search_candidates_jeuInfos() rom_type   "{0}"'.format(rom_type))
-        log_debug('ScreenScraper::_search_candidates_jeuInfos() system_id  "{0}"'.format(system_id))
-        log_debug('ScreenScraper::_search_candidates_jeuInfos() crc_str    "{0}"'.format(crc_str))
-        log_debug('ScreenScraper::_search_candidates_jeuInfos() rom_name   "{0}"'.format(rom_name))
-        log_debug('ScreenScraper::_search_candidates_jeuInfos() rom_size   "{0}"'.format(rom_size))
+        log_debug('ScreenScraper._search_candidates_jeuInfos() sspassword "{0}"'.format('***'))
+        log_debug('ScreenScraper._search_candidates_jeuInfos() rom_type   "{0}"'.format(rom_type))
+        log_debug('ScreenScraper._search_candidates_jeuInfos() system_id  "{0}"'.format(system_id))
+        log_debug('ScreenScraper._search_candidates_jeuInfos() crc_str    "{0}"'.format(crc_str))
+        log_debug('ScreenScraper._search_candidates_jeuInfos() rom_name   "{0}"'.format(rom_name))
+        log_debug('ScreenScraper._search_candidates_jeuInfos() rom_size   "{0}"'.format(rom_size))
 
         # --- Build URL and retrieve JSON ---
         # It is more convenient to dump XML files for development.
@@ -3417,20 +3381,17 @@ class ScreenScraper(Scraper):
 
         # --- Build candidate_list from ScreenScraper jeu_dic returned by jeuInfos.php ---
         # SS returns one candidate or no candidate.
-        cache_key = search_term + '__' + rombase_noext + '__' + platform
         candidate = self._new_candidate_dic()
         candidate['id'] = id_str
         candidate['display_name'] = title
         candidate['platform'] = platform
         candidate['scraper_platform'] = scraper_platform
         candidate['order'] = 1
-        candidate['SS_cache_str'] = cache_key # Special field to retrieve game from SS cache.
 
         # --- Add candidate games to the internal cache ---
-        # Remove clutter (the ROM list) from jeu_dic dictionary before inserting in the cache.
-        log_debug('ScreenScraper::_search_candidates_jeuInfos() Adding to internal cache')
+        log_debug('ScreenScraper._search_candidates_jeuInfos() Adding to internal cache "{0}"'.format(self.cache_key))
         jeu_dic['roms'] = []
-        self.cache_jeuInfos[cache_key] = jeu_dic
+        self._update_disk_cache(Scraper.CACHE_INTERNAL, self.cache_key, jeu_dic)
 
         return [ candidate ]
 
