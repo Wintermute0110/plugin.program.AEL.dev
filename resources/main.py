@@ -9258,6 +9258,8 @@ class Main:
                 pdialog.endProgress()
                 kodi_dialog_OK('Stopping ROM scanning. No changes have been made.')
                 log_info('User pressed Cancel button when scanning ROMs. ROM scanning stopped.')
+                # Flush scraper disk caches.
+                g_scraper_factory.destroy_scanner()
                 return
         pdialog.endProgress()
         # Flush scraper disk caches.
@@ -9271,7 +9273,7 @@ class Main:
         report_fobj.write('Files checked     {0:6d}\n'.format(num_files_checked))
         report_fobj.write('New added ROMs    {0:6d}\n'.format(num_new_roms))
 
-        if len(roms) == 0:
+        if not roms:
             report_fobj.write('WARNING The ROM scanner found no ROMs. Launcher is empty.\n')
             report_fobj.close()
             kodi_dialog_OK((
