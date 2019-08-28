@@ -99,16 +99,19 @@ def log_error(str_text):
 #  1) ret = kodi_dialog_OK('Launch ROM?')
 #  2) ret = kodi_dialog_OK('Launch ROM?', title = 'AEL - Launcher')
 #
-def kodi_dialog_OK(row1, row2='', row3='', title = 'Advanced Emulator Launcher'):
+def kodi_dialog_OK(row1, row2 = '', row3 = '', title = 'Advanced Emulator Launcher'):
     xbmcgui.Dialog().ok(title, row1, row2, row3)
 
-#
 # Returns True is YES was pressed, returns False if NO was pressed or dialog canceled.
-#
 def kodi_dialog_yesno(row1, row2='', row3='', title = 'Advanced Emulator Launcher'):
     ret = xbmcgui.Dialog().yesno(title, row1, row2, row3)
 
     return ret
+
+# Returns True is YES was pressed, returns False if NO was pressed or dialog canceled.
+def kodi_dialog_yesno_custom(text, yeslabel_str, nolabel_str):
+    title = 'Advanced Emulator Launcher'
+    return xbmcgui.Dialog().yesno(title, text, yeslabel = yeslabel_str, nolabel = nolabel_str)
 
 #
 # Displays a small box in the low right corner

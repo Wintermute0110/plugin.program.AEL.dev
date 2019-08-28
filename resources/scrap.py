@@ -953,7 +953,7 @@ class ScrapeStrategy(object):
         self.scraper_obj.check_before_scraping(status_dic)
         if not status_dic['status']: return status_dic
 
-        # --- Grab candidate game ---
+        # --- Grab and set candidate game ---
         self._scrap_CM_get_candidate(ScrapeStrategy.SCRAPE_ROM, object_dic, data_dic, status_dic)
         if not status_dic['status']: return status_dic
 
@@ -1039,7 +1039,7 @@ class ScrapeStrategy(object):
         if not status_dic['status']: return status_dic
 
         # --- Grab candidate game ---
-        self._scrap_CM_get_candidate(SCRAPE_ROM, object_dic, data_dic, status_dic)
+        self._scrap_CM_get_candidate(ScrapeStrategy.SCRAPE_ROM, object_dic, data_dic, status_dic)
         if not status_dic['status']: return status_dic
 
         # --- Grab list of images for the selected game -------------------------------------------
@@ -1155,9 +1155,10 @@ class ScrapeStrategy(object):
 
         return status_dic
 
+    # This function is used when scraping stuff from the context menu.
+    # Introduce the search string, grab candidate games, and select a candidate for scraping.
     #
-    # When scraping metadata or assets in the context menu, introduce the search strin,
-    # grab candidate games, and select a candidate for scraping.
+    # * Scraping from the context menu is always in manual mode.
     #
     # @param object_name: [str] SCRAPE_ROM, SCRAPE_LAUNCHER.
     def _scrap_CM_get_candidate(self, object_name, object_dic, data_dic, status_dic):
@@ -1168,12 +1169,27 @@ class ScrapeStrategy(object):
         platform = data_dic['platform']
         scraper_name = self.scraper_obj.get_name()
 
+        # * Note that empty candidates may be in the cache. An empty candidate means that
+        #   the scraper search was unsucessful. For some scraper, changin the search
+        #   string may produce a valid candidate.
+        # * In the context menu always rescrape empty candidates.
+        # * In the ROM scanner empty candidates are never rescraped. In that cases
+        #   the user must use the context menu to find a valid candidate.
         if self.scraper_obj.check_candidates_cache(rom_base_noext, platform):
             log_debug('ROM "{}" in candidates cache.'.format(rom_base_noext))
-            ret = kodi_dialog_yesno(
-                'Candidate in the scraper cache. Use candidate from cache (YES) or rescrape (NO)?')
-            if ret: use_from_cache = True
-            else:   use_from_cache = False
+            candidate = self.scraper_obj.retrieve_from_candidates_cache(rom_base_noext, platform)
+            if not candidate:
+                kodi_dialog_OK(
+                    'Candidate game in the scraper disk cache but empty. '
+                    'Forcing rescraping.')
+                log_debug('ROM "{}" candidate is empting. Force rescraping.')
+                use_from_cache = False
+            else:
+                ret = kodi_dialog_yesno_custom(
+                    'Candidate game in the scraper disk cache. '
+                    'Use candidate from cache or rescrape?',
+                    'Use from cache', 'Scrape')
+                use_from_cache = True if ret else False
         else:
             log_debug('ROM "{}" NOT in candidates cache.'.format(rom_base_noext))
             use_from_cache = False
@@ -1182,8 +1198,7 @@ class ScrapeStrategy(object):
         if use_from_cache:
             self.scraper_obj.set_candidate_from_cache(rom_base_noext, platform)
         else:
-            # If previous items are in the cache (user decided to rescrape) then clear
-            # the cache.
+            # Clear all caches to remove preexiting information, just in case user is rescraping.
             self.scraper_obj.clear_cache(rom_base_noext, platform)
 
             # --- Ask user to enter ROM metadata search string ---
@@ -1521,13 +1536,13 @@ class Scraper(object):
             self._load_disk_cache(Scraper.CACHE_CANDIDATES, platform)
 
         # --- Check cache ---
-        if rom_base_noext in self.disk_caches[Scraper.CACHE_CANDIDATES]:
-            return True
-        else:
-            return False
+        return True if rom_base_noext in self.disk_caches[Scraper.CACHE_CANDIDATES] else False
 
-    # When the user decides to rescrape an item in the cache make sure all the caches
-    # are purged.
+    def retrieve_from_candidates_cache(self, rom_base_noext, platform):
+        return self._retrieve_from_disk_cache(Scraper.CACHE_CANDIDATES, rom_base_noext)
+
+    # When the user decides to rescrape an item that was in the cache make sure all
+    # the caches are purged.
     def clear_cache(self, rom_base_noext, platform):
         log_debug('Scraper.clear_cache() Clearing caches "{}" "{}"'.format(
             rom_base_noext, platform))
@@ -1549,25 +1564,22 @@ class Scraper(object):
         # Do not introduce None candidates in the cache so the game will be rescraped later.
         # Keep the None candidate in the object internal variables so later calls to 
         # get_metadata() and get_assets() will know an error happened.
-        # Note that candidate may be an empty dictionary if the scraper did not found
-        # any candidate games.
         if candidate is None: return
         self.disk_caches[Scraper.CACHE_CANDIDATES][rom_base_noext] = candidate
 
     # Only write to disk non-empty caches.
     def flush_disk_cache(self):
         # --- Scraper caches ---
+        log_debug('Scraper.flush_disk_cache() Saving scraper disk cache...')
         for cache_type in Scraper.CACHE_LIST:
             # Skip unloaded caches
             if not self.disk_caches_loaded[cache_type]:
-                log_debug('Scraper.flush_disk_cache() Skipping {} (Unloaded)'.format(cache_type))
+                log_debug('Skipping {} (Unloaded)'.format(cache_type))
                 continue
             # Skip empty caches
             if not self.disk_caches[cache_type]:
-                log_debug('Scraper.flush_disk_cache() Skipping {} (Empty)'.format(cache_type))
+                log_debug('Skipping {} (Empty)'.format(cache_type))
                 continue
-            json_file_path = self._get_scraper_file_name(cache_type, self.platform)
-            log_debug('Scraper.flush_disk_cache() Saving "{}"'.format(json_file_path))
 
             # Get JSON data.
             json_data = json.dumps(
@@ -1575,22 +1587,24 @@ class Scraper(object):
                 indent = Scraper.JSON_indent, separators = Scraper.JSON_separators)
 
             # Write to disk
+            json_file_path, json_fname = self._get_scraper_file_name(cache_type, self.platform)
             file = io.open(json_file_path, 'w', encoding = 'utf-8')
             file.write(unicode(json_data))
             file.close()
+            # log_debug('Saved "{}"'.format(json_file_path))
+            log_debug('Saved "<SCRAPER_CACHE_DIR>/{}"'.format(json_fname))
 
         # --- Global caches ---
+        log_debug('Scraper.flush_disk_cache() Saving scraper global disk cache...')
         for cache_type in Scraper.GLOBAL_CACHE_LIST:
             # Skip unloaded caches
             if not self.global_disk_caches_loaded[cache_type]:
-                log_debug('Scraper.flush_disk_cache() Skipping global {} (Unloaded)'.format(cache_type))
+                log_debug('Skipping global {} (Unloaded)'.format(cache_type))
                 continue
             # Skip empty caches
             if not self.global_disk_caches[cache_type]:
-                log_debug('Scraper.flush_disk_cache() Skipping global {} (Empty)'.format(cache_type))
+                log_debug('Skipping global {} (Empty)'.format(cache_type))
                 continue
-            json_file_path = self._get_global_file_name(cache_type)
-            log_debug('Scraper.flush_disk_cache() Saving global "{}"'.format(json_file_path))
 
             # Get JSON data.
             json_data = json.dumps(
@@ -1598,18 +1612,20 @@ class Scraper(object):
                 indent = Scraper.JSON_indent, separators = Scraper.JSON_separators)
 
             # Write to disk
+            json_file_path, json_fname = self._get_global_file_name(cache_type)
             file = io.open(json_file_path, 'w', encoding = 'utf-8')
             file.write(unicode(json_data))
             file.close()
+            # log_debug('Saved global "{}"'.format(json_file_path))
+            log_debug('Saved global "<SCRAPER_CACHE_DIR>/{}"'.format(json_fname))
 
     # --- Internal cache functions ---------------------------------------------------------------
     def _get_scraper_file_name(self, cache_type, platform):
         scraper_filename = self.get_filename()
-        json_file_path = os.path.join(
-            self.scraper_cache_dir,
-            scraper_filename + '__' + platform + '__' + cache_type + '.json').decode('utf-8')
+        json_fname = scraper_filename + '__' + platform + '__' + cache_type + '.json'
+        json_full_path = os.path.join(self.scraper_cache_dir, json_fname).decode('utf-8')
 
-        return json_file_path
+        return json_full_path, json_fname
 
     # Returns True if disk cache has been loaded, False otherwise.
     def _is_disk_cache_loaded(self, cache_type):
@@ -1617,9 +1633,8 @@ class Scraper(object):
 
     def _load_disk_cache(self, cache_type, platform):
         # --- Get filename ---
-        json_file_path = self._get_scraper_file_name(cache_type, platform)
+        json_file_path, json_fname = self._get_scraper_file_name(cache_type, platform)
         log_debug('Scraper._load_disk_cache() Loading cache "{}"'.format(cache_type))
-        log_debug('File "{}"'.format(json_file_path))
 
         # --- Load cache if file exists ---
         if os.path.isfile(json_file_path):
@@ -1627,6 +1642,8 @@ class Scraper(object):
             file_contents = file.read()
             file.close()
             self.disk_caches[cache_type] = json.loads(file_contents)
+            # log_debug('Loaded "{}"'.format(json_file_path))
+            log_debug('Loaded "<SCRAPER_CACHE_DIR>/{}"'.format(json_fname))
         else:
             log_debug('Cache file not found. Resetting cache.')
             self.disk_caches[cache_type] = {}
@@ -1661,18 +1678,18 @@ class Scraper(object):
 
     # --- Global disk caches ---------------------------------------------------------------------
     def _get_global_file_name(self, cache_type):
-        json_file_path = os.path.join(self.scraper_cache_dir, cache_type + '.json').decode('utf-8')
+        json_fname = cache_type + '.json'
+        json_full_path = os.path.join(self.scraper_cache_dir, json_fname).decode('utf-8')
 
-        return json_file_path
+        return json_full_path, json_fname
 
     def _is_global_cache_loaded(self, cache_type):
         return self.global_disk_caches_loaded[cache_type]
 
     def _load_global_cache(self, cache_type):
         # --- Get filename ---
-        json_file_path = self._get_global_file_name(cache_type)
+        json_file_path, json_fname = self._get_global_file_name(cache_type)
         log_debug('Scraper._load_global_cache() Loading cache "{}"'.format(cache_type))
-        log_debug('File "{}"'.format(json_file_path))
 
         # --- Load cache if file exists ---
         if os.path.isfile(json_file_path):
@@ -1680,23 +1697,26 @@ class Scraper(object):
             file_contents = file.read()
             file.close()
             self.global_disk_caches[cache_type] = json.loads(file_contents)
+            # log_debug('Loaded "{}"'.format(json_file_path))
+            log_debug('Loaded "<SCRAPER_CACHE_DIR>/{}"'.format(json_fname))
         else:
             log_debug('Cache file not found. Resetting cache.')
             self.global_disk_caches[cache_type] = {}
         self.global_disk_caches_loaded[cache_type] = True
 
     def _check_global_cache(self, cache_type):
-        # --- Lazy load disk cache ---
         if not self._is_global_cache_loaded(cache_type):
             self._load_global_cache(cache_type)
 
-        # --- Check if cache is empty ---
         return self.global_disk_caches[cache_type]
 
     def _retrieve_from_global_cache(self, cache_type):
         return self.global_disk_caches[cache_type]
 
     def _update_global_cache(self, cache_type, data):
+        # Lazy load disk cache.
+        if not self._is_global_cache_loaded(cache_type):
+            self._load_global_cache(cache_type)
         self.global_disk_caches[cache_type] = data
 
 # ------------------------------------------------------------------------------------------------
