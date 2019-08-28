@@ -3690,14 +3690,18 @@ class ScreenScraper(Scraper):
     #   Return None but status_dic marks no error.
     def _retrieve_URL_as_JSON(self, url, status_dic):
         page_data_raw, http_code = net_get_URL(url, self._clean_URL_for_log(url))
-        if http_code == 404:
+        if http_code == 400:
+            # Code 400 describes an error. See API description page.
+            log_debug('ScreenScraper::_retrieve_URL_as_JSON() HTTP status 400: general error.')
+            return None
+        elif http_code == 404:
             # Code 404 in SS means the ROM was not found.
             log_debug('ScreenScraper::_retrieve_URL_as_JSON() HTTP status 404: no candidates found.')
             return None
         elif http_code != 200:
             # Unknown HTTP status code.
-            self._handle_exception(ex, status_dic,
-                'Bad HTTP status code {} in net_get_URL()'.format(http_code))
+            self._handle_error(
+                status_dic, 'Bad HTTP status code {} in net_get_URL()'.format(http_code))
             return None
         # self._dump_file_debug('ScreenScraper_data_raw.txt', page_data_raw)
 
@@ -3707,14 +3711,28 @@ class ScreenScraper(Scraper):
             self._handle_error(status_dic, 'Network error in net_get_URL()')
             return None
 
-        # Convert data to JSON
+        # Convert data to JSON.
         try:
-            json_data = json.loads(page_data_raw)
+            return json.loads(page_data_raw)
         except Exception as ex:
+            log_error('Error decoding JSON data from ScreenScraper.')
+
+        # This point is reached if there was an exception decoding JSON.
+        # Sometimes ScreenScraper API V2 returns badly formatted JSON. Try to fix this.
+        # See https://github.com/muldjord/skyscraper/blob/master/src/screenscraper.cpp
+        # The badly formatted JSON is at the end of the file, for example:
+        #
+        #			],     <-- Here it should be a ']' and not '],'.
+        #		}
+        #	}
+        #}
+        log_error('Trying to repair JSON string before parsing.')
+        page_data_raw = page_data_raw.replace('],\n\t\t}', ']\n\t\t}')
+        try:
+            return json.loads(page_data_raw)
+        except:
             self._handle_exception(ex, status_dic, 'Error decoding JSON data from ScreenScraper.')
             return None
-
-        return json_data
 
 # ------------------------------------------------------------------------------------------------
 # GameFAQs online scraper.
