@@ -41,6 +41,8 @@ from .net_IO import *
 from .rom_audit import *
 
 # --- Scraper use cases ---------------------------------------------------------------------------
+# THIS IS OBSOLETE, IT MUST BE UPDATED TO INCLUDE THE SCRAPER DISK CACHE.
+#
 # The ScraperFactory class is resposible to create a ScraperStrategy object according to the
 # addon settings and to keep a cached dictionary of Scraper objects.
 #
@@ -330,9 +332,6 @@ class ScraperFactory(object):
         self.strategy_obj.scraper_obj = None
         self.strategy_obj = None
 
-SCRAPE_ROM      = 'ROM'
-SCRAPE_LAUNCHER = 'Launcher'
-
 #
 # Main scraping logic.
 #
@@ -346,6 +345,10 @@ class ScrapeStrategy(object):
     # --- Asset actions ---
     ACTION_ASSET_LOCAL_ASSET = 100
     ACTION_ASSET_SCRAPER     = 200
+
+    SCRAPE_ROM      = 'ROM'
+    SCRAPE_LAUNCHER = 'Launcher'
+
 
     # --- Constructor ----------------------------------------------------------------------------
     # @param PATHS: PATH object.
@@ -951,7 +954,7 @@ class ScrapeStrategy(object):
         if not status_dic['status']: return status_dic
 
         # --- Grab candidate game ---
-        self._scrap_CM_get_candidate(SCRAPE_ROM, object_dic, data_dic, status_dic)
+        self._scrap_CM_get_candidate(ScrapeStrategy.SCRAPE_ROM, object_dic, data_dic, status_dic)
         if not status_dic['status']: return status_dic
 
         # --- Grab metadata ---
@@ -992,7 +995,7 @@ class ScrapeStrategy(object):
         if not status_dic['status']: return status_dic
 
         # --- Grab candidate game ---
-        self._scrap_CM_get_candidate(SCRAPE_LAUNCHER, object_dic, data_dic, status_dic)
+        self._scrap_CM_get_candidate(ScrapeStrategy.SCRAPE_LAUNCHER, object_dic, data_dic, status_dic)
         if not status_dic['status']: return status_dic
 
         # --- Grab metadata ---
