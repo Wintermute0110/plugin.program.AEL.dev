@@ -785,7 +785,7 @@ class ScrapeStrategy(object):
             # If scraper returns no images return current local asset.
             log_debug('{0} {1} found no images.'.format(self.asset_scraper_name, asset_name))
             return ret_asset_path
-        log_verb('{0} scraper returned {1} images.'.format(asset_name, len(assetdata_list)))
+        # log_verb('{0} scraper returned {1} images.'.format(asset_name, len(assetdata_list)))
 
         # --- Semi-automatic scraping (user choses an image from a list) ---
         if self.asset_selection_mode == 0:
@@ -3138,8 +3138,8 @@ class ScreenScraper(Scraper):
     # medatada and asset caches at all because the metadata and assets are generated
     # with the internal cache.
     def get_candidates(self, search_term, rombase_noext, platform, status_dic):
-        # --- If scraper is disabled return immediately and silently ---
         # If the scraper is disabled return None and do not mark error in status_dic.
+        # Candidate will not be introduced in the disk cache and will be scraped again.
         if self.scraper_disabled:
             log_debug('ScreenScraper.get_candidates() Scraper disabled. Returning empty data.')
             return None
@@ -3147,10 +3147,7 @@ class ScreenScraper(Scraper):
         # --- Request is not cached. Get candidates and introduce in the cache ---
         # ScreenScraper jeuInfos.php returns absolutely everything about a single ROM, including
         # metadata, artwork, etc. jeuInfos.php returns one game or nothing at all.
-        # The data returned by jeuInfos.php must be cached in this object for every request done.
         # ScreenScraper returns only one game or nothing at all.
-        # The candidates and the jeu_dic caches are synchronised. If there is a candidates
-        # cache miss then it is also a jeu_dic cache miss.
         scraper_platform = AEL_platform_to_ScreenScraper(platform)
         log_debug('ScreenScraper.get_candidates() search_term   "{}"'.format(search_term))
         log_debug('ScreenScraper.get_candidates() rombase_noext "{}"'.format(rombase_noext))
