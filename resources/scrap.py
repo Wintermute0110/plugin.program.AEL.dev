@@ -3521,43 +3521,59 @@ class ScreenScraper(Scraper):
         return candidate_list
 
     def _parse_meta_title(self, jeu_dic):
-        # First search for the user preferred region.
-        for n in jeu_dic['noms']:
-            if n['region'] == self.user_region: return n['text']
-        # If nothing found then search in the sorted list of regions.
-        for region in ScreenScraper.region_list:
+        try:
+            # First search for the user preferred region.
             for n in jeu_dic['noms']:
-                if n['region'] == region: return n['text']
+                if n['region'] == self.user_region: return n['text']
+            # If nothing found then search in the sorted list of regions.
+            for region in ScreenScraper.region_list:
+                for n in jeu_dic['noms']:
+                    if n['region'] == region: return n['text']
+        except KeyError:
+            pass
 
-        # Default name is first of the list. In theory we will never reach this point.
-        return jeu_dic['noms'][0]['text']
+        return DEFAULT_META_TITLE
 
     def _parse_meta_year(self, jeu_dic):
-        for n in jeu_dic['dates']:
-            if n['region'] == self.user_region: return n['text'][0:4]
-        for region in ScreenScraper.region_list:
+        try:
             for n in jeu_dic['dates']:
-                if n['region'] == region: return n['text'][0:4]
+                if n['region'] == self.user_region: return n['text'][0:4]
+            for region in ScreenScraper.region_list:
+                for n in jeu_dic['dates']:
+                    if n['region'] == region: return n['text'][0:4]
+        except KeyError:
+            pass
 
-        return jeu_dic['dates'][0]['text'][0:4]
+        return DEFAULT_META_YEAR
 
     # Use first genre only for now.
     def _parse_meta_genre(self, jeu_dic):
-        for n in jeu_dic['genres'][0]['noms']:
-            if n['langue'] == self.user_language: return n['text']
-        for language in ScreenScraper.language_list:
-            for n in jeu_dic['genres'][0]['noms']:
-                if n['langue'] == language: return n['text']
+        try:
+            genre_item = jeu_dic['genres'][0]
+            for n in genre_item['noms']:
+                if n['langue'] == self.user_language: return n['text']
+            for language in ScreenScraper.language_list:
+                for n in genre_item['noms']:
+                    if n['langue'] == language: return n['text']
+        except KeyError:
+            pass
 
-        return jeu_dic['genres'][0]['noms'][0]['text']
+        return DEFAULT_META_GENRE
 
     def _parse_meta_developer(self, jeu_dic):
-        if 'developpeur' in jeu_dic: return jeu_dic['developpeur']['text']
+        try:
+            return jeu_dic['developpeur']['text']
+        except KeyError:
+            pass
 
         return DEFAULT_META_DEVELOPER
 
     def _parse_meta_nplayers(self, jeu_dic):
-        if 'joueurs' in jeu_dic: return jeu_dic['joueurs']['text']
+        # EAFP Easier to ask for forgiveness than permission.
+        try:
+            return jeu_dic['joueurs']['text']
+        except KeyError:
+            pass
 
         return DEFAULT_META_NPLAYERS
 
@@ -3569,13 +3585,16 @@ class ScreenScraper(Scraper):
         return DEFAULT_META_ESRB
 
     def _parse_meta_plot(self, jeu_dic):
-        for n in jeu_dic['synopsis']:
-            if n['langue'] == self.user_language: return n['text']
-        for language in ScreenScraper.language_list:
+        try:
             for n in jeu_dic['synopsis']:
-                if n['langue'] == language: return n['text']
+                if n['langue'] == self.user_language: return n['text']
+            for language in ScreenScraper.language_list:
+                for n in jeu_dic['synopsis']:
+                    if n['langue'] == language: return n['text']
+        except KeyError:
+            pass
 
-        return jeu_dic['synopsis'][0]['text']
+        return DEFAULT_META_PLOT
 
     # Get ALL available assets for game.
     # Returns all assets found in the jeu_dic dictionary. It is not necessary to cache this
@@ -3749,7 +3768,7 @@ class ScreenScraper(Scraper):
         #		}
         #	}
         #}
-        log_error('Trying to repair JSON string before parsing.')
+        log_error('Trying to repair ScreenScraper JSON string before parsing.')
         page_data_raw = page_data_raw.replace('],\n\t\t}', ']\n\t\t}')
         try:
             return json.loads(page_data_raw)
