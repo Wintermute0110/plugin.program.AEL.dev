@@ -3120,10 +3120,10 @@ class ScreenScraper(Scraper):
     # limited.
     def check_before_scraping(self, status_dic):
         if self.ssid and self.sspassword:
-            log_debug('ScreenScraper::check_before_scraping() ScreenScraper user name and pass OK.')
+            log_debug('ScreenScraper.check_before_scraping() ScreenScraper user name and pass OK.')
             return
-        log_error('ScreenScraper::check_before_scraping() ScreenScraper user name and/or pass not configured.')
-        log_error('ScreenScraper::check_before_scraping() Disabling ScreenScraper scraper.')
+        log_error('ScreenScraper.check_before_scraping() ScreenScraper user name and/or pass not configured.')
+        log_error('ScreenScraper.check_before_scraping() Disabling ScreenScraper scraper.')
         self.scraper_deactivated = True
         status_dic['status'] = False
         status_dic['dialog'] = KODI_MESSAGE_DIALOG
@@ -3152,10 +3152,10 @@ class ScreenScraper(Scraper):
         # The candidates and the jeu_dic caches are synchronised. If there is a candidates
         # cache miss then it is also a jeu_dic cache miss.
         scraper_platform = AEL_platform_to_ScreenScraper(platform)
-        log_debug('ScreenScraper.get_candidates() search_term   "{0}"'.format(search_term))
-        log_debug('ScreenScraper.get_candidates() rombase_noext "{0}"'.format(rombase_noext))
-        log_debug('ScreenScraper.get_candidates() AEL platform  "{0}"'.format(platform))
-        log_debug('ScreenScraper.get_candidates() SS platform   "{0}"'.format(scraper_platform))
+        log_debug('ScreenScraper.get_candidates() search_term   "{}"'.format(search_term))
+        log_debug('ScreenScraper.get_candidates() rombase_noext "{}"'.format(rombase_noext))
+        log_debug('ScreenScraper.get_candidates() AEL platform  "{}"'.format(platform))
+        log_debug('ScreenScraper.get_candidates() SS platform   "{}"'.format(scraper_platform))
         candidate_list = self._search_candidates_jeuInfos(
             search_term, rombase_noext, platform, scraper_platform, status_dic)
         # _search_candidates_jeuRecherche() does not work for get_metadata() and get_assets()
@@ -3164,7 +3164,6 @@ class ScreenScraper(Scraper):
         #     search_term, rombase_noext, platform, scraper_platform, status_dic)
         if not status_dic['status']: return None
 
-        # Always return a list, even if only with 1 element.
         return candidate_list
 
     # This function may be called many times in the ROM Scanner. All calls to this function
@@ -3199,11 +3198,11 @@ class ScreenScraper(Scraper):
     def get_assets(self, asset_ID, status_dic):
         # --- If scraper is disabled return immediately and silently ---
         if self.scraper_disabled:
-            log_debug('ScreenScraper::get_assets() Scraper disabled. Returning empty data.')
+            log_debug('ScreenScraper.get_assets() Scraper disabled. Returning empty data.')
             return []
 
         asset_info = assets_get_info_scheme(asset_ID)
-        log_debug('ScreenScraper::get_assets() Getting assets {} (ID {}) for candidate ID = {}'.format(
+        log_debug('ScreenScraper.get_assets() Getting assets {} (ID {}) for candidate ID = {}'.format(
             asset_info.name, asset_ID, self.candidate['id']))
 
         # --- Retrieve jeu_dic from internal cache ---
@@ -3439,16 +3438,15 @@ class ScreenScraper(Scraper):
             rom_type, system_id, crc_str, rom_name, rom_size)
         url = url_a + url_b + url_c
         json_data = self._retrieve_URL_as_JSON(url, status_dic)
-        if json_data is None or not status_dic['status']: return None
+        # If status_dic mark an error there was an exception. Return None.
+        if not status_dic['status']: return None
+        # If no games were found server replied with an HTTP 404 error. json_data is None and
+        # status_dic signals operation succesfull. Return empty list of candidates.
+        if json_data is None: return []
         self._dump_json_debug('ScreenScraper_gameInfo.json', json_data)
 
-        # * If no games were found server replied with a HTTP 404 error. json_data is None and
-        #  status_dic signals operation succesfull. Return empty list of candidates.
-        # * If an error/exception happened then it is marked in status_dic.
-        if json_data is None: return []
+        # --- Print some info ---
         jeu_dic = json_data['response']['jeu']
-
-        # --- Deal with errors returned by api/jeuInfos.php ---
         id_str = str(jeu_dic['id'])
         title = jeu_dic['noms'][0]['text']
         log_debug('Game "{}" (ID {})'.format(title, id_str))
@@ -3735,22 +3733,25 @@ class ScreenScraper(Scraper):
         if http_code == 400:
             # Code 400 describes an error. See API description page.
             log_debug('ScreenScraper::_retrieve_URL_as_JSON() HTTP status 400: general error.')
+            self._handle_error(status_dic,
+                'Bad HTTP status code {} in net_get_URL()'.format(http_code))
             return None
         elif http_code == 404:
-            # Code 404 in SS means the ROM was not found.
+            # Code 404 in SS means the ROM was not found. Return None but do not mark
+            # error in status_dic.
             log_debug('ScreenScraper::_retrieve_URL_as_JSON() HTTP status 404: no candidates found.')
             return None
         elif http_code != 200:
             # Unknown HTTP status code.
-            self._handle_error(
-                status_dic, 'Bad HTTP status code {} in net_get_URL()'.format(http_code))
+            self._handle_error(status_dic,
+                'Bad HTTP status code {} in net_get_URL()'.format(http_code))
             return None
         # self._dump_file_debug('ScreenScraper_data_raw.txt', page_data_raw)
 
-        # If page_data_raw is None at this point is because of an exception which is not
-        # urllib2.HTTPError.
+        # If page_data_raw is None at this point is because of an exception in net_get_URL()
+        # which is not urllib2.HTTPError.
         if page_data_raw is None:
-            self._handle_error(status_dic, 'Network error in net_get_URL()')
+            self._handle_error(status_dic, 'Network error/exception in net_get_URL()')
             return None
 
         # Convert data to JSON.
@@ -3768,12 +3769,13 @@ class ScreenScraper(Scraper):
         #		}
         #	}
         #}
-        log_error('Trying to repair ScreenScraper JSON string before parsing.')
+        log_error('Trying to repair ScreenScraper data string before parsing JSON again.')
         page_data_raw = page_data_raw.replace('],\n\t\t}', ']\n\t\t}')
         try:
             return json.loads(page_data_raw)
         except:
-            self._handle_exception(ex, status_dic, 'Error decoding JSON data from ScreenScraper.')
+            self._handle_exception(ex, status_dic,
+                'Error decoding JSON data from ScreenScraper (fixed version).')
             return None
 
 # ------------------------------------------------------------------------------------------------
