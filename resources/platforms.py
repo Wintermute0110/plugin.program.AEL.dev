@@ -24,31 +24,44 @@ DAT_NOINTRO = 'No-Intro'
 DAT_REDUMP  = 'Redump'
 DAT_NONE    = ''
 class Platform:
-    def __init__(self, name, shortname, DAT, aliasof = ''):
+    def __init__(self, name, shortname, compactname, aliasof = None, DAT = None,
+        TGDB_plat = None, MG_plat = None, SS_plat = None, GF_plat = None):
         self.long_name    = name
         self.short_name   = shortname
-        self.compact_name = shortname
-        self.DAT          = DAT
+        self.compact_name = compactname
         self.aliasof      = aliasof
+        self.DAT          = DAT
+        self.TGDB_plat    = TGDB_plat
+        self.MG_plat      = MG_plat
+        self.SS_plat      = SS_plat
+        self.GF_plat      = GF_plat
 
 # From this list create simplified list to access platform information.
 # Shorted alphabetically by long name.
 # To be compatible with Retroplayer and Kodi artwork database, anything that can be launched
 # by Retroarch must be a platform, including Doom, CaveStory, etc.
-#
-# When designing this put as an example a complete platform and a platform alias.
+# Platform names must have filesystem-safe characters.
+# When possible user No-Intro DAT-o-MATIC names. Fallback to Wikipedia names.
 AEL_platforms = [
-    # --- Arcade is an alias of MAME ---
-    Platform('MAME', 'mame', DAT_MAME),
+    # --- 3DO ---
+    Platform('3DO', 'console-3d0', '3do', None, DAT_REDUMP, '25', '35', '29', '61'),
 
     # --- Amstrad ---
-    Platform('Amstrad CPC', 'cpc', DAT_NONE),
+    Platform('Amstrad CPC', 'computer-cpc', 'cpc', None, DAT_NONE, '4914', '60', '65', '46'),
 
     # --- Atari ---
-    Platform('Atari 2600', 'a2600', DAT_NOINTRO),
+
+    # --- Bandai ---
 
     # --- Coleco ---
-    Platform('Colecovision', 'coleco', DAT_NOINTRO),
+
+    # --- Commodore ---
+
+    # --- Emerson ---
+
+    # --- Nintendo ---
+    Platform('Nintendo Famicon', 'nintendo-famicon', 'famicon', 'nes'),
+    Platform('Nintendo NES', 'nintendo-nes', 'nes', None, DAT_NOINTRO, '7', '22', '3', '41'),
 ]
 
 AEL_p_list = []
@@ -60,7 +73,6 @@ for p_obj in AEL_platforms:
 # -------------------------------------------------------------------------------------------------
 # Old platform engine
 # -------------------------------------------------------------------------------------------------
-# When possible user No-Intro DAT-o-MATIC names. Fallback to Wikipedia names.
 AEL_platform_list = [
     # --- 3DO ---
     '3DO Interactive Multiplayer',
