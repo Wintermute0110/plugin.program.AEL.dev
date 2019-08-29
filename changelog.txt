@@ -65,6 +65,10 @@ WIP      [CORE] Sometimes the scrapers download wrong/corrupt data, or produce 0
          utility to check asset images and delete corrupt images so they can be rescraped
          again.
 
+WIP      [CORE] Support for Advanced MAME Launcher exported virtual launchers.
+         This feature requires AML 0.9.X
+         AML creates the Category "Arcade (AML)" and places the exported launchers there.
+
 WIP      [COLLECTIONS] Current way of storing the collection artwork, in a unified XML file,
          is not good. Think of a good way to exporting collections (for example, store the
          artwork in a subdirectory). Possible way of solving filename collisions
@@ -166,10 +170,6 @@ WIP      [CORE] Create a couple of new ROM context menus, "Manage Recently playe
          See AML for an implementation.
          See https://forum.kodi.tv/showthread.php?tid=287826&pid=2698811#pid2698811
 
-WIP      [CORE] Support for Advanced MAME Launcher exported virtual launchers.
-         This feature requires AML 0.9.X
-         AML creates the Category "Arcade (AML)" and places the exported launchers there.
-
 FEATURE  [CORE] New ROMs artwork type 3D Boxes, asked by Rufoo.
 
 FEATURE  [CORE] New entry in root menu named "Global Reports"
@@ -179,7 +179,7 @@ FEATURE  [CORE] New entry in root menu named "Utilities"
 FEATURE  [CORE] Move stuff from addon settings into the Utilities menu, including the
          database upgrading functions.
 
-WIP      [CORE] Make sure AEL never crashes when rendering the root window, even if 
+FEATURE  [CORE] Make sure AEL never crashes when rendering the root window, even if 
          categories.xml is corruped. Users must be able to access the Utilities menu always to
          be able to upgrade the database. In case of crash when rendering the root window,
          ask the user to update the databases (in the case the crash is due to a missing 
