@@ -118,6 +118,7 @@ def net_download_img(img_url, file_path):
 
 #
 # User agent is fixed and defined in global var USER_AGENT
+# https://docs.python.org/2/library/urllib2.html
 #
 # @param url: [Unicode string] URL to open
 # @param url_log: [Unicode string] If not None this URL will be used in the logs.
@@ -142,7 +143,13 @@ def net_get_URL(url, url_log = None):
     # and page_bytes the message.
     except urllib2.HTTPError as ex:
         http_code = ex.code
-        page_bytes = unicode(ex.reason)
+        # Try to read contents of the web page.
+        # If it fails get error string from the exception object.
+        try:
+            page_bytes = ex.read()
+            ex.close()
+        except:
+            page_bytes = unicode(ex.reason)
         log_error('(HTTPError) In net_get_URL()')
         log_error('(HTTPError) Object type "{}"'.format(type(ex)))
         log_error('(HTTPError) Message "{}"'.format(str(ex)))
