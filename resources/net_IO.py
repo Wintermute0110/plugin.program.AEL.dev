@@ -92,11 +92,13 @@ def net_download_img(img_url, file_path):
     # known to take action.
     except IOError as ex:
         log_error('(IOError) In net_download_img(), network code.')
-        log_error('Message: {0}'.format(str(ex)))
+        log_error('(IOError) Object type "{}"'.format(type(ex)))
+        log_error('(IOError) Message "{0}"'.format(str(ex)))
         return
     except Exception as ex:
         log_error('(Exception) In net_download_img(), network code.')
-        log_error('Message: {0}'.format(str(ex)))
+        log_error('(Exception) Object type "{}"'.format(type(ex)))
+        log_error('(Exception) Message "{0}"'.format(str(ex)))
         return
 
     # --- Write image file to disk ---
@@ -107,10 +109,12 @@ def net_download_img(img_url, file_path):
         f.close()
     except IOError as ex:
         log_error('(IOError) In net_download_img(), disk code.')
-        log_error('Message: {0}'.format(str(ex)))
+        log_error('(IOError) Object type "{}"'.format(type(ex)))
+        log_error('(IOError) Message "{0}"'.format(str(ex)))
     except Exception as ex:
         log_error('(Exception) In net_download_img(), disk code.')
-        log_error('Message: {0}'.format(str(ex)))
+        log_error('(Exception) Object type "{}"'.format(type(ex)))
+        log_error('(Exception) Message "{0}"'.format(str(ex)))
 
 #
 # User agent is fixed and defined in global var USER_AGENT
