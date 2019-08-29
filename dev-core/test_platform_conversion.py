@@ -26,17 +26,19 @@ sl = []
 sl.append('Number of AEL platforms {}'.format(len(AEL_platform_list)))
 sl.append('')
 table_str = [
-    ['left', 'left', 'left', 'left', 'left', 'left'],
-    ['AEL platform long name', 'AEL short name', 'AEL compact name',
-     'TheGamesDB', 'MobyGames', 'ScreenScraper'],
+    ['left', 'left', 'left', 'left', 'left', 'left', 'left', 'left'],
+    ['AEL long name', 'AEL short name', 'AEL compact name', 'Alias of',
+     'TheGamesDB', 'MobyGames', 'ScreenScraper', 'GameFAQs'],
 ]
 for AEL_plat in AEL_platform_list:
     TGDB_plat = AEL_platform_to_TheGamesDB(AEL_plat)
     MobyGames_plat = AEL_platform_to_MobyGames(AEL_plat)
     ScreenScraper_plat = AEL_platform_to_ScreenScraper(AEL_plat)
+    GameFAQs_plat = AEL_platform_to_GameFAQs(AEL_plat)
     table_str.append([
-        unicode(AEL_plat), '', '',
-        unicode(TGDB_plat), unicode(MobyGames_plat), unicode(ScreenScraper_plat),
+        unicode(AEL_plat), '', '', '',
+        unicode(TGDB_plat), unicode(MobyGames_plat),
+        unicode(ScreenScraper_plat), unicode(GameFAQs_plat),
     ])
 table_str_list = text_render_table_str(table_str)
 sl.extend(table_str_list)

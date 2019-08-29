@@ -1,91 +1,91 @@
 Number of AEL platforms 87
 
-AEL platform long name        AEL short name  AEL compact name  TheGamesDB  MobyGames  ScreenScraper
-----------------------------------------------------------------------------------------------------
-3DO Interactive Multiplayer                                     25          35         29           
-Amstrad CPC                                                     4914        60         65           
-Atari 2600                                                      22          28         26           
-Atari 5200                                                      26          33         40           
-Atari 7800                                                      27          34         41           
-Atari Jaguar                                                    28          17         27           
-Atari Jaguar CD                                                 29          17         171          
-Atari Lynx                                                      4924        18         28           
-Atari 8-bit                                                     0           0          0            
-Atari ST                                                        4937        24         42           
-Bandai WonderSwan                                               4925        48         45           
-Bandai WonderSwan Color                                         4926        49         46           
-Colecovision                                                    31          29         48           
-Commodore 64                                                    40          27         66           
-Commodore Amiga                                                 4911        19         64           
-Commodore Amiga CD32                                            4947        56         130          
-Commodore Plus-4                                                0           115                     
-Commodore VIC-20                                                4945        43         73           
-Emerson Arcadia 2001                                            0           0          0            
-Fairchild Channel F                                             0           0          0            
-Fujitsu FM Towns Marty                                          4932        102        97           
-GCE Vectrex                                                     4939        37         102          
-Magnavox Odyssey2                                               4927        78                      
-MAME                                                            23          143        75           
-Mattel Intellivision                                            32          30         115          
-Microsoft MS-DOS                                                1           2          135          
-Microsoft MSX                                                   4929        57         113          
-Microsoft MSX2                                                  4929        57         116          
-Microsoft Windows                                               1           3          136          
-Microsoft Xbox                                                  14          13         32           
-Microsoft Xbox 360                                              15          69         33           
-Microsoft Xbox One                                              4920        142                     
-NEC PC Engine                                                   34          40         31           
-NEC PC Engine CDROM2                                            4955        45         114          
-NEC TurboGrafx 16                                               34          40         31           
-NEC TurboGrafx CD                                               4955        45         114          
-NEC SuperGrafx                                                  34          127        105          
-NEC PC-FX                                                       4930        59         72           
-Nintendo 3DS                                                    4912        101        17           
-Nintendo 64                                                     3           9          14           
-Nintendo 64DD                                                   3           9          122          
-Nintendo DS                                                     8           44         15           
-Nintendo DSi                                                    8           87         15           
-Nintendo Famicom                                                7           22         3            
-Nintendo Famicom Disk System                                    4936        22         106          
-Nintendo GameBoy                                                4           10         9            
-Nintendo GameBoy Advance                                        5           12         12           
-Nintendo GameBoy Color                                          41          11         10           
-Nintendo GameCube                                               2           14         13           
-Nintendo NES                                                    7           22         3            
-Nintendo Pokemon Mini                                           4957        152        211          
-Nintendo SNES                                                   6           15         4            
-Nintendo Switch                                                 4971        203                     
-Nintendo Virtual Boy                                            4918        38         11           
-Nintendo Wii                                                    9           82         16           
-Nintendo Wii U                                                  38          132        18           
-Philips Videopac G7000                                          0           78         104          
-Philips Videopac Plus G7400                                     0           128        104          
-RCA Studio II                                                   0           0          0            
-ScummVM                                                         0                      123          
-Sega 32X                                                        33          21         19           
-Sega Dreamcast                                                  16          8          23           
-Sega Game Gear                                                  20          25         21           
-Sega Genesis                                                    18          16         1            
-Sega Master System                                              35          26         2            
-Sega MegaCD                                                     21          20         20           
-Sega MegaDrive                                                  36          16         1            
-Sega PICO                                                       4958        103                     
-Sega Saturn                                                     17          23         22           
-Sega SC-3000                                                    4949                                
-Sega SegaCD                                                     21          20         20           
-Sega SG-1000                                                    4949        114        109          
-Sharp X68000                                                    4931        106        79           
-Sinclair ZX Spectrum                                            4913        41         76           
-SNK Neo-Geo AES                                                 24          36         142          
-SNK Neo-Geo CD                                                  4956        54         70           
-SNK Neo-Geo MVS                                                 24          143        68           
-SNK Neo-Geo Pocket                                              4922        52         25           
-SNK Neo-Geo Pocket Color                                        4923        53         82           
-Sony PlayStation                                                10          6          57           
-Sony PlayStation 2                                              11          7          58           
-Sony PlayStation 3                                              12          81         59           
-Sony PlayStation 4                                              4919        141                     
-Sony PlayStation Portable                                       13          46         61           
-Sony PlayStation Vita                                           39          105        62           
-Watara Supervision                                              0           0          0            
-Unknown                                                         0           0          0            
+AEL long name                 AEL short name  AEL compact name  Alias of  TheGamesDB  MobyGames  ScreenScraper  GameFAQs
+------------------------------------------------------------------------------------------------------------------------
+3DO Interactive Multiplayer                                               25          35         29             61      
+Amstrad CPC                                                               4914        60         65             46      
+Atari 2600                                                                22          28         26             6       
+Atari 5200                                                                26          33         40             20      
+Atari 7800                                                                27          34         41             51      
+Atari Jaguar                                                              28          17         27             72      
+Atari Jaguar CD                                                           29          17         171            82      
+Atari Lynx                                                                4924        18         28             58      
+Atari 8-bit                                                               0           0          0              0       
+Atari ST                                                                  4937        24         42             38      
+Bandai WonderSwan                                                         4925        48         45             90      
+Bandai WonderSwan Color                                                   4926        49         46             95      
+Colecovision                                                              31          29         48             29      
+Commodore 64                                                              40          27         66             24      
+Commodore Amiga                                                           4911        19         64             39      
+Commodore Amiga CD32                                                      4947        56         130            70      
+Commodore Plus-4                                                          0           115                       0       
+Commodore VIC-20                                                          4945        43         73             11      
+Emerson Arcadia 2001                                                      0           0          0              0       
+Fairchild Channel F                                                       0           0          0              0       
+Fujitsu FM Towns Marty                                                    4932        102        97             55      
+GCE Vectrex                                                               4939        37         102            34      
+Magnavox Odyssey2                                                         4927        78                        9       
+MAME                                                                      23          143        75             2       
+Mattel Intellivision                                                      32          30         115            16      
+Microsoft MS-DOS                                                          1           2          135            19      
+Microsoft MSX                                                             4929        57         113            40      
+Microsoft MSX2                                                            4929        57         116            40      
+Microsoft Windows                                                         1           3          136            19      
+Microsoft Xbox                                                            14          13         32             98      
+Microsoft Xbox 360                                                        15          69         33             111     
+Microsoft Xbox One                                                        4920        142                       121     
+NEC PC Engine                                                             34          40         31             53      
+NEC PC Engine CDROM2                                                      4955        45         114            56      
+NEC TurboGrafx 16                                                         34          40         31             53      
+NEC TurboGrafx CD                                                         4955        45         114            56      
+NEC SuperGrafx                                                            34          127        105            53      
+NEC PC-FX                                                                 4930        59         72             79      
+Nintendo 3DS                                                              4912        101        17             116     
+Nintendo 64                                                               3           9          14             84      
+Nintendo 64DD                                                             3           9          122            92      
+Nintendo DS                                                               8           44         15             108     
+Nintendo DSi                                                              8           87         15             108     
+Nintendo Famicom                                                          7           22         3              41      
+Nintendo Famicom Disk System                                              4936        22         106            47      
+Nintendo GameBoy                                                          4           10         9              59      
+Nintendo GameBoy Advance                                                  5           12         12             91      
+Nintendo GameBoy Color                                                    41          11         10             57      
+Nintendo GameCube                                                         2           14         13             99      
+Nintendo NES                                                              7           22         3              41      
+Nintendo Pokemon Mini                                                     4957        152        211            0       
+Nintendo SNES                                                             6           15         4              63      
+Nintendo Switch                                                           4971        203                       124     
+Nintendo Virtual Boy                                                      4918        38         11             83      
+Nintendo Wii                                                              9           82         16             114     
+Nintendo Wii U                                                            38          132        18             118     
+Philips Videopac G7000                                                    0           78         104            9       
+Philips Videopac Plus G7400                                               0           128        104            0       
+RCA Studio II                                                             0           0          0              0       
+ScummVM                                                                   0                      123            0       
+Sega 32X                                                                  33          21         19             74      
+Sega Dreamcast                                                            16          8          23             67      
+Sega Game Gear                                                            20          25         21             62      
+Sega Genesis                                                              18          16         1              54      
+Sega Master System                                                        35          26         2              49      
+Sega MegaCD                                                               21          20         20             65      
+Sega MegaDrive                                                            36          16         1              54      
+Sega PICO                                                                 4958        103                       0       
+Sega Saturn                                                               17          23         22             76      
+Sega SC-3000                                                              4949                                  0       
+Sega SegaCD                                                               21          20         20             65      
+Sega SG-1000                                                              4949        114        109            43      
+Sharp X68000                                                              4931        106        79             52      
+Sinclair ZX Spectrum                                                      4913        41         76             35      
+SNK Neo-Geo AES                                                           24          36         142            64      
+SNK Neo-Geo CD                                                            4956        54         70             68      
+SNK Neo-Geo MVS                                                           24          143        68             2       
+SNK Neo-Geo Pocket                                                        4922        52         25             0       
+SNK Neo-Geo Pocket Color                                                  4923        53         82             89      
+Sony PlayStation                                                          10          6          57             78      
+Sony PlayStation 2                                                        11          7          58             94      
+Sony PlayStation 3                                                        12          81         59             113     
+Sony PlayStation 4                                                        4919        141                       120     
+Sony PlayStation Portable                                                 13          46         61             109     
+Sony PlayStation Vita                                                     39          105        62             117     
+Watara Supervision                                                        0           0          0              0       
+Unknown                                                                   0           0          0              0       
