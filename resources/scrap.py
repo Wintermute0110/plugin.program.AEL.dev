@@ -594,18 +594,18 @@ class ScrapeStrategy(object):
                     AInfo.name, i, asset_ID, self.asset_action_list[i]))
 
         # --- Print some debug info ---
-        log_verb('Set Title     file "{0}"'.format(romdata['s_title']))
-        log_verb('Set Snap      file "{0}"'.format(romdata['s_snap']))
-        log_verb('Set Boxfront  file "{0}"'.format(romdata['s_boxfront']))
-        log_verb('Set Boxback   file "{0}"'.format(romdata['s_boxback']))
-        log_verb('Set Cartridge file "{0}"'.format(romdata['s_cartridge']))
-        log_verb('Set Fanart    file "{0}"'.format(romdata['s_fanart']))
-        log_verb('Set Banner    file "{0}"'.format(romdata['s_banner']))
-        log_verb('Set Clearlogo file "{0}"'.format(romdata['s_clearlogo']))
-        log_verb('Set Flyer     file "{0}"'.format(romdata['s_flyer']))
-        log_verb('Set Map       file "{0}"'.format(romdata['s_map']))
-        log_verb('Set Manual    file "{0}"'.format(romdata['s_manual']))
-        log_verb('Set Trailer   file "{0}"'.format(romdata['s_trailer']))
+        log_verb('Set Title     file "{}"'.format(romdata['s_title']))
+        log_verb('Set Snap      file "{}"'.format(romdata['s_snap']))
+        log_verb('Set Boxfront  file "{}"'.format(romdata['s_boxfront']))
+        log_verb('Set Boxback   file "{}"'.format(romdata['s_boxback']))
+        log_verb('Set Cartridge file "{}"'.format(romdata['s_cartridge']))
+        log_verb('Set Fanart    file "{}"'.format(romdata['s_fanart']))
+        log_verb('Set Banner    file "{}"'.format(romdata['s_banner']))
+        log_verb('Set Clearlogo file "{}"'.format(romdata['s_clearlogo']))
+        log_verb('Set Flyer     file "{}"'.format(romdata['s_flyer']))
+        log_verb('Set Map       file "{}"'.format(romdata['s_map']))
+        log_verb('Set Manual    file "{}"'.format(romdata['s_manual']))
+        log_verb('Set Trailer   file "{}"'.format(romdata['s_trailer']))
 
         return romdata
 
@@ -625,7 +625,7 @@ class ScrapeStrategy(object):
         rom_base_noext = ROM_FN.getBase_noext()
         if scraper_obj.check_candidates_cache(rom_base_noext, self.platform):
             log_debug('ROM "{}" in candidates cache.'.format(rom_base_noext))
-            candidate = self.scraper_obj.retrieve_from_candidates_cache(rom_base_noext, platform)
+            candidate = scraper_obj.retrieve_from_candidates_cache(rom_base_noext, self.platform)
             if not candidate:
                 log_debug('Candidate game is empty. ROM will not be scraped again by the scanner.')
             use_from_cache = True
@@ -638,7 +638,7 @@ class ScrapeStrategy(object):
             scraper_obj.set_candidate_from_cache(rom_base_noext, self.platform)
         else:
             # Clear all caches to remove preexiting information, just in case user is rescraping.
-            self.scraper_obj.clear_cache(rom_base_noext, platform)
+            scraper_obj.clear_cache(rom_base_noext, self.platform)
 
             # --- Call scraper and get a list of games ---
             rom_name_scraping = text_format_ROM_name_for_scraping(ROM_FN.getBase_noext())
@@ -672,7 +672,7 @@ class ScrapeStrategy(object):
                 log_debug('Found no candidates after searching.')
                 scraper_obj.set_candidate(rom_base_noext, self.platform, dict())
                 return
-            log_debug('Scraper {0} found {1} candidate/s'.format(scraper_name, len(candidates)))
+            log_debug('Scraper {} found {} candidate/s'.format(scraper_name, len(candidates)))
 
             # --- Choose game to download metadata ---
             if self.game_selection_mode == 0:
@@ -686,14 +686,14 @@ class ScrapeStrategy(object):
                     self.pdialog.close()
                     game_name_list = [candidate['display_name'] for candidate in candidates]
                     select_candidate_idx = xbmcgui.Dialog().select(
-                        'Select game for ROM {0}'.format(ROM_FN.getBase_noext()), game_name_list)
+                        'Select game for ROM {}'.format(ROM_FN.getBase_noext()), game_name_list)
                     if select_candidate_idx < 0: select_candidate_idx = 0
                     self.pdialog.reopen()
             elif self.game_selection_mode == 1:
                 log_debug('Metadata automatic scraping. Selecting first result.')
                 select_candidate_idx = 0
             else:
-                raise ValueError('Invalid game_selection_mode {0}'.format(self.game_selection_mode))
+                raise ValueError('Invalid game_selection_mode {}'.format(self.game_selection_mode))
             candidate = candidates[select_candidate_idx]
 
             # --- Set candidate. This will introduce it in the cache ---
