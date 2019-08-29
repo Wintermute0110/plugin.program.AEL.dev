@@ -15,7 +15,7 @@ settings = {
 
     # --- ScreenScraper ---
     'scraper_screenscraper_ssid' : 'Wintermute0110',
-    'scraper_screenscraper_sspass' : '',  # NEVER COMMIT THIS PASSWORD
+    'scraper_screenscraper_sspass' : '', # NEVER COMMIT THIS PASSWORD
     'scraper_screenscraper_AEL_softname' : 'AEL_0.9.8',
     'scraper_screenscraper_region' : 0, # Default World
     'scraper_screenscraper_language' : 0, # Default English
@@ -43,7 +43,10 @@ games = {
     'MAME_wrong_platform' : ('Tetris (set 1)', 'atetris', 'mjhyewqr'),
 }
 
-def handle_get_candidates(candidate_list):
+def handle_get_candidates(candidate_list, status_dic):
+    if not status_dic['status']:
+        print('Status error "{}"'.format(status_dic['msg']))
+        sys.exit(0)
     if candidate_list is None:
         print('Error/exception in get_candidates(). Exiting.')
         sys.exit(0)

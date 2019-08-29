@@ -29,22 +29,29 @@ scraper_obj.set_verbose_mode(False)
 scraper_obj.set_debug_file_dump(True, os.path.join(os.path.dirname(__file__), 'assets'))
 status_dic = kodi_new_status_dic('Scraper test was OK')
 
-# --- Get candidates ---
-# candidate_list = scraper_obj.get_candidates(*common.games['tetris'], status_dic = status_dic)
-# candidate_list = scraper_obj.get_candidates(*common.games['mslug'], status_dic = status_dic)
-candidate_list = scraper_obj.get_candidates(*common.games['dino'], status_dic = status_dic)
-# candidate_list = scraper_obj.get_candidates(*common.games['MAME_invalid'], status_dic = status_dic)
+# --- Choose data for testing ---
+# search_term, rombase_noext, platform = common.games['tetris']
+# search_term, rombase_noext, platform = common.games['mslug']
+search_term, rombase_noext, platform = common.games['dino']
+# search_term, rombase_noext, platform = common.games['MAME_wrong_title']
+# search_term, rombase_noext, platform = common.games['MAME_wrong_platform']
 
-# --- Print search results ---
-common.handle_get_candidates(candidate_list)
+# --- Get candidates, print them and set first candidate ---
+if scraper_obj.check_candidates_cache(rombase_noext, platform):
+    print('>>>> Game "{}" "{}" in disk cache.'.format(rombase_noext, platform))
+else:
+    print('>>>> Game "{}" "{}" not in disk cache.'.format(rombase_noext, platform))
+candidate_list = scraper_obj.get_candidates(search_term, rombase_noext, platform, status_dic)
 # pprint.pprint(candidate_list)
+common.handle_get_candidates(candidate_list, status_dic)
 print_candidate_list(candidate_list)
-candidate = candidate_list[0]
+scraper_obj.set_candidate(rombase_noext, platform, candidate_list[0])
 
 # --- Print list of assets found -----------------------------------------------------------------
 print('*** Fetching game assets ****************************************************************')
 # --- Get specific assets ---
-print_game_assets(scraper_obj.get_assets(candidate, ASSET_TITLE_ID, status_dic))
-print_game_assets(scraper_obj.get_assets(candidate, ASSET_SNAP_ID, status_dic))
-print_game_assets(scraper_obj.get_assets(candidate, ASSET_BOXFRONT_ID, status_dic))
-print_game_assets(scraper_obj.get_assets(candidate, ASSET_FLYER_ID, status_dic))
+print_game_assets(scraper_obj.get_assets(ASSET_TITLE_ID, status_dic))
+print_game_assets(scraper_obj.get_assets(ASSET_SNAP_ID, status_dic))
+print_game_assets(scraper_obj.get_assets(ASSET_BOXFRONT_ID, status_dic))
+print_game_assets(scraper_obj.get_assets(ASSET_FLYER_ID, status_dic))
+scraper_obj.flush_disk_cache()
