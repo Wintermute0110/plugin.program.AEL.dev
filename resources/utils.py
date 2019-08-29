@@ -823,7 +823,7 @@ ESRB_L      = 20
 PLOT_L      = 70
 
 # Assets
-ASSET_ID_L        = 8
+ASSET_ID_L        = 10
 ASSET_NAME_L      = 60
 ASSET_URL_THUMB_L = 100
 
