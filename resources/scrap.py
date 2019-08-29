@@ -652,7 +652,9 @@ class ScrapeStrategy(object):
             # * Once the error is displayed reset status_dic
             if not status_dic['status']:
                 self.pdialog.close()
-                kodi_dialog_OK(status_dic['msg'])
+                # Close error message dialog automatically 1 minute to keep scanning.
+                # kodi_dialog_OK(status_dic['msg'])
+                kodi_dialog_yesno_timer(status_dic['msg'], 60000)
                 status_dic = kodi_new_status_dic('No error')
                 self.pdialog.reopen()
             # * If candidates is None some kind of error/exception happened.
@@ -726,7 +728,9 @@ class ScrapeStrategy(object):
         game_data = self.meta_scraper_obj.get_metadata(status_dic)
         if not status_dic['status']:
             self.pdialog.close()
-            kodi_dialog_OK(status_dic['msg'])
+            # Close error message dialog automatically 1 minute to keep scanning.
+            # kodi_dialog_OK(status_dic['msg'])
+            kodi_dialog_yesno_timer(status_dic['msg'], 60000)
             self.pdialog.reopen()
             return
         scraper_applied = self._apply_candidate_on_metadata_old(game_data, romdata, ROM_FN)
@@ -785,7 +789,9 @@ class ScrapeStrategy(object):
         assetdata_list = self.asset_scraper_obj.get_assets(asset_ID, status_dic)
         if not status_dic['status']:
             self.pdialog.close()
-            kodi_dialog_OK(status_dic['msg'])
+            # Close error message dialog automatically 1 minute to keep scanning.
+            # kodi_dialog_OK(status_dic['msg'])
+            kodi_dialog_yesno_timer(status_dic['msg'], 60000)
             status_dic = kodi_new_status_dic('No error')
             self.pdialog.reopen()
         if assetdata_list is None or not assetdata_list:
@@ -849,7 +855,9 @@ class ScrapeStrategy(object):
             selected_asset, status_dic)
         if not status_dic['status']:
             self.pdialog.close()
-            kodi_dialog_OK(status_dic['msg'])
+            # Close error message dialog automatically 1 minute to keep scanning.
+            # kodi_dialog_OK(status_dic['msg'])
+            kodi_dialog_yesno_timer(status_dic['msg'], 60000)
             status_dic = kodi_new_status_dic('No error')
             self.pdialog.reopen()
         if image_url is None or not image_url:
@@ -863,7 +871,9 @@ class ScrapeStrategy(object):
             selected_asset, image_url, status_dic)
         if not status_dic['status']:
             self.pdialog.close()
-            kodi_dialog_OK(status_dic['msg'])
+            # Close error message dialog automatically 1 minute to keep scanning.
+            # kodi_dialog_OK(status_dic['msg'])
+            kodi_dialog_yesno_timer(status_dic['msg'], 60000)
             status_dic = kodi_new_status_dic('No error')
             self.pdialog.reopen()
         if image_ext is None or not image_ext:
@@ -884,7 +894,9 @@ class ScrapeStrategy(object):
             net_download_img(image_url, image_local_path)
         except socket.timeout:
             self.pdialog.close()
-            kodi_dialog_OK('Cannot download {0} image (Timeout)'.format(asset_name))
+            # Close error message dialog automatically 1 minute to keep scanning.
+            # kodi_dialog_OK(status_dic['msg'])
+            kodi_dialog_yesno_timer('Cannot download {} image (Timeout)'.format(asset_name), 60000)
             self.pdialog.reopen()
 
         # --- Update Kodi cache with downloaded image ---
@@ -3502,10 +3514,10 @@ class ScreenScraper(Scraper):
         # rom_name = urllib.quote(rombase_noext)
         rom_name = urllib.quote_plus(rombase_noext)
         rom_size = 0
-        log_debug('ScreenScraper._search_candidates_jeuInfos() ssid       "{0}"'.format(self.ssid))
+        # log_debug('ScreenScraper._search_candidates_jeuInfos() ssid       "{0}"'.format(self.ssid))
         # log_debug('ScreenScraper::_search_candidates_jeuInfos() ssid       "{0}"'.format('***'))
         # log_debug('ScreenScraper::_search_candidates_jeuInfos() sspassword "{0}"'.format(self.sspassword))
-        log_debug('ScreenScraper._search_candidates_jeuInfos() sspassword "{0}"'.format('***'))
+        # log_debug('ScreenScraper._search_candidates_jeuInfos() sspassword "{0}"'.format('***'))
         log_debug('ScreenScraper._search_candidates_jeuInfos() rom_type   "{0}"'.format(rom_type))
         log_debug('ScreenScraper._search_candidates_jeuInfos() system_id  "{0}"'.format(system_id))
         log_debug('ScreenScraper._search_candidates_jeuInfos() crc_str    "{0}"'.format(crc_str))
