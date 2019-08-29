@@ -1396,10 +1396,6 @@ class Scraper(object):
     def check_candidates_cache(self, rom_base_noext, platform):
         self.cache_key = rom_base_noext
         self.platform = platform
-
-        # If scraper does not use disk cache (notably AEL Offline) return False
-        # so get_candidates() is called always.
-        if not self.uses_disk_cache(): return False
         self.lazy_load_candidate_cache()
 
         # --- Check cache ---
@@ -1593,8 +1589,15 @@ class Scraper(object):
     # --- Scraper on-disk cache ------------------------------------------------------------------
     # Only write to disk non-empty caches.
     def flush_disk_cache(self):
+        # If scraper does not use disk cache (notably AEL Offline) return.
+        if not self.uses_disk_cache():
+            log_debug('Scraper.flush_disk_cache() Scraper {} does not use disk cache.'.format(
+                self.get_name()))
+            return
+
         # --- Scraper caches ---
-        log_debug('Scraper.flush_disk_cache() Saving scraper disk cache...')
+        log_debug('Scraper.flush_disk_cache() Saving scraper {} disk cache...'.format(
+            self.get_name()))
         for cache_type in Scraper.CACHE_LIST:
             # Skip unloaded caches
             if not self.disk_caches_loaded[cache_type]:
@@ -1619,7 +1622,8 @@ class Scraper(object):
             log_debug('Saved "<SCRAPER_CACHE_DIR>/{}"'.format(json_fname))
 
         # --- Global caches ---
-        log_debug('Scraper.flush_disk_cache() Saving scraper global disk cache...')
+        log_debug('Scraper.flush_disk_cache() Saving scraper {} global disk cache...'.format(
+                self.get_name()))
         for cache_type in Scraper.GLOBAL_CACHE_LIST:
             # Skip unloaded caches
             if not self.global_disk_caches_loaded[cache_type]:
