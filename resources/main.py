@@ -3734,7 +3734,7 @@ class Main:
         xbmcplugin.addDirectoryItem(handle = self.addon_handle, url = url_str, listitem = listitem, isFolder = True)
 
     def _gui_render_Utilities_root(self):
-        vcategory_name   = '[COLOR orangered]Utilities[/COLOR]'
+        vcategory_name   = '[COLOR sandybrown]Utilities[/COLOR]'
         vcategory_plot   = 'A set of useful [COLOR orange]Utilities[/COLOR].'
         vcategory_icon   = g_PATHS.ICON_FILE_PATH.getPath()
         vcategory_fanart = g_PATHS.FANART_FILE_PATH.getPath()
@@ -10177,12 +10177,15 @@ class Main:
         ssuser = json_data['response']['ssuser']
         window_title = 'ScreenScraper scraper information'
         sl = []
+        sl.append('requeststoday       {}'.format(ssuser['requeststoday']))
         sl.append('maxthreads          {}'.format(ssuser['maxthreads']))
         sl.append('niveau              {}'.format(ssuser['niveau']))
         sl.append('visites             {}'.format(ssuser['visites']))
+        sl.append('maxrequestsperday   {}'.format(ssuser['maxrequestsperday']))
         sl.append('maxdownloadspeed    {}'.format(ssuser['maxdownloadspeed']))
         sl.append('favregion           {}'.format(ssuser['favregion']))
         sl.append('datedernierevisite  {}'.format(ssuser['datedernierevisite']))
+        sl.append('contribution        {}'.format(ssuser['contribution']))
         sl.append('id                  {}'.format(ssuser['id']))
         kodi_display_text_window_mono(window_title, '\n'.join(sl))
 
