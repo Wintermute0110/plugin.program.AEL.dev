@@ -19,6 +19,9 @@ settings = {
     'scraper_screenscraper_AEL_softname' : 'AEL_0.9.8',
     'scraper_screenscraper_region' : 0, # Default World
     'scraper_screenscraper_language' : 0, # Default English
+
+    # --- All scrapers ---
+    'scraper_cache_dir' : './cache/'
 }
 
 # --- Test data -----------------------------------------------------------------------------------
