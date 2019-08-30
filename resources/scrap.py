@@ -1593,6 +1593,7 @@ class Scraper(object):
 
     # --- Scraper on-disk cache ------------------------------------------------------------------
     # Only write to disk non-empty caches.
+    # TODO Only write to disk dirty caches. If cache has not been modified then do not write it.
     def flush_disk_cache(self):
         # If scraper does not use disk cache (notably AEL Offline) return.
         if not self.uses_disk_cache():
