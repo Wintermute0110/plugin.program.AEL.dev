@@ -9534,11 +9534,6 @@ class Main:
                     continue
 
             # --- Create new ROM and process metadata and assets ---------------------------------
-            # launcherID [str] MD5 hash (32 hexadecimal digits)
-            # ROM        [FileName object]
-            # Database always stores the original (non transformed/manipulated) path.
-            launcher = self.launchers[launcherID]
-            platform = launcher['platform']
             romdata  = fs_new_rom()
             romdata['id'] = misc_generate_random_SID()
             romdata['filename'] = ROM.getOriginalPath()
