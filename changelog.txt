@@ -185,7 +185,7 @@ FEATURE  [CORE] Make sure AEL never crashes when rendering the root window, even
          ask the user to update the databases (in the case the crash is due to a missing 
          key in dictionary).
 
-WIP      [CORE] New properties to notify skins about Std launchers, ROM launchers, Categories,
+WIP NOW  [CORE] New properties to notify skins about Std launchers, ROM launchers, Categories,
          and number of items in a Launcher. Upgrade documentation in SKINNING.md.
 
 FEATURE  [CORE] Add Year and Developer for Categories.
