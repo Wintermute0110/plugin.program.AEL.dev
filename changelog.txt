@@ -121,7 +121,7 @@ WIP      [SCRAPERS] Persistent scraper cache browser. Ability to browse the stor
          searches. Also, context menu to delete stored cached data.
 
 
-[B]Advanced Emulator Launcher | version 0.9.8-beta1 | XX August 2019[/B]
+[B]Advanced Emulator Launcher | version 0.9.8-beta1 | XX September 2019[/B]
 
 FEATURE  [SCRAPERS] Copy scraper stuff from master branch by Chrisism.
 
@@ -164,7 +164,7 @@ FEATURE  [SCRAPERS] Option to rescrape all ROM assets in a similar fashion to
          I think the best location for the code is in the ScraperStrategy class.
          See https://github.com/Wintermute0110/plugin.program.advanced.emulator.launcher/issues/72
 
-WIP      [CORE] Create a couple of new ROM context menus, "Manage Recently played ROM" and 
+FEATURE  [CORE] Create a couple of new ROM context menus, "Manage Recently played ROM" and 
          "Manage Most played ROM". Both will have the following options: "Delete this ROM",
          "Delete all Unlinked/Broken ROMs".
          See AML for an implementation.

@@ -275,32 +275,35 @@ class Main:
         log_debug('command = "{0}"'.format(command))
 
         # --- Commands that do not modify the databases are allowed to run concurrently ---
-        if command == 'SHOW_ADDON_ROOT' or \
-           command == 'SHOW_VCATEGORIES_ROOT' or \
-           command == 'SHOW_AEL_OFFLINE_LAUNCHERS_ROOT' or \
-           command == 'SHOW_LB_OFFLINE_LAUNCHERS_ROOT' or \
-           command == 'SHOW_FAVOURITES' or \
-           command == 'SHOW_VIRTUAL_CATEGORY' or \
-           command == 'SHOW_RECENTLY_PLAYED' or \
-           command == 'SHOW_MOST_PLAYED' or \
-           command == 'SHOW_UTILITIES_VLAUNCHERS' or \
-           command == 'SHOW_GLOBALREPORTS_VLAUNCHERS' or \
-           command == 'SHOW_COLLECTIONS' or \
-           command == 'SHOW_COLLECTION_ROMS' or \
-           command == 'SHOW_LAUNCHERS' or \
-           command == 'SHOW_ROMS' or \
-           command == 'SHOW_VLAUNCHER_ROMS' or \
-           command == 'SHOW_AEL_SCRAPER_ROMS' or \
-           command == 'SHOW_LB_SCRAPER_ROMS' or \
-           command == 'EXEC_SHOW_CLONE_ROMS' or \
-           command == 'SHOW_CLONE_ROMS' or \
-           command == 'SHOW_ALL_CATEGORIES' or \
-           command == 'SHOW_ALL_LAUNCHERS' or \
-           command == 'SHOW_ALL_ROMS' or \
-           command == 'BUILD_GAMES_MENU':
+        concurrent_command_list = [
+            'SHOW_ADDON_ROOT',
+            'SHOW_VCATEGORIES_ROOT',
+            'SHOW_AEL_OFFLINE_LAUNCHERS_ROOT',
+            'SHOW_LB_OFFLINE_LAUNCHERS_ROOT',
+            'SHOW_FAVOURITES',
+            'SHOW_VIRTUAL_CATEGORY',
+            'SHOW_RECENTLY_PLAYED',
+            'SHOW_MOST_PLAYED',
+            'SHOW_UTILITIES_VLAUNCHERS',
+            'SHOW_GLOBALREPORTS_VLAUNCHERS',
+            'SHOW_COLLECTIONS',
+            'SHOW_COLLECTION_ROMS',
+            'SHOW_LAUNCHERS',
+            'SHOW_ROMS',
+            'SHOW_VLAUNCHER_ROMS',
+            'SHOW_AEL_SCRAPER_ROMS',
+            'SHOW_LB_SCRAPER_ROMS',
+            'EXEC_SHOW_CLONE_ROMS',
+            'SHOW_CLONE_ROMS',
+            'SHOW_ALL_CATEGORIES',
+            'SHOW_ALL_LAUNCHERS',
+            'SHOW_ALL_ROMS',
+            'BUILD_GAMES_MENU',
+        ]
+        if command in concurrent_command_list:
             self.run_concurrent(command, args)
         else:
-            # >> Ensure AEL only runs one instance at a time
+            # Ensure AEL only runs one instance at a time
             with SingleInstance():
                 self.run_protected(command, args)
         log_debug('Advanced Emulator Launcher run_plugin() exit')
@@ -310,7 +313,7 @@ class Main:
     #
     def run_concurrent(self, command, args):
         log_debug('Advanced Emulator Launcher run_concurrent() BEGIN')
-        
+
         # --- Name says it all ---
         if command == 'SHOW_ADDON_ROOT':
             self._command_render_root_window()
@@ -421,12 +424,22 @@ class Main:
             self._command_edit_collection(args['catID'][0], args['launID'][0])
         elif command == 'DELETE_COLLECTION':
             self._command_delete_collection(args['catID'][0], args['launID'][0])
+
         elif command == 'IMPORT_COLLECTION':
             self._command_import_collection()
         elif command == 'EXPORT_COLLECTION':
             self._command_export_collection(args['catID'][0], args['launID'][0])
+
         elif command == 'MANAGE_FAV':
             self._command_manage_favourites(args['catID'][0], args['launID'][0], args['romID'][0])
+
+        elif command == 'MANAGE_RECENT_PLAYED':
+            rom_ID  = args['romID'][0] if 'romID'  in args else ''
+            self._command_manage_recently_played(rom_ID)
+
+        elif command == 'MANAGE_MOST_PLAYED':
+            rom_ID  = args['romID'][0] if 'romID'  in args else ''
+            self._command_manage_most_played(rom_ID)
 
         # --- Searches ---
         # This command is issued when user clicks on "Search" on the context menu of a launcher
@@ -438,14 +451,15 @@ class Main:
         elif command == 'EXECUTE_SEARCH_LAUNCHER':
             # >> Deal with empty search strings
             if 'search_string' not in args: args['search_string'] = [ '' ]
-            self._command_execute_search_launcher(args['catID'][0], args['launID'][0],
-                                                  args['search_type'][0], args['search_string'][0])
+            self._command_execute_search_launcher(
+                args['catID'][0], args['launID'][0],
+                args['search_type'][0], args['search_string'][0])
 
         # >> Shows info about categories/launchers/ROMs and reports
         elif command == 'VIEW':
             catID  = args['catID'][0]                              # >> Mandatory
             launID = args['launID'][0] if 'launID' in args else '' # >> Optional
-            romID  = args['romID'][0]  if 'romID'  in args else '' # >> Optional
+            romID  = args['romID'][0] if 'romID'  in args else ''  # >> Optional
             self._command_view_menu(catID, launID, romID)
         elif command == 'VIEW_OS_ROM':
             self._command_view_offline_scraper_rom(args['catID'][0], args['launID'][0], args['romID'][0])
@@ -2883,7 +2897,7 @@ class Main:
                 kodi_display_user_message(status_dic)
                 if not status_dic['status']: return
 
-        # --- Edit Launcher Assets/Artwork ---
+        # --- Edit ROMs Assets/Artwork ---
         elif type == 1:
             rom = roms[romID]
 
@@ -3703,6 +3717,7 @@ class Main:
         listitem.setProperty(AEL_CONTENT_LABEL, AEL_CONTENT_VALUE_ROM_LAUNCHER)
 
         commands = []
+        commands.append(('Manage Recently Played', self._misc_url_RunPlugin('MANAGE_RECENT_PLAYED')))
         commands.append(('Create New Category', self._misc_url_RunPlugin('ADD_CATEGORY')))
         commands.append(('Add New Launcher', self._misc_url_RunPlugin('ADD_LAUNCHER_ROOT')))
         commands.append(('Kodi File Manager', 'ActivateWindow(filemanager)'))
@@ -3724,6 +3739,7 @@ class Main:
         listitem.setProperty(AEL_CONTENT_LABEL, AEL_CONTENT_VALUE_ROM_LAUNCHER)
 
         commands = []
+        commands.append(('Manage Most Played', self._misc_url_RunPlugin('MANAGE_MOST_PLAYED')))
         commands.append(('Create New Category', self._misc_url_RunPlugin('ADD_CATEGORY')))
         commands.append(('Add New Launcher', self._misc_url_RunPlugin('ADD_LAUNCHER_ROOT')))
         commands.append(('Kodi File Manager', 'ActivateWindow(filemanager)'))
@@ -4390,7 +4406,7 @@ class Main:
                 return
 
         # --- Render ROMs ---
-        roms_fav = fs_load_Favourites_JSON(FAV_JSON_FILE_PATH)
+        roms_fav = fs_load_Favourites_JSON(g_PATHS.FAV_JSON_FILE_PATH)
         roms_fav_set = set(roms_fav.keys())
         for key in sorted(roms, key = lambda x : roms[x]['m_name']):
             self._gui_render_rom_row(categoryID, launcherID, roms[key], key in roms_fav_set, view_mode, False)
@@ -4748,8 +4764,15 @@ class Main:
             commands.append(('Add ROM to AEL Favourites',  self._misc_url_RunPlugin('ADD_TO_FAV',        categoryID, launcherID, romID)))
             commands.append(('Search ROMs in Collection',  self._misc_url_RunPlugin('SEARCH_LAUNCHER',   categoryID, launcherID)))
             commands.append(('Manage Collection ROMs',     self._misc_url_RunPlugin('MANAGE_FAV',        categoryID, launcherID, romID)))
-        elif categoryID == VCATEGORY_RECENT_ID or categoryID == VCATEGORY_MOST_PLAYED_ID:
+
+        elif categoryID == VCATEGORY_RECENT_ID:
             commands.append(('View ROM data', self._misc_url_RunPlugin('VIEW', categoryID, launcherID, romID)))
+            commands.append(('Manage Recently Played', self._misc_url_RunPlugin('MANAGE_RECENT_PLAYED', categoryID, launcherID, romID)))
+
+        elif categoryID == VCATEGORY_MOST_PLAYED_ID:
+            commands.append(('View ROM data', self._misc_url_RunPlugin('VIEW', categoryID, launcherID, romID)))
+            commands.append(('Manage Most Played', self._misc_url_RunPlugin('MANAGE_MOST_PLAYED', categoryID, launcherID, romID)))
+
         elif categoryID == VCATEGORY_TITLE_ID    or categoryID == VCATEGORY_YEARS_ID  or \
              categoryID == VCATEGORY_GENRE_ID    or categoryID == VCATEGORY_DEVELOPER_ID or \
              categoryID == VCATEGORY_NPLAYERS_ID or categoryID == VCATEGORY_ESRB_ID   or \
@@ -5095,7 +5118,7 @@ class Main:
         # --- Load Most Played favourite ROMs ---
         roms = fs_load_Favourites_JSON(g_PATHS.MOST_PLAYED_FILE_PATH)
         if not roms:
-            kodi_notify('Most played ROMs list  is empty. Play some ROMs first!.')
+            kodi_notify('Most played ROMs list is empty. Play some ROMs first!.')
             xbmcplugin.endOfDirectory(handle = self.addon_handle, succeeded = True, cacheToDisc = False)
             return
 
@@ -5533,13 +5556,13 @@ class Main:
         pDialog.close()
 
         # STEP 2: Find missing ROM ID
-        # >> Get a list of launchers Favourite ROMs belong
+        # Get a list of launchers Favourite ROMs belong.
         log_debug('_fav_check_favourites() STEP 2: Search unlinked ROMs')
         launchers_fav = set()
         for rom_fav_ID in roms_fav: launchers_fav.add(roms_fav[rom_fav_ID]['launcherID'])
 
-        # >> Traverse list of launchers. For each launcher, load ROMs it and check all favourite ROMs
-        # >> that belong to that launcher.
+        # Traverse list of launchers. For each launcher, load ROMs it and check all favourite ROMs
+        # that belong to that launcher.
         num_progress_items = len(launchers_fav)
         i = 0
         pDialog.create('Advanced Emulator Launcher', 'Checking Favourite ROMs. Step 2 of 3...')
@@ -5582,6 +5605,268 @@ class Main:
                 self.num_fav_broken += 1
         pDialog.update(i * 100 / num_progress_items)
         pDialog.close()
+
+    # Recently Played ROMs are stored in a list of ROM dictionaries.
+    def _command_manage_recently_played(self, rom_ID):
+        VIEW_ROOT_MENU   = 100
+        VIEW_INSIDE_MENU = 200
+
+        ACTION_DELETE_MACHINE = 100
+        ACTION_DELETE_MISSING = 200
+        ACTION_DELETE_ALL     = 300
+
+        menus_dic = {
+            VIEW_ROOT_MENU : [
+                ('Delete missing machines from Recently Played', ACTION_DELETE_MISSING),
+                ('Delete all machines from Recently Played', ACTION_DELETE_ALL),
+            ],
+            VIEW_INSIDE_MENU : [
+                ('Delete machine from Recently Played', ACTION_DELETE_MACHINE),
+                ('Delete missing machines from Recently Played', ACTION_DELETE_MISSING),
+                ('Delete all machines from Recently Played', ACTION_DELETE_ALL),
+            ],
+        }
+
+        # --- Determine view type ---
+        log_debug('_command_manage_most_played() BEGIN...')
+        log_debug('rom_ID "{0}"'.format(rom_ID))
+        if rom_ID:
+            view_type = VIEW_INSIDE_MENU
+        else:
+            view_type = VIEW_ROOT_MENU
+        log_debug('view_type {0}'.format(view_type))
+
+        # --- Build menu base on view_type (Polymorphic menu, determine action) ---
+        d_list = [menu[0] for menu in menus_dic[view_type]]
+        selected_value = xbmcgui.Dialog().select('Manage Recently Played ROMs', d_list)
+        if selected_value < 0: return
+        action = menus_dic[view_type][selected_value][1]
+        log_debug('action {0}'.format(action))
+
+        # --- Execute actions ---
+        if action == ACTION_DELETE_MACHINE:
+            log_debug('_command_manage_most_played() ACTION_DELETE_MACHINE')
+
+            # --- Load ROMs ---
+            rom_list = fs_load_Collection_ROMs_JSON(g_PATHS.RECENT_PLAYED_FILE_PATH)
+            roms = OrderedDict()
+            for rom in rom_list: roms[rom['id']] = rom
+            if not roms:
+                kodi_notify('Recently Played ROMs list is empty. Play some ROMs first!.')
+                return
+
+            # --- Confirm deletion ---
+            rom_name = roms[rom_ID]['m_name']
+            msg_str = 'Are you sure you want to delete it from Recently Played ROMs?'
+            ret = kodi_dialog_yesno('ROM "{0}". '.format(rom_name) + msg_str)
+            if not ret: return
+            roms.pop(rom_ID)
+
+            # --- Save ROMs and notify user ---
+            # Convert from OrderedDict to list.
+            rom_list = [roms[key] for key in roms]
+            fs_write_Collection_ROMs_JSON(g_PATHS.RECENT_PLAYED_FILE_PATH, rom_list)
+            kodi_notify('Deleted ROM {0}'.format(rom_name))
+            kodi_refresh_container()
+
+        elif action == ACTION_DELETE_ALL:
+            log_debug('_command_manage_most_played() ACTION_DELETE_ALL')
+
+            # --- Confirm deletion ---
+            msg_str = 'Are you sure you want to delete all Recently Played ROMs?'
+            ret = kodi_dialog_yesno(msg_str)
+            if not ret: return
+
+            # --- Save ROMs and notify user ---
+            fs_write_Collection_ROMs_JSON(g_PATHS.RECENT_PLAYED_FILE_PATH, [])
+            kodi_notify('Deleted all Recently Played ROMs')
+            kodi_refresh_container()
+
+        elif action == ACTION_DELETE_MISSING:
+            log_debug('_command_manage_most_played() ACTION_DELETE_MISSING')
+
+            # --- Load ROMs ---
+            rom_list = fs_load_Collection_ROMs_JSON(g_PATHS.RECENT_PLAYED_FILE_PATH)
+            roms = OrderedDict()
+            for rom in rom_list: roms[rom['id']] = rom
+            if not roms:
+                kodi_notify('Recently Played ROMs list is empty. Play some ROMs first!.')
+                return
+
+            # --- Traverse ROMs and check if they exist in Launcher ---
+            # Naive, slow implementation. I will improve it when I had time.
+            # Dictionaries cannot be modified while being iterated. Make a list of keys
+            # to be deleted later.
+            pDialog = KodiProgressDialog()
+            pDialog.startProgress('Delete missing Recently Played ROMs', len(roms))
+            ROM_counter = 0
+            delete_key_list = []
+            for rom_ID in roms:
+                pDialog.updateProgress(ROM_counter)
+                ROM_counter += 1
+
+                # STEP 1: Delete Favourite with missing Launcher.
+                launcher_id = roms[rom_ID]['launcherID']
+                if launcher_id not in self.launchers:
+                    log_debug('ROM title {} ID {}'.format(roms[rom_ID]['m_name'], rom_ID))
+                    log_debug('launcherID {} not found in Launchers.'.format(roms[rom_ID]['launcherID']))
+                    log_debug('Deleting ROM from Recently Played ROMs')
+                    delete_key_list.append(rom_ID)
+                    continue
+
+                # STEP 2: Delete Favourite if ROM ID cannot be found in Launcher.
+                launcher_roms = fs_load_ROMs_JSON(g_PATHS.ROMS_DIR, self.launchers[launcher_id])
+                if rom_ID not in launcher_roms:
+                    log_debug('ROM title {} ID {}'.format(roms[rom_ID]['m_name'], rom_ID))
+                    log_debug('rom_ID {} not found in launcher ROMs.'.format(rom_ID))
+                    log_debug('Deleting ROM from Recently Played ROMs')
+                    delete_key_list.append(rom_ID)
+                    continue
+            pDialog.endProgress()
+            log_debug('len(delete_key_list) = {}'.format(len(delete_key_list)))
+            for key in delete_key_list: del roms[key]
+
+            # --- Save ROMs and notify user ---
+            # Convert from OrderedDict to list.
+            rom_list = [roms[key] for key in roms]
+            fs_write_Collection_ROMs_JSON(g_PATHS.RECENT_PLAYED_FILE_PATH, rom_list)
+            if len(delete_key_list) == 0:
+                kodi_notify('No Recently Played ROMs deleted')
+            else:
+                kodi_notify('Deleted {} Recently Played ROMs'.format(len(delete_key_list)))
+            kodi_refresh_container()
+
+        else:
+            t = 'Wrong action = {}. This is a bug, please report it.'.format(action)
+            log_error(t)
+            kodi_dialog_OK(t)
+
+    # Most played ROMs are stored in a dictionary, key ROM ID and value ROM dictionary.
+    def _command_manage_most_played(self, rom_ID):
+        VIEW_ROOT_MENU   = 100
+        VIEW_INSIDE_MENU = 200
+
+        ACTION_DELETE_MACHINE = 100
+        ACTION_DELETE_MISSING = 200
+        ACTION_DELETE_ALL     = 300
+
+        menus_dic = {
+            VIEW_ROOT_MENU : [
+                ('Delete missing machines from Most Played', ACTION_DELETE_MISSING),
+                ('Delete all machines from Most Played', ACTION_DELETE_ALL),
+            ],
+            VIEW_INSIDE_MENU : [
+                ('Delete machine from Most Played', ACTION_DELETE_MACHINE),
+                ('Delete missing machines from Most Played', ACTION_DELETE_MISSING),
+                ('Delete all machines from Most Played', ACTION_DELETE_ALL),
+            ],
+        }
+
+        # --- Determine view type ---
+        log_debug('_command_manage_most_played() BEGIN...')
+        log_debug('rom_ID "{0}"'.format(rom_ID))
+        if rom_ID:
+            view_type = VIEW_INSIDE_MENU
+        else:
+            view_type = VIEW_ROOT_MENU
+        log_debug('view_type {0}'.format(view_type))
+
+        # --- Build menu base on view_type (Polymorphic menu, determine action) ---
+        d_list = [menu[0] for menu in menus_dic[view_type]]
+        selected_value = xbmcgui.Dialog().select('Manage Most Played ROMs', d_list)
+        if selected_value < 0: return
+        action = menus_dic[view_type][selected_value][1]
+        log_debug('action {0}'.format(action))
+
+        # --- Execute actions ---
+        if action == ACTION_DELETE_MACHINE:
+            log_debug('_command_manage_most_played() ACTION_DELETE_MACHINE')
+
+            # --- Load ROMs ---
+            roms = fs_load_Favourites_JSON(g_PATHS.MOST_PLAYED_FILE_PATH)
+            if not roms:
+                kodi_notify('Most Played ROMs list is empty. Play some ROMs first!.')
+                return
+
+            # --- Confirm deletion ---
+            rom_name = roms[rom_ID]['m_name']
+            msg_str = 'Are you sure you want to delete it from Most Played ROMs?'
+            ret = kodi_dialog_yesno('ROM "{0}". '.format(rom_name) + msg_str)
+            if not ret: return
+            roms.pop(rom_ID)
+
+            # --- Save ROMs and notify user ---
+            fs_write_Favourites_JSON(g_PATHS.MOST_PLAYED_FILE_PATH, roms)
+            kodi_notify('Deleted ROM {0}'.format(rom_name))
+            kodi_refresh_container()
+
+        elif action == ACTION_DELETE_ALL:
+            log_debug('_command_manage_most_played() ACTION_DELETE_ALL')
+
+            # --- Confirm deletion ---
+            msg_str = 'Are you sure you want to delete all Most Played ROMs?'
+            ret = kodi_dialog_yesno(msg_str)
+            if not ret: return
+
+            # --- Save ROMs and notify user ---
+            fs_write_Favourites_JSON(g_PATHS.MOST_PLAYED_FILE_PATH, {})
+            kodi_notify('Deleted all Most Played ROMs')
+            kodi_refresh_container()
+
+        elif action == ACTION_DELETE_MISSING:
+            log_debug('_command_manage_most_played() ACTION_DELETE_MISSING')
+
+            # --- Load ROMs ---
+            roms = fs_load_Favourites_JSON(g_PATHS.MOST_PLAYED_FILE_PATH)
+            if not roms:
+                kodi_notify('Most Played ROMs list is empty. Play some ROMs first!.')
+                return
+
+            # --- Traverse ROMs and check if they exist in Launcher ---
+            # Naive, slow implementation. I will improve it when I had time.
+            # Dictionaries cannot be modified while being iterated. Make a list of keys
+            # to be deleted later.
+            pDialog = KodiProgressDialog()
+            pDialog.startProgress('Delete missing Most Played ROMs', len(roms))
+            ROM_counter = 0
+            delete_key_list = []
+            for rom_ID in roms:
+                pDialog.updateProgress(ROM_counter)
+                ROM_counter += 1
+
+                # STEP 1: Delete Favourite with missing Launcher.
+                launcher_id = roms[rom_ID]['launcherID']
+                if launcher_id not in self.launchers:
+                    log_debug('ROM title {} ID {}'.format(roms[rom_ID]['m_name'], rom_ID))
+                    log_debug('launcherID {} not found in Launchers.'.format(roms[rom_ID]['launcherID']))
+                    log_debug('Deleting ROM from Most Played ROMs')
+                    delete_key_list.append(rom_ID)
+                    continue
+
+                # STEP 2: Delete Favourite if ROM ID cannot be found in Launcher.
+                launcher_roms = fs_load_ROMs_JSON(g_PATHS.ROMS_DIR, self.launchers[launcher_id])
+                if rom_ID not in launcher_roms:
+                    log_debug('ROM title {} ID {}'.format(roms[rom_ID]['m_name'], rom_ID))
+                    log_debug('rom_ID {} not found in launcher ROMs.'.format(rom_ID))
+                    log_debug('Deleting ROM from Most Played ROMs')
+                    delete_key_list.append(rom_ID)
+                    continue
+            pDialog.endProgress()
+            log_debug('len(delete_key_list) = {}'.format(len(delete_key_list)))
+            for key in delete_key_list: del roms[key]
+
+            # --- Save ROMs and notify user ---
+            fs_write_Favourites_JSON(g_PATHS.MOST_PLAYED_FILE_PATH, roms)
+            if len(delete_key_list) == 0:
+                kodi_notify('No Most Played ROMs deleted')
+            else:
+                kodi_notify('Deleted {} Most Played ROMs'.format(len(delete_key_list)))
+            kodi_refresh_container()
+
+        else:
+            t = 'Wrong action = {}. This is a bug, please report it.'.format(action)
+            log_error(t)
+            kodi_dialog_OK(t)
 
     #
     # Renders a listview with all collections
@@ -10322,25 +10607,28 @@ class Main:
         sl.extend(table_str_list)
         kodi_display_text_window_mono(window_title, '\n'.join(sl))
 
-    #
     # A set of functions to help making plugin URLs
     # NOTE probably this can be implemented in a more elegant way with optinal arguments...
-    #
     def _misc_url_RunPlugin(self, command, categoryID = None, launcherID = None, romID = None):
         if romID is not None:
-            return 'XBMC.RunPlugin({0}?com={1}&catID={2}&launID={3}&romID={4})'.format(self.base_url, command, categoryID, launcherID, romID)
+            return 'XBMC.RunPlugin({0}?com={1}&catID={2}&launID={3}&romID={4})'.format(
+                self.base_url, command, categoryID, launcherID, romID)
         elif launcherID is not None:
-            return 'XBMC.RunPlugin({0}?com={1}&catID={2}&launID={3})'.format(self.base_url, command, categoryID, launcherID)
+            return 'XBMC.RunPlugin({0}?com={1}&catID={2}&launID={3})'.format(
+                self.base_url, command, categoryID, launcherID)
         elif categoryID is not None:
-            return 'XBMC.RunPlugin({0}?com={1}&catID={2})'.format(self.base_url, command, categoryID)
+            return 'XBMC.RunPlugin({0}?com={1}&catID={2})'.format(
+                self.base_url, command, categoryID)
 
         return 'XBMC.RunPlugin({0}?com={1})'.format(self.base_url, command)
 
     def _misc_url(self, command, categoryID = None, launcherID = None, romID = None):
         if romID is not None:
-            return '{0}?com={1}&catID={2}&launID={3}&romID={4}'.format(self.base_url, command, categoryID, launcherID, romID)
+            return '{0}?com={1}&catID={2}&launID={3}&romID={4}'.format(
+                self.base_url, command, categoryID, launcherID, romID)
         elif launcherID is not None:
-            return '{0}?com={1}&catID={2}&launID={3}'.format(self.base_url, command, categoryID, launcherID)
+            return '{0}?com={1}&catID={2}&launID={3}'.format(
+                self.base_url, command, categoryID, launcherID)
         elif categoryID is not None:
             return '{0}?com={1}&catID={2}'.format(self.base_url, command, categoryID)
 
