@@ -2096,6 +2096,19 @@ class Main:
                             else:
                                 raise ValueError('Asset {} index {} ID {} unknown action {}'.format(
                                     AInfo.name, i, asset_ID, asset_action_list[i]))
+
+                        # --- Check if user pressed the cancel button ---
+                        if pdialog.isCanceled():
+                            pdialog.endProgress()
+                            kodi_dialog_OK('Stopping ROM artwork scraping.')
+                            log_info('User pressed Cancel button when scraping ROMs.')
+                            break
+                    else:
+                        pdialog.endProgress()
+
+                    # --- Flush scraper disk caches ---
+                    pdialog.startProgress('Flushing scraper disk caches...')
+                    g_scraper_factory.destroy_scanner()
                     pdialog.endProgress()
 
                     # --- Save ROMs XML file ---
@@ -2893,11 +2906,11 @@ class Main:
                 # was found, however the cache can have valid data for the candidates.
                 scrap_strategy = g_scrap_factory.create_CM_metadata(scraper_ID)
                 status_dic = scrap_strategy.scrap_CM_metadata_ROM(object_dic, data_dic)
-                # Flush caches.
-                pDialog = KodiProgressDialog()
-                pDialog.startProgress('Flushing scraper disk caches...')
+                # Flush disk caches.
+                pdialog = KodiProgressDialog()
+                pdialog.startProgress('Flushing scraper disk caches...')
                 g_scrap_factory.destroy_CM()
-                pDialog.endProgress()
+                pdialog.endProgress()
                 kodi_display_user_message(status_dic)
                 if not status_dic['status']: return
 
@@ -9548,11 +9561,15 @@ class Main:
                 kodi_dialog_OK('Stopping ROM scanning. No changes have been made.')
                 log_info('User pressed Cancel button when scanning ROMs. ROM scanning stopped.')
                 # Flush scraper disk caches.
+                pdialog.startProgress('Flushing scraper disk caches...')
                 g_scraper_factory.destroy_scanner()
+                pdialog.endProgress()
                 return
         pdialog.endProgress()
         # Flush scraper disk caches.
+        pdialog.startProgress('Flushing scraper disk caches...')
         g_scraper_factory.destroy_scanner()
+        pdialog.endProgress()
         log_info('******************** ROM scanner finished. Report ********************')
         log_info('Removed dead ROMs {0:6d}'.format(num_removed_roms))
         log_info('Files checked     {0:6d}'.format(num_files_checked))
