@@ -2893,7 +2893,11 @@ class Main:
                 # was found, however the cache can have valid data for the candidates.
                 scrap_strategy = g_scrap_factory.create_CM_metadata(scraper_ID)
                 status_dic = scrap_strategy.scrap_CM_metadata_ROM(object_dic, data_dic)
-                g_scrap_factory.destroy_CM_metadata()
+                # Flush caches.
+                pDialog = KodiProgressDialog()
+                pDialog.startProgress('Flushing scraper disk caches...')
+                g_scrap_factory.destroy_CM()
+                pDialog.endProgress()
                 kodi_display_user_message(status_dic)
                 if not status_dic['status']: return
 
@@ -9832,10 +9836,14 @@ class Main:
             # to be printed here. A message here is that no images were found, however the
             # caches (internal, etc.) may have valid data.
             scraper_strategy = g_scrap_factory.create_CM_asset(scraper_ID)
-            op_dic = scraper_strategy.scrap_CM_asset(object_dic, asset_ID, data_dic)
-            g_scrap_factory.destroy_CM_asset()
-            kodi_display_user_message(op_dic)
-            if not op_dic['status']: return
+            status_dic = scraper_strategy.scrap_CM_asset(object_dic, asset_ID, data_dic)
+            # Flush caches.
+            pDialog = KodiProgressDialog()
+            pDialog.startProgress('Flushing scraper disk caches...')
+            g_scrap_factory.destroy_CM()
+            pDialog.endProgress()
+            kodi_display_user_message(status_dic)
+            if not status_dic['status']: return False
 
         # If we reach this point, changes were made.
         # Categories/Launchers/ROMs must be saved, container must be refreshed.

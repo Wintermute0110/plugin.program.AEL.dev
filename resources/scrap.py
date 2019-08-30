@@ -302,13 +302,6 @@ class ScraperFactory(object):
 
         return self.strategy_obj
 
-    # * Flush caches before dereferencing object.
-    def destroy_CM_metadata(self):
-        log_debug('ScraperFactory.destroy_CM_metadata() Flushing disk caches...')
-        self.strategy_obj.scraper_obj.flush_disk_cache()
-        self.strategy_obj.scraper_obj = None
-        self.strategy_obj = None
-
     # * Create a ScraperStrategy object to be used in the "Edit asset" context menu.
     #
     # Returns a ScrapeStrategy object which is used for the actual scraping.
@@ -326,8 +319,8 @@ class ScraperFactory(object):
         return self.strategy_obj
 
     # * Flush caches before dereferencing object.
-    def destroy_CM_asset(self):
-        log_debug('ScraperFactory.destroy_CM_asset() Flushing disk caches...')
+    def destroy_CM(self):
+        log_debug('ScraperFactory.destroy_CM() Flushing disk caches...')
         self.strategy_obj.scraper_obj.flush_disk_cache()
         self.strategy_obj.scraper_obj = None
         self.strategy_obj = None
