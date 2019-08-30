@@ -2896,6 +2896,7 @@ class Main:
                     platform = self.launchers[launcherID]['platform']
                 data_dic = {
                     'rom_base_noext' : ROM.getBase_noext(),
+                    'rom_path' : ROM.getPath(),
                     'platform' : platform,
                 }
 
@@ -9839,6 +9840,7 @@ class Main:
             # --- Scrape! ---
             data_dic = {
                 'rom_base_noext' : ROMfile.getBase_noext(),
+                'rom_path' : ROMfile.getPath(),
                 'platform' : platform,
                 'current_asset_FN' : current_asset_FN,
                 'asset_path_noext' : asset_path_noext,
