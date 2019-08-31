@@ -636,7 +636,7 @@ class ScrapeStrategy(object):
             # --- Call scraper and get a list of games ---
             rom_name_scraping = text_format_ROM_name_for_scraping(ROM_FN.getBase_noext())
             candidates = scraper_obj.get_candidates(
-                rom_name_scraping, ROM_FN.getBase_noext(), self.platform, status_dic)
+                rom_name_scraping, ROM_FN.getBase_noext(), ROM_FN.getPath(), self.platform, status_dic)
             # * If the scraper produced an error notification show it and continue scanner operation.
             # * Note that if many errors/exceptions happen (for example, network is down) then
             #   the scraper will disable itself after a number of errors and only a limited number
