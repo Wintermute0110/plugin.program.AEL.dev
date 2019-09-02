@@ -684,9 +684,9 @@ def misc_calculate_checksums(full_file_path):
         log_debug('Returning None')
         return None
     checksums = {
-        'crc'  : '{:08X}'.format(crc),
-        'md5'  : md5_digest,
-        'sha1' : sha1_digest,
+        'crc'  : '{:08X}'.format(crc).upper(),
+        'md5'  : md5_digest.upper(),
+        'sha1' : sha1_digest.upper(),
         'size' : size,
     }
 
