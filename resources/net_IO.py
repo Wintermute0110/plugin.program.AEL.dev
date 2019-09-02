@@ -25,7 +25,7 @@ import ssl
 import xml.etree.ElementTree as ET
 
 from httplib import HTTPSConnection
-from urllib2 import urlopen, build_opener, Request, HTTPSHandler
+from urllib2 import urlopen, build_opener, Request, HTTPSHandler, HTTPError
 
 # Python3 
 # import http
@@ -123,10 +123,14 @@ def net_get_URL(url, url_log = None):
     page_bytes = http_code = None
     try:
         f = urlopen(req, timeout = 120)
-        page_bytes = f.read()
         http_code = f.getcode()
+        page_bytes = f.read()
         f.close()
     # If an exception happens return empty data.
+    except HTTPError as error:
+        log_error('(HTTPError) In net_get_URL()')
+        log_error('(HTTPError) Message "{}"'.format(str(error)))
+        return page_bytes, error.code
     except Exception as ex:
         log_error('(Exception) In net_get_URL()')
         log_error('(Exception) Object type "{}"'.format(type(ex)))

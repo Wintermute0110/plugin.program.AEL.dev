@@ -3779,12 +3779,12 @@ class RetroarchLauncher(StandardRomLauncher):
     def _builder_get_available_retroarch_cores(self, item_key, launcher):
         cores = collections.OrderedDict()
         cores['BROWSE'] = 'Manual enter path to core'
-        cores_ext = '*.*'
+        cores_ext = ''
 
         if is_windows():
-            cores_ext = '*.dll'
+            cores_ext = 'dll'
         else:
-            cores_ext = '*.so'
+            cores_ext = 'so'
 
         config_file   = FileName(launcher['retro_config'])
         parent_dir    = FileName(config_file.getDir())
@@ -3795,23 +3795,29 @@ class RetroarchLauncher(StandardRomLauncher):
 
         if not info_folder.exists():
             log_warning('Retroarch info folder not found {}'.format(info_folder.getPath()))
+            kodi_notify_error('Retroarch info folder not found {}. Read documentation'.format(info_folder.getPath()))
             return cores
     
-        if not cores_folder.exists():
-            log_warning('Retroarch cores folder not found {}'.format(cores_folder.getPath()))
-            return cores
-
-        files = cores_folder.scanFilesInPath(cores_ext)
-        for file in files:
+        # scan based on info folder and files since Retroarch on Android has it's core files in 
+        # the app folder which is not readable without root privileges. Changing the cores folder
+        # will not work since Retroarch won't be able to load cores from a different folder due
+        # to security reasons. Changing that setting under Android will only result in a reset 
+        # of that value after restarting Retroarch ( https://forums.libretro.com/t/directory-settings-wont-save/12753/3 )
+        # So we will scan based on info files (which setting path can be changed) and guess that
+        # the core files will be available.
+        files = info_folder.scanFilesInPath('*.info')
+        for info_file in files:
                 
-            log_debug("get_available_retroarch_cores() adding core '{0}'".format(file.getPath()))    
-            info_file = self._switch_core_to_info_file(file, info_folder)
+            log_debug("get_available_retroarch_cores() adding core using info '{0}'".format(info_file.getPath()))    
 
-            if not info_file.exists():
-                log_warning('get_available_retroarch_cores() Cannot find "{}". Skipping core "{}"'.format(info_file.getPath(), file.getBase()))
-                continue
-
-            log_debug("get_available_retroarch_cores() using info '{0}'".format(info_file.getPath()))    
+            # check if core exists, if android just skip and guess it exists
+            if not is_android():
+                core_file = self._switch_info_to_core_file(info_file, cores_folder, cores_ext)
+                if not core_file.exists():
+                    log_warning('get_available_retroarch_cores() Cannot find "{}". Skipping info "{}"'.format(core_file.getPath(), info_file.getBase()))
+                    continue
+                log_debug("get_available_retroarch_cores() using core '{0}'".format(core_file.getPath()))
+                
             core_info = info_file.readPropertyFile()
             cores[info_file.getPath()] = core_info['display_name']
 
@@ -3837,11 +3843,6 @@ class RetroarchLauncher(StandardRomLauncher):
         cores_folder    = self._create_path_from_retroarch_setting(configuration['libretro_directory'], parent_dir)
         info_file       = FileName(input)
         
-        if not cores_folder.exists():
-            log_warning('Retroarch cores folder not found {}'.format(cores_folder.getPath()))
-            kodi_notify_error('Retroarch cores folder not found {}. Read documentation'.format(cores_folder.getPath()))
-            return ''
-
         core_file = self._switch_info_to_core_file(info_file, cores_folder, cores_ext)
         core_info = info_file.readPropertyFile()
 
