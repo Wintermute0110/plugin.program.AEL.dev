@@ -1210,8 +1210,8 @@ class ScrapeStrategy(object):
                 ret = kodi_dialog_yesno_custom(
                     'Candidate game in the scraper disk cache. '
                     'Use candidate from cache or rescrape?',
-                    'Use from cache', 'Scrape')
-                use_from_cache = True if ret else False
+                    'Scrape', 'Use from cache')
+                use_from_cache = False if ret else True
         else:
             log_debug('ROM "{}" NOT in candidates cache.'.format(rom_base_noext))
             use_from_cache = False
