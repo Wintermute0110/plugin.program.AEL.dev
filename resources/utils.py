@@ -2074,9 +2074,7 @@ class NewFileName:
         for row in reader:
             if len(row) < 2:
                continue
-                                   
-            if len(row) > 2:
-               raise csv.Error("Too many fields on row with contents: "+str(row))
+           
             result[row[0].strip()] = row[1].strip().lstrip('"').rstrip('"')
 
         return result

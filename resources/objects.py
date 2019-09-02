@@ -3777,8 +3777,7 @@ class RetroarchLauncher(StandardRomLauncher):
         return configs
 
     def _builder_get_available_retroarch_cores(self, item_key, launcher):
-        cores = collections.OrderedDict()
-        cores['BROWSE'] = 'Manual enter path to core'
+        cores_sorted = collections.OrderedDict()
         cores_ext = ''
 
         if is_windows():
@@ -3796,7 +3795,7 @@ class RetroarchLauncher(StandardRomLauncher):
         if not info_folder.exists():
             log_warning('Retroarch info folder not found {}'.format(info_folder.getPath()))
             kodi_notify_error('Retroarch info folder not found {}. Read documentation'.format(info_folder.getPath()))
-            return cores
+            return cores_sorted
     
         # scan based on info folder and files since Retroarch on Android has it's core files in 
         # the app folder which is not readable without root privileges. Changing the cores folder
@@ -3805,8 +3804,12 @@ class RetroarchLauncher(StandardRomLauncher):
         # of that value after restarting Retroarch ( https://forums.libretro.com/t/directory-settings-wont-save/12753/3 )
         # So we will scan based on info files (which setting path can be changed) and guess that
         # the core files will be available.
+        cores = {}
         files = info_folder.scanFilesInPath('*.info')
         for info_file in files:
+            
+            if info_file.getBaseNoExt() == '00_example_libretro':
+                continue
                 
             log_debug("get_available_retroarch_cores() adding core using info '{0}'".format(info_file.getPath()))    
 
@@ -3821,7 +3824,10 @@ class RetroarchLauncher(StandardRomLauncher):
             core_info = info_file.readPropertyFile()
             cores[info_file.getPath()] = core_info['display_name']
 
-        return cores
+        cores_sorted['BROWSE'] = 'Manual enter path to core'        
+        for core_item in sorted(cores.items(), key=lambda x: x[1]):
+            cores_sorted[core_item[0]] = core_item[1]
+        return cores_sorted
 
     def _builder_load_selected_core_info(self, input, item_key, launcher):
         if input == 'BROWSE':
