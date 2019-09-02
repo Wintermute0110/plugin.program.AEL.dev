@@ -162,7 +162,7 @@ class KodiProgressDialog(object):
         self.progressDialog.update(self.progress)
 
     # Update progress and optionally update messages as well.
-    def updateProgress(self, step_index, message1 = '', message2 = ''):
+    def updateProgress(self, step_index, message1 = ' ', message2 = ' '):
         self.progress = (step_index * 100) / self.num_steps
         self.message1 = message1
         self.message2 = message2
