@@ -9833,8 +9833,7 @@ class Main:
 
             # --- Scrape! ---
             data_dic = {
-                'rom_base_noext' : ROMfile.getBase_noext(),
-                'rom_path' : ROMfile.getPath(),
+                'rom_FN' : ROMfile,
                 'platform' : platform,
                 'current_asset_FN' : current_asset_FN,
                 'asset_path_noext' : asset_path_noext,

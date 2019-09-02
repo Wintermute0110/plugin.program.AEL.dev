@@ -1049,7 +1049,6 @@ class ScrapeStrategy(object):
         asset_info = assets_get_info_scheme(asset_ID)
         asset_name = asset_info.name
         # In AEL 0.10.x this data is grabed from the objects, not passed using a dictionary.
-        rom_base_noext = data_dic['rom_base_noext']
         platform = data_dic['platform']
         current_asset_FN = data_dic['current_asset_FN']
         asset_path_noext_FN = data_dic['asset_path_noext']
@@ -1154,7 +1153,7 @@ class ScrapeStrategy(object):
         image_local_path = asset_path_noext_FN.append('.' + image_ext).getPath()
         log_verb('Download  "{0}"'.format(image_url_log))
         log_verb('Into file "{0}"'.format(image_local_path))
-        pdialog.startProgress('Downloading {}...'.format(asset_name))
+        pdialog.startProgress('Downloading {} from {}...'.format(asset_name, scraper_name))
         try:
             # net_download_img() never prints URLs or paths.
             net_download_img(image_url, image_local_path)
@@ -3630,8 +3629,9 @@ class ScreenScraper(Scraper):
         # --- Add candidate jeu_dic to the internal cache ---
         log_debug('ScreenScraper._search_candidates_jeuInfos() Adding to internal cache "{}"'.format(
             self.cache_key))
+        # IMPORTANT Do not clean URLs. There could be problems reconstructing some URLs.
+        # self._clean_JSON_for_dumping(jeu_dic)
         jeu_dic['roms'] = []
-        self._clean_JSON_for_dumping(jeu_dic)
         self._update_disk_cache(Scraper.CACHE_INTERNAL, self.cache_key, jeu_dic)
 
         return [ candidate ]
@@ -3772,7 +3772,7 @@ class ScreenScraper(Scraper):
     # https://www.screenscraper.fr/gameinfos.php?gameid=1187  # Sonic 3 Megadrive
     # https://www.screenscraper.fr/gameinfos.php?gameid=19249 # Final Fantasy VII PSX
     #
-    # Example of URL for thumbs used web SS id displaying media in the website:
+    # Example of download and thumb URLs. Thumb URLs are used to display media in the website:
     # https://www.screenscraper.fr/image.php?gameid=5&media=sstitle&hd=0&region=wor&num=&version=&maxwidth=338&maxheight=190
     # https://www.screenscraper.fr/image.php?gameid=5&media=fanart&hd=0&region=&num=&version=&maxwidth=338&maxheight=190
     # https://www.screenscraper.fr/image.php?gameid=5&media=steamgrid&hd=0&region=&num=&version=&maxwidth=338&maxheight=190
@@ -3791,12 +3791,25 @@ class ScreenScraper(Scraper):
             # Build thumb URL
             game_ID = jeu_dic['id']
             region = media_dic['region'] if 'region' in media_dic else ''
-            if region: media_type  = media_dic['type'] + ' ' + region
-            else:      media_type  = media_dic['type']
+            if region: media_type = media_dic['type'] + ' ' + region
+            else:      media_type = media_dic['type']
+            # Build thumb URL
             url_thumb_a = 'https://www.screenscraper.fr/image.php?'
             url_thumb_b = 'gameid={}&media={}&region={}'.format(game_ID, media_type, region)
             url_thumb_c = '&hd=0&num=&version=&maxwidth=338&maxheight=190'
             url_thumb = url_thumb_a + url_thumb_b + url_thumb_c
+            # Build asset URL. ScreenScraper URLs are stripped down when saved to the cache
+            # to save space and time. FEATURE CANCELED. There could be problems reconstructing
+            # some URLs and the space saved is not so great for most games.
+            # systemeid = jeu_dic['systemeid']
+            # media = '{}({})'.format(media_type, region)
+            # url_thumb_a = 'https://www.screenscraper.fr/api2/mediaJeu.php?'
+            # url_b = 'devid={}&devpassword={}&softname={}&ssid={}&sspassword={}'.format(
+            #     base64.b64decode(self.dev_id), base64.b64decode(self.dev_pass),
+            #     self.softname, self.ssid, self.sspassword)
+            # url_thumb_c = '&systemeid={}&jeuid={}&media={}'.format(systemeid, game_ID, media)
+            # url_asset = url_thumb_a + url_thumb_b + url_thumb_c
+            # log_debug('URL "{}"'.format(url_asset))
             # Create asset dictionary
             asset_data = self._new_assetdata_dic()
             asset_data['asset_ID'] = asset_ID
@@ -3892,7 +3905,7 @@ class ScreenScraper(Scraper):
             # log_debug('Cleaning "{}"'.format(keys))
             url = self._getFromDict(json_data, keys)
             clean_url = self._clean_URL_for_log(url)
-            log_debug('Cleaned  "{}"'.format(clean_url))
+            # log_debug('Cleaned  "{}"'.format(clean_url))
             self._setInDict(json_data, keys, clean_url)
         log_debug('ScreenScraper._clean_JSON_for_dumping() Cleaned {} URLs'.format(len(URL_key_list)))
 

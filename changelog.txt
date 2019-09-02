@@ -140,9 +140,9 @@ DONE     [SCRAPERS] Make sure only dirty scraper caches are written to disk, ski
 
 DONE     [SCRAPERS] Progress dialog when saving scraper caches.
 
-DONE     [SCRAPERS] Clean SS URLs before introducing in the internal cache.
+CANCELED [SCRAPERS] Clean SS URLs before introducing in the internal cache.
 
-WIP      [SCRAPERS] Fix asset URLs taken from cache for ScreenScraper.
+CANCELED [SCRAPERS] Fix asset URLs taken from cache for ScreenScraper.
 
 WIP      [CORE] Finish the new platform scheme.
 
