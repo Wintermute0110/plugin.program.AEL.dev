@@ -309,6 +309,11 @@ MANUAL_EXTENSION_LIST  = ['pdf', 'cbz', 'cbr']
 TRAILER_EXTENSION_LIST = ['mov', 'divx', 'xvid', 'wmv', 'avi', 'mpg', 'mpeg', 'mp4', 'mkv', 'avc']
 
 # --- Scrapers -----------------------------------------------------------------------------------
+# --- Options ---
+# Use True only for development.
+SCRAPER_CACHE_HUMAN_JSON = True
+
+# --- IDs ---
 SCRAPER_NULL_ID          = 10
 SCRAPER_AEL_OFFLINE_ID   = 20
 SCRAPER_THEGAMESDB_ID    = 30

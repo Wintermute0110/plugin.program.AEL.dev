@@ -140,7 +140,7 @@ DONE     [SCRAPERS] Make sure only dirty scraper caches are written to disk, ski
 
 DONE     [SCRAPERS] Progress dialog when saving scraper caches.
 
-WIP      [SCRAPERS] Clean SS URLs before introducing in the internal cache.
+DONE     [SCRAPERS] Clean SS URLs before introducing in the internal cache.
 
 WIP      [CORE] Finish the new platform scheme.
 

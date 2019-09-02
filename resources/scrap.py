@@ -1371,7 +1371,10 @@ class Scraper(object):
     def _dump_json_debug(self, file_name, data_dic):
         if not self.dump_file_flag: return
         file_path = os.path.join(self.dump_dir, file_name)
-        json_str = json.dumps(data_dic, indent = 4, separators = (', ', ' : '))
+        if SCRAPER_CACHE_HUMAN_JSON:
+            json_str = json.dumps(data_dic, indent = 4, separators = (', ', ' : '))
+        else:
+            json_str = json.dumps(data_dic)
         text_dump_str_to_file(file_path, json_str)
 
     def _dump_file_debug(self, file_name, page_data):
@@ -1418,7 +1421,6 @@ class Scraper(object):
     def check_candidates_cache(self, rom_FN, platform):
         self.cache_key = rom_FN.getBase()
         self.platform = platform
-        self.lazy_load_candidate_cache()
 
         return self._check_disk_cache(Scraper.CACHE_CANDIDATES, self.cache_key)
 
@@ -1459,9 +1461,9 @@ class Scraper(object):
 
     # Only write to disk non-empty caches.
     # Only write to disk dirty caches. If cache has not been modified then do not write it.
-    def flush_disk_cache(self, pdialog):
+    def flush_disk_cache(self, pdialog = None):
         # If scraper does not use disk cache (notably AEL Offline) return.
-        if not self.uses_disk_cache():
+        if not self.supports_disk_cache():
             log_debug('Scraper.flush_disk_cache() Scraper {} does not use disk cache.'.format(
                 self.get_name()))
             return
@@ -1469,14 +1471,16 @@ class Scraper(object):
         # Create progress dialog.
         num_steps = len(Scraper.CACHE_LIST) + len(Scraper.GLOBAL_CACHE_LIST)
         step_count = 0
-        pdialog.startProgress('Flushing scraper disk caches...', num_steps)
+        if pdialog is not None:
+            pdialog.startProgress('Flushing scraper disk caches...', num_steps)
 
         # --- Scraper caches ---
         log_debug('Scraper.flush_disk_cache() Saving scraper {} disk cache...'.format(
             self.get_name()))
         for cache_type in Scraper.CACHE_LIST:
-            pdialog.updateProgress(step_count)
-            step_count += 1
+            if pdialog is not None:
+                pdialog.updateProgress(step_count)
+                step_count += 1
 
             # Skip unloaded caches
             if not self.disk_caches_loaded[cache_type]:
@@ -1511,8 +1515,9 @@ class Scraper(object):
         log_debug('Scraper.flush_disk_cache() Saving scraper {} global disk cache...'.format(
                 self.get_name()))
         for cache_type in Scraper.GLOBAL_CACHE_LIST:
-            pdialog.updateProgress(step_count)
-            step_count += 1
+            if pdialog is not None:
+                pdialog.updateProgress(step_count)
+                step_count += 1
 
             # Skip unloaded caches
             if not self.global_disk_caches_loaded[cache_type]:
@@ -1542,7 +1547,7 @@ class Scraper(object):
 
             # Cache written to disk is clean gain.
             self.global_disk_caches_dirty[cache_type] = False
-        pdialog.endProgress()
+        if pdialog is not None: pdialog.endProgress()
 
     # Search for candidates and return a list of dictionaries _new_candidate_dic().
     #
@@ -1755,7 +1760,7 @@ class Scraper(object):
 
     def _lazy_load_global_disk_cache(self, cache_type):
         if not self.global_disk_caches_loaded[cache_type]:
-            self._load_global_cache(cache_type, self.platform)
+            self._load_global_cache(cache_type)
 
     def _load_global_cache(self, cache_type):
         # --- Get filename ---
@@ -1781,6 +1786,7 @@ class Scraper(object):
 
         return self.global_disk_caches[cache_type]
 
+    # _check_disk_cache() must be called before this.
     def _retrieve_global_cache(self, cache_type):
         return self.global_disk_caches[cache_type]
 
@@ -3816,10 +3822,18 @@ class ScreenScraper(Scraper):
         # clean_url = re.sub('sspassword=[^&]*$', 'sspassword=***', clean_url)
         # --- Mr Propoer. SS URLs are very long ---
         clean_url = re.sub('devid=[^&]*&', '', clean_url)
+        clean_url = re.sub('devid=[^&]*$', '', clean_url)
         clean_url = re.sub('devpassword=[^&]*&', '', clean_url)
+        clean_url = re.sub('devpassword=[^$]*$', '', clean_url)
+        clean_url = re.sub('softname=[^&]*&', '', clean_url)
+        clean_url = re.sub('softname=[^&]*$', '', clean_url)
+        clean_url = re.sub('output=[^&]*&', '', clean_url)
+        clean_url = re.sub('output=[^&]*$', '', clean_url)
         clean_url = re.sub('ssid=[^&]*&', '', clean_url)
+        clean_url = re.sub('ssid=[^&]*$', '', clean_url)
         clean_url = re.sub('sspassword=[^&]*&', '', clean_url)
         clean_url = re.sub('sspassword=[^&]*$', '', clean_url)
+
         # log_variable('url', url)
         # log_variable('clean_url', clean_url)
 
@@ -3866,16 +3880,19 @@ class ScreenScraper(Scraper):
         log_debug('ScreenScraper._clean_JSON_for_dumping() Cleaning JSON URLs.')
         for keys, item in self._recursive_iter(json_data):
             # log_debug('{} "{}"'.format(keys, item))
+            # log_debug('Type item "{}"'.format(type(item)))
             # Skip non string objects.
-            if not isinstance(item, str) or not isinstance(item, unicode): continue
+            if not isinstance(item, str) and not isinstance(item, unicode): continue
             if item.startswith('http'):
                 # log_debug('Adding URL "{}"'.format(item))
                 URL_key_list.append(keys)
+
         # --- Do the actual cleaning ---
         for keys in URL_key_list:
             # log_debug('Cleaning "{}"'.format(keys))
             url = self._getFromDict(json_data, keys)
             clean_url = self._clean_URL_for_log(url)
+            log_debug('Cleaned  "{}"'.format(clean_url))
             self._setInDict(json_data, keys, clean_url)
         log_debug('ScreenScraper._clean_JSON_for_dumping() Cleaned {} URLs'.format(len(URL_key_list)))
 
