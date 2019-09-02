@@ -122,23 +122,25 @@ WIP      [SCRAPERS] Persistent scraper cache browser. Ability to browse the stor
 
 [B]Urgent features to de done before 0.9.8 release[/B]
 
-WIP      [SCRAPERS] Change the yesno dialog so default is to use data from the cache and not to
-         rescrape.
+DONE     [SCRAPERS] Change the yesno dialog so default is to use data from the cache and not to
+         rescrape when scraping from the ROM context menu.
 
 WIP      [SCRAPERS] ScreenScraper requires the file extension. Intead of passing rombase_noext
          and path use a FileName object so scraper extracts the file parts it needs.
 
-WIP      [SCRAPERS] The key in the scrapers cache must include the file extension and not
+DONE     [SCRAPERS] The key in the scrapers cache must include the file extension and not
          only rombase_noext.
 
 WIP      [SCRAPERS] Add a method to know if scrapper supports search string or not. If scraper
          does not support search string (AEL Offline, ScreenScraper and ArcadeDB) then do not bother
          the user asking for one.
 
-WIP      [SCRAPERS] Make sure only dirty scraper caches are written to disk, skip clean
+DONE     [SCRAPERS] Make sure only dirty scraper caches are written to disk, skip clean
          caches.
 
 WIP      [SCRAPERS] Progress dialog when saving scraper caches.
+
+WIP      [SCRAPERS] Clean SS URLs before introducing in the internal cache.
 
 WIP      [CORE] Finish the new platform scheme.
 
