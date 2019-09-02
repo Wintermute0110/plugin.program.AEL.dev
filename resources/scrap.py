@@ -3625,7 +3625,7 @@ class ScreenScraper(Scraper):
         log_debug('ScreenScraper._search_candidates_jeuInfos() Adding to internal cache "{}"'.format(
             self.cache_key))
         jeu_dic['roms'] = []
-        # self._clean_URL_for_cache()
+        self._clean_JSON_for_dumping(jeu_dic)
         self._update_disk_cache(Scraper.CACHE_INTERNAL, self.cache_key, jeu_dic)
 
         return [ candidate ]
@@ -3851,6 +3851,13 @@ class ScreenScraper(Scraper):
         else:
             yield keys, obj
 
+    # Get a given data from a dictionary with position provided as a list (iterable)
+    # Example maplist = ["b", "v", "y"] or ("b", "v", "y")
+    def _getFromDict(self, dataDict, mapList):
+        for k in mapList: dataDict = dataDict[k]
+
+        return dataDict
+
     # Recursively cleans URLs in a JSON data structure for safe JSON file data dumping.
     def _clean_JSON_for_dumping(self, json_data):
         # --- Recursively iterate data ---
@@ -3871,13 +3878,6 @@ class ScreenScraper(Scraper):
             clean_url = self._clean_URL_for_log(url)
             self._setInDict(json_data, keys, clean_url)
         log_debug('ScreenScraper._clean_JSON_for_dumping() Cleaned {} URLs'.format(len(URL_key_list)))
-
-    # Get a given data from a dictionary with position provided as a list (iterable)
-    # Example maplist = ["b", "v", "y"] or ("b", "v", "y")
-    def _getFromDict(self, dataDict, mapList):
-        for k in mapList: dataDict = dataDict[k]
-
-        return dataDict
 
     # Set a given data in a dictionary with position provided as a list (iterable)
     def _setInDict(self, dataDict, mapList, value):
