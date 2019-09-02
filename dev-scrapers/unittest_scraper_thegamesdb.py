@@ -1,3 +1,5 @@
+#!/usr/bin/python -B
+# -*- coding: utf-8 -*-
 import unittest, mock, os, sys
 
 from mock import *

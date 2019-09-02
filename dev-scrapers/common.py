@@ -27,20 +27,20 @@ settings = {
 # --- Test data -----------------------------------------------------------------------------------
 games = {
     # Console games
-    'metroid'                : ('Metroid', 'Metroid', 'Nintendo SNES'),
-    'mworld'                 : ('Super Mario World', 'Super Mario World', 'Nintendo SNES'),
-    'sonic'                  : ('Sonic the Hedgehog', 'Sonic the Hedgehog (USA, Europe)', 'Sega MegaDrive'),
-    'chakan'                 : ('Chakan', 'Chakan (USA, Europe)', 'Sega MegaDrive'),
+    'metroid'                : ('Metroid', 'Metroid.zip', 'Nintendo SNES'),
+    'mworld'                 : ('Super Mario World', 'Super Mario World.zip', 'Nintendo SNES'),
+    'sonic'                  : ('Sonic the Hedgehog', 'Sonic the Hedgehog (USA, Europe).zip', 'Sega MegaDrive'),
+    'chakan'                 : ('Chakan', 'Chakan (USA, Europe).zip', 'Sega MegaDrive'),
     'ff7'                    : ('Final Fantasy VII', 'Final Fantasy VII (USA) (Disc 1).iso', 'Sony PlayStation'),
-    'console_wrong_title'    : ('Console invalid game', 'mjhyewqr', 'Sega MegaDrive'),
-    'console_wrong_platform' : ('Sonic the Hedgehog', 'Sonic the Hedgehog (USA, Europe)', 'mjhyewqr'),
+    'console_wrong_title'    : ('Console invalid game', 'mjhyewqr.zip', 'Sega MegaDrive'),
+    'console_wrong_platform' : ('Sonic the Hedgehog', 'Sonic the Hedgehog (USA, Europe).zip', 'mjhyewqr'),
 
     # MAME games
-    'atetris'             : ('Tetris (set 1)', 'atetris', 'MAME'),
-    'mslug'               : ('Metal Slug - Super Vehicle-001', 'mslug', 'MAME'),
-    'dino'                : ('Cadillacs and Dinosaurs (World 930201)', 'dino', 'MAME'),
-    'MAME_wrong_title'    : ('MAME invalid game', 'mjhyewqr', 'MAME'),
-    'MAME_wrong_platform' : ('Tetris (set 1)', 'atetris', 'mjhyewqr'),
+    'atetris'             : ('Tetris (set 1)', 'atetris.zip', 'MAME'),
+    'mslug'               : ('Metal Slug - Super Vehicle-001', 'mslug.zip', 'MAME'),
+    'dino'                : ('Cadillacs and Dinosaurs (World 930201)', 'dino.zip', 'MAME'),
+    'MAME_wrong_title'    : ('MAME invalid game', 'mjhyewqr.zip', 'MAME'),
+    'MAME_wrong_platform' : ('Tetris (set 1)', 'atetris.zip', 'mjhyewqr'),
 }
 
 def handle_get_candidates(candidate_list, status_dic):

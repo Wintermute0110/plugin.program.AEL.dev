@@ -1,5 +1,6 @@
-#!/usr/bin/python
+#!/usr/bin/python -B
 # -*- coding: utf-8 -*-
+
 # Updates the ROM count in the Offline Scraper
 
 # Copyright (c) 2016-2017 Wintermute0110 <wintermute0110@gmail.com>
