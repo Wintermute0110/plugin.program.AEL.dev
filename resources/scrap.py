@@ -606,7 +606,7 @@ class ScrapeStrategy(object):
 
     # Get and set a candidate game in the ROM scanner.
     # Returns nothing.
-    def _scanner_get_candidate(self, romdata, ROM_FN, scraper_obj, scraper_name, status_dic):
+    def _scanner_get_candidate(self, romdata, rom_FN, scraper_obj, scraper_name, status_dic):
         # --- Update scanner progress dialog ---
         if self.pdialog_verbose:
             scraper_text = 'Searching games with scaper {}...'.format(scraper_name)
@@ -617,28 +617,31 @@ class ScrapeStrategy(object):
         # * If the candidate is empty it means it was previously searched and the scraper
         #   found no candidates. In this case, the context menu must be used to manually
         #   change the search string and set a valid candidate.
-        rom_base_noext = ROM_FN.getBase_noext()
-        if scraper_obj.check_candidates_cache(rom_base_noext, self.platform):
-            log_debug('ROM "{}" in candidates cache.'.format(rom_base_noext))
-            candidate = scraper_obj.retrieve_from_candidates_cache(rom_base_noext, self.platform)
+        if scraper_obj.check_candidates_cache(rom_FN, self.platform):
+            log_debug('ROM "{}" in candidates cache.'.format(rom_FN.getPath()))
+            candidate = scraper_obj.retrieve_from_candidates_cache(rom_FN, self.platform)
             if not candidate:
                 log_debug('Candidate game is empty. ROM will not be scraped again by the scanner.')
             use_from_cache = True
         else:
-            log_debug('ROM "{}" NOT in candidates cache.'.format(rom_base_noext))
+            log_debug('ROM "{}" NOT in candidates cache.'.format(rom_FN.getPath()))
             use_from_cache = False
         log_debug('use_from_cache "{}"'.format(use_from_cache))
 
         if use_from_cache:
-            scraper_obj.set_candidate_from_cache(rom_base_noext, self.platform)
+            scraper_obj.set_candidate_from_cache(rom_FN, self.platform)
         else:
             # Clear all caches to remove preexiting information, just in case user is rescraping.
-            scraper_obj.clear_cache(rom_base_noext, self.platform)
+            scraper_obj.clear_cache(rom_FN, self.platform)
 
             # --- Call scraper and get a list of games ---
-            rom_name_scraping = text_format_ROM_name_for_scraping(ROM_FN.getBase_noext())
-            candidates = scraper_obj.get_candidates(
-                rom_name_scraping, ROM_FN.getBase_noext(), ROM_FN.getPath(), self.platform, status_dic)
+            # In manual scanner mode should we ask the user for a search string
+            # if the scraper supports it?
+            # I think it is better to keep things like this. If the scraper does not
+            # find a proper candidate game the user can fix the scraper cache with the
+            # context menu.
+            rom_name_scraping = text_format_ROM_name_for_scraping(rom_FN.getBase_noext())
+            candidates = scraper_obj.get_candidates(rom_name_scraping, rom_FN, self.platform, status_dic)
             # * If the scraper produced an error notification show it and continue scanner operation.
             # * Note that if many errors/exceptions happen (for example, network is down) then
             #   the scraper will disable itself after a number of errors and only a limited number
@@ -660,14 +663,14 @@ class ScrapeStrategy(object):
             #   never introduced in the cache.
             if candidates is None:
                 log_debug('Error getting the candidate (None).')
-                scraper_obj.set_candidate(rom_base_noext, self.platform, None)
+                scraper_obj.set_candidate(rom_FN, self.platform, None)
                 return
             # * If candidates list is empty scraper operation was correct but no candidate was
             # * found. In this case set the candidate in the scraper object to an empty
             # * dictionary and introduce it in the cache.
             if not candidates:
                 log_debug('Found no candidates after searching.')
-                scraper_obj.set_candidate(rom_base_noext, self.platform, dict())
+                scraper_obj.set_candidate(rom_FN, self.platform, dict())
                 return
             log_debug('Scraper {} found {} candidate/s'.format(scraper_name, len(candidates)))
 
@@ -694,7 +697,7 @@ class ScrapeStrategy(object):
             candidate = candidates[select_candidate_idx]
 
             # --- Set candidate. This will introduce it in the cache ---
-            scraper_obj.set_candidate(rom_base_noext, self.platform, candidate)
+            scraper_obj.set_candidate(rom_FN, self.platform, candidate)
 
     # Scraps ROM metadata in the ROM scanner.
     def _scanner_scrap_ROM_metadata(self, romdata, ROM_FN):
