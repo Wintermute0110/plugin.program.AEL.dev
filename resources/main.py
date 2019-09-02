@@ -2895,8 +2895,7 @@ class Main:
                 else:
                     platform = self.launchers[launcherID]['platform']
                 data_dic = {
-                    'rom_base_noext' : ROM.getBase_noext(),
-                    'rom_path' : ROM.getPath(),
+                    'rom_FN'   : ROM,
                     'platform' : platform,
                 }
 
@@ -2905,13 +2904,10 @@ class Main:
                 # the database and return immediately.
                 # Scraper caches are flushed. An error here could mean that no metadata
                 # was found, however the cache can have valid data for the candidates.
+                # Remember to flush caches after scraping.
                 scrap_strategy = g_scrap_factory.create_CM_metadata(scraper_ID)
                 status_dic = scrap_strategy.scrap_CM_metadata_ROM(object_dic, data_dic)
-                # Flush disk caches.
-                pdialog = KodiProgressDialog()
-                pdialog.startProgress('Flushing scraper disk caches...')
                 g_scrap_factory.destroy_CM()
-                pdialog.endProgress()
                 kodi_display_user_message(status_dic)
                 if not status_dic['status']: return
 
@@ -9557,15 +9553,13 @@ class Main:
                 kodi_dialog_OK('Stopping ROM scanning. No changes have been made.')
                 log_info('User pressed Cancel button when scanning ROMs. ROM scanning stopped.')
                 # Flush scraper disk caches.
-                pdialog.startProgress('Flushing scraper disk caches...')
-                g_scraper_factory.destroy_scanner()
-                pdialog.endProgress()
+                g_scraper_factory.destroy_scanner(pdialog)
                 return
         pdialog.endProgress()
         # Flush scraper disk caches.
-        pdialog.startProgress('Flushing scraper disk caches...')
-        g_scraper_factory.destroy_scanner()
-        pdialog.endProgress()
+        g_scraper_factory.destroy_scanner(pdialog)
+
+        # --- Scanner report ---
         log_info('******************** ROM scanner finished. Report ********************')
         log_info('Removed dead ROMs {0:6d}'.format(num_removed_roms))
         log_info('Files checked     {0:6d}'.format(num_files_checked))
@@ -9625,7 +9619,7 @@ class Main:
         self.launchers[launcherID]['timestamp_launcher'] = time.time()
         pdialog.startProgress('Saving ROM JSON database ...', 100)
         fs_write_catfile(g_PATHS.CATEGORIES_FILE_PATH, self.categories, self.launchers)
-        pdialog.updateProgress(10)
+        pdialog.updateProgress(25)
         fs_write_ROMs_JSON(g_PATHS.ROMS_DIR, launcher, roms)
         pdialog.endProgress()
         kodi_refresh_container()
