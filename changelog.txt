@@ -60,6 +60,14 @@ WIP      [CORE] Unified ROM artwork directory. This will require heavy changes i
          See https://forum.kodi.tv/showthread.php?tid=287826&pid=2865413#pid2865413
          See https://forum.kodi.tv/showthread.php?tid=287826&pid=2867785#pid2867785
 
+WIP      [CORE] Support for BoxSpines artwork. Support for BoxTextures artwork.
+         Code Unified ROM artwork directory before this.
+
+WIP      [CORE] Automatic generation of 3D Boxes using BoxFront and BoxSpine.
+         Copy this feature from AML.
+
+WIP      [CORE] Automatic generation of BoxTextures from BoxBack, BoxSpine and BoxFront.
+
 WIP      [CORE] Sometimes the scrapers download wrong/corrupt data, or produce 0 sized files
          if a file is open() and there is an exception. It would be nice to have an
          utility to check asset images and delete corrupt images so they can be rescraped
@@ -69,11 +77,19 @@ WIP      [CORE] Support for Advanced MAME Launcher exported virtual launchers.
          This feature requires AML 0.9.X
          AML creates the Category "Arcade (AML)" and places the exported launchers there.
 
+WIP      [CORE] Utility to check artwork. Sometimes a JPG image is renamed as PNG, etc.
+         Check that all artwork have correct file extensions, etc.
+
+WIP      [CORE] Utility to scan and remove orphaned artwork.
+
 WIP      [COLLECTIONS] Current way of storing the collection artwork, in a unified XML file,
          is not good. Think of a good way to exporting collections (for example, store the
          artwork in a subdirectory). Possible way of solving filename collisions
          ROM_name_platform_fanart.png, platform is the short name and it's only used if
          there is filename amgibuity (same ROM name in different platforms in the collection).
+
+WIP      [FAVOURITES] Also change the way artwork is stored in Favourites, Launchers and
+         Categories. Avoid using IDs in the artwork name so artwork can be reused.
 
 WIP      [MULTIDISC] Edit multi-disc ROMs.
 
