@@ -95,6 +95,7 @@ def autoconfig_export_launcher_str_list(launcher, category_name, str_list):
     if ROM_asset_path:
         str_list.append(XML_text('ROM_asset_path', ROM_asset_path))
     else:
+        str_list.append(XML_text('path_3dbox', launcher['path_3dbox']))
         str_list.append(XML_text('path_title', launcher['path_title']))
         str_list.append(XML_text('path_snap', launcher['path_snap']))
         str_list.append(XML_text('path_boxfront', launcher['path_boxfront']))
@@ -203,7 +204,7 @@ def autoconfig_export_category(category, export_FN):
 # Import AEL launcher configuration
 # -------------------------------------------------------------------------------------------------
 def autoconfig_get_default_import_category():
-    l = {
+    return {
         'name' : '',
         'year' : '',
         'genre' : '',
@@ -219,10 +220,8 @@ def autoconfig_get_default_import_category():
         's_trailer' : '',
     }
 
-    return l
-
 def autoconfig_get_default_import_launcher():
-    l = {
+    return {
         'name' : '',
         'category' : 'root_category',
         'Launcher_NFO' : '',
@@ -239,6 +238,7 @@ def autoconfig_get_default_import_launcher():
         'ROM_ext' : '',
         'Options' : '',
         'ROM_asset_path' : '',
+        'path_3dbox' : '',
         'path_title' : '',
         'path_snap' : '',
         'path_boxfront' : '',
@@ -260,8 +260,6 @@ def autoconfig_get_default_import_launcher():
         's_controller' : '',
         's_trailer' : '',
     }
-
-    return l
 
 def autoconfig_search_all_by_name(i_launcher, categories, launchers):
     cat_name = i_launcher['category']
@@ -803,8 +801,12 @@ def autoconfig_import_launcher(ROMS_DIR, categories, launchers, categoryID, laun
             log_debug('ROM asset directories left blank or as there were.')
 
     # --- <path_*> tags override <ROM_asset_path> ---
-    # >> This paths will be imported in a raw way, no existance checkings will be done.
-    # >> Note that path_* tags will be imported only if they are non-empty.
+    # This paths will be imported in a raw way, no existance checkings will be done.
+    # Note that path_* tags will be imported only if they are non-empty.
+    if i_launcher['path_3dbox']:
+        launchers[launcherID]['path_3dbox'] = i_launcher['path_3dbox']
+        log_debug('Imported path_3dbox "{0}"'.format(i_launcher['path_3dbox']))
+
     if i_launcher['path_title']:
         launchers[launcherID]['path_title'] = i_launcher['path_title']
         log_debug('Imported path_title "{0}"'.format(i_launcher['path_title']))

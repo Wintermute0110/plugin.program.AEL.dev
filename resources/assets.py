@@ -65,6 +65,38 @@ def asset_get_regexp_extension_list(exts):
 # -------------------------------------------------------------------------------------------------
 # Asset functions
 # -------------------------------------------------------------------------------------------------
+def assets_get_default_artwork_dir(asset_ID, launcher):
+    if launcher['platform'] == 'MAME':
+        if   asset_ID == ASSET_FANART_ID: return 'fanarts'
+        elif asset_ID == ASSET_BANNER_ID: return 'marquees'
+        elif asset_ID == ASSET_CLEARLOGO_ID: return 'clearlogos'
+        elif asset_ID == ASSET_TITLE_ID: return 'titles'
+        elif asset_ID == ASSET_SNAP_ID: return 'snaps'
+        elif asset_ID == ASSET_BOXFRONT_ID: return 'cabinets'
+        elif asset_ID == ASSET_BOXBACK_ID: return 'cpanels'
+        elif asset_ID == ASSET_3DBOX_ID: return '3dboxes'
+        elif asset_ID == ASSET_CARTRIDGE_ID: return 'PCBs'
+        elif asset_ID == ASSET_FLYER_ID: return 'flyers'
+        elif asset_ID == ASSET_MAP_ID: return 'maps'
+        elif asset_ID == ASSET_MANUAL_ID: return 'manuals'
+        elif asset_ID == ASSET_TRAILER_ID: return 'trailers'
+        else: raise ValueError
+    else:
+        if   asset_ID == ASSET_FANART_ID: return 'fanarts'
+        elif asset_ID == ASSET_BANNER_ID: return 'banners'
+        elif asset_ID == ASSET_CLEARLOGO_ID: return 'clearlogos'
+        elif asset_ID == ASSET_TITLE_ID: return 'titles'
+        elif asset_ID == ASSET_SNAP_ID: return 'snaps'
+        elif asset_ID == ASSET_BOXFRONT_ID: return 'boxfronts'
+        elif asset_ID == ASSET_BOXBACK_ID: return 'boxbacks'
+        elif asset_ID == ASSET_3DBOX_ID: return '3dboxes'
+        elif asset_ID == ASSET_CARTRIDGE_ID: return 'cartridges'
+        elif asset_ID == ASSET_FLYER_ID: return 'flyers'
+        elif asset_ID == ASSET_MAP_ID: return 'maps'
+        elif asset_ID == ASSET_MANUAL_ID: return 'manuals'
+        elif asset_ID == ASSET_TRAILER_ID: return 'trailers'
+        else: raise ValueError
+
 # Creates path for assets (artwork) and automatically fills in the path_ fields in the launcher
 # struct.
 # 
@@ -73,30 +105,29 @@ def assets_init_asset_dir(assets_path_FName, launcher):
 
     # --- Fill in launcher fields and create asset directories ---
     if launcher['platform'] == 'MAME':
-        assets_parse_asset_dir(launcher, assets_path_FName, 'path_3dbox', '3dboxes')
-        assets_parse_asset_dir(launcher, assets_path_FName, 'path_title', 'titles')
+        assets_parse_asset_dir(launcher, assets_path_FName, 'path_fanart', 'fanarts')
+        assets_parse_asset_dir(launcher, assets_path_FName, 'path_banner', 'marquees')
+        assets_parse_asset_dir(launcher, assets_path_FName, 'path_clearlogo', 'clearlogos')
         assets_parse_asset_dir(launcher, assets_path_FName, 'path_title', 'titles')
         assets_parse_asset_dir(launcher, assets_path_FName, 'path_snap', 'snaps')
         assets_parse_asset_dir(launcher, assets_path_FName, 'path_boxfront', 'cabinets')
         assets_parse_asset_dir(launcher, assets_path_FName, 'path_boxback', 'cpanels')
+        assets_parse_asset_dir(launcher, assets_path_FName, 'path_3dbox', '3dboxes')
         assets_parse_asset_dir(launcher, assets_path_FName, 'path_cartridge', 'PCBs')
-        assets_parse_asset_dir(launcher, assets_path_FName, 'path_fanart', 'fanarts')
-        assets_parse_asset_dir(launcher, assets_path_FName, 'path_banner', 'marquees')
-        assets_parse_asset_dir(launcher, assets_path_FName, 'path_clearlogo', 'clearlogos')
         assets_parse_asset_dir(launcher, assets_path_FName, 'path_flyer', 'flyers')
         assets_parse_asset_dir(launcher, assets_path_FName, 'path_map', 'maps')
         assets_parse_asset_dir(launcher, assets_path_FName, 'path_manual', 'manuals')
         assets_parse_asset_dir(launcher, assets_path_FName, 'path_trailer', 'trailers')
     else:
-        assets_parse_asset_dir(launcher, assets_path_FName, 'path_3dbox', '3dboxes')
+        assets_parse_asset_dir(launcher, assets_path_FName, 'path_fanart', 'fanarts')
+        assets_parse_asset_dir(launcher, assets_path_FName, 'path_banner', 'banners')
+        assets_parse_asset_dir(launcher, assets_path_FName, 'path_clearlogo', 'clearlogos')
         assets_parse_asset_dir(launcher, assets_path_FName, 'path_title', 'titles')
         assets_parse_asset_dir(launcher, assets_path_FName, 'path_snap', 'snaps')
         assets_parse_asset_dir(launcher, assets_path_FName, 'path_boxfront', 'boxfronts')
         assets_parse_asset_dir(launcher, assets_path_FName, 'path_boxback', 'boxbacks')
+        assets_parse_asset_dir(launcher, assets_path_FName, 'path_3dbox', '3dboxes')
         assets_parse_asset_dir(launcher, assets_path_FName, 'path_cartridge', 'cartridges')
-        assets_parse_asset_dir(launcher, assets_path_FName, 'path_fanart', 'fanarts')
-        assets_parse_asset_dir(launcher, assets_path_FName, 'path_banner', 'banners')
-        assets_parse_asset_dir(launcher, assets_path_FName, 'path_clearlogo', 'clearlogos')
         assets_parse_asset_dir(launcher, assets_path_FName, 'path_flyer', 'flyers')
         assets_parse_asset_dir(launcher, assets_path_FName, 'path_map', 'maps')
         assets_parse_asset_dir(launcher, assets_path_FName, 'path_manual', 'manuals')
@@ -578,18 +609,34 @@ def assets_search_local_assets(launcher, ROMFile, enabled_ROM_ASSET_ID_LIST):
 # A) This function checks if all path_* share a common root directory. If so
 #    this function returns that common directory as an Unicode string.
 # B) If path_* do not share a common root directory this function returns ''.
+# C) If path_* does not use the standard artwork directory this function will also return '',
+#    so the exporting of the <path_*> tags will be forced.
 #
 def assets_get_ROM_asset_path(launcher):
     ROM_asset_path = ''
     duplicated_bool_list = [False] * len(ROM_ASSET_ID_LIST)
     AInfo_first = assets_get_info_scheme(ROM_ASSET_ID_LIST[0])
     path_first_asset_FN = FileName(launcher[AInfo_first.path_key])
-    log_debug('assets_get_ROM_asset_path() path_first_asset OP  "{0}"'.format(path_first_asset_FN.getOriginalPath()))
-    log_debug('assets_get_ROM_asset_path() path_first_asset Dir "{0}"'.format(path_first_asset_FN.getDir()))
+    ROM_asset_path_FN = FileName(path_first_asset_FN.getDir())
+    log_debug('assets_get_ROM_asset_path() path_first_asset_FN OP "{0}"'.format(path_first_asset_FN.getOriginalPath()))
+    log_debug('assets_get_ROM_asset_path() path_first_asset_FN Base "{0}"'.format(path_first_asset_FN.getBase()))
+    log_debug('assets_get_ROM_asset_path() ROM_asset_path_FN Dir "{0}"'.format(ROM_asset_path_FN.getDir()))
     for i, asset_kind in enumerate(ROM_ASSET_ID_LIST):
         AInfo = assets_get_info_scheme(asset_kind)
-        current_path_FN = FileName(launcher[AInfo.path_key])
-        if current_path_FN.getDir() == path_first_asset_FN.getDir():
+        # If asset path is unconfigured consider it as common so a default path will
+        # be created when importing.
+        if not launcher[AInfo.path_key]:
             duplicated_bool_list[i] = True
+            continue
+        # If asset path is not the standard one force return of ''.
+        current_path_FN = FileName(launcher[AInfo.path_key])
+        default_dir = assets_get_default_artwork_dir(AInfo.ID, launcher)
+        if default_dir != current_path_FN.getBase():
+            duplicated_bool_list[i] = False
+            continue
+        # Check for common path, getDir() subtracts last directory.
+        if current_path_FN.getDir() == ROM_asset_path_FN.getOriginalPath():
+            duplicated_bool_list[i] = True
+    ROM_asset_path_common = all(duplicated_bool_list)
 
-    return path_first_asset_FN.getDir() if all(duplicated_bool_list) else ''
+    return ROM_asset_path_FN.getOriginalPath() if ROM_asset_path_common else ''
