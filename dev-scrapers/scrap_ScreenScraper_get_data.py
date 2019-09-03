@@ -25,14 +25,20 @@ import common
 set_log_level(LOG_DEBUG)
 
 # --- Create scraper object ---
-scraper_obj = ScreenScraper_V1(common.settings)
+scraper_obj = ScreenScraper(common.settings)
 scraper_obj.set_verbose_mode(False)
 scraper_obj.set_debug_file_dump(True, os.path.join(os.path.dirname(__file__), 'assets'))
 status_dic = kodi_new_status_dic('Scraper test was OK')
 
 # --- Get ROM types ---
-online_data = scraper_obj.get_user_info(status_dic) # Not working at the moment.
-# online_data = scraper_obj.get_ROM_types(status_dic) # Not working at the moment.
-# online_data = scraper_obj.get_genres_list(status_dic) # Works OK.
-# online_data = scraper_obj.get_regions_list(status_dic) # Works OK.
-pprint.pprint(online_data)
+online_data = scraper_obj.debug_get_user_info(dict.copy(status_dic))
+# userlevelsListe.php fails because invalid JSON returned. It's not prioritary at all, however.
+# online_data = scraper_obj.debug_get_user_levels(dict.copy(status_dic))
+online_data = scraper_obj.debug_get_support_types(dict.copy(status_dic))
+online_data = scraper_obj.debug_get_ROM_types(dict.copy(status_dic))
+online_data = scraper_obj.debug_get_genres(dict.copy(status_dic))
+online_data = scraper_obj.debug_get_regions(dict.copy(status_dic))
+online_data = scraper_obj.debug_get_languages(dict.copy(status_dic))
+online_data = scraper_obj.debug_get_clasifications(dict.copy(status_dic))
+online_data = scraper_obj.debug_get_platforms(dict.copy(status_dic))
+# pprint.pprint(online_data)

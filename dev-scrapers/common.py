@@ -3,6 +3,8 @@
 #
 # Common data to test the scrapers.
 #
+from __future__ import unicode_literals
+import sys
 
 settings = {
     # --- AEL Offline ---
@@ -13,8 +15,13 @@ settings = {
 
     # --- ScreenScraper ---
     'scraper_screenscraper_ssid' : 'Wintermute0110',
-    'scraper_screenscraper_sspass' : '',  # NEVER COMMIT THIS PASSWORD
+    'scraper_screenscraper_sspass' : '', # NEVER COMMIT THIS PASSWORD
     'scraper_screenscraper_AEL_softname' : 'AEL_0.9.8',
+    'scraper_screenscraper_region' : 0, # Default World
+    'scraper_screenscraper_language' : 0, # Default English
+
+    # --- All scrapers ---
+    'scraper_cache_dir' : './cache/'
 }
 
 # --- Test data -----------------------------------------------------------------------------------
@@ -24,6 +31,7 @@ games = {
     'mworld'                 : ('Super Mario World', 'Super Mario World', 'Nintendo SNES'),
     'sonic'                  : ('Sonic the Hedgehog', 'Sonic the Hedgehog (USA, Europe)', 'Sega MegaDrive'),
     'chakan'                 : ('Chakan', 'Chakan (USA, Europe)', 'Sega MegaDrive'),
+    'ff7'                    : ('Final Fantasy VII', 'Final Fantasy VII (USA) (Disc 1).iso', 'Sony PlayStation'),
     'console_wrong_title'    : ('Console invalid game', 'mjhyewqr', 'Sega MegaDrive'),
     'console_wrong_platform' : ('Sonic the Hedgehog', 'Sonic the Hedgehog (USA, Europe)', 'mjhyewqr'),
 
@@ -34,3 +42,14 @@ games = {
     'MAME_wrong_title'    : ('MAME invalid game', 'mjhyewqr', 'MAME'),
     'MAME_wrong_platform' : ('Tetris (set 1)', 'atetris', 'mjhyewqr'),
 }
+
+def handle_get_candidates(candidate_list, status_dic):
+    if not status_dic['status']:
+        print('Status error "{}"'.format(status_dic['msg']))
+        sys.exit(0)
+    if candidate_list is None:
+        print('Error/exception in get_candidates(). Exiting.')
+        sys.exit(0)
+    if not candidate_list:
+        print('No candidates found. Exiting.')
+        sys.exit(0)

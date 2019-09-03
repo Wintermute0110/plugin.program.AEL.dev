@@ -28,20 +28,24 @@ scraper_obj.set_verbose_mode(False)
 scraper_obj.set_debug_file_dump(True, os.path.join(os.path.dirname(__file__), 'assets'))
 status_dic = kodi_new_status_dic('Scraper test was OK')
 
-# --- Get candidates ---
-# candidate_list = scraper_obj.get_candidates(*common.games['metroid'], status_dic = status_dic)
-# candidate_list = scraper_obj.get_candidates(*common.games['mworld'], status_dic = status_dic)
-candidate_list = scraper_obj.get_candidates(*common.games['sonic'], status_dic = status_dic)
-# candidate_list = scraper_obj.get_candidates(*common.games['chakan'], status_dic = status_dic)
-# candidate_list = scraper_obj.get_candidates(*common.games['console_invalid'], status_dic = status_dic)
+# --- Choose data for testing ---
+# search_term, rombase_noext, platform = common.games['metroid']
+# search_term, rombase_noext, platform = common.games['mworld']
+# search_term, rombase_noext, platform = common.games['sonic']
+search_term, rombase_noext, platform = common.games['chakan']
+# search_term, rombase_noext, platform = common.games['console_wrong_title']
+# search_term, rombase_noext, platform = common.games['console_wrong_platform']
 
-# --- Print search results ---
+# --- Get candidates, print them and set first candidate ---
+if scraper_obj.check_candidates_cache(rombase_noext, platform):
+    print('>>>> Game "{}" "{}" in disk cache.'.format(rombase_noext, platform))
+else:
+    print('>>>> Game "{}" "{}" not in disk cache.'.format(rombase_noext, platform))
+candidate_list = scraper_obj.get_candidates(search_term, rombase_noext, platform, status_dic)
 # pprint.pprint(candidate_list)
+common.handle_get_candidates(candidate_list, status_dic)
 print_candidate_list(candidate_list)
-if not candidate_list:
-    print('No candidates found.')
-    sys.exit(0)
-candidate = candidate_list[0]
+scraper_obj.set_candidate(rombase_noext, platform, candidate_list[0])
 
 # --- Print list of assets found -----------------------------------------------------------------
 print('*** Fetching game assets ****************************************************************')
@@ -51,9 +55,10 @@ print('*** Fetching game assets ************************************************
 # print_game_assets(assets)
 
 # --- Get specific assets ---
-print_game_assets(scraper_obj.get_assets(candidate, ASSET_FANART_ID, status_dic))
-print_game_assets(scraper_obj.get_assets(candidate, ASSET_BANNER_ID, status_dic))
-print_game_assets(scraper_obj.get_assets(candidate, ASSET_CLEARLOGO_ID, status_dic))
-print_game_assets(scraper_obj.get_assets(candidate, ASSET_SNAP_ID, status_dic))
-print_game_assets(scraper_obj.get_assets(candidate, ASSET_BOXFRONT_ID, status_dic))
-print_game_assets(scraper_obj.get_assets(candidate, ASSET_BOXBACK_ID, status_dic))
+print_game_assets(scraper_obj.get_assets(ASSET_FANART_ID, status_dic))
+print_game_assets(scraper_obj.get_assets(ASSET_BANNER_ID, status_dic))
+print_game_assets(scraper_obj.get_assets(ASSET_CLEARLOGO_ID, status_dic))
+print_game_assets(scraper_obj.get_assets(ASSET_SNAP_ID, status_dic))
+print_game_assets(scraper_obj.get_assets(ASSET_BOXFRONT_ID, status_dic))
+print_game_assets(scraper_obj.get_assets(ASSET_BOXBACK_ID, status_dic))
+scraper_obj.flush_disk_cache()

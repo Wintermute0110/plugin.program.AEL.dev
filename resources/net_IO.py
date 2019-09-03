@@ -19,6 +19,7 @@
 from __future__ import unicode_literals
 from __future__ import division
 import sys
+import os
 import random
 import json
 import ssl
@@ -46,19 +47,19 @@ USER_AGENT = 'Mozilla/5.0 (X11; Linux i586; rv:31.0) Gecko/20100101 Firefox/68.0
 def net_get_random_UserAgent():
     platform = random.choice(['Macintosh', 'Windows', 'X11'])
     if platform == 'Macintosh':
-        os  = random.choice(['68K', 'PPC'])
+        os_str  = random.choice(['68K', 'PPC'])
     elif platform == 'Windows':
-        os  = random.choice([
+        os_str  = random.choice([
             'Win3.11', 'WinNT3.51', 'WinNT4.0', 'Windows NT 5.0', 'Windows NT 5.1', 
             'Windows NT 5.2', 'Windows NT 6.0', 'Windows NT 6.1', 'Windows NT 6.2', 
             'Win95', 'Win98', 'Win 9x 4.90', 'WindowsCE'])
     elif platform == 'X11':
-        os  = random.choice(['Linux i686', 'Linux x86_64'])
+        os_str  = random.choice(['Linux i686', 'Linux x86_64'])
     browser = random.choice(['chrome', 'firefox', 'ie'])
     if browser == 'chrome':
         webkit = str(random.randint(500, 599))
         version = str(random.randint(0, 24)) + '.0' + str(random.randint(0, 1500)) + '.' + str(random.randint(0, 999))
-        return 'Mozilla/5.0 (' + os + ') AppleWebKit/' + webkit + '.0 (KHTML, live Gecko) Chrome/' + version + ' Safari/' + webkit
+        return 'Mozilla/5.0 (' + os_str + ') AppleWebKit/' + webkit + '.0 (KHTML, live Gecko) Chrome/' + version + ' Safari/' + webkit
 
     elif browser == 'firefox':
         year = str(random.randint(2000, 2012))
@@ -76,7 +77,7 @@ def net_get_random_UserAgent():
         version = random.choice([
             '1.0', '2.0', '3.0', '4.0', '5.0', '6.0', '7.0', '8.0', 
             '9.0', '10.0', '11.0', '12.0', '13.0', '14.0', '15.0'])
-        return 'Mozilla/5.0 (' + os + '; rv:' + version + ') Gecko/' + gecko + ' Firefox/' + version
+        return 'Mozilla/5.0 (' + os_str + '; rv:' + version + ') Gecko/' + gecko + ' Firefox/' + version
 
     elif browser == 'ie':
         version = str(random.randint(1, 10)) + '.0'
@@ -86,26 +87,48 @@ def net_get_random_UserAgent():
             token = random.choice(['.NET CLR', 'SV1', 'Tablet PC', 'Win64; IA64', 'Win64; x64', 'WOW64']) + '; '
         elif option == False:
             token = ''
-        return 'Mozilla/5.0 (compatible; MSIE ' + version + '; ' + os + '; ' + token + 'Trident/' + engine + ')'
+        return 'Mozilla/5.0 (compatible; MSIE ' + version + '; ' + os_str + '; ' + token + 'Trident/' + engine + ')'
 
 def net_download_img(img_url, file_path):
+    # --- Download image to a buffer in memory ---
+    # If an exception happens here no file is created (avoid creating files with 0 bytes).
     try:
         req = Request(img_url)
         # req.add_unredirected_header('User-Agent', net_get_random_UserAgent())
         req.add_unredirected_header('User-Agent', USER_AGENT)
-        file_path.writeAll(urlopen(req, timeout = 120).read(),'wb')
+        img_buf = urllib2.urlopen(req, timeout = 120).read()
     # If an exception happens record it in the log and do nothing.
     # This must be fixed. If an error happened when downloading stuff caller code must
     # known to take action.
     except IOError as ex:
-        log_error('(IOError exception) In net_download_img()')
-        log_error('Message: {0}'.format(str(ex)))
+        log_error('(IOError) In net_download_img(), network code.')
+        log_error('(IOError) Object type "{}"'.format(type(ex)))
+        log_error('(IOError) Message "{0}"'.format(str(ex)))
+        return
     except Exception as ex:
-        log_error('(General exception) In net_download_img()')
-        log_error('Message: {0}'.format(str(ex)))
+        log_error('(Exception) In net_download_img(), network code.')
+        log_error('(Exception) Object type "{}"'.format(type(ex)))
+        log_error('(Exception) Message "{0}"'.format(str(ex)))
+        return
+
+    # --- Write image file to disk ---
+    # There should be no more 0 size files with this code.
+    try:
+        f = file_path.open('wb')
+        f.write(img_buf)
+        f.close()
+    except IOError as ex:
+        log_error('(IOError) In net_download_img(), disk code.')
+        log_error('(IOError) Object type "{}"'.format(type(ex)))
+        log_error('(IOError) Message "{0}"'.format(str(ex)))
+    except Exception as ex:
+        log_error('(Exception) In net_download_img(), disk code.')
+        log_error('(Exception) Object type "{}"'.format(type(ex)))
+        log_error('(Exception) Message "{0}"'.format(str(ex)))
 
 #
 # User agent is fixed and defined in global var USER_AGENT
+# https://docs.python.org/2/library/urllib2.html
 #
 # @param url: [Unicode string] URL to open
 # @param url_log: [Unicode string] If not None this URL will be used in the logs.
@@ -126,11 +149,23 @@ def net_get_URL(url, url_log = None):
         http_code = f.getcode()
         page_bytes = f.read()
         f.close()
-    # If an exception happens return empty data.
-    except HTTPError as error:
+    # If the server returns an HTTP status code then make sure http_code has the error code
+    # and page_bytes the message.
+    except HTTPError as ex:
+        http_code = ex.code
+        # Try to read contents of the web page.
+        # If it fails get error string from the exception object.
+        try:
+            page_bytes = ex.read()
+            ex.close()
+        except:
+            page_bytes = unicode(ex.reason)
         log_error('(HTTPError) In net_get_URL()')
-        log_error('(HTTPError) Message "{}"'.format(str(error)))
-        return page_bytes, error.code
+        log_error('(HTTPError) Object type "{}"'.format(type(ex)))
+        log_error('(HTTPError) Message "{}"'.format(str(ex)))
+        log_error('(HTTPError) Code {}'.format(http_code))
+        return page_bytes, http_code
+    # If an unknown exception happens return empty data.
     except Exception as ex:
         log_error('(Exception) In net_get_URL()')
         log_error('(Exception) Object type "{}"'.format(type(ex)))

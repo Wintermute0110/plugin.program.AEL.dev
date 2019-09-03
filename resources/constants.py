@@ -254,14 +254,15 @@ NPLAYERS_LIST = [
     NP_8P_ALT,
 ]
 
-META_TITLE_ID     = 10
-META_YEAR_ID      = 20
-META_GENRE_ID     = 30
-META_DEVELOPER_ID = 40
-META_NPLAYERS_ID  = 50
-META_ESRB_ID      = 60
-META_RATING_ID    = 70
-META_PLOT_ID      = 80
+# Use unique string as IDs.
+META_TITLE_ID     = 'title'
+META_YEAR_ID      = 'year'
+META_GENRE_ID     = 'genre'
+META_DEVELOPER_ID = 'developer'
+META_NPLAYERS_ID  = 'nplayers'
+META_ESRB_ID      = 'esrb'
+META_RATING_ID    = 'rating'
+META_PLOT_ID      = 'plot'
 
 DEFAULT_META_TITLE     = ''
 DEFAULT_META_YEAR      = ''
@@ -276,24 +277,25 @@ DEFAULT_META_PLOT      = ''
 # Assets
 # -------------------------------------------------------------------------------------------------
 # --- Kodi standard artwork types. Mappable to any other artwork type including itself ---
-ASSET_ICON_ID       = 100
-ASSET_FANART_ID     = 200
-ASSET_CLEARLOGO_ID  = 300
-ASSET_POSTER_ID     = 400
-ASSET_BANNER_ID     = 500  # Marquee in MAME
-ASSET_TRAILER_ID    = 600
+# # Use unique string as IDs. Then, if asset order changes the IDs are the same.
+ASSET_ICON_ID       = 'icon'
+ASSET_FANART_ID     = 'fanart'
+ASSET_CLEARLOGO_ID  = 'clearlogo'
+ASSET_POSTER_ID     = 'poster'
+ASSET_BANNER_ID     = 'banner' # Marquee in MAME
+ASSET_TRAILER_ID    = 'trailer'
 # --- AEL artwork types ---
 # What about supporting BOXSPINE and composite box (fron, spine and back in one image).
-ASSET_TITLE_ID      = 700
-ASSET_SNAP_ID       = 800
-ASSET_BOXFRONT_ID   = 900  # Cabinet in MAME
-ASSET_BOXBACK_ID    = 1000 # CPanel in MAME
-ASSET_3DBOX_ID      = 1100
-ASSET_CARTRIDGE_ID  = 1200 # PCB in MAME
-ASSET_FLYER_ID      = 1300
-ASSET_MAP_ID        = 1400
-ASSET_MANUAL_ID     = 1500
-ASSET_CONTROLLER_ID = 1600
+ASSET_TITLE_ID      = 'title'
+ASSET_SNAP_ID       = 'snap'
+ASSET_BOXFRONT_ID   = 'boxfront'  # Cabinet in MAME
+ASSET_BOXBACK_ID    = 'boxback'   # CPanel in MAME
+ASSET_3DBOX_ID      = '3dbox'
+ASSET_CARTRIDGE_ID  = 'cartridge' # PCB in MAME
+ASSET_FLYER_ID      = 'flyer'
+ASSET_MAP_ID        = 'map'
+ASSET_MANUAL_ID     = 'manual'
+ASSET_CONTROLLER_ID = 'controller'
 
 #
 # The order of this list must match order in dialog.select() in the GUI, or bad things will happen.

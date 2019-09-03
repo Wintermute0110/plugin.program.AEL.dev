@@ -1,0 +1,44 @@
+Number of ScreenScraper regions 40
+
+ID     Shortname  Parent  English           
+--------------------------------------------
+57     wor        0       World             
+48     eu         0       Europe            
+46     us         3257    USA               
+47     jp         114     Japan             
+20240  ss         0       ScreenScraper     
+3257   ame        0       American continent
+114    asi        0       Asia              
+61     au         3824    Australia         
+3891   bg         48      Bulgaria          
+63     br         3257    Brazil            
+121    ca         3257    Canada            
+3822   cl         3257    Chile             
+56     cn         114     China             
+3603   cus        0       Custom            
+3820   cz         48      Czech republic    
+115    de         48      Germany           
+282    dk         48      Denmark           
+283    fi         48      Finland           
+45     fr         48      France            
+3892   gr         48      Greece            
+3821   hu         48      Hungary           
+3827   il         3826    Israel            
+118    it         48      Italy             
+58     kr         114     Korea             
+3832   kw         3826    Kuwait            
+3826   mor        0       Middle East       
+130    nl         48      Netherlands       
+3884   no         48      Norway            
+3825   nz         3824    New Zealand       
+3824   oce        0       Oceania           
+3828   pe         3257    Peru              
+3595   pl         48      Poland            
+3780   pt         48      Portugal          
+126    ru         0       Russia            
+116    se         48      Sweden            
+3823   sk         48      Slovakia          
+122    sp         48      Spain             
+3829   tr         3826    Turkey            
+112    tw         114     Taiwan            
+3289   uk         48      United Kingdom    

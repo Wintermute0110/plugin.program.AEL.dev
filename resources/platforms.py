@@ -15,7 +15,6 @@
 
 # --- Python standard library ---
 from __future__ import unicode_literals
-from __future__ import division
 
 # -------------------------------------------------------------------------------------------------
 # New platform engine
@@ -25,29 +24,44 @@ DAT_NOINTRO = 'No-Intro'
 DAT_REDUMP  = 'Redump'
 DAT_NONE    = ''
 class Platform:
-    def __init__(self, name, shortname, DAT, aliasof = ''):
+    def __init__(self, name, shortname, compactname, aliasof = None, DAT = None,
+        TGDB_plat = None, MG_plat = None, SS_plat = None, GF_plat = None):
         self.long_name    = name
         self.short_name   = shortname
-        self.compact_name = shortname
-        self.DAT          = DAT
+        self.compact_name = compactname
         self.aliasof      = aliasof
+        self.DAT          = DAT
+        self.TGDB_plat    = TGDB_plat
+        self.MG_plat      = MG_plat
+        self.SS_plat      = SS_plat
+        self.GF_plat      = GF_plat
 
 # From this list create simplified list to access platform information.
 # Shorted alphabetically by long name.
 # To be compatible with Retroplayer and Kodi artwork database, anything that can be launched
 # by Retroarch must be a platform, including Doom, CaveStory, etc.
+# Platform names must have filesystem-safe characters.
+# When possible user No-Intro DAT-o-MATIC names. Fallback to Wikipedia names.
 AEL_platforms = [
-    # --- Arcade is an alias of MAME ---
-    Platform('MAME', 'mame', DAT_MAME),
+    # --- 3DO ---
+    Platform('3DO', 'console-3d0', '3do', None, DAT_REDUMP, '25', '35', '29', '61'),
 
     # --- Amstrad ---
-    Platform('Amstrad CPC', 'cpc', DAT_NONE),
+    Platform('Amstrad CPC', 'computer-cpc', 'cpc', None, DAT_NONE, '4914', '60', '65', '46'),
 
     # --- Atari ---
-    Platform('Atari 2600', 'a2600', DAT_NOINTRO),
+
+    # --- Bandai ---
 
     # --- Coleco ---
-    Platform('Colecovision', 'coleco', DAT_NOINTRO),
+
+    # --- Commodore ---
+
+    # --- Emerson ---
+
+    # --- Nintendo ---
+    Platform('Nintendo Famicon', 'nintendo-famicon', 'famicon', 'nes'),
+    Platform('Nintendo NES', 'nintendo-nes', 'nes', None, DAT_NOINTRO, '7', '22', '3', '41'),
 ]
 
 AEL_p_list = []
@@ -59,7 +73,6 @@ for p_obj in AEL_platforms:
 # -------------------------------------------------------------------------------------------------
 # Old platform engine
 # -------------------------------------------------------------------------------------------------
-# When possible user No-Intro DAT-o-MATIC names. Fallback to Wikipedia names.
 AEL_platform_list = [
     # --- 3DO ---
     '3DO Interactive Multiplayer',
@@ -335,53 +348,53 @@ platform_AEL_to_Offline_GameDBInfo_XML = {
 }
 
 #
-# Get platform list from TGDB using script scrap_TGDB_get_platforms.py.
+# Get platform list from TGDB using script scrap_TGDB_list_platforms.py.
 # API key is required to grab the platform data.
 # '0' means any platform in TGDB and must be returned when there is no platform matching.
 #
 platform_AEL_to_TheGamesDB_dic = {
     '3DO Interactive Multiplayer' : '25',
-    'Amstrad CPC'                 : '0',
-    'Atari 2600'                  : '0',
-    'Atari 5200'                  : '0',
-    'Atari 7800'                  : '0',
-    'Atari Jaguar'                : '0',
-    'Atari Jaguar CD'             : '0',
-    'Atari Lynx'                  : '0',
-    'Atari ST'                    : '0',
-    'Bandai WonderSwan'           : '0',
-    'Bandai WonderSwan Color'     : '0',
-    'Colecovision'                : '0',
-    'Commodore 64'                : '0',
-    'Commodore Amiga'             : '0',
-    'Commodore Amiga CD32'        : '0',
+    'Amstrad CPC'                 : '4914',
+    'Atari 2600'                  : '22',
+    'Atari 5200'                  : '26',
+    'Atari 7800'                  : '27',
+    'Atari Jaguar'                : '28',
+    'Atari Jaguar CD'             : '29',
+    'Atari Lynx'                  : '4924',
+    'Atari ST'                    : '4937',
+    'Bandai WonderSwan'           : '4925',
+    'Bandai WonderSwan Color'     : '4926',
+    'Colecovision'                : '31',
+    'Commodore 64'                : '40',
+    'Commodore Amiga'             : '4911',
+    'Commodore Amiga CD32'        : '4947',
     'Commodore Plus-4'            : '0',
-    'Commodore VIC-20'            : '0',
-    'Fujitsu FM Towns Marty'      : '0',
-    'GCE Vectrex'                 : '0',
-    'Magnavox Odyssey2'           : '0',
-    'MAME'                        : '0',
-    'Mattel Intellivision'        : '0',
-    'Microsoft MS-DOS'            : '0',
-    'Microsoft MSX'               : '0',
-    'Microsoft MSX2'              : '0',
-    'Microsoft Windows'           : '0',
-    'Microsoft Xbox'              : '0',
-    'Microsoft Xbox 360'          : '0',
-    'Microsoft Xbox One'          : '0',
-    'NEC PC Engine'               : '0',
-    'NEC PC Engine CDROM2'        : '0',
-    'NEC TurboGrafx 16'           : '0',
-    'NEC TurboGrafx CD'           : '0',
-    'NEC SuperGrafx'              : '0',
-    'NEC PC-FX'                   : '0',
+    'Commodore VIC-20'            : '4945',
+    'Fujitsu FM Towns Marty'      : '4932',
+    'GCE Vectrex'                 : '4939',
+    'Magnavox Odyssey2'           : '4927',
+    'MAME'                        : '23',
+    'Mattel Intellivision'        : '32',
+    'Microsoft MS-DOS'            : '1',
+    'Microsoft MSX'               : '4929',
+    'Microsoft MSX2'              : '4929',
+    'Microsoft Windows'           : '1',
+    'Microsoft Xbox'              : '14',
+    'Microsoft Xbox 360'          : '15',
+    'Microsoft Xbox One'          : '4920',
+    'NEC PC Engine'               : '34',
+    'NEC PC Engine CDROM2'        : '4955',
+    'NEC TurboGrafx 16'           : '34',
+    'NEC TurboGrafx CD'           : '4955',
+    'NEC SuperGrafx'              : '34',
+    'NEC PC-FX'                   : '4930',
     'Nintendo 3DS'                : '4912',
     'Nintendo 64'                 : '3',
     'Nintendo 64DD'               : '3', # Not found on TGDB, same as N64.
     'Nintendo DS'                 : '8',
     'Nintendo DSi'                : '8', # Not found on TGDB, same as NDS.
     'Nintendo Famicom'            : '7',
-    'Nintendo Famicom Disk System': '0',
+    'Nintendo Famicom Disk System': '4936',
     'Nintendo GameBoy'            : '4',
     'Nintendo GameBoy Advance'    : '5',
     'Nintendo GameBoy Color'      : '41',
@@ -397,24 +410,24 @@ platform_AEL_to_TheGamesDB_dic = {
     'Philips Videopac Plus G7400' : '0',
     'ScummVM'                     : '0',
     'Sega 32X'                    : '33',
-    'Sega Dreamcast'              : '0',
-    'Sega Game Gear'              : '0',
+    'Sega Dreamcast'              : '16',
+    'Sega Game Gear'              : '20',
     'Sega Genesis'                : '18',
     'Sega Master System'          : '35',
-    'Sega MegaCD'                 : '0',
+    'Sega MegaCD'                 : '21',
     'Sega MegaDrive'              : '36',
     'Sega PICO'                   : '4958',
     'Sega Saturn'                 : '17',
-    'Sega SC-3000'                : '0',
-    'Sega SegaCD'                 : '0',
-    'Sega SG-1000'                : '0',
-    'Sharp X68000'                : '0',
-    'Sinclair ZX Spectrum'        : '0',
-    'SNK Neo-Geo AES'             : '0',
-    'SNK Neo-Geo CD'              : '0',
-    'SNK Neo-Geo MVS'             : '0',
-    'SNK Neo-Geo Pocket'          : '0',
-    'SNK Neo-Geo Pocket Color'    : '0',
+    'Sega SC-3000'                : '4949',
+    'Sega SegaCD'                 : '21',
+    'Sega SG-1000'                : '4949',
+    'Sharp X68000'                : '4931',
+    'Sinclair ZX Spectrum'        : '4913',
+    'SNK Neo-Geo AES'             : '24',
+    'SNK Neo-Geo CD'              : '4956',
+    'SNK Neo-Geo MVS'             : '24',
+    'SNK Neo-Geo Pocket'          : '4922',
+    'SNK Neo-Geo Pocket Color'    : '4923',
     'Sony PlayStation'            : '10',
     'Sony PlayStation 2'          : '11',
     'Sony PlayStation 3'          : '12',
@@ -424,7 +437,7 @@ platform_AEL_to_TheGamesDB_dic = {
 }
 
 #
-# Get platform names from http://www.mobygames.com/search/quick?q=ar
+# Get platform list from TGDB using script scrap_MobyGames_list_platforms.py.
 #
 platform_AEL_to_MobyGames_dic = {
     '3DO Interactive Multiplayer' : '35',  # <option value="35">3DO</option>
@@ -512,7 +525,7 @@ platform_AEL_to_MobyGames_dic = {
 }
 
 #
-# Get platform names from https://www.screenscraper.fr/api/systemesListe.php?devid=xxx&devpassword=yyy&softname=zzz&output=XML&ssid=test&sspassword=test
+# Get platform names from the API.
 #
 platform_AEL_to_ScreenScraper_dic = {
     '3DO Interactive Multiplayer' : '29',
@@ -521,7 +534,7 @@ platform_AEL_to_ScreenScraper_dic = {
     'Atari 5200'                  : '40',
     'Atari 7800'                  : '41',
     'Atari Jaguar'                : '27',
-    'Atari Jaguar CD'             : '',
+    'Atari Jaguar CD'             : '171',
     'Atari Lynx'                  : '28',
     'Atari ST'                    : '42',
     'Bandai WonderSwan'           : '45',
@@ -529,48 +542,48 @@ platform_AEL_to_ScreenScraper_dic = {
     'Colecovision'                : '48',
     'Commodore 64'                : '66',
     'Commodore Amiga'             : '64',
-    'Commodore Amiga CD32'        : '',
+    'Commodore Amiga CD32'        : '130',
     'Commodore Plus-4'            : '',
     'Commodore VIC-20'            : '73',
-    'Fujitsu FM Towns Marty'      : '',
+    'Fujitsu FM Towns Marty'      : '97',
     'GCE Vectrex'                 : '102',
     'Magnavox Odyssey2'           : '',
     'MAME'                        : '75',
-    'Mattel Intellivision'        : '',
-    'Microsoft MS-DOS'            : '',
-    'Microsoft MSX'               : '',
-    'Microsoft MSX2'              : '',
-    'Microsoft Windows'           : '',
+    'Mattel Intellivision'        : '115',
+    'Microsoft MS-DOS'            : '135',
+    'Microsoft MSX'               : '113',
+    'Microsoft MSX2'              : '116',
+    'Microsoft Windows'           : '136',
     'Microsoft Xbox'              : '32',
     'Microsoft Xbox 360'          : '33',
     'Microsoft Xbox One'          : '',
     'NEC PC Engine'               : '31',
-    'NEC PC Engine CDROM2'        : '',
-    'NEC TurboGrafx 16'           : '',
-    'NEC TurboGrafx CD'           : '',
-    'NEC SuperGrafx'              : '',
+    'NEC PC Engine CDROM2'        : '114',
+    'NEC TurboGrafx 16'           : '31',
+    'NEC TurboGrafx CD'           : '114',
+    'NEC SuperGrafx'              : '105',
     'NEC PC-FX'                   : '72',
     'Nintendo 3DS'                : '17',
     'Nintendo 64'                 : '14',
-    'Nintendo 64DD'               : '',
+    'Nintendo 64DD'               : '122',
     'Nintendo DS'                 : '15',
-    'Nintendo DSi'                : '',
+    'Nintendo DSi'                : '15',
     'Nintendo Famicom'            : '3',
-    'Nintendo Famicom Disk System': '',
+    'Nintendo Famicom Disk System': '106',
     'Nintendo GameBoy'            : '9',
     'Nintendo GameBoy Advance'    : '12',
     'Nintendo GameBoy Color'      : '10',
     'Nintendo GameCube'           : '13',
     'Nintendo NES'                : '3',
-    'Nintendo Pokemon Mini'       : '',
+    'Nintendo Pokemon Mini'       : '211',
     'Nintendo SNES'               : '4',
     'Nintendo Switch'             : '',
     'Nintendo Virtual Boy'        : '11',
     'Nintendo Wii'                : '16',
     'Nintendo Wii U'              : '18',
-    'Philips Videopac G7000'      : '',
-    'Philips Videopac Plus G7400' : '',
-    'ScummVM'                     : '',
+    'Philips Videopac G7000'      : '104',
+    'Philips Videopac Plus G7400' : '104',
+    'ScummVM'                     : '123',
     'Sega 32X'                    : '19',
     'Sega Dreamcast'              : '23',
     'Sega Game Gear'              : '21',
@@ -582,10 +595,10 @@ platform_AEL_to_ScreenScraper_dic = {
     'Sega Saturn'                 : '22',
     'Sega SC-3000'                : '',
     'Sega SegaCD'                 : '20',
-    'Sega SG-1000'                : '',
+    'Sega SG-1000'                : '109',
     'Sharp X68000'                : '79',
     'Sinclair ZX Spectrum'        : '76',
-    'SNK Neo-Geo AES'             : '',
+    'SNK Neo-Geo AES'             : '142',
     'SNK Neo-Geo CD'              : '70',
     'SNK Neo-Geo MVS'             : '68',
     'SNK Neo-Geo Pocket'          : '25',
@@ -691,7 +704,7 @@ def AEL_platform_to_TheGamesDB(platform_AEL):
         platform_TheGamesDB = platform_AEL_to_TheGamesDB_dic[platform_AEL]
     except:
         # Platform '0' means any platform in TGDB
-        platform_TheGamesDB = ''
+        platform_TheGamesDB = '0'
 
     return platform_TheGamesDB
 
@@ -699,7 +712,14 @@ def AEL_platform_to_MobyGames(platform_AEL):
     try:
         platform_MobyGames = platform_AEL_to_MobyGames_dic[platform_AEL]
     except:
-        platform_MobyGames = ''
+        # * MobyGames API cannot be used withouth a valid platform.
+        # * If '0' is used as the Unknown platform then MobyGames returns an HTTP error
+        #    "HTTP Error 422: UNPROCESSABLE ENTITY"
+        # * If '' is used as the Unknwon platform then MobyGames returns and HTTP error
+        #   "HTTP Error 400: BAD REQUEST"
+        # * The solution is to use '0' as the unknwon platform. AEL will detect this and
+        #   will remove the '&platform={}' parameter from the search URL.
+        platform_MobyGames = '0'
 
     return platform_MobyGames
 
@@ -707,7 +727,7 @@ def AEL_platform_to_ScreenScraper(platform_AEL):
     try:
         platform_MobyGames = platform_AEL_to_ScreenScraper_dic[platform_AEL]
     except:
-        platform_MobyGames = ''
+        platform_MobyGames = '0'
 
     return platform_MobyGames
 
@@ -715,7 +735,8 @@ def AEL_platform_to_GameFAQs(AEL_gamesys):
     try:
         platform_GameFAQs = platform_AEL_to_GameFAQs_dic[AEL_gamesys]
     except:
-        platform_GameFAQs = '0' # Platform '0' means all platforms
+        # Platform '0' means all platforms in GameFAQs.
+        platform_GameFAQs = '0'
 
     return platform_GameFAQs
 
@@ -735,7 +756,7 @@ def emudata_get_program_arguments(app):
         'retroarch'   : '-L /path/to/core -f "$rom$"',
         'yabause'     : '-a -f -i "$rom$"',
     }
-    for application, arguments in applications.items():
+    for application, arguments in applications.iteritems():
         if app.find(application) >= 0:
             return arguments
 
@@ -752,7 +773,7 @@ def emudata_get_program_extensions(app):
         'retroarch'  : 'zip|cue',
         'yabause'    : 'cue',
     }
-    for application, extensions in applications.items():
+    for application, extensions in applications.iteritems():
         if app.find(application) >= 0:
             return extensions
 

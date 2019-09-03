@@ -30,6 +30,11 @@
     <setting label="MobyGames API key" type="text" id="scraper_mobygames_apikey" default="" />
     <setting label="ScreenScraper Username" type="text" id="scraper_screenscraper_ssid" default="" />
     <setting label="ScreenScraper Pass" type="text" id="scraper_screenscraper_sspass" default="" />
+
+    <setting id="separator" type="lsep" label="Scraper settings"/>
+    <!-- ScreenScraper settings are automatically generated with Python scripts -->
+    <setting label="ScreenScraper region" type="enum" id="scraper_screenscraper_region" default="0" values="World|Europe|USA|Japan|ScreenScraper|American continent|Asia|Australia|Bulgaria|Brazil|Canada|Chile|China|Custom|Czech republic|Germany|Denmark|Finland|France|Greece|Hungary|Israel|Italy|Korea|Kuwait|Middle East|Netherlands|Norway|New Zealand|Oceania|Peru|Poland|Portugal|Russia|Sweden|Slovakia|Spain|Turkey|Taiwan|United Kingdom" />
+    <setting label="ScreenScraper language" type="enum" id="scraper_screenscraper_language" default="0" values="English|Spanish|Japanese|Czech|Danish|German|Finnish|French|Hungarian|Italian|Korean|Dutch|Norwegian|Polish|Portuguese|Russian|Slovak|Swedish|Turkish|Chinese" />
 <!--
     <setting label="Region" type="enum" id="scraper_region" default="0" values="World|Europe|Japan|America"/>
     <setting label="Thumb Images Size" type="enum" id="scraper_thumb_size" default="0" values="All|Icon|Small|Medium|Large|XLarge|XXLarge|Huge"/>
@@ -37,6 +42,7 @@
     <setting label="Preferred arcade images" type="enum" id="scraper_image_type" default="0" values="Snapshots|Flyers"/>
     <setting label="Selected fanart image" type="enum" id="scraper_fanart_order" default="1" values="First|Half|Last"/>
 -->
+
     <setting id="separator" type="lsep" label="Utilities"/>
     <setting label="Retroarch System directory" type="folder" id="io_retroarch_sys_dir" default="" source="" />
     <setting label="Only check mandatory BIOSes" type="bool" id="io_retroarch_only_mandatory" default="true"/>
