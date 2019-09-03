@@ -163,6 +163,31 @@ CANCELED [SCRAPERS] Fix asset URLs taken from cache for ScreenScraper.
 WIP      [CORE] Finish the new platform scheme.
 
 
+[B]0.9.7 to 0.9.8-beta1 upgrade process[/B]
+
+ 1. Install 0.9.8-beta1.
+
+ 2. Upgrade your database with 'Utilities', 'Check/Update all databases'
+
+ 3. The 3Dbox path will be unconfigured for all Launchers.
+
+ 4. Export all your Categories/Launchers with 'Utilities', 'Export category/launcher XML
+    configuration file'
+
+ 5. Import the XML file with 'Utilities', 'Import category/launcher XML configuration file'.
+    This will create the 3D boxes default directory automatically.
+
+ 6. If you use custom paths for your assets and no the standard ones.
+    Make sure each launcher has a <path_3dbox> tag. Then, reimport the XML configuration file.
+
+
+[B]TODO before releasing 0.9.8-beta1[/B]
+
+WIP      [SCRAPERS] ScreenScraper does not work for multidisc ROMs, because of 
+         misc_calculate_checksums() fails. The first disc in the multidisc set must be
+         used to compute the checksum.
+
+
 [B]Advanced Emulator Launcher | version 0.9.8-beta1 | XX September 2019[/B]
 
 FEATURE  [SCRAPERS] Copy scraper stuff from master branch by Chrisism.

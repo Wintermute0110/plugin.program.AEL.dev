@@ -978,8 +978,8 @@ class Main:
             # >> printed. This is the standard way of handling error messages in AEL code.
             try:
                 autoconfig_export_category(category, export_FN)
-            except AEL_Error as E:
-                kodi_notify_warn('{0}'.format(E))
+            except AddonError as ex:
+                kodi_notify_warn('{0}'.format(ex))
             else:
                 kodi_notify('Exported Category "{0}" XML config'.format(category['m_name']))
             # >> No need to update categories.xml and timestamps so return now.
@@ -2629,7 +2629,7 @@ class Main:
             # --- Print error message is something goes wrong writing file ---
             try:
                 autoconfig_export_launcher(launcher, export_FN, self.categories)
-            except AEL_Error as E:
+            except AddonError as E:
                 kodi_notify_warn('{0}'.format(E))
             else:
                 kodi_notify('Exported Launcher "{0}" XML config'.format(launcher['m_name']))
@@ -9340,13 +9340,13 @@ class Main:
         # --- Load metadata/asset scrapers --------------------------------------------------------
         g_scraper_factory = ScraperFactory(g_PATHS, self.settings)
         scraper_strategy = g_scraper_factory.create_scanner(launcher)
-        scraper_strategy.begin_ROM_scanner(launcher, pdialog, pdialog_verbose)
-        # Check if scraper is ready for operation. Otherwise disable it.
+        scraper_strategy.scanner_set_progress_dialog(pdialog, pdialog_verbose)
+        # Check if scraper is ready for operation. Otherwise disable it internally.
         scraper_strategy.scanner_check_before_scraping()
 
         # --- Assets/artwork stuff ----------------------------------------------------------------
         # Ensure there is no duplicate asset dirs. Abort scanning of assets if duplicate dirs found.
-        log_info('Checking for duplicated artwork directories ...')
+        log_debug('Checking for duplicated artwork directories...')
         duplicated_name_list = asset_get_duplicated_dir_list(launcher)
         if duplicated_name_list:
             duplicated_asset_srt = ', '.join(duplicated_name_list)
@@ -9358,6 +9358,7 @@ class Main:
             log_info('No duplicated asset dirs found')
 
         # --- Check asset dirs and disable scanning for unset dirs ---
+        log_debug('Checking for unset artwork directories...')
         scraper_strategy.scanner_check_launcher_unset_asset_dirs()
         if scraper_strategy.unconfigured_name_list:
             unconfigured_asset_srt = ', '.join(scraper_strategy.unconfigured_name_list)
@@ -9369,8 +9370,8 @@ class Main:
         # misc_add_file_cache() creates a set with all files in a given directory.
         # That set is stored in a function internal cache associated with the path.
         # Files in the cache can be searched with misc_search_file_cache()
-        log_info('Scanning and caching files in asset directories ...')
-        pdialog.startProgress('Scanning files in asset directories ...', len(ROM_ASSET_ID_LIST))
+        log_info('Scanning and caching files in asset directories...')
+        pdialog.startProgress('Scanning files in asset directories...', len(ROM_ASSET_ID_LIST))
         for i, asset_kind in enumerate(ROM_ASSET_ID_LIST):
             pdialog.updateProgress(i)
             AInfo = assets_get_info_scheme(asset_kind)
@@ -9378,7 +9379,7 @@ class Main:
         pdialog.endProgress()
 
         # --- Remove dead ROM entries ------------------------------------------------------------
-        log_info('Removing dead ROMs ...'.format())
+        log_info('Removing dead ROMs...'.format())
         report_fobj.write('Removing dead ROMs ...\n')
         num_removed_roms = 0
         if num_roms > 0:
@@ -9946,8 +9947,8 @@ class Main:
         # --- Export stuff ---
         try:
             autoconfig_export_all(self.categories, self.launchers, export_FN)
-        except AEL_Error as E:
-            kodi_notify_warn('{0}'.format(E))
+        except AddonError as ex:
+            kodi_notify_warn('{0}'.format(ex))
         else:
             kodi_notify('Exported AEL Categories and Launchers XML configuration')
 
