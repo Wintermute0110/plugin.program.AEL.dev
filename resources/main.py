@@ -82,12 +82,12 @@ __addon_type__    = __addon__.getAddonInfo('type').decode('utf-8')
 class AEL_Paths:
     def __init__(self):
         # --- Base paths ---
-        self.ADDONS_DATA_DIR  = FileName('special://profile/addon_data', isdir = True)
-        self.ADDON_DATA_DIR   = self.ADDONS_DATA_DIR.pjoin(__addon_id__, isdir = True)
-        self.PROFILE_DIR      = FileName('special://profile', isdir = True)
-        self.HOME_DIR         = FileName('special://home', isdir = True)
-        self.ADDONS_CODE_DIR  = self.HOME_DIR.pjoin('addons', isdir = True)
-        self.ADDON_CODE_DIR   = self.ADDONS_CODE_DIR.pjoin(__addon_id__, isdir = True)
+        self.HOME_DIR         = FileName('special://home')
+        self.PROFILE_DIR      = FileName('special://profile')
+        self.ADDONS_DATA_DIR  = FileName('special://profile/addon_data')
+        self.ADDON_DATA_DIR   = self.ADDONS_DATA_DIR.pjoin(__addon_id__)
+        self.ADDONS_CODE_DIR  = self.HOME_DIR.pjoin('addons')
+        self.ADDON_CODE_DIR   = self.ADDONS_CODE_DIR.pjoin(__addon_id__)
         self.ICON_FILE_PATH   = self.ADDON_CODE_DIR.pjoin('media/icon.png')
         self.FANART_FILE_PATH = self.ADDON_CODE_DIR.pjoin('media/fanart.jpg')
 
@@ -103,7 +103,6 @@ class AEL_Paths:
         self.VCAT_ESRB_FILE_PATH       = self.ADDON_DATA_DIR.pjoin('vcat_esrb.xml')
         self.VCAT_RATING_FILE_PATH     = self.ADDON_DATA_DIR.pjoin('vcat_rating.xml')
         self.VCAT_CATEGORY_FILE_PATH   = self.ADDON_DATA_DIR.pjoin('vcat_category.xml')
-        # Launcher app stdout/stderr file
         self.LAUNCH_LOG_FILE_PATH      = self.ADDON_DATA_DIR.pjoin('launcher.log')
         self.RECENT_PLAYED_FILE_PATH   = self.ADDON_DATA_DIR.pjoin('history.json')
         self.MOST_PLAYED_FILE_PATH     = self.ADDON_DATA_DIR.pjoin('most_played.json')
@@ -111,27 +110,30 @@ class AEL_Paths:
         self.LAUNCHER_REPORT_FILE_PATH = self.ADDON_DATA_DIR.pjoin('report_Launchers.txt')
 
         # --- Offline scraper databases ---
-        self.GAMEDB_INFO_DIR           = self.ADDON_CODE_DIR.pjoin('GameDBInfo', isdir = True)
+        self.GAMEDB_INFO_DIR           = self.ADDON_CODE_DIR.pjoin('GameDBInfo')
         self.GAMEDB_JSON_BASE_NOEXT    = 'GameDB_info'
-        self.LAUNCHBOX_INFO_DIR        = self.ADDON_CODE_DIR.pjoin('LaunchBox', isdir = True)
-        self.LAUNCHBOX_JSON_BASE_NOEXT = 'LaunchBox_info'
+        # self.LAUNCHBOX_INFO_DIR        = self.ADDON_CODE_DIR.pjoin('LaunchBox')
+        # self.LAUNCHBOX_JSON_BASE_NOEXT = 'LaunchBox_info'
+
+        # --- Online scraper on-disk cache ---
+        self.SCRAPER_CACHE_DIR = self.ADDON_DATA_DIR.pjoin('ScraperCache')
 
         # --- Artwork and NFO for Categories and Launchers ---
-        self.CATEGORIES_ASSET_DIR      = self.ADDON_DATA_DIR.pjoin('asset-categories', isdir = True)
-        self.COLLECTIONS_ASSET_DIR     = self.ADDON_DATA_DIR.pjoin('asset-collections', isdir = True)
-        self.LAUNCHERS_ASSET_DIR       = self.ADDON_DATA_DIR.pjoin('asset-launchers', isdir = True)
-        self.FAVOURITES_ASSET_DIR      = self.ADDON_DATA_DIR.pjoin('asset-favourites', isdir = True)
-        self.VIRTUAL_CAT_TITLE_DIR     = self.ADDON_DATA_DIR.pjoin('db_title', isdir = True)
-        self.VIRTUAL_CAT_YEARS_DIR     = self.ADDON_DATA_DIR.pjoin('db_year', isdir = True)
-        self.VIRTUAL_CAT_GENRE_DIR     = self.ADDON_DATA_DIR.pjoin('db_genre', isdir = True)
-        self.VIRTUAL_CAT_DEVELOPER_DIR = self.ADDON_DATA_DIR.pjoin('db_developer', isdir = True)
-        self.VIRTUAL_CAT_NPLAYERS_DIR  = self.ADDON_DATA_DIR.pjoin('db_nplayer', isdir = True)
-        self.VIRTUAL_CAT_ESRB_DIR      = self.ADDON_DATA_DIR.pjoin('db_esrb', isdir = True)
-        self.VIRTUAL_CAT_RATING_DIR    = self.ADDON_DATA_DIR.pjoin('db_rating', isdir = True)
-        self.VIRTUAL_CAT_CATEGORY_DIR  = self.ADDON_DATA_DIR.pjoin('db_category', isdir = True)
-        self.ROMS_DIR                  = self.ADDON_DATA_DIR.pjoin('db_ROMs', isdir = True)
-        self.COLLECTIONS_DIR           = self.ADDON_DATA_DIR.pjoin('db_Collections', isdir = True)
-        self.REPORTS_DIR               = self.ADDON_DATA_DIR.pjoin('reports', isdir = True)
+        self.DEFAULT_CAT_ASSET_DIR     = self.ADDON_DATA_DIR.pjoin('asset-categories')
+        self.DEFAULT_COL_ASSET_DIR     = self.ADDON_DATA_DIR.pjoin('asset-collections')
+        self.DEFAULT_LAUN_ASSET_DIR    = self.ADDON_DATA_DIR.pjoin('asset-launchers')
+        self.DEFAULT_FAV_ASSET_DIR     = self.ADDON_DATA_DIR.pjoin('asset-favourites')
+        self.VIRTUAL_CAT_TITLE_DIR     = self.ADDON_DATA_DIR.pjoin('db_title')
+        self.VIRTUAL_CAT_YEARS_DIR     = self.ADDON_DATA_DIR.pjoin('db_year')
+        self.VIRTUAL_CAT_GENRE_DIR     = self.ADDON_DATA_DIR.pjoin('db_genre')
+        self.VIRTUAL_CAT_DEVELOPER_DIR = self.ADDON_DATA_DIR.pjoin('db_developer')
+        self.VIRTUAL_CAT_NPLAYERS_DIR  = self.ADDON_DATA_DIR.pjoin('db_nplayer')
+        self.VIRTUAL_CAT_ESRB_DIR      = self.ADDON_DATA_DIR.pjoin('db_esrb')
+        self.VIRTUAL_CAT_RATING_DIR    = self.ADDON_DATA_DIR.pjoin('db_rating')
+        self.VIRTUAL_CAT_CATEGORY_DIR  = self.ADDON_DATA_DIR.pjoin('db_category')
+        self.ROMS_DIR                  = self.ADDON_DATA_DIR.pjoin('db_ROMs')
+        self.COLLECTIONS_DIR           = self.ADDON_DATA_DIR.pjoin('db_Collections')
+        self.REPORTS_DIR               = self.ADDON_DATA_DIR.pjoin('reports')
 
 # --- Global variables ---
 g_PATHS = AEL_Paths()
@@ -245,10 +247,11 @@ def run_plugin(addon_argv):
 
     # --- Addon data paths creation ---
     if not g_PATHS.ADDON_DATA_DIR.exists():            g_PATHS.ADDON_DATA_DIR.makedirs()
-    if not g_PATHS.CATEGORIES_ASSET_DIR.exists():      g_PATHS.CATEGORIES_ASSET_DIR.makedirs()
-    if not g_PATHS.COLLECTIONS_ASSET_DIR.exists():     g_PATHS.COLLECTIONS_ASSET_DIR.makedirs()
-    if not g_PATHS.LAUNCHERS_ASSET_DIR.exists():       g_PATHS.LAUNCHERS_ASSET_DIR.makedirs()
-    if not g_PATHS.FAVOURITES_ASSET_DIR.exists():      g_PATHS.FAVOURITES_ASSET_DIR.makedirs()
+    if not g_PATHS.SCRAPER_CACHE_DIR.exists():         g_PATHS.SCRAPER_CACHE_DIR.makedirs()
+    if not g_PATHS.DEFAULT_CAT_ASSET_DIR.exists():     g_PATHS.DEFAULT_CAT_ASSET_DIR.makedirs()
+    if not g_PATHS.DEFAULT_COL_ASSET_DIR.exists():     g_PATHS.DEFAULT_COL_ASSET_DIR.makedirs()
+    if not g_PATHS.DEFAULT_LAUN_ASSET_DIR.exists():    g_PATHS.DEFAULT_LAUN_ASSET_DIR.makedirs()
+    if not g_PATHS.DEFAULT_FAV_ASSET_DIR.exists():     g_PATHS.DEFAULT_FAV_ASSET_DIR.makedirs()
     if not g_PATHS.VIRTUAL_CAT_TITLE_DIR.exists():     g_PATHS.VIRTUAL_CAT_TITLE_DIR.makedirs()
     if not g_PATHS.VIRTUAL_CAT_YEARS_DIR.exists():     g_PATHS.VIRTUAL_CAT_YEARS_DIR.makedirs()
     if not g_PATHS.VIRTUAL_CAT_GENRE_DIR.exists():     g_PATHS.VIRTUAL_CAT_GENRE_DIR.makedirs()
@@ -550,8 +553,6 @@ def m_get_settings():
     # Scanner settings
     g_settings['scan_metadata_policy']  = int(o.getSetting('scan_metadata_policy'))
     g_settings['scan_asset_policy']     = int(o.getSetting('scan_asset_policy'))
-    g_settings['metadata_scraper_mode'] = int(o.getSetting('metadata_scraper_mode'))
-    g_settings['asset_scraper_mode']    = int(o.getSetting('asset_scraper_mode'))
     g_settings['game_selection_mode']   = int(o.getSetting('game_selection_mode'))
     g_settings['asset_selection_mode']  = int(o.getSetting('asset_selection_mode'))
 
@@ -564,8 +565,11 @@ def m_get_settings():
     # --- Scrapers ---
     g_settings['scraper_thegamesdb_apikey']    = o.getSetting('scraper_thegamesdb_apikey').decode('utf-8')
     g_settings['scraper_mobygames_apikey']     = o.getSetting('scraper_mobygames_apikey').decode('utf-8')
-    g_settings['scraper_screenscraper_ssid']   = o.getSetting('scraper_screenscraper_ssid').decode('utf-8')
-    g_settings['scraper_screenscraper_sspass'] = o.getSetting('scraper_screenscraper_sspass').decode('utf-8')
+   
+    g_settings['scraper_screenscraper_ssid']     = o.getSetting('scraper_screenscraper_ssid').decode('utf-8')
+    g_settings['scraper_screenscraper_sspass']   = o.getSetting('scraper_screenscraper_sspass').decode('utf-8')
+    g_settings['scraper_screenscraper_region']   = int(o.getSetting('scraper_screenscraper_region'))
+    g_settings['scraper_screenscraper_language'] = int(o.getSetting('scraper_screenscraper_language'))
     
     # --- Misc tab ---
     g_settings['steam_api_key']            = o.getSetting('steam_api_key')
@@ -630,21 +634,21 @@ def m_get_settings():
     g_settings['log_level']                = int(o.getSetting('log_level'))
     g_settings['migrated_version']         = o.getSetting('migrated_version')
 
-    # >> Check if user changed default artwork paths for categories/launchers.
-    # >> If not, set sensible defaults.
-    if g_settings['categories_asset_dir']  == '':
-        g_settings['categories_asset_dir'] = g_PATHS.CATEGORIES_ASSET_DIR.getPath()
+    # Check if user changed default artwork paths for categories/launchers. If not, set defaults.
+    if g_settings['categories_asset_dir'] == '':
+        g_settings['categories_asset_dir'] = g_PATHS.DEFAULT_CAT_ASSET_DIR.getPath()
+    if g_settings['launchers_asset_dir'] == '':
+        g_settings['launchers_asset_dir'] = g_PATHS.DEFAULT_LAUN_ASSET_DIR.getPath()
+    if g_settings['favourites_asset_dir'] == '':
+        g_settings['favourites_asset_dir'] = g_PATHS.DEFAULT_FAV_ASSET_DIR.getPath()
     if g_settings['collections_asset_dir'] == '':
-        g_settings['collections_asset_dir'] = g_PATHS.COLLECTIONS_ASSET_DIR.getPath()
-    if g_settings['launchers_asset_dir']   == '':
-        g_settings['launchers_asset_dir'] = g_PATHS.LAUNCHERS_ASSET_DIR.getPath()
-    if g_settings['favourites_asset_dir']  == '':
-        g_settings['favourites_asset_dir'] = g_PATHS.FAVOURITES_ASSET_DIR.getPath()
+        g_settings['collections_asset_dir'] = g_PATHS.DEFAULT_COL_ASSET_DIR.getPath()
 
     # Settings required by the scrapers (they are not really settings).
     g_settings['scraper_screenscraper_AEL_softname'] = 'AEL_{0}'.format(__addon_version__)
     g_settings['scraper_aeloffline_addon_code_dir'] = g_PATHS.ADDON_CODE_DIR.getPath()
-    
+    g_settings['scraper_cache_dir'] = g_PATHS.SCRAPER_CACHE_DIR.getPath()
+        
     # --- Dump settings for DEBUG ---
     # log_debug('Settings dump BEGIN')
     # for key in sorted(g_settings):
