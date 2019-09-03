@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/python -B
 # -*- coding: utf-8 -*-
 
 #
@@ -23,8 +23,8 @@ from resources.utils import *
 import common
 
 # --- configuration ------------------------------------------------------------------------------
-input_fname = 'assets/ScreenScraper_get_gameInfo.json'
-output_fname = 'assets/ScreenScraper_get_gameInfo_clean.json'
+input_fname = 'assets/ScreenScraper_gameInfo.json'
+output_fname = 'assets/ScreenScraper_gameInfo_clean.json'
 
 # --- main ---------------------------------------------------------------------------------------
 # --- Load JSON data ---

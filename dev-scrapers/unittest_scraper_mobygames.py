@@ -1,5 +1,6 @@
-#!/usr/bin/python
-#
+#!/usr/bin/python -B
+# -*- coding: utf-8 -*-
+
 # Copied from master branch (old file mobygames_scraper_test.py).
 # I will try to understand how the new scraper engine coded by Chrisism works.
 

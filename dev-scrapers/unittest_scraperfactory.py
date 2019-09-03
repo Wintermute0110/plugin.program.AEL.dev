@@ -1,8 +1,8 @@
-#!/usr/bin/python
-#
+#!/usr/bin/python -B
+# -*- coding: utf-8 -*-
+
 # Copied from master branch (old file scraperfactory_test.py).
 # I will try to understand how the new scraper engine coded by Chrisism works.
-#
 import unittest
 import mock
 import os

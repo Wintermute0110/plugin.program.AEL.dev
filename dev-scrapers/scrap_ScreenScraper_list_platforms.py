@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/python -B
 # -*- coding: utf-8 -*-
 #
 # Get all ScreenScraper platform IDs and outputs JSON and CSV files.

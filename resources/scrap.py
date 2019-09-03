@@ -273,9 +273,10 @@ class ScraperFactory(object):
         return self.strategy_obj
 
     # * Flush caches before dereferencing object.
-    def destroy_scanner(self):
+    def destroy_scanner(self, pdialog = None):
         log_debug('ScraperFactory.destroy_scanner() Flushing disk caches...')
-        self.strategy_obj.meta_scraper_obj.flush_disk_cache()
+        if pdialog is None: pdialog = KodiProgressDialog()
+        self.strategy_obj.meta_scraper_obj.flush_disk_cache(pdialog)
         # Only flush asset cache if object is different from metadata.
         if not self.strategy_obj.meta_scraper_obj is self.strategy_obj.asset_scraper_obj:
             self.strategy_obj.asset_scraper_obj.flush_disk_cache()
@@ -321,9 +322,10 @@ class ScraperFactory(object):
         return self.strategy_obj
 
     # * Flush caches before dereferencing object.
-    def destroy_CM(self):
+    def destroy_CM(self, pdialog = None):
         log_debug('ScraperFactory.destroy_CM() Flushing disk caches...')
-        self.strategy_obj.scraper_obj.flush_disk_cache()
+        if pdialog is None: pdialog = KodiProgressDialog()
+        self.strategy_obj.scraper_obj.flush_disk_cache(pdialog)
         self.strategy_obj.scraper_obj = None
         self.strategy_obj = None
 
@@ -623,28 +625,31 @@ class ScrapeStrategy(object):
         #   found no candidates. In this case, the context menu must be used to manually
         #   change the search string and set a valid candidate.
         ROM_path = ROM.get_file()
-        rom_base_noext = ROM_path.getBaseNoExt()
-        if scraper_obj.check_candidates_cache(rom_base_noext, self.platform):
-            log_debug('ROM "{}" in candidates cache.'.format(rom_base_noext))
-            candidate = scraper_obj.retrieve_from_candidates_cache(rom_base_noext, self.platform)
+        if scraper_obj.check_candidates_cache(ROM_path, self.platform):
+            log_debug('ROM "{}" in candidates cache.'.format(ROM_path.getPath()))
+            candidate = scraper_obj.retrieve_from_candidates_cache(ROM_path, self.platform)
             if not candidate:
                 log_debug('Candidate game is empty. ROM will not be scraped again by the scanner.')
             use_from_cache = True
         else:
-            log_debug('ROM "{}" NOT in candidates cache.'.format(rom_base_noext))
+            log_debug('ROM "{}" NOT in candidates cache.'.format(ROM_path.getPath()))
             use_from_cache = False
         log_debug('use_from_cache "{}"'.format(use_from_cache))
 
         if use_from_cache:
-            scraper_obj.set_candidate_from_cache(rom_base_noext, self.platform)
+            scraper_obj.set_candidate_from_cache(ROM_path, self.platform)
         else:
             # Clear all caches to remove preexiting information, just in case user is rescraping.
-            scraper_obj.clear_cache(rom_base_noext, self.platform)
+            scraper_obj.clear_cache(ROM_path, self.platform)
 
             # --- Call scraper and get a list of games ---
+            # In manual scanner mode should we ask the user for a search string
+            # if the scraper supports it?
+            # I think it is better to keep things like this. If the scraper does not
+            # find a proper candidate game the user can fix the scraper cache with the
+            # context menu.
             rom_name_scraping = text_format_ROM_name_for_scraping(ROM_path.getBaseNoExt())
-            candidates = scraper_obj.get_candidates(
-				rom_name_scraping, ROM_path.getBaseNoExt(), self.platform, status_dic)
+            candidates = scraper_obj.get_candidates(rom_name_scraping, ROM_path, self.platform, status_dic)
             # * If the scraper produced an error notification show it and continue scanner operation.
             # * Note that if many errors/exceptions happen (for example, network is down) then
             #   the scraper will disable itself after a number of errors and only a limited number
@@ -666,14 +671,14 @@ class ScrapeStrategy(object):
             #   never introduced in the cache.
             if candidates is None:
                 log_debug('Error getting the candidate (None).')
-                scraper_obj.set_candidate(rom_base_noext, self.platform, None)
+                scraper_obj.set_candidate(rom_FN, self.platform, None)
                 return
             # * If candidates list is empty scraper operation was correct but no candidate was
             # * found. In this case set the candidate in the scraper object to an empty
             # * dictionary and introduce it in the cache.
             if not candidates:
                 log_debug('Found no candidates after searching.')
-                scraper_obj.set_candidate(rom_base_noext, self.platform, dict())
+                scraper_obj.set_candidate(rom_FN, self.platform, dict())
                 return
             log_debug('Scraper {} found {} candidate/s'.format(scraper_name, len(candidates)))
 
@@ -700,7 +705,7 @@ class ScrapeStrategy(object):
             candidate = candidates[select_candidate_idx]
 
             # --- Set candidate. This will introduce it in the cache ---
-            scraper_obj.set_candidate(rom_base_noext, self.platform, candidate)
+            scraper_obj.set_candidate(rom_FN, self.platform, candidate)
 
     # Scraps ROM metadata in the ROM scanner.
     def _scanner_scrap_ROM_metadata(self, ROM):
@@ -977,7 +982,8 @@ class ScrapeStrategy(object):
     def scrap_CM_metadata_ROM(self, object_dic, data_dic):
         log_debug('ScrapeStrategy::scrap_CM_metadata_ROM() BEGIN ...')
         # In AEL 0.10.x this data is grabed from the objects, not passed using a dictionary.
-        rom_base_noext = data_dic['rom_base_noext']
+        rom_FN = data_dic['rom_FN']
+        rom_base_noext = rom_FN.getBase_noext()
         status_dic = kodi_new_status_dic('ROM metadata updated')
         scraper_name = self.scraper_obj.get_name()
 
@@ -1058,7 +1064,6 @@ class ScrapeStrategy(object):
         asset_info = g_assetFactory.get_asset_info(asset_ID)
         asset_name = asset_info.name
         # In AEL 0.10.x this data is grabed from the objects, not passed using a dictionary.
-        rom_base_noext = data_dic['rom_base_noext']
         platform = data_dic['platform']
         current_asset_FN = data_dic['current_asset_FN']
         asset_path_noext_FN = data_dic['asset_path_noext']
@@ -1163,7 +1168,7 @@ class ScrapeStrategy(object):
         image_local_path = asset_path_noext_FN.append('.' + image_ext).getPath()
         log_verb('Download  "{0}"'.format(image_url_log))
         log_verb('Into file "{0}"'.format(image_local_path))
-        pdialog.startProgress('Downloading {}...'.format(asset_name))
+        pdialog.startProgress('Downloading {} from {}...'.format(asset_name, scraper_name))
         try:
             # net_download_img() never prints URLs or paths.
             net_download_img(image_url, image_local_path)
@@ -1198,8 +1203,7 @@ class ScrapeStrategy(object):
         # log_debug('ScrapeStrategy::_scrap_CM_get_candidate() BEGIN...')
 
         # In AEL 0.10.x this data is grabed from the objects, not passed using a dictionary.
-        rom_base_noext = data_dic['rom_base_noext']
-        rom_path = data_dic['rom_path']
+        rom_FN = data_dic['rom_FN']
         platform = data_dic['platform']
         scraper_name = self.scraper_obj.get_name()
 
@@ -1209,9 +1213,9 @@ class ScrapeStrategy(object):
         # * In the context menu always rescrape empty candidates.
         # * In the ROM scanner empty candidates are never rescraped. In that cases
         #   the user must use the context menu to find a valid candidate.
-        if self.scraper_obj.check_candidates_cache(rom_base_noext, platform):
-            log_debug('ROM "{}" in candidates cache.'.format(rom_base_noext))
-            candidate = self.scraper_obj.retrieve_from_candidates_cache(rom_base_noext, platform)
+        if self.scraper_obj.check_candidates_cache(rom_FN, platform):
+            log_debug('ROM "{}" in candidates cache.'.format(rom_FN.getBase_noext()))
+            candidate = self.scraper_obj.retrieve_from_candidates_cache(rom_FN, platform)
             if not candidate:
                 kodi_dialog_OK(
                     'Candidate game in the scraper disk cache but empty. '
@@ -1222,36 +1226,44 @@ class ScrapeStrategy(object):
                 ret = kodi_dialog_yesno_custom(
                     'Candidate game in the scraper disk cache. '
                     'Use candidate from cache or rescrape?',
-                    'Use from cache', 'Scrape')
-                use_from_cache = True if ret else False
+                    'Scrape', 'Use from cache')
+                use_from_cache = False if ret else True
         else:
-            log_debug('ROM "{}" NOT in candidates cache.'.format(rom_base_noext))
+            log_debug('ROM "{}" NOT in candidates cache.'.format(rom_FN.getBase_noext()))
             use_from_cache = False
         log_debug('use_from_cache "{}"'.format(use_from_cache))
 
         if use_from_cache:
-            self.scraper_obj.set_candidate_from_cache(rom_base_noext, platform)
+            self.scraper_obj.set_candidate_from_cache(rom_FN, platform)
         else:
             # Clear all caches to remove preexiting information, just in case user is rescraping.
-            self.scraper_obj.clear_cache(rom_base_noext, platform)
+            self.scraper_obj.clear_cache(rom_FN, platform)
 
-            # --- Ask user to enter ROM metadata search string ---
-            # If ROM title has tags remove them for scraping.
-            search_term = text_format_ROM_name_for_scraping(object_dic['m_name'])
-            keyboard = xbmc.Keyboard(search_term, 'Enter the search term ...')
-            keyboard.doModal()
-            if not keyboard.isConfirmed():
-                status_dic['status'] = False
-                status_dic['dialog'] = KODI_MESSAGE_NOTIFY
-                status_dic['msg'] = '{0} metadata unchanged'.format(object_name)
-                return
-            search_term = keyboard.getText().decode('utf-8')
+            # --- Ask user to enter ROM metadata search term ---
+            # Only ask user for a search term if the scraper supports it.
+            # Scrapers that do exact matches, like AEL Offline, ScreenScraper and ArcadeDB
+            # do not need this so set the search term to None.
+            if self.scraper_obj.supports_search_string():
+                log_debug('Asking user for a search string.')
+                # If ROM title has tags remove them for scraping.
+                search_term = text_format_ROM_name_for_scraping(object_dic['m_name'])
+                keyboard = xbmc.Keyboard(search_term, 'Enter the search term ...')
+                keyboard.doModal()
+                if not keyboard.isConfirmed():
+                    status_dic['status'] = False
+                    status_dic['dialog'] = KODI_MESSAGE_NOTIFY
+                    status_dic['msg'] = '{0} metadata unchanged'.format(object_name)
+                    return
+                search_term = keyboard.getText().decode('utf-8')
+            else:
+                log_debug('Scraper does not support search strings. Setting it to None.')
+                search_term = None
 
             # --- Do a search and get a list of games ---
             pdialog = KodiProgressDialog()
             pdialog.startProgress('Searching games with scaper {}...'.format(scraper_name))
             candidate_list = self.scraper_obj.get_candidates(
-                search_term, rom_base_noext, rom_path, platform, status_dic)
+                search_term, rom_FN, platform, status_dic)
             # If the there was an error/exception in the scraper return immediately.
             if not status_dic['status']: return status_dic
             # If the scraper is disabled candidate_list will be None. However, it is impossible
@@ -1281,7 +1293,7 @@ class ScrapeStrategy(object):
             log_verb('User chose game "{0}"'.format(candidate['display_name']))
 
             # --- Set candidate. This will introduce it in the cache ---
-            self.scraper_obj.set_candidate(rom_base_noext, platform, candidate)
+            self.scraper_obj.set_candidate(rom_FN, platform, candidate)
 
 #
 # Abstract base class for all scrapers (offline or online, metadata or asset).
@@ -1296,7 +1308,7 @@ class Scraper(object):
     # is deactivated. This is useful in the ROM Scanner to not flood the user with error
     # messages in case something is wrong (for example, the internet connection is broken or
     # the number of API calls is exceeded).
-    EXCEPTION_COUNTER_THRESHOLD = 3
+    EXCEPTION_COUNTER_THRESHOLD = 5
     
     # Maximum amount of retries of certain requests
     RETRY_THRESHOLD = 4
@@ -1339,9 +1351,11 @@ class Scraper(object):
         # --- Disk caches ---
         self.disk_caches = {}
         self.disk_caches_loaded = {}
+        self.disk_caches_dirty = {}
         for cache_name in Scraper.CACHE_LIST:
             self.disk_caches[cache_name] = {}
             self.disk_caches_loaded[cache_name] = False
+            self.disk_caches_dirty[cache_name] = False
         # Candidate game is set with functions set_candidate_from_cache() or set_candidate()
         # and used by functions get_metadata() and get_assets()
         self.candidate = None
@@ -1349,9 +1363,11 @@ class Scraper(object):
         # --- Global disk caches ---
         self.global_disk_caches = {}
         self.global_disk_caches_loaded = {}
+        self.global_disk_caches_dirty = {}
         for cache_name in Scraper.GLOBAL_CACHE_LIST:
             self.global_disk_caches[cache_name] = {}
             self.global_disk_caches_loaded[cache_name] = False
+            self.global_disk_caches_dirty[cache_name] = False
 
     # --- Methods --------------------------------------------------------------------------------
     # Scraper is much more verbose (even more than AEL Debug level).
@@ -1359,7 +1375,7 @@ class Scraper(object):
         log_debug('Scraper.set_verbose_mode() verbose_flag {0}'.format(verbose_flag))
         self.verbose_flag = verbose_flag
 
-    # Dump scraper data into files for debugging.
+    # Dump scraper data into files for debugging. Used in the development scripts.
     def set_debug_file_dump(self, dump_file_flag, dump_dir):
         log_debug('Scraper.set_debug_file_dump() dump_file_flag {0}'.format(dump_file_flag))
         log_debug('Scraper.set_debug_file_dump() dump_dir {0}'.format(dump_dir))
@@ -1371,7 +1387,10 @@ class Scraper(object):
     def _dump_json_debug(self, file_name, data_dic):
         if not self.dump_file_flag: return
         file_path = os.path.join(self.dump_dir, file_name)
-        json_str = json.dumps(data_dic, indent = 4, separators = (', ', ' : '))
+        if SCRAPER_CACHE_HUMAN_JSON:
+            json_str = json.dumps(data_dic, indent = 4, separators = (', ', ' : '))
+        else:
+            json_str = json.dumps(data_dic)
         text_dump_str_to_file(file_path, json_str)
 
     def _dump_file_debug(self, file_name, page_data):
@@ -1386,7 +1405,10 @@ class Scraper(object):
     def get_filename(self): pass
 
     @abc.abstractmethod
-    def uses_disk_cache(self): pass
+    def supports_disk_cache(self): pass
+
+    @abc.abstractmethod
+    def supports_search_string(self): pass
 
     @abc.abstractmethod
     def supports_metadata_ID(self, metadata_ID): pass
@@ -1407,54 +1429,141 @@ class Scraper(object):
     @abc.abstractmethod
     def check_before_scraping(self, status_dic): pass
 
-    def lazy_load_candidate_cache(self):
-        if not self._is_disk_cache_loaded(Scraper.CACHE_CANDIDATES):
-            self._load_disk_cache(Scraper.CACHE_CANDIDATES, self.platform)
+    # The *_candidates_cache_*() functions use the low level cache functions which are internal
+    # to the Scraper object. The functions next are public, however.
 
     # Returns True if candidate is in disk cache, False otherwise.
     # Lazy loads candidate cache from disk.
-    def check_candidates_cache(self, rom_base_noext, platform):
-        self.cache_key = rom_base_noext
+    def check_candidates_cache(self, rom_FN, platform):
+        self.cache_key = rom_FN.getBase()
         self.platform = platform
-        self.lazy_load_candidate_cache()
 
-        # --- Check cache ---
-        return True if rom_base_noext in self.disk_caches[Scraper.CACHE_CANDIDATES] else False
+        return self._check_disk_cache(Scraper.CACHE_CANDIDATES, self.cache_key)
 
     # Not necesary to lazy load the cache because before calling this function
     # check_candidates_cache() must be called.
-    def retrieve_from_candidates_cache(self, rom_base_noext, platform):
-        return self._retrieve_from_disk_cache(Scraper.CACHE_CANDIDATES, rom_base_noext)
+    def retrieve_from_candidates_cache(self, rom_FN, platform):
+        self.cache_key = rom_FN.getBase()
 
-    def set_candidate_from_cache(self, rom_base_noext, platform):
-        self.cache_key = rom_base_noext
+        return self._retrieve_from_disk_cache(Scraper.CACHE_CANDIDATES, self.cache_key)
+
+    def set_candidate_from_cache(self, rom_FN, platform):
+        self.cache_key = rom_FN.getBase()
         self.platform  = platform
-        self.lazy_load_candidate_cache()
-        self.candidate = self.disk_caches[Scraper.CACHE_CANDIDATES][rom_base_noext]
+        self.candidate = self._retrieve_from_disk_cache(Scraper.CACHE_CANDIDATES, self.cache_key)
 
-    def set_candidate(self, rom_base_noext, platform, candidate):
-        self.cache_key = rom_base_noext
+    def set_candidate(self, rom_FN, platform, candidate):
+        self.cache_key = rom_FN.getBase()
         self.platform  = platform
         self.candidate = candidate
-        log_debug('Scrape.set_candidate() Setting "{}" "{}"'.format(rom_base_noext, platform))
+        log_debug('Scrape.set_candidate() Setting "{}" "{}"'.format(self.cache_key, platform))
         # Do not introduce None candidates in the cache so the game will be rescraped later.
         # Keep the None candidate in the object internal variables so later calls to 
         # get_metadata() and get_assets() will know an error happened.
         if candidate is None: return
-        self.lazy_load_candidate_cache()
-        self.disk_caches[Scraper.CACHE_CANDIDATES][rom_base_noext] = candidate
-        log_debug('Scrape.set_candidate() Added "{}" to cache'.format(rom_base_noext))
+        self._update_disk_cache(Scraper.CACHE_CANDIDATES, self.cache_key, candidate)
+        log_debug('Scrape.set_candidate() Added "{}" to cache'.format(self.cache_key))
 
     # When the user decides to rescrape an item that was in the cache make sure all
     # the caches are purged.
-    def clear_cache(self, rom_base_noext, platform):
-        log_debug('Scraper.clear_cache() Clearing caches "{}" "{}"'.format(
-            rom_base_noext, platform))
-        self.cache_key = rom_base_noext
+    def clear_cache(self, rom_FN, platform):
+        self.cache_key = rom_FN.getBase()
         self.platform = platform
+        log_debug('Scraper.clear_cache() Clearing caches "{}" "{}"'.format(
+            self.cache_key, platform))
         for cache_type in Scraper.CACHE_LIST:
-            if self._check_disk_cache(cache_type, rom_base_noext):
-                self._delete_from_disk_cache(cache_type, rom_base_noext)
+            if self._check_disk_cache(cache_type, self.cache_key):
+                self._delete_from_disk_cache(cache_type, self.cache_key)
+
+    # Only write to disk non-empty caches.
+    # Only write to disk dirty caches. If cache has not been modified then do not write it.
+    def flush_disk_cache(self, pdialog = None):
+        # If scraper does not use disk cache (notably AEL Offline) return.
+        if not self.supports_disk_cache():
+            log_debug('Scraper.flush_disk_cache() Scraper {} does not use disk cache.'.format(
+                self.get_name()))
+            return
+
+        # Create progress dialog.
+        num_steps = len(Scraper.CACHE_LIST) + len(Scraper.GLOBAL_CACHE_LIST)
+        step_count = 0
+        if pdialog is not None:
+            pdialog.startProgress('Flushing scraper disk caches...', num_steps)
+
+        # --- Scraper caches ---
+        log_debug('Scraper.flush_disk_cache() Saving scraper {} disk cache...'.format(
+            self.get_name()))
+        for cache_type in Scraper.CACHE_LIST:
+            if pdialog is not None:
+                pdialog.updateProgress(step_count)
+                step_count += 1
+
+            # Skip unloaded caches
+            if not self.disk_caches_loaded[cache_type]:
+                log_debug('Skipping {} (Unloaded)'.format(cache_type))
+                continue
+            # Skip empty caches
+            if not self.disk_caches[cache_type]:
+                log_debug('Skipping {} (Empty)'.format(cache_type))
+                continue
+            # Skip clean caches.
+            if not self.disk_caches_dirty[cache_type]:
+                log_debug('Skipping {} (Clean)'.format(cache_type))
+                continue
+
+            # Get JSON data.
+            json_data = json.dumps(
+                self.disk_caches[cache_type], ensure_ascii = False, sort_keys = True,
+                indent = Scraper.JSON_indent, separators = Scraper.JSON_separators)
+
+            # Write to disk
+            json_file_path, json_fname = self._get_scraper_file_name(cache_type, self.platform)
+            file = io.open(json_file_path, 'w', encoding = 'utf-8')
+            file.write(unicode(json_data))
+            file.close()
+            # log_debug('Saved "{}"'.format(json_file_path))
+            log_debug('Saved "<SCRAPER_CACHE_DIR>/{}"'.format(json_fname))
+
+            # Cache written to disk is clean gain.
+            self.disk_caches_dirty[cache_type] = False
+
+        # --- Global caches ---
+        log_debug('Scraper.flush_disk_cache() Saving scraper {} global disk cache...'.format(
+                self.get_name()))
+        for cache_type in Scraper.GLOBAL_CACHE_LIST:
+            if pdialog is not None:
+                pdialog.updateProgress(step_count)
+                step_count += 1
+
+            # Skip unloaded caches
+            if not self.global_disk_caches_loaded[cache_type]:
+                log_debug('Skipping global {} (Unloaded)'.format(cache_type))
+                continue
+            # Skip empty caches
+            if not self.global_disk_caches[cache_type]:
+                log_debug('Skipping global {} (Empty)'.format(cache_type))
+                continue
+            # Skip clean caches.
+            if not self.global_disk_caches_dirty[cache_type]:
+                log_debug('Skipping global {} (Clean)'.format(cache_type))
+                continue
+
+            # Get JSON data.
+            json_data = json.dumps(
+                self.global_disk_caches[cache_type], ensure_ascii = False, sort_keys = True,
+                indent = Scraper.JSON_indent, separators = Scraper.JSON_separators)
+
+            # Write to disk
+            json_file_path, json_fname = self._get_global_file_name(cache_type)
+            file = io.open(json_file_path, 'w', encoding = 'utf-8')
+            file.write(unicode(json_data))
+            file.close()
+            # log_debug('Saved global "{}"'.format(json_file_path))
+            log_debug('Saved global "<SCRAPER_CACHE_DIR>/{}"'.format(json_fname))
+
+            # Cache written to disk is clean gain.
+            self.global_disk_caches_dirty[cache_type] = False
+        if pdialog is not None: pdialog.endProgress()
 
     # Search for candidates and return a list of dictionaries _new_candidate_dic().
     #
@@ -1471,14 +1580,12 @@ class Scraper(object):
     #   with the scraper overloading must be printed once like any other error.
     #
     # @param search_term: [str] String to be searched.
-    # @param rombase_noext: [str] rombase_noext is used by some scrapers instead of search_term,
-    #                       notably the offline scrapers. Some scrapers require the literal name
-    #                       of the ROM.
+    # @param rom_FN: [FileName] Scraper will get whatever part of the filename they want.
     # @param platform: [str] AEL platform.
     # @param status_dic: [dict] kodi_new_status_dic() status dictionary.
     # @return: [list] or None.
     @abc.abstractmethod
-    def get_candidates(self, search_term, rombase_noext, rom_path, platform, status_dic): pass
+    def get_candidates(self, search_term, rom_FN, platform, status_dic): pass
 
     # Returns the metadata for a candidate (search result).
     #
@@ -1606,69 +1713,7 @@ class Scraper(object):
         log_error('(Exception) Message "{}"'.format(str(ex)))
         self._handle_error(status_dic, user_msg)
 
-    # --- Scraper on-disk cache ------------------------------------------------------------------
-    # Only write to disk non-empty caches.
-    # TODO Only write to disk dirty caches. If cache has not been modified then do not write it.
-    def flush_disk_cache(self):
-        # If scraper does not use disk cache (notably AEL Offline) return.
-        if not self.uses_disk_cache():
-            log_debug('Scraper.flush_disk_cache() Scraper {} does not use disk cache.'.format(
-                self.get_name()))
-            return
-
-        # --- Scraper caches ---
-        log_debug('Scraper.flush_disk_cache() Saving scraper {} disk cache...'.format(
-            self.get_name()))
-        for cache_type in Scraper.CACHE_LIST:
-            # Skip unloaded caches
-            if not self.disk_caches_loaded[cache_type]:
-                log_debug('Skipping {} (Unloaded)'.format(cache_type))
-                continue
-            # Skip empty caches
-            if not self.disk_caches[cache_type]:
-                log_debug('Skipping {} (Empty)'.format(cache_type))
-                continue
-
-            # Get JSON data.
-            json_data = json.dumps(
-                self.disk_caches[cache_type], ensure_ascii = False, sort_keys = True,
-                indent = Scraper.JSON_indent, separators = Scraper.JSON_separators)
-
-            # Write to disk
-            json_file_path, json_fname = self._get_scraper_file_name(cache_type, self.platform)
-            file = io.open(json_file_path, 'w', encoding = 'utf-8')
-            file.write(unicode(json_data))
-            file.close()
-            # log_debug('Saved "{}"'.format(json_file_path))
-            log_debug('Saved "<SCRAPER_CACHE_DIR>/{}"'.format(json_fname))
-
-        # --- Global caches ---
-        log_debug('Scraper.flush_disk_cache() Saving scraper {} global disk cache...'.format(
-                self.get_name()))
-        for cache_type in Scraper.GLOBAL_CACHE_LIST:
-            # Skip unloaded caches
-            if not self.global_disk_caches_loaded[cache_type]:
-                log_debug('Skipping global {} (Unloaded)'.format(cache_type))
-                continue
-            # Skip empty caches
-            if not self.global_disk_caches[cache_type]:
-                log_debug('Skipping global {} (Empty)'.format(cache_type))
-                continue
-
-            # Get JSON data.
-            json_data = json.dumps(
-                self.global_disk_caches[cache_type], ensure_ascii = False, sort_keys = True,
-                indent = Scraper.JSON_indent, separators = Scraper.JSON_separators)
-
-            # Write to disk
-            json_file_path, json_fname = self._get_global_file_name(cache_type)
-            file = io.open(json_file_path, 'w', encoding = 'utf-8')
-            file.write(unicode(json_data))
-            file.close()
-            # log_debug('Saved global "{}"'.format(json_file_path))
-            log_debug('Saved global "<SCRAPER_CACHE_DIR>/{}"'.format(json_fname))
-
-    # --- Internal cache functions ---------------------------------------------------------------
+    # --- Private disk cache functions -----------------------------------------------------------
     def _get_scraper_file_name(self, cache_type, platform):
         scraper_filename = self.get_filename()
         json_fname = scraper_filename + '__' + platform + '__' + cache_type + '.json'
@@ -1676,9 +1721,9 @@ class Scraper(object):
 
         return json_full_path, json_fname
 
-    # Returns True if disk cache has been loaded, False otherwise.
-    def _is_disk_cache_loaded(self, cache_type):
-        return self.disk_caches_loaded[cache_type]
+    def _lazy_load_disk_cache(self, cache_type):
+        if not self.disk_caches_loaded[cache_type]:
+            self._load_disk_cache(cache_type, self.platform)
 
     def _load_disk_cache(self, cache_type, platform):
         # --- Get filename ---
@@ -1697,43 +1742,41 @@ class Scraper(object):
             log_debug('Cache file not found. Resetting cache.')
             self.disk_caches[cache_type] = {}
         self.disk_caches_loaded[cache_type] = True
+        self.disk_caches_dirty[cache_type] = False
 
     # Returns True if item is in the cache, False otherwise.
     # Lazy loads cache files from disk.
     def _check_disk_cache(self, cache_type, cache_key):
-        # --- Lazy load disk cache ---
-        if not self._is_disk_cache_loaded(cache_type):
-            self._load_disk_cache(cache_type, self.platform)
-        # --- Check cache ---
-        if cache_key in self.disk_caches[cache_type]:
-            return True
-        else:
-            return False
+        self._lazy_load_disk_cache(cache_type)
 
+        return True if cache_key in self.disk_caches[cache_type] else False
+
+    # _check_disk_cache() must be called before this.
     def _retrieve_from_disk_cache(self, cache_type, cache_key):
         return self.disk_caches[cache_type][cache_key]
 
+    # _check_disk_cache() must be called before this.
     def _delete_from_disk_cache(self, cache_type, cache_key):
         del self.disk_caches[cache_type][cache_key]
+        self.disk_caches_dirty[cache_type] = True
 
     # Lazy loading should be done here because the internal cache for ScreenScraper
     # could be updated withouth being loaded first with _check_disk_cache().
     def _update_disk_cache(self, cache_type, cache_key, data):
-        # --- Lazy load disk cache ---
-        if not self._is_disk_cache_loaded(cache_type):
-            self._load_disk_cache(cache_type, self.platform)
-        # --- Update cache ---
+        self._lazy_load_disk_cache(cache_type)
         self.disk_caches[cache_type][cache_key] = data
+        self.disk_caches_dirty[cache_type] = True
 
-    # --- Global disk caches ---------------------------------------------------------------------
+    # --- Private global disk caches -------------------------------------------------------------
     def _get_global_file_name(self, cache_type):
         json_fname = cache_type + '.json'
         json_full_path = os.path.join(self.scraper_cache_dir, json_fname).decode('utf-8')
 
         return json_full_path, json_fname
 
-    def _is_global_cache_loaded(self, cache_type):
-        return self.global_disk_caches_loaded[cache_type]
+    def _lazy_load_global_disk_cache(self, cache_type):
+        if not self.global_disk_caches_loaded[cache_type]:
+            self._load_global_cache(cache_type)
 
     def _load_global_cache(self, cache_type):
         # --- Get filename ---
@@ -1752,21 +1795,26 @@ class Scraper(object):
             log_debug('Cache file not found. Resetting cache.')
             self.global_disk_caches[cache_type] = {}
         self.global_disk_caches_loaded[cache_type] = True
+        self.global_disk_caches_dirty[cache_type] = False
 
     def _check_global_cache(self, cache_type):
-        if not self._is_global_cache_loaded(cache_type):
-            self._load_global_cache(cache_type)
+        self._lazy_load_global_disk_cache(cache_type)
 
         return self.global_disk_caches[cache_type]
 
-    def _retrieve_from_global_cache(self, cache_type):
+    # _check_disk_cache() must be called before this.
+    def _retrieve_global_cache(self, cache_type):
         return self.global_disk_caches[cache_type]
+
+    # _check_disk_cache() must be called before this.
+    def _reset_global_cache(self, cache_type):
+        self.global_disk_caches[cache_type] = {}
+        self.global_disk_caches_dirty[cache_type] = True
 
     def _update_global_cache(self, cache_type, data):
-        # Lazy load disk cache.
-        if not self._is_global_cache_loaded(cache_type):
-            self._load_global_cache(cache_type)
+        self._lazy_load_global_disk_cache(cache_type)
         self.global_disk_caches[cache_type] = data
+        self.global_disk_caches_dirty[cache_type] = True
 
 # ------------------------------------------------------------------------------------------------
 # NULL scraper, does nothing.
@@ -1779,7 +1827,9 @@ class Null_Scraper(Scraper):
 
     def get_filename(self): return 'Null'
 
-    def uses_disk_cache(self): return False
+    def supports_disk_cache(self): return False
+
+    def supports_search_string(self): return True
 
     def supports_metadata_ID(self, metadata_ID): return False
 
@@ -1792,7 +1842,7 @@ class Null_Scraper(Scraper):
     def check_before_scraping(self, status_dic): return status_dic
 
     # Null scraper never finds candidates.
-    def get_candidates(self, search_term, rombase_noext, rom_path, platform, status_dic): return []
+    def get_candidates(self, search_term, rom_FN, platform, status_dic): return []
 
     # Null scraper never returns valid scraped metadata.
     def get_metadata(self, status_dic): return self._new_gamedata_dic()
@@ -1836,7 +1886,9 @@ class AEL_Offline(Scraper):
 
     def get_filename(self): return 'AEL_Offline'
 
-    def uses_disk_cache(self): return False
+    def supports_disk_cache(self): return False
+
+    def supports_search_string(self): return False
 
     def supports_metadata_ID(self, metadata_ID):
         return True if metadata_ID in ScreenScraper_V1.supported_metadata_list else False
@@ -1849,8 +1901,11 @@ class AEL_Offline(Scraper):
 
     def check_before_scraping(self, status_dic): return status_dic
 
-    def get_candidates(self, search_term, rombase_noext, rom_path, platform, status_dic):
-        log_debug('AEL_Offline.get_candidates() search_term   "{0}"'.format(search_term))
+    # Search term is always None for this scraper.
+    def get_candidates(self, search_term, rom_FN, platform, status_dic):
+        # AEL Offline cannot be disabled.
+        # Prepare data for scraping.
+        rombase_noext = rom_FN.getBase_noext()
         log_debug('AEL_Offline.get_candidates() rombase_noext "{0}"'.format(rombase_noext))
         log_debug('AEL_Offline.get_candidates() AEL platform  "{0}"'.format(platform))
 
@@ -1861,10 +1916,10 @@ class AEL_Offline(Scraper):
 
         if platform == 'MAME':
             # --- Search MAME games ---
-            candidate_list = self._get_MAME_candidates(search_term, rombase_noext, platform)
+            candidate_list = self._get_MAME_candidates(rombase_noext, platform)
         else:
             # --- Search No-Intro games ---
-            candidate_list = self._get_NoIntro_candidates(search_term, rombase_noext, platform)
+            candidate_list = self._get_NoIntro_candidates(rombase_noext, platform)
 
         return candidate_list
 
@@ -1903,7 +1958,7 @@ class AEL_Offline(Scraper):
     def resolve_asset_URL_extension(self, selected_asset, image_url, status_dic): pass
 
     # --- This class own methods -----------------------------------------------------------------
-    def _get_MAME_candidates(self, search_term, rombase_noext, platform):
+    def _get_MAME_candidates(self, rombase_noext, platform):
         log_verb("AEL_Offline._get_MAME_candidates() Scraper working in MAME mode.")
 
         # --- MAME rombase_noext is exactly the rom name ---
@@ -1920,7 +1975,7 @@ class AEL_Offline(Scraper):
         else:
             return []
 
-    def _get_NoIntro_candidates(self, search_term, rombase_noext, platform):
+    def _get_NoIntro_candidates(self, rombase_noext, platform):
         # --- First try an exact match using rombase_noext ---
         log_verb("AEL_Offline._get_NoIntro_candidates() Scraper working in No-Intro mode.")
         log_verb("AEL_Offline._get_NoIntro_candidates() Trying exact search for '{0}'".format(
@@ -1937,11 +1992,13 @@ class AEL_Offline(Scraper):
             candidate_list.append(candidate)
         else:
             # --- If nothing found, do a fuzzy search ---
+            # Here implement a Levenshtein distance algorithm.
+            search_term = text_format_ROM_name_for_scraping(rombase_noext)
             log_verb("AEL_Offline._get_NoIntro_candidates() No exact match found.")
             log_verb("AEL_Offline._get_NoIntro_candidates() Trying fuzzy search '{0}'".format(
                 search_term))
-            search_string_lower = search_term.lower()
-            regexp = '.*{0}.*'.format(search_string_lower)
+            search_string_lower = rombase_noext.lower()
+            regexp = '.*{}.*'.format(search_string_lower)
             try:
                 # Sometimes this produces: raise error, v # invalid expression
                 p = re.compile(regexp)
@@ -2079,7 +2136,9 @@ class TheGamesDB(Scraper):
 
     def get_filename(self): return 'TGDB'
 
-    def uses_disk_cache(self): return True
+    def supports_disk_cache(self): return True
+
+    def supports_search_string(self): return True
 
     def supports_metadata_ID(self, metadata_ID):
         return True if metadata_ID in TheGamesDB.supported_metadata_list else False
@@ -2095,23 +2154,24 @@ class TheGamesDB(Scraper):
     # operation so return it as it is.
     def check_before_scraping(self, status_dic): return status_dic
 
-    # This function is not cached. If called is because the candidate game is not in the
-    # disk cache.
-    def get_candidates(self, search_term, rombase_noext, rom_path, platform, status_dic):
+    def get_candidates(self, search_term, rom_FN, platform, status_dic):
         # If the scraper is disabled return None and do not mark error in status_dic.
         # Candidate will not be introduced in the disk cache and will be scraped again.
         if self.scraper_disabled:
             log_debug('TheGamesDB.get_candidates() Scraper disabled. Returning empty data.')
             return None
 
+        # Prepare data for scraping.
+        rombase_noext = rom_FN.getBase_noext()
+
         # --- Get candidates ---
         scraper_platform = AEL_platform_to_TheGamesDB(platform)
         log_debug('TheGamesDB.get_candidates() search_term         "{0}"'.format(search_term))
-        log_debug('TheGamesDB.get_candidates() rom_base_noext      "{0}"'.format(rombase_noext))
+        log_debug('TheGamesDB.get_candidates() rombase_noext       "{0}"'.format(rombase_noext))
         log_debug('TheGamesDB.get_candidates() AEL platform        "{0}"'.format(platform))
         log_debug('TheGamesDB.get_candidates() TheGamesDB platform "{0}"'.format(scraper_platform))
         candidate_list = self._search_candidates(
-            search_term, rombase_noext, platform, scraper_platform, status_dic)
+            search_term, platform, scraper_platform, status_dic)
         if not status_dic['status']: return None
 
         # --- Deactivate this for now ---
@@ -2245,7 +2305,7 @@ class TheGamesDB(Scraper):
     def _get_API_key(self): return self.api_public_key
 
     # --- Retrieve list of games ---
-    def _search_candidates(self, search_term, rombase_noext, platform, scraper_platform, status_dic):
+    def _search_candidates(self, search_term, platform, scraper_platform, status_dic):
         # quote_plus() will convert the spaces into '+'. Note that quote_plus() requires an
         # UTF-8 encoded string and does not work with Unicode strings.
         # https://stackoverflow.com/questions/22415345/using-pythons-urllib-quote-plus-on-utf-8-strings-with-safe-arguments
@@ -2649,7 +2709,9 @@ class MobyGames(Scraper):
 
     def get_filename(self): return 'MobyGames'
 
-    def uses_disk_cache(self): return True
+    def supports_disk_cache(self): return True
+
+    def supports_search_string(self): return True
 
     def supports_metadata_ID(self, metadata_ID):
         return True if metadata_ID in MobyGames.supported_metadata_list else False
@@ -2678,23 +2740,24 @@ class MobyGames(Scraper):
             'and introduce the API key in AEL addon settings.'
         )
 
-    # This function is not cached. If called is because the candidate game is not in the
-    # disk cache.
-    def get_candidates(self, search_term, rombase_noext, rom_path, platform, status_dic):
+    def get_candidates(self, search_term, rom_FN, platform, status_dic):
         # --- If scraper is disabled return immediately and silently ---
         if self.scraper_disabled:
             # If the scraper is disabled return None and do not mark error in status_dic.
             log_debug('MobyGames.get_candidates() Scraper disabled. Returning empty data.')
             return None
 
+        # Prepare data for scraping.
+        rombase_noext = rom_FN.getBase_noext()
+
         # --- Request is not cached. Get candidates and introduce in the cache ---
         scraper_platform = AEL_platform_to_MobyGames(platform)
         log_debug('MobyGames.get_candidates() search_term        "{0}"'.format(search_term))
-        log_debug('MobyGames.get_candidates() rom_base_noext     "{0}"'.format(rombase_noext))
+        log_debug('MobyGames.get_candidates() rombase_noext      "{0}"'.format(rombase_noext))
         log_debug('MobyGames.get_candidates() AEL platform       "{0}"'.format(platform))
         log_debug('MobyGames.get_candidates() MobyGames platform "{0}"'.format(scraper_platform))
         candidate_list = self._search_candidates(
-            search_term, rombase_noext, platform, scraper_platform, status_dic)
+            search_term, platform, scraper_platform, status_dic)
         if not status_dic['status']: return None
 
         return candidate_list
@@ -2783,7 +2846,7 @@ class MobyGames(Scraper):
         return json_data
 
     # --- Retrieve list of games ---
-    def _search_candidates(self, search_term, rombase_noext, platform, scraper_platform, status_dic):
+    def _search_candidates(self, search_term, platform, scraper_platform, status_dic):
         # --- Retrieve JSON data with list of games ---
         search_string_encoded = urllib.quote_plus(search_term.encode('utf8'))
         if scraper_platform == '0':
@@ -3247,7 +3310,9 @@ class ScreenScraper(Scraper):
 
     def get_filename(self): return 'ScreenScraper'
 
-    def uses_disk_cache(self): return True
+    def supports_disk_cache(self): return True
+
+    def supports_search_string(self): return False
 
     def supports_metadata_ID(self, metadata_ID):
         return True if asset_ID in ScreenScraper.supported_metadata_list else False
@@ -3281,24 +3346,29 @@ class ScreenScraper(Scraper):
     # ScreenScraper uses the candidates and internal cache. It does not use the
     # medatada and asset caches at all because the metadata and assets are generated
     # with the internal cache.
-    def get_candidates(self, search_term, rombase_noext, rom_path, platform, status_dic):
+    # Search term is always None for this scraper.
+    def get_candidates(self, search_term, rom_FN, platform, status_dic):
         # If the scraper is disabled return None and do not mark error in status_dic.
         # Candidate will not be introduced in the disk cache and will be scraped again.
         if self.scraper_disabled:
             log_debug('ScreenScraper.get_candidates() Scraper disabled. Returning empty data.')
             return None
 
+        # Prepare data for scraping.
+        rombase = rom_FN.getBase()
+        rompath = rom_FN.getPath()
+
         # --- Get candidates ---
         # ScreenScraper jeuInfos.php returns absolutely everything about a single ROM, including
         # metadata, artwork, etc. jeuInfos.php returns one game or nothing at all.
         # ScreenScraper returns only one game or nothing at all.
         scraper_platform = AEL_platform_to_ScreenScraper(platform)
-        log_debug('ScreenScraper.get_candidates() search_term   "{}"'.format(search_term))
-        log_debug('ScreenScraper.get_candidates() rombase_noext "{}"'.format(rombase_noext))
-        log_debug('ScreenScraper.get_candidates() AEL platform  "{}"'.format(platform))
-        log_debug('ScreenScraper.get_candidates() SS platform   "{}"'.format(scraper_platform))
+        log_debug('ScreenScraper.get_candidates() rombase      "{}"'.format(rombase))
+        log_debug('ScreenScraper.get_candidates() rompath      "{}"'.format(rompath))
+        log_debug('ScreenScraper.get_candidates() AEL platform "{}"'.format(platform))
+        log_debug('ScreenScraper.get_candidates() SS platform  "{}"'.format(scraper_platform))
         candidate_list = self._search_candidates_jeuInfos(
-            search_term, rombase_noext, rom_path, platform, scraper_platform, status_dic)
+            rombase, rompath, platform, scraper_platform, status_dic)
         # _search_candidates_jeuRecherche() does not work for get_metadata() and get_assets()
         # because jeu_dic is not introduced in the internal cache.
         # candidate_list = self._search_candidates_jeuRecherche(
@@ -3522,7 +3592,7 @@ class ScreenScraper(Scraper):
         self._dump_json_debug('ScreenScraper_gameSearch.json', json_data)
 
     # Call to ScreenScraper jeuInfos.php.
-    def _search_candidates_jeuInfos(self, search_term, rombase_noext, rom_path, platform, scraper_platform, status_dic):
+    def _search_candidates_jeuInfos(self, rombase, rompath, platform, scraper_platform, status_dic):
         # --- Test data ---
         # * Example from ScreenScraper API info page.
         #   #crc=50ABC90A&systemeid=1&romtype=rom&romnom=Sonic%20The%20Hedgehog%202%20(World).zip&romtaille=749652
@@ -3549,7 +3619,7 @@ class ScreenScraper(Scraper):
         # ScreenScraper requires all CRC, MD5 and SHA1 and the correct file size of the
         # files scraped. Put these data in a SS checksums cache so it is calculated once for
         # every file.
-        checksums = misc_calculate_checksums(rom_path)
+        checksums = misc_calculate_checksums(rompath)
         if checksums is None:
             status_dic['status'] = False
             status_dic['msg'] = 'Error computing file checksums.'
@@ -3562,8 +3632,8 @@ class ScreenScraper(Scraper):
         crc_str = checksums['crc']
         md5_str = checksums['md5']
         sha1_str = checksums['sha1']
-        # rom_name = urllib.quote(rombase_noext)
-        rom_name = urllib.quote_plus(rombase_noext)
+        # rom_name = urllib.quote(rombase)
+        rom_name = urllib.quote_plus(rombase)
         rom_size = checksums['size']
         # log_debug('ScreenScraper._search_candidates_jeuInfos() ssid       "{0}"'.format(self.ssid))
         # log_debug('ScreenScraper::_search_candidates_jeuInfos() ssid       "{0}"'.format('***'))
@@ -3615,6 +3685,8 @@ class ScreenScraper(Scraper):
         # --- Add candidate jeu_dic to the internal cache ---
         log_debug('ScreenScraper._search_candidates_jeuInfos() Adding to internal cache "{}"'.format(
             self.cache_key))
+        # IMPORTANT Do not clean URLs. There could be problems reconstructing some URLs.
+        # self._clean_JSON_for_dumping(jeu_dic)
         jeu_dic['roms'] = []
         self._update_disk_cache(Scraper.CACHE_INTERNAL, self.cache_key, jeu_dic)
 
@@ -3756,7 +3828,7 @@ class ScreenScraper(Scraper):
     # https://www.screenscraper.fr/gameinfos.php?gameid=1187  # Sonic 3 Megadrive
     # https://www.screenscraper.fr/gameinfos.php?gameid=19249 # Final Fantasy VII PSX
     #
-    # Example of URL for thumbs used web SS id displaying media in the website:
+    # Example of download and thumb URLs. Thumb URLs are used to display media in the website:
     # https://www.screenscraper.fr/image.php?gameid=5&media=sstitle&hd=0&region=wor&num=&version=&maxwidth=338&maxheight=190
     # https://www.screenscraper.fr/image.php?gameid=5&media=fanart&hd=0&region=&num=&version=&maxwidth=338&maxheight=190
     # https://www.screenscraper.fr/image.php?gameid=5&media=steamgrid&hd=0&region=&num=&version=&maxwidth=338&maxheight=190
@@ -3775,12 +3847,25 @@ class ScreenScraper(Scraper):
             # Build thumb URL
             game_ID = jeu_dic['id']
             region = media_dic['region'] if 'region' in media_dic else ''
-            if region: media_type  = media_dic['type'] + ' ' + region
-            else:      media_type  = media_dic['type']
+            if region: media_type = media_dic['type'] + ' ' + region
+            else:      media_type = media_dic['type']
+            # Build thumb URL
             url_thumb_a = 'https://www.screenscraper.fr/image.php?'
             url_thumb_b = 'gameid={}&media={}&region={}'.format(game_ID, media_type, region)
             url_thumb_c = '&hd=0&num=&version=&maxwidth=338&maxheight=190'
             url_thumb = url_thumb_a + url_thumb_b + url_thumb_c
+            # Build asset URL. ScreenScraper URLs are stripped down when saved to the cache
+            # to save space and time. FEATURE CANCELED. There could be problems reconstructing
+            # some URLs and the space saved is not so great for most games.
+            # systemeid = jeu_dic['systemeid']
+            # media = '{}({})'.format(media_type, region)
+            # url_thumb_a = 'https://www.screenscraper.fr/api2/mediaJeu.php?'
+            # url_b = 'devid={}&devpassword={}&softname={}&ssid={}&sspassword={}'.format(
+            #     base64.b64decode(self.dev_id), base64.b64decode(self.dev_pass),
+            #     self.softname, self.ssid, self.sspassword)
+            # url_thumb_c = '&systemeid={}&jeuid={}&media={}'.format(systemeid, game_ID, media)
+            # url_asset = url_thumb_a + url_thumb_b + url_thumb_c
+            # log_debug('URL "{}"'.format(url_asset))
             # Create asset dictionary
             asset_data = self._new_assetdata_dic()
             asset_data['asset_ID'] = asset_ID
@@ -3806,10 +3891,18 @@ class ScreenScraper(Scraper):
         # clean_url = re.sub('sspassword=[^&]*$', 'sspassword=***', clean_url)
         # --- Mr Propoer. SS URLs are very long ---
         clean_url = re.sub('devid=[^&]*&', '', clean_url)
+        clean_url = re.sub('devid=[^&]*$', '', clean_url)
         clean_url = re.sub('devpassword=[^&]*&', '', clean_url)
+        clean_url = re.sub('devpassword=[^$]*$', '', clean_url)
+        clean_url = re.sub('softname=[^&]*&', '', clean_url)
+        clean_url = re.sub('softname=[^&]*$', '', clean_url)
+        clean_url = re.sub('output=[^&]*&', '', clean_url)
+        clean_url = re.sub('output=[^&]*$', '', clean_url)
         clean_url = re.sub('ssid=[^&]*&', '', clean_url)
+        clean_url = re.sub('ssid=[^&]*$', '', clean_url)
         clean_url = re.sub('sspassword=[^&]*&', '', clean_url)
         clean_url = re.sub('sspassword=[^&]*$', '', clean_url)
+
         # log_variable('url', url)
         # log_variable('clean_url', clean_url)
 
@@ -3841,6 +3934,13 @@ class ScreenScraper(Scraper):
         else:
             yield keys, obj
 
+    # Get a given data from a dictionary with position provided as a list (iterable)
+    # Example maplist = ["b", "v", "y"] or ("b", "v", "y")
+    def _getFromDict(self, dataDict, mapList):
+        for k in mapList: dataDict = dataDict[k]
+
+        return dataDict
+
     # Recursively cleans URLs in a JSON data structure for safe JSON file data dumping.
     def _clean_JSON_for_dumping(self, json_data):
         # --- Recursively iterate data ---
@@ -3849,25 +3949,21 @@ class ScreenScraper(Scraper):
         log_debug('ScreenScraper._clean_JSON_for_dumping() Cleaning JSON URLs.')
         for keys, item in self._recursive_iter(json_data):
             # log_debug('{} "{}"'.format(keys, item))
+            # log_debug('Type item "{}"'.format(type(item)))
             # Skip non string objects.
-            if not isinstance(item, str) or not isinstance(item, unicode): continue
+            if not isinstance(item, str) and not isinstance(item, unicode): continue
             if item.startswith('http'):
                 # log_debug('Adding URL "{}"'.format(item))
                 URL_key_list.append(keys)
+
         # --- Do the actual cleaning ---
         for keys in URL_key_list:
             # log_debug('Cleaning "{}"'.format(keys))
             url = self._getFromDict(json_data, keys)
             clean_url = self._clean_URL_for_log(url)
+            # log_debug('Cleaned  "{}"'.format(clean_url))
             self._setInDict(json_data, keys, clean_url)
         log_debug('ScreenScraper._clean_JSON_for_dumping() Cleaned {} URLs'.format(len(URL_key_list)))
-
-    # Get a given data from a dictionary with position provided as a list (iterable)
-    # Example maplist = ["b", "v", "y"] or ("b", "v", "y")
-    def _getFromDict(self, dataDict, mapList):
-        for k in mapList: dataDict = dataDict[k]
-
-        return dataDict
 
     # Set a given data in a dictionary with position provided as a list (iterable)
     def _setInDict(self, dataDict, mapList, value):
@@ -3969,7 +4065,9 @@ class GameFAQs(Scraper):
 
     def get_filename(self): return 'GameFAQs'
 
-    def uses_disk_cache(self): return True
+    def supports_disk_cache(self): return True
+
+    def supports_search_string(self): return True
 
     def supports_metadata_ID(self, metadata_ID):
         return True if metadata_ID in GameFAQs.supported_metadata_list else False
@@ -3985,7 +4083,7 @@ class GameFAQs(Scraper):
     # operation so return it as it is.
     def check_before_scraping(self, status_dic): return status_dic
 
-    def get_candidates(self, search_term, rombase_noext, rom_path, platform, status_dic):
+    def get_candidates(self, search_term, rom_FN, platform, status_dic):
         scraper_platform = AEL_platform_to_GameFAQs(platform)
         log_debug('GameFAQs::get_candidates() search_term      "{0}"'.format(search_term))
         log_debug('GameFAQs::get_candidates() rombase_noext    "{0}"'.format(rombase_noext))
@@ -4338,7 +4436,9 @@ class ArcadeDB(Scraper):
 
     def get_filename(self): return 'ADB'
 
-    def uses_disk_cache(self): return True
+    def supports_disk_cache(self): return True
+
+    def supports_search_string(self): return False
 
     def supports_metadata_ID(self, metadata_ID):
         return True if metadata_ID in ArcadeDB.supported_metadata_list else False
@@ -4353,25 +4453,27 @@ class ArcadeDB(Scraper):
     # ArcadeDB does not require any API keys.
     def check_before_scraping(self, status_dic): return status_dic
 
-    # This function may be called many times in the ROM Scanner. All calls to this function
-    # must be cached. See comments for this function in the Scraper abstract class.
-    #
-    # ArcadeDB uses a dobule cache, one cache for candidates and another for jeu_dic.
-    def get_candidates(self, search_term, rombase_noext, rom_path, platform, status_dic):
+    # Search term is always None for this scraper.
+    def get_candidates(self, search_term, rom_FN, platform, status_dic):
         # --- If scraper is disabled return immediately and silently ---
         if self.scraper_disabled:
             # If the scraper is disabled return None and do not mark error in status_dic.
             log_debug('ArcadeDB.get_candidates() Scraper disabled. Returning empty data.')
             return None
 
+        # Prepare data for scraping.
+        # rombase = rom_FN.getBase()
+        rombase_noext = rom_FN.getBase_noext()
+
         # --- Request is not cached. Get candidates and introduce in the cache ---
         # ArcadeDB QUERY_MAME returns absolutely everything about a single ROM, including
         # metadata, artwork, etc. This data must be cached in this object for every request done.
         # See ScreenScraper comments for more info about the implementation.
-        log_debug('ArcadeDB.get_candidates() search_term    "{0}"'.format(search_term))
-        log_debug('ArcadeDB.get_candidates() rom_base_noext "{0}"'.format(rombase_noext))
-        log_debug('ArcadeDB.get_candidates() AEL platform   "{0}"'.format(platform))
-        json_response_dic = self._get_QUERY_MAME(search_term, rombase_noext, platform, status_dic)
+        # log_debug('ArcadeDB.get_candidates() search_term   "{0}"'.format(search_term))
+        # log_debug('ArcadeDB.get_candidates() rombase       "{0}"'.format(rombase))
+        log_debug('ArcadeDB.get_candidates() rombase_noext "{0}"'.format(rombase_noext))
+        log_debug('ArcadeDB.get_candidates() AEL platform  "{0}"'.format(platform))
+        json_response_dic = self._get_QUERY_MAME(rombase_noext, platform, status_dic)
         if not status_dic['status']: return None
 
         # --- Return cadidate list ---
@@ -4472,13 +4574,13 @@ class ArcadeDB(Scraper):
         return json_response_dic
 
     # Call ArcadeDB API only function to retrieve all game metadata.
-    def _get_QUERY_MAME(self, search_term, rombase_noext, platform, status_dic):
+    def _get_QUERY_MAME(self, rombase_noext, platform, status_dic):
         game_name = rombase_noext
         log_debug('ArcadeDB._get_QUERY_MAME() game_name "{0}"'.format(game_name))
 
         # --- Build URL ---
         url_a = 'http://adb.arcadeitalia.net/service_scraper.php?ajax=query_mame'
-        url_b = '&game_name={0}'.format(game_name)
+        url_b = '&game_name={}'.format(game_name)
         url = url_a + url_b
 
         # --- Grab and parse URL data ---
