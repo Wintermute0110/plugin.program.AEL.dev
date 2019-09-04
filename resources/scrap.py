@@ -134,7 +134,7 @@ from .rom_audit import *
 # ------------------------------------------------------------------------------------------------
 class ScraperFactory(object):
     def __init__(self, PATHS, settings):
-        # log_debug('ScraperFactory::__init__() BEGIN ...')
+        # log_debug('ScraperFactory.__init__() BEGIN ...')
         self.PATHS = PATHS
         self.settings = settings
 
@@ -146,7 +146,7 @@ class ScraperFactory(object):
         # Keep instantiated scrapers in an OrderedDictionary.
         # The order is necessary when checking the scraper capabilities and building menus for
         # the scrapers to show always in the same order.
-        log_debug('ScraperFactory::__init__() Creating scraper objects...')
+        log_debug('ScraperFactory.__init__() Creating scraper objects...')
         self.scraper_objs = collections.OrderedDict()
         if SCRAPER_NULL_ID in SCRAPER_LIST:
             self.scraper_objs[SCRAPER_NULL_ID] = Null_Scraper(self.settings)
@@ -183,7 +183,7 @@ class ScraperFactory(object):
         return self.scraper_objs[scraper_ID].supports_asset_ID(asset_ID)
 
     def get_metadata_scraper_menu_list(self):
-        log_debug('ScraperFactory::get_metadata_scraper_menu_list() Building scraper list...')
+        log_debug('ScraperFactory.get_metadata_scraper_menu_list() Building scraper list...')
         scraper_menu_list = []
         self.metadata_menu_ID_list = []
         for scraper_ID in self.scraper_objs:
@@ -235,7 +235,7 @@ class ScraperFactory(object):
     #
     # Returns a ScrapeStrategy object which is used for the actual scraping.
     def create_scanner(self, launcher):
-        # log_debug('ScraperFactory::create_scanner() BEGIN ...')
+        # log_debug('ScraperFactory.create_scanner() BEGIN ...')
         self.strategy_obj = ScrapeStrategy(self.PATHS, self.settings)
 
         platform = launcher.get_platform()
@@ -248,7 +248,7 @@ class ScraperFactory(object):
             scraper_metadata_ID = SCRAP_METADATA_MAME_SETTINGS_LIST[scraper_metadata_index]
             scraper_asset_ID = SCRAP_ASSET_MAME_SETTINGS_LIST[scraper_asset_index]
         else:
-            log_debug('ScraperFactory::create_scanner() Platform is NON-MAME.')
+            log_debug('ScraperFactory.create_scanner() Platform is NON-MAME.')
             log_debug('Using standard scrapers from settings.xml')
             scraper_metadata_index = self.settings['scraper_metadata']
             scraper_asset_index = self.settings['scraper_asset']
@@ -259,15 +259,19 @@ class ScraperFactory(object):
         log_debug('scraper asset name    {} (index {}, ID {})'.format(
             self.scraper_objs[scraper_asset_ID].get_name(), scraper_asset_index, scraper_asset_ID))
 
-        # For now the ScraperStrategy object will use the first scraper of this list. In the
-        # future maybe multiple scrapers can be used and these lists will have more than one
-        # object.
+        # Set scraper objects.
         self.strategy_obj.meta_scraper_obj   = self.scraper_objs[scraper_metadata_ID]
         self.strategy_obj.meta_scraper_name  = self.strategy_obj.meta_scraper_obj.get_name()
         self.strategy_obj.asset_scraper_obj  = self.scraper_objs[scraper_asset_ID]
         self.strategy_obj.asset_scraper_name = self.strategy_obj.asset_scraper_obj.get_name()
 
+        flag = self.strategy_obj.meta_scraper_obj is self.strategy_obj.asset_scraper_obj
+        self.strategy_obj.meta_and_asset_scraper_same = flag
+        log_debug('Are metadata and asset scrapers the same? {}'.format(
+            self.strategy_obj.meta_and_asset_scraper_same))
+
         # --- Add launcher properties to ScrapeStrategy object ---
+        self.strategy_obj.launcher = launcher
         self.strategy_obj.platform = platform
 
         return self.strategy_obj
@@ -281,9 +285,7 @@ class ScraperFactory(object):
         if not self.strategy_obj.meta_scraper_obj is self.strategy_obj.asset_scraper_obj:
             self.strategy_obj.asset_scraper_obj.flush_disk_cache()
         else:
-            log_debug('Metadata and asset scraper same. Not flushing asset disk cache.')
-        self.strategy_obj.meta_scraper_obj = None
-        self.strategy_obj.asset_scraper_obj = None
+            log_debug('Metadata and asset scraper same. Not flushing asset scraper disk cache.')
         self.strategy_obj = None
 
     # * Create a ScraperStrategy object to be used in the "Edit metadata" context menu.
@@ -350,7 +352,7 @@ class ScrapeStrategy(object):
     # @param PATHS: PATH object.
     # @param settings: [dict] Addon settings.
     def __init__(self, PATHS, settings):
-        log_debug('ScrapeStrategy::__init__() Initializing ScrapeStrategy...')
+        log_debug('ScrapeStrategy.__init__() Initializing ScrapeStrategy...')
         self.PATHS = PATHS
         self.settings = settings
 
@@ -366,19 +368,13 @@ class ScrapeStrategy(object):
         self.scan_update_NFO_files   = self.settings['scan_update_NFO_files']
 
     # Call this function before the ROM Scanning starts.
-    def begin_ROM_scanner(self, launcher, pdialog, pdialog_verbose):
-        log_debug('ScrapeStrategy::begin_ROM_scanner() Initialising ROM Scanner engine...')
-        self.launcher = launcher
-        self.platform = launcher.get_platform()
+    def scanner_set_progress_dialog(self, pdialog, pdialog_verbose):
+        log_debug('ScrapeStrategy.scanner_set_progress_dialog() Setting progress dialog...')
         self.pdialog = pdialog
         self.pdialog_verbose = pdialog_verbose
 
-        # This will be used later
-        self.flag_meta_and_asset_scraper_same = self.meta_scraper_obj is self.asset_scraper_obj
-        log_debug('Are metadata and asset scrapers the same? {}'.format(self.flag_meta_and_asset_scraper_same))
-
-        # DEBUG, never use in a release.
-        # log_debug('ScrapeStrategy::begin_ROM_scanner() DEBUG dumping of scraper data ON.')
+        # DEBUG code, never use in a release.
+        # log_debug('ScrapeStrategy.begin_ROM_scanner() DEBUG dumping of scraper data ON.')
         # self.meta_scraper_obj.set_debug_file_dump(True, '/home/kodi/')
         # self.asset_scraper_obj.set_debug_file_dump(True, '/home/kodi/')
 
@@ -387,11 +383,13 @@ class ScrapeStrategy(object):
     def scanner_check_before_scraping(self):
         status_dic = kodi_new_status_dic('No error')
         self.meta_scraper_obj.check_before_scraping(status_dic)
-        if not status_dic['status']: kodi_dialog_OK(op_dic['msg'])
+        if not status_dic['status']: kodi_dialog_OK(status_dic['msg'])
 
-        status_dic = kodi_new_status_dic('No error')
-        self.asset_scraper_obj.check_before_scraping(status_dic)
-        if not status_dic['status']: kodi_dialog_OK(op_dic['msg'])
+        # Only check asset scraper if it's different from the metadata scraper.
+        if not self.meta_and_asset_scraper_same:
+            status_dic = kodi_new_status_dic('No error')
+            self.asset_scraper_obj.check_before_scraping(status_dic)
+            if not status_dic['status']: kodi_dialog_OK(status_dic['msg'])
 
     def scanner_check_launcher_unset_asset_dirs(self):
         log_debug('ScrapeStrategy::scanner_check_launcher_unset_asset_dirs() BEGIN ...')
@@ -525,7 +523,7 @@ class ScrapeStrategy(object):
         # Do nothing because both scraper objects are really the same object and candidate has been
         # set internally in the scraper object.
         temp_asset_list = [x == ScrapeStrategy.ACTION_ASSET_SCRAPER for x in self.asset_action_list]
-        if any(temp_asset_list) and self.flag_meta_and_asset_scraper_same:
+        if any(temp_asset_list) and self.meta_and_asset_scraper_same:
             log_debug('Asset candidate game same as metadata candidate. Doing nothing.')
         # Otherwise search for an asset scraper candidate if needed.
         elif any(temp_asset_list):
@@ -580,7 +578,7 @@ class ScrapeStrategy(object):
     # @param romdata: [dict] ROM data dictionary. Mutable and edited by assignment.
     # @param ROM_FN: [Filename] ROM filename object.
     def scanner_process_ROM_assets(self, romdata, ROM_FN):
-        log_debug('ScrapeStrategy::scanner_process_ROM_assets() Processing asset actions...')
+        log_debug('ScrapeStrategy.scanner_process_ROM_assets() Processing asset actions...')
         # --- Process asset by asset actions ---
         # --- Asset scraping ---
         for i, asset_ID in enumerate(ROM_ASSET_ID_LIST):
@@ -980,7 +978,7 @@ class ScrapeStrategy(object):
     #
     # @return: [dic] kodi_new_status_dic() status dictionary.
     def scrap_CM_metadata_ROM(self, object_dic, data_dic):
-        log_debug('ScrapeStrategy::scrap_CM_metadata_ROM() BEGIN ...')
+        log_debug('ScrapeStrategy.scrap_CM_metadata_ROM() BEGIN ...')
         # In AEL 0.10.x this data is grabed from the objects, not passed using a dictionary.
         rom_FN = data_dic['rom_FN']
         rom_base_noext = rom_FN.getBase_noext()
@@ -1024,7 +1022,7 @@ class ScrapeStrategy(object):
     #
     # @return: [dic] kodi_new_status_dic() status dictionary.
     def scrap_CM_metadata_Launcher(self, object_dic, data_dic):
-        log_debug('ScrapeStrategy::scrap_CM_metadata_Launcher() BEGIN ...')
+        log_debug('ScrapeStrategy.scrap_CM_metadata_Launcher() BEGIN ...')
         status_dic = kodi_new_status_dic('Launcher metadata updated')
         scraper_name = self.scraper_obj.get_name()
 
@@ -1058,7 +1056,7 @@ class ScrapeStrategy(object):
     #
     # @return: [dic] kodi_new_status_dic() status dictionary.
     def scrap_CM_asset(self, object_dic, asset_ID, data_dic):
-        # log_debug('ScrapeStrategy::scrap_CM_asset() BEGIN...')
+        # log_debug('ScrapeStrategy.scrap_CM_asset() BEGIN...')
 
         # --- Cached frequent used things ---
         asset_info = g_assetFactory.get_asset_info(asset_ID)
@@ -1067,7 +1065,7 @@ class ScrapeStrategy(object):
         platform = data_dic['platform']
         current_asset_FN = data_dic['current_asset_FN']
         asset_path_noext_FN = data_dic['asset_path_noext']
-        log_info('ScrapeStrategy::scrap_CM_asset() Scraping {0}...'.format(object_dic['m_name']))
+        log_info('ScrapeStrategy.scrap_CM_asset() Scraping {0}...'.format(object_dic['m_name']))
         status_dic = kodi_new_status_dic('Asset updated')
         scraper_name = self.scraper_obj.get_name()
 
@@ -1200,7 +1198,7 @@ class ScrapeStrategy(object):
     #
     # @param object_name: [str] SCRAPE_ROM, SCRAPE_LAUNCHER.
     def _scrap_CM_get_candidate(self, object_name, object_dic, data_dic, status_dic):
-        # log_debug('ScrapeStrategy::_scrap_CM_get_candidate() BEGIN...')
+        # log_debug('ScrapeStrategy._scrap_CM_get_candidate() BEGIN...')
 
         # In AEL 0.10.x this data is grabed from the objects, not passed using a dictionary.
         rom_FN = data_dic['rom_FN']
@@ -1346,7 +1344,7 @@ class Scraper(object):
         # Directory to store on-disk scraper caches.
         self.scraper_cache_dir = settings['scraper_cache_dir']
         # Do not log here. Otherwise the same thing will be printed for every scraper instantiated.
-        # log_debug('Scraper::__init__() scraper_cache_dir "{}"'.format(self.scraper_cache_dir))
+        # log_debug('Scraper.__init__() scraper_cache_dir "{}"'.format(self.scraper_cache_dir))
 
         # --- Disk caches ---
         self.disk_caches = {}
@@ -1936,7 +1934,7 @@ class AEL_Offline(Scraper):
             gamedata['developer'] = self.cached_games[key_id]['manufacturer']
         elif self.cached_platform == 'Unknown':
             # --- Unknown platform. Behave like NULL scraper ---
-            log_verb("AEL_Offline::get_metadata() Mode Unknown. Doing nothing.")
+            log_verb("AEL_Offline.get_metadata() Mode Unknown. Doing nothing.")
         else:
             # --- No-Intro scraper ---
             key_id = self.candidate['id']
@@ -2051,7 +2049,7 @@ class AEL_Offline(Scraper):
 
         # Load XML database and keep it in memory for subsequent calls
         xml_path = os.path.join(self.addon_dir, xml_file)
-        # log_debug('AEL_Offline::_initialise_platform() Loading XML {0}'.format(xml_path))
+        # log_debug('AEL_Offline._initialise_platform() Loading XML {0}'.format(xml_path))
         self.cached_games = audit_load_OfflineScraper_XML(xml_path)
         if not self.cached_games:
             self._reset_cached_games()
@@ -2360,7 +2358,7 @@ class TheGamesDB(Scraper):
         # --- Recursively load more games ---
         next_url = json_data['pages']['next']
         if next_url is not None:
-            log_debug('TheGamesDB::_retrieve_games_from_url() Recursively loading game page')
+            log_debug('TheGamesDB._retrieve_games_from_url() Recursively loading game page')
             candidate_list = candidate_list + self._retrieve_games_from_url(
                 next_url, search_term, platform, scraper_platform, status_dic)
             if not status_dic['status']: return None
@@ -2566,7 +2564,7 @@ class TheGamesDB(Scraper):
             asset_data['url_thumb'] = base_url_thumb + asset_fname
             asset_data['url'] = base_url + asset_fname
             if self.verbose_flag:
-                log_debug('TheGamesDB:: Found Asset {0}'.format(asset_data['name']))
+                log_debug('TheGamesDB. Found Asset {0}'.format(asset_data['name']))
             assets_list.append(asset_data)
 
         # --- Recursively load more assets ---
@@ -3451,7 +3449,7 @@ class ScreenScraper(Scraper):
     # --- This class own methods -----------------------------------------------------------------
     # Plumbing function to get the cached jeu_dic dictionary returned by ScreenScraper.
     # This is cached in the internal cache.
-    # Scraper::get_candiates() must be called before this function to fill the cache.
+    # Scraper.get_candiates() must be called before this function to fill the cache.
     #
     # THIS FUNCTION IS OBSOLETE. jeu_dic is now in the internal cache.
     def debug_get_gameInfos_dic(self, candidate):
@@ -3636,8 +3634,8 @@ class ScreenScraper(Scraper):
         rom_name = urllib.quote_plus(rombase)
         rom_size = checksums['size']
         # log_debug('ScreenScraper._search_candidates_jeuInfos() ssid       "{0}"'.format(self.ssid))
-        # log_debug('ScreenScraper::_search_candidates_jeuInfos() ssid       "{0}"'.format('***'))
-        # log_debug('ScreenScraper::_search_candidates_jeuInfos() sspassword "{0}"'.format(self.sspassword))
+        # log_debug('ScreenScraper._search_candidates_jeuInfos() ssid       "{0}"'.format('***'))
+        # log_debug('ScreenScraper._search_candidates_jeuInfos() sspassword "{0}"'.format(self.sspassword))
         # log_debug('ScreenScraper._search_candidates_jeuInfos() sspassword "{0}"'.format('***'))
         log_debug('ScreenScraper._search_candidates_jeuInfos() rom_type   "{0}"'.format(rom_type))
         log_debug('ScreenScraper._search_candidates_jeuInfos() system_id  "{0}"'.format(system_id))
@@ -3736,7 +3734,7 @@ class ScreenScraper(Scraper):
             candidate_list.append(candidate)
 
         # --- Add candidate games to the internal cache ---
-        # log_debug('ScreenScraper::_search_candidates_jeuInfos() Adding to internal cache')
+        # log_debug('ScreenScraper._search_candidates_jeuInfos() Adding to internal cache')
         # self.cache_jeuInfos[cache_key] = jeu_dic
 
         return candidate_list
@@ -4085,10 +4083,10 @@ class GameFAQs(Scraper):
 
     def get_candidates(self, search_term, rom_FN, platform, status_dic):
         scraper_platform = AEL_platform_to_GameFAQs(platform)
-        log_debug('GameFAQs::get_candidates() search_term      "{0}"'.format(search_term))
-        log_debug('GameFAQs::get_candidates() rombase_noext    "{0}"'.format(rombase_noext))
-        log_debug('GameFAQs::get_candidates() platform         "{0}"'.format(platform))
-        log_debug('GameFAQs::get_candidates() scraper_platform "{0}"'.format(scraper_platform))
+        log_debug('GameFAQs.get_candidates() search_term      "{0}"'.format(search_term))
+        log_debug('GameFAQs.get_candidates() rombase_noext    "{0}"'.format(rombase_noext))
+        log_debug('GameFAQs.get_candidates() platform         "{0}"'.format(platform))
+        log_debug('GameFAQs.get_candidates() scraper_platform "{0}"'.format(scraper_platform))
 
         # Order list based on score
         game_list = self._get_candidates_from_page(search_term, platform, scraper_platform)
@@ -4100,7 +4098,7 @@ class GameFAQs(Scraper):
     # https://gamefaqs.gamespot.com/snes/519824-super-mario-world
     def get_metadata(self, status_dic):
         # --- Grab game information page ---
-        log_debug('GameFAQs::_scraper_get_metadata() Get metadata from {}'.format(candidate['id']))
+        log_debug('GameFAQs._scraper_get_metadata() Get metadata from {}'.format(candidate['id']))
         url = 'https://gamefaqs.gamespot.com{}'.format(candidate['id'])
         page_data = net_get_URL(url)
         self._dump_file_debug('GameFAQs_get_metadata.html', page_data)
@@ -4147,7 +4145,7 @@ class GameFAQs(Scraper):
     # https://gamefaqs.gamespot.com/snes/519824-super-mario-world/images/29
     def resolve_asset_URL(self, candidate, status_dic):
         url = 'https://gamefaqs.gamespot.com{}'.format(candidate['url'])
-        log_debug('GameFAQs::_scraper_resolve_asset_URL() Get image from "{}" for asset type {}'.format(
+        log_debug('GameFAQs._scraper_resolve_asset_URL() Get image from "{}" for asset type {}'.format(
             url, asset_info.name))
         page_data = net_get_URL(url)
         self._dump_json_debug('GameFAQs_scraper_resolve_asset_URL.html', page_data)
@@ -4159,9 +4157,9 @@ class GameFAQs(Scraper):
             image_asset_ids = self._parse_asset_type(image_on_page['alt'])
             log_verb('Found "{}" of types {} with url {}'.format(image_on_page['alt'], image_asset_ids, image_on_page['url']))
             if asset_info.id in image_asset_ids:
-                log_debug('GameFAQs::_scraper_resolve_asset_URL() Found match {}'.format(image_on_page['alt']))
+                log_debug('GameFAQs._scraper_resolve_asset_URL() Found match {}'.format(image_on_page['alt']))
                 return image_on_page['url']
-        log_debug('GameFAQs::_scraper_resolve_asset_URL() No correct match')
+        log_debug('GameFAQs._scraper_resolve_asset_URL() No correct match')
 
         return '', ''
 
@@ -4294,10 +4292,10 @@ class GameFAQs(Scraper):
     def _scraper_get_assets_all(self, candidate, status_dic):
         cache_key = str(candidate['id'])
         if cache_key in self.all_asset_cache:
-            log_debug('MobyGames::_scraper_get_assets_all() Cache hit "{0}"'.format(cache_key))
+            log_debug('MobyGames._scraper_get_assets_all() Cache hit "{0}"'.format(cache_key))
             asset_list = self.all_asset_cache[cache_key]
         else:
-            log_debug('MobyGames::_scraper_get_assets_all() Cache miss "{0}"'.format(cache_key))
+            log_debug('MobyGames._scraper_get_assets_all() Cache miss "{0}"'.format(cache_key))
             asset_list = self._load_assets_from_page(candidate)
             log_debug('A total of {0} assets found for candidate ID {1}'.format(
                 len(asset_list), candidate['id']))
@@ -4346,7 +4344,7 @@ class GameFAQs(Scraper):
     #   </td>
     def _load_assets_from_page(self, candidate):
         url = 'https://gamefaqs.gamespot.com{}/images'.format(candidate['id'])
-        log_debug('GameFAQs::_scraper_get_assets_all() Get asset data from {}'.format(url))
+        log_debug('GameFAQs._scraper_get_assets_all() Get asset data from {}'.format(url))
         page_data = net_get_URL(url)
         self._dump_file_debug('GameFAQs_load_assets_from_page.html', page_data)
 
@@ -4565,7 +4563,7 @@ class ArcadeDB(Scraper):
     # --- This class own methods -----------------------------------------------------------------
     # Plumbing function to get the cached jeu_dic dictionary returned by ScreenScraper.
     # This is cached in the internal cache
-    # Scraper::get_candiates() must be called before this function to fill the cache.
+    # Scraper.get_candiates() must be called before this function to fill the cache.
     def debug_get_QUERY_MAME_dic(self, candidate):
         log_debug('ArcadeDB.debug_get_QUERY_MAME_dic() Internal cache retrieving "{}"'.format(
             candidate['ADB_cache_str']))

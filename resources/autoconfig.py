@@ -102,26 +102,27 @@ def autoconfig_export_launcher_str_list(launcher, category_name, str_list):
     if ROM_asset_path:
         str_list.append(text_XML_line('ROM_asset_path', ROM_asset_path))
     else:
-        str_list.append(text_XML_line('path_title', launcher['path_title']))
-        str_list.append(text_XML_line('path_snap', launcher['path_snap']))
-        str_list.append(text_XML_line('path_boxfront', launcher['path_boxfront']))
-        str_list.append(text_XML_line('path_boxback', launcher['path_boxback']))
-        str_list.append(text_XML_line('path_cartridge', launcher['path_cartridge']))
-        str_list.append(text_XML_line('path_fanart', launcher['path_fanart']))
-        str_list.append(text_XML_line('path_banner', launcher['path_banner']))
-        str_list.append(text_XML_line('path_clearlogo', launcher['path_clearlogo']))
-        str_list.append(text_XML_line('path_flyer', launcher['path_flyer']))
-        str_list.append(text_XML_line('path_map', launcher['path_map']))
-        str_list.append(text_XML_line('path_manual', launcher['path_manual']))
-        str_list.append(text_XML_line('path_trailer', launcher['path_trailer']))
-    str_list.append(text_XML_line('Asset_Prefix', launcher['Asset_Prefix']))
-    str_list.append(text_XML_line('s_icon', launcher['s_icon']))
-    str_list.append(text_XML_line('s_fanart', launcher['s_fanart']))
-    str_list.append(text_XML_line('s_banner', launcher['s_banner']))
-    str_list.append(text_XML_line('s_poster', launcher['s_poster']))
-    str_list.append(text_XML_line('s_clearlogo', launcher['s_clearlogo']))
-    str_list.append(text_XML_line('s_controller', launcher['s_controller']))
-    str_list.append(text_XML_line('s_trailer', launcher['s_trailer']))
+        str_list.append(XML_text('path_3dbox', launcher['path_3dbox']))
+        str_list.append(XML_text('path_title', launcher['path_title']))
+        str_list.append(XML_text('path_snap', launcher['path_snap']))
+        str_list.append(XML_text('path_boxfront', launcher['path_boxfront']))
+        str_list.append(XML_text('path_boxback', launcher['path_boxback']))
+        str_list.append(XML_text('path_cartridge', launcher['path_cartridge']))
+        str_list.append(XML_text('path_fanart', launcher['path_fanart']))
+        str_list.append(XML_text('path_banner', launcher['path_banner']))
+        str_list.append(XML_text('path_clearlogo', launcher['path_clearlogo']))
+        str_list.append(XML_text('path_flyer', launcher['path_flyer']))
+        str_list.append(XML_text('path_map', launcher['path_map']))
+        str_list.append(XML_text('path_manual', launcher['path_manual']))
+        str_list.append(XML_text('path_trailer', launcher['path_trailer']))
+    str_list.append(XML_text('Asset_Prefix', launcher['Asset_Prefix']))
+    str_list.append(XML_text('s_icon', launcher['s_icon']))
+    str_list.append(XML_text('s_fanart', launcher['s_fanart']))
+    str_list.append(XML_text('s_banner', launcher['s_banner']))
+    str_list.append(XML_text('s_poster', launcher['s_poster']))
+    str_list.append(XML_text('s_clearlogo', launcher['s_clearlogo']))
+    str_list.append(XML_text('s_controller', launcher['s_controller']))
+    str_list.append(XML_text('s_trailer', launcher['s_trailer']))
     str_list.append('</launcher>\n')
 
 #
@@ -207,7 +208,7 @@ def autoconfig_export_category(category, export_FN):
 # Import AEL launcher configuration
 # -------------------------------------------------------------------------------------------------
 def autoconfig_get_default_import_category():
-    l = {
+    return {
         'name' : '',
         'year' : '',
         'genre' : '',
@@ -223,10 +224,8 @@ def autoconfig_get_default_import_category():
         's_trailer' : '',
     }
 
-    return l
-
 def autoconfig_get_default_import_launcher():
-    l = {
+    return {
         'name' : '',
         'category' : 'root_category',
         'Launcher_NFO' : '',
@@ -243,6 +242,7 @@ def autoconfig_get_default_import_launcher():
         'ROM_ext' : '',
         'Options' : '',
         'ROM_asset_path' : '',
+        'path_3dbox' : '',
         'path_title' : '',
         'path_snap' : '',
         'path_boxfront' : '',
@@ -264,8 +264,6 @@ def autoconfig_get_default_import_launcher():
         's_controller' : '',
         's_trailer' : '',
     }
-
-    return l
 
 def autoconfig_search_all_by_name(i_launcher, categories, launchers):
     cat_name = i_launcher['category']
@@ -807,8 +805,12 @@ def autoconfig_import_launcher(ROMS_DIR, categories, launchers, categoryID, laun
             log_debug('ROM asset directories left blank or as there were.')
 
     # --- <path_*> tags override <ROM_asset_path> ---
-    # >> This paths will be imported in a raw way, no existance checkings will be done.
-    # >> Note that path_* tags will be imported only if they are non-empty.
+    # This paths will be imported in a raw way, no existance checkings will be done.
+    # Note that path_* tags will be imported only if they are non-empty.
+    if i_launcher['path_3dbox']:
+        launchers[launcherID]['path_3dbox'] = i_launcher['path_3dbox']
+        log_debug('Imported path_3dbox "{0}"'.format(i_launcher['path_3dbox']))
+
     if i_launcher['path_title']:
         launchers[launcherID]['path_title'] = i_launcher['path_title']
         log_debug('Imported path_title "{0}"'.format(i_launcher['path_title']))
