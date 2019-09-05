@@ -252,9 +252,9 @@ class ScraperFactory(object):
             scraper_asset_index = self.settings['scraper_asset']
             scraper_metadata_ID = SCRAP_METADATA_SETTINGS_LIST[scraper_metadata_index]
             scraper_asset_ID = SCRAP_ASSET_SETTINGS_LIST[scraper_asset_index]
-        log_debug('scraper metadata name {} (index {}, ID {})'.format(
+        log_debug('Metadata scraper name {} (index {}, ID {})'.format(
             self.scraper_objs[scraper_metadata_ID].get_name(), scraper_metadata_index, scraper_metadata_ID))
-        log_debug('scraper asset name    {} (index {}, ID {})'.format(
+        log_debug('Asset scraper name    {} (index {}, ID {})'.format(
             self.scraper_objs[scraper_asset_ID].get_name(), scraper_asset_index, scraper_asset_ID))
 
         # Set scraper objects.
@@ -396,7 +396,7 @@ class ScrapeStrategy(object):
 
     # Determine the actions to be carried out by process_ROM_metadata() and process_ROM_assets().
     # Must be called before the aforementioned methods.
-    def scanner_process_ROM_begin(self, romdata, ROM):
+    def scanner_process_ROM_begin(self, romdata, ROM, ROM_checksums):
         log_debug('ScrapeStrategy.scanner_process_ROM_begin() Determining metadata and asset actions...')
 
         # --- Determine metadata action ----------------------------------------------------------
@@ -509,10 +509,11 @@ class ScrapeStrategy(object):
         # must be selected for both scrapers.
         if self.metadata_action == ScrapeStrategy.ACTION_META_SCRAPER:
             log_debug('Getting metadata candidate game')
-            # What if status_dic reports and error here? It is ignored?
+            # What if status_dic reports and error here? Is it ignored?
             status_dic = kodi_new_status_dic('No error')
             self._scanner_get_candidate(
-                romdata, ROM, self.meta_scraper_obj, self.meta_scraper_name, status_dic)
+                romdata, ROM, ROM_checksums, self.meta_scraper_obj, self.meta_scraper_name,
+                status_dic)
         else:
             log_debug('Metadata candidate game is None')
 
@@ -525,10 +526,11 @@ class ScrapeStrategy(object):
         # Otherwise search for an asset scraper candidate if needed.
         elif any(temp_asset_list):
             log_debug('Getting asset candidate game.')
-            # What if status_dic reports and error here? It is ignored?
+            # What if status_dic reports and error here? Is it ignored?
             status_dic = kodi_new_status_dic('No error')
             self._scanner_get_candidate(
-                romdata, ROM, self.asset_scraper_obj, self.asset_scraper_name, status_dic)
+                romdata, ROM, ROM_checksums, self.asset_scraper_obj, self.asset_scraper_name,
+                status_dic)
         # Asset scraper not needed.
         else:
             log_debug('Asset candidate game is None')
@@ -604,7 +606,8 @@ class ScrapeStrategy(object):
 
     # Get and set a candidate game in the ROM scanner.
     # Returns nothing.
-    def _scanner_get_candidate(self, romdata, rom_FN, scraper_obj, scraper_name, status_dic):
+    def _scanner_get_candidate(self, romdata, ROM_FN, ROM_checksums_FN,
+        scraper_obj, scraper_name, status_dic):
         # --- Update scanner progress dialog ---
         if self.pdialog_verbose:
             scraper_text = 'Searching games with scaper {}...'.format(scraper_name)
@@ -615,22 +618,22 @@ class ScrapeStrategy(object):
         # * If the candidate is empty it means it was previously searched and the scraper
         #   found no candidates. In this case, the context menu must be used to manually
         #   change the search string and set a valid candidate.
-        if scraper_obj.check_candidates_cache(rom_FN, self.platform):
-            log_debug('ROM "{}" in candidates cache.'.format(rom_FN.getPath()))
-            candidate = scraper_obj.retrieve_from_candidates_cache(rom_FN, self.platform)
+        if scraper_obj.check_candidates_cache(ROM_FN, self.platform):
+            log_debug('ROM "{}" in candidates cache.'.format(ROM_FN.getPath()))
+            candidate = scraper_obj.retrieve_from_candidates_cache(ROM_FN, self.platform)
             if not candidate:
                 log_debug('Candidate game is empty. ROM will not be scraped again by the scanner.')
             use_from_cache = True
         else:
-            log_debug('ROM "{}" NOT in candidates cache.'.format(rom_FN.getPath()))
+            log_debug('ROM "{}" NOT in candidates cache.'.format(ROM_FN.getPath()))
             use_from_cache = False
         log_debug('use_from_cache "{}"'.format(use_from_cache))
 
         if use_from_cache:
-            scraper_obj.set_candidate_from_cache(rom_FN, self.platform)
+            scraper_obj.set_candidate_from_cache(ROM_FN, self.platform)
         else:
             # Clear all caches to remove preexiting information, just in case user is rescraping.
-            scraper_obj.clear_cache(rom_FN, self.platform)
+            scraper_obj.clear_cache(ROM_FN, self.platform)
 
             # --- Call scraper and get a list of games ---
             # In manual scanner mode should we ask the user for a search string
@@ -638,8 +641,9 @@ class ScrapeStrategy(object):
             # I think it is better to keep things like this. If the scraper does not
             # find a proper candidate game the user can fix the scraper cache with the
             # context menu.
-            rom_name_scraping = text_format_ROM_name_for_scraping(rom_FN.getBase_noext())
-            candidates = scraper_obj.get_candidates(rom_name_scraping, rom_FN, self.platform, status_dic)
+            rom_name_scraping = text_format_ROM_name_for_scraping(ROM_FN.getBase_noext())
+            candidates = scraper_obj.get_candidates(
+                rom_name_scraping, ROM_FN, ROM_checksums_FN, self.platform, status_dic)
             # * If the scraper produced an error notification show it and continue scanner operation.
             # * Note that if many errors/exceptions happen (for example, network is down) then
             #   the scraper will disable itself after a number of errors and only a limited number
@@ -661,14 +665,14 @@ class ScrapeStrategy(object):
             #   never introduced in the cache.
             if candidates is None:
                 log_debug('Error getting the candidate (None).')
-                scraper_obj.set_candidate(rom_FN, self.platform, None)
+                scraper_obj.set_candidate(ROM_FN, self.platform, None)
                 return
             # * If candidates list is empty scraper operation was correct but no candidate was
             # * found. In this case set the candidate in the scraper object to an empty
             # * dictionary and introduce it in the cache.
             if not candidates:
                 log_debug('Found no candidates after searching.')
-                scraper_obj.set_candidate(rom_FN, self.platform, dict())
+                scraper_obj.set_candidate(ROM_FN, self.platform, dict())
                 return
             log_debug('Scraper {} found {} candidate/s'.format(scraper_name, len(candidates)))
 
@@ -695,7 +699,7 @@ class ScrapeStrategy(object):
             candidate = candidates[select_candidate_idx]
 
             # --- Set candidate. This will introduce it in the cache ---
-            scraper_obj.set_candidate(rom_FN, self.platform, candidate)
+            scraper_obj.set_candidate(ROM_FN, self.platform, candidate)
 
     # Scraps ROM metadata in the ROM scanner.
     def _scanner_scrap_ROM_metadata(self, romdata, ROM_FN):
@@ -1321,6 +1325,7 @@ class Scraper(object):
         self.settings = settings
         self.verbose_flag = False
         self.dump_file_flag = False
+        self.debug_checksums_flag = False
         # Record the number of network error/exceptions. If this number is bigger than a
         # threshold disable the scraper.
         self.exception_counter = 0
@@ -1365,6 +1370,17 @@ class Scraper(object):
         log_debug('Scraper.set_debug_file_dump() dump_dir {0}'.format(dump_dir))
         self.dump_file_flag = dump_file_flag
         self.dump_dir = dump_dir
+
+    # ScreenScraper needs the checksum of the file scraped. This function sets the checksums
+    # externally for debugging purposes, for example when debugging the scraper with
+    # fake filenames.
+    def set_debug_checksums(self, debug_checksums, crc_str = '', md5_str = '', sha1_str = '', size = 0):
+        log_debug('Scraper.set_debug_checksums() debug_checksums {0}'.format(debug_checksums))
+        self.debug_checksums_flag = debug_checksums
+        self.debug_crc  = crc_str
+        self.debug_md5  = md5_str
+        self.debug_sha1 = sha1_str
+        self.debug_size = size
 
     # Dump dictionary as JSON file for debugging purposes.
     # This function is used internally by the scrapers if the flag self.dump_file_flag is True.
@@ -1565,11 +1581,14 @@ class Scraper(object):
     #
     # @param search_term: [str] String to be searched.
     # @param rom_FN: [FileName] Scraper will get whatever part of the filename they want.
+    # @param rom_checksums_FN: [FileName] File to be used when computing checksums. For
+    #                          multidisc ROMs rom_FN is a fake file but rom_checksums_FN is a real
+    #                          file belonging to the set.
     # @param platform: [str] AEL platform.
     # @param status_dic: [dict] kodi_new_status_dic() status dictionary.
     # @return: [list] or None.
     @abc.abstractmethod
-    def get_candidates(self, search_term, rom_FN, platform, status_dic): pass
+    def get_candidates(self, search_term, rom_FN, rom_checksums_FN, platform, status_dic): pass
 
     # Returns the metadata for a candidate (search result).
     #
@@ -1826,7 +1845,7 @@ class Null_Scraper(Scraper):
     def check_before_scraping(self, status_dic): return status_dic
 
     # Null scraper never finds candidates.
-    def get_candidates(self, search_term, rom_FN, platform, status_dic): return []
+    def get_candidates(self, search_term, rom_FN, rom_checksums_FN, platform, status_dic): return []
 
     # Null scraper never returns valid scraped metadata.
     def get_metadata(self, status_dic): return self._new_gamedata_dic()
@@ -1886,7 +1905,7 @@ class AEL_Offline(Scraper):
     def check_before_scraping(self, status_dic): return status_dic
 
     # Search term is always None for this scraper.
-    def get_candidates(self, search_term, rom_FN, platform, status_dic):
+    def get_candidates(self, search_term, rom_FN, rom_checksums_FN, platform, status_dic):
         # AEL Offline cannot be disabled.
         # Prepare data for scraping.
         rombase_noext = rom_FN.getBase_noext()
@@ -2126,7 +2145,7 @@ class TheGamesDB(Scraper):
     # operation so return it as it is.
     def check_before_scraping(self, status_dic): return status_dic
 
-    def get_candidates(self, search_term, rom_FN, platform, status_dic):
+    def get_candidates(self, search_term, rom_FN, rom_checksums_FN, platform, status_dic):
         # If the scraper is disabled return None and do not mark error in status_dic.
         # Candidate will not be introduced in the disk cache and will be scraped again.
         if self.scraper_disabled:
@@ -2701,7 +2720,7 @@ class MobyGames(Scraper):
             'and introduce the API key in AEL addon settings.'
         )
 
-    def get_candidates(self, search_term, rom_FN, platform, status_dic):
+    def get_candidates(self, search_term, rom_FN, rom_checksums_FN, platform, status_dic):
         # --- If scraper is disabled return immediately and silently ---
         if self.scraper_disabled:
             # If the scraper is disabled return None and do not mark error in status_dic.
@@ -3291,7 +3310,7 @@ class ScreenScraper(Scraper):
     # medatada and asset caches at all because the metadata and assets are generated
     # with the internal cache.
     # Search term is always None for this scraper.
-    def get_candidates(self, search_term, rom_FN, platform, status_dic):
+    def get_candidates(self, search_term, rom_FN, rom_checksums_FN, platform, status_dic):
         # If the scraper is disabled return None and do not mark error in status_dic.
         # Candidate will not be introduced in the disk cache and will be scraped again.
         if self.scraper_disabled:
@@ -3301,6 +3320,7 @@ class ScreenScraper(Scraper):
         # Prepare data for scraping.
         rombase = rom_FN.getBase()
         rompath = rom_FN.getPath()
+        romchecksums_path = rom_checksums_FN.getPath()
 
         # --- Get candidates ---
         # ScreenScraper jeuInfos.php returns absolutely everything about a single ROM, including
@@ -3309,10 +3329,11 @@ class ScreenScraper(Scraper):
         scraper_platform = AEL_platform_to_ScreenScraper(platform)
         log_debug('ScreenScraper.get_candidates() rombase      "{}"'.format(rombase))
         log_debug('ScreenScraper.get_candidates() rompath      "{}"'.format(rompath))
+        log_debug('ScreenScraper.get_candidates() romchecksums "{}"'.format(romchecksums_path))
         log_debug('ScreenScraper.get_candidates() AEL platform "{}"'.format(platform))
         log_debug('ScreenScraper.get_candidates() SS platform  "{}"'.format(scraper_platform))
         candidate_list = self._search_candidates_jeuInfos(
-            rombase, rompath, platform, scraper_platform, status_dic)
+            rombase, rompath, romchecksums_path, platform, scraper_platform, status_dic)
         # _search_candidates_jeuRecherche() does not work for get_metadata() and get_assets()
         # because jeu_dic is not introduced in the internal cache.
         # candidate_list = self._search_candidates_jeuRecherche(
@@ -3537,7 +3558,8 @@ class ScreenScraper(Scraper):
         self._dump_json_debug('ScreenScraper_gameSearch.json', json_data)
 
     # Call to ScreenScraper jeuInfos.php.
-    def _search_candidates_jeuInfos(self, rombase, rompath, platform, scraper_platform, status_dic):
+    def _search_candidates_jeuInfos(self, rombase, rompath, romchecksums_path, platform,
+        scraper_platform, status_dic):
         # --- Test data ---
         # * Example from ScreenScraper API info page.
         #   #crc=50ABC90A&systemeid=1&romtype=rom&romnom=Sonic%20The%20Hedgehog%202%20(World).zip&romtaille=749652
@@ -3564,11 +3586,19 @@ class ScreenScraper(Scraper):
         # ScreenScraper requires all CRC, MD5 and SHA1 and the correct file size of the
         # files scraped. Put these data in a SS checksums cache so it is calculated once for
         # every file.
-        checksums = misc_calculate_checksums(rompath)
-        if checksums is None:
-            status_dic['status'] = False
-            status_dic['msg'] = 'Error computing file checksums.'
-            return None
+        if self.debug_checksums_flag:
+            # Use fake checksums when developing the scraper with fake 0-sized files.
+            log_info('Using debug checksums and not computing real ones.')
+            checksums = {
+                'crc'  : self.debug_crc, 'md5'  : self.debug_md5,
+                'sha1' : self.debug_sha1, 'size' : self.debug_size,
+            }
+        else:
+            checksums = misc_calculate_checksums(romchecksums_path)
+            if checksums is None:
+                status_dic['status'] = False
+                status_dic['msg'] = 'Error computing file checksums.'
+                return None
 
         # --- Actual data for scraping in AEL ---
         # Change rom_type for ISO-based platforms
@@ -4028,7 +4058,7 @@ class GameFAQs(Scraper):
     # operation so return it as it is.
     def check_before_scraping(self, status_dic): return status_dic
 
-    def get_candidates(self, search_term, rom_FN, platform, status_dic):
+    def get_candidates(self, search_term, rom_FN, rom_checksums_FN, platform, status_dic):
         scraper_platform = AEL_platform_to_GameFAQs(platform)
         log_debug('GameFAQs.get_candidates() search_term      "{0}"'.format(search_term))
         log_debug('GameFAQs.get_candidates() rombase_noext    "{0}"'.format(rombase_noext))
@@ -4399,7 +4429,7 @@ class ArcadeDB(Scraper):
     def check_before_scraping(self, status_dic): return status_dic
 
     # Search term is always None for this scraper.
-    def get_candidates(self, search_term, rom_FN, platform, status_dic):
+    def get_candidates(self, search_term, rom_FN, rom_checksums_FN, platform, status_dic):
         # --- If scraper is disabled return immediately and silently ---
         if self.scraper_disabled:
             # If the scraper is disabled return None and do not mark error in status_dic.

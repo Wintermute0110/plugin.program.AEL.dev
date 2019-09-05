@@ -9488,11 +9488,14 @@ class Main:
                 # >> Add the set
                 if not MultiDiscInROMs:
                     log_debug('First ROM in the multidisc set.')
-                    # >> Manipulate ROM so filename is the name of the set
+                    # Manipulate ROM so filename is the name of the set.
+                    ROM_original = ROM
                     ROM_dir = FileName(ROM.getDir())
                     ROM_temp = ROM_dir.pjoin(MDSet.setName)
                     log_debug('ROM_temp OP "{0}"'.format(ROM_temp.getOriginalPath()))
                     log_debug('ROM_temp  P "{0}"'.format(ROM_temp.getPath()))
+                    log_debug('ROM_original OP "{0}"'.format(ROM_original.getOriginalPath()))
+                    log_debug('ROM_original  P "{0}"'.format(ROM_original.getPath()))
                     ROM = ROM_temp
                 # >> If set already in ROMs, just add this disk into the set disks field.
                 else:
@@ -9535,7 +9538,8 @@ class Main:
             romdata  = fs_new_rom()
             romdata['id'] = misc_generate_random_SID()
             romdata['filename'] = ROM.getOriginalPath()
-            scraper_strategy.scanner_process_ROM_begin(romdata, ROM)
+            ROM_checksums = ROM_original if MDSet.isMultiDisc and launcher_multidisc else ROM
+            scraper_strategy.scanner_process_ROM_begin(romdata, ROM, ROM_checksums)
             scraper_strategy.scanner_process_ROM_metadata(romdata, ROM)
             scraper_strategy.scanner_process_ROM_assets(romdata, ROM)
 

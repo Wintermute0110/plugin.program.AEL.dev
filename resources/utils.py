@@ -675,7 +675,7 @@ def misc_calculate_checksums(full_file_path):
             crc_prev = zlib.crc32(piece, crc_prev)
             md5.update(piece)
             sha1.update(piece)
-        crc = crc_prev & 0xFFFFFFFF
+        crc_digest = '{:08X}'.format(crc_prev & 0xFFFFFFFF)
         md5_digest = md5.hexdigest()
         sha1_digest = sha1.hexdigest()
         size = os.path.getsize(full_file_path)
@@ -684,7 +684,7 @@ def misc_calculate_checksums(full_file_path):
         log_debug('Returning None')
         return None
     checksums = {
-        'crc'  : '{:08X}'.format(crc).upper(),
+        'crc'  : crc_digest.upper(),
         'md5'  : md5_digest.upper(),
         'sha1' : sha1_digest.upper(),
         'size' : size,
