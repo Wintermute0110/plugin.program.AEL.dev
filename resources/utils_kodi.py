@@ -99,9 +99,7 @@ def log_error(str_text):
 #  1) ret = kodi_dialog_OK('Launch ROM?')
 #  2) ret = kodi_dialog_OK('Launch ROM?', title = 'AEL - Launcher')
 #
-def kodi_dialog_OK(text):
-    title = 'Advanced Emulator Launcher'
-
+def kodi_dialog_OK(text, title = 'Advanced Emulator Launcher'):
     xbmcgui.Dialog().ok(title, text)
 
 # Returns True is YES was pressed, returns False if NO was pressed or dialog canceled.
