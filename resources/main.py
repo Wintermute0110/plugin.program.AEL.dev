@@ -807,40 +807,47 @@ class Main:
             label2_icon      = category['s_icon']      if category['s_icon']      else 'Not set'
             label2_fanart    = category['s_fanart']    if category['s_fanart']    else 'Not set'
             label2_banner    = category['s_banner']    if category['s_banner']    else 'Not set'
-            label2_poster    = category['s_poster']    if category['s_poster']    else 'Not set'
             label2_clearlogo = category['s_clearlogo'] if category['s_clearlogo'] else 'Not set'
+            label2_poster    = category['s_poster']    if category['s_poster']    else 'Not set'
             label2_trailer   = category['s_trailer']   if category['s_trailer']   else 'Not set'
+
             icon_listitem      = xbmcgui.ListItem(label = 'Edit Icon ...',      label2 = label2_icon)
             fanart_listitem    = xbmcgui.ListItem(label = 'Edit Fanart ...',    label2 = label2_fanart)
             banner_listitem    = xbmcgui.ListItem(label = 'Edit Banner ...',    label2 = label2_banner)
-            poster_listitem    = xbmcgui.ListItem(label = 'Edit Poster ...',    label2 = label2_poster)
             clearlogo_listitem = xbmcgui.ListItem(label = 'Edit Clearlogo ...', label2 = label2_clearlogo)
+            poster_listitem    = xbmcgui.ListItem(label = 'Edit Poster ...',    label2 = label2_poster)
             trailer_listitem   = xbmcgui.ListItem(label = 'Edit Trailer ...',   label2 = label2_trailer)
 
             # >> Set lisitem artwork with setArt
             img_icon         = category['s_icon']      if category['s_icon']      else 'DefaultAddonNone.png'
             img_fanart       = category['s_fanart']    if category['s_fanart']    else 'DefaultAddonNone.png'
             img_banner       = category['s_banner']    if category['s_banner']    else 'DefaultAddonNone.png'
-            img_poster       = category['s_poster']    if category['s_poster']    else 'DefaultAddonNone.png'
             img_clearlogo    = category['s_clearlogo'] if category['s_clearlogo'] else 'DefaultAddonNone.png'
+            img_poster       = category['s_poster']    if category['s_poster']    else 'DefaultAddonNone.png'
             img_trailer      = 'DefaultAddonVideo.png' if category['s_trailer']   else 'DefaultAddonNone.png'
             icon_listitem.setArt({'icon' : img_icon})
             fanart_listitem.setArt({'icon' : img_fanart})
             banner_listitem.setArt({'icon' : img_banner})
-            poster_listitem.setArt({'icon' : img_poster})
             clearlogo_listitem.setArt({'icon' : img_clearlogo})
+            poster_listitem.setArt({'icon' : img_poster})
             trailer_listitem.setArt({'icon' : img_trailer})
 
             # >> Execute select dialog
-            listitems = [icon_listitem, fanart_listitem, banner_listitem,
-                         poster_listitem, clearlogo_listitem, trailer_listitem]
+            listitems = [
+                icon_listitem,
+                fanart_listitem,
+                banner_listitem,
+                clearlogo_listitem,
+                poster_listitem,
+                trailer_listitem
+            ]
             type2 = dialog.select('Edit Category Assets/Artwork', list = listitems, useDetails = True)
             if type2 < 0: return
 
             # --- Edit Assets ---
             # >> If this function returns False no changes were made. No need to save categories XML
             # >> and update container.
-            asset_list = [ASSET_ICON, ASSET_FANART, ASSET_BANNER, ASSET_POSTER, ASSET_CLEARLOGO, ASSET_TRAILER]
+            asset_list = CATEGORY_ASSET_ID_LIST
             asset_kind = asset_list[type2]
             if not self._gui_edit_asset(KIND_CATEGORY, asset_kind, category): return
 
@@ -1015,9 +1022,9 @@ class Main:
                 self.categories.pop(categoryID)
             kodi_notify('Deleted category {0}'.format(category_name))
 
-        # >> If this point is reached then changes to metadata/images were made.
-        # >> Save categories and update container contents so user sees those changes inmediately.
-        fs_write_catfile(CATEGORIES_FILE_PATH, self.categories, self.launchers)
+        # If this point is reached then changes to metadata/images were made.
+        # Save categories and update container contents so user sees those changes inmediately.
+        fs_write_catfile(g_PATHS.CATEGORIES_FILE_PATH, self.categories, self.launchers)
         kodi_refresh_container()
 
     def _command_add_new_launcher(self, categoryID):
