@@ -2900,7 +2900,7 @@ class Main:
                 else:
                     ROM_checksums_FN = ROM
                 data_dic = {
-                    'rom_FN'   : ROM,
+                    'rom_FN' : ROM,
                     'rom_checksums_FN' : ROM_checksums_FN,
                     'platform' : platform,
                 }
@@ -10439,6 +10439,8 @@ class Main:
         sl.append('remaining_monthly_allowance  {}'.format(remaining_monthly_allowance))
         sl.append('allowance_refresh_timer      {}'.format(allowance_refresh_timer))
         sl.append('allowance_refresh_timer_str  {}'.format(allowance_refresh_timer_str))
+        sl.append('')
+        sl.append('TGDB scraper seems to be working OK.')
         kodi_display_text_window_mono(window_title, '\n'.join(sl))
 
     # MobyGames API docs https://www.mobygames.com/info/api
@@ -10470,6 +10472,8 @@ class Main:
         sl.append('The API allowance of MobyGames cannot be currently checked.')
         sl.append('')
         sl.append('MobyGames has {} platforms.'.format(len(json_data['platforms'])))
+        sl.append('')
+        sl.append('MobyGames scraper seems to be working OK.')
         kodi_display_text_window_mono(window_title, '\n'.join(sl))
 
     # ScreenScraper API docs https://www.screenscraper.fr/webapi.php
@@ -10507,6 +10511,8 @@ class Main:
         sl.append('datedernierevisite  {}'.format(ssuser['datedernierevisite']))
         sl.append('contribution        {}'.format(ssuser['contribution']))
         sl.append('id                  {}'.format(ssuser['id']))
+        sl.append('')
+        sl.append('ScreenScraper scraper seems to be working OK.')
         kodi_display_text_window_mono(window_title, '\n'.join(sl))
 
     # Retrieve an example game to test if ArcadeDB works.
@@ -10520,14 +10526,24 @@ class Main:
             kodi_dialog_OK(status_dic['msg'])
             return
 
+        search_str = 'atetris'
+        rom_FN = FileName('atetris.zip')
+        rom_checksums_FN = FileName('atetris.zip')
+        platform = 'MAME'
+
         pdialog = KodiProgressDialog()
         pdialog.startProgress('Retrieving info from ArcadeDB...', 100)
-        candidates = ArcadeDB.get_candidates('atetris', 'atetris', 'MAME', status_dic)
-        json_response_dic = ArcadeDB.debug_get_QUERY_MAME_dic(candidates[0])
+        ArcadeDB.check_candidates_cache(rom_FN, platform)
+        ArcadeDB.clear_cache(rom_FN, platform)
+        candidates = ArcadeDB.get_candidates(search_str, rom_FN, rom_checksums_FN, platform, status_dic)
         pdialog.endProgress()
         if not status_dic['status']:
             kodi_dialog_OK(status_dic['msg'])
             return
+        if len(candidates) != 1:
+            kodi_dialog_OK('There is a problem with ArcadeDB scraper.')
+            return
+        json_response_dic = ArcadeDB.debug_get_QUERY_MAME_dic(candidates[0])
 
         # --- Print and display report ---
         num_games = len(json_response_dic['result'])
@@ -10539,7 +10555,7 @@ class Main:
         sl.append('emulator_name  {}'.format(json_response_dic['result'][0]['emulator_name']))
         if num_games == 1:
             sl.append('')
-            sl.append('ArcadeDB seems to be working OK.')
+            sl.append('ArcadeDB scraper seems to be working OK.')
             sl.append('Remember this scraper only works with platform MAME. It will only return')
             sl.append('valid data for MAME games.')
         kodi_display_text_window_mono(window_title, '\n'.join(sl))

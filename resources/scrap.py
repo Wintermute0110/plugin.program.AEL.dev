@@ -4469,7 +4469,8 @@ class ArcadeDB(Scraper):
             candidate_list.append(candidate)
 
             # --- Add candidate games to the cache ---
-            log_debug('ArcadeDB.get_candidates() Adding to internal cache')
+            log_debug('ArcadeDB.get_candidates() Adding to internal cache "{}"'.format(
+                self.cache_key))
             self._update_disk_cache(Scraper.CACHE_INTERNAL, self.cache_key, json_response_dic)
         else:
             raise ValueError('Unexpected number of games returned (more than one).')
@@ -4541,12 +4542,11 @@ class ArcadeDB(Scraper):
 
     # --- This class own methods -----------------------------------------------------------------
     # Plumbing function to get the cached jeu_dic dictionary returned by ScreenScraper.
-    # This is cached in the internal cache
-    # Scraper.get_candiates() must be called before this function to fill the cache.
+    # Cache must be lazy loaded before calling this function.
     def debug_get_QUERY_MAME_dic(self, candidate):
         log_debug('ArcadeDB.debug_get_QUERY_MAME_dic() Internal cache retrieving "{}"'.format(
-            candidate['ADB_cache_str']))
-        json_response_dic = self.cache_QUERY_MAME[candidate['ADB_cache_str']]
+            self.cache_key))
+        json_response_dic = self._retrieve_from_disk_cache(Scraper.CACHE_INTERNAL, self.cache_key)
 
         return json_response_dic
 
