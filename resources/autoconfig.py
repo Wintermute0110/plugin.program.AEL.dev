@@ -539,15 +539,16 @@ def autoconfig_import_category(categories, categoryID, i_category, import_FN):
         effective_Asset_Prefix = ''
         file_list = []
 
-    # >> Traverse list of category assets and search for image files for each asset
-    for cat_asset in CATEGORY_ASSET_LIST:
+    # Traverse list of category assets and search for image files for each asset.
+    for cat_asset in CATEGORY_ASSET_ID_LIST:
         # >> Bypass trailers now
-        if cat_asset == ASSET_TRAILER: continue
+        if cat_asset == ASSET_TRAILER_ID: continue
 
         # >> Look for assets using the file list cache.
         AInfo = assets_get_info_scheme(cat_asset)
         log_debug('>> Asset "{0}"'.format(AInfo.name))
-        asset_file_list = autoconfig_search_asset_file_list(effective_Asset_Prefix, AInfo, norm_asset_dir_FN, file_list)
+        asset_file_list = autoconfig_search_asset_file_list(
+            effective_Asset_Prefix, AInfo, norm_asset_dir_FN, file_list)
 
         # --- Create image list for selection dialog ---
         listitems_list = []
@@ -572,8 +573,9 @@ def autoconfig_import_category(categories, categoryID, i_category, import_FN):
         for asset_file_name in asset_file_list:
             log_debug('asset_file_name "{0}"'.format(asset_file_name))
             asset_FN = FileName(asset_file_name)
-            asset_listitem = xbmcgui.ListItem(label = '<Asset_Prefix> #{0} "{1}"'.format(image_count, asset_FN.getBase()),
-                                              label2 = asset_file_name)
+            asset_listitem = xbmcgui.ListItem(
+                label = 'Asset_Prefix #{0} "{1}"'.format(image_count, asset_FN.getBase()),
+                label2 = asset_file_name)
             asset_listitem.setArt({'icon' : asset_file_name})
             listitems_list.append(asset_listitem)
             listitems_asset_paths.append(asset_FN.getPath())
