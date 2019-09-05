@@ -164,7 +164,7 @@ class KodiProgressDialog(object):
         self.progress = (step_index * 100) / self.num_steps
         self.message1 = message1
         self.message2 = message2
-        if message2:
+        if message2 and message2 != ' ':
             self.progressDialog.update(self.progress, message1, message2)
         else:
             self.progressDialog.update(self.progress, message1)
@@ -210,7 +210,7 @@ class KodiProgressDialog(object):
 
     # Reopens a previously closed dialog, remembering the messages and the progress.
     def reopen(self):
-        if not self.message2:
+        if self.message2 and self.message2 != ' ':
             self.progressDialog.create(self.title, self.message1, self.message2)
         else:
             self.progressDialog.create(self.title, self.message1)
