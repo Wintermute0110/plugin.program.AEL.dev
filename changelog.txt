@@ -183,10 +183,6 @@ WIP      [CORE] Finish the new platform scheme.
 
 [B]TODO before releasing 0.9.8-beta1[/B]
 
-WIP      [SCRAPERS] ScreenScraper does not work for multidisc ROMs, because of 
-         misc_calculate_checksums() fails. The first disc in the multidisc set must be
-         used to compute the checksum.
-
 
 [B]Advanced Emulator Launcher | version 0.9.8-beta1 | XX September 2019[/B]
 
