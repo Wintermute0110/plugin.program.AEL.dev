@@ -32,6 +32,8 @@ set_log_level(LOG_DEBUG)
 scraper_obj = ScreenScraper(common.settings)
 scraper_obj.set_verbose_mode(False)
 scraper_obj.set_debug_file_dump(True, os.path.join(os.path.dirname(__file__), 'assets'))
+scraper_obj.set_debug_checksums(True, '414FA339', '9db5682a4d778ca2cb79580bdb67083f',
+    '48c98f7e5a6e736d790ab740dfc3f51a61abe2b5', 123456)
 status_dic = kodi_new_status_dic('Scraper test was OK')
 
 # --- Choose data for testing ---
@@ -47,11 +49,12 @@ search_term, rombase, platform = common.games['sonic']
 
 # --- Get candidates, print them and set first candidate ---
 rom_FN = FileName(rombase)
+rom_checksums_FN = FileName(rombase)
 if scraper_obj.check_candidates_cache(rom_FN, platform):
     print('>>>> Game "{}" "{}" in disk cache.'.format(rom_FN.getBase(), platform))
 else:
     print('>>>> Game "{}" "{}" not in disk cache.'.format(rom_FN.getBase(), platform))
-candidate_list = scraper_obj.get_candidates(search_term, rom_FN, platform, status_dic)
+candidate_list = scraper_obj.get_candidates(search_term, rom_FN, rom_checksums_FN, platform, status_dic)
 # pprint.pprint(candidate_list)
 common.handle_get_candidates(candidate_list, status_dic)
 print_candidate_list(candidate_list)
