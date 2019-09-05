@@ -7299,9 +7299,9 @@ class Main:
 
             # --- Get report filename ---
             roms_base_noext  = fs_get_ROMs_basename(category_name, launcher['m_name'], launcherID)
-            report_stats_FN  = REPORTS_DIR.pjoin(roms_base_noext + '_stats.txt')
-            report_meta_FN   = REPORTS_DIR.pjoin(roms_base_noext + '_metadata.txt')
-            report_assets_FN = REPORTS_DIR.pjoin(roms_base_noext + '_assets.txt')
+            report_stats_FN  = g_PATHS.REPORTS_DIR.pjoin(roms_base_noext + '_stats.txt')
+            report_meta_FN   = g_PATHS.REPORTS_DIR.pjoin(roms_base_noext + '_metadata.txt')
+            report_assets_FN = g_PATHS.REPORTS_DIR.pjoin(roms_base_noext + '_assets.txt')
             log_verb('_command_view_menu() Stats  OP "{0}"'.format(report_stats_FN.getOriginalPath()))
             log_verb('_command_view_menu() Meta   OP "{0}"'.format(report_meta_FN.getOriginalPath()))
             log_verb('_command_view_menu() Assets OP "{0}"'.format(report_assets_FN.getOriginalPath()))
@@ -8563,7 +8563,7 @@ class Main:
         if categoryID in self.categories: category_name = self.categories[categoryID]['m_name']
         else:                             category_name = VCATEGORY_ADDONROOT_ID
         roms_base_noext  = fs_get_ROMs_basename(category_name, self.launchers[launcherID]['m_name'], launcherID)
-        report_stats_FN  = REPORTS_DIR.pjoin(roms_base_noext + '_stats.txt')
+        report_stats_FN  = g_PATHS.REPORTS_DIR.pjoin(roms_base_noext + '_stats.txt')
         log_verb('_command_view_menu() Stats  OP "{0}"'.format(report_stats_FN.getOriginalPath()))
 
         # --- If report doesn't exists create it automatically ---
@@ -8576,14 +8576,14 @@ class Main:
             # >> Save Categories/Launchers
             # >> DO NOT update the timestamp of categories/launchers of report will always be obsolete!!!
             # >> Keep same timestamp as before.
-            fs_write_catfile(CATEGORIES_FILE_PATH, self.categories, self.launchers, self.update_timestamp)
+            fs_write_catfile(g_PATHS.CATEGORIES_FILE_PATH, self.categories, self.launchers, self.update_timestamp)
 
         # --- If report timestamp is older than launchers last modification, recreate it ---
         if self.launchers[launcherID]['timestamp_report'] <= self.launchers[launcherID]['timestamp_launcher']:
             kodi_dialog_OK('Report is outdated. Will be regenerated now.')
             self._roms_create_launcher_reports(categoryID, launcherID, roms)
             self.launchers[launcherID]['timestamp_report'] = time.time()
-            fs_write_catfile(CATEGORIES_FILE_PATH, self.categories, self.launchers, self.update_timestamp)
+            fs_write_catfile(g_PATHS.CATEGORIES_FILE_PATH, self.categories, self.launchers, self.update_timestamp)
 
     #
     # Creates a Launcher report having:
@@ -8600,14 +8600,14 @@ class Main:
         else:                             category_name = VCATEGORY_ADDONROOT_ID
         launcher = self.launchers[launcherID]
         roms_base_noext  = fs_get_ROMs_basename(category_name, launcher['m_name'], launcherID)
-        report_stats_FN  = REPORTS_DIR.pjoin(roms_base_noext + '_stats.txt')
-        report_meta_FN   = REPORTS_DIR.pjoin(roms_base_noext + '_metadata.txt')
-        report_assets_FN = REPORTS_DIR.pjoin(roms_base_noext + '_assets.txt')
+        report_stats_FN  = g_PATHS.REPORTS_DIR.pjoin(roms_base_noext + '_stats.txt')
+        report_meta_FN   = g_PATHS.REPORTS_DIR.pjoin(roms_base_noext + '_metadata.txt')
+        report_assets_FN = g_PATHS.REPORTS_DIR.pjoin(roms_base_noext + '_assets.txt')
         log_verb('_roms_create_launcher_reports() Stats  OP "{0}"'.format(report_stats_FN.getOriginalPath()))
         log_verb('_roms_create_launcher_reports() Meta   OP "{0}"'.format(report_meta_FN.getOriginalPath()))
         log_verb('_roms_create_launcher_reports() Assets OP "{0}"'.format(report_assets_FN.getOriginalPath()))
         roms_base_noext = fs_get_ROMs_basename(category_name, launcher['m_name'], launcherID)
-        report_file_name = REPORTS_DIR.pjoin(roms_base_noext + '.txt')
+        report_file_name = g_PATHS.REPORTS_DIR.pjoin(roms_base_noext + '.txt')
         log_verb('_roms_create_launcher_reports() Report filename "{0}"'.format(report_file_name.getOriginalPath()))
 
         # >> Step 1: Build report data
