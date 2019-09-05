@@ -2894,8 +2894,14 @@ class Main:
                     platform = roms[romID]['platform']
                 else:
                     platform = self.launchers[launcherID]['platform']
+                if roms[romID]['disks']:
+                    # Multidisc ROM. Take first file of the set.
+                    ROM_checksums_FN = FileName(ROM.getDir()).pjoin(roms[romID]['disks'][0])
+                else:
+                    ROM_checksums_FN = ROM
                 data_dic = {
                     'rom_FN'   : ROM,
+                    'rom_checksums_FN' : ROM_checksums_FN,
                     'platform' : platform,
                 }
 
@@ -9678,7 +9684,8 @@ class Main:
             # --- Grab asset information for editing ---
             object_name = 'Launcher'
             asset_directory = FileName(self.settings['launchers_asset_dir'])
-            asset_path_noext = assets_get_path_noext_SUFIX(AInfo, asset_directory, object_dic['m_name'], object_dic['id'])
+            asset_path_noext = assets_get_path_noext_SUFIX(
+                AInfo, asset_directory, object_dic['m_name'], object_dic['id'])
             log_info('_gui_edit_asset() Editing Launcher "{0}"'.format(AInfo.name))
             log_info('_gui_edit_asset() ID {0}'.format(object_dic['id']))
             log_debug('_gui_edit_asset() asset_directory  "{0}"'.format(asset_directory.getOriginalPath()))
@@ -9692,16 +9699,22 @@ class Main:
             # --- Grab asset information for editing ---
             object_name = 'ROM'
             ROMfile = FileName(object_dic['filename'])
+            if object_dic['disks']:
+                ROM_checksums_FN = FileName(ROMfile.getDir()).pjoin(object_dic['disks'][0])
+            else:
+                ROM_checksums_FN = ROMfile
             if categoryID == VCATEGORY_FAVOURITES_ID:
                 log_info('_gui_edit_asset() ROM is in Favourites')
                 asset_directory  = FileName(self.settings['favourites_asset_dir'])
                 platform         = object_dic['platform']
-                asset_path_noext = assets_get_path_noext_SUFIX(AInfo, asset_directory, ROMfile.getBase_noext(), object_dic['id'])
+                asset_path_noext = assets_get_path_noext_SUFIX(
+                    AInfo, asset_directory, ROMfile.getBase_noext(), object_dic['id'])
             elif categoryID == VCATEGORY_COLLECTIONS_ID:
                 log_info('_gui_edit_asset() ROM is in Collection')
                 asset_directory  = FileName(self.settings['collections_asset_dir'])
                 platform         = object_dic['platform']
-                asset_path_noext = assets_get_path_noext_SUFIX(AInfo, asset_directory, ROMfile.getBase_noext(), object_dic['id'])
+                asset_path_noext = assets_get_path_noext_SUFIX(
+                    AInfo, asset_directory, ROMfile.getBase_noext(), object_dic['id'])
             else:
                 log_info('_gui_edit_asset() ROM is in Launcher id {0}'.format(launcherID))
                 launcher         = self.launchers[launcherID]
@@ -9718,8 +9731,9 @@ class Main:
 
             # --- Do not edit asset if asset directory not configured ---
             if not asset_directory.isdir():
-                kodi_dialog_OK('Directory to store {0} not configured or not found. '.format(AInfo.name) + \
-                               'Configure it before you can edit artwork.')
+                kodi_dialog_OK(
+                    'Directory to store {0} not configured or not found. '.format(AInfo.name) + \
+                    'Configure it before you can edit artwork.')
                 return False
 
         else:
@@ -9839,6 +9853,7 @@ class Main:
             # --- Scrape! ---
             data_dic = {
                 'rom_FN' : ROMfile,
+                'rom_checksums_FN' : ROM_checksums_FN,
                 'platform' : platform,
                 'current_asset_FN' : current_asset_FN,
                 'asset_path_noext' : asset_path_noext,

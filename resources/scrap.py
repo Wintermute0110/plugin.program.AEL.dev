@@ -1194,6 +1194,7 @@ class ScrapeStrategy(object):
 
         # In AEL 0.10.x this data is grabed from the objects, not passed using a dictionary.
         rom_FN = data_dic['rom_FN']
+        rom_checksums_FN = data_dic['rom_checksums_FN']
         platform = data_dic['platform']
         scraper_name = self.scraper_obj.get_name()
 
@@ -1253,7 +1254,7 @@ class ScrapeStrategy(object):
             pdialog = KodiProgressDialog()
             pdialog.startProgress('Searching games with scaper {}...'.format(scraper_name))
             candidate_list = self.scraper_obj.get_candidates(
-                search_term, rom_FN, platform, status_dic)
+                search_term, rom_FN, rom_checksums_FN, platform, status_dic)
             # If the there was an error/exception in the scraper return immediately.
             if not status_dic['status']: return status_dic
             # If the scraper is disabled candidate_list will be None. However, it is impossible
