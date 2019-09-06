@@ -6354,7 +6354,7 @@ class Main:
             log_debug('_command_import_collection() Collection asset JSON NOT found')
 
         # --- Load collection indices ---
-        collections, update_timestamp = fs_load_Collection_index_XML(COLLECTIONS_FILE_PATH)
+        collections, update_timestamp = fs_load_Collection_index_XML(g_PATHS.COLLECTIONS_FILE_PATH)
 
         # --- If collectionID already on index warn the user ---
         if collection_dic['id'] in collections:
@@ -6373,11 +6373,11 @@ class Main:
 
             # --- Import Collection assets ---
             log_info('_command_import_collection() Importing ROM Collection assets ...')
-            for asset_kind in CATEGORY_ASSET_LIST:
+            for asset_kind in CATEGORY_ASSET_ID_LIST:
                 # >> Get asset filename with no extension
                 AInfo = assets_get_info_scheme(asset_kind)
-                asset_noext_FN = assets_get_path_noext_SUFIX(AInfo, collections_asset_dir_FN,
-                                                             collection_dic['m_name'], collection_dic['id'])
+                asset_noext_FN = assets_get_path_noext_SUFIX(
+                    AInfo, collections_asset_dir_FN, collection_dic['m_name'], collection_dic['id'])
                 log_debug('{0:<9s} base_noext "{1}"'.format(AInfo.name, asset_noext_FN.getBase()))
                 if asset_noext_FN.getBase() not in assets_dic:
                     # >> Asset not found. Make sure asset is unset in imported Collection.
@@ -6454,7 +6454,8 @@ class Main:
 
         # --- Add imported collection to database ---
         collections[collection_dic['id']] = collection_dic
-        log_info('_command_import_collection() Imported Collection "{0}" (id {1})'.format(collection_dic['m_name'], collection_dic['id']))
+        log_info('_command_import_collection() Imported Collection "{0}" (id {1})'.format(
+            collection_dic['m_name'], collection_dic['id']))
 
         # --- Write ROM Collection databases ---
         fs_write_Collection_index_XML(g_PATHS.COLLECTIONS_FILE_PATH, collections)
@@ -6481,7 +6482,7 @@ class Main:
         output_dir_FileName = FileName(output_dir)
 
         # --- Load collection ROMs ---
-        (collections, update_timestamp) = fs_load_Collection_index_XML(COLLECTIONS_FILE_PATH)
+        (collections, update_timestamp) = fs_load_Collection_index_XML(g_PATHS.COLLECTIONS_FILE_PATH)
         collection = collections[launcherID]
         roms_json_file = g_PATHS.COLLECTIONS_DIR.pjoin(collection['roms_base_noext'] + '.json')
         collection_rom_list = fs_load_Collection_ROMs_JSON(roms_json_file)
@@ -6507,11 +6508,11 @@ class Main:
             log_info('_command_export_collection() Copying ROM Collection assets ...')
             collections_asset_dir_FN = FileName(self.settings['collections_asset_dir'])
             collection_assets_were_copied = False
-            for asset_kind in CATEGORY_ASSET_LIST:
+            for asset_kind in COLLECTION_ASSET_ID_LIST:
                 AInfo = assets_get_info_scheme(asset_kind)
                 asset_FileName = FileName(collection[AInfo.key])
-                new_asset_noext_FileName = assets_get_path_noext_SUFIX(AInfo, collections_asset_dir_FN,
-                                                                       collection['m_name'], collection['id'])
+                new_asset_noext_FileName = assets_get_path_noext_SUFIX(
+                    AInfo, collections_asset_dir_FN, collection['m_name'], collection['id'])
                 new_asset_FileName = new_asset_noext_FileName.append(asset_FileName.getExt())
                 if not collection[AInfo.key]:
                     log_debug('{0:<9s} not set.'.format(AInfo.name))
@@ -6558,8 +6559,8 @@ class Main:
                     AInfo = assets_get_info_scheme(asset_kind)
                     asset_FileName = FileName(rom_item[AInfo.key])
                     ROM_FileName = FileName(rom_item['filename'])
-                    new_asset_noext_FileName = assets_get_path_noext_SUFIX(AInfo, collections_asset_dir_FN, 
-                                                                           ROM_FileName.getBase_noext(), rom_item['id'])
+                    new_asset_noext_FileName = assets_get_path_noext_SUFIX(
+                        AInfo, collections_asset_dir_FN, ROM_FileName.getBase_noext(), rom_item['id'])
                     new_asset_FileName = new_asset_noext_FileName.append(asset_FileName.getExt())
                     if not rom_item[AInfo.key]:
                         log_debug('{0:<9s} not set.'.format(AInfo.name))
@@ -6596,7 +6597,7 @@ class Main:
                         rom_item[AInfo.key] = new_asset_FileName.getOriginalPath()
                         ROM_assets_were_copied = True
 
-            # >> Write ROM Collection DB.
+            # Write ROM Collection DB.
             if collection_assets_were_copied:
                 fs_write_Collection_index_XML(g_PATHS.COLLECTIONS_FILE_PATH, collections)
                 log_info('_command_export_collection() Collection assets were copied. Saving Collection index ...')
