@@ -183,6 +183,8 @@ WIP      [CORE] Finish the new platform scheme.
 
 [B]TODO before releasing 0.9.8-beta1[/B]
 
+Disable scraping for ROM launchers.
+
 
 [B]Advanced Emulator Launcher | version 0.9.8-beta1 | XX September 2019[/B]
 

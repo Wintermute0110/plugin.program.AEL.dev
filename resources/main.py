@@ -1279,7 +1279,13 @@ class Main:
                 'Save NFO file (default location)',
             ]
             dialog = xbmcgui.Dialog()
-            type2 = dialog.select('Edit Launcher Metadata', common_menu_list + scraper_menu_list)
+            # For now disable scraping for all launcher, including standalone launchers.
+            # ROM_launcher = True if self.launchers[launcherID]['rompath'] else False
+            # if ROM_launcher:
+            #     type2 = dialog.select('Edit Launcher Metadata', common_menu_list)
+            # else:
+            #     type2 = dialog.select('Edit Launcher Metadata', common_menu_list + scraper_menu_list)
+            type2 = dialog.select('Edit Launcher Metadata', common_menu_list)
             if type2 < 0: return
 
             # --- Edition of the launcher name ---
@@ -1360,9 +1366,9 @@ class Main:
 
             # --- Edition of the launcher rating ---
             elif type2 == 5:
-                rating = dialog.select('Edit Launcher Rating',
-                                      ['Not set',  'Rating 0', 'Rating 1', 'Rating 2', 'Rating 3', 'Rating 4',
-                                       'Rating 5', 'Rating 6', 'Rating 7', 'Rating 8', 'Rating 9', 'Rating 10'])
+                rating = dialog.select('Edit Launcher Rating', [
+                    'Not set',  'Rating 0', 'Rating 1', 'Rating 2', 'Rating 3', 'Rating 4',
+                    'Rating 5', 'Rating 6', 'Rating 7', 'Rating 8', 'Rating 9', 'Rating 10'])
                 if rating == 0:
                     self.launchers[launcherID]['m_rating'] = ''
                     kodi_notify('Launcher Rating changed to Not Set')
@@ -1444,15 +1450,15 @@ class Main:
             label2_icon       = launcher['s_icon']       if launcher['s_icon']      else 'Not set'
             label2_fanart     = launcher['s_fanart']     if launcher['s_fanart']    else 'Not set'
             label2_banner     = launcher['s_banner']     if launcher['s_banner']    else 'Not set'
-            label2_poster     = launcher['s_poster']     if launcher['s_poster']     else 'Not set'
             label2_clearlogo  = launcher['s_clearlogo']  if launcher['s_clearlogo'] else 'Not set'
+            label2_poster     = launcher['s_poster']     if launcher['s_poster']     else 'Not set'
             label2_controller = launcher['s_controller'] if launcher['s_controller'] else 'Not set'
             label2_trailer    = launcher['s_trailer']    if launcher['s_trailer']   else 'Not set'
             icon_listitem       = xbmcgui.ListItem(label = 'Edit Icon ...', label2 = label2_icon)
             fanart_listitem     = xbmcgui.ListItem(label = 'Edit Fanart ...', label2 = label2_fanart)
             banner_listitem     = xbmcgui.ListItem(label = 'Edit Banner ...', label2 = label2_banner)
-            poster_listitem     = xbmcgui.ListItem(label = 'Edit Poster ...', label2 = label2_poster)
             clearlogo_listitem  = xbmcgui.ListItem(label = 'Edit Clearlogo ...', label2 = label2_clearlogo)
+            poster_listitem     = xbmcgui.ListItem(label = 'Edit Poster ...', label2 = label2_poster)
             controller_listitem = xbmcgui.ListItem(label = 'Edit Controller ...', label2 = label2_controller)
             trailer_listitem    = xbmcgui.ListItem(label = 'Edit Trailer ...', label2 = label2_trailer)
 
@@ -1460,30 +1466,35 @@ class Main:
             img_icon       = launcher['s_icon']       if launcher['s_icon']     else 'DefaultAddonNone.png'
             img_fanart     = launcher['s_fanart']     if launcher['s_fanart']    else 'DefaultAddonNone.png'
             img_banner     = launcher['s_banner']     if launcher['s_banner']    else 'DefaultAddonNone.png'
-            img_poster     = launcher['s_poster']     if launcher['s_poster']     else 'DefaultAddonNone.png'
             img_clearlogo  = launcher['s_clearlogo']  if launcher['s_clearlogo'] else 'DefaultAddonNone.png'
+            img_poster     = launcher['s_poster']     if launcher['s_poster']     else 'DefaultAddonNone.png'
             img_controller = launcher['s_controller'] if launcher['s_controller'] else 'DefaultAddonNone.png'
             img_trailer    = 'DefaultAddonVideo.png'  if launcher['s_trailer']   else 'DefaultAddonNone.png'
             icon_listitem.setArt({'icon' : img_icon})
             fanart_listitem.setArt({'icon' : img_fanart})
             banner_listitem.setArt({'icon' : img_banner})
-            poster_listitem.setArt({'icon' : img_poster})
             clearlogo_listitem.setArt({'icon' : img_clearlogo})
+            poster_listitem.setArt({'icon' : img_poster})
             controller_listitem.setArt({'icon' : img_controller})
             trailer_listitem.setArt({'icon' : img_trailer})
 
             # >> Execute select dialog
-            listitems = [icon_listitem, fanart_listitem, banner_listitem, poster_listitem,
-                         clearlogo_listitem, controller_listitem, trailer_listitem]
+            listitems = [
+                icon_listitem,
+                fanart_listitem,
+                banner_listitem,
+                clearlogo_listitem,
+                poster_listitem,
+                controller_listitem,
+                trailer_listitem
+            ]
             type2 = dialog.select('Edit Launcher Assets/Artwork', list = listitems, useDetails = True)
             if type2 < 0: return
 
             # --- Edit Assets ---
-            # >> If this function returns False no changes were made. No need to save categories
-            # >> XML and update container.
-            asset_list = [ASSET_ICON, ASSET_FANART, ASSET_BANNER, ASSET_POSTER,
-                          ASSET_CLEARLOGO, ASSET_CONTROLLER, ASSET_TRAILER]
-            asset_kind = asset_list[type2]
+            # If this function returns False no changes were made. No need to save categories
+            # XML and update container.
+            asset_kind = LAUNCHER_ASSET_ID_LIST[type2]
             if not self._gui_edit_asset(KIND_LAUNCHER, asset_kind, launcher): return
 
         # --- Choose Launcher default icon/fanart/banner/poster/clearlogo ---
@@ -1494,38 +1505,45 @@ class Main:
             asset_icon_str      = assets_get_asset_name_str(launcher['default_icon'])
             asset_fanart_str    = assets_get_asset_name_str(launcher['default_fanart'])
             asset_banner_str    = assets_get_asset_name_str(launcher['default_banner'])
-            asset_poster_str    = assets_get_asset_name_str(launcher['default_poster'])
             asset_clearlogo_str = assets_get_asset_name_str(launcher['default_clearlogo'])
+            asset_poster_str    = assets_get_asset_name_str(launcher['default_poster'])
             label2_icon         = launcher[launcher['default_icon']]      if launcher[launcher['default_icon']]      else 'Not set'
             label2_fanart       = launcher[launcher['default_fanart']]    if launcher[launcher['default_fanart']]    else 'Not set'
             label2_banner       = launcher[launcher['default_banner']]    if launcher[launcher['default_banner']]    else 'Not set'
-            label2_poster       = launcher[launcher['default_poster']]    if launcher[launcher['default_poster']]    else 'Not set'
             label2_clearlogo    = launcher[launcher['default_clearlogo']] if launcher[launcher['default_clearlogo']] else 'Not set'
+            label2_poster       = launcher[launcher['default_poster']]    if launcher[launcher['default_poster']]    else 'Not set'
             icon_listitem       = xbmcgui.ListItem(
                 label = 'Choose asset for Icon (currently {0})'.format(asset_icon_str), label2 = label2_icon)
             fanart_listitem     = xbmcgui.ListItem(
                 label = 'Choose asset for Fanart (currently {0})'.format(asset_fanart_str), label2 = label2_fanart)
             banner_listitem     = xbmcgui.ListItem(
                 label = 'Choose asset for Banner (currently {0})'.format(asset_banner_str), label2 = label2_banner)
-            poster_listitem     = xbmcgui.ListItem(
-                label = 'Choose asset for Poster (currently {0})'.format(asset_poster_str), label2 = label2_poster)
             clearlogo_listitem  = xbmcgui.ListItem(
                 label = 'Choose asset for Clearlogo (currently {0})'.format(asset_clearlogo_str), label2 = label2_clearlogo)
+            poster_listitem     = xbmcgui.ListItem(
+                label = 'Choose asset for Poster (currently {0})'.format(asset_poster_str), label2 = label2_poster)
 
             # >> Asset image
             img_icon            = launcher[launcher['default_icon']]      if launcher[launcher['default_icon']]      else 'DefaultAddonNone.png'
             img_fanart          = launcher[launcher['default_fanart']]    if launcher[launcher['default_fanart']]    else 'DefaultAddonNone.png'
             img_banner          = launcher[launcher['default_banner']]    if launcher[launcher['default_banner']]    else 'DefaultAddonNone.png'
-            img_poster          = launcher[launcher['default_poster']]    if launcher[launcher['default_poster']]    else 'DefaultAddonNone.png'
             img_clearlogo       = launcher[launcher['default_clearlogo']] if launcher[launcher['default_clearlogo']] else 'DefaultAddonNone.png'
+            img_poster          = launcher[launcher['default_poster']]    if launcher[launcher['default_poster']]    else 'DefaultAddonNone.png'
+
             icon_listitem.setArt({'icon' : img_icon})
             fanart_listitem.setArt({'icon' : img_fanart})
             banner_listitem.setArt({'icon' : img_banner})
-            poster_listitem.setArt({'icon' : img_poster})
             clearlogo_listitem.setArt({'icon' : img_clearlogo})
+            poster_listitem.setArt({'icon' : img_poster})
 
             # >> Execute select dialog
-            listitems = [icon_listitem, fanart_listitem, banner_listitem, poster_listitem, clearlogo_listitem]
+            listitems = [
+                icon_listitem,
+                fanart_listitem,
+                banner_listitem,
+                clearlogo_listitem,
+                poster_listitem,
+            ]
             type2 = dialog.select('Edit Launcher default Assets/Artwork', list = listitems, useDetails = True)
             if type2 < 0: return
 
@@ -1534,58 +1552,63 @@ class Main:
                 xbmcgui.ListItem(label = 'Icon',       label2 = launcher['s_icon'] if launcher['s_icon'] else 'Not set'),
                 xbmcgui.ListItem(label = 'Fanart',     label2 = launcher['s_fanart'] if launcher['s_fanart'] else 'Not set'),
                 xbmcgui.ListItem(label = 'Banner',     label2 = launcher['s_banner'] if launcher['s_banner'] else 'Not set'),
-                xbmcgui.ListItem(label = 'Poster',     label2 = launcher['s_poster'] if launcher['s_poster'] else 'Not set'),
                 xbmcgui.ListItem(label = 'Clearlogo',  label2 = launcher['s_clearlogo'] if launcher['s_clearlogo'] else 'Not set'),
+                xbmcgui.ListItem(label = 'Poster',     label2 = launcher['s_poster'] if launcher['s_poster'] else 'Not set'),
                 xbmcgui.ListItem(label = 'Controller', label2 = launcher['s_controller'] if launcher['s_controller'] else 'Not set'),
             ]
             Launcher_asset_ListItem_list[0].setArt({'icon' : launcher['s_icon'] if launcher['s_icon'] else 'DefaultAddonNone.png'})
             Launcher_asset_ListItem_list[1].setArt({'icon' : launcher['s_fanart'] if launcher['s_fanart'] else 'DefaultAddonNone.png'})
             Launcher_asset_ListItem_list[2].setArt({'icon' : launcher['s_banner'] if launcher['s_banner'] else 'DefaultAddonNone.png'})
-            Launcher_asset_ListItem_list[3].setArt({'icon' : launcher['s_poster'] if launcher['s_poster'] else 'DefaultAddonNone.png'})
-            Launcher_asset_ListItem_list[4].setArt({'icon' : launcher['s_clearlogo'] if launcher['s_clearlogo'] else 'DefaultAddonNone.png'})
+            Launcher_asset_ListItem_list[3].setArt({'icon' : launcher['s_clearlogo'] if launcher['s_clearlogo'] else 'DefaultAddonNone.png'})
+            Launcher_asset_ListItem_list[4].setArt({'icon' : launcher['s_poster'] if launcher['s_poster'] else 'DefaultAddonNone.png'})
             Launcher_asset_ListItem_list[5].setArt({'icon' : launcher['s_controller'] if launcher['s_controller'] else 'DefaultAddonNone.png'})
 
             # >> Krypton feature: User preselected item in select() dialog.
             if type2 == 0:
                 p_idx = assets_get_Launcher_mapped_asset_idx(launcher, 'default_icon')
-                type_s = dialog.select('Choose Launcher default asset for Icon', 
-                                       list = Launcher_asset_ListItem_list, useDetails = True, preselect = p_idx)
+                type_s = dialog.select(
+                    'Choose Launcher default asset for Icon',
+                    list = Launcher_asset_ListItem_list, useDetails = True, preselect = p_idx)
                 if type_s < 0: return
                 assets_choose_Launcher_mapped_artwork(launcher, 'default_icon', type_s)
                 asset_name = assets_get_asset_name_str(launcher['default_icon'])
                 kodi_notify('Launcher Icon mapped to {0}'.format(asset_name))
             elif type2 == 1:
                 p_idx = assets_get_Launcher_mapped_asset_idx(launcher, 'default_fanart')
-                type_s = dialog.select('Choose default asset for Fanart',
-                                       list = Launcher_asset_ListItem_list, useDetails = True, preselect = p_idx)
+                type_s = dialog.select(
+                    'Choose default asset for Fanart',
+                    list = Launcher_asset_ListItem_list, useDetails = True, preselect = p_idx)
                 if type_s < 0: return
                 assets_choose_Launcher_mapped_artwork(launcher, 'default_fanart', type_s)
                 asset_name = assets_get_asset_name_str(launcher['default_fanart'])
                 kodi_notify('Launcher Fanart mapped to {0}'.format(asset_name))
             elif type2 == 2:
                 p_idx = assets_get_Launcher_mapped_asset_idx(launcher, 'default_banner')
-                type_s = dialog.select('Choose default asset for Banner',
-                                       list = Launcher_asset_ListItem_list, useDetails = True, preselect = p_idx)
+                type_s = dialog.select(
+                    'Choose default asset for Banner',
+                    list = Launcher_asset_ListItem_list, useDetails = True, preselect = p_idx)
                 if type_s < 0: return
                 assets_choose_Launcher_mapped_artwork(launcher, 'default_banner', type_s)
                 asset_name = assets_get_asset_name_str(launcher['default_banner'])
                 kodi_notify('Launcher Banner mapped to {0}'.format(asset_name))
             elif type2 == 3:
-                p_idx = assets_get_Launcher_mapped_asset_idx(launcher, 'default_poster')
-                type_s = dialog.select('Choose default asset for Poster',
-                                       list = Launcher_asset_ListItem_list, useDetails = True, preselect = p_idx)
-                if type_s < 0: return
-                assets_choose_Launcher_mapped_artwork(launcher, 'default_poster', type_s)
-                asset_name = assets_get_asset_name_str(launcher['default_poster'])
-                kodi_notify('Launcher Poster mapped to {0}'.format(asset_name))
-            elif type2 == 4:
                 p_idx = assets_get_Launcher_mapped_asset_idx(launcher, 'default_clearlogo')
-                type_s = dialog.select('Choose default asset for Clearlogo',
-                                       list = Launcher_asset_ListItem_list, useDetails = True, preselect = p_idx)
+                type_s = dialog.select(
+                    'Choose default asset for Clearlogo',
+                    list = Launcher_asset_ListItem_list, useDetails = True, preselect = p_idx)
                 if type_s < 0: return
                 assets_choose_Launcher_mapped_artwork(launcher, 'default_clearlogo', type_s)
                 asset_name = assets_get_asset_name_str(launcher['default_clearlogo'])
                 kodi_notify('Launcher Clearlogo mapped to {0}'.format(asset_name))
+            elif type2 == 4:
+                p_idx = assets_get_Launcher_mapped_asset_idx(launcher, 'default_poster')
+                type_s = dialog.select(
+                    'Choose default asset for Poster',
+                    list = Launcher_asset_ListItem_list, useDetails = True, preselect = p_idx)
+                if type_s < 0: return
+                assets_choose_Launcher_mapped_artwork(launcher, 'default_poster', type_s)
+                asset_name = assets_get_asset_name_str(launcher['default_poster'])
+                kodi_notify('Launcher Poster mapped to {0}'.format(asset_name))
 
         # --- Change launcher's Category ---
         type_nb = type_nb + 1
@@ -9663,7 +9686,8 @@ class Main:
             # --- Grab asset information for editing ---
             object_name = 'Category'
             asset_directory = FileName(self.settings['categories_asset_dir'])
-            asset_path_noext = assets_get_path_noext_SUFIX(AInfo, asset_directory, object_dic['m_name'], object_dic['id'])
+            asset_path_noext = assets_get_path_noext_SUFIX(
+                AInfo, asset_directory, object_dic['m_name'], object_dic['id'])
             log_info('_gui_edit_asset() Editing Category "{0}"'.format(AInfo.name))
             log_info('_gui_edit_asset() ID {0}'.format(object_dic['id']))
             log_debug('_gui_edit_asset() asset_directory  "{0}"'.format(asset_directory.getOriginalPath()))
@@ -9677,7 +9701,8 @@ class Main:
             # --- Grab asset information for editing ---
             object_name = 'Collection'
             asset_directory = FileName(self.settings['collections_asset_dir'])
-            asset_path_noext = assets_get_path_noext_SUFIX(AInfo, asset_directory, object_dic['m_name'], object_dic['id'])
+            asset_path_noext = assets_get_path_noext_SUFIX(
+                AInfo, asset_directory, object_dic['m_name'], object_dic['id'])
             log_info('_gui_edit_asset() Editing Collection "{0}"'.format(AInfo.name))
             log_info('_gui_edit_asset() ID {0}'.format(object_dic['id']))
             log_debug('_gui_edit_asset() asset_directory  "{0}"'.format(asset_directory.getOriginalPath()))
@@ -9753,6 +9778,8 @@ class Main:
         if object_kind == KIND_ROM:
             g_scrap_factory = ScraperFactory(g_PATHS, self.settings)
             scraper_menu_list = g_scrap_factory.get_asset_scraper_menu_list(asset_ID)
+        else:
+            scraper_menu_list = []
 
         # --- Show image editing options ---
         # Scrapers only supported for ROMs (for the moment)
@@ -9762,12 +9789,9 @@ class Main:
             'Import local {0} (copy and rename)'.format(AInfo.kind_str),
             'Unset artwork/asset',
         ]
-        if object_kind == KIND_ROM:
-            type2 = dialog.select('Change {0} {1}'.format(AInfo.name, AInfo.kind_str),
-                common_menu_list + scraper_menu_list)
-        else:
-            type2 = dialog.select('Change {0} {1}'.format(AInfo.name, AInfo.kind_str),
-                common_menu_list)
+        type2 = dialog.select(
+            'Change {0} {1}'.format(AInfo.name, AInfo.kind_str),
+            common_menu_list + scraper_menu_list)
         if type2 < 0: return False
 
         # --- Link to a local image ---
