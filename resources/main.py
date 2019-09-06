@@ -3260,12 +3260,13 @@ class Main:
                 rom = roms[romID]
 
                 # >> Label1 an label2
-                asset_icon_str     = assets_get_asset_name_str(rom['roms_default_thumb'])
+                asset_icon_str      = assets_get_asset_name_str(rom['roms_default_icon'])
                 asset_fanart_str    = assets_get_asset_name_str(rom['roms_default_fanart'])
                 asset_banner_str    = assets_get_asset_name_str(rom['roms_default_banner'])
                 asset_poster_str    = assets_get_asset_name_str(rom['roms_default_poster'])
                 asset_clearlogo_str = assets_get_asset_name_str(rom['roms_default_clearlogo'])
-                label2_thumb        = rom[rom['roms_default_thumb']]     if rom[rom['roms_default_thumb']]     else 'Not set'
+
+                label2_thumb        = rom[rom['roms_default_icon']]     if rom[rom['roms_default_icon']]     else 'Not set'
                 label2_fanart       = rom[rom['roms_default_fanart']]    if rom[rom['roms_default_fanart']]    else 'Not set'
                 label2_banner       = rom[rom['roms_default_banner']]    if rom[rom['roms_default_banner']]    else 'Not set'
                 label2_poster       = rom[rom['roms_default_poster']]    if rom[rom['roms_default_poster']]    else 'Not set'
@@ -3282,7 +3283,7 @@ class Main:
                                                        label2 = label2_clearlogo)
 
                 # >> Asset image
-                img_icon            = rom[rom['roms_default_thumb']]     if rom[rom['roms_default_thumb']]     else 'DefaultAddonNone.png'
+                img_icon            = rom[rom['roms_default_icon']]     if rom[rom['roms_default_icon']]     else 'DefaultAddonNone.png'
                 img_fanart          = rom[rom['roms_default_fanart']]    if rom[rom['roms_default_fanart']]    else 'DefaultAddonNone.png'
                 img_banner          = rom[rom['roms_default_banner']]    if rom[rom['roms_default_banner']]    else 'DefaultAddonNone.png'
                 img_poster          = rom[rom['roms_default_poster']]    if rom[rom['roms_default_poster']]    else 'DefaultAddonNone.png'
@@ -3329,7 +3330,7 @@ class Main:
                 if type3 == 0:
                     type_s = dialog.select('Choose default Asset for Icon', list = ROMs_asset_ListItem_list, useDetails = True)
                     if type_s < 0: return
-                    assets_choose_category_ROM(rom, 'roms_default_thumb', type_s)
+                    assets_choose_category_ROM(rom, 'roms_default_icon', type_s)
                 elif type3 == 1:
                     type_s = dialog.select('Choose default Asset for Fanart', list = ROMs_asset_ListItem_list, useDetails = True)
                     if type_s < 0: return
@@ -7103,7 +7104,7 @@ class Main:
                     info_text += self._misc_print_string_Category(category)
             elif view_type == VIEW_COLLECTION:
                 window_title = 'ROM Collection data'
-                (collections, update_timestamp) = fs_load_Collection_index_XML(COLLECTIONS_FILE_PATH)
+                (collections, update_timestamp) = fs_load_Collection_index_XML(g_PATHS.COLLECTIONS_FILE_PATH)
                 collection = collections[launcherID]
                 info_text = '[COLOR orange]ROM Collection information[/COLOR]\n'
                 info_text += self._misc_print_string_Collection(collection)
@@ -7392,22 +7393,22 @@ class Main:
         elif action == ACTION_VIEW_MAP:
             # >> Load ROMs
             if categoryID == VCATEGORY_FAVOURITES_ID:
-                roms = fs_load_Favourites_JSON(FAV_JSON_FILE_PATH)
+                roms = fs_load_Favourites_JSON(g_PATHS.FAV_JSON_FILE_PATH)
                 rom = roms[romID]
             elif categoryID == VCATEGORY_MOST_PLAYED_ID:
-                most_played_roms = fs_load_Favourites_JSON(MOST_PLAYED_FILE_PATH)
+                most_played_roms = fs_load_Favourites_JSON(g_PATHS.MOST_PLAYED_FILE_PATH)
                 rom = most_played_roms[romID]
             elif categoryID == VCATEGORY_RECENT_ID:
-                recent_roms_list = fs_load_Collection_ROMs_JSON(RECENT_PLAYED_FILE_PATH)
+                recent_roms_list = fs_load_Collection_ROMs_JSON(g_PATHS.RECENT_PLAYED_FILE_PATH)
                 current_ROM_position = fs_collection_ROM_index_by_romID(romID, recent_roms_list)
                 if current_ROM_position < 0:
                     kodi_dialog_OK('Collection ROM not found in list. This is a bug!')
                     return
                 rom = recent_roms_list[current_ROM_position]
             elif categoryID == VCATEGORY_COLLECTIONS_ID:
-                (collections, update_timestamp) = fs_load_Collection_index_XML(COLLECTIONS_FILE_PATH)
+                (collections, update_timestamp) = fs_load_Collection_index_XML(g_PATHS.COLLECTIONS_FILE_PATH)
                 collection = collections[launcherID]
-                roms_json_file = COLLECTIONS_DIR.pjoin(collection['roms_base_noext'] + '.json')
+                roms_json_file = g_PATHS.COLLECTIONS_DIR.pjoin(collection['roms_base_noext'] + '.json')
                 collection_rom_list = fs_load_Collection_ROMs_JSON(roms_json_file)
                 current_ROM_position = fs_collection_ROM_index_by_romID(romID, collection_rom_list)
                 if current_ROM_position < 0:
