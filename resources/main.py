@@ -3803,12 +3803,13 @@ class Main:
     def _gui_render_Utilities_root(self):
         vcategory_name   = '[COLOR sandybrown]Utilities[/COLOR]'
         vcategory_plot   = 'A set of useful [COLOR orange]Utilities[/COLOR].'
-        vcategory_icon   = g_PATHS.ICON_FILE_PATH.getPath()
+        vcategory_icon   = g_PATHS.ADDON_CODE_DIR.pjoin('media/theme/Utilities_icon.png').getPath()
         vcategory_fanart = g_PATHS.FANART_FILE_PATH.getPath()
+        vcategory_poster = g_PATHS.ADDON_CODE_DIR.pjoin('media/theme/Utilities_poster.png').getPath()
 
         listitem = xbmcgui.ListItem(vcategory_name)
         listitem.setInfo('video', {'title': vcategory_name, 'plot' : vcategory_plot, 'overlay': 4})
-        listitem.setArt({'icon' : vcategory_icon, 'fanart' : vcategory_fanart})
+        listitem.setArt({'icon' : vcategory_icon, 'fanart' : vcategory_fanart, 'poster' : vcategory_poster})
         listitem.setProperty(AEL_CONTENT_LABEL, AEL_CONTENT_VALUE_CATEGORY)
 
         commands = []
@@ -3822,12 +3823,13 @@ class Main:
     def _gui_render_GlobalReports_root(self):
         vcategory_name   = '[COLOR salmon]Global Reports[/COLOR]'
         vcategory_plot   = 'Generate and view [COLOR orange]Global Reports[/COLOR].'
-        vcategory_icon   = g_PATHS.ICON_FILE_PATH.getPath()
+        vcategory_icon   = g_PATHS.ADDON_CODE_DIR.pjoin('media/theme/Global_Reports_icon.png').getPath()
         vcategory_fanart = g_PATHS.FANART_FILE_PATH.getPath()
+        vcategory_poster = g_PATHS.ADDON_CODE_DIR.pjoin('media/theme/Global_Reports_poster.png').getPath()
 
         listitem = xbmcgui.ListItem(vcategory_name)
         listitem.setInfo('video', {'title': vcategory_name, 'plot' : vcategory_plot, 'overlay': 4})
-        listitem.setArt({'icon' : vcategory_icon, 'fanart' : vcategory_fanart})
+        listitem.setArt({'icon' : vcategory_icon, 'fanart' : vcategory_fanart, 'poster' : vcategory_poster})
         listitem.setProperty(AEL_CONTENT_LABEL, AEL_CONTENT_VALUE_CATEGORY)
 
         commands = []
@@ -4029,16 +4031,19 @@ class Main:
         commands.append(('Kodi File Manager', 'ActivateWindow(filemanager)'))
         commands.append(('AEL addon settings', 'Addon.OpenSettings({0})'.format(__addon_id__)))
 
+        # --- Common artwork for all VLaunchers ---
+        vcategory_icon   = g_PATHS.ADDON_CODE_DIR.pjoin('media/theme/Utilities_icon.png').getPath()
+        vcategory_fanart = g_PATHS.FANART_FILE_PATH.getPath()
+        vcategory_poster = g_PATHS.ADDON_CODE_DIR.pjoin('media/theme/Utilities_poster.png').getPath()
+
         # <setting label="Import category/launcher configuration ..."
         #  action="RunPlugin(plugin://plugin.program.advanced.emulator.launcher/?com=IMPORT_LAUNCHERS)"/>
         vcategory_name   = 'Import category/launcher XML configuration file'
         vcategory_plot   = (
             'Imports XML files having AEL categories and/or launcher configuration.')
-        vcategory_icon   = g_PATHS.ICON_FILE_PATH.getPath()
-        vcategory_fanart = g_PATHS.FANART_FILE_PATH.getPath()
         listitem = xbmcgui.ListItem(vcategory_name)
         listitem.setInfo('video', {'title': vcategory_name, 'plot' : vcategory_plot, 'overlay': 4})
-        listitem.setArt({'icon' : vcategory_icon, 'fanart' : vcategory_fanart})
+        listitem.setArt({'icon' : vcategory_icon, 'fanart' : vcategory_fanart, 'poster' : vcategory_poster})
         listitem.setProperty(AEL_CONTENT_LABEL, AEL_CONTENT_VALUE_ROM_LAUNCHER)
         listitem.addContextMenuItems(commands)
         url_str = self._misc_url('EXECUTE_UTILS_IMPORT_LAUNCHERS')
@@ -4050,11 +4055,9 @@ class Main:
         vcategory_plot   = (
             'Exports all AEL categories and launchers into an XML configuration file. '
             'You can later reimport this XML file.')
-        vcategory_icon   = g_PATHS.ICON_FILE_PATH.getPath()
-        vcategory_fanart = g_PATHS.FANART_FILE_PATH.getPath()
         listitem = xbmcgui.ListItem(vcategory_name)
         listitem.setInfo('video', {'title': vcategory_name, 'plot' : vcategory_plot, 'overlay': 4})
-        listitem.setArt({'icon' : vcategory_icon, 'fanart' : vcategory_fanart})
+        listitem.setArt({'icon' : vcategory_icon, 'fanart' : vcategory_fanart, 'poster' : vcategory_poster})
         listitem.setProperty(AEL_CONTENT_LABEL, AEL_CONTENT_VALUE_ROM_LAUNCHER)
         listitem.addContextMenuItems(commands)
         url_str = self._misc_url('EXECUTE_UTILS_EXPORT_LAUNCHERS')
@@ -4064,11 +4067,9 @@ class Main:
         #  action="RunPlugin(plugin://plugin.program.advanced.emulator.launcher/?com=CHECK_DATABASE)"/>
         vcategory_name   = 'Check/Update all databases'
         vcategory_plot   = ('Checks and updates all AEL databases.')
-        vcategory_icon   = g_PATHS.ICON_FILE_PATH.getPath()
-        vcategory_fanart = g_PATHS.FANART_FILE_PATH.getPath()
         listitem = xbmcgui.ListItem(vcategory_name)
         listitem.setInfo('video', {'title': vcategory_name, 'plot' : vcategory_plot, 'overlay': 4})
-        listitem.setArt({'icon' : vcategory_icon, 'fanart' : vcategory_fanart})
+        listitem.setArt({'icon' : vcategory_icon, 'fanart' : vcategory_fanart, 'poster' : vcategory_poster})
         listitem.setProperty(AEL_CONTENT_LABEL, AEL_CONTENT_VALUE_ROM_LAUNCHER)
         listitem.addContextMenuItems(commands)
         url_str = self._misc_url('EXECUTE_UTILS_CHECK_DATABASE')
@@ -4079,11 +4080,9 @@ class Main:
         #  action="RunPlugin(plugin://plugin.program.advanced.emulator.launcher/?com=CHECK_LAUNCHERS)"/>
         vcategory_name   = 'Check Launchers'
         vcategory_plot   = ('Check Launchers.')
-        vcategory_icon   = g_PATHS.ICON_FILE_PATH.getPath()
-        vcategory_fanart = g_PATHS.FANART_FILE_PATH.getPath()
         listitem = xbmcgui.ListItem(vcategory_name)
         listitem.setInfo('video', {'title': vcategory_name, 'plot' : vcategory_plot, 'overlay': 4})
-        listitem.setArt({'icon' : vcategory_icon, 'fanart' : vcategory_fanart})
+        listitem.setArt({'icon' : vcategory_icon, 'fanart' : vcategory_fanart, 'poster' : vcategory_poster})
         listitem.setProperty(AEL_CONTENT_LABEL, AEL_CONTENT_VALUE_ROM_LAUNCHER)
         listitem.addContextMenuItems(commands)
         url_str = self._misc_url('EXECUTE_UTILS_CHECK_LAUNCHERS')
@@ -4093,11 +4092,9 @@ class Main:
         #  action="RunPlugin(plugin://plugin.program.advanced.emulator.launcher/?com=CHECK_RETRO_BIOS)"/>
         vcategory_name   = 'Check Retroarch BIOSes'
         vcategory_plot   = ('Check Retroarch BIOSes.')
-        vcategory_icon   = g_PATHS.ICON_FILE_PATH.getPath()
-        vcategory_fanart = g_PATHS.FANART_FILE_PATH.getPath()
         listitem = xbmcgui.ListItem(vcategory_name)
         listitem.setInfo('video', {'title': vcategory_name, 'plot' : vcategory_plot, 'overlay': 4})
-        listitem.setArt({'icon' : vcategory_icon, 'fanart' : vcategory_fanart})
+        listitem.setArt({'icon' : vcategory_icon, 'fanart' : vcategory_fanart, 'poster' : vcategory_poster})
         listitem.setProperty(AEL_CONTENT_LABEL, AEL_CONTENT_VALUE_ROM_LAUNCHER)
         listitem.addContextMenuItems(commands)
         url_str = self._misc_url('EXECUTE_UTILS_CHECK_RETRO_BIOS')
@@ -4111,11 +4108,9 @@ class Main:
         # --- Check TheGamesDB scraper ---
         vcategory_name   = 'Check TheGamesDB scraper'
         vcategory_plot   = ('Connects to TheGamesDB and checks you monthly allowance.')
-        vcategory_icon   = g_PATHS.ICON_FILE_PATH.getPath()
-        vcategory_fanart = g_PATHS.FANART_FILE_PATH.getPath()
         listitem = xbmcgui.ListItem(vcategory_name)
         listitem.setInfo('video', {'title': vcategory_name, 'plot' : vcategory_plot, 'overlay': 4})
-        listitem.setArt({'icon' : vcategory_icon, 'fanart' : vcategory_fanart})
+        listitem.setArt({'icon' : vcategory_icon, 'fanart' : vcategory_fanart, 'poster' : vcategory_poster})
         listitem.setProperty(AEL_CONTENT_LABEL, AEL_CONTENT_VALUE_ROM_LAUNCHER)
         listitem.addContextMenuItems(commands)
         url_str = self._misc_url('EXECUTE_UTILS_TGDB_CHECK')
@@ -4124,11 +4119,9 @@ class Main:
         # --- Check MobyGames scraper ---
         vcategory_name   = 'Check MobyGames scraper'
         vcategory_plot   = ('Connects to MobyGames and checks if it works.')
-        vcategory_icon   = g_PATHS.ICON_FILE_PATH.getPath()
-        vcategory_fanart = g_PATHS.FANART_FILE_PATH.getPath()
         listitem = xbmcgui.ListItem(vcategory_name)
         listitem.setInfo('video', {'title': vcategory_name, 'plot' : vcategory_plot, 'overlay': 4})
-        listitem.setArt({'icon' : vcategory_icon, 'fanart' : vcategory_fanart})
+        listitem.setArt({'icon' : vcategory_icon, 'fanart' : vcategory_fanart, 'poster' : vcategory_poster})
         listitem.setProperty(AEL_CONTENT_LABEL, AEL_CONTENT_VALUE_ROM_LAUNCHER)
         listitem.addContextMenuItems(commands)
         url_str = self._misc_url('EXECUTE_UTILS_MOBYGAMES_CHECK')
@@ -4137,11 +4130,9 @@ class Main:
         # --- Check ScreenScraper scraper ---
         vcategory_name   = 'Check ScreenScraper scraper'
         vcategory_plot   = ('Connects to ScreenScraper and checks if it works.')
-        vcategory_icon   = g_PATHS.ICON_FILE_PATH.getPath()
-        vcategory_fanart = g_PATHS.FANART_FILE_PATH.getPath()
         listitem = xbmcgui.ListItem(vcategory_name)
         listitem.setInfo('video', {'title': vcategory_name, 'plot' : vcategory_plot, 'overlay': 4})
-        listitem.setArt({'icon' : vcategory_icon, 'fanart' : vcategory_fanart})
+        listitem.setArt({'icon' : vcategory_icon, 'fanart' : vcategory_fanart, 'poster' : vcategory_poster})
         listitem.setProperty(AEL_CONTENT_LABEL, AEL_CONTENT_VALUE_ROM_LAUNCHER)
         listitem.addContextMenuItems(commands)
         url_str = self._misc_url('EXECUTE_UTILS_SCREENSCRAPER_CHECK')
@@ -4150,11 +4141,9 @@ class Main:
         # --- Check ArcadeDB scraper ---
         vcategory_name   = 'Check Arcade DB scraper'
         vcategory_plot   = ('Connects to Arcade DB and checks if it works.')
-        vcategory_icon   = g_PATHS.ICON_FILE_PATH.getPath()
-        vcategory_fanart = g_PATHS.FANART_FILE_PATH.getPath()
         listitem = xbmcgui.ListItem(vcategory_name)
         listitem.setInfo('video', {'title': vcategory_name, 'plot' : vcategory_plot, 'overlay': 4})
-        listitem.setArt({'icon' : vcategory_icon, 'fanart' : vcategory_fanart})
+        listitem.setArt({'icon' : vcategory_icon, 'fanart' : vcategory_fanart, 'poster' : vcategory_poster})
         listitem.setProperty(AEL_CONTENT_LABEL, AEL_CONTENT_VALUE_ROM_LAUNCHER)
         listitem.addContextMenuItems(commands)
         url_str = self._misc_url('EXECUTE_UTILS_ARCADEDB_CHECK')
@@ -4169,14 +4158,17 @@ class Main:
         commands.append(('Kodi File Manager', 'ActivateWindow(filemanager)'))
         commands.append(('AEL addon settings', 'Addon.OpenSettings({0})'.format(__addon_id__)))
 
+        # --- Common artwork for all VLaunchers ---
+        vcategory_icon   = g_PATHS.ADDON_CODE_DIR.pjoin('media/theme/Global_Reports_icon.png').getPath()
+        vcategory_fanart = g_PATHS.FANART_FILE_PATH.getPath()
+        vcategory_poster = g_PATHS.ADDON_CODE_DIR.pjoin('media/theme/Global_Reports_poster.png').getPath()
+
         # --- Global ROM statistics ---
         vcategory_name   = 'Global ROM statistics'
         vcategory_plot   = ('Shows a report of all ROM Launchers with number of ROMs.')
-        vcategory_icon   = g_PATHS.ICON_FILE_PATH.getPath()
-        vcategory_fanart = g_PATHS.FANART_FILE_PATH.getPath()
         listitem = xbmcgui.ListItem(vcategory_name)
         listitem.setInfo('video', {'title': vcategory_name, 'plot' : vcategory_plot, 'overlay': 4})
-        listitem.setArt({'icon' : vcategory_icon, 'fanart' : vcategory_fanart})
+        listitem.setArt({'icon' : vcategory_icon, 'fanart' : vcategory_fanart, 'poster' : vcategory_poster})
         listitem.setProperty(AEL_CONTENT_LABEL, AEL_CONTENT_VALUE_ROM_LAUNCHER)
         listitem.addContextMenuItems(commands)
         url_str = self._misc_url('EXECUTE_GLOBAL_ROM_STATS')
@@ -4186,11 +4178,9 @@ class Main:
         vcategory_name   = 'Global ROM Audit statistics'
         vcategory_plot   = ('Shows a report of all audited ROM Launchers, with Have, Miss and Unknown '
                             'statistics.')
-        vcategory_icon   = g_PATHS.ICON_FILE_PATH.getPath()
-        vcategory_fanart = g_PATHS.FANART_FILE_PATH.getPath()
         listitem = xbmcgui.ListItem(vcategory_name)
         listitem.setInfo('video', {'title': vcategory_name, 'plot' : vcategory_plot, 'overlay': 4})
-        listitem.setArt({'icon' : vcategory_icon, 'fanart' : vcategory_fanart})
+        listitem.setArt({'icon' : vcategory_icon, 'fanart' : vcategory_fanart, 'poster' : vcategory_poster})
         listitem.setProperty(AEL_CONTENT_LABEL, AEL_CONTENT_VALUE_ROM_LAUNCHER)
         listitem.addContextMenuItems(commands)
         url_str = self._misc_url('EXECUTE_GLOBAL_AUDIT_STATS')
