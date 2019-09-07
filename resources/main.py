@@ -173,10 +173,10 @@ class Main:
         # log_debug('__a_profile__  "{0}"'.format(__addon_profile__))
         # log_debug('__a_type__     "{0}"'.format(__addon_type__))
         for i in range(len(sys.argv)): log_debug('sys.argv[{0}] "{1}"'.format(i, sys.argv[i]))
-        # log_debug('PLUGIN_DATA_DIR OP "{0}"'.format(PLUGIN_DATA_DIR.getOriginalPath()))
-        # log_debug('PLUGIN_DATA_DIR  P "{0}"'.format(PLUGIN_DATA_DIR.getPath()))
-        # log_debug('g_PATHS.ADDON_CODE_DIR OP "{0}"'.format(g_PATHS.ADDON_CODE_DIR.getOriginalPath()))
-        # log_debug('g_PATHS.ADDON_CODE_DIR  P "{0}"'.format(g_PATHS.ADDON_CODE_DIR.getPath()))
+        # log_debug('PLUGIN_DATA_DIR OP "{0}"'.format(g_PATHS.PLUGIN_DATA_DIR.getOriginalPath()))
+        # log_debug('PLUGIN_DATA_DIR  P "{0}"'.format(g_PATHS.PLUGIN_DATA_DIR.getPath()))
+        # log_debug('ADDON_CODE_DIR OP "{0}"'.format(g_PATHS.ADDON_CODE_DIR.getOriginalPath()))
+        # log_debug('ADDON_CODE_DIR  P "{0}"'.format(g_PATHS.ADDON_CODE_DIR.getPath()))
 
         # --- Get DEBUG information for the log --
         if self.settings['log_level'] == LOG_DEBUG:
@@ -659,7 +659,7 @@ class Main:
         category['id']     = categoryID
         category['m_name'] = keyboard.getText().decode('utf-8')
         self.categories[categoryID] = category
-        fs_write_catfile(CATEGORIES_FILE_PATH, self.categories, self.launchers)
+        fs_write_catfile(g_PATHS.CATEGORIES_FILE_PATH, self.categories, self.launchers)
         kodi_notify('Category {0} created'.format(category['m_name']))
         kodi_refresh_container()
 
@@ -1634,9 +1634,9 @@ class Main:
             log_debug('_command_edit_launcher() new     category   ID "{0}"'.format(new_categoryID))
             log_debug('_command_edit_launcher() new     category name "{0}"'.format(categories_name[selected_cat]))
 
-            # >> Save cateogires/launchers
+            # >> Save categories/launchers
             self.launchers[launcherID]['timestamp_launcher'] = time.time()
-            fs_write_catfile(CATEGORIES_FILE_PATH, self.categories, self.launchers)
+            fs_write_catfile(g_PATHS.CATEGORIES_FILE_PATH, self.categories, self.launchers)
 
             # >> Display new category where launcher has moved
             # For some reason ReplaceWindow() does not work, bu Container.Update() does.
@@ -5179,18 +5179,18 @@ class Main:
         for launcher_id in self.launchers:
             launcher = self.launchers[launcher_id]
             # If launcher is standalone skip
-            if launcher['rompath'] == '': continue
+            if not launcher['rompath']: continue
             roms = fs_load_ROMs_JSON(g_PATHS.ROMS_DIR, launcher)
             temp_roms = {}
             for rom_id in roms:
-                temp_rom                = roms[rom_id].copy()
+                temp_rom = roms[rom_id].copy()
                 temp_rom['launcher_id'] = launcher_id
                 temp_rom['category_id'] = launcher['categoryID']
                 temp_roms[rom_id] = temp_rom
             all_roms.update(temp_roms)
 
         # --- Load favourites ---
-        roms_fav = fs_load_Favourites_JSON(FAV_JSON_FILE_PATH)
+        roms_fav = fs_load_Favourites_JSON(g_PATHS.FAV_JSON_FILE_PATH)
         roms_fav_set = set(roms_fav.keys())
 
         # --- Set content type and sorting methods ---
@@ -5198,8 +5198,9 @@ class Main:
 
         # --- Render ROMs ---
         for rom_id in sorted(all_roms, key = lambda x : all_roms[x]['m_name']):
-            self._gui_render_rom_row(all_roms[rom_id]['category_id'], all_roms[rom_id]['launcher_id'],
-                                     all_roms[rom_id], rom_id in roms_fav_set)
+            self._gui_render_rom_row(
+                all_roms[rom_id]['category_id'], all_roms[rom_id]['launcher_id'],
+                all_roms[rom_id], rom_id in roms_fav_set)
         xbmcplugin.endOfDirectory(handle = self.addon_handle, succeeded = True, cacheToDisc = False)
 
     #
@@ -5208,19 +5209,19 @@ class Main:
     def _command_add_to_favourites(self, categoryID, launcherID, romID):
         # >> ROM in Virtual Launcher
         if categoryID == VCATEGORY_TITLE_ID:
-            roms = fs_load_VCategory_ROMs_JSON(VIRTUAL_CAT_TITLE_DIR, launcherID)
+            roms = fs_load_VCategory_ROMs_JSON(g_PATHS.VIRTUAL_CAT_TITLE_DIR, launcherID)
             launcher = self.launchers[roms[romID]['launcherID']]
         elif categoryID == VCATEGORY_YEARS_ID:
-            roms = fs_load_VCategory_ROMs_JSON(VIRTUAL_CAT_YEARS_DIR, launcherID)
+            roms = fs_load_VCategory_ROMs_JSON(g_PATHS.VIRTUAL_CAT_YEARS_DIR, launcherID)
             launcher = self.launchers[roms[romID]['launcherID']]
         elif categoryID == VCATEGORY_GENRE_ID:
-            roms = fs_load_VCategory_ROMs_JSON(VIRTUAL_CAT_GENRE_DIR, launcherID)
+            roms = fs_load_VCategory_ROMs_JSON(g_PATHS.VIRTUAL_CAT_GENRE_DIR, launcherID)
             launcher = self.launchers[roms[romID]['launcherID']]
         elif categoryID == VCATEGORY_DEVELOPER_ID:
-            roms = fs_load_VCategory_ROMs_JSON(VIRTUAL_CAT_DEVELOPER_DIR, launcherID)
+            roms = fs_load_VCategory_ROMs_JSON(g_PATHS.VIRTUAL_CAT_DEVELOPER_DIR, launcherID)
             launcher = self.launchers[roms[romID]['launcherID']]
         elif categoryID == VCATEGORY_CATEGORY_ID:
-            roms = fs_load_VCategory_ROMs_JSON(VIRTUAL_CAT_CATEGORY_DIR, launcherID)
+            roms = fs_load_VCategory_ROMs_JSON(g_PATHS.VIRTUAL_CAT_CATEGORY_DIR, launcherID)
             launcher = self.launchers[roms[romID]['launcherID']]
         # >> ROMs in standard launcher
         else:
@@ -6841,17 +6842,17 @@ class Main:
 
         # --- Load Launcher ROMs ---
         if categoryID == VCATEGORY_FAVOURITES_ID:
-            roms = fs_load_Favourites_JSON(FAV_JSON_FILE_PATH)
+            roms = fs_load_Favourites_JSON(g_PATHS.FAV_JSON_FILE_PATH)
         elif categoryID == VCATEGORY_TITLE_ID:
-            roms = fs_load_VCategory_ROMs_JSON(VIRTUAL_CAT_TITLE_DIR, launcherID)
+            roms = fs_load_VCategory_ROMs_JSON(g_PATHS.VIRTUAL_CAT_TITLE_DIR, launcherID)
         elif categoryID == VCATEGORY_YEARS_ID:
-            roms = fs_load_VCategory_ROMs_JSON(VIRTUAL_CAT_YEARS_DIR, launcherID)
+            roms = fs_load_VCategory_ROMs_JSON(g_PATHS.VIRTUAL_CAT_YEARS_DIR, launcherID)
         elif categoryID == VCATEGORY_GENRE_ID:
-            roms = fs_load_VCategory_ROMs_JSON(VIRTUAL_CAT_GENRE_DIR, launcherID)
+            roms = fs_load_VCategory_ROMs_JSON(g_PATHS.VIRTUAL_CAT_GENRE_DIR, launcherID)
         elif categoryID == VCATEGORY_DEVELOPER_ID:
-            roms = fs_load_VCategory_ROMs_JSON(VIRTUAL_CAT_DEVELOPER_DIR, launcherID)
+            roms = fs_load_VCategory_ROMs_JSON(g_PATHS.VIRTUAL_CAT_DEVELOPER_DIR, launcherID)
         elif categoryID == VCATEGORY_CATEGORY_ID:
-            roms = fs_load_VCategory_ROMs_JSON(VIRTUAL_CAT_CATEGORY_DIR, launcherID)
+            roms = fs_load_VCategory_ROMs_JSON(g_PATHS.VIRTUAL_CAT_CATEGORY_DIR, launcherID)
         else:
             rom_file_path = g_PATHS.ROMS_DIR.pjoin(self.launchers[launcherID]['roms_base_noext'] + '.json')
             if not rom_file_path.exists():
@@ -8385,13 +8386,13 @@ class Main:
                 if windows_cd_apppath and windows_close_fds:
                     retcode = subprocess.call(exec_list, cwd = apppath.encode('utf-8'), close_fds = True)
                 elif windows_cd_apppath and not windows_close_fds:
-                    with open(LAUNCH_LOG_FILE_PATH.getPath(), 'w') as f:
+                    with open(g_PATHS.LAUNCH_LOG_FILE_PATH.getPath(), 'w') as f:
                         retcode = subprocess.call(exec_list, cwd = apppath.encode('utf-8'), close_fds = False,
                                                   stdout = f, stderr = subprocess.STDOUT)
                 elif not windows_cd_apppath and windows_close_fds:
                     retcode = subprocess.call(exec_list, close_fds = True)
                 elif not windows_cd_apppath and not windows_close_fds:
-                    with open(LAUNCH_LOG_FILE_PATH.getPath(), 'w') as f:
+                    with open(g_PATHS.LAUNCH_LOG_FILE_PATH.getPath(), 'w') as f:
                         retcode = subprocess.call(exec_list, close_fds = False,
                                                   stdout = f, stderr = subprocess.STDOUT)
                 else:
@@ -8434,7 +8435,7 @@ class Main:
             # os.system('"{0}" {1}'.format(application, arguments).encode('utf-8'))
 
             # >> New way.
-            with open(LAUNCH_LOG_FILE_PATH.getPath(), 'w') as f:
+            with open(g_PATHS.LAUNCH_LOG_FILE_PATH.getPath(), 'w') as f:
                 retcode = subprocess.call(exec_list, stdout = f, stderr = subprocess.STDOUT)
             log_info('_run_process() Process retcode = {0}'.format(retcode))
 
@@ -9318,7 +9319,7 @@ class Main:
         launcher['num_roms'] = len(roms)
         launcher['timestamp_launcher'] = time.time()
         fs_write_ROMs_JSON(g_PATHS.ROMS_DIR, launcher, roms)
-        fs_write_catfile(CATEGORIES_FILE_PATH, self.categories, self.launchers)
+        fs_write_catfile(g_PATHS.CATEGORIES_FILE_PATH, self.categories, self.launchers)
         kodi_refresh_container()
         kodi_notify('Added ROM. Launcher has now {0} ROMs'.format(len(roms)))
 
