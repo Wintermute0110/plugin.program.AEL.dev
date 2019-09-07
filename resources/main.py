@@ -9470,11 +9470,11 @@ class Main:
             report_fobj.write('>>> {0}\n'.format(ROM.getPath()).encode('utf-8'))
 
             # ~~~ Update progress dialog ~~~
-            file_text = 'ROM {0}'.format(ROM.getBase())
+            file_text = 'ROM [COLOR orange]{}[/COLOR]'.format(ROM.getBase())
             if not pdialog_verbose:
                 pdialog.updateProgress(num_files_checked, file_text)
             else:
-                pdialog.updateProgress(num_files_checked, file_text, 'Checking if has ROM extension ...')
+                pdialog.updateProgress(num_files_checked, file_text, 'Checking if has ROM extension...')
             num_files_checked += 1
 
             # --- Check if filename matchs ROM extensions ---
