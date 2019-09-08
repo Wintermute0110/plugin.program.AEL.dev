@@ -2308,7 +2308,6 @@ def m_subcommand_toggle_multidisc(launcher):
 
 
 
-
 # --- Scan ROMs local artwork ---
 # >> A) First, local assets are searched for every ROM based on the filename.
 # >> B) Next, missing assets are searched in the Parent/Clone group using the files
@@ -6881,7 +6880,7 @@ def m_command_view_menu(categoryID, launcherID, romID):
                 log_info('_command_view_menu() Viewing ROM in Collection ...')
                 (collections, update_timestamp) = fs_load_Collection_index_XML(COLLECTIONS_FILE_PATH)
                 collection = collections[launcherID]
-                roms_json_file = COLLECTIONS_DIR.pjoin(collection['roms_base_noext'] + '.json')
+                roms_json_file = g_PATHS.COLLECTIONS_DIR.pjoin(collection['roms_base_noext'] + '.json')
                 collection_rom_list = fs_load_Collection_ROMs_JSON(roms_json_file)
                 current_ROM_position = fs_collection_ROM_index_by_romID(romID, collection_rom_list)
                 if current_ROM_position < 0:

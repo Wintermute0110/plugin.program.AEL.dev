@@ -1125,24 +1125,24 @@ def fs_export_ROM_collection_assets(output_FileName, collection, collection_rom_
 
     control_dic = {
         'control' : 'Advanced Emulator Launcher Collection ROM assets',
-        'version' : AEL_STORAGE_FORMAT
+        'version' : AEL_STORAGE_FORMAT,
     }
 
     # --- Export Collection assets ---
     assets_dic = {}
     log_debug('fs_export_ROM_collection_assets() Exporting Collecion assets')
-    for asset_kind in CATEGORY_ASSET_ID_LIST:
+    for asset_kind in COLLECTION_ASSET_ID_LIST:
         AInfo    = assets_get_info_scheme(asset_kind)
         asset_FN = FileName.create(collection[AInfo.key])
         if not collection[AInfo.key]:
             log_debug('{0:<9s} not set'.format(AInfo.name))
             continue
         elif not asset_FN.exists():
-            log_error('{0:<9s} not found "{1}"'.format(AInfo.name, asset_FN.getPath()))
-            log_error('{0:<9s} ignoring'.format(AInfo.name))
+            log_debug('{0:<9s} not found "{1}"'.format(AInfo.name, asset_FN.getPath()))
+            log_debug('{0:<9s} ignoring'.format(AInfo.name))
             continue
         elif asset_FN.getDir() != collections_asset_dir_FN.getPath():
-            log_error('{0:<9s} not in ROM Collection asset dir! This is not supposed to happen!'.format(AInfo.name))
+            log_debug('{0:<9s} not in ROM Collection asset dir! This is not supposed to happen!'.format(AInfo.name))
             continue
         # >> Read image binary data and encode
         log_debug('{0:<9s} Adding to assets dictionary with key "{1}"'.format(AInfo.name, asset_FN.getBase_noext()))
@@ -1159,18 +1159,18 @@ def fs_export_ROM_collection_assets(output_FileName, collection, collection_rom_
     log_debug('fs_export_ROM_collection_assets() Exporting ROM assets')
     for rom_item in collection_rom_list:
         log_debug('fs_export_ROM_collection_assets() ROM "{0}"'.format(rom_item['m_name']))
-        for asset_kind in ROM_ASSET_LIST:
+        for asset_kind in ROM_ASSET_ID_LIST:
             AInfo    = assets_get_info_scheme(asset_kind)
             asset_FN = FileNameFactory.create(rom_item[AInfo.key])
             if not rom_item[AInfo.key]:
                 log_debug('{0:<9s} not set'.format(AInfo.name))
                 continue
             elif not asset_FN.exists():
-                log_error('{0:<9s} not found "{1}"'.format(AInfo.name, asset_FN.getPath()))
-                log_error('{0:<9s} ignoring'.format(AInfo.name))
+                log_debug('{0:<9s} not found "{1}"'.format(AInfo.name, asset_FN.getPath()))
+                log_debug('{0:<9s} ignoring'.format(AInfo.name))
                 continue
             elif asset_FN.getDir() != collections_asset_dir_FN.getPath():
-                log_error('{0:<9s} not in ROM Collection asset dir! This is not supposed to happen!'.format(AInfo.name))
+                log_debug('{0:<9s} not in ROM Collection asset dir! This is not supposed to happen!'.format(AInfo.name))
                 continue
             # >> Read image binary data and encode
             log_debug('{0:<9s} Adding to assets dictionary with key "{1}"'.format(AInfo.name, asset_FN.getBase_noext()))
@@ -1181,7 +1181,7 @@ def fs_export_ROM_collection_assets(output_FileName, collection, collection_rom_
             file_size = statinfo.st_size
             a_dic = {'basename' : asset_FN.getBase(), 'filesize' : file_size, 'data' : fileData_base64}
             assets_dic[asset_FN.getBase_noext()] = a_dic
-            log_error('{0:<9s} exported/encoded'.format(AInfo.name))
+            log_debug('{0:<9s} exported/encoded'.format(AInfo.name))
 
     raw_data = []
     raw_data.append(control_dic)

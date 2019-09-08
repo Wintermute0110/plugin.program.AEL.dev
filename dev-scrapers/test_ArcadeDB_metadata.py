@@ -41,11 +41,12 @@ search_term, rombase, platform = common.games['dino']
 
 # --- Get candidates, print them and set first candidate ---
 rom_FN = FileName(rombase)
+rom_checksums_FN = FileName(rombase)
 if scraper_obj.check_candidates_cache(rom_FN, platform):
     print('>>>> Game "{}" "{}" in disk cache.'.format(rom_FN.getBase(), platform))
 else:
     print('>>>> Game "{}" "{}" not in disk cache.'.format(rom_FN.getBase(), platform))
-candidate_list = scraper_obj.get_candidates(search_term, rom_FN, platform, status_dic)
+candidate_list = scraper_obj.get_candidates(search_term, rom_FN, rom_checksums_FN, platform, status_dic)
 # pprint.pprint(candidate_list)
 common.handle_get_candidates(candidate_list, status_dic)
 print_candidate_list(candidate_list)
