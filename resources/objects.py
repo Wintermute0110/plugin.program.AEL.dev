@@ -5126,7 +5126,6 @@ class RomScannerStrategy(ScannerStrategyABC):
          # --- Assets/artwork stuff ----------------------------------------------------------------
         # Ensure there is no duplicate asset dirs. Abort scanning of assets if duplicate dirs found.
         launcher_report.write('Checking for duplicated artwork directories ...')
-        launcher_report.write('Removing dead ROMs ...')
         duplicated_name_list = self.launcher.get_duplicated_asset_dirs()
         if duplicated_name_list:
             duplicated_asset_srt = ', '.join(duplicated_name_list)
@@ -5143,7 +5142,7 @@ class RomScannerStrategy(ScannerStrategyABC):
         launcher_report.write('{0} candidates found'.format(num_candidates))
 
         # --- Check asset dirs and disable scanning for unset dirs ---
-        self.scraping_strategy.check_launcher_unset_asset_dirs()
+        self.scraping_strategy.scanner_check_launcher_unset_asset_dirs()
         if self.scraping_strategy.unconfigured_name_list:
             unconfigured_asset_srt = ', '.join(self.scraping_strategy.unconfigured_name_list)
             msg = 'Assets directories not set: {0}. '.format(unconfigured_asset_srt)
@@ -5369,6 +5368,7 @@ class RomFolderScanner(RomScannerStrategy):
                     log_info('First ROM in the set. Adding to ROMs ...')
                     # >> Manipulate ROM so filename is the name of the set
                     ROM_dir = FileName(ROM_file.getDir())
+                    ROM_file_original = ROM_file
                     ROM_temp = ROM_dir.pjoin(MDSet.setName)
                     log_info('ROM_temp P "{0}"'.format(ROM_temp.getPath()))
                     ROM_file = ROM_temp
@@ -5414,13 +5414,16 @@ class RomFolderScanner(RomScannerStrategy):
             # >> Database always stores the original (non transformed/manipulated) path
             new_rom = ROM()
             new_rom.set_file(ROM_file)
+            
+            # checksums
+            ROM_checksums = ROM_file_original if MDSet.isMultiDisc and launcher_multidisc else ROM_file
 
             scraping_succeeded = True
             self.progress_dialog.updateMessages(file_text, 'Scraping {0}...'.format(ROM_file.getBaseNoExt()))
             try:
-                self.scraping_strategy.process_ROM_begin(new_rom)
-                self.scraping_strategy.process_ROM_metadata(new_rom)
-                self.scraping_strategy.process_ROM_assets(new_rom)
+                self.scraping_strategy.scanner_process_ROM_begin(new_rom, ROM_checksums)
+                self.scraping_strategy.scanner_process_ROM_metadata(new_rom)
+                self.scraping_strategy.scanner_process_ROM_assets(new_rom)
             except Exception as ex:
                 scraping_succeeded = False        
                 log_error('(Exception) Object type "{}"'.format(type(ex)))

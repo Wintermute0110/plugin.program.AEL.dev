@@ -1819,7 +1819,7 @@ def m_subcommand_launcher_import_nfo_file(launcher):
     # >> Returns True if changes were made
     NFO_file = fs_get_launcher_NFO_name(g_settings, launcher.get_data_dic())
     if launcher.import_nfo_file(NFO_file):
-        g_ObjectFactory.save_launcher(launcher)
+        launcher.save_to_disk()
         kodi_notify('Imported Launcher NFO file {0}'.format(NFO_file.getPath()))
 
 # --- Browse for NFO file ---
@@ -1993,7 +1993,8 @@ def m_subcommand_change_display_mode(launcher):
     if actual_mode != selected_mode:
         kodi_dialog_OK('No-Intro DAT not configured or cannot be found. PClone or 1G1R view mode cannot be set.')
         return
-            
+
+    launcher.save_to_disk()            
     g_LauncherRepository.save(launcher)
     kodi_notify('Launcher view mode set to {0}'.format(selected_mode))
     return
@@ -8280,7 +8281,7 @@ def m_roms_import_roms(categoryID, launcherID):
     scraper_strategy    = g_ScraperFactory.create_scanner(launcher)
     rom_scanner         = g_ROMScannerFactory.create(launcher, scraper_strategy, pdialog)
 
-    scraper_strategy.begin_ROM_scanner(launcher, pdialog, False)
+    scraper_strategy.scanner_set_progress_dialog(pdialog, False)
     roms = rom_scanner.scan()
     pdialog.endProgress()
     
