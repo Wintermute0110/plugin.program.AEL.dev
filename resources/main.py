@@ -38,7 +38,6 @@ import socket
 import string
 import sys
 import time
-import traceback
 #import urllib
 #import urllib2
 from urlparse import parse_qs
@@ -9325,7 +9324,6 @@ def m_command_buildMenu():
     except Exception as ex:
         log_error("(Exception) Failed to load skinshortcuts addon")
         log_error("(Exception) {0}".format(ex))
-        traceback.print_exc()
         warnAddonMissingDialog = xbmcgui.Dialog()
         warnAddonMissingDialog.notification('Failure', 'Could not load skinshortcuts addon', xbmcgui.NOTIFICATION_WARNING, 5000)
         return

@@ -2201,7 +2201,6 @@ class LauncherABC(MetaDataItemABC):
     # Function asumes that the NFO file already exists.
     #
     def import_nfo_file(self, nfo_file_path):
-        import traceback
         # --- Get NFO file name ---
         log_debug('launcher.import_nfo_file() Importing launcher NFO "{0}"'.format(nfo_file_path.getPath()))
 
@@ -5429,6 +5428,7 @@ class RomFolderScanner(RomScannerStrategy):
                 log_error('(Exception) Object type "{}"'.format(type(ex)))
                 log_error('(Exception) Message "{}"'.format(str(ex)))
                 log_warning('Could not scrape "{}"'.format(ROM_file.getBaseNoExt()))
+                #log_debug(traceback.format_exc())
             
             if not scraping_succeeded and skip_if_scraping_failed:
                 kodi_display_user_message({
@@ -5758,13 +5758,14 @@ class ScrapeRomsOnlyScanner(RomScannerStrategy):
             
             self.progress_dialog.updateMessages(file_text, 'Scraping {0}...'.format(ROM_file.getBaseNoExt()))
             try:
-                self.scraping_strategy.process_ROM_begin(rom)
-                self.scraping_strategy.process_ROM_metadata(rom)
-                self.scraping_strategy.process_ROM_assets(rom)
+                self.scraping_strategy.scanner_process_ROM_begin(rom)
+                self.scraping_strategy.scanner_process_ROM_metadata(rom)
+                self.scraping_strategy.scanner_process_ROM_assets(rom)
             except Exception as ex:
                 log_error('(Exception) Object type "{}"'.format(type(ex)))
                 log_error('(Exception) Message "{}"'.format(str(ex)))
                 log_warning('Could not scrape "{}"'.format(ROM_file.getBaseNoExt()))
+                #log_debug(traceback.format_exc())
             
             # ~~~ Check if user pressed the cancel button ~~~
             if self.progress_dialog.isCanceled():

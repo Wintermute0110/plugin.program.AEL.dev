@@ -96,7 +96,7 @@ def net_download_img(img_url, file_path):
         req = Request(img_url)
         # req.add_unredirected_header('User-Agent', net_get_random_UserAgent())
         req.add_unredirected_header('User-Agent', USER_AGENT)
-        img_buf = urllib2.urlopen(req, timeout = 120).read()
+        img_buf = urlopen(req, timeout = 120).read()
     # If an exception happens record it in the log and do nothing.
     # This must be fixed. If an error happened when downloading stuff caller code must
     # known to take action.
@@ -136,6 +136,7 @@ def net_download_img(img_url, file_path):
 #          a Unicode string or None if network error/exception. Second tuple element is the 
 #          HTTP status code as integer or None if network error/exception.
 def net_get_URL(url, url_log = None):
+    import traceback
     req = Request(url)
     req.add_unredirected_header('User-Agent', USER_AGENT)
     if url_log is None:
@@ -164,12 +165,16 @@ def net_get_URL(url, url_log = None):
         log_error('(HTTPError) Object type "{}"'.format(type(ex)))
         log_error('(HTTPError) Message "{}"'.format(str(ex)))
         log_error('(HTTPError) Code {}'.format(http_code))
+        log_debug(traceback.format_exc())
+            
         return page_bytes, http_code
     # If an unknown exception happens return empty data.
     except Exception as ex:
         log_error('(Exception) In net_get_URL()')
         log_error('(Exception) Object type "{}"'.format(type(ex)))
         log_error('(Exception) Message "{}"'.format(str(ex)))
+        log_debug(traceback.format_exc())
+            
         return page_bytes, http_code
     log_debug('net_get_URL() Read {} bytes'.format(len(page_bytes)))
     log_debug('net_get_URL() HTTP status code {}'.format(http_code))

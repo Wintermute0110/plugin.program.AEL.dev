@@ -575,9 +575,8 @@ class ScrapeStrategy(object):
 
     # Called by the ROM scanner. Fills in the ROM assets.
     #
-    # @param romdata: [dict] ROM data dictionary. Mutable and edited by assignment.
-    # @param ROM_FN: [Filename] ROM filename object.
-    def scanner_process_ROM_assets(self, romdata, ROM_FN):
+    # @param ROM: [ROM] ROM data object. Mutable and edited by assignment.
+    def scanner_process_ROM_assets(self, ROM):
         log_debug('ScrapeStrategy.scanner_process_ROM_assets() Processing asset actions...')
         # --- Process asset by asset actions ---
         # --- Asset scraping ---
@@ -586,13 +585,14 @@ class ScrapeStrategy(object):
             if self.asset_action_list[i] == ScrapeStrategy.ACTION_ASSET_LOCAL_ASSET:
                 log_debug('Using local asset for {}'.format(AInfo.name))
                 ROM.set_asset(AInfo, self.local_asset_list[i])
-            elif self.asset_action_list[i] == ScrapeStrategy.ACTION_ASSET_SCRAPER:                
-                ROM.set_asset(AInfo, self._scanner_scrap_ROM_asset(
-                    AInfo, self.local_asset_list[i], ROM))
+            elif self.asset_action_list[i] == ScrapeStrategy.ACTION_ASSET_SCRAPER:   
+                asset_path = self._scanner_scrap_ROM_asset(AInfo, self.local_asset_list[i], ROM)                             
+                ROM.set_asset(AInfo, asset_path)
             else:
                 raise ValueError('Asset {} index {} ID {} unknown action {}'.format(
                     AInfo.name, i, asset_ID, self.asset_action_list[i]))
 
+        romdata = ROM.get_data_dic()
         # --- Print some debug info ---
         log_verb('Set Title     file "{}"'.format(romdata['s_title']))
         log_verb('Set Snap      file "{}"'.format(romdata['s_snap']))
@@ -669,14 +669,14 @@ class ScrapeStrategy(object):
             #   never introduced in the cache.
             if candidates is None:
                 log_debug('Error getting the candidate (None).')
-                scraper_obj.set_candidate(ROM_FN, self.platform, None)
+                scraper_obj.set_candidate(ROM_path, self.platform, None)
                 return
             # * If candidates list is empty scraper operation was correct but no candidate was
             # * found. In this case set the candidate in the scraper object to an empty
             # * dictionary and introduce it in the cache.
             if not candidates:
                 log_debug('Found no candidates after searching.')
-                scraper_obj.set_candidate(ROM_FN, self.platform, dict())
+                scraper_obj.set_candidate(ROM_path, self.platform, dict())
                 return
             log_debug('Scraper {} found {} candidate/s'.format(scraper_name, len(candidates)))
 
@@ -692,7 +692,7 @@ class ScrapeStrategy(object):
                     self.pdialog.close()
                     game_name_list = [candidate['display_name'] for candidate in candidates]
                     select_candidate_idx = xbmcgui.Dialog().select(
-                        'Select game for ROM {}'.format(ROM_FN.getBase_noext()), game_name_list)
+                        'Select game for ROM {}'.format(ROM_path.getBaseNoExt()), game_name_list)
                     if select_candidate_idx < 0: select_candidate_idx = 0
                     self.pdialog.reopen()
             elif self.game_selection_mode == 1:
@@ -703,7 +703,7 @@ class ScrapeStrategy(object):
             candidate = candidates[select_candidate_idx]
 
             # --- Set candidate. This will introduce it in the cache ---
-            scraper_obj.set_candidate(ROM_FN, self.platform, candidate)
+            scraper_obj.set_candidate(ROM_path, self.platform, candidate)
 
     # Scraps ROM metadata in the ROM scanner.
     def _scanner_scrap_ROM_metadata(self, ROM):
@@ -893,9 +893,9 @@ class ScrapeStrategy(object):
             scraper_text = 'Downloading {} from {}...'.format(
                 asset_name, self.asset_scraper_name)
             self.pdialog.updateMessage2(scraper_text)
-        image_local_path = asset_path_noext_FN.append('.' + image_ext).getPath()
+        image_local_path = asset_path_noext_FN.append('.' + image_ext)
         log_verb('Download  "{0}"'.format(image_url_log))
-        log_verb('Into file "{0}"'.format(image_local_path))
+        log_verb('Into file "{0}"'.format(image_local_path.getPath()))
         try:
             # net_download_img() never prints URLs or paths.
             net_download_img(image_url, image_local_path)
@@ -981,7 +981,7 @@ class ScrapeStrategy(object):
         log_debug('ScrapeStrategy.scrap_CM_metadata_ROM() BEGIN ...')
         # In AEL 0.10.x this data is grabed from the objects, not passed using a dictionary.
         rom_FN = data_dic['rom_FN']
-        rom_base_noext = rom_FN.getBase_noext()
+        rom_base_noext = rom_FN.getBaseNoExt()
         status_dic = kodi_new_status_dic('ROM metadata updated')
         scraper_name = self.scraper_obj.get_name()
 
@@ -2820,9 +2820,9 @@ class MobyGames(Scraper):
             log_debug('MobyGames.get_assets() Scraper disabled. Returning empty data.')
             return []
 
-        asset_info = assets_get_info_scheme(asset_ID)
+        asset_info = assets_get_info_scheme(asset_info.id)
         log_debug('MobyGames.get_assets() Getting assets {} (ID {}) for candidate ID "{}"'.format(
-            asset_info.name, asset_ID, self.candidate['id']))
+            asset_info.name, asset_info.id, self.candidate['id']))
 
         # --- Request is not cached. Get candidates and introduce in the cache ---
         # Get all assets for candidate. _retrieve_all_assets() caches all assets for a candidate.
@@ -4110,6 +4110,7 @@ class GameFAQs(Scraper):
 
     def get_candidates(self, search_term, rom_FN, rom_checksums_FN, platform, status_dic):
         scraper_platform = AEL_platform_to_GameFAQs(platform)
+        rombase_noext = rom_FN.getBaseNoExt()
         log_debug('GameFAQs.get_candidates() search_term      "{0}"'.format(search_term))
         log_debug('GameFAQs.get_candidates() rombase_noext    "{0}"'.format(rombase_noext))
         log_debug('GameFAQs.get_candidates() platform         "{0}"'.format(platform))
@@ -4488,7 +4489,7 @@ class ArcadeDB(Scraper):
 
         # Prepare data for scraping.
         # rombase = rom_FN.getBase()
-        rombase_noext = rom_FN.getBase_noext()
+        rombase_noext = rom_FN.getBaseNoExt()
 
         # --- Request is not cached. Get candidates and introduce in the cache ---
         # ArcadeDB QUERY_MAME returns absolutely everything about a single ROM, including
