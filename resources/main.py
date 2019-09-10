@@ -8318,7 +8318,7 @@ def m_roms_scrape_roms(categoryID, launcherID):
     scraper_strategy    = g_ScraperFactory.create_scanner(launcher)
     rom_scanner         = g_ROMScannerFactory.create(launcher, scraper_strategy, pdialog, scrape_only=True)
 
-    scraper_strategy.begin_ROM_scanner(launcher, pdialog, False)
+    scraper_strategy.scanner_set_progress_dialog(pdialog, False)    
     roms = rom_scanner.scan()
     pdialog.endProgress()
     

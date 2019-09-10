@@ -5758,7 +5758,7 @@ class ScrapeRomsOnlyScanner(RomScannerStrategy):
             
             self.progress_dialog.updateMessages(file_text, 'Scraping {0}...'.format(ROM_file.getBaseNoExt()))
             try:
-                self.scraping_strategy.scanner_process_ROM_begin(rom)
+                self.scraping_strategy.scanner_process_ROM_begin(rom, ROM_file)
                 self.scraping_strategy.scanner_process_ROM_metadata(rom)
                 self.scraping_strategy.scanner_process_ROM_assets(rom)
             except Exception as ex:
@@ -5913,7 +5913,7 @@ class RomDatFileScanner(object):
             if nointro_rom not in roms_set:
                 # Add new "fake" missing ROM. This ROM cannot be launched!
                 # Added ROMs have special extension .nointro
-                rom = Rom()
+                rom = ROM()
                 rom.set_file(ROMPath.pjoin(nointro_rom + '.nointro'))
                 rom.set_name(nointro_rom)
                 rom.set_nointro_status(NOINTRO_STATUS_MISS)
