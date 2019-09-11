@@ -103,20 +103,14 @@ def kodi_dialog_OK(text, title = 'Advanced Emulator Launcher'):
     xbmcgui.Dialog().ok(title, text)
 
 # Returns True is YES was pressed, returns False if NO was pressed or dialog canceled.
-def kodi_dialog_yesno(text):
-    title = 'Advanced Emulator Launcher'
-
+def kodi_dialog_yesno(text, title = 'Advanced Emulator Launcher'):
     return xbmcgui.Dialog().yesno(title, text)
 
 # Returns True is YES was pressed, returns False if NO was pressed or dialog canceled.
-def kodi_dialog_yesno_custom(text, yeslabel_str, nolabel_str):
-    title = 'Advanced Emulator Launcher'
-
+def kodi_dialog_yesno_custom(text, yeslabel_str, nolabel_str, title = 'Advanced Emulator Launcher'):
     return xbmcgui.Dialog().yesno(title, text, yeslabel = yeslabel_str, nolabel = nolabel_str)
 
-def kodi_dialog_yesno_timer(text, timer_ms = 30000):
-    title = 'Advanced Emulator Launcher'
-
+def kodi_dialog_yesno_timer(text, timer_ms = 30000, title = 'Advanced Emulator Launcher'):
     return xbmcgui.Dialog().yesno(title, text, autoclose = timer_ms)
 
 #
@@ -143,6 +137,7 @@ def kodi_refresh_container():
     xbmc.executebuiltin('Container.Refresh')
 
 # Progress dialog that can be closed and reopened.
+# Messages in the dialog are always remembered.
 # If the dialog is canceled this class remembers it forever.
 class KodiProgressDialog(object):
     def __init__(self):
@@ -156,34 +151,48 @@ class KodiProgressDialog(object):
         self.num_steps = num_steps
         self.progress = 0
         self.dialog_active = True
-        self.progressDialog.create(self.title, message)
+        self.message1 = message
+        self.message2 = None
+        self.progressDialog.create(self.title, self.message1)
         self.progressDialog.update(self.progress)
 
     # Update progress and optionally update messages as well.
-    def updateProgress(self, step_index, message1 = ' ', message2 = ' '):
+    # If not messages specified then keep current message/s
+    def updateProgress(self, step_index, message1 = None, message2 = None):
         self.progress = (step_index * 100) / self.num_steps
-        self.message1 = message1
-        self.message2 = message2
-        if message2 and message2 != ' ':
-            self.progressDialog.update(self.progress, message1, message2)
+        # Update both messages
+        if message1 and message2:
+            self.message1 = message1
+            self.message2 = message2
+        # Update only message1 and deletes message2. There could be no message2 without a message1.
+        elif message1:
+            self.message1 = message1
+            self.message2 = None
+            self.progressDialog.update(self.progress, message1, ' ')
+            return
+        if self.message2:
+            self.progressDialog.update(self.progress, self.message1, self.message2)
         else:
-            self.progressDialog.update(self.progress, message1)
+            # The ' ' is to avoid a bug in Kodi progress dialog that keeps old messages 2
+            # if an empty string is passed.
+            self.progressDialog.update(self.progress, self.message1, ' ')
+
+    # Update dialog message but keep same progress. message2 is removed if any.
+    def updateMessage(self, message1):
+        self.message1 = message1
+        self.message2 = None
+        self.progressDialog.update(self.progress, self.message1, ' ')
+
+    # Update message2 and keeps same progress and message1
+    def updateMessage2(self, message2):
+        self.message2 = message2
+        self.progressDialog.update(self.progress, self.message1, self.message2)
 
     # Update dialog message but keep same progress.
     def updateMessages(self, message1, message2):
         self.message1 = message1
         self.message2 = message2
         self.progressDialog.update(self.progress, message1, message2)
-
-    # Update dialog message but keep same progress. message2 is removed if any.
-    def updateMessage(self, message1):
-        self.message1 = message1
-        self.progressDialog.update(self.progress, message1)
-
-    # Update message2 and keeps same progress and message1
-    def updateMessage2(self, message2):
-        self.message2 = message2
-        self.progressDialog.update(self.progress, self.message1, message2)
 
     def isCanceled(self):
         # If the user pressed the cancel button before then return it now.
@@ -208,13 +217,17 @@ class KodiProgressDialog(object):
         self.progressDialog.close()
         self.dialog_active = False
 
-    # Reopens a previously closed dialog, remembering the messages and the progress.
+    # Reopens a previously closed dialog, remembering the messages and the progress it had
+    # when it was closed.
     def reopen(self):
-        if self.message2 and self.message2 != ' ':
-            self.progressDialog.create(self.title, self.message1, self.message2)
+        if self.message2:
+            self.progressDialog.create(self.progress, self.message1, self.message2)
         else:
-            self.progressDialog.create(self.title, self.message1)
+            # The ' ' is to avoid a bug in Kodi progress dialog that keeps old messages 2
+            # if an empty string is passed.
+            self.progressDialog.create(self.progress, self.message1, ' ')
         self.progressDialog.update(self.progress)
+        self.dialog_active = True
 
 # To be used as a base class.
 class KodiProgressDialog_Chrisism(object):
