@@ -147,13 +147,18 @@ class KodiProgressDialog(object):
         self.dialog_active = False
         self.progressDialog = xbmcgui.DialogProgress()
 
-    def startProgress(self, message, num_steps = 100):
+    def startProgress(self, message1, num_steps = 100, message2 = None):
         self.num_steps = num_steps
         self.progress = 0
         self.dialog_active = True
-        self.message1 = message
-        self.message2 = None
-        self.progressDialog.create(self.title, self.message1)
+        self.message1 = message1
+        self.message2 = message2
+        if self.message2:
+            self.progressDialog.create(self.title, self.message1, self.message2)
+        else:
+            # The ' ' is to avoid a bug in Kodi progress dialog that keeps old messages 2
+            # if an empty string is passed.
+            self.progressDialog.create(self.title, self.message1, ' ')
         self.progressDialog.update(self.progress)
 
     # Update progress and optionally update messages as well.
@@ -221,11 +226,11 @@ class KodiProgressDialog(object):
     # when it was closed.
     def reopen(self):
         if self.message2:
-            self.progressDialog.create(self.progress, self.message1, self.message2)
+            self.progressDialog.create(self.title, self.message1, self.message2)
         else:
             # The ' ' is to avoid a bug in Kodi progress dialog that keeps old messages 2
             # if an empty string is passed.
-            self.progressDialog.create(self.progress, self.message1, ' ')
+            self.progressDialog.create(self.title, self.message1, ' ')
         self.progressDialog.update(self.progress)
         self.dialog_active = True
 
