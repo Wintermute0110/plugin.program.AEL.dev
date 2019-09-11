@@ -38,7 +38,7 @@ class Test_gamestream(unittest.TestCase):
         
         # arrange
         http_mock.return_value = self.read_file(self.TEST_ASSETS_DIR + "\\gamestreamserver_response.xml")
-        server = GameStreamServer('192.168.0.555', PythonFileName(self.TEST_ASSETS_DIR))
+        server = GameStreamServer('192.168.0.555', NewFileName(self.TEST_ASSETS_DIR))
         
         # act
         actual = server.connect()
@@ -52,7 +52,7 @@ class Test_gamestream(unittest.TestCase):
          
         # arrange
         http_mock.return_value = self.read_file(self.TEST_ASSETS_DIR + "\\gamestreamserver_response.xml")
-        server = GameStreamServer('192.168.0.555', PythonFileName(self.TEST_ASSETS_DIR))
+        server = GameStreamServer('192.168.0.555', NewFileName(self.TEST_ASSETS_DIR))
         expected = '7.1.402.0'
         expectedMajor = 7
 
@@ -69,7 +69,7 @@ class Test_gamestream(unittest.TestCase):
 
         # arrange        
         http_mock.return_value = self.read_file(self.TEST_ASSETS_DIR + "\\gamestreamserver_apps.xml")
-        server = GameStreamServer('192.168.0.555', PythonFileName(self.TEST_ASSETS_DIR))
+        server = GameStreamServer('192.168.0.555', NewFileName(self.TEST_ASSETS_DIR))
 
         expected = 18
 
@@ -91,7 +91,7 @@ class Test_gamestream(unittest.TestCase):
     def test_pair_with_gamestream_server(self, random_mock, certificateKeyBytesMock, certificateBytesMock):
         
         # arrange
-        addon_dir = PythonFileName(self.TEST_ASSETS_DIR)
+        addon_dir = NewFileName(self.TEST_ASSETS_DIR)
         certificateBytesMock.return_value    = self.read_file(self.TEST_ASSETS_DIR + "/nvidia.crt")
         certificateKeyBytesMock.return_value = self.read_file(self.TEST_ASSETS_DIR + "/nvidia.key")
         random_mock.return_value = binascii.unhexlify("50ca25d03b4ac53368875b9a1bfb50cc")
@@ -112,7 +112,7 @@ class Test_gamestream(unittest.TestCase):
 
         # arrange        
        # http_mock.return_value = self.read_file(self.TEST_ASSETS_DIR + "\\gamestreamserver_apps.xml")
-        server = GameStreamServer('192.168.0.5', PythonFileName(self.TEST_ASSETS_DIR))
+        server = GameStreamServer('192.168.0.5', NewFileName(self.TEST_ASSETS_DIR))
 
         expected = 18
 

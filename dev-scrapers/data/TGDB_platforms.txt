@@ -1,0 +1,113 @@
+Number of TGDB platforms 109
+
+ID    Name                                 Short name                       
+----------------------------------------------------------------------------
+25    3DO                                  3do                              
+4969  APF MP-1000                          apf-mp-1000                      
+4944  Acorn Archimedes                     acorn-archimedes                 
+4954  Acorn Electron                       acorn-electron                   
+4976  Action Max                           action-max                       
+4911  Amiga                                amiga                            
+4947  Amiga CD32                           amiga-cd32                       
+4914  Amstrad CPC                          amstrad-cpc                      
+4916  Android                              android                          
+4942  Apple II                             apple2                           
+23    Arcade                               arcade                           
+22    Atari 2600                           atari-2600                       
+26    Atari 5200                           atari-5200                       
+27    Atari 7800                           atari-7800                       
+4943  Atari 800                            atari800                         
+28    Atari Jaguar                         atari-jaguar                     
+29    Atari Jaguar CD                      atari-jaguar-cd                  
+4924  Atari Lynx                           atari-lynx                       
+4937  Atari ST                             atari-st                         
+30    Atari XE                             atari-xe                         
+4968  Bally Astrocade                      bally-astrocade                  
+4964  Casio PV-1000                        casio-pv-1000                    
+4970  Coleco Telstar Arcade                coleco-telstar-arcade            
+31    Colecovision                         colecovision                     
+4946  Commodore 128                        c128                             
+40    Commodore 64                         commodore-64                     
+4945  Commodore VIC-20                     commodore-vic20                  
+4952  Dragon 32/64                         dragon32-64                      
+4963  Emerson Arcadia 2001                 emerson-arcadia-2001             
+4974  Entex Adventure Vision               entex-adventure-vision           
+4973  Entex Select-a-Game                  entex-select-a-game              
+4965  Epoch Cassette Vision                epoch-cassette-vision            
+4966  Epoch Super Cassette Vision          epoch-super-cassette-vision      
+4932  FM Towns Marty                       fmtowns                          
+4928  Fairchild Channel F                  fairchild                        
+4936  Famicom Disk System                  fds                              
+4978  Fujitsu FM-7                         fujitsu-fm-7                     
+4962  Gakken Compact Vision                gakken-compact-vision            
+4950  Game & Watch                         game-and-watch                   
+4940  Game.com                             game-com                         
+4951  Handheld Electronic Games (LCD)      lcd                              
+32    Intellivision                        intellivision                    
+4929  MSX                                  msx                              
+37    Mac OS                               mac-os                           
+4961  Magnavox Odyssey 1                   magnavox-odyssey                 
+4927  Magnavox Odyssey 2                   magnavox-odyssey-2               
+4948  Mega Duck                            megaduck                         
+14    Microsoft Xbox                       microsoft-xbox                   
+15    Microsoft Xbox 360                   microsoft-xbox-360               
+4920  Microsoft Xbox One                   microsoft-xbox-one               
+4972  Milton Bradley Microvision           milton-bradley-microvision       
+4938  N-Gage                               ngage                            
+24    Neo Geo                              neogeo                           
+4956  Neo Geo CD                           neo-geo-cd                       
+4922  Neo Geo Pocket                       neo-geo-pocket                   
+4923  Neo Geo Pocket Color                 neo-geo-pocket-color             
+4912  Nintendo 3DS                         nintendo-3ds                     
+3     Nintendo 64                          nintendo-64                      
+8     Nintendo DS                          nintendo-ds                      
+7     Nintendo Entertainment System (NES)  nintendo-entertainment-system-nes
+4     Nintendo Game Boy                    nintendo-gameboy                 
+5     Nintendo Game Boy Advance            nintendo-gameboy-advance         
+41    Nintendo Game Boy Color              nintendo-gameboy-color           
+2     Nintendo GameCube                    nintendo-gamecube                
+4957  Nintendo Pokémon Mini                nintendo-pokmon-mini             
+4971  Nintendo Switch                      nintendo-switch                  
+4918  Nintendo Virtual Boy                 nintendo-virtual-boy             
+9     Nintendo Wii                         nintendo-wii                     
+38    Nintendo Wii U                       nintendo-wii-u                   
+4935  Nuon                                 nuon                             
+4921  Ouya                                 ouya                             
+1     PC                                   pc                               
+4933  PC-88                                pc88                             
+4934  PC-98                                pc98                             
+4930  PC-FX                                pcfx                             
+4917  Philips CD-i                         philips-cd-i                     
+4975  Pioneer LaserActive                                                   
+4967  RCA Studio II                        rca-studio-ii                    
+4979  SAM Coupé                            None                             
+4949  SEGA SG-1000                         sg1000                           
+33    Sega 32X                             sega-32x                         
+21    Sega CD                              sega-cd                          
+16    Sega Dreamcast                       sega-dreamcast                   
+20    Sega Game Gear                       sega-game-gear                   
+18    Sega Genesis                         sega-genesis                     
+35    Sega Master System                   sega-master-system               
+36    Sega Mega Drive                      sega-mega-drive                  
+4958  Sega Pico                            sega-pico                        
+17    Sega Saturn                          sega-saturn                      
+4977  Sharp X1                             sharp-x1                         
+4931  Sharp X68000                         x68                              
+4913  Sinclair ZX Spectrum                 sinclair-zx-spectrum             
+10    Sony Playstation                     sony-playstation                 
+11    Sony Playstation 2                   sony-playstation-2               
+12    Sony Playstation 3                   sony-playstation-3               
+4919  Sony Playstation 4                   sony-playstation-4               
+13    Sony Playstation Portable            sony-psp                         
+39    Sony Playstation Vita                sony-playstation-vita            
+6     Super Nintendo (SNES)                super-nintendo-snes              
+4941  TRS-80 Color Computer                trs80-color                      
+4953  Texas Instruments TI-99/4A           texas-instruments-ti-99-4a       
+4960  Tomy Tutor                           tomy-pyta                        
+34    TurboGrafx 16                        turbografx-16                    
+4955  TurboGrafx CD                        turbo-grafx-cd                   
+4939  Vectrex                              vectrex                          
+4959  Watara Supervision                   watara-supervision               
+4925  WonderSwan                           wonderswan                       
+4926  WonderSwan Color                     wonderswan-color                 
+4915  iOS                                  ios                              

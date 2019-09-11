@@ -42,7 +42,7 @@ class Test_executortests(unittest.TestCase):
         settings['lirc_state'] = True
 
         # act
-        factory = ExecutorFactory(settings, AEL_Paths())
+        factory = ExecutorFactory(AEL_Paths(), settings)
         executor = factory.create(launcherPath)
         
         # assert
@@ -67,7 +67,7 @@ class Test_executortests(unittest.TestCase):
         settings['windows_close_fds'] = ''
 
         # act
-        factory = ExecutorFactory(settings, AEL_Paths())
+        factory = ExecutorFactory(AEL_Paths(), settings)
         executor = factory.create(launcherPath)
         
         # assert
@@ -91,7 +91,7 @@ class Test_executortests(unittest.TestCase):
         settings['show_batch_window'] = False
 
         # act
-        factory = ExecutorFactory(settings, AEL_Paths())
+        factory = ExecutorFactory(AEL_Paths(), settings)
         executor = factory.create(launcherPath)
         
         # assert
@@ -114,7 +114,7 @@ class Test_executortests(unittest.TestCase):
         settings = {}
 
         # act
-        factory = ExecutorFactory(settings, AEL_Paths())
+        factory = ExecutorFactory(AEL_Paths(), settings)
         executor = factory.create(launcherPath)
 
         # assert
@@ -132,7 +132,7 @@ class Test_executortests(unittest.TestCase):
         settings = {}
 
         # act
-        factory = ExecutorFactory(settings, AEL_Paths())
+        factory = ExecutorFactory(AEL_Paths(), settings)
         executor = factory.create(launcherPath)
 
         # assert
@@ -155,7 +155,7 @@ class Test_executortests(unittest.TestCase):
         settings = {}
 
         # act
-        factory = ExecutorFactory(settings, AEL_Paths())
+        factory = ExecutorFactory(AEL_Paths(), settings)
         executor = factory.create(launcherPath)
 
         # assert
@@ -171,7 +171,7 @@ class Test_executortests(unittest.TestCase):
         settings = {}
 
         # act
-        factory = ExecutorFactory(settings, AEL_Paths())
+        factory = ExecutorFactory(AEL_Paths(), settings)
         executor = factory.create(FakeFile('steam://rungameid/'))
 
         # assert

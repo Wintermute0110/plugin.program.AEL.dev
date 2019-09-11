@@ -1,0 +1,24 @@
+Number of ScreenScraper languages 20
+
+ID    Shortname  Parent  English   
+-----------------------------------
+68    en         0       English   
+71    es         0       Spanish   
+73    ja         0       Japanese  
+3819  cz         0       Czech     
+3893  da         0       Danish    
+70    de         0       German    
+120   fi         0       Finnish   
+69    fr         0       French    
+3831  hu         0       Hungarian 
+72    it         0       Italian   
+133   ko         0       Korean    
+76    nl         0       Dutch     
+113   no         0       Norwegian 
+2619  pl         0       Polish    
+75    pt         0       Portuguese
+3224  ru         0       Russian   
+3830  sk         0       Slovak    
+74    sv         0       Swedish   
+3226  tr         0       Turkish   
+2620  zh         0       Chinese   

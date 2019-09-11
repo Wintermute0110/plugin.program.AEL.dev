@@ -41,12 +41,15 @@ class FakeClass():
     def FakeMethod(self, value, key, launcher):
         self.value = value
 
-class FakeFile(KodiFileName):
+class FakeFile(FileName):
     
     def __init__(self, pathString):
         self.fakeContent  = ''
-        self.originalPath = pathString
-        self.path         = pathString
+        self.path_str     = pathString
+        self.path_tr      = pathString
+        
+        self.exists = self.exists_fake
+        self.write = self.write_fake
 
     def setFakeContent(self, content):
         self.fakeContent = content
@@ -54,22 +57,34 @@ class FakeFile(KodiFileName):
     def getFakeContent(self):
         return self.fakeContent
     
+    def loadFileToStr(self, encoding = 'utf-8'):
+        return self.fakeContent
+        
     def readAllUnicode(self, encoding='utf-8'):
         contents = unicode(self.fakeContent)
         return contents
 
-    def write(self, bytes):
+    def saveStrToFile(self, data_str, encoding = 'utf-8'):
+        self.fakeContent = data_str
+        
+    def write_fake(self, bytes):
        self.fakeContent = self.fakeContent + bytes
+
+    def open(self, mode):
+        pass
+    
+    def close(self):
+        pass
       
     def writeAll(self, bytes, flags='w'):
        self.fakeContent = self.fakeContent + bytes
        
     def pjoin(self, *args):
-        child = FakeFile(self.originalPath)
+        child = FakeFile(self.path_str)
         child.setFakeContent(self.fakeContent)
         for arg in args:
-            child.path = os.path.join(child.path, arg)
-            child.originalPath = os.path.join(child.originalPath, arg)
+            child.path_str = os.path.join(child.path_str, arg)
+            child.path_tr = os.path.join(child.path_tr, arg)
 
         return child    
     
@@ -79,9 +94,9 @@ class FakeFile(KodiFileName):
         switched_fake.setFakeContent(self.fakeContent)
         return switched_fake
 
-    def exists(self):
+    def exists_fake(self):
         return True
-
+    
     def scanFilesInPathAsFileNameObjects(self, mask = '*.*'):
         return []
     

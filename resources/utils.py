@@ -1,9 +1,8 @@
 # -*- coding: utf-8 -*-
-#
-# Advanced Emulator Launcher utilities and misc functions.
-#
 
-# Copyright (c) 2016-2018 Wintermute0110 <wintermute0110@gmail.com>
+# Advanced Emulator Launcher miscellaneous functions
+
+# Copyright (c) 2016-2019 Wintermute0110 <wintermute0110@gmail.com>
 # Portions (c) 2010-2015 Angelscry and others
 #
 # This program is free software; you can redistribute it and/or modify
@@ -12,8 +11,8 @@
 #
 # This program is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-# GNU General Public License for more details.
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+# See the GNU General Public License for more details.
 
 # --- Module documentation ---
 # 1. This function contains utilities that do not depend on Kodi modules and utilities that
@@ -51,6 +50,7 @@ import shutil
 import string
 import sys
 import time
+import zlib
 
 from HTMLParser import HTMLParser
 from urlparse import urlparse
@@ -159,32 +159,33 @@ def is_osx():
     return is_osx_bool
 
 def is_android():
-    return is_linux_bool
+    return is_android_bool
 
 def is_linux():
-    return is_android_bool
+    return is_linux_bool
 
 # -------------------------------------------------------------------------------------------------
 # Strings and text
 # -------------------------------------------------------------------------------------------------
+# Limits the length of a string for printing. If max_length == -1 do nothing (string has no
+# length limit). The string is trimmed by cutting it and adding three dots ... at the end.
+# Including these three dots the length of the returned string is max_length or less.
+# Example: 'asdfasdfdasf' -> 'asdfsda...'
 #
-# If max_length == -1 do nothing (no length limit).
-#
+# @param string: [str] String to be trimmed.
+# @param max_length: [int] Integer maximum length of the string.
+# @return [str] Trimmed string.
 def text_limit_string(string, max_length):
     if max_length > 5 and len(string) > max_length:
         string = string[0:max_length-3] + '...'
-
     return string
 
-#
 # Given a Category/Launcher name clean it so the cleaned srt can be used as a filename.
-#  1) Convert any non-printable character into '_'
-#  2) Convert spaces ' ' into '_'
-#
+# 1) Convert any non-printable character into '_'
+# 2) Convert spaces ' ' into '_'
 def text_title_to_filename_str(title_str):
     cleaned_str_1 = ''.join([i if i in string.printable else '_' for i in title_str])
     cleaned_str_2 = cleaned_str_1.replace(' ', '_')
-
     return cleaned_str_2
 
 #
@@ -214,6 +215,172 @@ def text_str_2_Uni(string):
     # print(type(unicode_str))
 
     return unicode_str
+
+# Renders a list of list of strings table into a CSV list of strings.
+# The list of strings must be joined with '\n'.join()
+def text_render_table_CSV_slist(table_str):
+    rows = len(table_str)
+    cols = len(table_str[0])
+    table_str_list = []
+    for i in range(1, rows):
+        row_str = ''
+        for j in range(cols):
+            if j < cols - 1:
+                row_str += '{},'.format(table_str[i][j])
+            else:
+                row_str += '{}'.format(table_str[i][j])
+        table_str_list.append(row_str)
+
+    return table_str_list
+
+#
+# First row            column aligment 'right' or 'left'
+# Second row           column titles
+# Third and next rows  table data
+#
+# Returns a list of strings that must be joined with '\n'.join()
+#
+def text_render_table_str(table_str):
+    rows = len(table_str)
+    cols = len(table_str[0])
+    table_str_list = []
+    col_sizes = text_get_table_str_col_sizes(table_str, rows, cols)
+    col_padding = table_str[0]
+
+    # --- Table header ---
+    row_str = ''
+    for j in range(cols):
+        if j < cols - 1:
+            row_str += text_print_padded_left(table_str[1][j], col_sizes[j]) + '  '
+        else:
+            row_str += text_print_padded_left(table_str[1][j], col_sizes[j])
+    table_str_list.append(row_str)
+    # >> Table -----
+    total_size = sum(col_sizes) + 2*(cols-1)
+    table_str_list.append('{0}'.format('-' * total_size))
+
+    # --- Data rows ---
+    for i in range(2, rows):
+        row_str = ''
+        for j in range(cols):
+            if j < cols - 1:
+                if col_padding[j] == 'right':
+                    row_str += text_print_padded_right(table_str[i][j], col_sizes[j]) + '  '
+                else:
+                    row_str += text_print_padded_left(table_str[i][j], col_sizes[j]) + '  '
+            else:
+                if col_padding[j] == 'right':
+                    row_str += text_print_padded_right(table_str[i][j], col_sizes[j])
+                else:
+                    row_str += text_print_padded_left(table_str[i][j], col_sizes[j])
+        table_str_list.append(row_str)
+
+    return table_str_list
+
+#
+# First row             column aligment 'right' or 'left'
+# Second and next rows  table data
+#
+def text_render_table_str_NO_HEADER(table_str):
+    rows = len(table_str)
+    cols = len(table_str[0])
+    table_str_list = []
+    # >> Ignore row 0 when computing sizes.
+    col_sizes = text_get_table_str_col_sizes(table_str, rows, cols)
+    col_padding = table_str[0]
+
+    # --- Data rows ---
+    for i in range(1, rows):
+        row_str = ''
+        for j in range(cols):
+            if j < cols - 1:
+                if col_padding[j] == 'right':
+                    row_str += text_print_padded_right(table_str[i][j], col_sizes[j]) + '  '
+                else:
+                    row_str += text_print_padded_left(table_str[i][j], col_sizes[j]) + '  '
+            else:
+                if col_padding[j] == 'right':
+                    row_str += text_print_padded_right(table_str[i][j], col_sizes[j])
+                else:
+                    row_str += text_print_padded_left(table_str[i][j], col_sizes[j])
+        table_str_list.append(row_str)
+
+    return table_str_list
+
+#
+# Removed Kodi colour tags before computing size (substitute by ''):
+#   A) [COLOR skyblue]
+#   B) [/COLOR]
+#
+def text_get_table_str_col_sizes(table_str, rows, cols):
+    col_sizes = [0] * cols
+    for j in range(cols):
+        col_max_size = 0
+        for i in range(1, rows):
+            cell_str = re.sub(r'\[COLOR \w+?\]', '', table_str[i][j])
+            cell_str = re.sub(r'\[/COLOR\]', '', cell_str)
+            str_size = len('{0}'.format(cell_str))
+            if str_size > col_max_size: col_max_size = str_size
+        col_sizes[j] = col_max_size
+
+    return col_sizes
+
+def text_str_list_size(str_list):
+    max_str_size = 0
+    for str_item in str_list:
+        str_size = len('{0}'.format(str_item))
+        if str_size > max_str_size: max_str_size = str_size
+
+    return max_str_size
+
+def text_str_dic_max_size(dictionary_list, dic_key, title_str = ''):
+    max_str_size = 0
+    for item in dictionary_list:
+        str_size = len('{0}'.format(item[dic_key]))
+        if str_size > max_str_size: max_str_size = str_size
+    if title_str:
+        str_size = len(title_str)
+        if str_size > max_str_size: max_str_size = str_size
+
+    return max_str_size
+
+def text_print_padded_left(str, str_max_size):
+    formatted_str = '{0}'.format(str)
+    padded_str =  formatted_str + ' ' * (str_max_size - len(formatted_str))
+
+    return padded_str
+
+def text_print_padded_right(str, str_max_size):
+    formatted_str = '{0}'.format(str)
+    padded_str = ' ' * (str_max_size - len(formatted_str)) + formatted_str
+
+    return padded_str
+
+def text_remove_color_tags_slist(slist):
+    # Iterate list of strings and remove the following tags
+    # 1) [COLOR colorname]
+    # 2) [/COLOR]
+    #
+    # Modifying list already seen is OK when iterating the list. Do not change the size of the
+    # list when iterating.
+    for i, s in enumerate(slist):
+        modified = False
+        s_temp = s
+
+        # >> Remove [COLOR colorname]
+        m = re.search('(\[COLOR \w+?\])', s_temp)
+        if m:
+            s_temp = s_temp.replace(m.group(1), '')
+            modified = True
+
+        # >> Remove [/COLOR]
+        if s_temp.find('[/COLOR]') >= 0:
+            s_temp = s_temp.replace('[/COLOR]', '')
+            modified = True
+
+        # >> Update list
+        if modified:
+            slist[i] = s_temp
 
 # Some XML encoding of special characters:
 #   {'\n': '&#10;', '\r': '&#13;', '\t':'&#9;'}
@@ -325,11 +492,9 @@ def text_unescape_HTML(s):
 
     return s
 
-#
-# Remove HTML tags
-#
+# Remove HTML tags from string.
 def text_remove_HTML_tags(s):
-    p = re.compile(r'<.*?>')
+    p = re.compile('<.*?>')
     s = p.sub('', s)
 
     return s
@@ -521,19 +686,23 @@ def text_get_multidisc_info(ROM_FN):
 # URLs
 # -------------------------------------------------------------------------------------------------
 #
-# Get extension of URL. Returns '' if not found.
+# Get extension of URL. Returns '' if not found. Examples: 'png', 'jpg', 'gif'.
 #
 def text_get_URL_extension(url):
-    
-    urlPath = FileName(url)
-    return urlPath.getExt()
+    path = urlparse(url).path
+    ext = os.path.splitext(path)[1]
+    if ext[0] == '.': ext = ext[1:] # Remove initial dot
+
+    return ext
 
 #
-# Defaults to .jpg if URL extension cannot be determined
+# Defaults to 'jpg' if URL extension cannot be determined
 #
 def text_get_image_URL_extension(url):
-    ext = text_get_URL_extension(url)
-    ret = '.jpg' if ext == '' else ext
+    path = urlparse(url).path
+    ext = os.path.splitext(path)[1]
+    if ext[0] == '.': ext = ext[1:] # Remove initial dot
+    ret = 'jpg' if ext == '' else ext
 
     return ret
 
@@ -612,6 +781,50 @@ def misc_generate_random_SID():
     return sid
 
 #
+# Lazy function (generator) to read a file piece by piece. Default chunk size: 8k.
+#
+def misc_read_in_chunks(file_object, chunk_size = 8192):
+    while True:
+        data = file_object.read(chunk_size)
+        if not data: break
+        yield data
+
+#
+# Calculates CRC, MD5 and SHA1 of a file in an efficient way.
+# Returns a dictionary with the checksums or None in case of error.
+#
+# https://stackoverflow.com/questions/519633/lazy-method-for-reading-big-file-in-python
+# https://stackoverflow.com/questions/1742866/compute-crc-of-file-in-python 
+#
+def misc_calculate_checksums(full_file_path):
+    log_debug('Computing checksums "{}"'.format(full_file_path))
+    try:
+        f = open(full_file_path, 'rb')
+        crc_prev = 0
+        md5 = hashlib.md5()
+        sha1 = hashlib.sha1()
+        for piece in misc_read_in_chunks(f):
+            crc_prev = zlib.crc32(piece, crc_prev)
+            md5.update(piece)
+            sha1.update(piece)
+        crc_digest = '{:08X}'.format(crc_prev & 0xFFFFFFFF)
+        md5_digest = md5.hexdigest()
+        sha1_digest = sha1.hexdigest()
+        size = os.path.getsize(full_file_path)
+    except:
+        log_debug('(Exception) In misc_calculate_checksums()')
+        log_debug('Returning None')
+        return None
+    checksums = {
+        'crc'  : crc_digest.upper(),
+        'md5'  : md5_digest.upper(),
+        'sha1' : sha1_digest.upper(),
+        'size' : size,
+    }
+
+    return checksums
+
+#
 # Version helper class
 #
 class VersionNumber(object):
@@ -638,72 +851,6 @@ class VersionNumber(object):
 def dump_object_to_log(obj):
     log_debug('Dumping obj.__class__.__name__ = {0}'.format(obj.__class__.__name__))
     log_debug(pprint.pformat(obj))
-
-# -------------------------------------------------------------------------------------------------
-# Utilities to test scrapers
-# -------------------------------------------------------------------------------------------------
-ID_LENGTH     = 70
-NAME_LENGTH   = 60
-GENRE_LENGTH  = 20
-YEAR_LENGTH   = 4
-STUDIO_LENGTH = 20
-PLOT_LENGTH   = 70
-URL_LENGTH    = 70
-
-def print_scraper_list(scraper_obj_list):
-    print('Scraper name')
-    print('--------------------------------')
-    for scraper_obj in scraper_obj_list:
-        print('{0}'.format(scraper_obj.name))
-    print('')
-
-# PUT functions to print things returned by Scraper object (which are common to all scrapers)
-# into util.py, to be resused by all scraper tests.
-def print_games_search(results):
-    print('\nFound {0} game/s'.format(len(results)))
-    print("{0} {1}".format('Display name'.ljust(NAME_LENGTH), 'Id'.ljust(ID_LENGTH)))
-    print("{0} {1}".format('-'*NAME_LENGTH, '-'*ID_LENGTH))
-    for game in results:
-        display_name = text_limit_string(game['display_name'], NAME_LENGTH)
-        id           = text_limit_string(game['id'], ID_LENGTH)
-        print("{0} {1}".format(display_name.ljust(NAME_LENGTH), id.ljust(ID_LENGTH)))
-    print('')
-
-def print_game_metadata(scraperObj, results):
-    # --- Get metadata of first game ---
-    if results:
-        metadata = scraperObj.get_metadata(results[0])
-
-        title  = text_limit_string(metadata['title'], NAME_LENGTH)
-        genre  = text_limit_string(metadata['genre'], GENRE_LENGTH)
-        year   = metadata['year']
-        studio = text_limit_string(metadata['studio'], STUDIO_LENGTH)
-        plot   = text_limit_string(metadata['plot'], PLOT_LENGTH)
-        print('\nDisplaying metadata for title "{0}"'.format(title))
-        print("{0} {1} {2} {3} {4}".format('Title'.ljust(NAME_LENGTH), 'Genre'.ljust(GENRE_LENGTH), 
-                                           'Year'.ljust(YEAR_LENGTH), 'Studio'.ljust(STUDIO_LENGTH),
-                                           'Plot'.ljust(PLOT_LENGTH)))
-        print("{0} {1} {2} {3} {4}".format('-'*NAME_LENGTH, '-'*GENRE_LENGTH, '-'*YEAR_LENGTH, 
-                                           '-'*STUDIO_LENGTH, '-'*PLOT_LENGTH))
-        print("{0} {1} {2} {3} {4}".format(title.ljust(NAME_LENGTH), genre.ljust(GENRE_LENGTH), 
-                                           year.ljust(YEAR_LENGTH), studio.ljust(STUDIO_LENGTH),
-                                           plot.ljust(PLOT_LENGTH)))
-
-def print_game_image_list(scraperObj, results, asset_kind):
-    # --- Get image list of first game ---
-    if results:
-        image_list = scraperObj.get_images(results[0], asset_kind)
-        print('Found {0} image/s'.format(len(image_list)))
-        print("{0} {1} {2}".format('Display name'.ljust(NAME_LENGTH),
-                                   'ID'.ljust(ID_LENGTH), 
-                                   'URL'.ljust(URL_LENGTH)))
-        print("{0} {1} {2}".format('-'*NAME_LENGTH, '-'*URL_LENGTH, '-'*URL_LENGTH))
-        for image in image_list:
-            display_name  = text_limit_string(image['name'], NAME_LENGTH)
-            id            = text_limit_string(image['id'], ID_LENGTH)
-            url           = text_limit_string(image['URL'], URL_LENGTH)
-            print("{0} {1} {2}".format(display_name.ljust(NAME_LENGTH), id.ljust(ID_LENGTH), url.ljust(URL_LENGTH)))
-        print('\n')
 
 # #################################################################################################
 # #################################################################################################
@@ -1147,9 +1294,10 @@ class FileNameBase():
             log_error('(IOError) Cannot read {0} file'.format(self.path_tr))
             raise AddonException('(IOError) Cannot read {0} file'.format(self.path_tr))
 
+        if file_bytes is None:
+            return None
         # Return a Unicode string.
         return unicode(file_bytes, encoding)
-
 
     # Opens JSON file and reads it
     def readJson(self):
@@ -1439,9 +1587,6 @@ class PythonFileName(FileNameBase):
     def rename(self, to):
         os.rename(self.path, to.getPath())
 
-    def copy(self, to):
-        shutil.copy2(self.getPath(), to.getPath())
-
     # ---------------------------------------------------------------------------------------------
     # File IO functions
     # ---------------------------------------------------------------------------------------------
@@ -1592,8 +1737,8 @@ class NewFileName:
 
         # --- If a directory, ensure path ends with '/' ---
         if self.is_a_dir:
-            if not self.path_str[:-1] == '/': self.path_str = self.path_str + '/'
-            if not self.path_tr[:-1] == '/': self.path_tr = self.path_tr + '/'
+            if not self.path_str[-1:] == '/': self.path_str = self.path_str + '/'
+            if not self.path_tr[-1:] == '/': self.path_tr = self.path_tr + '/'
 
         # if DEBUG_NEWFILENAME_CLASS:
         #     log_debug('NewFileName() path_str "{0}"'.format(self.path_str))
@@ -1736,6 +1881,10 @@ class NewFileName:
         new_path = FileName(copiedPath.replace(ext, targetExt))
         return new_path
 
+    def escapeQuotes(self):
+        self.path_tr = self.path_tr.replace("'", "\\'")
+        self.path_tr = self.path_tr.replace('"', '\\"')
+        
     # Checks the extension to determine the type of the file.
     def isImageFile(self):
         return '.' + self.getExt().lower() in IMAGE_EXTENSION_LIST
@@ -1777,7 +1926,7 @@ class NewFileName:
         return xbmcvfs.exists(self.path_str)
 
     def makedirs_kodivfs(self):
-        raise AddonException('Not implemented yet')
+        xbmcvfs.mkdirs(self.path_tr)
 
     def list_kodivfs(self):
         subdirectories, filenames = xbmcvfs.listdir(self.path_tr)
@@ -1835,19 +1984,28 @@ class NewFileName:
 
     # ---------------------------------------------------------------------------------------------
     # File low-level IO functions. Kodi VFS implementation.
+    # Kodi VFS documentation in https://alwinesch.github.io/group__python__xbmcvfs.html
     # ---------------------------------------------------------------------------------------------
     def open_kodivfs(self, flags):
-        raise AddonException('Not implemented yet')
+        log_debug('NewFileName::open_kodivfs() path_tr "{0}"'.format(self.path_tr))
+        log_debug('NewFileName::open_kodivfs() flags   "{0}"'.format(flags))
 
+        self.fileHandle = xbmcvfs.File(self.path_tr, flags)
+        return self
+    
     def read_kodivfs(self):
-        raise AddonException('Not implemented yet')
+        if self.fileHandle is None: raise OSError('file not opened')
+        return self.fileHandle.read()
+ 
+    def write_kodivfs(self, bytes):
+        if self.fileHandle is None: raise OSError('file not opened')
+        self.fileHandle.write(bytes)
 
-    def write_kodivfs(self):
-        raise AddonException('Not implemented yet')
-
-    def close_kodivfs(self, bytes):
-        raise AddonException('Not implemented yet')
-
+    def close_kodivfs(self):
+        if self.fileHandle is None: raise OSError('file not opened')
+        self.fileHandle.close()
+        self.fileHandle = None
+        
     # ---------------------------------------------------------------------------------------------
     # File high-level IO functions
     # These functions are independent of the filesystem implementation.
@@ -1917,11 +2075,11 @@ class NewFileName:
             raise AddonException('(IOError) Cannot read {0} file'.format(self.path_tr))
         
         # Return a Unicode string.
-        if encoding is None:
+        if encoding is None or file_bytes is None:
             return file_bytes
         
         return file_bytes.decode(encoding)
-
+    
     #
     # data_str is a Unicode string. Encode it in UTF-8 for file writing.
     #
@@ -1957,10 +2115,11 @@ class NewFileName:
         file_lines = file_contents.splitlines()
 
         result={ }
-        reader = csv.reader(file_lines, delimiter=str('='), quoting=csv.QUOTE_NONE)
+        reader = csv.reader(file_lines, delimiter=str('='), quotechar=str('"'), quoting=csv.QUOTE_MINIMAL, skipinitialspace=True)
         for row in reader:
-            if len(row) != 2:
-                raise csv.Error("Too many fields on row with contents: "+str(row))
+            if len(row) < 2:
+               continue
+           
             result[row[0].strip()] = row[1].strip().lstrip('"').rstrip('"')
 
         return result
@@ -1984,6 +2143,24 @@ class NewFileName:
     def writeXml(self, xml_root):
         data = ET.tostring(xml_root)
         self.saveStrToFile(data)
+
+    def writeAll(self, bytes, flags = 'w'):
+         # --- Catch exceptions in the FilaName class ---
+        try:
+            self.open(flags)
+            self.write(bytes)
+            self.close()
+        except OSError:
+            log_error('(OSError) Exception in writeAll()')
+            log_error('(OSError) Cannot write {0} file'.format(self.path_tr))
+            raise AddonException('(OSError) Cannot write {0} file'.format(self.path_tr))
+        except IOError as e:
+            log_error('(IOError) Exception in writeAll()')
+            log_error('(IOError) errno = {0}'.format(e.errno))
+            if e.errno == errno.ENOENT: log_error('(IOError) No such file or directory.')
+            else:                       log_error('(IOError) Unhandled errno value.')
+            log_error('(IOError) Cannot write {0} file'.format(self.path_tr))
+            raise AddonException('(IOError) Cannot write {0} file'.format(self.path_tr))
         
     # ---------------------------------------------------------------------------------------------
     # Scanner functions
@@ -2569,7 +2746,82 @@ class KodiOrdDictionaryDialog(object):
 
         return key
 
-class KodiProgressDialogStrategy(object):
+# Progress dialog that can be closed and reopened.
+# If the dialog is canceled this class remembers it forever.
+class KodiProgressDialog(object):
+    def __init__(self):
+        self.title = 'Advanced Emulator Launcher'
+        self.progress = 0
+        self.flag_dialog_canceled = False
+        self.dialog_active = False
+        self.progressDialog = xbmcgui.DialogProgress()
+
+    def startProgress(self, message, num_steps = 100):
+        self.num_steps = num_steps
+        self.progress = 0
+        self.dialog_active = True
+        self.progressDialog.create(self.title, message)
+        self.progressDialog.update(self.progress)
+
+    # Update progress and optionally update messages as well.
+    def updateProgress(self, step_index, message1 = '', message2 = ''):
+        self.progress = int((step_index * 100) / self.num_steps)
+        self.message1 = message1
+        self.message2 = message2
+        if message2:
+            self.progressDialog.update(self.progress, message1, message2)
+        else:
+            self.progressDialog.update(self.progress, message1)
+
+    # Update dialog message but keep same progress.
+    def updateMessages(self, message1, message2):
+        self.message1 = message1
+        self.message2 = message2
+        self.progressDialog.update(self.progress, message1, message2)
+
+    # Update dialog message but keep same progress.
+    def updateMessage(self, message1):
+        self.message1 = message1
+        self.progressDialog.update(self.progress, message1)
+
+    # Update message2 and keeps same progress and message1
+    def updateMessage2(self, message2):
+        self.message2 = message2
+        self.progressDialog.update(self.progress, self.message1, message2)
+
+    def isCanceled(self):
+        # If the user pressed the cancel button before then return it now.
+        if self.flag_dialog_canceled:
+            return True
+        else:
+            self.flag_dialog_canceled = self.progressDialog.iscanceled()
+            return self.flag_dialog_canceled
+
+    def close(self):
+        # Before closing the dialog check if the user pressed the Cancel button and remember
+        # the user decision.
+        if self.progressDialog.iscanceled(): self.flag_dialog_canceled = True
+        self.progressDialog.close()
+        self.dialog_active = False
+
+    def endProgress(self):
+        # Before closing the dialog check if the user pressed the Cancel button and remember
+        # the user decision.
+        if self.progressDialog.iscanceled(): self.flag_dialog_canceled = True
+        self.progressDialog.update(100)
+        self.progressDialog.close()
+        self.dialog_active = False
+
+    # Reopens a previously closed dialog, remembering the messages and the progress.
+    def reopen(self):
+        if not self.message2:
+            self.progressDialog.create(self.title, self.message1, self.message2)
+        else:
+            self.progressDialog.create(self.title, self.message1)
+        self.progressDialog.update(self.progress)
+
+# To be used as a base class.
+class KodiProgressDialog_Chrisism(object):
     def __init__(self):
         self.progress = 0
         self.progressDialog = xbmcgui.DialogProgress()
@@ -2579,15 +2831,14 @@ class KodiProgressDialogStrategy(object):
         self.progressDialog.create(title, message)
 
     def _updateProgress(self, progress, message1 = None, message2 = None):
-        self.progress = int(progress)
+        self.progress = progress
         if not self.verbose:
-            self.progressDialog.update(self.progress)
+            self.progressDialog.update(progress)
         else:
-            self.progressDialog.update(self.progress, message1, message2)
+            self.progressDialog.update(progress, message1, message2)
 
     def _updateProgressMessage(self, message1, message2 = None):
-        if not self.verbose:
-            return
+        if not self.verbose: return
 
         self.progressDialog.update(self.progress, message1, message2)
 
@@ -2595,10 +2846,9 @@ class KodiProgressDialogStrategy(object):
         return self.progressDialog.iscanceled()
 
     def _endProgressPhase(self, canceled = False):
-        if not canceled:
-            self.progressDialog.update(100)
+        if not canceled: self.progressDialog.update(100)
         self.progressDialog.close()
-
+        
 # -------------------------------------------------------------------------------------------------
 # If runnining with Kodi Python interpreter use Kodi proper functions.
 # If running with the standard Python interpreter use replacement functions.
@@ -2615,3 +2865,117 @@ else:
     log_info    = log_info_Python
     log_warning = log_warning_Python
     log_error   = log_error_Python
+
+
+# -------------------------------------------------------------------------------------------------
+# Kodi error reporting
+# -------------------------------------------------------------------------------------------------
+KODI_MESSAGE_NONE        = 100
+# Kodi notifications must be short.
+KODI_MESSAGE_NOTIFY      = 200
+KODI_MESSAGE_NOTIFY_WARN = 300
+# Kodi OK dialog to display a message.
+KODI_MESSAGE_DIALOG      = 400
+
+# If status_dic['status'] is True then everything is OK. If status_dic['status'] is False,
+# then display the notification.
+def kodi_new_status_dic(message):
+    return {
+        'status' : True,
+        'dialog' : KODI_MESSAGE_NOTIFY,
+        'msg'    : message,
+    }
+
+def kodi_display_user_message(op_dic):
+    if op_dic['dialog'] == KODI_MESSAGE_NONE:
+        return
+    elif op_dic['dialog'] == KODI_MESSAGE_NOTIFY:
+        kodi_notify(op_dic['msg'])
+    elif op_dic['dialog'] == KODI_MESSAGE_NOTIFY_WARN:
+        kodi_notify(op_dic['msg'])
+    elif op_dic['dialog'] == KODI_MESSAGE_DIALOG:
+        kodi_dialog_OK(op_dic['msg'])
+
+# -------------------------------------------------------------------------------------------------
+# Utilities to test scrapers
+# -------------------------------------------------------------------------------------------------
+# Candidates
+NAME_L      = 65
+SCORE_L     = 5
+ID_L        = 55
+PLATFORM_L  = 15
+SPLATFORM_L = 15
+URL_L       = 70
+
+# Metadata
+TITLE_L     = 50
+YEAR_L      = 4
+GENRE_L     = 20
+DEVELOPER_L = 10
+NPLAYERS_L  = 10
+ESRB_L      = 20
+PLOT_L      = 70
+
+# Assets
+ASSET_ID_L        = 8
+ASSET_NAME_L      = 60
+ASSET_URL_THUMB_L = 100
+
+# PUT functions to print things returned by Scraper object (which are common to all scrapers)
+# into util.py, to be resused by all scraper tests.
+def print_candidate_list(results):
+    p_str = "{0} {1} {2} {3} {4}"
+    print('Found {0} candidate/s'.format(len(results)))
+    print(p_str.format(
+        'Display name'.ljust(NAME_L), 'Score'.ljust(SCORE_L),
+        'Id'.ljust(ID_L), 'Platform'.ljust(PLATFORM_L), 'SPlatform'.ljust(SPLATFORM_L)))
+    print(p_str.format(
+        '-'*NAME_L, '-'*SCORE_L, '-'*ID_L, '-'*PLATFORM_L, '-'*SPLATFORM_L))
+    for game in results:
+        display_name = text_limit_string(game['display_name'], NAME_L)
+        score = text_limit_string(str(game['order']), SCORE_L)
+        id = text_limit_string(str(game['id']), ID_L)
+        platform = text_limit_string(str(game['platform']), PLATFORM_L)
+        splatform = text_limit_string(str(game['scraper_platform']), SPLATFORM_L)
+        print(p_str.format(
+            display_name.ljust(NAME_L), score.ljust(SCORE_L), id.ljust(ID_L),
+            platform.ljust(PLATFORM_L), splatform.ljust(SPLATFORM_L)))
+    print('')
+
+def print_game_metadata(metadata):
+    title     = text_limit_string(metadata['title'], TITLE_L)
+    year      = metadata['year']
+    genre     = text_limit_string(metadata['genre'], GENRE_L)
+    developer = text_limit_string(metadata['developer'], DEVELOPER_L)
+    nplayers  = text_limit_string(metadata['nplayers'], NPLAYERS_L)
+    esrb      = text_limit_string(metadata['esrb'], ESRB_L)
+    plot      = text_limit_string(metadata['plot'], PLOT_L)
+
+    p_str = "{0} {1} {2} {3} {4} {5} {6}"
+    print('Displaying metadata for title "{0}"'.format(title))
+    print(p_str.format(
+        'Title'.ljust(TITLE_L), 'Year'.ljust(YEAR_L), 'Genre'.ljust(GENRE_L),
+        'Developer'.ljust(DEVELOPER_L), 'NPlayers'.ljust(NPLAYERS_L), 'ESRB'.ljust(ESRB_L),
+        'Plot'.ljust(PLOT_L)))
+    print(p_str.format(
+        '-'*TITLE_L, '-'*YEAR_L, '-'*GENRE_L, '-'*DEVELOPER_L, '-'*NPLAYERS_L, '-'*ESRB_L, '-'*PLOT_L))
+    print(p_str.format(
+        title.ljust(TITLE_L), year.ljust(YEAR_L), genre.ljust(GENRE_L), developer.ljust(DEVELOPER_L),
+        nplayers.ljust(NPLAYERS_L), esrb.ljust(ESRB_L), plot.ljust(PLOT_L) ))
+    print('')
+
+def print_game_assets(image_list):
+    # print('Found {0} image/s'.format(len(image_list)))
+    p_str = "{0} {1} {2}"
+    print(p_str.format(
+        'Asset ID'.ljust(ASSET_ID_L), 'Name'.ljust(ASSET_NAME_L),
+        'URL thumb'.ljust(ASSET_URL_THUMB_L)))
+    print(p_str.format('-'*ASSET_ID_L, '-'*ASSET_NAME_L, '-'*ASSET_URL_THUMB_L))
+    for image in image_list:
+        id           = text_limit_string(str(image['asset_ID']), ASSET_ID_L)
+        display_name = text_limit_string(image['display_name'], ASSET_NAME_L)
+        url_thumb    = text_limit_string(image['url_thumb'], ASSET_URL_THUMB_L)
+        print(p_str.format(
+            id.ljust(ASSET_ID_L), display_name.ljust(ASSET_NAME_L),
+            url_thumb.ljust(ASSET_URL_THUMB_L)))
+    print('')

@@ -71,14 +71,10 @@ class Test_filename_test(unittest.TestCase):
         # assert
         self.assertEquals('', actual)
 
-    @patch('resources.utils.xbmcvfs.File')
-    def test_reading_property_file_successfull(self, file_mock):
-        import ConfigParser
-
+    def test_reading_property_file_successfull(self):
         # arrange
         p = self.TEST_ASSETS_DIR + "\\retroarch.cfg"
-        file_mock.return_value = open(p, 'r')
-        target = KodiFileName(p)       
+        target = NewFileName(p)       
 
         # act
         propfile = target.readPropertyFile()
@@ -91,6 +87,17 @@ class Test_filename_test(unittest.TestCase):
         self.assertIsNotNone(actual)
         self.assertEquals(u':\\database\\rdb', actual)
         
-
+    def test_parsing_strings_to_folders(self):
+        # arrange
+        path = '/data/user/0/com.retroarch/cores/'
+        
+        # act       
+        actual = NewFileName(path, isdir=True) 
+                
+        # assert
+        self.assertIsNotNone(actual)
+        self.assertEquals(u'/data/user/0/com.retroarch/cores/', actual.path_tr)
+        print actual.path_tr
+        
 if __name__ == '__main__':
     unittest.main()

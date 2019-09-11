@@ -111,7 +111,7 @@ class Test_Launcher(unittest.TestCase):
 
         # assert
         self.assertIsNotNone(expectedApp)
-        self.assertEqual(expectedApp, mock.actualApplication.getOriginalPath())
+        self.assertEqual(expectedApp, mock.actualApplication.getPath())
         self.assertIsNotNone(expectedArgs)
         self.assertEqual(expectedArgs, mock.actualArgs)
         
@@ -144,7 +144,7 @@ class Test_Launcher(unittest.TestCase):
 
         # assert
         self.assertIsNotNone(mock.actualApplication)
-        self.assertEqual(expectedApp, mock.actualApplication.getOriginalPath())
+        self.assertEqual(expectedApp, mock.actualApplication.getPath())
         
         self.assertIsNotNone(mock.actualArgs)
         self.assertEqual(expectedArgs, mock.actualArgs)
@@ -175,7 +175,7 @@ class Test_Launcher(unittest.TestCase):
         rom_dir.setFakeContent(json_data)
 
         paths = Fake_Paths('\\fake\\')
-        paths.ROMS_DIR = PythonFileName(self.TEST_ASSETS_DIR)                
+        paths.ROMS_DIR = NewFileName(self.TEST_ASSETS_DIR)                
         repository = ROMSetRepository(paths, settings)
 
         # act
@@ -231,7 +231,7 @@ class Test_Launcher(unittest.TestCase):
 
         # assert
         self.assertIsNotNone(mock.actualApplication)
-        self.assertEqual(expected, mock.actualApplication.getOriginalPath())
+        self.assertEqual(expected, mock.actualApplication.getPath())
         self.assertEqual(expectedArgs, mock.actualArgs)
                 
     @patch('resources.objects.FileName', side_effect = FakeFile)
@@ -413,7 +413,7 @@ class Test_Launcher(unittest.TestCase):
         mock_exeFactory.create.return_value = mock
                         
         paths = Fake_Paths('\\fake\\')
-        paths.ROMS_DIR = PythonFileName(self.TEST_ASSETS_DIR)
+        paths.ROMS_DIR = NewFileName(self.TEST_ASSETS_DIR)
                 
         repository = ROMSetRepository(paths, settings)
         target = RetroarchLauncher(paths, settings, launcher_data, None, mock_exeFactory, repository, None)        
@@ -453,7 +453,7 @@ class Test_Launcher(unittest.TestCase):
         mock_exeFactory.create.return_value = mock
 
         paths = Fake_Paths('\\fake\\')
-        paths.ROMS_DIR = PythonFileName(self.TEST_ASSETS_DIR)
+        paths.ROMS_DIR = NewFileName(self.TEST_ASSETS_DIR)
                 
         repository = ROMSetRepository(paths, settings)
         target = StandardRomLauncher(paths, settings, launcher_data, None, mock_exeFactory, repository, None)        
@@ -466,6 +466,29 @@ class Test_Launcher(unittest.TestCase):
         # assert
         self.assertIsNotNone(actual)
         self.assertEqual(len(actual), expected)
+
+    @patch('resources.objects.is_android')
+    def test_retroarchlauncher_switching_core_to_info_file(self, is_android_mock):
+        # arrange
+        is_android_mock.return_value = True
+        
+        settings = self._get_test_settings()
+        launcher_data = {}
+        launcher_data['type'] = OBJ_LAUNCHER_RETROARCH
+        paths = Fake_Paths('\\fake\\')
+                
+        info_path = NewFileName('/data/user/0/infos/')
+        core_path = NewFileName('/data/user/0/cores/mycore_libretro_android.so')
+        
+        target = RetroarchLauncher(paths, settings, launcher_data, None, None, None, None)
+                
+        # act
+        actual = target._switch_core_to_info_file(core_path, info_path)
+        
+        # assert
+        print actual.path_tr
+        self.assertIsNotNone(actual)
+        self.assertEquals(u'/data/user/0/infos/mycore_libretro.info', actual.path_tr)
 
 if __name__ == '__main__':
    unittest.main()

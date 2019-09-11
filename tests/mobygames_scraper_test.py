@@ -19,7 +19,7 @@ def read_file_as_json(path):
     file_data = read_file(path)
     return json.loads(file_data, encoding = 'utf-8')
 
-def mocked_gamesdb(url):
+def mocked_gamesdb(url, url_log=None):
 
     mocked_json_file = ''
 
@@ -36,10 +36,10 @@ def mocked_gamesdb(url):
         mocked_json_file = Test_mobygames_scraper.TEST_ASSETS_DIR + "\\mobygames_castlevania.json"
         
     if mocked_json_file == '':
-        return net_get_URL_as_json(url)
+        return net_get_URL(url)
 
     print('reading mocked data from file: {}'.format(mocked_json_file))
-    return read_file_as_json(mocked_json_file)
+    return read_file(mocked_json_file), 200
 
 class Test_mobygames_scraper(unittest.TestCase):
     
@@ -69,66 +69,55 @@ class Test_mobygames_scraper(unittest.TestCase):
         settings['scan_clean_tags'] = True
         settings['scan_ignore_scrap_title'] = False
         settings['scraper_metadata'] = 0 # NullScraper
-        settings['mobygames_apikey'] = 'abc123'
+        settings['scraper_mobygames_apikey'] = 'abc123'
         settings['escape_romfile'] = False
 
         return settings
 
-    @patch('resources.scrap.net_get_URL_as_json', side_effect = mocked_gamesdb)
+    @patch('resources.scrap.net_get_URL', side_effect = mocked_gamesdb)
     def test_scraping_metadata_for_game(self, mock_json_downloader):
         
         # arrange
         settings = self.get_test_settings()
-        
-        launcher = StandardRomLauncher(None, settings, None, None, None, None, None)
-        launcher.set_platform('Nintendo NES')
-        
-        rom = ROM({'id': 1234})
-        fakeRomPath = FakeFile('/my/nice/roms/castlevania.zip')
-
-        target = MobyGamesScraper(settings, launcher)
+        status_dic = {}
+        status_dic['status'] = True
+        target = MobyGames(settings)
 
         # act
-        actual = target.scrape_metadata('castlevania', fakeRomPath, rom)
-                
+        candidates = target.get_candidates('castlevania', 'castlevania', 'Nintendo NES', status_dic)
+        actual = target.get_metadata(candidates[0], status_dic)
+                          
         # assert
         self.assertTrue(actual)
-        self.assertEqual(u'Castlevania', rom.get_name())
-        print(rom)
+        self.assertEqual(u'Castlevania', actual['title'])
+        print(actual)
 
         
     # add actual mobygames apikey above and comment out patch attributes to do live tests
-    @patch('resources.scrap.net_get_URL_as_json', side_effect = mocked_gamesdb)
+    @patch('resources.scrap.net_get_URL', side_effect = mocked_gamesdb)
     @patch('resources.scrap.net_download_img')
     def test_scraping_assets_for_game(self, mock_img_downloader, mock_json_downloader):
 
         # arrange
         settings = self.get_test_settings()
+        status_dic = {}
+        status_dic['status'] = True
+        target = MobyGames(settings)
         
         assets_to_scrape = [
             g_assetFactory.get_asset_info(ASSET_BOXFRONT_ID), 
             g_assetFactory.get_asset_info(ASSET_BOXBACK_ID), 
             g_assetFactory.get_asset_info(ASSET_SNAP_ID)]
         
-        launcher = StandardRomLauncher(None, settings, None, None, None, None, None)
-        launcher.set_platform('Nintendo NES')
-        launcher.set_asset_path(g_assetFactory.get_asset_info(ASSET_BOXFRONT_ID),'/my/nice/assets/front/')
-        launcher.set_asset_path(g_assetFactory.get_asset_info(ASSET_BOXBACK_ID),'/my/nice/assets/back/')
-        launcher.set_asset_path(g_assetFactory.get_asset_info(ASSET_SNAP_ID),'/my/nice/assets/snaps/')
-        
-        rom = ROM({'id': 1234})
-        fakeRomPath = FakeFile('/my/nice/roms/castlevania.zip')
-
-        target = MobyGamesScraper(settings, launcher)
-
         # act
         actuals = []
+        candidates = target.get_candidates('castlevania', 'castlevania', 'Nintendo NES', status_dic)   
         for asset_to_scrape in assets_to_scrape:
-            an_actual = target.scrape_asset('castlevania', asset_to_scrape, fakeRomPath, rom)
+            an_actual = target.get_assets(candidates[0], asset_to_scrape, status_dic)
             actuals.append(an_actual)
                 
         # assert
         for actual in actuals:
             self.assertTrue(actual)
         
-        print(rom)
+        print(actuals)

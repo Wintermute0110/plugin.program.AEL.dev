@@ -3,44 +3,49 @@
 <category label="ROM scanner">
     <setting label="Recursive scan" type="bool" id="scan_recursive" default="true" />
     <setting label="Ignore BIOS files" type="bool" id="scan_ignore_bios" default="true"/>
-    <setting label="Update NFO files after ROM scraping" type="bool" id="scan_update_NFO_files" default="false" />
-    <setting label="Ignore Scrapped Titles (use ROM filenames instead)" type="bool" id="scan_ignore_scrap_title" default="true" />
+    <setting label="Ignore Scrapped Titles (use ROM filenames)" type="bool" id="scan_ignore_scrap_title" default="true" />
     <setting label="Clean No-Intro/TOSEC Title Tags (tag) [tag] {tag}" type="bool" id="scan_clean_tags" default="false" />
-    <setting label="Metadata scan policy" type="enum" id="scan_metadata_policy" default="3" values="None|NFO Files|NFO Files + Scrapers|Scrapers" />
-    <setting label="Asset scan policy" type="enum" id="scan_asset_policy" default="0" values="Local Images|Local Images + Scrapers|Scrapers" />
-    <setting label="Metadata scraping mode" type="enum" id="metadata_scraper_mode" default="1" values="Semi-automatic|Automatic"/>
-    <setting label="Asset scraping mode" type="enum" id="asset_scraper_mode" default="1" values="Semi-automatic|Automatic"/>
+    <setting label="Update NFO files after ROM scraping" type="bool" id="scan_update_NFO_files" default="false" />
+    <setting label="Skip scanning if scraping fails" type="bool" id="scan_skip_on_scraping_failure" default="true" />
 </category>
+<!--
+    Make sure the scraper lists match the variables in constants.py
+-->
 <category label="ROM scraping">
-    <setting id="separator" type="lsep" label="Metadata scrapers"/>
-    <setting label="Metadata scraper"      type="enum" id="scraper_metadata"      default="0" values="Offline scraper|TheGamesDB|GameFAQs|MobyGames"/>
-    <setting label="MAME metadata scraper" type="enum" id="scraper_metadata_MAME" default="0" values="Offline scraper|TheGamesDB|GameFAQs|MobyGames|ArcadeDB"/>
+    <setting id="separator" type="lsep" label="Scanner settings"/>
+    <setting label="Metadata scan policy" type="enum" id="scan_metadata_policy" default="3" values="None|NFO files|NFO files + Scrapers|Scrapers" />
+    <setting label="Asset scan policy" type="enum" id="scan_asset_policy" default="0" values="Local images|Local images + Scrapers|Scrapers" />
+    <setting label="Game selection mode" type="enum" id="game_selection_mode" default="1" values="Manual|Automatic" />
+    <setting label="Asset selection mode" type="enum" id="asset_selection_mode" default="1" values="Manual|Automatic" />
 
-    <setting id="separator" type="lsep" label="Asset scrapers (non MAME)"/>
-    <setting label="Titles scraper" type="enum" id="scraper_title" default="0"        values="None|TheGamesDB|GameFAQs|MobyGames"/>
-    <setting label="Snaps scraper" type="enum" id="scraper_snap" default="0"          values="None|TheGamesDB|GameFAQs|MobyGames"/>
-    <setting label="Boxfront scraper" type="enum" id="scraper_boxfront" default="0"   values="None|TheGamesDB|GameFAQs|MobyGames"/>
-    <setting label="Boxback scraper" type="enum" id="scraper_boxback" default="0"     values="None|TheGamesDB|GameFAQs|MobyGames"/>
-    <setting label="Cartridge scraper" type="enum" id="scraper_cart" default="0"      values="None|MobyGames"/>
-    <setting label="Fanart scraper" type="enum" id="scraper_fanart" default="0"       values="None|TheGamesDB"/>
-    <setting label="Banner scraper" type="enum" id="scraper_banner" default="0"       values="None|TheGamesDB"/>
-    <setting label="Clearlogo scraper" type="enum" id="scraper_clearlogo" default="0" values="None|TheGamesDB"/>
-
-    <setting id="separator" type="lsep" label="Asset scrapers (MAME)"/>
-    <setting label="Titles scraper" type="enum" id="scraper_title_MAME" default="0"         values="None|TheGamesDB|GameFAQs|MobyGames|ArcadeDB"/>
-    <setting label="Snaps scraper" type="enum" id="scraper_snap_MAME" default="0"           values="None|TheGamesDB|GameFAQs|MobyGames|ArcadeDB"/>
-    <setting label="Cabinet scraper" type="enum" id="scraper_cabinet_MAME" default="0"      values="None|TheGamesDB|GameFAQs|MobyGames|ArcadeDB"/>
-    <setting label="Control Panel scraper" type="enum" id="scraper_cpanel_MAME" default="0" values="None|TheGamesDB|GameFAQs|MobyGames|ArcadeDB"/>
-    <setting label="PCB scraper" type="enum" id="scraper_pcb_MAME" default="0"              values="None|MobyGames|ArcadeDB"/>
-    <setting label="Fanart scraper" type="enum" id="scraper_fanart_MAME" default="0"        values="None|TheGamesDB"/>
-    <setting label="Marquee scraper" type="enum" id="scraper_marquee_MAME" default="0"      values="None|TheGamesDB|ArcadeDB"/>
-    <setting label="Clearlogo scraper" type="enum" id="scraper_clearlogo_MAME" default="0"  values="None|TheGamesDB|ArcadeDB"/>
-    <setting label="Flyer scraper" type="enum" id="scraper_flyer_MAME" default="0"          values="None|ArcadeDB"/>
-
+    <setting id="separator" type="lsep" label="Scanner scrapers"/>
+    <setting label="Metadata scraper" type="enum" id="scraper_metadata" default="0" values="AEL Offline|TheGamesDB|ScreenScraper|MobyGames" />
+    <setting label="Asset scraper" type="enum" id="scraper_asset" default="0" values="TheGamesDB|ScreenScraper|MobyGames" />
+    <setting label="MAME metadata scraper" type="enum" id="scraper_metadata_MAME" default="0" values="AEL Offline|ArcadeDB|TheGamesDB|ScreenScraper|MobyGames" />
+    <setting label="MAME asset scraper" type="enum" id="scraper_asset_MAME" default="0" values="ArcadeDB|TheGamesDB|ScreenScraper|MobyGames" />
+</category>
+<category label="Misc settings">
     <setting id="separator" type="lsep" label="Scraper API keys"/>
-    <setting label="MobyGames" type="text" id="mobygames_apikey" default="" visible="true"/>
-    <setting label="TheGamesDB" type="text" id="thegamesdb_apikey" default="" visible="true"/>
-    
+    <setting label="TheGamesDB API key" default="" id="scraper_thegamesdb_apikey" type="text"/>
+    <setting label="MobyGames API key" type="text" id="scraper_mobygames_apikey" default="" />
+    <setting label="ScreenScraper Username" type="text" id="scraper_screenscraper_ssid" default="" />
+    <setting label="ScreenScraper Pass" type="text" id="scraper_screenscraper_sspass" default="" />
+
+    <setting id="separator" type="lsep" label="Scraper settings"/>
+    <!-- ScreenScraper settings are automatically generated with Python scripts -->
+    <setting label="ScreenScraper region" type="enum" id="scraper_screenscraper_region" default="0" values="World|Europe|USA|Japan|ScreenScraper|American continent|Asia|Australia|Bulgaria|Brazil|Canada|Chile|China|Custom|Czech republic|Germany|Denmark|Finland|France|Greece|Hungary|Israel|Italy|Korea|Kuwait|Middle East|Netherlands|Norway|New Zealand|Oceania|Peru|Poland|Portugal|Russia|Sweden|Slovakia|Spain|Turkey|Taiwan|United Kingdom" />
+    <setting label="ScreenScraper language" type="enum" id="scraper_screenscraper_language" default="0" values="English|Spanish|Japanese|Czech|Danish|German|Finnish|French|Hungarian|Italian|Korean|Dutch|Norwegian|Polish|Portuguese|Russian|Slovak|Swedish|Turkish|Chinese" />
+<!--
+    <setting label="Region" type="enum" id="scraper_region" default="0" values="World|Europe|Japan|America"/>
+    <setting label="Thumb Images Size" type="enum" id="scraper_thumb_size" default="0" values="All|Icon|Small|Medium|Large|XLarge|XXLarge|Huge"/>
+    <setting label="Fanart Images Size" type="enum" id="scraper_fanart_size" default="0" values="All|Icon|Small|Medium|Large|XLarge|XXLarge|Huge"/>
+    <setting label="Preferred arcade images" type="enum" id="scraper_image_type" default="0" values="Snapshots|Flyers"/>
+    <setting label="Selected fanart image" type="enum" id="scraper_fanart_order" default="1" values="First|Half|Last"/>
+-->
+
+    <setting id="separator" type="lsep" label="Utilities"/>
+    <setting label="Retroarch System directory" type="folder" id="io_retroarch_sys_dir" default="" source="" />
+    <setting label="Only check mandatory BIOSes" type="bool" id="io_retroarch_only_mandatory" default="true"/>
 </category>
 <category label="ROM audit">
     <setting label="Unkown ROMs are" type="enum" id="audit_unknown_roms" default="0" values="Parents|Clones" />
@@ -51,17 +56,8 @@
 <!--
     <setting label="1G1R main region (not working yet)" type="enum" id="audit_1G1R_main_region" default="0" values="Europe|USA|Japan" />
     <setting label="1G1R secondary region (not working yet)" type="enum" id="audit_1G1R_second_region" default="0" values="Spain|France|Brazil|Korea" />
--->    
-</category>
-<!--
-<category label="Scrapers">
-    <setting label="Region" type="enum" id="scraper_region" default="0" values="World|Europe|Japan|America"/>
-    <setting label="Thumb Images Size" type="enum" id="scraper_thumb_size" default="0" values="All|Icon|Small|Medium|Large|XLarge|XXLarge|Huge"/>
-    <setting label="Fanart Images Size" type="enum" id="scraper_fanart_size" default="0" values="All|Icon|Small|Medium|Large|XLarge|XXLarge|Huge"/>
-    <setting label="Preferred arcade images" type="enum" id="scraper_image_type" default="0" values="Snapshots|Flyers"/>
-    <setting label="Selected fanart image" type="enum" id="scraper_fanart_order" default="1" values="First|Half|Last"/>
-</category>
 -->
+</category>
 <category label="Display">
     <setting id="separator" type="lsep" label="General"/>
     <setting label="Categories display mode" type="enum" id="display_category_mode" default="0" values="Standard|Flat"/>
@@ -83,10 +79,6 @@
     <setting label="Hide [Recently played ROMs]" type="bool" id="display_hide_recent" default="false" />
     <setting label="Hide [Most played ROMs]" type="bool" id="display_hide_mostplayed" default="false" />
 </category>
-<category label="Miscellaneous">
-    <setting label="Only check mandatory Retroarch BIOSes" type="bool" id="retroarch_mandatory_BIOS" default="true"/>
-    <setting label="Steam API key" type="text" id="steam_api_key" default="123abc" />
-</category>
 <category label="Paths">
     <setting id="separator" type="lsep" label="Retroarch paths/options"/>
     <setting label="Retroarch executable" type="folder" id="retroarch_exec_path" default="" source="" />
@@ -99,22 +91,10 @@
     <setting label="Favourites Asset directory" type="folder" id="favourites_asset_dir" default="" source="" />
     <setting label="Collections Asset directory" type="folder" id="collections_asset_dir" default="" source="" />
 </category>
-<category label="I/O">
-    <setting id="separator" type="lsep" label="Import/export configuration"/>
-    <setting label="Import category/launcher configuration ..." type="action" option="close" action="RunPlugin(plugin://plugin.program.AEL/?com=EXECUTE_IMPORT_LAUNCHERS)"/>
-    <setting label="Export category/launcher configuration ..." type="action" option="close" action="RunPlugin(plugin://plugin.program.AEL/?com=EXECUTE_EXPORT_LAUNCHERS)"/>
-
-    <setting id="separator" type="lsep" label="Utilities"/>
-    <setting label="Check/Update all databases ..." type="action" option="close" action="RunPlugin(plugin://plugin.program.AEL/?com=EXECUTE_CHECK_DATABASES)"/>
-    <setting label="Import AL launchers.xml ..." type="action" option="close" action="RunPlugin(plugin://plugin.program.AEL/?com=EXECUTE_IMPORT_AL_LAUNCHERS)"/>
-</category>
 <category label="Advanced">
     <setting label="Action on Kodi playing media" type="enum" id="media_state_action" default="0" values="Stop|Pause|Let Play" />
     <setting label="After/before launch delay (ms)" type="slider" id="delay_tempo" default="500" range="0,100,15000" option="int"/>
     <setting label="Suspend/resume Kodi audio engine" type="bool" id="suspend_audio_engine" default="false"/>
-<!--
-    <setting label="Suspend/resume Kodi joystick engine" type="bool" id="suspend_joystick_engine" default="false"/>
--->
     <setting label="Escape $rom$ quotes" type="bool" id="escape_romfile" default="false" />
     <setting label="Disable LIRC (Linux only)" type="bool" id="lirc_state" default="true" />
     <setting label="Show batch command window (Windows only)" type="bool" id="show_batch_window" default="false"/>
@@ -122,5 +102,6 @@
     <setting label="CD into aplication dir (Windows only)" type="bool" id="windows_cd_apppath" default="true"/>
     <setting label="Log level" type="enum" id="log_level" default="2" values="ERROR|WARNING|INFO|VERBOSE|DEBUG" />
     <setting label="Migrated version" type="text" id="migrated_version" default="0.0.0" visible="true"/>
+    <setting label="Steam API key" type="text" id="steam_api_key" default="123abc" />
 </category>
 </settings>
