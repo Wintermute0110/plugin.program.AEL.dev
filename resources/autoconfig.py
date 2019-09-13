@@ -232,7 +232,7 @@ def autoconfig_get_default_import_launcher():
         'plot' : '',
         'platform' : 'Unknown',
         'application' : '',
-        'args' : '',
+        'args' : [],
         'args_extra' : [],
         'ROM_path' : '',
         'ROM_ext' : '',
@@ -328,6 +328,7 @@ def autoconfig_import_launchers(CATEGORIES_FILE_PATH, ROMS_DIR, categories, laun
     # >> Process tags in XML configuration file
     imported_categories_list = []
     imported_launchers_list = []
+    list_type_tags = ['args', 'args_extra']
     for root_element in xml_root:
         if __debug_xml_parser: log_debug('>>> Root child tag <{0}>'.format(root_element.tag))
 
@@ -352,9 +353,11 @@ def autoconfig_import_launchers(CATEGORIES_FILE_PATH, ROMS_DIR, categories, laun
                 xml_tag  = root_child.tag
                 if __debug_xml_parser: log_debug('>>> "{0:<11s}" --> "{1}"'.format(xml_tag, xml_text))
 
-                # >> Transform list datatype. Only add to the list if string is non empty.
-                if xml_tag == 'args_extra' and xml_text: launcher_temp[xml_tag].append(xml_text)
-                else:                                    launcher_temp[xml_tag] = xml_text
+                # Transform list datatype. Only add to the list if string is non empty.
+                if xml_tag in list_type_tags and xml_text:
+                    launcher_temp[xml_tag].append(xml_text)
+                    continue
+                launcher_temp[xml_tag] = xml_text
             # --- Add launcher to categories dictionary ---
             log_debug('Adding launcher "{0}" to import list'.format(launcher_temp['name']))
             imported_launchers_list.append(launcher_temp)
@@ -712,17 +715,39 @@ def autoconfig_import_launcher(ROMS_DIR, categories, launchers, categoryID, laun
         launchers[launcherID]['application'] = i_launcher['application']
         log_debug('Imported application "{0}"'.format(i_launcher['application']))
 
-    if i_launcher['args']:
+    # Both <args> and <args_extra> are lists. <args_extra> is deprecated.
+    # Case 1) Only one <args> tag
+    # Case 2) Multiple <args> tag
+    # Case 3) One <arg> tag and one or more <args_extra> tags. This is deprecated.
+    len_args = len(i_launcher['args'])
+    len_extra_args = len(i_launcher['args_extra'])
+    if len_args == 1 and len_extra_args == 0:
         launchers[launcherID]['args'] = i_launcher['args']
-        log_debug('Imported args "{0}"'.format(i_launcher['args']))
-
-    # >> For every args_extra item add one entry to the list
-    if i_launcher['args_extra']:
-        # >> Reset current args_extra
         launchers[launcherID]['args_extra'] = []
-        for args in i_launcher['args_extra']:
+        log_debug('Imported args "{0}"'.format(i_launcher['args']))
+        log_debug('Resetted args_extra')
+    elif len_args > 1 and len_extra_args == 0:
+        args_str = i_launcher['args'][0]
+        args_extra_list = i_launcher['args'][1:]
+        launchers[launcherID]['args'] = args_str
+        log_debug('Imported args "{0}"'.format(args_str))
+        launchers[launcherID]['args_extra'] = []
+        for args in args_extra_list:
             launchers[launcherID]['args_extra'].append(args)
             log_debug('Imported args_extra "{0}"'.format(args))
+    elif len_args == 1 and len_extra_args >= 1:
+        args_str = i_launcher['args'][0]
+        args_extra_list = i_launcher['args_extra']
+        launchers[launcherID]['args'] = args_str
+        log_debug('Imported args "{0}"'.format(args_str))
+        launchers[launcherID]['args_extra'] = []
+        for args in args_extra_list:
+            launchers[launcherID]['args_extra'].append(args)
+            log_debug('Imported args_extra "{0}"'.format(args))
+    else:
+        log_error('Wrong usage of <args> and <args_extra>')
+        log_error('len_args = {}, len_extra_args = {}'.format(len_args, len_extra_args))
+        log_error('No arguments imported.')
 
     # >> Warn user if rompath directory does not exist
     if i_launcher['ROM_path']:

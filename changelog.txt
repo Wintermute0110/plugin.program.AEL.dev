@@ -141,6 +141,19 @@ WIP      [SCRAPERS] Persistent scraper cache browser. Ability to browse the stor
 
 [B]Advanced Emulator Launcher | version 0.9.8-beta1 | 06 September 2019[/B]
 
+FEATURE  [CORE] Added new artwork contributed by Sagrath.
+
+FEATURE  [CORE] In XML configuration files, support multiple <args> tag and deprecate <args_extra>
+
+WIP      [SCRAPERS] In ScreenScraper, if a ZIP file contains one and only one archive
+         use it to calculate checksums and not the ZIP file itself.
+
+FIX      Fixed a path related issue in _command_add_new_category() and
+         _command_render_all_ROMs().
+
+
+[B]Advanced Emulator Launcher | version 0.9.8-beta1 | 06 September 2019[/B]
+
 FEATURE  [SCRAPERS] Copy scraper stuff from master branch by Chrisism.
 
 FEATURE  [SCRAPERS] Fix MobyGames scraper and use new MobyGames API.
