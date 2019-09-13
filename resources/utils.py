@@ -651,7 +651,7 @@ def misc_generate_random_SID():
 #
 # Lazy function (generator) to read a file piece by piece. Default chunk size: 8k.
 #
-def misc_read_in_chunks(file_object, chunk_size = 8192):
+def misc_read_file_in_chunks(file_object, chunk_size = 8192):
     while True:
         data = file_object.read(chunk_size)
         if not data: break
@@ -664,14 +664,14 @@ def misc_read_in_chunks(file_object, chunk_size = 8192):
 # https://stackoverflow.com/questions/519633/lazy-method-for-reading-big-file-in-python
 # https://stackoverflow.com/questions/1742866/compute-crc-of-file-in-python 
 #
-def misc_calculate_checksums(full_file_path):
+def misc_calculate_file_checksums(full_file_path):
     log_debug('Computing checksums "{}"'.format(full_file_path))
     try:
         f = open(full_file_path, 'rb')
         crc_prev = 0
         md5 = hashlib.md5()
         sha1 = hashlib.sha1()
-        for piece in misc_read_in_chunks(f):
+        for piece in misc_read_file_in_chunks(f):
             crc_prev = zlib.crc32(piece, crc_prev)
             md5.update(piece)
             sha1.update(piece)
@@ -680,9 +680,47 @@ def misc_calculate_checksums(full_file_path):
         sha1_digest = sha1.hexdigest()
         size = os.path.getsize(full_file_path)
     except:
-        log_debug('(Exception) In misc_calculate_checksums()')
+        log_debug('(Exception) In misc_calculate_file_checksums()')
         log_debug('Returning None')
         return None
+    checksums = {
+        'crc'  : crc_digest.upper(),
+        'md5'  : md5_digest.upper(),
+        'sha1' : sha1_digest.upper(),
+        'size' : size,
+    }
+
+    return checksums
+
+# This function not finished yet.
+def misc_read_bytes_in_chunks(file_bytes, chunk_size = 8192):
+    file_length = len(file_bytes)
+    block_number = 0
+    while True:
+        start_index = None
+        end_index = None
+        data = file_bytes[start_index:end_index]
+        yield data
+
+def misc_calculate_stream_checksums(file_bytes):
+    log_debug('Computing checksums of bytes stream...'.format(len(file_bytes)))
+    crc_prev = 0
+    md5 = hashlib.md5()
+    sha1 = hashlib.sha1()
+    # Process bytes stream block by block
+    # for piece in misc_read_bytes_in_chunks(file_bytes):
+    #     crc_prev = zlib.crc32(piece, crc_prev)
+    #     md5.update(piece)
+    #     sha1.update(piece)
+    # Process bytes in one go
+    crc_prev = zlib.crc32(file_bytes, crc_prev)
+    md5.update(file_bytes)
+    sha1.update(file_bytes)
+    crc_digest = '{:08X}'.format(crc_prev & 0xFFFFFFFF)
+    md5_digest = md5.hexdigest()
+    sha1_digest = sha1.hexdigest()
+    size = len(file_bytes)
+
     checksums = {
         'crc'  : crc_digest.upper(),
         'md5'  : md5_digest.upper(),
