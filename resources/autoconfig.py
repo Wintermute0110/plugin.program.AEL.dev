@@ -722,7 +722,8 @@ def autoconfig_import_launcher(ROMS_DIR, categories, launchers, categoryID, laun
     len_args = len(i_launcher['args'])
     len_extra_args = len(i_launcher['args_extra'])
     if len_args == 1 and len_extra_args == 0:
-        launchers[launcherID]['args'] = i_launcher['args']
+        args_str = i_launcher['args'][0]
+        launchers[launcherID]['args'] = args_str
         launchers[launcherID]['args_extra'] = []
         log_debug('Imported args "{0}"'.format(i_launcher['args']))
         log_debug('Resetted args_extra')
