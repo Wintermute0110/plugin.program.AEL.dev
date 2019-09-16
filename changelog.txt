@@ -139,7 +139,7 @@ WIP      [SCRAPERS] Persistent scraper cache browser. Ability to browse the stor
          searches. Also, context menu to delete stored cached data.
 
 
-[B]Advanced Emulator Launcher | version 0.9.8 | xx September 2019[/B]
+[B]Advanced Emulator Launcher | version 0.9.8 | 16 September 2019[/B]
 
 FEATURE  [CORE] Added new artwork contributed by Sagrath.
 
