@@ -4282,6 +4282,8 @@ class Main:
                         launcher_name = '{0} [COLOR orange]({1} ROMs)[/COLOR]'.format(launcher_raw_name, num_roms)
             else:
                 launcher_name = '{0} [COLOR chocolate](Std)[/COLOR]'.format(launcher_raw_name)
+        else:
+            launcher_name = launcher_raw_name
 
         # --- Create listitem row ---
         ICON_OVERLAY = 5 if launcher_dic['finished'] else 4
@@ -4289,15 +4291,17 @@ class Main:
         # >> BUG in Jarvis/Krypton skins. If 'year' is set to empty string a 0 is displayed on the
         # >>     skin. If year is not set then the correct icon is shown.
         if launcher_dic['m_year']:
-            listitem.setInfo('video', {'title'   : launcher_name,             'year'    : launcher_dic['m_year'],
-                                       'genre'   : launcher_dic['m_genre'],   'studio'  : launcher_dic['m_developer'],
-                                       'rating'  : launcher_dic['m_rating'],  'plot'    : launcher_dic['m_plot'],
-                                       'trailer' : launcher_dic['s_trailer'], 'overlay' : ICON_OVERLAY })
+            listitem.setInfo('video', {
+                'title'   : launcher_name,             'year'    : launcher_dic['m_year'],
+                'genre'   : launcher_dic['m_genre'],   'studio'  : launcher_dic['m_developer'],
+                'rating'  : launcher_dic['m_rating'],  'plot'    : launcher_dic['m_plot'],
+                'trailer' : launcher_dic['s_trailer'], 'overlay' : ICON_OVERLAY })
         else:
-            listitem.setInfo('video', {'title'   : launcher_name,
-                                       'genre'   : launcher_dic['m_genre'],   'studio'  : launcher_dic['m_developer'],
-                                       'rating'  : launcher_dic['m_rating'],  'plot'    : launcher_dic['m_plot'],
-                                       'trailer' : launcher_dic['s_trailer'], 'overlay' : ICON_OVERLAY })
+            listitem.setInfo('video', {
+                'title'   : launcher_name,
+                'genre'   : launcher_dic['m_genre'],   'studio'  : launcher_dic['m_developer'],
+                'rating'  : launcher_dic['m_rating'],  'plot'    : launcher_dic['m_plot'],
+                'trailer' : launcher_dic['s_trailer'], 'overlay' : ICON_OVERLAY })
         listitem.setProperty('platform', launcher_dic['platform'])
         if launcher_dic['rompath']:
             listitem.setProperty(AEL_CONTENT_LABEL, AEL_CONTENT_VALUE_ROM_LAUNCHER)

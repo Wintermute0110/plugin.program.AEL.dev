@@ -139,6 +139,13 @@ WIP      [SCRAPERS] Persistent scraper cache browser. Ability to browse the stor
          searches. Also, context menu to delete stored cached data.
 
 
+[B]Advanced Emulator Launcher | version 0.9.9 | xx October 2019[/B]
+
+FEATURE  [CORE] Settings to hide Utilities and Global Reports from root window.
+
+FIX      Fixed crash when setting display_launcher_roms was True.
+
+
 [B]Advanced Emulator Launcher | version 0.9.8 | 16 September 2019[/B]
 
 FEATURE  [CORE] Added new artwork contributed by Sagrath.
