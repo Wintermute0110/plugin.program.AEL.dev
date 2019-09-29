@@ -33,13 +33,6 @@
     <!-- ScreenScraper settings are automatically generated with Python scripts -->
     <setting label="ScreenScraper region" type="enum" id="scraper_screenscraper_region" default="0" values="World|Europe|USA|Japan|ScreenScraper|American continent|Asia|Australia|Bulgaria|Brazil|Canada|Chile|China|Custom|Czech republic|Germany|Denmark|Finland|France|Greece|Hungary|Israel|Italy|Korea|Kuwait|Middle East|Netherlands|Norway|New Zealand|Oceania|Peru|Poland|Portugal|Russia|Sweden|Slovakia|Spain|Turkey|Taiwan|United Kingdom" />
     <setting label="ScreenScraper language" type="enum" id="scraper_screenscraper_language" default="0" values="English|Spanish|Japanese|Czech|Danish|German|Finnish|French|Hungarian|Italian|Korean|Dutch|Norwegian|Polish|Portuguese|Russian|Slovak|Swedish|Turkish|Chinese" />
-<!--
-    <setting label="Region" type="enum" id="scraper_region" default="0" values="World|Europe|Japan|America"/>
-    <setting label="Thumb Images Size" type="enum" id="scraper_thumb_size" default="0" values="All|Icon|Small|Medium|Large|XLarge|XXLarge|Huge"/>
-    <setting label="Fanart Images Size" type="enum" id="scraper_fanart_size" default="0" values="All|Icon|Small|Medium|Large|XLarge|XXLarge|Huge"/>
-    <setting label="Preferred arcade images" type="enum" id="scraper_image_type" default="0" values="Snapshots|Flyers"/>
-    <setting label="Selected fanart image" type="enum" id="scraper_fanart_order" default="1" values="First|Half|Last"/>
--->
 
     <setting id="separator" type="lsep" label="Utilities"/>
     <setting label="Retroarch System directory" type="folder" id="io_retroarch_sys_dir" default="" source="" />
@@ -47,13 +40,11 @@
 </category>
 <category label="ROM audit">
     <setting label="Unkown ROMs are" type="enum" id="audit_unknown_roms" default="0" values="Parents|Clones" />
-<!--
-    <setting label="Create filename-based Parent/Clone groups" type="bool" id="audit_create_pclone_groups" default="true" />
--->
     <setting label="Search assets in the Parent/Clone group" type="bool" id="audit_pclone_assets" default="true" />
 <!--
-    <setting label="1G1R main region (not working yet)" type="enum" id="audit_1G1R_main_region" default="0" values="Europe|USA|Japan" />
-    <setting label="1G1R secondary region (not working yet)" type="enum" id="audit_1G1R_second_region" default="0" values="Spain|France|Brazil|Korea" />
+    <setting label="1G1R primary region" type="enum" id="audit_1G1R_first_region" default="0" values="Europe|USA|Japan" />
+    <setting label="1G1R secondary region" type="enum" id="audit_1G1R_second_region" default="0" values="Spain|France|Brazil|Korea" />
+    <setting label="1G1R tertiary region" type="enum" id="audit_1G1R_third_region" default="0" values="Spain|France|Brazil|Korea" />
 -->
 </category>
 <category label="Display">
@@ -69,13 +60,14 @@
     <setting label="Display Favourite Status tag" type="bool" id="display_fav_status" default="true" />
 
     <setting id="separator" type="lsep" label="Special Categories/Launchers"/>
-    <setting label="Hide <Favourites>" type="bool" id="display_hide_favs" default="false" />
-    <setting label="Hide {ROM Collections}" type="bool" id="display_hide_collections" default="false" />
-    <setting label="Hide [Browse by ...]" type="bool" id="display_hide_vlaunchers" default="false" />
-    <setting label="Hide [Browse AEL Offline Scraper]" type="bool" id="display_hide_AEL_scraper" default="false" />
-    <setting label="Hide [Browse LaunchBox Offline Scraper]" type="bool" id="display_hide_LB_scraper" default="false" />
-    <setting label="Hide [Recently played ROMs]" type="bool" id="display_hide_recent" default="false" />
-    <setting label="Hide [Most played ROMs]" type="bool" id="display_hide_mostplayed" default="false" />
+    <setting label="Hide Favourites" type="bool" id="display_hide_favs" default="false" />
+    <setting label="Hide ROM Collections" type="bool" id="display_hide_collections" default="false" />
+    <setting label="Hide Browse by ..." type="bool" id="display_hide_vlaunchers" default="false" />
+    <setting label="Hide Browse AEL Offline Scraper" type="bool" id="display_hide_AEL_scraper" default="false" />
+    <setting label="Hide Recently played ROMs" type="bool" id="display_hide_recent" default="false" />
+    <setting label="Hide Most played ROMs" type="bool" id="display_hide_mostplayed" default="false" />
+    <setting label="Hide Utilities" type="bool" id="display_hide_utilities" default="false" />
+    <setting label="Hide Global Reports" type="bool" id="display_hide_g_reports" default="false" />
 </category>
 <category label="Paths">
     <setting label="Category Asset directory" type="folder" id="categories_asset_dir" default="" source="" />

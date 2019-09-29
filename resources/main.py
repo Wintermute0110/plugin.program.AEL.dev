@@ -525,21 +525,15 @@ class Main:
         self.settings['scraper_screenscraper_region']   = int(o.getSetting('scraper_screenscraper_region'))
         self.settings['scraper_screenscraper_language'] = int(o.getSetting('scraper_screenscraper_language'))
 
-        # self.settings['scraper_region']           = int(o.getSetting('scraper_region'))
-        # self.settings['scraper_thumb_size']       = int(o.getSetting('scraper_thumb_size'))
-        # self.settings['scraper_fanart_size']      = int(o.getSetting('scraper_fanart_size'))
-        # self.settings['scraper_image_type']       = int(o.getSetting('scraper_image_type'))
-        # self.settings['scraper_fanart_order']     = int(o.getSetting('scraper_fanart_order'))
-
         self.settings['io_retroarch_only_mandatory'] = True if o.getSetting('io_retroarch_only_mandatory') == 'true' else False
         self.settings['io_retroarch_sys_dir']        = o.getSetting('io_retroarch_sys_dir').decode('utf-8')
 
         # --- ROM audit ---
         self.settings['audit_unknown_roms']         = int(o.getSetting('audit_unknown_roms'))
-        # self.settings['audit_create_pclone_groups'] = True if o.getSetting('audit_create_pclone_groups') == 'true' else False
         self.settings['audit_pclone_assets']        = True if o.getSetting('audit_pclone_assets') == 'true' else False
-        # self.settings['audit_1G1R_main_region']     = int(o.getSetting('audit_1G1R_main_region'))
+        # self.settings['audit_1G1R_first_region']     = int(o.getSetting('audit_1G1R_first_region'))
         # self.settings['audit_1G1R_second_region']   = int(o.getSetting('audit_1G1R_second_region'))
+        # self.settings['audit_1G1R_third_region']   = int(o.getSetting('audit_1G1R_third_region'))
 
         # --- Display ---
         self.settings['display_category_mode']    = int(o.getSetting('display_category_mode'))
@@ -555,9 +549,10 @@ class Main:
         self.settings['display_hide_collections'] = True if o.getSetting('display_hide_collections') == 'true' else False
         self.settings['display_hide_vlaunchers']  = True if o.getSetting('display_hide_vlaunchers') == 'true' else False
         self.settings['display_hide_AEL_scraper'] = True if o.getSetting('display_hide_AEL_scraper') == 'true' else False
-        self.settings['display_hide_LB_scraper']  = True if o.getSetting('display_hide_LB_scraper') == 'true' else False
         self.settings['display_hide_recent']      = True if o.getSetting('display_hide_recent') == 'true' else False
         self.settings['display_hide_mostplayed']  = True if o.getSetting('display_hide_mostplayed') == 'true' else False
+        self.settings['display_hide_utilities']   = True if o.getSetting('display_hide_utilities') == 'true' else False
+        self.settings['display_hide_g_reports']   = True if o.getSetting('display_hide_g_reports') == 'true' else False
 
         # --- Paths ---
         self.settings['categories_asset_dir']     = o.getSetting('categories_asset_dir').decode('utf-8')
@@ -3568,13 +3563,10 @@ class Main:
         #     self._gui_render_category_LB_offline_scraper_row()
 
         # --- Recently played and most played ROMs ---
-        if not self.settings['display_hide_recent']:
-            self._gui_render_category_recently_played_row()
-        if not self.settings['display_hide_mostplayed']:
-            self._gui_render_category_most_played_row()
-
-        self._gui_render_Utilities_root()
-        self._gui_render_GlobalReports_root()
+        if not self.settings['display_hide_recent']: self._gui_render_category_recently_played_row()
+        if not self.settings['display_hide_mostplayed']: self._gui_render_category_most_played_row()
+        if not self.settings['display_hide_utilities']: self._gui_render_Utilities_root()
+        if not self.settings['display_hide_g_reports']: self._gui_render_GlobalReports_root()
 
         xbmcplugin.endOfDirectory(handle = self.addon_handle, succeeded = True, cacheToDisc = False)
 
