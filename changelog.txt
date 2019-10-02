@@ -141,9 +141,16 @@ WIP      [SCRAPERS] Persistent scraper cache browser. Ability to browse the stor
 
 [B]Advanced Emulator Launcher | version 0.9.9 | xx October 2019[/B]
 
+WIP      [CORE] Increase the number of platforms to include all No-Intro, Redump and
+         Libretro platforms. This is in preparation of the Kodi Games Database.
+
 FEATURE  [CORE] Settings to hide Utilities and Global Reports from root window.
 
 FIX      Fixed crash when setting display_launcher_roms was True.
+
+WIP      When fixing ROM Collections the order of the ROM list is lots.
+         I have to confirm if this happens when repaired "Unlinked Launcher" items, 
+         "Unlinked ROM" items, and "Broken ROMs" items or all three cases.
 
 
 [B]Advanced Emulator Launcher | version 0.9.8 | 16 September 2019[/B]

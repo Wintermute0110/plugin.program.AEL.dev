@@ -19,10 +19,11 @@ from __future__ import unicode_literals
 # -------------------------------------------------------------------------------------------------
 # New platform engine
 # -------------------------------------------------------------------------------------------------
-DAT_MAME    = 'MAME'
-DAT_NOINTRO = 'No-Intro'
-DAT_REDUMP  = 'Redump'
-DAT_NONE    = ''
+DAT_MAME     = 'MAME'
+DAT_NOINTRO  = 'No-Intro'
+DAT_REDUMP   = 'Redump'
+DAT_LIBRETRO = 'Redump'
+DAT_NONE     = ''
 class Platform:
     def __init__(self, name, shortname, compactname, aliasof = None, DAT = None,
         TGDB_plat = None, MG_plat = None, SS_plat = None, GF_plat = None):
@@ -43,8 +44,8 @@ class Platform:
 # Platform names must have filesystem-safe characters.
 # When possible user No-Intro DAT-o-MATIC names. Fallback to Wikipedia names.
 AEL_platforms = [
-    # --- 3DO ---
-    Platform('3DO', 'console-3d0', '3do', None, DAT_REDUMP, '25', '35', '29', '61'),
+    # --- 3DO Interactive Multiplayer ---
+    Platform('3DO Interactive Multiplayer', 'console-3do', '3do', None, DAT_REDUMP, '25', '35', '29', '61'),
 
     # --- Amstrad ---
     Platform('Amstrad CPC', 'computer-cpc', 'cpc', None, DAT_NONE, '4914', '60', '65', '46'),
