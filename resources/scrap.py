@@ -1807,11 +1807,11 @@ class Scraper(object):
 
         return self.global_disk_caches[cache_type]
 
-    # _check_disk_cache() must be called before this.
+    # _check_global_cache() must be called before this.
     def _retrieve_global_cache(self, cache_type):
         return self.global_disk_caches[cache_type]
 
-    # _check_disk_cache() must be called before this.
+    # _check_global_cache() must be called before this.
     def _reset_global_cache(self, cache_type):
         self.global_disk_caches[cache_type] = {}
         self.global_disk_caches_dirty[cache_type] = True
@@ -2448,7 +2448,7 @@ class TheGamesDB(Scraper):
         # --- Cache hit ---
         if self._check_global_cache(Scraper.GLOBAL_CACHE_TGDB_GENRES):
             log_debug('TheGamesDB._retrieve_genres() Genres global cache hit.')
-            return self._retrieve_from_global_cache(Scraper.GLOBAL_CACHE_TGDB_GENRES)
+            return self._retrieve_global_cache(Scraper.GLOBAL_CACHE_TGDB_GENRES)
 
         # --- Cache miss. Retrieve data ---
         log_debug('TheGamesDB._retrieve_genres() Genres global cache miss. Retrieving genres...')
@@ -2473,7 +2473,7 @@ class TheGamesDB(Scraper):
         # --- Cache hit ---
         if self._check_global_cache(Scraper.GLOBAL_CACHE_TGDB_DEVELOPERS):
             log_debug('TheGamesDB._retrieve_developers() Genres global cache hit.')
-            return self._retrieve_from_global_cache(Scraper.GLOBAL_CACHE_TGDB_DEVELOPERS)
+            return self._retrieve_global_cache(Scraper.GLOBAL_CACHE_TGDB_DEVELOPERS)
 
         # --- Cache miss. Retrieve data ---
         log_debug('TheGamesDB._retrieve_developers() Developers global cache miss. Retrieving developers...')
