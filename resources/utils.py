@@ -20,6 +20,7 @@
 
 # --- Python standard library ---
 from __future__ import unicode_literals
+import collections
 import sys
 import os
 import shutil
@@ -741,7 +742,7 @@ def misc_replace_fav(dict_in, old_item_key, new_item_key, new_value):
         # In this case create a new OrderedDict to respect original order.
         # This implementation is slow and naive but I don't care, OrderedDict are only use
         # when editing ROM Collections.
-        dict_out = collections.OrderedDict
+        dict_out = collections.OrderedDict()
         for key in dict_in:
             if key == old_item_key:
                 dict_out[new_item_key] = new_value
