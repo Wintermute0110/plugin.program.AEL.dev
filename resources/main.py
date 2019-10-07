@@ -5285,8 +5285,9 @@ class Main:
             for collection_rom in collection_rom_list:
                 roms_fav[collection_rom['id']] = collection_rom
         else:
-            kodi_dialog_OK('_command_manage_favourites() should be called for Favourites or Collections. '
-                           'This is a bug, please report it.')
+            kodi_dialog_OK(
+                '_command_manage_favourites() should be called for Favourites or Collections. '
+                'This is a bug, please report it.')
             return
 
         # --- Show selection dialog ---
@@ -5431,8 +5432,7 @@ class Main:
 
                 # >> Relink Favourite ROM. Removed old Favourite before inserting new one.
                 new_fav_rom = fs_repair_Favourite_ROM(repair_mode, old_fav_rom, parent_rom, parent_launcher)
-                roms_fav.pop(old_fav_rom_ID)
-                roms_fav[new_fav_rom['id']] = new_fav_rom
+                roms_fav = misc_replace_fav(roms_fav, old_fav_rom_ID, new_fav_rom['id'], new_fav_rom)
                 num_repaired_ROMs += 1
             log_debug('_command_manage_favourites() Repaired {0} ROMs'.format(num_repaired_ROMs))
 
@@ -5456,11 +5456,12 @@ class Main:
 
             # --- Ask user about how to repair the Fav ROMs ---
             dialog = xbmcgui.Dialog()
-            repair_mode = dialog.select('How to repair ROMs?',
-                                        ['Relink and update launcher info',
-                                         'Relink and update metadata',
-                                         'Relink and update artwork',
-                                         'Relink and update everything'])
+            repair_mode = dialog.select(
+                'How to repair ROMs?', [
+                'Relink and update launcher info',
+                'Relink and update metadata',
+                'Relink and update artwork',
+                'Relink and update everything'])
             if repair_mode < 0: return
             log_verb('_command_manage_favourites() Repair mode {0}'.format(repair_mode))
 
@@ -5531,16 +5532,16 @@ class Main:
                 log_debug('_command_manage_favourites()  New ROM      {0}'.format(new_fav_rom_ID))
                 log_debug('_command_manage_favourites()  New Launcher {0}'.format(new_fav_rom_laun_ID))
 
-                # >> Relink Favourite ROM. Removed old Favourite before inserting new one.
+                # Relink Favourite ROM. Removed old Favourite before inserting new one.
                 new_fav_rom = fs_repair_Favourite_ROM(repair_mode, old_fav_rom, parent_rom, parent_launcher)
-                roms_fav.pop(old_fav_rom_ID)
-                roms_fav[new_fav_rom['id']] = new_fav_rom
+                roms_fav = misc_replace_fav(roms_fav, old_fav_rom_ID, new_fav_rom['id'], new_fav_rom)
                 num_repaired_ROMs += 1
             log_debug('_command_manage_favourites() Repaired {0} ROMs'.format(num_repaired_ROMs))
 
             # >> Show info to user
-            kodi_dialog_OK('Found {0} Unlinked ROMs. '.format(num_unlinked_ROMs) +
-                           'Of those, {0} were repaired.'.format(num_repaired_ROMs))
+            kodi_dialog_OK(
+                'Found {0} Unlinked ROMs. '.format(num_unlinked_ROMs) +
+                'Of those, {0} were repaired.'.format(num_repaired_ROMs))
 
         # --- User cancelled dialog ---
         elif type < 0:

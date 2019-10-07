@@ -730,6 +730,27 @@ def misc_calculate_stream_checksums(file_bytes):
 
     return checksums
 
+# Replace an item in dictionary. If dict_in is an OrderedDict then keep original order.
+# Returns a dict or OrderedDict
+def misc_replace_fav(dict_in, old_item_key, new_item_key, new_value):
+    if type(dict_in) is dict:
+        dict_in.pop(old_item_key)
+        dict_in[new_item_key] = new_value
+        return dict_in
+    elif type(dict_in) is collections.OrderedDict:
+        # In this case create a new OrderedDict to respect original order.
+        # This implementation is slow and naive but I don't care, OrderedDict are only use
+        # when editing ROM Collections.
+        dict_out = collections.OrderedDict
+        for key in dict_in:
+            if key == old_item_key:
+                dict_out[new_item_key] = new_value
+            else:
+                dict_out[key] = dict_in[key]
+        return dict_out
+    else:
+        raise TypeError
+
 # -------------------------------------------------------------------------------------------------
 # Filesystem helper class
 # This class always takes and returns Unicode string paths. Decoding to UTF-8 must be done in

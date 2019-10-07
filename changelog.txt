@@ -148,9 +148,9 @@ FEATURE  [CORE] Settings to hide Utilities and Global Reports from root window.
 
 FIX      Fixed crash when setting display_launcher_roms was True.
 
-WIP      When fixing ROM Collections the order of the ROM list is lots.
-         I have to confirm if this happens when repaired "Unlinked Launcher" items, 
-         "Unlinked ROM" items, and "Broken ROMs" items or all three cases.
+FIX      When fixing ROM Collections the order of the ROM list is lost. Repaired items are
+         placed at the end of the list and the original order is lost.
+         This was a very long standing bug.
 
 
 [B]Advanced Emulator Launcher | version 0.9.8 | 16 September 2019[/B]
