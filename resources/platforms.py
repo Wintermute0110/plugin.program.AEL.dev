@@ -43,6 +43,9 @@ class Platform:
 # by Retroarch must be a platform, including Doom, CaveStory, etc.
 # Platform names must have filesystem-safe characters.
 # When possible user No-Intro DAT-o-MATIC names. Fallback to Wikipedia names.
+#
+# Default values: Platform('', '', '', None, DAT_NONE, None, None, None, None),
+#
 AEL_platforms = [
     # --- 3DO Interactive Multiplayer ---
     Platform('3DO Interactive Multiplayer', 'console-3do', '3do', None, DAT_REDUMP, '25', '35', '29', '61'),
@@ -51,18 +54,137 @@ AEL_platforms = [
     Platform('Amstrad CPC', 'computer-cpc', 'cpc', None, DAT_NONE, '4914', '60', '65', '46'),
 
     # --- Atari ---
+    Platform('Atari 2600', '', '', None, DAT_NOINTRO, None, None, None, None),
+    Platform('Atari 5200', '', '', None, DAT_NOINTRO, None, None, None, None),
+    Platform('Atari 7800', '', '', None, DAT_NOINTRO, None, None, None, None),
+    Platform('Atari Jaguar', '', '', None, DAT_NOINTRO, None, None, None, None),
+    Platform('Atari Jaguar CD', '', '', None, DAT_NONE, None, None, None, None),
+    Platform('Atari Lynx', '', '', None, DAT_NOINTRO, None, None, None, None),
+    Platform('Atari 8-bit', '', '', None, DAT_NONE, None, None, None, None),
+    Platform('Atari ST', '', '', None, DAT_NONE, None, None, None, None),
 
     # --- Bandai ---
+    Platform('Bandai WonderSwan', '', '', None, DAT_NOINTRO, None, None, None, None),
+    Platform('Bandai WonderSwan Color', '', '', None, DAT_NOINTRO, None, None, None, None),
 
     # --- Coleco ---
+    Platform('Colecovision', '', '', None, DAT_NOINTRO, None, None, None, None),
 
     # --- Commodore ---
+    Platform('Commodore 64', '', '', None, DAT_NONE, None, None, None, None),
+    Platform('Commodore Amiga', '', '', None, DAT_NONE, None, None, None, None),
+    Platform('Commodore Amiga CD32', '', '', None, DAT_NONE, None, None, None, None),
+    Platform('Commodore Plus-4', '', '', None, DAT_NONE, None, None, None, None),
+    Platform('Commodore VIC-20', '', '', None, DAT_NONE, None, None, None, None),
 
     # --- Emerson ---
+    Platform('Emerson Arcadia 2001', '', '', None, DAT_NONE, None, None, None, None),
+
+    # --- Fairchild ---
+    Platform('Fairchild Channel F', '', '', None, DAT_NONE, None, None, None, None),
+
+    # --- Fujitsu ---
+    Platform('Fujitsu FM Towns Marty', '', '', None, DAT_NONE, None, None, None, None),
+
+    # --- GCE ---
+    Platform('GCE Vectrex', '', '', None, DAT_NONE, None, None, None, None),
+
+    # --- Magnavox ---
+    Platform('Magnavox Odyssey2', '', '', None, DAT_NONE, None, None, None, None),
+
+    # --- MAME/Arcade ---
+    Platform('MAME', '', '', None, DAT_NONE, None, None, None, None),
+
+    # --- Mattel ---
+    Platform('Mattel Intellivision', '', '', None, DAT_NONE, None, None, None, None),
+
+    # --- Microsoft ---
+    Platform('Microsoft MS-DOS', '', '', None, DAT_NONE, None, None, None, None),
+    Platform('Microsoft MSX', '', '', None, DAT_NONE, None, None, None, None),
+    Platform('Microsoft MSX2', '', '', None, DAT_NONE, None, None, None, None),
+    Platform('Microsoft Windows', '', '', None, DAT_NONE, None, None, None, None),
+    Platform('Microsoft Xbox', '', '', None, DAT_NONE, None, None, None, None),
+    Platform('Microsoft Xbox 360', '', '', None, DAT_NONE, None, None, None, None),
+    Platform('Microsoft Xbox One', '', '', None, DAT_NONE, None, None, None, None),
+
+    # --- NEC ---
+    Platform('NEC PC Engine', '', '', None, DAT_NOINTRO, None, None, None, None),
+    Platform('NEC PC Engine CDROM2', '', '', None, DAT_NONE, None, None, None, None),
+    Platform('NEC TurboGrafx 16', '', '', None, DAT_NOINTRO, None, None, None, None),
+    Platform('NEC TurboGrafx CD', '', '', None, DAT_NONE, None, None, None, None),
+    Platform('NEC SuperGrafx', '', '', None, DAT_NOINTRO, None, None, None, None),
+    Platform('NEC PC-FX', '', '', None, DAT_NONE, None, None, None, None),
 
     # --- Nintendo ---
+    Platform('Nintendo 3DS', '', '', None, DAT_NONE, None, None, None, None),
+    Platform('Nintendo 64', '', '', None, DAT_NONE, None, None, None, None),
+    Platform('Nintendo 64DD', '', '', None, DAT_NONE, None, None, None, None),
+    Platform('Nintendo DS', '', '', None, DAT_NONE, None, None, None, None),
+    Platform('Nintendo DSi', '', '', None, DAT_NONE, None, None, None, None),
     Platform('Nintendo Famicon', 'nintendo-famicon', 'famicon', 'nes'),
+    Platform('Nintendo Famicom Disk System', '', '', None, DAT_NONE, None, None, None, None),
+    Platform('Nintendo GameBoy', '', '', None, DAT_NONE, None, None, None, None),
+    Platform('Nintendo GameBoy Advance', '', '', None, DAT_NONE, None, None, None, None),
+    Platform('Nintendo GameBoy Color', '', '', None, DAT_NONE, None, None, None, None),
+    Platform('Nintendo GameCube', '', '', None, DAT_NONE, None, None, None, None),
     Platform('Nintendo NES', 'nintendo-nes', 'nes', None, DAT_NOINTRO, '7', '22', '3', '41'),
+    Platform('Nintendo Pokemon Mini', '', '', None, DAT_NONE, None, None, None, None),
+    Platform('Nintendo SNES', '', '', None, DAT_NONE, None, None, None, None),
+    Platform('Nintendo Switch', '', '', None, DAT_NONE, None, None, None, None),
+    Platform('Nintendo Virtual Boy', '', '', None, DAT_NONE, None, None, None, None),
+    Platform('Nintendo Wii', '', '', None, DAT_NONE, None, None, None, None),
+    Platform('Nintendo Wii U', '', '', None, DAT_NONE, None, None, None, None),
+
+    # --- Philips ---
+    Platform('Philips Videopac G7000', '', '', None, DAT_NONE, None, None, None, None),
+    Platform('Philips Videopac Plus G7400', '', '', None, DAT_NONE, None, None, None, None),
+
+    # --- RCA ---
+    Platform('RCA Studio II', '', '', None, DAT_NONE, None, None, None, None),
+
+    # --- ScummVM ---
+    Platform('ScummVM', '', '', None, DAT_NONE, None, None, None, None),
+
+    # --- Sega ---
+    Platform('Sega 32X', '', '', None, DAT_NONE, None, None, None, None),
+    Platform('Sega Dreamcast', '', '', None, DAT_NONE, None, None, None, None),
+    Platform('Sega Game Gear', '', '', None, DAT_NONE, None, None, None, None),
+    Platform('Sega Genesis', '', '', None, DAT_NONE, None, None, None, None),
+    Platform('Sega Master System', '', '', None, DAT_NONE, None, None, None, None),
+    Platform('Sega MegaCD', '', '', None, DAT_NONE, None, None, None, None),
+    Platform('Sega MegaDrive', '', '', None, DAT_NONE, None, None, None, None),
+    Platform('Sega PICO', '', '', None, DAT_NONE, None, None, None, None),
+    Platform('Sega Saturn', '', '', None, DAT_NONE, None, None, None, None),
+    Platform('Sega SC-3000', '', '', None, DAT_NONE, None, None, None, None),
+    Platform('Sega SegaCD', '', '', None, DAT_NONE, None, None, None, None),
+    Platform('Sega SG-1000', '', '', None, DAT_NONE, None, None, None, None),
+
+    # --- Sharp ---
+    Platform('Sharp X68000', '', '', None, DAT_NONE, None, None, None, None),
+
+    # --- Sinclair ---
+    Platform('Sinclair ZX Spectrum', '', '', None, DAT_NONE, None, None, None, None),
+
+    # --- SNK ---
+    Platform('SNK Neo-Geo AES', '', '', None, DAT_NONE, None, None, None, None),
+    Platform('SNK Neo-Geo CD', '', '', None, DAT_NONE, None, None, None, None),
+    Platform('SNK Neo-Geo MVS', '', '', None, DAT_NONE, None, None, None, None),
+    Platform('SNK Neo-Geo Pocket', '', '', None, DAT_NONE, None, None, None, None),
+    Platform('SNK Neo-Geo Pocket Color', '', '', None, DAT_NONE, None, None, None, None),
+
+    # --- SONY ---
+    Platform('Sony PlayStation', '', '', None, DAT_NONE, None, None, None, None),
+    Platform('Sony PlayStation 2', '', '', None, DAT_NONE, None, None, None, None),
+    Platform('Sony PlayStation 3', '', '', None, DAT_NONE, None, None, None, None),
+    Platform('Sony PlayStation 4', '', '', None, DAT_NONE, None, None, None, None),
+    Platform('Sony PlayStation Portable', '', '', None, DAT_NONE, None, None, None, None),
+    Platform('Sony PlayStation Vita', '', '', None, DAT_NONE, None, None, None, None),
+
+    # --- Watara ---
+    Platform('Watara Supervision', '', '', None, DAT_NONE, None, None, None, None),
+
+    # --- Unknown ---
+    Platform('Unknown', '', '', None, DAT_NONE, None, None, None, None),
 ]
 
 AEL_p_list = []
@@ -194,9 +316,9 @@ AEL_platform_list = [
     'Sinclair ZX Spectrum',
 
     # --- SNK ---
-    'SNK Neo-Geo AES', # Alias of MAME? AES has some exclusive games.
+    'SNK Neo-Geo AES', # Alias of MAME?
     'SNK Neo-Geo CD',
-    'SNK Neo-Geo MVS', # Alias of MAME
+    'SNK Neo-Geo MVS', # Alias of MAME?
     'SNK Neo-Geo Pocket',
     'SNK Neo-Geo Pocket Color',
 
