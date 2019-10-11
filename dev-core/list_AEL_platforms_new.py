@@ -42,15 +42,15 @@ table_str = [
      'TheGamesDB', 'MobyGames', 'ScreenScraper', 'GameFAQs'],
 ]
 for p_obj in AEL_platforms:
-    pprint.pprint(p_obj.long_name)
-    pprint.pprint(p_obj)
+    # pprint.pprint(p_obj.long_name)
+    # pprint.pprint(p_obj)
 
     table_str.append([
         p_obj.long_name, p_obj.short_name, p_obj.compact_name,
         unicode(p_obj.aliasof), unicode(p_obj.DAT),
         unicode(p_obj.TGDB_plat), unicode(p_obj.MG_plat), unicode(p_obj.SS_plat), unicode(p_obj.GF_plat)
     ])
-pprint.pprint(table_str)
+# pprint.pprint(table_str)
 table_str_list = text_render_table_str(table_str)
 sl.extend(table_str_list)
 text_str = '\n'.join(sl)
