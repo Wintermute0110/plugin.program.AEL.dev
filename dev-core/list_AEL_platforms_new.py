@@ -10,6 +10,7 @@
 
 # --- Python standard library ---
 from __future__ import unicode_literals
+import copy
 import os
 import pprint
 import sys
@@ -28,39 +29,57 @@ def write_txt_file(filename, text):
         text_file.write(text)
 
 # --- configuration ------------------------------------------------------------------------------
-fname_txt = 'data/AEL_platform_list_new.txt'
-fname_csv = 'data/AEL_platform_list_new.csv'
+fname_longname_txt = 'data/AEL_platform_list_longname.txt'
+fname_longname_csv = 'data/AEL_platform_list_longname.csv'
+fname_shortname_txt = 'data/AEL_platform_list_shortname.txt'
+fname_shortname_csv = 'data/AEL_platform_list_shortname.csv'
 
 # --- main ---------------------------------------------------------------------------------------
-sl = []
-sl.append('Number of AEL platforms {}'.format(len(AEL_platforms)))
-sl.append('')
+header_list = []
+header_list.append('Number of AEL platforms {}'.format(len(AEL_platforms)))
+header_list.append('')
 table_str = [
     ['left', 'left', 'left', 'left', 'left', 'left', 'left', 'left', 'left'],
     ['AEL long name', 'AEL short name', 'AEL compact name',
      'Alias of', 'DAT',
      'TheGamesDB', 'MobyGames', 'ScreenScraper', 'GameFAQs'],
 ]
-for p_obj in AEL_platforms:
-    # pprint.pprint(p_obj.long_name)
-    # pprint.pprint(p_obj)
-
-    table_str.append([
+header_long_list = copy.deepcopy(header_list)
+header_short_list = copy.deepcopy(header_list)
+table_long_str = copy.deepcopy(table_str)
+table_short_str = copy.deepcopy(table_str)
+for p_name in sorted(platform_long_list):
+    p_obj = AEL_platforms[platform_long_list.index(p_name)]
+    table_long_str.append([
         p_obj.long_name, p_obj.short_name, p_obj.compact_name,
         unicode(p_obj.aliasof), unicode(p_obj.DAT),
         unicode(p_obj.TGDB_plat), unicode(p_obj.MG_plat), unicode(p_obj.SS_plat), unicode(p_obj.GF_plat)
     ])
-# pprint.pprint(table_str)
-table_str_list = text_render_table_str(table_str)
-sl.extend(table_str_list)
-text_str = '\n'.join(sl)
-print(text_str)
+for p_name in sorted(platform_short_list):
+    p_obj = AEL_platforms[platform_short_list.index(p_name)]
+    table_short_str.append([
+        p_obj.long_name, p_obj.short_name, p_obj.compact_name,
+        unicode(p_obj.aliasof), unicode(p_obj.DAT),
+        unicode(p_obj.TGDB_plat), unicode(p_obj.MG_plat), unicode(p_obj.SS_plat), unicode(p_obj.GF_plat)
+    ])
+table_long_str_list = text_render_table_str(table_long_str)
+header_long_list.extend(table_long_str_list)
+text_long_str = '\n'.join(header_long_list)
+print(text_long_str)
 
-# --- Output file in TXT format ---
-print('\nWriting file "{}"'.format(fname_txt))
-write_txt_file(fname_txt, text_str)
+table_short_str_list = text_render_table_str(table_short_str)
+header_short_list.extend(table_short_str_list)
+text_short_str = '\n'.join(header_short_list)
 
-# --- Output file in CSV format ---
-text_csv = '\n'.join(text_render_table_CSV_slist(table_str))
-print('Writing file "{}"'.format(fname_csv))
-write_txt_file(fname_csv, text_csv)
+# --- Output file in TXT and CSV format ---
+print('\nWriting file "{}"'.format(fname_longname_txt))
+write_txt_file(fname_longname_txt, text_long_str)
+text_csv = '\n'.join(text_render_table_CSV_slist(table_long_str))
+print('Writing file "{}"'.format(fname_longname_csv))
+write_txt_file(fname_longname_csv, text_csv)
+
+print('\nWriting file "{}"'.format(fname_shortname_txt))
+write_txt_file(fname_shortname_txt, text_short_str)
+text_csv = '\n'.join(text_render_table_CSV_slist(table_short_str))
+print('Writing file "{}"'.format(fname_shortname_csv))
+write_txt_file(fname_shortname_csv, text_csv)
