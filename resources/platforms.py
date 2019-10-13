@@ -54,18 +54,19 @@ AEL_platforms = [
     Platform('Amstrad CPC', 'computer-cpc', 'cpc', None, DAT_NONE, '4914', '60', '65', '46'),
 
     # --- Atari ---
-    Platform('Atari 2600', 'atari-2600', 'a2600', None, DAT_NOINTRO, None, None, None, None),
-    Platform('Atari 5200', 'atari-5200', 'a5200', None, DAT_NOINTRO, None, None, None, None),
-    Platform('Atari 7800', 'atari-7800', 'a7800', None, DAT_NOINTRO, None, None, None, None),
-    Platform('Atari Jaguar', 'atari-jaguar', 'jaguar', None, DAT_NOINTRO, None, None, None, None),
-    Platform('Atari Jaguar CD', 'atari-jaguarcd', 'jaguarcd', None, DAT_REDUMP, None, None, None, None),
-    Platform('Atari Lynx', 'atari-lynx', 'lynx', None, DAT_NOINTRO, None, None, None, None),
-    Platform('Atari 8-bit', 'computer-atari-8bit', 'atari-8bit', None, DAT_NONE, None, None, None, None),
-    Platform('Atari ST', 'computer-atari-st', 'atari-st', None, DAT_NONE, None, None, None, None),
+    Platform('Atari 2600', 'atari-2600', 'a2600', None, DAT_NOINTRO, '22', None, None, None),
+    Platform('Atari 5200', 'atari-5200', 'a5200', None, DAT_NOINTRO, '26', None, None, None),
+    Platform('Atari 7800', 'atari-7800', 'a7800', None, DAT_NOINTRO, '27', None, None, None),
+    Platform('Atari Jaguar', 'atari-jaguar', 'jaguar', None, DAT_NOINTRO, '28', None, None, None),
+    Platform('Atari Jaguar CD', 'atari-jaguarcd', 'jaguarcd', None, DAT_REDUMP, '29', None, None, None),
+    Platform('Atari Lynx', 'atari-lynx', 'lynx', None, DAT_NOINTRO, '4924', None, None, None),
+    # Atari 8-bit includes: Atari 400, Atari 800, Atari 1200XL, Atari 65XE, Atari 130XE, Atari XEGS
+    Platform('Atari 8-bit', 'computer-atari-8bit', 'atari-8bit', None, DAT_NONE, '30', None, None, None),
+    Platform('Atari ST', 'computer-atari-st', 'atari-st', None, DAT_NONE, '4937', None, None, None),
 
     # --- Bandai ---
-    Platform('Bandai WonderSwan', 'bandai-wswan', 'wswan', None, DAT_NOINTRO, None, None, None, None),
-    Platform('Bandai WonderSwan Color', 'bandai-wswancolor', 'wswancolor', None, DAT_NOINTRO, None, None, None, None),
+    Platform('Bandai WonderSwan', 'bandai-wswan', 'wswan', None, DAT_NOINTRO, '4925', None, None, None),
+    Platform('Bandai WonderSwan Color', 'bandai-wswancolor', 'wswancolor', None, DAT_NOINTRO, '4926', None, None, None),
     Platform('Benesse Pocket Challenge V2', 'console-bpc', 'bpc', None, DAT_NOINTRO, None, None, None, None),
 
     # --- Casio ---
@@ -73,15 +74,15 @@ AEL_platforms = [
     Platform('Casio PV-1000', 'console-pv1000', 'pv1000', None, DAT_NOINTRO, None, None, None, None),
 
     # --- Coleco ---
-    Platform('Coleco Colecovision', 'console-cvision', 'cvision', None, DAT_NOINTRO, None, None, None, None),
+    Platform('Coleco Colecovision', 'console-cvision', 'cvision', None, DAT_NOINTRO, '31', None, None, None),
 
     # --- Commodore ---
-    Platform('Commodore 64', 'computer-c64', 'c64', None, DAT_NONE, None, None, None, None),
-    Platform('Commodore Amiga', 'computer-amiga', 'amiga', None, DAT_NONE, None, None, None, None),
-    Platform('Commodore CD32', 'console-cd32', 'cd32', None, DAT_REDUMP, None, None, None, None),
+    Platform('Commodore 64', 'computer-c64', 'c64', None, DAT_NONE, '40', None, None, None),
+    Platform('Commodore Amiga', 'computer-amiga', 'amiga', None, DAT_NONE, '4911', None, None, None),
+    Platform('Commodore CD32', 'console-cd32', 'cd32', None, DAT_REDUMP, '4947', None, None, None),
     Platform('Commodore CDTV', 'console-cdtv', 'cdtv', None, DAT_REDUMP, None, None, None, None),
-    Platform('Commodore Plus-4', 'computer-plus4', 'plus4', None, DAT_NONE, None, None, None, None),
-    Platform('Commodore VIC-20', 'computer-vic20', 'vic20', None, DAT_NONE, None, None, None, None),
+    Platform('Commodore Plus-4', 'computer-plus4', 'plus4', None, DAT_NONE, '0', None, None, None),
+    Platform('Commodore VIC-20', 'computer-vic20', 'vic20', None, DAT_NONE, '4945', None, None, None),
 
     # --- Emerson ---
     Platform('Emerson Arcadia 2001', 'console-arcadia2001', 'arcadia2001', None, DAT_NOINTRO, None, None, None, None),
@@ -95,12 +96,12 @@ AEL_platforms = [
     Platform('Funtech Super Acan', 'console-superacan', 'superacan', None, DAT_NOINTRO, None, None, None, None),
 
     # --- Fujitsu ---
-    Platform('Fujitsu FM Towns Marty', 'console-fmtmarty', 'fmtmarty', None, DAT_NONE, None, None, None, None),
+    Platform('Fujitsu FM Towns Marty', 'console-fmtmarty', 'fmtmarty', None, DAT_NONE, '4932', None, None, None),
 
     Platform('GamePark GP32', 'console-gp32', 'gp32', None, DAT_NOINTRO, None, None, None, None),
 
     # --- GCE ---
-    Platform('GCE Vectrex', 'console-vectrex', 'vectrex', None, DAT_NONE, None, None, None, None),
+    Platform('GCE Vectrex', 'console-vectrex', 'vectrex', None, DAT_NONE, '4939', None, None, None),
 
     Platform('Hartung Game Master', 'console-gamemaster', 'gamemaster', None, DAT_NOINTRO, None, None, None, None),
     Platform('iQue iQue Player', 'console-ique', 'ique', None, DAT_NOINTRO, None, None, None, None),
@@ -114,54 +115,54 @@ AEL_platforms = [
     Platform('Libretro Doom', 'lr-doom', 'doom', None, DAT_NOINTRO, None, None, None, None),
 
     # --- Magnavox ---
-    Platform('Magnavox Odyssey2', 'console-odyssey2', 'odyssey2', None, DAT_NOINTRO, None, None, None, None),
+    Platform('Magnavox Odyssey2', 'console-odyssey2', 'odyssey2', None, DAT_NOINTRO, '4927', None, None, None),
 
     # --- MAME/Arcade ---
-    Platform('MAME', 'arcade-mame', 'mame', None, DAT_MAME, None, None, None, None),
+    Platform('MAME', 'arcade-mame', 'mame', None, DAT_MAME, '23', None, None, None),
 
     # --- Mattel ---
-    Platform('Mattel Intellivision', 'console-ivision', 'ivision', None, DAT_NOINTRO, None, None, None, None),
+    Platform('Mattel Intellivision', 'console-ivision', 'ivision', None, DAT_NOINTRO, '32', None, None, None),
 
     # --- Microsoft ---
-    Platform('Microsoft MS-DOS', 'microsoft-msdos', 'msdos', None, DAT_NONE, None, None, None, None),
-    Platform('Microsoft MSX', 'microsoft-msx', 'msx', None, DAT_NONE, None, None, None, None),
-    Platform('Microsoft MSX2', 'microsoft-msx2', 'msx2', None, DAT_NONE, None, None, None, None),
-    Platform('Microsoft Windows', 'microsoft-windows', 'windows', None, DAT_NONE, None, None, None, None),
-    Platform('Microsoft Xbox', 'microsoft-xbox', 'xbox', None, DAT_NONE, None, None, None, None),
-    Platform('Microsoft Xbox 360', 'microsoft-xbox360', 'xbox360', None, DAT_NONE, None, None, None, None),
-    Platform('Microsoft Xbox One', 'microsoft-xboxone', 'xboxone', None, DAT_NONE, None, None, None, None),
+    Platform('Microsoft MS-DOS', 'microsoft-msdos', 'msdos', None, DAT_NONE, '1', None, None, None),
+    Platform('Microsoft MSX', 'microsoft-msx', 'msx', None, DAT_NONE, '4929', None, None, None),
+    Platform('Microsoft MSX2', 'microsoft-msx2', 'msx2', None, DAT_NONE, '4929', None, None, None),
+    Platform('Microsoft Windows', 'microsoft-windows', 'windows', None, DAT_NONE, '1', None, None, None),
+    Platform('Microsoft Xbox', 'microsoft-xbox', 'xbox', None, DAT_NONE, '14', None, None, None),
+    Platform('Microsoft Xbox 360', 'microsoft-xbox360', 'xbox360', None, DAT_NONE, '15', None, None, None),
+    Platform('Microsoft Xbox One', 'microsoft-xboxone', 'xboxone', None, DAT_NONE, '4920', None, None, None),
 
     # --- NEC ---
-    Platform('NEC PC Engine', 'nec-pce', 'pce', None, DAT_NOINTRO, None, None, None, None),
-    Platform('NEC PC Engine CDROM2', 'nec-pcecd', 'pcecd', None, DAT_REDUMP, None, None, None, None),
+    Platform('NEC PC Engine', 'nec-pce', 'pce', None, DAT_NOINTRO, '34', None, None, None),
+    Platform('NEC PC Engine CDROM2', 'nec-pcecd', 'pcecd', None, DAT_REDUMP, '4955', None, None, None),
     Platform('NEC TurboGrafx 16', 'nec-tg16', 'tg16', 'pce'),
     Platform('NEC TurboGrafx CD', 'nec-tg16cd', 'tg16cd', 'pcecd'),
-    Platform('NEC SuperGrafx', 'nec-sgx', 'sgx', None, DAT_NOINTRO, None, None, None, None),
-    Platform('NEC PC-FX', 'nec-pcfx', 'pcfx', None, DAT_REDUMP, None, None, None, None),
+    Platform('NEC SuperGrafx', 'nec-sgx', 'sgx', None, DAT_NOINTRO, '34', None, None, None),
+    Platform('NEC PC-FX', 'nec-pcfx', 'pcfx', None, DAT_REDUMP, '4930', None, None, None),
     Platform('NEC PC-FXGA', 'nec-pcfxga', 'pcfxga', 'pcfx'),
 
     # --- Nintendo ---
-    Platform('Nintendo 3DS', 'nintendo-n3ds', 'n3ds', None, DAT_NONE, None, None, None, None),
-    Platform('Nintendo 64', 'nintendo-n64', 'n64', None, DAT_NOINTRO, None, None, None, None),
-    Platform('Nintendo 64DD', 'nintendo-n64dd', 'n64dd', None, DAT_NOINTRO, None, None, None, None),
-    Platform('Nintendo DS', 'nintendo-nds', 'nds', None, DAT_NONE, None, None, None, None),
-    Platform('Nintendo DSi', 'nintendo-ndsi', 'ndsi', None, DAT_NONE, None, None, None, None),
+    Platform('Nintendo 3DS', 'nintendo-n3ds', 'n3ds', None, DAT_NONE, '4912', None, None, None),
+    Platform('Nintendo 64', 'nintendo-n64', 'n64', None, DAT_NOINTRO, '3', None, None, None),
+    Platform('Nintendo 64DD', 'nintendo-n64dd', 'n64dd', None, DAT_NOINTRO, '3', None, None, None),
+    Platform('Nintendo DS', 'nintendo-nds', 'nds', None, DAT_NONE, '8', None, None, None),
+    Platform('Nintendo DSi', 'nintendo-ndsi', 'ndsi', None, DAT_NONE, '8', None, None, None),
     Platform('Nintendo e-Reader', 'nintendo-ereader', 'ereader', None, DAT_NOINTRO, None, None, None, None),
     Platform('Nintendo Famicon', 'nintendo-famicon', 'famicon', 'nes'),
-    Platform('Nintendo Famicon Disk System', 'nintendo-fds', 'fds', None, DAT_NOINTRO, None, None, None, None),
-    Platform('Nintendo GameBoy', 'nintendo-gb', 'gb', None, DAT_NOINTRO, None, None, None, None),
-    Platform('Nintendo GameBoy Advance', 'nintendo-gba', 'gba', None, DAT_NOINTRO, None, None, None, None),
-    Platform('Nintendo GameBoy Color', 'nintendo-gbcolor', 'gbcolor', None, DAT_NOINTRO, None, None, None, None),
-    Platform('Nintendo GameCube', 'nintendo-gamecube', 'gamecube', None, DAT_REDUMP, None, None, None, None),
+    Platform('Nintendo Famicon Disk System', 'nintendo-fds', 'fds', None, DAT_NOINTRO, '4936', None, None, None),
+    Platform('Nintendo GameBoy', 'nintendo-gb', 'gb', None, DAT_NOINTRO, '4', None, None, None),
+    Platform('Nintendo GameBoy Advance', 'nintendo-gba', 'gba', None, DAT_NOINTRO, '5', None, None, None),
+    Platform('Nintendo GameBoy Color', 'nintendo-gbcolor', 'gbcolor', None, DAT_NOINTRO, '41', None, None, None),
+    Platform('Nintendo GameCube', 'nintendo-gamecube', 'gamecube', None, DAT_REDUMP, '2', None, None, None),
     Platform('Nintendo NES', 'nintendo-nes', 'nes', None, DAT_NOINTRO, '7', '22', '3', '41'),
-    Platform('Nintendo Pokemon Mini', 'nintendo-pokemini', 'pokemini', None, DAT_NOINTRO, None, None, None, None),
+    Platform('Nintendo Pokemon Mini', 'nintendo-pokemini', 'pokemini', None, DAT_NOINTRO, '4957', None, None, None),
     Platform('Nintendo Satellaview', 'nintendo-satellaview', 'satellaview', None, DAT_NOINTRO, None, None, None, None),
-    Platform('Nintendo SNES', 'nintendo-snes', 'snes', None, DAT_NOINTRO, None, None, None, None),
+    Platform('Nintendo SNES', 'nintendo-snes', 'snes', None, DAT_NOINTRO, '6', None, None, None),
     Platform('Nintendo Sufami Turbo', 'nintendo-sufami', 'sufami', None, DAT_NOINTRO, None, None, None, None),
-    Platform('Nintendo Switch', 'nintendo-switch', 'switch', None, DAT_NONE, None, None, None, None),
-    Platform('Nintendo Virtual Boy', 'nintendo-vb', 'vb', None, DAT_NOINTRO, None, None, None, None),
-    Platform('Nintendo Wii', 'nintendo-wii', 'wii', None, DAT_NONE, None, None, None, None),
-    Platform('Nintendo Wii U', 'nintendo-wiiu', 'wiiu', None, DAT_NONE, None, None, None, None),
+    Platform('Nintendo Switch', 'nintendo-switch', 'switch', None, DAT_NONE, '4971', None, None, None),
+    Platform('Nintendo Virtual Boy', 'nintendo-vb', 'vb', None, DAT_NOINTRO, '4918', None, None, None),
+    Platform('Nintendo Wii', 'nintendo-wii', 'wii', None, DAT_NONE, '9', None, None, None),
+    Platform('Nintendo Wii U', 'nintendo-wiiu', 'wiiu', None, DAT_NONE, '38', None, None, None),
 
     Platform('Ouya Ouya', 'console-ouya', 'ouya', None, DAT_NONE, None, None, None, None),
 
@@ -176,23 +177,23 @@ AEL_platforms = [
     Platform('ScummVM', 'scummvm', 'scummvm', None, DAT_NONE, None, None, None, None),
 
     # --- Sega ---
-    Platform('Sega 32X', 'sega-32x', '32x', None, DAT_NOINTRO, None, None, None, None),
+    Platform('Sega 32X', 'sega-32x', '32x', None, DAT_NOINTRO, '33', None, None, None),
     Platform('Sega Beena', 'sega-beena', 'beena', None, DAT_NOINTRO, None, None, None, None),
-    Platform('Sega Dreamcast', 'sega-dreamcast', 'dreamcast', None, DAT_REDUMP, None, None, None, None),
-    Platform('Sega Game Gear', 'sega-gamegear', 'gamegear', None, DAT_NOINTRO, None, None, None, None),
+    Platform('Sega Dreamcast', 'sega-dreamcast', 'dreamcast', None, DAT_REDUMP, '16', None, None, None),
+    Platform('Sega Game Gear', 'sega-gamegear', 'gamegear', None, DAT_NOINTRO, '20', None, None, None),
     Platform('Sega Genesis', 'sega-genesis', 'genesis', 'megadrive'),
-    Platform('Sega Master System', 'sega-sms', 'sms', None, DAT_NOINTRO, None, None, None, None),
-    Platform('Sega MegaCD', 'sega-megacd', 'megacd', None, DAT_REDUMP, None, None, None, None),
-    Platform('Sega MegaDrive', 'sega-megadrive', 'megadrive', None, DAT_NOINTRO, None, None, None, None),
-    Platform('Sega PICO', 'sega-pico', 'pico', None, DAT_NOINTRO, None, None, None, None),
-    Platform('Sega Saturn', 'sega-saturn', 'saturn', None, DAT_REDUMP, None, None, None, None),
+    Platform('Sega Master System', 'sega-sms', 'sms', None, DAT_NOINTRO, '35', None, None, None),
+    Platform('Sega MegaCD', 'sega-megacd', 'megacd', None, DAT_REDUMP, '21', None, None, None),
+    Platform('Sega MegaDrive', 'sega-megadrive', 'megadrive', None, DAT_NOINTRO, '18', None, None, None),
+    Platform('Sega PICO', 'sega-pico', 'pico', None, DAT_NOINTRO, '4958', None, None, None),
+    Platform('Sega Saturn', 'sega-saturn', 'saturn', None, DAT_REDUMP, '17', None, None, None),
     # SC-3000 is a clone of SG-1000? Verify this.
-    Platform('Sega SC-3000', 'sega-sc3000', 'sc3000', None, DAT_NONE, None, None, None, None),
+    Platform('Sega SC-3000', 'sega-sc3000', 'sc3000', None, DAT_NONE, '4949', None, None, None),
     Platform('Sega SegaCD', 'sega-segacd', 'segacd', 'megacd'),
-    Platform('Sega SG-1000', 'sega-sg1000', 'sg1000', None, DAT_NOINTRO, None, None, None, None),
+    Platform('Sega SG-1000', 'sega-sg1000', 'sg1000', None, DAT_NOINTRO, '4949', None, None, None),
 
     # --- Sharp ---
-    Platform('Sharp X68000', 'computer-x68k', 'x68k', None, DAT_NONE, None, None, None, None),
+    Platform('Sharp X68000', 'computer-x68k', 'x68k', None, DAT_NONE, '4931', None, None, None),
 
     # --- Sinclair ---
     Platform('Sinclair ZX Spectrum', 'computer-spectrum', 'spectrum', None, DAT_NONE, None, None, None, None),
@@ -200,18 +201,18 @@ AEL_platforms = [
 
     # --- SNK ---
     Platform('SNK Neo-Geo AES', 'snk-aes', 'aes', 'mame'),
-    Platform('SNK Neo-Geo CD', 'snk-neocd', 'neocd', None, DAT_REDUMP, None, None, None, None),
+    Platform('SNK Neo-Geo CD', 'snk-neocd', 'neocd', None, DAT_REDUMP, '4956', None, None, None),
     Platform('SNK Neo-Geo MVS', 'snk-mvs', 'mvs', 'mame'),
-    Platform('SNK Neo-Geo Pocket', 'snk-ngp', 'ngp', None, DAT_NOINTRO, None, None, None, None),
-    Platform('SNK Neo-Geo Pocket Color', 'snk-ngpc', 'ngpc', None, DAT_NOINTRO, None, None, None, None),
+    Platform('SNK Neo-Geo Pocket', 'snk-ngp', 'ngp', None, DAT_NOINTRO, '4922', None, None, None),
+    Platform('SNK Neo-Geo Pocket Color', 'snk-ngpc', 'ngpc', None, DAT_NOINTRO, '4923', None, None, None),
 
     # --- SONY ---
-    Platform('Sony PlayStation', 'sony-psx', 'psx', None, DAT_REDUMP, None, None, None, None),
-    Platform('Sony PlayStation 2', 'sony-ps2', 'ps2', None, DAT_REDUMP, None, None, None, None),
-    Platform('Sony PlayStation 3', 'sony-ps3', 'ps3', None, DAT_NONE, None, None, None, None),
-    Platform('Sony PlayStation 4', 'sony-ps4', 'ps4', None, DAT_NONE, None, None, None, None),
-    Platform('Sony PlayStation Portable', 'sony-psp', 'psp', None, DAT_REDUMP, None, None, None, None),
-    Platform('Sony PlayStation Vita', 'sony-psvita', 'psvita', None, DAT_NONE, None, None, None, None),
+    Platform('Sony PlayStation', 'sony-psx', 'psx', None, DAT_REDUMP, '10', None, None, None),
+    Platform('Sony PlayStation 2', 'sony-ps2', 'ps2', None, DAT_REDUMP, '11', None, None, None),
+    Platform('Sony PlayStation 3', 'sony-ps3', 'ps3', None, DAT_NONE, '12', None, None, None),
+    Platform('Sony PlayStation 4', 'sony-ps4', 'ps4', None, DAT_NONE, '4919', None, None, None),
+    Platform('Sony PlayStation Portable', 'sony-psp', 'psp', None, DAT_REDUMP, '13', None, None, None),
+    Platform('Sony PlayStation Vita', 'sony-psvita', 'psvita', None, DAT_NONE, '39', None, None, None),
 
     Platform('Tiger Game.com', 'console-tigergame', 'tigergame', None, DAT_NOINTRO, None, None, None, None),
     Platform('VTech CreatiVision', 'console-creativision', 'creativision', None, DAT_NOINTRO, None, None, None, None),
@@ -228,10 +229,12 @@ AEL_platforms = [
 platform_long_list = []
 platform_short_list = []
 platform_compact_list = []
+platform_short_long_dic = {}
 for p_obj in AEL_platforms:
     platform_long_list.append(p_obj.long_name)
     platform_short_list.append(p_obj.short_name)
     platform_compact_list.append(p_obj.compact_name)
+    platform_short_long_dic[p_obj.short_name] = p_obj.long_name
 
 # -------------------------------------------------------------------------------------------------
 # Old platform engine
