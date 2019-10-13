@@ -48,14 +48,14 @@ header_long_list = copy.deepcopy(header_list)
 header_short_list = copy.deepcopy(header_list)
 table_long_str = copy.deepcopy(table_str)
 table_short_str = copy.deepcopy(table_str)
-for p_name in sorted(platform_long_list):
+for p_name in sorted(platform_long_list, key = lambda x: x.lower()):
     p_obj = AEL_platforms[platform_long_list.index(p_name)]
     table_long_str.append([
         p_obj.long_name, p_obj.short_name, p_obj.compact_name,
         unicode(p_obj.aliasof), unicode(p_obj.DAT),
         unicode(p_obj.TGDB_plat), unicode(p_obj.MG_plat), unicode(p_obj.SS_plat), unicode(p_obj.GF_plat)
     ])
-for p_name in sorted(platform_short_list):
+for p_name in sorted(platform_short_list, key = lambda x: x.lower()):
     p_obj = AEL_platforms[platform_short_list.index(p_name)]
     table_short_str.append([
         p_obj.long_name, p_obj.short_name, p_obj.compact_name,

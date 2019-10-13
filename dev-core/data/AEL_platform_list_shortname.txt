@@ -2,45 +2,45 @@ Number of AEL platforms 116
 
 AEL long name                           AEL short name        AEL compact name  Alias of   DAT       TheGamesDB  MobyGames  ScreenScraper  GameFAQs
 ---------------------------------------------------------------------------------------------------------------------------------------------------
-MAME                                    arcade-mame           mame              None       MAME      None        None       None           None    
-Atari 2600                              atari-2600            a2600             None       No-Intro  None        None       None           None    
-Atari 5200                              atari-5200            a5200             None       No-Intro  None        None       None           None    
-Atari 7800                              atari-7800            a7800             None       No-Intro  None        None       None           None    
-Atari Jaguar                            atari-jaguar          jaguar            None       No-Intro  None        None       None           None    
-Atari Jaguar CD                         atari-jaguarcd        jaguarcd          None       Redump    None        None       None           None    
-Atari Lynx                              atari-lynx            lynx              None       No-Intro  None        None       None           None    
-Bandai WonderSwan                       bandai-wswan          wswan             None       No-Intro  None        None       None           None    
-Bandai WonderSwan Color                 bandai-wswancolor     wswancolor        None       No-Intro  None        None       None           None    
-Commodore Amiga                         computer-amiga        amiga             None                 None        None       None           None    
-Atari 8-bit                             computer-atari-8bit   atari-8bit        None                 None        None       None           None    
-Atari ST                                computer-atari-st     atari-st          None                 None        None       None           None    
-Commodore 64                            computer-c64          c64               None                 None        None       None           None    
+MAME                                    arcade-mame           mame              None       MAME      23          None       None           None    
+Atari 2600                              atari-2600            a2600             None       No-Intro  22          None       None           None    
+Atari 5200                              atari-5200            a5200             None       No-Intro  26          None       None           None    
+Atari 7800                              atari-7800            a7800             None       No-Intro  27          None       None           None    
+Atari Jaguar                            atari-jaguar          jaguar            None       No-Intro  28          None       None           None    
+Atari Jaguar CD                         atari-jaguarcd        jaguarcd          None       Redump    29          None       None           None    
+Atari Lynx                              atari-lynx            lynx              None       No-Intro  4924        None       None           None    
+Bandai WonderSwan                       bandai-wswan          wswan             None       No-Intro  4925        None       None           None    
+Bandai WonderSwan Color                 bandai-wswancolor     wswancolor        None       No-Intro  4926        None       None           None    
+Commodore Amiga                         computer-amiga        amiga             None                 4911        None       None           None    
+Atari 8-bit                             computer-atari-8bit   atari-8bit        None                 30          None       None           None    
+Atari ST                                computer-atari-st     atari-st          None                 4937        None       None           None    
+Commodore 64                            computer-c64          c64               None                 40          None       None           None    
 Amstrad CPC                             computer-cpc          cpc               None                 4914        60         65             46      
-Commodore Plus-4                        computer-plus4        plus4             None                 None        None       None           None    
+Commodore Plus-4                        computer-plus4        plus4             None                 0           None       None           None    
 Sinclair ZX Spectrum                    computer-spectrum     spectrum          None                 None        None       None           None    
-Commodore VIC-20                        computer-vic20        vic20             None                 None        None       None           None    
-Sharp X68000                            computer-x68k         x68k              None                 None        None       None           None    
+Commodore VIC-20                        computer-vic20        vic20             None                 4945        None       None           None    
+Sharp X68000                            computer-x68k         x68k              None                 4931        None       None           None    
 3DO Interactive Multiplayer             console-3do           3do               None       Redump    25          35         29             61      
 Emerson Arcadia 2001                    console-arcadia2001   arcadia2001       None       No-Intro  None        None       None           None    
 Entex Adventure Vision                  console-avision       avision           None       No-Intro  None        None       None           None    
 Benesse Pocket Challenge V2             console-bpc           bpc               None       No-Intro  None        None       None           None    
-Commodore CD32                          console-cd32          cd32              None       Redump    None        None       None           None    
+Commodore CD32                          console-cd32          cd32              None       Redump    4947        None       None           None    
 Commodore CDTV                          console-cdtv          cdtv              None       Redump    None        None       None           None    
 Fairchild Channel F                     console-channelf      channelf          None       No-Intro  None        None       None           None    
 VTech CreatiVision                      console-creativision  creativision      None       No-Intro  None        None       None           None    
-Coleco Colecovision                     console-cvision       cvision           None       No-Intro  None        None       None           None    
-Fujitsu FM Towns Marty                  console-fmtmarty      fmtmarty          None                 None        None       None           None    
+Coleco Colecovision                     console-cvision       cvision           None       No-Intro  31          None       None           None    
+Fujitsu FM Towns Marty                  console-fmtmarty      fmtmarty          None                 4932        None       None           None    
 Philips Videopac G7000                  console-g7000         g7000             None       No-Intro  None        None       None           None    
 Philips Videopac Plus G7400             console-g7400         g7400             None       No-Intro  None        None       None           None    
 Hartung Game Master                     console-gamemaster    gamemaster        None       No-Intro  None        None       None           None    
 GamePark GP32                           console-gp32          gp32              None       No-Intro  None        None       None           None    
 iQue iQue Player                        console-ique          ique              None       No-Intro  None        None       None           None    
-Mattel Intellivision                    console-ivision       ivision           None       No-Intro  None        None       None           None    
+Mattel Intellivision                    console-ivision       ivision           None       No-Intro  32          None       None           None    
 LeapFrog LeapPad                        console-leappad       leappad           None       No-Intro  None        None       None           None    
 LeapFrog Leapster Learning Game System  console-llgs          llgs              None       No-Intro  None        None       None           None    
 Casio Loopy                             console-loopy         loopy             None       No-Intro  None        None       None           None    
 LeapFrog My First LeapPad               console-mfleappad     mfleappad         None       No-Intro  None        None       None           None    
-Magnavox Odyssey2                       console-odyssey2      odyssey2          None       No-Intro  None        None       None           None    
+Magnavox Odyssey2                       console-odyssey2      odyssey2          None       No-Intro  4927        None       None           None    
 Ouya Ouya                               console-ouya          ouya              None                 None        None       None           None    
 Konami Picno                            console-picno         picno             None       No-Intro  None        None       None           None    
 Casio PV-1000                           console-pv1000        pv1000            None       No-Intro  None        None       None           None    
@@ -49,72 +49,72 @@ RCA Studio II                           console-studio2       studio2           
 Funtech Super Acan                      console-superacan     superacan         None       No-Intro  None        None       None           None    
 Watara Supervision                      console-supervision   supervision       None       No-Intro  None        None       None           None    
 Tiger Game.com                          console-tigergame     tigergame         None       No-Intro  None        None       None           None    
-GCE Vectrex                             console-vectrex       vectrex           None                 None        None       None           None    
+GCE Vectrex                             console-vectrex       vectrex           None                 4939        None       None           None    
 VTech V.Flash                           console-vflash        vflash            None       Redump    None        None       None           None    
 VTech V.Smile                           console-vsmile        vsmile            None       No-Intro  None        None       None           None    
 VTech V.Smile Pro                       console-vsmilepro     vsmilepro         vflash     None      None        None       None           None    
 Zeebo Zeebo                             console-zeebo         zeebo             None       No-Intro  None        None       None           None    
 Libretro Cave Story (NX Engine)         lr-cavestory          cavestory         None       No-Intro  None        None       None           None    
 Libretro Doom                           lr-doom               doom              None       No-Intro  None        None       None           None    
-Microsoft MS-DOS                        microsoft-msdos       msdos             None                 None        None       None           None    
-Microsoft MSX                           microsoft-msx         msx               None                 None        None       None           None    
-Microsoft MSX2                          microsoft-msx2        msx2              None                 None        None       None           None    
-Microsoft Windows                       microsoft-windows     windows           None                 None        None       None           None    
-Microsoft Xbox                          microsoft-xbox        xbox              None                 None        None       None           None    
-Microsoft Xbox 360                      microsoft-xbox360     xbox360           None                 None        None       None           None    
-Microsoft Xbox One                      microsoft-xboxone     xboxone           None                 None        None       None           None    
-NEC PC Engine                           nec-pce               pce               None       No-Intro  None        None       None           None    
-NEC PC Engine CDROM2                    nec-pcecd             pcecd             None       Redump    None        None       None           None    
-NEC PC-FX                               nec-pcfx              pcfx              None       Redump    None        None       None           None    
+Microsoft MS-DOS                        microsoft-msdos       msdos             None                 1           None       None           None    
+Microsoft MSX                           microsoft-msx         msx               None                 4929        None       None           None    
+Microsoft MSX2                          microsoft-msx2        msx2              None                 4929        None       None           None    
+Microsoft Windows                       microsoft-windows     windows           None                 1           None       None           None    
+Microsoft Xbox                          microsoft-xbox        xbox              None                 14          None       None           None    
+Microsoft Xbox 360                      microsoft-xbox360     xbox360           None                 15          None       None           None    
+Microsoft Xbox One                      microsoft-xboxone     xboxone           None                 4920        None       None           None    
+NEC PC Engine                           nec-pce               pce               None       No-Intro  34          None       None           None    
+NEC PC Engine CDROM2                    nec-pcecd             pcecd             None       Redump    4955        None       None           None    
+NEC PC-FX                               nec-pcfx              pcfx              None       Redump    4930        None       None           None    
 NEC PC-FXGA                             nec-pcfxga            pcfxga            pcfx       None      None        None       None           None    
-NEC SuperGrafx                          nec-sgx               sgx               None       No-Intro  None        None       None           None    
+NEC SuperGrafx                          nec-sgx               sgx               None       No-Intro  34          None       None           None    
 NEC TurboGrafx 16                       nec-tg16              tg16              pce        None      None        None       None           None    
 NEC TurboGrafx CD                       nec-tg16cd            tg16cd            pcecd      None      None        None       None           None    
 Nintendo e-Reader                       nintendo-ereader      ereader           None       No-Intro  None        None       None           None    
 Nintendo Famicon                        nintendo-famicon      famicon           nes        None      None        None       None           None    
-Nintendo Famicon Disk System            nintendo-fds          fds               None       No-Intro  None        None       None           None    
-Nintendo GameCube                       nintendo-gamecube     gamecube          None       Redump    None        None       None           None    
-Nintendo GameBoy                        nintendo-gb           gb                None       No-Intro  None        None       None           None    
-Nintendo GameBoy Advance                nintendo-gba          gba               None       No-Intro  None        None       None           None    
-Nintendo GameBoy Color                  nintendo-gbcolor      gbcolor           None       No-Intro  None        None       None           None    
-Nintendo 3DS                            nintendo-n3ds         n3ds              None                 None        None       None           None    
-Nintendo 64                             nintendo-n64          n64               None       No-Intro  None        None       None           None    
-Nintendo 64DD                           nintendo-n64dd        n64dd             None       No-Intro  None        None       None           None    
-Nintendo DS                             nintendo-nds          nds               None                 None        None       None           None    
-Nintendo DSi                            nintendo-ndsi         ndsi              None                 None        None       None           None    
+Nintendo Famicon Disk System            nintendo-fds          fds               None       No-Intro  4936        None       None           None    
+Nintendo GameCube                       nintendo-gamecube     gamecube          None       Redump    2           None       None           None    
+Nintendo GameBoy                        nintendo-gb           gb                None       No-Intro  4           None       None           None    
+Nintendo GameBoy Advance                nintendo-gba          gba               None       No-Intro  5           None       None           None    
+Nintendo GameBoy Color                  nintendo-gbcolor      gbcolor           None       No-Intro  41          None       None           None    
+Nintendo 3DS                            nintendo-n3ds         n3ds              None                 4912        None       None           None    
+Nintendo 64                             nintendo-n64          n64               None       No-Intro  3           None       None           None    
+Nintendo 64DD                           nintendo-n64dd        n64dd             None       No-Intro  3           None       None           None    
+Nintendo DS                             nintendo-nds          nds               None                 8           None       None           None    
+Nintendo DSi                            nintendo-ndsi         ndsi              None                 8           None       None           None    
 Nintendo NES                            nintendo-nes          nes               None       No-Intro  7           22         3              41      
-Nintendo Pokemon Mini                   nintendo-pokemini     pokemini          None       No-Intro  None        None       None           None    
+Nintendo Pokemon Mini                   nintendo-pokemini     pokemini          None       No-Intro  4957        None       None           None    
 Nintendo Satellaview                    nintendo-satellaview  satellaview       None       No-Intro  None        None       None           None    
-Nintendo SNES                           nintendo-snes         snes              None       No-Intro  None        None       None           None    
+Nintendo SNES                           nintendo-snes         snes              None       No-Intro  6           None       None           None    
 Nintendo Sufami Turbo                   nintendo-sufami       sufami            None       No-Intro  None        None       None           None    
-Nintendo Switch                         nintendo-switch       switch            None                 None        None       None           None    
-Nintendo Virtual Boy                    nintendo-vb           vb                None       No-Intro  None        None       None           None    
-Nintendo Wii                            nintendo-wii          wii               None                 None        None       None           None    
-Nintendo Wii U                          nintendo-wiiu         wiiu              None                 None        None       None           None    
+Nintendo Switch                         nintendo-switch       switch            None                 4971        None       None           None    
+Nintendo Virtual Boy                    nintendo-vb           vb                None       No-Intro  4918        None       None           None    
+Nintendo Wii                            nintendo-wii          wii               None                 9           None       None           None    
+Nintendo Wii U                          nintendo-wiiu         wiiu              None                 38          None       None           None    
 ScummVM                                 scummvm               scummvm           None                 None        None       None           None    
-Sega 32X                                sega-32x              32x               None       No-Intro  None        None       None           None    
+Sega 32X                                sega-32x              32x               None       No-Intro  33          None       None           None    
 Sega Beena                              sega-beena            beena             None       No-Intro  None        None       None           None    
-Sega Dreamcast                          sega-dreamcast        dreamcast         None       Redump    None        None       None           None    
-Sega Game Gear                          sega-gamegear         gamegear          None       No-Intro  None        None       None           None    
+Sega Dreamcast                          sega-dreamcast        dreamcast         None       Redump    16          None       None           None    
+Sega Game Gear                          sega-gamegear         gamegear          None       No-Intro  20          None       None           None    
 Sega Genesis                            sega-genesis          genesis           megadrive  None      None        None       None           None    
-Sega MegaCD                             sega-megacd           megacd            None       Redump    None        None       None           None    
-Sega MegaDrive                          sega-megadrive        megadrive         None       No-Intro  None        None       None           None    
-Sega PICO                               sega-pico             pico              None       No-Intro  None        None       None           None    
-Sega Saturn                             sega-saturn           saturn            None       Redump    None        None       None           None    
-Sega SC-3000                            sega-sc3000           sc3000            None                 None        None       None           None    
+Sega MegaCD                             sega-megacd           megacd            None       Redump    21          None       None           None    
+Sega MegaDrive                          sega-megadrive        megadrive         None       No-Intro  18          None       None           None    
+Sega PICO                               sega-pico             pico              None       No-Intro  4958        None       None           None    
+Sega Saturn                             sega-saturn           saturn            None       Redump    17          None       None           None    
+Sega SC-3000                            sega-sc3000           sc3000            None                 4949        None       None           None    
 Sega SegaCD                             sega-segacd           segacd            megacd     None      None        None       None           None    
-Sega SG-1000                            sega-sg1000           sg1000            None       No-Intro  None        None       None           None    
-Sega Master System                      sega-sms              sms               None       No-Intro  None        None       None           None    
+Sega SG-1000                            sega-sg1000           sg1000            None       No-Intro  4949        None       None           None    
+Sega Master System                      sega-sms              sms               None       No-Intro  35          None       None           None    
 SNK Neo-Geo AES                         snk-aes               aes               mame       None      None        None       None           None    
 SNK Neo-Geo MVS                         snk-mvs               mvs               mame       None      None        None       None           None    
-SNK Neo-Geo CD                          snk-neocd             neocd             None       Redump    None        None       None           None    
-SNK Neo-Geo Pocket                      snk-ngp               ngp               None       No-Intro  None        None       None           None    
-SNK Neo-Geo Pocket Color                snk-ngpc              ngpc              None       No-Intro  None        None       None           None    
-Sony PlayStation 2                      sony-ps2              ps2               None       Redump    None        None       None           None    
-Sony PlayStation 3                      sony-ps3              ps3               None                 None        None       None           None    
-Sony PlayStation 4                      sony-ps4              ps4               None                 None        None       None           None    
-Sony PlayStation Portable               sony-psp              psp               None       Redump    None        None       None           None    
-Sony PlayStation Vita                   sony-psvita           psvita            None                 None        None       None           None    
-Sony PlayStation                        sony-psx              psx               None       Redump    None        None       None           None    
+SNK Neo-Geo CD                          snk-neocd             neocd             None       Redump    4956        None       None           None    
+SNK Neo-Geo Pocket                      snk-ngp               ngp               None       No-Intro  4922        None       None           None    
+SNK Neo-Geo Pocket Color                snk-ngpc              ngpc              None       No-Intro  4923        None       None           None    
+Sony PlayStation 2                      sony-ps2              ps2               None       Redump    11          None       None           None    
+Sony PlayStation 3                      sony-ps3              ps3               None                 12          None       None           None    
+Sony PlayStation 4                      sony-ps4              ps4               None                 4919        None       None           None    
+Sony PlayStation Portable               sony-psp              psp               None       Redump    13          None       None           None    
+Sony PlayStation Vita                   sony-psvita           psvita            None                 39          None       None           None    
+Sony PlayStation                        sony-psx              psx               None       Redump    10          None       None           None    
 Sinclair ZX Spectrum Plus 3             spectrump3            spectrump3        None                 None        None       None           None    
 Unknown                                 unknown               unknown           None                 None        None       None           None    
