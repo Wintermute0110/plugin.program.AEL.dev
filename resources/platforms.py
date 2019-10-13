@@ -37,12 +37,14 @@ class Platform:
         self.SS_plat      = SS_plat
         self.GF_plat      = GF_plat
 
-# From this list create simplified list to access platform information.
-# Shorted alphabetically by long name.
-# To be compatible with Retroplayer and Kodi artwork database, anything that can be launched
-# by Retroarch must be a platform, including Doom, CaveStory, etc.
-# Platform names must have filesystem-safe characters.
-# When possible user No-Intro DAT-o-MATIC names. Fallback to Wikipedia names.
+# * From this list create simplified lists to access platform information.
+# * Shorted alphabetically by long name.
+# * To be compatible with Retroplayer and Kodi artwork database, anything that can be launched
+#   by Retroarch must be a platform, including Doom, CaveStory, etc.
+# * Platform is something that has ROMs to launch. Standalone cores do not need a platform,
+#   they are Kodi addons with its own artwork.
+# * Platform names must have filesystem-safe characters.
+# * When possible user No-Intro DAT-o-MATIC names. Fallback to Wikipedia names.
 #
 # Default values: Platform('', '', '', None, DAT_NONE, None, None, None, None),
 #
@@ -111,8 +113,12 @@ AEL_platforms = [
     Platform('LeapFrog My First LeapPad', 'console-mfleappad', 'mfleappad', None, DAT_NOINTRO, None, None, None, None),
 
     # --- Libretro ---
-    Platform('Libretro Cave Story (NX Engine)', 'lr-cavestory', 'cavestory', None, DAT_NOINTRO, None, None, None, None),
-    Platform('Libretro Doom', 'lr-doom', 'doom', None, DAT_NOINTRO, None, None, None, None),
+    # Use nxengine and not cavestory because in the future there could be nxengine-evo.
+    # nxengine is able to launch several versions of the game.
+    Platform('Libretro Cave Story (NX Engine)', 'games-nxengine', 'nxengine', None, DAT_LIBRETRO, None, None, None, None),
+    Platform('Libretro Doom', 'games-doom', 'doom', None, DAT_LIBRETRO, None, None, None, None),
+    Platform('Libretro Game and Watch', 'games-gw', 'gw', None, DAT_LIBRETRO, None, None, None, None),
+    Platform('Libretro OpenLara', 'games-openlara', 'openlara', None, DAT_LIBRETRO, None, None, None, None),
 
     # --- Magnavox ---
     Platform('Magnavox Odyssey2', 'console-odyssey2', 'odyssey2', None, DAT_NOINTRO, '4927', None, None, None),
@@ -174,7 +180,7 @@ AEL_platforms = [
     Platform('RCA Studio II', 'console-studio2', 'studio2', None, DAT_NOINTRO, None, None, None, None),
 
     # --- ScummVM ---
-    Platform('ScummVM', 'scummvm', 'scummvm', None, DAT_NONE, None, None, None, None),
+    Platform('ScummVM', 'games-scummvm', 'scummvm', None, DAT_NONE, None, None, None, None),
 
     # --- Sega ---
     Platform('Sega 32X', 'sega-32x', '32x', None, DAT_NOINTRO, '33', None, None, None),
@@ -196,6 +202,7 @@ AEL_platforms = [
     Platform('Sharp X68000', 'computer-x68k', 'x68k', None, DAT_NONE, '4931', None, None, None),
 
     # --- Sinclair ---
+    Platform('Sinclair ZX 81', 'computer-zx81', 'zx81', None, DAT_LIBRETRO, None, None, None, None),
     Platform('Sinclair ZX Spectrum', 'computer-spectrum', 'spectrum', None, DAT_NONE, None, None, None, None),
     Platform('Sinclair ZX Spectrum Plus 3', 'spectrump3', 'spectrump3', None, DAT_NONE, None, None, None, None),
 
