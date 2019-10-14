@@ -1387,6 +1387,9 @@ class MetaDataItemABC(object):
     def get_default_asset_list(self):
         return g_assetFactory.get_asset_list_by_IDs(DEFAULTABLE_ASSET_ID_LIST)
 
+    def __str__(self):
+        return '{}}#{}: {}'.format(self.get_object_name(), self.get_id(), self.get_name())
+
 # -------------------------------------------------------------------------------------------------
 # Class representing an AEL Cateogry.
 # Contains code to generate the context menus passed to Dialog.select()
@@ -1479,6 +1482,9 @@ class Category(MetaDataItemABC):
     def set_mapped_asset_key(self, asset_info, mapped_to_info):
         self.entity_data[asset_info.default_key] = mapped_to_info.key
 
+    def __str__(self):
+        return super().__str__()
+    
 # -------------------------------------------------------------------------------------------------
 # Class representing the virtual categories in AEL.
 # All ROM Collections is a Virtual Category.
@@ -2594,12 +2600,18 @@ class ROMLauncherABC(LauncherABC):
         log_debug('ROMLauncherABC::get_audit_roms_options() Returning edit options')
         display_mode_str       = self.entity_data['launcher_display_mode']
         no_intro_display_mode  = self.entity_data['nointro_display_mode']
-
+        
+        nointro_xml_file_FName = self.get_nointro_xml_filepath()
+        if not nointro_xml_file_FName or not nointro_xml_file_FName.exists():
+            no_intro_xml_file = 'NONE'
+        else:
+            no_intro_xml_file = nointro_xml_file_FileName.getBase()
+            
         options = collections.OrderedDict()
         options['CHANGE_DISPLAY_MODE']    = 'Change launcher display mode (now {0}) ...'.format(display_mode_str)
         options['CREATE_PARENTCLONE_DAT'] = 'Create Parent/Clone DAT based on ROM filenames'
         options['CHANGE_DISPLAY_ROMS']    = 'Display ROMs (now {0}) ...'.format(no_intro_display_mode)
-        options['ADD_NO_INTRO']           = "Add No-Intro/Redump DAT: '{0}'".format(nointro_xml_file)
+        options['ADD_NO_INTRO']           = "Add No-Intro/Redump DAT: '{0}'".format(no_intro_xml_file)
         options['DELETE_NO_INTRO']        = 'Delete No-Intro/Redump DAT'
         options['UPDATE_ROM_AUDIT']       = 'Update ROM audit'
 
