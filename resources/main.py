@@ -6452,6 +6452,7 @@ class Main:
             kodi_dialog_OK("Imported ROM Collection '{0}' metadata and assets.".format(collection_dic['m_name']))
         else:
             kodi_dialog_OK("Imported ROM Collection '{0}' metadata.".format(collection_dic['m_name']))
+        kodi_refresh_container()
 
     #
     # Exports a ROM Collection
