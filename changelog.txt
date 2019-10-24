@@ -50,7 +50,7 @@ WIP      [CORE] categoryID is redundant in SHOW_ROMS URL! Remove it or make it o
 WIP      [CORE] Should plugin URL be rationalised and simplified to make skinner's life easier?
          See https://forum.kodi.tv/showthread.php?tid=276002&pid=2643218#pid2643218
 
-WIP      [CORE] Filtering of BIOSes not working properly for MAME ROMs.
+WIP      [CORE] Filtering of BIOS/Devices not working properly for MAME ROMs.
          Use the offline scraper DB to determine what is a BIOS/Device in MAME.
          See https://forum.kodi.tv/showthread.php?tid=287826&pid=2697000#pid2697000
 
@@ -67,6 +67,7 @@ WIP      [CORE] Automatic generation of 3D Boxes using BoxFront and BoxSpine.
          Copy this feature from AML.
 
 WIP      [CORE] Automatic generation of BoxTextures from BoxBack, BoxSpine and BoxFront.
+         Copy this feature from AML.
 
 WIP      [CORE] Sometimes the scrapers download wrong/corrupt data, or produce 0 sized files
          if a file is open() and there is an exception. It would be nice to have an
@@ -82,18 +83,11 @@ WIP      [CORE] Utility to check artwork. Sometimes a JPG image is renamed as PN
 
 WIP      [CORE] Utility to scan and remove orphaned artwork.
 
-WIP      [CORE] Finish the new platform scheme.
+WIP      [FAVOURITES] Change the way artwork is stored in Favourites, Launchers and
+         Categories directories. Avoid using IDs in the artwork name so artwork can be reused.
 
-WIP      [COLLECTIONS] Current way of storing the collection artwork, in a unified XML file,
-         is not good. Think of a good way to exporting collections (for example, store the
-         artwork in a subdirectory). Possible way of solving filename collisions
-         ROM_name_platform_fanart.png, platform is the short name and it's only used if
-         there is filename amgibuity (same ROM name in different platforms in the collection).
-
-WIP      [FAVOURITES] Also change the way artwork is stored in Favourites, Launchers and
-         Categories. Avoid using IDs in the artwork name so artwork can be reused.
-
-WIP      [MULTIDISC] Edit multi-disc ROMs.
+WIP      [MULTIDISC] Edit multidisc ROMs. In general, improve the support for
+         multidisc ROMs.
 
 WIP      [MULTIDISC] Fix artwork support for mult-disc ROMs.
          See https://forum.kodi.tv/showthread.php?tid=287826&pid=2628912#pid2628912
@@ -105,7 +99,7 @@ WIP      [MISC] Changes and suggestions propoed by Atsumori.
 WIP      [MANUALS] Port the PDF manual reader from AML into AEL.
 
 WIP      [ROM AUDIT] Add an option to create a default Parent ROM for Redump DATs or NoIntro DATs
-         with no PClone information. See previous feature.
+         with no PClone information.
 
 WIP      [ROM AUDIT] Create a "fake" Parent/Clone list from filenames ala NARS (NARS Advanced ROM
          Sorting). In "Edit Launcher", "Audit ROMs / Launcher view mode" include a new option
@@ -126,20 +120,25 @@ WIP      [SCRAPERS] MAME offline scraper: include ESRB field. Take it from GameI
 
 WIP      [SCRAPERS] MAME offline scraper: include plot field. Take it from GameInfoDB.
 
-WIP      [SCRAPERS] Update MAME Offline Scraper database to version latest version 0.212
+WIP      [SCRAPERS] Update MAME Offline Scraper database to version latest version 0.214
 
-WIP      [SCRAPERS] Upgrade and fix  AEL Offline scraper databases.
-
-WIP      [SCRAPERS] Persistent scraper cache. Currently scrapers are very inefficient. If
-         the context menu is use to scrape, candidate games are searched again and again. It
-         should be good to implement some kind of offline scraper cache in a similar fashion
-         to Skyscraper (https://github.com/muldjord/skyscraper).
+WIP      [SCRAPERS] Upgrade and fix AEL Offline scraper databases.
 
 WIP      [SCRAPERS] Persistent scraper cache browser. Ability to browse the stored scraper
          searches. Also, context menu to delete stored cached data.
 
 
 [B]Advanced Emulator Launcher | version 0.9.9 | xx October 2019[/B]
+
+WIP      [COLLECTIONS] Current way of storing the collection artwork, in a unified JSON file,
+         is not good. Think of a good way to exporting collections (for example, store the
+         artwork in a subdirectory). Possible way of solving filename collisions
+         ROM_name_platform_fanart.png, platform is the short name and it's only used if
+         there is filename amgibuity (same ROM name in different platforms in the collection).
+
+WIP      [ROM AUDIT] Current way of doing the audit is inconvenient. User has to set a DAT
+         file. Create two new settings: a) directory for No-Intro DATs, b) directory for Redump
+         DATs. AEL must be able to choose the DAT file according to the platform.
 
 WIP      [CORE] Increase the number of platforms to include all No-Intro, Redump and
          Libretro platforms. This is in preparation of the Kodi Games Database.
