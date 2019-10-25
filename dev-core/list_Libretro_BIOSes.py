@@ -90,13 +90,8 @@ for BIOS_name in sorted(BIOS_list, reverse = False):
             corename = m.group(1)
         for BIOS_dic in json_data[key]['BIOS']:
             if BIOS_name == BIOS_dic['path']:
-                BIOS_opt = BIOS_dic['opt']
-                core_list.append(corename)
-    BIOS_data.append({
-        'path' : BIOS_name,
-        'opt' : BIOS_opt,
-        'core_list' : sorted(core_list),
-    })
+                core_list.append({'opt' : BIOS_dic['opt'], 'corename' : corename})
+    BIOS_data.append({'path' : BIOS_name, 'core_list' : core_list})
 
 table_str = [
     ['left', 'left', 'left'],
@@ -104,11 +99,11 @@ table_str = [
 ]
 for BIOS_dic in BIOS_data:
     counter = 0
-    for corename in BIOS_dic['core_list']:
+    for B_dic in sorted(BIOS_dic['core_list'], key = lambda x: x['corename']):
         if counter == 0:
-            table_str.append([BIOS_dic['path'], BIOS_dic['opt'], corename])
+            table_str.append([BIOS_dic['path'], B_dic['opt'], B_dic['corename']])
         else:
-            table_str.append([' ', ' ', corename])
+            table_str.append([' ', B_dic['opt'], B_dic['corename']])
         counter += 1
 table_long_str_list = text_render_table_str(table_str)
 text_long_str = '\n'.join(table_long_str_list)

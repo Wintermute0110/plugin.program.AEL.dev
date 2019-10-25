@@ -3,7 +3,7 @@ BIOS name                        opt    corename
 3do_arcade_saot.bin              true   4do                      
 5200.rom                         false  atari800                 
 64DD_IPL.bin                     true   parallel_n64             
-                                        parallel_n64_debug       
+                                 true   parallel_n64_debug       
 7800 BIOS (U).rom                true   prosystem                
 BS-X.bin                         true   snes9x                   
 DISK.ROM                         true   fmsx                     
@@ -19,28 +19,28 @@ NstDatabase.xml                  true   nestopia
 PAINTER.ROM                      true   fmsx                     
 PPSSPP/ppge_atlas.zim            false  ppsspp                   
 SGB1.sfc/program.rom             true   higan_sfc                
-                                        higan_sfc_balanced       
+                                 true   higan_sfc_balanced       
 SGB1.sfc/sgb1.boot.rom           true   higan_sfc                
-                                        higan_sfc_balanced       
+                                 true   higan_sfc_balanced       
 SGB2.sfc/program.rom             true   higan_sfc                
-                                        higan_sfc_balanced       
+                                 true   higan_sfc_balanced       
 SGB2.sfc/sgb2.boot.rom           true   higan_sfc                
-                                        higan_sfc_balanced       
+                                 true   higan_sfc_balanced       
 STBIOS.bin                       true   snes9x                   
 areplay.bin                      true   genesis_plus_gx          
 bios.gg                          true   genesis_plus_gx          
 bios.min                         true   pokemini                 
 bios.sms                         false  emux_sms                 
 bios7.bin                        true   desmume                  
-                                        melonds                  
+                                 false  melonds                  
 bios9.bin                        true   desmume                  
-                                        melonds                  
+                                 false  melonds                  
 bios_CD_E.bin                    true   genesis_plus_gx          
-                                        picodrive                
+                                 true   picodrive                
 bios_CD_J.bin                    true   genesis_plus_gx          
-                                        picodrive                
+                                 true   picodrive                
 bios_CD_U.bin                    true   genesis_plus_gx          
-                                        picodrive                
+                                 true   picodrive                
 bios_E.sms                       true   genesis_plus_gx          
 bios_J.sms                       true   genesis_plus_gx          
 bios_MD.bin                      true   genesis_plus_gx          
@@ -49,12 +49,12 @@ bootloader-en-m515.rom           true   mu
 c52.bin                          false  o2em                     
 cgb_boot.bin                     true   sameboy                  
 cx4.data.rom                     true   bsnes                    
-                                        bsnes2014_accuracy       
-                                        bsnes2014_balanced       
-                                        bsnes_mercury_accuracy   
-                                        bsnes_mercury_balanced   
-                                        higan_sfc                
-                                        higan_sfc_balanced       
+                                 true   bsnes2014_accuracy       
+                                 true   bsnes2014_balanced       
+                                 true   bsnes_mercury_accuracy   
+                                 true   bsnes_mercury_balanced   
+                                 true   higan_sfc                
+                                 true   higan_sfc_balanced       
 dc/airlbios.zip                  true   flycast                  
 dc/awbios.zip                    true   flycast                  
 dc/boot.bin                      false  redream                  
@@ -66,101 +66,101 @@ dc/flash.bin                     false  redream
 dc/hod2bios.zip                  true   flycast                  
 dc/naomi.zip                     true   flycast                  
 disksys.rom                      true   fceumm                   
-                                        fixnes                   
-                                        mesen                    
-                                        nestopia                 
-dmg_boot.bin                     true   emux_gb                  
-                                        sameboy                  
+                                 true   fixnes                   
+                                 true   mesen                    
+                                 true   nestopia                 
+dmg_boot.bin                     false  emux_gb                  
+                                 true   sameboy                  
 dsp1.data.rom                    true   bsnes                    
-                                        bsnes2014_accuracy       
-                                        bsnes2014_balanced       
-                                        bsnes2014_performance    
-                                        bsnes_mercury_accuracy   
-                                        bsnes_mercury_balanced   
-                                        bsnes_mercury_performance
-                                        higan_sfc                
-                                        higan_sfc_balanced       
+                                 true   bsnes2014_accuracy       
+                                 true   bsnes2014_balanced       
+                                 true   bsnes2014_performance    
+                                 true   bsnes_mercury_accuracy   
+                                 true   bsnes_mercury_balanced   
+                                 true   bsnes_mercury_performance
+                                 true   higan_sfc                
+                                 true   higan_sfc_balanced       
 dsp1.program.rom                 true   bsnes                    
-                                        bsnes2014_accuracy       
-                                        bsnes2014_balanced       
-                                        bsnes2014_performance    
-                                        bsnes_mercury_accuracy   
-                                        bsnes_mercury_balanced   
-                                        bsnes_mercury_performance
-                                        higan_sfc                
-                                        higan_sfc_balanced       
+                                 true   bsnes2014_accuracy       
+                                 true   bsnes2014_balanced       
+                                 true   bsnes2014_performance    
+                                 true   bsnes_mercury_accuracy   
+                                 true   bsnes_mercury_balanced   
+                                 true   bsnes_mercury_performance
+                                 true   higan_sfc                
+                                 true   higan_sfc_balanced       
 dsp1b.data.rom                   true   bsnes                    
-                                        bsnes2014_accuracy       
-                                        bsnes2014_balanced       
-                                        bsnes2014_performance    
-                                        bsnes_mercury_accuracy   
-                                        bsnes_mercury_balanced   
-                                        bsnes_mercury_performance
-                                        higan_sfc                
-                                        higan_sfc_balanced       
+                                 true   bsnes2014_accuracy       
+                                 true   bsnes2014_balanced       
+                                 true   bsnes2014_performance    
+                                 true   bsnes_mercury_accuracy   
+                                 true   bsnes_mercury_balanced   
+                                 true   bsnes_mercury_performance
+                                 true   higan_sfc                
+                                 true   higan_sfc_balanced       
 dsp1b.program.rom                true   bsnes                    
-                                        bsnes2014_accuracy       
-                                        bsnes2014_balanced       
-                                        bsnes2014_performance    
-                                        bsnes_mercury_accuracy   
-                                        bsnes_mercury_balanced   
-                                        bsnes_mercury_performance
-                                        higan_sfc                
-                                        higan_sfc_balanced       
+                                 true   bsnes2014_accuracy       
+                                 true   bsnes2014_balanced       
+                                 true   bsnes2014_performance    
+                                 true   bsnes_mercury_accuracy   
+                                 true   bsnes_mercury_balanced   
+                                 true   bsnes_mercury_performance
+                                 true   higan_sfc                
+                                 true   higan_sfc_balanced       
 dsp2.data.rom                    true   bsnes                    
-                                        bsnes2014_accuracy       
-                                        bsnes2014_balanced       
-                                        bsnes2014_performance    
-                                        bsnes_mercury_accuracy   
-                                        bsnes_mercury_balanced   
-                                        bsnes_mercury_performance
-                                        higan_sfc                
-                                        higan_sfc_balanced       
+                                 true   bsnes2014_accuracy       
+                                 true   bsnes2014_balanced       
+                                 true   bsnes2014_performance    
+                                 true   bsnes_mercury_accuracy   
+                                 true   bsnes_mercury_balanced   
+                                 true   bsnes_mercury_performance
+                                 true   higan_sfc                
+                                 true   higan_sfc_balanced       
 dsp2.program.rom                 true   bsnes                    
-                                        bsnes2014_accuracy       
-                                        bsnes2014_balanced       
-                                        bsnes2014_performance    
-                                        bsnes_mercury_accuracy   
-                                        bsnes_mercury_balanced   
-                                        bsnes_mercury_performance
-                                        higan_sfc                
-                                        higan_sfc_balanced       
+                                 true   bsnes2014_accuracy       
+                                 true   bsnes2014_balanced       
+                                 true   bsnes2014_performance    
+                                 true   bsnes_mercury_accuracy   
+                                 true   bsnes_mercury_balanced   
+                                 true   bsnes_mercury_performance
+                                 true   higan_sfc                
+                                 true   higan_sfc_balanced       
 dsp3.data.rom                    true   bsnes                    
-                                        bsnes2014_accuracy       
-                                        bsnes2014_balanced       
-                                        bsnes2014_performance    
-                                        bsnes_mercury_accuracy   
-                                        bsnes_mercury_balanced   
-                                        bsnes_mercury_performance
-                                        higan_sfc                
-                                        higan_sfc_balanced       
+                                 true   bsnes2014_accuracy       
+                                 true   bsnes2014_balanced       
+                                 true   bsnes2014_performance    
+                                 true   bsnes_mercury_accuracy   
+                                 true   bsnes_mercury_balanced   
+                                 true   bsnes_mercury_performance
+                                 true   higan_sfc                
+                                 true   higan_sfc_balanced       
 dsp3.program.rom                 true   bsnes                    
-                                        bsnes2014_accuracy       
-                                        bsnes2014_balanced       
-                                        bsnes2014_performance    
-                                        bsnes_mercury_accuracy   
-                                        bsnes_mercury_balanced   
-                                        bsnes_mercury_performance
-                                        higan_sfc                
-                                        higan_sfc_balanced       
+                                 true   bsnes2014_accuracy       
+                                 true   bsnes2014_balanced       
+                                 true   bsnes2014_performance    
+                                 true   bsnes_mercury_accuracy   
+                                 true   bsnes_mercury_balanced   
+                                 true   bsnes_mercury_performance
+                                 true   higan_sfc                
+                                 true   higan_sfc_balanced       
 dsp4.data.rom                    true   bsnes                    
-                                        bsnes2014_accuracy       
-                                        bsnes2014_balanced       
-                                        bsnes2014_performance    
-                                        bsnes_mercury_accuracy   
-                                        bsnes_mercury_balanced   
-                                        bsnes_mercury_performance
-                                        higan_sfc                
-                                        higan_sfc_balanced       
+                                 true   bsnes2014_accuracy       
+                                 true   bsnes2014_balanced       
+                                 true   bsnes2014_performance    
+                                 true   bsnes_mercury_accuracy   
+                                 true   bsnes_mercury_balanced   
+                                 true   bsnes_mercury_performance
+                                 true   higan_sfc                
+                                 true   higan_sfc_balanced       
 dsp4.program.rom                 true   bsnes                    
-                                        bsnes2014_accuracy       
-                                        bsnes2014_balanced       
-                                        bsnes2014_performance    
-                                        bsnes_mercury_accuracy   
-                                        bsnes_mercury_balanced   
-                                        bsnes_mercury_performance
-                                        higan_sfc                
-                                        higan_sfc_balanced       
+                                 true   bsnes2014_accuracy       
+                                 true   bsnes2014_balanced       
+                                 true   bsnes2014_performance    
+                                 true   bsnes_mercury_accuracy   
+                                 true   bsnes_mercury_balanced   
+                                 true   bsnes_mercury_performance
+                                 true   higan_sfc                
+                                 true   higan_sfc_balanced       
 exec.bin                         false  freeintv                 
 fbneo/cchip.zip                  true   fbneo                    
 fbneo/decocass.zip               true   fbneo                    
@@ -173,27 +173,27 @@ fbneo/pgm.zip                    true   fbneo
 fbneo/skns.zip                   true   fbneo                    
 fbneo/ym2608.zip                 true   fbneo                    
 firmware.bin                     true   desmume                  
-                                        melonds                  
+                                 false  melonds                  
 freej2me-fx.jar                  false  freej2me                 
 freej2me-lr.jar                  false  freej2me                 
 freej2me.jar                     false  freej2me                 
 g7400.bin                        false  o2em                     
 gb_bios.bin                      true   gambatte                 
-                                        mgba                     
-                                        vbam                     
+                                 true   mgba                     
+                                 true   vbam                     
 gba_bios.bin                     false  gpsp                     
-                                        mednafen_gba             
-                                        mgba                     
-                                        tempgba                  
-                                        vba_next                 
-                                        vbam                     
+                                 true   mednafen_gba             
+                                 true   mgba                     
+                                 false  tempgba                  
+                                 true   vba_next                 
+                                 true   vbam                     
 gbc_bios.bin                     true   fixgb                    
-                                        gambatte                 
-                                        mgba                     
-                                        vbam                     
+                                 true   gambatte                 
+                                 true   mgba                     
+                                 true   vbam                     
 gexpress.pce                     true   mednafen_pce             
-                                        mednafen_pce_fast        
-                                        mednafen_supergrafx      
+                                 true   mednafen_pce_fast        
+                                 true   mednafen_supergrafx      
 ggenie.bin                       true   genesis_plus_gx          
 goldstar.bin                     true   4do                      
 grom.bin                         false  freeintv                 
@@ -208,12 +208,12 @@ kick40068.A1200                  false  puae
 kronos/saturn_bios.bin           false  kronos                   
 kronos/stvbios.zip               false  kronos                   
 lynxboot.img                     true   handy                    
-                                        mednafen_lynx            
+                                 false  mednafen_lynx            
 mpr-17933.bin                    false  mednafen_saturn          
 mpr-18811-mx.ic1                 true   kronos                   
-                                        mednafen_saturn          
+                                 true   mednafen_saturn          
 mpr-19367-mx.ic1                 true   kronos                   
-                                        mednafen_saturn          
+                                 true   mednafen_saturn          
 neocd/000-lo.lo                  true   libneocd                 
 neocd/front-sp1.bin              true   libneocd                 
 neocd/neocd.bin                  true   libneocd                 
@@ -254,34 +254,34 @@ quasi88/n88knj1.rom              true   quasi88
 quasi88/n88knj2.rom              true   quasi88                  
 quasi88/n88n.rom                 true   quasi88                  
 sanyotry.bin                     true   4do                      
-saturn_bios.bin                  true   yabasanshiro             
-                                        yabause                  
+saturn_bios.bin                  false  yabasanshiro             
+                                 true   yabause                  
 scph5500.bin                     true   mednafen_psx             
-                                        mednafen_psx_hw          
-                                        pcsx1                    
-                                        pcsx_rearmed             
-                                        pcsx_rearmed_interpreter 
-                                        pcsx_rearmed_neon        
+                                 true   mednafen_psx_hw          
+                                 true   pcsx1                    
+                                 true   pcsx_rearmed             
+                                 true   pcsx_rearmed_interpreter 
+                                 true   pcsx_rearmed_neon        
 scph5501.bin                     true   mednafen_psx             
-                                        mednafen_psx_hw          
-                                        pcsx1                    
-                                        pcsx_rearmed             
-                                        pcsx_rearmed_interpreter 
-                                        pcsx_rearmed_neon        
+                                 true   mednafen_psx_hw          
+                                 true   pcsx1                    
+                                 true   pcsx_rearmed             
+                                 true   pcsx_rearmed_interpreter 
+                                 true   pcsx_rearmed_neon        
 scph5502.bin                     true   mednafen_psx             
-                                        mednafen_psx_hw          
-                                        pcsx1                    
-                                        pcsx_rearmed             
-                                        pcsx_rearmed_interpreter 
-                                        pcsx_rearmed_neon        
+                                 true   mednafen_psx_hw          
+                                 true   pcsx1                    
+                                 true   pcsx_rearmed             
+                                 true   pcsx_rearmed_interpreter 
+                                 true   pcsx_rearmed_neon        
 sega_101.bin                     false  mednafen_saturn          
 sgb.boot.rom                     true   bsnes                    
-                                        bsnes2014_accuracy       
-                                        bsnes2014_balanced       
-                                        bsnes2014_performance    
-                                        bsnes_mercury_accuracy   
-                                        bsnes_mercury_balanced   
-                                        bsnes_mercury_performance
+                                 true   bsnes2014_accuracy       
+                                 true   bsnes2014_balanced       
+                                 true   bsnes2014_performance    
+                                 true   bsnes_mercury_accuracy   
+                                 true   bsnes_mercury_balanced   
+                                 true   bsnes_mercury_performance
 sgb_bios.bin                     true   mgba                     
 sk.bin                           true   genesis_plus_gx          
 sk2chip.bin                      true   genesis_plus_gx          
@@ -290,68 +290,68 @@ sl31254.bin                      false  freechaf
 sl90025.bin                      false  freechaf                 
 squirreljme.sqc                  false  squirreljme              
 st010.data.rom                   true   bsnes                    
-                                        bsnes2014_accuracy       
-                                        bsnes2014_balanced       
-                                        bsnes2014_performance    
-                                        bsnes_mercury_accuracy   
-                                        bsnes_mercury_balanced   
-                                        bsnes_mercury_performance
-                                        higan_sfc                
-                                        higan_sfc_balanced       
+                                 true   bsnes2014_accuracy       
+                                 true   bsnes2014_balanced       
+                                 true   bsnes2014_performance    
+                                 true   bsnes_mercury_accuracy   
+                                 true   bsnes_mercury_balanced   
+                                 true   bsnes_mercury_performance
+                                 true   higan_sfc                
+                                 true   higan_sfc_balanced       
 st010.program.rom                true   bsnes                    
-                                        bsnes2014_accuracy       
-                                        bsnes2014_balanced       
-                                        bsnes2014_performance    
-                                        bsnes_mercury_accuracy   
-                                        bsnes_mercury_balanced   
-                                        bsnes_mercury_performance
-                                        higan_sfc                
-                                        higan_sfc_balanced       
+                                 true   bsnes2014_accuracy       
+                                 true   bsnes2014_balanced       
+                                 true   bsnes2014_performance    
+                                 true   bsnes_mercury_accuracy   
+                                 true   bsnes_mercury_balanced   
+                                 true   bsnes_mercury_performance
+                                 true   higan_sfc                
+                                 true   higan_sfc_balanced       
 st011.data.rom                   true   bsnes                    
-                                        bsnes2014_accuracy       
-                                        bsnes2014_balanced       
-                                        bsnes2014_performance    
-                                        bsnes_mercury_accuracy   
-                                        bsnes_mercury_balanced   
-                                        bsnes_mercury_performance
-                                        higan_sfc                
-                                        higan_sfc_balanced       
+                                 true   bsnes2014_accuracy       
+                                 true   bsnes2014_balanced       
+                                 true   bsnes2014_performance    
+                                 true   bsnes_mercury_accuracy   
+                                 true   bsnes_mercury_balanced   
+                                 true   bsnes_mercury_performance
+                                 true   higan_sfc                
+                                 true   higan_sfc_balanced       
 st011.program.rom                true   bsnes                    
-                                        bsnes2014_accuracy       
-                                        bsnes2014_balanced       
-                                        bsnes2014_performance    
-                                        bsnes_mercury_accuracy   
-                                        bsnes_mercury_balanced   
-                                        bsnes_mercury_performance
-                                        higan_sfc                
-                                        higan_sfc_balanced       
+                                 true   bsnes2014_accuracy       
+                                 true   bsnes2014_balanced       
+                                 true   bsnes2014_performance    
+                                 true   bsnes_mercury_accuracy   
+                                 true   bsnes_mercury_balanced   
+                                 true   bsnes_mercury_performance
+                                 true   higan_sfc                
+                                 true   higan_sfc_balanced       
 st018.data.rom                   true   bsnes                    
-                                        bsnes2014_accuracy       
-                                        bsnes2014_balanced       
-                                        bsnes2014_performance    
-                                        bsnes_mercury_accuracy   
-                                        bsnes_mercury_balanced   
-                                        bsnes_mercury_performance
-                                        higan_sfc                
-                                        higan_sfc_balanced       
+                                 true   bsnes2014_accuracy       
+                                 true   bsnes2014_balanced       
+                                 true   bsnes2014_performance    
+                                 true   bsnes_mercury_accuracy   
+                                 true   bsnes_mercury_balanced   
+                                 true   bsnes_mercury_performance
+                                 true   higan_sfc                
+                                 true   higan_sfc_balanced       
 st018.program.rom                true   bsnes                    
-                                        bsnes2014_accuracy       
-                                        bsnes2014_balanced       
-                                        bsnes2014_performance    
-                                        bsnes_mercury_accuracy   
-                                        bsnes_mercury_balanced   
-                                        bsnes_mercury_performance
-                                        higan_sfc                
-                                        higan_sfc_balanced       
+                                 true   bsnes2014_accuracy       
+                                 true   bsnes2014_balanced       
+                                 true   bsnes2014_performance    
+                                 true   bsnes_mercury_accuracy   
+                                 true   bsnes_mercury_balanced   
+                                 true   bsnes_mercury_performance
+                                 true   higan_sfc                
+                                 true   higan_sfc_balanced       
 syscard1.pce                     true   mednafen_pce             
-                                        mednafen_pce_fast        
-                                        mednafen_supergrafx      
+                                 true   mednafen_pce_fast        
+                                 true   mednafen_supergrafx      
 syscard2.pce                     true   mednafen_pce             
-                                        mednafen_pce_fast        
-                                        mednafen_supergrafx      
+                                 true   mednafen_pce_fast        
+                                 true   mednafen_supergrafx      
 syscard3.pce                     true   mednafen_pce             
-                                        mednafen_pce_fast        
-                                        mednafen_supergrafx      
+                                 true   mednafen_pce_fast        
+                                 true   mednafen_supergrafx      
 tos.img                          false  hatari                   
 uae_data/drive_click_LOUD.wav    true   puae                     
 uae_data/drive_snatch_LOUD.wav   true   puae                     
