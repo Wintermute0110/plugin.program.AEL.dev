@@ -55,7 +55,7 @@ for key in sorted(json_data, key = lambda x: json_data[x]['corename'].lower(), r
         if not m: raise ValueError(key)
         corename = m.group(1)
     for BIOS_dic in json_data[key]['BIOS']:
-        table_str.append([corename, BIOS_dic['desc'], BIOS_dic['opt'], BIOS_dic['path']])
+        table_str.append([corename, remove_commas(BIOS_dic['desc']), BIOS_dic['opt'], BIOS_dic['path']])
         num_BIOS += 1
 table_long_str_list = text_render_table_str(table_str)
 text_long_str = '\n'.join(table_long_str_list)

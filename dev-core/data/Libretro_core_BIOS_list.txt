@@ -322,10 +322,10 @@ picodrive                  bios_CD_J.bin (MegaCD JP BIOS)                       
 pokemini                   bios.min (Pokemon Mini BIOS)                                                      true   bios.min                       
 ppsspp                     ppge_atlas.zim (PPSSPP Data ROM)                                                  false  PPSSPP/ppge_atlas.zim          
 prosystem                  7800 BIOS (U).rom (7800 BIOS)                                                     true   7800 BIOS (U).rom              
-puae                       kick34005.A500 (Amiga 500 BIOS, Kickstart v1.3 Rev. 34.005)                       false  kick34005.A500                 
-puae                       kick37175.A500 (Amiga 500+ BIOS, Kickstart v2.04 Rev. 37.175)                     false  kick37175.A500                 
-puae                       kick40063.A600 (Amiga 600 BIOS, Kickstart v3.1 Rev. 40.063)                       false  kick40063.A600                 
-puae                       kick40068.A1200 (Amiga 1200 BIOS, Kickstart v3.1 Rev. 40.068)                     false  kick40068.A1200                
+puae                       kick34005.A500 (Amiga 500 BIOS_ Kickstart v1.3 Rev. 34.005)                       false  kick34005.A500                 
+puae                       kick37175.A500 (Amiga 500+ BIOS_ Kickstart v2.04 Rev. 37.175)                     false  kick37175.A500                 
+puae                       kick40063.A600 (Amiga 600 BIOS_ Kickstart v3.1 Rev. 40.063)                       false  kick40063.A600                 
+puae                       kick40068.A1200 (Amiga 1200 BIOS_ Kickstart v3.1 Rev. 40.068)                     false  kick40068.A1200                
 puae                       drive_click_LOUD.wav (floppy drive sound)                                         true   uae_data/drive_click_LOUD.wav  
 puae                       drive_snatch_LOUD.wav (floppy drive sound)                                        true   uae_data/drive_snatch_LOUD.wav 
 puae                       drive_spin_LOUD.wav (floppy drive sound)                                          true   uae_data/drive_spin_LOUD.wav   
