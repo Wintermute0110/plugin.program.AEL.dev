@@ -37,6 +37,24 @@ fname_category_txt  = 'data/AEL_platform_list_category.txt'
 fname_category_csv  = 'data/AEL_platform_list_category.csv'
 
 # --- main ---------------------------------------------------------------------------------------
+# --- Check that short names are unique ---
+print('Checking that platform short names are unique...')
+for index in range(len(AEL_platforms)):
+    for subindex in range(len(AEL_platforms)):
+        if index == subindex: continue
+        if AEL_platforms[index].short_name == AEL_platforms[subindex].short_name:
+            print('Short name {} is repeated!'.format(AEL_platforms[index].short_name))
+            sys.exit(1)
+
+# --- Check that compact names are unique ---
+print('Checking that platform compact names are unique...')
+for index in range(len(AEL_platforms)):
+    for subindex in range(len(AEL_platforms)):
+        if index == subindex: continue
+        if AEL_platforms[index].compact_name == AEL_platforms[subindex].compact_name:
+            print('Compact name {} is repeated!'.format(AEL_platforms[index].compact_name))
+            sys.exit(1)
+
 # --- Check that the platform object list is alphabetically sorted ---
 # Unknown platform is special and it's always in last position. Remove from alphabetical check.
 p_longname_list = [pobj.long_name for pobj in AEL_platforms[:-1]]
