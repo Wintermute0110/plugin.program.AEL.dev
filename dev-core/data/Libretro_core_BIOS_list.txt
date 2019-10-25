@@ -1,0 +1,367 @@
+corename                   desc                                                                              opt    path                           
+---------------------------------------------------------------------------------------------------------------------------------------------------
+4do                        panafz1.bin (Panasonic FZ-1 BIOS)                                                 true   panafz1.bin                    
+4do                        panafz10.bin (Panasonic FZ-10 BIOS)                                               true   panafz10.bin                   
+4do                        panafz10-patched.bin (Panasonic FZ-10 BIOS [RSA Patch])                           true   panafz10-patched.bin           
+4do                        panafz10e-anvil.bin (Panasonic FZ-10E BIOS [Anvil])                               true   panafz10e-anvil.bin            
+4do                        panafz10e-anvil-patched.bin (Panasonic FZ-10E BIOS [Anvil RSA Patch])             true   panafz10e-anvil-patched.bin    
+4do                        goldstar.bin (Goldstar GDO-101M BIOS)                                             true   goldstar.bin                   
+4do                        sanyotry.bin (Sanyo Try IMP-21J BIOS)                                             true   sanyotry.bin                   
+4do                        3do_arcade_saot.bin (Shootout At Old Tucson BIOS)                                 true   3do_arcade_saot.bin            
+4do                        panafz1-kanji.bin (Panasonic FZ-1 Kanji Font ROM)                                 true   panafz1-kanji.bin              
+4do                        panafz10ja-anvil-kanji.bin (Panasonic FZ-10JA Kanji Font ROM)                     true   panafz10ja-anvil-kanji.bin     
+atari800                   5200.rom (5200 BIOS)                                                              false  5200.rom                       
+mednafen_gba               gba_bios.bin (Game Boy Advance BIOS)                                              true   gba_bios.bin                   
+mednafen_lynx              lynxboot.img (Lynx Boot Image)                                                    false  lynxboot.img                   
+mednafen_pcfx              pcfx.rom (PC-FX BIOS v1.00 - 2 Sep 1994)                                          false  pcfx.rom                       
+mednafen_pce               syscard3.pce (Super CD-ROM2 System V3.xx)                                         true   syscard3.pce                   
+mednafen_pce               syscard2.pce (CD-ROM System V2.xx)                                                true   syscard2.pce                   
+mednafen_pce               syscard1.pce (CD-ROM System V1.xx)                                                true   syscard1.pce                   
+mednafen_pce               gexpress.pce (Game Express CD Card)                                               true   gexpress.pce                   
+mednafen_pce_fast          syscard3.pce (PCE-CD BIOS)                                                        true   syscard3.pce                   
+mednafen_pce_fast          syscard2.pce (PCE-CD BIOS)                                                        true   syscard2.pce                   
+mednafen_pce_fast          syscard1.pce (PCE-CD BIOS)                                                        true   syscard1.pce                   
+mednafen_pce_fast          gexpress.pce (PCE-CD BIOS)                                                        true   gexpress.pce                   
+mednafen_psx               scph5500.bin (PS1 JP BIOS)                                                        true   scph5500.bin                   
+mednafen_psx               scph5501.bin (PS1 US BIOS)                                                        true   scph5501.bin                   
+mednafen_psx               scph5502.bin (PS1 EU BIOS)                                                        true   scph5502.bin                   
+mednafen_psx_hw            scph5500.bin (PS1 JP BIOS)                                                        true   scph5500.bin                   
+mednafen_psx_hw            scph5501.bin (PS1 US BIOS)                                                        true   scph5501.bin                   
+mednafen_psx_hw            scph5502.bin (PS1 EU BIOS)                                                        true   scph5502.bin                   
+mednafen_saturn            sega_101.bin (Saturn JP BIOS)                                                     false  sega_101.bin                   
+mednafen_saturn            mpr-17933.bin (Saturn US/EU BIOS)                                                 false  mpr-17933.bin                  
+mednafen_saturn            mpr-18811-mx.ic1 (The King of Fighters '95 ROM Cartridge)                         true   mpr-18811-mx.ic1               
+mednafen_saturn            mpr-19367-mx.ic1 (Ultraman: Hikari no Kyojin Densetsu ROM Cartridge)              true   mpr-19367-mx.ic1               
+mednafen_supergrafx        syscard3.pce (Super CD-ROM2 System V3.xx)                                         true   syscard3.pce                   
+mednafen_supergrafx        syscard2.pce (CD-ROM System V2.xx)                                                true   syscard2.pce                   
+mednafen_supergrafx        syscard1.pce (CD-ROM System V1.xx)                                                true   syscard1.pce                   
+mednafen_supergrafx        gexpress.pce (Game Express CD Card)                                               true   gexpress.pce                   
+bsnes                      dsp1.data.rom                                                                     true   dsp1.data.rom                  
+bsnes                      dsp1.program.rom                                                                  true   dsp1.program.rom               
+bsnes                      dsp1b.data.rom                                                                    true   dsp1b.data.rom                 
+bsnes                      dsp1b.program.rom                                                                 true   dsp1b.program.rom              
+bsnes                      dsp2.data.rom                                                                     true   dsp2.data.rom                  
+bsnes                      dsp2.program.rom                                                                  true   dsp2.program.rom               
+bsnes                      dsp3.data.rom                                                                     true   dsp3.data.rom                  
+bsnes                      dsp3.program.rom                                                                  true   dsp3.program.rom               
+bsnes                      dsp4.data.rom                                                                     true   dsp4.data.rom                  
+bsnes                      dsp4.program.rom                                                                  true   dsp4.program.rom               
+bsnes                      cx4.data.rom                                                                      true   cx4.data.rom                   
+bsnes                      st010.data.rom                                                                    true   st010.data.rom                 
+bsnes                      st010.program.rom                                                                 true   st010.program.rom              
+bsnes                      st011.data.rom                                                                    true   st011.data.rom                 
+bsnes                      st011.program.rom                                                                 true   st011.program.rom              
+bsnes                      st018.data.rom                                                                    true   st018.data.rom                 
+bsnes                      st018.program.rom                                                                 true   st018.program.rom              
+bsnes                      sgb.boot.rom (SGB Boot Image)                                                     true   sgb.boot.rom                   
+bsnes2014_accuracy         dsp1.data.rom                                                                     true   dsp1.data.rom                  
+bsnes2014_accuracy         dsp1.program.rom                                                                  true   dsp1.program.rom               
+bsnes2014_accuracy         dsp1b.data.rom                                                                    true   dsp1b.data.rom                 
+bsnes2014_accuracy         dsp1b.program.rom                                                                 true   dsp1b.program.rom              
+bsnes2014_accuracy         dsp2.data.rom                                                                     true   dsp2.data.rom                  
+bsnes2014_accuracy         dsp2.program.rom                                                                  true   dsp2.program.rom               
+bsnes2014_accuracy         dsp3.data.rom                                                                     true   dsp3.data.rom                  
+bsnes2014_accuracy         dsp3.program.rom                                                                  true   dsp3.program.rom               
+bsnes2014_accuracy         dsp4.data.rom                                                                     true   dsp4.data.rom                  
+bsnes2014_accuracy         dsp4.program.rom                                                                  true   dsp4.program.rom               
+bsnes2014_accuracy         cx4.data.rom                                                                      true   cx4.data.rom                   
+bsnes2014_accuracy         st010.data.rom                                                                    true   st010.data.rom                 
+bsnes2014_accuracy         st010.program.rom                                                                 true   st010.program.rom              
+bsnes2014_accuracy         st011.data.rom                                                                    true   st011.data.rom                 
+bsnes2014_accuracy         st011.program.rom                                                                 true   st011.program.rom              
+bsnes2014_accuracy         st018.data.rom                                                                    true   st018.data.rom                 
+bsnes2014_accuracy         st018.program.rom                                                                 true   st018.program.rom              
+bsnes2014_accuracy         sgb.boot.rom (SGB Boot Image)                                                     true   sgb.boot.rom                   
+bsnes2014_balanced         dsp1.data.rom                                                                     true   dsp1.data.rom                  
+bsnes2014_balanced         dsp1.program.rom                                                                  true   dsp1.program.rom               
+bsnes2014_balanced         dsp1b.data.rom                                                                    true   dsp1b.data.rom                 
+bsnes2014_balanced         dsp1b.program.rom                                                                 true   dsp1b.program.rom              
+bsnes2014_balanced         dsp2.data.rom                                                                     true   dsp2.data.rom                  
+bsnes2014_balanced         dsp2.program.rom                                                                  true   dsp2.program.rom               
+bsnes2014_balanced         dsp3.data.rom                                                                     true   dsp3.data.rom                  
+bsnes2014_balanced         dsp3.program.rom                                                                  true   dsp3.program.rom               
+bsnes2014_balanced         dsp4.data.rom                                                                     true   dsp4.data.rom                  
+bsnes2014_balanced         dsp4.program.rom                                                                  true   dsp4.program.rom               
+bsnes2014_balanced         cx4.data.rom                                                                      true   cx4.data.rom                   
+bsnes2014_balanced         st010.data.rom                                                                    true   st010.data.rom                 
+bsnes2014_balanced         st010.program.rom                                                                 true   st010.program.rom              
+bsnes2014_balanced         st011.data.rom                                                                    true   st011.data.rom                 
+bsnes2014_balanced         st011.program.rom                                                                 true   st011.program.rom              
+bsnes2014_balanced         st018.data.rom                                                                    true   st018.data.rom                 
+bsnes2014_balanced         st018.program.rom                                                                 true   st018.program.rom              
+bsnes2014_balanced         sgb.boot.rom (SGB Boot Image)                                                     true   sgb.boot.rom                   
+bsnes2014_performance      dsp1.data.rom                                                                     true   dsp1.data.rom                  
+bsnes2014_performance      dsp1.program.rom                                                                  true   dsp1.program.rom               
+bsnes2014_performance      dsp1b.data.rom                                                                    true   dsp1b.data.rom                 
+bsnes2014_performance      dsp1b.program.rom                                                                 true   dsp1b.program.rom              
+bsnes2014_performance      dsp2.data.rom                                                                     true   dsp2.data.rom                  
+bsnes2014_performance      dsp2.program.rom                                                                  true   dsp2.program.rom               
+bsnes2014_performance      dsp3.data.rom                                                                     true   dsp3.data.rom                  
+bsnes2014_performance      dsp3.program.rom                                                                  true   dsp3.program.rom               
+bsnes2014_performance      dsp4.data.rom                                                                     true   dsp4.data.rom                  
+bsnes2014_performance      dsp4.program.rom                                                                  true   dsp4.program.rom               
+bsnes2014_performance      st010.data.rom                                                                    true   st010.data.rom                 
+bsnes2014_performance      st010.program.rom                                                                 true   st010.program.rom              
+bsnes2014_performance      st011.data.rom                                                                    true   st011.data.rom                 
+bsnes2014_performance      st011.program.rom                                                                 true   st011.program.rom              
+bsnes2014_performance      st018.data.rom                                                                    true   st018.data.rom                 
+bsnes2014_performance      st018.program.rom                                                                 true   st018.program.rom              
+bsnes2014_performance      sgb.boot.rom (SGB Boot Image)                                                     true   sgb.boot.rom                   
+bsnes_mercury_accuracy     dsp1.data.rom                                                                     true   dsp1.data.rom                  
+bsnes_mercury_accuracy     dsp1.program.rom                                                                  true   dsp1.program.rom               
+bsnes_mercury_accuracy     dsp1b.data.rom                                                                    true   dsp1b.data.rom                 
+bsnes_mercury_accuracy     dsp1b.program.rom                                                                 true   dsp1b.program.rom              
+bsnes_mercury_accuracy     dsp2.data.rom                                                                     true   dsp2.data.rom                  
+bsnes_mercury_accuracy     dsp2.program.rom                                                                  true   dsp2.program.rom               
+bsnes_mercury_accuracy     dsp3.data.rom                                                                     true   dsp3.data.rom                  
+bsnes_mercury_accuracy     dsp3.program.rom                                                                  true   dsp3.program.rom               
+bsnes_mercury_accuracy     dsp4.data.rom                                                                     true   dsp4.data.rom                  
+bsnes_mercury_accuracy     dsp4.program.rom                                                                  true   dsp4.program.rom               
+bsnes_mercury_accuracy     cx4.data.rom                                                                      true   cx4.data.rom                   
+bsnes_mercury_accuracy     st010.data.rom                                                                    true   st010.data.rom                 
+bsnes_mercury_accuracy     st010.program.rom                                                                 true   st010.program.rom              
+bsnes_mercury_accuracy     st011.data.rom                                                                    true   st011.data.rom                 
+bsnes_mercury_accuracy     st011.program.rom                                                                 true   st011.program.rom              
+bsnes_mercury_accuracy     st018.data.rom                                                                    true   st018.data.rom                 
+bsnes_mercury_accuracy     st018.program.rom                                                                 true   st018.program.rom              
+bsnes_mercury_accuracy     sgb.boot.rom (SGB Boot Image)                                                     true   sgb.boot.rom                   
+bsnes_mercury_balanced     dsp1.data.rom                                                                     true   dsp1.data.rom                  
+bsnes_mercury_balanced     dsp1.program.rom                                                                  true   dsp1.program.rom               
+bsnes_mercury_balanced     dsp1b.data.rom                                                                    true   dsp1b.data.rom                 
+bsnes_mercury_balanced     dsp1b.program.rom                                                                 true   dsp1b.program.rom              
+bsnes_mercury_balanced     dsp2.data.rom                                                                     true   dsp2.data.rom                  
+bsnes_mercury_balanced     dsp2.program.rom                                                                  true   dsp2.program.rom               
+bsnes_mercury_balanced     dsp3.data.rom                                                                     true   dsp3.data.rom                  
+bsnes_mercury_balanced     dsp3.program.rom                                                                  true   dsp3.program.rom               
+bsnes_mercury_balanced     dsp4.data.rom                                                                     true   dsp4.data.rom                  
+bsnes_mercury_balanced     dsp4.program.rom                                                                  true   dsp4.program.rom               
+bsnes_mercury_balanced     cx4.data.rom                                                                      true   cx4.data.rom                   
+bsnes_mercury_balanced     st010.data.rom                                                                    true   st010.data.rom                 
+bsnes_mercury_balanced     st010.program.rom                                                                 true   st010.program.rom              
+bsnes_mercury_balanced     st011.data.rom                                                                    true   st011.data.rom                 
+bsnes_mercury_balanced     st011.program.rom                                                                 true   st011.program.rom              
+bsnes_mercury_balanced     st018.data.rom                                                                    true   st018.data.rom                 
+bsnes_mercury_balanced     st018.program.rom                                                                 true   st018.program.rom              
+bsnes_mercury_balanced     sgb.boot.rom (SGB Boot Image)                                                     true   sgb.boot.rom                   
+bsnes_mercury_performance  dsp1.data.rom                                                                     true   dsp1.data.rom                  
+bsnes_mercury_performance  dsp1.program.rom                                                                  true   dsp1.program.rom               
+bsnes_mercury_performance  dsp1b.data.rom                                                                    true   dsp1b.data.rom                 
+bsnes_mercury_performance  dsp1b.program.rom                                                                 true   dsp1b.program.rom              
+bsnes_mercury_performance  dsp2.data.rom                                                                     true   dsp2.data.rom                  
+bsnes_mercury_performance  dsp2.program.rom                                                                  true   dsp2.program.rom               
+bsnes_mercury_performance  dsp3.data.rom                                                                     true   dsp3.data.rom                  
+bsnes_mercury_performance  dsp3.program.rom                                                                  true   dsp3.program.rom               
+bsnes_mercury_performance  dsp4.data.rom                                                                     true   dsp4.data.rom                  
+bsnes_mercury_performance  dsp4.program.rom                                                                  true   dsp4.program.rom               
+bsnes_mercury_performance  st010.data.rom                                                                    true   st010.data.rom                 
+bsnes_mercury_performance  st010.program.rom                                                                 true   st010.program.rom              
+bsnes_mercury_performance  st011.data.rom                                                                    true   st011.data.rom                 
+bsnes_mercury_performance  st011.program.rom                                                                 true   st011.program.rom              
+bsnes_mercury_performance  st018.data.rom                                                                    true   st018.data.rom                 
+bsnes_mercury_performance  st018.program.rom                                                                 true   st018.program.rom              
+bsnes_mercury_performance  sgb.boot.rom (SGB Boot Image)                                                     true   sgb.boot.rom                   
+desmume                    firmware.bin (NDS Firmware)                                                       true   firmware.bin                   
+desmume                    bios7.bin (ARM7 BIOS)                                                             true   bios7.bin                      
+desmume                    bios9.bin (ARM9 BIOS)                                                             true   bios9.bin                      
+emux_gb                    dmg_boot.bin (Game Boy Boot ROM)                                                  false  dmg_boot.bin                   
+emux_sms                   bios.sms (Master System BIOS)                                                     false  bios.sms                       
+fceumm                     disksys.rom (Family Computer Disk System BIOS)                                    true   disksys.rom                    
+fceumm                     nes.pal (custom NES Palette)                                                      true   nes.pal                        
+fbneo                      fbneo/neogeo.zip (Neo Geo BIOS)                                                   true   fbneo/neogeo.zip               
+fbneo                      fbneo/neocdz.zip (Neo Geo CDZ System BIOS)                                        true   fbneo/neocdz.zip               
+fbneo                      fbneo/decocass.zip (DECO Cassette System BIOS)                                    true   fbneo/decocass.zip             
+fbneo                      fbneo/isgsm.zip (ISG Selection Master Type 2006 System BIOS)                      true   fbneo/isgsm.zip                
+fbneo                      fbneo/midssio.zip (Midway SSIO Sound Board Internal ROM)                          true   fbneo/midssio.zip              
+fbneo                      fbneo/nmk004.zip (NMK004 Internal ROM)                                            true   fbneo/nmk004.zip               
+fbneo                      fbneo/pgm.zip (PGM System BIOS)                                                   true   fbneo/pgm.zip                  
+fbneo                      fbneo/skns.zip (Super Kaneko Nova System BIOS)                                    true   fbneo/skns.zip                 
+fbneo                      fbneo/ym2608.zip (YM2608 Internal ROM)                                            true   fbneo/ym2608.zip               
+fbneo                      fbneo/cchip.zip (C-Chip Internal ROM)                                             true   fbneo/cchip.zip                
+fixgb                      gbc_bios.bin (Game Boy Color BIOS)                                                true   gbc_bios.bin                   
+fixnes                     disksys.rom (Family Computer Disk System BIOS)                                    true   disksys.rom                    
+flycast                    dc/dc_boot.bin (Dreamcast BIOS)                                                   true   dc/dc_boot.bin                 
+flycast                    dc/dc_flash.bin (Date/Time/Language)                                              true   dc/dc_flash.bin                
+flycast                    dc/naomi.zip (Naomi Bios from MAME)                                               true   dc/naomi.zip                   
+flycast                    dc/hod2bios.zip (Naomi The House of the Dead 2 Bios from MAME)                    true   dc/hod2bios.zip                
+flycast                    dc/f355dlx.zip (Naomi Ferrari F355 Challenge deluxe Bios from MAME)               true   dc/f355dlx.zip                 
+flycast                    dc/f355bios.zip (Naomi Ferrari F355 Challenge twin/deluxe Bios from MAME)         true   dc/f355bios.zip                
+flycast                    dc/airlbios.zip (Naomi Airline Pilots deluxe Bios from MAME)                      true   dc/airlbios.zip                
+flycast                    dc/awbios.zip (Atomiswave BIOS from MAME)                                         true   dc/awbios.zip                  
+fmsx                       MSX.ROM (MSX BIOS)                                                                false  MSX.ROM                        
+fmsx                       MSX2.ROM (MSX2 BIOS)                                                              false  MSX2.ROM                       
+fmsx                       MSX2EXT.ROM (MSX2 ExtROM)                                                         false  MSX2EXT.ROM                    
+fmsx                       MSX2P.ROM (MSX2+ BIOS)                                                            false  MSX2P.ROM                      
+fmsx                       MSX2PEXT.ROM (MSX2+ ExtROM)                                                       false  MSX2PEXT.ROM                   
+fmsx                       DISK.ROM (DiskROM/BDOS)                                                           true   DISK.ROM                       
+fmsx                       FMPAC.ROM (FMPAC BIOS)                                                            true   FMPAC.ROM                      
+fmsx                       MSXDOS2.ROM (MSX-DOS 2)                                                           true   MSXDOS2.ROM                    
+fmsx                       PAINTER.ROM (Yamaha Painter)                                                      true   PAINTER.ROM                    
+fmsx                       KANJI.ROM (Kanji Font)                                                            true   KANJI.ROM                      
+freechaf                   sl31253.bin                                                                       false  sl31253.bin                    
+freechaf                   sl31254.bin                                                                       false  sl31254.bin                    
+freechaf                   sl90025.bin                                                                       false  sl90025.bin                    
+freeintv                   exec.bin                                                                          false  exec.bin                       
+freeintv                   grom.bin                                                                          false  grom.bin                       
+freej2me                   freej2me-fx.jar                                                                   false  freej2me-fx.jar                
+freej2me                   freej2me.jar                                                                      false  freej2me.jar                   
+freej2me                   freej2me-lr.jar                                                                   false  freej2me-lr.jar                
+gambatte                   gb_bios.bin (Game Boy BIOS)                                                       true   gb_bios.bin                    
+gambatte                   gbc_bios.bin (Game Boy Color BIOS)                                                true   gbc_bios.bin                   
+genesis_plus_gx            bios_MD.bin (Mega Drive startup ROM)                                              true   bios_MD.bin                    
+genesis_plus_gx            bios_CD_E.bin (MegaCD EU BIOS)                                                    true   bios_CD_E.bin                  
+genesis_plus_gx            bios_CD_U.bin (SegaCD US BIOS)                                                    true   bios_CD_U.bin                  
+genesis_plus_gx            bios_CD_J.bin (MegaCD JP BIOS)                                                    true   bios_CD_J.bin                  
+genesis_plus_gx            bios_E.sms (MasterSystem EU BIOS)                                                 true   bios_E.sms                     
+genesis_plus_gx            bios_U.sms (MasterSystem US BIOS)                                                 true   bios_U.sms                     
+genesis_plus_gx            bios_J.sms (MasterSystem JP BIOS)                                                 true   bios_J.sms                     
+genesis_plus_gx            bios.gg (GameGear BIOS)                                                           true   bios.gg                        
+genesis_plus_gx            sk.bin (Sonic & Knuckles ROM)                                                     true   sk.bin                         
+genesis_plus_gx            sk2chip.bin (Sonic & Knuckles UPMEM ROM)                                          true   sk2chip.bin                    
+genesis_plus_gx            areplay.bin (Action Replay ROM)                                                   true   areplay.bin                    
+genesis_plus_gx            ggenie.bin (Game Genie ROM)                                                       true   ggenie.bin                     
+gpsp                       gba_bios.bin (Game Boy Advance BIOS)                                              false  gba_bios.bin                   
+handy                      lynxboot.img (Lynx Boot Image)                                                    true   lynxboot.img                   
+hatari                     tos.img (TOS Boot Image)                                                          false  tos.img                        
+higan_sfc                  dsp1.data.rom                                                                     true   dsp1.data.rom                  
+higan_sfc                  dsp1.program.rom                                                                  true   dsp1.program.rom               
+higan_sfc                  dsp1b.data.rom                                                                    true   dsp1b.data.rom                 
+higan_sfc                  dsp1b.program.rom                                                                 true   dsp1b.program.rom              
+higan_sfc                  dsp2.data.rom                                                                     true   dsp2.data.rom                  
+higan_sfc                  dsp2.program.rom                                                                  true   dsp2.program.rom               
+higan_sfc                  dsp3.data.rom                                                                     true   dsp3.data.rom                  
+higan_sfc                  dsp3.program.rom                                                                  true   dsp3.program.rom               
+higan_sfc                  dsp4.data.rom                                                                     true   dsp4.data.rom                  
+higan_sfc                  dsp4.program.rom                                                                  true   dsp4.program.rom               
+higan_sfc                  cx4.data.rom                                                                      true   cx4.data.rom                   
+higan_sfc                  st010.data.rom                                                                    true   st010.data.rom                 
+higan_sfc                  st010.program.rom                                                                 true   st010.program.rom              
+higan_sfc                  st011.data.rom                                                                    true   st011.data.rom                 
+higan_sfc                  st011.program.rom                                                                 true   st011.program.rom              
+higan_sfc                  st018.data.rom                                                                    true   st018.data.rom                 
+higan_sfc                  st018.program.rom                                                                 true   st018.program.rom              
+higan_sfc                  SGB1.sfc/sgb1.boot.rom (SGB Boot BIOS)                                            true   SGB1.sfc/sgb1.boot.rom         
+higan_sfc                  SGB1.sfc/program.rom (SGB Boot Image)                                             true   SGB1.sfc/program.rom           
+higan_sfc                  SGB2.sfc/sgb2.boot.rom (SGB Boot BIOS)                                            true   SGB2.sfc/sgb2.boot.rom         
+higan_sfc                  SGB2.sfc/program.rom (SGB Boot Image)                                             true   SGB2.sfc/program.rom           
+kronos                     kronos/saturn_bios.bin (Saturn BIOS)                                              false  kronos/saturn_bios.bin         
+kronos                     kronos/stvbios.zip (ST-V BIOS from MAME)                                          false  kronos/stvbios.zip             
+kronos                     mpr-18811-mx.ic1 (The King of Fighters '95 ROM Cartridge)                         true   mpr-18811-mx.ic1               
+kronos                     mpr-19367-mx.ic1 (Ultraman: Hikari no Kyojin Densetsu ROM Cartridge)              true   mpr-19367-mx.ic1               
+melonds                    firmware.bin (NDS Firmware)                                                       false  firmware.bin                   
+melonds                    bios7.bin (ARM7 BIOS)                                                             false  bios7.bin                      
+melonds                    bios9.bin (ARM9 BIOS)                                                             false  bios9.bin                      
+mesen                      disksys.rom (Family Computer Disk System BIOS)                                    true   disksys.rom                    
+mgba                       gba_bios.bin (Game Boy Advance BIOS)                                              true   gba_bios.bin                   
+mgba                       gb_bios.bin (Game Boy BIOS)                                                       true   gb_bios.bin                    
+mgba                       gbc_bios.bin (Game Boy Color BIOS)                                                true   gbc_bios.bin                   
+mgba                       sgb_bios.bin (Super Game Boy BIOS)                                                true   sgb_bios.bin                   
+mu                         palmos41-en-m515.rom (Palm OS 4.1)                                                true   palmos41-en-m515.rom           
+mu                         palmos52-en-t3.rom (Palm OS 5.2.1)                                                true   palmos52-en-t3.rom             
+mu                         bootloader-en-m515.rom (MC68VZ328 UART Bootloader)                                true   bootloader-en-m515.rom         
+np2kai                     font.bmp (needed to display text)                                                 true   np2kai/font.bmp                
+np2kai                     FONT.ROM (alt font file)                                                          true   np2kai/FONT.ROM                
+np2kai                     bios.rom                                                                          true   np2kai/bios.rom                
+np2kai                     itf.rom                                                                           true   np2kai/itf.rom                 
+np2kai                     sound.rom                                                                         true   np2kai/sound.rom               
+libneocd                   Front Loader BIOS                                                                 true   neocd/neocd_f.rom              
+libneocd                   Front Loader BIOS (SMKDAN)                                                        true   neocd/neocd_sf.rom             
+libneocd                   Top Loader BIOS                                                                   true   neocd/neocd_t.rom              
+libneocd                   Top Loader BIOS (SMKDAN)                                                          true   neocd/neocd_st.rom             
+libneocd                   CDZ BIOS                                                                          true   neocd/neocd_z.rom              
+libneocd                   CDZ BIOS (SMKDAN)                                                                 true   neocd/neocd_sz.rom             
+libneocd                   Y-ZOOM ROM                                                                        true   neocd/ng-lo.rom                
+libneocd                   Y-ZOOM ROM (MAME)                                                                 true   neocd/000-lo.lo                
+libneocd                   Front Loader BIOS (MAME)                                                          true   neocd/front-sp1.bin            
+libneocd                   Top Loader BIOS (MAME)                                                            true   neocd/top-sp1.bin              
+libneocd                   CDZ BIOS (MAME)                                                                   true   neocd/neocd.bin                
+libneocd                   Universe BIOS                                                                     true   neocd/uni-bioscd.rom           
+nestopia                   NstDatabase.xml (Nestopia UE Database file)                                       true   NstDatabase.xml                
+nestopia                   disksys.rom (Family Computer Disk System BIOS)                                    true   disksys.rom                    
+higan_sfc_balanced         dsp1.data.rom                                                                     true   dsp1.data.rom                  
+higan_sfc_balanced         dsp1.program.rom                                                                  true   dsp1.program.rom               
+higan_sfc_balanced         dsp1b.data.rom                                                                    true   dsp1b.data.rom                 
+higan_sfc_balanced         dsp1b.program.rom                                                                 true   dsp1b.program.rom              
+higan_sfc_balanced         dsp2.data.rom                                                                     true   dsp2.data.rom                  
+higan_sfc_balanced         dsp2.program.rom                                                                  true   dsp2.program.rom               
+higan_sfc_balanced         dsp3.data.rom                                                                     true   dsp3.data.rom                  
+higan_sfc_balanced         dsp3.program.rom                                                                  true   dsp3.program.rom               
+higan_sfc_balanced         dsp4.data.rom                                                                     true   dsp4.data.rom                  
+higan_sfc_balanced         dsp4.program.rom                                                                  true   dsp4.program.rom               
+higan_sfc_balanced         cx4.data.rom                                                                      true   cx4.data.rom                   
+higan_sfc_balanced         st010.data.rom                                                                    true   st010.data.rom                 
+higan_sfc_balanced         st010.program.rom                                                                 true   st010.program.rom              
+higan_sfc_balanced         st011.data.rom                                                                    true   st011.data.rom                 
+higan_sfc_balanced         st011.program.rom                                                                 true   st011.program.rom              
+higan_sfc_balanced         st018.data.rom                                                                    true   st018.data.rom                 
+higan_sfc_balanced         st018.program.rom                                                                 true   st018.program.rom              
+higan_sfc_balanced         SGB1.sfc/sgb1.boot.rom (SGB Boot BIOS)                                            true   SGB1.sfc/sgb1.boot.rom         
+higan_sfc_balanced         SGB1.sfc/program.rom (SGB Boot Image)                                             true   SGB1.sfc/program.rom           
+higan_sfc_balanced         SGB2.sfc/sgb2.boot.rom (SGB Boot BIOS)                                            true   SGB2.sfc/sgb2.boot.rom         
+higan_sfc_balanced         SGB2.sfc/program.rom (SGB Boot Image)                                             true   SGB2.sfc/program.rom           
+o2em                       o2rom.bin (Odyssey2 BIOS - G7000 model)                                           false  o2rom.bin                      
+o2em                       c52.bin (Videopac+ French BIOS - G7000 model)                                     false  c52.bin                        
+o2em                       g7400.bin (Videopac+ European BIOS - G7400 model)                                 false  g7400.bin                      
+o2em                       jopac.bin (Videopac+ French BIOS - G7400 model)                                   false  jopac.bin                      
+parallel_n64_debug         64DD_IPL.bin (64DD IPL ROM)                                                       true   64DD_IPL.bin                   
+parallel_n64               64DD_IPL.bin (64DD IPL ROM)                                                       true   64DD_IPL.bin                   
+pcsx_rearmed_interpreter   scph5500.bin (PS1 JP BIOS)                                                        true   scph5500.bin                   
+pcsx_rearmed_interpreter   scph5501.bin (PS1 US BIOS)                                                        true   scph5501.bin                   
+pcsx_rearmed_interpreter   scph5502.bin (PS1 EU BIOS)                                                        true   scph5502.bin                   
+pcsx_rearmed_neon          scph5500.bin (PS1 JP BIOS)                                                        true   scph5500.bin                   
+pcsx_rearmed_neon          scph5501.bin (PS1 US BIOS)                                                        true   scph5501.bin                   
+pcsx_rearmed_neon          scph5502.bin (PS1 EU BIOS)                                                        true   scph5502.bin                   
+pcsx_rearmed               scph5500.bin (PS1 JP BIOS)                                                        true   scph5500.bin                   
+pcsx_rearmed               scph5501.bin (PS1 US BIOS)                                                        true   scph5501.bin                   
+pcsx_rearmed               scph5502.bin (PS1 EU BIOS)                                                        true   scph5502.bin                   
+pcsx1                      scph5500.bin (PS1 JP BIOS)                                                        true   scph5500.bin                   
+pcsx1                      scph5501.bin (PS1 US BIOS)                                                        true   scph5501.bin                   
+pcsx1                      scph5502.bin (PS1 EU BIOS)                                                        true   scph5502.bin                   
+picodrive                  bios_CD_E.bin (MegaCD EU BIOS)                                                    true   bios_CD_E.bin                  
+picodrive                  bios_CD_U.bin (SegaCD US BIOS)                                                    true   bios_CD_U.bin                  
+picodrive                  bios_CD_J.bin (MegaCD JP BIOS)                                                    true   bios_CD_J.bin                  
+pokemini                   bios.min (Pokemon Mini BIOS)                                                      true   bios.min                       
+ppsspp                     ppge_atlas.zim (PPSSPP Data ROM)                                                  false  PPSSPP/ppge_atlas.zim          
+prosystem                  7800 BIOS (U).rom (7800 BIOS)                                                     true   7800 BIOS (U).rom              
+puae                       kick34005.A500 (Amiga 500 BIOS, Kickstart v1.3 Rev. 34.005)                       false  kick34005.A500                 
+puae                       kick37175.A500 (Amiga 500+ BIOS, Kickstart v2.04 Rev. 37.175)                     false  kick37175.A500                 
+puae                       kick40063.A600 (Amiga 600 BIOS, Kickstart v3.1 Rev. 40.063)                       false  kick40063.A600                 
+puae                       kick40068.A1200 (Amiga 1200 BIOS, Kickstart v3.1 Rev. 40.068)                     false  kick40068.A1200                
+puae                       drive_click_LOUD.wav (floppy drive sound)                                         true   uae_data/drive_click_LOUD.wav  
+puae                       drive_snatch_LOUD.wav (floppy drive sound)                                        true   uae_data/drive_snatch_LOUD.wav 
+puae                       drive_spin_LOUD.wav (floppy drive sound)                                          true   uae_data/drive_spin_LOUD.wav   
+puae                       drive_spinnd_LOUD.wav (floppy drive sound)                                        true   uae_data/drive_spinnd_LOUD.wav 
+puae                       drive_startup_LOUD.wav (floppy drive sound)                                       true   uae_data/drive_startup_LOUD.wav
+px68k                      iplrom.dat (X68000 BIOS)                                                          false  keropi/iplrom.dat              
+px68k                      cgrom.dat (X68000 BIOS 2)                                                         false  keropi/cgrom.dat               
+px68k                      iplrom30.dat (X68000 BIOS 3)                                                      true   keropi/iplrom30.dat            
+quasi88                    n88.rom (Main BIOS)                                                               false  quasi88/n88.rom                
+quasi88                    n88_0.rom (Extension BIOS 1)                                                      false  quasi88/n88_0.rom              
+quasi88                    n88_1.rom (Extension BIOS 2)                                                      true   quasi88/n88_1.rom              
+quasi88                    n88_2.rom (Extension BIOS 3)                                                      true   quasi88/n88_2.rom              
+quasi88                    n88_3.rom (Extension BIOS 4)                                                      true   quasi88/n88_3.rom              
+quasi88                    n88n.rom (N Basic BIOS)                                                           true   quasi88/n88n.rom               
+quasi88                    disk.rom (Sub BIOS)                                                               true   quasi88/disk.rom               
+quasi88                    n88knj1.rom (Kanji Font 1)                                                        true   quasi88/n88knj1.rom            
+quasi88                    n88knj2.rom (Kanji Font 2)                                                        true   quasi88/n88knj2.rom            
+quasi88                    n88jisho.rom (Jisho)                                                              true   quasi88/n88jisho.rom           
+redream                    boot.bin (Dreamcast BIOS)                                                         false  dc/boot.bin                    
+redream                    flash.bin (Date/Time/Language)                                                    false  dc/flash.bin                   
+sameboy                    dmg_boot.bin (Game Boy boot ROM)                                                  true   dmg_boot.bin                   
+sameboy                    cgb_boot.bin (Game Boy Color boot ROM)                                            true   cgb_boot.bin                   
+snes9x                     BS-X.bin (BS-X - Sore wa Namae o Nusumareta Machi no Monogatari (Japan) (Rev 1))  true   BS-X.bin                       
+snes9x                     STBIOS.bin (Sufami Turbo (Japan))                                                 true   STBIOS.bin                     
+squirreljme                squirreljme.sqc (SquirrelJME Compiled SummerCoat ROM)                             false  squirreljme.sqc                
+tempgba                    gba_bios.bin (Game Boy Advance BIOS)                                              false  gba_bios.bin                   
+vba_next                   gba_bios.bin (Game Boy Advance BIOS)                                              true   gba_bios.bin                   
+vbam                       gba_bios.bin (Game Boy Advance BIOS)                                              true   gba_bios.bin                   
+vbam                       gb_bios.bin (Game Boy BIOS)                                                       true   gb_bios.bin                    
+vbam                       gbc_bios.bin (Game Boy Color BIOS)                                                true   gbc_bios.bin                   
+vice_xpet                  chargen (PET BIOS)                                                                false  vice/PET/chargen               
+vice_xpet                  edit1g (PET BIOS)                                                                 false  vice/PET/edit1g                
+vice_xpet                  edit2b (PET BIOS)                                                                 false  vice/PET/edit2b                
+vice_xpet                  edit2g (PET BIOS)                                                                 false  vice/PET/edit2g                
+vice_xpet                  edit4b40 (PET BIOS)                                                               false  vice/PET/edit4b40              
+vice_xpet                  edit4b80 (PET BIOS)                                                               false  vice/PET/edit4b80              
+vice_xpet                  edit4g40 (PET BIOS)                                                               false  vice/PET/edit4g40              
+yabasanshiro               saturn_bios.bin (Saturn BIOS)                                                     false  saturn_bios.bin                
+yabause                    saturn_bios.bin (Saturn BIOS)                                                     true   saturn_bios.bin                
