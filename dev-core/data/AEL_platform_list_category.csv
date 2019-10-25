@@ -8,53 +8,53 @@ Atari Jaguar CD,atari-jaguarcd,jaguarcd,None,Redump,29,17,171,82
 Atari Lynx,atari-lynx,lynx,None,No-Intro,4924,18,28,58
 Bandai WonderSwan,bandai-wswan,wswan,None,No-Intro,4925,48,45,90
 Bandai WonderSwan Color,bandai-wswancolor,wswancolor,None,No-Intro,4926,49,46,95
-Commodore Amiga,computer-amiga,amiga,None,,4911,19,64,39
+Amstrad CPC,computer-cpc,cpc,None,,4914,60,65,46
 Atari 8-bit,computer-atari-8bit,atari-8bit,None,,30,None,None,None
 Atari ST,computer-atari-st,atari-st,None,,4937,24,42,38
 Commodore 64,computer-c64,c64,None,,40,27,66,24
-Amstrad CPC,computer-cpc,cpc,None,,4914,60,65,46
+Commodore Amiga,computer-amiga,amiga,None,,4911,19,64,39
 Commodore Plus-4,computer-plus4,plus4,None,,None,115,None,None
-Sinclair ZX Spectrum,computer-spectrum,spectrum,None,,4913,41,76,35
 Commodore VIC-20,computer-vic20,vic20,None,,4945,43,73,11
 Sharp X68000,computer-x68k,x68k,None,,4931,106,79,52
 Sinclair ZX 81,computer-zx81,zx81,None,Redump,None,None,None,None
+Sinclair ZX Spectrum,computer-spectrum,spectrum,None,,4913,41,76,35
 3DO Interactive Multiplayer,console-3do,3do,None,Redump,25,35,29,61
-Emerson Arcadia 2001,console-arcadia2001,arcadia2001,None,No-Intro,None,None,None,None
-Entex Adventure Vision,console-avision,avision,None,No-Intro,None,None,None,None
 Benesse Pocket Challenge V2,console-bpc,bpc,None,No-Intro,None,None,None,None
+Casio Loopy,console-loopy,loopy,None,No-Intro,None,None,None,None
+Casio PV-1000,console-pv1000,pv1000,None,No-Intro,None,None,None,None
+Coleco Colecovision,console-cvision,cvision,None,No-Intro,31,29,48,29
 Commodore CD32,console-cd32,cd32,None,Redump,4947,56,130,70
 Commodore CDTV,console-cdtv,cdtv,None,Redump,None,None,None,None
+Emerson Arcadia 2001,console-arcadia2001,arcadia2001,None,No-Intro,None,None,None,None
+Entex Adventure Vision,console-avision,avision,None,No-Intro,None,None,None,None
+Epoch Super Cassette Vision,console-scvision,scvision,None,No-Intro,None,None,None,None
 Fairchild Channel F,console-channelf,channelf,None,No-Intro,None,None,None,None
-VTech CreatiVision,console-creativision,creativision,None,No-Intro,None,None,None,None
-Coleco Colecovision,console-cvision,cvision,None,No-Intro,31,29,48,29
 Fujitsu FM Towns Marty,console-fmtmarty,fmtmarty,None,,4932,102,97,55
-Philips Videopac G7000,console-g7000,g7000,None,No-Intro,None,78,104,9
-Philips Videopac Plus G7400,console-g7400,g7400,None,No-Intro,None,128,104,None
-Hartung Game Master,console-gamemaster,gamemaster,None,No-Intro,None,None,None,None
+Funtech Super Acan,console-superacan,superacan,None,No-Intro,None,None,None,None
 GamePark GP32,console-gp32,gp32,None,No-Intro,None,None,None,None
+GCE Vectrex,console-vectrex,vectrex,None,,4939,37,102,34
+Hartung Game Master,console-gamemaster,gamemaster,None,No-Intro,None,None,None,None
 iQue iQue Player,console-ique,ique,None,No-Intro,None,None,None,None
-Mattel Intellivision,console-ivision,ivision,None,No-Intro,32,30,115,16
+Konami Picno,console-picno,picno,None,No-Intro,None,None,None,None
 LeapFrog LeapPad,console-leappad,leappad,None,No-Intro,None,None,None,None
 LeapFrog Leapster Learning Game System,console-llgs,llgs,None,No-Intro,None,None,None,None
-Casio Loopy,console-loopy,loopy,None,No-Intro,None,None,None,None
 LeapFrog My First LeapPad,console-mfleappad,mfleappad,None,No-Intro,None,None,None,None
 Magnavox Odyssey2,console-odyssey2,odyssey2,None,No-Intro,4927,78,None,9
+Mattel Intellivision,console-ivision,ivision,None,No-Intro,32,30,115,16
 Ouya Ouya,console-ouya,ouya,None,,None,None,None,None
-Konami Picno,console-picno,picno,None,No-Intro,None,None,None,None
-Casio PV-1000,console-pv1000,pv1000,None,No-Intro,None,None,None,None
-Epoch Super Cassette Vision,console-scvision,scvision,None,No-Intro,None,None,None,None
+Philips Videopac G7000,console-g7000,g7000,None,No-Intro,None,78,104,9
+Philips Videopac Plus G7400,console-g7400,g7400,None,No-Intro,None,128,104,None
 RCA Studio II,console-studio2,studio2,None,No-Intro,None,None,None,None
-Funtech Super Acan,console-superacan,superacan,None,No-Intro,None,None,None,None
-Watara Supervision,console-supervision,supervision,None,No-Intro,None,None,None,None
 Tiger Game.com,console-tigergame,tigergame,None,No-Intro,None,None,None,None
-GCE Vectrex,console-vectrex,vectrex,None,,4939,37,102,34
+VTech CreatiVision,console-creativision,creativision,None,No-Intro,None,None,None,None
 VTech V.Flash,console-vflash,vflash,None,Redump,None,None,None,None
 VTech V.Smile,console-vsmile,vsmile,None,No-Intro,None,None,None,None
 VTech V.Smile Pro,console-vsmilepro,vsmilepro,vflash,None,None,None,None,None
+Watara Supervision,console-supervision,supervision,None,No-Intro,None,None,None,None
 Zeebo Zeebo,console-zeebo,zeebo,None,No-Intro,None,None,None,None
+Libretro Cave Story (NX Engine),games-nxengine,nxengine,None,Redump,None,None,None,None
 Libretro Doom,games-doom,doom,None,Redump,None,None,None,None
 Libretro Game and Watch,games-gw,gw,None,Redump,None,None,None,None
-Libretro Cave Story (NX Engine),games-nxengine,nxengine,None,Redump,None,None,None,None
 Libretro OpenLara,games-openlara,openlara,None,Redump,None,None,None,None
 ScummVM,games-scummvm,scummvm,None,,None,None,123,None
 Microsoft MS-DOS,microsoft-msdos,msdos,None,,1,2,135,19
@@ -71,18 +71,18 @@ NEC PC-FXGA,nec-pcfxga,pcfxga,pcfx,None,None,None,None,None
 NEC SuperGrafx,nec-sgx,sgx,None,No-Intro,34,127,105,53
 NEC TurboGrafx 16,nec-tg16,tg16,pce,None,None,None,None,None
 NEC TurboGrafx CD,nec-tg16cd,tg16cd,pcecd,None,None,None,None,None
-Nintendo e-Reader,nintendo-ereader,ereader,None,No-Intro,None,None,None,None
-Nintendo Famicon,nintendo-famicon,famicon,nes,None,None,None,None,None
-Nintendo Famicon Disk System,nintendo-fds,fds,None,No-Intro,4936,22,106,47
-Nintendo GameCube,nintendo-gamecube,gamecube,None,Redump,2,14,13,99
-Nintendo GameBoy,nintendo-gb,gb,None,No-Intro,4,10,9,59
-Nintendo GameBoy Advance,nintendo-gba,gba,None,No-Intro,5,12,12,91
-Nintendo GameBoy Color,nintendo-gbcolor,gbcolor,None,No-Intro,41,11,10,57
 Nintendo 3DS,nintendo-n3ds,n3ds,None,,4912,101,17,116
 Nintendo 64,nintendo-n64,n64,None,No-Intro,3,9,14,84
 Nintendo 64DD,nintendo-n64dd,n64dd,None,No-Intro,3,9,122,92
 Nintendo DS,nintendo-nds,nds,None,,8,44,15,108
 Nintendo DSi,nintendo-ndsi,ndsi,None,,8,87,15,108
+Nintendo e-Reader,nintendo-ereader,ereader,None,No-Intro,None,None,None,None
+Nintendo Famicon,nintendo-famicon,famicon,nes,None,None,None,None,None
+Nintendo Famicon Disk System,nintendo-fds,fds,None,No-Intro,4936,22,106,47
+Nintendo GameBoy,nintendo-gb,gb,None,No-Intro,4,10,9,59
+Nintendo GameBoy Advance,nintendo-gba,gba,None,No-Intro,5,12,12,91
+Nintendo GameBoy Color,nintendo-gbcolor,gbcolor,None,No-Intro,41,11,10,57
+Nintendo GameCube,nintendo-gamecube,gamecube,None,Redump,2,14,13,99
 Nintendo NES,nintendo-nes,nes,None,No-Intro,7,22,3,41
 Nintendo Pokemon Mini,nintendo-pokemini,pokemini,None,No-Intro,4957,152,211,None
 Nintendo Satellaview,nintendo-satellaview,satellaview,None,No-Intro,None,None,None,None
@@ -97,24 +97,24 @@ Sega Beena,sega-beena,beena,None,No-Intro,None,None,None,None
 Sega Dreamcast,sega-dreamcast,dreamcast,None,Redump,16,8,23,67
 Sega Game Gear,sega-gamegear,gamegear,None,No-Intro,20,25,21,62
 Sega Genesis,sega-genesis,genesis,megadrive,None,None,None,None,None
-Sega MegaCD,sega-megacd,megacd,None,Redump,21,20,20,65
+Sega Master System,sega-sms,sms,None,No-Intro,35,26,2,49
 Sega Mega Drive,sega-megadrive,megadrive,None,No-Intro,36,16,1,54
+Sega MegaCD,sega-megacd,megacd,None,Redump,21,20,20,65
 Sega PICO,sega-pico,pico,None,No-Intro,4958,103,None,None
 Sega Saturn,sega-saturn,saturn,None,Redump,17,23,22,76
 Sega SC-3000,sega-sc3000,sc3000,None,,4949,None,None,None
 Sega SegaCD,sega-segacd,segacd,megacd,None,None,None,None,None
 Sega SG-1000,sega-sg1000,sg1000,None,No-Intro,4949,114,109,43
-Sega Master System,sega-sms,sms,None,No-Intro,35,26,2,49
 SNK Neo-Geo AES,snk-aes,aes,mame,None,None,None,None,None
-SNK Neo-Geo MVS,snk-mvs,mvs,mame,None,None,None,None,None
 SNK Neo-Geo CD,snk-neocd,neocd,None,Redump,4956,54,70,68
+SNK Neo-Geo MVS,snk-mvs,mvs,mame,None,None,None,None,None
 SNK Neo-Geo Pocket,snk-ngp,ngp,None,No-Intro,4922,52,25,None
 SNK Neo-Geo Pocket Color,snk-ngpc,ngpc,None,No-Intro,4923,53,82,89
+Sony PlayStation,sony-psx,psx,None,Redump,10,6,57,78
 Sony PlayStation 2,sony-ps2,ps2,None,Redump,11,7,58,94
 Sony PlayStation 3,sony-ps3,ps3,None,,12,81,59,113
 Sony PlayStation 4,sony-ps4,ps4,None,,4919,141,None,120
 Sony PlayStation Portable,sony-psp,psp,None,Redump,13,46,61,109
 Sony PlayStation Vita,sony-psvita,psvita,None,,39,105,62,117
-Sony PlayStation,sony-psx,psx,None,Redump,10,6,57,78
 Sinclair ZX Spectrum Plus 3,spectrump3,spectrump3,None,,None,None,None,None
 Unknown,unknown,unknown,None,,None,None,None,None

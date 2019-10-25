@@ -258,6 +258,11 @@ AEL_platforms = [
     Platform('Unknown', 'unknown', 'unknown', None, DAT_NONE, None, None, None, None),
 ]
 
+# --- Add category to platform objects ---
+# The category is the first part of the short name.
+for p_obj in AEL_platforms:
+    p_obj.category = p_obj.short_name.split('-')[0]
+# Dictionaries for fast access to the platform information.
 platform_short_to_long_dic = {}
 platform_compact_to_long_dic = {}
 platform_long_to_index_dic = {}

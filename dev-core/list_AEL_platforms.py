@@ -29,13 +29,16 @@ def write_txt_file(filename, text):
         text_file.write(text)
 
 # --- configuration ------------------------------------------------------------------------------
-fname_longname_txt = 'data/AEL_platform_list_longname.txt'
-fname_longname_csv = 'data/AEL_platform_list_longname.csv'
+fname_longname_txt  = 'data/AEL_platform_list_longname.txt'
+fname_longname_csv  = 'data/AEL_platform_list_longname.csv'
 fname_shortname_txt = 'data/AEL_platform_list_shortname.txt'
 fname_shortname_csv = 'data/AEL_platform_list_shortname.csv'
+fname_category_txt  = 'data/AEL_platform_list_category.txt'
+fname_category_csv  = 'data/AEL_platform_list_category.csv'
 
 # --- main ---------------------------------------------------------------------------------------
 # --- Check that the platform object list is alphabetically sorted ---
+# Unknown platform is special and it's always in last position. Remove from alphabetical check.
 p_longname_list = [pobj.long_name for pobj in AEL_platforms[:-1]]
 p_longname_list_sorted = sorted(p_longname_list, key = lambda s: s.lower())
 table_str = [ ['left', 'left', 'left'], ['Marker', 'Original', 'Sorted'] ]
@@ -55,54 +58,78 @@ if not_sorted_flag:
     sys.exit(1)
 print('Platforms sorted alphabetically.')
 
-# --- List platforms sorted by ... ---
-
-# --- List platforms sorted by ... ---
-
-header_list = []
-header_list.append('Number of AEL platforms {}'.format(len(AEL_platforms)))
-header_list.append('')
+# --- List platforms sorted by long name ---
 table_str = [
     ['left', 'left', 'left', 'left', 'left', 'left', 'left', 'left', 'left'],
     ['AEL long name', 'AEL short name', 'AEL compact name', 'Alias of', 'DAT',
      'TheGamesDB', 'MobyGames', 'ScreenScraper', 'GameFAQs'],
 ]
-header_long_list = copy.deepcopy(header_list)
-header_short_list = copy.deepcopy(header_list)
-table_long_str = copy.deepcopy(table_str)
-table_short_str = copy.deepcopy(table_str)
-for p_name in sorted(platform_long_list, key = lambda x: x.lower()):
-    p_obj = AEL_platforms[platform_long_list.index(p_name)]
-    table_long_str.append([
+for p_obj in AEL_platforms:
+    table_str.append([
         p_obj.long_name, p_obj.short_name, p_obj.compact_name,
         unicode(p_obj.aliasof), unicode(p_obj.DAT),
         unicode(p_obj.TGDB_plat), unicode(p_obj.MG_plat), unicode(p_obj.SS_plat), unicode(p_obj.GF_plat)
     ])
-for p_name in sorted(platform_short_list, key = lambda x: x.lower()):
-    p_obj = AEL_platforms[platform_short_list.index(p_name)]
-    table_short_str.append([
-        p_obj.long_name, p_obj.short_name, p_obj.compact_name,
-        unicode(p_obj.aliasof), unicode(p_obj.DAT),
-        unicode(p_obj.TGDB_plat), unicode(p_obj.MG_plat), unicode(p_obj.SS_plat), unicode(p_obj.GF_plat)
-    ])
-table_long_str_list = text_render_table_str(table_long_str)
-header_long_list.extend(table_long_str_list)
-text_long_str = '\n'.join(header_long_list)
-print(text_long_str)
-
-table_short_str_list = text_render_table_str(table_short_str)
-header_short_list.extend(table_short_str_list)
-text_short_str = '\n'.join(header_short_list)
-
-# --- Output file in TXT and CSV format ---
+header_list = []
+header_list.append('Number of AEL platforms {}'.format(len(AEL_platforms)))
+header_list.append('')
+table_str_list = text_render_table_str(table_str)
+header_list.extend(table_str_list)
+text_str = '\n'.join(header_list)
+print(text_str)
+# Output file in TXT and CSV format
 print('\nWriting file "{}"'.format(fname_longname_txt))
-write_txt_file(fname_longname_txt, text_long_str)
-text_csv = '\n'.join(text_render_table_CSV_slist(table_long_str))
+write_txt_file(fname_longname_txt, text_str)
+text_csv = '\n'.join(text_render_table_CSV_slist(table_str))
 print('Writing file "{}"'.format(fname_longname_csv))
 write_txt_file(fname_longname_csv, text_csv)
 
+# --- List platforms sorted by short name ---
+table_str = [
+    ['left', 'left', 'left', 'left', 'left', 'left', 'left', 'left', 'left'],
+    ['AEL long name', 'AEL short name', 'AEL compact name', 'Alias of', 'DAT',
+     'TheGamesDB', 'MobyGames', 'ScreenScraper', 'GameFAQs'],
+]
+for p_obj in sorted(AEL_platforms, key = lambda x: x.short_name.lower(), reverse = False):
+    table_str.append([
+        p_obj.long_name, p_obj.short_name, p_obj.compact_name,
+        unicode(p_obj.aliasof), unicode(p_obj.DAT),
+        unicode(p_obj.TGDB_plat), unicode(p_obj.MG_plat), unicode(p_obj.SS_plat), unicode(p_obj.GF_plat)
+    ])
+header_list = []
+header_list.append('Number of AEL platforms {}'.format(len(AEL_platforms)))
+header_list.append('')
+table_str_list = text_render_table_str(table_str)
+header_list.extend(table_str_list)
+text_str = '\n'.join(header_list)
+# Output file in TXT and CSV format
 print('\nWriting file "{}"'.format(fname_shortname_txt))
-write_txt_file(fname_shortname_txt, text_short_str)
-text_csv = '\n'.join(text_render_table_CSV_slist(table_short_str))
+write_txt_file(fname_shortname_txt, text_str)
+text_csv = '\n'.join(text_render_table_CSV_slist(table_str))
 print('Writing file "{}"'.format(fname_shortname_csv))
 write_txt_file(fname_shortname_csv, text_csv)
+
+# --- List platforms sorted by category and then long name ---
+table_str = [
+    ['left', 'left', 'left', 'left', 'left', 'left', 'left', 'left', 'left'],
+    ['AEL long name', 'AEL short name', 'AEL compact name', 'Alias of', 'DAT',
+     'TheGamesDB', 'MobyGames', 'ScreenScraper', 'GameFAQs'],
+]
+for p_obj in sorted(AEL_platforms, key = lambda x: (x.category.lower(), x.long_name.lower()), reverse = False):
+    table_str.append([
+        p_obj.long_name, p_obj.short_name, p_obj.compact_name,
+        unicode(p_obj.aliasof), unicode(p_obj.DAT),
+        unicode(p_obj.TGDB_plat), unicode(p_obj.MG_plat), unicode(p_obj.SS_plat), unicode(p_obj.GF_plat)
+    ])
+header_list = []
+header_list.append('Number of AEL platforms {}'.format(len(AEL_platforms)))
+header_list.append('')
+table_str_list = text_render_table_str(table_str)
+header_list.extend(table_str_list)
+text_str = '\n'.join(header_list)
+# Output file in TXT and CSV format
+print('\nWriting file "{}"'.format(fname_category_txt))
+write_txt_file(fname_category_txt, text_str)
+text_csv = '\n'.join(text_render_table_CSV_slist(table_str))
+print('Writing file "{}"'.format(fname_category_csv))
+write_txt_file(fname_category_csv, text_csv)
