@@ -24,6 +24,10 @@ def write_txt_file(filename, text):
     with open(filename, 'w') as text_file:
         text_file.write(text)
 
+# To export CSV all commas from string must be removed.
+def remove_commas(s):
+    return s.replace(',', '_')
+
 # --- configuration ------------------------------------------------------------------------------
 json_fname = 'data/Libretro_info.json'
 fname_longname_txt = 'data/Libretro_longname.txt'
@@ -42,21 +46,24 @@ table_long_str = copy.deepcopy(table_str)
 for key in sorted(json_data, key = lambda x: json_data[x]['corename'].lower(), reverse = False):
     idata = json_data[key]
     table_long_str.append([
-        idata['corename'], idata['categories'], idata['display_name'],
-        idata['firmware_count'], idata['systemid'], idata['systemname'],
-        idata['supports_no_game'],
+        remove_commas(idata['corename']), remove_commas(idata['categories']),
+        remove_commas(idata['display_name']), remove_commas(idata['firmware_count']),
+        remove_commas(idata['systemid']), remove_commas(idata['systemname']),
+        remove_commas(idata['supports_no_game']),
     ])
 table_long_str_list = text_render_table_str(table_long_str)
 text_long_str = '\n'.join(table_long_str_list)
 print(text_long_str)
 
 table_short_str = copy.deepcopy(table_str)
-for key in sorted(json_data, key = lambda x: (json_data[x]['categories'].lower(), json_data[x]['corename'].lower()), reverse = False):
+for key in sorted(json_data,
+    key = lambda x: (json_data[x]['categories'].lower(), json_data[x]['corename'].lower()), reverse = False):
     idata = json_data[key]
     table_short_str.append([
-        idata['corename'], idata['categories'], idata['display_name'],
-        idata['firmware_count'], idata['systemid'], idata['systemname'],
-        idata['supports_no_game'],
+        remove_commas(idata['corename']), remove_commas(idata['categories']),
+        remove_commas(idata['display_name']), remove_commas(idata['firmware_count']),
+        remove_commas(idata['systemid']), remove_commas(idata['systemname']),
+        remove_commas(idata['supports_no_game']),
     ])
 table_short_str_list = text_render_table_str(table_short_str)
 text_short_str = '\n'.join(table_short_str_list)
