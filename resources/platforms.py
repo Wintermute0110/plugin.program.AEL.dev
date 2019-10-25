@@ -71,11 +71,11 @@ AEL_platforms = [
     Platform('Atari 2600', 'atari-2600', 'a2600', None, DAT_NOINTRO, '22', '28', '26', '6'),
     Platform('Atari 5200', 'atari-5200', 'a5200', None, DAT_NOINTRO, '26', '33', '40', '20'),
     Platform('Atari 7800', 'atari-7800', 'a7800', None, DAT_NOINTRO, '27', '34', '41', '51'),
+    # Atari 8-bit includes: Atari 400, Atari 800, Atari 1200XL, Atari 65XE, Atari 130XE, Atari XEGS
+    Platform('Atari 8-bit', 'computer-atari-8bit', 'atari-8bit', None, DAT_NONE, '30', None, None, None),
     Platform('Atari Jaguar', 'atari-jaguar', 'jaguar', None, DAT_NOINTRO, '28', '17', '27', '72'),
     Platform('Atari Jaguar CD', 'atari-jaguarcd', 'jaguarcd', None, DAT_REDUMP, '29', '17', '171', '82'),
     Platform('Atari Lynx', 'atari-lynx', 'lynx', None, DAT_NOINTRO, '4924', '18', '28', '58'),
-    # Atari 8-bit includes: Atari 400, Atari 800, Atari 1200XL, Atari 65XE, Atari 130XE, Atari XEGS
-    Platform('Atari 8-bit', 'computer-atari-8bit', 'atari-8bit', None, DAT_NONE, '30', None, None, None),
     Platform('Atari ST', 'computer-atari-st', 'atari-st', None, DAT_NONE, '4937', '24', '42', '38'),
 
     # --- Bandai ---
@@ -110,11 +110,10 @@ AEL_platforms = [
     # --- Fairchild ---
     Platform('Fairchild Channel F', 'console-channelf', 'channelf', None, DAT_NOINTRO, None, None, None, None),
 
-    Platform('Funtech Super Acan', 'console-superacan', 'superacan', None, DAT_NOINTRO, None, None, None, None),
-
     # --- Fujitsu ---
     Platform('Fujitsu FM Towns Marty', 'console-fmtmarty', 'fmtmarty', None, DAT_NONE, '4932', '102', '97', '55'),
 
+    Platform('Funtech Super Acan', 'console-superacan', 'superacan', None, DAT_NOINTRO, None, None, None, None),
     Platform('GamePark GP32', 'console-gp32', 'gp32', None, DAT_NOINTRO, None, None, None, None),
 
     # --- GCE ---
@@ -157,11 +156,11 @@ AEL_platforms = [
     # --- NEC ---
     Platform('NEC PC Engine', 'nec-pce', 'pce', None, DAT_NOINTRO, '34', '40', '31', '53'),
     Platform('NEC PC Engine CDROM2', 'nec-pcecd', 'pcecd', None, DAT_REDUMP, '4955', '45', '114', '56'),
-    Platform('NEC TurboGrafx 16', 'nec-tg16', 'tg16', 'pce'),
-    Platform('NEC TurboGrafx CD', 'nec-tg16cd', 'tg16cd', 'pcecd'),
-    Platform('NEC SuperGrafx', 'nec-sgx', 'sgx', None, DAT_NOINTRO, '34', '127', '105', '53'),
     Platform('NEC PC-FX', 'nec-pcfx', 'pcfx', None, DAT_REDUMP, '4930', '59', '72', '79'),
     Platform('NEC PC-FXGA', 'nec-pcfxga', 'pcfxga', 'pcfx'),
+    Platform('NEC SuperGrafx', 'nec-sgx', 'sgx', None, DAT_NOINTRO, '34', '127', '105', '53'),
+    Platform('NEC TurboGrafx 16', 'nec-tg16', 'tg16', 'pce'),
+    Platform('NEC TurboGrafx CD', 'nec-tg16cd', 'tg16cd', 'pcecd'),
 
     # --- Nintendo ---
     Platform('Nintendo 3DS', 'nintendo-n3ds', 'n3ds', None, DAT_NONE, '4912', '101', '17', '116'),
@@ -210,8 +209,8 @@ AEL_platforms = [
     Platform('Sega Game Gear', 'sega-gamegear', 'gamegear', None, DAT_NOINTRO, '20', '25', '21', '62'),
     Platform('Sega Genesis', 'sega-genesis', 'genesis', 'megadrive'),
     Platform('Sega Master System', 'sega-sms', 'sms', None, DAT_NOINTRO, '35', '26', '2', '49'),
-    Platform('Sega MegaCD', 'sega-megacd', 'megacd', None, DAT_REDUMP, '21', '20', '20', '65'),
     Platform('Sega Mega Drive', 'sega-megadrive', 'megadrive', None, DAT_NOINTRO, '36', '16', '1', '54'),
+    Platform('Sega MegaCD', 'sega-megacd', 'megacd', None, DAT_REDUMP, '21', '20', '20', '65'),
     Platform('Sega PICO', 'sega-pico', 'pico', None, DAT_NOINTRO, '4958', '103', None, None),
     Platform('Sega Saturn', 'sega-saturn', 'saturn', None, DAT_REDUMP, '17', '23', '22', '76'),
     # SC-3000 is a clone of SG-1000? Verify this.

@@ -35,13 +35,36 @@ fname_shortname_txt = 'data/AEL_platform_list_shortname.txt'
 fname_shortname_csv = 'data/AEL_platform_list_shortname.csv'
 
 # --- main ---------------------------------------------------------------------------------------
+# --- Check that the platform object list is alphabetically sorted ---
+p_longname_list = [pobj.long_name for pobj in AEL_platforms[:-1]]
+p_longname_list_sorted = sorted(p_longname_list, key = lambda s: s.lower())
+table_str = [ ['left', 'left', 'left'], ['Marker', 'Original', 'Sorted'] ]
+not_sorted_flag = False
+for i in range(len(p_longname_list)):
+    a = p_longname_list[i]
+    b = p_longname_list_sorted[i]
+    if a != b:
+        table_str.append([' *** ', a, b])
+        not_sorted_flag = True
+    else:
+        table_str.append(['', a, b])
+if not_sorted_flag:
+    print('Platforms not sorted alphabetically.')
+    print('\n'.join(text_render_table_str(table_str)))
+    print('Exiting.')
+    sys.exit(1)
+print('Platforms sorted alphabetically.')
+
+# --- List platforms sorted by ... ---
+
+# --- List platforms sorted by ... ---
+
 header_list = []
 header_list.append('Number of AEL platforms {}'.format(len(AEL_platforms)))
 header_list.append('')
 table_str = [
     ['left', 'left', 'left', 'left', 'left', 'left', 'left', 'left', 'left'],
-    ['AEL long name', 'AEL short name', 'AEL compact name',
-     'Alias of', 'DAT',
+    ['AEL long name', 'AEL short name', 'AEL compact name', 'Alias of', 'DAT',
      'TheGamesDB', 'MobyGames', 'ScreenScraper', 'GameFAQs'],
 ]
 header_long_list = copy.deepcopy(header_list)
