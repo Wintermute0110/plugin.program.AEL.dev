@@ -42,6 +42,7 @@ Cruzes                          Game            Cruzes                          
 Daphne                          Emulator        Arcade (Daphne)                                                                              Arcade (various)                          false           
 DeSmuME                         Emulator        Nintendo - DS (DeSmuME)                                3               nds                   Nintendo DS                               false           
 DeSmuME 2015                    Emulator        Nintendo - DS (DeSmuME 2015)                                           nds                   Nintendo DS                               false           
+dhewm3                          Game            Doom 3 (dhewm3)                                                        doom_3                Doom 3 Game Engine                        false           
 Dinothawr                       Game            Dinothawr                                                              dinothawr             Dinothawr Game Engine                     false           
 Dolphin                         Emulator        Nintendo - GameCube / Wii (Dolphin)                                    gamecube              GameCube / Wii                            false           
 Dolphin Launcher                Emulator        Nintendo - GameCube / Wii (Dolphin Launcher)                           gamecube              GameCube / Wii                            true            
@@ -132,9 +133,9 @@ PokeMini                        Emulator        Nintendo - Pokemon Mini (PokeMin
 PPSSPP                          Emulator        Sony - PlayStation Portable (PPSSPP)                   1               playstation_portable  PSP                                       false           
 PrBoom                          Game            Doom (PrBoom)                                                          doom                  DOOM Game Engine                          false           
 ProSystem                       Emulator        Atari - 7800 (ProSystem)                               1               atari_7800            Atari 7800                                false           
-PUAE                            Emulator        Commodore - Amiga (P-UAE)                              4               amiga                 Commodore Amiga                           false           
+PUAE                            Emulator        Commodore - Amiga (P-UAE)                              9               amiga                 Commodore Amiga                           false           
 PX68k                           Emulator        Sharp - X68000 (PX68k)                                 3               sharp_x68000          Sharp X68000                              false           
-QUASI88                         Emulator        NEC - PC-8001 / PC-8801 (QUASI88)                      10              pc_88                 PC-8001 / PC-8801                         true            
+QUASI88                         Emulator        NEC - PC-8000 / PC-8800 series (QUASI88)               10              pc_88                 PC-8000 / PC-8800 series                  true            
 QuickNES                        Emulator        Nintendo - NES / Famicom (QuickNES)                                    nes                   Nintendo Entertainment System             false           
 Redbook                         music           Redbook Audio Player                                                   redbook               Redbook                                   false           
 Redream                         Emulator        Sega - Dreamcast (Redream GPL)                         2               dreamcast             Sega Dreamcast                            false           
@@ -177,14 +178,21 @@ VBA Next                        Emulator        Nintendo - Game Boy Advance (VBA
 VBA-M                           Emulator        Nintendo - Game Boy Advance (VBA-M)                    3               game_boy_advance      Game Boy/Game Boy Color/Game Boy Advance  false           
 vecx                            Emulator        GCE - Vectrex (vecx)                                                   vectrex               Vectrex                                   false           
 VeMUlator                       Game            VeMUlator                                                                                    SEGA Visual Memory Unit                   false           
-VICE                            Emulator        Commodore - C64 (VICE x64sc, accurate)                                 commodore_64          C64                                       false           
+VICE                            Emulator        Commodore - C64 (VICE x64sc_ accurate)                                 commodore_64          C64                                       false           
+VICE                            Emulator        Commodore CBM-II (VICE xcbm2)                                          commodore_cbm2        CBM2                                      false           
 VICE                            Emulator        Commodore - PLUS4 (VICE xplus4)                                        commodore_plus_4      PLUS4                                     false           
 VICE                            Emulator        Commodore - PET (VICE xpet)                            7               commodore_pet         PET                                       false           
-VICE                            Emulator        Commodore - C64 (VICE x64, fast)                                       commodore_64          C64                                       false           
+VICE                            Emulator        Commodore - C64 (VICE x64_ fast)                                       commodore_64          C64                                       false           
 VICE                            Emulator        Commodore - C128 (VICE x128)                                           commodore_128         C128                                      false           
 VICE                            Emulator        Commodore - VIC20 (VICE xvic)                                          commodore_vic_20      VIC20                                     false           
 VICE SDL                        Emulator        Commodore - C64 (VICE SDL)                                             commodore_64          C64                                       false           
 Virtual Jaguar                  Emulator        Atari - Jaguar (Virtual Jaguar)                                        atari_jaguar          Jaguar                                    false           
+vitaQuake 2                     Game            Quake 2 (vitaQuake 2)                                                  quake_2               Quake 2 Game Engine                       false           
+vitaQuake 2 [Rogue]             Game            Quake 2 - Ground Zero (vitaQuake 2 [Rogue])                            quake_2               Quake 2 Game Engine                       false           
+vitaQuake 2 [Xatrix]            Game            Quake 2 - The Reckoning (vitaQuake 2 [Xatrix])                         quake_2               Quake 2 Game Engine                       false           
+vitaQuake 2 [Zaero]             Game            Quake 2 - Zaero (vitaQuake 2 [Zaero])                                  quake_2               Quake 2 Game Engine                       false           
+vitaQuake 3                     Game            Quake III: Arena (vitaQuake 3)                                         quake_3               Quake 3 Game Engine                       false           
+vitaVoyager                     Game            Star Trek: Voyager - Elite Force (vitaVoyager)                         quake_3               Quake 3 Game Engine                       false           
 XRick                           Game            Rick Dangerous (XRick)                                                 xrick                 Rick Dangerous Game Engine                false           
 YabaSanshiro                    Emulator        Sega - Saturn (YabaSanshiro)                           1               sega_saturn           Saturn                                    false           
 Yabause                         Emulator        Sega - Saturn (Yabause)                                1               sega_saturn           Saturn                                    false           
