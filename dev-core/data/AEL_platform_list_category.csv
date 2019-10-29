@@ -56,11 +56,14 @@ Libretro Cave Story (NX Engine),games-nxengine,nxengine,None,Redump,None,None,No
 Libretro ChaiLove,games-chailove,chailove,None,Redump,None,None,None,None
 Libretro Doom,games-doom,doom,None,Redump,None,None,None,None
 Libretro Doom 3,games-doom3,doom3,None,Redump,None,None,None,None
+Libretro EasyRPG,games-easyrpg,easyrpg,None,Redump,None,None,None,None
 Libretro Game and Watch,games-gw,gw,None,Redump,None,None,None,None
+Libretro Lutro,games-lutro,lutro,None,Redump,None,None,None,None
 Libretro OpenLara,games-openlara,openlara,None,Redump,None,None,None,None
 Libretro Quake,games-quake,quake,None,Redump,None,None,None,None
 Libretro Quake 2,games-quake2,quake2,None,Redump,None,None,None,None
 Libretro Quake 3,games-quake3,quake3,None,Redump,None,None,None,None
+Libretro TIC-80,games-tic80,tic80,None,Redump,None,None,None,None
 ScummVM,games-scummvm,scummvm,None,,None,None,123,None
 Microsoft MS-DOS,microsoft-msdos,msdos,None,,1,2,135,19
 Microsoft MSX,microsoft-msx,msx,None,,4929,57,113,40

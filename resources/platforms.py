@@ -133,11 +133,14 @@ AEL_platforms = [
     Platform('Libretro ChaiLove', 'games-chailove', 'chailove', None, DAT_LIBRETRO, None, None, None, None),
     Platform('Libretro Doom', 'games-doom', 'doom', None, DAT_LIBRETRO, None, None, None, None),
     Platform('Libretro Doom 3', 'games-doom3', 'doom3', None, DAT_LIBRETRO, None, None, None, None),
+    Platform('Libretro EasyRPG', 'games-easyrpg', 'easyrpg', None, DAT_LIBRETRO, None, None, None, None),
     Platform('Libretro Game and Watch', 'games-gw', 'gw', None, DAT_LIBRETRO, None, None, None, None),
+    Platform('Libretro Lutro', 'games-lutro', 'lutro', None, DAT_LIBRETRO, None, None, None, None),
     Platform('Libretro OpenLara', 'games-openlara', 'openlara', None, DAT_LIBRETRO, None, None, None, None),
     Platform('Libretro Quake', 'games-quake', 'quake', None, DAT_LIBRETRO, None, None, None, None),
     Platform('Libretro Quake 2', 'games-quake2', 'quake2', None, DAT_LIBRETRO, None, None, None, None),
     Platform('Libretro Quake 3', 'games-quake3', 'quake3', None, DAT_LIBRETRO, None, None, None, None),
+    Platform('Libretro TIC-80', 'games-tic80', 'tic80', None, DAT_LIBRETRO, None, None, None, None),
 
     # --- Magnavox ---
     Platform('Magnavox Odyssey2', 'console-odyssey2', 'odyssey2', None, DAT_NOINTRO, '4927', '78', None, '9'),

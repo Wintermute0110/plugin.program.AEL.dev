@@ -1,4 +1,4 @@
-Number of AEL platforms 124
+Number of AEL platforms 127
 
 Long name                               Short name            Compact name  Alias      DAT       TGDB  MG    SS    GF  
 -----------------------------------------------------------------------------------------------------------------------
@@ -42,11 +42,14 @@ Libretro Cave Story (NX Engine)         games-nxengine        nxengine      None
 Libretro ChaiLove                       games-chailove        chailove      None       Redump    None  None  None  None
 Libretro Doom                           games-doom            doom          None       Redump    None  None  None  None
 Libretro Doom 3                         games-doom3           doom3         None       Redump    None  None  None  None
+Libretro EasyRPG                        games-easyrpg         easyrpg       None       Redump    None  None  None  None
 Libretro Game and Watch                 games-gw              gw            None       Redump    None  None  None  None
+Libretro Lutro                          games-lutro           lutro         None       Redump    None  None  None  None
 Libretro OpenLara                       games-openlara        openlara      None       Redump    None  None  None  None
 Libretro Quake                          games-quake           quake         None       Redump    None  None  None  None
 Libretro Quake 2                        games-quake2          quake2        None       Redump    None  None  None  None
 Libretro Quake 3                        games-quake3          quake3        None       Redump    None  None  None  None
+Libretro TIC-80                         games-tic80           tic80         None       Redump    None  None  None  None
 Magnavox Odyssey2                       console-odyssey2      odyssey2      None       No-Intro  4927  78    None  9   
 MAME                                    arcade-mame           mame          None       MAME      23    143   75    2   
 Mattel Intellivision                    console-ivision       ivision       None       No-Intro  32    30    115   16  
