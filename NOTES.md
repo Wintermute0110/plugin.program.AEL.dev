@@ -1,19 +1,12 @@
 ## AEL technical notes ##
 
-### Misc stuff
+### Separation of ROM Audit and Parent/Clone generation
 
-GameFAQs scraper: detect when web server is blocked.
-
-   Blocked IP Address
-   Your IP address has been temporarily blocked due to a large number of HTTP requests. The most 
-   common causes of this issue are:
-
-   http://forum.kodi.tv/showthread.php?tid=287826&pid=2403674#pid2403674
-
+Write me...
 
 ### Multidisc support
 
-#### ROM scanner implementation
+#### Multidisc ROM scanner implementation
 
  1) If the ROM scanner finds a multidisc image belonging to a set, for example
     `Final Fantasy VII (USA) (Disc 3).cue`.
@@ -51,7 +44,13 @@ GameFAQs scraper: detect when web server is blocked.
  5) Al launching time, users selects from a select dialog of the basenames of the roms of the
     set which one to launch.
 
-### Naming conventions
+## No-Intro ROM names
+
+The official No-Intro naming convention PDF can be downloaded from [ DAT-o-matic](https://datomatic.no-intro.org/) website.
+
+The only mandatory elements are the **Title** and the **Region**.
+
+## Redump/Trurip/TOSEC ISO names
 
 [No-Intro](http://www.no-intro.org/index.html)
 
@@ -80,7 +79,7 @@ GameFAQs scraper: detect when web server is blocked.
 `listitem.setInfo('video', {'overlay'  : 4})`
 
 Kodi Krypton Estuary displays a small icon to the left of the listitem title that can be changed
-with the overlay property value. Overlay values are defined in [GUIListItem],
+with the overlay property value. Overlay values are defined in [GUIListItem]:
 
 ```
 enum GUIIconOverlay {
@@ -96,3 +95,7 @@ enum GUIIconOverlay {
 
 [setInfo]: http://mirrors.xbmc.org/docs/python-docs/16.x-jarvis/xbmcgui.html#ListItem-setInfo
 [GUIListItem]: https://github.com/cisco-open-source/kodi/blob/master/xbmc/guilib/GUIListItem.h
+
+### Misc stuff
+
+Nothing at the moment.
