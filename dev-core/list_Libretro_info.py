@@ -30,53 +30,59 @@ def remove_commas(s):
 
 # --- configuration ------------------------------------------------------------------------------
 json_fname = 'data/Libretro_info.json'
-fname_longname_txt = 'data/Libretro_longname.txt'
-fname_longname_csv = 'data/Libretro_longname.csv'
-fname_shortname_txt = 'data/Libretro_shortname.txt'
-fname_shortname_csv = 'data/Libretro_shortname.csv'
+fname_longname_txt = 'data/Libretro_list_longname.txt'
+fname_longname_csv = 'data/Libretro_list_longname.csv'
+fname_shortname_txt = 'data/Libretro_list_category.txt'
+fname_shortname_csv = 'data/Libretro_list_category.csv'
 
 # --- main ---------------------------------------------------------------------------------------
 with open(json_fname, 'r') as json_file:
     json_data = json.load(json_file)
+
+# Short alphabetically by corename
 table_str = [
     ['left', 'left', 'left', 'left', 'left', 'left', 'left'],
     ['corename', 'categories', 'display_name', 'firmware_count', 'systemid', 'systemname', 'supports_no_game'],
 ]
-table_long_str = copy.deepcopy(table_str)
 for key in sorted(json_data, key = lambda x: json_data[x]['corename'].lower(), reverse = False):
     idata = json_data[key]
-    table_long_str.append([
+    table_str.append([
         remove_commas(idata['corename']), remove_commas(idata['categories']),
         remove_commas(idata['display_name']), remove_commas(idata['firmware_count']),
         remove_commas(idata['systemid']), remove_commas(idata['systemname']),
         remove_commas(idata['supports_no_game']),
     ])
-table_long_str_list = text_render_table_str(table_long_str)
+table_long_str_list = text_render_table_str(table_str)
 text_long_str = '\n'.join(table_long_str_list)
 print(text_long_str)
 
-table_short_str = copy.deepcopy(table_str)
+# Write TXT/CSV files
+print('\nWriting file "{}"'.format(fname_longname_txt))
+write_txt_file(fname_longname_txt, text_long_str)
+print('Writing file "{}"'.format(fname_longname_csv))
+text_csv = '\n'.join(text_render_table_CSV_slist(table_str))
+write_txt_file(fname_longname_csv, text_csv)
+
+# Short alphabetically by categories and then corename
+table_str = [
+    ['left', 'left', 'left', 'left', 'left', 'left', 'left'],
+    ['corename', 'categories', 'display_name', 'firmware_count', 'systemid', 'systemname', 'supports_no_game'],
+]
 for key in sorted(json_data,
     key = lambda x: (json_data[x]['categories'].lower(), json_data[x]['corename'].lower()), reverse = False):
     idata = json_data[key]
-    table_short_str.append([
+    table_str.append([
         remove_commas(idata['corename']), remove_commas(idata['categories']),
         remove_commas(idata['display_name']), remove_commas(idata['firmware_count']),
         remove_commas(idata['systemid']), remove_commas(idata['systemname']),
         remove_commas(idata['supports_no_game']),
     ])
-table_short_str_list = text_render_table_str(table_short_str)
+table_short_str_list = text_render_table_str(table_str)
 text_short_str = '\n'.join(table_short_str_list)
 
-# --- Output file in TXT and CSV format ---
-print('\nWriting file "{}"'.format(fname_longname_txt))
-write_txt_file(fname_longname_txt, text_long_str)
-print('Writing file "{}"'.format(fname_longname_csv))
-text_csv = '\n'.join(text_render_table_CSV_slist(table_long_str))
-write_txt_file(fname_longname_csv, text_csv)
-
+# Write TXT/CSV files
 print('\nWriting file "{}"'.format(fname_shortname_txt))
 write_txt_file(fname_shortname_txt, text_short_str)
 print('Writing file "{}"'.format(fname_shortname_csv))
-text_csv = '\n'.join(text_render_table_CSV_slist(table_short_str))
+text_csv = '\n'.join(text_render_table_CSV_slist(table_str))
 write_txt_file(fname_shortname_csv, text_csv)

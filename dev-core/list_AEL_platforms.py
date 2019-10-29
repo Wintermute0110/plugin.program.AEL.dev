@@ -79,8 +79,7 @@ print('Platforms sorted alphabetically.')
 # --- List platforms sorted by long name ---
 table_str = [
     ['left', 'left', 'left', 'left', 'left', 'left', 'left', 'left', 'left'],
-    ['AEL long name', 'AEL short name', 'AEL compact name', 'Alias of', 'DAT',
-     'TheGamesDB', 'MobyGames', 'ScreenScraper', 'GameFAQs'],
+    ['Long name', 'Short name', 'Compact name', 'Alias', 'DAT', 'TGDB', 'MG', 'SS', 'GF'],
 ]
 for p_obj in AEL_platforms:
     table_str.append([
@@ -105,8 +104,7 @@ write_txt_file(fname_longname_csv, text_csv)
 # --- List platforms sorted by short name ---
 table_str = [
     ['left', 'left', 'left', 'left', 'left', 'left', 'left', 'left', 'left'],
-    ['AEL long name', 'AEL short name', 'AEL compact name', 'Alias of', 'DAT',
-     'TheGamesDB', 'MobyGames', 'ScreenScraper', 'GameFAQs'],
+    ['Long name', 'Short name', 'Compact name', 'Alias', 'DAT', 'TGDB', 'MG', 'SS', 'GF'],
 ]
 for p_obj in sorted(AEL_platforms, key = lambda x: x.short_name.lower(), reverse = False):
     table_str.append([
@@ -130,8 +128,7 @@ write_txt_file(fname_shortname_csv, text_csv)
 # --- List platforms sorted by category and then long name ---
 table_str = [
     ['left', 'left', 'left', 'left', 'left', 'left', 'left', 'left', 'left'],
-    ['AEL long name', 'AEL short name', 'AEL compact name', 'Alias of', 'DAT',
-     'TheGamesDB', 'MobyGames', 'ScreenScraper', 'GameFAQs'],
+    ['Long name', 'Short name', 'Compact name', 'Alias', 'DAT', 'TGDB', 'MG', 'SS', 'GF'],
 ]
 for p_obj in sorted(AEL_platforms, key = lambda x: (x.category.lower(), x.long_name.lower()), reverse = False):
     table_str.append([

@@ -136,11 +136,11 @@ WIP      [COLLECTIONS] Current way of storing the collection artwork, in a unifi
          ROM_name_platform_fanart.png, platform is the short name and it's only used if
          there is filename amgibuity (same ROM name in different platforms in the collection).
 
-WIP      [ROM AUDIT] Current way of doing the audit is inconvenient. User has to set a DAT
+WIP      [ROM AUDIT] Current way of doing the ROM audit is inconvenient. User has to set a DAT
          file. Create two new settings: a) directory for No-Intro DATs, b) directory for Redump
          DATs. AEL must be able to choose the DAT file according to the platform.
 
-WIP      [CORE] Increase the number of platforms to include all No-Intro, Redump and
+FEATURE  [CORE] Increase the number of platforms to include all No-Intro, Redump and
          Libretro platforms. This is in preparation of the Kodi Games Database.
 
 FEATURE  [CORE] Settings to hide Utilities and Global Reports from root window.
