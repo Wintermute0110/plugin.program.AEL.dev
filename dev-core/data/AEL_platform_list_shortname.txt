@@ -1,4 +1,4 @@
-Number of AEL platforms 127
+Number of AEL platforms 128
 
 Long name                               Short name            Compact name  Alias      DAT       TGDB  MG    SS    GF  
 -----------------------------------------------------------------------------------------------------------------------
@@ -12,62 +12,63 @@ Atari Lynx                              atari-lynx            lynx          None
 Bandai WonderSwan                       bandai-wswan          wswan         None       No-Intro  4925  48    45    90  
 Bandai WonderSwan Color                 bandai-wswancolor     wswancolor    None       No-Intro  4926  49    46    95  
 Commodore Amiga                         computer-amiga        amiga         None                 4911  19    64    39  
-Atari 8-bit                             computer-atari-8bit   atari-8bit    None                 30    None  None  None
+Atari 8-bit                             computer-atari-8bit   atari-8bit    None                 30    39    43    None
 Atari ST                                computer-atari-st     atari-st      None                 4937  24    42    38  
 Commodore 64                            computer-c64          c64           None                 40    27    66    24  
 Amstrad CPC                             computer-cpc          cpc           None                 4914  60    65    46  
-Commodore Plus-4                        computer-plus4        plus4         None                 None  115   None  None
+Commodore Plus-4                        computer-plus4        plus4         None                 None  115   99    None
 Sinclair ZX Spectrum                    computer-spectrum     spectrum      None                 4913  41    76    35  
 Commodore VIC-20                        computer-vic20        vic20         None                 4945  43    73    11  
 Sharp X68000                            computer-x68k         x68k          None                 4931  106   79    52  
-Sinclair ZX 81                          computer-zx81         zx81          None       Redump    None  None  None  None
+Sinclair ZX80                           computer-zx80         zx80          None       Libretro  None  118   None  None
+Sinclair ZX81                           computer-zx81         zx81          None       Libretro  None  119   77    None
 3DO Interactive Multiplayer             console-3do           3do           None       Redump    25    35    29    61  
-Emerson Arcadia 2001                    console-arcadia2001   arcadia2001   None       No-Intro  None  None  None  None
-Entex Adventure Vision                  console-avision       avision       None       No-Intro  None  None  None  None
+Emerson Arcadia 2001                    console-arcadia2001   arcadia2001   None       No-Intro  4963  162   94    None
+Entex Adventure Vision                  console-avision       avision       None       No-Intro  4974  210   78    None
 Benesse Pocket Challenge V2             console-bpc           bpc           None       No-Intro  None  None  None  None
 Commodore CD32                          console-cd32          cd32          None       Redump    4947  56    130   70  
-Commodore CDTV                          console-cdtv          cdtv          None       Redump    None  None  None  None
-Fairchild Channel F                     console-channelf      channelf      None       No-Intro  None  None  None  None
-VTech CreatiVision                      console-creativision  creativision  None       No-Intro  None  None  None  None
+Commodore CDTV                          console-cdtv          cdtv          None       Redump    None  83    129   None
+Fairchild Channel F                     console-channelf      channelf      None       No-Intro  4928  76    80    None
+VTech CreatiVision                      console-creativision  creativision  None       No-Intro  None  212   None  None
 Coleco Colecovision                     console-cvision       cvision       None       No-Intro  31    29    48    29  
 Fujitsu FM Towns Marty                  console-fmtmarty      fmtmarty      None                 4932  102   97    55  
-Philips Videopac G7000                  console-g7000         g7000         None       No-Intro  None  78    104   9   
+Philips Videopac G7000                  console-g7000         g7000         odyssey2   None      None  None  None  None
 Philips Videopac Plus G7400             console-g7400         g7400         None       No-Intro  None  128   104   None
-Hartung Game Master                     console-gamemaster    gamemaster    None       No-Intro  None  None  None  None
-GamePark GP32                           console-gp32          gp32          None       No-Intro  None  None  None  None
-iQue iQue Player                        console-ique          ique          None       No-Intro  None  None  None  None
+Hartung Game Master                     console-gamemaster    gamemaster    None       No-Intro  None  None  103   None
+GamePark GP32                           console-gp32          gp32          None       No-Intro  None  108   101   None
+iQue iQue Player                        console-ique          ique          n64        No-Intro  None  None  None  None
 Mattel Intellivision                    console-ivision       ivision       None       No-Intro  32    30    115   16  
 LeapFrog LeapPad                        console-leappad       leappad       None       No-Intro  None  None  None  None
 LeapFrog Leapster Learning Game System  console-llgs          llgs          None       No-Intro  None  None  None  None
-Casio Loopy                             console-loopy         loopy         None       No-Intro  None  None  None  None
+Casio Loopy                             console-loopy         loopy         None       No-Intro  None  124   98    None
 LeapFrog My First LeapPad               console-mfleappad     mfleappad     None       No-Intro  None  None  None  None
-Magnavox Odyssey2                       console-odyssey2      odyssey2      None       No-Intro  4927  78    None  9   
-Ouya Ouya                               console-ouya          ouya          None                 None  None  None  None
+Magnavox Odyssey2                       console-odyssey2      odyssey2      None       No-Intro  4927  78    104   9   
+Ouya Ouya                               console-ouya          ouya          None                 4921  144   None  None
 Konami Picno                            console-picno         picno         None       No-Intro  None  None  None  None
-Casio PV-1000                           console-pv1000        pv1000        None       No-Intro  None  None  None  None
-Epoch Super Cassette Vision             console-scvision      scvision      None       No-Intro  None  None  None  None
-RCA Studio II                           console-studio2       studio2       None       No-Intro  None  None  None  None
-Funtech Super Acan                      console-superacan     superacan     None       No-Intro  None  None  None  None
-Watara Supervision                      console-supervision   supervision   None       No-Intro  None  None  None  None
-Tiger Game.com                          console-tigergame     tigergame     None       No-Intro  None  None  None  None
+Casio PV-1000                           console-pv1000        pv1000        None       No-Intro  4964  125   74    None
+Epoch Super Cassette Vision             console-scvision      scvision      None       No-Intro  4966  None  67    None
+RCA Studio II                           console-studio2       studio2       None       No-Intro  4967  113   None  None
+Funtech Super Acan                      console-superacan     superacan     None       No-Intro  None  110   100   None
+Watara Supervision                      console-supervision   supervision   None       No-Intro  4959  109   207   None
+Tiger Game.com                          console-tigergame     tigergame     None       No-Intro  4940  50    121   None
 GCE Vectrex                             console-vectrex       vectrex       None                 4939  37    102   34  
-VTech V.Flash                           console-vflash        vflash        None       Redump    None  None  None  None
-VTech V.Smile                           console-vsmile        vsmile        None       No-Intro  None  None  None  None
+VTech V.Flash                           console-vflash        vflash        None       Redump    None  189   None  None
+VTech V.Smile                           console-vsmile        vsmile        None       No-Intro  None  42    120   None
 VTech V.Smile Pro                       console-vsmilepro     vsmilepro     vflash     None      None  None  None  None
-Zeebo Zeebo                             console-zeebo         zeebo         None       No-Intro  None  None  None  None
-Libretro ChaiLove                       games-chailove        chailove      None       Redump    None  None  None  None
-Libretro Doom                           games-doom            doom          None       Redump    None  None  None  None
-Libretro Doom 3                         games-doom3           doom3         None       Redump    None  None  None  None
-Libretro EasyRPG                        games-easyrpg         easyrpg       None       Redump    None  None  None  None
-Libretro Game and Watch                 games-gw              gw            None       Redump    None  None  None  None
-Libretro Lutro                          games-lutro           lutro         None       Redump    None  None  None  None
-Libretro Cave Story (NX Engine)         games-nxengine        nxengine      None       Redump    None  None  None  None
-Libretro OpenLara                       games-openlara        openlara      None       Redump    None  None  None  None
-Libretro Quake                          games-quake           quake         None       Redump    None  None  None  None
-Libretro Quake 2                        games-quake2          quake2        None       Redump    None  None  None  None
-Libretro Quake 3                        games-quake3          quake3        None       Redump    None  None  None  None
+Zeebo Zeebo                             console-zeebo         zeebo         None       No-Intro  None  88    None  None
+Libretro ChaiLove                       games-chailove        chailove      None       Libretro  None  None  None  None
+Libretro Doom                           games-doom            doom          None       Libretro  None  None  None  None
+Libretro Doom 3                         games-doom3           doom3         None       Libretro  None  None  None  None
+Libretro EasyRPG                        games-easyrpg         easyrpg       None       Libretro  None  None  None  None
+Libretro Game and Watch                 games-gw              gw            None       Libretro  None  None  None  None
+Libretro Lutro                          games-lutro           lutro         None       Libretro  None  None  206   None
+Libretro Cave Story (NX Engine)         games-nxengine        nxengine      None       Libretro  None  None  None  None
+Libretro OpenLara                       games-openlara        openlara      None       Libretro  None  None  None  None
+Libretro Quake                          games-quake           quake         None       Libretro  None  None  None  None
+Libretro Quake 2                        games-quake2          quake2        None       Libretro  None  None  None  None
+Libretro Quake 3                        games-quake3          quake3        None       Libretro  None  None  None  None
 ScummVM                                 games-scummvm         scummvm       None                 None  None  123   None
-Libretro TIC-80                         games-tic80           tic80         None       Redump    None  None  None  None
+Libretro TIC-80                         games-tic80           tic80         None       Libretro  None  None  222   None
 Microsoft MS-DOS                        microsoft-msdos       msdos         None                 1     2     135   19  
 Microsoft MSX                           microsoft-msx         msx           None                 4929  57    113   40  
 Microsoft MSX2                          microsoft-msx2        msx2          None                 4929  57    116   40  
@@ -82,7 +83,7 @@ NEC PC-FXGA                             nec-pcfxga            pcfxga        pcfx
 NEC SuperGrafx                          nec-sgx               sgx           None       No-Intro  34    127   105   53  
 NEC TurboGrafx 16                       nec-tg16              tg16          pce        None      None  None  None  None
 NEC TurboGrafx CD                       nec-tg16cd            tg16cd        pcecd      None      None  None  None  None
-Nintendo e-Reader                       nintendo-ereader      ereader       None       No-Intro  None  None  None  None
+Nintendo e-Reader                       nintendo-ereader      ereader       None       No-Intro  None  None  119   None
 Nintendo Famicon                        nintendo-famicon      famicon       nes        None      None  None  None  None
 Nintendo Famicon Disk System            nintendo-fds          fds           None       No-Intro  4936  22    106   47  
 Nintendo GameCube                       nintendo-gamecube     gamecube      None       Redump    2     14    13    99  
@@ -96,9 +97,9 @@ Nintendo DS                             nintendo-nds          nds           None
 Nintendo DSi                            nintendo-ndsi         ndsi          None                 8     87    15    108 
 Nintendo NES                            nintendo-nes          nes           None       No-Intro  7     22    3     41  
 Nintendo Pokemon Mini                   nintendo-pokemini     pokemini      None       No-Intro  4957  152   211   None
-Nintendo Satellaview                    nintendo-satellaview  satellaview   None       No-Intro  None  None  None  None
+Nintendo Satellaview                    nintendo-satellaview  satellaview   None       No-Intro  None  None  107   None
 Nintendo SNES                           nintendo-snes         snes          None       No-Intro  6     15    4     63  
-Nintendo Sufami Turbo                   nintendo-sufami       sufami        None       No-Intro  None  None  None  None
+Nintendo Sufami Turbo                   nintendo-sufami       sufami        None       No-Intro  None  None  108   None
 Nintendo Switch                         nintendo-switch       switch        None                 4971  203   None  124 
 Nintendo Virtual Boy                    nintendo-vb           vb            None       No-Intro  4918  38    11    83  
 Nintendo Wii                            nintendo-wii          wii           None                 9     82    16    114 
@@ -112,7 +113,7 @@ Sega MegaCD                             sega-megacd           megacd        None
 Sega Mega Drive                         sega-megadrive        megadrive     None       No-Intro  36    16    1     54  
 Sega PICO                               sega-pico             pico          None       No-Intro  4958  103   None  None
 Sega Saturn                             sega-saturn           saturn        None       Redump    17    23    22    76  
-Sega SC-3000                            sega-sc3000           sc3000        None                 4949  None  None  None
+Sega SC-3000                            sega-sc3000           sc3000        sg1000     None      None  None  None  None
 Sega SegaCD                             sega-segacd           segacd        megacd     None      None  None  None  None
 Sega SG-1000                            sega-sg1000           sg1000        None       No-Intro  4949  114   109   43  
 Sega Master System                      sega-sms              sms           None       No-Intro  35    26    2     49  

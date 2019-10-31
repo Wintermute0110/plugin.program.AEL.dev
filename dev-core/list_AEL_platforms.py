@@ -70,9 +70,8 @@ for i in range(len(p_longname_list)):
     else:
         table_str.append(['', a, b])
 if not_sorted_flag:
-    print('Platforms not sorted alphabetically.')
     print('\n'.join(text_render_table_str(table_str)))
-    print('Exiting.')
+    print('Platforms not sorted alphabetically. Exiting.')
     sys.exit(1)
 print('Platforms sorted alphabetically.')
 
