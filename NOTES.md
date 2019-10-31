@@ -1,8 +1,54 @@
 ## AEL technical notes ##
 
+### Current menus in 0.9.8
+
+Context menu **Edit Launcher**, submenu **Manage ROMs ...**:
+```
+'Choose ROMs default artwork ...',
+'Manage ROMs asset directories ...',
+'Rescan ROMs local artwork',
+'Scrape ROMs artwork',
+'Remove dead/missing ROMs',
+'Import ROMs metadata from NFO files',
+'Export ROMs metadata to NFO files',
+'Delete ROMs NFO files',
+'Clear ROMs from launcher',
+```
+
+Display modes: LAUNCHER_DMODE_FLAT, LAUNCHER_DMODE_PCLONE, LAUNCHER_DMODE_1G1R.
+PCLONE and 1G1R are the same, the difference is that in 1G1R the ROM Context 
+Menu **Show clones** is displayed and Parents are launcher automatically. AML now has
+FLAT and 1G1R modes only.
+
+Display filters: NOINTRO_DMODE_ALL, NOINTRO_DMODE_HAVE, NOINTRO_DMODE_HAVE_UNK,
+NOINTRO_DMODE_HAVE_MISS, NOINTRO_DMODE_MISS, NOINTRO_DMODE_MISS_UNK, NOINTRO_DMODE_UNK.
+
+Context menu **Edit Launcher**, submenu **Audit ROMs / Launcher view mode ...**:
+```
+'Change launcher display mode (now {0}) ...'.format(display_mode_str),
+'Add No-Intro/Redump XML DAT ...' OR 'Delete No-Intro/Redump DAT: {0}'
+'Create Parent/Clone DAT based on ROM filenames',
+'Display ROMs (now {0}) ...'.format(launcher['nointro_display_mode']),
+'Update ROM audit',
+```
+
+### New menus in 0.9.9
+
+To be added.
+
 ### Separation of ROM Audit and Parent/Clone generation
 
-Write me...
+Complete example of SNES ROMs including all cases.
+
+```
+Kaizo Mario World (Japan).zip                   -- EXTRA ROM
+Kaizo Mario World 2 (Japan).zip                 -- EXTRA ROM
+Super Mario World - Super Mario Bros. 4 (Japan) -- Clone ROM / Different basename
+Super Mario World (Europe)                      -- Clone ROM
+Super Mario World (Europe) (Rev 1)              -- Parent according to No-Intro DAT
+Super Mario World (Japan) (En) (Arcade) [b]     -- Missing ROM / Clone ROM
+Super Mario World (USA)                         -- Clone ROM
+```
 
 ### Multidisc support
 
@@ -44,13 +90,13 @@ Write me...
  5) Al launching time, users selects from a select dialog of the basenames of the roms of the
     set which one to launch.
 
-## No-Intro ROM names
+### No-Intro ROM names
 
 The official No-Intro naming convention PDF can be downloaded from [ DAT-o-matic](https://datomatic.no-intro.org/) website.
 
 The only mandatory elements are the **Title** and the **Region**.
 
-## Redump/Trurip/TOSEC ISO names
+### Redump/Trurip/TOSEC ISO names
 
 [No-Intro](http://www.no-intro.org/index.html)
 
@@ -66,7 +112,6 @@ The only mandatory elements are the **Title** and the **Region**.
 | **Redump**   | `Final Fantasy VII (USA) (Disc 1).cue`                        |
 |              | `Final Fantasy VII (USA) (Disc 2).cue`                        |
 |              | `Final Fantasy VII (USA) (Disc 3).cue`                        |
-
 
 ### TOSEC/Trurip/Redump image formats
 
