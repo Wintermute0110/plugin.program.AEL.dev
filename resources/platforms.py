@@ -23,13 +23,16 @@ DAT_MAME     = 'MAME'
 DAT_NOINTRO  = 'No-Intro'
 DAT_REDUMP   = 'Redump'
 DAT_LIBRETRO = 'Libretro'
-DAT_NONE     = ''
+DAT_NONE     = None
 DEFAULT_PLAT_TGDB          = '0'
 DEFAULT_PLAT_MOBYGAMES     = '0'
 DEFAULT_PLAT_SCREENSCRAPER = '0'
 DEFAULT_PLAT_GAMEFAQS      = '0'
+PLATFORM_UNKNOWN_LONG    = 'Unknown'
+PLATFORM_UNKNOWN_SHORT   = 'unknown'
+PLATFORM_UNKNOWN_COMPACT = 'unknown'
 class Platform:
-    def __init__(self, name, shortname, compactname, aliasof = None, DAT = None,
+    def __init__(self, name, shortname, compactname, aliasof = None, DAT = DAT_NONE,
         TGDB_plat = None, MG_plat = None, SS_plat = None, GF_plat = None):
         self.long_name    = name
         self.short_name   = shortname
@@ -269,13 +272,14 @@ AEL_platforms = [
     Platform('Zeebo Zeebo', 'console-zeebo', 'zeebo', None, DAT_NOINTRO, None, '88', None, None),
 
     # --- Unknown ---
-    Platform('Unknown', 'unknown', 'unknown', None, DAT_NONE, None, None, None, None),
+    Platform(PLATFORM_UNKNOWN_LONG, PLATFORM_UNKNOWN_SHORT, PLATFORM_UNKNOWN_COMPACT),
 ]
 
 # --- Add category to platform objects ---
 # The category is the first part of the short name.
 for p_obj in AEL_platforms:
     p_obj.category = p_obj.short_name.split('-')[0]
+
 # Dictionaries for fast access to the platform information.
 platform_short_to_long_dic = {}
 platform_compact_to_long_dic = {}
@@ -289,17 +293,17 @@ for index, p_obj in enumerate(AEL_platforms):
 # Returns the platform numerical index from the platform name. If the platform name is not
 # found then returns the index of the 'Unknown' platform
 #
-def get_AEL_platform_index(platform_name):
-    if platform_name in platform_long_to_index_dic:
-        return platform_long_to_index_dic[platform_name]
+def get_AEL_platform_index(platform_AEL):
+    if platform_AEL in platform_long_to_index_dic:
+        return platform_long_to_index_dic[platform_AEL]
     else:
         return platform_long_to_index_dic['Unknown']
 
 # NOTE must take into account platform aliases.
 # '0' means any platform in TGDB and must be returned when there is no platform matching.
 def AEL_platform_to_TheGamesDB(platform_AEL):
-    if platform_name in platform_long_to_index_dic:
-        pobj = AEL_platforms[platform_long_to_index_dic[platform_name]]
+    if platform_AEL in platform_long_to_index_dic:
+        pobj = AEL_platforms[platform_long_to_index_dic[platform_AEL]]
     else:
         # Platform not found.
         return DEFAULT_PLAT_TGDB
@@ -322,8 +326,8 @@ def AEL_platform_to_TheGamesDB(platform_AEL):
 # * The solution is to use '0' as the unknwon platform. AEL will detect this and
 #   will remove the '&platform={}' parameter from the search URL.
 def AEL_platform_to_MobyGames(platform_AEL):
-    if platform_name in platform_long_to_index_dic:
-        pobj = AEL_platforms[platform_long_to_index_dic[platform_name]]
+    if platform_AEL in platform_long_to_index_dic:
+        pobj = AEL_platforms[platform_long_to_index_dic[platform_AEL]]
     else:
         return DEFAULT_PLAT_MOBYGAMES
     scraper_platform = pobj.MG_plat
@@ -335,8 +339,8 @@ def AEL_platform_to_MobyGames(platform_AEL):
         return scraper_platform
 
 def AEL_platform_to_ScreenScraper(platform_AEL):
-    if platform_name in platform_long_to_index_dic:
-        pobj = AEL_platforms[platform_long_to_index_dic[platform_name]]
+    if platform_AEL in platform_long_to_index_dic:
+        pobj = AEL_platforms[platform_long_to_index_dic[platform_AEL]]
     else:
         return DEFAULT_PLAT_SCREENSCRAPER
     scraper_platform = pobj.SS_plat
@@ -349,8 +353,8 @@ def AEL_platform_to_ScreenScraper(platform_AEL):
 
 # Platform '0' means all platforms in GameFAQs.
 def AEL_platform_to_GameFAQs(AEL_gamesys):
-    if platform_name in platform_long_to_index_dic:
-        pobj = AEL_platforms[platform_long_to_index_dic[platform_name]]
+    if platform_AEL in platform_long_to_index_dic:
+        pobj = AEL_platforms[platform_long_to_index_dic[platform_AEL]]
     else:
         return DEFAULT_PLAT_GAMEFAQS
     scraper_platform = pobj.GF_plat

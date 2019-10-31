@@ -1662,16 +1662,17 @@ class Main:
             type_nb = type_nb + 1
             if type == type_nb:
                 dialog = xbmcgui.Dialog()
-                type2 = dialog.select('Manage ROMs',
-                                      ['Choose ROMs default artwork ...',
-                                       'Manage ROMs asset directories ...',
-                                       'Rescan ROMs local artwork',
-                                       'Scrape ROMs artwork',
-                                       'Remove dead/missing ROMs',
-                                       'Import ROMs metadata from NFO files',
-                                       'Export ROMs metadata to NFO files',
-                                       'Delete ROMs NFO files',
-                                       'Clear ROMs from launcher' ])
+                type2 = dialog.select('Manage ROMs', [
+                    'Choose ROMs default artwork ...',
+                    'Manage ROMs asset directories ...',
+                    'Rescan ROMs local artwork',
+                    'Scrape ROMs artwork',
+                    'Remove dead/missing ROMs',
+                    'Import ROMs metadata from NFO files',
+                    'Export ROMs metadata to NFO files',
+                    'Delete ROMs NFO files',
+                    'Clear ROMs from launcher',
+                ])
                 if type2 < 0: return # User canceled select dialog
 
                 # --- Choose default ROMs assets/artwork ---
@@ -2285,12 +2286,13 @@ class Main:
                 else:
                     add_delete_NoIntro_str = 'Add No-Intro/Redump XML DAT ...'
                 display_mode_str = launcher['launcher_display_mode']
-                type2 = dialog.select('Audit ROMs / Launcher view mode',
-                                      ['Change launcher display mode (now {0}) ...'.format(display_mode_str),
-                                       add_delete_NoIntro_str,
-                                       'Create Parent/Clone DAT based on ROM filenames',
-                                       'Display ROMs (now {0}) ...'.format(launcher['nointro_display_mode']),
-                                       'Update ROM audit'])
+                type2 = dialog.select('Audit ROMs / Launcher view mode', [
+                    'Change launcher display mode (now {0}) ...'.format(display_mode_str),
+                    add_delete_NoIntro_str,
+                    'Create Parent/Clone DAT based on ROM filenames',
+                    'Display ROMs (now {0}) ...'.format(launcher['nointro_display_mode']),
+                    'Update ROM audit',
+                ])
                 if type2 < 0: return # >> User canceled select dialog
 
                 # --- Change launcher view mode (Normal or PClone) ---
