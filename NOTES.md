@@ -41,11 +41,11 @@ To be added.
 Complete example of SNES ROMs including all cases.
 
 ```
-Kaizo Mario World (Japan).zip                   -- EXTRA ROM
-Kaizo Mario World 2 (Japan).zip                 -- EXTRA ROM
-Super Mario World - Super Mario Bros. 4 (Japan) -- Clone ROM / Different basename
+Kaizo Mario World (Japan)                       -- EXTRA ROM / Different basename from any ROM in set
+Kaizo Mario World 2 (Japan)                     -- EXTRA ROM / Different basename from any ROM in set
+Super Mario World - Super Mario Bros. 4 (Japan) -- Clone ROM / Different basename from any ROM in set
 Super Mario World (Europe)                      -- Clone ROM
-Super Mario World (Europe) (Rev 1)              -- Parent according to No-Intro DAT
+Super Mario World (Europe) (Rev 1)              -- Parent ROM / According to No-Intro DAT
 Super Mario World (Japan) (En) (Arcade) [b]     -- Missing ROM / Clone ROM
 Super Mario World (USA)                         -- Clone ROM
 ```
