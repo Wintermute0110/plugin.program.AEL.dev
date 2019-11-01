@@ -42,12 +42,13 @@ Current fields in database:
 
 ### New menus in 0.9.9
 
-Display modes: LAUNCHER_DMODE_FLAT (default), LAUNCHER_DMODE_PCLONE, LAUNCHER_DMODE_1G1R.
+Launcher display modes: LAUNCHER_DMODE_FLAT (default), LAUNCHER_DMODE_PCLONE.
 
-Audit status: AUDIT_STATUS_ON, AUDIT_STATUS_OFF (default).
+Launcher audit status: AUDIT_STATUS_ON, AUDIT_STATUS_OFF (default).
 
-Display filters: AUDIT_FILTER_ALL (default), AUDIT_FILTER_HAVE, AUDIT_FILTER_HAVE_UNK,
-AUDIT_FILTER_HAVE_MISS, AUDIT_FILTER_MISS, AUDIT_FILTER_MISS_UNK, AUDIT_FILTER_UNK.
+Launcher audit display filter: AUDIT_FILTER_ALL (default), AUDIT_FILTER_HAVE, AUDIT_FILTER_HAVE_UNK,
+AUDIT_FILTER_HAVE_MISS, AUDIT_FILTER_MISS, AUDIT_FILTER_MISS_UNK, AUDIT_FILTER_UNK. For now,
+always display Extra ROMs.
 
 Context menu **Edit Launcher**, submenu **Audit ROMs / Launcher view mode ...**:
 ```
@@ -65,12 +66,13 @@ Context menu **Edit Launcher**, submenu **Audit ROMs / Launcher view mode ...**:
  * The ROM region information is ALWAYS computed, regardless of the audit status, whenever
    the launcher ROMs change.
 
- * Audit filters can be used if and only if the audit status is ON.
+ * Audit display filters can be used if and only if the audit status is ON.
 
  * The ROM Audit is very easy to do. The difficult part is to make the Parent/Clone groups
    and choosing the parent ROM.
 
-New database fields:
+### Future required database fields
+
 ```
 "i_cloneof" : ROMID,        -- Same as m_parent but uses ROM ID
 "i_audit_status" : "Have",  -- Determined by the ROM Audit exclusively
@@ -82,19 +84,34 @@ New database fields:
 "m_language" : '',          -- Override the ROM languages (read-only)
 ```
 
+### New features for 0.9.9
+
+ * ScreenScraper must choose the correct artwork depending on the region/language.
+   AEL must have an official list of regions/languages, extracted from the No-Intro/Redump
+   DATs, to translate to ScreenScraper values.
+
+ * Create a tool to select the No-Intro/Redump DAT file automatically.
+
+ * In the **Global ROM Audit statistics** report show only the audited launchers.
+
+ * Create a new Utility to show the automatically detected No-Intro/Redump DATs.
+
+ * Change the Offline Scraper format from XML to JSON. Include the new fields
+   `parent` **string**, `region` **list of strings** and `language` **list of strings**.
+
+ * Try to improve the Offline Scraper and create the XML databases to be merged with the
+   No-Intro/Redump DATs, also giving support to Extra ROMs (hacks, etc.).
+
 ### Computation of the Parent/Clone ROMs
 
-A report of the PClone group generation shoudl be generated so the user can check for errors
-or unwanted configurations.
-
- 1. Parent/Clone groups are computed:
+ 1. First Parent/Clone groups are computed:
  
     1. If a No-Intro XML DAT is available it will be used.
        For Have and Missing ROMs take `m_parent` from the DAT.
-       For Have and MIssing ROMs extrace `m_region` and `m_language` from filename.
+       For Have and Missing ROMs extract `m_region` and `m_language` from filename.
 
-    2. The Offline Scraper database will be used.
-       For found ROMs `m_parent`, `m_region` and `m_language` will be used.
+    2. The Offline Scraper database will be used next.
+       For found ROMs `m_parent`, `m_region` and `m_language` will be taken from the database.
 
     3. For Unknown ROMs, the ROM basename will be used to compute `m_parent` and `m_region`
        and `m_language` extracted from the filename.
@@ -109,28 +126,32 @@ or unwanted configurations.
 
     2. User chooses the primary and secondary ROM languages.
 
-    3. Other tags like (Rev) are used to choose the preferred ROM.
+    3. Other tags like (Rev) are used to choose the preferred Parent in the set.
 
     4. PClone groups are reordered according to the user preferences.
 
-    5. `i_cloneof` is updated to reflect the new parent.
+    5. `i_cloneof` is updated to reflect the new Parent of each set.
 
-    6. The file roms_<Launcher_name>_PClone_index.json is create. This file is used when
-       rendering the PClone group window.
+    6. The file `roms_<Launcher_name>_PClone_index.json` is created.
+       This file is used when rendering the PClone group list when the user select the
+       context menu "Show clone ROMs".
 
-    7. To render the Parent ROMs in PCLONE mode open the ROMs database and render only the
-       Parents.
+    7. To render the Parent ROMs in PCLONE launcher display mode open the ROM JSON database
+       and render only the Parent ROMs.
+
+A report of the PClone group generation should be generated so the user can check for errors
+or unwanted configurations.
 
 **Potential problems**
 
  * What if the parent of a PClone group is a Missing ROM?
 
-   1. If all ROMs in the PClone group are Unknown choose the Parent as usual.
+   1. If all ROMs in the PClone group are Missing choose the Parent ROM as usual.
 
-   2. Otherwise, short the ROMs in the group accouring to the user preferences and choose
+   2. Otherwise, short the ROMs in the group according to the user preferences and choose
       the first Have or Unknown ROM as Parent.
 
- * What if the user wants to force an specific Parent? How to do this?
+ * What if the user wants to force a specific Parent? How to do this?
 
    1. The Parent can be changed with the ROM Region and ROM Language settings.
 
@@ -150,6 +171,7 @@ or unwanted configurations.
     as a function of the platform launcher.
 
  5. Users can manually configure a custom XML DAT file for every launcher.
+    In this case, the automatic DAT selection is ignored.
 
 **Potential problems**
 

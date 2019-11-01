@@ -98,6 +98,8 @@ WIP      [MISC] Changes and suggestions propoed by Atsumori.
 
 WIP      [MANUALS] Port the PDF manual reader from AML into AEL.
 
+WIP      [ROM AUDIT] Separate the ROM Audit code from the Parent/Clone code.
+
 WIP      [ROM AUDIT] Add an option to create a default Parent ROM for Redump DATs or NoIntro DATs
          with no PClone information.
 
@@ -120,7 +122,7 @@ WIP      [SCRAPERS] MAME offline scraper: include ESRB field. Take it from GameI
 
 WIP      [SCRAPERS] MAME offline scraper: include plot field. Take it from GameInfoDB.
 
-WIP      [SCRAPERS] Update MAME Offline Scraper database to version latest version 0.214
+WIP      [SCRAPERS] Update MAME Offline Scraper database to version latest version 0.215.
 
 WIP      [SCRAPERS] Upgrade and fix AEL Offline scraper databases.
 
@@ -136,8 +138,6 @@ WIP      [COLLECTIONS] Current way of storing the collection artwork, in a unifi
          ROM_name_platform_fanart.png, platform is the short name and it's only used if
          there is filename amgibuity (same ROM name in different platforms in the collection).
 
-WIP      [CORE] Separate the ROM Audit code from the Parent/Clone code.
-
 WIP      [ROM AUDIT] Current way of doing the ROM audit is inconvenient. User has to set a DAT
          file. Create two new settings: a) directory for No-Intro DATs, b) directory for Redump
          DATs. AEL must be able to choose the DAT file according to the platform.
@@ -146,6 +146,8 @@ FEATURE  [CORE] Increase the number of platforms to include all No-Intro, Redump
          Libretro platforms. This is in preparation of the Kodi Games Database.
 
 FEATURE  [CORE] Settings to hide Utilities and Global Reports from root window.
+
+FEATURE  [CORE] Setting for skin kiosk mode. See pull request in Github.
 
 FIX      Fixed crash when setting display_launcher_roms was True.
 
