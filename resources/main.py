@@ -3627,7 +3627,9 @@ class Main:
         commands.append(('Kodi File Manager', 'ActivateWindow(filemanager)', )) # If using window ID then use "10003"
         commands.append(('AEL addon settings', 'Addon.OpenSettings({0})'.format(__addon_id__), ))
         # In Krypton "Add to favourites" appears always in the last position of context menu.
-        listitem.addContextMenuItems(commands, replaceItems = True)
+
+        if (xbmc.getCondVisibility("!Skin.HasSetting(KioskMode.Enabled)")):
+            listitem.addContextMenuItems(commands, replaceItems = True)
 
         # --- Add row ---
         url_str = self._misc_url('SHOW_LAUNCHERS', key)
@@ -3653,7 +3655,8 @@ class Main:
         commands.append(('Add New Launcher', self._misc_url_RunPlugin('ADD_LAUNCHER_ROOT')))
         commands.append(('Kodi File Manager', 'ActivateWindow(filemanager)'))
         commands.append(('AEL addon settings', 'Addon.OpenSettings({0})'.format(__addon_id__)))
-        listitem.addContextMenuItems(commands, replaceItems = True)
+        if (xbmc.getCondVisibility("!Skin.HasSetting(KioskMode.Enabled)")):
+            listitem.addContextMenuItems(commands, replaceItems = True)
 
         # --- Add row ---
         url_str = self._misc_url('SHOW_FAVOURITES')
@@ -3677,7 +3680,8 @@ class Main:
         commands.append(('Add New Launcher', self._misc_url_RunPlugin('ADD_LAUNCHER_ROOT')))
         commands.append(('Kodi File Manager', 'ActivateWindow(filemanager)'))
         commands.append(('AEL addon settings', 'Addon.OpenSettings({0})'.format(__addon_id__)))
-        listitem.addContextMenuItems(commands, replaceItems = True)
+        if (xbmc.getCondVisibility("!Skin.HasSetting(KioskMode.Enabled)")):
+            listitem.addContextMenuItems(commands, replaceItems = True)
 
         url_str = self._misc_url('SHOW_COLLECTIONS')
         xbmcplugin.addDirectoryItem(handle = self.addon_handle, url = url_str, listitem = listitem, isFolder = True)
@@ -3701,7 +3705,8 @@ class Main:
         commands.append(('Add New Launcher', self._misc_url_RunPlugin('ADD_LAUNCHER_ROOT')))
         commands.append(('Kodi File Manager', 'ActivateWindow(filemanager)'))
         commands.append(('AEL addon settings', 'Addon.OpenSettings({0})'.format(__addon_id__)))
-        listitem.addContextMenuItems(commands, replaceItems = True)
+        if (xbmc.getCondVisibility("!Skin.HasSetting(KioskMode.Enabled)")):
+            listitem.addContextMenuItems(commands, replaceItems = True)
 
         url_str = self._misc_url('SHOW_VCATEGORIES_ROOT')
         xbmcplugin.addDirectoryItem(handle = self.addon_handle, url = url_str, listitem = listitem, isFolder = True)
@@ -3723,7 +3728,8 @@ class Main:
         commands.append(('Add New Launcher', self._misc_url_RunPlugin('ADD_LAUNCHER_ROOT')))
         commands.append(('Kodi File Manager', 'ActivateWindow(filemanager)'))
         commands.append(('AEL addon settings', 'Addon.OpenSettings({0})'.format(__addon_id__)))
-        listitem.addContextMenuItems(commands, replaceItems = True)
+        if (xbmc.getCondVisibility("!Skin.HasSetting(KioskMode.Enabled)")):
+            listitem.addContextMenuItems(commands, replaceItems = True)
 
         url_str = self._misc_url('SHOW_AEL_OFFLINE_LAUNCHERS_ROOT')
         xbmcplugin.addDirectoryItem(handle = self.addon_handle, url = url_str, listitem = listitem, isFolder = True)
@@ -3745,7 +3751,8 @@ class Main:
         commands.append(('Add New Launcher', self._misc_url_RunPlugin('ADD_LAUNCHER_ROOT')))
         commands.append(('Kodi File Manager', 'ActivateWindow(filemanager)'))
         commands.append(('AEL addon settings', 'Addon.OpenSettings({0})'.format(__addon_id__)))
-        listitem.addContextMenuItems(commands, replaceItems = True)
+        if (xbmc.getCondVisibility("!Skin.HasSetting(KioskMode.Enabled)")):
+            listitem.addContextMenuItems(commands, replaceItems = True)
 
         url_str = self._misc_url('SHOW_LB_OFFLINE_LAUNCHERS_ROOT')
         xbmcplugin.addDirectoryItem(handle = self.addon_handle, url = url_str, listitem = listitem, isFolder = True)
@@ -3767,7 +3774,8 @@ class Main:
         commands.append(('Add New Launcher', self._misc_url_RunPlugin('ADD_LAUNCHER_ROOT')))
         commands.append(('Kodi File Manager', 'ActivateWindow(filemanager)'))
         commands.append(('AEL addon settings', 'Addon.OpenSettings({0})'.format(__addon_id__)))
-        listitem.addContextMenuItems(commands, replaceItems = True)
+        if (xbmc.getCondVisibility("!Skin.HasSetting(KioskMode.Enabled)")):
+            listitem.addContextMenuItems(commands, replaceItems = True)
 
         url_str = self._misc_url('SHOW_RECENTLY_PLAYED')
         xbmcplugin.addDirectoryItem(handle = self.addon_handle, url = url_str, listitem = listitem, isFolder = True)
@@ -3789,7 +3797,8 @@ class Main:
         commands.append(('Add New Launcher', self._misc_url_RunPlugin('ADD_LAUNCHER_ROOT')))
         commands.append(('Kodi File Manager', 'ActivateWindow(filemanager)'))
         commands.append(('AEL addon settings', 'Addon.OpenSettings({0})'.format(__addon_id__)))
-        listitem.addContextMenuItems(commands, replaceItems = True)
+        if (xbmc.getCondVisibility("!Skin.HasSetting(KioskMode.Enabled)")):
+            listitem.addContextMenuItems(commands, replaceItems = True)
 
         url_str = self._misc_url('SHOW_MOST_PLAYED')
         xbmcplugin.addDirectoryItem(handle = self.addon_handle, url = url_str, listitem = listitem, isFolder = True)
@@ -3809,7 +3818,8 @@ class Main:
         commands = []
         commands.append(('Open Kodi file manager', 'ActivateWindow(filemanager)'))
         commands.append(('AEL addon settings', 'Addon.OpenSettings({0})'.format(__addon_id__)))
-        listitem.addContextMenuItems(commands)
+        if (xbmc.getCondVisibility("!Skin.HasSetting(KioskMode.Enabled)")):
+            listitem.addContextMenuItems(commands)
 
         url_str = self._misc_url('SHOW_UTILITIES_VLAUNCHERS')
         xbmcplugin.addDirectoryItem(handle = self.addon_handle, url = url_str, listitem = listitem, isFolder = True)
@@ -3829,7 +3839,8 @@ class Main:
         commands = []
         commands.append(('Open Kodi file manager', 'ActivateWindow(filemanager)'))
         commands.append(('AEL addon settings', 'Addon.OpenSettings({0})'.format(__addon_id__)))
-        listitem.addContextMenuItems(commands)
+        if (xbmc.getCondVisibility("!Skin.HasSetting(KioskMode.Enabled)")):
+            listitem.addContextMenuItems(commands)
 
         url_str = self._misc_url('SHOW_GLOBALREPORTS_VLAUNCHERS')
         xbmcplugin.addDirectoryItem(handle = self.addon_handle, url = url_str, listitem = listitem, isFolder = True)
@@ -3926,7 +3937,8 @@ class Main:
         commands.append(('Add New Launcher',    self._misc_url_RunPlugin('ADD_LAUNCHER_ROOT')))
         commands.append(('Kodi File Manager', 'ActivateWindow(filemanager)'))
         commands.append(('AEL addon settings', 'Addon.OpenSettings({0})'.format(__addon_id__)))
-        listitem.addContextMenuItems(commands, replaceItems = True)
+        if (xbmc.getCondVisibility("!Skin.HasSetting(KioskMode.Enabled)")):
+            listitem.addContextMenuItems(commands, replaceItems = True)
 
         url_str = self._misc_url('SHOW_VIRTUAL_CATEGORY', virtual_category_kind)
         xbmcplugin.addDirectoryItem(handle = self.addon_handle, url = url_str, listitem = listitem, isFolder = True)
@@ -3970,7 +3982,8 @@ class Main:
         commands = []
         commands.append(('Kodi File Manager', 'ActivateWindow(filemanager)'))
         commands.append(('AEL addon settings', 'Addon.OpenSettings({0})'.format(__addon_id__)))
-        listitem.addContextMenuItems(commands, replaceItems = True)
+        if (xbmc.getCondVisibility("!Skin.HasSetting(KioskMode.Enabled)")):
+            listitem.addContextMenuItems(commands, replaceItems = True)
 
         url_str = self._misc_url('SHOW_AEL_SCRAPER_ROMS', platform)
         xbmcplugin.addDirectoryItem(handle = self.addon_handle, url = url_str, listitem = listitem, isFolder = True)
@@ -4014,7 +4027,8 @@ class Main:
         commands = []
         commands.append(('Kodi File Manager', 'ActivateWindow(filemanager)'))
         commands.append(('AEL addon settings', 'Addon.OpenSettings({0})'.format(__addon_id__)))
-        listitem.addContextMenuItems(commands, replaceItems = True)
+        if (xbmc.getCondVisibility("!Skin.HasSetting(KioskMode.Enabled)")):
+            listitem.addContextMenuItems(commands, replaceItems = True)
 
         url_str = self._misc_url('SHOW_LB_SCRAPER_ROMS', platform)
         xbmcplugin.addDirectoryItem(handle = self.addon_handle, url = url_str, listitem = listitem, isFolder = True)
@@ -4039,7 +4053,8 @@ class Main:
         listitem.setInfo('video', {'title': vcategory_name, 'plot' : vcategory_plot, 'overlay': 4})
         listitem.setArt({'icon' : vcategory_icon, 'fanart' : vcategory_fanart, 'poster' : vcategory_poster})
         listitem.setProperty(AEL_CONTENT_LABEL, AEL_CONTENT_VALUE_ROM_LAUNCHER)
-        listitem.addContextMenuItems(commands)
+        if (xbmc.getCondVisibility("!Skin.HasSetting(KioskMode.Enabled)")):
+            listitem.addContextMenuItems(commands)
         url_str = self._misc_url('EXECUTE_UTILS_IMPORT_LAUNCHERS')
         xbmcplugin.addDirectoryItem(handle = self.addon_handle, url = url_str, listitem = listitem, isFolder = False)
 
@@ -4053,7 +4068,8 @@ class Main:
         listitem.setInfo('video', {'title': vcategory_name, 'plot' : vcategory_plot, 'overlay': 4})
         listitem.setArt({'icon' : vcategory_icon, 'fanart' : vcategory_fanart, 'poster' : vcategory_poster})
         listitem.setProperty(AEL_CONTENT_LABEL, AEL_CONTENT_VALUE_ROM_LAUNCHER)
-        listitem.addContextMenuItems(commands)
+        if (xbmc.getCondVisibility("!Skin.HasSetting(KioskMode.Enabled)")):
+            listitem.addContextMenuItems(commands)
         url_str = self._misc_url('EXECUTE_UTILS_EXPORT_LAUNCHERS')
         xbmcplugin.addDirectoryItem(handle = self.addon_handle, url = url_str, listitem = listitem, isFolder = False)
 
@@ -4065,7 +4081,8 @@ class Main:
         listitem.setInfo('video', {'title': vcategory_name, 'plot' : vcategory_plot, 'overlay': 4})
         listitem.setArt({'icon' : vcategory_icon, 'fanart' : vcategory_fanart, 'poster' : vcategory_poster})
         listitem.setProperty(AEL_CONTENT_LABEL, AEL_CONTENT_VALUE_ROM_LAUNCHER)
-        listitem.addContextMenuItems(commands)
+        if (xbmc.getCondVisibility("!Skin.HasSetting(KioskMode.Enabled)")):
+            listitem.addContextMenuItems(commands)
         url_str = self._misc_url('EXECUTE_UTILS_CHECK_DATABASE')
         xbmcplugin.addDirectoryItem(handle = self.addon_handle, url = url_str, listitem = listitem, isFolder = False)
 
@@ -4078,7 +4095,8 @@ class Main:
         listitem.setInfo('video', {'title': vcategory_name, 'plot' : vcategory_plot, 'overlay': 4})
         listitem.setArt({'icon' : vcategory_icon, 'fanart' : vcategory_fanart, 'poster' : vcategory_poster})
         listitem.setProperty(AEL_CONTENT_LABEL, AEL_CONTENT_VALUE_ROM_LAUNCHER)
-        listitem.addContextMenuItems(commands)
+        if (xbmc.getCondVisibility("!Skin.HasSetting(KioskMode.Enabled)")):
+            listitem.addContextMenuItems(commands)
         url_str = self._misc_url('EXECUTE_UTILS_CHECK_LAUNCHERS')
         xbmcplugin.addDirectoryItem(handle = self.addon_handle, url = url_str, listitem = listitem, isFolder = False)
 
@@ -4090,7 +4108,8 @@ class Main:
         listitem.setInfo('video', {'title': vcategory_name, 'plot' : vcategory_plot, 'overlay': 4})
         listitem.setArt({'icon' : vcategory_icon, 'fanart' : vcategory_fanart, 'poster' : vcategory_poster})
         listitem.setProperty(AEL_CONTENT_LABEL, AEL_CONTENT_VALUE_ROM_LAUNCHER)
-        listitem.addContextMenuItems(commands)
+        if (xbmc.getCondVisibility("!Skin.HasSetting(KioskMode.Enabled)")):
+            listitem.addContextMenuItems(commands)
         url_str = self._misc_url('EXECUTE_UTILS_CHECK_RETRO_BIOS')
         xbmcplugin.addDirectoryItem(handle = self.addon_handle, url = url_str, listitem = listitem, isFolder = False)
 
@@ -4106,7 +4125,8 @@ class Main:
         listitem.setInfo('video', {'title': vcategory_name, 'plot' : vcategory_plot, 'overlay': 4})
         listitem.setArt({'icon' : vcategory_icon, 'fanart' : vcategory_fanart, 'poster' : vcategory_poster})
         listitem.setProperty(AEL_CONTENT_LABEL, AEL_CONTENT_VALUE_ROM_LAUNCHER)
-        listitem.addContextMenuItems(commands)
+        if (xbmc.getCondVisibility("!Skin.HasSetting(KioskMode.Enabled)")):
+            listitem.addContextMenuItems(commands)
         url_str = self._misc_url('EXECUTE_UTILS_TGDB_CHECK')
         xbmcplugin.addDirectoryItem(handle = self.addon_handle, url = url_str, listitem = listitem, isFolder = False)
 
@@ -4117,7 +4137,8 @@ class Main:
         listitem.setInfo('video', {'title': vcategory_name, 'plot' : vcategory_plot, 'overlay': 4})
         listitem.setArt({'icon' : vcategory_icon, 'fanart' : vcategory_fanart, 'poster' : vcategory_poster})
         listitem.setProperty(AEL_CONTENT_LABEL, AEL_CONTENT_VALUE_ROM_LAUNCHER)
-        listitem.addContextMenuItems(commands)
+        if (xbmc.getCondVisibility("!Skin.HasSetting(KioskMode.Enabled)")):
+            listitem.addContextMenuItems(commands)
         url_str = self._misc_url('EXECUTE_UTILS_MOBYGAMES_CHECK')
         xbmcplugin.addDirectoryItem(handle = self.addon_handle, url = url_str, listitem = listitem, isFolder = False)
 
@@ -4128,7 +4149,8 @@ class Main:
         listitem.setInfo('video', {'title': vcategory_name, 'plot' : vcategory_plot, 'overlay': 4})
         listitem.setArt({'icon' : vcategory_icon, 'fanart' : vcategory_fanart, 'poster' : vcategory_poster})
         listitem.setProperty(AEL_CONTENT_LABEL, AEL_CONTENT_VALUE_ROM_LAUNCHER)
-        listitem.addContextMenuItems(commands)
+        if (xbmc.getCondVisibility("!Skin.HasSetting(KioskMode.Enabled)")):
+            listitem.addContextMenuItems(commands)
         url_str = self._misc_url('EXECUTE_UTILS_SCREENSCRAPER_CHECK')
         xbmcplugin.addDirectoryItem(handle = self.addon_handle, url = url_str, listitem = listitem, isFolder = False)
 
@@ -4139,7 +4161,8 @@ class Main:
         listitem.setInfo('video', {'title': vcategory_name, 'plot' : vcategory_plot, 'overlay': 4})
         listitem.setArt({'icon' : vcategory_icon, 'fanart' : vcategory_fanart, 'poster' : vcategory_poster})
         listitem.setProperty(AEL_CONTENT_LABEL, AEL_CONTENT_VALUE_ROM_LAUNCHER)
-        listitem.addContextMenuItems(commands)
+        if (xbmc.getCondVisibility("!Skin.HasSetting(KioskMode.Enabled)")):
+            listitem.addContextMenuItems(commands)
         url_str = self._misc_url('EXECUTE_UTILS_ARCADEDB_CHECK')
         xbmcplugin.addDirectoryItem(handle = self.addon_handle, url = url_str, listitem = listitem, isFolder = False)
 
@@ -4164,7 +4187,8 @@ class Main:
         listitem.setInfo('video', {'title': vcategory_name, 'plot' : vcategory_plot, 'overlay': 4})
         listitem.setArt({'icon' : vcategory_icon, 'fanart' : vcategory_fanart, 'poster' : vcategory_poster})
         listitem.setProperty(AEL_CONTENT_LABEL, AEL_CONTENT_VALUE_ROM_LAUNCHER)
-        listitem.addContextMenuItems(commands)
+        if (xbmc.getCondVisibility("!Skin.HasSetting(KioskMode.Enabled)")):
+            listitem.addContextMenuItems(commands)
         url_str = self._misc_url('EXECUTE_GLOBAL_ROM_STATS')
         xbmcplugin.addDirectoryItem(handle = self.addon_handle, url = url_str, listitem = listitem, isFolder = False)
 
@@ -4176,7 +4200,8 @@ class Main:
         listitem.setInfo('video', {'title': vcategory_name, 'plot' : vcategory_plot, 'overlay': 4})
         listitem.setArt({'icon' : vcategory_icon, 'fanart' : vcategory_fanart, 'poster' : vcategory_poster})
         listitem.setProperty(AEL_CONTENT_LABEL, AEL_CONTENT_VALUE_ROM_LAUNCHER)
-        listitem.addContextMenuItems(commands)
+        if (xbmc.getCondVisibility("!Skin.HasSetting(KioskMode.Enabled)")):
+            listitem.addContextMenuItems(commands)
         url_str = self._misc_url('EXECUTE_GLOBAL_AUDIT_STATS')
         xbmcplugin.addDirectoryItem(handle = self.addon_handle, url = url_str, listitem = listitem, isFolder = False)
 
@@ -4344,7 +4369,8 @@ class Main:
                 commands.append(('Create New Category', self._misc_url_RunPlugin('ADD_CATEGORY')))
         commands.append(('Kodi File Manager', 'ActivateWindow(filemanager)'))
         commands.append(('AEL addon settings', 'Addon.OpenSettings({0})'.format(__addon_id__)))
-        listitem.addContextMenuItems(commands, replaceItems = True)
+        if (xbmc.getCondVisibility("!Skin.HasSetting(KioskMode.Enabled)")):
+            listitem.addContextMenuItems(commands, replaceItems = True)
 
         # --- Add Launcher row to ListItem ---
         if launcher_dic['rompath']:
@@ -4830,7 +4856,8 @@ class Main:
             commands.append(('Search ROMs in Launcher',   self._misc_url_RunPlugin('SEARCH_LAUNCHER',   categoryID, launcherID)))
             commands.append(('Edit Launcher',             self._misc_url_RunPlugin('EDIT_LAUNCHER',     categoryID, launcherID)))
         commands.append(('AEL addon settings', 'Addon.OpenSettings({0})'.format(__addon_id__), ))
-        listitem.addContextMenuItems(commands, replaceItems = True)
+        if (xbmc.getCondVisibility("!Skin.HasSetting(KioskMode.Enabled)")):
+            listitem.addContextMenuItems(commands, replaceItems = True)
 
         # --- Add row ---
         # URLs must be different depending on the content type. If not Kodi log will be filled with:
@@ -4861,7 +4888,8 @@ class Main:
         # --- Create context menu ---
         commands = []
         commands.append(('AEL addon settings', 'Addon.OpenSettings({0})'.format(__addon_id__), ))
-        listitem.addContextMenuItems(commands, replaceItems = True)
+        if (xbmc.getCondVisibility("!Skin.HasSetting(KioskMode.Enabled)")):
+            listitem.addContextMenuItems(commands, replaceItems = True)
 
         # --- Add row ---
         # When user clicks on a ROM show the raw database entry
@@ -4887,7 +4915,8 @@ class Main:
         # --- Create context menu ---
         commands = []
         commands.append(('AEL addon settings', 'Addon.OpenSettings({0})'.format(__addon_id__), ))
-        listitem.addContextMenuItems(commands, replaceItems = True)
+        if (xbmc.getCondVisibility("!Skin.HasSetting(KioskMode.Enabled)")):
+            listitem.addContextMenuItems(commands, replaceItems = True)
 
         # --- Add row ---
         # When user clicks on a ROM show the raw database entry
@@ -5009,7 +5038,8 @@ class Main:
             commands.append(('Search ROMs in Virtual Launcher', self._misc_url_RunPlugin('SEARCH_LAUNCHER', virtual_categoryID, vlauncher_id)))
             commands.append(('Kodi File Manager', 'ActivateWindow(filemanager)', ))
             commands.append(('AEL addon settings', 'Addon.OpenSettings({0})'.format(__addon_id__), ))
-            listitem.addContextMenuItems(commands, replaceItems = True)
+            if (xbmc.getCondVisibility("!Skin.HasSetting(KioskMode.Enabled)")):
+                listitem.addContextMenuItems(commands, replaceItems = True)
 
             url_str = self._misc_url('SHOW_VLAUNCHER_ROMS', virtual_categoryID, vlauncher_id)
             xbmcplugin.addDirectoryItem(handle = self.addon_handle, url = url_str, listitem = listitem, isFolder = True)
@@ -5980,7 +6010,8 @@ class Main:
             commands.append(('Import Collection',        self._misc_url_RunPlugin('IMPORT_COLLECTION')))
             commands.append(('Kodi File Manager', 'ActivateWindow(filemanager)'))
             commands.append(('AEL addon settings', 'Addon.OpenSettings({0})'.format(__addon_id__)))
-            listitem.addContextMenuItems(commands, replaceItems = True)
+            if (xbmc.getCondVisibility("!Skin.HasSetting(KioskMode.Enabled)")):
+                listitem.addContextMenuItems(commands, replaceItems = True)
 
             # >> Use ROMs renderer to display collection ROMs
             url_str = self._misc_url('SHOW_COLLECTION_ROMS', VCATEGORY_COLLECTIONS_ID, collection_id)
