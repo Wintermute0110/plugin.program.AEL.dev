@@ -92,7 +92,13 @@ for f in sorted(file_list):
                 print("Line '{}'".format(line))
                 raise ValueError(keyword)
             if keyword == 'notes':
-                json_data[f][keyword].append(value)
+                if value.find('|') >= 0:
+                    print('Splitting notes string into multiline string')
+                    n_lines = value.split('|')
+                    pprint.pprint(n_lines)
+                    json_data[f][keyword].extend(n_lines)
+                else:
+                    json_data[f][keyword].append(value)
             elif keyword == 'supports_no_game':
                 if value not in {'true', 'false'}:
                     raise TypeError('Unknown supports_no_game = {}'.format(value))

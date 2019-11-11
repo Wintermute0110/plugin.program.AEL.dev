@@ -144,7 +144,8 @@
         "license": "GPLv3", 
         "manufacturer": "Sinclair", 
         "notes": [
-            "[1] Amstrad have kindly given their permission for the redistribution|[^] of their copyrighted material but retain that copyright."
+            "[1] Amstrad have kindly given their permission for the redistribution", 
+            "[^] of their copyrighted material but retain that copyright."
         ], 
         "permissions": "", 
         "required_hw_api": "", 
@@ -237,7 +238,19 @@
         "license": "GPLv2", 
         "manufacturer": "Various", 
         "notes": [
-            "(!) The libretro port of blueMSX requires the BIOS files|from full standalone package inside the 'System\\Machines' directory |and media database files into 'System\\Databases' directory.|https://docs.libretro.com/library/bluemsx/#bios|(!) ColecoVision Gamepad Mapping is as follow:|Button 1 as Retropad A|Button 2 as Retropad B|Dial keys 1 to 8 as X, Y, R, L, R2, L2, R3, L3|Star as Select, Hash as Start|0 & 9 are on keyboard 1 & 2 for Player 1|0 & 9 are on keyboard 3 & 4 for Player 2.|(!) To play SpectraVideo cassettes type 'cload' then 'run'|or BLOAD ''CAS:'',R depending of game."
+            "(!) The libretro port of blueMSX requires the BIOS files", 
+            "from full standalone package inside the 'System\\Machines' directory ", 
+            "and media database files into 'System\\Databases' directory.", 
+            "https://docs.libretro.com/library/bluemsx/#bios", 
+            "(!) ColecoVision Gamepad Mapping is as follow:", 
+            "Button 1 as Retropad A", 
+            "Button 2 as Retropad B", 
+            "Dial keys 1 to 8 as X, Y, R, L, R2, L2, R3, L3", 
+            "Star as Select, Hash as Start", 
+            "0 & 9 are on keyboard 1 & 2 for Player 1", 
+            "0 & 9 are on keyboard 3 & 4 for Player 2.", 
+            "(!) To play SpectraVideo cassettes type 'cload' then 'run'", 
+            "or BLOAD ''CAS:'',R depending of game."
         ], 
         "permissions": "", 
         "required_hw_api": "", 
@@ -388,7 +401,13 @@
         "license": "GPLv3", 
         "manufacturer": "Nintendo", 
         "notes": [
-            "[1] bsnes 2014 Accuracy uses split ROMS for special chip games.|[*] Notable DSP1/DSP1B Games: Super Mario Kart,  Pilotwings|[*] Notable DSP2 Games: Dungeon Master|[*] Notable DSP3 Games: SD Gundam GX|[*] Notable DSP4 Games: Top Gear 3000|[*] Notable Cx4 Games: Mega Man X2,  Mega Man X3|[2] SGB Emulation will only work with command line."
+            "[1] bsnes 2014 Accuracy uses split ROMS for special chip games.", 
+            "[*] Notable DSP1/DSP1B Games: Super Mario Kart,  Pilotwings", 
+            "[*] Notable DSP2 Games: Dungeon Master", 
+            "[*] Notable DSP3 Games: SD Gundam GX", 
+            "[*] Notable DSP4 Games: Top Gear 3000", 
+            "[*] Notable Cx4 Games: Mega Man X2,  Mega Man X3", 
+            "[2] SGB Emulation will only work with command line."
         ], 
         "permissions": "", 
         "required_hw_api": "", 
@@ -519,7 +538,13 @@
         "license": "GPLv3", 
         "manufacturer": "Nintendo", 
         "notes": [
-            "[1] bsnes 2014 Balanced uses split ROMS for special chip games.|[*] Notable DSP1/DSP1B Games: Super Mario Kart,  Pilotwings|[*] Notable DSP2 Games: Dungeon Master|[*] Notable DSP3 Games: SD Gundam GX|[*] Notable DSP4 Games: Top Gear 3000|[*] Notable Cx4 Games: Mega Man X2,  Mega Man X3|[2] SGB Emulation will only work with command line."
+            "[1] bsnes 2014 Balanced uses split ROMS for special chip games.", 
+            "[*] Notable DSP1/DSP1B Games: Super Mario Kart,  Pilotwings", 
+            "[*] Notable DSP2 Games: Dungeon Master", 
+            "[*] Notable DSP3 Games: SD Gundam GX", 
+            "[*] Notable DSP4 Games: Top Gear 3000", 
+            "[*] Notable Cx4 Games: Mega Man X2,  Mega Man X3", 
+            "[2] SGB Emulation will only work with command line."
         ], 
         "permissions": "", 
         "required_hw_api": "", 
@@ -644,7 +669,12 @@
         "license": "GPLv3", 
         "manufacturer": "Nintendo", 
         "notes": [
-            "[1] bsnes 2014 Performance uses split ROMS for special chip games.|[*] Notable DSP1/DSP1B Games: Super Mario Kart, Pilotwings|[*] Notable DSP2 Games: Dungeon Master|[*] Notable DSP3 Games: SD Gundam GX|[*] Notable DSP4 Games: Top Gear 3000|[2] Emulation for Cx4 games is broken."
+            "[1] bsnes 2014 Performance uses split ROMS for special chip games.", 
+            "[*] Notable DSP1/DSP1B Games: Super Mario Kart, Pilotwings", 
+            "[*] Notable DSP2 Games: Dungeon Master", 
+            "[*] Notable DSP3 Games: SD Gundam GX", 
+            "[*] Notable DSP4 Games: Top Gear 3000", 
+            "[2] Emulation for Cx4 games is broken."
         ], 
         "permissions": "", 
         "required_hw_api": "", 
@@ -779,13 +809,13 @@
             }, 
             {
                 "desc": "SGB1.sfc (SGB Boot Image)", 
-                "md5": "", 
+                "md5": "b15ddb15721c657d82c5bab6db982ee9", 
                 "opt": true, 
                 "path": "SGB1.sfc"
             }, 
             {
                 "desc": "SGB2.sfc (SGB Boot Image)", 
-                "md5": "", 
+                "md5": "8ecd73eb4edf7ed7e81aef1be80031d5", 
                 "opt": true, 
                 "path": "SGB2.sfc"
             }
@@ -801,7 +831,15 @@
         "license": "GPLv3", 
         "manufacturer": "Nintendo", 
         "notes": [
-            "[1] bsnes uses split ROMS for special chip games.|[*] Notable DSP1/DSP1B Games: Super Mario Kart,  Pilotwings|[*] Notable DSP2 Games: Dungeon Master|[*] Notable DSP3 Games: SD Gundam GX|[*] Notable DSP4 Games: Top Gear 3000|[*] Notable Cx4 Games: Mega Man X2,  Mega Man X3|[2] SGB Emulation needs No-Intro Super Game Boy ROMs renamed to SGB1.sfc or SGB2.sfc|(!) SGB1.sfc (md5): b15ddb15721c657d82c5bab6db982ee9|(!) SGB2.sfc (md5): 8ecd73eb4edf7ed7e81aef1be80031d5"
+            "[1] bsnes uses split ROMS for special chip games.", 
+            "[*] Notable DSP1/DSP1B Games: Super Mario Kart,  Pilotwings", 
+            "[*] Notable DSP2 Games: Dungeon Master", 
+            "[*] Notable DSP3 Games: SD Gundam GX", 
+            "[*] Notable DSP4 Games: Top Gear 3000", 
+            "[*] Notable Cx4 Games: Mega Man X2,  Mega Man X3", 
+            "[2] SGB Emulation needs No-Intro Super Game Boy ROMs renamed to SGB1.sfc or SGB2.sfc", 
+            "(!) SGB1.sfc (md5): b15ddb15721c657d82c5bab6db982ee9", 
+            "(!) SGB2.sfc (md5): 8ecd73eb4edf7ed7e81aef1be80031d5"
         ], 
         "permissions": "", 
         "required_hw_api": "", 
@@ -932,7 +970,13 @@
         "license": "GPLv3", 
         "manufacturer": "Nintendo", 
         "notes": [
-            "[1] bsnes-mercury Accuracy uses split ROMS for special chip games.|[*] Notable DSP1/DSP1B Games: Super Mario Kart,  Pilotwings|[*] Notable DSP2 Games: Dungeon Master|[*] Notable DSP3 Games: SD Gundam GX|[*] Notable DSP4 Games: Top Gear 3000|[*] Notable Cx4 Games: Mega Man X2,  Mega Man X3|[2] SGB Emulation will only work with command line."
+            "[1] bsnes-mercury Accuracy uses split ROMS for special chip games.", 
+            "[*] Notable DSP1/DSP1B Games: Super Mario Kart,  Pilotwings", 
+            "[*] Notable DSP2 Games: Dungeon Master", 
+            "[*] Notable DSP3 Games: SD Gundam GX", 
+            "[*] Notable DSP4 Games: Top Gear 3000", 
+            "[*] Notable Cx4 Games: Mega Man X2,  Mega Man X3", 
+            "[2] SGB Emulation will only work with command line."
         ], 
         "permissions": "", 
         "required_hw_api": "", 
@@ -1063,7 +1107,13 @@
         "license": "GPLv3", 
         "manufacturer": "Nintendo", 
         "notes": [
-            "[1] bsnes-mercury Balanced uses split ROMS for special chip games.|[*] Notable DSP1/DSP1B Games: Super Mario Kart,  Pilotwings|[*] Notable DSP2 Games: Dungeon Master|[*] Notable DSP3 Games: SD Gundam GX|[*] Notable DSP4 Games: Top Gear 3000|[*] Notable Cx4 Games: Mega Man X2,  Mega Man X3|[2] SGB Emulation will only work with command line."
+            "[1] bsnes-mercury Balanced uses split ROMS for special chip games.", 
+            "[*] Notable DSP1/DSP1B Games: Super Mario Kart,  Pilotwings", 
+            "[*] Notable DSP2 Games: Dungeon Master", 
+            "[*] Notable DSP3 Games: SD Gundam GX", 
+            "[*] Notable DSP4 Games: Top Gear 3000", 
+            "[*] Notable Cx4 Games: Mega Man X2,  Mega Man X3", 
+            "[2] SGB Emulation will only work with command line."
         ], 
         "permissions": "", 
         "required_hw_api": "", 
@@ -1188,7 +1238,12 @@
         "license": "GPLv3", 
         "manufacturer": "Nintendo", 
         "notes": [
-            "[1] bsnes-mercury Performance uses split ROMS for special chip games.|[*] Notable DSP1/DSP1B Games: Super Mario Kart,  Pilotwings|[*] Notable DSP2 Games: Dungeon Master|[*] Notable DSP3 Games: SD Gundam GX|[*] Notable DSP4 Games: Top Gear 3000|[2] Emulation for Cx4 games is broken."
+            "[1] bsnes-mercury Performance uses split ROMS for special chip games.", 
+            "[*] Notable DSP1/DSP1B Games: Super Mario Kart,  Pilotwings", 
+            "[*] Notable DSP2 Games: Dungeon Master", 
+            "[*] Notable DSP3 Games: SD Gundam GX", 
+            "[*] Notable DSP4 Games: Top Gear 3000", 
+            "[2] Emulation for Cx4 games is broken."
         ], 
         "permissions": "", 
         "required_hw_api": "", 
@@ -1403,19 +1458,19 @@
         "BIOS": [
             {
                 "desc": "firmware.bin (NDS Firmware)", 
-                "md5": "", 
+                "md5": "145eaef5bd3037cbc247c213bb3da1b3", 
                 "opt": true, 
                 "path": "firmware.bin"
             }, 
             {
                 "desc": "bios7.bin (ARM7 BIOS)", 
-                "md5": "", 
+                "md5": "df692a80a5b1bc90728bc3dfc76cd948", 
                 "opt": true, 
                 "path": "bios7.bin"
             }, 
             {
                 "desc": "bios9.bin (ARM9 BIOS)", 
-                "md5": "", 
+                "md5": "a392174eb3e572fed6447e956bde4b25", 
                 "opt": true, 
                 "path": "bios9.bin"
             }
@@ -1431,7 +1486,10 @@
         "license": "GPLv2", 
         "manufacturer": "Nintendo", 
         "notes": [
-            "(!) firmware.bin (md5): 145eaef5bd3037cbc247c213bb3da1b3|(!) bios7.bin (md5): df692a80a5b1bc90728bc3dfc76cd948|(!) bios9.bin (md5): a392174eb3e572fed6447e956bde4b25|[1] Enable 'Use External BIOS/Firmware' core option to use firmware files"
+            "(!) firmware.bin (md5): 145eaef5bd3037cbc247c213bb3da1b3", 
+            "(!) bios7.bin (md5): df692a80a5b1bc90728bc3dfc76cd948", 
+            "(!) bios9.bin (md5): a392174eb3e572fed6447e956bde4b25", 
+            "[1] Enable 'Use External BIOS/Firmware' core option to use firmware files"
         ], 
         "permissions": "", 
         "required_hw_api": "", 
@@ -1473,7 +1531,8 @@
         "license": "Non-commercial", 
         "manufacturer": "", 
         "notes": [
-            "(!) Dinothawr requires data ROM 'Dinothawr.zip'.|(!) Load Content 'dinothawr.game'."
+            "(!) Dinothawr requires data ROM 'Dinothawr.zip'.", 
+            "(!) Load Content 'dinothawr.game'."
         ], 
         "permissions": "", 
         "required_hw_api": "", 
@@ -1515,7 +1574,8 @@
         "license": "GPLv2+", 
         "manufacturer": "Nintendo", 
         "notes": [
-            "(!) You need to have Dolphin Sys folder in system/dolphin-emu/Sys.|(!) See: https://docs.libretro.com/library/dolphin/#setup"
+            "(!) You need to have Dolphin Sys folder in system/dolphin-emu/Sys.", 
+            "(!) See: https://docs.libretro.com/library/dolphin/#setup"
         ], 
         "permissions": "", 
         "required_hw_api": "", 
@@ -1557,7 +1617,8 @@
         "license": "GPLv2", 
         "manufacturer": "Microsoft", 
         "notes": [
-            "(!) This core requires libsdl1.2 and libsdl-net1.2.|"
+            "(!) This core requires libsdl1.2 and libsdl-net1.2.", 
+            ""
         ], 
         "permissions": "", 
         "required_hw_api": "", 
@@ -1579,7 +1640,8 @@
         "license": "GPLv2", 
         "manufacturer": "Microsoft", 
         "notes": [
-            "(!) This core requires libsdl1.2 and libsdl-net1.2.|"
+            "(!) This core requires libsdl1.2 and libsdl-net1.2.", 
+            ""
         ], 
         "permissions": "", 
         "required_hw_api": "", 
@@ -1890,7 +1952,8 @@
         "license": "Non-commercial", 
         "manufacturer": "Various", 
         "notes": [
-            "(!) The BIOS files can also be inside the ROM directory or the root of SYSTEM directory.|(!) Homepage : https://neo-source.com/"
+            "(!) The BIOS files can also be inside the ROM directory or the root of SYSTEM directory.", 
+            "(!) Homepage : https://neo-source.com/"
         ], 
         "permissions": "", 
         "required_hw_api": "", 
@@ -1903,7 +1966,7 @@
         "BIOS": [
             {
                 "desc": "disksys.rom (Family Computer Disk System BIOS)", 
-                "md5": "", 
+                "md5": "ca30b50f880eb660a320674ed365ef7a", 
                 "opt": true, 
                 "path": "disksys.rom"
             }, 
@@ -1925,7 +1988,8 @@
         "license": "GPLv2", 
         "manufacturer": "Nintendo", 
         "notes": [
-            "(!) disksys.rom (md5): ca30b50f880eb660a320674ed365ef7a|(!) nes.pal must be located in system directory."
+            "(!) disksys.rom (md5): ca30b50f880eb660a320674ed365ef7a", 
+            "(!) nes.pal must be located in system directory."
         ], 
         "permissions": "", 
         "required_hw_api": "", 
@@ -2074,7 +2138,14 @@
         "license": "GPLv2", 
         "manufacturer": "Sega", 
         "notes": [
-            "(!) dc_boot.bin (md5): e10c53c2f8b90bab96ead2d368858623|(!) dc_flash.bin (md5): 0a93f7940c455905bea6e392dfde92a4|(!) naomi.zip (md5): eb4099aeb42ef089cfe94f8fe95e51f6|(!) hod2bios.zip (md5): 9c755171b222fb1f4e1439d5b709dbf1|(!) f355dlx.zip (md5): 5e83867c751f692a000afdf658dc181f|(!) f355bios.zip (md5): f126d318f135f38ee377fef2acf08d7e|(!) airlbios.zip (md5): 3f348c88af99a40fbd11fa435f28c69d|(!) awbios.zip (md5): 0ec5ae5b5a5c4959fa8b43fcf8687f7c"
+            "(!) dc_boot.bin (md5): e10c53c2f8b90bab96ead2d368858623", 
+            "(!) dc_flash.bin (md5): 0a93f7940c455905bea6e392dfde92a4", 
+            "(!) naomi.zip (md5): eb4099aeb42ef089cfe94f8fe95e51f6", 
+            "(!) hod2bios.zip (md5): 9c755171b222fb1f4e1439d5b709dbf1", 
+            "(!) f355dlx.zip (md5): 5e83867c751f692a000afdf658dc181f", 
+            "(!) f355bios.zip (md5): f126d318f135f38ee377fef2acf08d7e", 
+            "(!) airlbios.zip (md5): 3f348c88af99a40fbd11fa435f28c69d", 
+            "(!) awbios.zip (md5): 0ec5ae5b5a5c4959fa8b43fcf8687f7c"
         ], 
         "permissions": "", 
         "required_hw_api": "OpenGL Core >= 3.0 | OpenGL ES >= 2.0", 
@@ -2087,25 +2158,25 @@
         "BIOS": [
             {
                 "desc": "MSX.ROM (MSX BIOS)", 
-                "md5": "", 
+                "md5": "364a1a579fe5cb8dba54519bcfcdac0d", 
                 "opt": false, 
                 "path": "MSX.ROM"
             }, 
             {
                 "desc": "MSX2.ROM (MSX2 BIOS)", 
-                "md5": "", 
+                "md5": "ec3a01c91f24fbddcbcab0ad301bc9ef", 
                 "opt": false, 
                 "path": "MSX2.ROM"
             }, 
             {
                 "desc": "MSX2EXT.ROM (MSX2 ExtROM)", 
-                "md5": "", 
+                "md5": "2183c2aff17cf4297bdb496de78c2e8a", 
                 "opt": false, 
                 "path": "MSX2EXT.ROM"
             }, 
             {
                 "desc": "MSX2P.ROM (MSX2+ BIOS)", 
-                "md5": "", 
+                "md5": "847cc025ffae665487940ff2639540e5", 
                 "opt": false, 
                 "path": "MSX2P.ROM"
             }, 
@@ -2141,7 +2212,7 @@
             }, 
             {
                 "desc": "KANJI.ROM (Kanji Font)", 
-                "md5": "", 
+                "md5": "febe8782b466d7c3b16de6d104826b34", 
                 "opt": true, 
                 "path": "KANJI.ROM"
             }
@@ -2157,7 +2228,16 @@
         "license": "Non-commercial", 
         "manufacturer": "Various", 
         "notes": [
-            "(!) MSX.ROM (md5): 364a1a579fe5cb8dba54519bcfcdac0d|(!) MSX2.ROM (md5): ec3a01c91f24fbddcbcab0ad301bc9ef|(!) MSX2EXT.ROM (md5): 2183c2aff17cf4297bdb496de78c2e8a|(!) MSX2P.ROM (md5): 847cc025ffae665487940ff2639540e5|(!) MSX2PEXT.ROM (md5): 7c8243c71d8f143b2531f01afa6a05dc |(!) DISK.ROM (md5): 80dcd1ad1a4cf65d64b7ba10504e8190 |(!) FMPAC.ROM (md5): 6f69cc8b5ed761b03afd78000dfb0e19 |(!) MSXDOS2.ROM (md5): 6418d091cd6907bbcf940324339e43bb |(!) PAINTER.ROM (md5): 403cdea1cbd2bb24fae506941f8f655e |(!) KANJI.ROM (md5): febe8782b466d7c3b16de6d104826b34"
+            "(!) MSX.ROM (md5): 364a1a579fe5cb8dba54519bcfcdac0d", 
+            "(!) MSX2.ROM (md5): ec3a01c91f24fbddcbcab0ad301bc9ef", 
+            "(!) MSX2EXT.ROM (md5): 2183c2aff17cf4297bdb496de78c2e8a", 
+            "(!) MSX2P.ROM (md5): 847cc025ffae665487940ff2639540e5", 
+            "(!) MSX2PEXT.ROM (md5): 7c8243c71d8f143b2531f01afa6a05dc ", 
+            "(!) DISK.ROM (md5): 80dcd1ad1a4cf65d64b7ba10504e8190 ", 
+            "(!) FMPAC.ROM (md5): 6f69cc8b5ed761b03afd78000dfb0e19 ", 
+            "(!) MSXDOS2.ROM (md5): 6418d091cd6907bbcf940324339e43bb ", 
+            "(!) PAINTER.ROM (md5): 403cdea1cbd2bb24fae506941f8f655e ", 
+            "(!) KANJI.ROM (md5): febe8782b466d7c3b16de6d104826b34"
         ], 
         "permissions": "", 
         "required_hw_api": "", 
@@ -2170,19 +2250,19 @@
         "BIOS": [
             {
                 "desc": "sl31253.bin", 
-                "md5": "", 
+                "md5": "ac9804d4c0e9d07e33472e3726ed15c3", 
                 "opt": false, 
                 "path": "sl31253.bin"
             }, 
             {
                 "desc": "sl31254.bin", 
-                "md5": "", 
+                "md5": "da98f4bb3242ab80d76629021bb27585", 
                 "opt": false, 
                 "path": "sl31254.bin"
             }, 
             {
                 "desc": "sl90025.bin", 
-                "md5": "", 
+                "md5": "95d339631d867c8f1d15a5f2ec26069d", 
                 "opt": false, 
                 "path": "sl90025.bin"
             }
@@ -2198,7 +2278,9 @@
         "license": "GPLv3", 
         "manufacturer": "Fairchild", 
         "notes": [
-            "(!) sl31253.bin (md5): ac9804d4c0e9d07e33472e3726ed15c3|(!) sl31254.bin (md5): da98f4bb3242ab80d76629021bb27585|(!) sl90025.bin (md5): 95d339631d867c8f1d15a5f2ec26069d"
+            "(!) sl31253.bin (md5): ac9804d4c0e9d07e33472e3726ed15c3", 
+            "(!) sl31254.bin (md5): da98f4bb3242ab80d76629021bb27585", 
+            "(!) sl90025.bin (md5): 95d339631d867c8f1d15a5f2ec26069d"
         ], 
         "permissions": "", 
         "required_hw_api": "", 
@@ -2211,13 +2293,13 @@
         "BIOS": [
             {
                 "desc": "exec.bin", 
-                "md5": "", 
+                "md5": "62e761035cb657903761800f4437b8af", 
                 "opt": false, 
                 "path": "exec.bin"
             }, 
             {
                 "desc": "grom.bin", 
-                "md5": "", 
+                "md5": "0cd5946c6473e42e8e4c2137785e427f", 
                 "opt": false, 
                 "path": "grom.bin"
             }
@@ -2233,7 +2315,8 @@
         "license": "GPLv3", 
         "manufacturer": "Mattel", 
         "notes": [
-            "(!) exec.bin (md5): 62e761035cb657903761800f4437b8af|(!) grom.bin (md5): 0cd5946c6473e42e8e4c2137785e427f"
+            "(!) exec.bin (md5): 62e761035cb657903761800f4437b8af", 
+            "(!) grom.bin (md5): 0cd5946c6473e42e8e4c2137785e427f"
         ], 
         "permissions": "", 
         "required_hw_api": "", 
@@ -2246,19 +2329,19 @@
         "BIOS": [
             {
                 "desc": "freej2me-fx.jar", 
-                "md5": "", 
+                "md5": "86fdd1ff260cd5a8f4c4d46bdde1a78a", 
                 "opt": false, 
                 "path": "freej2me-fx.jar"
             }, 
             {
                 "desc": "freej2me.jar", 
-                "md5": "", 
+                "md5": "707cbaabaafc2a4f9726a5c03449406a", 
                 "opt": false, 
                 "path": "freej2me.jar"
             }, 
             {
                 "desc": "freej2me-lr.jar", 
-                "md5": "", 
+                "md5": "d8aec1b68dc4e2ffc5eeff4e22fd607b", 
                 "opt": false, 
                 "path": "freej2me-lr.jar"
             }
@@ -2274,7 +2357,9 @@
         "license": "GPLv3", 
         "manufacturer": "Java", 
         "notes": [
-            "(!) freej2me-fx.jar (md5): 86fdd1ff260cd5a8f4c4d46bdde1a78a|(!) freej2me.jar (md5): 707cbaabaafc2a4f9726a5c03449406a|(!) freej2me-lr.jar (md5): d8aec1b68dc4e2ffc5eeff4e22fd607b"
+            "(!) freej2me-fx.jar (md5): 86fdd1ff260cd5a8f4c4d46bdde1a78a", 
+            "(!) freej2me.jar (md5): 707cbaabaafc2a4f9726a5c03449406a", 
+            "(!) freej2me-lr.jar (md5): d8aec1b68dc4e2ffc5eeff4e22fd607b"
         ], 
         "permissions": "", 
         "required_hw_api": "", 
@@ -2336,7 +2421,8 @@
         "license": "GPLv3", 
         "manufacturer": "Sinclair|Amstrad", 
         "notes": [
-            "[1] Amstrad have kindly given their permission for the redistribution|[^] of their copyrighted material but retain that copyright."
+            "[1] Amstrad have kindly given their permission for the redistribution", 
+            "[^] of their copyrighted material but retain that copyright."
         ], 
         "permissions": "", 
         "required_hw_api": "", 
@@ -2349,13 +2435,13 @@
         "BIOS": [
             {
                 "desc": "gb_bios.bin (Game Boy BIOS)", 
-                "md5": "", 
+                "md5": "32fbbd84168d3482956eb3c5051637f5", 
                 "opt": true, 
                 "path": "gb_bios.bin"
             }, 
             {
                 "desc": "gbc_bios.bin (Game Boy Color BIOS)", 
-                "md5": "", 
+                "md5": "dbfce9db9deaa2567f6a84fde55f9680", 
                 "opt": true, 
                 "path": "gbc_bios.bin"
             }
@@ -2371,7 +2457,8 @@
         "license": "GPLv2", 
         "manufacturer": "Nintendo", 
         "notes": [
-            "(!) gb_bios.bin (md5): 32fbbd84168d3482956eb3c5051637f5|(!) gbc_bios.bin (md5): dbfce9db9deaa2567f6a84fde55f9680"
+            "(!) gb_bios.bin (md5): 32fbbd84168d3482956eb3c5051637f5", 
+            "(!) gbc_bios.bin (md5): dbfce9db9deaa2567f6a84fde55f9680"
         ], 
         "permissions": "", 
         "required_hw_api": "", 
@@ -2472,13 +2559,13 @@
             }, 
             {
                 "desc": "sk.bin (Sonic & Knuckles ROM)", 
-                "md5": "", 
+                "md5": "4ea493ea4e9f6c9ebfccbdb15110367e", 
                 "opt": true, 
                 "path": "sk.bin"
             }, 
             {
                 "desc": "sk2chip.bin (Sonic & Knuckles UPMEM ROM)", 
-                "md5": "", 
+                "md5": "b4e76e416b887f4e7413ba76fa735f16", 
                 "opt": true, 
                 "path": "sk2chip.bin"
             }, 
@@ -2506,7 +2593,8 @@
         "license": "Non-commercial", 
         "manufacturer": "Sega", 
         "notes": [
-            "(!) sk2chip.bin (md5): b4e76e416b887f4e7413ba76fa735f16|(!) sk.bin (md5): 4ea493ea4e9f6c9ebfccbdb15110367e"
+            "(!) sk2chip.bin (md5): b4e76e416b887f4e7413ba76fa735f16", 
+            "(!) sk.bin (md5): 4ea493ea4e9f6c9ebfccbdb15110367e"
         ], 
         "permissions": "", 
         "required_hw_api": "", 
@@ -2782,7 +2870,15 @@
         "license": "GPLv3", 
         "manufacturer": "Nintendo", 
         "notes": [
-            "[1] nSide Balanced uses split ROMS for special chip games.|[*] Notable DSP1/DSP1B Games: Super Mario Kart,  Pilotwings|[*] Notable DSP2 Games: Dungeon Master|[*] Notable DSP3 Games: SD Gundam GX|[*] Notable DSP4 Games: Top Gear 3000|[*] Notable Cx4 Games: Mega Man X2,  Mega Man X3|[2] SGB Emulation needs SGB.sfc/, SGB1.sfc/ or SGB2.sfc/ foltainers in system directory.|SGB1.sfc/ or SGB2.sfc/ can be selected as core options.|GB/GBC ROMs can be loaded directly as ROMs in this core."
+            "[1] nSide Balanced uses split ROMS for special chip games.", 
+            "[*] Notable DSP1/DSP1B Games: Super Mario Kart,  Pilotwings", 
+            "[*] Notable DSP2 Games: Dungeon Master", 
+            "[*] Notable DSP3 Games: SD Gundam GX", 
+            "[*] Notable DSP4 Games: Top Gear 3000", 
+            "[*] Notable Cx4 Games: Mega Man X2,  Mega Man X3", 
+            "[2] SGB Emulation needs SGB.sfc/, SGB1.sfc/ or SGB2.sfc/ foltainers in system directory.", 
+            "SGB1.sfc/ or SGB2.sfc/ can be selected as core options.", 
+            "GB/GBC ROMs can be loaded directly as ROMs in this core."
         ], 
         "permissions": "", 
         "required_hw_api": "", 
@@ -2931,7 +3027,15 @@
         "license": "GPLv3", 
         "manufacturer": "Nintendo", 
         "notes": [
-            "[1] higan Accuracy uses split ROMS for special chip games.|[*] Notable DSP1/DSP1B Games: Super Mario Kart,  Pilotwings|[*] Notable DSP2 Games: Dungeon Master|[*] Notable DSP3 Games: SD Gundam GX|[*] Notable DSP4 Games: Top Gear 3000|[*] Notable Cx4 Games: Mega Man X2,  Mega Man X3|[2] SGB Emulation needs SGB.sfc/, SGB1.sfc/ or SGB2.sfc/ foltainers in system directory.|SGB1.sfc/ or SGB2.sfc/ can be selected as core options.|GB/GBC ROMs can be loaded directly as ROMs in this core."
+            "[1] higan Accuracy uses split ROMS for special chip games.", 
+            "[*] Notable DSP1/DSP1B Games: Super Mario Kart,  Pilotwings", 
+            "[*] Notable DSP2 Games: Dungeon Master", 
+            "[*] Notable DSP3 Games: SD Gundam GX", 
+            "[*] Notable DSP4 Games: Top Gear 3000", 
+            "[*] Notable Cx4 Games: Mega Man X2,  Mega Man X3", 
+            "[2] SGB Emulation needs SGB.sfc/, SGB1.sfc/ or SGB2.sfc/ foltainers in system directory.", 
+            "SGB1.sfc/ or SGB2.sfc/ can be selected as core options.", 
+            "GB/GBC ROMs can be loaded directly as ROMs in this core."
         ], 
         "permissions": "", 
         "required_hw_api": "", 
@@ -2996,13 +3100,13 @@
             }, 
             {
                 "desc": "mpr-18811-mx.ic1 (The King of Fighters '95 ROM Cartridge)", 
-                "md5": "", 
+                "md5": "255113ba943c92a54facd25a10fd780c", 
                 "opt": true, 
                 "path": "mpr-18811-mx.ic1"
             }, 
             {
                 "desc": "mpr-19367-mx.ic1 (Ultraman: Hikari no Kyojin Densetsu ROM Cartridge)", 
-                "md5": "", 
+                "md5": "1cd19988d1d72a3e7caa0b73234c96b4", 
                 "opt": true, 
                 "path": "mpr-19367-mx.ic1"
             }
@@ -3018,7 +3122,10 @@
         "license": "GPLv2", 
         "manufacturer": "Sega", 
         "notes": [
-            "(!) saturn_bios.bin (md5): af5828fdff51384f99b3c4926be27762|(!) stvbios.zip (md5): 53a094ad3a188f86de4e64624fe9b3ca|(!) mpr-18811-mx.ic1 (md5): 255113ba943c92a54facd25a10fd780c|(!) mpr-19367-mx.ic1 (md5): 1cd19988d1d72a3e7caa0b73234c96b4"
+            "(!) saturn_bios.bin (md5): af5828fdff51384f99b3c4926be27762", 
+            "(!) stvbios.zip (md5): 53a094ad3a188f86de4e64624fe9b3ca", 
+            "(!) mpr-18811-mx.ic1 (md5): 255113ba943c92a54facd25a10fd780c", 
+            "(!) mpr-19367-mx.ic1 (md5): 1cd19988d1d72a3e7caa0b73234c96b4"
         ], 
         "permissions": "", 
         "required_hw_api": "OpenGL Core >= 3.3", 
@@ -3060,7 +3167,8 @@
         "license": "MAME", 
         "manufacturer": "Various", 
         "notes": [
-            "(!) The BIOS files must be inside the ROM directory.|"
+            "(!) The BIOS files must be inside the ROM directory.", 
+            ""
         ], 
         "permissions": "", 
         "required_hw_api": "", 
@@ -3082,7 +3190,8 @@
         "license": "MAME", 
         "manufacturer": "Various", 
         "notes": [
-            "(!) The BIOS files must be inside the ROM directory.|"
+            "(!) The BIOS files must be inside the ROM directory.", 
+            ""
         ], 
         "permissions": "", 
         "required_hw_api": "", 
@@ -3104,7 +3213,8 @@
         "license": "MAME", 
         "manufacturer": "Various", 
         "notes": [
-            "(!) The BIOS files must be inside the ROM directory.|"
+            "(!) The BIOS files must be inside the ROM directory.", 
+            ""
         ], 
         "permissions": "", 
         "required_hw_api": "", 
@@ -3126,7 +3236,9 @@
         "license": "MAME Noncommercial", 
         "manufacturer": "Various", 
         "notes": [
-            "(!) Unless using Full Non-Merged romsets, BIOS files must be inside the ROM directory.|See libretro core documentation for more information about content paths.|"
+            "(!) Unless using Full Non-Merged romsets, BIOS files must be inside the ROM directory.", 
+            "See libretro core documentation for more information about content paths.", 
+            ""
         ], 
         "permissions": "", 
         "required_hw_api": "", 
@@ -3148,7 +3260,8 @@
         "license": "MAME", 
         "manufacturer": "Various", 
         "notes": [
-            "(!) The BIOS files must be inside the ROM directory.|"
+            "(!) The BIOS files must be inside the ROM directory.", 
+            ""
         ], 
         "permissions": "", 
         "required_hw_api": "", 
@@ -3170,7 +3283,8 @@
         "license": "MAME", 
         "manufacturer": "Various", 
         "notes": [
-            "(!) The BIOS files must be inside the ROM directory.|"
+            "(!) The BIOS files must be inside the ROM directory.", 
+            ""
         ], 
         "permissions": "", 
         "required_hw_api": "", 
@@ -3192,7 +3306,14 @@
         "license": "MAME", 
         "manufacturer": "Various", 
         "notes": [
-            "[1] MAME 2015 (0.160) supports MAME save states.|[2] MAME 2015 (0.160) supports extracted MAME cheats.|[3] The BIOS files must be inside the ROM directory.|[4] The same directory with CHD files inside must be inside the ROM directory.|[5] If desired, the ARTWORK, CHEATS, and SAMPLES directories can be|[^] inside the 'SYSTEMDIR\\mame' directory.|[6] When saving, the following directories will be created in the 'SAVEDIR\\mame'|[^] directory: STATES, NVRAM, INPUT, SNAPS, CFG, MEMCARD, and DIFF."
+            "[1] MAME 2015 (0.160) supports MAME save states.", 
+            "[2] MAME 2015 (0.160) supports extracted MAME cheats.", 
+            "[3] The BIOS files must be inside the ROM directory.", 
+            "[4] The same directory with CHD files inside must be inside the ROM directory.", 
+            "[5] If desired, the ARTWORK, CHEATS, and SAMPLES directories can be", 
+            "[^] inside the 'SYSTEMDIR\\mame' directory.", 
+            "[6] When saving, the following directories will be created in the 'SAVEDIR\\mame'", 
+            "[^] directory: STATES, NVRAM, INPUT, SNAPS, CFG, MEMCARD, and DIFF."
         ], 
         "permissions": "", 
         "required_hw_api": "", 
@@ -3214,7 +3335,14 @@
         "license": "GPLv2+", 
         "manufacturer": "Various", 
         "notes": [
-            "[1] MAME 2016 (0.174) supports MAME save states.|[2] MAME 2016 (0.174) supports extracted MAME cheats.|[3] The BIOS files must be inside the ROM directory.|[4] The same directory with CHD files inside must be inside the ROM directory.|[5] If desired, the ARTWORK, CHEATS, and SAMPLES directories can be|[^] inside the 'SYSTEMDIR\\mame' directory.|[6] When saving, the following directories will be created in the 'SAVEDIR\\mame'|[^] directory: STATES, NVRAM, INPUT, SNAPS, CFG, MEMCARD, and DIFF."
+            "[1] MAME 2016 (0.174) supports MAME save states.", 
+            "[2] MAME 2016 (0.174) supports extracted MAME cheats.", 
+            "[3] The BIOS files must be inside the ROM directory.", 
+            "[4] The same directory with CHD files inside must be inside the ROM directory.", 
+            "[5] If desired, the ARTWORK, CHEATS, and SAMPLES directories can be", 
+            "[^] inside the 'SYSTEMDIR\\mame' directory.", 
+            "[6] When saving, the following directories will be created in the 'SAVEDIR\\mame'", 
+            "[^] directory: STATES, NVRAM, INPUT, SNAPS, CFG, MEMCARD, and DIFF."
         ], 
         "permissions": "", 
         "required_hw_api": "", 
@@ -3236,7 +3364,16 @@
         "license": "GPLv2+", 
         "manufacturer": "Various", 
         "notes": [
-            "[1] MAME supports MAME save states.|[2] MAME supports extracted MAME cheats.|[3] The BIOS files must be inside the ROM directory.|[4] CHD files and their directories must be inside the ROM directory.|[5] ARTWORK, CHEATS, HASH, INI and SAMPLES directories can be placed|[^] inside the 'SYSTEMDIR\\mame' directory. (INI/Source for drivers)|[6] When saving, the following directories will be created in the 'SAVEDIR\\mame'|[^] directory: STATES, NVRAM, INPUT, SNAPS, CFG, MEMCARD, and DIFF.|[7] Default combo to call MAME GUI: Retropad Select + X|[^] Retropad Select + Start => CANCEL"
+            "[1] MAME supports MAME save states.", 
+            "[2] MAME supports extracted MAME cheats.", 
+            "[3] The BIOS files must be inside the ROM directory.", 
+            "[4] CHD files and their directories must be inside the ROM directory.", 
+            "[5] ARTWORK, CHEATS, HASH, INI and SAMPLES directories can be placed", 
+            "[^] inside the 'SYSTEMDIR\\mame' directory. (INI/Source for drivers)", 
+            "[6] When saving, the following directories will be created in the 'SAVEDIR\\mame'", 
+            "[^] directory: STATES, NVRAM, INPUT, SNAPS, CFG, MEMCARD, and DIFF.", 
+            "[7] Default combo to call MAME GUI: Retropad Select + X", 
+            "[^] Retropad Select + Start => CANCEL"
         ], 
         "permissions": "", 
         "required_hw_api": "", 
@@ -3327,7 +3464,7 @@
         "BIOS": [
             {
                 "desc": "syscard3.pce (PCE-CD BIOS)", 
-                "md5": "", 
+                "md5": "38179df8f4ac870017db21ebcbf53114", 
                 "opt": true, 
                 "path": "syscard3.pce"
             }, 
@@ -3361,7 +3498,11 @@
         "license": "GPLv2", 
         "manufacturer": "NEC", 
         "notes": [
-            "(!) syscard3.pce (md5): 38179df8f4ac870017db21ebcbf53114|[i] For cue files track type use:|[i] OGG for ogg files|[i] WAVE for wav files|[i] BINARY for iso files"
+            "(!) syscard3.pce (md5): 38179df8f4ac870017db21ebcbf53114", 
+            "[i] For cue files track type use:", 
+            "[i] OGG for ogg files", 
+            "[i] WAVE for wav files", 
+            "[i] BINARY for iso files"
         ], 
         "permissions": "", 
         "required_hw_api": "", 
@@ -3374,7 +3515,7 @@
         "BIOS": [
             {
                 "desc": "syscard3.pce (Super CD-ROM2 System V3.xx)", 
-                "md5": "", 
+                "md5": "38179df8f4ac870017db21ebcbf53114", 
                 "opt": true, 
                 "path": "syscard3.pce"
             }, 
@@ -3408,7 +3549,11 @@
         "license": "GPLv2", 
         "manufacturer": "NEC", 
         "notes": [
-            "(!) syscard3.pce (md5): 38179df8f4ac870017db21ebcbf53114|[i] For cue files track type use:|[i] OGG for ogg files|[i] WAVE for wav files|[i] BINARY for iso files"
+            "(!) syscard3.pce (md5): 38179df8f4ac870017db21ebcbf53114", 
+            "[i] For cue files track type use:", 
+            "[i] OGG for ogg files", 
+            "[i] WAVE for wav files", 
+            "[i] BINARY for iso files"
         ], 
         "permissions": "", 
         "required_hw_api": "", 
@@ -3450,19 +3595,19 @@
         "BIOS": [
             {
                 "desc": "scph5500.bin (PS1 JP BIOS)", 
-                "md5": "", 
+                "md5": "8dd7d5296a650fac7319bce665a6a53c", 
                 "opt": true, 
                 "path": "scph5500.bin"
             }, 
             {
                 "desc": "scph5501.bin (PS1 US BIOS)", 
-                "md5": "", 
+                "md5": "490f666e1afb15b7362b406ed1cea246", 
                 "opt": true, 
                 "path": "scph5501.bin"
             }, 
             {
                 "desc": "scph5502.bin (PS1 EU BIOS)", 
-                "md5": "", 
+                "md5": "32736f17079d0b2b7024407c39bd3050", 
                 "opt": true, 
                 "path": "scph5502.bin"
             }
@@ -3478,7 +3623,9 @@
         "license": "GPLv2", 
         "manufacturer": "Sony", 
         "notes": [
-            "(!) scph5500.bin (md5): 8dd7d5296a650fac7319bce665a6a53c|(!) scph5501.bin (md5): 490f666e1afb15b7362b406ed1cea246|(!) scph5502.bin (md5): 32736f17079d0b2b7024407c39bd3050"
+            "(!) scph5500.bin (md5): 8dd7d5296a650fac7319bce665a6a53c", 
+            "(!) scph5501.bin (md5): 490f666e1afb15b7362b406ed1cea246", 
+            "(!) scph5502.bin (md5): 32736f17079d0b2b7024407c39bd3050"
         ], 
         "permissions": "", 
         "required_hw_api": "", 
@@ -3491,19 +3638,19 @@
         "BIOS": [
             {
                 "desc": "scph5500.bin (PS1 JP BIOS)", 
-                "md5": "", 
+                "md5": "8dd7d5296a650fac7319bce665a6a53c", 
                 "opt": true, 
                 "path": "scph5500.bin"
             }, 
             {
                 "desc": "scph5501.bin (PS1 US BIOS)", 
-                "md5": "", 
+                "md5": "490f666e1afb15b7362b406ed1cea246", 
                 "opt": true, 
                 "path": "scph5501.bin"
             }, 
             {
                 "desc": "scph5502.bin (PS1 EU BIOS)", 
-                "md5": "", 
+                "md5": "32736f17079d0b2b7024407c39bd3050", 
                 "opt": true, 
                 "path": "scph5502.bin"
             }
@@ -3519,7 +3666,9 @@
         "license": "GPLv2", 
         "manufacturer": "Sony", 
         "notes": [
-            "(!) scph5500.bin (md5): 8dd7d5296a650fac7319bce665a6a53c|(!) scph5501.bin (md5): 490f666e1afb15b7362b406ed1cea246|(!) scph5502.bin (md5): 32736f17079d0b2b7024407c39bd3050"
+            "(!) scph5500.bin (md5): 8dd7d5296a650fac7319bce665a6a53c", 
+            "(!) scph5501.bin (md5): 490f666e1afb15b7362b406ed1cea246", 
+            "(!) scph5502.bin (md5): 32736f17079d0b2b7024407c39bd3050"
         ], 
         "permissions": "", 
         "required_hw_api": "", 
@@ -3532,25 +3681,25 @@
         "BIOS": [
             {
                 "desc": "sega_101.bin (Saturn JP BIOS)", 
-                "md5": "", 
+                "md5": "85ec9ca47d8f6807718151cbcca8b964", 
                 "opt": false, 
                 "path": "sega_101.bin"
             }, 
             {
                 "desc": "mpr-17933.bin (Saturn US/EU BIOS)", 
-                "md5": "", 
+                "md5": "3240872c70984b6cbfda1586cab68dbe", 
                 "opt": false, 
                 "path": "mpr-17933.bin"
             }, 
             {
                 "desc": "mpr-18811-mx.ic1 (The King of Fighters '95 ROM Cartridge)", 
-                "md5": "", 
+                "md5": "255113ba943c92a54facd25a10fd780c", 
                 "opt": true, 
                 "path": "mpr-18811-mx.ic1"
             }, 
             {
                 "desc": "mpr-19367-mx.ic1 (Ultraman: Hikari no Kyojin Densetsu ROM Cartridge)", 
-                "md5": "", 
+                "md5": "1cd19988d1d72a3e7caa0b73234c96b4", 
                 "opt": true, 
                 "path": "mpr-19367-mx.ic1"
             }
@@ -3566,7 +3715,10 @@
         "license": "GPLv2", 
         "manufacturer": "Sega", 
         "notes": [
-            "(!) sega_101.bin (md5): 85ec9ca47d8f6807718151cbcca8b964|(!) mpr-17933.bin (md5): 3240872c70984b6cbfda1586cab68dbe|(!) mpr-18811-mx.ic1 (md5): 255113ba943c92a54facd25a10fd780c|(!) mpr-19367-mx.ic1 (md5): 1cd19988d1d72a3e7caa0b73234c96b4"
+            "(!) sega_101.bin (md5): 85ec9ca47d8f6807718151cbcca8b964", 
+            "(!) mpr-17933.bin (md5): 3240872c70984b6cbfda1586cab68dbe", 
+            "(!) mpr-18811-mx.ic1 (md5): 255113ba943c92a54facd25a10fd780c", 
+            "(!) mpr-19367-mx.ic1 (md5): 1cd19988d1d72a3e7caa0b73234c96b4"
         ], 
         "permissions": "", 
         "required_hw_api": "", 
@@ -3686,19 +3838,19 @@
         "BIOS": [
             {
                 "desc": "firmware.bin (NDS Firmware)", 
-                "md5": "", 
+                "md5": "145eaef5bd3037cbc247c213bb3da1b3", 
                 "opt": false, 
                 "path": "firmware.bin"
             }, 
             {
                 "desc": "bios7.bin (ARM7 BIOS)", 
-                "md5": "", 
+                "md5": "df692a80a5b1bc90728bc3dfc76cd948", 
                 "opt": false, 
                 "path": "bios7.bin"
             }, 
             {
                 "desc": "bios9.bin (ARM9 BIOS)", 
-                "md5": "", 
+                "md5": "a392174eb3e572fed6447e956bde4b25", 
                 "opt": false, 
                 "path": "bios9.bin"
             }
@@ -3714,7 +3866,9 @@
         "license": "GPLv3", 
         "manufacturer": "Nintendo", 
         "notes": [
-            "(!) firmware.bin (md5): 145eaef5bd3037cbc247c213bb3da1b3|(!) bios7.bin (md5): df692a80a5b1bc90728bc3dfc76cd948|(!) bios9.bin (md5): a392174eb3e572fed6447e956bde4b25"
+            "(!) firmware.bin (md5): 145eaef5bd3037cbc247c213bb3da1b3", 
+            "(!) bios7.bin (md5): df692a80a5b1bc90728bc3dfc76cd948", 
+            "(!) bios9.bin (md5): a392174eb3e572fed6447e956bde4b25"
         ], 
         "permissions": "", 
         "required_hw_api": "", 
@@ -3747,7 +3901,7 @@
         "BIOS": [
             {
                 "desc": "disksys.rom (Family Computer Disk System BIOS)", 
-                "md5": "", 
+                "md5": "ca30b50f880eb660a320674ed365ef7a", 
                 "opt": true, 
                 "path": "disksys.rom"
             }
@@ -3763,7 +3917,10 @@
         "license": "GPLv3", 
         "manufacturer": "Nintendo", 
         "notes": [
-            "(!) disksys.rom (md5): ca30b50f880eb660a320674ed365ef7a|Press Retropad R1 to switch disk side.|HD Packs go in %system%/HdPacks/%game_name%|Custom palette in %system%/MesenPalette.pal"
+            "(!) disksys.rom (md5): ca30b50f880eb660a320674ed365ef7a", 
+            "Press Retropad R1 to switch disk side.", 
+            "HD Packs go in %system%/HdPacks/%game_name%", 
+            "Custom palette in %system%/MesenPalette.pal"
         ], 
         "permissions": "", 
         "required_hw_api": "", 
@@ -3785,7 +3942,16 @@
         "license": "MAME", 
         "manufacturer": "Various", 
         "notes": [
-            "[1] MESS 2015 requires the hashes from the MAME/MESS source code|[^] to be inside the 'SYSTEMDIR\\ume\\hash' directory and softlist romset.|(!) [2] MESS 2015 supports MESS save states.|[3] MESS 2015 supports extracted MESS cheats.|[4] The BIOS files must be inside the ROM directory.|[5] The same directory with CHD files inside must be inside the ROM directory.|[6] If desired, the ARTWORK, CHEATS, and SAMPLES directories can be|[^] inside the 'SYSTEMDIR\\mess' directory.|[7] When saving, the following directories will be created in the 'SAVEDIR\\mess'|[^] directory: STATES, NVRAM, INPUT, SNAPS, CFG, MEMCARD, and DIFF."
+            "[1] MESS 2015 requires the hashes from the MAME/MESS source code", 
+            "[^] to be inside the 'SYSTEMDIR\\ume\\hash' directory and softlist romset.", 
+            "(!) [2] MESS 2015 supports MESS save states.", 
+            "[3] MESS 2015 supports extracted MESS cheats.", 
+            "[4] The BIOS files must be inside the ROM directory.", 
+            "[5] The same directory with CHD files inside must be inside the ROM directory.", 
+            "[6] If desired, the ARTWORK, CHEATS, and SAMPLES directories can be", 
+            "[^] inside the 'SYSTEMDIR\\mess' directory.", 
+            "[7] When saving, the following directories will be created in the 'SAVEDIR\\mess'", 
+            "[^] directory: STATES, NVRAM, INPUT, SNAPS, CFG, MEMCARD, and DIFF."
         ], 
         "permissions": "", 
         "required_hw_api": "", 
@@ -3818,19 +3984,19 @@
         "BIOS": [
             {
                 "desc": "gba_bios.bin (Game Boy Advance BIOS)", 
-                "md5": "", 
+                "md5": "a860e8c0b6d573d191e4ec7db1b1e4f6", 
                 "opt": true, 
                 "path": "gba_bios.bin"
             }, 
             {
                 "desc": "gb_bios.bin (Game Boy BIOS)", 
-                "md5": "", 
+                "md5": "32fbbd84168d3482956eb3c5051637f5", 
                 "opt": true, 
                 "path": "gb_bios.bin"
             }, 
             {
                 "desc": "gbc_bios.bin (Game Boy Color BIOS)", 
-                "md5": "", 
+                "md5": "dbfce9db9deaa2567f6a84fde55f9680", 
                 "opt": true, 
                 "path": "gbc_bios.bin"
             }, 
@@ -3852,7 +4018,9 @@
         "license": "MPLv2.0", 
         "manufacturer": "Nintendo", 
         "notes": [
-            "(!) gba_bios.bin (md5): a860e8c0b6d573d191e4ec7db1b1e4f6|(!) gb_bios.bin (md5): 32fbbd84168d3482956eb3c5051637f5|(!) gbc_bios.bin (md5): dbfce9db9deaa2567f6a84fde55f9680"
+            "(!) gba_bios.bin (md5): a860e8c0b6d573d191e4ec7db1b1e4f6", 
+            "(!) gb_bios.bin (md5): 32fbbd84168d3482956eb3c5051637f5", 
+            "(!) gbc_bios.bin (md5): dbfce9db9deaa2567f6a84fde55f9680"
         ], 
         "permissions": "", 
         "required_hw_api": "", 
@@ -4103,7 +4271,7 @@
             }, 
             {
                 "desc": "disksys.rom (Family Computer Disk System BIOS)", 
-                "md5": "", 
+                "md5": "ca30b50f880eb660a320674ed365ef7a", 
                 "opt": true, 
                 "path": "disksys.rom"
             }
@@ -4119,7 +4287,9 @@
         "license": "GPLv2", 
         "manufacturer": "Nintendo", 
         "notes": [
-            "Get NstDatabase.xml from https://github.com/0ldsk00l/nestopia|(!) disksys.rom (md5): ca30b50f880eb660a320674ed365ef7a|Press Retropad L1 to switch disk side."
+            "Get NstDatabase.xml from https://github.com/0ldsk00l/nestopia", 
+            "(!) disksys.rom (md5): ca30b50f880eb660a320674ed365ef7a", 
+            "Press Retropad L1 to switch disk side."
         ], 
         "permissions": "", 
         "required_hw_api": "", 
@@ -4172,7 +4342,12 @@
         "license": "MIT", 
         "manufacturer": "NEC", 
         "notes": [
-            " YM2608 RYTHM samples present in the np2kai folder will be used:|2608_bd.wav, 2608_sd.wav, 2608_top.wav, 2608_hh.wav, 2608_tom.wav, 2608_rim.wav|JOY2KEY buttons mapping: A=x B=z X=space Y=lctrl|L=backspace R=rshift SELECT=escape START=return|Keep 'end' key down when booting for machine options.|Many games need GDC set as 2.5Mhz there."
+            " YM2608 RYTHM samples present in the np2kai folder will be used:", 
+            "2608_bd.wav, 2608_sd.wav, 2608_top.wav, 2608_hh.wav, 2608_tom.wav, 2608_rim.wav", 
+            "JOY2KEY buttons mapping: A=x B=z X=space Y=lctrl", 
+            "L=backspace R=rshift SELECT=escape START=return", 
+            "Keep 'end' key down when booting for machine options.", 
+            "Many games need GDC set as 2.5Mhz there."
         ], 
         "permissions": "", 
         "required_hw_api": "", 
@@ -4194,7 +4369,8 @@
         "license": "GPLv3", 
         "manufacturer": "", 
         "notes": [
-            "(!) NXEngine requires data ROM 'Cave Story (en).zip'.|(!) Load Content 'Doukutsu.exe'"
+            "(!) NXEngine requires data ROM 'Cave Story (en).zip'.", 
+            "(!) Load Content 'Doukutsu.exe'"
         ], 
         "permissions": "", 
         "required_hw_api": "", 
@@ -4207,7 +4383,7 @@
         "BIOS": [
             {
                 "desc": "o2rom.bin (Odyssey2 BIOS - G7000 model)", 
-                "md5": "", 
+                "md5": "562d5ebf9e030a40d6fabfc2f33139fd", 
                 "opt": false, 
                 "path": "o2rom.bin"
             }, 
@@ -4241,7 +4417,10 @@
         "license": "Artistic License", 
         "manufacturer": "Magnavox|Philips", 
         "notes": [
-            "(!) o2rom.bin (md5): 562d5ebf9e030a40d6fabfc2f33139fd|(!) bios_c52.bin (md5): f1071cdb0b6b10dde94d3bc8a6146387|(!) bios_g7400.bin (md5): c500ff71236068e0dc0d0603d265ae76|(!)bios_jopac.bin (md5): 279008e4a0db2dc5f1c048853b033828"
+            "(!) o2rom.bin (md5): 562d5ebf9e030a40d6fabfc2f33139fd", 
+            "(!) bios_c52.bin (md5): f1071cdb0b6b10dde94d3bc8a6146387", 
+            "(!) bios_g7400.bin (md5): c500ff71236068e0dc0d0603d265ae76", 
+            "(!)bios_jopac.bin (md5): 279008e4a0db2dc5f1c048853b033828"
         ], 
         "permissions": "", 
         "required_hw_api": "", 
@@ -4303,7 +4482,8 @@
         "license": "GPLv3", 
         "manufacturer": "", 
         "notes": [
-            "(!) XRick requires data ROM 'data.zip'.|(!) Load Content 'data.zip'"
+            "(!) XRick requires data ROM 'data.zip'.", 
+            "(!) Load Content 'data.zip'"
         ], 
         "permissions": "", 
         "required_hw_api": "", 
@@ -4414,19 +4594,19 @@
         "BIOS": [
             {
                 "desc": "scph5500.bin (PS1 JP BIOS)", 
-                "md5": "", 
+                "md5": "8dd7d5296a650fac7319bce665a6a53c", 
                 "opt": true, 
                 "path": "scph5500.bin"
             }, 
             {
                 "desc": "scph5501.bin (PS1 US BIOS)", 
-                "md5": "", 
+                "md5": "490f666e1afb15b7362b406ed1cea246", 
                 "opt": true, 
                 "path": "scph5501.bin"
             }, 
             {
                 "desc": "scph5502.bin (PS1 EU BIOS)", 
-                "md5": "", 
+                "md5": "32736f17079d0b2b7024407c39bd3050", 
                 "opt": true, 
                 "path": "scph5502.bin"
             }
@@ -4442,7 +4622,9 @@
         "license": "GPLv2", 
         "manufacturer": "Sony", 
         "notes": [
-            "(!) scph5500.bin (md5): 8dd7d5296a650fac7319bce665a6a53c|(!) scph5501.bin (md5): 490f666e1afb15b7362b406ed1cea246|(!) scph5502.bin (md5): 32736f17079d0b2b7024407c39bd3050"
+            "(!) scph5500.bin (md5): 8dd7d5296a650fac7319bce665a6a53c", 
+            "(!) scph5501.bin (md5): 490f666e1afb15b7362b406ed1cea246", 
+            "(!) scph5502.bin (md5): 32736f17079d0b2b7024407c39bd3050"
         ], 
         "permissions": "dynarec", 
         "required_hw_api": "", 
@@ -4455,19 +4637,19 @@
         "BIOS": [
             {
                 "desc": "scph5500.bin (PS1 JP BIOS)", 
-                "md5": "", 
+                "md5": "8dd7d5296a650fac7319bce665a6a53c", 
                 "opt": true, 
                 "path": "scph5500.bin"
             }, 
             {
                 "desc": "scph5501.bin (PS1 US BIOS)", 
-                "md5": "", 
+                "md5": "490f666e1afb15b7362b406ed1cea246", 
                 "opt": true, 
                 "path": "scph5501.bin"
             }, 
             {
                 "desc": "scph5502.bin (PS1 EU BIOS)", 
-                "md5": "", 
+                "md5": "32736f17079d0b2b7024407c39bd3050", 
                 "opt": true, 
                 "path": "scph5502.bin"
             }
@@ -4483,7 +4665,9 @@
         "license": "GPLv2", 
         "manufacturer": "Sony", 
         "notes": [
-            "(!) scph5500.bin (md5): 8dd7d5296a650fac7319bce665a6a53c|(!) scph5501.bin (md5): 490f666e1afb15b7362b406ed1cea246|(!) scph5502.bin (md5): 32736f17079d0b2b7024407c39bd3050"
+            "(!) scph5500.bin (md5): 8dd7d5296a650fac7319bce665a6a53c", 
+            "(!) scph5501.bin (md5): 490f666e1afb15b7362b406ed1cea246", 
+            "(!) scph5502.bin (md5): 32736f17079d0b2b7024407c39bd3050"
         ], 
         "permissions": "", 
         "required_hw_api": "", 
@@ -4496,19 +4680,19 @@
         "BIOS": [
             {
                 "desc": "scph5500.bin (PS1 JP BIOS)", 
-                "md5": "", 
+                "md5": "8dd7d5296a650fac7319bce665a6a53c", 
                 "opt": true, 
                 "path": "scph5500.bin"
             }, 
             {
                 "desc": "scph5501.bin (PS1 US BIOS)", 
-                "md5": "", 
+                "md5": "490f666e1afb15b7362b406ed1cea246", 
                 "opt": true, 
                 "path": "scph5501.bin"
             }, 
             {
                 "desc": "scph5502.bin (PS1 EU BIOS)", 
-                "md5": "", 
+                "md5": "32736f17079d0b2b7024407c39bd3050", 
                 "opt": true, 
                 "path": "scph5502.bin"
             }
@@ -4524,7 +4708,9 @@
         "license": "GPLv2", 
         "manufacturer": "Sony", 
         "notes": [
-            "(!) scph5500.bin (md5): 8dd7d5296a650fac7319bce665a6a53c|(!) scph5501.bin (md5): 490f666e1afb15b7362b406ed1cea246|(!) scph5502.bin (md5): 32736f17079d0b2b7024407c39bd3050"
+            "(!) scph5500.bin (md5): 8dd7d5296a650fac7319bce665a6a53c", 
+            "(!) scph5501.bin (md5): 490f666e1afb15b7362b406ed1cea246", 
+            "(!) scph5502.bin (md5): 32736f17079d0b2b7024407c39bd3050"
         ], 
         "permissions": "dynarec", 
         "required_hw_api": "", 
@@ -4537,19 +4723,19 @@
         "BIOS": [
             {
                 "desc": "scph5500.bin (PS1 JP BIOS)", 
-                "md5": "", 
+                "md5": "8dd7d5296a650fac7319bce665a6a53c", 
                 "opt": true, 
                 "path": "scph5500.bin"
             }, 
             {
                 "desc": "scph5501.bin (PS1 US BIOS)", 
-                "md5": "", 
+                "md5": "490f666e1afb15b7362b406ed1cea246", 
                 "opt": true, 
                 "path": "scph5501.bin"
             }, 
             {
                 "desc": "scph5502.bin (PS1 EU BIOS)", 
-                "md5": "", 
+                "md5": "32736f17079d0b2b7024407c39bd3050", 
                 "opt": true, 
                 "path": "scph5502.bin"
             }
@@ -4565,7 +4751,9 @@
         "license": "GPLv2", 
         "manufacturer": "Sony", 
         "notes": [
-            "(!) scph5500.bin (md5): 8dd7d5296a650fac7319bce665a6a53c|(!) scph5501.bin (md5): 490f666e1afb15b7362b406ed1cea246|(!) scph5502.bin (md5): 32736f17079d0b2b7024407c39bd3050"
+            "(!) scph5500.bin (md5): 8dd7d5296a650fac7319bce665a6a53c", 
+            "(!) scph5501.bin (md5): 490f666e1afb15b7362b406ed1cea246", 
+            "(!) scph5502.bin (md5): 32736f17079d0b2b7024407c39bd3050"
         ], 
         "permissions": "dynarec", 
         "required_hw_api": "", 
@@ -4578,19 +4766,19 @@
         "BIOS": [
             {
                 "desc": "bios_CD_E.bin (MegaCD EU BIOS)", 
-                "md5": "", 
+                "md5": "e66fa1dc5820d254611fdcdba0662372", 
                 "opt": true, 
                 "path": "bios_CD_E.bin"
             }, 
             {
                 "desc": "bios_CD_U.bin (SegaCD US BIOS)", 
-                "md5": "", 
+                "md5": "2efd74e3232ff260e371b99f84024f7f", 
                 "opt": true, 
                 "path": "bios_CD_U.bin"
             }, 
             {
                 "desc": "bios_CD_J.bin (MegaCD JP BIOS)", 
-                "md5": "", 
+                "md5": "278a9397d192149e84e820ac621a8edd", 
                 "opt": true, 
                 "path": "bios_CD_J.bin"
             }
@@ -4606,7 +4794,9 @@
         "license": "MAME", 
         "manufacturer": "Sega", 
         "notes": [
-            "(!) bios_CD_U.bin (md5): 2efd74e3232ff260e371b99f84024f7f|(!) bios_CD_E.bin (md5): e66fa1dc5820d254611fdcdba0662372|(!) bios_CD_J.bin (md5): 278a9397d192149e84e820ac621a8edd"
+            "(!) bios_CD_U.bin (md5): 2efd74e3232ff260e371b99f84024f7f", 
+            "(!) bios_CD_E.bin (md5): e66fa1dc5820d254611fdcdba0662372", 
+            "(!) bios_CD_J.bin (md5): 278a9397d192149e84e820ac621a8edd"
         ], 
         "permissions": "dynarec_optional", 
         "required_hw_api": "", 
@@ -4675,7 +4865,8 @@
         "license": "GPLv3", 
         "manufacturer": "Nintendo", 
         "notes": [
-            "Suggested md5sum:|1e4fb124a3a886865acb574f388c803d = bios.min"
+            "Suggested md5sum:", 
+            "1e4fb124a3a886865acb574f388c803d = bios.min"
         ], 
         "permissions": "", 
         "required_hw_api": "", 
@@ -4704,7 +4895,9 @@
         "license": "GPLv2", 
         "manufacturer": "Sony", 
         "notes": [
-            "(!) ppge_atlas.zim (md5): a93fc411c1ce7d001a2a812643c70085|(!) PPSSPP requires the asset files, lang folder, and flash0 folder inside the 'system\\PPSSPP' directory.|(!) Check https://docs.libretro.com/library/ppsspp/#bios to find out how to get the assets files."
+            "(!) ppge_atlas.zim (md5): a93fc411c1ce7d001a2a812643c70085", 
+            "(!) PPSSPP requires the asset files, lang folder, and flash0 folder inside the 'system\\PPSSPP' directory.", 
+            "(!) Check https://docs.libretro.com/library/ppsspp/#bios to find out how to get the assets files."
         ], 
         "permissions": "", 
         "required_hw_api": "OpenGL Core >= 3.1 | OpenGL ES >= 2.0 | Vulkan >= 1.0 | Direct3D11 >= 11.0", 
@@ -4726,7 +4919,8 @@
         "license": "GPLv2", 
         "manufacturer": "Id Software", 
         "notes": [
-            "(!) PrBoom requires data ROM 'prboom.wad' inside the ROM directory.|(!) Load Content 'doom1.wad'."
+            "(!) PrBoom requires data ROM 'prboom.wad' inside the ROM directory.", 
+            "(!) Load Content 'doom1.wad'."
         ], 
         "permissions": "", 
         "required_hw_api": "", 
@@ -4768,25 +4962,25 @@
         "BIOS": [
             {
                 "desc": "kick34005.A500 (Amiga 500 BIOS, Kickstart v1.3 Rev. 34.005)", 
-                "md5": "", 
+                "md5": "82a21c1890cae844b3df741f2762d48d", 
                 "opt": false, 
                 "path": "kick34005.A500"
             }, 
             {
                 "desc": "kick37175.A500 (Amiga 500+ BIOS, Kickstart v2.04 Rev. 37.175)", 
-                "md5": "", 
+                "md5": "dc10d7bdd1b6f450773dfb558477c230", 
                 "opt": false, 
                 "path": "kick37175.A500"
             }, 
             {
                 "desc": "kick40063.A600 (Amiga 600 BIOS, Kickstart v3.1 Rev. 40.063)", 
-                "md5": "", 
+                "md5": "e40a5dfb3d017ba8779faba30cbd1c8e", 
                 "opt": false, 
                 "path": "kick40063.A600"
             }, 
             {
                 "desc": "kick40068.A1200 (Amiga 1200 BIOS, Kickstart v3.1 Rev. 40.068)", 
-                "md5": "", 
+                "md5": "646773759326fbac3b2311fd8c8793ee", 
                 "opt": false, 
                 "path": "kick40068.A1200"
             }, 
@@ -4832,7 +5026,10 @@
         "license": "GPLv2", 
         "manufacturer": "Commodore", 
         "notes": [
-            "(!) kick34005.A500 (md5): 82a21c1890cae844b3df741f2762d48d|(!) kick37175.A500 (md5): dc10d7bdd1b6f450773dfb558477c230|(!) kick40063.A600 (md5): e40a5dfb3d017ba8779faba30cbd1c8e|(!) kick40068.A1200 (md5): 646773759326fbac3b2311fd8c8793ee"
+            "(!) kick34005.A500 (md5): 82a21c1890cae844b3df741f2762d48d", 
+            "(!) kick37175.A500 (md5): dc10d7bdd1b6f450773dfb558477c230", 
+            "(!) kick40063.A600 (md5): e40a5dfb3d017ba8779faba30cbd1c8e", 
+            "(!) kick40068.A1200 (md5): 646773759326fbac3b2311fd8c8793ee"
         ], 
         "permissions": "", 
         "required_hw_api": "", 
@@ -4873,7 +5070,9 @@
         "license": "", 
         "manufacturer": "Sharp", 
         "notes": [
-            "[i] Place BIOS files in system/keropi folder.|[i] F12 or Retropad L2 for Emulator Menu.|[i] Define your disks path in system/keropi/config StartDir line."
+            "[i] Place BIOS files in system/keropi folder.", 
+            "[i] F12 or Retropad L2 for Emulator Menu.", 
+            "[i] Define your disks path in system/keropi/config StartDir line."
         ], 
         "permissions": "", 
         "required_hw_api": "", 
@@ -4956,7 +5155,44 @@
         "license": "BSD 3-Clause", 
         "manufacturer": "NEC", 
         "notes": [
-            "QUASI88 by Showzoh Fukunaga.|Sound driver by MAME team.|fmgen and PC-8801 pseudo BIOS by cisc.|libretro port by Celerizer.| |BSD 3-Clause License| |Redistribution and use in source and binary|forms, with or without modification, are permitted|provided that the following conditions are met:| |1. Redistributions of source code must retain the|   above copyright notice, this list of conditions and|   the following disclaimer.| |2. Redistributions in binary form must reproduce the|   above copyright notice, this list of conditions and|   the following disclaimer in the documentation and/or|   other materials provided with the distribution.| |3. Neither the name of the copyright holder nor the|   names of its contributors may be used to endorse or|   promote products derived from this software without|   specific prior written permission.| |THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND|CONTRIBUTORS ''AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES,|INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF|MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE|DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR|CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,|SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT|NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;|LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)|HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN|CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR|OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,|EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE."
+            "QUASI88 by Showzoh Fukunaga.", 
+            "Sound driver by MAME team.", 
+            "fmgen and PC-8801 pseudo BIOS by cisc.", 
+            "libretro port by Celerizer.", 
+            " ", 
+            "BSD 3-Clause License", 
+            " ", 
+            "Redistribution and use in source and binary", 
+            "forms, with or without modification, are permitted", 
+            "provided that the following conditions are met:", 
+            " ", 
+            "1. Redistributions of source code must retain the", 
+            "   above copyright notice, this list of conditions and", 
+            "   the following disclaimer.", 
+            " ", 
+            "2. Redistributions in binary form must reproduce the", 
+            "   above copyright notice, this list of conditions and", 
+            "   the following disclaimer in the documentation and/or", 
+            "   other materials provided with the distribution.", 
+            " ", 
+            "3. Neither the name of the copyright holder nor the", 
+            "   names of its contributors may be used to endorse or", 
+            "   promote products derived from this software without", 
+            "   specific prior written permission.", 
+            " ", 
+            "THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND", 
+            "CONTRIBUTORS ''AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES,", 
+            "INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF", 
+            "MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE", 
+            "DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR", 
+            "CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,", 
+            "SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT", 
+            "NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;", 
+            "LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)", 
+            "HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN", 
+            "CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR", 
+            "OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,", 
+            "EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE."
         ], 
         "permissions": "", 
         "required_hw_api": "", 
@@ -5031,7 +5267,8 @@
         "license": "GPLv3", 
         "manufacturer": "Sega", 
         "notes": [
-            "(!) boot.bin (md5): e10c53c2f8b90bab96ead2d368858623|(!) flash.bin (md5): 0a93f7940c455905bea6e392dfde92a4"
+            "(!) boot.bin (md5): e10c53c2f8b90bab96ead2d368858623", 
+            "(!) flash.bin (md5): 0a93f7940c455905bea6e392dfde92a4"
         ], 
         "permissions": "", 
         "required_hw_api": "", 
@@ -5106,13 +5343,13 @@
         "BIOS": [
             {
                 "desc": "dmg_boot.bin (Game Boy boot ROM)", 
-                "md5": "", 
+                "md5": "32fbbd84168d3482956eb3c5051637f5", 
                 "opt": true, 
                 "path": "dmg_boot.bin"
             }, 
             {
                 "desc": "cgb_boot.bin (Game Boy Color boot ROM)", 
-                "md5": "", 
+                "md5": "dbfce9db9deaa2567f6a84fde55f9680", 
                 "opt": true, 
                 "path": "cgb_boot.bin"
             }
@@ -5128,7 +5365,8 @@
         "license": "MIT", 
         "manufacturer": "Nintendo", 
         "notes": [
-            "(!) dmg_boot.bin (md5): 32fbbd84168d3482956eb3c5051637f5|(!) cgb_boot.bin (md5): dbfce9db9deaa2567f6a84fde55f9680"
+            "(!) dmg_boot.bin (md5): 32fbbd84168d3482956eb3c5051637f5", 
+            "(!) cgb_boot.bin (md5): dbfce9db9deaa2567f6a84fde55f9680"
         ], 
         "permissions": "", 
         "required_hw_api": "", 
@@ -5261,13 +5499,13 @@
         "BIOS": [
             {
                 "desc": "BS-X.bin (BS-X - Sore wa Namae o Nusumareta Machi no Monogatari (Japan) (Rev 1))", 
-                "md5": "", 
+                "md5": "fed4d8242cfbed61343d53d48432aced", 
                 "opt": true, 
                 "path": "BS-X.bin"
             }, 
             {
                 "desc": "STBIOS.bin (Sufami Turbo (Japan))", 
-                "md5": "", 
+                "md5": "d3a44ba7d42a74d3ac58cb9c14c6a5ca", 
                 "opt": true, 
                 "path": "STBIOS.bin"
             }
@@ -5283,7 +5521,9 @@
         "license": "Non-commercial", 
         "manufacturer": "Nintendo", 
         "notes": [
-            "(!) BS-X.bin (md5): fed4d8242cfbed61343d53d48432aced|(!) STBIOS.bin (md5): d3a44ba7d42a74d3ac58cb9c14c6a5ca|(!) To start BS-X games from the RPG-like interface, go back into the house and select the 1st option."
+            "(!) BS-X.bin (md5): fed4d8242cfbed61343d53d48432aced", 
+            "(!) STBIOS.bin (md5): d3a44ba7d42a74d3ac58cb9c14c6a5ca", 
+            "(!) To start BS-X games from the RPG-like interface, go back into the house and select the 1st option."
         ], 
         "permissions": "", 
         "required_hw_api": "", 
@@ -5781,7 +6021,12 @@
         "license": "GPLv2", 
         "manufacturer": "Id Software", 
         "notes": [
-            "[i] Make those folders in the same directory:|[i] -id1 for the main game|[i] -hipnotic for the 1st mission pack|[i] -rogue for the 2nd mission pack|[i] -quoth for Quoth addon|[i] Put BGM into a subfolder named music in each of them."
+            "[i] Make those folders in the same directory:", 
+            "[i] -id1 for the main game", 
+            "[i] -hipnotic for the 1st mission pack", 
+            "[i] -rogue for the 2nd mission pack", 
+            "[i] -quoth for Quoth addon", 
+            "[i] Put BGM into a subfolder named music in each of them."
         ], 
         "permissions": "", 
         "required_hw_api": "", 
@@ -5823,7 +6068,16 @@
         "license": "MAME", 
         "manufacturer": "Various", 
         "notes": [
-            "[1] UME 2015 (Git) requires the hashes from the MAME/MESS source code|[^] to be inside the 'SYSTEMDIR\\ume\\hash' directory and softlist romset|(!) [2] UME 2015 supports UME save states.|[3] UME 2015 supports extracted UME cheats.|[4] The BIOS files must be inside the ROM directory.|[5] The same directory with CHD files inside must be inside the ROM directory.|[6] If desired, the ARTWORK, CHEATS, and SAMPLES directories can be|[^] inside the 'SYSTEMDIR\\ume' directory.|[7] When saving, the following directories will be created in the 'SAVEDIR\\ume'|[^] directory: STATES, NVRAM, INPUT, SNAPS, CFG, MEMCARD, and DIFF."
+            "[1] UME 2015 (Git) requires the hashes from the MAME/MESS source code", 
+            "[^] to be inside the 'SYSTEMDIR\\ume\\hash' directory and softlist romset", 
+            "(!) [2] UME 2015 supports UME save states.", 
+            "[3] UME 2015 supports extracted UME cheats.", 
+            "[4] The BIOS files must be inside the ROM directory.", 
+            "[5] The same directory with CHD files inside must be inside the ROM directory.", 
+            "[6] If desired, the ARTWORK, CHEATS, and SAMPLES directories can be", 
+            "[^] inside the 'SYSTEMDIR\\ume' directory.", 
+            "[7] When saving, the following directories will be created in the 'SAVEDIR\\ume'", 
+            "[^] directory: STATES, NVRAM, INPUT, SNAPS, CFG, MEMCARD, and DIFF."
         ], 
         "permissions": "", 
         "required_hw_api": "", 
@@ -5885,19 +6139,19 @@
         "BIOS": [
             {
                 "desc": "gba_bios.bin (Game Boy Advance BIOS)", 
-                "md5": "", 
+                "md5": "a860e8c0b6d573d191e4ec7db1b1e4f6", 
                 "opt": true, 
                 "path": "gba_bios.bin"
             }, 
             {
                 "desc": "gb_bios.bin (Game Boy BIOS)", 
-                "md5": "", 
+                "md5": "32fbbd84168d3482956eb3c5051637f5", 
                 "opt": true, 
                 "path": "gb_bios.bin"
             }, 
             {
                 "desc": "gbc_bios.bin (Game Boy Color BIOS)", 
-                "md5": "", 
+                "md5": "dbfce9db9deaa2567f6a84fde55f9680", 
                 "opt": true, 
                 "path": "gbc_bios.bin"
             }
@@ -5913,7 +6167,9 @@
         "license": "GPLv2", 
         "manufacturer": "Nintendo", 
         "notes": [
-            "(!) gba_bios.bin (md5): a860e8c0b6d573d191e4ec7db1b1e4f6|(!) gb_bios.bin (md5): 32fbbd84168d3482956eb3c5051637f5|(!) gbc_bios.bin (md5): dbfce9db9deaa2567f6a84fde55f9680"
+            "(!) gba_bios.bin (md5): a860e8c0b6d573d191e4ec7db1b1e4f6", 
+            "(!) gb_bios.bin (md5): 32fbbd84168d3482956eb3c5051637f5", 
+            "(!) gbc_bios.bin (md5): dbfce9db9deaa2567f6a84fde55f9680"
         ], 
         "permissions": "", 
         "required_hw_api": "", 
@@ -6320,7 +6576,8 @@
         "license": "GPLv3", 
         "manufacturer": "", 
         "notes": [
-            "(!) XRick requires data ROM 'data.zip'.|(!) Load Content 'data.zip'"
+            "(!) XRick requires data ROM 'data.zip'.", 
+            "(!) Load Content 'data.zip'"
         ], 
         "permissions": "", 
         "required_hw_api": "", 
@@ -6333,7 +6590,7 @@
         "BIOS": [
             {
                 "desc": "saturn_bios.bin (Saturn BIOS)", 
-                "md5": "", 
+                "md5": "af5828fdff51384f99b3c4926be27762", 
                 "opt": false, 
                 "path": "saturn_bios.bin"
             }
@@ -6349,7 +6606,8 @@
         "license": "GPLv2", 
         "manufacturer": "Sega", 
         "notes": [
-            "(!) saturn_bios.bin (md5): af5828fdff51384f99b3c4926be27762|Homepage : http://www.uoyabause.org/"
+            "(!) saturn_bios.bin (md5): af5828fdff51384f99b3c4926be27762", 
+            "Homepage : http://www.uoyabause.org/"
         ], 
         "permissions": "", 
         "required_hw_api": "OpenGL Core >= 3.3 | OpenGL ES >= 3.0", 
