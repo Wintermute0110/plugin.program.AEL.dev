@@ -74,14 +74,14 @@ Context menu **Edit Launcher**, submenu **Audit ROMs / Launcher view mode ...**:
 ### Future required database fields
 
 ```
-"i_cloneof" : ROMID,        -- Same as m_parent but uses ROM ID
-"i_audit_status" : "Have",  -- Determined by the ROM Audit exclusively
-"i_regions" : ['', ''],     -- Same as m_region
-"i_languages" : ['', ''],   -- Same as m_language
-"i_tags" : ['', ''],        -- Always extracted from filename
-"m_parent" : '',            -- Override the ROM parent (read-only)
-"m_region" : '',            -- Override the ROM regions (read-only)
-"m_language" : '',          -- Override the ROM languages (read-only)
+"i_cloneof" : ROMID,        Same as m_parent but uses ROM ID
+"i_audit_status" : "Have",  Determined by the ROM Audit exclusively
+"i_regions" : ['', ''],     Same as m_region
+"i_languages" : ['', ''],   Same as m_language
+"i_tags" : ['', ''],        Always extracted from filename
+"m_parent" : '',            Override the ROM parent (read-only)
+"m_region" : '',            Override the ROM regions (read-only)
+"m_language" : '',          Override the ROM languages (read-only)
 ```
 
 ### New features for 0.9.9
