@@ -49,7 +49,7 @@ disksys.rom                      ca30b50f  disksys.rom (Family Computer Disk Sys
                                                                                                                              False  fixnes                   
                                                                                                                              False  mesen                    
                                                                                                                              False  nestopia                 
-dmg_boot.bin                     32fbbd84  dmg_boot.bin (Game Boy boot ROM)                                                  True   emux_gb                  
+dmg_boot.bin                     32fbbd84  dmg_boot.bin (Game Boy Boot ROM)                                                  True   emux_gb                  
                                                                                                                              False  sameboy                  
 dsp1.data.rom                              dsp1.data.rom                                                                     False  bsnes                    
                                                                                                                              False  bsnes2014_accuracy       
@@ -172,7 +172,7 @@ gbc_bios.bin                     dbfce9db  gbc_bios.bin (Game Boy Color BIOS)   
                                                                                                                              False  gambatte                 
                                                                                                                              False  mgba                     
                                                                                                                              False  vbam                     
-gexpress.pce                               gexpress.pce (PCE-CD BIOS)                                                        False  mednafen_pce             
+gexpress.pce                               gexpress.pce (Game Express CD Card)                                               False  mednafen_pce             
                                                                                                                              False  mednafen_pce_fast        
                                                                                                                              False  mednafen_supergrafx      
 ggenie.bin                                 ggenie.bin (Game Genie ROM)                                                       False  genesis_plus_gx          
@@ -344,13 +344,13 @@ st018.program.rom                          st018.program.rom                    
                                                                                                                              False  higan_sfc                
                                                                                                                              False  higan_sfc_balanced       
 STBIOS.bin                       d3a44ba7  STBIOS.bin (Sufami Turbo (Japan))                                                 False  snes9x                   
-syscard1.pce                               syscard1.pce (PCE-CD BIOS)                                                        False  mednafen_pce             
+syscard1.pce                               syscard1.pce (CD-ROM System V1.xx)                                                False  mednafen_pce             
                                                                                                                              False  mednafen_pce_fast        
                                                                                                                              False  mednafen_supergrafx      
-syscard2.pce                               syscard2.pce (PCE-CD BIOS)                                                        False  mednafen_pce             
+syscard2.pce                               syscard2.pce (CD-ROM System V2.xx)                                                False  mednafen_pce             
                                                                                                                              False  mednafen_pce_fast        
                                                                                                                              False  mednafen_supergrafx      
-syscard3.pce                     38179df8  syscard3.pce (PCE-CD BIOS)                                                        False  mednafen_pce             
+syscard3.pce                     38179df8  syscard3.pce (Super CD-ROM2 System V3.xx)                                         False  mednafen_pce             
                                                                                                                              False  mednafen_pce_fast        
                                                                                                                              False  mednafen_supergrafx      
 tos.img                          c1c57ce4  tos.img (TOS Boot Image)                                                          True   hatari                   
