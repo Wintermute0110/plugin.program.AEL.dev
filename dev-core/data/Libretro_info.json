@@ -15,7 +15,7 @@
         "permissions": "", 
         "required_hw_api": "", 
         "supported_extensions": "", 
-        "supports_no_game": "true", 
+        "supports_no_game": true, 
         "systemid": "2048", 
         "systemname": "2048 Game Clone"
     }, 
@@ -35,7 +35,7 @@
         "permissions": "", 
         "required_hw_api": "", 
         "supported_extensions": "png|jpg|mtl|obj", 
-        "supports_no_game": "false", 
+        "supports_no_game": false, 
         "systemid": "", 
         "systemname": "3D Engine"
     }, 
@@ -43,62 +43,62 @@
         "BIOS": [
             {
                 "desc": "panafz1.bin (Panasonic FZ-1 BIOS)", 
-                "md5": "", 
-                "opt": "true", 
+                "md5": "f47264dd47fe30f73ab3c010015c155b", 
+                "opt": true, 
                 "path": "panafz1.bin"
             }, 
             {
                 "desc": "panafz10.bin (Panasonic FZ-10 BIOS)", 
-                "md5": "", 
-                "opt": "true", 
+                "md5": "51f2f43ae2f3508a14d9f56597e2d3ce", 
+                "opt": true, 
                 "path": "panafz10.bin"
             }, 
             {
                 "desc": "panafz10-patched.bin (Panasonic FZ-10 BIOS [RSA Patch])", 
-                "md5": "", 
-                "opt": "true", 
+                "md5": "1477bda80dc33731a65468c1f5bcbee9", 
+                "opt": true, 
                 "path": "panafz10-patched.bin"
             }, 
             {
                 "desc": "panafz10e-anvil.bin (Panasonic FZ-10E BIOS [Anvil])", 
-                "md5": "", 
-                "opt": "true", 
+                "md5": "a48e6746bd7edec0f40cff078f0bb19f", 
+                "opt": true, 
                 "path": "panafz10e-anvil.bin"
             }, 
             {
                 "desc": "panafz10e-anvil-patched.bin (Panasonic FZ-10E BIOS [Anvil RSA Patch])", 
-                "md5": "", 
-                "opt": "true", 
+                "md5": "cf11bbb5a16d7af9875cca9de9a15e09", 
+                "opt": true, 
                 "path": "panafz10e-anvil-patched.bin"
             }, 
             {
                 "desc": "goldstar.bin (Goldstar GDO-101M BIOS)", 
-                "md5": "", 
-                "opt": "true", 
+                "md5": "8639fd5e549bd6238cfee79e3e749114", 
+                "opt": true, 
                 "path": "goldstar.bin"
             }, 
             {
                 "desc": "sanyotry.bin (Sanyo Try IMP-21J BIOS)", 
-                "md5": "", 
-                "opt": "true", 
+                "md5": "35fa1a1ebaaeea286dc5cd15487c13ea", 
+                "opt": true, 
                 "path": "sanyotry.bin"
             }, 
             {
                 "desc": "3do_arcade_saot.bin (Shootout At Old Tucson BIOS)", 
-                "md5": "", 
-                "opt": "true", 
+                "md5": "8970fc987ab89a7f64da9f8a8c4333ff", 
+                "opt": true, 
                 "path": "3do_arcade_saot.bin"
             }, 
             {
                 "desc": "panafz1-kanji.bin (Panasonic FZ-1 Kanji Font ROM)", 
-                "md5": "", 
-                "opt": "true", 
+                "md5": "b8dc97f778a6245c58e064b0312e8281", 
+                "opt": true, 
                 "path": "panafz1-kanji.bin"
             }, 
             {
                 "desc": "panafz10ja-anvil-kanji.bin (Panasonic FZ-10JA Kanji Font ROM)", 
-                "md5": "", 
-                "opt": "true", 
+                "md5": "428577250f43edc902ea239c50d2240d", 
+                "opt": true, 
                 "path": "panafz10ja-anvil-kanji.bin"
             }
         ], 
@@ -127,7 +127,7 @@
         "permissions": "", 
         "required_hw_api": "", 
         "supported_extensions": "iso|bin|chd|cue", 
-        "supports_no_game": "true", 
+        "supports_no_game": true, 
         "systemid": "3do", 
         "systemname": "3DO"
     }, 
@@ -149,7 +149,7 @@
         "permissions": "", 
         "required_hw_api": "", 
         "supported_extensions": "p|tzx|t81", 
-        "supports_no_game": "false", 
+        "supports_no_game": false, 
         "systemid": "zx81", 
         "systemname": "ZX81"
     }, 
@@ -169,7 +169,7 @@
         "permissions": "", 
         "required_hw_api": "", 
         "supported_extensions": "", 
-        "supports_no_game": "true", 
+        "supports_no_game": true, 
         "systemid": "", 
         "systemname": ""
     }, 
@@ -177,8 +177,8 @@
         "BIOS": [
             {
                 "desc": "5200.rom (5200 BIOS)", 
-                "md5": "", 
-                "opt": "false", 
+                "md5": "281f20ea4320404ec820fb7ec0693b38", 
+                "opt": false, 
                 "path": "5200.rom"
             }
         ], 
@@ -198,7 +198,7 @@
         "permissions": "", 
         "required_hw_api": "", 
         "supported_extensions": "xfd|atr|atx|cdm|cas|bin|a52|xex|zip", 
-        "supports_no_game": "false", 
+        "supports_no_game": false, 
         "systemid": "atari_5200", 
         "systemname": "Atari 5200"
     }, 
@@ -220,7 +220,7 @@
         "permissions": "", 
         "required_hw_api": "", 
         "supported_extensions": "md|bin|smd", 
-        "supports_no_game": "false", 
+        "supports_no_game": false, 
         "systemid": "mega_drive", 
         "systemname": "Sega Genesis"
     }, 
@@ -242,7 +242,7 @@
         "permissions": "", 
         "required_hw_api": "", 
         "supported_extensions": "rom|ri|mx1|mx2|col|dsk|cas|sg|sc|m3u", 
-        "supports_no_game": "false", 
+        "supports_no_game": false, 
         "systemid": "msx", 
         "systemname": "MSX/SVI/ColecoVision/SG-1000"
     }, 
@@ -262,7 +262,7 @@
         "permissions": "", 
         "required_hw_api": "", 
         "supported_extensions": "nes", 
-        "supports_no_game": "false", 
+        "supports_no_game": false, 
         "systemid": "nes", 
         "systemname": "Nintendo Entertainment System"
     }, 
@@ -271,109 +271,109 @@
             {
                 "desc": "dsp1.data.rom", 
                 "md5": "", 
-                "opt": "true", 
+                "opt": true, 
                 "path": "dsp1.data.rom"
             }, 
             {
                 "desc": "dsp1.program.rom", 
                 "md5": "", 
-                "opt": "true", 
+                "opt": true, 
                 "path": "dsp1.program.rom"
             }, 
             {
                 "desc": "dsp1b.data.rom", 
                 "md5": "", 
-                "opt": "true", 
+                "opt": true, 
                 "path": "dsp1b.data.rom"
             }, 
             {
                 "desc": "dsp1b.program.rom", 
                 "md5": "", 
-                "opt": "true", 
+                "opt": true, 
                 "path": "dsp1b.program.rom"
             }, 
             {
                 "desc": "dsp2.data.rom", 
                 "md5": "", 
-                "opt": "true", 
+                "opt": true, 
                 "path": "dsp2.data.rom"
             }, 
             {
                 "desc": "dsp2.program.rom", 
                 "md5": "", 
-                "opt": "true", 
+                "opt": true, 
                 "path": "dsp2.program.rom"
             }, 
             {
                 "desc": "dsp3.data.rom", 
                 "md5": "", 
-                "opt": "true", 
+                "opt": true, 
                 "path": "dsp3.data.rom"
             }, 
             {
                 "desc": "dsp3.program.rom", 
                 "md5": "", 
-                "opt": "true", 
+                "opt": true, 
                 "path": "dsp3.program.rom"
             }, 
             {
                 "desc": "dsp4.data.rom", 
                 "md5": "", 
-                "opt": "true", 
+                "opt": true, 
                 "path": "dsp4.data.rom"
             }, 
             {
                 "desc": "dsp4.program.rom", 
                 "md5": "", 
-                "opt": "true", 
+                "opt": true, 
                 "path": "dsp4.program.rom"
             }, 
             {
                 "desc": "cx4.data.rom", 
                 "md5": "", 
-                "opt": "true", 
+                "opt": true, 
                 "path": "cx4.data.rom"
             }, 
             {
                 "desc": "st010.data.rom", 
                 "md5": "", 
-                "opt": "true", 
+                "opt": true, 
                 "path": "st010.data.rom"
             }, 
             {
                 "desc": "st010.program.rom", 
                 "md5": "", 
-                "opt": "true", 
+                "opt": true, 
                 "path": "st010.program.rom"
             }, 
             {
                 "desc": "st011.data.rom", 
                 "md5": "", 
-                "opt": "true", 
+                "opt": true, 
                 "path": "st011.data.rom"
             }, 
             {
                 "desc": "st011.program.rom", 
                 "md5": "", 
-                "opt": "true", 
+                "opt": true, 
                 "path": "st011.program.rom"
             }, 
             {
                 "desc": "st018.data.rom", 
                 "md5": "", 
-                "opt": "true", 
+                "opt": true, 
                 "path": "st018.data.rom"
             }, 
             {
                 "desc": "st018.program.rom", 
                 "md5": "", 
-                "opt": "true", 
+                "opt": true, 
                 "path": "st018.program.rom"
             }, 
             {
                 "desc": "sgb.boot.rom (SGB Boot Image)", 
                 "md5": "", 
-                "opt": "true", 
+                "opt": true, 
                 "path": "sgb.boot.rom"
             }
         ], 
@@ -393,7 +393,7 @@
         "permissions": "", 
         "required_hw_api": "", 
         "supported_extensions": "sfc|smc|bml", 
-        "supports_no_game": "false", 
+        "supports_no_game": false, 
         "systemid": "super_nes", 
         "systemname": "Super Nintendo Entertainment System"
     }, 
@@ -402,109 +402,109 @@
             {
                 "desc": "dsp1.data.rom", 
                 "md5": "", 
-                "opt": "true", 
+                "opt": true, 
                 "path": "dsp1.data.rom"
             }, 
             {
                 "desc": "dsp1.program.rom", 
                 "md5": "", 
-                "opt": "true", 
+                "opt": true, 
                 "path": "dsp1.program.rom"
             }, 
             {
                 "desc": "dsp1b.data.rom", 
                 "md5": "", 
-                "opt": "true", 
+                "opt": true, 
                 "path": "dsp1b.data.rom"
             }, 
             {
                 "desc": "dsp1b.program.rom", 
                 "md5": "", 
-                "opt": "true", 
+                "opt": true, 
                 "path": "dsp1b.program.rom"
             }, 
             {
                 "desc": "dsp2.data.rom", 
                 "md5": "", 
-                "opt": "true", 
+                "opt": true, 
                 "path": "dsp2.data.rom"
             }, 
             {
                 "desc": "dsp2.program.rom", 
                 "md5": "", 
-                "opt": "true", 
+                "opt": true, 
                 "path": "dsp2.program.rom"
             }, 
             {
                 "desc": "dsp3.data.rom", 
                 "md5": "", 
-                "opt": "true", 
+                "opt": true, 
                 "path": "dsp3.data.rom"
             }, 
             {
                 "desc": "dsp3.program.rom", 
                 "md5": "", 
-                "opt": "true", 
+                "opt": true, 
                 "path": "dsp3.program.rom"
             }, 
             {
                 "desc": "dsp4.data.rom", 
                 "md5": "", 
-                "opt": "true", 
+                "opt": true, 
                 "path": "dsp4.data.rom"
             }, 
             {
                 "desc": "dsp4.program.rom", 
                 "md5": "", 
-                "opt": "true", 
+                "opt": true, 
                 "path": "dsp4.program.rom"
             }, 
             {
                 "desc": "cx4.data.rom", 
                 "md5": "", 
-                "opt": "true", 
+                "opt": true, 
                 "path": "cx4.data.rom"
             }, 
             {
                 "desc": "st010.data.rom", 
                 "md5": "", 
-                "opt": "true", 
+                "opt": true, 
                 "path": "st010.data.rom"
             }, 
             {
                 "desc": "st010.program.rom", 
                 "md5": "", 
-                "opt": "true", 
+                "opt": true, 
                 "path": "st010.program.rom"
             }, 
             {
                 "desc": "st011.data.rom", 
                 "md5": "", 
-                "opt": "true", 
+                "opt": true, 
                 "path": "st011.data.rom"
             }, 
             {
                 "desc": "st011.program.rom", 
                 "md5": "", 
-                "opt": "true", 
+                "opt": true, 
                 "path": "st011.program.rom"
             }, 
             {
                 "desc": "st018.data.rom", 
                 "md5": "", 
-                "opt": "true", 
+                "opt": true, 
                 "path": "st018.data.rom"
             }, 
             {
                 "desc": "st018.program.rom", 
                 "md5": "", 
-                "opt": "true", 
+                "opt": true, 
                 "path": "st018.program.rom"
             }, 
             {
                 "desc": "sgb.boot.rom (SGB Boot Image)", 
                 "md5": "", 
-                "opt": "true", 
+                "opt": true, 
                 "path": "sgb.boot.rom"
             }
         ], 
@@ -524,7 +524,7 @@
         "permissions": "", 
         "required_hw_api": "", 
         "supported_extensions": "sfc|smc|bml", 
-        "supports_no_game": "false", 
+        "supports_no_game": false, 
         "systemid": "super_nes", 
         "systemname": "Super Nintendo Entertainment System"
     }, 
@@ -533,103 +533,103 @@
             {
                 "desc": "dsp1.data.rom", 
                 "md5": "", 
-                "opt": "true", 
+                "opt": true, 
                 "path": "dsp1.data.rom"
             }, 
             {
                 "desc": "dsp1.program.rom", 
                 "md5": "", 
-                "opt": "true", 
+                "opt": true, 
                 "path": "dsp1.program.rom"
             }, 
             {
                 "desc": "dsp1b.data.rom", 
                 "md5": "", 
-                "opt": "true", 
+                "opt": true, 
                 "path": "dsp1b.data.rom"
             }, 
             {
                 "desc": "dsp1b.program.rom", 
                 "md5": "", 
-                "opt": "true", 
+                "opt": true, 
                 "path": "dsp1b.program.rom"
             }, 
             {
                 "desc": "dsp2.data.rom", 
                 "md5": "", 
-                "opt": "true", 
+                "opt": true, 
                 "path": "dsp2.data.rom"
             }, 
             {
                 "desc": "dsp2.program.rom", 
                 "md5": "", 
-                "opt": "true", 
+                "opt": true, 
                 "path": "dsp2.program.rom"
             }, 
             {
                 "desc": "dsp3.data.rom", 
                 "md5": "", 
-                "opt": "true", 
+                "opt": true, 
                 "path": "dsp3.data.rom"
             }, 
             {
                 "desc": "dsp3.program.rom", 
                 "md5": "", 
-                "opt": "true", 
+                "opt": true, 
                 "path": "dsp3.program.rom"
             }, 
             {
                 "desc": "dsp4.data.rom", 
                 "md5": "", 
-                "opt": "true", 
+                "opt": true, 
                 "path": "dsp4.data.rom"
             }, 
             {
                 "desc": "dsp4.program.rom", 
                 "md5": "", 
-                "opt": "true", 
+                "opt": true, 
                 "path": "dsp4.program.rom"
             }, 
             {
                 "desc": "st010.data.rom", 
                 "md5": "", 
-                "opt": "true", 
+                "opt": true, 
                 "path": "st010.data.rom"
             }, 
             {
                 "desc": "st010.program.rom", 
                 "md5": "", 
-                "opt": "true", 
+                "opt": true, 
                 "path": "st010.program.rom"
             }, 
             {
                 "desc": "st011.data.rom", 
                 "md5": "", 
-                "opt": "true", 
+                "opt": true, 
                 "path": "st011.data.rom"
             }, 
             {
                 "desc": "st011.program.rom", 
                 "md5": "", 
-                "opt": "true", 
+                "opt": true, 
                 "path": "st011.program.rom"
             }, 
             {
                 "desc": "st018.data.rom", 
                 "md5": "", 
-                "opt": "true", 
+                "opt": true, 
                 "path": "st018.data.rom"
             }, 
             {
                 "desc": "st018.program.rom", 
                 "md5": "", 
-                "opt": "true", 
+                "opt": true, 
                 "path": "st018.program.rom"
             }, 
             {
                 "desc": "sgb.boot.rom (SGB Boot Image)", 
                 "md5": "", 
-                "opt": "true", 
+                "opt": true, 
                 "path": "sgb.boot.rom"
             }
         ], 
@@ -649,7 +649,7 @@
         "permissions": "", 
         "required_hw_api": "", 
         "supported_extensions": "sfc|smc|bml", 
-        "supports_no_game": "false", 
+        "supports_no_game": false, 
         "systemid": "super_nes", 
         "systemname": "Super Nintendo Entertainment System"
     }, 
@@ -669,7 +669,7 @@
         "permissions": "", 
         "required_hw_api": "", 
         "supported_extensions": "sfc|smc", 
-        "supports_no_game": "false", 
+        "supports_no_game": false, 
         "systemid": "super_nes", 
         "systemname": "Super Nintendo Entertainment System"
     }, 
@@ -678,110 +678,116 @@
             {
                 "desc": "dsp1.data.rom", 
                 "md5": "", 
-                "opt": "true", 
+                "opt": true, 
                 "path": "dsp1.data.rom"
             }, 
             {
                 "desc": "dsp1.program.rom", 
                 "md5": "", 
-                "opt": "true", 
+                "opt": true, 
                 "path": "dsp1.program.rom"
             }, 
             {
                 "desc": "dsp1b.data.rom", 
                 "md5": "", 
-                "opt": "true", 
+                "opt": true, 
                 "path": "dsp1b.data.rom"
             }, 
             {
                 "desc": "dsp1b.program.rom", 
                 "md5": "", 
-                "opt": "true", 
+                "opt": true, 
                 "path": "dsp1b.program.rom"
             }, 
             {
                 "desc": "dsp2.data.rom", 
                 "md5": "", 
-                "opt": "true", 
+                "opt": true, 
                 "path": "dsp2.data.rom"
             }, 
             {
                 "desc": "dsp2.program.rom", 
                 "md5": "", 
-                "opt": "true", 
+                "opt": true, 
                 "path": "dsp2.program.rom"
             }, 
             {
                 "desc": "dsp3.data.rom", 
                 "md5": "", 
-                "opt": "true", 
+                "opt": true, 
                 "path": "dsp3.data.rom"
             }, 
             {
                 "desc": "dsp3.program.rom", 
                 "md5": "", 
-                "opt": "true", 
+                "opt": true, 
                 "path": "dsp3.program.rom"
             }, 
             {
                 "desc": "dsp4.data.rom", 
                 "md5": "", 
-                "opt": "true", 
+                "opt": true, 
                 "path": "dsp4.data.rom"
             }, 
             {
                 "desc": "dsp4.program.rom", 
                 "md5": "", 
-                "opt": "true", 
+                "opt": true, 
                 "path": "dsp4.program.rom"
             }, 
             {
                 "desc": "cx4.data.rom", 
                 "md5": "", 
-                "opt": "true", 
+                "opt": true, 
                 "path": "cx4.data.rom"
             }, 
             {
                 "desc": "st010.data.rom", 
                 "md5": "", 
-                "opt": "true", 
+                "opt": true, 
                 "path": "st010.data.rom"
             }, 
             {
                 "desc": "st010.program.rom", 
                 "md5": "", 
-                "opt": "true", 
+                "opt": true, 
                 "path": "st010.program.rom"
             }, 
             {
                 "desc": "st011.data.rom", 
                 "md5": "", 
-                "opt": "true", 
+                "opt": true, 
                 "path": "st011.data.rom"
             }, 
             {
                 "desc": "st011.program.rom", 
                 "md5": "", 
-                "opt": "true", 
+                "opt": true, 
                 "path": "st011.program.rom"
             }, 
             {
                 "desc": "st018.data.rom", 
                 "md5": "", 
-                "opt": "true", 
+                "opt": true, 
                 "path": "st018.data.rom"
             }, 
             {
                 "desc": "st018.program.rom", 
                 "md5": "", 
-                "opt": "true", 
+                "opt": true, 
                 "path": "st018.program.rom"
             }, 
             {
-                "desc": "sgb.boot.rom (SGB Boot Image)", 
+                "desc": "SGB1.sfc (SGB Boot Image)", 
                 "md5": "", 
-                "opt": "true", 
-                "path": "sgb.boot.rom"
+                "opt": true, 
+                "path": "SGB1.sfc"
+            }, 
+            {
+                "desc": "SGB2.sfc (SGB Boot Image)", 
+                "md5": "", 
+                "opt": true, 
+                "path": "SGB2.sfc"
             }
         ], 
         "authors": "byuu", 
@@ -791,16 +797,16 @@
         "database_match_archive_member": "", 
         "display_name": "Nintendo - SNES / Famicom (bsnes)", 
         "display_version": "v110.3 (Balanced)", 
-        "firmware_count": "18", 
+        "firmware_count": "19", 
         "license": "GPLv3", 
         "manufacturer": "Nintendo", 
         "notes": [
-            "[1] bsnes uses split ROMS for special chip games.|[*] Notable DSP1/DSP1B Games: Super Mario Kart,  Pilotwings|[*] Notable DSP2 Games: Dungeon Master|[*] Notable DSP3 Games: SD Gundam GX|[*] Notable DSP4 Games: Top Gear 3000|[*] Notable Cx4 Games: Mega Man X2,  Mega Man X3|[2] SGB Emulation will only work with command line."
+            "[1] bsnes uses split ROMS for special chip games.|[*] Notable DSP1/DSP1B Games: Super Mario Kart,  Pilotwings|[*] Notable DSP2 Games: Dungeon Master|[*] Notable DSP3 Games: SD Gundam GX|[*] Notable DSP4 Games: Top Gear 3000|[*] Notable Cx4 Games: Mega Man X2,  Mega Man X3|[2] SGB Emulation needs No-Intro Super Game Boy ROMs renamed to SGB1.sfc or SGB2.sfc|(!) SGB1.sfc (md5): b15ddb15721c657d82c5bab6db982ee9|(!) SGB2.sfc (md5): 8ecd73eb4edf7ed7e81aef1be80031d5"
         ], 
         "permissions": "", 
         "required_hw_api": "", 
-        "supported_extensions": "sfc|smc|bml", 
-        "supports_no_game": "false", 
+        "supported_extensions": "sfc|smc|gb|gbc", 
+        "supports_no_game": false, 
         "systemid": "super_nes", 
         "systemname": "Super Nintendo Entertainment System"
     }, 
@@ -809,109 +815,109 @@
             {
                 "desc": "dsp1.data.rom", 
                 "md5": "", 
-                "opt": "true", 
+                "opt": true, 
                 "path": "dsp1.data.rom"
             }, 
             {
                 "desc": "dsp1.program.rom", 
                 "md5": "", 
-                "opt": "true", 
+                "opt": true, 
                 "path": "dsp1.program.rom"
             }, 
             {
                 "desc": "dsp1b.data.rom", 
                 "md5": "", 
-                "opt": "true", 
+                "opt": true, 
                 "path": "dsp1b.data.rom"
             }, 
             {
                 "desc": "dsp1b.program.rom", 
                 "md5": "", 
-                "opt": "true", 
+                "opt": true, 
                 "path": "dsp1b.program.rom"
             }, 
             {
                 "desc": "dsp2.data.rom", 
                 "md5": "", 
-                "opt": "true", 
+                "opt": true, 
                 "path": "dsp2.data.rom"
             }, 
             {
                 "desc": "dsp2.program.rom", 
                 "md5": "", 
-                "opt": "true", 
+                "opt": true, 
                 "path": "dsp2.program.rom"
             }, 
             {
                 "desc": "dsp3.data.rom", 
                 "md5": "", 
-                "opt": "true", 
+                "opt": true, 
                 "path": "dsp3.data.rom"
             }, 
             {
                 "desc": "dsp3.program.rom", 
                 "md5": "", 
-                "opt": "true", 
+                "opt": true, 
                 "path": "dsp3.program.rom"
             }, 
             {
                 "desc": "dsp4.data.rom", 
                 "md5": "", 
-                "opt": "true", 
+                "opt": true, 
                 "path": "dsp4.data.rom"
             }, 
             {
                 "desc": "dsp4.program.rom", 
                 "md5": "", 
-                "opt": "true", 
+                "opt": true, 
                 "path": "dsp4.program.rom"
             }, 
             {
                 "desc": "cx4.data.rom", 
                 "md5": "", 
-                "opt": "true", 
+                "opt": true, 
                 "path": "cx4.data.rom"
             }, 
             {
                 "desc": "st010.data.rom", 
                 "md5": "", 
-                "opt": "true", 
+                "opt": true, 
                 "path": "st010.data.rom"
             }, 
             {
                 "desc": "st010.program.rom", 
                 "md5": "", 
-                "opt": "true", 
+                "opt": true, 
                 "path": "st010.program.rom"
             }, 
             {
                 "desc": "st011.data.rom", 
                 "md5": "", 
-                "opt": "true", 
+                "opt": true, 
                 "path": "st011.data.rom"
             }, 
             {
                 "desc": "st011.program.rom", 
                 "md5": "", 
-                "opt": "true", 
+                "opt": true, 
                 "path": "st011.program.rom"
             }, 
             {
                 "desc": "st018.data.rom", 
                 "md5": "", 
-                "opt": "true", 
+                "opt": true, 
                 "path": "st018.data.rom"
             }, 
             {
                 "desc": "st018.program.rom", 
                 "md5": "", 
-                "opt": "true", 
+                "opt": true, 
                 "path": "st018.program.rom"
             }, 
             {
                 "desc": "sgb.boot.rom (SGB Boot Image)", 
                 "md5": "", 
-                "opt": "true", 
+                "opt": true, 
                 "path": "sgb.boot.rom"
             }
         ], 
@@ -931,7 +937,7 @@
         "permissions": "", 
         "required_hw_api": "", 
         "supported_extensions": "sfc|smc|bml", 
-        "supports_no_game": "false", 
+        "supports_no_game": false, 
         "systemid": "super_nes", 
         "systemname": "Super Nintendo Entertainment System"
     }, 
@@ -940,109 +946,109 @@
             {
                 "desc": "dsp1.data.rom", 
                 "md5": "", 
-                "opt": "true", 
+                "opt": true, 
                 "path": "dsp1.data.rom"
             }, 
             {
                 "desc": "dsp1.program.rom", 
                 "md5": "", 
-                "opt": "true", 
+                "opt": true, 
                 "path": "dsp1.program.rom"
             }, 
             {
                 "desc": "dsp1b.data.rom", 
                 "md5": "", 
-                "opt": "true", 
+                "opt": true, 
                 "path": "dsp1b.data.rom"
             }, 
             {
                 "desc": "dsp1b.program.rom", 
                 "md5": "", 
-                "opt": "true", 
+                "opt": true, 
                 "path": "dsp1b.program.rom"
             }, 
             {
                 "desc": "dsp2.data.rom", 
                 "md5": "", 
-                "opt": "true", 
+                "opt": true, 
                 "path": "dsp2.data.rom"
             }, 
             {
                 "desc": "dsp2.program.rom", 
                 "md5": "", 
-                "opt": "true", 
+                "opt": true, 
                 "path": "dsp2.program.rom"
             }, 
             {
                 "desc": "dsp3.data.rom", 
                 "md5": "", 
-                "opt": "true", 
+                "opt": true, 
                 "path": "dsp3.data.rom"
             }, 
             {
                 "desc": "dsp3.program.rom", 
                 "md5": "", 
-                "opt": "true", 
+                "opt": true, 
                 "path": "dsp3.program.rom"
             }, 
             {
                 "desc": "dsp4.data.rom", 
                 "md5": "", 
-                "opt": "true", 
+                "opt": true, 
                 "path": "dsp4.data.rom"
             }, 
             {
                 "desc": "dsp4.program.rom", 
                 "md5": "", 
-                "opt": "true", 
+                "opt": true, 
                 "path": "dsp4.program.rom"
             }, 
             {
                 "desc": "cx4.data.rom", 
                 "md5": "", 
-                "opt": "true", 
+                "opt": true, 
                 "path": "cx4.data.rom"
             }, 
             {
                 "desc": "st010.data.rom", 
                 "md5": "", 
-                "opt": "true", 
+                "opt": true, 
                 "path": "st010.data.rom"
             }, 
             {
                 "desc": "st010.program.rom", 
                 "md5": "", 
-                "opt": "true", 
+                "opt": true, 
                 "path": "st010.program.rom"
             }, 
             {
                 "desc": "st011.data.rom", 
                 "md5": "", 
-                "opt": "true", 
+                "opt": true, 
                 "path": "st011.data.rom"
             }, 
             {
                 "desc": "st011.program.rom", 
                 "md5": "", 
-                "opt": "true", 
+                "opt": true, 
                 "path": "st011.program.rom"
             }, 
             {
                 "desc": "st018.data.rom", 
                 "md5": "", 
-                "opt": "true", 
+                "opt": true, 
                 "path": "st018.data.rom"
             }, 
             {
                 "desc": "st018.program.rom", 
                 "md5": "", 
-                "opt": "true", 
+                "opt": true, 
                 "path": "st018.program.rom"
             }, 
             {
                 "desc": "sgb.boot.rom (SGB Boot Image)", 
                 "md5": "", 
-                "opt": "true", 
+                "opt": true, 
                 "path": "sgb.boot.rom"
             }
         ], 
@@ -1062,7 +1068,7 @@
         "permissions": "", 
         "required_hw_api": "", 
         "supported_extensions": "sfc|smc|bml", 
-        "supports_no_game": "false", 
+        "supports_no_game": false, 
         "systemid": "super_nes", 
         "systemname": "Super Nintendo Entertainment System"
     }, 
@@ -1071,103 +1077,103 @@
             {
                 "desc": "dsp1.data.rom", 
                 "md5": "", 
-                "opt": "true", 
+                "opt": true, 
                 "path": "dsp1.data.rom"
             }, 
             {
                 "desc": "dsp1.program.rom", 
                 "md5": "", 
-                "opt": "true", 
+                "opt": true, 
                 "path": "dsp1.program.rom"
             }, 
             {
                 "desc": "dsp1b.data.rom", 
                 "md5": "", 
-                "opt": "true", 
+                "opt": true, 
                 "path": "dsp1b.data.rom"
             }, 
             {
                 "desc": "dsp1b.program.rom", 
                 "md5": "", 
-                "opt": "true", 
+                "opt": true, 
                 "path": "dsp1b.program.rom"
             }, 
             {
                 "desc": "dsp2.data.rom", 
                 "md5": "", 
-                "opt": "true", 
+                "opt": true, 
                 "path": "dsp2.data.rom"
             }, 
             {
                 "desc": "dsp2.program.rom", 
                 "md5": "", 
-                "opt": "true", 
+                "opt": true, 
                 "path": "dsp2.program.rom"
             }, 
             {
                 "desc": "dsp3.data.rom", 
                 "md5": "", 
-                "opt": "true", 
+                "opt": true, 
                 "path": "dsp3.data.rom"
             }, 
             {
                 "desc": "dsp3.program.rom", 
                 "md5": "", 
-                "opt": "true", 
+                "opt": true, 
                 "path": "dsp3.program.rom"
             }, 
             {
                 "desc": "dsp4.data.rom", 
                 "md5": "", 
-                "opt": "true", 
+                "opt": true, 
                 "path": "dsp4.data.rom"
             }, 
             {
                 "desc": "dsp4.program.rom", 
                 "md5": "", 
-                "opt": "true", 
+                "opt": true, 
                 "path": "dsp4.program.rom"
             }, 
             {
                 "desc": "st010.data.rom", 
                 "md5": "", 
-                "opt": "true", 
+                "opt": true, 
                 "path": "st010.data.rom"
             }, 
             {
                 "desc": "st010.program.rom", 
                 "md5": "", 
-                "opt": "true", 
+                "opt": true, 
                 "path": "st010.program.rom"
             }, 
             {
                 "desc": "st011.data.rom", 
                 "md5": "", 
-                "opt": "true", 
+                "opt": true, 
                 "path": "st011.data.rom"
             }, 
             {
                 "desc": "st011.program.rom", 
                 "md5": "", 
-                "opt": "true", 
+                "opt": true, 
                 "path": "st011.program.rom"
             }, 
             {
                 "desc": "st018.data.rom", 
                 "md5": "", 
-                "opt": "true", 
+                "opt": true, 
                 "path": "st018.data.rom"
             }, 
             {
                 "desc": "st018.program.rom", 
                 "md5": "", 
-                "opt": "true", 
+                "opt": true, 
                 "path": "st018.program.rom"
             }, 
             {
                 "desc": "sgb.boot.rom (SGB Boot Image)", 
                 "md5": "", 
-                "opt": "true", 
+                "opt": true, 
                 "path": "sgb.boot.rom"
             }
         ], 
@@ -1187,7 +1193,7 @@
         "permissions": "", 
         "required_hw_api": "", 
         "supported_extensions": "sfc|smc|bml", 
-        "supports_no_game": "false", 
+        "supports_no_game": false, 
         "systemid": "super_nes", 
         "systemname": "Super Nintendo Entertainment System"
     }, 
@@ -1209,7 +1215,7 @@
         "permissions": "", 
         "required_hw_api": "", 
         "supported_extensions": "game|88", 
-        "supports_no_game": "false", 
+        "supports_no_game": false, 
         "systemid": "", 
         "systemname": "Outrun Game Engine"
     }, 
@@ -1229,7 +1235,7 @@
         "permissions": "", 
         "required_hw_api": "", 
         "supported_extensions": "dsk|sna|zip|tap|cdt|voc|m3u", 
-        "supports_no_game": "true", 
+        "supports_no_game": true, 
         "systemid": "cpc", 
         "systemname": "CPC"
     }, 
@@ -1249,7 +1255,7 @@
         "permissions": "", 
         "required_hw_api": "", 
         "supported_extensions": "chai|chailove", 
-        "supports_no_game": "false", 
+        "supports_no_game": false, 
         "systemid": "chailove", 
         "systemname": "ChaiLove"
     }, 
@@ -1269,7 +1275,7 @@
         "permissions": "", 
         "required_hw_api": "", 
         "supported_extensions": "3ds|3dsx|elf|axf|cci|cxi|app", 
-        "supports_no_game": "false", 
+        "supports_no_game": false, 
         "systemid": "3ds", 
         "systemname": "Nintendo 3DS"
     }, 
@@ -1289,7 +1295,7 @@
         "permissions": "", 
         "required_hw_api": "OpenGL Core >= 3.3", 
         "supported_extensions": "3ds|3dsx|elf|axf|cci|cxi|app", 
-        "supports_no_game": "false", 
+        "supports_no_game": false, 
         "systemid": "3ds", 
         "systemname": "Nintendo 3DS"
     }, 
@@ -1309,7 +1315,7 @@
         "permissions": "", 
         "required_hw_api": "", 
         "supported_extensions": "", 
-        "supports_no_game": "true", 
+        "supports_no_game": true, 
         "systemid": "craft", 
         "systemname": "Minecraft Game Clone"
     }, 
@@ -1329,7 +1335,7 @@
         "permissions": "", 
         "required_hw_api": "", 
         "supported_extensions": "dsk|sna|kcr", 
-        "supports_no_game": "false", 
+        "supports_no_game": false, 
         "systemid": "cpc", 
         "systemname": "CPC"
     }, 
@@ -1349,7 +1355,7 @@
         "permissions": "", 
         "required_hw_api": "", 
         "supported_extensions": "game", 
-        "supports_no_game": "true", 
+        "supports_no_game": true, 
         "systemid": "", 
         "systemname": ""
     }, 
@@ -1369,7 +1375,7 @@
         "permissions": "", 
         "required_hw_api": "", 
         "supported_extensions": "zip", 
-        "supports_no_game": "false", 
+        "supports_no_game": false, 
         "systemid": "", 
         "systemname": "Arcade (various)"
     }, 
@@ -1389,7 +1395,7 @@
         "permissions": "", 
         "required_hw_api": "", 
         "supported_extensions": "nds|bin", 
-        "supports_no_game": "false", 
+        "supports_no_game": false, 
         "systemid": "nds", 
         "systemname": "Nintendo DS"
     }, 
@@ -1398,19 +1404,19 @@
             {
                 "desc": "firmware.bin (NDS Firmware)", 
                 "md5": "", 
-                "opt": "true", 
+                "opt": true, 
                 "path": "firmware.bin"
             }, 
             {
                 "desc": "bios7.bin (ARM7 BIOS)", 
                 "md5": "", 
-                "opt": "true", 
+                "opt": true, 
                 "path": "bios7.bin"
             }, 
             {
                 "desc": "bios9.bin (ARM9 BIOS)", 
                 "md5": "", 
-                "opt": "true", 
+                "opt": true, 
                 "path": "bios9.bin"
             }
         ], 
@@ -1430,7 +1436,7 @@
         "permissions": "", 
         "required_hw_api": "", 
         "supported_extensions": "nds|bin", 
-        "supports_no_game": "false", 
+        "supports_no_game": false, 
         "systemid": "nds", 
         "systemname": "Nintendo DS"
     }, 
@@ -1450,7 +1456,7 @@
         "permissions": "", 
         "required_hw_api": "", 
         "supported_extensions": "pk4", 
-        "supports_no_game": "false", 
+        "supports_no_game": false, 
         "systemid": "doom_3", 
         "systemname": "Doom 3 Game Engine"
     }, 
@@ -1472,7 +1478,7 @@
         "permissions": "", 
         "required_hw_api": "", 
         "supported_extensions": "game", 
-        "supports_no_game": "false", 
+        "supports_no_game": false, 
         "systemid": "dinothawr", 
         "systemname": "Dinothawr Game Engine"
     }, 
@@ -1492,7 +1498,7 @@
         "permissions": "", 
         "required_hw_api": "", 
         "supported_extensions": "elf|dol|gcm|iso|wbfs|ciso|gcz|wad", 
-        "supports_no_game": "true", 
+        "supports_no_game": true, 
         "systemid": "gamecube", 
         "systemname": "GameCube / Wii"
     }, 
@@ -1514,7 +1520,7 @@
         "permissions": "", 
         "required_hw_api": "", 
         "supported_extensions": "gcm|iso|wbfs|ciso|gcz|elf|dol|dff|tgc|wad", 
-        "supports_no_game": "false", 
+        "supports_no_game": false, 
         "systemid": "gamecube", 
         "systemname": "GameCube / Wii"
     }, 
@@ -1534,33 +1540,35 @@
         "permissions": "", 
         "required_hw_api": "", 
         "supported_extensions": "exe|com|bat|conf", 
-        "supports_no_game": "true", 
+        "supports_no_game": true, 
         "systemid": "dos", 
         "systemname": "DOS"
     }, 
-    "info/dosbox_svn_glide_libretro.info": {
+    "info/dosbox_svn_ce_libretro.info": {
         "BIOS": [], 
-        "authors": "DOSBox Team", 
+        "authors": "DOSBox Team|radius", 
         "categories": "Emulator", 
-        "corename": "DOSBox-SVN", 
+        "corename": "DOSBox-SVN CE", 
         "database": "DOS", 
         "database_match_archive_member": "", 
-        "display_name": "DOS (DOSBox-SVN Glide)", 
-        "display_version": "SVN", 
+        "display_name": "DOS (DOSBox-SVN)", 
+        "display_version": "SVN CE", 
         "firmware_count": "", 
         "license": "GPLv2", 
         "manufacturer": "Microsoft", 
-        "notes": [], 
+        "notes": [
+            "(!) This core requires libsdl1.2 and libsdl-net1.2.|"
+        ], 
         "permissions": "", 
         "required_hw_api": "", 
-        "supported_extensions": "exe|com|bat|conf", 
-        "supports_no_game": "true", 
+        "supported_extensions": "exe|com|bat|conf|cue|iso", 
+        "supports_no_game": true, 
         "systemid": "dos", 
         "systemname": "DOS"
     }, 
     "info/dosbox_svn_libretro.info": {
         "BIOS": [], 
-        "authors": "DOSBox Team", 
+        "authors": "DOSBox Team|radius", 
         "categories": "Emulator", 
         "corename": "DOSBox-SVN", 
         "database": "DOS", 
@@ -1576,7 +1584,7 @@
         "permissions": "", 
         "required_hw_api": "", 
         "supported_extensions": "exe|com|bat|conf|cue|iso", 
-        "supports_no_game": "true", 
+        "supports_no_game": true, 
         "systemid": "dos", 
         "systemname": "DOS"
     }, 
@@ -1596,7 +1604,7 @@
         "permissions": "", 
         "required_hw_api": "", 
         "supported_extensions": "ldb", 
-        "supports_no_game": "false", 
+        "supports_no_game": false, 
         "systemid": "", 
         "systemname": "RPG Maker 2000/2003 Game Engine"
     }, 
@@ -1616,7 +1624,7 @@
         "permissions": "", 
         "required_hw_api": "", 
         "supported_extensions": "ch8|bin|rom", 
-        "supports_no_game": "false", 
+        "supports_no_game": false, 
         "systemid": "chip_8", 
         "systemname": "CHIP-8"
     }, 
@@ -1624,8 +1632,8 @@
         "BIOS": [
             {
                 "desc": "dmg_boot.bin (Game Boy Boot ROM)", 
-                "md5": "", 
-                "opt": "false", 
+                "md5": "32fbbd84168d3482956eb3c5051637f5", 
+                "opt": false, 
                 "path": "dmg_boot.bin"
             }
         ], 
@@ -1645,7 +1653,7 @@
         "permissions": "", 
         "required_hw_api": "", 
         "supported_extensions": "gb|bin|rom", 
-        "supports_no_game": "false", 
+        "supports_no_game": false, 
         "systemid": "game_boy", 
         "systemname": "Game Boy/Game Boy Color"
     }, 
@@ -1665,7 +1673,7 @@
         "permissions": "", 
         "required_hw_api": "", 
         "supported_extensions": "nes|bin|rom", 
-        "supports_no_game": "false", 
+        "supports_no_game": false, 
         "systemid": "nes", 
         "systemname": "Nintendo Entertainment System"
     }, 
@@ -1674,7 +1682,7 @@
             {
                 "desc": "bios.sms (Master System BIOS)", 
                 "md5": "", 
-                "opt": "false", 
+                "opt": false, 
                 "path": "bios.sms"
             }
         ], 
@@ -1694,7 +1702,7 @@
         "permissions": "", 
         "required_hw_api": "", 
         "supported_extensions": "sms|bin|rom", 
-        "supports_no_game": "false", 
+        "supports_no_game": false, 
         "systemid": "master_system", 
         "systemname": "Sega Master System"
     }, 
@@ -1716,7 +1724,7 @@
         "permissions": "", 
         "required_hw_api": "", 
         "supported_extensions": "zip", 
-        "supports_no_game": "false", 
+        "supports_no_game": false, 
         "systemid": "fb_alpha", 
         "systemname": "CP System I"
     }, 
@@ -1738,7 +1746,7 @@
         "permissions": "", 
         "required_hw_api": "", 
         "supported_extensions": "zip", 
-        "supports_no_game": "false", 
+        "supports_no_game": false, 
         "systemid": "fb_alpha", 
         "systemname": "CP System II"
     }, 
@@ -1760,7 +1768,7 @@
         "permissions": "", 
         "required_hw_api": "", 
         "supported_extensions": "zip", 
-        "supports_no_game": "false", 
+        "supports_no_game": false, 
         "systemid": "fb_alpha", 
         "systemname": "CP System III"
     }, 
@@ -1782,7 +1790,7 @@
         "permissions": "", 
         "required_hw_api": "", 
         "supported_extensions": "iso|zip|7z", 
-        "supports_no_game": "false", 
+        "supports_no_game": false, 
         "systemid": "fb_alpha", 
         "systemname": "Arcade (various)"
     }, 
@@ -1804,7 +1812,7 @@
         "permissions": "", 
         "required_hw_api": "", 
         "supported_extensions": "zip", 
-        "supports_no_game": "false", 
+        "supports_no_game": false, 
         "systemid": "fb_alpha", 
         "systemname": "Neo Geo"
     }, 
@@ -1813,61 +1821,61 @@
             {
                 "desc": "fbneo/neogeo.zip (Neo Geo BIOS)", 
                 "md5": "", 
-                "opt": "true", 
+                "opt": true, 
                 "path": "fbneo/neogeo.zip"
             }, 
             {
                 "desc": "fbneo/neocdz.zip (Neo Geo CDZ System BIOS)", 
                 "md5": "", 
-                "opt": "true", 
+                "opt": true, 
                 "path": "fbneo/neocdz.zip"
             }, 
             {
                 "desc": "fbneo/decocass.zip (DECO Cassette System BIOS)", 
                 "md5": "", 
-                "opt": "true", 
+                "opt": true, 
                 "path": "fbneo/decocass.zip"
             }, 
             {
                 "desc": "fbneo/isgsm.zip (ISG Selection Master Type 2006 System BIOS)", 
                 "md5": "", 
-                "opt": "true", 
+                "opt": true, 
                 "path": "fbneo/isgsm.zip"
             }, 
             {
                 "desc": "fbneo/midssio.zip (Midway SSIO Sound Board Internal ROM)", 
                 "md5": "", 
-                "opt": "true", 
+                "opt": true, 
                 "path": "fbneo/midssio.zip"
             }, 
             {
                 "desc": "fbneo/nmk004.zip (NMK004 Internal ROM)", 
                 "md5": "", 
-                "opt": "true", 
+                "opt": true, 
                 "path": "fbneo/nmk004.zip"
             }, 
             {
                 "desc": "fbneo/pgm.zip (PGM System BIOS)", 
                 "md5": "", 
-                "opt": "true", 
+                "opt": true, 
                 "path": "fbneo/pgm.zip"
             }, 
             {
                 "desc": "fbneo/skns.zip (Super Kaneko Nova System BIOS)", 
                 "md5": "", 
-                "opt": "true", 
+                "opt": true, 
                 "path": "fbneo/skns.zip"
             }, 
             {
                 "desc": "fbneo/ym2608.zip (YM2608 Internal ROM)", 
                 "md5": "", 
-                "opt": "true", 
+                "opt": true, 
                 "path": "fbneo/ym2608.zip"
             }, 
             {
                 "desc": "fbneo/cchip.zip (C-Chip Internal ROM)", 
                 "md5": "", 
-                "opt": "true", 
+                "opt": true, 
                 "path": "fbneo/cchip.zip"
             }
         ], 
@@ -1887,7 +1895,7 @@
         "permissions": "", 
         "required_hw_api": "", 
         "supported_extensions": "zip|7z|cue", 
-        "supports_no_game": "false", 
+        "supports_no_game": false, 
         "systemid": "fb_alpha", 
         "systemname": "Arcade (various)"
     }, 
@@ -1896,13 +1904,13 @@
             {
                 "desc": "disksys.rom (Family Computer Disk System BIOS)", 
                 "md5": "", 
-                "opt": "true", 
+                "opt": true, 
                 "path": "disksys.rom"
             }, 
             {
                 "desc": "nes.pal (custom NES Palette)", 
                 "md5": "", 
-                "opt": "true", 
+                "opt": true, 
                 "path": "nes.pal"
             }
         ], 
@@ -1922,7 +1930,7 @@
         "permissions": "", 
         "required_hw_api": "", 
         "supported_extensions": "fds|nes|unif|unf", 
-        "supports_no_game": "false", 
+        "supports_no_game": false, 
         "systemid": "nes", 
         "systemname": "Nintendo Entertainment System"
     }, 
@@ -1942,7 +1950,7 @@
         "permissions": "", 
         "required_hw_api": "", 
         "supported_extensions": "mkv|avi|f4v|f4f|3gp|ogm|flv|mp4|mp3|flac|ogg|m4a|webm|3g2|mov|wmv|mpg|mpeg|vob|asf|divx|m2p|m2ts|ps|ts|mxf|wma|wav", 
-        "supports_no_game": "false", 
+        "supports_no_game": false, 
         "systemid": "", 
         "systemname": "FFmpeg"
     }, 
@@ -1950,8 +1958,8 @@
         "BIOS": [
             {
                 "desc": "gbc_bios.bin (Game Boy Color BIOS)", 
-                "md5": "", 
-                "opt": "true", 
+                "md5": "dbfce9db9deaa2567f6a84fde55f9680", 
+                "opt": true, 
                 "path": "gbc_bios.bin"
             }
         ], 
@@ -1971,7 +1979,7 @@
         "permissions": "", 
         "required_hw_api": "", 
         "supported_extensions": "gb|gbc|gbs", 
-        "supports_no_game": "false", 
+        "supports_no_game": false, 
         "systemid": "game_boy", 
         "systemname": "Game Boy/Game Boy Color"
     }, 
@@ -1979,8 +1987,8 @@
         "BIOS": [
             {
                 "desc": "disksys.rom (Family Computer Disk System BIOS)", 
-                "md5": "", 
-                "opt": "true", 
+                "md5": "ca30b50f880eb660a320674ed365ef7a", 
+                "opt": true, 
                 "path": "disksys.rom"
             }
         ], 
@@ -2000,7 +2008,7 @@
         "permissions": "", 
         "required_hw_api": "", 
         "supported_extensions": "nes|fds|qd|nsf", 
-        "supports_no_game": "false", 
+        "supports_no_game": false, 
         "systemid": "nes", 
         "systemname": "Nintendo Entertainment System"
     }, 
@@ -2009,49 +2017,49 @@
             {
                 "desc": "dc/dc_boot.bin (Dreamcast BIOS)", 
                 "md5": "", 
-                "opt": "true", 
+                "opt": true, 
                 "path": "dc/dc_boot.bin"
             }, 
             {
                 "desc": "dc/dc_flash.bin (Date/Time/Language)", 
                 "md5": "", 
-                "opt": "true", 
+                "opt": true, 
                 "path": "dc/dc_flash.bin"
             }, 
             {
                 "desc": "dc/naomi.zip (Naomi Bios from MAME)", 
                 "md5": "", 
-                "opt": "true", 
+                "opt": true, 
                 "path": "dc/naomi.zip"
             }, 
             {
                 "desc": "dc/hod2bios.zip (Naomi The House of the Dead 2 Bios from MAME)", 
                 "md5": "", 
-                "opt": "true", 
+                "opt": true, 
                 "path": "dc/hod2bios.zip"
             }, 
             {
                 "desc": "dc/f355dlx.zip (Naomi Ferrari F355 Challenge deluxe Bios from MAME)", 
                 "md5": "", 
-                "opt": "true", 
+                "opt": true, 
                 "path": "dc/f355dlx.zip"
             }, 
             {
                 "desc": "dc/f355bios.zip (Naomi Ferrari F355 Challenge twin/deluxe Bios from MAME)", 
                 "md5": "", 
-                "opt": "true", 
+                "opt": true, 
                 "path": "dc/f355bios.zip"
             }, 
             {
                 "desc": "dc/airlbios.zip (Naomi Airline Pilots deluxe Bios from MAME)", 
                 "md5": "", 
-                "opt": "true", 
+                "opt": true, 
                 "path": "dc/airlbios.zip"
             }, 
             {
                 "desc": "dc/awbios.zip (Atomiswave BIOS from MAME)", 
                 "md5": "", 
-                "opt": "true", 
+                "opt": true, 
                 "path": "dc/awbios.zip"
             }
         ], 
@@ -2071,7 +2079,7 @@
         "permissions": "", 
         "required_hw_api": "OpenGL Core >= 3.0 | OpenGL ES >= 2.0", 
         "supported_extensions": "chd|cdi|iso|elf|bin|cue|gdi|lst|zip|dat|7z|m3u", 
-        "supports_no_game": "false", 
+        "supports_no_game": false, 
         "systemid": "dreamcast", 
         "systemname": "Sega Dreamcast"
     }, 
@@ -2080,61 +2088,61 @@
             {
                 "desc": "MSX.ROM (MSX BIOS)", 
                 "md5": "", 
-                "opt": "false", 
+                "opt": false, 
                 "path": "MSX.ROM"
             }, 
             {
                 "desc": "MSX2.ROM (MSX2 BIOS)", 
                 "md5": "", 
-                "opt": "false", 
+                "opt": false, 
                 "path": "MSX2.ROM"
             }, 
             {
                 "desc": "MSX2EXT.ROM (MSX2 ExtROM)", 
                 "md5": "", 
-                "opt": "false", 
+                "opt": false, 
                 "path": "MSX2EXT.ROM"
             }, 
             {
                 "desc": "MSX2P.ROM (MSX2+ BIOS)", 
                 "md5": "", 
-                "opt": "false", 
+                "opt": false, 
                 "path": "MSX2P.ROM"
             }, 
             {
                 "desc": "MSX2PEXT.ROM (MSX2+ ExtROM)", 
                 "md5": "", 
-                "opt": "false", 
+                "opt": false, 
                 "path": "MSX2PEXT.ROM"
             }, 
             {
                 "desc": "DISK.ROM (DiskROM/BDOS)", 
                 "md5": "", 
-                "opt": "true", 
+                "opt": true, 
                 "path": "DISK.ROM"
             }, 
             {
                 "desc": "FMPAC.ROM (FMPAC BIOS)", 
                 "md5": "", 
-                "opt": "true", 
+                "opt": true, 
                 "path": "FMPAC.ROM"
             }, 
             {
                 "desc": "MSXDOS2.ROM (MSX-DOS 2)", 
                 "md5": "", 
-                "opt": "true", 
+                "opt": true, 
                 "path": "MSXDOS2.ROM"
             }, 
             {
                 "desc": "PAINTER.ROM (Yamaha Painter)", 
                 "md5": "", 
-                "opt": "true", 
+                "opt": true, 
                 "path": "PAINTER.ROM"
             }, 
             {
                 "desc": "KANJI.ROM (Kanji Font)", 
                 "md5": "", 
-                "opt": "true", 
+                "opt": true, 
                 "path": "KANJI.ROM"
             }
         ], 
@@ -2154,7 +2162,7 @@
         "permissions": "", 
         "required_hw_api": "", 
         "supported_extensions": "rom|mx1|mx2|dsk|cas", 
-        "supports_no_game": "false", 
+        "supports_no_game": false, 
         "systemid": "msx", 
         "systemname": "MSX"
     }, 
@@ -2163,19 +2171,19 @@
             {
                 "desc": "sl31253.bin", 
                 "md5": "", 
-                "opt": "false", 
+                "opt": false, 
                 "path": "sl31253.bin"
             }, 
             {
                 "desc": "sl31254.bin", 
                 "md5": "", 
-                "opt": "false", 
+                "opt": false, 
                 "path": "sl31254.bin"
             }, 
             {
                 "desc": "sl90025.bin", 
                 "md5": "", 
-                "opt": "false", 
+                "opt": false, 
                 "path": "sl90025.bin"
             }
         ], 
@@ -2195,7 +2203,7 @@
         "permissions": "", 
         "required_hw_api": "", 
         "supported_extensions": "bin", 
-        "supports_no_game": "false", 
+        "supports_no_game": false, 
         "systemid": "", 
         "systemname": "FreeChaF"
     }, 
@@ -2204,13 +2212,13 @@
             {
                 "desc": "exec.bin", 
                 "md5": "", 
-                "opt": "false", 
+                "opt": false, 
                 "path": "exec.bin"
             }, 
             {
                 "desc": "grom.bin", 
                 "md5": "", 
-                "opt": "false", 
+                "opt": false, 
                 "path": "grom.bin"
             }
         ], 
@@ -2230,7 +2238,7 @@
         "permissions": "", 
         "required_hw_api": "", 
         "supported_extensions": "int|bin|rom", 
-        "supports_no_game": "false", 
+        "supports_no_game": false, 
         "systemid": "intellivision", 
         "systemname": "Intellivision"
     }, 
@@ -2239,19 +2247,19 @@
             {
                 "desc": "freej2me-fx.jar", 
                 "md5": "", 
-                "opt": "false", 
+                "opt": false, 
                 "path": "freej2me-fx.jar"
             }, 
             {
                 "desc": "freej2me.jar", 
                 "md5": "", 
-                "opt": "false", 
+                "opt": false, 
                 "path": "freej2me.jar"
             }, 
             {
                 "desc": "freej2me-lr.jar", 
                 "md5": "", 
-                "opt": "false", 
+                "opt": false, 
                 "path": "freej2me-lr.jar"
             }
         ], 
@@ -2271,7 +2279,7 @@
         "permissions": "", 
         "required_hw_api": "", 
         "supported_extensions": "jar", 
-        "supports_no_game": "false", 
+        "supports_no_game": false, 
         "systemid": "", 
         "systemname": "J2ME"
     }, 
@@ -2291,7 +2299,7 @@
         "permissions": "", 
         "required_hw_api": "", 
         "supported_extensions": "d64|t64|x64|p00|lnx|zip", 
-        "supports_no_game": "false", 
+        "supports_no_game": false, 
         "systemid": "commodore_64", 
         "systemname": "C64"
     }, 
@@ -2311,7 +2319,7 @@
         "permissions": "", 
         "required_hw_api": "", 
         "supported_extensions": "adf|ipf|fs-uae", 
-        "supports_no_game": "false", 
+        "supports_no_game": false, 
         "systemid": "amiga", 
         "systemname": "Amiga"
     }, 
@@ -2333,7 +2341,7 @@
         "permissions": "", 
         "required_hw_api": "", 
         "supported_extensions": "tzx|tap|z80|rzx|scl|trd", 
-        "supports_no_game": "false", 
+        "supports_no_game": false, 
         "systemid": "zx_spectrum", 
         "systemname": "ZX Spectrum (various)"
     }, 
@@ -2342,13 +2350,13 @@
             {
                 "desc": "gb_bios.bin (Game Boy BIOS)", 
                 "md5": "", 
-                "opt": "true", 
+                "opt": true, 
                 "path": "gb_bios.bin"
             }, 
             {
                 "desc": "gbc_bios.bin (Game Boy Color BIOS)", 
                 "md5": "", 
-                "opt": "true", 
+                "opt": true, 
                 "path": "gbc_bios.bin"
             }
         ], 
@@ -2368,7 +2376,7 @@
         "permissions": "", 
         "required_hw_api": "", 
         "supported_extensions": "gb|gbc|dmg", 
-        "supports_no_game": "false", 
+        "supports_no_game": false, 
         "systemid": "game_boy", 
         "systemname": "Game Boy/Game Boy Color"
     }, 
@@ -2388,7 +2396,7 @@
         "permissions": "", 
         "required_hw_api": "", 
         "supported_extensions": "gb|dmg|gbc|cgb|sgb", 
-        "supports_no_game": "false", 
+        "supports_no_game": false, 
         "systemid": "game_boy", 
         "systemname": "Game Boy/Game Boy Color"
     }, 
@@ -2408,7 +2416,7 @@
         "permissions": "", 
         "required_hw_api": "", 
         "supported_extensions": "sms|gg|sg|bin|rom", 
-        "supports_no_game": "false", 
+        "supports_no_game": false, 
         "systemid": "master_system", 
         "systemname": "Sega 8-bit (MS/GG/SG-1000)"
     }, 
@@ -2417,73 +2425,73 @@
             {
                 "desc": "bios_MD.bin (Mega Drive startup ROM)", 
                 "md5": "", 
-                "opt": "true", 
+                "opt": true, 
                 "path": "bios_MD.bin"
             }, 
             {
                 "desc": "bios_CD_E.bin (MegaCD EU BIOS)", 
                 "md5": "", 
-                "opt": "true", 
+                "opt": true, 
                 "path": "bios_CD_E.bin"
             }, 
             {
                 "desc": "bios_CD_U.bin (SegaCD US BIOS)", 
                 "md5": "", 
-                "opt": "true", 
+                "opt": true, 
                 "path": "bios_CD_U.bin"
             }, 
             {
                 "desc": "bios_CD_J.bin (MegaCD JP BIOS)", 
                 "md5": "", 
-                "opt": "true", 
+                "opt": true, 
                 "path": "bios_CD_J.bin"
             }, 
             {
                 "desc": "bios_E.sms (MasterSystem EU BIOS)", 
                 "md5": "", 
-                "opt": "true", 
+                "opt": true, 
                 "path": "bios_E.sms"
             }, 
             {
                 "desc": "bios_U.sms (MasterSystem US BIOS)", 
                 "md5": "", 
-                "opt": "true", 
+                "opt": true, 
                 "path": "bios_U.sms"
             }, 
             {
                 "desc": "bios_J.sms (MasterSystem JP BIOS)", 
                 "md5": "", 
-                "opt": "true", 
+                "opt": true, 
                 "path": "bios_J.sms"
             }, 
             {
                 "desc": "bios.gg (GameGear BIOS)", 
                 "md5": "", 
-                "opt": "true", 
+                "opt": true, 
                 "path": "bios.gg"
             }, 
             {
                 "desc": "sk.bin (Sonic & Knuckles ROM)", 
                 "md5": "", 
-                "opt": "true", 
+                "opt": true, 
                 "path": "sk.bin"
             }, 
             {
                 "desc": "sk2chip.bin (Sonic & Knuckles UPMEM ROM)", 
                 "md5": "", 
-                "opt": "true", 
+                "opt": true, 
                 "path": "sk2chip.bin"
             }, 
             {
                 "desc": "areplay.bin (Action Replay ROM)", 
                 "md5": "", 
-                "opt": "true", 
+                "opt": true, 
                 "path": "areplay.bin"
             }, 
             {
                 "desc": "ggenie.bin (Game Genie ROM)", 
                 "md5": "", 
-                "opt": "true", 
+                "opt": true, 
                 "path": "ggenie.bin"
             }
         ], 
@@ -2503,7 +2511,7 @@
         "permissions": "", 
         "required_hw_api": "", 
         "supported_extensions": "mdx|md|smd|gen|bin|cue|iso|sms|gg|sg|68k|chd", 
-        "supports_no_game": "false", 
+        "supports_no_game": false, 
         "systemid": "mega_drive", 
         "systemname": "Sega 8/16-bit (Various)"
     }, 
@@ -2523,7 +2531,7 @@
         "permissions": "", 
         "required_hw_api": "", 
         "supported_extensions": "ay|gbs|gym|hes|kss|nsf|nsfe|sap|spc|vgm|vgz|zip", 
-        "supports_no_game": "false", 
+        "supports_no_game": false, 
         "systemid": "", 
         "systemname": "Music"
     }, 
@@ -2531,8 +2539,8 @@
         "BIOS": [
             {
                 "desc": "gba_bios.bin (Game Boy Advance BIOS)", 
-                "md5": "", 
-                "opt": "false", 
+                "md5": "a860e8c0b6d573d191e4ec7db1b1e4f6", 
+                "opt": false, 
                 "path": "gba_bios.bin"
             }
         ], 
@@ -2552,7 +2560,7 @@
         "permissions": "", 
         "required_hw_api": "", 
         "supported_extensions": "gba|bin", 
-        "supports_no_game": "false", 
+        "supports_no_game": false, 
         "systemid": "game_boy_advance", 
         "systemname": "Game Boy Advance"
     }, 
@@ -2572,7 +2580,7 @@
         "permissions": "", 
         "required_hw_api": "", 
         "supported_extensions": "mgw", 
-        "supports_no_game": "false", 
+        "supports_no_game": false, 
         "systemid": "", 
         "systemname": "Handheld Electronic"
     }, 
@@ -2580,8 +2588,8 @@
         "BIOS": [
             {
                 "desc": "lynxboot.img (Lynx Boot Image)", 
-                "md5": "", 
-                "opt": "true", 
+                "md5": "fcd403db69f54290b51035d82f835e7b", 
+                "opt": true, 
                 "path": "lynxboot.img"
             }
         ], 
@@ -2601,7 +2609,7 @@
         "permissions": "", 
         "required_hw_api": "", 
         "supported_extensions": "lnx", 
-        "supports_no_game": "false", 
+        "supports_no_game": false, 
         "systemid": "atari_lynx", 
         "systemname": "Lynx"
     }, 
@@ -2609,8 +2617,8 @@
         "BIOS": [
             {
                 "desc": "tos.img (TOS Boot Image)", 
-                "md5": "", 
-                "opt": "false", 
+                "md5": "c1c57ce48e8ee4135885cee9e63a68a2", 
+                "opt": false, 
                 "path": "tos.img"
             }
         ], 
@@ -2630,7 +2638,7 @@
         "permissions": "", 
         "required_hw_api": "", 
         "supported_extensions": "st|msa|zip|stx|dim|ipf|m3u", 
-        "supports_no_game": "false", 
+        "supports_no_game": false, 
         "systemid": "atari_st", 
         "systemname": "Atari ST/STE/TT/Falcon"
     }, 
@@ -2639,127 +2647,127 @@
             {
                 "desc": "dsp1.data.rom", 
                 "md5": "", 
-                "opt": "true", 
+                "opt": true, 
                 "path": "dsp1.data.rom"
             }, 
             {
                 "desc": "dsp1.program.rom", 
                 "md5": "", 
-                "opt": "true", 
+                "opt": true, 
                 "path": "dsp1.program.rom"
             }, 
             {
                 "desc": "dsp1b.data.rom", 
                 "md5": "", 
-                "opt": "true", 
+                "opt": true, 
                 "path": "dsp1b.data.rom"
             }, 
             {
                 "desc": "dsp1b.program.rom", 
                 "md5": "", 
-                "opt": "true", 
+                "opt": true, 
                 "path": "dsp1b.program.rom"
             }, 
             {
                 "desc": "dsp2.data.rom", 
                 "md5": "", 
-                "opt": "true", 
+                "opt": true, 
                 "path": "dsp2.data.rom"
             }, 
             {
                 "desc": "dsp2.program.rom", 
                 "md5": "", 
-                "opt": "true", 
+                "opt": true, 
                 "path": "dsp2.program.rom"
             }, 
             {
                 "desc": "dsp3.data.rom", 
                 "md5": "", 
-                "opt": "true", 
+                "opt": true, 
                 "path": "dsp3.data.rom"
             }, 
             {
                 "desc": "dsp3.program.rom", 
                 "md5": "", 
-                "opt": "true", 
+                "opt": true, 
                 "path": "dsp3.program.rom"
             }, 
             {
                 "desc": "dsp4.data.rom", 
                 "md5": "", 
-                "opt": "true", 
+                "opt": true, 
                 "path": "dsp4.data.rom"
             }, 
             {
                 "desc": "dsp4.program.rom", 
                 "md5": "", 
-                "opt": "true", 
+                "opt": true, 
                 "path": "dsp4.program.rom"
             }, 
             {
                 "desc": "cx4.data.rom", 
                 "md5": "", 
-                "opt": "true", 
+                "opt": true, 
                 "path": "cx4.data.rom"
             }, 
             {
                 "desc": "st010.data.rom", 
                 "md5": "", 
-                "opt": "true", 
+                "opt": true, 
                 "path": "st010.data.rom"
             }, 
             {
                 "desc": "st010.program.rom", 
                 "md5": "", 
-                "opt": "true", 
+                "opt": true, 
                 "path": "st010.program.rom"
             }, 
             {
                 "desc": "st011.data.rom", 
                 "md5": "", 
-                "opt": "true", 
+                "opt": true, 
                 "path": "st011.data.rom"
             }, 
             {
                 "desc": "st011.program.rom", 
                 "md5": "", 
-                "opt": "true", 
+                "opt": true, 
                 "path": "st011.program.rom"
             }, 
             {
                 "desc": "st018.data.rom", 
                 "md5": "", 
-                "opt": "true", 
+                "opt": true, 
                 "path": "st018.data.rom"
             }, 
             {
                 "desc": "st018.program.rom", 
                 "md5": "", 
-                "opt": "true", 
+                "opt": true, 
                 "path": "st018.program.rom"
             }, 
             {
                 "desc": "SGB1.sfc/sgb1.boot.rom (SGB Boot BIOS)", 
                 "md5": "", 
-                "opt": "true", 
+                "opt": true, 
                 "path": "SGB1.sfc/sgb1.boot.rom"
             }, 
             {
                 "desc": "SGB1.sfc/program.rom (SGB Boot Image)", 
                 "md5": "", 
-                "opt": "true", 
+                "opt": true, 
                 "path": "SGB1.sfc/program.rom"
             }, 
             {
                 "desc": "SGB2.sfc/sgb2.boot.rom (SGB Boot BIOS)", 
                 "md5": "", 
-                "opt": "true", 
+                "opt": true, 
                 "path": "SGB2.sfc/sgb2.boot.rom"
             }, 
             {
                 "desc": "SGB2.sfc/program.rom (SGB Boot Image)", 
                 "md5": "", 
-                "opt": "true", 
+                "opt": true, 
                 "path": "SGB2.sfc/program.rom"
             }
         ], 
@@ -2779,7 +2787,7 @@
         "permissions": "", 
         "required_hw_api": "", 
         "supported_extensions": "sfc|smc|gb|gbc|bml|rom", 
-        "supports_no_game": "false", 
+        "supports_no_game": false, 
         "systemid": "super_nes", 
         "systemname": "Super Nintendo Entertainment System"
     }, 
@@ -2788,127 +2796,127 @@
             {
                 "desc": "dsp1.data.rom", 
                 "md5": "", 
-                "opt": "true", 
+                "opt": true, 
                 "path": "dsp1.data.rom"
             }, 
             {
                 "desc": "dsp1.program.rom", 
                 "md5": "", 
-                "opt": "true", 
+                "opt": true, 
                 "path": "dsp1.program.rom"
             }, 
             {
                 "desc": "dsp1b.data.rom", 
                 "md5": "", 
-                "opt": "true", 
+                "opt": true, 
                 "path": "dsp1b.data.rom"
             }, 
             {
                 "desc": "dsp1b.program.rom", 
                 "md5": "", 
-                "opt": "true", 
+                "opt": true, 
                 "path": "dsp1b.program.rom"
             }, 
             {
                 "desc": "dsp2.data.rom", 
                 "md5": "", 
-                "opt": "true", 
+                "opt": true, 
                 "path": "dsp2.data.rom"
             }, 
             {
                 "desc": "dsp2.program.rom", 
                 "md5": "", 
-                "opt": "true", 
+                "opt": true, 
                 "path": "dsp2.program.rom"
             }, 
             {
                 "desc": "dsp3.data.rom", 
                 "md5": "", 
-                "opt": "true", 
+                "opt": true, 
                 "path": "dsp3.data.rom"
             }, 
             {
                 "desc": "dsp3.program.rom", 
                 "md5": "", 
-                "opt": "true", 
+                "opt": true, 
                 "path": "dsp3.program.rom"
             }, 
             {
                 "desc": "dsp4.data.rom", 
                 "md5": "", 
-                "opt": "true", 
+                "opt": true, 
                 "path": "dsp4.data.rom"
             }, 
             {
                 "desc": "dsp4.program.rom", 
                 "md5": "", 
-                "opt": "true", 
+                "opt": true, 
                 "path": "dsp4.program.rom"
             }, 
             {
                 "desc": "cx4.data.rom", 
                 "md5": "", 
-                "opt": "true", 
+                "opt": true, 
                 "path": "cx4.data.rom"
             }, 
             {
                 "desc": "st010.data.rom", 
                 "md5": "", 
-                "opt": "true", 
+                "opt": true, 
                 "path": "st010.data.rom"
             }, 
             {
                 "desc": "st010.program.rom", 
                 "md5": "", 
-                "opt": "true", 
+                "opt": true, 
                 "path": "st010.program.rom"
             }, 
             {
                 "desc": "st011.data.rom", 
                 "md5": "", 
-                "opt": "true", 
+                "opt": true, 
                 "path": "st011.data.rom"
             }, 
             {
                 "desc": "st011.program.rom", 
                 "md5": "", 
-                "opt": "true", 
+                "opt": true, 
                 "path": "st011.program.rom"
             }, 
             {
                 "desc": "st018.data.rom", 
                 "md5": "", 
-                "opt": "true", 
+                "opt": true, 
                 "path": "st018.data.rom"
             }, 
             {
                 "desc": "st018.program.rom", 
                 "md5": "", 
-                "opt": "true", 
+                "opt": true, 
                 "path": "st018.program.rom"
             }, 
             {
                 "desc": "SGB1.sfc/sgb1.boot.rom (SGB Boot BIOS)", 
                 "md5": "", 
-                "opt": "true", 
+                "opt": true, 
                 "path": "SGB1.sfc/sgb1.boot.rom"
             }, 
             {
                 "desc": "SGB1.sfc/program.rom (SGB Boot Image)", 
                 "md5": "", 
-                "opt": "true", 
+                "opt": true, 
                 "path": "SGB1.sfc/program.rom"
             }, 
             {
                 "desc": "SGB2.sfc/sgb2.boot.rom (SGB Boot BIOS)", 
                 "md5": "", 
-                "opt": "true", 
+                "opt": true, 
                 "path": "SGB2.sfc/sgb2.boot.rom"
             }, 
             {
                 "desc": "SGB2.sfc/program.rom (SGB Boot Image)", 
                 "md5": "", 
-                "opt": "true", 
+                "opt": true, 
                 "path": "SGB2.sfc/program.rom"
             }
         ], 
@@ -2928,7 +2936,7 @@
         "permissions": "", 
         "required_hw_api": "", 
         "supported_extensions": "sfc|smc|gb|gbc|bml|rom", 
-        "supports_no_game": "false", 
+        "supports_no_game": false, 
         "systemid": "super_nes", 
         "systemname": "Super Nintendo Entertainment System"
     }, 
@@ -2948,7 +2956,7 @@
         "permissions": "", 
         "required_hw_api": "", 
         "supported_extensions": "jpg|jpeg|png|bmp|psd|tga|gif|hdr|pic|ppm|pgm", 
-        "supports_no_game": "false", 
+        "supports_no_game": false, 
         "systemid": "", 
         "systemname": ""
     }, 
@@ -2968,7 +2976,7 @@
         "permissions": "", 
         "required_hw_api": "", 
         "supported_extensions": "gcm|iso|wbfs|ciso|gcz|elf|dol|dff|tgc|wad", 
-        "supports_no_game": "false", 
+        "supports_no_game": false, 
         "systemid": "gamecube", 
         "systemname": "GameCube / Wii"
     }, 
@@ -2977,25 +2985,25 @@
             {
                 "desc": "kronos/saturn_bios.bin (Saturn BIOS)", 
                 "md5": "", 
-                "opt": "false", 
+                "opt": false, 
                 "path": "kronos/saturn_bios.bin"
             }, 
             {
                 "desc": "kronos/stvbios.zip (ST-V BIOS from MAME)", 
                 "md5": "", 
-                "opt": "false", 
+                "opt": false, 
                 "path": "kronos/stvbios.zip"
             }, 
             {
                 "desc": "mpr-18811-mx.ic1 (The King of Fighters '95 ROM Cartridge)", 
                 "md5": "", 
-                "opt": "true", 
+                "opt": true, 
                 "path": "mpr-18811-mx.ic1"
             }, 
             {
                 "desc": "mpr-19367-mx.ic1 (Ultraman: Hikari no Kyojin Densetsu ROM Cartridge)", 
                 "md5": "", 
-                "opt": "true", 
+                "opt": true, 
                 "path": "mpr-19367-mx.ic1"
             }
         ], 
@@ -3015,102 +3023,9 @@
         "permissions": "", 
         "required_hw_api": "OpenGL Core >= 3.3", 
         "supported_extensions": "cue|iso|mds|ccd|zip|chd", 
-        "supports_no_game": "false", 
+        "supports_no_game": false, 
         "systemid": "sega_saturn", 
         "systemname": "Saturn"
-    }, 
-    "info/libneocd_libretro.info": {
-        "BIOS": [
-            {
-                "desc": "Front Loader BIOS", 
-                "md5": "", 
-                "opt": "true", 
-                "path": "neocd/neocd_f.rom"
-            }, 
-            {
-                "desc": "Front Loader BIOS (SMKDAN)", 
-                "md5": "", 
-                "opt": "true", 
-                "path": "neocd/neocd_sf.rom"
-            }, 
-            {
-                "desc": "Top Loader BIOS", 
-                "md5": "", 
-                "opt": "true", 
-                "path": "neocd/neocd_t.rom"
-            }, 
-            {
-                "desc": "Top Loader BIOS (SMKDAN)", 
-                "md5": "", 
-                "opt": "true", 
-                "path": "neocd/neocd_st.rom"
-            }, 
-            {
-                "desc": "CDZ BIOS", 
-                "md5": "", 
-                "opt": "true", 
-                "path": "neocd/neocd_z.rom"
-            }, 
-            {
-                "desc": "CDZ BIOS (SMKDAN)", 
-                "md5": "", 
-                "opt": "true", 
-                "path": "neocd/neocd_sz.rom"
-            }, 
-            {
-                "desc": "Y-ZOOM ROM", 
-                "md5": "", 
-                "opt": "true", 
-                "path": "neocd/ng-lo.rom"
-            }, 
-            {
-                "desc": "Y-ZOOM ROM (MAME)", 
-                "md5": "", 
-                "opt": "true", 
-                "path": "neocd/000-lo.lo"
-            }, 
-            {
-                "desc": "Front Loader BIOS (MAME)", 
-                "md5": "", 
-                "opt": "true", 
-                "path": "neocd/front-sp1.bin"
-            }, 
-            {
-                "desc": "Top Loader BIOS (MAME)", 
-                "md5": "", 
-                "opt": "true", 
-                "path": "neocd/top-sp1.bin"
-            }, 
-            {
-                "desc": "CDZ BIOS (MAME)", 
-                "md5": "", 
-                "opt": "true", 
-                "path": "neocd/neocd.bin"
-            }, 
-            {
-                "desc": "Universe BIOS", 
-                "md5": "", 
-                "opt": "true", 
-                "path": "neocd/uni-bioscd.rom"
-            }
-        ], 
-        "authors": "Elta", 
-        "categories": "Emulator", 
-        "corename": "NeoCD", 
-        "database": "SNK - Neo Geo CD", 
-        "database_match_archive_member": "", 
-        "display_name": "SNK - Neo Geo CD (NeoCD)", 
-        "display_version": "2019", 
-        "firmware_count": "12", 
-        "license": "LGPLv3", 
-        "manufacturer": "SNK", 
-        "notes": [], 
-        "permissions": "", 
-        "required_hw_api": "", 
-        "supported_extensions": "cue|chd", 
-        "supports_no_game": "false", 
-        "systemid": "", 
-        "systemname": "SNK Neo Geo CD"
     }, 
     "info/lutro_libretro.info": {
         "BIOS": [], 
@@ -3128,7 +3043,7 @@
         "permissions": "", 
         "required_hw_api": "", 
         "supported_extensions": "lutro|lua", 
-        "supports_no_game": "false", 
+        "supports_no_game": false, 
         "systemid": "", 
         "systemname": "Lutro"
     }, 
@@ -3150,7 +3065,7 @@
         "permissions": "", 
         "required_hw_api": "", 
         "supported_extensions": "zip|7z|chd", 
-        "supports_no_game": "false", 
+        "supports_no_game": false, 
         "systemid": "mame", 
         "systemname": "Arcade (various)"
     }, 
@@ -3172,7 +3087,7 @@
         "permissions": "", 
         "required_hw_api": "", 
         "supported_extensions": "zip", 
-        "supports_no_game": "false", 
+        "supports_no_game": false, 
         "systemid": "mame", 
         "systemname": "Arcade (various)"
     }, 
@@ -3194,7 +3109,7 @@
         "permissions": "", 
         "required_hw_api": "", 
         "supported_extensions": "zip", 
-        "supports_no_game": "false", 
+        "supports_no_game": false, 
         "systemid": "mame", 
         "systemname": "Arcade (various)"
     }, 
@@ -3216,7 +3131,7 @@
         "permissions": "", 
         "required_hw_api": "", 
         "supported_extensions": "zip", 
-        "supports_no_game": "false", 
+        "supports_no_game": false, 
         "systemid": "mame", 
         "systemname": "Arcade (various)"
     }, 
@@ -3238,7 +3153,7 @@
         "permissions": "", 
         "required_hw_api": "", 
         "supported_extensions": "zip|7z|chd", 
-        "supports_no_game": "false", 
+        "supports_no_game": false, 
         "systemid": "mame", 
         "systemname": "Arcade (various)"
     }, 
@@ -3260,7 +3175,7 @@
         "permissions": "", 
         "required_hw_api": "", 
         "supported_extensions": "zip|7z|chd", 
-        "supports_no_game": "false", 
+        "supports_no_game": false, 
         "systemid": "mame", 
         "systemname": "Arcade (various)"
     }, 
@@ -3282,7 +3197,7 @@
         "permissions": "", 
         "required_hw_api": "", 
         "supported_extensions": "zip|chd|7z|cmd", 
-        "supports_no_game": "false", 
+        "supports_no_game": false, 
         "systemid": "mame", 
         "systemname": "Arcade (various)"
     }, 
@@ -3304,7 +3219,7 @@
         "permissions": "", 
         "required_hw_api": "", 
         "supported_extensions": "zip|chd|7z|cmd", 
-        "supports_no_game": "false", 
+        "supports_no_game": false, 
         "systemid": "mame", 
         "systemname": "Arcade (various)"
     }, 
@@ -3326,7 +3241,7 @@
         "permissions": "", 
         "required_hw_api": "", 
         "supported_extensions": "zip|chd|7z|cmd", 
-        "supports_no_game": "false", 
+        "supports_no_game": false, 
         "systemid": "mame", 
         "systemname": "Arcade (various)"
     }, 
@@ -3334,8 +3249,8 @@
         "BIOS": [
             {
                 "desc": "gba_bios.bin (Game Boy Advance BIOS)", 
-                "md5": "", 
-                "opt": "true", 
+                "md5": "a860e8c0b6d573d191e4ec7db1b1e4f6", 
+                "opt": true, 
                 "path": "gba_bios.bin"
             }
         ], 
@@ -3355,7 +3270,7 @@
         "permissions": "", 
         "required_hw_api": "", 
         "supported_extensions": "gba|agb|bin", 
-        "supports_no_game": "false", 
+        "supports_no_game": false, 
         "systemid": "game_boy_advance", 
         "systemname": "Game Boy Advance"
     }, 
@@ -3363,8 +3278,8 @@
         "BIOS": [
             {
                 "desc": "lynxboot.img (Lynx Boot Image)", 
-                "md5": "", 
-                "opt": "false", 
+                "md5": "fcd403db69f54290b51035d82f835e7b", 
+                "opt": false, 
                 "path": "lynxboot.img"
             }
         ], 
@@ -3384,7 +3299,7 @@
         "permissions": "", 
         "required_hw_api": "", 
         "supported_extensions": "lnx", 
-        "supports_no_game": "false", 
+        "supports_no_game": false, 
         "systemid": "atari_lynx", 
         "systemname": "Lynx"
     }, 
@@ -3404,7 +3319,7 @@
         "permissions": "", 
         "required_hw_api": "", 
         "supported_extensions": "ngp|ngc|ngpc|npc", 
-        "supports_no_game": "false", 
+        "supports_no_game": false, 
         "systemid": "neo_geo_pocket", 
         "systemname": "Neo Geo Pocket (Color)"
     }, 
@@ -3413,25 +3328,25 @@
             {
                 "desc": "syscard3.pce (PCE-CD BIOS)", 
                 "md5": "", 
-                "opt": "true", 
+                "opt": true, 
                 "path": "syscard3.pce"
             }, 
             {
                 "desc": "syscard2.pce (PCE-CD BIOS)", 
                 "md5": "", 
-                "opt": "true", 
+                "opt": true, 
                 "path": "syscard2.pce"
             }, 
             {
                 "desc": "syscard1.pce (PCE-CD BIOS)", 
                 "md5": "", 
-                "opt": "true", 
+                "opt": true, 
                 "path": "syscard1.pce"
             }, 
             {
                 "desc": "gexpress.pce (PCE-CD BIOS)", 
                 "md5": "", 
-                "opt": "true", 
+                "opt": true, 
                 "path": "gexpress.pce"
             }
         ], 
@@ -3451,7 +3366,7 @@
         "permissions": "", 
         "required_hw_api": "", 
         "supported_extensions": "pce|cue|ccd|iso|img|bin|chd", 
-        "supports_no_game": "false", 
+        "supports_no_game": false, 
         "systemid": "pc_engine", 
         "systemname": "PC Engine/PCE-CD"
     }, 
@@ -3460,25 +3375,25 @@
             {
                 "desc": "syscard3.pce (Super CD-ROM2 System V3.xx)", 
                 "md5": "", 
-                "opt": "true", 
+                "opt": true, 
                 "path": "syscard3.pce"
             }, 
             {
                 "desc": "syscard2.pce (CD-ROM System V2.xx)", 
                 "md5": "", 
-                "opt": "true", 
+                "opt": true, 
                 "path": "syscard2.pce"
             }, 
             {
                 "desc": "syscard1.pce (CD-ROM System V1.xx)", 
                 "md5": "", 
-                "opt": "true", 
+                "opt": true, 
                 "path": "syscard1.pce"
             }, 
             {
                 "desc": "gexpress.pce (Game Express CD Card)", 
                 "md5": "", 
-                "opt": "true", 
+                "opt": true, 
                 "path": "gexpress.pce"
             }
         ], 
@@ -3498,7 +3413,7 @@
         "permissions": "", 
         "required_hw_api": "", 
         "supported_extensions": "pce|cue|ccd|iso|img|bin|chd", 
-        "supports_no_game": "false", 
+        "supports_no_game": false, 
         "systemid": "pc_engine", 
         "systemname": "PC Engine/SuperGrafx/CD"
     }, 
@@ -3506,8 +3421,8 @@
         "BIOS": [
             {
                 "desc": "pcfx.rom (PC-FX BIOS v1.00 - 2 Sep 1994)", 
-                "md5": "", 
-                "opt": "false", 
+                "md5": "08e36edbea28a017f79f8d4f7ff9b6d7", 
+                "opt": false, 
                 "path": "pcfx.rom"
             }
         ], 
@@ -3527,7 +3442,7 @@
         "permissions": "", 
         "required_hw_api": "", 
         "supported_extensions": "cue|ccd|toc|chd", 
-        "supports_no_game": "false", 
+        "supports_no_game": false, 
         "systemid": "pc_fx", 
         "systemname": "PC-FX"
     }, 
@@ -3536,19 +3451,19 @@
             {
                 "desc": "scph5500.bin (PS1 JP BIOS)", 
                 "md5": "", 
-                "opt": "true", 
+                "opt": true, 
                 "path": "scph5500.bin"
             }, 
             {
                 "desc": "scph5501.bin (PS1 US BIOS)", 
                 "md5": "", 
-                "opt": "true", 
+                "opt": true, 
                 "path": "scph5501.bin"
             }, 
             {
                 "desc": "scph5502.bin (PS1 EU BIOS)", 
                 "md5": "", 
-                "opt": "true", 
+                "opt": true, 
                 "path": "scph5502.bin"
             }
         ], 
@@ -3568,7 +3483,7 @@
         "permissions": "", 
         "required_hw_api": "", 
         "supported_extensions": "cue|toc|m3u|ccd|exe|pbp|chd", 
-        "supports_no_game": "false", 
+        "supports_no_game": false, 
         "systemid": "playstation", 
         "systemname": "PlayStation"
     }, 
@@ -3577,19 +3492,19 @@
             {
                 "desc": "scph5500.bin (PS1 JP BIOS)", 
                 "md5": "", 
-                "opt": "true", 
+                "opt": true, 
                 "path": "scph5500.bin"
             }, 
             {
                 "desc": "scph5501.bin (PS1 US BIOS)", 
                 "md5": "", 
-                "opt": "true", 
+                "opt": true, 
                 "path": "scph5501.bin"
             }, 
             {
                 "desc": "scph5502.bin (PS1 EU BIOS)", 
                 "md5": "", 
-                "opt": "true", 
+                "opt": true, 
                 "path": "scph5502.bin"
             }
         ], 
@@ -3609,7 +3524,7 @@
         "permissions": "", 
         "required_hw_api": "", 
         "supported_extensions": "cue|toc|m3u|ccd|exe|pbp|chd", 
-        "supports_no_game": "false", 
+        "supports_no_game": false, 
         "systemid": "playstation", 
         "systemname": "PlayStation"
     }, 
@@ -3618,25 +3533,25 @@
             {
                 "desc": "sega_101.bin (Saturn JP BIOS)", 
                 "md5": "", 
-                "opt": "false", 
+                "opt": false, 
                 "path": "sega_101.bin"
             }, 
             {
                 "desc": "mpr-17933.bin (Saturn US/EU BIOS)", 
                 "md5": "", 
-                "opt": "false", 
+                "opt": false, 
                 "path": "mpr-17933.bin"
             }, 
             {
                 "desc": "mpr-18811-mx.ic1 (The King of Fighters '95 ROM Cartridge)", 
                 "md5": "", 
-                "opt": "true", 
+                "opt": true, 
                 "path": "mpr-18811-mx.ic1"
             }, 
             {
                 "desc": "mpr-19367-mx.ic1 (Ultraman: Hikari no Kyojin Densetsu ROM Cartridge)", 
                 "md5": "", 
-                "opt": "true", 
+                "opt": true, 
                 "path": "mpr-19367-mx.ic1"
             }
         ], 
@@ -3656,7 +3571,7 @@
         "permissions": "", 
         "required_hw_api": "", 
         "supported_extensions": "cue|toc|m3u|ccd|chd", 
-        "supports_no_game": "false", 
+        "supports_no_game": false, 
         "systemid": "sega_saturn", 
         "systemname": "Saturn"
     }, 
@@ -3676,7 +3591,7 @@
         "permissions": "", 
         "required_hw_api": "", 
         "supported_extensions": "smc|fig|bs|st|sfc", 
-        "supports_no_game": "false", 
+        "supports_no_game": false, 
         "systemid": "super_nes", 
         "systemname": "Super Nintendo Entertainment System"
     }, 
@@ -3684,26 +3599,26 @@
         "BIOS": [
             {
                 "desc": "syscard3.pce (Super CD-ROM2 System V3.xx)", 
-                "md5": "", 
-                "opt": "true", 
+                "md5": "38179df8f4ac870017db21ebcbf53114", 
+                "opt": true, 
                 "path": "syscard3.pce"
             }, 
             {
                 "desc": "syscard2.pce (CD-ROM System V2.xx)", 
                 "md5": "", 
-                "opt": "true", 
+                "opt": true, 
                 "path": "syscard2.pce"
             }, 
             {
                 "desc": "syscard1.pce (CD-ROM System V1.xx)", 
                 "md5": "", 
-                "opt": "true", 
+                "opt": true, 
                 "path": "syscard1.pce"
             }, 
             {
                 "desc": "gexpress.pce (Game Express CD Card)", 
                 "md5": "", 
-                "opt": "true", 
+                "opt": true, 
                 "path": "gexpress.pce"
             }
         ], 
@@ -3723,7 +3638,7 @@
         "permissions": "", 
         "required_hw_api": "", 
         "supported_extensions": "pce|sgx|cue|ccd|chd", 
-        "supports_no_game": "false", 
+        "supports_no_game": false, 
         "systemid": "pc_engine", 
         "systemname": "PC Engine SuperGrafx"
     }, 
@@ -3743,7 +3658,7 @@
         "permissions": "", 
         "required_hw_api": "", 
         "supported_extensions": "vb|vboy|bin", 
-        "supports_no_game": "false", 
+        "supports_no_game": false, 
         "systemid": "virtual_boy", 
         "systemname": "Virtual Boy"
     }, 
@@ -3763,7 +3678,7 @@
         "permissions": "", 
         "required_hw_api": "", 
         "supported_extensions": "ws|wsc|pc2", 
-        "supports_no_game": "false", 
+        "supports_no_game": false, 
         "systemid": "wonderswan", 
         "systemname": "WonderSwan/Color"
     }, 
@@ -3772,19 +3687,19 @@
             {
                 "desc": "firmware.bin (NDS Firmware)", 
                 "md5": "", 
-                "opt": "false", 
+                "opt": false, 
                 "path": "firmware.bin"
             }, 
             {
                 "desc": "bios7.bin (ARM7 BIOS)", 
                 "md5": "", 
-                "opt": "false", 
+                "opt": false, 
                 "path": "bios7.bin"
             }, 
             {
                 "desc": "bios9.bin (ARM9 BIOS)", 
                 "md5": "", 
-                "opt": "false", 
+                "opt": false, 
                 "path": "bios9.bin"
             }
         ], 
@@ -3804,7 +3719,7 @@
         "permissions": "", 
         "required_hw_api": "", 
         "supported_extensions": "nds", 
-        "supports_no_game": "false", 
+        "supports_no_game": false, 
         "systemid": "nds", 
         "systemname": "Nintendo DS"
     }, 
@@ -3824,7 +3739,7 @@
         "permissions": "", 
         "required_hw_api": "", 
         "supported_extensions": "sfc|smc|fig|swc", 
-        "supports_no_game": "false", 
+        "supports_no_game": false, 
         "systemid": "super_nes", 
         "systemname": "Super Nintendo Entertainment System"
     }, 
@@ -3833,7 +3748,7 @@
             {
                 "desc": "disksys.rom (Family Computer Disk System BIOS)", 
                 "md5": "", 
-                "opt": "true", 
+                "opt": true, 
                 "path": "disksys.rom"
             }
         ], 
@@ -3853,7 +3768,7 @@
         "permissions": "", 
         "required_hw_api": "", 
         "supported_extensions": "nes|fds|unf|unif", 
-        "supports_no_game": "false", 
+        "supports_no_game": false, 
         "systemid": "nes", 
         "systemname": "Nintendo Entertainment System"
     }, 
@@ -3875,7 +3790,7 @@
         "permissions": "", 
         "required_hw_api": "", 
         "supported_extensions": "zip|chd|7z", 
-        "supports_no_game": "false", 
+        "supports_no_game": false, 
         "systemid": "mame", 
         "systemname": "Multi (various)"
     }, 
@@ -3895,7 +3810,7 @@
         "permissions": "", 
         "required_hw_api": "", 
         "supported_extensions": "gba", 
-        "supports_no_game": "false", 
+        "supports_no_game": false, 
         "systemid": "game_boy_advance", 
         "systemname": "Game Boy Advance"
     }, 
@@ -3904,25 +3819,25 @@
             {
                 "desc": "gba_bios.bin (Game Boy Advance BIOS)", 
                 "md5": "", 
-                "opt": "true", 
+                "opt": true, 
                 "path": "gba_bios.bin"
             }, 
             {
                 "desc": "gb_bios.bin (Game Boy BIOS)", 
                 "md5": "", 
-                "opt": "true", 
+                "opt": true, 
                 "path": "gb_bios.bin"
             }, 
             {
                 "desc": "gbc_bios.bin (Game Boy Color BIOS)", 
                 "md5": "", 
-                "opt": "true", 
+                "opt": true, 
                 "path": "gbc_bios.bin"
             }, 
             {
                 "desc": "sgb_bios.bin (Super Game Boy BIOS)", 
                 "md5": "", 
-                "opt": "true", 
+                "opt": true, 
                 "path": "sgb_bios.bin"
             }
         ], 
@@ -3942,7 +3857,7 @@
         "permissions": "", 
         "required_hw_api": "", 
         "supported_extensions": "gb|gbc|gba", 
-        "supports_no_game": "false", 
+        "supports_no_game": false, 
         "systemid": "game_boy_advance", 
         "systemname": "Game Boy/Game Boy Color/Game Boy Advance"
     }, 
@@ -3962,7 +3877,7 @@
         "permissions": "", 
         "required_hw_api": "", 
         "supported_extensions": "mkv|avi|f4v|f4f|3gp|ogm|flv|mp4|mp3|flac|ogg|m4a|webm|3g2|mov|wmv|mpg|mpeg|vob|asf|divx|m2p|m2ts|ps|ts|mxf|wma|wav", 
-        "supports_no_game": "false", 
+        "supports_no_game": false, 
         "systemid": "movie", 
         "systemname": "MPV"
     }, 
@@ -3982,7 +3897,7 @@
         "permissions": "", 
         "required_hw_api": "", 
         "supported_extensions": "desktop", 
-        "supports_no_game": "true", 
+        "supports_no_game": true, 
         "systemid": "bomberman", 
         "systemname": "Mr.Boom"
     }, 
@@ -3991,19 +3906,19 @@
             {
                 "desc": "palmos41-en-m515.rom (Palm OS 4.1)", 
                 "md5": "", 
-                "opt": "true", 
+                "opt": true, 
                 "path": "palmos41-en-m515.rom"
             }, 
             {
                 "desc": "palmos52-en-t3.rom (Palm OS 5.2.1)", 
                 "md5": "", 
-                "opt": "true", 
+                "opt": true, 
                 "path": "palmos52-en-t3.rom"
             }, 
             {
                 "desc": "bootloader-en-m515.rom (MC68VZ328 UART Bootloader)", 
                 "md5": "", 
-                "opt": "true", 
+                "opt": true, 
                 "path": "bootloader-en-m515.rom"
             }
         ], 
@@ -4021,7 +3936,7 @@
         "permissions": "", 
         "required_hw_api": "", 
         "supported_extensions": "prc|pqa|img", 
-        "supports_no_game": "true", 
+        "supports_no_game": true, 
         "systemid": "", 
         "systemname": "Palm OS"
     }, 
@@ -4041,7 +3956,7 @@
         "permissions": "dynarec_optional", 
         "required_hw_api": "OpenGL ES >= 3.0", 
         "supported_extensions": "n64|v64|z64|bin|u1|ndd", 
-        "supports_no_game": "false", 
+        "supports_no_game": false, 
         "systemid": "nintendo_64", 
         "systemname": "Nintendo 64"
     }, 
@@ -4061,7 +3976,7 @@
         "permissions": "dynarec_optional", 
         "required_hw_api": "OpenGL Core >= 3.3 | OpenGL ES >= 2.0", 
         "supported_extensions": "n64|v64|z64|bin|u1|ndd", 
-        "supports_no_game": "false", 
+        "supports_no_game": false, 
         "systemid": "nintendo_64", 
         "systemname": "Nintendo 64"
     }, 
@@ -4081,22 +3996,115 @@
         "permissions": "", 
         "required_hw_api": "", 
         "supported_extensions": "d98|zip|98d|fdi|fdd|2hd|tfd|d88|88d|hdm|xdf|dup|cmd|hdi|thd|nhd|hdd", 
-        "supports_no_game": "false", 
+        "supports_no_game": false, 
         "systemid": "pc_98", 
         "systemname": "PC-98"
+    }, 
+    "info/neocd_libretro.info": {
+        "BIOS": [
+            {
+                "desc": "Front Loader BIOS", 
+                "md5": "", 
+                "opt": true, 
+                "path": "neocd/neocd_f.rom"
+            }, 
+            {
+                "desc": "Front Loader BIOS (SMKDAN)", 
+                "md5": "", 
+                "opt": true, 
+                "path": "neocd/neocd_sf.rom"
+            }, 
+            {
+                "desc": "Top Loader BIOS", 
+                "md5": "", 
+                "opt": true, 
+                "path": "neocd/neocd_t.rom"
+            }, 
+            {
+                "desc": "Top Loader BIOS (SMKDAN)", 
+                "md5": "", 
+                "opt": true, 
+                "path": "neocd/neocd_st.rom"
+            }, 
+            {
+                "desc": "CDZ BIOS", 
+                "md5": "", 
+                "opt": true, 
+                "path": "neocd/neocd_z.rom"
+            }, 
+            {
+                "desc": "CDZ BIOS (SMKDAN)", 
+                "md5": "", 
+                "opt": true, 
+                "path": "neocd/neocd_sz.rom"
+            }, 
+            {
+                "desc": "Y-ZOOM ROM", 
+                "md5": "", 
+                "opt": true, 
+                "path": "neocd/ng-lo.rom"
+            }, 
+            {
+                "desc": "Y-ZOOM ROM (MAME)", 
+                "md5": "", 
+                "opt": true, 
+                "path": "neocd/000-lo.lo"
+            }, 
+            {
+                "desc": "Front Loader BIOS (MAME)", 
+                "md5": "", 
+                "opt": true, 
+                "path": "neocd/front-sp1.bin"
+            }, 
+            {
+                "desc": "Top Loader BIOS (MAME)", 
+                "md5": "", 
+                "opt": true, 
+                "path": "neocd/top-sp1.bin"
+            }, 
+            {
+                "desc": "CDZ BIOS (MAME)", 
+                "md5": "", 
+                "opt": true, 
+                "path": "neocd/neocd.bin"
+            }, 
+            {
+                "desc": "Universe BIOS", 
+                "md5": "", 
+                "opt": true, 
+                "path": "neocd/uni-bioscd.rom"
+            }
+        ], 
+        "authors": "Elta", 
+        "categories": "Emulator", 
+        "corename": "NeoCD", 
+        "database": "SNK - Neo Geo CD", 
+        "database_match_archive_member": "", 
+        "display_name": "SNK - Neo Geo CD (NeoCD)", 
+        "display_version": "2019", 
+        "firmware_count": "12", 
+        "license": "LGPLv3", 
+        "manufacturer": "SNK", 
+        "notes": [], 
+        "permissions": "", 
+        "required_hw_api": "", 
+        "supported_extensions": "cue|chd", 
+        "supports_no_game": false, 
+        "systemid": "", 
+        "systemname": "SNK Neo Geo CD"
     }, 
     "info/nestopia_libretro.info": {
         "BIOS": [
             {
                 "desc": "NstDatabase.xml (Nestopia UE Database file)", 
                 "md5": "", 
-                "opt": "true", 
+                "opt": true, 
                 "path": "NstDatabase.xml"
             }, 
             {
                 "desc": "disksys.rom (Family Computer Disk System BIOS)", 
                 "md5": "", 
-                "opt": "true", 
+                "opt": true, 
                 "path": "disksys.rom"
             }
         ], 
@@ -4116,7 +4124,7 @@
         "permissions": "", 
         "required_hw_api": "", 
         "supported_extensions": "nes|fds|unf|unif", 
-        "supports_no_game": "false", 
+        "supports_no_game": false, 
         "systemid": "nes", 
         "systemname": "Nintendo Entertainment System"
     }, 
@@ -4125,31 +4133,31 @@
             {
                 "desc": "font.bmp (needed to display text)", 
                 "md5": "", 
-                "opt": "true", 
+                "opt": true, 
                 "path": "np2kai/font.bmp"
             }, 
             {
                 "desc": "FONT.ROM (alt font file)", 
                 "md5": "", 
-                "opt": "true", 
+                "opt": true, 
                 "path": "np2kai/FONT.ROM"
             }, 
             {
                 "desc": "bios.rom", 
                 "md5": "", 
-                "opt": "true", 
+                "opt": true, 
                 "path": "np2kai/bios.rom"
             }, 
             {
                 "desc": "itf.rom", 
                 "md5": "", 
-                "opt": "true", 
+                "opt": true, 
                 "path": "np2kai/itf.rom"
             }, 
             {
                 "desc": "sound.rom", 
                 "md5": "", 
-                "opt": "true", 
+                "opt": true, 
                 "path": "np2kai/sound.rom"
             }
         ], 
@@ -4169,7 +4177,7 @@
         "permissions": "", 
         "required_hw_api": "", 
         "supported_extensions": "d98|zip|98d|fdi|fdd|2hd|tfd|d88|88d|hdm|xdf|dup|cmd|hdi|thd|nhd|hdd|hdn", 
-        "supports_no_game": "false", 
+        "supports_no_game": false, 
         "systemid": "pc_98", 
         "systemname": "PC-98"
     }, 
@@ -4191,7 +4199,7 @@
         "permissions": "", 
         "required_hw_api": "", 
         "supported_extensions": "exe", 
-        "supports_no_game": "false", 
+        "supports_no_game": false, 
         "systemid": "nxengine", 
         "systemname": "Cave Story Game Engine"
     }, 
@@ -4200,25 +4208,25 @@
             {
                 "desc": "o2rom.bin (Odyssey2 BIOS - G7000 model)", 
                 "md5": "", 
-                "opt": "false", 
+                "opt": false, 
                 "path": "o2rom.bin"
             }, 
             {
                 "desc": "c52.bin (Videopac+ French BIOS - G7000 model)", 
                 "md5": "", 
-                "opt": "false", 
+                "opt": false, 
                 "path": "c52.bin"
             }, 
             {
                 "desc": "g7400.bin (Videopac+ European BIOS - G7400 model)", 
                 "md5": "", 
-                "opt": "false", 
+                "opt": false, 
                 "path": "g7400.bin"
             }, 
             {
                 "desc": "jopac.bin (Videopac+ French BIOS - G7400 model)", 
                 "md5": "", 
-                "opt": "false", 
+                "opt": false, 
                 "path": "jopac.bin"
             }
         ], 
@@ -4238,7 +4246,7 @@
         "permissions": "", 
         "required_hw_api": "", 
         "supported_extensions": "bin", 
-        "supports_no_game": "false", 
+        "supports_no_game": false, 
         "systemid": "odyssey2", 
         "systemname": "Magnavox Odyssey2 / Phillips Videopac+"
     }, 
@@ -4258,7 +4266,7 @@
         "permissions": "", 
         "required_hw_api": "", 
         "supported_extensions": "dsk", 
-        "supports_no_game": "false", 
+        "supports_no_game": false, 
         "systemid": "", 
         "systemname": "Oberon RISC machine"
     }, 
@@ -4278,7 +4286,7 @@
         "permissions": "", 
         "required_hw_api": "OpenGL Core >= 3.1 | OpenGL ES >= 2.0", 
         "supported_extensions": "phd|psx|tr2", 
-        "supports_no_game": "false", 
+        "supports_no_game": false, 
         "systemid": "openlara", 
         "systemname": "Classic Tomb Raider engine"
     }, 
@@ -4300,7 +4308,7 @@
         "permissions": "", 
         "required_hw_api": "", 
         "supported_extensions": "", 
-        "supports_no_game": "true", 
+        "supports_no_game": true, 
         "systemid": "", 
         "systemname": "Tyrian Game Engine"
     }, 
@@ -4308,8 +4316,8 @@
         "BIOS": [
             {
                 "desc": "64DD_IPL.bin (64DD IPL ROM)", 
-                "md5": "", 
-                "opt": "true", 
+                "md5": "8d3d9f294b6e174bc7b1d2fd1c727530", 
+                "opt": true, 
                 "path": "64DD_IPL.bin"
             }
         ], 
@@ -4329,7 +4337,7 @@
         "permissions": "dynarec_optional", 
         "required_hw_api": "", 
         "supported_extensions": "n64|v64|z64|bin|u1|ndd", 
-        "supports_no_game": "false", 
+        "supports_no_game": false, 
         "systemid": "nintendo_64", 
         "systemname": "Nintendo 64"
     }, 
@@ -4337,8 +4345,8 @@
         "BIOS": [
             {
                 "desc": "64DD_IPL.bin (64DD IPL ROM)", 
-                "md5": "", 
-                "opt": "true", 
+                "md5": "8d3d9f294b6e174bc7b1d2fd1c727530", 
+                "opt": true, 
                 "path": "64DD_IPL.bin"
             }
         ], 
@@ -4358,7 +4366,7 @@
         "permissions": "dynarec_optional", 
         "required_hw_api": "", 
         "supported_extensions": "n64|v64|z64|bin|u1|ndd", 
-        "supports_no_game": "false", 
+        "supports_no_game": false, 
         "systemid": "nintendo_64", 
         "systemname": "Nintendo 64"
     }, 
@@ -4378,7 +4386,7 @@
         "permissions": "", 
         "required_hw_api": "", 
         "supported_extensions": "game", 
-        "supports_no_game": "true", 
+        "supports_no_game": true, 
         "systemid": "", 
         "systemname": ""
     }, 
@@ -4398,7 +4406,7 @@
         "permissions": "", 
         "required_hw_api": "", 
         "supported_extensions": "exe|com|bat|conf", 
-        "supports_no_game": "true", 
+        "supports_no_game": true, 
         "systemid": "", 
         "systemname": "PC"
     }, 
@@ -4407,19 +4415,19 @@
             {
                 "desc": "scph5500.bin (PS1 JP BIOS)", 
                 "md5": "", 
-                "opt": "true", 
+                "opt": true, 
                 "path": "scph5500.bin"
             }, 
             {
                 "desc": "scph5501.bin (PS1 US BIOS)", 
                 "md5": "", 
-                "opt": "true", 
+                "opt": true, 
                 "path": "scph5501.bin"
             }, 
             {
                 "desc": "scph5502.bin (PS1 EU BIOS)", 
                 "md5": "", 
-                "opt": "true", 
+                "opt": true, 
                 "path": "scph5502.bin"
             }
         ], 
@@ -4439,7 +4447,7 @@
         "permissions": "dynarec", 
         "required_hw_api": "", 
         "supported_extensions": "bin|cue|img|mdf|pbp|toc|cbn|m3u", 
-        "supports_no_game": "false", 
+        "supports_no_game": false, 
         "systemid": "playstation", 
         "systemname": "PlayStation"
     }, 
@@ -4448,19 +4456,19 @@
             {
                 "desc": "scph5500.bin (PS1 JP BIOS)", 
                 "md5": "", 
-                "opt": "true", 
+                "opt": true, 
                 "path": "scph5500.bin"
             }, 
             {
                 "desc": "scph5501.bin (PS1 US BIOS)", 
                 "md5": "", 
-                "opt": "true", 
+                "opt": true, 
                 "path": "scph5501.bin"
             }, 
             {
                 "desc": "scph5502.bin (PS1 EU BIOS)", 
                 "md5": "", 
-                "opt": "true", 
+                "opt": true, 
                 "path": "scph5502.bin"
             }
         ], 
@@ -4480,7 +4488,7 @@
         "permissions": "", 
         "required_hw_api": "", 
         "supported_extensions": "bin|cue|img|mdf|pbp|cbn|toc|chd", 
-        "supports_no_game": "false", 
+        "supports_no_game": false, 
         "systemid": "playstation", 
         "systemname": "PlayStation"
     }, 
@@ -4489,19 +4497,19 @@
             {
                 "desc": "scph5500.bin (PS1 JP BIOS)", 
                 "md5": "", 
-                "opt": "true", 
+                "opt": true, 
                 "path": "scph5500.bin"
             }, 
             {
                 "desc": "scph5501.bin (PS1 US BIOS)", 
                 "md5": "", 
-                "opt": "true", 
+                "opt": true, 
                 "path": "scph5501.bin"
             }, 
             {
                 "desc": "scph5502.bin (PS1 EU BIOS)", 
                 "md5": "", 
-                "opt": "true", 
+                "opt": true, 
                 "path": "scph5502.bin"
             }
         ], 
@@ -4521,7 +4529,7 @@
         "permissions": "dynarec", 
         "required_hw_api": "", 
         "supported_extensions": "bin|cue|img|mdf|pbp|toc|cbn|m3u|ccd|chd", 
-        "supports_no_game": "false", 
+        "supports_no_game": false, 
         "systemid": "playstation", 
         "systemname": "PlayStation"
     }, 
@@ -4530,19 +4538,19 @@
             {
                 "desc": "scph5500.bin (PS1 JP BIOS)", 
                 "md5": "", 
-                "opt": "true", 
+                "opt": true, 
                 "path": "scph5500.bin"
             }, 
             {
                 "desc": "scph5501.bin (PS1 US BIOS)", 
                 "md5": "", 
-                "opt": "true", 
+                "opt": true, 
                 "path": "scph5501.bin"
             }, 
             {
                 "desc": "scph5502.bin (PS1 EU BIOS)", 
                 "md5": "", 
-                "opt": "true", 
+                "opt": true, 
                 "path": "scph5502.bin"
             }
         ], 
@@ -4562,7 +4570,7 @@
         "permissions": "dynarec", 
         "required_hw_api": "", 
         "supported_extensions": "bin|cue|img|mdf|pbp|toc|cbn|m3u|chd", 
-        "supports_no_game": "false", 
+        "supports_no_game": false, 
         "systemid": "playstation", 
         "systemname": "PlayStation"
     }, 
@@ -4571,19 +4579,19 @@
             {
                 "desc": "bios_CD_E.bin (MegaCD EU BIOS)", 
                 "md5": "", 
-                "opt": "true", 
+                "opt": true, 
                 "path": "bios_CD_E.bin"
             }, 
             {
                 "desc": "bios_CD_U.bin (SegaCD US BIOS)", 
                 "md5": "", 
-                "opt": "true", 
+                "opt": true, 
                 "path": "bios_CD_U.bin"
             }, 
             {
                 "desc": "bios_CD_J.bin (MegaCD JP BIOS)", 
                 "md5": "", 
-                "opt": "true", 
+                "opt": true, 
                 "path": "bios_CD_J.bin"
             }
         ], 
@@ -4603,7 +4611,7 @@
         "permissions": "dynarec_optional", 
         "required_hw_api": "", 
         "supported_extensions": "bin|gen|smd|md|32x|cue|iso|sms|68k", 
-        "supports_no_game": "false", 
+        "supports_no_game": false, 
         "systemid": "mega_drive", 
         "systemname": "Sega 8/16-bit + 32X (Various)"
     }, 
@@ -4623,7 +4631,7 @@
         "permissions": "", 
         "required_hw_api": "", 
         "supported_extensions": "iso|isz|cso|bin|elf", 
-        "supports_no_game": "false", 
+        "supports_no_game": false, 
         "systemid": "playstation2", 
         "systemname": "Sony PlayStation 2"
     }, 
@@ -4643,7 +4651,7 @@
         "permissions": "", 
         "required_hw_api": "", 
         "supported_extensions": "cdg", 
-        "supports_no_game": "false", 
+        "supports_no_game": false, 
         "systemid": "music", 
         "systemname": "Music"
     }, 
@@ -4652,7 +4660,7 @@
             {
                 "desc": "bios.min (Pokemon Mini BIOS)", 
                 "md5": "", 
-                "opt": "true", 
+                "opt": true, 
                 "path": "bios.min"
             }
         ], 
@@ -4672,7 +4680,7 @@
         "permissions": "", 
         "required_hw_api": "", 
         "supported_extensions": "min", 
-        "supports_no_game": "false", 
+        "supports_no_game": false, 
         "systemid": "pokemon_mini", 
         "systemname": "Pokemon Mini"
     }, 
@@ -4681,7 +4689,7 @@
             {
                 "desc": "ppge_atlas.zim (PPSSPP Data ROM)", 
                 "md5": "", 
-                "opt": "false", 
+                "opt": false, 
                 "path": "PPSSPP/ppge_atlas.zim"
             }
         ], 
@@ -4701,7 +4709,7 @@
         "permissions": "", 
         "required_hw_api": "OpenGL Core >= 3.1 | OpenGL ES >= 2.0 | Vulkan >= 1.0 | Direct3D11 >= 11.0", 
         "supported_extensions": "elf|iso|cso|prx|pbp", 
-        "supports_no_game": "false", 
+        "supports_no_game": false, 
         "systemid": "playstation_portable", 
         "systemname": "PSP"
     }, 
@@ -4723,7 +4731,7 @@
         "permissions": "", 
         "required_hw_api": "", 
         "supported_extensions": "wad|iwad|pwad", 
-        "supports_no_game": "false", 
+        "supports_no_game": false, 
         "systemid": "doom", 
         "systemname": "DOOM Game Engine"
     }, 
@@ -4731,8 +4739,8 @@
         "BIOS": [
             {
                 "desc": "7800 BIOS (U).rom (7800 BIOS)", 
-                "md5": "", 
-                "opt": "true", 
+                "md5": "0763f1ffb006ddbe32e52d497ee848ae", 
+                "opt": true, 
                 "path": "7800 BIOS (U).rom"
             }
         ], 
@@ -4752,7 +4760,7 @@
         "permissions": "", 
         "required_hw_api": "", 
         "supported_extensions": "a78|bin", 
-        "supports_no_game": "false", 
+        "supports_no_game": false, 
         "systemid": "atari_7800", 
         "systemname": "Atari 7800"
     }, 
@@ -4761,55 +4769,55 @@
             {
                 "desc": "kick34005.A500 (Amiga 500 BIOS, Kickstart v1.3 Rev. 34.005)", 
                 "md5": "", 
-                "opt": "false", 
+                "opt": false, 
                 "path": "kick34005.A500"
             }, 
             {
                 "desc": "kick37175.A500 (Amiga 500+ BIOS, Kickstart v2.04 Rev. 37.175)", 
                 "md5": "", 
-                "opt": "false", 
+                "opt": false, 
                 "path": "kick37175.A500"
             }, 
             {
                 "desc": "kick40063.A600 (Amiga 600 BIOS, Kickstart v3.1 Rev. 40.063)", 
                 "md5": "", 
-                "opt": "false", 
+                "opt": false, 
                 "path": "kick40063.A600"
             }, 
             {
                 "desc": "kick40068.A1200 (Amiga 1200 BIOS, Kickstart v3.1 Rev. 40.068)", 
                 "md5": "", 
-                "opt": "false", 
+                "opt": false, 
                 "path": "kick40068.A1200"
             }, 
             {
                 "desc": "drive_click_LOUD.wav (floppy drive sound)", 
                 "md5": "", 
-                "opt": "true", 
+                "opt": true, 
                 "path": "uae_data/drive_click_LOUD.wav"
             }, 
             {
                 "desc": "drive_snatch_LOUD.wav (floppy drive sound)", 
                 "md5": "", 
-                "opt": "true", 
+                "opt": true, 
                 "path": "uae_data/drive_snatch_LOUD.wav"
             }, 
             {
                 "desc": "drive_spin_LOUD.wav (floppy drive sound)", 
                 "md5": "", 
-                "opt": "true", 
+                "opt": true, 
                 "path": "uae_data/drive_spin_LOUD.wav"
             }, 
             {
                 "desc": "drive_spinnd_LOUD.wav (floppy drive sound)", 
                 "md5": "", 
-                "opt": "true", 
+                "opt": true, 
                 "path": "uae_data/drive_spinnd_LOUD.wav"
             }, 
             {
                 "desc": "drive_startup_LOUD.wav (floppy drive sound)", 
                 "md5": "", 
-                "opt": "true", 
+                "opt": true, 
                 "path": "uae_data/drive_startup_LOUD.wav"
             }
         ], 
@@ -4829,7 +4837,7 @@
         "permissions": "", 
         "required_hw_api": "", 
         "supported_extensions": "adf|dms|fdi|ipf|zip|hdf|hdz|m3u|uae", 
-        "supports_no_game": "false", 
+        "supports_no_game": false, 
         "systemid": "amiga", 
         "systemname": "Commodore Amiga"
     }, 
@@ -4838,19 +4846,19 @@
             {
                 "desc": "iplrom.dat (X68000 BIOS)", 
                 "md5": "", 
-                "opt": "false", 
+                "opt": false, 
                 "path": "keropi/iplrom.dat"
             }, 
             {
                 "desc": "cgrom.dat (X68000 BIOS 2)", 
                 "md5": "", 
-                "opt": "false", 
+                "opt": false, 
                 "path": "keropi/cgrom.dat"
             }, 
             {
                 "desc": "iplrom30.dat (X68000 BIOS 3)", 
                 "md5": "", 
-                "opt": "true", 
+                "opt": true, 
                 "path": "keropi/iplrom30.dat"
             }
         ], 
@@ -4870,7 +4878,7 @@
         "permissions": "", 
         "required_hw_api": "", 
         "supported_extensions": "dim|zip|img|d88|88d|hdm|dup|2hd|xdf|hdf|cmd|m3u", 
-        "supports_no_game": "false", 
+        "supports_no_game": false, 
         "systemid": "sharp_x68000", 
         "systemname": "Sharp X68000"
     }, 
@@ -4879,61 +4887,61 @@
             {
                 "desc": "n88.rom (Main BIOS)", 
                 "md5": "", 
-                "opt": "false", 
+                "opt": false, 
                 "path": "quasi88/n88.rom"
             }, 
             {
                 "desc": "n88_0.rom (Extension BIOS 1)", 
                 "md5": "", 
-                "opt": "false", 
+                "opt": false, 
                 "path": "quasi88/n88_0.rom"
             }, 
             {
                 "desc": "n88_1.rom (Extension BIOS 2)", 
                 "md5": "", 
-                "opt": "true", 
+                "opt": true, 
                 "path": "quasi88/n88_1.rom"
             }, 
             {
                 "desc": "n88_2.rom (Extension BIOS 3)", 
                 "md5": "", 
-                "opt": "true", 
+                "opt": true, 
                 "path": "quasi88/n88_2.rom"
             }, 
             {
                 "desc": "n88_3.rom (Extension BIOS 4)", 
                 "md5": "", 
-                "opt": "true", 
+                "opt": true, 
                 "path": "quasi88/n88_3.rom"
             }, 
             {
                 "desc": "n88n.rom (N Basic BIOS)", 
                 "md5": "", 
-                "opt": "true", 
+                "opt": true, 
                 "path": "quasi88/n88n.rom"
             }, 
             {
                 "desc": "disk.rom (Sub BIOS)", 
                 "md5": "", 
-                "opt": "true", 
+                "opt": true, 
                 "path": "quasi88/disk.rom"
             }, 
             {
                 "desc": "n88knj1.rom (Kanji Font 1)", 
                 "md5": "", 
-                "opt": "true", 
+                "opt": true, 
                 "path": "quasi88/n88knj1.rom"
             }, 
             {
                 "desc": "n88knj2.rom (Kanji Font 2)", 
                 "md5": "", 
-                "opt": "true", 
+                "opt": true, 
                 "path": "quasi88/n88knj2.rom"
             }, 
             {
                 "desc": "n88jisho.rom (Jisho)", 
                 "md5": "", 
-                "opt": "true", 
+                "opt": true, 
                 "path": "quasi88/n88jisho.rom"
             }
         ], 
@@ -4953,7 +4961,7 @@
         "permissions": "", 
         "required_hw_api": "", 
         "supported_extensions": "d88|u88|m3u", 
-        "supports_no_game": "true", 
+        "supports_no_game": true, 
         "systemid": "pc_88", 
         "systemname": "PC-8000 / PC-8800 series"
     }, 
@@ -4973,7 +4981,7 @@
         "permissions": "", 
         "required_hw_api": "", 
         "supported_extensions": "nes", 
-        "supports_no_game": "false", 
+        "supports_no_game": false, 
         "systemid": "nes", 
         "systemname": "Nintendo Entertainment System"
     }, 
@@ -4993,7 +5001,7 @@
         "permissions": "", 
         "required_hw_api": "", 
         "supported_extensions": "cue|bin", 
-        "supports_no_game": "false", 
+        "supports_no_game": false, 
         "systemid": "redbook", 
         "systemname": "Redbook"
     }, 
@@ -5002,13 +5010,13 @@
             {
                 "desc": "boot.bin (Dreamcast BIOS)", 
                 "md5": "", 
-                "opt": "false", 
+                "opt": false, 
                 "path": "dc/boot.bin"
             }, 
             {
                 "desc": "flash.bin (Date/Time/Language)", 
                 "md5": "", 
-                "opt": "false", 
+                "opt": false, 
                 "path": "dc/flash.bin"
             }
         ], 
@@ -5028,7 +5036,7 @@
         "permissions": "", 
         "required_hw_api": "", 
         "supported_extensions": "gdi|chd|cdi", 
-        "supports_no_game": "false", 
+        "supports_no_game": false, 
         "systemid": "dreamcast", 
         "systemname": "Sega Dreamcast"
     }, 
@@ -5050,7 +5058,7 @@
         "permissions": "", 
         "required_hw_api": "", 
         "supported_extensions": "map|aba|seq|lev", 
-        "supports_no_game": "false", 
+        "supports_no_game": false, 
         "systemid": "", 
         "systemname": "Flashback Game Engine"
     }, 
@@ -5070,7 +5078,7 @@
         "permissions": "", 
         "required_hw_api": "", 
         "supported_extensions": "", 
-        "supports_no_game": "true", 
+        "supports_no_game": true, 
         "systemid": "playstation_portable", 
         "systemname": ""
     }, 
@@ -5090,7 +5098,7 @@
         "permissions": "", 
         "required_hw_api": "OpenGL Core >= 3.3", 
         "supported_extensions": "cue|toc|m3u|ccd|exe", 
-        "supports_no_game": "false", 
+        "supports_no_game": false, 
         "systemid": "playstation", 
         "systemname": "PlayStation"
     }, 
@@ -5099,13 +5107,13 @@
             {
                 "desc": "dmg_boot.bin (Game Boy boot ROM)", 
                 "md5": "", 
-                "opt": "true", 
+                "opt": true, 
                 "path": "dmg_boot.bin"
             }, 
             {
                 "desc": "cgb_boot.bin (Game Boy Color boot ROM)", 
                 "md5": "", 
-                "opt": "true", 
+                "opt": true, 
                 "path": "cgb_boot.bin"
             }
         ], 
@@ -5125,7 +5133,7 @@
         "permissions": "", 
         "required_hw_api": "", 
         "supported_extensions": "gb|gbc", 
-        "supports_no_game": "false", 
+        "supports_no_game": false, 
         "systemid": "game_boy", 
         "systemname": "Game Boy/Game Boy Color"
     }, 
@@ -5145,7 +5153,7 @@
         "permissions": "", 
         "required_hw_api": "", 
         "supported_extensions": "scummvm", 
-        "supports_no_game": "true", 
+        "supports_no_game": true, 
         "systemid": "scummvm", 
         "systemname": "Game engine"
     }, 
@@ -5165,7 +5173,7 @@
         "permissions": "", 
         "required_hw_api": "", 
         "supported_extensions": "dsk|mgt|sbt|sad", 
-        "supports_no_game": "false", 
+        "supports_no_game": false, 
         "systemid": "", 
         "systemname": "SAM coupe"
     }, 
@@ -5185,7 +5193,7 @@
         "permissions": "", 
         "required_hw_api": "", 
         "supported_extensions": "smc|fig|sfc|gd3|gd7|dx2|bsx|swc", 
-        "supports_no_game": "false", 
+        "supports_no_game": false, 
         "systemid": "super_nes", 
         "systemname": "Super Nintendo Entertainment System"
     }, 
@@ -5205,7 +5213,7 @@
         "permissions": "", 
         "required_hw_api": "", 
         "supported_extensions": "smc|fig|sfc|gd3|gd7|dx2|bsx|swc", 
-        "supports_no_game": "false", 
+        "supports_no_game": false, 
         "systemid": "super_nes", 
         "systemname": "Super Nintendo Entertainment System"
     }, 
@@ -5225,7 +5233,7 @@
         "permissions": "", 
         "required_hw_api": "", 
         "supported_extensions": "smc|fig|sfc|gd3|gd7|dx2|bsx|swc", 
-        "supports_no_game": "false", 
+        "supports_no_game": false, 
         "systemid": "super_nes", 
         "systemname": "Super Nintendo Entertainment System"
     }, 
@@ -5245,7 +5253,7 @@
         "permissions": "", 
         "required_hw_api": "", 
         "supported_extensions": "smc|fig|sfc|gd3|gd7|dx2|bsx|swc", 
-        "supports_no_game": "false", 
+        "supports_no_game": false, 
         "systemid": "super_nes", 
         "systemname": "Super Nintendo Entertainment System"
     }, 
@@ -5254,13 +5262,13 @@
             {
                 "desc": "BS-X.bin (BS-X - Sore wa Namae o Nusumareta Machi no Monogatari (Japan) (Rev 1))", 
                 "md5": "", 
-                "opt": "true", 
+                "opt": true, 
                 "path": "BS-X.bin"
             }, 
             {
                 "desc": "STBIOS.bin (Sufami Turbo (Japan))", 
                 "md5": "", 
-                "opt": "true", 
+                "opt": true, 
                 "path": "STBIOS.bin"
             }
         ], 
@@ -5280,7 +5288,7 @@
         "permissions": "", 
         "required_hw_api": "", 
         "supported_extensions": "smc|sfc|swc|fig|bs", 
-        "supports_no_game": "false", 
+        "supports_no_game": false, 
         "systemid": "super_nes", 
         "systemname": "Super Nintendo Entertainment System"
     }, 
@@ -5289,7 +5297,7 @@
             {
                 "desc": "squirreljme.sqc (SquirrelJME Compiled SummerCoat ROM)", 
                 "md5": "", 
-                "opt": "false", 
+                "opt": false, 
                 "path": "squirreljme.sqc"
             }
         ], 
@@ -5307,7 +5315,7 @@
         "permissions": "", 
         "required_hw_api": "", 
         "supported_extensions": "jar", 
-        "supports_no_game": "true", 
+        "supports_no_game": true, 
         "systemid": "J2ME", 
         "systemname": "Java ME"
     }, 
@@ -5327,7 +5335,7 @@
         "permissions": "", 
         "required_hw_api": "", 
         "supported_extensions": "a26|bin", 
-        "supports_no_game": "false", 
+        "supports_no_game": false, 
         "systemid": "atari_2600", 
         "systemname": "Atari 2600"
     }, 
@@ -5347,7 +5355,7 @@
         "permissions": "", 
         "required_hw_api": "", 
         "supported_extensions": "a26|bin", 
-        "supports_no_game": "false", 
+        "supports_no_game": false, 
         "systemid": "atari_2600", 
         "systemname": "Atari 2600"
     }, 
@@ -5367,7 +5375,7 @@
         "permissions": "", 
         "required_hw_api": "", 
         "supported_extensions": "crawlrc", 
-        "supports_no_game": "false", 
+        "supports_no_game": false, 
         "systemid": "", 
         "systemname": ""
     }, 
@@ -5375,8 +5383,8 @@
         "BIOS": [
             {
                 "desc": "gba_bios.bin (Game Boy Advance BIOS)", 
-                "md5": "", 
-                "opt": "false", 
+                "md5": "a860e8c0b6d573d191e4ec7db1b1e4f6", 
+                "opt": false, 
                 "path": "gba_bios.bin"
             }
         ], 
@@ -5396,7 +5404,7 @@
         "permissions": "", 
         "required_hw_api": "", 
         "supported_extensions": "gba|bin|agb|gbz", 
-        "supports_no_game": "false", 
+        "supports_no_game": false, 
         "systemid": "game_boy_advance", 
         "systemname": "Game Boy Advance"
     }, 
@@ -5416,7 +5424,7 @@
         "permissions": "", 
         "required_hw_api": "", 
         "supported_extensions": "", 
-        "supports_no_game": "true", 
+        "supports_no_game": true, 
         "systemid": "", 
         "systemname": ""
     }, 
@@ -5436,7 +5444,7 @@
         "permissions": "", 
         "required_hw_api": "", 
         "supported_extensions": "", 
-        "supports_no_game": "true", 
+        "supports_no_game": true, 
         "systemid": "", 
         "systemname": "Test for netplay"
     }, 
@@ -5456,7 +5464,7 @@
         "permissions": "", 
         "required_hw_api": "", 
         "supported_extensions": "", 
-        "supports_no_game": "true", 
+        "supports_no_game": true, 
         "systemid": "", 
         "systemname": ""
     }, 
@@ -5476,7 +5484,7 @@
         "permissions": "", 
         "required_hw_api": "", 
         "supported_extensions": "", 
-        "supports_no_game": "true", 
+        "supports_no_game": true, 
         "systemid": "", 
         "systemname": ""
     }, 
@@ -5496,7 +5504,7 @@
         "permissions": "", 
         "required_hw_api": "", 
         "supported_extensions": "", 
-        "supports_no_game": "true", 
+        "supports_no_game": true, 
         "systemid": "", 
         "systemname": ""
     }, 
@@ -5516,7 +5524,7 @@
         "permissions": "", 
         "required_hw_api": "", 
         "supported_extensions": "", 
-        "supports_no_game": "true", 
+        "supports_no_game": true, 
         "systemid": "", 
         "systemname": ""
     }, 
@@ -5536,7 +5544,7 @@
         "permissions": "", 
         "required_hw_api": "", 
         "supported_extensions": "", 
-        "supports_no_game": "true", 
+        "supports_no_game": true, 
         "systemid": "", 
         "systemname": ""
     }, 
@@ -5556,7 +5564,7 @@
         "permissions": "", 
         "required_hw_api": "", 
         "supported_extensions": "", 
-        "supports_no_game": "true", 
+        "supports_no_game": true, 
         "systemid": "", 
         "systemname": ""
     }, 
@@ -5576,7 +5584,7 @@
         "permissions": "", 
         "required_hw_api": "", 
         "supported_extensions": "", 
-        "supports_no_game": "true", 
+        "supports_no_game": true, 
         "systemid": "", 
         "systemname": ""
     }, 
@@ -5596,7 +5604,7 @@
         "permissions": "", 
         "required_hw_api": "", 
         "supported_extensions": "", 
-        "supports_no_game": "true", 
+        "supports_no_game": true, 
         "systemid": "", 
         "systemname": ""
     }, 
@@ -5616,7 +5624,7 @@
         "permissions": "", 
         "required_hw_api": "", 
         "supported_extensions": "", 
-        "supports_no_game": "true", 
+        "supports_no_game": true, 
         "systemid": "", 
         "systemname": ""
     }, 
@@ -5636,7 +5644,7 @@
         "permissions": "", 
         "required_hw_api": "", 
         "supported_extensions": "", 
-        "supports_no_game": "true", 
+        "supports_no_game": true, 
         "systemid": "", 
         "systemname": ""
     }, 
@@ -5656,7 +5664,7 @@
         "permissions": "", 
         "required_hw_api": "", 
         "supported_extensions": "", 
-        "supports_no_game": "true", 
+        "supports_no_game": true, 
         "systemid": "", 
         "systemname": ""
     }, 
@@ -5676,7 +5684,7 @@
         "permissions": "", 
         "required_hw_api": "", 
         "supported_extensions": "", 
-        "supports_no_game": "true", 
+        "supports_no_game": true, 
         "systemid": "", 
         "systemname": ""
     }, 
@@ -5696,8 +5704,8 @@
         "permissions": "", 
         "required_hw_api": "", 
         "supported_extensions": "gb|gbc|sgb", 
-        "supports_no_game": "false", 
-        "systemid": "game_boy_advance", 
+        "supports_no_game": false, 
+        "systemid": "game_boy", 
         "systemname": "Game Boy/Game Boy Color"
     }, 
     "info/theodore_libretro.info": {
@@ -5716,7 +5724,7 @@
         "permissions": "", 
         "required_hw_api": "", 
         "supported_extensions": "fd|sap|k7|m7|m5|rom", 
-        "supports_no_game": "true", 
+        "supports_no_game": true, 
         "systemid": "", 
         "systemname": "Thomson MO/TO"
     }, 
@@ -5736,7 +5744,7 @@
         "permissions": "", 
         "required_hw_api": "", 
         "supported_extensions": "cps", 
-        "supports_no_game": "true", 
+        "supports_no_game": true, 
         "systemid": "", 
         "systemname": "Physics Toy"
     }, 
@@ -5756,7 +5764,7 @@
         "permissions": "", 
         "required_hw_api": "", 
         "supported_extensions": "tic", 
-        "supports_no_game": "false", 
+        "supports_no_game": false, 
         "systemid": "tic80", 
         "systemname": "TIC-80"
     }, 
@@ -5778,7 +5786,7 @@
         "permissions": "", 
         "required_hw_api": "", 
         "supported_extensions": "pak", 
-        "supports_no_game": "false", 
+        "supports_no_game": false, 
         "systemid": "quake_1", 
         "systemname": "Quake Game Engine"
     }, 
@@ -5798,7 +5806,7 @@
         "permissions": "", 
         "required_hw_api": "", 
         "supported_extensions": "adf|dms|zip|ipf|adz|uae", 
-        "supports_no_game": "false", 
+        "supports_no_game": false, 
         "systemid": "amiga", 
         "systemname": "Commodore Amiga"
     }, 
@@ -5820,7 +5828,7 @@
         "permissions": "", 
         "required_hw_api": "", 
         "supported_extensions": "zip|chd|7z", 
-        "supports_no_game": "false", 
+        "supports_no_game": false, 
         "systemid": "mame", 
         "systemname": "Multi (various)"
     }, 
@@ -5840,7 +5848,7 @@
         "permissions": "", 
         "required_hw_api": "", 
         "supported_extensions": "uze", 
-        "supports_no_game": "false", 
+        "supports_no_game": false, 
         "systemid": "uzebox", 
         "systemname": "Uzebox"
     }, 
@@ -5848,8 +5856,8 @@
         "BIOS": [
             {
                 "desc": "gba_bios.bin (Game Boy Advance BIOS)", 
-                "md5": "", 
-                "opt": "true", 
+                "md5": "a860e8c0b6d573d191e4ec7db1b1e4f6", 
+                "opt": true, 
                 "path": "gba_bios.bin"
             }
         ], 
@@ -5869,7 +5877,7 @@
         "permissions": "", 
         "required_hw_api": "", 
         "supported_extensions": "gba", 
-        "supports_no_game": "false", 
+        "supports_no_game": false, 
         "systemid": "game_boy_advance", 
         "systemname": "Game Boy Advance"
     }, 
@@ -5878,19 +5886,19 @@
             {
                 "desc": "gba_bios.bin (Game Boy Advance BIOS)", 
                 "md5": "", 
-                "opt": "true", 
+                "opt": true, 
                 "path": "gba_bios.bin"
             }, 
             {
                 "desc": "gb_bios.bin (Game Boy BIOS)", 
                 "md5": "", 
-                "opt": "true", 
+                "opt": true, 
                 "path": "gb_bios.bin"
             }, 
             {
                 "desc": "gbc_bios.bin (Game Boy Color BIOS)", 
                 "md5": "", 
-                "opt": "true", 
+                "opt": true, 
                 "path": "gbc_bios.bin"
             }
         ], 
@@ -5910,7 +5918,7 @@
         "permissions": "", 
         "required_hw_api": "", 
         "supported_extensions": "dmg|gb|gbc|cgb|sgb|gba", 
-        "supports_no_game": "false", 
+        "supports_no_game": false, 
         "systemid": "game_boy_advance", 
         "systemname": "Game Boy/Game Boy Color/Game Boy Advance"
     }, 
@@ -5930,7 +5938,7 @@
         "permissions": "", 
         "required_hw_api": "", 
         "supported_extensions": "bin|vec", 
-        "supports_no_game": "false", 
+        "supports_no_game": false, 
         "systemid": "vectrex", 
         "systemname": "Vectrex"
     }, 
@@ -5950,7 +5958,7 @@
         "permissions": "", 
         "required_hw_api": "", 
         "supported_extensions": "vms|dci|bin", 
-        "supports_no_game": "false", 
+        "supports_no_game": false, 
         "systemid": "", 
         "systemname": "SEGA Visual Memory Unit"
     }, 
@@ -5970,7 +5978,7 @@
         "permissions": "", 
         "required_hw_api": "", 
         "supported_extensions": "d64|d71|d80|d81|d82|g64|g41|x64|t64|tap|prg|p00|crt|bin|zip|gz|d6z|d7z|d8z|g6z|g4z|x6z|cmd|m3u", 
-        "supports_no_game": "false", 
+        "supports_no_game": false, 
         "systemid": "commodore_128", 
         "systemname": "C128"
     }, 
@@ -5990,7 +5998,7 @@
         "permissions": "", 
         "required_hw_api": "", 
         "supported_extensions": "d64|d71|d80|d81|d82|g64|g41|x64|t64|tap|prg|p00|crt|bin|zip|gz|d6z|d7z|d8z|g6z|g4z|x6z|cmd|m3u", 
-        "supports_no_game": "false", 
+        "supports_no_game": false, 
         "systemid": "commodore_64", 
         "systemname": "C64"
     }, 
@@ -6010,7 +6018,7 @@
         "permissions": "", 
         "required_hw_api": "", 
         "supported_extensions": "d64|d71|d80|d81|d82|g64|g41|x64|t64|tap|prg|p00|crt|bin|zip|gz|d6z|d7z|d8z|g6z|g4z|x6z|cmd|m3u", 
-        "supports_no_game": "false", 
+        "supports_no_game": false, 
         "systemid": "commodore_64", 
         "systemname": "C64"
     }, 
@@ -6030,7 +6038,7 @@
         "permissions": "", 
         "required_hw_api": "", 
         "supported_extensions": "d64|d71|d80|d81|d82|g64|g41|x64|t64|tap|prg|p00|crt|bin|zip|gz|d6z|d7z|d8z|g6z|g4z|x6z|cmd|m3u", 
-        "supports_no_game": "false", 
+        "supports_no_game": false, 
         "systemid": "commodore_cbm2", 
         "systemname": "CBM2"
     }, 
@@ -6039,43 +6047,43 @@
             {
                 "desc": "chargen (PET BIOS)", 
                 "md5": "", 
-                "opt": "false", 
+                "opt": false, 
                 "path": "vice/PET/chargen"
             }, 
             {
                 "desc": "edit1g (PET BIOS)", 
                 "md5": "", 
-                "opt": "false", 
+                "opt": false, 
                 "path": "vice/PET/edit1g"
             }, 
             {
                 "desc": "edit2b (PET BIOS)", 
                 "md5": "", 
-                "opt": "false", 
+                "opt": false, 
                 "path": "vice/PET/edit2b"
             }, 
             {
                 "desc": "edit2g (PET BIOS)", 
                 "md5": "", 
-                "opt": "false", 
+                "opt": false, 
                 "path": "vice/PET/edit2g"
             }, 
             {
                 "desc": "edit4b40 (PET BIOS)", 
                 "md5": "", 
-                "opt": "false", 
+                "opt": false, 
                 "path": "vice/PET/edit4b40"
             }, 
             {
                 "desc": "edit4b80 (PET BIOS)", 
                 "md5": "", 
-                "opt": "false", 
+                "opt": false, 
                 "path": "vice/PET/edit4b80"
             }, 
             {
                 "desc": "edit4g40 (PET BIOS)", 
                 "md5": "", 
-                "opt": "false", 
+                "opt": false, 
                 "path": "vice/PET/edit4g40"
             }
         ], 
@@ -6095,7 +6103,7 @@
         "permissions": "", 
         "required_hw_api": "", 
         "supported_extensions": "d64|d71|d80|d81|d82|g64|g41|x64|t64|tap|prg|p00|crt|bin|zip|gz|d6z|d7z|d8z|g6z|g4z|x6z|cmd|m3u", 
-        "supports_no_game": "false", 
+        "supports_no_game": false, 
         "systemid": "commodore_pet", 
         "systemname": "PET"
     }, 
@@ -6115,7 +6123,7 @@
         "permissions": "", 
         "required_hw_api": "", 
         "supported_extensions": "d64|d71|d80|d81|d82|g64|g41|x64|t64|tap|prg|p00|crt|bin|zip|gz|d6z|d7z|d8z|g6z|g4z|x6z|cmd|m3u", 
-        "supports_no_game": "false", 
+        "supports_no_game": false, 
         "systemid": "commodore_plus_4", 
         "systemname": "PLUS4"
     }, 
@@ -6135,7 +6143,7 @@
         "permissions": "", 
         "required_hw_api": "", 
         "supported_extensions": "20|40|60|a0|b0|d64|d71|d80|d81|d82|g64|g41|x64|t64|tap|prg|p00|crt|bin|zip|gz|d6z|d7z|d8z|g6z|g4z|x6z|cmd|m3u", 
-        "supports_no_game": "false", 
+        "supports_no_game": false, 
         "systemid": "commodore_vic_20", 
         "systemname": "VIC20"
     }, 
@@ -6155,7 +6163,7 @@
         "permissions": "", 
         "required_hw_api": "", 
         "supported_extensions": "j64|jag|rom|abs|cof|bin|prg", 
-        "supports_no_game": "false", 
+        "supports_no_game": false, 
         "systemid": "atari_jaguar", 
         "systemname": "Jaguar"
     }, 
@@ -6175,7 +6183,7 @@
         "permissions": "", 
         "required_hw_api": "", 
         "supported_extensions": "pak", 
-        "supports_no_game": "false", 
+        "supports_no_game": false, 
         "systemid": "quake_2", 
         "systemname": "Quake 2 Game Engine"
     }, 
@@ -6195,7 +6203,7 @@
         "permissions": "", 
         "required_hw_api": "", 
         "supported_extensions": "pak", 
-        "supports_no_game": "false", 
+        "supports_no_game": false, 
         "systemid": "quake_2", 
         "systemname": "Quake 2 Game Engine"
     }, 
@@ -6215,7 +6223,7 @@
         "permissions": "", 
         "required_hw_api": "", 
         "supported_extensions": "pak", 
-        "supports_no_game": "false", 
+        "supports_no_game": false, 
         "systemid": "quake_2", 
         "systemname": "Quake 2 Game Engine"
     }, 
@@ -6235,7 +6243,7 @@
         "permissions": "", 
         "required_hw_api": "", 
         "supported_extensions": "pak", 
-        "supports_no_game": "false", 
+        "supports_no_game": false, 
         "systemid": "quake_2", 
         "systemname": "Quake 2 Game Engine"
     }, 
@@ -6255,7 +6263,7 @@
         "permissions": "", 
         "required_hw_api": "", 
         "supported_extensions": "pk3", 
-        "supports_no_game": "false", 
+        "supports_no_game": false, 
         "systemid": "quake_3", 
         "systemname": "Quake 3 Game Engine"
     }, 
@@ -6275,7 +6283,7 @@
         "permissions": "", 
         "required_hw_api": "", 
         "supported_extensions": "pak", 
-        "supports_no_game": "false", 
+        "supports_no_game": false, 
         "systemid": "quake_3", 
         "systemname": "Quake 3 Game Engine"
     }, 
@@ -6295,7 +6303,7 @@
         "permissions": "", 
         "required_hw_api": "", 
         "supported_extensions": "d64|d71|d80|d81|d82|g64||g41|x64|t64|tap|prg|p00|crt|bin|zip|gz|d6z|d7z|d8z|g6z|g4z|x6z", 
-        "supports_no_game": "false", 
+        "supports_no_game": false, 
         "systemid": "commodore_64", 
         "systemname": "C64"
     }, 
@@ -6317,7 +6325,7 @@
         "permissions": "", 
         "required_hw_api": "", 
         "supported_extensions": "zip", 
-        "supports_no_game": "false", 
+        "supports_no_game": false, 
         "systemid": "xrick", 
         "systemname": "Rick Dangerous Game Engine"
     }, 
@@ -6326,7 +6334,7 @@
             {
                 "desc": "saturn_bios.bin (Saturn BIOS)", 
                 "md5": "", 
-                "opt": "false", 
+                "opt": false, 
                 "path": "saturn_bios.bin"
             }
         ], 
@@ -6346,7 +6354,7 @@
         "permissions": "", 
         "required_hw_api": "OpenGL Core >= 3.3 | OpenGL ES >= 3.0", 
         "supported_extensions": "cue|iso|mds|ccd|zip|chd", 
-        "supports_no_game": "false", 
+        "supports_no_game": false, 
         "systemid": "sega_saturn", 
         "systemname": "Saturn"
     }, 
@@ -6354,8 +6362,8 @@
         "BIOS": [
             {
                 "desc": "saturn_bios.bin (Saturn BIOS)", 
-                "md5": "", 
-                "opt": "true", 
+                "md5": "af5828fdff51384f99b3c4926be27762", 
+                "opt": true, 
                 "path": "saturn_bios.bin"
             }
         ], 
@@ -6375,7 +6383,7 @@
         "permissions": "", 
         "required_hw_api": "", 
         "supported_extensions": "cue|iso|mds|ccd|zip|chd", 
-        "supports_no_game": "false", 
+        "supports_no_game": false, 
         "systemid": "sega_saturn", 
         "systemname": "Saturn"
     }

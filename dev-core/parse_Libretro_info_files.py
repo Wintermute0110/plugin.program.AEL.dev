@@ -76,13 +76,13 @@ for f in sorted(file_list):
         if line[0] == '#': continue
         # print("Line '{}'".format(line))
 
-        # Parse lines 'firmware0_desc = "panafz1.bin (Panasonic FZ-1 BIOS)" '
+        # Parse lines like 'firmware0_desc = "panafz1.bin (Panasonic FZ-1 BIOS)" '
         m = re.search('^firmware(\d+)_(\w+)\s+=\s+"(.*)"$$', line)
         if m:
             print('Match A: "{}" "{}" "{}". Skipping.'.format(m.group(1), m.group(2), m.group(3)))
             continue
 
-        # Parse lines 'display_name = "Atari - 5200 (Atari800)"'
+        # Parse lines like 'display_name = "Atari - 5200 (Atari800)"'
         m = re.search('^([\w]+)\s+=\s+"(.*)"$', line)
         if m:
             print('Match B: "{}" "{}"'.format(m.group(1), m.group(2)))
@@ -93,11 +93,15 @@ for f in sorted(file_list):
                 raise ValueError(keyword)
             if keyword == 'notes':
                 json_data[f][keyword].append(value)
+            elif keyword == 'supports_no_game':
+                if value not in {'true', 'false'}:
+                    raise TypeError('Unknown supports_no_game = {}'.format(value))
+                json_data[f][keyword] = True if value == 'true' else False
             else:
                 json_data[f][keyword] = value
             continue
 
-        # Parse lines 'firmware_count = 1'
+        # Parse lines like 'firmware_count = 1'
         m = re.search('^([\w]+)\s+=\s+(\d*)$', line)
         if m:
             print('Match C: "{}" "{}"'.format(m.group(1), m.group(2)))
@@ -123,6 +127,7 @@ for f in sorted(file_list):
         BIOS_list.append({'desc' : '', 'path' : '', 'opt'  : '', 'md5'  : ''})
     # pprint.pprint(BIOS_list)
 
+    # Second pass parses the firmware lists.
     print('\nSecond pass "{}"'.format(f))
     fp = open(f, 'r')
     for line in fp:
@@ -130,16 +135,39 @@ for f in sorted(file_list):
         if line == '': continue
         if line[0] == '#': continue
 
-        # Parse lines 'firmware0_desc = "panafz1.bin (Panasonic FZ-1 BIOS)" '
+        # Parse lines like:
+        # 'firmware0_desc = "panafz1.bin (Panasonic FZ-1 BIOS)"'
+        # 'firmware0_path = "panafz1.bin"'
+        # 'firmware0_opt = "true"'
         m = re.search('^firmware(\d+)_(\w+)\s+=\s+"(.*)"$$', line)
         if m:
             print('Match A: "{}" "{}" "{}"'.format(m.group(1), m.group(2), m.group(3)))
             b_index_str, keyword_str, value_str = m.group(1), m.group(2), m.group(3)
             b_index = int(b_index_str)
-            BIOS_list[b_index][keyword_str] = value_str
+            if keyword_str == 'opt':
+                if value_str not in {'true', 'false'}:
+                    raise TypeError('Unknown firmwareX_opt = {}'.format(value_str))
+                BIOS_list[b_index][keyword_str] = True if value_str == 'true' else False
+            else:
+                BIOS_list[b_index][keyword_str] = value_str
     fp.close()
     json_data[f]['BIOS'] = BIOS_list
 
+    # Third pass searches for firmware MD5
+    print('\nThird pass "{}"'.format(f))
+    for BIOS_dic in json_data[f]['BIOS']:
+        print('Looking MD5 for firmware "{}"'.format(BIOS_dic['path']))
+        for note_line in json_data[f]['notes']:
+            # Parse lines like '(!) panafz1.bin (md5): f47264dd47fe30f73ab3c010015c155b'
+            m = re.search('^\(!\) (.*) \(md5\): ([0-9A-Fa-f]+)$', note_line)
+            if not m: continue
+            print('Match A: "{}" "{}"'.format(m.group(1), m.group(2)))
+            f_path, f_MD5 = m.group(1), m.group(2)
+            if BIOS_dic['path'] == f_path:
+                print('Firmware {} matched with MD5 hash'.format(BIOS_dic['path']))
+                BIOS_dic['md5'] = f_MD5
+                break
+                
 # Save output JSON.
 with open(json_fname, 'w') as outfile:
     outfile.write(json.dumps(json_data, sort_keys = True, indent = 4))
