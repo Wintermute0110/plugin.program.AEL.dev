@@ -2,7 +2,8 @@
 *.pyo
 *.pyc
 
-# KDE Kate temp files
+# Misc files
+*.html
 *.kate-swp
 /plugin.program.advanced.emulator.launcher.sln
 /plugin.program.advanced.emulator.launcher.pyproj.user
