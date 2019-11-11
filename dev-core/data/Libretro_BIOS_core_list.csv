@@ -1,366 +1,367 @@
-BIOS name,opt,corename
-3do_arcade_saot.bin,true,4do
-5200.rom,false,atari800
-64DD_IPL.bin,true,parallel_n64
- ,true,parallel_n64_debug
-7800 BIOS (U).rom,true,prosystem
-BS-X.bin,true,snes9x
-DISK.ROM,true,fmsx
-FMPAC.ROM,true,fmsx
-KANJI.ROM,true,fmsx
-MSX.ROM,false,fmsx
-MSX2.ROM,false,fmsx
-MSX2EXT.ROM,false,fmsx
-MSX2P.ROM,false,fmsx
-MSX2PEXT.ROM,false,fmsx
-MSXDOS2.ROM,true,fmsx
-NstDatabase.xml,true,nestopia
-PAINTER.ROM,true,fmsx
-PPSSPP/ppge_atlas.zim,false,ppsspp
-SGB1.sfc/program.rom,true,higan_sfc
- ,true,higan_sfc_balanced
-SGB1.sfc/sgb1.boot.rom,true,higan_sfc
- ,true,higan_sfc_balanced
-SGB2.sfc/program.rom,true,higan_sfc
- ,true,higan_sfc_balanced
-SGB2.sfc/sgb2.boot.rom,true,higan_sfc
- ,true,higan_sfc_balanced
-STBIOS.bin,true,snes9x
-areplay.bin,true,genesis_plus_gx
-bios.gg,true,genesis_plus_gx
-bios.min,true,pokemini
-bios.sms,false,emux_sms
-bios7.bin,true,desmume
- ,false,melonds
-bios9.bin,true,desmume
- ,false,melonds
-bios_CD_E.bin,true,genesis_plus_gx
- ,true,picodrive
-bios_CD_J.bin,true,genesis_plus_gx
- ,true,picodrive
-bios_CD_U.bin,true,genesis_plus_gx
- ,true,picodrive
-bios_E.sms,true,genesis_plus_gx
-bios_J.sms,true,genesis_plus_gx
-bios_MD.bin,true,genesis_plus_gx
-bios_U.sms,true,genesis_plus_gx
-bootloader-en-m515.rom,true,mu
-c52.bin,false,o2em
-cgb_boot.bin,true,sameboy
-cx4.data.rom,true,bsnes
- ,true,bsnes2014_accuracy
- ,true,bsnes2014_balanced
- ,true,bsnes_mercury_accuracy
- ,true,bsnes_mercury_balanced
- ,true,higan_sfc
- ,true,higan_sfc_balanced
-dc/airlbios.zip,true,flycast
-dc/awbios.zip,true,flycast
-dc/boot.bin,false,redream
-dc/dc_boot.bin,true,flycast
-dc/dc_flash.bin,true,flycast
-dc/f355bios.zip,true,flycast
-dc/f355dlx.zip,true,flycast
-dc/flash.bin,false,redream
-dc/hod2bios.zip,true,flycast
-dc/naomi.zip,true,flycast
-disksys.rom,true,fceumm
- ,true,fixnes
- ,true,mesen
- ,true,nestopia
-dmg_boot.bin,false,emux_gb
- ,true,sameboy
-dsp1.data.rom,true,bsnes
- ,true,bsnes2014_accuracy
- ,true,bsnes2014_balanced
- ,true,bsnes2014_performance
- ,true,bsnes_mercury_accuracy
- ,true,bsnes_mercury_balanced
- ,true,bsnes_mercury_performance
- ,true,higan_sfc
- ,true,higan_sfc_balanced
-dsp1.program.rom,true,bsnes
- ,true,bsnes2014_accuracy
- ,true,bsnes2014_balanced
- ,true,bsnes2014_performance
- ,true,bsnes_mercury_accuracy
- ,true,bsnes_mercury_balanced
- ,true,bsnes_mercury_performance
- ,true,higan_sfc
- ,true,higan_sfc_balanced
-dsp1b.data.rom,true,bsnes
- ,true,bsnes2014_accuracy
- ,true,bsnes2014_balanced
- ,true,bsnes2014_performance
- ,true,bsnes_mercury_accuracy
- ,true,bsnes_mercury_balanced
- ,true,bsnes_mercury_performance
- ,true,higan_sfc
- ,true,higan_sfc_balanced
-dsp1b.program.rom,true,bsnes
- ,true,bsnes2014_accuracy
- ,true,bsnes2014_balanced
- ,true,bsnes2014_performance
- ,true,bsnes_mercury_accuracy
- ,true,bsnes_mercury_balanced
- ,true,bsnes_mercury_performance
- ,true,higan_sfc
- ,true,higan_sfc_balanced
-dsp2.data.rom,true,bsnes
- ,true,bsnes2014_accuracy
- ,true,bsnes2014_balanced
- ,true,bsnes2014_performance
- ,true,bsnes_mercury_accuracy
- ,true,bsnes_mercury_balanced
- ,true,bsnes_mercury_performance
- ,true,higan_sfc
- ,true,higan_sfc_balanced
-dsp2.program.rom,true,bsnes
- ,true,bsnes2014_accuracy
- ,true,bsnes2014_balanced
- ,true,bsnes2014_performance
- ,true,bsnes_mercury_accuracy
- ,true,bsnes_mercury_balanced
- ,true,bsnes_mercury_performance
- ,true,higan_sfc
- ,true,higan_sfc_balanced
-dsp3.data.rom,true,bsnes
- ,true,bsnes2014_accuracy
- ,true,bsnes2014_balanced
- ,true,bsnes2014_performance
- ,true,bsnes_mercury_accuracy
- ,true,bsnes_mercury_balanced
- ,true,bsnes_mercury_performance
- ,true,higan_sfc
- ,true,higan_sfc_balanced
-dsp3.program.rom,true,bsnes
- ,true,bsnes2014_accuracy
- ,true,bsnes2014_balanced
- ,true,bsnes2014_performance
- ,true,bsnes_mercury_accuracy
- ,true,bsnes_mercury_balanced
- ,true,bsnes_mercury_performance
- ,true,higan_sfc
- ,true,higan_sfc_balanced
-dsp4.data.rom,true,bsnes
- ,true,bsnes2014_accuracy
- ,true,bsnes2014_balanced
- ,true,bsnes2014_performance
- ,true,bsnes_mercury_accuracy
- ,true,bsnes_mercury_balanced
- ,true,bsnes_mercury_performance
- ,true,higan_sfc
- ,true,higan_sfc_balanced
-dsp4.program.rom,true,bsnes
- ,true,bsnes2014_accuracy
- ,true,bsnes2014_balanced
- ,true,bsnes2014_performance
- ,true,bsnes_mercury_accuracy
- ,true,bsnes_mercury_balanced
- ,true,bsnes_mercury_performance
- ,true,higan_sfc
- ,true,higan_sfc_balanced
-exec.bin,false,freeintv
-fbneo/cchip.zip,true,fbneo
-fbneo/decocass.zip,true,fbneo
-fbneo/isgsm.zip,true,fbneo
-fbneo/midssio.zip,true,fbneo
-fbneo/neocdz.zip,true,fbneo
-fbneo/neogeo.zip,true,fbneo
-fbneo/nmk004.zip,true,fbneo
-fbneo/pgm.zip,true,fbneo
-fbneo/skns.zip,true,fbneo
-fbneo/ym2608.zip,true,fbneo
-firmware.bin,true,desmume
- ,false,melonds
-freej2me-fx.jar,false,freej2me
-freej2me-lr.jar,false,freej2me
-freej2me.jar,false,freej2me
-g7400.bin,false,o2em
-gb_bios.bin,true,gambatte
- ,true,mgba
- ,true,vbam
-gba_bios.bin,false,gpsp
- ,true,mednafen_gba
- ,true,mgba
- ,false,tempgba
- ,true,vba_next
- ,true,vbam
-gbc_bios.bin,true,fixgb
- ,true,gambatte
- ,true,mgba
- ,true,vbam
-gexpress.pce,true,mednafen_pce
- ,true,mednafen_pce_fast
- ,true,mednafen_supergrafx
-ggenie.bin,true,genesis_plus_gx
-goldstar.bin,true,4do
-grom.bin,false,freeintv
-jopac.bin,false,o2em
-keropi/cgrom.dat,false,px68k
-keropi/iplrom.dat,false,px68k
-keropi/iplrom30.dat,true,px68k
-kick34005.A500,false,puae
-kick37175.A500,false,puae
-kick40063.A600,false,puae
-kick40068.A1200,false,puae
-kronos/saturn_bios.bin,false,kronos
-kronos/stvbios.zip,false,kronos
-lynxboot.img,true,handy
- ,false,mednafen_lynx
-mpr-17933.bin,false,mednafen_saturn
-mpr-18811-mx.ic1,true,kronos
- ,true,mednafen_saturn
-mpr-19367-mx.ic1,true,kronos
- ,true,mednafen_saturn
-neocd/000-lo.lo,true,libneocd
-neocd/front-sp1.bin,true,libneocd
-neocd/neocd.bin,true,libneocd
-neocd/neocd_f.rom,true,libneocd
-neocd/neocd_sf.rom,true,libneocd
-neocd/neocd_st.rom,true,libneocd
-neocd/neocd_sz.rom,true,libneocd
-neocd/neocd_t.rom,true,libneocd
-neocd/neocd_z.rom,true,libneocd
-neocd/ng-lo.rom,true,libneocd
-neocd/top-sp1.bin,true,libneocd
-neocd/uni-bioscd.rom,true,libneocd
-nes.pal,true,fceumm
-np2kai/FONT.ROM,true,np2kai
-np2kai/bios.rom,true,np2kai
-np2kai/font.bmp,true,np2kai
-np2kai/itf.rom,true,np2kai
-np2kai/sound.rom,true,np2kai
-o2rom.bin,false,o2em
-palmos41-en-m515.rom,true,mu
-palmos52-en-t3.rom,true,mu
-panafz1-kanji.bin,true,4do
-panafz1.bin,true,4do
-panafz10-patched.bin,true,4do
-panafz10.bin,true,4do
-panafz10e-anvil-patched.bin,true,4do
-panafz10e-anvil.bin,true,4do
-panafz10ja-anvil-kanji.bin,true,4do
-pcfx.rom,false,mednafen_pcfx
-quasi88/disk.rom,true,quasi88
-quasi88/n88.rom,false,quasi88
-quasi88/n88_0.rom,false,quasi88
-quasi88/n88_1.rom,true,quasi88
-quasi88/n88_2.rom,true,quasi88
-quasi88/n88_3.rom,true,quasi88
-quasi88/n88jisho.rom,true,quasi88
-quasi88/n88knj1.rom,true,quasi88
-quasi88/n88knj2.rom,true,quasi88
-quasi88/n88n.rom,true,quasi88
-sanyotry.bin,true,4do
-saturn_bios.bin,false,yabasanshiro
- ,true,yabause
-scph5500.bin,true,mednafen_psx
- ,true,mednafen_psx_hw
- ,true,pcsx1
- ,true,pcsx_rearmed
- ,true,pcsx_rearmed_interpreter
- ,true,pcsx_rearmed_neon
-scph5501.bin,true,mednafen_psx
- ,true,mednafen_psx_hw
- ,true,pcsx1
- ,true,pcsx_rearmed
- ,true,pcsx_rearmed_interpreter
- ,true,pcsx_rearmed_neon
-scph5502.bin,true,mednafen_psx
- ,true,mednafen_psx_hw
- ,true,pcsx1
- ,true,pcsx_rearmed
- ,true,pcsx_rearmed_interpreter
- ,true,pcsx_rearmed_neon
-sega_101.bin,false,mednafen_saturn
-sgb.boot.rom,true,bsnes
- ,true,bsnes2014_accuracy
- ,true,bsnes2014_balanced
- ,true,bsnes2014_performance
- ,true,bsnes_mercury_accuracy
- ,true,bsnes_mercury_balanced
- ,true,bsnes_mercury_performance
-sgb_bios.bin,true,mgba
-sk.bin,true,genesis_plus_gx
-sk2chip.bin,true,genesis_plus_gx
-sl31253.bin,false,freechaf
-sl31254.bin,false,freechaf
-sl90025.bin,false,freechaf
-squirreljme.sqc,false,squirreljme
-st010.data.rom,true,bsnes
- ,true,bsnes2014_accuracy
- ,true,bsnes2014_balanced
- ,true,bsnes2014_performance
- ,true,bsnes_mercury_accuracy
- ,true,bsnes_mercury_balanced
- ,true,bsnes_mercury_performance
- ,true,higan_sfc
- ,true,higan_sfc_balanced
-st010.program.rom,true,bsnes
- ,true,bsnes2014_accuracy
- ,true,bsnes2014_balanced
- ,true,bsnes2014_performance
- ,true,bsnes_mercury_accuracy
- ,true,bsnes_mercury_balanced
- ,true,bsnes_mercury_performance
- ,true,higan_sfc
- ,true,higan_sfc_balanced
-st011.data.rom,true,bsnes
- ,true,bsnes2014_accuracy
- ,true,bsnes2014_balanced
- ,true,bsnes2014_performance
- ,true,bsnes_mercury_accuracy
- ,true,bsnes_mercury_balanced
- ,true,bsnes_mercury_performance
- ,true,higan_sfc
- ,true,higan_sfc_balanced
-st011.program.rom,true,bsnes
- ,true,bsnes2014_accuracy
- ,true,bsnes2014_balanced
- ,true,bsnes2014_performance
- ,true,bsnes_mercury_accuracy
- ,true,bsnes_mercury_balanced
- ,true,bsnes_mercury_performance
- ,true,higan_sfc
- ,true,higan_sfc_balanced
-st018.data.rom,true,bsnes
- ,true,bsnes2014_accuracy
- ,true,bsnes2014_balanced
- ,true,bsnes2014_performance
- ,true,bsnes_mercury_accuracy
- ,true,bsnes_mercury_balanced
- ,true,bsnes_mercury_performance
- ,true,higan_sfc
- ,true,higan_sfc_balanced
-st018.program.rom,true,bsnes
- ,true,bsnes2014_accuracy
- ,true,bsnes2014_balanced
- ,true,bsnes2014_performance
- ,true,bsnes_mercury_accuracy
- ,true,bsnes_mercury_balanced
- ,true,bsnes_mercury_performance
- ,true,higan_sfc
- ,true,higan_sfc_balanced
-syscard1.pce,true,mednafen_pce
- ,true,mednafen_pce_fast
- ,true,mednafen_supergrafx
-syscard2.pce,true,mednafen_pce
- ,true,mednafen_pce_fast
- ,true,mednafen_supergrafx
-syscard3.pce,true,mednafen_pce
- ,true,mednafen_pce_fast
- ,true,mednafen_supergrafx
-tos.img,false,hatari
-uae_data/drive_click_LOUD.wav,true,puae
-uae_data/drive_snatch_LOUD.wav,true,puae
-uae_data/drive_spin_LOUD.wav,true,puae
-uae_data/drive_spinnd_LOUD.wav,true,puae
-uae_data/drive_startup_LOUD.wav,true,puae
-vice/PET/chargen,false,vice_xpet
-vice/PET/edit1g,false,vice_xpet
-vice/PET/edit2b,false,vice_xpet
-vice/PET/edit2g,false,vice_xpet
-vice/PET/edit4b40,false,vice_xpet
-vice/PET/edit4b80,false,vice_xpet
-vice/PET/edit4g40,false,vice_xpet
+BIOS path,MD5,desc,req,corename
+3do_arcade_saot.bin,8970fc98,3do_arcade_saot.bin (Shootout At Old Tucson BIOS),False,4do
+5200.rom,281f20ea,5200.rom (5200 BIOS),True,atari800
+64DD_IPL.bin,8d3d9f29,64DD_IPL.bin (64DD IPL ROM),False,parallel_n64
+ , , ,False,parallel_n64_debug
+7800 BIOS (U).rom,0763f1ff,7800 BIOS (U).rom (7800 BIOS),False,prosystem
+areplay.bin,,areplay.bin (Action Replay ROM),False,genesis_plus_gx
+bios.gg,,bios.gg (GameGear BIOS),False,genesis_plus_gx
+bios.min,,bios.min (Pokemon Mini BIOS),False,pokemini
+bios.sms,,bios.sms (Master System BIOS),True,emux_sms
+bios7.bin,,bios7.bin (ARM7 BIOS),False,desmume
+ , , ,True,melonds
+bios9.bin,,bios9.bin (ARM9 BIOS),False,desmume
+ , , ,True,melonds
+bios_CD_E.bin,,bios_CD_E.bin (MegaCD EU BIOS),False,genesis_plus_gx
+ , , ,False,picodrive
+bios_CD_J.bin,,bios_CD_J.bin (MegaCD JP BIOS),False,genesis_plus_gx
+ , , ,False,picodrive
+bios_CD_U.bin,,bios_CD_U.bin (SegaCD US BIOS),False,genesis_plus_gx
+ , , ,False,picodrive
+bios_E.sms,,bios_E.sms (MasterSystem EU BIOS),False,genesis_plus_gx
+bios_J.sms,,bios_J.sms (MasterSystem JP BIOS),False,genesis_plus_gx
+bios_MD.bin,,bios_MD.bin (Mega Drive startup ROM),False,genesis_plus_gx
+bios_U.sms,,bios_U.sms (MasterSystem US BIOS),False,genesis_plus_gx
+bootloader-en-m515.rom,,bootloader-en-m515.rom (MC68VZ328 UART Bootloader),False,mu
+BS-X.bin,,BS-X.bin (BS-X - Sore wa Namae o Nusumareta Machi no Monogatari (Japan) (Rev 1)),False,snes9x
+c52.bin,,c52.bin (Videopac+ French BIOS - G7000 model),True,o2em
+cgb_boot.bin,,cgb_boot.bin (Game Boy Color boot ROM),False,sameboy
+cx4.data.rom,,cx4.data.rom,False,bsnes
+ , , ,False,bsnes2014_accuracy
+ , , ,False,bsnes2014_balanced
+ , , ,False,bsnes_mercury_accuracy
+ , , ,False,bsnes_mercury_balanced
+ , , ,False,higan_sfc
+ , , ,False,higan_sfc_balanced
+dc/airlbios.zip,,dc/airlbios.zip (Naomi Airline Pilots deluxe Bios from MAME),False,flycast
+dc/awbios.zip,,dc/awbios.zip (Atomiswave BIOS from MAME),False,flycast
+dc/boot.bin,,boot.bin (Dreamcast BIOS),True,redream
+dc/dc_boot.bin,,dc/dc_boot.bin (Dreamcast BIOS),False,flycast
+dc/dc_flash.bin,,dc/dc_flash.bin (Date/Time/Language),False,flycast
+dc/f355bios.zip,,dc/f355bios.zip (Naomi Ferrari F355 Challenge twin/deluxe Bios from MAME),False,flycast
+dc/f355dlx.zip,,dc/f355dlx.zip (Naomi Ferrari F355 Challenge deluxe Bios from MAME),False,flycast
+dc/flash.bin,,flash.bin (Date/Time/Language),True,redream
+dc/hod2bios.zip,,dc/hod2bios.zip (Naomi The House of the Dead 2 Bios from MAME),False,flycast
+dc/naomi.zip,,dc/naomi.zip (Naomi Bios from MAME),False,flycast
+DISK.ROM,,DISK.ROM (DiskROM/BDOS),False,fmsx
+disksys.rom,ca30b50f,disksys.rom (Family Computer Disk System BIOS),False,fceumm
+ , , ,False,fixnes
+ , , ,False,mesen
+ , , ,False,nestopia
+dmg_boot.bin,,dmg_boot.bin (Game Boy boot ROM),True,emux_gb
+ , , ,False,sameboy
+dsp1.data.rom,,dsp1.data.rom,False,bsnes
+ , , ,False,bsnes2014_accuracy
+ , , ,False,bsnes2014_balanced
+ , , ,False,bsnes2014_performance
+ , , ,False,bsnes_mercury_accuracy
+ , , ,False,bsnes_mercury_balanced
+ , , ,False,bsnes_mercury_performance
+ , , ,False,higan_sfc
+ , , ,False,higan_sfc_balanced
+dsp1.program.rom,,dsp1.program.rom,False,bsnes
+ , , ,False,bsnes2014_accuracy
+ , , ,False,bsnes2014_balanced
+ , , ,False,bsnes2014_performance
+ , , ,False,bsnes_mercury_accuracy
+ , , ,False,bsnes_mercury_balanced
+ , , ,False,bsnes_mercury_performance
+ , , ,False,higan_sfc
+ , , ,False,higan_sfc_balanced
+dsp1b.data.rom,,dsp1b.data.rom,False,bsnes
+ , , ,False,bsnes2014_accuracy
+ , , ,False,bsnes2014_balanced
+ , , ,False,bsnes2014_performance
+ , , ,False,bsnes_mercury_accuracy
+ , , ,False,bsnes_mercury_balanced
+ , , ,False,bsnes_mercury_performance
+ , , ,False,higan_sfc
+ , , ,False,higan_sfc_balanced
+dsp1b.program.rom,,dsp1b.program.rom,False,bsnes
+ , , ,False,bsnes2014_accuracy
+ , , ,False,bsnes2014_balanced
+ , , ,False,bsnes2014_performance
+ , , ,False,bsnes_mercury_accuracy
+ , , ,False,bsnes_mercury_balanced
+ , , ,False,bsnes_mercury_performance
+ , , ,False,higan_sfc
+ , , ,False,higan_sfc_balanced
+dsp2.data.rom,,dsp2.data.rom,False,bsnes
+ , , ,False,bsnes2014_accuracy
+ , , ,False,bsnes2014_balanced
+ , , ,False,bsnes2014_performance
+ , , ,False,bsnes_mercury_accuracy
+ , , ,False,bsnes_mercury_balanced
+ , , ,False,bsnes_mercury_performance
+ , , ,False,higan_sfc
+ , , ,False,higan_sfc_balanced
+dsp2.program.rom,,dsp2.program.rom,False,bsnes
+ , , ,False,bsnes2014_accuracy
+ , , ,False,bsnes2014_balanced
+ , , ,False,bsnes2014_performance
+ , , ,False,bsnes_mercury_accuracy
+ , , ,False,bsnes_mercury_balanced
+ , , ,False,bsnes_mercury_performance
+ , , ,False,higan_sfc
+ , , ,False,higan_sfc_balanced
+dsp3.data.rom,,dsp3.data.rom,False,bsnes
+ , , ,False,bsnes2014_accuracy
+ , , ,False,bsnes2014_balanced
+ , , ,False,bsnes2014_performance
+ , , ,False,bsnes_mercury_accuracy
+ , , ,False,bsnes_mercury_balanced
+ , , ,False,bsnes_mercury_performance
+ , , ,False,higan_sfc
+ , , ,False,higan_sfc_balanced
+dsp3.program.rom,,dsp3.program.rom,False,bsnes
+ , , ,False,bsnes2014_accuracy
+ , , ,False,bsnes2014_balanced
+ , , ,False,bsnes2014_performance
+ , , ,False,bsnes_mercury_accuracy
+ , , ,False,bsnes_mercury_balanced
+ , , ,False,bsnes_mercury_performance
+ , , ,False,higan_sfc
+ , , ,False,higan_sfc_balanced
+dsp4.data.rom,,dsp4.data.rom,False,bsnes
+ , , ,False,bsnes2014_accuracy
+ , , ,False,bsnes2014_balanced
+ , , ,False,bsnes2014_performance
+ , , ,False,bsnes_mercury_accuracy
+ , , ,False,bsnes_mercury_balanced
+ , , ,False,bsnes_mercury_performance
+ , , ,False,higan_sfc
+ , , ,False,higan_sfc_balanced
+dsp4.program.rom,,dsp4.program.rom,False,bsnes
+ , , ,False,bsnes2014_accuracy
+ , , ,False,bsnes2014_balanced
+ , , ,False,bsnes2014_performance
+ , , ,False,bsnes_mercury_accuracy
+ , , ,False,bsnes_mercury_balanced
+ , , ,False,bsnes_mercury_performance
+ , , ,False,higan_sfc
+ , , ,False,higan_sfc_balanced
+exec.bin,,exec.bin,True,freeintv
+fbneo/cchip.zip,,fbneo/cchip.zip (C-Chip Internal ROM),False,fbneo
+fbneo/decocass.zip,,fbneo/decocass.zip (DECO Cassette System BIOS),False,fbneo
+fbneo/isgsm.zip,,fbneo/isgsm.zip (ISG Selection Master Type 2006 System BIOS),False,fbneo
+fbneo/midssio.zip,,fbneo/midssio.zip (Midway SSIO Sound Board Internal ROM),False,fbneo
+fbneo/neocdz.zip,,fbneo/neocdz.zip (Neo Geo CDZ System BIOS),False,fbneo
+fbneo/neogeo.zip,,fbneo/neogeo.zip (Neo Geo BIOS),False,fbneo
+fbneo/nmk004.zip,,fbneo/nmk004.zip (NMK004 Internal ROM),False,fbneo
+fbneo/pgm.zip,,fbneo/pgm.zip (PGM System BIOS),False,fbneo
+fbneo/skns.zip,,fbneo/skns.zip (Super Kaneko Nova System BIOS),False,fbneo
+fbneo/ym2608.zip,,fbneo/ym2608.zip (YM2608 Internal ROM),False,fbneo
+firmware.bin,,firmware.bin (NDS Firmware),False,desmume
+ , , ,True,melonds
+FMPAC.ROM,,FMPAC.ROM (FMPAC BIOS),False,fmsx
+freej2me-fx.jar,,freej2me-fx.jar,True,freej2me
+freej2me-lr.jar,,freej2me-lr.jar,True,freej2me
+freej2me.jar,,freej2me.jar,True,freej2me
+g7400.bin,,g7400.bin (Videopac+ European BIOS - G7400 model),True,o2em
+gb_bios.bin,,gb_bios.bin (Game Boy BIOS),False,gambatte
+ , , ,False,mgba
+ , , ,False,vbam
+gba_bios.bin,a860e8c0,gba_bios.bin (Game Boy Advance BIOS),True,gpsp
+ , , ,False,mednafen_gba
+ , , ,False,mgba
+ , , ,True,tempgba
+ , , ,False,vba_next
+ , , ,False,vbam
+gbc_bios.bin,dbfce9db,gbc_bios.bin (Game Boy Color BIOS),False,fixgb
+ , , ,False,gambatte
+ , , ,False,mgba
+ , , ,False,vbam
+gexpress.pce,,gexpress.pce (PCE-CD BIOS),False,mednafen_pce
+ , , ,False,mednafen_pce_fast
+ , , ,False,mednafen_supergrafx
+ggenie.bin,,ggenie.bin (Game Genie ROM),False,genesis_plus_gx
+goldstar.bin,8639fd5e,goldstar.bin (Goldstar GDO-101M BIOS),False,4do
+grom.bin,,grom.bin,True,freeintv
+jopac.bin,,jopac.bin (Videopac+ French BIOS - G7400 model),True,o2em
+KANJI.ROM,,KANJI.ROM (Kanji Font),False,fmsx
+keropi/cgrom.dat,,cgrom.dat (X68000 BIOS 2),True,px68k
+keropi/iplrom.dat,,iplrom.dat (X68000 BIOS),True,px68k
+keropi/iplrom30.dat,,iplrom30.dat (X68000 BIOS 3),False,px68k
+kick34005.A500,,kick34005.A500 (Amiga 500 BIOS_ Kickstart v1.3 Rev. 34.005),True,puae
+kick37175.A500,,kick37175.A500 (Amiga 500+ BIOS_ Kickstart v2.04 Rev. 37.175),True,puae
+kick40063.A600,,kick40063.A600 (Amiga 600 BIOS_ Kickstart v3.1 Rev. 40.063),True,puae
+kick40068.A1200,,kick40068.A1200 (Amiga 1200 BIOS_ Kickstart v3.1 Rev. 40.068),True,puae
+kronos/saturn_bios.bin,,kronos/saturn_bios.bin (Saturn BIOS),True,kronos
+kronos/stvbios.zip,,kronos/stvbios.zip (ST-V BIOS from MAME),True,kronos
+lynxboot.img,fcd403db,lynxboot.img (Lynx Boot Image),False,handy
+ , , ,True,mednafen_lynx
+mpr-17933.bin,,mpr-17933.bin (Saturn US/EU BIOS),True,mednafen_saturn
+mpr-18811-mx.ic1,,mpr-18811-mx.ic1 (The King of Fighters '95 ROM Cartridge),False,kronos
+ , , ,False,mednafen_saturn
+mpr-19367-mx.ic1,,mpr-19367-mx.ic1 (Ultraman: Hikari no Kyojin Densetsu ROM Cartridge),False,kronos
+ , , ,False,mednafen_saturn
+MSX.ROM,,MSX.ROM (MSX BIOS),True,fmsx
+MSX2.ROM,,MSX2.ROM (MSX2 BIOS),True,fmsx
+MSX2EXT.ROM,,MSX2EXT.ROM (MSX2 ExtROM),True,fmsx
+MSX2P.ROM,,MSX2P.ROM (MSX2+ BIOS),True,fmsx
+MSX2PEXT.ROM,,MSX2PEXT.ROM (MSX2+ ExtROM),True,fmsx
+MSXDOS2.ROM,,MSXDOS2.ROM (MSX-DOS 2),False,fmsx
+neocd/000-lo.lo,,Y-ZOOM ROM (MAME),False,neocd
+neocd/front-sp1.bin,,Front Loader BIOS (MAME),False,neocd
+neocd/neocd.bin,,CDZ BIOS (MAME),False,neocd
+neocd/neocd_f.rom,,Front Loader BIOS,False,neocd
+neocd/neocd_sf.rom,,Front Loader BIOS (SMKDAN),False,neocd
+neocd/neocd_st.rom,,Top Loader BIOS (SMKDAN),False,neocd
+neocd/neocd_sz.rom,,CDZ BIOS (SMKDAN),False,neocd
+neocd/neocd_t.rom,,Top Loader BIOS,False,neocd
+neocd/neocd_z.rom,,CDZ BIOS,False,neocd
+neocd/ng-lo.rom,,Y-ZOOM ROM,False,neocd
+neocd/top-sp1.bin,,Top Loader BIOS (MAME),False,neocd
+neocd/uni-bioscd.rom,,Universe BIOS,False,neocd
+nes.pal,,nes.pal (custom NES Palette),False,fceumm
+np2kai/bios.rom,,bios.rom,False,np2kai
+np2kai/font.bmp,,font.bmp (needed to display text),False,np2kai
+np2kai/FONT.ROM,,FONT.ROM (alt font file),False,np2kai
+np2kai/itf.rom,,itf.rom,False,np2kai
+np2kai/sound.rom,,sound.rom,False,np2kai
+NstDatabase.xml,,NstDatabase.xml (Nestopia UE Database file),False,nestopia
+o2rom.bin,,o2rom.bin (Odyssey2 BIOS - G7000 model),True,o2em
+PAINTER.ROM,,PAINTER.ROM (Yamaha Painter),False,fmsx
+palmos41-en-m515.rom,,palmos41-en-m515.rom (Palm OS 4.1),False,mu
+palmos52-en-t3.rom,,palmos52-en-t3.rom (Palm OS 5.2.1),False,mu
+panafz1-kanji.bin,b8dc97f7,panafz1-kanji.bin (Panasonic FZ-1 Kanji Font ROM),False,4do
+panafz1.bin,f47264dd,panafz1.bin (Panasonic FZ-1 BIOS),False,4do
+panafz10-patched.bin,1477bda8,panafz10-patched.bin (Panasonic FZ-10 BIOS [RSA Patch]),False,4do
+panafz10.bin,51f2f43a,panafz10.bin (Panasonic FZ-10 BIOS),False,4do
+panafz10e-anvil-patched.bin,cf11bbb5,panafz10e-anvil-patched.bin (Panasonic FZ-10E BIOS [Anvil RSA Patch]),False,4do
+panafz10e-anvil.bin,a48e6746,panafz10e-anvil.bin (Panasonic FZ-10E BIOS [Anvil]),False,4do
+panafz10ja-anvil-kanji.bin,42857725,panafz10ja-anvil-kanji.bin (Panasonic FZ-10JA Kanji Font ROM),False,4do
+pcfx.rom,08e36edb,pcfx.rom (PC-FX BIOS v1.00 - 2 Sep 1994),True,mednafen_pcfx
+PPSSPP/ppge_atlas.zim,,ppge_atlas.zim (PPSSPP Data ROM),True,ppsspp
+quasi88/disk.rom,,disk.rom (Sub BIOS),False,quasi88
+quasi88/n88.rom,,n88.rom (Main BIOS),True,quasi88
+quasi88/n88_0.rom,,n88_0.rom (Extension BIOS 1),True,quasi88
+quasi88/n88_1.rom,,n88_1.rom (Extension BIOS 2),False,quasi88
+quasi88/n88_2.rom,,n88_2.rom (Extension BIOS 3),False,quasi88
+quasi88/n88_3.rom,,n88_3.rom (Extension BIOS 4),False,quasi88
+quasi88/n88jisho.rom,,n88jisho.rom (Jisho),False,quasi88
+quasi88/n88knj1.rom,,n88knj1.rom (Kanji Font 1),False,quasi88
+quasi88/n88knj2.rom,,n88knj2.rom (Kanji Font 2),False,quasi88
+quasi88/n88n.rom,,n88n.rom (N Basic BIOS),False,quasi88
+sanyotry.bin,35fa1a1e,sanyotry.bin (Sanyo Try IMP-21J BIOS),False,4do
+saturn_bios.bin,af5828fd,saturn_bios.bin (Saturn BIOS),True,yabasanshiro
+ , , ,False,yabause
+scph5500.bin,,scph5500.bin (PS1 JP BIOS),False,mednafen_psx
+ , , ,False,mednafen_psx_hw
+ , , ,False,pcsx1
+ , , ,False,pcsx_rearmed
+ , , ,False,pcsx_rearmed_interpreter
+ , , ,False,pcsx_rearmed_neon
+scph5501.bin,,scph5501.bin (PS1 US BIOS),False,mednafen_psx
+ , , ,False,mednafen_psx_hw
+ , , ,False,pcsx1
+ , , ,False,pcsx_rearmed
+ , , ,False,pcsx_rearmed_interpreter
+ , , ,False,pcsx_rearmed_neon
+scph5502.bin,,scph5502.bin (PS1 EU BIOS),False,mednafen_psx
+ , , ,False,mednafen_psx_hw
+ , , ,False,pcsx1
+ , , ,False,pcsx_rearmed
+ , , ,False,pcsx_rearmed_interpreter
+ , , ,False,pcsx_rearmed_neon
+sega_101.bin,,sega_101.bin (Saturn JP BIOS),True,mednafen_saturn
+sgb.boot.rom,,sgb.boot.rom (SGB Boot Image),False,bsnes2014_accuracy
+ , , ,False,bsnes2014_balanced
+ , , ,False,bsnes2014_performance
+ , , ,False,bsnes_mercury_accuracy
+ , , ,False,bsnes_mercury_balanced
+ , , ,False,bsnes_mercury_performance
+SGB1.sfc,,SGB1.sfc (SGB Boot Image),False,bsnes
+SGB1.sfc/program.rom,,SGB1.sfc/program.rom (SGB Boot Image),False,higan_sfc
+ , , ,False,higan_sfc_balanced
+SGB1.sfc/sgb1.boot.rom,,SGB1.sfc/sgb1.boot.rom (SGB Boot BIOS),False,higan_sfc
+ , , ,False,higan_sfc_balanced
+SGB2.sfc,,SGB2.sfc (SGB Boot Image),False,bsnes
+SGB2.sfc/program.rom,,SGB2.sfc/program.rom (SGB Boot Image),False,higan_sfc
+ , , ,False,higan_sfc_balanced
+SGB2.sfc/sgb2.boot.rom,,SGB2.sfc/sgb2.boot.rom (SGB Boot BIOS),False,higan_sfc
+ , , ,False,higan_sfc_balanced
+sgb_bios.bin,,sgb_bios.bin (Super Game Boy BIOS),False,mgba
+sk.bin,,sk.bin (Sonic & Knuckles ROM),False,genesis_plus_gx
+sk2chip.bin,,sk2chip.bin (Sonic & Knuckles UPMEM ROM),False,genesis_plus_gx
+sl31253.bin,,sl31253.bin,True,freechaf
+sl31254.bin,,sl31254.bin,True,freechaf
+sl90025.bin,,sl90025.bin,True,freechaf
+squirreljme.sqc,,squirreljme.sqc (SquirrelJME Compiled SummerCoat ROM),True,squirreljme
+st010.data.rom,,st010.data.rom,False,bsnes
+ , , ,False,bsnes2014_accuracy
+ , , ,False,bsnes2014_balanced
+ , , ,False,bsnes2014_performance
+ , , ,False,bsnes_mercury_accuracy
+ , , ,False,bsnes_mercury_balanced
+ , , ,False,bsnes_mercury_performance
+ , , ,False,higan_sfc
+ , , ,False,higan_sfc_balanced
+st010.program.rom,,st010.program.rom,False,bsnes
+ , , ,False,bsnes2014_accuracy
+ , , ,False,bsnes2014_balanced
+ , , ,False,bsnes2014_performance
+ , , ,False,bsnes_mercury_accuracy
+ , , ,False,bsnes_mercury_balanced
+ , , ,False,bsnes_mercury_performance
+ , , ,False,higan_sfc
+ , , ,False,higan_sfc_balanced
+st011.data.rom,,st011.data.rom,False,bsnes
+ , , ,False,bsnes2014_accuracy
+ , , ,False,bsnes2014_balanced
+ , , ,False,bsnes2014_performance
+ , , ,False,bsnes_mercury_accuracy
+ , , ,False,bsnes_mercury_balanced
+ , , ,False,bsnes_mercury_performance
+ , , ,False,higan_sfc
+ , , ,False,higan_sfc_balanced
+st011.program.rom,,st011.program.rom,False,bsnes
+ , , ,False,bsnes2014_accuracy
+ , , ,False,bsnes2014_balanced
+ , , ,False,bsnes2014_performance
+ , , ,False,bsnes_mercury_accuracy
+ , , ,False,bsnes_mercury_balanced
+ , , ,False,bsnes_mercury_performance
+ , , ,False,higan_sfc
+ , , ,False,higan_sfc_balanced
+st018.data.rom,,st018.data.rom,False,bsnes
+ , , ,False,bsnes2014_accuracy
+ , , ,False,bsnes2014_balanced
+ , , ,False,bsnes2014_performance
+ , , ,False,bsnes_mercury_accuracy
+ , , ,False,bsnes_mercury_balanced
+ , , ,False,bsnes_mercury_performance
+ , , ,False,higan_sfc
+ , , ,False,higan_sfc_balanced
+st018.program.rom,,st018.program.rom,False,bsnes
+ , , ,False,bsnes2014_accuracy
+ , , ,False,bsnes2014_balanced
+ , , ,False,bsnes2014_performance
+ , , ,False,bsnes_mercury_accuracy
+ , , ,False,bsnes_mercury_balanced
+ , , ,False,bsnes_mercury_performance
+ , , ,False,higan_sfc
+ , , ,False,higan_sfc_balanced
+STBIOS.bin,,STBIOS.bin (Sufami Turbo (Japan)),False,snes9x
+syscard1.pce,,syscard1.pce (PCE-CD BIOS),False,mednafen_pce
+ , , ,False,mednafen_pce_fast
+ , , ,False,mednafen_supergrafx
+syscard2.pce,,syscard2.pce (PCE-CD BIOS),False,mednafen_pce
+ , , ,False,mednafen_pce_fast
+ , , ,False,mednafen_supergrafx
+syscard3.pce,,syscard3.pce (PCE-CD BIOS),False,mednafen_pce
+ , , ,False,mednafen_pce_fast
+ , , ,False,mednafen_supergrafx
+tos.img,c1c57ce4,tos.img (TOS Boot Image),True,hatari
+uae_data/drive_click_LOUD.wav,,drive_click_LOUD.wav (floppy drive sound),False,puae
+uae_data/drive_snatch_LOUD.wav,,drive_snatch_LOUD.wav (floppy drive sound),False,puae
+uae_data/drive_spin_LOUD.wav,,drive_spin_LOUD.wav (floppy drive sound),False,puae
+uae_data/drive_spinnd_LOUD.wav,,drive_spinnd_LOUD.wav (floppy drive sound),False,puae
+uae_data/drive_startup_LOUD.wav,,drive_startup_LOUD.wav (floppy drive sound),False,puae
+vice/PET/chargen,,chargen (PET BIOS),True,vice_xpet
+vice/PET/edit1g,,edit1g (PET BIOS),True,vice_xpet
+vice/PET/edit2b,,edit2b (PET BIOS),True,vice_xpet
+vice/PET/edit2g,,edit2g (PET BIOS),True,vice_xpet
+vice/PET/edit4b40,,edit4b40 (PET BIOS),True,vice_xpet
+vice/PET/edit4b80,,edit4b80 (PET BIOS),True,vice_xpet
+vice/PET/edit4g40,,edit4g40 (PET BIOS),True,vice_xpet

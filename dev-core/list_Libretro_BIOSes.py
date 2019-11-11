@@ -40,10 +40,10 @@ fname_BIOS_core_csv = 'data/Libretro_BIOS_core_list.csv'
 with open(json_fname, 'r') as json_file:
     json_data = json.load(json_file)
 
-# --- For each core list BIOSes ---
+# --- For each core list BIOSes of that core -----------------------------------------------------
 table_str = [
-    ['left', 'left', 'left', 'left'],
-    ['corename', 'desc', 'opt', 'path'],
+    ['left', 'left', 'left', 'left', 'left'],
+    ['corename', 'BIOS path', 'MD5', 'desc', 'req'],
 ]
 num_BIOS = 0
 for key in sorted(json_data, key = lambda x: json_data[x]['corename'].lower(), reverse = False):
@@ -55,7 +55,10 @@ for key in sorted(json_data, key = lambda x: json_data[x]['corename'].lower(), r
         if not m: raise ValueError(key)
         corename = m.group(1)
     for BIOS_dic in json_data[key]['BIOS']:
-        table_str.append([corename, remove_commas(BIOS_dic['desc']), BIOS_dic['opt'], BIOS_dic['path']])
+        table_str.append([
+            corename, BIOS_dic['path'], BIOS_dic['md5'][0:8],
+            remove_commas(BIOS_dic['desc']), str(not BIOS_dic['opt']),
+        ])
         num_BIOS += 1
 table_long_str_list = text_render_table_str(table_str)
 text_long_str = '\n'.join(table_long_str_list)
@@ -69,16 +72,18 @@ print('Writing file "{}"'.format(fname_core_BIOS_csv))
 text_csv = '\n'.join(text_render_table_CSV_slist(table_str))
 write_txt_file(fname_core_BIOS_csv, text_csv)
 
-# --- For each BIOS list cores that use that BIOS ---
+# --- For each BIOS list cores that use that BIOS ------------------------------------------------
 # --- Traverse list of cores and build a unique list of BIOSes ---
+# Unique list of BIOS names or paths.
 # NOTE In a future version check if there are BIOSes with same filename but different MD5.
 BIOS_list = []
 for key in json_data:
     for BIOS_dic in json_data[key]['BIOS']:
         if BIOS_dic['path'] not in BIOS_list: BIOS_list.append(BIOS_dic['path'])
 
+# In the future check if the BIOS description is different in different cores.
 BIOS_data = []
-for BIOS_name in sorted(BIOS_list, reverse = False):
+for BIOS_name in sorted(BIOS_list, key = lambda s: s.lower(), reverse = False):
     core_list = []
     for key in json_data:
         # Special case. It is an error in the file name.
@@ -90,20 +95,38 @@ for BIOS_name in sorted(BIOS_list, reverse = False):
             corename = m.group(1)
         for BIOS_dic in json_data[key]['BIOS']:
             if BIOS_name == BIOS_dic['path']:
-                core_list.append({'opt' : BIOS_dic['opt'], 'corename' : corename})
-    BIOS_data.append({'path' : BIOS_name, 'core_list' : core_list})
+                core_list.append({
+                    'opt' : BIOS_dic['opt'],
+                    'corename' : corename
+                })
+                # Now the BIOS description is the description found in the last cores.
+                # In theory the BIOS description is the same in all cores but this must be checked.
+                BIOS_description = BIOS_dic['desc']
+                BIOS_MD5 = BIOS_dic['md5']
+    BIOS_data.append({
+        'path' : BIOS_name,
+        'desc' : BIOS_description,
+        'md5' : BIOS_MD5,
+        'core_list' : core_list
+    })
 
 table_str = [
-    ['left', 'left', 'left'],
-    ['BIOS name', 'opt', 'corename'],
+    ['left', 'left', 'left', 'left', 'left'],
+    ['BIOS path', 'MD5', 'desc', 'req', 'corename'],
 ]
 for BIOS_dic in BIOS_data:
+    # Short by corename
     counter = 0
     for B_dic in sorted(BIOS_dic['core_list'], key = lambda x: x['corename']):
         if counter == 0:
-            table_str.append([BIOS_dic['path'], B_dic['opt'], B_dic['corename']])
+            table_str.append([
+                BIOS_dic['path'], BIOS_dic['md5'][0:8], remove_commas(BIOS_dic['desc']), 
+                str(not B_dic['opt']), B_dic['corename'],
+            ])
         else:
-            table_str.append([' ', B_dic['opt'], B_dic['corename']])
+            table_str.append([
+                ' ', ' ', ' ', str(not B_dic['opt']), B_dic['corename']
+            ])
         counter += 1
 table_long_str_list = text_render_table_str(table_str)
 text_long_str = '\n'.join(table_long_str_list)
