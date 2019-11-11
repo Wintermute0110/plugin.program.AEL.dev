@@ -10,6 +10,7 @@ import json
 import os
 import pprint
 import re
+import shutil
 import sys
 
 # --- AEL modules ---
@@ -175,5 +176,11 @@ for f in sorted(file_list):
                 break
                 
 # Save output JSON.
+print('\nSaving file "{}"'.format(json_fname))
 with open(json_fname, 'w') as outfile:
     outfile.write(json.dumps(json_data, sort_keys = True, indent = 4))
+
+# Copy file to AEL data directory.
+dest_fname = '../data/Libretro_info.json'
+print('Saving file "{}"'.format(dest_fname))
+shutil.copy(json_fname, dest_fname)
