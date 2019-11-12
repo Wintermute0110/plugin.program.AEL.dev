@@ -74,8 +74,8 @@ WIP      [CORE] Sometimes the scrapers download wrong/corrupt data, or produce 0
          utility to check asset images and delete corrupt images so they can be rescraped
          again.
 
-WIP      [CORE] Support for Advanced MAME Launcher exported virtual launchers.
-         This feature requires AML 0.9.X
+WIP      [CORE] Support for Advanced MAME Launcher exported virtual launchers or
+         Read Only Launchers. This feature requires AML 0.9.X
          AML creates the Category "Arcade (AML)" and places the exported launchers there.
 
 WIP      [CORE] Utility to check artwork. Sometimes a JPG image is renamed as PNG, etc.
@@ -113,8 +113,18 @@ WIP      [ROM AUDIT] Options to generate the 1G1R parent list, like prefer ROMs 
 WIP      [SCRAPERS] Asset scrapers are disabled/not working for standalone launchers. Fix this.
          See https://github.com/Wintermute0110/plugin.program.advanced.emulator.launcher/issues/62
 
+WIP      [SCRAPERS] Change the Offline Scraper format from XML to JSON. Include the new fields
+         `parent` **string**, `region` **list of strings** and `language` **list of strings**.
+         In general, write down the specifications of the new Offline Scraper database and
+         have a look at NOTES.md for guidelines. Create the XML databases to be merged with the
+         No-Intro/Redump DATs, also giving support to Extra ROMs (hacks, etc.).
+
 WIP      [SCRAPERS] Store the offline scraper databases in JSON and not in XML. This will make
          the loading of the databases faster.
+
+WIP      [SCRAPERS] ScreenScraper must choose the correct artwork depending on the region/language.
+         AEL must have an official list of regions/languages, extracted from the No-Intro/Redump
+         DATs, to translate to ScreenScraper values.
 
 WIP      [SCRAPERS] MAME offline scraper: include NPlayers field. Take it from nplayers.ini
 
@@ -130,7 +140,7 @@ WIP      [SCRAPERS] Persistent scraper cache browser. Ability to browse the stor
          searches. Also, context menu to delete stored cached data.
 
 
-[B]Advanced Emulator Launcher | version 0.9.9 | xx October 2019[/B]
+[B]Advanced Emulator Launcher | version 0.9.9 | xx November 2019[/B]
 
 WIP      [COLLECTIONS] Current way of storing the collection artwork, in a unified JSON file,
          is not good. Think of a good way to exporting collections (for example, store the
@@ -141,6 +151,14 @@ WIP      [COLLECTIONS] Current way of storing the collection artwork, in a unifi
 WIP      [ROM AUDIT] Current way of doing the ROM audit is inconvenient. User has to set a DAT
          file. Create two new settings: a) directory for No-Intro DATs, b) directory for Redump
          DATs. AEL must be able to choose the DAT file according to the platform.
+
+WIP      [ROM AUDIT] Create a tool to select the No-Intro/Redump DAT file automatically for
+         each platform. This will be very useful for the new Offline Scraper database and
+         for the ROM tag histogram.
+
+WIP      [CORE] Create a new Utility to show the automatically detected No-Intro/Redump DATs.
+
+WIP      [CORE] In the **Global ROM Audit statistics** report show only the audited launchers.
 
 FEATURE  [CORE] Increase the number of platforms to include all No-Intro, Redump and
          Libretro platforms. This is in preparation of the Kodi Games Database.

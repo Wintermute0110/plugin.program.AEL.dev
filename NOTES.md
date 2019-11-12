@@ -15,14 +15,6 @@ Context menu **Edit Launcher**, submenu **Manage ROMs ...**:
 'Clear ROMs from launcher',
 ```
 
-Display modes: LAUNCHER_DMODE_FLAT, LAUNCHER_DMODE_PCLONE, LAUNCHER_DMODE_1G1R.
-PCLONE and 1G1R are the same, the difference is that in 1G1R the ROM Context 
-Menu **Show clones** is displayed and Parents are launcher automatically. AML now has
-FLAT and 1G1R modes only.
-
-Display filters: NOINTRO_DMODE_ALL, NOINTRO_DMODE_HAVE, NOINTRO_DMODE_HAVE_UNK,
-NOINTRO_DMODE_HAVE_MISS, NOINTRO_DMODE_MISS, NOINTRO_DMODE_MISS_UNK, NOINTRO_DMODE_UNK.
-
 Context menu **Edit Launcher**, submenu **Audit ROMs / Launcher view mode ...**:
 ```
 'Change launcher display mode (now {0}) ...'.format(display_mode_str),
@@ -32,6 +24,14 @@ Context menu **Edit Launcher**, submenu **Audit ROMs / Launcher view mode ...**:
 'Update ROM audit',
 ```
 
+Display modes: LAUNCHER_DMODE_FLAT, LAUNCHER_DMODE_PCLONE, LAUNCHER_DMODE_1G1R.
+PCLONE and 1G1R are the same, the difference is that in 1G1R the ROM Context 
+Menu **Show clones** is displayed and Parents are launcher automatically. AML now has
+FLAT and 1G1R modes only.
+
+Display filters: NOINTRO_DMODE_ALL, NOINTRO_DMODE_HAVE, NOINTRO_DMODE_HAVE_UNK,
+NOINTRO_DMODE_HAVE_MISS, NOINTRO_DMODE_MISS, NOINTRO_DMODE_MISS_UNK, NOINTRO_DMODE_UNK.
+
 Current fields in database:
 ```
 "cloneof":"",
@@ -40,7 +40,28 @@ Current fields in database:
 "pclone_status":"Parent",
 ```
 
-### New menus in 0.9.9
+### Menus in future AEL releases
+
+Context menu **Edit Launcher**, submenu **Manage ROMs ...**:
+```
+'Choose ROMs default artwork ...',
+'Manage ROMs asset directories ...',
+'Rescan ROMs local artwork',
+'Scrape ROMs artwork',
+'Import ROMs metadata from NFO files',
+'Export ROMs metadata to NFO files',
+'Delete ROMs NFO files',
+'Delete ROMs from launcher',
+```
+
+Context menu **Edit Launcher**, submenu **Audit ROMs / Launcher view mode ...**:
+```
+'Launcher display mode (now {0}) ...'.format(display_mode_str),
+'Audit display filter (now {0}) ...'.format(launcher['display_filter']),
+'Audit launcher ROMs ...',
+'Undo ROM audit (remove missing ROMs)',
+'Add custom XML DAT ...' OR 'Delete custom XML DAT',
+```
 
 Launcher display modes: LAUNCHER_DMODE_FLAT (default), LAUNCHER_DMODE_PCLONE.
 
@@ -50,15 +71,7 @@ Launcher audit display filter: AUDIT_FILTER_ALL (default), AUDIT_FILTER_HAVE, AU
 AUDIT_FILTER_HAVE_MISS, AUDIT_FILTER_MISS, AUDIT_FILTER_MISS_UNK, AUDIT_FILTER_UNK. For now,
 always display Extra ROMs.
 
-Context menu **Edit Launcher**, submenu **Audit ROMs / Launcher view mode ...**:
-```
-'Change launcher display mode (now {0}) ...'.format(display_mode_str),
-
-'Audit launcher with No-Intro/Redump XML DAT',
-'Undo ROM audit (remove missing ROMs)',
-'Audit display filter (now {0}) ...'.format(launcher['display_filter']),
-'Add custom XML DAT ...' OR 'Delete custom XML DAT',
-```
+### Future AEL guidelines
 
  * The Parent/Clone information is ALWAYS computed, regardles of the audit status, whenever
    the launcher ROMs change.
@@ -66,71 +79,64 @@ Context menu **Edit Launcher**, submenu **Audit ROMs / Launcher view mode ...**:
  * The ROM region information is ALWAYS computed, regardless of the audit status, whenever
    the launcher ROMs change.
 
- * Audit display filters can be used if and only if the audit status is ON.
+ * The Parent of the Parent/Clone group is chosen according to the preferred Region and
+   Language. User selects the preferred Region and Language with global settings. These
+   global settings may be overriden with Launcher-specific settings.
+
+ * The Launcher display mode is always available.
+
+ * The Launcher audit display filter is available if and only if the audit status is ON.
 
  * The ROM Audit is very easy to do. The difficult part is to make the Parent/Clone groups
    and choosing the parent ROM.
 
-### Future required database fields
-
+Future database fields:
 ```
-"i_cloneof" : ROMID,        Same as m_parent but uses ROM ID
 "i_audit_status" : "Have",  Determined by the ROM Audit exclusively
+"i_cloneof" : ROMID,        Same as m_parent but uses ROM ID
+"i_order" : int,            Position of the ROM in the Parent/Clone group
 "i_regions" : ['', ''],     Same as m_region
 "i_languages" : ['', ''],   Same as m_language
 "i_tags" : ['', ''],        Always extracted from filename
-"m_parent" : '',            Override the ROM parent (read-only)
+"m_cloneof" : '',           Override the ROM parent (read-only)
 "m_region" : '',            Override the ROM regions (read-only)
 "m_language" : '',          Override the ROM languages (read-only)
 ```
-
-### New features for 0.9.9
-
- * ScreenScraper must choose the correct artwork depending on the region/language.
-   AEL must have an official list of regions/languages, extracted from the No-Intro/Redump
-   DATs, to translate to ScreenScraper values.
-
- * Create a tool to select the No-Intro/Redump DAT file automatically.
-
- * In the **Global ROM Audit statistics** report show only the audited launchers.
-
- * Create a new Utility to show the automatically detected No-Intro/Redump DATs.
-
- * Change the Offline Scraper format from XML to JSON. Include the new fields
-   `parent` **string**, `region` **list of strings** and `language` **list of strings**.
-
- * Try to improve the Offline Scraper and create the XML databases to be merged with the
-   No-Intro/Redump DATs, also giving support to Extra ROMs (hacks, etc.).
 
 ### Computation of the Parent/Clone ROMs
 
  1. First Parent/Clone groups are computed:
  
     1. If a No-Intro XML DAT is available it will be used.
-       For Have and Missing ROMs take `m_parent` from the DAT.
-       For Have and Missing ROMs extract `m_region` and `m_language` from filename.
+       For Have and Missing ROMs take `i_cloneof` from the DAT.
+       For Have and Missing ROMs extract `i_regions` and `i_languages` from filename.
 
-    2. The Offline Scraper database will be used next.
-       For found ROMs `m_parent`, `m_region` and `m_language` will be taken from the database.
+    2. The Offline Scraper database will be used next, or first if the DAT is not found.
+       For found ROMs `i_cloneof`, `i_regions` and `i_languages` will be taken from the database.
 
-    3. For Unknown ROMs, the ROM basename will be used to compute `m_parent` and `m_region`
-       and `m_language` extracted from the filename.
+    3. For Unknown ROMs, the ROM basename will be used to compute `i_cloneof` and `i_regions`
+       and `i_languages` extracted from the filename.
 
-    4. The fiels `m_parent`, `m_region` and `m_language` in the ROM metadata override any
-       of the above.
+    4. The fiels `m_cloneof`, `m_region` and `m_language` in the ROM metadata override any of 
+       the `i_*` fields.
 
- 2. With `m_parent`, `m_region` and `m_language` the fields `i_cloneof`, `i_regions`,
-    `i_languages` and `i_tages` are computed and used to set the order in the PClone group.
+ 2. With the fields `i_cloneof`, `i_regions`, `i_languages` and `i_tags` the order in the
+    Parent/Clone group is calculated:
 
     1. User chooses the primary and secondary ROM regions.
 
     2. User chooses the primary and secondary ROM languages.
 
-    3. Other tags like (Rev) are used to choose the preferred Parent in the set.
+    3. Other tags like (Rev X) are used to choose the preferred Parent in the set.
+       AEL needs to have an histogram of all the No-Intro and Redump tags and
+       use the information when building the Parent/Clone groups according to the settings.
 
-    4. PClone groups are reordered according to the user preferences.
+    4. PClone groups are reordered according to the user settings. The Parent of the group will
+       be the first ROM in the set.
 
     5. `i_cloneof` is updated to reflect the new Parent of each set.
+
+    6. `i_order` is updated to reflect the ROM positions in the set.
 
     6. The file `roms_<Launcher_name>_PClone_index.json` is created.
        This file is used when rendering the PClone group list when the user select the
@@ -158,11 +164,19 @@ or unwanted configurations.
    2. Maybe having a read-only setting bool `m_forceparent`???
       This can create a conflict in the settings that must be solved.
 
+ * What if there is a conflic when creating the Parent/Clone groups? For example, the No-Intro
+   DAT says the Parent of a ROM is A and the user sets the parent of the ROM to B.
+
+   1. A report of the Parent/Clone groups must be created so the user knows what happened
+      and fix any error or misconfiguration. This report can be read using the Launcher
+      context menu.
+
 ### Computation of the ROM Audit
 
  1. Only ROMs in the main ROM directory are audited.
 
- 2. All ROMs in the extra ROM directory are Extra ROMs.
+ 2. All ROMs in the extra ROM directory are Extra ROMs. Extra ROMs can be ROM hacks, etc., which
+    are not in the official DATs but may be included in the Offline Scraper database.
 
  3. The XML DAT for No-Intro ROMs is chosen automatically from the No-Intro DAT directory 
     as a function of the platform launcher.
@@ -173,13 +187,15 @@ or unwanted configurations.
  5. Users can manually configure a custom XML DAT file for every launcher.
     In this case, the automatic DAT selection is ignored.
 
+ 6. The Offline Scraper database can be used for the ROM Audit instead of an external DAT XML file.
+
 **Potential problems**
 
  1. How to audit multidisc ROMs???
 
-    1. For now, do not allow multidisc ROMs and ROM Audit for the same launcher.
+    1. For now, do not allow multidisc ROMs and ROM Audit for the same launcher at the same time.
 
-### Separation of ROM Audit and Parent/Clone generation
+### Examples of ROM Audit and Parent/Clone generation
 
 Complete example of SNES ROMs including all cases except multidisc ROMs.
 
@@ -192,6 +208,8 @@ Super Mario World (Europe) (Rev 1)              -- PARENT ROM / According to No-
 Super Mario World (Japan) (En) (Arcade) [b]     -- MISSING ROM / CLONE ROM
 Super Mario World (USA)                         -- CLONE ROM
 ```
+
+To be written...
 
 ### Multidisc support
 
