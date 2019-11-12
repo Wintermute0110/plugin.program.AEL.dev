@@ -10358,16 +10358,21 @@ class Main:
         log_debug('_command_exec_utils_check_retro_launchers() Starting ...')
         slist = []
 
+        # Resolve category IDs to names
+        for launcher_id in self.launchers:
+            category_id = self.launchers[launcher_id]['categoryID']
+            if category_id == 'root_category':
+                self.launchers[launcher_id]['category'] = 'No category'
+            else:
+                self.launchers[launcher_id]['category'] = self.categories[category_id]['m_name']
+
         # Traverse list of launchers. If launcher uses Retroarch then check the
         # arguments and check that the core pointed with argument -L exists.
         # Sort launcher by category and then name.
         for launcher_id in sorted(self.launchers, 
-            key = lambda x: (self.launchers[x]['categoryID'], self.launchers[x]['m_name'])):
+            key = lambda x: (self.launchers[x]['category'], self.launchers[x]['m_name'])):
             launcher = self.launchers[launcher_id]
             m_name = launcher['m_name']
-            clist = []
-            slist.append('[COLOR orange]Launcher "{0}"[/COLOR]\n'.format(m_name))
-
             # Skip Standalone Launchers
             if not launcher['rompath']:
                 log_debug('Skipping launcher "{}"'.format(m_name))
@@ -10379,6 +10384,7 @@ class Main:
             if not application.lower().find('retroarch'):
                 log_debug('Not a Retroarch launcher "{}"'.format(application))
                 continue
+            clist = []
             flag_retroarch_launcher = False
             for index, arg_str in enumerate(arguments_list):
                 arg_list = shlex.split(arg_str, posix = True)
@@ -10389,22 +10395,18 @@ class Main:
                     flag_retroarch_launcher = True
                     core_FN = FileName(arg_list[i+1])
                     if core_FN.exists():
-                        s = 'Found core "{}"'.format(core_FN.getPath())
+                        s = '[COLOR=green]Found[/COLOR] core "{}"\n'.format(core_FN.getPath())
                     else:
-                        s = 'Missing core "{}"'.format(core_FN.getPath())
+                        s = '[COLOR=red]Missing[/COLOR] core "{}"\n'.format(core_FN.getPath())
                     log_debug(s)
                     clist.append(s)
                     break
-
             # Build report
-            # if clist: slist.extend(clist)
-            # else:     slist.append('No problems found\n')
             if flag_retroarch_launcher:
+                slist.append('Category [COLOR orange]{}[/COLOR] - Launcher [COLOR orange]{}[/COLOR]\n'.format(
+                    self.launchers[launcher_id]['category'], m_name))
                 slist.extend(clist)
-            else:
-                slist.append('Not a Retroarch launcher.\n')
-            slist.append('\n')
-
+                slist.append('\n')
         # Print report
         full_string = ''.join(slist).encode('utf-8')
         kodi_display_text_window_mono('Retroarch launchers report', full_string)
