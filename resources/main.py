@@ -10271,7 +10271,7 @@ class Main:
 
             # >> Check that platform is on AEL official platform list
             platform = launcher['platform']
-            if platform not in AEL_platform_list:
+            if platform not in platform_long_to_index_dic:
                 l_str.append('Unrecognised platform "{0}"\n'.format(platform))
 
             # >> Check that category exists
