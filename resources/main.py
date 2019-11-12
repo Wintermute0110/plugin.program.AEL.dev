@@ -275,7 +275,7 @@ class Main:
         log_debug('command = "{0}"'.format(command))
 
         # --- Commands that do not modify the databases are allowed to run concurrently ---
-        concurrent_command_list = [
+        concurrent_command_set = {
             'SHOW_ADDON_ROOT',
             'SHOW_VCATEGORIES_ROOT',
             'SHOW_AEL_OFFLINE_LAUNCHERS_ROOT',
@@ -299,8 +299,8 @@ class Main:
             'SHOW_ALL_LAUNCHERS',
             'SHOW_ALL_ROMS',
             'BUILD_GAMES_MENU',
-        ]
-        if command in concurrent_command_list:
+        }
+        if command in concurrent_command_set:
             self.run_concurrent(command, args)
         else:
             # Ensure AEL only runs one instance at a time
@@ -471,15 +471,19 @@ class Main:
             self._command_update_virtual_category_db_all()
 
         # Commands called from Utilities menu.
-        elif command == 'EXECUTE_UTILS_IMPORT_LAUNCHERS':    self._command_exec_utils_import_launchers()
-        elif command == 'EXECUTE_UTILS_EXPORT_LAUNCHERS':    self._command_exec_utils_export_launchers()
-        elif command == 'EXECUTE_UTILS_CHECK_DATABASE':      self._command_exec_utils_check_database()
-        elif command == 'EXECUTE_UTILS_CHECK_LAUNCHERS':     self._command_exec_utils_check_launchers()
-        elif command == 'EXECUTE_UTILS_CHECK_RETRO_BIOS':    self._command_exec_utils_check_retro_BIOS()
-        elif command == 'EXECUTE_UTILS_TGDB_CHECK':          self._command_exec_utils_TGDB_check()
-        elif command == 'EXECUTE_UTILS_MOBYGAMES_CHECK':     self._command_exec_utils_MobyGames_check()
+        elif command == 'EXECUTE_UTILS_IMPORT_LAUNCHERS': self._command_exec_utils_import_launchers()
+        elif command == 'EXECUTE_UTILS_EXPORT_LAUNCHERS': self._command_exec_utils_export_launchers()
+
+        elif command == 'EXECUTE_UTILS_CHECK_DATABASE': self._command_exec_utils_check_database()
+        elif command == 'EXECUTE_UTILS_CHECK_LAUNCHERS': self._command_exec_utils_check_launchers()
+        elif command == 'EXECUTE_UTILS_SHOW_DETECTED_DATS': self._command_exec_utils_show_DATs()
+        elif command == 'EXECUTE_UTILS_CHECK_RETRO_LAUNCHERS': self._command_exec_utils_check_retro_launchers()
+        elif command == 'EXECUTE_UTILS_CHECK_RETRO_BIOS': self._command_exec_utils_check_retro_BIOS()
+
+        elif command == 'EXECUTE_UTILS_TGDB_CHECK': self._command_exec_utils_TGDB_check()
+        elif command == 'EXECUTE_UTILS_MOBYGAMES_CHECK': self._command_exec_utils_MobyGames_check()
         elif command == 'EXECUTE_UTILS_SCREENSCRAPER_CHECK': self._command_exec_utils_ScreenScraper_check()
-        elif command == 'EXECUTE_UTILS_ARCADEDB_CHECK':      self._command_exec_utils_ArcadeDB_check()
+        elif command == 'EXECUTE_UTILS_ARCADEDB_CHECK': self._command_exec_utils_ArcadeDB_check()
 
         # Commands called from Global Reports menu.
         elif command == 'EXECUTE_GLOBAL_ROM_STATS':   self._command_exec_global_rom_stats()
@@ -4101,18 +4105,6 @@ class Main:
         url_str = self._misc_url('EXECUTE_UTILS_CHECK_LAUNCHERS')
         xbmcplugin.addDirectoryItem(handle = self.addon_handle, url = url_str, listitem = listitem, isFolder = False)
 
-        vcategory_name = 'Check Retroarch launchers'
-        vcategory_plot = ('Check Retroarch launchers for missing Libretro cores set with argument '
-            '[COLOR=orange]-L[/COLOR]. This only works in Linux and Windows platforms.')
-        listitem = xbmcgui.ListItem(vcategory_name)
-        listitem.setInfo('video', {'title': vcategory_name, 'plot' : vcategory_plot, 'overlay': 4})
-        listitem.setArt({'icon' : vcategory_icon, 'fanart' : vcategory_fanart, 'poster' : vcategory_poster})
-        listitem.setProperty(AEL_CONTENT_LABEL, AEL_CONTENT_VALUE_ROM_LAUNCHER)
-        if xbmc.getCondVisibility("!Skin.HasSetting(KioskMode.Enabled)"):
-            listitem.addContextMenuItems(commands)
-        url_str = self._misc_url('EXECUTE_UTILS_CHECK_RETRO_LAUNCHERS')
-        xbmcplugin.addDirectoryItem(handle = self.addon_handle, url = url_str, listitem = listitem, isFolder = False)
-
         vcategory_name = 'Show detected No-Intro/Redump DATs'
         vcategory_plot = ('Display the auto-detected No-Intro/Redump DATs that will be used for the '
             'ROM audit. You have to configure the DAT directories in '
@@ -4126,12 +4118,25 @@ class Main:
         url_str = self._misc_url('EXECUTE_UTILS_SHOW_DETECTED_DATS')
         xbmcplugin.addDirectoryItem(handle = self.addon_handle, url = url_str, listitem = listitem, isFolder = False)
 
+        vcategory_name = 'Check Retroarch launchers'
+        vcategory_plot = ('Check Retroarch launchers for missing Libretro cores set with argument '
+            '[COLOR=orange]-L[/COLOR]. This only works in Linux and Windows platforms.')
+        listitem = xbmcgui.ListItem(vcategory_name)
+        listitem.setInfo('video', {'title': vcategory_name, 'plot' : vcategory_plot, 'overlay': 4})
+        listitem.setArt({'icon' : vcategory_icon, 'fanart' : vcategory_fanart, 'poster' : vcategory_poster})
+        listitem.setProperty(AEL_CONTENT_LABEL, AEL_CONTENT_VALUE_ROM_LAUNCHER)
+        if xbmc.getCondVisibility("!Skin.HasSetting(KioskMode.Enabled)"):
+            listitem.addContextMenuItems(commands)
+        url_str = self._misc_url('EXECUTE_UTILS_CHECK_RETRO_LAUNCHERS')
+        xbmcplugin.addDirectoryItem(handle = self.addon_handle, url = url_str, listitem = listitem, isFolder = False)
+
         # <setting label="Check Retroarch BIOSes ..."
         #  action="RunPlugin(plugin://plugin.program.advanced.emulator.launcher/?com=CHECK_RETRO_BIOS)"/>
         vcategory_name = 'Check Retroarch BIOSes'
         vcategory_plot = ('Check Retroarch BIOSes. You need to configure the Libretro system '
             'directory in [COLOR=orange]AEL addon settings[/COLOR], '
-            '[COLOR=orange]Misc settings[/COLOR] tab.')
+            '[COLOR=orange]Misc settings[/COLOR] tab. The setting '
+            '[COLOR=orange]Only check mandatory BIOSes[/COLOR] affects this report.')
         listitem = xbmcgui.ListItem(vcategory_name)
         listitem.setInfo('video', {'title': vcategory_name, 'plot' : vcategory_plot, 'overlay': 4})
         listitem.setArt({'icon' : vcategory_icon, 'fanart' : vcategory_fanart, 'poster' : vcategory_poster})
@@ -10345,6 +10350,12 @@ class Main:
         if path and not path_FN.exists():
             problems_found = True
             str_list.append('{0} "{1}" not found\n'.format(dic_key_name, path_FN.getPath()))
+
+    def _command_exec_utils_show_DATs(self):
+        kodi_display_text_window_mono('No-Intro/Redump DATs report', 'Not coded yet')
+
+    def _command_exec_utils_check_retro_launchers(self):
+        kodi_display_text_window_mono('Retroarch launcher report', 'Not coded yet')
 
     def _command_exec_utils_check_retro_BIOS(self):
         log_info('_command_exec_utils_check_retro_BIOS() Checking Retroarch BIOSes ...')
