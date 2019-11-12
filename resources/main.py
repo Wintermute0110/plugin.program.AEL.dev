@@ -4035,80 +4035,108 @@ class Main:
 
     def _gui_render_Utilities_vlaunchers(self):
         # --- Common context menu for all VLaunchers ---
-        commands = []
-        commands.append(('Kodi File Manager', 'ActivateWindow(filemanager)'))
-        commands.append(('AEL addon settings', 'Addon.OpenSettings({0})'.format(__addon_id__)))
+        commands = [
+            ('Kodi File Manager', 'ActivateWindow(filemanager)'),
+            ('AEL addon settings', 'Addon.OpenSettings({0})'.format(__addon_id__)),
+        ]
 
-        # --- Common artwork for all VLaunchers ---
+        # --- Common artwork for all Utilities VLaunchers ---
         vcategory_icon   = g_PATHS.ADDON_CODE_DIR.pjoin('media/theme/Utilities_icon.png').getPath()
         vcategory_fanart = g_PATHS.FANART_FILE_PATH.getPath()
         vcategory_poster = g_PATHS.ADDON_CODE_DIR.pjoin('media/theme/Utilities_poster.png').getPath()
 
         # <setting label="Import category/launcher configuration ..."
         #  action="RunPlugin(plugin://plugin.program.advanced.emulator.launcher/?com=IMPORT_LAUNCHERS)"/>
-        vcategory_name   = 'Import category/launcher XML configuration file'
-        vcategory_plot   = (
+        vcategory_name = 'Import category/launcher XML configuration file'
+        vcategory_plot = (
             'Imports XML files having AEL categories and/or launcher configuration.')
         listitem = xbmcgui.ListItem(vcategory_name)
         listitem.setInfo('video', {'title': vcategory_name, 'plot' : vcategory_plot, 'overlay': 4})
         listitem.setArt({'icon' : vcategory_icon, 'fanart' : vcategory_fanart, 'poster' : vcategory_poster})
         listitem.setProperty(AEL_CONTENT_LABEL, AEL_CONTENT_VALUE_ROM_LAUNCHER)
-        if (xbmc.getCondVisibility("!Skin.HasSetting(KioskMode.Enabled)")):
+        if xbmc.getCondVisibility("!Skin.HasSetting(KioskMode.Enabled)"):
             listitem.addContextMenuItems(commands)
         url_str = self._misc_url('EXECUTE_UTILS_IMPORT_LAUNCHERS')
         xbmcplugin.addDirectoryItem(handle = self.addon_handle, url = url_str, listitem = listitem, isFolder = False)
 
         # <setting label="Export category/launcher configuration ..."
         #  action="RunPlugin(plugin://plugin.program.advanced.emulator.launcher/?com=EXPORT_LAUNCHERS)"/>
-        vcategory_name   = 'Export category/launcher XML configuration file'
-        vcategory_plot   = (
+        vcategory_name = 'Export category/launcher XML configuration file'
+        vcategory_plot = (
             'Exports all AEL categories and launchers into an XML configuration file. '
             'You can later reimport this XML file.')
         listitem = xbmcgui.ListItem(vcategory_name)
         listitem.setInfo('video', {'title': vcategory_name, 'plot' : vcategory_plot, 'overlay': 4})
         listitem.setArt({'icon' : vcategory_icon, 'fanart' : vcategory_fanart, 'poster' : vcategory_poster})
         listitem.setProperty(AEL_CONTENT_LABEL, AEL_CONTENT_VALUE_ROM_LAUNCHER)
-        if (xbmc.getCondVisibility("!Skin.HasSetting(KioskMode.Enabled)")):
+        if xbmc.getCondVisibility("!Skin.HasSetting(KioskMode.Enabled)"):
             listitem.addContextMenuItems(commands)
         url_str = self._misc_url('EXECUTE_UTILS_EXPORT_LAUNCHERS')
         xbmcplugin.addDirectoryItem(handle = self.addon_handle, url = url_str, listitem = listitem, isFolder = False)
 
         # <setting label="Check/Update all databases ..."
         #  action="RunPlugin(plugin://plugin.program.advanced.emulator.launcher/?com=CHECK_DATABASE)"/>
-        vcategory_name   = 'Check/Update all databases'
-        vcategory_plot   = ('Checks and updates all AEL databases.')
+        vcategory_name = 'Check/Update all databases'
+        vcategory_plot = ('Checks and updates all AEL databases.')
         listitem = xbmcgui.ListItem(vcategory_name)
         listitem.setInfo('video', {'title': vcategory_name, 'plot' : vcategory_plot, 'overlay': 4})
         listitem.setArt({'icon' : vcategory_icon, 'fanart' : vcategory_fanart, 'poster' : vcategory_poster})
         listitem.setProperty(AEL_CONTENT_LABEL, AEL_CONTENT_VALUE_ROM_LAUNCHER)
-        if (xbmc.getCondVisibility("!Skin.HasSetting(KioskMode.Enabled)")):
+        if xbmc.getCondVisibility("!Skin.HasSetting(KioskMode.Enabled)"):
             listitem.addContextMenuItems(commands)
         url_str = self._misc_url('EXECUTE_UTILS_CHECK_DATABASE')
         xbmcplugin.addDirectoryItem(handle = self.addon_handle, url = url_str, listitem = listitem, isFolder = False)
 
-
         # <setting label="Check Launchers ..."
         #  action="RunPlugin(plugin://plugin.program.advanced.emulator.launcher/?com=CHECK_LAUNCHERS)"/>
-        vcategory_name   = 'Check Launchers'
-        vcategory_plot   = ('Check Launchers.')
+        vcategory_name = 'Check Launchers'
+        vcategory_plot = ('Check all Launchers for missing executables, missing artwork, '
+            'wrong platform names, ROM path exists, etc.')
         listitem = xbmcgui.ListItem(vcategory_name)
         listitem.setInfo('video', {'title': vcategory_name, 'plot' : vcategory_plot, 'overlay': 4})
         listitem.setArt({'icon' : vcategory_icon, 'fanart' : vcategory_fanart, 'poster' : vcategory_poster})
         listitem.setProperty(AEL_CONTENT_LABEL, AEL_CONTENT_VALUE_ROM_LAUNCHER)
-        if (xbmc.getCondVisibility("!Skin.HasSetting(KioskMode.Enabled)")):
+        if xbmc.getCondVisibility("!Skin.HasSetting(KioskMode.Enabled)"):
             listitem.addContextMenuItems(commands)
         url_str = self._misc_url('EXECUTE_UTILS_CHECK_LAUNCHERS')
         xbmcplugin.addDirectoryItem(handle = self.addon_handle, url = url_str, listitem = listitem, isFolder = False)
 
-        # <setting label="Check Retroarch BIOSes ..."
-        #  action="RunPlugin(plugin://plugin.program.advanced.emulator.launcher/?com=CHECK_RETRO_BIOS)"/>
-        vcategory_name   = 'Check Retroarch BIOSes'
-        vcategory_plot   = ('Check Retroarch BIOSes.')
+        vcategory_name = 'Check Retroarch launchers'
+        vcategory_plot = ('Check Retroarch launchers for missing Libretro cores set with argument '
+            '[COLOR=orange]-L[/COLOR]. This only works in Linux and Windows platforms.')
         listitem = xbmcgui.ListItem(vcategory_name)
         listitem.setInfo('video', {'title': vcategory_name, 'plot' : vcategory_plot, 'overlay': 4})
         listitem.setArt({'icon' : vcategory_icon, 'fanart' : vcategory_fanart, 'poster' : vcategory_poster})
         listitem.setProperty(AEL_CONTENT_LABEL, AEL_CONTENT_VALUE_ROM_LAUNCHER)
-        if (xbmc.getCondVisibility("!Skin.HasSetting(KioskMode.Enabled)")):
+        if xbmc.getCondVisibility("!Skin.HasSetting(KioskMode.Enabled)"):
+            listitem.addContextMenuItems(commands)
+        url_str = self._misc_url('EXECUTE_UTILS_CHECK_RETRO_LAUNCHERS')
+        xbmcplugin.addDirectoryItem(handle = self.addon_handle, url = url_str, listitem = listitem, isFolder = False)
+
+        vcategory_name = 'Show detected No-Intro/Redump DATs'
+        vcategory_plot = ('Display the auto-detected No-Intro/Redump DATs that will be used for the '
+            'ROM audit. You have to configure the DAT directories in '
+            '[COLOR=orange]AEL addon settings[/COLOR], [COLOR=orange]xxx[/COLOR] tab.')
+        listitem = xbmcgui.ListItem(vcategory_name)
+        listitem.setInfo('video', {'title': vcategory_name, 'plot' : vcategory_plot, 'overlay': 4})
+        listitem.setArt({'icon' : vcategory_icon, 'fanart' : vcategory_fanart, 'poster' : vcategory_poster})
+        listitem.setProperty(AEL_CONTENT_LABEL, AEL_CONTENT_VALUE_ROM_LAUNCHER)
+        if xbmc.getCondVisibility("!Skin.HasSetting(KioskMode.Enabled)"):
+            listitem.addContextMenuItems(commands)
+        url_str = self._misc_url('EXECUTE_UTILS_SHOW_DETECTED_DATS')
+        xbmcplugin.addDirectoryItem(handle = self.addon_handle, url = url_str, listitem = listitem, isFolder = False)
+
+        # <setting label="Check Retroarch BIOSes ..."
+        #  action="RunPlugin(plugin://plugin.program.advanced.emulator.launcher/?com=CHECK_RETRO_BIOS)"/>
+        vcategory_name = 'Check Retroarch BIOSes'
+        vcategory_plot = ('Check Retroarch BIOSes. You need to configure the Libretro system '
+            'directory in [COLOR=orange]AEL addon settings[/COLOR], '
+            '[COLOR=orange]Misc settings[/COLOR] tab.')
+        listitem = xbmcgui.ListItem(vcategory_name)
+        listitem.setInfo('video', {'title': vcategory_name, 'plot' : vcategory_plot, 'overlay': 4})
+        listitem.setArt({'icon' : vcategory_icon, 'fanart' : vcategory_fanart, 'poster' : vcategory_poster})
+        listitem.setProperty(AEL_CONTENT_LABEL, AEL_CONTENT_VALUE_ROM_LAUNCHER)
+        if xbmc.getCondVisibility("!Skin.HasSetting(KioskMode.Enabled)"):
             listitem.addContextMenuItems(commands)
         url_str = self._misc_url('EXECUTE_UTILS_CHECK_RETRO_BIOS')
         xbmcplugin.addDirectoryItem(handle = self.addon_handle, url = url_str, listitem = listitem, isFolder = False)
@@ -4119,49 +4147,49 @@ class Main:
         #  action="RunPlugin(plugin://plugin.program.advanced.emulator.launcher/?com=IMPORT_AL_LAUNCHERS)"/>
 
         # --- Check TheGamesDB scraper ---
-        vcategory_name   = 'Check TheGamesDB scraper'
-        vcategory_plot   = ('Connects to TheGamesDB and checks you monthly allowance.')
+        vcategory_name = 'Check TheGamesDB scraper'
+        vcategory_plot = ('Connects to TheGamesDB and checks you monthly allowance.')
         listitem = xbmcgui.ListItem(vcategory_name)
         listitem.setInfo('video', {'title': vcategory_name, 'plot' : vcategory_plot, 'overlay': 4})
         listitem.setArt({'icon' : vcategory_icon, 'fanart' : vcategory_fanart, 'poster' : vcategory_poster})
         listitem.setProperty(AEL_CONTENT_LABEL, AEL_CONTENT_VALUE_ROM_LAUNCHER)
-        if (xbmc.getCondVisibility("!Skin.HasSetting(KioskMode.Enabled)")):
+        if xbmc.getCondVisibility("!Skin.HasSetting(KioskMode.Enabled)"):
             listitem.addContextMenuItems(commands)
         url_str = self._misc_url('EXECUTE_UTILS_TGDB_CHECK')
         xbmcplugin.addDirectoryItem(handle = self.addon_handle, url = url_str, listitem = listitem, isFolder = False)
 
         # --- Check MobyGames scraper ---
-        vcategory_name   = 'Check MobyGames scraper'
-        vcategory_plot   = ('Connects to MobyGames and checks if it works.')
+        vcategory_name = 'Check MobyGames scraper'
+        vcategory_plot = ('Connects to MobyGames and checks if it works.')
         listitem = xbmcgui.ListItem(vcategory_name)
         listitem.setInfo('video', {'title': vcategory_name, 'plot' : vcategory_plot, 'overlay': 4})
         listitem.setArt({'icon' : vcategory_icon, 'fanart' : vcategory_fanart, 'poster' : vcategory_poster})
         listitem.setProperty(AEL_CONTENT_LABEL, AEL_CONTENT_VALUE_ROM_LAUNCHER)
-        if (xbmc.getCondVisibility("!Skin.HasSetting(KioskMode.Enabled)")):
+        if xbmc.getCondVisibility("!Skin.HasSetting(KioskMode.Enabled)"):
             listitem.addContextMenuItems(commands)
         url_str = self._misc_url('EXECUTE_UTILS_MOBYGAMES_CHECK')
         xbmcplugin.addDirectoryItem(handle = self.addon_handle, url = url_str, listitem = listitem, isFolder = False)
 
         # --- Check ScreenScraper scraper ---
-        vcategory_name   = 'Check ScreenScraper scraper'
-        vcategory_plot   = ('Connects to ScreenScraper and checks if it works.')
+        vcategory_name = 'Check ScreenScraper scraper'
+        vcategory_plot = ('Connects to ScreenScraper and checks if it works.')
         listitem = xbmcgui.ListItem(vcategory_name)
         listitem.setInfo('video', {'title': vcategory_name, 'plot' : vcategory_plot, 'overlay': 4})
         listitem.setArt({'icon' : vcategory_icon, 'fanart' : vcategory_fanart, 'poster' : vcategory_poster})
         listitem.setProperty(AEL_CONTENT_LABEL, AEL_CONTENT_VALUE_ROM_LAUNCHER)
-        if (xbmc.getCondVisibility("!Skin.HasSetting(KioskMode.Enabled)")):
+        if xbmc.getCondVisibility("!Skin.HasSetting(KioskMode.Enabled)"):
             listitem.addContextMenuItems(commands)
         url_str = self._misc_url('EXECUTE_UTILS_SCREENSCRAPER_CHECK')
         xbmcplugin.addDirectoryItem(handle = self.addon_handle, url = url_str, listitem = listitem, isFolder = False)
 
         # --- Check ArcadeDB scraper ---
-        vcategory_name   = 'Check Arcade DB scraper'
-        vcategory_plot   = ('Connects to Arcade DB and checks if it works.')
+        vcategory_name = 'Check Arcade DB scraper'
+        vcategory_plot = ('Connects to Arcade DB and checks if it works.')
         listitem = xbmcgui.ListItem(vcategory_name)
         listitem.setInfo('video', {'title': vcategory_name, 'plot' : vcategory_plot, 'overlay': 4})
         listitem.setArt({'icon' : vcategory_icon, 'fanart' : vcategory_fanart, 'poster' : vcategory_poster})
         listitem.setProperty(AEL_CONTENT_LABEL, AEL_CONTENT_VALUE_ROM_LAUNCHER)
-        if (xbmc.getCondVisibility("!Skin.HasSetting(KioskMode.Enabled)")):
+        if xbmc.getCondVisibility("!Skin.HasSetting(KioskMode.Enabled)"):
             listitem.addContextMenuItems(commands)
         url_str = self._misc_url('EXECUTE_UTILS_ARCADEDB_CHECK')
         xbmcplugin.addDirectoryItem(handle = self.addon_handle, url = url_str, listitem = listitem, isFolder = False)
@@ -10280,6 +10308,7 @@ class Main:
                 l_str.append('ROM_asset_path "{0}" not found\n'.format(ROM_asset_path_FN.getPath()))
 
             # >> Test that ROM asset paths exist if not empty (path_* fields)
+            self._aux_check_for_file(l_str, 'path_3dbox', launcher)
             self._aux_check_for_file(l_str, 'path_title', launcher)
             self._aux_check_for_file(l_str, 'path_snap', launcher)
             self._aux_check_for_file(l_str, 'path_boxfront', launcher)
@@ -10670,7 +10699,7 @@ class Main:
         # Table cell padding: left, right
         table_str = [
             ['left', 'left', 'right', 'right', 'right', 'right', 'right', 'right'],
-            ['Category', 'Launcher', 'ROMs', 'Parents', 'Clones', 'Have', 'Miss', 'Unknown'],
+            ['Category', 'Launcher', 'ROMs', 'Have', 'Miss', 'Unknown', 'Parents', 'Clones'],
         ]
 
         # Traverse categories and sort alphabetically.
@@ -10681,16 +10710,18 @@ class Main:
             launcher_list = []
             for launcher_id in sorted(self.launchers, key = lambda x : self.launchers[x]['m_name']):
                 launcher = self.launchers[launcher_id]
-                # Skip Standalone Launchers
+                # Skip Standalone Launchers and Launcher with no ROM Audit.
                 if not launcher['rompath']: continue
+                if not launcher['nointro_xml_file']: continue
                 if launcher['categoryID'] == cat_id: launcher_list.append(launcher)
             # Render list of launchers for this category.
             cat_name = self.categories[cat_id]['m_name']
             for launcher in launcher_list:
                 table_str.append([
                     cat_name, launcher['m_name'],
-                    str(launcher['num_roms']), str(launcher['num_parents']), str(launcher['num_clones']),
+                    str(launcher['num_roms']),
                     str(launcher['num_have']), str(launcher['num_miss']), str(launcher['num_unknown']),
+                    str(launcher['num_parents']), str(launcher['num_clones']),
                 ])
         # Traverse categoryless launchers.
         catless_launchers = {}
@@ -10702,9 +10733,10 @@ class Main:
             # Skip Standalone Launchers
             if not launcher['rompath']: continue
             table_str.append([
-                '', launcher['m_name'],
-                    str(launcher['num_roms']), str(launcher['num_parents']), str(launcher['num_clones']),
-                    str(launcher['num_have']), str(launcher['num_miss']), str(launcher['num_unknown']),
+                ' ', launcher['m_name'],
+                str(launcher['num_roms']),
+                str(launcher['num_have']), str(launcher['num_miss']), str(launcher['num_unknown']),
+                str(launcher['num_parents']), str(launcher['num_clones']),
             ])
 
         # Generate table and print report

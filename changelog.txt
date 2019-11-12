@@ -83,6 +83,9 @@ WIP      [CORE] Utility to check artwork. Sometimes a JPG image is renamed as PN
 
 WIP      [CORE] Utility to scan and remove orphaned artwork.
 
+WIP      [CORE] Use Libretro_BIOS_cores.json for the Retroarch BIOS audit and not the internal
+         database. However, Libretro_BIOS_cores.json does not have the ROM size.
+
 WIP      [FAVOURITES] Change the way artwork is stored in Favourites, Launchers and
          Categories directories. Avoid using IDs in the artwork name so artwork can be reused.
 
@@ -156,9 +159,13 @@ WIP      [ROM AUDIT] Create a tool to select the No-Intro/Redump DAT file automa
          each platform. This will be very useful for the new Offline Scraper database and
          for the ROM tag histogram.
 
-WIP      [CORE] Create a new Utility to show the automatically detected No-Intro/Redump DATs.
+WIP NOW  [CORE] Create a new Utility to show the automatically detected No-Intro/Redump DATs.
+         Create addon settings for the No-Intro DAT directory and the Redump DAT directory.
 
-WIP      [CORE] In the **Global ROM Audit statistics** report show only the audited launchers.
+WIP NOW  [CORE] Create an utility to check Retroarch launchers, check if the core set with
+         -L exists.
+
+FEATURE  [CORE] In the "Global ROM Audit statistics" report show only the audited launchers.
 
 FEATURE  [CORE] Increase the number of platforms to include all No-Intro, Redump and
          Libretro platforms. This is in preparation of the Kodi Games Database.
