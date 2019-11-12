@@ -17,7 +17,7 @@
 # --- Python standard library ---
 from __future__ import unicode_literals
 import sys, os, shutil, fnmatch, string, time, traceback
-import re, urllib, urllib2, urlparse, socket, exceptions, hashlib
+import re, urllib, urllib2, urlparse, socket, exceptions, hashlib, shlex
 from collections import OrderedDict
 
 # --- Kodi stuff ---
@@ -8360,7 +8360,7 @@ class Main:
         # >> See http://stackoverflow.com/questions/446209/possible-values-from-sys-platform
 
         # >> Decompose arguments to call subprocess module
-        arg_list  = shlex.split(arguments, posix = True)
+        arg_list = shlex.split(arguments, posix = True)
         exec_list = [application] + arg_list
         log_debug('_run_process() arguments = "{0}"'.format(arguments))
         log_debug('_run_process() arg_list  = {0}'.format(arg_list))
@@ -10336,7 +10336,7 @@ class Main:
                 main_str_list.append('No problems found\n')
             main_str_list.append('\n')
 
-        # >> Stats report
+        # Stats report
         log_info('Writing report file "{0}"'.format(g_PATHS.LAUNCHER_REPORT_FILE_PATH.getPath()))
         full_string = ''.join(main_str_list).encode('utf-8')
         file = open(g_PATHS.LAUNCHER_REPORT_FILE_PATH.getPath(), 'w')
@@ -10355,12 +10355,64 @@ class Main:
         kodi_display_text_window_mono('No-Intro/Redump DATs report', 'Not coded yet')
 
     def _command_exec_utils_check_retro_launchers(self):
-        kodi_display_text_window_mono('Retroarch launcher report', 'Not coded yet')
+        log_debug('_command_exec_utils_check_retro_launchers() Starting ...')
+        slist = []
+
+        # Traverse list of launchers. If launcher uses Retroarch then check the
+        # arguments and check that the core pointed with argument -L exists.
+        # Sort launcher by category and then name.
+        for launcher_id in sorted(self.launchers, 
+            key = lambda x: (self.launchers[x]['categoryID'], self.launchers[x]['m_name'])):
+            launcher = self.launchers[launcher_id]
+            m_name = launcher['m_name']
+            clist = []
+            slist.append('[COLOR orange]Launcher "{0}"[/COLOR]\n'.format(m_name))
+
+            # Skip Standalone Launchers
+            if not launcher['rompath']:
+                log_debug('Skipping launcher "{}"'.format(m_name))
+                continue
+            log_debug('Checking launcher "{}"'.format(m_name))
+            application = launcher['application']
+            arguments_list = [launcher['args']]
+            arguments_list.extend(launcher['args_extra'])
+            if not application.lower().find('retroarch'):
+                log_debug('Not a Retroarch launcher "{}"'.format(application))
+                continue
+            flag_retroarch_launcher = False
+            for index, arg_str in enumerate(arguments_list):
+                arg_list = shlex.split(arg_str, posix = True)
+                log_debug('[index {}] arg_str "{}"'.format(index, arg_str))
+                log_debug('[index {}] arg_list {}'.format(index, arg_list))
+                for i, arg in enumerate(arg_list):
+                    if arg != '-L': continue
+                    flag_retroarch_launcher = True
+                    core_FN = FileName(arg_list[i+1])
+                    if core_FN.exists():
+                        s = 'Found core "{}"'.format(core_FN.getPath())
+                    else:
+                        s = 'Missing core "{}"'.format(core_FN.getPath())
+                    log_debug(s)
+                    clist.append(s)
+                    break
+
+            # Build report
+            # if clist: slist.extend(clist)
+            # else:     slist.append('No problems found\n')
+            if flag_retroarch_launcher:
+                slist.extend(clist)
+            else:
+                slist.append('Not a Retroarch launcher.\n')
+            slist.append('\n')
+
+        # Print report
+        full_string = ''.join(slist).encode('utf-8')
+        kodi_display_text_window_mono('Retroarch launchers report', full_string)
 
     def _command_exec_utils_check_retro_BIOS(self):
-        log_info('_command_exec_utils_check_retro_BIOS() Checking Retroarch BIOSes ...')
+        log_debug('_command_exec_utils_check_retro_BIOS() Checking Retroarch BIOSes ...')
         check_only_mandatory = self.settings['io_retroarch_only_mandatory']
-        log_info('_command_exec_utils_check_retro_BIOS() check_only_mandatory = {0}'.format(check_only_mandatory))
+        log_debug('_command_exec_utils_check_retro_BIOS() check_only_mandatory = {0}'.format(check_only_mandatory))
 
         # >> If Retroarch System dir not configured or found abort.
         sys_dir_FN = FileName(self.settings['io_retroarch_sys_dir'])

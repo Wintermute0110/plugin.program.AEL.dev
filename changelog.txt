@@ -162,7 +162,7 @@ WIP      [ROM AUDIT] Create a tool to select the No-Intro/Redump DAT file automa
 WIP NOW  [CORE] Create a new Utility to show the automatically detected No-Intro/Redump DATs.
          Create addon settings for the No-Intro DAT directory and the Redump DAT directory.
 
-WIP NOW  [CORE] Create an utility to check Retroarch launchers, check if the core set with
+FEATURE  [CORE] Create an utility to check Retroarch launchers, check if the core set with
          -L exists.
 
 FEATURE  [CORE] In the "Global ROM Audit statistics" report show only the audited launchers.
