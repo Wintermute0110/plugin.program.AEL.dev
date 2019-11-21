@@ -41,6 +41,9 @@
 <category label="ROM audit">
     <setting label="Unkown ROMs are" type="enum" id="audit_unknown_roms" default="0" values="Parents|Clones" />
     <setting label="Search assets in the Parent/Clone group" type="bool" id="audit_pclone_assets" default="true" />
+    <setting label="No-Intro DAT directory" type="folder" id="audit_nointro_dir" default="" source="" />
+    <setting label="Redump DAT directory" type="folder" id="audit_redump_dir" default="" source="" />
+
 <!--
     <setting label="1G1R primary region" type="enum" id="audit_1G1R_first_region" default="0" values="Europe|USA|Japan" />
     <setting label="1G1R secondary region" type="enum" id="audit_1G1R_second_region" default="0" values="Spain|France|Brazil|Korea" />

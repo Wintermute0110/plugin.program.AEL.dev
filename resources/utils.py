@@ -638,6 +638,27 @@ def misc_look_for_file(rootPath, filename_noext, file_exts):
 
     return None
 
+# 
+def misc_look_for_NoIntro_DAT(platform, NOINTRO_DAT_list):
+    # log_debug('Testing No-Intro platform "{}"'.format(platform.long_name))
+    if not platform.DAT_prefix:
+        # log_debug('Empty DAT_prefix. Return empty string.')
+        return ''
+    # Traverse all files and make a list of DAT matches.
+    patt = '.*' + platform.DAT_prefix + '\s\(Parent-Clone\)\s\((\d\d\d\d\d\d\d\d)-(\d\d\d\d\d\d)\)\.dat'
+    # log_variable('patt', patt)
+    fname_list = []
+    for fname in NOINTRO_DAT_list:
+        m = re.match(patt, fname)
+        if m: fname_list.append(fname)
+    # log_variable('fname_list', fname_list)
+    if fname_list:
+        # If more than one DAT found sort alphabetically and pick the first.
+        # Because the fname include the date the most recent must be first.
+        return sorted(fname_list)[0]
+    else:
+        return ''
+
 #
 # Generates a random an unique MD5 hash and returns a string with the hash
 #

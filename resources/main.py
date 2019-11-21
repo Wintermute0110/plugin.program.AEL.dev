@@ -529,12 +529,15 @@ class Main:
         self.settings['scraper_screenscraper_region']   = int(o.getSetting('scraper_screenscraper_region'))
         self.settings['scraper_screenscraper_language'] = int(o.getSetting('scraper_screenscraper_language'))
 
-        self.settings['io_retroarch_only_mandatory'] = True if o.getSetting('io_retroarch_only_mandatory') == 'true' else False
         self.settings['io_retroarch_sys_dir']        = o.getSetting('io_retroarch_sys_dir').decode('utf-8')
+        self.settings['io_retroarch_only_mandatory'] = True if o.getSetting('io_retroarch_only_mandatory') == 'true' else False
 
         # --- ROM audit ---
         self.settings['audit_unknown_roms']         = int(o.getSetting('audit_unknown_roms'))
         self.settings['audit_pclone_assets']        = True if o.getSetting('audit_pclone_assets') == 'true' else False
+        self.settings['audit_nointro_dir']          = o.getSetting('audit_nointro_dir').decode('utf-8')
+        self.settings['audit_redump_dir']           = o.getSetting('audit_redump_dir').decode('utf-8')
+
         # self.settings['audit_1G1R_first_region']     = int(o.getSetting('audit_1G1R_first_region'))
         # self.settings['audit_1G1R_second_region']   = int(o.getSetting('audit_1G1R_second_region'))
         # self.settings['audit_1G1R_third_region']   = int(o.getSetting('audit_1G1R_third_region'))
@@ -10351,11 +10354,58 @@ class Main:
             problems_found = True
             str_list.append('{0} "{1}" not found\n'.format(dic_key_name, path_FN.getPath()))
 
+    # Shows a report of the auto-detected No-Intro/Redump DAT files.
+    # This simplifies a lot the ROM Audit of launchers and other things like the
+    # Offline Scraper database generation.
     def _command_exec_utils_show_DATs(self):
-        kodi_display_text_window_mono('No-Intro/Redump DATs report', 'Not coded yet')
+        log_debug('_command_exec_utils_show_DATs() Starting...')
+        slist = []
+
+        # --- Get files in No-Intro and Redump DAT directories ---
+        NOINTRO_PATH_FN = FileName(self.settings['audit_nointro_dir'])
+        if not NOINTRO_PATH_FN.exists():
+            kodi_dialog_OK('No-Intro DAT directory not found. Please set it up in AEL addon settings.')
+            return
+        REDUMP_PATH_FN = FileName(self.settings['audit_redump_dir'])
+        if not REDUMP_PATH_FN.exists():
+            kodi_dialog_OK('No-Intro DAT directory not found. Please set it up in AEL addon settings.')
+            return
+
+        # --- Table header ---
+        table_str = [
+            ['left', 'left', 'left'],
+            ['Platform', 'DAT type', 'DAT file'],
+        ]
+
+        # --- Scan files in DAT dirs ---
+        NOINTRO_DAT_list = NOINTRO_PATH_FN.scanFilesInPath('*.dat')
+        REDUMP_DAT_list = REDUMP_PATH_FN.scanFilesInPath('*.dat')
+        # Some debug code
+        # for fname in NOINTRO_DAT_list: log_debug(fname)
+
+        # --- Autodetect files ---
+        # 1) Traverse all platforms.
+        # 2) Autodetect DATs for No-Intro or Redump platforms only.
+        # AEL_platforms_t = AEL_platforms[0:4]
+        for platform in AEL_platforms:
+            if platform.DAT == DAT_NOINTRO:
+                # No-Intro DAT filename problems 2019-11-21
+                # Atari - Jaguar (J64) (Parent-Clone) (Parent-Clone) (20190518-213240).dat
+                fname = misc_look_for_NoIntro_DAT(platform, NOINTRO_DAT_list)
+                DAT_str = FileName(fname).getBase() if fname else 'No-Intro DAT not found'
+                table_str.append([platform.compact_name, platform.DAT, DAT_str])
+            elif platform.DAT == DAT_REDUMP:
+                table_str.append([platform.compact_name, platform.DAT,
+                    'Redump not implemented yet',
+                ])
+
+        # Print report
+        slist.extend(text_render_table_str(table_str))
+        full_string = '\n'.join(slist).encode('utf-8')
+        kodi_display_text_window_mono('No-Intro/Redump DAT files report', full_string)
 
     def _command_exec_utils_check_retro_launchers(self):
-        log_debug('_command_exec_utils_check_retro_launchers() Starting ...')
+        log_debug('_command_exec_utils_check_retro_launchers() Starting...')
         slist = []
 
         # Resolve category IDs to names
