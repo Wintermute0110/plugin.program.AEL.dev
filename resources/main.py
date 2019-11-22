@@ -10390,12 +10390,22 @@ class Main:
         for platform in AEL_platforms:
             if platform.DAT == DAT_NOINTRO:
                 fname = misc_look_for_NoIntro_DAT(platform, NOINTRO_DAT_list)
-                DAT_str = FileName(fname).getBase() if fname else 'Redump DAT not found'
+                if fname:
+                    DAT_str = FileName(fname).getBase()
+                    DAT_str = text_limit_string(DAT_str, 60)
+                    DAT_str = '[COLOR=orange]' + DAT_str + '[/COLOR]'
+                else:
+                    DAT_str = '[COLOR=yellow]No-Intro DAT not found[/COLOR]'
                 table_str.append([platform.compact_name, platform.DAT, DAT_str])
             elif platform.DAT == DAT_REDUMP:
                 fname = misc_look_for_Redump_DAT(platform, REDUMP_DAT_list)
-                DAT_str = FileName(fname).getBase() if fname else 'Redump DAT not found'
-                table_str.append([platform.compact_name, str(platform.aliasof), platform.DAT, DAT_str])
+                if fname:
+                    DAT_str = FileName(fname).getBase()
+                    DAT_str = text_limit_string(DAT_str, 60)
+                    DAT_str = '[COLOR=orange]' + DAT_str + '[/COLOR]'
+                else:
+                    DAT_str = '[COLOR=yellow]Redump DAT not found[/COLOR]'
+                table_str.append([platform.compact_name, platform.DAT, DAT_str])
 
         # Print report
         slist.extend(text_render_table_str(table_str))
