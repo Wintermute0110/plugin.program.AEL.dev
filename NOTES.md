@@ -32,12 +32,19 @@ FLAT and 1G1R modes only.
 Display filters: NOINTRO_DMODE_ALL, NOINTRO_DMODE_HAVE, NOINTRO_DMODE_HAVE_UNK,
 NOINTRO_DMODE_HAVE_MISS, NOINTRO_DMODE_MISS, NOINTRO_DMODE_MISS_UNK, NOINTRO_DMODE_UNK.
 
-Current fields in database:
+Current fields in Launchers database:
 ```
-"cloneof":"",
-"disks":[],
-"nointro_status":"Miss",
-"pclone_status":"Parent",
+    'nointro_xml_file' : '',
+    'nointro_display_mode' : NOINTRO_DMODE_ALL,
+    'launcher_display_mode' : LAUNCHER_DMODE_FLAT,
+```
+
+Current fields in ROMs database:
+```
+    'disks' : [],
+    'nointro_status' : 'Miss',
+    'pclone_status' : 'Parent',
+    'cloneof' : '',
 ```
 
 ### Menus in future AEL releases
@@ -90,17 +97,26 @@ always display Extra ROMs.
  * The ROM Audit is very easy to do. The difficult part is to make the Parent/Clone groups
    and choosing the parent ROM.
 
-Future database fields:
+Future fields in Launchers database:
 ```
-"i_audit_status" : "Have",  Determined by the ROM Audit exclusively
-"i_cloneof" : ROMID,        Same as m_parent but uses ROM ID
-"i_order" : int,            Position of the ROM in the Parent/Clone group
-"i_regions" : ['', ''],     Same as m_region
-"i_languages" : ['', ''],   Same as m_language
-"i_tags" : ['', ''],        Always extracted from filename
-"m_cloneof" : '',           Override the ROM parent (read-only)
-"m_region" : '',            Override the ROM regions (read-only)
-"m_language" : '',          Override the ROM languages (read-only)
+    'nointro_xml_file' : '',
+    'nointro_display_mode' : NOINTRO_DMODE_ALL,
+    'launcher_display_mode' : LAUNCHER_DMODE_FLAT,
+```
+
+Future ROMs database fields:
+```
+    'disks' : [],
+    'i_audit_status' : 'Have',     Determined by the ROM Audit exclusively
+    'i_pclone_status' : 'Parent',  Same as i_cloneof, used to set skin properties.
+    'i_cloneof' : ROMID,           Same as m_parent but uses ROM ID
+    'i_order' : int,               Position of the ROM in the Parent/Clone group
+    'i_regions' : ['', ''],        Same as m_region
+    'i_languages' : ['', ''],      Same as m_language
+    'i_tags' : ['', ''],           Always extracted from filename
+    'm_cloneof' : '',              Override the ROM parent (read-only)
+    'm_region' : '',               Override the ROM regions (read-only)
+    'm_language' : '',             Override the ROM languages (read-only)
 ```
 
 ### Computation of the Parent/Clone ROMs
