@@ -23,11 +23,6 @@ if __name__ == "__main__" and __package__ is None:
 from resources.utils import *
 from resources.platforms import *
 
-# --- functions ----------------------------------------------------------------------------------
-def write_txt_file(filename, text):
-    with open(filename, 'w') as text_file:
-        text_file.write(text)
-
 # --- configuration ------------------------------------------------------------------------------
 fname_longname_txt  = 'data/AEL_platform_list_longname.txt'
 fname_longname_csv  = 'data/AEL_platform_list_longname.csv'
@@ -35,6 +30,11 @@ fname_shortname_txt = 'data/AEL_platform_list_shortname.txt'
 fname_shortname_csv = 'data/AEL_platform_list_shortname.csv'
 fname_category_txt  = 'data/AEL_platform_list_category.txt'
 fname_category_csv  = 'data/AEL_platform_list_category.csv'
+
+# --- functions ----------------------------------------------------------------------------------
+def write_txt_file(filename, text):
+    with open(filename, 'w') as text_file:
+        text_file.write(text)
 
 # --- main ---------------------------------------------------------------------------------------
 # --- Check that short names are unique ---
@@ -78,13 +78,13 @@ print('Platforms sorted alphabetically.')
 # --- List platforms sorted by long name ---
 table_str = [
     ['left', 'left', 'left', 'left', 'left', 'left', 'left', 'left', 'left'],
-    ['Long name', 'Short name', 'Compact name', 'Alias', 'DAT', 'TGDB', 'MG', 'SS', 'GF'],
+    ['Long name', 'Short name', 'Compact name', 'Alias', 'TGDB', 'MG', 'SS', 'GF', 'DAT'],
 ]
 for p_obj in AEL_platforms:
     table_str.append([
-        p_obj.long_name, p_obj.short_name, p_obj.compact_name,
-        unicode(p_obj.aliasof), unicode(p_obj.DAT),
-        unicode(p_obj.TGDB_plat), unicode(p_obj.MG_plat), unicode(p_obj.SS_plat), unicode(p_obj.GF_plat)
+        p_obj.long_name, p_obj.short_name, p_obj.compact_name, unicode(p_obj.aliasof), 
+        unicode(p_obj.TGDB_plat), unicode(p_obj.MG_plat), unicode(p_obj.SS_plat), unicode(p_obj.GF_plat),
+        unicode(p_obj.DAT),
     ])
 header_list = []
 header_list.append('Number of AEL platforms {}'.format(len(AEL_platforms)))
@@ -103,13 +103,13 @@ write_txt_file(fname_longname_csv, text_csv)
 # --- List platforms sorted by short name ---
 table_str = [
     ['left', 'left', 'left', 'left', 'left', 'left', 'left', 'left', 'left'],
-    ['Long name', 'Short name', 'Compact name', 'Alias', 'DAT', 'TGDB', 'MG', 'SS', 'GF'],
+    ['Long name', 'Short name', 'Compact name', 'Alias', 'TGDB', 'MG', 'SS', 'GF', 'DAT'],
 ]
 for p_obj in sorted(AEL_platforms, key = lambda x: x.short_name.lower(), reverse = False):
     table_str.append([
-        p_obj.long_name, p_obj.short_name, p_obj.compact_name,
-        unicode(p_obj.aliasof), unicode(p_obj.DAT),
-        unicode(p_obj.TGDB_plat), unicode(p_obj.MG_plat), unicode(p_obj.SS_plat), unicode(p_obj.GF_plat)
+        p_obj.long_name, p_obj.short_name, p_obj.compact_name, unicode(p_obj.aliasof),
+        unicode(p_obj.TGDB_plat), unicode(p_obj.MG_plat), unicode(p_obj.SS_plat), unicode(p_obj.GF_plat),
+        unicode(p_obj.DAT),
     ])
 header_list = []
 header_list.append('Number of AEL platforms {}'.format(len(AEL_platforms)))
@@ -127,13 +127,13 @@ write_txt_file(fname_shortname_csv, text_csv)
 # --- List platforms sorted by category and then long name ---
 table_str = [
     ['left', 'left', 'left', 'left', 'left', 'left', 'left', 'left', 'left'],
-    ['Long name', 'Short name', 'Compact name', 'Alias', 'DAT', 'TGDB', 'MG', 'SS', 'GF'],
+    ['Long name', 'Short name', 'Compact name', 'Alias', 'TGDB', 'MG', 'SS', 'GF', 'DAT'],
 ]
 for p_obj in sorted(AEL_platforms, key = lambda x: (x.category.lower(), x.long_name.lower()), reverse = False):
     table_str.append([
-        p_obj.long_name, p_obj.short_name, p_obj.compact_name,
-        unicode(p_obj.aliasof), unicode(p_obj.DAT),
-        unicode(p_obj.TGDB_plat), unicode(p_obj.MG_plat), unicode(p_obj.SS_plat), unicode(p_obj.GF_plat)
+        p_obj.long_name, p_obj.short_name, p_obj.compact_name, unicode(p_obj.aliasof),
+        unicode(p_obj.TGDB_plat), unicode(p_obj.MG_plat), unicode(p_obj.SS_plat), unicode(p_obj.GF_plat),
+        unicode(p_obj.DAT),
     ])
 header_list = []
 header_list.append('Number of AEL platforms {}'.format(len(AEL_platforms)))
