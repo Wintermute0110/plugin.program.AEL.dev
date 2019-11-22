@@ -10389,8 +10389,8 @@ class Main:
         # AEL_platforms_t = AEL_platforms[0:4]
         for platform in AEL_platforms:
             if platform.DAT == DAT_NOINTRO:
-                # No-Intro DAT filename problems 2019-11-21
-                # Atari - Jaguar (J64) (Parent-Clone) (Parent-Clone) (20190518-213240).dat
+                # No-Intro DAT filename problems (at 2019-11-21):
+                # 1) Atari - Jaguar (J64) (Parent-Clone) (Parent-Clone) (20190518-213240).dat
                 fname = misc_look_for_NoIntro_DAT(platform, NOINTRO_DAT_list)
                 DAT_str = FileName(fname).getBase() if fname else 'No-Intro DAT not found'
                 table_str.append([platform.compact_name, platform.DAT, DAT_str])
