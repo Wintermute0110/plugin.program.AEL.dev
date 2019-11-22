@@ -10475,6 +10475,7 @@ class Main:
         # Traverse list of launchers. If launcher uses Retroarch then check the
         # arguments and check that the core pointed with argument -L exists.
         # Sort launcher by category and then name.
+        num_retro_launchers = 0
         for launcher_id in sorted(self.launchers, 
             key = lambda x: (self.launchers[x]['category'], self.launchers[x]['m_name'])):
             launcher = self.launchers[launcher_id]
@@ -10499,6 +10500,7 @@ class Main:
                 for i, arg in enumerate(arg_list):
                     if arg != '-L': continue
                     flag_retroarch_launcher = True
+                    num_retro_launchers += 1
                     core_FN = FileName(arg_list[i+1])
                     if core_FN.exists():
                         s = '[COLOR=green]Found[/COLOR] core "{}"\n'.format(core_FN.getPath())
@@ -10514,8 +10516,12 @@ class Main:
                 slist.extend(clist)
                 slist.append('\n')
         # Print report
-        full_string = ''.join(slist).encode('utf-8')
-        kodi_display_text_window_mono('Retroarch launchers report', full_string)
+        if num_retro_launchers > 0:
+            full_string = ''.join(slist).encode('utf-8')
+            kodi_display_text_window_mono('Retroarch launchers report', full_string)
+        else:
+            kodi_display_text_window_mono('Retroarch launchers report',
+                'No Retroarch launchers found.')
 
     def _command_exec_utils_check_retro_BIOS(self):
         log_debug('_command_exec_utils_check_retro_BIOS() Checking Retroarch BIOSes ...')
