@@ -65,11 +65,12 @@ class Platform:
 # Get ScreenScraper platform list from script xxxx.py
 # Get GameFAQs platform list from https://www.gamefaqs.com/search_advanced?game=ar
 #
-# Default values: Platform('', '', '', None, DAT_NONE, None, None, None, None),
+# Default values: Platform('', '', '', None, None, None, None, None, DAT_NONE, ''),
 #
 AEL_platforms = [
     # --- 3DO Interactive Multiplayer ---
-    Platform('3DO Interactive Multiplayer', 'console-3do', '3do', None, '25', '35', '29', '61', DAT_REDUMP),
+    Platform('3DO Interactive Multiplayer', 'console-3do', '3do', None, '25', '35', '29', '61',
+        DAT_REDUMP, 'Panasonic - 3DO Interactive Multiplayer - Datfile'),
 
     # --- Amstrad ---
     Platform('Amstrad CPC', 'computer-cpc', 'cpc', None, '4914', '60', '65', '46', DAT_NONE),
@@ -88,8 +89,9 @@ AEL_platforms = [
     # *) Atari - Jaguar (J64) (Parent-Clone) (Parent-Clone) (20190518-213240).dat
     # *) Atari - Jaguar (ROM) (20190518-213240).dat
     Platform('Atari Jaguar', 'atari-jaguar', 'jaguar', None, '28', '17', '27', '72',
-        DAT_NOINTRO, 'Atari - Jaguar (J64)'),
-    Platform('Atari Jaguar CD', 'atari-jaguarcd', 'jaguarcd', None, '29', '17', '171', '82', DAT_REDUMP),
+        DAT_NOINTRO, 'Atari - Jaguar (J64) (Parent-Clone)'),
+    Platform('Atari Jaguar CD', 'atari-jaguarcd', 'jaguarcd', None, '29', '17', '171', '82',
+        DAT_REDUMP, 'Atari - Jaguar CD Interactive Multimedia System - Datfile'),
     Platform('Atari Lynx', 'atari-lynx', 'lynx', None, '4924', '18', '28', '58',
         DAT_NOINTRO, 'Atari - Lynx'),
     Platform('Atari ST', 'computer-atari-st', 'atari-st', None, '4937', '24', '42', '38',
@@ -125,10 +127,12 @@ AEL_platforms = [
         DAT_NOINTRO, 'Commodore - Amiga'),
     # The CD32 is part of a family of Amiga computers and is of similar specification to the
     # Amiga 1200 computer.
-    Platform('Commodore CD32', 'console-cd32', 'cd32', None, '4947', '56', '130', '70', DAT_REDUMP),
+    Platform('Commodore CD32', 'console-cd32', 'cd32', None, '4947', '56', '130', '70',
+        DAT_REDUMP, 'Commodore - Amiga CD32 - Datfile'),
     # The CDTV is essentially a Commodore Amiga 500 home computer with a CD-ROM drive and
     # remote control.
-    Platform('Commodore CDTV', 'console-cdtv', 'cdtv', None, None, '83', '129', None, DAT_REDUMP),
+    Platform('Commodore CDTV', 'console-cdtv', 'cdtv', None, None, '83', '129', None,
+        DAT_REDUMP, 'Commodore - Amiga CDTV - Datfile'),
     # MobyGames "Commodore 16, Plus/4"
     # Not found in GameFAQs.
     Platform('Commodore Plus-4', 'computer-plus4', 'plus4', None, None, '115', '99', None,
@@ -169,8 +173,8 @@ AEL_platforms = [
     # *) iQue - iQue (CDN) (20190927-125114).dat
     # *) iQue - iQue (Decrypted) (20190927-125114)
     # *) iQue - iQue (Decrypted) (Parent-Clone) (Parent-Clone) (20190927-125114)
-    Platform('iQue iQue Player', 'console-ique', 'ique', 'n64',  None, None, None, None, None,
-        DAT_NOINTRO, 'iQue - iQue (Decrypted)'),
+    Platform('iQue iQue Player', 'console-ique', 'ique', 'n64', None, None, None, None,
+        DAT_NOINTRO, 'iQue - iQue (Decrypted) (Parent-Clone)'),
     Platform('Konami Picno', 'console-picno', 'picno', None, None, None, None, None,
         DAT_NOINTRO, 'Konami - Picno'),
     Platform('LeapFrog LeapPad', 'console-leappad', 'leappad', None, None, None, None, None,
@@ -222,8 +226,10 @@ AEL_platforms = [
     # --- NEC ---
     Platform('NEC PC Engine', 'nec-pce', 'pce', None, '34', '40', '31', '53',
         DAT_NOINTRO, 'NEC - PC Engine - TurboGrafx 16'),
-    Platform('NEC PC Engine CDROM2', 'nec-pcecd', 'pcecd', None, '4955', '45', '114', '56', DAT_REDUMP),
-    Platform('NEC PC-FX', 'nec-pcfx', 'pcfx', None, '4930', '59', '72', '79', DAT_REDUMP),
+    Platform('NEC PC Engine CDROM2', 'nec-pcecd', 'pcecd', None, '4955', '45', '114', '56',
+        DAT_REDUMP, 'NEC - PC Engine CD & TurboGrafx CD - Datfile'),
+    Platform('NEC PC-FX', 'nec-pcfx', 'pcfx', None, '4930', '59', '72', '79',
+        DAT_REDUMP, 'NEC - PC-FX & PC-FXGA - Datfile'),
     Platform('NEC PC-FXGA', 'nec-pcfxga', 'pcfxga', 'pcfx'),
     Platform('NEC SuperGrafx', 'nec-sgx', 'sgx', None, '34', '127', '105', '53',
         DAT_NOINTRO, 'NEC - PC Engine SuperGrafx'),
@@ -242,16 +248,16 @@ AEL_platforms = [
     # *) Nintendo - Nintendo 3DS (Encrypted) (20191109-080816)
     # *) Nintendo - Nintendo 3DS (Encrypted) (Parent-Clone) (Parent-Clone) (20191109-080816)
     Platform('Nintendo 3DS', 'nintendo-n3ds', 'n3ds', None, '4912', '101', '17', '116',
-        DAT_NOINTRO, 'Nintendo - Nintendo 3DS (Decrypted)'),
+        DAT_NOINTRO, 'Nintendo - Nintendo 3DS (Encrypted) (Parent-Clone)'),
     # No-Intro Nintendo 64 DAT files:
     # *) Nintendo - Nintendo 64 (BigEndian) (20190918-121135)
     # *) Nintendo - Nintendo 64 (BigEndian) (Parent-Clone) (Parent-Clone) (20190918-121135)
     # *) Nintendo - Nintendo 64 (ByteSwapped) (20190918-121135)
     Platform('Nintendo 64', 'nintendo-n64', 'n64', None, '3', '9', '14', '84',
-        DAT_NOINTRO, 'Nintendo - Nintendo 64 (BigEndian)'),
+        DAT_NOINTRO, 'Nintendo - Nintendo 64 (BigEndian) (Parent-Clone)'),
     # Nintendo 64DD not found on MobyGames.
     Platform('Nintendo 64DD', 'nintendo-n64dd', 'n64dd', None, '3', '9', '122', '92',
-        DAT_NOINTRO, 'Nintendo - Nintendo 64DD (Parent-Clone) (20190512-023816)'),
+        DAT_NOINTRO, 'Nintendo - Nintendo 64DD'),
     # No-Intro Nintendo DS DAT files:
     # *) Nintendo - Nintendo DS (Decrypted) (20191117-150815)
     # *) Nintendo - Nintendo DS (Decrypted) (Parent-Clone) (Parent-Clone) (20191117-150815)
@@ -259,7 +265,7 @@ AEL_platforms = [
     # *) Nintendo - Nintendo DS (Download Play) (Parent-Clone) (20190825-082425)
     # *) Nintendo - Nintendo DS (Encrypted) (20191117-150815)
     Platform('Nintendo DS', 'nintendo-nds', 'nds', None, '8', '44', '15', '108',
-        DAT_NOINTRO, 'Nintendo - Nintendo DS (Decrypted)'),
+        DAT_NOINTRO, 'Nintendo - Nintendo DS (Decrypted) (Parent-Clone)'),
     # No-Intro Nintendo DSi DAT files:
     # *) Nintendo - Nintendo DSi (Decrypted) (20190503-112150)
     # *) Nintendo - Nintendo DSi (Decrypted) (Parent-Clone) (Parent-Clone) (20190503-112150)
@@ -267,7 +273,7 @@ AEL_platforms = [
     # *) Nintendo - Nintendo DSi (Digital) (Parent-Clone) (20190813-061824)
     # *) Nintendo - Nintendo DSi (Encrypted) (20190503-112150)
     Platform('Nintendo DSi', 'nintendo-ndsi', 'ndsi', None, '8', '87', '15', '108',
-        DAT_NOINTRO, 'Nintendo - Nintendo DSi (Decrypted)'),
+        DAT_NOINTRO, 'Nintendo - Nintendo DSi (Decrypted) (Parent-Clone)'),
     Platform('Nintendo e-Reader', 'nintendo-ereader', 'ereader', None, None, None, '119', None,
         DAT_NOINTRO, 'Nintendo - e-Reader'),
     Platform('Nintendo Famicon', 'nintendo-famicon', 'famicon', 'nes'),
@@ -279,14 +285,15 @@ AEL_platforms = [
     # *) Nintendo - Family Computer Disk System (FDSStickRAW) (20191109-080316)
     # *) Nintendo - Family Computer Disk System (QD) (20191109-080316)
     Platform('Nintendo Famicon Disk System', 'nintendo-fds', 'fds', None, '4936', '22', '106', '47',
-        DAT_NOINTRO, 'Nintendo - Family Computer Disk System (FDS)'),
+        DAT_NOINTRO, 'Nintendo - Family Computer Disk System (FDS) (Parent-Clone)'),
     Platform('Nintendo GameBoy', 'nintendo-gb', 'gb', None, '4', '10', '9', '59',
-        DAT_NOINTRO, 'Nintendo - Game Boy (Parent-Clone) (20191031-114701)'),
+        DAT_NOINTRO, 'Nintendo - Game Boy'),
     Platform('Nintendo GameBoy Advance', 'nintendo-gba', 'gba', None, '5', '12', '12', '91',
         DAT_NOINTRO, 'Nintendo - Game Boy Advance'),
     Platform('Nintendo GameBoy Color', 'nintendo-gbcolor', 'gbcolor', None, '41', '11', '10', '57',
         DAT_NOINTRO, 'Nintendo - Game Boy Color'),
-    Platform('Nintendo GameCube', 'nintendo-gamecube', 'gamecube', None, '2', '14', '13', '99', DAT_REDUMP),
+    Platform('Nintendo GameCube', 'nintendo-gamecube', 'gamecube', None, '2', '14', '13', '99',
+        DAT_REDUMP, 'Nintendo - GameCube - Datfile'),
     Platform('Nintendo NES', 'nintendo-nes', 'nes', None, '7', '22', '3', '41',
         DAT_NOINTRO, 'Nintendo - Nintendo Entertainment System (Parent-Clone)'),
     # No-Intro New Nintendo 3DS DAT files:
@@ -296,7 +303,7 @@ AEL_platforms = [
     # *) Nintendo - New Nintendo 3DS (Encrypted) (20190402-125456)
     # *) Nintendo - New Nintendo 3DS (Encrypted) (Parent-Clone) (Parent-Clone) (20190402-125456)
     Platform('Nintendo New Nintendo 3DS', 'nintendo-new3ds', 'new3ds', None, None, None, None, None,
-        DAT_NOINTRO, ' Nintendo - New Nintendo 3DS (Digital)'),
+        DAT_NOINTRO, 'Nintendo - New Nintendo 3DS (Encrypted) (Parent-Clone)'),
     # Pokemon Mini not found in GameFAQs.
     Platform('Nintendo Pokemon Mini', 'nintendo-pokemini', 'pokemini', None, '4957', '152', '211', None,
         DAT_NOINTRO, 'Nintendo - Pokemon Mini'),
@@ -336,7 +343,8 @@ AEL_platforms = [
     # The Advanced Pico Beena is an upgraded Sega PICO.
     Platform('Sega Beena', 'sega-beena', 'beena', None, None, None, None, None,
         DAT_NOINTRO, 'Sega - Beena'),
-    Platform('Sega Dreamcast', 'sega-dreamcast', 'dreamcast', None, '16', '8', '23', '67', DAT_REDUMP),
+    Platform('Sega Dreamcast', 'sega-dreamcast', 'dreamcast', None, '16', '8', '23', '67',
+        DAT_REDUMP, 'Sega - Dreamcast - Datfile'),
     Platform('Sega Game Gear', 'sega-gamegear', 'gamegear', None, '20', '25', '21', '62',
         DAT_NOINTRO, 'Sega - Game Gear'),
     Platform('Sega Genesis', 'sega-genesis', 'genesis', 'megadrive'),
@@ -344,10 +352,12 @@ AEL_platforms = [
         DAT_NOINTRO, 'Sega - Master System - Mark III'),
     Platform('Sega Mega Drive', 'sega-megadrive', 'megadrive', None, '36', '16', '1', '54',
         DAT_NOINTRO, 'Sega - Mega Drive - Genesis'),
-    Platform('Sega MegaCD', 'sega-megacd', 'megacd', None, '21', '20', '20', '65', DAT_REDUMP),
+    Platform('Sega MegaCD', 'sega-megacd', 'megacd', None, '21', '20', '20', '65',
+        DAT_REDUMP, 'Sega - Mega CD & Sega CD - Datfile'),
     Platform('Sega PICO', 'sega-pico', 'pico', None, '4958', '103', None, None,
         DAT_NOINTRO, 'Sega - PICO'),
-    Platform('Sega Saturn', 'sega-saturn', 'saturn', None, '17', '23', '22', '76', DAT_REDUMP),
+    Platform('Sega Saturn', 'sega-saturn', 'saturn', None, '17', '23', '22', '76',
+        DAT_REDUMP, 'Sega - Saturn - Datfile'),
     # The SG-1000 was released in several forms, including the SC-3000 computer and
     # the redesigned SG-1000 II.
     Platform('Sega SC-3000', 'sega-sc3000', 'sc3000', 'sg1000'),
@@ -371,7 +381,8 @@ AEL_platforms = [
     # ScreenScraper has a platform Neo Geo AES = '142'
     # GameFAQs has a platform NeoGeo = '64'
     Platform('SNK Neo-Geo AES', 'snk-aes', 'aes', 'mame'),
-    Platform('SNK Neo-Geo CD', 'snk-neocd', 'neocd', None, '4956', '54', '70', '68', DAT_REDUMP),
+    Platform('SNK Neo-Geo CD', 'snk-neocd', 'neocd', None, '4956', '54', '70', '68',
+        DAT_REDUMP, 'SNK - Neo Geo CD - Datfile'),
     # ScreenScraper has a platform for Neo Geo MVS = '68'
     Platform('SNK Neo-Geo MVS', 'snk-mvs', 'mvs', 'mame'),
     Platform('SNK Neo-Geo Pocket', 'snk-ngp', 'ngp', None, '4922', '52', '25', None,
@@ -380,8 +391,10 @@ AEL_platforms = [
         DAT_NOINTRO, 'SNK - Neo Geo Pocket Color'),
 
     # --- SONY ---
-    Platform('Sony PlayStation', 'sony-psx', 'psx', None, '10', '6', '57', '78', DAT_REDUMP),
-    Platform('Sony PlayStation 2', 'sony-ps2', 'ps2', None, '11', '7', '58', '94', DAT_REDUMP),
+    Platform('Sony PlayStation', 'sony-psx', 'psx', None, '10', '6', '57', '78',
+        DAT_REDUMP, 'Sony - PlayStation - Datfile'),
+    Platform('Sony PlayStation 2', 'sony-ps2', 'ps2', None, '11', '7', '58', '94',
+        DAT_REDUMP, 'Sony - PlayStation 2 - Datfile'),
     Platform('Sony PlayStation 3', 'sony-ps3', 'ps3', None, '12', '81', '59', '113', DAT_NONE),
     Platform('Sony PlayStation 4', 'sony-ps4', 'ps4', None, '4919', '141', None, '120', DAT_NONE),
     # No-Intro has PSP DATs:
@@ -398,7 +411,8 @@ AEL_platforms = [
     # *) Sony - PlayStation Portable (UMD Video) (Parent-Clone) (20191023-221355)
     #
     # Should the Redump or No-Intro DAT used for PSP?
-    Platform('Sony PlayStation Portable', 'sony-psp', 'psp', None, '13', '46', '61', '109', DAT_REDUMP),
+    Platform('Sony PlayStation Portable', 'sony-psp', 'psp', None, '13', '46', '61', '109',
+        DAT_REDUMP, 'Sony - PlayStation Portable - Datfile'),
     # No-Intro has PS Vita DATs.
     Platform('Sony PlayStation Vita', 'sony-psvita', 'psvita', None, '39', '105', '62', '117', DAT_NONE),
 
@@ -406,7 +420,8 @@ AEL_platforms = [
         DAT_NOINTRO, 'Tiger - Game.com'),
     Platform('VTech CreatiVision', 'console-creativision', 'creativision', None, None, '212', None, None,
         DAT_NOINTRO, 'VTech - CreatiVision'),
-    Platform('VTech V.Flash', 'console-vflash', 'vflash', None, None, '189', None, None, DAT_REDUMP),
+    Platform('VTech V.Flash', 'console-vflash', 'vflash', None, None, '189', None, None,
+        DAT_REDUMP, 'VTech - V.Flash & V.Smile Pro - Datfile'),
     Platform('VTech V.Smile', 'console-vsmile', 'vsmile', None, None, '42', '120', None,
         DAT_NOINTRO, 'VTech - V.Smile'),
     Platform('VTech V.Smile Pro', 'console-vsmilepro', 'vsmilepro', 'vflash'),

@@ -159,7 +159,7 @@ WIP      [ROM AUDIT] Create a tool to select the No-Intro/Redump DAT file automa
          each platform. This will be very useful for the new Offline Scraper database and
          for the ROM tag histogram.
 
-WIP NOW  [CORE] Create a new Utility to show the automatically detected No-Intro/Redump DATs.
+FEATURE  [CORE] Create a new Utility to show the automatically detected No-Intro/Redump DATs.
          Create addon settings for the No-Intro DAT directory and the Redump DAT directory.
 
 FEATURE  [CORE] Create an utility to check Retroarch launchers, check if the core set with

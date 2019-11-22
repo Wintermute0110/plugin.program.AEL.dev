@@ -10389,15 +10389,13 @@ class Main:
         # AEL_platforms_t = AEL_platforms[0:4]
         for platform in AEL_platforms:
             if platform.DAT == DAT_NOINTRO:
-                # No-Intro DAT filename problems (at 2019-11-21):
-                # 1) Atari - Jaguar (J64) (Parent-Clone) (Parent-Clone) (20190518-213240).dat
                 fname = misc_look_for_NoIntro_DAT(platform, NOINTRO_DAT_list)
-                DAT_str = FileName(fname).getBase() if fname else 'No-Intro DAT not found'
+                DAT_str = FileName(fname).getBase() if fname else 'Redump DAT not found'
                 table_str.append([platform.compact_name, platform.DAT, DAT_str])
             elif platform.DAT == DAT_REDUMP:
-                table_str.append([platform.compact_name, platform.DAT,
-                    'Redump not implemented yet',
-                ])
+                fname = misc_look_for_Redump_DAT(platform, REDUMP_DAT_list)
+                DAT_str = FileName(fname).getBase() if fname else 'Redump DAT not found'
+                table_str.append([platform.compact_name, str(platform.aliasof), platform.DAT, DAT_str])
 
         # Print report
         slist.extend(text_render_table_str(table_str))

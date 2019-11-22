@@ -638,24 +638,53 @@ def misc_look_for_file(rootPath, filename_noext, file_exts):
 
     return None
 
-# 
-def misc_look_for_NoIntro_DAT(platform, NOINTRO_DAT_list):
+def misc_escape_regex_special_chars(s):
+    s = s.replace('(', '\(')
+    s = s.replace(')', '\)')
+    s = s.replace('+', '\+')
+
+    return s
+
+# Search for a No-Intro DAT filename.
+def misc_look_for_NoIntro_DAT(platform, DAT_list):
     # log_debug('Testing No-Intro platform "{}"'.format(platform.long_name))
     if not platform.DAT_prefix:
         # log_debug('Empty DAT_prefix. Return empty string.')
         return ''
     # Traverse all files and make a list of DAT matches.
-    patt = '.*' + platform.DAT_prefix + '\s\(Parent-Clone\)\s\((\d\d\d\d\d\d\d\d)-(\d\d\d\d\d\d)\)\.dat'
+    DAT_str = misc_escape_regex_special_chars(platform.DAT_prefix)
+    patt = '.*' + DAT_str + ' \(Parent-Clone\) \((\d\d\d\d\d\d\d\d)-(\d\d\d\d\d\d)\)\.dat'
     # log_variable('patt', patt)
     fname_list = []
-    for fname in NOINTRO_DAT_list:
+    for fname in DAT_list:
         m = re.match(patt, fname)
         if m: fname_list.append(fname)
     # log_variable('fname_list', fname_list)
     if fname_list:
         # If more than one DAT found sort alphabetically and pick the first.
         # Because the fname include the date the most recent must be first.
-        return sorted(fname_list)[0]
+        return sorted(fname_list, reverse = True)[0]
+    else:
+        return ''
+
+# Atari - Jaguar CD Interactive Multimedia System - Datfile (10) (2019-08-27 00-06-32)
+# Commodore - Amiga CD - Datfile (350) (2019-06-28 13-05-34)
+# Commodore - Amiga CD32 - Datfile (157) (2019-09-24 21-03-02)
+def misc_look_for_Redump_DAT(platform, DAT_list):
+    # log_debug('Testing Redump platform "{}"'.format(platform.long_name))
+    if not platform.DAT_prefix:
+        # log_debug('Empty DAT_prefix. Return empty string.')
+        return ''
+    DAT_str = misc_escape_regex_special_chars(platform.DAT_prefix)
+    patt = '.*' + DAT_str + ' \(\d+\) \((\d\d\d\d-\d\d-\d\d) (\d\d-\d\d-\d\d)\)\.dat'
+    # log_variable('patt', patt)
+    fname_list = []
+    for fname in DAT_list:
+        m = re.match(patt, fname)
+        if m: fname_list.append(fname)
+    # log_variable('fname_list', fname_list)
+    if fname_list:
+        return sorted(fname_list, reverse = True)[0]
     else:
         return ''
 
