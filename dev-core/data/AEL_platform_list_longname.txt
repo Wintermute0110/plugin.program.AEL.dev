@@ -109,7 +109,7 @@ Sega SegaCD                             sega-segacd           segacd        mega
 Sega SG-1000                            sega-sg1000           sg1000        None       4949  114   109   43    No-Intro
 Sharp X68000                            computer-x68k         x68k          None       4931  106   79    52    None    
 Sinclair ZX Spectrum                    computer-spectrum     spectrum      None       4913  41    76    35    None    
-Sinclair ZX Spectrum Plus 3             spectrump3            spectrump3    None       None  None  None  None  No-Intro
+Sinclair ZX Spectrum Plus 3             computer-spectrump3   spectrump3    None       None  None  None  None  No-Intro
 Sinclair ZX80                           computer-zx80         zx80          None       None  118   None  None  Libretro
 Sinclair ZX81                           computer-zx81         zx81          None       None  119   77    None  Libretro
 SNK Neo-Geo AES                         snk-aes               aes           mame       None  None  None  None  None    
