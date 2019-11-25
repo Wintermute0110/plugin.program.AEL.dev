@@ -370,7 +370,7 @@ AEL_platforms = [
 
     # --- Sinclair ---
     Platform('Sinclair ZX Spectrum', 'computer-spectrum', 'spectrum', None, '4913', '41', '76', '35', DAT_NONE),
-    Platform('Sinclair ZX Spectrum Plus 3', 'spectrump3', 'spectrump3', None, None, None, None, None,
+    Platform('Sinclair ZX Spectrum Plus 3', 'computer-spectrump3', 'spectrump3', None, None, None, None, None,
         DAT_NOINTRO, 'Sinclair - ZX Spectrum +3'),
     # I think the ZX80 and the ZX81 are incompatible computers.
     Platform('Sinclair ZX80', 'computer-zx80', 'zx80', None, None, '118', None, None, DAT_LIBRETRO),
