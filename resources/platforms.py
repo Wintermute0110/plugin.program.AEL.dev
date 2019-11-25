@@ -448,15 +448,13 @@ for index, p_obj in enumerate(AEL_platforms):
     platform_compact_to_long_dic[p_obj.compact_name] = p_obj.long_name
     platform_long_to_index_dic[p_obj.long_name] = index
 
-#
 # Returns the platform numerical index from the platform name. If the platform name is not
 # found then returns the index of the 'Unknown' platform
-#
 def get_AEL_platform_index(platform_AEL):
     if platform_AEL in platform_long_to_index_dic:
         return platform_long_to_index_dic[platform_AEL]
     else:
-        return platform_long_to_index_dic['Unknown']
+        return platform_long_to_index_dic[PLATFORM_UNKNOWN_LONG]
 
 # NOTE must take into account platform aliases.
 # '0' means any platform in TGDB and must be returned when there is no platform matching.

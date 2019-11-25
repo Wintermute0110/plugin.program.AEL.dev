@@ -113,6 +113,11 @@ main_window       = xbmcgui.Window(10000)
 AEL_LOCK_PROPNAME = 'AEL_instance_lock'
 AEL_LOCK_VALUE    = 'True'
 
+# Audit reports constants
+AUDIT_REPORT_ALL = 'AUDIT_REPORT_ALL'
+AUDIT_REPORT_NOINTRO = 'AUDIT_REPORT_NOINTRO'
+AUDIT_REPORT_REDUMP = 'AUDIT_REPORT_REDUMP'
+
 class SingleInstance:
     def __enter__(self):
         # --- If property is True then another instance of AEL is running ---
@@ -486,8 +491,13 @@ class Main:
         elif command == 'EXECUTE_UTILS_ARCADEDB_CHECK': self._command_exec_utils_ArcadeDB_check()
 
         # Commands called from Global Reports menu.
-        elif command == 'EXECUTE_GLOBAL_ROM_STATS':   self._command_exec_global_rom_stats()
-        elif command == 'EXECUTE_GLOBAL_AUDIT_STATS': self._command_exec_global_audit_stats()
+        elif command == 'EXECUTE_GLOBAL_ROM_STATS': self._command_exec_global_rom_stats()
+        elif command == 'EXECUTE_GLOBAL_AUDIT_STATS_ALL':
+            self._command_exec_global_audit_stats(AUDIT_REPORT_ALL)
+        elif command == 'EXECUTE_GLOBAL_AUDIT_STATS_NOINTRO':
+            self._command_exec_global_audit_stats(AUDIT_REPORT_NOINTRO)
+        elif command == 'EXECUTE_GLOBAL_AUDIT_STATS_REDUMP':
+            self._command_exec_global_audit_stats(AUDIT_REPORT_REDUMP)
 
         # Unknown command
         else:
@@ -4275,16 +4285,43 @@ class Main:
         xbmcplugin.addDirectoryItem(handle = self.addon_handle, url = url_str, listitem = listitem, isFolder = False)
 
         # --- Global ROM Audit statistics ---
-        vcategory_name   = 'Global ROM Audit statistics'
-        vcategory_plot   = ('Shows a report of all audited ROM Launchers, with Have, Miss and Unknown '
-                            'statistics.')
+        vcategory_name   = 'Global ROM Audit statistics (All)'
+        vcategory_plot   = (
+            'Shows a report of all audited ROM Launchers, with Have, Miss and Unknown '
+            'statistics.')
         listitem = xbmcgui.ListItem(vcategory_name)
         listitem.setInfo('video', {'title': vcategory_name, 'plot' : vcategory_plot, 'overlay': 4})
         listitem.setArt({'icon' : vcategory_icon, 'fanart' : vcategory_fanart, 'poster' : vcategory_poster})
         listitem.setProperty(AEL_CONTENT_LABEL, AEL_CONTENT_VALUE_ROM_LAUNCHER)
         if (xbmc.getCondVisibility("!Skin.HasSetting(KioskMode.Enabled)")):
             listitem.addContextMenuItems(commands)
-        url_str = self._misc_url('EXECUTE_GLOBAL_AUDIT_STATS')
+        url_str = self._misc_url('EXECUTE_GLOBAL_AUDIT_STATS_ALL')
+        xbmcplugin.addDirectoryItem(handle = self.addon_handle, url = url_str, listitem = listitem, isFolder = False)
+
+        vcategory_name   = 'Global ROM Audit statistics (No-Intro only)'
+        vcategory_plot   = (
+            'Shows a report of all audited ROM Launchers, with Have, Miss and Unknown '
+            'statistics. Only No-Intro platforms (cartridge-based) are reported.')
+        listitem = xbmcgui.ListItem(vcategory_name)
+        listitem.setInfo('video', {'title': vcategory_name, 'plot' : vcategory_plot, 'overlay': 4})
+        listitem.setArt({'icon' : vcategory_icon, 'fanart' : vcategory_fanart, 'poster' : vcategory_poster})
+        listitem.setProperty(AEL_CONTENT_LABEL, AEL_CONTENT_VALUE_ROM_LAUNCHER)
+        if (xbmc.getCondVisibility("!Skin.HasSetting(KioskMode.Enabled)")):
+            listitem.addContextMenuItems(commands)
+        url_str = self._misc_url('EXECUTE_GLOBAL_AUDIT_STATS_NOINTRO')
+        xbmcplugin.addDirectoryItem(handle = self.addon_handle, url = url_str, listitem = listitem, isFolder = False)
+
+        vcategory_name   = 'Global ROM Audit statistics (Redump only)'
+        vcategory_plot   = (
+            'Shows a report of all audited ROM Launchers, with Have, Miss and Unknown '
+            'statistics. Only Redump platforms (optical-based) are reported.')
+        listitem = xbmcgui.ListItem(vcategory_name)
+        listitem.setInfo('video', {'title': vcategory_name, 'plot' : vcategory_plot, 'overlay': 4})
+        listitem.setArt({'icon' : vcategory_icon, 'fanart' : vcategory_fanart, 'poster' : vcategory_poster})
+        listitem.setProperty(AEL_CONTENT_LABEL, AEL_CONTENT_VALUE_ROM_LAUNCHER)
+        if (xbmc.getCondVisibility("!Skin.HasSetting(KioskMode.Enabled)")):
+            listitem.addContextMenuItems(commands)
+        url_str = self._misc_url('EXECUTE_GLOBAL_AUDIT_STATS_REDUMP')
         xbmcplugin.addDirectoryItem(handle = self.addon_handle, url = url_str, listitem = listitem, isFolder = False)
 
         # --- End of directory ---
@@ -10829,9 +10866,8 @@ class Main:
         # sl.append('')
 
         # --- Table header ---
-        # Table cell padding: left, right
         table_str = [
-            ['left', 'left', 'right'],
+            ['left', 'left', 'left'],
             ['Category', 'Launcher', 'ROMs'],
         ]
 
@@ -10863,20 +10899,20 @@ class Main:
 
         # Generate table and print report
         # log_debug(unicode(table_str))
-        table_str_list = text_render_table_str(table_str)
-        sl.extend(table_str_list)
+        sl.extend(text_render_table_str(table_str))
         kodi_display_text_window_mono(window_title, '\n'.join(sl))
 
-    def _command_exec_global_audit_stats(self):
-        log_debug('_command_exec_global_audit_stats() BEGIN')
+    # TODO Add a table columnd to tell user if the DAT is automatic or custom.
+    def _command_exec_global_audit_stats(self, report_type):
+        log_debug('_command_exec_global_audit_stats() Report type {}'.format(report_type))
         window_title = 'Global ROM Audit statistics'
         sl = []
 
         # --- Table header ---
         # Table cell padding: left, right
         table_str = [
-            ['left', 'left', 'right', 'right', 'right', 'right', 'right', 'right'],
-            ['Category', 'Launcher', 'ROMs', 'Have', 'Miss', 'Unknown', 'Parents', 'Clones'],
+            ['left', 'left', 'left', 'left', 'left', 'left', 'left', 'left'],
+            ['Category', 'Launcher', 'Platform', 'Type', 'ROMs', 'Have', 'Miss', 'Unknown'],
         ]
 
         # Traverse categories and sort alphabetically.
@@ -10894,11 +10930,15 @@ class Main:
             # Render list of launchers for this category.
             cat_name = self.categories[cat_id]['m_name']
             for launcher in launcher_list:
+                p_index = get_AEL_platform_index(launcher['platform'])
+                p_obj = AEL_platforms[p_index]
+                # Skip launchers depending on user settings.
+                if report_type == AUDIT_REPORT_NOINTRO and p_obj.DAT != DAT_NOINTRO: continue
+                if report_type == AUDIT_REPORT_REDUMP and p_obj.DAT != DAT_REDUMP: continue
                 table_str.append([
-                    cat_name, launcher['m_name'],
-                    str(launcher['num_roms']),
-                    str(launcher['num_have']), str(launcher['num_miss']), str(launcher['num_unknown']),
-                    str(launcher['num_parents']), str(launcher['num_clones']),
+                    cat_name, launcher['m_name'], p_obj.compact_name, p_obj.DAT,
+                    str(launcher['num_roms']), str(launcher['num_have']),
+                    str(launcher['num_miss']), str(launcher['num_unknown']),
                 ])
         # Traverse categoryless launchers.
         catless_launchers = {}
@@ -10909,17 +10949,21 @@ class Main:
             launcher = self.launchers[launcher_id]
             # Skip Standalone Launchers
             if not launcher['rompath']: continue
+
+            p_index = get_AEL_platform_index(launcher['platform'])
+            p_obj = AEL_platforms[p_index]
+            # Skip launchers depending on user settings.
+            if report_type == AUDIT_REPORT_NOINTRO and p_obj.DAT != DAT_NOINTRO: continue
+            if report_type == AUDIT_REPORT_REDUMP and p_obj.DAT != DAT_REDUMP: continue
             table_str.append([
-                ' ', launcher['m_name'],
-                str(launcher['num_roms']),
-                str(launcher['num_have']), str(launcher['num_miss']), str(launcher['num_unknown']),
-                str(launcher['num_parents']), str(launcher['num_clones']),
+                ' ', launcher['m_name'], p_obj.compact_name, p_obj.DAT,
+                str(launcher['num_roms']), str(launcher['num_have']),
+                str(launcher['num_miss']), str(launcher['num_unknown']),
             ])
 
         # Generate table and print report
         # log_debug(unicode(table_str))
-        table_str_list = text_render_table_str(table_str)
-        sl.extend(table_str_list)
+        sl.extend(text_render_table_str(table_str))
         kodi_display_text_window_mono(window_title, '\n'.join(sl))
 
     # A set of functions to help making plugin URLs
