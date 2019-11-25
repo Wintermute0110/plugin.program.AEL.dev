@@ -127,11 +127,11 @@ AEL_platforms = [
         DAT_NOINTRO, 'Commodore - Amiga'),
     # The CD32 is part of a family of Amiga computers and is of similar specification to the
     # Amiga 1200 computer.
-    Platform('Commodore CD32', 'console-cd32', 'cd32', None, '4947', '56', '130', '70',
+    Platform('Commodore Amiga CD32', 'console-cd32', 'cd32', None, '4947', '56', '130', '70',
         DAT_REDUMP, 'Commodore - Amiga CD32 - Datfile'),
     # The CDTV is essentially a Commodore Amiga 500 home computer with a CD-ROM drive and
     # remote control.
-    Platform('Commodore CDTV', 'console-cdtv', 'cdtv', None, None, '83', '129', None,
+    Platform('Commodore Amiga CDTV', 'console-cdtv', 'cdtv', None, None, '83', '129', None,
         DAT_REDUMP, 'Commodore - Amiga CDTV - Datfile'),
     # MobyGames "Commodore 16, Plus/4"
     # Not found in GameFAQs.

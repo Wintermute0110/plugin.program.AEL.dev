@@ -26,8 +26,8 @@ Sinclair ZX81                           computer-zx81         zx81          None
 Emerson Arcadia 2001                    console-arcadia2001   arcadia2001   None       4963  162   94    None  No-Intro
 Entex Adventure Vision                  console-avision       avision       None       4974  210   78    None  No-Intro
 Benesse Pocket Challenge V2             console-bpc           bpc           None       None  None  None  None  No-Intro
-Commodore CD32                          console-cd32          cd32          None       4947  56    130   70    Redump  
-Commodore CDTV                          console-cdtv          cdtv          None       None  83    129   None  Redump  
+Commodore Amiga CD32                    console-cd32          cd32          None       4947  56    130   70    Redump  
+Commodore Amiga CDTV                    console-cdtv          cdtv          None       None  83    129   None  Redump  
 Fairchild Channel F                     console-channelf      channelf      None       4928  76    80    None  No-Intro
 VTech CreatiVision                      console-creativision  creativision  None       None  212   None  None  No-Intro
 Coleco Colecovision                     console-cvision       cvision       None       31    29    48    29    No-Intro

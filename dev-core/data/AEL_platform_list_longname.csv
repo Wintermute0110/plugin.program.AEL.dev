@@ -17,8 +17,8 @@ Casio PV-1000,console-pv1000,pv1000,None,4964,125,74,None,No-Intro
 Coleco Colecovision,console-cvision,cvision,None,31,29,48,29,No-Intro
 Commodore 64,computer-c64,c64,None,40,27,66,24,No-Intro
 Commodore Amiga,computer-amiga,amiga,None,4911,19,64,39,No-Intro
-Commodore CD32,console-cd32,cd32,None,4947,56,130,70,Redump
-Commodore CDTV,console-cdtv,cdtv,None,None,83,129,None,Redump
+Commodore Amiga CD32,console-cd32,cd32,None,4947,56,130,70,Redump
+Commodore Amiga CDTV,console-cdtv,cdtv,None,None,83,129,None,Redump
 Commodore Plus-4,computer-plus4,plus4,None,None,115,99,None,No-Intro
 Commodore VIC-20,computer-vic20,vic20,None,4945,43,73,11,No-Intro
 Emerson Arcadia 2001,console-arcadia2001,arcadia2001,None,4963,162,94,None,No-Intro
