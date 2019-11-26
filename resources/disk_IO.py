@@ -104,8 +104,10 @@ def fs_new_launcher():
          'non_blocking' : False,
          'multidisc' : True,
          'roms_base_noext' : '',
-         'nointro_xml_file' : '',
-         'nointro_display_mode' : NOINTRO_DMODE_ALL,
+         'audit_status' : AUDIT_STATE_OFF,
+         'audit_auto_dat_file' : '',
+         'audit_custom_dat_file' : '',
+         'audit_display_mode' : NOINTRO_DMODE_ALL,
          'launcher_display_mode' : LAUNCHER_DMODE_FLAT,
          'num_roms' : 0,
          'num_parents' : 0,
@@ -463,8 +465,10 @@ def fs_write_catfile(categories_file, categories, launchers, update_timestamp = 
             str_list.append(XML_text('non_blocking', unicode(launcher['non_blocking'])))
             str_list.append(XML_text('multidisc', unicode(launcher['multidisc'])))
             str_list.append(XML_text('roms_base_noext', launcher['roms_base_noext']))
-            str_list.append(XML_text('nointro_xml_file', launcher['nointro_xml_file']))
-            str_list.append(XML_text('nointro_display_mode', launcher['nointro_display_mode']))
+            str_list.append(XML_text('audit_status', launcher['audit_status']))
+            str_list.append(XML_text('audit_auto_dat_file', launcher['audit_auto_dat_file']))
+            str_list.append(XML_text('audit_custom_dat_file', launcher['audit_custom_dat_file']))
+            str_list.append(XML_text('audit_display_mode', launcher['audit_display_mode']))
             str_list.append(XML_text('launcher_display_mode', unicode(launcher['launcher_display_mode'])))
             str_list.append(XML_text('num_roms', unicode(launcher['num_roms'])))
             str_list.append(XML_text('num_parents', unicode(launcher['num_parents'])))
@@ -584,7 +588,6 @@ def fs_load_catfile(categories_file, categories, launchers):
                 else:
                     # Internal data is always stored as Unicode. ElementTree already outputs Unicode.
                     category[xml_tag] = xml_text
-            # --- Add category to categories dictionary ---
             categories[category['id']] = category
 
         elif category_element.tag == 'launcher':
@@ -615,7 +618,6 @@ def fs_load_catfile(categories_file, categories, launchers):
                     launcher[xml_tag] = float(xml_text)
                 else:
                     launcher[xml_tag] = xml_text
-            # --- Add launcher to categories dictionary ---
             launchers[launcher['id']] = launcher
     # log_verb('fs_load_catfile() Loaded {0} categories'.format(len(categories)))
     # log_verb('fs_load_catfile() Loaded {0} launchers'.format(len(launchers)))

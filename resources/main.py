@@ -7692,11 +7692,14 @@ class Main:
         info_text += "[COLOR skyblue]toggle_window[/COLOR]: {0}\n".format(launcher['toggle_window'])
         info_text += "[COLOR skyblue]non_blocking[/COLOR]: {0}\n".format(launcher['non_blocking'])
         info_text += "[COLOR skyblue]multidisc[/COLOR]: {0}\n".format(launcher['multidisc'])
-
+        # Strings
         info_text += "[COLOR violet]roms_base_noext[/COLOR]: '{0}'\n".format(launcher['roms_base_noext'])
-        info_text += "[COLOR violet]nointro_xml_file[/COLOR]: '{0}'\n".format(launcher['nointro_xml_file'])
-        info_text += "[COLOR violet]nointro_display_mode[/COLOR]: '{0}'\n".format(launcher['nointro_display_mode'])
+        info_text += "[COLOR violet]audit_status[/COLOR]: '{0}'\n".format(launcher['audit_status'])
+        info_text += "[COLOR violet]audit_auto_dat_file[/COLOR]: '{0}'\n".format(launcher['audit_auto_dat_file'])
+        info_text += "[COLOR violet]audit_custom_dat_file[/COLOR]: '{0}'\n".format(launcher['audit_custom_dat_file'])
+        info_text += "[COLOR violet]audit_display_mode[/COLOR]: '{0}'\n".format(launcher['audit_display_mode'])
         info_text += "[COLOR violet]launcher_display_mode[/COLOR]: '{0}'\n".format(launcher['launcher_display_mode'])
+        # Integers/Floats
         info_text += "[COLOR skyblue]num_roms[/COLOR]: {0}\n".format(launcher['num_roms'])
         info_text += "[COLOR skyblue]num_parents[/COLOR]: {0}\n".format(launcher['num_parents'])
         info_text += "[COLOR skyblue]num_clones[/COLOR]: {0}\n".format(launcher['num_clones'])
@@ -10177,7 +10180,7 @@ class Main:
             if category['default_poster'] == 's_flyer':    category['default_poster'] = 's_poster'
             if category['default_clearlogo'] == 's_flyer': category['default_clearlogo'] = 's_poster'
 
-        # >> Traverse and fix Launchers.
+        # Traverse and fix Launchers.
         for launcher_id in self.launchers:
             launcher = self.launchers[launcher_id]
             # Fix s_thumb -> s_icon renaming
@@ -10187,7 +10190,6 @@ class Main:
             if launcher['default_poster'] == 's_thumb':     launcher['default_poster'] = 's_icon'
             if launcher['default_clearlogo'] == 's_thumb':  launcher['default_clearlogo'] = 's_icon'
             if launcher['default_controller'] == 's_thumb': launcher['default_controller'] = 's_icon'
-
             # Fix s_flyer -> s_poster renaming
             if launcher['default_icon'] == 's_flyer':       launcher['default_icon'] = 's_poster'
             if launcher['default_fanart'] == 's_flyer':     launcher['default_fanart'] = 's_poster'
@@ -10195,11 +10197,7 @@ class Main:
             if launcher['default_poster'] == 's_flyer':     launcher['default_poster'] = 's_poster'
             if launcher['default_clearlogo'] == 's_flyer':  launcher['default_clearlogo'] = 's_poster'
             if launcher['default_controller'] == 's_flyer': launcher['default_controller'] = 's_poster'
-
-            # Add new fields.
-            if 'path_3dbox' not in launcher: launcher['path_3dbox'] = ''
-
-        # >> Save categories.xml
+        # Save categories.xml to update timestamp.
         fs_write_catfile(g_PATHS.CATEGORIES_FILE_PATH, self.categories, self.launchers)
         pDialog.update(100)
 
