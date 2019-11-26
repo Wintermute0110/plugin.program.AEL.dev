@@ -65,7 +65,7 @@ Context menu **Edit Launcher**, submenu **Audit ROMs / Launcher view mode ...**:
 ```
 'Launcher display mode (now {0}) ...'.format(display_mode_str),
 'Audit display filter (now {0}) ...'.format(launcher['display_filter']),
-'Audit launcher ROMs ...',
+'Audit launcher ROMs',
 'Undo ROM audit (remove missing ROMs)',
 'Add custom XML DAT ...' OR 'Delete custom XML DAT',
 ```
@@ -99,18 +99,20 @@ always display Extra ROMs.
 
 Future fields in Launchers database:
 ```
-    'nointro_xml_file' : '',
-    'nointro_display_mode' : NOINTRO_DMODE_ALL,
+    'audit_state' : AUDIT_ON or AUDIT_OFF,         Reports if audit is ON or not.
+    'audit_auto_dat_file' : '',
+    'audit_custom_dat_file' : '',                   (previous nointro_xml_file)
+    'audit_display_mode' : NOINTRO_DMODE_ALL,       (previous nointro_display_mode)
     'launcher_display_mode' : LAUNCHER_DMODE_FLAT,
 ```
 
 Future ROMs database fields:
 ```
     'disks' : [],
-    'i_audit_status' : 'Have',     Determined by the ROM Audit exclusively
+    'i_audit_status' : 'Have',     Determined by the ROM Audit exclusively.
     'i_pclone_status' : 'Parent',  Same as i_cloneof, used to set skin properties.
-    'i_cloneof' : ROMID,           Same as m_parent but uses ROM ID
-    'i_order' : int,               Position of the ROM in the Parent/Clone group
+    'i_cloneof' : ROMID,           ROM ID of the final parent ROM.
+    'i_order' : int,               Position of the ROM in the Parent/Clone group.
     'i_regions' : ['', ''],        Same as m_region
     'i_languages' : ['', ''],      Same as m_language
     'i_tags' : ['', ''],           Always extracted from filename
@@ -297,6 +299,48 @@ The only mandatory elements are the **Title** and the **Region**.
 | TOSEC       | Redump  | Trurip          |
 |-------------|---------|-----------------|
 | cue,iso,wav | cue,bin | cue,img,ccd,sub |
+
+### ROM Collections
+
+Way of storing ROM Collections when saving the collection:
+```
+Sonic the Hedgehog.json
+Sonic the Hedgehog_banner.png
+Sonic the Hedgehog_fanart.png
+Sonic the Hedgehog_icon.png
+Sonic the Hedgehog_poster.png
+Sonic the Hedgehog/Sonic The Hedgehog (USA, Europe)_fanart.png          megadrive
+Sonic the Hedgehog/Sonic The Hedgehog (USA, Europe)_title.png
+Sonic the Hedgehog/Sonic The Hedgehog (USA, Europe)_snap.png
+Sonic the Hedgehog/Sonic The Hedgehog (USA, Europe, Brazil)_fanart.png  sms
+Sonic the Hedgehog/Sonic The Hedgehog (USA, Europe, Brazil)_title.png
+Sonic the Hedgehog/Sonic The Hedgehog (USA, Europe, Brazil)_snap.png
+```
+
+There could be more than 1 image that will be shown to the user when importing the
+ROM Collection JSON file. The user then chooses what image to import.
+This applies to the artwork of the collection itself and to the Collection ROMs:
+```
+Sonic the Hedgehog.json
+Sonic the Hedgehog_banner.png
+Sonic the Hedgehog_banner1.png
+Sonic the Hedgehog_banner2.png
+Sonic the Hedgehog_fanart.png
+Sonic the Hedgehog_fanart1.png
+Sonic the Hedgehog_fanart2.png
+Sonic the Hedgehog_fanart3.png
+```
+
+If two ROMs in different platforms have the same filename then a platform compact name
+suffix is added to resolve the filename collision:
+```
+Sonic the Hedgehog/Sonic The Hedgehog (USA, Europe)_fanart.png      megadrive
+Sonic the Hedgehog/Sonic The Hedgehog (USA, Europe)_title.png
+Sonic the Hedgehog/Sonic The Hedgehog (USA, Europe)_snap.png
+Sonic the Hedgehog/Sonic The Hedgehog (USA, Europe)_sms_fanart.png  sms
+Sonic the Hedgehog/Sonic The Hedgehog (USA, Europe)_sms_title.png
+Sonic the Hedgehog/Sonic The Hedgehog (USA, Europe)_sms_snap.png
+```
 
 ### listitem.setInfo() overlay values and effects
 
