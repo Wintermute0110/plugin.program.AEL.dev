@@ -359,7 +359,7 @@ class Main:
             self._command_render_AEL_scraper_roms(args['catID'][0])
         elif command == 'SHOW_LB_SCRAPER_ROMS':
             self._command_render_LB_scraper_roms(args['catID'][0])
-        # Auxiliar command to render clone ROM list from context menu in 1G1R mode
+        # Auxiliar command to render clone ROM list from context menu in Parent/Clone mode.
         elif command == 'EXEC_SHOW_CLONE_ROMS':
             url = self._misc_url('SHOW_CLONE_ROMS', args['catID'][0], args['launID'][0], args['romID'][0])
             xbmc.executebuiltin('Container.Update({0})'.format(url))
@@ -2320,58 +2320,32 @@ class Main:
                     launcher = self.launchers[launcherID]
                     # Krypton feature: preselect the current item.
                     # NOTE Preselect must be called with named parameter, otherwise it does not work well.
-                    display_mode = launcher['launcher_display_mode']
-                    if   display_mode == LAUNCHER_DMODE_FLAT:   p_idx = 0
-                    elif display_mode == LAUNCHER_DMODE_PCLONE: p_idx = 1
-                    elif display_mode == LAUNCHER_DMODE_1G1R:   p_idx = 2
-                    else:                                       p_idx = 0
+                    try:
+                        p_idx = LAUNCHER_DMODE_LIST.index(launcher['launcher_display_mode'])
+                    except ValueError:
+                        p_idx = 0
                     log_debug('p_idx = "{0}"'.format(p_idx))
                     type_temp = dialog.select('Launcher display mode', LAUNCHER_DMODE_LIST, preselect = p_idx)
                     if type_temp < 0: return
 
                     # LAUNCHER_DMODE_FLAT
                     if type_temp == 0:
-                        # --- Delete PClone index and Parent ROMs DB to save disk space ---
-
-                        # --- Mark status ---
                         launcher['launcher_display_mode'] = LAUNCHER_DMODE_FLAT
-                        log_debug('launcher_display_mode = {0}'.format(launcher['launcher_display_mode']))
-                        kodi_notify('Launcher view mode set to {0}'.format(LAUNCHER_DMODE_FLAT))
-
+                        log_debug('launcher_display_mode = {}'.format(launcher['launcher_display_mode']))
+                        kodi_notify('Launcher view mode set to {}'.format(LAUNCHER_DMODE_FLAT))
                     # LAUNCHER_DMODE_PCLONE = 1
-                    # LAUNCHER_DMODE_1G1R = 2
-                    elif type_temp == 1 or type_temp == 2:
-                        # >> Check if user configured a No-Intro DAT. If not configured  or file does
-                        # >> not exists refuse to switch to PClone view and force normal mode.
-                        nointro_xml_file = launcher['nointro_xml_file']
-                        nointro_xml_file_FName = FileName(nointro_xml_file)
-                        if not nointro_xml_file:
-                            log_info('_command_edit_launcher() No-Intro DAT not configured.')
+                    elif type_temp == 1:
+                        # Currently LAUNCHER_DMODE_FLAT requires that ROM Audit is done.
+                        if launcher['audit_state'] == AUDIT_STATE_OFF:
+                            log_info('_command_edit_launcher() audit_state is OFF')
                             log_info('_command_edit_launcher() Forcing Flat view mode.')
-                            kodi_dialog_OK('No-Intro DAT not configured. PClone or 1G1R view mode cannot be set.')
+                            kodi_dialog_OK('ROM Audit not done. PClone view mode cannot be set.')
                             launcher['launcher_display_mode'] = LAUNCHER_DMODE_FLAT
-                            kodi_notify('Launcher view mode set to {0}'.format(LAUNCHER_DMODE_FLAT))
-
-                        elif not nointro_xml_file_FName.exists():
-                            log_info('_command_edit_launcher() No-Intro DAT not found.')
-                            log_info('_command_edit_launcher() Forcing Flat view mode.')
-                            kodi_dialog_OK('No-Intro DAT cannot be found. PClone or 1G1R view mode cannot be set.')
-                            launcher['launcher_display_mode'] = LAUNCHER_DMODE_FLAT
-                            kodi_notify('Launcher view mode set to {0}'.format(LAUNCHER_DMODE_FLAT))
-
+                            kodi_notify('Launcher view mode set to {}'.format(LAUNCHER_DMODE_FLAT))
                         else:
-                            # --- Re/Generate PClone index and Parent ROMs databases ---
-
-                            # >> LAUNCHER_DMODE_PCLONE = 1
-                            if type_temp == 1:
-                                launcher['launcher_display_mode'] = LAUNCHER_DMODE_PCLONE
-                                log_debug('launcher_display_mode = {0}'.format(launcher['launcher_display_mode']))
-                                kodi_notify('Launcher view mode set to {0}'.format(LAUNCHER_DMODE_PCLONE))
-                            # >> LAUNCHER_DMODE_1G1R = 2
-                            elif type_temp == 2:
-                                launcher['launcher_display_mode'] = LAUNCHER_DMODE_1G1R
-                                log_debug('launcher_display_mode = {0}'.format(launcher['launcher_display_mode']))
-                                kodi_notify('Launcher view mode set to {0}'.format(LAUNCHER_DMODE_1G1R))
+                            launcher['launcher_display_mode'] = LAUNCHER_DMODE_PCLONE
+                            log_debug('launcher_display_mode = {}'.format(launcher['launcher_display_mode']))
+                            kodi_notify('Launcher view mode set to {}'.format(LAUNCHER_DMODE_PCLONE))
 
                 # --- Audit display filter ---
                 elif type2 == 1:
@@ -2382,7 +2356,7 @@ class Main:
                             'Audit this launcher before changing this setting.')
                         return
 
-                    # In Krypton preselect the current item
+                    # In Krypton preselect the current item.
                     try:
                         p_idx = AUDIT_DMODE_LIST.index(launcher['audit_display_mode'])
                     except ValueError:
@@ -4328,16 +4302,13 @@ class Main:
                         num_have    = launcher_dic['num_have']
                         num_miss    = launcher_dic['num_miss']
                         num_unknown = launcher_dic['num_unknown']
-                        launcher_name = '{0} [COLOR orange]({1} Have / {2} Miss / {3} Unk)[/COLOR]'.format(
+                        launcher_name = '{} [COLOR orange]({} Have / {} Miss / {} Unk)[/COLOR]'.format(
                             launcher_raw_name, num_have, num_miss, num_unknown)
                     elif launcher_dic['launcher_display_mode'] == LAUNCHER_DMODE_PCLONE:
                         num_parents = launcher_dic['num_parents']
                         num_clones  = launcher_dic['num_clones']
-                        launcher_name = '{0} [COLOR orange]({1} Par / {2} Clo)[/COLOR]'.format(
+                        launcher_name = '{} [COLOR orange]({} Parents / {} Clones)[/COLOR]'.format(
                             launcher_raw_name, num_parents, num_clones)
-                    elif launcher_dic['launcher_display_mode'] == LAUNCHER_DMODE_1G1R:
-                        num_parents = launcher_dic['num_parents']
-                        launcher_name = '{0} [COLOR orange]({1} Games)[/COLOR]'.format(launcher_raw_name, num_parents)
                     else:
                         launcher_name = '{0} [COLOR red](ERROR)[/COLOR]'.format(launcher_raw_name)
                 # Non-audited ROM launcher.
@@ -4428,7 +4399,7 @@ class Main:
     # ---------------------------------------------------------------------------------------------
     #
     # Render clone ROMs. romID is the parent ROM.
-    # This is only called in Parent/Clone and 1G1R display modes.
+    # This is only called in Parent/Clone display modes.
     #
     def _command_render_clone_roms(self, categoryID, launcherID, romID):
         # --- Set content type and sorting methods ---
@@ -4474,8 +4445,7 @@ class Main:
         # >> Add parent ROM except if the parent if the fake paren ROM
         if romID != UNKNOWN_ROMS_PARENT_ID: roms[romID] = all_roms[romID]
         # >> Add clones, if any
-        for rom_id in pclone_index[romID]:
-            roms[rom_id] = all_roms[rom_id]
+        for rom_id in pclone_index[romID]: roms[rom_id] = all_roms[rom_id]
         log_verb('_command_render_clone_roms() Parent ID {0}'.format(romID))
         log_verb('_command_render_clone_roms() Number of clone ROMs = {0}'.format(len(roms)))
         # for key in roms:
@@ -4483,28 +4453,28 @@ class Main:
         #     log_debug('value = {0}'.format(roms[key]))
 
         # --- ROM display filter ---
-        dp_mode = selectedLauncher['nointro_display_mode']
-        if selectedLauncher['nointro_xml_file'] and dp_mode != NOINTRO_DMODE_ALL:
+        dp_mode = selectedLauncher['audit_display_mode']
+        if selectedLauncher['audit_state'] == AUDIT_STATE_ON and dp_mode != AUDIT_DMODE_ALL:
             filtered_roms = {}
             for rom_id in roms:
                 rom = roms[rom_id]
-                if rom['nointro_status'] == NOINTRO_STATUS_HAVE:
-                    if dp_mode == NOINTRO_DMODE_HAVE or \
-                       dp_mode == NOINTRO_DMODE_HAVE_UNK or \
-                       dp_mode == NOINTRO_DMODE_HAVE_MISS:
+                if rom['nointro_status'] == AUDIT_STATUS_HAVE:
+                    if dp_mode == AUDIT_DMODE_HAVE or \
+                       dp_mode == AUDIT_DMODE_HAVE_UNK or \
+                       dp_mode == AUDIT_DMODE_HAVE_MISS:
                         filtered_roms[rom_id] = rom
-                elif rom['nointro_status'] == NOINTRO_STATUS_MISS:
-                    if dp_mode == NOINTRO_DMODE_HAVE_MISS or \
-                       dp_mode == NOINTRO_DMODE_MISS or \
-                       dp_mode == NOINTRO_DMODE_MISS_UNK:
+                elif rom['nointro_status'] == AUDIT_STATUS_MISS:
+                    if dp_mode == AUDIT_DMODE_HAVE_MISS or \
+                       dp_mode == AUDIT_DMODE_MISS or \
+                       dp_mode == AUDIT_DMODE_MISS_UNK:
                         filtered_roms[rom_id] = rom
-                elif rom['nointro_status'] == NOINTRO_STATUS_UNKNOWN:
-                    if dp_mode == NOINTRO_DMODE_HAVE_UNK or \
-                       dp_mode == NOINTRO_DMODE_MISS_UNK or \
-                       dp_mode == NOINTRO_DMODE_UNK:
+                elif rom['nointro_status'] == AUDIT_STATUS_UNKNOWN:
+                    if dp_mode == AUDIT_DMODE_HAVE_UNK or \
+                       dp_mode == AUDIT_DMODE_MISS_UNK or \
+                       dp_mode == AUDIT_DMODE_UNK:
                         filtered_roms[rom_id] = rom
-                # >> Always copy roms with unknown status (NOINTRO_STATUS_NONE)
                 else:
+                    # Always copy roms with unknown status (NOINTRO_STATUS_NONE)
                     filtered_roms[rom_id] = rom
             roms = filtered_roms
             if not roms:
@@ -4536,8 +4506,7 @@ class Main:
         self._misc_set_AEL_Content(AEL_CONTENT_VALUE_ROMS)
         self._misc_set_AEL_Launcher_Content(selectedLauncher)
 
-        # --- Render in Flat mode (all ROMs) or Parent/Clone or 1G1R mode---
-        # >> Parent/Clone mode and 1G1R modes are very similar in terms of programming.
+        # --- Render in Flat mode (all ROMs) or Parent/Clone mode---
         loading_ticks_start = time.time()
         if view_mode == LAUNCHER_DMODE_FLAT:
             # --- Load ROMs for this launcher ---
@@ -4585,7 +4554,7 @@ class Main:
             for rom_id in roms:
                 rom = roms[rom_id]
                 # >> Always include a parent ROM regardless of filters in 'Parent/Clone mode'
-                # >> and '1G1R mode' launcher_display_mode if it has 1 or more clones.
+                # >> launcher_display_mode if it has 1 or more clones.
                 if not selectedLauncher['launcher_display_mode'] == LAUNCHER_DMODE_FLAT and len(pclone_index[rom_id]):
                     filtered_roms[rom_id] = rom
                     continue
@@ -4889,8 +4858,8 @@ class Main:
             commands.append(('Add ROM to Collection',           self._misc_url_RunPlugin('ADD_TO_COLLECTION', categoryID, launcherID, romID)))
             commands.append(('Search ROMs in Virtual Launcher', self._misc_url_RunPlugin('SEARCH_LAUNCHER',   categoryID, launcherID)))
         else:
-            commands.append(('View ROM/Launcher',         self._misc_url_RunPlugin('VIEW',              categoryID, launcherID, romID)))
-            if is_parent_launcher and num_clones > 0 and view_mode == LAUNCHER_DMODE_1G1R:
+            commands.append(('View ROM/Launcher', self._misc_url_RunPlugin('VIEW', categoryID, launcherID, romID)))
+            if is_parent_launcher and num_clones > 0:
                 commands.append(('Show clones', self._misc_url_RunPlugin('EXEC_SHOW_CLONE_ROMS', categoryID, launcherID, romID)))
             commands.append(('Edit ROM',                  self._misc_url_RunPlugin('EDIT_ROM',          categoryID, launcherID, romID)))
             commands.append(('Add ROM to AEL Favourites', self._misc_url_RunPlugin('ADD_TO_FAV',        categoryID, launcherID, romID)))
@@ -4904,12 +4873,14 @@ class Main:
         # --- Add row ---
         # URLs must be different depending on the content type. If not Kodi log will be filled with:
         # WARNING: CreateLoader - unsupported protocol(plugin) in the log. See http://forum.kodi.tv/showthread.php?tid=187954
-        if is_parent_launcher and num_clones > 0 and view_mode == LAUNCHER_DMODE_PCLONE:
-            url_str = self._misc_url('SHOW_CLONE_ROMS', categoryID, launcherID, romID)
-            xbmcplugin.addDirectoryItem(handle = self.addon_handle, url = url_str, listitem = listitem, isFolder = True)
-        else:
-            url_str = self._misc_url('LAUNCH_ROM', categoryID, launcherID, romID)
-            xbmcplugin.addDirectoryItem(handle = self.addon_handle, url = url_str, listitem = listitem, isFolder = False)
+        # if is_parent_launcher and num_clones > 0 and view_mode == LAUNCHER_DMODE_PCLONE:
+        #     url_str = self._misc_url('SHOW_CLONE_ROMS', categoryID, launcherID, romID)
+        #     xbmcplugin.addDirectoryItem(handle = self.addon_handle, url = url_str, listitem = listitem, isFolder = True)
+        # else:
+        #     url_str = self._misc_url('LAUNCH_ROM', categoryID, launcherID, romID)
+        #     xbmcplugin.addDirectoryItem(handle = self.addon_handle, url = url_str, listitem = listitem, isFolder = False)
+        url_str = self._misc_url('LAUNCH_ROM', categoryID, launcherID, romID)
+        xbmcplugin.addDirectoryItem(handle = self.addon_handle, url = url_str, listitem = listitem, isFolder = False)
 
     def _gui_render_AEL_scraper_rom_row(self, platform, game):
         # --- Add ROM to lisitem ---
@@ -4929,7 +4900,7 @@ class Main:
 
         # --- Create context menu ---
         commands = []
-        commands.append(('AEL addon settings', 'Addon.OpenSettings({0})'.format(__addon_id__), ))
+        commands.append(('AEL addon settings', 'Addon.OpenSettings({0})'.format(__addon_id__)))
         if (xbmc.getCondVisibility("!Skin.HasSetting(KioskMode.Enabled)")):
             listitem.addContextMenuItems(commands, replaceItems = True)
 
@@ -4956,7 +4927,7 @@ class Main:
 
         # --- Create context menu ---
         commands = []
-        commands.append(('AEL addon settings', 'Addon.OpenSettings({0})'.format(__addon_id__), ))
+        commands.append(('AEL addon settings', 'Addon.OpenSettings({0})'.format(__addon_id__)))
         if (xbmc.getCondVisibility("!Skin.HasSetting(KioskMode.Enabled)")):
             listitem.addContextMenuItems(commands, replaceItems = True)
 
@@ -9334,7 +9305,7 @@ class Main:
         launcher['audit_state'] = AUDIT_STATE_ON
 
         # --- Make a Parent only ROM list and save JSON ---
-        # >> This is to speed up rendering of launchers in 1G1R display mode
+        # This is to speed up rendering of launchers in Parent/Clone display mode.
         pDialog.update(0, 'Building Parent/Clone index and Parent dictionary ...')
         parent_roms = audit_generate_parent_ROMs_dic(roms, roms_pclone_index)
         pDialog.update(100)
