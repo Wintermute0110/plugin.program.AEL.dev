@@ -104,10 +104,10 @@ def fs_new_launcher():
          'non_blocking' : False,
          'multidisc' : True,
          'roms_base_noext' : '',
-         'audit_status' : AUDIT_STATE_OFF,
+         'audit_state' : AUDIT_STATE_OFF,
          'audit_auto_dat_file' : '',
          'audit_custom_dat_file' : '',
-         'audit_display_mode' : NOINTRO_DMODE_ALL,
+         'audit_display_mode' : AUDIT_DMODE_ALL,
          'launcher_display_mode' : LAUNCHER_DMODE_FLAT,
          'num_roms' : 0,
          'num_parents' : 0,
@@ -169,7 +169,7 @@ def fs_new_rom():
          'altapp' : '',
          'altarg' : '',
          'finished' : False,
-         'nointro_status' : NOINTRO_STATUS_NONE,
+         'nointro_status' : AUDIT_STATUS_NONE,
          'pclone_status' : PCLONE_STATUS_NONE,
          'cloneof' : '',
          's_3dbox' : '',
@@ -465,7 +465,7 @@ def fs_write_catfile(categories_file, categories, launchers, update_timestamp = 
             str_list.append(XML_text('non_blocking', unicode(launcher['non_blocking'])))
             str_list.append(XML_text('multidisc', unicode(launcher['multidisc'])))
             str_list.append(XML_text('roms_base_noext', launcher['roms_base_noext']))
-            str_list.append(XML_text('audit_status', launcher['audit_status']))
+            str_list.append(XML_text('audit_state', launcher['audit_state']))
             str_list.append(XML_text('audit_auto_dat_file', launcher['audit_auto_dat_file']))
             str_list.append(XML_text('audit_custom_dat_file', launcher['audit_custom_dat_file']))
             str_list.append(XML_text('audit_display_mode', launcher['audit_display_mode']))

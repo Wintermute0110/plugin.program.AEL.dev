@@ -72,7 +72,7 @@ Context menu **Edit Launcher**, submenu **Audit ROMs / Launcher view mode ...**:
 
 Launcher display modes: LAUNCHER_DMODE_FLAT (default), LAUNCHER_DMODE_PCLONE.
 
-Launcher audit status: AUDIT_STATUS_ON, AUDIT_STATUS_OFF (default).
+Launcher audit status: AUDIT_STATE_ON, AUDIT_STATE_OFF (default).
 
 Launcher audit display filter: AUDIT_FILTER_ALL (default), AUDIT_FILTER_HAVE, AUDIT_FILTER_HAVE_UNK,
 AUDIT_FILTER_HAVE_MISS, AUDIT_FILTER_MISS, AUDIT_FILTER_MISS_UNK, AUDIT_FILTER_UNK. For now,
@@ -99,26 +99,26 @@ always display Extra ROMs.
 
 Future fields in Launchers database:
 ```
-    'audit_state' : AUDIT_ON or AUDIT_OFF,         Reports if audit is ON or not.
-    'audit_auto_dat_file' : '',
-    'audit_custom_dat_file' : '',                   (previous nointro_xml_file)
-    'audit_display_mode' : NOINTRO_DMODE_ALL,       (previous nointro_display_mode)
+    'audit_state' : AUDIT_STATE_ON or AUDIT_STATE_OFF,  Reports if audit is ON or not
+    'audit_auto_dat_file' : '',                         Filled in automatically
+    'audit_custom_dat_file' : '',                       Previous nointro_xml_file
+    'audit_display_mode' : AUDIT_DMODE_ALL,             Previous nointro_display_mode
     'launcher_display_mode' : LAUNCHER_DMODE_FLAT,
 ```
 
 Future ROMs database fields:
 ```
+    'm_cloneof' : '',              Override the ROM parent (read-only field)
+    'm_region' : '',               Override the ROM regions (read-only field)
+    'm_language' : '',             Override the ROM languages (read-only field)
     'disks' : [],
-    'i_audit_status' : 'Have',     Determined by the ROM Audit exclusively.
-    'i_pclone_status' : 'Parent',  Same as i_cloneof, used to set skin properties.
-    'i_cloneof' : ROMID,           ROM ID of the final parent ROM.
-    'i_order' : int,               Position of the ROM in the Parent/Clone group.
+    'i_audit_status' : 'Have',     Determined by the ROM Audit exclusively, former nointro_status
+    'i_pclone_status' : 'Parent',  Based on i_cloneof, used to set skin properties, former pclone_status
+    'i_cloneof' : ROMID,           ROM ID of the final parent ROM, former cloneof
+    'i_order' : int,               Position of the ROM in the Parent/Clone group
     'i_regions' : ['', ''],        Same as m_region
     'i_languages' : ['', ''],      Same as m_language
     'i_tags' : ['', ''],           Always extracted from filename
-    'm_cloneof' : '',              Override the ROM parent (read-only)
-    'm_region' : '',               Override the ROM regions (read-only)
-    'm_language' : '',             Override the ROM languages (read-only)
 ```
 
 ### Computation of the Parent/Clone ROMs

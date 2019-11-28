@@ -151,9 +151,13 @@ WIP      [COLLECTIONS] Current way of storing the collection artwork, in a unifi
          ROM_name_platform_fanart.png, platform is the short name and it's only used if
          there is filename amgibuity (same ROM name in different platforms in the collection).
 
+WIP      [CORE] Remove the LAUNCHER_DMODE_1G1R Launcher display mode. The Launcher display
+         modes will be LAUNCHER_DMODE_FLAT and LAUNCHER_DMODE_PCLONE, like AML.
+
 FEATURE  [ROM AUDIT] Current way of doing the ROM audit is inconvenient. User has to set a DAT
          file. Create two new settings: a) directory for No-Intro DATs, b) directory for Redump
          DATs. AEL must be able to choose the DAT file according to the platform.
+         Some fields in categories.xml have been changed.
 
 FEATURE  [ROM AUDIT] Create a tool to select the No-Intro/Redump DAT file automatically for
          each platform. This will be very useful for the new Offline Scraper database and
