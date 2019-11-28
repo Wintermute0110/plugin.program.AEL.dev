@@ -3446,8 +3446,8 @@ class Main:
             fs_write_catfile(g_PATHS.CATEGORIES_FILE_PATH, self.categories, self.launchers)
             pDialog.update(100)
 
-            # >> If launcher has a DAT then synchronise the edit ROM in the list of parents
-            if launcher['nointro_xml_file']:
+            # If launcher is audited then synchronise the edit ROM in the list of parents.
+            if launcher['audit_state'] == AUDIT_STATE_ON:
                 log_verb('Updating ROM in Parents JSON')
                 parents_roms_base_noext = launcher['roms_base_noext'] + '_parents'
                 pDialog.update(25, 'Loading Parents JSON ...')
