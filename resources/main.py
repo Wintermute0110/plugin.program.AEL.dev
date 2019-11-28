@@ -2399,6 +2399,7 @@ class Main:
                     # _roms_reset_NoIntro_status() does not save ROMs JSON/XML.
                     roms = fs_load_ROMs_JSON(g_PATHS.ROMS_DIR, self.launchers[launcherID])
                     self._roms_reset_NoIntro_status(self.launchers[launcherID], roms)
+                    self.launchers[launcherID]['launcher_display_mode'] = LAUNCHER_DMODE_FLAT
                     # categories.xml saved at the end of the function.
                     fs_write_ROMs_JSON(g_PATHS.ROMS_DIR, self.launchers[launcherID], roms)
                     kodi_notify('Removed missing ROMs')
