@@ -60,8 +60,9 @@ JSON_separators = (',', ':')
 # Tag name in the XML is the same as in the data dictionary.
 #
 def fs_new_category():
-    c = {'id' : '',
-         'm_name' : '',
+    return {
+        'id' : '',
+        'm_name' : '',
          'm_year' : '',
          'm_genre' : '',
          'm_developer' : '',
@@ -77,17 +78,16 @@ def fs_new_category():
          's_icon' : '',
          's_fanart' : '',
          's_banner' : '',
-         's_poster' : '',
-         's_clearlogo' : '',
-         's_trailer' : ''
-         }
-
-    return c
+        's_poster' : '',
+        's_clearlogo' : '',
+        's_trailer' : ''
+    }
 
 def fs_new_launcher():
-    l = {'id' : '',
-         'm_name' : '',
-         'm_year' : '',
+    return {
+        'id' : '',
+        'm_name' : '',
+        'm_year' : '',
          'm_genre' : '',
          'm_developer' : '',
          'm_rating' : '',
@@ -147,17 +147,16 @@ def fs_new_launcher():
          'path_banner' : '',
          'path_clearlogo' : '',
          'path_flyer' : '',
-         'path_map' : '',
-         'path_manual' : '',
-         'path_trailer' : ''
+        'path_map' : '',
+        'path_manual' : '',
+        'path_trailer' : ''
     }
 
-    return l
-
 def fs_new_rom():
-    r = {'id' : '',
-         'm_name' : '',
-         'm_year' : '',
+    return {
+        'id' : '',
+        'm_name' : '',
+        'm_year' : '',
          'm_genre' : '',
          'm_developer' : '',
          'm_nplayers' : '',
@@ -182,17 +181,16 @@ def fs_new_rom():
          's_banner' : '',
          's_clearlogo' : '',
          's_flyer' : '',
-         's_map' : '',
-         's_manual' : '',
-         's_trailer' : ''
+        's_map' : '',
+        's_manual' : '',
+        's_trailer' : ''
     }
 
-    return r
-
 def fs_new_collection():
-    c = {'id' : '',
-         'm_name' : '',
-         'm_genre' : '',
+    return {
+        'id' : '',
+        'm_name' : '',
+        'm_genre' : '',
          'm_rating' : '',
          'm_plot' : '',
          'roms_base_noext' : '',
@@ -204,12 +202,10 @@ def fs_new_collection():
          's_icon' : '',
          's_fanart' : '',
          's_banner' : '',
-         's_poster' : '',
-         's_clearlogo' : '',
-         's_trailer' : ''
+        's_poster' : '',
+        's_clearlogo' : '',
+        's_trailer' : ''
     }
-
-    return c
 
 # -------------------------------------------------------------------------------------------------
 # Favourite ROM creation/management
@@ -227,7 +223,7 @@ def fs_new_collection():
 #  'Broken'            ROM filename does not exist. ROM is unplayable
 #
 def fs_get_Favourite_from_ROM(rom, launcher):
-    # >> Copy dictionary object
+    # Copy dictionary object
     favourite = dict(rom)
 
     # Delete nointro_status field from ROM. Make sure this is done in the copy to be

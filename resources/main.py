@@ -10890,7 +10890,7 @@ class Main:
                 launcher = self.launchers[launcher_id]
                 # Skip Standalone Launchers and Launcher with no ROM Audit.
                 if not launcher['rompath']: continue
-                if not launcher['nointro_xml_file']: continue
+                if launcher['audit_state'] == AUDIT_STATE_OFF: continue
                 if launcher['categoryID'] == cat_id: launcher_list.append(launcher)
             # Render list of launchers for this category.
             cat_name = self.categories[cat_id]['m_name']
