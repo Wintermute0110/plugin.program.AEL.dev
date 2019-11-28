@@ -2363,9 +2363,9 @@ class Main:
                         p_idx = 0
                     log_debug('p_idx = "{0}"'.format(p_idx))
                     type_temp = dialog.select('Launcher audit display filter',
-                        NOINTRO_DMODE_LIST, preselect = p_idx)
+                        AUDIT_DMODE_LIST, preselect = p_idx)
                     if type_temp < 0: return
-                    launcher['audit_display_mode'] = NOINTRO_DMODE_LIST[type_temp]
+                    launcher['audit_display_mode'] = AUDIT_DMODE_LIST[type_temp]
                     log_info('Launcher audit display mode changed to "{0}"'.format(launcher['audit_display_mode']))
                     kodi_notify('Display ROMs changed to "{0}"'.format(launcher['audit_display_mode']))
 
