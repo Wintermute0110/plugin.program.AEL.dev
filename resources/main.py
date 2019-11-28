@@ -9016,6 +9016,9 @@ class Main:
                 else:
                     kodi_dialog_OK('Redump DAT cannot be auto detected.')
                     return None
+            else:
+                log_warning('platform.DAT {} unknown'.format(platform.DAT))
+                return None
 
         return nointro_xml_FN
 
