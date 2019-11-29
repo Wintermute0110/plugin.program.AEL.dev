@@ -2047,7 +2047,7 @@ class Main:
                     # --- Load metadata/asset scrapers ---
                     g_scraper_factory = ScraperFactory(g_PATHS, self.settings)
                     scraper_strategy = g_scraper_factory.create_scanner(launcher)
-                    scraper_strategy.begin_ROM_scanner(launcher, pdialog, pdialog_verbose)
+                    scraper_strategy.scanner_set_progress_dialog(pdialog, pdialog_verbose)
                     scraper_strategy.scanner_check_before_scraping()
 
                     # --- Ensure there is no duplicate asset dirs ---
@@ -2075,7 +2075,7 @@ class Main:
                     asset_scraper_name = scraper_strategy.asset_scraper_name
                     asset_scraper_obj  = scraper_strategy.asset_scraper_obj
 
-                    # --- Create a cache of assets ---
+                    # --- Create a cache of current assets on disk ---
                     log_info('Scanning and caching files in asset directories ...')
                     pdialog.startProgress('Scanning files in asset directories ...', len(ROM_ASSET_ID_LIST))
                     for i, asset_kind in enumerate(ROM_ASSET_ID_LIST):
@@ -2096,7 +2096,7 @@ class Main:
                         # --- Search for local artwork/assets ---
                         rom = roms[rom_id]
                         ROMFile = FileName(rom['filename'])
-                        log_debug('Checking ROM "{0}" (ID {1})'.format(ROMFile.getBase(), rom_id))
+                        log_debug('***** Checking ROM "{0}" (ID {1})'.format(ROMFile.getBase(), rom_id))
                         local_asset_list = assets_search_local_cached_assets(launcher, ROMFile, enabled_asset_list)
                         asset_action_list = [ScrapeStrategy.ACTION_ASSET_LOCAL_ASSET] * len(ROM_ASSET_ID_LIST)
 
@@ -2124,8 +2124,11 @@ class Main:
                             log_debug('Getting asset candidate game.')
                             # What if status_dic reports and error here? It is ignored?
                             status_dic = kodi_new_status_dic('No error')
+                            # This is a workaround! It will fail for multidisc ROMs.
+                            # See proper implementation in _roms_import_roms()
+                            ROM_checksums = ROMFile
                             candidate_asset = scraper_strategy._scanner_get_candidate(
-                                rom, ROMFile, asset_scraper_obj, asset_scraper_name, status_dic)
+                                rom, ROMFile, ROM_checksums, asset_scraper_obj, asset_scraper_name, status_dic)
                             scraper_strategy.candidate_asset = candidate_asset
                         else:
                             log_debug('Setting candidate game to None.')
