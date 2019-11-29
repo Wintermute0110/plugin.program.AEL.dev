@@ -8767,10 +8767,10 @@ class Main:
             if rom['s_trailer']:   rom_info['s_trailer']   = 'Y'
             else:                  rom_info['s_trailer']   = '-'; missing_s_trailer += 1
             # --- ROM audit ---
-            if   rom['nointro_status'] == NOINTRO_STATUS_NONE:    audit_none += 1
-            elif rom['nointro_status'] == NOINTRO_STATUS_HAVE:    audit_have += 1
-            elif rom['nointro_status'] == NOINTRO_STATUS_MISS:    audit_miss += 1
-            elif rom['nointro_status'] == NOINTRO_STATUS_UNKNOWN: audit_unknown += 1
+            if   rom['nointro_status'] == AUDIT_STATUS_NONE:    audit_none += 1
+            elif rom['nointro_status'] == AUDIT_STATUS_HAVE:    audit_have += 1
+            elif rom['nointro_status'] == AUDIT_STATUS_MISS:    audit_miss += 1
+            elif rom['nointro_status'] == AUDIT_STATUS_UNKNOWN: audit_unknown += 1
             else:
                 log_error('Unknown audit status {0}.'.format(rom['nointro_status']))
                 kodi_dialog_OK('Unknown audit status {0}. This is a bug, please report it.'.format(rom['nointro_status']))
@@ -8919,8 +8919,8 @@ class Main:
 
         # >> Step 4: Asset report
         str_asset_list = []
-        str_asset_list.append('{0} Tit Sna Fan Ban Clr Bxf Bxb Car Fly Map Man Tra\n'.format('Name'.ljust(ROM_NAME_LENGHT)))
-        str_asset_list.append('{0}\n'.format('-' * 98))
+        str_asset_list.append('{} Tit Sna Fan Ban Clr Bxf Bxb Car Fly Map Man Tra\n'.format('Name'.ljust(ROM_NAME_LENGHT)))
+        str_asset_list.append('{}\n'.format('-' * 98))
         for m in check_list:
             # >> Limit ROM name string length
             name_str = text_limit_string(m['m_name'], ROM_NAME_LENGHT)
