@@ -3919,11 +3919,14 @@ class Main:
 
         # >> Loop the list of platforms and render a virtual launcher for each platform that
         # >> has a valid XML database.
-        for platform in AEL_platform_list:
+        for platform in AEL_platforms:
             # >> Do not show Unknown platform
             if platform == 'Unknown': continue
-            db_suffix = platform_AEL_to_Offline_GameDBInfo_XML[platform]
-            self._gui_render_AEL_scraper_launchers_row(platform, gamedb_info_dic[platform], db_suffix)
+            # Workaround to avoid crash.
+            if platform.long_name not in platform_AEL_to_Offline_GameDBInfo_XML: continue
+            db_suffix = platform_AEL_to_Offline_GameDBInfo_XML[platform.long_name]
+            self._gui_render_AEL_scraper_launchers_row(platform.long_name,
+                gamedb_info_dic[platform.long_name], db_suffix)
         xbmcplugin.endOfDirectory(handle = self.addon_handle, succeeded = True, cacheToDisc = False)
 
     def _gui_render_AEL_scraper_launchers_row(self, platform, platform_info, db_suffix):

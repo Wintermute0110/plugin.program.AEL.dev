@@ -526,6 +526,7 @@ def AEL_platform_to_GameFAQs(AEL_gamesys):
 # Translation of AEL oficial gamesys (platform) name to scraper particular name
 # -------------------------------------------------------------------------------------------------
 # NOTE change the offline scraper so the database name is the same as the platform long name.
+# NOTE This dictionary must be deleted ASAP.
 platform_AEL_to_Offline_GameDBInfo_XML = {
     '3DO Interactive Multiplayer' : 'GameDBInfo/Panasonic 3DO.xml',
 
