@@ -4046,7 +4046,8 @@ class Main:
         # <setting label="Check/Update all databases ..."
         #  action="RunPlugin(plugin://plugin.program.advanced.emulator.launcher/?com=CHECK_DATABASE)"/>
         vcategory_name = 'Check/Update all databases'
-        vcategory_plot = ('Checks and updates all AEL databases.')
+        vcategory_plot = ('Checks and updates all AEL databases. Always use this tool '
+            'after upgrading AEL from a previous version if the plugins crashes.')
         listitem = xbmcgui.ListItem(vcategory_name)
         listitem.setInfo('video', {'title': vcategory_name, 'plot' : vcategory_plot, 'overlay': 4})
         listitem.setArt({'icon' : vcategory_icon, 'fanart' : vcategory_fanart, 'poster' : vcategory_poster})
@@ -4060,7 +4061,7 @@ class Main:
         #  action="RunPlugin(plugin://plugin.program.advanced.emulator.launcher/?com=CHECK_LAUNCHERS)"/>
         vcategory_name = 'Check Launchers'
         vcategory_plot = ('Check all Launchers for missing executables, missing artwork, '
-            'wrong platform names, ROM path exists, etc.')
+            'wrong platform names, ROM path existence, etc.')
         listitem = xbmcgui.ListItem(vcategory_name)
         listitem.setInfo('video', {'title': vcategory_name, 'plot' : vcategory_plot, 'overlay': 4})
         listitem.setArt({'icon' : vcategory_icon, 'fanart' : vcategory_fanart, 'poster' : vcategory_poster})
@@ -4070,10 +4071,49 @@ class Main:
         url_str = self._misc_url('EXECUTE_UTILS_CHECK_LAUNCHERS')
         xbmcplugin.addDirectoryItem(handle = self.addon_handle, url = url_str, listitem = listitem, isFolder = False)
 
+        vcategory_name = 'Check ROM sync status'
+        vcategory_plot = ('For all ROM Launchers, check if all the ROMs in the ROM path are in AEL '
+            'database. If any Launcher is out of sync because you were changing your ROM files, use '
+            'the [COLOR=orange]ROM Scanner[/COLOR] to add and scrape the missing ROMs and remove '
+            'any dead ROMs.')
+        listitem = xbmcgui.ListItem(vcategory_name)
+        listitem.setInfo('video', {'title': vcategory_name, 'plot' : vcategory_plot, 'overlay': 4})
+        listitem.setArt({'icon' : vcategory_icon, 'fanart' : vcategory_fanart, 'poster' : vcategory_poster})
+        listitem.setProperty(AEL_CONTENT_LABEL, AEL_CONTENT_VALUE_ROM_LAUNCHER)
+        if xbmc.getCondVisibility("!Skin.HasSetting(KioskMode.Enabled)"):
+            listitem.addContextMenuItems(commands)
+        url_str = self._misc_url('EXECUTE_UTILS_CHECK_LAUNCHER_SYNC_STATUS')
+        xbmcplugin.addDirectoryItem(handle = self.addon_handle, url = url_str, listitem = listitem, isFolder = False)
+
+        vcategory_name = 'Check artwork image integrity'
+        vcategory_plot = ('Scans existing [COLOR=orange]artwork images[/COLOR] in Launchers, Favourites '
+            'and ROM Collections and verifies that the images have correct extension '
+            'and size is greater than 0. You can delete corrupted images to be rescraped later.')
+        listitem = xbmcgui.ListItem(vcategory_name)
+        listitem.setInfo('video', {'title': vcategory_name, 'plot' : vcategory_plot, 'overlay': 4})
+        listitem.setArt({'icon' : vcategory_icon, 'fanart' : vcategory_fanart, 'poster' : vcategory_poster})
+        listitem.setProperty(AEL_CONTENT_LABEL, AEL_CONTENT_VALUE_ROM_LAUNCHER)
+        if xbmc.getCondVisibility("!Skin.HasSetting(KioskMode.Enabled)"):
+            listitem.addContextMenuItems(commands)
+        url_str = self._misc_url('EXECUTE_UTILS_CHECK_ARTWORK_INTEGRITY')
+        xbmcplugin.addDirectoryItem(handle = self.addon_handle, url = url_str, listitem = listitem, isFolder = False)
+
+        vcategory_name = 'Delete redundant artwork'
+        vcategory_plot = ('Scans all Launchers, Favourites and Collections and finds redundant '
+            'or unused artwork. You may delete this unneeded images.')
+        listitem = xbmcgui.ListItem(vcategory_name)
+        listitem.setInfo('video', {'title': vcategory_name, 'plot' : vcategory_plot, 'overlay': 4})
+        listitem.setArt({'icon' : vcategory_icon, 'fanart' : vcategory_fanart, 'poster' : vcategory_poster})
+        listitem.setProperty(AEL_CONTENT_LABEL, AEL_CONTENT_VALUE_ROM_LAUNCHER)
+        if xbmc.getCondVisibility("!Skin.HasSetting(KioskMode.Enabled)"):
+            listitem.addContextMenuItems(commands)
+        url_str = self._misc_url('EXECUTE_UTILS_DELETE_REDUNDANT_ARTWORK')
+        xbmcplugin.addDirectoryItem(handle = self.addon_handle, url = url_str, listitem = listitem, isFolder = False)
+
         vcategory_name = 'Show detected No-Intro/Redump DATs'
         vcategory_plot = ('Display the auto-detected No-Intro/Redump DATs that will be used for the '
             'ROM audit. You have to configure the DAT directories in '
-            '[COLOR=orange]AEL addon settings[/COLOR], [COLOR=orange]xxx[/COLOR] tab.')
+            '[COLOR=orange]AEL addon settings[/COLOR], [COLOR=orange]ROM Audit[/COLOR] tab.')
         listitem = xbmcgui.ListItem(vcategory_name)
         listitem.setInfo('video', {'title': vcategory_name, 'plot' : vcategory_plot, 'overlay': 4})
         listitem.setArt({'icon' : vcategory_icon, 'fanart' : vcategory_fanart, 'poster' : vcategory_poster})
@@ -4084,7 +4124,7 @@ class Main:
         xbmcplugin.addDirectoryItem(handle = self.addon_handle, url = url_str, listitem = listitem, isFolder = False)
 
         vcategory_name = 'Check Retroarch launchers'
-        vcategory_plot = ('Check Retroarch launchers for missing Libretro cores set with argument '
+        vcategory_plot = ('Check Retroarch ROM launchers for missing Libretro cores set with argument '
             '[COLOR=orange]-L[/COLOR]. This only works in Linux and Windows platforms.')
         listitem = xbmcgui.ListItem(vcategory_name)
         listitem.setInfo('video', {'title': vcategory_name, 'plot' : vcategory_plot, 'overlay': 4})
@@ -4118,7 +4158,7 @@ class Main:
 
         # --- Check TheGamesDB scraper ---
         vcategory_name = 'Check TheGamesDB scraper'
-        vcategory_plot = ('Connects to TheGamesDB and checks you monthly allowance.')
+        vcategory_plot = ('Connect to TheGamesDB and check if it is working and your monthly allowance.')
         listitem = xbmcgui.ListItem(vcategory_name)
         listitem.setInfo('video', {'title': vcategory_name, 'plot' : vcategory_plot, 'overlay': 4})
         listitem.setArt({'icon' : vcategory_icon, 'fanart' : vcategory_fanart, 'poster' : vcategory_poster})
@@ -4130,7 +4170,7 @@ class Main:
 
         # --- Check MobyGames scraper ---
         vcategory_name = 'Check MobyGames scraper'
-        vcategory_plot = ('Connects to MobyGames and checks if it works.')
+        vcategory_plot = ('Connect to MobyGames and check if it works.')
         listitem = xbmcgui.ListItem(vcategory_name)
         listitem.setInfo('video', {'title': vcategory_name, 'plot' : vcategory_plot, 'overlay': 4})
         listitem.setArt({'icon' : vcategory_icon, 'fanart' : vcategory_fanart, 'poster' : vcategory_poster})
@@ -4142,7 +4182,7 @@ class Main:
 
         # --- Check ScreenScraper scraper ---
         vcategory_name = 'Check ScreenScraper scraper'
-        vcategory_plot = ('Connects to ScreenScraper and checks if it works.')
+        vcategory_plot = ('Connect to ScreenScraper and check if it works.')
         listitem = xbmcgui.ListItem(vcategory_name)
         listitem.setInfo('video', {'title': vcategory_name, 'plot' : vcategory_plot, 'overlay': 4})
         listitem.setArt({'icon' : vcategory_icon, 'fanart' : vcategory_fanart, 'poster' : vcategory_poster})
@@ -4154,7 +4194,7 @@ class Main:
 
         # --- Check ArcadeDB scraper ---
         vcategory_name = 'Check Arcade DB scraper'
-        vcategory_plot = ('Connects to Arcade DB and checks if it works.')
+        vcategory_plot = ('Connect to Arcade DB and check if it works.')
         listitem = xbmcgui.ListItem(vcategory_name)
         listitem.setInfo('video', {'title': vcategory_name, 'plot' : vcategory_plot, 'overlay': 4})
         listitem.setArt({'icon' : vcategory_icon, 'fanart' : vcategory_fanart, 'poster' : vcategory_poster})
