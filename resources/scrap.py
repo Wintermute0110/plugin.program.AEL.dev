@@ -3881,7 +3881,7 @@ class ScreenScraper(Scraper):
                 log_debug('_get_SS_checksum() ZIP file has {} files.'.format(len(namelist)))
                 log_debug('_get_SS_checksum() Computing checksum of whole ZIP file.')
         else:
-            log_debug('_get_SS_checksum() File is not ZIP. Computing checksum of whole ZIP file.')
+            log_debug('_get_SS_checksum() File is not ZIP. Computing checksum of whole file.')
         # Otherwise calculate checksums of the whole file
         checksums = misc_calculate_file_checksums(f_path)
         checksums['rom_name'] = f_basename
