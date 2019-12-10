@@ -4071,7 +4071,7 @@ class Main:
         url_str = self._misc_url('EXECUTE_UTILS_CHECK_LAUNCHERS')
         xbmcplugin.addDirectoryItem(handle = self.addon_handle, url = url_str, listitem = listitem, isFolder = False)
 
-        vcategory_name = 'Check ROM sync status'
+        vcategory_name = 'Check Launcher ROMs sync status'
         vcategory_plot = ('For all ROM Launchers, check if all the ROMs in the ROM path are in AEL '
             'database. If any Launcher is out of sync because you were changing your ROM files, use '
             'the [COLOR=orange]ROM Scanner[/COLOR] to add and scrape the missing ROMs and remove '
@@ -4098,6 +4098,19 @@ class Main:
         url_str = self._misc_url('EXECUTE_UTILS_CHECK_ARTWORK_INTEGRITY')
         xbmcplugin.addDirectoryItem(handle = self.addon_handle, url = url_str, listitem = listitem, isFolder = False)
 
+        vcategory_name = 'Check ROM artwork image integrity'
+        vcategory_plot = ('Scans existing [COLOR=orange]artwork images[/COLOR] in ROM Launchers '
+            'and verifies that the ROM images have correct extension '
+            'and size is greater than 0. You can delete corrupted images to be rescraped later.')
+        listitem = xbmcgui.ListItem(vcategory_name)
+        listitem.setInfo('video', {'title': vcategory_name, 'plot' : vcategory_plot, 'overlay': 4})
+        listitem.setArt({'icon' : vcategory_icon, 'fanart' : vcategory_fanart, 'poster' : vcategory_poster})
+        listitem.setProperty(AEL_CONTENT_LABEL, AEL_CONTENT_VALUE_ROM_LAUNCHER)
+        if xbmc.getCondVisibility("!Skin.HasSetting(KioskMode.Enabled)"):
+            listitem.addContextMenuItems(commands)
+        url_str = self._misc_url('EXECUTE_UTILS_CHECK_ROM_ARTWORK_INTEGRITY')
+        xbmcplugin.addDirectoryItem(handle = self.addon_handle, url = url_str, listitem = listitem, isFolder = False)
+
         vcategory_name = 'Delete redundant artwork'
         vcategory_plot = ('Scans all Launchers, Favourites and Collections and finds redundant '
             'or unused artwork. You may delete this unneeded images.')
@@ -4108,6 +4121,18 @@ class Main:
         if xbmc.getCondVisibility("!Skin.HasSetting(KioskMode.Enabled)"):
             listitem.addContextMenuItems(commands)
         url_str = self._misc_url('EXECUTE_UTILS_DELETE_REDUNDANT_ARTWORK')
+        xbmcplugin.addDirectoryItem(handle = self.addon_handle, url = url_str, listitem = listitem, isFolder = False)
+
+        vcategory_name = 'Delete ROMs redundant artwork'
+        vcategory_plot = ('Scans all ROM Launchers and finds redundant '
+            'or unused ROMs artwork. You may delete this unneeded images.')
+        listitem = xbmcgui.ListItem(vcategory_name)
+        listitem.setInfo('video', {'title': vcategory_name, 'plot' : vcategory_plot, 'overlay': 4})
+        listitem.setArt({'icon' : vcategory_icon, 'fanart' : vcategory_fanart, 'poster' : vcategory_poster})
+        listitem.setProperty(AEL_CONTENT_LABEL, AEL_CONTENT_VALUE_ROM_LAUNCHER)
+        if xbmc.getCondVisibility("!Skin.HasSetting(KioskMode.Enabled)"):
+            listitem.addContextMenuItems(commands)
+        url_str = self._misc_url('EXECUTE_UTILS_DELETE_ROM_REDUNDANT_ARTWORK')
         xbmcplugin.addDirectoryItem(handle = self.addon_handle, url = url_str, listitem = listitem, isFolder = False)
 
         vcategory_name = 'Show detected No-Intro/Redump DATs'

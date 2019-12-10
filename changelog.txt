@@ -143,13 +143,35 @@ WIP      [SCRAPERS] Persistent scraper cache browser. Ability to browse the stor
          searches. Also, context menu to delete stored cached data.
 
 
-[B]Advanced Emulator Launcher | version 0.9.9 | xx November 2019[/B]
+[B]Advanced Emulator Launcher | version 0.9.10 | xx xxxxx 2020[/B]
 
 WIP      [COLLECTIONS] Current way of storing the collection artwork, in a unified JSON file,
          is not good. Think of a good way to exporting collections (for example, store the
          artwork in a subdirectory). Possible way of solving filename collisions
          ROM_name_platform_fanart.png, platform is the short name and it's only used if
          there is filename amgibuity (same ROM name in different platforms in the collection).
+
+WIP      Improve the Offline Scraper. XML to JSON databases and fix platforms.
+
+
+[B]Advanced Emulator Launcher | version 0.9.9 | xx January 2020[/B]
+
+WIP      [CORE] New Utility "Check Launcher ROMs sync status"
+
+WIP      [CORE] New Utility "Check artwork image integrity"
+
+WIP      [CORE] New Utility "Check ROMs artwork image integrity"
+
+WIP      [CORE] New Utility "Delete redundant artwork"
+
+WIP      [CORE] New Utility "Delete ROMs redundant artwork"
+
+FEATURE  [CORE] New Utility "Show detected No-Intro/Redump DATs"
+	     This utility shows the automatically detected No-Intro/Redump DATs.
+         Create addon settings for the No-Intro DAT directory and the Redump DAT directory.
+
+FEATURE  [CORE] New Utility "Check Retroarch Launchers" This utility checks all Retroarch
+         launchers to verify if the core set with -L exists.
 
 FEATURE  [CORE] Remove the LAUNCHER_DMODE_1G1R Launcher display mode. The Launcher display
          modes will be LAUNCHER_DMODE_FLAT and LAUNCHER_DMODE_PCLONE, like AML.
@@ -162,12 +184,6 @@ FEATURE  [ROM AUDIT] Current way of doing the ROM audit is inconvenient. User ha
 FEATURE  [ROM AUDIT] Create a tool to select the No-Intro/Redump DAT file automatically for
          each platform. This will be very useful for the new Offline Scraper database and
          for the ROM tag histogram.
-
-FEATURE  [CORE] Create a new Utility to show the automatically detected No-Intro/Redump DATs.
-         Create addon settings for the No-Intro DAT directory and the Redump DAT directory.
-
-FEATURE  [CORE] Create an utility to check Retroarch launchers, check if the core set with
-         -L exists.
 
 FEATURE  [CORE] In the "Global ROM Audit statistics" report show only the audited launchers.
 
