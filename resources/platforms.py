@@ -440,27 +440,30 @@ for p_obj in AEL_platforms:
     p_obj.category = p_obj.short_name.split('-')[0]
 
 # Dictionaries for fast access to the platform information.
-platform_short_to_long_dic = {}
-platform_compact_to_long_dic = {}
+# Also, platform long name list for select() dialogs.
+platform_short_to_index_dic = {}
+platform_compact_to_index_dic = {}
 platform_long_to_index_dic = {}
+AEL_platform_list = []
 for index, p_obj in enumerate(AEL_platforms):
-    platform_short_to_long_dic[p_obj.short_name] = p_obj.long_name
-    platform_compact_to_long_dic[p_obj.compact_name] = p_obj.long_name
+    platform_short_to_index_dic[p_obj.short_name] = index
+    platform_compact_to_index_dic[p_obj.compact_name] = index
     platform_long_to_index_dic[p_obj.long_name] = index
+    AEL_platform_list.append(p_obj.long_name)
 
 # Returns the platform numerical index from the platform name. If the platform name is not
 # found then returns the index of the 'Unknown' platform
-def get_AEL_platform_index(platform_AEL):
-    if platform_AEL in platform_long_to_index_dic:
-        return platform_long_to_index_dic[platform_AEL]
+def get_AEL_platform_index(platform_long):
+    if platform_long in platform_long_to_index_dic:
+        return platform_long_to_index_dic[platform_long]
     else:
         return platform_long_to_index_dic[PLATFORM_UNKNOWN_LONG]
 
 # NOTE must take into account platform aliases.
 # '0' means any platform in TGDB and must be returned when there is no platform matching.
-def AEL_platform_to_TheGamesDB(platform_AEL):
-    if platform_AEL in platform_long_to_index_dic:
-        pobj = AEL_platforms[platform_long_to_index_dic[platform_AEL]]
+def AEL_platform_to_TheGamesDB(platform_long_name):
+    if platform_long_name in platform_long_to_index_dic:
+        pobj = AEL_platforms[platform_long_to_index_dic[platform_long_name]]
     else:
         # Platform not found.
         return DEFAULT_PLAT_TGDB
@@ -469,11 +472,9 @@ def AEL_platform_to_TheGamesDB(platform_AEL):
     if pobj.aliasof is not None and scraper_platform is None:
         # If alias does not have specific platform return platform of parent.
         return AEL_platform_to_TheGamesDB(platform_compact_to_long_dic[pobj.aliasof])
+
     # If platform is None then return default platform
-    if scraper_platform is None:
-        return DEFAULT_PLAT_TGDB
-    else:
-        return scraper_platform
+    return DEFAULT_PLAT_TGDB if scraper_platform is None scraper_platform
 
 # * MobyGames API cannot be used withouth a valid platform.
 # * If '0' is used as the Unknown platform then MobyGames returns an HTTP error
@@ -482,51 +483,45 @@ def AEL_platform_to_TheGamesDB(platform_AEL):
 #   "HTTP Error 400: BAD REQUEST"
 # * The solution is to use '0' as the unknwon platform. AEL will detect this and
 #   will remove the '&platform={}' parameter from the search URL.
-def AEL_platform_to_MobyGames(platform_AEL):
-    if platform_AEL in platform_long_to_index_dic:
-        pobj = AEL_platforms[platform_long_to_index_dic[platform_AEL]]
+def AEL_platform_to_MobyGames(platform_long_name):
+    if platform_long_name in platform_long_to_index_dic:
+        pobj = AEL_platforms[platform_long_to_index_dic[platform_long_name]]
     else:
         return DEFAULT_PLAT_MOBYGAMES
     scraper_platform = pobj.MG_plat
     if pobj.aliasof is not None and scraper_platform is None:
         return AEL_platform_to_MobyGames(platform_compact_to_long_dic[pobj.aliasof])
-    if scraper_platform is None:
-        return DEFAULT_PLAT_MOBYGAMES
-    else:
-        return scraper_platform
 
-def AEL_platform_to_ScreenScraper(platform_AEL):
-    if platform_AEL in platform_long_to_index_dic:
-        pobj = AEL_platforms[platform_long_to_index_dic[platform_AEL]]
+    return DEFAULT_PLAT_MOBYGAMES if scraper_platform is None scraper_platform
+
+def AEL_platform_to_ScreenScraper(platform_long_name):
+    if platform_long_name in platform_long_to_index_dic:
+        pobj = AEL_platforms[platform_long_to_index_dic[platform_long_name]]
     else:
         return DEFAULT_PLAT_SCREENSCRAPER
     scraper_platform = pobj.SS_plat
     if pobj.aliasof is not None and scraper_platform is None:
         return AEL_platform_to_ScreenScraper(platform_compact_to_long_dic[pobj.aliasof])
-    if scraper_platform is None:
-        return DEFAULT_PLAT_SCREENSCRAPER
-    else:
-        return scraper_platform
+
+    return DEFAULT_PLAT_SCREENSCRAPER if scraper_platform is None scraper_platform
 
 # Platform '0' means all platforms in GameFAQs.
-def AEL_platform_to_GameFAQs(AEL_gamesys):
-    if platform_AEL in platform_long_to_index_dic:
-        pobj = AEL_platforms[platform_long_to_index_dic[platform_AEL]]
+def AEL_platform_to_GameFAQs(platform_long_name):
+    if platform_long_name in platform_long_to_index_dic:
+        pobj = AEL_platforms[platform_long_to_index_dic[platform_long_name]]
     else:
         return DEFAULT_PLAT_GAMEFAQS
     scraper_platform = pobj.GF_plat
     if pobj.aliasof is not None and scraper_platform is None:
         return AEL_platform_to_GameFAQs(platform_compact_to_long_dic[pobj.aliasof])
-    if scraper_platform is None:
-        return DEFAULT_PLAT_GAMEFAQS
-    else:
-        return scraper_platform
+
+    return DEFAULT_PLAT_GAMEFAQS if scraper_platform is None else scraper_platform
 
 # -------------------------------------------------------------------------------------------------
 # Translation of AEL oficial gamesys (platform) name to scraper particular name
 # -------------------------------------------------------------------------------------------------
 # NOTE change the offline scraper so the database name is the same as the platform long name.
-# NOTE This dictionary must be deleted ASAP.
+# NOTE This dictionary must be deleted ASAP. Offline Database filenames must be renamed.
 platform_AEL_to_Offline_GameDBInfo_XML = {
     '3DO Interactive Multiplayer' : 'GameDBInfo/Panasonic 3DO.xml',
 
