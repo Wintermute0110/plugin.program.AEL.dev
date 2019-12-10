@@ -474,7 +474,7 @@ def AEL_platform_to_TheGamesDB(platform_long_name):
         return AEL_platform_to_TheGamesDB(platform_compact_to_long_dic[pobj.aliasof])
 
     # If platform is None then return default platform
-    return DEFAULT_PLAT_TGDB if scraper_platform is None scraper_platform
+    return DEFAULT_PLAT_TGDB if scraper_platform is None else scraper_platform
 
 # * MobyGames API cannot be used withouth a valid platform.
 # * If '0' is used as the Unknown platform then MobyGames returns an HTTP error
@@ -492,7 +492,7 @@ def AEL_platform_to_MobyGames(platform_long_name):
     if pobj.aliasof is not None and scraper_platform is None:
         return AEL_platform_to_MobyGames(platform_compact_to_long_dic[pobj.aliasof])
 
-    return DEFAULT_PLAT_MOBYGAMES if scraper_platform is None scraper_platform
+    return DEFAULT_PLAT_MOBYGAMES if scraper_platform is None else scraper_platform
 
 def AEL_platform_to_ScreenScraper(platform_long_name):
     if platform_long_name in platform_long_to_index_dic:
@@ -503,7 +503,7 @@ def AEL_platform_to_ScreenScraper(platform_long_name):
     if pobj.aliasof is not None and scraper_platform is None:
         return AEL_platform_to_ScreenScraper(platform_compact_to_long_dic[pobj.aliasof])
 
-    return DEFAULT_PLAT_SCREENSCRAPER if scraper_platform is None scraper_platform
+    return DEFAULT_PLAT_SCREENSCRAPER if scraper_platform is None else scraper_platform
 
 # Platform '0' means all platforms in GameFAQs.
 def AEL_platform_to_GameFAQs(platform_long_name):
