@@ -72,8 +72,11 @@ class AEL_Paths:
         self.LAUNCH_LOG_FILE_PATH      = self.ADDON_DATA_DIR.pjoin('launcher.log')
         self.RECENT_PLAYED_FILE_PATH   = self.ADDON_DATA_DIR.pjoin('history.json')
         self.MOST_PLAYED_FILE_PATH     = self.ADDON_DATA_DIR.pjoin('most_played.json')
+
+        # Reports
         self.BIOS_REPORT_FILE_PATH     = self.ADDON_DATA_DIR.pjoin('report_BIOS.txt')
         self.LAUNCHER_REPORT_FILE_PATH = self.ADDON_DATA_DIR.pjoin('report_Launchers.txt')
+        self.ROM_SYNC_REPORT_FILE_PATH = self.ADDON_DATA_DIR.pjoin('report_ROM_sync_status.txt')
 
         # --- Offline scraper databases ---
         self.GAMEDB_INFO_DIR           = self.ADDON_CODE_DIR.pjoin('GameDBInfo')
@@ -9549,8 +9552,8 @@ class Main:
         report_fobj.write('Loading launcher ROMs ...\n')
         roms = fs_load_ROMs_JSON(g_PATHS.ROMS_DIR, launcher)
         num_roms = len(roms)
-        report_fobj.write('{0} ROMs currently in database\n'.format(num_roms))
-        log_info('Launcher ROM database contain {0} items'.format(num_roms))
+        report_fobj.write('{} ROMs currently in database\n'.format(num_roms))
+        log_info('Launcher ROM database contain {} items'.format(num_roms))
 
         # --- Progress dialog ---
         pdialog_verbose = True
@@ -9606,11 +9609,10 @@ class Main:
             i = 0
             for key in sorted(roms.iterkeys()):
                 pdialog.updateProgress(i)
-                log_debug('Searching {0}'.format(roms[key]['filename']))
                 i += 1
+                log_debug('Searching {0}'.format(roms[key]['filename']))
                 fileName = FileName(roms[key]['filename'])
                 if not fileName.exists():
-                    log_debug('Not found')
                     log_debug('Deleting from DB {0}'.format(roms[key]['filename']))
                     del roms[key]
                     num_removed_roms += 1
@@ -9676,7 +9678,7 @@ class Main:
                     log_debug("Expected '{0}' extension detected".format(ext))
                     report_fobj.write("  Expected '{0}' extension detected\n".format(ext))
                     processROM = True
-            if not processROM: 
+            if not processROM:
                 log_debug('File has not an expected extension. Skipping file.')
                 report_fobj.write('  File has not an expected extension. Skipping file.\n')
                 continue
@@ -9732,12 +9734,14 @@ class Main:
                 log_debug('ROM does not belong to a multidisc set.')
                 report_fobj.write('  ROM does not belong to a multidisc set.\n')
 
-            # --- Check that ROM is not already in the list of ROMs ---
-            # >> If file already in ROM list skip it
-            repeatedROM = False
+            # --- If ROM already in DB then skip it ---
+            # Linear search is slow but I don't care for now.
+            ROM_in_launcher_DB = False
             for rom_id in roms:
-                if roms[rom_id]['filename'] == f_path: repeatedROM = True
-            if repeatedROM:
+                if roms[rom_id]['filename'] == f_path:
+                    ROM_in_launcher_DB = True
+                    break
+            if ROM_in_launcher_DB:
                 log_debug('File already into launcher ROM list. Skipping file.')
                 report_fobj.write('  File already into launcher ROM list. Skipping file.\n')
                 continue
@@ -10485,7 +10489,111 @@ class Main:
     # there are ROM files not in AEL database. If either 1) or 2) is true launcher must be
     # updated with the ROM scanner.
     def _command_exec_utils_check_launcher_sync_status(self):
-        kodi_dialog_OK('EXECUTE_UTILS_CHECK_LAUNCHER_SYNC_STATUS not implemented yet.')
+        log_info('_command_exec_utils_check_launcher_sync_status() Checking ROM Launcher sync status...')
+        pdialog = KodiProgressDialog()
+        num_launchers = len(self.launchers)
+        main_str_list = []
+        main_str_list.append('There are {} ROM launchers.'.format(num_launchers))
+        pdialog.startProgress('Checking ROM sync status...', num_launchers)
+        processed_launchers = 0
+        for launcher_id in sorted(self.launchers, key = lambda x : self.launchers[x]['m_name']):
+            pdialog.updateProgress(processed_launchers)
+            processed_launchers += 1
+            launcher = self.launchers[launcher_id]
+            # Skip non-ROM launcher.
+            if not launcher['rompath']: continue
+            log_debug('Checking ROM Launcher "{}"'.format(launcher['m_name']))
+            main_str_list.append('\n[COLOR orange]Launcher "{0}"[/COLOR]'.format(launcher['m_name']))
+            # Scan files in ROM path.
+            roms = fs_load_ROMs_JSON(g_PATHS.ROMS_DIR, launcher)
+            num_roms = len(roms)
+            R_str = 'ROM' if num_roms == 1 else 'ROMs'
+            log_debug('Launcher has {} DB {}'.format(num_roms, R_str))
+            main_str_list.append('Launcher has {} DB {}'.format(num_roms, R_str))
+            # Remove ROM Audit Missing ROMs.
+            real_roms = {}
+            for rom_id in roms:
+                if roms[rom_id]['nointro_status'] == AUDIT_STATUS_MISS: continue
+                real_roms[rom_id] = roms[rom_id]
+            num_roms = len(real_roms)
+            R_str = 'ROM' if num_roms == 1 else 'ROMs'
+            log_debug('Launcher has {} real {}'.format(num_roms, R_str))
+            main_str_list.append('Launcher has {} real {}'.format(num_roms, R_str))
+            # If Launcher is empty there is nothing to do.
+            if num_roms < 1:
+                log_debug('Launcher is empty')
+                main_str_list.append('Launcher is empty')
+                continue
+
+            # Check for dead ROMs (ROMs in AEL DB not on disk).
+            log_debug('Checking for dead ROMs...')
+            num_dead_roms = 0
+            for key in sorted(real_roms.iterkeys()):
+                fileName = FileName(real_roms[key]['filename'])
+                if not fileName.exists():
+                    num_dead_roms += 1
+            if num_dead_roms > 0:
+                R_str = 'ROM' if num_dead_roms == 1 else 'ROMs'
+                main_str_list.append('Found {} dead {}'.format(num_dead_roms, R_str))
+            else:
+                main_str_list.append('No dead ROMs found')
+
+            # Check for unsynced ROMs (ROMS on disk not in AEL DB).
+            log_debug('Checking for unsynced ROMs...')
+            num_unsynced_roms = 0
+            launcher_path = FileName(launcher['rompath'])
+            log_debug('Scanning files in {}'.format(launcher_path.getPath()))
+            if self.settings['scan_recursive']:
+                log_debug('Recursive scan activated')
+                files = launcher_path.recursiveScanFilesInPath('*.*')
+            else:
+                log_debug('Recursive scan not activated')
+                files = launcher_path.scanFilesInPath('*.*')
+            num_files = len(files)
+            f_str = 'file' if num_files == 1 else 'files'
+            log_debug('File scanner found {} files'.format(num_files, f_str))
+            main_str_list.append('File scanner found {} files'.format(num_files, f_str))
+            for f_path in sorted(files):
+                ROM_FN = FileName(f_path)
+                processROM = False
+                for ext in launcher['romext'].split("|"):
+                    if ROM_FN.getExt() == '.' + ext: processROM = True
+                if not processROM: continue
+
+                # Ignore BIOS ROMs.
+                if self.settings['scan_ignore_bios']:
+                    BIOS_re = re.findall('\[BIOS\]', ROM_FN.getBase())
+                    if len(BIOS_re) > 0:
+                        log_debug("BIOS detected. Skipping ROM '{0}'".format(ROM_FN.path))
+                        continue
+
+                # Linear search is slow but I don't care for now.
+                ROM_in_launcher_DB = False
+                for rom_id in real_roms:
+                    if real_roms[rom_id]['filename'] == f_path:
+                        ROM_in_launcher_DB = True
+                        break
+                if not ROM_in_launcher_DB: num_unsynced_roms += 1
+            if num_unsynced_roms > 0:
+                R_str = 'ROM' if num_unsynced_roms == 1 else 'ROMs'
+                main_str_list.append('Found {} unsynced {}'.format(num_unsynced_roms, R_str))
+            else:
+                main_str_list.append('No unsynced ROMs found')
+            if num_dead_roms > 0 or num_unsynced_roms > 0:
+                main_str_list.append('[COLOR yellow]Launcher should be updated[/COLOR]')
+            else:
+                main_str_list.append('[COLOR green]Launcher OK[/COLOR]')
+        pdialog.endProgress()
+
+        # Generate, save and display report.
+        log_info('Writing report file "{0}"'.format(g_PATHS.ROM_SYNC_REPORT_FILE_PATH.getPath()))
+        pdialog.startProgress('Saving report')
+        full_string = '\n'.join(main_str_list).encode('utf-8')
+        file = open(g_PATHS.ROM_SYNC_REPORT_FILE_PATH.getPath(), 'w')
+        file.write(full_string)
+        file.close()
+        pdialog.endProgress()
+        kodi_display_text_window_mono('ROM sync status report', full_string)
 
     def _command_exec_utils_check_artwork_integrity(self):
         kodi_dialog_OK('EXECUTE_UTILS_CHECK_ARTWORK_INTEGRITY not implemented yet.')
