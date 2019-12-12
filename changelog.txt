@@ -167,7 +167,7 @@ WIP      [CORE] New Utility "Delete redundant artwork"
 WIP      [CORE] New Utility "Delete ROMs redundant artwork"
 
 FEATURE  [CORE] New Utility "Show detected No-Intro/Redump DATs"
-	     This utility shows the automatically detected No-Intro/Redump DATs.
+         This utility shows the automatically detected No-Intro/Redump DATs.
          Create addon settings for the No-Intro DAT directory and the Redump DAT directory.
 
 FEATURE  [CORE] New Utility "Check Retroarch Launchers" This utility checks all Retroarch

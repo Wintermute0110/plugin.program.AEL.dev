@@ -481,6 +481,11 @@ class Main:
 
         elif command == 'EXECUTE_UTILS_CHECK_DATABASE': self._command_exec_utils_check_database()
         elif command == 'EXECUTE_UTILS_CHECK_LAUNCHERS': self._command_exec_utils_check_launchers()
+        elif command == 'EXECUTE_UTILS_CHECK_LAUNCHER_SYNC_STATUS': self._command_exec_utils_check_launcher_sync_status()
+        elif command == 'EXECUTE_UTILS_CHECK_ARTWORK_INTEGRITY': self._command_exec_utils_check_artwork_integrity()
+        elif command == 'EXECUTE_UTILS_CHECK_ROM_ARTWORK_INTEGRITY': self._command_exec_utils_check_ROM_artwork_integrity()
+        elif command == 'EXECUTE_UTILS_DELETE_REDUNDANT_ARTWORK': self._command_exec_utils_delete_redundant_artwork()
+        elif command == 'EXECUTE_UTILS_DELETE_ROM_REDUNDANT_ARTWORK': self._command_exec_utils_delete_ROM_redundant_artwork()
         elif command == 'EXECUTE_UTILS_SHOW_DETECTED_DATS': self._command_exec_utils_show_DATs()
         elif command == 'EXECUTE_UTILS_CHECK_RETRO_LAUNCHERS': self._command_exec_utils_check_retro_launchers()
         elif command == 'EXECUTE_UTILS_CHECK_RETRO_BIOS': self._command_exec_utils_check_retro_BIOS()
@@ -4099,8 +4104,8 @@ class Main:
         xbmcplugin.addDirectoryItem(handle = self.addon_handle, url = url_str, listitem = listitem, isFolder = False)
 
         vcategory_name = 'Check ROM artwork image integrity'
-        vcategory_plot = ('Scans existing [COLOR=orange]artwork images[/COLOR] in ROM Launchers '
-            'and verifies that the ROM images have correct extension '
+        vcategory_plot = ('Scans existing [COLOR=orange]ROMs artwork images[/COLOR] in ROM Launchers '
+            'and verifies that the images have correct extension '
             'and size is greater than 0. You can delete corrupted images to be rescraped later.')
         listitem = xbmcgui.ListItem(vcategory_name)
         listitem.setInfo('video', {'title': vcategory_name, 'plot' : vcategory_plot, 'overlay': 4})
@@ -10475,6 +10480,24 @@ class Main:
         if path and not path_FN.exists():
             problems_found = True
             str_list.append('{0} "{1}" not found\n'.format(dic_key_name, path_FN.getPath()))
+
+    # For every ROM launcher scans the ROM path and check 1) if there are dead ROMs and 2) if
+    # there are ROM files not in AEL database. If either 1) or 2) is true launcher must be
+    # updated with the ROM scanner.
+    def _command_exec_utils_check_launcher_sync_status(self):
+        kodi_dialog_OK('EXECUTE_UTILS_CHECK_LAUNCHER_SYNC_STATUS not implemented yet.')
+
+    def _command_exec_utils_check_artwork_integrity(self):
+        kodi_dialog_OK('EXECUTE_UTILS_CHECK_ARTWORK_INTEGRITY not implemented yet.')
+
+    def _command_exec_utils_check_ROM_artwork_integrity(self):
+        kodi_dialog_OK('EXECUTE_UTILS_CHECK_ROM_ARTWORK_INTEGRITY not implemented yet.')
+
+    def _command_exec_utils_delete_redundant_artwork(self):
+        kodi_dialog_OK('EXECUTE_UTILS_DELETE_REDUNDANT_ARTWORK not implemented yet.')
+
+    def _command_exec_utils_delete_ROM_redundant_artwork(self):
+        kodi_dialog_OK('EXECUTE_UTILS_DELETE_ROM_REDUNDANT_ARTWORK not implemented yet.')
 
     # Shows a report of the auto-detected No-Intro/Redump DAT files.
     # This simplifies a lot the ROM Audit of launchers and other things like the
