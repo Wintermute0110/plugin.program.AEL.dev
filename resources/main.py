@@ -10511,9 +10511,21 @@ class Main:
             R_str = 'ROM' if num_roms == 1 else 'ROMs'
             log_debug('Launcher has {} DB {}'.format(num_roms, R_str))
             main_str_list.append('Launcher has {} DB {}'.format(num_roms, R_str))
+            # For now skip multidisc ROMs until multidisc support is fixed. I think for
+            # every ROM in the multidisc set there should be a normal ROM not displayed
+            # in listings, and then the special multidisc ROM that points to the ROMs
+            # in the set.
+            has_multidisc_ROMs = False
+            for rom_id in roms:
+                if roms[rom_id]['disks']: 
+                    has_multidisc_ROMs = True
+                    break
+            if has_multidisc_ROMs:
+                log_debug('Launcher has multidisc ROMs. Skipping launcher')
+                main_str_list.append('Launcher has multidisc ROMs.')
+                main_str_list.append('[COLOR yellow]Skipping launcher[/COLOR]')
+                continue
             # Remove ROM Audit Missing ROMs (fake ROMs).
-            # NOTE We should also remove multidisc ROMs here... however, ROMs in a multidisc
-            # set are not present as real ROMs with the current implementation.
             real_roms = {}
             for rom_id in roms:
                 if roms[rom_id]['nointro_status'] == AUDIT_STATUS_MISS: continue
@@ -10526,6 +10538,7 @@ class Main:
             if num_real_roms < 1:
                 log_debug('Launcher is empty')
                 main_str_list.append('Launcher is empty')
+                main_str_list.append('[COLOR yellow]Skipping launcher[/COLOR]')
                 continue
             # Make a dictionary for fast indexing.
             romfiles_dic = {real_roms[rom_id]['filename'] : rom_id for rom_id in real_roms}
@@ -10583,7 +10596,7 @@ class Main:
                 main_str_list.append('No unsynced ROMs found')
             update_launcher_flag = True if num_dead_roms > 0 or num_unsynced_roms > 0 else False
             if update_launcher_flag:
-                main_str_list.append('[COLOR yellow]Launcher should be updated[/COLOR]')
+                main_str_list.append('[COLOR red]Launcher should be updated[/COLOR]')
             else:
                 main_str_list.append('[COLOR green]Launcher OK[/COLOR]')
         pdialog.endProgress()
