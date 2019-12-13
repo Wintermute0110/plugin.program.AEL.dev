@@ -10494,7 +10494,7 @@ class Main:
         num_launchers = len(self.launchers)
         main_str_list = []
         main_str_list.append('There are {} ROM launchers.'.format(num_launchers))
-        pdialog.startProgress('Checking ROM sync status...', num_launchers)
+        pdialog.startProgress('Checking ROM sync status', num_launchers)
         processed_launchers = 0
         for launcher_id in sorted(self.launchers, key = lambda x : self.launchers[x]['m_name']):
             pdialog.updateProgress(processed_launchers)
@@ -10504,43 +10504,34 @@ class Main:
             if not launcher['rompath']: continue
             log_debug('Checking ROM Launcher "{}"'.format(launcher['m_name']))
             main_str_list.append('\n[COLOR orange]Launcher "{0}"[/COLOR]'.format(launcher['m_name']))
-            # Scan files in ROM path.
+            # Load ROMs.
+            pdialog.updateMessage2('Loading ROMs...')
             roms = fs_load_ROMs_JSON(g_PATHS.ROMS_DIR, launcher)
             num_roms = len(roms)
             R_str = 'ROM' if num_roms == 1 else 'ROMs'
             log_debug('Launcher has {} DB {}'.format(num_roms, R_str))
             main_str_list.append('Launcher has {} DB {}'.format(num_roms, R_str))
-            # Remove ROM Audit Missing ROMs.
+            # Remove ROM Audit Missing ROMs (fake ROMs).
+            # NOTE We should also remove multidisc ROMs here... however, ROMs in a multidisc
+            # set are not present as real ROMs with the current implementation.
             real_roms = {}
             for rom_id in roms:
                 if roms[rom_id]['nointro_status'] == AUDIT_STATUS_MISS: continue
                 real_roms[rom_id] = roms[rom_id]
-            num_roms = len(real_roms)
-            R_str = 'ROM' if num_roms == 1 else 'ROMs'
-            log_debug('Launcher has {} real {}'.format(num_roms, R_str))
-            main_str_list.append('Launcher has {} real {}'.format(num_roms, R_str))
+            num_real_roms = len(real_roms)
+            R_str = 'ROM' if num_real_roms == 1 else 'ROMs'
+            log_debug('Launcher has {} real {}'.format(num_real_roms, R_str))
+            main_str_list.append('Launcher has {} real {}'.format(num_real_roms, R_str))
             # If Launcher is empty there is nothing to do.
-            if num_roms < 1:
+            if num_real_roms < 1:
                 log_debug('Launcher is empty')
                 main_str_list.append('Launcher is empty')
                 continue
+            # Make a dictionary for fast indexing.
+            romfiles_dic = {real_roms[rom_id]['filename'] : rom_id for rom_id in real_roms}
 
-            # Check for dead ROMs (ROMs in AEL DB not on disk).
-            log_debug('Checking for dead ROMs...')
-            num_dead_roms = 0
-            for key in sorted(real_roms.iterkeys()):
-                fileName = FileName(real_roms[key]['filename'])
-                if not fileName.exists():
-                    num_dead_roms += 1
-            if num_dead_roms > 0:
-                R_str = 'ROM' if num_dead_roms == 1 else 'ROMs'
-                main_str_list.append('Found {} dead {}'.format(num_dead_roms, R_str))
-            else:
-                main_str_list.append('No dead ROMs found')
-
-            # Check for unsynced ROMs (ROMS on disk not in AEL DB).
-            log_debug('Checking for unsynced ROMs...')
-            num_unsynced_roms = 0
+            # Scan files in rompath directory.
+            pdialog.updateMessage2('Scanning files in ROM paths...')
             launcher_path = FileName(launcher['rompath'])
             log_debug('Scanning files in {}'.format(launcher_path.getPath()))
             if self.settings['scan_recursive']:
@@ -10553,33 +10544,45 @@ class Main:
             f_str = 'file' if num_files == 1 else 'files'
             log_debug('File scanner found {} files'.format(num_files, f_str))
             main_str_list.append('File scanner found {} files'.format(num_files, f_str))
+
+            # Check for dead ROMs (ROMs in AEL DB not on disk).
+            pdialog.updateMessage2('Checking dead ROMs...')
+            log_debug('Checking for dead ROMs...')
+            num_dead_roms = 0
+            for rom_id in real_roms:
+                fileName = FileName(real_roms[rom_id]['filename'])
+                if not fileName.exists(): num_dead_roms += 1
+            if num_dead_roms > 0:
+                R_str = 'ROM' if num_dead_roms == 1 else 'ROMs'
+                main_str_list.append('Found {} dead {}'.format(num_dead_roms, R_str))
+            else:
+                main_str_list.append('No dead ROMs found')
+
+            # Check for unsynced ROMs (ROMS on disk not in AEL DB).
+            pdialog.updateMessage2('Checking unsynced ROMs...')
+            log_debug('Checking for unsynced ROMs...')
+            num_unsynced_roms = 0
             for f_path in sorted(files):
                 ROM_FN = FileName(f_path)
                 processROM = False
                 for ext in launcher['romext'].split("|"):
                     if ROM_FN.getExt() == '.' + ext: processROM = True
                 if not processROM: continue
-
-                # Ignore BIOS ROMs.
+                # Ignore BIOS ROMs, like the ROM Scanner does.
                 if self.settings['scan_ignore_bios']:
                     BIOS_re = re.findall('\[BIOS\]', ROM_FN.getBase())
                     if len(BIOS_re) > 0:
-                        log_debug("BIOS detected. Skipping ROM '{0}'".format(ROM_FN.path))
+                        log_debug('BIOS detected. Skipping ROM "{}"'.format(ROM_FN.getBase()))
                         continue
-
-                # Linear search is slow but I don't care for now.
-                ROM_in_launcher_DB = False
-                for rom_id in real_roms:
-                    if real_roms[rom_id]['filename'] == f_path:
-                        ROM_in_launcher_DB = True
-                        break
+                ROM_in_launcher_DB = True if f_path in romfiles_dic else False
                 if not ROM_in_launcher_DB: num_unsynced_roms += 1
             if num_unsynced_roms > 0:
                 R_str = 'ROM' if num_unsynced_roms == 1 else 'ROMs'
                 main_str_list.append('Found {} unsynced {}'.format(num_unsynced_roms, R_str))
             else:
                 main_str_list.append('No unsynced ROMs found')
-            if num_dead_roms > 0 or num_unsynced_roms > 0:
+            update_launcher_flag = True if num_dead_roms > 0 or num_unsynced_roms > 0 else False
+            if update_launcher_flag:
                 main_str_list.append('[COLOR yellow]Launcher should be updated[/COLOR]')
             else:
                 main_str_list.append('[COLOR green]Launcher OK[/COLOR]')
