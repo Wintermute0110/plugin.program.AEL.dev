@@ -110,6 +110,14 @@ def text_str_2_Uni(string):
 
     return unicode_str
 
+def text_remove_Kodi_color_tags(s):
+    s = re.sub('\[COLOR \S+?\]', '', s)
+    s = re.sub('\[color \S+?\]', '', s)
+    s = s.replace('[/color]', '')
+    s = s.replace('[/COLOR]', '')
+
+    return s
+
 # Renders a list of list of strings table into a CSV list of strings.
 # The list of strings must be joined with '\n'.join()
 def text_render_table_CSV(table_str):
@@ -142,9 +150,22 @@ def text_render_table_CSV(table_str):
 #
 # Output:
 #
-def text_render_table(table_str):
+def text_render_table(table_str, trim_Kodi_colours = False):
     rows = len(table_str)
     cols = len(table_str[0])
+
+    # Remove Kodi tags [COLOR string] and [/COLOR]
+    if trim_Kodi_colours:
+        new_table_str = []
+        for i in range(rows):
+            new_table_str.append([])
+            for j in range(cols):
+                s = text_remove_Kodi_color_tags(table_str[i][j])
+                new_table_str[i].append(s)
+        table_str = new_table_str
+
+    # Determine sizes and padding.
+    # Ignore row 0 when computing sizes.
     table_str_list = []
     col_sizes = text_get_table_str_col_sizes(table_str, rows, cols)
     col_padding = table_str[0]
@@ -190,11 +211,26 @@ def text_render_table(table_str):
 #
 # Output:
 #
-def text_render_table_NO_HEADER(table_str):
+def text_render_table_NO_HEADER(table_str, trim_Kodi_colours = False):
     rows = len(table_str)
     cols = len(table_str[0])
+
+    # Remove Kodi tags [COLOR string] and [/COLOR]
+    # BUG Currently this code removes all the colour tags so the table is rendered
+    #     with no colours.
+    # NOTE To render tables with colours is more difficult than this... 
+    #      All the paddings changed. I will left this for the future.
+    if trim_Kodi_colours:
+        new_table_str = []
+        for i in range(rows):
+            new_table_str.append([])
+            for j in range(cols):
+                s = text_remove_Kodi_color_tags(table_str[i][j])
+                new_table_str[i].append(s)
+        table_str = new_table_str
+
+    # Ignore row 0 when computing sizes.
     table_str_list = []
-    # >> Ignore row 0 when computing sizes.
     col_sizes = text_get_table_str_col_sizes(table_str, rows, cols)
     col_padding = table_str[0]
 

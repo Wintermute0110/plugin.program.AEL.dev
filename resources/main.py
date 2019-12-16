@@ -10597,10 +10597,10 @@ class Main:
                 detailed_slist.append('No unsynced ROMs found')
             update_launcher_flag = True if num_dead_roms > 0 or num_unsynced_roms > 0 else False
             if update_launcher_flag:
-                short_slist.append([launcher['m_name'], 'Update launcher'])
+                short_slist.append([launcher['m_name'], '[COLOR red]Update launcher[/COLOR]'])
                 detailed_slist.append('[COLOR red]Launcher should be updated[/COLOR]')
             else:
-                short_slist.append([launcher['m_name'], 'Launcher OK'])
+                short_slist.append([launcher['m_name'], '[COLOR green]Launcher OK[/COLOR]'])
                 detailed_slist.append('[COLOR green]Launcher OK[/COLOR]')
             detailed_slist.append('')
         pdialog.endProgress()
@@ -10611,7 +10611,7 @@ class Main:
         main_slist.append('*** Summary ***')
         main_slist.append('There are {} ROM launchers.'.format(num_launchers))
         main_slist.append('')
-        main_slist.extend(text_render_table_NO_HEADER(short_slist))
+        main_slist.extend(text_render_table_NO_HEADER(short_slist, trim_Kodi_colours = True))
         main_slist.append('')
         main_slist.append('*** Detailed report ***')
         main_slist.extend(detailed_slist)
