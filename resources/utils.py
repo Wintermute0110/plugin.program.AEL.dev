@@ -112,7 +112,7 @@ def text_str_2_Uni(string):
 
 # Renders a list of list of strings table into a CSV list of strings.
 # The list of strings must be joined with '\n'.join()
-def text_render_table_CSV_slist(table_str):
+def text_render_table_CSV(table_str):
     rows = len(table_str)
     cols = len(table_str[0])
     table_str_list = []
@@ -127,14 +127,22 @@ def text_render_table_CSV_slist(table_str):
 
     return table_str_list
 
+# Returns a list of strings that must be joined with '\n'.join()
 #
 # First row            column aligment 'right' or 'left'
 # Second row           column titles
 # Third and next rows  table data
 #
-# Returns a list of strings that must be joined with '\n'.join()
+# Input:
+# table_str = [
+#     ['left', 'left', 'left'],
+#     ['Platform', 'Parents', 'Clones'],
+#     ['', '', ''],
+# ]
 #
-def text_render_table_str(table_str):
+# Output:
+#
+def text_render_table(table_str):
     rows = len(table_str)
     cols = len(table_str[0])
     table_str_list = []
@@ -149,7 +157,7 @@ def text_render_table_str(table_str):
         else:
             row_str += text_print_padded_left(table_str[1][j], col_sizes[j])
     table_str_list.append(row_str)
-    # >> Table -----
+    # Table line -----
     total_size = sum(col_sizes) + 2*(cols-1)
     table_str_list.append('{0}'.format('-' * total_size))
 
@@ -171,11 +179,9 @@ def text_render_table_str(table_str):
 
     return table_str_list
 
-#
 # First row             column aligment 'right' or 'left'
 # Second and next rows  table data
-#
-def text_render_table_str_NO_HEADER(table_str):
+def text_render_table_NO_HEADER(table_str):
     rows = len(table_str)
     cols = len(table_str[0])
     table_str_list = []
@@ -222,7 +228,7 @@ def text_get_table_str_col_sizes(table_str, rows, cols):
 def text_str_list_size(str_list):
     max_str_size = 0
     for str_item in str_list:
-        str_size = len('{0}'.format(str_item))
+        str_size = len('{}'.format(str_item))
         if str_size > max_str_size: max_str_size = str_size
 
     return max_str_size

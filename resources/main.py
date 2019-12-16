@@ -10490,8 +10490,11 @@ class Main:
         log_info('_command_exec_utils_check_launcher_sync_status() Checking ROM Launcher sync status...')
         pdialog = KodiProgressDialog()
         num_launchers = len(self.launchers)
-        main_str_list = []
-        main_str_list.append('There are {} ROM launchers.'.format(num_launchers))
+        main_slist = []
+        short_slist = [
+            ['left', 'left'],
+        ]
+        detailed_slist = []
         pdialog.startProgress('Checking ROM sync status', num_launchers)
         processed_launchers = 0
         for launcher_id in sorted(self.launchers, key = lambda x : self.launchers[x]['m_name']):
@@ -10501,14 +10504,14 @@ class Main:
             # Skip non-ROM launcher.
             if not launcher['rompath']: continue
             log_debug('Checking ROM Launcher "{}"'.format(launcher['m_name']))
-            main_str_list.append('\n[COLOR orange]Launcher "{0}"[/COLOR]'.format(launcher['m_name']))
+            detailed_slist.append('[COLOR orange]Launcher "{0}"[/COLOR]'.format(launcher['m_name']))
             # Load ROMs.
             pdialog.updateMessage2('Loading ROMs...')
             roms = fs_load_ROMs_JSON(g_PATHS.ROMS_DIR, launcher)
             num_roms = len(roms)
             R_str = 'ROM' if num_roms == 1 else 'ROMs'
             log_debug('Launcher has {} DB {}'.format(num_roms, R_str))
-            main_str_list.append('Launcher has {} DB {}'.format(num_roms, R_str))
+            detailed_slist.append('Launcher has {} DB {}'.format(num_roms, R_str))
             # For now skip multidisc ROMs until multidisc support is fixed. I think for
             # every ROM in the multidisc set there should be a normal ROM not displayed
             # in listings, and then the special multidisc ROM that points to the ROMs
@@ -10520,8 +10523,8 @@ class Main:
                     break
             if has_multidisc_ROMs:
                 log_debug('Launcher has multidisc ROMs. Skipping launcher')
-                main_str_list.append('Launcher has multidisc ROMs.')
-                main_str_list.append('[COLOR yellow]Skipping launcher[/COLOR]')
+                detailed_slist.append('Launcher has multidisc ROMs.')
+                detailed_slist.append('[COLOR yellow]Skipping launcher[/COLOR]')
                 continue
             # Remove ROM Audit Missing ROMs (fake ROMs).
             real_roms = {}
@@ -10531,12 +10534,12 @@ class Main:
             num_real_roms = len(real_roms)
             R_str = 'ROM' if num_real_roms == 1 else 'ROMs'
             log_debug('Launcher has {} real {}'.format(num_real_roms, R_str))
-            main_str_list.append('Launcher has {} real {}'.format(num_real_roms, R_str))
+            detailed_slist.append('Launcher has {} real {}'.format(num_real_roms, R_str))
             # If Launcher is empty there is nothing to do.
             if num_real_roms < 1:
                 log_debug('Launcher is empty')
-                main_str_list.append('Launcher is empty')
-                main_str_list.append('[COLOR yellow]Skipping launcher[/COLOR]')
+                detailed_slist.append('Launcher is empty')
+                detailed_slist.append('[COLOR yellow]Skipping launcher[/COLOR]')
                 continue
             # Make a dictionary for fast indexing.
             romfiles_dic = {real_roms[rom_id]['filename'] : rom_id for rom_id in real_roms}
@@ -10554,7 +10557,7 @@ class Main:
             num_files = len(files)
             f_str = 'file' if num_files == 1 else 'files'
             log_debug('File scanner found {} files'.format(num_files, f_str))
-            main_str_list.append('File scanner found {} files'.format(num_files, f_str))
+            detailed_slist.append('File scanner found {} files'.format(num_files, f_str))
 
             # Check for dead ROMs (ROMs in AEL DB not on disk).
             pdialog.updateMessage2('Checking dead ROMs...')
@@ -10565,9 +10568,9 @@ class Main:
                 if not fileName.exists(): num_dead_roms += 1
             if num_dead_roms > 0:
                 R_str = 'ROM' if num_dead_roms == 1 else 'ROMs'
-                main_str_list.append('Found {} dead {}'.format(num_dead_roms, R_str))
+                detailed_slist.append('Found {} dead {}'.format(num_dead_roms, R_str))
             else:
-                main_str_list.append('No dead ROMs found')
+                detailed_slist.append('No dead ROMs found')
 
             # Check for unsynced ROMs (ROMS on disk not in AEL DB).
             pdialog.updateMessage2('Checking unsynced ROMs...')
@@ -10589,20 +10592,30 @@ class Main:
                 if not ROM_in_launcher_DB: num_unsynced_roms += 1
             if num_unsynced_roms > 0:
                 R_str = 'ROM' if num_unsynced_roms == 1 else 'ROMs'
-                main_str_list.append('Found {} unsynced {}'.format(num_unsynced_roms, R_str))
+                detailed_slist.append('Found {} unsynced {}'.format(num_unsynced_roms, R_str))
             else:
-                main_str_list.append('No unsynced ROMs found')
+                detailed_slist.append('No unsynced ROMs found')
             update_launcher_flag = True if num_dead_roms > 0 or num_unsynced_roms > 0 else False
             if update_launcher_flag:
-                main_str_list.append('[COLOR red]Launcher should be updated[/COLOR]')
+                short_slist.append([launcher['m_name'], 'Update launcher'])
+                detailed_slist.append('[COLOR red]Launcher should be updated[/COLOR]')
             else:
-                main_str_list.append('[COLOR green]Launcher OK[/COLOR]')
+                short_slist.append([launcher['m_name'], 'Launcher OK'])
+                detailed_slist.append('[COLOR green]Launcher OK[/COLOR]')
+            detailed_slist.append('')
         pdialog.endProgress()
 
         # Generate, save and display report.
         log_info('Writing report file "{0}"'.format(g_PATHS.ROM_SYNC_REPORT_FILE_PATH.getPath()))
         pdialog.startProgress('Saving report')
-        full_string = '\n'.join(main_str_list).encode('utf-8')
+        main_slist.append('*** Summary ***')
+        main_slist.append('There are {} ROM launchers.'.format(num_launchers))
+        main_slist.append('')
+        main_slist.extend(text_render_table_NO_HEADER(short_slist))
+        main_slist.append('')
+        main_slist.append('*** Detailed report ***')
+        main_slist.extend(detailed_slist)
+        full_string = '\n'.join(main_slist).encode('utf-8')
         file = open(g_PATHS.ROM_SYNC_REPORT_FILE_PATH.getPath(), 'w')
         file.write(full_string)
         file.close()
