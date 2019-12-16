@@ -200,6 +200,9 @@ FIX      When fixing ROM Collections the order of the ROM list is lost. Repaired
          placed at the end of the list and the original order is lost.
          This was a very long standing bug.
 
+FIX      Fix crash when using "Export ROM metadata to NFO files"
+         Crash was related to the deprecated kodi_busydialog_ON()
+
 
 [B]Advanced Emulator Launcher | version 0.9.8 | 16 September 2019[/B]
 

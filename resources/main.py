@@ -2223,18 +2223,16 @@ class Main:
 
                 # --- Export ROM metadata to NFO files ---
                 elif type2 == 6:
-                    # >> Load ROMs for current launcher, iterate and write NFO files
+                    # Load ROMs for current launcher, iterate and write NFO files
                     roms = fs_load_ROMs_JSON(g_PATHS.ROMS_DIR, self.launchers[launcherID])
                     if not roms: return
-                    kodi_busydialog_ON()
                     num_nfo_files = 0
                     for rom_id in roms:
                         # >> Skip No-Intro Added ROMs
                         if not roms[rom_id]['filename']: continue
                         fs_export_ROM_NFO(roms[rom_id], verbose = False)
                         num_nfo_files += 1
-                    kodi_busydialog_OFF()
-                    # >> No need to save launchers XML / Update container
+                    # No need to save launchers XML / Update container
                     kodi_notify('Created {0} NFO files'.format(num_nfo_files))
                     return
 
