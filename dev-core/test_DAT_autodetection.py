@@ -68,11 +68,11 @@ for platform in AEL_platforms:
         table_str.append([platform.compact_name, str(platform.aliasof), platform.DAT, DAT_str])
 
 # Print report
-slist.extend(text_render_table_str(table_str))
+slist.extend(text_render_table(table_str))
 text_str = '\n'.join(slist).encode('utf-8')
 print(text_str)
 print('\nWriting file "{}"'.format(fname_txt))
 write_txt_file(fname_txt, text_str)
-text_csv = '\n'.join(text_render_table_CSV_slist(table_str))
+text_csv = '\n'.join(text_render_table_CSV(table_str))
 print('Writing file "{}"'.format(fname_csv))
 write_txt_file(fname_csv, text_csv)

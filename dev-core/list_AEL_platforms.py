@@ -70,7 +70,7 @@ for i in range(len(p_longname_list)):
     else:
         table_str.append(['', a, b])
 if not_sorted_flag:
-    print('\n'.join(text_render_table_str(table_str)))
+    print('\n'.join(text_render_table(table_str)))
     print('Platforms not sorted alphabetically. Exiting.')
     sys.exit(1)
 print('Platforms sorted alphabetically.')
@@ -89,14 +89,14 @@ for p_obj in AEL_platforms:
 header_list = []
 header_list.append('Number of AEL platforms {}'.format(len(AEL_platforms)))
 header_list.append('')
-table_str_list = text_render_table_str(table_str)
+table_str_list = text_render_table(table_str)
 header_list.extend(table_str_list)
 text_str = '\n'.join(header_list)
 print(text_str)
 # Output file in TXT and CSV format
 print('\nWriting file "{}"'.format(fname_longname_txt))
 write_txt_file(fname_longname_txt, text_str)
-text_csv = '\n'.join(text_render_table_CSV_slist(table_str))
+text_csv = '\n'.join(text_render_table_CSV(table_str))
 print('Writing file "{}"'.format(fname_longname_csv))
 write_txt_file(fname_longname_csv, text_csv)
 
@@ -114,13 +114,13 @@ for p_obj in sorted(AEL_platforms, key = lambda x: x.short_name.lower(), reverse
 header_list = []
 header_list.append('Number of AEL platforms {}'.format(len(AEL_platforms)))
 header_list.append('')
-table_str_list = text_render_table_str(table_str)
+table_str_list = text_render_table(table_str)
 header_list.extend(table_str_list)
 text_str = '\n'.join(header_list)
 # Output file in TXT and CSV format
 print('\nWriting file "{}"'.format(fname_shortname_txt))
 write_txt_file(fname_shortname_txt, text_str)
-text_csv = '\n'.join(text_render_table_CSV_slist(table_str))
+text_csv = '\n'.join(text_render_table_CSV(table_str))
 print('Writing file "{}"'.format(fname_shortname_csv))
 write_txt_file(fname_shortname_csv, text_csv)
 
@@ -138,12 +138,12 @@ for p_obj in sorted(AEL_platforms, key = lambda x: (x.category.lower(), x.long_n
 header_list = []
 header_list.append('Number of AEL platforms {}'.format(len(AEL_platforms)))
 header_list.append('')
-table_str_list = text_render_table_str(table_str)
+table_str_list = text_render_table(table_str)
 header_list.extend(table_str_list)
 text_str = '\n'.join(header_list)
 # Output file in TXT and CSV format
 print('\nWriting file "{}"'.format(fname_category_txt))
 write_txt_file(fname_category_txt, text_str)
-text_csv = '\n'.join(text_render_table_CSV_slist(table_str))
+text_csv = '\n'.join(text_render_table_CSV(table_str))
 print('Writing file "{}"'.format(fname_category_csv))
 write_txt_file(fname_category_csv, text_csv)

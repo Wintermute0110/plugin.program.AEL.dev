@@ -52,7 +52,7 @@ for key in sorted(json_data, key = lambda x: json_data[x]['corename'].lower(), r
         remove_commas(idata['systemid']), remove_commas(idata['systemname']),
         remove_commas(idata['supports_no_game']),
     ])
-table_long_str_list = text_render_table_str(table_str)
+table_long_str_list = text_render_table(table_str)
 text_long_str = '\n'.join(table_long_str_list)
 print(text_long_str)
 
@@ -60,7 +60,7 @@ print(text_long_str)
 print('\nWriting file "{}"'.format(fname_longname_txt))
 write_txt_file(fname_longname_txt, text_long_str)
 print('Writing file "{}"'.format(fname_longname_csv))
-text_csv = '\n'.join(text_render_table_CSV_slist(table_str))
+text_csv = '\n'.join(text_render_table_CSV(table_str))
 write_txt_file(fname_longname_csv, text_csv)
 
 # Short alphabetically by categories and then corename
@@ -77,12 +77,12 @@ for key in sorted(json_data,
         remove_commas(idata['systemid']), remove_commas(idata['systemname']),
         remove_commas(idata['supports_no_game']),
     ])
-table_short_str_list = text_render_table_str(table_str)
+table_short_str_list = text_render_table(table_str)
 text_short_str = '\n'.join(table_short_str_list)
 
 # Write TXT/CSV files
 print('\nWriting file "{}"'.format(fname_shortname_txt))
 write_txt_file(fname_shortname_txt, text_short_str)
 print('Writing file "{}"'.format(fname_shortname_csv))
-text_csv = '\n'.join(text_render_table_CSV_slist(table_str))
+text_csv = '\n'.join(text_render_table_CSV(table_str))
 write_txt_file(fname_shortname_csv, text_csv)

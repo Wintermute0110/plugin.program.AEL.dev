@@ -181,6 +181,15 @@ def text_render_table(table_str):
 
 # First row             column aligment 'right' or 'left'
 # Second and next rows  table data
+# Input:
+# table_str = [
+#     ['left', 'left', 'left'],
+#     ['Platform', 'Parents', 'Clones'],
+#     ['', '', ''],
+# ]
+#
+# Output:
+#
 def text_render_table_NO_HEADER(table_str):
     rows = len(table_str)
     cols = len(table_str[0])

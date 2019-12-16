@@ -60,7 +60,7 @@ for key in sorted(json_data, key = lambda x: json_data[x]['corename'].lower(), r
             remove_commas(BIOS_dic['desc']), str(not BIOS_dic['opt']),
         ])
         num_BIOS += 1
-table_long_str_list = text_render_table_str(table_str)
+table_long_str_list = text_render_table(table_str)
 text_long_str = '\n'.join(table_long_str_list)
 print(text_long_str)
 print('There are {} BIOSes'.format(num_BIOS))
@@ -69,7 +69,7 @@ print('There are {} BIOSes'.format(num_BIOS))
 print('\nWriting file "{}"'.format(fname_core_BIOS_txt))
 write_txt_file(fname_core_BIOS_txt, text_long_str)
 print('Writing file "{}"'.format(fname_core_BIOS_csv))
-text_csv = '\n'.join(text_render_table_CSV_slist(table_str))
+text_csv = '\n'.join(text_render_table_CSV(table_str))
 write_txt_file(fname_core_BIOS_csv, text_csv)
 
 # --- For each BIOS list cores that use that BIOS ------------------------------------------------
@@ -150,7 +150,7 @@ for BIOS_dic in BIOS_data:
                 ' ', ' ', ' ', str(not B_dic['opt']), B_dic['corename']
             ])
         counter += 1
-table_long_str_list = text_render_table_str(table_str)
+table_long_str_list = text_render_table(table_str)
 text_long_str = '\n'.join(table_long_str_list)
 print(text_long_str)
 
@@ -158,7 +158,7 @@ print(text_long_str)
 print('\nWriting file "{}"'.format(fname_BIOS_core_txt))
 write_txt_file(fname_BIOS_core_txt, text_long_str)
 print('Writing file "{}"'.format(fname_BIOS_core_csv))
-text_csv = '\n'.join(text_render_table_CSV_slist(table_str))
+text_csv = '\n'.join(text_render_table_CSV(table_str))
 write_txt_file(fname_BIOS_core_csv, text_csv)
 
 # Generate BIOS_core list into AEL data directory.

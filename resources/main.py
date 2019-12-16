@@ -10691,7 +10691,7 @@ class Main:
 
         # Print report
         slist = []
-        slist.extend(text_render_table_str(table_str))
+        slist.extend(text_render_table(table_str))
         full_string = '\n'.join(slist).encode('utf-8')
         kodi_display_text_window_mono('No-Intro/Redump DAT files report', full_string)
 
@@ -11097,7 +11097,7 @@ class Main:
 
         # Generate table and print report
         # log_debug(unicode(table_str))
-        sl.extend(text_render_table_str(table_str))
+        sl.extend(text_render_table(table_str))
         kodi_display_text_window_mono(window_title, '\n'.join(sl))
 
     # TODO Add a table columnd to tell user if the DAT is automatic or custom.
@@ -11161,7 +11161,7 @@ class Main:
 
         # Generate table and print report
         # log_debug(unicode(table_str))
-        sl.extend(text_render_table_str(table_str))
+        sl.extend(text_render_table(table_str))
         kodi_display_text_window_mono(window_title, '\n'.join(sl))
 
     # A set of functions to help making plugin URLs
