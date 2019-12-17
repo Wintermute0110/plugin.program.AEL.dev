@@ -4130,8 +4130,8 @@ class Main:
         # xbmcplugin.addDirectoryItem(handle = self.addon_handle, url = url_str, listitem = listitem, isFolder = False)
 
         vcategory_name = 'Delete ROMs redundant artwork'
-        vcategory_plot = ('Scans all ROM Launchers and finds redundant '
-            'or unused ROMs artwork. You may delete this unneeded images.')
+        vcategory_plot = ('Scans all ROM Launchers and finds '
+            '[COLOR orange]redundant ROMs artwork[/COLOR]. You may delete this unneeded images.')
         listitem = xbmcgui.ListItem(vcategory_name)
         listitem.setInfo('video', {'title': vcategory_name, 'plot' : vcategory_plot, 'overlay': 4})
         listitem.setArt({'icon' : vcategory_icon, 'fanart' : vcategory_fanart, 'poster' : vcategory_poster})
@@ -4144,7 +4144,7 @@ class Main:
         vcategory_name = 'Show detected No-Intro/Redump DATs'
         vcategory_plot = ('Display the auto-detected No-Intro/Redump DATs that will be used for the '
             'ROM audit. You have to configure the DAT directories in '
-            '[COLOR=orange]AEL addon settings[/COLOR], [COLOR=orange]ROM Audit[/COLOR] tab.')
+            '[COLOR orange]AEL addon settings[/COLOR], [COLOR=orange]ROM Audit[/COLOR] tab.')
         listitem = xbmcgui.ListItem(vcategory_name)
         listitem.setInfo('video', {'title': vcategory_name, 'plot' : vcategory_plot, 'overlay': 4})
         listitem.setArt({'icon' : vcategory_icon, 'fanart' : vcategory_fanart, 'poster' : vcategory_poster})
@@ -4155,8 +4155,9 @@ class Main:
         xbmcplugin.addDirectoryItem(handle = self.addon_handle, url = url_str, listitem = listitem, isFolder = False)
 
         vcategory_name = 'Check Retroarch launchers'
-        vcategory_plot = ('Check Retroarch ROM launchers for missing Libretro cores set with argument '
-            '[COLOR=orange]-L[/COLOR]. This only works in Linux and Windows platforms.')
+        vcategory_plot = ('Check [COLOR orange]Retroarch ROM launchers[/COLOR] for missing '
+            'Libretro cores set with [COLOR=orange]argument -L[/COLOR]. '
+            'This only works in Linux and Windows platforms.')
         listitem = xbmcgui.ListItem(vcategory_name)
         listitem.setInfo('video', {'title': vcategory_name, 'plot' : vcategory_plot, 'overlay': 4})
         listitem.setArt({'icon' : vcategory_icon, 'fanart' : vcategory_fanart, 'poster' : vcategory_poster})
@@ -4169,10 +4170,10 @@ class Main:
         # <setting label="Check Retroarch BIOSes ..."
         #  action="RunPlugin(plugin://plugin.program.advanced.emulator.launcher/?com=CHECK_RETRO_BIOS)"/>
         vcategory_name = 'Check Retroarch BIOSes'
-        vcategory_plot = ('Check Retroarch BIOSes. You need to configure the Libretro system '
-            'directory in [COLOR=orange]AEL addon settings[/COLOR], '
-            '[COLOR=orange]Misc settings[/COLOR] tab. The setting '
-            '[COLOR=orange]Only check mandatory BIOSes[/COLOR] affects this report.')
+        vcategory_plot = ('Check [COLOR orange]Retroarch BIOSes[/COLOR]. You need to configure the '
+            'Libretro system directory in [COLOR orange]AEL addon settings[/COLOR], '
+            '[COLOR orange]Misc settings[/COLOR] tab. The setting '
+            '[COLOR orange]Only check mandatory BIOSes[/COLOR] affects this report.')
         listitem = xbmcgui.ListItem(vcategory_name)
         listitem.setInfo('video', {'title': vcategory_name, 'plot' : vcategory_plot, 'overlay': 4})
         listitem.setArt({'icon' : vcategory_icon, 'fanart' : vcategory_fanart, 'poster' : vcategory_poster})
