@@ -4104,7 +4104,7 @@ class Main:
         # url_str = self._misc_url('EXECUTE_UTILS_CHECK_ARTWORK_INTEGRITY')
         # xbmcplugin.addDirectoryItem(handle = self.addon_handle, url = url_str, listitem = listitem, isFolder = False)
 
-        vcategory_name = 'Check ROM artwork image integrity'
+        vcategory_name = 'Check ROMs artwork image integrity'
         vcategory_plot = ('Scans existing [COLOR=orange]ROMs artwork images[/COLOR] in ROM Launchers '
             'and verifies that the images have correct extension '
             'and size is greater than 0. You can delete corrupted images to be rescraped later.')
@@ -10526,6 +10526,7 @@ class Main:
                 detailed_slist.append('Launcher has multidisc ROMs.')
                 detailed_slist.append('[COLOR yellow]Skipping launcher[/COLOR]')
                 continue
+            # Get real ROMs (remove Missing, Multidisc, etc., ROMs).
             # Remove ROM Audit Missing ROMs (fake ROMs).
             real_roms = {}
             for rom_id in roms:
@@ -10626,13 +10627,91 @@ class Main:
         kodi_dialog_OK('EXECUTE_UTILS_CHECK_ARTWORK_INTEGRITY not implemented yet.')
 
     def _command_exec_utils_check_ROM_artwork_integrity(self):
+        log_info('_command_exec_utils_check_ROM_artwork_integrity() Beginning...')
         kodi_dialog_OK('EXECUTE_UTILS_CHECK_ROM_ARTWORK_INTEGRITY not implemented yet.')
 
     def _command_exec_utils_delete_redundant_artwork(self):
         kodi_dialog_OK('EXECUTE_UTILS_DELETE_REDUNDANT_ARTWORK not implemented yet.')
 
     def _command_exec_utils_delete_ROM_redundant_artwork(self):
-        kodi_dialog_OK('EXECUTE_UTILS_DELETE_ROM_REDUNDANT_ARTWORK not implemented yet.')
+        log_info('_command_exec_utils_delete_ROM_redundant_artwork() Beginning...')
+        pdialog = KodiProgressDialog()
+        num_launchers = len(self.launchers)
+        main_slist = []
+        detailed_slist = []
+        pdialog.startProgress('Checking ROM sync status', num_launchers)
+        processed_launchers = 0
+        for launcher_id in sorted(self.launchers, key = lambda x : self.launchers[x]['m_name']):
+            pdialog.updateProgress(processed_launchers)
+            processed_launchers += 1
+            launcher = self.launchers[launcher_id]
+            # Skip non-ROM launcher.
+            if not launcher['rompath']: continue
+            log_debug('Checking ROM Launcher "{}"'.format(launcher['m_name']))
+            detailed_slist.append('[COLOR orange]Launcher "{0}"[/COLOR]'.format(launcher['m_name']))
+            # Load ROMs.
+            pdialog.updateMessage2('Loading ROMs...')
+            roms = fs_load_ROMs_JSON(g_PATHS.ROMS_DIR, launcher)
+            num_roms = len(roms)
+            R_str = 'ROM' if num_roms == 1 else 'ROMs'
+            log_debug('Launcher has {} DB {}'.format(num_roms, R_str))
+            detailed_slist.append('Launcher has {} DB {}'.format(num_roms, R_str))
+            # For now skip multidisc ROMs until multidisc support is fixed. I think for
+            # every ROM in the multidisc set there should be a normal ROM not displayed
+            # in listings, and then the special multidisc ROM that points to the ROMs
+            # in the set.
+            has_multidisc_ROMs = False
+            for rom_id in roms:
+                if roms[rom_id]['disks']: 
+                    has_multidisc_ROMs = True
+                    break
+            if has_multidisc_ROMs:
+                log_debug('Launcher has multidisc ROMs. Skipping launcher')
+                detailed_slist.append('Launcher has multidisc ROMs.')
+                detailed_slist.append('[COLOR yellow]Skipping launcher[/COLOR]')
+                continue
+            # Get real ROMs (remove Missing, Multidisc, etc., ROMs).
+            # Remove ROM Audit Missing ROMs (fake ROMs).
+            real_roms = {}
+            for rom_id in roms:
+                if roms[rom_id]['nointro_status'] == AUDIT_STATUS_MISS: continue
+                real_roms[rom_id] = roms[rom_id]
+            num_real_roms = len(real_roms)
+            R_str = 'ROM' if num_real_roms == 1 else 'ROMs'
+            log_debug('Launcher has {} real {}'.format(num_real_roms, R_str))
+            detailed_slist.append('Launcher has {} real {}'.format(num_real_roms, R_str))
+            # If Launcher is empty there is nothing to do.
+            if num_real_roms < 1:
+                log_debug('Launcher is empty')
+                detailed_slist.append('Launcher is empty')
+                detailed_slist.append('[COLOR yellow]Skipping launcher[/COLOR]')
+                continue
+            # Make a dictionary for fast indexing.
+            # romfiles_dic = {real_roms[rom_id]['filename'] : rom_id for rom_id in real_roms}
+
+            # Process all asset directories one by one.
+            
+
+            # Complete detailed report.
+            detailed_slist.append('')
+        pdialog.endProgress()
+
+        # Generate, save and display report.
+        log_info('Writing report file "{0}"'.format(g_PATHS.ROM_SYNC_REPORT_FILE_PATH.getPath()))
+        pdialog.startProgress('Saving report')
+        main_slist.append('*** Summary ***')
+        main_slist.append('There are {} ROM launchers.'.format(num_launchers))
+        main_slist.append('')
+        # main_slist.extend(text_render_table_NO_HEADER(short_slist, trim_Kodi_colours = True))
+        # main_slist.append('')
+        main_slist.append('*** Detailed report ***')
+        main_slist.extend(detailed_slist)
+        full_string = '\n'.join(main_slist).encode('utf-8')
+        file = open(g_PATHS.ROM_SYNC_REPORT_FILE_PATH.getPath(), 'w')
+        file.write(full_string)
+        file.close()
+        pdialog.endProgress()
+        kodi_display_text_window_mono('ROM redundant artwork report', full_string)
 
     # Shows a report of the auto-detected No-Intro/Redump DAT files.
     # This simplifies a lot the ROM Audit of launchers and other things like the
