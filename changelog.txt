@@ -151,18 +151,18 @@ WIP      [COLLECTIONS] Current way of storing the collection artwork, in a unifi
          ROM_name_platform_fanart.png, platform is the short name and it's only used if
          there is filename amgibuity (same ROM name in different platforms in the collection).
 
-WIP      Improve the Offline Scraper. XML to JSON databases and fix platforms.
+WIP      [SCRAPERS] Improve the Offline Scraper. XML to JSON databases and fix platforms.
+
+WIP      [CORE] New Utility "Check artwork image integrity"
+
+WIP      [CORE] New Utility "Delete redundant artwork"
 
 
 [B]Advanced Emulator Launcher | version 0.9.9 | xx January 2020[/B]
 
 FEATURE  [CORE] New Utility "Check Launcher ROMs sync status"
 
-WIP      [CORE] New Utility "Check artwork image integrity"
-
 WIP      [CORE] New Utility "Check ROMs artwork image integrity"
-
-WIP      [CORE] New Utility "Delete redundant artwork"
 
 WIP      [CORE] New Utility "Delete ROMs redundant artwork"
 
