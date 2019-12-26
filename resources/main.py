@@ -599,7 +599,7 @@ def m_gui_render_AEL_scraper_vlaunchers():
 
 def m_gui_render_AEL_scraper_vlaunchers_row(platform, platform_info, db_suffix):
     # >> Mark platform whose XML DB is not available
-    title_str = platformz
+    title_str = platform
     if not db_suffix:
         title_str += ' [COLOR red][Not available][/COLOR]'
     else:
@@ -1794,7 +1794,7 @@ def m_command_add_rom_to_collection(categoryID, launcherID, romID):
         launcher = g_ObjectRepository.find_launcher(actual_launcher_id)
 
     # --- Load Collection index ---
-    collections = self.collection_repository.find_all()
+    collections = g_ObjectRepository.find_collections().collection_repository.find_all()
 
     # --- If no collections so long and thanks for all the fish ---
     if not collections:
@@ -2940,10 +2940,10 @@ def m_command_view_menu(categoryID, launcherID = '', romID = ''):
          action == ACTION_VIEW_LAUNCHER_ASSETS:
         
         # --- Standalone launchers do not have reports! ---
-        category = self.category_repository.find(categoryID)
+        category = g_ObjectFactory.find_category(categoryID)
         category_name = category.get_name()
         
-        launcher = g_LauncherRepository.find(launcherID)
+        launcher = g_ObjectFactory.find_launcher(launcherID)
 
         if not launcher.supports_launching_roms():
             kodi_notify_warn('Cannot create report for standalone launcher')
@@ -2956,7 +2956,7 @@ def m_command_view_menu(categoryID, launcherID = '', romID = ''):
             kodi_notify_warn('No ROMs in launcher. Report not created')
             return
         # --- Regenerate reports if don't exist or are outdated ---
-        self._roms_regenerate_launcher_reports(categoryID, launcherID, roms)
+        m_roms_regenerate_launcher_reports(categoryID, launcherID, roms)
 
         # --- Get report filename ---
         roms_base_noext  = fs_get_ROMs_basename(category_name, launcher.get_name(), launcherID)
@@ -5699,6 +5699,7 @@ def m_subcommand_edit_rom_assets(launcher, rom):
     return
 
 # --- Advanced ROM Modifications ---
+@router.action('ADVANCED_MODS')
 def m_subcommand_advanced_rom_modifications(launcher, rom):
     options = rom.get_advanced_modification_options()
 
