@@ -123,7 +123,8 @@ class Router(object):
             return self._execute(applicable_rules[0].view_func, applicable_rules[0].rule)
         
         log_debug("Found %s applicable routes" % (len(applicable_rules)))
-        sorted_rules = sorted(applicable_rules, key=lambda r: r.amount_matching_arguments - r.amount_arguments, reverse=True)        
+        sorted_rules = sorted(applicable_rules, key=lambda r: (-r.match, -r.amount_arguments))        
+        
         return self._execute(sorted_rules[0].view_func, sorted_rules[0].rule)
     
     def _execute(self, view_func, rule):
@@ -156,3 +157,4 @@ class MatchingRule(object):
         self.view_func = view_func
         self.amount_matching_arguments = amount_matching_arguments
         self.amount_arguments = len(rule.arguments)
+        self.match = amount_matching_arguments / (self.amount_arguments / 100) if self.amount_arguments > 0 else 0
