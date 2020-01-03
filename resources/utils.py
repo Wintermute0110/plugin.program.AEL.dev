@@ -797,6 +797,10 @@ def misc_read_in_chunks(file_object, chunk_size = 8192):
 # https://stackoverflow.com/questions/1742866/compute-crc-of-file-in-python 
 #
 def misc_calculate_checksums(full_file_path):
+    if full_file_path is None:
+        log_debug('No checksum to complete')
+        return None
+    
     log_debug('Computing checksums "{}"'.format(full_file_path))
     try:
         f = open(full_file_path, 'rb')
@@ -1775,6 +1779,7 @@ class NewFileName:
             self.read     = self.read_python
             self.write    = self.write_python
             self.close    = self.close_python
+            self.unlink   = self.unlink_python
         else:
             self.exists         = self.exists_kodivfs
             self.makedirs       = self.makedirs_kodivfs
@@ -1785,6 +1790,7 @@ class NewFileName:
             self.read     = self.read_kodivfs
             self.write    = self.write_kodivfs
             self.close    = self.close_kodivfs
+            self.unlink   = self.unlink_kodivfs
 
     def _decodeName(self, name):
         if type(name) == str:
@@ -1862,8 +1868,8 @@ class NewFileName:
         return os.path.dirname(self.path_str)
 
     # Returns a new FileName object.
-    # def getDirAsFileName(self):
-    #     return self.__init__(self.getDir())
+    def getDirAsFileName(self):
+        return NewFileName(self.getDir())
 
     def getBase(self):
         return os.path.basename(self.path_str)
@@ -1988,6 +1994,9 @@ class NewFileName:
            raise OSError('file not opened')
        self.fileHandle.write(bytes)
 
+    def unlink_python(self):
+        os.remove(self.path_tr)
+            
     # ---------------------------------------------------------------------------------------------
     # File low-level IO functions. Kodi VFS implementation.
     # Kodi VFS documentation in https://alwinesch.github.io/group__python__xbmcvfs.html
@@ -2011,7 +2020,18 @@ class NewFileName:
         if self.fileHandle is None: raise OSError('file not opened')
         self.fileHandle.close()
         self.fileHandle = None
+  
+    def unlink_kodivfs(self):
+        if self.is_a_dir:
+            xbmcvfs.rmdir(self.path_tr)
+            return
         
+        xbmcvfs.delete(self.path_tr)
+        # hard delete if it doesnt succeed
+        #log_debug('xbmcvfs.delete() failed, applying hard delete')
+        if self.exists():
+            self.unlink_python()
+            
     # ---------------------------------------------------------------------------------------------
     # File high-level IO functions
     # These functions are independent of the filesystem implementation.
@@ -2286,8 +2306,10 @@ def kodi_dialog_OK(row1, row2 = '', row3 = '', title = 'Advanced Emulator Launch
 #
 def kodi_dialog_yesno(row1, row2 = '', row3 = '', title = 'Advanced Emulator Launcher'):
     ret = xbmcgui.Dialog().yesno(title, row1, row2, row3)
-
     return ret
+
+def kodi_dialog_yesno_timer(text, timer_ms = 30000, title = 'Advanced Emulator Launcher'):
+    return xbmcgui.Dialog().yesno(title, text, autoclose = timer_ms)
 
 #
 # Displays a small box in the low right corner

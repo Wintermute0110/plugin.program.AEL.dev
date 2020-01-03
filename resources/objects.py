@@ -5667,6 +5667,7 @@ class NvidiaStreamScanner(RomScannerStrategy):
             
         self.progress_dialog.startProgress('Checking for new ROMs ...', num_games)
         streamIdsAlreadyInCollection = set(rom.get_custom_attribute('streamid') for rom in roms)
+        skip_if_scraping_failed = self.settings['scan_skip_on_scraping_failure']
         
         for streamableGame in items:
             
@@ -5684,7 +5685,7 @@ class NvidiaStreamScanner(RomScannerStrategy):
                 log_debug('Not found. Item {0} is new'.format(streamableGame['AppTitle']))
 
                 launcher_path = self.launcher.get_rom_path()
-                romPath = launcher_path.pjoin('{0}.rom'.format(streamableGame['ID']))
+                romPath = launcher_path.pjoin('{0}.rom'.format(streamableGame['AppTitle']))
 
                 # ~~~~~ Process new ROM and add to the list ~~~~~
                 # --- Create new rom dictionary ---
@@ -5696,39 +5697,34 @@ class NvidiaStreamScanner(RomScannerStrategy):
                 new_rom.set_custom_attribute('gamestream_name', streamableGame['AppTitle'])  # so that we always have the original name
                 new_rom.set_name(streamableGame['AppTitle'])
                 
-                searchTerm = streamableGame['AppTitle']
-                
+                scraping_succeeded = True
                 self.progress_dialog.updateMessages(streamableGame['AppTitle'], 'Scraping {0}...'.format(streamableGame['AppTitle']))
-                self.scraping_strategy.scrape(searchTerm, romPath, new_rom)
+                try:
+                    self.scraping_strategy.scanner_process_ROM_begin(new_rom, None)
+                    self.scraping_strategy.scanner_process_ROM_metadata(new_rom)
+                    self.scraping_strategy.scanner_process_ROM_assets(new_rom)
+                except Exception as ex:
+                    scraping_succeeded = False        
+                    log_error('(Exception) Object type "{}"'.format(type(ex)))
+                    log_error('(Exception) Message "{}"'.format(str(ex)))
+                    log_warning('Could not scrape "{}"'.format(streamableGame['AppTitle']))
+                    #log_debug(traceback.format_exc())
                 
-                #if self.scrapers:
-                #    for scraper in self.scrapers:
-                #        self._updateProgressMessage(streamableGame['AppTitle'], 'Scraping {0}...'.format(scraper.getName()))
-                #        scraper.scrape(searchTerm, romPath, new_rom)
-                #
-                #romdata = new_rom.get_data()
-                #log_verb('Set Title     file "{0}"'.format(romdata['s_title']))
-                #log_verb('Set Snap      file "{0}"'.format(romdata['s_snap']))
-                #log_verb('Set Boxfront  file "{0}"'.format(romdata['s_boxfront']))
-                #log_verb('Set Boxback   file "{0}"'.format(romdata['s_boxback']))
-                #log_verb('Set Cartridge file "{0}"'.format(romdata['s_cartridge']))
-                #log_verb('Set Fanart    file "{0}"'.format(romdata['s_fanart']))
-                #log_verb('Set Banner    file "{0}"'.format(romdata['s_banner']))
-                #log_verb('Set Clearlogo file "{0}"'.format(romdata['s_clearlogo']))
-                #log_verb('Set Flyer     file "{0}"'.format(romdata['s_flyer']))
-                #log_verb('Set Map       file "{0}"'.format(romdata['s_map']))
-                #log_verb('Set Manual    file "{0}"'.format(romdata['s_manual']))
-                #log_verb('Set Trailer   file "{0}"'.format(romdata['s_trailer']))
-            
-                new_roms.append(new_rom)
-                            
+                if not scraping_succeeded and skip_if_scraping_failed:
+                    kodi_display_user_message({
+                        'dialog': KODI_MESSAGE_NOTIFY_WARN,
+                        'msg': 'Scraping "{}" failed. Skipping.'.format(streamableGame['AppTitle'])
+                    })
+                else:
+                    new_roms.append(new_rom)
+                  
                 # ~~~ Check if user pressed the cancel button ~~~
-                if self._isProgressCanceled():
+                if self.progress_dialog.isCanceled():
                     self.progress_dialog.endProgress()
                     kodi_dialog_OK('Stopping ROM scanning. No changes have been made.')
                     log_info('User pressed Cancel button when scanning ROMs. ROM scanning stopped.')
                     return None
-            
+                
                 num_items_checked += 1
 
         self.progress_dialog.endProgress()
@@ -5875,7 +5871,7 @@ class RomDatFileScanner(object):
         for rom in roms:
             # >> Use the ROM basename.
             ROMFileName = rom.get_file()
-            roms_set.add(ROMFileName.getBase_noext())
+            roms_set.add(ROMFileName.getBaseNoExt())
         self._updateProgress(100)
         if __debug_progress_dialogs: time.sleep(0.5)
 

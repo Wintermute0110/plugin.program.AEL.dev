@@ -1699,7 +1699,7 @@ def m_command_edit_launcher(categoryID, launcherID):
 # Add ROMS to launcher.
 #
 @router.action('ADD_ROMS', protected=True)
-def m_command_add_roms(categoryID, launcher_id):
+def m_command_add_roms(categoryID, launcherID):
     # NOTE Addition of single ROMs is deprecated. Only use the ROM scanner.
     #      Keep this old code for reference.
     # type = xbmcgui.Dialog().select(
@@ -1711,7 +1711,7 @@ def m_command_add_roms(categoryID, launcher_id):
     #     m_roms_add_new_rom(launcher_id)
 
     # --- Call the ROM scanner ---
-    m_roms_import_roms(categoryID, launcher_id)
+    m_roms_import_roms(categoryID, launcherID)
 
 #
 # Note that categoryID = VCATEGORY_FAVOURITES_ID, launcherID = VLAUNCHER_FAVOURITES_ID if we are editing
@@ -5102,7 +5102,7 @@ def m_subcommand_delete_roms_nfo(category, launcher):
 @router.action('CLEAR_ROMS')
 def m_subcommand_clear_roms(category, launcher):
     # If launcher is empty (no ROMs) do nothing
-    num_roms = launcher.actual_amount_of_roms()
+    num_roms = launcher.actual_amount_of_ROMs()
     if num_roms == 0:
         kodi_dialog_OK('Launcher has no ROMs. Nothing to do.')
         return

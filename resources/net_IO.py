@@ -153,6 +153,7 @@ def net_get_URL(url, url_log = None):
     # If the server returns an HTTP status code then make sure http_code has the error code
     # and page_bytes the message.
     except HTTPError as ex:
+        log_error('(HTTPError) In net_get_URL()')
         http_code = ex.code
         # Try to read contents of the web page.
         # If it fails get error string from the exception object.
@@ -161,7 +162,6 @@ def net_get_URL(url, url_log = None):
             ex.close()
         except:
             page_bytes = unicode(ex.reason)
-        log_error('(HTTPError) In net_get_URL()')
         log_error('(HTTPError) Object type "{}"'.format(type(ex)))
         log_error('(HTTPError) Message "{}"'.format(str(ex)))
         log_error('(HTTPError) Code {}'.format(http_code))
@@ -234,7 +234,8 @@ def net_decode_URL_data(page_bytes, encoding):
     elif encoding == 'text/plain' and 'UTF-8' in page_bytes:  encoding = 'utf-8'
     elif encoding == 'text/plain' and 'UTF-16' in page_bytes: encoding = 'utf-16'
     else:                                                     encoding = 'utf-8'
-    # log_debug('net_decode_URL_data() encoding = "{0}"'.format(encoding))
+    
+    log_debug('net_decode_URL_data() encoding = "{0}"'.format(encoding))
 
     # --- Decode ---
     if encoding == 'utf-16':
@@ -242,20 +243,6 @@ def net_decode_URL_data(page_bytes, encoding):
     else:
         # python3: page_data = str(page_bytes, encoding)
         page_data = unicode(page_bytes, encoding)
-
-    # --- Convert to Unicode ---    
-    if encoding == 'text/html': encoding = 'utf-8'
-    if encoding == 'text/plain' and 'UTF-8' in page_bytes: encoding = 'utf-8'
-    if encoding == 'text/plain' and 'UTF-16' in page_bytes: encoding = 'utf-16'
-    if encoding == 'application/json': encoding = 'utf-8'
-    
-    log_debug('net_get_URL_original() encoding = "{0}"'.format(encoding))
-    if encoding != 'utf-16':
-        #python 3: page_data = str(page_bytes, encoding)
-        page_data = unicode(page_bytes, encoding)
-
-    if encoding == 'utf-16':
-        page_data = page_bytes.encode('utf-16')
 
     return page_data
 

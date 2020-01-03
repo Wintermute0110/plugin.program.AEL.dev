@@ -646,7 +646,7 @@ class ScrapeStrategy(object):
             # I think it is better to keep things like this. If the scraper does not
             # find a proper candidate game the user can fix the scraper cache with the
             # context menu.
-            rom_name_scraping = text_format_ROM_name_for_scraping(ROM_path.getBaseNoExt())
+            rom_name_scraping = text_format_ROM_name_for_scraping(ROM_path.getBaseNoExt())                
             candidates = scraper_obj.get_candidates(rom_name_scraping, ROM_path, ROM_checksums_FN, self.platform, status_dic)
             # * If the scraper produced an error notification show it and continue scanner operation.
             # * Note that if many errors/exceptions happen (for example, network is down) then
@@ -1168,8 +1168,7 @@ class ScrapeStrategy(object):
         log_verb('Into file "{0}"'.format(image_local_path))
         pdialog.startProgress('Downloading {} from {}...'.format(asset_name, scraper_name))
         try:
-            # net_download_img() never prints URLs or paths.
-            net_download_img(image_url, image_local_path)
+            self.scraper_obj.download_image(image_url, image_local_path)
         except socket.timeout:
             pdialog.endProgress()
             kodi_notify_warn('Cannot download {0} image (Timeout)'.format(asset_name))
@@ -1213,7 +1212,7 @@ class ScrapeStrategy(object):
         # * In the ROM scanner empty candidates are never rescraped. In that cases
         #   the user must use the context menu to find a valid candidate.
         if self.scraper_obj.check_candidates_cache(rom_FN, platform):
-            log_debug('ROM "{}" in candidates cache.'.format(rom_FN.getBase_noext()))
+            log_debug('ROM "{}" in candidates cache.'.format(rom_FN.getBaseNoExt()))
             candidate = self.scraper_obj.retrieve_from_candidates_cache(rom_FN, platform)
             if not candidate:
                 kodi_dialog_OK(
@@ -1228,7 +1227,7 @@ class ScrapeStrategy(object):
                     'Scrape', 'Use from cache')
                 use_from_cache = False if ret else True
         else:
-            log_debug('ROM "{}" NOT in candidates cache.'.format(rom_FN.getBase_noext()))
+            log_debug('ROM "{}" NOT in candidates cache.'.format(rom_FN.getBaseNoExt()))
             use_from_cache = False
         log_debug('use_from_cache "{}"'.format(use_from_cache))
 
@@ -1651,6 +1650,13 @@ class Scraper(object):
     @abc.abstractmethod
     def resolve_asset_URL_extension(self, selected_asset, image_url, status_dic): pass
 
+    # Downloads an image from the given url to the local path.
+    # Can overwrite this method in scraper implementation to support extra actions, like
+    # request throttling.
+    def download_image(self, image_url, image_local_path):
+        # net_download_img() never prints URLs or paths.
+        net_download_img(image_url, image_local_path)
+
     # Not used now. candidate['id'] is used as hash value for the whole candidate dictionary.
     # candidate['id'] must be unique for each game.
     # def _dictionary_hash(self, my_dict):
@@ -1867,6 +1873,8 @@ class Null_Scraper(Scraper):
 
     def resolve_asset_URL_extension(self, selected_asset, image_url, status_dic): return ''
 
+    def download_image(self, image_url, image_local_path): pass
+    
 # ------------------------------------------------------------------------------------------------
 # AEL offline metadata scraper.
 # ------------------------------------------------------------------------------------------------
@@ -1919,7 +1927,7 @@ class AEL_Offline(Scraper):
     def get_candidates(self, search_term, rom_FN, rom_checksums_FN, platform, status_dic):
         # AEL Offline cannot be disabled.
         # Prepare data for scraping.
-        rombase_noext = rom_FN.getBase_noext()
+        rombase_noext = rom_FN.getBaseNoExt()
         log_debug('AEL_Offline.get_candidates() rombase_noext "{0}"'.format(rombase_noext))
         log_debug('AEL_Offline.get_candidates() AEL platform  "{0}"'.format(platform))
 
@@ -1970,7 +1978,7 @@ class AEL_Offline(Scraper):
     def resolve_asset_URL(self, selected_asset, status_dic): pass
 
     def resolve_asset_URL_extension(self, selected_asset, image_url, status_dic): pass
-
+        
     # --- This class own methods -----------------------------------------------------------------
     def _get_MAME_candidates(self, rombase_noext, platform):
         log_verb("AEL_Offline._get_MAME_candidates() Scraper working in MAME mode.")
@@ -2176,7 +2184,7 @@ class TheGamesDB(Scraper):
             return None
 
         # Prepare data for scraping.
-        rombase_noext = rom_FN.getBase_noext()
+        rombase_noext = rom_FN.getBaseNoExt()
 
         # --- Get candidates ---
         scraper_platform = AEL_platform_to_TheGamesDB(platform)
@@ -2271,7 +2279,6 @@ class TheGamesDB(Scraper):
             log_debug('TheGamesDB.get_assets() Scraper disabled. Returning empty data.')
             return []
 
-        asset_info = assets_get_info_scheme(asset_info.id)
         log_debug('TheGamesDB.get_assets() Getting assets {} (ID {}) for candidate ID "{}"'.format(
             asset_info.name, asset_info.id, self.candidate['id']))
 
@@ -2762,7 +2769,7 @@ class MobyGames(Scraper):
             return None
 
         # Prepare data for scraping.
-        rombase_noext = rom_FN.getBase_noext()
+        rombase_noext = rom_FN.getBaseNoExt()
 
         # --- Request is not cached. Get candidates and introduce in the cache ---
         scraper_platform = AEL_platform_to_MobyGames(platform)
@@ -2790,7 +2797,7 @@ class MobyGames(Scraper):
             return self._retrieve_from_disk_cache(Scraper.CACHE_METADATA, self.cache_key)
 
         # --- Request is not cached. Get candidates and introduce in the cache ---
-        log_debug('TheGamesDB.get_metadata() Metadata cache miss "{0}"'.format(self.cache_key))
+        log_debug('MobyGames.get_metadata() Metadata cache miss "{0}"'.format(self.cache_key))
         url = 'https://api.mobygames.com/v1/games/{}?api_key={}'.format(self.candidate['id'], self.api_key)
         json_data = self._retrieve_URL_as_JSON(url, status_dic)
         if not status_dic['status']: return None
@@ -2820,7 +2827,6 @@ class MobyGames(Scraper):
             log_debug('MobyGames.get_assets() Scraper disabled. Returning empty data.')
             return []
 
-        asset_info = assets_get_info_scheme(asset_info.id)
         log_debug('MobyGames.get_assets() Getting assets {} (ID {}) for candidate ID "{}"'.format(
             asset_info.name, asset_info.id, self.candidate['id']))
 
@@ -2848,6 +2854,17 @@ class MobyGames(Scraper):
     def resolve_asset_URL_extension(self, selected_asset, image_url, status_dic):
         return text_get_URL_extension(image_url)
 
+    def download_image(self, image_url, image_local_path):
+        self._wait_for_API_request()
+        # net_download_img() never prints URLs or paths.
+        net_download_img(image_url, image_local_path)
+        
+        # failed? retry after 5 seconds
+        if not image_local_path.exists():
+            log_debug('Download failed. Retry after 5 seconds')
+            self._wait_for_API_request(5)
+            net_download_img(image_url, image_local_path)
+        
     # --- This class own methods -----------------------------------------------------------------
     def debug_get_platforms(self, status_dic):
         log_debug('MobyGames.debug_get_platforms() BEGIN...')
@@ -2923,7 +2940,7 @@ class MobyGames(Scraper):
         return genre_str
 
     def _parse_metadata_plot(self, json_data):
-        if 'description' in json_data:
+        if 'description' in json_data and json_data['description'] is not None:
             plot_str = json_data['description']
             plot_str = text_remove_HTML_tags(plot_str) # Clean HTML tags like <i>, </i>
         else:
@@ -2994,7 +3011,7 @@ class MobyGames(Scraper):
         if not status_dic['status']: return None
         self._dump_json_debug('MobyGames_assets_cover.json', json_data)
 
-        if page_data is None:
+        if json_data is None:
             return []
 
         # --- Parse images page data ---
@@ -3095,12 +3112,12 @@ class MobyGames(Scraper):
 
     # From xxxxx
     # 
-    def _wait_for_API_request(self):
+    def _wait_for_API_request(self, wait_time_in_seconds = 1):
         # Make sure we dont go over the TooManyRequests limit of 1 second.
         now = datetime.now()
-        if (now - self.last_http_call).total_seconds() < 1:
-            log_debug('MobyGames._wait_for_API_request() Sleeping 1 second to avoid overloading...')
-            time.sleep(1)
+        if (now - self.last_http_call).total_seconds() < wait_time_in_seconds:
+            log_debug('MobyGames._wait_for_API_request() Sleeping {} second to avoid overloading...'.format(wait_time_in_seconds))
+            time.sleep(wait_time_in_seconds)
             
 # ------------------------------------------------------------------------------------------------
 # ScreenScraper online scraper. Uses V2 API.
@@ -3329,7 +3346,7 @@ class ScreenScraper(Scraper):
     def supports_search_string(self): return False
 
     def supports_metadata_ID(self, metadata_ID):
-        return True if asset_ID in ScreenScraper.supported_metadata_list else False
+        return True if metadata_ID in ScreenScraper.supported_metadata_list else False
 
     def supports_metadata(self): return True
 
@@ -3371,7 +3388,7 @@ class ScreenScraper(Scraper):
         # Prepare data for scraping.
         rombase = rom_FN.getBase()
         rompath = rom_FN.getPath()
-        romchecksums_path = rom_checksums_FN.getPath()
+        romchecksums_path = rom_checksums_FN.getPath() if rom_checksums_FN is not None else None
 
         # --- Get candidates ---
         # ScreenScraper jeuInfos.php returns absolutely everything about a single ROM, including
@@ -4126,8 +4143,8 @@ class GameFAQs(Scraper):
     # https://gamefaqs.gamespot.com/snes/519824-super-mario-world
     def get_metadata(self, status_dic):
         # --- Grab game information page ---
-        log_debug('GameFAQs._scraper_get_metadata() Get metadata from {}'.format(candidate['id']))
-        url = 'https://gamefaqs.gamespot.com{}'.format(candidate['id'])
+        log_debug('GameFAQs._scraper_get_metadata() Get metadata from {}'.format(self.candidate['id']))
+        url = 'https://gamefaqs.gamespot.com{}'.format(self.candidate['id'])
         page_data = net_get_URL(url)
         self._dump_file_debug('GameFAQs_get_metadata.html', page_data)
 
@@ -4139,7 +4156,7 @@ class GameFAQs(Scraper):
 
         # --- Build metadata dictionary ---
         game_data = self._new_gamedata_dic()
-        game_data['title']     = candidate['game_name']
+        game_data['title']     = self.candidate['game_name']
         game_data['year']      = game_year
         game_data['genre']     = game_genre
         game_data['developer'] = game_developer
