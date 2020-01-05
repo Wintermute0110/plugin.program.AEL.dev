@@ -518,20 +518,22 @@ class ScrapeStrategy(object):
                 ROM, ROM_checksums, self.meta_scraper_obj, self.meta_scraper_name, status_dic)
         else:
             log_debug('Metadata candidate game is None')
+            self.meta_scraper_obj.candidate = None
 
         # Asset scraper is needed and metadata and asset scrapers are the same.
         # Do nothing because both scraper objects are really the same object and candidate has been
-        # set internally in the scraper object.
+        # set internally in the scraper object. Unless candidate selection was skipped for metadata.
         temp_asset_list = [x == ScrapeStrategy.ACTION_ASSET_SCRAPER for x in self.asset_action_list]
-        if any(temp_asset_list) and self.meta_and_asset_scraper_same:
-            log_debug('Asset candidate game same as metadata candidate. Doing nothing.')
-        # Otherwise search for an asset scraper candidate if needed.
-        elif any(temp_asset_list):
-            log_debug('Getting asset candidate game.')
-            # What if status_dic reports and error here? Is it ignored?
-            status_dic = kodi_new_status_dic('No error')
-            self._scanner_get_candidate(
-                ROM, ROM_checksums, self.asset_scraper_obj, self.asset_scraper_name, status_dic)
+        if any(temp_asset_list):    
+            if self.meta_and_asset_scraper_same and self.meta_scraper_obj.candidate is not None:
+                log_debug('Asset candidate game same as metadata candidate. Doing nothing.')
+            # Otherwise search for an asset scraper candidate if needed.
+            else:
+                log_debug('Getting asset candidate game.')
+                # What if status_dic reports and error here? Is it ignored?
+                status_dic = kodi_new_status_dic('No error')
+                self._scanner_get_candidate(
+                    ROM, ROM_checksums, self.asset_scraper_obj, self.asset_scraper_name, status_dic)
         # Asset scraper not needed.
         else:
             log_debug('Asset candidate game is None')
@@ -2243,7 +2245,7 @@ class TheGamesDB(Scraper):
         # | alternates      | "alternates": null                    | No   |
         # |-----------------|---------------------------------------|------|
         log_debug('TheGamesDB.get_metadata() Metadata cache miss "{0}"'.format(self.cache_key))
-        url_a = 'https://api.thegamesdb.net/Games/ByGameID?apikey={0}&id={1}'
+        url_a = 'https://api.thegamesdb.net/v1/Games/ByGameID?apikey={0}&id={1}'
         url_b = '&fields=players%2Cgenres%2Coverview%2Crating'
         url_a = url_a.format(self._get_API_key(), self.candidate['id'])
         url = url_a + url_b
@@ -2305,7 +2307,7 @@ class TheGamesDB(Scraper):
     # --- This class own methods -----------------------------------------------------------------
     def debug_get_platforms(self, status_dic):
         log_debug('TheGamesDB.debug_get_platforms() BEGIN...')
-        url = 'https://api.thegamesdb.net/Platforms?apikey={}'.format(self._get_API_key())
+        url = 'https://api.thegamesdb.net/v1/Platforms?apikey={}'.format(self._get_API_key())
         json_data = self._retrieve_URL_as_JSON(url, status_dic)
         if not status_dic['status']: return None
         self._dump_json_debug('TGDB_get_platforms.json', json_data)
@@ -2314,7 +2316,7 @@ class TheGamesDB(Scraper):
 
     def debug_get_genres(self, status_dic):
         log_debug('TheGamesDB.debug_get_genres() BEGIN...')
-        url = 'https://api.thegamesdb.net/Genres?apikey={}'.format(self._get_API_key())
+        url = 'https://api.thegamesdb.net/v1/Genres?apikey={}'.format(self._get_API_key())
         json_data = self._retrieve_URL_as_JSON(url, status_dic)
         if not status_dic['status']: return None
         self._dump_json_debug('TGDB_get_genres.json', json_data)
@@ -2331,7 +2333,7 @@ class TheGamesDB(Scraper):
         # UTF-8 encoded string and does not work with Unicode strings.
         # https://stackoverflow.com/questions/22415345/using-pythons-urllib-quote-plus-on-utf-8-strings-with-safe-arguments
         search_string_encoded = urllib.quote_plus(search_term.encode('utf8'))
-        url_a = 'https://api.thegamesdb.net/Games/ByGameName?'
+        url_a = 'https://api.thegamesdb.net/v1/Games/ByGameName?'
         url_b = 'apikey={0}&name={1}&filter[platform]={2}'.format(
             self._get_API_key(), search_string_encoded, scraper_platform)
         url = url_a + url_b
@@ -2481,7 +2483,7 @@ class TheGamesDB(Scraper):
 
         # --- Cache miss. Retrieve data ---
         log_debug('TheGamesDB._retrieve_genres() Genres global cache miss. Retrieving genres...')
-        url = 'https://api.thegamesdb.net/Genres?apikey={}'.format(self._get_API_key())
+        url = 'https://api.thegamesdb.net/v1/Genres?apikey={}'.format(self._get_API_key())
         page_data = self._retrieve_URL_as_JSON(url, status_dic)
         if not status_dic['status']: return None
         self._dump_json_debug('TGDB_get_genres.json', page_data)
@@ -2506,7 +2508,7 @@ class TheGamesDB(Scraper):
 
         # --- Cache miss. Retrieve data ---
         log_debug('TheGamesDB._retrieve_developers() Developers global cache miss. Retrieving developers...')
-        url = 'https://api.thegamesdb.net/Developers?apikey={}'.format(self._get_API_key())
+        url = 'https://api.thegamesdb.net/v1/Developers?apikey={}'.format(self._get_API_key())
         page_data = self._retrieve_URL_as_JSON(url, status_dic)
         if not status_dic['status']: return None
         self._dump_json_debug('TGDB_get_developers.json', page_data)
@@ -2526,7 +2528,7 @@ class TheGamesDB(Scraper):
         if publisher_ids is None: return ''
         if self.publishers_cached is None:
             log_debug('TheGamesDB:: No cached publishers. Retrieving from online.')
-            url = 'https://api.thegamesdb.net/Publishers?apikey={}'.format(self._get_API_key())
+            url = 'https://api.thegamesdb.net/v1/Publishers?apikey={}'.format(self._get_API_key())
             page_data_raw = net_get_URL(url, self._clean_URL_for_log(url))
             publishers_json = json.loads(page_data_raw)
             self.publishers_cached = {}
@@ -2546,7 +2548,7 @@ class TheGamesDB(Scraper):
 
         # --- Cache miss. Retrieve data and update cache ---
         log_debug('TheGamesDB._retrieve_all_assets() Internal cache miss "{0}"'.format(self.cache_key))
-        url = 'https://api.thegamesdb.net/Games/Images?apikey={}&games_id={}'.format(
+        url = 'https://api.thegamesdb.net/v1/Games/Images?apikey={}&games_id={}'.format(
             self._get_API_key(), candidate['id'])
         asset_list = self._retrieve_assets_from_url(url, candidate['id'], status_dic)
         if not status_dic['status']: return None
