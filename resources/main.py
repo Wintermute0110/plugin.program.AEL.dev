@@ -5658,45 +5658,47 @@ def m_subcommand_scrape_rom_metadata(launcher, rom, command):
     return
 
 # --- Edit ROM Assets/Artwork ---
+@router.action('EDIT_ASSETS')
 def m_subcommand_edit_rom_assets(launcher, rom):
-    asset_infos = self.assetFactory.get_asset_kinds_for_roms()
-    list_items = []
-
-    for asset_info in asset_infos:
-        # >> Create ListItems and label2
-        has_asset   = rom.has_asset(asset_info)
-        label1_text = 'Edit {} ...'.format(asset_info.get_description())
-        label2_text = rom.get_asset(asset_info) if has_asset else 'Not set'
-        list_item   = xbmcgui.ListItem(label = label1_text, label2 = label2_text)
-            
-        # >> Set artwork with setArt()
-        item_img = 'DefaultAddonNone.png'
-        if has_asset:
-            item_path = rom.get_asset_file(asset_info)
-            if item_path.is_video_file():
-                item_img = 'DefaultAddonVideo.png'
-            if item_path.is_document():
-                item_img = 'DefaultAddonImages.png'
-            else:
-                item_img = item_path.getOriginalPath()
-
-        list_item.setArt({'icon' : item_img})
-        list_items.append(list_item)
-
-    # >> Execute select dialog
-    selected_option = xbmcgui.Dialog().select('Edit ROM Assets/Artwork', list = list_items, useDetails = True)
-    if selected_option < 0: 
-        return self._command_edit_rom(launcher.get_category_id(), launcher.get_id(), rom.get_id())
- 
-    selected_asset_info = asset_infos[selected_option]
-    # --- Edit Assets ---
-    # >> If this function returns False no changes were made. No need to save categories
-    # >> XML and update container.
-    if self._gui_edit_asset(KIND_ROM, selected_asset_info.kind, rom.get_data_dic(), launcher.get_category_id(), launcher.get_id()): 
-        launcher.save_ROM(rom)
-
-    self._subcommand_edit_rom_assets(launcher, rom)
-    return
+    m_gui_edit_object_assets(rom)
+    #asset_infos = self.assetFactory.get_asset_kinds_for_roms()
+    #list_items = []
+#
+    #for asset_info in asset_infos:
+    #    # >> Create ListItems and label2
+    #    has_asset   = rom.has_asset(asset_info)
+    #    label1_text = 'Edit {} ...'.format(asset_info.get_description())
+    #    label2_text = rom.get_asset(asset_info) if has_asset else 'Not set'
+    #    list_item   = xbmcgui.ListItem(label = label1_text, label2 = label2_text)
+    #        
+    #    # >> Set artwork with setArt()
+    #    item_img = 'DefaultAddonNone.png'
+    #    if has_asset:
+    #        item_path = rom.get_asset_file(asset_info)
+    #        if item_path.is_video_file():
+    #            item_img = 'DefaultAddonVideo.png'
+    #        if item_path.is_document():
+    #            item_img = 'DefaultAddonImages.png'
+    #        else:
+    #            item_img = item_path.getOriginalPath()
+#
+    #    list_item.setArt({'icon' : item_img})
+    #    list_items.append(list_item)
+#
+    ## >> Execute select dialog
+    #selected_option = xbmcgui.Dialog().select('Edit ROM Assets/Artwork', list = list_items, useDetails = True)
+    #if selected_option < 0: 
+    #    return self._command_edit_rom(launcher.get_category_id(), launcher.get_id(), rom.get_id())
+ #
+    #selected_asset_info = asset_infos[selected_option]
+    ## --- Edit Assets ---
+    ## >> If this function returns False no changes were made. No need to save categories
+    ## >> XML and update container.
+    #if self._gui_edit_asset(KIND_ROM, selected_asset_info.kind, rom.get_data_dic(), launcher.get_category_id(), launcher.get_id()): 
+    #    launcher.save_ROM(rom)
+#
+    #self._subcommand_edit_rom_assets(launcher, rom)
+    #return
 
 # --- Advanced ROM Modifications ---
 @router.action('ADVANCED_MODS')

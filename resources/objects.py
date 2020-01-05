@@ -1671,6 +1671,23 @@ class ROM(MetaDataItemABC):
     def save_to_disk(self): 
         raise NotImplementedError
 
+    # ---------------------------------------------------------------------------------------------
+    # ROM asset methods
+    # ---------------------------------------------------------------------------------------------
+    #
+    # Returns an ordered dictionary with all the object assets, ready to be edited.
+    # Keys are AssetInfo objects.
+    # Values are the current file for the asset as Unicode string or '' if the asset is not set.
+    #
+    def get_assets_odict(self):
+        asset_info_list = g_assetFactory.get_asset_list_by_IDs(ROM_ASSET_ID_LIST)
+        asset_odict = collections.OrderedDict()
+        for asset_info in asset_info_list:
+            asset_fname_str = self.entity_data[asset_info.key] if self.entity_data[asset_info.key] else ''
+            asset_odict[asset_info] = asset_fname_str
+
+        return asset_odict
+    
     def get_edit_options(self, category_id):
         delete_rom_txt = 'Delete ROM'
         if category_id == VCATEGORY_FAVOURITES_ID:
