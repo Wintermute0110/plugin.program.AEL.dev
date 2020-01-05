@@ -1,0 +1,3073 @@
+[
+    {
+        "core_list": [
+            {
+                "corename": "4do", 
+                "desc": "3do_arcade_saot.bin (Shootout At Old Tucson BIOS)", 
+                "md5": "8970fc987ab89a7f64da9f8a8c4333ff", 
+                "opt": true
+            }
+        ], 
+        "path": "3do_arcade_saot.bin"
+    }, 
+    {
+        "core_list": [
+            {
+                "corename": "atari800", 
+                "desc": "5200.rom (5200 BIOS)", 
+                "md5": "281f20ea4320404ec820fb7ec0693b38", 
+                "opt": false
+            }
+        ], 
+        "path": "5200.rom"
+    }, 
+    {
+        "core_list": [
+            {
+                "corename": "parallel_n64_debug", 
+                "desc": "64DD_IPL.bin (64DD IPL ROM)", 
+                "md5": "8d3d9f294b6e174bc7b1d2fd1c727530", 
+                "opt": true
+            }, 
+            {
+                "corename": "parallel_n64", 
+                "desc": "64DD_IPL.bin (64DD IPL ROM)", 
+                "md5": "8d3d9f294b6e174bc7b1d2fd1c727530", 
+                "opt": true
+            }
+        ], 
+        "path": "64DD_IPL.bin"
+    }, 
+    {
+        "core_list": [
+            {
+                "corename": "prosystem", 
+                "desc": "7800 BIOS (U).rom (7800 BIOS)", 
+                "md5": "0763f1ffb006ddbe32e52d497ee848ae", 
+                "opt": true
+            }
+        ], 
+        "path": "7800 BIOS (U).rom"
+    }, 
+    {
+        "core_list": [
+            {
+                "corename": "genesis_plus_gx", 
+                "desc": "areplay.bin (Action Replay ROM)", 
+                "md5": "", 
+                "opt": true
+            }
+        ], 
+        "path": "areplay.bin"
+    }, 
+    {
+        "core_list": [
+            {
+                "corename": "genesis_plus_gx", 
+                "desc": "bios.gg (GameGear BIOS)", 
+                "md5": "", 
+                "opt": true
+            }
+        ], 
+        "path": "bios.gg"
+    }, 
+    {
+        "core_list": [
+            {
+                "corename": "pokemini", 
+                "desc": "bios.min (Pokemon Mini BIOS)", 
+                "md5": "", 
+                "opt": true
+            }
+        ], 
+        "path": "bios.min"
+    }, 
+    {
+        "core_list": [
+            {
+                "corename": "emux_sms", 
+                "desc": "bios.sms (Master System BIOS)", 
+                "md5": "", 
+                "opt": false
+            }
+        ], 
+        "path": "bios.sms"
+    }, 
+    {
+        "core_list": [
+            {
+                "corename": "melonds", 
+                "desc": "bios7.bin (ARM7 BIOS)", 
+                "md5": "df692a80a5b1bc90728bc3dfc76cd948", 
+                "opt": false
+            }, 
+            {
+                "corename": "desmume", 
+                "desc": "bios7.bin (ARM7 BIOS)", 
+                "md5": "df692a80a5b1bc90728bc3dfc76cd948", 
+                "opt": true
+            }
+        ], 
+        "path": "bios7.bin"
+    }, 
+    {
+        "core_list": [
+            {
+                "corename": "melonds", 
+                "desc": "bios9.bin (ARM9 BIOS)", 
+                "md5": "a392174eb3e572fed6447e956bde4b25", 
+                "opt": false
+            }, 
+            {
+                "corename": "desmume", 
+                "desc": "bios9.bin (ARM9 BIOS)", 
+                "md5": "a392174eb3e572fed6447e956bde4b25", 
+                "opt": true
+            }
+        ], 
+        "path": "bios9.bin"
+    }, 
+    {
+        "core_list": [
+            {
+                "corename": "picodrive", 
+                "desc": "bios_CD_E.bin (MegaCD EU BIOS)", 
+                "md5": "e66fa1dc5820d254611fdcdba0662372", 
+                "opt": true
+            }, 
+            {
+                "corename": "genesis_plus_gx", 
+                "desc": "bios_CD_E.bin (MegaCD EU BIOS)", 
+                "md5": "", 
+                "opt": true
+            }
+        ], 
+        "path": "bios_CD_E.bin"
+    }, 
+    {
+        "core_list": [
+            {
+                "corename": "picodrive", 
+                "desc": "bios_CD_J.bin (MegaCD JP BIOS)", 
+                "md5": "278a9397d192149e84e820ac621a8edd", 
+                "opt": true
+            }, 
+            {
+                "corename": "genesis_plus_gx", 
+                "desc": "bios_CD_J.bin (MegaCD JP BIOS)", 
+                "md5": "", 
+                "opt": true
+            }
+        ], 
+        "path": "bios_CD_J.bin"
+    }, 
+    {
+        "core_list": [
+            {
+                "corename": "picodrive", 
+                "desc": "bios_CD_U.bin (SegaCD US BIOS)", 
+                "md5": "2efd74e3232ff260e371b99f84024f7f", 
+                "opt": true
+            }, 
+            {
+                "corename": "genesis_plus_gx", 
+                "desc": "bios_CD_U.bin (SegaCD US BIOS)", 
+                "md5": "", 
+                "opt": true
+            }
+        ], 
+        "path": "bios_CD_U.bin"
+    }, 
+    {
+        "core_list": [
+            {
+                "corename": "genesis_plus_gx", 
+                "desc": "bios_E.sms (MasterSystem EU BIOS)", 
+                "md5": "", 
+                "opt": true
+            }
+        ], 
+        "path": "bios_E.sms"
+    }, 
+    {
+        "core_list": [
+            {
+                "corename": "genesis_plus_gx", 
+                "desc": "bios_J.sms (MasterSystem JP BIOS)", 
+                "md5": "", 
+                "opt": true
+            }
+        ], 
+        "path": "bios_J.sms"
+    }, 
+    {
+        "core_list": [
+            {
+                "corename": "genesis_plus_gx", 
+                "desc": "bios_MD.bin (Mega Drive startup ROM)", 
+                "md5": "", 
+                "opt": true
+            }
+        ], 
+        "path": "bios_MD.bin"
+    }, 
+    {
+        "core_list": [
+            {
+                "corename": "genesis_plus_gx", 
+                "desc": "bios_U.sms (MasterSystem US BIOS)", 
+                "md5": "", 
+                "opt": true
+            }
+        ], 
+        "path": "bios_U.sms"
+    }, 
+    {
+        "core_list": [
+            {
+                "corename": "mu", 
+                "desc": "bootloader-en-m515.rom (MC68VZ328 UART Bootloader)", 
+                "md5": "", 
+                "opt": true
+            }
+        ], 
+        "path": "bootloader-en-m515.rom"
+    }, 
+    {
+        "core_list": [
+            {
+                "corename": "snes9x", 
+                "desc": "BS-X.bin (BS-X - Sore wa Namae o Nusumareta Machi no Monogatari (Japan) (Rev 1))", 
+                "md5": "fed4d8242cfbed61343d53d48432aced", 
+                "opt": true
+            }
+        ], 
+        "path": "BS-X.bin"
+    }, 
+    {
+        "core_list": [
+            {
+                "corename": "o2em", 
+                "desc": "c52.bin (Videopac+ French BIOS - G7000 model)", 
+                "md5": "", 
+                "opt": false
+            }
+        ], 
+        "path": "c52.bin"
+    }, 
+    {
+        "core_list": [
+            {
+                "corename": "sameboy", 
+                "desc": "cgb_boot.bin (Game Boy Color boot ROM)", 
+                "md5": "dbfce9db9deaa2567f6a84fde55f9680", 
+                "opt": true
+            }
+        ], 
+        "path": "cgb_boot.bin"
+    }, 
+    {
+        "core_list": [
+            {
+                "corename": "bsnes_mercury_balanced", 
+                "desc": "cx4.data.rom", 
+                "md5": "", 
+                "opt": true
+            }, 
+            {
+                "corename": "bsnes2014_balanced", 
+                "desc": "cx4.data.rom", 
+                "md5": "", 
+                "opt": true
+            }, 
+            {
+                "corename": "bsnes_mercury_accuracy", 
+                "desc": "cx4.data.rom", 
+                "md5": "", 
+                "opt": true
+            }, 
+            {
+                "corename": "higan_sfc_balanced", 
+                "desc": "cx4.data.rom", 
+                "md5": "", 
+                "opt": true
+            }, 
+            {
+                "corename": "bsnes2014_accuracy", 
+                "desc": "cx4.data.rom", 
+                "md5": "", 
+                "opt": true
+            }, 
+            {
+                "corename": "higan_sfc", 
+                "desc": "cx4.data.rom", 
+                "md5": "", 
+                "opt": true
+            }, 
+            {
+                "corename": "bsnes", 
+                "desc": "cx4.data.rom", 
+                "md5": "", 
+                "opt": true
+            }
+        ], 
+        "path": "cx4.data.rom"
+    }, 
+    {
+        "core_list": [
+            {
+                "corename": "flycast", 
+                "desc": "dc/airlbios.zip (Naomi Airline Pilots deluxe Bios from MAME)", 
+                "md5": "", 
+                "opt": true
+            }
+        ], 
+        "path": "dc/airlbios.zip"
+    }, 
+    {
+        "core_list": [
+            {
+                "corename": "flycast", 
+                "desc": "dc/awbios.zip (Atomiswave BIOS from MAME)", 
+                "md5": "", 
+                "opt": true
+            }
+        ], 
+        "path": "dc/awbios.zip"
+    }, 
+    {
+        "core_list": [
+            {
+                "corename": "redream", 
+                "desc": "boot.bin (Dreamcast BIOS)", 
+                "md5": "", 
+                "opt": false
+            }
+        ], 
+        "path": "dc/boot.bin"
+    }, 
+    {
+        "core_list": [
+            {
+                "corename": "flycast", 
+                "desc": "dc/dc_boot.bin (Dreamcast BIOS)", 
+                "md5": "", 
+                "opt": true
+            }
+        ], 
+        "path": "dc/dc_boot.bin"
+    }, 
+    {
+        "core_list": [
+            {
+                "corename": "flycast", 
+                "desc": "dc/dc_flash.bin (Date/Time/Language)", 
+                "md5": "", 
+                "opt": true
+            }
+        ], 
+        "path": "dc/dc_flash.bin"
+    }, 
+    {
+        "core_list": [
+            {
+                "corename": "flycast", 
+                "desc": "dc/f355bios.zip (Naomi Ferrari F355 Challenge twin/deluxe Bios from MAME)", 
+                "md5": "", 
+                "opt": true
+            }
+        ], 
+        "path": "dc/f355bios.zip"
+    }, 
+    {
+        "core_list": [
+            {
+                "corename": "flycast", 
+                "desc": "dc/f355dlx.zip (Naomi Ferrari F355 Challenge deluxe Bios from MAME)", 
+                "md5": "", 
+                "opt": true
+            }
+        ], 
+        "path": "dc/f355dlx.zip"
+    }, 
+    {
+        "core_list": [
+            {
+                "corename": "redream", 
+                "desc": "flash.bin (Date/Time/Language)", 
+                "md5": "", 
+                "opt": false
+            }
+        ], 
+        "path": "dc/flash.bin"
+    }, 
+    {
+        "core_list": [
+            {
+                "corename": "flycast", 
+                "desc": "dc/hod2bios.zip (Naomi The House of the Dead 2 Bios from MAME)", 
+                "md5": "", 
+                "opt": true
+            }
+        ], 
+        "path": "dc/hod2bios.zip"
+    }, 
+    {
+        "core_list": [
+            {
+                "corename": "flycast", 
+                "desc": "dc/naomi.zip (Naomi Bios from MAME)", 
+                "md5": "", 
+                "opt": true
+            }
+        ], 
+        "path": "dc/naomi.zip"
+    }, 
+    {
+        "core_list": [
+            {
+                "corename": "fmsx", 
+                "desc": "DISK.ROM (DiskROM/BDOS)", 
+                "md5": "", 
+                "opt": true
+            }
+        ], 
+        "path": "DISK.ROM"
+    }, 
+    {
+        "core_list": [
+            {
+                "corename": "mesen", 
+                "desc": "disksys.rom (Family Computer Disk System BIOS)", 
+                "md5": "ca30b50f880eb660a320674ed365ef7a", 
+                "opt": true
+            }, 
+            {
+                "corename": "nestopia", 
+                "desc": "disksys.rom (Family Computer Disk System BIOS)", 
+                "md5": "ca30b50f880eb660a320674ed365ef7a", 
+                "opt": true
+            }, 
+            {
+                "corename": "fceumm", 
+                "desc": "disksys.rom (Family Computer Disk System BIOS)", 
+                "md5": "ca30b50f880eb660a320674ed365ef7a", 
+                "opt": true
+            }, 
+            {
+                "corename": "fixnes", 
+                "desc": "disksys.rom (Family Computer Disk System BIOS)", 
+                "md5": "ca30b50f880eb660a320674ed365ef7a", 
+                "opt": true
+            }
+        ], 
+        "path": "disksys.rom"
+    }, 
+    {
+        "core_list": [
+            {
+                "corename": "emux_gb", 
+                "desc": "dmg_boot.bin (Game Boy Boot ROM)", 
+                "md5": "32fbbd84168d3482956eb3c5051637f5", 
+                "opt": false
+            }, 
+            {
+                "corename": "sameboy", 
+                "desc": "dmg_boot.bin (Game Boy boot ROM)", 
+                "md5": "32fbbd84168d3482956eb3c5051637f5", 
+                "opt": true
+            }
+        ], 
+        "path": "dmg_boot.bin"
+    }, 
+    {
+        "core_list": [
+            {
+                "corename": "bsnes_mercury_balanced", 
+                "desc": "dsp1.data.rom", 
+                "md5": "", 
+                "opt": true
+            }, 
+            {
+                "corename": "bsnes_mercury_performance", 
+                "desc": "dsp1.data.rom", 
+                "md5": "", 
+                "opt": true
+            }, 
+            {
+                "corename": "bsnes2014_balanced", 
+                "desc": "dsp1.data.rom", 
+                "md5": "", 
+                "opt": true
+            }, 
+            {
+                "corename": "bsnes_mercury_accuracy", 
+                "desc": "dsp1.data.rom", 
+                "md5": "", 
+                "opt": true
+            }, 
+            {
+                "corename": "higan_sfc_balanced", 
+                "desc": "dsp1.data.rom", 
+                "md5": "", 
+                "opt": true
+            }, 
+            {
+                "corename": "bsnes2014_performance", 
+                "desc": "dsp1.data.rom", 
+                "md5": "", 
+                "opt": true
+            }, 
+            {
+                "corename": "bsnes2014_accuracy", 
+                "desc": "dsp1.data.rom", 
+                "md5": "", 
+                "opt": true
+            }, 
+            {
+                "corename": "higan_sfc", 
+                "desc": "dsp1.data.rom", 
+                "md5": "", 
+                "opt": true
+            }, 
+            {
+                "corename": "bsnes", 
+                "desc": "dsp1.data.rom", 
+                "md5": "", 
+                "opt": true
+            }
+        ], 
+        "path": "dsp1.data.rom"
+    }, 
+    {
+        "core_list": [
+            {
+                "corename": "bsnes_mercury_balanced", 
+                "desc": "dsp1.program.rom", 
+                "md5": "", 
+                "opt": true
+            }, 
+            {
+                "corename": "bsnes_mercury_performance", 
+                "desc": "dsp1.program.rom", 
+                "md5": "", 
+                "opt": true
+            }, 
+            {
+                "corename": "bsnes2014_balanced", 
+                "desc": "dsp1.program.rom", 
+                "md5": "", 
+                "opt": true
+            }, 
+            {
+                "corename": "bsnes_mercury_accuracy", 
+                "desc": "dsp1.program.rom", 
+                "md5": "", 
+                "opt": true
+            }, 
+            {
+                "corename": "higan_sfc_balanced", 
+                "desc": "dsp1.program.rom", 
+                "md5": "", 
+                "opt": true
+            }, 
+            {
+                "corename": "bsnes2014_performance", 
+                "desc": "dsp1.program.rom", 
+                "md5": "", 
+                "opt": true
+            }, 
+            {
+                "corename": "bsnes2014_accuracy", 
+                "desc": "dsp1.program.rom", 
+                "md5": "", 
+                "opt": true
+            }, 
+            {
+                "corename": "higan_sfc", 
+                "desc": "dsp1.program.rom", 
+                "md5": "", 
+                "opt": true
+            }, 
+            {
+                "corename": "bsnes", 
+                "desc": "dsp1.program.rom", 
+                "md5": "", 
+                "opt": true
+            }
+        ], 
+        "path": "dsp1.program.rom"
+    }, 
+    {
+        "core_list": [
+            {
+                "corename": "bsnes_mercury_balanced", 
+                "desc": "dsp1b.data.rom", 
+                "md5": "", 
+                "opt": true
+            }, 
+            {
+                "corename": "bsnes_mercury_performance", 
+                "desc": "dsp1b.data.rom", 
+                "md5": "", 
+                "opt": true
+            }, 
+            {
+                "corename": "bsnes2014_balanced", 
+                "desc": "dsp1b.data.rom", 
+                "md5": "", 
+                "opt": true
+            }, 
+            {
+                "corename": "bsnes_mercury_accuracy", 
+                "desc": "dsp1b.data.rom", 
+                "md5": "", 
+                "opt": true
+            }, 
+            {
+                "corename": "higan_sfc_balanced", 
+                "desc": "dsp1b.data.rom", 
+                "md5": "", 
+                "opt": true
+            }, 
+            {
+                "corename": "bsnes2014_performance", 
+                "desc": "dsp1b.data.rom", 
+                "md5": "", 
+                "opt": true
+            }, 
+            {
+                "corename": "bsnes2014_accuracy", 
+                "desc": "dsp1b.data.rom", 
+                "md5": "", 
+                "opt": true
+            }, 
+            {
+                "corename": "higan_sfc", 
+                "desc": "dsp1b.data.rom", 
+                "md5": "", 
+                "opt": true
+            }, 
+            {
+                "corename": "bsnes", 
+                "desc": "dsp1b.data.rom", 
+                "md5": "", 
+                "opt": true
+            }
+        ], 
+        "path": "dsp1b.data.rom"
+    }, 
+    {
+        "core_list": [
+            {
+                "corename": "bsnes_mercury_balanced", 
+                "desc": "dsp1b.program.rom", 
+                "md5": "", 
+                "opt": true
+            }, 
+            {
+                "corename": "bsnes_mercury_performance", 
+                "desc": "dsp1b.program.rom", 
+                "md5": "", 
+                "opt": true
+            }, 
+            {
+                "corename": "bsnes2014_balanced", 
+                "desc": "dsp1b.program.rom", 
+                "md5": "", 
+                "opt": true
+            }, 
+            {
+                "corename": "bsnes_mercury_accuracy", 
+                "desc": "dsp1b.program.rom", 
+                "md5": "", 
+                "opt": true
+            }, 
+            {
+                "corename": "higan_sfc_balanced", 
+                "desc": "dsp1b.program.rom", 
+                "md5": "", 
+                "opt": true
+            }, 
+            {
+                "corename": "bsnes2014_performance", 
+                "desc": "dsp1b.program.rom", 
+                "md5": "", 
+                "opt": true
+            }, 
+            {
+                "corename": "bsnes2014_accuracy", 
+                "desc": "dsp1b.program.rom", 
+                "md5": "", 
+                "opt": true
+            }, 
+            {
+                "corename": "higan_sfc", 
+                "desc": "dsp1b.program.rom", 
+                "md5": "", 
+                "opt": true
+            }, 
+            {
+                "corename": "bsnes", 
+                "desc": "dsp1b.program.rom", 
+                "md5": "", 
+                "opt": true
+            }
+        ], 
+        "path": "dsp1b.program.rom"
+    }, 
+    {
+        "core_list": [
+            {
+                "corename": "bsnes_mercury_balanced", 
+                "desc": "dsp2.data.rom", 
+                "md5": "", 
+                "opt": true
+            }, 
+            {
+                "corename": "bsnes_mercury_performance", 
+                "desc": "dsp2.data.rom", 
+                "md5": "", 
+                "opt": true
+            }, 
+            {
+                "corename": "bsnes2014_balanced", 
+                "desc": "dsp2.data.rom", 
+                "md5": "", 
+                "opt": true
+            }, 
+            {
+                "corename": "bsnes_mercury_accuracy", 
+                "desc": "dsp2.data.rom", 
+                "md5": "", 
+                "opt": true
+            }, 
+            {
+                "corename": "higan_sfc_balanced", 
+                "desc": "dsp2.data.rom", 
+                "md5": "", 
+                "opt": true
+            }, 
+            {
+                "corename": "bsnes2014_performance", 
+                "desc": "dsp2.data.rom", 
+                "md5": "", 
+                "opt": true
+            }, 
+            {
+                "corename": "bsnes2014_accuracy", 
+                "desc": "dsp2.data.rom", 
+                "md5": "", 
+                "opt": true
+            }, 
+            {
+                "corename": "higan_sfc", 
+                "desc": "dsp2.data.rom", 
+                "md5": "", 
+                "opt": true
+            }, 
+            {
+                "corename": "bsnes", 
+                "desc": "dsp2.data.rom", 
+                "md5": "", 
+                "opt": true
+            }
+        ], 
+        "path": "dsp2.data.rom"
+    }, 
+    {
+        "core_list": [
+            {
+                "corename": "bsnes_mercury_balanced", 
+                "desc": "dsp2.program.rom", 
+                "md5": "", 
+                "opt": true
+            }, 
+            {
+                "corename": "bsnes_mercury_performance", 
+                "desc": "dsp2.program.rom", 
+                "md5": "", 
+                "opt": true
+            }, 
+            {
+                "corename": "bsnes2014_balanced", 
+                "desc": "dsp2.program.rom", 
+                "md5": "", 
+                "opt": true
+            }, 
+            {
+                "corename": "bsnes_mercury_accuracy", 
+                "desc": "dsp2.program.rom", 
+                "md5": "", 
+                "opt": true
+            }, 
+            {
+                "corename": "higan_sfc_balanced", 
+                "desc": "dsp2.program.rom", 
+                "md5": "", 
+                "opt": true
+            }, 
+            {
+                "corename": "bsnes2014_performance", 
+                "desc": "dsp2.program.rom", 
+                "md5": "", 
+                "opt": true
+            }, 
+            {
+                "corename": "bsnes2014_accuracy", 
+                "desc": "dsp2.program.rom", 
+                "md5": "", 
+                "opt": true
+            }, 
+            {
+                "corename": "higan_sfc", 
+                "desc": "dsp2.program.rom", 
+                "md5": "", 
+                "opt": true
+            }, 
+            {
+                "corename": "bsnes", 
+                "desc": "dsp2.program.rom", 
+                "md5": "", 
+                "opt": true
+            }
+        ], 
+        "path": "dsp2.program.rom"
+    }, 
+    {
+        "core_list": [
+            {
+                "corename": "bsnes_mercury_balanced", 
+                "desc": "dsp3.data.rom", 
+                "md5": "", 
+                "opt": true
+            }, 
+            {
+                "corename": "bsnes_mercury_performance", 
+                "desc": "dsp3.data.rom", 
+                "md5": "", 
+                "opt": true
+            }, 
+            {
+                "corename": "bsnes2014_balanced", 
+                "desc": "dsp3.data.rom", 
+                "md5": "", 
+                "opt": true
+            }, 
+            {
+                "corename": "bsnes_mercury_accuracy", 
+                "desc": "dsp3.data.rom", 
+                "md5": "", 
+                "opt": true
+            }, 
+            {
+                "corename": "higan_sfc_balanced", 
+                "desc": "dsp3.data.rom", 
+                "md5": "", 
+                "opt": true
+            }, 
+            {
+                "corename": "bsnes2014_performance", 
+                "desc": "dsp3.data.rom", 
+                "md5": "", 
+                "opt": true
+            }, 
+            {
+                "corename": "bsnes2014_accuracy", 
+                "desc": "dsp3.data.rom", 
+                "md5": "", 
+                "opt": true
+            }, 
+            {
+                "corename": "higan_sfc", 
+                "desc": "dsp3.data.rom", 
+                "md5": "", 
+                "opt": true
+            }, 
+            {
+                "corename": "bsnes", 
+                "desc": "dsp3.data.rom", 
+                "md5": "", 
+                "opt": true
+            }
+        ], 
+        "path": "dsp3.data.rom"
+    }, 
+    {
+        "core_list": [
+            {
+                "corename": "bsnes_mercury_balanced", 
+                "desc": "dsp3.program.rom", 
+                "md5": "", 
+                "opt": true
+            }, 
+            {
+                "corename": "bsnes_mercury_performance", 
+                "desc": "dsp3.program.rom", 
+                "md5": "", 
+                "opt": true
+            }, 
+            {
+                "corename": "bsnes2014_balanced", 
+                "desc": "dsp3.program.rom", 
+                "md5": "", 
+                "opt": true
+            }, 
+            {
+                "corename": "bsnes_mercury_accuracy", 
+                "desc": "dsp3.program.rom", 
+                "md5": "", 
+                "opt": true
+            }, 
+            {
+                "corename": "higan_sfc_balanced", 
+                "desc": "dsp3.program.rom", 
+                "md5": "", 
+                "opt": true
+            }, 
+            {
+                "corename": "bsnes2014_performance", 
+                "desc": "dsp3.program.rom", 
+                "md5": "", 
+                "opt": true
+            }, 
+            {
+                "corename": "bsnes2014_accuracy", 
+                "desc": "dsp3.program.rom", 
+                "md5": "", 
+                "opt": true
+            }, 
+            {
+                "corename": "higan_sfc", 
+                "desc": "dsp3.program.rom", 
+                "md5": "", 
+                "opt": true
+            }, 
+            {
+                "corename": "bsnes", 
+                "desc": "dsp3.program.rom", 
+                "md5": "", 
+                "opt": true
+            }
+        ], 
+        "path": "dsp3.program.rom"
+    }, 
+    {
+        "core_list": [
+            {
+                "corename": "bsnes_mercury_balanced", 
+                "desc": "dsp4.data.rom", 
+                "md5": "", 
+                "opt": true
+            }, 
+            {
+                "corename": "bsnes_mercury_performance", 
+                "desc": "dsp4.data.rom", 
+                "md5": "", 
+                "opt": true
+            }, 
+            {
+                "corename": "bsnes2014_balanced", 
+                "desc": "dsp4.data.rom", 
+                "md5": "", 
+                "opt": true
+            }, 
+            {
+                "corename": "bsnes_mercury_accuracy", 
+                "desc": "dsp4.data.rom", 
+                "md5": "", 
+                "opt": true
+            }, 
+            {
+                "corename": "higan_sfc_balanced", 
+                "desc": "dsp4.data.rom", 
+                "md5": "", 
+                "opt": true
+            }, 
+            {
+                "corename": "bsnes2014_performance", 
+                "desc": "dsp4.data.rom", 
+                "md5": "", 
+                "opt": true
+            }, 
+            {
+                "corename": "bsnes2014_accuracy", 
+                "desc": "dsp4.data.rom", 
+                "md5": "", 
+                "opt": true
+            }, 
+            {
+                "corename": "higan_sfc", 
+                "desc": "dsp4.data.rom", 
+                "md5": "", 
+                "opt": true
+            }, 
+            {
+                "corename": "bsnes", 
+                "desc": "dsp4.data.rom", 
+                "md5": "", 
+                "opt": true
+            }
+        ], 
+        "path": "dsp4.data.rom"
+    }, 
+    {
+        "core_list": [
+            {
+                "corename": "bsnes_mercury_balanced", 
+                "desc": "dsp4.program.rom", 
+                "md5": "", 
+                "opt": true
+            }, 
+            {
+                "corename": "bsnes_mercury_performance", 
+                "desc": "dsp4.program.rom", 
+                "md5": "", 
+                "opt": true
+            }, 
+            {
+                "corename": "bsnes2014_balanced", 
+                "desc": "dsp4.program.rom", 
+                "md5": "", 
+                "opt": true
+            }, 
+            {
+                "corename": "bsnes_mercury_accuracy", 
+                "desc": "dsp4.program.rom", 
+                "md5": "", 
+                "opt": true
+            }, 
+            {
+                "corename": "higan_sfc_balanced", 
+                "desc": "dsp4.program.rom", 
+                "md5": "", 
+                "opt": true
+            }, 
+            {
+                "corename": "bsnes2014_performance", 
+                "desc": "dsp4.program.rom", 
+                "md5": "", 
+                "opt": true
+            }, 
+            {
+                "corename": "bsnes2014_accuracy", 
+                "desc": "dsp4.program.rom", 
+                "md5": "", 
+                "opt": true
+            }, 
+            {
+                "corename": "higan_sfc", 
+                "desc": "dsp4.program.rom", 
+                "md5": "", 
+                "opt": true
+            }, 
+            {
+                "corename": "bsnes", 
+                "desc": "dsp4.program.rom", 
+                "md5": "", 
+                "opt": true
+            }
+        ], 
+        "path": "dsp4.program.rom"
+    }, 
+    {
+        "core_list": [
+            {
+                "corename": "freeintv", 
+                "desc": "exec.bin", 
+                "md5": "62e761035cb657903761800f4437b8af", 
+                "opt": false
+            }
+        ], 
+        "path": "exec.bin"
+    }, 
+    {
+        "core_list": [
+            {
+                "corename": "fbneo", 
+                "desc": "fbneo/cchip.zip (C-Chip Internal ROM)", 
+                "md5": "", 
+                "opt": true
+            }
+        ], 
+        "path": "fbneo/cchip.zip"
+    }, 
+    {
+        "core_list": [
+            {
+                "corename": "fbneo", 
+                "desc": "fbneo/decocass.zip (DECO Cassette System BIOS)", 
+                "md5": "", 
+                "opt": true
+            }
+        ], 
+        "path": "fbneo/decocass.zip"
+    }, 
+    {
+        "core_list": [
+            {
+                "corename": "fbneo", 
+                "desc": "fbneo/isgsm.zip (ISG Selection Master Type 2006 System BIOS)", 
+                "md5": "", 
+                "opt": true
+            }
+        ], 
+        "path": "fbneo/isgsm.zip"
+    }, 
+    {
+        "core_list": [
+            {
+                "corename": "fbneo", 
+                "desc": "fbneo/midssio.zip (Midway SSIO Sound Board Internal ROM)", 
+                "md5": "", 
+                "opt": true
+            }
+        ], 
+        "path": "fbneo/midssio.zip"
+    }, 
+    {
+        "core_list": [
+            {
+                "corename": "fbneo", 
+                "desc": "fbneo/neocdz.zip (Neo Geo CDZ System BIOS)", 
+                "md5": "", 
+                "opt": true
+            }
+        ], 
+        "path": "fbneo/neocdz.zip"
+    }, 
+    {
+        "core_list": [
+            {
+                "corename": "fbneo", 
+                "desc": "fbneo/neogeo.zip (Neo Geo BIOS)", 
+                "md5": "", 
+                "opt": true
+            }
+        ], 
+        "path": "fbneo/neogeo.zip"
+    }, 
+    {
+        "core_list": [
+            {
+                "corename": "fbneo", 
+                "desc": "fbneo/nmk004.zip (NMK004 Internal ROM)", 
+                "md5": "", 
+                "opt": true
+            }
+        ], 
+        "path": "fbneo/nmk004.zip"
+    }, 
+    {
+        "core_list": [
+            {
+                "corename": "fbneo", 
+                "desc": "fbneo/pgm.zip (PGM System BIOS)", 
+                "md5": "", 
+                "opt": true
+            }
+        ], 
+        "path": "fbneo/pgm.zip"
+    }, 
+    {
+        "core_list": [
+            {
+                "corename": "fbneo", 
+                "desc": "fbneo/skns.zip (Super Kaneko Nova System BIOS)", 
+                "md5": "", 
+                "opt": true
+            }
+        ], 
+        "path": "fbneo/skns.zip"
+    }, 
+    {
+        "core_list": [
+            {
+                "corename": "fbneo", 
+                "desc": "fbneo/ym2608.zip (YM2608 Internal ROM)", 
+                "md5": "", 
+                "opt": true
+            }
+        ], 
+        "path": "fbneo/ym2608.zip"
+    }, 
+    {
+        "core_list": [
+            {
+                "corename": "melonds", 
+                "desc": "firmware.bin (NDS Firmware)", 
+                "md5": "145eaef5bd3037cbc247c213bb3da1b3", 
+                "opt": false
+            }, 
+            {
+                "corename": "desmume", 
+                "desc": "firmware.bin (NDS Firmware)", 
+                "md5": "145eaef5bd3037cbc247c213bb3da1b3", 
+                "opt": true
+            }
+        ], 
+        "path": "firmware.bin"
+    }, 
+    {
+        "core_list": [
+            {
+                "corename": "fmsx", 
+                "desc": "FMPAC.ROM (FMPAC BIOS)", 
+                "md5": "", 
+                "opt": true
+            }
+        ], 
+        "path": "FMPAC.ROM"
+    }, 
+    {
+        "core_list": [
+            {
+                "corename": "freej2me", 
+                "desc": "freej2me-fx.jar", 
+                "md5": "86fdd1ff260cd5a8f4c4d46bdde1a78a", 
+                "opt": false
+            }
+        ], 
+        "path": "freej2me-fx.jar"
+    }, 
+    {
+        "core_list": [
+            {
+                "corename": "freej2me", 
+                "desc": "freej2me-lr.jar", 
+                "md5": "d8aec1b68dc4e2ffc5eeff4e22fd607b", 
+                "opt": false
+            }
+        ], 
+        "path": "freej2me-lr.jar"
+    }, 
+    {
+        "core_list": [
+            {
+                "corename": "freej2me", 
+                "desc": "freej2me.jar", 
+                "md5": "707cbaabaafc2a4f9726a5c03449406a", 
+                "opt": false
+            }
+        ], 
+        "path": "freej2me.jar"
+    }, 
+    {
+        "core_list": [
+            {
+                "corename": "o2em", 
+                "desc": "g7400.bin (Videopac+ European BIOS - G7400 model)", 
+                "md5": "", 
+                "opt": false
+            }
+        ], 
+        "path": "g7400.bin"
+    }, 
+    {
+        "core_list": [
+            {
+                "corename": "mgba", 
+                "desc": "gb_bios.bin (Game Boy BIOS)", 
+                "md5": "32fbbd84168d3482956eb3c5051637f5", 
+                "opt": true
+            }, 
+            {
+                "corename": "vbam", 
+                "desc": "gb_bios.bin (Game Boy BIOS)", 
+                "md5": "32fbbd84168d3482956eb3c5051637f5", 
+                "opt": true
+            }, 
+            {
+                "corename": "gambatte", 
+                "desc": "gb_bios.bin (Game Boy BIOS)", 
+                "md5": "32fbbd84168d3482956eb3c5051637f5", 
+                "opt": true
+            }
+        ], 
+        "path": "gb_bios.bin"
+    }, 
+    {
+        "core_list": [
+            {
+                "corename": "mgba", 
+                "desc": "gba_bios.bin (Game Boy Advance BIOS)", 
+                "md5": "a860e8c0b6d573d191e4ec7db1b1e4f6", 
+                "opt": true
+            }, 
+            {
+                "corename": "vbam", 
+                "desc": "gba_bios.bin (Game Boy Advance BIOS)", 
+                "md5": "a860e8c0b6d573d191e4ec7db1b1e4f6", 
+                "opt": true
+            }, 
+            {
+                "corename": "mednafen_gba", 
+                "desc": "gba_bios.bin (Game Boy Advance BIOS)", 
+                "md5": "a860e8c0b6d573d191e4ec7db1b1e4f6", 
+                "opt": true
+            }, 
+            {
+                "corename": "tempgba", 
+                "desc": "gba_bios.bin (Game Boy Advance BIOS)", 
+                "md5": "a860e8c0b6d573d191e4ec7db1b1e4f6", 
+                "opt": false
+            }, 
+            {
+                "corename": "vba_next", 
+                "desc": "gba_bios.bin (Game Boy Advance BIOS)", 
+                "md5": "a860e8c0b6d573d191e4ec7db1b1e4f6", 
+                "opt": true
+            }, 
+            {
+                "corename": "gpsp", 
+                "desc": "gba_bios.bin (Game Boy Advance BIOS)", 
+                "md5": "a860e8c0b6d573d191e4ec7db1b1e4f6", 
+                "opt": false
+            }
+        ], 
+        "path": "gba_bios.bin"
+    }, 
+    {
+        "core_list": [
+            {
+                "corename": "mgba", 
+                "desc": "gbc_bios.bin (Game Boy Color BIOS)", 
+                "md5": "dbfce9db9deaa2567f6a84fde55f9680", 
+                "opt": true
+            }, 
+            {
+                "corename": "vbam", 
+                "desc": "gbc_bios.bin (Game Boy Color BIOS)", 
+                "md5": "dbfce9db9deaa2567f6a84fde55f9680", 
+                "opt": true
+            }, 
+            {
+                "corename": "gambatte", 
+                "desc": "gbc_bios.bin (Game Boy Color BIOS)", 
+                "md5": "dbfce9db9deaa2567f6a84fde55f9680", 
+                "opt": true
+            }, 
+            {
+                "corename": "fixgb", 
+                "desc": "gbc_bios.bin (Game Boy Color BIOS)", 
+                "md5": "dbfce9db9deaa2567f6a84fde55f9680", 
+                "opt": true
+            }
+        ], 
+        "path": "gbc_bios.bin"
+    }, 
+    {
+        "core_list": [
+            {
+                "corename": "mednafen_pce", 
+                "desc": "gexpress.pce (Game Express CD Card)", 
+                "md5": "", 
+                "opt": true
+            }, 
+            {
+                "corename": "mednafen_supergrafx", 
+                "desc": "gexpress.pce (Game Express CD Card)", 
+                "md5": "", 
+                "opt": true
+            }, 
+            {
+                "corename": "mednafen_pce_fast", 
+                "desc": "gexpress.pce (PCE-CD BIOS)", 
+                "md5": "", 
+                "opt": true
+            }
+        ], 
+        "path": "gexpress.pce"
+    }, 
+    {
+        "core_list": [
+            {
+                "corename": "genesis_plus_gx", 
+                "desc": "ggenie.bin (Game Genie ROM)", 
+                "md5": "", 
+                "opt": true
+            }
+        ], 
+        "path": "ggenie.bin"
+    }, 
+    {
+        "core_list": [
+            {
+                "corename": "4do", 
+                "desc": "goldstar.bin (Goldstar GDO-101M BIOS)", 
+                "md5": "8639fd5e549bd6238cfee79e3e749114", 
+                "opt": true
+            }
+        ], 
+        "path": "goldstar.bin"
+    }, 
+    {
+        "core_list": [
+            {
+                "corename": "freeintv", 
+                "desc": "grom.bin", 
+                "md5": "0cd5946c6473e42e8e4c2137785e427f", 
+                "opt": false
+            }
+        ], 
+        "path": "grom.bin"
+    }, 
+    {
+        "core_list": [
+            {
+                "corename": "o2em", 
+                "desc": "jopac.bin (Videopac+ French BIOS - G7400 model)", 
+                "md5": "", 
+                "opt": false
+            }
+        ], 
+        "path": "jopac.bin"
+    }, 
+    {
+        "core_list": [
+            {
+                "corename": "fmsx", 
+                "desc": "KANJI.ROM (Kanji Font)", 
+                "md5": "febe8782b466d7c3b16de6d104826b34", 
+                "opt": true
+            }
+        ], 
+        "path": "KANJI.ROM"
+    }, 
+    {
+        "core_list": [
+            {
+                "corename": "px68k", 
+                "desc": "cgrom.dat (X68000 BIOS 2)", 
+                "md5": "", 
+                "opt": false
+            }
+        ], 
+        "path": "keropi/cgrom.dat"
+    }, 
+    {
+        "core_list": [
+            {
+                "corename": "px68k", 
+                "desc": "iplrom.dat (X68000 BIOS)", 
+                "md5": "", 
+                "opt": false
+            }
+        ], 
+        "path": "keropi/iplrom.dat"
+    }, 
+    {
+        "core_list": [
+            {
+                "corename": "px68k", 
+                "desc": "iplrom30.dat (X68000 BIOS 3)", 
+                "md5": "", 
+                "opt": true
+            }
+        ], 
+        "path": "keropi/iplrom30.dat"
+    }, 
+    {
+        "core_list": [
+            {
+                "corename": "puae", 
+                "desc": "kick34005.A500 (Amiga 500 BIOS, Kickstart v1.3 Rev. 34.005)", 
+                "md5": "82a21c1890cae844b3df741f2762d48d", 
+                "opt": false
+            }
+        ], 
+        "path": "kick34005.A500"
+    }, 
+    {
+        "core_list": [
+            {
+                "corename": "puae", 
+                "desc": "kick37175.A500 (Amiga 500+ BIOS, Kickstart v2.04 Rev. 37.175)", 
+                "md5": "dc10d7bdd1b6f450773dfb558477c230", 
+                "opt": false
+            }
+        ], 
+        "path": "kick37175.A500"
+    }, 
+    {
+        "core_list": [
+            {
+                "corename": "puae", 
+                "desc": "kick40063.A600 (Amiga 600 BIOS, Kickstart v3.1 Rev. 40.063)", 
+                "md5": "e40a5dfb3d017ba8779faba30cbd1c8e", 
+                "opt": false
+            }
+        ], 
+        "path": "kick40063.A600"
+    }, 
+    {
+        "core_list": [
+            {
+                "corename": "puae", 
+                "desc": "kick40068.A1200 (Amiga 1200 BIOS, Kickstart v3.1 Rev. 40.068)", 
+                "md5": "646773759326fbac3b2311fd8c8793ee", 
+                "opt": false
+            }
+        ], 
+        "path": "kick40068.A1200"
+    }, 
+    {
+        "core_list": [
+            {
+                "corename": "kronos", 
+                "desc": "kronos/saturn_bios.bin (Saturn BIOS)", 
+                "md5": "", 
+                "opt": false
+            }
+        ], 
+        "path": "kronos/saturn_bios.bin"
+    }, 
+    {
+        "core_list": [
+            {
+                "corename": "kronos", 
+                "desc": "kronos/stvbios.zip (ST-V BIOS from MAME)", 
+                "md5": "", 
+                "opt": false
+            }
+        ], 
+        "path": "kronos/stvbios.zip"
+    }, 
+    {
+        "core_list": [
+            {
+                "corename": "mednafen_lynx", 
+                "desc": "lynxboot.img (Lynx Boot Image)", 
+                "md5": "fcd403db69f54290b51035d82f835e7b", 
+                "opt": false
+            }, 
+            {
+                "corename": "handy", 
+                "desc": "lynxboot.img (Lynx Boot Image)", 
+                "md5": "fcd403db69f54290b51035d82f835e7b", 
+                "opt": true
+            }
+        ], 
+        "path": "lynxboot.img"
+    }, 
+    {
+        "core_list": [
+            {
+                "corename": "mednafen_saturn", 
+                "desc": "mpr-17933.bin (Saturn US/EU BIOS)", 
+                "md5": "3240872c70984b6cbfda1586cab68dbe", 
+                "opt": false
+            }
+        ], 
+        "path": "mpr-17933.bin"
+    }, 
+    {
+        "core_list": [
+            {
+                "corename": "mednafen_saturn", 
+                "desc": "mpr-18811-mx.ic1 (The King of Fighters '95 ROM Cartridge)", 
+                "md5": "255113ba943c92a54facd25a10fd780c", 
+                "opt": true
+            }, 
+            {
+                "corename": "kronos", 
+                "desc": "mpr-18811-mx.ic1 (The King of Fighters '95 ROM Cartridge)", 
+                "md5": "255113ba943c92a54facd25a10fd780c", 
+                "opt": true
+            }
+        ], 
+        "path": "mpr-18811-mx.ic1"
+    }, 
+    {
+        "core_list": [
+            {
+                "corename": "mednafen_saturn", 
+                "desc": "mpr-19367-mx.ic1 (Ultraman: Hikari no Kyojin Densetsu ROM Cartridge)", 
+                "md5": "1cd19988d1d72a3e7caa0b73234c96b4", 
+                "opt": true
+            }, 
+            {
+                "corename": "kronos", 
+                "desc": "mpr-19367-mx.ic1 (Ultraman: Hikari no Kyojin Densetsu ROM Cartridge)", 
+                "md5": "1cd19988d1d72a3e7caa0b73234c96b4", 
+                "opt": true
+            }
+        ], 
+        "path": "mpr-19367-mx.ic1"
+    }, 
+    {
+        "core_list": [
+            {
+                "corename": "fmsx", 
+                "desc": "MSX.ROM (MSX BIOS)", 
+                "md5": "364a1a579fe5cb8dba54519bcfcdac0d", 
+                "opt": false
+            }
+        ], 
+        "path": "MSX.ROM"
+    }, 
+    {
+        "core_list": [
+            {
+                "corename": "fmsx", 
+                "desc": "MSX2.ROM (MSX2 BIOS)", 
+                "md5": "ec3a01c91f24fbddcbcab0ad301bc9ef", 
+                "opt": false
+            }
+        ], 
+        "path": "MSX2.ROM"
+    }, 
+    {
+        "core_list": [
+            {
+                "corename": "fmsx", 
+                "desc": "MSX2EXT.ROM (MSX2 ExtROM)", 
+                "md5": "2183c2aff17cf4297bdb496de78c2e8a", 
+                "opt": false
+            }
+        ], 
+        "path": "MSX2EXT.ROM"
+    }, 
+    {
+        "core_list": [
+            {
+                "corename": "fmsx", 
+                "desc": "MSX2P.ROM (MSX2+ BIOS)", 
+                "md5": "847cc025ffae665487940ff2639540e5", 
+                "opt": false
+            }
+        ], 
+        "path": "MSX2P.ROM"
+    }, 
+    {
+        "core_list": [
+            {
+                "corename": "fmsx", 
+                "desc": "MSX2PEXT.ROM (MSX2+ ExtROM)", 
+                "md5": "", 
+                "opt": false
+            }
+        ], 
+        "path": "MSX2PEXT.ROM"
+    }, 
+    {
+        "core_list": [
+            {
+                "corename": "fmsx", 
+                "desc": "MSXDOS2.ROM (MSX-DOS 2)", 
+                "md5": "", 
+                "opt": true
+            }
+        ], 
+        "path": "MSXDOS2.ROM"
+    }, 
+    {
+        "core_list": [
+            {
+                "corename": "neocd", 
+                "desc": "Y-ZOOM ROM (MAME)", 
+                "md5": "", 
+                "opt": true
+            }
+        ], 
+        "path": "neocd/000-lo.lo"
+    }, 
+    {
+        "core_list": [
+            {
+                "corename": "neocd", 
+                "desc": "Front Loader BIOS (MAME)", 
+                "md5": "", 
+                "opt": true
+            }
+        ], 
+        "path": "neocd/front-sp1.bin"
+    }, 
+    {
+        "core_list": [
+            {
+                "corename": "neocd", 
+                "desc": "CDZ BIOS (MAME)", 
+                "md5": "", 
+                "opt": true
+            }
+        ], 
+        "path": "neocd/neocd.bin"
+    }, 
+    {
+        "core_list": [
+            {
+                "corename": "neocd", 
+                "desc": "Front Loader BIOS", 
+                "md5": "", 
+                "opt": true
+            }
+        ], 
+        "path": "neocd/neocd_f.rom"
+    }, 
+    {
+        "core_list": [
+            {
+                "corename": "neocd", 
+                "desc": "Front Loader BIOS (SMKDAN)", 
+                "md5": "", 
+                "opt": true
+            }
+        ], 
+        "path": "neocd/neocd_sf.rom"
+    }, 
+    {
+        "core_list": [
+            {
+                "corename": "neocd", 
+                "desc": "Top Loader BIOS (SMKDAN)", 
+                "md5": "", 
+                "opt": true
+            }
+        ], 
+        "path": "neocd/neocd_st.rom"
+    }, 
+    {
+        "core_list": [
+            {
+                "corename": "neocd", 
+                "desc": "CDZ BIOS (SMKDAN)", 
+                "md5": "", 
+                "opt": true
+            }
+        ], 
+        "path": "neocd/neocd_sz.rom"
+    }, 
+    {
+        "core_list": [
+            {
+                "corename": "neocd", 
+                "desc": "Top Loader BIOS", 
+                "md5": "", 
+                "opt": true
+            }
+        ], 
+        "path": "neocd/neocd_t.rom"
+    }, 
+    {
+        "core_list": [
+            {
+                "corename": "neocd", 
+                "desc": "CDZ BIOS", 
+                "md5": "", 
+                "opt": true
+            }
+        ], 
+        "path": "neocd/neocd_z.rom"
+    }, 
+    {
+        "core_list": [
+            {
+                "corename": "neocd", 
+                "desc": "Y-ZOOM ROM", 
+                "md5": "", 
+                "opt": true
+            }
+        ], 
+        "path": "neocd/ng-lo.rom"
+    }, 
+    {
+        "core_list": [
+            {
+                "corename": "neocd", 
+                "desc": "Top Loader BIOS (MAME)", 
+                "md5": "", 
+                "opt": true
+            }
+        ], 
+        "path": "neocd/top-sp1.bin"
+    }, 
+    {
+        "core_list": [
+            {
+                "corename": "neocd", 
+                "desc": "Universe BIOS", 
+                "md5": "", 
+                "opt": true
+            }
+        ], 
+        "path": "neocd/uni-bioscd.rom"
+    }, 
+    {
+        "core_list": [
+            {
+                "corename": "fceumm", 
+                "desc": "nes.pal (custom NES Palette)", 
+                "md5": "", 
+                "opt": true
+            }
+        ], 
+        "path": "nes.pal"
+    }, 
+    {
+        "core_list": [
+            {
+                "corename": "np2kai", 
+                "desc": "bios.rom", 
+                "md5": "", 
+                "opt": true
+            }
+        ], 
+        "path": "np2kai/bios.rom"
+    }, 
+    {
+        "core_list": [
+            {
+                "corename": "np2kai", 
+                "desc": "font.bmp (needed to display text)", 
+                "md5": "", 
+                "opt": true
+            }
+        ], 
+        "path": "np2kai/font.bmp"
+    }, 
+    {
+        "core_list": [
+            {
+                "corename": "np2kai", 
+                "desc": "FONT.ROM (alt font file)", 
+                "md5": "", 
+                "opt": true
+            }
+        ], 
+        "path": "np2kai/FONT.ROM"
+    }, 
+    {
+        "core_list": [
+            {
+                "corename": "np2kai", 
+                "desc": "itf.rom", 
+                "md5": "", 
+                "opt": true
+            }
+        ], 
+        "path": "np2kai/itf.rom"
+    }, 
+    {
+        "core_list": [
+            {
+                "corename": "np2kai", 
+                "desc": "sound.rom", 
+                "md5": "", 
+                "opt": true
+            }
+        ], 
+        "path": "np2kai/sound.rom"
+    }, 
+    {
+        "core_list": [
+            {
+                "corename": "nestopia", 
+                "desc": "NstDatabase.xml (Nestopia UE Database file)", 
+                "md5": "", 
+                "opt": true
+            }
+        ], 
+        "path": "NstDatabase.xml"
+    }, 
+    {
+        "core_list": [
+            {
+                "corename": "o2em", 
+                "desc": "o2rom.bin (Odyssey2 BIOS - G7000 model)", 
+                "md5": "562d5ebf9e030a40d6fabfc2f33139fd", 
+                "opt": false
+            }
+        ], 
+        "path": "o2rom.bin"
+    }, 
+    {
+        "core_list": [
+            {
+                "corename": "fmsx", 
+                "desc": "PAINTER.ROM (Yamaha Painter)", 
+                "md5": "", 
+                "opt": true
+            }
+        ], 
+        "path": "PAINTER.ROM"
+    }, 
+    {
+        "core_list": [
+            {
+                "corename": "mu", 
+                "desc": "palmos41-en-m515.rom (Palm OS 4.1)", 
+                "md5": "", 
+                "opt": true
+            }
+        ], 
+        "path": "palmos41-en-m515.rom"
+    }, 
+    {
+        "core_list": [
+            {
+                "corename": "mu", 
+                "desc": "palmos52-en-t3.rom (Palm OS 5.2.1)", 
+                "md5": "", 
+                "opt": true
+            }
+        ], 
+        "path": "palmos52-en-t3.rom"
+    }, 
+    {
+        "core_list": [
+            {
+                "corename": "4do", 
+                "desc": "panafz1-kanji.bin (Panasonic FZ-1 Kanji Font ROM)", 
+                "md5": "b8dc97f778a6245c58e064b0312e8281", 
+                "opt": true
+            }
+        ], 
+        "path": "panafz1-kanji.bin"
+    }, 
+    {
+        "core_list": [
+            {
+                "corename": "4do", 
+                "desc": "panafz1.bin (Panasonic FZ-1 BIOS)", 
+                "md5": "f47264dd47fe30f73ab3c010015c155b", 
+                "opt": true
+            }
+        ], 
+        "path": "panafz1.bin"
+    }, 
+    {
+        "core_list": [
+            {
+                "corename": "4do", 
+                "desc": "panafz10-patched.bin (Panasonic FZ-10 BIOS [RSA Patch])", 
+                "md5": "1477bda80dc33731a65468c1f5bcbee9", 
+                "opt": true
+            }
+        ], 
+        "path": "panafz10-patched.bin"
+    }, 
+    {
+        "core_list": [
+            {
+                "corename": "4do", 
+                "desc": "panafz10.bin (Panasonic FZ-10 BIOS)", 
+                "md5": "51f2f43ae2f3508a14d9f56597e2d3ce", 
+                "opt": true
+            }
+        ], 
+        "path": "panafz10.bin"
+    }, 
+    {
+        "core_list": [
+            {
+                "corename": "4do", 
+                "desc": "panafz10e-anvil-patched.bin (Panasonic FZ-10E BIOS [Anvil RSA Patch])", 
+                "md5": "cf11bbb5a16d7af9875cca9de9a15e09", 
+                "opt": true
+            }
+        ], 
+        "path": "panafz10e-anvil-patched.bin"
+    }, 
+    {
+        "core_list": [
+            {
+                "corename": "4do", 
+                "desc": "panafz10e-anvil.bin (Panasonic FZ-10E BIOS [Anvil])", 
+                "md5": "a48e6746bd7edec0f40cff078f0bb19f", 
+                "opt": true
+            }
+        ], 
+        "path": "panafz10e-anvil.bin"
+    }, 
+    {
+        "core_list": [
+            {
+                "corename": "4do", 
+                "desc": "panafz10ja-anvil-kanji.bin (Panasonic FZ-10JA Kanji Font ROM)", 
+                "md5": "428577250f43edc902ea239c50d2240d", 
+                "opt": true
+            }
+        ], 
+        "path": "panafz10ja-anvil-kanji.bin"
+    }, 
+    {
+        "core_list": [
+            {
+                "corename": "mednafen_pcfx", 
+                "desc": "pcfx.rom (PC-FX BIOS v1.00 - 2 Sep 1994)", 
+                "md5": "08e36edbea28a017f79f8d4f7ff9b6d7", 
+                "opt": false
+            }
+        ], 
+        "path": "pcfx.rom"
+    }, 
+    {
+        "core_list": [
+            {
+                "corename": "ppsspp", 
+                "desc": "ppge_atlas.zim (PPSSPP Data ROM)", 
+                "md5": "", 
+                "opt": false
+            }
+        ], 
+        "path": "PPSSPP/ppge_atlas.zim"
+    }, 
+    {
+        "core_list": [
+            {
+                "corename": "quasi88", 
+                "desc": "disk.rom (Sub BIOS)", 
+                "md5": "", 
+                "opt": true
+            }
+        ], 
+        "path": "quasi88/disk.rom"
+    }, 
+    {
+        "core_list": [
+            {
+                "corename": "quasi88", 
+                "desc": "n88.rom (Main BIOS)", 
+                "md5": "", 
+                "opt": false
+            }
+        ], 
+        "path": "quasi88/n88.rom"
+    }, 
+    {
+        "core_list": [
+            {
+                "corename": "quasi88", 
+                "desc": "n88_0.rom (Extension BIOS 1)", 
+                "md5": "", 
+                "opt": false
+            }
+        ], 
+        "path": "quasi88/n88_0.rom"
+    }, 
+    {
+        "core_list": [
+            {
+                "corename": "quasi88", 
+                "desc": "n88_1.rom (Extension BIOS 2)", 
+                "md5": "", 
+                "opt": true
+            }
+        ], 
+        "path": "quasi88/n88_1.rom"
+    }, 
+    {
+        "core_list": [
+            {
+                "corename": "quasi88", 
+                "desc": "n88_2.rom (Extension BIOS 3)", 
+                "md5": "", 
+                "opt": true
+            }
+        ], 
+        "path": "quasi88/n88_2.rom"
+    }, 
+    {
+        "core_list": [
+            {
+                "corename": "quasi88", 
+                "desc": "n88_3.rom (Extension BIOS 4)", 
+                "md5": "", 
+                "opt": true
+            }
+        ], 
+        "path": "quasi88/n88_3.rom"
+    }, 
+    {
+        "core_list": [
+            {
+                "corename": "quasi88", 
+                "desc": "n88jisho.rom (Jisho)", 
+                "md5": "", 
+                "opt": true
+            }
+        ], 
+        "path": "quasi88/n88jisho.rom"
+    }, 
+    {
+        "core_list": [
+            {
+                "corename": "quasi88", 
+                "desc": "n88knj1.rom (Kanji Font 1)", 
+                "md5": "", 
+                "opt": true
+            }
+        ], 
+        "path": "quasi88/n88knj1.rom"
+    }, 
+    {
+        "core_list": [
+            {
+                "corename": "quasi88", 
+                "desc": "n88knj2.rom (Kanji Font 2)", 
+                "md5": "", 
+                "opt": true
+            }
+        ], 
+        "path": "quasi88/n88knj2.rom"
+    }, 
+    {
+        "core_list": [
+            {
+                "corename": "quasi88", 
+                "desc": "n88n.rom (N Basic BIOS)", 
+                "md5": "", 
+                "opt": true
+            }
+        ], 
+        "path": "quasi88/n88n.rom"
+    }, 
+    {
+        "core_list": [
+            {
+                "corename": "4do", 
+                "desc": "sanyotry.bin (Sanyo Try IMP-21J BIOS)", 
+                "md5": "35fa1a1ebaaeea286dc5cd15487c13ea", 
+                "opt": true
+            }
+        ], 
+        "path": "sanyotry.bin"
+    }, 
+    {
+        "core_list": [
+            {
+                "corename": "yabasanshiro", 
+                "desc": "saturn_bios.bin (Saturn BIOS)", 
+                "md5": "af5828fdff51384f99b3c4926be27762", 
+                "opt": false
+            }, 
+            {
+                "corename": "yabause", 
+                "desc": "saturn_bios.bin (Saturn BIOS)", 
+                "md5": "af5828fdff51384f99b3c4926be27762", 
+                "opt": true
+            }
+        ], 
+        "path": "saturn_bios.bin"
+    }, 
+    {
+        "core_list": [
+            {
+                "corename": "pcsx_rearmed_interpreter", 
+                "desc": "scph5500.bin (PS1 JP BIOS)", 
+                "md5": "8dd7d5296a650fac7319bce665a6a53c", 
+                "opt": true
+            }, 
+            {
+                "corename": "pcsx_rearmed", 
+                "desc": "scph5500.bin (PS1 JP BIOS)", 
+                "md5": "8dd7d5296a650fac7319bce665a6a53c", 
+                "opt": true
+            }, 
+            {
+                "corename": "pcsx_rearmed_neon", 
+                "desc": "scph5500.bin (PS1 JP BIOS)", 
+                "md5": "8dd7d5296a650fac7319bce665a6a53c", 
+                "opt": true
+            }, 
+            {
+                "corename": "pcsx1", 
+                "desc": "scph5500.bin (PS1 JP BIOS)", 
+                "md5": "8dd7d5296a650fac7319bce665a6a53c", 
+                "opt": true
+            }, 
+            {
+                "corename": "mednafen_psx", 
+                "desc": "scph5500.bin (PS1 JP BIOS)", 
+                "md5": "8dd7d5296a650fac7319bce665a6a53c", 
+                "opt": true
+            }, 
+            {
+                "corename": "mednafen_psx_hw", 
+                "desc": "scph5500.bin (PS1 JP BIOS)", 
+                "md5": "8dd7d5296a650fac7319bce665a6a53c", 
+                "opt": true
+            }
+        ], 
+        "path": "scph5500.bin"
+    }, 
+    {
+        "core_list": [
+            {
+                "corename": "pcsx_rearmed_interpreter", 
+                "desc": "scph5501.bin (PS1 US BIOS)", 
+                "md5": "490f666e1afb15b7362b406ed1cea246", 
+                "opt": true
+            }, 
+            {
+                "corename": "pcsx_rearmed", 
+                "desc": "scph5501.bin (PS1 US BIOS)", 
+                "md5": "490f666e1afb15b7362b406ed1cea246", 
+                "opt": true
+            }, 
+            {
+                "corename": "pcsx_rearmed_neon", 
+                "desc": "scph5501.bin (PS1 US BIOS)", 
+                "md5": "490f666e1afb15b7362b406ed1cea246", 
+                "opt": true
+            }, 
+            {
+                "corename": "pcsx1", 
+                "desc": "scph5501.bin (PS1 US BIOS)", 
+                "md5": "490f666e1afb15b7362b406ed1cea246", 
+                "opt": true
+            }, 
+            {
+                "corename": "mednafen_psx", 
+                "desc": "scph5501.bin (PS1 US BIOS)", 
+                "md5": "490f666e1afb15b7362b406ed1cea246", 
+                "opt": true
+            }, 
+            {
+                "corename": "mednafen_psx_hw", 
+                "desc": "scph5501.bin (PS1 US BIOS)", 
+                "md5": "490f666e1afb15b7362b406ed1cea246", 
+                "opt": true
+            }
+        ], 
+        "path": "scph5501.bin"
+    }, 
+    {
+        "core_list": [
+            {
+                "corename": "pcsx_rearmed_interpreter", 
+                "desc": "scph5502.bin (PS1 EU BIOS)", 
+                "md5": "32736f17079d0b2b7024407c39bd3050", 
+                "opt": true
+            }, 
+            {
+                "corename": "pcsx_rearmed", 
+                "desc": "scph5502.bin (PS1 EU BIOS)", 
+                "md5": "32736f17079d0b2b7024407c39bd3050", 
+                "opt": true
+            }, 
+            {
+                "corename": "pcsx_rearmed_neon", 
+                "desc": "scph5502.bin (PS1 EU BIOS)", 
+                "md5": "32736f17079d0b2b7024407c39bd3050", 
+                "opt": true
+            }, 
+            {
+                "corename": "pcsx1", 
+                "desc": "scph5502.bin (PS1 EU BIOS)", 
+                "md5": "32736f17079d0b2b7024407c39bd3050", 
+                "opt": true
+            }, 
+            {
+                "corename": "mednafen_psx", 
+                "desc": "scph5502.bin (PS1 EU BIOS)", 
+                "md5": "32736f17079d0b2b7024407c39bd3050", 
+                "opt": true
+            }, 
+            {
+                "corename": "mednafen_psx_hw", 
+                "desc": "scph5502.bin (PS1 EU BIOS)", 
+                "md5": "32736f17079d0b2b7024407c39bd3050", 
+                "opt": true
+            }
+        ], 
+        "path": "scph5502.bin"
+    }, 
+    {
+        "core_list": [
+            {
+                "corename": "mednafen_saturn", 
+                "desc": "sega_101.bin (Saturn JP BIOS)", 
+                "md5": "85ec9ca47d8f6807718151cbcca8b964", 
+                "opt": false
+            }
+        ], 
+        "path": "sega_101.bin"
+    }, 
+    {
+        "core_list": [
+            {
+                "corename": "bsnes_mercury_balanced", 
+                "desc": "sgb.boot.rom (SGB Boot Image)", 
+                "md5": "", 
+                "opt": true
+            }, 
+            {
+                "corename": "bsnes_mercury_performance", 
+                "desc": "sgb.boot.rom (SGB Boot Image)", 
+                "md5": "", 
+                "opt": true
+            }, 
+            {
+                "corename": "bsnes2014_balanced", 
+                "desc": "sgb.boot.rom (SGB Boot Image)", 
+                "md5": "", 
+                "opt": true
+            }, 
+            {
+                "corename": "bsnes_mercury_accuracy", 
+                "desc": "sgb.boot.rom (SGB Boot Image)", 
+                "md5": "", 
+                "opt": true
+            }, 
+            {
+                "corename": "bsnes2014_performance", 
+                "desc": "sgb.boot.rom (SGB Boot Image)", 
+                "md5": "", 
+                "opt": true
+            }, 
+            {
+                "corename": "bsnes2014_accuracy", 
+                "desc": "sgb.boot.rom (SGB Boot Image)", 
+                "md5": "", 
+                "opt": true
+            }
+        ], 
+        "path": "sgb.boot.rom"
+    }, 
+    {
+        "core_list": [
+            {
+                "corename": "bsnes", 
+                "desc": "SGB1.sfc (SGB Boot Image)", 
+                "md5": "b15ddb15721c657d82c5bab6db982ee9", 
+                "opt": true
+            }
+        ], 
+        "path": "SGB1.sfc"
+    }, 
+    {
+        "core_list": [
+            {
+                "corename": "higan_sfc_balanced", 
+                "desc": "SGB1.sfc/program.rom (SGB Boot Image)", 
+                "md5": "", 
+                "opt": true
+            }, 
+            {
+                "corename": "higan_sfc", 
+                "desc": "SGB1.sfc/program.rom (SGB Boot Image)", 
+                "md5": "", 
+                "opt": true
+            }
+        ], 
+        "path": "SGB1.sfc/program.rom"
+    }, 
+    {
+        "core_list": [
+            {
+                "corename": "higan_sfc_balanced", 
+                "desc": "SGB1.sfc/sgb1.boot.rom (SGB Boot BIOS)", 
+                "md5": "", 
+                "opt": true
+            }, 
+            {
+                "corename": "higan_sfc", 
+                "desc": "SGB1.sfc/sgb1.boot.rom (SGB Boot BIOS)", 
+                "md5": "", 
+                "opt": true
+            }
+        ], 
+        "path": "SGB1.sfc/sgb1.boot.rom"
+    }, 
+    {
+        "core_list": [
+            {
+                "corename": "bsnes", 
+                "desc": "SGB2.sfc (SGB Boot Image)", 
+                "md5": "8ecd73eb4edf7ed7e81aef1be80031d5", 
+                "opt": true
+            }
+        ], 
+        "path": "SGB2.sfc"
+    }, 
+    {
+        "core_list": [
+            {
+                "corename": "higan_sfc_balanced", 
+                "desc": "SGB2.sfc/program.rom (SGB Boot Image)", 
+                "md5": "", 
+                "opt": true
+            }, 
+            {
+                "corename": "higan_sfc", 
+                "desc": "SGB2.sfc/program.rom (SGB Boot Image)", 
+                "md5": "", 
+                "opt": true
+            }
+        ], 
+        "path": "SGB2.sfc/program.rom"
+    }, 
+    {
+        "core_list": [
+            {
+                "corename": "higan_sfc_balanced", 
+                "desc": "SGB2.sfc/sgb2.boot.rom (SGB Boot BIOS)", 
+                "md5": "", 
+                "opt": true
+            }, 
+            {
+                "corename": "higan_sfc", 
+                "desc": "SGB2.sfc/sgb2.boot.rom (SGB Boot BIOS)", 
+                "md5": "", 
+                "opt": true
+            }
+        ], 
+        "path": "SGB2.sfc/sgb2.boot.rom"
+    }, 
+    {
+        "core_list": [
+            {
+                "corename": "mgba", 
+                "desc": "sgb_bios.bin (Super Game Boy BIOS)", 
+                "md5": "", 
+                "opt": true
+            }
+        ], 
+        "path": "sgb_bios.bin"
+    }, 
+    {
+        "core_list": [
+            {
+                "corename": "genesis_plus_gx", 
+                "desc": "sk.bin (Sonic & Knuckles ROM)", 
+                "md5": "4ea493ea4e9f6c9ebfccbdb15110367e", 
+                "opt": true
+            }
+        ], 
+        "path": "sk.bin"
+    }, 
+    {
+        "core_list": [
+            {
+                "corename": "genesis_plus_gx", 
+                "desc": "sk2chip.bin (Sonic & Knuckles UPMEM ROM)", 
+                "md5": "b4e76e416b887f4e7413ba76fa735f16", 
+                "opt": true
+            }
+        ], 
+        "path": "sk2chip.bin"
+    }, 
+    {
+        "core_list": [
+            {
+                "corename": "freechaf", 
+                "desc": "sl31253.bin", 
+                "md5": "ac9804d4c0e9d07e33472e3726ed15c3", 
+                "opt": false
+            }
+        ], 
+        "path": "sl31253.bin"
+    }, 
+    {
+        "core_list": [
+            {
+                "corename": "freechaf", 
+                "desc": "sl31254.bin", 
+                "md5": "da98f4bb3242ab80d76629021bb27585", 
+                "opt": false
+            }
+        ], 
+        "path": "sl31254.bin"
+    }, 
+    {
+        "core_list": [
+            {
+                "corename": "freechaf", 
+                "desc": "sl90025.bin", 
+                "md5": "95d339631d867c8f1d15a5f2ec26069d", 
+                "opt": false
+            }
+        ], 
+        "path": "sl90025.bin"
+    }, 
+    {
+        "core_list": [
+            {
+                "corename": "squirreljme", 
+                "desc": "squirreljme.sqc (SquirrelJME Compiled SummerCoat ROM)", 
+                "md5": "", 
+                "opt": false
+            }
+        ], 
+        "path": "squirreljme.sqc"
+    }, 
+    {
+        "core_list": [
+            {
+                "corename": "bsnes_mercury_balanced", 
+                "desc": "st010.data.rom", 
+                "md5": "", 
+                "opt": true
+            }, 
+            {
+                "corename": "bsnes_mercury_performance", 
+                "desc": "st010.data.rom", 
+                "md5": "", 
+                "opt": true
+            }, 
+            {
+                "corename": "bsnes2014_balanced", 
+                "desc": "st010.data.rom", 
+                "md5": "", 
+                "opt": true
+            }, 
+            {
+                "corename": "bsnes_mercury_accuracy", 
+                "desc": "st010.data.rom", 
+                "md5": "", 
+                "opt": true
+            }, 
+            {
+                "corename": "higan_sfc_balanced", 
+                "desc": "st010.data.rom", 
+                "md5": "", 
+                "opt": true
+            }, 
+            {
+                "corename": "bsnes2014_performance", 
+                "desc": "st010.data.rom", 
+                "md5": "", 
+                "opt": true
+            }, 
+            {
+                "corename": "bsnes2014_accuracy", 
+                "desc": "st010.data.rom", 
+                "md5": "", 
+                "opt": true
+            }, 
+            {
+                "corename": "higan_sfc", 
+                "desc": "st010.data.rom", 
+                "md5": "", 
+                "opt": true
+            }, 
+            {
+                "corename": "bsnes", 
+                "desc": "st010.data.rom", 
+                "md5": "", 
+                "opt": true
+            }
+        ], 
+        "path": "st010.data.rom"
+    }, 
+    {
+        "core_list": [
+            {
+                "corename": "bsnes_mercury_balanced", 
+                "desc": "st010.program.rom", 
+                "md5": "", 
+                "opt": true
+            }, 
+            {
+                "corename": "bsnes_mercury_performance", 
+                "desc": "st010.program.rom", 
+                "md5": "", 
+                "opt": true
+            }, 
+            {
+                "corename": "bsnes2014_balanced", 
+                "desc": "st010.program.rom", 
+                "md5": "", 
+                "opt": true
+            }, 
+            {
+                "corename": "bsnes_mercury_accuracy", 
+                "desc": "st010.program.rom", 
+                "md5": "", 
+                "opt": true
+            }, 
+            {
+                "corename": "higan_sfc_balanced", 
+                "desc": "st010.program.rom", 
+                "md5": "", 
+                "opt": true
+            }, 
+            {
+                "corename": "bsnes2014_performance", 
+                "desc": "st010.program.rom", 
+                "md5": "", 
+                "opt": true
+            }, 
+            {
+                "corename": "bsnes2014_accuracy", 
+                "desc": "st010.program.rom", 
+                "md5": "", 
+                "opt": true
+            }, 
+            {
+                "corename": "higan_sfc", 
+                "desc": "st010.program.rom", 
+                "md5": "", 
+                "opt": true
+            }, 
+            {
+                "corename": "bsnes", 
+                "desc": "st010.program.rom", 
+                "md5": "", 
+                "opt": true
+            }
+        ], 
+        "path": "st010.program.rom"
+    }, 
+    {
+        "core_list": [
+            {
+                "corename": "bsnes_mercury_balanced", 
+                "desc": "st011.data.rom", 
+                "md5": "", 
+                "opt": true
+            }, 
+            {
+                "corename": "bsnes_mercury_performance", 
+                "desc": "st011.data.rom", 
+                "md5": "", 
+                "opt": true
+            }, 
+            {
+                "corename": "bsnes2014_balanced", 
+                "desc": "st011.data.rom", 
+                "md5": "", 
+                "opt": true
+            }, 
+            {
+                "corename": "bsnes_mercury_accuracy", 
+                "desc": "st011.data.rom", 
+                "md5": "", 
+                "opt": true
+            }, 
+            {
+                "corename": "higan_sfc_balanced", 
+                "desc": "st011.data.rom", 
+                "md5": "", 
+                "opt": true
+            }, 
+            {
+                "corename": "bsnes2014_performance", 
+                "desc": "st011.data.rom", 
+                "md5": "", 
+                "opt": true
+            }, 
+            {
+                "corename": "bsnes2014_accuracy", 
+                "desc": "st011.data.rom", 
+                "md5": "", 
+                "opt": true
+            }, 
+            {
+                "corename": "higan_sfc", 
+                "desc": "st011.data.rom", 
+                "md5": "", 
+                "opt": true
+            }, 
+            {
+                "corename": "bsnes", 
+                "desc": "st011.data.rom", 
+                "md5": "", 
+                "opt": true
+            }
+        ], 
+        "path": "st011.data.rom"
+    }, 
+    {
+        "core_list": [
+            {
+                "corename": "bsnes_mercury_balanced", 
+                "desc": "st011.program.rom", 
+                "md5": "", 
+                "opt": true
+            }, 
+            {
+                "corename": "bsnes_mercury_performance", 
+                "desc": "st011.program.rom", 
+                "md5": "", 
+                "opt": true
+            }, 
+            {
+                "corename": "bsnes2014_balanced", 
+                "desc": "st011.program.rom", 
+                "md5": "", 
+                "opt": true
+            }, 
+            {
+                "corename": "bsnes_mercury_accuracy", 
+                "desc": "st011.program.rom", 
+                "md5": "", 
+                "opt": true
+            }, 
+            {
+                "corename": "higan_sfc_balanced", 
+                "desc": "st011.program.rom", 
+                "md5": "", 
+                "opt": true
+            }, 
+            {
+                "corename": "bsnes2014_performance", 
+                "desc": "st011.program.rom", 
+                "md5": "", 
+                "opt": true
+            }, 
+            {
+                "corename": "bsnes2014_accuracy", 
+                "desc": "st011.program.rom", 
+                "md5": "", 
+                "opt": true
+            }, 
+            {
+                "corename": "higan_sfc", 
+                "desc": "st011.program.rom", 
+                "md5": "", 
+                "opt": true
+            }, 
+            {
+                "corename": "bsnes", 
+                "desc": "st011.program.rom", 
+                "md5": "", 
+                "opt": true
+            }
+        ], 
+        "path": "st011.program.rom"
+    }, 
+    {
+        "core_list": [
+            {
+                "corename": "bsnes_mercury_balanced", 
+                "desc": "st018.data.rom", 
+                "md5": "", 
+                "opt": true
+            }, 
+            {
+                "corename": "bsnes_mercury_performance", 
+                "desc": "st018.data.rom", 
+                "md5": "", 
+                "opt": true
+            }, 
+            {
+                "corename": "bsnes2014_balanced", 
+                "desc": "st018.data.rom", 
+                "md5": "", 
+                "opt": true
+            }, 
+            {
+                "corename": "bsnes_mercury_accuracy", 
+                "desc": "st018.data.rom", 
+                "md5": "", 
+                "opt": true
+            }, 
+            {
+                "corename": "higan_sfc_balanced", 
+                "desc": "st018.data.rom", 
+                "md5": "", 
+                "opt": true
+            }, 
+            {
+                "corename": "bsnes2014_performance", 
+                "desc": "st018.data.rom", 
+                "md5": "", 
+                "opt": true
+            }, 
+            {
+                "corename": "bsnes2014_accuracy", 
+                "desc": "st018.data.rom", 
+                "md5": "", 
+                "opt": true
+            }, 
+            {
+                "corename": "higan_sfc", 
+                "desc": "st018.data.rom", 
+                "md5": "", 
+                "opt": true
+            }, 
+            {
+                "corename": "bsnes", 
+                "desc": "st018.data.rom", 
+                "md5": "", 
+                "opt": true
+            }
+        ], 
+        "path": "st018.data.rom"
+    }, 
+    {
+        "core_list": [
+            {
+                "corename": "bsnes_mercury_balanced", 
+                "desc": "st018.program.rom", 
+                "md5": "", 
+                "opt": true
+            }, 
+            {
+                "corename": "bsnes_mercury_performance", 
+                "desc": "st018.program.rom", 
+                "md5": "", 
+                "opt": true
+            }, 
+            {
+                "corename": "bsnes2014_balanced", 
+                "desc": "st018.program.rom", 
+                "md5": "", 
+                "opt": true
+            }, 
+            {
+                "corename": "bsnes_mercury_accuracy", 
+                "desc": "st018.program.rom", 
+                "md5": "", 
+                "opt": true
+            }, 
+            {
+                "corename": "higan_sfc_balanced", 
+                "desc": "st018.program.rom", 
+                "md5": "", 
+                "opt": true
+            }, 
+            {
+                "corename": "bsnes2014_performance", 
+                "desc": "st018.program.rom", 
+                "md5": "", 
+                "opt": true
+            }, 
+            {
+                "corename": "bsnes2014_accuracy", 
+                "desc": "st018.program.rom", 
+                "md5": "", 
+                "opt": true
+            }, 
+            {
+                "corename": "higan_sfc", 
+                "desc": "st018.program.rom", 
+                "md5": "", 
+                "opt": true
+            }, 
+            {
+                "corename": "bsnes", 
+                "desc": "st018.program.rom", 
+                "md5": "", 
+                "opt": true
+            }
+        ], 
+        "path": "st018.program.rom"
+    }, 
+    {
+        "core_list": [
+            {
+                "corename": "snes9x", 
+                "desc": "STBIOS.bin (Sufami Turbo (Japan))", 
+                "md5": "d3a44ba7d42a74d3ac58cb9c14c6a5ca", 
+                "opt": true
+            }
+        ], 
+        "path": "STBIOS.bin"
+    }, 
+    {
+        "core_list": [
+            {
+                "corename": "mednafen_pce", 
+                "desc": "syscard1.pce (CD-ROM System V1.xx)", 
+                "md5": "", 
+                "opt": true
+            }, 
+            {
+                "corename": "mednafen_supergrafx", 
+                "desc": "syscard1.pce (CD-ROM System V1.xx)", 
+                "md5": "", 
+                "opt": true
+            }, 
+            {
+                "corename": "mednafen_pce_fast", 
+                "desc": "syscard1.pce (PCE-CD BIOS)", 
+                "md5": "", 
+                "opt": true
+            }
+        ], 
+        "path": "syscard1.pce"
+    }, 
+    {
+        "core_list": [
+            {
+                "corename": "mednafen_pce", 
+                "desc": "syscard2.pce (CD-ROM System V2.xx)", 
+                "md5": "", 
+                "opt": true
+            }, 
+            {
+                "corename": "mednafen_supergrafx", 
+                "desc": "syscard2.pce (CD-ROM System V2.xx)", 
+                "md5": "", 
+                "opt": true
+            }, 
+            {
+                "corename": "mednafen_pce_fast", 
+                "desc": "syscard2.pce (PCE-CD BIOS)", 
+                "md5": "", 
+                "opt": true
+            }
+        ], 
+        "path": "syscard2.pce"
+    }, 
+    {
+        "core_list": [
+            {
+                "corename": "mednafen_pce", 
+                "desc": "syscard3.pce (Super CD-ROM2 System V3.xx)", 
+                "md5": "38179df8f4ac870017db21ebcbf53114", 
+                "opt": true
+            }, 
+            {
+                "corename": "mednafen_supergrafx", 
+                "desc": "syscard3.pce (Super CD-ROM2 System V3.xx)", 
+                "md5": "38179df8f4ac870017db21ebcbf53114", 
+                "opt": true
+            }, 
+            {
+                "corename": "mednafen_pce_fast", 
+                "desc": "syscard3.pce (PCE-CD BIOS)", 
+                "md5": "38179df8f4ac870017db21ebcbf53114", 
+                "opt": true
+            }
+        ], 
+        "path": "syscard3.pce"
+    }, 
+    {
+        "core_list": [
+            {
+                "corename": "hatari", 
+                "desc": "tos.img (TOS Boot Image)", 
+                "md5": "c1c57ce48e8ee4135885cee9e63a68a2", 
+                "opt": false
+            }
+        ], 
+        "path": "tos.img"
+    }, 
+    {
+        "core_list": [
+            {
+                "corename": "puae", 
+                "desc": "drive_click_LOUD.wav (floppy drive sound)", 
+                "md5": "", 
+                "opt": true
+            }
+        ], 
+        "path": "uae_data/drive_click_LOUD.wav"
+    }, 
+    {
+        "core_list": [
+            {
+                "corename": "puae", 
+                "desc": "drive_snatch_LOUD.wav (floppy drive sound)", 
+                "md5": "", 
+                "opt": true
+            }
+        ], 
+        "path": "uae_data/drive_snatch_LOUD.wav"
+    }, 
+    {
+        "core_list": [
+            {
+                "corename": "puae", 
+                "desc": "drive_spin_LOUD.wav (floppy drive sound)", 
+                "md5": "", 
+                "opt": true
+            }
+        ], 
+        "path": "uae_data/drive_spin_LOUD.wav"
+    }, 
+    {
+        "core_list": [
+            {
+                "corename": "puae", 
+                "desc": "drive_spinnd_LOUD.wav (floppy drive sound)", 
+                "md5": "", 
+                "opt": true
+            }
+        ], 
+        "path": "uae_data/drive_spinnd_LOUD.wav"
+    }, 
+    {
+        "core_list": [
+            {
+                "corename": "puae", 
+                "desc": "drive_startup_LOUD.wav (floppy drive sound)", 
+                "md5": "", 
+                "opt": true
+            }
+        ], 
+        "path": "uae_data/drive_startup_LOUD.wav"
+    }, 
+    {
+        "core_list": [
+            {
+                "corename": "vice_xpet", 
+                "desc": "chargen (PET BIOS)", 
+                "md5": "", 
+                "opt": false
+            }
+        ], 
+        "path": "vice/PET/chargen"
+    }, 
+    {
+        "core_list": [
+            {
+                "corename": "vice_xpet", 
+                "desc": "edit1g (PET BIOS)", 
+                "md5": "", 
+                "opt": false
+            }
+        ], 
+        "path": "vice/PET/edit1g"
+    }, 
+    {
+        "core_list": [
+            {
+                "corename": "vice_xpet", 
+                "desc": "edit2b (PET BIOS)", 
+                "md5": "", 
+                "opt": false
+            }
+        ], 
+        "path": "vice/PET/edit2b"
+    }, 
+    {
+        "core_list": [
+            {
+                "corename": "vice_xpet", 
+                "desc": "edit2g (PET BIOS)", 
+                "md5": "", 
+                "opt": false
+            }
+        ], 
+        "path": "vice/PET/edit2g"
+    }, 
+    {
+        "core_list": [
+            {
+                "corename": "vice_xpet", 
+                "desc": "edit4b40 (PET BIOS)", 
+                "md5": "", 
+                "opt": false
+            }
+        ], 
+        "path": "vice/PET/edit4b40"
+    }, 
+    {
+        "core_list": [
+            {
+                "corename": "vice_xpet", 
+                "desc": "edit4b80 (PET BIOS)", 
+                "md5": "", 
+                "opt": false
+            }
+        ], 
+        "path": "vice/PET/edit4b80"
+    }, 
+    {
+        "core_list": [
+            {
+                "corename": "vice_xpet", 
+                "desc": "edit4g40 (PET BIOS)", 
+                "md5": "", 
+                "opt": false
+            }
+        ], 
+        "path": "vice/PET/edit4g40"
+    }
+]

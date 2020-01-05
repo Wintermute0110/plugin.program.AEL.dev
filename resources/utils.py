@@ -42,6 +42,8 @@ import errno
 import fnmatch
 import hashlib
 import json
+import collections
+import sys
 import os
 import pprint
 import random
@@ -216,9 +218,17 @@ def text_str_2_Uni(string):
 
     return unicode_str
 
+def text_remove_Kodi_color_tags(s):
+    s = re.sub('\[COLOR \S+?\]', '', s)
+    s = re.sub('\[color \S+?\]', '', s)
+    s = s.replace('[/color]', '')
+    s = s.replace('[/COLOR]', '')
+
+    return s
+
 # Renders a list of list of strings table into a CSV list of strings.
 # The list of strings must be joined with '\n'.join()
-def text_render_table_CSV_slist(table_str):
+def text_render_table_CSV(table_str):
     rows = len(table_str)
     cols = len(table_str[0])
     table_str_list = []
@@ -233,16 +243,37 @@ def text_render_table_CSV_slist(table_str):
 
     return table_str_list
 
+# Returns a list of strings that must be joined with '\n'.join()
 #
 # First row            column aligment 'right' or 'left'
 # Second row           column titles
 # Third and next rows  table data
 #
-# Returns a list of strings that must be joined with '\n'.join()
+# Input:
+# table_str = [
+#     ['left', 'left', 'left'],
+#     ['Platform', 'Parents', 'Clones'],
+#     ['', '', ''],
+# ]
 #
-def text_render_table_str(table_str):
+# Output:
+#
+def text_render_table(table_str, trim_Kodi_colours = False):
     rows = len(table_str)
     cols = len(table_str[0])
+
+    # Remove Kodi tags [COLOR string] and [/COLOR]
+    if trim_Kodi_colours:
+        new_table_str = []
+        for i in range(rows):
+            new_table_str.append([])
+            for j in range(cols):
+                s = text_remove_Kodi_color_tags(table_str[i][j])
+                new_table_str[i].append(s)
+        table_str = new_table_str
+
+    # Determine sizes and padding.
+    # Ignore row 0 when computing sizes.
     table_str_list = []
     col_sizes = text_get_table_str_col_sizes(table_str, rows, cols)
     col_padding = table_str[0]
@@ -255,7 +286,7 @@ def text_render_table_str(table_str):
         else:
             row_str += text_print_padded_left(table_str[1][j], col_sizes[j])
     table_str_list.append(row_str)
-    # >> Table -----
+    # Table line -----
     total_size = sum(col_sizes) + 2*(cols-1)
     table_str_list.append('{0}'.format('-' * total_size))
 
@@ -277,15 +308,37 @@ def text_render_table_str(table_str):
 
     return table_str_list
 
-#
 # First row             column aligment 'right' or 'left'
 # Second and next rows  table data
+# Input:
+# table_str = [
+#     ['left', 'left', 'left'],
+#     ['Platform', 'Parents', 'Clones'],
+#     ['', '', ''],
+# ]
 #
-def text_render_table_str_NO_HEADER(table_str):
+# Output:
+#
+def text_render_table_NO_HEADER(table_str, trim_Kodi_colours = False):
     rows = len(table_str)
     cols = len(table_str[0])
+
+    # Remove Kodi tags [COLOR string] and [/COLOR]
+    # BUG Currently this code removes all the colour tags so the table is rendered
+    #     with no colours.
+    # NOTE To render tables with colours is more difficult than this... 
+    #      All the paddings changed. I will left this for the future.
+    if trim_Kodi_colours:
+        new_table_str = []
+        for i in range(rows):
+            new_table_str.append([])
+            for j in range(cols):
+                s = text_remove_Kodi_color_tags(table_str[i][j])
+                new_table_str[i].append(s)
+        table_str = new_table_str
+
+    # Ignore row 0 when computing sizes.
     table_str_list = []
-    # >> Ignore row 0 when computing sizes.
     col_sizes = text_get_table_str_col_sizes(table_str, rows, cols)
     col_padding = table_str[0]
 
@@ -328,7 +381,7 @@ def text_get_table_str_col_sizes(table_str, rows, cols):
 def text_str_list_size(str_list):
     max_str_size = 0
     for str_item in str_list:
-        str_size = len('{0}'.format(str_item))
+        str_size = len('{}'.format(str_item))
         if str_size > max_str_size: max_str_size = str_size
 
     return max_str_size
@@ -769,6 +822,56 @@ def misc_look_for_file(rootPath, filename_noext, file_exts):
 
     return None
 
+def misc_escape_regex_special_chars(s):
+    s = s.replace('(', '\(')
+    s = s.replace(')', '\)')
+    s = s.replace('+', '\+')
+
+    return s
+
+# Search for a No-Intro DAT filename.
+def misc_look_for_NoIntro_DAT(platform, DAT_list):
+    # log_debug('Testing No-Intro platform "{}"'.format(platform.long_name))
+    if not platform.DAT_prefix:
+        # log_debug('Empty DAT_prefix. Return empty string.')
+        return ''
+    # Traverse all files and make a list of DAT matches.
+    DAT_str = misc_escape_regex_special_chars(platform.DAT_prefix)
+    patt = '.*' + DAT_str + ' \(Parent-Clone\) \((\d\d\d\d\d\d\d\d)-(\d\d\d\d\d\d)\)\.dat'
+    # log_variable('patt', patt)
+    fname_list = []
+    for fname in DAT_list:
+        m = re.match(patt, fname)
+        if m: fname_list.append(fname)
+    # log_variable('fname_list', fname_list)
+    if fname_list:
+        # If more than one DAT found sort alphabetically and pick the first.
+        # Because the fname include the date the most recent must be first.
+        return sorted(fname_list, reverse = True)[0]
+    else:
+        return ''
+
+# Atari - Jaguar CD Interactive Multimedia System - Datfile (10) (2019-08-27 00-06-32)
+# Commodore - Amiga CD - Datfile (350) (2019-06-28 13-05-34)
+# Commodore - Amiga CD32 - Datfile (157) (2019-09-24 21-03-02)
+def misc_look_for_Redump_DAT(platform, DAT_list):
+    # log_debug('Testing Redump platform "{}"'.format(platform.long_name))
+    if not platform.DAT_prefix:
+        # log_debug('Empty DAT_prefix. Return empty string.')
+        return ''
+    DAT_str = misc_escape_regex_special_chars(platform.DAT_prefix)
+    patt = '.*' + DAT_str + ' \(\d+\) \((\d\d\d\d-\d\d-\d\d) (\d\d-\d\d-\d\d)\)\.dat'
+    # log_variable('patt', patt)
+    fname_list = []
+    for fname in DAT_list:
+        m = re.match(patt, fname)
+        if m: fname_list.append(fname)
+    # log_variable('fname_list', fname_list)
+    if fname_list:
+        return sorted(fname_list, reverse = True)[0]
+    else:
+        return ''
+
 #
 # Generates a random an unique MD5 hash and returns a string with the hash
 #
@@ -783,50 +886,11 @@ def misc_generate_random_SID():
 #
 # Lazy function (generator) to read a file piece by piece. Default chunk size: 8k.
 #
-def misc_read_in_chunks(file_object, chunk_size = 8192):
+def misc_read_file_in_chunks(file_object, chunk_size = 8192):
     while True:
         data = file_object.read(chunk_size)
         if not data: break
         yield data
-
-#
-# Calculates CRC, MD5 and SHA1 of a file in an efficient way.
-# Returns a dictionary with the checksums or None in case of error.
-#
-# https://stackoverflow.com/questions/519633/lazy-method-for-reading-big-file-in-python
-# https://stackoverflow.com/questions/1742866/compute-crc-of-file-in-python 
-#
-def misc_calculate_checksums(full_file_path):
-    if full_file_path is None:
-        log_debug('No checksum to complete')
-        return None
-    
-    log_debug('Computing checksums "{}"'.format(full_file_path))
-    try:
-        f = open(full_file_path, 'rb')
-        crc_prev = 0
-        md5 = hashlib.md5()
-        sha1 = hashlib.sha1()
-        for piece in misc_read_in_chunks(f):
-            crc_prev = zlib.crc32(piece, crc_prev)
-            md5.update(piece)
-            sha1.update(piece)
-        crc_digest = '{:08X}'.format(crc_prev & 0xFFFFFFFF)
-        md5_digest = md5.hexdigest()
-        sha1_digest = sha1.hexdigest()
-        size = os.path.getsize(full_file_path)
-    except:
-        log_debug('(Exception) In misc_calculate_checksums()')
-        log_debug('Returning None')
-        return None
-    checksums = {
-        'crc'  : crc_digest.upper(),
-        'md5'  : md5_digest.upper(),
-        'sha1' : sha1_digest.upper(),
-        'size' : size,
-    }
-
-    return checksums
 
 #
 # Version helper class
@@ -1007,6 +1071,104 @@ def merge_dicts(x, y):
 # Filesystem utilities
 # #################################################################################################
 # #################################################################################################
+# This function not finished yet.
+def misc_read_bytes_in_chunks(file_bytes, chunk_size = 8192):
+    file_length = len(file_bytes)
+    block_number = 0
+    while True:
+        start_index = None
+        end_index = None
+        data = file_bytes[start_index:end_index]
+        yield data
+
+#
+# Calculates CRC, MD5 and SHA1 of a file in an efficient way.
+# Returns a dictionary with the checksums or None in case of error.
+#
+# https://stackoverflow.com/questions/519633/lazy-method-for-reading-big-file-in-python
+# https://stackoverflow.com/questions/1742866/compute-crc-of-file-in-python 
+#
+def misc_calculate_checksums(full_file_path):
+    if full_file_path is None:
+        log_debug('No checksum to complete')
+        return None
+    
+    log_debug('Computing checksums "{}"'.format(full_file_path))
+    try:
+        f = open(full_file_path, 'rb')
+        crc_prev = 0
+        md5 = hashlib.md5()
+        sha1 = hashlib.sha1()
+        for piece in misc_read_file_in_chunks(f):
+            crc_prev = zlib.crc32(piece, crc_prev)
+            md5.update(piece)
+            sha1.update(piece)
+        crc_digest = '{:08X}'.format(crc_prev & 0xFFFFFFFF)
+        md5_digest = md5.hexdigest()
+        sha1_digest = sha1.hexdigest()
+        size = os.path.getsize(full_file_path)
+    except:
+        log_debug('(Exception) In misc_calculate_file_checksums()')
+        log_debug('Returning None')
+        return None
+    checksums = {
+        'crc'  : crc_digest.upper(),
+        'md5'  : md5_digest.upper(),
+        'sha1' : sha1_digest.upper(),
+        'size' : size,
+    }
+
+    return checksums
+
+def misc_calculate_stream_checksums(file_bytes):
+    log_debug('Computing checksums of bytes stream...'.format(len(file_bytes)))
+    crc_prev = 0
+    md5 = hashlib.md5()
+    sha1 = hashlib.sha1()
+    # Process bytes stream block by block
+    # for piece in misc_read_bytes_in_chunks(file_bytes):
+    #     crc_prev = zlib.crc32(piece, crc_prev)
+    #     md5.update(piece)
+    #     sha1.update(piece)
+    # Process bytes in one go
+    crc_prev = zlib.crc32(file_bytes, crc_prev)
+    md5.update(file_bytes)
+    sha1.update(file_bytes)
+    crc_digest = '{:08X}'.format(crc_prev & 0xFFFFFFFF)
+    md5_digest = md5.hexdigest()
+    sha1_digest = sha1.hexdigest()
+    size = len(file_bytes)
+
+    checksums = {
+        'crc'  : crc_digest.upper(),
+        'md5'  : md5_digest.upper(),
+        'sha1' : sha1_digest.upper(),
+        'size' : size,
+    }
+
+    return checksums
+
+# Replace an item in dictionary. If dict_in is an OrderedDict then keep original order.
+# Returns a dict or OrderedDict
+def misc_replace_fav(dict_in, old_item_key, new_item_key, new_value):
+    if type(dict_in) is dict:
+        dict_in.pop(old_item_key)
+        dict_in[new_item_key] = new_value
+        return dict_in
+    elif type(dict_in) is collections.OrderedDict:
+        # In this case create a new OrderedDict to respect original order.
+        # This implementation is slow and naive but I don't care, OrderedDict are only use
+        # when editing ROM Collections.
+        dict_out = collections.OrderedDict()
+        for key in dict_in:
+            if key == old_item_key:
+                dict_out[new_item_key] = new_value
+            else:
+                dict_out[key] = dict_in[key]
+        return dict_out
+    else:
+        raise TypeError
+
 # -------------------------------------------------------------------------------------------------
 # Filesystem abstract base class
 # This class and classes that inherit this one always take and return Unicode string paths.

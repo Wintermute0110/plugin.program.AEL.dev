@@ -463,7 +463,7 @@ def audit_make_NoIntro_Parents_dic(nointro_dic):
         machine = nointro_dic[machine_name]
         if machine['cloneof']:
             parent_name = machine['cloneof']
-            main_clone_to_parent_dic[machine_name] = parent_name            
+            main_clone_to_parent_dic[machine_name] = parent_name
 
     return main_clone_to_parent_dic
 
@@ -516,7 +516,7 @@ def audit_generate_DAT_PClone_index(roms, roms_nointro, unknown_ROMs_are_parents
         # log_debug('  ROM_base_noext   "{0}"'.format(ROMFileName.getBase_noext()))
         # log_debug('  rom_nointro_name "{0}"'.format(rom_nointro_name))
 
-        if rom['nointro_status'] == NOINTRO_STATUS_UNKNOWN:
+        if rom['nointro_status'] == AUDIT_STATUS_UNKNOWN:
             if unknown_ROMs_are_parents:
                 # >> Unknown ROMs are parents
                 if rom_id not in roms_pclone_index_by_id:

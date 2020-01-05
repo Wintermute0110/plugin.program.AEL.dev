@@ -64,4 +64,4 @@ for media_dic in medias_list:
         str(media_dic['type']), str(region), str(media_dic['format'])
     ])
 print('\nThere are {} assets'.format(len(medias_list)))
-print('\n'.join(text_render_table_str(table)))
+print('\n'.join(text_render_table(table)))

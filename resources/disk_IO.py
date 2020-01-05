@@ -87,7 +87,6 @@ def fs_new_category():
 def fs_new_launcher():
     return {
         'id' : '',
-        'type': '',
         'm_name' : '',
         'm_year' : '',
         'm_genre' : '',
@@ -106,8 +105,10 @@ def fs_new_launcher():
         'non_blocking' : False,
         'multidisc' : True,
         'roms_base_noext' : '',
-        'nointro_xml_file' : '',
-        'nointro_display_mode' : NOINTRO_DMODE_ALL,
+        'audit_state' : AUDIT_STATE_OFF,
+        'audit_auto_dat_file' : '',
+        'audit_custom_dat_file' : '',
+        'audit_display_mode' : AUDIT_DMODE_ALL,
         'launcher_display_mode' : LAUNCHER_DMODE_FLAT,
         'num_roms' : 0,
         'num_parents' : 0,
@@ -137,6 +138,7 @@ def fs_new_launcher():
         'roms_default_poster' : 's_flyer',
         'roms_default_clearlogo' : 's_clearlogo',
         'ROM_asset_path' : '',
+        'path_3dbox' : '',
         'path_title' : '',
         'path_snap' : '',
         'path_boxfront' : '',
@@ -149,6 +151,41 @@ def fs_new_launcher():
         'path_map' : '',
         'path_manual' : '',
         'path_trailer' : ''
+    }
+
+def fs_new_rom():
+    return {
+        'id' : '',
+        'type': OBJ_ROM,
+        'm_name' : '',
+        'm_year' : '',
+        'm_genre' : '',
+        'm_developer' : '',
+        'm_nplayers' : '',
+        'm_esrb' : ESRB_PENDING,
+        'm_rating' : '',
+        'm_plot' : '',
+        'filename' : '',
+        'disks' : [],
+        'altapp' : '',
+        'altarg' : '',
+        'finished' : False,
+        'nointro_status' : AUDIT_STATUS_NONE,
+        'pclone_status' : PCLONE_STATUS_NONE,
+        'cloneof' : '',
+        's_3dbox' : '',
+        's_title' : '',
+        's_snap' : '',
+        's_boxfront' : '',
+        's_boxback' : '',
+        's_cartridge' : '',
+        's_fanart' : '',
+        's_banner' : '',
+        's_clearlogo' : '',
+        's_flyer' : '',
+        's_map' : '',
+        's_manual' : '',
+        's_trailer' : ''
     }
 
 def fs_new_collection():
@@ -172,41 +209,7 @@ def fs_new_collection():
         's_clearlogo' : '',
         's_trailer' : ''
     }
-
-def fs_new_rom():
-    return {
-        'id' : '',
-        'type': OBJ_ROM,
-        'm_name' : '',
-        'm_year' : '',
-        'm_genre' : '',
-        'm_developer' : '',
-        'm_nplayers' : '',
-        'm_esrb' : ESRB_PENDING,
-        'm_rating' : '',
-        'm_plot' : '',
-        'filename' : '',
-        'disks' : [],
-        'altapp' : '',
-        'altarg' : '',
-        'finished' : False,
-        'nointro_status' : NOINTRO_STATUS_NONE,
-        'pclone_status' : PCLONE_STATUS_NONE,
-        'cloneof' : '',
-        's_title' : '',
-        's_snap' : '',
-        's_boxfront' : '',
-        's_boxback' : '',
-        's_cartridge' : '',
-        's_fanart' : '',
-        's_banner' : '',
-        's_clearlogo' : '',
-        's_flyer' : '',
-        's_map' : '',
-        's_manual' : '',
-        's_trailer' : ''
-    }
-
+    
 # -------------------------------------------------------------------------------------------------
 # Favourite ROM creation/management
 # -------------------------------------------------------------------------------------------------
@@ -223,7 +226,7 @@ def fs_new_rom():
 #  'Broken'            ROM filename does not exist. ROM is unplayable
 #
 def fs_get_Favourite_from_ROM(rom, launcher):
-    # >> Copy dictionary object
+    # Copy dictionary object
     favourite = dict(rom)
 
     # Delete nointro_status field from ROM. Make sure this is done in the copy to be

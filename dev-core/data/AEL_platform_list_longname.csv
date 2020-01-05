@@ -1,0 +1,130 @@
+Long name,Short name,Compact name,Alias,TGDB,MG,SS,GF,DAT
+3DO Interactive Multiplayer,console-3do,3do,None,25,35,29,61,Redump
+Amstrad CPC,computer-cpc,cpc,None,4914,60,65,46,None
+Atari 2600,atari-2600,a2600,None,22,28,26,6,No-Intro
+Atari 5200,atari-5200,a5200,None,26,33,40,20,No-Intro
+Atari 7800,atari-7800,a7800,None,27,34,41,51,No-Intro
+Atari 8-bit,computer-atari-8bit,atari-8bit,None,30,39,43,None,None
+Atari Jaguar,atari-jaguar,jaguar,None,28,17,27,72,No-Intro
+Atari Jaguar CD,atari-jaguarcd,jaguarcd,None,29,17,171,82,Redump
+Atari Lynx,atari-lynx,lynx,None,4924,18,28,58,No-Intro
+Atari ST,computer-atari-st,atari-st,None,4937,24,42,38,No-Intro
+Bandai WonderSwan,bandai-wswan,wswan,None,4925,48,45,90,No-Intro
+Bandai WonderSwan Color,bandai-wswancolor,wswancolor,None,4926,49,46,95,No-Intro
+Benesse Pocket Challenge V2,console-bpc,bpc,None,None,None,None,None,No-Intro
+Casio Loopy,console-loopy,loopy,None,None,124,98,None,No-Intro
+Casio PV-1000,console-pv1000,pv1000,None,4964,125,74,None,No-Intro
+Coleco Colecovision,console-cvision,cvision,None,31,29,48,29,No-Intro
+Commodore 64,computer-c64,c64,None,40,27,66,24,No-Intro
+Commodore Amiga,computer-amiga,amiga,None,4911,19,64,39,No-Intro
+Commodore Amiga CD32,console-cd32,cd32,None,4947,56,130,70,Redump
+Commodore Amiga CDTV,console-cdtv,cdtv,None,None,83,129,None,Redump
+Commodore Plus-4,computer-plus4,plus4,None,None,115,99,None,No-Intro
+Commodore VIC-20,computer-vic20,vic20,None,4945,43,73,11,No-Intro
+Emerson Arcadia 2001,console-arcadia2001,arcadia2001,None,4963,162,94,None,No-Intro
+Entex Adventure Vision,console-avision,avision,None,4974,210,78,None,No-Intro
+Epoch Super Cassette Vision,console-scvision,scvision,None,4966,None,67,None,No-Intro
+Fairchild Channel F,console-channelf,channelf,None,4928,76,80,None,No-Intro
+Fujitsu FM Towns Marty,console-fmtmarty,fmtmarty,None,4932,102,97,55,None
+Funtech Super Acan,console-superacan,superacan,None,None,110,100,None,No-Intro
+GamePark GP32,console-gp32,gp32,None,None,108,101,None,No-Intro
+GCE Vectrex,console-vectrex,vectrex,None,4939,37,102,34,No-Intro
+Hartung Game Master,console-gamemaster,gamemaster,None,None,None,103,None,No-Intro
+iQue iQue Player,console-ique,ique,n64,None,None,None,None,No-Intro
+Konami Picno,console-picno,picno,None,None,None,None,None,No-Intro
+LeapFrog LeapPad,console-leappad,leappad,None,None,None,None,None,No-Intro
+LeapFrog Leapster Learning Game System,console-llgs,llgs,None,None,None,None,None,No-Intro
+LeapFrog My First LeapPad,console-mfleappad,mfleappad,None,None,None,None,None,No-Intro
+Libretro Cave Story (NX Engine),games-nxengine,nxengine,None,None,None,None,None,Libretro
+Libretro ChaiLove,games-chailove,chailove,None,None,None,None,None,Libretro
+Libretro Doom,games-doom,doom,None,None,None,None,None,Libretro
+Libretro Doom 3,games-doom3,doom3,None,None,None,None,None,Libretro
+Libretro EasyRPG,games-easyrpg,easyrpg,None,None,None,None,None,Libretro
+Libretro Game and Watch,games-gw,gw,None,None,None,None,None,Libretro
+Libretro Lutro,games-lutro,lutro,None,None,None,206,None,Libretro
+Libretro OpenLara,games-openlara,openlara,None,None,None,None,None,Libretro
+Libretro Quake,games-quake,quake,None,None,None,None,None,Libretro
+Libretro Quake 2,games-quake2,quake2,None,None,None,None,None,Libretro
+Libretro Quake 3,games-quake3,quake3,None,None,None,None,None,Libretro
+Libretro TIC-80,games-tic80,tic80,None,None,None,222,None,Libretro
+Magnavox Odyssey2,console-odyssey2,odyssey2,None,4927,78,104,9,No-Intro
+MAME,arcade-mame,mame,None,23,143,75,2,MAME
+Mattel Intellivision,console-ivision,ivision,None,32,30,115,16,No-Intro
+Microsoft MS-DOS,microsoft-msdos,msdos,None,1,2,135,19,None
+Microsoft MSX,microsoft-msx,msx,None,4929,57,113,40,No-Intro
+Microsoft MSX2,microsoft-msx2,msx2,None,4929,57,116,40,No-Intro
+Microsoft Windows,microsoft-windows,windows,None,1,3,136,19,None
+Microsoft Xbox,microsoft-xbox,xbox,None,14,13,32,98,None
+Microsoft Xbox 360,microsoft-xbox360,xbox360,None,15,69,33,111,None
+Microsoft Xbox One,microsoft-xboxone,xboxone,None,4920,142,None,121,None
+NEC PC Engine,nec-pce,pce,None,34,40,31,53,No-Intro
+NEC PC Engine CDROM2,nec-pcecd,pcecd,None,4955,45,114,56,Redump
+NEC PC-FX,nec-pcfx,pcfx,None,4930,59,72,79,Redump
+NEC PC-FXGA,nec-pcfxga,pcfxga,pcfx,None,None,None,None,None
+NEC SuperGrafx,nec-sgx,sgx,None,34,127,105,53,No-Intro
+NEC TurboGrafx 16,nec-tg16,tg16,pce,None,None,None,None,None
+NEC TurboGrafx CD,nec-tg16cd,tg16cd,pcecd,None,None,None,None,None
+Nintendo 3DS,nintendo-n3ds,n3ds,None,4912,101,17,116,No-Intro
+Nintendo 64,nintendo-n64,n64,None,3,9,14,84,No-Intro
+Nintendo 64DD,nintendo-n64dd,n64dd,None,3,9,122,92,No-Intro
+Nintendo DS,nintendo-nds,nds,None,8,44,15,108,No-Intro
+Nintendo DSi,nintendo-ndsi,ndsi,None,8,87,15,108,No-Intro
+Nintendo e-Reader,nintendo-ereader,ereader,None,None,None,119,None,No-Intro
+Nintendo Famicon,nintendo-famicon,famicon,nes,None,None,None,None,None
+Nintendo Famicon Disk System,nintendo-fds,fds,None,4936,22,106,47,No-Intro
+Nintendo GameBoy,nintendo-gb,gb,None,4,10,9,59,No-Intro
+Nintendo GameBoy Advance,nintendo-gba,gba,None,5,12,12,91,No-Intro
+Nintendo GameBoy Color,nintendo-gbcolor,gbcolor,None,41,11,10,57,No-Intro
+Nintendo GameCube,nintendo-gamecube,gamecube,None,2,14,13,99,Redump
+Nintendo NES,nintendo-nes,nes,None,7,22,3,41,No-Intro
+Nintendo New Nintendo 3DS,nintendo-new3ds,new3ds,None,None,None,None,None,No-Intro
+Nintendo Pokemon Mini,nintendo-pokemini,pokemini,None,4957,152,211,None,No-Intro
+Nintendo Satellaview,nintendo-satellaview,satellaview,None,None,None,107,None,No-Intro
+Nintendo SNES,nintendo-snes,snes,None,6,15,4,63,No-Intro
+Nintendo Sufami Turbo,nintendo-sufami,sufami,None,None,None,108,None,No-Intro
+Nintendo Switch,nintendo-switch,switch,None,4971,203,None,124,None
+Nintendo Virtual Boy,nintendo-vb,vb,None,4918,38,11,83,No-Intro
+Nintendo Wii,nintendo-wii,wii,None,9,82,16,114,None
+Nintendo Wii U,nintendo-wiiu,wiiu,None,38,132,18,118,None
+Ouya Ouya,console-ouya,ouya,None,4921,144,None,None,No-Intro
+Philips Videopac G7000,console-g7000,g7000,odyssey2,None,None,None,None,None
+Philips Videopac Plus G7400,console-g7400,g7400,None,None,128,104,None,No-Intro
+RCA Studio II,console-studio2,studio2,None,4967,113,None,None,No-Intro
+ScummVM,games-scummvm,scummvm,None,None,None,123,None,None
+Sega 32X,sega-32x,32x,None,33,21,19,74,No-Intro
+Sega Beena,sega-beena,beena,None,None,None,None,None,No-Intro
+Sega Dreamcast,sega-dreamcast,dreamcast,None,16,8,23,67,Redump
+Sega Game Gear,sega-gamegear,gamegear,None,20,25,21,62,No-Intro
+Sega Genesis,sega-genesis,genesis,megadrive,None,None,None,None,None
+Sega Master System,sega-sms,sms,None,35,26,2,49,No-Intro
+Sega Mega Drive,sega-megadrive,megadrive,None,36,16,1,54,No-Intro
+Sega MegaCD,sega-megacd,megacd,None,21,20,20,65,Redump
+Sega PICO,sega-pico,pico,None,4958,103,None,None,No-Intro
+Sega Saturn,sega-saturn,saturn,None,17,23,22,76,Redump
+Sega SC-3000,sega-sc3000,sc3000,sg1000,None,None,None,None,None
+Sega SegaCD,sega-segacd,segacd,megacd,None,None,None,None,None
+Sega SG-1000,sega-sg1000,sg1000,None,4949,114,109,43,No-Intro
+Sharp X68000,computer-x68k,x68k,None,4931,106,79,52,None
+Sinclair ZX Spectrum,computer-spectrum,spectrum,None,4913,41,76,35,None
+Sinclair ZX Spectrum Plus 3,computer-spectrump3,spectrump3,None,None,None,None,None,No-Intro
+Sinclair ZX80,computer-zx80,zx80,None,None,118,None,None,Libretro
+Sinclair ZX81,computer-zx81,zx81,None,None,119,77,None,Libretro
+SNK Neo-Geo AES,snk-aes,aes,mame,None,None,None,None,None
+SNK Neo-Geo CD,snk-neocd,neocd,None,4956,54,70,68,Redump
+SNK Neo-Geo MVS,snk-mvs,mvs,mame,None,None,None,None,None
+SNK Neo-Geo Pocket,snk-ngp,ngp,None,4922,52,25,None,No-Intro
+SNK Neo-Geo Pocket Color,snk-ngpc,ngpc,None,4923,53,82,89,No-Intro
+Sony PlayStation,sony-psx,psx,None,10,6,57,78,Redump
+Sony PlayStation 2,sony-ps2,ps2,None,11,7,58,94,Redump
+Sony PlayStation 3,sony-ps3,ps3,None,12,81,59,113,None
+Sony PlayStation 4,sony-ps4,ps4,None,4919,141,None,120,None
+Sony PlayStation Portable,sony-psp,psp,None,13,46,61,109,Redump
+Sony PlayStation Vita,sony-psvita,psvita,None,39,105,62,117,None
+Tiger Game.com,console-tigergame,tigergame,None,4940,50,121,None,No-Intro
+VTech CreatiVision,console-creativision,creativision,None,None,212,None,None,No-Intro
+VTech V.Flash,console-vflash,vflash,None,None,189,None,None,Redump
+VTech V.Smile,console-vsmile,vsmile,None,None,42,120,None,No-Intro
+VTech V.Smile Pro,console-vsmilepro,vsmilepro,vflash,None,None,None,None,None
+Watara Supervision,console-supervision,supervision,None,4959,109,207,None,No-Intro
+Zeebo Zeebo,console-zeebo,zeebo,None,None,88,None,None,No-Intro
+Unknown,unknown,unknown,None,None,None,None,None,None
