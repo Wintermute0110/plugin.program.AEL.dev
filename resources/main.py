@@ -148,6 +148,11 @@ g_addon_handle = 0
 g_content_type = ''
 g_time_str = unicode(datetime.now())
 
+# Audit reports constants
+AUDIT_REPORT_ALL = 'AUDIT_REPORT_ALL'
+AUDIT_REPORT_NOINTRO = 'AUDIT_REPORT_NOINTRO'
+AUDIT_REPORT_REDUMP = 'AUDIT_REPORT_REDUMP'
+
 # --- Global objects ---
 g_ScraperFactory = None
 g_ROMScannerFactory = None
@@ -301,11 +306,11 @@ def m_get_settings():
     o = __addon__
     
     # --- ROM Scanner settings ---
-    g_settings['scan_recursive']           = True if o.getSetting('scan_recursive') == 'true' else False
-    g_settings['scan_ignore_bios']         = True if o.getSetting('scan_ignore_bios') == 'true' else False
-    g_settings['scan_update_NFO_files']    = True if o.getSetting('scan_update_NFO_files') == 'true' else False
-    g_settings['scan_ignore_scrap_title']  = True if o.getSetting('scan_ignore_scrap_title') == 'true' else False
-    g_settings['scan_clean_tags']          = True if o.getSetting('scan_clean_tags') == 'true' else False
+    g_settings['scan_recursive']                = True if o.getSetting('scan_recursive') == 'true' else False
+    g_settings['scan_ignore_bios']              = True if o.getSetting('scan_ignore_bios') == 'true' else False
+    g_settings['scan_ignore_scrap_title']       = True if o.getSetting('scan_ignore_scrap_title') == 'true' else False
+    g_settings['scan_clean_tags']               = True if o.getSetting('scan_clean_tags') == 'true' else False
+    g_settings['scan_update_NFO_files']         = True if o.getSetting('scan_update_NFO_files') == 'true' else False
     g_settings['scan_skip_on_scraping_failure'] = True if o.getSetting('scan_skip_on_scraping_failure') == 'true' else False
     
     # --- ROM scraping ---
@@ -314,38 +319,33 @@ def m_get_settings():
     g_settings['scan_asset_policy']     = int(o.getSetting('scan_asset_policy'))
     g_settings['game_selection_mode']   = int(o.getSetting('game_selection_mode'))
     g_settings['asset_selection_mode']  = int(o.getSetting('asset_selection_mode'))
-
     # Scanner scrapers
     g_settings['scraper_metadata']      = int(o.getSetting('scraper_metadata'))
     g_settings['scraper_asset']         = int(o.getSetting('scraper_asset'))
     g_settings['scraper_metadata_MAME'] = int(o.getSetting('scraper_metadata_MAME'))
     g_settings['scraper_asset_MAME']    = int(o.getSetting('scraper_asset_MAME'))
     
-    # --- Scrapers ---
-    g_settings['scraper_thegamesdb_apikey']    = o.getSetting('scraper_thegamesdb_apikey').decode('utf-8')
-    g_settings['scraper_mobygames_apikey']     = o.getSetting('scraper_mobygames_apikey').decode('utf-8')
-   
+    # --- Misc settings ---
+    g_settings['scraper_thegamesdb_apikey']      = o.getSetting('scraper_thegamesdb_apikey').decode('utf-8')
+    g_settings['scraper_mobygames_apikey']       = o.getSetting('scraper_mobygames_apikey').decode('utf-8')   
     g_settings['scraper_screenscraper_ssid']     = o.getSetting('scraper_screenscraper_ssid').decode('utf-8')
     g_settings['scraper_screenscraper_sspass']   = o.getSetting('scraper_screenscraper_sspass').decode('utf-8')
+    
     g_settings['scraper_screenscraper_region']   = int(o.getSetting('scraper_screenscraper_region'))
     g_settings['scraper_screenscraper_language'] = int(o.getSetting('scraper_screenscraper_language'))
+        
+    g_settings['io_retroarch_only_mandatory'] = True if o.getSetting('io_retroarch_only_mandatory') == 'true' else False
+    g_settings['io_retroarch_sys_dir']        = o.getSetting('io_retroarch_sys_dir').decode('utf-8')
     
-    # --- Misc tab ---
-    g_settings['steam_api_key']            = o.getSetting('steam_api_key')
-
-    # --- Scrapers ---
-    # g_settings['scraper_region']           = int(o.getSetting('scraper_region'))
-    # g_settings['scraper_thumb_size']       = int(o.getSetting('scraper_thumb_size'))
-    # g_settings['scraper_fanart_size']      = int(o.getSetting('scraper_fanart_size'))
-    # g_settings['scraper_image_type']       = int(o.getSetting('scraper_image_type'))
-    # g_settings['scraper_fanart_order']     = int(o.getSetting('scraper_fanart_order'))
-
     # --- ROM audit ---
     g_settings['audit_unknown_roms']         = int(o.getSetting('audit_unknown_roms'))
-    # self.settings['audit_create_pclone_groups'] = True if o.getSetting('audit_create_pclone_groups') == 'true' else False
     g_settings['audit_pclone_assets']        = True if o.getSetting('audit_pclone_assets') == 'true' else False
-    # self.settings['audit_1G1R_main_region']     = int(o.getSetting('audit_1G1R_main_region'))
-    # self.settings['audit_1G1R_second_region']   = int(o.getSetting('audit_1G1R_second_region'))
+    g_settings['audit_nointro_dir']          = o.getSetting('audit_nointro_dir').decode('utf-8')
+    g_settings['audit_redump_dir']           = o.getSetting('audit_redump_dir').decode('utf-8')
+
+    # g_settings['audit_1G1R_first_region']     = int(o.getSetting('audit_1G1R_first_region'))
+    # g_settings['audit_1G1R_second_region']   = int(o.getSetting('audit_1G1R_second_region'))
+    # g_settings['audit_1G1R_third_region']   = int(o.getSetting('audit_1G1R_third_region'))
 
     # --- Display ---
     g_settings['display_category_mode']    = int(o.getSetting('display_category_mode'))
@@ -361,26 +361,18 @@ def m_get_settings():
     g_settings['display_hide_collections'] = True if o.getSetting('display_hide_collections') == 'true' else False
     g_settings['display_hide_vlaunchers']  = True if o.getSetting('display_hide_vlaunchers') == 'true' else False
     g_settings['display_hide_AEL_scraper'] = True if o.getSetting('display_hide_AEL_scraper') == 'true' else False
-    g_settings['display_hide_LB_scraper']  = True if o.getSetting('display_hide_LB_scraper') == 'true' else False
     g_settings['display_hide_recent']      = True if o.getSetting('display_hide_recent') == 'true' else False
     g_settings['display_hide_mostplayed']  = True if o.getSetting('display_hide_mostplayed') == 'true' else False
+    g_settings['display_hide_utilities']   = True if o.getSetting('display_hide_utilities') == 'true' else False
+    g_settings['display_hide_g_reports']   = True if o.getSetting('display_hide_g_reports') == 'true' else False
 
-    # --- Paths tab ---
+    # --- Paths ---
     g_settings['categories_asset_dir']     = o.getSetting('categories_asset_dir').decode('utf-8')
     g_settings['launchers_asset_dir']      = o.getSetting('launchers_asset_dir').decode('utf-8')
     g_settings['favourites_asset_dir']     = o.getSetting('favourites_asset_dir').decode('utf-8')
     g_settings['collections_asset_dir']    = o.getSetting('collections_asset_dir').decode('utf-8')
-
-    # --- I/O ---
-    g_settings['retroarch_exec_path']      = o.getSetting('retroarch_exec_path').decode('utf-8')
-    g_settings['retroarch_cores_dir']      = o.getSetting('retroarch_cores_dir').decode('utf-8')
-    g_settings['retroarch_system_dir']     = o.getSetting('retroarch_system_dir').decode('utf-8')
     
-    g_settings['retroarch_mandatory_BIOS'] = True if o.getSetting('retroarch_mandatory_BIOS') == 'true' else False  # deprecated?
-    g_settings['io_retroarch_only_mandatory'] = True if o.getSetting('io_retroarch_only_mandatory') == 'true' else False
-    g_settings['io_retroarch_sys_dir']        = o.getSetting('io_retroarch_sys_dir').decode('utf-8')
-    
-    # --- Advanced tab ---
+    # --- Advanced ---
     g_settings['media_state_action']       = int(o.getSetting('media_state_action'))
     g_settings['delay_tempo']              = int(round(float(o.getSetting('delay_tempo'))))
     g_settings['suspend_audio_engine']     = True if o.getSetting('suspend_audio_engine') == 'true' else False
@@ -392,6 +384,13 @@ def m_get_settings():
     g_settings['windows_cd_apppath']       = True if o.getSetting('windows_cd_apppath') == 'true' else False
     g_settings['log_level']                = int(o.getSetting('log_level'))
     g_settings['migrated_version']         = o.getSetting('migrated_version')
+    g_settings['steam_api_key']            = o.getSetting('steam_api_key')
+
+    # --- I/O ---
+    g_settings['retroarch_exec_path']      = o.getSetting('retroarch_exec_path').decode('utf-8')
+    g_settings['retroarch_cores_dir']      = o.getSetting('retroarch_cores_dir').decode('utf-8')
+    g_settings['retroarch_system_dir']     = o.getSetting('retroarch_system_dir').decode('utf-8')    
+    g_settings['retroarch_mandatory_BIOS'] = True if o.getSetting('retroarch_mandatory_BIOS') == 'true' else False  # deprecated?
 
     # Check if user changed default artwork paths for categories/launchers. If not, set defaults.
     if g_settings['categories_asset_dir'] == '':
@@ -572,7 +571,8 @@ def m_gui_render_Browse_by_vlaunchers_row(virtual_category_kind):
     commands.append(('Add new Category', m_misc_url_RunPlugin('ADD_CATEGORY')))
     commands.append(('Open Kodi file manager', 'ActivateWindow(filemanager)'))
     commands.append(('AEL addon settings', 'Addon.OpenSettings({0})'.format(__addon_id__)))
-    listitem.addContextMenuItems(commands)
+    if xbmc.getCondVisibility("!Skin.HasSetting(KioskMode.Enabled)"):
+        listitem.addContextMenuItems(commands, replaceItems = True)
 
     url_str = m_misc_url('SHOW_VIRTUAL_CATEGORY', virtual_category_kind)
     xbmcplugin.addDirectoryItem(handle = g_addon_handle, url = url_str, listitem = listitem, isFolder = True)
@@ -622,7 +622,8 @@ def m_gui_render_AEL_scraper_vlaunchers_row(platform, platform_info, db_suffix):
     commands = []
     commands.append(('Kodi File Manager', 'ActivateWindow(filemanager)'))
     commands.append(('AEL addon settings', 'Addon.OpenSettings({0})'.format(__addon_id__)))
-    listitem.addContextMenuItems(commands)
+    if xbmc.getCondVisibility("!Skin.HasSetting(KioskMode.Enabled)"):
+        listitem.addContextMenuItems(commands, replaceItems = True)
 
     url_str = m_misc_url('SHOW_AEL_SCRAPER_ROMS', platform)
     xbmcplugin.addDirectoryItem(handle = g_addon_handle, url = url_str, listitem = listitem, isFolder = True)
@@ -672,7 +673,8 @@ def m_gui_render_LB_scraper_vlaunchers_row(platform, platform_info, db_suffix):
     commands = []
     commands.append(('Kodi File Manager', 'ActivateWindow(filemanager)'))
     commands.append(('AEL addon settings', 'Addon.OpenSettings({0})'.format(__addon_id__)))
-    listitem.addContextMenuItems(commands)
+    if xbmc.getCondVisibility("!Skin.HasSetting(KioskMode.Enabled)"):
+        listitem.addContextMenuItems(commands, replaceItems = True)
 
     url_str = m_misc_url('SHOW_LB_SCRAPER_ROMS', platform)
     xbmcplugin.addDirectoryItem(handle = g_addon_handle, url = url_str, listitem = listitem, isFolder = True)
@@ -729,101 +731,230 @@ def m_command_render_most_played_roms():
 @router.action('SHOW_UTILITIES_VLAUNCHERS')
 def m_gui_render_Utilities_vlaunchers():
     # --- Common context menu for all VLaunchers ---
-    commands = []
-    commands.append(('Kodi File Manager', 'ActivateWindow(filemanager)'))
-    commands.append(('AEL addon settings', 'Addon.OpenSettings({0})'.format(__addon_id__)))
-
-    # --- Check/Update all databases ---
-    # This command also available from settings for AEL DB migrations.
-    vcategory_name   = 'Check/Update all databases'
-    vcategory_plot   = 'Check/Update all databases'
-    vcategory_icon   = g_PATHS.ICON_FILE_PATH.getPath()
+    commands = [
+        ('Kodi File Manager', 'ActivateWindow(filemanager)'),
+        ('AEL addon settings', 'Addon.OpenSettings({0})'.format(__addon_id__)),
+    ]
+    
+    # --- Common artwork for all Utilities VLaunchers ---
+    vcategory_icon   = g_PATHS.ADDON_CODE_DIR.pjoin('media/theme/Utilities_icon.png').getPath()
     vcategory_fanart = g_PATHS.FANART_FILE_PATH.getPath()
+    vcategory_poster = g_PATHS.ADDON_CODE_DIR.pjoin('media/theme/Utilities_poster.png').getPath()
+    
+    # <setting label="Import category/launcher configuration ..."
+    #  action="RunPlugin(plugin://plugin.program.advanced.emulator.launcher/?com=IMPORT_LAUNCHERS)"/>
+    vcategory_name = 'Import category/launcher XML configuration file'
+    vcategory_plot = (
+        'Imports XML files having AEL categories and/or launcher configuration.')
     listitem = xbmcgui.ListItem(vcategory_name)
     listitem.setInfo('video', {'title': vcategory_name, 'plot' : vcategory_plot, 'overlay': 4})
-    listitem.setArt({'icon' : vcategory_icon, 'fanart' : vcategory_fanart})
+    listitem.setArt({'icon' : vcategory_icon, 'fanart' : vcategory_fanart, 'poster' : vcategory_poster})
     listitem.setProperty(AEL_CONTENT_LABEL, AEL_CONTENT_VALUE_ROM_LAUNCHER)
-    listitem.addContextMenuItems(commands)
-    url_str = m_misc_url('EXECUTE_CHECK_DATABASES')
+    if xbmc.getCondVisibility("!Skin.HasSetting(KioskMode.Enabled)"):
+        listitem.addContextMenuItems(commands)
+    url_str = m_misc_url('EXECUTE_UTILS_IMPORT_LAUNCHERS')
     xbmcplugin.addDirectoryItem(handle = g_addon_handle, url = url_str, listitem = listitem, isFolder = False)
 
-    # --- Check all Launchers ---
-    vcategory_name   = 'Check all Launchers'
-    vcategory_plot   = 'Check all Launchers'
-    vcategory_icon   = g_PATHS.ICON_FILE_PATH.getPath()
-    vcategory_fanart = g_PATHS.FANART_FILE_PATH.getPath()
+    # <setting label="Export category/launcher configuration ..."
+    #  action="RunPlugin(plugin://plugin.program.advanced.emulator.launcher/?com=EXPORT_LAUNCHERS)"/>
+    vcategory_name = 'Export category/launcher XML configuration file'
+    vcategory_plot = (
+        'Exports all AEL categories and launchers into an XML configuration file. '
+        'You can later reimport this XML file.')
     listitem = xbmcgui.ListItem(vcategory_name)
     listitem.setInfo('video', {'title': vcategory_name, 'plot' : vcategory_plot, 'overlay': 4})
-    listitem.setArt({'icon' : vcategory_icon, 'fanart' : vcategory_fanart})
+    listitem.setArt({'icon' : vcategory_icon, 'fanart' : vcategory_fanart, 'poster' : vcategory_poster})
     listitem.setProperty(AEL_CONTENT_LABEL, AEL_CONTENT_VALUE_ROM_LAUNCHER)
-    listitem.addContextMenuItems(commands)
-    url_str = m_misc_url('EXECUTE_CHECK_LAUNCHERS')
+    if xbmc.getCondVisibility("!Skin.HasSetting(KioskMode.Enabled)"):
+        listitem.addContextMenuItems(commands)
+    url_str = m_misc_url('EXECUTE_UTILS_EXPORT_LAUNCHERS')
     xbmcplugin.addDirectoryItem(handle = g_addon_handle, url = url_str, listitem = listitem, isFolder = False)
 
-    # --- Check missing Assets/Artwork ---
-    vcategory_name   = 'Check missing Assets/Artwork'
-    vcategory_plot   = 'Check missing Assets/Artwork'
-    vcategory_icon   = g_PATHS.ICON_FILE_PATH.getPath()
-    vcategory_fanart = g_PATHS.FANART_FILE_PATH.getPath()
+    # <setting label="Check/Update all databases ..."
+    #  action="RunPlugin(plugin://plugin.program.advanced.emulator.launcher/?com=CHECK_DATABASE)"/>
+    vcategory_name = 'Check/Update all databases'
+    vcategory_plot = ('Checks and updates all AEL databases. Always use this tool '
+        'after upgrading AEL from a previous version if the plugins crashes.')
     listitem = xbmcgui.ListItem(vcategory_name)
     listitem.setInfo('video', {'title': vcategory_name, 'plot' : vcategory_plot, 'overlay': 4})
-    listitem.setArt({'icon' : vcategory_icon, 'fanart' : vcategory_fanart})
+    listitem.setArt({'icon' : vcategory_icon, 'fanart' : vcategory_fanart, 'poster' : vcategory_poster})
     listitem.setProperty(AEL_CONTENT_LABEL, AEL_CONTENT_VALUE_ROM_LAUNCHER)
-    listitem.addContextMenuItems(commands)
-    url_str = m_misc_url('EXECUTE_CHECK_MISSING_ASSETS')
+    if xbmc.getCondVisibility("!Skin.HasSetting(KioskMode.Enabled)"):
+        listitem.addContextMenuItems(commands)
+    url_str = m_misc_url('EXECUTE_UTILS_CHECK_DATABASE')
     xbmcplugin.addDirectoryItem(handle = g_addon_handle, url = url_str, listitem = listitem, isFolder = False)
 
-    # --- Check Retroarch installed cores ---
-    vcategory_name   = 'Check Retroarch installed cores'
-    vcategory_plot   = 'Check Retroarch installed cores'
-    vcategory_icon   = g_PATHS.ICON_FILE_PATH.getPath()
-    vcategory_fanart = g_PATHS.FANART_FILE_PATH.getPath()
+    # <setting label="Check Launchers ..."
+    #  action="RunPlugin(plugin://plugin.program.advanced.emulator.launcher/?com=CHECK_LAUNCHERS)"/>
+    vcategory_name = 'Check Launchers'
+    vcategory_plot = ('Check all Launchers for missing executables, missing artwork, '
+        'wrong platform names, ROM path existence, etc.')
     listitem = xbmcgui.ListItem(vcategory_name)
     listitem.setInfo('video', {'title': vcategory_name, 'plot' : vcategory_plot, 'overlay': 4})
-    listitem.setArt({'icon' : vcategory_icon, 'fanart' : vcategory_fanart})
+    listitem.setArt({'icon' : vcategory_icon, 'fanart' : vcategory_fanart, 'poster' : vcategory_poster})
     listitem.setProperty(AEL_CONTENT_LABEL, AEL_CONTENT_VALUE_ROM_LAUNCHER)
-    listitem.addContextMenuItems(commands)
-    url_str = m_misc_url('EXECUTE_CHECK_RETROARCH_CORES')
+    if xbmc.getCondVisibility("!Skin.HasSetting(KioskMode.Enabled)"):
+        listitem.addContextMenuItems(commands)
+    url_str = m_misc_url('EXECUTE_UTILS_CHECK_LAUNCHERS')
     xbmcplugin.addDirectoryItem(handle = g_addon_handle, url = url_str, listitem = listitem, isFolder = False)
 
-    # --- Check Retroarch BIOSes ---
-    # NOTE One table for mandatory BIOSes and another one for optical ones.
-    vcategory_name   = 'Check Retroarch BIOSes'
-    vcategory_plot   = 'Check Retroarch BIOSes'
-    vcategory_icon   = g_PATHS.ICON_FILE_PATH.getPath()
-    vcategory_fanart = g_PATHS.FANART_FILE_PATH.getPath()
+    vcategory_name = 'Check Launcher ROMs sync status'
+    vcategory_plot = ('For all ROM Launchers, check if all the ROMs in the ROM path are in AEL '
+        'database. If any Launcher is out of sync because you were changing your ROM files, use '
+        'the [COLOR=orange]ROM Scanner[/COLOR] to add and scrape the missing ROMs and remove '
+        'any dead ROMs.')
     listitem = xbmcgui.ListItem(vcategory_name)
     listitem.setInfo('video', {'title': vcategory_name, 'plot' : vcategory_plot, 'overlay': 4})
-    listitem.setArt({'icon' : vcategory_icon, 'fanart' : vcategory_fanart})
+    listitem.setArt({'icon' : vcategory_icon, 'fanart' : vcategory_fanart, 'poster' : vcategory_poster})
     listitem.setProperty(AEL_CONTENT_LABEL, AEL_CONTENT_VALUE_ROM_LAUNCHER)
-    listitem.addContextMenuItems(commands)
-    url_str = m_misc_url('EXECUTE_CHECK_RETROARCH_BIOS')
+    if xbmc.getCondVisibility("!Skin.HasSetting(KioskMode.Enabled)"):
+        listitem.addContextMenuItems(commands)
+    url_str = m_misc_url('EXECUTE_UTILS_CHECK_LAUNCHER_SYNC_STATUS')
     xbmcplugin.addDirectoryItem(handle = g_addon_handle, url = url_str, listitem = listitem, isFolder = False)
 
-    # --- Check Retroplayer installed cores ---
-    vcategory_name   = 'Check Retroplayer installed cores'
-    vcategory_plot   = 'Check Retroplayer installed cores'
-    vcategory_icon   = g_PATHS.ICON_FILE_PATH.getPath()
-    vcategory_fanart = g_PATHS.FANART_FILE_PATH.getPath()
+    # vcategory_name = 'Check artwork image integrity'
+    # vcategory_plot = ('Scans existing [COLOR=orange]artwork images[/COLOR] in Launchers, Favourites '
+    #     'and ROM Collections and verifies that the images have correct extension '
+    #     'and size is greater than 0. You can delete corrupted images to be rescraped later.')
+    # listitem = xbmcgui.ListItem(vcategory_name)
+    # listitem.setInfo('video', {'title': vcategory_name, 'plot' : vcategory_plot, 'overlay': 4})
+    # listitem.setArt({'icon' : vcategory_icon, 'fanart' : vcategory_fanart, 'poster' : vcategory_poster})
+    # listitem.setProperty(AEL_CONTENT_LABEL, AEL_CONTENT_VALUE_ROM_LAUNCHER)
+    # if xbmc.getCondVisibility("!Skin.HasSetting(KioskMode.Enabled)"):
+    #     listitem.addContextMenuItems(commands)
+    # url_str = m_misc_url('EXECUTE_UTILS_CHECK_ARTWORK_INTEGRITY')
+    # xbmcplugin.addDirectoryItem(handle = g_addon_handle, url = url_str, listitem = listitem, isFolder = False)
+
+    vcategory_name = 'Check ROMs artwork image integrity'
+    vcategory_plot = ('Scans existing [COLOR=orange]ROMs artwork images[/COLOR] in ROM Launchers '
+        'and verifies that the images have correct extension '
+        'and size is greater than 0. You can delete corrupted images to be rescraped later.')
     listitem = xbmcgui.ListItem(vcategory_name)
     listitem.setInfo('video', {'title': vcategory_name, 'plot' : vcategory_plot, 'overlay': 4})
-    listitem.setArt({'icon' : vcategory_icon, 'fanart' : vcategory_fanart})
+    listitem.setArt({'icon' : vcategory_icon, 'fanart' : vcategory_fanart, 'poster' : vcategory_poster})
     listitem.setProperty(AEL_CONTENT_LABEL, AEL_CONTENT_VALUE_ROM_LAUNCHER)
-    listitem.addContextMenuItems(commands)
-    url_str = m_misc_url('EXECUTE_CHECK_RETROPLAYER_CORES')
+    if xbmc.getCondVisibility("!Skin.HasSetting(KioskMode.Enabled)"):
+        listitem.addContextMenuItems(commands)
+    url_str = m_misc_url('EXECUTE_UTILS_CHECK_ROM_ARTWORK_INTEGRITY')
     xbmcplugin.addDirectoryItem(handle = g_addon_handle, url = url_str, listitem = listitem, isFolder = False)
 
-    # --- Check Retroarch BIOSes (mandatory only) ---
-    vcategory_name   = 'Check Retroplayer BIOSes'
-    vcategory_plot   = 'Check Retroplayer BIOSes'
-    vcategory_icon   = g_PATHS.ICON_FILE_PATH.getPath()
-    vcategory_fanart = g_PATHS.FANART_FILE_PATH.getPath()
+    # vcategory_name = 'Delete redundant artwork'
+    # vcategory_plot = ('Scans all Launchers, Favourites and Collections and finds redundant '
+    #     'or unused artwork. You may delete this unneeded images.')
+    # listitem = xbmcgui.ListItem(vcategory_name)
+    # listitem.setInfo('video', {'title': vcategory_name, 'plot' : vcategory_plot, 'overlay': 4})
+    # listitem.setArt({'icon' : vcategory_icon, 'fanart' : vcategory_fanart, 'poster' : vcategory_poster})
+    # listitem.setProperty(AEL_CONTENT_LABEL, AEL_CONTENT_VALUE_ROM_LAUNCHER)
+    # if xbmc.getCondVisibility("!Skin.HasSetting(KioskMode.Enabled)"):
+    #     listitem.addContextMenuItems(commands)
+    # url_str = m_misc_url('EXECUTE_UTILS_DELETE_REDUNDANT_ARTWORK')
+    # xbmcplugin.addDirectoryItem(handle = g_addon_handle, url = url_str, listitem = listitem, isFolder = False)
+
+    vcategory_name = 'Delete ROMs redundant artwork'
+    vcategory_plot = ('Scans all ROM Launchers and finds '
+        '[COLOR orange]redundant ROMs artwork[/COLOR]. You may delete this unneeded images.')
     listitem = xbmcgui.ListItem(vcategory_name)
     listitem.setInfo('video', {'title': vcategory_name, 'plot' : vcategory_plot, 'overlay': 4})
-    listitem.setArt({'icon' : vcategory_icon, 'fanart' : vcategory_fanart})
+    listitem.setArt({'icon' : vcategory_icon, 'fanart' : vcategory_fanart, 'poster' : vcategory_poster})
     listitem.setProperty(AEL_CONTENT_LABEL, AEL_CONTENT_VALUE_ROM_LAUNCHER)
-    listitem.addContextMenuItems(commands)
-    url_str = m_misc_url('EXECUTE_CHECK_RETROPLAYER_BIOS')
+    if xbmc.getCondVisibility("!Skin.HasSetting(KioskMode.Enabled)"):
+        listitem.addContextMenuItems(commands)
+    url_str = m_misc_url('EXECUTE_UTILS_DELETE_ROM_REDUNDANT_ARTWORK')
+    xbmcplugin.addDirectoryItem(handle = g_addon_handle, url = url_str, listitem = listitem, isFolder = False)
+
+    vcategory_name = 'Show detected No-Intro/Redump DATs'
+    vcategory_plot = ('Display the auto-detected No-Intro/Redump DATs that will be used for the '
+        'ROM audit. You have to configure the DAT directories in '
+        '[COLOR orange]AEL addon settings[/COLOR], [COLOR=orange]ROM Audit[/COLOR] tab.')
+    listitem = xbmcgui.ListItem(vcategory_name)
+    listitem.setInfo('video', {'title': vcategory_name, 'plot' : vcategory_plot, 'overlay': 4})
+    listitem.setArt({'icon' : vcategory_icon, 'fanart' : vcategory_fanart, 'poster' : vcategory_poster})
+    listitem.setProperty(AEL_CONTENT_LABEL, AEL_CONTENT_VALUE_ROM_LAUNCHER)
+    if xbmc.getCondVisibility("!Skin.HasSetting(KioskMode.Enabled)"):
+        listitem.addContextMenuItems(commands)
+    url_str = m_misc_url('EXECUTE_UTILS_SHOW_DETECTED_DATS')
+    xbmcplugin.addDirectoryItem(handle = g_addon_handle, url = url_str, listitem = listitem, isFolder = False)
+
+    vcategory_name = 'Check Retroarch launchers'
+    vcategory_plot = ('Check [COLOR orange]Retroarch ROM launchers[/COLOR] for missing '
+        'Libretro cores set with [COLOR=orange]argument -L[/COLOR]. '
+        'This only works in Linux and Windows platforms.')
+    listitem = xbmcgui.ListItem(vcategory_name)
+    listitem.setInfo('video', {'title': vcategory_name, 'plot' : vcategory_plot, 'overlay': 4})
+    listitem.setArt({'icon' : vcategory_icon, 'fanart' : vcategory_fanart, 'poster' : vcategory_poster})
+    listitem.setProperty(AEL_CONTENT_LABEL, AEL_CONTENT_VALUE_ROM_LAUNCHER)
+    if xbmc.getCondVisibility("!Skin.HasSetting(KioskMode.Enabled)"):
+        listitem.addContextMenuItems(commands)
+    url_str = m_misc_url('EXECUTE_UTILS_CHECK_RETRO_LAUNCHERS')
+    xbmcplugin.addDirectoryItem(handle = g_addon_handle, url = url_str, listitem = listitem, isFolder = False)
+
+    # <setting label="Check Retroarch BIOSes ..."
+    #  action="RunPlugin(plugin://plugin.program.advanced.emulator.launcher/?com=CHECK_RETRO_BIOS)"/>
+    vcategory_name = 'Check Retroarch BIOSes'
+    vcategory_plot = ('Check [COLOR orange]Retroarch BIOSes[/COLOR]. You need to configure the '
+        'Libretro system directory in [COLOR orange]AEL addon settings[/COLOR], '
+        '[COLOR orange]Misc settings[/COLOR] tab. The setting '
+        '[COLOR orange]Only check mandatory BIOSes[/COLOR] affects this report.')
+    listitem = xbmcgui.ListItem(vcategory_name)
+    listitem.setInfo('video', {'title': vcategory_name, 'plot' : vcategory_plot, 'overlay': 4})
+    listitem.setArt({'icon' : vcategory_icon, 'fanart' : vcategory_fanart, 'poster' : vcategory_poster})
+    listitem.setProperty(AEL_CONTENT_LABEL, AEL_CONTENT_VALUE_ROM_LAUNCHER)
+    if xbmc.getCondVisibility("!Skin.HasSetting(KioskMode.Enabled)"):
+        listitem.addContextMenuItems(commands)
+    url_str = m_misc_url('EXECUTE_UTILS_CHECK_RETRO_BIOS')
+    xbmcplugin.addDirectoryItem(handle = g_addon_handle, url = url_str, listitem = listitem, isFolder = False)
+
+    # Importing AL configuration is not supported any more. It will cause a lot of trouble
+    # because AL and AEL have diverged too much.
+    # <setting label="Import AL launchers.xml ..."
+    #  action="RunPlugin(plugin://plugin.program.advanced.emulator.launcher/?com=IMPORT_AL_LAUNCHERS)"/>
+
+    # --- Check TheGamesDB scraper ---
+    vcategory_name = 'Check TheGamesDB scraper'
+    vcategory_plot = ('Connect to TheGamesDB and check if it is working and your monthly allowance.')
+    listitem = xbmcgui.ListItem(vcategory_name)
+    listitem.setInfo('video', {'title': vcategory_name, 'plot' : vcategory_plot, 'overlay': 4})
+    listitem.setArt({'icon' : vcategory_icon, 'fanart' : vcategory_fanart, 'poster' : vcategory_poster})
+    listitem.setProperty(AEL_CONTENT_LABEL, AEL_CONTENT_VALUE_ROM_LAUNCHER)
+    if xbmc.getCondVisibility("!Skin.HasSetting(KioskMode.Enabled)"):
+        listitem.addContextMenuItems(commands)
+    url_str = m_misc_url('EXECUTE_UTILS_TGDB_CHECK')
+    xbmcplugin.addDirectoryItem(handle = g_addon_handle, url = url_str, listitem = listitem, isFolder = False)
+
+    # --- Check MobyGames scraper ---
+    vcategory_name = 'Check MobyGames scraper'
+    vcategory_plot = ('Connect to MobyGames and check if it works.')
+    listitem = xbmcgui.ListItem(vcategory_name)
+    listitem.setInfo('video', {'title': vcategory_name, 'plot' : vcategory_plot, 'overlay': 4})
+    listitem.setArt({'icon' : vcategory_icon, 'fanart' : vcategory_fanart, 'poster' : vcategory_poster})
+    listitem.setProperty(AEL_CONTENT_LABEL, AEL_CONTENT_VALUE_ROM_LAUNCHER)
+    if xbmc.getCondVisibility("!Skin.HasSetting(KioskMode.Enabled)"):
+        listitem.addContextMenuItems(commands)
+    url_str = m_misc_url('EXECUTE_UTILS_MOBYGAMES_CHECK')
+    xbmcplugin.addDirectoryItem(handle = g_addon_handle, url = url_str, listitem = listitem, isFolder = False)
+
+    # --- Check ScreenScraper scraper ---
+    vcategory_name = 'Check ScreenScraper scraper'
+    vcategory_plot = ('Connect to ScreenScraper and check if it works.')
+    listitem = xbmcgui.ListItem(vcategory_name)
+    listitem.setInfo('video', {'title': vcategory_name, 'plot' : vcategory_plot, 'overlay': 4})
+    listitem.setArt({'icon' : vcategory_icon, 'fanart' : vcategory_fanart, 'poster' : vcategory_poster})
+    listitem.setProperty(AEL_CONTENT_LABEL, AEL_CONTENT_VALUE_ROM_LAUNCHER)
+    if xbmc.getCondVisibility("!Skin.HasSetting(KioskMode.Enabled)"):
+        listitem.addContextMenuItems(commands)
+    url_str = m_misc_url('EXECUTE_UTILS_SCREENSCRAPER_CHECK')
+    xbmcplugin.addDirectoryItem(handle = g_addon_handle, url = url_str, listitem = listitem, isFolder = False)
+
+    # --- Check ArcadeDB scraper ---
+    vcategory_name = 'Check Arcade DB scraper'
+    vcategory_plot = ('Connect to Arcade DB and check if it works.')
+    listitem = xbmcgui.ListItem(vcategory_name)
+    listitem.setInfo('video', {'title': vcategory_name, 'plot' : vcategory_plot, 'overlay': 4})
+    listitem.setArt({'icon' : vcategory_icon, 'fanart' : vcategory_fanart, 'poster' : vcategory_poster})
+    listitem.setProperty(AEL_CONTENT_LABEL, AEL_CONTENT_VALUE_ROM_LAUNCHER)
+    if xbmc.getCondVisibility("!Skin.HasSetting(KioskMode.Enabled)"):
+        listitem.addContextMenuItems(commands)
+    url_str = m_misc_url('EXECUTE_UTILS_ARCADEDB_CHECK')
     xbmcplugin.addDirectoryItem(handle = g_addon_handle, url = url_str, listitem = listitem, isFolder = False)
 
     # --- End of directory ---
@@ -836,30 +967,61 @@ def m_gui_render_GlobalReports_vlaunchers():
     commands.append(('Kodi File Manager', 'ActivateWindow(filemanager)'))
     commands.append(('AEL addon settings', 'Addon.OpenSettings({0})'.format(__addon_id__)))
 
+    # --- Common artwork for all VLaunchers ---
+    vcategory_icon   = g_PATHS.ADDON_CODE_DIR.pjoin('media/theme/Global_Reports_icon.png').getPath()
+    vcategory_fanart = g_PATHS.FANART_FILE_PATH.getPath()
+    vcategory_poster = g_PATHS.ADDON_CODE_DIR.pjoin('media/theme/Global_Reports_poster.png').getPath()
+
     # --- Global ROM statistics ---
     vcategory_name   = 'Global ROM statistics'
-    vcategory_plot   = 'Global ROM statistics'
-    vcategory_icon   = g_PATHS.ICON_FILE_PATH.getPath()
-    vcategory_fanart = g_PATHS.FANART_FILE_PATH.getPath()
+    vcategory_plot   = ('Shows a report of all ROM Launchers with number of ROMs.')
     listitem = xbmcgui.ListItem(vcategory_name)
     listitem.setInfo('video', {'title': vcategory_name, 'plot' : vcategory_plot, 'overlay': 4})
-    listitem.setArt({'icon' : vcategory_icon, 'fanart' : vcategory_fanart})
+    listitem.setArt({'icon' : vcategory_icon, 'fanart' : vcategory_fanart, 'poster' : vcategory_poster})
     listitem.setProperty(AEL_CONTENT_LABEL, AEL_CONTENT_VALUE_ROM_LAUNCHER)
-    listitem.addContextMenuItems(commands)
+    if xbmc.getCondVisibility("!Skin.HasSetting(KioskMode.Enabled)"):
+        listitem.addContextMenuItems(commands)
     url_str = m_misc_url('EXECUTE_GLOBAL_ROM_STATS')
     xbmcplugin.addDirectoryItem(handle = g_addon_handle, url = url_str, listitem = listitem, isFolder = False)
 
     # --- Global ROM Audit statistics ---
-    vcategory_name   = 'Global ROM Audit statistics'
-    vcategory_plot   = 'Global ROM Audit statistics'
-    vcategory_icon   = g_PATHS.ICON_FILE_PATH.getPath()
-    vcategory_fanart = g_PATHS.FANART_FILE_PATH.getPath()
+    vcategory_name   = 'Global ROM Audit statistics (All)'
+    vcategory_plot   = (
+        'Shows a report of all audited ROM Launchers, with Have, Miss and Unknown '
+        'statistics.')
     listitem = xbmcgui.ListItem(vcategory_name)
     listitem.setInfo('video', {'title': vcategory_name, 'plot' : vcategory_plot, 'overlay': 4})
-    listitem.setArt({'icon' : vcategory_icon, 'fanart' : vcategory_fanart})
+    listitem.setArt({'icon' : vcategory_icon, 'fanart' : vcategory_fanart, 'poster' : vcategory_poster})
     listitem.setProperty(AEL_CONTENT_LABEL, AEL_CONTENT_VALUE_ROM_LAUNCHER)
-    listitem.addContextMenuItems(commands)
-    url_str = m_misc_url('EXECUTE_GLOBAL_AUDIT_STATS')
+    if xbmc.getCondVisibility("!Skin.HasSetting(KioskMode.Enabled)"):
+        listitem.addContextMenuItems(commands, replaceItems = True)
+    url_str = router.create_url('EXECUTE_GLOBAL_AUDIT_STATS_ALL')
+    xbmcplugin.addDirectoryItem(handle = g_addon_handle, url = url_str, listitem = listitem, isFolder = False)
+
+    vcategory_name   = 'Global ROM Audit statistics (No-Intro only)'
+    vcategory_plot   = (
+        'Shows a report of all audited ROM Launchers, with Have, Miss and Unknown '
+        'statistics. Only No-Intro platforms (cartridge-based) are reported.')
+    listitem = xbmcgui.ListItem(vcategory_name)
+    listitem.setInfo('video', {'title': vcategory_name, 'plot' : vcategory_plot, 'overlay': 4})
+    listitem.setArt({'icon' : vcategory_icon, 'fanart' : vcategory_fanart, 'poster' : vcategory_poster})
+    listitem.setProperty(AEL_CONTENT_LABEL, AEL_CONTENT_VALUE_ROM_LAUNCHER)
+    if xbmc.getCondVisibility("!Skin.HasSetting(KioskMode.Enabled)"):
+        listitem.addContextMenuItems(commands)
+    url_str = router.create_url('EXECUTE_GLOBAL_AUDIT_STATS_NOINTRO', report_type=AUDIT_REPORT_NOINTRO)
+    xbmcplugin.addDirectoryItem(handle = g_addon_handle, url = url_str, listitem = listitem, isFolder = False)
+
+    vcategory_name   = 'Global ROM Audit statistics (Redump only)'
+    vcategory_plot   = (
+        'Shows a report of all audited ROM Launchers, with Have, Miss and Unknown '
+        'statistics. Only Redump platforms (optical-based) are reported.')
+    listitem = xbmcgui.ListItem(vcategory_name)
+    listitem.setInfo('video', {'title': vcategory_name, 'plot' : vcategory_plot, 'overlay': 4})
+    listitem.setArt({'icon' : vcategory_icon, 'fanart' : vcategory_fanart, 'poster' : vcategory_poster})
+    listitem.setProperty(AEL_CONTENT_LABEL, AEL_CONTENT_VALUE_ROM_LAUNCHER)
+    if xbmc.getCondVisibility("!Skin.HasSetting(KioskMode.Enabled)"):
+        listitem.addContextMenuItems(commands)
+    url_str = router.create_url('EXECUTE_GLOBAL_AUDIT_STATS_REDUMP', report_type=AUDIT_REPORT_REDUMP)
     xbmcplugin.addDirectoryItem(handle = g_addon_handle, url = url_str, listitem = listitem, isFolder = False)
 
     # --- End of directory ---
@@ -938,7 +1100,8 @@ def m_command_render_Collections():
         commands.append(('Import Collection',        m_misc_url_RunPlugin('IMPORT_COLLECTION')))
         commands.append(('Kodi File Manager',        'ActivateWindow(filemanager)'))
         commands.append(('AEL addon settings',       'Addon.OpenSettings({0})'.format(__addon_id__)))
-        listitem.addContextMenuItems(commands)
+        if xbmc.getCondVisibility("!Skin.HasSetting(KioskMode.Enabled)"):
+            listitem.addContextMenuItems(commands, replaceItems = True)
 
         # >> Use ROMs renderer to display collection ROMs
         url_str = m_misc_url('SHOW_COLLECTION_ROMS', VCATEGORY_COLLECTIONS_ID, collection_id)
@@ -1281,7 +1444,8 @@ def m_command_render_Browse_by_roms(virtual_categoryID):
         commands.append(('Search ROMs in Virtual Launcher', m_misc_url_RunPlugin('SEARCH_LAUNCHER', virtual_categoryID, vlauncher_id)))
         commands.append(('Kodi File Manager', 'ActivateWindow(filemanager)', ))
         commands.append(('AEL addon settings', 'Addon.OpenSettings({0})'.format(__addon_id__), ))
-        listitem.addContextMenuItems(commands)
+        if xbmc.getCondVisibility("!Skin.HasSetting(KioskMode.Enabled)"):
+            listitem.addContextMenuItems(commands, replaceItems = True)
 
         url_str = m_misc_url('SHOW_VLAUNCHER_ROMS', virtual_categoryID, vlauncher_id)
         xbmcplugin.addDirectoryItem(handle = g_addon_handle, url = url_str, listitem = listitem, isFolder = True)
@@ -2046,6 +2210,7 @@ def m_command_import_collection():
         kodi_dialog_OK("Imported ROM Collection '{0}' metadata and assets.".format(collection_dic['m_name']))
     else:
         kodi_dialog_OK("Imported ROM Collection '{0}' metadata.".format(collection_dic['m_name']))
+    kodi_refresh_container()
 
 #
 # Exports a ROM Collection
@@ -2227,7 +2392,7 @@ def m_command_edit_rom_favourite(categoryID, launcherID, romID):
         roms_fav = fav_launcher.get_roms()
     elif categoryID == VCATEGORY_COLLECTIONS_ID:
         log_debug('_command_manage_favourites() Managing Collection ROMs')
-        collection = self.collcollection_repository.find(launcherID)
+        collection = self.collection_repository.find(launcherID)
         roms_fav = collection.get_roms()
     else:
         kodi_dialog_OK('_command_manage_favourites() should be called for Favourites or Collections. '
@@ -2384,8 +2549,7 @@ def m_command_edit_rom_favourite(categoryID, launcherID, romID):
 
             # >> Relink Favourite ROM. Removed old Favourite before inserting new one.
             new_fav_rom = fs_repair_Favourite_ROM(repair_mode, old_fav_rom, parent_rom, parent_launcher)
-            roms_fav.remove(old_fav_rom)
-            roms_fav.append(new_fav_rom)
+            roms_fav = misc_replace_fav(roms_fav, old_fav_rom_ID, new_fav_rom['id'], new_fav_rom)
             num_repaired_ROMs += 1
         log_debug('_command_manage_favourites() Repaired {0} ROMs'.format(num_repaired_ROMs))
 
@@ -3574,301 +3738,6 @@ def m_command_exec_check_database():
     kodi_notify('All databases checked')
     log_debug('_command_check_database() Exiting')
 
-# >> Commands called from Utilities menu.
-@router.action('EXECUTE_CHECK_LAUNCHERS', protected=True)
-def m_command_exec_check_launchers():
-    log_info('m_command_exec_check_launchers() Checking all Launchers configuration ...')
-
-    launchers = g_LauncherRepository.find_all()
-
-    main_str_list = []
-    main_str_list.append('Number of launchers: {0}\n\n'.format(len(launchers)))
-    for launcher in sorted(launchers, key = lambda l : l.get_name()):
-        
-        l_str = []
-        main_str_list.append('[COLOR orange]Launcher "{0}"[/COLOR]\n'.format(launcher.get_name()))
-
-        # >> Check that platform is on AEL official platform list
-        platform = launcher.get_platform()
-        if platform not in AEL_platform_list:
-            l_str.append('Unrecognised platform "{0}"\n'.format(platform))
-
-        # >> Check that category exists
-        category = self.category_repository.find(launcher.get_category_id())
-        if category is None:
-                l_str.append('Category not found (unlinked launcher)\n')
-
-        # >> Check that application exists
-        app_FN = FileName(launcher['application'])
-        if not app_FN.exists():
-            l_str.append('Application "{0}" not found\n'.format(app_FN.getPath()))
-            
-        launcher_data = launcher.get_data_dic()
-        
-        # >> Test that artwork files exist if not empty (s_* fields)
-        self._aux_check_for_file(l_str, 's_icon', launcher_data)
-        self._aux_check_for_file(l_str, 's_fanart', launcher_data)
-        self._aux_check_for_file(l_str, 's_banner', launcher_data)
-        self._aux_check_for_file(l_str, 's_poster', launcher_data)
-        self._aux_check_for_file(l_str, 's_clearlogo', launcher_data)
-        self._aux_check_for_file(l_str, 's_controller', launcher_data)
-        self._aux_check_for_file(l_str, 's_trailer', launcher_data)
-
-        # Checks only applicable for RomLaunchers
-        if launcher.supports_launching_roms():
-            
-            # >> Check that rompath exists if rompath is not empty
-            # >> Empty rompath means standalone launcher
-            rompath = launcher.get_rom_path()
-            if not rompath.exists():
-                l_str.append('ROM path "{0}" not found\n'.format(rompath.getPath()))
-
-            # >> Check that DAT file exists if not empty
-            if launcher.has_nointro_xml():
-                nointro_xml_file_FN = launcher.get_nointro_xml_filepath()
-                if not nointro_xml_file_FN.exists():
-                    l_str.append('DAT file "{0}" not found\n'.format(nointro_xml_file_FN.getPath()))
-
-            # >> Test that ROM_asset_path exists if not empty
-            ROM_asset_path = launcher.get_rom_asset_path()
-            if not ROM_asset_path.exists():
-                l_str.append('ROM_asset_path "{0}" not found\n'.format(ROM_asset_path.getPath()))
-
-            # >> Test that ROM asset paths exist if not empty (path_* fields)
-            self._aux_check_for_file(l_str, 'path_title', launcher_data)
-            self._aux_check_for_file(l_str, 'path_snap', launcher_data)
-            self._aux_check_for_file(l_str, 'path_boxfront', launcher_data)
-            self._aux_check_for_file(l_str, 'path_boxback', launcher_data)
-            self._aux_check_for_file(l_str, 'path_cartridge', launcher_data)
-            self._aux_check_for_file(l_str, 'path_fanart', launcher_data)
-            self._aux_check_for_file(l_str, 'path_banner', launcher_data)
-            self._aux_check_for_file(l_str, 'path_clearlogo', launcher_data)
-            self._aux_check_for_file(l_str, 'path_flyer', launcher_data)
-            self._aux_check_for_file(l_str, 'path_map', launcher_data)
-            self._aux_check_for_file(l_str, 'path_manual', launcher_data)
-            self._aux_check_for_file(l_str, 'path_trailer', launcher_data)
-
-            # >> Check for duplicate asset paths
-            
-
-        # >> If l_str is empty is because no problems were found.
-        if l_str:
-            main_str_list.extend(l_str)
-        else:
-            main_str_list.append('No problems found\n')
-        main_str_list.append('\n')
-
-    # >> Stats report
-    log_info('Writing report file "{0}"'.format(g_PATHS.LAUNCHER_REPORT_FILE_PATH.getPath()))
-    full_string = ''.join(main_str_list).encode('utf-8')
-    file = open(g_PATHS.LAUNCHER_REPORT_FILE_PATH.getPath(), 'w')
-    file.write(full_string)
-    file.close()
-
-    # >> Display report TXT file
-    window_title = 'Launchers report'
-    kodi_display_text_window_mono(window_title, full_string)
-
-@router.action('EXECUTE_CHECK_MISSING_ASSETS', protected=True)
-def m_command_exec_check_missing_assets():
-    log_debug('m_command_exec_check_missing_assets() BEGIN')
-    window_title = 'Check missing assets/artwork'
-
-    slist = []
-    slist.append('Sorry, not implemented yet')
-    kodi_display_text_window_mono(window_title, '\n'.join(slist))
-
-@router.action('EXECUTE_CHECK_RETROARCH_CORES', protected=True)
-def m_command_exec_check_Retroarch_cores():
-    log_debug('m_command_exec_check_Retroarch_cores() BEGIN')
-    window_title = 'Check Retroarch installed cores'
-
-    slist = []
-    slist.append('Sorry, not implemented yet')
-    kodi_display_text_window_mono(window_title, '\n'.join(slist))
-
-@router.action('EXECUTE_CHECK_RETROARCH_BIOS', protected=True)
-def m_command_exec_check_Retroarch_BIOS():
-    log_info('m_command_exec_check_Retroarch_BIOS() Checking Retroarch BIOSes ...')
-    check_only_mandatory = g_settings['io_retroarch_only_mandatory']
-    log_info('m_command_exec_check_Retroarch_BIOS() check_only_mandatory = {0}'.format(check_only_mandatory))
-
-    # >> If Retroarch System dir not configured or found abort.
-    sys_dir_FN = FileName(g_settings['io_retroarch_sys_dir'])
-    if not sys_dir_FN.exists():
-        kodi_dialog_OK('Retroarch System directory "{0}" not found. '.format(sys_dir_FN.getPath()) +
-                       'Please configure it in the addons settings.')
-        return
-
-    # >> Progress dialog
-    pDialog = xbmcgui.DialogProgress()
-    pDialog_canceled = False
-    pDialog.create('Advanced Emulator Launcher', 'Checking Retroarch BIOSes ...')
-    num_BIOS = len(Libretro_BIOS_list)
-    file_count = 0
-
-    # >> Algorithm:
-    #    1) Traverse list of BIOS. For every BIOS:
-    #    2) Check if file exists. If not exists -> missing BIOS.
-    #    3) If BIOS exists check file size.
-    #    3) If BIOS exists check MD5
-    #    4) Unknwon files in Retroarch System dir are ignored and non-reported.
-    #    5) Write results into a report TXT file.
-    BIOS_status_dic = {}
-    BIOS_status_dic_colour = {}
-    for BIOS_dic in Libretro_BIOS_list:
-        if check_only_mandatory and not BIOS_dic['mandatory']:
-            log_debug('BIOS "{0}" is not mandatory. Skipping check.'.format(BIOS_dic['filename']))
-            continue
-
-        BIOS_file_FN = sys_dir_FN.pjoin(BIOS_dic['filename'])
-        log_debug('Testing BIOS "{0}"'.format(BIOS_file_FN.getPath()))
-
-        if not BIOS_file_FN.exists():
-            log_info('Not found "{0}"'.format(BIOS_file_FN.getPath()))
-            BIOS_status_dic[BIOS_dic['filename']] = 'Not found'
-            BIOS_status_dic_colour[BIOS_dic['filename']] = '[COLOR orange]Not found[/COLOR]'
-            continue
-
-        BIOS_stat = BIOS_file_FN.stat()
-        file_size = BIOS_stat.st_size
-        if file_size != BIOS_dic['size']:
-            log_info('Wrong size "{0}"'.format(BIOS_file_FN.getPath()))
-            log_info('It is {0} and must be {1}'.format(file_size, BIOS_dic['size']))
-            BIOS_status_dic[BIOS_dic['filename']] = 'Wrong size'
-            BIOS_status_dic_colour[BIOS_dic['filename']] = '[COLOR orange]Wrong size[/COLOR]'
-            continue
-
-        hash_md5 = hashlib.md5()
-        with open(BIOS_file_FN.getPath(), "rb") as f:
-            for chunk in iter(lambda: f.read(4096), b""):
-                hash_md5.update(chunk)
-        file_MD5 = hash_md5.hexdigest()
-        log_debug('MD5 is "{0}"'.format(file_MD5))
-        if file_MD5 != BIOS_dic['md5']:
-            log_info('Wrong MD5 "{0}"'.format(BIOS_file_FN.getPath()))
-            log_info('It is       "{0}"'.format(file_MD5))
-            log_info('and must be "{0}"'.format(BIOS_dic['md5']))
-            BIOS_status_dic[BIOS_dic['filename']] = 'Wrong MD5'
-            BIOS_status_dic_colour[BIOS_dic['filename']] = '[COLOR orange]Wrong MD5[/COLOR]'
-            continue
-        log_info('BIOS OK "{0}"'.format(BIOS_file_FN.getPath()))
-        BIOS_status_dic[BIOS_dic['filename']] = 'OK'
-        BIOS_status_dic_colour[BIOS_dic['filename']] = '[COLOR lime]OK[/COLOR]'
-
-        # >> Update progress
-        file_count += 1
-        update_number = (float(file_count) / float(num_BIOS)) * 100
-        pDialog.update(int(update_number))
-    pDialog.update(100)
-    pDialog.close()
-
-    # >> Output format:
-    #    BIOS name             Mandatory  Status      Cores affected 
-    #    -------------------------------------------------
-    #    5200.rom              YES        OK          ---            
-    #    7800 BIOS (E).rom     NO         Wrong MD5   core a name    
-    #                                                 core b name    
-    #    7800 BIOS (U).rom     YES        OK          ---            
-    #
-    max_size_BIOS_filename = 0
-    for BIOS_dic in Libretro_BIOS_list:
-        if len(BIOS_dic['filename']) > max_size_BIOS_filename:
-            max_size_BIOS_filename = len(BIOS_dic['filename'])
-
-    max_size_status = 0
-    for key in BIOS_status_dic:
-        if len(BIOS_status_dic[key]) > max_size_status:
-            max_size_status = len(BIOS_status_dic[key])
-
-    str_list = []
-    str_list.append('Retroarch system dir "{0}"\n'.format(sys_dir_FN.getPath()))
-    if check_only_mandatory:
-        str_list.append('Checking only mandatory BIOSes.\n\n')
-    else:
-        str_list.append('Checking mandatory and optional BIOSes.\n\n')
-    bios_str      = '{0}{1}'.format('BIOS name', ' ' * (max_size_BIOS_filename - len('BIOS name')))
-    mandatory_str = 'Mandatory'
-    status_str    = '{0}{1}'.format('Status', ' ' * (max_size_status - len('Status')))
-    cores_str     = 'Cores affected'
-    size_total = len(bios_str) + len(mandatory_str) + len(status_str) + len(cores_str) + 6
-    str_list.append('{0}  {1}  {2}  {3}\n'.format(bios_str, mandatory_str, status_str, cores_str))
-    str_list.append('{0}\n'.format('-' * size_total))
-
-    for BIOS_dic in Libretro_BIOS_list:
-        BIOS_filename = BIOS_dic['filename']
-        # >> If BIOS was skipped continue loop
-        if BIOS_filename not in BIOS_status_dic: continue
-        status_text = BIOS_status_dic[BIOS_filename]
-        status_text_colour = BIOS_status_dic_colour[BIOS_filename]
-        filename_str = '{0}{1}'.format(BIOS_filename, ' ' * (max_size_BIOS_filename - len(BIOS_filename)))
-        mandatory_str = 'YES      ' if BIOS_dic['mandatory'] else 'NO       '
-        status_str = '{0}{1}'.format(status_text_colour, ' ' * (max_size_status - len(status_text)))
-        len_status_str = len('{0}{1}'.format(status_text, ' ' * (max_size_status - len(status_text))))
-
-        # >> Print affected core list
-        core_list = BIOS_dic['cores']
-        if len(core_list) == 0:
-            line_str = '{0}  {1}  {2}\n'.format(filename_str, mandatory_str, status_str)
-            str_list.append(line_str)
-        else:
-            num_spaces = len(filename_str) + 9 + len_status_str + 4
-            for i, core_name in enumerate(core_list):
-                beautiful_core_name = Retro_core_dic[core_name] if core_name in Retro_core_dic else core_name
-                if i == 0:
-                    line_str = '{0}  {1}  {2}  {3}\n'.format(filename_str, mandatory_str, status_str, beautiful_core_name)
-                    str_list.append(line_str)
-                else:
-                    line_str = '{0}  {1}\n'.format(' ' * num_spaces, beautiful_core_name)
-                    str_list.append(line_str)
-
-    # >> Stats report
-    log_info('Writing report file "{0}"'.format(BIOS_REPORT_FILE_PATH.getPath()))
-    full_string = ''.join(str_list).encode('utf-8')
-    file = open(BIOS_REPORT_FILE_PATH.getPath(), 'w')
-    file.write(full_string)
-    file.close()
-
-    # >> Display report TXT file.
-    window_title = 'Retroarch BIOS report'
-    kodi_display_text_window_mono(window_title, full_string)
-
-@router.action('EXECUTE_CHECK_RETROPLAYER_CORES', protected=True)
-def m_command_exec_check_Retroplayer_cores():
-    log_debug('m_command_exec_check_Retroplayer_cores() BEGIN')
-    window_title = 'Check Retroplayer installed cores'
-
-    slist = []
-    slist.append('Sorry, not implemented yet')
-    kodi_display_text_window_mono(window_title, '\n'.join(slist))
-
-@router.action('EXECUTE_CHECK_RETROPLAYER_BIOS', protected=True)
-def m_command_exec_check_Retroplayer_BIOS():
-    log_debug('m_command_exec_check_Retroplayer_BIOS() BEGIN')
-    window_title = 'Check Retroplayer installed BIOSes'
-
-    slist = []
-    slist.append('Sorry, not implemented yet')
-    kodi_display_text_window_mono(window_title, '\n'.join(slist))
-
-@router.action('EXECUTE_GLOBAL_ROM_STATS', protected=True)
-def m_command_exec_global_rom_stats():
-    log_debug('m_command_exec_global_rom_stats() BEGIN')
-    window_title = 'Global ROM statistics'
-
-    slist = []
-    slist.append('Sorry, not implemented yet')
-    kodi_display_text_window_mono(window_title, '\n'.join(slist))
-
-@router.action('EXECUTE_GLOBAL_AUDIT_STATS', protected=True)
-def m_command_exec_global_audit_stats():
-    log_debug('m_command_exec_global_audit_stats() BEGIN')
-    window_title = 'Global ROM Audit statistics'
-
-    slist = []
-    slist.append('Sorry, not implemented yet')
-    kodi_display_text_window_mono(window_title, '\n'.join(slist))
-
 # -------------------------------------------------------------------------------------------------
 # Item context menu methods
 # -------------------------------------------------------------------------------------------------
@@ -4352,7 +4221,7 @@ def m_subcommand_launcher_manage_roms(category, launcher):
     m_subcommand_launcher_manage_roms(category, launcher)
   
 # --- Submenu command (Audit ROMs / Launcher viewmode) ---
-# NOTE ONLY for ROM launchers, not for standalone launchers
+# ONLY for ROM launchers, not for standalone launchers
 #
 # >>> New No-Intro/Redump DAT file management <<<
 # A) If the user adds a No-Intro/Redump DAT, ROMs will be audited automatically after addition
@@ -6143,6 +6012,890 @@ def m_subcommand_manage_collection_rom_position(launcher, rom):
         roms = new_roms
 
 # -------------------------------------------------------------------------------------------------
+# Global Report methods
+# -------------------------------------------------------------------------------------------------
+# >> Commands called from Utilities menu.
+@router.action('EXECUTE_CHECK_LAUNCHERS', protected=True)
+def m_command_exec_check_launchers():
+    log_info('m_command_exec_check_launchers() Checking all Launchers configuration ...')
+
+    launchers = g_LauncherRepository.find_all()
+
+    main_str_list = []
+    main_str_list.append('Number of launchers: {0}\n\n'.format(len(launchers)))
+    for launcher in sorted(launchers, key = lambda l : l.get_name()):
+        
+        l_str = []
+        main_str_list.append('[COLOR orange]Launcher "{0}"[/COLOR]\n'.format(launcher.get_name()))
+
+        # >> Check that platform is on AEL official platform list
+        platform = launcher.get_platform()
+        if platform not in platform_long_to_index_dic:
+            l_str.append('Unrecognised platform "{0}"\n'.format(platform))
+
+        # >> Check that category exists
+        category = self.category_repository.find(launcher.get_category_id())
+        if category is None:
+                l_str.append('Category not found (unlinked launcher)\n')
+
+        # >> Check that application exists
+        app_FN = FileName(launcher['application'])
+        if not app_FN.exists():
+            l_str.append('Application "{0}" not found\n'.format(app_FN.getPath()))
+            
+        launcher_data = launcher.get_data_dic()
+        
+        # >> Test that artwork files exist if not empty (s_* fields)
+        m_aux_check_for_file(l_str, 's_icon', launcher_data)
+        m_aux_check_for_file(l_str, 's_fanart', launcher_data)
+        m_aux_check_for_file(l_str, 's_banner', launcher_data)
+        m_aux_check_for_file(l_str, 's_poster', launcher_data)
+        m_aux_check_for_file(l_str, 's_clearlogo', launcher_data)
+        m_aux_check_for_file(l_str, 's_controller', launcher_data)
+        m_aux_check_for_file(l_str, 's_trailer', launcher_data)
+
+        # Checks only applicable for RomLaunchers
+        if launcher.supports_launching_roms():
+            
+            # >> Check that rompath exists if rompath is not empty
+            # >> Empty rompath means standalone launcher
+            rompath = launcher.get_rom_path()
+            if not rompath.exists():
+                l_str.append('ROM path "{0}" not found\n'.format(rompath.getPath()))
+
+            # >> Check that DAT file exists if not empty
+            if launcher.has_nointro_xml():
+                nointro_xml_file_FN = launcher.get_nointro_xml_filepath()
+                if not nointro_xml_file_FN.exists():
+                    l_str.append('DAT file "{0}" not found\n'.format(nointro_xml_file_FN.getPath()))
+
+            # >> Test that ROM_asset_path exists if not empty
+            ROM_asset_path = launcher.get_rom_asset_path()
+            if not ROM_asset_path.exists():
+                l_str.append('ROM_asset_path "{0}" not found\n'.format(ROM_asset_path.getPath()))
+
+            # >> Test that ROM asset paths exist if not empty (path_* fields)
+            m_aux_check_for_file(l_str, 'path_3dbox', launcher_data)
+            m_aux_check_for_file(l_str, 'path_title', launcher_data)
+            m_aux_check_for_file(l_str, 'path_snap', launcher_data)
+            m_aux_check_for_file(l_str, 'path_boxfront', launcher_data)
+            m_aux_check_for_file(l_str, 'path_boxback', launcher_data)
+            m_aux_check_for_file(l_str, 'path_cartridge', launcher_data)
+            m_aux_check_for_file(l_str, 'path_fanart', launcher_data)
+            m_aux_check_for_file(l_str, 'path_banner', launcher_data)
+            m_aux_check_for_file(l_str, 'path_clearlogo', launcher_data)
+            m_aux_check_for_file(l_str, 'path_flyer', launcher_data)
+            m_aux_check_for_file(l_str, 'path_map', launcher_data)
+            m_aux_check_for_file(l_str, 'path_manual', launcher_data)
+            m_aux_check_for_file(l_str, 'path_trailer', launcher_data)
+
+            # >> Check for duplicate asset paths
+            
+
+        # >> If l_str is empty is because no problems were found.
+        if l_str:
+            main_str_list.extend(l_str)
+        else:
+            main_str_list.append('No problems found\n')
+        main_str_list.append('\n')
+
+    # >> Stats report
+    log_info('Writing report file "{0}"'.format(g_PATHS.LAUNCHER_REPORT_FILE_PATH.getPath()))
+    full_string = ''.join(main_str_list).encode('utf-8')
+    file = open(g_PATHS.LAUNCHER_REPORT_FILE_PATH.getPath(), 'w')
+    file.write(full_string)
+    file.close()
+
+    # >> Display report TXT file
+    window_title = 'Launchers report'
+    kodi_display_text_window_mono(window_title, full_string)
+
+@router.action('EXECUTE_CHECK_MISSING_ASSETS', protected=True)
+def m_command_exec_check_missing_assets():
+    log_debug('m_command_exec_check_missing_assets() BEGIN')
+    window_title = 'Check missing assets/artwork'
+
+    slist = []
+    slist.append('Sorry, not implemented yet')
+    kodi_display_text_window_mono(window_title, '\n'.join(slist))
+
+@router.action('EXECUTE_GLOBAL_ROM_STATS', protected=True)
+def m_command_exec_global_rom_stats():
+    log_debug('m_command_exec_global_rom_stats() BEGIN')
+    window_title = 'Global ROM statistics'
+    sl = []
+    # sl.append('[COLOR violet]Launcher ROM report.[/COLOR]')
+    # sl.append('')
+
+    # --- Table header ---
+    table_str = [
+        ['left', 'left', 'left'],
+        ['Category', 'Launcher', 'ROMs'],
+    ]
+
+    # Traverse categories and sort alphabetically.
+    log_debug('Number of categories {0}'.format(len(self.categories)))
+    log_debug('Number of launchers {0}'.format(len(self.launchers)))
+    for cat_id in sorted(self.categories, key = lambda x : self.categories[x]['m_name']):
+        # Get launchers of this category alphabetically sorted.
+        launcher_list = []
+        for launcher_id in sorted(self.launchers, key = lambda x : self.launchers[x]['m_name']):
+            launcher = self.launchers[launcher_id]
+            # Skip Standalone Launchers
+            if not launcher['rompath']: continue
+            if launcher['categoryID'] == cat_id: launcher_list.append(launcher)
+        # Render list of launchers for this category.
+        cat_name = self.categories[cat_id]['m_name']
+        for launcher in launcher_list:
+            table_str.append([cat_name, launcher['m_name'], str(launcher['num_roms'])])
+    # Traverse categoryless launchers.
+    catless_launchers = {}
+    for launcher_id, launcher in self.launchers.iteritems():
+        if launcher['categoryID'] == VCATEGORY_ADDONROOT_ID:
+            catless_launchers[launcher_id] = launcher
+    for launcher_id in sorted(catless_launchers, key = lambda x : catless_launchers[x]['m_name']):
+        launcher = self.launchers[launcher_id]
+        # Skip Standalone Launchers
+        if not launcher['rompath']: continue
+        table_str.append(['', launcher['m_name'], str(launcher['num_roms'])])
+
+    # Generate table and print report
+    # log_debug(unicode(table_str))
+    sl.extend(text_render_table(table_str))
+    kodi_display_text_window_mono(window_title, '\n'.join(sl))
+ 
+# TODO Add a table columnd to tell user if the DAT is automatic or custom.
+@router.action('EXECUTE_GLOBAL_AUDIT_STATS_ALL', protected=True)
+@router.action('EXECUTE_GLOBAL_AUDIT_STATS_NOINTRO', protected=True)
+@router.action('EXECUTE_GLOBAL_AUDIT_STATS_REDUMP', protected=True)
+def m_command_exec_global_audit_stats(report_type = AUDIT_REPORT_ALL):
+    log_debug('m_command_exec_global_audit_stats() Report type {}'.format(report_type))
+    window_title = 'Global ROM Audit statistics'
+    sl = []
+
+    # --- Table header ---
+    # Table cell padding: left, right
+    table_str = [
+        ['left', 'left', 'left', 'left', 'left', 'left', 'left', 'left'],
+        ['Category', 'Launcher', 'Platform', 'Type', 'ROMs', 'Have', 'Miss', 'Unknown'],
+    ]
+
+    # Traverse categories and sort alphabetically.
+    log_debug('Number of categories {0}'.format(len(self.categories)))
+    log_debug('Number of launchers {0}'.format(len(self.launchers)))
+    for cat_id in sorted(self.categories, key = lambda x : self.categories[x]['m_name']):
+        # Get launchers of this category alphabetically sorted.
+        launcher_list = []
+        for launcher_id in sorted(self.launchers, key = lambda x : self.launchers[x]['m_name']):
+            launcher = self.launchers[launcher_id]
+            # Skip Standalone Launchers and Launcher with no ROM Audit.
+            if not launcher['rompath']: continue
+            if launcher['audit_state'] == AUDIT_STATE_OFF: continue
+            if launcher['categoryID'] == cat_id: launcher_list.append(launcher)
+        # Render list of launchers for this category.
+        cat_name = self.categories[cat_id]['m_name']
+        for launcher in launcher_list:
+            p_index = get_AEL_platform_index(launcher['platform'])
+            p_obj = AEL_platforms[p_index]
+            # Skip launchers depending on user settings.
+            if report_type == AUDIT_REPORT_NOINTRO and p_obj.DAT != DAT_NOINTRO: continue
+            if report_type == AUDIT_REPORT_REDUMP and p_obj.DAT != DAT_REDUMP: continue
+            table_str.append([
+                cat_name, launcher['m_name'], p_obj.compact_name, p_obj.DAT,
+                str(launcher['num_roms']), str(launcher['num_have']),
+                str(launcher['num_miss']), str(launcher['num_unknown']),
+            ])
+    # Traverse categoryless launchers.
+    catless_launchers = {}
+    for launcher_id, launcher in self.launchers.iteritems():
+        if launcher['categoryID'] == VCATEGORY_ADDONROOT_ID:
+            catless_launchers[launcher_id] = launcher
+    for launcher_id in sorted(catless_launchers, key = lambda x : catless_launchers[x]['m_name']):
+        launcher = self.launchers[launcher_id]
+        # Skip Standalone Launchers
+        if not launcher['rompath']: continue
+
+        p_index = get_AEL_platform_index(launcher['platform'])
+        p_obj = AEL_platforms[p_index]
+        # Skip launchers depending on user settings.
+        if report_type == AUDIT_REPORT_NOINTRO and p_obj.DAT != DAT_NOINTRO: continue
+        if report_type == AUDIT_REPORT_REDUMP and p_obj.DAT != DAT_REDUMP: continue
+        table_str.append([
+            ' ', launcher['m_name'], p_obj.compact_name, p_obj.DAT,
+            str(launcher['num_roms']), str(launcher['num_have']),
+            str(launcher['num_miss']), str(launcher['num_unknown']),
+        ])
+
+    # Generate table and print report
+    # log_debug(unicode(table_str))
+    sl.extend(text_render_table(table_str))
+    kodi_display_text_window_mono(window_title, '\n'.join(sl))    
+
+# For every ROM launcher scans the ROM path and check 1) if there are dead ROMs and 2) if
+# there are ROM files not in AEL database. If either 1) or 2) is true launcher must be
+# updated with the ROM scanner.
+@router.action('EXECUTE_UTILS_CHECK_LAUNCHER_SYNC_STATUS', protected=True)
+def m_command_exec_utils_check_launcher_sync_status():
+    log_info('_command_exec_utils_check_launcher_sync_status() Checking ROM Launcher sync status...')
+    pdialog = KodiProgressDialog()
+    num_launchers = len(self.launchers)
+    main_slist = []
+    short_slist = [
+        ['left', 'left'],
+    ]
+    detailed_slist = []
+    pdialog.startProgress('Checking ROM sync status', num_launchers)
+    processed_launchers = 0
+    for launcher_id in sorted(self.launchers, key = lambda x : self.launchers[x]['m_name']):
+        pdialog.updateProgress(processed_launchers)
+        processed_launchers += 1
+        launcher = self.launchers[launcher_id]
+        # Skip non-ROM launcher.
+        if not launcher['rompath']: continue
+        log_debug('Checking ROM Launcher "{}"'.format(launcher['m_name']))
+        detailed_slist.append('[COLOR orange]Launcher "{0}"[/COLOR]'.format(launcher['m_name']))
+        # Load ROMs .
+        pdialog.updateMessage2('Loading ROMs...')
+        roms = fs_load_ROMs_JSON(g_PATHS.ROMS_DIR, launcher)
+        num_roms = len(roms)
+        R_str = 'ROM' if num_roms == 1 else 'ROMs'
+        log_debug('Launcher has {} DB {}'.format(num_roms, R_str))
+        detailed_slist.append('Launcher has {} DB {}'.format(num_roms, R_str))
+        # For now skip multidisc ROMs until multidisc support is fixed. I think for
+        # every ROM in the multidisc set there should be a normal ROM not displayed
+        # in listings, and then the special multidisc ROM that points to the ROMs
+        # in the set.
+        has_multidisc_ROMs = False
+        for rom_id in roms:
+            if roms[rom_id]['disks']: 
+                has_multidisc_ROMs = True
+                break
+        if has_multidisc_ROMs:
+            log_debug('Launcher has multidisc ROMs. Skipping launcher')
+            detailed_slist.append('Launcher has multidisc ROMs.')
+            detailed_slist.append('[COLOR yellow]Skipping launcher[/COLOR]')
+            continue
+        # Get real ROMs (remove Missing, Multidisc, etc., ROMs).
+        # Remove ROM Audit Missing ROMs (fake ROMs).
+        real_roms = {}
+        for rom_id in roms:
+            if roms[rom_id]['nointro_status'] == AUDIT_STATUS_MISS: continue
+            real_roms[rom_id] = roms[rom_id]
+        num_real_roms = len(real_roms)
+        R_str = 'ROM' if num_real_roms == 1 else 'ROMs'
+        log_debug('Launcher has {} real {}'.format(num_real_roms, R_str))
+        detailed_slist.append('Launcher has {} real {}'.format(num_real_roms, R_str))
+        # If Launcher is empty there is nothing to do.
+        if num_real_roms < 1:
+            log_debug('Launcher is empty')
+            detailed_slist.append('Launcher is empty')
+            detailed_slist.append('[COLOR yellow]Skipping launcher[/COLOR]')
+            continue
+        # Make a dictionary for fast indexing.
+        romfiles_dic = {real_roms[rom_id]['filename'] : rom_id for rom_id in real_roms}
+
+        # Scan files in rompath directory.
+        pdialog.updateMessage2('Scanning files in ROM paths...')
+        launcher_path = FileName(launcher['rompath'])
+        log_debug('Scanning files in {}'.format(launcher_path.getPath()))
+        if self.settings['scan_recursive']:
+            log_debug('Recursive scan activated')
+            files = launcher_path.recursiveScanFilesInPath('*.*')
+        else:
+            log_debug('Recursive scan not activated')
+            files = launcher_path.scanFilesInPath('*.*')
+        num_files = len(files)
+        f_str = 'file' if num_files == 1 else 'files'
+        log_debug('File scanner found {} files'.format(num_files, f_str))
+        detailed_slist.append('File scanner found {} files'.format(num_files, f_str))
+
+        # Check for dead ROMs (ROMs in AEL DB not on disk).
+        pdialog.updateMessage2('Checking dead ROMs...')
+        log_debug('Checking for dead ROMs...')
+        num_dead_roms = 0
+        for rom_id in real_roms:
+            fileName = FileName(real_roms[rom_id]['filename'])
+            if not fileName.exists(): num_dead_roms += 1
+        if num_dead_roms > 0:
+            R_str = 'ROM' if num_dead_roms == 1 else 'ROMs'
+            detailed_slist.append('Found {} dead {}'.format(num_dead_roms, R_str))
+        else:
+            detailed_slist.append('No dead ROMs found')
+
+        # Check for unsynced ROMs (ROMS on disk not in AEL DB).
+        pdialog.updateMessage2('Checking unsynced ROMs...')
+        log_debug('Checking for unsynced ROMs...')
+        num_unsynced_roms = 0
+        for f_path in sorted(files):
+            ROM_FN = FileName(f_path)
+            processROM = False
+            for ext in launcher['romext'].split("|"):
+                if ROM_FN.getExt() == '.' + ext: processROM = True
+            if not processROM: continue
+            # Ignore BIOS ROMs, like the ROM Scanner does.
+            if self.settings['scan_ignore_bios']:
+                BIOS_re = re.findall('\[BIOS\]', ROM_FN.getBase())
+                if len(BIOS_re) > 0:
+                    log_debug('BIOS detected. Skipping ROM "{}"'.format(ROM_FN.getBase()))
+                    continue
+            ROM_in_launcher_DB = True if f_path in romfiles_dic else False
+            if not ROM_in_launcher_DB: num_unsynced_roms += 1
+        if num_unsynced_roms > 0:
+            R_str = 'ROM' if num_unsynced_roms == 1 else 'ROMs'
+            detailed_slist.append('Found {} unsynced {}'.format(num_unsynced_roms, R_str))
+        else:
+            detailed_slist.append('No unsynced ROMs found')
+        update_launcher_flag = True if num_dead_roms > 0 or num_unsynced_roms > 0 else False
+        if update_launcher_flag:
+            short_slist.append([launcher['m_name'], '[COLOR red]Update launcher[/COLOR]'])
+            detailed_slist.append('[COLOR red]Launcher should be updated[/COLOR]')
+        else:
+            short_slist.append([launcher['m_name'], '[COLOR green]Launcher OK[/COLOR]'])
+            detailed_slist.append('[COLOR green]Launcher OK[/COLOR]')
+        detailed_slist.append('')
+    pdialog.endProgress()
+
+    # Generate, save and display report.
+    log_info('Writing report file "{0}"'.format(g_PATHS.ROM_SYNC_REPORT_FILE_PATH.getPath()))
+    pdialog.startProgress('Saving report')
+    main_slist.append('*** Summary ***')
+    main_slist.append('There are {} ROM launchers.'.format(num_launchers))
+    main_slist.append('')
+    main_slist.extend(text_render_table_NO_HEADER(short_slist, trim_Kodi_colours = True))
+    main_slist.append('')
+    main_slist.append('*** Detailed report ***')
+    main_slist.extend(detailed_slist)
+    full_string = '\n'.join(main_slist).encode('utf-8')
+    file = open(g_PATHS.ROM_SYNC_REPORT_FILE_PATH.getPath(), 'w')
+    file.write(full_string)
+    file.close()
+    pdialog.endProgress()
+    kodi_display_text_window_mono('ROM sync status report', full_string)
+
+@router.action('EXECUTE_UTILS_CHECK_ARTWORK_INTEGRITY', protected=True)
+def m_command_exec_utils_check_artwork_integrity():
+    kodi_dialog_OK('EXECUTE_UTILS_CHECK_ARTWORK_INTEGRITY not implemented yet.')
+
+@router.action('EXECUTE_UTILS_CHECK_ROM_ARTWORK_INTEGRITY', protected=True)
+def m_command_exec_utils_check_ROM_artwork_integrity():
+    log_info('_command_exec_utils_check_ROM_artwork_integrity() Beginning...')
+    kodi_dialog_OK('EXECUTE_UTILS_CHECK_ROM_ARTWORK_INTEGRITY not implemented yet.')
+
+@router.action('EXECUTE_UTILS_DELETE_REDUNDANT_ARTWORK', protected=True)
+def m_command_exec_utils_delete_redundant_artwork():
+    kodi_dialog_OK('EXECUTE_UTILS_DELETE_REDUNDANT_ARTWORK not implemented yet.')
+
+@router.action('EXECUTE_UTILS_DELETE_ROM_REDUNDANT_ARTWORK', protected=True)
+def m_command_exec_utils_delete_ROM_redundant_artwork():
+    log_info('_command_exec_utils_delete_ROM_redundant_artwork() Beginning...')
+    pdialog = KodiProgressDialog()
+    num_launchers = len(self.launchers)
+    main_slist = []
+    detailed_slist = []
+    pdialog.startProgress('Checking ROM sync status', num_launchers)
+    processed_launchers = 0
+    for launcher_id in sorted(self.launchers, key = lambda x : self.launchers[x]['m_name']):
+        pdialog.updateProgress(processed_launchers)
+        processed_launchers += 1
+        launcher = self.launchers[launcher_id]
+        # Skip non-ROM launcher.
+        if not launcher['rompath']: continue
+        log_debug('Checking ROM Launcher "{}"'.format(launcher['m_name']))
+        detailed_slist.append('[COLOR orange]Launcher "{0}"[/COLOR]'.format(launcher['m_name']))
+        # Load ROMs.
+        pdialog.updateMessage2('Loading ROMs...')
+        roms = fs_load_ROMs_JSON(g_PATHS.ROMS_DIR, launcher)
+        num_roms = len(roms)
+        R_str = 'ROM' if num_roms == 1 else 'ROMs'
+        log_debug('Launcher has {} DB {}'.format(num_roms, R_str))
+        detailed_slist.append('Launcher has {} DB {}'.format(num_roms, R_str))
+        # For now skip multidisc ROMs until multidisc support is fixed. I think for
+        # every ROM in the multidisc set there should be a normal ROM not displayed
+        # in listings, and then the special multidisc ROM that points to the ROMs
+        # in the set.
+        has_multidisc_ROMs = False
+        for rom_id in roms:
+            if roms[rom_id]['disks']: 
+                has_multidisc_ROMs = True
+                break
+        if has_multidisc_ROMs:
+            log_debug('Launcher has multidisc ROMs. Skipping launcher')
+            detailed_slist.append('Launcher has multidisc ROMs.')
+            detailed_slist.append('[COLOR yellow]Skipping launcher[/COLOR]')
+            continue
+        # Get real ROMs (remove Missing, Multidisc, etc., ROMs).
+        # Remove ROM Audit Missing ROMs (fake ROMs).
+        real_roms = {}
+        for rom_id in roms:
+            if roms[rom_id]['nointro_status'] == AUDIT_STATUS_MISS: continue
+            real_roms[rom_id] = roms[rom_id]
+        num_real_roms = len(real_roms)
+        R_str = 'ROM' if num_real_roms == 1 else 'ROMs'
+        log_debug('Launcher has {} real {}'.format(num_real_roms, R_str))
+        detailed_slist.append('Launcher has {} real {}'.format(num_real_roms, R_str))
+        # If Launcher is empty there is nothing to do.
+        if num_real_roms < 1:
+            log_debug('Launcher is empty')
+            detailed_slist.append('Launcher is empty')
+            detailed_slist.append('[COLOR yellow]Skipping launcher[/COLOR]')
+            continue
+        # Make a dictionary for fast indexing.
+        # romfiles_dic = {real_roms[rom_id]['filename'] : rom_id for rom_id in real_roms}
+
+        # Process all asset directories one by one.
+        
+
+        # Complete detailed report.
+        detailed_slist.append('')
+    pdialog.endProgress()
+
+    # Generate, save and display report.
+    log_info('Writing report file "{0}"'.format(g_PATHS.ROM_SYNC_REPORT_FILE_PATH.getPath()))
+    pdialog.startProgress('Saving report')
+    main_slist.append('*** Summary ***')
+    main_slist.append('There are {} ROM launchers.'.format(num_launchers))
+    main_slist.append('')
+    # main_slist.extend(text_render_table_NO_HEADER(short_slist, trim_Kodi_colours = True))
+    # main_slist.append('')
+    main_slist.append('*** Detailed report ***')
+    main_slist.extend(detailed_slist)
+    full_string = '\n'.join(main_slist).encode('utf-8')
+    file = open(g_PATHS.ROM_SYNC_REPORT_FILE_PATH.getPath(), 'w')
+    file.write(full_string)
+    file.close()
+    pdialog.endProgress()
+    kodi_display_text_window_mono('ROM redundant artwork report', full_string)
+
+# Shows a report of the auto-detected No-Intro/Redump DAT files.
+# This simplifies a lot the ROM Audit of launchers and other things like the
+# Offline Scraper database generation.
+@router.action('EXECUTE_UTILS_SHOW_DETECTED_DATS', protected=True)
+def m_command_exec_utils_show_DATs():
+    log_debug('m_command_exec_utils_show_DATs() Starting...')
+    DAT_STRING_LIMIT_CHARS = 80
+
+    # --- Get files in No-Intro and Redump DAT directories ---
+    NOINTRO_PATH_FN = FileName(self.settings['audit_nointro_dir'])
+    if not NOINTRO_PATH_FN.exists():
+        kodi_dialog_OK('No-Intro DAT directory not found. '
+            'Please set it up in AEL addon settings.')
+        return
+    REDUMP_PATH_FN = FileName(self.settings['audit_redump_dir'])
+    if not REDUMP_PATH_FN.exists():
+        kodi_dialog_OK('No-Intro DAT directory not found. '
+            'Please set it up in AEL addon settings.')
+        return
+
+    # --- Table header ---
+    table_str = [
+        ['left', 'left', 'left'],
+        ['Platform', 'DAT type', 'DAT file'],
+    ]
+
+    # --- Scan files in DAT dirs ---
+    NOINTRO_DAT_list = NOINTRO_PATH_FN.scanFilesInPath('*.dat')
+    REDUMP_DAT_list = REDUMP_PATH_FN.scanFilesInPath('*.dat')
+    # Some debug code
+    # for fname in NOINTRO_DAT_list: log_debug(fname)
+
+    # --- Autodetect files ---
+    # 1) Traverse all platforms.
+    # 2) Autodetect DATs for No-Intro or Redump platforms only.
+    # AEL_platforms_t = AEL_platforms[0:4]
+    for platform in AEL_platforms:
+        if platform.DAT == DAT_NOINTRO:
+            fname = misc_look_for_NoIntro_DAT(platform, NOINTRO_DAT_list)
+            if fname:
+                DAT_str = FileName(fname).getBase()
+                DAT_str = text_limit_string(DAT_str, DAT_STRING_LIMIT_CHARS)
+                # DAT_str = '[COLOR=orange]' + DAT_str + '[/COLOR]'
+            else:
+                DAT_str = '[COLOR=yellow]No-Intro DAT not found[/COLOR]'
+            table_str.append([platform.compact_name, platform.DAT, DAT_str])
+        elif platform.DAT == DAT_REDUMP:
+            fname = misc_look_for_Redump_DAT(platform, REDUMP_DAT_list)
+            if fname:
+                DAT_str = FileName(fname).getBase()
+                DAT_str = text_limit_string(DAT_str, DAT_STRING_LIMIT_CHARS)
+                # DAT_str = '[COLOR=orange]' + DAT_str + '[/COLOR]'
+            else:
+                DAT_str = '[COLOR=yellow]Redump DAT not found[/COLOR]'
+            table_str.append([platform.compact_name, platform.DAT, DAT_str])
+
+    # Print report
+    slist = []
+    slist.extend(text_render_table(table_str))
+    full_string = '\n'.join(slist).encode('utf-8')
+    kodi_display_text_window_mono('No-Intro/Redump DAT files report', full_string)
+
+@router.action('EXECUTE_UTILS_CHECK_RETRO_LAUNCHERS', protected=True)
+def m_command_exec_utils_check_retro_launchers():
+    log_debug('_command_exec_utils_check_retro_launchers() Starting...')
+    slist = []
+
+    # Resolve category IDs to names
+    for launcher_id in self.launchers:
+        category_id = self.launchers[launcher_id]['categoryID']
+        if category_id == 'root_category':
+            self.launchers[launcher_id]['category'] = 'No category'
+        else:
+            self.launchers[launcher_id]['category'] = self.categories[category_id]['m_name']
+
+    # Traverse list of launchers. If launcher uses Retroarch then check the
+    # arguments and check that the core pointed with argument -L exists.
+    # Sort launcher by category and then name.
+    num_retro_launchers = 0
+    for launcher_id in sorted(self.launchers, 
+        key = lambda x: (self.launchers[x]['category'], self.launchers[x]['m_name'])):
+        launcher = self.launchers[launcher_id]
+        m_name = launcher['m_name']
+        # Skip Standalone Launchers
+        if not launcher['rompath']:
+            log_debug('Skipping launcher "{}"'.format(m_name))
+            continue
+        log_debug('Checking launcher "{}"'.format(m_name))
+        application = launcher['application']
+        arguments_list = [launcher['args']]
+        arguments_list.extend(launcher['args_extra'])
+        if not application.lower().find('retroarch'):
+            log_debug('Not a Retroarch launcher "{}"'.format(application))
+            continue
+        clist = []
+        flag_retroarch_launcher = False
+        for index, arg_str in enumerate(arguments_list):
+            arg_list = shlex.split(arg_str, posix = True)
+            log_debug('[index {}] arg_str "{}"'.format(index, arg_str))
+            log_debug('[index {}] arg_list {}'.format(index, arg_list))
+            for i, arg in enumerate(arg_list):
+                if arg != '-L': continue
+                flag_retroarch_launcher = True
+                num_retro_launchers += 1
+                core_FN = FileName(arg_list[i+1])
+                if core_FN.exists():
+                    s = '[COLOR=green]Found[/COLOR] core "{}"\n'.format(core_FN.getPath())
+                else:
+                    s = '[COLOR=red]Missing[/COLOR] core "{}"\n'.format(core_FN.getPath())
+                log_debug(s)
+                clist.append(s)
+                break
+        # Build report
+        if flag_retroarch_launcher:
+            slist.append('Category [COLOR orange]{}[/COLOR] - Launcher [COLOR orange]{}[/COLOR]\n'.format(
+                self.launchers[launcher_id]['category'], m_name))
+            slist.extend(clist)
+            slist.append('\n')
+    # Print report
+    if num_retro_launchers > 0:
+        full_string = ''.join(slist).encode('utf-8')
+        kodi_display_text_window_mono('Retroarch launchers report', full_string)
+    else:
+        kodi_display_text_window_mono('Retroarch launchers report',
+            'No Retroarch launchers found.')
+
+@router.action('EXECUTE_UTILS_CHECK_RETRO_BIOS', protected=True)
+def m_command_exec_utils_check_retro_BIOS():
+    log_debug('_command_exec_utils_check_retro_BIOS() Checking Retroarch BIOSes ...')
+    check_only_mandatory = self.settings['io_retroarch_only_mandatory']
+    log_debug('_command_exec_utils_check_retro_BIOS() check_only_mandatory = {0}'.format(check_only_mandatory))
+
+    # >> If Retroarch System dir not configured or found abort.
+    sys_dir_FN = FileName(self.settings['io_retroarch_sys_dir'])
+    if not sys_dir_FN.exists():
+        kodi_dialog_OK('Retroarch System directory not found. Please configure it.')
+        return
+
+    # >> Progress dialog
+    pDialog = xbmcgui.DialogProgress()
+    pDialog_canceled = False
+    pDialog.create('Advanced Emulator Launcher', 'Checking Retroarch BIOSes ...')
+    num_BIOS = len(Libretro_BIOS_list)
+    file_count = 0
+
+    # Algorithm:
+    # 1) Traverse list of BIOS. For every BIOS:
+    # 2) Check if file exists. If not exists -> missing BIOS.
+    # 3) If BIOS exists check file size.
+    # 3) If BIOS exists check MD5
+    # 4) Unknwon files in Retroarch System dir are ignored and non-reported.
+    # 5) Write results into a report TXT file.
+    BIOS_status_dic = {}
+    BIOS_status_dic_colour = {}
+    for BIOS_dic in Libretro_BIOS_list:
+        if check_only_mandatory and not BIOS_dic['mandatory']:
+            log_debug('BIOS "{0}" is not mandatory. Skipping check.'.format(BIOS_dic['filename']))
+            continue
+
+        BIOS_file_FN = sys_dir_FN.pjoin(BIOS_dic['filename'])
+        log_debug('Testing BIOS "{0}"'.format(BIOS_file_FN.getPath()))
+
+        if not BIOS_file_FN.exists():
+            log_info('Not found "{0}"'.format(BIOS_file_FN.getPath()))
+            BIOS_status_dic[BIOS_dic['filename']] = 'Not found'
+            BIOS_status_dic_colour[BIOS_dic['filename']] = '[COLOR orange]Not found[/COLOR]'
+            continue
+
+        BIOS_stat = BIOS_file_FN.stat()
+        file_size = BIOS_stat.st_size
+        if file_size != BIOS_dic['size']:
+            log_info('Wrong size "{0}"'.format(BIOS_file_FN.getPath()))
+            log_info('It is {0} and must be {1}'.format(file_size, BIOS_dic['size']))
+            BIOS_status_dic[BIOS_dic['filename']] = 'Wrong size'
+            BIOS_status_dic_colour[BIOS_dic['filename']] = '[COLOR orange]Wrong size[/COLOR]'
+            continue
+
+        hash_md5 = hashlib.md5()
+        with open(BIOS_file_FN.getPath(), "rb") as f:
+            for chunk in iter(lambda: f.read(4096), b""):
+                hash_md5.update(chunk)
+        file_MD5 = hash_md5.hexdigest()
+        log_debug('MD5 is "{0}"'.format(file_MD5))
+        if file_MD5 != BIOS_dic['md5']:
+            log_info('Wrong MD5 "{0}"'.format(BIOS_file_FN.getPath()))
+            log_info('It is       "{0}"'.format(file_MD5))
+            log_info('and must be "{0}"'.format(BIOS_dic['md5']))
+            BIOS_status_dic[BIOS_dic['filename']] = 'Wrong MD5'
+            BIOS_status_dic_colour[BIOS_dic['filename']] = '[COLOR orange]Wrong MD5[/COLOR]'
+            continue
+        log_info('BIOS OK "{0}"'.format(BIOS_file_FN.getPath()))
+        BIOS_status_dic[BIOS_dic['filename']] = 'OK'
+        BIOS_status_dic_colour[BIOS_dic['filename']] = '[COLOR lime]OK[/COLOR]'
+
+        # >> Update progress
+        file_count += 1
+        update_number = (float(file_count) / float(num_BIOS)) * 100
+        pDialog.update(int(update_number))
+    pDialog.update(100)
+    pDialog.close()
+
+    # >> Output format:
+    #    BIOS name             Mandatory  Status      Cores affected 
+    #    -------------------------------------------------
+    #    5200.rom              YES        OK          ---            
+    #    7800 BIOS (E).rom     NO         Wrong MD5   core a name    
+    #                                                 core b name    
+    #    7800 BIOS (U).rom     YES        OK          ---            
+    #
+    max_size_BIOS_filename = 0
+    for BIOS_dic in Libretro_BIOS_list:
+        if len(BIOS_dic['filename']) > max_size_BIOS_filename:
+            max_size_BIOS_filename = len(BIOS_dic['filename'])
+
+    max_size_status = 0
+    for key in BIOS_status_dic:
+        if len(BIOS_status_dic[key]) > max_size_status:
+            max_size_status = len(BIOS_status_dic[key])
+
+    str_list = []
+    str_list.append('Retroarch system dir "{0}"\n'.format(sys_dir_FN.getPath()))
+    if check_only_mandatory:
+        str_list.append('Checking only mandatory BIOSes.\n\n')
+    else:
+        str_list.append('Checking mandatory and optional BIOSes.\n\n')
+    bios_str      = '{0}{1}'.format('BIOS name', ' ' * (max_size_BIOS_filename - len('BIOS name')))
+    mandatory_str = 'Mandatory'
+    status_str    = '{0}{1}'.format('Status', ' ' * (max_size_status - len('Status')))
+    cores_str     = 'Cores affected'
+    size_total = len(bios_str) + len(mandatory_str) + len(status_str) + len(cores_str) + 6
+    str_list.append('{0}  {1}  {2}  {3}\n'.format(bios_str, mandatory_str, status_str, cores_str))
+    str_list.append('{0}\n'.format('-' * size_total))
+
+    for BIOS_dic in Libretro_BIOS_list:
+        BIOS_filename = BIOS_dic['filename']
+        # >> If BIOS was skipped continue loop
+        if BIOS_filename not in BIOS_status_dic: continue
+        status_text = BIOS_status_dic[BIOS_filename]
+        status_text_colour = BIOS_status_dic_colour[BIOS_filename]
+        filename_str = '{0}{1}'.format(BIOS_filename, ' ' * (max_size_BIOS_filename - len(BIOS_filename)))
+        mandatory_str = 'YES      ' if BIOS_dic['mandatory'] else 'NO       '
+        status_str = '{0}{1}'.format(status_text_colour, ' ' * (max_size_status - len(status_text)))
+        len_status_str = len('{0}{1}'.format(status_text, ' ' * (max_size_status - len(status_text))))
+
+        # >> Print affected core list
+        core_list = BIOS_dic['cores']
+        if len(core_list) == 0:
+            line_str = '{0}  {1}  {2}\n'.format(filename_str, mandatory_str, status_str)
+            str_list.append(line_str)
+        else:
+            num_spaces = len(filename_str) + 9 + len_status_str + 4
+            for i, core_name in enumerate(core_list):
+                beautiful_core_name = Retro_core_dic[core_name] if core_name in Retro_core_dic else core_name
+                if i == 0:
+                    line_str = '{0}  {1}  {2}  {3}\n'.format(filename_str, mandatory_str, status_str, beautiful_core_name)
+                    str_list.append(line_str)
+                else:
+                    line_str = '{0}  {1}\n'.format(' ' * num_spaces, beautiful_core_name)
+                    str_list.append(line_str)
+
+    # Stats report
+    log_info('Writing report file "{0}"'.format(g_PATHS.BIOS_REPORT_FILE_PATH.getPath()))
+    full_string = ''.join(str_list).encode('utf-8')
+    file = open(g_PATHS.BIOS_REPORT_FILE_PATH.getPath(), 'w')
+    file.write(full_string)
+    file.close()
+
+    # Display report TXT file.
+    kodi_display_text_window_mono('Retroarch BIOS report', full_string)
+
+# Use TGDB scraper to get the monthly allowance and report to the user.
+# TGDB API docs https://api.thegamesdb.net/
+@router.action('EXECUTE_UTILS_TGDB_CHECK', protected=True)
+def m_command_exec_utils_TGDB_check():
+    # --- Get scraper object and retrieve information ---
+    # Treat any error message returned by the scraper as an OK dialog.
+    status_dic = kodi_new_status_dic('No error')
+    g_scraper_factory = ScraperFactory(g_PATHS, self.settings)
+    TGDB = g_scraper_factory.get_scraper_object(SCRAPER_THEGAMESDB_ID)
+    TGDB.check_before_scraping(status_dic)
+    if not status_dic['status']:
+        kodi_dialog_OK(status_dic['msg'])
+        return
+
+    # To check the scraper monthly allowance, get the list of platforms as JSON. This JSON
+    # data contains the monthly allowance.
+    pdialog = KodiProgressDialog()
+    pdialog.startProgress('Retrieving info from TheGamesDB...', 100)
+    json_data = TGDB.debug_get_genres(status_dic)
+    pdialog.endProgress()
+    if not status_dic['status']:
+        kodi_dialog_OK(status_dic['msg'])
+        return
+    extra_allowance = json_data['extra_allowance']
+    remaining_monthly_allowance = json_data['remaining_monthly_allowance']
+    allowance_refresh_timer = json_data['allowance_refresh_timer']
+    allowance_refresh_timer_str = str(datetime.timedelta(seconds = allowance_refresh_timer))
+
+    # --- Print and display report ---
+    window_title = 'TheGamesDB scraper information'
+    sl = []
+    sl.append('extra_allowance              {}'.format(extra_allowance))
+    sl.append('remaining_monthly_allowance  {}'.format(remaining_monthly_allowance))
+    sl.append('allowance_refresh_timer      {}'.format(allowance_refresh_timer))
+    sl.append('allowance_refresh_timer_str  {}'.format(allowance_refresh_timer_str))
+    sl.append('')
+    sl.append('TGDB scraper seems to be working OK.')
+    kodi_display_text_window_mono(window_title, '\n'.join(sl))
+
+# MobyGames API docs https://www.mobygames.com/info/api
+# Currently there is no way to check the MobyGames allowance.
+@router.action('EXECUTE_UTILS_MOBYGAMES_CHECK', protected=True)
+def m_command_exec_utils_MobyGames_check():
+    # --- Get scraper object and retrieve information ---
+    # Treat any error message returned by the scraper as an OK dialog.
+    status_dic = kodi_new_status_dic('No error')
+    g_scraper_factory = ScraperFactory(g_PATHS, self.settings)
+    MobyGames = g_scraper_factory.get_scraper_object(SCRAPER_MOBYGAMES_ID)
+    MobyGames.check_before_scraping(status_dic)
+    if not status_dic['status']:
+        kodi_dialog_OK(status_dic['msg'])
+        return
+
+    # TTBOMK, there is no way to know the current limits of MobyGames scraper.
+    # Just get the list of platforms and report to the user.
+    pdialog = KodiProgressDialog()
+    pdialog.startProgress('Retrieving info from MobyGames...', 100)
+    json_data = MobyGames.debug_get_platforms(status_dic)
+    pdialog.endProgress()
+    if not status_dic['status']:
+        kodi_dialog_OK(status_dic['msg'])
+        return
+
+    # --- Print and display report ---
+    window_title = 'MobyGames scraper information'
+    sl = []
+    sl.append('The API allowance of MobyGames cannot be currently checked.')
+    sl.append('')
+    sl.append('MobyGames has {} platforms.'.format(len(json_data['platforms'])))
+    sl.append('')
+    sl.append('MobyGames scraper seems to be working OK.')
+    kodi_display_text_window_mono(window_title, '\n'.join(sl))
+
+# ScreenScraper API docs https://www.screenscraper.fr/webapi.php
+@router.action('EXECUTE_UTILS_SCREENSCRAPER_CHECK', protected=True)
+def m_command_exec_utils_ScreenScraper_check():
+    # --- Get scraper object and retrieve information ---
+    # Treat any error message returned by the scraper as an OK dialog.
+    status_dic = kodi_new_status_dic('No error')
+    g_scraper_factory = ScraperFactory(g_PATHS, self.settings)
+    ScreenScraper = g_scraper_factory.get_scraper_object(SCRAPER_SCREENSCRAPER_ID)
+    ScreenScraper.check_before_scraping(status_dic)
+    if not status_dic['status']:
+        kodi_dialog_OK(status_dic['msg'])
+        return
+
+    # Get ScreenScraper user information
+    pdialog = KodiProgressDialog()
+    pdialog.startProgress('Retrieving info from ScreenScraper...', 100)
+    json_data = ScreenScraper.debug_get_user_info(status_dic)
+    pdialog.endProgress()
+    if not status_dic['status']:
+        kodi_dialog_OK(status_dic['msg'])
+        return
+
+    # --- Print and display report ---
+    ssuser = json_data['response']['ssuser']
+    window_title = 'ScreenScraper scraper information'
+    sl = []
+    sl.append('requeststoday       {}'.format(ssuser['requeststoday']))
+    sl.append('maxthreads          {}'.format(ssuser['maxthreads']))
+    sl.append('niveau              {}'.format(ssuser['niveau']))
+    sl.append('visites             {}'.format(ssuser['visites']))
+    sl.append('maxrequestsperday   {}'.format(ssuser['maxrequestsperday']))
+    sl.append('maxdownloadspeed    {}'.format(ssuser['maxdownloadspeed']))
+    sl.append('favregion           {}'.format(ssuser['favregion']))
+    sl.append('datedernierevisite  {}'.format(ssuser['datedernierevisite']))
+    sl.append('contribution        {}'.format(ssuser['contribution']))
+    sl.append('id                  {}'.format(ssuser['id']))
+    sl.append('')
+    sl.append('ScreenScraper scraper seems to be working OK.')
+    kodi_display_text_window_mono(window_title, '\n'.join(sl))
+
+# Retrieve an example game to test if ArcadeDB works.
+# TTBOMK there are not API retrictions at the moment (August 2019).
+@router.action('EXECUTE_UTILS_ARCADEDB_CHECK', protected=True)
+def m_command_exec_utils_ArcadeDB_check():
+    status_dic = kodi_new_status_dic('No error')
+    g_scraper_factory = ScraperFactory(g_PATHS, self.settings)
+    ArcadeDB = g_scraper_factory.get_scraper_object(SCRAPER_ARCADEDB_ID)
+    ArcadeDB.check_before_scraping(status_dic)
+    if not status_dic['status']:
+        kodi_dialog_OK(status_dic['msg'])
+        return
+
+    search_str = 'atetris'
+    rom_FN = FileName('atetris.zip')
+    rom_checksums_FN = FileName('atetris.zip')
+    platform = 'MAME'
+
+    pdialog = KodiProgressDialog()
+    pdialog.startProgress('Retrieving info from ArcadeDB...', 100)
+    ArcadeDB.check_candidates_cache(rom_FN, platform)
+    ArcadeDB.clear_cache(rom_FN, platform)
+    candidates = ArcadeDB.get_candidates(search_str, rom_FN, rom_checksums_FN, platform, status_dic)
+    pdialog.endProgress()
+    if not status_dic['status']:
+        kodi_dialog_OK(status_dic['msg'])
+        return
+    if len(candidates) != 1:
+        kodi_dialog_OK('There is a problem with ArcadeDB scraper.')
+        return
+    json_response_dic = ArcadeDB.debug_get_QUERY_MAME_dic(candidates[0])
+
+    # --- Print and display report ---
+    num_games = len(json_response_dic['result'])
+    window_title = 'ArcadeDB scraper information'
+    sl = []
+    sl.append('num_games      {}'.format(num_games))
+    sl.append('game_name      {}'.format(json_response_dic['result'][0]['game_name']))
+    sl.append('title          {}'.format(json_response_dic['result'][0]['title']))
+    sl.append('emulator_name  {}'.format(json_response_dic['result'][0]['emulator_name']))
+    if num_games == 1:
+        sl.append('')
+        sl.append('ArcadeDB scraper seems to be working OK.')
+        sl.append('Remember this scraper only works with platform MAME. It will only return')
+        sl.append('valid data for MAME games.')
+    kodi_display_text_window_mono(window_title, '\n'.join(sl))
+
+# -------------------------------------------------------------------------------------------------
 # UI support methods
 # -------------------------------------------------------------------------------------------------
 #
@@ -6985,7 +7738,8 @@ def m_gui_render_category_row(category):
     commands.append(('Add new Category', m_misc_url_RunPlugin('ADD_CATEGORY')))
     commands.append(('Open Kodi file manager', 'ActivateWindow(filemanager)'))
     commands.append(('AEL addon settings', 'Addon.OpenSettings({0})'.format(__addon_id__)))
-    listitem.addContextMenuItems(commands)
+    if xbmc.getCondVisibility("!Skin.HasSetting(KioskMode.Enabled)"):
+        listitem.addContextMenuItems(commands, replaceItems = True)
 
     # --- Add row ---
     url_str = m_misc_url('SHOW_LAUNCHERS', categoryID)
@@ -7011,7 +7765,8 @@ def m_gui_render_vlauncher_favourites_row():
     commands.append(('Add new Category', m_misc_url_RunPlugin('ADD_CATEGORY')))
     commands.append(('Open Kodi file manager', 'ActivateWindow(filemanager)'))
     commands.append(('AEL addon settings', 'Addon.OpenSettings({0})'.format(__addon_id__)))
-    listitem.addContextMenuItems(commands)
+    if xbmc.getCondVisibility("!Skin.HasSetting(KioskMode.Enabled)"):
+        listitem.addContextMenuItems(commands, replaceItems = True)
 
     # --- Add row ---
     url_str = m_misc_url('SHOW_FAVOURITES')
@@ -7035,8 +7790,9 @@ def m_gui_render_vcategory_collections_row():
     commands.append(('Add new Category', m_misc_url_RunPlugin('ADD_CATEGORY')))
     commands.append(('Open Kodi file manager', 'ActivateWindow(filemanager)'))
     commands.append(('AEL addon settings', 'Addon.OpenSettings({0})'.format(__addon_id__)))
-    listitem.addContextMenuItems(commands)
-
+    if xbmc.getCondVisibility("!Skin.HasSetting(KioskMode.Enabled)"):
+        listitem.addContextMenuItems(commands, replaceItems = True)
+            
     url_str = m_misc_url('SHOW_COLLECTIONS')
     xbmcplugin.addDirectoryItem(handle = g_addon_handle, url = url_str, listitem = listitem, isFolder = True)
 
@@ -7056,7 +7812,8 @@ def m_gui_render_vlauncher_recently_played_row():
     commands.append(('Add new Category', m_misc_url_RunPlugin('ADD_CATEGORY')))
     commands.append(('Open Kodi file manager', 'ActivateWindow(filemanager)'))
     commands.append(('AEL addon settings', 'Addon.OpenSettings({0})'.format(__addon_id__)))
-    listitem.addContextMenuItems(commands)
+    if xbmc.getCondVisibility("!Skin.HasSetting(KioskMode.Enabled)"):
+        listitem.addContextMenuItems(commands, replaceItems = True)
 
     url_str = m_misc_url('SHOW_RECENTLY_PLAYED')
     xbmcplugin.addDirectoryItem(handle = g_addon_handle, url = url_str, listitem = listitem, isFolder = True)
@@ -7077,7 +7834,8 @@ def m_gui_render_vlauncher_most_played_row():
     commands.append(('Add new Category', m_misc_url_RunPlugin('ADD_CATEGORY')))
     commands.append(('Open Kodi file manager', 'ActivateWindow(filemanager)'))
     commands.append(('AEL addon settings', 'Addon.OpenSettings({0})'.format(__addon_id__)))
-    listitem.addContextMenuItems(commands)
+    if xbmc.getCondVisibility("!Skin.HasSetting(KioskMode.Enabled)"):
+        listitem.addContextMenuItems(commands, replaceItems = True)
 
     url_str = m_misc_url('SHOW_MOST_PLAYED')
     xbmcplugin.addDirectoryItem(handle = g_addon_handle, url = url_str, listitem = listitem, isFolder = True)
@@ -7101,7 +7859,8 @@ def m_gui_render_vcategory_Browse_by_row():
     commands.append(('Add new Category', m_misc_url_RunPlugin('ADD_CATEGORY')))
     commands.append(('Open Kodi file manager', 'ActivateWindow(filemanager)'))
     commands.append(('AEL addon settings', 'Addon.OpenSettings({0})'.format(__addon_id__)))
-    listitem.addContextMenuItems(commands)
+    if xbmc.getCondVisibility("!Skin.HasSetting(KioskMode.Enabled)"):
+        listitem.addContextMenuItems(commands, replaceItems = True)
 
     url_str = m_misc_url('SHOW_VCATEGORIES_ROOT')
     xbmcplugin.addDirectoryItem(handle = g_addon_handle, url = url_str, listitem = listitem, isFolder = True)
@@ -7123,7 +7882,8 @@ def m_gui_render_vcategory_AEL_offline_scraper_row():
     commands.append(('Add new Category', m_misc_url_RunPlugin('ADD_CATEGORY')))
     commands.append(('Open Kodi file manager', 'ActivateWindow(filemanager)'))
     commands.append(('AEL addon settings', 'Addon.OpenSettings({0})'.format(__addon_id__)))
-    listitem.addContextMenuItems(commands)
+    if xbmc.getCondVisibility("!Skin.HasSetting(KioskMode.Enabled)"):
+        listitem.addContextMenuItems(commands, replaceItems = True)
 
     url_str = m_misc_url('SHOW_AEL_OFFLINE_LAUNCHERS_ROOT')
     xbmcplugin.addDirectoryItem(handle = g_addon_handle, url = url_str, listitem = listitem, isFolder = True)
@@ -7145,7 +7905,8 @@ def m_gui_render_vcategory_LB_offline_scraper_row():
     commands.append(('Add new Category', m_misc_url_RunPlugin('ADD_CATEGORY')))
     commands.append(('Open Kodi file manager', 'ActivateWindow(filemanager)'))
     commands.append(('AEL addon settings', 'Addon.OpenSettings({0})'.format(__addon_id__)))
-    listitem.addContextMenuItems(commands)
+    if xbmc.getCondVisibility("!Skin.HasSetting(KioskMode.Enabled)"):
+        listitem.addContextMenuItems(commands, replaceItems = True)
 
     url_str = m_misc_url('SHOW_LB_OFFLINE_LAUNCHERS_ROOT')
     xbmcplugin.addDirectoryItem(handle = g_addon_handle, url = url_str, listitem = listitem, isFolder = True)
@@ -7166,7 +7927,8 @@ def m_gui_render_Utilities_root():
     commands.append(('Add new Category', m_misc_url_RunPlugin('ADD_CATEGORY')))
     commands.append(('Open Kodi file manager', 'ActivateWindow(filemanager)'))
     commands.append(('AEL addon settings', 'Addon.OpenSettings({0})'.format(__addon_id__)))
-    listitem.addContextMenuItems(commands)
+    if xbmc.getCondVisibility("!Skin.HasSetting(KioskMode.Enabled)"):
+        listitem.addContextMenuItems(commands, replaceItems = True)
 
     url_str = m_misc_url('SHOW_UTILITIES_VLAUNCHERS')
     xbmcplugin.addDirectoryItem(handle = g_addon_handle, url = url_str, listitem = listitem, isFolder = True)
@@ -7187,7 +7949,8 @@ def m_gui_render_GlobalReports_root():
     commands.append(('Add new Category', m_misc_url_RunPlugin('ADD_CATEGORY')))
     commands.append(('Open Kodi file manager', 'ActivateWindow(filemanager)'))
     commands.append(('AEL addon settings', 'Addon.OpenSettings({0})'.format(__addon_id__)))
-    listitem.addContextMenuItems(commands)
+    if xbmc.getCondVisibility("!Skin.HasSetting(KioskMode.Enabled)"):
+        listitem.addContextMenuItems(commands, replaceItems = True)
 
     url_str = m_misc_url('SHOW_GLOBALREPORTS_VLAUNCHERS')
     xbmcplugin.addDirectoryItem(handle = g_addon_handle, url = url_str, listitem = listitem, isFolder = True)
@@ -7242,7 +8005,7 @@ def m_gui_render_launcher_row(launcher, launcher_raw_name = None):
             else:
                 launcher_name = '{0} [COLOR orange]({1} ROMs)[/COLOR]'.format(launcher_raw_name, num_roms)
     else:
-        launcher_name = launcher_raw_name
+        launcher_name = '{0} [COLOR chocolate](Std)[/COLOR]'.format(launcher_raw_name)
 
     # --- Create listitem row ---
     ICON_OVERLAY = 5 if launcher_dic['finished'] else 4
@@ -7301,7 +8064,8 @@ def m_gui_render_launcher_row(launcher, launcher_raw_name = None):
         commands.append(('Add new Category', m_misc_url_RunPlugin('ADD_CATEGORY')))
     commands.append(('Open Kodi file manager', 'ActivateWindow(filemanager)' ))
     commands.append(('AEL addon settings', 'Addon.OpenSettings({0})'.format(__addon_id__) ))
-    listitem.addContextMenuItems(commands)
+    if xbmc.getCondVisibility("!Skin.HasSetting(KioskMode.Enabled)"):
+        listitem.addContextMenuItems(commands, replaceItems = True)
 
     # --- Add Launcher row to ListItem ---
     if launcher_dic['rompath']:
@@ -7568,7 +8332,8 @@ def m_gui_render_rom_row(categoryID, launcherID, rom,
         commands.append(('Search ROMs in Launcher',   m_misc_url_RunPlugin('SEARCH_LAUNCHER',   categoryID, launcherID)))
         commands.append(('Edit Launcher',             m_misc_url_RunPlugin('EDIT_LAUNCHER',     categoryID, launcherID)))
     commands.append(('AEL addon settings', 'Addon.OpenSettings({0})'.format(__addon_id__), ))
-    listitem.addContextMenuItems(commands)
+    if xbmc.getCondVisibility("!Skin.HasSetting(KioskMode.Enabled)"):
+        listitem.addContextMenuItems(commands, replaceItems = True)
 
     # --- Add row ---
     # URLs must be different depending on the content type. If not Kodi log will be filled with:
@@ -7599,7 +8364,8 @@ def m_gui_render_AEL_scraper_rom_row(platform, game):
     # --- Create context menu ---
     commands = []
     commands.append(('AEL addon settings', 'Addon.OpenSettings({0})'.format(__addon_id__), ))
-    listitem.addContextMenuItems(commands)
+    if xbmc.getCondVisibility("!Skin.HasSetting(KioskMode.Enabled)"):
+        listitem.addContextMenuItems(commands, replaceItems = True)
 
     # --- Add row ---
     # When user clicks on a ROM show the raw database entry
@@ -7625,7 +8391,8 @@ def m_gui_render_LB_scraper_rom_row(platform, game):
     # --- Create context menu ---
     commands = []
     commands.append(('AEL addon settings', 'Addon.OpenSettings({0})'.format(__addon_id__), ))
-    listitem.addContextMenuItems(commands)
+    if xbmc.getCondVisibility("!Skin.HasSetting(KioskMode.Enabled)"):
+        listitem.addContextMenuItems(commands, replaceItems = True)
 
     # --- Add row ---
     # When user clicks on a ROM show the raw database entry
@@ -8025,237 +8792,6 @@ def m_command_update_virtual_category_db(virtual_categoryID, all_roms_external =
     # >> This file is small, no progress dialog
     log_verb('_command_update_virtual_category_db() Writing virtual category XML index')
     fs_write_VCategory_XML(vcategory_db_filename, vcategory_launchers)
-
-#
-# Launchs a ROM launcher or standalone launcher
-# For standalone launchers romext is the extension of the application (only used in Windoze)
-#
-def m_run_process(application, arguments, apppath, romext, non_blocking_flag):
-    import shlex
-    import subprocess
-
-    # >> Determine platform and launch application
-    # >> See http://stackoverflow.com/questions/446209/possible-values-from-sys-platform
-
-    # >> Decompose arguments to call subprocess module
-    arg_list  = shlex.split(arguments, posix = True)
-    exec_list = [application] + arg_list
-    log_debug('_run_process() arguments = "{0}"'.format(arguments))
-    log_debug('_run_process() arg_list  = {0}'.format(arg_list))
-    log_debug('_run_process() exec_list = {0}'.format(exec_list))
-
-    # >> Windoze
-    # NOTE subprocess24_hack.py was hacked to always set CreateProcess() bInheritHandles to 0.
-    # bInheritHandles [in] If this parameter TRUE, each inheritable handle in the calling 
-    # process is inherited by the new process. If the parameter is FALSE, the handles are not 
-    # inherited. Note that inherited handles have the same value and access rights as the original handles.
-    # See https://msdn.microsoft.com/en-us/library/windows/desktop/ms682425(v=vs.85).aspx
-    #
-    # Same behaviour can be achieved in current version of subprocess with close_fds.
-    # If close_fds is true, all file descriptors except 0, 1 and 2 will be closed before the 
-    # child process is executed. (Unix only). Or, on Windows, if close_fds is true then no handles 
-    # will be inherited by the child process. Note that on Windows, you cannot set close_fds to 
-    # true and also redirect the standard handles by setting stdin, stdout or stderr.
-    #
-    # If I keep old launcher behaviour in Windows (close_fds = True) then program output cannot
-    # be redirected to a file.
-    #
-    if sys.platform == 'win32':
-        app_ext = application.split('.')[-1]
-        log_debug('_run_process() (Windows) application = "{0}"'.format(application))
-        log_debug('_run_process() (Windows) arguments   = "{0}"'.format(arguments))
-        log_debug('_run_process() (Windows) apppath     = "{0}"'.format(apppath))
-        log_debug('_run_process() (Windows) romext      = "{0}"'.format(romext))
-        log_debug('_run_process() (Windows) app_ext     = "{0}"'.format(app_ext))
-        # >> Standalone launcher where application is a LNK file
-        if app_ext == 'lnk' or app_ext == 'LNK':
-            log_debug('_run_process() (Windows) Launching LNK application')
-            # os.system('start "AEL" /b "{0}"'.format(application).encode('utf-8'))
-            retcode = subprocess.call('start "AEL" /b "{0}"'.format(application).encode('utf-8'), shell = True)
-            log_info('_run_process() (Windows) LNK app retcode = {0}'.format(retcode))
-
-        # >> ROM launcher where ROMs are LNK files
-        elif romext == 'lnk' or romext == 'LNK':
-            log_debug('_run_process() (Windows) Launching LNK ROM')
-            # os.system('start "AEL" /b "{0}"'.format(arguments).encode('utf-8'))
-            retcode = subprocess.call('start "AEL" /b "{0}"'.format(arguments).encode('utf-8'), shell = True)
-            log_info('_run_process() (Windows) LNK ROM retcode = {0}'.format(retcode))
-
-        # >> CMD/BAT files in Windows
-        elif app_ext == 'bat' or app_ext == 'BAT' or app_ext == 'cmd' or app_ext == 'CMD':
-            # --- Workaround to run UNC paths in Windows ---
-            # >> Retroarch now support ROMs in UNC paths (Samba remotes)
-            new_exec_list = list(exec_list)
-            for i, _ in enumerate(exec_list):
-                if exec_list[i][0] == '\\':
-                    new_exec_list[i] = '\\' + exec_list[i]
-                    log_debug('_run_process() (Windows) Before arg #{0} = "{1}"'.format(i, exec_list[i]))
-                    log_debug('_run_process() (Windows) Now    arg #{0} = "{1}"'.format(i, new_exec_list[i]))
-            exec_list = list(new_exec_list)
-            log_debug('_run_process() (Windows) exec_list = {0}'.format(exec_list))
-            log_debug('_run_process() (Windows) Launching BAT application')
-            log_debug('_run_process() (Windows) Ignoring setting windows_cd_apppath')
-            log_debug('_run_process() (Windows) Ignoring setting windows_close_fds')
-            log_debug('_run_process() (Windows) show_batch_window = {0}'.format(g_settings['show_batch_window']))
-            info = subprocess.STARTUPINFO()
-            info.dwFlags = 1
-            info.wShowWindow = 5 if g_settings['show_batch_window'] else 0
-            retcode = subprocess.call(exec_list, cwd = apppath.encode('utf-8'), close_fds = True, startupinfo = info)
-            log_info('_run_process() (Windows) Process BAR retcode = {0}'.format(retcode))
-
-        else:
-            # --- Workaround to run UNC paths in Windows ---
-            # >> Retroarch now support ROMs in UNC paths (Samba remotes)
-            new_exec_list = list(exec_list)
-            for i, _ in enumerate(exec_list):
-                if exec_list[i][0] == '\\':
-                    new_exec_list[i] = '\\' + exec_list[i]
-                    log_debug('_run_process() (Windows) Before arg #{0} = "{1}"'.format(i, exec_list[i]))
-                    log_debug('_run_process() (Windows) Now    arg #{0} = "{1}"'.format(i, new_exec_list[i]))
-            exec_list = list(new_exec_list)
-            log_debug('_run_process() (Windows) exec_list = {0}'.format(exec_list))
-
-            # >> cwd = apppath.encode('utf-8') fails if application path has Unicode on Windows
-            # >> A workaraound is to use cwd = apppath.encode(sys.getfilesystemencoding()) --> DOES NOT WORK
-            # >> For the moment AEL cannot launch executables on Windows having Unicode paths.
-            windows_cd_apppath = g_settings['windows_cd_apppath']
-            windows_close_fds  = g_settings['windows_close_fds']
-            log_debug('_run_process() (Windows) Launching regular application')
-            log_debug('_run_process() (Windows) windows_cd_apppath = {0}'.format(windows_cd_apppath))
-            log_debug('_run_process() (Windows) windows_close_fds  = {0}'.format(windows_close_fds))
-            # >>  Note that on Windows, you cannot set close_fds to true and also redirect the 
-            # >> standard handles by setting stdin, stdout or stderr.
-            if windows_cd_apppath and windows_close_fds:
-                retcode = subprocess.call(exec_list, cwd = apppath.encode('utf-8'), close_fds = True)
-            elif windows_cd_apppath and not windows_close_fds:
-                with open(LAUNCH_LOG_FILE_PATH.getPath(), 'w') as f:
-                    retcode = subprocess.call(exec_list, cwd = apppath.encode('utf-8'), close_fds = False,
-                                              stdout = f, stderr = subprocess.STDOUT)
-            elif not windows_cd_apppath and windows_close_fds:
-                retcode = subprocess.call(exec_list, close_fds = True)
-            elif not windows_cd_apppath and not windows_close_fds:
-                with open(LAUNCH_LOG_FILE_PATH.getPath(), 'w') as f:
-                    retcode = subprocess.call(exec_list, close_fds = False,
-                                              stdout = f, stderr = subprocess.STDOUT)
-            else:
-                raise Exception('Logical error')
-            log_info('_run_process() (Windows) Process retcode = {0}'.format(retcode))
-
-    # Android
-    elif is_android():
-         
-        retcode = os.system("{0} {1}".format(application, arguments).encode('utf-8'))
-        log_info('_run_process() Process retcode = {0}'.format(retcode))
-
-    # >> Linux
-    # >> New in 0.9.7: always close all file descriptions except 0, 1 and 2 on the child
-    # >> process. This is to avoid Kodi opens sockets be inherited by the child process. A
-    # >> wrapper script may terminate Kodi using JSON RPC and if file descriptors are not
-    # >> closed Kodi will complain that the remote interfacte cannot be initialised. I believe
-    # >> the cause is that the socket is kept open by the wrapper script.
-    elif sys.platform.startswith('linux'):
-        # >> Old way of launching child process. os.system() is deprecated and should not
-        # >> be used anymore.
-        # os.system('"{0}" {1}'.format(application, arguments).encode('utf-8'))
-
-        # >> New way of launching, uses subproces module. Also, save child process stdout.
-        if non_blocking_flag:
-            # >> In a non-blocking launch stdout/stderr of child process cannot be recorded.
-            log_info('_run_process() (Linux) Launching non-blocking process subprocess.Popen()')
-            p = subprocess.Popen(exec_list, close_fds = True)
-        else:
-            if g_settings['lirc_state']: xbmc.executebuiltin('LIRC.stop')
-            log_info('_run_process() (Linux) Launching blocking process subprocess.call()')
-            with open(LAUNCH_LOG_FILE_PATH.getPath(), 'w') as f:
-                retcode = subprocess.call(exec_list, stdout = f, stderr = subprocess.STDOUT, close_fds = True)
-            log_info('_run_process() Process retcode = {0}'.format(retcode))
-            if g_settings['lirc_state']: xbmc.executebuiltin('LIRC.start')
-
-    # >> OS X
-    elif sys.platform.startswith('darwin'):
-        # >> Old way
-        # os.system('"{0}" {1}'.format(application, arguments).encode('utf-8'))
-        
-        # >> New way.
-        with open(LAUNCH_LOG_FILE_PATH.getPath(), 'w') as f:
-            retcode = subprocess.call(exec_list, stdout = f, stderr = subprocess.STDOUT)
-        log_info('_run_process() Process retcode = {0}'.format(retcode))
-
-    else:
-        kodi_notify_warn('Cannot determine the running platform')
-
-#
-# These two functions do things like stopping music before lunch, toggling full screen, etc.
-# Variables set in this function:
-# self.kodi_was_playing      True if Kodi player was ON, False otherwise
-# self.kodi_audio_suspended  True if Kodi audio suspended before launching
-#
-def m_run_before_execution(rom_title, toggle_screen_flag):
-    # --- User notification ---
-    if g_settings['display_launcher_notify']:
-        kodi_notify('Launching {0}'.format(rom_title))
-
-    # --- Stop/Pause Kodi mediaplayer if requested in settings ---
-    self.kodi_was_playing = False
-    # id="media_state_action" default="0" values="Stop|Pause|Let Play"
-    media_state_action = g_settings['media_state_action']
-    media_state_str = ['Stop', 'Pause', 'Let Play'][media_state_action]
-    log_verb('_run_before_execution() media_state_action is "{0}" ({1})'.format(media_state_str, media_state_action))
-    if media_state_action == 0 and xbmc.Player().isPlaying():
-        log_verb('_run_before_execution() Calling xbmc.Player().stop()')
-        xbmc.Player().stop()
-        xbmc.sleep(100)
-        self.kodi_was_playing = True
-    elif media_state_action == 1 and xbmc.Player().isPlaying():
-        log_verb('_run_before_execution() Calling xbmc.Player().pause()')
-        xbmc.Player().pause()
-        xbmc.sleep(100)
-        self.kodi_was_playing = True
-
-    # --- Force audio suspend if requested in "Settings" --> "Advanced"
-    # >> See http://forum.kodi.tv/showthread.php?tid=164522
-    self.kodi_audio_suspended = False
-    if g_settings['suspend_audio_engine']:
-        log_verb('_run_before_execution() Suspending Kodi audio engine')
-        xbmc.audioSuspend()
-        xbmc.enableNavSounds(False)
-        xbmc.sleep(100)
-        self.kodi_audio_suspended = True
-    else:
-        log_verb('_run_before_execution() DO NOT suspend Kodi audio engine')
-
-    # --- Force joystick suspend if requested in "Settings" --> "Advanced"
-    # >> See https://forum.kodi.tv/showthread.php?tid=287826&pid=2627128#pid2627128
-    # >> See https://forum.kodi.tv/showthread.php?tid=157499&pid=1722549&highlight=input.enablejoystick#pid1722549
-    # >> See https://forum.kodi.tv/showthread.php?tid=313615
-    self.kodi_joystick_suspended = False
-    # if g_settings['suspend_joystick_engine']:
-        # log_verb('_run_before_execution() Suspending Kodi joystick engine')
-        # >> Research. Get the value of the setting first
-        # >> Apparently input.enablejoystick is not supported on Kodi Krypton anymore.
-        # c_str = ('{"id" : 1, "jsonrpc" : "2.0",'
-        #          ' "method" : "Settings.GetSettingValue",'
-        #          ' "params" : {"setting":"input.enablejoystick"}}')
-        # response = xbmc.executeJSONRPC(c_str)
-        # log_debug('JSON      ''{0}'''.format(c_str))
-        # log_debug('Response  ''{0}'''.format(response))
-
-    log_info('_command_run_rom() Launching ROM in Launcher ...')
-
-    
-    launcher = g_ObjectFactory.find_launcher(categoryID, launcherID)
-
-    # --- Check launcher is OK ---
-    if launcher is None:
-        kodi_dialog_OK('Could not start launcher. Check the logs')
-        return
-
-    rom = launcher.select_ROM(romID)
-   
-    if rom is None:
-        kodi_dialog_OK('Could not load rom. Check the logs')
-        return
-    launcher.launch()
 
 #
 # Check if Launcher reports must be created/regenrated

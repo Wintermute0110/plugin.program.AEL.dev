@@ -2989,6 +2989,11 @@ class ROMLauncherABC(LauncherABC):
         self.entity_data['roms_xml_file'] = xml_file
 
     def clear_roms(self):
+        # Set ROM Audit to OFF.
+        if self.entity_data['audit_state'] == AUDIT_STATE_ON:
+            log_info('Setting audit_state = AUDIT_STATE_OFF')
+            self.entity_data['audit_state'] = AUDIT_STATE_OFF
+        
         self.entity_data['num_roms'] = 0
         self.roms = {}
         self.romsetRepository.delete_all_by_launcher(self)
@@ -4368,13 +4373,16 @@ class NvidiaGameStreamLauncher(ROMLauncherABC):
 
         return options
 
+    #
+    # get_advanced_modification_options() is custom for every concrete launcher class.
+    #
     def get_advanced_modification_options(self):
         log_debug('NvidiaGameStreamLauncher::get_advanced_modification_options() Returning edit options')
         toggle_window_str = 'ON' if self.entity_data['toggle_window'] else 'OFF'
         non_blocking_str  = 'ON' if self.entity_data['non_blocking'] else 'OFF'
         
-        options = super(NvidiaGameStreamLauncher, self).get_advanced_modification_options()
-        options['TOGGLE_WINDOWED'] = "Toggle Kodi into windowed mode (now {0})".format(toggle_window_str)
+        options = collections.OrderedDict()
+        options['TOGGLE_WINDOWED']    = "Toggle Kodi into windowed mode (now {0})".format(toggle_window_str)
         options['TOGGLE_NONBLOCKING'] = "Non-blocking launcher (now {0})".format(non_blocking_str)
 
     # ---------------------------------------------------------------------------------------------
