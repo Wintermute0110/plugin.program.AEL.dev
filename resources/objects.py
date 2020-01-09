@@ -1387,6 +1387,9 @@ class MetaDataItemABC(object):
     def get_default_asset_list(self):
         return g_assetFactory.get_asset_list_by_IDs(DEFAULTABLE_ASSET_ID_LIST)
 
+    def __str__(self):
+        return '{}}#{}: {}'.format(self.get_object_name(), self.get_id(), self.get_name())
+
 # -------------------------------------------------------------------------------------------------
 # Class representing an AEL Cateogry.
 # Contains code to generate the context menus passed to Dialog.select()
@@ -1479,6 +1482,9 @@ class Category(MetaDataItemABC):
     def set_mapped_asset_key(self, asset_info, mapped_to_info):
         self.entity_data[asset_info.default_key] = mapped_to_info.key
 
+    def __str__(self):
+        return super().__str__()
+    
 # -------------------------------------------------------------------------------------------------
 # Class representing the virtual categories in AEL.
 # All ROM Collections is a Virtual Category.
@@ -1665,6 +1671,23 @@ class ROM(MetaDataItemABC):
     def save_to_disk(self): 
         raise NotImplementedError
 
+    # ---------------------------------------------------------------------------------------------
+    # ROM asset methods
+    # ---------------------------------------------------------------------------------------------
+    #
+    # Returns an ordered dictionary with all the object assets, ready to be edited.
+    # Keys are AssetInfo objects.
+    # Values are the current file for the asset as Unicode string or '' if the asset is not set.
+    #
+    def get_assets_odict(self):
+        asset_info_list = g_assetFactory.get_asset_list_by_IDs(ROM_ASSET_ID_LIST)
+        asset_odict = collections.OrderedDict()
+        for asset_info in asset_info_list:
+            asset_fname_str = self.entity_data[asset_info.key] if self.entity_data[asset_info.key] else ''
+            asset_odict[asset_info] = asset_fname_str
+
+        return asset_odict
+    
     def get_edit_options(self, category_id):
         delete_rom_txt = 'Delete ROM'
         if category_id == VCATEGORY_FAVOURITES_ID:
@@ -2594,12 +2617,18 @@ class ROMLauncherABC(LauncherABC):
         log_debug('ROMLauncherABC::get_audit_roms_options() Returning edit options')
         display_mode_str       = self.entity_data['launcher_display_mode']
         no_intro_display_mode  = self.entity_data['nointro_display_mode']
-
+        
+        nointro_xml_file_FName = self.get_nointro_xml_filepath()
+        if not nointro_xml_file_FName or not nointro_xml_file_FName.exists():
+            no_intro_xml_file = 'NONE'
+        else:
+            no_intro_xml_file = nointro_xml_file_FileName.getBase()
+            
         options = collections.OrderedDict()
         options['CHANGE_DISPLAY_MODE']    = 'Change launcher display mode (now {0}) ...'.format(display_mode_str)
         options['CREATE_PARENTCLONE_DAT'] = 'Create Parent/Clone DAT based on ROM filenames'
         options['CHANGE_DISPLAY_ROMS']    = 'Display ROMs (now {0}) ...'.format(no_intro_display_mode)
-        options['ADD_NO_INTRO']           = "Add No-Intro/Redump DAT: '{0}'".format(nointro_xml_file)
+        options['ADD_NO_INTRO']           = "Add No-Intro/Redump DAT: '{0}'".format(no_intro_xml_file)
         options['DELETE_NO_INTRO']        = 'Delete No-Intro/Redump DAT'
         options['UPDATE_ROM_AUDIT']       = 'Update ROM audit'
 
@@ -5655,6 +5684,7 @@ class NvidiaStreamScanner(RomScannerStrategy):
             
         self.progress_dialog.startProgress('Checking for new ROMs ...', num_games)
         streamIdsAlreadyInCollection = set(rom.get_custom_attribute('streamid') for rom in roms)
+        skip_if_scraping_failed = self.settings['scan_skip_on_scraping_failure']
         
         for streamableGame in items:
             
@@ -5663,61 +5693,58 @@ class NvidiaStreamScanner(RomScannerStrategy):
 
             self.progress_dialog.updateProgress(num_items_checked, streamableGame['AppTitle'])
             
-            if streamId not in streamIdsAlreadyInCollection:
+            if streamId in streamIdsAlreadyInCollection:
+                log_debug('Game "{}" with #{} already in collection'.format(streamableGame['AppTitle'], streamId))
+                continue
                 
-                log_debug('========== Processing Nvidia Gamestream game ==========')
-                launcher_report.write('>>> title: {0}'.format(streamableGame['AppTitle']))
-                launcher_report.write('>>> ID: {0}'.format(streamableGame['ID']))
-        
-                log_debug('Not found. Item {0} is new'.format(streamableGame['AppTitle']))
+            log_debug('========== Processing Nvidia Gamestream game ==========')
+            launcher_report.write('>>> title: {0}'.format(streamableGame['AppTitle']))
+            launcher_report.write('>>> ID: {0}'.format(streamableGame['ID']))
+    
+            log_debug('Not found. Item {0} is new'.format(streamableGame['AppTitle']))
 
-                launcher_path = self.launcher.get_rom_path()
-                romPath = launcher_path.pjoin('{0}.rom'.format(streamableGame['ID']))
+            launcher_path = self.launcher.get_rom_path()
+            romPath = launcher_path.pjoin('{0}.rom'.format(streamableGame['AppTitle']))
 
-                # ~~~~~ Process new ROM and add to the list ~~~~~
-                # --- Create new rom dictionary ---
-                # >> Database always stores the original (non transformed/manipulated) path
-                new_rom  = ROM()
-                new_rom.set_file(romPath)
+            # ~~~~~ Process new ROM and add to the list ~~~~~
+            # --- Create new rom dictionary ---
+            # >> Database always stores the original (non transformed/manipulated) path
+            new_rom  = ROM()
+            new_rom.set_file(romPath)
 
-                new_rom.set_custom_attribute('streamid',        streamableGame['ID'])
-                new_rom.set_custom_attribute('gamestream_name', streamableGame['AppTitle'])  # so that we always have the original name
-                new_rom.set_name(streamableGame['AppTitle'])
-                
-                searchTerm = streamableGame['AppTitle']
-                
-                self.progress_dialog.updateMessages(streamableGame['AppTitle'], 'Scraping {0}...'.format(streamableGame['AppTitle']))
-                self.scraping_strategy.scrape(searchTerm, romPath, new_rom)
-                
-                #if self.scrapers:
-                #    for scraper in self.scrapers:
-                #        self._updateProgressMessage(streamableGame['AppTitle'], 'Scraping {0}...'.format(scraper.getName()))
-                #        scraper.scrape(searchTerm, romPath, new_rom)
-                #
-                #romdata = new_rom.get_data()
-                #log_verb('Set Title     file "{0}"'.format(romdata['s_title']))
-                #log_verb('Set Snap      file "{0}"'.format(romdata['s_snap']))
-                #log_verb('Set Boxfront  file "{0}"'.format(romdata['s_boxfront']))
-                #log_verb('Set Boxback   file "{0}"'.format(romdata['s_boxback']))
-                #log_verb('Set Cartridge file "{0}"'.format(romdata['s_cartridge']))
-                #log_verb('Set Fanart    file "{0}"'.format(romdata['s_fanart']))
-                #log_verb('Set Banner    file "{0}"'.format(romdata['s_banner']))
-                #log_verb('Set Clearlogo file "{0}"'.format(romdata['s_clearlogo']))
-                #log_verb('Set Flyer     file "{0}"'.format(romdata['s_flyer']))
-                #log_verb('Set Map       file "{0}"'.format(romdata['s_map']))
-                #log_verb('Set Manual    file "{0}"'.format(romdata['s_manual']))
-                #log_verb('Set Trailer   file "{0}"'.format(romdata['s_trailer']))
+            new_rom.set_custom_attribute('streamid',        streamableGame['ID'])
+            new_rom.set_custom_attribute('gamestream_name', streamableGame['AppTitle'])  # so that we always have the original name
+            new_rom.set_name(streamableGame['AppTitle'])
             
+            scraping_succeeded = True
+            self.progress_dialog.updateMessages(streamableGame['AppTitle'], 'Scraping {0}...'.format(streamableGame['AppTitle']))
+            try:
+                self.scraping_strategy.scanner_process_ROM_begin(new_rom, None)
+                self.scraping_strategy.scanner_process_ROM_metadata(new_rom)
+                self.scraping_strategy.scanner_process_ROM_assets(new_rom)
+            except Exception as ex:
+                scraping_succeeded = False        
+                log_error('(Exception) Object type "{}"'.format(type(ex)))
+                log_error('(Exception) Message "{}"'.format(str(ex)))
+                log_warning('Could not scrape "{}"'.format(streamableGame['AppTitle']))
+                #log_debug(traceback.format_exc())
+            
+            if not scraping_succeeded and skip_if_scraping_failed:
+                kodi_display_user_message({
+                    'dialog': KODI_MESSAGE_NOTIFY_WARN,
+                    'msg': 'Scraping "{}" failed. Skipping.'.format(streamableGame['AppTitle'])
+                })
+            else:
                 new_roms.append(new_rom)
-                            
-                # ~~~ Check if user pressed the cancel button ~~~
-                if self._isProgressCanceled():
-                    self.progress_dialog.endProgress()
-                    kodi_dialog_OK('Stopping ROM scanning. No changes have been made.')
-                    log_info('User pressed Cancel button when scanning ROMs. ROM scanning stopped.')
-                    return None
+                
+            # ~~~ Check if user pressed the cancel button ~~~
+            if self.progress_dialog.isCanceled():
+                self.progress_dialog.endProgress()
+                kodi_dialog_OK('Stopping ROM scanning. No changes have been made.')
+                log_info('User pressed Cancel button when scanning ROMs. ROM scanning stopped.')
+                return None
             
-                num_items_checked += 1
+            num_items_checked += 1
 
         self.progress_dialog.endProgress()
         return new_roms
@@ -5863,7 +5890,7 @@ class RomDatFileScanner(object):
         for rom in roms:
             # >> Use the ROM basename.
             ROMFileName = rom.get_file()
-            roms_set.add(ROMFileName.getBase_noext())
+            roms_set.add(ROMFileName.getBaseNoExt())
         self._updateProgress(100)
         if __debug_progress_dialogs: time.sleep(0.5)
 
@@ -6070,7 +6097,7 @@ class RomDatFileScanner(object):
             for rom in reversed(roms):
             
                 ROMFileName = rom.get_file()
-                if not rom_file:
+                if not ROMFileName:
                     log_debug('_roms_delete_missing_ROMs() Skip "{0}"'.format(rom.get_name()))
                     continue
 
