@@ -86,7 +86,9 @@ def fs_new_category():
 
 def fs_new_launcher():
     return {
+        
         'id' : '',
+        'type': '',
         'm_name' : '',
         'm_year' : '',
         'm_genre' : '',
@@ -105,11 +107,13 @@ def fs_new_launcher():
         'non_blocking' : False,
         'multidisc' : True,
         'roms_base_noext' : '',
+        'nointro_xml_file' : '', # deprecated? TODO: remove
+        'nointro_display_mode' : AUDIT_DMODE_ALL, # deprecated? TODO: remove
         'audit_state' : AUDIT_STATE_OFF,
         'audit_auto_dat_file' : '',
         'audit_custom_dat_file' : '',
         'audit_display_mode' : AUDIT_DMODE_ALL,
-        'launcher_display_mode' : LAUNCHER_DMODE_FLAT,
+        'launcher_display_mode' : LAUNCHER_DMODE_FLAT,        
         'num_roms' : 0,
         'num_parents' : 0,
         'num_clones' : 0,
@@ -150,7 +154,7 @@ def fs_new_launcher():
         'path_flyer' : '',
         'path_map' : '',
         'path_manual' : '',
-        'path_trailer' : ''
+        'path_trailer' : ''        
     }
 
 def fs_new_rom():

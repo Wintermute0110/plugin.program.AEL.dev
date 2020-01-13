@@ -444,11 +444,14 @@ for p_obj in AEL_platforms:
 platform_short_to_index_dic = {}
 platform_compact_to_index_dic = {}
 platform_long_to_index_dic = {}
+platform_compact_to_long_dic = {}
+
 AEL_platform_list = []
 for index, p_obj in enumerate(AEL_platforms):
     platform_short_to_index_dic[p_obj.short_name] = index
     platform_compact_to_index_dic[p_obj.compact_name] = index
     platform_long_to_index_dic[p_obj.long_name] = index
+    platform_compact_to_long_dic[p_obj.compact_name] = p_obj.long_name        
     AEL_platform_list.append(p_obj.long_name)
 
 # Returns the platform numerical index from the platform name. If the platform name is not

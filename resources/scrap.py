@@ -185,13 +185,14 @@ class ScraperFactory(object):
 
     def get_metadata_scraper_menu_list(self):
         log_debug('ScraperFactory.get_metadata_scraper_menu_list() Building scraper list...')
-        scraper_menu_list = []
+        scraper_menu_list = {}
         self.metadata_menu_ID_list = []
+    
         for scraper_ID in self.scraper_objs:
             scraper_obj = self.scraper_objs[scraper_ID]
             s_name = scraper_obj.get_name()
             if scraper_obj.supports_metadata():
-                scraper_menu_list.append('Scrape with {0}'.format(s_name))
+                scraper_menu_list['SCRAPE_' + s_name] = ('Scrape with {0}'.format(s_name))
                 self.metadata_menu_ID_list.append(scraper_ID)
                 log_verb('Scraper {0} supports metadata (ENABLED)'.format(s_name))
             else:
@@ -1350,6 +1351,8 @@ class Scraper(object):
         # Do not log here. Otherwise the same thing will be printed for every scraper instantiated.
         # log_debug('Scraper.__init__() scraper_cache_dir "{}"'.format(self.scraper_cache_dir))
 
+        self.last_http_call = datetime.now()
+        
         # --- Disk caches ---
         self.disk_caches = {}
         self.disk_caches_loaded = {}
@@ -1839,6 +1842,18 @@ class Scraper(object):
         self.global_disk_caches[cache_type] = data
         self.global_disk_caches_dirty[cache_type] = True
 
+    # Generic waiting method to avoid too many requests
+    # and website abuse. 
+    def _wait_for_API_request(self, wait_time_in_miliseconds = 1000):
+        if wait_time_in_miliseconds == 0:
+            return
+        
+        # Make sure we dont go over the TooManyRequests limit of 1 second.
+        now = datetime.now()
+        if (now - self.last_http_call).total_seconds() * 1000 < wait_time_in_miliseconds:
+            log_debug('Scraper._wait_for_API_request() Sleeping {}ms to avoid overloading...'.format(wait_time_in_miliseconds))
+            time.sleep(wait_time_in_miliseconds / 1000)
+            
 # ------------------------------------------------------------------------------------------------
 # NULL scraper, does nothing.
 # ------------------------------------------------------------------------------------------------
@@ -2711,9 +2726,9 @@ class MobyGames(Scraper):
         'inside cover'  : None,
         'full cover'    : None,
         'soundtrack'    : None,
+
         'map'           : ASSET_MAP_ID
     }
-
     # --- Constructor ----------------------------------------------------------------------------
     def __init__(self, settings):
         # --- This scraper settings ---
@@ -2724,7 +2739,6 @@ class MobyGames(Scraper):
         self.cache_metadata = {}
         self.cache_assets = {}
         self.all_asset_cache = {}
-        self.last_http_call = datetime.now()
         # --- Pass down common scraper settings ---
         super(MobyGames, self).__init__(settings)
 
@@ -2865,7 +2879,7 @@ class MobyGames(Scraper):
         # failed? retry after 5 seconds
         if not image_local_path.exists():
             log_debug('Download failed. Retry after 5 seconds')
-            self._wait_for_API_request(5)
+            self._wait_for_API_request(5000)
             net_download_img(image_url, image_local_path)
         
     # --- This class own methods -----------------------------------------------------------------
@@ -3113,15 +3127,6 @@ class MobyGames(Scraper):
 
         return json_data
 
-    # From xxxxx
-    # 
-    def _wait_for_API_request(self, wait_time_in_seconds = 1):
-        # Make sure we dont go over the TooManyRequests limit of 1 second.
-        now = datetime.now()
-        if (now - self.last_http_call).total_seconds() < wait_time_in_seconds:
-            log_debug('MobyGames._wait_for_API_request() Sleeping {} second to avoid overloading...'.format(wait_time_in_seconds))
-            time.sleep(wait_time_in_seconds)
-            
 # ------------------------------------------------------------------------------------------------
 # ScreenScraper online scraper. Uses V2 API.
 #
@@ -3954,7 +3959,7 @@ class ScreenScraper(Scraper):
         else:
             log_debug('_get_SS_checksum() File is not ZIP. Computing checksum of whole file.')
         # Otherwise calculate checksums of the whole file
-        checksums = misc_calculate_file_checksums(f_path)
+        checksums = misc_calculate_checksums(f_path)
         checksums['rom_name'] = f_basename
         log_debug('_get_SS_checksum() ROM name is "{}"'.format(checksums['rom_name']))
 
@@ -4055,13 +4060,16 @@ class ScreenScraper(Scraper):
     # Retrieve URL and decode JSON object.
     #
     # * When the API user/pass is not configured or invalid SS returns ...
-    # * When the API number of calls is exhausted SS returns a HTTP 400 error code.
+    # * When the API number of calls is exhausted SS returns a HTTP 429 error code.
+    # * When the API number of calls for the whole day is exhausted SS returns HTTP status code 430.
     #   In this case mark error in status_dic and return None.
     # * In case of any error/exception mark error in status_dic and return None.
     # * When the a game search is not succesfull SS returns a "HTTP Error 404: Not Found" error.
     #   In this case status_dic marks no error and return None.
-    def _retrieve_URL_as_JSON(self, url, status_dic):
+    def _retrieve_URL_as_JSON(self, url, status_dic, retry=0):
+        self._wait_for_API_request(2000)
         page_data_raw, http_code = net_get_URL(url, self._clean_URL_for_log(url))
+        self.last_http_call = datetime.now()
 
         # --- Check HTTP error codes ---
         if http_code == 400:
@@ -4069,6 +4077,17 @@ class ScreenScraper(Scraper):
             log_debug('ScreenScraper._retrieve_URL_as_JSON() HTTP status 400: general error.')
             self._handle_error(status_dic, 'Bad HTTP status code {}'.format(http_code))
             return None
+        elif http_code == 429 and retry < Scraper.RETRY_THRESHOLD:
+            log_debug('ScreenScraper._retrieve_URL_as_JSON() HTTP status 429: Limit exceeded.')
+            # Number of requests limit, wait at least 2 minutes. Increments with every retry.
+            amount_seconds = 120*(retry+1)
+            wait_till_time = datetime.now() + timedelta(seconds=amount_seconds)
+            kodi_dialog_OK('You\'ve exceeded the max rate limit.', 
+                           'Respecting the website and we wait at least till {}.'.format(wait_till_time))
+            self._wait_for_API_request(amount_seconds*1000)
+            # waited long enough? Try again
+            retry_after_wait = retry + 1
+            return self._retrieve_URL_as_JSON(url, status_dic, retry_after_wait)
         elif http_code == 404:
             # Code 404 in SS means the ROM was not found. Return None but do not mark
             # error in status_dic.

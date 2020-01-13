@@ -83,46 +83,6 @@ MAME_ASSET_SETTING_KEYS = {
     ASSET_MANUAL_ID : ''
 }
 
-#
-# Get extensions to search for files
-# Input : ['png', 'jpg']
-# Output: ['png', 'jpg', 'PNG', 'JPG']
-#
-def asset_get_filesearch_extension_list(exts):
-    ext_list = list(exts)
-    for ext in exts:
-        ext_list.append(ext.upper())
-
-    return ext_list
-
-#
-# Gets extensions to be used in Kodi file dialog.
-# Input : ['png', 'jpg']
-# Output: '.png|.jpg'
-#
-def asset_get_dialog_extension_list(exts):
-    ext_string = ''
-    for ext in exts:
-        ext_string += '.' + ext + '|'
-    # >> Remove trailing '|' character
-    ext_string = ext_string[:-1]
-
-    return ext_string
-
-#
-# Gets extensions to be used in regular expressions.
-# Input : ['png', 'jpg']
-# Output: '(png|jpg)'
-#
-def asset_get_regexp_extension_list(exts):
-    ext_string = ''
-    for ext in exts:
-        ext_string += ext + '|'
-    # >> Remove trailing '|' character
-    ext_string = ext_string[:-1]
-
-    return '(' + ext_string + ')'
-
 # -------------------------------------------------------------------------------------------------
 # Asset functions
 # -------------------------------------------------------------------------------------------------
@@ -299,8 +259,8 @@ a_icon.name             = 'Icon'
 a_icon.name_plural      = 'Icons'
 a_icon.fname_infix      = 'icon'
 a_icon.kind_str         = 'image'
-a_icon.exts             = asset_get_filesearch_extension_list(IMAGE_EXTENSION_LIST)
-a_icon.exts_dialog      = asset_get_dialog_extension_list(IMAGE_EXTENSION_LIST)
+a_icon.exts             = AssetInfoFactory.asset_get_filesearch_extension_list(IMAGE_EXTENSION_LIST)
+a_icon.exts_dialog      = AssetInfoFactory.asset_get_dialog_extension_list(IMAGE_EXTENSION_LIST)
 a_icon.path_key         = 'path_icon'
 
 a_fanart = AssetInfo()
@@ -312,8 +272,8 @@ a_fanart.name            = 'Fanart'
 a_fanart.plural          = 'Fanarts'
 a_fanart.fname_infix     = 'fanart'
 a_fanart.kind_str        = 'image'
-a_fanart.exts            = asset_get_filesearch_extension_list(IMAGE_EXTENSION_LIST)
-a_fanart.exts_dialog     = asset_get_dialog_extension_list(IMAGE_EXTENSION_LIST)
+a_fanart.exts            = AssetInfoFactory.asset_get_filesearch_extension_list(IMAGE_EXTENSION_LIST)
+a_fanart.exts_dialog     = AssetInfoFactory.asset_get_dialog_extension_list(IMAGE_EXTENSION_LIST)
 a_fanart.path_key        = 'path_fanart'
 
 a_banner = AssetInfo()
@@ -326,8 +286,8 @@ a_banner.description       = 'Banner / Marquee'
 a_banner.plural            = 'Banners'
 a_banner.fname_infix       = 'banner'
 a_banner.kind_str          = 'image'
-a_banner.exts              = asset_get_filesearch_extension_list(IMAGE_EXTENSION_LIST)
-a_banner.exts_dialog       = asset_get_dialog_extension_list(IMAGE_EXTENSION_LIST)
+a_banner.exts              = AssetInfoFactory.asset_get_filesearch_extension_list(IMAGE_EXTENSION_LIST)
+a_banner.exts_dialog       = AssetInfoFactory.asset_get_dialog_extension_list(IMAGE_EXTENSION_LIST)
 a_banner.path_key          = 'path_banner'
 
 a_poster = AssetInfo()        
@@ -339,8 +299,8 @@ a_poster.name              = 'Poster'
 a_poster.plural            = 'Posters'
 a_poster.fname_infix       = 'poster'
 a_poster.kind_str          = 'image'
-a_poster.exts              = asset_get_filesearch_extension_list(IMAGE_EXTENSION_LIST)
-a_poster.exts_dialog       = asset_get_dialog_extension_list(IMAGE_EXTENSION_LIST)
+a_poster.exts              = AssetInfoFactory.asset_get_filesearch_extension_list(IMAGE_EXTENSION_LIST)
+a_poster.exts_dialog       = AssetInfoFactory.asset_get_dialog_extension_list(IMAGE_EXTENSION_LIST)
 a_poster.path_key          = 'path_poster'
 
 a_clearlogo = AssetInfo()
@@ -352,8 +312,8 @@ a_clearlogo.name            = 'Clearlogo'
 a_clearlogo.plural          = 'Clearlogos'
 a_clearlogo.fname_infix     = 'clearlogo'
 a_clearlogo.kind_str        = 'image'
-a_clearlogo.exts            = asset_get_filesearch_extension_list(IMAGE_EXTENSION_LIST)
-a_clearlogo.exts_dialog     = asset_get_dialog_extension_list(IMAGE_EXTENSION_LIST)
+a_clearlogo.exts            = AssetInfoFactory.asset_get_filesearch_extension_list(IMAGE_EXTENSION_LIST)
+a_clearlogo.exts_dialog     = AssetInfoFactory.asset_get_dialog_extension_list(IMAGE_EXTENSION_LIST)
 a_clearlogo.path_key        = 'path_clearlogo'
 
 a_controller = AssetInfo()
@@ -363,8 +323,8 @@ a_controller.name           = 'Controller'
 a_controller.plural         = 'Controllers'
 a_controller.fname_infix    = 'controller'
 a_controller.kind_str       = 'image'
-a_controller.exts           = asset_get_filesearch_extension_list(IMAGE_EXTENSION_LIST)
-a_controller.exts_dialog    = asset_get_dialog_extension_list(IMAGE_EXTENSION_LIST)
+a_controller.exts           = AssetInfoFactory.asset_get_filesearch_extension_list(IMAGE_EXTENSION_LIST)
+a_controller.exts_dialog    = AssetInfoFactory.asset_get_dialog_extension_list(IMAGE_EXTENSION_LIST)
 a_controller.path_key       = 'path_controller'
 
 a_trailer = AssetInfo()
@@ -374,8 +334,8 @@ a_trailer.name              = 'Trailer'
 a_trailer.plural            = 'Trailers'
 a_trailer.fname_infix       = 'trailer'
 a_trailer.kind_str          = 'video'
-a_trailer.exts              = asset_get_filesearch_extension_list(TRAILER_EXTENSION_LIST)
-a_trailer.exts_dialog       = asset_get_dialog_extension_list(TRAILER_EXTENSION_LIST)
+a_trailer.exts              = AssetInfoFactory.asset_get_filesearch_extension_list(TRAILER_EXTENSION_LIST)
+a_trailer.exts_dialog       = AssetInfoFactory.asset_get_dialog_extension_list(TRAILER_EXTENSION_LIST)
 a_trailer.path_key          = 'path_trailer'
 
 a_title = AssetInfo()
@@ -385,8 +345,8 @@ a_title.name                = 'Title'
 a_title.plural              = 'Titles'
 a_title.fname_infix         = 'title'
 a_title.kind_str            = 'image'
-a_title.exts                = asset_get_filesearch_extension_list(IMAGE_EXTENSION_LIST)
-a_title.exts_dialog         = asset_get_dialog_extension_list(IMAGE_EXTENSION_LIST)
+a_title.exts                = AssetInfoFactory.asset_get_filesearch_extension_list(IMAGE_EXTENSION_LIST)
+a_title.exts_dialog         = AssetInfoFactory.asset_get_dialog_extension_list(IMAGE_EXTENSION_LIST)
 a_title.path_key            = 'path_title'
 
 a_snap = AssetInfo()
@@ -396,8 +356,8 @@ a_snap.name                 = 'Snap'
 a_snap.plural               = 'Snaps'
 a_snap.fname_infix          = 'snap'
 a_snap.kind_str             = 'image'
-a_snap.exts                 = asset_get_filesearch_extension_list(IMAGE_EXTENSION_LIST)
-a_snap.exts_dialog          = asset_get_dialog_extension_list(IMAGE_EXTENSION_LIST)
+a_snap.exts                 = AssetInfoFactory.asset_get_filesearch_extension_list(IMAGE_EXTENSION_LIST)
+a_snap.exts_dialog          = AssetInfoFactory.asset_get_dialog_extension_list(IMAGE_EXTENSION_LIST)
 a_snap.path_key             = 'path_snap'
 
 a_boxfront = AssetInfo()
@@ -408,8 +368,8 @@ a_boxfront.description      = 'Boxfront / Cabinet'
 a_boxfront.plural           = 'Boxfronts'
 a_boxfront.fname_infix      = 'boxfront'
 a_boxfront.kind_str         = 'image'
-a_boxfront.exts             = asset_get_filesearch_extension_list(IMAGE_EXTENSION_LIST)
-a_boxfront.exts_dialog      = asset_get_dialog_extension_list(IMAGE_EXTENSION_LIST)
+a_boxfront.exts             = AssetInfoFactory.asset_get_filesearch_extension_list(IMAGE_EXTENSION_LIST)
+a_boxfront.exts_dialog      = AssetInfoFactory.asset_get_dialog_extension_list(IMAGE_EXTENSION_LIST)
 a_boxfront.path_key         = 'path_boxfront'
 
 a_boxback = AssetInfo()
@@ -420,8 +380,8 @@ a_boxback.description       = 'Boxback / CPanel'
 a_boxback.plural            = 'Boxbacks'
 a_boxback.fname_infix       = 'boxback'
 a_boxback.kind_str          = 'image'
-a_boxback.exts              = asset_get_filesearch_extension_list(IMAGE_EXTENSION_LIST)
-a_boxback.exts_dialog       = asset_get_dialog_extension_list(IMAGE_EXTENSION_LIST)
+a_boxback.exts              = AssetInfoFactory.asset_get_filesearch_extension_list(IMAGE_EXTENSION_LIST)
+a_boxback.exts_dialog       = AssetInfoFactory.asset_get_dialog_extension_list(IMAGE_EXTENSION_LIST)
 a_boxback.path_key          = 'path_boxback'
 
 a_cartridge = AssetInfo()
@@ -432,8 +392,8 @@ a_cartridge.description     = 'Cartridge / PCB'
 a_cartridge.plural          = 'Cartridges'
 a_cartridge.fname_infix     = 'cartridge'
 a_cartridge.kind_str        = 'image'
-a_cartridge.exts            = asset_get_filesearch_extension_list(IMAGE_EXTENSION_LIST)
-a_cartridge.exts_dialog     = asset_get_dialog_extension_list(IMAGE_EXTENSION_LIST)
+a_cartridge.exts            = AssetInfoFactory.asset_get_filesearch_extension_list(IMAGE_EXTENSION_LIST)
+a_cartridge.exts_dialog     = AssetInfoFactory.asset_get_dialog_extension_list(IMAGE_EXTENSION_LIST)
 a_cartridge.path_key        = 'path_cartridge'
 
 a_flyer = AssetInfo()
@@ -444,8 +404,8 @@ a_flyer.plural              = 'Flyers'
 a_flyer.fname_infix         = 'flyer'
 a_flyer.kind_str            = 'image'
 a_flyer.fname_infix         = 'poster'
-a_flyer.exts                = asset_get_filesearch_extension_list(IMAGE_EXTENSION_LIST)
-a_flyer.exts_dialog         = asset_get_dialog_extension_list(IMAGE_EXTENSION_LIST)
+a_flyer.exts                = AssetInfoFactory.asset_get_filesearch_extension_list(IMAGE_EXTENSION_LIST)
+a_flyer.exts_dialog         = AssetInfoFactory.asset_get_dialog_extension_list(IMAGE_EXTENSION_LIST)
 a_flyer.path_key            = 'path_flyer'
 
 a_map = AssetInfo()
@@ -455,8 +415,8 @@ a_map.name                  = 'Map'
 a_map.plural                = 'Maps'
 a_map.fname_infix           = 'map'
 a_map.kind_str              = 'image'
-a_map.exts                  = asset_get_filesearch_extension_list(IMAGE_EXTENSION_LIST)
-a_map.exts_dialog           = asset_get_dialog_extension_list(IMAGE_EXTENSION_LIST)
+a_map.exts                  = AssetInfoFactory.asset_get_filesearch_extension_list(IMAGE_EXTENSION_LIST)
+a_map.exts_dialog           = AssetInfoFactory.asset_get_dialog_extension_list(IMAGE_EXTENSION_LIST)
 a_map.path_key              = 'path_map'
 
 a_manual = AssetInfo()
@@ -466,8 +426,8 @@ a_manual.name               = 'Manual'
 a_manual.plural             = 'Manuals'
 a_manual.fname_infix        = 'manual'
 a_manual.kind_str           = 'manual'
-a_manual.exts               = asset_get_filesearch_extension_list(MANUAL_EXTENSION_LIST)
-a_manual.exts_dialog        = asset_get_dialog_extension_list(MANUAL_EXTENSION_LIST)
+a_manual.exts               = AssetInfoFactory.asset_get_filesearch_extension_list(MANUAL_EXTENSION_LIST)
+a_manual.exts_dialog        = AssetInfoFactory.asset_get_dialog_extension_list(MANUAL_EXTENSION_LIST)
 a_manual.path_key           = 'path_manual'
 
 a_3dbox = AssetInfo()
@@ -476,8 +436,8 @@ a_3dbox.key                 = 's_3dbox'
 a_3dbox.name               = '3D Box'
 a_3dbox.fname_infix         = '3dbox'
 a_3dbox.kind_str            = 'image'
-a_3dbox.exts                = asset_get_filesearch_extension_list(IMAGE_EXTENSION_LIST)
-a_3dbox.exts_dialog         = asset_get_dialog_extension_list(IMAGE_EXTENSION_LIST)
+a_3dbox.exts                = AssetInfoFactory.asset_get_filesearch_extension_list(IMAGE_EXTENSION_LIST)
+a_3dbox.exts_dialog         = AssetInfoFactory.asset_get_dialog_extension_list(IMAGE_EXTENSION_LIST)
 a_3dbox.path_key            = 'path_3dbox'
 
 #
@@ -562,6 +522,49 @@ class AssetInfoFactory(object):
         kind = ASSET_KEYS_TO_CONSTANTS[name_key]
 
         return self.get_asset_info(kind)
+
+    #
+    # Get extensions to search for files
+    # Input : ['png', 'jpg']
+    # Output: ['png', 'jpg', 'PNG', 'JPG']
+    #
+    @staticmethod
+    def asset_get_filesearch_extension_list(exts):
+        ext_list = list(exts)
+        for ext in exts:
+            ext_list.append(ext.upper())
+
+        return ext_list
+
+    #
+    # Gets extensions to be used in Kodi file dialog.
+    # Input : ['png', 'jpg']
+    # Output: '.png|.jpg'
+    #
+    @staticmethod
+    def asset_get_dialog_extension_list(exts):
+        ext_string = ''
+        for ext in exts:
+            ext_string += '.' + ext + '|'
+        # >> Remove trailing '|' character
+        ext_string = ext_string[:-1]
+
+        return ext_string
+
+    #
+    # Gets extensions to be used in regular expressions.
+    # Input : ['png', 'jpg']
+    # Output: '(png|jpg)'
+    #
+    @staticmethod
+    def asset_get_regexp_extension_list(exts):
+        ext_string = ''
+        for ext in exts:
+            ext_string += ext + '|'
+        # >> Remove trailing '|' character
+        ext_string = ext_string[:-1]
+
+        return '(' + ext_string + ')'
 
 # --- Global object to get asset info ---
 g_assetFactory = AssetInfoFactory()
@@ -1521,41 +1524,12 @@ class VirtualCategory(MetaDataItemABC):
 # Class representing a ROM file you can play through AEL.
 # -------------------------------------------------------------------------------------------------
 class ROM(MetaDataItemABC):
-    def __init__(self, rom_data = None):
-        #super(PATHS, addon_settings, entity_data, objectRepository)
-        super(ROM, self).__init__(None, None, rom_data, None) #todo
-        if self.entity_data is None:
-            self.entity_data = {
-             'id' : misc_generate_random_SID(),
-             'm_name' : '',
-             'm_year' : '',
-             'm_genre' : '',
-             'm_developer' : '',
-             'm_nplayers' : '',
-             'm_esrb' : ESRB_PENDING,
-             'm_rating' : '',
-             'm_plot' : '',
-             'filename' : '',
-             'disks' : [],
-             'altapp' : '',
-             'altarg' : '',
-             'finished' : False,
-             'nointro_status' : NOINTRO_STATUS_NONE,
-             'pclone_status' : PCLONE_STATUS_NONE,
-             'cloneof' : '',
-             's_title' : '',
-             's_snap' : '',
-             's_boxfront' : '',
-             's_boxback' : '',
-             's_cartridge' : '',
-             's_fanart' : '',
-             's_banner' : '',
-             's_clearlogo' : '',
-             's_flyer' : '',
-             's_map' : '',
-             's_manual' : '',
-             's_trailer' : ''
-             }
+    def __init__(self, rom_data = None):        
+        if rom_data = None:
+            rom_data = fs_new_rom()
+            rom_data['id'] = misc_generate_random_SID()
+            rom_data['type'] = OBJ_ROM
+        super(ROM, self).__init__(None, None, rom_data, None)
 
     # is this virtual only? Should we make a VirtualRom(Rom)?
     def get_launcher_id(self):
@@ -3031,7 +3005,7 @@ class ROMLauncherABC(LauncherABC):
         return mode
 
     def has_nointro_xml(self):
-        return self.entity_data['nointro_xml_file']
+        return self.entity_data['nointro_xml_file'] if 'nointro_xml_file' in self.entity_data else None
 
     def get_nointro_xml_filepath(self):
         return self._get_value_as_filename('nointro_xml_file')
@@ -3480,7 +3454,7 @@ class StandardRomLauncher(ROMLauncherABC):
             elif nointro_status == NOINTRO_STATUS_UNKNOWN and dp_mode in dp_modes_for_unknown:
                 filtered_roms.append(rom)
 
-            # >> Always copy roms with unknown status (NOINTRO_STATUS_NONE)
+            # >> Always copy roms with unknown status (AUDIT_STATUS_NONE)
             else:
                 filtered_roms.append(rom)
 
@@ -4384,6 +4358,8 @@ class NvidiaGameStreamLauncher(ROMLauncherABC):
         options = collections.OrderedDict()
         options['TOGGLE_WINDOWED']    = "Toggle Kodi into windowed mode (now {0})".format(toggle_window_str)
         options['TOGGLE_NONBLOCKING'] = "Non-blocking launcher (now {0})".format(non_blocking_str)
+        
+        return options
 
     # ---------------------------------------------------------------------------------------------
     # Execution methods
@@ -5442,7 +5418,7 @@ class RomFolderScanner(RomScannerStrategy):
             if self.settings['scan_ignore_bios']:
                 BIOS_re = re.findall('\[BIOS\]', ROM_file.getBase())
                 if len(BIOS_re) > 0:
-                    log_info("BIOS detected. Skipping ROM '{0}'".format(ROM_file.path))
+                    log_info("BIOS detected. Skipping ROM '{0}'".format(ROM_file.getPath()))
                     continue
 
             # ~~~~~ Process new ROM and add to the list ~~~~~
@@ -6071,7 +6047,7 @@ class RomDatFileScanner(object):
     #
     # Resets the No-Intro status
     # 1) Remove all ROMs which does not exist.
-    # 2) Set status of remaining ROMs to nointro_status = NOINTRO_STATUS_NONE
+    # 2) Set status of remaining ROMs to nointro_status = AUDIT_STATUS_NONE
     #
     def roms_reset_NoIntro_status_roms_reset_NoIntro_status(self, launcher, roms):
         log_info('roms_reset_NoIntro_status() Launcher has {0} ROMs'.format(len(roms)))
@@ -6081,11 +6057,11 @@ class RomDatFileScanner(object):
         num_removed_roms = self._roms_delete_missing_ROMs(roms)
         log_info('roms_reset_NoIntro_status() Removed {0} dead/missing ROMs'.format(num_removed_roms))
 
-        # >> Step 2) Set No-Intro status to NOINTRO_STATUS_NONE and
+        # >> Step 2) Set No-Intro status to AUDIT_STATUS_NONE and
         #            set PClone status to PCLONE_STATUS_NONE
         log_info('roms_reset_NoIntro_status() Resetting No-Intro status of all ROMs to None')
         for rom in roms: 
-            rom.set_nointro_status(NOINTRO_STATUS_NONE)
+            rom.set_nointro_status(AUDIT_STATUS_NONE)
             rom.set_pclone_status(PCLONE_STATUS_NONE)
 
         log_info('roms_reset_NoIntro_status() Now launcher has {0} ROMs'.format(len(roms)))

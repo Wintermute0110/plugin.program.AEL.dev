@@ -1108,7 +1108,7 @@ def misc_calculate_checksums(full_file_path):
         sha1_digest = sha1.hexdigest()
         size = os.path.getsize(full_file_path)
     except:
-        log_debug('(Exception) In misc_calculate_file_checksums()')
+        log_debug('(Exception) In misc_calculate_checksums()')
         log_debug('Returning None')
         return None
     checksums = {
@@ -2405,31 +2405,31 @@ def log_debug_KR(str_text):
         if isinstance(str_text, str): str_text = str_text.decode('utf-8')
 
         # At this point we are sure str_text is a unicode string.
-        log_text = u'AML DEBUG: ' + str_text
+        log_text = u'AEL DEBUG: ' + str_text
         xbmc.log(log_text.encode('utf-8'), level = xbmc.LOGNOTICE)
 
 def log_verb_KR(str_text):
     if current_log_level >= LOG_VERB:
         if isinstance(str_text, str): str_text = str_text.decode('utf-8')
-        log_text = u'AML VERB : ' + str_text
+        log_text = u'AEL VERB : ' + str_text
         xbmc.log(log_text.encode('utf-8'), level = xbmc.LOGNOTICE)
 
 def log_info_KR(str_text):
     if current_log_level >= LOG_INFO:
         if isinstance(str_text, str): str_text = str_text.decode('utf-8')
-        log_text = u'AML INFO : ' + str_text
+        log_text = u'AEL INFO : ' + str_text
         xbmc.log(log_text.encode('utf-8'), level = xbmc.LOGNOTICE)
 
 def log_warning_KR(str_text):
     if current_log_level >= LOG_WARNING:
         if isinstance(str_text, str): str_text = str_text.decode('utf-8')
-        log_text = u'AML WARN : ' + str_text
+        log_text = u'AEL WARN : ' + str_text
         xbmc.log(log_text.encode('utf-8'), level = xbmc.LOGWARNING)
 
 def log_error_KR(str_text):
     if current_log_level >= LOG_ERROR:
         if isinstance(str_text, str): str_text = str_text.decode('utf-8')
-        log_text = u'AML ERROR: ' + str_text
+        log_text = u'AEL ERROR: ' + str_text
         xbmc.log(log_text.encode('utf-8'), level = xbmc.LOGERROR)
 
 #
@@ -2964,7 +2964,7 @@ class KodiProgressDialog(object):
     # Update progress and optionally update messages as well.
     # If not messages specified then keep current message/s
     def updateProgress(self, step_index, message1 = None, message2 = None):
-        self.progress = (step_index * 100) / self.num_steps
+        self.progress = int((step_index * 100) / self.num_steps)
         # Update both messages
         if message1 and message2:
             self.message1 = message1

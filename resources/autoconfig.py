@@ -1027,7 +1027,7 @@ def autoconfig_search_asset_file_list(asset_prefix, AInfo, norm_asset_dir_FN, fi
     # >> Traverse list of filenames (no paths)
     filename_noext = asset_prefix + '_' + AInfo.fname_infix
     # log_debug('filename_noext "{0}"'.format(filename_noext))
-    img_ext_regexp = asset_get_regexp_extension_list(IMAGE_EXTENSION_LIST)
+    img_ext_regexp = AssetInfoFactory.asset_get_regexp_extension_list(IMAGE_EXTENSION_LIST)
     # log_debug('img_ext_regexp "{0}"'.format(img_ext_regexp))
     pattern = '({0})([ \w]*?)\.{1}'.format(filename_noext, img_ext_regexp)
     log_debug('autoconfig_search_asset_file_list() pattern "{0}"'.format(pattern))
