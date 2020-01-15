@@ -2910,8 +2910,17 @@ class KodiListDialog(object):
     def __init__(self):
         self.dialog = xbmcgui.Dialog()
 
-    def select(self, title, options_list, preselect_idx = None):
-        selection = self.dialog.select(title, options_list, preselect = preselect_idx)
+    def select(self, title, options_list, preselect_idx = 0, use_details = False):
+        # --- Execute select dialog menu logic ---
+        # Kodi Krypton bug: if preselect is used then dialog never returns < 0 even if cancel
+        # button is pressed. This bug has been solved in Leia.
+        # See https://forum.kodi.tv/showthread.php?tid=337011
+        if kodi_running_version >= KODI_VERSION_LEIA:
+            selection = self.dialog.select(title, options_list, useDetails = use_details, preselect = preselect_idx)
+        else:
+            log_debug('Executing code < KODI_VERSION_LEIA to overcome select() bug.')
+            selection = self.dialog.select(title, options_list, useDetails = use_details)
+            
         if selection < 0:
             return None
 
@@ -2924,12 +2933,20 @@ class KodiOrdDictionaryDialog(object):
     def __init__(self):
         self.dialog = xbmcgui.Dialog()
 
-    def select(self, title, options_odict, preselect = None):
+    def select(self, title, options_odict, preselect = None, use_details = False):
         preselected_index = -1
         if preselect is not None:
             preselected_value = options_odict[preselect]
             preselected_index = options_odict.values().index(preselected_value)
-        selection = self.dialog.select(title, options_odict.values(), preselect = preselected_index)
+        # --- Execute select dialog menu logic ---
+        # Kodi Krypton bug: if preselect is used then dialog never returns < 0 even if cancel
+        # button is pressed. This bug has been solved in Leia.
+        # See https://forum.kodi.tv/showthread.php?tid=337011
+        if kodi_running_version >= KODI_VERSION_LEIA:
+            selection = self.dialog.select(title, options_odict.values(), useDetails = use_details, preselect = preselected_index)
+        else:
+            log_debug('Executing code < KODI_VERSION_LEIA to overcome select() bug.')
+            selection = self.dialog.select(title, options_odict.values(), useDetails = use_details)
 
         if selection < 0:
             return None

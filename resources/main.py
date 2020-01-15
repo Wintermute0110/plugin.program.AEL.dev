@@ -1965,7 +1965,7 @@ def m_command_add_rom_to_collection(categoryID, launcherID, romID):
 
     # --- Ask user which Collection wants to add the ROM to ---
     dialog = KodiOrdDictionaryDialog()
-    collection_options = OrderedDict()
+    collection_options = collections.OrderedDict()
     for collection in sorted(collections, key = lambda c : c.get_name()):
         collection_options[collection.get_id()] = collection.get_name()
 
@@ -3786,6 +3786,10 @@ def m_subcommand_category_metadata(category):
 def m_subcommand_category_edit_assets(category):
     m_gui_edit_object_assets(category)
 
+@router.action('EDIT_DEFAULT_ASSETS')
+def m_subcommand_category_edit_default_assets(category):
+    m_gui_edit_object_default_assets(category)
+
 @router.action('CATEGORY_STATUS')
 def m_subcommand_category_status(category):
     category.change_finished_status()
@@ -4346,7 +4350,7 @@ def m_subcommand_collection_edit_default_assets(collection):
 
 # --- Atomic commands ---
 # TODO: implement
-@router.action('EDIT_DEFAULT_ASSETS')
+@router.action('EXOIRT')
 def m_subcommand_collection_export_collection_xml(collection):
     pass
 
@@ -4357,269 +4361,64 @@ def m_subcommand_collection_export_collection_xml(collection):
 # --- Choose default ROMs assets/artwork ---
 @router.action('SET_ROMS_DEFAULT_ARTWORK')
 def m_subcommand_set_roms_default_artwork(category, launcher):
-    list_items = {}
-    assets = g_assetFactory.get_assets_by(DEFAULTABLE_ROM_ASSETLIST)
-    mappable_assets = g_assetFactory.get_assets_by(MAPPBLE_ROM_ASSET_LIST)
-
-    for asset_info in assets:
-        current_default_key = launcher.get_rom_asset_default(asset_info)
-        if current_default_key and current_default_key != '':
-            current_default_key = ASSET_KEYS_TO_CONSTANTS[current_default_key]
-            current_default = g_assetFactory.get_asset_info(current_default_key)
-            list_items[asset_info] = 'Choose asset for {0} (currently {1})'.format(asset_info.name, current_default.name)
-        else:
-            list_items[asset_info] = 'Choose asset for {0} (currently not set)'.format(asset_info.name)
-
-    dialog = DictionaryDialog()
-    selected_asset = dialog.select('Edit ROMs default Assets/Artwork', list_items)
+    
+    if not launcher.supports_launching_roms():
+        kodi_dialog_OK(
+            'm_subcommand_set_roms_default_artwork() ' +
+            'Launcher "{0}" is not a ROM launcher.'.format(launcher.__class__.__name__) +
+            'This is a bug, please report it.')
+        return
+    
+    # --- Build Dialog.select() list ---
+    default_assets_list = launcher.get_ROM_mappable_asset_list()
+    options = collections.OrderedDict()
+    for default_asset_info in default_assets_list:
+        # >> Label is the string 'Choose asset for XXXX (currently YYYYY)'
+        mapped_asset_key = launcher.get_mapped_ROM_asset_key(default_asset_info)
+        mapped_asset_info = g_assetFactory.get_asset_info_by_key(mapped_asset_key)
+        # --- Append to list of ListItems ---
+        options[default_asset_info] = 'Choose asset for {0} (currently {1})'.format(default_asset_info.name, mapped_asset_info.name)
         
-    if selected_asset is None:
+    dialog = KodiOrdDictionaryDialog()
+    selected_asset_info = dialog.select('Edit ROMs default Assets/Artwork', options)
+    
+    if selected_asset_info is None:
+        # >> Return to parent menu.
+        log_debug('m_subcommand_set_roms_default_artwork() Main selected NONE. Returning to parent menu.')
         return
+    
+    log_debug('m_subcommand_set_roms_default_artwork() Main select() returned {0}'.format(selected_asset_info.name))    
+    mapped_asset_key    = launcher.get_mapped_ROM_asset_key(selected_asset_info)
+    mapped_asset_info   = g_assetFactory.get_asset_info_by_key(mapped_asset_key)
+    mappable_asset_list = g_assetFactory.get_asset_list_by_IDs(ROM_ASSET_ID_LIST, 'image')
+    log_debug('m_subcommand_set_roms_default_artwork() {0} currently is mapped to {1}'.format(selected_asset_info.name, mapped_asset_info.name))
+    
+    # --- Create ListItems ---
+    options = collections.OrderedDict()
+    for mappable_asset_info in mappable_asset_list:
+        # >> Label is the asset name (Icon, Fanart, etc.)
+        options[mappable_asset_info] = mappable_asset_info.name
 
-    # --- Launcher status (finished [bool]) ---
-    type_nb = type_nb + 1
-    if type == type_nb:
-        finished = self.launchers[launcherID]['finished']
-        finished = False if finished else True
-        finished_display = 'Finished' if finished == True else 'Unfinished'
-        self.launchers[launcherID]['finished'] = finished
-        kodi_dialog_OK('Launcher "{0}" status is now {1}'.format(self.launchers[launcherID]['m_name'], finished_display))
-
-    # --- Launcher Manage ROMs menu option ---
-    # ONLY for ROM launchers, not for standalone launchers
-    if self.launchers[launcherID]['rompath'] != '':
-        type_nb = type_nb + 1
-        if type == type_nb:
-            dialog = xbmcgui.Dialog()
-            type2 = dialog.select('Manage ROMs',
-                                  ['Choose ROMs default artwork ...',
-                                   'Manage ROMs asset directories ...',
-                                   'Rescan ROMs local artwork',
-                                   'Scrape ROMs artwork',
-                                   'Remove dead/missing ROMs',
-                                   'Import ROMs metadata from NFO files',
-                                   'Export ROMs metadata to NFO files',
-                                   'Delete ROMs NFO files',
-                                   'Clear ROMs from launcher' ])
-            if type2 < 0: return # User canceled select dialog
-
-            # --- Choose default ROMs assets/artwork ---
-            if type2 == 0:
-                launcher        = self.launchers[launcherID]
-                asset_icon_str      = assets_get_asset_name_str(launcher['roms_default_icon'])
-                asset_fanart_str    = assets_get_asset_name_str(launcher['roms_default_fanart'])
-                asset_banner_str    = assets_get_asset_name_str(launcher['roms_default_banner'])
-                asset_poster_str    = assets_get_asset_name_str(launcher['roms_default_poster'])
-                asset_clearlogo_str = assets_get_asset_name_str(launcher['roms_default_clearlogo'])
-
-                # >> Execute select dialog
-                dialog = xbmcgui.Dialog()
-                type3 = dialog.select('Edit ROMs default Assets/Artwork',
-                                      ['Choose asset for Icon (currently {0})'.format(asset_icon_str),
-                                       'Choose asset for Fanart (currently {0})'.format(asset_fanart_str),
-                                       'Choose asset for Banner (currently {0})'.format(asset_banner_str),
-                                       'Choose asset for Poster (currently {0})'.format(asset_poster_str),
-                                       'Choose asset for Clearlogo (currently {0})'.format(asset_clearlogo_str)])
-                if type3 < 0: return
-
-                # >> Krypton feature: User preselected item in select() dialog.
-                ROM_asset_str_list = ['Title', 'Snap', 'Boxfront', 'Boxback', 'Cartridge',
-                                      'Fanart', 'Banner', 'Clearlogo', 'Flyer', 'Map']
-                if type3 == 0:
-                    p_idx = assets_get_ROM_mapped_asset_idx(launcher, 'roms_default_icon')
-                    type_s = xbmcgui.Dialog().select('Choose ROMs default asset for Icon',
-                                                     ROM_asset_str_list, preselect = p_idx)
-                    if type_s < 0: return
-                    assets_choose_ROM_mapped_artwork(launcher, 'roms_default_icon', type_s)
-                    asset_name = assets_get_asset_name_str(launcher['roms_default_icon'])
-                    kodi_notify('ROMs Icon mapped to {0}'.format(asset_name))
-                elif type3 == 1:
-                    p_idx = assets_get_ROM_mapped_asset_idx(launcher, 'roms_default_fanart')
-                    type_s = xbmcgui.Dialog().select('Choose ROMs default asset for Fanart',
-                                                     ROM_asset_str_list, preselect = p_idx)
-                    if type_s < 0: return
-                    assets_choose_ROM_mapped_artwork(launcher, 'roms_default_fanart', type_s)
-                    asset_name = assets_get_asset_name_str(launcher['roms_default_fanart'])
-                    kodi_notify('ROMs Fanart mapped to {0}'.format(asset_name))
-                elif type3 == 2:
-                    p_idx = assets_get_ROM_mapped_asset_idx(launcher, 'roms_default_banner')
-                    type_s = xbmcgui.Dialog().select('Choose ROMS default asset for Banner',
-                                                     ROM_asset_str_list, preselect = p_idx)
-                    if type_s < 0: return
-                    assets_choose_ROM_mapped_artwork(launcher, 'roms_default_banner', type_s)
-                    asset_name = assets_get_asset_name_str(launcher['roms_default_banner'])
-                    kodi_notify('ROMs Banner mapped to {0}'.format(asset_name))
-                elif type3 == 3:
-                    p_idx = assets_get_ROM_mapped_asset_idx(launcher, 'roms_default_poster')
-                    type_s = xbmcgui.Dialog().select('Choose ROMS default asset for Poster',
-                                                     ROM_asset_str_list, preselect = p_idx)
-                    if type_s < 0: return
-                    assets_choose_ROM_mapped_artwork(launcher, 'roms_default_poster', type_s)
-                    asset_name = assets_get_asset_name_str(launcher['roms_default_poster'])
-                    kodi_notify('ROMs Poster mapped to {0}'.format(asset_name))
-                elif type3 == 4:
-                    p_idx = assets_get_ROM_mapped_asset_idx(launcher, 'roms_default_clearlogo')
-                    type_s = xbmcgui.Dialog().select('Choose ROMs default asset for Clearlogo',
-                                                     ROM_asset_str_list, preselect = p_idx)
-                    if type_s < 0: return
-                    assets_choose_ROM_mapped_artwork(launcher, 'roms_default_clearlogo', type_s)
-                    asset_name = assets_get_asset_name_str(launcher['roms_default_clearlogo'])
-                    kodi_notify('ROMs Clearlogo mapped to {0}'.format(asset_name))
-
-            # --- Manage ROM Asset directories ---
-            elif type2 == 1:
-                launcher = self.launchers[launcherID]
-                dialog = xbmcgui.Dialog()
-                type3 = dialog.select('ROM Asset directories ',
-                                      ["Change Titles path: '{0}'".format(launcher['path_title']),
-                                       "Change Snaps path: '{0}'".format(launcher['path_snap']),
-                                       "Change Fanarts path '{0}'".format(launcher['path_fanart']),
-                                       "Change Banners path: '{0}'".format(launcher['path_banner']),
-                                       "Change Clearlogos path: '{0}'".format(launcher['path_clearlogo']),
-                                       "Change Boxfronts path: '{0}'".format(launcher['path_boxfront']),
-                                       "Change Boxbacks path: '{0}'".format(launcher['path_boxback']),
-                                       "Change Cartridges path: '{0}'".format(launcher['path_cartridge']),
-                                       "Change Flyers path: '{0}'".format(launcher['path_flyer']),
-                                       "Change Maps path: '{0}'".format(launcher['path_map']),
-                                       "Change Manuals path: '{0}'".format(launcher['path_manual']),
-                                       "Change Trailers path: '{0}'".format(launcher['path_trailer']) ])
-
-                if type3 == 0:
-                    dialog = xbmcgui.Dialog()
-                    dir_path = dialog.browse(0, 'Select Titles path', 'files', '', False, False, launcher['path_title']).decode('utf-8')
-                    if not dir_path: return
-                    self.launchers[launcherID]['path_title'] = dir_path
-                elif type3 == 1:
-                    dialog = xbmcgui.Dialog()
-                    dir_path = dialog.browse(0, 'Select Snaps path', 'files', '', False, False, launcher['path_snap']).decode('utf-8')
-                    if not dir_path: return
-                    self.launchers[launcherID]['path_snap'] = dir_path
-                elif type3 == 2:
-                    dialog = xbmcgui.Dialog()
-                    dir_path = dialog.browse(0, 'Select Fanarts path', 'files', '', False, False, launcher['path_fanart']).decode('utf-8')
-                    if not dir_path: return
-                    self.launchers[launcherID]['path_fanart'] = dir_path
-                elif type3 == 3:
-                    dialog = xbmcgui.Dialog()
-                    dir_path = dialog.browse(0, 'Select Banners path', 'files', '', False, False, launcher['path_banner']).decode('utf-8')
-                    if not dir_path: return
-                    self.launchers[launcherID]['path_banner'] = dir_path
-                elif type3 == 4:
-                    dialog = xbmcgui.Dialog()
-                    dir_path = dialog.browse(0, 'Select Clearlogos path', 'files', '', False, False, launcher['path_clearlogo']).decode('utf-8')
-                    if not dir_path: return
-                    self.launchers[launcherID]['path_clearlogo'] = dir_path
-                elif type3 == 5:
-                    dialog = xbmcgui.Dialog()
-                    dir_path = dialog.browse(0, 'Select Boxfronts path', 'files', '', False, False, launcher['path_boxfront']).decode('utf-8')
-                    if not dir_path: return
-                    self.launchers[launcherID]['path_boxfront'] = dir_path
-                elif type3 == 6:
-                    dialog = xbmcgui.Dialog()
-                    dir_path = dialog.browse(0, 'Select Boxbacks path', 'files', '', False, False, launcher['path_boxback']).decode('utf-8')
-                    if not dir_path: return
-                    self.launchers[launcherID]['path_boxback'] = dir_path
-                elif type3 == 7:
-                    dialog = xbmcgui.Dialog()
-                    dir_path = dialog.browse(0, 'Select Cartridges path', 'files', '', False, False, launcher['path_cartridge']).decode('utf-8')
-                    if not dir_path: return
-                    self.launchers[launcherID]['path_cartridge'] = dir_path
-                elif type3 == 8:
-                    dialog = xbmcgui.Dialog()
-                    dir_path = dialog.browse(0, 'Select Flyers path', 'files', '', False, False, launcher['path_flyer']).decode('utf-8')
-                    if not dir_path: return
-                    self.launchers[launcherID]['path_flyer'] = dir_path
-                elif type3 == 9:
-                    dialog = xbmcgui.Dialog()
-                    dir_path = dialog.browse(0, 'Select Maps path', 'files', '', False, False, launcher['path_map']).decode('utf-8')
-                    if not dir_path: return
-                    self.launchers[launcherID]['path_map'] = dir_path
-                elif type3 == 10:
-                    dialog = xbmcgui.Dialog()
-                    dir_path = dialog.browse(0, 'Select Manuals path', 'files', '', False, False, launcher['path_manual']).decode('utf-8')
-                    if not dir_path: return
-                    self.launchers[launcherID]['path_manual'] = dir_path
-                elif type3 == 11:
-                    dialog = xbmcgui.Dialog()
-                    dir_path = dialog.browse(0, 'Select Trailers path', 'files', '', False, False, launcher['path_trailer']).decode('utf-8')
-                    if not dir_path: return
-                    self.launchers[launcherID]['path_trailer'] = dir_path
-                # >> User canceled select dialog
-                elif type3 < 0: return
-
-                # >> Check for duplicate paths and warn user.
-                duplicated_name_list = launcher.get_duplicated_asset_dirs()
-                #duplicated_name_list = asset_get_duplicated_dir_list(self.launchers[launcherID])
-                if duplicated_name_list:
-                    duplicated_asset_srt = ', '.join(duplicated_name_list)
-                    kodi_dialog_OK('Duplicated asset directories: {0}. '.format(duplicated_asset_srt) +
-                                   'AEL will refuse to add/edit ROMs if there are duplicate asset directories.')
-
-            # --- Rescan ROMs local artwork ---
-            # >> A) First, local assets are searched for every ROM based on the filename.
-            # >> B) Next, missing assets are searched in the Parent/Clone group using the files
-            #       found in the previous step. This is much faster than searching for files again.
-            #
-            elif type2 == 2:
-                log_info('_command_edit_launcher() Rescanning local assets ...')
-                launcher = self.launchers[launcherID]
-
-                # ~~~ Check asset dirs and disable scanning for unset dirs ~~~
-                (enabled_asset_list, unconfigured_name_list) = asset_get_configured_dir_list(launcher)
-                if unconfigured_name_list:
-                    unconfigure_asset_srt = ', '.join(unconfigured_name_list)
-                    kodi_dialog_OK('Assets directories not set: {0}. '.format(unconfigure_asset_srt) +
-                                   'Asset scanner will be disabled for this/those.')
-
-                # ~~~ Ensure there is no duplicate asset dirs ~~~
-                # >> Cancel scanning if duplicates found
-                duplicated_name_list = launcher.get_duplicated_asset_dirs(launcher)
-                if duplicated_name_list:
-                    duplicated_asset_srt = ', '.join(duplicated_name_list)
-                    log_info('Duplicated asset dirs: {0}'.format(duplicated_asset_srt))
-                    kodi_dialog_OK('Duplicated asset directories: {0}. '.format(duplicated_asset_srt) +
-                                   'Change asset directories before continuing.')
-                    return
-                else:
-                    log_info('No duplicated asset dirs found')
-
-                # --- Create a cache of assets ---
-                # >> misc_add_file_cache() creates a set with all files in a given directory.
-                # >> That set is stored in a function internal cache associated with the path.
-                # >> Files in the cache can be searched with misc_search_file_cache()
-                pDialog = xbmcgui.DialogProgress()
-                pDialog.create('Advanced Emulator Launcher', 'Scanning files in asset directories ...')
-                for i, asset_kind in enumerate(ROM_ASSET_LIST):
-                    AInfo = assets_get_info_scheme(asset_kind)
-                    misc_add_file_cache(launcher[AInfo.path_key])
-                    pDialog.update((100*i)/len(ROM_ASSET_LIST))
-                pDialog.update(100)
-                pDialog.close()
-
-    default_key = launcher.get_rom_asset_default(selected_asset)
-    default_key = ASSET_KEYS_TO_CONSTANTS[default_key]
-    default_kind = None
-
-    # >> Build ListItem of assets that can be mapped.
-    mappable_asset_list_items = {}
-    for mappable_asset in mappable_assets:
-        mappable_asset_list_items[mappable_asset] = mappable_asset.name
-        if mappable_asset.kind == default_key:
-            default_kind = mappable_asset
-
-    # >> Krypton feature: User preselected item in select() dialog.
-    selected_mappable_asset = dialog.select('Choose ROMs default asset for {}'.format(selected_asset.name), mappable_asset_list_items, default_kind)
-    if selected_mappable_asset is None or selected_mappable_asset == default_kind:   
-        self._subcommand_set_roms_default_artwork(launcher)                
-        return
-                    
-    launcher.set_default_rom_asset(selected_asset, selected_mappable_asset)
-    g_LauncherRepository.save(launcher)
-
-    kodi_notify('ROMs {0} mapped to {1}'.format(selected_asset.name, selected_mappable_asset.name))
-      
-    self._subcommand_set_roms_default_artwork(launcher)
-    return
+    dialog = KodiOrdDictionaryDialog()
+    dialog_title_str = 'Edit {0} {1} mapped asset'.format(
+        launcher.get_object_name(), selected_asset_info.name)
+    new_selected_asset_info = dialog.select(dialog_title_str, options, mapped_asset_info)
+   
+    if new_selected_asset_info is None:
+        # >> Return to this method recursively to previous menu.
+        log_debug('m_subcommand_set_roms_default_artwork() Mapable selected NONE. Returning to previous menu.')
+        m_subcommand_set_roms_default_artwork(category, launcher)
+        return   
+    
+    log_debug('m_subcommand_set_roms_default_artwork() Mapable selected {0}.'.format(new_selected_asset_info.name))
+    launcher.set_mapped_ROM_asset_key(selected_asset_info, new_selected_asset_info)
+    launcher.save_to_disk()
+    kodi_notify('{0} {1} mapped to {2}'.format(
+        launcher.get_object_name(), selected_asset_info.name, new_selected_asset_info.name
+    ))
+    
+    # >> Return to this method recursively to previous menu.
+    m_subcommand_set_roms_default_artwork(category, launcher)
 
 @router.action('SET_ROMS_ASSET_DIRS')
 def m_subcommand_set_rom_asset_dirs(category, launcher):
@@ -5898,7 +5697,7 @@ def m_subcommand_manage_collection_rom_position(launcher, rom):
         log_verb('_command_edit_rom() new_order = {0}'.format(unicode(new_order)))
 
         # >> Reorder ROMs
-        new_roms = OrderedDict()
+        new_roms = collections.OrderedDict()
         for order_idx in new_order:
             key_value_tuple = roms.items()[order_idx]
             new_roms.update({key_value_tuple[0] : key_value_tuple[1]})
@@ -5929,7 +5728,7 @@ def m_subcommand_manage_collection_rom_position(launcher, rom):
         new_order                           = range(num_roms)
         new_order[current_ROM_position - 1] = current_ROM_position
         new_order[current_ROM_position]     = current_ROM_position - 1
-        new_roms = OrderedDict()
+        new_roms = colletions.OrderedDict()
         # >> http://stackoverflow.com/questions/10058140/accessing-items-in-a-ordereddict
         for order_idx in new_order:
             key_value_tuple = roms.items()[order_idx]
@@ -5961,7 +5760,7 @@ def m_subcommand_manage_collection_rom_position(launcher, rom):
         new_order                           = range(num_roms)
         new_order[current_ROM_position]     = current_ROM_position + 1
         new_order[current_ROM_position + 1] = current_ROM_position
-        new_roms = OrderedDict()
+        new_roms = collections.OrderedDict()
         # >> http://stackoverflow.com/questions/10058140/accessing-items-in-a-ordereddict
         for order_idx in new_order:
             key_value_tuple = roms.items()[order_idx]
@@ -7230,7 +7029,7 @@ def m_gui_edit_asset(obj_instance, asset_info):
         current_image_file = obj_instance.get_asset_FN(asset_info)
         if current_image_file is None:
             current_image_dir = obj_instance.get_assets_path_FN()
-            if current_image_file is None: current_image_dir = FileName()
+            if current_image_file is None: current_image_dir = FileName('/')
         else: 
             current_image_dir = FileName(current_image_file.getDir(), isdir = True)
         log_debug('m_gui_edit_asset() Asset initial dir "{0}"'.format(current_image_dir.getPath()))
@@ -7490,30 +7289,11 @@ def m_gui_edit_object_default_assets(obj_instance, pre_select_idx = 0):
     log_debug('m_gui_edit_object_default_assets() obj {0}'.format(obj_instance.__class__.__name__))
     log_debug('m_gui_edit_object_default_assets() pre_select_idx {0}'.format(pre_select_idx))
 
-    # --- Customize function for each object type ---
-    if obj_instance.get_assets_kind() == KIND_ASSET_CATEGORY:
-        repository_obj = g_MainRepository
-
-    elif obj_instance.get_assets_kind() == KIND_ASSET_COLLECTION:
-        repository_obj = g_CollectionRepository
-
-    elif obj_instance.get_assets_kind() == KIND_ASSET_LAUNCHER:
-        repository_obj = g_MainRepository
-
-    elif obj_instance.get_assets_kind() == KIND_ASSET_ROM:
-        repository_obj = g_MainRepository
-
-    else:
-        kodi_dialog_OK(
-            'm_gui_edit_object_default_assets() ' +
-            'Unknown obj_instance.get_assets_kind() = {0}'.format(obj_instance.get_assets_kind()) +
-            'This is a bug, please report it.')
-        return
     dialog_title_str = 'Edit {0} default Assets/Artwork'.format(obj_instance.get_object_name())
 
     # --- Build Dialog.select() list ---
     assets_odict = obj_instance.get_assets_odict()
-    default_assets_list = obj_instance.get_default_asset_list()
+    default_assets_list = obj_instance.get_mappable_asset_list()
     list_items = []
     # >> List to easily pick the selected AssetInfo() object
     asset_info_list = []
@@ -7522,7 +7302,7 @@ def m_gui_edit_object_default_assets(obj_instance, pre_select_idx = 0):
         # >> Label 2 is the fname string of the current mapped asset or 'Not set'
         # >> icon is the fname string of the current mapped asset.
         mapped_asset_key = obj_instance.get_mapped_asset_key(default_asset_info)
-        mapped_asset_info = ASSET_INFO_KEY_DICT[mapped_asset_key]
+        mapped_asset_info = g_assetFactory.get_asset_info_by_key(mapped_asset_key)
         mapped_asset_str = obj_instance.get_asset_str(mapped_asset_info)
         label1_str = 'Choose asset for {0} (currently {1})'.format(default_asset_info.name, mapped_asset_info.name)
         label2_str = mapped_asset_str
@@ -7614,7 +7394,7 @@ def m_gui_edit_object_default_assets(obj_instance, pre_select_idx = 0):
             new_selected_asset_info = asset_info_list[secondary_selected_option]
             log_debug('m_gui_edit_object_default_assets() Mapable selected {0}.'.format(new_selected_asset_info.name))
             obj_instance.set_mapped_asset_key(selected_asset_info, new_selected_asset_info)
-            repository_obj.save(obj_instance)
+            obj_instance.save_to_disk()
             kodi_notify('{0} {1} mapped to {2}'.format(
                 obj_instance.get_object_name(), selected_asset_info.name, new_selected_asset_info.name
             ))
