@@ -1051,11 +1051,11 @@ def m_command_render_Collections():
         listitem.setInfo('video', {'title'   : collection['m_name'],    'genre'   : collection['m_genre'],
                                    'plot'    : collection['m_plot'],    'rating'  : collection['m_rating'],
                                    'trailer' : collection['s_trailer'], 'overlay' : 4 })
-        icon_path      = asset_get_default_asset_Category(collection, 'default_icon', 'DefaultFolder.png')
-        fanart_path    = asset_get_default_asset_Category(collection, 'default_fanart')
-        banner_path    = asset_get_default_asset_Category(collection, 'default_banner')
-        poster_path    = asset_get_default_asset_Category(collection, 'default_poster')
-        clearlogo_path = asset_get_default_asset_Category(collection, 'default_clearlogo')
+        icon_path      = collection.get_asset_str(collection.get_mapped_asset_info(asset_id=ASSET_ICON_ID), 'DefaultFolder.png')
+        fanart_path    = collection.get_asset_str(collection.get_mapped_asset_info(asset_id=ASSET_FANART_ID))
+        banner_path    = collection.get_asset_str(collection.get_mapped_asset_info(asset_id=ASSET_BANNER_ID))
+        poster_path    = collection.get_asset_str(collection.get_mapped_asset_info(asset_id=ASSET_POSTER_ID))
+        clearlogo_path = collection.get_asset_str(collection.get_mapped_asset_info(asset_id=ASSET_CLEARLOGO_ID))
         listitem.setArt({'icon'   : icon_path,   'fanart' : fanart_path,
                          'banner' : banner_path, 'poster' : poster_path, 'clearlogo' : clearlogo_path})
 
@@ -1685,11 +1685,10 @@ def m_command_buildMenu():
     if typeOfContent == 0:
         categories = self.category_repository.find_all()
         for category in sorted(categories, key = lambda c : c.get_name()):
-            category_dic = category.get_data_dic()
-            name = category_dic['m_name']
+            name = category.get_name()
             url_str =  "ActivateWindow(Programs,\"%s\",return)" % m_misc_url('SHOW_LAUNCHERS', key)
-            fanart = asset_get_default_asset_Category(category_dic, 'default_fanart')
-            thumb = asset_get_default_asset_Category(category_dic, 'default_thumb', 'DefaultFolder.png')
+            fanart = category.get_asset_str(category.get_mapped_asset_info(asset_id=ASSET_FANART_ID))
+            thumb = category.get_asset_str(category.get_mapped_asset_info(asset_id=ASSET_THUMB_ID, 'DefaultFolder.png') # ASSET_THUMB_ID?
 
             log_debug('_command_buildMenu() Adding Category "{0}"'.format(name))
             listitem = self._buildMenuItem(key, name, url_str, thumb, fanart, count, ui)
@@ -1703,8 +1702,8 @@ def m_command_buildMenu():
             launcherID = launcher.get_id()
             categoryID = launcher.get_category_id()
             url_str =  "ActivateWindow(Programs,\"%s\",return)" % m_misc_url('SHOW_ROMS', categoryID, launcherID)
-            fanart = asset_get_default_asset_Category(launcher.get_data_dic(), 'default_fanart')
-            thumb = asset_get_default_asset_Category(launcher.get_data_dic(), 'default_thumb', 'DefaultFolder.png')
+            fanart = launcher.get_mapped_asset(g_assetFactory.get_asset_info(ASSET_FANART_ID))
+            thumb = launcher.get_mapped_asset(g_assetFactory.get_asset_info(ASSET_THUMB_ID, 'DefaultFolder.png') # ASSET_THUMB_ID?
 
             log_debug('_command_buildMenu() Adding Launcher "{0}"'.format(name))
             listitem = self._buildMenuItem(key, name, url_str, thumb, fanart, count, ui)
@@ -2119,7 +2118,7 @@ def m_command_import_collection():
         for asset_kind in CATEGORY_ASSET_LIST:
             # >> Get asset filename with no extension
             AInfo = assets_get_info_scheme(asset_kind)
-            asset_noext_FN = assets_get_path_noext_SUFIX(AInfo, collections_asset_dir_FN,
+            asset_noext_FN = g_assetFactory.assets_get_path_noext_SUFIX(AInfo, collections_asset_dir_FN,
                                                          collection_dic['m_name'], collection_dic['id'])
             log_debug('{0:<9s} base_noext "{1}"'.format(AInfo.name, asset_noext_FN.getBase()))
             if asset_noext_FN.getBase() not in assets_dic:
@@ -2160,7 +2159,7 @@ def m_command_import_collection():
                 # >> Get assets filename with no extension
                 AInfo = assets_get_info_scheme(asset_kind)
                 ROM_FN = FileName(rom_item['filename'])                    
-                ROM_asset_noext_FN = assets_get_path_noext_SUFIX(AInfo, collections_asset_dir_FN, 
+                ROM_asset_noext_FN = g_assetFactory.assets_get_path_noext_SUFIX(AInfo, collections_asset_dir_FN, 
                                                                  ROM_FN.getBase_noext(), rom_item['id'])
                 ROM_asset_FN = ROM_asset_noext_FN.append(ROM_asset_noext_FN.getExt())
                 log_debug('{0:<9s} base_noext "{1}"'.format(AInfo.name, ROM_asset_FN.getBase_noext()))
@@ -2255,7 +2254,7 @@ def m_command_export_collection(categoryID, launcherID):
         for asset_kind in CATEGORY_ASSET_LIST:
             AInfo = assets_get_info_scheme(asset_kind)
             asset_FileName = FileName(collection[AInfo.key])
-            new_asset_noext_FileName = assets_get_path_noext_SUFIX(AInfo, collections_asset_dir_FN,
+            new_asset_noext_FileName = g_assetFactory.assets_get_path_noext_SUFIX(AInfo, collections_asset_dir_FN,
                                                                    collection['m_name'], collection['id'])
             new_asset_FileName = new_asset_noext_FileName.append(asset_FileName.getExt())
             if not collection[AInfo.key]:
@@ -2303,7 +2302,7 @@ def m_command_export_collection(categoryID, launcherID):
                 AInfo = assets_get_info_scheme(asset_kind)
                 asset_FileName = FileName(rom_item[AInfo.key])
                 ROM_FileName = FileName(rom_item['filename'])
-                new_asset_noext_FileName = assets_get_path_noext_SUFIX(AInfo, collections_asset_dir_FN, 
+                new_asset_noext_FileName = g_assetFactory.assets_get_path_noext_SUFIX(AInfo, collections_asset_dir_FN, 
                                                                        ROM_FileName.getBase_noext(), rom_item['id'])
                 new_asset_FileName = new_asset_noext_FileName.append(asset_FileName.getExt())
                 if not rom_item[AInfo.key]:
@@ -5565,11 +5564,11 @@ def m_subcommand_manage_favourite_rom(launcher, rom):
         rom = roms[romID]
 
         # >> Label1 an label2
-        asset_icon_str     = assets_get_asset_name_str(rom['roms_default_thumb'])
-        asset_fanart_str    = assets_get_asset_name_str(rom['roms_default_fanart'])
-        asset_banner_str    = assets_get_asset_name_str(rom['roms_default_banner'])
-        asset_poster_str    = assets_get_asset_name_str(rom['roms_default_poster'])
-        asset_clearlogo_str = assets_get_asset_name_str(rom['roms_default_clearlogo'])
+        asset_icon_str      = rom.get_mapped_ROM_asset_info(asset_id=ASSET_THUMB_ID).name
+        asset_fanart_str    = rom.get_mapped_ROM_asset_info(asset_id=ASSET_FANART_ID).name
+        asset_banner_str    = rom.get_mapped_ROM_asset_info(asset_id=ASSET_BANNER_ID).name
+        asset_poster_str    = rom.get_mapped_ROM_asset_info(asset_id=ASSET_POSTER_ID).name
+        asset_clearlogo_str = rom.get_mapped_ROM_asset_info(asset_id=ASSET_CLEARLOGO_ID).name
         label2_thumb        = rom[rom['roms_default_thumb']]     if rom[rom['roms_default_thumb']]     else 'Not set'
         label2_fanart       = rom[rom['roms_default_fanart']]    if rom[rom['roms_default_fanart']]    else 'Not set'
         label2_banner       = rom[rom['roms_default_banner']]    if rom[rom['roms_default_banner']]    else 'Not set'
@@ -6698,11 +6697,11 @@ def m_misc_set_AEL_Content(AEL_Content_Value):
 #   1. Title of the launcher.
 #   2. Icon of the launcher.
 #   3. Clearlogo of the launcher.
-#
+#   ---- TODO Deprecated?
 def m_misc_set_AEL_Launcher_Content(launcher_dic):
     kodi_thumb     = 'DefaultFolder.png' if launcher_dic['rompath'] else 'DefaultProgram.png'
-    icon_path      = asset_get_default_asset_Category(launcher_dic, 'default_icon', kodi_thumb)
-    clearlogo_path = asset_get_default_asset_Category(launcher_dic, 'default_clearlogo')
+    #icon_path      = asset_get_default_asset_Category(launcher_dic, 'default_icon', kodi_thumb)
+    #clearlogo_path = asset_get_default_asset_Category(launcher_dic, 'default_clearlogo')
     xbmcgui.Window(AEL_CONTENT_WINDOW_ID).setProperty(AEL_LAUNCHER_NAME_LABEL, launcher_dic['m_name'])
     xbmcgui.Window(AEL_CONTENT_WINDOW_ID).setProperty(AEL_LAUNCHER_ICON_LABEL, icon_path)
     xbmcgui.Window(AEL_CONTENT_WINDOW_ID).setProperty(AEL_LAUNCHER_CLEARLOGO_LABEL, clearlogo_path)
@@ -6898,7 +6897,7 @@ def m_gui_edit_asset(obj_instance, asset_info):
         kodi_dialog_OK('Unknown obj_instance.get_assets_kind() {0}. '.format(obj_instance.get_assets_kind()) +
                        'This is a bug, please report it.')
         return False
-    asset_path_noext = assets_get_path_noext_SUFIX(asset_info.id, asset_directory,
+    asset_path_noext = g_assetFactory.assets_get_path_noext_SUFIX(asset_info.id, asset_directory,
                                                    obj_instance.get_name(), obj_instance.get_id())
     log_info('m_gui_edit_asset() Editing {0} {1}'.format(obj_instance.get_object_name(), asset_info.name))
     log_info('m_gui_edit_asset() Object ID {0}'.format(obj_instance.get_id()))
@@ -7456,11 +7455,11 @@ def m_gui_render_category_row(category):
     # --- Set Category artwork ---
     category_dic = category.get_data_dic()
     # NOTE Integrate this functions into the Category class.
-    icon_path      = asset_get_default_asset_Category(category_dic, 'default_icon', 'DefaultFolder.png')
-    fanart_path    = asset_get_default_asset_Category(category_dic, 'default_fanart')
-    banner_path    = asset_get_default_asset_Category(category_dic, 'default_banner')
-    poster_path    = asset_get_default_asset_Category(category_dic, 'default_poster')
-    clearlogo_path = asset_get_default_asset_Category(category_dic, 'default_clearlogo')
+    icon_path      = category.get_mapped_asset_str(asset_id=ASSET_ICON_ID, 'DefaultFolder.png'))
+    fanart_path    = category.get_mapped_asset_str(asset_id=ASSET_FANART_ID))
+    banner_path    = category.get_mapped_asset_str(asset_id=ASSET_BANNER_ID))
+    poster_path    = category.get_mapped_asset_str(asset_id=ASSET_POSTER_ID))
+    clearlogo_path = category.get_mapped_asset_str(asset_id=ASSET_CLEARLOGO_ID))
     listitem.setArt({'icon'   : icon_path,   'fanart' : fanart_path, 
                      'banner' : banner_path, 'poster' : poster_path, 'clearlogo' : clearlogo_path})
 
@@ -7770,11 +7769,11 @@ def m_gui_render_launcher_row(launcher, launcher_raw_name = None):
 
     # --- Set ListItem artwork ---
     kodi_thumb     = 'DefaultFolder.png' if launcher_dic['rompath'] else 'DefaultProgram.png'
-    icon_path      = asset_get_default_asset_Category(launcher_dic, 'default_icon', kodi_thumb)
-    fanart_path    = asset_get_default_asset_Category(launcher_dic, 'default_fanart')
-    banner_path    = asset_get_default_asset_Category(launcher_dic, 'default_banner')
-    poster_path    = asset_get_default_asset_Category(launcher_dic, 'default_poster')
-    clearlogo_path = asset_get_default_asset_Category(launcher_dic, 'default_clearlogo')
+    icon_path      = launcher.get_mapped_asset_str(asset_id=ASSET_ICON_ID), kodi_thumb)
+    fanart_path    = launcher.get_mapped_asset_str(asset_id=ASSET_FANART_ID))
+    banner_path    = launcher.get_mapped_asset_str(asset_id=ASSET_BANNER_ID))
+    poster_path    = launcher.get_mapped_asset_str(asset_id=ASSET_POSTER_ID))
+    clearlogo_path = launcher.get_mapped_asset_str(asset_id=ASSET_CLEARLOGO_ID))
     listitem.setArt({'icon'   : icon_path,   'fanart' : fanart_path, 'banner' : banner_path,
                      'poster' : poster_path, 'clearlogo' : clearlogo_path,
                      'controller' : launcher_dic['s_controller']})
@@ -7836,14 +7835,22 @@ def m_gui_render_rom_row(categoryID, launcherID, rom,
     # --- Create listitem row ---
     # NOTE A possible optimization is to compute rom_name, asset paths and flags on the calling 
     #      function. A lot of ifs will be avoided here and that will increase speed.
-    rom_raw_name = rom['m_name']
+    rom_raw_name    = rom['m_name']
+    platform       =  rom['platform'] if 'platform' in rom else ''
+    
+    mapped_icon_asset       = launcher.get_mapped_ROM_asset_info(g_assetFactory.get_asset_info(ASSET_ICON_ID))
+    mapped_fanart_asset     = launcher.get_mapped_ROM_asset_info(g_assetFactory.get_asset_info(ASSET_FANART_ID))
+    mapped_banner_asset     = launcher.get_mapped_ROM_asset_info(g_assetFactory.get_asset_info(ASSET_BANNER_ID))
+    mapped_poster_asset     = launcher.get_mapped_ROM_asset_info(g_assetFactory.get_asset_info(ASSET_POSTER_ID))
+    mapped_clearlogo_asset  = launcher.get_mapped_ROM_asset_info(g_assetFactory.get_asset_info(ASSET_CLEARLOGO_ID))
+    
+    icon_path      = rom.get_asset_str(mapped_icon_asset, 'DefaultProgram.png')
+    fanart_path    = rom.get_asset_str(mapped_fanart_asset)
+    banner_path    = rom.get_asset_str(mapped_banner_asset)
+    poster_path    = rom.get_asset_str(mapped_poster_asset)
+    clearlogo_path = rom.get_asset_str(mapped_clearlogo_asset)
+    
     if categoryID == VCATEGORY_FAVOURITES_ID:
-        icon_path      = asset_get_default_asset_Launcher_ROM(rom, rom, 'roms_default_icon', 'DefaultProgram.png')
-        fanart_path    = asset_get_default_asset_Launcher_ROM(rom, rom, 'roms_default_fanart')
-        banner_path    = asset_get_default_asset_Launcher_ROM(rom, rom, 'roms_default_banner')
-        poster_path    = asset_get_default_asset_Launcher_ROM(rom, rom, 'roms_default_poster')
-        clearlogo_path = asset_get_default_asset_Launcher_ROM(rom, rom, 'roms_default_clearlogo')
-        platform        = rom['platform']
 
         # --- Favourite status flag ---
         if g_settings['display_fav_status']:
@@ -7860,13 +7867,6 @@ def m_gui_render_rom_row(categoryID, launcherID, rom,
         elif rom['fav_status'] == 'Broken':            AEL_Fav_stat_value = AEL_FAV_STAT_VALUE_BROKEN
         else:                                          AEL_Fav_stat_value = AEL_FAV_STAT_VALUE_UNKNOWN
     elif categoryID == VCATEGORY_COLLECTIONS_ID:
-        icon_path      = asset_get_default_asset_Launcher_ROM(rom, rom, 'roms_default_icon', 'DefaultProgram.png')
-        fanart_path    = asset_get_default_asset_Launcher_ROM(rom, rom, 'roms_default_fanart')
-        banner_path    = asset_get_default_asset_Launcher_ROM(rom, rom, 'roms_default_banner')
-        poster_path    = asset_get_default_asset_Launcher_ROM(rom, rom, 'roms_default_poster')
-        clearlogo_path = asset_get_default_asset_Launcher_ROM(rom, rom, 'roms_default_clearlogo')
-        platform       = rom['platform']
-
         # --- Favourite status flag ---
         if g_settings['display_fav_status']:
             if   rom['fav_status'] == 'OK':                rom_name = '{0} [COLOR green][OK][/COLOR]'.format(rom_raw_name)
@@ -7882,20 +7882,8 @@ def m_gui_render_rom_row(categoryID, launcherID, rom,
         elif rom['fav_status'] == 'Broken':            AEL_Fav_stat_value = AEL_FAV_STAT_VALUE_BROKEN
         else:                                          AEL_Fav_stat_value = AEL_FAV_STAT_VALUE_UNKNOWN
     elif categoryID == VCATEGORY_RECENT_ID:
-        icon_path      = asset_get_default_asset_Launcher_ROM(rom, rom, 'roms_default_icon', 'DefaultProgram.png')
-        fanart_path    = asset_get_default_asset_Launcher_ROM(rom, rom, 'roms_default_fanart')
-        banner_path    = asset_get_default_asset_Launcher_ROM(rom, rom, 'roms_default_banner')
-        poster_path    = asset_get_default_asset_Launcher_ROM(rom, rom, 'roms_default_poster')
-        clearlogo_path = asset_get_default_asset_Launcher_ROM(rom, rom, 'roms_default_clearlogo')
-        platform       =  rom['platform'] if 'platform' in rom else ''
         rom_name = rom_raw_name
     elif categoryID == VCATEGORY_MOST_PLAYED_ID:
-        icon_path      = asset_get_default_asset_Launcher_ROM(rom, rom, 'roms_default_icon', 'DefaultProgram.png')
-        fanart_path    = asset_get_default_asset_Launcher_ROM(rom, rom, 'roms_default_fanart')
-        banner_path    = asset_get_default_asset_Launcher_ROM(rom, rom, 'roms_default_banner')
-        poster_path    = asset_get_default_asset_Launcher_ROM(rom, rom, 'roms_default_poster')
-        clearlogo_path = asset_get_default_asset_Launcher_ROM(rom, rom, 'roms_default_clearlogo')
-        platform       =  rom['platform'] if 'platform' in rom else ''
         # >> Render number of number the ROM has been launched
         if rom['launch_count'] == 1:
             rom_name = '{0} [COLOR orange][{1} time][/COLOR]'.format(rom_raw_name, rom['launch_count'])
@@ -7905,13 +7893,6 @@ def m_gui_render_rom_row(categoryID, launcherID, rom,
          categoryID == VCATEGORY_GENRE_ID    or categoryID == VCATEGORY_DEVELOPER_ID or \
          categoryID == VCATEGORY_NPLAYERS_ID or categoryID == VCATEGORY_ESRB_ID or \
          categoryID == VCATEGORY_RATING_ID   or categoryID == VCATEGORY_CATEGORY_ID:
-        icon_path      = asset_get_default_asset_Launcher_ROM(rom, rom, 'roms_default_icon', 'DefaultProgram.png')
-        fanart_path    = asset_get_default_asset_Launcher_ROM(rom, rom, 'roms_default_fanart')
-        banner_path    = asset_get_default_asset_Launcher_ROM(rom, rom, 'roms_default_banner')
-        poster_path    = asset_get_default_asset_Launcher_ROM(rom, rom, 'roms_default_poster')
-        clearlogo_path = asset_get_default_asset_Launcher_ROM(rom, rom, 'roms_default_clearlogo')
-        platform       =  rom['platform'] if 'platform' in rom else ''
-
         # --- NoIntro status flag ---
         nstat = rom['nointro_status']
         if g_settings['display_nointro_stat']:
@@ -7932,17 +7913,6 @@ def m_gui_render_rom_row(categoryID, launcherID, rom,
         if rom_in_fav: AEL_InFav_bool_value = AEL_INFAV_BOOL_VALUE_TRUE
     # --- Standard launcher ---
     else:
-        # >> If ROM has no fanart then use launcher fanart
-        launcher_data = g_ObjectRepository.find_launcher(launcherID)
-        
-        kodi_def_icon = launcher_data['s_icon'] if launcher_data['s_icon'] else 'DefaultProgram.png'
-        icon_path      = asset_get_default_asset_Launcher_ROM(rom, launcher_data, 'roms_default_icon', kodi_def_icon)
-        fanart_path    = asset_get_default_asset_Launcher_ROM(rom, launcher_data, 'roms_default_fanart', launcher_data['s_fanart'])
-        banner_path    = asset_get_default_asset_Launcher_ROM(rom, launcher_data, 'roms_default_banner')
-        poster_path    = asset_get_default_asset_Launcher_ROM(rom, launcher_data, 'roms_default_poster')
-        clearlogo_path = asset_get_default_asset_Launcher_ROM(rom, launcher_data, 'roms_default_clearlogo')
-        platform = launcher_data['platform']
-
         # --- parent_launcher is True when rendering Parent ROMs in Parent/Clone view mode ---
         nstat = rom['nointro_status']
         if g_settings['display_nointro_stat']:

@@ -84,94 +84,6 @@ MAME_ASSET_SETTING_KEYS = {
 }
 
 # -------------------------------------------------------------------------------------------------
-# Asset functions
-# -------------------------------------------------------------------------------------------------
-
-#
-# Get artwork user configured to be used as icon/fanart/... for Categories/Launchers
-#
-def asset_get_default_asset_Category(object_dic, object_key, default_asset = ''):
-    conf_asset_key = object_dic[object_key]
-    asset_path     = object_dic[conf_asset_key] if conf_asset_key in object_dic and object_dic[conf_asset_key] else default_asset
-
-    return asset_path
-
-#
-# Same for ROMs
-#
-def asset_get_default_asset_Launcher_ROM(rom, launcher, object_key, default_asset = ''):
-
-    if object_key not in launcher:
-        return default_asset
-
-    conf_asset_key = launcher[object_key]
-    asset_path     = rom[conf_asset_key] if rom[conf_asset_key] else default_asset
-
-    return asset_path
-
-#
-# Gets a human readable name string for the asset field name.
-#
-def assets_get_asset_name_str(default_asset):
-    asset_name_str = ''
-
-    # >> ROMs
-    if   default_asset == 's_title':     asset_name_str = 'Title'
-    elif default_asset == 's_snap':      asset_name_str = 'Snap'
-    elif default_asset == 's_boxfront':  asset_name_str = 'Boxfront'
-    elif default_asset == 's_boxback':   asset_name_str = 'Boxback'
-    elif default_asset == 's_cartridge': asset_name_str = 'Cartridge'
-    elif default_asset == 's_fanart':    asset_name_str = 'Fanart'
-    elif default_asset == 's_banner':    asset_name_str = 'Banner'
-    elif default_asset == 's_clearlogo': asset_name_str = 'Clearlogo'
-    elif default_asset == 's_flyer':     asset_name_str = 'Flyer'
-    elif default_asset == 's_map':       asset_name_str = 'Map'
-    elif default_asset == 's_manual':    asset_name_str = 'Manual'
-    elif default_asset == 's_trailer':   asset_name_str = 'Trailer'
-    # >> Categories/Launchers
-    elif default_asset == 's_icon':       asset_name_str = 'Icon'
-    elif default_asset == 's_poster':     asset_name_str = 'Poster'
-    elif default_asset == 's_controller': asset_name_str = 'Controller'
-    else:
-        kodi_notify_warn('Wrong asset key {0}'.format(default_asset))
-        log_error('assets_get_asset_name_str() Wrong default_thumb {0}'.format(default_asset))
-    
-    return asset_name_str
-
-#
-# This must match the order of the list ROM_asset_str_list in _command_edit_launcher()
-#
-def assets_choose_ROM_mapped_artwork(dict_object, key, index):
-    if   index == 0: dict_object[key] = 's_title'
-    elif index == 1: dict_object[key] = 's_snap'
-    elif index == 2: dict_object[key] = 's_boxfront'
-    elif index == 3: dict_object[key] = 's_boxback'
-    elif index == 4: dict_object[key] = 's_cartridge'
-    elif index == 5: dict_object[key] = 's_fanart'
-    elif index == 6: dict_object[key] = 's_banner'
-    elif index == 7: dict_object[key] = 's_clearlogo'
-    elif index == 8: dict_object[key] = 's_flyer'
-    elif index == 9: dict_object[key] = 's_map'
-
-#
-# This must match the order of the list ROM_asset_str_list in _command_edit_launcher()
-#
-def assets_get_ROM_mapped_asset_idx(dict_object, key):
-    if   dict_object[key] == 's_title':     index = 0
-    elif dict_object[key] == 's_snap':      index = 1
-    elif dict_object[key] == 's_boxfront':  index = 2
-    elif dict_object[key] == 's_boxback':   index = 3
-    elif dict_object[key] == 's_cartridge': index = 4
-    elif dict_object[key] == 's_fanart':    index = 5
-    elif dict_object[key] == 's_banner':    index = 6
-    elif dict_object[key] == 's_clearlogo': index = 7
-    elif dict_object[key] == 's_flyer':     index = 8
-    elif dict_object[key] == 's_map':       index = 9
-    else:                                   index = 0
-
-    return index
-
-# -------------------------------------------------------------------------------------------------
 # Gets all required information about an asset: path, name, etc.
 # Returns an object with all the information
 # -------------------------------------------------------------------------------------------------
@@ -214,9 +126,32 @@ class AssetInfoFactory(object):
         
         self._load_asset_data()
         
+    # -------------------------------------------------------------------------------------------------
+    # Asset functions
+    # -------------------------------------------------------------------------------------------------
     def get_all(self):
         return list(self.ASSET_INFO_ID_DICT.values())
 
+    def get_asset_info(self, asset_ID):
+        asset_info = self.ASSET_INFO_ID_DICT.get(asset_ID, None)
+
+        if asset_info is None:
+            log_error('get_asset_info() Wrong asset_ID = {0}'.format(asset_ID))
+            return AssetInfo()
+
+        return asset_info
+    
+    # Returns the corresponding assetinfo object for the
+    # given key (eg: 's_icon')
+    def get_asset_info_by_key(self, asset_key):
+        asset_info = self.ASSET_INFO_KEY_DICT.get(asset_key, None)
+
+        if asset_info is None:
+            log_error('get_asset_info_by_key() Wrong asset_key = {0}'.format(asset_key))
+            return AssetInfo()
+
+        return asset_info 
+          
     def get_asset_kinds_for_roms(self):
         rom_asset_kinds = []
         for rom_asset_id in ROM_ASSET_ID_LIST:
@@ -237,34 +172,13 @@ class AssetInfoFactory(object):
             if kind is None or asset_info.kind_str == kind: asset_info_list.append(asset_info)
 
         return asset_info_list
-
-    def get_asset_info(self, asset_kind):
-        asset_info = self.ASSET_INFO_ID_DICT.get(asset_kind, None)
-
-        if asset_info is None:
-            log_error('get_asset_info() Wrong asset_kind = {0}'.format(asset_kind))
-            return AssetInfo()
-
-        return asset_info
-
-    # Returns the corresponding assetinfo object for the
-    # given key (eg: 's_icon')
-    def get_asset_info_by_key(self, asset_key):
-        asset_info = self.ASSET_INFO_KEY_DICT.get(asset_key, None)
-
-        if asset_info is None:
-            log_error('get_asset_info_by_key() Wrong asset_key = {0}'.format(asset_key))
-            return AssetInfo()
-
-        return asset_info 
-        
+  
     # todo: use 1 type of identifier not number constants and name strings ('s_icon')
     def get_asset_info_by_namekey(self, name_key):
         if name_key == '': return None
         kind = ASSET_KEYS_TO_CONSTANTS[name_key]
 
         return self.get_asset_info(kind)
-
     #
     # Get extensions to search for files
     # Input : ['png', 'jpg']
@@ -290,6 +204,43 @@ class AssetInfoFactory(object):
         ext_string = ext_string[:-1]
 
         return ext_string
+
+    #
+    # Scheme SUFIX uses suffixes for artwork. All artwork assets are stored in the same directory.
+    # Name example: "Sonic The Hedgehog (Europe)_a3e_title"
+    # First 3 characters of the objectID are added to avoid overwriting of images. For example, in the
+    # Favourites special category there could be ROMs with the same name for different systems.
+    #
+    # asset_ID         -> Assets ID defined in constants.py
+    # AssetPath        -> FileName object
+    # asset_base_noext -> Unicode string
+    # objectID         -> Object MD5 ID fingerprint (Unicode string)
+    #
+    # Returns a FileName object
+    #
+    def assets_get_path_noext_SUFIX(asset_ID, AssetPath, asset_base_noext, objectID = '000'):
+        objectID_str = '_' + objectID[0:3]
+
+        if   asset_ID == ASSET_ICON_ID:       asset_path_noext_FN = AssetPath.pjoin(asset_base_noext + objectID_str + '_icon')
+        elif asset_ID == ASSET_FANART_ID:     asset_path_noext_FN = AssetPath.pjoin(asset_base_noext + objectID_str + '_fanart')
+        elif asset_ID == ASSET_BANNER_ID:     asset_path_noext_FN = AssetPath.pjoin(asset_base_noext + objectID_str + '_banner')
+        elif asset_ID == ASSET_POSTER_ID:     asset_path_noext_FN = AssetPath.pjoin(asset_base_noext + objectID_str + '_poster')
+        elif asset_ID == ASSET_CLEARLOGO_ID:  asset_path_noext_FN = AssetPath.pjoin(asset_base_noext + objectID_str + '_clearlogo')
+        elif asset_ID == ASSET_CONTROLLER_ID: asset_path_noext_FN = AssetPath.pjoin(asset_base_noext + objectID_str + '_controller')
+        elif asset_ID == ASSET_TRAILER_ID:    asset_path_noext_FN = AssetPath.pjoin(asset_base_noext + objectID_str + '_trailer')
+        elif asset_ID == ASSET_TITLE_ID:      asset_path_noext_FN = AssetPath.pjoin(asset_base_noext + objectID_str + '_title')
+        elif asset_ID == ASSET_SNAP_ID:       asset_path_noext_FN = AssetPath.pjoin(asset_base_noext + objectID_str + '_snap')
+        elif asset_ID == ASSET_BOXFRONT_ID:   asset_path_noext_FN = AssetPath.pjoin(asset_base_noext + objectID_str + '_boxfront')
+        elif asset_ID == ASSET_BOXBACK_ID:    asset_path_noext_FN = AssetPath.pjoin(asset_base_noext + objectID_str + '_boxback')
+        elif asset_ID == ASSET_CARTRIDGE_ID:  asset_path_noext_FN = AssetPath.pjoin(asset_base_noext + objectID_str + '_cartridge')
+        elif asset_ID == ASSET_FLYER_ID:      asset_path_noext_FN = AssetPath.pjoin(asset_base_noext + objectID_str + '_flyer')
+        elif asset_ID == ASSET_MAP_ID:        asset_path_noext_FN = AssetPath.pjoin(asset_base_noext + objectID_str + '_map')
+        elif asset_ID == ASSET_MANUAL_ID:     asset_path_noext_FN = AssetPath.pjoin(asset_base_noext + objectID_str + '_manual')
+        else:
+            asset_path_noext_FN = FileName('')
+            log_error('assets_get_path_noext_SUFIX() Wrong asset_ID = {0}'.format(asset_ID))
+
+        return asset_path_noext_FN
 
     #
     # Gets extensions to be used in regular expressions.
@@ -590,55 +541,6 @@ class AssetInfoFactory(object):
 
 # --- Global object to get asset info ---
 g_assetFactory = AssetInfoFactory()
-
-#
-# Scheme DIR uses different directories for artwork and no sufixes.
-#
-# Assets    -> Assets info object
-# AssetPath -> FileName object
-# ROM       -> ROM name FileName object
-#
-# Returns a FileName object
-#
-def assets_get_path_noext_DIR(Asset, AssetPath, ROM):
-    return AssetPath + ROM.getBaseNoExt()
-
-#
-# Scheme SUFIX uses suffixes for artwork. All artwork assets are stored in the same directory.
-# Name example: "Sonic The Hedgehog (Europe)_a3e_title"
-# First 3 characters of the objectID are added to avoid overwriting of images. For example, in the
-# Favourites special category there could be ROMs with the same name for different systems.
-#
-# asset_ID         -> Assets ID defined in constants.py
-# AssetPath        -> FileName object
-# asset_base_noext -> Unicode string
-# objectID         -> Object MD5 ID fingerprint (Unicode string)
-#
-# Returns a FileName object
-#
-def assets_get_path_noext_SUFIX(asset_ID, AssetPath, asset_base_noext, objectID = '000'):
-    objectID_str = '_' + objectID[0:3]
-
-    if   asset_ID == ASSET_ICON_ID:       asset_path_noext_FN = AssetPath.pjoin(asset_base_noext + objectID_str + '_icon')
-    elif asset_ID == ASSET_FANART_ID:     asset_path_noext_FN = AssetPath.pjoin(asset_base_noext + objectID_str + '_fanart')
-    elif asset_ID == ASSET_BANNER_ID:     asset_path_noext_FN = AssetPath.pjoin(asset_base_noext + objectID_str + '_banner')
-    elif asset_ID == ASSET_POSTER_ID:     asset_path_noext_FN = AssetPath.pjoin(asset_base_noext + objectID_str + '_poster')
-    elif asset_ID == ASSET_CLEARLOGO_ID:  asset_path_noext_FN = AssetPath.pjoin(asset_base_noext + objectID_str + '_clearlogo')
-    elif asset_ID == ASSET_CONTROLLER_ID: asset_path_noext_FN = AssetPath.pjoin(asset_base_noext + objectID_str + '_controller')
-    elif asset_ID == ASSET_TRAILER_ID:    asset_path_noext_FN = AssetPath.pjoin(asset_base_noext + objectID_str + '_trailer')
-    elif asset_ID == ASSET_TITLE_ID:      asset_path_noext_FN = AssetPath.pjoin(asset_base_noext + objectID_str + '_title')
-    elif asset_ID == ASSET_SNAP_ID:       asset_path_noext_FN = AssetPath.pjoin(asset_base_noext + objectID_str + '_snap')
-    elif asset_ID == ASSET_BOXFRONT_ID:   asset_path_noext_FN = AssetPath.pjoin(asset_base_noext + objectID_str + '_boxfront')
-    elif asset_ID == ASSET_BOXBACK_ID:    asset_path_noext_FN = AssetPath.pjoin(asset_base_noext + objectID_str + '_boxback')
-    elif asset_ID == ASSET_CARTRIDGE_ID:  asset_path_noext_FN = AssetPath.pjoin(asset_base_noext + objectID_str + '_cartridge')
-    elif asset_ID == ASSET_FLYER_ID:      asset_path_noext_FN = AssetPath.pjoin(asset_base_noext + objectID_str + '_flyer')
-    elif asset_ID == ASSET_MAP_ID:        asset_path_noext_FN = AssetPath.pjoin(asset_base_noext + objectID_str + '_map')
-    elif asset_ID == ASSET_MANUAL_ID:     asset_path_noext_FN = AssetPath.pjoin(asset_base_noext + objectID_str + '_manual')
-    else:
-        asset_path_noext_FN = FileName('')
-        log_error('assets_get_path_noext_SUFIX() Wrong asset_ID = {0}'.format(asset_ID))
-
-    return asset_path_noext_FN
 
 # unconfigured_name_list  List of disabled asset names
 def asset_get_unconfigured_name_list(configured_bool_list):
@@ -1387,14 +1289,28 @@ class MetaDataItemABC(object):
 
         return self.entity_data[asset_info.key] != None and self.entity_data[asset_info.key] != ''
 
-    def get_asset_str(self, asset_info):
-        return self.entity_data[asset_info.key] if asset_info.key in self.entity_data else ''
+    # 
+    # Gets the asset path (str) of the given assetinfo type.
+    #
+    def get_asset_str(self, asset_info, fallback = ''):
+        return self.entity_data[asset_info.key] if asset_info.key in self.entity_data  and entity_data[asset_info.key]
+            else fallback
 
+    # 
+    # Gets the asset path (str) of the mapped asset type following
+    # the given input of either an assetinfo object or asset id.
+    #
+    def get_mapped_asset_str(self, asset_info=None, asset_id=None, fallback = ''):
+        asset_info = self.get_mapped_asset_info(asset_info, asset_id)
+        return self.entity_data[asset_info.key] if asset_info.key in self.entity_data  and entity_data[asset_info.key]
+            else fallback
+            
     def get_asset_FN(self, asset_info):
         if not asset_info or not asset_info.key in self.entity_data :
             return None
+        
         return self._get_value_as_filename(asset_info.key)
-
+        
     def set_asset(self, asset_info, path_FN):
         path = path_FN.getPath() if path_FN else ''
         self.entity_data[asset_info.key] = path
@@ -1411,7 +1327,19 @@ class MetaDataItemABC(object):
     #
     @abc.abstractmethod
     def get_mappable_asset_list(self): pass
-
+    
+    #
+    # Gets the actual assetinfo object that is mapped for
+    # the given assetinfo for this particular MetaDataItem.
+    #
+    def get_mapped_asset_info(self, asset_info=None, asset_id=None):
+        if asset_info is None and asset_id is None: return None
+        if asset_id is not None: asset_info = g_assetFactory.get_asset_info(asset_id)
+        
+        mapped_key = self.get_mapped_asset_key(asset_info)
+        mapped_asset_info = g_assetFactory.get_asset_info_by_key(mapped_key)
+        return mapped_asset_info
+    
     #
     # Gets the database filename mapped for asset_info.
     # Note that the mapped asset uses diferent fields wheter it is a Category/Launcher/ROM
@@ -1687,13 +1615,14 @@ class ROM(MetaDataItemABC):
             asset_odict[asset_info] = asset_fname_str
 
         return asset_odict
- #
+    
+    #
     # Get a list of the assets that can be mapped to a defaultable asset.
     # They must be images, no videos, no documents.
     #
     def get_mappable_asset_list(self):
         return g_assetFactory.get_asset_list_by_IDs(ROM_ASSET_ID_LIST, 'image')
-       
+                 
     def get_edit_options(self, category_id):
         delete_rom_txt = 'Delete ROM'
         if category_id == VCATEGORY_FAVOURITES_ID:
@@ -2784,6 +2713,17 @@ class ROMLauncherABC(LauncherABC):
         MAPPABLE_ASSETS = [ASSET_ICON_ID, ASSET_FANART_ID, ASSET_BANNER_ID, ASSET_CLEARLOGO_ID, ASSET_POSTER_ID]
         return g_assetFactory.get_asset_list_by_IDs(MAPPABLE_ASSETS)
 
+    #
+    # Gets the actual assetinfo object that is mapped for
+    # the given (ROM) assetinfo for this particular MetaDataItem.
+    #
+    def get_mapped_ROM_asset_info(self, asset_info=None, asset_id=None):
+        if asset_info is None and asset_id is None: return None
+        if asset_id is not None: asset_info = g_assetFactory.get_asset_info(asset_id)
+        
+        mapped_key = self.get_mapped_ROM_asset_key(asset_info)
+        mapped_asset_info = g_assetFactory.get_asset_info_by_key(mapped_key)
+        return mapped_asset_info
     #
     # Gets the database filename mapped for asset_info.
     # Note that the mapped asset uses diferent fields wheter it is a Category/Launcher/ROM
