@@ -91,6 +91,10 @@ class Router(object):
                 
         return url
 
+    def create_run_plugin_cmd(self, command, **kwargs):
+        url = self.create_url(command, **kwargs)
+        return 'XBMC.RunPlugin({0})'.format(url)
+
     def run(self, argv=None):
         if argv is None:
             argv = sys.argv
@@ -116,6 +120,11 @@ class Router(object):
         if 'romID' in self.args:
             self.args['romID'] = self.args['romID'][0]
 
+        # normalize?
+        for arg in self.args:
+            if isinstance(self.args[arg], list) and len(self.args[arg]) == 1:
+                self.args[arg] = self.args[arg][0]
+        
         applicable_rules = []
         arg_set = set(self.args.keys())
         log_debug('run() Arguments set: {}'.format(arg_set))

@@ -558,12 +558,12 @@ def m_gui_render_Browse_by_vlaunchers_row(virtual_category_kind):
     listitem.setProperty(AEL_CONTENT_LABEL, AEL_CONTENT_VALUE_ROM_LAUNCHER)
 
     commands = []
-    update_vcat_URL = m_misc_url_RunPlugin('UPDATE_VIRTUAL_CATEGORY', virtual_category_kind)
-    update_vcat_all_URL = m_misc_url_RunPlugin('UPDATE_ALL_VCATEGORIES')
+    update_vcat_URL = router.create_run_plugin_cmd('UPDATE_VIRTUAL_CATEGORY', virtual_category_kind=virtual_category_kind)
+    update_vcat_all_URL = router.create_run_plugin_cmd('UPDATE_ALL_VCATEGORIES')
     commands.append(('Update {0} database'.format(vcategory_label), update_vcat_URL))
     commands.append(('Update all databases', update_vcat_all_URL))
-    commands.append(('Add new Launcher', m_misc_url_RunPlugin('ADD_LAUNCHER_ROOT')))
-    commands.append(('Add new Category', m_misc_url_RunPlugin('ADD_CATEGORY')))
+    commands.append(('Add new Launcher', router.create_run_plugin_cmd('ADD_LAUNCHER_ROOT')))
+    commands.append(('Add new Category', router.create_run_plugin_cmd('ADD_CATEGORY')))
     commands.append(('Open Kodi file manager', 'ActivateWindow(filemanager)'))
     commands.append(('AEL addon settings', 'Addon.OpenSettings({0})'.format(__addon_id__)))
     if xbmc.getCondVisibility("!Skin.HasSetting(KioskMode.Enabled)"):
@@ -1089,10 +1089,10 @@ def m_command_render_Collections():
 
         # --- Create context menu ---
         commands = []
-        commands.append(('View Collection data', m_misc_url_RunPlugin('VIEW', VCATEGORY_COLLECTIONS_ID, collection_id)))
-        commands.append(('Edit/Export Collection',   m_misc_url_RunPlugin('EDIT_COLLECTION', VCATEGORY_COLLECTIONS_ID, collection_id)))
-        commands.append(('Create New Collection',    m_misc_url_RunPlugin('ADD_COLLECTION')))
-        commands.append(('Import Collection',        m_misc_url_RunPlugin('IMPORT_COLLECTION')))
+        commands.append(('View Collection data',     router.create_run_plugin_cmd('VIEW', catID=VCATEGORY_COLLECTIONS_ID, launcherID=collection_id)))
+        commands.append(('Edit/Export Collection',   router.create_run_plugin_cmd('EDIT_COLLECTION', catID=VCATEGORY_COLLECTIONS_ID, launcherID=collection_id)))
+        commands.append(('Create New Collection',    router.create_run_plugin_cmd('ADD_COLLECTION')))
+        commands.append(('Import Collection',        router.create_run_plugin_cmd('IMPORT_COLLECTION')))
         commands.append(('Kodi File Manager',        'ActivateWindow(filemanager)'))
         commands.append(('AEL addon settings',       'Addon.OpenSettings({0})'.format(__addon_id__)))
         if xbmc.getCondVisibility("!Skin.HasSetting(KioskMode.Enabled)"):
@@ -1436,7 +1436,7 @@ def m_command_render_Browse_by_roms(virtual_categoryID):
 
         # --- Create context menu ---
         commands = []
-        commands.append(('Search ROMs in Virtual Launcher', m_misc_url_RunPlugin('SEARCH_LAUNCHER', virtual_categoryID, vlauncher_id)))
+        commands.append(('Search ROMs in Virtual Launcher', router.create_run_plugin_cmd('SEARCH_LAUNCHER', categoryID=virtual_categoryID, launcherID=vlauncher_id)))
         commands.append(('Kodi File Manager', 'ActivateWindow(filemanager)', ))
         commands.append(('AEL addon settings', 'Addon.OpenSettings({0})'.format(__addon_id__), ))
         if xbmc.getCondVisibility("!Skin.HasSetting(KioskMode.Enabled)"):
@@ -7458,10 +7458,10 @@ def m_gui_render_category_row(category):
     # be removed.
     commands = []
     categoryID = category.get_id()
-    commands.append(('View', m_misc_url_RunPlugin('VIEW', categoryID)))
-    commands.append(('Edit/Export Category', m_misc_url_RunPlugin('EDIT_CATEGORY', categoryID)))
-    commands.append(('Add new Launcher', m_misc_url_RunPlugin('ADD_LAUNCHER', categoryID)))
-    commands.append(('Add new Category', m_misc_url_RunPlugin('ADD_CATEGORY')))
+    commands.append(('View', router.create_run_plugin_cmd('VIEW', categoryID=categoryID)))
+    commands.append(('Edit/Export Category', router.create_run_plugin_cmd('EDIT_CATEGORY', categoryID=categoryID)))
+    commands.append(('Add new Launcher', router.create_run_plugin_cmd('ADD_LAUNCHER', categoryID=categoryID)))
+    commands.append(('Add new Category', router.create_run_plugin_cmd('ADD_CATEGORY')))
     commands.append(('Open Kodi file manager', 'ActivateWindow(filemanager)'))
     commands.append(('AEL addon settings', 'Addon.OpenSettings({0})'.format(__addon_id__)))
     if xbmc.getCondVisibility("!Skin.HasSetting(KioskMode.Enabled)"):
@@ -7487,8 +7487,8 @@ def m_gui_render_vlauncher_favourites_row():
 
     # --- Create context menu ---
     commands = []
-    commands.append(('Add new Launcher', m_misc_url_RunPlugin('ADD_LAUNCHER_ROOT')))
-    commands.append(('Add new Category', m_misc_url_RunPlugin('ADD_CATEGORY')))
+    commands.append(('Add new Launcher', router.create_run_plugin_cmd('ADD_LAUNCHER_ROOT')))
+    commands.append(('Add new Category', router.create_run_plugin_cmd('ADD_CATEGORY')))
     commands.append(('Open Kodi file manager', 'ActivateWindow(filemanager)'))
     commands.append(('AEL addon settings', 'Addon.OpenSettings({0})'.format(__addon_id__)))
     if xbmc.getCondVisibility("!Skin.HasSetting(KioskMode.Enabled)"):
@@ -7510,10 +7510,10 @@ def m_gui_render_vcategory_collections_row():
     listitem.setProperty(AEL_CONTENT_LABEL, AEL_CONTENT_VALUE_CATEGORY)
 
     commands = []
-    commands.append(('Add new ROM Collection', m_misc_url_RunPlugin('ADD_COLLECTION')))
-    commands.append(('Import ROM Collection', m_misc_url_RunPlugin('IMPORT_COLLECTION')))
-    commands.append(('Add new Launcher', m_misc_url_RunPlugin('ADD_LAUNCHER_ROOT')))
-    commands.append(('Add new Category', m_misc_url_RunPlugin('ADD_CATEGORY')))
+    commands.append(('Add new ROM Collection', router.create_run_plugin_cmd('ADD_COLLECTION')))
+    commands.append(('Import ROM Collection', router.create_run_plugin_cmd('IMPORT_COLLECTION')))
+    commands.append(('Add new Launcher', router.create_run_plugin_cmd('ADD_LAUNCHER_ROOT')))
+    commands.append(('Add new Category', router.create_run_plugin_cmd('ADD_CATEGORY')))
     commands.append(('Open Kodi file manager', 'ActivateWindow(filemanager)'))
     commands.append(('AEL addon settings', 'Addon.OpenSettings({0})'.format(__addon_id__)))
     if xbmc.getCondVisibility("!Skin.HasSetting(KioskMode.Enabled)"):
@@ -7534,8 +7534,8 @@ def m_gui_render_vlauncher_recently_played_row():
     listitem.setProperty(AEL_CONTENT_LABEL, AEL_CONTENT_VALUE_ROM_LAUNCHER)
 
     commands = []
-    commands.append(('Add new Launcher', m_misc_url_RunPlugin('ADD_LAUNCHER_ROOT')))
-    commands.append(('Add new Category', m_misc_url_RunPlugin('ADD_CATEGORY')))
+    commands.append(('Add new Launcher', router.create_run_plugin_cmd('ADD_LAUNCHER_ROOT')))
+    commands.append(('Add new Category', router.create_run_plugin_cmd('ADD_CATEGORY')))
     commands.append(('Open Kodi file manager', 'ActivateWindow(filemanager)'))
     commands.append(('AEL addon settings', 'Addon.OpenSettings({0})'.format(__addon_id__)))
     if xbmc.getCondVisibility("!Skin.HasSetting(KioskMode.Enabled)"):
@@ -7556,8 +7556,8 @@ def m_gui_render_vlauncher_most_played_row():
     listitem.setProperty(AEL_CONTENT_LABEL, AEL_CONTENT_VALUE_ROM_LAUNCHER)
 
     commands = []
-    commands.append(('Add new Launcher', m_misc_url_RunPlugin('ADD_LAUNCHER_ROOT')))
-    commands.append(('Add new Category', m_misc_url_RunPlugin('ADD_CATEGORY')))
+    commands.append(('Add new Launcher', router.create_run_plugin_cmd('ADD_LAUNCHER_ROOT')))
+    commands.append(('Add new Category', router.create_run_plugin_cmd('ADD_CATEGORY')))
     commands.append(('Open Kodi file manager', 'ActivateWindow(filemanager)'))
     commands.append(('AEL addon settings', 'Addon.OpenSettings({0})'.format(__addon_id__)))
     if xbmc.getCondVisibility("!Skin.HasSetting(KioskMode.Enabled)"):
@@ -7579,10 +7579,10 @@ def m_gui_render_vcategory_Browse_by_row():
     listitem.setProperty(AEL_CONTENT_LABEL, AEL_CONTENT_VALUE_CATEGORY)
 
     commands = []
-    update_vcat_all_URL = m_misc_url_RunPlugin('UPDATE_ALL_VCATEGORIES')
+    update_vcat_all_URL = router.create_run_plugin_cmd('UPDATE_ALL_VCATEGORIES')
     commands.append(('Update all databases'.format(vcategory_label), update_vcat_all_URL))
-    commands.append(('Add new Launcher', m_misc_url_RunPlugin('ADD_LAUNCHER_ROOT')))
-    commands.append(('Add new Category', m_misc_url_RunPlugin('ADD_CATEGORY')))
+    commands.append(('Add new Launcher', router.create_run_plugin_cmd('ADD_LAUNCHER_ROOT')))
+    commands.append(('Add new Category', router.create_run_plugin_cmd('ADD_CATEGORY')))
     commands.append(('Open Kodi file manager', 'ActivateWindow(filemanager)'))
     commands.append(('AEL addon settings', 'Addon.OpenSettings({0})'.format(__addon_id__)))
     if xbmc.getCondVisibility("!Skin.HasSetting(KioskMode.Enabled)"):
@@ -7604,8 +7604,8 @@ def m_gui_render_vcategory_AEL_offline_scraper_row():
     listitem.setProperty(AEL_CONTENT_LABEL, AEL_CONTENT_VALUE_CATEGORY)
 
     commands = []
-    commands.append(('Add new Launcher', m_misc_url_RunPlugin('ADD_LAUNCHER_ROOT')))
-    commands.append(('Add new Category', m_misc_url_RunPlugin('ADD_CATEGORY')))
+    commands.append(('Add new Launcher', router.create_run_plugin_cmd('ADD_LAUNCHER_ROOT')))
+    commands.append(('Add new Category', router.create_run_plugin_cmd('ADD_CATEGORY')))
     commands.append(('Open Kodi file manager', 'ActivateWindow(filemanager)'))
     commands.append(('AEL addon settings', 'Addon.OpenSettings({0})'.format(__addon_id__)))
     if xbmc.getCondVisibility("!Skin.HasSetting(KioskMode.Enabled)"):
@@ -7627,8 +7627,8 @@ def m_gui_render_vcategory_LB_offline_scraper_row():
     listitem.setProperty(AEL_CONTENT_LABEL, AEL_CONTENT_VALUE_CATEGORY)
 
     commands = []
-    commands.append(('Add new Launcher', m_misc_url_RunPlugin('ADD_LAUNCHER_ROOT')))
-    commands.append(('Add new Category', m_misc_url_RunPlugin('ADD_CATEGORY')))
+    commands.append(('Add new Launcher', router.create_run_plugin_cmd('ADD_LAUNCHER_ROOT')))
+    commands.append(('Add new Category', router.create_run_plugin_cmd('ADD_CATEGORY')))
     commands.append(('Open Kodi file manager', 'ActivateWindow(filemanager)'))
     commands.append(('AEL addon settings', 'Addon.OpenSettings({0})'.format(__addon_id__)))
     if xbmc.getCondVisibility("!Skin.HasSetting(KioskMode.Enabled)"):
@@ -7649,8 +7649,8 @@ def m_gui_render_Utilities_root():
     listitem.setProperty(AEL_CONTENT_LABEL, AEL_CONTENT_VALUE_CATEGORY)
 
     commands = []
-    commands.append(('Add new Launcher', m_misc_url_RunPlugin('ADD_LAUNCHER_ROOT')))
-    commands.append(('Add new Category', m_misc_url_RunPlugin('ADD_CATEGORY')))
+    commands.append(('Add new Launcher', router.create_run_plugin_cmd('ADD_LAUNCHER_ROOT')))
+    commands.append(('Add new Category', router.create_run_plugin_cmd('ADD_CATEGORY')))
     commands.append(('Open Kodi file manager', 'ActivateWindow(filemanager)'))
     commands.append(('AEL addon settings', 'Addon.OpenSettings({0})'.format(__addon_id__)))
     if xbmc.getCondVisibility("!Skin.HasSetting(KioskMode.Enabled)"):
@@ -7671,8 +7671,8 @@ def m_gui_render_GlobalReports_root():
     listitem.setProperty(AEL_CONTENT_LABEL, AEL_CONTENT_VALUE_CATEGORY)
 
     commands = []
-    commands.append(('Add new Launcher', m_misc_url_RunPlugin('ADD_LAUNCHER_ROOT')))
-    commands.append(('Add new Category', m_misc_url_RunPlugin('ADD_CATEGORY')))
+    commands.append(('Add new Launcher', router.create_run_plugin_cmd('ADD_LAUNCHER_ROOT')))
+    commands.append(('Add new Category', router.create_run_plugin_cmd('ADD_CATEGORY')))
     commands.append(('Open Kodi file manager', 'ActivateWindow(filemanager)'))
     commands.append(('AEL addon settings', 'Addon.OpenSettings({0})'.format(__addon_id__)))
     if xbmc.getCondVisibility("!Skin.HasSetting(KioskMode.Enabled)"):
@@ -7777,17 +7777,17 @@ def m_gui_render_launcher_row(launcher, launcher_raw_name = None):
     launcherID = launcher_dic['id']
     categoryID = launcher_dic['categoryID']
     
-    commands.append(('View', m_misc_url_RunPlugin('VIEW', categoryID, launcherID) ))
-    commands.append(('Edit/Export Launcher', m_misc_url_RunPlugin('EDIT_LAUNCHER', categoryID, launcherID) ))
+    commands.append(('View', router.create_run_plugin_cmd('VIEW', categoryID=categoryID, launcherID=launcherID) ))
+    commands.append(('Edit/Export Launcher', router.create_run_plugin_cmd('EDIT_LAUNCHER', categoryID=categoryID, launcherID=launcherID) ))
     # >> ONLY for ROM launchers
     if launcher.supports_launching_roms():
-        #commands.append(('Scan ROMs', m_misc_url_RunPlugin('SCAN_ROMS', categoryID, launcherID) ))
-        commands.append(('Scan ROMs', m_misc_url_RunPlugin('ADD_ROMS', categoryID, launcherID) ))
-        commands.append(('Search ROMs in Launcher', m_misc_url_RunPlugin('SEARCH_LAUNCHER', categoryID, launcherID) ))
-    commands.append(('Add new Launcher', m_misc_url_RunPlugin('ADD_LAUNCHER', categoryID) ))
+        #commands.append(('Scan ROMs', router.create_run_plugin_cmd('SCAN_ROMS', categoryID, launcherID) ))
+        commands.append(('Scan ROMs', router.create_run_plugin_cmd('ADD_ROMS', categoryID=categoryID, launcherID=launcherID) ))
+        commands.append(('Search ROMs in Launcher', router.create_run_plugin_cmd('SEARCH_LAUNCHER', categoryID=categoryID, launcherID=launcherID) ))
+    commands.append(('Add new Launcher', router.create_run_plugin_cmd('ADD_LAUNCHER', categoryID=categoryID) ))
     # >> Launchers in addon root should be able to create a new category
     if categoryID == VCATEGORY_ADDONROOT_ID:
-        commands.append(('Add new Category', m_misc_url_RunPlugin('ADD_CATEGORY')))
+        commands.append(('Add new Category', router.create_run_plugin_cmd('ADD_CATEGORY')))
     commands.append(('Open Kodi file manager', 'ActivateWindow(filemanager)' ))
     commands.append(('AEL addon settings', 'Addon.OpenSettings({0})'.format(__addon_id__) ))
     if xbmc.getCondVisibility("!Skin.HasSetting(KioskMode.Enabled)"):
@@ -7997,36 +7997,36 @@ def m_gui_render_rom_row(categoryID, launcher, rom,
     launcherID = launcher.get_id()
     commands = []
     if categoryID == VCATEGORY_FAVOURITES_ID:
-        commands.append(('View Favourite ROM',         m_misc_url_RunPlugin('VIEW',              categoryID, launcherID, romID)))
-        commands.append(('Edit ROM in Favourites',     m_misc_url_RunPlugin('EDIT_ROM',          categoryID, launcherID, romID)))
-        commands.append(('Add ROM to Collection',      m_misc_url_RunPlugin('ADD_TO_COLLECTION', categoryID, launcherID, romID)))
-        commands.append(('Search ROMs in Favourites',  m_misc_url_RunPlugin('SEARCH_LAUNCHER',   categoryID, launcherID)))
-        commands.append(('Manage Favourite ROMs',      m_misc_url_RunPlugin('MANAGE_FAV',        categoryID, launcherID, romID)))
+        commands.append(('View Favourite ROM',         router.create_run_plugin_cmd('VIEW',              catID=categoryID, launcherID=launcherID, romID=romID)))
+        commands.append(('Edit ROM in Favourites',     router.create_run_plugin_cmd('EDIT_ROM',          catID=categoryID, launID=launcherID, romID=romID)))
+        commands.append(('Add ROM to Collection',      router.create_run_plugin_cmd('ADD_TO_COLLECTION', catID=categoryID, launcherID=launcherID, romID=romID)))
+        commands.append(('Search ROMs in Favourites',  router.create_run_plugin_cmd('SEARCH_LAUNCHER',   catID=categoryID, launcherID=launcherID)))
+        commands.append(('Manage Favourite ROMs',      router.create_run_plugin_cmd('MANAGE_FAV',        catID=categoryID, launcherID=launcherID, romID=romID)))
     elif categoryID == VCATEGORY_COLLECTIONS_ID:
-        commands.append(('View Collection ROM',        m_misc_url_RunPlugin('VIEW',              categoryID, launcherID, romID)))
-        commands.append(('Edit ROM in Collection',     m_misc_url_RunPlugin('EDIT_ROM',          categoryID, launcherID, romID)))
-        commands.append(('Add ROM to AEL Favourites',  m_misc_url_RunPlugin('ADD_TO_FAV',        categoryID, launcherID, romID)))
-        commands.append(('Search ROMs in Collection',  m_misc_url_RunPlugin('SEARCH_LAUNCHER',   categoryID, launcherID)))
-        commands.append(('Manage Collection ROMs',     m_misc_url_RunPlugin('MANAGE_FAV',        categoryID, launcherID, romID)))
+        commands.append(('View Collection ROM',        router.create_run_plugin_cmd('VIEW',            catID=categoryID, launcherID=launcherID, romID=romID)))
+        commands.append(('Edit ROM in Collection',     router.create_run_plugin_cmd('EDIT_ROM',        catID=categoryID, launID=launcherID, romID=romID)))
+        commands.append(('Add ROM to AEL Favourites',  router.create_run_plugin_cmd('ADD_TO_FAV',      catID=categoryID, launcherID=launcherID, romID=romID)))
+        commands.append(('Search ROMs in Collection',  router.create_run_plugin_cmd('SEARCH_LAUNCHER', catID=categoryID, launcherID=launcherID)))
+        commands.append(('Manage Collection ROMs',     router.create_run_plugin_cmd('MANAGE_FAV',      catID=categoryID, launcherID=launcherID, romID=romID)))
     elif categoryID == VCATEGORY_RECENT_ID or categoryID == VCATEGORY_MOST_PLAYED_ID:
-        commands.append(('View ROM data', m_misc_url_RunPlugin('VIEW', categoryID, launcherID, romID)))
+        commands.append(('View ROM data', router.create_run_plugin_cmd('VIEW', catID=categoryID, launcherID=launcherID, romID=romID)))
     elif categoryID == VCATEGORY_TITLE_ID    or categoryID == VCATEGORY_YEARS_ID  or \
          categoryID == VCATEGORY_GENRE_ID    or categoryID == VCATEGORY_DEVELOPER_ID or \
          categoryID == VCATEGORY_NPLAYERS_ID or categoryID == VCATEGORY_ESRB_ID   or \
          categoryID == VCATEGORY_RATING_ID   or categoryID == VCATEGORY_CATEGORY_ID:
-        commands.append(('View ROM data',                   m_misc_url_RunPlugin('VIEW',              categoryID, launcherID, romID)))
-        commands.append(('Add ROM to AEL Favourites',       m_misc_url_RunPlugin('ADD_TO_FAV',        categoryID, launcherID, romID)))
-        commands.append(('Add ROM to Collection',           m_misc_url_RunPlugin('ADD_TO_COLLECTION', categoryID, launcherID, romID)))
-        commands.append(('Search ROMs in Virtual Launcher', m_misc_url_RunPlugin('SEARCH_LAUNCHER',   categoryID, launcherID)))
+        commands.append(('View ROM data',                   router.create_run_plugin_cmd('VIEW', catID=categoryID, launcherID=launcherID, romID=romID)))
+        commands.append(('Add ROM to AEL Favourites',       router.create_run_plugin_cmd('ADD_TO_FAV', catID=categoryID, launcherID=launcherID, romID=romID)))
+        commands.append(('Add ROM to Collection',           router.create_run_plugin_cmd('ADD_TO_COLLECTION', catID=categoryID, launcherID=launcherID, romID=romID)))
+        commands.append(('Search ROMs in Virtual Launcher', router.create_run_plugin_cmd('SEARCH_LAUNCHER', catID=categoryID, launcherID=launcherID)))
     else:
-        commands.append(('View ROM/Launcher',         m_misc_url_RunPlugin('VIEW',              categoryID, launcherID, romID)))
+        commands.append(('View ROM/Launcher',         router.create_run_plugin_cmd('VIEW', catID=categoryID, launcherID=launcherID, romID=romID)))
         if is_parent_launcher and num_clones > 0 and view_mode == LAUNCHER_DMODE_1G1R:
-            commands.append(('Show clones', m_misc_url_RunPlugin('EXEC_SHOW_CLONE_ROMS', categoryID, launcherID, romID)))
-        commands.append(('Edit ROM',                  m_misc_url_RunPlugin('EDIT_ROM',          categoryID, launcherID, romID)))
-        commands.append(('Add ROM to AEL Favourites', m_misc_url_RunPlugin('ADD_TO_FAV',        categoryID, launcherID, romID)))
-        commands.append(('Add ROM to Collection',     m_misc_url_RunPlugin('ADD_TO_COLLECTION', categoryID, launcherID, romID)))
-        commands.append(('Search ROMs in Launcher',   m_misc_url_RunPlugin('SEARCH_LAUNCHER',   categoryID, launcherID)))
-        commands.append(('Edit Launcher',             m_misc_url_RunPlugin('EDIT_LAUNCHER',     categoryID, launcherID)))
+            commands.append(('Show clones', router.create_run_plugin_cmd('EXEC_SHOW_CLONE_ROMS', catID=categoryID, launcherID=launcherID, romID=romID)))
+        commands.append(('Edit ROM',                  router.create_run_plugin_cmd('EDIT_ROM', catID=categoryID, launID=launcherID, romID=romID)))
+        commands.append(('Add ROM to AEL Favourites', router.create_run_plugin_cmd('ADD_TO_FAV', catID=categoryID, launcherID=launcherID, romID=romID)))
+        commands.append(('Add ROM to Collection',     router.create_run_plugin_cmd('ADD_TO_COLLECTION', catID=categoryID, launcherID=launcherID, romID=romID)))
+        commands.append(('Search ROMs in Launcher',   router.create_run_plugin_cmd('SEARCH_LAUNCHER', catID=categoryID, launcherID=launcherID, romID=romID)))
+        commands.append(('Edit Launcher',             router.create_run_plugin_cmd('EDIT_LAUNCHER', catID=categoryID, launcherID=launcherID, romID=romID)))
     commands.append(('AEL addon settings', 'Addon.OpenSettings({0})'.format(__addon_id__), ))
     if xbmc.getCondVisibility("!Skin.HasSetting(KioskMode.Enabled)"):
         listitem.addContextMenuItems(commands, replaceItems = True)
