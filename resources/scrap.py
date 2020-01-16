@@ -206,21 +206,18 @@ class ScraperFactory(object):
     # Traverses all instantiated scraper objects and checks if the scraper supports the particular
     # kind of asset. If so, it adds the scraper name to the list.
     #
-    # @return: [list of strings]
-    def get_asset_scraper_menu_list(self, asset_ID):
+    # @return: dict of scraper ids and scraper names
+    def get_asset_scraper_menu_list(self, asset_info):
         log_debug('ScraperFactory::get_asset_scraper_menu_list() Building scraper list...')
-        AInfo = g_assetFactory.get_asset_info(asset_ID)
-        scraper_menu_list = []
-        self.asset_menu_ID_list = []
+        scraper_menu_list = {}
         for scraper_ID in self.scraper_objs:
             scraper_obj = self.scraper_objs[scraper_ID]
             s_name = scraper_obj.get_name()
-            if scraper_obj.supports_asset_ID(asset_ID):
-                scraper_menu_list.append('Scrape {0} with {1}'.format(AInfo.name, s_name))
-                self.asset_menu_ID_list.append(scraper_ID)
-                log_verb('Scraper {0} supports asset {1} (ENABLED)'.format(s_name, AInfo.name))
+            if scraper_obj.supports_asset_ID(asset_info.id):
+                scraper_menu_list[scraper_ID] = 'Scrape {0} with {1}'.format(asset_info.name, s_name)
+                log_verb('Scraper {0} supports asset {1} (ENABLED)'.format(s_name, asset_info.name))
             else:
-                log_verb('Scraper {0} lacks asset {1} (DISABLED)'.format(s_name, AInfo.name))
+                log_verb('Scraper {0} lacks asset {1} (DISABLED)'.format(s_name, asset_info.name))
 
         return scraper_menu_list
 
@@ -395,8 +392,13 @@ class ScrapeStrategy(object):
 
     def scanner_check_launcher_unset_asset_dirs(self):
         log_debug('ScrapeStrategy::scanner_check_launcher_unset_asset_dirs() BEGIN ...')
-        self.enabled_asset_list = self.launcher.get_enabled_asset_list()
-        self.unconfigured_name_list = asset_get_unconfigured_name_list(self.enabled_asset_list)
+        
+        rom_asset_states = self.launcher.get_ROM_assets_enabled_statusses()
+        self.enabled_asset_list = rom_asset_states.values()
+        self.unconfigured_name_list = []
+        for rom_asset, enabled_state in rom_asset_states.items():
+            if not enabled_state:
+                self.unconfigured_name_list.append(rom_asset.name)
  
     # Determine the actions to be carried out by process_ROM_metadata() and process_ROM_assets().
     # Must be called before the aforementioned methods.
@@ -449,7 +451,7 @@ class ScrapeStrategy(object):
         # --- Search for local artwork/assets ---
         # Always look for local assets whatever the scanner settings. For unconfigured assets
         # local_asset_list will have the default database value empty string ''.
-        self.local_asset_list = assets_search_local_cached_assets(self.launcher, ROM, self.enabled_asset_list)
+        self.local_asset_list = g_assetFactory.assets_search_local_cached_assets(self.launcher, ROM, self.enabled_asset_list)
         self.asset_action_list = [ScrapeStrategy.ACTION_ASSET_LOCAL_ASSET] * len(ROM_ASSET_ID_LIST)
         # Print information to the log
         if self.scan_asset_policy == 0:
