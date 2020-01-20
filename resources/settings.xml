@@ -20,7 +20,7 @@
 
     <setting id="separator" type="lsep" label="Scanner scrapers"/>
     <setting label="Metadata scraper" type="enum" id="scraper_metadata" default="0" values="AEL Offline|TheGamesDB|ScreenScraper|MobyGames" />
-    <setting label="Asset scraper" type="enum" id="scraper_asset" default="0" values="TheGamesDB|ScreenScraper|MobyGames" />
+    <setting label="Asset scraper" type="enum" id="scraper_asset" default="0" values="TheGamesDB|ScreenScraper|MobyGames|SteamGridDB" />
     <setting label="MAME metadata scraper" type="enum" id="scraper_metadata_MAME" default="0" values="AEL Offline|ArcadeDB|TheGamesDB|ScreenScraper|MobyGames" />
     <setting label="MAME asset scraper" type="enum" id="scraper_asset_MAME" default="0" values="ArcadeDB|TheGamesDB|ScreenScraper|MobyGames" />
 </category>
@@ -28,6 +28,7 @@
     <setting id="separator" type="lsep" label="Scraper API keys"/>
     <setting label="TheGamesDB API key" default="" id="scraper_thegamesdb_apikey" type="text"/>
     <setting label="MobyGames API key" type="text" id="scraper_mobygames_apikey" default="" />
+    <setting label="SteamGridDB API key" type="text" id="scraper_steamgriddb_apikey" default="" />
     <setting label="ScreenScraper Username" type="text" id="scraper_screenscraper_ssid" default="" />
     <setting label="ScreenScraper Pass" type="text" id="scraper_screenscraper_sspass" default="" />
 

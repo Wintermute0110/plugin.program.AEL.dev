@@ -132,13 +132,19 @@ def net_download_img(img_url, file_path):
 #
 # @param url: [Unicode string] URL to open
 # @param url_log: [Unicode string] If not None this URL will be used in the logs.
+# @param headers: [Dict(string,string)] Optional collection of custom headers to add.
 # @return: [tuple] Tuple of strings. First tuple element is a string with the web content as 
 #          a Unicode string or None if network error/exception. Second tuple element is the 
 #          HTTP status code as integer or None if network error/exception.
-def net_get_URL(url, url_log = None):
+def net_get_URL(url, url_log = None, headers = None):
     import traceback
     req = Request(url)
     req.add_unredirected_header('User-Agent', USER_AGENT)
+    
+    if headers is not None:
+        for key, value in headers.items():
+            req.add_header(key, value)
+    
     if url_log is None:
         log_debug('net_get_URL() GET URL "{}"'.format(req.get_full_url()))
     else:
