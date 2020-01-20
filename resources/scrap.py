@@ -4912,9 +4912,8 @@ class SteamGridDB(Scraper):
         # Transform http to https
         url = selected_asset['url']
         if url[0:4] == 'http': url = 'https' + url[4:]
-        url_log = self._clean_URL_for_log(url)
 
-        return url, url_log
+        return url, url
 
     def resolve_asset_URL_extension(self, selected_asset, image_url, status_dic):
         return text_get_URL_extension(image_url)
