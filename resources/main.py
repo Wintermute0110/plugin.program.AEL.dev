@@ -687,7 +687,7 @@ def m_command_render_recently_played_roms():
     m_misc_set_AEL_Content(AEL_CONTENT_VALUE_ROMS)
 
     # --- Load Recently Played favourite ROM list and create and OrderedDict ---
-    recent_launcher = g_ObjectFactory.find_launcher(VLAUNCHER_RECENT_ID)
+    recent_launcher = g_ObjectFactory.find_launcher(VCATEGORY_RECENT_ID, VLAUNCHER_RECENT_ID)
     recent_roms = recent_launcher.get_roms()
     
     if not recent_roms or len(recent_roms) == 0:
@@ -707,7 +707,7 @@ def m_command_render_most_played_roms():
     m_misc_set_AEL_Content(AEL_CONTENT_VALUE_ROMS)
 
     # --- Load Most Played favourite ROMs ---
-    most_played_launcher = g_ObjectFactory.find_launcher(VLAUNCHER_MOST_PLAYED_ID)
+    most_played_launcher = g_ObjectFactory.find_launcher(VCATEGORY_MOST_PLAYED_ID, VLAUNCHER_MOST_PLAYED_ID)
     roms = most_played_launcher.get_roms()
 
     if not roms or len(roms) == 0:
@@ -1313,7 +1313,7 @@ def m_command_render_clone_roms(categoryID, launcherID, romID):
 
     # --- Render ROMs ---
     view_mode       = selectedLauncher.get_display_mode()
-    fav_launcher    = g_ObjectFactory.find_launcher(VLAUNCHER_FAVOURITES_ID)
+    fav_launcher    = g_ObjectFactory.find_launcher(VCATEGORY_FAVOURITES_ID, VLAUNCHER_FAVOURITES_ID)
     roms_fav_set    = set(fav_launcher.get_rom_ids())
 
     for rom in sorted(roms, key = lambda r : r.get_name()):
@@ -1346,7 +1346,7 @@ def m_command_render_favourite_roms():
     m_misc_clear_AEL_Launcher_Content()
 
     # --- Load Favourite ROMs ---
-    favourites_launcher = g_ObjectFactory.find_launcher(VLAUNCHER_FAVOURITES_ID)
+    favourites_launcher = g_ObjectFactory.find_launcher(VCATEGORY_FAVOURITES_ID, VLAUNCHER_FAVOURITES_ID)
     roms = favourites_launcher.get_roms()
     #roms = fs_load_Favourites_JSON(FAV_JSON_FILE_PATH)
     if not roms or len(roms) == 0:
@@ -1592,7 +1592,7 @@ def m_command_render_all_roms():
         all_roms.update(temp_roms)
 
     # --- Load favourites ---
-    fav_launcher = g_ObjectFactory.find_launcher(VLAUNCHER_FAVOURITES_ID)
+    fav_launcher = g_ObjectFactory.find_launcher(VCATEGORY_FAVOURITES_ID, VLAUNCHER_FAVOURITES_ID)
     roms_fav = fav_launcher.get_roms()
     roms_fav_set = set(rom_fav.get_id() for rom_fav in roms_fav)
 
@@ -3644,7 +3644,7 @@ def m_command_exec_check_database():
 
     # >> Load Favourite ROMs and update JSON
     pDialog.update(0, 'Checking Favourite ROMs ...')
-    fav_launcher = g_ObjectFactory.find_launcher(VLAUNCHER_FAVOURITES_ID)
+    fav_launcher = g_ObjectFactory.find_launcher(VCATEGORY_FAVOURITES_ID, VLAUNCHER_FAVOURITES_ID)
     roms_fav = fav_launcher.get_roms()
     num_fav_roms = len(roms_fav)
     processed_fav_roms = 0
@@ -3706,7 +3706,7 @@ def m_command_exec_check_database():
 
     # >> Load Most Played ROMs and check/update.
     pDialog.update(0, 'Checking Most Played ROMs ...')                    
-    most_played_launcher = g_ObjectFactory.find_launcher(VLAUNCHER_MOST_PLAYED_ID)
+    most_played_launcher = g_ObjectFactory.find_launcher(VCATEGORY_MOST_PLAYED_ID, VLAUNCHER_MOST_PLAYED_ID)
     most_played_roms = most_played_launcher.get_roms()
     for rom in most_played_roms:
         self._misc_fix_Favourite_rom_object(rom)
@@ -3716,7 +3716,7 @@ def m_command_exec_check_database():
 
     # >> Load Recently Played ROMs and check/update.
     pDialog.update(0, 'Checking Recently Played ROMs ...')
-    recent_played_launcher = g_ObjectFactory.find_launcher(VLAUNCHER_RECENT_ID)
+    recent_played_launcher = g_ObjectFactory.find_launcher(VCATEGORY_RECENT_ID, VLAUNCHER_RECENT_ID)
     recent_roms_list = recent_played_launcher.get_roms()
 
     if recent_roms_list is None:
@@ -8106,7 +8106,7 @@ def m_command_render_vlauncher_roms(virtual_categoryID, virtual_launcherID):
     m_misc_set_AEL_Content(AEL_CONTENT_VALUE_ROMS)
 
     # --- Load virtual launchers in this category ---
-    vlauncher - g_ObjectFactory.find_launcher(virtual_launcherID)
+    vlauncher - g_ObjectFactory.find_launcher(virtual_categoryID, virtual_launcherID)
     roms = vlauncher.get_roms()
 
     if not roms:
@@ -8116,7 +8116,7 @@ def m_command_render_vlauncher_roms(virtual_categoryID, virtual_launcherID):
     # --- Load favourites ---
     # >> Optimisation: Transform the dictionary keys into a set. Sets are the fastest
     #    when checking if an element exists.
-    favlauncher = g_ObjectFactory.find_launcher(VLAUNCHER_FAVOURITES_ID)
+    favlauncher = g_ObjectFactory.find_launcher(VCATEGORY_FAVOURITES_ID, VLAUNCHER_FAVOURITES_ID)
     roms_fav = favlauncher.get_roms()
     roms_fav_set = set(favrom.get_id() for favrom in roms_fav)
 
