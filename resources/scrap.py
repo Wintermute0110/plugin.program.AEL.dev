@@ -4909,10 +4909,7 @@ class SteamGridDB(Scraper):
     # SteamGridDB returns both the asset thumbnail URL and the full resolution URL so in
     # this scraper this method is trivial.
     def resolve_asset_URL(self, selected_asset, status_dic):
-        # Transform http to https
         url = selected_asset['url']
-        if url[0:4] == 'http': url = 'https' + url[4:]
-
         return url, url
 
     def resolve_asset_URL_extension(self, selected_asset, image_url, status_dic):
@@ -4999,9 +4996,10 @@ class SteamGridDB(Scraper):
         # --- Parse images page data ---
         asset_list = []
         for image_data in json_data['data']:
+            style = image_data['style'] if 'style' in image_data else 'image'
             asset_data = self._new_assetdata_dic()
             asset_data['asset_ID'] = ASSET_BOXFRONT_ID
-            asset_data['display_name'] = "{} by {}".format(image_data['style'], image_data['author']['name'])
+            asset_data['display_name'] = "{} by {}".format(style, image_data['author']['name'])
             asset_data['url_thumb'] = image_data['thumb']
             asset_data['url'] = image_data['url']
             if self.verbose_flag: log_debug('Found cover {0}'.format(asset_data['url_thumb']))
@@ -5022,9 +5020,10 @@ class SteamGridDB(Scraper):
         # --- Parse images page data ---
         asset_list = []
         for image_data in json_data['data']:
+            style = image_data['style'] if 'style' in image_data else 'image'
             asset_data = self._new_assetdata_dic()
             asset_data['asset_ID'] = ASSET_CLEARLOGO_ID
-            asset_data['display_name'] = "{} by {}".format(image_data['style'], image_data['author']['name'])
+            asset_data['display_name'] = "{} by {}".format(style, image_data['author']['name'])
             asset_data['url_thumb'] = image_data['thumb']
             asset_data['url'] = image_data['url']
             if self.verbose_flag: log_debug('Found logo {0}'.format(asset_data['url_thumb']))
@@ -5045,9 +5044,10 @@ class SteamGridDB(Scraper):
         # --- Parse images page data ---
         asset_list = []
         for image_data in json_data['data']:
+            style = image_data['style'] if 'style' in image_data else 'image'
             asset_data = self._new_assetdata_dic()
             asset_data['asset_ID'] = ASSET_FANART_ID
-            asset_data['display_name'] = "{} by {}".format(image_data['style'], image_data['author']['name'])
+            asset_data['display_name'] = "{} by {}".format(style, image_data['author']['name'])
             asset_data['url_thumb'] = image_data['thumb']
             asset_data['url'] = image_data['url']
             if self.verbose_flag: log_debug('Found fanart {0}'.format(asset_data['url_thumb']))
