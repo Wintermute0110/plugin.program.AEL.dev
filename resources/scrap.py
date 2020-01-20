@@ -31,6 +31,7 @@ import time
 import urllib
 import urlparse
 import socket
+import zipfile
 
 # --- AEL packages ---
 from .constants import *
@@ -184,13 +185,14 @@ class ScraperFactory(object):
 
     def get_metadata_scraper_menu_list(self):
         log_debug('ScraperFactory.get_metadata_scraper_menu_list() Building scraper list...')
-        scraper_menu_list = []
+        scraper_menu_list = {}
         self.metadata_menu_ID_list = []
+    
         for scraper_ID in self.scraper_objs:
             scraper_obj = self.scraper_objs[scraper_ID]
             s_name = scraper_obj.get_name()
             if scraper_obj.supports_metadata():
-                scraper_menu_list.append('Scrape with {0}'.format(s_name))
+                scraper_menu_list['SCRAPE_' + s_name] = ('Scrape with {0}'.format(s_name))
                 self.metadata_menu_ID_list.append(scraper_ID)
                 log_verb('Scraper {0} supports metadata (ENABLED)'.format(s_name))
             else:
@@ -204,21 +206,18 @@ class ScraperFactory(object):
     # Traverses all instantiated scraper objects and checks if the scraper supports the particular
     # kind of asset. If so, it adds the scraper name to the list.
     #
-    # @return: [list of strings]
-    def get_asset_scraper_menu_list(self, asset_ID):
+    # @return: dict of scraper ids and scraper names
+    def get_asset_scraper_menu_list(self, asset_info):
         log_debug('ScraperFactory::get_asset_scraper_menu_list() Building scraper list...')
-        AInfo = g_assetFactory.get_asset_info(asset_ID)
-        scraper_menu_list = []
-        self.asset_menu_ID_list = []
+        scraper_menu_list = {}
         for scraper_ID in self.scraper_objs:
             scraper_obj = self.scraper_objs[scraper_ID]
             s_name = scraper_obj.get_name()
-            if scraper_obj.supports_asset_ID(asset_ID):
-                scraper_menu_list.append('Scrape {0} with {1}'.format(AInfo.name, s_name))
-                self.asset_menu_ID_list.append(scraper_ID)
-                log_verb('Scraper {0} supports asset {1} (ENABLED)'.format(s_name, AInfo.name))
+            if scraper_obj.supports_asset_ID(asset_info.id):
+                scraper_menu_list[scraper_ID] = 'Scrape {0} with {1}'.format(asset_info.name, s_name)
+                log_verb('Scraper {0} supports asset {1} (ENABLED)'.format(s_name, asset_info.name))
             else:
-                log_verb('Scraper {0} lacks asset {1} (DISABLED)'.format(s_name, AInfo.name))
+                log_verb('Scraper {0} lacks asset {1} (DISABLED)'.format(s_name, asset_info.name))
 
         return scraper_menu_list
 
@@ -393,8 +392,13 @@ class ScrapeStrategy(object):
 
     def scanner_check_launcher_unset_asset_dirs(self):
         log_debug('ScrapeStrategy::scanner_check_launcher_unset_asset_dirs() BEGIN ...')
-        self.enabled_asset_list = self.launcher.get_enabled_asset_list()
-        self.unconfigured_name_list = asset_get_unconfigured_name_list(self.enabled_asset_list)
+        
+        rom_asset_states = self.launcher.get_ROM_assets_enabled_statusses()
+        self.enabled_asset_list = rom_asset_states.values()
+        self.unconfigured_name_list = []
+        for rom_asset, enabled_state in rom_asset_states.items():
+            if not enabled_state:
+                self.unconfigured_name_list.append(rom_asset.name)
  
     # Determine the actions to be carried out by process_ROM_metadata() and process_ROM_assets().
     # Must be called before the aforementioned methods.
@@ -447,7 +451,7 @@ class ScrapeStrategy(object):
         # --- Search for local artwork/assets ---
         # Always look for local assets whatever the scanner settings. For unconfigured assets
         # local_asset_list will have the default database value empty string ''.
-        self.local_asset_list = assets_search_local_cached_assets(self.launcher, ROM, self.enabled_asset_list)
+        self.local_asset_list = g_assetFactory.assets_search_local_cached_assets(self.launcher, ROM, self.enabled_asset_list)
         self.asset_action_list = [ScrapeStrategy.ACTION_ASSET_LOCAL_ASSET] * len(ROM_ASSET_ID_LIST)
         # Print information to the log
         if self.scan_asset_policy == 0:
@@ -764,7 +768,7 @@ class ScrapeStrategy(object):
         # --- Cached frequent used things ---
         asset_name = asset_info.name
         asset_dir_FN  = self.launcher.get_asset_path(asset_info)
-        asset_path_noext_FN = assets_get_path_noext_DIR(asset_info, asset_dir_FN, ROM.get_file())
+        asset_path_noext_FN = asset_dir_FN + ROM.get_file().getBaseNoExt()
         t = 'ScrapeStrategy._scanner_scrap_ROM_asset() Scraping {} with scraper {} ------------------------------'
         log_debug(t.format(asset_name, self.asset_scraper_name))
         status_dic = kodi_new_status_dic('No error')
@@ -1349,6 +1353,8 @@ class Scraper(object):
         # Do not log here. Otherwise the same thing will be printed for every scraper instantiated.
         # log_debug('Scraper.__init__() scraper_cache_dir "{}"'.format(self.scraper_cache_dir))
 
+        self.last_http_call = datetime.now()
+        
         # --- Disk caches ---
         self.disk_caches = {}
         self.disk_caches_loaded = {}
@@ -1824,11 +1830,11 @@ class Scraper(object):
 
         return self.global_disk_caches[cache_type]
 
-    # _check_disk_cache() must be called before this.
+    # _check_global_cache() must be called before this.
     def _retrieve_global_cache(self, cache_type):
         return self.global_disk_caches[cache_type]
 
-    # _check_disk_cache() must be called before this.
+    # _check_global_cache() must be called before this.
     def _reset_global_cache(self, cache_type):
         self.global_disk_caches[cache_type] = {}
         self.global_disk_caches_dirty[cache_type] = True
@@ -1838,6 +1844,18 @@ class Scraper(object):
         self.global_disk_caches[cache_type] = data
         self.global_disk_caches_dirty[cache_type] = True
 
+    # Generic waiting method to avoid too many requests
+    # and website abuse. 
+    def _wait_for_API_request(self, wait_time_in_miliseconds = 1000):
+        if wait_time_in_miliseconds == 0:
+            return
+        
+        # Make sure we dont go over the TooManyRequests limit of 1 second.
+        now = datetime.now()
+        if (now - self.last_http_call).total_seconds() * 1000 < wait_time_in_miliseconds:
+            log_debug('Scraper._wait_for_API_request() Sleeping {}ms to avoid overloading...'.format(wait_time_in_miliseconds))
+            time.sleep(wait_time_in_miliseconds / 1000)
+            
 # ------------------------------------------------------------------------------------------------
 # NULL scraper, does nothing.
 # ------------------------------------------------------------------------------------------------
@@ -2479,7 +2497,7 @@ class TheGamesDB(Scraper):
         # --- Cache hit ---
         if self._check_global_cache(Scraper.GLOBAL_CACHE_TGDB_GENRES):
             log_debug('TheGamesDB._retrieve_genres() Genres global cache hit.')
-            return self._retrieve_from_global_cache(Scraper.GLOBAL_CACHE_TGDB_GENRES)
+            return self._retrieve_global_cache(Scraper.GLOBAL_CACHE_TGDB_GENRES)
 
         # --- Cache miss. Retrieve data ---
         log_debug('TheGamesDB._retrieve_genres() Genres global cache miss. Retrieving genres...')
@@ -2504,7 +2522,7 @@ class TheGamesDB(Scraper):
         # --- Cache hit ---
         if self._check_global_cache(Scraper.GLOBAL_CACHE_TGDB_DEVELOPERS):
             log_debug('TheGamesDB._retrieve_developers() Genres global cache hit.')
-            return self._retrieve_from_global_cache(Scraper.GLOBAL_CACHE_TGDB_DEVELOPERS)
+            return self._retrieve_global_cache(Scraper.GLOBAL_CACHE_TGDB_DEVELOPERS)
 
         # --- Cache miss. Retrieve data ---
         log_debug('TheGamesDB._retrieve_developers() Developers global cache miss. Retrieving developers...')
@@ -2710,9 +2728,9 @@ class MobyGames(Scraper):
         'inside cover'  : None,
         'full cover'    : None,
         'soundtrack'    : None,
+
         'map'           : ASSET_MAP_ID
     }
-
     # --- Constructor ----------------------------------------------------------------------------
     def __init__(self, settings):
         # --- This scraper settings ---
@@ -2723,7 +2741,6 @@ class MobyGames(Scraper):
         self.cache_metadata = {}
         self.cache_assets = {}
         self.all_asset_cache = {}
-        self.last_http_call = datetime.now()
         # --- Pass down common scraper settings ---
         super(MobyGames, self).__init__(settings)
 
@@ -2864,7 +2881,7 @@ class MobyGames(Scraper):
         # failed? retry after 5 seconds
         if not image_local_path.exists():
             log_debug('Download failed. Retry after 5 seconds')
-            self._wait_for_API_request(5)
+            self._wait_for_API_request(5000)
             net_download_img(image_url, image_local_path)
         
     # --- This class own methods -----------------------------------------------------------------
@@ -3112,15 +3129,6 @@ class MobyGames(Scraper):
 
         return json_data
 
-    # From xxxxx
-    # 
-    def _wait_for_API_request(self, wait_time_in_seconds = 1):
-        # Make sure we dont go over the TooManyRequests limit of 1 second.
-        now = datetime.now()
-        if (now - self.last_http_call).total_seconds() < wait_time_in_seconds:
-            log_debug('MobyGames._wait_for_API_request() Sleeping {} second to avoid overloading...'.format(wait_time_in_seconds))
-            time.sleep(wait_time_in_seconds)
-            
 # ------------------------------------------------------------------------------------------------
 # ScreenScraper online scraper. Uses V2 API.
 #
@@ -3391,19 +3399,18 @@ class ScreenScraper(Scraper):
         rombase = rom_FN.getBase()
         rompath = rom_FN.getPath()
         romchecksums_path = rom_checksums_FN.getPath() if rom_checksums_FN is not None else None
+        scraper_platform = AEL_platform_to_ScreenScraper(platform)
 
         # --- Get candidates ---
         # ScreenScraper jeuInfos.php returns absolutely everything about a single ROM, including
         # metadata, artwork, etc. jeuInfos.php returns one game or nothing at all.
         # ScreenScraper returns only one game or nothing at all.
-        scraper_platform = AEL_platform_to_ScreenScraper(platform)
-        log_debug('ScreenScraper.get_candidates() rombase      "{}"'.format(rombase))
         log_debug('ScreenScraper.get_candidates() rompath      "{}"'.format(rompath))
         log_debug('ScreenScraper.get_candidates() romchecksums "{}"'.format(romchecksums_path))
         log_debug('ScreenScraper.get_candidates() AEL platform "{}"'.format(platform))
         log_debug('ScreenScraper.get_candidates() SS platform  "{}"'.format(scraper_platform))
         candidate_list = self._search_candidates_jeuInfos(
-            rombase, rompath, romchecksums_path, platform, scraper_platform, status_dic)
+            rom_FN, rom_checksums_FN, platform, scraper_platform, status_dic)
         # _search_candidates_jeuRecherche() does not work for get_metadata() and get_assets()
         # because jeu_dic is not introduced in the internal cache.
         # candidate_list = self._search_candidates_jeuRecherche(
@@ -3627,8 +3634,7 @@ class ScreenScraper(Scraper):
         self._dump_json_debug('ScreenScraper_gameSearch.json', json_data)
 
     # Call to ScreenScraper jeuInfos.php.
-    def _search_candidates_jeuInfos(self, rombase, rompath, romchecksums_path, platform,
-        scraper_platform, status_dic):
+    def _search_candidates_jeuInfos(self, rom_FN, rom_checksums_FN, platform, scraper_platform, status_dic):
         # --- Test data ---
         # * Example from ScreenScraper API info page.
         #   #crc=50ABC90A&systemeid=1&romtype=rom&romnom=Sonic%20The%20Hedgehog%202%20(World).zip&romtaille=749652
@@ -3653,17 +3659,16 @@ class ScreenScraper(Scraper):
 
         # --- IMPORTANT ---
         # ScreenScraper requires all CRC, MD5 and SHA1 and the correct file size of the
-        # files scraped. Put these data in a SS checksums cache so it is calculated once for
-        # every file.
+        # files scraped.
         if self.debug_checksums_flag:
             # Use fake checksums when developing the scraper with fake 0-sized files.
             log_info('Using debug checksums and not computing real ones.')
             checksums = {
-                'crc'  : self.debug_crc, 'md5'  : self.debug_md5,
-                'sha1' : self.debug_sha1, 'size' : self.debug_size,
+                'crc'  : self.debug_crc, 'md5'  : self.debug_md5, 'sha1' : self.debug_sha1,
+                'size' : self.debug_size, 'rom_name' : rom_FN.getBase(),
             }
         else:
-            checksums = misc_calculate_checksums(romchecksums_path)
+            checksums = self._get_SS_checksum(rom_checksums_FN)
             if checksums is None:
                 status_dic['status'] = False
                 status_dic['msg'] = 'Error computing file checksums.'
@@ -3676,8 +3681,8 @@ class ScreenScraper(Scraper):
         crc_str = checksums['crc']
         md5_str = checksums['md5']
         sha1_str = checksums['sha1']
-        # rom_name = urllib.quote(rombase)
-        rom_name = urllib.quote_plus(rombase)
+        # rom_name = urllib.quote(checksums['rom_name'])
+        rom_name = urllib.quote_plus(checksums['rom_name'])
         rom_size = checksums['size']
         # log_debug('ScreenScraper._search_candidates_jeuInfos() ssid       "{0}"'.format(self.ssid))
         # log_debug('ScreenScraper._search_candidates_jeuInfos() ssid       "{0}"'.format('***'))
@@ -3922,6 +3927,46 @@ class ScreenScraper(Scraper):
 
         return asset_list
 
+    # 1) If rom_checksums_FN is a ZIP file and contains one and only one file, then consider that
+    #    file the ROM, decompress in memory and calculate the checksums.
+    # 2) If rom_checksums_FN is a standard file or 1) fails then calculate the checksums of
+    #    the file.
+    # 3) Return a checksums dictionary if everything is OK. Return None in case of any error.
+    def _get_SS_checksum(self, rom_checksums_FN):
+        f_basename = rom_checksums_FN.getBase()
+        f_path = rom_checksums_FN.getPath()
+        log_debug('_get_SS_checksum() Processing "{}"'.format(f_path))
+        if f_basename.lower().endswith('.zip'):
+            log_debug('_get_SS_checksum() ZIP file detected.')
+            if not zipfile.is_zipfile(f_path):
+                log_error('zipfile.is_zipfile() returns False. Bad ZIP file.')
+                return None
+            else:
+                log_debug('_get_SS_checksum() ZIP file seems to be correct.')
+            zip = zipfile.ZipFile(f_path)
+            namelist = zip.namelist()
+            # log_variable('namelist', namelist)
+            if len(namelist) == 1:
+                log_debug('_get_SS_checksum() ZIP file has one file only.')
+                log_debug('_get_SS_checksum() Decompressing file "{}"'.format(namelist[0]))
+                file_bytes = zip.read(namelist[0])
+                log_debug('_get_SS_checksum() Decompressed size is {} bytes'.format(len(file_bytes)))
+                checksums = misc_calculate_stream_checksums(file_bytes)
+                checksums['rom_name'] = namelist[0]
+                log_debug('_get_SS_checksum() ROM name is "{}"'.format(checksums['rom_name']))
+                return checksums
+            else:
+                log_debug('_get_SS_checksum() ZIP file has {} files.'.format(len(namelist)))
+                log_debug('_get_SS_checksum() Computing checksum of whole ZIP file.')
+        else:
+            log_debug('_get_SS_checksum() File is not ZIP. Computing checksum of whole file.')
+        # Otherwise calculate checksums of the whole file
+        checksums = misc_calculate_checksums(f_path)
+        checksums['rom_name'] = f_basename
+        log_debug('_get_SS_checksum() ROM name is "{}"'.format(checksums['rom_name']))
+
+        return checksums
+
     # ScreenScraper URLs have the developer password and the user password.
     # Clean URLs for safe logging.
     def _clean_URL_for_log(self, url):
@@ -4017,13 +4062,16 @@ class ScreenScraper(Scraper):
     # Retrieve URL and decode JSON object.
     #
     # * When the API user/pass is not configured or invalid SS returns ...
-    # * When the API number of calls is exhausted SS returns a HTTP 400 error code.
+    # * When the API number of calls is exhausted SS returns a HTTP 429 error code.
+    # * When the API number of calls for the whole day is exhausted SS returns HTTP status code 430.
     #   In this case mark error in status_dic and return None.
     # * In case of any error/exception mark error in status_dic and return None.
     # * When the a game search is not succesfull SS returns a "HTTP Error 404: Not Found" error.
     #   In this case status_dic marks no error and return None.
-    def _retrieve_URL_as_JSON(self, url, status_dic):
+    def _retrieve_URL_as_JSON(self, url, status_dic, retry=0):
+        self._wait_for_API_request(2000)
         page_data_raw, http_code = net_get_URL(url, self._clean_URL_for_log(url))
+        self.last_http_call = datetime.now()
 
         # --- Check HTTP error codes ---
         if http_code == 400:
@@ -4031,6 +4079,17 @@ class ScreenScraper(Scraper):
             log_debug('ScreenScraper._retrieve_URL_as_JSON() HTTP status 400: general error.')
             self._handle_error(status_dic, 'Bad HTTP status code {}'.format(http_code))
             return None
+        elif http_code == 429 and retry < Scraper.RETRY_THRESHOLD:
+            log_debug('ScreenScraper._retrieve_URL_as_JSON() HTTP status 429: Limit exceeded.')
+            # Number of requests limit, wait at least 2 minutes. Increments with every retry.
+            amount_seconds = 120*(retry+1)
+            wait_till_time = datetime.now() + timedelta(seconds=amount_seconds)
+            kodi_dialog_OK('You\'ve exceeded the max rate limit.', 
+                           'Respecting the website and we wait at least till {}.'.format(wait_till_time))
+            self._wait_for_API_request(amount_seconds*1000)
+            # waited long enough? Try again
+            retry_after_wait = retry + 1
+            return self._retrieve_URL_as_JSON(url, status_dic, retry_after_wait)
         elif http_code == 404:
             # Code 404 in SS means the ROM was not found. Return None but do not mark
             # error in status_dic.

@@ -42,6 +42,8 @@ import errno
 import fnmatch
 import hashlib
 import json
+import collections
+import sys
 import os
 import pprint
 import random
@@ -216,9 +218,17 @@ def text_str_2_Uni(string):
 
     return unicode_str
 
+def text_remove_Kodi_color_tags(s):
+    s = re.sub('\[COLOR \S+?\]', '', s)
+    s = re.sub('\[color \S+?\]', '', s)
+    s = s.replace('[/color]', '')
+    s = s.replace('[/COLOR]', '')
+
+    return s
+
 # Renders a list of list of strings table into a CSV list of strings.
 # The list of strings must be joined with '\n'.join()
-def text_render_table_CSV_slist(table_str):
+def text_render_table_CSV(table_str):
     rows = len(table_str)
     cols = len(table_str[0])
     table_str_list = []
@@ -233,16 +243,37 @@ def text_render_table_CSV_slist(table_str):
 
     return table_str_list
 
+# Returns a list of strings that must be joined with '\n'.join()
 #
 # First row            column aligment 'right' or 'left'
 # Second row           column titles
 # Third and next rows  table data
 #
-# Returns a list of strings that must be joined with '\n'.join()
+# Input:
+# table_str = [
+#     ['left', 'left', 'left'],
+#     ['Platform', 'Parents', 'Clones'],
+#     ['', '', ''],
+# ]
 #
-def text_render_table_str(table_str):
+# Output:
+#
+def text_render_table(table_str, trim_Kodi_colours = False):
     rows = len(table_str)
     cols = len(table_str[0])
+
+    # Remove Kodi tags [COLOR string] and [/COLOR]
+    if trim_Kodi_colours:
+        new_table_str = []
+        for i in range(rows):
+            new_table_str.append([])
+            for j in range(cols):
+                s = text_remove_Kodi_color_tags(table_str[i][j])
+                new_table_str[i].append(s)
+        table_str = new_table_str
+
+    # Determine sizes and padding.
+    # Ignore row 0 when computing sizes.
     table_str_list = []
     col_sizes = text_get_table_str_col_sizes(table_str, rows, cols)
     col_padding = table_str[0]
@@ -255,7 +286,7 @@ def text_render_table_str(table_str):
         else:
             row_str += text_print_padded_left(table_str[1][j], col_sizes[j])
     table_str_list.append(row_str)
-    # >> Table -----
+    # Table line -----
     total_size = sum(col_sizes) + 2*(cols-1)
     table_str_list.append('{0}'.format('-' * total_size))
 
@@ -277,15 +308,37 @@ def text_render_table_str(table_str):
 
     return table_str_list
 
-#
 # First row             column aligment 'right' or 'left'
 # Second and next rows  table data
+# Input:
+# table_str = [
+#     ['left', 'left', 'left'],
+#     ['Platform', 'Parents', 'Clones'],
+#     ['', '', ''],
+# ]
 #
-def text_render_table_str_NO_HEADER(table_str):
+# Output:
+#
+def text_render_table_NO_HEADER(table_str, trim_Kodi_colours = False):
     rows = len(table_str)
     cols = len(table_str[0])
+
+    # Remove Kodi tags [COLOR string] and [/COLOR]
+    # BUG Currently this code removes all the colour tags so the table is rendered
+    #     with no colours.
+    # NOTE To render tables with colours is more difficult than this... 
+    #      All the paddings changed. I will left this for the future.
+    if trim_Kodi_colours:
+        new_table_str = []
+        for i in range(rows):
+            new_table_str.append([])
+            for j in range(cols):
+                s = text_remove_Kodi_color_tags(table_str[i][j])
+                new_table_str[i].append(s)
+        table_str = new_table_str
+
+    # Ignore row 0 when computing sizes.
     table_str_list = []
-    # >> Ignore row 0 when computing sizes.
     col_sizes = text_get_table_str_col_sizes(table_str, rows, cols)
     col_padding = table_str[0]
 
@@ -328,7 +381,7 @@ def text_get_table_str_col_sizes(table_str, rows, cols):
 def text_str_list_size(str_list):
     max_str_size = 0
     for str_item in str_list:
-        str_size = len('{0}'.format(str_item))
+        str_size = len('{}'.format(str_item))
         if str_size > max_str_size: max_str_size = str_size
 
     return max_str_size
@@ -769,6 +822,56 @@ def misc_look_for_file(rootPath, filename_noext, file_exts):
 
     return None
 
+def misc_escape_regex_special_chars(s):
+    s = s.replace('(', '\(')
+    s = s.replace(')', '\)')
+    s = s.replace('+', '\+')
+
+    return s
+
+# Search for a No-Intro DAT filename.
+def misc_look_for_NoIntro_DAT(platform, DAT_list):
+    # log_debug('Testing No-Intro platform "{}"'.format(platform.long_name))
+    if not platform.DAT_prefix:
+        # log_debug('Empty DAT_prefix. Return empty string.')
+        return ''
+    # Traverse all files and make a list of DAT matches.
+    DAT_str = misc_escape_regex_special_chars(platform.DAT_prefix)
+    patt = '.*' + DAT_str + ' \(Parent-Clone\) \((\d\d\d\d\d\d\d\d)-(\d\d\d\d\d\d)\)\.dat'
+    # log_variable('patt', patt)
+    fname_list = []
+    for fname in DAT_list:
+        m = re.match(patt, fname)
+        if m: fname_list.append(fname)
+    # log_variable('fname_list', fname_list)
+    if fname_list:
+        # If more than one DAT found sort alphabetically and pick the first.
+        # Because the fname include the date the most recent must be first.
+        return sorted(fname_list, reverse = True)[0]
+    else:
+        return ''
+
+# Atari - Jaguar CD Interactive Multimedia System - Datfile (10) (2019-08-27 00-06-32)
+# Commodore - Amiga CD - Datfile (350) (2019-06-28 13-05-34)
+# Commodore - Amiga CD32 - Datfile (157) (2019-09-24 21-03-02)
+def misc_look_for_Redump_DAT(platform, DAT_list):
+    # log_debug('Testing Redump platform "{}"'.format(platform.long_name))
+    if not platform.DAT_prefix:
+        # log_debug('Empty DAT_prefix. Return empty string.')
+        return ''
+    DAT_str = misc_escape_regex_special_chars(platform.DAT_prefix)
+    patt = '.*' + DAT_str + ' \(\d+\) \((\d\d\d\d-\d\d-\d\d) (\d\d-\d\d-\d\d)\)\.dat'
+    # log_variable('patt', patt)
+    fname_list = []
+    for fname in DAT_list:
+        m = re.match(patt, fname)
+        if m: fname_list.append(fname)
+    # log_variable('fname_list', fname_list)
+    if fname_list:
+        return sorted(fname_list, reverse = True)[0]
+    else:
+        return ''
+
 #
 # Generates a random an unique MD5 hash and returns a string with the hash
 #
@@ -783,50 +886,11 @@ def misc_generate_random_SID():
 #
 # Lazy function (generator) to read a file piece by piece. Default chunk size: 8k.
 #
-def misc_read_in_chunks(file_object, chunk_size = 8192):
+def misc_read_file_in_chunks(file_object, chunk_size = 8192):
     while True:
         data = file_object.read(chunk_size)
         if not data: break
         yield data
-
-#
-# Calculates CRC, MD5 and SHA1 of a file in an efficient way.
-# Returns a dictionary with the checksums or None in case of error.
-#
-# https://stackoverflow.com/questions/519633/lazy-method-for-reading-big-file-in-python
-# https://stackoverflow.com/questions/1742866/compute-crc-of-file-in-python 
-#
-def misc_calculate_checksums(full_file_path):
-    if full_file_path is None:
-        log_debug('No checksum to complete')
-        return None
-    
-    log_debug('Computing checksums "{}"'.format(full_file_path))
-    try:
-        f = open(full_file_path, 'rb')
-        crc_prev = 0
-        md5 = hashlib.md5()
-        sha1 = hashlib.sha1()
-        for piece in misc_read_in_chunks(f):
-            crc_prev = zlib.crc32(piece, crc_prev)
-            md5.update(piece)
-            sha1.update(piece)
-        crc_digest = '{:08X}'.format(crc_prev & 0xFFFFFFFF)
-        md5_digest = md5.hexdigest()
-        sha1_digest = sha1.hexdigest()
-        size = os.path.getsize(full_file_path)
-    except:
-        log_debug('(Exception) In misc_calculate_checksums()')
-        log_debug('Returning None')
-        return None
-    checksums = {
-        'crc'  : crc_digest.upper(),
-        'md5'  : md5_digest.upper(),
-        'sha1' : sha1_digest.upper(),
-        'size' : size,
-    }
-
-    return checksums
 
 #
 # Version helper class
@@ -1007,6 +1071,104 @@ def merge_dicts(x, y):
 # Filesystem utilities
 # #################################################################################################
 # #################################################################################################
+# This function not finished yet.
+def misc_read_bytes_in_chunks(file_bytes, chunk_size = 8192):
+    file_length = len(file_bytes)
+    block_number = 0
+    while True:
+        start_index = None
+        end_index = None
+        data = file_bytes[start_index:end_index]
+        yield data
+
+#
+# Calculates CRC, MD5 and SHA1 of a file in an efficient way.
+# Returns a dictionary with the checksums or None in case of error.
+#
+# https://stackoverflow.com/questions/519633/lazy-method-for-reading-big-file-in-python
+# https://stackoverflow.com/questions/1742866/compute-crc-of-file-in-python 
+#
+def misc_calculate_checksums(full_file_path):
+    if full_file_path is None:
+        log_debug('No checksum to complete')
+        return None
+    
+    log_debug('Computing checksums "{}"'.format(full_file_path))
+    try:
+        f = open(full_file_path, 'rb')
+        crc_prev = 0
+        md5 = hashlib.md5()
+        sha1 = hashlib.sha1()
+        for piece in misc_read_file_in_chunks(f):
+            crc_prev = zlib.crc32(piece, crc_prev)
+            md5.update(piece)
+            sha1.update(piece)
+        crc_digest = '{:08X}'.format(crc_prev & 0xFFFFFFFF)
+        md5_digest = md5.hexdigest()
+        sha1_digest = sha1.hexdigest()
+        size = os.path.getsize(full_file_path)
+    except:
+        log_debug('(Exception) In misc_calculate_checksums()')
+        log_debug('Returning None')
+        return None
+    checksums = {
+        'crc'  : crc_digest.upper(),
+        'md5'  : md5_digest.upper(),
+        'sha1' : sha1_digest.upper(),
+        'size' : size,
+    }
+
+    return checksums
+
+def misc_calculate_stream_checksums(file_bytes):
+    log_debug('Computing checksums of bytes stream...'.format(len(file_bytes)))
+    crc_prev = 0
+    md5 = hashlib.md5()
+    sha1 = hashlib.sha1()
+    # Process bytes stream block by block
+    # for piece in misc_read_bytes_in_chunks(file_bytes):
+    #     crc_prev = zlib.crc32(piece, crc_prev)
+    #     md5.update(piece)
+    #     sha1.update(piece)
+    # Process bytes in one go
+    crc_prev = zlib.crc32(file_bytes, crc_prev)
+    md5.update(file_bytes)
+    sha1.update(file_bytes)
+    crc_digest = '{:08X}'.format(crc_prev & 0xFFFFFFFF)
+    md5_digest = md5.hexdigest()
+    sha1_digest = sha1.hexdigest()
+    size = len(file_bytes)
+
+    checksums = {
+        'crc'  : crc_digest.upper(),
+        'md5'  : md5_digest.upper(),
+        'sha1' : sha1_digest.upper(),
+        'size' : size,
+    }
+
+    return checksums
+
+# Replace an item in dictionary. If dict_in is an OrderedDict then keep original order.
+# Returns a dict or OrderedDict
+def misc_replace_fav(dict_in, old_item_key, new_item_key, new_value):
+    if type(dict_in) is dict:
+        dict_in.pop(old_item_key)
+        dict_in[new_item_key] = new_value
+        return dict_in
+    elif type(dict_in) is collections.OrderedDict:
+        # In this case create a new OrderedDict to respect original order.
+        # This implementation is slow and naive but I don't care, OrderedDict are only use
+        # when editing ROM Collections.
+        dict_out = collections.OrderedDict()
+        for key in dict_in:
+            if key == old_item_key:
+                dict_out[new_item_key] = new_value
+            else:
+                dict_out[key] = dict_in[key]
+        return dict_out
+    else:
+        raise TypeError
+
 # -------------------------------------------------------------------------------------------------
 # Filesystem abstract base class
 # This class and classes that inherit this one always take and return Unicode string paths.
@@ -2243,31 +2405,31 @@ def log_debug_KR(str_text):
         if isinstance(str_text, str): str_text = str_text.decode('utf-8')
 
         # At this point we are sure str_text is a unicode string.
-        log_text = u'AML DEBUG: ' + str_text
+        log_text = u'AEL DEBUG: ' + str_text
         xbmc.log(log_text.encode('utf-8'), level = xbmc.LOGNOTICE)
 
 def log_verb_KR(str_text):
     if current_log_level >= LOG_VERB:
         if isinstance(str_text, str): str_text = str_text.decode('utf-8')
-        log_text = u'AML VERB : ' + str_text
+        log_text = u'AEL VERB : ' + str_text
         xbmc.log(log_text.encode('utf-8'), level = xbmc.LOGNOTICE)
 
 def log_info_KR(str_text):
     if current_log_level >= LOG_INFO:
         if isinstance(str_text, str): str_text = str_text.decode('utf-8')
-        log_text = u'AML INFO : ' + str_text
+        log_text = u'AEL INFO : ' + str_text
         xbmc.log(log_text.encode('utf-8'), level = xbmc.LOGNOTICE)
 
 def log_warning_KR(str_text):
     if current_log_level >= LOG_WARNING:
         if isinstance(str_text, str): str_text = str_text.decode('utf-8')
-        log_text = u'AML WARN : ' + str_text
+        log_text = u'AEL WARN : ' + str_text
         xbmc.log(log_text.encode('utf-8'), level = xbmc.LOGWARNING)
 
 def log_error_KR(str_text):
     if current_log_level >= LOG_ERROR:
         if isinstance(str_text, str): str_text = str_text.decode('utf-8')
-        log_text = u'AML ERROR: ' + str_text
+        log_text = u'AEL ERROR: ' + str_text
         xbmc.log(log_text.encode('utf-8'), level = xbmc.LOGERROR)
 
 #
@@ -2298,15 +2460,16 @@ def log_error_Python(str):
 #  1) ret = kodi_dialog_OK('Launch ROM?')
 #  2) ret = kodi_dialog_OK('Launch ROM?', title = 'AEL - Launcher')
 #
-def kodi_dialog_OK(row1, row2 = '', row3 = '', title = 'Advanced Emulator Launcher'):
-    return xbmcgui.Dialog().ok(title, row1, row2, row3)
+def kodi_dialog_OK(text, title = 'Advanced Emulator Launcher'):
+    xbmcgui.Dialog().ok(title, text)
 
-#
 # Returns True is YES was pressed, returns False if NO was pressed or dialog canceled.
-#
-def kodi_dialog_yesno(row1, row2 = '', row3 = '', title = 'Advanced Emulator Launcher'):
-    ret = xbmcgui.Dialog().yesno(title, row1, row2, row3)
-    return ret
+def kodi_dialog_yesno(text, title = 'Advanced Emulator Launcher'):
+    return xbmcgui.Dialog().yesno(title, text)
+
+# Returns True is YES was pressed, returns False if NO was pressed or dialog canceled.
+def kodi_dialog_yesno_custom(text, yeslabel_str, nolabel_str, title = 'Advanced Emulator Launcher'):
+    return xbmcgui.Dialog().yesno(title, text, yeslabel = yeslabel_str, nolabel = nolabel_str)
 
 def kodi_dialog_yesno_timer(text, timer_ms = 30000, title = 'Advanced Emulator Launcher'):
     return xbmcgui.Dialog().yesno(title, text, autoclose = timer_ms)
@@ -2747,8 +2910,17 @@ class KodiListDialog(object):
     def __init__(self):
         self.dialog = xbmcgui.Dialog()
 
-    def select(self, title, options_list, preselect_idx = None):
-        selection = self.dialog.select(title, options_list, preselect = preselect_idx)
+    def select(self, title, options_list, preselect_idx = 0, use_details = False):
+        # --- Execute select dialog menu logic ---
+        # Kodi Krypton bug: if preselect is used then dialog never returns < 0 even if cancel
+        # button is pressed. This bug has been solved in Leia.
+        # See https://forum.kodi.tv/showthread.php?tid=337011
+        if kodi_running_version >= KODI_VERSION_LEIA:
+            selection = self.dialog.select(title, options_list, useDetails = use_details, preselect = preselect_idx)
+        else:
+            log_debug('Executing code < KODI_VERSION_LEIA to overcome select() bug.')
+            selection = self.dialog.select(title, options_list, useDetails = use_details)
+            
         if selection < 0:
             return None
 
@@ -2761,12 +2933,20 @@ class KodiOrdDictionaryDialog(object):
     def __init__(self):
         self.dialog = xbmcgui.Dialog()
 
-    def select(self, title, options_odict, preselect = None):
+    def select(self, title, options_odict, preselect = None, use_details = False):
         preselected_index = -1
         if preselect is not None:
             preselected_value = options_odict[preselect]
             preselected_index = options_odict.values().index(preselected_value)
-        selection = self.dialog.select(title, options_odict.values(), preselect = preselected_index)
+        # --- Execute select dialog menu logic ---
+        # Kodi Krypton bug: if preselect is used then dialog never returns < 0 even if cancel
+        # button is pressed. This bug has been solved in Leia.
+        # See https://forum.kodi.tv/showthread.php?tid=337011
+        if kodi_running_version >= KODI_VERSION_LEIA:
+            selection = self.dialog.select(title, options_odict.values(), useDetails = use_details, preselect = preselected_index)
+        else:
+            log_debug('Executing code < KODI_VERSION_LEIA to overcome select() bug.')
+            selection = self.dialog.select(title, options_odict.values(), useDetails = use_details)
 
         if selection < 0:
             return None
@@ -2784,38 +2964,57 @@ class KodiProgressDialog(object):
         self.dialog_active = False
         self.progressDialog = xbmcgui.DialogProgress()
 
-    def startProgress(self, message, num_steps = 100):
+    def startProgress(self, message1, num_steps = 100, message2 = None):
         self.num_steps = num_steps
         self.progress = 0
         self.dialog_active = True
-        self.progressDialog.create(self.title, message)
+        self.message1 = message1
+        self.message2 = message2
+        if self.message2:
+            self.progressDialog.create(self.title, self.message1, self.message2)
+        else:
+            # The ' ' is to avoid a bug in Kodi progress dialog that keeps old messages 2
+            # if an empty string is passed.
+            self.progressDialog.create(self.title, self.message1, ' ')
         self.progressDialog.update(self.progress)
 
     # Update progress and optionally update messages as well.
-    def updateProgress(self, step_index, message1 = '', message2 = ''):
+    # If not messages specified then keep current message/s
+    def updateProgress(self, step_index, message1 = None, message2 = None):
         self.progress = int((step_index * 100) / self.num_steps)
-        self.message1 = message1
-        self.message2 = message2
-        if message2:
-            self.progressDialog.update(self.progress, message1, message2)
+        # Update both messages
+        if message1 and message2:
+            self.message1 = message1
+            self.message2 = message2
+        # Update only message1 and deletes message2. There could be no message2 without a message1.
+        elif message1:
+            self.message1 = message1
+            self.message2 = None
+            self.progressDialog.update(self.progress, message1, ' ')
+            return
+        if self.message2:
+            self.progressDialog.update(self.progress, self.message1, self.message2)
         else:
-            self.progressDialog.update(self.progress, message1)
+            # The ' ' is to avoid a bug in Kodi progress dialog that keeps old messages 2
+            # if an empty string is passed.
+            self.progressDialog.update(self.progress, self.message1, ' ')
+
+    # Update dialog message but keep same progress. message2 is removed if any.
+    def updateMessage(self, message1):
+        self.message1 = message1
+        self.message2 = None
+        self.progressDialog.update(self.progress, self.message1, ' ')
+
+    # Update message2 and keeps same progress and message1
+    def updateMessage2(self, message2):
+        self.message2 = message2
+        self.progressDialog.update(self.progress, self.message1, self.message2)
 
     # Update dialog message but keep same progress.
     def updateMessages(self, message1, message2):
         self.message1 = message1
         self.message2 = message2
         self.progressDialog.update(self.progress, message1, message2)
-
-    # Update dialog message but keep same progress.
-    def updateMessage(self, message1):
-        self.message1 = message1
-        self.progressDialog.update(self.progress, message1)
-
-    # Update message2 and keeps same progress and message1
-    def updateMessage2(self, message2):
-        self.message2 = message2
-        self.progressDialog.update(self.progress, self.message1, message2)
 
     def isCanceled(self):
         # If the user pressed the cancel button before then return it now.
@@ -2840,13 +3039,17 @@ class KodiProgressDialog(object):
         self.progressDialog.close()
         self.dialog_active = False
 
-    # Reopens a previously closed dialog, remembering the messages and the progress.
+    # Reopens a previously closed dialog, remembering the messages and the progress it had
+    # when it was closed.
     def reopen(self):
-        if not self.message2:
+        if self.message2:
             self.progressDialog.create(self.title, self.message1, self.message2)
         else:
-            self.progressDialog.create(self.title, self.message1)
+            # The ' ' is to avoid a bug in Kodi progress dialog that keeps old messages 2
+            # if an empty string is passed.
+            self.progressDialog.create(self.title, self.message1, ' ')
         self.progressDialog.update(self.progress)
+        self.dialog_active = True
 
 # To be used as a base class.
 class KodiProgressDialog_Chrisism(object):

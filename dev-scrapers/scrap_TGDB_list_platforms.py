@@ -63,7 +63,7 @@ for pname in sorted(pname_dic, reverse = False):
         print('Exception UnicodeEncodeError')
         print('ID {0}'.format(platform['id']))
         sys.exit(0)
-table_str_list = text_render_table_str(table_str)
+table_str_list = text_render_table(table_str)
 sl.extend(table_str_list)
 text_str = '\n'.join(sl)
 print('\n'.join(table_str_list))
@@ -75,7 +75,7 @@ text_file.write(text_str.encode('utf8'))
 text_file.close()
 
 # --- Output file in CSV format ---
-text_csv_slist = text_render_table_CSV_slist(table_str)
+text_csv_slist = text_render_table_CSV(table_str)
 text_csv = '\n'.join(text_csv_slist)
 print('Writing file "{}"'.format(csv_fname))
 text_file = open(csv_fname, 'w')

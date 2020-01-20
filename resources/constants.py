@@ -156,57 +156,62 @@ UNKNOWN_ROMS_PARENT_ID = 'Unknown_ROMs_Parent'
 # -------------------------------------------------------------------------------------------------
 # Metadata
 # -------------------------------------------------------------------------------------------------
-# launcher['nointro_display_mode'] values default NOINTRO_DMODE_ALL
-NOINTRO_DMODE_ALL       = 'All ROMs'
-NOINTRO_DMODE_HAVE      = 'Have ROMs'
-NOINTRO_DMODE_HAVE_UNK  = 'Have or Unknown ROMs'
-NOINTRO_DMODE_HAVE_MISS = 'Have or Missing ROMs'
-NOINTRO_DMODE_MISS      = 'Missing ROMs'
-NOINTRO_DMODE_MISS_UNK  = 'Missing or Unknown ROMs'
-NOINTRO_DMODE_UNK       = 'Unknown ROMs'
-NOINTRO_DMODE_LIST = [
-    NOINTRO_DMODE_ALL,
-    NOINTRO_DMODE_HAVE,
-    NOINTRO_DMODE_HAVE_UNK, 
-    NOINTRO_DMODE_HAVE_MISS,
-    NOINTRO_DMODE_MISS,
-    NOINTRO_DMODE_MISS_UNK,
-    NOINTRO_DMODE_UNK
+# launcher['audit_state'] values default AUDIT_STATE_OFF
+AUDIT_STATE_ON  = 'Audit ON'
+AUDIT_STATE_OFF = 'Audit OFF'
+AUDIT_STATE_LIST = [
+    AUDIT_STATE_ON,
+    AUDIT_STATE_OFF,
+]
+
+# launcher['audit_display_mode'] values default NOINTRO_DMODE_ALL
+AUDIT_DMODE_ALL       = 'All ROMs'
+AUDIT_DMODE_HAVE      = 'Have ROMs'
+AUDIT_DMODE_HAVE_UNK  = 'Have or Unknown ROMs'
+AUDIT_DMODE_HAVE_MISS = 'Have or Missing ROMs'
+AUDIT_DMODE_MISS      = 'Missing ROMs'
+AUDIT_DMODE_MISS_UNK  = 'Missing or Unknown ROMs'
+AUDIT_DMODE_UNK       = 'Unknown ROMs'
+AUDIT_DMODE_LIST = [
+    AUDIT_DMODE_ALL,
+    AUDIT_DMODE_HAVE,
+    AUDIT_DMODE_HAVE_UNK,
+    AUDIT_DMODE_HAVE_MISS,
+    AUDIT_DMODE_MISS,
+    AUDIT_DMODE_MISS_UNK,
+    AUDIT_DMODE_UNK,
 ]
 
 # launcher['display_mode'] default value LAUNCHER_DMODE_FLAT
 LAUNCHER_DMODE_FLAT   = 'Flat mode'
 LAUNCHER_DMODE_PCLONE = 'Parent/Clone mode'
-LAUNCHER_DMODE_1G1R   = '1G1R mode'
 LAUNCHER_DMODE_LIST = [
     LAUNCHER_DMODE_FLAT,
     LAUNCHER_DMODE_PCLONE,
-    LAUNCHER_DMODE_1G1R
 ]
 
-# Mandatory variables in XML:
-# id              string MD5 hash
-# name            string ROM name
-# finished        bool default False
-# nointro_status  string ['Have', 'Miss', 'Added', 'Unknown', 'None'] default 'None'
-NOINTRO_STATUS_HAVE    = 'Have'
-NOINTRO_STATUS_MISS    = 'Miss'
-NOINTRO_STATUS_UNKNOWN = 'Unknown'
-NOINTRO_STATUS_NONE    = 'None'
-NOINTRO_STATUS_LIST = [
-    NOINTRO_STATUS_HAVE,
-    NOINTRO_STATUS_MISS,
-    NOINTRO_STATUS_UNKNOWN,
-    NOINTRO_STATUS_NONE
+# rom['nointro_status'] values default AUDIT_STATUS_NONE
+AUDIT_STATUS_HAVE    = 'Have'
+AUDIT_STATUS_MISS    = 'Miss'
+AUDIT_STATUS_UNKNOWN = 'Unknown'
+AUDIT_STATUS_EXTRA   = 'Extra'
+AUDIT_STATUS_NONE    = 'None'
+AUDIT_STATUS_LIST = [
+    AUDIT_STATUS_HAVE,
+    AUDIT_STATUS_MISS,
+    AUDIT_STATUS_UNKNOWN,
+    AUDIT_STATUS_EXTRA,
+    AUDIT_STATUS_NONE,
 ]
 
+# rom['pclone_status'] values default PCLONE_STATUS_NONE
 PCLONE_STATUS_PARENT = 'Parent'
 PCLONE_STATUS_CLONE  = 'Clone'
 PCLONE_STATUS_NONE   = 'None'
 PCLONE_STATUS_LIST = [
     PCLONE_STATUS_PARENT,
     PCLONE_STATUS_CLONE,
-    PCLONE_STATUS_NONE
+    PCLONE_STATUS_NONE,
 ]
 
 # m_esrb string ESRB_LIST default ESRB_PENDING
@@ -224,7 +229,7 @@ ESRB_LIST = [
     ESRB_EVERYONE_10,
     ESRB_TEEN,
     ESRB_MATURE,
-    ESRB_ADULTS_ONLY
+    ESRB_ADULTS_ONLY,
 ]
 
 # m_nplayers values default ''

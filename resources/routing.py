@@ -60,6 +60,8 @@ class Router(object):
             self.handle = int(sys.argv[1])
         else:
             self.handle = -1
+        
+        self.base_url = sys.argv[0]
         self.args = {}
     
     def action(self, command, protected=False):
@@ -79,6 +81,19 @@ class Router(object):
         if func not in self._rules:
             self._rules[func] = []
         self._rules[func].append(rule)
+
+    def create_url(self, command, **kwargs):
+        url = '{0}?com={1}'.format(self.base_url, command)
+        if kwargs is not None:
+            # python 3: for key in kwargs.items():
+            for key, value in kwargs.iteritems():
+                url = url + '&{0}={1}'.format(key, value)
+                
+        return url
+
+    def create_run_plugin_cmd(self, command, **kwargs):
+        url = self.create_url(command, **kwargs)
+        return 'XBMC.RunPlugin({0})'.format(url)
 
     def run(self, argv=None):
         if argv is None:
@@ -105,6 +120,11 @@ class Router(object):
         if 'romID' in self.args:
             self.args['romID'] = self.args['romID'][0]
 
+        # normalize?
+        for arg in self.args:
+            if isinstance(self.args[arg], list) and len(self.args[arg]) == 1:
+                self.args[arg] = self.args[arg][0]
+        
         applicable_rules = []
         arg_set = set(self.args.keys())
         log_debug('run() Arguments set: {}'.format(arg_set))

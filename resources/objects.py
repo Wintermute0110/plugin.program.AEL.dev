@@ -83,182 +83,6 @@ MAME_ASSET_SETTING_KEYS = {
     ASSET_MANUAL_ID : ''
 }
 
-#
-# Get extensions to search for files
-# Input : ['png', 'jpg']
-# Output: ['png', 'jpg', 'PNG', 'JPG']
-#
-def asset_get_filesearch_extension_list(exts):
-    ext_list = list(exts)
-    for ext in exts:
-        ext_list.append(ext.upper())
-
-    return ext_list
-
-#
-# Gets extensions to be used in Kodi file dialog.
-# Input : ['png', 'jpg']
-# Output: '.png|.jpg'
-#
-def asset_get_dialog_extension_list(exts):
-    ext_string = ''
-    for ext in exts:
-        ext_string += '.' + ext + '|'
-    # >> Remove trailing '|' character
-    ext_string = ext_string[:-1]
-
-    return ext_string
-
-#
-# Gets extensions to be used in regular expressions.
-# Input : ['png', 'jpg']
-# Output: '(png|jpg)'
-#
-def asset_get_regexp_extension_list(exts):
-    ext_string = ''
-    for ext in exts:
-        ext_string += ext + '|'
-    # >> Remove trailing '|' character
-    ext_string = ext_string[:-1]
-
-    return '(' + ext_string + ')'
-
-# -------------------------------------------------------------------------------------------------
-# Asset functions
-# -------------------------------------------------------------------------------------------------
-
-#
-# Get artwork user configured to be used as icon/fanart/... for Categories/Launchers
-#
-def asset_get_default_asset_Category(object_dic, object_key, default_asset = ''):
-    conf_asset_key = object_dic[object_key]
-    asset_path     = object_dic[conf_asset_key] if conf_asset_key in object_dic and object_dic[conf_asset_key] else default_asset
-
-    return asset_path
-
-#
-# Same for ROMs
-#
-def asset_get_default_asset_Launcher_ROM(rom, launcher, object_key, default_asset = ''):
-
-    if object_key not in launcher:
-        return default_asset
-
-    conf_asset_key = launcher[object_key]
-    asset_path     = rom[conf_asset_key] if rom[conf_asset_key] else default_asset
-
-    return asset_path
-
-#
-# Gets a human readable name string for the asset field name.
-#
-def assets_get_asset_name_str(default_asset):
-    asset_name_str = ''
-
-    # >> ROMs
-    if   default_asset == 's_title':     asset_name_str = 'Title'
-    elif default_asset == 's_snap':      asset_name_str = 'Snap'
-    elif default_asset == 's_boxfront':  asset_name_str = 'Boxfront'
-    elif default_asset == 's_boxback':   asset_name_str = 'Boxback'
-    elif default_asset == 's_cartridge': asset_name_str = 'Cartridge'
-    elif default_asset == 's_fanart':    asset_name_str = 'Fanart'
-    elif default_asset == 's_banner':    asset_name_str = 'Banner'
-    elif default_asset == 's_clearlogo': asset_name_str = 'Clearlogo'
-    elif default_asset == 's_flyer':     asset_name_str = 'Flyer'
-    elif default_asset == 's_map':       asset_name_str = 'Map'
-    elif default_asset == 's_manual':    asset_name_str = 'Manual'
-    elif default_asset == 's_trailer':   asset_name_str = 'Trailer'
-    # >> Categories/Launchers
-    elif default_asset == 's_icon':       asset_name_str = 'Icon'
-    elif default_asset == 's_poster':     asset_name_str = 'Poster'
-    elif default_asset == 's_controller': asset_name_str = 'Controller'
-    else:
-        kodi_notify_warn('Wrong asset key {0}'.format(default_asset))
-        log_error('assets_get_asset_name_str() Wrong default_thumb {0}'.format(default_asset))
-    
-    return asset_name_str
-
-#
-# This must match the order of the list Category_asset_ListItem_list in _command_edit_category()
-#
-def assets_choose_Category_mapped_artwork(dict_object, key, index):
-    if   index == 0: dict_object[key] = 's_icon'
-    elif index == 1: dict_object[key] = 's_fanart'
-    elif index == 2: dict_object[key] = 's_banner'
-    elif index == 3: dict_object[key] = 's_poster'
-    elif index == 4: dict_object[key] = 's_clearlogo'
-
-#
-# This must match the order of the list Category_asset_ListItem_list in _command_edit_category()
-#
-def assets_get_Category_mapped_asset_idx(dict_object, key):
-    if   dict_object[key] == 's_icon':       index = 0
-    elif dict_object[key] == 's_fanart':     index = 1
-    elif dict_object[key] == 's_banner':     index = 2
-    elif dict_object[key] == 's_poster':     index = 3
-    elif dict_object[key] == 's_clearlogo':  index = 4
-    else:                                    index = 0
-
-    return index
-
-#
-# This must match the order of the list Launcher_asset_ListItem_list in _command_edit_launcher()
-#
-def assets_choose_Launcher_mapped_artwork(dict_object, key, index):
-    if   index == 0: dict_object[key] = 's_icon'
-    elif index == 1: dict_object[key] = 's_fanart'
-    elif index == 2: dict_object[key] = 's_banner'
-    elif index == 3: dict_object[key] = 's_poster'
-    elif index == 4: dict_object[key] = 's_clearlogo'
-    elif index == 5: dict_object[key] = 's_controller'
-
-#
-# This must match the order of the list Launcher_asset_ListItem_list in _command_edit_launcher()
-#
-def assets_get_Launcher_mapped_asset_idx(dict_object, key):
-    if   dict_object[key] == 's_icon':       index = 0
-    elif dict_object[key] == 's_fanart':     index = 1
-    elif dict_object[key] == 's_banner':     index = 2
-    elif dict_object[key] == 's_poster':     index = 3
-    elif dict_object[key] == 's_clearlogo':  index = 4
-    elif dict_object[key] == 's_controller': index = 5
-    else:                                    index = 0
-
-    return index
-
-#
-# This must match the order of the list ROM_asset_str_list in _command_edit_launcher()
-#
-def assets_choose_ROM_mapped_artwork(dict_object, key, index):
-    if   index == 0: dict_object[key] = 's_title'
-    elif index == 1: dict_object[key] = 's_snap'
-    elif index == 2: dict_object[key] = 's_boxfront'
-    elif index == 3: dict_object[key] = 's_boxback'
-    elif index == 4: dict_object[key] = 's_cartridge'
-    elif index == 5: dict_object[key] = 's_fanart'
-    elif index == 6: dict_object[key] = 's_banner'
-    elif index == 7: dict_object[key] = 's_clearlogo'
-    elif index == 8: dict_object[key] = 's_flyer'
-    elif index == 9: dict_object[key] = 's_map'
-
-#
-# This must match the order of the list ROM_asset_str_list in _command_edit_launcher()
-#
-def assets_get_ROM_mapped_asset_idx(dict_object, key):
-    if   dict_object[key] == 's_title':     index = 0
-    elif dict_object[key] == 's_snap':      index = 1
-    elif dict_object[key] == 's_boxfront':  index = 2
-    elif dict_object[key] == 's_boxback':   index = 3
-    elif dict_object[key] == 's_cartridge': index = 4
-    elif dict_object[key] == 's_fanart':    index = 5
-    elif dict_object[key] == 's_banner':    index = 6
-    elif dict_object[key] == 's_clearlogo': index = 7
-    elif dict_object[key] == 's_flyer':     index = 8
-    elif dict_object[key] == 's_map':       index = 9
-    else:                                   index = 0
-
-    return index
-
 # -------------------------------------------------------------------------------------------------
 # Gets all required information about an asset: path, name, etc.
 # Returns an object with all the information
@@ -288,439 +112,508 @@ class AssetInfo:
     def __hash__(self):
         return self.id.__hash__()
 
-# --- Static list of asset information objects ----------------------------------------------------
-# >> These are used very frequently so I think it is better to have a cached statis list.
-a_icon = AssetInfo()
-a_icon.id               = ASSET_ICON_ID
-a_icon.key              = 's_icon'
-a_icon.default_key      = 'default_icon'
-a_icon.rom_default_key  = 'roms_default_icon'
-a_icon.name             = 'Icon'
-a_icon.name_plural      = 'Icons'
-a_icon.fname_infix      = 'icon'
-a_icon.kind_str         = 'image'
-a_icon.exts             = asset_get_filesearch_extension_list(IMAGE_EXTENSION_LIST)
-a_icon.exts_dialog      = asset_get_dialog_extension_list(IMAGE_EXTENSION_LIST)
-a_icon.path_key         = 'path_icon'
-
-a_fanart = AssetInfo()
-a_fanart.id              = ASSET_FANART_ID
-a_fanart.key             = 's_fanart'
-a_fanart.default_key     = 'default_fanart'
-a_fanart.rom_default_key = 'roms_default_fanart'
-a_fanart.name            = 'Fanart'
-a_fanart.plural          = 'Fanarts'
-a_fanart.fname_infix     = 'fanart'
-a_fanart.kind_str        = 'image'
-a_fanart.exts            = asset_get_filesearch_extension_list(IMAGE_EXTENSION_LIST)
-a_fanart.exts_dialog     = asset_get_dialog_extension_list(IMAGE_EXTENSION_LIST)
-a_fanart.path_key        = 'path_fanart'
-
-a_banner = AssetInfo()
-a_banner.id                = ASSET_BANNER_ID
-a_banner.key               = 's_banner'
-a_banner.default_key       = 'default_banner'
-a_banner.rom_default_key   = 'roms_default_banner'
-a_banner.name              = 'Banner'
-a_banner.description       = 'Banner / Marquee'
-a_banner.plural            = 'Banners'
-a_banner.fname_infix       = 'banner'
-a_banner.kind_str          = 'image'
-a_banner.exts              = asset_get_filesearch_extension_list(IMAGE_EXTENSION_LIST)
-a_banner.exts_dialog       = asset_get_dialog_extension_list(IMAGE_EXTENSION_LIST)
-a_banner.path_key          = 'path_banner'
-
-a_poster = AssetInfo()        
-a_poster.id                = ASSET_POSTER_ID
-a_poster.key               = 's_poster'
-a_poster.default_key       = 'default_poster'
-a_poster.rom_default_key   = 'roms_default_poster'
-a_poster.name              = 'Poster'
-a_poster.plural            = 'Posters'
-a_poster.fname_infix       = 'poster'
-a_poster.kind_str          = 'image'
-a_poster.exts              = asset_get_filesearch_extension_list(IMAGE_EXTENSION_LIST)
-a_poster.exts_dialog       = asset_get_dialog_extension_list(IMAGE_EXTENSION_LIST)
-a_poster.path_key          = 'path_poster'
-
-a_clearlogo = AssetInfo()
-a_clearlogo.id              = ASSET_CLEARLOGO_ID
-a_clearlogo.key             = 's_clearlogo'
-a_clearlogo.default_key     = 'default_clearlogo'
-a_clearlogo.rom_default_key = 'roms_default_clearlogo'
-a_clearlogo.name            = 'Clearlogo'
-a_clearlogo.plural          = 'Clearlogos'
-a_clearlogo.fname_infix     = 'clearlogo'
-a_clearlogo.kind_str        = 'image'
-a_clearlogo.exts            = asset_get_filesearch_extension_list(IMAGE_EXTENSION_LIST)
-a_clearlogo.exts_dialog     = asset_get_dialog_extension_list(IMAGE_EXTENSION_LIST)
-a_clearlogo.path_key        = 'path_clearlogo'
-
-a_controller = AssetInfo()
-a_controller.id             = ASSET_CONTROLLER_ID
-a_controller.key            = 's_controller'
-a_controller.name           = 'Controller'
-a_controller.plural         = 'Controllers'
-a_controller.fname_infix    = 'controller'
-a_controller.kind_str       = 'image'
-a_controller.exts           = asset_get_filesearch_extension_list(IMAGE_EXTENSION_LIST)
-a_controller.exts_dialog    = asset_get_dialog_extension_list(IMAGE_EXTENSION_LIST)
-a_controller.path_key       = 'path_controller'
-
-a_trailer = AssetInfo()
-a_trailer.id                = ASSET_TRAILER_ID
-a_trailer.key               = 's_trailer'
-a_trailer.name              = 'Trailer'
-a_trailer.plural            = 'Trailers'
-a_trailer.fname_infix       = 'trailer'
-a_trailer.kind_str          = 'video'
-a_trailer.exts              = asset_get_filesearch_extension_list(TRAILER_EXTENSION_LIST)
-a_trailer.exts_dialog       = asset_get_dialog_extension_list(TRAILER_EXTENSION_LIST)
-a_trailer.path_key          = 'path_trailer'
-
-a_title = AssetInfo()
-a_title.id                  = ASSET_TITLE_ID
-a_title.key                 = 's_title'
-a_title.name                = 'Title'
-a_title.plural              = 'Titles'
-a_title.fname_infix         = 'title'
-a_title.kind_str            = 'image'
-a_title.exts                = asset_get_filesearch_extension_list(IMAGE_EXTENSION_LIST)
-a_title.exts_dialog         = asset_get_dialog_extension_list(IMAGE_EXTENSION_LIST)
-a_title.path_key            = 'path_title'
-
-a_snap = AssetInfo()
-a_snap.id                   = ASSET_SNAP_ID
-a_snap.key                  = 's_snap'
-a_snap.name                 = 'Snap'
-a_snap.plural               = 'Snaps'
-a_snap.fname_infix          = 'snap'
-a_snap.kind_str             = 'image'
-a_snap.exts                 = asset_get_filesearch_extension_list(IMAGE_EXTENSION_LIST)
-a_snap.exts_dialog          = asset_get_dialog_extension_list(IMAGE_EXTENSION_LIST)
-a_snap.path_key             = 'path_snap'
-
-a_boxfront = AssetInfo()
-a_boxfront.id               = ASSET_BOXFRONT_ID
-a_boxfront.key              = 's_boxfront'
-a_boxfront.name             = 'Boxfront'
-a_boxfront.description      = 'Boxfront / Cabinet'
-a_boxfront.plural           = 'Boxfronts'
-a_boxfront.fname_infix      = 'boxfront'
-a_boxfront.kind_str         = 'image'
-a_boxfront.exts             = asset_get_filesearch_extension_list(IMAGE_EXTENSION_LIST)
-a_boxfront.exts_dialog      = asset_get_dialog_extension_list(IMAGE_EXTENSION_LIST)
-a_boxfront.path_key         = 'path_boxfront'
-
-a_boxback = AssetInfo()
-a_boxback.id                = ASSET_BOXBACK_ID
-a_boxback.key               = 's_boxback'
-a_boxback.name              = 'Boxback'
-a_boxback.description       = 'Boxback / CPanel'
-a_boxback.plural            = 'Boxbacks'
-a_boxback.fname_infix       = 'boxback'
-a_boxback.kind_str          = 'image'
-a_boxback.exts              = asset_get_filesearch_extension_list(IMAGE_EXTENSION_LIST)
-a_boxback.exts_dialog       = asset_get_dialog_extension_list(IMAGE_EXTENSION_LIST)
-a_boxback.path_key          = 'path_boxback'
-
-a_cartridge = AssetInfo()
-a_cartridge.id              = ASSET_CARTRIDGE_ID
-a_cartridge.key             = 's_cartridge'
-a_cartridge.name            = 'Cartridge'
-a_cartridge.description     = 'Cartridge / PCB'
-a_cartridge.plural          = 'Cartridges'
-a_cartridge.fname_infix     = 'cartridge'
-a_cartridge.kind_str        = 'image'
-a_cartridge.exts            = asset_get_filesearch_extension_list(IMAGE_EXTENSION_LIST)
-a_cartridge.exts_dialog     = asset_get_dialog_extension_list(IMAGE_EXTENSION_LIST)
-a_cartridge.path_key        = 'path_cartridge'
-
-a_flyer = AssetInfo()
-a_flyer.id                  = ASSET_FLYER_ID
-a_flyer.key                 = 's_flyer'
-a_flyer.name                = 'Flyer'
-a_flyer.plural              = 'Flyers'
-a_flyer.fname_infix         = 'flyer'
-a_flyer.kind_str            = 'image'
-a_flyer.fname_infix         = 'poster'
-a_flyer.exts                = asset_get_filesearch_extension_list(IMAGE_EXTENSION_LIST)
-a_flyer.exts_dialog         = asset_get_dialog_extension_list(IMAGE_EXTENSION_LIST)
-a_flyer.path_key            = 'path_flyer'
-
-a_map = AssetInfo()
-a_map.id                    = ASSET_MAP_ID
-a_map.key                   = 's_map'
-a_map.name                  = 'Map'
-a_map.plural                = 'Maps'
-a_map.fname_infix           = 'map'
-a_map.kind_str              = 'image'
-a_map.exts                  = asset_get_filesearch_extension_list(IMAGE_EXTENSION_LIST)
-a_map.exts_dialog           = asset_get_dialog_extension_list(IMAGE_EXTENSION_LIST)
-a_map.path_key              = 'path_map'
-
-a_manual = AssetInfo()
-a_manual.id                 = ASSET_MANUAL_ID
-a_manual.key                = 's_manual'
-a_manual.name               = 'Manual'
-a_manual.plural             = 'Manuals'
-a_manual.fname_infix        = 'manual'
-a_manual.kind_str           = 'manual'
-a_manual.exts               = asset_get_filesearch_extension_list(MANUAL_EXTENSION_LIST)
-a_manual.exts_dialog        = asset_get_dialog_extension_list(MANUAL_EXTENSION_LIST)
-a_manual.path_key           = 'path_manual'
-
-a_3dbox = AssetInfo()
-a_3dbox.ID                  = ASSET_3DBOX_ID
-a_3dbox.key                 = 's_3dbox'
-a_3dbox.name               = '3D Box'
-a_3dbox.fname_infix         = '3dbox'
-a_3dbox.kind_str            = 'image'
-a_3dbox.exts                = asset_get_filesearch_extension_list(IMAGE_EXTENSION_LIST)
-a_3dbox.exts_dialog         = asset_get_dialog_extension_list(IMAGE_EXTENSION_LIST)
-a_3dbox.path_key            = 'path_3dbox'
-
-#
-# Get AssetInfo object by asset ID.
-#
-ASSET_INFO_DICT = {
-    ASSET_ICON_ID       : a_icon,
-    ASSET_FANART_ID     : a_fanart,
-    ASSET_BANNER_ID     : a_banner,
-    ASSET_POSTER_ID     : a_poster,
-    ASSET_CLEARLOGO_ID  : a_clearlogo,
-    ASSET_CONTROLLER_ID : a_controller,
-    ASSET_TRAILER_ID    : a_trailer,
-    ASSET_TITLE_ID      : a_title,
-    ASSET_SNAP_ID       : a_snap,
-    ASSET_BOXFRONT_ID   : a_boxfront,
-    ASSET_BOXBACK_ID    : a_boxback,
-    ASSET_CARTRIDGE_ID  : a_cartridge,
-    ASSET_FLYER_ID      : a_flyer,
-    ASSET_MAP_ID        : a_map,
-    ASSET_MANUAL_ID     : a_manual,
-    ASSET_3DBOX_ID      : a_3dbox
-}
-
-#
-# Get AssetInfo object by database key.
-#
-ASSET_INFO_KEY_DICT = {
-    's_icon'       : a_icon,
-    's_fanart'     : a_fanart,
-    's_banner'     : a_banner,
-    's_poster'     : a_poster,
-    's_clearlogo'  : a_clearlogo,
-    's_controller' : a_controller,
-    's_trailer'    : a_trailer,
-    's_title'      : a_title,
-    's_snap'       : a_snap,
-    's_boxfront'   : a_boxfront,
-    's_boxback'    : a_boxback,
-    's_cartridge'  : a_cartridge,
-    's_flyer'      : a_flyer,
-    's_map'        : a_map,
-    's_manual'     : a_manual,
-}
-
 #
 # Class to interact with the asset engine.
 # This class uses the asset_infos, dictionary of AssetInfo indexed by asset_ID
 #
 class AssetInfoFactory(object):
         
+    def __init__(self):
+        
+        # default collections
+        self.ASSET_INFO_ID_DICT = {} # ID -> object
+        self.ASSET_INFO_KEY_DICT = {} # Key -> object
+        
+        self._load_asset_data()
+        
+    # -------------------------------------------------------------------------------------------------
+    # Asset functions
+    # -------------------------------------------------------------------------------------------------
     def get_all(self):
-        return list(ASSET_INFO_DICT.values())
+        return list(self.ASSET_INFO_ID_DICT.values())
 
+    def get_asset_info(self, asset_ID):
+        asset_info = self.ASSET_INFO_ID_DICT.get(asset_ID, None)
+
+        if asset_info is None:
+            log_error('get_asset_info() Wrong asset_ID = {0}'.format(asset_ID))
+            return AssetInfo()
+
+        return asset_info
+    
+    # Returns the corresponding assetinfo object for the
+    # given key (eg: 's_icon')
+    def get_asset_info_by_key(self, asset_key):
+        asset_info = self.ASSET_INFO_KEY_DICT.get(asset_key, None)
+
+        if asset_info is None:
+            log_error('get_asset_info_by_key() Wrong asset_key = {0}'.format(asset_key))
+            return AssetInfo()
+
+        return asset_info 
+          
     def get_asset_kinds_for_roms(self):
         rom_asset_kinds = []
         for rom_asset_id in ROM_ASSET_ID_LIST:
-            rom_asset_kinds.append(ASSET_INFO_DICT[rom_asset_id])
+            rom_asset_kinds.append(self.ASSET_INFO_ID_DICT[rom_asset_id])
 
         return rom_asset_kinds
 
     # IDs is a list (or an iterable that returns an asset ID
     # Returns a list of AssetInfo objects.
-    def get_asset_list_by_IDs(self, IDs):
+    # If the asset kind is given, it will filter out assets not corresponding to that kind.
+    def get_asset_list_by_IDs(self, IDs, kind = None):
         asset_info_list = []
-        for asset_ID in IDs: asset_info_list.append(ASSET_INFO_DICT[asset_ID])
+        for asset_ID in IDs:
+            asset_info = self.ASSET_INFO_ID_DICT.get(asset_ID, None)
+            if asset_info is None:
+                log_error('get_asset_list_by_IDs() Wrong asset_ID = {0}'.format(asset_ID))
+                continue
+            if kind is None or asset_info.kind_str == kind: asset_info_list.append(asset_info)
 
         return asset_info_list
-
-    def get_asset_info(self, asset_kind):
-        asset_info = ASSET_INFO_DICT.get(asset_kind, None)
-
-        if asset_info is None:
-            log_error('get_asset_info() Wrong asset_kind = {0}'.format(asset_kind))
-            return AssetInfo()
-
-        return asset_info
-
+  
     # todo: use 1 type of identifier not number constants and name strings ('s_icon')
     def get_asset_info_by_namekey(self, name_key):
         if name_key == '': return None
         kind = ASSET_KEYS_TO_CONSTANTS[name_key]
 
         return self.get_asset_info(kind)
+    #
+    # Get extensions to search for files
+    # Input : ['png', 'jpg']
+    # Output: ['png', 'jpg', 'PNG', 'JPG']
+    #
+    def asset_get_filesearch_extension_list(self, exts):
+        ext_list = list(exts)
+        for ext in exts:
+            ext_list.append(ext.upper())
+
+        return ext_list
+
+    #
+    # Gets extensions to be used in Kodi file dialog.
+    # Input : ['png', 'jpg']
+    # Output: '.png|.jpg'
+    #
+    def asset_get_dialog_extension_list(self, exts):
+        ext_string = ''
+        for ext in exts:
+            ext_string += '.' + ext + '|'
+        # >> Remove trailing '|' character
+        ext_string = ext_string[:-1]
+
+        return ext_string
+
+    #
+    # Scheme SUFIX uses suffixes for artwork. All artwork assets are stored in the same directory.
+    # Name example: "Sonic The Hedgehog (Europe)_a3e_title"
+    # First 3 characters of the objectID are added to avoid overwriting of images. For example, in the
+    # Favourites special category there could be ROMs with the same name for different systems.
+    #
+    # asset_ID         -> Assets ID defined in constants.py
+    # AssetPath        -> FileName object
+    # asset_base_noext -> Unicode string
+    # objectID         -> Object MD5 ID fingerprint (Unicode string)
+    #
+    # Returns a FileName object
+    #
+    def assets_get_path_noext_SUFIX(self, asset_ID, AssetPath, asset_base_noext, objectID = '000'):
+        objectID_str = '_' + objectID[0:3]
+
+        if   asset_ID == ASSET_ICON_ID:       asset_path_noext_FN = AssetPath.pjoin(asset_base_noext + objectID_str + '_icon')
+        elif asset_ID == ASSET_FANART_ID:     asset_path_noext_FN = AssetPath.pjoin(asset_base_noext + objectID_str + '_fanart')
+        elif asset_ID == ASSET_BANNER_ID:     asset_path_noext_FN = AssetPath.pjoin(asset_base_noext + objectID_str + '_banner')
+        elif asset_ID == ASSET_POSTER_ID:     asset_path_noext_FN = AssetPath.pjoin(asset_base_noext + objectID_str + '_poster')
+        elif asset_ID == ASSET_CLEARLOGO_ID:  asset_path_noext_FN = AssetPath.pjoin(asset_base_noext + objectID_str + '_clearlogo')
+        elif asset_ID == ASSET_CONTROLLER_ID: asset_path_noext_FN = AssetPath.pjoin(asset_base_noext + objectID_str + '_controller')
+        elif asset_ID == ASSET_TRAILER_ID:    asset_path_noext_FN = AssetPath.pjoin(asset_base_noext + objectID_str + '_trailer')
+        elif asset_ID == ASSET_TITLE_ID:      asset_path_noext_FN = AssetPath.pjoin(asset_base_noext + objectID_str + '_title')
+        elif asset_ID == ASSET_SNAP_ID:       asset_path_noext_FN = AssetPath.pjoin(asset_base_noext + objectID_str + '_snap')
+        elif asset_ID == ASSET_BOXFRONT_ID:   asset_path_noext_FN = AssetPath.pjoin(asset_base_noext + objectID_str + '_boxfront')
+        elif asset_ID == ASSET_BOXBACK_ID:    asset_path_noext_FN = AssetPath.pjoin(asset_base_noext + objectID_str + '_boxback')
+        elif asset_ID == ASSET_CARTRIDGE_ID:  asset_path_noext_FN = AssetPath.pjoin(asset_base_noext + objectID_str + '_cartridge')
+        elif asset_ID == ASSET_FLYER_ID:      asset_path_noext_FN = AssetPath.pjoin(asset_base_noext + objectID_str + '_flyer')
+        elif asset_ID == ASSET_MAP_ID:        asset_path_noext_FN = AssetPath.pjoin(asset_base_noext + objectID_str + '_map')
+        elif asset_ID == ASSET_MANUAL_ID:     asset_path_noext_FN = AssetPath.pjoin(asset_base_noext + objectID_str + '_manual')
+        else:
+            asset_path_noext_FN = FileName('')
+            log_error('assets_get_path_noext_SUFIX() Wrong asset_ID = {0}'.format(asset_ID))
+
+        return asset_path_noext_FN
+
+    #
+    # Search for local assets and place found files into a list.
+    # Returned list all has assets as defined in ROM_ASSET_LIST.
+    # This function is used in the ROM Scanner.
+    #
+    # launcher               -> launcher dictionary
+    # ROMFile                -> Rom object
+    # enabled_ROM_asset_list -> list of booleans
+    #
+    def assets_search_local_cached_assets(self, launcher, ROM, enabled_ROM_asset_list):
+        log_verb('assets_search_local_cached_assets() Searching for ROM local assets...')
+        local_asset_list = [None] * len(ROM_ASSET_ID_LIST)
+        ROMFile = ROM.get_file()
+        rom_basename_noext = ROMFile.getBaseNoExt()
+        for i, asset_kind in enumerate(ROM_ASSET_ID_LIST):
+            AInfo = g_assetFactory.get_asset_info(asset_kind)
+            if not enabled_ROM_asset_list[i]:
+                log_verb('assets_search_local_cached_assets() Disabled {0:<9}'.format(AInfo.name))
+                continue
+            local_asset = misc_search_file_cache(launcher.get_asset_path(AInfo), rom_basename_noext, AInfo.exts)
+
+            if local_asset:
+                local_asset_list[i] = local_asset
+                log_verb('assets_search_local_cached_assets() Found    {0:<9} "{1}"'.format(AInfo.name, local_asset_list[i]))
+            else:
+                local_asset_list[i] = None
+                log_verb('assets_search_local_cached_assets() Missing  {0:<9}'.format(AInfo.name))
+
+        return local_asset_list
+
+    #
+    # Search for local assets and put found files into a list.
+    # This function is used in _roms_add_new_rom() where there is no need for a file cache.
+    #
+    def assets_search_local_assets(self, launcher, ROMFile, enabled_ROM_asset_list):
+        log_verb('assets_search_local_assets() Searching for ROM local assets...')
+        local_asset_list = [''] * len(ROM_ASSET_ID_LIST)
+        for i, asset_kind in enumerate(ROM_ASSET_ID_LIST):
+            AInfo = g_assetFactory.get_asset_info(asset_kind)
+            if not enabled_ROM_asset_list[i]:
+                log_verb('assets_search_local_assets() Disabled {0:<9}'.format(AInfo.name))
+                continue
+            asset_path = launcher.get_asset_path(AInfo)
+            local_asset = misc_look_for_file(asset_path, ROMFile.getBaseNoExt(), AInfo.exts)
+
+            if local_asset:
+                local_asset_list[i] = local_asset.getPath()
+                log_verb('assets_search_local_assets() Found    {0:<9} "{1}"'.format(AInfo.name, local_asset_list[i]))
+            else:
+                local_asset_list[i] = ''
+                log_verb('assets_search_local_assets() Missing  {0:<9}'.format(AInfo.name))
+
+        return local_asset_list
+
+    #
+    # A) This function checks if all path_* share a common root directory. If so
+    #    this function returns that common directory as an Unicode string.
+    # B) If path_* do not share a common root directory this function returns ''.
+    #
+    def assets_get_ROM_asset_path(self, launcher):
+        ROM_asset_path = ''
+        duplicated_bool_list = [False] * len(ROM_ASSET_ID_LIST)
+        AInfo_first = g_assetFactory.get_asset_info(ROM_ASSET_ID_LIST[0])
+        path_first_asset_FN = FileName(launcher[AInfo_first.path_key])
+        log_debug('assets_get_ROM_asset_path() path_first_asset "{0}"'.format(path_first_asset_FN.getPath()))
+        for i, asset_kind in enumerate(ROM_ASSET_ID_LIST):
+            AInfo = g_assetFactory.get_asset_info(asset_kind)
+            current_path_FN = FileName(launcher[AInfo.path_key])
+            if current_path_FN.getDir() == path_first_asset_FN.getDir():
+                duplicated_bool_list[i] = True
+
+        return path_first_asset_FN.getDir() if all(duplicated_bool_list) else ''
+
+    #
+    # Gets extensions to be used in regular expressions.
+    # Input : ['png', 'jpg']
+    # Output: '(png|jpg)'
+    #
+    @staticmethod
+    def asset_get_regexp_extension_list(exts):
+        ext_string = ''
+        for ext in exts:
+            ext_string += ext + '|'
+        # >> Remove trailing '|' character
+        ext_string = ext_string[:-1]
+
+        return '(' + ext_string + ')'
+    
+    #
+    # This must match the order of the list Category_asset_ListItem_list in _command_edit_category()
+    # TODO: deprecated?
+    @staticmethod
+    def assets_choose_Category_mapped_artwork(dict_object, key, index):
+        if   index == 0: dict_object[key] = 's_icon'
+        elif index == 1: dict_object[key] = 's_fanart'
+        elif index == 2: dict_object[key] = 's_banner'
+        elif index == 3: dict_object[key] = 's_poster'
+        elif index == 4: dict_object[key] = 's_clearlogo'
+
+    #
+    # This must match the order of the list Category_asset_ListItem_list in _command_edit_category()
+    # TODO: deprecated?
+    @staticmethod
+    def assets_get_Category_mapped_asset_idx(dict_object, key):
+        if   dict_object[key] == 's_icon':       index = 0
+        elif dict_object[key] == 's_fanart':     index = 1
+        elif dict_object[key] == 's_banner':     index = 2
+        elif dict_object[key] == 's_poster':     index = 3
+        elif dict_object[key] == 's_clearlogo':  index = 4
+        else:                                    index = 0
+
+        return index
+
+    #
+    # This must match the order of the list Launcher_asset_ListItem_list in _command_edit_launcher()
+    # TODO: deprecated?
+    @staticmethod
+    def assets_choose_Launcher_mapped_artwork(dict_object, key, index):
+        if   index == 0: dict_object[key] = 's_icon'
+        elif index == 1: dict_object[key] = 's_fanart'
+        elif index == 2: dict_object[key] = 's_banner'
+        elif index == 3: dict_object[key] = 's_poster'
+        elif index == 4: dict_object[key] = 's_clearlogo'
+        elif index == 5: dict_object[key] = 's_controller'
+
+    #
+    # This must match the order of the list Launcher_asset_ListItem_list in _command_edit_launcher()
+    # TODO: deprecated?
+    @staticmethod
+    def assets_get_Launcher_mapped_asset_idx(dict_object, key):
+        if   dict_object[key] == 's_icon':       index = 0
+        elif dict_object[key] == 's_fanart':     index = 1
+        elif dict_object[key] == 's_banner':     index = 2
+        elif dict_object[key] == 's_poster':     index = 3
+        elif dict_object[key] == 's_clearlogo':  index = 4
+        elif dict_object[key] == 's_controller': index = 5
+        else:                                    index = 0
+
+        return index
+
+    # since we are using a single instance for the assetinfo factory we can automatically load
+    # all the asset objects into the memory
+    def _load_asset_data(self): 
+                
+        # >> These are used very frequently so I think it is better to have a cached list.
+        a = AssetInfo()
+        a.id                            = ASSET_ICON_ID
+        a.key                           = 's_icon'
+        a.default_key                   = 'default_icon'
+        a.rom_default_key               = 'roms_default_icon'
+        a.name                          = 'Icon'
+        a.name_plural                   = 'Icons'
+        a.fname_infix                   = 'icon'
+        a.kind_str                      = 'image'
+        a.exts                          = self.asset_get_filesearch_extension_list(IMAGE_EXTENSION_LIST)
+        a.exts_dialog                   = self.asset_get_dialog_extension_list(IMAGE_EXTENSION_LIST)
+        a.path_key                      = 'path_icon'        
+        self.ASSET_INFO_ID_DICT[a.id]   = a
+        self.ASSET_INFO_KEY_DICT[a.key] = a
+
+        a = AssetInfo()
+        a.id                            = ASSET_FANART_ID
+        a.key                           = 's_fanart'
+        a.default_key                   = 'default_fanart'
+        a.rom_default_key               = 'roms_default_fanart'
+        a.name                          = 'Fanart'
+        a.plural                        = 'Fanarts'
+        a.fname_infix                   = 'fanart'
+        a.kind_str                      = 'image'
+        a.exts                          = self.asset_get_filesearch_extension_list(IMAGE_EXTENSION_LIST)
+        a.exts_dialog                   = self.asset_get_dialog_extension_list(IMAGE_EXTENSION_LIST)
+        a.path_key                      = 'path_fanart'
+        self.ASSET_INFO_ID_DICT[a.id]   = a
+        self.ASSET_INFO_KEY_DICT[a.key] = a
+
+        a = AssetInfo()
+        a.id                            = ASSET_BANNER_ID
+        a.key                           = 's_banner'
+        a.default_key                   = 'default_banner'
+        a.rom_default_key               = 'roms_default_banner'
+        a.name                          = 'Banner'
+        a.description                   = 'Banner / Marquee'
+        a.plural                        = 'Banners'
+        a.fname_infix                   = 'banner'
+        a.kind_str                      = 'image'
+        a.exts                          = self.asset_get_filesearch_extension_list(IMAGE_EXTENSION_LIST)
+        a.exts_dialog                   = self.asset_get_dialog_extension_list(IMAGE_EXTENSION_LIST)
+        a.path_key                      = 'path_banner'
+        self.ASSET_INFO_ID_DICT[a.id]   = a
+        self.ASSET_INFO_KEY_DICT[a.key] = a
+
+        a = AssetInfo()        
+        a.id                            = ASSET_POSTER_ID
+        a.key                           = 's_poster'
+        a.default_key                   = 'default_poster'
+        a.rom_default_key               = 'roms_default_poster'
+        a.name                          = 'Poster'
+        a.plural                        = 'Posters'
+        a.fname_infix                   = 'poster'
+        a.kind_str                      = 'image'
+        a.exts                          = self.asset_get_filesearch_extension_list(IMAGE_EXTENSION_LIST)
+        a.exts_dialog                   = self.asset_get_dialog_extension_list(IMAGE_EXTENSION_LIST)
+        a.path_key                      = 'path_poster'
+        self.ASSET_INFO_ID_DICT[a.id]   = a
+        self.ASSET_INFO_KEY_DICT[a.key] = a
+
+        a = AssetInfo()
+        a.id                            = ASSET_CLEARLOGO_ID
+        a.key                           = 's_clearlogo'
+        a.default_key                   = 'default_clearlogo'
+        a.rom_default_key               = 'roms_default_clearlogo'
+        a.name                          = 'Clearlogo'
+        a.plural                        = 'Clearlogos'
+        a.fname_infix                   = 'clearlogo'
+        a.kind_str                      = 'image'
+        a.exts                          = self.asset_get_filesearch_extension_list(IMAGE_EXTENSION_LIST)
+        a.exts_dialog                   = self.asset_get_dialog_extension_list(IMAGE_EXTENSION_LIST)
+        a.path_key                      = 'path_clearlogo'
+        self.ASSET_INFO_ID_DICT[a.id]   = a
+        self.ASSET_INFO_KEY_DICT[a.key] = a
+
+        a = AssetInfo()
+        a.id                            = ASSET_CONTROLLER_ID
+        a.key                           = 's_controller'
+        a.default_key                   = 'default_controller'
+        a.name                          = 'Controller'
+        a.plural                        = 'Controllers'
+        a.fname_infix                   = 'controller'
+        a.kind_str                      = 'image'
+        a.exts                          = self.asset_get_filesearch_extension_list(IMAGE_EXTENSION_LIST)
+        a.exts_dialog                   = self.asset_get_dialog_extension_list(IMAGE_EXTENSION_LIST)
+        a.path_key                      = 'path_controller'
+        self.ASSET_INFO_ID_DICT[a.id]   = a
+        self.ASSET_INFO_KEY_DICT[a.key] = a
+
+        a = AssetInfo()
+        a.id                            = ASSET_TRAILER_ID
+        a.key                           = 's_trailer'
+        a.name                          = 'Trailer'
+        a.plural                        = 'Trailers'
+        a.fname_infix                   = 'trailer'
+        a.kind_str                      = 'video'
+        a.exts                          = self.asset_get_filesearch_extension_list(TRAILER_EXTENSION_LIST)
+        a.exts_dialog                   = self.asset_get_dialog_extension_list(TRAILER_EXTENSION_LIST)
+        a.path_key                      = 'path_trailer'
+        self.ASSET_INFO_ID_DICT[a.id]   = a
+        self.ASSET_INFO_KEY_DICT[a.key] = a
+
+        a = AssetInfo()
+        a.id                            = ASSET_TITLE_ID
+        a.key                           = 's_title'
+        a.default_key                   = 'default_title'
+        a.rom_default_key               = 'roms_default_title'
+        a.name                          = 'Title'
+        a.plural                        = 'Titles'
+        a.fname_infix                   = 'title'
+        a.kind_str                      = 'image'
+        a.exts                          = self.asset_get_filesearch_extension_list(IMAGE_EXTENSION_LIST)
+        a.exts_dialog                   = self.asset_get_dialog_extension_list(IMAGE_EXTENSION_LIST)
+        a.path_key                      = 'path_title'
+        self.ASSET_INFO_ID_DICT[a.id]   = a
+        self.ASSET_INFO_KEY_DICT[a.key] = a
+
+        a = AssetInfo()
+        a.id                            = ASSET_SNAP_ID
+        a.key                           = 's_snap'
+        a.name                          = 'Snap'
+        a.plural                        = 'Snaps'
+        a.fname_infix                   = 'snap'
+        a.kind_str                      = 'image'
+        a.exts                          = self.asset_get_filesearch_extension_list(IMAGE_EXTENSION_LIST)
+        a.exts_dialog                   = self.asset_get_dialog_extension_list(IMAGE_EXTENSION_LIST)
+        a.path_key                      = 'path_snap'
+        self.ASSET_INFO_ID_DICT[a.id]   = a
+        self.ASSET_INFO_KEY_DICT[a.key] = a
+
+        a = AssetInfo()
+        a.id                            = ASSET_BOXFRONT_ID
+        a.key                           = 's_boxfront'
+        a.name                          = 'Boxfront'
+        a.description                   = 'Boxfront / Cabinet'
+        a.plural                        = 'Boxfronts'
+        a.fname_infix                   = 'boxfront'
+        a.kind_str                      = 'image'
+        a.exts                          = self.asset_get_filesearch_extension_list(IMAGE_EXTENSION_LIST)
+        a.exts_dialog                   = self.asset_get_dialog_extension_list(IMAGE_EXTENSION_LIST)
+        a.path_key                      = 'path_boxfront'
+        self.ASSET_INFO_ID_DICT[a.id]   = a
+        self.ASSET_INFO_KEY_DICT[a.key] = a
+
+        a = AssetInfo()
+        a.id                            = ASSET_BOXBACK_ID
+        a.key                           = 's_boxback'
+        a.name                          = 'Boxback'
+        a.description                   = 'Boxback / CPanel'
+        a.plural                        = 'Boxbacks'
+        a.fname_infix                   = 'boxback'
+        a.kind_str                      = 'image'
+        a.exts                          = self.asset_get_filesearch_extension_list(IMAGE_EXTENSION_LIST)
+        a.exts_dialog                   = self.asset_get_dialog_extension_list(IMAGE_EXTENSION_LIST)
+        a.path_key                      = 'path_boxback'
+        self.ASSET_INFO_ID_DICT[a.id]   = a
+        self.ASSET_INFO_KEY_DICT[a.key] = a
+
+        a = AssetInfo()
+        a.id                            = ASSET_CARTRIDGE_ID
+        a.key                           = 's_cartridge'
+        a.name                          = 'Cartridge'
+        a.description                   = 'Cartridge / PCB'
+        a.plural                        = 'Cartridges'
+        a.fname_infix                   = 'cartridge'
+        a.kind_str                      = 'image'
+        a.exts                          = self.asset_get_filesearch_extension_list(IMAGE_EXTENSION_LIST)
+        a.exts_dialog                   = self.asset_get_dialog_extension_list(IMAGE_EXTENSION_LIST)
+        a.path_key                      = 'path_cartridge'
+        self.ASSET_INFO_ID_DICT[a.id]   = a
+        self.ASSET_INFO_KEY_DICT[a.key] = a
+
+        a = AssetInfo()
+        a.id                            = ASSET_FLYER_ID
+        a.key                           = 's_flyer'
+        a.name                          = 'Flyer'
+        a.plural                        = 'Flyers'
+        a.fname_infix                   = 'flyer'
+        a.kind_str                      = 'image'
+        a.fname_infix                   = 'poster'
+        a.exts                          = self.asset_get_filesearch_extension_list(IMAGE_EXTENSION_LIST)
+        a.exts_dialog                   = self.asset_get_dialog_extension_list(IMAGE_EXTENSION_LIST)
+        a.path_key                      = 'path_flyer'
+        self.ASSET_INFO_ID_DICT[a.id]   = a
+        self.ASSET_INFO_KEY_DICT[a.key] = a
+
+        a = AssetInfo()
+        a.id                            = ASSET_MAP_ID
+        a.key                           = 's_map'
+        a.name                          = 'Map'
+        a.plural                        = 'Maps'
+        a.fname_infix                   = 'map'
+        a.kind_str                      = 'image'
+        a.exts                          = self.asset_get_filesearch_extension_list(IMAGE_EXTENSION_LIST)
+        a.exts_dialog                   = self.asset_get_dialog_extension_list(IMAGE_EXTENSION_LIST)
+        a.path_key                      = 'path_map'
+        self.ASSET_INFO_ID_DICT[a.id]   = a
+        self.ASSET_INFO_KEY_DICT[a.key] = a
+
+        a = AssetInfo()
+        a.id                            = ASSET_MANUAL_ID
+        a.key                           = 's_manual'
+        a.name                          = 'Manual'
+        a.plural                        = 'Manuals'
+        a.fname_infix                   = 'manual'
+        a.kind_str                      = 'manual'
+        a.exts                          = self.asset_get_filesearch_extension_list(MANUAL_EXTENSION_LIST)
+        a.exts_dialog                   = self.asset_get_dialog_extension_list(MANUAL_EXTENSION_LIST)
+        a.path_key                      = 'path_manual'
+        self.ASSET_INFO_ID_DICT[a.id]   = a
+        self.ASSET_INFO_KEY_DICT[a.key] = a
+
+        a = AssetInfo()
+        a.id                            = ASSET_3DBOX_ID
+        a.key                           = 's_3dbox'
+        a.name                          = '3D Box'
+        a.fname_infix                   = '3dbox'
+        a.kind_str                      = 'image'
+        a.exts                          = self.asset_get_filesearch_extension_list(IMAGE_EXTENSION_LIST)
+        a.exts_dialog                   = self.asset_get_dialog_extension_list(IMAGE_EXTENSION_LIST)
+        a.path_key                      = 'path_3dbox'
+        self.ASSET_INFO_ID_DICT[a.id]   = a
+        self.ASSET_INFO_KEY_DICT[a.key] = a
 
 # --- Global object to get asset info ---
 g_assetFactory = AssetInfoFactory()
-
-#
-# Scheme DIR uses different directories for artwork and no sufixes.
-#
-# Assets    -> Assets info object
-# AssetPath -> FileName object
-# ROM       -> ROM name FileName object
-#
-# Returns a FileName object
-#
-def assets_get_path_noext_DIR(Asset, AssetPath, ROM):
-    return AssetPath + ROM.getBaseNoExt()
-
-#
-# Scheme SUFIX uses suffixes for artwork. All artwork assets are stored in the same directory.
-# Name example: "Sonic The Hedgehog (Europe)_a3e_title"
-# First 3 characters of the objectID are added to avoid overwriting of images. For example, in the
-# Favourites special category there could be ROMs with the same name for different systems.
-#
-# asset_ID         -> Assets ID defined in constants.py
-# AssetPath        -> FileName object
-# asset_base_noext -> Unicode string
-# objectID         -> Object MD5 ID fingerprint (Unicode string)
-#
-# Returns a FileName object
-#
-def assets_get_path_noext_SUFIX(asset_ID, AssetPath, asset_base_noext, objectID = '000'):
-    objectID_str = '_' + objectID[0:3]
-
-    if   asset_ID == ASSET_ICON_ID:       asset_path_noext_FN = AssetPath.pjoin(asset_base_noext + objectID_str + '_icon')
-    elif asset_ID == ASSET_FANART_ID:     asset_path_noext_FN = AssetPath.pjoin(asset_base_noext + objectID_str + '_fanart')
-    elif asset_ID == ASSET_BANNER_ID:     asset_path_noext_FN = AssetPath.pjoin(asset_base_noext + objectID_str + '_banner')
-    elif asset_ID == ASSET_POSTER_ID:     asset_path_noext_FN = AssetPath.pjoin(asset_base_noext + objectID_str + '_poster')
-    elif asset_ID == ASSET_CLEARLOGO_ID:  asset_path_noext_FN = AssetPath.pjoin(asset_base_noext + objectID_str + '_clearlogo')
-    elif asset_ID == ASSET_CONTROLLER_ID: asset_path_noext_FN = AssetPath.pjoin(asset_base_noext + objectID_str + '_controller')
-    elif asset_ID == ASSET_TRAILER_ID:    asset_path_noext_FN = AssetPath.pjoin(asset_base_noext + objectID_str + '_trailer')
-    elif asset_ID == ASSET_TITLE_ID:      asset_path_noext_FN = AssetPath.pjoin(asset_base_noext + objectID_str + '_title')
-    elif asset_ID == ASSET_SNAP_ID:       asset_path_noext_FN = AssetPath.pjoin(asset_base_noext + objectID_str + '_snap')
-    elif asset_ID == ASSET_BOXFRONT_ID:   asset_path_noext_FN = AssetPath.pjoin(asset_base_noext + objectID_str + '_boxfront')
-    elif asset_ID == ASSET_BOXBACK_ID:    asset_path_noext_FN = AssetPath.pjoin(asset_base_noext + objectID_str + '_boxback')
-    elif asset_ID == ASSET_CARTRIDGE_ID:  asset_path_noext_FN = AssetPath.pjoin(asset_base_noext + objectID_str + '_cartridge')
-    elif asset_ID == ASSET_FLYER_ID:      asset_path_noext_FN = AssetPath.pjoin(asset_base_noext + objectID_str + '_flyer')
-    elif asset_ID == ASSET_MAP_ID:        asset_path_noext_FN = AssetPath.pjoin(asset_base_noext + objectID_str + '_map')
-    elif asset_ID == ASSET_MANUAL_ID:     asset_path_noext_FN = AssetPath.pjoin(asset_base_noext + objectID_str + '_manual')
-    else:
-        asset_path_noext_FN = FileName('')
-        log_error('assets_get_path_noext_SUFIX() Wrong asset_ID = {0}'.format(asset_ID))
-
-    return asset_path_noext_FN
-
-# unconfigured_name_list  List of disabled asset names
-def asset_get_unconfigured_name_list(configured_bool_list):
-    unconfigured_name_list = []
-
-    for i, asset in enumerate(ROM_ASSET_ID_LIST):
-        A = g_assetFactory.get_asset_info(asset)
-        if not configured_bool_list[i]:
-            unconfigured_name_list.append(A.name)
-
-    return unconfigured_name_list
-
-#
-# Get a list of enabled assets.
-#
-# Returns tuple:
-# configured_bool_list    List of boolean values. It has all assets defined in ROM_ASSET_LIST
-# unconfigured_name_list  List of disabled asset names
-#
-# MOVE TO LAUNCHER
-def asset_get_configured_dir_list(launcher):
-    configured_bool_list   = [False] * len(ROM_ASSET_ID_LIST)
-    unconfigured_name_list = []
-
-    # >> Check if asset paths are configured or not
-    for i, asset in enumerate(ROM_ASSET_ID_LIST):
-        A = g_assetFactory.get_asset_info(asset)
-        configured_bool_list[i] = True if launcher[A.path_key] else False
-        if not configured_bool_list[i]: 
-            unconfigured_name_list.append(A.name)
-            log_verb('asset_get_enabled_asset_list() {0:<9} path unconfigured'.format(A.name))
-        else:
-            log_debug('asset_get_enabled_asset_list() {0:<9} path configured'.format(A.name))
-
-    return (configured_bool_list, unconfigured_name_list)
-#
-# Search for local assets and place found files into a list.
-# Returned list all has assets as defined in ROM_ASSET_LIST.
-# This function is used in the ROM Scanner.
-#
-# launcher               -> launcher dictionary
-# ROMFile                -> Rom object
-# enabled_ROM_asset_list -> list of booleans
-#
-def assets_search_local_cached_assets(launcher, ROM, enabled_ROM_asset_list):
-    log_verb('assets_search_local_cached_assets() Searching for ROM local assets...')
-    local_asset_list = [None] * len(ROM_ASSET_ID_LIST)
-    ROMFile = ROM.get_file()
-    rom_basename_noext = ROMFile.getBaseNoExt()
-    for i, asset_kind in enumerate(ROM_ASSET_ID_LIST):
-        AInfo = g_assetFactory.get_asset_info(asset_kind)
-        if not enabled_ROM_asset_list[i]:
-            log_verb('assets_search_local_cached_assets() Disabled {0:<9}'.format(AInfo.name))
-            continue
-        local_asset = misc_search_file_cache(launcher.get_asset_path(AInfo), rom_basename_noext, AInfo.exts)
-
-        if local_asset:
-            local_asset_list[i] = local_asset
-            log_verb('assets_search_local_cached_assets() Found    {0:<9} "{1}"'.format(AInfo.name, local_asset_list[i]))
-        else:
-            local_asset_list[i] = None
-            log_verb('assets_search_local_cached_assets() Missing  {0:<9}'.format(AInfo.name))
-
-    return local_asset_list
-
-#
-# Search for local assets and put found files into a list.
-# This function is used in _roms_add_new_rom() where there is no need for a file cache.
-#
-def assets_search_local_assets(launcher, ROMFile, enabled_ROM_asset_list):
-    log_verb('assets_search_local_assets() Searching for ROM local assets...')
-    local_asset_list = [''] * len(ROM_ASSET_ID_LIST)
-    for i, asset_kind in enumerate(ROM_ASSET_ID_LIST):
-        AInfo = g_assetFactory.get_asset_info(asset_kind)
-        if not enabled_ROM_asset_list[i]:
-            log_verb('assets_search_local_assets() Disabled {0:<9}'.format(AInfo.name))
-            continue
-        asset_path = launcher.get_asset_path(AInfo)
-        local_asset = misc_look_for_file(asset_path, ROMFile.getBaseNoExt(), AInfo.exts)
-
-        if local_asset:
-            local_asset_list[i] = local_asset.getPath()
-            log_verb('assets_search_local_assets() Found    {0:<9} "{1}"'.format(AInfo.name, local_asset_list[i]))
-        else:
-            local_asset_list[i] = ''
-            log_verb('assets_search_local_assets() Missing  {0:<9}'.format(AInfo.name))
-
-    return local_asset_list
-
-#
-# A) This function checks if all path_* share a common root directory. If so
-#    this function returns that common directory as an Unicode string.
-# B) If path_* do not share a common root directory this function returns ''.
-#
-def assets_get_ROM_asset_path(launcher):
-    ROM_asset_path = ''
-    duplicated_bool_list = [False] * len(ROM_ASSET_ID_LIST)
-    AInfo_first = g_assetFactory.get_asset_info(ROM_ASSET_ID_LIST[0])
-    path_first_asset_FN = FileName(launcher[AInfo_first.path_key])
-    log_debug('assets_get_ROM_asset_path() path_first_asset "{0}"'.format(path_first_asset_FN.getPath()))
-    for i, asset_kind in enumerate(ROM_ASSET_ID_LIST):
-        AInfo = g_assetFactory.get_asset_info(asset_kind)
-        current_path_FN = FileName(launcher[AInfo.path_key])
-        if current_path_FN.getDir() == path_first_asset_FN.getDir():
-            duplicated_bool_list[i] = True
-
-    return path_first_asset_FN.getDir() if all(duplicated_bool_list) else ''
 
 # #################################################################################################
 # #################################################################################################
@@ -1362,14 +1255,33 @@ class MetaDataItemABC(object):
 
         return self.entity_data[asset_info.key] != None and self.entity_data[asset_info.key] != ''
 
-    def get_asset_str(self, asset_info):
-        return self.entity_data[asset_info.key] if asset_info.key in self.entity_data else ''
-
+    # 
+    # Gets the asset path (str) of the given assetinfo type.
+    #
+    def get_asset_str(self, asset_info=None, asset_id=None, fallback = ''):
+        if asset_info is None and asset_id is None: return None
+        if asset_id is not None: asset_info = g_assetFactory.get_asset_info(asset_id)
+        
+        if asset_info.key in self.entity_data and self.entity_data[asset_info.key]:
+            return self.entity_data[asset_info.key] 
+        return fallback
+    
+    # 
+    # Gets the asset path (str) of the mapped asset type following
+    # the given input of either an assetinfo object or asset id.
+    #
+    def get_mapped_asset_str(self, asset_info=None, asset_id=None, fallback = ''):
+        asset_info = self.get_mapped_asset_info(asset_info, asset_id)
+        if asset_info.key in self.entity_data and self.entity_data[asset_info.key]:
+            return self.entity_data[asset_info.key] 
+        return fallback
+            
     def get_asset_FN(self, asset_info):
         if not asset_info or not asset_info.key in self.entity_data :
             return None
+        
         return self._get_value_as_filename(asset_info.key)
-
+        
     def set_asset(self, asset_info, path_FN):
         path = path_FN.getPath() if path_FN else ''
         self.entity_data[asset_info.key] = path
@@ -1381,12 +1293,38 @@ class MetaDataItemABC(object):
         return self._get_directory_filename_from_field('assets_path')        
 
     #
-    # Get a list of the assets that can be mapped.
-    # Returns a list of AssetInfo objects.
+    # Get a list of the assets that can be mapped to a defaultable asset.
+    # They must be images, no videos, no documents.
     #
-    def get_default_asset_list(self):
-        return g_assetFactory.get_asset_list_by_IDs(DEFAULTABLE_ASSET_ID_LIST)
-
+    @abc.abstractmethod
+    def get_mappable_asset_list(self): pass
+    
+    #
+    # Gets the actual assetinfo object that is mapped for
+    # the given assetinfo for this particular MetaDataItem.
+    #
+    def get_mapped_asset_info(self, asset_info=None, asset_id=None):
+        if asset_info is None and asset_id is None: return None
+        if asset_id is not None: asset_info = g_assetFactory.get_asset_info(asset_id)
+        
+        mapped_key = self.get_mapped_asset_key(asset_info)
+        mapped_asset_info = g_assetFactory.get_asset_info_by_key(mapped_key)
+        return mapped_asset_info
+    
+    #
+    # Gets the database filename mapped for asset_info.
+    # Note that the mapped asset uses diferent fields wheter it is a Category/Launcher/ROM
+    #
+    def get_mapped_asset_key(self, asset_info):
+        if asset_info.default_key is '':
+            log_error('Requested mapping for AssetInfo without default key. Type {}'.format(asset_info.id))
+            raise AddonError('Not supported asset type used. This might be a bug!')  
+            
+        return self.entity_data[asset_info.default_key]
+	
+    def set_mapped_asset_key(self, asset_info, mapped_to_info):
+        self.entity_data[asset_info.default_key] = mapped_to_info.key
+        
     def __str__(self):
         return '{}}#{}: {}'.format(self.get_object_name(), self.get_id(), self.get_name())
 
@@ -1470,17 +1408,7 @@ class Category(MetaDataItemABC):
     # They must be images, no videos, no documents.
     #
     def get_mappable_asset_list(self):
-        return g_assetFactory.get_asset_list_by_IDs(MAPPABLE_CATEGORY_ASSET_ID_LIST)
-
-    #
-    # Gets the database filename mapped for asset_info.
-    # Note that the mapped asset uses diferent fields wheter it is a Category/Launcher/ROM
-    #
-    def get_mapped_asset_key(self, asset_info):
-        return self.entity_data[asset_info.default_key]
-
-    def set_mapped_asset_key(self, asset_info, mapped_to_info):
-        self.entity_data[asset_info.default_key] = mapped_to_info.key
+        return g_assetFactory.get_asset_list_by_IDs(COLLECTION_ASSET_ID_LIST, 'image')
 
     def __str__(self):
         return super().__str__()
@@ -1521,41 +1449,17 @@ class VirtualCategory(MetaDataItemABC):
 # Class representing a ROM file you can play through AEL.
 # -------------------------------------------------------------------------------------------------
 class ROM(MetaDataItemABC):
-    def __init__(self, rom_data = None):
-        #super(PATHS, addon_settings, entity_data, objectRepository)
-        super(ROM, self).__init__(None, None, rom_data, None) #todo
-        if self.entity_data is None:
-            self.entity_data = {
-             'id' : misc_generate_random_SID(),
-             'm_name' : '',
-             'm_year' : '',
-             'm_genre' : '',
-             'm_developer' : '',
-             'm_nplayers' : '',
-             'm_esrb' : ESRB_PENDING,
-             'm_rating' : '',
-             'm_plot' : '',
-             'filename' : '',
-             'disks' : [],
-             'altapp' : '',
-             'altarg' : '',
-             'finished' : False,
-             'nointro_status' : NOINTRO_STATUS_NONE,
-             'pclone_status' : PCLONE_STATUS_NONE,
-             'cloneof' : '',
-             's_title' : '',
-             's_snap' : '',
-             's_boxfront' : '',
-             's_boxback' : '',
-             's_cartridge' : '',
-             's_fanart' : '',
-             's_banner' : '',
-             's_clearlogo' : '',
-             's_flyer' : '',
-             's_map' : '',
-             's_manual' : '',
-             's_trailer' : ''
-             }
+        
+    def __init__(self, rom_data = None):        
+        if rom_data is None:
+            rom_data = fs_new_rom()
+            rom_data['id'] = misc_generate_random_SID()
+            rom_data['type'] = OBJ_ROM
+            
+        # back/parent reference 
+        self.launcher = None
+        
+        super(ROM, self).__init__(None, None, rom_data, None)
 
     # is this virtual only? Should we make a VirtualRom(Rom)?
     def get_launcher_id(self):
@@ -1568,7 +1472,7 @@ class ROM(MetaDataItemABC):
         return self.entity_data['nointro_status']
 
     def get_pclone_status(self):
-        return self.entity_data['pclone_status']
+        return self.entity_data['pclone_status'] if 'pclone_status' in self.entity_data else ''
 
     def get_clone(self):
         return self.entity_data['cloneof']
@@ -1612,7 +1516,7 @@ class ROM(MetaDataItemABC):
         return self.entity_data['m_esrb']
 
     def get_favourite_status(self):
-        return self.entity_data['fav_status']
+        return self.entity_data['fav_status'] if 'fav_status' in self.entity_data else None
 
     def get_launch_count(self):
         return self.entity_data['launch_count']
@@ -1660,16 +1564,21 @@ class ROM(MetaDataItemABC):
         return ROM(data)
 
     def delete_from_disk(self):
-        raise NotImplementedError
+        if self.launcher is None:
+            raise AddonError('Launcher not set for ROM')
         
-    def get_assets_kind(self): 
-        raise NotImplementedError
+        self.launcher.delete_ROM(self)
+        
+    def get_assets_kind(self): return KIND_ASSET_ROM
 	
     def get_object_name(self): 
         return "ROM"
 	
     def save_to_disk(self): 
-        raise NotImplementedError
+        if self.launcher is None:
+            raise AddonError('Launcher not set for ROM')
+        
+        self.launcher.save_ROM(self)
 
     # ---------------------------------------------------------------------------------------------
     # ROM asset methods
@@ -1683,11 +1592,17 @@ class ROM(MetaDataItemABC):
         asset_info_list = g_assetFactory.get_asset_list_by_IDs(ROM_ASSET_ID_LIST)
         asset_odict = collections.OrderedDict()
         for asset_info in asset_info_list:
-            asset_fname_str = self.entity_data[asset_info.key] if self.entity_data[asset_info.key] else ''
-            asset_odict[asset_info] = asset_fname_str
+            asset_odict[asset_info] = self.get_asset_str(asset_info)
 
         return asset_odict
     
+    #
+    # Get a list of the assets that can be mapped to a defaultable asset.
+    # They must be images, no videos, no documents.
+    #
+    def get_mappable_asset_list(self):
+        return g_assetFactory.get_asset_list_by_IDs(ROM_ASSET_ID_LIST, 'image')
+                 
     def get_edit_options(self, category_id):
         delete_rom_txt = 'Delete ROM'
         if category_id == VCATEGORY_FAVOURITES_ID:
@@ -2175,40 +2090,32 @@ class LauncherABC(MetaDataItemABC):
         return asset_odict
     
     #
-    # Get a list of enabled assets.
+    # Get a dictionary of ROM assets with enabled status as a boolean.
     #
-    # Returns tuple:
-    # configured_bool_list    List of boolean values. It has all assets defined in ROM_ASSET_ID_LIST
+    # Returns dict:
+    # asset_status_dict     Dict of AssetInfo object as key and enabled boolean as value
     #
-    def get_enabled_asset_list(self):
-        configured_bool_list   = [False] * len(ROM_ASSET_ID_LIST)
-        asset_info_list = g_assetFactory.get_asset_list_by_IDs(ROM_ASSET_ID_LIST)
+    def get_ROM_assets_enabled_statusses(self):
+        asset_status_dict   = collections.OrderedDict()
+        asset_info_list     = g_assetFactory.get_asset_list_by_IDs(ROM_ASSET_ID_LIST)
+        
         # >> Check if asset paths are configured or not
-        for i, asset in enumerate(asset_info_list):
-            configured_bool_list[i] = True if asset.path_key in self.entity_data and self.entity_data[asset.path_key] else False
-            if not configured_bool_list[i]:
-                log_verb('asset_get_enabled_asset_list() {0:<9} path unconfigured'.format(asset.name))
+        for asset in asset_info_list:
+            enabled = True if asset.path_key in self.entity_data and self.entity_data[asset.path_key] else False
+            asset_status_dict[asset] = enabled
+            if not enabled:
+                log_verb('get_ROM_assets_enabled_statusses() {0:<9} path unconfigured'.format(asset.name))
             else:
-                log_debug('asset_get_enabled_asset_list() {0:<9} path configured'.format(asset.name))
+                log_debug('get_ROM_assets_enabled_statusses() {0:<9} path configured'.format(asset.name))
 
-        return configured_bool_list
+        return asset_status_dict
     #
     # Get a list of the assets that can be mapped to a defaultable asset.
     # They must be images, no videos, no documents.
     # The defaultable assets are always the same: icon, fanart, banner, poster, clearlogo.
     #
     def get_mappable_asset_list(self):
-        return g_assetFactory.get_asset_list_by_IDs(MAPPABLE_LAUNCHER_ASSET_ID_LIST)
-
-    #
-    # Gets the database filename mapped for asset_info.
-    # Note that the mapped asset uses diferent fields wheter it is a Category/Launcher/ROM
-    #
-    def get_mapped_asset_key(self, asset_info):
-        return self.entity_data[asset_info.default_key]
-
-    def set_mapped_asset_key(self, asset_info, mapped_to_info):
-        self.entity_data[asset_info.default_key] = mapped_to_info.key
+        return g_assetFactory.get_asset_list_by_IDs(LAUNCHER_ASSET_ID_LIST, 'image')
 
     # ---------------------------------------------------------------------------------------------
     # NFO files for metadata
@@ -2783,32 +2690,36 @@ class ROMLauncherABC(LauncherABC):
         self.entity_data[key] = asset_dir_FN.getPath()
         log_debug('ROMLauncherABC::rom_assets_create_dir() Creating "{0}"'.format(asset_dir_FN.getPath()))
         asset_dir_FN.makedirs()
+    
+    def get_ROM_mappable_asset_list(self):
+        MAPPABLE_ASSETS = [ASSET_ICON_ID, ASSET_FANART_ID, ASSET_BANNER_ID, ASSET_CLEARLOGO_ID, ASSET_POSTER_ID]
+        return g_assetFactory.get_asset_list_by_IDs(MAPPABLE_ASSETS)
 
-    def get_ROM_assets(self):
-        assets = {}
-        assets[ASSET_BANNER]     = self.entity_data['s_banner']      if self.entity_data['s_banner']     else ''
-        assets[ASSET_ICON]       = self.entity_data['s_icon']        if self.entity_data['s_icon']       else ''
-        assets[ASSET_FANART]     = self.entity_data['s_fanart']      if self.entity_data['s_fanart']     else ''
-        assets[ASSET_POSTER]     = self.entity_data['s_poster']      if self.entity_data['s_poster']     else ''
-        assets[ASSET_CLEARLOGO]  = self.entity_data['s_clearlogo']   if self.entity_data['s_clearlogo']  else ''
-        assets[ASSET_CONTROLLER] = self.entity_data['s_controller']  if self.entity_data['s_controller'] else ''
-        assets[ASSET_TRAILER]    = self.entity_data['s_trailer']     if self.entity_data['s_trailer']    else ''
+    #
+    # Gets the actual assetinfo object that is mapped for
+    # the given (ROM) assetinfo for this particular MetaDataItem.
+    #
+    def get_mapped_ROM_asset_info(self, asset_info=None, asset_id=None):
+        if asset_info is None and asset_id is None: return None
+        if asset_id is not None: asset_info = g_assetFactory.get_asset_info(asset_id)
+        
+        mapped_key = self.get_mapped_ROM_asset_key(asset_info)
+        mapped_asset_info = g_assetFactory.get_asset_info_by_key(mapped_key)
+        return mapped_asset_info
+    #
+    # Gets the database filename mapped for asset_info.
+    # Note that the mapped asset uses diferent fields wheter it is a Category/Launcher/ROM
+    #
+    def get_mapped_ROM_asset_key(self, asset_info):
+        if asset_info.rom_default_key is '':
+            log_error('Requested mapping for AssetInfo without default key. Type {}'.format(asset_info.id))
+            raise AddonError('Not supported asset type used. This might be a bug!')  
+            
+        return self.entity_data[asset_info.rom_default_key]
 
-        return assets
-
-    def get_ROM_asset_default(self, asset_info):
-        return self.entity_data[asset_info.rom_default_key] if asset_info.rom_default_key in self.entity_data else None
-
-    def get_ROM_asset_defaults(self):
-        default_assets = {}
-        default_assets[ASSET_BANNER]     = ASSET_KEYS_TO_CONSTANTS[self.entity_data['roms_default_banner']]    if self.entity_data['roms_default_banner']     else ''
-        default_assets[ASSET_ICON]       = ASSET_KEYS_TO_CONSTANTS[self.entity_data['roms_default_icon']]      if self.entity_data['roms_default_icon']       else ''
-        default_assets[ASSET_FANART]     = ASSET_KEYS_TO_CONSTANTS[self.entity_data['roms_default_fanart']]    if self.entity_data['roms_default_fanart']     else ''
-        default_assets[ASSET_POSTER]     = ASSET_KEYS_TO_CONSTANTS[self.entity_data['roms_default_poster']]    if self.entity_data['roms_default_poster']     else ''
-        default_assets[ASSET_CLEARLOGO]  = ASSET_KEYS_TO_CONSTANTS[self.entity_data['roms_default_clearlogo']] if self.entity_data['roms_default_clearlogo']  else ''
-
-        return default_assets
-
+    def set_mapped_ROM_asset_key(self, asset_info, mapped_to_info):
+        self.entity_data[asset_info.rom_default_key] = mapped_to_info.key
+               
     # ---------------------------------------------------------------------------------------------
     # Utility functions of ROM Launchers
     # Use the same function names as in ObjectRepository class.
@@ -2847,6 +2758,7 @@ class ROMLauncherABC(LauncherABC):
             log_error('RomID {0} not found in romset'.format(rom_id))
             return None
         self.rom = self.roms[rom_id]
+        self.rom.launcher = self
 
         return self.rom
 
@@ -2989,6 +2901,11 @@ class ROMLauncherABC(LauncherABC):
         self.entity_data['roms_xml_file'] = xml_file
 
     def clear_roms(self):
+        # Set ROM Audit to OFF.
+        if self.entity_data['audit_state'] == AUDIT_STATE_ON:
+            log_info('Setting audit_state = AUDIT_STATE_OFF')
+            self.entity_data['audit_state'] = AUDIT_STATE_OFF
+        
         self.entity_data['num_roms'] = 0
         self.roms = {}
         self.romsetRepository.delete_all_by_launcher(self)
@@ -3026,7 +2943,7 @@ class ROMLauncherABC(LauncherABC):
         return mode
 
     def has_nointro_xml(self):
-        return self.entity_data['nointro_xml_file']
+        return self.entity_data['nointro_xml_file'] if 'nointro_xml_file' in self.entity_data else None
 
     def get_nointro_xml_filepath(self):
         return self._get_value_as_filename('nointro_xml_file')
@@ -3475,7 +3392,7 @@ class StandardRomLauncher(ROMLauncherABC):
             elif nointro_status == NOINTRO_STATUS_UNKNOWN and dp_mode in dp_modes_for_unknown:
                 filtered_roms.append(rom)
 
-            # >> Always copy roms with unknown status (NOINTRO_STATUS_NONE)
+            # >> Always copy roms with unknown status (AUDIT_STATUS_NONE)
             else:
                 filtered_roms.append(rom)
 
@@ -4368,14 +4285,19 @@ class NvidiaGameStreamLauncher(ROMLauncherABC):
 
         return options
 
+    #
+    # get_advanced_modification_options() is custom for every concrete launcher class.
+    #
     def get_advanced_modification_options(self):
         log_debug('NvidiaGameStreamLauncher::get_advanced_modification_options() Returning edit options')
         toggle_window_str = 'ON' if self.entity_data['toggle_window'] else 'OFF'
         non_blocking_str  = 'ON' if self.entity_data['non_blocking'] else 'OFF'
         
-        options = super(NvidiaGameStreamLauncher, self).get_advanced_modification_options()
-        options['TOGGLE_WINDOWED'] = "Toggle Kodi into windowed mode (now {0})".format(toggle_window_str)
+        options = collections.OrderedDict()
+        options['TOGGLE_WINDOWED']    = "Toggle Kodi into windowed mode (now {0})".format(toggle_window_str)
         options['TOGGLE_NONBLOCKING'] = "Non-blocking launcher (now {0})".format(non_blocking_str)
+        
+        return options
 
     # ---------------------------------------------------------------------------------------------
     # Execution methods
@@ -5434,7 +5356,7 @@ class RomFolderScanner(RomScannerStrategy):
             if self.settings['scan_ignore_bios']:
                 BIOS_re = re.findall('\[BIOS\]', ROM_file.getBase())
                 if len(BIOS_re) > 0:
-                    log_info("BIOS detected. Skipping ROM '{0}'".format(ROM_file.path))
+                    log_info("BIOS detected. Skipping ROM '{0}'".format(ROM_file.getPath()))
                     continue
 
             # ~~~~~ Process new ROM and add to the list ~~~~~
@@ -6063,7 +5985,7 @@ class RomDatFileScanner(object):
     #
     # Resets the No-Intro status
     # 1) Remove all ROMs which does not exist.
-    # 2) Set status of remaining ROMs to nointro_status = NOINTRO_STATUS_NONE
+    # 2) Set status of remaining ROMs to nointro_status = AUDIT_STATUS_NONE
     #
     def roms_reset_NoIntro_status_roms_reset_NoIntro_status(self, launcher, roms):
         log_info('roms_reset_NoIntro_status() Launcher has {0} ROMs'.format(len(roms)))
@@ -6073,11 +5995,11 @@ class RomDatFileScanner(object):
         num_removed_roms = self._roms_delete_missing_ROMs(roms)
         log_info('roms_reset_NoIntro_status() Removed {0} dead/missing ROMs'.format(num_removed_roms))
 
-        # >> Step 2) Set No-Intro status to NOINTRO_STATUS_NONE and
+        # >> Step 2) Set No-Intro status to AUDIT_STATUS_NONE and
         #            set PClone status to PCLONE_STATUS_NONE
         log_info('roms_reset_NoIntro_status() Resetting No-Intro status of all ROMs to None')
         for rom in roms: 
-            rom.set_nointro_status(NOINTRO_STATUS_NONE)
+            rom.set_nointro_status(AUDIT_STATUS_NONE)
             rom.set_pclone_status(PCLONE_STATUS_NONE)
 
         log_info('roms_reset_NoIntro_status() Now launcher has {0} ROMs'.format(len(roms)))
