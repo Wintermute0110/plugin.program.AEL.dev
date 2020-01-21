@@ -3072,14 +3072,21 @@ class VirtualLauncher(ROMLauncherABC):
                  executorFactory, romsetRepository, statsStrategy):
         # Look at the VirtualCategory construction for complete this.
         super(VirtualLauncher, self).__init__(
-            launcher_data, settings, None, romsetRepository, None, False
+            PATHS, settings, collection_dic, None, executorFactory, romsetRepository, statsStrategy
         )
 
+    # --------------------------------------------------------------------------------------------
+    # Core functions
+    # --------------------------------------------------------------------------------------------
     def get_object_name(self): return 'Virtual launcher'
 
     def get_assets_kind(self): return KIND_ASSET_LAUNCHER
 
     def get_launcher_type(self): return OBJ_LAUNCHER_VIRTUAL
+
+    def save_to_disk(self): pass
+
+    def delete_from_disk(self): pass
 
     def supports_launching_roms(self): return True
 
@@ -3099,11 +3106,14 @@ class VirtualLauncher(ROMLauncherABC):
 
     def launch(self): pass
 
-    def _selectApplicationToUse(self): return False
+    # ---------------------------------------------------------------------------------------------
+    # Execution methods
+    # ---------------------------------------------------------------------------------------------
+    def _launch_selectApplicationToUse(self): return False
 
-    def _selectArgumentsToUse(self): return False
-
-    def _selectRomFileToUse(self): return False
+    def _launch_selectArgumentsToUse(self): return False
+    
+    def _launch_selectRomFileToUse(self): return False
 
     def has_nointro_xml(self): return False
 
@@ -4604,13 +4614,15 @@ class AELObjectFactory(object):
     # Returns a Launcher object or None.
     #
     def find_launcher(self, category_id, launcher_id):
+        
+        if launcher_id in VLAUNCHERS:
+            return self._load(launcher_id)            
+                
         launcher_dic = self.objectRepository.find_launcher(launcher_id)
-        if launcher_dic is not None:
-            category_obj = self._load(launcher_dic['type'], launcher_dic)
-        else:
-            category_obj = None
-
-        return category_obj
+        if launcher_dic is None:
+            return None
+            
+        return self._load(launcher_dic['type'], launcher_dic)
 
     #
     # Retrieves a list of Launcher objects in a category.
@@ -4661,18 +4673,27 @@ class AELObjectFactory(object):
 
         # --- Virtual launchers ---
         elif obj_type == VLAUNCHER_RECENT_ID:
-            return VirtualLauncher(
-                self.recently_played_roms_dic, self.settings, ROMSetRepository(self.plugin_data_dir)
+            ROMRepository = ROMSetRepository(self.PATHS, self.settings)
+            statsStrategy = ROMStatisticsStrategy(self.PATHS, self.settings)
+            
+            return VirtualLauncher(self.PATHS, self.settings, self.recently_played_roms_dic, 
+                                   None, ROMRepository, statsStrategy
             )
 
         elif obj_type == VLAUNCHER_MOST_PLAYED_ID:
-            return VirtualLauncher(
-                self.most_played_roms_dic, self.settings, ROMSetRepository(self.plugin_data_dir)
+            ROMRepository = ROMSetRepository(self.PATHS, self.settings)
+            statsStrategy = ROMStatisticsStrategy(self.PATHS, self.settings)
+            
+            return VirtualLauncher(self.PATHS, self.settings, self.most_played_roms_dic, 
+                                   None, ROMRepository, statsStrategy
             )
 
         elif obj_type == VLAUNCHER_FAVOURITES_ID:
-            return VirtualLauncher(
-                self.favourites_roms_dic, self.settings, ROMSetRepository(self.plugin_data_dir)
+            ROMRepository = ROMSetRepository(self.PATHS, self.settings)
+            statsStrategy = ROMStatisticsStrategy(self.PATHS, self.settings)
+            
+            return VirtualLauncher(self.PATHS, self.settings, self.favourites_roms_dic, 
+                                   None, ROMRepository, statsStrategy
             )
 
         # --- Real launchers ---

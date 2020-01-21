@@ -93,6 +93,12 @@ VLAUNCHER_FAVOURITES_ID     = 'vlauncher_favourites'
 VLAUNCHER_RECENT_ID         = 'vlauncher_recent'
 VLAUNCHER_MOST_PLAYED_ID    = 'vlauncher_most_played'
 
+VLAUNCHERS = [
+    VLAUNCHER_FAVOURITES_ID,
+    VLAUNCHER_RECENT_ID,
+    VLAUNCHER_MOST_PLAYED_ID
+]
+
 # --- AEL OBJECT TYPES ---
 OBJ_CATEGORY                 = 'CATEGORY'
 OBJ_CATEGORY_VIRTUAL         = 'VIRTUAL_CATEGORY'
