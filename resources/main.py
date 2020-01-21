@@ -327,7 +327,8 @@ def m_get_settings():
     
     # --- Misc settings ---
     g_settings['scraper_thegamesdb_apikey']      = o.getSetting('scraper_thegamesdb_apikey').decode('utf-8')
-    g_settings['scraper_mobygames_apikey']       = o.getSetting('scraper_mobygames_apikey').decode('utf-8')   
+    g_settings['scraper_mobygames_apikey']       = o.getSetting('scraper_mobygames_apikey').decode('utf-8') 
+    g_settings['scraper_steamgriddb_apikey']     = o.getSetting('scraper_steamgriddb_apikey').decode('utf-8')  
     g_settings['scraper_screenscraper_ssid']     = o.getSetting('scraper_screenscraper_ssid').decode('utf-8')
     g_settings['scraper_screenscraper_sspass']   = o.getSetting('scraper_screenscraper_sspass').decode('utf-8')
     

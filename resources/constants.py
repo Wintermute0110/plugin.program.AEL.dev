@@ -361,6 +361,7 @@ SCRAPER_SCREENSCRAPER_ID = 50
 SCRAPER_GAMEFAQS_ID      = 60 # Disabled at the moment.
 SCRAPER_ARCADEDB_ID      = 70
 SCRAPER_LIBRETRO_ID      = 80 # Not coded yet.
+SCRAPER_STEAMGRIDDB_ID   = 90
 
 # List of enabled scrapers. If a scraper ID is in this list then a unique scraper object
 # will be instantiated and cached in the global ScraperFactory object.
@@ -372,6 +373,7 @@ SCRAPER_LIST = [
     SCRAPER_MOBYGAMES_ID,
     SCRAPER_SCREENSCRAPER_ID,
     SCRAPER_ARCADEDB_ID,
+    SCRAPER_STEAMGRIDDB_ID
 ]
 
 # Make sure this matches the scraper list in settings.xml or bad things will happen.
@@ -386,6 +388,7 @@ SCRAP_ASSET_SETTINGS_LIST = [
     SCRAPER_THEGAMESDB_ID,
     SCRAPER_SCREENSCRAPER_ID,
     SCRAPER_MOBYGAMES_ID,
+    SCRAPER_STEAMGRIDDB_ID
 ]
 
 SCRAP_METADATA_MAME_SETTINGS_LIST = [
