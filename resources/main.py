@@ -1199,13 +1199,11 @@ def m_command_render_roms(categoryID, launcherID):
     #    when checking if an element exists.
     fav_launcher = g_ObjectFactory.find_launcher(VCATEGORY_FAVOURITES_ID, VLAUNCHER_FAVOURITES_ID)
     
+    fav_rom_ids = set()
     if fav_launcher is not None:
         fav_roms = fav_launcher.get_roms()
-        fav_rom_ids = set(f.get_id() for f in fav_roms)
-        # roms_fav = fs_load_Favourites_JSON(FAV_JSON_FILE_PATH)
-        # roms_fav_set = set(roms_fav.keys())
-    else:
-        fav_rom_ids = set()
+        if fav_roms is not None:
+            fav_rom_ids = set(f.get_id() for f in fav_roms)
         
     loading_ticks_end = time.time()
 
@@ -1317,7 +1315,7 @@ def m_command_render_clone_roms(categoryID, launcherID, romID):
     roms_fav_set    = set(fav_launcher.get_rom_ids())
 
     for rom in sorted(roms, key = lambda r : r.get_name()):
-        self._gui_render_rom_row(categoryID, launcherID, rom.get_data_dic(), rom.get_id() in roms_fav_set, view_mode, False)
+        m_gui_render_rom_row(categoryID, launcherID, rom.get_data_dic(), rom.get_id() in roms_fav_set, view_mode, False)
     xbmcplugin.endOfDirectory(handle = g_addon_handle, succeeded = True, cacheToDisc = False)
 
 #
@@ -1464,7 +1462,7 @@ def m_command_render_Collection_roms(categoryID, launcherID):
 
     # --- Display Collection ROMs ---
     for rom in collection_rom_list:
-        self._gui_render_rom_row(categoryID, launcherID, rom)
+        m_gui_render_rom_row(categoryID, launcherID, rom)
     xbmcplugin.endOfDirectory(handle = g_addon_handle, succeeded = True, cacheToDisc = False)
 
 #
@@ -4057,27 +4055,64 @@ def m_subcommand_launcher_browse_import_nfo_file(category, launcher):
 
 #
 # ROM scraper. Called when user chooses Launcher CM, "Scrape ROMs"
-#
+# TODO: refactor
 @router.action('SCRAPE_ROMS_SCRAPER')
 def m_roms_scrape_roms(category, launcher):
     log_debug('========== m_roms_scrape_roms() BEGIN ==================================================')
     pdialog             = KodiProgressDialog()
     scraper_strategy    = g_ScraperFactory.create_scanner(launcher)
-    rom_scanner         = g_ROMScannerFactory.create(launcher, scraper_strategy, pdialog, scrape_only=True)
+    
+    scraper_strategy.scanner_set_progress_dialog(pdialog, False)
+    # --- Check asset dirs and disable scanning for unset dirs ---
+    scraper_strategy.scanner_check_launcher_unset_asset_dirs()
+    if scraper_strategy.unconfigured_name_list:
+        unconfigured_asset_srt = ', '.join(scraper_strategy.unconfigured_name_list)
+        msg = 'Assets directories not set: {0}. '.format(unconfigured_asset_srt)
+        msg = msg + 'Asset scanner will be disabled for this/those.'
+        kodi_dialog_OK(msg)
 
-    scraper_strategy.scanner_set_progress_dialog(pdialog, False)    
-    roms = rom_scanner.scan()
+    # --- Create a cache of assets ---
+    # misc_add_file_cache() creates a set with all files in a given directory.
+    # That set is stored in a function internal cache associated with the path.
+    # Files in the cache can be searched with misc_search_file_cache()
+    pdialog.startProgress('Scanning files in asset directories ...', len(ROM_ASSET_ID_LIST))
+    for i, asset_kind in enumerate(ROM_ASSET_ID_LIST):
+        pdialog.updateProgress(i)
+        AInfo = g_assetFactory.get_asset_info(asset_kind)
+        misc_add_file_cache(launcher.get_asset_path(AInfo))
     pdialog.endProgress()
     
-    if roms is None:
-        return
-
-    # --- If we have a No-Intro XML then audit roms after scanning ----------------------------
-    if launcher.has_nointro_xml():
-        self._audit_no_intro_roms(launcher, roms)
-    else:
-        log_info('No-Intro/Redump DAT not configured. Do not audit ROMs.')
-
+    roms = launcher.get_roms()
+    num_items = len(roms)
+    pdialog.startProgress('Scrapping found items', num_items)
+    log_debug('============================== Processing ROMs ==============================')
+    num_items_checked = 0
+    
+    for rom in sorted(roms):
+        pdialog.updateProgress(num_items_checked)
+        ROM_file = rom.get_file()
+        file_text = 'ROM {0}'.format(ROM_file.getBase())
+        
+        pdialog.updateMessages(file_text, 'Scraping {0}...'.format(ROM_file.getBaseNoExt()))
+        try:
+            scraper_strategy.scanner_process_ROM_begin(rom, ROM_file)
+            scraper_strategy.scanner_process_ROM_metadata(rom)
+            scraper_strategy.scanner_process_ROM_assets(rom)
+        except Exception as ex:
+            log_error('(Exception) Object type "{}"'.format(type(ex)))
+            log_error('(Exception) Message "{}"'.format(str(ex)))
+            log_warning('Could not scrape "{}"'.format(ROM_file.getBaseNoExt()))
+        
+        # ~~~ Check if user pressed the cancel button ~~~
+        if pdialog.isCanceled():
+            pdialog.endProgress()
+            kodi_dialog_OK('Stopping ROM scraping. No changes have been made.')
+            log_info('User pressed Cancel button when scanning ROMs. ROM scanning stopped.')
+            return None
+        
+        num_items_checked += 1
+        
+    pdialog.endProgress()
     pdialog.startProgress('Saving ROM JSON database ...')
 
     # ~~~ Save ROMs XML file ~~~
@@ -4434,7 +4469,7 @@ def m_subcommand_set_rom_asset_dirs(category, launcher):
             list_items[asset_info] = "Change {0} path: '{1}'".format(asset_info.plural, path.getPath())
 
 
-    dialog = DictionaryDialog()
+    dialog = KodiOrdDictionaryDialog()
     selected_asset = dialog.select('ROM Asset directories ', list_items)
 
     if selected_asset is None:    

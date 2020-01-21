@@ -4689,7 +4689,7 @@ class AELObjectFactory(object):
             )
 
         elif obj_type == VLAUNCHER_FAVOURITES_ID:
-            ROMRepository = ROMSetRepository(self.PATHS, self.settings)
+            ROMRepository = ROMSetRepository(self.PATHS, self.settings, True)
             statsStrategy = ROMStatisticsStrategy(self.PATHS, self.settings)
             
             return VirtualLauncher(self.PATHS, self.settings, self.favourites_roms_dic, 
@@ -5647,7 +5647,8 @@ class NvidiaStreamScanner(RomScannerStrategy):
             log_debug('Not found. Item {0} is new'.format(streamableGame['AppTitle']))
 
             launcher_path = self.launcher.get_rom_path()
-            romPath = launcher_path.pjoin('{0}.rom'.format(streamableGame['AppTitle']))
+            fake_file_name = text_str_to_filename_str(streamableGame['AppTitle'])
+            romPath = launcher_path.pjoin('{0}.rom'.format(fake_file_name))
 
             # ~~~~~ Process new ROM and add to the list ~~~~~
             # --- Create new rom dictionary ---
@@ -5691,63 +5692,6 @@ class NvidiaStreamScanner(RomScannerStrategy):
 
         self.progress_dialog.endProgress()
         return new_roms
-
-class ScrapeRomsOnlyScanner(RomScannerStrategy):
-    # ~~~ Scan for new files (*.*) and put them in a list ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    def _getCandidates(self, launcher_report):
-        
-        self.progress_dialog.startProgress('Scanning and caching ROMs in Launcher ...', 100)
-        roms = self.launcher.get_roms()
-        num_files = len(roms)
-        files = []
-        for rom in roms:
-            files.append(rom.get_file())            
-        launcher_report.write('  Rom scanner found {0} roms'.format(num_files))
-
-        self.progress_dialog.endProgress()
-        return files
-
-    # --- Remove dead entries -----------------------------------------------------------------
-    # Skipped
-    def _removeDeadRoms(self, candidates, roms):
-        return 0
-
-    # ~~~ Now go processing item by item ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    def _processFoundItems(self, items, roms, launcher_report):
-        num_items = len(roms)
-
-        self.progress_dialog.startProgress('Scanning found items', num_items)
-        log_debug('============================== Processing ROMs ==============================')
-        launcher_report.write('Processing files ...')
-        num_items_checked = 0
-        
-        for rom in sorted(roms):
-            self.progress_dialog.updateProgress(num_items_checked)
-            ROM_file = rom.get_file()
-            file_text = 'ROM {0}'.format(ROM_file.getBase())
-            
-            self.progress_dialog.updateMessages(file_text, 'Scraping {0}...'.format(ROM_file.getBaseNoExt()))
-            try:
-                self.scraping_strategy.scanner_process_ROM_begin(rom, ROM_file)
-                self.scraping_strategy.scanner_process_ROM_metadata(rom)
-                self.scraping_strategy.scanner_process_ROM_assets(rom)
-            except Exception as ex:
-                log_error('(Exception) Object type "{}"'.format(type(ex)))
-                log_error('(Exception) Message "{}"'.format(str(ex)))
-                log_warning('Could not scrape "{}"'.format(ROM_file.getBaseNoExt()))
-                #log_debug(traceback.format_exc())
-            
-            # ~~~ Check if user pressed the cancel button ~~~
-            if self.progress_dialog.isCanceled():
-                self.progress_dialog.endProgress()
-                kodi_dialog_OK('Stopping ROM scanning. No changes have been made.')
-                log_info('User pressed Cancel button when scanning ROMs. ROM scanning stopped.')
-                return None
-            
-            num_items_checked += 1
-           
-        self.progress_dialog.endProgress()
-        return []
 
 # #################################################################################################
 # #################################################################################################

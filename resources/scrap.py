@@ -771,6 +771,7 @@ class ScrapeStrategy(object):
         asset_name = asset_info.name
         asset_dir_FN  = self.launcher.get_asset_path(asset_info)
         asset_path_noext_FN = asset_dir_FN + ROM.get_file().getBaseNoExt()
+       
         t = 'ScrapeStrategy._scanner_scrap_ROM_asset() Scraping {} with scraper {} ------------------------------'
         log_debug(t.format(asset_name, self.asset_scraper_name))
         status_dic = kodi_new_status_dic('No error')
