@@ -277,6 +277,36 @@ class ScraperFactory(object):
 
         return self.strategy_obj
 
+    # 1) Create the ScraperStrategy object to be used in the ROM Scanner.
+    #
+    # 2) The metadata and asset scrapers will be set as NullScrapers and
+    # the ScraperStrategy will only do local file scraping (NFO & local files).
+    #
+    # Returns a ScrapeStrategy object which is used for the actual scraping.
+    def create_local_scanner(self, launcher):
+        
+        self.strategy_obj = ScrapeStrategy(self.PATHS, self.settings)
+        
+        # overwrite settings 
+        self.scan_metadata_policy = ACTION_META_NFO_FILE
+        self.scan_asset_policy    = ACTION_ASSET_LOCAL_ASSET
+        
+        # Set scraper objects.
+        null_scraper = Null_Scraper(self.settings)
+        self.strategy_obj.meta_scraper_obj   = null_scraper
+        self.strategy_obj.meta_scraper_name  = null_scraper.get_name()
+        self.strategy_obj.asset_scraper_obj  = null_scraper
+        self.strategy_obj.asset_scraper_name = null_scraper.get_name()
+        self.strategy_obj.meta_and_asset_scraper_same = True
+
+        # --- Add launcher properties to ScrapeStrategy object ---
+        platform = launcher.get_platform()
+        self.strategy_obj.launcher = launcher
+        self.strategy_obj.platform = platform
+
+        return self.strategy_obj
+        
+
     # * Flush caches before dereferencing object.
     def destroy_scanner(self, pdialog = None):
         log_debug('ScraperFactory.destroy_scanner() Flushing disk caches...')

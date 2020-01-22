@@ -2509,9 +2509,7 @@ class ROMLauncherABC(LauncherABC):
         options = collections.OrderedDict()
         options['SET_ROMS_DEFAULT_ARTWORK']  = 'Choose ROMs default artwork ...'
         options['SET_ROMS_ASSET_DIRS']       = 'Manage ROMs asset directories ...'
-        options['SCAN_LOCAL_ARTWORK']        = 'Scan ROMs local artwork'
-        options['SCRAPE_LOCAL_ARTWORK']      = 'Scrape ROMs local artwork'
-        options['SCRAPE_ROMS_SCRAPER']       = 'Scrape ROMs with scrapers'
+        options['SCRAPE_ROMS']               = 'Scrape ROMs'
         options['REMOVE_DEAD_ROMS']          = 'Remove dead/missing ROMs'
         options['IMPORT_ROMS']               = 'Import ROMs metadata from NFO files'
         options['EXPORT_ROMS']               = 'Export ROMs metadata to NFO files'
@@ -2719,6 +2717,14 @@ class ROMLauncherABC(LauncherABC):
 
     def set_mapped_ROM_asset_key(self, asset_info, mapped_to_info):
         self.entity_data[asset_info.rom_default_key] = mapped_to_info.key
+    
+    # --- Create a cache of assets ---
+    # misc_add_file_cache() creates a set with all files in a given directory.
+    # That set is stored in a function internal cache associated with the path.
+    # Files in the cache can be searched with misc_search_file_cache()
+    def cache_assets(self, asset_id):
+        AInfo = g_assetFactory.get_asset_info(asset_id)
+        misc_add_file_cache(self.get_asset_path(AInfo))
                
     # ---------------------------------------------------------------------------------------------
     # Utility functions of ROM Launchers
@@ -5024,7 +5030,7 @@ class RomScannersFactory(object):
             return NullScanner(launcher, self.settings, progress_dialog)
 
         if scrape_only:
-            return ScrapeRomsOnlyScanner(self.reports_dir, self.addon_dir, launcher, self.settings, scraping_strategy, progress_dialog)
+            return ScrapingOnlyScanner(self.reports_dir, self.addon_dir, launcher, self.settings, scraping_strategy, progress_dialog)
         
         if launcherType == OBJ_LAUNCHER_STEAM:
             return SteamScanner(self.reports_dir, self.addon_dir, launcher, self.settings, scraping_strategy, progress_dialog)
@@ -5122,15 +5128,11 @@ class RomScannerStrategy(ScannerStrategyABC):
             kodi_dialog_OK(msg)
 
         # --- Create a cache of assets ---
-        # misc_add_file_cache() creates a set with all files in a given directory.
-        # That set is stored in a function internal cache associated with the path.
-        # Files in the cache can be searched with misc_search_file_cache()
         launcher_report.write('Scanning and caching files in asset directories ...')
         self.progress_dialog.startProgress('Scanning files in asset directories ...', len(ROM_ASSET_ID_LIST))
         for i, asset_kind in enumerate(ROM_ASSET_ID_LIST):
             self.progress_dialog.updateProgress(i)
-            AInfo = g_assetFactory.get_asset_info(asset_kind)
-            misc_add_file_cache(self.launcher.get_asset_path(AInfo))
+            launcher.cache_assets(asset_kind)
         self.progress_dialog.endProgress()
         
         launcher_report.write('Removing dead ROMs ...')
@@ -5693,6 +5695,129 @@ class NvidiaStreamScanner(RomScannerStrategy):
         self.progress_dialog.endProgress()
         return new_roms
 
+# Scanner only used for scraping.
+# No dead ROM removal
+class ScrapingOnlyScanner(ScannerStrategyABC):
+    
+    def __init__(self, reports_dir, addon_dir, launcher, settings, scraping_strategy, progress_dialog):
+        
+        self.reports_dir = reports_dir
+        self.addon_dir = addon_dir
+           
+        self.scraping_strategy = scraping_strategy
+
+        super(RomScannerStrategy, self).__init__(launcher, settings, progress_dialog)
+
+    def scan(self):
+               
+        # --- Open ROM scanner report file ---
+        launcher_report = LogReporter(self.launcher.get_data_dic())
+        launcher_report.open('ScrapingOnlyScanner() Starting ROM scanner')
+        launcher_report.write('Loading launcher ROMs ...')
+        roms = self.launcher.get_roms()
+
+        if roms is None:
+            roms = []
+        
+        num_roms = len(roms)
+        launcher_report.write('{0} ROMs currently in database'.format(num_roms))
+        
+         # --- Assets/artwork stuff ----------------------------------------------------------------
+        # Ensure there is no duplicate asset dirs. Abort scanning of assets if duplicate dirs found.
+        launcher_report.write('Checking for duplicated artwork directories ...')
+        duplicated_name_list = self.launcher.get_duplicated_asset_dirs()
+        if duplicated_name_list:
+            duplicated_asset_srt = ', '.join(duplicated_name_list)
+            launcher_report.write('Duplicated asset dirs: {0}'.format(duplicated_asset_srt))
+            kodi_dialog_OK('Duplicated asset directories: {0}. '.format(duplicated_asset_srt) +
+                           'Change asset directories before continuing.')
+            return
+        else:
+            launcher_report.write('No duplicated asset dirs found')
+      
+        # --- Check asset dirs and disable scanning for unset dirs ---
+        self.scraping_strategy.scanner_check_launcher_unset_asset_dirs()
+        if self.scraping_strategy.unconfigured_name_list:
+            unconfigured_asset_srt = ', '.join(self.scraping_strategy.unconfigured_name_list)
+            msg = 'Assets directories not set: {0}. '.format(unconfigured_asset_srt)
+            msg = msg + 'Asset scanner will be disabled for this/those.'                                
+            launcher_report.write(msg)
+            kodi_dialog_OK(msg)
+
+        # --- Create a cache of assets ---
+        launcher_report.write('Scanning and caching files in asset directories ...')
+        self.progress_dialog.startProgress('Scanning files in asset directories ...', len(ROM_ASSET_ID_LIST))
+        for i, asset_kind in enumerate(ROM_ASSET_ID_LIST):
+            self.progress_dialog.updateProgress(i)
+            launcher.cache_assets(asset_kind)
+        self.progress_dialog.endProgress()
+        
+        # notice that since we are not scanning for new ROMs, this method returns all ROMs from the launcher
+        all_roms = self._processFoundItems(None, roms, launcher_report)        
+        if not all_roms:
+            return None
+
+        num_all_roms = len(all_roms)
+        launcher_report.write('******************** ROM scanner finished. Report ********************')
+        launcher_report.write('Processed ROMs    {0:6d}'.format(num_all_roms))
+        
+        kodi_notify('Porcessed {0} ROMs'.format(num_all_roms))
+
+        # --- Close ROM scanner report file ---
+        launcher_report.write('*** END of the ROM scanner report ***')
+        launcher_report.close()
+
+        return roms
+
+    def cleanup(self):
+        return {}
+
+    # Skipped
+    def _getCandidates(self, launcher_report):
+        return []
+
+    # --- Remove dead entries -----------------------------------------------------------------
+    # Skipped
+    def _removeDeadRoms(self, candidates, roms):
+        return 0
+
+    def _processFoundItems(self, items, roms, launcher_report):
+        num_items = len(roms)
+
+        self.progress_dialog.startProgress('Scanning found items', num_items)
+        log_debug('============================== Processing ROMs ==============================')
+        launcher_report.write('Processing files ...')
+        num_items_checked = 0
+        
+        for rom in sorted(roms):
+            self.progress_dialog.updateProgress(num_items_checked)
+            ROM_file = rom.get_file()
+            file_text = 'ROM {0}'.format(ROM_file.getBase())
+            
+            self.progress_dialog.updateMessages(file_text, 'Scraping {0}...'.format(ROM_file.getBaseNoExt()))
+            try:
+                self.scraping_strategy.scanner_process_ROM_begin(rom, ROM_file)
+                self.scraping_strategy.scanner_process_ROM_metadata(rom)
+                self.scraping_strategy.scanner_process_ROM_assets(rom)
+            except Exception as ex:
+                log_error('(Exception) Object type "{}"'.format(type(ex)))
+                log_error('(Exception) Message "{}"'.format(str(ex)))
+                log_warning('Could not scrape "{}"'.format(ROM_file.getBaseNoExt()))
+                #log_debug(traceback.format_exc())
+            
+            # ~~~ Check if user pressed the cancel button ~~~
+            if self.progress_dialog.isCanceled():
+                self.progress_dialog.endProgress()
+                kodi_dialog_OK('Stopping ROM scanning. No changes have been made.')
+                log_info('User pressed Cancel button when scanning ROMs. ROM scanning stopped.')
+                return None
+            
+            num_items_checked += 1
+           
+        self.progress_dialog.endProgress()
+        return roms
+
+    
 # #################################################################################################
 # #################################################################################################
 # DAT files and ROM audit
