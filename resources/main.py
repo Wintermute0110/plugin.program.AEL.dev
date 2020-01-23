@@ -3948,13 +3948,6 @@ def m_run_launcher_sub_command(category, launcher):
 def m_subcommand_launcher_metadata(category, launcher):
     options = launcher.get_metadata_edit_options()
 
-    # >> Make a list of available metadata scrapers
-    # todo: make a separate menu item 'Scrape' with after that a list to select instead of
-    # merging it now with other options.
-    # for scrap_obj in scrapers_metadata:
-    #     options['SCRAPE_' + scrap_obj.name] = 'Scrape metadata from {0} ...'.format(scrap_obj.name)
-    #     log_verb('Added metadata scraper {0}'.format(scrap_obj.name))
-
     s = 'Edit Launcher "{0}" metadata'.format(launcher.get_name())
     selected_option = KodiOrdDictionaryDialog().select(s, options)
     if selected_option is None:
@@ -4058,7 +4051,7 @@ def m_roms_scrape_roms(category, launcher):
     log_debug('SCRAPE_ROMS: m_roms_scrape_roms() SHOW MENU')
 
     options = {
-        'SCRAPE_ROMS_LOCAL_ONLY': 'Scrape ROMs local files only'
+        'SCRAPE_ROMS_LOCAL_ONLY': 'Scrape ROMs local files only',
         'SCRAPE_ROMS_ONLINE': 'Scrape ROMs with configured scrapers'
     }
     s = 'Scrape Launcher "{0}" ROMs'.format(launcher.get_name())
@@ -4950,13 +4943,9 @@ def m_run_rom_sub_command(categoryID, launcher, rom):
 @router.action('EDIT_METADATA')
 def m_subcommand_rom_metadata(launcher, rom):
 
-    options = rom.get_metadata_edit_options()   
-     
-    # --- Make a menu list of available metadata scrapers ---
-    scraper_menu_list = g_ScraperFactory.get_metadata_scraper_menu_list()
-    options.update(scraper_menu_list)
-    
     s = 'Edit ROM "{0}" metadata'.format(rom.get_name())
+    options = rom.get_metadata_edit_options()       
+    
     selected_option = KodiOrdDictionaryDialog().select(s, options)
     
     if selected_option is None:
@@ -5115,20 +5104,41 @@ def m_subcommand_scrape_launcher(launcher, selected_option):
         g_ObjectRepository.save_launcher(launcher)
 
 # --- Scrape ROM metadata ---
-def m_subcommand_scrape_rom_metadata(launcher, rom, command):
-    scraper_obj_name = command.replace('SCRAPE_', '')
-    scraper_obj = filter(lambda x: x.name == scraper_obj_name, scrapers_metadata)[0]
-    log_debug('_subcommand_scrape_rom_metadata() User chose scraper "{0}"'.format(scraper_obj.name))
+@router.action('SCRAPE_ROM_METADATA')
+def m_subcommand_scrape_rom_metadata(launcher, rom):
     
-    # --- Initialise asset scraper ---
-    scraper_obj.set_addon_dir(CURRENT_ADDON_DIR.getPath())
-    log_debug('_subcommand_scrape_rom_metadata() Initialised scraper "{0}"'.format(scraper_obj.name))
+    # --- Make a menu list of available metadata scrapers ---
+    options =  g_ScraperFactory.get_metadata_scraper_menu_list()
+    selected_option = KodiOrdDictionaryDialog().select('Scrape ROM metadata', options)
+    if selected_option is None:
+        # >> Exits context menu
+        log_debug('SCRAPE_ROM_METADATA: m_subcommand_scrape_rom_metadata() Selected None. Closing context menu')
+        return
     
-    # >> If this returns False there were no changes so no need to save ROMs JSON.
-    if self._gui_scrap_rom_metadata(launcher, rom, scraper_obj): 
-        launcher.save_ROM(rom)
-
-    return
+    # >> Execute scraper
+    log_debug('SCRAPE_ROM_METADATA: m_subcommand_scrape_rom_metadata() Selected scraper#{}'.format(selected_option))
+    pdialog             = KodiProgressDialog()
+    ROM_file            = rom.get_file()
+    scraping_strategy   = g_ScraperFactory.create_metadata_scraper(launcher, selected_option)
+    
+    msg = 'Scraping {0}...'.format(ROM_file.getBaseNoExt())
+    pdialog.startProgress(msg)
+    log_debug(msg)
+    scraping_strategy.scanner_set_progress_dialog(pdialog, False)    
+    try:
+        scraping_strategy.scanner_process_ROM_begin(rom, ROM_file)
+        scraping_strategy.scanner_process_ROM_metadata(rom)
+    except Exception as ex:
+        log_error('(Exception) Object type "{}"'.format(type(ex)))
+        log_error('(Exception) Message "{}"'.format(str(ex)))
+        log_warning('Could not scrape "{}"'.format(ROM_file.getBaseNoExt()))
+        kodi_notify_error('Could not scrape ROM')
+        pdialog.endProgress()
+        return
+    
+    launcher.save_ROM(rom)
+    pdialog.endProgress()
+    kodi_notify('ROM metadata scraped')
 
 # --- Edit ROM Assets/Artwork ---
 @router.action('EDIT_ASSETS')
@@ -6606,24 +6616,14 @@ def m_gui_edit_rating(obj_instance, get_method, set_method):
     kodi_notify('{0} rating is now {1}'.format(object_name, current_rating_str))
 
 
-def m_gui_edit_object_assets(obj_instance, pre_select_idx = 0):
+def m_gui_edit_object_assets(obj_instance, preselected_asset = None):
     log_debug('m_gui_edit_object_assets() obj_instance {0}'.format(obj_instance.__class__.__name__))
-    log_debug('m_gui_edit_object_assets() pre_select_idx {0}'.format(pre_select_idx))
-
-    # --- DEBUG texture cache ---
-    # icon_FN = FileName(obj_instance.get_asset_str(asset_infos[ASSET_ICON_ID]))
-    # fanart_FN = FileName(obj_instance.get_asset_str(asset_infos[ASSET_FANART_ID]))
-    # log_debug('m_gui_edit_object_assets() icon_FN   "{0}"'.format(icon_FN.getPath()))
-    # log_debug('m_gui_edit_object_assets() fanart_FN "{0}"'.format(fanart_FN.getPath()))
-    # kodi_print_texture_info(icon_FN.getPath())
-    # kodi_print_texture_info(fanart_FN.getPath())
+    log_debug('m_gui_edit_object_assets() preselected_asset {0}'.format(preselected_asset.get_name() if preselected_asset is not None else 'NONE'))
 
     # --- Build options list ---
     asset_odict = obj_instance.get_assets_odict()
     # dump_object_to_log('asset_odict', asset_odict)
-    list_items = []
-    # >> List to easily pick the selected AssetInfo() object
-    asset_info_list = []
+    options = collections.OrderedDict()
     for asset_info_obj, asset_fname_str in asset_odict.iteritems():
         # --- Create ListItems ---
         # >> Label1 is the asset name (Icon, Fanart, etc.)
@@ -6641,25 +6641,24 @@ def m_gui_edit_object_assets(obj_instance, pre_select_idx = 0):
             item_img = 'DefaultAddonNone.png'
         list_item.setArt({'icon' : item_img})
         # --- Append to list of ListItems ---
-        list_items.append(list_item)
-        asset_info_list.append(asset_info_obj)
+        options[asset_info_obj] = list_item
 
     # --- Customize function for each object type ---
     dialog_title_str = 'Edit {0} Assets/Artwork'. format(obj_instance.get_object_name())
-    dialog = KodiListDialog()
+    dialog = KodiOrdDictionaryDialog()
     # >> Use Krypton Dialog().select(useDetails = True) to display label2 on dialog.
-    selected_option = dialog.select(dialog_title_str, list_items, preselect_idx = pre_select_idx, use_details = True)
+    selected_option = dialog.select(dialog_title_str, options, preselect = preselected_asset, use_details = True)
 
-    log_debug('m_gui_edit_object_assets() select() returned {0}'.format(selected_option))
-    if selected_option < 0:
+    if selected_option is None:
         # >> Return to parent menu.
         log_debug('m_gui_edit_object_assets() Selected NONE. Returning to parent menu.')
         return
     
+    log_debug('m_gui_edit_object_assets() select() returned {0}'.format(selected_option.name))
     # >> Execute edit asset menu subcommand. Then, execute recursively this submenu again.
     # >> The menu dialog is instantiated again so it reflects the changes just edited.
     # >> If m_gui_edit_asset() returns True changes were made.
-    if m_gui_edit_asset(obj_instance, asset_info_list[selected_option]):
+    if m_gui_edit_asset(obj_instance, selected_option):
         obj_instance.save_to_disk()
         
     m_gui_edit_object_assets(obj_instance, selected_option)
@@ -8704,6 +8703,7 @@ def m_roms_import_roms(categoryID, launcherID):
 
     pdialog.updateProgress(100)
     pdialog.close()
+    kodi_notify('ROMs import done')
 
 def m_audit_no_intro_roms(launcher, roms):
     

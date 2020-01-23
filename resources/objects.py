@@ -1649,6 +1649,7 @@ class ROM(MetaDataItemABC):
         options['LOAD_PLOT']                 = "Load Plot from TXT file ..."
         options['IMPORT_NFO_FILE']           = u"Import NFO file (default, {0})".format(NFO_found_str).encode('utf-8')
         options['SAVE_NFO_FILE']             = "Save NFO file (default location)"
+        options['SCRAPE_ROM_METADATA']       = "Scrape Metadata"
 
         return options
 
@@ -5695,8 +5696,8 @@ class NvidiaStreamScanner(RomScannerStrategy):
         self.progress_dialog.endProgress()
         return new_roms
 
-# Scanner only used for scraping.
-# No dead ROM removal
+# Scanner only used for scraping of already imported ROMs.
+# No dead ROM removal or scanning for new ROM files.
 class ScrapingOnlyScanner(ScannerStrategyABC):
     
     def __init__(self, reports_dir, addon_dir, launcher, settings, scraping_strategy, progress_dialog):
