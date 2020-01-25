@@ -112,6 +112,8 @@ class AssetInfo:
     def __hash__(self):
         return self.id.__hash__()
 
+    def __str__(self):
+        return self.name
 #
 # Class to interact with the asset engine.
 # This class uses the asset_infos, dictionary of AssetInfo indexed by asset_ID
@@ -1461,10 +1463,13 @@ class ROM(MetaDataItemABC):
         
         super(ROM, self).__init__(None, None, rom_data, None)
 
+    def get_launcher(self):
+        return self.launcher
+    
     # is this virtual only? Should we make a VirtualRom(Rom)?
     def get_launcher_id(self):
         return self.entity_data['launcherID']
-
+    
     def is_virtual_rom(self):
         return 'launcherID' in self.entity_data
 

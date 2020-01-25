@@ -5145,6 +5145,61 @@ def m_subcommand_scrape_rom_metadata(launcher, rom):
 def m_subcommand_edit_rom_assets(launcher, rom):
     m_gui_edit_object_assets(rom)
 
+# --- Scrape ROM assets ---
+@router.action('SCRAPE_ROM_ASSETS')
+def m_subcommand_scrape_rom_assets(rom):
+    
+    # --- Make a menu list of available asset scrapers ---
+    options =  g_ScraperFactory.get_asset_scraper_menu_list()
+    selected_option = KodiOrdDictionaryDialog().select('Scrape ROM assets', options)
+    if selected_option is None:
+        # >> Exits context menu
+        log_debug('SCRAPE_ROM_ASSETS: m_subcommand_scrape_rom_assets() Selected None. Closing context menu')
+        return
+    
+    # >> Execute scraper
+    log_debug('SCRAPE_ROM_ASSETS: m_subcommand_scrape_rom_assets() Selected scraper#{}'.format(selected_option))
+    pdialog             = KodiProgressDialog()
+    ROM_file            = rom.get_file()
+    launcher            = rom.get_launcher()
+    scraping_strategy   = g_ScraperFactory.create_asset_scraper(launcher, selected_option)
+    
+    msg = 'Preparing to scrape {0}...'.format(ROM_file.getBaseNoExt())
+    pdialog.startProgress(msg)
+    log_debug(msg)
+    scraping_strategy.scanner_set_progress_dialog(pdialog, False)   
+
+    # --- Check asset dirs and disable scanning for unset dirs ---
+    scraping_strategy.scanner_check_launcher_unset_asset_dirs()
+    if scraping_strategy.unconfigured_name_list:
+        unconfigured_asset_srt = ', '.join(scraping_strategy.unconfigured_name_list)
+        msg = 'Assets directories not set: {0}. '.format(unconfigured_asset_srt)
+        msg = msg + 'Asset scanner will be disabled for this/those.'                                
+        log_debug(msg)
+        kodi_dialog_OK(msg)
+    
+    for i, asset_kind in enumerate(ROM_ASSET_ID_LIST):
+            pdialog.updateProgress(i)
+            launcher.cache_assets(asset_kind) 
+    pdialog.endProgress()
+    msg = 'Scraping {0}...'.format(ROM_file.getBaseNoExt())
+    pdialog.startProgress(msg)
+    
+    try:
+        scraping_strategy.scanner_process_ROM_begin(rom, ROM_file)
+        scraping_strategy.scanner_process_ROM_assets(rom)
+    except Exception as ex:
+        log_error('(Exception) Object type "{}"'.format(type(ex)))
+        log_error('(Exception) Message "{}"'.format(str(ex)))
+        log_warning('Could not scrape "{}"'.format(ROM_file.getBaseNoExt()))
+        kodi_notify_error('Could not scrape ROM')
+        pdialog.endProgress()
+        return
+    
+    launcher.save_ROM(rom)
+    pdialog.endProgress()
+    kodi_notify('ROM assets scraped')
+
 # --- Advanced ROM Modifications ---
 @router.action('ADVANCED_MODS')
 def m_subcommand_advanced_rom_modifications(launcher, rom):
@@ -6618,10 +6673,12 @@ def m_gui_edit_rating(obj_instance, get_method, set_method):
 
 def m_gui_edit_object_assets(obj_instance, preselected_asset = None):
     log_debug('m_gui_edit_object_assets() obj_instance {0}'.format(obj_instance.__class__.__name__))
-    log_debug('m_gui_edit_object_assets() preselected_asset {0}'.format(preselected_asset.get_name() if preselected_asset is not None else 'NONE'))
+    log_debug('m_gui_edit_object_assets() preselected_asset {0}'.format(preselected_asset if preselected_asset is not None else 'NONE'))
 
     # --- Build options list ---
     asset_odict = obj_instance.get_assets_odict()
+    scrape_cmd = 'SCRAPE_ROM_ASSETS'
+    
     # dump_object_to_log('asset_odict', asset_odict)
     options = collections.OrderedDict()
     for asset_info_obj, asset_fname_str in asset_odict.iteritems():
@@ -6643,6 +6700,10 @@ def m_gui_edit_object_assets(obj_instance, preselected_asset = None):
         # --- Append to list of ListItems ---
         options[asset_info_obj] = list_item
 
+    # if ROM then add scrape option
+    if obj_instance.get_object_name() == 'ROM':
+        options[scrape_cmd] = 'Scrape ROM assets'
+    
     # --- Customize function for each object type ---
     dialog_title_str = 'Edit {0} Assets/Artwork'. format(obj_instance.get_object_name())
     dialog = KodiOrdDictionaryDialog()
@@ -6652,6 +6713,11 @@ def m_gui_edit_object_assets(obj_instance, preselected_asset = None):
     if selected_option is None:
         # >> Return to parent menu.
         log_debug('m_gui_edit_object_assets() Selected NONE. Returning to parent menu.')
+        return
+    
+    if selected_option == scrape_cmd:
+        router.run_command(scrape_cmd, rom=obj_instance)
+        m_gui_edit_object_assets(obj_instance, selected_option)
         return
     
     log_debug('m_gui_edit_object_assets() select() returned {0}'.format(selected_option.name))
