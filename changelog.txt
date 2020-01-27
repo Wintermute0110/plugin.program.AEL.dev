@@ -44,7 +44,7 @@ WIP      [CORE] Support Kodi VFS and ROMs in remote filesystems for Retroplayer.
 WIP      [CORE] Disable LNK $rom$ launcher with global setting.
          See https://forum.kodi.tv/showthread.php?tid=287826&pid=2640857#pid2640857
 
-WIP      [CORE] categoryID is redundant in SHOW_ROMS URL! Remove it or make it optional.
+WIP      [CORE] categoryID is redundant in SHOW_ROMS URL. Remove it or make it optional.
          See https://forum.kodi.tv/showthread.php?tid=276002&pid=2643218#pid2643218
 
 WIP      [CORE] Should plugin URL be rationalised and simplified to make skinner's life easier?
@@ -60,39 +60,26 @@ WIP      [CORE] Unified ROM artwork directory. This will require heavy changes i
          See https://forum.kodi.tv/showthread.php?tid=287826&pid=2865413#pid2865413
          See https://forum.kodi.tv/showthread.php?tid=287826&pid=2867785#pid2867785
 
-WIP      [CORE] Support for BoxSpines artwork. Support for BoxTextures artwork.
-         Code Unified ROM artwork directory before this.
-
 WIP      [CORE] Automatic generation of 3D Boxes using BoxFront and BoxSpine.
          Copy this feature from AML.
 
 WIP      [CORE] Automatic generation of BoxTextures from BoxBack, BoxSpine and BoxFront.
          Copy this feature from AML.
 
-WIP      [CORE] Sometimes the scrapers download wrong/corrupt data, or produce 0 sized files
-         if a file is open() and there is an exception. It would be nice to have an
-         utility to check asset images and delete corrupt images so they can be rescraped
-         again.
-
 WIP      [CORE] Support for Advanced MAME Launcher exported virtual launchers or
          Read Only Launchers. This feature requires AML 0.9.X
          AML creates the Category "Arcade (AML)" and places the exported launchers there.
-
-WIP      [CORE] Utility to check artwork. Sometimes a JPG image is renamed as PNG, etc.
-         Check that all artwork have correct file extensions, etc.
-
-WIP      [CORE] Utility to scan and remove orphaned artwork.
 
 WIP      [CORE] Use Libretro_BIOS_cores.json for the Retroarch BIOS audit and not the internal
          database. However, Libretro_BIOS_cores.json does not have the ROM size.
 
 WIP      [FAVOURITES] Change the way artwork is stored in Favourites, Launchers and
-         Categories directories. Avoid using IDs in the artwork name so artwork can be reused.
+         Categories directories. Avoid using IDs in the artwork name unless absolutely necessary.
 
 WIP      [MULTIDISC] Edit multidisc ROMs. In general, improve the support for
          multidisc ROMs.
 
-WIP      [MULTIDISC] Fix artwork support for mult-disc ROMs.
+WIP      [MULTIDISC] Fix artwork support for multi-disc ROMs.
          See https://forum.kodi.tv/showthread.php?tid=287826&pid=2628912#pid2628912
 
 WIP      [MISC] Changes and suggestions propoed by Atsumori.
@@ -116,15 +103,6 @@ WIP      [ROM AUDIT] Options to generate the 1G1R parent list, like prefer ROMs 
 WIP      [SCRAPERS] Asset scrapers are disabled/not working for standalone launchers. Fix this.
          See https://github.com/Wintermute0110/plugin.program.advanced.emulator.launcher/issues/62
 
-WIP      [SCRAPERS] Change the Offline Scraper format from XML to JSON. Include the new fields
-         `parent` **string**, `region` **list of strings** and `language` **list of strings**.
-         In general, write down the specifications of the new Offline Scraper database and
-         have a look at NOTES.md for guidelines. Create the XML databases to be merged with the
-         No-Intro/Redump DATs, also giving support to Extra ROMs (hacks, etc.).
-
-WIP      [SCRAPERS] Store the offline scraper databases in JSON and not in XML. This will make
-         the loading of the databases faster.
-
 WIP      [SCRAPERS] ScreenScraper must choose the correct artwork depending on the region/language.
          AEL must have an official list of regions/languages, extracted from the No-Intro/Redump
          DATs, to translate to ScreenScraper values.
@@ -135,15 +113,16 @@ WIP      [SCRAPERS] MAME offline scraper: include ESRB field. Take it from GameI
 
 WIP      [SCRAPERS] MAME offline scraper: include plot field. Take it from GameInfoDB.
 
-WIP      [SCRAPERS] Update MAME Offline Scraper database to version latest version 0.215.
-
-WIP      [SCRAPERS] Upgrade and fix AEL Offline scraper databases.
+WIP      [SCRAPERS] Update MAME Offline Scraper database to version latest version 0.217.
 
 WIP      [SCRAPERS] Persistent scraper cache browser. Ability to browse the stored scraper
          searches. Also, context menu to delete stored cached data.
 
 
-[B]Advanced Emulator Launcher | version 0.9.10 | xx xxxxx 2020[/B]
+[B]Advanced Emulator Launcher | version 0.9.10 | xx April 2020[/B]
+
+WIP      [CORE] Support for Spines artwork. Support for BoxTextures artwork.
+         Have a look at LaunchBox for other types of artwork that may be interesting.
 
 WIP      [COLLECTIONS] Current way of storing the collection artwork, in a unified JSON file,
          is not good. Think of a good way to exporting collections (for example, store the
@@ -151,20 +130,30 @@ WIP      [COLLECTIONS] Current way of storing the collection artwork, in a unifi
          ROM_name_platform_fanart.png, platform is the short name and it's only used if
          there is filename amgibuity (same ROM name in different platforms in the collection).
 
-WIP      [SCRAPERS] Improve the Offline Scraper. XML to JSON databases and fix platforms.
+WIP      [SCRAPERS] Improve the Offline Scraper. Improve the quality of the databases.
 
-WIP      [CORE] New Utility "Check artwork image integrity"
+WIP      [SCRAPERS] Change the Offline Scraper format from XML to JSON. Include the new fields
+         `parent` **string**, `region` **list of strings** and `language` **list of strings**.
+         In general, write down the specifications of the new Offline Scraper database and
+         have a look at NOTES.md for guidelines. Create the XML databases to be merged with the
+         No-Intro/Redump DATs, also giving support to Extra ROMs (hacks, etc.).
 
-WIP      [CORE] New Utility "Delete redundant artwork"
 
-
-[B]Advanced Emulator Launcher | version 0.9.9 | xx January 2020[/B]
+[B]Advanced Emulator Launcher | version 0.9.9 | xx February 2020[/B]
 
 FEATURE  [CORE] New Utility "Check Launcher ROMs sync status"
 
 WIP      [CORE] New Utility "Check ROMs artwork image integrity"
+         Sometimes the scrapers download wrong/corrupt data, or produce 0 sized files
+         if a file is open() and there is an exception. Sometimes a JPG image is renamed
+         as PNG, etc. Check that all artwork have correct file extensions, etc.
 
 WIP      [CORE] New Utility "Delete ROMs redundant artwork"
+         Redundant artwork is orphaned artwork.
+
+WIP NOW  [CORE] Extra ROMs directory. Extra ROMs are not audited. The extra ROMs directory
+         is perfect for ROM translations and hacks that should not be taken into account
+         in the ROM audit.
 
 FEATURE  [CORE] New Utility "Show detected No-Intro/Redump DATs"
          This utility shows the automatically detected No-Intro/Redump DATs.
@@ -202,6 +191,9 @@ FIX      When fixing ROM Collections the order of the ROM list is lost. Repaired
 
 FIX      Fix crash when using "Export ROM metadata to NFO files"
          Crash was related to the deprecated kodi_busydialog_ON()
+
+FIX WIP  TheGamesDB URL API has changed. Verify that the scraper is working OK.
+         See https://forums.thegamesdb.net/viewtopic.php?f=5&p=2228
 
 
 [B]Advanced Emulator Launcher | version 0.9.8 | 16 September 2019[/B]
