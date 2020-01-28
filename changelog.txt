@@ -192,7 +192,7 @@ FIX      When fixing ROM Collections the order of the ROM list is lost. Repaired
 FIX      Fix crash when using "Export ROM metadata to NFO files"
          Crash was related to the deprecated kodi_busydialog_ON()
 
-FIX WIP  TheGamesDB URL API has changed. Verify that the scraper is working OK.
+FIX      TheGamesDB URL API has changed. Verify that the scraper is working OK. Github issue #109.
          See https://forums.thegamesdb.net/viewtopic.php?f=5&p=2228
 
 

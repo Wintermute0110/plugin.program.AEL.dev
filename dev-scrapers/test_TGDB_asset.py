@@ -31,8 +31,8 @@ status_dic = kodi_new_status_dic('Scraper test was OK')
 # --- Choose data for testing ---
 # search_term, rombase, platform = common.games['metroid']
 # search_term, rombase, platform = common.games['mworld']
-search_term, rombase, platform = common.games['sonic']
-# search_term, rombase, platform = common.games['chakan']
+# search_term, rombase, platform = common.games['sonic']
+search_term, rombase, platform = common.games['chakan']
 # search_term, rombase, platform = common.games['console_wrong_title']
 # search_term, rombase, platform = common.games['console_wrong_platform']
 
@@ -43,9 +43,9 @@ search_term, rombase, platform = common.games['sonic']
 rom_FN = FileName(rombase)
 rom_checksums_FN = FileName(rombase)
 if scraper_obj.check_candidates_cache(rom_FN, platform):
-    print('>>>> Game "{}" "{}" in disk cache.'.format(rom_FN.getBase(), platform))
+    print('>>> Game "{}" "{}" in disk cache.'.format(rom_FN.getBase(), platform))
 else:
-    print('>>>> Game "{}" "{}" not in disk cache.'.format(rom_FN.getBase(), platform))
+    print('>>> Game "{}" "{}" not in disk cache.'.format(rom_FN.getBase(), platform))
 candidate_list = scraper_obj.get_candidates(search_term, rom_FN, rom_checksums_FN, platform, status_dic)
 # pprint.pprint(candidate_list)
 common.handle_get_candidates(candidate_list, status_dic)
