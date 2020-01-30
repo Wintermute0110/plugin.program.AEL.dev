@@ -13,16 +13,16 @@
 -->
 <category label="ROM scraping">
     <setting id="separator" type="lsep" label="Scanner settings"/>
-    <setting label="Metadata scan policy" type="enum" id="scan_metadata_policy" default="3" values="None|NFO files|NFO files + Scrapers|Scrapers" />
-    <setting label="Asset scan policy" type="enum" id="scan_asset_policy" default="0" values="Local images|Local images + Scrapers|Scrapers" />
-    <setting label="Game selection mode" type="enum" id="game_selection_mode" default="1" values="Manual|Automatic" />
-    <setting label="Asset selection mode" type="enum" id="asset_selection_mode" default="1" values="Manual|Automatic" />
+    <setting label="Metadata scan policy" type="labelenum" id="scan_metadata_policy" default="20040" lvalues="20010|20020|20040|20060" />
+    <setting label="Asset scan policy" type="labelenum" id="scan_asset_policy" default="20060" lvalues="20030|20050|20060" />
+    <setting label="Game selection mode" type="labelenum" id="game_selection_mode" default="20520" lvalues="20510|20520" />
+    <setting label="Asset selection mode" type="labelenum" id="asset_selection_mode" default="20520" lvalues="20510|20520" />
 
     <setting id="separator" type="lsep" label="Scanner scrapers"/>
-    <setting label="Metadata scraper" type="enum" id="scraper_metadata" default="0" values="AEL Offline|TheGamesDB|ScreenScraper|MobyGames" />
-    <setting label="Asset scraper" type="enum" id="scraper_asset" default="0" values="TheGamesDB|ScreenScraper|MobyGames|SteamGridDB" />
-    <setting label="MAME metadata scraper" type="enum" id="scraper_metadata_MAME" default="0" values="AEL Offline|ArcadeDB|TheGamesDB|ScreenScraper|MobyGames" />
-    <setting label="MAME asset scraper" type="enum" id="scraper_asset_MAME" default="0" values="ArcadeDB|TheGamesDB|ScreenScraper|MobyGames" />
+    <setting label="Metadata scraper" type="labelenum" id="scraper_metadata" default="10020" lvalues="10020|10030|10050|10040" />
+    <setting label="Asset scraper" type="labelenum" id="scraper_asset" default="10030" lvalues="10030|10050|10040|10090" />
+    <setting label="MAME metadata scraper" type="labelenum" id="scraper_metadata_MAME" default="10020" lvalues="10020|10070|10030|10050|10040" />
+    <setting label="MAME asset scraper" type="labelenum" id="scraper_asset_MAME" default="10070" lvalues="10070|10030|10050|10040" />
 </category>
 <category label="Misc settings">
     <setting id="separator" type="lsep" label="Scraper API keys"/>

@@ -5106,41 +5106,11 @@ class RomScannerStrategy(ScannerStrategyABC):
         num_roms = len(roms)
         launcher_report.write('{0} ROMs currently in database'.format(num_roms))
         
-         # --- Assets/artwork stuff ----------------------------------------------------------------
-        # Ensure there is no duplicate asset dirs. Abort scanning of assets if duplicate dirs found.
-        launcher_report.write('Checking for duplicated artwork directories ...')
-        duplicated_name_list = self.launcher.get_duplicated_asset_dirs()
-        if duplicated_name_list:
-            duplicated_asset_srt = ', '.join(duplicated_name_list)
-            launcher_report.write('Duplicated asset dirs: {0}'.format(duplicated_asset_srt))
-            kodi_dialog_OK('Duplicated asset directories: {0}. '.format(duplicated_asset_srt) +
-                           'Change asset directories before continuing.')
-            return
-        else:
-            launcher_report.write('No duplicated asset dirs found')
-        
         launcher_report.write('Collecting candidates ...')
         candidates = self._getCandidates(launcher_report)
         num_candidates = len(candidates)
         launcher_report.write('{0} candidates found'.format(num_candidates))
 
-        # --- Check asset dirs and disable scanning for unset dirs ---
-        self.scraping_strategy.scanner_check_launcher_unset_asset_dirs()
-        if self.scraping_strategy.unconfigured_name_list:
-            unconfigured_asset_srt = ', '.join(self.scraping_strategy.unconfigured_name_list)
-            msg = 'Assets directories not set: {0}. '.format(unconfigured_asset_srt)
-            msg = msg + 'Asset scanner will be disabled for this/those.'                                
-            launcher_report.write(msg)
-            kodi_dialog_OK(msg)
-
-        # --- Create a cache of assets ---
-        launcher_report.write('Scanning and caching files in asset directories ...')
-        self.progress_dialog.startProgress('Scanning files in asset directories ...', len(ROM_ASSET_ID_LIST))
-        for i, asset_kind in enumerate(ROM_ASSET_ID_LIST):
-            self.progress_dialog.updateProgress(i)
-            launcher.cache_assets(asset_kind)
-        self.progress_dialog.endProgress()
-        
         launcher_report.write('Removing dead ROMs ...')
         num_removed_roms = self._removeDeadRoms(candidates, roms)        
 
@@ -5400,9 +5370,7 @@ class RomFolderScanner(RomScannerStrategy):
             scraping_succeeded = True
             self.progress_dialog.updateMessages(file_text, 'Scraping {0}...'.format(ROM_file.getBaseNoExt()))
             try:
-                self.scraping_strategy.scanner_process_ROM_begin(new_rom, ROM_checksums)
-                self.scraping_strategy.scanner_process_ROM_metadata(new_rom)
-                self.scraping_strategy.scanner_process_ROM_assets(new_rom)
+                self.scraping_strategy.scanner_process_ROM(new_rom, ROM_checksums)
             except Exception as ex:
                 scraping_succeeded = False        
                 log_error('(Exception) Object type "{}"'.format(type(ex)))
@@ -5671,9 +5639,7 @@ class NvidiaStreamScanner(RomScannerStrategy):
             scraping_succeeded = True
             self.progress_dialog.updateMessages(streamableGame['AppTitle'], 'Scraping {0}...'.format(streamableGame['AppTitle']))
             try:
-                self.scraping_strategy.scanner_process_ROM_begin(new_rom, None)
-                self.scraping_strategy.scanner_process_ROM_metadata(new_rom)
-                self.scraping_strategy.scanner_process_ROM_assets(new_rom)
+                self.scraping_strategy.scanner_process_ROM(new_rom, None)
             except Exception as ex:
                 scraping_succeeded = False        
                 log_error('(Exception) Object type "{}"'.format(type(ex)))
@@ -5729,34 +5695,6 @@ class ScrapingOnlyScanner(ScannerStrategyABC):
         launcher_report.write('{0} ROMs currently in database'.format(num_roms))
         
          # --- Assets/artwork stuff ----------------------------------------------------------------
-        # Ensure there is no duplicate asset dirs. Abort scanning of assets if duplicate dirs found.
-        launcher_report.write('Checking for duplicated artwork directories ...')
-        duplicated_name_list = self.launcher.get_duplicated_asset_dirs()
-        if duplicated_name_list:
-            duplicated_asset_srt = ', '.join(duplicated_name_list)
-            launcher_report.write('Duplicated asset dirs: {0}'.format(duplicated_asset_srt))
-            kodi_dialog_OK('Duplicated asset directories: {0}. '.format(duplicated_asset_srt) +
-                           'Change asset directories before continuing.')
-            return
-        else:
-            launcher_report.write('No duplicated asset dirs found')
-      
-        # --- Check asset dirs and disable scanning for unset dirs ---
-        self.scraping_strategy.scanner_check_launcher_unset_asset_dirs()
-        if self.scraping_strategy.unconfigured_name_list:
-            unconfigured_asset_srt = ', '.join(self.scraping_strategy.unconfigured_name_list)
-            msg = 'Assets directories not set: {0}. '.format(unconfigured_asset_srt)
-            msg = msg + 'Asset scanner will be disabled for this/those.'                                
-            launcher_report.write(msg)
-            kodi_dialog_OK(msg)
-
-        # --- Create a cache of assets ---
-        launcher_report.write('Scanning and caching files in asset directories ...')
-        self.progress_dialog.startProgress('Scanning files in asset directories ...', len(ROM_ASSET_ID_LIST))
-        for i, asset_kind in enumerate(ROM_ASSET_ID_LIST):
-            self.progress_dialog.updateProgress(i)
-            launcher.cache_assets(asset_kind)
-        self.progress_dialog.endProgress()
         
         # notice that since we are not scanning for new ROMs, this method returns all ROMs from the launcher
         all_roms = self._processFoundItems(None, roms, launcher_report)        
@@ -5802,9 +5740,7 @@ class ScrapingOnlyScanner(ScannerStrategyABC):
             
             self.progress_dialog.updateMessages(file_text, 'Scraping {0}...'.format(ROM_file.getBaseNoExt()))
             try:
-                self.scraping_strategy.scanner_process_ROM_begin(rom, ROM_file)
-                self.scraping_strategy.scanner_process_ROM_metadata(rom)
-                self.scraping_strategy.scanner_process_ROM_assets(rom)
+                self.scraping_strategy.scanner_process_ROM(rom, ROM_file)
             except Exception as ex:
                 log_error('(Exception) Object type "{}"'.format(type(ex)))
                 log_error('(Exception) Message "{}"'.format(str(ex)))

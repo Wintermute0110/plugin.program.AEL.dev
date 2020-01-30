@@ -1,0 +1,77 @@
+# Kodi Media Center language file
+# Addon Name: Advanced Emulator Launcher
+# Addon id: plugin.program.AEL
+msgid ""
+msgstr ""
+
+msgctxt "#10020"
+msgid "AEL Offline"
+msgstr "settings.xml"
+
+msgctxt "#10030"
+msgid "TheGamesDB"
+msgstr "settings.xml"
+
+msgctxt "#10040"
+msgid "MobyGames"
+msgstr "settings.xml"
+
+msgctxt "#10050"
+msgid "ScreenScraper"
+msgstr "settings.xml"
+
+msgctxt "#10060"
+msgid "GameFaq"
+msgstr "settings.xml"
+
+msgctxt "#10070"
+msgid "ArcadeDB"
+msgstr "settings.xml"
+
+msgctxt "#10080"
+msgid "Libretro"
+msgstr "settings.xml"
+
+msgctxt "#10090"
+msgid "SteamGridDB"
+msgstr "settings.xml"
+
+############################
+# Scraping settings
+############################
+
+msgctxt "#20010"
+msgid "None"
+msgstr "settings.xml"
+
+msgctxt "#20020"
+msgid "NFO files"
+msgstr "settings.xml"
+
+msgctxt "#20030"
+msgid "Local images"
+msgstr "settings.xml"
+
+msgctxt "#20040"
+msgid "NFO files + Scrapers"
+msgstr "settings.xml"
+
+msgctxt "#20050"
+msgid "Local images + Scrapers"
+msgstr "settings.xml"
+
+msgctxt "#20060"
+msgid "Scrapers"
+msgstr "settings.xml"
+
+############################
+# Scraping mode
+############################
+
+msgctxt "#20510"
+msgid "Manual"
+msgstr "settings.xml"
+
+msgctxt "#20520"
+msgid "Automatic"
+msgstr "settings.xml"

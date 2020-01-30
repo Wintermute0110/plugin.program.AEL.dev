@@ -315,15 +315,16 @@ def m_get_settings():
     
     # --- ROM scraping ---
     # Scanner settings
-    g_settings['scan_metadata_policy']  = int(o.getSetting('scan_metadata_policy'))
-    g_settings['scan_asset_policy']     = int(o.getSetting('scan_asset_policy'))
-    g_settings['game_selection_mode']   = int(o.getSetting('game_selection_mode'))
-    g_settings['asset_selection_mode']  = int(o.getSetting('asset_selection_mode'))
+    # Matrix read settings fix: https://kodi.wiki/view/Add-on_settings_conversion
+    g_settings['scan_metadata_policy']  = m_misc_translate_setting('scan_metadata_policy')
+    g_settings['scan_asset_policy']     = m_misc_translate_setting('scan_asset_policy')
+    g_settings['game_selection_mode']   = m_misc_translate_setting('game_selection_mode')
+    g_settings['asset_selection_mode']  = m_misc_translate_setting('asset_selection_mode')
     # Scanner scrapers
-    g_settings['scraper_metadata']      = int(o.getSetting('scraper_metadata'))
-    g_settings['scraper_asset']         = int(o.getSetting('scraper_asset'))
-    g_settings['scraper_metadata_MAME'] = int(o.getSetting('scraper_metadata_MAME'))
-    g_settings['scraper_asset_MAME']    = int(o.getSetting('scraper_asset_MAME'))
+    g_settings['scraper_metadata']      = m_misc_translate_setting('scraper_metadata')
+    g_settings['scraper_asset']         = m_misc_translate_setting('scraper_asset')
+    g_settings['scraper_metadata_MAME'] = m_misc_translate_setting('scraper_metadata_MAME')
+    g_settings['scraper_asset_MAME']    = m_misc_translate_setting('scraper_asset_MAME')
     
     # --- Misc settings ---
     g_settings['scraper_thegamesdb_apikey']      = o.getSetting('scraper_thegamesdb_apikey').decode('utf-8')
@@ -4072,11 +4073,15 @@ def m_roms_scrape_roms(category, launcher):
 @router.action('SCRAPE_ROMS_LOCAL_ONLY')
 def m_roms_scrape_roms_local(category, launcher):
     log_debug('========== m_roms_scrape_roms_local() BEGIN ==================================================')
-    pdialog             = KodiProgressDialog()
-    scraper_strategy    = g_ScraperFactory.create_local_scanner(launcher)
+    
+    scraper_settings = ScraperSettings()
+    scraper_settings.scrape_metadata_policy = SCRAPE_POLICY_NFO_PREFERED
+    scraper_settings.scrape_assets_policy   = SCRAPE_POLICY_LOCAL_ONLY
+    
+    pdialog             = KodiProgressDialog()    
+    scraper_strategy    = g_ScraperFactory.create_scraper(launcher, pdialog, scraper_settings)
     rom_scanner         = g_ROMScannerFactory.create(launcher, scraper_strategy, pdialog, scrape_only=True)
 
-    scraper_strategy.scanner_set_progress_dialog(pdialog, False)    
     roms = rom_scanner.scan()
     pdialog.endProgress()
     pdialog.startProgress('Saving ROM JSON database ...')
@@ -4101,10 +4106,9 @@ def m_roms_scrape_roms_local(category, launcher):
 def m_roms_scrape_roms_as_configured(category, launcher):
     log_debug('========== m_roms_scrape_roms_as_configured() BEGIN ==================================================')
     pdialog             = KodiProgressDialog()
-    scraper_strategy    = g_ScraperFactory.create_scanner(launcher)
+    scraper_strategy    = g_ScraperFactory.create_scraper(launcher, pdialog)
     rom_scanner         = g_ROMScannerFactory.create(launcher, scraper_strategy, pdialog, scrape_only=True)
 
-    scraper_strategy.scanner_set_progress_dialog(pdialog, False)    
     roms = rom_scanner.scan()
     pdialog.endProgress()
     pdialog.startProgress('Saving ROM JSON database ...')
@@ -5117,17 +5121,22 @@ def m_subcommand_scrape_rom_metadata(launcher, rom):
     
     # >> Execute scraper
     log_debug('SCRAPE_ROM_METADATA: m_subcommand_scrape_rom_metadata() Selected scraper#{}'.format(selected_option))
+    scraper_settings = ScraperSettings()
+    scraper_settings.metadata_scraper_ID     = selected_option
+    scraper_settings.scrape_metadata_policy  = SCRAPE_POLICY_SCRAPE_ONLY
+    scraper_settings.game_selection_mode     = SCRAPE_MANUAL
+    scraper_settings.scrape_assets_policy    = SCRAPE_ACTION_NONE
+    
     pdialog             = KodiProgressDialog()
     ROM_file            = rom.get_file()
-    scraping_strategy   = g_ScraperFactory.create_metadata_scraper(launcher, selected_option)
+    scraping_strategy   = g_ScraperFactory.create_scraper(launcher, pdialog, scraper_settings)
     
     msg = 'Scraping {0}...'.format(ROM_file.getBaseNoExt())
     pdialog.startProgress(msg)
     log_debug(msg)
     scraping_strategy.scanner_set_progress_dialog(pdialog, False)    
     try:
-        scraping_strategy.scanner_process_ROM_begin(rom, ROM_file)
-        scraping_strategy.scanner_process_ROM_metadata(rom)
+        scraping_strategy.scanner_process_ROM(rom, ROM_file)
     except Exception as ex:
         log_error('(Exception) Object type "{}"'.format(type(ex)))
         log_error('(Exception) Message "{}"'.format(str(ex)))
@@ -5146,48 +5155,40 @@ def m_subcommand_edit_rom_assets(launcher, rom):
     m_gui_edit_object_assets(rom)
 
 # --- Scrape ROM assets ---
-@router.action('SCRAPE_ROM_ASSETS')
-def m_subcommand_scrape_rom_assets(rom):
+@router.action('RESCRAPE_ROM_ASSETS')
+def m_subcommand_rescrape_rom_assets(rom):
     
     # --- Make a menu list of available asset scrapers ---
     options =  g_ScraperFactory.get_asset_scraper_menu_list()
-    selected_option = KodiOrdDictionaryDialog().select('Scrape ROM assets', options)
+    selected_option = KodiOrdDictionaryDialog().select('Rescrape ROM assets', options)
     if selected_option is None:
         # >> Exits context menu
-        log_debug('SCRAPE_ROM_ASSETS: m_subcommand_scrape_rom_assets() Selected None. Closing context menu')
+        log_debug('RESCRAPE_ROM_ASSETS: m_subcommand_rescrape_rom_assets() Selected None. Closing context menu')
         return
     
     # >> Execute scraper
-    log_debug('SCRAPE_ROM_ASSETS: m_subcommand_scrape_rom_assets() Selected scraper#{}'.format(selected_option))
+    log_debug('SCRAPE_ROM_ASSETS: m_subcommand_rescrape_rom_assets() Selected scraper#{}'.format(selected_option))
+    scraper_settings = ScraperSettings()
+    scraper_settings.assets_scraper_ID       = selected_option
+    scraper_settings.scrape_metadata_policy  = SCRAPE_ACTION_NONE
+    scraper_settings.scrape_assets_policy    = SCRAPE_POLICY_SCRAPE_ONLY
+    scraper_settings.game_selection_mode     = SCRAPE_MANUAL
+    scraper_settings.asset_selection_mode    = SCRAPE_MANUAL
+    
     pdialog             = KodiProgressDialog()
     ROM_file            = rom.get_file()
     launcher            = rom.get_launcher()
-    scraping_strategy   = g_ScraperFactory.create_asset_scraper(launcher, selected_option)
+    scraping_strategy   = g_ScraperFactory.create_scraper(launcher, pdialog, scraper_settings)
     
     msg = 'Preparing to scrape {0}...'.format(ROM_file.getBaseNoExt())
     pdialog.startProgress(msg)
     log_debug(msg)
-    scraping_strategy.scanner_set_progress_dialog(pdialog, False)   
 
-    # --- Check asset dirs and disable scanning for unset dirs ---
-    scraping_strategy.scanner_check_launcher_unset_asset_dirs()
-    if scraping_strategy.unconfigured_name_list:
-        unconfigured_asset_srt = ', '.join(scraping_strategy.unconfigured_name_list)
-        msg = 'Assets directories not set: {0}. '.format(unconfigured_asset_srt)
-        msg = msg + 'Asset scanner will be disabled for this/those.'                                
-        log_debug(msg)
-        kodi_dialog_OK(msg)
-    
-    for i, asset_kind in enumerate(ROM_ASSET_ID_LIST):
-            pdialog.updateProgress(i)
-            launcher.cache_assets(asset_kind) 
-    pdialog.endProgress()
     msg = 'Scraping {0}...'.format(ROM_file.getBaseNoExt())
     pdialog.startProgress(msg)
     
     try:
-        scraping_strategy.scanner_process_ROM_begin(rom, ROM_file)
-        scraping_strategy.scanner_process_ROM_assets(rom)
+        scraping_strategy.scanner_process_ROM(rom, ROM_file)
     except Exception as ex:
         log_error('(Exception) Object type "{}"'.format(type(ex)))
         log_error('(Exception) Message "{}"'.format(str(ex)))
@@ -6677,7 +6678,7 @@ def m_gui_edit_object_assets(obj_instance, preselected_asset = None):
 
     # --- Build options list ---
     asset_odict = obj_instance.get_assets_odict()
-    scrape_cmd = 'SCRAPE_ROM_ASSETS'
+    scrape_cmd = 'RESCRAPE_ROM_ASSETS'
     
     # dump_object_to_log('asset_odict', asset_odict)
     options = collections.OrderedDict()
@@ -6702,7 +6703,7 @@ def m_gui_edit_object_assets(obj_instance, preselected_asset = None):
 
     # if ROM then add scrape option
     if obj_instance.get_object_name() == 'ROM':
-        options[scrape_cmd] = 'Scrape ROM assets'
+        options[scrape_cmd] = 'Rescrape ROM assets'
     
     # --- Customize function for each object type ---
     dialog_title_str = 'Edit {0} Assets/Artwork'. format(obj_instance.get_object_name())
@@ -8738,10 +8739,13 @@ def m_roms_import_roms(categoryID, launcherID):
     log_debug('========== _roms_import_roms() BEGIN ==================================================')
     pdialog             = KodiProgressDialog()
     launcher            = g_ObjectFactory.find_launcher(categoryID, launcherID)
-    scraper_strategy    = g_ScraperFactory.create_scanner(launcher)
+    scraper_strategy    = g_ScraperFactory.create_scraper(launcher, pdialog)
     rom_scanner         = g_ROMScannerFactory.create(launcher, scraper_strategy, pdialog)
 
-    scraper_strategy.scanner_set_progress_dialog(pdialog, False)
+    # Something went wrong, stop operation
+    if scraper_strategy is None:
+        return
+
     roms = rom_scanner.scan()
     pdialog.endProgress()
     
@@ -9026,6 +9030,40 @@ def m_misc_url_search(command, categoryID, launcherID, search_type, search_strin
     return '{0}?com={1}&catID={2}&launID={3}&search_type={4}&search_string={5}'.format(
             g_base_url, command, categoryID, launcherID, search_type, search_string
         )
+
+# https://kodi.wiki/view/Add-on_settings_conversion
+# Leia has issue with lvalues giving back string instead of id
+# Fixed in Matrix, but this method will fix it for Leia
+translation_fix = {}
+def m_misc_translate_setting(setting_key):
+    
+    if kodi_running_version > KODI_VERSION_LEIA:
+        return int(__addon__.getSetting(setting_key))
+                
+    if len(translation_fix) == 0:
+        translation_fix["AEL Offline"] = 10020 
+        translation_fix["TheGamesDB"] = 10030 
+        translation_fix["MobyGames"] = 10040 
+        translation_fix["ScreenScraper"] = 10050 
+        translation_fix["GameFaq"] = 10060 
+        translation_fix["ArcadeDB"] = 10070
+        translation_fix["Libretro"] = 10080
+        translation_fix["SteamGridDB"] = 10090 
+        
+        translation_fix["None"] = 20010 
+        translation_fix["NFO files"] = 20020 
+        translation_fix["Local images"] = 20030 
+        translation_fix["NFO files + Scrapers"] = 20040 
+        translation_fix["Local images + Scrapers"] = 20050 
+        translation_fix["Scrapers"] = 20060 
+        
+        translation_fix["Manual"] = 20510 
+        translation_fix["Automatic"] = 20520 
+    
+    setting_translated = __addon__.getSetting(setting_key)
+    log_info('SETTING {} has {}'.format(setting_key, setting_translated))
+        
+    return translation_fix[setting_translated] if setting_translated in translation_fix else int(setting_translated)
 
 # Executes the migrations which are newer than the last migration version that has run.
 # Each migration will be executed in order of version numbering.
