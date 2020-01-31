@@ -115,6 +115,7 @@ Future ROMs database fields:
     'i_audit_status' : 'Have',     Determined by the ROM Audit exclusively, former nointro_status
     'i_pclone_status' : 'Parent',  Based on i_cloneof, used to set skin properties, former pclone_status
     'i_cloneof' : ROMID,           ROM ID of the final parent ROM, former cloneof
+    'i_extra_ROM' : bool,          If True ROM is an extra ROM, false otherwise
     'i_order' : int,               Position of the ROM in the Parent/Clone group
     'i_regions' : ['', ''],        Same as m_region
     'i_languages' : ['', ''],      Same as m_language

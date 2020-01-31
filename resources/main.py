@@ -7603,6 +7603,7 @@ class Main:
         info_text += "[COLOR violet]nointro_status[/COLOR]: '{0}'\n".format(rom['nointro_status'])
         info_text += "[COLOR violet]pclone_status[/COLOR]: '{0}'\n".format(rom['pclone_status'])
         info_text += "[COLOR violet]cloneof[/COLOR]: '{0}'\n".format(rom['cloneof'])
+        info_text += "[COLOR skyblue]i_extra_ROM[/COLOR]: {0}\n".format(rom['i_extra_ROM'])
         # >> Assets/artwork
         info_text += "[COLOR violet]s_3dbox[/COLOR]: '{0}'\n".format(rom['s_3dbox'])
         info_text += "[COLOR violet]s_title[/COLOR]: '{0}'\n".format(rom['s_title'])
@@ -7662,6 +7663,7 @@ class Main:
         info_text += "[COLOR skyblue]args_extra[/COLOR]: {0}\n".format(launcher['args_extra'])
         info_text += "[COLOR violet]rompath[/COLOR]: '{0}'\n".format(launcher['rompath'])
         info_text += "[COLOR violet]romext[/COLOR]: '{0}'\n".format(launcher['romext'])
+        info_text += "[COLOR violet]romextrapath[/COLOR]: '{0}'\n".format(launcher['romextrapath'])
         # Bool settings
         info_text += "[COLOR skyblue]finished[/COLOR]: {0}\n".format(launcher['finished'])
         info_text += "[COLOR skyblue]toggle_window[/COLOR]: {0}\n".format(launcher['toggle_window'])
@@ -9523,16 +9525,18 @@ class Main:
 
         # --- Get information from launcher ---
         launcher           = self.launchers[launcherID]
-        launcher_path      = FileName(launcher['rompath'])
+        rom_path           = FileName(launcher['rompath'])
         launcher_exts      = launcher['romext']
+        rom_extra_path     = FileName(launcher['romextrapath'])
         launcher_multidisc = launcher['multidisc']
         log_info('_roms_import_roms() Starting ROM scanner ...')
-        log_info('Launcher name "{0}"'.format(launcher['m_name']))
-        log_info('launcher ID   "{0}"'.format(launcher['id']))
-        log_info('ROM path      "{0}"'.format(launcher_path.getPath()))
-        log_info('ROM exts      "{0}"'.format(launcher_exts))
-        log_info('Multidisc     {0}'.format(launcher_multidisc))
-        log_info('Platform      "{0}"'.format(launcher['platform']))
+        log_info('Launcher name  "{}"'.format(launcher['m_name']))
+        log_info('Launcher ID    "{}"'.format(launcher['id']))
+        log_info('ROM path       "{}"'.format(rom_path.getPath()))
+        log_info('ROM exts       "{}"'.format(launcher_exts))
+        log_info('ROM extra path "{}"'.format(rom_extra_path.getPath()))
+        log_info('Platform       "{}"'.format(launcher['platform']))
+        log_info('Multidisc      {}'.format(launcher_multidisc))
 
         # --- Open ROM scanner report file ---
         launcher_report_FN = g_PATHS.REPORTS_DIR.pjoin(launcher['roms_base_noext'] + '_report.txt')
@@ -9540,14 +9544,15 @@ class Main:
         log_info('Report file  P "{0}"'.format(launcher_report_FN.getPath()))
         report_fobj = open(launcher_report_FN.getPath(), "w")
         report_fobj.write('*** Starting ROM scanner ... ***\n'.format())
-        report_fobj.write('  Launcher name "{0}"\n'.format(launcher['m_name']))
-        report_fobj.write('  launcher ID   "{0}"\n'.format(launcher['id']))
-        report_fobj.write('  ROM path      "{0}"\n'.format(launcher_path.getPath()))
-        report_fobj.write('  ROM ext       "{0}"\n'.format(launcher_exts))
-        report_fobj.write('  Platform      "{0}"\n'.format(launcher['platform']))
+        report_fobj.write('Launcher name  "{0}"\n'.format(launcher['m_name']))
+        report_fobj.write('Launcher ID    "{0}"\n'.format(launcher['id']))
+        report_fobj.write('ROM path       "{0}"\n'.format(rom_path.getPath()))
+        report_fobj.write('ROM ext        "{0}"\n'.format(launcher_exts))
+        report_fobj.write('ROM extra path "{0}"\n'.format(rom_extra_path.getPath()))
+        report_fobj.write('Platform       "{0}"\n'.format(launcher['platform']))
 
-        # >> Check if there is an XML for this launcher. If so, load it.
-        # >> If file does not exist or is empty then return an empty dictionary.
+        # Check if there is an XML for this launcher. If so, load it.
+        # If file does not exist or is empty then return an empty dictionary.
         report_fobj.write('Loading launcher ROMs ...\n')
         roms = fs_load_ROMs_JSON(g_PATHS.ROMS_DIR, launcher)
         num_roms = len(roms)
@@ -9624,43 +9629,68 @@ class Main:
         else:
             log_info('Launcher is empty. No dead ROM check.')
 
-        # --- Scan all files in ROMpath (mask *.*) and put them in a list ------------------------
-        pdialog.startProgress('Scanning and caching files in ROM path ...', 100)
+        # --- Scan all files in ROM path (mask *.*) and put them in a list -----------------------
+        pdialog.startProgress('Scanning and caching files in ROM path ...')
         files = []
-        log_info('Scanning files in {0}'.format(launcher_path.getPath()))
+        log_info('Scanning files in {}'.format(rom_path.getPath()))
         report_fobj.write('Scanning files ...\n')
-        report_fobj.write('  Directory {0}\n'.format(launcher_path.getPath()))
+        report_fobj.write('Directory {}\n'.format(rom_path.getPath()))
         if self.settings['scan_recursive']:
             log_info('Recursive scan activated')
-            files = launcher_path.recursiveScanFilesInPath('*.*')
+            files = rom_path.recursiveScanFilesInPath('*.*')
         else:
             log_info('Recursive scan not activated')
-            files = launcher_path.scanFilesInPath('*.*')
-        num_files = len(files)
-        log_info('File scanner found {0} files'.format(num_files))
-        report_fobj.write('  File scanner found {0} files\n'.format(num_files))
+            files = rom_path.scanFilesInPath('*.*')
+        log_info('File scanner found {} files'.format(len(files)))
+        report_fobj.write('File scanner found {} files\n'.format(len(files)))
         pdialog.endProgress()
 
+        # --- Scan all files in extra ROM path ---------------------------------------------------
+        if launcher['romextrapath']:
+            log_info('Scanning files in extra ROM path.')
+            pdialog.startProgress('Scanning and caching files in extra ROM path ...')
+            extra_files = []
+            log_info('Scanning files in {}'.format(rom_path.getPath()))
+            report_fobj.write('Scanning files ...\n')
+            report_fobj.write('Directory {}\n'.format(rom_path.getPath()))
+            if self.settings['scan_recursive']:
+                log_info('Recursive scan activated')
+                extra_files = rom_path.recursiveScanFilesInPath('*.*')
+            else:
+                log_info('Recursive scan not activated')
+                extra_files = rom_path.scanFilesInPath('*.*')
+            log_info('File scanner found {} files'.format(len(extra_files)))
+            report_fobj.write('File scanner found {} files\n'.format(len(extra_files)))
+            pdialog.endProgress()
+        else:
+            log_info('Extra ROM path empty. Skipping scanning.')
+
+        # --- Prepare list of files to be processed ----------------------------------------------
+        # List has tuples (filename, extra_ROM_flag). List already sorted alphabetically.
+        file_list = []
+        for f_path in sorted(files): file_list.append((f_path, False))
+        for f_path in sorted(extra_files): file_list.append((f_path, True))
+
         # --- Now go processing file by file -----------------------------------------------------
-        pdialog.startProgress('Scanning {0}'.format(launcher_path), num_files)
+        pdialog.startProgress('Scanning {}'.format(rom_path), len(file_list))
         log_info('============================== Processing ROMs ===============================')
         report_fobj.write('Processing files ...\n')
         num_new_roms = 0
         num_files_checked = 0
-        for f_path in sorted(files):
+        for f_path, extra_ROM_flag in file_list:
             # --- Get all file name combinations ---
             ROM = FileName(f_path)
             log_debug('------------------------------ Processing cached file -------------------')
-            log_debug('ROM.getPath()         "{0}"'.format(ROM.getPath()))
-            log_debug('ROM.getOriginalPath() "{0}"'.format(ROM.getOriginalPath()))
-            # log_debug('ROM.getPath_noext()   "{0}"'.format(ROM.getPath_noext()))
-            # log_debug('ROM.getDir()          "{0}"'.format(ROM.getDir()))
-            # log_debug('ROM.getBase()         "{0}"'.format(ROM.getBase()))
-            # log_debug('ROM.getBase_noext()   "{0}"'.format(ROM.getBase_noext()))
-            # log_debug('ROM.getExt()          "{0}"'.format(ROM.getExt()))
-            report_fobj.write('>>> {0}\n'.format(ROM.getPath()).encode('utf-8'))
+            log_debug('ROM.getPath()         "{}"'.format(ROM.getPath()))
+            log_debug('ROM.getOriginalPath() "{}"'.format(ROM.getOriginalPath()))
+            # log_debug('ROM.getPath_noext()   "{}"'.format(ROM.getPath_noext()))
+            # log_debug('ROM.getDir()          "{}"'.format(ROM.getDir()))
+            # log_debug('ROM.getBase()         "{}"'.format(ROM.getBase()))
+            # log_debug('ROM.getBase_noext()   "{}"'.format(ROM.getBase_noext()))
+            # log_debug('ROM.getExt()          "{}"'.format(ROM.getExt()))
+            report_fobj.write('>>> {}\n'.format(ROM.getPath()).encode('utf-8'))
 
-            # ~~~ Update progress dialog ~~~
+            # Update progress dialog.
             file_text = 'ROM [COLOR orange]{}[/COLOR]'.format(ROM.getBase())
             if not pdialog_verbose:
                 pdialog.updateProgress(num_files_checked, file_text)
@@ -9757,9 +9787,10 @@ class Main:
                     continue
 
             # --- Create new ROM and process metadata and assets ---------------------------------
-            romdata  = fs_new_rom()
+            romdata = fs_new_rom()
             romdata['id'] = misc_generate_random_SID()
             romdata['filename'] = ROM.getOriginalPath()
+            romdata['i_extra_ROM'] = extra_ROM_flag
             ROM_checksums = ROM_original if MDSet.isMultiDisc and launcher_multidisc else ROM
             scraper_strategy.scanner_process_ROM_begin(romdata, ROM, ROM_checksums)
             scraper_strategy.scanner_process_ROM_metadata(romdata, ROM)
@@ -10359,25 +10390,26 @@ class Main:
     # ROM dictionary is edited by Python passing by assigment
     #
     def _misc_fix_rom_object(self, rom):
-        # --- Add new fields if not present ---
+        # Add new fields if not present
         if 'm_nplayers'    not in rom: rom['m_nplayers']    = ''
         if 'm_esrb'        not in rom: rom['m_esrb']        = ESRB_PENDING
         if 'disks'         not in rom: rom['disks']         = []
         if 'pclone_status' not in rom: rom['pclone_status'] = PCLONE_STATUS_NONE
         if 'cloneof'       not in rom: rom['cloneof']       = ''
         if 's_3dbox'       not in rom: rom['s_3dbox']       = ''
-        # --- Delete unwanted/obsolete stuff ---
+        if 'i_extra_ROM'   not in rom: rom['i_extra_ROM']   = False
+        # Delete unwanted/obsolete stuff
         if 'nointro_isClone' in rom: rom.pop('nointro_isClone')
-        # --- DB field renamings ---
+        # DB field renamings
         if 'm_studio' in rom:
             rom['m_developer'] = rom['m_studio']
             rom.pop('m_studio')
 
     def _misc_fix_Favourite_rom_object(self, rom):
-        # --- Fix standard ROM fields ---
+        # Fix standard ROM fields
         self._misc_fix_rom_object(rom)
 
-        # --- Favourite ROMs additional stuff ---
+        # Favourite ROMs additional stuff
         if 'args_extra' not in rom: rom['args_extra'] = []
         if 'non_blocking' not in rom: rom['non_blocking'] = False
         if 'roms_default_thumb' in rom:

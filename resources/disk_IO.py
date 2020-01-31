@@ -99,6 +99,7 @@ def fs_new_launcher():
         'args_extra' : [],
         'rompath' : '',
         'romext' : '',
+        'romextrapath' : '',
         'finished': False,
         'toggle_window' : False, # Former 'minimize'
         'non_blocking' : False,
@@ -171,6 +172,7 @@ def fs_new_rom():
         'nointro_status' : AUDIT_STATUS_NONE,
         'pclone_status' : PCLONE_STATUS_NONE,
         'cloneof' : '',
+        'i_extra_ROM' : False,
         's_3dbox' : '',
         's_title' : '',
         's_snap' : '',
@@ -456,6 +458,7 @@ def fs_write_catfile(categories_file, categories, launchers, update_timestamp = 
                 for extra_arg in launcher['args_extra']: str_list.append(XML_text('args_extra', extra_arg))
             str_list.append(XML_text('rompath', launcher['rompath']))
             str_list.append(XML_text('romext', launcher['romext']))
+            str_list.append(XML_text('romextrapath', launcher['romextrapath']))
             str_list.append(XML_text('finished', unicode(launcher['finished'])))
             str_list.append(XML_text('toggle_window', unicode(launcher['toggle_window'])))
             str_list.append(XML_text('non_blocking', unicode(launcher['non_blocking'])))

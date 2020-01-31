@@ -152,7 +152,7 @@ WIP      [CORE] New Utility "Delete ROMs redundant artwork"
          Redundant artwork is orphaned artwork.
 
 WIP NOW  [CORE] Extra ROMs directory. Extra ROMs are not audited. The extra ROMs directory
-         is perfect for ROM translations and hacks that should not be taken into account
+         is intended for ROM translations and hacks that should not be taken into account
          in the ROM audit.
 
 FEATURE  [CORE] New Utility "Show detected No-Intro/Redump DATs"
