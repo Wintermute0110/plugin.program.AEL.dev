@@ -245,36 +245,6 @@ class AssetInfoFactory(object):
         return asset_path_noext_FN
 
     #
-    # Search for local assets and place found files into a list.
-    # Returned list all has assets as defined in ROM_ASSET_LIST.
-    # This function is used in the ROM Scanner.
-    #
-    # launcher               -> launcher dictionary
-    # ROMFile                -> Rom object
-    # enabled_ROM_asset_list -> list of booleans
-    #
-    def assets_search_local_cached_assets(self, launcher, ROM, enabled_ROM_asset_list):
-        log_verb('assets_search_local_cached_assets() Searching for ROM local assets...')
-        local_asset_list = [None] * len(ROM_ASSET_ID_LIST)
-        ROMFile = ROM.get_file()
-        rom_basename_noext = ROMFile.getBaseNoExt()
-        for i, asset_kind in enumerate(ROM_ASSET_ID_LIST):
-            AInfo = g_assetFactory.get_asset_info(asset_kind)
-            if not enabled_ROM_asset_list[i]:
-                log_verb('assets_search_local_cached_assets() Disabled {0:<9}'.format(AInfo.name))
-                continue
-            local_asset = misc_search_file_cache(launcher.get_asset_path(AInfo), rom_basename_noext, AInfo.exts)
-
-            if local_asset:
-                local_asset_list[i] = local_asset
-                log_verb('assets_search_local_cached_assets() Found    {0:<9} "{1}"'.format(AInfo.name, local_asset_list[i]))
-            else:
-                local_asset_list[i] = None
-                log_verb('assets_search_local_cached_assets() Missing  {0:<9}'.format(AInfo.name))
-
-        return local_asset_list
-
-    #
     # Search for local assets and put found files into a list.
     # This function is used in _roms_add_new_rom() where there is no need for a file cache.
     #
@@ -2101,9 +2071,9 @@ class LauncherABC(MetaDataItemABC):
     # Returns dict:
     # asset_status_dict     Dict of AssetInfo object as key and enabled boolean as value
     #
-    def get_ROM_assets_enabled_statusses(self):
+    def get_ROM_assets_enabled_statusses(self, asset_ids_to_check = ROM_ASSET_ID_LIST):        
         asset_status_dict   = collections.OrderedDict()
-        asset_info_list     = g_assetFactory.get_asset_list_by_IDs(ROM_ASSET_ID_LIST)
+        asset_info_list     = g_assetFactory.get_asset_list_by_IDs(asset_ids_to_check)
         
         # >> Check if asset paths are configured or not
         for asset in asset_info_list:
@@ -2115,6 +2085,7 @@ class LauncherABC(MetaDataItemABC):
                 log_debug('get_ROM_assets_enabled_statusses() {0:<9} path configured'.format(asset.name))
 
         return asset_status_dict
+    
     #
     # Get a list of the assets that can be mapped to a defaultable asset.
     # They must be images, no videos, no documents.
@@ -2723,7 +2694,31 @@ class ROMLauncherABC(LauncherABC):
 
     def set_mapped_ROM_asset_key(self, asset_info, mapped_to_info):
         self.entity_data[asset_info.rom_default_key] = mapped_to_info.key
-    
+
+    #
+    # Search for local assets and place found files into a list.
+    # Returned list all has assets as defined in ROM_ASSET_LIST.
+    # This function is used in the Scraper.
+    #
+    # ROM         -> Rom object
+    # asset_infos -> list of assets to request
+    #
+    def get_local_assets(self, ROM, asset_infos):
+        log_verb('get_local_assets() Searching for ROM local assets...')
+        ROMFile = ROM.get_file()
+        rom_basename_noext = ROMFile.getBaseNoExt()
+        local_assets = {}
+        for asset_info in asset_infos:
+            local_asset = misc_search_file_cache(self.get_asset_path(asset_info), rom_basename_noext, asset_info.exts)
+            if local_asset:
+                local_assets[asset_info.id] = local_asset
+                log_verb('get_local_assets() Found    {0:<9} "{1}"'.format(asset_info.name, local_asset))
+            else:
+                local_assets[asset_info.id] = None
+                log_verb('get_local_assets() Missing  {0:<9}'.format(asset_info.name))
+
+        return local_assets
+
     # --- Create a cache of assets ---
     # misc_add_file_cache() creates a set with all files in a given directory.
     # That set is stored in a function internal cache associated with the path.

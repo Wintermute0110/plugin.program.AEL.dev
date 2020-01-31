@@ -316,6 +316,7 @@ class ScraperFactory(object):
         
         log_debug('No duplicated asset dirs found')
         return True
+    
 #
 # Main scraping logic.
 #
@@ -385,15 +386,18 @@ class ScrapeStrategy(object):
     def scanner_check_launcher_unset_asset_dirs(self):
         log_debug('ScrapeStrategy::scanner_check_launcher_unset_asset_dirs() BEGIN ...')
         
-        rom_asset_states = self.launcher.get_ROM_assets_enabled_statusses()
-        self.enabled_asset_list = rom_asset_states.values()
-        self.unconfigured_name_list = []
+        rom_asset_states = self.launcher.get_ROM_assets_enabled_statusses(self.scraper_settings.asset_IDs_to_scrape)
+        self.enabled_asset_list = []
+        unconfigured_name_list = []
         for rom_asset, enabled_state in rom_asset_states.items():
             if not enabled_state:
-                self.unconfigured_name_list.append(rom_asset.name)
+                log_debug('Directory not set. Asset "{}" will be disabled'.format(rom_asset))
+                unconfigured_name_list.append(rom_asset.name)
+            else:
+                self.enabled_asset_list.append(rom_asset)
                 
-        if self.unconfigured_name_list:
-            unconfigured_asset_srt = ', '.join(self.unconfigured_name_list)
+        if unconfigured_name_list:
+            unconfigured_asset_srt = ', '.join(unconfigured_name_list)
             msg = 'Assets directories not set: {0}. '.format(unconfigured_asset_srt)
             msg = msg + 'Asset scanner will be disabled for this/those.'                                
             log_debug(msg)
@@ -402,10 +406,10 @@ class ScrapeStrategy(object):
     def scanner_process_ROM(self, ROM, ROM_checksums):
         log_debug('ScrapeStrategy.scanner_process_ROM() Determining metadata and asset actions...')
         
-        if self.scraper_settings.scrape_metadata_policy is not SCRAPE_ACTION_NONE:
+        if self.scraper_settings.scrape_metadata_policy != SCRAPE_ACTION_NONE:
             self._scanner_process_ROM_metadata_begin(ROM)
         
-        if self.scraper_settings.scrape_assets_policy is not SCRAPE_ACTION_NONE:
+        if self.scraper_settings.scrape_assets_policy != SCRAPE_ACTION_NONE:
             self._scanner_process_ROM_assets_begin(ROM)
 
         # --- If metadata or any asset is scraped then select the game among the candidates ---
@@ -419,12 +423,12 @@ class ScrapeStrategy(object):
 
         log_debug('ScrapeStrategy.scanner_process_ROM() Getting candidates for game')
         meta_candidate_set = False
-        if self.scraper_settings.scrape_metadata_policy is not SCRAPE_ACTION_NONE:
+        if self.scraper_settings.scrape_metadata_policy != SCRAPE_ACTION_NONE:
             self._scanner_get_candidate(ROM, ROM_checksums, self.meta_scraper_obj, status_dic)
             meta_candidate_set = True
         
         asset_candidate_set = False
-        if self.scraper_settings.scrape_assets_policy is not SCRAPE_ACTION_NONE:
+        if self.scraper_settings.scrape_assets_policy != SCRAPE_ACTION_NONE:
             if not self.meta_and_asset_scraper_same and not meta_candidate_set:
                 self._scanner_get_candidate(ROM, ROM_checksums, self.asset_scraper_obj, status_dic)
                 asset_candidate_set = True
@@ -433,10 +437,10 @@ class ScrapeStrategy(object):
         if not meta_candidate_set: log_debug('Metadata candidate game is not set')
         if not asset_candidate_set: log_debug('Asset candidate game is not set')
             
-        if self.scraper_settings.scrape_metadata_policy is not SCRAPE_ACTION_NONE:
+        if self.scraper_settings.scrape_metadata_policy != SCRAPE_ACTION_NONE:
             self._scanner_process_ROM_metadata(ROM)
         
-        if self.scraper_settings.scrape_assets_policy is not SCRAPE_ACTION_NONE:
+        if self.scraper_settings.scrape_assets_policy != SCRAPE_ACTION_NONE:
             self._scanner_process_ROM_assets(ROM)
                  
     # Called by the ROM scanner. Fills in the ROM metadata.
@@ -483,28 +487,27 @@ class ScrapeStrategy(object):
     def _scanner_process_ROM_assets(self, ROM):
         log_debug('ScrapeStrategy.scanner_process_ROM_assets() Processing asset actions...')
         
-        if all(asset_action == ScrapeStrategy.ACTION_ASSET_NONE for asset_action in self.asset_action_list):
+        if all(asset_action == ScrapeStrategy.ACTION_ASSET_NONE for asset_action in self.asset_action_list.values()):
             return
         
         # --- Process asset by asset actions ---
         # --- Asset scraping ---
-        for i, asset_ID in enumerate(ROM_ASSET_ID_LIST):
-            AInfo = g_assetFactory.get_asset_info(asset_ID)
-            if self.asset_action_list[i] == ScrapeStrategy.ACTION_ASSET_NONE:
+        for AInfo in self.enabled_asset_list:
+            if self.asset_action_list[AInfo.id] == ScrapeStrategy.ACTION_ASSET_NONE:
                 log_debug('Skipping asset scraping for {}'.format(AInfo.name))
                 continue                
-            elif self.asset_action_list[i] == ScrapeStrategy.ACTION_ASSET_LOCAL_ASSET:
+            elif self.asset_action_list[AInfo.id] == ScrapeStrategy.ACTION_ASSET_LOCAL_ASSET:
                 log_debug('Using local asset for {}'.format(AInfo.name))
-                ROM.set_asset(AInfo, self.local_asset_list[i])
-            elif self.asset_action_list[i] == ScrapeStrategy.ACTION_ASSET_SCRAPER:   
-                asset_path = self._scanner_scrap_ROM_asset(AInfo, self.local_asset_list[i], ROM)
+                ROM.set_asset(AInfo, self.local_asset_list[AInfo.id])
+            elif self.asset_action_list[AInfo.id] == ScrapeStrategy.ACTION_ASSET_SCRAPER:   
+                asset_path = self._scanner_scrap_ROM_asset(AInfo, self.local_asset_list[AInfo.id], ROM)
                 if asset_path is None or asset_path.getPath() == '':
                     log_debug('No asset scraped. Skipping {}'.format(AInfo.name))
                     continue                             
                 ROM.set_asset(AInfo, asset_path)
             else:
                 raise ValueError('Asset {} index {} ID {} unknown action {}'.format(
-                    AInfo.name, i, asset_ID, self.asset_action_list[i]))
+                    AInfo.name, i, AInfo.id, self.asset_action_list[AInfo.id]))
 
         romdata = ROM.get_data_dic()
         # --- Print some debug info ---
@@ -580,71 +583,62 @@ class ScrapeStrategy(object):
         
         if self.asset_scraper_obj is None:
             log_debug('ScrapeStrategy::_scanner_process_ROM_assets_begin() No asset scraper set, disabling asset scraping.')
-            self.asset_action_list = [ScrapeStrategy.ACTION_ASSET_NONE] * len(ROM_ASSET_ID_LIST)
+            self.asset_action_list = { key.id:ScrapeStrategy.ACTION_ASSET_NONE for (key, value) in self.enabled_asset_list }
             return
         
         # --- Determine Asset action -------------------------------------------------------------
         # --- Search for local artwork/assets ---
         # Always look for local assets whatever the scanner settings. For unconfigured assets
         # local_asset_list will have the default database value empty string ''.
-        self.local_asset_list = g_assetFactory.assets_search_local_cached_assets(self.launcher, ROM, self.enabled_asset_list)
-        self.asset_action_list = [ScrapeStrategy.ACTION_ASSET_LOCAL_ASSET] * len(ROM_ASSET_ID_LIST)
+        self.local_asset_list = self.launcher.get_local_assets(ROM, self.enabled_asset_list) 
+        self.asset_action_list = {}
         
         # Print information to the log
         if self.scraper_settings.scrape_assets_policy == SCRAPE_POLICY_LOCAL_ONLY:
             log_debug('Asset policy: Local images ON | Scraper OFF')
-        elif self.scraper_settings.scrape_assets_policy  == SCRAPE_POLICY_LOCAL_AND_SCRAPE:
+        elif self.scraper_settings.scrape_assets_policy == SCRAPE_POLICY_LOCAL_AND_SCRAPE:
             log_debug('Asset policy: Local images ON | Scraper ON')
-        elif self.scraper_settings.scrape_assets_policy  == SCRAPE_POLICY_SCRAPE_ONLY:
+        elif self.scraper_settings.scrape_assets_policy == SCRAPE_POLICY_SCRAPE_ONLY:
             log_debug('Asset policy: Local images OFF | Scraper ON')
         else:
             raise ValueError('Invalid scrape_assets_policy value {0}'.format(self.scraper_settings.scrape_assets_policy))
-        # Process asset by asset
-        for i, asset_ID in enumerate(ROM_ASSET_ID_LIST):
-            AInfo = g_assetFactory.get_asset_info(asset_ID)
+        # Process asset by asset (only enabled ones)
+        for AInfo in self.enabled_asset_list:
             # Local artwork.
             if self.scraper_settings.scrape_assets_policy == SCRAPE_POLICY_LOCAL_ONLY:
-                if not self.enabled_asset_list[i]:
-                    log_debug('Skipping {0} (dir not configured).'.format(AInfo.name))
-                elif self.local_asset_list[i]:
+                if self.local_asset_list[AInfo.id]:
                     log_debug('Local {0} FOUND'.format(AInfo.name))
                 else:
                     log_debug('Local {0} NOT found.'.format(AInfo.name))
-                self.asset_action_list[i] = ScrapeStrategy.ACTION_ASSET_LOCAL_ASSET
+                self.asset_action_list[AInfo.id] = ScrapeStrategy.ACTION_ASSET_LOCAL_ASSET
             # Local artwork + Scrapers.
             elif self.scraper_settings.scrape_assets_policy == SCRAPE_POLICY_LOCAL_AND_SCRAPE:
-                if not self.enabled_asset_list[i]:
-                    log_debug('Skipping {0} (dir not configured).'.format(AInfo.name))
-                    self.asset_action_list[i] = ScrapeStrategy.ACTION_ASSET_LOCAL_ASSET
-                elif self.local_asset_list[i]:
+                if self.local_asset_list[AInfo.id]:
                     log_debug('Local {0} FOUND'.format(AInfo.name))
-                    self.asset_action_list[i] = ScrapeStrategy.ACTION_ASSET_LOCAL_ASSET
-                elif self.asset_scraper_obj.supports_asset_ID(asset_ID):
+                    self.asset_action_list[AInfo.id] = ScrapeStrategy.ACTION_ASSET_LOCAL_ASSET
+                elif self.asset_scraper_obj.supports_asset_ID(AInfo.id):
                     # Scrape only if scraper supports asset.
                     log_debug('Local {0} NOT found. Scraping.'.format(AInfo.name))
-                    self.asset_action_list[i] = ScrapeStrategy.ACTION_ASSET_SCRAPER
+                    self.asset_action_list[AInfo.id] = ScrapeStrategy.ACTION_ASSET_SCRAPER
                 else:
                     log_debug('Local {0} NOT found. No scraper support.'.format(AInfo.name))
-                    self.asset_action_list[i] = ScrapeStrategy.ACTION_ASSET_LOCAL_ASSET
+                    self.asset_action_list[AInfo.id] = ScrapeStrategy.ACTION_ASSET_LOCAL_ASSET
             # Scrapers.
             elif self.scraper_settings.scrape_assets_policy == SCRAPE_POLICY_SCRAPE_ONLY:
-                if not self.enabled_asset_list[i]:
-                    log_debug('Skipping {0} (dir not configured).'.format(AInfo.name))
-                    self.asset_action_list[i] = ScrapeStrategy.ACTION_ASSET_LOCAL_ASSET
                 # Scraper does not support asset but local asset found.
-                elif not self.asset_scraper_obj.supports_asset_ID(asset_ID) and self.local_asset_list[i]:
+                if not self.asset_scraper_obj.supports_asset_ID(AInfo.id) and self.local_asset_list[AInfo.id]:
                     log_debug('Scraper {} does not support {}. Using local asset.'.format(
                         self.asset_scraper_obj.get_name(), AInfo.name))
-                    self.asset_action_list[i] = ScrapeStrategy.ACTION_ASSET_LOCAL_ASSET
+                    self.asset_action_list[AInfo.id] = ScrapeStrategy.ACTION_ASSET_LOCAL_ASSET
                 # Scraper does not support asset and local asset not found.
-                elif not self.asset_scraper_obj.supports_asset_ID(asset_ID) and not self.local_asset_list[i]:
+                elif not self.asset_scraper_obj.supports_asset_ID(AInfo.id) and not self.local_asset_list[AInfo.id]:
                     log_debug('Scraper {} does not support {}. Local asset not found.'.format(
                         self.asset_scraper_obj.get_name(), AInfo.name))
-                    self.asset_action_list[i] = ScrapeStrategy.ACTION_ASSET_LOCAL_ASSET
+                    self.asset_action_list[AInfo.id] = ScrapeStrategy.ACTION_ASSET_LOCAL_ASSET
                 # Scraper supports asset. Scrape wheter local asset is found or not.
-                elif self.asset_scraper_obj.supports_asset_ID(asset_ID):
+                elif self.asset_scraper_obj.supports_asset_ID(AInfo.id):
                     log_debug('Scraping {} with {}.'.format(AInfo.name, self.asset_scraper_obj.get_name()))
-                    self.asset_action_list[i] = ScrapeStrategy.ACTION_ASSET_SCRAPER
+                    self.asset_action_list[AInfo.id] = ScrapeStrategy.ACTION_ASSET_SCRAPER
                 else:
                     raise ValueError('Logical error')
 
