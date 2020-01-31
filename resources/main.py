@@ -7683,6 +7683,7 @@ class Main:
         info_text += "[COLOR skyblue]num_have[/COLOR]: {0}\n".format(launcher['num_have'])
         info_text += "[COLOR skyblue]num_miss[/COLOR]: {0}\n".format(launcher['num_miss'])
         info_text += "[COLOR skyblue]num_unknown[/COLOR]: {0}\n".format(launcher['num_unknown'])
+        info_text += "[COLOR skyblue]num_extra[/COLOR]: {0}\n".format(launcher['num_extra'])
         info_text += "[COLOR skyblue]timestamp_launcher[/COLOR]: {0}\n".format(launcher['timestamp_launcher'])
         info_text += "[COLOR skyblue]timestamp_report[/COLOR]: {0}\n".format(launcher['timestamp_report'])
 
@@ -9200,7 +9201,7 @@ class Main:
         __debug_time_step = 0.0005
 
         # --- Reset the No-Intro status and removed No-Intro missing ROMs ---
-        audit_have = audit_miss = audit_unknown = 0
+        audit_have = audit_miss = audit_unknown = audit_extra = 0
         pDialog = xbmcgui.DialogProgress()
         pDialog.create('Advanced Emulator Launcher', 'Deleting Missing/Dead ROMs and clearing flags ...')
         self._roms_reset_NoIntro_status(launcher, roms)
@@ -9209,14 +9210,14 @@ class Main:
 
         # --- Check if DAT file exists ---
         if not DAT_FN.exists():
-            log_warning('_roms_update_NoIntro_status() Not found {0}'.format(DAT_FN.getPath()))
+            log_warning('_roms_update_NoIntro_status() Not found {}'.format(DAT_FN.getPath()))
             return False
         pDialog.update(0, 'Loading No-Intro/Redump XML DAT file ...')
         roms_nointro = audit_load_NoIntro_XML_file(DAT_FN)
         pDialog.update(100)
         if __debug_progress_dialogs: time.sleep(0.5)
         if not roms_nointro:
-            log_warning('_roms_update_NoIntro_status() Error loading {0}'.format(DAT_FN.getPath()))
+            log_warning('_roms_update_NoIntro_status() Error loading {}'.format(DAT_FN.getPath()))
             return False
 
         # --- Remove BIOSes from No-Intro ROMs ---
@@ -9260,20 +9261,24 @@ class Main:
         item_counter = 0
         for rom_id in roms:
             ROMFileName = FileName(roms[rom_id]['filename'])
-            if ROMFileName.getBase_noext() in roms_nointro_set:
+            if roms[rom_id]['i_extra_ROM']:
+                roms[rom_id]['nointro_status'] = AUDIT_STATUS_EXTRA
+                audit_extra += 1
+                # log_debug('_roms_update_NoIntro_status() EXTRA   "{}"'.format(ROMFileName.getBase_noext()))
+            elif ROMFileName.getBase_noext() in roms_nointro_set:
                 roms[rom_id]['nointro_status'] = AUDIT_STATUS_HAVE
                 audit_have += 1
-                # log_debug('_roms_update_NoIntro_status() HAVE    "{0}"'.format(ROMFileName.getBase_noext()))
+                # log_debug('_roms_update_NoIntro_status() HAVE    "{}"'.format(ROMFileName.getBase_noext()))
             else:
                 roms[rom_id]['nointro_status'] = AUDIT_STATUS_UNKNOWN
                 audit_unknown += 1
-                # log_debug('_roms_update_NoIntro_status() UNKNOWN "{0}"'.format(ROMFileName.getBase_noext()))
+                # log_debug('_roms_update_NoIntro_status() UNKNOWN "{}"'.format(ROMFileName.getBase_noext()))
             item_counter += 1
             pDialog.update((item_counter*100)/num_items)
             if __debug_progress_dialogs: time.sleep(__debug_time_step)
         pDialog.update(100)
 
-        # --- Mark Launcher dead ROMs as missing ---
+        # --- Mark Launcher dead ROMs as Missing ---
         pDialog.update(0, 'Audit Step 2/4: Checking Missing ROMs ...')
         num_items = len(roms)
         item_counter = 0
@@ -9288,9 +9293,9 @@ class Main:
             if __debug_progress_dialogs: time.sleep(__debug_time_step)
         pDialog.update(100)
 
-        # --- Now add missing ROMs to Launcher ---
-        # >> Traverse the No-Intro set and add the No-Intro ROM if it's not in the Launcher
-        # >> Added/Missing ROMs have their own romID.
+        # --- Now add Missing ROMs to Launcher ---
+        # Traverse the No-Intro set and add the No-Intro ROM if it's not in the Launcher
+        # Added/Missing ROMs have their own romID.
         pDialog.update(0, 'Audit Step 3/4: Adding Missing ROMs ...')
         num_items = len(roms_nointro_set)
         item_counter = 0
@@ -9306,7 +9311,7 @@ class Main:
                 rom['filename']       = ROMPath.pjoin(nointro_rom + '.nointro').getOriginalPath()
                 rom['m_name']         = nointro_rom
                 rom['nointro_status'] = AUDIT_STATUS_MISS
-                roms[rom_id]          = rom
+                roms[rom_id] = rom
                 audit_miss += 1
                 # log_debug('_roms_update_NoIntro_status() ADDED   "{0}"'.format(rom['m_name']))
                 # log_debug('_roms_update_NoIntro_status()    OP   "{0}"'.format(rom['filename']))
@@ -9388,6 +9393,7 @@ class Main:
         launcher['num_have']    = audit_have
         launcher['num_miss']    = audit_miss
         launcher['num_unknown'] = audit_unknown
+        launcher['num_extra']   = audit_extra
         launcher['audit_state'] = AUDIT_STATE_ON
 
         # --- Make a Parent only ROM list and save JSON ---
@@ -9411,18 +9417,20 @@ class Main:
         self.audit_have    = audit_have
         self.audit_miss    = audit_miss
         self.audit_unknown = audit_unknown
+        self.audit_extra   = audit_extra
         self.audit_total   = len(roms)
         self.audit_parents = audit_parents
         self.audit_clones  = audit_clones
 
         # --- Report ---
         log_info('********** No-Intro/Redump audit finished. Report ***********')
-        log_info('Have ROMs    {0:6d}'.format(self.audit_have))
-        log_info('Miss ROMs    {0:6d}'.format(self.audit_miss))
-        log_info('Unknown ROMs {0:6d}'.format(self.audit_unknown))
-        log_info('Total ROMs   {0:6d}'.format(self.audit_total))
-        log_info('Parent ROMs  {0:6d}'.format(self.audit_parents))
-        log_info('Clone ROMs   {0:6d}'.format(self.audit_clones))
+        log_info('Have ROMs    {:6d}'.format(self.audit_have))
+        log_info('Miss ROMs    {:6d}'.format(self.audit_miss))
+        log_info('Unknown ROMs {:6d}'.format(self.audit_unknown))
+        log_info('Extra ROMs   {:6d}'.format(self.audit_extra))
+        log_info('Total ROMs   {:6d}'.format(self.audit_total))
+        log_info('Parent ROMs  {:6d}'.format(self.audit_parents))
+        log_info('Clone ROMs   {:6d}'.format(self.audit_clones))
 
         return True
 

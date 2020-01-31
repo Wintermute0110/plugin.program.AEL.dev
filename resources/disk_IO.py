@@ -116,6 +116,7 @@ def fs_new_launcher():
         'num_have' : 0,
         'num_miss' : 0,
         'num_unknown' : 0,
+        'num_extra' : 0,
         'timestamp_launcher' : 0.0,
         'timestamp_report' : 0.0,
         'default_icon' : 's_icon',
@@ -475,6 +476,7 @@ def fs_write_catfile(categories_file, categories, launchers, update_timestamp = 
             str_list.append(XML_text('num_have', unicode(launcher['num_have'])))
             str_list.append(XML_text('num_miss', unicode(launcher['num_miss'])))
             str_list.append(XML_text('num_unknown', unicode(launcher['num_unknown'])))
+            str_list.append(XML_text('num_extra', unicode(launcher['num_extra'])))
             str_list.append(XML_text('timestamp_launcher', unicode(launcher['timestamp_launcher'])))
             str_list.append(XML_text('timestamp_report', unicode(launcher['timestamp_report'])))
             # >> Launcher artwork
@@ -595,25 +597,27 @@ def fs_load_catfile(categories_file, categories, launchers):
 
             # Parse child tags of category
             for category_child in category_element:
-                # >> By default read strings
+                # By default read strings
                 xml_text = category_child.text if category_child.text is not None else ''
                 xml_text = text_unescape_XML(xml_text)
                 xml_tag  = category_child.tag
                 if __debug_xml_parser: log_debug('{0} --> {1}'.format(xml_tag, xml_text))
 
-                # >> Transform list() datatype
                 if xml_tag == 'args_extra':
+                    # Transform list() datatype
                     launcher[xml_tag].append(xml_text)
-                # >> Transform Bool datatype
                 elif xml_tag == 'finished' or xml_tag == 'toggle_window' or xml_tag == 'non_blocking' or \
                      xml_tag == 'multidisc':
+                    # Transform Bool datatype
                     launcher[xml_tag] = True if xml_text == 'True' else False
-                # >> Transform Int datatype
-                elif xml_tag == 'num_roms' or xml_tag == 'num_parents' or xml_tag == 'num_clones' or \
-                     xml_tag == 'num_have' or xml_tag == 'num_miss'    or xml_tag == 'num_unknown':
+                elif xml_tag == 'num_roms' or xml_tag == 'num_parents' or \
+                     xml_tag == 'num_clones' or xml_tag == 'num_have' or \
+                     xml_tag == 'num_miss' or xml_tag == 'num_unknown' or \
+                     xml_tag == 'num_extra':
+                    # Transform Int datatype
                     launcher[xml_tag] = int(xml_text)
-                # >> Transform Float datatype
                 elif xml_tag == 'timestamp_launcher' or xml_tag == 'timestamp_report':
+                    # Transform Float datatype
                     launcher[xml_tag] = float(xml_text)
                 else:
                     launcher[xml_tag] = xml_text
