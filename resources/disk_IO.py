@@ -102,6 +102,7 @@ def fs_new_launcher():
         'args_extra' : [],
         'rompath' : '',
         'romext' : '',
+        'romextrapath' : '',
         'finished': False,
         'toggle_window' : False, # Former 'minimize'
         'non_blocking' : False,
@@ -120,6 +121,7 @@ def fs_new_launcher():
         'num_have' : 0,
         'num_miss' : 0,
         'num_unknown' : 0,
+        'num_extra' : 0,
         'timestamp_launcher' : 0.0,
         'timestamp_report' : 0.0,
         'default_icon' : 's_icon',
@@ -177,6 +179,7 @@ def fs_new_rom():
         'nointro_status' : AUDIT_STATUS_NONE,
         'pclone_status' : PCLONE_STATUS_NONE,
         'cloneof' : '',
+        'i_extra_ROM' : False,
         's_3dbox' : '',
         's_title' : '',
         's_snap' : '',
@@ -596,26 +599,21 @@ def fs_load_catfile(categories_FN, header_dic, categories, launchers):
                 xml_tag  = category_child.tag
                 if __debug_xml_parser: log_debug('{0} --> {1}'.format(xml_tag, text_XML_line))
 
-                # >> Transform list() datatype
                 if xml_tag == 'args_extra':
+                    # Transform list() datatype
                     launcher[xml_tag].append(text_XML_line)
-                # >> Transform Bool datatype
-                elif (xml_tag == 'finished'
-                   or xml_tag == 'toggle_window'
-                   or xml_tag == 'non_blocking'
-                   or xml_tag == 'multidisc'):
+                elif xml_tag == 'finished' or xml_tag == 'toggle_window' or xml_tag == 'non_blocking' or \
+                     xml_tag == 'multidisc':
+                    # Transform Bool datatype
                     launcher[xml_tag] = True if text_XML_line == 'True' else False
-                # >> Transform Int datatype
-                elif (xml_tag == 'num_roms'
-                   or xml_tag == 'num_parents'
-                   or xml_tag == 'num_clones'
-                   or xml_tag == 'num_have'
-                   or xml_tag == 'num_miss'
-                   or xml_tag == 'num_unknown'):
+                elif xml_tag == 'num_roms' or xml_tag == 'num_parents' or \
+                     xml_tag == 'num_clones' or xml_tag == 'num_have' or \
+                     xml_tag == 'num_miss' or xml_tag == 'num_unknown' or \
+                     xml_tag == 'num_extra':
+                    # Transform Int datatype
                     launcher[xml_tag] = int(text_XML_line)
-                # >> Transform Float datatype
-                elif (xml_tag == 'timestamp_launcher'
-                   or xml_tag == 'timestamp_report'):
+                elif xml_tag == 'timestamp_launcher' or xml_tag == 'timestamp_report':
+                    # Transform Float datatype
                     launcher[xml_tag] = float(text_XML_line)
                 else:
                     launcher[xml_tag] = text_XML_line
