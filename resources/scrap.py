@@ -403,6 +403,36 @@ class ScrapeStrategy(object):
             log_debug(msg)
             kodi_dialog_OK(msg)
  
+    def scanner_process_launcher(self, launcher):        
+        roms = self.launcher.get_roms()
+        num_items = len(roms)
+        self.pdialog.startProgress('Scraping ROMs in launcher', num_items)
+        log_debug('============================== Scraping ROMs ==============================')
+        
+        for rom in sorted(roms):
+            self.pdialog.updateProgress(num_items_checked)
+            ROM_file = rom.get_file()
+            file_text = 'ROM {0}'.format(ROM_file.getBase())
+            
+            self.pdialog.updateMessages(file_text, 'Scraping {0}...'.format(ROM_file.getBaseNoExt()))
+            try:
+                self.scanner_process_ROM(rom, ROM_file)
+            except Exception as ex:
+                log_error('(Exception) Object type "{}"'.format(type(ex)))
+                log_error('(Exception) Message "{}"'.format(str(ex)))
+                log_warning('Could not scrape "{}"'.format(ROM_file.getBaseNoExt()))
+                kodi_notify_warn('Could not scrape "{}"'.format(rom.get_name()))
+            
+            # ~~~ Check if user pressed the cancel button ~~~
+            if self.pdialog.isCanceled():
+                self.pdialog.endProgress()
+                kodi_dialog_OK('Stopping ROM scraping.')
+                log_info('User pressed Cancel button when scraping ROMs. ROM scraping stopped.')
+                return None
+            
+        self.progress_dialog.endProgress()
+        return roms
+    
     def scanner_process_ROM(self, ROM, ROM_checksums):
         log_debug('ScrapeStrategy.scanner_process_ROM() Determining metadata and asset actions...')
         

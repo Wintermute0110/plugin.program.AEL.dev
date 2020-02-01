@@ -5023,16 +5023,13 @@ class RomScannersFactory(object):
         self.reports_dir = PATHS.REPORTS_DIR
         self.addon_dir = PATHS.ADDON_DATA_DIR
 
-    def create(self, launcher, scraping_strategy, progress_dialog, scrape_only=False):
+    def create(self, launcher, scraping_strategy, progress_dialog):
         launcherType = launcher.get_launcher_type()
         log_info('RomScannersFactory: Creating romscanner for {}'.format(launcherType))
 
         if not launcher.supports_launching_roms():
             return NullScanner(launcher, self.settings, progress_dialog)
 
-        if scrape_only:
-            return ScrapingOnlyScanner(self.reports_dir, self.addon_dir, launcher, self.settings, scraping_strategy, progress_dialog)
-        
         if launcherType == OBJ_LAUNCHER_STEAM:
             return SteamScanner(self.reports_dir, self.addon_dir, launcher, self.settings, scraping_strategy, progress_dialog)
 
@@ -5661,99 +5658,6 @@ class NvidiaStreamScanner(RomScannerStrategy):
 
         self.progress_dialog.endProgress()
         return new_roms
-
-# Scanner only used for scraping of already imported ROMs.
-# No dead ROM removal or scanning for new ROM files.
-class ScrapingOnlyScanner(ScannerStrategyABC):
-    
-    def __init__(self, reports_dir, addon_dir, launcher, settings, scraping_strategy, progress_dialog):
-        
-        self.reports_dir = reports_dir
-        self.addon_dir = addon_dir
-           
-        self.scraping_strategy = scraping_strategy
-
-        super(RomScannerStrategy, self).__init__(launcher, settings, progress_dialog)
-
-    def scan(self):
-               
-        # --- Open ROM scanner report file ---
-        launcher_report = LogReporter(self.launcher.get_data_dic())
-        launcher_report.open('ScrapingOnlyScanner() Starting ROM scanner')
-        launcher_report.write('Loading launcher ROMs ...')
-        roms = self.launcher.get_roms()
-
-        if roms is None:
-            roms = []
-        
-        num_roms = len(roms)
-        launcher_report.write('{0} ROMs currently in database'.format(num_roms))
-        
-         # --- Assets/artwork stuff ----------------------------------------------------------------
-        
-        # notice that since we are not scanning for new ROMs, this method returns all ROMs from the launcher
-        all_roms = self._processFoundItems(None, roms, launcher_report)        
-        if not all_roms:
-            return None
-
-        num_all_roms = len(all_roms)
-        launcher_report.write('******************** ROM scanner finished. Report ********************')
-        launcher_report.write('Processed ROMs    {0:6d}'.format(num_all_roms))
-        
-        kodi_notify('Porcessed {0} ROMs'.format(num_all_roms))
-
-        # --- Close ROM scanner report file ---
-        launcher_report.write('*** END of the ROM scanner report ***')
-        launcher_report.close()
-
-        return roms
-
-    def cleanup(self):
-        return {}
-
-    # Skipped
-    def _getCandidates(self, launcher_report):
-        return []
-
-    # --- Remove dead entries -----------------------------------------------------------------
-    # Skipped
-    def _removeDeadRoms(self, candidates, roms):
-        return 0
-
-    def _processFoundItems(self, items, roms, launcher_report):
-        num_items = len(roms)
-
-        self.progress_dialog.startProgress('Scanning found items', num_items)
-        log_debug('============================== Processing ROMs ==============================')
-        launcher_report.write('Processing files ...')
-        num_items_checked = 0
-        
-        for rom in sorted(roms):
-            self.progress_dialog.updateProgress(num_items_checked)
-            ROM_file = rom.get_file()
-            file_text = 'ROM {0}'.format(ROM_file.getBase())
-            
-            self.progress_dialog.updateMessages(file_text, 'Scraping {0}...'.format(ROM_file.getBaseNoExt()))
-            try:
-                self.scraping_strategy.scanner_process_ROM(rom, ROM_file)
-            except Exception as ex:
-                log_error('(Exception) Object type "{}"'.format(type(ex)))
-                log_error('(Exception) Message "{}"'.format(str(ex)))
-                log_warning('Could not scrape "{}"'.format(ROM_file.getBaseNoExt()))
-                #log_debug(traceback.format_exc())
-            
-            # ~~~ Check if user pressed the cancel button ~~~
-            if self.progress_dialog.isCanceled():
-                self.progress_dialog.endProgress()
-                kodi_dialog_OK('Stopping ROM scanning. No changes have been made.')
-                log_info('User pressed Cancel button when scanning ROMs. ROM scanning stopped.')
-                return None
-            
-            num_items_checked += 1
-           
-        self.progress_dialog.endProgress()
-        return roms
-
     
 # #################################################################################################
 # #################################################################################################

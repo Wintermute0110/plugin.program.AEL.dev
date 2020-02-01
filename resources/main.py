@@ -4080,9 +4080,8 @@ def m_roms_scrape_roms_local(category, launcher):
     
     pdialog             = KodiProgressDialog()    
     scraper_strategy    = g_ScraperFactory.create_scraper(launcher, pdialog, scraper_settings)
-    rom_scanner         = g_ROMScannerFactory.create(launcher, scraper_strategy, pdialog, scrape_only=True)
 
-    roms = rom_scanner.scan()
+    roms = scraper_strategy.scanner_process_launcher(launcher)
     pdialog.endProgress()
     pdialog.startProgress('Saving ROM JSON database ...')
 
@@ -4107,9 +4106,8 @@ def m_roms_scrape_roms_as_configured(category, launcher):
     log_debug('========== m_roms_scrape_roms_as_configured() BEGIN ==================================================')
     pdialog             = KodiProgressDialog()
     scraper_strategy    = g_ScraperFactory.create_scraper(launcher, pdialog)
-    rom_scanner         = g_ROMScannerFactory.create(launcher, scraper_strategy, pdialog, scrape_only=True)
 
-    roms = rom_scanner.scan()
+    roms = scraper_strategy.scanner_process_launcher(launcher)
     pdialog.endProgress()
     pdialog.startProgress('Saving ROM JSON database ...')
 
@@ -7472,7 +7470,6 @@ def m_gui_render_launcher_row(launcher, launcher_raw_name = None):
     commands.append(('Edit/Export Launcher', router.create_run_plugin_cmd('EDIT_LAUNCHER', categoryID=categoryID, launcherID=launcherID) ))
     # >> ONLY for ROM launchers
     if launcher.supports_launching_roms():
-        #commands.append(('Scan ROMs', router.create_run_plugin_cmd('SCAN_ROMS', categoryID, launcherID) ))
         commands.append(('Scan ROMs', router.create_run_plugin_cmd('ADD_ROMS', categoryID=categoryID, launcherID=launcherID) ))
         commands.append(('Search ROMs in Launcher', router.create_run_plugin_cmd('SEARCH_LAUNCHER', categoryID=categoryID, launcherID=launcherID) ))
     commands.append(('Add new Launcher', router.create_run_plugin_cmd('ADD_LAUNCHER', categoryID=categoryID) ))
