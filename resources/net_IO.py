@@ -123,7 +123,7 @@ def net_download_img(img_url, file_path):
         log_error('(IOError) Message "{0}"'.format(str(ex)))
     except Exception as ex:
         log_error('(Exception) In net_download_img(), disk code.')
-        log_error('(Exception) Object type "{}"'.format(type(ex)))
+        log_error('(net_download_img) Object type "{}"'.format(type(ex)))
         log_error('(Exception) Message "{0}"'.format(str(ex)))
 
 #

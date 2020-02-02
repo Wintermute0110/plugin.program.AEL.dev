@@ -112,6 +112,8 @@ class AssetInfo:
     def __hash__(self):
         return self.id.__hash__()
 
+    def __str__(self):
+        return self.name
 #
 # Class to interact with the asset engine.
 # This class uses the asset_infos, dictionary of AssetInfo indexed by asset_ID
@@ -241,36 +243,6 @@ class AssetInfoFactory(object):
             log_error('assets_get_path_noext_SUFIX() Wrong asset_ID = {0}'.format(asset_ID))
 
         return asset_path_noext_FN
-
-    #
-    # Search for local assets and place found files into a list.
-    # Returned list all has assets as defined in ROM_ASSET_LIST.
-    # This function is used in the ROM Scanner.
-    #
-    # launcher               -> launcher dictionary
-    # ROMFile                -> Rom object
-    # enabled_ROM_asset_list -> list of booleans
-    #
-    def assets_search_local_cached_assets(self, launcher, ROM, enabled_ROM_asset_list):
-        log_verb('assets_search_local_cached_assets() Searching for ROM local assets...')
-        local_asset_list = [None] * len(ROM_ASSET_ID_LIST)
-        ROMFile = ROM.get_file()
-        rom_basename_noext = ROMFile.getBaseNoExt()
-        for i, asset_kind in enumerate(ROM_ASSET_ID_LIST):
-            AInfo = g_assetFactory.get_asset_info(asset_kind)
-            if not enabled_ROM_asset_list[i]:
-                log_verb('assets_search_local_cached_assets() Disabled {0:<9}'.format(AInfo.name))
-                continue
-            local_asset = misc_search_file_cache(launcher.get_asset_path(AInfo), rom_basename_noext, AInfo.exts)
-
-            if local_asset:
-                local_asset_list[i] = local_asset
-                log_verb('assets_search_local_cached_assets() Found    {0:<9} "{1}"'.format(AInfo.name, local_asset_list[i]))
-            else:
-                local_asset_list[i] = None
-                log_verb('assets_search_local_cached_assets() Missing  {0:<9}'.format(AInfo.name))
-
-        return local_asset_list
 
     #
     # Search for local assets and put found files into a list.
@@ -1461,10 +1433,13 @@ class ROM(MetaDataItemABC):
         
         super(ROM, self).__init__(None, None, rom_data, None)
 
+    def get_launcher(self):
+        return self.launcher
+    
     # is this virtual only? Should we make a VirtualRom(Rom)?
     def get_launcher_id(self):
         return self.entity_data['launcherID']
-
+    
     def is_virtual_rom(self):
         return 'launcherID' in self.entity_data
 
@@ -1649,6 +1624,7 @@ class ROM(MetaDataItemABC):
         options['LOAD_PLOT']                 = "Load Plot from TXT file ..."
         options['IMPORT_NFO_FILE']           = u"Import NFO file (default, {0})".format(NFO_found_str).encode('utf-8')
         options['SAVE_NFO_FILE']             = "Save NFO file (default location)"
+        options['SCRAPE_ROM_METADATA']       = "Scrape Metadata"
 
         return options
 
@@ -2095,9 +2071,9 @@ class LauncherABC(MetaDataItemABC):
     # Returns dict:
     # asset_status_dict     Dict of AssetInfo object as key and enabled boolean as value
     #
-    def get_ROM_assets_enabled_statusses(self):
+    def get_ROM_assets_enabled_statusses(self, asset_ids_to_check = ROM_ASSET_ID_LIST):        
         asset_status_dict   = collections.OrderedDict()
-        asset_info_list     = g_assetFactory.get_asset_list_by_IDs(ROM_ASSET_ID_LIST)
+        asset_info_list     = g_assetFactory.get_asset_list_by_IDs(asset_ids_to_check)
         
         # >> Check if asset paths are configured or not
         for asset in asset_info_list:
@@ -2109,6 +2085,7 @@ class LauncherABC(MetaDataItemABC):
                 log_debug('get_ROM_assets_enabled_statusses() {0:<9} path configured'.format(asset.name))
 
         return asset_status_dict
+    
     #
     # Get a list of the assets that can be mapped to a defaultable asset.
     # They must be images, no videos, no documents.
@@ -2509,9 +2486,7 @@ class ROMLauncherABC(LauncherABC):
         options = collections.OrderedDict()
         options['SET_ROMS_DEFAULT_ARTWORK']  = 'Choose ROMs default artwork ...'
         options['SET_ROMS_ASSET_DIRS']       = 'Manage ROMs asset directories ...'
-        options['SCAN_LOCAL_ARTWORK']        = 'Scan ROMs local artwork'
-        options['SCRAPE_LOCAL_ARTWORK']      = 'Scrape ROMs local artwork'
-        options['SCRAPE_ROMS_SCRAPER']       = 'Scrape ROMs with scrapers'
+        options['SCRAPE_ROMS']               = 'Scrape ROMs'
         options['REMOVE_DEAD_ROMS']          = 'Remove dead/missing ROMs'
         options['IMPORT_ROMS']               = 'Import ROMs metadata from NFO files'
         options['EXPORT_ROMS']               = 'Export ROMs metadata to NFO files'
@@ -2719,6 +2694,38 @@ class ROMLauncherABC(LauncherABC):
 
     def set_mapped_ROM_asset_key(self, asset_info, mapped_to_info):
         self.entity_data[asset_info.rom_default_key] = mapped_to_info.key
+
+    #
+    # Search for local assets and place found files into a list.
+    # Returned list all has assets as defined in ROM_ASSET_LIST.
+    # This function is used in the Scraper.
+    #
+    # ROM         -> Rom object
+    # asset_infos -> list of assets to request
+    #
+    def get_local_assets(self, ROM, asset_infos):
+        log_verb('get_local_assets() Searching for ROM local assets...')
+        ROMFile = ROM.get_file()
+        rom_basename_noext = ROMFile.getBaseNoExt()
+        local_assets = {}
+        for asset_info in asset_infos:
+            local_asset = misc_search_file_cache(self.get_asset_path(asset_info), rom_basename_noext, asset_info.exts)
+            if local_asset:
+                local_assets[asset_info.id] = local_asset
+                log_verb('get_local_assets() Found    {0:<9} "{1}"'.format(asset_info.name, local_asset))
+            else:
+                local_assets[asset_info.id] = None
+                log_verb('get_local_assets() Missing  {0:<9}'.format(asset_info.name))
+
+        return local_assets
+
+    # --- Create a cache of assets ---
+    # misc_add_file_cache() creates a set with all files in a given directory.
+    # That set is stored in a function internal cache associated with the path.
+    # Files in the cache can be searched with misc_search_file_cache()
+    def cache_assets(self, asset_id):
+        AInfo = g_assetFactory.get_asset_info(asset_id)
+        misc_add_file_cache(self.get_asset_path(AInfo))
                
     # ---------------------------------------------------------------------------------------------
     # Utility functions of ROM Launchers
@@ -3072,14 +3079,21 @@ class VirtualLauncher(ROMLauncherABC):
                  executorFactory, romsetRepository, statsStrategy):
         # Look at the VirtualCategory construction for complete this.
         super(VirtualLauncher, self).__init__(
-            launcher_data, settings, None, romsetRepository, None, False
+            PATHS, settings, collection_dic, None, executorFactory, romsetRepository, statsStrategy
         )
 
+    # --------------------------------------------------------------------------------------------
+    # Core functions
+    # --------------------------------------------------------------------------------------------
     def get_object_name(self): return 'Virtual launcher'
 
     def get_assets_kind(self): return KIND_ASSET_LAUNCHER
 
     def get_launcher_type(self): return OBJ_LAUNCHER_VIRTUAL
+
+    def save_to_disk(self): pass
+
+    def delete_from_disk(self): pass
 
     def supports_launching_roms(self): return True
 
@@ -3099,11 +3113,14 @@ class VirtualLauncher(ROMLauncherABC):
 
     def launch(self): pass
 
-    def _selectApplicationToUse(self): return False
+    # ---------------------------------------------------------------------------------------------
+    # Execution methods
+    # ---------------------------------------------------------------------------------------------
+    def _launch_selectApplicationToUse(self): return False
 
-    def _selectArgumentsToUse(self): return False
-
-    def _selectRomFileToUse(self): return False
+    def _launch_selectArgumentsToUse(self): return False
+    
+    def _launch_selectRomFileToUse(self): return False
 
     def has_nointro_xml(self): return False
 
@@ -4604,13 +4621,15 @@ class AELObjectFactory(object):
     # Returns a Launcher object or None.
     #
     def find_launcher(self, category_id, launcher_id):
+        
+        if launcher_id in VLAUNCHERS:
+            return self._load(launcher_id)            
+                
         launcher_dic = self.objectRepository.find_launcher(launcher_id)
-        if launcher_dic is not None:
-            category_obj = self._load(launcher_dic['type'], launcher_dic)
-        else:
-            category_obj = None
-
-        return category_obj
+        if launcher_dic is None:
+            return None
+            
+        return self._load(launcher_dic['type'], launcher_dic)
 
     #
     # Retrieves a list of Launcher objects in a category.
@@ -4661,18 +4680,27 @@ class AELObjectFactory(object):
 
         # --- Virtual launchers ---
         elif obj_type == VLAUNCHER_RECENT_ID:
-            return VirtualLauncher(
-                self.recently_played_roms_dic, self.settings, ROMSetRepository(self.plugin_data_dir)
+            ROMRepository = ROMSetRepository(self.PATHS, self.settings)
+            statsStrategy = ROMStatisticsStrategy(self.PATHS, self.settings)
+            
+            return VirtualLauncher(self.PATHS, self.settings, self.recently_played_roms_dic, 
+                                   None, ROMRepository, statsStrategy
             )
 
         elif obj_type == VLAUNCHER_MOST_PLAYED_ID:
-            return VirtualLauncher(
-                self.most_played_roms_dic, self.settings, ROMSetRepository(self.plugin_data_dir)
+            ROMRepository = ROMSetRepository(self.PATHS, self.settings)
+            statsStrategy = ROMStatisticsStrategy(self.PATHS, self.settings)
+            
+            return VirtualLauncher(self.PATHS, self.settings, self.most_played_roms_dic, 
+                                   None, ROMRepository, statsStrategy
             )
 
         elif obj_type == VLAUNCHER_FAVOURITES_ID:
-            return VirtualLauncher(
-                self.favourites_roms_dic, self.settings, ROMSetRepository(self.plugin_data_dir)
+            ROMRepository = ROMSetRepository(self.PATHS, self.settings, True)
+            statsStrategy = ROMStatisticsStrategy(self.PATHS, self.settings)
+            
+            return VirtualLauncher(self.PATHS, self.settings, self.favourites_roms_dic, 
+                                   None, ROMRepository, statsStrategy
             )
 
         # --- Real launchers ---
@@ -5003,7 +5031,7 @@ class RomScannersFactory(object):
             return NullScanner(launcher, self.settings, progress_dialog)
 
         if scrape_only:
-            return ScrapeRomsOnlyScanner(self.reports_dir, self.addon_dir, launcher, self.settings, scraping_strategy, progress_dialog)
+            return ScrapingOnlyScanner(self.reports_dir, self.addon_dir, launcher, self.settings, scraping_strategy, progress_dialog)
         
         if launcherType == OBJ_LAUNCHER_STEAM:
             return SteamScanner(self.reports_dir, self.addon_dir, launcher, self.settings, scraping_strategy, progress_dialog)
@@ -5073,45 +5101,11 @@ class RomScannerStrategy(ScannerStrategyABC):
         num_roms = len(roms)
         launcher_report.write('{0} ROMs currently in database'.format(num_roms))
         
-         # --- Assets/artwork stuff ----------------------------------------------------------------
-        # Ensure there is no duplicate asset dirs. Abort scanning of assets if duplicate dirs found.
-        launcher_report.write('Checking for duplicated artwork directories ...')
-        duplicated_name_list = self.launcher.get_duplicated_asset_dirs()
-        if duplicated_name_list:
-            duplicated_asset_srt = ', '.join(duplicated_name_list)
-            launcher_report.write('Duplicated asset dirs: {0}'.format(duplicated_asset_srt))
-            kodi_dialog_OK('Duplicated asset directories: {0}. '.format(duplicated_asset_srt) +
-                           'Change asset directories before continuing.')
-            return
-        else:
-            launcher_report.write('No duplicated asset dirs found')
-        
         launcher_report.write('Collecting candidates ...')
         candidates = self._getCandidates(launcher_report)
         num_candidates = len(candidates)
         launcher_report.write('{0} candidates found'.format(num_candidates))
 
-        # --- Check asset dirs and disable scanning for unset dirs ---
-        self.scraping_strategy.scanner_check_launcher_unset_asset_dirs()
-        if self.scraping_strategy.unconfigured_name_list:
-            unconfigured_asset_srt = ', '.join(self.scraping_strategy.unconfigured_name_list)
-            msg = 'Assets directories not set: {0}. '.format(unconfigured_asset_srt)
-            msg = msg + 'Asset scanner will be disabled for this/those.'                                
-            launcher_report.write(msg)
-            kodi_dialog_OK(msg)
-
-        # --- Create a cache of assets ---
-        # misc_add_file_cache() creates a set with all files in a given directory.
-        # That set is stored in a function internal cache associated with the path.
-        # Files in the cache can be searched with misc_search_file_cache()
-        launcher_report.write('Scanning and caching files in asset directories ...')
-        self.progress_dialog.startProgress('Scanning files in asset directories ...', len(ROM_ASSET_ID_LIST))
-        for i, asset_kind in enumerate(ROM_ASSET_ID_LIST):
-            self.progress_dialog.updateProgress(i)
-            AInfo = g_assetFactory.get_asset_info(asset_kind)
-            misc_add_file_cache(self.launcher.get_asset_path(AInfo))
-        self.progress_dialog.endProgress()
-        
         launcher_report.write('Removing dead ROMs ...')
         num_removed_roms = self._removeDeadRoms(candidates, roms)        
 
@@ -5371,9 +5365,7 @@ class RomFolderScanner(RomScannerStrategy):
             scraping_succeeded = True
             self.progress_dialog.updateMessages(file_text, 'Scraping {0}...'.format(ROM_file.getBaseNoExt()))
             try:
-                self.scraping_strategy.scanner_process_ROM_begin(new_rom, ROM_checksums)
-                self.scraping_strategy.scanner_process_ROM_metadata(new_rom)
-                self.scraping_strategy.scanner_process_ROM_assets(new_rom)
+                self.scraping_strategy.scanner_process_ROM(new_rom, ROM_checksums)
             except Exception as ex:
                 scraping_succeeded = False        
                 log_error('(Exception) Object type "{}"'.format(type(ex)))
@@ -5626,7 +5618,8 @@ class NvidiaStreamScanner(RomScannerStrategy):
             log_debug('Not found. Item {0} is new'.format(streamableGame['AppTitle']))
 
             launcher_path = self.launcher.get_rom_path()
-            romPath = launcher_path.pjoin('{0}.rom'.format(streamableGame['AppTitle']))
+            fake_file_name = text_str_to_filename_str(streamableGame['AppTitle'])
+            romPath = launcher_path.pjoin('{0}.rom'.format(fake_file_name))
 
             # ~~~~~ Process new ROM and add to the list ~~~~~
             # --- Create new rom dictionary ---
@@ -5641,9 +5634,7 @@ class NvidiaStreamScanner(RomScannerStrategy):
             scraping_succeeded = True
             self.progress_dialog.updateMessages(streamableGame['AppTitle'], 'Scraping {0}...'.format(streamableGame['AppTitle']))
             try:
-                self.scraping_strategy.scanner_process_ROM_begin(new_rom, None)
-                self.scraping_strategy.scanner_process_ROM_metadata(new_rom)
-                self.scraping_strategy.scanner_process_ROM_assets(new_rom)
+                self.scraping_strategy.scanner_process_ROM(new_rom, None)
             except Exception as ex:
                 scraping_succeeded = False        
                 log_error('(Exception) Object type "{}"'.format(type(ex)))
@@ -5671,27 +5662,64 @@ class NvidiaStreamScanner(RomScannerStrategy):
         self.progress_dialog.endProgress()
         return new_roms
 
-class ScrapeRomsOnlyScanner(RomScannerStrategy):
-    # ~~~ Scan for new files (*.*) and put them in a list ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    def _getCandidates(self, launcher_report):
+# Scanner only used for scraping of already imported ROMs.
+# No dead ROM removal or scanning for new ROM files.
+class ScrapingOnlyScanner(ScannerStrategyABC):
+    
+    def __init__(self, reports_dir, addon_dir, launcher, settings, scraping_strategy, progress_dialog):
         
-        self.progress_dialog.startProgress('Scanning and caching ROMs in Launcher ...', 100)
-        roms = self.launcher.get_roms()
-        num_files = len(roms)
-        files = []
-        for rom in roms:
-            files.append(rom.get_file())            
-        launcher_report.write('  Rom scanner found {0} roms'.format(num_files))
+        self.reports_dir = reports_dir
+        self.addon_dir = addon_dir
+           
+        self.scraping_strategy = scraping_strategy
 
-        self.progress_dialog.endProgress()
-        return files
+        super(RomScannerStrategy, self).__init__(launcher, settings, progress_dialog)
+
+    def scan(self):
+               
+        # --- Open ROM scanner report file ---
+        launcher_report = LogReporter(self.launcher.get_data_dic())
+        launcher_report.open('ScrapingOnlyScanner() Starting ROM scanner')
+        launcher_report.write('Loading launcher ROMs ...')
+        roms = self.launcher.get_roms()
+
+        if roms is None:
+            roms = []
+        
+        num_roms = len(roms)
+        launcher_report.write('{0} ROMs currently in database'.format(num_roms))
+        
+         # --- Assets/artwork stuff ----------------------------------------------------------------
+        
+        # notice that since we are not scanning for new ROMs, this method returns all ROMs from the launcher
+        all_roms = self._processFoundItems(None, roms, launcher_report)        
+        if not all_roms:
+            return None
+
+        num_all_roms = len(all_roms)
+        launcher_report.write('******************** ROM scanner finished. Report ********************')
+        launcher_report.write('Processed ROMs    {0:6d}'.format(num_all_roms))
+        
+        kodi_notify('Porcessed {0} ROMs'.format(num_all_roms))
+
+        # --- Close ROM scanner report file ---
+        launcher_report.write('*** END of the ROM scanner report ***')
+        launcher_report.close()
+
+        return roms
+
+    def cleanup(self):
+        return {}
+
+    # Skipped
+    def _getCandidates(self, launcher_report):
+        return []
 
     # --- Remove dead entries -----------------------------------------------------------------
     # Skipped
     def _removeDeadRoms(self, candidates, roms):
         return 0
 
-    # ~~~ Now go processing item by item ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def _processFoundItems(self, items, roms, launcher_report):
         num_items = len(roms)
 
@@ -5707,9 +5735,7 @@ class ScrapeRomsOnlyScanner(RomScannerStrategy):
             
             self.progress_dialog.updateMessages(file_text, 'Scraping {0}...'.format(ROM_file.getBaseNoExt()))
             try:
-                self.scraping_strategy.scanner_process_ROM_begin(rom, ROM_file)
-                self.scraping_strategy.scanner_process_ROM_metadata(rom)
-                self.scraping_strategy.scanner_process_ROM_assets(rom)
+                self.scraping_strategy.scanner_process_ROM(rom, ROM_file)
             except Exception as ex:
                 log_error('(Exception) Object type "{}"'.format(type(ex)))
                 log_error('(Exception) Message "{}"'.format(str(ex)))
@@ -5726,8 +5752,9 @@ class ScrapeRomsOnlyScanner(RomScannerStrategy):
             num_items_checked += 1
            
         self.progress_dialog.endProgress()
-        return []
+        return roms
 
+    
 # #################################################################################################
 # #################################################################################################
 # DAT files and ROM audit

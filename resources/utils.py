@@ -182,13 +182,16 @@ def text_limit_string(string, max_length):
         string = string[0:max_length-3] + '...'
     return string
 
-# Given a Category/Launcher name clean it so the cleaned srt can be used as a filename.
+# Given a text clean it so the cleaned string can be used as a filename.
 # 1) Convert any non-printable character into '_'
-# 2) Convert spaces ' ' into '_'
-def text_title_to_filename_str(title_str):
+# 2) Remove special chars
+# 3) Convert spaces ' ' into '_'
+def text_str_to_filename_str(title_str):
+    not_valid_chars = '"*/:<>?\\|'
     cleaned_str_1 = ''.join([i if i in string.printable else '_' for i in title_str])
-    cleaned_str_2 = cleaned_str_1.replace(' ', '_')
-    return cleaned_str_2
+    cleaned_str_2 = ''.join([i if i not in not_valid_chars else '' for i in cleaned_str_1])
+    cleaned_str_3 = cleaned_str_2.replace(' ', '_')
+    return cleaned_str_3
 
 #
 # Writes a XML text tag line, indented 2 spaces by default.
