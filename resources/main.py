@@ -9658,15 +9658,15 @@ class Main:
             log_info('Scanning files in extra ROM path.')
             pdialog.startProgress('Scanning and caching files in extra ROM path ...')
             extra_files = []
-            log_info('Scanning files in {}'.format(rom_path.getPath()))
+            log_info('Scanning files in {}'.format(rom_extra_path.getPath()))
             report_fobj.write('Scanning files ...\n')
-            report_fobj.write('Directory {}\n'.format(rom_path.getPath()))
+            report_fobj.write('Directory {}\n'.format(rom_extra_path.getPath()))
             if self.settings['scan_recursive']:
                 log_info('Recursive scan activated')
-                extra_files = rom_path.recursiveScanFilesInPath('*.*')
+                extra_files = rom_extra_path.recursiveScanFilesInPath('*.*')
             else:
                 log_info('Recursive scan not activated')
-                extra_files = rom_path.scanFilesInPath('*.*')
+                extra_files = rom_extra_path.scanFilesInPath('*.*')
             log_info('File scanner found {} files'.format(len(extra_files)))
             report_fobj.write('File scanner found {} files\n'.format(len(extra_files)))
             pdialog.endProgress()
@@ -9680,7 +9680,7 @@ class Main:
         for f_path in sorted(extra_files): file_list.append((f_path, True))
 
         # --- Now go processing file by file -----------------------------------------------------
-        pdialog.startProgress('Scanning {}'.format(rom_path), len(file_list))
+        pdialog.startProgress('Processing ROMs...', len(file_list))
         log_info('============================== Processing ROMs ===============================')
         report_fobj.write('Processing files ...\n')
         num_new_roms = 0
