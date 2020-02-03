@@ -1482,6 +1482,9 @@ class ROM(MetaDataItemABC):
     def get_extra_ROM(self):
         return self.entity_data['i_extra_ROM']
 
+    def set_as_extra_ROM(self):
+        self.entity_data['i_extra_ROM'] = True
+
     def get_nfo_file(self):
         ROMFileName = self.get_file()
         nfo_file_path = ROMFileName.changeExtension('.nfo')
@@ -5117,9 +5120,9 @@ class RomScannerStrategy(ScannerStrategyABC):
             log_info('Scanning candidates in extra ROM path.')
             extra_candidates = self._getCandidates(launcher_report, launcher.get_extra_rompath())            
             log_info('{} extra candidate files found'.format(len(extra_candidates)))
-            candi
         else:
             log_info('Extra ROM path empty. Skipping scanning.')
+            extra_candidates = []
 
         launcher_report.write('Removing dead ROMs ...')
         num_removed_roms = self._removeDeadRoms(candidates, roms)        
@@ -5129,8 +5132,14 @@ class RomScannerStrategy(ScannerStrategyABC):
             log_info('{0} dead ROMs removed successfully'.format(num_removed_roms))
         else:
             log_info('No dead ROMs found')
+        
+        # --- Prepare list of candidates to be processed ----------------------------------------------
+        # List has tuples (candidate, extra_ROM_flag). List already sorted alphabetically.
+        candidates_combined = []
+        for candidate in sorted(candidates): candidates_combined.append((candidate, False))
+        for candidate in sorted(extra_candidates): candidates_combined.append((candidate, True))
 
-        new_roms = self._processFoundItems(candidates, roms, launcher_report)
+        new_roms = self._processFoundItems(candidates_combined, roms, launcher_report)
         
         if not new_roms:
             return None
@@ -5226,34 +5235,7 @@ class RomFolderScanner(RomScannerStrategy):
         num_files = len(files)
         launcher_report.write('  File scanner found {} files'.format(num_files))
         self.progress_dialog.endProgress()
-        
-        # --- Scan all files in extra ROM path ---------------------------------------------------
-        if launcher.has_extra_rompath():
-            log_info('Scanning files in extra ROM path.')
-            self.progress_dialog.startProgress('Scanning and caching files in extra ROM path ...')
-            extra_files = []
-            log_info('Scanning files in {}'.format(rom_path.getPath()))
-            launcher_report.write('Scanning files ...\n')
-            launcher_report.write('Directory {}\n'.format(rom_path.getPath()))
-            if self.settings['scan_recursive']:
-                log_info('Recursive scan activated')
-                extra_files = rom_path.recursiveScanFilesInPath('*.*')
-            else:
-                log_info('Recursive scan not activated')
-                extra_files = rom_path.scanFilesInPath('*.*')
-            log_info('File scanner found {} files'.format(len(extra_files)))
-            launcher_report.write('File scanner found {} files\n'.format(len(extra_files)))
-            self.progress_dialog.endProgress()
-        else:
-            log_info('Extra ROM path empty. Skipping scanning.')
-
-        # --- Prepare list of files to be processed ----------------------------------------------
-        # List has tuples (filename, extra_ROM_flag). List already sorted alphabetically.
-        file_list = []
-        for f_path in sorted(files): file_list.append((f_path, False))
-        for f_path in sorted(extra_files): file_list.append((f_path, True))
-
-        
+                
         return files
 
     # --- Remove dead entries -----------------------------------------------------------------
@@ -5300,7 +5282,7 @@ class RomFolderScanner(RomScannerStrategy):
         launcher_multidisc = self.launcher.supports_multidisc()
 
         skip_if_scraping_failed = self.settings['scan_skip_on_scraping_failure']
-        for ROM_file in sorted(items):
+        for ROM_file, extra_ROM_flag in sorted(items):
             self.progress_dialog.updateProgress(num_items_checked)
             
             # --- Get all file name combinations ---
@@ -5402,6 +5384,8 @@ class RomFolderScanner(RomScannerStrategy):
             # >> Database always stores the original (non transformed/manipulated) path
             new_rom = ROM()
             new_rom.set_file(ROM_file)
+                        
+            if extra_ROM_flag: new_rom.set_as_extra_ROM()
             
             # checksums
             ROM_checksums = ROM_file_original if MDSet.isMultiDisc and launcher_multidisc else ROM_file
@@ -5510,7 +5494,7 @@ class SteamScanner(RomScannerStrategy):
         self.progress_dialog.startProgress('Checking for new ROMs ...', num_games)
         steamIdsAlreadyInCollection = set(rom.get_custom_attribute('steamid') for rom in roms)
         
-        for steamGame in items:
+        for steamGame, extra_ROM_flag in items:
             
             steamId = steamGame['appid']
             log_debug('Searching {} with #{}'.format(steamGame['name'], steamId))
@@ -5519,49 +5503,45 @@ class SteamScanner(RomScannerStrategy):
             if steamId not in steamIdsAlreadyInCollection:
                 
                 log_debug('========== Processing Steam game ==========')
-                launcher_report.write('>>> title: {0}'.format(steamGame['name']))
-                launcher_report.write('>>> ID: {0}'.format(steamGame['appid']))
+                launcher_report.write('>>> title: {}'.format(steamGame['name']))
+                launcher_report.write('>>> ID: {}'.format(steamGame['appid']))
         
-                log_debug('Not found. Item {0} is new'.format(steamGame['name']))
+                log_debug('Not found. Item {} is new'.format(steamGame['name']))
 
                 launcher_path = self.launcher.get_rom_path()
-                romPath = launcher_path.pjoin('{0}.rom'.format(steamGame['appid']))
+                fake_file_name = text_str_to_filename_str(steamGame['name'])
+                romPath = launcher_path.pjoin('{0}.rom'.format(fake_file_name))
 
                 # ~~~~~ Process new ROM and add to the list ~~~~~
                 # --- Create new rom dictionary ---
                 # >> Database always stores the original (non transformed/manipulated) path
-                new_rom  = Rom()
+                new_rom  = ROM()
                 new_rom.set_file(romPath)
 
+                if extra_ROM_flag: new_rom.set_as_extra_ROM()
+            
                 new_rom.set_custom_attribute('steamid', steamGame['appid'])
                 new_rom.set_custom_attribute('steam_name', steamGame['name'])  # so that we always have the original name
                 new_rom.set_name(steamGame['name'])
-
-                searchTerm = steamGame['name']
+        
+                scraping_succeeded = True
+                self.progress_dialog.updateMessages(steamGame['name'], 'Scraping {}...'.format(steamGame['name']))
+                try:
+                    self.scraping_strategy.scanner_process_ROM(new_rom, None)
+                except Exception as ex:
+                    scraping_succeeded = False        
+                    log_error('(Exception) Object type "{}"'.format(type(ex)))
+                    log_error('(Exception) Message "{}"'.format(str(ex)))
+                    log_warning('Could not scrape "{}"'.format(steamGame['name']))
+                    #log_debug(traceback.format_exc())
                 
-                self.progress_dialog.updateMessages(steamGame['name'], 'Scraping {0}...'.format(steamGame['name']))
-                self.scraping_strategy.scrape(searchTerm, romPath, new_rom)
-                # !!!! MOVED CODE BELOW TO SCRAPING_STRATEGY UNTILL PROPERLY MERGED !!!
-                #if self.scrapers:
-                #    for scraper in self.scrapers:
-                #        self._updateProgressMessage(steamGame['name'], 'Scraping {0}...'.format(scraper.getName()))
-                #        scraper.scrape(searchTerm, romPath, new_rom)
-                #
-                #romdata = new_rom.get_data()
-                #log_verb('Set Title     file "{0}"'.format(romdata['s_title']))
-                #log_verb('Set Snap      file "{0}"'.format(romdata['s_snap']))
-                #log_verb('Set Boxfront  file "{0}"'.format(romdata['s_boxfront']))
-                #log_verb('Set Boxback   file "{0}"'.format(romdata['s_boxback']))
-                #log_verb('Set Cartridge file "{0}"'.format(romdata['s_cartridge']))
-                #log_verb('Set Fanart    file "{0}"'.format(romdata['s_fanart']))
-                #log_verb('Set Banner    file "{0}"'.format(romdata['s_banner']))
-                #log_verb('Set Clearlogo file "{0}"'.format(romdata['s_clearlogo']))
-                #log_verb('Set Flyer     file "{0}"'.format(romdata['s_flyer']))
-                #log_verb('Set Map       file "{0}"'.format(romdata['s_map']))
-                #log_verb('Set Manual    file "{0}"'.format(romdata['s_manual']))
-                #log_verb('Set Trailer   file "{0}"'.format(romdata['s_trailer']))
-            
-                new_roms.append(new_rom)
+                if not scraping_succeeded and skip_if_scraping_failed:
+                    kodi_display_user_message({
+                        'dialog': KODI_MESSAGE_NOTIFY_WARN,
+                        'msg': 'Scraping "{}" failed. Skipping.'.format(steamGame['name'])
+                    })
+                else:
+                    new_roms.append(new_rom)
                             
                 # ~~~ Check if user pressed the cancel button ~~~
                 if self._isProgressCanceled():
@@ -5644,7 +5624,7 @@ class NvidiaStreamScanner(RomScannerStrategy):
         streamIdsAlreadyInCollection = set(rom.get_custom_attribute('streamid') for rom in roms)
         skip_if_scraping_failed = self.settings['scan_skip_on_scraping_failure']
         
-        for streamableGame in items:
+        for streamableGame, extra_ROM_flag in items:
             
             streamId = streamableGame['ID']
             log_debug('Searching {} with #{}'.format(streamableGame['AppTitle'], streamId))
@@ -5671,6 +5651,8 @@ class NvidiaStreamScanner(RomScannerStrategy):
             new_rom  = ROM()
             new_rom.set_file(romPath)
 
+            if extra_ROM_flag: new_rom.set_as_extra_ROM()
+            
             new_rom.set_custom_attribute('streamid',        streamableGame['ID'])
             new_rom.set_custom_attribute('gamestream_name', streamableGame['AppTitle'])  # so that we always have the original name
             new_rom.set_name(streamableGame['AppTitle'])
