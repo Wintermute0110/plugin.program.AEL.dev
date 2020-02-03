@@ -5116,9 +5116,9 @@ class RomScannerStrategy(ScannerStrategyABC):
         launcher_report.write('{} candidates found'.format(num_candidates))
         
         # --- Scan all files in extra ROM path ---------------------------------------------------
-        if launcher.has_extra_rompath():
+        if self.launcher.has_extra_rompath():
             log_info('Scanning candidates in extra ROM path.')
-            extra_candidates = self._getCandidates(launcher_report, launcher.get_extra_rompath())            
+            extra_candidates = self._getCandidates(launcher_report, self.launcher.get_extra_rompath())            
             log_info('{} extra candidate files found'.format(len(extra_candidates)))
         else:
             log_info('Extra ROM path empty. Skipping scanning.')
