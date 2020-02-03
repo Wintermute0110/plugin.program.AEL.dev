@@ -5148,9 +5148,10 @@ class RomScannerStrategy(ScannerStrategyABC):
         roms = roms + new_roms
 
         launcher_report.write('******************** ROM scanner finished. Report ********************')
-        launcher_report.write('Removed dead ROMs {0:6d}'.format(num_removed_roms))
-        launcher_report.write('Files checked     {0:6d}'.format(num_candidates))
-        launcher_report.write('New added ROMs    {0:6d}'.format(num_new_roms))
+        launcher_report.write('Removed dead ROMs   {0:6d}'.format(num_removed_roms))
+        launcher_report.write('Files checked       {0:6d}'.format(num_candidates))
+        launcher_report.write('Extra files checked {0:6d}'.format(len(extra_candidates)))
+        launcher_report.write('New added ROMs      {0:6d}'.format(num_new_roms))
         
         if len(roms) == 0:
             launcher_report.write('WARNING Launcher has no ROMs!')
