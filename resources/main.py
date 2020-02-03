@@ -8771,25 +8771,26 @@ def m_gui_import_TXT_file(text_file):
 #
 def m_misc_fix_rom_object(rom):
     rom_data = rom.get_data_dic()
-    # --- Add new fields if not present ---
+    # Add new fields if not present
     if 'm_nplayers'    not in rom_data: rom_data['m_nplayers']    = ''
     if 'm_esrb'        not in rom_data: rom_data['m_esrb']        = ESRB_PENDING
     if 'disks'         not in rom_data: rom_data['disks']         = []
     if 'pclone_status' not in rom_data: rom_data['pclone_status'] = PCLONE_STATUS_NONE
     if 'cloneof'       not in rom_data: rom_data['cloneof']       = ''
-    # --- Delete unwanted/obsolete stuff ---
+    if 'i_extra_ROM'   not in rom: rom['i_extra_ROM']             = False
+    # Delete unwanted/obsolete stuff
     if 'nointro_isClone' in rom_data: rom_data.pop('nointro_isClone')
-    # --- DB field renamings ---
+    # DB field renamings
     if 'm_studio' in rom_data:
         rom_data['m_developer'] = rom_data['m_studio']
         rom_data.pop('m_studio')
 
 def m_misc_fix_Favourite_rom_object(rom):
-    # --- Fix standard ROM fields ---
+    # Fix standard ROM fields
     self._misc_fix_rom_object(rom)
     rom_data = rom.get_data_dic()
 
-    # --- Favourite ROMs additional stuff ---
+    # Favourite ROMs additional stuff
     if 'args_extra' not in rom_data: rom_data['args_extra'] = []
     if 'non_blocking' not in rom_data: rom_data['non_blocking'] = False
     if 'roms_default_thumb' in rom_data:

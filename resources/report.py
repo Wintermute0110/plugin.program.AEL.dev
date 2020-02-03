@@ -45,7 +45,9 @@ def report_print_ROM(slist, rom):
     slist.append("[COLOR skyblue]finished[/COLOR]: {0}".format(rom.is_finished()))
     slist.append("[COLOR violet]nointro_status[/COLOR]: '{0}'".format(rom.get_nointro_status()))
     slist.append("[COLOR violet]pclone_status[/COLOR]: '{0}'".format(rom.get_pclone_status()))
-    slist.append("[COLOR violet]cloneof[/COLOR]: '{0}'".format(rom.get_clone()))
+    slist.append("[COLOR violet]cloneof[/COLOR]: '{0}'".format(rom.get_clone()))       
+    slist.append("[COLOR skyblue]i_extra_ROM[/COLOR]: {0}\n".format(rom.get_extra_ROM()))
+
     # >> Assets/artwork
     asset_infos = self.assetFactory.get_asset_kinds_for_roms()
     for asset_info in asset_infos:
@@ -93,6 +95,8 @@ def report_print_Launcher(slist, launcher_dic):
     slist.append("[COLOR skyblue]args_extra[/COLOR]: {0}".format(launcher_dic['args_extra']))
     slist.append("[COLOR violet]rompath[/COLOR]: '{0}'".format(launcher_dic['rompath']))
     slist.append("[COLOR violet]romext[/COLOR]: '{0}'".format(launcher_dic['romext']))
+    slist.append("[COLOR violet]romextrapath[/COLOR]: '{0}'\n".format(launcher_dic['romextrapath']))
+
     # Bool settings
     slist.append("[COLOR skyblue]finished[/COLOR]: {0}".format(launcher_dic['finished']))
     slist.append("[COLOR skyblue]toggle_window[/COLOR]: {0}".format(launcher_dic['toggle_window']))

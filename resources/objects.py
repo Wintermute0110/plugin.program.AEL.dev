@@ -1478,6 +1478,9 @@ class ROM(MetaDataItemABC):
             return []
 
         return self.entity_data['disks']
+    
+    def get_extra_ROM(self):
+        return self.entity_data['i_extra_ROM']
 
     def get_nfo_file(self):
         ROMFileName = self.get_file()
@@ -2889,6 +2892,12 @@ class ROMLauncherABC(LauncherABC):
     def get_rom_path(self):
         return self._get_value_as_filename('rompath')
 
+    def has_extra_rompath(self):
+        return 'romextrapath' in self.entity_data and self.entity_data['romextrapath'] is not None
+    
+    def get_extra_rompath(self):
+        return self._get_value_as_filename('romextrapath')
+    
     def change_rom_path(self, path):
         self.entity_data['rompath'] = path
 
@@ -5096,12 +5105,21 @@ class RomScannerStrategy(ScannerStrategyABC):
             roms = []
         
         num_roms = len(roms)
-        launcher_report.write('{0} ROMs currently in database'.format(num_roms))
+        launcher_report.write('{} ROMs currently in database'.format(num_roms))
         
         launcher_report.write('Collecting candidates ...')
         candidates = self._getCandidates(launcher_report)
         num_candidates = len(candidates)
-        launcher_report.write('{0} candidates found'.format(num_candidates))
+        launcher_report.write('{} candidates found'.format(num_candidates))
+        
+        # --- Scan all files in extra ROM path ---------------------------------------------------
+        if launcher.has_extra_rompath():
+            log_info('Scanning candidates in extra ROM path.')
+            extra_candidates = self._getCandidates(launcher_report, launcher.get_extra_rompath())            
+            log_info('{} extra candidate files found'.format(len(extra_candidates)))
+            candi
+        else:
+            log_info('Extra ROM path empty. Skipping scanning.')
 
         launcher_report.write('Removing dead ROMs ...')
         num_removed_roms = self._removeDeadRoms(candidates, roms)        
@@ -5175,7 +5193,7 @@ class RomScannerStrategy(ScannerStrategyABC):
 
     # ~~~ Scan for new files (*.*) and put them in a list ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     @abc.abstractmethod
-    def _getCandidates(self, launcher_report):
+    def _getCandidates(self, launcher_report, rom_path = None):
         return []
 
     # --- Remove dead entries -----------------------------------------------------------------
@@ -5189,24 +5207,53 @@ class RomScannerStrategy(ScannerStrategyABC):
         return []
 
 class RomFolderScanner(RomScannerStrategy):
+    
     # ~~~ Scan for new files (*.*) and put them in a list ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    def _getCandidates(self, launcher_report):
-        self.progress_dialog.startProgress('Scanning and caching files in ROM path ...', 100)
+    def _getCandidates(self, launcher_report, rom_path = None):
+        self.progress_dialog.startProgress('Scanning and caching files in ROM path ...')
         files = []
-        launcher_path = self.launcher.get_rom_path()
-        launcher_report.write('Scanning files in {0}'.format(launcher_path.getPath()))
+        
+        if rom_path is None: rom_path = self.launcher.get_rom_path()
+        launcher_report.write('Scanning files in {}'.format(rom_path.getPath()))
 
         if self.settings['scan_recursive']:
             log_info('Recursive scan activated')
-            files = launcher_path.recursiveScanFilesInPath('*.*')
+            files = rom_path.recursiveScanFilesInPath('*.*')
         else:
             log_info('Recursive scan not activated')
-            files = launcher_path.scanFilesInPath('*.*')
+            files = rom_path.scanFilesInPath('*.*')
 
         num_files = len(files)
-        launcher_report.write('  File scanner found {0} files'.format(num_files))
-
+        launcher_report.write('  File scanner found {} files'.format(num_files))
         self.progress_dialog.endProgress()
+        
+        # --- Scan all files in extra ROM path ---------------------------------------------------
+        if launcher.has_extra_rompath():
+            log_info('Scanning files in extra ROM path.')
+            self.progress_dialog.startProgress('Scanning and caching files in extra ROM path ...')
+            extra_files = []
+            log_info('Scanning files in {}'.format(rom_path.getPath()))
+            launcher_report.write('Scanning files ...\n')
+            launcher_report.write('Directory {}\n'.format(rom_path.getPath()))
+            if self.settings['scan_recursive']:
+                log_info('Recursive scan activated')
+                extra_files = rom_path.recursiveScanFilesInPath('*.*')
+            else:
+                log_info('Recursive scan not activated')
+                extra_files = rom_path.scanFilesInPath('*.*')
+            log_info('File scanner found {} files'.format(len(extra_files)))
+            launcher_report.write('File scanner found {} files\n'.format(len(extra_files)))
+            self.progress_dialog.endProgress()
+        else:
+            log_info('Extra ROM path empty. Skipping scanning.')
+
+        # --- Prepare list of files to be processed ----------------------------------------------
+        # List has tuples (filename, extra_ROM_flag). List already sorted alphabetically.
+        file_list = []
+        for f_path in sorted(files): file_list.append((f_path, False))
+        for f_path in sorted(extra_files): file_list.append((f_path, True))
+
+        
         return files
 
     # --- Remove dead entries -----------------------------------------------------------------
@@ -5398,7 +5445,7 @@ class RomFolderScanner(RomScannerStrategy):
 class SteamScanner(RomScannerStrategy):
     
     # ~~~ Scan for new items not yet in the rom collection ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    def _getCandidates(self, launcher_report):
+    def _getCandidates(self, launcher_report, rom_path = None):
                
         log_debug('Reading Steam account')
         self.progress_dialog.startProgress('Reading Steam account...')
@@ -5531,7 +5578,7 @@ class SteamScanner(RomScannerStrategy):
 class NvidiaStreamScanner(RomScannerStrategy):
 
     # ~~~ Scan for new items not yet in the rom collection ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    def _getCandidates(self, launcher_report):
+    def _getCandidates(self, launcher_report, rom_path = None):
         log_debug('Reading Nvidia GameStream server')
         self.progress_dialog.startProgress('Reading Nvidia GameStream server...')
 
