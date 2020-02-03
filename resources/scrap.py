@@ -1918,6 +1918,14 @@ class TheGamesDB(Scraper):
         'banner': ASSET_BANNER_ID,
     }
 
+    URL_ByGameName = 'https://api.thegamesdb.net/v1/Games/ByGameName'
+    URL_ByGameID   = 'https://api.thegamesdb.net/v1/Games/ByGameID'
+    URL_Platforms  = 'https://api.thegamesdb.net/v1/Platforms'
+    URL_Genres     = 'https://api.thegamesdb.net/v1/Genres'
+    URL_Developers = 'https://api.thegamesdb.net/v1/Developers'
+    URL_Publishers = 'https://api.thegamesdb.net/v1/Publishers'
+    URL_Images     = 'https://api.thegamesdb.net/v1/Games/Images'
+
     # --- Constructor ----------------------------------------------------------------------------
     def __init__(self, settings):
         # --- This scraper settings ---
@@ -1977,12 +1985,11 @@ class TheGamesDB(Scraper):
 
         # --- Get candidates ---
         scraper_platform = AEL_platform_to_TheGamesDB(platform)
-        log_debug('TheGamesDB.get_candidates() search_term         "{0}"'.format(search_term))
-        log_debug('TheGamesDB.get_candidates() rombase_noext       "{0}"'.format(rombase_noext))
-        log_debug('TheGamesDB.get_candidates() AEL platform        "{0}"'.format(platform))
-        log_debug('TheGamesDB.get_candidates() TheGamesDB platform "{0}"'.format(scraper_platform))
-        candidate_list = self._search_candidates(
-            search_term, platform, scraper_platform, status_dic)
+        log_debug('TheGamesDB.get_candidates() search_term         "{}"'.format(search_term))
+        log_debug('TheGamesDB.get_candidates() rombase_noext       "{}"'.format(rombase_noext))
+        log_debug('TheGamesDB.get_candidates() AEL platform        "{}"'.format(platform))
+        log_debug('TheGamesDB.get_candidates() TheGamesDB platform "{}"'.format(scraper_platform))
+        candidate_list = self._search_candidates(search_term, platform, scraper_platform, status_dic)
         if not status_dic['status']: return None
 
         # --- Deactivate this for now ---
@@ -2007,7 +2014,7 @@ class TheGamesDB(Scraper):
 
         # --- Check if search term is in the cache ---
         if self._check_disk_cache(Scraper.CACHE_METADATA, self.cache_key):
-            log_debug('TheGamesDB.get_metadata() Metadata cache hit "{0}"'.format(self.cache_key))
+            log_debug('TheGamesDB.get_metadata() Metadata cache hit "{}"'.format(self.cache_key))
             return self._retrieve_from_disk_cache(Scraper.CACHE_METADATA, self.cache_key)
 
         # --- Request is not cached. Get candidates and introduce in the cache ---
@@ -2031,11 +2038,10 @@ class TheGamesDB(Scraper):
         # | youtube         | "youtube": "dR3Hm8scbEw"              | No   |
         # | alternates      | "alternates": null                    | No   |
         # |-----------------|---------------------------------------|------|
-        log_debug('TheGamesDB.get_metadata() Metadata cache miss "{0}"'.format(self.cache_key))
-        url_a = 'https://api.thegamesdb.net/v1/Games/ByGameID?apikey={0}&id={1}'
-        url_b = '&fields=players%2Cgenres%2Coverview%2Crating'
-        url_a = url_a.format(self._get_API_key(), self.candidate['id'])
-        url = url_a + url_b
+        log_debug('TheGamesDB.get_metadata() Metadata cache miss "{}"'.format(self.cache_key))
+        url_tail = '?apikey={}&id={}&fields=players%2Cgenres%2Coverview%2Crating'.format(
+            self._get_API_key(), self.candidate['id'])
+        url = TheGamesDB.URL_ByGameID + url_tail
         json_data = self._retrieve_URL_as_JSON(url, status_dic)
         if not status_dic['status']: return None
         self._dump_json_debug('TGDB_get_metadata.json', json_data)
@@ -2055,7 +2061,7 @@ class TheGamesDB(Scraper):
         gamedata['plot']      = self._parse_metadata_plot(online_data)
 
         # --- Put metadata in the cache ---
-        log_debug('TheGamesDB.get_metadata() Adding to metadata cache "{0}"'.format(self.cache_key))
+        log_debug('TheGamesDB.get_metadata() Adding to metadata cache "{}"'.format(self.cache_key))
         self._update_disk_cache(Scraper.CACHE_METADATA, self.cache_key, gamedata)
 
         return gamedata
@@ -2077,7 +2083,7 @@ class TheGamesDB(Scraper):
         all_asset_list = self._retrieve_all_assets(self.candidate, status_dic)
         if not status_dic['status']: return None
         asset_list = [asset_dic for asset_dic in all_asset_list if asset_dic['asset_ID'] == asset_info.id]
-        log_debug('TheGamesDB::get_assets() Total assets {0} / Returned assets {1}'.format(
+        log_debug('TheGamesDB::get_assets() Total assets {} / Returned assets {}'.format(
             len(all_asset_list), len(asset_list)))
 
         return asset_list
@@ -2094,7 +2100,7 @@ class TheGamesDB(Scraper):
     # --- This class own methods -----------------------------------------------------------------
     def debug_get_platforms(self, status_dic):
         log_debug('TheGamesDB.debug_get_platforms() BEGIN...')
-        url = 'https://api.thegamesdb.net/v1/Platforms?apikey={}'.format(self._get_API_key())
+        url = TheGamesDB.URL_Platforms + '?apikey={}'.format(self._get_API_key())
         json_data = self._retrieve_URL_as_JSON(url, status_dic)
         if not status_dic['status']: return None
         self._dump_json_debug('TGDB_get_platforms.json', json_data)
@@ -2103,7 +2109,7 @@ class TheGamesDB(Scraper):
 
     def debug_get_genres(self, status_dic):
         log_debug('TheGamesDB.debug_get_genres() BEGIN...')
-        url = 'https://api.thegamesdb.net/v1/Genres?apikey={}'.format(self._get_API_key())
+        url = TheGamesDB.URL_Genres + '?apikey={}'.format(self._get_API_key())
         json_data = self._retrieve_URL_as_JSON(url, status_dic)
         if not status_dic['status']: return None
         self._dump_json_debug('TGDB_get_genres.json', json_data)
@@ -2120,10 +2126,9 @@ class TheGamesDB(Scraper):
         # UTF-8 encoded string and does not work with Unicode strings.
         # https://stackoverflow.com/questions/22415345/using-pythons-urllib-quote-plus-on-utf-8-strings-with-safe-arguments
         search_string_encoded = urllib.quote_plus(search_term.encode('utf8'))
-        url_a = 'https://api.thegamesdb.net/v1/Games/ByGameName?'
-        url_b = 'apikey={0}&name={1}&filter[platform]={2}'.format(
+        url_tail = '?apikey={}&name={}&filter[platform]={}'.format(
             self._get_API_key(), search_string_encoded, scraper_platform)
-        url = url_a + url_b
+        url = TheGamesDB.URL_ByGameName + url_tail
         # _retrieve_games_from_url() may load files recursively from several pages so this code
         # must be in a separate function.
         candidate_list = self._retrieve_games_from_url(
@@ -2270,7 +2275,7 @@ class TheGamesDB(Scraper):
 
         # --- Cache miss. Retrieve data ---
         log_debug('TheGamesDB._retrieve_genres() Genres global cache miss. Retrieving genres...')
-        url = 'https://api.thegamesdb.net/v1/Genres?apikey={}'.format(self._get_API_key())
+        url = TheGamesDB.URL_Genres + '?apikey={}'.format(self._get_API_key())
         page_data = self._retrieve_URL_as_JSON(url, status_dic)
         if not status_dic['status']: return None
         self._dump_json_debug('TGDB_get_genres.json', page_data)
@@ -2295,7 +2300,7 @@ class TheGamesDB(Scraper):
 
         # --- Cache miss. Retrieve data ---
         log_debug('TheGamesDB._retrieve_developers() Developers global cache miss. Retrieving developers...')
-        url = 'https://api.thegamesdb.net/v1/Developers?apikey={}'.format(self._get_API_key())
+        url = TheGamesDB.URL_Developers + '?apikey={}'.format(self._get_API_key())
         page_data = self._retrieve_URL_as_JSON(url, status_dic)
         if not status_dic['status']: return None
         self._dump_json_debug('TGDB_get_developers.json', page_data)
@@ -2313,9 +2318,9 @@ class TheGamesDB(Scraper):
     # THIS FUNCTION CODE MUST BE UPDATED.
     def _retrieve_publishers(self, publisher_ids):
         if publisher_ids is None: return ''
-        if self.publishers_cached is None:
-            log_debug('TheGamesDB:: No cached publishers. Retrieving from online.')
-            url = 'https://api.thegamesdb.net/v1/Publishers?apikey={}'.format(self._get_API_key())
+        if self.publishers is None:
+            log_debug('TheGamesDB. No cached publishers. Retrieving from online.')
+            url = TheGamesDB.URL_Publishers + '?apikey={}'.format(self._get_API_key())
             page_data_raw = net_get_URL(url, self._clean_URL_for_log(url))
             publishers_json = json.loads(page_data_raw)
             self.publishers_cached = {}
@@ -2335,8 +2340,8 @@ class TheGamesDB(Scraper):
 
         # --- Cache miss. Retrieve data and update cache ---
         log_debug('TheGamesDB._retrieve_all_assets() Internal cache miss "{0}"'.format(self.cache_key))
-        url = 'https://api.thegamesdb.net/v1/Games/Images?apikey={}&games_id={}'.format(
-            self._get_API_key(), candidate['id'])
+        url_tail = '?apikey={}&games_id={}'.format(self._get_API_key(), candidate['id'])
+        url = TheGamesDB.URL_Images + url_tail
         asset_list = self._retrieve_assets_from_url(url, candidate['id'], status_dic)
         if not status_dic['status']: return None
         log_debug('A total of {0} assets found for candidate ID {1}'.format(
@@ -2376,7 +2381,7 @@ class TheGamesDB(Scraper):
             asset_data['url_thumb'] = base_url_thumb + asset_fname
             asset_data['url'] = base_url + asset_fname
             if self.verbose_flag:
-                log_debug('TheGamesDB. Found Asset {0}'.format(asset_data['name']))
+                log_debug('TheGamesDB. Found Asset {}'.format(asset_data['name']))
             assets_list.append(asset_data)
 
         # --- Recursively load more assets ---

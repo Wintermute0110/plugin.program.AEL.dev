@@ -99,6 +99,7 @@ def autoconfig_export_launcher_str_list(launcher, category_name, str_list):
         str_list.append(text_XML_line('args_extra', ''))
     str_list.append(text_XML_line('ROM_path', launcher['rompath']))
     str_list.append(text_XML_line('ROM_ext', launcher['romext']))
+    str_list.append(text_XML_line('ROM_extra_path', launcher['romextrapath']))
     if ROM_asset_path:
         str_list.append(text_XML_line('ROM_asset_path', ROM_asset_path))
     else:
@@ -240,6 +241,7 @@ def autoconfig_get_default_import_launcher():
         'args_extra' : [],
         'ROM_path' : '',
         'ROM_ext' : '',
+        'ROM_extra_path' : '',
         'Options' : '',
         'ROM_asset_path' : '',
         'path_3dbox' : '',
@@ -754,24 +756,38 @@ def autoconfig_import_launcher(ROMS_DIR, categories, launchers, categoryID, laun
         log_error('len_args = {}, len_extra_args = {}'.format(len_args, len_extra_args))
         log_error('No arguments imported.')
 
-    # >> Warn user if rompath directory does not exist
+    # Warn user if rompath directory does not exist
     if i_launcher['ROM_path']:
         rompath = FileName(i_launcher['ROM_path'])
-        log_debug('ROMpath OP "{0}"'.format(rompath.getOriginalPath()))
-        log_debug('ROMpath  P "{0}"'.format(rompath.getPath()))
+        log_debug('ROMpath OP "{}"'.format(rompath.getOriginalPath()))
+        log_debug('ROMpath  P "{}"'.format(rompath.getPath()))
         if not rompath.exists():
-            log_debug('ROMpath NOT found.')
+            log_debug('ROM path NOT found.')
             kodi_dialog_OK(
-                'ROM path "{0}" not found'.format(rompath.getPath()),
-                title = 'Launcher "{0}"'.format(i_launcher['name']))
+                'ROM path "{}" not found'.format(rompath.getPath()),
+                title = 'Launcher "{}"'.format(i_launcher['name']))
         else:
             log_debug('ROM_path found.')
         launchers[launcherID]['rompath'] = i_launcher['ROM_path']
-        log_debug('Imported rompath "{0}"'.format(i_launcher['ROM_path']))
+        log_debug('Imported ROM path "{}"'.format(i_launcher['ROM_path']))
 
     if i_launcher['ROM_ext']:
         launchers[launcherID]['romext'] = i_launcher['ROM_ext']
-        log_debug('Imported romext "{0}"'.format(i_launcher['ROM_ext']))
+        log_debug('Imported romext "{}"'.format(i_launcher['ROM_ext']))
+
+    if i_launcher['ROM_extra_path']:
+        rompath = FileName(i_launcher['ROM_extra_path'])
+        log_debug('ROMpath OP "{}"'.format(rompath.getOriginalPath()))
+        log_debug('ROMpath  P "{}"'.format(rompath.getPath()))
+        if not rompath.exists():
+            log_debug('ROM_extra_path NOT found.')
+            kodi_dialog_OK(
+                'ROM path "{}" not found'.format(rompath.getPath()),
+                title = 'Launcher "{}"'.format(i_launcher['name']))
+        else:
+            log_debug('ROM_extra_path found.')
+        launchers[launcherID]['romextrapath'] = i_launcher['ROM_extra_path']
+        log_debug('Imported ROM extra path "{}"'.format(i_launcher['ROM_extra_path']))
 
     # --- Launcher options ---
     if i_launcher['Options']:
