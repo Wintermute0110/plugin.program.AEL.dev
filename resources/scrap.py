@@ -125,6 +125,18 @@ class ScraperSettings(object):
         self.asset_IDs_to_scrape = ROM_ASSET_ID_LIST       
         self.show_info_verbose = False
     
+    def build_menu(self):
+        options = collections.OrderedDict()
+        
+        options['SC_METADATA_POLICY']      = 'Metadata scan policy: "{}"'.format(text_translate(self.scrape_metadata_policy))
+        options['SC_ASSET_POLICY']         = 'Asset scan policy: "{}"'.format(text_translate(self.scrape_assets_policy))
+        options['SC_GAME_SELECTION_MODE']  = 'Game selection mode: "{}"'.format(text_translate(self.game_selection_mode))
+        options['SC_ASSET_SELECTION_MODE'] = 'Asset selection mode: "{}"'.format(text_translate(self.asset_selection_mode))
+        options['SC_METADATA_SCRAPER']     = 'Metadata scraper: "{}"'.format(text_translate(self.metadata_scraper_ID))
+        options['SC_ASSET_SCRAPER']        = 'Asset scraper: "{}"'.format(text_translate(self.assets_scraper_ID))
+        
+        return options
+            
     @staticmethod
     def from_settings(settings, launcher):
         
@@ -250,6 +262,13 @@ class ScraperFactory(object):
         log_debug('ScraperFactory.create_scraper() BEGIN ...')
         
         if scraper_settings is None: scraper_settings = ScraperSettings.from_settings(self.settings, launcher)
+        if scraper_settings.scrape_metadata_policy == SCRAPE_POLICY_TITLE_ONLY or \
+            scraper_settings.scrape_metadata_policy == SCRAPE_POLICY_NFO_PREFERED or \
+            scraper_settings.scrape_metadata_policy == SCRAPE_ACTION_NONE:
+            scraper_settings.metadata_scraper_ID = SCRAPER_NULL_ID
+        if scraper_settings.scrape_assets_policy == SCRAPE_ACTION_NONE:
+            scraper_settings.assets_scraper_ID = SCRAPER_NULL_ID
+        
         self.strategy_obj = ScrapeStrategy(self.PATHS, self.settings, scraper_settings)
 
         # set progress dialog
@@ -406,11 +425,13 @@ class ScrapeStrategy(object):
     def scanner_process_launcher(self, launcher):        
         roms = self.launcher.get_roms()
         num_items = len(roms)
+        num_items_checked = 0
         self.pdialog.startProgress('Scraping ROMs in launcher', num_items)
         log_debug('============================== Scraping ROMs ==============================')
         
         for rom in sorted(roms):
             self.pdialog.updateProgress(num_items_checked)
+            num_items_checked = num_items_checked + 1
             ROM_file = rom.get_file()
             file_text = 'ROM {0}'.format(ROM_file.getBase())
             
@@ -430,7 +451,7 @@ class ScrapeStrategy(object):
                 log_info('User pressed Cancel button when scraping ROMs. ROM scraping stopped.')
                 return None
             
-        self.progress_dialog.endProgress()
+        self.pdialog.endProgress()
         return roms
     
     def scanner_process_ROM(self, ROM, ROM_checksums):

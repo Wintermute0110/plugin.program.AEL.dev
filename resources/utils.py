@@ -577,6 +577,10 @@ def text_escape_JSON(s):
 
     return s
 
+def text_translate(id):
+    addon = xbmcaddon.Addon()
+    return addon.getLocalizedString(id)
+    
 def text_dump_str_to_file(filename, full_string):
     file_obj = open(filename, 'w')
     file_obj.write(full_string.encode('utf-8'))
