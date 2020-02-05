@@ -571,7 +571,7 @@ def m_gui_render_Browse_by_vlaunchers_row(virtual_category_kind):
     if xbmc.getCondVisibility("!Skin.HasSetting(KioskMode.Enabled)"):
         listitem.addContextMenuItems(commands, replaceItems = True)
 
-    url_str = m_misc_url('SHOW_VIRTUAL_CATEGORY', virtual_category_kind)
+    url_str = router.create_url('SHOW_VIRTUAL_CATEGORY', categoryID=virtual_category_kind)
     xbmcplugin.addDirectoryItem(handle = g_addon_handle, url = url_str, listitem = listitem, isFolder = True)
 
 @router.action('SHOW_AEL_OFFLINE_LAUNCHERS_ROOT')
@@ -622,7 +622,7 @@ def m_gui_render_AEL_scraper_vlaunchers_row(platform, platform_info, db_suffix):
     if xbmc.getCondVisibility("!Skin.HasSetting(KioskMode.Enabled)"):
         listitem.addContextMenuItems(commands, replaceItems = True)
 
-    url_str = m_misc_url('SHOW_AEL_SCRAPER_ROMS', platform)
+    url_str = router.create_url('SHOW_AEL_SCRAPER_ROMS', categoryID=platform)
     xbmcplugin.addDirectoryItem(handle = g_addon_handle, url = url_str, listitem = listitem, isFolder = True)
 
 @router.action('SHOW_LB_OFFLINE_LAUNCHERS_ROOT')
@@ -673,7 +673,7 @@ def m_gui_render_LB_scraper_vlaunchers_row(platform, platform_info, db_suffix):
     if xbmc.getCondVisibility("!Skin.HasSetting(KioskMode.Enabled)"):
         listitem.addContextMenuItems(commands, replaceItems = True)
 
-    url_str = m_misc_url('SHOW_LB_SCRAPER_ROMS', platform)
+    url_str = router.create_url('SHOW_LB_SCRAPER_ROMS',categoryID=platform)
     xbmcplugin.addDirectoryItem(handle = g_addon_handle, url = url_str, listitem = listitem, isFolder = True)
     
 # TODO: @router.action('SHOW_VIRTUAL_CATEGORY')
@@ -749,7 +749,7 @@ def m_gui_render_Utilities_vlaunchers():
     listitem.setProperty(AEL_CONTENT_LABEL, AEL_CONTENT_VALUE_ROM_LAUNCHER)
     if xbmc.getCondVisibility("!Skin.HasSetting(KioskMode.Enabled)"):
         listitem.addContextMenuItems(commands)
-    url_str = m_misc_url('EXECUTE_UTILS_IMPORT_LAUNCHERS')
+    url_str = router.create_url('EXECUTE_UTILS_IMPORT_LAUNCHERS')
     xbmcplugin.addDirectoryItem(handle = g_addon_handle, url = url_str, listitem = listitem, isFolder = False)
 
     # <setting label="Export category/launcher configuration ..."
@@ -764,7 +764,7 @@ def m_gui_render_Utilities_vlaunchers():
     listitem.setProperty(AEL_CONTENT_LABEL, AEL_CONTENT_VALUE_ROM_LAUNCHER)
     if xbmc.getCondVisibility("!Skin.HasSetting(KioskMode.Enabled)"):
         listitem.addContextMenuItems(commands)
-    url_str = m_misc_url('EXECUTE_UTILS_EXPORT_LAUNCHERS')
+    url_str = router.create_url('EXECUTE_UTILS_EXPORT_LAUNCHERS')
     xbmcplugin.addDirectoryItem(handle = g_addon_handle, url = url_str, listitem = listitem, isFolder = False)
 
     # <setting label="Check/Update all databases ..."
@@ -778,7 +778,7 @@ def m_gui_render_Utilities_vlaunchers():
     listitem.setProperty(AEL_CONTENT_LABEL, AEL_CONTENT_VALUE_ROM_LAUNCHER)
     if xbmc.getCondVisibility("!Skin.HasSetting(KioskMode.Enabled)"):
         listitem.addContextMenuItems(commands)
-    url_str = m_misc_url('EXECUTE_UTILS_CHECK_DATABASE')
+    url_str = router.create_url('EXECUTE_UTILS_CHECK_DATABASE')
     xbmcplugin.addDirectoryItem(handle = g_addon_handle, url = url_str, listitem = listitem, isFolder = False)
 
     # <setting label="Check Launchers ..."
@@ -792,7 +792,7 @@ def m_gui_render_Utilities_vlaunchers():
     listitem.setProperty(AEL_CONTENT_LABEL, AEL_CONTENT_VALUE_ROM_LAUNCHER)
     if xbmc.getCondVisibility("!Skin.HasSetting(KioskMode.Enabled)"):
         listitem.addContextMenuItems(commands)
-    url_str = m_misc_url('EXECUTE_UTILS_CHECK_LAUNCHERS')
+    url_str = router.create_url('EXECUTE_UTILS_CHECK_LAUNCHERS')
     xbmcplugin.addDirectoryItem(handle = g_addon_handle, url = url_str, listitem = listitem, isFolder = False)
 
     vcategory_name = 'Check Launcher ROMs sync status'
@@ -806,7 +806,7 @@ def m_gui_render_Utilities_vlaunchers():
     listitem.setProperty(AEL_CONTENT_LABEL, AEL_CONTENT_VALUE_ROM_LAUNCHER)
     if xbmc.getCondVisibility("!Skin.HasSetting(KioskMode.Enabled)"):
         listitem.addContextMenuItems(commands)
-    url_str = m_misc_url('EXECUTE_UTILS_CHECK_LAUNCHER_SYNC_STATUS')
+    url_str = router.create_url('EXECUTE_UTILS_CHECK_LAUNCHER_SYNC_STATUS')
     xbmcplugin.addDirectoryItem(handle = g_addon_handle, url = url_str, listitem = listitem, isFolder = False)
 
     # vcategory_name = 'Check artwork image integrity'
@@ -819,7 +819,7 @@ def m_gui_render_Utilities_vlaunchers():
     # listitem.setProperty(AEL_CONTENT_LABEL, AEL_CONTENT_VALUE_ROM_LAUNCHER)
     # if xbmc.getCondVisibility("!Skin.HasSetting(KioskMode.Enabled)"):
     #     listitem.addContextMenuItems(commands)
-    # url_str = m_misc_url('EXECUTE_UTILS_CHECK_ARTWORK_INTEGRITY')
+    # url_str = router.create_url('EXECUTE_UTILS_CHECK_ARTWORK_INTEGRITY')
     # xbmcplugin.addDirectoryItem(handle = g_addon_handle, url = url_str, listitem = listitem, isFolder = False)
 
     vcategory_name = 'Check ROMs artwork image integrity'
@@ -832,7 +832,7 @@ def m_gui_render_Utilities_vlaunchers():
     listitem.setProperty(AEL_CONTENT_LABEL, AEL_CONTENT_VALUE_ROM_LAUNCHER)
     if xbmc.getCondVisibility("!Skin.HasSetting(KioskMode.Enabled)"):
         listitem.addContextMenuItems(commands)
-    url_str = m_misc_url('EXECUTE_UTILS_CHECK_ROM_ARTWORK_INTEGRITY')
+    url_str = router.create_url('EXECUTE_UTILS_CHECK_ROM_ARTWORK_INTEGRITY')
     xbmcplugin.addDirectoryItem(handle = g_addon_handle, url = url_str, listitem = listitem, isFolder = False)
 
     # vcategory_name = 'Delete redundant artwork'
@@ -844,7 +844,7 @@ def m_gui_render_Utilities_vlaunchers():
     # listitem.setProperty(AEL_CONTENT_LABEL, AEL_CONTENT_VALUE_ROM_LAUNCHER)
     # if xbmc.getCondVisibility("!Skin.HasSetting(KioskMode.Enabled)"):
     #     listitem.addContextMenuItems(commands)
-    # url_str = m_misc_url('EXECUTE_UTILS_DELETE_REDUNDANT_ARTWORK')
+    # url_str = router.create_url('EXECUTE_UTILS_DELETE_REDUNDANT_ARTWORK')
     # xbmcplugin.addDirectoryItem(handle = g_addon_handle, url = url_str, listitem = listitem, isFolder = False)
 
     vcategory_name = 'Delete ROMs redundant artwork'
@@ -856,7 +856,7 @@ def m_gui_render_Utilities_vlaunchers():
     listitem.setProperty(AEL_CONTENT_LABEL, AEL_CONTENT_VALUE_ROM_LAUNCHER)
     if xbmc.getCondVisibility("!Skin.HasSetting(KioskMode.Enabled)"):
         listitem.addContextMenuItems(commands)
-    url_str = m_misc_url('EXECUTE_UTILS_DELETE_ROM_REDUNDANT_ARTWORK')
+    url_str = router.create_url('EXECUTE_UTILS_DELETE_ROM_REDUNDANT_ARTWORK')
     xbmcplugin.addDirectoryItem(handle = g_addon_handle, url = url_str, listitem = listitem, isFolder = False)
 
     vcategory_name = 'Show detected No-Intro/Redump DATs'
@@ -869,7 +869,7 @@ def m_gui_render_Utilities_vlaunchers():
     listitem.setProperty(AEL_CONTENT_LABEL, AEL_CONTENT_VALUE_ROM_LAUNCHER)
     if xbmc.getCondVisibility("!Skin.HasSetting(KioskMode.Enabled)"):
         listitem.addContextMenuItems(commands)
-    url_str = m_misc_url('EXECUTE_UTILS_SHOW_DETECTED_DATS')
+    url_str = router.create_url('EXECUTE_UTILS_SHOW_DETECTED_DATS')
     xbmcplugin.addDirectoryItem(handle = g_addon_handle, url = url_str, listitem = listitem, isFolder = False)
 
     vcategory_name = 'Check Retroarch launchers'
@@ -882,7 +882,7 @@ def m_gui_render_Utilities_vlaunchers():
     listitem.setProperty(AEL_CONTENT_LABEL, AEL_CONTENT_VALUE_ROM_LAUNCHER)
     if xbmc.getCondVisibility("!Skin.HasSetting(KioskMode.Enabled)"):
         listitem.addContextMenuItems(commands)
-    url_str = m_misc_url('EXECUTE_UTILS_CHECK_RETRO_LAUNCHERS')
+    url_str = router.create_url('EXECUTE_UTILS_CHECK_RETRO_LAUNCHERS')
     xbmcplugin.addDirectoryItem(handle = g_addon_handle, url = url_str, listitem = listitem, isFolder = False)
 
     # <setting label="Check Retroarch BIOSes ..."
@@ -898,7 +898,7 @@ def m_gui_render_Utilities_vlaunchers():
     listitem.setProperty(AEL_CONTENT_LABEL, AEL_CONTENT_VALUE_ROM_LAUNCHER)
     if xbmc.getCondVisibility("!Skin.HasSetting(KioskMode.Enabled)"):
         listitem.addContextMenuItems(commands)
-    url_str = m_misc_url('EXECUTE_UTILS_CHECK_RETRO_BIOS')
+    url_str = router.create_url('EXECUTE_UTILS_CHECK_RETRO_BIOS')
     xbmcplugin.addDirectoryItem(handle = g_addon_handle, url = url_str, listitem = listitem, isFolder = False)
 
     # Importing AL configuration is not supported any more. It will cause a lot of trouble
@@ -915,7 +915,7 @@ def m_gui_render_Utilities_vlaunchers():
     listitem.setProperty(AEL_CONTENT_LABEL, AEL_CONTENT_VALUE_ROM_LAUNCHER)
     if xbmc.getCondVisibility("!Skin.HasSetting(KioskMode.Enabled)"):
         listitem.addContextMenuItems(commands)
-    url_str = m_misc_url('EXECUTE_UTILS_TGDB_CHECK')
+    url_str = router.create_url('EXECUTE_UTILS_TGDB_CHECK')
     xbmcplugin.addDirectoryItem(handle = g_addon_handle, url = url_str, listitem = listitem, isFolder = False)
 
     # --- Check MobyGames scraper ---
@@ -927,7 +927,7 @@ def m_gui_render_Utilities_vlaunchers():
     listitem.setProperty(AEL_CONTENT_LABEL, AEL_CONTENT_VALUE_ROM_LAUNCHER)
     if xbmc.getCondVisibility("!Skin.HasSetting(KioskMode.Enabled)"):
         listitem.addContextMenuItems(commands)
-    url_str = m_misc_url('EXECUTE_UTILS_MOBYGAMES_CHECK')
+    url_str = router.create_url('EXECUTE_UTILS_MOBYGAMES_CHECK')
     xbmcplugin.addDirectoryItem(handle = g_addon_handle, url = url_str, listitem = listitem, isFolder = False)
 
     # --- Check ScreenScraper scraper ---
@@ -939,7 +939,7 @@ def m_gui_render_Utilities_vlaunchers():
     listitem.setProperty(AEL_CONTENT_LABEL, AEL_CONTENT_VALUE_ROM_LAUNCHER)
     if xbmc.getCondVisibility("!Skin.HasSetting(KioskMode.Enabled)"):
         listitem.addContextMenuItems(commands)
-    url_str = m_misc_url('EXECUTE_UTILS_SCREENSCRAPER_CHECK')
+    url_str = router.create_url('EXECUTE_UTILS_SCREENSCRAPER_CHECK')
     xbmcplugin.addDirectoryItem(handle = g_addon_handle, url = url_str, listitem = listitem, isFolder = False)
 
     # --- Check ArcadeDB scraper ---
@@ -951,7 +951,7 @@ def m_gui_render_Utilities_vlaunchers():
     listitem.setProperty(AEL_CONTENT_LABEL, AEL_CONTENT_VALUE_ROM_LAUNCHER)
     if xbmc.getCondVisibility("!Skin.HasSetting(KioskMode.Enabled)"):
         listitem.addContextMenuItems(commands)
-    url_str = m_misc_url('EXECUTE_UTILS_ARCADEDB_CHECK')
+    url_str = router.create_url('EXECUTE_UTILS_ARCADEDB_CHECK')
     xbmcplugin.addDirectoryItem(handle = g_addon_handle, url = url_str, listitem = listitem, isFolder = False)
 
     # --- End of directory ---
@@ -978,7 +978,7 @@ def m_gui_render_GlobalReports_vlaunchers():
     listitem.setProperty(AEL_CONTENT_LABEL, AEL_CONTENT_VALUE_ROM_LAUNCHER)
     if xbmc.getCondVisibility("!Skin.HasSetting(KioskMode.Enabled)"):
         listitem.addContextMenuItems(commands)
-    url_str = m_misc_url('EXECUTE_GLOBAL_ROM_STATS')
+    url_str = router.create_url('EXECUTE_GLOBAL_ROM_STATS')
     xbmcplugin.addDirectoryItem(handle = g_addon_handle, url = url_str, listitem = listitem, isFolder = False)
 
     # --- Global ROM Audit statistics ---
@@ -1101,7 +1101,7 @@ def m_command_render_Collections():
             listitem.addContextMenuItems(commands, replaceItems = True)
 
         # >> Use ROMs renderer to display collection ROMs
-        url_str = m_misc_url('SHOW_COLLECTION_ROMS', VCATEGORY_COLLECTIONS_ID, collection_id)
+        url_str = router.create_url('SHOW_COLLECTION_ROMS', categoryID=VCATEGORY_COLLECTIONS_ID, launcherID=collection_id)
         xbmcplugin.addDirectoryItem(handle = g_addon_handle, url = url_str, listitem = listitem, isFolder = True)
     xbmcplugin.endOfDirectory(handle = g_addon_handle, succeeded = True, cacheToDisc = False)
 
@@ -1442,7 +1442,7 @@ def m_command_render_Browse_by_roms(virtual_categoryID):
         if xbmc.getCondVisibility("!Skin.HasSetting(KioskMode.Enabled)"):
             listitem.addContextMenuItems(commands, replaceItems = True)
 
-        url_str = m_misc_url('SHOW_VLAUNCHER_ROMS', virtual_categoryID, vlauncher_id)
+        url_str = router.create_url('SHOW_VLAUNCHER_ROMS', categoryID=virtual_categoryID, launcherID=vlauncher_id)
         xbmcplugin.addDirectoryItem(handle = g_addon_handle, url = url_str, listitem = listitem, isFolder = True)
     xbmcplugin.endOfDirectory(handle = g_addon_handle, succeeded = True, cacheToDisc = False)
 
@@ -1686,7 +1686,7 @@ def m_command_buildMenu():
         categories = self.category_repository.find_all()
         for category in sorted(categories, key = lambda c : c.get_name()):
             name = category.get_name()
-            url_str =  "ActivateWindow(Programs,\"%s\",return)" % m_misc_url('SHOW_LAUNCHERS', key)
+            url_str =  "ActivateWindow(Programs,\"%s\",return)" % router.create_url('SHOW_LAUNCHERS',categoryID=key)
             fanart = category.get_mapped_asset_str(asset_id=ASSET_FANART_ID)
             thumb = category.get_mapped_asset_str(asset_id=ASSET_THUMB_ID, fallback='DefaultFolder.png') # ASSET_THUMB_ID?
 
@@ -1701,7 +1701,7 @@ def m_command_buildMenu():
             name = launcher.get_name()
             launcherID = launcher.get_id()
             categoryID = launcher.get_category_id()
-            url_str =  "ActivateWindow(Programs,\"%s\",return)" % m_misc_url('SHOW_ROMS', categoryID, launcherID)
+            url_str =  "ActivateWindow(Programs,\"%s\",return)" % router.create_url('SHOW_ROMS', categoryID=categoryID, launcherID=launcherID)
             fanart = launcher.get_mapped_asset(g_assetFactory.get_asset_info(ASSET_FANART_ID))
             thumb = launcher.get_mapped_asset(g_assetFactory.get_asset_info(ASSET_THUMB_ID), 'DefaultFolder.png') # ASSET_THUMB_ID?
 
@@ -2705,8 +2705,8 @@ def m_command_search_launcher(categoryID, launcherID):
         keyboard.doModal()
         if not keyboard.isConfirmed(): return
         search_string = keyboard.getText().decode('utf-8')
-        url = m_misc_url_search('EXECUTE_SEARCH_LAUNCHER', categoryID, launcherID, 'SEARCH_TITLE', search_string)
-
+        url = router.create_url('EXECUTE_SEARCH_LAUNCHER', categoryID=categoryID, launcherID=launcherID, search_type='SEARCH_TITLE', search_string=search_string)
+        
     # --- Search by Release Date ---
     type_nb = type_nb + 1
     if type == type_nb:
@@ -2715,8 +2715,8 @@ def m_command_search_launcher(categoryID, launcherID):
         selected_value = dialog.select('Select a release year ...', searched_list)
         if selected_value < 0: return
         search_string = searched_list[selected_value]
-        url = m_misc_url_search('EXECUTE_SEARCH_LAUNCHER', categoryID, launcherID, 'SEARCH_YEAR', search_string)
-
+        url = router.create_url('EXECUTE_SEARCH_LAUNCHER', categoryID=categoryID, launcherID=launcherID, search_type='SEARCH_YEAR', search_string=search_string)
+        
     # --- Search by System Platform ---
     # >> Note that search by platform does not make sense when searching a launcher because all items have
     # >> the same platform! It only makes sense for global searches... which AEL does not.
@@ -2738,7 +2738,7 @@ def m_command_search_launcher(categoryID, launcherID):
         selected_value = dialog.select('Select a Genre ...', searched_list)
         if selected_value < 0: return
         search_string = searched_list[selected_value]
-        url = m_misc_url_search('EXECUTE_SEARCH_LAUNCHER', categoryID, launcherID, 'SEARCH_GENRE', search_string)
+        url = router.create_url('EXECUTE_SEARCH_LAUNCHER', categoryID=categoryID, launcherID=launcherID, search_type='SEARCH_GENRE', search_string=search_string)
 
     # --- Search by Studio ---
     type_nb = type_nb + 1
@@ -2748,7 +2748,8 @@ def m_command_search_launcher(categoryID, launcherID):
         selected_value = dialog.select('Select a Studio ...', searched_list)
         if selected_value < 0: return
         search_string = searched_list[selected_value]
-        url = m_misc_url_search('EXECUTE_SEARCH_LAUNCHER', categoryID, launcherID, 'SEARCH_STUDIO', search_string)
+        url = router.create_url('EXECUTE_SEARCH_LAUNCHER', categoryID=categoryID, launcherID=launcherID, search_type='SEARCH_STUDIO', search_string=search_string)
+
 
     # --- Search by Rating ---
     type_nb = type_nb + 1
@@ -2758,7 +2759,7 @@ def m_command_search_launcher(categoryID, launcherID):
         selected_value = dialog.select('Select a Rating ...', searched_list)
         if selected_value < 0: return
         search_string = searched_list[selected_value]
-        url = m_misc_url_search('EXECUTE_SEARCH_LAUNCHER', categoryID, launcherID, 'SEARCH_RATING', search_string)
+        url = router.create_url('EXECUTE_SEARCH_LAUNCHER', categoryID=categoryID, launcherID=launcherID, search_type='SEARCH_RATING', search_string=search_string)
 
     # --- Replace current window by search window ---
     # When user press Back in search window it returns to the original window (either showing
@@ -7197,7 +7198,7 @@ def m_gui_render_category_row(category):
         listitem.addContextMenuItems(commands, replaceItems = True)
 
     # --- Add row ---
-    url_str = m_misc_url('SHOW_LAUNCHERS', categoryID)
+    url_str = router.create_url('SHOW_LAUNCHERS', categoryID=categoryID)
     xbmcplugin.addDirectoryItem(handle = g_addon_handle, url = url_str, listitem = listitem, isFolder=True)
 
 def m_gui_render_vlauncher_favourites_row():
@@ -7224,7 +7225,7 @@ def m_gui_render_vlauncher_favourites_row():
         listitem.addContextMenuItems(commands, replaceItems = True)
 
     # --- Add row ---
-    url_str = m_misc_url('SHOW_FAVOURITES')
+    url_str = router.create_url('SHOW_FAVOURITES')
     xbmcplugin.addDirectoryItem(handle = g_addon_handle, url = url_str, listitem = listitem, isFolder = True)
 
 def m_gui_render_vcategory_collections_row():
@@ -7248,7 +7249,7 @@ def m_gui_render_vcategory_collections_row():
     if xbmc.getCondVisibility("!Skin.HasSetting(KioskMode.Enabled)"):
         listitem.addContextMenuItems(commands, replaceItems = True)
             
-    url_str = m_misc_url('SHOW_COLLECTIONS')
+    url_str = router.create_url('SHOW_COLLECTIONS')
     xbmcplugin.addDirectoryItem(handle = g_addon_handle, url = url_str, listitem = listitem, isFolder = True)
 
 def m_gui_render_vlauncher_recently_played_row():
@@ -7270,7 +7271,7 @@ def m_gui_render_vlauncher_recently_played_row():
     if xbmc.getCondVisibility("!Skin.HasSetting(KioskMode.Enabled)"):
         listitem.addContextMenuItems(commands, replaceItems = True)
 
-    url_str = m_misc_url('SHOW_RECENTLY_PLAYED')
+    url_str = router.create_url('SHOW_RECENTLY_PLAYED')
     xbmcplugin.addDirectoryItem(handle = g_addon_handle, url = url_str, listitem = listitem, isFolder = True)
 
 def m_gui_render_vlauncher_most_played_row():
@@ -7292,7 +7293,7 @@ def m_gui_render_vlauncher_most_played_row():
     if xbmc.getCondVisibility("!Skin.HasSetting(KioskMode.Enabled)"):
         listitem.addContextMenuItems(commands, replaceItems = True)
 
-    url_str = m_misc_url('SHOW_MOST_PLAYED')
+    url_str = router.create_url('SHOW_MOST_PLAYED')
     xbmcplugin.addDirectoryItem(handle = g_addon_handle, url = url_str, listitem = listitem, isFolder = True)
 
 def m_gui_render_vcategory_Browse_by_row():
@@ -7317,7 +7318,7 @@ def m_gui_render_vcategory_Browse_by_row():
     if xbmc.getCondVisibility("!Skin.HasSetting(KioskMode.Enabled)"):
         listitem.addContextMenuItems(commands, replaceItems = True)
 
-    url_str = m_misc_url('SHOW_VCATEGORIES_ROOT')
+    url_str = router.create_url('SHOW_VCATEGORIES_ROOT')
     xbmcplugin.addDirectoryItem(handle = g_addon_handle, url = url_str, listitem = listitem, isFolder = True)
 
 def m_gui_render_vcategory_AEL_offline_scraper_row():
@@ -7340,7 +7341,7 @@ def m_gui_render_vcategory_AEL_offline_scraper_row():
     if xbmc.getCondVisibility("!Skin.HasSetting(KioskMode.Enabled)"):
         listitem.addContextMenuItems(commands, replaceItems = True)
 
-    url_str = m_misc_url('SHOW_AEL_OFFLINE_LAUNCHERS_ROOT')
+    url_str = router.create_url('SHOW_AEL_OFFLINE_LAUNCHERS_ROOT')
     xbmcplugin.addDirectoryItem(handle = g_addon_handle, url = url_str, listitem = listitem, isFolder = True)
 
 def m_gui_render_vcategory_LB_offline_scraper_row():
@@ -7363,7 +7364,7 @@ def m_gui_render_vcategory_LB_offline_scraper_row():
     if xbmc.getCondVisibility("!Skin.HasSetting(KioskMode.Enabled)"):
         listitem.addContextMenuItems(commands, replaceItems = True)
 
-    url_str = m_misc_url('SHOW_LB_OFFLINE_LAUNCHERS_ROOT')
+    url_str = router.create_url('SHOW_LB_OFFLINE_LAUNCHERS_ROOT')
     xbmcplugin.addDirectoryItem(handle = g_addon_handle, url = url_str, listitem = listitem, isFolder = True)
 
 def m_gui_render_Utilities_root():
@@ -7385,7 +7386,7 @@ def m_gui_render_Utilities_root():
     if xbmc.getCondVisibility("!Skin.HasSetting(KioskMode.Enabled)"):
         listitem.addContextMenuItems(commands, replaceItems = True)
 
-    url_str = m_misc_url('SHOW_UTILITIES_VLAUNCHERS')
+    url_str = router.create_url('SHOW_UTILITIES_VLAUNCHERS')
     xbmcplugin.addDirectoryItem(handle = g_addon_handle, url = url_str, listitem = listitem, isFolder = True)
 
 def m_gui_render_GlobalReports_root():
@@ -7407,7 +7408,7 @@ def m_gui_render_GlobalReports_root():
     if xbmc.getCondVisibility("!Skin.HasSetting(KioskMode.Enabled)"):
         listitem.addContextMenuItems(commands, replaceItems = True)
 
-    url_str = m_misc_url('SHOW_GLOBALREPORTS_VLAUNCHERS')
+    url_str = router.create_url('SHOW_GLOBALREPORTS_VLAUNCHERS')
     xbmcplugin.addDirectoryItem(handle = g_addon_handle, url = url_str, listitem = listitem, isFolder = True)
 
 def m_gui_render_launcher_row(launcher, launcher_raw_name = None):
@@ -7523,10 +7524,10 @@ def m_gui_render_launcher_row(launcher, launcher_raw_name = None):
 
     # --- Add Launcher row to ListItem ---
     if launcher_dic['rompath']:
-        url_str = m_misc_url('SHOW_ROMS', categoryID, launcherID)
+        url_str = router.create_url('SHOW_ROMS', categoryID=categoryID, launcherID=launcherID)
         folder_flag = True
     else:
-        url_str = m_misc_url('LAUNCH_STANDALONE', categoryID, launcherID)
+        url_str = router.create_url('LAUNCH_STANDALONE', categoryID=categoryID, launcherID=launcherID)
         folder_flag = False
     xbmcplugin.addDirectoryItem(handle = g_addon_handle, url = url_str, listitem = listitem, isFolder = folder_flag)
 
@@ -7763,10 +7764,10 @@ def m_gui_render_rom_row(categoryID, launcher, rom,
     # URLs must be different depending on the content type. If not Kodi log will be filled with:
     # WARNING: CreateLoader - unsupported protocol(plugin) in the log. See http://forum.kodi.tv/showthread.php?tid=187954
     if is_parent_launcher and num_clones > 0 and view_mode == LAUNCHER_DMODE_PCLONE:
-        url_str = m_misc_url('SHOW_CLONE_ROMS', categoryID, launcherID, romID)
+        url_str = router.create_url('SHOW_CLONE_ROMS', categoryID=categoryID, launcherID=launcherID, romID=romID)
         xbmcplugin.addDirectoryItem(handle = g_addon_handle, url = url_str, listitem = listitem, isFolder = True)
     else:
-        url_str = m_misc_url('LAUNCH_ROM', categoryID, launcherID, romID)
+        url_str = router.create_url('LAUNCH_ROM', categoryID=categoryID, launcherID=launcherID, romID=romID)
         xbmcplugin.addDirectoryItem(handle = g_addon_handle, url = url_str, listitem = listitem, isFolder = False)
 
 def m_gui_render_AEL_scraper_rom_row(platform, game):
@@ -7793,7 +7794,7 @@ def m_gui_render_AEL_scraper_rom_row(platform, game):
 
     # --- Add row ---
     # When user clicks on a ROM show the raw database entry
-    url_str = m_misc_url('VIEW_OS_ROM', 'AEL', platform, game['name'])
+    url_str = router.create_url('VIEW_OS_ROM', categoryID='AEL', launcherID=platform, romID=game['name'])
     xbmcplugin.addDirectoryItem(handle = g_addon_handle, url = url_str, listitem = listitem, isFolder = False)
 
 def m_gui_render_LB_scraper_rom_row(platform, game):
@@ -7820,7 +7821,7 @@ def m_gui_render_LB_scraper_rom_row(platform, game):
 
     # --- Add row ---
     # When user clicks on a ROM show the raw database entry
-    url_str = m_misc_url('VIEW_OS_ROM', 'LaunchBox', platform, game['name'])
+    url_str = router.create_url('VIEW_OS_ROM', 'LaunchBox', categoryID=platform, launcherID=game['name'])
     xbmcplugin.addDirectoryItem(handle = g_addon_handle, url = url_str, listitem = listitem, isFolder = False)
 
 #
@@ -8846,35 +8847,6 @@ def m_aux_check_for_file(str_list, dic_key_name, launcher):
     if path and not path_FN.exists():
         problems_found = True
         str_list.append('{0} "{1}" not found\n'.format(dic_key_name, path_FN.getPath()))
-
-#
-# A set of functions to help making plugin URLs
-# NOTE probably this can be implemented in a more elegant way with optinal arguments...
-#
-def m_misc_url_RunPlugin(command, categoryID = None, launcherID = None, romID = None):
-    if romID is not None:
-        return 'XBMC.RunPlugin({0}?com={1}&catID={2}&launID={3}&romID={4})'.format(g_base_url, command, categoryID, launcherID, romID)
-    elif launcherID is not None:
-        return 'XBMC.RunPlugin({0}?com={1}&catID={2}&launID={3})'.format(g_base_url, command, categoryID, launcherID)
-    elif categoryID is not None:
-        return 'XBMC.RunPlugin({0}?com={1}&catID={2})'.format(g_base_url, command, categoryID)
-
-    return 'XBMC.RunPlugin({0}?com={1})'.format(g_base_url, command)
-
-def m_misc_url(command, categoryID = None, launcherID = None, romID = None):
-    if romID is not None:
-        return '{0}?com={1}&catID={2}&launID={3}&romID={4}'.format(g_base_url, command, categoryID, launcherID, romID)
-    elif launcherID is not None:
-        return '{0}?com={1}&catID={2}&launID={3}'.format(g_base_url, command, categoryID, launcherID)
-    elif categoryID is not None:
-        return '{0}?com={1}&catID={2}'.format(g_base_url, command, categoryID)
-
-    return '{0}?com={1}'.format(g_base_url, command)
-
-def m_misc_url_search(command, categoryID, launcherID, search_type, search_string):
-    return '{0}?com={1}&catID={2}&launID={3}&search_type={4}&search_string={5}'.format(
-            g_base_url, command, categoryID, launcherID, search_type, search_string
-        )
 
 # https://kodi.wiki/view/Add-on_settings_conversion
 # Leia has issue with lvalues giving back string instead of id
