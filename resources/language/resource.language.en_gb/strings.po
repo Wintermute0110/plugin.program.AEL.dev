@@ -39,6 +39,9 @@ msgstr "settings.xml"
 ############################
 # Scraping settings
 ############################
+msgctxt "#20000"
+msgid "Skip"
+msgstr "settings.xml"
 
 msgctxt "#20010"
 msgid "None"

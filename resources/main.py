@@ -4049,67 +4049,118 @@ def m_subcommand_launcher_browse_import_nfo_file(category, launcher):
 
 @router.action('SCRAPE_ROMS')
 def m_roms_scrape_roms(category, launcher):
-    log_debug('SCRAPE_ROMS: m_roms_scrape_roms() SHOW MENU')
-
-    options = {
-        'SCRAPE_ROMS_LOCAL_ONLY': 'Scrape ROMs local files only',
-        'SCRAPE_ROMS_ONLINE': 'Scrape ROMs with configured scrapers'
-    }
+    scraper_settings = ScraperSettings.from_settings(g_settings, launcher)
+    router.run_command('SCRAPE_ROMS_MENU', category=category,launcher=launcher,scraper_settings=scraper_settings)
+    
+@router.action('SCRAPE_ROMS_MENU')
+def m_roms_scrape_roms_menu(category, launcher, scraper_settings):
+    log_debug('SCRAPE_ROMS_MENU: m_roms_scrape_roms_menu() SHOW MENU')
+    options = scraper_settings.build_menu()
+    options['SCRAPE_ROMS_WITH_SETTINGS'] = 'Scrape'
+    
     s = 'Scrape Launcher "{0}" ROMs'.format(launcher.get_name())
-    selected_option = KodiOrdDictionaryDialog().select(s, options)
+    selected_option = KodiOrdDictionaryDialog().select(s, options, preselect='SCRAPE_ROMS_WITH_SETTINGS')
     if selected_option is None:
         # >> Exits context menu
-        log_debug('SCRAPE_ROMS: m_roms_scrape_roms() Selected None. Closing context menu')
+        log_debug('SCRAPE_ROMS: m_roms_scrape_roms_menu() Selected None. Closing context menu')
         return
     
     # >> Execute subcommand
-    log_debug('SCRAPE_ROMS: m_roms_scrape_roms() Selected {0}'.format(selected_option))
-    router.run_command(selected_option, category=category, launcher=launcher)
+    log_debug('SCRAPE_ROMS: m_roms_scrape_roms_menu() Selected {0}'.format(selected_option))
+    router.run_command(selected_option, category=category, launcher=launcher, scraper_settings=scraper_settings)
     # close this menu when finished
-    return
-  
+    m_roms_scrape_roms_menu(category, launcher, scraper_settings)
+
+@router.action('SC_METADATA_POLICY')
+def m_scraper_settings_metadata_policy(category, launcher, scraper_settings):    
+    options = collections.OrderedDict()
+    options[SCRAPE_ACTION_NONE]           = text_translate(SCRAPE_ACTION_NONE)
+    options[SCRAPE_POLICY_TITLE_ONLY]     = text_translate(SCRAPE_POLICY_TITLE_ONLY)
+    options[SCRAPE_POLICY_NFO_PREFERED]   = text_translate(SCRAPE_POLICY_NFO_PREFERED)
+    options[SCRAPE_POLICY_NFO_AND_SCRAPE] = text_translate(SCRAPE_POLICY_NFO_AND_SCRAPE)
+    options[SCRAPE_POLICY_SCRAPE_ONLY]    = text_translate(SCRAPE_POLICY_SCRAPE_ONLY)
+    
+    s = 'Metadata scan policy "{}"'.format(text_translate(scraper_settings.scrape_metadata_policy))
+    selected_option = KodiOrdDictionaryDialog().select(s, options, preselect=scraper_settings.scrape_metadata_policy)
+    
+    if selected_option is None:
+        return
+    
+    scraper_settings.scrape_metadata_policy = selected_option
+    
+@router.action('SC_ASSET_POLICY')
+def m_scraper_settings_asset_policy(category, launcher, scraper_settings):    
+    options = collections.OrderedDict()
+    options[SCRAPE_ACTION_NONE]             = text_translate(SCRAPE_ACTION_NONE)
+    options[SCRAPE_POLICY_LOCAL_ONLY]       = text_translate(SCRAPE_POLICY_LOCAL_ONLY)
+    options[SCRAPE_POLICY_LOCAL_AND_SCRAPE] = text_translate(SCRAPE_POLICY_LOCAL_AND_SCRAPE)
+    options[SCRAPE_POLICY_SCRAPE_ONLY]      = text_translate(SCRAPE_POLICY_SCRAPE_ONLY)
+    
+    s = 'Asset scan policy "{}"'.format(text_translate(scraper_settings.scrape_assets_policy))
+    selected_option = KodiOrdDictionaryDialog().select(s, options, preselect=scraper_settings.scrape_assets_policy)
+    
+    if selected_option is None:
+        return
+    
+    scraper_settings.scrape_assets_policy = selected_option
+
+@router.action('SC_GAME_SELECTION_MODE')
+def m_scraper_settings_game_selection_mode(category, launcher, scraper_settings):    
+    options = collections.OrderedDict()
+    options[SCRAPE_MANUAL]    = text_translate(SCRAPE_MANUAL)
+    options[SCRAPE_AUTOMATIC] = text_translate(SCRAPE_AUTOMATIC)
+    s = 'Game selection mode "{}"'.format(text_translate(scraper_settings.game_selection_mode))
+    selected_option = KodiOrdDictionaryDialog().select(s, options, preselect=scraper_settings.game_selection_mode)
+    
+    if selected_option is None:
+        return
+    
+    scraper_settings.game_selection_mode = selected_option
+
+@router.action('SC_ASSET_SELECTION_MODE')
+def m_scraper_settings_asset_selection_mode(category, launcher, scraper_settings):    
+    options = collections.OrderedDict()
+    options[SCRAPE_MANUAL]    = text_translate(SCRAPE_MANUAL)
+    options[SCRAPE_AUTOMATIC] = text_translate(SCRAPE_AUTOMATIC)
+    s = 'Game selection mode "{}"'.format(text_translate(scraper_settings.asset_selection_mode))
+    selected_option = KodiOrdDictionaryDialog().select(s, options, preselect=scraper_settings.asset_selection_mode)
+    
+    if selected_option is None:
+        return
+    
+    scraper_settings.asset_selection_mode = selected_option
+
+@router.action('SC_METADATA_SCRAPER')
+def m_scraper_settings_metadata_scraper(category, launcher, scraper_settings):    
+    options = g_ScraperFactory.get_metadata_scraper_menu_list()
+    s = 'Metadata scraper "{}"'.format(text_translate(scraper_settings.metadata_scraper_ID))
+    selected_option = KodiOrdDictionaryDialog().select(s, options, preselect=scraper_settings.metadata_scraper_ID)
+    
+    if selected_option is None:
+        return
+    
+    scraper_settings.metadata_scraper_ID = selected_option
+
+@router.action('SC_ASSET_SCRAPER')
+def m_scraper_settings_metadata_scraper(category, launcher, scraper_settings):    
+    options = g_ScraperFactory.get_asset_scraper_menu_list()
+    s = 'Asset scraper "{}"'.format(text_translate(scraper_settings.assets_scraper_ID))
+    selected_option = KodiOrdDictionaryDialog().select(s, options, preselect=scraper_settings.assets_scraper_ID)
+    
+    if selected_option is None:
+        return
+    
+    scraper_settings.assets_scraper_ID = selected_option
+
 #
-# ROM scraper with a local files only scrapers
-@router.action('SCRAPE_ROMS_LOCAL_ONLY')
-def m_roms_scrape_roms_local(category, launcher):
-    log_debug('========== m_roms_scrape_roms_local() BEGIN ==================================================')
-    
-    scraper_settings = ScraperSettings()
-    scraper_settings.scrape_metadata_policy = SCRAPE_POLICY_NFO_PREFERED
-    scraper_settings.scrape_assets_policy   = SCRAPE_POLICY_LOCAL_ONLY
-    
-    pdialog             = KodiProgressDialog()    
-    scraper_strategy    = g_ScraperFactory.create_scraper(launcher, pdialog, scraper_settings)
-    rom_scanner         = g_ROMScannerFactory.create(launcher, scraper_strategy, pdialog, scrape_only=True)
-
-    roms = rom_scanner.scan()
-    pdialog.endProgress()
-    pdialog.startProgress('Saving ROM JSON database ...')
-
-    # ~~~ Save ROMs XML file ~~~
-    # >> Also save categories/launchers to update timestamp.
-    # >> Update launcher timestamp to update VLaunchers and reports.
-    log_debug('Saving {0} ROMS'.format(len(roms)))
-    launcher.update_ROM_set(roms)
-    pdialog.updateProgress(80)
-    
-    launcher.set_number_of_roms()
-    launcher.save_to_disk()
-
-    pdialog.updateProgress(100)
-    pdialog.close()
-    log_debug('========== m_roms_scrape_roms_local() END ==================================================')
-      
-#
-# ROM scraper with configured scrapers
-@router.action('SCRAPE_ROMS_ONLINE')
-def m_roms_scrape_roms_as_configured(category, launcher):
-    log_debug('========== m_roms_scrape_roms_as_configured() BEGIN ==================================================')
+# ROM scraper with configured settings
+@router.action('SCRAPE_ROMS_WITH_SETTINGS')
+def m_roms_scrape_roms_with_settings(category, launcher, scraper_settings):
+    log_debug('========== m_roms_scrape_roms_with_settings() BEGIN ==================================================')
     pdialog             = KodiProgressDialog()
-    scraper_strategy    = g_ScraperFactory.create_scraper(launcher, pdialog)
-    rom_scanner         = g_ROMScannerFactory.create(launcher, scraper_strategy, pdialog, scrape_only=True)
+    scraper_strategy    = g_ScraperFactory.create_scraper(launcher, pdialog, scraper_settings)
 
-    roms = rom_scanner.scan()
+    roms = scraper_strategy.scanner_process_launcher(launcher)
     pdialog.endProgress()
     pdialog.startProgress('Saving ROM JSON database ...')
 
@@ -4125,6 +4176,7 @@ def m_roms_scrape_roms_as_configured(category, launcher):
 
     pdialog.updateProgress(100)
     pdialog.close()
+    kodi_notify('Done scraping launcher ROMS')
     log_debug('========== m_roms_scrape_roms_as_configured() END ==================================================')
 
 # --- Import ROM metadata from NFO files ---
@@ -5093,20 +5145,6 @@ def m_subcommand_change_rom_status(launcher, rom):
     launcher.save_ROM(rom)
     kodi_dialog_OK('ROM "{0}" status is now {1}'.format(rom.get_name(), rom.get_state()))
  
-# --- Scrape launcher metadata ---
-def m_subcommand_scrape_launcher(launcher, selected_option):
-    scraper_obj_name = selected_option.replace('SCRAPE_', '')
-    scraper_obj = filter(lambda x: x.name == scraper_obj_name, scrapers_metadata)[0]
-    log_debug('_subcommand_scrape_launcher() User chose scraper "{0}"'.format(scraper_obj.name))
-    
-    # --- Initialise asset scraper ---
-    scraper_obj.set_addon_dir(CURRENT_ADDON_DIR.getPath())
-    log_debug('_subcommand_scrape_launcher() Initialised scraper "{0}"'.format(scraper_obj.name))
-    
-    # >> If this returns False there were no changes so no need to save categories.xml
-    if self._gui_scrap_launcher_metadata(launcher.get_id(), scraper_obj): 
-        g_ObjectRepository.save_launcher(launcher)
-
 # --- Scrape ROM metadata ---
 @router.action('SCRAPE_ROM_METADATA')
 def m_subcommand_scrape_rom_metadata(launcher, rom):
@@ -5146,7 +5184,7 @@ def m_subcommand_scrape_rom_metadata(launcher, rom):
     
     launcher.save_ROM(rom)
     pdialog.endProgress()
-    kodi_notify('ROM metadata scraped')
+    kodi_notify('Done scraping ROM metadata')
 
 # --- Edit ROM Assets/Artwork ---
 @router.action('EDIT_ASSETS')
@@ -7472,7 +7510,6 @@ def m_gui_render_launcher_row(launcher, launcher_raw_name = None):
     commands.append(('Edit/Export Launcher', router.create_run_plugin_cmd('EDIT_LAUNCHER', categoryID=categoryID, launcherID=launcherID) ))
     # >> ONLY for ROM launchers
     if launcher.supports_launching_roms():
-        #commands.append(('Scan ROMs', router.create_run_plugin_cmd('SCAN_ROMS', categoryID, launcherID) ))
         commands.append(('Scan ROMs', router.create_run_plugin_cmd('ADD_ROMS', categoryID=categoryID, launcherID=launcherID) ))
         commands.append(('Search ROMs in Launcher', router.create_run_plugin_cmd('SEARCH_LAUNCHER', categoryID=categoryID, launcherID=launcherID) ))
     commands.append(('Add new Launcher', router.create_run_plugin_cmd('ADD_LAUNCHER', categoryID=categoryID) ))
@@ -8774,25 +8811,26 @@ def m_gui_import_TXT_file(text_file):
 #
 def m_misc_fix_rom_object(rom):
     rom_data = rom.get_data_dic()
-    # --- Add new fields if not present ---
+    # Add new fields if not present
     if 'm_nplayers'    not in rom_data: rom_data['m_nplayers']    = ''
     if 'm_esrb'        not in rom_data: rom_data['m_esrb']        = ESRB_PENDING
     if 'disks'         not in rom_data: rom_data['disks']         = []
     if 'pclone_status' not in rom_data: rom_data['pclone_status'] = PCLONE_STATUS_NONE
     if 'cloneof'       not in rom_data: rom_data['cloneof']       = ''
-    # --- Delete unwanted/obsolete stuff ---
+    if 'i_extra_ROM'   not in rom: rom['i_extra_ROM']             = False
+    # Delete unwanted/obsolete stuff
     if 'nointro_isClone' in rom_data: rom_data.pop('nointro_isClone')
-    # --- DB field renamings ---
+    # DB field renamings
     if 'm_studio' in rom_data:
         rom_data['m_developer'] = rom_data['m_studio']
         rom_data.pop('m_studio')
 
 def m_misc_fix_Favourite_rom_object(rom):
-    # --- Fix standard ROM fields ---
+    # Fix standard ROM fields
     self._misc_fix_rom_object(rom)
     rom_data = rom.get_data_dic()
 
-    # --- Favourite ROMs additional stuff ---
+    # Favourite ROMs additional stuff
     if 'args_extra' not in rom_data: rom_data['args_extra'] = []
     if 'non_blocking' not in rom_data: rom_data['non_blocking'] = False
     if 'roms_default_thumb' in rom_data:
@@ -8842,34 +8880,18 @@ def m_misc_url_search(command, categoryID, launcherID, search_type, search_strin
 # Leia has issue with lvalues giving back string instead of id
 # Fixed in Matrix, but this method will fix it for Leia
 translation_fix = {}
+translation_codes = [10020, 10030, 10040, 10050, 10060, 10070, 10080, 10090,
+                     20010, 20020, 20030, 20040, 20050, 20060, 20510, 20520]
 def m_misc_translate_setting(setting_key):
     
     if kodi_running_version > KODI_VERSION_LEIA:
         return int(__addon__.getSetting(setting_key))
                 
     if len(translation_fix) == 0:
-        translation_fix["AEL Offline"] = 10020 
-        translation_fix["TheGamesDB"] = 10030 
-        translation_fix["MobyGames"] = 10040 
-        translation_fix["ScreenScraper"] = 10050 
-        translation_fix["GameFaq"] = 10060 
-        translation_fix["ArcadeDB"] = 10070
-        translation_fix["Libretro"] = 10080
-        translation_fix["SteamGridDB"] = 10090 
-        
-        translation_fix["None"] = 20010 
-        translation_fix["NFO files"] = 20020 
-        translation_fix["Local images"] = 20030 
-        translation_fix["NFO files + Scrapers"] = 20040 
-        translation_fix["Local images + Scrapers"] = 20050 
-        translation_fix["Scrapers"] = 20060 
-        
-        translation_fix["Manual"] = 20510 
-        translation_fix["Automatic"] = 20520 
+        for code in translation_codes:
+            translation_fix[text_translate(code)] = code
     
-    setting_translated = __addon__.getSetting(setting_key)
-    log_info('SETTING {} has {}'.format(setting_key, setting_translated))
-        
+    setting_translated = __addon__.getSetting(setting_key)        
     return translation_fix[setting_translated] if setting_translated in translation_fix else int(setting_translated)
 
 # Executes the migrations which are newer than the last migration version that has run.
