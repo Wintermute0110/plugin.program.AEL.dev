@@ -6011,9 +6011,10 @@ class RomDatFileScanner(object):
 # #################################################################################################
 class GameStreamServer(object):
     
-    def __init__(self, host, certificates_path):
+    def __init__(self, host, certificates_path, debug_mode = False):
         self.host = host
         self.unique_id = random.getrandbits(16)
+        self.debug_mode = debug_mode
 
         if certificates_path:
             self.certificates_path = certificates_path
@@ -6046,9 +6047,11 @@ class GameStreamServer(object):
     
         if page_data is None:
             return None
-
+        
         root = ET.fromstring(page_data)
-        #log_debug(ET.tostring(root,encoding='utf8',method='xml'))
+        if self.debug_mode:
+            log_debug(ET.tostring(root,encoding='utf8',method='xml'))
+       
         return root
 
     def connect(self):
