@@ -4273,7 +4273,7 @@ def m_subcommand_launcher_advanced_mods(category, launcher):
     log_debug('LAUNCHER_ADVANCED_MODS: m_subcommand_launcher_advanced_mods() SHOW MENU')
 
     options = launcher.get_advanced_modification_options()
-    s = 'Launcher "{0}" advanced modifications'.format(launcher.get_name())
+    s = 'Launcher "{}" advanced modifications'.format(launcher.get_name())
     selected_option = KodiOrdDictionaryDialog().select(s, options)
     if selected_option is None:
         # >> Exits context menu
@@ -4898,13 +4898,13 @@ def m_subcommand_change_launcher_rompath(category, launcher):
         return
         
     current_path = launcher.get_rom_path()
-    rom_path = xbmcgui.Dialog().browse(0, 'Select Files path', 'files', '', False, False, current_path.getOriginalPath()).decode('utf-8')
+    rom_path = xbmcgui.Dialog().browse(0, 'Select Files path', 'files', '', False, False, current_path.getPath()).decode('utf-8')
         
-    if not rom_path or rom_path == current_path.getOriginalPath():
+    if not rom_path or rom_path == current_path.getPath():
         return
 
     launcher.change_rom_path(rom_path)
-    g_ObjectRepository.save_launcher(launcher)
+    launcher.save_to_disk()
 
     kodi_notify('Changed ROM path')
     return
@@ -4923,8 +4923,7 @@ def m_subcommand_change_launcher_rom_extensions(category, launcher):
         return
 
     launcher.change_rom_extensions(keyboard.getText().decode('utf-8'))
-
-    g_ObjectRepository.save_launcher(launcher)
+    launcher.save_to_disk()
     kodi_notify('Changed ROM extensions')
 
 # --- Minimise Kodi window flag. Command: EDIT_TOGGLE_WINDOWED ---
@@ -4939,7 +4938,7 @@ def m_subcommand_toggle_windowed(category, launcher):
     is_windowed = launcher.set_windowed_mode(type3 > 0)
     minimise_str = 'ON' if is_windowed else 'OFF'
         
-    g_ObjectRepository.save_launcher(launcher)
+    launcher.save_to_disk()
     kodi_notify('Toggle Kodi into windowed mode {0}'.format(minimise_str))
 
 # --- Non-blocking launcher flag. Command: EDIT_TOGGLE_NONBLOCKING ---_
@@ -4954,7 +4953,7 @@ def m_subcommand_toggle_nonblocking(category, launcher):
     is_non_blocking = launcher.set_non_blocking(type3 > 0)
     non_blocking_str = 'ON' if is_non_blocking else 'OFF'
 
-    g_ObjectRepository.save_launcher(launcher)
+    launcher.save_to_disk()
     kodi_notify('Launcher Non-blocking is now {0}'.format(non_blocking_str))
 
 # --- Multidisc ROM support (Only ROM launchers) Command: EDIT_TOGGLE_MULTIDISC ---
@@ -4972,10 +4971,28 @@ def m_subcommand_toggle_multidisc(category, launcher):
     supports_multidisc = launcher.set_multidisc_support(type3 > 0)
     multidisc_str = 'ON' if supports_multidisc else 'OFF'
         
-    g_ObjectRepository.save_launcher(launcher)
+    launcher.save_to_disk()
     kodi_notify('Launcher Multidisc support is now {0}'.format(multidisc_str))
 
     return
+
+# -------------------------------------------------------------------------------------------------
+# Launcher specific advanced commands
+# -------------------------------------------------------------------------------------------------
+@router.action('CHANGE_RETROARCH_CORE')
+def m_subcommand_change_retroarch_core(category, launcher):
+    options = launcher.get_available_cores()
+    
+    dialog = KodiOrdDictionaryDialog()
+    selected_option = dialog.select('Select Retroach Core', options)
+     
+    if selected_option is None:
+        log_debug('m_subcommand_change_retroarch_core(): Selected option = NONE')
+        return
+            
+    log_debug('m_subcommand_change_retroarch_core(): Selected option = {0}'.format(selected_option))
+    launcher.change_core(selected_option)
+    launcher.save_to_disk()
 
 # -------------------------------------------------------------------------------------------------
 # ROM item context menu atomic comands.
@@ -8638,153 +8655,6 @@ def m_audit_no_intro_roms(launcher, roms):
         # >> ERROR when auditing the ROMs. Unset nointro_xml_file
         launcher.reset_nointro_xmldata()
         kodi_notify_warn('Error auditing ROMs. XML DAT file unset.')
-
-# ---------------------------------------------------------------------------------------------
-# Metadata scrapers
-# ---------------------------------------------------------------------------------------------
-#
-# Called when editing a ROM by _command_edit_rom()
-# Always do semi-automatic scraping when editing ROMs/Launchers.
-# launcherID = '0' if scraping ROM in Favourites
-# roms are editing using Python arguments passed by assignment. Caller is responsible of
-# saving the ROMs XML file.
-#
-# Returns:
-#   True   Changes were made.
-#   False  Changes not made. No need to save ROMs XML/Update container
-#
-def m_gui_scrap_rom_metadata(launcher, rom, scraper_obj):
-    # --- Grab ROM info and metadata scraper settings ---
-    # >> ROM in favourites
-    if launcher.get_id() == VLAUNCHER_FAVOURITES_ID or launcher.get_launcher_type() == LAUNCHER_COLLECTION:
-        platform = rom.get_custom_attribute('platform')
-    else:
-        platform = launcher.get_platform()
-
-    ROM      = rom.get_file()
-    rom_name = rom.get_name()
-    scan_clean_tags            = g_settings['scan_clean_tags']
-    scan_ignore_scrapped_title = g_settings['scan_ignore_scrap_title']
-    log_info('_gui_scrap_rom_metadata() ROM "{0}"'.format(rom_name))
-
-    # --- Ask user to enter ROM metadata search string ---
-    keyboard = xbmc.Keyboard(rom_name, 'Enter the ROM search string ...')
-    keyboard.doModal()
-    if not keyboard.isConfirmed(): return False
-    search_string = keyboard.getText().decode('utf-8')
-
-    # --- Do a search and get a list of games ---
-    # >> Prevent race conditions
-    #kodi_busydialog_ON()
-    results = scraper_obj.get_search(search_string, ROM.getBase_noext(), platform)
-    #kodi_busydialog_OFF()
-    log_verb('_gui_scrap_rom_metadata() Metadata scraper found {0} result/s'.format(len(results)))
-    if not results:
-        kodi_notify('Scraper found no game matches')
-        return False
-
-    # --- Display corresponding game list found so user choses ---
-    rom_name_list = []
-    for game in results: rom_name_list.append(game['display_name'])
-    # >> If there is only one item in the list then don't show select dialog
-    if len(rom_name_list) == 1:
-        selectgame = 0
-    else:
-        selectgame = xbmcgui.Dialog().select('Select game for ROM {0}'.format(rom_name), rom_name_list)
-        if selectgame < 0: return False
-    log_verb('_gui_scrap_rom_metadata() User chose game "{0}"'.format(rom_name_list[selectgame]))
-
-    # --- Grab metadata for selected game ---
-    # >> Prevent race conditions
-    #kodi_busydialog_ON()
-    gamedata = scraper_obj.get_metadata(results[selectgame])
-    #kodi_busydialog_OFF()
-    if not gamedata:
-        kodi_notify_warn('Cannot download game metadata.')
-        return False
-
-    # --- Put metadata into ROM dictionary ---
-    # >> Ignore scraped title
-    scraped_title = ''
-    if scan_ignore_scrapped_title:
-        scraped_title = text_format_ROM_title(ROM.getBase_noext(), scan_clean_tags)
-        log_debug('User wants to ignore scraper name. Setting name to "{0}"'.format(scraped_title))
-    # >> Use scraped title
-    else:
-        scraped_title = gamedata['title']
-        log_debug('User wants scrapped name. Setting name to "{0}"'.format(scraped_title))
-
-    rom.set_name(scraped_title)
-    rom.set_releaseyear(gamedata['year'])
-    rom.set_genre(gamedata['genre'])
-    rom.set_developer(gamedata['developer'])
-    rom.set_number_of_players(gamedata['nplayers'])
-    rom.set_esrb_rating(gamedata['esrb'])
-    rom.set_plot(gamedata['plot'])
-
-    # >> Changes were made, return True
-    kodi_notify('ROM metadata updated')
-
-    return True
-
-#
-# Called when editing a launcher by _command_edit_launcher()
-# Note that launcher maybe a ROM launcher or a standalone launcher (game, app)
-# Scrap standalone launcher (typically a game) metadata
-# Called when editing a launcher...
-# Always do semi-automatic scraping when editing ROMs/Launchers
-#
-# Returns:
-#   True   Changes were made.
-#   False  Changes not made. No need to save ROMs XML/Update container
-#
-def m_gui_scrap_launcher_metadata(launcherID, scraper_obj):
-    launcher = g_ObjectFactory.find_launcher(launcherID)
-    launcher_name = launcher.get_name()
-    platform = launcher.get_platform()
-
-    # Edition of the launcher name
-    keyboard = xbmc.Keyboard(launcher_name, 'Enter the launcher search string ...')
-    keyboard.doModal()
-    if not keyboard.isConfirmed(): return False
-    search_string = keyboard.getText().decode('utf-8')
-
-    # Scrap and get a list of matches
-    #kodi_busydialog_ON()
-    results = scraper_obj.get_search(search_string, '', platform)
-    #kodi_busydialog_OFF()
-    log_debug('_gui_scrap_launcher_metadata() Metadata scraper found {0} result/s'.format(len(results)))
-    if not results:
-        kodi_notify('Scraper found no matches')
-        return False
-
-    # --- Display corresponding game list found so user choses ---
-    rom_name_list = []
-    for game in results: rom_name_list.append(game['display_name'])
-    if len(rom_name_list) == 1:
-        selectgame = 0
-    else:
-        selectgame = xbmcgui.Dialog().select('Select item for Launcher {0}'.format(launcher_name), rom_name_list)
-        if selectgame < 0: return False
-
-    # --- Grab metadata for selected game ---
-    #kodi_busydialog_ON()
-    gamedata = scraper_obj.get_metadata(results[selectgame])
-    #kodi_busydialog_OFF()
-    if not gamedata:
-        kodi_notify_warn('Cannot download game metadata.')
-        return False
-
-    # --- Put metadata into launcher dictionary ---
-    # >> Scraper should not change launcher title
-    # >> 'nplayers' and 'esrb' ignored for launchers
-    launcher.set_release_year(gamedata['year'])
-    launcher.set_genre(gamedata['genre'])
-    launcher.set_developer(gamedata['developer'])
-    launcher.set_plot(gamedata['plot'])
-
-    # >> Changes were made
-    return True
 
 #
 # Reads a text file with category/launcher plot. 

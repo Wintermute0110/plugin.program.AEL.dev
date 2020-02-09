@@ -3868,18 +3868,36 @@ class RetroarchLauncher(StandardRomLauncher):
         non_blocking_str  = 'ON' if self.entity_data['non_blocking'] else 'OFF'
         multidisc_str     = 'ON' if self.entity_data['multidisc'] else 'OFF'
 
-        options = super(RetroarchLauncher, self).get_advanced_modification_options()
+        options = collections.OrderedDict()
         options['CHANGE_APPLICATION']   = "Change Retroarch path: '{0}'".format(self.entity_data['application'])
-        options['MODIFY_ARGS'] = "Modify Arguments: '{0}'".format(self.entity_data['args'])
-        options['ADDITIONAL_ARGS'] = "Modify aditional arguments ..."
-        options['CHANGE_ROMPATH'] = "Change ROM path: '{0}'".format(self.entity_data['rompath'])
-        options['CHANGE_ROMEXT'] = "Modify ROM extensions: '{0}'".format(self.entity_data['romext'])
-        options['TOGGLE_WINDOWED'] = "Toggle Kodi into windowed mode (now {0})".format(toggle_window_str)
-        options['TOGGLE_NONBLOCKING'] = "Non-blocking launcher (now {0})".format(non_blocking_str)
-        options['TOGGLE_MULTIDISC'] = "Multidisc ROM support (now {0})".format(multidisc_str)
+        options['CHANGE_RETROARCH_CORE']= "Change core: '{0}'".format(self.entity_data['retro_core'])
+        options['EDIT_ARGS']            = "Modify Arguments: '{0}'".format(self.entity_data['args'])
+        options['EDIT_ADDITIONAL_ARGS'] = "Modify aditional arguments ..."
+        options['EDIT_ROMPATH']         = "Change ROM path: '{0}'".format(self.entity_data['rompath'])
+        options['EDIT_ROMEXT']          = "Modify ROM extensions: '{0}'".format(self.entity_data['romext'])
+        options['TOGGLE_WINDOWED']      = "Toggle Kodi into windowed mode (now {0})".format(toggle_window_str)
+        options['TOGGLE_NONBLOCKING']   = "Non-blocking launcher (now {0})".format(non_blocking_str)
+        options['TOGGLE_MULTIDISC']     = "Multidisc ROM support (now {0})".format(multidisc_str)
 
         return options
 
+    def get_available_cores(self):
+        return self._builder_get_available_retroarch_cores('retro_core_info', self.get_data_dic())
+    
+    def change_application(self):
+        current_application = self.entity_data['application']
+        selected_application = xbmcgui.Dialog().browse(0, 'Select the Retroarch path', 'files',
+                                                       '', False, False, current_application).decode('utf-8')
+
+        if selected_application is None or selected_application == current_application:
+            return False
+        self.entity_data['application'] = selected_application
+
+        return True
+
+    def change_core(self, selected_core):
+        self.entity_data['retro_core'] = selected_core
+    
     # ---------------------------------------------------------------------------------------------
     # Execution methods
     # ---------------------------------------------------------------------------------------------
@@ -3917,24 +3935,10 @@ class RetroarchLauncher(StandardRomLauncher):
 
         # TODO: other OSes
         return False
-
-    # Probably just use parent implementation
-    #def _launch_selectRomFileToUse(self): raise AddonError('Implement me!')
-
+    
     # ---------------------------------------------------------------------------------------------
     # Misc methods
-    # ---------------------------------------------------------------------------------------------
-    def change_application(self):
-        current_application = self.entity_data['application']
-        selected_application = xbmcgui.Dialog().browse(0, 'Select the Retroarch path', 'files',
-                                                       '', False, False, current_application).decode('utf-8')
-
-        if selected_application is None or selected_application == current_application:
-            return False
-        self.entity_data['application'] = selected_application
-
-        return True
-
+    # ---------------------------------------------------------------------------------------------    
     def _create_path_from_retroarch_setting(self, path_from_setting, parent_dir):
         if path_from_setting.startswith(':\\'):
             path_from_setting = path_from_setting[2:]
