@@ -3803,7 +3803,7 @@ class RetroarchLauncher(StandardRomLauncher):
             cores_sorted[core_item[0]] = core_item[1]
         return cores_sorted
 
-    def _builder_load_selected_core_info(self, input, item_key, launcher):
+    def _builder_load_selected_core_info(self, input, item_key, launcher, ask_overwrite=False):
         if input == 'BROWSE':
             return input
 
@@ -3828,6 +3828,10 @@ class RetroarchLauncher(StandardRomLauncher):
 
         launcher[item_key]      = info_file.getPath()
         launcher['retro_core']  = core_file.getPath()
+        
+        if ask_overwrite and not kodi_dialog_yesno('Do you also want to overwrite previous settings for platform, developer etc.'):
+            return input
+        
         launcher['romext']      = core_info['supported_extensions']
         launcher['platform']    = core_info['systemname']
         launcher['m_developer'] = core_info['manufacturer']
@@ -3895,8 +3899,8 @@ class RetroarchLauncher(StandardRomLauncher):
 
         return True
 
-    def change_core(self, selected_core):
-        self.entity_data['retro_core'] = selected_core
+    def change_core(self, selected_core_file):
+        self._builder_load_selected_core_info(selected_core_file, 'retro_core_info', self.entity_data, True)
     
     # ---------------------------------------------------------------------------------------------
     # Execution methods
