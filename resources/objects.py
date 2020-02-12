@@ -4085,6 +4085,9 @@ class SteamLauncher(ROMLauncherABC):
 
     def get_launcher_type_name(self): return 'Steam launcher'
 
+    # --------------------------------------------------------------------------------------------
+    # Launcher specific functions
+    # --------------------------------------------------------------------------------------------
     def get_steam_id(self): return self.entity_data['steamid']
 
     def get_edit_options(self):
@@ -4198,9 +4201,14 @@ class NvidiaGameStreamLauncher(ROMLauncherABC):
     # Launcher specific functions
     # --------------------------------------------------------------------------------------------
     def get_server(self): return self.entity_data['server']
+    
+    def set_server(self, value): self.entity_data['server'] = value
 
     def get_certificates_path(self): return self._get_value_as_filename('certificates_path')
 
+    def get_server_id(self): return self.entity_data['server_id'] if 'server_id' in self.entity_data else 0
+    
+    def set_server_id(self, value): self.entity_data['server_id'] = value
     # --------------------------------------------------------------------------------------------
     # Launcher build wizard methods
     # --------------------------------------------------------------------------------------------
@@ -4296,10 +4304,11 @@ class NvidiaGameStreamLauncher(ROMLauncherABC):
         if not gs.connect():
             kodi_notify_warn('Could not connect to gamestream server')
 
-        launcher['server_id'] = gs.get_uniqueid()
+        launcher['server_id'] = 4 # not yet known what the origin is
+        launcher['server_uuid'] = gs.get_uniqueid()
         launcher['server_hostname'] = gs.get_hostname()
 
-        log_debug('validate_gamestream_server_connection() Found correct gamestream server with id "{}" and hostname "{}"'.format(launcher['server_id'],launcher['server_hostname']))
+        log_debug('validate_gamestream_server_connection() Found correct gamestream server with id "{}" and hostname "{}"'.format(launcher['server_uuid'],launcher['server_hostname']))
 
         return input
     
@@ -4333,6 +4342,9 @@ class NvidiaGameStreamLauncher(ROMLauncherABC):
         options = collections.OrderedDict()
         options['TOGGLE_WINDOWED']    = "Toggle Kodi into windowed mode (now {0})".format(toggle_window_str)
         options['TOGGLE_NONBLOCKING'] = "Non-blocking launcher (now {0})".format(non_blocking_str)
+        
+        options['CHANGE_NVGS_SERVER_ID'] = "Change server ID: '{}'".format(self.get_server_id())
+        options['CHANGE_NVGS_HOST']      = "Change host: '{}'".format(self.entity_data['server'])
         
         return options
 
@@ -4378,7 +4390,7 @@ class NvidiaGameStreamLauncher(ROMLauncherABC):
             if streamClient == 'NVIDIA':
                 self.arguments =  'start --user 0 -a android.intent.action.VIEW '
                 self.arguments += '-n com.nvidia.tegrazone3/com.nvidia.grid.UnifiedLaunchActivity '
-                self.arguments += '-d nvidia://stream/target/2/$streamid$'
+                self.arguments += '-d nvidia://stream/target/$server_id$/$streamid$'
                 return True
 
             elif streamClient == 'MOONLIGHT':
@@ -4389,7 +4401,7 @@ class NvidiaGameStreamLauncher(ROMLauncherABC):
                 self.arguments += '-e AppId $streamid$ '
                 self.arguments += '-e AppName "$gamestream_name$" '
                 self.arguments += '-e PcName "$server_hostname$" '
-                self.arguments += '-e UUID $server_id$ '
+                self.arguments += '-e UUID $server_uuid$ '
                 self.arguments += '-e UniqueId {} '.format(misc_generate_random_SID())
 
                 return True

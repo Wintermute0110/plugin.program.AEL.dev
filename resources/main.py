@@ -194,9 +194,9 @@ def run_plugin(addon_argv):
     # log_debug('__a_profile__  "{0}"'.format(__addon_profile__))
     # log_debug('__a_type__     "{0}"'.format(__addon_type__))
     for i in range(len(sys.argv)): log_debug('sys.argv[{0}] "{1}"'.format(i, sys.argv[i]))
-    # log_debug('ADDON_DATA_DIR OP "{0}"'.format(ADDON_DATA_DIR.getOriginalPath()))
+    # log_debug('ADDON_DATA_DIR OP "{0}"'.format(ADDON_DATA_DIR.getPath()))
     # log_debug('ADDON_DATA_DIR  P "{0}"'.format(ADDON_DATA_DIR.getPath()))
-    # log_debug('g_PATHS.ADDON_CODE_DIR OP "{0}"'.format(g_PATHS.ADDON_CODE_DIR.getOriginalPath()))
+    # log_debug('g_PATHS.ADDON_CODE_DIR OP "{0}"'.format(g_PATHS.ADDON_CODE_DIR.getPath()))
     # log_debug('g_PATHS.ADDON_CODE_DIR  P "{0}"'.format(g_PATHS.ADDON_CODE_DIR.getPath()))
 
     # --- Get DEBUG information for the log --
@@ -250,9 +250,9 @@ def run_plugin(addon_argv):
 
     # WARNING Right now concentrate on stabilising AEL code. Once AEL works well again then
     #         think about the migration from 0.9.7 to 0.10.0.
-    # if current_version > last_migrated_to_version:
-    #     log_info('Execute migrations')
-    #     m_execute_migrations(last_migrated_to_version)
+    #if current_version > last_migrated_to_version:
+    #    log_info('Execute migrations')
+    #    m_execute_migrations(last_migrated_to_version)
 
     # --- Process URL ---
     g_base_url = addon_argv[0]
@@ -1074,14 +1074,14 @@ def m_command_render_Collections():
             log_debug('m_command_render_Collections() test    {0}'.format(extrafanart_file.getPath()))
             if extrafanart_file.exists():
                 log_debug('m_command_render_Collections() Adding extrafanart #{0}'.format(i))
-                extrafanart_dic['extrafanart{0}'.format(i)] = extrafanart_file.getOriginalPath()
+                extrafanart_dic['extrafanart{0}'.format(i)] = extrafanart_file.getPath()
                 continue
             # --- JPG ---
             extrafanart_file = extrafanart_dir + 'fanart{0}.jpg'.format(i)
             log_debug('m_command_render_Collections() test    {0}'.format(extrafanart_file.getPath()))
             if extrafanart_file.exists():
                 log_debug('m_command_render_Collections() Adding extrafanart #{0}'.format(i))
-                extrafanart_dic['extrafanart{0}'.format(i)] = extrafanart_file.getOriginalPath()
+                extrafanart_dic['extrafanart{0}'.format(i)] = extrafanart_file.getPath()
                 continue
             # >> No extrafanart found, exit loop.
             break
@@ -1487,7 +1487,7 @@ def m_command_render_AEL_scraper_roms(categoryID):
     # --- Load offline scraper XML file ---
     loading_ticks_start = time.time()
     xml_path_FN = g_PATHS.ADDON_CODE_DIR.pjoin(xml_file)
-    log_debug('xml_path_FN OP {0}'.format(xml_path_FN.getOriginalPath()))
+    log_debug('xml_path_FN OP {0}'.format(xml_path_FN.getPath()))
     log_debug('xml_path_FN  P {0}'.format(xml_path_FN.getPath()))
     games = audit_load_OfflineScraper_XML(xml_path_FN.getPath())
 
@@ -1524,7 +1524,7 @@ def m_command_render_LB_scraper_roms(categoryID):
     # --- Load offline scraper XML file ---
     loading_ticks_start = time.time()
     xml_path_FN = g_PATHS.ADDON_CODE_DIR.pjoin(xml_file)
-    log_debug('xml_path_FN OP {0}'.format(xml_path_FN.getOriginalPath()))
+    log_debug('xml_path_FN OP {0}'.format(xml_path_FN.getPath()))
     log_debug('xml_path_FN  P {0}'.format(xml_path_FN.getPath()))
     games = audit_load_OfflineScraper_XML(xml_path_FN.getPath())
 
@@ -2134,7 +2134,7 @@ def m_command_import_collection():
             asset_base64_data = asset_dic['data']
             asset_filesize    = asset_dic['filesize']
             fileData = base64.b64decode(asset_base64_data)
-            log_debug('{0:<9s} Creating OP "{1}"'.format(AInfo.name, new_asset_FN.getOriginalPath()))
+            log_debug('{0:<9s} Creating OP "{1}"'.format(AInfo.name, new_asset_FN.getPath()))
             log_debug('{0:<9s} Creating P  "{1}"'.format(AInfo.name, new_asset_FN.getPath()))
 
             new_asset_FN.writeAll(fileData, 'wb') # b is important -> binary
@@ -2148,8 +2148,8 @@ def m_command_import_collection():
             else:
                 log_debug('{0:<9s} file size OK ({1} bytes)'.format(AInfo.name, asset_filesize))
             # >> Update imported asset filename in database.
-            log_debug('{0:<9s} collection[{1}] linked to "{2}"'.format(AInfo.name, AInfo.key, new_asset_FN.getOriginalPath()))
-            collection_dic[AInfo.key] = new_asset_FN.getOriginalPath()
+            log_debug('{0:<9s} collection[{1}] linked to "{2}"'.format(AInfo.name, AInfo.key, new_asset_FN.getPath()))
+            collection_dic[AInfo.key] = new_asset_FN.getPath()
 
         # --- Import ROM assets ---
         log_info('_command_import_collection() Importing ROM assets ...')
@@ -2160,23 +2160,23 @@ def m_command_import_collection():
                 AInfo = assets_get_info_scheme(asset_kind)
                 ROM_FN = FileName(rom_item['filename'])                    
                 ROM_asset_noext_FN = g_assetFactory.assets_get_path_noext_SUFIX(AInfo, collections_asset_dir_FN, 
-                                                                 ROM_FN.getBase_noext(), rom_item['id'])
+                                                                 ROM_FN.getBaseNoExt(), rom_item['id'])
                 ROM_asset_FN = ROM_asset_noext_FN.append(ROM_asset_noext_FN.getExt())
-                log_debug('{0:<9s} base_noext "{1}"'.format(AInfo.name, ROM_asset_FN.getBase_noext()))
-                if ROM_asset_FN.getBase_noext() not in assets_dic:
+                log_debug('{0:<9s} base_noext "{1}"'.format(AInfo.name, ROM_asset_FN.getBaseNoExt()))
+                if ROM_asset_FN.getBaseNoExt() not in assets_dic:
                     # >> Asset not found. Make sure asset is unset in imported Collection.
                     rom_item[AInfo.key] = ''
                     log_debug('{0:<9s} NOT found in imported asset dictionary'.format(AInfo.name))
                     continue
                 log_debug('{0:<9s} found in imported asset dictionary'.format(AInfo.name))
-                asset_dic = assets_dic[ROM_asset_FN.getBase_noext()]                        
+                asset_dic = assets_dic[ROM_asset_FN.getBaseNoExt()]                        
                 new_asset_FN = collections_asset_dir_FN.pjoin(asset_dic['basename'])
 
                 # >> Create asset file
                 asset_base64_data = asset_dic['data']
                 asset_filesize    = asset_dic['filesize']
                 fileData = base64.b64decode(asset_base64_data)
-                log_debug('{0:<9s} Creating OP "{1}"'.format(AInfo.name, new_asset_FN.getOriginalPath()))
+                log_debug('{0:<9s} Creating OP "{1}"'.format(AInfo.name, new_asset_FN.getPath()))
                 log_debug('{0:<9s} Creating P  "{1}"'.format(AInfo.name, new_asset_FN.getPath()))
                 new_asset_FN.writeAll(fileData, 'wb')
                 statinfo = new_asset_FN.stat()
@@ -2189,8 +2189,8 @@ def m_command_import_collection():
                 else:
                     log_debug('{0:<9s} file size OK ({1} bytes)'.format(AInfo.name, asset_filesize))
                 # >> Update asset info in database
-                log_debug('{0:<9s} rom_item[{1}] linked to "{2}"'.format(AInfo.name, AInfo.key, new_asset_FN.getOriginalPath()))
-                rom_item[AInfo.key] = new_asset_FN.getOriginalPath()
+                log_debug('{0:<9s} rom_item[{1}] linked to "{2}"'.format(AInfo.name, AInfo.key, new_asset_FN.getPath()))
+                rom_item[AInfo.key] = new_asset_FN.getPath()
         log_debug('_command_import_collection() Finished importing assets')
 
     # --- Add imported collection to database ---
@@ -2265,13 +2265,13 @@ def m_command_export_collection(categoryID, launcherID):
                 continue
             # >> If asset cannot be found then ignore it. Do not touch JSON database.
             elif not asset_FileName.exists():
-                log_debug('{0:<9s} not found "{1}"'.format(AInfo.name, asset_FileName.getOriginalPath()))
+                log_debug('{0:<9s} not found "{1}"'.format(AInfo.name, asset_FileName.getPath()))
                 log_debug('{0:<9s} ignored'.format(AInfo.name))
                 continue
             else:
                 log_debug('{0:<9s} in external dir'.format(AInfo.name))
-                log_debug('{0:<9s} OP COPY "{1}"'.format(AInfo.name, asset_FileName.getOriginalPath()))
-                log_debug('{0:<9s} OP   TO "{1}"'.format(AInfo.name, new_asset_FileName.getOriginalPath()))
+                log_debug('{0:<9s} OP COPY "{1}"'.format(AInfo.name, asset_FileName.getPath()))
+                log_debug('{0:<9s} OP   TO "{1}"'.format(AInfo.name, new_asset_FileName.getPath()))
                 log_debug('{0:<9s} P  COPY "{1}"'.format(AInfo.name, asset_FileName.getPath()))
                 log_debug('{0:<9s} P    TO "{1}"'.format(AInfo.name, new_asset_FileName.getPath()))
                 try:
@@ -2290,7 +2290,7 @@ def m_command_export_collection(categoryID, launcherID):
                     return
 
                 # >> Asset were copied. Update ROM Collection database.
-                collection[AInfo.key] = new_asset_FileName.getOriginalPath()
+                collection[AInfo.key] = new_asset_FileName.getPath()
                 collection_assets_were_copied = True
 
         # --- Copy Collection ROM assets ---
@@ -2303,7 +2303,7 @@ def m_command_export_collection(categoryID, launcherID):
                 asset_FileName = FileName(rom_item[AInfo.key])
                 ROM_FileName = FileName(rom_item['filename'])
                 new_asset_noext_FileName = g_assetFactory.assets_get_path_noext_SUFIX(AInfo, collections_asset_dir_FN, 
-                                                                       ROM_FileName.getBase_noext(), rom_item['id'])
+                                                                       ROM_FileName.getBaseNoExt(), rom_item['id'])
                 new_asset_FileName = new_asset_noext_FileName.append(asset_FileName.getExt())
                 if not rom_item[AInfo.key]:
                     log_debug('{0:<9s} not set.'.format(AInfo.name))
@@ -2313,14 +2313,14 @@ def m_command_export_collection(categoryID, launcherID):
                     continue
                 # >> If asset cannot be found then ignore it. Do not touch JSON database.
                 elif not asset_FileName.exists():
-                    log_debug('{0:<9s} not found "{1}"'.format(AInfo.name, asset_FileName.getOriginalPath()))
+                    log_debug('{0:<9s} not found "{1}"'.format(AInfo.name, asset_FileName.getPath()))
                     log_debug('{0:<9s} ignored'.format(AInfo.name))
                     continue
                 else:
                     # >> Copy asset from parent into ROM Collection asset dir
                     log_debug('{0:<9s} in external dir'.format(AInfo.name))
-                    log_debug('{0:<9s} OP COPY "{1}"'.format(AInfo.name, asset_FileName.getOriginalPath()))
-                    log_debug('{0:<9s} OP   TO "{1}"'.format(AInfo.name, new_asset_FileName.getOriginalPath()))
+                    log_debug('{0:<9s} OP COPY "{1}"'.format(AInfo.name, asset_FileName.getPath()))
+                    log_debug('{0:<9s} OP   TO "{1}"'.format(AInfo.name, new_asset_FileName.getPath()))
                     log_debug('{0:<9s} P  COPY "{1}"'.format(AInfo.name, asset_FileName.getPath()))
                     log_debug('{0:<9s} P    TO "{1}"'.format(AInfo.name, new_asset_FileName.getPath()))
                     try:
@@ -2337,7 +2337,7 @@ def m_command_export_collection(categoryID, launcherID):
                         return
 
                     # >> Asset were copied. Update ROM Collection database.
-                    rom_item[AInfo.key] = new_asset_FileName.getOriginalPath()
+                    rom_item[AInfo.key] = new_asset_FileName.getPath()
                     ROM_assets_were_copied = True
 
         # >> Write ROM Collection DB.
@@ -3125,9 +3125,9 @@ def m_command_view_menu(categoryID, launcherID = '', romID = ''):
         report_stats_FN  = REPORTS_DIR.pjoin(roms_base_noext + '_stats.txt')
         report_meta_FN   = REPORTS_DIR.pjoin(roms_base_noext + '_metadata.txt')
         report_assets_FN = REPORTS_DIR.pjoin(roms_base_noext + '_assets.txt')
-        log_verb('_command_view_menu() Stats  OP "{0}"'.format(report_stats_FN.getOriginalPath()))
-        log_verb('_command_view_menu() Meta   OP "{0}"'.format(report_meta_FN.getOriginalPath()))
-        log_verb('_command_view_menu() Assets OP "{0}"'.format(report_assets_FN.getOriginalPath()))
+        log_verb('_command_view_menu() Stats  OP "{0}"'.format(report_stats_FN.getPath()))
+        log_verb('_command_view_menu() Meta   OP "{0}"'.format(report_meta_FN.getPath()))
+        log_verb('_command_view_menu() Assets OP "{0}"'.format(report_assets_FN.getPath()))
 
         # --- Read report file ---
         try:
@@ -3262,7 +3262,7 @@ def m_command_view_offline_scraper_rom(scraper, platform, game_name):
         xml_path = CURRENT_ADDON_DIR.pjoin(xml_file)
 
         # log_debug('xml_file = {0}'.format(xml_file))
-        log_debug('Loading AEL XML {0}'.format(xml_path.getOriginalPath()))
+        log_debug('Loading AEL XML {0}'.format(xml_path.getPath()))
         games = audit_load_OfflineScraper_XML(xml_path)
         game = games[game_name]
 
@@ -3288,7 +3288,7 @@ def m_command_view_offline_scraper_rom(scraper, platform, game_name):
         xml_path = CURRENT_ADDON_DIR.pjoin(xml_file)
 
         # log_debug('xml_file = {0}'.format(xml_file))
-        log_debug('Loading LaunchBox XML {0}'.format(xml_path.getOriginalPath()))
+        log_debug('Loading LaunchBox XML {0}'.format(xml_path.getPath()))
         games = audit_load_OfflineScraper_XML(xml_path)
         game = games[game_name]
         # log_debug(unicode(game))
@@ -3835,19 +3835,19 @@ def m_subcommand_category_delete(category):
 # NOTE integrate subcommands using generic editing functions.
 @router.action('EDIT_METADATA_TITLE')
 def m_subcommand_category_metadata_title(category):
-    m_gui_edit_metadata_str(category, 'Title', category.get_name, category.set_name)
+    m_gui_edit_field_by_str(category, 'Title', category.get_name, category.set_name)
 
 @router.action('EDIT_METADATA_RELEASEYEAR')
 def m_subcommand_category_metadata_releaseyear(category):
-    m_gui_edit_metadata_str(category, 'Release Year', category.get_releaseyear, category.set_releaseyear)
+    m_gui_edit_field_by_str(category, 'Release Year', category.get_releaseyear, category.set_releaseyear)
 
 @router.action('EDIT_METADATA_GENRE')
 def m_subcommand_category_metadata_genre(category):
-    m_gui_edit_metadata_str(category, 'Genre', category.get_genre, category.set_genre)
+    m_gui_edit_field_by_str(category, 'Genre', category.get_genre, category.set_genre)
 
 @router.action('EDIT_METADATA_DEVELOPER')
 def m_subcommand_category_metadata_developer(category):
-    m_gui_edit_metadata_str(category, 'Developer', category.get_developer, category.set_developer)
+    m_gui_edit_field_by_str(category, 'Developer', category.get_developer, category.set_developer)
 
 @router.action('EDIT_METADATA_RATING')
 def m_subcommand_category_metadata_rating(category):
@@ -3855,7 +3855,7 @@ def m_subcommand_category_metadata_rating(category):
 
 @router.action('EDIT_METADATA_PLOT')
 def m_subcommand_category_metadata_plot(category):
-    m_gui_edit_metadata_str(category, 'Plot', category.get_plot, category.set_plot)
+    m_gui_edit_field_by_str(category, 'Plot', category.get_plot, category.set_plot)
 
 # NOTE Create new generic functions to save/load NFO files.
 #      NFO save/load functionality must be in the edited-object methods.
@@ -3997,20 +3997,20 @@ def m_subcommand_launcher_metadata_title(category, launcher):
 
 @router.action('EDIT_METADATA_PLATFORM')
 def m_subcommand_launcher_metadata_platform(category, launcher):
-    m_gui_edit_metadata_list(launcher, 'Platform', AEL_platform_list,
+    m_gui_edit_field_by_list(launcher, 'Platform', AEL_platform_list,
                                 launcher.get_platform, launcher.set_platform)
 
 @router.action('EDIT_METADATA_RELEASEYEAR')
 def m_subcommand_launcher_metadata_releaseyear(category, launcher):
-    m_gui_edit_metadata_str(launcher, 'Release Rear', launcher.get_releaseyear, launcher.set_releaseyear)
+    m_gui_edit_field_by_str(launcher, 'Release Rear', launcher.get_releaseyear, launcher.set_releaseyear)
 
 @router.action('EDIT_METADATA_GENRE')
 def m_subcommand_launcher_metadata_genre(category, launcher):
-    m_gui_edit_metadata_str(launcher, 'Genre', launcher.get_genre, launcher.set_genre)
+    m_gui_edit_field_by_str(launcher, 'Genre', launcher.get_genre, launcher.set_genre)
 
 @router.action('EDIT_METADATA_DEVELOPER')
 def m_subcommand_launcher_metadata_developer(category, launcher):
-    m_gui_edit_metadata_str(launcher, 'Developer', launcher.get_developer, launcher.set_developer)
+    m_gui_edit_field_by_str(launcher, 'Developer', launcher.get_developer, launcher.set_developer)
 
 @router.action('EDIT_METADATA_RATING')
 def m_subcommand_launcher_metadata_rating(category, launcher):
@@ -4018,7 +4018,7 @@ def m_subcommand_launcher_metadata_rating(category, launcher):
 
 @router.action('EDIT_METADATA_PLOT')
 def m_subcommand_launcher_metadata_plot(category, launcher):
-    m_gui_edit_metadata_str(launcher, 'Plot', launcher.get_plot, launcher.set_plot)
+    m_gui_edit_field_by_str(launcher, 'Plot', launcher.get_plot, launcher.set_plot)
     
 # --- Import launcher metadata from NFO file (default location) ---
 @router.action('IMPORT_NFO_FILE_DEFAULT')
@@ -4404,11 +4404,11 @@ def m_subcommand_collection_metadata(collection):
 # --- Atomic commands ---
 @router.action('EDIT_METADATA_TITLE')
 def m_subcommand_collection_metadata_title(collection):
-    m_gui_edit_metadata_str(collection, 'Title', collection.get_name, collection.set_name)
+    m_gui_edit_field_by_str(collection, 'Title', collection.get_name, collection.set_name)
 
 @router.action('EDIT_METADATA_GENRE')
 def m_subcommand_collection_metadata_genre(collection):
-    m_gui_edit_metadata_str(collection, 'Genre', collection.get_genre, collection.set_genre)
+    m_gui_edit_field_by_str(collection, 'Genre', collection.get_genre, collection.set_genre)
     
 @router.action('EDIT_METADATA_RATING')
 def m_subcommand_collection_metadata_rating(collection):
@@ -4416,7 +4416,7 @@ def m_subcommand_collection_metadata_rating(collection):
         
 @router.action('EDIT_METADATA_PLOT')
 def m_subcommand_collection_metadata_plot(collection):
-    m_gui_edit_metadata_str(collection, 'Plot', collection.get_plot, collection.set_plot)
+    m_gui_edit_field_by_str(collection, 'Plot', collection.get_plot, collection.set_plot)
 
 # Add these commands IMPORT_NFO_FILE_DEFAULT, IMPORT_NFO_FILE_BROWSE, SAVE_NFO_FILE_DEFAULT.
 # Create a generic function for import/export NFO files.
@@ -4994,6 +4994,14 @@ def m_subcommand_change_retroarch_core(category, launcher):
     launcher.change_core(selected_option)
     launcher.save_to_disk()
 
+@router.action("CHANGE_NVGS_SERVER_ID")
+def m_subcommand_change_gamestream_server_id(category, launcher):
+    m_gui_edit_field_by_int(launcher, 'Server ID', launcher.get_server_id, launcher.set_server_id)
+    
+@router.action("CHANGE_NVGS_HOST")
+def m_subcommand_change_gamestream_server_id(category, launcher):
+    m_gui_edit_field_by_ipaddr(launcher, 'Gamestream Host', launcher.get_server, launcher.set_server)
+    
 # -------------------------------------------------------------------------------------------------
 # ROM item context menu atomic comands.
 # -------------------------------------------------------------------------------------------------
@@ -5034,22 +5042,22 @@ def m_subcommand_rom_metadata(launcher, rom):
 # --- Edit of the rom title ---
 @router.action('EDIT_METADATA_TITLE')
 def m_subcommand_edit_rom_title(launcher, rom):
-    m_gui_edit_metadata_str(rom, 'Title', rom.get_name, rom.set_name)
+    m_gui_edit_field_by_str(rom, 'Title', rom.get_name, rom.set_name)
 
 # --- Edition of the rom release year ---    
 @router.action('EDIT_METADATA_RELEASEYEAR')
 def m_subcommand_edit_rom_release_year(launcher, rom):
-    m_gui_edit_metadata_str(rom, 'Release Year', rom.get_releaseyear, rom.set_releaseyear)
+    m_gui_edit_field_by_str(rom, 'Release Year', rom.get_releaseyear, rom.set_releaseyear)
 
 # --- Edition of the rom game genre ---
 @router.action('EDIT_METADATA_GENRE')
 def m_subcommand_edit_rom_genre(launcher, rom):
-    m_gui_edit_metadata_str(rom, 'genre', rom.get_genre, rom.set_genre)
+    m_gui_edit_field_by_str(rom, 'genre', rom.get_genre, rom.set_genre)
 
 # --- Edition of the rom developer ---
 @router.action('EDIT_METADATA_DEVELOPER')
 def m_subcommand_edit_rom_developer(launcher, rom):
-    m_gui_edit_metadata_str(rom, 'developer', rom.get_developer, rom.set_developer)
+    m_gui_edit_field_by_str(rom, 'developer', rom.get_developer, rom.set_developer)
 
 # --- Edition of launcher NPlayers ---
 @router.action('EDIT_METADATA_NPLAYERS')
@@ -5073,7 +5081,7 @@ def m_subcommand_edit_rom_number_of_players(launcher, rom):
     if np_idx == 1:
         # >> Manual entry. Open a text entry dialog.
         
-        if m_gui_edit_metadata_str('NPlayers', rom.get_number_of_players, rom.set_number_of_players):
+        if m_gui_edit_field_by_str('NPlayers', rom.get_number_of_players, rom.set_number_of_players):
             launcher.save_ROM(rom)
         return
 
@@ -5088,7 +5096,7 @@ def m_subcommand_edit_rom_esrb_rating(launcher, rom):
     # >> Show a dialog select with the available ratings
     # >> Kodi Krypton: preselect current rating in select list        
 
-    if self._list_edit_rom_metadata('ESRB rating', ESRB_LIST, -1, rom.get_esrb_rating, rom.set_esrb_rating):
+    if m_gui_edit_field_by_list('ESRB rating', ESRB_LIST, -1, rom.get_esrb_rating, rom.set_esrb_rating):
         launcher.save_ROM(rom)
 
 # --- Edition of the ROM rating ---
@@ -5108,13 +5116,13 @@ def m_subcommand_edit_rom_rating(launcher, rom):
     options[9] = 'Rating 9'
     options[10] = 'Rating 10'
 
-    if self._list_edit_rom_metadata('Rating', options, -1, rom.get_rating, rom.update_rating):
+    if m_gui_edit_field_by_list('Rating', options, -1, rom.get_rating, rom.update_rating):
         launcher.save_ROM(rom)
 
 # --- Edit ROM description (plot) ---
 @router.action('EDIT_METADATA_PLOT')
 def m_subcommand_edit_rom_description(launcher, rom):
-    m_gui_edit_metadata_str(rom, 'plot', rom.get_plot, rom.update_plot)
+    m_gui_edit_field_by_str(rom, 'plot', rom.get_plot, rom.update_plot)
 
 # --- Import of the rom game plot from TXT file ---
 @router.action('LOAD_PLOT')
@@ -5306,7 +5314,7 @@ def m_subcommand_edit_rom_alternative_application(launcher, rom):
 
 # >> Alternative launcher arguments
 def m_subcommand_edit_rom_alternative_arguments(launcher, rom):
-    if m_gui_edit_metadata_str('altarg', rom.get_alternative_arguments, rom.set_alternative_arguments):
+    if m_gui_edit_field_by_str('altarg', rom.get_alternative_arguments, rom.set_alternative_arguments):
         launcher.save_ROM(rom)
 
 # --- Delete ROM ---
@@ -6643,9 +6651,9 @@ def m_misc_clear_AEL_Launcher_Content():
 # Edits an object field which is a Unicode string.
 #
 # Example call:
-#   m_gui_edit_metadata_str(collection, 'Title', collection.get_title, collection.set_title)
+#   m_gui_edit_field_by_str(collection, 'Title', collection.get_title, collection.set_title)
 #
-def m_gui_edit_metadata_str(obj_instance, metadata_name, get_method, set_method):
+def m_gui_edit_field_by_str(obj_instance, metadata_name, get_method, set_method):
     object_name = obj_instance.get_object_name()
     old_value = get_method()
     s = 'Edit {0} "{1}" {2}'.format(object_name, old_value, metadata_name)
@@ -6662,13 +6670,58 @@ def m_gui_edit_metadata_str(obj_instance, metadata_name, get_method, set_method)
     kodi_notify('{0} {1} is now {2}'.format(object_name, metadata_name, new_value))
 
 #
+# Edits an object field which is a number(Int)
+#
+# Example call:
+#   m_gui_edit_field_by_int(launcher, 'Server', launcher.get_server, launcher_set_server)
+#
+def m_gui_edit_field_by_int(obj_instance, field_name, get_method, set_method):
+    object_name = obj_instance.get_object_name()
+    old_value = get_method()
+    if not isinstance(old_value, int):
+        old_value = 0
+    
+    s = 'Edit {0} "{1}" {2}'.format(object_name, old_value, field_name)
+    dialog = xbmcgui.Dialog()
+    new_value = dialog.numeric(old_value, s)
+    
+    if new_value is None or new_value == '': return
+    if old_value == new_value:
+        kodi_notify('{0} {1} not changed'.format(object_name, field_name))
+        return
+    set_method(new_value)
+    obj_instance.save_to_disk()
+    kodi_notify('{0} {1} is now {2}'.format(object_name, field_name, new_value))
+
+#
+# Edits an object field which is an IP address
+#
+# Example call:
+#   m_gui_edit_field_by_ipaddr(launcher, 'Server ID', launcher.get_server_id, launcher_set_server_id)
+#
+def m_gui_edit_field_by_ipaddr(obj_instance, field_name, get_method, set_method):
+    object_name = obj_instance.get_object_name()
+    old_value = get_method()
+    s = 'Edit {0} "{1}" {2}'.format(object_name, old_value, field_name)
+    dialog = xbmcgui.Dialog()
+    new_value = dialog.input(s, old_value, type=xbmcgui.INPUT_IPADDRESS)
+    
+    if new_value is None or new_value == '': return
+    if old_value == new_value:
+        kodi_notify('{0} {1} not changed'.format(object_name, field_name))
+        return
+    set_method(new_value)
+    obj_instance.save_to_disk()
+    kodi_notify('{0} {1} is now {2}'.format(object_name, field_name, new_value))
+
+#
 # The values of str_list are supposed to be unique.
 #
 # Example call:
-# m_gui_edit_metadata_list('Launcher', 'Platform', AEL_platform_list,
+# m_gui_edit_field_by_list('Launcher', 'Platform', AEL_platform_list,
 #                          launcher.get_platform, launcher.set_platform)
 #
-def m_gui_edit_metadata_list(obj_instance, metadata_name, str_list, get_method, set_method):
+def m_gui_edit_field_by_list(obj_instance, metadata_name, str_list, get_method, set_method):
     object_name = obj_instance.get_object_name()
     old_value = get_method()
     if old_value in str_list:
@@ -6921,7 +6974,7 @@ def m_gui_edit_asset(obj_instance, asset_info):
         # NOTE deleting the destination image before copying does not work to force a cache
         #      update.
         # if dest_asset_file.exists():
-        #     log_debug('m_gui_edit_asset() Deleting image "{0}"'.format(dest_asset_file.getOriginalPath()))
+        #     log_debug('m_gui_edit_asset() Deleting image "{0}"'.format(dest_asset_file.getPath()))
         #     dest_asset_file.unlink()
 
         # --- Copy image file ---
@@ -8110,14 +8163,14 @@ def m_command_update_virtual_category_db(virtual_categoryID, all_roms_external =
 
     # --- Delete previous hashed database XMLs ---
     log_info('_command_update_virtual_category_db() Cleaning hashed database old XMLs')
-    for the_file in vcategory_db_directory.scanFilesInPathAsFileNameObjects('*.*'):
+    for the_file in vcategory_db_directory.scanFilesInPath('*.*'):
         file_extension = the_file.getExt()
         if file_extension.lower() != '.xml' and file_extension.lower() != '.json':
             # >> There should be only XMLs or JSON in this directory
-            log_error('_command_update_virtual_category_db() Non XML/JSON file "{0}"'.format(the_file.getOriginalPath()))
+            log_error('_command_update_virtual_category_db() Non XML/JSON file "{0}"'.format(the_file.getPath()))
             log_error('_command_update_virtual_category_db() Skipping it from deletion')
             continue
-        log_verb('_command_update_virtual_category_db() Deleting "{0}"'.format(the_file.getOriginalPath()))
+        log_verb('_command_update_virtual_category_db() Deleting "{0}"'.format(the_file.getPath()))
         try:
             if the_file.exists():
                 the_file.unlink()
@@ -8245,7 +8298,7 @@ def m_roms_regenerate_launcher_reports(categoryID, launcherID, roms):
     # --- Get report filename ---
     roms_base_noext  = fs_get_ROMs_basename(category.get_name(), launcher.get_name(), launcherID)
     report_stats_FN  = REPORTS_DIR.pjoin(roms_base_noext + '_stats.txt')
-    log_verb('_command_view_menu() Stats  OP "{0}"'.format(report_stats_FN.getOriginalPath()))
+    log_verb('_command_view_menu() Stats  OP "{0}"'.format(report_stats_FN.getPath()))
 
     # --- If report doesn't exists create it automatically ---
     log_debug('_command_view_Launcher_Report() Testing report file "{0}"'.format(report_stats_FN.getPath()))
@@ -8286,12 +8339,12 @@ def m_roms_create_launcher_reports(category, launcher, roms):
     report_stats_FN  = REPORTS_DIR.pjoin(roms_base_noext + '_stats.txt')
     report_meta_FN   = REPORTS_DIR.pjoin(roms_base_noext + '_metadata.txt')
     report_assets_FN = REPORTS_DIR.pjoin(roms_base_noext + '_assets.txt')
-    log_verb('_roms_create_launcher_reports() Stats  OP "{0}"'.format(report_stats_FN.getOriginalPath()))
-    log_verb('_roms_create_launcher_reports() Meta   OP "{0}"'.format(report_meta_FN.getOriginalPath()))
-    log_verb('_roms_create_launcher_reports() Assets OP "{0}"'.format(report_assets_FN.getOriginalPath()))
+    log_verb('_roms_create_launcher_reports() Stats  OP "{0}"'.format(report_stats_FN.getPath()))
+    log_verb('_roms_create_launcher_reports() Meta   OP "{0}"'.format(report_meta_FN.getPath()))
+    log_verb('_roms_create_launcher_reports() Assets OP "{0}"'.format(report_assets_FN.getPath()))
     roms_base_noext = fs_get_ROMs_basename(category_name, launcher.get_name(), launcher.get_id())
     report_file_name = REPORTS_DIR.pjoin(roms_base_noext + '.txt')
-    log_verb('_roms_create_launcher_reports() Report filename "{0}"'.format(report_file_name.getOriginalPath()))
+    log_verb('_roms_create_launcher_reports() Report filename "{0}"'.format(report_file_name.getPath()))
 
     # >> Step 1: Build report data
     num_roms = len(roms)
@@ -8335,11 +8388,11 @@ def m_roms_create_launcher_reports(category, launcher, roms):
         # To differentiate between S and C a test in the PClone group must be done.
         #
         romfile_FN = rom.get_file()
-        romfile_getBase_noext = romfile_FN.getBase_noext()
+        romfile_getBaseNoExt = romfile_FN.getBaseNoExt()
 
         for asset_kind in asset_kinds:
             if rom.has_asset(asset_kind):
-                rom_info[asset_kind.key] = self._aux_get_info(rom.get_asset_file(asset_kind), launcher.get_asset_path(asset_kind).getPath(), romfile_getBase_noext)
+                rom_info[asset_kind.key] = self._aux_get_info(rom.get_asset_file(asset_kind), launcher.get_asset_path(asset_kind).getPath(), romfile_getBaseNoExt)
             else:
                 rom_info[asset_kind.key] = '-'
                 missing_assets[asset_kind.key] = missing_assets[asset_kind.key] + 1
@@ -8481,13 +8534,13 @@ def m_roms_create_launcher_reports(category, launcher, roms):
         log_error('Cannot write categories.xml file (IOError)')
         kodi_notify_warn('Cannot write Launcher Report (IOError)')
 
-def m_aux_get_info(asset_FN, path_asset_P, romfile_getBase_noext):
+def m_aux_get_info(asset_FN, path_asset_P, romfile_getBaseNoExt):
     # log_debug('title_FN.getDir() "{0}"'.format(title_FN.getDir()))
     # log_debug('path_title_P      "{0}"'.format(path_title_P))
     if path_asset_P != asset_FN.getDir():
         ret_str = 'C'
     else:
-        if romfile_getBase_noext == asset_FN.getBase_noext():
+        if romfile_getBaseNoExt == asset_FN.getBaseNoExt():
             ret_str = 'Y'
         else:
             ret_str = 'O'
@@ -8527,7 +8580,7 @@ def m_roms_add_new_rom(launcherID):
     # --- Format title ---
     scan_clean_tags = g_settings['scan_clean_tags']
     ROMFile = FileName(romfile)
-    rom_name = text_format_ROM_title(ROMFile.getBase_noext(), scan_clean_tags)
+    rom_name = text_format_ROM_title(ROMFile.getBaseNoExt(), scan_clean_tags)
 
     # ~~~ Check asset dirs and disable scanning for unset dirs ~~~
     # >> Do not warn about unconfigured dirs here
@@ -8662,7 +8715,7 @@ def m_audit_no_intro_roms(launcher, roms):
 #
 def m_gui_import_TXT_file(text_file):
     # Warn user in case he chose a binary file or a very big one. Avoid categories.xml corruption.
-    log_debug('_gui_import_TXT_file() Importing plot from "{0}"'.format(text_file.getOriginalPath()))
+    log_debug('_gui_import_TXT_file() Importing plot from "{0}"'.format(text_file.getPath()))
     statinfo = text_file.stat()
     file_size = statinfo.st_size
     log_debug('_gui_import_TXT_file() File size is {0}'.format(file_size))
@@ -8672,7 +8725,7 @@ def m_gui_import_TXT_file(text_file):
         if not ret: return ''
 
     # Import file
-    log_debug('_gui_import_TXT_file() Importing description from "{0}"'.format(text_file.getOriginalPath()))
+    log_debug('_gui_import_TXT_file() Importing description from "{0}"'.format(text_file.getPath()))
     file_data = text_file.readAll()
 
     return file_data
@@ -8753,7 +8806,7 @@ def m_execute_migrations(last_migrated_to_version, to_version = None):
     pDialog.update(5)
 
     migrations_folder     = g_PATHS.ADDON_CODE_DIR.pjoin('resources/migrations')
-    migration_files       = migrations_folder.scanFilesInPathAsFileNameObjects('*.py')
+    migration_files       = migrations_folder.scanFilesInPath('*.py')
     applicable_migrations = m_select_applicable_migration_files(migration_files, last_migrated_to_version, to_version)
 
     num_migrations = len(applicable_migrations)
@@ -8762,7 +8815,7 @@ def m_execute_migrations(last_migrated_to_version, to_version = None):
         log_info('Migrating to version {0} using file {1}'.format(version, migration_file.getBase()))
         pDialog.update( (i * 95 // num_migrations) + 5, 'Migrating to version {} ...'.format(version))
 
-        module_namespace = 'migrations.{0}'.format(migration_file.getBase_noext())
+        module_namespace = 'migrations.{0}'.format(migration_file.getBaseNoExt())
         module =__import__(module_namespace, globals(), locals(), ['migrations'])
         migration_class_name = module.MIGRATION_CLASS_NAME
         migration_class = getattr(module, migration_class_name)
@@ -8787,10 +8840,10 @@ def m_select_applicable_migration_files(migration_files, last_migrated_to_versio
     
     applicable_migrations = {}
     for migration_file in migration_files:
-        if migration_file.getBase_noext() == '__init__' or migration_file.getBase_noext() == 'main':
+        if migration_file.getBaseNoExt() == '__init__' or migration_file.getBaseNoExt() == 'main':
             continue
 
-        file_name = migration_file.getBase_noext()
+        file_name = migration_file.getBaseNoExt()
         log_debug('Reading migration file {0}'.format(file_name))
         version_part = file_name.replace('migration_', '').replace('_', '.')
         migration_version = LooseVersion(version_part)

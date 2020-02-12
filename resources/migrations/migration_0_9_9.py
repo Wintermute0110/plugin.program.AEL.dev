@@ -41,23 +41,23 @@ class Migration_0_9_9(Migration):
         log_info('[Migration][0.9.9] Finished migration')
 
     def _set_launchertype(self, launcher):
-        application = KodiFileName(launcher['application'])
+        application = FileName(launcher['application'])
         name = launcher['m_name']
 
-        if application.getOriginalPath() == RETROPLAYER_LAUNCHER_APP_NAME:
+        if application.getPath() == RETROPLAYER_LAUNCHER_APP_NAME:
             log_debug('[Migration][0.9.9] Setting launcher "{}" with type RETROPLAYER'.format(name))
-            launcher['type'] = LAUNCHER_RETROPLAYER
+            launcher['type'] = OBJ_LAUNCHER_RETROPLAYER
             return
 
-        if application.getOriginalPath() == LNK_LAUNCHER_APP_NAME:
+        if application.getPath() == LNK_LAUNCHER_APP_NAME:
             log_debug('[Migration][0.9.9] Setting launcher "{}" with type LNK'.format(name))
-            launcher['type'] = LAUNCHER_LNK
+            launcher['type'] = OBJ_LAUNCHER_LNK
             return
 
         if 'rompath' in launcher and launcher['rompath'] != '':
             log_debug('[Migration][0.9.9] Setting launcher "{}" with type ROM LAUNCHER'.format(name))
-            launcher['type'] = LAUNCHER_ROM
+            launcher['type'] = OBJ_LAUNCHER_ROM
             return
         
-        launcher['type'] = LAUNCHER_STANDALONE
+        launcher['type'] = OBJ_LAUNCHER_STANDALONE
         log_debug('[Migration][0.9.9] Setting launcher "{}" with type STANDALONE'.format(name))
