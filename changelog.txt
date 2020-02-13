@@ -141,6 +141,9 @@ WIP      [SCRAPERS] Change the Offline Scraper format from XML to JSON. Include 
 
 [B]Advanced Emulator Launcher | version 0.9.9 | xx February 2020[/B]
 
+WIP      [SCRAPERS] Add a delay to ScreenScraper scraper to avoid overloading.
+         See https://forum.kodi.tv/showthread.php?tid=287826&pid=2923181#pid2923181
+
 FEATURE  [CORE] New Utility "Check Launcher ROMs sync status"
 
 WIP      [CORE] New Utility "Check ROMs artwork image integrity"
