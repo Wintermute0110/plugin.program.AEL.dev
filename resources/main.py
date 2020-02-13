@@ -5283,6 +5283,7 @@ def m_subcommand_advanced_rom_modifications(launcher, rom):
     return
 
 # >> Change ROM file
+@router.action('CHANGE_ROM_FILE')
 def m_subcommand_change_rom_file(launcher, rom):
     # >> Abort if multidisc ROM
     if rom.has_multiple_disks():
@@ -5295,11 +5296,12 @@ def m_subcommand_change_rom_file(launcher, rom):
                                         False, False, filename).decode('utf-8')
     if not item_file: return
 
-    item_file_FN = FileFactory.create(item_file)
+    item_file_FN = FileName(item_file)
     rom.set_filename(item_file_FN)
     launcher.save_ROM(rom)
 
 # >> Alternative launcher application file path
+@router.action('CHANGE_ALT_APPLICATION')
 def m_subcommand_edit_rom_alternative_application(launcher, rom):
     filter_str = '.bat|.exe|.cmd' if is_windows() else ''
     altapp = xbmcgui.Dialog().browse(1, 'Select ROM custom launcher application',
@@ -5313,11 +5315,13 @@ def m_subcommand_edit_rom_alternative_application(launcher, rom):
     launcher.save_ROM(rom)
 
 # >> Alternative launcher arguments
+@router.action('CHANGE_ALT_ARGUMENTS')
 def m_subcommand_edit_rom_alternative_arguments(launcher, rom):
     if m_gui_edit_field_by_str('altarg', rom.get_alternative_arguments, rom.set_alternative_arguments):
         launcher.save_ROM(rom)
 
 # --- Delete ROM ---
+@router.action('DELETE_ROM')
 def m_subcommand_delete_rom(launcher, rom):
 
     if launcher.has_nointro_xml() and rom.get_nointro_status() == AUDIT_STATUS_MISS:
@@ -7188,6 +7192,10 @@ def m_gui_edit_object_default_assets(obj_instance, pre_select_idx = 0):
         # --- Execute recursively wheter submenu was canceled or not ---
         m_gui_edit_object_default_assets(obj_instance, selected_option)
 
+# -------------------------------------------------------------------------------------------------
+# UI render methods
+# -------------------------------------------------------------------------------------------------
+#
 #
 # Renders all categories without Favourites, Collections, virtual categories, etc.
 # This function is called by skins to build shortcuts menu.
@@ -7927,6 +7935,7 @@ def m_command_render_vlauncher_roms(virtual_categoryID, virtual_launcherID):
 # Check ROMs in favourites and set fav_status field.
 # roms_fav edited by passing by assigment, dictionaries are mutable.
 # 
+# --------------------- TODO: NOT USED? / OBSOLETE -----------------------------------------
 def m_fav_check_favourites(roms_fav):
     # --- Statistics ---
     self.num_fav_roms = len(roms_fav)
@@ -8789,6 +8798,10 @@ def m_misc_translate_setting(setting_key):
     setting_translated = __addon__.getSetting(setting_key)        
     return translation_fix[setting_translated] if setting_translated in translation_fix else int(setting_translated)
 
+# -------------------------------------------------------------------------------------------------
+# Migration methods
+# -------------------------------------------------------------------------------------------------
+#
 # Executes the migrations which are newer than the last migration version that has run.
 # Each migration will be executed in order of version numbering.
 #

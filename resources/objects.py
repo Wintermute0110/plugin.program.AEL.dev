@@ -2557,16 +2557,16 @@ class ROMLauncherABC(LauncherABC):
     def _launch_parseArguments(self):
         log_info('RomLauncher() raw arguments   "{0}"'.format(self.arguments))
 
-        # Application based arguments replacements  TODO: isinstance(FileNameBase) or NewFileName?
-        #if self.application and isinstance(self.application, FileName):
-        #    apppath = self.application.getDir()
-#
-        #    log_info('RomLauncher() application  "{0}"'.format(self.application.getPath()))
-        #    log_info('RomLauncher() appbase      "{0}"'.format(self.application.getBase()))
-        #    log_info('RomLauncher() apppath      "{0}"'.format(apppath))
-#
-        #    self.arguments = self.arguments.replace('$apppath$', apppath)
-        #    self.arguments = self.arguments.replace('$appbase$', self.application.getBase())
+        #Application based arguments replacements
+        if self.application and isinstance(self.application, NewFileName):
+           apppath = self.application.getDir()
+
+           log_info('RomLauncher() application  "{0}"'.format(self.application.getPath()))
+           log_info('RomLauncher() appbase      "{0}"'.format(self.application.getBase()))
+           log_info('RomLauncher() apppath      "{0}"'.format(apppath))
+
+           self.arguments = self.arguments.replace('$apppath$', apppath)
+           self.arguments = self.arguments.replace('$appbase$', self.application.getBase())
 
         # ROM based arguments replacements
         if self.selected_rom_file:
