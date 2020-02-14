@@ -2557,16 +2557,16 @@ class ROMLauncherABC(LauncherABC):
     def _launch_parseArguments(self):
         log_info('RomLauncher() raw arguments   "{0}"'.format(self.arguments))
 
-        # Application based arguments replacements  TODO: isinstance(FileNameBase) or NewFileName?
-        if self.application and isinstance(self.application, FileNameBase):
-            apppath = self.application.getDir()
+        #Application based arguments replacements
+        if self.application and isinstance(self.application, NewFileName):
+           apppath = self.application.getDir()
 
-            log_info('RomLauncher() application  "{0}"'.format(self.application.getPath()))
-            log_info('RomLauncher() appbase      "{0}"'.format(self.application.getBase()))
-            log_info('RomLauncher() apppath      "{0}"'.format(apppath))
+           log_info('RomLauncher() application  "{0}"'.format(self.application.getPath()))
+           log_info('RomLauncher() appbase      "{0}"'.format(self.application.getBase()))
+           log_info('RomLauncher() apppath      "{0}"'.format(apppath))
 
-            self.arguments = self.arguments.replace('$apppath$', apppath)
-            self.arguments = self.arguments.replace('$appbase$', self.application.getBase())
+           self.arguments = self.arguments.replace('$apppath$', apppath)
+           self.arguments = self.arguments.replace('$appbase$', self.application.getBase())
 
         # ROM based arguments replacements
         if self.selected_rom_file:
@@ -3803,7 +3803,7 @@ class RetroarchLauncher(StandardRomLauncher):
             cores_sorted[core_item[0]] = core_item[1]
         return cores_sorted
 
-    def _builder_load_selected_core_info(self, input, item_key, launcher):
+    def _builder_load_selected_core_info(self, input, item_key, launcher, ask_overwrite=False):
         if input == 'BROWSE':
             return input
 
@@ -3828,6 +3828,10 @@ class RetroarchLauncher(StandardRomLauncher):
 
         launcher[item_key]      = info_file.getPath()
         launcher['retro_core']  = core_file.getPath()
+        
+        if ask_overwrite and not kodi_dialog_yesno('Do you also want to overwrite previous settings for platform, developer etc.'):
+            return input
+        
         launcher['romext']      = core_info['supported_extensions']
         launcher['platform']    = core_info['systemname']
         launcher['m_developer'] = core_info['manufacturer']
@@ -3868,18 +3872,36 @@ class RetroarchLauncher(StandardRomLauncher):
         non_blocking_str  = 'ON' if self.entity_data['non_blocking'] else 'OFF'
         multidisc_str     = 'ON' if self.entity_data['multidisc'] else 'OFF'
 
-        options = super(RetroarchLauncher, self).get_advanced_modification_options()
+        options = collections.OrderedDict()
         options['CHANGE_APPLICATION']   = "Change Retroarch path: '{0}'".format(self.entity_data['application'])
-        options['MODIFY_ARGS'] = "Modify Arguments: '{0}'".format(self.entity_data['args'])
-        options['ADDITIONAL_ARGS'] = "Modify aditional arguments ..."
-        options['CHANGE_ROMPATH'] = "Change ROM path: '{0}'".format(self.entity_data['rompath'])
-        options['CHANGE_ROMEXT'] = "Modify ROM extensions: '{0}'".format(self.entity_data['romext'])
-        options['TOGGLE_WINDOWED'] = "Toggle Kodi into windowed mode (now {0})".format(toggle_window_str)
-        options['TOGGLE_NONBLOCKING'] = "Non-blocking launcher (now {0})".format(non_blocking_str)
-        options['TOGGLE_MULTIDISC'] = "Multidisc ROM support (now {0})".format(multidisc_str)
+        options['CHANGE_RETROARCH_CORE']= "Change core: '{0}'".format(self.entity_data['retro_core'])
+        options['EDIT_ARGS']            = "Modify Arguments: '{0}'".format(self.entity_data['args'])
+        options['EDIT_ADDITIONAL_ARGS'] = "Modify aditional arguments ..."
+        options['EDIT_ROMPATH']         = "Change ROM path: '{0}'".format(self.entity_data['rompath'])
+        options['EDIT_ROMEXT']          = "Modify ROM extensions: '{0}'".format(self.entity_data['romext'])
+        options['TOGGLE_WINDOWED']      = "Toggle Kodi into windowed mode (now {0})".format(toggle_window_str)
+        options['TOGGLE_NONBLOCKING']   = "Non-blocking launcher (now {0})".format(non_blocking_str)
+        options['TOGGLE_MULTIDISC']     = "Multidisc ROM support (now {0})".format(multidisc_str)
 
         return options
 
+    def get_available_cores(self):
+        return self._builder_get_available_retroarch_cores('retro_core_info', self.get_data_dic())
+    
+    def change_application(self):
+        current_application = self.entity_data['application']
+        selected_application = xbmcgui.Dialog().browse(0, 'Select the Retroarch path', 'files',
+                                                       '', False, False, current_application).decode('utf-8')
+
+        if selected_application is None or selected_application == current_application:
+            return False
+        self.entity_data['application'] = selected_application
+
+        return True
+
+    def change_core(self, selected_core_file):
+        self._builder_load_selected_core_info(selected_core_file, 'retro_core_info', self.entity_data, True)
+    
     # ---------------------------------------------------------------------------------------------
     # Execution methods
     # ---------------------------------------------------------------------------------------------
@@ -3917,24 +3939,10 @@ class RetroarchLauncher(StandardRomLauncher):
 
         # TODO: other OSes
         return False
-
-    # Probably just use parent implementation
-    #def _launch_selectRomFileToUse(self): raise AddonError('Implement me!')
-
+    
     # ---------------------------------------------------------------------------------------------
     # Misc methods
-    # ---------------------------------------------------------------------------------------------
-    def change_application(self):
-        current_application = self.entity_data['application']
-        selected_application = xbmcgui.Dialog().browse(0, 'Select the Retroarch path', 'files',
-                                                       '', False, False, current_application).decode('utf-8')
-
-        if selected_application is None or selected_application == current_application:
-            return False
-        self.entity_data['application'] = selected_application
-
-        return True
-
+    # ---------------------------------------------------------------------------------------------    
     def _create_path_from_retroarch_setting(self, path_from_setting, parent_dir):
         if path_from_setting.startswith(':\\'):
             path_from_setting = path_from_setting[2:]
@@ -4077,6 +4085,9 @@ class SteamLauncher(ROMLauncherABC):
 
     def get_launcher_type_name(self): return 'Steam launcher'
 
+    # --------------------------------------------------------------------------------------------
+    # Launcher specific functions
+    # --------------------------------------------------------------------------------------------
     def get_steam_id(self): return self.entity_data['steamid']
 
     def get_edit_options(self):
@@ -4190,9 +4201,14 @@ class NvidiaGameStreamLauncher(ROMLauncherABC):
     # Launcher specific functions
     # --------------------------------------------------------------------------------------------
     def get_server(self): return self.entity_data['server']
+    
+    def set_server(self, value): self.entity_data['server'] = value
 
     def get_certificates_path(self): return self._get_value_as_filename('certificates_path')
 
+    def get_server_id(self): return self.entity_data['server_id'] if 'server_id' in self.entity_data else 0
+    
+    def set_server_id(self, value): self.entity_data['server_id'] = value
     # --------------------------------------------------------------------------------------------
     # Launcher build wizard methods
     # --------------------------------------------------------------------------------------------
@@ -4288,10 +4304,11 @@ class NvidiaGameStreamLauncher(ROMLauncherABC):
         if not gs.connect():
             kodi_notify_warn('Could not connect to gamestream server')
 
-        launcher['server_id'] = gs.get_uniqueid()
+        launcher['server_id'] = 4 # not yet known what the origin is
+        launcher['server_uuid'] = gs.get_uniqueid()
         launcher['server_hostname'] = gs.get_hostname()
 
-        log_debug('validate_gamestream_server_connection() Found correct gamestream server with id "{}" and hostname "{}"'.format(launcher['server_id'],launcher['server_hostname']))
+        log_debug('validate_gamestream_server_connection() Found correct gamestream server with id "{}" and hostname "{}"'.format(launcher['server_uuid'],launcher['server_hostname']))
 
         return input
     
@@ -4325,6 +4342,9 @@ class NvidiaGameStreamLauncher(ROMLauncherABC):
         options = collections.OrderedDict()
         options['TOGGLE_WINDOWED']    = "Toggle Kodi into windowed mode (now {0})".format(toggle_window_str)
         options['TOGGLE_NONBLOCKING'] = "Non-blocking launcher (now {0})".format(non_blocking_str)
+        
+        options['CHANGE_NVGS_SERVER_ID'] = "Change server ID: '{}'".format(self.get_server_id())
+        options['CHANGE_NVGS_HOST']      = "Change host: '{}'".format(self.entity_data['server'])
         
         return options
 
@@ -4370,7 +4390,7 @@ class NvidiaGameStreamLauncher(ROMLauncherABC):
             if streamClient == 'NVIDIA':
                 self.arguments =  'start --user 0 -a android.intent.action.VIEW '
                 self.arguments += '-n com.nvidia.tegrazone3/com.nvidia.grid.UnifiedLaunchActivity '
-                self.arguments += '-d nvidia://stream/target/2/$streamid$'
+                self.arguments += '-d nvidia://stream/target/$server_id$/$streamid$'
                 return True
 
             elif streamClient == 'MOONLIGHT':
@@ -4381,7 +4401,7 @@ class NvidiaGameStreamLauncher(ROMLauncherABC):
                 self.arguments += '-e AppId $streamid$ '
                 self.arguments += '-e AppName "$gamestream_name$" '
                 self.arguments += '-e PcName "$server_hostname$" '
-                self.arguments += '-e UUID $server_id$ '
+                self.arguments += '-e UUID $server_uuid$ '
                 self.arguments += '-e UniqueId {} '.format(misc_generate_random_SID())
 
                 return True
@@ -6007,9 +6027,10 @@ class RomDatFileScanner(object):
 # #################################################################################################
 class GameStreamServer(object):
     
-    def __init__(self, host, certificates_path):
+    def __init__(self, host, certificates_path, debug_mode = False):
         self.host = host
         self.unique_id = random.getrandbits(16)
+        self.debug_mode = debug_mode
 
         if certificates_path:
             self.certificates_path = certificates_path
@@ -6042,9 +6063,11 @@ class GameStreamServer(object):
     
         if page_data is None:
             return None
-
+        
         root = ET.fromstring(page_data)
-        #log_debug(ET.tostring(root,encoding='utf8',method='xml'))
+        if self.debug_mode:
+            log_debug(ET.tostring(root,encoding='utf8',method='xml'))
+       
         return root
 
     def connect(self):

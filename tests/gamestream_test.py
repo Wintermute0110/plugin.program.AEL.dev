@@ -96,7 +96,7 @@ class Test_gamestream(unittest.TestCase):
         certificateKeyBytesMock.return_value = self.read_file(self.TEST_ASSETS_DIR + "/nvidia.key")
         random_mock.return_value = binascii.unhexlify("50ca25d03b4ac53368875b9a1bfb50cc")
 
-        server = GameStreamServer('mediaserver', addon_dir)
+        server = GameStreamServer('mediaserver', addon_dir, debug_mode = True)
         
         # act
         server.connect()
