@@ -698,7 +698,7 @@ def m_command_render_recently_played_roms():
 
     # --- Display recently player ROM list ---
     for rom in recent_roms:
-        self._gui_render_rom_row(VCATEGORY_RECENT_ID, VLAUNCHER_RECENT_ID, rom.get_data_dic())
+        m_gui_render_rom_row(VCATEGORY_RECENT_ID, recent_launcher, rom)
     xbmcplugin.endOfDirectory(handle = g_addon_handle, succeeded = True, cacheToDisc = False)
 
 @router.action('SHOW_MOST_PLAYED')
@@ -718,7 +718,7 @@ def m_command_render_most_played_roms():
 
     # --- Display most played ROMs, order by number of launchs ---
     for rom in sorted(roms, key = lambda rom : rom.get_launch_count(), reverse = True):
-        self._gui_render_rom_row(VCATEGORY_MOST_PLAYED_ID, VLAUNCHER_MOST_PLAYED_ID, rom.get_data_dic())
+        m_gui_render_rom_row(VCATEGORY_MOST_PLAYED_ID, most_played_launcher, rom)
 
     xbmcplugin.endOfDirectory(handle = g_addon_handle, succeeded = True, cacheToDisc = False)
 
@@ -1316,7 +1316,7 @@ def m_command_render_clone_roms(categoryID, launcherID, romID):
     roms_fav_set    = set(fav_launcher.get_rom_ids())
 
     for rom in sorted(roms, key = lambda r : r.get_name()):
-        m_gui_render_rom_row(categoryID, launcherID, rom.get_data_dic(), rom.get_id() in roms_fav_set, view_mode, False)
+        m_gui_render_rom_row(categoryID, selectedLauncher, rom, rom.get_id() in roms_fav_set, view_mode, False)
     xbmcplugin.endOfDirectory(handle = g_addon_handle, succeeded = True, cacheToDisc = False)
 
 #
@@ -7631,7 +7631,7 @@ def m_gui_render_rom_row(categoryID, launcher, rom,
     # NOTE A possible optimization is to compute rom_name, asset paths and flags on the calling 
     #      function. A lot of ifs will be avoided here and that will increase speed.
     rom_raw_name    = rom.get_name()
-    platform        = launcher.get_platform()  ## TODO was rom['m_platform'] ?
+    platform        = rom.get_platform()
     fav_status      = rom.get_favourite_status()
     
     mapped_icon_asset       = launcher.get_mapped_ROM_asset_info(g_assetFactory.get_asset_info(ASSET_ICON_ID))
