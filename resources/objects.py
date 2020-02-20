@@ -839,7 +839,7 @@ class ROMSetRepository(object):
             repository_file = self.ROMs_dir.pjoin('{}_parents.json'.format(roms_base_noext))
         if not repository_file.exists():
             log_warning('Launcher JSON not found "{0}"'.format(repository_file.getPath()))
-            return None
+            return {}
         log_info('Loading ROMs in Launcher ({0}:{1}) ...'.format(
             launcher.get_launcher_type(), launcher.get_name()))
         log_info('View mode {0}...'.format(view_mode))
@@ -1572,6 +1572,59 @@ class ROM(MetaDataItemABC):
         data['launcherID'] = self.launcher.get_id()
         data['platform'] = self.get_platform()
         return ROM(data, None)
+
+    # -------------------------------------------------------------------------------------------------
+    # Favourite ROM creation/management
+    # -------------------------------------------------------------------------------------------------
+    #
+    # Creates a new Favourite ROM dictionary from parent ROM and Launcher.
+    #
+    # No-Intro Missing ROMs are not allowed in Favourites or Virtual Launchers.
+    # fav_status = ['OK', 'Unlinked ROM', 'Unlinked Launcher', 'Broken'] default 'OK'
+    #  'OK'                ROM filename exists and launcher exists and ROM id exists
+    #  'Unlinked ROM'      ROM filename exists but ROM ID in launcher does not
+    #  'Unlinked Launcher' ROM filename exists but Launcher ID not found
+    #                      Note that if the launcher does not exists implies ROM ID does not exist.
+    #                      If launcher doesn't exist ROM JSON cannot be loaded.
+    #  'Broken'            ROM filename does not exist. ROM is unplayable
+    #
+    def copy_as_favourite_ROM(self):
+        # >> Copy original rom     
+        # todo: Should we make a FavouriteRom class inheriting Rom?
+        favourite_data = self.copy_of_data_dic()
+        
+        favourite_data['launcherID'] = self.launcher.get_id()
+        favourite_data['platform']   = self.get_platform()
+        
+        favourite = ROM(favourite_data, None)
+        
+        # Delete nointro_status field from ROM. Make sure this is done in the copy to be
+        # returned to avoid chaning the function parameters (dictionaries are mutable!)
+        # See http://stackoverflow.com/questions/5844672/delete-an-element-from-a-dictionary
+        # NOTE keep it!
+        # del favourite_data['nointro_status']
+        
+        # >> Favourite ROM unique fields
+        # >> Favourite ROMs in "Most played ROMs" DB also have 'launch_count' field.
+        favourite.set_favourite_status('OK')
+
+        # >> Copy parent launcher fields into Favourite ROM
+        #favourite.set_custom_attribute('launcherID',            self.get_id())
+        #favourite.set_custom_attribute('platform',              self.get_platform())
+        #favourite.set_custom_attribute('application',           self.get_custom_attribute('application'))
+        #favourite.set_custom_attribute('args',                  self.get_custom_attribute('args'))
+        #favourite.set_custom_attribute('args_extra',            self.get_custom_attribute('args_extra'))
+        #favourite.set_custom_attribute('rompath',               self.get_rom_path().getPath())
+        #favourite.set_custom_attribute('romext',                self.get_custom_attribute('romext'))
+        #favourite.set_custom_attribute('toggle_window',         self.is_in_windowed_mode())
+        #favourite.set_custom_attribute('non_blocking',          self.is_non_blocking())
+        #favourite.set_custom_attribute('roms_default_icon',     self.get_custom_attribute('roms_default_icon'))
+        #favourite.set_custom_attribute('roms_default_fanart',   self.get_custom_attribute('roms_default_fanart'))
+        #favourite.set_custom_attribute('roms_default_banner',   self.get_custom_attribute('roms_default_banner'))
+        #favourite.set_custom_attribute('roms_default_poster',   self.get_custom_attribute('roms_default_poster'))
+        #favourite.set_custom_attribute('roms_default_clearlogo',self.get_custom_attribute('roms_default_clearlogo'))
+
+        return favourite
 
     def delete_from_disk(self):
         if self.launcher is None:
@@ -2832,56 +2885,7 @@ class ROMLauncherABC(LauncherABC):
         self.romsetRepository.delete_by_launcher(self, ROMSET_CPARENT)
         self.romsetRepository.delete_by_launcher(self, ROMSET_PCLONE)
         self.romsetRepository.delete_by_launcher(self, ROMSET_PARENTS)
-
-    # -------------------------------------------------------------------------------------------------
-    # Favourite ROM creation/management
-    # -------------------------------------------------------------------------------------------------
-    #
-    # Creates a new Favourite ROM dictionary from parent ROM and Launcher.
-    #
-    # No-Intro Missing ROMs are not allowed in Favourites or Virtual Launchers.
-    # fav_status = ['OK', 'Unlinked ROM', 'Unlinked Launcher', 'Broken'] default 'OK'
-    #  'OK'                ROM filename exists and launcher exists and ROM id exists
-    #  'Unlinked ROM'      ROM filename exists but ROM ID in launcher does not
-    #  'Unlinked Launcher' ROM filename exists but Launcher ID not found
-    #                      Note that if the launcher does not exists implies ROM ID does not exist.
-    #                      If launcher doesn't exist ROM JSON cannot be loaded.
-    #  'Broken'            ROM filename does not exist. ROM is unplayable
-    #
-    def convert_rom_to_favourite(self, rom_id):
-        rom = self.select_ROM(rom_id)
-        # >> Copy original rom     
-        # todo: Should we make a FavouriteRom class inheriting Rom?
-        favourite = rom.copy()
-
-        # Delete nointro_status field from ROM. Make sure this is done in the copy to be
-        # returned to avoid chaning the function parameters (dictionaries are mutable!)
-        # See http://stackoverflow.com/questions/5844672/delete-an-element-from-a-dictionary
-        # NOTE keep it!
-        # del favourite['nointro_status']
-
-        # >> Copy parent launcher fields into Favourite ROM
-        favourite.set_custom_attribute('launcherID',            self.get_id())
-        favourite.set_custom_attribute('platform',              self.get_platform())
-        favourite.set_custom_attribute('application',           self.get_custom_attribute('application'))
-        favourite.set_custom_attribute('args',                  self.get_custom_attribute('args'))
-        favourite.set_custom_attribute('args_extra',            self.get_custom_attribute('args_extra'))
-        favourite.set_custom_attribute('rompath',               self.get_rom_path().getPath())
-        favourite.set_custom_attribute('romext',                self.get_custom_attribute('romext'))
-        favourite.set_custom_attribute('toggle_window',         self.is_in_windowed_mode())
-        favourite.set_custom_attribute('non_blocking',          self.is_non_blocking())
-        favourite.set_custom_attribute('roms_default_icon',     self.get_custom_attribute('roms_default_icon'))
-        favourite.set_custom_attribute('roms_default_fanart',   self.get_custom_attribute('roms_default_fanart'))
-        favourite.set_custom_attribute('roms_default_banner',   self.get_custom_attribute('roms_default_banner'))
-        favourite.set_custom_attribute('roms_default_poster',   self.get_custom_attribute('roms_default_poster'))
-        favourite.set_custom_attribute('roms_default_clearlogo',self.get_custom_attribute('roms_default_clearlogo'))
-
-        # >> Favourite ROM unique fields
-        # >> Favourite ROMs in "Most played ROMs" DB also have 'launch_count' field.
-        favourite.set_favourite_status('OK')
-
-        return favourite
-		
+        		
     #
     # Get a list of assets with duplicated paths. Refuse to do anything if duplicated paths found.
     #

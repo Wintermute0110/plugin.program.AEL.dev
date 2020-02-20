@@ -1907,10 +1907,10 @@ def m_command_add_rom_to_favourites(categoryID, launcherID, romID):
 
     if launcher.get_launcher_type() == OBJ_LAUNCHER_VIRTUAL:
         actual_launcher_id = rom.get_launcher_id()
-        launcher = g_ObjectRepository.find_launcher(actual_launcher_id)
+        launcher = g_ObjectFactory.find_launcher(None, actual_launcher_id)
 
     # --- Load favourites ---
-    favlauncher = g_ObjectRepository.find_launcher(VLAUNCHER_FAVOURITES_ID)
+    favlauncher = g_ObjectFactory.find_launcher(VCATEGORY_FAVOURITES_ID, VLAUNCHER_FAVOURITES_ID)
     roms_fav = favlauncher.get_roms()
 
     # --- DEBUG info ---
@@ -1919,7 +1919,7 @@ def m_command_add_rom_to_favourites(categoryID, launcherID, romID):
     log_verb('_command_add_to_favourites() m_name {0}'.format(rom.get_name()))
 
     # Check if ROM already in favourites an warn user if so
-    if favlauncher.has_rom(romID):
+    if favlauncher.has_ROM(romID):
         log_verb('Already in favourites')
         dialog = xbmcgui.Dialog()
         ret = dialog.yesno('Advanced Emulator Launcher',
@@ -1937,7 +1937,7 @@ def m_command_add_rom_to_favourites(categoryID, launcherID, romID):
             return
         
     # --- Add ROM to favourites ROMs and save to disk ---
-    fav_rom = launcher.convert_rom_to_favourite(romID)
+    fav_rom = rom.copy_as_favourite_ROM()
     favlauncher.save_ROM(fav_rom)
 
     kodi_notify('ROM {0} added to Favourites'.format(fav_rom.get_name()))
