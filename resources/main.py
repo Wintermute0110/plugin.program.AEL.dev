@@ -571,7 +571,7 @@ def m_gui_render_Browse_by_vlaunchers_row(virtual_category_kind):
     if xbmc.getCondVisibility("!Skin.HasSetting(KioskMode.Enabled)"):
         listitem.addContextMenuItems(commands, replaceItems = True)
 
-    url_str = router.create_url('SHOW_VIRTUAL_CATEGORY', categoryID=virtual_category_kind)
+    url_str = router.create_url('SHOW_VLAUNCHER_ROMS', virtual_categoryID=virtual_category_kind)
     xbmcplugin.addDirectoryItem(handle = g_addon_handle, url = url_str, listitem = listitem, isFolder = True)
 
 @router.action('SHOW_AEL_OFFLINE_LAUNCHERS_ROOT')
@@ -676,8 +676,6 @@ def m_gui_render_LB_scraper_vlaunchers_row(platform, platform_info, db_suffix):
     url_str = router.create_url('SHOW_LB_SCRAPER_ROMS',categoryID=platform)
     xbmcplugin.addDirectoryItem(handle = g_addon_handle, url = url_str, listitem = listitem, isFolder = True)
     
-# TODO: @router.action('SHOW_VIRTUAL_CATEGORY')
-
 #
 # Render the Recently played and Most Played virtual launchers.
 #
