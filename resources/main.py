@@ -6907,10 +6907,12 @@ def m_gui_edit_asset(obj_instance, asset_info):
     if selected_option == 'LINK_LOCAL':
         current_image_file = obj_instance.get_asset_FN(asset_info)
         if current_image_file is None:
-            current_image_file = obj_instance.get_assets_path_FN()
-            if current_image_file is None: current_image_dir = FileName('/')
+            current_image_dir = obj_instance.get_assets_path_FN()
         else: 
             current_image_dir = FileName(current_image_file.getDir(), isdir = True)
+        
+        if current_image_dir is None: current_image_dir = FileName('/')
+        
         log_debug('m_gui_edit_asset() Asset initial dir "{0}"'.format(current_image_dir.getPath()))
         title_str = 'Select {0} {1}'.format(obj_instance.get_object_name(), asset_info.name)
         ext_list = asset_info.exts_dialog
