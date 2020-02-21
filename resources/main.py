@@ -9654,10 +9654,10 @@ class Main:
         pdialog.endProgress()
 
         # --- Scan all files in extra ROM path ---------------------------------------------------
+        extra_files = []
         if launcher['romextrapath']:
             log_info('Scanning files in extra ROM path.')
             pdialog.startProgress('Scanning and caching files in extra ROM path ...')
-            extra_files = []
             log_info('Scanning files in {}'.format(rom_extra_path.getPath()))
             report_fobj.write('Scanning files ...\n')
             report_fobj.write('Directory {}\n'.format(rom_extra_path.getPath()))
