@@ -1659,6 +1659,12 @@ class ROM(MetaDataItemABC):
 
         return asset_odict
     
+    def get_assets_path_FN(self):
+        if not self.launcher:
+            return None
+        
+        return self.launcher.get_assets_path_FN()
+    
     #
     # Get a list of the assets that can be mapped to a defaultable asset.
     # They must be images, no videos, no documents.
