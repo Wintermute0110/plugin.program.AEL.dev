@@ -119,6 +119,8 @@ class ScraperSettings(object):
         
         self.scrape_metadata_policy = SCRAPE_POLICY_TITLE_ONLY
         self.scrape_assets_policy   = SCRAPE_POLICY_LOCAL_ONLY
+        
+        self.search_term_mode       = SCRAPE_AUTOMATIC
         self.game_selection_mode    = SCRAPE_AUTOMATIC
         self.asset_selection_mode   = SCRAPE_AUTOMATIC
         
@@ -456,7 +458,7 @@ class ScrapeStrategy(object):
     
     def scanner_process_ROM(self, ROM, ROM_checksums):
         log_debug('ScrapeStrategy.scanner_process_ROM() Determining metadata and asset actions...')
-        
+                
         if self.scraper_settings.scrape_metadata_policy != SCRAPE_ACTION_NONE:
             self._scanner_process_ROM_metadata_begin(ROM)
         
@@ -472,16 +474,21 @@ class ScrapeStrategy(object):
         # set internally in the scraper object. Unless candidate selection was skipped for metadata.
         status_dic = kodi_new_status_dic('No error')
 
+        ROM_path = ROM.get_file()
+        rom_name_scraping = text_format_ROM_name_for_scraping(ROM_path.getBaseNoExt())    
+        if self.scraper_settings.search_term_mode == SCRAPE_MANUAL:
+            rom_name_scraping = kodi_dialog_GetText('Search term', rom_name_scraping)
+            
         log_debug('ScrapeStrategy.scanner_process_ROM() Getting candidates for game')
         meta_candidate_set = False
         if self.scraper_settings.scrape_metadata_policy != SCRAPE_ACTION_NONE:
-            self._scanner_get_candidate(ROM, ROM_checksums, self.meta_scraper_obj, status_dic)
+            self._scanner_get_candidate(ROM, ROM_checksums, rom_name_scraping, self.meta_scraper_obj, status_dic)
             meta_candidate_set = True
         
         asset_candidate_set = False
         if self.scraper_settings.scrape_assets_policy != SCRAPE_ACTION_NONE:
             if not self.meta_and_asset_scraper_same and not meta_candidate_set:
-                self._scanner_get_candidate(ROM, ROM_checksums, self.asset_scraper_obj, status_dic)
+                self._scanner_get_candidate(ROM, ROM_checksums, rom_name_scraping, self.asset_scraper_obj, status_dic)
                 asset_candidate_set = True
             else: log_debug('Asset candidate game same as metadata candidate. Doing nothing.')
                 
@@ -695,7 +702,7 @@ class ScrapeStrategy(object):
 
     # Get a candidate game in the ROM scanner.
     # Returns nothing.
-    def _scanner_get_candidate(self, ROM, ROM_checksums_FN, scraper_obj, status_dic):
+    def _scanner_get_candidate(self, ROM, ROM_checksums_FN, search_term, scraper_obj, status_dic):
         # --- Update scanner progress dialog ---
         if self.pdialog_verbose:
             scraper_text = 'Searching games with scraper {}...'.format(scraper_obj.get_name())
@@ -724,14 +731,8 @@ class ScrapeStrategy(object):
             # Clear all caches to remove preexiting information, just in case user is rescraping.
             scraper_obj.clear_cache(ROM_path, self.platform)
 
-            # --- Call scraper and get a list of games ---
-            # In manual scanner mode should we ask the user for a search string
-            # if the scraper supports it?
-            # I think it is better to keep things like this. If the scraper does not
-            # find a proper candidate game the user can fix the scraper cache with the
-            # context menu.
-            rom_name_scraping = text_format_ROM_name_for_scraping(ROM_path.getBaseNoExt())                
-            candidates = scraper_obj.get_candidates(rom_name_scraping, ROM_path, ROM_checksums_FN, self.platform, status_dic)
+            # --- Call scraper and get a list of games ---                
+            candidates = scraper_obj.get_candidates(search_term, ROM_path, ROM_checksums_FN, self.platform, status_dic)
             # * If the scraper produced an error notification show it and continue scanner operation.
             # * Note that if many errors/exceptions happen (for example, network is down) then
             #   the scraper will disable itself after a number of errors and only a limited number
@@ -3413,6 +3414,10 @@ class ScreenScraper(Scraper):
 
     # Call to ScreenScraper jeuInfos.php.
     def _search_candidates_jeuInfos(self, rom_FN, rom_checksums_FN, platform, scraper_platform, status_dic):
+        if rom_FN is None or rom_checksums_FN is None:
+            log_warning('Trying to scrape a non existing or virtual ROM file with Screenscraper')
+            return None
+        
         # --- Test data ---
         # * Example from ScreenScraper API info page.
         #   #crc=50ABC90A&systemeid=1&romtype=rom&romnom=Sonic%20The%20Hedgehog%202%20(World).zip&romtaille=749652
@@ -3711,6 +3716,7 @@ class ScreenScraper(Scraper):
     #    the file.
     # 3) Return a checksums dictionary if everything is OK. Return None in case of any error.
     def _get_SS_checksum(self, rom_checksums_FN):
+              
         f_basename = rom_checksums_FN.getBase()
         f_path = rom_checksums_FN.getPath()
         log_debug('_get_SS_checksum() Processing "{}"'.format(f_path))

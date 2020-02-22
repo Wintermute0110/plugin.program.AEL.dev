@@ -1924,6 +1924,10 @@ def kodi_display_text_window_mono(window_title, info_text):
 def kodi_display_text_window(window_title, info_text):
     xbmcgui.Dialog().textviewer(window_title, info_text)
 
+def kodi_dialog_GetText(title_str, default_value):
+    output  = xbmcgui.Dialog().input(title_str, default_value, xbmcgui.INPUT_ALPHANUM)
+    return output
+
 #
 # Kodi dialog to select a file
 # Documentation in https://alwinesch.github.io/group__python___dialog.html

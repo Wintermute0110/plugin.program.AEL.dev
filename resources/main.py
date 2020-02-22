@@ -1856,21 +1856,52 @@ def m_command_edit_launcher(categoryID, launcherID):
 
 #
 # Add ROMS to launcher.
+# ROM scanner. Called when user chooses Launcher CM, "Add ROMs" -> "Scan for new ROMs"
 #
 @router.action('ADD_ROMS', protected=True)
-def m_command_add_roms(categoryID, launcherID):
-    # NOTE Addition of single ROMs is deprecated. Only use the ROM scanner.
-    #      Keep this old code for reference.
-    # type = xbmcgui.Dialog().select(
-    #     'Add/Update ROMs to Launcher', ['Scan for New ROMs', 'Manually Add ROM']
-    # )
-    # if type == 0:
-    #     m_roms_import_roms(launcher_id)
-    # elif type == 1:
-    #     m_roms_add_new_rom(launcher_id)
+def m_roms_import_roms(categoryID, launcherID):
+    log_debug('========== m_roms_import_roms() BEGIN ==================================================')
+    pdialog             = KodiProgressDialog()
+    launcher            = g_ObjectFactory.find_launcher(categoryID, launcherID)
+    scraper_strategy    = g_ScraperFactory.create_scraper(launcher, pdialog)
+    rom_scanner         = g_ROMScannerFactory.create(launcher, scraper_strategy, pdialog)
 
-    # --- Call the ROM scanner ---
-    m_roms_import_roms(categoryID, launcherID)
+    # Something went wrong, stop operation
+    if scraper_strategy is None:
+        return
+
+    log_debug('m_roms_import_roms(): Start scanning')
+    roms = rom_scanner.scan()
+    pdialog.endProgress()
+    log_debug('m_roms_import_roms(): Finished scanning')
+    
+    if roms is None:
+        log_info('m_roms_import_roms(): No roms scanned')
+        return
+        
+    log_info('m_roms_import_roms(): {} roms scanned'.format(len(roms)))
+    # --- If we have a No-Intro XML then audit roms after scanning ----------------------------
+    if launcher.has_nointro_xml():
+        m_audit_no_intro_roms(launcher, roms)
+    else:
+        log_info('No-Intro/Redump DAT not configured. Do not audit ROMs.')
+
+    pdialog.startProgress('Saving ROM JSON database ...')
+
+    # ~~~ Save ROMs XML file ~~~
+    # >> Also save categories/launchers to update timestamp.
+    # >> Update launcher timestamp to update VLaunchers and reports.
+    log_debug('Saving {0} ROMS'.format(len(roms)))
+    launcher.update_ROM_set(roms)
+
+    pdialog.updateProgress(80)
+    
+    launcher.set_number_of_roms()
+    launcher.save_to_disk()
+
+    pdialog.updateProgress(100)
+    pdialog.close()
+    kodi_notify('ROMs import done')
 
 #
 # Note that categoryID = VCATEGORY_FAVOURITES_ID, launcherID = VLAUNCHER_FAVOURITES_ID if we are editing
@@ -5186,6 +5217,7 @@ def m_subcommand_scrape_rom_metadata(launcher, rom):
     scraper_settings = ScraperSettings()
     scraper_settings.metadata_scraper_ID     = selected_option
     scraper_settings.scrape_metadata_policy  = SCRAPE_POLICY_SCRAPE_ONLY
+    scraper_settings.search_term_mode        = SCRAPE_MANUAL
     scraper_settings.game_selection_mode     = SCRAPE_MANUAL
     scraper_settings.scrape_assets_policy    = SCRAPE_ACTION_NONE
     
@@ -5233,6 +5265,7 @@ def m_subcommand_rescrape_rom_assets(rom):
     scraper_settings.assets_scraper_ID       = selected_option
     scraper_settings.scrape_metadata_policy  = SCRAPE_ACTION_NONE
     scraper_settings.scrape_assets_policy    = SCRAPE_POLICY_SCRAPE_ONLY
+    scraper_settings.search_term_mode        = SCRAPE_MANUAL
     scraper_settings.game_selection_mode     = SCRAPE_MANUAL
     scraper_settings.asset_selection_mode    = SCRAPE_MANUAL
     
@@ -5328,14 +5361,14 @@ def m_subcommand_delete_rom(launcher, rom):
                         'ROMs then delete the XML DAT file.')
         return
 
-    log_info('_command_remove_rom() Deleting ROM from {0} (id {1})'.format(launcher.get_name(), rom.get_id()))
+    log_info('m_subcommand_delete_rom() Deleting ROM from {0} (id {1})'.format(launcher.get_name(), rom.get_id()))
 
     # --- Confirm deletion ---
     msg_str = 'Are you sure you want to delete it from "{0}"?'.format(launcher.get_name())
     ret = kodi_dialog_yesno('ROM "{0}". {1}'.format(rom.get_name(), msg_str))
     if not ret: return
 
-    launcher.remove_rom(rom.get_id())
+    launcher.delete_ROM(rom.get_id())
 
     # --- If there is a No-Intro XML configured audit ROMs ---
     if launcher.has_nointro_xml():
@@ -7041,6 +7074,7 @@ def m_gui_edit_asset(obj_instance, asset_info):
         scraper_settings.assets_scraper_ID       = selected_option
         scraper_settings.scrape_metadata_policy  = SCRAPE_ACTION_NONE
         scraper_settings.scrape_assets_policy    = SCRAPE_POLICY_SCRAPE_ONLY
+        scraper_settings.search_term_mode        = SCRAPE_MANUAL
         scraper_settings.game_selection_mode     = SCRAPE_MANUAL
         scraper_settings.asset_selection_mode    = SCRAPE_MANUAL
         scraper_settings.asset_IDs_to_scrape     = [asset_info.id]
@@ -8655,49 +8689,6 @@ def m_roms_add_new_rom(launcherID):
 
     kodi_refresh_container()
     kodi_notify('Added ROM. Launcher has now {0} ROMs'.format(self.launcher.get_number_of_roms()))
-
-#
-# ROM scanner. Called when user chooses Launcher CM, "Add ROMs" -> "Scan for new ROMs"
-#
-def m_roms_import_roms(categoryID, launcherID):
-    log_debug('========== _roms_import_roms() BEGIN ==================================================')
-    pdialog             = KodiProgressDialog()
-    launcher            = g_ObjectFactory.find_launcher(categoryID, launcherID)
-    scraper_strategy    = g_ScraperFactory.create_scraper(launcher, pdialog)
-    rom_scanner         = g_ROMScannerFactory.create(launcher, scraper_strategy, pdialog)
-
-    # Something went wrong, stop operation
-    if scraper_strategy is None:
-        return
-
-    roms = rom_scanner.scan()
-    pdialog.endProgress()
-    
-    if roms is None:
-        return
-
-    # --- If we have a No-Intro XML then audit roms after scanning ----------------------------
-    if launcher.has_nointro_xml():
-        self._audit_no_intro_roms(launcher, roms)
-    else:
-        log_info('No-Intro/Redump DAT not configured. Do not audit ROMs.')
-
-    pdialog.startProgress('Saving ROM JSON database ...')
-
-    # ~~~ Save ROMs XML file ~~~
-    # >> Also save categories/launchers to update timestamp.
-    # >> Update launcher timestamp to update VLaunchers and reports.
-    log_debug('Saving {0} ROMS'.format(len(roms)))
-    launcher.update_ROM_set(roms)
-
-    pdialog.updateProgress(80)
-    
-    launcher.set_number_of_roms()
-    launcher.save_to_disk()
-
-    pdialog.updateProgress(100)
-    pdialog.close()
-    kodi_notify('ROMs import done')
 
 def m_audit_no_intro_roms(launcher, roms):
     
