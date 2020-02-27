@@ -4648,7 +4648,7 @@ class SteamGridDB(Scraper):
             log_debug('SteamGridDB.get_candidates() Scraper disabled. Returning empty data.')
             return None
 
-        if platform <> 'Microsoft Windows':
+        if platform != 'Microsoft Windows':
             log_error('SteamGridDB.get_candidates() SteamGridDB called with incompatible platform')
             status_dic['status'] = False
             status_dic['dialog'] = KODI_MESSAGE_DIALOG
