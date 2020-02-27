@@ -473,10 +473,9 @@ class ScrapeStrategy(object):
         status_dic = kodi_new_status_dic('No error')
 
         ROM_path = ROM.get_file()
-        if self.scraper_settings.search_term_mode == SCRAPE_MANUAL:
+        search_term = text_format_ROM_name_for_scraping(ROM_path.getBaseNoExt())
+        if self.scraper_settings.search_term_mode == SCRAPE_MANUAL:            
             search_term = kodi_dialog_GetText('Search term', ROM_path.getBaseNoExt())
-        else:
-            search_term = text_format_ROM_name_for_scraping(ROM_path.getBaseNoExt())
             
         log_debug('ScrapeStrategy.scanner_process_ROM() Getting candidates for game')
         meta_candidate_set = False
@@ -4647,14 +4646,6 @@ class SteamGridDB(Scraper):
             # If the scraper is disabled return None and do not mark error in status_dic.
             log_debug('SteamGridDB.get_candidates() Scraper disabled. Returning empty data.')
             return None
-
-        if platform != 'Microsoft Windows':
-            log_error('SteamGridDB.get_candidates() SteamGridDB called with incompatible platform')
-            status_dic['status'] = False
-            status_dic['dialog'] = KODI_MESSAGE_DIALOG
-            status_dic['msg'] = (
-                'SteamGridDB only supports Windows as a platform.'
-            )
 
         # Prepare data for scraping.
         rombase_noext = rom_FN.getBaseNoExt()
