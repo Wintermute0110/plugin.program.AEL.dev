@@ -36,6 +36,10 @@ msgctxt "#10090"
 msgid "SteamGridDB"
 msgstr "settings.xml"
 
+msgctxt "#10100"
+msgid "Google search"
+msgstr "settings.xml"
+
 ############################
 # Scraping settings
 ############################
