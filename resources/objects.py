@@ -839,7 +839,7 @@ class ROMSetRepository(object):
             repository_file = self.ROMs_dir.pjoin('{}_parents.json'.format(roms_base_noext))
         if not repository_file.exists():
             log_warning('Launcher JSON not found "{0}"'.format(repository_file.getPath()))
-            return None
+            return {}
         log_info('Loading ROMs in Launcher ({0}:{1}) ...'.format(
             launcher.get_launcher_type(), launcher.get_name()))
         log_info('View mode {0}...'.format(view_mode))
@@ -868,12 +868,12 @@ class ROMSetRepository(object):
         roms = {}
         if isinstance(roms_data, list):
             for rom_data in roms_data:
-                r = ROM(rom_data)
+                r = ROM(rom_data, launcher)
                 key = r.get_id()
                 roms[key] = r
         else:
             for key in roms_data:
-                r = ROM(roms_data[key])
+                r = ROM(roms_data[key], launcher)
                 roms[key] = r
 
         return roms
@@ -1007,24 +1007,43 @@ class ROMSetRepository(object):
 # Strategy class for updating the ROM play statistics.
 # Updates the amount of times a ROM is played and which rom recently has been played.
 # Uses functions in disk_IO.py for maximum speed.
-# ROMStatisticsStrategy() is exclusively called at ROM execution time.
+# ROMStatisticsStrategyABC() is exclusively called at ROM execution time.
 # -------------------------------------------------------------------------------------------------
-class ROMStatisticsStrategy(object):
+class ROMStatisticsStrategyABC(object):
+    __metaclass__ = abc.ABCMeta
+     
     def __init__(self, PATHS, settings):
         self.PATHS = PATHS
-        self.settings = settings
+        self.settings = settings 
         self.MAX_RECENT_PLAYED_ROMS = 100
-        # self.recent_played_launcher = recent_played_launcher
-        # self.most_played_launcher = most_played_launcher
+    
+    @abc.abstractmethod
+    def update_launched_rom_stats(self, rom_to_update): pass
 
-    def update_launched_rom_stats(self, recent_rom):
-        if True:
-            return #TODO
+class VirtualROMStatisticsStrategy(ROMStatisticsStrategyABC):
+    
+    def update_launched_rom_stats(self, rom_to_update): 
+        pass
+    
+class ROMStatisticsStrategy(ROMStatisticsStrategyABC):
+    
+    def __init__(self, PATHS, settings, recent_played_launcher, most_played_launcher):
+        self.recent_played_launcher = recent_played_launcher
+        self.most_played_launcher = most_played_launcher
+        
+        super(ROMStatisticsStrategy, self).__init__(PATHS, settings)
+
+    def update_launched_rom_stats(self, rom_to_update):
+        rom_to_update.increase_launch_count()
+        virtual_rom = rom_to_update.copy_as_virtual_ROM()
         
         # --- Compute ROM recently played list ---
-        recently_played_roms = None #TODO: self.recent_played_launcher.get_roms()
-        recently_played_roms = [rom for rom in recently_played_roms if rom.get_id() != recent_rom.get_id()]
-        recently_played_roms.insert(0, recent_rom)
+        recently_played_roms = self.recent_played_launcher.get_roms()
+        if recently_played_roms:
+            recently_played_roms = [rom for rom in recently_played_roms if rom.get_id() != rom_to_update.get_id()]
+        else:
+            recently_played_roms = []
+        recently_played_roms.insert(0, virtual_rom)
 
         if len(recently_played_roms) > self.MAX_RECENT_PLAYED_ROMS:
             log_debug('RomStatisticsStrategy() len(recently_played_roms) = {0}'.format(len(recently_played_roms)))
@@ -1033,18 +1052,16 @@ class ROMStatisticsStrategy(object):
             temp_list            = recently_played_roms[:self.MAX_RECENT_PLAYED_ROMS]
             recently_played_roms = temp_list
 
-        #TODO: self.recent_played_launcher.update_rom_set(recently_played_roms)
-
-        recent_rom.increase_launch_count()
+        self.recent_played_launcher.update_ROM_set(recently_played_roms)
 
         # --- Compute most played ROM statistics ---
-        most_played_roms = None #TODO: self.most_played_launcher.get_roms()
+        most_played_roms = self.most_played_launcher.get_roms()
         if most_played_roms is None:
             most_played_roms = []
         else:
-            most_played_roms = [rom for rom in most_played_roms if rom.get_id() != recent_rom.get_id()]
-        most_played_roms.append(recent_rom)
-        #TODO: self.most_played_launcher.update_rom_set(most_played_roms)
+            most_played_roms = [rom for rom in most_played_roms if rom.get_id() != rom_to_update.get_id()]
+        most_played_roms.append(virtual_rom)
+        self.most_played_launcher.update_ROM_set(most_played_roms)
 
 # -------------------------------------------------------------------------------------------------
 # Abstract base class for business objects which support the generic
@@ -1422,14 +1439,14 @@ class VirtualCategory(MetaDataItemABC):
 # -------------------------------------------------------------------------------------------------
 class ROM(MetaDataItemABC):
         
-    def __init__(self, rom_data = None):        
+    def __init__(self, rom_data = None, launcher = None):        
         if rom_data is None:
             rom_data = fs_new_rom()
             rom_data['id'] = misc_generate_random_SID()
             rom_data['type'] = OBJ_ROM
             
         # back/parent reference 
-        self.launcher = None
+        self.launcher = launcher
         
         super(ROM, self).__init__(None, None, rom_data, None)
 
@@ -1443,6 +1460,12 @@ class ROM(MetaDataItemABC):
     def is_virtual_rom(self):
         return 'launcherID' in self.entity_data
 
+    def get_platform(self):
+        if self.is_virtual_rom():
+            return self.entity_data['platform']
+                        
+        return self.launcher.get_platform()
+    
     def get_nointro_status(self):
         return self.entity_data['nointro_status']
 
@@ -1541,8 +1564,67 @@ class ROM(MetaDataItemABC):
         self.entity_data['altarg'] = arg
 
     def copy(self):
-        data = self.copy_of_data()
-        return ROM(data)
+        data = self.copy_of_data_dic()
+        return ROM(data, self.launcher)
+
+    def copy_as_virtual_ROM(self):
+        data = self.copy_of_data_dic()
+        data['launcherID'] = self.launcher.get_id()
+        data['platform'] = self.get_platform()
+        return ROM(data, None)
+
+    # -------------------------------------------------------------------------------------------------
+    # Favourite ROM creation/management
+    # -------------------------------------------------------------------------------------------------
+    #
+    # Creates a new Favourite ROM dictionary from parent ROM and Launcher.
+    #
+    # No-Intro Missing ROMs are not allowed in Favourites or Virtual Launchers.
+    # fav_status = ['OK', 'Unlinked ROM', 'Unlinked Launcher', 'Broken'] default 'OK'
+    #  'OK'                ROM filename exists and launcher exists and ROM id exists
+    #  'Unlinked ROM'      ROM filename exists but ROM ID in launcher does not
+    #  'Unlinked Launcher' ROM filename exists but Launcher ID not found
+    #                      Note that if the launcher does not exists implies ROM ID does not exist.
+    #                      If launcher doesn't exist ROM JSON cannot be loaded.
+    #  'Broken'            ROM filename does not exist. ROM is unplayable
+    #
+    def copy_as_favourite_ROM(self):
+        # >> Copy original rom     
+        # todo: Should we make a FavouriteRom class inheriting Rom?
+        favourite_data = self.copy_of_data_dic()
+        
+        favourite_data['launcherID'] = self.launcher.get_id()
+        favourite_data['platform']   = self.get_platform()
+        
+        favourite = ROM(favourite_data, None)
+        
+        # Delete nointro_status field from ROM. Make sure this is done in the copy to be
+        # returned to avoid chaning the function parameters (dictionaries are mutable!)
+        # See http://stackoverflow.com/questions/5844672/delete-an-element-from-a-dictionary
+        # NOTE keep it!
+        # del favourite_data['nointro_status']
+        
+        # >> Favourite ROM unique fields
+        # >> Favourite ROMs in "Most played ROMs" DB also have 'launch_count' field.
+        favourite.set_favourite_status('OK')
+
+        # >> Copy parent launcher fields into Favourite ROM
+        #favourite.set_custom_attribute('launcherID',            self.get_id())
+        #favourite.set_custom_attribute('platform',              self.get_platform())
+        #favourite.set_custom_attribute('application',           self.get_custom_attribute('application'))
+        #favourite.set_custom_attribute('args',                  self.get_custom_attribute('args'))
+        #favourite.set_custom_attribute('args_extra',            self.get_custom_attribute('args_extra'))
+        #favourite.set_custom_attribute('rompath',               self.get_rom_path().getPath())
+        #favourite.set_custom_attribute('romext',                self.get_custom_attribute('romext'))
+        #favourite.set_custom_attribute('toggle_window',         self.is_in_windowed_mode())
+        #favourite.set_custom_attribute('non_blocking',          self.is_non_blocking())
+        #favourite.set_custom_attribute('roms_default_icon',     self.get_custom_attribute('roms_default_icon'))
+        #favourite.set_custom_attribute('roms_default_fanart',   self.get_custom_attribute('roms_default_fanart'))
+        #favourite.set_custom_attribute('roms_default_banner',   self.get_custom_attribute('roms_default_banner'))
+        #favourite.set_custom_attribute('roms_default_poster',   self.get_custom_attribute('roms_default_poster'))
+        #favourite.set_custom_attribute('roms_default_clearlogo',self.get_custom_attribute('roms_default_clearlogo'))
+
+        return favourite
 
     def delete_from_disk(self):
         if self.launcher is None:
@@ -1576,6 +1658,12 @@ class ROM(MetaDataItemABC):
             asset_odict[asset_info] = self.get_asset_str(asset_info)
 
         return asset_odict
+    
+    def get_assets_path_FN(self):
+        if not self.launcher:
+            return None
+        
+        return self.launcher.get_assets_path_FN()
     
     #
     # Get a list of the assets that can be mapped to a defaultable asset.
@@ -2618,11 +2706,6 @@ class ROMLauncherABC(LauncherABC):
         log_info('RomLauncher() final arguments "{0}"'.format(self.arguments))
 
     # ---------------------------------------------------------------------------------------------
-    # ROM methods
-    # ---------------------------------------------------------------------------------------------
-
-
-    # ---------------------------------------------------------------------------------------------
     # ROM asset methods
     # ---------------------------------------------------------------------------------------------
     #
@@ -2732,7 +2815,11 @@ class ROMLauncherABC(LauncherABC):
     def cache_assets(self, asset_id):
         AInfo = g_assetFactory.get_asset_info(asset_id)
         misc_add_file_cache(self.get_asset_path(AInfo))
-               
+     
+    # ---------------------------------------------------------------------------------------------
+    # ROM methods
+    # ---------------------------------------------------------------------------------------------
+          
     # ---------------------------------------------------------------------------------------------
     # Utility functions of ROM Launchers
     # Use the same function names as in ObjectRepository class.
@@ -2771,7 +2858,6 @@ class ROMLauncherABC(LauncherABC):
             log_error('RomID {0} not found in romset'.format(rom_id))
             return None
         self.rom = self.roms[rom_id]
-        self.rom.launcher = self
 
         return self.rom
 
@@ -2805,56 +2891,7 @@ class ROMLauncherABC(LauncherABC):
         self.romsetRepository.delete_by_launcher(self, ROMSET_CPARENT)
         self.romsetRepository.delete_by_launcher(self, ROMSET_PCLONE)
         self.romsetRepository.delete_by_launcher(self, ROMSET_PARENTS)
-
-    # -------------------------------------------------------------------------------------------------
-    # Favourite ROM creation/management
-    # -------------------------------------------------------------------------------------------------
-    #
-    # Creates a new Favourite ROM dictionary from parent ROM and Launcher.
-    #
-    # No-Intro Missing ROMs are not allowed in Favourites or Virtual Launchers.
-    # fav_status = ['OK', 'Unlinked ROM', 'Unlinked Launcher', 'Broken'] default 'OK'
-    #  'OK'                ROM filename exists and launcher exists and ROM id exists
-    #  'Unlinked ROM'      ROM filename exists but ROM ID in launcher does not
-    #  'Unlinked Launcher' ROM filename exists but Launcher ID not found
-    #                      Note that if the launcher does not exists implies ROM ID does not exist.
-    #                      If launcher doesn't exist ROM JSON cannot be loaded.
-    #  'Broken'            ROM filename does not exist. ROM is unplayable
-    #
-    def convert_rom_to_favourite(self, rom_id):
-        rom = self.select_ROM(rom_id)
-        # >> Copy original rom     
-        # todo: Should we make a FavouriteRom class inheriting Rom?
-        favourite = rom.copy()
-
-        # Delete nointro_status field from ROM. Make sure this is done in the copy to be
-        # returned to avoid chaning the function parameters (dictionaries are mutable!)
-        # See http://stackoverflow.com/questions/5844672/delete-an-element-from-a-dictionary
-        # NOTE keep it!
-        # del favourite['nointro_status']
-
-        # >> Copy parent launcher fields into Favourite ROM
-        favourite.set_custom_attribute('launcherID',            self.get_id())
-        favourite.set_custom_attribute('platform',              self.get_platform())
-        favourite.set_custom_attribute('application',           self.get_custom_attribute('application'))
-        favourite.set_custom_attribute('args',                  self.get_custom_attribute('args'))
-        favourite.set_custom_attribute('args_extra',            self.get_custom_attribute('args_extra'))
-        favourite.set_custom_attribute('rompath',               self.get_rom_path().getPath())
-        favourite.set_custom_attribute('romext',                self.get_custom_attribute('romext'))
-        favourite.set_custom_attribute('toggle_window',         self.is_in_windowed_mode())
-        favourite.set_custom_attribute('non_blocking',          self.is_non_blocking())
-        favourite.set_custom_attribute('roms_default_icon',     self.get_custom_attribute('roms_default_icon'))
-        favourite.set_custom_attribute('roms_default_fanart',   self.get_custom_attribute('roms_default_fanart'))
-        favourite.set_custom_attribute('roms_default_banner',   self.get_custom_attribute('roms_default_banner'))
-        favourite.set_custom_attribute('roms_default_poster',   self.get_custom_attribute('roms_default_poster'))
-        favourite.set_custom_attribute('roms_default_clearlogo',self.get_custom_attribute('roms_default_clearlogo'))
-
-        # >> Favourite ROM unique fields
-        # >> Favourite ROMs in "Most played ROMs" DB also have 'launch_count' field.
-        favourite.set_favourite_status('OK')
-
-        return favourite
-		
+        		
     #
     # Get a list of assets with duplicated paths. Refuse to do anything if duplicated paths found.
     #
@@ -3135,7 +3172,7 @@ class VirtualLauncher(ROMLauncherABC):
     def _launch_selectRomFileToUse(self): return False
 
     def has_nointro_xml(self): return False
-
+    
 # -------------------------------------------------------------------------------------------------
 # Standard ROM launcher where user can fully customize all settings.
 #
@@ -4580,19 +4617,52 @@ class AELObjectFactory(object):
             'id' : VLAUNCHER_RECENT_ID,
             'type' : OBJ_CATEGORY_VIRTUAL,
             'm_name': 'Recently played',
-            'roms_base_noext': 'history',
+            'roms_base_noext': 'history',            
+            'default_icon' : 's_icon',
+            'default_fanart' : 's_fanart',
+            'default_banner' : 's_banner',
+            'default_poster' : 's_poster',
+            'default_clearlogo' : 's_clearlogo',
+            'default_controller' : 's_controller',
+            'roms_default_icon' : 's_boxfront',
+            'roms_default_fanart' : 's_fanart',
+            'roms_default_banner' : 's_banner',
+            'roms_default_poster' : 's_flyer',
+            'roms_default_clearlogo' : 's_clearlogo'
         }
         self.most_played_roms_dic = {
             'id' : VLAUNCHER_MOST_PLAYED_ID,
             'type' : OBJ_CATEGORY_VIRTUAL,
             'm_name': 'Most played',
-            'roms_base_noext': 'most_played',
+            'roms_base_noext': 'most_played',            
+            'default_icon' : 's_icon',
+            'default_fanart' : 's_fanart',
+            'default_banner' : 's_banner',
+            'default_poster' : 's_poster',
+            'default_clearlogo' : 's_clearlogo',
+            'default_controller' : 's_controller',
+            'roms_default_icon' : 's_boxfront',
+            'roms_default_fanart' : 's_fanart',
+            'roms_default_banner' : 's_banner',
+            'roms_default_poster' : 's_flyer',
+            'roms_default_clearlogo' : 's_clearlogo'
         }
         self.favourites_roms_dic = {
             'id' : VLAUNCHER_FAVOURITES_ID,
             'type' : OBJ_CATEGORY_VIRTUAL,
             'm_name': 'Favourites',
-            'roms_base_noext': 'favourites',
+            'roms_base_noext': 'favourites',            
+            'default_icon' : 's_icon',
+            'default_fanart' : 's_fanart',
+            'default_banner' : 's_banner',
+            'default_poster' : 's_poster',
+            'default_clearlogo' : 's_clearlogo',
+            'default_controller' : 's_controller',
+            'roms_default_icon' : 's_boxfront',
+            'roms_default_fanart' : 's_fanart',
+            'roms_default_banner' : 's_banner',
+            'roms_default_poster' : 's_flyer',
+            'roms_default_clearlogo' : 's_clearlogo'
         }
 
     #
@@ -4713,7 +4783,7 @@ class AELObjectFactory(object):
         # --- Virtual launchers ---
         elif obj_type == VLAUNCHER_RECENT_ID:
             ROMRepository = ROMSetRepository(self.PATHS, self.settings)
-            statsStrategy = ROMStatisticsStrategy(self.PATHS, self.settings)
+            statsStrategy = VirtualROMStatisticsStrategy(self.PATHS, self.settings)
             
             return VirtualLauncher(self.PATHS, self.settings, self.recently_played_roms_dic, 
                                    None, ROMRepository, statsStrategy
@@ -4721,7 +4791,7 @@ class AELObjectFactory(object):
 
         elif obj_type == VLAUNCHER_MOST_PLAYED_ID:
             ROMRepository = ROMSetRepository(self.PATHS, self.settings)
-            statsStrategy = ROMStatisticsStrategy(self.PATHS, self.settings)
+            statsStrategy = VirtualROMStatisticsStrategy(self.PATHS, self.settings)
             
             return VirtualLauncher(self.PATHS, self.settings, self.most_played_roms_dic, 
                                    None, ROMRepository, statsStrategy
@@ -4729,7 +4799,7 @@ class AELObjectFactory(object):
 
         elif obj_type == VLAUNCHER_FAVOURITES_ID:
             ROMRepository = ROMSetRepository(self.PATHS, self.settings, True)
-            statsStrategy = ROMStatisticsStrategy(self.PATHS, self.settings)
+            statsStrategy = VirtualROMStatisticsStrategy(self.PATHS, self.settings)
             
             return VirtualLauncher(self.PATHS, self.settings, self.favourites_roms_dic, 
                                    None, ROMRepository, statsStrategy
@@ -4742,50 +4812,64 @@ class AELObjectFactory(object):
 
         elif obj_type == OBJ_LAUNCHER_COLLECTION:
             # romsetRepository = ROMSetRepository(self.PATHS.COLLECTIONS_FILE_PATH, False)
-            ROMRepository = ROMSetRepository(self.PATHS, self.settings)
-            statsStrategy = ROMStatisticsStrategy(self.PATHS, self.settings)
+            ROMRepository           = ROMSetRepository(self.PATHS, self.settings)
+            recent_played_launcher  = self._load(VLAUNCHER_RECENT_ID)
+            most_played_launcher    = self._load(VLAUNCHER_MOST_PLAYED_ID)            
+            statsStrategy           = ROMStatisticsStrategy(self.PATHS, self.settings, recent_played_launcher, most_played_launcher)
 
             return CollectionLauncher(self.PATHS, self.settings, obj_dic, romsetRepository)
 
         elif obj_type == OBJ_LAUNCHER_ROM:
-            ROMRepository = ROMSetRepository(self.PATHS, self.settings)
-            statsStrategy = ROMStatisticsStrategy(self.PATHS, self.settings)
+            ROMRepository           = ROMSetRepository(self.PATHS, self.settings)
+            recent_played_launcher  = self._load(VLAUNCHER_RECENT_ID)
+            most_played_launcher    = self._load(VLAUNCHER_MOST_PLAYED_ID)            
+            statsStrategy           = ROMStatisticsStrategy(self.PATHS, self.settings, recent_played_launcher, most_played_launcher)
 
             return StandardRomLauncher(self.PATHS, self.settings, obj_dic, self.objectRepository,
                                        self.executorFactory, ROMRepository, statsStrategy)
 
         elif obj_type == OBJ_LAUNCHER_RETROPLAYER:
-            ROMRepository = ROMSetRepository(self.PATHS, self.settings)
-            statsStrategy = ROMStatisticsStrategy(self.PATHS, self.settings)
+            ROMRepository           = ROMSetRepository(self.PATHS, self.settings)
+            recent_played_launcher  = self._load(VLAUNCHER_RECENT_ID)
+            most_played_launcher    = self._load(VLAUNCHER_MOST_PLAYED_ID)            
+            statsStrategy           = ROMStatisticsStrategy(self.PATHS, self.settings, recent_played_launcher, most_played_launcher)
 
             return RetroplayerLauncher(self.PATHS, self.settings, obj_dic, self.objectRepository,
                                        self.executorFactory, ROMRepository, statsStrategy)
 
         elif obj_type == OBJ_LAUNCHER_RETROARCH:
-            ROMRepository = ROMSetRepository(self.PATHS, self.settings)
-            statsStrategy = ROMStatisticsStrategy(self.PATHS, self.settings)
+            ROMRepository           = ROMSetRepository(self.PATHS, self.settings)
+            recent_played_launcher  = self._load(VLAUNCHER_RECENT_ID)
+            most_played_launcher    = self._load(VLAUNCHER_MOST_PLAYED_ID)            
+            statsStrategy           = ROMStatisticsStrategy(self.PATHS, self.settings, recent_played_launcher, most_played_launcher)
 
             return RetroarchLauncher(self.PATHS, self.settings, obj_dic, self.objectRepository,
                                      self.executorFactory, ROMRepository, statsStrategy)
 
         # LNK launchers available only on Windows
         elif obj_type == OBJ_LAUNCHER_LNK:
-            ROMRepository = ROMSetRepository(self.PATHS, self.settings)
-            statsStrategy = ROMStatisticsStrategy(self.PATHS, self.settings)
+            ROMRepository           = ROMSetRepository(self.PATHS, self.settings)
+            recent_played_launcher  = self._load(VLAUNCHER_RECENT_ID)
+            most_played_launcher    = self._load(VLAUNCHER_MOST_PLAYED_ID)            
+            statsStrategy           = ROMStatisticsStrategy(self.PATHS, self.settings, recent_played_launcher, most_played_launcher)
 
             return LnkLauncher(self.PATHS, self.settings, obj_dic, self.objectRepository,
                                self.executorFactory, ROMRepository, statsStrategy)
 
         elif obj_type == OBJ_LAUNCHER_STEAM:
-            ROMRepository = ROMSetRepository(self.PATHS, self.settings)
-            statsStrategy = ROMStatisticsStrategy(self.PATHS, self.settings)
+            ROMRepository           = ROMSetRepository(self.PATHS, self.settings)
+            recent_played_launcher  = self._load(VLAUNCHER_RECENT_ID)
+            most_played_launcher    = self._load(VLAUNCHER_MOST_PLAYED_ID)            
+            statsStrategy           = ROMStatisticsStrategy(self.PATHS, self.settings, recent_played_launcher, most_played_launcher)
 
             return SteamLauncher(self.PATHS, self.settings, obj_dic, self.objectRepository,
                                  self.executorFactory, ROMRepository, statsStrategy)
 
         elif obj_type == OBJ_LAUNCHER_NVGAMESTREAM:
-            ROMRepository = ROMSetRepository(self.PATHS, self.settings)
-            statsStrategy = ROMStatisticsStrategy(self.PATHS, self.settings)
+            ROMRepository           = ROMSetRepository(self.PATHS, self.settings)
+            recent_played_launcher  = self._load(VLAUNCHER_RECENT_ID)
+            most_played_launcher    = self._load(VLAUNCHER_MOST_PLAYED_ID)            
+            statsStrategy           = ROMStatisticsStrategy(self.PATHS, self.settings, recent_played_launcher, most_played_launcher)
 
             return NvidiaGameStreamLauncher(self.PATHS, self.settings, obj_dic, self.objectRepository,
                                             self.executorFactory, ROMRepository, statsStrategy)

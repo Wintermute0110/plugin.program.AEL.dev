@@ -571,7 +571,7 @@ def m_gui_render_Browse_by_vlaunchers_row(virtual_category_kind):
     if xbmc.getCondVisibility("!Skin.HasSetting(KioskMode.Enabled)"):
         listitem.addContextMenuItems(commands, replaceItems = True)
 
-    url_str = router.create_url('SHOW_VIRTUAL_CATEGORY', categoryID=virtual_category_kind)
+    url_str = router.create_url('SHOW_VLAUNCHER_ROMS', virtual_categoryID=virtual_category_kind)
     xbmcplugin.addDirectoryItem(handle = g_addon_handle, url = url_str, listitem = listitem, isFolder = True)
 
 @router.action('SHOW_AEL_OFFLINE_LAUNCHERS_ROOT')
@@ -676,8 +676,6 @@ def m_gui_render_LB_scraper_vlaunchers_row(platform, platform_info, db_suffix):
     url_str = router.create_url('SHOW_LB_SCRAPER_ROMS',categoryID=platform)
     xbmcplugin.addDirectoryItem(handle = g_addon_handle, url = url_str, listitem = listitem, isFolder = True)
     
-# TODO: @router.action('SHOW_VIRTUAL_CATEGORY')
-
 #
 # Render the Recently played and Most Played virtual launchers.
 #
@@ -698,7 +696,7 @@ def m_command_render_recently_played_roms():
 
     # --- Display recently player ROM list ---
     for rom in recent_roms:
-        self._gui_render_rom_row(VCATEGORY_RECENT_ID, VLAUNCHER_RECENT_ID, rom.get_data_dic())
+        m_gui_render_rom_row(VCATEGORY_RECENT_ID, recent_launcher, rom)
     xbmcplugin.endOfDirectory(handle = g_addon_handle, succeeded = True, cacheToDisc = False)
 
 @router.action('SHOW_MOST_PLAYED')
@@ -718,7 +716,7 @@ def m_command_render_most_played_roms():
 
     # --- Display most played ROMs, order by number of launchs ---
     for rom in sorted(roms, key = lambda rom : rom.get_launch_count(), reverse = True):
-        self._gui_render_rom_row(VCATEGORY_MOST_PLAYED_ID, VLAUNCHER_MOST_PLAYED_ID, rom.get_data_dic())
+        m_gui_render_rom_row(VCATEGORY_MOST_PLAYED_ID, most_played_launcher, rom)
 
     xbmcplugin.endOfDirectory(handle = g_addon_handle, succeeded = True, cacheToDisc = False)
 
@@ -1316,7 +1314,7 @@ def m_command_render_clone_roms(categoryID, launcherID, romID):
     roms_fav_set    = set(fav_launcher.get_rom_ids())
 
     for rom in sorted(roms, key = lambda r : r.get_name()):
-        m_gui_render_rom_row(categoryID, launcherID, rom.get_data_dic(), rom.get_id() in roms_fav_set, view_mode, False)
+        m_gui_render_rom_row(categoryID, selectedLauncher, rom, rom.get_id() in roms_fav_set, view_mode, False)
     xbmcplugin.endOfDirectory(handle = g_addon_handle, succeeded = True, cacheToDisc = False)
 
 #
@@ -1907,10 +1905,10 @@ def m_command_add_rom_to_favourites(categoryID, launcherID, romID):
 
     if launcher.get_launcher_type() == OBJ_LAUNCHER_VIRTUAL:
         actual_launcher_id = rom.get_launcher_id()
-        launcher = g_ObjectRepository.find_launcher(actual_launcher_id)
+        launcher = g_ObjectFactory.find_launcher(None, actual_launcher_id)
 
     # --- Load favourites ---
-    favlauncher = g_ObjectRepository.find_launcher(VLAUNCHER_FAVOURITES_ID)
+    favlauncher = g_ObjectFactory.find_launcher(VCATEGORY_FAVOURITES_ID, VLAUNCHER_FAVOURITES_ID)
     roms_fav = favlauncher.get_roms()
 
     # --- DEBUG info ---
@@ -1919,7 +1917,7 @@ def m_command_add_rom_to_favourites(categoryID, launcherID, romID):
     log_verb('_command_add_to_favourites() m_name {0}'.format(rom.get_name()))
 
     # Check if ROM already in favourites an warn user if so
-    if favlauncher.has_rom(romID):
+    if favlauncher.has_ROM(romID):
         log_verb('Already in favourites')
         dialog = xbmcgui.Dialog()
         ret = dialog.yesno('Advanced Emulator Launcher',
@@ -1937,7 +1935,7 @@ def m_command_add_rom_to_favourites(categoryID, launcherID, romID):
             return
         
     # --- Add ROM to favourites ROMs and save to disk ---
-    fav_rom = launcher.convert_rom_to_favourite(romID)
+    fav_rom = rom.copy_as_favourite_ROM()
     favlauncher.save_ROM(fav_rom)
 
     kodi_notify('ROM {0} added to Favourites'.format(fav_rom.get_name()))
@@ -6910,9 +6908,11 @@ def m_gui_edit_asset(obj_instance, asset_info):
         current_image_file = obj_instance.get_asset_FN(asset_info)
         if current_image_file is None:
             current_image_dir = obj_instance.get_assets_path_FN()
-            if current_image_file is None: current_image_dir = FileName('/')
         else: 
             current_image_dir = FileName(current_image_file.getDir(), isdir = True)
+        
+        if current_image_dir is None: current_image_dir = FileName('/')
+        
         log_debug('m_gui_edit_asset() Asset initial dir "{0}"'.format(current_image_dir.getPath()))
         title_str = 'Select {0} {1}'.format(obj_instance.get_object_name(), asset_info.name)
         ext_list = asset_info.exts_dialog
@@ -7631,7 +7631,7 @@ def m_gui_render_rom_row(categoryID, launcher, rom,
     # NOTE A possible optimization is to compute rom_name, asset paths and flags on the calling 
     #      function. A lot of ifs will be avoided here and that will increase speed.
     rom_raw_name    = rom.get_name()
-    platform        = launcher.get_platform()  ## TODO was rom['m_platform'] ?
+    platform        = rom.get_platform()
     fav_status      = rom.get_favourite_status()
     
     mapped_icon_asset       = launcher.get_mapped_ROM_asset_info(g_assetFactory.get_asset_info(ASSET_ICON_ID))
