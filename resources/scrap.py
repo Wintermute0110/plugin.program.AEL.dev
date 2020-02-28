@@ -475,7 +475,7 @@ class ScrapeStrategy(object):
         ROM_path = ROM.get_file()
         search_term = text_format_ROM_name_for_scraping(ROM_path.getBaseNoExt())
         if self.scraper_settings.search_term_mode == SCRAPE_MANUAL:            
-            search_term = kodi_dialog_GetText('Search term', ROM_path.getBaseNoExt())
+            search_term = kodi_dialog_GetText('Search term', search_term)
             
         log_debug('ScrapeStrategy.scanner_process_ROM() Getting candidates for game')
         meta_candidate_set = False
