@@ -49,7 +49,7 @@ class Platform:
         self.DAT_prefix   = DAT_prefix
 
 # * From this list create simplified lists to access platform information.
-# * Shorted alphabetically by long name. Alphabetical order is veryfied with script
+# * Shorted alphabetically by long name. Alphabetical order is veryfied with the script
 #   xxxxx.py
 # * To be compatible with Retroplayer and Kodi artwork database, anything that can be launched
 #   by Retroarch must be a platform, including Doom, CaveStory, etc.
@@ -76,11 +76,11 @@ AEL_platforms = [
     Platform('Amstrad CPC', 'computer-cpc', 'cpc', None, '4914', '60', '65', '46', DAT_NONE),
 
     # --- Atari ---
-    Platform('Atari 2600', 'atari-2600', 'a2600', None, '22', '28', '26', '6',
+    Platform('Atari 2600', 'atari-a2600', 'a2600', None, '22', '28', '26', '6',
         DAT_NOINTRO, 'Atari - 2600'),
-    Platform('Atari 5200', 'atari-5200', 'a5200', None, '26', '33', '40', '20',
+    Platform('Atari 5200', 'atari-a5200', 'a5200', None, '26', '33', '40', '20',
         DAT_NOINTRO, 'Atari - 5200'),
-    Platform('Atari 7800', 'atari-7800', 'a7800', None, '27', '34', '41', '51',
+    Platform('Atari 7800', 'atari-a7800', 'a7800', None, '27', '34', '41', '51',
         DAT_NOINTRO, 'Atari - 7800'),
     # Atari 8-bit includes: Atari 400, Atari 800, Atari 1200XL, Atari 65XE, Atari 130XE, Atari XEGS
     Platform('Atari 8-bit', 'computer-atari-8bit', 'atari-8bit', None, '30', '39', '43', None, DAT_NONE),
