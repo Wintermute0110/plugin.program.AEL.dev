@@ -602,7 +602,7 @@ def text_format_ROM_name_for_scraping(title):
     
     title = title.replace('_', ' ')
     title = title.replace('-', ' ')
-    title = title.replace(':', ' ')
+    title = title.replace(':', '')
     title = title.replace('.', ' ')
     title = title.strip()
 
