@@ -5729,14 +5729,11 @@ class NvidiaStreamScanner(RomScannerStrategy):
             
         self.progress_dialog.startProgress('Checking for new ROMs ...', num_games)
         streamIdsAlreadyInCollection = set(rom.get_custom_attribute('streamid') for rom in roms)
-        streamIdsJustAdded = []
         skip_if_scraping_failed = self.settings['scan_skip_on_scraping_failure']
         
         for streamableGame, extra_ROM_flag in items:
             
             streamId = streamableGame['ID']
-            #if streamId in streamIdsJustAdded:
-                
             log_debug('Searching {} with #{}'.format(streamableGame['AppTitle'], streamId))
 
             self.progress_dialog.updateProgress(num_items_checked, streamableGame['AppTitle'])
