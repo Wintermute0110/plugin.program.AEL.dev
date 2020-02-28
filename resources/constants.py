@@ -347,6 +347,26 @@ ROM_ASSET_ID_LIST = [
     ASSET_TRAILER_ID,
 ]
 
+BOX_SIZE_COVER      = 'Cover'
+BOX_SIZE_WIDE       = 'Widebox'
+BOX_SIZE_BLURAY     = 'Bluray'
+BOX_SIZE_CD         = 'CD'
+BOX_SIZE_SLIM       = 'Slimbox'
+BOX_SIZE_STEAM      = 'SteamBanner'
+BOX_SIZE_SCREEN     = 'Screenshot'
+BOX_SIZE_THUMB      = 'Thumb'
+
+BOX_SIZES = [
+    BOX_SIZE_COVER,
+    BOX_SIZE_BLURAY,
+    BOX_SIZE_WIDE,
+    BOX_SIZE_CD,
+    BOX_SIZE_SLIM,
+    BOX_SIZE_STEAM,
+    BOX_SIZE_SCREEN,
+    BOX_SIZE_THUMB
+]
+
 # --- Addon will search these file extensions for assets ---
 # >> Check http://kodi.wiki/view/advancedsettings.xml#videoextensions
 IMAGE_EXTENSION_LIST   = ['png', 'jpg', 'gif', 'bmp']

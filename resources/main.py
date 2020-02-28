@@ -4048,6 +4048,10 @@ def m_subcommand_launcher_metadata_rating(category, launcher):
 @router.action('EDIT_METADATA_PLOT')
 def m_subcommand_launcher_metadata_plot(category, launcher):
     m_gui_edit_field_by_str(launcher, 'Plot', launcher.get_plot, launcher.set_plot)
+
+@router.action('EDIT_METADATA_BOXSIZE')
+def m_subcommand_launcher_metadata_boxsize(category, launcher):
+    m_gui_edit_field_by_list(launcher, 'Default box size', BOX_SIZES, launcher.get_box_sizing, launcher.set_box_sizing)
     
 # --- Import launcher metadata from NFO file (default location) ---
 @router.action('IMPORT_NFO_FILE_DEFAULT')
@@ -5152,6 +5156,10 @@ def m_subcommand_edit_rom_rating(launcher, rom):
 @router.action('EDIT_METADATA_PLOT')
 def m_subcommand_edit_rom_description(launcher, rom):
     m_gui_edit_field_by_str(rom, 'plot', rom.get_plot, rom.update_plot)
+
+@router.action('EDIT_METADATA_BOXSIZE')
+def m_subcommand_edit_rom_boxsize(launcher, rom):
+    m_gui_edit_field_by_list(rom, 'Box size', BOX_SIZES, rom.get_box_sizing, rom.set_box_sizing)
 
 # --- Import of the rom game plot from TXT file ---
 @router.action('LOAD_PLOT')
@@ -7590,6 +7598,7 @@ def m_gui_render_launcher_row(launcher, launcher_raw_name = None):
                                    'genre'   : launcher_dic['m_genre'],   'studio'  : launcher_dic['m_developer'],
                                    'rating'  : launcher_dic['m_rating'],  'plot'    : launcher_dic['m_plot'],
                                    'trailer' : launcher_dic['s_trailer'], 'overlay' : ICON_OVERLAY })
+    
     listitem.setProperty('platform', launcher_dic['platform'])
     if launcher_dic['rompath']:
         listitem.setProperty(AEL_CONTENT_LABEL, AEL_CONTENT_VALUE_ROM_LAUNCHER)
@@ -7795,6 +7804,7 @@ def m_gui_render_rom_row(categoryID, launcher, rom,
     listitem.setProperty('nplayers', rom.get_number_of_players())
     listitem.setProperty('esrb', rom.get_esrb_rating())
     listitem.setProperty('platform', platform)
+    listitem.setProperty('boxsize', rom.get_box_sizing())
     listitem.setProperty(AEL_CONTENT_LABEL, AEL_CONTENT_VALUE_ROM)
 
     # --- Set ROM artwork ---
