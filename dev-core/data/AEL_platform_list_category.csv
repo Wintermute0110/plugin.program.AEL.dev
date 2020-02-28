@@ -1,8 +1,8 @@
 Long name,Short name,Compact name,Alias,TGDB,MG,SS,GF,DAT
 MAME,arcade-mame,mame,None,23,143,75,2,MAME
-Atari 2600,atari-2600,a2600,None,22,28,26,6,No-Intro
-Atari 5200,atari-5200,a5200,None,26,33,40,20,No-Intro
-Atari 7800,atari-7800,a7800,None,27,34,41,51,No-Intro
+Atari 2600,atari-a2600,a2600,None,22,28,26,6,No-Intro
+Atari 5200,atari-a5200,a5200,None,26,33,40,20,No-Intro
+Atari 7800,atari-a7800,a7800,None,27,34,41,51,No-Intro
 Atari Jaguar,atari-jaguar,jaguar,None,28,17,27,72,No-Intro
 Atari Jaguar CD,atari-jaguarcd,jaguarcd,None,29,17,171,82,Redump
 Atari Lynx,atari-lynx,lynx,None,4924,18,28,58,No-Intro
