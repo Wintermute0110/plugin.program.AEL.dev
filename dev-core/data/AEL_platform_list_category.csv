@@ -120,7 +120,7 @@ SNK Neo-Geo AES,snk-aes,aes,mame,None,None,None,None,None
 SNK Neo-Geo CD,snk-neocd,neocd,None,4956,54,70,68,Redump
 SNK Neo-Geo MVS,snk-mvs,mvs,mame,None,None,None,None,None
 SNK Neo-Geo Pocket,snk-ngp,ngp,None,4922,52,25,None,No-Intro
-SNK Neo-Geo Pocket Color,snk-ngpc,ngpc,None,4923,53,82,89,No-Intro
+SNK Neo-Geo Pocket Color,snk-ngpcolor,ngpcolor,None,4923,53,82,89,No-Intro
 Sony PlayStation,sony-psx,psx,None,10,6,57,78,Redump
 Sony PlayStation 2,sony-ps2,ps2,None,11,7,58,94,Redump
 Sony PlayStation 3,sony-ps3,ps3,None,12,81,59,113,None

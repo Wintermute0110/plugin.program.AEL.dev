@@ -387,7 +387,7 @@ AEL_platforms = [
     Platform('SNK Neo-Geo MVS', 'snk-mvs', 'mvs', 'mame'),
     Platform('SNK Neo-Geo Pocket', 'snk-ngp', 'ngp', None, '4922', '52', '25', None,
         DAT_NOINTRO, 'SNK - Neo Geo Pocket'),
-    Platform('SNK Neo-Geo Pocket Color', 'snk-ngpc', 'ngpc', None, '4923', '53', '82', '89',
+    Platform('SNK Neo-Geo Pocket Color', 'snk-ngpcolor', 'ngpcolor', None, '4923', '53', '82', '89',
         DAT_NOINTRO, 'SNK - Neo Geo Pocket Color'),
 
     # --- SONY ---
