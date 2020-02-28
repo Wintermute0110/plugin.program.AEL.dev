@@ -10465,10 +10465,10 @@ class Main:
             if audit_custom_dat_file and not audit_custom_dat_FN.exists():
                 l_str.append('Custom DAT file "{}" not found\n'.format(audit_custom_dat_FN.getPath()))
 
-            audit_auto_dat_file = launcher['audit_auto_dat_file']
-            audit_auto_dat_FN = FileName(audit_auto_dat_file)
-            if audit_auto_dat_file and not audit_auto_dat_FN.exists():
-                l_str.append('Custom DAT file "{}" not found\n'.format(audit_auto_dat_FN.getPath()))
+            # audit_auto_dat_file = launcher['audit_auto_dat_file']
+            # audit_auto_dat_FN = FileName(audit_auto_dat_file)
+            # if audit_auto_dat_file and not audit_auto_dat_FN.exists():
+            #     l_str.append('Custom DAT file "{}" not found\n'.format(audit_auto_dat_FN.getPath()))
 
             # >> Test that artwork files exist if not empty (s_* fields)
             self._aux_check_for_file(l_str, 's_icon', launcher)
