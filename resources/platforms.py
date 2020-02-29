@@ -295,7 +295,7 @@ AEL_platforms = [
     Platform('Nintendo GameCube', 'nintendo-gamecube', 'gamecube', None, '2', '14', '13', '99',
         DAT_REDUMP, 'Nintendo - GameCube - Datfile'),
     Platform('Nintendo NES', 'nintendo-nes', 'nes', None, '7', '22', '3', '41',
-        DAT_NOINTRO, 'Nintendo - Nintendo Entertainment System (Parent-Clone)'),
+        DAT_NOINTRO, 'Nintendo - Nintendo Entertainment System'),
     # No-Intro New Nintendo 3DS DAT files:
     # *) Nintendo - New Nintendo 3DS (Decrypted) (20190402-125456)
     # *) Nintendo - New Nintendo 3DS (Digital) (20181009-100544)
