@@ -4787,16 +4787,18 @@ class Main:
             # --- NoIntro status flag ---
             nstat = rom['nointro_status']
             if self.settings['display_nointro_stat']:
-                if   nstat == AUDIT_STATUS_HAVE:    rom_name = '{0} [COLOR green][Have][/COLOR]'.format(rom_raw_name)
-                elif nstat == AUDIT_STATUS_MISS:    rom_name = '{0} [COLOR magenta][Miss][/COLOR]'.format(rom_raw_name)
-                elif nstat == AUDIT_STATUS_UNKNOWN: rom_name = '{0} [COLOR yellow][Unknown][/COLOR]'.format(rom_raw_name)
+                if   nstat == AUDIT_STATUS_HAVE:    rom_name = '{} [COLOR green][Have][/COLOR]'.format(rom_raw_name)
+                elif nstat == AUDIT_STATUS_MISS:    rom_name = '{} [COLOR magenta][Miss][/COLOR]'.format(rom_raw_name)
+                elif nstat == AUDIT_STATUS_UNKNOWN: rom_name = '{} [COLOR yellow][Unknown][/COLOR]'.format(rom_raw_name)
+                elif nstat == AUDIT_STATUS_EXTRA:   rom_name = '{} [COLOR limegreen][Extra][/COLOR]'.format(rom_raw_name)
                 elif nstat == AUDIT_STATUS_NONE:    rom_name = rom_raw_name
-                else:                                 rom_name = '{0} [COLOR red][Status error][/COLOR]'.format(rom_raw_name)
+                else:                               rom_name = '{} [COLOR red][Status error][/COLOR]'.format(rom_raw_name)
             else:
                 rom_name = rom_raw_name
             if   nstat == AUDIT_STATUS_HAVE:    AEL_NoIntro_stat_value = AEL_NOINTRO_STAT_VALUE_HAVE
             elif nstat == AUDIT_STATUS_MISS:    AEL_NoIntro_stat_value = AEL_NOINTRO_STAT_VALUE_MISS
             elif nstat == AUDIT_STATUS_UNKNOWN: AEL_NoIntro_stat_value = AEL_NOINTRO_STAT_VALUE_UNKNOWN
+            elif nstat == AUDIT_STATUS_EXTRA:   AEL_NoIntro_stat_value = AEL_NOINTRO_STAT_VALUE_EXTRA
             elif nstat == AUDIT_STATUS_NONE:    AEL_NoIntro_stat_value = AEL_NOINTRO_STAT_VALUE_NONE
 
             # --- In Favourites ROM flag ---
@@ -4817,11 +4819,12 @@ class Main:
             # --- parent_launcher is True when rendering Parent ROMs in Parent/Clone view mode ---
             nstat = rom['nointro_status']
             if self.settings['display_nointro_stat']:
-                if   nstat == AUDIT_STATUS_HAVE:    rom_name = '{0} [COLOR green][Have][/COLOR]'.format(rom_raw_name)
-                elif nstat == AUDIT_STATUS_MISS:    rom_name = '{0} [COLOR magenta][Miss][/COLOR]'.format(rom_raw_name)
-                elif nstat == AUDIT_STATUS_UNKNOWN: rom_name = '{0} [COLOR yellow][Unknown][/COLOR]'.format(rom_raw_name)
+                if   nstat == AUDIT_STATUS_HAVE:    rom_name = '{} [COLOR green][Have][/COLOR]'.format(rom_raw_name)
+                elif nstat == AUDIT_STATUS_MISS:    rom_name = '{} [COLOR magenta][Miss][/COLOR]'.format(rom_raw_name)
+                elif nstat == AUDIT_STATUS_UNKNOWN: rom_name = '{} [COLOR yellow][Unknown][/COLOR]'.format(rom_raw_name)
+                elif nstat == AUDIT_STATUS_EXTRA:   rom_name = '{} [COLOR limegreen][Extra][/COLOR]'.format(rom_raw_name)
                 elif nstat == AUDIT_STATUS_NONE:    rom_name = rom_raw_name
-                else:                                 rom_name = '{0} [COLOR red][Status error][/COLOR]'.format(rom_raw_name)
+                else:                               rom_name = '{} [COLOR red][Status error][/COLOR]'.format(rom_raw_name)
             else:
                 rom_name = rom_raw_name
             if is_parent_launcher and num_clones > 0:
@@ -4829,6 +4832,7 @@ class Main:
             if   nstat == AUDIT_STATUS_HAVE:    AEL_NoIntro_stat_value = AEL_NOINTRO_STAT_VALUE_HAVE
             elif nstat == AUDIT_STATUS_MISS:    AEL_NoIntro_stat_value = AEL_NOINTRO_STAT_VALUE_MISS
             elif nstat == AUDIT_STATUS_UNKNOWN: AEL_NoIntro_stat_value = AEL_NOINTRO_STAT_VALUE_UNKNOWN
+            elif nstat == AUDIT_STATUS_EXTRA:   AEL_NoIntro_stat_value = AEL_NOINTRO_STAT_VALUE_EXTRA
             elif nstat == AUDIT_STATUS_NONE:    AEL_NoIntro_stat_value = AEL_NOINTRO_STAT_VALUE_NONE
             # --- Mark clone ROMs ---
             pclone_status = rom['pclone_status']
