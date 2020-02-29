@@ -519,25 +519,28 @@ def audit_generate_DAT_PClone_index(roms, roms_nointro, unknown_ROMs_are_parents
 
         if rom['nointro_status'] == AUDIT_STATUS_UNKNOWN:
             if unknown_ROMs_are_parents:
-                # >> Unknown ROMs are parents
+                # Unknown ROMs are parents
                 if rom_id not in roms_pclone_index_by_id:
                     roms_pclone_index_by_id[rom_id] = []
             else:
-                # >> Unknown ROMs are clones
-                #    Also, if the parent ROMs of all clones does not exist yet then create it
+                # Unknown ROMs are clones
+                # Also, if the parent ROMs of all clones does not exist yet then create it
                 if UNKNOWN_ROMS_PARENT_ID not in roms_pclone_index_by_id:
                     roms_pclone_index_by_id[UNKNOWN_ROMS_PARENT_ID] = []
                     roms_pclone_index_by_id[UNKNOWN_ROMS_PARENT_ID].append(rom_id)
                 else:
                     roms_pclone_index_by_id[UNKNOWN_ROMS_PARENT_ID].append(rom_id)
+        elif rom['nointro_status'] == AUDIT_STATUS_EXTRA:
+            # Extra ROMs are parents.
+            if rom_id not in roms_pclone_index_by_id:
+                roms_pclone_index_by_id[rom_id] = []
         else:
             nointro_rom = roms_nointro[rom_nointro_name]
-
-            # >> ROM is a parent
+            # ROM is a parent
             if nointro_rom['cloneof'] == '':
                 if rom_id not in roms_pclone_index_by_id:
                     roms_pclone_index_by_id[rom_id] = []
-            # >> ROM is a clone
+            # ROM is a clone
             else:
                 parent_name = nointro_rom['cloneof']
                 parent_id   = names_to_ids_dic[parent_name]
