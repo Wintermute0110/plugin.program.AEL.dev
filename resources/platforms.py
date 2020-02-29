@@ -16,6 +16,8 @@
 # --- Python standard library ---
 from __future__ import unicode_literals
 
+from resources.constants import *
+
 # -------------------------------------------------------------------------------------------------
 # New platform engine
 # -------------------------------------------------------------------------------------------------
@@ -34,19 +36,20 @@ PLATFORM_UNKNOWN_COMPACT = 'unknown'
 class Platform:
     def __init__(self, name, shortname, compactname, aliasof = None,
         TGDB_plat = None, MG_plat = None, SS_plat = None, GF_plat = None,
-        DAT = DAT_NONE, DAT_prefix = ''):
+        DAT = DAT_NONE, DAT_prefix = '', default_box_size = None):
         # Autocompleted later with data from the short name.
-        self.category     = ''
-        self.long_name    = name
-        self.short_name   = shortname
-        self.compact_name = compactname
-        self.aliasof      = aliasof
-        self.TGDB_plat    = TGDB_plat
-        self.MG_plat      = MG_plat
-        self.SS_plat      = SS_plat
-        self.GF_plat      = GF_plat
-        self.DAT          = DAT
-        self.DAT_prefix   = DAT_prefix
+        self.category         = ''
+        self.long_name        = name
+        self.short_name       = shortname
+        self.compact_name     = compactname
+        self.aliasof          = aliasof
+        self.TGDB_plat        = TGDB_plat
+        self.MG_plat          = MG_plat
+        self.SS_plat          = SS_plat
+        self.GF_plat          = GF_plat
+        self.DAT              = DAT
+        self.DAT_prefix       = DAT_prefix
+        self.default_box_size = default_box_size
 
 # * From this list create simplified lists to access platform information.
 # * Shorted alphabetically by long name. Alphabetical order is veryfied with script
@@ -218,7 +221,8 @@ AEL_platforms = [
     Platform('Microsoft MSX2', 'microsoft-msx2', 'msx2', None, '4929', '57', '116', '40',
         DAT_NOINTRO, 'Microsoft - MSX2'),
     # MobyGames differentiates Windows = '3' and Windows 3.x = '5'
-    Platform('Microsoft Windows', 'microsoft-windows', 'windows', None, '1', '3', '136', '19', DAT_NONE),
+    Platform('Microsoft Windows', 'microsoft-windows', 'windows', None, '1', '3', '136', '19', DAT_NONE,
+              default_box_size=BOX_SIZE_STEAM),
     Platform('Microsoft Xbox', 'microsoft-xbox', 'xbox', None, '14', '13', '32', '98', DAT_NONE),
     Platform('Microsoft Xbox 360', 'microsoft-xbox360', 'xbox360', None, '15', '69', '33', '111', DAT_NONE),
     Platform('Microsoft Xbox One', 'microsoft-xboxone', 'xboxone', None, '4920', '142', None, '121', DAT_NONE),
@@ -287,15 +291,15 @@ AEL_platforms = [
     Platform('Nintendo Famicon Disk System', 'nintendo-fds', 'fds', None, '4936', '22', '106', '47',
         DAT_NOINTRO, 'Nintendo - Family Computer Disk System (FDS) (Parent-Clone)'),
     Platform('Nintendo GameBoy', 'nintendo-gb', 'gb', None, '4', '10', '9', '59',
-        DAT_NOINTRO, 'Nintendo - Game Boy'),
+        DAT_NOINTRO, 'Nintendo - Game Boy', default_box_size=BOX_SIZE_SQUARE),
     Platform('Nintendo GameBoy Advance', 'nintendo-gba', 'gba', None, '5', '12', '12', '91',
-        DAT_NOINTRO, 'Nintendo - Game Boy Advance'),
+        DAT_NOINTRO, 'Nintendo - Game Boy Advance', default_box_size=BOX_SIZE_SQUARE),
     Platform('Nintendo GameBoy Color', 'nintendo-gbcolor', 'gbcolor', None, '41', '11', '10', '57',
-        DAT_NOINTRO, 'Nintendo - Game Boy Color'),
+        DAT_NOINTRO, 'Nintendo - Game Boy Color', default_box_size=BOX_SIZE_SQUARE),
     Platform('Nintendo GameCube', 'nintendo-gamecube', 'gamecube', None, '2', '14', '13', '99',
-        DAT_REDUMP, 'Nintendo - GameCube - Datfile'),
+        DAT_REDUMP, 'Nintendo - GameCube - Datfile', default_box_size=BOX_SIZE_DVD),
     Platform('Nintendo NES', 'nintendo-nes', 'nes', None, '7', '22', '3', '41',
-        DAT_NOINTRO, 'Nintendo - Nintendo Entertainment System (Parent-Clone)'),
+        DAT_NOINTRO, 'Nintendo - Nintendo Entertainment System (Parent-Clone)', default_box_size=BOX_SIZE_POSTER),
     # No-Intro New Nintendo 3DS DAT files:
     # *) Nintendo - New Nintendo 3DS (Decrypted) (20190402-125456)
     # *) Nintendo - New Nintendo 3DS (Digital) (20181009-100544)
@@ -310,7 +314,7 @@ AEL_platforms = [
     Platform('Nintendo Satellaview', 'nintendo-satellaview', 'satellaview', None, None, None, '107', None,
         DAT_NOINTRO, 'Nintendo - Satellaview'),
     Platform('Nintendo SNES', 'nintendo-snes', 'snes', None, '6', '15', '4', '63',
-        DAT_NOINTRO, 'Nintendo - Super Nintendo Entertainment System (Combined) (Parent-Clone)'),
+        DAT_NOINTRO, 'Nintendo - Super Nintendo Entertainment System (Combined) (Parent-Clone)', default_box_size=BOX_SIZE_WIDE),
     Platform('Nintendo Sufami Turbo', 'nintendo-sufami', 'sufami', None, None, None, '108', None,
         DAT_NOINTRO, 'Nintendo - Sufami Turbo'),
     Platform('Nintendo Switch', 'nintendo-switch', 'switch', None, '4971', '203', None, '124', DAT_NONE),
@@ -394,9 +398,9 @@ AEL_platforms = [
     Platform('Sony PlayStation', 'sony-psx', 'psx', None, '10', '6', '57', '78',
         DAT_REDUMP, 'Sony - PlayStation - Datfile'),
     Platform('Sony PlayStation 2', 'sony-ps2', 'ps2', None, '11', '7', '58', '94',
-        DAT_REDUMP, 'Sony - PlayStation 2 - Datfile'),
-    Platform('Sony PlayStation 3', 'sony-ps3', 'ps3', None, '12', '81', '59', '113', DAT_NONE),
-    Platform('Sony PlayStation 4', 'sony-ps4', 'ps4', None, '4919', '141', None, '120', DAT_NONE),
+        DAT_REDUMP, 'Sony - PlayStation 2 - Datfile', default_box_size=BOX_SIZE_DVD),
+    Platform('Sony PlayStation 3', 'sony-ps3', 'ps3', None, '12', '81', '59', '113', DAT_NONE, default_box_size=BOX_SIZE_BLURAY),
+    Platform('Sony PlayStation 4', 'sony-ps4', 'ps4', None, '4919', '141', None, '120', DAT_NONE, default_box_size=BOX_SIZE_BLURAY),
     # No-Intro has PSP DATs:
     # *) Sony - PlayStation Portable (20191005-125849)
     # *) Sony - PlayStation Portable (Parent-Clone) (20191005-125849)
@@ -412,9 +416,10 @@ AEL_platforms = [
     #
     # Should the Redump or No-Intro DAT used for PSP?
     Platform('Sony PlayStation Portable', 'sony-psp', 'psp', None, '13', '46', '61', '109',
-        DAT_REDUMP, 'Sony - PlayStation Portable - Datfile'),
+        DAT_REDUMP, 'Sony - PlayStation Portable - Datfile', default_box_size=BOX_SIZE_SLIM),
     # No-Intro has PS Vita DATs.
-    Platform('Sony PlayStation Vita', 'sony-psvita', 'psvita', None, '39', '105', '62', '117', DAT_NONE),
+    Platform('Sony PlayStation Vita', 'sony-psvita', 'psvita', None, '39', '105', '62', '117', DAT_NONE, 
+             default_box_size=BOX_SIZE_BLURAY),
 
     Platform('Tiger Game.com', 'console-tigergame', 'tigergame', None, '4940', '50', '121', None,
         DAT_NOINTRO, 'Tiger - Game.com'),
@@ -461,6 +466,10 @@ def get_AEL_platform_index(platform_long):
         return platform_long_to_index_dic[platform_long]
     else:
         return platform_long_to_index_dic[PLATFORM_UNKNOWN_LONG]
+
+def get_AEL_platform(platform_long):
+    idx = get_AEL_platform_index(platform_long)
+    return AEL_platform_list[idx]
 
 # NOTE must take into account platform aliases.
 # '0' means any platform in TGDB and must be returned when there is no platform matching.

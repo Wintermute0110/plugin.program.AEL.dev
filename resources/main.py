@@ -1170,7 +1170,7 @@ def m_command_render_roms(categoryID, launcherID):
     # --- Set content type and sorting methods ---
     m_misc_set_all_sorting_methods()
     m_misc_set_AEL_Content(AEL_CONTENT_VALUE_ROMS)
-    # m_misc_set_AEL_Launcher_Content(selectedLauncher)
+    m_misc_set_AEL_Launcher_Content(launcher)
 
     # --- Render in Flat mode (all ROMs) or Parent/Clone or 1G1R mode---
     # >> Parent/Clone mode and 1G1R modes are very similar in terms of programming.
@@ -6677,19 +6677,22 @@ def m_misc_set_AEL_Content(AEL_Content_Value):
 #   1. Title of the launcher.
 #   2. Icon of the launcher.
 #   3. Clearlogo of the launcher.
-#   ---- TODO Deprecated?
-def m_misc_set_AEL_Launcher_Content(launcher_dic):
-    kodi_thumb     = 'DefaultFolder.png' if launcher_dic['rompath'] else 'DefaultProgram.png'
-    #icon_path      = asset_get_default_asset_Category(launcher_dic, 'default_icon', kodi_thumb)
-    #clearlogo_path = asset_get_default_asset_Category(launcher_dic, 'default_clearlogo')
-    xbmcgui.Window(AEL_CONTENT_WINDOW_ID).setProperty(AEL_LAUNCHER_NAME_LABEL, launcher_dic['m_name'])
+#   4. Default box size of the launcher
+def m_misc_set_AEL_Launcher_Content(launcher):
+    kodi_thumb     = 'DefaultFolder.png' if launcher.supports_launching_roms() else 'DefaultProgram.png'
+    icon_path      = launcher.get_mapped_asset_str(asset_id=ASSET_ICON_ID, fallback=kodi_thumb)
+    clearlogo_path = launcher.get_mapped_asset_str(asset_id=ASSET_CLEARLOGO_ID)
+    xbmcgui.Window(AEL_CONTENT_WINDOW_ID).setProperty(AEL_LAUNCHER_NAME_LABEL, launcher.get_name())
     xbmcgui.Window(AEL_CONTENT_WINDOW_ID).setProperty(AEL_LAUNCHER_ICON_LABEL, icon_path)
     xbmcgui.Window(AEL_CONTENT_WINDOW_ID).setProperty(AEL_LAUNCHER_CLEARLOGO_LABEL, clearlogo_path)
+    xbmcgui.Window(AEL_CONTENT_WINDOW_ID).setProperty(AEL_LAUNCHER_BOXSIZE_LABEL, launcher.get_box_sizing())
 
 def m_misc_clear_AEL_Launcher_Content():
     xbmcgui.Window(AEL_CONTENT_WINDOW_ID).setProperty(AEL_LAUNCHER_NAME_LABEL, '')
     xbmcgui.Window(AEL_CONTENT_WINDOW_ID).setProperty(AEL_LAUNCHER_ICON_LABEL, '')
     xbmcgui.Window(AEL_CONTENT_WINDOW_ID).setProperty(AEL_LAUNCHER_CLEARLOGO_LABEL, '')
+    xbmcgui.Window(AEL_CONTENT_WINDOW_ID).setProperty(AEL_LAUNCHER_BOXSIZE_LABEL, '')
+    
 #
 # Edits an object field which is a Unicode string.
 #

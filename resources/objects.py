@@ -1567,7 +1567,7 @@ class ROM(MetaDataItemABC):
         if 'box_size' in self.entity_data: return self.entity_data['box_size'] 
         # fallback to launcher size 
         if self.launcher: return self.launcher.get_box_sizing()
-        return BOX_SIZE_COVER
+        return BOX_SIZE_POSTER
     
     def set_box_sizing(self, box_size):
         self.entity_data['box_size'] = box_size
@@ -2154,7 +2154,7 @@ class LauncherABC(MetaDataItemABC):
     def update_report_timestamp(self): self.entity_data['timestamp_report'] = time.time()
 
     def get_box_sizing(self):
-        return self.entity_data['box_size'] if 'box_size' in self.entity_data else BOX_SIZE_COVER
+        return self.entity_data['box_size'] if 'box_size' in self.entity_data else BOX_SIZE_POSTER
     
     def set_box_sizing(self, box_size):
         self.entity_data['box_size'] = box_size
@@ -2385,7 +2385,6 @@ class StandaloneLauncher(LauncherABC):
             self._builder_get_title_from_app_path)
         wizard = WizardDialog_Selection(wizard, 'platform', 'Select the platform',
             AEL_platform_list)
-
         return wizard
 
     def _build_pre_wizard_hook(self): return True
@@ -2543,6 +2542,10 @@ class ROMLauncherABC(LauncherABC):
         # >> launcher is edited using Python passing by assignment.
         self.rom_assets_init_dirs()
 
+        # --- Determine box size based on platform --
+        platform = get_AEL_platform(self.entity_data['platform'])
+        self.set_box_sizing(platform.default_box_size)
+        
         return True
 
     def _builder_get_extensions_from_app_path(self, input, item_key ,launcher):
@@ -4314,13 +4317,17 @@ class NvidiaGameStreamLauncher(ROMLauncherABC):
     
     def _build_pre_wizard_hook(self):
         log_debug('NvidiaGameStreamLauncher::_build_pre_wizard_hook() Starting ...')
-
         return True
 
     def _build_post_wizard_hook(self):
         log_debug('NvidiaGameStreamLauncher::_build_post_wizard_hook() Starting ...')
 
-        return super(NvidiaGameStreamLauncher, self)._build_post_wizard_hook()
+        success = super(NvidiaGameStreamLauncher, self)._build_post_wizard_hook()
+        if not success:
+            return success
+        
+        self.set_box_sizing(BOX_SIZE_STEAM)
+        return success
     
     def _builder_generatePairPinCode(self, input, item_key, launcher):
         return GameStreamServer(None, None).generatePincode()
