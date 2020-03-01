@@ -6682,15 +6682,18 @@ def m_misc_set_AEL_Launcher_Content(launcher):
     kodi_thumb     = 'DefaultFolder.png' if launcher.supports_launching_roms() else 'DefaultProgram.png'
     icon_path      = launcher.get_mapped_asset_str(asset_id=ASSET_ICON_ID, fallback=kodi_thumb)
     clearlogo_path = launcher.get_mapped_asset_str(asset_id=ASSET_CLEARLOGO_ID)
+    
     xbmcgui.Window(AEL_CONTENT_WINDOW_ID).setProperty(AEL_LAUNCHER_NAME_LABEL, launcher.get_name())
     xbmcgui.Window(AEL_CONTENT_WINDOW_ID).setProperty(AEL_LAUNCHER_ICON_LABEL, icon_path)
     xbmcgui.Window(AEL_CONTENT_WINDOW_ID).setProperty(AEL_LAUNCHER_CLEARLOGO_LABEL, clearlogo_path)
+    xbmcgui.Window(AEL_CONTENT_WINDOW_ID).setProperty(AEL_LAUNCHER_PLATFORM_LABEL, launcher.get_platform())
     xbmcgui.Window(AEL_CONTENT_WINDOW_ID).setProperty(AEL_LAUNCHER_BOXSIZE_LABEL, launcher.get_box_sizing())
 
 def m_misc_clear_AEL_Launcher_Content():
     xbmcgui.Window(AEL_CONTENT_WINDOW_ID).setProperty(AEL_LAUNCHER_NAME_LABEL, '')
     xbmcgui.Window(AEL_CONTENT_WINDOW_ID).setProperty(AEL_LAUNCHER_ICON_LABEL, '')
     xbmcgui.Window(AEL_CONTENT_WINDOW_ID).setProperty(AEL_LAUNCHER_CLEARLOGO_LABEL, '')
+    xbmcgui.Window(AEL_CONTENT_WINDOW_ID).setProperty(AEL_LAUNCHER_PLATFORM_LABEL, '')
     xbmcgui.Window(AEL_CONTENT_WINDOW_ID).setProperty(AEL_LAUNCHER_BOXSIZE_LABEL, '')
     
 #
