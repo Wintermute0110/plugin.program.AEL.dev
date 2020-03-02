@@ -2933,7 +2933,9 @@ class ROMLauncherABC(LauncherABC):
         return self._get_value_as_filename('rompath')
 
     def has_extra_rompath(self):
-        return 'romextrapath' in self.entity_data and self.entity_data['romextrapath'] is not None
+        return 'romextrapath' in self.entity_data and \
+            self.entity_data['romextrapath'] is not None and \
+            self.entity_data['romextrapath'] is not ''
     
     def get_extra_rompath(self):
         return self._get_value_as_filename('romextrapath')
@@ -5577,7 +5579,7 @@ class SteamScanner(RomScannerStrategy):
             i += 1
 
             if romSteamId not in steamGameIds:
-                log_debug('Not found. Deleting from DB {0}'.format(rom.get_name()))
+                log_debug('Not found. Deleting from DB: "{0}"'.format(rom.get_name()))
                 roms.remove(rom)
                 num_removed_roms += 1
             
@@ -5670,7 +5672,7 @@ class NvidiaStreamScanner(RomScannerStrategy):
         server_host = self.launcher.get_server()
         certificates_path = self.launcher.get_certificates_path()
 
-        streamServer = GameStreamServer(server_host, certificates_path)
+        streamServer = GameStreamServer(server_host, certificates_path, True)
         connected = streamServer.connect()
 
         if not connected:

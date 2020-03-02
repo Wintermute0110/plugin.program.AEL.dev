@@ -600,10 +600,10 @@ def text_format_ROM_name_for_scraping(title):
     title = re.sub('\(.*?\)', '', title)
     title = re.sub('\{.*?\}', '', title)
     
-    title = title.replace('_', '')
-    title = title.replace('-', '')
+    title = title.replace('_', ' ')
+    title = title.replace('-', ' ')
     title = title.replace(':', '')
-    title = title.replace('.', '')
+    title = title.replace('.', ' ')
     title = title.strip()
 
     return title
@@ -1923,6 +1923,10 @@ def kodi_display_text_window_mono(window_title, info_text):
 #
 def kodi_display_text_window(window_title, info_text):
     xbmcgui.Dialog().textviewer(window_title, info_text)
+
+def kodi_dialog_GetText(title_str, default_value):
+    output  = xbmcgui.Dialog().input(title_str, default_value, xbmcgui.INPUT_ALPHANUM)
+    return output
 
 #
 # Kodi dialog to select a file
