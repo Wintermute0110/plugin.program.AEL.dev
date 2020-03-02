@@ -121,6 +121,8 @@ WIP      [SCRAPERS] Persistent scraper cache browser. Ability to browse the stor
 
 [B]Advanced Emulator Launcher | version 0.9.10 | xx April 2020[/B]
 
+WIP      [CORE] New fields in database to be prepared for the future.
+
 WIP      [CORE] Support for Spines artwork. Support for BoxTextures artwork.
          Have a look at LaunchBox for other types of artwork that may be interesting.
 
@@ -139,10 +141,13 @@ WIP      [SCRAPERS] Change the Offline Scraper format from XML to JSON. Include 
          No-Intro/Redump DATs, also giving support to Extra ROMs (hacks, etc.).
 
 
-[B]Advanced Emulator Launcher | version 0.9.9 | xx February 2020[/B]
+[B]Advanced Emulator Launcher | version 0.9.9 | xx March 2020[/B]
 
 WIP      [SCRAPERS] Add a delay to ScreenScraper scraper to avoid overloading.
          See https://forum.kodi.tv/showthread.php?tid=287826&pid=2923181#pid2923181
+
+WIP      [SCRAPERS] Store when there is a bad JSON from the scrapers for further
+         analysis.
 
 FEATURE  [CORE] New Utility "Check Launcher ROMs sync status"
 
@@ -154,7 +159,7 @@ WIP      [CORE] New Utility "Check ROMs artwork image integrity"
 WIP      [CORE] New Utility "Delete ROMs redundant artwork"
          Redundant artwork is orphaned artwork.
 
-WIP NOW  [CORE] Extra ROMs directory. Extra ROMs are not audited. The extra ROMs directory
+FEATURE  [CORE] Extra ROMs directory. Extra ROMs are not audited. The extra ROMs directory
          is intended for ROM translations and hacks that should not be taken into account
          in the ROM audit.
 

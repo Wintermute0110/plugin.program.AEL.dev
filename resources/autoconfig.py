@@ -91,8 +91,8 @@ def autoconfig_export_launcher_str_list(launcher, category_name, str_list):
     else:
         str_list.append(XML_text('args_extra', ''))
     str_list.append(XML_text('ROM_path', launcher['rompath']))
-    str_list.append(XML_text('ROM_ext', launcher['romext']))
     str_list.append(XML_text('ROM_extra_path', launcher['romextrapath']))
+    str_list.append(XML_text('ROM_ext', launcher['romext']))
     if ROM_asset_path:
         str_list.append(XML_text('ROM_asset_path', ROM_asset_path))
     else:

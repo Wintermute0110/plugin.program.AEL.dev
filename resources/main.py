@@ -4391,18 +4391,18 @@ class Main:
                         launcher_name = '{} [COLOR orange]({} Parents / {} Clones)[/COLOR]'.format(
                             launcher_raw_name, num_parents, num_clones)
                     else:
-                        launcher_name = '{0} [COLOR red](ERROR)[/COLOR]'.format(launcher_raw_name)
+                        launcher_name = '{} [COLOR red](ERROR)[/COLOR]'.format(launcher_raw_name)
                 # Non-audited ROM launcher.
                 else:
                     num_roms = launcher_dic['num_roms']
                     if num_roms == 0:
-                        launcher_name = '{0} [COLOR orange](No ROMs)[/COLOR]'.format(launcher_raw_name)
+                        launcher_name = '{} [COLOR orange](No ROMs)[/COLOR]'.format(launcher_raw_name)
                     elif num_roms == 1:
-                        launcher_name = '{0} [COLOR orange]({1} ROM)[/COLOR]'.format(launcher_raw_name, num_roms)
+                        launcher_name = '{} [COLOR orange]({} ROM)[/COLOR]'.format(launcher_raw_name, num_roms)
                     else:
-                        launcher_name = '{0} [COLOR orange]({1} ROMs)[/COLOR]'.format(launcher_raw_name, num_roms)
+                        launcher_name = '{} [COLOR orange]({} ROMs)[/COLOR]'.format(launcher_raw_name, num_roms)
             else:
-                launcher_name = '{0} [COLOR chocolate](Std)[/COLOR]'.format(launcher_raw_name)
+                launcher_name = '{} [COLOR chocolate](Std)[/COLOR]'.format(launcher_raw_name)
         else:
             launcher_name = launcher_raw_name
 
@@ -4719,10 +4719,10 @@ class Main:
 
             # --- Favourite status flag ---
             if self.settings['display_fav_status']:
-                if   rom['fav_status'] == 'OK':                rom_name = '{0} [COLOR green][OK][/COLOR]'.format(rom_raw_name)
-                elif rom['fav_status'] == 'Unlinked ROM':      rom_name = '{0} [COLOR yellow][Unlinked ROM][/COLOR]'.format(rom_raw_name)
-                elif rom['fav_status'] == 'Unlinked Launcher': rom_name = '{0} [COLOR yellow][Unlinked Launcher][/COLOR]'.format(rom_raw_name)
-                elif rom['fav_status'] == 'Broken':            rom_name = '{0} [COLOR red][Broken][/COLOR]'.format(rom_raw_name)
+                if   rom['fav_status'] == 'OK':                rom_name = '{} [COLOR green][OK][/COLOR]'.format(rom_raw_name)
+                elif rom['fav_status'] == 'Unlinked ROM':      rom_name = '{} [COLOR yellow][Unlinked ROM][/COLOR]'.format(rom_raw_name)
+                elif rom['fav_status'] == 'Unlinked Launcher': rom_name = '{} [COLOR yellow][Unlinked Launcher][/COLOR]'.format(rom_raw_name)
+                elif rom['fav_status'] == 'Broken':            rom_name = '{} [COLOR red][Broken][/COLOR]'.format(rom_raw_name)
                 else:                                          rom_name = rom_raw_name
             else:
                 rom_name = rom_raw_name
@@ -4741,10 +4741,10 @@ class Main:
 
             # --- Favourite status flag ---
             if self.settings['display_fav_status']:
-                if   rom['fav_status'] == 'OK':                rom_name = '{0} [COLOR green][OK][/COLOR]'.format(rom_raw_name)
-                elif rom['fav_status'] == 'Unlinked ROM':      rom_name = '{0} [COLOR yellow][Unlinked ROM][/COLOR]'.format(rom_raw_name)
-                elif rom['fav_status'] == 'Unlinked Launcher': rom_name = '{0} [COLOR yellow][Unlinked Launcher][/COLOR]'.format(rom_raw_name)
-                elif rom['fav_status'] == 'Broken':            rom_name = '{0} [COLOR red][Broken][/COLOR]'.format(rom_raw_name)
+                if   rom['fav_status'] == 'OK':                rom_name = '{} [COLOR green][OK][/COLOR]'.format(rom_raw_name)
+                elif rom['fav_status'] == 'Unlinked ROM':      rom_name = '{} [COLOR yellow][Unlinked ROM][/COLOR]'.format(rom_raw_name)
+                elif rom['fav_status'] == 'Unlinked Launcher': rom_name = '{} [COLOR yellow][Unlinked Launcher][/COLOR]'.format(rom_raw_name)
+                elif rom['fav_status'] == 'Broken':            rom_name = '{} [COLOR red][Broken][/COLOR]'.format(rom_raw_name)
                 else:                                          rom_name = rom_raw_name
             else:
                 rom_name = rom_raw_name
@@ -4770,9 +4770,9 @@ class Main:
             platform       = rom['platform']
             # >> Render number of number the ROM has been launched
             if rom['launch_count'] == 1:
-                rom_name = '{0} [COLOR orange][{1} time][/COLOR]'.format(rom_raw_name, rom['launch_count'])
+                rom_name = '{} [COLOR orange][{} time][/COLOR]'.format(rom_raw_name, rom['launch_count'])
             else:
-                rom_name = '{0} [COLOR orange][{1} times][/COLOR]'.format(rom_raw_name, rom['launch_count'])
+                rom_name = '{} [COLOR orange][{} times][/COLOR]'.format(rom_raw_name, rom['launch_count'])
         elif categoryID == VCATEGORY_TITLE_ID    or categoryID == VCATEGORY_YEARS_ID or \
              categoryID == VCATEGORY_GENRE_ID    or categoryID == VCATEGORY_DEVELOPER_ID or \
              categoryID == VCATEGORY_NPLAYERS_ID or categoryID == VCATEGORY_ESRB_ID or \
