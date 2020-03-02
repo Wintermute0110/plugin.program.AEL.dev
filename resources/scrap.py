@@ -1326,7 +1326,8 @@ class Scraper(object):
         # --- Initialize common scraper settings ---
         self.settings = settings
         self.verbose_flag = False
-        self.dump_file_flag = False
+        self.dump_file_flag = False # Dump DEBUG files only if this is true.
+        self.dump_dir = None # Directory to dump DEBUG files.
         self.debug_checksums_flag = False
         # Record the number of network error/exceptions. If this number is bigger than a
         # threshold disable the scraper.
@@ -4030,16 +4031,33 @@ class ScreenScraper(Scraper):
         # Sometimes ScreenScraper API V2 returns badly formatted JSON. Try to fix this.
         # See https://github.com/muldjord/skyscraper/blob/master/src/screenscraper.cpp
         # The badly formatted JSON is at the end of the file, for example:
-        #
-        #			],     <-- Here it should be a ']' and not '],'.
+        #			],     <----- Here it should be a ']' and not '],'.
         #		}
         #	}
         #}
-        log_error('Trying to repair ScreenScraper data string before parsing JSON again.')
-        page_data_raw = page_data_raw.replace('],\n\t\t}', ']\n\t\t}')
+        log_error('Trying to repair ScreenScraper raw data (Try 1).')
+        new_page_data_raw = page_data_raw.replace('],\n\t\t}', ']\n\t\t}')
         try:
-            return json.loads(page_data_raw)
-        except:
+            return json.loads(new_page_data_raw)
+        except Exception as ex:
+            log_error('Error decoding JSON data from ScreenScraper (Try 1).')
+
+        # At the end of the JSON data file...
+        #		},         <----- Here it should be a '}' and not '},'.
+        #		}
+        #	}
+        #            
+        log_error('Trying to repair ScreenScraper raw data (Try 2).')
+        new_page_data_raw = page_data_raw.replace('\t\t},\n\t\t}', '\t\t}\n\t\t}')
+        try:
+            return json.loads(new_page_data_raw)
+        except Exception as ex:
+            log_error('Error decoding JSON data from ScreenScraper (Try 2).')
+            log_error('Cannot decode JSON (invalid JSON returned). Dumping debug files...')
+            file_path = os.path.join(self.scraper_cache_dir, 'ScreenScraper_url.txt')
+            text_dump_str_to_file(file_path, url)
+            file_path = os.path.join(self.scraper_cache_dir, 'ScreenScraper_page_data_raw.txt')
+            text_dump_str_to_file(file_path, page_data_raw)
             self._handle_exception(ex, status_dic,
                 'Error decoding JSON data from ScreenScraper (fixed version).')
             return None
