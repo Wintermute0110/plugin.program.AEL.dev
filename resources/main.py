@@ -11118,19 +11118,29 @@ class Main:
             return
 
         # --- Print and display report ---
+        header = json_data['header']
+        serveurs = json_data['response']['serveurs']
         ssuser = json_data['response']['ssuser']
         window_title = 'ScreenScraper scraper information'
         sl = []
-        sl.append('requeststoday       {}'.format(ssuser['requeststoday']))
-        sl.append('maxthreads          {}'.format(ssuser['maxthreads']))
-        sl.append('niveau              {}'.format(ssuser['niveau']))
-        sl.append('visites             {}'.format(ssuser['visites']))
-        sl.append('maxrequestsperday   {}'.format(ssuser['maxrequestsperday']))
-        sl.append('maxdownloadspeed    {}'.format(ssuser['maxdownloadspeed']))
-        sl.append('favregion           {}'.format(ssuser['favregion']))
-        sl.append('datedernierevisite  {}'.format(ssuser['datedernierevisite']))
-        sl.append('contribution        {}'.format(ssuser['contribution']))
-        sl.append('id                  {}'.format(ssuser['id']))
+        sl.append('APIversion           {}'.format(header['APIversion']))
+        sl.append('dateTime             {}'.format(header['dateTime']))
+        sl.append('cpu1 load            {}%'.format(serveurs['cpu1']))
+        sl.append('cpu2 load            {}%'.format(serveurs['cpu2']))
+        sl.append('nbscrapeurs          {}'.format(serveurs['nbscrapeurs']))
+        sl.append('')
+        sl.append('id                   {}'.format(ssuser['id']))
+        sl.append('niveau               {}'.format(ssuser['niveau']))
+        sl.append('maxthreads           {}'.format(ssuser['maxthreads']))
+        sl.append('maxdownloadspeed     {}'.format(ssuser['maxdownloadspeed']))
+        sl.append('requeststoday        {}'.format(ssuser['requeststoday']))
+        sl.append('requestskotoday      {}'.format(ssuser['requestskotoday']))
+        sl.append('maxrequestspermin    {}'.format(ssuser['maxrequestspermin']))
+        sl.append('maxrequestsperday    {}'.format(ssuser['maxrequestsperday']))
+        sl.append('maxrequestskoperday  {}'.format(ssuser['maxrequestskoperday']))
+        sl.append('visites              {}'.format(ssuser['visites']))
+        sl.append('datedernierevisite   {}'.format(ssuser['datedernierevisite']))
+        sl.append('favregion            {}'.format(ssuser['favregion']))
         sl.append('')
         sl.append('ScreenScraper scraper seems to be working OK.')
         kodi_display_text_window_mono(window_title, '\n'.join(sl))
