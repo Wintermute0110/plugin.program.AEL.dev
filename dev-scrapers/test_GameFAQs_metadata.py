@@ -37,7 +37,8 @@ status_dic = kodi_new_status_dic('Scraper test was OK')
 # --- Choose data for testing ---
 # search_term, rombase, platform = common.games['metroid']
 # search_term, rombase, platform = common.games['mworld']
-search_term, rombase, platform = common.games['sonic']
+#search_term, rombase, platform = common.games['sonic_megaDrive']
+search_term, rombase, platform = common.games['sonic_genesis'] # Aliased platform
 # search_term, rombase, platform = common.games['chakan']
 # search_term, rombase, platform = common.games['console_wrong_title']
 # search_term, rombase, platform = common.games['console_wrong_platform']
