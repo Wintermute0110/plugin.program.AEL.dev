@@ -433,9 +433,9 @@ class ScrapeStrategy(object):
             self.pdialog.updateProgress(num_items_checked)
             num_items_checked = num_items_checked + 1
             ROM_file = rom.get_file()
-            file_text = 'ROM {0}'.format(ROM_file.getBase())
+            file_text = 'ROM {}'.format(ROM_file.getBase())
             
-            self.pdialog.updateMessages(file_text, 'Scraping {0}...'.format(ROM_file.getBaseNoExt()))
+            self.pdialog.updateMessages(file_text, 'Scraping {}...'.format(ROM_file.getBaseNoExt()))
             try:
                 self.scanner_process_ROM(rom, ROM_file)
             except Exception as ex:
@@ -5058,7 +5058,6 @@ class GoogleImageSearch(Scraper):
 
         return asset_list
     
-
     # Retrieve URL and create a JSON object.
     # GoogleImageSearch
     #

@@ -5261,6 +5261,7 @@ def m_subcommand_rescrape_rom_assets(rom):
     
     # --- Make a menu list of available asset scrapers ---
     options =  g_ScraperFactory.get_asset_scraper_menu_list()
+    options[SCRAPER_NULL_ID] = 'Scrape assets from local folder'
     selected_option = KodiOrdDictionaryDialog().select('Rescrape ROM assets', options)
     if selected_option is None:
         # >> Exits context menu
@@ -5272,10 +5273,10 @@ def m_subcommand_rescrape_rom_assets(rom):
     scraper_settings = ScraperSettings()
     scraper_settings.assets_scraper_ID       = selected_option
     scraper_settings.scrape_metadata_policy  = SCRAPE_ACTION_NONE
-    scraper_settings.scrape_assets_policy    = SCRAPE_POLICY_SCRAPE_ONLY
-    scraper_settings.search_term_mode        = SCRAPE_MANUAL
-    scraper_settings.game_selection_mode     = SCRAPE_MANUAL
-    scraper_settings.asset_selection_mode    = SCRAPE_MANUAL
+    scraper_settings.scrape_assets_policy    = SCRAPE_POLICY_SCRAPE_ONLY if selected_option != SCRAPER_NULL_ID else SCRAPE_POLICY_LOCAL_ONLY
+    scraper_settings.search_term_mode        = SCRAPE_MANUAL if selected_option != SCRAPER_NULL_ID else SCRAPE_AUTOMATIC
+    scraper_settings.game_selection_mode     = SCRAPE_MANUAL if selected_option != SCRAPER_NULL_ID else SCRAPE_AUTOMATIC
+    scraper_settings.asset_selection_mode    = SCRAPE_MANUAL if selected_option != SCRAPER_NULL_ID else SCRAPE_AUTOMATIC
     
     pdialog             = KodiProgressDialog()
     ROM_file            = rom.get_file()
@@ -7795,11 +7796,10 @@ def m_gui_render_rom_row(categoryID, launcher, rom,
     # labels are set as Title in setInfo(), then they work but the alphabetical order is lost!
     # I solved this alphabetical ordering issue by placing a coloured tag [Fav] at the and of the ROM name
     # instead of changing the whole row colour.
-    trailer = rom.get_asset_str(asset_id=ASSET_TRAILER_ID)    
-    listitem.setInfo('video', {'title'   : rom_name,
+    listitem.setInfo('video', { 'title'   : rom_name,
                                 'genre'   : rom.get_genre(),  'studio'  : rom.get_developer(),
                                 'rating'  : rom.get_rating(), 'plot'    : rom.get_plot(),
-                                'trailer' : trailer,          'overlay' : ICON_OVERLAY })
+                                'trailer' : rom.get_trailer(),'overlay' : ICON_OVERLAY })
     
     # >> BUG in Jarvis/Krypton skins. If 'year' is set to empty string a 0 is displayed on the
     # >>     skin. If year is not set then the correct icon is shown.
