@@ -36,10 +36,12 @@ class Platform:
         TGDB_plat = None, MG_plat = None, SS_plat = None, GF_plat = None,
         DAT = DAT_NONE, DAT_prefix = ''):
         # Autocompleted later with data from the short name.
+        # Short names are "category-compact_name"
         self.category     = ''
         self.long_name    = name
         self.short_name   = shortname
         self.compact_name = compactname
+        # Always use the compact name when definid aliases. Otherwise bad things will happen.
         self.aliasof      = aliasof
         self.TGDB_plat    = TGDB_plat
         self.MG_plat      = MG_plat
@@ -441,14 +443,14 @@ for p_obj in AEL_platforms:
 
 # Dictionaries for fast access to the platform information.
 # Also, platform long name list for select() dialogs.
+platform_long_to_index_dic = {}
 platform_short_to_index_dic = {}
 platform_compact_to_index_dic = {}
-platform_long_to_index_dic = {}
 AEL_platform_list = []
 for index, p_obj in enumerate(AEL_platforms):
+    platform_long_to_index_dic[p_obj.long_name] = index
     platform_short_to_index_dic[p_obj.short_name] = index
     platform_compact_to_index_dic[p_obj.compact_name] = index
-    platform_long_to_index_dic[p_obj.long_name] = index
     AEL_platform_list.append(p_obj.long_name)
 
 # Returns the platform numerical index from the platform name. If the platform name is not
@@ -467,11 +469,13 @@ def AEL_platform_to_TheGamesDB(platform_long_name):
     else:
         # Platform not found.
         return DEFAULT_PLAT_TGDB
-    # Check if platform is an alias.
     scraper_platform = pobj.TGDB_plat
+    # Check if platform is an alias.
+    # If alias does not have specific platform return platform of parent.
     if pobj.aliasof is not None and scraper_platform is None:
-        # If alias does not have specific platform return platform of parent.
-        return AEL_platform_to_TheGamesDB(platform_compact_to_long_dic[pobj.aliasof])
+        parent_idx = platform_compact_to_index_dic[pobj.aliasof]
+        parent_long_name = AEL_platforms[parent_idx].long_name
+        return AEL_platform_to_TheGamesDB(parent_long_name)
 
     # If platform is None then return default platform
     return DEFAULT_PLAT_TGDB if scraper_platform is None else scraper_platform
@@ -490,7 +494,9 @@ def AEL_platform_to_MobyGames(platform_long_name):
         return DEFAULT_PLAT_MOBYGAMES
     scraper_platform = pobj.MG_plat
     if pobj.aliasof is not None and scraper_platform is None:
-        return AEL_platform_to_MobyGames(platform_compact_to_long_dic[pobj.aliasof])
+        parent_idx = platform_compact_to_index_dic[pobj.aliasof]
+        parent_long_name = AEL_platforms[parent_idx].long_name
+        return AEL_platform_to_MobyGames(parent_long_name)
 
     return DEFAULT_PLAT_MOBYGAMES if scraper_platform is None else scraper_platform
 
@@ -501,7 +507,9 @@ def AEL_platform_to_ScreenScraper(platform_long_name):
         return DEFAULT_PLAT_SCREENSCRAPER
     scraper_platform = pobj.SS_plat
     if pobj.aliasof is not None and scraper_platform is None:
-        return AEL_platform_to_ScreenScraper(platform_compact_to_long_dic[pobj.aliasof])
+        parent_idx = platform_compact_to_index_dic[pobj.aliasof]
+        parent_long_name = AEL_platforms[parent_idx].long_name
+        return AEL_platform_to_ScreenScraper(parent_long_name)
 
     return DEFAULT_PLAT_SCREENSCRAPER if scraper_platform is None else scraper_platform
 
@@ -513,7 +521,9 @@ def AEL_platform_to_GameFAQs(platform_long_name):
         return DEFAULT_PLAT_GAMEFAQS
     scraper_platform = pobj.GF_plat
     if pobj.aliasof is not None and scraper_platform is None:
-        return AEL_platform_to_GameFAQs(platform_compact_to_long_dic[pobj.aliasof])
+        parent_idx = platform_compact_to_index_dic[pobj.aliasof]
+        parent_long_name = AEL_platforms[parent_idx].long_name
+        return AEL_platform_to_GameFAQs(parent_long_name)
 
     return DEFAULT_PLAT_GAMEFAQS if scraper_platform is None else scraper_platform
 
