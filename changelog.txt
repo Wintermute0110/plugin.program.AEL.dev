@@ -143,7 +143,7 @@ WIP      [SCRAPERS] Change the Offline Scraper format from XML to JSON. Include 
 
 [B]Advanced Emulator Launcher | version 0.9.9 | xx March 2020[/B]
 
-WIP      [CORE] Rename offline scraper images to use new platform name.
+WIP      [CORE] Rename offline scraper XML databases to use new platform name.
 
 WIP      [CORE] Update the platform icons. Github issue #112.
 

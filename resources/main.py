@@ -79,8 +79,8 @@ class AEL_Paths:
         self.ROM_SYNC_REPORT_FILE_PATH = self.ADDON_DATA_DIR.pjoin('report_ROM_sync_status.txt')
 
         # --- Offline scraper databases ---
-        self.GAMEDB_INFO_DIR           = self.ADDON_CODE_DIR.pjoin('GameDBInfo')
-        self.GAMEDB_JSON_BASE_NOEXT    = 'GameDB_info'
+        self.GAMEDB_INFO_DIR           = self.ADDON_CODE_DIR.pjoin('data-AOS')
+        self.GAMEDB_JSON_BASE_NOEXT    = 'AOS_GameDB_info'
         # self.LAUNCHBOX_INFO_DIR        = self.ADDON_CODE_DIR.pjoin('LaunchBox')
         # self.LAUNCHBOX_JSON_BASE_NOEXT = 'LaunchBox_info'
 
@@ -3920,29 +3920,24 @@ class Main:
         self._misc_set_AEL_Content(AEL_CONTENT_VALUE_LAUNCHERS)
         self._misc_clear_AEL_Launcher_Content()
 
-        # >> Open info dictionary
-        gamedb_info_dic = fs_load_JSON_file(g_PATHS.GAMEDB_INFO_DIR, g_PATHS.GAMEDB_JSON_BASE_NOEXT)
-
-        # >> Loop the list of platforms and render a virtual launcher for each platform that
-        # >> has a valid XML database.
-        for platform in AEL_platforms:
-            # >> Do not show Unknown platform
-            if platform == 'Unknown': continue
-            # Workaround to avoid crash.
-            if platform.long_name not in platform_AEL_to_Offline_GameDBInfo_XML: continue
-            db_suffix = platform_AEL_to_Offline_GameDBInfo_XML[platform.long_name]
-            self._gui_render_AEL_scraper_launchers_row(platform.long_name,
-                gamedb_info_dic[platform.long_name], db_suffix)
+        # Open info dictionary and render platform rows.
+        data_dir_FN = g_PATHS.ADDON_CODE_DIR.pjoin('data')
+        gamedb_info_dic = fs_load_JSON_file(data_dir_FN, g_PATHS.GAMEDB_JSON_BASE_NOEXT)
+        for pobj in AEL_platforms:
+            if pobj.long_name == PLATFORM_UNKNOWN_LONG: continue
+            platform_dic = gamedb_info_dic[pobj.long_name]
+            self._gui_render_AEL_scraper_launchers_row(pobj.long_name, platform_dic)
         xbmcplugin.endOfDirectory(handle = self.addon_handle, succeeded = True, cacheToDisc = False)
 
-    def _gui_render_AEL_scraper_launchers_row(self, platform, platform_info, db_suffix):
-        # >> Mark platform whose XML DB is not available
-        title_str = platform
-        if not db_suffix:
-            title_str += ' [COLOR red][Not available][/COLOR]'
+    def _gui_render_AEL_scraper_launchers_row(self, plong_name, platform_dic):
+        # Mark platform whose XML DB is not available
+        title_str = plong_name
+        num_ROMs = platform_dic['numROMs']
+        if num_ROMs > 0:
+            title_str += ' [COLOR orange]({} ROMs)[/COLOR]'.format(platform_dic['numROMs'])
         else:
-            title_str += ' [COLOR orange]({0} ROMs)[/COLOR]'.format(platform_info['numROMs'])
-        plot_text = 'Browse [COLOR orange]{0}[/COLOR] ROMs in AEL Offline Scraper database'.format(platform)
+            title_str += ' [COLOR red][Not available][/COLOR]'
+        plot_text = 'Browse [COLOR orange]{}[/COLOR] ROMs in AEL Offline Scraper database'.format(title_str)
         vlauncher_icon   = g_PATHS.ADDON_CODE_DIR.pjoin('media/theme/Browse_AEL_Offline_icon.png').getPath()
         vlauncher_fanart = g_PATHS.FANART_FILE_PATH.getPath()
         vlauncher_poster = g_PATHS.ADDON_CODE_DIR.pjoin('media/theme/Browse_AEL_Offline_poster.png').getPath()
@@ -3950,17 +3945,17 @@ class Main:
         listitem = xbmcgui.ListItem(title_str)
         listitem.setInfo('video', {'title' : title_str, 'plot' : plot_text, 'overlay' : 4 })
         listitem.setArt({'icon' : vlauncher_icon, 'fanart' : vlauncher_fanart, 'poster' : vlauncher_poster})
-        # >> Set platform property to render platform icon on skins.
-        listitem.setProperty('platform', platform)
+        # Set platform property to render platform icon on skins.
+        listitem.setProperty('platform', plong_name)
         listitem.setProperty(AEL_CONTENT_LABEL, AEL_CONTENT_VALUE_ROM_LAUNCHER)
 
         commands = []
         commands.append(('Kodi File Manager', 'ActivateWindow(filemanager)'))
-        commands.append(('AEL addon settings', 'Addon.OpenSettings({0})'.format(__addon_id__)))
-        if (xbmc.getCondVisibility("!Skin.HasSetting(KioskMode.Enabled)")):
+        commands.append(('AEL addon settings', 'Addon.OpenSettings({})'.format(__addon_id__)))
+        if xbmc.getCondVisibility("!Skin.HasSetting(KioskMode.Enabled)"):
             listitem.addContextMenuItems(commands, replaceItems = True)
 
-        url_str = self._misc_url('SHOW_AEL_SCRAPER_ROMS', platform)
+        url_str = self._misc_url('SHOW_AEL_SCRAPER_ROMS', plong_name)
         xbmcplugin.addDirectoryItem(handle = self.addon_handle, url = url_str, listitem = listitem, isFolder = True)
 
     def _gui_render_LB_scraper_launchers(self):
@@ -4971,12 +4966,14 @@ class Main:
         # --- Add ROM to lisitem ---
         kodi_def_thumb = 'DefaultProgram.png'
         ICON_OVERLAY = 4
-        listitem = xbmcgui.ListItem(game['description'])
+        listitem = xbmcgui.ListItem(game['title'])
 
-        listitem.setInfo('video', {'title'   : game['description'],  'year'    : game['year'],
-                                   'genre'   : game['genre'],        'plot'    : game['story'],
-                                   'studio'  : game['manufacturer'], 'overlay' : ICON_OVERLAY })
-        listitem.setProperty('nplayers', game['player'])
+        listitem.setInfo('video', {
+            'title'   : game['title'],     'year'    : game['year'],
+            'genre'   : game['genre'],     'plot'    : game['plot'],
+            'studio'  : game['developer'], 'overlay' : ICON_OVERLAY,
+        })
+        listitem.setProperty('nplayers', game['nplayers'])
         listitem.setProperty('esrb', game['rating'])
         listitem.setProperty('platform', platform)
 
@@ -5192,26 +5189,25 @@ class Main:
     #
     def _command_render_AEL_scraper_roms(self, platform):
         log_debug('_command_render_AEL_scraper_roms() platform = "{0}"'.format(platform))
-        # >> Content type and sorting method
+        # Content type and sorting method
         self._misc_set_all_sorting_methods()
         self._misc_set_AEL_Content(AEL_CONTENT_VALUE_ROMS)
 
-        # >> If XML DB not available tell user and leave
-        xml_file = platform_AEL_to_Offline_GameDBInfo_XML[platform]
-        if not xml_file:
-            kodi_notify_warn('{0} database not available yet.'.format(platform))
+        # If XML DB not available tell user and leave
+        xml_path_FN = g_PATHS.GAMEDB_INFO_DIR.pjoin(platform + '.xml')
+        log_debug('xml_path_FN OP {}'.format(xml_path_FN.getOriginalPath()))
+        log_debug('xml_path_FN  P {}'.format(xml_path_FN.getPath()))
+        if not xml_path_FN.exists():
+            kodi_notify_warn('{} database not available yet.'.format(platform))
             # kodi_refresh_container()
             return
 
         # --- Load offline scraper XML file ---
         loading_ticks_start = time.time()
-        xml_path_FN = g_PATHS.ADDON_CODE_DIR.pjoin(xml_file)
-        log_debug('xml_path_FN OP {0}'.format(xml_path_FN.getOriginalPath()))
-        log_debug('xml_path_FN  P {0}'.format(xml_path_FN.getPath()))
         games = audit_load_OfflineScraper_XML(xml_path_FN.getPath())
+        loading_ticks_end = time.time()
 
         # --- Display offline scraper ROMs ---
-        loading_ticks_end = time.time()
         rendering_ticks_start = time.time()
         for key in sorted(games, key= lambda x : games[x]['name']):
             self._gui_render_AEL_scraper_rom_row(platform, games[key])
@@ -5219,8 +5215,8 @@ class Main:
         rendering_ticks_end = time.time()
 
         # --- DEBUG Data loading/rendering statistics ---
-        log_debug('Loading seconds   {0}'.format(loading_ticks_end - loading_ticks_start))
-        log_debug('Rendering seconds {0}'.format(rendering_ticks_end - rendering_ticks_start))
+        log_debug('Loading seconds   {}'.format(loading_ticks_end - loading_ticks_start))
+        log_debug('Rendering seconds {}'.format(rendering_ticks_end - rendering_ticks_start))
 
     #
     # Renders ROMs in a LaunchBox offline Scraper virtual launcher (aka platform)
@@ -7776,18 +7772,17 @@ class Main:
         return info_text
 
     def _command_view_offline_scraper_rom(self, scraper, platform, game_name):
-        log_debug('_command_view_offline_scraper_rom() scraper   "{0}"'.format(scraper))
-        log_debug('_command_view_offline_scraper_rom() platform  "{0}"'.format(platform))
-        log_debug('_command_view_offline_scraper_rom() game_name "{0}"'.format(game_name))
+        log_debug('_command_view_offline_scraper_rom() scraper   "{}"'.format(scraper))
+        log_debug('_command_view_offline_scraper_rom() platform  "{}"'.format(platform))
+        log_debug('_command_view_offline_scraper_rom() game_name "{}"'.format(game_name))
 
         # --- Load Offline Scraper database ---
         # --- Load offline scraper XML file ---
         loading_ticks_start = time.time()
         if scraper == 'AEL':
-            xml_file = platform_AEL_to_Offline_GameDBInfo_XML[platform]
-            xml_path = os.path.join(g_PATHS.ADDON_CODE_DIR.getPath(), xml_file)
-            # log_debug('xml_file = {0}'.format(xml_file))
-            log_debug('Loading AEL XML {0}'.format(xml_path))
+            xml_path_FN = g_PATHS.GAMEDB_INFO_DIR.pjoin(platform + '.xml')
+            xml_path = xml_path_FN.getPath()
+            log_debug('Loading AEL XML {}'.format(xml_path))
             games = audit_load_OfflineScraper_XML(xml_path)
             game = games[game_name]
 
@@ -7795,18 +7790,32 @@ class Main:
             info_text += "[COLOR violet]game_name[/COLOR]: '{0}'\n".format(game_name)
             info_text += "[COLOR violet]platform[/COLOR]: '{0}'\n".format(platform)
             info_text += '\n[COLOR orange]Metadata[/COLOR]\n'
-            info_text += "[COLOR violet]description[/COLOR]: '{0}'\n".format(game['description'])
+
+            # Old Offline Scraper
+            # info_text += "[COLOR violet]description[/COLOR]: '{0}'\n".format(game['description'])
+            # info_text += "[COLOR violet]year[/COLOR]: '{0}'\n".format(game['year'])
+            # info_text += "[COLOR violet]rating[/COLOR]: '{0}'\n".format(game['rating'])
+            # info_text += "[COLOR violet]manufacturer[/COLOR]: '{0}'\n".format(game['manufacturer'])
+            # info_text += "[COLOR violet]dev[/COLOR]: '{0}'\n".format(game['dev'])
+            # info_text += "[COLOR violet]genre[/COLOR]: '{0}'\n".format(game['genre'])
+            # info_text += "[COLOR violet]score[/COLOR]: '{0}'\n".format(game['score'])
+            # info_text += "[COLOR violet]player[/COLOR]: '{0}'\n".format(game['player'])
+            # info_text += "[COLOR violet]story[/COLOR]: '{0}'\n".format(game['story'])
+            # info_text += "[COLOR violet]enabled[/COLOR]: '{0}'\n".format(game['enabled'])
+            # info_text += "[COLOR violet]crc[/COLOR]: '{0}'\n".format(game['crc'])
+            # info_text += "[COLOR violet]cloneof[/COLOR]: '{0}'\n".format(game['cloneof'])
+
+            # V1 Offline Scraper
+            info_text += "[COLOR violet]title[/COLOR]: '{0}'\n".format(game['title'])
             info_text += "[COLOR violet]year[/COLOR]: '{0}'\n".format(game['year'])
             info_text += "[COLOR violet]rating[/COLOR]: '{0}'\n".format(game['rating'])
-            info_text += "[COLOR violet]manufacturer[/COLOR]: '{0}'\n".format(game['manufacturer'])
-            info_text += "[COLOR violet]dev[/COLOR]: '{0}'\n".format(game['dev'])
+            info_text += "[COLOR violet]publisher[/COLOR]: '{0}'\n".format(game['publisher'])
+            info_text += "[COLOR violet]developer[/COLOR]: '{0}'\n".format(game['developer'])
             info_text += "[COLOR violet]genre[/COLOR]: '{0}'\n".format(game['genre'])
             info_text += "[COLOR violet]score[/COLOR]: '{0}'\n".format(game['score'])
-            info_text += "[COLOR violet]player[/COLOR]: '{0}'\n".format(game['player'])
-            info_text += "[COLOR violet]story[/COLOR]: '{0}'\n".format(game['story'])
-            info_text += "[COLOR violet]enabled[/COLOR]: '{0}'\n".format(game['enabled'])
-            info_text += "[COLOR violet]crc[/COLOR]: '{0}'\n".format(game['crc'])
-            info_text += "[COLOR violet]cloneof[/COLOR]: '{0}'\n".format(game['cloneof'])
+            info_text += "[COLOR violet]nplayers[/COLOR]: '{0}'\n".format(game['nplayers'])
+            info_text += "[COLOR violet]plot[/COLOR]: '{0}'\n".format(game['plot'])
+
         elif scraper == 'LaunchBox':
             xml_file = platform_AEL_to_LB_XML[platform]
             xml_path = os.path.join(g_PATHS.ADDON_CODE_DIR.getPath(), xml_file)
@@ -7833,7 +7842,7 @@ class Main:
             info_text += "[COLOR violet]Publisher[/COLOR]: '{0}'\n".format(game['Publisher'])
             info_text += "[COLOR violet]Developer[/COLOR]: '{0}'\n".format(game['Developer'])
         else:
-            kodi_dialog_OK('Wrong scraper name {0}'.format(scraper))
+            kodi_dialog_OK('Wrong scraper name {}'.format(scraper))
             return
 
         # --- Show information window ---

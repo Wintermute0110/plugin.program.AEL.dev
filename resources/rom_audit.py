@@ -216,21 +216,21 @@ def audit_load_OfflineScraper_XML(xml_file):
 
     # --- Check that file exists ---
     if not os.path.isfile(xml_file):
-        log_error("Cannot load file '{0}'".format(xml_file))
+        log_error("Cannot load file '{}'".format(xml_file))
         return games
 
     # --- Parse using cElementTree ---
-    log_debug('audit_load_OfflineScraper_XML() Loading "{0}"'.format(xml_file))
+    log_debug('audit_load_OfflineScraper_XML() Loading "{}"'.format(xml_file))
     try:
         xml_tree = ET.parse(xml_file)
     except ET.ParseError, e:
         log_error('(ParseError) Exception parsing XML categories.xml')
-        log_error('(ParseError) {0}'.format(str(e)))
+        log_error('(ParseError) {}'.format(str(e)))
         return games
     xml_root = xml_tree.getroot()
     for game_element in xml_root:
         if __debug_xml_parser:
-            log_debug('=== Root child tag "{0}" ==='.format(game_element.tag))
+            log_debug('=== Root child tag "{}" ==='.format(game_element.tag))
 
         if game_element.tag == 'game':
             # Default values
@@ -238,7 +238,7 @@ def audit_load_OfflineScraper_XML(xml_file):
 
             # ROM name is an attribute of <game>
             game['name'] = game_element.attrib['name']
-            if __debug_xml_parser: log_debug('Game name = "{0}"'.format(game['name']))
+            if __debug_xml_parser: log_debug('Game name = "{}"'.format(game['name']))
 
             # Parse child tags of category
             for game_child in game_element:
@@ -246,7 +246,7 @@ def audit_load_OfflineScraper_XML(xml_file):
                 xml_text = game_child.text if game_child.text is not None else ''
                 xml_text = text_unescape_XML(xml_text)
                 xml_tag  = game_child.tag
-                if __debug_xml_parser: log_debug('Tag "{0}" --> "{1}"'.format(xml_tag, xml_text))
+                if __debug_xml_parser: log_debug('Tag "{}" --> "{}"'.format(xml_tag, xml_text))
                 game[xml_tag] = xml_text
             key = game['name']
             games[key] = game

@@ -50,21 +50,27 @@ class Platform:
         self.DAT          = DAT
         self.DAT_prefix   = DAT_prefix
 
-# * From this list create simplified lists to access platform information.
+# * From this list create dictionaries with indices to access platform information.
+#
 # * Shorted alphabetically by long name. Alphabetical order is veryfied with the script
-#   xxxxx.py
+#   ./dev-core/list_AEL_platforms.py
+#
 # * To be compatible with Retroplayer and Kodi artwork database, anything that can be launched
 #   by Retroarch must be a platform, including Doom, CaveStory, etc.
+#
 # * Platform is something that has ROMs to launch. Standalone cores do not need a platform,
 #   they are Kodi addons with its own artwork. CHECK THIS!
+#
 # * Platform names must have filesystem-safe characters.
+#
 # * When possible user No-Intro DAT-o-MATIC names. Fallback to Wikipedia names.
+#
 # * Unsuported scraper platforms must be set to None. The conversion function will then
 #   translate None to the appropiate value for the scraper.
 #
-# Get TGDB platform list from script scrap_TGDB_list_platforms.py.
-# Get MobyGames platform list from script scrap_MobyGames_list_platforms.py.
-# Get ScreenScraper platform list from script xxxx.py
+# Get TGDB platform list from script ./dev-scrapers/scrap_TGDB_list_platforms.py
+# Get MobyGames platform list from script ./dev-scrapers/scrap_MobyGames_list_platforms.py
+# Get ScreenScraper platform list from script ./dev-scrapers/scrap_ScreenScraper_list_platforms.py
 # Get GameFAQs platform list from https://www.gamefaqs.com/search_advanced?game=ar
 #
 # Default values: Platform('', '', '', None, None, None, None, None, DAT_NONE, ''),
