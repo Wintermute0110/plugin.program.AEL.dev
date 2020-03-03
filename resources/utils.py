@@ -799,9 +799,9 @@ def misc_search_file_cache(dir_path, filename_noext, file_exts):
     current_cache_set = file_cache[dir_str]
     for ext in file_exts:
         file_base = filename_noext + '.' + ext
-        file_base = file_base.lower()
+        file_base_as_cached = file_base.lower()
         #log_debug('misc_search_file_cache() file_Base = "{0}"'.format(file_base))
-        if file_base in current_cache_set:
+        if file_base_as_cached in current_cache_set:
             # log_debug('misc_search_file_cache() Found in cache')
             return dir_path.pjoin(file_base)
 
