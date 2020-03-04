@@ -36,15 +36,15 @@ status_dic = kodi_new_status_dic('Scraper test was OK')
 
 # --- Get candidates non-MAME ---
 # search_term, rombase, platform = common.games['metroid']
-search_term, rombase, platform = common.games['mworld']
-# search_term, rombase, platform = common.games['sonic_megaDrive']
+# search_term, rombase, platform = common.games['mworld']
+search_term, rombase, platform = common.games['sonic_megaDrive']
 # search_term, rombase, platform = common.games['sonic_genesis'] # Aliased platform
 # search_term, rombase, platform = common.games['chakan']
 # search_term, rombase, platform = common.games['console_wrong_title']
 # search_term, rombase, platform = common.games['console_wrong_platform']
 
 # --- Get candidates MAME ---
-# search_term, rombase, platform = common.games['tetris']
+# search_term, rombase, platform = common.games['atetris']
 # search_term, rombase, platform = common.games['mslug']
 # search_term, rombase, platform = common.games['dino']
 # search_term, rombase, platform = common.games['MAME_wrong_title']

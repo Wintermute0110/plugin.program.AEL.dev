@@ -4988,7 +4988,7 @@ class Main:
 
         # --- Add row ---
         # When user clicks on a ROM show the raw database entry
-        url_str = self._misc_url('VIEW_OS_ROM', 'AEL', platform, game['name'])
+        url_str = self._misc_url('VIEW_OS_ROM', 'AEL', platform, game['ROM'])
         xbmcplugin.addDirectoryItem(handle = self.addon_handle, url = url_str, listitem = listitem, isFolder = False)
 
     def _gui_render_LB_scraper_rom_row(self, platform, game):
@@ -4997,9 +4997,11 @@ class Main:
         ICON_OVERLAY = 4
         listitem = xbmcgui.ListItem(game['Name'])
 
-        listitem.setInfo('video', {'title'   : game['Name'],      'year'    : game['ReleaseYear'],
-                                   'genre'   : game['Genres'],    'plot'    : game['Overview'],
-                                   'studio'  : game['Publisher'], 'overlay' : ICON_OVERLAY })
+        listitem.setInfo('video', {
+            'title'   : game['Name'],      'year'    : game['ReleaseYear'],
+            'genre'   : game['Genres'],    'plot'    : game['Overview'],
+            'studio'  : game['Publisher'], 'overlay' : ICON_OVERLAY,
+        })
         listitem.setProperty('nplayers', game['MaxPlayers'])
         listitem.setProperty('esrb', game['ESRB'])
         listitem.setProperty('platform', platform)
@@ -5188,7 +5190,7 @@ class Main:
     # Renders ROMs in a AEL offline Scraper virtual launcher (aka platform)
     #
     def _command_render_AEL_scraper_roms(self, platform):
-        log_debug('_command_render_AEL_scraper_roms() platform = "{0}"'.format(platform))
+        log_debug('_command_render_AEL_scraper_roms() platform = "{}"'.format(platform))
         # Content type and sorting method
         self._misc_set_all_sorting_methods()
         self._misc_set_AEL_Content(AEL_CONTENT_VALUE_ROMS)
@@ -5209,7 +5211,7 @@ class Main:
 
         # --- Display offline scraper ROMs ---
         rendering_ticks_start = time.time()
-        for key in sorted(games, key= lambda x : games[x]['name']):
+        for key in sorted(games, key= lambda x : games[x]['ROM']):
             self._gui_render_AEL_scraper_rom_row(platform, games[key])
         xbmcplugin.endOfDirectory(handle = self.addon_handle, succeeded = True, cacheToDisc = False)
         rendering_ticks_end = time.time()
@@ -5222,7 +5224,7 @@ class Main:
     # Renders ROMs in a LaunchBox offline Scraper virtual launcher (aka platform)
     #
     def _command_render_LB_scraper_roms(self, platform):
-        log_debug('_command_render_LB_scraper_roms() platform = "{0}"'.format(platform))
+        log_debug('_command_render_LB_scraper_roms() platform = "{}"'.format(platform))
         # >> Content type and sorting method
         self._misc_set_all_sorting_methods()
         self._misc_set_AEL_Content(AEL_CONTENT_VALUE_ROMS)
@@ -5230,15 +5232,15 @@ class Main:
         # >> If XML DB not available tell user and leave
         xml_file = platform_AEL_to_LB_XML[platform]
         if not xml_file:
-            kodi_notify_warn('{0} database not available yet.'.format(platform))
+            kodi_notify_warn('{} database not available yet.'.format(platform))
             # kodi_refresh_container()
             return
 
         # --- Load offline scraper XML file ---
         loading_ticks_start = time.time()
         xml_path_FN = g_PATHS.ADDON_CODE_DIR.pjoin(xml_file)
-        log_debug('xml_path_FN OP {0}'.format(xml_path_FN.getOriginalPath()))
-        log_debug('xml_path_FN  P {0}'.format(xml_path_FN.getPath()))
+        log_debug('xml_path_FN OP {}'.format(xml_path_FN.getOriginalPath()))
+        log_debug('xml_path_FN  P {}'.format(xml_path_FN.getPath()))
         games = audit_load_OfflineScraper_XML(xml_path_FN.getPath())
 
         # --- Display offline scraper ROMs ---
@@ -5250,8 +5252,8 @@ class Main:
         rendering_ticks_end = time.time()
 
         # --- DEBUG Data loading/rendering statistics ---
-        log_debug('Loading seconds   {0}'.format(loading_ticks_end - loading_ticks_start))
-        log_debug('Rendering seconds {0}'.format(rendering_ticks_end - rendering_ticks_start))
+        log_debug('Loading seconds   {}'.format(loading_ticks_end - loading_ticks_start))
+        log_debug('Rendering seconds {}'.format(rendering_ticks_end - rendering_ticks_start))
 
     #
     # Render the Recently played and Most Played virtual launchers.
@@ -7787,7 +7789,7 @@ class Main:
             game = games[game_name]
 
             info_text  = '[COLOR orange]ROM information[/COLOR]\n'
-            info_text += "[COLOR violet]game_name[/COLOR]: '{0}'\n".format(game_name)
+            info_text += "[COLOR violet]ROM basename[/COLOR]: '{0}'\n".format(game_name)
             info_text += "[COLOR violet]platform[/COLOR]: '{0}'\n".format(platform)
             info_text += '\n[COLOR orange]Metadata[/COLOR]\n'
 
@@ -7808,12 +7810,12 @@ class Main:
             # V1 Offline Scraper
             info_text += "[COLOR violet]title[/COLOR]: '{0}'\n".format(game['title'])
             info_text += "[COLOR violet]year[/COLOR]: '{0}'\n".format(game['year'])
-            info_text += "[COLOR violet]rating[/COLOR]: '{0}'\n".format(game['rating'])
+            info_text += "[COLOR violet]genre[/COLOR]: '{0}'\n".format(game['genre'])
             info_text += "[COLOR violet]publisher[/COLOR]: '{0}'\n".format(game['publisher'])
             info_text += "[COLOR violet]developer[/COLOR]: '{0}'\n".format(game['developer'])
-            info_text += "[COLOR violet]genre[/COLOR]: '{0}'\n".format(game['genre'])
-            info_text += "[COLOR violet]score[/COLOR]: '{0}'\n".format(game['score'])
+            info_text += "[COLOR violet]rating[/COLOR]: '{0}'\n".format(game['rating'])
             info_text += "[COLOR violet]nplayers[/COLOR]: '{0}'\n".format(game['nplayers'])
+            info_text += "[COLOR violet]score[/COLOR]: '{0}'\n".format(game['score'])
             info_text += "[COLOR violet]plot[/COLOR]: '{0}'\n".format(game['plot'])
 
         elif scraper == 'LaunchBox':
