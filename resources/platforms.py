@@ -235,7 +235,9 @@ AEL_platforms = [
     Platform('Microsoft MSX2', 'microsoft-msx2', 'msx2', None, '4929', '57', '116', '40',
         DAT_NOINTRO, 'Microsoft - MSX2'),
     # MobyGames differentiates Windows = '3' and Windows 3.x = '5'
-    Platform('Microsoft Windows', 'microsoft-windows', 'windows', None, '1', '3', '136', '19', DAT_NONE),
+    Platform('Microsoft Windows 3.x', 'microsoft-windows3x', 'windows3x', None, '1', '3', '136', '19', DAT_NONE),
+    # Modern versions of Windows.
+    Platform('Microsoft Windows', 'microsoft-windows', 'windows', None, None, None, None, None, DAT_NONE),
     Platform('Microsoft Xbox', 'microsoft-xbox', 'xbox', None, '14', '13', '32', '98', DAT_NONE),
     Platform('Microsoft Xbox 360', 'microsoft-xbox360', 'xbox360', None, '15', '69', '33', '111', DAT_NONE),
     Platform('Microsoft Xbox One', 'microsoft-xboxone', 'xboxone', None, '4920', '142', None, '121', DAT_NONE),
