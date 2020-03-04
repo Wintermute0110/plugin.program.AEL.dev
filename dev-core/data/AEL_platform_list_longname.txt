@@ -1,4 +1,4 @@
-Number of AEL platforms 129
+Number of AEL platforms 132
 
 Long name                               Short name            Compact name  Alias      TGDB  MG    SS    GF    DAT     
 -----------------------------------------------------------------------------------------------------------------------
@@ -18,11 +18,13 @@ Benesse Pocket Challenge V2             console-bpc           bpc           None
 Casio Loopy                             console-loopy         loopy         None       None  124   98    None  No-Intro
 Casio PV-1000                           console-pv1000        pv1000        None       4964  125   74    None  No-Intro
 Coleco Colecovision                     console-cvision       cvision       None       31    29    48    29    No-Intro
+Commodore 16                            computer-16           c16           None       None  115   99    None  No-Intro
 Commodore 64                            computer-c64          c64           None       40    27    66    24    No-Intro
 Commodore Amiga                         computer-amiga        amiga         None       4911  19    64    39    No-Intro
 Commodore Amiga CD32                    console-cd32          cd32          None       4947  56    130   70    Redump  
 Commodore Amiga CDTV                    console-cdtv          cdtv          None       None  83    129   None  Redump  
-Commodore Plus-4                        computer-plus4        plus4         None       None  115   99    None  No-Intro
+Commodore PET                           computer-pet          pet           None       None  None  None  None  None    
+Commodore Plus-4                        computer-plus4        plus4         c16        None  None  None  None  None    
 Commodore VIC-20                        computer-vic20        vic20         None       4945  43    73    11    No-Intro
 Emerson Arcadia 2001                    console-arcadia2001   arcadia2001   None       4963  162   94    None  No-Intro
 Entex Adventure Vision                  console-avision       avision       None       4974  210   78    None  No-Intro
@@ -56,7 +58,8 @@ Mattel Intellivision                    console-ivision       ivision       None
 Microsoft MS-DOS                        microsoft-msdos       msdos         None       1     2     135   19    None    
 Microsoft MSX                           microsoft-msx         msx           None       4929  57    113   40    No-Intro
 Microsoft MSX2                          microsoft-msx2        msx2          None       4929  57    116   40    No-Intro
-Microsoft Windows                       microsoft-windows     windows       None       1     3     136   19    None    
+Microsoft Windows                       microsoft-windows     windows       None       None  None  None  None  None    
+Microsoft Windows 3.x                   microsoft-windows3x   windows3x     None       1     3     136   19    None    
 Microsoft Xbox                          microsoft-xbox        xbox          None       14    13    32    98    None    
 Microsoft Xbox 360                      microsoft-xbox360     xbox360       None       15    69    33    111   None    
 Microsoft Xbox One                      microsoft-xboxone     xboxone       None       4920  142   None  121   None    
