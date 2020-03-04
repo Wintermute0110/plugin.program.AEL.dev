@@ -7666,8 +7666,8 @@ class Main:
         info_text += "[COLOR violet]args[/COLOR]: '{0}'\n".format(launcher['args'])
         info_text += "[COLOR skyblue]args_extra[/COLOR]: {0}\n".format(launcher['args_extra'])
         info_text += "[COLOR violet]rompath[/COLOR]: '{0}'\n".format(launcher['rompath'])
-        info_text += "[COLOR violet]romext[/COLOR]: '{0}'\n".format(launcher['romext'])
         info_text += "[COLOR violet]romextrapath[/COLOR]: '{0}'\n".format(launcher['romextrapath'])
+        info_text += "[COLOR violet]romext[/COLOR]: '{0}'\n".format(launcher['romext'])
         # Bool settings
         info_text += "[COLOR skyblue]finished[/COLOR]: {0}\n".format(launcher['finished'])
         info_text += "[COLOR skyblue]toggle_window[/COLOR]: {0}\n".format(launcher['toggle_window'])
