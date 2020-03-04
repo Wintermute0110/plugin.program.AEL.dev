@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<menu>
+<header>
+  <listname>Nintendo Pokemon Mini</listname>
+  <lastlistupdate></lastlistupdate>
+  <listversion>V1</listversion>
+  <exporterversion>V1 GameDBInfo converter</exporterversion>
+</header>
+<game name="Pichu Bros. Mini (Japan)">
+  <title>Pichu Bros. Mini (Japan)</title>
+  <year>2000</year>
+  <rating>ESRB - E (Everyone)</rating>
+  <publisher>Denyusha Co. Ltd.</publisher>
+  <developer />
+  <genre>Multiplay</genre>
+</game>
+<game name="Pokemon Breeder Mini (Japan) (Translated En)">
+  <title>Pokemon Breeder Mini (Japan) (Translated En)</title>
+  <year>2002</year>
+  <rating>ESRB - E (Everyone)</rating>
+  <publisher>Jupiter Corp.</publisher>
+  <developer />
+  <genre>Simulation</genre>
+</game>
+<game name="Pokemon Party Mini (USA)">
+  <title>Pokemon Party Mini (USA)</title>
+  <year>2001</year>
+  <rating>ESRB - E (Everyone)</rating>
+  <publisher>Denyusha Co. Ltd.</publisher>
+  <developer />
+  <genre>Multiplay</genre>
+</game>
+<game name="Pokemon Pinball Mini (USA)">
+  <title>Pokemon Pinball Mini (USA)</title>
+  <year>2001</year>
+  <rating>ESRB - E (Everyone)</rating>
+  <publisher>Jupiter Corp.</publisher>
+  <developer />
+  <genre>Pinball</genre>
+</game>
+<game name="Pokemon Puzzle Collection (USA)">
+  <title>Pokemon Puzzle Collection (USA)</title>
+  <year>2001</year>
+  <rating>ESRB - E (Everyone)</rating>
+  <publisher>Jupiter Corp.</publisher>
+  <developer />
+  <genre>Puzzle</genre>
+</game>
+<game name="Pokemon Puzzle Collection Vol. 2 (Japan) (Translated En)">
+  <title>Pokemon Puzzle Collection Vol. 2 (Japan) (Translated En)</title>
+  <year>2002</year>
+  <rating>ESRB - E (Everyone)</rating>
+  <publisher>Jupiter Corp.</publisher>
+  <developer />
+  <genre>Puzzle</genre>
+</game>
+<game name="Pokemon Race Mini (Japan)">
+  <title>Pokemon Race Mini (Japan)</title>
+  <year>2002</year>
+  <rating>ESRB - E (Everyone)</rating>
+  <publisher>Jupiter Corp.</publisher>
+  <developer />
+  <genre>Driving</genre>
+</game>
+<game name="Pokemon Tetris (Europe)">
+  <title>Pokemon Tetris (Europe)</title>
+  <year>2002</year>
+  <rating>ESRB - E (Everyone)</rating>
+  <publisher>Nintendo</publisher>
+  <developer />
+  <genre>Puzzle</genre>
+</game>
+<game name="Pokemon Zany Cards (USA)">
+  <title>Pokemon Zany Cards (USA)</title>
+  <year>2001</year>
+  <rating>ESRB - E (Everyone)</rating>
+  <publisher>Denyusha Co. Ltd.</publisher>
+  <developer />
+  <genre>Card Battle</genre>
+</game>
+<game name="Snorlax&apos;s Lunch Time (USA) (GameCube)">
+  <title>Snorlax&apos;s Lunch Time (USA) (GameCube)</title>
+  <year>2003</year>
+  <rating>ESRB - E (Everyone)</rating>
+  <publisher>Nintendo</publisher>
+  <developer />
+  <genre>Miscellaneous</genre>
+</game>
+<game name="Togepi no Daibouken (Japan) (Translated En)">
+  <title>Togepi no Daibouken (Japan) (Translated En)</title>
+  <year>2002</year>
+  <rating>ESRB - E (Everyone)</rating>
+  <publisher>Jupiter Corp.</publisher>
+  <developer />
+  <genre>Adventure</genre>
+</game>
+</menu>

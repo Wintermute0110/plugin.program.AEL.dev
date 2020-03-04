@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<menu>
+<header>
+  <listname>Entex Adventure Vision</listname>
+  <lastlistupdate></lastlistupdate>
+  <listversion>V1</listversion>
+  <exporterversion>V1 GameDBInfo converter</exporterversion>
+</header>
+<game name="Defender (USA, Europe)">
+  <title>Defender (USA, Europe)</title>
+  <year>1982</year>
+  <rating>HSRS - GA (General Audience)</rating>
+  <publisher>Entex Industries</publisher>
+  <developer />
+  <genre>Shooter</genre>
+</game>
+<game name="Space Force (USA, Europe)">
+  <title>Space Force (USA, Europe)</title>
+  <year>1982</year>
+  <rating>HSRS - GA (General Audience)</rating>
+  <publisher>Entex Industries</publisher>
+  <developer />
+  <genre>Shooter</genre>
+</game>
+<game name="Super Cobra (USA, Europe)">
+  <title>Super Cobra (USA, Europe)</title>
+  <year>1982</year>
+  <rating>HSRS - GA (General Audience)</rating>
+  <publisher>Entex Industries</publisher>
+  <developer />
+  <genre>Shooter</genre>
+</game>
+<game name="Turtles (USA, Europe)">
+  <title>Turtles (USA, Europe)</title>
+  <year>1982</year>
+  <rating>HSRS - GA (General Audience)</rating>
+  <publisher>Entex Industries</publisher>
+  <developer />
+  <genre>Action</genre>
+</game>
+</menu>

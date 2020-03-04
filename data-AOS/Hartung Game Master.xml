@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<menu>
+<header>
+  <listname>Hartung Game Master</listname>
+  <lastlistupdate></lastlistupdate>
+  <listversion>V1</listversion>
+  <exporterversion>V1 GameDBInfo converter</exporterversion>
+</header>
+<game name="Bubble Boy">
+  <title>Bubble Boy</title>
+  <year>1990</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Hartung</publisher>
+  <developer />
+  <genre>Puzzle</genre>
+</game>
+<game name="Continental Galaxy 2020">
+  <title>Continental Galaxy 2020</title>
+  <year>1990</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Hartung</publisher>
+  <developer />
+  <genre>Shoot Em-Up</genre>
+</game>
+<game name="Dungeon Adventure">
+  <title>Dungeon Adventure</title>
+  <year>1990</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Hartung</publisher>
+  <developer />
+  <genre>Action</genre>
+</game>
+<game name="Falling Block!">
+  <title>Falling Block!</title>
+  <year>1990</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Hartung</publisher>
+  <developer />
+  <genre>Puzzle</genre>
+</game>
+<game name="Go Bang">
+  <title>Go Bang</title>
+  <year>1990</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Hartung</publisher>
+  <developer />
+  <genre>Puzzle</genre>
+</game>
+<game name="Hyper Space">
+  <title>Hyper Space</title>
+  <year>1990</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Hartung</publisher>
+  <developer />
+  <genre>Action</genre>
+</game>
+<game name="Kung Fu Challenge">
+  <title>Kung Fu Challenge</title>
+  <year>1990</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Hartung</publisher>
+  <developer />
+  <genre>Fighter</genre>
+</game>
+<game name="Pin Ball">
+  <title>Pin Ball</title>
+  <year>1990</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Hartung</publisher>
+  <developer />
+  <genre>Pinball</genre>
+</game>
+<game name="Space Castle">
+  <title>Space Castle</title>
+  <year>1990</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Hartung</publisher>
+  <developer />
+  <genre>Shoot Em-Up</genre>
+</game>
+<game name="Tennis Master">
+  <title>Tennis Master</title>
+  <year>1990</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Hartung</publisher>
+  <developer />
+  <genre>Tennis</genre>
+</game>
+<game name="Urban Champion">
+  <title>Urban Champion</title>
+  <year>1990</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Hartung</publisher>
+  <developer />
+  <genre>Action</genre>
+</game>
+</menu>

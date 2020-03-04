@@ -1,0 +1,169 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<menu>
+<header>
+  <listname>Tiger Game.com</listname>
+  <lastlistupdate></lastlistupdate>
+  <listversion>V1</listversion>
+  <exporterversion>V1 GameDBInfo converter</exporterversion>
+</header>
+<game name="Batman &amp; Robin (USA)">
+  <title>Batman &amp; Robin (USA)</title>
+  <year>1997</year>
+  <rating>ESRB - T (Teen)</rating>
+  <publisher>Acclaim</publisher>
+  <developer />
+  <genre>Action</genre>
+</game>
+<game name="Centipede (USA)">
+  <title>Centipede (USA)</title>
+  <year>1999</year>
+  <rating>ESRB - E (Everyone)</rating>
+  <publisher>Hasbro-Tiger Electronics</publisher>
+  <developer />
+  <genre>Shooter</genre>
+</game>
+<game name="Duke Nukem 3D (USA)">
+  <title>Duke Nukem 3D (USA)</title>
+  <year>1997</year>
+  <rating>ESRB - M (Mature)</rating>
+  <publisher>Tiger Electronics</publisher>
+  <developer />
+  <genre>Action</genre>
+</game>
+<game name="Fighters Megamix (USA)">
+  <title>Fighters Megamix (USA)</title>
+  <year>1998</year>
+  <rating>ESRB - T (Teen)</rating>
+  <publisher>Sega</publisher>
+  <developer />
+  <genre>Fighter</genre>
+</game>
+<game name="Frogger (USA)">
+  <title>Frogger (USA)</title>
+  <year>1999</year>
+  <rating>ESRB - E (Everyone)</rating>
+  <publisher>Hasbro-Tiger Electronics</publisher>
+  <developer />
+  <genre>Action</genre>
+</game>
+<game name="Henry (USA)">
+  <title>Henry (USA)</title>
+  <year>1997</year>
+  <rating>ESRB - E (Everyone)</rating>
+  <publisher>Tiger Electronics</publisher>
+  <developer />
+  <genre>Action</genre>
+</game>
+<game name="Indy 500 (USA)">
+  <title>Indy 500 (USA)</title>
+  <year>1997</year>
+  <rating>ESRB - E (Everyone)</rating>
+  <publisher>Tiger Electronics</publisher>
+  <developer />
+  <genre>Driving</genre>
+</game>
+<game name="Jeopardy! (USA)">
+  <title>Jeopardy! (USA)</title>
+  <year>1997</year>
+  <rating>ESRB - E (Everyone)</rating>
+  <publisher>Tiger Electronics</publisher>
+  <developer />
+  <genre>Quiz</genre>
+</game>
+<game name="Jurassic Park - The Lost World (USA)">
+  <title>Jurassic Park - The Lost World (USA)</title>
+  <year>1997</year>
+  <rating>ESRB - T (Teen)</rating>
+  <publisher>Tiger Electronics</publisher>
+  <developer />
+  <genre>Action</genre>
+</game>
+<game name="Lights Out (USA)">
+  <title>Lights Out (USA)</title>
+  <year>1997</year>
+  <rating>ESRB - E (Everyone)</rating>
+  <publisher>Tiger Electronics</publisher>
+  <developer />
+  <genre>Puzzle</genre>
+</game>
+<game name="Monopoly (USA)">
+  <title>Monopoly (USA)</title>
+  <year>1999</year>
+  <rating>ESRB - E (Everyone)</rating>
+  <publisher>Tiger Electronics</publisher>
+  <developer />
+  <genre>Board Games</genre>
+</game>
+<game name="Mortal Kombat Trilogy (USA)">
+  <title>Mortal Kombat Trilogy (USA)</title>
+  <year>1997</year>
+  <rating>ESRB - M (Mature)</rating>
+  <publisher>Midway</publisher>
+  <developer />
+  <genre>Fighter</genre>
+</game>
+<game name="Quiz Wiz - Cyber Trivia (USA)">
+  <title>Quiz Wiz - Cyber Trivia (USA)</title>
+  <year>1997</year>
+  <rating>ESRB - E (Everyone)</rating>
+  <publisher>Tiger Electronics</publisher>
+  <developer />
+  <genre>Quiz</genre>
+</game>
+<game name="Resident Evil 2 (USA)">
+  <title>Resident Evil 2 (USA)</title>
+  <year>1998</year>
+  <rating>ESRB - M (Mature)</rating>
+  <publisher>Capcom</publisher>
+  <developer />
+  <genre>Action</genre>
+</game>
+<game name="Scrabble (USA)">
+  <title>Scrabble (USA)</title>
+  <year>1999</year>
+  <rating>ESRB - E (Everyone)</rating>
+  <publisher>Hasbro-Tiger Electronics</publisher>
+  <developer />
+  <genre>Board Games</genre>
+</game>
+<game name="Sonic Jam (USA)">
+  <title>Sonic Jam (USA)</title>
+  <year>1998</year>
+  <rating>ESRB - E (Everyone)</rating>
+  <publisher>Sega</publisher>
+  <developer />
+  <genre>Platform</genre>
+</game>
+<game name="Tiger Casino (USA)">
+  <title>Tiger Casino (USA)</title>
+  <year>1998</year>
+  <rating>ESRB - E (Everyone)</rating>
+  <publisher>Tiger Electronics</publisher>
+  <developer />
+  <genre>Casino</genre>
+</game>
+<game name="Wheel of Fortune (USA)">
+  <title>Wheel of Fortune (USA)</title>
+  <year>1997</year>
+  <rating>ESRB - E (Everyone)</rating>
+  <publisher>Tiger Electronics</publisher>
+  <developer />
+  <genre>Puzzle</genre>
+</game>
+<game name="Wheel of Fortune 2 (USA)">
+  <title>Wheel of Fortune 2 (USA)</title>
+  <year>1998</year>
+  <rating>ESRB - E (Everyone)</rating>
+  <publisher>Tiger Electronics</publisher>
+  <developer />
+  <genre>Puzzle</genre>
+</game>
+<game name="Williams Arcade Classics (USA)">
+  <title>Williams Arcade Classics (USA)</title>
+  <year>1997</year>
+  <rating>ESRB - E (Everyone)</rating>
+  <publisher>Tiger Electronics</publisher>
+  <developer />
+  <genre>Miscellaneous</genre>
+</game>
+</menu>

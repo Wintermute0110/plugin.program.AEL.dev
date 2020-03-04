@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<menu>
+<header>
+  <listname>Nintendo 64DD</listname>
+  <lastlistupdate></lastlistupdate>
+  <listversion>V1</listversion>
+  <exporterversion>V1 GameDBInfo converter</exporterversion>
+</header>
+<game name="Dezaemon DD (Japan) (Proto)">
+  <title>Dezaemon DD (Japan) (Proto)</title>
+  <year>1998</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Athena</publisher>
+  <developer />
+  <genre>Miscellaneous</genre>
+</game>
+<game name="Doshin the Giant (Japan)">
+  <title>Doshin the Giant (Japan)</title>
+  <year>1999</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Nintendo</publisher>
+  <developer />
+  <genre>Simulation</genre>
+</game>
+<game name="Doshin the Giant (Japan) (Demo)">
+  <title>Doshin the Giant (Japan) (Demo)</title>
+  <year>1999</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Nintendo</publisher>
+  <developer />
+  <genre>Simulation</genre>
+</game>
+<game name="Doshin the Giant Tinkling Toddler Liberation Front! Assemble (Japan)">
+  <title>Doshin the Giant Tinkling Toddler Liberation Front! Assemble (Japan)</title>
+  <year>2000</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Nintendo</publisher>
+  <developer />
+  <genre>Simulation</genre>
+</game>
+<game name="F-Zero X Expansion Kit (Japan) (Translated En)">
+  <title>F-Zero X Expansion Kit (Japan) (Translated En)</title>
+  <year>2000</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Nintendo</publisher>
+  <developer />
+  <genre>Driving</genre>
+</game>
+<game name="Japan Pro Golf Tour 64 (Japan)">
+  <title>Japan Pro Golf Tour 64 (Japan)</title>
+  <year>2000</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Seta</publisher>
+  <developer />
+  <genre>Sports/Golf</genre>
+</game>
+<game name="Mario Artist Communication Kit (Japan)">
+  <title>Mario Artist Communication Kit (Japan)</title>
+  <year>2000</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Nintendo</publisher>
+  <developer />
+  <genre>Multimedia</genre>
+</game>
+<game name="Mario Artist Paint Studio (Japan)">
+  <title>Mario Artist Paint Studio (Japan)</title>
+  <year>1999</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Nintendo</publisher>
+  <developer />
+  <genre>Multimedia</genre>
+</game>
+<game name="Mario Artist Polygon Studio (Japan)">
+  <title>Mario Artist Polygon Studio (Japan)</title>
+  <year>2000</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Nintendo</publisher>
+  <developer />
+  <genre>Multimedia</genre>
+</game>
+<game name="Mario Artist Talent Studio (Japan)">
+  <title>Mario Artist Talent Studio (Japan)</title>
+  <year>2000</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Nintendo</publisher>
+  <developer />
+  <genre>Multimedia</genre>
+</game>
+<game name="Sim City 64 (Japan)">
+  <title>Sim City 64 (Japan)</title>
+  <year>2000</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Nintendo</publisher>
+  <developer />
+  <genre>Simulation</genre>
+</game>
+<game name="Super Mario 64 (Japan) (Proto)">
+  <title>Super Mario 64 (Japan) (Proto)</title>
+  <year>19??</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Nintendo</publisher>
+  <developer />
+  <genre>Platform</genre>
+</game>
+</menu>

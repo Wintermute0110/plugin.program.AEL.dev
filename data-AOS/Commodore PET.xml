@@ -1,0 +1,2209 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<menu>
+<header>
+  <listname>Commodore PET</listname>
+  <lastlistupdate></lastlistupdate>
+  <listversion>V1</listversion>
+  <exporterversion>V1 GameDBInfo converter</exporterversion>
+</header>
+<game name="3-D Tic-Tac-Toe (USA)">
+  <title>3-D Tic-Tac-Toe (USA)</title>
+  <year>1978</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Creative Computing Software</publisher>
+  <developer />
+  <genre>Strategy</genre>
+</game>
+<game name="Acey Deucy (USA) (Unl)">
+  <title>Acey Deucy (USA) (Unl)</title>
+  <year>1980</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Unknown</publisher>
+  <developer />
+  <genre>Casino</genre>
+</game>
+<game name="Acigol (USA) (Unl)">
+  <title>Acigol (USA) (Unl)</title>
+  <year>1980</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Unknown</publisher>
+  <developer />
+  <genre>Puzzle</genre>
+</game>
+<game name="Acrobat II (USA) (Unl)">
+  <title>Acrobat II (USA) (Unl)</title>
+  <year>1982</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Commodore Japan Limited</publisher>
+  <developer />
+  <genre>Action</genre>
+</game>
+<game name="Adventure 1 - Cavern of Riches (USA) (Unl)">
+  <title>Adventure 1 - Cavern of Riches (USA) (Unl)</title>
+  <year>1980</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>John O&apos;Hare</publisher>
+  <developer />
+  <genre>Adventure</genre>
+</game>
+<game name="Adventure 2 - The Great Pyramid (USA) (Unl)">
+  <title>Adventure 2 - The Great Pyramid (USA) (Unl)</title>
+  <year>1980</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>John O&apos;Hare</publisher>
+  <developer />
+  <genre>Adventure</genre>
+</game>
+<game name="Adventure 3 - Haunted Mansion (USA) (Unl)">
+  <title>Adventure 3 - Haunted Mansion (USA) (Unl)</title>
+  <year>1980</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>John O&apos;Hare</publisher>
+  <developer />
+  <genre>Adventure</genre>
+</game>
+<game name="Adventureland (USA)">
+  <title>Adventureland (USA)</title>
+  <year>1978</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Adventure International</publisher>
+  <developer />
+  <genre>Adventure</genre>
+</game>
+<game name="Air Attack (USA)">
+  <title>Air Attack (USA)</title>
+  <year>1979</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Supersoft</publisher>
+  <developer />
+  <genre>Action</genre>
+</game>
+<game name="Aliens! (USA) (Unl)">
+  <title>Aliens! (USA) (Unl)</title>
+  <year>1980</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Code Works, The</publisher>
+  <developer />
+  <genre>Shoot-&apos;Em-Up</genre>
+</game>
+<game name="Alligator Moeras (Netherlands) (Unl)">
+  <title>Alligator Moeras (Netherlands) (Unl)</title>
+  <year>1980</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Unknown</publisher>
+  <developer />
+  <genre>Action</genre>
+</game>
+<game name="Ambush! (USA) (Unl)">
+  <title>Ambush! (USA) (Unl)</title>
+  <year>1980</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Code Works, The</publisher>
+  <developer />
+  <genre>Strategy</genre>
+</game>
+<game name="Android Nim (USA) (Unl)">
+  <title>Android Nim (USA) (Unl)</title>
+  <year>1979</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Don Dennis</publisher>
+  <developer />
+  <genre>Strategy</genre>
+</game>
+<game name="Arrow (USA) (Unl)">
+  <title>Arrow (USA) (Unl)</title>
+  <year>1980</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Jim Butterfield</publisher>
+  <developer />
+  <genre>Action</genre>
+</game>
+<game name="Artillery (USA)">
+  <title>Artillery (USA)</title>
+  <year>1979</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Creative Computing Software</publisher>
+  <developer />
+  <genre>Strategy</genre>
+</game>
+<game name="Atlantic Patrol (USA) (Unl)">
+  <title>Atlantic Patrol (USA) (Unl)</title>
+  <year>1978</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Unknown</publisher>
+  <developer />
+  <genre>Simulation</genre>
+</game>
+<game name="Avalanche (Europe) (Unl)">
+  <title>Avalanche (Europe) (Unl)</title>
+  <year>2012</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Revival Studios</publisher>
+  <developer />
+  <genre>Action</genre>
+</game>
+<game name="Awari (USA)">
+  <title>Awari (USA)</title>
+  <year>1978</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Creative Computing Software</publisher>
+  <developer />
+  <genre>Board Games</genre>
+</game>
+<game name="Backgammon (v1) (USA) (Unl)">
+  <title>Backgammon (v1) (USA) (Unl)</title>
+  <year>19xx</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Unknown</publisher>
+  <developer />
+  <genre>Board Games</genre>
+</game>
+<game name="Backgammon (v2) (USA) (Unl)">
+  <title>Backgammon (v2) (USA) (Unl)</title>
+  <year>19xx</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Unknown</publisher>
+  <developer />
+  <genre>Board Games</genre>
+</game>
+<game name="Ballon Redden (Netherlands)">
+  <title>Ballon Redden (Netherlands)</title>
+  <year>1980</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>DWE-Produktie</publisher>
+  <developer />
+  <genre>Action</genre>
+</game>
+<game name="Baseball (USA) (Unl)">
+  <title>Baseball (USA) (Unl)</title>
+  <year>1977</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Unknown</publisher>
+  <developer />
+  <genre>Sports/Baseball</genre>
+</game>
+<game name="Baseball Strategy (USA)">
+  <title>Baseball Strategy (USA)</title>
+  <year>1981</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Avalon Hill Game Company</publisher>
+  <developer />
+  <genre>Sports/Baseball</genre>
+</game>
+<game name="Bat! (USA) (Unl)">
+  <title>Bat! (USA) (Unl)</title>
+  <year>1979</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Code Works, The</publisher>
+  <developer />
+  <genre>Shoot-&apos;Em-Up</genre>
+</game>
+<game name="Battleship (USA)">
+  <title>Battleship (USA)</title>
+  <year>1978</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Commmodore Educational Software</publisher>
+  <developer />
+  <genre>Board Games</genre>
+</game>
+<game name="Bets (USA) (Unl)">
+  <title>Bets (USA) (Unl)</title>
+  <year>1980</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Code Works, The</publisher>
+  <developer />
+  <genre>Casino</genre>
+</game>
+<game name="BioTerror! (Europe) (Unl)">
+  <title>BioTerror! (Europe) (Unl)</title>
+  <year>2011</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Jason Grow</publisher>
+  <developer />
+  <genre>Simulation</genre>
+</game>
+<game name="Bjack (USA) (Unl)">
+  <title>Bjack (USA) (Unl)</title>
+  <year>1979</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Code Works, The</publisher>
+  <developer />
+  <genre>Casino</genre>
+</game>
+<game name="Blackjack (USA)">
+  <title>Blackjack (USA)</title>
+  <year>1979</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Commodore Business Machines</publisher>
+  <developer />
+  <genre>Casino</genre>
+</game>
+<game name="Blockade Special (USA) (Unl)">
+  <title>Blockade Special (USA) (Unl)</title>
+  <year>1981</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Gil Winkler</publisher>
+  <developer />
+  <genre>Action</genre>
+</game>
+<game name="Blok Copy (Europe) (Unl)">
+  <title>Blok Copy (Europe) (Unl)</title>
+  <year>2008</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Cosine Systems</publisher>
+  <developer />
+  <genre>Puzzle</genre>
+</game>
+<game name="Bomber (USA) (Unl)">
+  <title>Bomber (USA) (Unl)</title>
+  <year>1980</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Unknown</publisher>
+  <developer />
+  <genre>Action</genre>
+</game>
+<game name="Bonzo! (USA) (Unl)">
+  <title>Bonzo! (USA) (Unl)</title>
+  <year>1980</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Code Works, The</publisher>
+  <developer />
+  <genre>Board Games</genre>
+</game>
+<game name="Bop (USA) (Unl)">
+  <title>Bop (USA) (Unl)</title>
+  <year>1978</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Code Works, The</publisher>
+  <developer />
+  <genre>Educational</genre>
+</game>
+<game name="Boswain (USA) (Unl)">
+  <title>Boswain (USA) (Unl)</title>
+  <year>1980</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Code Works, The</publisher>
+  <developer />
+  <genre>Simulation</genre>
+</game>
+<game name="Bowling (USA)">
+  <title>Bowling (USA)</title>
+  <year>1982</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Avalon Hill Game Company</publisher>
+  <developer />
+  <genre>Sports/Bowling</genre>
+</game>
+<game name="Break-Out (USA) (Unl)">
+  <title>Break-Out (USA) (Unl)</title>
+  <year>1980</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Unknown</publisher>
+  <developer />
+  <genre>Breakout</genre>
+</game>
+<game name="Breakout (USA) (Unl)">
+  <title>Breakout (USA) (Unl)</title>
+  <year>1980</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Unknown</publisher>
+  <developer />
+  <genre>Breakout</genre>
+</game>
+<game name="Brick (USA) (Unl)">
+  <title>Brick (USA) (Unl)</title>
+  <year>1978</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Code Works, The</publisher>
+  <developer />
+  <genre>Breakout</genre>
+</game>
+<game name="Brick Wall (USA)">
+  <title>Brick Wall (USA)</title>
+  <year>1980</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Dawson</publisher>
+  <developer />
+  <genre>Breakout</genre>
+</game>
+<game name="Bridge Bidding Trainer (USA) (Unl)">
+  <title>Bridge Bidding Trainer (USA) (Unl)</title>
+  <year>1979</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>James C Downer</publisher>
+  <developer />
+  <genre>Tabletop</genre>
+</game>
+<game name="Bship (USA) (Unl)">
+  <title>Bship (USA) (Unl)</title>
+  <year>1978</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Code Works, The</publisher>
+  <developer />
+  <genre>Board Games</genre>
+</game>
+<game name="Buggy (USA) (Unl)">
+  <title>Buggy (USA) (Unl)</title>
+  <year>1980</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Unknown</publisher>
+  <developer />
+  <genre>Educational</genre>
+</game>
+<game name="Bulls and Bears (USA)">
+  <title>Bulls and Bears (USA)</title>
+  <year>1978</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Speakeasy Software</publisher>
+  <developer />
+  <genre>Simulation</genre>
+</game>
+<game name="Butterfield Social &amp; Recreational Club (USA) (Unl)">
+  <title>Butterfield Social &amp; Recreational Club (USA) (Unl)</title>
+  <year>1980</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Jim Butterfield</publisher>
+  <developer />
+  <genre>Casino</genre>
+</game>
+<game name="Canyon (USA) (Unl)">
+  <title>Canyon (USA) (Unl)</title>
+  <year>1979</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Code Works, The</publisher>
+  <developer />
+  <genre>Action</genre>
+</game>
+<game name="Capture! (USA) (Unl)">
+  <title>Capture! (USA) (Unl)</title>
+  <year>1980</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Code Works, The</publisher>
+  <developer />
+  <genre>Puzzle</genre>
+</game>
+<game name="Car Race II (USA) (Unl)">
+  <title>Car Race II (USA) (Unl)</title>
+  <year>1980</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Satoru Iwata</publisher>
+  <developer />
+  <genre>Driving</genre>
+</game>
+<game name="Casino Blackjack (USA)">
+  <title>Casino Blackjack (USA)</title>
+  <year>1979</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>CMS Software Systems</publisher>
+  <developer />
+  <genre>Casino</genre>
+</game>
+<game name="Checkers! (USA) (Unl)">
+  <title>Checkers! (USA) (Unl)</title>
+  <year>19xx</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Unknown</publisher>
+  <developer />
+  <genre>Board Games</genre>
+</game>
+<game name="Chess Game (USA) (Unl)">
+  <title>Chess Game (USA) (Unl)</title>
+  <year>1980</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Unknown</publisher>
+  <developer />
+  <genre>Board Games</genre>
+</game>
+<game name="Civil War (USA)">
+  <title>Civil War (USA)</title>
+  <year>1978</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Creative Computing Software</publisher>
+  <developer />
+  <genre>Simulation</genre>
+</game>
+<game name="Computer Acquire (USA)">
+  <title>Computer Acquire (USA)</title>
+  <year>1980</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Avalon Hill Game Company</publisher>
+  <developer />
+  <genre>Simulation</genre>
+</game>
+<game name="Concorde Landing Simulation (USA) (Unl)">
+  <title>Concorde Landing Simulation (USA) (Unl)</title>
+  <year>1980</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Unknown</publisher>
+  <developer />
+  <genre>Simulation</genre>
+</game>
+<game name="Cops (USA) (Unl)">
+  <title>Cops (USA) (Unl)</title>
+  <year>1979</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Code Works, The</publisher>
+  <developer />
+  <genre>Strategy</genre>
+</game>
+<game name="Cosmic Cosmiads (USA) (Unl)">
+  <title>Cosmic Cosmiads (USA) (Unl)</title>
+  <year>1981</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Derek J. Hipkin</publisher>
+  <developer />
+  <genre>Shoot-&apos;Em-Up</genre>
+</game>
+<game name="Cosmic Fighter (USA)">
+  <title>Cosmic Fighter (USA)</title>
+  <year>1982</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>MS Software</publisher>
+  <developer />
+  <genre>Shoot-&apos;Em-Up</genre>
+</game>
+<game name="Cosmic Jailbreak (USA) (Unl)">
+  <title>Cosmic Jailbreak (USA) (Unl)</title>
+  <year>1982</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Derek J. Hipkin</publisher>
+  <developer />
+  <genre>Shoot-&apos;Em-Up</genre>
+</game>
+<game name="Crazy Balloon (USA) (Unl)">
+  <title>Crazy Balloon (USA) (Unl)</title>
+  <year>1980</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Unknown</publisher>
+  <developer />
+  <genre>Action</genre>
+</game>
+<game name="Crossword Puzzle (USA) (Unl)">
+  <title>Crossword Puzzle (USA) (Unl)</title>
+  <year>1980</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Unknown</publisher>
+  <developer />
+  <genre>Puzzle</genre>
+</game>
+<game name="Dam Buster (USA) (Unl)">
+  <title>Dam Buster (USA) (Unl)</title>
+  <year>1980</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Unknown</publisher>
+  <developer />
+  <genre>Action</genre>
+</game>
+<game name="Debris (USA) (Unl)">
+  <title>Debris (USA) (Unl)</title>
+  <year>1980</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Unknown</publisher>
+  <developer />
+  <genre>Breakout</genre>
+</game>
+<game name="Deepspace (USA)">
+  <title>Deepspace (USA)</title>
+  <year>1979</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Creative Computing Software</publisher>
+  <developer />
+  <genre>Simulation</genre>
+</game>
+<game name="Defend! (USA) (Unl)">
+  <title>Defend! (USA) (Unl)</title>
+  <year>1981</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Code Works, The</publisher>
+  <developer />
+  <genre>Shoot-&apos;Em-Up</genre>
+</game>
+<game name="Deflection (USA)">
+  <title>Deflection (USA)</title>
+  <year>1979</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>ARESCO</publisher>
+  <developer />
+  <genre>Action</genre>
+</game>
+<game name="Demon! (USA) (Unl)">
+  <title>Demon! (USA) (Unl)</title>
+  <year>1979</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Code Works, The</publisher>
+  <developer />
+  <genre>Strategy</genre>
+</game>
+<game name="Diamond Hunt II (USA) (Unl)">
+  <title>Diamond Hunt II (USA) (Unl)</title>
+  <year>1990</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Dr. Ken &amp; Joe Commodore</publisher>
+  <developer />
+  <genre>Action</genre>
+</game>
+<game name="Dog Star Adventure (USA) (Unl)">
+  <title>Dog Star Adventure (USA) (Unl)</title>
+  <year>1980</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Unknown</publisher>
+  <developer />
+  <genre>Adventure</genre>
+</game>
+<game name="Dominos (USA) (Unl)">
+  <title>Dominos (USA) (Unl)</title>
+  <year>1980</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Unknown</publisher>
+  <developer />
+  <genre>Action</genre>
+</game>
+<game name="Donuts (USA) (Unl)">
+  <title>Donuts (USA) (Unl)</title>
+  <year>1980</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Unknown</publisher>
+  <developer />
+  <genre>Puzzle</genre>
+</game>
+<game name="Doolhof (Netherlands) (Unl)">
+  <title>Doolhof (Netherlands) (Unl)</title>
+  <year>1980</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Jan V. Gorp </publisher>
+  <developer />
+  <genre>Strategy</genre>
+</game>
+<game name="Dot Racer (USA) (Unl)">
+  <title>Dot Racer (USA) (Unl)</title>
+  <year>1980</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Unknown</publisher>
+  <developer />
+  <genre>Driving</genre>
+</game>
+<game name="Down (Europe) (Unl)">
+  <title>Down (Europe) (Unl)</title>
+  <year>2013</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Revival Studios</publisher>
+  <developer />
+  <genre>Action</genre>
+</game>
+<game name="Drag (USA) (Unl)">
+  <title>Drag (USA) (Unl)</title>
+  <year>1980</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Code Works, The</publisher>
+  <developer />
+  <genre>Educational</genre>
+</game>
+<game name="Dragon Island (USA) (Unl)">
+  <title>Dragon Island (USA) (Unl)</title>
+  <year>1978</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Mike Spencer</publisher>
+  <developer />
+  <genre>Strategy</genre>
+</game>
+<game name="Draw Poker 1 (USA)">
+  <title>Draw Poker 1 (USA)</title>
+  <year>1978</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Commodore Business Machines</publisher>
+  <developer />
+  <genre>Casino</genre>
+</game>
+<game name="Duel (USA) (Unl)">
+  <title>Duel (USA) (Unl)</title>
+  <year>1980</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Unknown</publisher>
+  <developer />
+  <genre>Action</genre>
+</game>
+<game name="Dungeon (USA) (Unl)">
+  <title>Dungeon (USA) (Unl)</title>
+  <year>1979</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Code Works, The</publisher>
+  <developer />
+  <genre>Role-Playing</genre>
+</game>
+<game name="Eliza (USA)">
+  <title>Eliza (USA)</title>
+  <year>1979</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Creative Computing Software</publisher>
+  <developer />
+  <genre>Simulation</genre>
+</game>
+<game name="Enigma (USA) (Unl)">
+  <title>Enigma (USA) (Unl)</title>
+  <year>1980</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Code Works, The</publisher>
+  <developer />
+  <genre>Simulation</genre>
+</game>
+<game name="Epidemic (USA) (Unl)">
+  <title>Epidemic (USA) (Unl)</title>
+  <year>1980</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Unknown</publisher>
+  <developer />
+  <genre>Educational</genre>
+</game>
+<game name="Everest (USA) (Unl)">
+  <title>Everest (USA) (Unl)</title>
+  <year>1979</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Code Works, The</publisher>
+  <developer />
+  <genre>Climbing</genre>
+</game>
+<game name="Fantastic Voyage (USA) (Unl)">
+  <title>Fantastic Voyage (USA) (Unl)</title>
+  <year>19xx</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Greg Hopkins</publisher>
+  <developer />
+  <genre>Shoot-&apos;Em-Up</genre>
+</game>
+<game name="Fball (USA) (Unl)">
+  <title>Fball (USA) (Unl)</title>
+  <year>1979</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Code Works, The</publisher>
+  <developer />
+  <genre>Sports/Football</genre>
+</game>
+<game name="Ferry (USA) (Unl)">
+  <title>Ferry (USA) (Unl)</title>
+  <year>1979</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Code Works, The</publisher>
+  <developer />
+  <genre>Simulation</genre>
+</game>
+<game name="Fifteen (USA) (Unl)">
+  <title>Fifteen (USA) (Unl)</title>
+  <year>1979</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Code Works, The</publisher>
+  <developer />
+  <genre>Puzzle</genre>
+</game>
+<game name="Fire! (USA) (Unl)">
+  <title>Fire! (USA) (Unl)</title>
+  <year>1980</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Code Works, The</publisher>
+  <developer />
+  <genre>Action</genre>
+</game>
+<game name="Flash Attack (USA)">
+  <title>Flash Attack (USA)</title>
+  <year>1980</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Mach 1 Software</publisher>
+  <developer />
+  <genre>Strategy</genre>
+</game>
+<game name="Flight Simulator (USA)">
+  <title>Flight Simulator (USA)</title>
+  <year>1983</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Commmodore Educational Software</publisher>
+  <developer />
+  <genre>Simulation</genre>
+</game>
+<game name="Football (USA)">
+  <title>Football (USA)</title>
+  <year>1979</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Programma International</publisher>
+  <developer />
+  <genre>Sports/Football</genre>
+</game>
+<game name="Forest (USA) (Unl)">
+  <title>Forest (USA) (Unl)</title>
+  <year>1980</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Unknown</publisher>
+  <developer />
+  <genre>Simulation</genre>
+</game>
+<game name="French Fur Trader (USA)">
+  <title>French Fur Trader (USA)</title>
+  <year>1978</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Creative Computing Software</publisher>
+  <developer />
+  <genre>Simulation</genre>
+</game>
+<game name="Frog Race (USA) (Unl)">
+  <title>Frog Race (USA) (Unl)</title>
+  <year>1980</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Unknown</publisher>
+  <developer />
+  <genre>Casino</genre>
+</game>
+<game name="Frog! (USA) (Unl)">
+  <title>Frog! (USA) (Unl)</title>
+  <year>1980</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Code Works, The</publisher>
+  <developer />
+  <genre>Action</genre>
+</game>
+<game name="Frogger (Germany) (Unl)">
+  <title>Frogger (Germany) (Unl)</title>
+  <year>19xx</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Unknown</publisher>
+  <developer />
+  <genre>Action</genre>
+</game>
+<game name="G-Word (USA) (Unl)">
+  <title>G-Word (USA) (Unl)</title>
+  <year>1981</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Code Works, The</publisher>
+  <developer />
+  <genre>Puzzle</genre>
+</game>
+<game name="Gammon (USA) (Unl)">
+  <title>Gammon (USA) (Unl)</title>
+  <year>1979</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Code Works, The</publisher>
+  <developer />
+  <genre>Board Games</genre>
+</game>
+<game name="Ganzen Schieten (Netherlands)">
+  <title>Ganzen Schieten (Netherlands)</title>
+  <year>1980</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Unknown</publisher>
+  <developer />
+  <genre>Shoot-&apos;Em-Up</genre>
+</game>
+<game name="Godzilla! (USA) (Unl)">
+  <title>Godzilla! (USA) (Unl)</title>
+  <year>1980</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Code Works, The</publisher>
+  <developer />
+  <genre>Strategy</genre>
+</game>
+<game name="Golf (USA)">
+  <title>Golf (USA)</title>
+  <year>1978</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Creative Computing Software</publisher>
+  <developer />
+  <genre>Sports/Golf</genre>
+</game>
+<game name="Golf (USA) (Unl)">
+  <title>Golf (USA) (Unl)</title>
+  <year>19xx</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Unknown</publisher>
+  <developer />
+  <genre>Sports/Golf</genre>
+</game>
+<game name="Gomoku (USA) (Unl)">
+  <title>Gomoku (USA) (Unl)</title>
+  <year>1979</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Code Works, The</publisher>
+  <developer />
+  <genre>Tabletop</genre>
+</game>
+<game name="Gremlin (USA) (Unl)">
+  <title>Gremlin (USA) (Unl)</title>
+  <year>1980</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Unknown</publisher>
+  <developer />
+  <genre>Shoot-&apos;Em-Up</genre>
+</game>
+<game name="Gribbet (USA) (Unl)">
+  <title>Gribbet (USA) (Unl)</title>
+  <year>1980</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Unknown</publisher>
+  <developer />
+  <genre>Action</genre>
+</game>
+<game name="Guess (USA) (Unl)">
+  <title>Guess (USA) (Unl)</title>
+  <year>1979</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Code Works, The</publisher>
+  <developer />
+  <genre>Strategy</genre>
+</game>
+<game name="Guess It (USA) (Unl)">
+  <title>Guess It (USA) (Unl)</title>
+  <year>1980</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Unknown</publisher>
+  <developer />
+  <genre>Simulation</genre>
+</game>
+<game name="Gunner (USA) (Unl)">
+  <title>Gunner (USA) (Unl)</title>
+  <year>1980</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Unknown</publisher>
+  <developer />
+  <genre>Action</genre>
+</game>
+<game name="Hamurabi (USA)">
+  <title>Hamurabi (USA)</title>
+  <year>1978</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Creative Computing Software</publisher>
+  <developer />
+  <genre>Strategy</genre>
+</game>
+<game name="Hangman (v1) (USA) (Unl)">
+  <title>Hangman (v1) (USA) (Unl)</title>
+  <year>1980</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Unknown</publisher>
+  <developer />
+  <genre>Puzzle</genre>
+</game>
+<game name="Hangman (v2) (USA) (Unl)">
+  <title>Hangman (v2) (USA) (Unl)</title>
+  <year>1980</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Unknown</publisher>
+  <developer />
+  <genre>Puzzle</genre>
+</game>
+<game name="Hangman (v3) (USA) (Unl)">
+  <title>Hangman (v3) (USA) (Unl)</title>
+  <year>1980</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Unknown</publisher>
+  <developer />
+  <genre>Puzzle</genre>
+</game>
+<game name="Hangman (v4) (USA) (Unl)">
+  <title>Hangman (v4) (USA) (Unl)</title>
+  <year>1980</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Unknown</publisher>
+  <developer />
+  <genre>Puzzle</genre>
+</game>
+<game name="Hanoi (USA) (Unl)">
+  <title>Hanoi (USA) (Unl)</title>
+  <year>1978</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Code Works, The</publisher>
+  <developer />
+  <genre>Puzzle</genre>
+</game>
+<game name="Heart Racer (USA) (Unl)">
+  <title>Heart Racer (USA) (Unl)</title>
+  <year>1980</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Unknown</publisher>
+  <developer />
+  <genre>Driving</genre>
+</game>
+<game name="Heart&apos;s Desire (USA) (Unl)">
+  <title>Heart&apos;s Desire (USA) (Unl)</title>
+  <year>1980</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Unknown</publisher>
+  <developer />
+  <genre>Action</genre>
+</game>
+<game name="Hexapawn (USA)">
+  <title>Hexapawn (USA)</title>
+  <year>1978</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Creative Computing Software</publisher>
+  <developer />
+  <genre>Strategy</genre>
+</game>
+<game name="Hman (USA) (Unl)">
+  <title>Hman (USA) (Unl)</title>
+  <year>1978</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Code Works, The</publisher>
+  <developer />
+  <genre>Puzzle</genre>
+</game>
+<game name="Horserace! (USA)">
+  <title>Horserace! (USA)</title>
+  <year>1979</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Creative Computing Software</publisher>
+  <developer />
+  <genre>Sports/Horse Racing</genre>
+</game>
+<game name="Hunt the Wumpus (USA) (Unl)">
+  <title>Hunt the Wumpus (USA) (Unl)</title>
+  <year>1978</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Unknown</publisher>
+  <developer />
+  <genre>Strategy</genre>
+</game>
+<game name="Hurkle (USA)">
+  <title>Hurkle (USA)</title>
+  <year>1978</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Creative Computing Software</publisher>
+  <developer />
+  <genre>Strategy</genre>
+</game>
+<game name="Hyperwurm (USA) (Unl)">
+  <title>Hyperwurm (USA) (Unl)</title>
+  <year>1989</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>VL-Soft</publisher>
+  <developer />
+  <genre>Action</genre>
+</game>
+<game name="Ian&apos;s Speed Race (USA) (Unl)">
+  <title>Ian&apos;s Speed Race (USA) (Unl)</title>
+  <year>1979</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Michael Bonnycastle</publisher>
+  <developer />
+  <genre>Driving</genre>
+</game>
+<game name="Jackpot! (USA) (Unl)">
+  <title>Jackpot! (USA) (Unl)</title>
+  <year>1980</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>R.V. Gelder</publisher>
+  <developer />
+  <genre>Casino</genre>
+</game>
+<game name="Joust (USA) (Unl)">
+  <title>Joust (USA) (Unl)</title>
+  <year>1980</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Code Works, The</publisher>
+  <developer />
+  <genre>Action</genre>
+</game>
+<game name="Jumbo Lander (USA)">
+  <title>Jumbo Lander (USA)</title>
+  <year>1980</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Courbois Software</publisher>
+  <developer />
+  <genre>Simulation</genre>
+</game>
+<game name="Kalah (USA) (Unl)">
+  <title>Kalah (USA) (Unl)</title>
+  <year>1980</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Code Works, The</publisher>
+  <developer />
+  <genre>Strategy</genre>
+</game>
+<game name="Keno (USA) (Unl)">
+  <title>Keno (USA) (Unl)</title>
+  <year>1980</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Unknown</publisher>
+  <developer />
+  <genre>Casino</genre>
+</game>
+<game name="King Tut&apos;s Tomb Adventure (USA) (Unl)">
+  <title>King Tut&apos;s Tomb Adventure (USA) (Unl)</title>
+  <year>1979</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Greg Hasset</publisher>
+  <developer />
+  <genre>Adventure</genre>
+</game>
+<game name="Kingdom (USA)">
+  <title>Kingdom (USA)</title>
+  <year>1977</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Commodore Business Machines</publisher>
+  <developer />
+  <genre>Strategy</genre>
+</game>
+<game name="Knights &amp; Demons (USA) (Unl)">
+  <title>Knights &amp; Demons (USA) (Unl)</title>
+  <year>2013</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Kabuto Factory</publisher>
+  <developer />
+  <genre>Action</genre>
+</game>
+<game name="Labyrinth (USA) (Unl)">
+  <title>Labyrinth (USA) (Unl)</title>
+  <year>1980</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Unknown</publisher>
+  <developer />
+  <genre>Maze</genre>
+</game>
+<game name="LadyBug (USA) (Unl)">
+  <title>LadyBug (USA) (Unl)</title>
+  <year>2013</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>NOP Software</publisher>
+  <developer />
+  <genre>Maze</genre>
+</game>
+<game name="Lander (USA)">
+  <title>Lander (USA)</title>
+  <year>1978</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Commodore Business Machines</publisher>
+  <developer />
+  <genre>Simulation</genre>
+</game>
+<game name="Lander X (USA) (Unl)">
+  <title>Lander X (USA) (Unl)</title>
+  <year>1980</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Unknown</publisher>
+  <developer />
+  <genre>Simulation</genre>
+</game>
+<game name="Laser Tanks (USA) (Unl)">
+  <title>Laser Tanks (USA) (Unl)</title>
+  <year>1980</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Unknown</publisher>
+  <developer />
+  <genre>Action</genre>
+</game>
+<game name="Lawn! (USA) (Unl)">
+  <title>Lawn! (USA) (Unl)</title>
+  <year>1981</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Code Works, The</publisher>
+  <developer />
+  <genre>Action</genre>
+</game>
+<game name="Leap (USA) (Unl)">
+  <title>Leap (USA) (Unl)</title>
+  <year>1979</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Code Works, The</publisher>
+  <developer />
+  <genre>Strategy</genre>
+</game>
+<game name="LEM (USA)">
+  <title>LEM (USA)</title>
+  <year>1979</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Creative Computing</publisher>
+  <developer />
+  <genre>Simulation</genre>
+</game>
+<game name="Life (USA)">
+  <title>Life (USA)</title>
+  <year>1980</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Cortex Computer Systems</publisher>
+  <developer />
+  <genre>Simulation</genre>
+</game>
+<game name="Life II (USA)">
+  <title>Life II (USA)</title>
+  <year>1978</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Creative Computing</publisher>
+  <developer />
+  <genre>Simulation</genre>
+</game>
+<game name="Lizzard (USA) (Unl)">
+  <title>Lizzard (USA) (Unl)</title>
+  <year>1980</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Unknown</publisher>
+  <developer />
+  <genre>Action</genre>
+</game>
+<game name="Lords of Karma (USA)">
+  <title>Lords of Karma (USA)</title>
+  <year>1980</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Avalon Hill Game Company</publisher>
+  <developer />
+  <genre>Adventure</genre>
+</game>
+<game name="Lunar Lander (USA) (Unl)">
+  <title>Lunar Lander (USA) (Unl)</title>
+  <year>1980</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Unknown</publisher>
+  <developer />
+  <genre>Simulation</genre>
+</game>
+<game name="Lunar Lander II (USA) (Unl)">
+  <title>Lunar Lander II (USA) (Unl)</title>
+  <year>19xx</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Unknown</publisher>
+  <developer />
+  <genre>Simulation</genre>
+</game>
+<game name="M-Maze (USA) (Unl)">
+  <title>M-Maze (USA) (Unl)</title>
+  <year>1980</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Unknown</publisher>
+  <developer />
+  <genre>Maze</genre>
+</game>
+<game name="Mad Bomber, The (USA) (Unl)">
+  <title>Mad Bomber, The (USA) (Unl)</title>
+  <year>1980</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Unknown</publisher>
+  <developer />
+  <genre>Action</genre>
+</game>
+<game name="Mars (USA)">
+  <title>Mars (USA)</title>
+  <year>1982</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Aardvark-80</publisher>
+  <developer />
+  <genre>Adventure</genre>
+</game>
+<game name="Master Mind (USA) (Unl)">
+  <title>Master Mind (USA) (Unl)</title>
+  <year>1980</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Unknown</publisher>
+  <developer />
+  <genre>Puzzle</genre>
+</game>
+<game name="Match (USA) (Unl)">
+  <title>Match (USA) (Unl)</title>
+  <year>1979</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Code Works, The</publisher>
+  <developer />
+  <genre>Educational</genre>
+</game>
+<game name="Matches (USA) (Unl)">
+  <title>Matches (USA) (Unl)</title>
+  <year>1980</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Unknown</publisher>
+  <developer />
+  <genre>Strategy</genre>
+</game>
+<game name="Maxit (USA) (Unl)">
+  <title>Maxit (USA) (Unl)</title>
+  <year>1981</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Code Works, The</publisher>
+  <developer />
+  <genre>Strategy</genre>
+</game>
+<game name="Mayhem (Europe) (Unl)">
+  <title>Mayhem (Europe) (Unl)</title>
+  <year>2012</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Revival Studios</publisher>
+  <developer />
+  <genre>Action</genre>
+</game>
+<game name="Maze (USA) (Unl)">
+  <title>Maze (USA) (Unl)</title>
+  <year>1979</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Code Works, The</publisher>
+  <developer />
+  <genre>Maze</genre>
+</game>
+<game name="Meteor (USA) (Unl)">
+  <title>Meteor (USA) (Unl)</title>
+  <year>1983</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Unknown</publisher>
+  <developer />
+  <genre>Action</genre>
+</game>
+<game name="Meteorites (USA)">
+  <title>Meteorites (USA)</title>
+  <year>1981</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Supersoft</publisher>
+  <developer />
+  <genre>Action</genre>
+</game>
+<game name="Microchess (USA)">
+  <title>Microchess (USA)</title>
+  <year>1978</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Micro-Ware</publisher>
+  <developer />
+  <genre>Board Games</genre>
+</game>
+<game name="Microjump (USA) (Unl)">
+  <title>Microjump (USA) (Unl)</title>
+  <year>1980</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Unknown</publisher>
+  <developer />
+  <genre>Action</genre>
+</game>
+<game name="Microstring (USA) (Unl)">
+  <title>Microstring (USA) (Unl)</title>
+  <year>1980</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Unknown</publisher>
+  <developer />
+  <genre>Action</genre>
+</game>
+<game name="Millipede (USA)">
+  <title>Millipede (USA)</title>
+  <year>1982</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>On Line Software</publisher>
+  <developer />
+  <genre>Action</genre>
+</game>
+<game name="Mind (USA) (Unl)">
+  <title>Mind (USA) (Unl)</title>
+  <year>1979</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Code Works, The</publisher>
+  <developer />
+  <genre>Strategy</genre>
+</game>
+<game name="Miner! (USA) (Unl)">
+  <title>Miner! (USA) (Unl)</title>
+  <year>1980</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Code Works, The</publisher>
+  <developer />
+  <genre>Simulation</genre>
+</game>
+<game name="Miser (USA) (Unl)">
+  <title>Miser (USA) (Unl)</title>
+  <year>1981</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Code Works, The</publisher>
+  <developer />
+  <genre>Adventure</genre>
+</game>
+<game name="Mission 2001 (USA) (Unl)">
+  <title>Mission 2001 (USA) (Unl)</title>
+  <year>1981</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Anthony &amp; Steven Scian</publisher>
+  <developer />
+  <genre>Shoot-&apos;Em-Up</genre>
+</game>
+<game name="Mount St Helens (USA) (Unl)">
+  <title>Mount St Helens (USA) (Unl)</title>
+  <year>1980</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Unknown</publisher>
+  <developer />
+  <genre>Adventure</genre>
+</game>
+<game name="Mousemaze (USA) (Unl)">
+  <title>Mousemaze (USA) (Unl)</title>
+  <year>1980</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Unknown</publisher>
+  <developer />
+  <genre>Maze</genre>
+</game>
+<game name="Mugwump (USA)">
+  <title>Mugwump (USA)</title>
+  <year>1978</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Creative Computing</publisher>
+  <developer />
+  <genre>Puzzle</genre>
+</game>
+<game name="Nab! (USA) (Unl)">
+  <title>Nab! (USA) (Unl)</title>
+  <year>1980</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Code Works, The</publisher>
+  <developer />
+  <genre>Action</genre>
+</game>
+<game name="Nazo no Enban AFO (Japan) (Unl)">
+  <title>Nazo no Enban AFO (Japan) (Unl)</title>
+  <year>1980</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Unknown</publisher>
+  <developer />
+  <genre>Action</genre>
+</game>
+<game name="Night Drive (USA) (Unl)">
+  <title>Night Drive (USA) (Unl)</title>
+  <year>1982</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>J. Suzuki</publisher>
+  <developer />
+  <genre>Driving</genre>
+</game>
+<game name="Nightmare Park (USA) (Unl)">
+  <title>Nightmare Park (USA) (Unl)</title>
+  <year>19xx</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Unknown</publisher>
+  <developer />
+  <genre>Maze</genre>
+</game>
+<game name="Nim (USA) (Unl)">
+  <title>Nim (USA) (Unl)</title>
+  <year>1979</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Unknown</publisher>
+  <developer />
+  <genre>Strategy</genre>
+</game>
+<game name="Number-Toe (USA) (Unl)">
+  <title>Number-Toe (USA) (Unl)</title>
+  <year>1980</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Unknown</publisher>
+  <developer />
+  <genre>Puzzle</genre>
+</game>
+<game name="Off-the-Wall (USA)">
+  <title>Off-the-Wall (USA)</title>
+  <year>1978</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Commodore Business Machines</publisher>
+  <developer />
+  <genre>Ball &amp; Paddle</genre>
+</game>
+<game name="Osero (USA) (Unl)">
+  <title>Osero (USA) (Unl)</title>
+  <year>1978</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Unknown</publisher>
+  <developer />
+  <genre>Board Games</genre>
+</game>
+<game name="Othello (USA) (Unl)">
+  <title>Othello (USA) (Unl)</title>
+  <year>19xx</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Unknown</publisher>
+  <developer />
+  <genre>Board Games</genre>
+</game>
+<game name="Ouranos! (USA) (Unl)">
+  <title>Ouranos! (USA) (Unl)</title>
+  <year>1980</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Code Works, The</publisher>
+  <developer />
+  <genre>Strategy</genre>
+</game>
+<game name="Outpost (USA) (Unl)">
+  <title>Outpost (USA) (Unl)</title>
+  <year>1980</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Unknown</publisher>
+  <developer />
+  <genre>Strategy</genre>
+</game>
+<game name="Pegboard (USA) (Unl)">
+  <title>Pegboard (USA) (Unl)</title>
+  <year>1979</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Code Works, The</publisher>
+  <developer />
+  <genre>Puzzle</genre>
+</game>
+<game name="PET Checkers (USA)">
+  <title>PET Checkers (USA)</title>
+  <year>1980</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>CMS Software Systems</publisher>
+  <developer />
+  <genre>Board Games</genre>
+</game>
+<game name="PET Mastermind (USA) (Unl)">
+  <title>PET Mastermind (USA) (Unl)</title>
+  <year>1980</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Unknown</publisher>
+  <developer />
+  <genre>Puzzle</genre>
+</game>
+<game name="PET Nuclear Power Plant (USA)">
+  <title>PET Nuclear Power Plant (USA)</title>
+  <year>1982</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Commodore Educational Software</publisher>
+  <developer />
+  <genre>Educational</genre>
+</game>
+<game name="PET Panic (USA) (Unl)">
+  <title>PET Panic (USA) (Unl)</title>
+  <year>19xx</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Jim Orlando</publisher>
+  <developer />
+  <genre>Platform</genre>
+</game>
+<game name="PET Tetris (USA) (Unl)">
+  <title>PET Tetris (USA) (Unl)</title>
+  <year>2010</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Tim Howe</publisher>
+  <developer />
+  <genre>Puzzle</genre>
+</game>
+<game name="Petals Around the Rose (USA) (Unl)">
+  <title>Petals Around the Rose (USA) (Unl)</title>
+  <year>1978</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Unknown</publisher>
+  <developer />
+  <genre>Simulation</genre>
+</game>
+<game name="Pick-Up (USA) (Unl)">
+  <title>Pick-Up (USA) (Unl)</title>
+  <year>1979</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Code Works, The</publisher>
+  <developer />
+  <genre>Action</genre>
+</game>
+<game name="Picture Kingdom (USA)">
+  <title>Picture Kingdom (USA)</title>
+  <year>1981</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>The Guild Adventure Software</publisher>
+  <developer />
+  <genre>Strategy</genre>
+</game>
+<game name="Pinball (USA) (Unl)">
+  <title>Pinball (USA) (Unl)</title>
+  <year>1980</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Unknown</publisher>
+  <developer />
+  <genre>Pinball</genre>
+</game>
+<game name="Ping Pong (USA) (Unl)">
+  <title>Ping Pong (USA) (Unl)</title>
+  <year>1980</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Unknown</publisher>
+  <developer />
+  <genre>Ball &amp; Paddle</genre>
+</game>
+<game name="Pirate Adventure (USA)">
+  <title>Pirate Adventure (USA)</title>
+  <year>1979</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Adventure International</publisher>
+  <developer />
+  <genre>Adventure</genre>
+</game>
+<game name="Pizza (USA)">
+  <title>Pizza (USA)</title>
+  <year>1981</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>CUE, Inc.</publisher>
+  <developer />
+  <genre>Educational</genre>
+</game>
+<game name="Planet Probe (USA) (Unl)">
+  <title>Planet Probe (USA) (Unl)</title>
+  <year>1980</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Unknown</publisher>
+  <developer />
+  <genre>Simulation</genre>
+</game>
+<game name="Poker (USA) (Unl)">
+  <title>Poker (USA) (Unl)</title>
+  <year>1980</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Code Works, The</publisher>
+  <developer />
+  <genre>Casino</genre>
+</game>
+<game name="Police (USA) (Unl)">
+  <title>Police (USA) (Unl)</title>
+  <year>1980</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Code Works, The</publisher>
+  <developer />
+  <genre>Driving</genre>
+</game>
+<game name="Pong (USA) (Unl)">
+  <title>Pong (USA) (Unl)</title>
+  <year>1980</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Unknown</publisher>
+  <developer />
+  <genre>Ball &amp; Paddle</genre>
+</game>
+<game name="Postperson&apos;s Route, The (USA) (Unl)">
+  <title>Postperson&apos;s Route, The (USA) (Unl)</title>
+  <year>1980</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Unknown</publisher>
+  <developer />
+  <genre>Strategy</genre>
+</game>
+<game name="Ppong (USA) (Unl)">
+  <title>Ppong (USA) (Unl)</title>
+  <year>1980</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Unknown</publisher>
+  <developer />
+  <genre>Ball &amp; Paddle</genre>
+</game>
+<game name="Qubic (USA) (Unl)">
+  <title>Qubic (USA) (Unl)</title>
+  <year>1978</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Unknown</publisher>
+  <developer />
+  <genre>Board Games</genre>
+</game>
+<game name="Quix (USA) (Unl)">
+  <title>Quix (USA) (Unl)</title>
+  <year>1978</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Code Works, The</publisher>
+  <developer />
+  <genre>Action</genre>
+</game>
+<game name="Race (USA) (Unl)">
+  <title>Race (USA) (Unl)</title>
+  <year>1978</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Code Works, The</publisher>
+  <developer />
+  <genre>Driving</genre>
+</game>
+<game name="Racer! (USA) (Unl)">
+  <title>Racer! (USA) (Unl)</title>
+  <year>1981</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Code Works, The</publisher>
+  <developer />
+  <genre>Driving</genre>
+</game>
+<game name="Racetrack (USA) (Unl)">
+  <title>Racetrack (USA) (Unl)</title>
+  <year>1980</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Unknown</publisher>
+  <developer />
+  <genre>Driving</genre>
+</game>
+<game name="Rail (USA) (Unl)">
+  <title>Rail (USA) (Unl)</title>
+  <year>1980</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Code Works, The</publisher>
+  <developer />
+  <genre>Simulation</genre>
+</game>
+<game name="Ratrun (USA) (Unl)">
+  <title>Ratrun (USA) (Unl)</title>
+  <year>1979</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Code Works, The</publisher>
+  <developer />
+  <genre>Simulation</genre>
+</game>
+<game name="Rescue! (USA) (Unl)">
+  <title>Rescue! (USA) (Unl)</title>
+  <year>1981</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Code Works, The</publisher>
+  <developer />
+  <genre>Action</genre>
+</game>
+<game name="Revers! (USA) (Unl)">
+  <title>Revers! (USA) (Unl)</title>
+  <year>1979</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Code Works, The</publisher>
+  <developer />
+  <genre>Strategy</genre>
+</game>
+<game name="Reverse (USA) (Unl)">
+  <title>Reverse (USA) (Unl)</title>
+  <year>1980</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Unknown</publisher>
+  <developer />
+  <genre>Puzzle</genre>
+</game>
+<game name="Road Race (USA)">
+  <title>Road Race (USA)</title>
+  <year>1982</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Avalon Hill Game Company</publisher>
+  <developer />
+  <genre>Driving</genre>
+</game>
+<game name="Rollercoaster (USA) (Unl)">
+  <title>Rollercoaster (USA) (Unl)</title>
+  <year>1980</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Unknown</publisher>
+  <developer />
+  <genre>Action</genre>
+</game>
+<game name="Rotate (USA)">
+  <title>Rotate (USA)</title>
+  <year>1978</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Commodore Business Machines</publisher>
+  <developer />
+  <genre>Puzzle</genre>
+</game>
+<game name="S-Racer (USA) (Unl)">
+  <title>S-Racer (USA) (Unl)</title>
+  <year>1980</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Unknown</publisher>
+  <developer />
+  <genre>Driving</genre>
+</game>
+<game name="Safe! (USA) (Unl)">
+  <title>Safe! (USA) (Unl)</title>
+  <year>1981</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Code Works, The</publisher>
+  <developer />
+  <genre>Puzzle</genre>
+</game>
+<game name="Sargon2 (USA)">
+  <title>Sargon2 (USA)</title>
+  <year>1982</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>S&amp;B Software</publisher>
+  <developer />
+  <genre>Board Games</genre>
+</game>
+<game name="Scramble (USA) (Unl)">
+  <title>Scramble (USA) (Unl)</title>
+  <year>1982</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Heiner Eichmann</publisher>
+  <developer />
+  <genre>Action</genre>
+</game>
+<game name="Scrambled Word Game, A (USA) (Unl)">
+  <title>Scrambled Word Game, A (USA) (Unl)</title>
+  <year>1980</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Unknown</publisher>
+  <developer />
+  <genre>Puzzle</genre>
+</game>
+<game name="Sea Battle (USA) (Unl)">
+  <title>Sea Battle (USA) (Unl)</title>
+  <year>1980</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Unknown</publisher>
+  <developer />
+  <genre>Strategy</genre>
+</game>
+<game name="Seabattle (USA)">
+  <title>Seabattle (USA)</title>
+  <year>1980</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Creative Computing</publisher>
+  <developer />
+  <genre>Simulation</genre>
+</game>
+<game name="Shark (USA) (Unl)">
+  <title>Shark (USA) (Unl)</title>
+  <year>1978</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Code Works, The</publisher>
+  <developer />
+  <genre>Strategy</genre>
+</game>
+<game name="Sheep (USA) (Unl)">
+  <title>Sheep (USA) (Unl)</title>
+  <year>1980</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Code Works, The</publisher>
+  <developer />
+  <genre>Strategy</genre>
+</game>
+<game name="Shoot (USA) (Unl)">
+  <title>Shoot (USA) (Unl)</title>
+  <year>1980</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Unknown</publisher>
+  <developer />
+  <genre>Action</genre>
+</game>
+<game name="Siege (USA) (Unl)">
+  <title>Siege (USA) (Unl)</title>
+  <year>1983</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Mike Singleton</publisher>
+  <developer />
+  <genre>Action</genre>
+</game>
+<game name="Sinners (USA) (Unl)">
+  <title>Sinners (USA) (Unl)</title>
+  <year>1978</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Computers/Calculators Magazine</publisher>
+  <developer />
+  <genre>Strategy</genre>
+</game>
+<game name="Ski (USA) (Unl)">
+  <title>Ski (USA) (Unl)</title>
+  <year>1982</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Mike Singleton</publisher>
+  <developer />
+  <genre>Sports/Skiing</genre>
+</game>
+<game name="Ski! (USA) (Unl)">
+  <title>Ski! (USA) (Unl)</title>
+  <year>1980</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Stephen Prokopchuk</publisher>
+  <developer />
+  <genre>Sports/Skiing</genre>
+</game>
+<game name="Slot (USA) (Unl)">
+  <title>Slot (USA) (Unl)</title>
+  <year>1979</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Code Works, The</publisher>
+  <developer />
+  <genre>Casino</genre>
+</game>
+<game name="Slot Machine (USA) (Unl)">
+  <title>Slot Machine (USA) (Unl)</title>
+  <year>1980</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Unknown</publisher>
+  <developer />
+  <genre>Casino</genre>
+</game>
+<game name="Snakes (USA) (Unl)">
+  <title>Snakes (USA) (Unl)</title>
+  <year>1980</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Unknown</publisher>
+  <developer />
+  <genre>Action</genre>
+</game>
+<game name="Snark (USA) (Unl)">
+  <title>Snark (USA) (Unl)</title>
+  <year>1979</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Unknown</publisher>
+  <developer />
+  <genre>Puzzle</genre>
+</game>
+<game name="Sorcerer&apos;s Castle Adventure (USA)">
+  <title>Sorcerer&apos;s Castle Adventure (USA)</title>
+  <year>1979</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Mad Hatter Software</publisher>
+  <developer />
+  <genre>Adventure</genre>
+</game>
+<game name="Space Ace (USA)">
+  <title>Space Ace (USA)</title>
+  <year>1982</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Petsoft</publisher>
+  <developer />
+  <genre>Action</genre>
+</game>
+<game name="Space Fight (USA)">
+  <title>Space Fight (USA)</title>
+  <year>1978</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>ARESCO</publisher>
+  <developer />
+  <genre>Shoot-&apos;Em-Up</genre>
+</game>
+<game name="Space Invaders (v1) (USA) (Unl)">
+  <title>Space Invaders (v1) (USA) (Unl)</title>
+  <year>1980</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Unknown</publisher>
+  <developer />
+  <genre>Shoot-&apos;Em-Up</genre>
+</game>
+<game name="Space Invaders (v2) (USA) (Unl)">
+  <title>Space Invaders (v2) (USA) (Unl)</title>
+  <year>19xx</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Unknown</publisher>
+  <developer />
+  <genre>Shoot-&apos;Em-Up</genre>
+</game>
+<game name="Space Trek 2 (USA) (Unl)">
+  <title>Space Trek 2 (USA) (Unl)</title>
+  <year>19xx</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Unknown</publisher>
+  <developer />
+  <genre>Simulation</genre>
+</game>
+<game name="Space! (USA) (Unl)">
+  <title>Space! (USA) (Unl)</title>
+  <year>1979</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Code Works, The</publisher>
+  <developer />
+  <genre>Shoot-&apos;Em-Up</genre>
+</game>
+<game name="Spacewar (USA) (Part 1)">
+  <title>Spacewar (USA) (Part 1)</title>
+  <year>1979</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Creative Computing</publisher>
+  <developer />
+  <genre>Strategy</genre>
+</game>
+<game name="Spacewar (USA) (Part 2)">
+  <title>Spacewar (USA) (Part 2)</title>
+  <year>1979</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Creative Computing</publisher>
+  <developer />
+  <genre>Strategy</genre>
+</game>
+<game name="Spot (USA) (Unl)">
+  <title>Spot (USA) (Unl)</title>
+  <year>1980</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Code Works, The</publisher>
+  <developer />
+  <genre>Tabletop</genre>
+</game>
+<game name="Stairrunner (Europe) (Unl)">
+  <title>Stairrunner (Europe) (Unl)</title>
+  <year>2013</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Revival Studios</publisher>
+  <developer />
+  <genre>Action</genre>
+</game>
+<game name="Star Fighter (USA) (Unl)">
+  <title>Star Fighter (USA) (Unl)</title>
+  <year>1980</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Unknown</publisher>
+  <developer />
+  <genre>Shoot-&apos;Em-Up</genre>
+</game>
+<game name="Star Force (USA)">
+  <title>Star Force (USA)</title>
+  <year>1979</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Astar</publisher>
+  <developer />
+  <genre>Shoot-&apos;Em-Up</genre>
+</game>
+<game name="Star Trek (M.P. McDonald) (USA) (Unl)">
+  <title>Star Trek (M.P. McDonald) (USA) (Unl)</title>
+  <year>19xx</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>M.P. McDonald</publisher>
+  <developer />
+  <genre>Simulation</genre>
+</game>
+<game name="Star Trek (Unknown) (USA) (Unl)">
+  <title>Star Trek (Unknown) (USA) (Unl)</title>
+  <year>1978</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Unknown</publisher>
+  <developer />
+  <genre>Simulation</genre>
+</game>
+<game name="Star Trek 64 (USA) (Unl)">
+  <title>Star Trek 64 (USA) (Unl)</title>
+  <year>1983</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Unknown</publisher>
+  <developer />
+  <genre>Simulation</genre>
+</game>
+<game name="Starburst (USA) (Unl)">
+  <title>Starburst (USA) (Unl)</title>
+  <year>1980</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Unknown</publisher>
+  <developer />
+  <genre>Shoot-&apos;Em-Up</genre>
+</game>
+<game name="Street Bomber (USA) (Unl)">
+  <title>Street Bomber (USA) (Unl)</title>
+  <year>19xx</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Unknown</publisher>
+  <developer />
+  <genre>Action</genre>
+</game>
+<game name="Super Glooper (USA) (Unl)">
+  <title>Super Glooper (USA) (Unl)</title>
+  <year>1981</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>D.E. Anthony</publisher>
+  <developer />
+  <genre>Maze</genre>
+</game>
+<game name="Super Trek (USA)">
+  <title>Super Trek (USA)</title>
+  <year>1979</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Creative Computing</publisher>
+  <developer />
+  <genre>Simulation</genre>
+</game>
+<game name="Super Trek - 16KNR (USA) (Unl)">
+  <title>Super Trek - 16KNR (USA) (Unl)</title>
+  <year>1980</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Unknown</publisher>
+  <developer />
+  <genre>Simulation</genre>
+</game>
+<game name="Tank! (USA) (Unl)">
+  <title>Tank! (USA) (Unl)</title>
+  <year>1981</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Code Works, The</publisher>
+  <developer />
+  <genre>Action</genre>
+</game>
+<game name="Tanktics (USA)">
+  <title>Tanktics (USA)</title>
+  <year>1981</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Avalon Hill Game Company</publisher>
+  <developer />
+  <genre>Strategy</genre>
+</game>
+<game name="Target Golf (USA) (Unl)">
+  <title>Target Golf (USA) (Unl)</title>
+  <year>1980</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Unknown</publisher>
+  <developer />
+  <genre>Sports/Golf</genre>
+</game>
+<game name="Target Pong (USA)">
+  <title>Target Pong (USA)</title>
+  <year>1978</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Commodore Business Machines</publisher>
+  <developer />
+  <genre>Ball &amp; Paddle</genre>
+</game>
+<game name="Telengard (USA)">
+  <title>Telengard (USA)</title>
+  <year>1980</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Avalon Hill Game Company</publisher>
+  <developer />
+  <genre>Puzzle</genre>
+</game>
+<game name="Thunt! (USA) (Unl)">
+  <title>Thunt! (USA) (Unl)</title>
+  <year>1980</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Code Works, The</publisher>
+  <developer />
+  <genre>Action</genre>
+</game>
+<game name="Tic Tac Toe (USA) (Unl)">
+  <title>Tic Tac Toe (USA) (Unl)</title>
+  <year>1978</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Unknown</publisher>
+  <developer />
+  <genre>Puzzle</genre>
+</game>
+<game name="Time Trek (USA)">
+  <title>Time Trek (USA)</title>
+  <year>1979</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Programma</publisher>
+  <developer />
+  <genre>Simulation</genre>
+</game>
+<game name="Titrator (USA) (Unl)">
+  <title>Titrator (USA) (Unl)</title>
+  <year>1979</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Code Works, The</publisher>
+  <developer />
+  <genre>Educational</genre>
+</game>
+<game name="Toker (USA) (Unl)">
+  <title>Toker (USA) (Unl)</title>
+  <year>1980</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Unknown</publisher>
+  <developer />
+  <genre>Simulation</genre>
+</game>
+<game name="Torpedeo (USA (Unl)">
+  <title>Torpedeo (USA (Unl)</title>
+  <year>1980</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>John Briggs</publisher>
+  <developer />
+  <genre>Action</genre>
+</game>
+<game name="Toss (USA) (Unl)">
+  <title>Toss (USA) (Unl)</title>
+  <year>1980</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Unknown</publisher>
+  <developer />
+  <genre>Simulation</genre>
+</game>
+<game name="Trail West (USA)">
+  <title>Trail West (USA)</title>
+  <year>1980</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Micro-Ed, Inc</publisher>
+  <developer />
+  <genre>Simulation</genre>
+</game>
+<game name="Trek Adventure (USA)">
+  <title>Trek Adventure (USA)</title>
+  <year>1982</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Aardvark-80</publisher>
+  <developer />
+  <genre>Adventure</genre>
+</game>
+<game name="TRON - Journey to the MCP (USA) (Unl)">
+  <title>TRON - Journey to the MCP (USA) (Unl)</title>
+  <year>1982</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Unknown</publisher>
+  <developer />
+  <genre>Maze</genre>
+</game>
+<game name="TRON - Light Cycle Game (USA) (Unl)">
+  <title>TRON - Light Cycle Game (USA) (Unl)</title>
+  <year>1982</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Unknown</publisher>
+  <developer />
+  <genre>Action</genre>
+</game>
+<game name="Tunnel Vision and Kat and Mouse (USA) (Unl)">
+  <title>Tunnel Vision and Kat and Mouse (USA) (Unl)</title>
+  <year>1978</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Unknown</publisher>
+  <developer />
+  <genre>Compilation</genre>
+</game>
+<game name="Vector Chase (USA) (Unl)">
+  <title>Vector Chase (USA) (Unl)</title>
+  <year>1983</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Unknown</publisher>
+  <developer />
+  <genre>Educational</genre>
+</game>
+<game name="Volcano! (USA) (Unl)">
+  <title>Volcano! (USA) (Unl)</title>
+  <year>1980</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Unknown</publisher>
+  <developer />
+  <genre>Adventure</genre>
+</game>
+<game name="Voyage to Atlantis (USA) (Unl)">
+  <title>Voyage to Atlantis (USA) (Unl)</title>
+  <year>1980</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Greg Hasset</publisher>
+  <developer />
+  <genre>Adventure</genre>
+</game>
+<game name="Voyager Program, The (USA)">
+  <title>Voyager Program, The (USA)</title>
+  <year>1980</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Avalon Hill Game Company</publisher>
+  <developer />
+  <genre>Puzzle</genre>
+</game>
+<game name="Will &apos;o the Wisp (USA) (Unl)">
+  <title>Will &apos;o the Wisp (USA) (Unl)</title>
+  <year>1980</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Mark Capella</publisher>
+  <developer />
+  <genre>Adventure</genre>
+</game>
+<game name="Wipeout (USA) (Unl)">
+  <title>Wipeout (USA) (Unl)</title>
+  <year>1979</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Code Works, The</publisher>
+  <developer />
+  <genre>Strategy</genre>
+</game>
+<game name="Wizard&apos;s Castle. The (USA)">
+  <title>Wizard&apos;s Castle. The (USA)</title>
+  <year>1980</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Joseph Power</publisher>
+  <developer />
+  <genre>Role-Playing</genre>
+</game>
+<game name="Yahtzee (USA) (Unl)">
+  <title>Yahtzee (USA) (Unl)</title>
+  <year>1979</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Code Works, The</publisher>
+  <developer />
+  <genre>Tabletop</genre>
+</game>
+<game name="Zap (USA) (Unl)">
+  <title>Zap (USA) (Unl)</title>
+  <year>1978</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Code Works, The</publisher>
+  <developer />
+  <genre>Action</genre>
+</game>
+<game name="Zone X (USA) (Unl)">
+  <title>Zone X (USA) (Unl)</title>
+  <year>1980</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Unknown</publisher>
+  <developer />
+  <genre>Puzzle</genre>
+</game>
+</menu>

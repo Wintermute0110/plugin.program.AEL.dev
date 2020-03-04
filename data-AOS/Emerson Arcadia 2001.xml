@@ -1,0 +1,449 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<menu>
+<header>
+  <listname>Emerson Arcadia 2001</listname>
+  <lastlistupdate></lastlistupdate>
+  <listversion>V1</listversion>
+  <exporterversion>V1 GameDBInfo converter</exporterversion>
+</header>
+<game name="3D Bowling (USA, Europe)">
+  <title>3D Bowling (USA, Europe)</title>
+  <year>1982</year>
+  <rating>HSRS - GA (General Audience)</rating>
+  <publisher>UA Ltd.</publisher>
+  <developer />
+  <genre>Sports/Bowling</genre>
+</game>
+<game name="3D Soccer (Europe)">
+  <title>3D Soccer (Europe)</title>
+  <year>1983</year>
+  <rating>HSRS - GA (General Audience)</rating>
+  <publisher>UA Ltd.</publisher>
+  <developer />
+  <genre>Sports/Soccer</genre>
+</game>
+<game name="Alien Invaders (USA, Europe)">
+  <title>Alien Invaders (USA, Europe)</title>
+  <year>1982</year>
+  <rating>HSRS - GA (General Audience)</rating>
+  <publisher>UA Ltd.</publisher>
+  <developer />
+  <genre>Shooter</genre>
+</game>
+<game name="American Football (USA, Europe)">
+  <title>American Football (USA, Europe)</title>
+  <year>1982</year>
+  <rating>HSRS - GA (General Audience)</rating>
+  <publisher>UA Ltd.</publisher>
+  <developer />
+  <genre>Sports/Football</genre>
+</game>
+<game name="Astro Invader (Europe)">
+  <title>Astro Invader (Europe)</title>
+  <year>1982</year>
+  <rating>HSRS - GA (General Audience)</rating>
+  <publisher>UA Ltd.</publisher>
+  <developer />
+  <genre>Shooter</genre>
+</game>
+<game name="Auto Race (Europe)">
+  <title>Auto Race (Europe)</title>
+  <year>1982</year>
+  <rating>HSRS - GA (General Audience)</rating>
+  <publisher>UA Ltd.</publisher>
+  <developer />
+  <genre>Driving</genre>
+</game>
+<game name="Baseball (USA, Europe)">
+  <title>Baseball (USA, Europe)</title>
+  <year>1982</year>
+  <rating>HSRS - GA (General Audience)</rating>
+  <publisher>UA Ltd.</publisher>
+  <developer />
+  <genre>Sports/Baseball</genre>
+</game>
+<game name="Basketball (Europe)">
+  <title>Basketball (Europe)</title>
+  <year>1982</year>
+  <rating>HSRS - GA (General Audience)</rating>
+  <publisher>UA Ltd.</publisher>
+  <developer />
+  <genre>Sports/Basketball</genre>
+</game>
+<game name="Black Jack &amp; Poker (Europe)">
+  <title>Black Jack &amp; Poker (Europe)</title>
+  <year>1983</year>
+  <rating>HSRS - GA (General Audience)</rating>
+  <publisher>UA Ltd.</publisher>
+  <developer />
+  <genre>Casino</genre>
+</game>
+<game name="Boxing (Europe)">
+  <title>Boxing (Europe)</title>
+  <year>1982</year>
+  <rating>HSRS - GA (General Audience)</rating>
+  <publisher>UA Ltd.</publisher>
+  <developer />
+  <genre>Sports/Boxing</genre>
+</game>
+<game name="Brain Quiz (USA, Europe)">
+  <title>Brain Quiz (USA, Europe)</title>
+  <year>1982</year>
+  <rating>HSRS - GA (General Audience)</rating>
+  <publisher>UA Ltd.</publisher>
+  <developer />
+  <genre>Miscellaneous</genre>
+</game>
+<game name="Breakaway (USA, Europe)">
+  <title>Breakaway (USA, Europe)</title>
+  <year>1982</year>
+  <rating>HSRS - GA (General Audience)</rating>
+  <publisher>UA Ltd.</publisher>
+  <developer />
+  <genre>Miscellaneous</genre>
+</game>
+<game name="Capture (USA, Europe)">
+  <title>Capture (USA, Europe)</title>
+  <year>1982</year>
+  <rating>HSRS - GA (General Audience)</rating>
+  <publisher>UA Ltd.</publisher>
+  <developer />
+  <genre>Board Games</genre>
+</game>
+<game name="Cat Trax (USA, Europe)">
+  <title>Cat Trax (USA, Europe)</title>
+  <year>1982</year>
+  <rating>HSRS - GA (General Audience)</rating>
+  <publisher>UA Ltd.</publisher>
+  <developer />
+  <genre>Maze</genre>
+</game>
+<game name="Circus (Europe)">
+  <title>Circus (Europe)</title>
+  <year>1983</year>
+  <rating>HSRS - GA (General Audience)</rating>
+  <publisher>UA Ltd.</publisher>
+  <developer />
+  <genre>Action</genre>
+</game>
+<game name="Combat (Europe)">
+  <title>Combat (Europe)</title>
+  <year>1983</year>
+  <rating>HSRS - GA (General Audience)</rating>
+  <publisher>UA Ltd.</publisher>
+  <developer />
+  <genre>Shooter</genre>
+</game>
+<game name="Crazy Climber (Europe)">
+  <title>Crazy Climber (Europe)</title>
+  <year>1982</year>
+  <rating>HSRS - GA (General Audience)</rating>
+  <publisher>UA Ltd.</publisher>
+  <developer />
+  <genre>Action</genre>
+</game>
+<game name="Crazy Gobbler (Europe)">
+  <title>Crazy Gobbler (Europe)</title>
+  <year>1982</year>
+  <rating>HSRS - GA (General Audience)</rating>
+  <publisher>UA Ltd.</publisher>
+  <developer />
+  <genre>Maze</genre>
+</game>
+<game name="Doraemon (Japan)">
+  <title>Doraemon (Japan)</title>
+  <year>1983</year>
+  <rating>HSRS - GA (General Audience)</rating>
+  <publisher>Bandai</publisher>
+  <developer />
+  <genre>Maze</genre>
+</game>
+<game name="Dr. Slump (Japan)">
+  <title>Dr. Slump (Japan)</title>
+  <year>1983</year>
+  <rating>HSRS - GA (General Audience)</rating>
+  <publisher>Bandai</publisher>
+  <developer />
+  <genre>Action</genre>
+</game>
+<game name="Escape (USA, Europe)">
+  <title>Escape (USA, Europe)</title>
+  <year>1982</year>
+  <rating>HSRS - GA (General Audience)</rating>
+  <publisher>UA Ltd.</publisher>
+  <developer />
+  <genre>Shooter</genre>
+</game>
+<game name="Frogger (USA, Europe)">
+  <title>Frogger (USA, Europe)</title>
+  <year>2004</year>
+  <rating>HSRS - GA (General Audience)</rating>
+  <publisher>Amigan Software</publisher>
+  <developer />
+  <genre>Action</genre>
+</game>
+<game name="Funky Fish (Europe)">
+  <title>Funky Fish (Europe)</title>
+  <year>1983</year>
+  <rating>HSRS - GA (General Audience)</rating>
+  <publisher>UA Ltd.</publisher>
+  <developer />
+  <genre>Action</genre>
+</game>
+<game name="Golf (Europe)">
+  <title>Golf (Europe)</title>
+  <year>1982</year>
+  <rating>HSRS - GA (General Audience)</rating>
+  <publisher>UA Ltd.</publisher>
+  <developer />
+  <genre>Sports/Golf</genre>
+</game>
+<game name="Grand Slam Tennis (USA, Europe)">
+  <title>Grand Slam Tennis (USA, Europe)</title>
+  <year>1982</year>
+  <rating>HSRS - GA (General Audience)</rating>
+  <publisher>UA Ltd.</publisher>
+  <developer />
+  <genre>Sports/Tennis</genre>
+</game>
+<game name="Hobo (Europe)">
+  <title>Hobo (Europe)</title>
+  <year>1982</year>
+  <rating>HSRS - GA (General Audience)</rating>
+  <publisher>UA Ltd.</publisher>
+  <developer />
+  <genre>Maze</genre>
+</game>
+<game name="Horse Racing (Europe)">
+  <title>Horse Racing (Europe)</title>
+  <year>1983</year>
+  <rating>HSRS - GA (General Audience)</rating>
+  <publisher>UA Ltd.</publisher>
+  <developer />
+  <genre>Sports/Horse Racing</genre>
+</game>
+<game name="JTron (USA, Europe)">
+  <title>JTron (USA, Europe)</title>
+  <year>2003</year>
+  <rating>HSRS - GA (General Audience)</rating>
+  <publisher>Amigan Software</publisher>
+  <developer />
+  <genre>Action</genre>
+</game>
+<game name="Jump Bug (Europe)">
+  <title>Jump Bug (Europe)</title>
+  <year>1982</year>
+  <rating>HSRS - GA (General Audience)</rating>
+  <publisher>UA Ltd.</publisher>
+  <developer />
+  <genre>Platfor</genre>
+</game>
+<game name="Jungler (USA, Europe)">
+  <title>Jungler (USA, Europe)</title>
+  <year>1982</year>
+  <rating>HSRS - GA (General Audience)</rating>
+  <publisher>UA Ltd.</publisher>
+  <developer />
+  <genre>Maze</genre>
+</game>
+<game name="Missile War (USA, Europe)">
+  <title>Missile War (USA, Europe)</title>
+  <year>1982</year>
+  <rating>HSRS - GA (General Audience)</rating>
+  <publisher>UA Ltd.</publisher>
+  <developer />
+  <genre>Strategy</genre>
+</game>
+<game name="Monaco Grand Prix (Europe)">
+  <title>Monaco Grand Prix (Europe)</title>
+  <year>1982</year>
+  <rating>HSRS - GA (General Audience)</rating>
+  <publisher>UA Ltd.</publisher>
+  <developer />
+  <genre>Driving</genre>
+</game>
+<game name="Nibblemen (Europe)">
+  <title>Nibblemen (Europe)</title>
+  <year>1982</year>
+  <rating>HSRS - GA (General Audience)</rating>
+  <publisher>UA Ltd.</publisher>
+  <developer />
+  <genre>Maze</genre>
+</game>
+<game name="Ocean Battle (USA, Europe)">
+  <title>Ocean Battle (USA, Europe)</title>
+  <year>1982</year>
+  <rating>HSRS - GA (General Audience)</rating>
+  <publisher>UA Ltd.</publisher>
+  <developer />
+  <genre>Strategy</genre>
+</game>
+<game name="Panzerspiel (Europe)">
+  <title>Panzerspiel (Europe)</title>
+  <year>1983</year>
+  <rating>HSRS - GA (General Audience)</rating>
+  <publisher>UA Ltd.</publisher>
+  <developer />
+  <genre>Action</genre>
+</game>
+<game name="Parashooter (Europe)">
+  <title>Parashooter (Europe)</title>
+  <year>1982</year>
+  <rating>HSRS - GA (General Audience)</rating>
+  <publisher>UA Ltd.</publisher>
+  <developer />
+  <genre>Shooter</genre>
+</game>
+<game name="Pleiades (Europe)">
+  <title>Pleiades (Europe)</title>
+  <year>1983</year>
+  <rating>HSRS - GA (General Audience)</rating>
+  <publisher>UA Ltd.</publisher>
+  <developer />
+  <genre>Shooter</genre>
+</game>
+<game name="R2D Tank (Europe)">
+  <title>R2D Tank (Europe)</title>
+  <year>1982</year>
+  <rating>HSRS - GA (General Audience)</rating>
+  <publisher>UA Ltd.</publisher>
+  <developer />
+  <genre>Shooter</genre>
+</game>
+<game name="Red Clash (USA, Europe)">
+  <title>Red Clash (USA, Europe)</title>
+  <year>1982</year>
+  <rating>HSRS - GA (General Audience)</rating>
+  <publisher>UA Ltd.</publisher>
+  <developer />
+  <genre>Shooter</genre>
+</game>
+<game name="Robot Killer (Europe)">
+  <title>Robot Killer (Europe)</title>
+  <year>1982</year>
+  <rating>HSRS - GA (General Audience)</rating>
+  <publisher>UA Ltd.</publisher>
+  <developer />
+  <genre>Shooter</genre>
+</game>
+<game name="Route 16 (Europe)">
+  <title>Route 16 (Europe)</title>
+  <year>1983</year>
+  <rating>HSRS - GA (General Audience)</rating>
+  <publisher>UA Ltd.</publisher>
+  <developer />
+  <genre>Maze</genre>
+</game>
+<game name="Soccer (USA, Europe)">
+  <title>Soccer (USA, Europe)</title>
+  <year>1982</year>
+  <rating>HSRS - GA (General Audience)</rating>
+  <publisher>UA Ltd.</publisher>
+  <developer />
+  <genre>Sports/Soccer</genre>
+</game>
+<game name="Space Attack (USA, Europe)">
+  <title>Space Attack (USA, Europe)</title>
+  <year>1982</year>
+  <rating>HSRS - GA (General Audience)</rating>
+  <publisher>UA Ltd.</publisher>
+  <developer />
+  <genre>Shooter</genre>
+</game>
+<game name="Space Mission (USA, Europe)">
+  <title>Space Mission (USA, Europe)</title>
+  <year>1982</year>
+  <rating>HSRS - GA (General Audience)</rating>
+  <publisher>UA Ltd.</publisher>
+  <developer />
+  <genre>Shooter</genre>
+</game>
+<game name="Space Raiders (USA, Europe)">
+  <title>Space Raiders (USA, Europe)</title>
+  <year>1982</year>
+  <rating>HSRS - GA (General Audience)</rating>
+  <publisher>UA Ltd.</publisher>
+  <developer />
+  <genre>Shooter</genre>
+</game>
+<game name="Space Squadron (Europe)">
+  <title>Space Squadron (Europe)</title>
+  <year>1982</year>
+  <rating>HSRS - GA (General Audience)</rating>
+  <publisher>UA Ltd.</publisher>
+  <developer />
+  <genre>Shooter</genre>
+</game>
+<game name="Space Vultures (USA, Europe)">
+  <title>Space Vultures (USA, Europe)</title>
+  <year>1982</year>
+  <rating>HSRS - GA (General Audience)</rating>
+  <publisher>UA Ltd.</publisher>
+  <developer />
+  <genre>Shooter</genre>
+</game>
+<game name="Spiders (USA, Europe)">
+  <title>Spiders (USA, Europe)</title>
+  <year>1982</year>
+  <rating>HSRS - GA (General Audience)</rating>
+  <publisher>UA Ltd.</publisher>
+  <developer />
+  <genre>Shooter</genre>
+</game>
+<game name="Star Chess (USA, Europe)">
+  <title>Star Chess (USA, Europe)</title>
+  <year>1982</year>
+  <rating>HSRS - GA (General Audience)</rating>
+  <publisher>UA Ltd.</publisher>
+  <developer />
+  <genre>Board Games</genre>
+</game>
+<game name="Super Dimension Fortress Macross (Japan)">
+  <title>Super Dimension Fortress Macross (Japan)</title>
+  <year>1983</year>
+  <rating>HSRS - GA (General Audience)</rating>
+  <publisher>Bandai</publisher>
+  <developer />
+  <genre>Shooter</genre>
+</game>
+<game name="Super Gobbler (Europe)">
+  <title>Super Gobbler (Europe)</title>
+  <year>1983</year>
+  <rating>HSRS - GA (General Audience)</rating>
+  <publisher>UA Ltd.</publisher>
+  <developer />
+  <genre>Action</genre>
+</game>
+<game name="Tanks a Lot (USA, Europe)">
+  <title>Tanks a Lot (USA, Europe)</title>
+  <year>1982</year>
+  <rating>HSRS - GA (General Audience)</rating>
+  <publisher>UA Ltd.</publisher>
+  <developer />
+  <genre>Action</genre>
+</game>
+<game name="Tetris (USA, Europe)">
+  <title>Tetris (USA, Europe)</title>
+  <year>2003</year>
+  <rating>HSRS - GA (General Audience)</rating>
+  <publisher>Peter Trauner</publisher>
+  <developer />
+  <genre>Puzzle</genre>
+</game>
+<game name="The End (Europe)">
+  <title>The End (Europe)</title>
+  <year>1982</year>
+  <rating>HSRS - GA (General Audience)</rating>
+  <publisher>UA Ltd.</publisher>
+  <developer />
+  <genre>Shooter</genre>
+</game>
+<game name="Turtles (Europe)">
+  <title>Turtles (Europe)</title>
+  <year>1982</year>
+  <rating>HSRS - GA (General Audience)</rating>
+  <publisher>UA Ltd.</publisher>
+  <developer />
+  <genre>Action</genre>
+</game>
+</menu>

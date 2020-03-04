@@ -1,0 +1,257 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<menu>
+<header>
+  <listname>GamePark GP32</listname>
+  <lastlistupdate></lastlistupdate>
+  <listversion>V1</listversion>
+  <exporterversion>V1 GameDBInfo converter</exporterversion>
+</header>
+<game name="Astonishia Story R (Korea)">
+  <title>Astonishia Story R</title>
+  <year>2002</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Sonnori</publisher>
+  <developer />
+  <genre>RPG</genre>
+</game>
+<game name="Blue Angelo - Angels from the Shrine (Europe) (En,Fr,De,Es,It,Pt)">
+  <title>Blue Angelo - Angels from the Shrine</title>
+  <year>2004</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Virtual Spaghetti</publisher>
+  <developer />
+  <genre>RPG</genre>
+</game>
+<game name="Dooly Soccer 2002 (Korea)">
+  <title>Dooly Soccer 2002</title>
+  <year>2002</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Abyss Game</publisher>
+  <developer />
+  <genre>Sport</genre>
+</game>
+<game name="Dungeon &amp; Guarder - Dragon Gore (Europe)">
+  <title>Dungeon &amp; Guarder - Dragon Gore</title>
+  <year>2001</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Gamepark</publisher>
+  <developer />
+  <genre>Hack &apos;n Slash</genre>
+</game>
+<game name="Dungeon &amp; Guarder - Dragon Gore (Korea)">
+  <title>Dungeon &amp; Guarder - Dragon Gore</title>
+  <year>2001</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Gamepark</publisher>
+  <developer />
+  <genre>Hack &apos;n Slash</genre>
+</game>
+<game name="Dyhard - With Infinite Stairs (Europe)">
+  <title>Dyhard - With Infinite Stairs</title>
+  <year>2001</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Kookie Soft</publisher>
+  <developer />
+  <genre>Action</genre>
+</game>
+<game name="Dyhard - With Infinite Stairs (Korea)">
+  <title>Dyhard - With Infinite Stairs</title>
+  <year>2001</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Kookie Soft</publisher>
+  <developer />
+  <genre>Action</genre>
+</game>
+<game name="Funny Soccer (Korea)">
+  <title>Funny Soccer</title>
+  <year>2002</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Metarica</publisher>
+  <developer />
+  <genre>Action</genre>
+</game>
+<game name="GP Fight (Korea)">
+  <title>GP Fight</title>
+  <year>2003</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>TeamBlaze</publisher>
+  <developer />
+  <genre />
+</game>
+<game name="Hany Party Game (Korea)">
+  <title>Hany Party Game</title>
+  <year>2002</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Include</publisher>
+  <developer />
+  <genre>Puzzle</genre>
+</game>
+<game name="Her Knights - All for Princess - Deadline (Korea)">
+  <title>Her Knights - All for Princess - Deadline</title>
+  <year>2002</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Byulbram</publisher>
+  <developer />
+  <genre>Arcade</genre>
+</game>
+<game name="Her Knights - All for the Princess (Europe)">
+  <title>Her Knights - All for the Princess</title>
+  <year>2002</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Byulbram</publisher>
+  <developer />
+  <genre>Arcade</genre>
+</game>
+<game name="Kimchiman GP32 (Korea)">
+  <title>Kimchiman GP32</title>
+  <year>2002</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Spearhead</publisher>
+  <developer />
+  <genre>Platformer</genre>
+</game>
+<game name="Little Girl Mill of a Gingko, The (Korea)">
+  <title>Little Girl Mill of a Gingko, The</title>
+  <year />
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Legendra</publisher>
+  <developer />
+  <genre />
+</game>
+<game name="Little Wizard (Europe)">
+  <title>Little Wizard</title>
+  <year>2001</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Gamepark</publisher>
+  <developer />
+  <genre>Fighting</genre>
+</game>
+<game name="Little Wizard (Korea)">
+  <title>Little Wizard</title>
+  <year>2001</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Gamepark</publisher>
+  <developer />
+  <genre>Fighting</genre>
+</game>
+<game name="OneShot Voca (Korea)">
+  <title>OneShot Voca</title>
+  <year>2002</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Damasys</publisher>
+  <developer />
+  <genre>Educational</genre>
+</game>
+<game name="Pinball Dreams (Korea)">
+  <title>Pinball Dreams</title>
+  <year>2002</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Logik State</publisher>
+  <developer />
+  <genre>Pinball</genre>
+</game>
+<game name="Princess Maker 2 (Korea)">
+  <title>Princess Maker 2</title>
+  <year>2002</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Ninelives</publisher>
+  <developer />
+  <genre>Simulation</genre>
+</game>
+<game name="Rally Pop (Korea)">
+  <title>Rally Pop</title>
+  <year>2001</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Gamepark</publisher>
+  <developer />
+  <genre>Strategy</genre>
+</game>
+<game name="Raphael (Korea)">
+  <title>Raphael</title>
+  <year>2002</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>T3 Entertainment</publisher>
+  <developer />
+  <genre>Puzzle</genre>
+</game>
+<game name="Super Plusha (Korea)">
+  <title>Super Plusha</title>
+  <year>2002</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>FaMe Soft</publisher>
+  <developer />
+  <genre>Platformer</genre>
+</game>
+<game name="Tanggle&apos;s Magic Square (Korea)">
+  <title>Tanggle&apos;s Magic Square</title>
+  <year>2001</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>EZ</publisher>
+  <developer />
+  <genre>Puzzle</genre>
+</game>
+<game name="Therapy (Korea)">
+  <title>Therapy</title>
+  <year>2002</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Rosa:6</publisher>
+  <developer />
+  <genre>Visual Novel</genre>
+</game>
+<game name="Tomak - Save the Earth, Again (Europe) (v1.0)">
+  <title>Tomak - Save the Earth, Again</title>
+  <year>2002</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Seed9</publisher>
+  <developer />
+  <genre>Shooter</genre>
+</game>
+<game name="Tomak - Save the Earth, Again (Europe) (v2.0)">
+  <title>Tomak - Save the Earth, Again</title>
+  <year>2002</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Seed9</publisher>
+  <developer />
+  <genre>Shooter</genre>
+</game>
+<game name="Tomak - Save the Earth, Again (Korea)">
+  <title>Tomak - Save the Earth, Again</title>
+  <year>2002</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Seed9</publisher>
+  <developer />
+  <genre>Shooter</genre>
+</game>
+<game name="W.B.W. - Wanna Be Wizard! (Korea)">
+  <title>W.B.W. - Wanna Be Wizard!</title>
+  <year>2004</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>A&amp;B Soft</publisher>
+  <developer />
+  <genre>RPG</genre>
+</game>
+<game name="Wizard Slayer (Korea)">
+  <title>Wizard Slayer</title>
+  <year>2002</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>FZ Media</publisher>
+  <developer />
+  <genre>Shooter</genre>
+</game>
+<game name="Woody &amp; Kunta - Treasure Island (Europe)">
+  <title>Woody &amp; Kunta - Treasure Island</title>
+  <year>2002</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Gamepark</publisher>
+  <developer />
+  <genre>Puzzle</genre>
+</game>
+<game name="Woody &amp; Kunta - Treasure Island (Korea)">
+  <title>Woody &amp; Kunta - Treasure Island</title>
+  <year>2002</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Gamepark</publisher>
+  <developer />
+  <genre>Puzzle</genre>
+</game>
+</menu>

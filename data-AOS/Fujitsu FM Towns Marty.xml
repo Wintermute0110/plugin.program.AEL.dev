@@ -1,0 +1,513 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<menu>
+<header>
+  <listname>Fujitsu FM Towns Marty</listname>
+  <lastlistupdate></lastlistupdate>
+  <listversion>V1</listversion>
+  <exporterversion>V1 GameDBInfo converter</exporterversion>
+</header>
+<game name="4D Sports Boxing (1991)(Distinctive Software)(Jp-En)">
+  <title>4D Sports Boxing</title>
+  <year>1991</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Distinctive Software</publisher>
+  <developer />
+  <genre>sports</genre>
+</game>
+<game name="4D Sports Driving (1992)(Distinctive Software)(Jp-En)">
+  <title>4D Sports Driving</title>
+  <year>1992</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Distinctive Software</publisher>
+  <developer />
+  <genre>driving</genre>
+</game>
+<game name="AD&amp;D Dragons of Flame (1992)(PonyCanyon)(Jp-En)">
+  <title>AD&amp;D Dragons of Flame</title>
+  <year>1992</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Pony Canyon</publisher>
+  <developer />
+  <genre>rpg</genre>
+</game>
+<game name="Advantage Tennis (1992)(Fujitsu)(Jp-En)">
+  <title>Advantage Tennis</title>
+  <year>1992</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Fujitsu</publisher>
+  <developer />
+  <genre>sports</genre>
+</game>
+<game name="Afterburner (1987)(Sega)(Jp-En)">
+  <title>Afterburner</title>
+  <year>1987</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Sega</publisher>
+  <developer />
+  <genre>flyer</genre>
+</game>
+<game name="Afterburner 2 (1989)(Sega)(Jp-En)">
+  <title>Afterburner 2</title>
+  <year>1989</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Sega</publisher>
+  <developer />
+  <genre>flyer</genre>
+</game>
+<game name="Afterburner 3 (1992)(Sega)(Jp)">
+  <title>Afterburner 3</title>
+  <year>1992</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Sega</publisher>
+  <developer />
+  <genre>flyer</genre>
+</game>
+<game name="Blandia (1994)(Ving)(Jp-En)[mp3 source]">
+  <title>Blandia</title>
+  <year>1994</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Ving</publisher>
+  <developer />
+  <genre>fighter</genre>
+</game>
+<game name="Bubble Bobble (1993)(Ving)(Jp-En)">
+  <title>Bubble Bobble</title>
+  <year>1993</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Ving</publisher>
+  <developer />
+  <genre>action</genre>
+</game>
+<game name="Castles (1992)(Victor)(Jp-En)">
+  <title>Castles</title>
+  <year>1992</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Victor</publisher>
+  <developer />
+  <genre>strategy</genre>
+</game>
+<game name="Chase HQ (1991)(Ving)(Jp-En)">
+  <title>Chase HQ</title>
+  <year>1991</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Ving</publisher>
+  <developer />
+  <genre>driving</genre>
+</game>
+<game name="Drakkhen (1990)(Fujitsu)(Jp-En)">
+  <title>Drakkhen</title>
+  <year>1990</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Fujitsu</publisher>
+  <developer />
+  <genre>rpg</genre>
+</game>
+<game name="Dungeon Master (1987)(FTL)(Jp-En)">
+  <title>Dungeon Master</title>
+  <year>1987</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>FTL</publisher>
+  <developer />
+  <genre>rpg</genre>
+</game>
+<game name="Dungeon Master Chaos Strikes Back (1990)(Victor)(Jp-En)">
+  <title>Dungeon Master Chaos Strikes Back</title>
+  <year>1990</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Victor</publisher>
+  <developer />
+  <genre>rpg</genre>
+</game>
+<game name="Evolution (1989)(System Sacom)(Jp-En)">
+  <title>Evolution</title>
+  <year>1989</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>System Sacom</publisher>
+  <developer />
+  <genre>shooter</genre>
+</game>
+<game name="Final Blow (1990)(Ving)(Jp-En)">
+  <title>Final Blow</title>
+  <year>1990</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Ving</publisher>
+  <developer />
+  <genre>sports</genre>
+</game>
+<game name="Flying Shark (1993)(Ving)(Jp-En)">
+  <title>Flying Shark</title>
+  <year>1993</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Ving</publisher>
+  <developer />
+  <genre>shoot-em up</genre>
+</game>
+<game name="Galaxy Force II (1990)(CSK)(Jp-En)">
+  <title>Galaxy Force II</title>
+  <year>1990</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>CSK</publisher>
+  <developer />
+  <genre>flying</genre>
+</game>
+<game name="Genocide Squared (1993)(Zoom)(Jp-En)">
+  <title>Genocide Squared</title>
+  <year>1993</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Zoom</publisher>
+  <developer />
+  <genre>action</genre>
+</game>
+<game name="Image Fight (1990)(Ving)(Jp-En)">
+  <title>Image Fight</title>
+  <year>1990</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Ving</publisher>
+  <developer />
+  <genre>shoot-em up</genre>
+</game>
+<game name="Indiana Jones and the Fate of Atlantis (1993)(LucasFilm)(Jp-En)">
+  <title>Indiana Jones and the Fate of Atlantis</title>
+  <year>1993</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Lucas Film</publisher>
+  <developer />
+  <genre>adventure</genre>
+</game>
+<game name="Indiana Jones and the Last Crusade (1989)(LucasFilm)(Jp-En)">
+  <title>Indiana Jones and the Last Crusade</title>
+  <year>1989</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Lucas Film</publisher>
+  <developer />
+  <genre>adventure</genre>
+</game>
+<game name="Kyukyoku Tiger (aka Twin Cobra) (1994)(Ving)(Jp-En)[mp3 source]">
+  <title>Kyukyoku Tiger</title>
+  <year>1994</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Ving</publisher>
+  <developer />
+  <genre>shoot-em up</genre>
+</game>
+<game name="Lemmings (1991)(Psygnosis)(Jp-En)">
+  <title>Lemmings</title>
+  <year>1991</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Psygnosis</publisher>
+  <developer />
+  <genre>puzzle</genre>
+</game>
+<game name="LibbleRabble (1993)(Namco)(Jp-En)">
+  <title>LibbleRabble</title>
+  <year>1993</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Namco</publisher>
+  <developer />
+  <genre>puzzle</genre>
+</game>
+<game name="Loom (1991)(LucasFilm)(Jp-En)">
+  <title>Loom</title>
+  <year>1991</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Lucas Film</publisher>
+  <developer />
+  <genre>adventure</genre>
+</game>
+<game name="Mad Stalker (1994)(Family Soft)(Jp-En)">
+  <title>Mad Stalker</title>
+  <year>1994</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Family Soft</publisher>
+  <developer />
+  <genre>action</genre>
+</game>
+<game name="Marble Madness (1991)(Homedata)(Jp-En)">
+  <title>Marble Madness</title>
+  <year>1991</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Homedata</publisher>
+  <developer />
+  <genre>puzzle</genre>
+</game>
+<game name="Monkey Island 2 - LeChuck&apos;s Revenge (1991)(LucasFilm)(Jp-En)">
+  <title>Monkey Island 2 - LeChuck&apos;s Revenge</title>
+  <year>1991</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Lucas Film</publisher>
+  <developer />
+  <genre>adventure</genre>
+</game>
+<game name="Muscle Bomber (1994)(CapCom)">
+  <title>Muscle Bomber</title>
+  <year>1994</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Capcom</publisher>
+  <developer />
+  <genre>wrestling</genre>
+</game>
+<game name="New Zealand Story, The (1989)(Ving)(Jp-En)">
+  <title>New Zealand Story, The</title>
+  <year>1989</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Ving</publisher>
+  <developer />
+  <genre>platform</genre>
+</game>
+<game name="Operation Wolf (1990)(Ving)(Jp-En)[mp3 source]">
+  <title>Operation Wolf</title>
+  <year>1990</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Ving</publisher>
+  <developer />
+  <genre>shooter</genre>
+</game>
+<game name="Populous (1990)(Imagineer)(Jp-En)">
+  <title>Populous</title>
+  <year>1990</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Imagineer</publisher>
+  <developer />
+  <genre>Strategy</genre>
+</game>
+<game name="Power Monger (1992)(Imagineer)(Jp-En)">
+  <title>Power Monger</title>
+  <year>1992</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Imagineer</publisher>
+  <developer />
+  <genre>Strategy</genre>
+</game>
+<game name="Prince of Persia (1992)(Riverhill Soft)(Jp)">
+  <title>Prince of Persia</title>
+  <year>1992</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Riverhill Soft</publisher>
+  <developer />
+  <genre>platformer</genre>
+</game>
+<game name="Pu-Li-Ru-La (1994)(Ving)(Jp-En)">
+  <title>Pu-Li-Ru-La</title>
+  <year>1994</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Ving</publisher>
+  <developer />
+  <genre>beat-em up</genre>
+</game>
+<game name="Puyo Puyo (1994)(CRI)(Jp)">
+  <title>Puyo Puyo</title>
+  <year>1994</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>CRI</publisher>
+  <developer />
+  <genre>puzzle</genre>
+</game>
+<game name="Queen Of Duellist, The (199x)(Agumix)(Jp-En)">
+  <title>Queen Of Duellist, The</title>
+  <year>1994</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Aqumix</publisher>
+  <developer />
+  <genre>fighter</genre>
+</game>
+<game name="RAC Rally (1995)(Victor)(En)">
+  <title>RAC Rally</title>
+  <year>1995</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Victor</publisher>
+  <developer />
+  <genre>Driving</genre>
+</game>
+<game name="Raiden Densetsu (1991)(Kid Corp)(Jp-En)">
+  <title>Raiden Densetsu</title>
+  <year>1991</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Kid Corp</publisher>
+  <developer />
+  <genre>shoot-em up</genre>
+</game>
+<game name="Rainbow Islands Extra (1992)(Ving)(Jp-En)">
+  <title>Rainbow Islands Extra</title>
+  <year>1992</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Ving</publisher>
+  <developer />
+  <genre>platform</genre>
+</game>
+<game name="Rayxanber (1990)(Datawest)(Jp-En)">
+  <title>Rayxanber</title>
+  <year>1990</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Datawest</publisher>
+  <developer />
+  <genre>shoot-em up</genre>
+</game>
+<game name="Samurai Spirits (1995)(Ving)(Jp-En)[mp3 source]">
+  <title>Samurai Spirits</title>
+  <year>1995</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Ving</publisher>
+  <developer />
+  <genre>fighter</genre>
+</game>
+<game name="Scavenger 4 (1994)(Psygnosis)(Jp-En)">
+  <title>Scavenger 4</title>
+  <year>1994</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Psygnosis</publisher>
+  <developer />
+  <genre>shoot-em up</genre>
+</game>
+<game name="Secret of Monkey Island, The (1992)(LucasFilm)(Jp-En)">
+  <title>Secret of Monkey Island, The</title>
+  <year>1992</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Lucas Film</publisher>
+  <developer />
+  <genre>adventure</genre>
+</game>
+<game name="Shadow of the Beast (1994)(Psygnosis)(Jp-En)">
+  <title>Shadow of the Beast</title>
+  <year>1994</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Psygnosis</publisher>
+  <developer />
+  <genre>action</genre>
+</game>
+<game name="Sherlock Holmes no Tantei Kouza (1991)(Fujitsu)(Jp-En)">
+  <title>Sherlock Holmes no Tantei Kouza</title>
+  <year>1991</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Fujitsu</publisher>
+  <developer />
+  <genre>Adventure</genre>
+</game>
+<game name="Sim City (1990)(Maxis)(Jp-En)">
+  <title>Sim City</title>
+  <year>1990</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Maxis</publisher>
+  <developer />
+  <genre>simulation</genre>
+</game>
+<game name="Splatterhouse (1992)(Ving)(Jp-En)">
+  <title>Splatterhouse</title>
+  <year>1992</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Ving</publisher>
+  <developer />
+  <genre>action</genre>
+</game>
+<game name="Strike Commander Plus (1994)(Origin)(Jp-En)">
+  <title>Strike Commander Plus</title>
+  <year>1994</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Origin</publisher>
+  <developer />
+  <genre>simulation</genre>
+</game>
+<game name="Super Shooting Towns (199x)(-)(Jp-En)">
+  <title>Super Shooting Towns</title>
+  <year>199x</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Amorphous</publisher>
+  <developer />
+  <genre>shoot-em up</genre>
+</game>
+<game name="Super Street Fighter II (1993)(Capcom)(Jp-En)">
+  <title>Super Street Fighter II</title>
+  <year>1993</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Capcom</publisher>
+  <developer />
+  <genre>fighter</genre>
+</game>
+<game name="Syndicate (1994)(Bullfrog)(US)">
+  <title>Syndicate</title>
+  <year>1994</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Bullfrog</publisher>
+  <developer />
+  <genre>simulation</genre>
+</game>
+<game name="Tatsujin Ou (aka Truxton II) (1993)(Ving)(Jp-En)">
+  <title>Tatsujin Ou</title>
+  <year>1993</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Ving</publisher>
+  <developer />
+  <genre>shoot-em up</genre>
+</game>
+<game name="Turbo Outrun (1988)(Sega)(Jp)">
+  <title>Turbo Outrun</title>
+  <year>1988</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Sega</publisher>
+  <developer />
+  <genre>driving</genre>
+</game>
+<game name="Ultima Trilogy 1-3 (1990)(Origins)(Jp-En)">
+  <title>Ultima Trilogy 1-3</title>
+  <year>1990</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Origins</publisher>
+  <developer />
+  <genre>rpg</genre>
+</game>
+<game name="Ultima V - Warriors of Destiny (1988)(Origins)(Jp-En)">
+  <title>Ultima V - Warriors of Destiny</title>
+  <year>1988</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Origins</publisher>
+  <developer />
+  <genre>rpg</genre>
+</game>
+<game name="Ultima VI - The False Prophet (1990)(Origins)(Jp-En)">
+  <title>Ultima VI - The False Prophet</title>
+  <year>1990</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Origins</publisher>
+  <developer />
+  <genre>rpg</genre>
+</game>
+<game name="Viewpoint (1993)(Ving)(Jp-En)[mp3 source]">
+  <title>Viewpoint</title>
+  <year>1993</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Ving</publisher>
+  <developer />
+  <genre>shoot-em up</genre>
+</game>
+<game name="Volfied (1991)(Ving)(Jp-En)">
+  <title>Volfied</title>
+  <year>1991</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Ving</publisher>
+  <developer />
+  <genre>puzzle</genre>
+</game>
+<game name="Where in the World is Carmen Sandiego (1993)(Fujitsu)(Jp-En)">
+  <title>Where in the World is Carmen Sandiego</title>
+  <year>1993</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Fujitsu</publisher>
+  <developer />
+  <genre>Adventure</genre>
+</game>
+<game name="Wing Commander+Secret Missions (1990)(Origin)(Jp-En)">
+  <title>Wing Commander+Secret Missions</title>
+  <year>1990</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Origin</publisher>
+  <developer />
+  <genre>simulation</genre>
+</game>
+<game name="Zak McKracken and The Alien Mindbenders (1990)(Lucasarts)(Jp-En)">
+  <title>Zak McKracken and The Alien Mindbenders</title>
+  <year>1990</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Lucasarts</publisher>
+  <developer />
+  <genre>adventure</genre>
+</game>
+</menu>

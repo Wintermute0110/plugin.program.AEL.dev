@@ -1,0 +1,5958 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<menu>
+<header>
+  <listname>Commodore 16</listname>
+  <lastlistupdate></lastlistupdate>
+  <listversion>V1</listversion>
+  <exporterversion>V1 GameDBInfo converter</exporterversion>
+</header>
+<game name="1K-Mini-Bdash (Italy) (Unl)">
+  <title>1K-Mini-Bdash (Italy) (Unl)</title>
+  <year>2008</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Ian Coog</publisher>
+  <developer />
+  <genre>Action</genre>
+  <score />
+</game>
+<game name="2D Maze (Europe)">
+  <title>2D Maze (Europe)</title>
+  <year>1984</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Melbourne House</publisher>
+  <developer />
+  <genre>Adventure</genre>
+  <score />
+</game>
+<game name="3D Car Race (Europe)">
+  <title>3D Car Race (Europe)</title>
+  <year>1986</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Visiogame</publisher>
+  <developer />
+  <genre>Driving</genre>
+  <score />
+</game>
+<game name="3D Crazy Tennis (Europe)">
+  <title>3D Crazy Tennis (Europe)</title>
+  <year>1986</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Visiogame</publisher>
+  <developer />
+  <genre>Sports/Tennis</genre>
+  <score />
+</game>
+<game name="3D Ghost Chase (Europe)">
+  <title>3D Ghost Chase (Europe)</title>
+  <year>1987</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>MicroValue</publisher>
+  <developer />
+  <genre>Maze</genre>
+  <score />
+</game>
+<game name="3D Glooper (Europe)">
+  <title>3D Glooper (Europe)</title>
+  <year>1988</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Audiogenic</publisher>
+  <developer />
+  <genre>Maze</genre>
+  <score />
+</game>
+<game name="3D Quasars (Europe)">
+  <title>3D Quasars (Europe)</title>
+  <year>1986</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Solar Software</publisher>
+  <developer />
+  <genre>Shoot-&apos;Em-Up</genre>
+  <score />
+</game>
+<game name="3D Time Trek (Europe)">
+  <title>3D Time Trek (Europe)</title>
+  <year>1985</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Anirog</publisher>
+  <developer />
+  <genre>Shoot-&apos;Em-Up</genre>
+  <score />
+</game>
+<game name="7Up Spot (Europe) (Unl)">
+  <title>7Up Spot (Europe) (Unl)</title>
+  <year>1996</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Assassins</publisher>
+  <developer />
+  <genre>Puzzle</genre>
+  <score />
+</game>
+<game name="A Farao Sirja (Hungary) (Unl)">
+  <title>A Farao Sirja (Hungary) (Unl)</title>
+  <year>1986</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Eberhardt Software</publisher>
+  <developer />
+  <genre>Action</genre>
+  <score />
+</game>
+<game name="A-07 (Europe)">
+  <title>A-07 (Europe)</title>
+  <year>1987</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Braintron</publisher>
+  <developer />
+  <genre>Platform</genre>
+  <score />
+</game>
+<game name="Aardvark (Europe)">
+  <title>Aardvark (Europe)</title>
+  <year>1986</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Bug-Byte</publisher>
+  <developer />
+  <genre>Maze</genre>
+  <score />
+</game>
+<game name="ACE (Europe)">
+  <title>ACE (Europe)</title>
+  <year>1985</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Cascade Games</publisher>
+  <developer />
+  <genre>Simulation</genre>
+  <score />
+</game>
+<game name="ACE +4 (Europe)">
+  <title>ACE +4 (Europe)</title>
+  <year>1986</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Cascade Games</publisher>
+  <developer />
+  <genre>Simulation</genre>
+  <score />
+</game>
+<game name="ACE 2 (Europe)">
+  <title>ACE 2 (Europe)</title>
+  <year>1987</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Cascade Games</publisher>
+  <developer />
+  <genre>Simulation</genre>
+  <score />
+</game>
+<game name="Aces Up (Europe)">
+  <title>Aces Up (Europe)</title>
+  <year>1986</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Thunderbirds</publisher>
+  <developer />
+  <genre>Casino</genre>
+  <score />
+</game>
+<game name="Acid Flipper (Europe) (Unl)">
+  <title>Acid Flipper (Europe) (Unl)</title>
+  <year>1991</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Electronic Disaster Crew</publisher>
+  <developer />
+  <genre>Action</genre>
+  <score />
+</game>
+<game name="Acidball (Europe) (Unl)">
+  <title>Acidball (Europe) (Unl)</title>
+  <year>1995</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Gods of the Universe</publisher>
+  <developer />
+  <genre>Puzzle</genre>
+  <score />
+</game>
+<game name="Ack Ack Attack (Europe)">
+  <title>Ack Ack Attack (Europe)</title>
+  <year>1988</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Tynesoft Computer Software</publisher>
+  <developer />
+  <genre>Shoot-&apos;Em-Up</genre>
+  <score />
+</game>
+<game name="Adventures in Time (Europe)">
+  <title>Adventures in Time (Europe)</title>
+  <year>2010</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Assassins</publisher>
+  <developer />
+  <genre>Platform</genre>
+  <score />
+</game>
+<game name="Aeroblitz (Europe)">
+  <title>Aeroblitz (Europe)</title>
+  <year>1984</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Visiogame</publisher>
+  <developer />
+  <genre>Action</genre>
+  <score />
+</game>
+<game name="Airwolf (Europe)">
+  <title>Airwolf (Europe)</title>
+  <year>1985</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Elite</publisher>
+  <developer />
+  <genre>Action</genre>
+  <score />
+</game>
+<game name="Airwolf 2 (Europe)">
+  <title>Airwolf 2 (Europe)</title>
+  <year>1987</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Elite</publisher>
+  <developer />
+  <genre>Shoot-&apos;Em-Up</genre>
+  <score />
+</game>
+<game name="Alex - The Game (Hungary)">
+  <title>Alex - The Game (Hungary)</title>
+  <year>1988</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Novotrade</publisher>
+  <developer />
+  <genre>Action</genre>
+  <score />
+</game>
+<game name="Alien (Europe)">
+  <title>Alien (Europe)</title>
+  <year>1985</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Gameworx Software</publisher>
+  <developer />
+  <genre>Adventure</genre>
+  <score />
+</game>
+<game name="Alien Attack (Europe)">
+  <title>Alien Attack (Europe)</title>
+  <year>1985</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Solar Software</publisher>
+  <developer />
+  <genre>Shoot-&apos;Em-Up</genre>
+  <score />
+</game>
+<game name="Alien Invasion (Europe)">
+  <title>Alien Invasion (Europe)</title>
+  <year>1988</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Kingsoft</publisher>
+  <developer />
+  <genre>Action</genre>
+  <score />
+</game>
+<game name="Alien Overrun (Europe)">
+  <title>Alien Overrun (Europe)</title>
+  <year>1984</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Melbourne House</publisher>
+  <developer />
+  <genre>Action</genre>
+  <score />
+</game>
+<game name="Aliens (Europe)">
+  <title>Aliens (Europe)</title>
+  <year>1987</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Electric Dreams</publisher>
+  <developer />
+  <genre>Adventure</genre>
+  <score />
+</game>
+<game name="Almatura (Hungary)">
+  <title>Almatura (Hungary)</title>
+  <year>1987</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Novotrade</publisher>
+  <developer />
+  <genre>Maze</genre>
+  <score />
+</game>
+<game name="Alpha Jet (Europe)">
+  <title>Alpha Jet (Europe)</title>
+  <year>1986</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Valentine Soft</publisher>
+  <developer />
+  <genre>Simulation</genre>
+  <score />
+</game>
+<game name="Ambush! (Europe) (Unl)">
+  <title>Ambush! (Europe) (Unl)</title>
+  <year>1980</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Bayman, Phil</publisher>
+  <developer />
+  <genre>Strategy</genre>
+  <score />
+</game>
+<game name="Amoba (Novotrade) (Hungary)">
+  <title>Amoba (Novotrade) (Hungary)</title>
+  <year>1986</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Novotrade</publisher>
+  <developer />
+  <genre>Puzzle</genre>
+  <score />
+</game>
+<game name="Amoba (Punk Software House) (Europe) (Unl)">
+  <title>Amoba (Punk Software House) (Europe) (Unl)</title>
+  <year>1992</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>The Punk Software House</publisher>
+  <developer />
+  <genre>Puzzle</genre>
+  <score />
+</game>
+<game name="Android Nim (Europe)">
+  <title>Android Nim (Europe)</title>
+  <year>1986</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Commodore Business Machines</publisher>
+  <developer />
+  <genre>Puzzle</genre>
+  <score />
+</game>
+<game name="Apollo Mission (Europe)">
+  <title>Apollo Mission (Europe)</title>
+  <year>1985</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Tynesoft Computer Software</publisher>
+  <developer />
+  <genre>Platform</genre>
+  <score />
+</game>
+<game name="Archery-16 (Europe)">
+  <title>Archery-16 (Europe)</title>
+  <year>1986</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Sunnysoft</publisher>
+  <developer />
+  <genre>Sports/Olympic</genre>
+  <score />
+</game>
+<game name="Arena 3000 (Europe)">
+  <title>Arena 3000 (Europe)</title>
+  <year>1985</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Microdeal</publisher>
+  <developer />
+  <genre>Shoot-&apos;Em-Up</genre>
+  <score />
+</game>
+<game name="Armor (Europe)">
+  <title>Armor (Europe)</title>
+  <year>1984</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>GuentherSoft-Berlin</publisher>
+  <developer />
+  <genre>Action</genre>
+  <score />
+</game>
+<game name="Arrow (Europe)">
+  <title>Arrow (Europe)</title>
+  <year>1985</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Commodore Business Machines</publisher>
+  <developer />
+  <genre>Educational</genre>
+  <score />
+</game>
+<game name="Arrow of Death (Europe)">
+  <title>Arrow of Death (Europe)</title>
+  <year>1984</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Paxman Promotions</publisher>
+  <developer />
+  <genre>Adventure</genre>
+  <score />
+</game>
+<game name="Arthur Noid (Europe)">
+  <title>Arthur Noid (Europe)</title>
+  <year>1988</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Alternative Software</publisher>
+  <developer />
+  <genre>Breakout</genre>
+  <score />
+</game>
+<game name="Artur Kalandjai (Hungary)">
+  <title>Artur Kalandjai (Hungary)</title>
+  <year>1988</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Stevo - Mucsi</publisher>
+  <developer />
+  <genre>Action</genre>
+  <score />
+</game>
+<game name="Assedio (Italy)">
+  <title>Assedio (Italy)</title>
+  <year>1985</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Papersoft</publisher>
+  <developer />
+  <genre>Action</genre>
+  <score />
+</game>
+<game name="Asteroid Belt (Europe)">
+  <title>Asteroid Belt (Europe)</title>
+  <year>1985</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Bug-Byte</publisher>
+  <developer />
+  <genre>Action</genre>
+  <score />
+</game>
+<game name="Asteroids (Europe) (Unl)">
+  <title>Asteroids (Europe) (Unl)</title>
+  <year>2013</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Norbert Kehrer</publisher>
+  <developer />
+  <genre>Shoot-&apos;Em-Up</genre>
+  <score />
+</game>
+<game name="Astrapede (Europe)">
+  <title>Astrapede (Europe)</title>
+  <year>1986</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Astralog</publisher>
+  <developer />
+  <genre>Action</genre>
+  <score />
+</game>
+<game name="Astro Plumber (Europe)">
+  <title>Astro Plumber (Europe)</title>
+  <year>1985</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Blue Ribbon Software</publisher>
+  <developer />
+  <genre>Action</genre>
+  <score />
+</game>
+<game name="ATA (Europe) (Unl)">
+  <title>ATA (Europe) (Unl)</title>
+  <year>1992</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>K., Daniel</publisher>
+  <developer />
+  <genre>Puzzle</genre>
+  <score />
+</game>
+<game name="Atlantis (Europe)">
+  <title>Atlantis (Europe)</title>
+  <year>1985</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Anirog</publisher>
+  <developer />
+  <genre>Action</genre>
+  <score />
+</game>
+<game name="Atomic Mission (Europe)">
+  <title>Atomic Mission (Europe)</title>
+  <year>1984</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Commodore Business Machines</publisher>
+  <developer />
+  <genre>Adventure</genre>
+  <score />
+</game>
+<game name="Atomino (Europe) (Unl)">
+  <title>Atomino (Europe) (Unl)</title>
+  <year>1993</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Dunkers</publisher>
+  <developer />
+  <genre>Puzzle</genre>
+  <score />
+</game>
+<game name="Atomix (Europe) (Unl)">
+  <title>Atomix (Europe) (Unl)</title>
+  <year>1990</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>VHS Team</publisher>
+  <developer />
+  <genre>Puzzle</genre>
+  <score />
+</game>
+<game name="Auf Wiedersehen Monty (Europe)">
+  <title>Auf Wiedersehen Monty (Europe)</title>
+  <year>1987</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Gremlin Graphics</publisher>
+  <developer />
+  <genre>Platform</genre>
+  <score />
+</game>
+<game name="Auriga (Europe)">
+  <title>Auriga (Europe)</title>
+  <year>1986</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Players</publisher>
+  <developer />
+  <genre>Shoot-&apos;Em-Up</genre>
+  <score />
+</game>
+<game name="Auto Zone (Europe)">
+  <title>Auto Zone (Europe)</title>
+  <year>1987</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Players</publisher>
+  <developer />
+  <genre>Action</genre>
+  <score />
+</game>
+<game name="Autobahn (Europe)">
+  <title>Autobahn (Europe)</title>
+  <year>1986</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Tynesoft Computer Software</publisher>
+  <developer />
+  <genre>Driving</genre>
+  <score />
+</game>
+<game name="Baby Berks (Europe)">
+  <title>Baby Berks (Europe)</title>
+  <year>1985</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>CRL Group PLC</publisher>
+  <developer />
+  <genre>Shoot-&apos;Em-Up</genre>
+  <score />
+</game>
+<game name="Balance (Germany)">
+  <title>Balance (Germany)</title>
+  <year>1986</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>UserSoft</publisher>
+  <developer />
+  <genre>Action</genre>
+  <score />
+</game>
+<game name="Ball (Europe) (Unl)">
+  <title>Ball (Europe) (Unl)</title>
+  <year>1996</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Scorpions</publisher>
+  <developer />
+  <genre>Breakout</genre>
+  <score />
+</game>
+<game name="Ball-X (Europe) (Unl)">
+  <title>Ball-X (Europe) (Unl)</title>
+  <year>1991</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>TCFS</publisher>
+  <developer />
+  <genre>Action</genre>
+  <score />
+</game>
+<game name="Bandits At Zero (Europe)">
+  <title>Bandits At Zero (Europe)</title>
+  <year>1986</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Mastertronic</publisher>
+  <developer />
+  <genre>Shoot-&apos;Em-Up</genre>
+  <score />
+</game>
+<game name="Bars (Europe) (Unl)">
+  <title>Bars (Europe) (Unl)</title>
+  <year>2003</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Assassins</publisher>
+  <developer />
+  <genre>Puzzle</genre>
+  <score />
+</game>
+<game name="Bastow Manor (Europe)">
+  <title>Bastow Manor (Europe)</title>
+  <year>1986</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Gameworx Software</publisher>
+  <developer />
+  <genre>Adventure</genre>
+  <score />
+</game>
+<game name="Bat Attack (Europe) (Unl)">
+  <title>Bat Attack (Europe) (Unl)</title>
+  <year>1988</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>GEIE</publisher>
+  <developer />
+  <genre>Shoot-&apos;Em-Up</genre>
+  <score />
+</game>
+<game name="Battery (Europe) (Unl)">
+  <title>Battery (Europe) (Unl)</title>
+  <year>1990</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Vortex</publisher>
+  <developer />
+  <genre>Action</genre>
+  <score />
+</game>
+<game name="Battery 2 (Europe) (Unl)">
+  <title>Battery 2 (Europe) (Unl)</title>
+  <year>1992</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>TCFS</publisher>
+  <developer />
+  <genre>Action</genre>
+  <score />
+</game>
+<game name="Battle (Europe)">
+  <title>Battle (Europe)</title>
+  <year>1987</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Mastertronic</publisher>
+  <developer />
+  <genre>Strategy</genre>
+  <score />
+</game>
+<game name="Battle Axe (Europe) (Unl)">
+  <title>Battle Axe (Europe) (Unl)</title>
+  <year>1989</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>CSM</publisher>
+  <developer />
+  <genre>Adventure</genre>
+  <score />
+</game>
+<game name="Battle Star (Europe)">
+  <title>Battle Star (Europe)</title>
+  <year>1987</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Tynesoft Computer Software</publisher>
+  <developer />
+  <genre>Shoot-&apos;Em-Up</genre>
+  <score />
+</game>
+<game name="Beach Head (Europe)">
+  <title>Beach Head (Europe)</title>
+  <year>1985</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Anirog</publisher>
+  <developer />
+  <genre>Action</genre>
+  <score />
+</game>
+<game name="Berks (Europe)">
+  <title>Berks (Europe)</title>
+  <year>1985</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>CRL Group</publisher>
+  <developer />
+  <genre>Shoot-&apos;Em-Up</genre>
+  <score />
+</game>
+<game name="Berks III (Europe)">
+  <title>Berks III (Europe)</title>
+  <year>1985</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>CRL Group</publisher>
+  <developer />
+  <genre>Shoot-&apos;Em-Up</genre>
+  <score />
+</game>
+<game name="Bernat A Nyomozo (Hungary)">
+  <title>Bernat A Nyomozo (Hungary)</title>
+  <year>1989</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Novotrade</publisher>
+  <developer />
+  <genre>Adventure</genre>
+  <score />
+</game>
+<game name="Big Mac (Europe)">
+  <title>Big Mac (Europe)</title>
+  <year>1986</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Mastertronics</publisher>
+  <developer />
+  <genre>Platform</genre>
+  <score />
+</game>
+<game name="Bio Invaders (Europe) (Unl)">
+  <title>Bio Invaders (Europe) (Unl)</title>
+  <year>1986</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Systems</publisher>
+  <developer />
+  <genre>Action</genre>
+  <score />
+</game>
+<game name="Bip-bip (Hungary)">
+  <title>Bip-bip (Hungary)</title>
+  <year>1986</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Novotrade</publisher>
+  <developer />
+  <genre>Action</genre>
+  <score />
+</game>
+<game name="Blagger (Europe)">
+  <title>Blagger (Europe)</title>
+  <year>1985</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Alligata Software</publisher>
+  <developer />
+  <genre>Platform</genre>
+  <score />
+</game>
+<game name="Blastones (Europe) (Unl)">
+  <title>Blastones (Europe) (Unl)</title>
+  <year>1994</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>EVS</publisher>
+  <developer />
+  <genre>Puzzle</genre>
+  <score />
+</game>
+<game name="Blaze (Europe)">
+  <title>Blaze (Europe)</title>
+  <year>1985</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Romik Software</publisher>
+  <developer />
+  <genre>Shoot-&apos;Em-Up</genre>
+  <score />
+</game>
+<game name="Blitz 16 (Europe)">
+  <title>Blitz 16 (Europe)</title>
+  <year>1985</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Commodore Business Machines</publisher>
+  <developer />
+  <genre>Action</genre>
+  <score />
+</game>
+<game name="Bloby (Europe) (Unl)">
+  <title>Bloby (Europe) (Unl)</title>
+  <year>1994</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Chicken</publisher>
+  <developer />
+  <genre>Platform</genre>
+  <score />
+</game>
+<game name="Block Memory (Europe) (Unl)">
+  <title>Block Memory (Europe) (Unl)</title>
+  <year>1997</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Assassins</publisher>
+  <developer />
+  <genre>Puzzle</genre>
+  <score />
+</game>
+<game name="Blockbusters (Europe) (Tape 1) (Side A)">
+  <title>Blockbusters (Europe) (Tape 1) (Side A)</title>
+  <year>1986</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Macsen Software</publisher>
+  <developer />
+  <genre>Puzzle</genre>
+  <score />
+</game>
+<game name="Blockbusters (Europe) (Tape 1) (Side B)">
+  <title>Blockbusters (Europe) (Tape 1) (Side B)</title>
+  <year>1986</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Macsen Software</publisher>
+  <developer />
+  <genre>Puzzle</genre>
+  <score />
+</game>
+<game name="Blockbusters (Europe) (Tape 2) (Extra Questions Database)">
+  <title>Blockbusters (Europe) (Tape 2) (Extra Questions Database)</title>
+  <year>1986</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Macsen Software</publisher>
+  <developer />
+  <genre>Puzzle</genre>
+  <score />
+</game>
+<game name="Blockbusters Goldrun (Europe)">
+  <title>Blockbusters Goldrun (Europe)</title>
+  <year>1986</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Macsen Software</publisher>
+  <developer />
+  <genre>Puzzle</genre>
+  <score />
+</game>
+<game name="Blue Thunder (Europe) (Unl)">
+  <title>Blue Thunder (Europe) (Unl)</title>
+  <year>1992</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Kuni</publisher>
+  <developer />
+  <genre>Action</genre>
+  <score />
+</game>
+<game name="Bmx Racers (Europe)">
+  <title>Bmx Racers (Europe)</title>
+  <year>1985</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Mastertronic</publisher>
+  <developer />
+  <genre>Driving</genre>
+  <score />
+</game>
+<game name="BMX Simulator (Europe)">
+  <title>BMX Simulator (Europe)</title>
+  <year>1986</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Codemasters</publisher>
+  <developer />
+  <genre>Driving</genre>
+  <score />
+</game>
+<game name="Bombjack (Europe) (Side A)">
+  <title>Bombjack (Europe) (Side A)</title>
+  <year>1986</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Elite</publisher>
+  <developer />
+  <genre>Action</genre>
+  <score />
+</game>
+<game name="Bombjack (Europe) (Side B)">
+  <title>Bombjack (Europe) (Side B)</title>
+  <year>1986</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Elite</publisher>
+  <developer />
+  <genre>Action</genre>
+  <score />
+</game>
+<game name="Bombjack II (Europe)">
+  <title>Bombjack II (Europe)</title>
+  <year>1986</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Elite</publisher>
+  <developer />
+  <genre>Action</genre>
+  <score />
+</game>
+<game name="Bongo (Europe)">
+  <title>Bongo (Europe)</title>
+  <year>1986</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Anco</publisher>
+  <developer />
+  <genre>Platform</genre>
+  <score />
+</game>
+<game name="Booty (Europe)">
+  <title>Booty (Europe)</title>
+  <year>1986</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Firebird</publisher>
+  <developer />
+  <genre>Adventure</genre>
+  <score />
+</game>
+<game name="Boulder Dash (Europe)">
+  <title>Boulder Dash (Europe)</title>
+  <year>1984</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>First Star Software</publisher>
+  <developer />
+  <genre>Action</genre>
+  <score />
+</game>
+<game name="Boulder Dash II (Europe)">
+  <title>Boulder Dash II (Europe)</title>
+  <year>1985</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>First Star Software</publisher>
+  <developer />
+  <genre>Action</genre>
+  <score />
+</game>
+<game name="Bounder (Europe)">
+  <title>Bounder (Europe)</title>
+  <year>1986</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Gremlin Graphics</publisher>
+  <developer />
+  <genre>Action</genre>
+  <score />
+</game>
+<game name="Brainfade (Europe) (Unl)">
+  <title>Brainfade (Europe) (Unl)</title>
+  <year>1992</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Skulls</publisher>
+  <developer />
+  <genre>Puzzle</genre>
+  <score />
+</game>
+<game name="Breki (Hungary)">
+  <title>Breki (Hungary)</title>
+  <year>1985</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Novotrade</publisher>
+  <developer />
+  <genre>Action</genre>
+  <score />
+</game>
+<game name="Bridgehead - Legionnaire 2 (Europe)">
+  <title>Bridgehead - Legionnaire 2 (Europe)</title>
+  <year>1986</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Anco</publisher>
+  <developer />
+  <genre>Action</genre>
+  <score />
+</game>
+<game name="Bubble Trouble (Europe)">
+  <title>Bubble Trouble (Europe)</title>
+  <year>1986</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Players</publisher>
+  <developer />
+  <genre>Action</genre>
+  <score />
+</game>
+<game name="Bubble Works (Europe) (Unl)">
+  <title>Bubble Works (Europe) (Unl)</title>
+  <year>1990</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>TCFS</publisher>
+  <developer />
+  <genre>Action</genre>
+  <score />
+</game>
+<game name="Buckaroo Banzai (Europe)">
+  <title>Buckaroo Banzai (Europe)</title>
+  <year>1987</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Master Games</publisher>
+  <developer />
+  <genre>Adventure</genre>
+  <score />
+</game>
+<game name="Buckaroo Banzai +4 (Europe)">
+  <title>Buckaroo Banzai +4 (Europe)</title>
+  <year>1984</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Adventure International</publisher>
+  <developer />
+  <genre>Adventure</genre>
+  <score />
+</game>
+<game name="Can of Worms (Europe)">
+  <title>Can of Worms (Europe)</title>
+  <year>1986</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Livewire Software</publisher>
+  <developer />
+  <genre>Compilation</genre>
+  <score />
+</game>
+<game name="Canoe Slalom (Europe)">
+  <title>Canoe Slalom (Europe)</title>
+  <year>1986</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Anco</publisher>
+  <developer />
+  <genre>Sports/Olympic</genre>
+  <score />
+</game>
+<game name="Careful (Europe)">
+  <title>Careful (Europe)</title>
+  <year>1984</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Commodore Business Machines</publisher>
+  <developer />
+  <genre>Action</genre>
+  <score />
+</game>
+<game name="Castle Dracula - Adventure 5 (Europe)">
+  <title>Castle Dracula - Adventure 5 (Europe)</title>
+  <year>1985</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Microdeal</publisher>
+  <developer />
+  <genre>Adventure</genre>
+  <score />
+</game>
+<game name="Catacombs (Europe)">
+  <title>Catacombs (Europe)</title>
+  <year>1984</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Anirog</publisher>
+  <developer />
+  <genre>Adventure</genre>
+  <score />
+</game>
+<game name="Cave Fighter (Europe)">
+  <title>Cave Fighter (Europe)</title>
+  <year>1985</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Bubble Bus Software</publisher>
+  <developer />
+  <genre>Platform</genre>
+  <score />
+</game>
+<game name="Centripod (Europe) (Unl)">
+  <title>Centripod (Europe) (Unl)</title>
+  <year>2007</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Fire</publisher>
+  <developer />
+  <genre>Action</genre>
+  <score />
+</game>
+<game name="Championship Wrestling (Europe)">
+  <title>Championship Wrestling (Europe)</title>
+  <year>1987</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>U.S. Gold</publisher>
+  <developer />
+  <genre>Sports/Wrestling</genre>
+  <score />
+</game>
+<game name="Chaos (Europe) (Unl)">
+  <title>Chaos (Europe) (Unl)</title>
+  <year>1993</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>MUFF</publisher>
+  <developer />
+  <genre>Action</genre>
+  <score />
+</game>
+<game name="Chip Factory, The (Europe)">
+  <title>Chip Factory, The (Europe)</title>
+  <year>1985</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Audiogenic</publisher>
+  <developer />
+  <genre>Action</genre>
+  <score />
+</game>
+<game name="Chipy (Europe)">
+  <title>Chipy (Europe)</title>
+  <year>1989</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Kingsoft</publisher>
+  <developer />
+  <genre>Puzzle</genre>
+  <score />
+</game>
+<game name="Chopper War (Europe)">
+  <title>Chopper War (Europe)</title>
+  <year>1986</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Illusion Software</publisher>
+  <developer />
+  <genre>Shoot-&apos;Em-Up</genre>
+  <score />
+</game>
+<game name="Church of Death (Europe) (Unl)">
+  <title>Church of Death (Europe) (Unl)</title>
+  <year>2007</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Cronosoft</publisher>
+  <developer />
+  <genre>Adventure</genre>
+  <score />
+</game>
+<game name="Circus (Europe)">
+  <title>Circus (Europe)</title>
+  <year>1998</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Crown</publisher>
+  <developer />
+  <genre>Adventure</genre>
+  <score />
+</game>
+<game name="Classic Adventure (Europe)">
+  <title>Classic Adventure (Europe)</title>
+  <year>1985</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Melbourne House</publisher>
+  <developer />
+  <genre>Adventure</genre>
+  <score />
+</game>
+<game name="Classic Snooker (Europe)">
+  <title>Classic Snooker (Europe)</title>
+  <year>1987</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Anco</publisher>
+  <developer />
+  <genre>Sports/Pool and Dart</genre>
+  <score />
+</game>
+<game name="Climb It (Europe)">
+  <title>Climb It (Europe)</title>
+  <year>1984</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Tynesoft Computer Software</publisher>
+  <developer />
+  <genre>Action</genre>
+  <score />
+</game>
+<game name="Clone (Europe) (Unl)">
+  <title>Clone (Europe) (Unl)</title>
+  <year>2011</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Asssassins</publisher>
+  <developer />
+  <genre>Puzzle</genre>
+  <score />
+</game>
+<game name="Cloud Kingdoms (Europe) (Disk 1) (Unl)">
+  <title>Cloud Kingdoms (Europe) (Disk 1) (Unl)</title>
+  <year>1992</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>TCFS</publisher>
+  <developer />
+  <genre>Action</genre>
+  <score />
+</game>
+<game name="Cloud Kingdoms (Europe) (Disk 2) (Unl)">
+  <title>Cloud Kingdoms (Europe) (Disk 2) (Unl)</title>
+  <year>1992</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>TCFS</publisher>
+  <developer />
+  <genre>Action</genre>
+  <score />
+</game>
+<game name="Commando (Europe)">
+  <title>Commando (Europe)</title>
+  <year>1986</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Elite</publisher>
+  <developer />
+  <genre>Action</genre>
+  <score />
+</game>
+<game name="Commando - Plus4 (Europe) (Unl)">
+  <title>Commando - Plus4 (Europe) (Unl)</title>
+  <year>1992</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>TCFS</publisher>
+  <developer />
+  <genre>Action</genre>
+  <score />
+</game>
+<game name="Commodore 16 Games Pack I (Europe) (Side A)">
+  <title>Commodore 16 Games Pack I (Europe) (Side A)</title>
+  <year>1984</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Melbourne House</publisher>
+  <developer />
+  <genre>Compilation</genre>
+  <score />
+</game>
+<game name="Commodore 16 Games Pack I (Europe) (Side B)">
+  <title>Commodore 16 Games Pack I (Europe) (Side B)</title>
+  <year>1984</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Melbourne House</publisher>
+  <developer />
+  <genre>Compilation</genre>
+  <score />
+</game>
+<game name="Commodore 16 Games Pack II (Europe) (Side A)">
+  <title>Commodore 16 Games Pack II (Europe) (Side A)</title>
+  <year>1984</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Melbourne House</publisher>
+  <developer />
+  <genre>Compilation</genre>
+  <score />
+</game>
+<game name="Commodore 16 Games Pack II (Europe) (Side B)">
+  <title>Commodore 16 Games Pack II (Europe) (Side B)</title>
+  <year>1984</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Melbourne House</publisher>
+  <developer />
+  <genre>Compilation</genre>
+  <score />
+</game>
+<game name="Control Command (Europe)">
+  <title>Control Command (Europe)</title>
+  <year>1986</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Paxman Promotions</publisher>
+  <developer />
+  <genre>Shoot-&apos;Em-Up</genre>
+  <score />
+</game>
+<game name="Cops N&apos; Robbers (Europe)">
+  <title>Cops N&apos; Robbers (Europe)</title>
+  <year>1986</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Atlantis Software</publisher>
+  <developer />
+  <genre>Action</genre>
+  <score />
+</game>
+<game name="Corman (Europe)">
+  <title>Corman (Europe)</title>
+  <year>1985</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Commodore Business Machines</publisher>
+  <developer />
+  <genre>Platform</genre>
+  <score />
+</game>
+<game name="Crackball - The Second Version (Europe) (Unl)">
+  <title>Crackball - The Second Version (Europe) (Unl)</title>
+  <year>1988</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>48-TPI</publisher>
+  <developer />
+  <genre>Breakout</genre>
+  <score />
+</game>
+<game name="Crazy Golf (Europe)">
+  <title>Crazy Golf (Europe)</title>
+  <year>1984</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Commodore Business Machines</publisher>
+  <developer />
+  <genre>Sports/Golf</genre>
+  <score />
+</game>
+<game name="Crillion (Europe)">
+  <title>Crillion (Europe)</title>
+  <year>1989</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Kingsoft</publisher>
+  <developer />
+  <genre>Action</genre>
+  <score />
+</game>
+<game name="Cross Motor (Europe) (Unl)">
+  <title>Cross Motor (Europe) (Unl)</title>
+  <year>2002</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Assassins</publisher>
+  <developer />
+  <genre>Motorcycle</genre>
+  <score />
+</game>
+<game name="Cruncher (Europe)">
+  <title>Cruncher (Europe)</title>
+  <year>1985</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Solar Software</publisher>
+  <developer />
+  <genre>Action</genre>
+  <score />
+</game>
+<game name="Csavargas A Gombak Birodalmaban (Hungary)">
+  <title>Csavargas A Gombak Birodalmaban (Hungary)</title>
+  <year>1988</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Novotrade</publisher>
+  <developer />
+  <genre>Simulation</genre>
+  <score />
+</game>
+<game name="Cuthbert Enters the Tombs of Doom (Europe)">
+  <title>Cuthbert Enters the Tombs of Doom (Europe)</title>
+  <year>1984</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Microdeal</publisher>
+  <developer />
+  <genre>Adventure</genre>
+  <score />
+</game>
+<game name="Cuthbert in Space (Europe)">
+  <title>Cuthbert in Space (Europe)</title>
+  <year>1985</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Microdeal</publisher>
+  <developer />
+  <genre>Action</genre>
+  <score />
+</game>
+<game name="Cuthbert in the Cooler (Europe)">
+  <title>Cuthbert in the Cooler (Europe)</title>
+  <year>1985</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Microdeal</publisher>
+  <developer />
+  <genre>Adventure</genre>
+  <score />
+</game>
+<game name="Cutthroats (Europe)">
+  <title>Cutthroats (Europe)</title>
+  <year>1984</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Infocom</publisher>
+  <developer />
+  <genre>Adventure</genre>
+  <score />
+</game>
+<game name="Cyberdroids (Europe)">
+  <title>Cyberdroids (Europe)</title>
+  <year>1987</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Mr. Chip Software</publisher>
+  <developer />
+  <genre>Shoot-&apos;Em-Up</genre>
+  <score />
+</game>
+<game name="Cyborg (Europe)">
+  <title>Cyborg (Europe)</title>
+  <year>1985</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Rino Marketing</publisher>
+  <developer />
+  <genre>Shoot-&apos;Em-Up</genre>
+  <score />
+</game>
+<game name="Daley Thompson&apos;s Star Events (Europe)">
+  <title>Daley Thompson&apos;s Star Events (Europe)</title>
+  <year>1985</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Ocean</publisher>
+  <developer />
+  <genre>Sports/Track &amp; Field</genre>
+  <score />
+</game>
+<game name="Danger (Europe) (Unl)">
+  <title>Danger (Europe) (Unl)</title>
+  <year>1992</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Electronic Disaster Crew</publisher>
+  <developer />
+  <genre>Action</genre>
+  <score />
+</game>
+<game name="Danger Zone (Europe)">
+  <title>Danger Zone (Europe)</title>
+  <year>1986</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Codemasters</publisher>
+  <developer />
+  <genre>Shoot-&apos;Em-Up</genre>
+  <score />
+</game>
+<game name="Dark Tower - Part 1 (Europe)">
+  <title>Dark Tower - Part 1 (Europe)</title>
+  <year>1985</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Melbourne House</publisher>
+  <developer />
+  <genre>Platform</genre>
+  <score />
+</game>
+<game name="Dark Tower - Part 2 (Europe)">
+  <title>Dark Tower - Part 2 (Europe)</title>
+  <year>1985</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Melbourne House</publisher>
+  <developer />
+  <genre>Platform</genre>
+  <score />
+</game>
+<game name="Dark Tower - Part 3 (Europe)">
+  <title>Dark Tower - Part 3 (Europe)</title>
+  <year>1985</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Melbourne House</publisher>
+  <developer />
+  <genre>Platform</genre>
+  <score />
+</game>
+<game name="Death or Glory (Europe)">
+  <title>Death or Glory (Europe)</title>
+  <year>1987</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>CRL Group PLC</publisher>
+  <developer />
+  <genre>Shoot-&apos;Em-Up</genre>
+  <score />
+</game>
+<game name="Death Race 16 (Europe)">
+  <title>Death Race 16 (Europe)</title>
+  <year>1985</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Atlantis Software</publisher>
+  <developer />
+  <genre>Driving</genre>
+  <score />
+</game>
+<game name="Death River (Europe)">
+  <title>Death River (Europe)</title>
+  <year>1986</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Optyx Software</publisher>
+  <developer />
+  <genre>Shoot-&apos;Em-Up</genre>
+  <score />
+</game>
+<game name="Decton (Europe) (Unl)">
+  <title>Decton (Europe) (Unl)</title>
+  <year>1991</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>TGH</publisher>
+  <developer />
+  <genre>Action</genre>
+  <score />
+</game>
+<game name="Deeper Dungeon (Europe)">
+  <title>Deeper Dungeon (Europe)</title>
+  <year>1985</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>International Education</publisher>
+  <developer />
+  <genre>Action</genre>
+  <score />
+</game>
+<game name="Defence-16 (Europe)">
+  <title>Defence-16 (Europe)</title>
+  <year>1985</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Probe Software</publisher>
+  <developer />
+  <genre>Shoot-&apos;Em-Up</genre>
+  <score />
+</game>
+<game name="Demolition (Europe)">
+  <title>Demolition (Europe)</title>
+  <year>1987</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Anco</publisher>
+  <developer />
+  <genre>Breakout</genre>
+  <score />
+</game>
+<game name="Demonok Birodalma (Hungary)">
+  <title>Demonok Birodalma (Hungary)</title>
+  <year>1989</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Novotrade</publisher>
+  <developer />
+  <genre>Adventure</genre>
+  <score />
+</game>
+<game name="Demonsdom (Europe) (Unl)">
+  <title>Demonsdom (Europe) (Unl)</title>
+  <year>1991</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>CSM</publisher>
+  <developer />
+  <genre>Adventure</genre>
+  <score />
+</game>
+<game name="Destructor (Europe)">
+  <title>Destructor (Europe)</title>
+  <year>1985</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Bug-Byte</publisher>
+  <developer />
+  <genre>Action</genre>
+  <score />
+</game>
+<game name="Dex (Hungary)">
+  <title>Dex (Hungary)</title>
+  <year>1989</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Novotrade</publisher>
+  <developer />
+  <genre>Shoot-&apos;Em-Up</genre>
+  <score />
+</game>
+<game name="Diagon (Europe)">
+  <title>Diagon (Europe)</title>
+  <year>1984</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Bug-Byte</publisher>
+  <developer />
+  <genre>Shoot-&apos;Em-Up</genre>
+  <score />
+</game>
+<game name="Diamond Mine (Europe)">
+  <title>Diamond Mine (Europe)</title>
+  <year>1986</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Blue Ribbon Software</publisher>
+  <developer />
+  <genre>Maze</genre>
+  <score />
+</game>
+<game name="Diamond Mine II (Europe)">
+  <title>Diamond Mine II (Europe)</title>
+  <year>1986</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Blue Ribbon Software</publisher>
+  <developer />
+  <genre>Maze</genre>
+  <score />
+</game>
+<game name="Digger (Europe)">
+  <title>Digger (Europe)</title>
+  <year>1987</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Stone-Castle</publisher>
+  <developer />
+  <genre>Action</genre>
+  <score />
+</game>
+<game name="Digital Ball (Hungary)">
+  <title>Digital Ball (Hungary)</title>
+  <year>1989</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Novotrade</publisher>
+  <developer />
+  <genre>Breakout</genre>
+  <score />
+</game>
+<game name="Dingbat (Europe)">
+  <title>Dingbat (Europe)</title>
+  <year>1988</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Mastertronic</publisher>
+  <developer />
+  <genre>Action</genre>
+  <score />
+</game>
+<game name="Dirty Den (Europe)">
+  <title>Dirty Den (Europe)</title>
+  <year>1986</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Probe Software</publisher>
+  <developer />
+  <genre>Platform</genre>
+  <score />
+</game>
+<game name="Dixi a Megmento (Europe) (Unl)">
+  <title>Dixi a Megmento (Europe) (Unl)</title>
+  <year>1987</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Kosir, Attila</publisher>
+  <developer />
+  <genre>Shoot-&apos;Em-Up</genre>
+  <score />
+</game>
+<game name="DizasterBlaster (Europe)">
+  <title>DizasterBlaster (Europe)</title>
+  <year>1987</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Americana Software</publisher>
+  <developer />
+  <genre>Shoot-&apos;Em-Up</genre>
+  <score />
+</game>
+<game name="Dizzy Dice (Europe)">
+  <title>Dizzy Dice (Europe)</title>
+  <year>1988</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Players</publisher>
+  <developer />
+  <genre>Casino</genre>
+  <score />
+</game>
+<game name="Don Paint (Germany)">
+  <title>Don Paint (Germany)</title>
+  <year>1984</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>UserSoft</publisher>
+  <developer />
+  <genre>Puzzle</genre>
+  <score />
+</game>
+<game name="Dork&apos;s Dilemma (Europe)">
+  <title>Dork&apos;s Dilemma (Europe)</title>
+  <year>1985</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Gremlin Graphics</publisher>
+  <developer />
+  <genre>Action</genre>
+  <score />
+</game>
+<game name="Double Blocks (Europe) (Unl)">
+  <title>Double Blocks (Europe) (Unl)</title>
+  <year>1993</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>The Big Corporation</publisher>
+  <developer />
+  <genre>Puzzle</genre>
+  <score />
+</game>
+<game name="Dragon Maze (Europe)">
+  <title>Dragon Maze (Europe)</title>
+  <year>1984</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Commodore Business Machines</publisher>
+  <developer />
+  <genre>Maze</genre>
+  <score />
+</game>
+<game name="Droid One (Europe)">
+  <title>Droid One (Europe)</title>
+  <year>1986</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Bug-Byte</publisher>
+  <developer />
+  <genre>Shoot-&apos;Em-Up</genre>
+  <score />
+</game>
+<game name="Dudaorru Patric (Hungary)">
+  <title>Dudaorru Patric (Hungary)</title>
+  <year>1989</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Novotrade</publisher>
+  <developer />
+  <genre>Action</genre>
+  <score />
+</game>
+<game name="Dynamoid (Europe) (Unl)">
+  <title>Dynamoid (Europe) (Unl)</title>
+  <year>1990</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>CSM</publisher>
+  <developer />
+  <genre>Action</genre>
+  <score />
+</game>
+<game name="Elite Squad (Europe) (Unl)">
+  <title>Elite Squad (Europe) (Unl)</title>
+  <year>1991</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>EVS</publisher>
+  <developer />
+  <genre>Puzzle</genre>
+  <score />
+</game>
+<game name="Elvarazsolt Kastely (Hungary)">
+  <title>Elvarazsolt Kastely (Hungary)</title>
+  <year>1987</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Novotrade</publisher>
+  <developer />
+  <genre>Platform</genre>
+  <score />
+</game>
+<game name="Emerald Mine (Europe)">
+  <title>Emerald Mine (Europe)</title>
+  <year>1988</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Kingsoft</publisher>
+  <developer />
+  <genre>Action</genre>
+  <score />
+</game>
+<game name="Emerald Mine II (Europe)">
+  <title>Emerald Mine II (Europe)</title>
+  <year>1989</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Kingsoft</publisher>
+  <developer />
+  <genre>Action</genre>
+  <score />
+</game>
+<game name="Enigma (Europe)">
+  <title>Enigma (Europe)</title>
+  <year>1985</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Commodore Business Machines</publisher>
+  <developer />
+  <genre>Action</genre>
+  <score />
+</game>
+<game name="Eoroid Professional (Europe)">
+  <title>Eoroid Professional (Europe)</title>
+  <year>1993</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Delta System</publisher>
+  <developer />
+  <genre>Puzzle</genre>
+  <score />
+</game>
+<game name="Escape (Europe) (Unl)">
+  <title>Escape (Europe) (Unl)</title>
+  <year>1993</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>B., Viktor</publisher>
+  <developer />
+  <genre>Action</genre>
+  <score />
+</game>
+<game name="Escape From Psylon (Hungary)">
+  <title>Escape From Psylon (Hungary)</title>
+  <year>1989</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Novotrade</publisher>
+  <developer />
+  <genre>Adventure</genre>
+  <score />
+</game>
+<game name="Escape From Pulsar 7 (Europe)">
+  <title>Escape From Pulsar 7 (Europe)</title>
+  <year>1984</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Paxman Promotions</publisher>
+  <developer />
+  <genre>Adventure</genre>
+  <score />
+</game>
+<game name="Escape Pro (Europe) (Unl)">
+  <title>Escape Pro (Europe) (Unl)</title>
+  <year>1994</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Wilds</publisher>
+  <developer />
+  <genre>Action</genre>
+  <score />
+</game>
+<game name="Eszveszto Utveszto (Hungary)">
+  <title>Eszveszto Utveszto (Hungary)</title>
+  <year>1987</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Novotrade</publisher>
+  <developer />
+  <genre>Maze</genre>
+  <score />
+</game>
+<game name="European Games (Europe)">
+  <title>European Games (Europe)</title>
+  <year>1987</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Tynesoft Computer Software</publisher>
+  <developer />
+  <genre>Sports/Olympic</genre>
+  <score />
+</game>
+<game name="European Soccer Finals (Europe)">
+  <title>European Soccer Finals (Europe)</title>
+  <year>1989</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Kingsoft</publisher>
+  <developer />
+  <genre>Sports/Soccer</genre>
+  <score />
+</game>
+<game name="Ewox (Europe) (Unl)">
+  <title>Ewox (Europe) (Unl)</title>
+  <year>1993</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Gods of the Universe</publisher>
+  <developer />
+  <genre>Action</genre>
+  <score />
+</game>
+<game name="Exorcist, The (Europe)">
+  <title>Exorcist, The (Europe)</title>
+  <year>1984</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Commodore Business Machines</publisher>
+  <developer />
+  <genre>Action</genre>
+  <score />
+</game>
+<game name="Exploding Fist +4 (Europe) (Unl)">
+  <title>Exploding Fist +4 (Europe) (Unl)</title>
+  <year>1993</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>S., Tamas</publisher>
+  <developer />
+  <genre>Fighter</genre>
+  <score />
+</game>
+<game name="Explosive Net (Europe) (Unl)">
+  <title>Explosive Net (Europe) (Unl)</title>
+  <year>1994</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>M., Istvan</publisher>
+  <developer />
+  <genre>Puzzle</genre>
+  <score />
+</game>
+<game name="Extasy (Europe) (Unl)">
+  <title>Extasy (Europe) (Unl)</title>
+  <year>1988</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Muffbusters</publisher>
+  <developer />
+  <genre>Puzzle</genre>
+  <score />
+</game>
+<game name="Fancy World (Europe) (Unl)">
+  <title>Fancy World (Europe) (Unl)</title>
+  <year>1992</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Gods of the Universe</publisher>
+  <developer />
+  <genre>Puzzle</genre>
+  <score />
+</game>
+<game name="Fantastic Four (Europe) (Unl)">
+  <title>Fantastic Four (Europe) (Unl)</title>
+  <year>1985</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Adventure International</publisher>
+  <developer />
+  <genre>Adventure</genre>
+  <score />
+</game>
+<game name="Fast Food (Europe) (Unl)">
+  <title>Fast Food (Europe) (Unl)</title>
+  <year>2003</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Assassins</publisher>
+  <developer />
+  <genre>Action</genre>
+  <score />
+</game>
+<game name="Feasibility Experiment (Europe)">
+  <title>Feasibility Experiment (Europe)</title>
+  <year>1984</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Paxman Promotions</publisher>
+  <developer />
+  <genre>Adventure</genre>
+  <score />
+</game>
+<game name="Ferrox Lander (Europe)">
+  <title>Ferrox Lander (Europe)</title>
+  <year>1984</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Commodore Business Machines</publisher>
+  <developer />
+  <genre>Action</genre>
+  <score />
+</game>
+<game name="Fighting Warrior (Europe)">
+  <title>Fighting Warrior (Europe)</title>
+  <year>1986</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Mastertronic</publisher>
+  <developer />
+  <genre>Fighter</genre>
+  <score />
+</game>
+<game name="Find Another Way Again (Europe) (Unl)">
+  <title>Find Another Way Again (Europe) (Unl)</title>
+  <year>2007</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Unlimited</publisher>
+  <developer />
+  <genre>Action</genre>
+  <score />
+</game>
+<game name="Finders Keepers (Europe)">
+  <title>Finders Keepers (Europe)</title>
+  <year>1986</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Mastertronic</publisher>
+  <developer />
+  <genre>Adventure</genre>
+  <score />
+</game>
+<game name="Fingers Malone (Europe)">
+  <title>Fingers Malone (Europe)</title>
+  <year>1986</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Mastertronic</publisher>
+  <developer />
+  <genre>Action</genre>
+  <score />
+</game>
+<game name="Fire Ant (Europe)">
+  <title>Fire Ant (Europe)</title>
+  <year>1984</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Commodore Business Machines</publisher>
+  <developer />
+  <genre>Action</genre>
+  <score />
+</game>
+<game name="Fire Galaxy (Europe)">
+  <title>Fire Galaxy (Europe)</title>
+  <year>1987</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Kingsoft</publisher>
+  <developer />
+  <genre>Shoot-&apos;Em-Up</genre>
+  <score />
+</game>
+<game name="Firm Base (Europe) (Unl)">
+  <title>Firm Base (Europe) (Unl)</title>
+  <year>1990</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>K., Istvan</publisher>
+  <developer />
+  <genre>Adventure</genre>
+  <score />
+</game>
+<game name="Flash Gordon (Europe) (Unl)">
+  <title>Flash Gordon (Europe) (Unl)</title>
+  <year>1990</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>S., Tamas</publisher>
+  <developer />
+  <genre>Shoot-&apos;Em-Up</genre>
+  <score />
+</game>
+<game name="Flight Path 737 (Europe)">
+  <title>Flight Path 737 (Europe)</title>
+  <year>1984</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Anirog</publisher>
+  <developer />
+  <genre>Simulation</genre>
+  <score />
+</game>
+<game name="Flopp (Hungary)">
+  <title>Flopp (Hungary)</title>
+  <year>1987</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Novotrade</publisher>
+  <developer />
+  <genre>Action</genre>
+  <score />
+</game>
+<game name="Footballer Of The Year (Europe)">
+  <title>Footballer Of The Year (Europe)</title>
+  <year>1986</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Gremlin Graphics</publisher>
+  <developer />
+  <genre>Sports/Soccer</genre>
+  <score />
+</game>
+<game name="Formula 1 Simulator (Europe)">
+  <title>Formula 1 Simulator (Europe)</title>
+  <year>1985</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Mastertronic</publisher>
+  <developer />
+  <genre>Driving</genre>
+  <score />
+</game>
+<game name="Fortress Underground (Europe)">
+  <title>Fortress Underground (Europe)</title>
+  <year>1987</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Kingsoft</publisher>
+  <developer />
+  <genre>Action</genre>
+  <score />
+</game>
+<game name="Frank Bruno&apos;s Boxing (Europe)">
+  <title>Frank Bruno&apos;s Boxing (Europe)</title>
+  <year>1986</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Elite</publisher>
+  <developer />
+  <genre>Sports/Boxing</genre>
+  <score />
+</game>
+<game name="Freek Out (Europe) (Unl)">
+  <title>Freek Out (Europe) (Unl)</title>
+  <year>1987</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>D., Mike</publisher>
+  <developer />
+  <genre>Breakout</genre>
+  <score />
+</game>
+<game name="Frenesis (Europe)">
+  <title>Frenesis (Europe)</title>
+  <year>1987</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Mastertronic</publisher>
+  <developer />
+  <genre>Action</genre>
+  <score />
+</game>
+<game name="Froggy (Europe)">
+  <title>Froggy (Europe)</title>
+  <year>1985</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Visiogame</publisher>
+  <developer />
+  <genre>Action</genre>
+  <score />
+</game>
+<game name="Fury (Europe)">
+  <title>Fury (Europe)</title>
+  <year>1986</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Firebird</publisher>
+  <developer />
+  <genre>Action</genre>
+  <score />
+</game>
+<game name="Future Knight (Europe)">
+  <title>Future Knight (Europe)</title>
+  <year>1986</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Gremlin Graphics</publisher>
+  <developer />
+  <genre>Adventure</genre>
+  <score />
+</game>
+<game name="Future Shock (Europe)">
+  <title>Future Shock (Europe)</title>
+  <year>1987</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Tynesoft Computer Software</publisher>
+  <developer />
+  <genre>Adventure</genre>
+  <score />
+</game>
+<game name="G-Man (Europe)">
+  <title>G-Man (Europe)</title>
+  <year>1986</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Codemasters</publisher>
+  <developer />
+  <genre>Action</genre>
+  <score />
+</game>
+<game name="Galaxions (Europe)">
+  <title>Galaxions (Europe)</title>
+  <year>1984</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Solar Software</publisher>
+  <developer />
+  <genre>Action</genre>
+  <score />
+</game>
+<game name="Galaxy (Europe)">
+  <title>Galaxy (Europe)</title>
+  <year>1984</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Anirog</publisher>
+  <developer />
+  <genre>Shoot-&apos;Em-Up</genre>
+  <score />
+</game>
+<game name="Galli (Europe) (Unl)">
+  <title>Galli (Europe) (Unl)</title>
+  <year>2012</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Antonio Scala</publisher>
+  <developer />
+  <genre>Platform</genre>
+  <score />
+</game>
+<game name="Get It (Europe) (Unl)">
+  <title>Get It (Europe) (Unl)</title>
+  <year>2007</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Assassins</publisher>
+  <developer />
+  <genre>Action</genre>
+  <score />
+</game>
+<game name="Ghost Castle (Europe) (Unl)">
+  <title>Ghost Castle (Europe) (Unl)</title>
+  <year>1992</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Mad Original Inhabitants</publisher>
+  <developer />
+  <genre>Platform</genre>
+  <score />
+</game>
+<game name="Ghost Town (Europe)">
+  <title>Ghost Town (Europe)</title>
+  <year>1985</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Kingsoft</publisher>
+  <developer />
+  <genre>Adventure</genre>
+  <score />
+</game>
+<game name="Ghost Town USA (USA)">
+  <title>Ghost Town USA (USA)</title>
+  <year>1985</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Pacific Tri Micro, Inc</publisher>
+  <developer />
+  <genre>Adventure</genre>
+  <score />
+</game>
+<game name="Ghosts &apos;n Goblins (Europe)">
+  <title>Ghosts &apos;n Goblins (Europe)</title>
+  <year>1986</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Elite</publisher>
+  <developer />
+  <genre>Action</genre>
+  <score />
+</game>
+<game name="Giana Sister (Europe) (Unl)">
+  <title>Giana Sister (Europe) (Unl)</title>
+  <year>1989</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>T+K Software</publisher>
+  <developer />
+  <genre>Platform</genre>
+  <score />
+</game>
+<game name="Gibson (Europe) (Unl)">
+  <title>Gibson (Europe) (Unl)</title>
+  <year>1992</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Coroners</publisher>
+  <developer />
+  <genre>Action</genre>
+  <score />
+</game>
+<game name="Gnasher (Europe)">
+  <title>Gnasher (Europe)</title>
+  <year>1986</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Yes! Software</publisher>
+  <developer />
+  <genre>Maze</genre>
+  <score />
+</game>
+<game name="Go Ahead! (Europe) (Unl)">
+  <title>Go Ahead! (Europe) (Unl)</title>
+  <year>1994</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Gentlemen Software</publisher>
+  <developer />
+  <genre>Puzzle</genre>
+  <score />
+</game>
+<game name="Godzilla (Hungary)">
+  <title>Godzilla (Hungary)</title>
+  <year>1988</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Novotrade</publisher>
+  <developer />
+  <genre>Action</genre>
+  <score />
+</game>
+<game name="Golden Baton (Europe)">
+  <title>Golden Baton (Europe)</title>
+  <year>1998</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Crown</publisher>
+  <developer />
+  <genre>Adventure</genre>
+  <score />
+</game>
+<game name="Goldrush (Europe)">
+  <title>Goldrush (Europe)</title>
+  <year>1986</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Firebird</publisher>
+  <developer />
+  <genre>Shoot-&apos;Em-Up</genre>
+  <score />
+</game>
+<game name="Golf (Europe)">
+  <title>Golf (Europe)</title>
+  <year>1986</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Yes! Software</publisher>
+  <developer />
+  <genre>Sports/Golf</genre>
+  <score />
+</game>
+<game name="Golf Royal (Europe) (Unl)">
+  <title>Golf Royal (Europe) (Unl)</title>
+  <year>1989</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Fish-Wolf</publisher>
+  <developer />
+  <genre>Sports/Golf</genre>
+  <score />
+</game>
+<game name="Grand Master (Europe)">
+  <title>Grand Master (Europe)</title>
+  <year>1982</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Kingsoft</publisher>
+  <developer />
+  <genre>Board Games</genre>
+  <score />
+</game>
+<game name="Green Beret (Europe)">
+  <title>Green Beret (Europe)</title>
+  <year>1986</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Imagine Software</publisher>
+  <developer />
+  <genre>Action</genre>
+  <score />
+</game>
+<game name="Gridtrap (Europe)">
+  <title>Gridtrap (Europe)</title>
+  <year>1985</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Livewire Software</publisher>
+  <developer />
+  <genre>Action</genre>
+  <score />
+</game>
+<game name="Gullwing Falcon (Europe)">
+  <title>Gullwing Falcon (Europe)</title>
+  <year>1985</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Gremlin Graphics</publisher>
+  <developer />
+  <genre>Shoot-&apos;Em-Up</genre>
+  <score />
+</game>
+<game name="Gunlaw (Europe)">
+  <title>Gunlaw (Europe)</title>
+  <year>1987</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Mastertronic</publisher>
+  <developer />
+  <genre>Action</genre>
+  <score />
+</game>
+<game name="Gunslinger (Europe)">
+  <title>Gunslinger (Europe)</title>
+  <year>1984</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Tynesoft Computer Software</publisher>
+  <developer />
+  <genre>Action</genre>
+  <score />
+</game>
+<game name="Gusztav Motorozik (Hungary)">
+  <title>Gusztav Motorozik (Hungary)</title>
+  <year>1986</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Vages Software</publisher>
+  <developer />
+  <genre>Motorcycle</genre>
+  <score />
+</game>
+<game name="Guzzler (Europe)">
+  <title>Guzzler (Europe)</title>
+  <year>1986</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Players</publisher>
+  <developer />
+  <genre>Action</genre>
+  <score />
+</game>
+<game name="Gwnn (Europe)">
+  <title>Gwnn (Europe)</title>
+  <year>1987</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Mastertronic</publisher>
+  <developer />
+  <genre>Shoot-&apos;Em-Up</genre>
+  <score />
+</game>
+<game name="Halallabirinthus (Europe) (Unl)">
+  <title>Halallabirinthus (Europe) (Unl)</title>
+  <year>1989</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>K., Istvan</publisher>
+  <developer />
+  <genre>Action</genre>
+  <score />
+</game>
+<game name="Halallabirinthus II (Europe) (Unl)">
+  <title>Halallabirinthus II (Europe) (Unl)</title>
+  <year>1990</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>K., Istvan</publisher>
+  <developer />
+  <genre>Action</genre>
+  <score />
+</game>
+<game name="Harbour Attack (Europe)">
+  <title>Harbour Attack (Europe)</title>
+  <year>1984</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Mr Micro</publisher>
+  <developer />
+  <genre>Action</genre>
+  <score />
+</game>
+<game name="Harvey Headbanger (Europe)">
+  <title>Harvey Headbanger (Europe)</title>
+  <year>1986</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Firebird</publisher>
+  <developer />
+  <genre>Action</genre>
+  <score />
+</game>
+<game name="Headhunters (Europe) (Unl)">
+  <title>Headhunters (Europe) (Unl)</title>
+  <year>1992</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>K., Tamas</publisher>
+  <developer />
+  <genre>Shoot-&apos;Em-Up</genre>
+  <score />
+</game>
+<game name="Heebie Jeebies (Europe)">
+  <title>Heebie Jeebies (Europe)</title>
+  <year>1986</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Livewire Software</publisher>
+  <developer />
+  <genre>Action</genre>
+  <score />
+</game>
+<game name="Hektik (Europe)">
+  <title>Hektik (Europe)</title>
+  <year>1986</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Mastertronic</publisher>
+  <developer />
+  <genre>Platform</genre>
+  <score />
+</game>
+<game name="Helicopters (Europe) (Unl)">
+  <title>Helicopters (Europe) (Unl)</title>
+  <year>1993</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>V., Gabor</publisher>
+  <developer />
+  <genre>Shoot-&apos;Em-Up</genre>
+  <score />
+</game>
+<game name="Helicopters 2 (Europe) (Unl)">
+  <title>Helicopters 2 (Europe) (Unl)</title>
+  <year>1994</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Synergy</publisher>
+  <developer />
+  <genre>Shoot-&apos;Em-Up</genre>
+  <score />
+</game>
+<game name="Helium (Europe) (Unl)">
+  <title>Helium (Europe) (Unl)</title>
+  <year>1991</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>T+K Software</publisher>
+  <developer />
+  <genre>Shoot-&apos;Em-Up</genre>
+  <score />
+</game>
+<game name="Hell 2, The (Europe) (Unl)">
+  <title>Hell 2, The (Europe) (Unl)</title>
+  <year>1992</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Scorpions</publisher>
+  <developer />
+  <genre>Adventure</genre>
+  <score />
+</game>
+<game name="Hell 3, The (Europe) (Unl)">
+  <title>Hell 3, The (Europe) (Unl)</title>
+  <year>1995</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Scorpions</publisher>
+  <developer />
+  <genre>Adventure</genre>
+  <score />
+</game>
+<game name="Hell, The (Europe) (Unl)">
+  <title>Hell, The (Europe) (Unl)</title>
+  <year>1991</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Assassins</publisher>
+  <developer />
+  <genre>Adventure</genre>
+  <score />
+</game>
+<game name="Hellgate (Europe)">
+  <title>Hellgate (Europe)</title>
+  <year>1986</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Llamasoft Ltd</publisher>
+  <developer />
+  <genre>Shoot-&apos;Em-Up</genre>
+  <score />
+</game>
+<game name="Hercules (Europe)">
+  <title>Hercules (Europe)</title>
+  <year>1987</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>The Power House</publisher>
+  <developer />
+  <genre>Platform</genre>
+  <score />
+</game>
+<game name="Heroic (Europe) (Unl)">
+  <title>Heroic (Europe) (Unl)</title>
+  <year>1992</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Electronic Disaster Crew</publisher>
+  <developer />
+  <genre>Shoot-&apos;Em-Up</genre>
+  <score />
+</game>
+<game name="Heroic 2 (Europe) (Unl)">
+  <title>Heroic 2 (Europe) (Unl)</title>
+  <year>1993</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Electronic Disaster Crew</publisher>
+  <developer />
+  <genre>Shoot-&apos;Em-Up</genre>
+  <score />
+</game>
+<game name="Hexaeder (Europe) (Unl)">
+  <title>Hexaeder (Europe) (Unl)</title>
+  <year>1989</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Boszik, Istvan</publisher>
+  <developer />
+  <genre>Maze</genre>
+  <score />
+</game>
+<game name="Hitchhiker&apos;s Guide to the Galaxy (Europe) (Unl)">
+  <title>Hitchhiker&apos;s Guide to the Galaxy (Europe) (Unl)</title>
+  <year>1984</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Infocom, Inc</publisher>
+  <developer />
+  <genre>Adventure</genre>
+  <score />
+</game>
+<game name="Hollywood Poker (Europe)">
+  <title>Hollywood Poker (Europe)</title>
+  <year>1987</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Golden Games</publisher>
+  <developer />
+  <genre>Casino</genre>
+  <score />
+</game>
+<game name="Hoppit (Europe)">
+  <title>Hoppit (Europe)</title>
+  <year>1984</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Tynesoft Computer Software</publisher>
+  <developer />
+  <genre>Action</genre>
+  <score />
+</game>
+<game name="Hulk, The (Europe)">
+  <title>Hulk, The (Europe)</title>
+  <year>1984</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Commodore Business Machines</publisher>
+  <developer />
+  <genre>Adventure</genre>
+  <score />
+</game>
+<game name="Hungaroring (Hungary)">
+  <title>Hungaroring (Hungary)</title>
+  <year>1986</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Novotrade</publisher>
+  <developer />
+  <genre>Driving</genre>
+  <score />
+</game>
+<game name="Hunter (Europe) (Unl)">
+  <title>Hunter (Europe) (Unl)</title>
+  <year>1993</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Gods of the Universe</publisher>
+  <developer />
+  <genre>Shoot-&apos;Em-Up</genre>
+  <score />
+</game>
+<game name="Hustler (Europe)">
+  <title>Hustler (Europe)</title>
+  <year>1985</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Bubble Bus Software</publisher>
+  <developer />
+  <genre>Sports/Pool and Dart</genre>
+  <score />
+</game>
+<game name="Hydroines (Europe) (Unl)">
+  <title>Hydroines (Europe) (Unl)</title>
+  <year>1992</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Electronic Disaster Crew</publisher>
+  <developer />
+  <genre>Action</genre>
+  <score />
+</game>
+<game name="Hyper Sports (Europe)">
+  <title>Hyper Sports (Europe)</title>
+  <year>1985</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Imagine Software</publisher>
+  <developer />
+  <genre>Sports/Olympic</genre>
+  <score />
+</game>
+<game name="Hyperforce (Europe)">
+  <title>Hyperforce (Europe)</title>
+  <year>1986</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Ariolasoft</publisher>
+  <developer />
+  <genre>Action</genre>
+  <score />
+</game>
+<game name="Ian Botham&apos;s Test Match (Europe)">
+  <title>Ian Botham&apos;s Test Match (Europe)</title>
+  <year>1986</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Tynesoft Computer Software</publisher>
+  <developer />
+  <genre>Sports/Cricket</genre>
+  <score />
+</game>
+<game name="Icicle Works (Europe)">
+  <title>Icicle Works (Europe)</title>
+  <year>1985</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Commodore Business Machines</publisher>
+  <developer />
+  <genre>Action</genre>
+  <score />
+</game>
+<game name="Idolabirintus (Hungary)">
+  <title>Idolabirintus (Hungary)</title>
+  <year>1987</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Novotrade</publisher>
+  <developer />
+  <genre>Maze</genre>
+  <score />
+</game>
+<game name="IFR (Flight Simulator) (USA)">
+  <title>IFR (Flight Simulator) (USA)</title>
+  <year>1985</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Academy Software</publisher>
+  <developer />
+  <genre>Simulation</genre>
+  <score />
+</game>
+<game name="Ikari Warriors (Europe)">
+  <title>Ikari Warriors (Europe)</title>
+  <year>1987</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Elite</publisher>
+  <developer />
+  <genre>Action</genre>
+  <score />
+</game>
+<game name="Incredible Hulk, The (Europe)">
+  <title>Incredible Hulk, The (Europe)</title>
+  <year>1984</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Adventure International</publisher>
+  <developer />
+  <genre>Adventure</genre>
+  <score />
+</game>
+<game name="Indoor Soccer (Europe)">
+  <title>Indoor Soccer (Europe)</title>
+  <year>1986</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Magnificent 7 Software</publisher>
+  <developer />
+  <genre>Sports/Soccer</genre>
+  <score />
+</game>
+<game name="Indoor Sports (Europe)">
+  <title>Indoor Sports (Europe)</title>
+  <year>1985</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Tynesoft Computer Software</publisher>
+  <developer />
+  <genre>Sports</genre>
+  <score />
+</game>
+<game name="International Karate (Europe)">
+  <title>International Karate (Europe)</title>
+  <year>1986</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Endurance Games</publisher>
+  <developer />
+  <genre>Fighter</genre>
+  <score />
+</game>
+<game name="Into The Deep (Europe)">
+  <title>Into The Deep (Europe)</title>
+  <year>1986</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Firebird</publisher>
+  <developer />
+  <genre>Action</genre>
+  <score />
+</game>
+<game name="Invaders (Commodore) (Europe)">
+  <title>Invaders (Commodore) (Europe)</title>
+  <year>1984</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Commodore Business Machines</publisher>
+  <developer />
+  <genre>Action</genre>
+  <score />
+</game>
+<game name="Invaders (Livewire) (Europe)">
+  <title>Invaders (Livewire) (Europe)</title>
+  <year>1987</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Livewire</publisher>
+  <developer />
+  <genre>Shoot-&apos;Em-Up</genre>
+  <score />
+</game>
+<game name="Invasion 2000 AD (Europe)">
+  <title>Invasion 2000 AD (Europe)</title>
+  <year>1985</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Solar Software.</publisher>
+  <developer />
+  <genre>Shoot-&apos;Em-Up</genre>
+  <score />
+</game>
+<game name="Invincible (Hungary)">
+  <title>Invincible (Hungary)</title>
+  <year>1988</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Novotrade</publisher>
+  <developer />
+  <genre>Platform</genre>
+  <score />
+</game>
+<game name="Jack Attack (Europe)">
+  <title>Jack Attack (Europe)</title>
+  <year>1984</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Commodore Business Machines</publisher>
+  <developer />
+  <genre>Action</genre>
+  <score />
+</game>
+<game name="Jailbreak (Europe)">
+  <title>Jailbreak (Europe)</title>
+  <year>1985</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Bug-Byte</publisher>
+  <developer />
+  <genre>Breakout</genre>
+  <score />
+</game>
+<game name="Jerry&apos;s Quest (Europe) (Unl)">
+  <title>Jerry&apos;s Quest (Europe) (Unl)</title>
+  <year>1993</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Chain</publisher>
+  <developer />
+  <genre>Platform</genre>
+  <score />
+</game>
+<game name="Jerusalem - Adventure 2 (Europe)">
+  <title>Jerusalem - Adventure 2 (Europe)</title>
+  <year>1985</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Microdeal</publisher>
+  <developer />
+  <genre>Adventure</genre>
+  <score />
+</game>
+<game name="Jet Set Willy (Europe)">
+  <title>Jet Set Willy (Europe)</title>
+  <year>1986</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Tynesoft Computer Software</publisher>
+  <developer />
+  <genre>Platform</genre>
+  <score />
+</game>
+<game name="Jet Set Willy II (Europe)">
+  <title>Jet Set Willy II (Europe)</title>
+  <year>1986</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Tynesoft Computer Software</publisher>
+  <developer />
+  <genre>Platform</genre>
+  <score />
+</game>
+<game name="Jetbrix (Europe)">
+  <title>Jetbrix (Europe)</title>
+  <year>1986</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Gremlin Graphics</publisher>
+  <developer />
+  <genre>Action</genre>
+  <score />
+</game>
+<game name="Joe Blade 2 (Europe)">
+  <title>Joe Blade 2 (Europe)</title>
+  <year>1988</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Players</publisher>
+  <developer />
+  <genre>Adventure</genre>
+  <score />
+</game>
+<game name="Joey (Europe)">
+  <title>Joey (Europe)</title>
+  <year>1986</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Wise Owl Software</publisher>
+  <developer />
+  <genre>Platform</genre>
+  <score />
+</game>
+<game name="Jonigk Games (Europe)">
+  <title>Jonigk Games (Europe)</title>
+  <year>1986</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>ComputerSoft Jonigk</publisher>
+  <developer />
+  <genre>Compilation</genre>
+  <score />
+</game>
+<game name="Jumbo (Hungary)">
+  <title>Jumbo (Hungary)</title>
+  <year>1988</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Novotrade</publisher>
+  <developer />
+  <genre>Action</genre>
+  <score />
+</game>
+<game name="Jump Jet (Europe)">
+  <title>Jump Jet (Europe)</title>
+  <year>1985</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Anirog</publisher>
+  <developer />
+  <genre>Simulation</genre>
+  <score />
+</game>
+<game name="Kaktus (Europe)">
+  <title>Kaktus (Europe)</title>
+  <year>1985</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Audiogenic</publisher>
+  <developer />
+  <genre>Shoot-&apos;Em-Up</genre>
+  <score />
+</game>
+<game name="Kane (Europe)">
+  <title>Kane (Europe)</title>
+  <year>1986</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Mastertronic</publisher>
+  <developer />
+  <genre>Action</genre>
+  <score />
+</game>
+<game name="Karate (Hungary)">
+  <title>Karate (Hungary)</title>
+  <year>1988</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Octasoft</publisher>
+  <developer />
+  <genre>Fighter</genre>
+  <score />
+</game>
+<game name="Karate King (Europe)">
+  <title>Karate King (Europe)</title>
+  <year>1986</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Kingsoft</publisher>
+  <developer />
+  <genre>Fighter</genre>
+  <score />
+</game>
+<game name="Karting Grand Prix (Europe)">
+  <title>Karting Grand Prix (Europe)</title>
+  <year>1989</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Kingsoft</publisher>
+  <developer />
+  <genre>Driving</genre>
+  <score />
+</game>
+<game name="Kikstart (Europe)">
+  <title>Kikstart (Europe)</title>
+  <year>1986</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Mastertronic</publisher>
+  <developer />
+  <genre>Motorcycle</genre>
+  <score />
+</game>
+<game name="Killapede (Europe)">
+  <title>Killapede (Europe)</title>
+  <year>1986</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Players</publisher>
+  <developer />
+  <genre>Action</genre>
+  <score />
+</game>
+<game name="King Size - 50 Games (Europe) (Side A)">
+  <title>King Size - 50 Games (Europe) (Side A)</title>
+  <year>1986</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Robtek</publisher>
+  <developer />
+  <genre>Compilation</genre>
+  <score />
+</game>
+<game name="King Size - 50 Games (Europe) (Side B)">
+  <title>King Size - 50 Games (Europe) (Side B)</title>
+  <year>1986</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Robtek</publisher>
+  <developer />
+  <genre>Compilation</genre>
+  <score />
+</game>
+<game name="King Solomon&apos;s Mines (Europe)">
+  <title>King Solomon&apos;s Mines (Europe)</title>
+  <year>1986</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Gameworx Software</publisher>
+  <developer />
+  <genre>Adventure</genre>
+  <score />
+</game>
+<game name="Kitores (Hungary)">
+  <title>Kitores (Hungary)</title>
+  <year>1987</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Octasoft</publisher>
+  <developer />
+  <genre>Action</genre>
+  <score />
+</game>
+<game name="Knights &amp; Demons (Europe) (Unl)">
+  <title>Knights &amp; Demons (Europe) (Unl)</title>
+  <year>2013</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Kabuto Factory</publisher>
+  <developer />
+  <genre>Puzzle</genre>
+  <score />
+</game>
+<game name="Knockout (Europe)">
+  <title>Knockout (Europe)</title>
+  <year>1985</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Solar Software</publisher>
+  <developer />
+  <genre>Breakout</genre>
+  <score />
+</game>
+<game name="Krakout (Europe) (Unl)">
+  <title>Krakout (Europe) (Unl)</title>
+  <year>1992</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>S., Tamas</publisher>
+  <developer />
+  <genre>Breakout</genre>
+  <score />
+</game>
+<game name="Kryptonite (Europe) (Unl)">
+  <title>Kryptonite (Europe) (Unl)</title>
+  <year>1991</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Terrorists</publisher>
+  <developer />
+  <genre>Shoot-&apos;Em-Up</genre>
+  <score />
+</game>
+<game name="Kung-Fu Kid (Europe)">
+  <title>Kung-Fu Kid (Europe)</title>
+  <year>1986</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Gremlin Graphics</publisher>
+  <developer />
+  <genre>Action</genre>
+  <score />
+</game>
+<game name="Labirinth 2 (Europe) (Unl)">
+  <title>Labirinth 2 (Europe) (Unl)</title>
+  <year>1993</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>V., Gabor</publisher>
+  <developer />
+  <genre>Maze</genre>
+  <score />
+</game>
+<game name="Labirinth 3 (Europe) (Unl)">
+  <title>Labirinth 3 (Europe) (Unl)</title>
+  <year>1994</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>V., Gabor</publisher>
+  <developer />
+  <genre>Maze</genre>
+  <score />
+</game>
+<game name="Labirinth 4 (Europe) (Unl)">
+  <title>Labirinth 4 (Europe) (Unl)</title>
+  <year>1995</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>V., Gabor</publisher>
+  <developer />
+  <genre>Maze</genre>
+  <score />
+</game>
+<game name="Labirinth! (Europe) (Unl)">
+  <title>Labirinth! (Europe) (Unl)</title>
+  <year>1993</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>V., Gabor</publisher>
+  <developer />
+  <genre>Maze</genre>
+  <score />
+</game>
+<game name="Las Vegas (Europe)">
+  <title>Las Vegas (Europe)</title>
+  <year>1984</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Anirog</publisher>
+  <developer />
+  <genre>Casino</genre>
+  <score />
+</game>
+<game name="Laser Squad (Europe) (Unl)">
+  <title>Laser Squad (Europe) (Unl)</title>
+  <year>1991</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>T., Attila</publisher>
+  <developer />
+  <genre>Strategy</genre>
+  <score />
+</game>
+<game name="Laser Squad II (Europe) (Unl)">
+  <title>Laser Squad II (Europe) (Unl)</title>
+  <year>1992</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>T., Attila</publisher>
+  <developer />
+  <genre>Strategy</genre>
+  <score />
+</game>
+<game name="Laser Zone (Europe)">
+  <title>Laser Zone (Europe)</title>
+  <year>1986</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Llamasoft</publisher>
+  <developer />
+  <genre>Shoot-&apos;Em-Up</genre>
+  <score />
+</game>
+<game name="Lawn Tennis (Europe)">
+  <title>Lawn Tennis (Europe)</title>
+  <year>1985</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Tynesoft Computer Software</publisher>
+  <developer />
+  <genre>Sports/Tennis</genre>
+  <score />
+</game>
+<game name="Laza! (Europe)">
+  <title>Laza! (Europe)</title>
+  <year>1986</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Mr. Chip Software</publisher>
+  <developer />
+  <genre>Shoot-&apos;Em-Up</genre>
+  <score />
+</game>
+<game name="Lazer 900 (Europe)">
+  <title>Lazer 900 (Europe)</title>
+  <year>1986</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Yes! Software</publisher>
+  <developer />
+  <genre>Shoot-&apos;Em-Up</genre>
+  <score />
+</game>
+<game name="League Challenge Division 1 (Europe)">
+  <title>League Challenge Division 1 (Europe)</title>
+  <year>1986</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Atlantis Software Ltd</publisher>
+  <developer />
+  <genre>Sports/Soccer</genre>
+  <score />
+</game>
+<game name="League Challenge Division 2 (Europe)">
+  <title>League Challenge Division 2 (Europe)</title>
+  <year>1986</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Atlantis Software Ltd</publisher>
+  <developer />
+  <genre>Sports/Soccer</genre>
+  <score />
+</game>
+<game name="League Challenge Division 3 (Europe)">
+  <title>League Challenge Division 3 (Europe)</title>
+  <year>1986</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Atlantis Software Ltd</publisher>
+  <developer />
+  <genre>Sports/Soccer</genre>
+  <score />
+</game>
+<game name="League Challenge Division 4 (Europe)">
+  <title>League Challenge Division 4 (Europe)</title>
+  <year>1986</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Atlantis Software Ltd</publisher>
+  <developer />
+  <genre>Sports/Soccer</genre>
+  <score />
+</game>
+<game name="Leaper (Europe)">
+  <title>Leaper (Europe)</title>
+  <year>1986</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Bug-Byte</publisher>
+  <developer />
+  <genre>Action</genre>
+  <score />
+</game>
+<game name="Leapin Louie (Europe)">
+  <title>Leapin Louie (Europe)</title>
+  <year>1985</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Audiogenic</publisher>
+  <developer />
+  <genre>Platform</genre>
+  <score />
+</game>
+<game name="Legionnaire (Europe)">
+  <title>Legionnaire (Europe)</title>
+  <year>1986</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Anco</publisher>
+  <developer />
+  <genre>Action</genre>
+  <score />
+</game>
+<game name="Liberator (Europe)">
+  <title>Liberator (Europe)</title>
+  <year>1986</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Magnificent 7 Software</publisher>
+  <developer />
+  <genre>Shoot-&apos;Em-Up</genre>
+  <score />
+</game>
+<game name="Lloyd Game (Europe) (Unl)">
+  <title>Lloyd Game (Europe) (Unl)</title>
+  <year>1992</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>R., Almos</publisher>
+  <developer />
+  <genre>Puzzle</genre>
+  <score />
+</game>
+<game name="Loco Co-Co (Europe)">
+  <title>Loco Co-Co (Europe)</title>
+  <year>1986</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Illusion Software</publisher>
+  <developer />
+  <genre>Action</genre>
+  <score />
+</game>
+<game name="Locomotion (Europe)">
+  <title>Locomotion (Europe)</title>
+  <year>1985</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Commodore Business Machines</publisher>
+  <developer />
+  <genre>Action</genre>
+  <score />
+</game>
+<game name="Logi-toli (Hungary)">
+  <title>Logi-toli (Hungary)</title>
+  <year>1986</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Novotrade</publisher>
+  <developer />
+  <genre>Puzzle</genre>
+  <score />
+</game>
+<game name="Logic Game (Europe) (Unl)">
+  <title>Logic Game (Europe) (Unl)</title>
+  <year>1990</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>K., Istvan</publisher>
+  <developer />
+  <genre>Puzzle</genre>
+  <score />
+</game>
+<game name="Logical Ball (Europe) (Unl)">
+  <title>Logical Ball (Europe) (Unl)</title>
+  <year>1992</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Electronic Disaster Crew</publisher>
+  <developer />
+  <genre>Action</genre>
+  <score />
+</game>
+<game name="Logomaze (Europe) (Unl)">
+  <title>Logomaze (Europe) (Unl)</title>
+  <year>1996</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Assassins</publisher>
+  <developer />
+  <genre>Action</genre>
+  <score />
+</game>
+<game name="Loncsi (Europe) (Unl)">
+  <title>Loncsi (Europe) (Unl)</title>
+  <year>1987</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>K., Attila</publisher>
+  <developer />
+  <genre>Shoot-&apos;Em-Up</genre>
+  <score />
+</game>
+<game name="Lone Survivor (Europe)">
+  <title>Lone Survivor (Europe)</title>
+  <year>1985</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Tynesoft</publisher>
+  <developer />
+  <genre>Adventure</genre>
+  <score />
+</game>
+<game name="Lunar Blitz (Europe) (Unl)">
+  <title>Lunar Blitz (Europe) (Unl)</title>
+  <year>2005</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Cronosoft</publisher>
+  <developer />
+  <genre>Action</genre>
+  <score />
+</game>
+<game name="Lunar Landing (Europe)">
+  <title>Lunar Landing (Europe)</title>
+  <year>1985</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Tynesoft Computer Software</publisher>
+  <developer />
+  <genre>Action</genre>
+  <score />
+</game>
+<game name="Mad Mummy (Europe)">
+  <title>Mad Mummy (Europe)</title>
+  <year>1984</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Gameworx Software</publisher>
+  <developer />
+  <genre>Adventure</genre>
+  <score />
+</game>
+<game name="Magic Balls (Europe) (Unl)">
+  <title>Magic Balls (Europe) (Unl)</title>
+  <year>1990</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Electronic Vision Software</publisher>
+  <developer />
+  <genre>Action</genre>
+  <score />
+</game>
+<game name="Magician&apos;s Curse, The (Europe)">
+  <title>Magician&apos;s Curse, The (Europe)</title>
+  <year>1986</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Gremlin Graphics</publisher>
+  <developer />
+  <genre>Adventure</genre>
+  <score />
+</game>
+<game name="Magnet-X (Europe) (Unl)">
+  <title>Magnet-X (Europe) (Unl)</title>
+  <year>1986</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Electronic Vision Software</publisher>
+  <developer />
+  <genre>Puzzle</genre>
+  <score />
+</game>
+<game name="Mail Trail (Europe)">
+  <title>Mail Trail (Europe)</title>
+  <year>1985</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Razorsoft</publisher>
+  <developer />
+  <genre>Action</genre>
+  <score />
+</game>
+<game name="Majesty of Sprites (Europe) (Unl)">
+  <title>Majesty of Sprites (Europe) (Unl)</title>
+  <year>2015</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Bauknecht</publisher>
+  <developer />
+  <genre>Platform</genre>
+  <score />
+</game>
+<game name="Major Blink (Europe)">
+  <title>Major Blink (Europe)</title>
+  <year>1985</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>CRL Group</publisher>
+  <developer />
+  <genre>Action</genre>
+  <score />
+</game>
+<game name="Maniac Garden (Europe) (Unl)">
+  <title>Maniac Garden (Europe) (Unl)</title>
+  <year>1989</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>New Multisoft</publisher>
+  <developer />
+  <genre>Shoot-&apos;Em-Up</genre>
+  <score />
+</game>
+<game name="Maniax (Europe)">
+  <title>Maniax (Europe)</title>
+  <year>1988</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Kingsoft</publisher>
+  <developer />
+  <genre>Action</genre>
+  <score />
+</game>
+<game name="Manic Death Chase (Europe)">
+  <title>Manic Death Chase (Europe)</title>
+  <year>1985</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Kingsoft</publisher>
+  <developer />
+  <genre>Platform</genre>
+  <score />
+</game>
+<game name="Manic Miner (Europe)">
+  <title>Manic Miner (Europe)</title>
+  <year>1986</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Software Projects Ltd</publisher>
+  <developer />
+  <genre>Platform</genre>
+  <score />
+</game>
+<game name="Mansion - Adventure 1 (Europe)">
+  <title>Mansion - Adventure 1 (Europe)</title>
+  <year>1985</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Microdeal</publisher>
+  <developer />
+  <genre>Adventure</genre>
+  <score />
+</game>
+<game name="Mario Brothers (Europe) (Unl)">
+  <title>Mario Brothers (Europe) (Unl)</title>
+  <year>1985</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Section 9</publisher>
+  <developer />
+  <genre>Action</genre>
+  <score />
+</game>
+<game name="Master Chess (Europe)">
+  <title>Master Chess (Europe)</title>
+  <year>1987</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Mastertronic</publisher>
+  <developer />
+  <genre>Board Games</genre>
+  <score />
+</game>
+<game name="Matrix (Europe)">
+  <title>Matrix (Europe)</title>
+  <year>1986</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Llamasoft</publisher>
+  <developer />
+  <genre>Action</genre>
+  <score />
+</game>
+<game name="Matrix +4 (Europe) (Unl)">
+  <title>Matrix +4 (Europe) (Unl)</title>
+  <year>1995</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>M., Istvan</publisher>
+  <developer />
+  <genre>Puzzle</genre>
+  <score />
+</game>
+<game name="Mayhem (Europe)">
+  <title>Mayhem (Europe)</title>
+  <year>1984</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Mr Micro</publisher>
+  <developer />
+  <genre>Action</genre>
+  <score />
+</game>
+<game name="Mega Zap (Europe)">
+  <title>Mega Zap (Europe)</title>
+  <year>1985</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Razorsoft</publisher>
+  <developer />
+  <genre>Shoot-&apos;Em-Up</genre>
+  <score />
+</game>
+<game name="Megablazer (Europe) (Unl)">
+  <title>Megablazer (Europe) (Unl)</title>
+  <year>1991</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>S., Tamas</publisher>
+  <developer />
+  <genre>Action</genre>
+  <score />
+</game>
+<game name="Megabolts (Europe)">
+  <title>Megabolts (Europe)</title>
+  <year>1986</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Mastertronic</publisher>
+  <developer />
+  <genre>Adventure</genre>
+  <score />
+</game>
+<game name="Menekules (Hungary)">
+  <title>Menekules (Hungary)</title>
+  <year>1986</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Octasoft</publisher>
+  <developer />
+  <genre>Maze</genre>
+  <score />
+</game>
+<game name="Mercenary - Escape From Targ (Europe)">
+  <title>Mercenary - Escape From Targ (Europe)</title>
+  <year>1986</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Novagen</publisher>
+  <developer />
+  <genre>Simulation</genre>
+  <score />
+</game>
+<game name="Mercenary - The Second City (Europe)">
+  <title>Mercenary - The Second City (Europe)</title>
+  <year>1986</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Novagen</publisher>
+  <developer />
+  <genre>Simulation</genre>
+  <score />
+</game>
+<game name="Mesel Az Erdo (Hungary)">
+  <title>Mesel Az Erdo (Hungary)</title>
+  <year>1988</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Novotrade</publisher>
+  <developer />
+  <genre>Platform</genre>
+  <score />
+</game>
+<game name="Meteorite (Europe)">
+  <title>Meteorite (Europe)</title>
+  <year>1986</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Solar Software</publisher>
+  <developer />
+  <genre>Shoot-&apos;Em-Up</genre>
+  <score />
+</game>
+<game name="Mindbenders (Europe)">
+  <title>Mindbenders (Europe)</title>
+  <year>1984</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Commodore Business Machines</publisher>
+  <developer />
+  <genre>Compilation</genre>
+  <score />
+</game>
+<game name="Minipedes (Europe)">
+  <title>Minipedes (Europe)</title>
+  <year>1984</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Anirog</publisher>
+  <developer />
+  <genre>Shoot-&apos;Em-Up</genre>
+  <score />
+</game>
+<game name="Mission Mars (Europe)">
+  <title>Mission Mars (Europe)</title>
+  <year>1985</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Solar Software</publisher>
+  <developer />
+  <genre>Action</genre>
+  <score />
+</game>
+<game name="Molecule Man (Europe)">
+  <title>Molecule Man (Europe)</title>
+  <year>1987</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Mastertronic</publisher>
+  <developer />
+  <genre>Adventure</genre>
+  <score />
+</game>
+<game name="Money (Europe) (Unl)">
+  <title>Money (Europe) (Unl)</title>
+  <year>1986</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Section 9</publisher>
+  <developer />
+  <genre>Platform</genre>
+  <score />
+</game>
+<game name="Monkey Magic (Europe)">
+  <title>Monkey Magic (Europe)</title>
+  <year>1985</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Solarsoft</publisher>
+  <developer />
+  <genre>Shoot-&apos;Em-Up</genre>
+  <score />
+</game>
+<game name="Monty on the Run (Europe)">
+  <title>Monty on the Run (Europe)</title>
+  <year>1986</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Gremlin Graphics</publisher>
+  <developer />
+  <genre>Platform</genre>
+  <score />
+</game>
+<game name="Moon Buggy (Europe)">
+  <title>Moon Buggy (Europe)</title>
+  <year>1985</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Anirog</publisher>
+  <developer />
+  <genre>Action</genre>
+  <score />
+</game>
+<game name="Motormania (Europe) (Unl)">
+  <title>Motormania (Europe) (Unl)</title>
+  <year>1990</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Muffbusters</publisher>
+  <developer />
+  <genre>Motorcycle</genre>
+  <score />
+</game>
+<game name="Mount Vesuvius (Europe)">
+  <title>Mount Vesuvius (Europe)</title>
+  <year>1985</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Tynesoft Computer Software</publisher>
+  <developer />
+  <genre>Action</genre>
+  <score />
+</game>
+<game name="Mouse Maze (Europe)">
+  <title>Mouse Maze (Europe)</title>
+  <year>1984</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Commodore Business Machines</publisher>
+  <developer />
+  <genre>Maze</genre>
+  <score />
+</game>
+<game name="Mr Angry Dude (Europe) (Unl)">
+  <title>Mr Angry Dude (Europe) (Unl)</title>
+  <year>2015</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Misfit</publisher>
+  <developer />
+  <genre>Puzzle</genre>
+  <score />
+</game>
+<game name="Mr. Puniverse (Europe)">
+  <title>Mr. Puniverse (Europe)</title>
+  <year>1986</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Mastertronic</publisher>
+  <developer />
+  <genre>Platform</genre>
+  <score />
+</game>
+<game name="Munch It (Europe)">
+  <title>Munch It (Europe)</title>
+  <year>1984</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Tynesoft Computer Software</publisher>
+  <developer />
+  <genre>Maze</genre>
+  <score />
+</game>
+<game name="Murder on the Waterfront (Europe)">
+  <title>Murder on the Waterfront (Europe)</title>
+  <year>1986</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Gameworx Software</publisher>
+  <developer />
+  <genre>Adventure</genre>
+  <score />
+</game>
+<game name="Mushroom Mania (Europe)">
+  <title>Mushroom Mania (Europe)</title>
+  <year>1985</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Arcadia Software</publisher>
+  <developer />
+  <genre>Shoot-&apos;Em-Up</genre>
+  <score />
+</game>
+<game name="Myriad (Europe)">
+  <title>Myriad (Europe)</title>
+  <year>1986</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Atlantis Software Ltd</publisher>
+  <developer />
+  <genre>Shoot-&apos;Em-Up</genre>
+  <score />
+</game>
+<game name="Nathrium Chlorid (Europe) (Unl)">
+  <title>Nathrium Chlorid (Europe) (Unl)</title>
+  <year>1989</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Fine Young Cannibals</publisher>
+  <developer />
+  <genre>Action</genre>
+  <score />
+</game>
+<game name="Nautilus (Europe) (Unl)">
+  <title>Nautilus (Europe) (Unl)</title>
+  <year>1988</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Many Clever Boys</publisher>
+  <developer />
+  <genre>Adventure</genre>
+  <score />
+</game>
+<game name="Netrun 2000 (Europe)">
+  <title>Netrun 2000 (Europe)</title>
+  <year>1986</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Firebird Software</publisher>
+  <developer />
+  <genre>Shoot-&apos;Em-Up</genre>
+  <score />
+</game>
+<game name="Ninja (Europe)">
+  <title>Ninja (Europe)</title>
+  <year>1985</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Gameworx Software</publisher>
+  <developer />
+  <genre>Adventure</genre>
+  <score />
+</game>
+<game name="Ninja Master (Europe)">
+  <title>Ninja Master (Europe)</title>
+  <year>1986</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Firebird</publisher>
+  <developer />
+  <genre>Action</genre>
+  <score />
+</game>
+<game name="Nintendo Worx (Europe) (Unl)">
+  <title>Nintendo Worx (Europe) (Unl)</title>
+  <year>1992</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Gods of the Universe</publisher>
+  <developer />
+  <genre>Action</genre>
+  <score />
+</game>
+<game name="Nuclear Ball (Europe) (Unl)">
+  <title>Nuclear Ball (Europe) (Unl)</title>
+  <year>1991</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>E., Ferenc</publisher>
+  <developer />
+  <genre>Breakout</genre>
+  <score />
+</game>
+<game name="Nucleon (Europe) (Unl)">
+  <title>Nucleon (Europe) (Unl)</title>
+  <year>1990</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>S., Tamas</publisher>
+  <developer />
+  <genre>Action</genre>
+  <score />
+</game>
+<game name="Number Builder (Europe)">
+  <title>Number Builder (Europe)</title>
+  <year>1985</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Commodore Business Machines</publisher>
+  <developer />
+  <genre>Educational</genre>
+  <score />
+</game>
+<game name="Number Chaser (Europe)">
+  <title>Number Chaser (Europe)</title>
+  <year>1985</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Commodore Business Machines</publisher>
+  <developer />
+  <genre>Educational</genre>
+  <score />
+</game>
+<game name="Oblido (Europe)">
+  <title>Oblido (Europe)</title>
+  <year>1986</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Mastertronic</publisher>
+  <developer />
+  <genre>Puzzle</genre>
+  <score />
+</game>
+<game name="Oliver Otthona (Hungary)">
+  <title>Oliver Otthona (Hungary)</title>
+  <year>1988</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Novotrade</publisher>
+  <developer />
+  <genre>Adventure</genre>
+  <score />
+</game>
+<game name="Olympiad (Europe)">
+  <title>Olympiad (Europe)</title>
+  <year>1984</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Tynesoft Computer Software</publisher>
+  <developer />
+  <genre>Sports/Olympic</genre>
+  <score />
+</game>
+<game name="Olympic Skier (Europe)">
+  <title>Olympic Skier (Europe)</title>
+  <year>1985</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Mr. Chip Software</publisher>
+  <developer />
+  <genre>Sports/Skiing</genre>
+  <score />
+</game>
+<game name="On Cue (Europe)">
+  <title>On Cue (Europe)</title>
+  <year>1987</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Mastertronic</publisher>
+  <developer />
+  <genre>Sports/Pool and Dart</genre>
+  <score />
+</game>
+<game name="One Man and his Droid (Europe)">
+  <title>One Man and his Droid (Europe)</title>
+  <year>1986</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Mastertronic</publisher>
+  <developer />
+  <genre>Action</genre>
+  <score />
+</game>
+<game name="Operation Red Moon (Europe)">
+  <title>Operation Red Moon (Europe)</title>
+  <year>1986</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Yes! Software</publisher>
+  <developer />
+  <genre>Shoot-&apos;Em-Up</genre>
+  <score />
+</game>
+<game name="Oszkar a Lovag (Hungary)">
+  <title>Oszkar a Lovag (Hungary)</title>
+  <year>1987</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Novotrade</publisher>
+  <developer />
+  <genre>Action</genre>
+  <score />
+</game>
+<game name="Othello (Europe) (Unl)">
+  <title>Othello (Europe) (Unl)</title>
+  <year>1993</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>C., Attila</publisher>
+  <developer />
+  <genre>Board Games</genre>
+  <score />
+</game>
+<game name="Out On A Limb (Europe)">
+  <title>Out On A Limb (Europe)</title>
+  <year>1984</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Anirog</publisher>
+  <developer />
+  <genre>Platform</genre>
+  <score />
+</game>
+<game name="Pacmania (Europe)">
+  <title>Pacmania (Europe)</title>
+  <year>1985</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Mr. Chip Software</publisher>
+  <developer />
+  <genre>Maze</genre>
+  <score />
+</game>
+<game name="Pancho (Europe)">
+  <title>Pancho (Europe)</title>
+  <year>1985</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Commodore Business Machines</publisher>
+  <developer />
+  <genre>Platform</genre>
+  <score />
+</game>
+<game name="Panic Penguin (Europe)">
+  <title>Panic Penguin (Europe)</title>
+  <year>1984</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Colosoft</publisher>
+  <developer />
+  <genre>Action</genre>
+  <score />
+</game>
+<game name="Panik! (Europe)">
+  <title>Panik! (Europe)</title>
+  <year>1986</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Atlantis Software</publisher>
+  <developer />
+  <genre>Action</genre>
+  <score />
+</game>
+<game name="Panzer Duel (Europe)">
+  <title>Panzer Duel (Europe)</title>
+  <year>1987</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Alternative Software Limited</publisher>
+  <developer />
+  <genre>Action</genre>
+  <score />
+</game>
+<game name="Paperboy (Europe)">
+  <title>Paperboy (Europe)</title>
+  <year>1986</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Elite</publisher>
+  <developer />
+  <genre>Action</genre>
+  <score />
+</game>
+<game name="Paramaths (Europe)">
+  <title>Paramaths (Europe)</title>
+  <year>1984</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Commodore Business Machines</publisher>
+  <developer />
+  <genre>Educational</genre>
+  <score />
+</game>
+<game name="Pasta Blasta (Europe)">
+  <title>Pasta Blasta (Europe)</title>
+  <year>1984</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Arcadia Software</publisher>
+  <developer />
+  <genre>Shoot-&apos;Em-Up</genre>
+  <score />
+</game>
+<game name="Patt Ball (Europe) (Unl)">
+  <title>Patt Ball (Europe) (Unl)</title>
+  <year>1989</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>S., Tamas</publisher>
+  <developer />
+  <genre>Platform</genre>
+  <score />
+</game>
+<game name="Pegged (Europe) (Unl)">
+  <title>Pegged (Europe) (Unl)</title>
+  <year>1997</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Assassin</publisher>
+  <developer />
+  <genre>Puzzle</genre>
+  <score />
+</game>
+<game name="Pengo (Europe) (Unl)">
+  <title>Pengo (Europe) (Unl)</title>
+  <year>1996</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>M., Istvan</publisher>
+  <developer />
+  <genre>Action</genre>
+  <score />
+</game>
+<game name="Perseus &amp; Andromeda (Europe)">
+  <title>Perseus &amp; Andromeda (Europe)</title>
+  <year>1984</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Paxman Promotions</publisher>
+  <developer />
+  <genre>Adventure</genre>
+  <score />
+</game>
+<game name="Petals of Doom (Europe)">
+  <title>Petals of Doom (Europe)</title>
+  <year>1985</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Micro Projects</publisher>
+  <developer />
+  <genre>Action</genre>
+  <score />
+</game>
+<game name="Petch (Europe)">
+  <title>Petch (Europe)</title>
+  <year>1985</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Anirog</publisher>
+  <developer />
+  <genre>Action</genre>
+  <score />
+</game>
+<game name="Phantom (Europe)">
+  <title>Phantom (Europe)</title>
+  <year>1987</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Tynesoft Computer Software</publisher>
+  <developer />
+  <genre>Action</genre>
+  <score />
+</game>
+<game name="Pharaohs Tomb (Europe)">
+  <title>Pharaohs Tomb (Europe)</title>
+  <year>1986</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Magnificent 7 Software</publisher>
+  <developer />
+  <genre>Adventure</genre>
+  <score />
+</game>
+<game name="Pheenix (Europe)">
+  <title>Pheenix (Europe)</title>
+  <year>1986</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Alternative Software</publisher>
+  <developer />
+  <genre>Shoot-&apos;Em-Up</genre>
+  <score />
+</game>
+<game name="Phoenix (Europe) (Unl)">
+  <title>Phoenix (Europe) (Unl)</title>
+  <year>1985</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>R., Bohdan</publisher>
+  <developer />
+  <genre>Shoot-&apos;Em-Up</genre>
+  <score />
+</game>
+<game name="Pilot X (Europe)">
+  <title>Pilot X (Europe)</title>
+  <year>1985</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Kingsoft</publisher>
+  <developer />
+  <genre>Action</genre>
+  <score />
+</game>
+<game name="Pin Point (Europe)">
+  <title>Pin Point (Europe)</title>
+  <year>1986</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Anco</publisher>
+  <developer />
+  <genre>Action</genre>
+  <score />
+</game>
+<game name="Ping (Europe) (Unl)">
+  <title>Ping (Europe) (Unl)</title>
+  <year>1992</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Synergy</publisher>
+  <developer />
+  <genre>Action</genre>
+  <score />
+</game>
+<game name="Ping Pong (Europe)">
+  <title>Ping Pong (Europe)</title>
+  <year>1986</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Imagine Software</publisher>
+  <developer />
+  <genre>Action</genre>
+  <score />
+</game>
+<game name="Pipe Dream (Europe) (Unl)">
+  <title>Pipe Dream (Europe) (Unl)</title>
+  <year>1992</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>H., Gabor</publisher>
+  <developer />
+  <genre>Puzzle</genre>
+  <score />
+</game>
+<game name="Pipe Mania (Europe) (Unl)">
+  <title>Pipe Mania (Europe) (Unl)</title>
+  <year>1992</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>S., Tamas</publisher>
+  <developer />
+  <genre>Puzzle</genre>
+  <score />
+</game>
+<game name="Pirate Adventure (Europe)">
+  <title>Pirate Adventure (Europe)</title>
+  <year>1984</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Commodore Business Machines</publisher>
+  <developer />
+  <genre>Adventure</genre>
+  <score />
+</game>
+<game name="Pirate Adventure C16 (Europe)">
+  <title>Pirate Adventure C16 (Europe)</title>
+  <year>1987</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Adventure International</publisher>
+  <developer />
+  <genre>Adventure</genre>
+  <score />
+</game>
+<game name="Pizza Pete (Europe)">
+  <title>Pizza Pete (Europe)</title>
+  <year>1985</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Illusion Software Ltd</publisher>
+  <developer />
+  <genre>Action</genre>
+  <score />
+</game>
+<game name="Planet Search (Europe)">
+  <title>Planet Search (Europe)</title>
+  <year>1986</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Gremlin Graphics</publisher>
+  <developer />
+  <genre>Shoot-&apos;Em-Up</genre>
+  <score />
+</game>
+<game name="Planetfall (Europe)">
+  <title>Planetfall (Europe)</title>
+  <year>1984</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Commodore Business Machines</publisher>
+  <developer />
+  <genre>Adventure</genre>
+  <score />
+</game>
+<game name="Platina (Hungary)">
+  <title>Platina (Hungary)</title>
+  <year>1989</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Novotrade</publisher>
+  <developer />
+  <genre>Action</genre>
+  <score />
+</game>
+<game name="Plus Casino (Europe)">
+  <title>Plus Casino (Europe)</title>
+  <year>1985</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Pacific Tri Micro, Inc.</publisher>
+  <developer />
+  <genre>Casino</genre>
+  <score />
+</game>
+<game name="POD - Proof Of Destruction (Europe)">
+  <title>POD - Proof Of Destruction (Europe)</title>
+  <year>1986</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Mastertronic</publisher>
+  <developer />
+  <genre>Shoot-&apos;Em-Up</genre>
+  <score />
+</game>
+<game name="Pogo Pete (Europe)">
+  <title>Pogo Pete (Europe)</title>
+  <year>1986</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Tynesoft Computer Software</publisher>
+  <developer />
+  <genre>Action</genre>
+  <score />
+</game>
+<game name="Pokoli Torony (Hungary) (Unl)">
+  <title>Pokoli Torony (Hungary) (Unl)</title>
+  <year>1988</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>M., Peter</publisher>
+  <developer />
+  <genre>Action</genre>
+  <score />
+</game>
+<game name="Ponk (Europe) (Unl)">
+  <title>Ponk (Europe) (Unl)</title>
+  <year>1995</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>P., Gabor</publisher>
+  <developer />
+  <genre>Puzzle</genre>
+  <score />
+</game>
+<game name="Pottit (Europe)">
+  <title>Pottit (Europe)</title>
+  <year>1984</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Romik Software Ltd</publisher>
+  <developer />
+  <genre>Action</genre>
+  <score />
+</game>
+<game name="Power Ball (Europe)">
+  <title>Power Ball (Europe)</title>
+  <year>1986</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Mastertronic</publisher>
+  <developer />
+  <genre>Action</genre>
+  <score />
+</game>
+<game name="Professional Amoeba (Europe) (Unl)">
+  <title>Professional Amoeba (Europe) (Unl)</title>
+  <year>1991</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>S., Tamas</publisher>
+  <developer />
+  <genre>Puzzle</genre>
+  <score />
+</game>
+<game name="Project Nova (Europe)">
+  <title>Project Nova (Europe)</title>
+  <year>1986</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Gremlin Graphics</publisher>
+  <developer />
+  <genre>Simulation</genre>
+  <score />
+</game>
+<game name="Prospector Pete (Europe)">
+  <title>Prospector Pete (Europe)</title>
+  <year>1986</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>British Soft</publisher>
+  <developer />
+  <genre>Action</genre>
+  <score />
+</game>
+<game name="Punchy (Europe)">
+  <title>Punchy (Europe)</title>
+  <year>1984</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Commodore Business Machines</publisher>
+  <developer />
+  <genre>Action</genre>
+  <score />
+</game>
+<game name="Punk Puzzle (Europe) (Unl)">
+  <title>Punk Puzzle (Europe) (Unl)</title>
+  <year>1992</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Fine Young Cannibals</publisher>
+  <developer />
+  <genre>Puzzle</genre>
+  <score />
+</game>
+<game name="Puppy&apos;s (Europe)">
+  <title>Puppy&apos;s (Europe)</title>
+  <year>1986</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Visiogame</publisher>
+  <developer />
+  <genre>Platform</genre>
+  <score />
+</game>
+<game name="Purple Turtles (Europe)">
+  <title>Purple Turtles (Europe)</title>
+  <year>1984</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Commodore Business Machines</publisher>
+  <developer />
+  <genre>Action</genre>
+  <score />
+</game>
+<game name="Puzznic (Europe) (Unl)">
+  <title>Puzznic (Europe) (Unl)</title>
+  <year>1991</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Electronic Vision Software</publisher>
+  <developer />
+  <genre>Puzzle</genre>
+  <score />
+</game>
+<game name="Quadrillion (Europe) (Unl)">
+  <title>Quadrillion (Europe) (Unl)</title>
+  <year>2004</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Legion of Doom</publisher>
+  <developer />
+  <genre>Action</genre>
+  <score />
+</game>
+<game name="Quick Draw (Europe)">
+  <title>Quick Draw (Europe)</title>
+  <year>1985</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Solar Software</publisher>
+  <developer />
+  <genre>Shoot-&apos;Em-Up</genre>
+  <score />
+</game>
+<game name="Rablo-Rulett (Hungary)">
+  <title>Rablo-Rulett (Hungary)</title>
+  <year>1987</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Novotrade</publisher>
+  <developer />
+  <genre>Casino</genre>
+  <score />
+</game>
+<game name="Raffles (Europe)">
+  <title>Raffles (Europe)</title>
+  <year>1985</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Tynesoft Computer Software</publisher>
+  <developer />
+  <genre>Adventure</genre>
+  <score />
+</game>
+<game name="Raider (Europe)">
+  <title>Raider (Europe)</title>
+  <year>1985</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Razorsoft</publisher>
+  <developer />
+  <genre>Shoot-&apos;Em-Up</genre>
+  <score />
+</game>
+<game name="Razos Ut (Hungary)">
+  <title>Razos Ut (Hungary)</title>
+  <year>1988</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Novotrade</publisher>
+  <developer />
+  <genre>Action</genre>
+  <score />
+</game>
+<game name="Reach for the Sky (Europe)">
+  <title>Reach for the Sky (Europe)</title>
+  <year>1986</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Gremlin Graphics</publisher>
+  <developer />
+  <genre>Shoot-&apos;Em-Up</genre>
+  <score />
+</game>
+<game name="Real Stunt Experts, The (Europe)">
+  <title>Real Stunt Experts, The (Europe)</title>
+  <year>1989</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Winner</publisher>
+  <developer />
+  <genre>Action</genre>
+  <score />
+</game>
+<game name="Reaxion (Europe) (Unl)">
+  <title>Reaxion (Europe) (Unl)</title>
+  <year>2005</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Cronosoft</publisher>
+  <developer />
+  <genre>Puzzle</genre>
+  <score />
+</game>
+<game name="Rebel Planet (Europe) (Unl)">
+  <title>Rebel Planet (Europe) (Unl)</title>
+  <year>2012</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Legion of Doom</publisher>
+  <developer />
+  <genre>Adventure</genre>
+  <score />
+</game>
+<game name="Reflex (Europe)">
+  <title>Reflex (Europe)</title>
+  <year>1988</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Players</publisher>
+  <developer />
+  <genre>Breakout</genre>
+  <score />
+</game>
+<game name="Rescue from Zylon (Europe)">
+  <title>Rescue from Zylon (Europe)</title>
+  <year>1985</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Gremlin Graphics</publisher>
+  <developer />
+  <genre>Action</genre>
+  <score />
+</game>
+<game name="Return of Rockman (Europe)">
+  <title>Return of Rockman (Europe)</title>
+  <year>1986</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Mastertronic</publisher>
+  <developer />
+  <genre>Action</genre>
+  <score />
+</game>
+<game name="Rig Attack (Europe)">
+  <title>Rig Attack (Europe)</title>
+  <year>1984</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Tynesoft Computer Software</publisher>
+  <developer />
+  <genre>Action</genre>
+  <score />
+</game>
+<game name="Road Warrior (Europe) (Unl)">
+  <title>Road Warrior (Europe) (Unl)</title>
+  <year>1991</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>K., Laszlo</publisher>
+  <developer />
+  <genre>Driving</genre>
+  <score />
+</game>
+<game name="Robin to the Rescue (Europe)">
+  <title>Robin to the Rescue (Europe)</title>
+  <year>1985</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Solar Software</publisher>
+  <developer />
+  <genre>Action</genre>
+  <score />
+</game>
+<game name="Robo Knight (Europe)">
+  <title>Robo Knight (Europe)</title>
+  <year>1986</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Americana Software</publisher>
+  <developer />
+  <genre>Adventure</genre>
+  <score />
+</game>
+<game name="Robothaboru (Hungary)">
+  <title>Robothaboru (Hungary)</title>
+  <year>1989</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Novotrade</publisher>
+  <developer />
+  <genre>Action</genre>
+  <score />
+</game>
+<game name="Rockman (Europe)">
+  <title>Rockman (Europe)</title>
+  <year>1985</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Mastertronic</publisher>
+  <developer />
+  <genre>Action</genre>
+  <score />
+</game>
+<game name="Rockmania (Europe) (Unl)">
+  <title>Rockmania (Europe) (Unl)</title>
+  <year>1990</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>S., Tamas</publisher>
+  <developer />
+  <genre>Action</genre>
+  <score />
+</game>
+<game name="Roller Kong (Europe)">
+  <title>Roller Kong (Europe)</title>
+  <year>1985</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Melbourne House</publisher>
+  <developer />
+  <genre>Action</genre>
+  <score />
+</game>
+<game name="Rolling Stones (Europe) (Unl)">
+  <title>Rolling Stones (Europe) (Unl)</title>
+  <year>1994</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Guys From West</publisher>
+  <developer />
+  <genre>Action</genre>
+  <score />
+</game>
+<game name="Rolling Stones 2 (Europe) (Unl)">
+  <title>Rolling Stones 2 (Europe) (Unl)</title>
+  <year>1995</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Guys From West</publisher>
+  <developer />
+  <genre>Action</genre>
+  <score />
+</game>
+<game name="Room Ten (Europe)">
+  <title>Room Ten (Europe)</title>
+  <year>1987</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>CRL Group</publisher>
+  <developer />
+  <genre>Action</genre>
+  <score />
+</game>
+<game name="Rozsaszin Parduc (Hungary) (Unl)">
+  <title>Rozsaszin Parduc (Hungary) (Unl)</title>
+  <year>1988</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>I., Geza</publisher>
+  <developer />
+  <genre>Platform</genre>
+  <score />
+</game>
+<game name="Rug Rider (Europe)">
+  <title>Rug Rider (Europe)</title>
+  <year>1985</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Pacific Tri Micro</publisher>
+  <developer />
+  <genre>Action</genre>
+  <score />
+</game>
+<game name="Runner (Europe)">
+  <title>Runner (Europe)</title>
+  <year>1986</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Firebird</publisher>
+  <developer />
+  <genre>Platform</genre>
+  <score />
+</game>
+<game name="Saboteur C16 (Europe)">
+  <title>Saboteur C16 (Europe)</title>
+  <year>1986</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Alternative Software</publisher>
+  <developer />
+  <genre>Adventure</genre>
+  <score />
+</game>
+<game name="Saboteur! (Europe)">
+  <title>Saboteur! (Europe)</title>
+  <year>1986</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Alternative Software</publisher>
+  <developer />
+  <genre>Adventure</genre>
+  <score />
+</game>
+<game name="Sabre Wulf (Europe) (Unl)">
+  <title>Sabre Wulf (Europe) (Unl)</title>
+  <year>2012</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>C., Gary</publisher>
+  <developer />
+  <genre>Adventure</genre>
+  <score />
+</game>
+<game name="Salvage (Europe)">
+  <title>Salvage (Europe)</title>
+  <year>1985</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Livewire Software</publisher>
+  <developer />
+  <genre>Adventure</genre>
+  <score />
+</game>
+<game name="Sandcastles (Europe)">
+  <title>Sandcastles (Europe)</title>
+  <year>1984</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Commodore Business Machines</publisher>
+  <developer />
+  <genre>Educational</genre>
+  <score />
+</game>
+<game name="Sanxion (Europe) (Unl)">
+  <title>Sanxion (Europe) (Unl)</title>
+  <year>1991</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>K., Laszlo</publisher>
+  <developer />
+  <genre>Shoot-&apos;Em-Up</genre>
+  <score />
+</game>
+<game name="Savage Island +4 - Part One (Europe)">
+  <title>Savage Island +4 - Part One (Europe)</title>
+  <year>1986</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Tynesoft Computer Software</publisher>
+  <developer />
+  <genre>Adventure</genre>
+  <score />
+</game>
+<game name="Savage Island +4 - Part Two (Europe)">
+  <title>Savage Island +4 - Part Two (Europe)</title>
+  <year>1986</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Tynesoft Computer Software</publisher>
+  <developer />
+  <genre>Adventure</genre>
+  <score />
+</game>
+<game name="Savage Island - Part One (Europe)">
+  <title>Savage Island - Part One (Europe)</title>
+  <year>1986</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Tynesoft Computer Software</publisher>
+  <developer />
+  <genre>Adventure</genre>
+  <score />
+</game>
+<game name="Savage Island - Part Two (Europe)">
+  <title>Savage Island - Part Two (Europe)</title>
+  <year>1986</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Tynesoft Computer Software</publisher>
+  <developer />
+  <genre>Adventure</genre>
+  <score />
+</game>
+<game name="Scooby Doo (Europe)">
+  <title>Scooby Doo (Europe)</title>
+  <year>1986</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Elite Systems Ltd</publisher>
+  <developer />
+  <genre>Action</genre>
+  <score />
+</game>
+<game name="Scumm (Europe) (Unl)">
+  <title>Scumm (Europe) (Unl)</title>
+  <year>1993</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Delta System</publisher>
+  <developer />
+  <genre>Puzzle</genre>
+  <score />
+</game>
+<game name="Sea Strike (Europe)">
+  <title>Sea Strike (Europe)</title>
+  <year>1985</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Razorsoft</publisher>
+  <developer />
+  <genre>Shoot-&apos;Em-Up</genre>
+  <score />
+</game>
+<game name="Sgt. Helmet Zero (Europe) (Unl)">
+  <title>Sgt. Helmet Zero (Europe) (Unl)</title>
+  <year>2013</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Assassins</publisher>
+  <developer />
+  <genre>Action</genre>
+  <score />
+</game>
+<game name="Shark Attack (Europe)">
+  <title>Shark Attack (Europe)</title>
+  <year>1986</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Firebird</publisher>
+  <developer />
+  <genre>Shoot-&apos;Em-Up</genre>
+  <score />
+</game>
+<game name="Shoot It (Europe)">
+  <title>Shoot It (Europe)</title>
+  <year>1984</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Tynesoft</publisher>
+  <developer />
+  <genre>Shoot-&apos;Em-Up</genre>
+  <score />
+</game>
+<game name="Sir Knight (Europe)">
+  <title>Sir Knight (Europe)</title>
+  <year>1986</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Tynesoft Computer Software</publisher>
+  <developer />
+  <genre>Action</genre>
+  <score />
+</game>
+<game name="Skate Roller (Europe) (Unl)">
+  <title>Skate Roller (Europe) (Unl)</title>
+  <year>1987</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Section9</publisher>
+  <developer />
+  <genre>Sports/Skateboarding</genre>
+  <score />
+</game>
+<game name="Skelby (Europe)">
+  <title>Skelby (Europe)</title>
+  <year>1986</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Yes! Software</publisher>
+  <developer />
+  <genre>Action</genre>
+  <score />
+</game>
+<game name="Skramble (Europe)">
+  <title>Skramble (Europe)</title>
+  <year>1984</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Anirog</publisher>
+  <developer />
+  <genre>Shoot-&apos;Em-Up</genre>
+  <score />
+</game>
+<game name="Skull Island (Europe)">
+  <title>Skull Island (Europe)</title>
+  <year>1984</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Gameworx Software</publisher>
+  <developer />
+  <genre>Adventure</genre>
+  <score />
+</game>
+<game name="Skyhawk (Europe)">
+  <title>Skyhawk (Europe)</title>
+  <year>1986</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Bug-Byte</publisher>
+  <developer />
+  <genre>Shoot-&apos;Em-Up</genre>
+  <score />
+</game>
+<game name="Slipper (Europe) (Unl)">
+  <title>Slipper (Europe) (Unl)</title>
+  <year>1993</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Scorpions</publisher>
+  <developer />
+  <genre>Puzzle</genre>
+  <score />
+</game>
+<game name="Slipper 2 (Europe) (Unl)">
+  <title>Slipper 2 (Europe) (Unl)</title>
+  <year>1993</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Scorpions</publisher>
+  <developer />
+  <genre>Puzzle</genre>
+  <score />
+</game>
+<game name="Slippery Sid (Europe)">
+  <title>Slippery Sid (Europe)</title>
+  <year>1984</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Citisoft Ltd</publisher>
+  <developer />
+  <genre>Action</genre>
+  <score />
+</game>
+<game name="Small Jones (Europe)">
+  <title>Small Jones (Europe)</title>
+  <year>1985</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Visiogame</publisher>
+  <developer />
+  <genre>Action</genre>
+  <score />
+</game>
+<game name="Snakes (Europe)">
+  <title>Snakes (Europe)</title>
+  <year>1984</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Commodore Business Machines</publisher>
+  <developer />
+  <genre>Action</genre>
+  <score />
+</game>
+<game name="Snooker &amp; Pool C16 (Europe)">
+  <title>Snooker &amp; Pool C16 (Europe)</title>
+  <year>1987</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Gremlin Graphics</publisher>
+  <developer />
+  <genre>Sports/Pool and Dart</genre>
+  <score />
+</game>
+<game name="Snooker &amp; Pool Plus4 (Europe)">
+  <title>Snooker &amp; Pool Plus4 (Europe)</title>
+  <year>1987</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Gremlin Graphics</publisher>
+  <developer />
+  <genre>Sports/Pool and Dart</genre>
+  <score />
+</game>
+<game name="Solo (Europe)">
+  <title>Solo (Europe)</title>
+  <year>1985</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Bug-Byte</publisher>
+  <developer />
+  <genre>Shoot-&apos;Em-Up</genre>
+  <score />
+</game>
+<game name="Sorcerer of Claymorgue Castle +4, The (USA)">
+  <title>Sorcerer of Claymorgue Castle +4, The (USA)</title>
+  <year>1985</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Adventure International</publisher>
+  <developer />
+  <genre>Adventure</genre>
+  <score />
+</game>
+<game name="Sorcerer of Claymorgue Castle, The (Europe)">
+  <title>Sorcerer of Claymorgue Castle, The (Europe)</title>
+  <year>1984</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Adventure International</publisher>
+  <developer />
+  <genre>Adventure</genre>
+  <score />
+</game>
+<game name="Space Escort (Europe)">
+  <title>Space Escort (Europe)</title>
+  <year>1985</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Atlantis Software Ltd</publisher>
+  <developer />
+  <genre>Shoot-&apos;Em-Up</genre>
+  <score />
+</game>
+<game name="Space Fiends (Europe)">
+  <title>Space Fiends (Europe)</title>
+  <year>1985</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Magnificent 7 Software</publisher>
+  <developer />
+  <genre>Shoot-&apos;Em-Up</genre>
+  <score />
+</game>
+<game name="Space Freeks (Europe)">
+  <title>Space Freeks (Europe)</title>
+  <year>1985</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Solar Software</publisher>
+  <developer />
+  <genre>Shoot-&apos;Em-Up</genre>
+  <score />
+</game>
+<game name="Space Pilot (Europe)">
+  <title>Space Pilot (Europe)</title>
+  <year>1986</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Kingsoft</publisher>
+  <developer />
+  <genre>Shoot-&apos;Em-Up</genre>
+  <score />
+</game>
+<game name="Space Sweep (Europe)">
+  <title>Space Sweep (Europe)</title>
+  <year>1984</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Mr Micro</publisher>
+  <developer />
+  <genre>Shoot-&apos;Em-Up</genre>
+  <score />
+</game>
+<game name="Spectipede (Europe)">
+  <title>Spectipede (Europe)</title>
+  <year>1985</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Mastertronic</publisher>
+  <developer />
+  <genre>Shoot-&apos;Em-Up</genre>
+  <score />
+</game>
+<game name="Speed King (Europe)">
+  <title>Speed King (Europe)</title>
+  <year>1986</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Mastertronic</publisher>
+  <developer />
+  <genre>Motorcycle</genre>
+  <score />
+</game>
+<game name="Speedboat Grand Prix (Europe)">
+  <title>Speedboat Grand Prix (Europe)</title>
+  <year>1986</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Anco</publisher>
+  <developer />
+  <genre>Water</genre>
+  <score />
+</game>
+<game name="Spiky Harold (Europe)">
+  <title>Spiky Harold (Europe)</title>
+  <year>1986</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Firebird</publisher>
+  <developer />
+  <genre>Platform</genre>
+  <score />
+</game>
+<game name="Split Personalities (Europe)">
+  <title>Split Personalities (Europe)</title>
+  <year>1987</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Domark Ltd</publisher>
+  <developer />
+  <genre>Puzzle</genre>
+  <score />
+</game>
+<game name="Splitz (Europe)">
+  <title>Splitz (Europe)</title>
+  <year>1987</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Wise Owl Software</publisher>
+  <developer />
+  <genre>Platform</genre>
+  <score />
+</game>
+<game name="Spore (Europe)">
+  <title>Spore (Europe)</title>
+  <year>1987</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Mastertronic</publisher>
+  <developer />
+  <genre>Action</genre>
+  <score />
+</game>
+<game name="Spy Vs Spy (Europe)">
+  <title>Spy Vs Spy (Europe)</title>
+  <year>1987</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Tynesoft Computer Software</publisher>
+  <developer />
+  <genre>Action</genre>
+  <score />
+</game>
+<game name="Sqij (Europe)">
+  <title>Sqij (Europe)</title>
+  <year>1987</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>The Power House</publisher>
+  <developer />
+  <genre>Adventure</genre>
+  <score />
+</game>
+<game name="Squirm (Europe)">
+  <title>Squirm (Europe)</title>
+  <year>1985</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Mastertronic</publisher>
+  <developer />
+  <genre>Action</genre>
+  <score />
+</game>
+<game name="Star Commander (Europe)">
+  <title>Star Commander (Europe)</title>
+  <year>1985</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Anirog</publisher>
+  <developer />
+  <genre>Shoot-&apos;Em-Up</genre>
+  <score />
+</game>
+<game name="Starburst (Europe)">
+  <title>Starburst (Europe)</title>
+  <year>1986</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Ariolasoft</publisher>
+  <developer />
+  <genre>Shoot-&apos;Em-Up</genre>
+  <score />
+</game>
+<game name="Starcross (Europe)">
+  <title>Starcross (Europe)</title>
+  <year>1984</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Infocom</publisher>
+  <developer />
+  <genre>Adventure</genre>
+  <score />
+</game>
+<game name="Starforce Nova (Europe)">
+  <title>Starforce Nova (Europe)</title>
+  <year>1987</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Mastertronic</publisher>
+  <developer />
+  <genre>Shoot-&apos;Em-Up</genre>
+  <score />
+</game>
+<game name="Starlite 1 (Europe)">
+  <title>Starlite 1 (Europe)</title>
+  <year>1986</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Yes! Software</publisher>
+  <developer />
+  <genre>Adventure</genre>
+  <score />
+</game>
+<game name="Starter Chess (Europe)">
+  <title>Starter Chess (Europe)</title>
+  <year>1984</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Commodore Business Machines</publisher>
+  <developer />
+  <genre>Board Games</genre>
+  <score />
+</game>
+<game name="Steinzeit (Germany)">
+  <title>Steinzeit (Germany)</title>
+  <year>1987</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Stone-Castle</publisher>
+  <developer />
+  <genre>Action</genre>
+  <score />
+</game>
+<game name="Stellar 7 (Europe)">
+  <title>Stellar 7 (Europe)</title>
+  <year>1990</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Bubi</publisher>
+  <developer />
+  <genre>Simulation</genre>
+  <score />
+</game>
+<game name="Stellar Wars (Europe)">
+  <title>Stellar Wars (Europe)</title>
+  <year>1984</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Commodore Business Machines</publisher>
+  <developer />
+  <genre>Shoot-&apos;Em-Up</genre>
+  <score />
+</game>
+<game name="Steve Davis Snooker (Europe)">
+  <title>Steve Davis Snooker (Europe)</title>
+  <year>1985</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>CDS Software Ltd</publisher>
+  <developer />
+  <genre>Sports/Pool and Dart</genre>
+  <score />
+</game>
+<game name="Stone Age (Europe) (Unl)">
+  <title>Stone Age (Europe) (Unl)</title>
+  <year>1994</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Wilds</publisher>
+  <developer />
+  <genre>Puzzle</genre>
+  <score />
+</game>
+<game name="Storm (Europe)">
+  <title>Storm (Europe)</title>
+  <year>1986</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Mastertronic</publisher>
+  <developer />
+  <genre>Adventure</genre>
+  <score />
+</game>
+<game name="Strange Odyssey (Europe)">
+  <title>Strange Odyssey (Europe)</title>
+  <year>1984</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Commodore Business Machines</publisher>
+  <developer />
+  <genre>Adventure</genre>
+  <score />
+</game>
+<game name="Strange Odyssey C16 (Europe)">
+  <title>Strange Odyssey C16 (Europe)</title>
+  <year>1987</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Adventure International</publisher>
+  <developer />
+  <genre>Adventure</genre>
+  <score />
+</game>
+<game name="Strangers (Europe)">
+  <title>Strangers (Europe)</title>
+  <year>1986</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Vages Software</publisher>
+  <developer />
+  <genre>Shoot-&apos;Em-Up</genre>
+  <score />
+</game>
+<game name="Street Olympics (Europe)">
+  <title>Street Olympics (Europe)</title>
+  <year>1986</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Mastertronic</publisher>
+  <developer />
+  <genre>Sports/Olympic</genre>
+  <score />
+</game>
+<game name="Strip Poker (Europe)">
+  <title>Strip Poker (Europe)</title>
+  <year>1986</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Artworx</publisher>
+  <developer />
+  <genre>Casino</genre>
+  <score />
+</game>
+<game name="Strip Poker II Plus (Europe)">
+  <title>Strip Poker II Plus (Europe)</title>
+  <year>1988</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Anco</publisher>
+  <developer />
+  <genre>Casino</genre>
+  <score />
+</game>
+<game name="Suicide Run (Europe)">
+  <title>Suicide Run (Europe)</title>
+  <year>1985</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Solar Software</publisher>
+  <developer />
+  <genre>Shoot-&apos;Em-Up</genre>
+  <score />
+</game>
+<game name="Summer Events (Europe)">
+  <title>Summer Events (Europe)</title>
+  <year>1987</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Kingsoft</publisher>
+  <developer />
+  <genre>Sports/Olympic</genre>
+  <score />
+</game>
+<game name="Sun Star (Europe)">
+  <title>Sun Star (Europe)</title>
+  <year>1987</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>CRL Group</publisher>
+  <developer />
+  <genre>Action</genre>
+  <score />
+</game>
+<game name="Super Cobra (Hungary)">
+  <title>Super Cobra (Hungary)</title>
+  <year>1987</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Novotrade</publisher>
+  <developer />
+  <genre>Shoot-&apos;Em-Up</genre>
+  <score />
+</game>
+<game name="Super Gran (Europe)">
+  <title>Super Gran (Europe)</title>
+  <year>1985</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Tynesoft Computer Software</publisher>
+  <developer />
+  <genre>Action</genre>
+  <score />
+</game>
+<game name="Super Gran - The Adventure (Europe)">
+  <title>Super Gran - The Adventure (Europe)</title>
+  <year>1985</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Tynesoft Computer Software</publisher>
+  <developer />
+  <genre>Adventure</genre>
+  <score />
+</game>
+<game name="Superman (Europe)">
+  <title>Superman (Europe)</title>
+  <year>1987</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Prism Leisure Corporation</publisher>
+  <developer />
+  <genre>Action</genre>
+  <score />
+</game>
+<game name="Surround (Germany)">
+  <title>Surround (Germany)</title>
+  <year>1984</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>UserSoft</publisher>
+  <developer />
+  <genre>Action</genre>
+  <score />
+</game>
+<game name="Survivors, The (Europe)">
+  <title>Survivors, The (Europe)</title>
+  <year>1987</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Atlantis</publisher>
+  <developer />
+  <genre>Action</genre>
+  <score />
+</game>
+<game name="Suspect (Europe)">
+  <title>Suspect (Europe)</title>
+  <year>1984</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Infocom</publisher>
+  <developer />
+  <genre>Adventure</genre>
+  <score />
+</game>
+<game name="Suspended (Europe)">
+  <title>Suspended (Europe)</title>
+  <year>1984</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Infocom</publisher>
+  <developer />
+  <genre>Adventure</genre>
+  <score />
+</game>
+<game name="Sword Of Destiny (Europe)">
+  <title>Sword Of Destiny (Europe)</title>
+  <year>1985</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Gremlin Graphics</publisher>
+  <developer />
+  <genre>Adventure</genre>
+  <score />
+</game>
+<game name="Syndrome Compilation (Europe) (Side A)">
+  <title>Syndrome Compilation (Europe) (Side A)</title>
+  <year>1985</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Jaysoft</publisher>
+  <developer />
+  <genre>Compilation</genre>
+  <score />
+</game>
+<game name="Syndrome Compilation (Europe) (Side B)">
+  <title>Syndrome Compilation (Europe) (Side B)</title>
+  <year>1985</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Jaysoft</publisher>
+  <developer />
+  <genre>Compilation</genre>
+  <score />
+</game>
+<game name="Szerpentin (Hungary)">
+  <title>Szerpentin (Hungary)</title>
+  <year>1986</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Novotrade</publisher>
+  <developer />
+  <genre>Action</genre>
+  <score />
+</game>
+<game name="Tank Attack (Europe)">
+  <title>Tank Attack (Europe)</title>
+  <year>1986</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Solar Software</publisher>
+  <developer />
+  <genre>Shoot-&apos;Em-Up</genre>
+  <score />
+</game>
+<game name="Taskforce (Europe)">
+  <title>Taskforce (Europe)</title>
+  <year>1989</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Players</publisher>
+  <developer />
+  <genre>Action</genre>
+  <score />
+</game>
+<game name="Tazz (Europe)">
+  <title>Tazz (Europe)</title>
+  <year>1986</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Bubble Bus Software</publisher>
+  <developer />
+  <genre>Shoot-&apos;Em-Up</genre>
+  <score />
+</game>
+<game name="Ten Little Indians (Europe)">
+  <title>Ten Little Indians (Europe)</title>
+  <year>1984</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Paxman Promotions</publisher>
+  <developer />
+  <genre>Adventure</genre>
+  <score />
+</game>
+<game name="Tennis (Europe)">
+  <title>Tennis (Europe)</title>
+  <year>1986</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Kingsoft</publisher>
+  <developer />
+  <genre>Sports/Tennis</genre>
+  <score />
+</game>
+<game name="Terra Cognita (Europe)">
+  <title>Terra Cognita (Europe)</title>
+  <year>1986</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Codemasters</publisher>
+  <developer />
+  <genre>Shoot-&apos;Em-Up</genre>
+  <score />
+</game>
+<game name="Terra Nova (Europe)">
+  <title>Terra Nova (Europe)</title>
+  <year>1987</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Anco</publisher>
+  <developer />
+  <genre>Shoot-&apos;Em-Up</genre>
+  <score />
+</game>
+<game name="Terra-X (Europe) (Unl)">
+  <title>Terra-X (Europe) (Unl)</title>
+  <year>1990</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>S., Tamas</publisher>
+  <developer />
+  <genre>Shoot-&apos;Em-Up</genre>
+  <score />
+</game>
+<game name="Tetris (Europe) (Unl)">
+  <title>Tetris (Europe) (Unl)</title>
+  <year>1990</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Vortex</publisher>
+  <developer />
+  <genre>Puzzle</genre>
+  <score />
+</game>
+<game name="Tetris 2 (Europe) (Unl)">
+  <title>Tetris 2 (Europe) (Unl)</title>
+  <year>1994</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>United Force</publisher>
+  <developer />
+  <genre>Puzzle</genre>
+  <score />
+</game>
+<game name="Thai Boxing (Europe)">
+  <title>Thai Boxing (Europe)</title>
+  <year>1985</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Anco</publisher>
+  <developer />
+  <genre>Fighter</genre>
+  <score />
+</game>
+<game name="Thermo Nuclear War Games (Europe)">
+  <title>Thermo Nuclear War Games (Europe)</title>
+  <year>1984</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Gameworx Software</publisher>
+  <developer />
+  <genre>Adventure</genre>
+  <score />
+</game>
+<game name="Thrust (Europe)">
+  <title>Thrust (Europe)</title>
+  <year>1987</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Firebird</publisher>
+  <developer />
+  <genre>Action</genre>
+  <score />
+</game>
+<game name="Time Cristal (Europe) (Unl)">
+  <title>Time Cristal (Europe) (Unl)</title>
+  <year>1994</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Scorpions</publisher>
+  <developer />
+  <genre>Action</genre>
+  <score />
+</game>
+<game name="Time Machine, The (Europe)">
+  <title>Time Machine, The (Europe)</title>
+  <year>1984</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Paxman Promotions</publisher>
+  <developer />
+  <genre>Adventure</genre>
+  <score />
+</game>
+<game name="Time-Zone (Europe) (Unl)">
+  <title>Time-Zone (Europe) (Unl)</title>
+  <year>1990</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>T+K Software</publisher>
+  <developer />
+  <genre>Action</genre>
+  <score />
+</game>
+<game name="Timeslip (Europe)">
+  <title>Timeslip (Europe)</title>
+  <year>1985</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>English Software</publisher>
+  <developer />
+  <genre>Shoot-&apos;Em-Up</genre>
+  <score />
+</game>
+<game name="Tom Thumb (Europe)">
+  <title>Tom Thumb (Europe)</title>
+  <year>1986</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Anirog</publisher>
+  <developer />
+  <genre>Platform</genre>
+  <score />
+</game>
+<game name="Tomb of Tarrabash, The (Europe)">
+  <title>Tomb of Tarrabash, The (Europe)</title>
+  <year>1986</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Audiogenic</publisher>
+  <developer />
+  <genre>Adventure</genre>
+  <score />
+</game>
+<game name="Tomcat (Europe)">
+  <title>Tomcat (Europe)</title>
+  <year>1989</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Players</publisher>
+  <developer />
+  <genre>Shoot-&apos;Em-Up</genre>
+  <score />
+</game>
+<game name="Tonido (Europe) (Unl)">
+  <title>Tonido (Europe) (Unl)</title>
+  <year>1992</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>E., Ferenc</publisher>
+  <developer />
+  <genre>Puzzle</genre>
+  <score />
+</game>
+<game name="Torpedo Alley (Europe)">
+  <title>Torpedo Alley (Europe)</title>
+  <year>1986</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Firebird</publisher>
+  <developer />
+  <genre>Simulation</genre>
+  <score />
+</game>
+<game name="Torpedo Run (Europe)">
+  <title>Torpedo Run (Europe)</title>
+  <year>1985</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Citisoft Ltd</publisher>
+  <developer />
+  <genre>Simulation</genre>
+  <score />
+</game>
+<game name="Tower of Evil (Europe)">
+  <title>Tower of Evil (Europe)</title>
+  <year>1985</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Creative Sparks</publisher>
+  <developer />
+  <genre>Adventure</genre>
+  <score />
+</game>
+<game name="Trailblazer (Europe)">
+  <title>Trailblazer (Europe)</title>
+  <year>1986</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Gremlin Graphics</publisher>
+  <developer />
+  <genre>Action</genre>
+  <score />
+</game>
+<game name="Tramp Kid (Europe) (Unl)">
+  <title>Tramp Kid (Europe) (Unl)</title>
+  <year>1991</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Electronic Disaster Crew</publisher>
+  <developer />
+  <genre>Maze</genre>
+  <score />
+</game>
+<game name="Trans Logic (Europe) (Unl)">
+  <title>Trans Logic (Europe) (Unl)</title>
+  <year>1995</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Gentlemen Software</publisher>
+  <developer />
+  <genre>Puzzle</genre>
+  <score />
+</game>
+<game name="Trans Logic 2 (Europe) (Unl)">
+  <title>Trans Logic 2 (Europe) (Unl)</title>
+  <year>2008</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Assassins</publisher>
+  <developer />
+  <genre>Puzzle</genre>
+  <score />
+</game>
+<game name="Transector (Europe)">
+  <title>Transector (Europe)</title>
+  <year>1985</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Bug-Byte</publisher>
+  <developer />
+  <genre>Action</genre>
+  <score />
+</game>
+<game name="Treasure Hunter (Europe)">
+  <title>Treasure Hunter (Europe)</title>
+  <year>1986</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Solar Software</publisher>
+  <developer />
+  <genre>Adventure</genre>
+  <score />
+</game>
+<game name="Treasure Island (Europe)">
+  <title>Treasure Island (Europe)</title>
+  <year>1985</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Commodore Business Machines</publisher>
+  <developer />
+  <genre>Adventure</genre>
+  <score />
+</game>
+<game name="Triple Change (Europe) (Unl)">
+  <title>Triple Change (Europe) (Unl)</title>
+  <year>1993</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Magnetic Violence</publisher>
+  <developer />
+  <genre>Puzzle</genre>
+  <score />
+</game>
+<game name="Trizons (Europe)">
+  <title>Trizons (Europe)</title>
+  <year>1986</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Bubble Bus Software</publisher>
+  <developer />
+  <genre>Shoot-&apos;Em-Up</genre>
+  <score />
+</game>
+<game name="Tube Runner (Europe)">
+  <title>Tube Runner (Europe)</title>
+  <year>1988</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Gremlin Graphics</publisher>
+  <developer />
+  <genre>Adventure</genre>
+  <score />
+</game>
+<game name="Tutti Frutti (Europe)">
+  <title>Tutti Frutti (Europe)</title>
+  <year>1985</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Mr. Chip Software</publisher>
+  <developer />
+  <genre>Action</genre>
+  <score />
+</game>
+<game name="Twin Kingdom Valley (Europe)">
+  <title>Twin Kingdom Valley (Europe)</title>
+  <year>1985</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Bug-Byte</publisher>
+  <developer />
+  <genre>Adventure</genre>
+  <score />
+</game>
+<game name="Two To One (Europe)">
+  <title>Two To One (Europe)</title>
+  <year>1990</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Kingsoft</publisher>
+  <developer />
+  <genre>Action</genre>
+  <score />
+</game>
+<game name="Tycoon Tex (Europe)">
+  <title>Tycoon Tex (Europe)</title>
+  <year>1985</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Gremlin Graphics</publisher>
+  <developer />
+  <genre>Action</genre>
+  <score />
+</game>
+<game name="UFO Vadasz (Hungary)">
+  <title>UFO Vadasz (Hungary)</title>
+  <year>1988</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Novotrade</publisher>
+  <developer />
+  <genre>Action</genre>
+  <score />
+</game>
+<game name="Ultimate - Adventure 4 (Europe)">
+  <title>Ultimate - Adventure 4 (Europe)</title>
+  <year>1985</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Microdeal</publisher>
+  <developer />
+  <genre>Adventure</genre>
+  <score />
+</game>
+<game name="Under Haupt (Europe) (Unl)">
+  <title>Under Haupt (Europe) (Unl)</title>
+  <year>1987</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>S., Istvan</publisher>
+  <developer />
+  <genre>Platform</genre>
+  <score />
+</game>
+<game name="Underground Adventure (Europe)">
+  <title>Underground Adventure (Europe)</title>
+  <year>1985</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Duckworth Computing</publisher>
+  <developer />
+  <genre>Adventure</genre>
+  <score />
+</game>
+<game name="Urkaland (Hungary)">
+  <title>Urkaland (Hungary)</title>
+  <year>1989</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Novotrade</publisher>
+  <developer />
+  <genre>Adventure</genre>
+  <score />
+</game>
+<game name="Urpok (Hungary)">
+  <title>Urpok (Hungary)</title>
+  <year>1986</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Novotrade</publisher>
+  <developer />
+  <genre>Shoot-&apos;Em-Up</genre>
+  <score />
+</game>
+<game name="Urvirag (Hungary)">
+  <title>Urvirag (Hungary)</title>
+  <year>1986</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Puhasoft</publisher>
+  <developer />
+  <genre>Action</genre>
+  <score />
+</game>
+<game name="US Drag Racing (Europe)">
+  <title>US Drag Racing (Europe)</title>
+  <year>1984</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Tynesoft Computer Software</publisher>
+  <developer />
+  <genre>Driving</genre>
+  <score />
+</game>
+<game name="Uwol (Europe) (Unl)">
+  <title>Uwol (Europe) (Unl)</title>
+  <year>2010</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Assassins</publisher>
+  <developer />
+  <genre>Platform</genre>
+  <score />
+</game>
+<game name="UXB (Europe)">
+  <title>UXB (Europe)</title>
+  <year>1984</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Commodore Business Machines</publisher>
+  <developer />
+  <genre>Action</genre>
+  <score />
+</game>
+<game name="Varmit (Europe)">
+  <title>Varmit (Europe)</title>
+  <year>1986</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Players</publisher>
+  <developer />
+  <genre>Action</genre>
+  <score />
+</game>
+<game name="Vegas Jackpot (Europe)">
+  <title>Vegas Jackpot (Europe)</title>
+  <year>1985</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Mastertronic</publisher>
+  <developer />
+  <genre>Casino</genre>
+  <score />
+</game>
+<game name="Verem (Hungary)">
+  <title>Verem (Hungary)</title>
+  <year>1987</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Octasoft</publisher>
+  <developer />
+  <genre>Puzzle</genre>
+  <score />
+</game>
+<game name="Video Classics (Europe)">
+  <title>Video Classics (Europe)</title>
+  <year>1988</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Silverbird Software</publisher>
+  <developer />
+  <genre>Action</genre>
+  <score />
+</game>
+<game name="Video Meanies (Europe)">
+  <title>Video Meanies (Europe)</title>
+  <year>1986</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Mastertronic</publisher>
+  <developer />
+  <genre>Adventure</genre>
+  <score />
+</game>
+<game name="Video Poker (Europe)">
+  <title>Video Poker (Europe)</title>
+  <year>1986</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Mastertronic</publisher>
+  <developer />
+  <genre>Casino</genre>
+  <score />
+</game>
+<game name="Viduzzles (Europe)">
+  <title>Viduzzles (Europe)</title>
+  <year>1984</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Commodore Business Machines</publisher>
+  <developer />
+  <genre>Puzzle</genre>
+  <score />
+</game>
+<game name="Voidrunner (Europe)">
+  <title>Voidrunner (Europe)</title>
+  <year>1986</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Llamasoft</publisher>
+  <developer />
+  <genre>Shoot-&apos;Em-Up</genre>
+  <score />
+</game>
+<game name="Volleyball (Europe) (Unl)">
+  <title>Volleyball (Europe) (Unl)</title>
+  <year>1997</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Assassins</publisher>
+  <developer />
+  <genre>Sports/Volleyball</genre>
+  <score />
+</game>
+<game name="Voodoo Castle (Europe)">
+  <title>Voodoo Castle (Europe)</title>
+  <year>1987</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Master Games</publisher>
+  <developer />
+  <genre>Adventure</genre>
+  <score />
+</game>
+<game name="Voodoo Castle +4 (Europe) (Unl)">
+  <title>Voodoo Castle +4 (Europe) (Unl)</title>
+  <year>2004</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Legion of Doom</publisher>
+  <developer />
+  <genre>Adventure</genre>
+  <score />
+</game>
+<game name="Vox (Europe)">
+  <title>Vox (Europe)</title>
+  <year>1985</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Tynesoft Computer Software</publisher>
+  <developer />
+  <genre>Shoot-&apos;Em-Up</genre>
+  <score />
+</game>
+<game name="Wacky Painter (Europe)">
+  <title>Wacky Painter (Europe)</title>
+  <year>1985</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Tynesoft Computer Software</publisher>
+  <developer />
+  <genre>Action</genre>
+  <score />
+</game>
+<game name="Walaki (Hungary)">
+  <title>Walaki (Hungary)</title>
+  <year>1987</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Novotrade</publisher>
+  <developer />
+  <genre>Adventure</genre>
+  <score />
+</game>
+<game name="Water Grand Prix (Europe)">
+  <title>Water Grand Prix (Europe)</title>
+  <year>1985</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Tynesoft Computer Software</publisher>
+  <developer />
+  <genre>Water</genre>
+  <score />
+</game>
+<game name="Waxworks (Europe)">
+  <title>Waxworks (Europe)</title>
+  <year>1984</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Paxman Promotions</publisher>
+  <developer />
+  <genre>Adventure</genre>
+  <score />
+</game>
+<game name="Way of the Exploding Fist (Europe)">
+  <title>Way of the Exploding Fist (Europe)</title>
+  <year>1986</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Mastertronic</publisher>
+  <developer />
+  <genre>Fighter</genre>
+  <score />
+</game>
+<game name="Way of the Tiger, The (Europe)">
+  <title>Way of the Tiger, The (Europe)</title>
+  <year>1986</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Gremlin Graphics</publisher>
+  <developer />
+  <genre>Fighter</genre>
+  <score />
+</game>
+<game name="Who Dares Wins II (Europe)">
+  <title>Who Dares Wins II (Europe)</title>
+  <year>1986</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Tynesoft Computer Software</publisher>
+  <developer />
+  <genre>Action</genre>
+  <score />
+</game>
+<game name="Wildfire (Europe) (Unl)">
+  <title>Wildfire (Europe) (Unl)</title>
+  <year>1992</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>S., Tamas</publisher>
+  <developer />
+  <genre>Shoot-&apos;Em-Up</genre>
+  <score />
+</game>
+<game name="Williamburg - Adventure 3 (Europe)">
+  <title>Williamburg - Adventure 3 (Europe)</title>
+  <year>1985</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Microdeal</publisher>
+  <developer />
+  <genre>Adventure</genre>
+  <score />
+</game>
+<game name="Wimbledon (Europe)">
+  <title>Wimbledon (Europe)</title>
+  <year>1986</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Gremlin Graphics</publisher>
+  <developer />
+  <genre>Sports/Tennis</genre>
+  <score />
+</game>
+<game name="Winnie Witch&apos;s Superbroom (Europe)">
+  <title>Winnie Witch&apos;s Superbroom (Europe)</title>
+  <year>1986</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Solar Software</publisher>
+  <developer />
+  <genre>Shoot-&apos;Em-Up</genre>
+  <score />
+</game>
+<game name="Winter Events (Europe)">
+  <title>Winter Events (Europe)</title>
+  <year>1986</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Kingsoft</publisher>
+  <developer />
+  <genre>Sports/Olympic</genre>
+  <score />
+</game>
+<game name="Winter Olympics (Europe)">
+  <title>Winter Olympics (Europe)</title>
+  <year>1986</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Tynesoft Computer Software</publisher>
+  <developer />
+  <genre>Sports/Olympic</genre>
+  <score />
+</game>
+<game name="Witness (Europe)">
+  <title>Witness (Europe)</title>
+  <year>1984</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Commodore Business Machines</publisher>
+  <developer />
+  <genre>Adventure</genre>
+  <score />
+</game>
+<game name="Wizard and the Princess, The (Europe)">
+  <title>Wizard and the Princess, The (Europe)</title>
+  <year>1985</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Melbourne House</publisher>
+  <developer />
+  <genre>Adventure</genre>
+  <score />
+</game>
+<game name="Wizard of Wor (Europe) (Unl)">
+  <title>Wizard of Wor (Europe) (Unl)</title>
+  <year>1990</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>S., Tamas</publisher>
+  <developer />
+  <genre>Action</genre>
+  <score />
+</game>
+<game name="Wolf Pack (Europe)">
+  <title>Wolf Pack (Europe)</title>
+  <year>1985</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Illusion Software</publisher>
+  <developer />
+  <genre>Action</genre>
+  <score />
+</game>
+<game name="World Cup (Europe)">
+  <title>World Cup (Europe)</title>
+  <year>1985</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Artic Computing</publisher>
+  <developer />
+  <genre>Sports/Soccer</genre>
+  <score />
+</game>
+<game name="World Cup Carnival (Europe)">
+  <title>World Cup Carnival (Europe)</title>
+  <year>1986</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>US Gold</publisher>
+  <developer />
+  <genre>Sports/Soccer</genre>
+  <score />
+</game>
+<game name="World Series Baseball +4 (Europe)">
+  <title>World Series Baseball +4 (Europe)</title>
+  <year>1985</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Imagine Software</publisher>
+  <developer />
+  <genre>Sports/Baseball</genre>
+  <score />
+</game>
+<game name="World Series Baseball C16 (Europe)">
+  <title>World Series Baseball C16 (Europe)</title>
+  <year>1985</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Imagine Software</publisher>
+  <developer />
+  <genre>Sports/Baseball</genre>
+  <score />
+</game>
+<game name="Wu Lung (Europe)">
+  <title>Wu Lung (Europe)</title>
+  <year>1987</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>ComputerSoft Jonigk</publisher>
+  <developer />
+  <genre>Board Games</genre>
+  <score />
+</game>
+<game name="Xadium (Europe)">
+  <title>Xadium (Europe)</title>
+  <year>1987</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Mastertronic</publisher>
+  <developer />
+  <genre>Action</genre>
+  <score />
+</game>
+<game name="Xargon Wars (Europe)">
+  <title>Xargon Wars (Europe)</title>
+  <year>1984</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Gremlin Graphics</publisher>
+  <developer />
+  <genre>Shoot-&apos;Em-Up</genre>
+  <score />
+</game>
+<game name="Xargon&apos;s Revenge (Europe)">
+  <title>Xargon&apos;s Revenge (Europe)</title>
+  <year>1985</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Gremlin Graphics</publisher>
+  <developer />
+  <genre>Shoot-&apos;Em-Up</genre>
+  <score />
+</game>
+<game name="XCellor8 (Europe)">
+  <title>XCellor8 (Europe)</title>
+  <year>1986</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Gremlin Graphics</publisher>
+  <developer />
+  <genre>Action</genre>
+  <score />
+</game>
+<game name="Xzap (Europe)">
+  <title>Xzap (Europe)</title>
+  <year>1984</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Commodore Business Machines</publisher>
+  <developer />
+  <genre>Action</genre>
+  <score />
+</game>
+<game name="Yie Ar Kung Fu (Europe)">
+  <title>Yie Ar Kung Fu (Europe)</title>
+  <year>1986</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Imagine Software</publisher>
+  <developer />
+  <genre>Fighter</genre>
+  <score />
+</game>
+<game name="Zagon Warrior (Europe)">
+  <title>Zagon Warrior (Europe)</title>
+  <year>1986</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Bug-Byte</publisher>
+  <developer />
+  <genre>Action</genre>
+  <score />
+</game>
+<game name="Zapp-em (Europe)">
+  <title>Zapp-em (Europe)</title>
+  <year>1985</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Tynesoft Computer Software</publisher>
+  <developer />
+  <genre>Shoot-&apos;Em-Up</genre>
+  <score />
+</game>
+<game name="Zodiac (Europe)">
+  <title>Zodiac (Europe)</title>
+  <year>1985</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Anirog</publisher>
+  <developer />
+  <genre>Action</genre>
+  <score />
+</game>
+<game name="Zolyx (Europe)">
+  <title>Zolyx (Europe)</title>
+  <year>1987</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Firebird</publisher>
+  <developer />
+  <genre>Action</genre>
+  <score />
+</game>
+<game name="Zone Control (Europe)">
+  <title>Zone Control (Europe)</title>
+  <year>1986</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Paxman Promotions</publisher>
+  <developer />
+  <genre>Shoot-&apos;Em-Up</genre>
+  <score />
+</game>
+<game name="Zork I (Europe)">
+  <title>Zork I (Europe)</title>
+  <year>1984</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Infocom</publisher>
+  <developer />
+  <genre>Adventure</genre>
+  <score />
+</game>
+<game name="Zork II (Europe)">
+  <title>Zork II (Europe)</title>
+  <year>1984</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Infocom</publisher>
+  <developer />
+  <genre>Adventure</genre>
+  <score />
+</game>
+<game name="Zork III (Europe)">
+  <title>Zork III (Europe)</title>
+  <year>1984</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Infocom</publisher>
+  <developer />
+  <genre>Adventure</genre>
+  <score />
+</game>
+<game name="Zortek and the Microchips (Europe)">
+  <title>Zortek and the Microchips (Europe)</title>
+  <year>1985</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Commodore Business Machines</publisher>
+  <developer />
+  <genre>Educational</genre>
+  <score />
+</game>
+</menu>

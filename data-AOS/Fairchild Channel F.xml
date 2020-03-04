@@ -1,0 +1,249 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<menu>
+<header>
+  <listname>Fairchild Channel F</listname>
+  <lastlistupdate></lastlistupdate>
+  <listversion>V1</listversion>
+  <exporterversion>V1 GameDBInfo converter</exporterversion>
+</header>
+<game name="Alien Invasion (USA)">
+  <title>Alien Invasion (USA)</title>
+  <year>1979</year>
+  <rating>HSRS - GA (General Audience)</rating>
+  <publisher>Zircon</publisher>
+  <developer />
+  <genre>Shooter</genre>
+</game>
+<game name="Backgammon, Acey-Deucey (USA)">
+  <title>Backgammon, Acey-Deucey (USA)</title>
+  <year>1977</year>
+  <rating>HSRS - GA (General Audience)</rating>
+  <publisher>Fairchild</publisher>
+  <developer />
+  <genre>Card Battle</genre>
+</game>
+<game name="Baseball (USA)">
+  <title>Baseball (USA)</title>
+  <year>1977</year>
+  <rating>HSRS - GA (General Audience)</rating>
+  <publisher>Fairchild</publisher>
+  <developer />
+  <genre>Sports/Baseball</genre>
+</game>
+<game name="Bowling (USA)">
+  <title>Bowling (USA)</title>
+  <year>1978</year>
+  <rating>HSRS - GA (General Audience)</rating>
+  <publisher>Fairchild</publisher>
+  <developer />
+  <genre>Sports/Bowling</genre>
+</game>
+<game name="Casino Poker (USA)">
+  <title>Casino Poker (USA)</title>
+  <year>1979</year>
+  <rating>HSRS - GA (General Audience)</rating>
+  <publisher>Zircon</publisher>
+  <developer />
+  <genre>Casino</genre>
+</game>
+<game name="Checkers (USA)">
+  <title>Checkers (USA)</title>
+  <year>1978</year>
+  <rating>HSRS - GA (General Audience)</rating>
+  <publisher>Zircon</publisher>
+  <developer />
+  <genre>Board Games</genre>
+</game>
+<game name="Desert Fox, Shooting Gallery (USA)">
+  <title>Desert Fox, Shooting Gallery (USA)</title>
+  <year>1976</year>
+  <rating>HSRS - GA (General Audience)</rating>
+  <publisher>Zircon</publisher>
+  <developer />
+  <genre>Shooter</genre>
+</game>
+<game name="Dodge It (USA)">
+  <title>Dodge It (USA)</title>
+  <year>1978</year>
+  <rating>HSRS - GA (General Audience)</rating>
+  <publisher>Fairchild</publisher>
+  <developer />
+  <genre>Action</genre>
+</game>
+<game name="Drag Strip (USA)">
+  <title>Drag Strip (USA)</title>
+  <year>1977</year>
+  <rating>HSRS - GA (General Audience)</rating>
+  <publisher>Fairchild</publisher>
+  <developer />
+  <genre>Racing</genre>
+</game>
+<game name="Galactic Space Wars, Lunar Lander (USA)">
+  <title>Galactic Space Wars, Lunar Lander (USA)</title>
+  <year>1990</year>
+  <rating>HSRS - GA (General Audience)</rating>
+  <publisher>Zircon</publisher>
+  <developer />
+  <genre>Shooter</genre>
+</game>
+<game name="Hangman (USA)">
+  <title>Hangman (USA)</title>
+  <year>1978</year>
+  <rating>HSRS - GA (General Audience)</rating>
+  <publisher>Fairchild</publisher>
+  <developer />
+  <genre>Puzzle</genre>
+</game>
+<game name="Hockey &amp; Tennis (USA)">
+  <title>Hockey &amp; Tennis (USA)</title>
+  <year>1976</year>
+  <rating>HSRS - GA (General Audience)</rating>
+  <publisher>Fairchild</publisher>
+  <developer />
+  <genre>Sports</genre>
+</game>
+<game name="Lights Out (USA)">
+  <title>Lights Out (USA)</title>
+  <year>2004</year>
+  <rating>HSRS - GA (General Audience)</rating>
+  <publisher>Sean Riddle</publisher>
+  <developer />
+  <genre>Puzzle</genre>
+</game>
+<game name="Magic Numbers - Mind Reader + Nim (USA)">
+  <title>Magic Numbers - Mind Reader + Nim (USA)</title>
+  <year>1977</year>
+  <rating>HSRS - GA (General Audience)</rating>
+  <publisher>Fairchild</publisher>
+  <developer />
+  <genre>Miscellaneous</genre>
+</game>
+<game name="Math Quiz I - Addition + Subtraction (USA)">
+  <title>Math Quiz I - Addition + Subtraction (USA)</title>
+  <year>1977</year>
+  <rating>HSRS - GA (General Audience)</rating>
+  <publisher>Fairchild</publisher>
+  <developer />
+  <genre>Miscellaneous</genre>
+</game>
+<game name="Math Quiz II - Multiplication + Division (USA)">
+  <title>Math Quiz II - Multiplication + Division (USA)</title>
+  <year>1977</year>
+  <rating>HSRS - GA (General Audience)</rating>
+  <publisher>Fairchild</publisher>
+  <developer />
+  <genre>Miscellaneous</genre>
+</game>
+<game name="Maze, Jailbreak, Blind-man&apos;s-bluff, Trailblazer (USA)">
+  <title>Maze, Jailbreak, Blind-man&apos;s-bluff, Trailblazer (USA)</title>
+  <year>1977</year>
+  <rating>HSRS - GA (General Audience)</rating>
+  <publisher>Fairchild</publisher>
+  <developer />
+  <genre>Action</genre>
+</game>
+<game name="Memory Match 1 &amp; 2 (USA)">
+  <title>Memory Match 1 &amp; 2 (USA)</title>
+  <year>1978</year>
+  <rating>HSRS - GA (General Audience)</rating>
+  <publisher>Fairchild</publisher>
+  <developer />
+  <genre>Miscellaneous</genre>
+</game>
+<game name="Pac-Man (USA)">
+  <title>Pac-Man (USA)</title>
+  <year>2006</year>
+  <rating>HSRS - GA (General Audience)</rating>
+  <publisher>Fredrid Blaholtz</publisher>
+  <developer />
+  <genre>Maze</genre>
+</game>
+<game name="Pinball Challenge (USA)">
+  <title>Pinball Challenge (USA)</title>
+  <year>1978</year>
+  <rating>HSRS - GA (General Audience)</rating>
+  <publisher>Fairchild</publisher>
+  <developer />
+  <genre>Pinball</genre>
+</game>
+<game name="Pro Football (USA)">
+  <title>Pro Football (USA)</title>
+  <year>1990</year>
+  <rating>HSRS - GA (General Audience)</rating>
+  <publisher>Zircon</publisher>
+  <developer />
+  <genre>Sports/Football</genre>
+</game>
+<game name="Robot War, Torpedo Alley (USA)">
+  <title>Robot War, Torpedo Alley (USA)</title>
+  <year>1977</year>
+  <rating>HSRS - GA (General Audience)</rating>
+  <publisher>Fairchild</publisher>
+  <developer />
+  <genre>Shooter</genre>
+</game>
+<game name="Slot Machine (USA)">
+  <title>Slot Machine (USA)</title>
+  <year>1980</year>
+  <rating>HSRS - GA (General Audience)</rating>
+  <publisher>Zircon</publisher>
+  <developer />
+  <genre>Casino</genre>
+</game>
+<game name="Sonar Search (USA)">
+  <title>Sonar Search (USA)</title>
+  <year>1977</year>
+  <rating>HSRS - GA (General Audience)</rating>
+  <publisher>Fairchild</publisher>
+  <developer />
+  <genre>Strategy</genre>
+</game>
+<game name="Space War (USA)">
+  <title>Space War (USA)</title>
+  <year>1977</year>
+  <rating>HSRS - GA (General Audience)</rating>
+  <publisher>Fairchild</publisher>
+  <developer />
+  <genre>Action</genre>
+</game>
+<game name="Spitfire (USA)">
+  <title>Spitfire (USA)</title>
+  <year>1977</year>
+  <rating>HSRS - GA (General Audience)</rating>
+  <publisher>Fairchild</publisher>
+  <developer />
+  <genre>Shooter</genre>
+</game>
+<game name="Tetris (USA)">
+  <title>Tetris (USA)</title>
+  <year>2004</year>
+  <rating>HSRS - GA (General Audience)</rating>
+  <publisher>Peter Trauner</publisher>
+  <developer />
+  <genre>Puzzle</genre>
+</game>
+<game name="Tic-Tac-Toe, Shooting Gallery, Doodle, Quadra-Doodle (USA)">
+  <title>Tic-Tac-Toe, Shooting Gallery, Doodle, Quadra-Doodle (USA)</title>
+  <year>1976</year>
+  <rating>HSRS - GA (General Audience)</rating>
+  <publisher>Fairchild</publisher>
+  <developer />
+  <genre>Miscellaneous</genre>
+</game>
+<game name="Video Blackjack (USA)">
+  <title>Video Blackjack (USA)</title>
+  <year>1976</year>
+  <rating>HSRS - GA (General Audience)</rating>
+  <publisher>Fairchild</publisher>
+  <developer />
+  <genre>Casino</genre>
+</game>
+<game name="Video Whizball (USA)">
+  <title>Video Whizball (USA)</title>
+  <year>1978</year>
+  <rating>HSRS - GA (General Audience)</rating>
+  <publisher>Fairchild</publisher>
+  <developer />
+  <genre>Action</genre>
+</game>
+</menu>

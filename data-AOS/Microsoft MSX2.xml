@@ -1,0 +1,1329 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<menu>
+<header>
+  <listname>Microsoft MSX2</listname>
+  <lastlistupdate></lastlistupdate>
+  <listversion>V1</listversion>
+  <exporterversion>V1 GameDBInfo converter</exporterversion>
+</header>
+<game name="1942 (Japan)">
+  <title>1942 (Japan)</title>
+  <year>1986</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>ASCII</publisher>
+  <developer />
+  <genre>Shoot-&apos;Em-Up</genre>
+</game>
+<game name="AcroJet (Japan)">
+  <title>AcroJet (Japan)</title>
+  <year>1988</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>SystemSoft</publisher>
+  <developer />
+  <genre>Simulation</genre>
+</game>
+<game name="Aleste (Japan)">
+  <title>Aleste (Japan)</title>
+  <year>1988</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Compile</publisher>
+  <developer />
+  <genre>Shoot-&apos;Em-Up</genre>
+</game>
+<game name="Alges no Yoku (Japan)">
+  <title>Alges no Yoku (Japan)</title>
+  <year>1986</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Kogado</publisher>
+  <developer />
+  <genre>Role-Playing</genre>
+</game>
+<game name="American Soccer (Japan)">
+  <title>American Soccer (Japan)</title>
+  <year>1988</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Nidecom Soft</publisher>
+  <developer />
+  <genre>Sports</genre>
+</game>
+<game name="Aoki Ookami to Shiroki Mejika - Genchou Hishi (Japan)">
+  <title>Aoki Ookami to Shiroki Mejika - Genchou Hishi (Japan)</title>
+  <year>1992</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Koei</publisher>
+  <developer />
+  <genre>Strategy</genre>
+</game>
+<game name="Aoki Ookami to Shiroki Mejika - Genghis Khan (Japan)">
+  <title>Aoki Ookami to Shiroki Mejika - Genghis Khan (Japan)</title>
+  <year>1991</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Koei</publisher>
+  <developer />
+  <genre>Strategy</genre>
+</game>
+<game name="Arctic - Active Rail Playing (Japan)">
+  <title>Arctic - Active Rail Playing (Japan)</title>
+  <year>1989</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Pony Canyon</publisher>
+  <developer />
+  <genre>Puzzle</genre>
+</game>
+<game name="Arkanoid II - Revenge of Doh (Japan)">
+  <title>Arkanoid II - Revenge of Doh (Japan)</title>
+  <year>1988</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Taito</publisher>
+  <developer />
+  <genre>Action</genre>
+</game>
+<game name="Asada Tetsuya no Akyoo Mahjong (Japan)">
+  <title>Asada Tetsuya no Akyoo Mahjong (Japan)</title>
+  <year>1989</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Pony Canyon</publisher>
+  <developer />
+  <genre>Mahjong</genre>
+</game>
+<game name="AshGuine - Densetsu no Seisenshi (Japan)">
+  <title>AshGuine - Densetsu no Seisenshi (Japan)</title>
+  <year>1987</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Bit2</publisher>
+  <developer />
+  <genre>Action</genre>
+</game>
+<game name="AshGuine Story II - Citadel in the Void (Japan) (Translated En)">
+  <title>AshGuine Story II - Citadel in the Void (Japan) (Translated En)</title>
+  <year>1987</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Bit2</publisher>
+  <developer />
+  <genre>Action</genre>
+</game>
+<game name="AshGuine Story II - Kokuu no Gajou (Japan)">
+  <title>AshGuine Story II - Kokuu no Gajou (Japan)</title>
+  <year>1987</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>TE Soft</publisher>
+  <developer />
+  <genre>Action</genre>
+</game>
+<game name="AshGuine Story III - Fukushuu no Honoo (Japan)">
+  <title>AshGuine Story III - Fukushuu no Honoo (Japan)</title>
+  <year>1987</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Micro Cabin - Panasoft</publisher>
+  <developer />
+  <genre>Action</genre>
+</game>
+<game name="Blade Lords (Japan)">
+  <title>Blade Lords (Japan)</title>
+  <year>1994</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Parallax</publisher>
+  <developer />
+  <genre>Platform</genre>
+</game>
+<game name="Bubble Bobble (Japan)">
+  <title>Bubble Bobble (Japan)</title>
+  <year>1987</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Taito</publisher>
+  <developer />
+  <genre>Platform</genre>
+</game>
+<game name="Cockpit, The (Japan)">
+  <title>Cockpit, The (Japan)</title>
+  <year>1988</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Taito</publisher>
+  <developer />
+  <genre>Simulation</genre>
+</game>
+<game name="Contra (Japan)">
+  <title>Contra (Japan)</title>
+  <year>1987</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Konami</publisher>
+  <developer />
+  <genre>Shooter</genre>
+</game>
+<game name="Crimson (Japan)">
+  <title>Crimson (Japan)</title>
+  <year>1988</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>XTALSOFT</publisher>
+  <developer />
+  <genre>Role-Playing</genre>
+</game>
+<game name="Daikoukai Jidai (Japan)">
+  <title>Daikoukai Jidai (Japan)</title>
+  <year>1990</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Koei</publisher>
+  <developer />
+  <genre>Strategy</genre>
+</game>
+<game name="Daisenryaku Risk (Japan)">
+  <title>Daisenryaku Risk (Japan)</title>
+  <year>1987</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Micro Cabin</publisher>
+  <developer />
+  <genre>Strategy</genre>
+</game>
+<game name="Darwin 4078 (Japan)">
+  <title>Darwin 4078 (Japan)</title>
+  <year>1987</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Hudson</publisher>
+  <developer />
+  <genre>Shoot-&apos;Em-Up</genre>
+</game>
+<game name="Deep Forest (Japan)">
+  <title>Deep Forest (Japan)</title>
+  <year>1987</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>XAIN</publisher>
+  <developer />
+  <genre>Role-Playing</genre>
+</game>
+<game name="Dires - Giger Loop (Japan)">
+  <title>Dires - Giger Loop (Japan)</title>
+  <year>1987</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Bothtec</publisher>
+  <developer />
+  <genre>Action</genre>
+</game>
+<game name="Double Vision (Japan)">
+  <title>Double Vision (Japan)</title>
+  <year>1987</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Hard</publisher>
+  <developer />
+  <genre>Simulation</genre>
+</game>
+<game name="Dragon Buster (Japan)">
+  <title>Dragon Buster (Japan)</title>
+  <year>1987</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>TOSE</publisher>
+  <developer />
+  <genre>Role-Playing</genre>
+</game>
+<game name="Dragon Quest (Japan)">
+  <title>Dragon Quest (Japan)</title>
+  <year>1986</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Enix</publisher>
+  <developer />
+  <genre>Role-Playing</genre>
+</game>
+<game name="Dragon Quest II (Japan)">
+  <title>Dragon Quest II (Japan)</title>
+  <year>1988</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Enix</publisher>
+  <developer />
+  <genre>Role-Playing</genre>
+</game>
+<game name="Dragon Slayer IV - Drasle Family (Japan)">
+  <title>Dragon Slayer IV - Drasle Family (Japan)</title>
+  <year>1987</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Falcom</publisher>
+  <developer />
+  <genre>Role-Playing</genre>
+</game>
+<game name="Dragon Slayer IV - Drasle Family (Japan)(Translated En)">
+  <title>Dragon Slayer IV - Drasle Family (Japan)(Translated En)</title>
+  <year>1987</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Falcom</publisher>
+  <developer />
+  <genre>Role-Playing</genre>
+</game>
+<game name="Dragon Slayer Jr. - Romancia (Japan)">
+  <title>Dragon Slayer Jr. - Romancia (Japan)</title>
+  <year>1986</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Falcom</publisher>
+  <developer />
+  <genre>Role-Playing</genre>
+</game>
+<game name="Dragon Slayer Jr. - Romancia (Japan) (Translated En)">
+  <title>Dragon Slayer Jr. - Romancia (Japan) (Translated En)</title>
+  <year>1986</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Falcom</publisher>
+  <developer />
+  <genre>Role-Playing</genre>
+</game>
+<game name="Druid (Japan)">
+  <title>Druid (Japan)</title>
+  <year>1988</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Nippon</publisher>
+  <developer />
+  <genre>Role-Playing</genre>
+</game>
+<game name="Dynamite Bowl (Japan)">
+  <title>Dynamite Bowl (Japan)</title>
+  <year>1987</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Toshiba EMI</publisher>
+  <developer />
+  <genre>Sports</genre>
+</game>
+<game name="Eidolon, The (Europe)">
+  <title>Eidolon, The (Europe)</title>
+  <year>1985</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>LucasFilm</publisher>
+  <developer />
+  <genre>Action</genre>
+</game>
+<game name="Elslid (Japan)">
+  <title>Elslid (Japan)</title>
+  <year>1989</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>NCS</publisher>
+  <developer />
+  <genre>Strategy</genre>
+</game>
+<game name="Empereur, L&apos; (Japan)">
+  <title>Empereur, L&apos; (Japan)</title>
+  <year>1990</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Koei</publisher>
+  <developer />
+  <genre>Simulation</genre>
+</game>
+<game name="Europe Sensen (Japan)">
+  <title>Europe Sensen (Japan)</title>
+  <year>1992</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Koei</publisher>
+  <developer />
+  <genre>Strategy</genre>
+</game>
+<game name="F-15 Strike Eagle (Japan)">
+  <title>F-15 Strike Eagle (Japan)</title>
+  <year>1990</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Novotrade / MicroProse</publisher>
+  <developer />
+  <genre>Flying</genre>
+</game>
+<game name="Famicle Parodic (Japan)">
+  <title>Famicle Parodic (Japan)</title>
+  <year>1988</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Bit2</publisher>
+  <developer />
+  <genre>Shoot-&apos;Em-Up</genre>
+</game>
+<game name="Family Billiards (Japan)">
+  <title>Family Billiards (Japan)</title>
+  <year>1988</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Dual / Pack-In-Video</publisher>
+  <developer />
+  <genre>Pool and Dart</genre>
+</game>
+<game name="Family Boxing - MSX Title Match (Japan)">
+  <title>Family Boxing - MSX Title Match (Japan)</title>
+  <year>1988</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>SCEI</publisher>
+  <developer />
+  <genre>Sports</genre>
+</game>
+<game name="Fantasy Zone II - The Tears of Opa-Opa (Japan)">
+  <title>Fantasy Zone II - The Tears of Opa-Opa (Japan)</title>
+  <year>1989</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Atelier Double / Pony Canyon</publisher>
+  <developer />
+  <genre>Shoot-&apos;Em-Up</genre>
+</game>
+<game name="Final Mystery Murder Club - Satsujin Club (Japan)">
+  <title>Final Mystery Murder Club - Satsujin Club (Japan)</title>
+  <year>1988</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Micro Cabin</publisher>
+  <developer />
+  <genre>Adventure</genre>
+</game>
+<game name="Fire Ball (Japan)">
+  <title>Fire Ball (Japan)</title>
+  <year>1988</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Hummingbird Soft</publisher>
+  <developer />
+  <genre>Pinball</genre>
+</game>
+<game name="Fleet Commander II - Koukon no Kaiiki (Japan)">
+  <title>Fleet Commander II - Koukon no Kaiiki (Japan)</title>
+  <year>1990</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>ASCII</publisher>
+  <developer />
+  <genre>Strategy</genre>
+</game>
+<game name="Gakuen Monogatari - High School Story (Japan)">
+  <title>Gakuen Monogatari - High School Story (Japan)</title>
+  <year>1988</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Great</publisher>
+  <developer />
+  <genre>Adventure</genre>
+</game>
+<game name="Gambler Jiko Chuushinha 2 - Jishou! Kyougou Janshi Hen (Japan)">
+  <title>Gambler Jiko Chuushinha 2 - Jishou! Kyougou Janshi Hen (Japan)</title>
+  <year>1989</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Game Arts</publisher>
+  <developer />
+  <genre>Tabletop</genre>
+</game>
+<game name="Ganbare Goemon! - Karakuri Douchuu (Japan)">
+  <title>Ganbare Goemon! - Karakuri Douchuu (Japan)</title>
+  <year>1987</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Konami</publisher>
+  <developer />
+  <genre>Action</genre>
+</game>
+<game name="Garyuu Ou (Japan)">
+  <title>Garyuu Ou (Japan)</title>
+  <year>1987</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>XAIN</publisher>
+  <developer />
+  <genre>Action</genre>
+</game>
+<game name="Gekitotsu Pennant Race - Pro Yakyuu, The (Japan)">
+  <title>Gekitotsu Pennant Race - Pro Yakyuu, The (Japan)</title>
+  <year>1988</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Konami</publisher>
+  <developer />
+  <genre>Sports</genre>
+</game>
+<game name="Gekitotsu Pennant Race 2 (Japan) (English Menu)">
+  <title>Gekitotsu Pennant Race 2 (Japan) (English Menu)</title>
+  <year>1989</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Konami</publisher>
+  <developer />
+  <genre>Sports</genre>
+</game>
+<game name="Girly Block (Japan)">
+  <title>Girly Block (Japan)</title>
+  <year>1988</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Compile / Nippon Telenet</publisher>
+  <developer />
+  <genre>Action</genre>
+</game>
+<game name="Gitahei (Japan)">
+  <title>Gitahei (Japan)</title>
+  <year>1986</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Micro Cabin</publisher>
+  <developer />
+  <genre>Tabletop</genre>
+</game>
+<game name="Go Othello. Connect Stones (Japan)">
+  <title>Go Othello. Connect Stones (Japan)</title>
+  <year>1990</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Konami</publisher>
+  <developer />
+  <genre>Tabletop</genre>
+</game>
+<game name="Hacker (Japan)">
+  <title>Hacker (Japan)</title>
+  <year>1988</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Pony Canyon</publisher>
+  <developer />
+  <genre>Adventure</genre>
+</game>
+<game name="Hai no Majutsushi (Japan)">
+  <title>Hai no Majutsushi (Japan)</title>
+  <year>1989</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Konami</publisher>
+  <developer />
+  <genre>Tabletop</genre>
+</game>
+<game name="Han Seimei Senki Andorogynus (Japan)">
+  <title>Han Seimei Senki Andorogynus (Japan)</title>
+  <year>1987</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Telenet Japan Co., Ltd.</publisher>
+  <developer />
+  <genre>Action</genre>
+</game>
+<game name="Hard Ball (Japan)">
+  <title>Hard Ball (Japan)</title>
+  <year>1987</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>SCEI</publisher>
+  <developer />
+  <genre>Sports</genre>
+</game>
+<game name="Heroes of the Lance (Japan)">
+  <title>Heroes of the Lance (Japan)</title>
+  <year>1991</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Pony Canyon</publisher>
+  <developer />
+  <genre>Role-Playing</genre>
+</game>
+<game name="Higemaru Makai Shima - Nanatsu no Shima Daibouken (Japan)">
+  <title>Higemaru Makai Shima - Nanatsu no Shima Daibouken (Japan)</title>
+  <year>1987</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Compile / Capcom</publisher>
+  <developer />
+  <genre>Action</genre>
+</game>
+<game name="High School! Kimengumi (Japan)">
+  <title>High School! Kimengumi (Japan)</title>
+  <year>1987</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Pony Canyon</publisher>
+  <developer />
+  <genre>Action</genre>
+</game>
+<game name="Hinotori - Houou Hen (Japan)">
+  <title>Hinotori - Houou Hen (Japan)</title>
+  <year>1987</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Konami</publisher>
+  <developer />
+  <genre>Shoot-&apos;Em-Up</genre>
+</game>
+<game name="Hole in One Special (Japan)">
+  <title>Hole in One Special (Japan)</title>
+  <year>1986</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Hal</publisher>
+  <developer />
+  <genre>Sports</genre>
+</game>
+<game name="Hydlide 3 - The Space Memories (Japan)">
+  <title>Hydlide 3 - The Space Memories (Japan)</title>
+  <year>1987</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>TE Soft</publisher>
+  <developer />
+  <genre>Role-Playing</genre>
+</game>
+<game name="Hyper Somen (Japan)">
+  <title>Hyper Somen (Japan)</title>
+  <year>1989</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Konami</publisher>
+  <developer />
+  <genre>Miscellaneous</genre>
+</game>
+<game name="Ide Yousuke Meijin no Jissen Mahjong (Japan)">
+  <title>Ide Yousuke Meijin no Jissen Mahjong (Japan)</title>
+  <year>1988</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Pack-In-Video</publisher>
+  <developer />
+  <genre>Mahjong</genre>
+</game>
+<game name="Ikari (Japan)">
+  <title>Ikari (Japan)</title>
+  <year>1987</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>SNK</publisher>
+  <developer />
+  <genre>Shooter</genre>
+</game>
+<game name="Inindou - Datou Nobunaga (Japan)">
+  <title>Inindou - Datou Nobunaga (Japan)</title>
+  <year>1991</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Koei</publisher>
+  <developer />
+  <genre>Role-Playing</genre>
+</game>
+<game name="Ishin no Arashi (Japan)">
+  <title>Ishin no Arashi (Japan)</title>
+  <year>1989</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Koei</publisher>
+  <developer />
+  <genre>Strategy</genre>
+</game>
+<game name="Jansei (Japan)">
+  <title>Jansei (Japan)</title>
+  <year>1986</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Chatnoir / Sony Corporation</publisher>
+  <developer />
+  <genre>Tabletop</genre>
+</game>
+<game name="Janyuu (Japan)">
+  <title>Janyuu (Japan)</title>
+  <year>1986</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>SCEE</publisher>
+  <developer />
+  <genre>Mahjong</genre>
+</game>
+<game name="Kenpelen Chess (Japan)">
+  <title>Kempelen Chess (Japan)</title>
+  <year>1988</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Pony Canyon</publisher>
+  <developer />
+  <genre>Tabletop</genre>
+</game>
+<game name="Kikikai-kai (Japan)">
+  <title>Kikikai-kai (Japan)</title>
+  <year>1987</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Pixel / SCEI</publisher>
+  <developer />
+  <genre>Shooter</genre>
+</game>
+<game name="King Kong 2 - Yomigaeru Densetsu (Japan)">
+  <title>King Kong 2 - Yomigaeru Densetsu (Japan)</title>
+  <year>1987</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Konami</publisher>
+  <developer />
+  <genre>Action</genre>
+</game>
+<game name="King Kong 2 - Yomigaeru Densetsu (Japan)(Translated En)">
+  <title>King Kong 2 - Yomigaeru Densetsu (Japan)(Translated En) (Japan)</title>
+  <year>1987</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Konami</publisher>
+  <developer />
+  <genre>Action</genre>
+</game>
+<game name="King&apos;s Valley II - The Seal of El Giza (Japan)">
+  <title>King&apos;s Valley II - The Seal of El Giza (Japan)</title>
+  <year>1988</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Konami</publisher>
+  <developer />
+  <genre>Action</genre>
+</game>
+<game name="King&apos;s Valley II - The Seal of El Giza - Edit Contest Version (Japan)">
+  <title>King&apos;s Valley II - The Seal of El Giza - Edit Contest Version (Japan)</title>
+  <year>1988</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Konami</publisher>
+  <developer />
+  <genre>Action</genre>
+</game>
+<game name="Kisei (Japan)">
+  <title>Kisei (Japan)</title>
+  <year>1987</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>SCEI</publisher>
+  <developer />
+  <genre>Tabletop</genre>
+</game>
+<game name="Koji Tanigawa&apos;s Shougi Shinan II (Japan)">
+  <title>Koji Tanigawa&apos;s Shougi Shinan II (Japan)</title>
+  <year>1988</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Pony Canyon</publisher>
+  <developer />
+  <genre>Tabletop</genre>
+</game>
+<game name="Koronis Rift (Europe)">
+  <title>Koronis Rift (Europe)</title>
+  <year>1987</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Pony Canyon</publisher>
+  <developer />
+  <genre>Action</genre>
+</game>
+<game name="Kyoto Ryu no Tera Satsujin Jiken (Japan)">
+  <title>Kyoto Ryu no Tera Satsujin Jiken (Japan)</title>
+  <year>1988</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Taito</publisher>
+  <developer />
+  <genre>Adventure</genre>
+</game>
+<game name="Labyrinth (Japan)">
+  <title>Labyrinth (Japan)</title>
+  <year>1987</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Pack-In-Video</publisher>
+  <developer />
+  <genre>Shooter</genre>
+</game>
+<game name="Livingstone Supongo (Japan)">
+  <title>Livingstone Supongo (Japan)</title>
+  <year>1987</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Opera Soft</publisher>
+  <developer />
+  <genre>Platform</genre>
+</game>
+<game name="Lupin Sansei - Babylon no Ougon Densetsu (Japan)">
+  <title>Lupin Sansei - Babylon no Ougon Densetsu (Japan)</title>
+  <year>1988</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Toho</publisher>
+  <developer />
+  <genre>Platform</genre>
+</game>
+<game name="Lupin Sansei - Cagliostro no Shiro (Japan)">
+  <title>Lupin Sansei - Cagliostro no Shiro (Japan)</title>
+  <year>1987</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Toho</publisher>
+  <developer />
+  <genre>Platform</genre>
+</game>
+<game name="Mad Rider (Japan)">
+  <title>Mad Rider (Japan)</title>
+  <year>1987</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Carry Lab</publisher>
+  <developer />
+  <genre>Driving</genre>
+</game>
+<game name="Maison Ikkoku - Kanketsu Hen - Sayonara, Soshite... (Japan)">
+  <title>Maison Ikkoku - Kanketsu Hen - Sayonara, Soshite... (Japan)</title>
+  <year>1988</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Micro Cabin</publisher>
+  <developer />
+  <genre>Adventure</genre>
+</game>
+<game name="Maison Ikkoku - Omoide no Photograph (Japan)">
+  <title>Maison Ikkoku - Omoide no Photograph (Japan)</title>
+  <year>1987</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Micro Cabin</publisher>
+  <developer />
+  <genre>Adventure</genre>
+</game>
+<game name="Malaya no Hibou (Japan)">
+  <title>Malaya no Hibou (Japan)</title>
+  <year>1988</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Pony Canyon</publisher>
+  <developer />
+  <genre>Action</genre>
+</game>
+<game name="Metal Gear (Europe)">
+  <title>Metal Gear (Europe)</title>
+  <year>1987</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Konami</publisher>
+  <developer />
+  <genre>Action</genre>
+</game>
+<game name="Metal Gear (Japan)">
+  <title>Metal Gear (Japan)</title>
+  <year>1987</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Konami</publisher>
+  <developer />
+  <genre>Action</genre>
+</game>
+<game name="Metal Gear 2 - Solid Snake (Japan)">
+  <title>Metal Gear 2 - Solid Snake (Japan)</title>
+  <year>1990</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Konami</publisher>
+  <developer />
+  <genre>Action</genre>
+</game>
+<game name="Metal Gear 2 - Solid Snake (Japan) (Demo)">
+  <title>Metal Gear 2 - Solid Snake (Japan) (Demo)</title>
+  <year>1990</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Konami</publisher>
+  <developer />
+  <genre>Action</genre>
+</game>
+<game name="Metal Gear 2 - Solid Snake (Japan)(Translated En)">
+  <title>Metal Gear 2 - Solid Snake (Japan)(Translated En)</title>
+  <year>1990</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Konami</publisher>
+  <developer />
+  <genre>Action</genre>
+</game>
+<game name="Mirai (Japan)">
+  <title>Mirai (Japan)</title>
+  <year>1987</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>XAIN</publisher>
+  <developer />
+  <genre>Role-Playing</genre>
+</game>
+<game name="Mississippi Satsujinjiken (Japan)">
+  <title>Mississippi Satsujinjiken (Japan)</title>
+  <year>1987</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Jaleco Entertainment</publisher>
+  <developer />
+  <genre>Adventure</genre>
+</game>
+<game name="Moero!! Nettou Yakyuu &apos;88 (Japan)">
+  <title>Moero!! Nettou Yakyuu &apos;88 (Japan)</title>
+  <year>1988</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Jaleco Entertainment</publisher>
+  <developer />
+  <genre>Sports</genre>
+</game>
+<game name="Monmon Kaibutsu (Japan)">
+  <title>Monmon Kaibutsu (Japan)</title>
+  <year>1989</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Hot-B</publisher>
+  <developer />
+  <genre>Action</genre>
+</game>
+<game name="Nekketsu Juudou (Japan)">
+  <title>Nekketsu Juudou (Japan)</title>
+  <year>1989</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Opera House / Pony Canyon</publisher>
+  <developer />
+  <genre>Sports</genre>
+</game>
+<game name="Ninja-kun - Asura no Shou (Japan)">
+  <title>Ninja-kun - Asura no Shou (Japan)</title>
+  <year>1987</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Opera House / HAL Labs</publisher>
+  <developer />
+  <genre>Action</genre>
+</game>
+<game name="Nobunaga no Yabou - Zenkoku Ban (Japan)">
+  <title>Nobunaga no Yabou - Zenkoku Ban (Japan)</title>
+  <year>1987</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Koei</publisher>
+  <developer />
+  <genre>Strategy</genre>
+</game>
+<game name="Nobunaga no Yabou 2 - Sengoku Gunyuu Den (Japan)">
+  <title>Nobunaga no Yabou 2 - Sengoku Gunyuu Den (Japan)</title>
+  <year>1989</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Koei</publisher>
+  <developer />
+  <genre>Strategy</genre>
+</game>
+<game name="Nobunaga no Yabou 3 - Bushou Fuuun Roku (Japan)">
+  <title>Nobunaga no Yabou 3 - Bushou Fuuun Roku (Japan)</title>
+  <year>1991</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Koei</publisher>
+  <developer />
+  <genre>Strategy</genre>
+</game>
+<game name="Ogre (Japan)">
+  <title>Ogre (Japan)</title>
+  <year>1987</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>SystemSoft</publisher>
+  <developer />
+  <genre>Action</genre>
+</game>
+<game name="Out Run (Japan)">
+  <title>Out Run (Japan)</title>
+  <year>1988</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Bedrock Software / US Gold</publisher>
+  <developer />
+  <genre>Driving</genre>
+</game>
+<game name="Pac-Mania (Japan)">
+  <title>Pac-Mania (Japan)</title>
+  <year>1989</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Namco</publisher>
+  <developer />
+  <genre>Action</genre>
+</game>
+<game name="Pachi Pro Densetsu (Japan)">
+  <title>Pachi Pro Densetsu (Japan)</title>
+  <year>1989</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Hal</publisher>
+  <developer />
+  <genre>Miscellaneous</genre>
+</game>
+<game name="Penguin-kun Wars 2 (Japan)">
+  <title>Penguin-kun Wars 2 (Japan)</title>
+  <year>1988</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>ASCII Entertainment</publisher>
+  <developer />
+  <genre>Action</genre>
+</game>
+<game name="Penguin-kun Wars 2 (Japan)(Translated En)">
+  <title>Penguin-kun Wars 2 (Japan)(Translated En)</title>
+  <year>1988</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>ASCII Entertainment</publisher>
+  <developer />
+  <genre>Action</genre>
+</game>
+<game name="Persevere Goemon! A Tricky Journey (Japan)(Translated En)">
+  <title>Persevere Goemon! A Tricky Journey (Japan)(Translated En)</title>
+  <year>1987</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Konami</publisher>
+  <developer />
+  <genre>Action</genre>
+</game>
+<game name="Predator (Japan)">
+  <title>Predator (Japan)</title>
+  <year>1988</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Pack-In-Video</publisher>
+  <developer />
+  <genre>Shooter</genre>
+</game>
+<game name="Pro Yakyuu Family Stadium - Pennant Race (Japan)">
+  <title>Pro Yakyuu Family Stadium - Pennant Race (Japan)</title>
+  <year>1989</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Compile / Namco</publisher>
+  <developer />
+  <genre>Sports</genre>
+</game>
+<game name="Pro Yakyuu Fan - Telenet Stadium (Japan)">
+  <title>Pro Yakyuu Fan - Telenet Stadium (Japan)</title>
+  <year>1987</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Nippon Telenet</publisher>
+  <developer />
+  <genre>Action</genre>
+</game>
+<game name="Professional Mahjong Gokuu (Japan)">
+  <title>Professional Mahjong Gokuu (Japan)</title>
+  <year>1988</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Chat Noir</publisher>
+  <developer />
+  <genre>Mahjong</genre>
+</game>
+<game name="Project A2 - Shijousaidai no Hyouteki (Japan)">
+  <title>Project A2 - Shijousaidai no Hyouteki (Japan)</title>
+  <year>1987</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Opera House / Pony Canyon</publisher>
+  <developer />
+  <genre>Action</genre>
+</game>
+<game name="Quarth (Japan)">
+  <title>Quarth (Japan)</title>
+  <year>1990</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Konami</publisher>
+  <developer />
+  <genre>Puzzle</genre>
+</game>
+<game name="Quarth (Japan) (Demo)">
+  <title>Quarth (Japan) (Demo)</title>
+  <year>1990</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Konami</publisher>
+  <developer />
+  <genre>Puzzle</genre>
+</game>
+<game name="Quarth (Korea)">
+  <title>Quarth (Korea)</title>
+  <year>1990</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Konami</publisher>
+  <developer />
+  <genre>Puzzle</genre>
+</game>
+<game name="Quinpl (Japan)">
+  <title>Quinpl (Japan)</title>
+  <year>1988</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Bit2</publisher>
+  <developer />
+  <genre>Action</genre>
+</game>
+<game name="Rastan Saga (Japan)">
+  <title>Rastan Saga (Japan)</title>
+  <year>1988</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Taito Corporation</publisher>
+  <developer />
+  <genre>Platform</genre>
+</game>
+<game name="Relics (Japan)">
+  <title>Relics (Japan)</title>
+  <year>1988</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Bothtec / Eaglesoft</publisher>
+  <developer />
+  <genre>Action</genre>
+</game>
+<game name="Replicart (Japan)">
+  <title>Replicart (Japan)</title>
+  <year>1987</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Dual / SCEI</publisher>
+  <developer />
+  <genre>Action</genre>
+</game>
+<game name="Return of Ishtar, The (Japan)">
+  <title>Return of Ishtar, The (Japan)</title>
+  <year>1988</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Namco</publisher>
+  <developer />
+  <genre>Action</genre>
+</game>
+<game name="Return of Jelda (Japan)">
+  <title>Return of Jelda (Japan)</title>
+  <year>1987</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Carry Lab</publisher>
+  <developer />
+  <genre>Action</genre>
+</game>
+<game name="Rick to Mick no Daibouken (Japan)">
+  <title>Rick to Mick no Daibouken (Japan)</title>
+  <year>1987</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Hummingbird Soft</publisher>
+  <developer />
+  <genre>Action</genre>
+</game>
+<game name="Royal Blood (Japan)">
+  <title>Royal Blood (Japan)</title>
+  <year>1991</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Koei</publisher>
+  <developer />
+  <genre>Strategy</genre>
+</game>
+<game name="Sangokushi (Japan)">
+  <title>Sangokushi (Japan)</title>
+  <year>1986</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Koei</publisher>
+  <developer />
+  <genre>Strategy</genre>
+</game>
+<game name="Sangokushi II (Japan)">
+  <title>Sangokushi II (Japan)</title>
+  <year>1990</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Koei</publisher>
+  <developer />
+  <genre>Strategy</genre>
+</game>
+<game name="Scramble Formation (Japan)">
+  <title>Scramble Formation (Japan)</title>
+  <year>1987</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Taito Corporation</publisher>
+  <developer />
+  <genre>Shoot-&apos;Em-Up</genre>
+</game>
+<game name="Seigimatsu II Special Attack Devil (Japan)">
+  <title>Seigimatsu II Special Attack Devil (Japan)</title>
+  <year>1987</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Sony</publisher>
+  <developer />
+  <genre>Action</genre>
+</game>
+<game name="Shanghai (Japan)">
+  <title>Shanghai (Japan)</title>
+  <year>1987</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>System Soft / Activision</publisher>
+  <developer />
+  <genre>Mahjong</genre>
+</game>
+<game name="Shirei Sensen - War of the Dead (Japan)">
+  <title>Shirei Sensen - War of the Dead (Japan)</title>
+  <year>1988</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Fun Factory</publisher>
+  <developer />
+  <genre>Role-Playing</genre>
+</game>
+<game name="Space Manbow (Japan)">
+  <title>Space Manbow (Japan)</title>
+  <year>1989</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Konami</publisher>
+  <developer />
+  <genre>Shoot-&apos;Em-Up</genre>
+</game>
+<game name="Star Virgin (Japan)">
+  <title>Star Virgin (Japan)</title>
+  <year>1988</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Marionette / Pony Canyon</publisher>
+  <developer />
+  <genre>Action</genre>
+</game>
+<game name="Strategic Mars (Japan)">
+  <title>Strategic Mars (Japan)</title>
+  <year>1988</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>DB Soft</publisher>
+  <developer />
+  <genre>Shooter</genre>
+</game>
+<game name="Suikoden - Tenmei no Chikai (Japan)">
+  <title>Suikoden - Tenmei no Chikai (Japan)</title>
+  <year>1988</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Koei</publisher>
+  <developer />
+  <genre>Strategy</genre>
+</game>
+<game name="Super Daisenryaku (Japan)">
+  <title>Super Daisenryaku (Japan)</title>
+  <year>1989</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Koei</publisher>
+  <developer />
+  <genre>Strategy</genre>
+</game>
+<game name="Super Load Runner (Japan)">
+  <title>Super Load Runner (Japan)</title>
+  <year>1987</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Irem</publisher>
+  <developer />
+  <genre>Platform</genre>
+</game>
+<game name="Super Rambo Special (Japan)">
+  <title>Super Rambo Special (Japan)</title>
+  <year>1986</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Pack-In-Video</publisher>
+  <developer />
+  <genre>Shooter</genre>
+</game>
+<game name="Super Runner (Japan)">
+  <title>Super Runner (Japan)</title>
+  <year>1987</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Opera House / Pony Canyon</publisher>
+  <developer />
+  <genre>Action</genre>
+</game>
+<game name="Super Tritorn (Japan)">
+  <title>Super Tritorn (Japan)</title>
+  <year>1986</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>XAIN</publisher>
+  <developer />
+  <genre>Action</genre>
+</game>
+<game name="Taiyou no Shinden - Asteka II (Japan)">
+  <title>Taiyou no Shinden - Asteka II (Japan)</title>
+  <year>1988</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Zap / Tokyo Shoseki</publisher>
+  <developer />
+  <genre>Action</genre>
+</game>
+<game name="Take the A Train (Japan)">
+  <title>Take the A Train (Japan)</title>
+  <year>1989</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Pony Canyon</publisher>
+  <developer />
+  <genre>Simulation</genre>
+</game>
+<game name="Tengoku Yoitoko (Japan)">
+  <title>Tengoku Yoitoko (Japan)</title>
+  <year>1987</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Taito Corporation</publisher>
+  <developer />
+  <genre>Role-Playing</genre>
+</game>
+<game name="Tetris (Japan)">
+  <title>Tetris (Japan)</title>
+  <year>1987</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>AcademySoft / Mirrorsoft</publisher>
+  <developer />
+  <genre>Puzzle</genre>
+</game>
+<game name="Title Memory (Japan)">
+  <title>Title Memory (Japan)</title>
+  <year>1988</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Konami</publisher>
+  <developer />
+  <genre>Puzzle</genre>
+</game>
+<game name="Topple Zip (Japan)">
+  <title>Topple Zip (Japan)</title>
+  <year>1986</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Bothtec / Eaglesoft</publisher>
+  <developer />
+  <genre>Action</genre>
+</game>
+<game name="Treasure of Usas, The (Japan, Europe)">
+  <title>Treasure of Usas, The (Japan, Europe)</title>
+  <year>1987</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Konami</publisher>
+  <developer />
+  <genre>Action</genre>
+</game>
+<game name="Tsurikichi Sanpei - Blue Marine Hen (Japan)">
+  <title>Tsurikichi Sanpei - Blue Marine Hen (Japan)</title>
+  <year>1988</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Victor Interactive Software</publisher>
+  <developer />
+  <genre>Sports</genre>
+</game>
+<game name="Turikichi Sampei Turisennin Hen (Japan)">
+  <title>Turikichi Sampei Turisennin Hen (Japan)</title>
+  <year>1989</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Victor Interactive Software</publisher>
+  <developer />
+  <genre>Sports</genre>
+</game>
+<game name="Ultima III - Exodus (Japan)">
+  <title>Ultima III - Exodus (Japan)</title>
+  <year>1988</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Pony Canyon</publisher>
+  <developer />
+  <genre>Role-Playing</genre>
+</game>
+<game name="Urusei Yatsura - Koi no Survival Birthday (Japan)">
+  <title>Urusei Yatsura - Koi no Survival Birthday (Japan)</title>
+  <year>1987</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Micro Cabin</publisher>
+  <developer />
+  <genre>Adventure</genre>
+</game>
+<game name="Vampire Killer (Japan)">
+  <title>Vampire Killer (Japan)</title>
+  <year>1986</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Konami</publisher>
+  <developer />
+  <genre>Action</genre>
+</game>
+<game name="Victorius Nine II (Japan)">
+  <title>Victorius Nine II (Japan)</title>
+  <year>1988</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Taito Corporation</publisher>
+  <developer />
+  <genre>Sports</genre>
+</game>
+<game name="Wizardry - Proving Grounds of Mad Overload (Japan)">
+  <title>Wizardry - Proving Grounds of Mad Overload (Japan)</title>
+  <year>1987</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>ASCII Entertainment</publisher>
+  <developer />
+  <genre>Role-Playing</genre>
+</game>
+<game name="Woody Poco (Japan)">
+  <title>Woody Poco (Japan)</title>
+  <year>1987</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>DB Soft</publisher>
+  <developer />
+  <genre>Action</genre>
+</game>
+<game name="Woody Poco (Japan)(Translated En)">
+  <title>Woody Poco (Japan)(Translated En)</title>
+  <year>1987</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>DB Soft</publisher>
+  <developer />
+  <genre>Action</genre>
+</game>
+<game name="Xevious - Fardraut Saga (Japan)">
+  <title>Xevious - Fardraut Saga (Japan)</title>
+  <year>1988</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Compile / Namco</publisher>
+  <developer />
+  <genre>Shoot-&apos;Em-Up</genre>
+</game>
+<game name="Yaksa (Japan)">
+  <title>Yaksa (Japan)</title>
+  <year>1987</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Wolf Tam</publisher>
+  <developer />
+  <genre>Role-Playing</genre>
+</game>
+<game name="Yuurei Kun (Japan)">
+  <title>Yuurei Kun (Japan)</title>
+  <year>1988</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>System Sacom</publisher>
+  <developer />
+  <genre>Platform</genre>
+</game>
+<game name="Zanac-Ex (Japan)">
+  <title>Zanac-Ex (Japan)</title>
+  <year>1986</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Compile</publisher>
+  <developer />
+  <genre>Shoot-&apos;Em-Up</genre>
+</game>
+<game name="Zoids (Japan)">
+  <title>Zoids (Japan)</title>
+  <year>1987</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Micronics / Toshiba EMI</publisher>
+  <developer />
+  <genre>Action</genre>
+</game>
+<game name="Zombie Hunter (Japan)">
+  <title>Zombie Hunter (Japan)</title>
+  <year>1988</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Hi-Score Media Work</publisher>
+  <developer />
+  <genre>Action</genre>
+</game>
+<game name="Zukkoke Yajikita Onmitsudoutyuu (Japan)">
+  <title>Zukkoke Yajikita Onmitsudoutyuu (Japan)</title>
+  <year>1987</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Hal</publisher>
+  <developer />
+  <genre>Action</genre>
+</game>
+</menu>

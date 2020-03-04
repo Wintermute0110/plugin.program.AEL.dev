@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<menu>
+<header>
+  <listname>Funtech Super Acan</listname>
+  <lastlistupdate></lastlistupdate>
+  <listversion>V1</listversion>
+  <exporterversion>V1 GameDBInfo converter</exporterversion>
+</header>
+<game name="African Adventures (Taiwan)">
+  <title>African Adventures</title>
+  <year>1995</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Panda Entertainment</publisher>
+  <developer />
+  <genre>Puzzle</genre>
+</game>
+<game name="Boom Zoo (Taiwan)">
+  <title>Boom Zoo</title>
+  <year>1996</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Funtech</publisher>
+  <developer />
+  <genre>Action</genre>
+</game>
+<game name="C.U.G. (Taiwan)">
+  <title>C.U.G.</title>
+  <year>1995</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Funtech</publisher>
+  <developer />
+  <genre>Platform</genre>
+</game>
+<game name="Formosa Duel (Taiwan)">
+  <title>Formosa Duel</title>
+  <year>1995</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>AV Artisan</publisher>
+  <developer />
+  <genre>Puzzle</genre>
+</game>
+<game name="Gambling Lord (Taiwan)">
+  <title>Gambling Lord</title>
+  <year>1996</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Panda Entertainment/Funtech</publisher>
+  <developer />
+  <genre>Mahjong</genre>
+</game>
+<game name="Magical Pool (Taiwan)">
+  <title>Magical Pool</title>
+  <year>199x</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Funtech</publisher>
+  <developer />
+  <genre>Sports</genre>
+</game>
+<game name="REBEL (Taiwan)">
+  <title>REBEL</title>
+  <year>1996</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Horng Shen Information Co., Ltd</publisher>
+  <developer />
+  <genre>Role-Playing</genre>
+</game>
+<game name="Sango Fighter (Taiwan)">
+  <title>Sango Fighter</title>
+  <year>1995</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Panda Entertainment</publisher>
+  <developer />
+  <genre>Fighting</genre>
+</game>
+<game name="Speedy Dragon (Taiwan)">
+  <title>Speedy Dragon</title>
+  <year>1995</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>AV Artisan</publisher>
+  <developer />
+  <genre>Platform</genre>
+</game>
+<game name="Super Dragon Force (Taiwan)">
+  <title>Super Dragon Force</title>
+  <year>1996</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Kingformation Co., Ltd</publisher>
+  <developer />
+  <genre>Role-Playing</genre>
+</game>
+<game name="Super Taiwanese Baseball League (Taiwan)">
+  <title>Super Taiwanese Baseball League</title>
+  <year>1995</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Quan Wei Technology/C&amp;E</publisher>
+  <developer />
+  <genre>Sports</genre>
+</game>
+<game name="The Son of Evil (Taiwan)">
+  <title>The Son of Evil</title>
+  <year>1995</year>
+  <rating>Other - NR (Not Rated)</rating>
+  <publisher>Funtech</publisher>
+  <developer />
+  <genre>Role-Playing</genre>
+</game>
+</menu>
