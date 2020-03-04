@@ -125,7 +125,8 @@ class ScraperSettings(object):
         self.game_selection_mode    = SCRAPE_AUTOMATIC
         self.asset_selection_mode   = SCRAPE_AUTOMATIC
         
-        self.asset_IDs_to_scrape = ROM_ASSET_ID_LIST       
+        self.asset_IDs_to_scrape = ROM_ASSET_ID_LIST
+        self.overwrite_existing = False
         self.show_info_verbose = False
     
     def build_menu(self):
@@ -135,6 +136,7 @@ class ScraperSettings(object):
         options['SC_ASSET_POLICY']         = 'Asset scan policy: "{}"'.format(text_translate(self.scrape_assets_policy))
         options['SC_GAME_SELECTION_MODE']  = 'Game selection mode: "{}"'.format(text_translate(self.game_selection_mode))
         options['SC_ASSET_SELECTION_MODE'] = 'Asset selection mode: "{}"'.format(text_translate(self.asset_selection_mode))
+        options['SC_OVERWRITE_MODE']       = 'Overwrite existing files: "{}"'.format('Yes' if self.overwrite_existing else 'No')
         options['SC_METADATA_SCRAPER']     = 'Metadata scraper: "{}"'.format(text_translate(self.metadata_scraper_ID))
         options['SC_ASSET_SCRAPER']        = 'Asset scraper: "{}"'.format(text_translate(self.assets_scraper_ID))
         
@@ -551,7 +553,10 @@ class ScrapeStrategy(object):
         for AInfo in self.enabled_asset_list:
             if self.asset_action_list[AInfo.id] == ScrapeStrategy.ACTION_ASSET_NONE:
                 log_debug('Skipping asset scraping for {}'.format(AInfo.name))
-                continue                
+                continue    
+            elif not self.scraper_settings.overwrite_existing and ROM.has_asset(AInfo):
+                log_debug('Asset {} already exists. Skipping (no overwrite)'.format(AInfo.name))
+                continue
             elif self.asset_action_list[AInfo.id] == ScrapeStrategy.ACTION_ASSET_LOCAL_ASSET:
                 log_debug('Using local asset for {}'.format(AInfo.name))
                 ROM.set_asset(AInfo, self.local_asset_list[AInfo.id])

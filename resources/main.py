@@ -4164,6 +4164,10 @@ def m_scraper_settings_asset_selection_mode(category, launcher, scraper_settings
     
     scraper_settings.asset_selection_mode = selected_option
 
+@router.action('SC_OVERWRITE_MODE')
+def m_scraper_settings_overwrite_mode(category, launcher, scraper_settings):  
+    scraper_settings.overwrite_existing = not scraper_settings.overwrite_existing
+
 @router.action('SC_METADATA_SCRAPER')
 def m_scraper_settings_metadata_scraper(category, launcher, scraper_settings):    
     options = g_ScraperFactory.get_metadata_scraper_menu_list()
@@ -5277,6 +5281,7 @@ def m_subcommand_rescrape_rom_assets(rom):
     scraper_settings.search_term_mode        = SCRAPE_MANUAL if selected_option != SCRAPER_NULL_ID else SCRAPE_AUTOMATIC
     scraper_settings.game_selection_mode     = SCRAPE_MANUAL if selected_option != SCRAPER_NULL_ID else SCRAPE_AUTOMATIC
     scraper_settings.asset_selection_mode    = SCRAPE_MANUAL if selected_option != SCRAPER_NULL_ID else SCRAPE_AUTOMATIC
+    scraper_settings.overwrite_existing      = kodi_dialog_yesno('Overwrite existing assets settings?')
     
     pdialog             = KodiProgressDialog()
     ROM_file            = rom.get_file()
@@ -6034,7 +6039,7 @@ def m_command_exec_utils_check_launcher_sync_status():
         pdialog.updateMessage2('Scanning files in ROM paths...')
         launcher_path = FileName(launcher['rompath'])
         log_debug('Scanning files in {}'.format(launcher_path.getPath()))
-        if self.settings['scan_recursive']:
+        if g_settings['scan_recursive']:
             log_debug('Recursive scan activated')
             files = launcher_path.recursiveScanFilesInPath('*.*')
         else:
@@ -7093,6 +7098,7 @@ def m_gui_edit_asset(obj_instance, asset_info):
         scraper_settings.game_selection_mode     = SCRAPE_MANUAL
         scraper_settings.asset_selection_mode    = SCRAPE_MANUAL
         scraper_settings.asset_IDs_to_scrape     = [asset_info.id]
+        scraper_settings.overwrite_existing      = kodi_dialog_yesno('Overwrite existing assets settings?')
         
         rom                 = obj_instance
         pdialog             = KodiProgressDialog()
