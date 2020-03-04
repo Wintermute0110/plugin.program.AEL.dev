@@ -1,0 +1,257 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<menu>
+<header>
+  <listname>GamePark GP32</listname>
+  <lastlistupdate></lastlistupdate>
+  <listversion>V1</listversion>
+  <exporterversion>V1 GameDBInfo converter</exporterversion>
+</header>
+<game ROM="Astonishia Story R (Korea)">
+  <title>Astonishia Story R</title>
+  <year>2002</year>
+  <genre>RPG</genre>
+  <publisher>Sonnori</publisher>
+  <developer />
+  <rating>Other - NR (Not Rated)</rating>
+</game>
+<game ROM="Blue Angelo - Angels from the Shrine (Europe) (En,Fr,De,Es,It,Pt)">
+  <title>Blue Angelo - Angels from the Shrine</title>
+  <year>2004</year>
+  <genre>RPG</genre>
+  <publisher>Virtual Spaghetti</publisher>
+  <developer />
+  <rating>Other - NR (Not Rated)</rating>
+</game>
+<game ROM="Dooly Soccer 2002 (Korea)">
+  <title>Dooly Soccer 2002</title>
+  <year>2002</year>
+  <genre>Sport</genre>
+  <publisher>Abyss Game</publisher>
+  <developer />
+  <rating>Other - NR (Not Rated)</rating>
+</game>
+<game ROM="Dungeon &amp; Guarder - Dragon Gore (Europe)">
+  <title>Dungeon &amp; Guarder - Dragon Gore</title>
+  <year>2001</year>
+  <genre>Hack &apos;n Slash</genre>
+  <publisher>Gamepark</publisher>
+  <developer />
+  <rating>Other - NR (Not Rated)</rating>
+</game>
+<game ROM="Dungeon &amp; Guarder - Dragon Gore (Korea)">
+  <title>Dungeon &amp; Guarder - Dragon Gore</title>
+  <year>2001</year>
+  <genre>Hack &apos;n Slash</genre>
+  <publisher>Gamepark</publisher>
+  <developer />
+  <rating>Other - NR (Not Rated)</rating>
+</game>
+<game ROM="Dyhard - With Infinite Stairs (Europe)">
+  <title>Dyhard - With Infinite Stairs</title>
+  <year>2001</year>
+  <genre>Action</genre>
+  <publisher>Kookie Soft</publisher>
+  <developer />
+  <rating>Other - NR (Not Rated)</rating>
+</game>
+<game ROM="Dyhard - With Infinite Stairs (Korea)">
+  <title>Dyhard - With Infinite Stairs</title>
+  <year>2001</year>
+  <genre>Action</genre>
+  <publisher>Kookie Soft</publisher>
+  <developer />
+  <rating>Other - NR (Not Rated)</rating>
+</game>
+<game ROM="Funny Soccer (Korea)">
+  <title>Funny Soccer</title>
+  <year>2002</year>
+  <genre>Action</genre>
+  <publisher>Metarica</publisher>
+  <developer />
+  <rating>Other - NR (Not Rated)</rating>
+</game>
+<game ROM="GP Fight (Korea)">
+  <title>GP Fight</title>
+  <year>2003</year>
+  <genre />
+  <publisher>TeamBlaze</publisher>
+  <developer />
+  <rating>Other - NR (Not Rated)</rating>
+</game>
+<game ROM="Hany Party Game (Korea)">
+  <title>Hany Party Game</title>
+  <year>2002</year>
+  <genre>Puzzle</genre>
+  <publisher>Include</publisher>
+  <developer />
+  <rating>Other - NR (Not Rated)</rating>
+</game>
+<game ROM="Her Knights - All for Princess - Deadline (Korea)">
+  <title>Her Knights - All for Princess - Deadline</title>
+  <year>2002</year>
+  <genre>Arcade</genre>
+  <publisher>Byulbram</publisher>
+  <developer />
+  <rating>Other - NR (Not Rated)</rating>
+</game>
+<game ROM="Her Knights - All for the Princess (Europe)">
+  <title>Her Knights - All for the Princess</title>
+  <year>2002</year>
+  <genre>Arcade</genre>
+  <publisher>Byulbram</publisher>
+  <developer />
+  <rating>Other - NR (Not Rated)</rating>
+</game>
+<game ROM="Kimchiman GP32 (Korea)">
+  <title>Kimchiman GP32</title>
+  <year>2002</year>
+  <genre>Platformer</genre>
+  <publisher>Spearhead</publisher>
+  <developer />
+  <rating>Other - NR (Not Rated)</rating>
+</game>
+<game ROM="Little Girl Mill of a Gingko, The (Korea)">
+  <title>Little Girl Mill of a Gingko, The</title>
+  <year />
+  <genre />
+  <publisher>Legendra</publisher>
+  <developer />
+  <rating>Other - NR (Not Rated)</rating>
+</game>
+<game ROM="Little Wizard (Europe)">
+  <title>Little Wizard</title>
+  <year>2001</year>
+  <genre>Fighting</genre>
+  <publisher>Gamepark</publisher>
+  <developer />
+  <rating>Other - NR (Not Rated)</rating>
+</game>
+<game ROM="Little Wizard (Korea)">
+  <title>Little Wizard</title>
+  <year>2001</year>
+  <genre>Fighting</genre>
+  <publisher>Gamepark</publisher>
+  <developer />
+  <rating>Other - NR (Not Rated)</rating>
+</game>
+<game ROM="OneShot Voca (Korea)">
+  <title>OneShot Voca</title>
+  <year>2002</year>
+  <genre>Educational</genre>
+  <publisher>Damasys</publisher>
+  <developer />
+  <rating>Other - NR (Not Rated)</rating>
+</game>
+<game ROM="Pinball Dreams (Korea)">
+  <title>Pinball Dreams</title>
+  <year>2002</year>
+  <genre>Pinball</genre>
+  <publisher>Logik State</publisher>
+  <developer />
+  <rating>Other - NR (Not Rated)</rating>
+</game>
+<game ROM="Princess Maker 2 (Korea)">
+  <title>Princess Maker 2</title>
+  <year>2002</year>
+  <genre>Simulation</genre>
+  <publisher>Ninelives</publisher>
+  <developer />
+  <rating>Other - NR (Not Rated)</rating>
+</game>
+<game ROM="Rally Pop (Korea)">
+  <title>Rally Pop</title>
+  <year>2001</year>
+  <genre>Strategy</genre>
+  <publisher>Gamepark</publisher>
+  <developer />
+  <rating>Other - NR (Not Rated)</rating>
+</game>
+<game ROM="Raphael (Korea)">
+  <title>Raphael</title>
+  <year>2002</year>
+  <genre>Puzzle</genre>
+  <publisher>T3 Entertainment</publisher>
+  <developer />
+  <rating>Other - NR (Not Rated)</rating>
+</game>
+<game ROM="Super Plusha (Korea)">
+  <title>Super Plusha</title>
+  <year>2002</year>
+  <genre>Platformer</genre>
+  <publisher>FaMe Soft</publisher>
+  <developer />
+  <rating>Other - NR (Not Rated)</rating>
+</game>
+<game ROM="Tanggle&apos;s Magic Square (Korea)">
+  <title>Tanggle&apos;s Magic Square</title>
+  <year>2001</year>
+  <genre>Puzzle</genre>
+  <publisher>EZ</publisher>
+  <developer />
+  <rating>Other - NR (Not Rated)</rating>
+</game>
+<game ROM="Therapy (Korea)">
+  <title>Therapy</title>
+  <year>2002</year>
+  <genre>Visual Novel</genre>
+  <publisher>Rosa:6</publisher>
+  <developer />
+  <rating>Other - NR (Not Rated)</rating>
+</game>
+<game ROM="Tomak - Save the Earth, Again (Europe) (v1.0)">
+  <title>Tomak - Save the Earth, Again</title>
+  <year>2002</year>
+  <genre>Shooter</genre>
+  <publisher>Seed9</publisher>
+  <developer />
+  <rating>Other - NR (Not Rated)</rating>
+</game>
+<game ROM="Tomak - Save the Earth, Again (Europe) (v2.0)">
+  <title>Tomak - Save the Earth, Again</title>
+  <year>2002</year>
+  <genre>Shooter</genre>
+  <publisher>Seed9</publisher>
+  <developer />
+  <rating>Other - NR (Not Rated)</rating>
+</game>
+<game ROM="Tomak - Save the Earth, Again (Korea)">
+  <title>Tomak - Save the Earth, Again</title>
+  <year>2002</year>
+  <genre>Shooter</genre>
+  <publisher>Seed9</publisher>
+  <developer />
+  <rating>Other - NR (Not Rated)</rating>
+</game>
+<game ROM="W.B.W. - Wanna Be Wizard! (Korea)">
+  <title>W.B.W. - Wanna Be Wizard!</title>
+  <year>2004</year>
+  <genre>RPG</genre>
+  <publisher>A&amp;B Soft</publisher>
+  <developer />
+  <rating>Other - NR (Not Rated)</rating>
+</game>
+<game ROM="Wizard Slayer (Korea)">
+  <title>Wizard Slayer</title>
+  <year>2002</year>
+  <genre>Shooter</genre>
+  <publisher>FZ Media</publisher>
+  <developer />
+  <rating>Other - NR (Not Rated)</rating>
+</game>
+<game ROM="Woody &amp; Kunta - Treasure Island (Europe)">
+  <title>Woody &amp; Kunta - Treasure Island</title>
+  <year>2002</year>
+  <genre>Puzzle</genre>
+  <publisher>Gamepark</publisher>
+  <developer />
+  <rating>Other - NR (Not Rated)</rating>
+</game>
+<game ROM="Woody &amp; Kunta - Treasure Island (Korea)">
+  <title>Woody &amp; Kunta - Treasure Island</title>
+  <year>2002</year>
+  <genre>Puzzle</genre>
+  <publisher>Gamepark</publisher>
+  <developer />
+  <rating>Other - NR (Not Rated)</rating>
+</game>
+</menu>

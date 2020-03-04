@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<menu>
+<header>
+  <listname>Casio PV-1000</listname>
+  <lastlistupdate></lastlistupdate>
+  <listversion>V1</listversion>
+  <exporterversion>V1 GameDBInfo converter</exporterversion>
+</header>
+<game ROM="Amidar (Japan)">
+  <title>Amidar (Japan)</title>
+  <year>1983</year>
+  <genre>Action</genre>
+  <publisher>Casio</publisher>
+  <developer />
+  <rating>HSRS - GA (General Audience)</rating>
+</game>
+<game ROM="Dig Dug (Japan)">
+  <title>Dig Dug (Japan)</title>
+  <year>1983</year>
+  <genre>Maze</genre>
+  <publisher>Casio</publisher>
+  <developer />
+  <rating>Other - NR (Not Rated)</rating>
+</game>
+<game ROM="Dirty Chameleon (Japan)">
+  <title>Dirty Chameleon (Japan)</title>
+  <year>1983</year>
+  <genre>Platform</genre>
+  <publisher>Casio</publisher>
+  <developer />
+  <rating>Other - NR (Not Rated)</rating>
+</game>
+<game ROM="Excite Mahjong (Japan)">
+  <title>Excite Mahjong (Japan)</title>
+  <year>1983</year>
+  <genre>Mahjong</genre>
+  <publisher>Casio</publisher>
+  <developer />
+  <rating>HSRS - GA (General Audience)</rating>
+</game>
+<game ROM="Fighting Bug (Japan)">
+  <title>Fighting Bug (Japan)</title>
+  <year>1983</year>
+  <genre>Maze</genre>
+  <publisher>Casio</publisher>
+  <developer />
+  <rating>Other - NR (Not Rated)</rating>
+</game>
+<game ROM="Naughty Boy (Japan)">
+  <title>Naughty Boy (Japan)</title>
+  <year>1983</year>
+  <genre>Maze</genre>
+  <publisher>Casio</publisher>
+  <developer />
+  <rating>Other - NR (Not Rated)</rating>
+</game>
+<game ROM="Pachinko-UFO (Japan)">
+  <title>Pachinko-UFO (Japan)</title>
+  <year>1983</year>
+  <genre>Casino</genre>
+  <publisher>Casio</publisher>
+  <developer />
+  <rating>HSRS - GA (General Audience)</rating>
+</game>
+<game ROM="Pooyan (Japan)">
+  <title>Pooyan (Japan)</title>
+  <year>1983</year>
+  <genre>Action</genre>
+  <publisher>Casio</publisher>
+  <developer />
+  <rating>HSRS - GA (General Audience)</rating>
+</game>
+<game ROM="Space Panic (Japan)">
+  <title>Space Panic (Japan)</title>
+  <year>1983</year>
+  <genre>Platform</genre>
+  <publisher>Casio</publisher>
+  <developer />
+  <rating>Other - NR (Not Rated)</rating>
+</game>
+<game ROM="Super Cobra (Japan)">
+  <title>Super Cobra (Japan)</title>
+  <year>1983</year>
+  <genre>Shooter</genre>
+  <publisher>Casio</publisher>
+  <developer />
+  <rating>HSRS - GA (General Audience)</rating>
+</game>
+<game ROM="Turpin (Japan)">
+  <title>Turpin (Japan)</title>
+  <year>1983</year>
+  <genre>Action</genre>
+  <publisher>Casio</publisher>
+  <developer />
+  <rating>Other - NR (Not Rated)</rating>
+</game>
+<game ROM="Tutankham (Japan)">
+  <title>Tutankham (Japan)</title>
+  <year>1983</year>
+  <genre>Maze</genre>
+  <publisher>Casio</publisher>
+  <developer />
+  <rating>Other - NR (Not Rated)</rating>
+</game>
+<game ROM="Warp &amp; Warp (Japan)">
+  <title>Warp &amp; Warp (Japan)</title>
+  <year>1983</year>
+  <genre>Shooter</genre>
+  <publisher>Casio</publisher>
+  <developer />
+  <rating>Other - NR (Not Rated)</rating>
+</game>
+</menu>

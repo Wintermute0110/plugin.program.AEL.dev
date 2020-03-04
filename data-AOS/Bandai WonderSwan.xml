@@ -1,0 +1,889 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<menu>
+<header>
+  <listname>Bandai WonderSwan</listname>
+  <lastlistupdate></lastlistupdate>
+  <listversion>V1</listversion>
+  <exporterversion>V1 GameDBInfo converter</exporterversion>
+</header>
+<game ROM="Anchorz Field (Japan)">
+  <title>Anchorz Field (Japan)</title>
+  <year>1999</year>
+  <genre>Strategy</genre>
+  <publisher>Sammy Studios</publisher>
+  <developer />
+  <rating>Other - NR (Not Rated)</rating>
+</game>
+<game ROM="Armored Unit (Japan)">
+  <title>Armored Unit (Japan)</title>
+  <year>1999</year>
+  <genre>Strategy</genre>
+  <publisher>Sammy Studios</publisher>
+  <developer />
+  <rating>Other - NR (Not Rated)</rating>
+</game>
+<game ROM="Bakusou Dekotora Densetsu for WonderSwan (Japan)">
+  <title>Bakusou Dekotora Densetsu for WonderSwan (Japan)</title>
+  <year>1999</year>
+  <genre>Driving</genre>
+  <publisher>Human Entertainment</publisher>
+  <developer />
+  <rating>Other - NR (Not Rated)</rating>
+</game>
+<game ROM="Beatmania for WonderSwan (Japan)">
+  <title>Beatmania for WonderSwan (Japan)</title>
+  <year>1999</year>
+  <genre>Rhythm</genre>
+  <publisher>Konami</publisher>
+  <developer />
+  <rating>Other - NR (Not Rated)</rating>
+</game>
+<game ROM="Buffers Evolution (Japan)">
+  <title>Buffers Evolution (Japan)</title>
+  <year>1999</year>
+  <genre>Action</genre>
+  <publisher>Bandai</publisher>
+  <developer />
+  <rating>Other - NR (Not Rated)</rating>
+</game>
+<game ROM="Cardcaptor Sakura - Sakura to Fushigi na Clow Card (Japan)">
+  <title>Cardcaptor Sakura - Sakura to Fushigi na Clow Card (Japan)</title>
+  <year>1999</year>
+  <genre>Role-Playing</genre>
+  <publisher>Bandai</publisher>
+  <developer />
+  <rating>Other - NR (Not Rated)</rating>
+</game>
+<game ROM="Chaos Gear - Michibikareshi Mono (Japan)">
+  <title>Chaos Gear - Michibikareshi Mono (Japan)</title>
+  <year>1999</year>
+  <genre>Strategy</genre>
+  <publisher>Bandai</publisher>
+  <developer />
+  <rating>Other - NR (Not Rated)</rating>
+</game>
+<game ROM="Chocobo no Fushigi na Dungeon for WonderSwan (Japan)">
+  <title>Chocobo no Fushigi na Dungeon for WonderSwan (Japan)</title>
+  <year>1999</year>
+  <genre>Role-Playing</genre>
+  <publisher>Bandai</publisher>
+  <developer />
+  <rating>Other - NR (Not Rated)</rating>
+</game>
+<game ROM="Chou Aniki - Otoko no Tamafuda (Japan)">
+  <title>Chou Aniki - Otoko no Tamafuda (Japan)</title>
+  <year>2000</year>
+  <genre>Role-Playing</genre>
+  <publisher>Bandai</publisher>
+  <developer />
+  <rating>Other - NR (Not Rated)</rating>
+</game>
+<game ROM="Chou Denki Card Game - Youfu Makai - Kikuchi Shuukou (Japan)">
+  <title>Chou Denki Card Game - Youfu Makai - Kikuchi Shuukou (Japan)</title>
+  <year>1999</year>
+  <genre>Card Battle</genre>
+  <publisher>Koubunsha</publisher>
+  <developer />
+  <rating>Other - NR (Not Rated)</rating>
+</game>
+<game ROM="Clock Tower for WonderSwan (Japan)">
+  <title>Clock Tower for WonderSwan (Japan)</title>
+  <year>1999</year>
+  <genre>Action</genre>
+  <publisher>Human Entertainment</publisher>
+  <developer />
+  <rating>Other - NR (Not Rated)</rating>
+</game>
+<game ROM="Crazy Climber (Japan)">
+  <title>Crazy Climber (Japan)</title>
+  <year>1999</year>
+  <genre>Action</genre>
+  <publisher>Nihon Bussan</publisher>
+  <developer />
+  <rating>Other - NR (Not Rated)</rating>
+</game>
+<game ROM="D&apos;s Garage 21 Koubo Game - Tane o Maku Tori (Japan)">
+  <title>D&apos;s Garage 21 Koubo Game - Tane o Maku Tori (Japan)</title>
+  <year>1999</year>
+  <genre>Puzzle</genre>
+  <publisher>Bandai</publisher>
+  <developer />
+  <rating>Other - NR (Not Rated)</rating>
+</game>
+<game ROM="Densha de Go! (Japan)">
+  <title>Densha de Go! (Japan)</title>
+  <year>1999</year>
+  <genre>Simulation</genre>
+  <publisher>Taito</publisher>
+  <developer />
+  <rating>Other - NR (Not Rated)</rating>
+</game>
+<game ROM="Densha de Go! 2 (Japan)">
+  <title>Densha de Go! 2 (Japan)</title>
+  <year>1999</year>
+  <genre>Simulation</genre>
+  <publisher>CyberFront</publisher>
+  <developer />
+  <rating>Other - NR (Not Rated)</rating>
+</game>
+<game ROM="Digimon Adventure - Anode Tamer (Japan)">
+  <title>Digimon Adventure - Anode Tamer (Japan)</title>
+  <year>1999</year>
+  <genre>Role-Playing</genre>
+  <publisher>Bandai</publisher>
+  <developer />
+  <rating>Other - NR (Not Rated)</rating>
+</game>
+<game ROM="Digimon Adventure - Cathode Tamer (Japan)">
+  <title>Digimon Adventure - Cathode Tamer (Japan)</title>
+  <year>2000</year>
+  <genre>Role-Playing</genre>
+  <publisher>Bandai</publisher>
+  <developer />
+  <rating>Other - NR (Not Rated)</rating>
+</game>
+<game ROM="Digimon Adventure 02 - Tag Tamers (Japan)">
+  <title>Digimon Adventure 02 - Tag Tamers (Japan)</title>
+  <year>2000</year>
+  <genre>Role-Playing</genre>
+  <publisher>Bandai</publisher>
+  <developer />
+  <rating>Other - NR (Not Rated)</rating>
+</game>
+<game ROM="Digital Monster - Ver. WonderSwan (Japan)">
+  <title>Digital Monster - Ver. WonderSwan (Japan)</title>
+  <year>1999</year>
+  <genre>Strategy</genre>
+  <publisher>Bandai</publisher>
+  <developer />
+  <rating>Other - NR (Not Rated)</rating>
+</game>
+<game ROM="Digital Partner (Japan)">
+  <title>Digital Partner (Japan)</title>
+  <year>2000</year>
+  <genre>Strategy</genre>
+  <publisher>Bandai</publisher>
+  <developer />
+  <rating>Other - NR (Not Rated)</rating>
+</game>
+<game ROM="Dokodemo Hamster (Japan)">
+  <title>Dokodemo Hamster (Japan)</title>
+  <year>2000</year>
+  <genre>Strategy</genre>
+  <publisher>Bec</publisher>
+  <developer />
+  <rating>Other - NR (Not Rated)</rating>
+</game>
+<game ROM="Engacho! for WonderSwan (Japan)">
+  <title>Engacho! for WonderSwan (Japan)</title>
+  <year>1999</year>
+  <genre>Puzzle</genre>
+  <publisher>NAC Geographic Products, Inc.</publisher>
+  <developer />
+  <rating>Other - NR (Not Rated)</rating>
+</game>
+<game ROM="Fever - Sankyo Koushiki Pachinko Simulation for WonderSwan (Japan)">
+  <title>Fever - Sankyo Koushiki Pachinko Simulation for WonderSwan (Japan)</title>
+  <year>1999</year>
+  <genre>Simulation</genre>
+  <publisher>Bec</publisher>
+  <developer />
+  <rating>Other - NR (Not Rated)</rating>
+</game>
+<game ROM="Final Lap 2000 (Japan)">
+  <title>Final Lap 2000 (Japan)</title>
+  <year>2000</year>
+  <genre>Driving</genre>
+  <publisher>Bandai</publisher>
+  <developer />
+  <rating>Other - NR (Not Rated)</rating>
+</game>
+<game ROM="Fire Pro Wrestling for WonderSwan (Japan)">
+  <title>Fire Pro Wrestling for WonderSwan (Japan)</title>
+  <year>2000</year>
+  <genre>Sports/Wrestling</genre>
+  <publisher>Kaga Tech</publisher>
+  <developer />
+  <rating>Other - NR (Not Rated)</rating>
+</game>
+<game ROM="Fishing Freaks - Bass Rise for WonderSwan (Japan)">
+  <title>Fishing Freaks - Bass Rise for WonderSwan (Japan)</title>
+  <year>2000</year>
+  <genre>Sports/Fishing</genre>
+  <publisher>Bandai</publisher>
+  <developer />
+  <rating>Other - NR (Not Rated)</rating>
+</game>
+<game ROM="From TV Animation One Piece - Mezase Kaizoku Ou! (Japan)">
+  <title>From TV Animation One Piece - Mezase Kaizoku Ou! (Japan)</title>
+  <year>2000</year>
+  <genre>Adventure</genre>
+  <publisher>Bandai</publisher>
+  <developer />
+  <rating>Other - NR (Not Rated)</rating>
+</game>
+<game ROM="Ganso Jajamaru-kun (Japan)">
+  <title>Ganso Jajamaru-kun (Japan)</title>
+  <year>1999</year>
+  <genre>Action</genre>
+  <publisher>Jaleco</publisher>
+  <developer />
+  <rating>Other - NR (Not Rated)</rating>
+</game>
+<game ROM="Glocal Hexcite (Japan)">
+  <title>Glocal Hexcite (Japan)</title>
+  <year>2000</year>
+  <genre>Puzzle</genre>
+  <publisher>Success</publisher>
+  <developer />
+  <rating>Other - NR (Not Rated)</rating>
+</game>
+<game ROM="Gomoku Narabe &amp; Reversi - Touryuumon (Japan)">
+  <title>Gomoku Narabe &amp; Reversi - Touryuumon (Japan)</title>
+  <year>2000</year>
+  <genre>Board Games</genre>
+  <publisher>Sammy Studios</publisher>
+  <developer />
+  <rating>Other - NR (Not Rated)</rating>
+</game>
+<game ROM="Goraku Ou Tango! (Japan)">
+  <title>Goraku Ou Tango! (Japan)</title>
+  <year>1999</year>
+  <genre>Puzzle</genre>
+  <publisher>Mebius</publisher>
+  <developer />
+  <rating>Other - NR (Not Rated)</rating>
+</game>
+<game ROM="GunPey (Japan)">
+  <title>GunPey (Japan)</title>
+  <year>1999</year>
+  <genre>Puzzle</genre>
+  <publisher>Bandai</publisher>
+  <developer />
+  <rating>Other - NR (Not Rated)</rating>
+</game>
+<game ROM="Hanafuda Shiyouyo (Japan)">
+  <title>Hanafuda Shiyouyo (Japan)</title>
+  <year>2000</year>
+  <genre>Puzzle</genre>
+  <publisher>Kaga Tech</publisher>
+  <developer />
+  <rating>Other - NR (Not Rated)</rating>
+</game>
+<game ROM="Harobots (Japan)">
+  <title>Harobots (Japan)</title>
+  <year>1999</year>
+  <genre>Role-Playing</genre>
+  <publisher>Sunrise Interactive</publisher>
+  <developer />
+  <rating>Other - NR (Not Rated)</rating>
+</game>
+<game ROM="Hunter X Hunter - Ishi o Tsugu Mono (Japan)">
+  <title>Hunter X Hunter - Ishi o Tsugu Mono (Japan)</title>
+  <year>2000</year>
+  <genre>Role-Playing</genre>
+  <publisher>Bandai</publisher>
+  <developer />
+  <rating>Other - NR (Not Rated)</rating>
+</game>
+<game ROM="Itou Junji Uzumaki - Noroi Simulation (Japan)">
+  <title>Itou Junji Uzumaki - Noroi Simulation (Japan)</title>
+  <year>2000</year>
+  <genre>Strategy</genre>
+  <publisher>Omega Micott</publisher>
+  <developer />
+  <rating>Other - NR (Not Rated)</rating>
+</game>
+<game ROM="Kakutou Ryouri Densetsu Bistro Recipe - Wonder Battle Hen (Japan)">
+  <title>Kakutou Ryouri Densetsu Bistro Recipe - Wonder Battle Hen (Japan)</title>
+  <year>1999</year>
+  <genre>Strategy</genre>
+  <publisher>Banpresto</publisher>
+  <developer />
+  <rating>Other - NR (Not Rated)</rating>
+</game>
+<game ROM="Kaze no Klonoa - Moonlight Museum (Japan)">
+  <title>Kaze no Klonoa - Moonlight Museum (Japan)</title>
+  <year>1999</year>
+  <genre>Puzzle</genre>
+  <publisher>Bandai</publisher>
+  <developer />
+  <rating>Other - NR (Not Rated)</rating>
+</game>
+<game ROM="Keiba Yosou Shien Soft - Yosou Shinkaron (Japan)">
+  <title>Keiba Yosou Shien Soft - Yosou Shinkaron (Japan)</title>
+  <year>1999</year>
+  <genre>Sports/Horse Racing</genre>
+  <publisher>Media Entertainment</publisher>
+  <developer />
+  <rating>Other - NR (Not Rated)</rating>
+</game>
+<game ROM="Kiss Yori... - Seaside Serenade (Japan)">
+  <title>Kiss Yori... - Seaside Serenade (Japan)</title>
+  <year>1999</year>
+  <genre>Adventure</genre>
+  <publisher>Kid</publisher>
+  <developer />
+  <rating>Other - NR (Not Rated)</rating>
+</game>
+<game ROM="Kosodate Quiz Dokodemo - My Angel (Japan)">
+  <title>Kosodate Quiz Dokodemo - My Angel (Japan)</title>
+  <year>1999</year>
+  <genre>Game Show</genre>
+  <publisher>Bandai</publisher>
+  <developer />
+  <rating>Other - NR (Not Rated)</rating>
+</game>
+<game ROM="Kyousouba Ikusei Simulation - Keiba (Japan)">
+  <title>Kyousouba Ikusei Simulation - Keiba (Japan)</title>
+  <year>1999</year>
+  <genre>Sports/Horse Racing</genre>
+  <publisher>Bec</publisher>
+  <developer />
+  <rating>Other - NR (Not Rated)</rating>
+</game>
+<game ROM="Langrisser Millennium WS - The Last Century (Japan)">
+  <title>Langrisser Millennium WS - The Last Century (Japan)</title>
+  <year>2000</year>
+  <genre>Strategy</genre>
+  <publisher>Bandai</publisher>
+  <developer />
+  <rating>Other - NR (Not Rated)</rating>
+</game>
+<game ROM="Last Stand (Japan)">
+  <title>Last Stand (Japan)</title>
+  <year>1999</year>
+  <genre>Strategy</genre>
+  <publisher>Bandai</publisher>
+  <developer />
+  <rating>Other - NR (Not Rated)</rating>
+</game>
+<game ROM="Lode Runner for WonderSwan (Japan)">
+  <title>Lode Runner for WonderSwan (Japan)</title>
+  <year>1999</year>
+  <genre>Action</genre>
+  <publisher>Banpresto</publisher>
+  <developer />
+  <rating>Other - NR (Not Rated)</rating>
+</game>
+<game ROM="Macross - True Love Song (Japan)">
+  <title>Macross - True Love Song (Japan)</title>
+  <year>2000</year>
+  <genre>Strategy</genre>
+  <publisher>Lay-Up</publisher>
+  <developer />
+  <rating>Other - NR (Not Rated)</rating>
+</game>
+<game ROM="Magical Drop for WonderSwan (Japan)">
+  <title>Magical Drop for WonderSwan (Japan)</title>
+  <year>1999</year>
+  <genre>Puzzle</genre>
+  <publisher>Data East</publisher>
+  <developer />
+  <rating>Other - NR (Not Rated)</rating>
+</game>
+<game ROM="Mahjong Touryuumon (Japan)">
+  <title>Mahjong Touryuumon (Japan)</title>
+  <year>1999</year>
+  <genre>Board Games</genre>
+  <publisher>Sammy Studios</publisher>
+  <developer />
+  <rating>Other - NR (Not Rated)</rating>
+</game>
+<game ROM="Makaimura for WonderSwan (Japan)">
+  <title>Makaimura for WonderSwan (Japan)</title>
+  <year>1999</year>
+  <genre>Action</genre>
+  <publisher>Bandai</publisher>
+  <developer />
+  <rating>Other - NR (Not Rated)</rating>
+</game>
+<game ROM="Medarot Perfect Edition - Kabuto Version (Japan)">
+  <title>Medarot Perfect Edition - Kabuto Version (Japan)</title>
+  <year>1999</year>
+  <genre>Role-Playing</genre>
+  <publisher>Imagineer</publisher>
+  <developer />
+  <rating>Other - NR (Not Rated)</rating>
+</game>
+<game ROM="Medarot Perfect Edition - Kuwagata Version (Japan)">
+  <title>Medarot Perfect Edition - Kuwagata Version (Japan)</title>
+  <year>1999</year>
+  <genre>Role-Playing</genre>
+  <publisher>Imagineer</publisher>
+  <developer />
+  <rating>Other - NR (Not Rated)</rating>
+</game>
+<game ROM="Meitantei Conan - Majutsushi no Chousenjou! (Japan)">
+  <title>Meitantei Conan - Majutsushi no Chousenjou! (Japan)</title>
+  <year>1999</year>
+  <genre>Adventure</genre>
+  <publisher>Bandai</publisher>
+  <developer />
+  <rating>Other - NR (Not Rated)</rating>
+</game>
+<game ROM="Meitantei Conan - Nishi no Meitantei Saidai no Kiki! (Japan)">
+  <title>Meitantei Conan - Nishi no Meitantei Saidai no Kiki! (Japan)</title>
+  <year>2000</year>
+  <genre>Adventure</genre>
+  <publisher>Bandai</publisher>
+  <developer />
+  <rating>Other - NR (Not Rated)</rating>
+</game>
+<game ROM="Metakomi Theraphy - Nee Kiite! (Japan)">
+  <title>Metakomi Theraphy - Nee Kiite! (Japan)</title>
+  <year>2000</year>
+  <genre>Strategy</genre>
+  <publisher>Media Entertainment</publisher>
+  <developer />
+  <rating>Other - NR (Not Rated)</rating>
+</game>
+<game ROM="Mingle Magnet (Japan)">
+  <title>Mingle Magnet (Japan)</title>
+  <year>1999</year>
+  <genre>Puzzle</genre>
+  <publisher>Hal</publisher>
+  <developer />
+  <rating>Other - NR (Not Rated)</rating>
+</game>
+<game ROM="Mobile Suit Gundam MSVS (Japan)">
+  <title>Mobile Suit Gundam MSVS (Japan)</title>
+  <year>1999</year>
+  <genre>Simulation</genre>
+  <publisher>Bandai</publisher>
+  <developer />
+  <rating>Other - NR (Not Rated)</rating>
+</game>
+<game ROM="MobileWonderGate (Japan)">
+  <title>MobileWonderGate (Japan)</title>
+  <year>2000</year>
+  <genre>Miscellaneous</genre>
+  <publisher>Bandai</publisher>
+  <developer />
+  <rating>Other - NR (Not Rated)</rating>
+</game>
+<game ROM="Moero!! Pro Yakyuu Rookies (Japan)">
+  <title>Moero!! Pro Yakyuu Rookies (Japan)</title>
+  <year>2000</year>
+  <genre>Sports/Baseball</genre>
+  <publisher>Jaleco</publisher>
+  <developer />
+  <rating>Other - NR (Not Rated)</rating>
+</game>
+<game ROM="Morita Shougi for WonderSwan (Japan)">
+  <title>Morita Shougi for WonderSwan (Japan)</title>
+  <year>1999</year>
+  <genre>Board Games</genre>
+  <publisher>Yuki</publisher>
+  <developer />
+  <rating>Other - NR (Not Rated)</rating>
+</game>
+<game ROM="Nazo Ou Pocket (Japan)">
+  <title>Nazo Ou Pocket (Japan)</title>
+  <year>1999</year>
+  <genre>Adventure</genre>
+  <publisher>Bandai</publisher>
+  <developer />
+  <rating>Other - NR (Not Rated)</rating>
+</game>
+<game ROM="Neon Genesis Evangelion - Shito Ikusei (Japan)">
+  <title>Neon Genesis Evangelion - Shito Ikusei (Japan)</title>
+  <year>1999</year>
+  <genre>Role-Playing</genre>
+  <publisher>Bandai</publisher>
+  <developer />
+  <rating>Other - NR (Not Rated)</rating>
+</game>
+<game ROM="Nice On (Japan)">
+  <title>Nice On (Japan)</title>
+  <year>1999</year>
+  <genre>Sports/Golf</genre>
+  <publisher>Sammy Studios</publisher>
+  <developer />
+  <rating>Other - NR (Not Rated)</rating>
+</game>
+<game ROM="Nihon Pro Mahjong Renmei Kounin - Tetsuman (Japan)">
+  <title>Nihon Pro Mahjong Renmei Kounin - Tetsuman (Japan)</title>
+  <year>1999</year>
+  <genre>Board Games</genre>
+  <publisher>Kaga Tech</publisher>
+  <developer />
+  <rating>Other - NR (Not Rated)</rating>
+</game>
+<game ROM="Nobunaga no Yabou for WonderSwan (Japan)">
+  <title>Nobunaga no Yabou for WonderSwan (Japan)</title>
+  <year>1999</year>
+  <genre>Strategy</genre>
+  <publisher>Koei</publisher>
+  <developer />
+  <rating>Other - NR (Not Rated)</rating>
+</game>
+<game ROM="Ou-chan no Oekaki Logic (Japan)">
+  <title>Ou-chan no Oekaki Logic (Japan)</title>
+  <year>2000</year>
+  <genre>Puzzle</genre>
+  <publisher>SunSoft</publisher>
+  <developer />
+  <rating>Other - NR (Not Rated)</rating>
+</game>
+<game ROM="Pocket Fighter (Japan)">
+  <title>Pocket Fighter (Japan)</title>
+  <year>2000</year>
+  <genre>Fighter</genre>
+  <publisher>Bandai</publisher>
+  <developer />
+  <rating>Other - NR (Not Rated)</rating>
+</game>
+<game ROM="Pro Mahjong Kiwame for WonderSwan (Japan)">
+  <title>Pro Mahjong Kiwame for WonderSwan (Japan)</title>
+  <year>1999</year>
+  <genre>Board Games</genre>
+  <publisher>Athena</publisher>
+  <developer />
+  <rating>Other - NR (Not Rated)</rating>
+</game>
+<game ROM="Puyo Puyo Tsuu (Japan)">
+  <title>Puyo Puyo Tsuu (Japan)</title>
+  <year>1999</year>
+  <genre>Puzzle</genre>
+  <publisher>Bandai</publisher>
+  <developer />
+  <rating>Other - NR (Not Rated)</rating>
+</game>
+<game ROM="Puzzle Bobble (Japan)">
+  <title>Puzzle Bobble (Japan)</title>
+  <year>1999</year>
+  <genre>Puzzle</genre>
+  <publisher>SunSoft</publisher>
+  <developer />
+  <rating>Other - NR (Not Rated)</rating>
+</game>
+<game ROM="Rainbow Islands - Putty&apos;s Party (Japan)">
+  <title>Rainbow Islands - Putty&apos;s Party (Japan)</title>
+  <year>2000</year>
+  <genre>Action</genre>
+  <publisher>Bandai</publisher>
+  <developer />
+  <rating>Other - NR (Not Rated)</rating>
+</game>
+<game ROM="Ring Infinity (Japan)">
+  <title>Ring Infinity (Japan)</title>
+  <year>2000</year>
+  <genre>Miscellaneous</genre>
+  <publisher>Kadokawa Shoten</publisher>
+  <developer />
+  <rating>Other - NR (Not Rated)</rating>
+</game>
+<game ROM="Robot Works (Asia) (En,Ja)">
+  <title>Robot Works (Asia) (En,Ja)</title>
+  <year>2000</year>
+  <genre>Miscellaneous</genre>
+  <publisher>Bandai</publisher>
+  <developer />
+  <rating>Other - NR (Not Rated)</rating>
+</game>
+<game ROM="Rockman &amp; Forte - Mirai Kara no Chousensha (Japan)">
+  <title>Rockman &amp; Forte - Mirai Kara no Chousensha (Japan)</title>
+  <year>1999</year>
+  <genre>Action</genre>
+  <publisher>Capcom</publisher>
+  <developer />
+  <rating>Other - NR (Not Rated)</rating>
+</game>
+<game ROM="San Goku Shi for WonderSwan (Japan)">
+  <title>San Goku Shi for WonderSwan (Japan)</title>
+  <year>2000</year>
+  <genre>Strategy</genre>
+  <publisher>Koei</publisher>
+  <developer />
+  <rating>Other - NR (Not Rated)</rating>
+</game>
+<game ROM="San Goku Shi II for WonderSwan (Japan)">
+  <title>San Goku Shi II for WonderSwan (Japan)</title>
+  <year>1999</year>
+  <genre>Strategy</genre>
+  <publisher>Koei</publisher>
+  <developer />
+  <rating>Other - NR (Not Rated)</rating>
+</game>
+<game ROM="SD Gundam - Emotional Jam (Japan)">
+  <title>SD Gundam - Emotional Jam (Japan)</title>
+  <year>1999</year>
+  <genre>Strategy</genre>
+  <publisher>Bandai</publisher>
+  <developer />
+  <rating>Other - NR (Not Rated)</rating>
+</game>
+<game ROM="SD Gundam G-Generation - Gather Beat (Japan)">
+  <title>SD Gundam G-Generation - Gather Beat (Japan)</title>
+  <year>2000</year>
+  <genre>Strategy</genre>
+  <publisher>Bandai</publisher>
+  <developer />
+  <rating>Other - NR (Not Rated)</rating>
+</game>
+<game ROM="SD Gundam Gashapon Senki - Episode 1 (Japan)">
+  <title>SD Gundam Gashapon Senki - Episode 1 (Japan)</title>
+  <year>1999</year>
+  <genre>Strategy</genre>
+  <publisher>Bandai</publisher>
+  <developer />
+  <rating>Other - NR (Not Rated)</rating>
+</game>
+<game ROM="Senkaiden - TV Animation Senkaiden Houshin Engi Yori (Japan)">
+  <title>Senkaiden - TV Animation Senkaiden Houshin Engi Yori (Japan)</title>
+  <year>2000</year>
+  <genre>Role-Playing</genre>
+  <publisher>Bandai</publisher>
+  <developer />
+  <rating>Other - NR (Not Rated)</rating>
+</game>
+<game ROM="Sennou Millennium (Japan)">
+  <title>Sennou Millennium (Japan)</title>
+  <year>2000</year>
+  <genre>Puzzle</genre>
+  <publisher>Bandai</publisher>
+  <developer />
+  <rating>Other - NR (Not Rated)</rating>
+</game>
+<game ROM="Shanghai Pocket (Japan)">
+  <title>Shanghai Pocket (Japan)</title>
+  <year>1999</year>
+  <genre>Puzzle</genre>
+  <publisher>SunSoft</publisher>
+  <developer />
+  <rating>Other - NR (Not Rated)</rating>
+</game>
+<game ROM="Shin Nihon Pro Wrestling - Toukon Retsuden (Japan)">
+  <title>Shin Nihon Pro Wrestling - Toukon Retsuden (Japan)</title>
+  <year>1999</year>
+  <genre>Sports/Wrestling</genre>
+  <publisher>Tomy Corporation</publisher>
+  <developer />
+  <rating>Other - NR (Not Rated)</rating>
+</game>
+<game ROM="Shougi Touryuumon (Japan)">
+  <title>Shougi Touryuumon (Japan)</title>
+  <year>1999</year>
+  <genre>Board Games</genre>
+  <publisher>Sammy Studios</publisher>
+  <developer />
+  <rating>Other - NR (Not Rated)</rating>
+</game>
+<game ROM="Side Pocket for WonderSwan (Japan)">
+  <title>Side Pocket for WonderSwan (Japan)</title>
+  <year>1999</year>
+  <genre>Sports/Pool</genre>
+  <publisher>Data East</publisher>
+  <developer />
+  <rating>Other - NR (Not Rated)</rating>
+</game>
+<game ROM="Slither Link (Japan)">
+  <title>Slither Link (Japan)</title>
+  <year>2000</year>
+  <genre>Puzzle</genre>
+  <publisher>Bandai</publisher>
+  <developer />
+  <rating>Other - NR (Not Rated)</rating>
+</game>
+<game ROM="Soccer Yarou! - Challenge the World (Japan)">
+  <title>Soccer Yarou! - Challenge the World (Japan)</title>
+  <year>1999</year>
+  <genre>Sports/Soccer</genre>
+  <publisher>Coconuts Japan</publisher>
+  <developer />
+  <rating>Other - NR (Not Rated)</rating>
+</game>
+<game ROM="Sotsugyou for WonderSwan (Japan)">
+  <title>Sotsugyou for WonderSwan (Japan)</title>
+  <year>1999</year>
+  <genre>Strategy</genre>
+  <publisher>Bandai</publisher>
+  <developer />
+  <rating>Other - NR (Not Rated)</rating>
+</game>
+<game ROM="Space Invaders (Japan)">
+  <title>Space Invaders (Japan)</title>
+  <year>1999</year>
+  <genre>Shooter</genre>
+  <publisher>SunSoft</publisher>
+  <developer />
+  <rating>Other - NR (Not Rated)</rating>
+</game>
+<game ROM="Super Robot Taisen Compact (Japan)">
+  <title>Super Robot Taisen Compact (Japan)</title>
+  <year>1999</year>
+  <genre>Strategy</genre>
+  <publisher>Banpresto</publisher>
+  <developer />
+  <rating>Other - NR (Not Rated)</rating>
+</game>
+<game ROM="Super Robot Taisen Compact 2 - Dai-1-bu - Chijou Gekidou Hen (Japan)">
+  <title>Super Robot Taisen Compact 2 - Dai-1-bu - Chijou Gekidou Hen (Japan)</title>
+  <year>2000</year>
+  <genre>Strategy</genre>
+  <publisher>Banpresto</publisher>
+  <developer />
+  <rating>Other - NR (Not Rated)</rating>
+</game>
+<game ROM="Super Robot Taisen Compact 2 - Dai-2-bu - Uchuu Gekishin Hen (Japan)">
+  <title>Super Robot Taisen Compact 2 - Dai-2-bu - Uchuu Gekishin Hen (Japan)</title>
+  <year>2000</year>
+  <genre>Strategy</genre>
+  <publisher>Banpresto</publisher>
+  <developer />
+  <rating>Other - NR (Not Rated)</rating>
+</game>
+<game ROM="Super Robot Taisen Compact 2 - Dai-3-bu - Ginga Kessen Hen (Japan)">
+  <title>Super Robot Taisen Compact 2 - Dai-3-bu - Ginga Kessen Hen (Japan)</title>
+  <year>2001</year>
+  <genre>Strategy</genre>
+  <publisher>Banpresto</publisher>
+  <developer />
+  <rating>Other - NR (Not Rated)</rating>
+</game>
+<game ROM="Taikyoku Igo - Heisei Kiin (Japan)">
+  <title>Taikyoku Igo - Heisei Kiin (Japan)</title>
+  <year>2000</year>
+  <genre>Board Games</genre>
+  <publisher>Kaga Tech</publisher>
+  <developer />
+  <rating>Other - NR (Not Rated)</rating>
+</game>
+<game ROM="Tanjou Debut for WonderSwan (Japan)">
+  <title>Tanjou Debut for WonderSwan (Japan)</title>
+  <year>2000</year>
+  <genre>Strategy</genre>
+  <publisher>Bandai</publisher>
+  <developer />
+  <rating>Other - NR (Not Rated)</rating>
+</game>
+<game ROM="Tare Panda no GunPey (Japan)">
+  <title>Tare Panda no GunPey (Japan)</title>
+  <year>1999</year>
+  <genre>Puzzle</genre>
+  <publisher>Bandai</publisher>
+  <developer />
+  <rating>Other - NR (Not Rated)</rating>
+</game>
+<game ROM="Tekken Card Challenge (Japan)">
+  <title>Tekken Card Challenge (Japan)</title>
+  <year>1999</year>
+  <genre>Card Battle</genre>
+  <publisher>Bandai</publisher>
+  <developer />
+  <rating>Other - NR (Not Rated)</rating>
+</game>
+<game ROM="Terrors (Japan)">
+  <title>Terrors (Japan)</title>
+  <year>1999</year>
+  <genre>Adventure</genre>
+  <publisher>Bandai</publisher>
+  <developer />
+  <rating>Other - NR (Not Rated)</rating>
+</game>
+<game ROM="Tetsujin 28 Gou (Japan)">
+  <title>Tetsujin 28 Gou (Japan)</title>
+  <year>1999</year>
+  <genre>Adventure</genre>
+  <publisher>MegaHouse</publisher>
+  <developer />
+  <rating>Other - NR (Not Rated)</rating>
+</game>
+<game ROM="Time Bokan Series - Bokan Densetsu - Butamo Odaterya Doronbou (Japan)">
+  <title>Time Bokan Series - Bokan Densetsu - Butamo Odaterya Doronbou (Japan)</title>
+  <year>2000</year>
+  <genre>Role-Playing</genre>
+  <publisher>Banpresto</publisher>
+  <developer />
+  <rating>Other - NR (Not Rated)</rating>
+</game>
+<game ROM="Tokyo Majin Gakuen - Fuju Houroku (Japan)">
+  <title>Tokyo Majin Gakuen - Fuju Houroku (Japan)</title>
+  <year>2000</year>
+  <genre>Role-Playing</genre>
+  <publisher>Asmik Ace Entertainment, Inc, </publisher>
+  <developer />
+  <rating>Other - NR (Not Rated)</rating>
+</game>
+<game ROM="Trump Collection - Bottom-Up Teki Trump Seikatsu (Japan)">
+  <title>Trump Collection - Bottom-Up Teki Trump Seikatsu (Japan)</title>
+  <year>1999</year>
+  <genre>Board Games</genre>
+  <publisher>Bottom Up</publisher>
+  <developer />
+  <rating>Other - NR (Not Rated)</rating>
+</game>
+<game ROM="Trump Collection 2 - Bottom-Up Teki Sekaiisshuu no Tabi (Japan)">
+  <title>Trump Collection 2 - Bottom-Up Teki Sekaiisshuu no Tabi (Japan)</title>
+  <year>2000</year>
+  <genre>Board Games</genre>
+  <publisher>Bottom Up</publisher>
+  <developer />
+  <rating>Other - NR (Not Rated)</rating>
+</game>
+<game ROM="Turntablist - DJ Battle (Japan)">
+  <title>Turntablist - DJ Battle (Japan)</title>
+  <year>1999</year>
+  <genre>Rhythm</genre>
+  <publisher>Bandai</publisher>
+  <developer />
+  <rating>Other - NR (Not Rated)</rating>
+</game>
+<game ROM="Umizuri ni Ikou! (Japan)">
+  <title>Umizuri ni Ikou! (Japan)</title>
+  <year>1999</year>
+  <genre>Sports/Fishing</genre>
+  <publisher>Coconuts Japan</publisher>
+  <developer />
+  <rating>Other - NR (Not Rated)</rating>
+</game>
+<game ROM="Uzumaki - Denshi Kaiki Hen (Japan)">
+  <title>Uzumaki - Denshi Kaiki Hen (Japan)</title>
+  <year>2000</year>
+  <genre>Action</genre>
+  <publisher>Omega Micott</publisher>
+  <developer />
+  <rating>Other - NR (Not Rated)</rating>
+</game>
+<game ROM="Vaitz Blade (Japan)">
+  <title>Vaitz Blade (Japan)</title>
+  <year>1999</year>
+  <genre>Role-Playing</genre>
+  <publisher>Bandai</publisher>
+  <developer />
+  <rating>Other - NR (Not Rated)</rating>
+</game>
+<game ROM="Wasabi Produce - Street Dancer (Japan)">
+  <title>Wasabi Produce - Street Dancer (Japan)</title>
+  <year>2000</year>
+  <genre>Rhythm</genre>
+  <publisher>Bandai</publisher>
+  <developer />
+  <rating>Other - NR (Not Rated)</rating>
+</game>
+<game ROM="Wonder Stadium &apos;99 (Japan)">
+  <title>Wonder Stadium &apos;99 (Japan)</title>
+  <year>1999</year>
+  <genre>Sports/Baseball</genre>
+  <publisher>Bandai</publisher>
+  <developer />
+  <rating>Other - NR (Not Rated)</rating>
+</game>
+<game ROM="Wonder Stadium (Japan)">
+  <title>Wonder Stadium (Japan)</title>
+  <year>1999</year>
+  <genre>Sports/Baseball</genre>
+  <publisher>Bandai</publisher>
+  <developer />
+  <rating>Other - NR (Not Rated)</rating>
+</game>
+<game ROM="WonderSwan Handy Sonar (Japan)">
+  <title>WonderSwan Handy Sonar (Japan)</title>
+  <year>1999</year>
+  <genre>Sports/Fishing</genre>
+  <publisher>Bandai</publisher>
+  <developer />
+  <rating>Other - NR (Not Rated)</rating>
+</game>
+</menu>

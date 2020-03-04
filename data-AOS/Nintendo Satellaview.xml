@@ -1,0 +1,713 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<menu>
+<header>
+  <listname>Nintendo Satellaview</listname>
+  <lastlistupdate></lastlistupdate>
+  <listversion>V1</listversion>
+  <exporterversion>V1 GameDBInfo converter</exporterversion>
+</header>
+<game ROM="Arkanoid - Doh It Again (Japan)">
+  <title>Arkanoid: Doh It Again (Japan)</title>
+  <year>1997</year>
+  <genre>Breakout</genre>
+  <publisher>Taito</publisher>
+  <developer />
+  <rating>Other - NR (Not Rated)</rating>
+</game>
+<game ROM="Bokujou Monogatari - Dai-2-wa (Japan)">
+  <title>Bokujou Monogatari Week 2 (Japan)</title>
+  <year>1996</year>
+  <genre>Role-Playing</genre>
+  <publisher>Pack-In-Video</publisher>
+  <developer />
+  <rating>Other - NR (Not Rated)</rating>
+</game>
+<game ROM="Bokujou Monogatari - Dai-4-wa (Japan)">
+  <title>Bokujou Monogatari Week 4 (Japan)</title>
+  <year>1996</year>
+  <genre>Role-Playing</genre>
+  <publisher>Pack-In-Video</publisher>
+  <developer />
+  <rating>Other - NR (Not Rated)</rating>
+</game>
+<game ROM="BS F-Zero Grand Prix 2 - Practice (Japan)">
+  <title>BS F-Zero Grand Prix 2: Practice (Japan)</title>
+  <year>1997</year>
+  <genre>Driving</genre>
+  <publisher>Nintendo</publisher>
+  <developer />
+  <rating>Other - NR (Not Rated)</rating>
+</game>
+<game ROM="BS F-Zero Grand Prix - Dai-1-shuu - Knight League (Japan)">
+  <title>BS F-Zero Grand Prix Week 1: Knight League (Japan)</title>
+  <year>1996</year>
+  <genre>Driving</genre>
+  <publisher>Nintendo</publisher>
+  <developer />
+  <rating>Other - NR (Not Rated)</rating>
+</game>
+<game ROM="BS F-Zero Grand Prix - Dai-2-shuu - Queen League (Japan)">
+  <title>BS F-Zero Grand Prix Week 2: Queen League (Japan)</title>
+  <year>1997</year>
+  <genre>Driving</genre>
+  <publisher>Nintendo</publisher>
+  <developer />
+  <rating>Other - NR (Not Rated)</rating>
+</game>
+<game ROM="BS F-Zero Grand Prix - Dai-3-shuu - King League (Japan)">
+  <title>BS F-Zero Grand Prix Week 3: King League (Japan)</title>
+  <year>1997</year>
+  <genre>Driving</genre>
+  <publisher>Nintendo</publisher>
+  <developer />
+  <rating>Other - NR (Not Rated)</rating>
+</game>
+<game ROM="BS F-Zero Grand Prix - Dai-4-shuu - Ace League (Japan)">
+  <title>BS F-Zero Grand Prix Week 4: Ace League (Japan)</title>
+  <year>1997</year>
+  <genre>Driving</genre>
+  <publisher>Nintendo</publisher>
+  <developer />
+  <rating>Other - NR (Not Rated)</rating>
+</game>
+<game ROM="BS Fire Emblem - Akaneia Senki Hen - Dai-1-wa - Palace Kanraku (Japan)">
+  <title>BS Fire Emblem: Akaneia Senki Hen Week 1: Palace Kanraku (Japan)</title>
+  <year>1997</year>
+  <genre>Strategy</genre>
+  <publisher>Nintendo</publisher>
+  <developer />
+  <rating>Other - NR (Not Rated)</rating>
+</game>
+<game ROM="BS Fire Emblem - Akaneia Senki Hen - Dai-2-wa - Akai Ryuu Kishi (Japan)">
+  <title>BS Fire Emblem: Akaneia Senki Hen Week 2: Akai Ryuu Kishi (Japan)</title>
+  <year>1997</year>
+  <genre>Strategy</genre>
+  <publisher>Nintendo</publisher>
+  <developer />
+  <rating>Other - NR (Not Rated)</rating>
+</game>
+<game ROM="BS Fire Emblem - Akaneia Senki Hen - Dai-3-wa - Seigi no Touzokudan (Japan)">
+  <title>BS Fire Emblem: Akaneia Senki Hen Week 3: Seigi no Touzokudan (Japan)</title>
+  <year>1997</year>
+  <genre>Strategy</genre>
+  <publisher>Nintendo</publisher>
+  <developer />
+  <rating>Other - NR (Not Rated)</rating>
+</game>
+<game ROM="BS Fire Emblem - Akaneia Senki Hen - Dai-4-wa - Hajimari no Toki (Japan)">
+  <title>BS Fire Emblem: Akaneia Senki Hen Week 4: Hajimari no Toki (Japan)</title>
+  <year>1997</year>
+  <genre>Strategy</genre>
+  <publisher>Nintendo</publisher>
+  <developer />
+  <rating>Other - NR (Not Rated)</rating>
+</game>
+<game ROM="BS Legend of Zelda, The (Japan) (Translated En)">
+  <title>BS Legend of Zelda, The (Japan) (Translated En)</title>
+  <year>1995</year>
+  <genre>Role-Playing</genre>
+  <publisher>Nintendo</publisher>
+  <developer />
+  <rating>Other - NR (Not Rated)</rating>
+</game>
+<game ROM="BS Legend of Zelda, The - Ancient Stone Tablets - Week 1 (Japan) (Translated En)">
+  <title>BS Legend of Zelda, The: Ancient Stone Tablets Week 1 (Japan) (Translated En)</title>
+  <year>1997</year>
+  <genre>Role-Playing</genre>
+  <publisher>Nintendo</publisher>
+  <developer />
+  <rating>Other - NR (Not Rated)</rating>
+</game>
+<game ROM="BS Legend of Zelda, The - Ancient Stone Tablets - Week 2 (Japan) (Translated En)">
+  <title>BS Legend of Zelda, The: Ancient Stone Tablets Week 2 (Japan) (Translated En)</title>
+  <year>1997</year>
+  <genre>Role-Playing</genre>
+  <publisher>Nintendo</publisher>
+  <developer />
+  <rating>Other - NR (Not Rated)</rating>
+</game>
+<game ROM="BS Legend of Zelda, The - Ancient Stone Tablets - Week 3 (Japan) (Translated En)">
+  <title>BS Legend of Zelda, The: Ancient Stone Tablets Week 3 (Japan) (Translated En)</title>
+  <year>1997</year>
+  <genre>Role-Playing</genre>
+  <publisher>Nintendo</publisher>
+  <developer />
+  <rating>Other - NR (Not Rated)</rating>
+</game>
+<game ROM="BS Legend of Zelda, The - Ancient Stone Tablets - Week 4 (Japan) (Translated En)">
+  <title>BS Legend of Zelda, The: Ancient Stone Tablets Week 4 (Japan) (Translated En)</title>
+  <year>1997</year>
+  <genre>Role-Playing</genre>
+  <publisher>Nintendo</publisher>
+  <developer />
+  <rating>Other - NR (Not Rated)</rating>
+</game>
+<game ROM="BS Legend of Zelda, The - Map 2 (Japan) (Translated En)">
+  <title>BS Legend of Zelda, The: Map 2 (Japan) (Translated En)</title>
+  <year>1995</year>
+  <genre>Role-Playing</genre>
+  <publisher>Nintendo</publisher>
+  <developer />
+  <rating>Other - NR (Not Rated)</rating>
+</game>
+<game ROM="BS Marvelous - Camp Arnold Course - Dai-1-shuu (Japan)">
+  <title>BS Marvelous: Camp Arnold Course Week 1 (Japan)</title>
+  <year>1996</year>
+  <genre>Role-Playing</genre>
+  <publisher>Nintendo</publisher>
+  <developer />
+  <rating>Other - NR (Not Rated)</rating>
+</game>
+<game ROM="BS Marvelous - Camp Arnold Course - Dai-2-shuu (Japan)">
+  <title>BS Marvelous: Camp Arnold Course Week 2 (Japan)</title>
+  <year>1996</year>
+  <genre>Role-Playing</genre>
+  <publisher>Nintendo</publisher>
+  <developer />
+  <rating>Other - NR (Not Rated)</rating>
+</game>
+<game ROM="BS Marvelous - Camp Arnold Course - Dai-3-shuu (Japan)">
+  <title>BS Marvelous: Camp Arnold Course Week 3 (Japan)</title>
+  <year>1996</year>
+  <genre>Role-Playing</genre>
+  <publisher>Nintendo</publisher>
+  <developer />
+  <rating>Other - NR (Not Rated)</rating>
+</game>
+<game ROM="BS Marvelous - Camp Arnold Course - Dai-4-shuu (Japan)">
+  <title>BS Marvelous: Camp Arnold Course Week 4 (Japan)</title>
+  <year>1996</year>
+  <genre>Role-Playing</genre>
+  <publisher>Nintendo</publisher>
+  <developer />
+  <rating>Other - NR (Not Rated)</rating>
+</game>
+<game ROM="BS Marvelous - Time Athletic Course - Dai-1-shuu (Japan)">
+  <title>BS Marvelous: Time Athletic Course Week 1 (Japan)</title>
+  <year>1996</year>
+  <genre>Role-Playing</genre>
+  <publisher>Nintendo</publisher>
+  <developer />
+  <rating>Other - NR (Not Rated)</rating>
+</game>
+<game ROM="BS Marvelous - Time Athletic Course - Dai-2-shuu (Japan)">
+  <title>BS Marvelous: Time Athletic Course Week 2</title>
+  <year>1996</year>
+  <genre>Role-Playing</genre>
+  <publisher>Nintendo</publisher>
+  <developer />
+  <rating>Other - NR (Not Rated)</rating>
+</game>
+<game ROM="BS Marvelous - Time Athletic Course - Dai-3-shuu (Japan)">
+  <title>BS Marvelous: Time Athletic Course Week 3 (Japan)</title>
+  <year>1996</year>
+  <genre>Role-Playing</genre>
+  <publisher>Nintendo</publisher>
+  <developer />
+  <rating>Other - NR (Not Rated)</rating>
+</game>
+<game ROM="BS Marvelous - Time Athletic Course - Dai-4-shuu (Japan)">
+  <title>BS Marvelous: Time Athletic Course Week 4 (Japan)</title>
+  <year>1996</year>
+  <genre>Role-Playing</genre>
+  <publisher>Nintendo</publisher>
+  <developer />
+  <rating>Other - NR (Not Rated)</rating>
+</game>
+<game ROM="BS Super Mario Collection - Dai-2-shuu (Japan)">
+  <title>BS Super Mario Collection: Week 2 (Japan)</title>
+  <year>1998</year>
+  <genre>Platform</genre>
+  <publisher>Nintendo</publisher>
+  <developer />
+  <rating>Other - NR (Not Rated)</rating>
+</game>
+<game ROM="BS Super Mario Collection - Dai-3-shuu (Japan)">
+  <title>BS Super Mario Collection: Week 3 (Japan)</title>
+  <year>1998</year>
+  <genre>Platform</genre>
+  <publisher>Nintendo</publisher>
+  <developer />
+  <rating>Other - NR (Not Rated)</rating>
+</game>
+<game ROM="BS Super Mario USA - Power Challenge - Week 1 (Japan) (Translated En)">
+  <title>BS Super Mario USA: Power Challenge Week 1 (Japan) (Translated En)</title>
+  <year>1996</year>
+  <genre>Platform</genre>
+  <publisher>Nintendo</publisher>
+  <developer />
+  <rating>Other - NR (Not Rated)</rating>
+</game>
+<game ROM="BS Super Mario USA - Power Challenge - Week 2 (Japan) (Translated En)">
+  <title>BS Super Mario USA: Power Challenge Week 2 (Japan) (Translated En)</title>
+  <year>1996</year>
+  <genre>Platform</genre>
+  <publisher>Nintendo</publisher>
+  <developer />
+  <rating>Other - NR (Not Rated)</rating>
+</game>
+<game ROM="BS Super Mario USA - Power Challenge - Week 3 (Japan) (Translated En)">
+  <title>BS Super Mario USA: Power Challenge Week 3 (Japan) (Translated En)</title>
+  <year>1996</year>
+  <genre>Platform</genre>
+  <publisher>Nintendo</publisher>
+  <developer />
+  <rating>Other - NR (Not Rated)</rating>
+</game>
+<game ROM="BS Super Mario USA - Power Challenge - Week 4 (Japan) (Translated En)">
+  <title>BS Super Mario USA: Power Challenge Week 4 (Japan) (Translated En)</title>
+  <year>1996</year>
+  <genre>Platform</genre>
+  <publisher>Nintendo</publisher>
+  <developer />
+  <rating>Other - NR (Not Rated)</rating>
+</game>
+<game ROM="Chrono Trigger - Jet Bike Special (Japan)">
+  <title>Chrono Trigger: Jet Bike Special (Japan)</title>
+  <year>1995</year>
+  <genre>Motorcycle</genre>
+  <publisher>Square</publisher>
+  <developer />
+  <rating>Other - NR (Not Rated)</rating>
+</game>
+<game ROM="Cu-On-Pa SFC (Japan)">
+  <title>Cu-On-Pa SFC (Japan)</title>
+  <year>1997</year>
+  <genre>Puzzle</genre>
+  <publisher>T&amp;E Soft</publisher>
+  <developer />
+  <rating>Other - NR (Not Rated)</rating>
+</game>
+<game ROM="Darius Force (Japan)">
+  <title>Darius Force (Japan)</title>
+  <year>1997</year>
+  <genre>Shoot-&apos;Em-Up</genre>
+  <publisher>Taito</publisher>
+  <developer />
+  <rating>Other - NR (Not Rated)</rating>
+</game>
+<game ROM="Dezaemon BSX Version - BS-X Shooting (Japan)">
+  <title>Dezaemon BSX Version: BS-X Shooting (Japan)</title>
+  <year>1996</year>
+  <genre>Shoot-&apos;Em-Up</genre>
+  <publisher>Athena</publisher>
+  <developer />
+  <rating>Other - NR (Not Rated)</rating>
+</game>
+<game ROM="Dr. Mario (Japan)">
+  <title>Dr. Mario (Japan)</title>
+  <year>1997</year>
+  <genre>Puzzle</genre>
+  <publisher>Nintendo</publisher>
+  <developer />
+  <rating>Other - NR (Not Rated)</rating>
+</game>
+<game ROM="Excitebike - Bunbun Mario Battle - Stadium 1 (Japan)">
+  <title>Excitebike: Bunbun Mario Battle Stadium 1 (Japan)</title>
+  <year>1997</year>
+  <genre>Motorcycle</genre>
+  <publisher>Nintendo</publisher>
+  <developer />
+  <rating>Other - NR (Not Rated)</rating>
+</game>
+<game ROM="Excitebike - Bunbun Mario Battle - Stadium 2 (Japan)">
+  <title>Excitebike: Bunbun Mario Battle Stadium 2 (Japan)</title>
+  <year>1997</year>
+  <genre>Motorcycle</genre>
+  <publisher>Nintendo</publisher>
+  <developer />
+  <rating>Other - NR (Not Rated)</rating>
+</game>
+<game ROM="Excitebike - Bunbun Mario Battle - Stadium 3 (Japan)">
+  <title>Excitebike: Bunbun Mario Battle Stadium 3 (Japan)</title>
+  <year>1997</year>
+  <genre>Motorcycle</genre>
+  <publisher>Nintendo</publisher>
+  <developer />
+  <rating>Other - NR (Not Rated)</rating>
+</game>
+<game ROM="Excitebike - Bunbun Mario Battle - Stadium 4 (Japan)">
+  <title>Excitebike: Bunbun Mario Battle Stadium 4 (Japan)</title>
+  <year>1997</year>
+  <genre>Motorcycle</genre>
+  <publisher>Nintendo</publisher>
+  <developer />
+  <rating>Other - NR (Not Rated)</rating>
+</game>
+<game ROM="F-Zero (Japan)">
+  <title>F-Zero (Japan)</title>
+  <year>1996</year>
+  <genre>Driving</genre>
+  <publisher>Nintendo</publisher>
+  <developer />
+  <rating>Other - NR (Not Rated)</rating>
+</game>
+<game ROM="Firemen, The (Japan)">
+  <title>Firemen, The (Japan)</title>
+  <year>1997</year>
+  <genre>Shooter</genre>
+  <publisher>Human Corporation</publisher>
+  <developer />
+  <rating>Other - NR (Not Rated)</rating>
+</game>
+<game ROM="Golf Daisuki! O.B. Club (Japan)">
+  <title>Golf Daisuki! O.B. Club (Japan)</title>
+  <year>1997</year>
+  <genre>Sports/Golf</genre>
+  <publisher>Nippon Computer Systems Corp</publisher>
+  <developer />
+  <rating>Other - NR (Not Rated)</rating>
+</game>
+<game ROM="Ikari no Yousai (Japan)">
+  <title>Ikari no Yousai (Japan)</title>
+  <year>1998</year>
+  <genre>Shooter</genre>
+  <publisher>Jaleco</publisher>
+  <developer />
+  <rating>Other - NR (Not Rated)</rating>
+</game>
+<game ROM="Kaizou Chounin Shubibinman Zero (Japan)">
+  <title>Kaizou Chounin Shubibinman Zero (Japan)</title>
+  <year>1997</year>
+  <genre>Beat-&apos;Em-Up</genre>
+  <publisher>Nippon Computer Systems Corp</publisher>
+  <developer />
+  <rating>Other - NR (Not Rated)</rating>
+</game>
+<game ROM="Kid Klown no Crazy Chase (Japan)">
+  <title>Kid Klown no Crazy Chase (Japan)</title>
+  <year>1997</year>
+  <genre>Platform</genre>
+  <publisher>Kemco</publisher>
+  <developer />
+  <rating>Other - NR (Not Rated)</rating>
+</game>
+<game ROM="Kikikai-kai - Nazo no Kuro Manteau (Japan)">
+  <title>Kikikai-kai: Nazo no Kuro Manteau (Japan)</title>
+  <year>1997</year>
+  <genre>Shoot-&apos;Em-Up</genre>
+  <publisher>Taito</publisher>
+  <developer />
+  <rating>Other - NR (Not Rated)</rating>
+</game>
+<game ROM="Kirby no Omochabako - Baseball (Japan)">
+  <title>Kirby no Omochabako: Baseball (Japan)</title>
+  <year>1996</year>
+  <genre>Sports/Baseball</genre>
+  <publisher>Nintendo</publisher>
+  <developer />
+  <rating>Other - NR (Not Rated)</rating>
+</game>
+<game ROM="Kirby no Omochabako - Guruguru Ball (Japan)">
+  <title>Kirby no Omochabako: Guruguru Ball (Japan)</title>
+  <year>1996</year>
+  <genre>Breakout</genre>
+  <publisher>Nintendo</publisher>
+  <developer />
+  <rating>Other - NR (Not Rated)</rating>
+</game>
+<game ROM="Kirby no Omochabako - Hoshi Kuzushi (Japan)">
+  <title>Kirby no Omochabako: Hoshi Kuzushi (Japan)</title>
+  <year>1996</year>
+  <genre>Puzzle</genre>
+  <publisher>Nintendo</publisher>
+  <developer />
+  <rating>Other - NR (Not Rated)</rating>
+</game>
+<game ROM="Kirby no Omochabako - Pinball (Japan)">
+  <title>Kirby no Omochabako: Pinball (Japan)</title>
+  <year>1996</year>
+  <genre>Pinball</genre>
+  <publisher>Nintendo</publisher>
+  <developer />
+  <rating>Other - NR (Not Rated)</rating>
+</game>
+<game ROM="Konae-chan no Dokidoki Penguin Kazoku (Japan)">
+  <title>Konae-chan no Dokidoki Penguin Kazoku (Japan)</title>
+  <year>1996</year>
+  <genre>Puzzle</genre>
+  <publisher>Pax Softnica</publisher>
+  <developer />
+  <rating>Other - NR (Not Rated)</rating>
+</game>
+<game ROM="Lemmings (Japan)">
+  <title>Lemmings (Japan)</title>
+  <year>1996</year>
+  <genre>Puzzle</genre>
+  <publisher>Psygnosis</publisher>
+  <developer />
+  <rating>Other - NR (Not Rated)</rating>
+</game>
+<game ROM="Mario Paint - Yuushou Naizou Ban (Japan)">
+  <title>Mario Paint: Yuushou Naizou Ban (Japan)</title>
+  <year>1997</year>
+  <genre>Utility</genre>
+  <publisher>Nintendo</publisher>
+  <developer />
+  <rating>Other - NR (Not Rated)</rating>
+</game>
+<game ROM="New 3D Golf Simulation - Waialae no Kiseki (Japan)">
+  <title>New 3D Golf Simulation: Waialae no Kiseki (Japan)</title>
+  <year>1997</year>
+  <genre>Sports/Golf</genre>
+  <publisher>T&amp;E Soft</publisher>
+  <developer />
+  <rating>Other - NR (Not Rated)</rating>
+</game>
+<game ROM="New Yatterman - Nandai Kandai Yajirobee (Japan)">
+  <title>New Yatterman: Nandai Kandai Yajirobee (Japan)</title>
+  <year>1996</year>
+  <genre>Action</genre>
+  <publisher>Yutaka</publisher>
+  <developer />
+  <rating>Other - NR (Not Rated)</rating>
+</game>
+<game ROM="Panel de Pon - Event &apos;98 (Japan)">
+  <title>Panel de Pon: Event &apos;98 (Japan)</title>
+  <year>1997</year>
+  <genre>Puzzle</genre>
+  <publisher>Intelligent Systems</publisher>
+  <developer />
+  <rating>Other - NR (Not Rated)</rating>
+</game>
+<game ROM="Satella Walker 2 - Dai-1-wa - Mokumoku Kemuri Panic (Japan)">
+  <title>Satella Walker 2 Week 1: Mokumoku Kemuri Panic (Japan)</title>
+  <year>1998</year>
+  <genre>Role-Playing</genre>
+  <publisher>Nintendo</publisher>
+  <developer />
+  <rating>Other - NR (Not Rated)</rating>
+</game>
+<game ROM="Satella Walker - Sate Bou o Sukuidase! (Japan)">
+  <title>Satella Walker: Sate Bou o Sukuidase! (Japan)</title>
+  <year>1997</year>
+  <genre>Role-Playing</genre>
+  <publisher>Nintendo</publisher>
+  <developer />
+  <rating>Other - NR (Not Rated)</rating>
+</game>
+<game ROM="Shanghai - Banri no Choujou (Japan)">
+  <title>Shanghai: Banri no Choujou (Japan)</title>
+  <year>1998</year>
+  <genre>Puzzle</genre>
+  <publisher>Sunsoft</publisher>
+  <developer />
+  <rating>Other - NR (Not Rated)</rating>
+</game>
+<game ROM="Sonic Blast Man (Japan)">
+  <title>Sonic Blast Man (Japan)</title>
+  <year>1997</year>
+  <genre>Beat-&apos;Em-Up</genre>
+  <publisher>Taito</publisher>
+  <developer />
+  <rating>Other - NR (Not Rated)</rating>
+</game>
+<game ROM="Special Tee Shot (Japan)">
+  <title>Special Tee Shot (Japan)</title>
+  <year>1996</year>
+  <genre>Sports/Golf</genre>
+  <publisher>Nintendo</publisher>
+  <developer />
+  <rating>Other - NR (Not Rated)</rating>
+</game>
+<game ROM="Super Aleste (Japan) (Translated En)">
+  <title>Super Aleste (Japan) (Translated En)</title>
+  <year>1997</year>
+  <genre>Shoot-&apos;Em-Up</genre>
+  <publisher>Toho</publisher>
+  <developer />
+  <rating>Other - NR (Not Rated)</rating>
+</game>
+<game ROM="Super Bomber Man (Japan)">
+  <title>Super Bomber Man (Japan)</title>
+  <year>1996</year>
+  <genre>Maze</genre>
+  <publisher>Hudson Soft</publisher>
+  <developer />
+  <rating>Other - NR (Not Rated)</rating>
+</game>
+<game ROM="Super Bomber Man 2 (Japan)">
+  <title>Super Bomber Man 2 (Japan)</title>
+  <year>1997</year>
+  <genre>Maze</genre>
+  <publisher>Hudson Soft</publisher>
+  <developer />
+  <rating>Other - NR (Not Rated)</rating>
+</game>
+<game ROM="Super E.D.F. (Japan)">
+  <title>Super E.D.F. (Japan)</title>
+  <year>1997</year>
+  <genre>Shoot-&apos;Em-Up</genre>
+  <publisher>Jaleco</publisher>
+  <developer />
+  <rating>Other - NR (Not Rated)</rating>
+</game>
+<game ROM="Super Famicom Wars - BS Ban - Tsukinowa-jima (Japan)">
+  <title>Super Famicom Wars BS Ban: Tsukinowa-jima (Japan)</title>
+  <year>1998</year>
+  <genre>Strategy</genre>
+  <publisher>Nintendo</publisher>
+  <developer />
+  <rating>Other - NR (Not Rated)</rating>
+</game>
+<game ROM="Super Fire Pro Wrestling (Japan)">
+  <title>Super Fire Pro Wrestling (Japan)</title>
+  <year>1997</year>
+  <genre>Fighter</genre>
+  <publisher>Human Entertainment</publisher>
+  <developer />
+  <rating>Other - NR (Not Rated)</rating>
+</game>
+<game ROM="Super Nazo Puyo Tsuu - Rulue no Tetsuwan Hanjouki (Japan)">
+  <title>Super Nazo Puyo Tsuu: Rulue no Tetsuwan Hanjouki (Japan)</title>
+  <year>1998</year>
+  <genre>Puzzle</genre>
+  <publisher>Banpresto</publisher>
+  <developer />
+  <rating>Other - NR (Not Rated)</rating>
+</game>
+<game ROM="Super Nazo Puyo - Rulue no Roux (Japan)">
+  <title>Super Nazo Puyo: Rulue no Roux (Japan)</title>
+  <year>1997</year>
+  <genre>Puzzle</genre>
+  <publisher>Banpresto</publisher>
+  <developer />
+  <rating>Other - NR (Not Rated)</rating>
+</game>
+<game ROM="Super Ninja-kun (Japan)">
+  <title>Super Ninja-kun (Japan)</title>
+  <year>1997</year>
+  <genre>Platform</genre>
+  <publisher>Jaleco</publisher>
+  <developer />
+  <rating>Other - NR (Not Rated)</rating>
+</game>
+<game ROM="Super Puyo Puyo (Japan)">
+  <title>Super Puyo Puyo (Japan)</title>
+  <year>1996</year>
+  <genre>Puzzle</genre>
+  <publisher>Compile</publisher>
+  <developer />
+  <rating>Other - NR (Not Rated)</rating>
+</game>
+<game ROM="Super Puyo Puyo Tsuu BS Ban (Japan)">
+  <title>Super Puyo Puyo Tsuu BS Ban (Japan)</title>
+  <year>1996</year>
+  <genre>Puzzle</genre>
+  <publisher>Compile</publisher>
+  <developer />
+  <rating>Other - NR (Not Rated)</rating>
+</game>
+<game ROM="Super Puyo Puyo Tsuu Remix (Japan)">
+  <title>Super Puyo Puyo Tsuu Remix (Japan)</title>
+  <year>1996</year>
+  <genre>Puzzle</genre>
+  <publisher>Compile</publisher>
+  <developer />
+  <rating>Other - NR (Not Rated)</rating>
+</game>
+<game ROM="Super Volley II (Japan)">
+  <title>Super Volley II (Japan)</title>
+  <year>1997</year>
+  <genre>Sports/Volleyball</genre>
+  <publisher>Video System Company</publisher>
+  <developer />
+  <rating>Other - NR (Not Rated)</rating>
+</game>
+<game ROM="Sutte Hakkun - 98 Fuyu Event Version (Japan)">
+  <title>Sutte Hakkun: 98 Fuyu Event Version (Japan)</title>
+  <year>1998</year>
+  <genre>Puzzle</genre>
+  <publisher>Nintendo</publisher>
+  <developer />
+  <rating>Other - NR (Not Rated)</rating>
+</game>
+<game ROM="Sutte Hakkun - BS Version 2 (Japan)">
+  <title>Sutte Hakkun: BS Version 2 (Japan)</title>
+  <year>1998</year>
+  <genre>Puzzle</genre>
+  <publisher>Nintendo</publisher>
+  <developer />
+  <rating>Other - NR (Not Rated)</rating>
+</game>
+<game ROM="Sutte Hakkun - Event Version (Japan)">
+  <title>Sutte Hakkun: Event Version (Japan)</title>
+  <year>1997</year>
+  <genre>Puzzle</genre>
+  <publisher>Nintendo</publisher>
+  <developer />
+  <rating>Other - NR (Not Rated)</rating>
+</game>
+<game ROM="Tamori no Picross (6-13) (Japan)">
+  <title>Tamori no Picross (6-13) (Japan)</title>
+  <year>1995</year>
+  <genre>Puzzle</genre>
+  <publisher>Nintendo</publisher>
+  <developer />
+  <rating>Other - NR (Not Rated)</rating>
+</game>
+<game ROM="Tamori no Picross (6-26) (Japan)">
+  <title>Tamori no Picross (6-26) (Japan)</title>
+  <year>1995</year>
+  <genre>Puzzle</genre>
+  <publisher>Nintendo</publisher>
+  <developer />
+  <rating>Other - NR (Not Rated)</rating>
+</game>
+<game ROM="Tamori no Picross (8-13) (Japan)">
+  <title>Tamori no Picross (8-13) (Japan)</title>
+  <year>1995</year>
+  <genre>Puzzle</genre>
+  <publisher>Nintendo</publisher>
+  <developer />
+  <rating>Other - NR (Not Rated)</rating>
+</game>
+<game ROM="Treasure Conflix (Japan)">
+  <title>Treasure Conflix (Japan)</title>
+  <year>1996</year>
+  <genre>Role-Playing</genre>
+  <publisher>Square</publisher>
+  <developer />
+  <rating>Other - NR (Not Rated)</rating>
+</game>
+<game ROM="Undake 30 Same Game Daisakusen - Mario Version (Japan)">
+  <title>Undake 30 Same Game Daisakusen: Mario Version (Japan)</title>
+  <year>1995</year>
+  <genre>Puzzle</genre>
+  <publisher>Nintendo</publisher>
+  <developer />
+  <rating>Other - NR (Not Rated)</rating>
+</game>
+<game ROM="Waiwai Check 3-21 Saihousou + Yuki no Waiwai Kids 3-16 Ban (Japan)">
+  <title>Waiwai Check 3-21 Saihousou + Yuki no Waiwai Kids 3-16 Ban (Japan)</title>
+  <year>1995</year>
+  <genre>Puzzle</genre>
+  <publisher>Hori Soft</publisher>
+  <developer />
+  <rating>Other - NR (Not Rated)</rating>
+</game>
+<game ROM="Waiwai Check 3-7 Gou (Japan)">
+  <title>Waiwai Check 3-7 Gou (Japan)</title>
+  <year>1995</year>
+  <genre>Puzzle</genre>
+  <publisher>Hori Soft</publisher>
+  <developer />
+  <rating>Other - NR (Not Rated)</rating>
+</game>
+<game ROM="Wario no Mori - Futatabi (Japan)">
+  <title>Wario no Mori: Futatabi (Japan)</title>
+  <year>1997</year>
+  <genre>Puzzle</genre>
+  <publisher>Nintendo</publisher>
+  <developer />
+  <rating>Other - NR (Not Rated)</rating>
+</game>
+<game ROM="Yoshi no Panepon - BS Ban (Japan)">
+  <title>Yoshi no Panepon: BS Ban (Japan)</title>
+  <year>1996</year>
+  <genre>Puzzle</genre>
+  <publisher>Nintendo</publisher>
+  <developer />
+  <rating>Other - NR (Not Rated)</rating>
+</game>
+</menu>

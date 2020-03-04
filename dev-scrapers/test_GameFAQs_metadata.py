@@ -37,13 +37,11 @@ status_dic = kodi_new_status_dic('Scraper test was OK')
 # --- Choose data for testing ---
 # search_term, rombase, platform = common.games['metroid']
 # search_term, rombase, platform = common.games['mworld']
-search_term, rombase, platform = common.games['sonic']
+#search_term, rombase, platform = common.games['sonic_megaDrive']
+search_term, rombase, platform = common.games['sonic_genesis'] # Aliased platform
 # search_term, rombase, platform = common.games['chakan']
 # search_term, rombase, platform = common.games['console_wrong_title']
 # search_term, rombase, platform = common.games['console_wrong_platform']
-
-# --- Debug call to test API function jeuRecherche.php ---
-# scraper_obj.debug_game_search(*common.games['ff7'], status_dic = status_dic)
 
 # --- Get candidates, print them and set first candidate ---
 rom_FN = FileName(rombase)

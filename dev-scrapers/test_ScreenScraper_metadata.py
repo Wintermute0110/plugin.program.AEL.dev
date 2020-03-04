@@ -2,12 +2,6 @@
 # -*- coding: utf-8 -*-
 
 # Test AEL ScreenScraper metadata scraper.
-#
-# * ScreenScraper works bad for ISO-based platforms. Why?
-# * For Playstation games, changing rom_type = 'rom' to 'iso' does not help.
-# * jeuRecherche works well, returns several candidates, but ignores the ROM name. For
-#   example, searching for FF7 ISO first result returned is FF4.
-#
 
 # --- Python standard library ---
 from __future__ import unicode_literals
@@ -32,14 +26,16 @@ set_log_level(LOG_DEBUG)
 scraper_obj = ScreenScraper(common.settings)
 scraper_obj.set_verbose_mode(False)
 scraper_obj.set_debug_file_dump(True, os.path.join(os.path.dirname(__file__), 'assets'))
-scraper_obj.set_debug_checksums(True, '414FA339', '9db5682a4d778ca2cb79580bdb67083f',
+scraper_obj.set_debug_checksums(True,
+    '414FA339', '9db5682a4d778ca2cb79580bdb67083f',
     '48c98f7e5a6e736d790ab740dfc3f51a61abe2b5', 123456)
 status_dic = kodi_new_status_dic('Scraper test was OK')
 
 # --- Choose data for testing ---
 # search_term, rombase, platform = common.games['metroid']
 # search_term, rombase, platform = common.games['mworld']
-search_term, rombase, platform = common.games['sonic']
+#search_term, rombase, platform = common.games['sonic_megaDrive']
+search_term, rombase, platform = common.games['sonic_genesis'] # Aliased platform
 # search_term, rombase, platform = common.games['chakan']
 # search_term, rombase, platform = common.games['console_wrong_title']
 # search_term, rombase, platform = common.games['console_wrong_platform']

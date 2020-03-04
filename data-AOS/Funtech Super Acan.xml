@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<menu>
+<header>
+  <listname>Funtech Super Acan</listname>
+  <lastlistupdate></lastlistupdate>
+  <listversion>V1</listversion>
+  <exporterversion>V1 GameDBInfo converter</exporterversion>
+</header>
+<game ROM="African Adventures (Taiwan)">
+  <title>African Adventures</title>
+  <year>1995</year>
+  <genre>Puzzle</genre>
+  <publisher>Panda Entertainment</publisher>
+  <developer />
+  <rating>Other - NR (Not Rated)</rating>
+</game>
+<game ROM="Boom Zoo (Taiwan)">
+  <title>Boom Zoo</title>
+  <year>1996</year>
+  <genre>Action</genre>
+  <publisher>Funtech</publisher>
+  <developer />
+  <rating>Other - NR (Not Rated)</rating>
+</game>
+<game ROM="C.U.G. (Taiwan)">
+  <title>C.U.G.</title>
+  <year>1995</year>
+  <genre>Platform</genre>
+  <publisher>Funtech</publisher>
+  <developer />
+  <rating>Other - NR (Not Rated)</rating>
+</game>
+<game ROM="Formosa Duel (Taiwan)">
+  <title>Formosa Duel</title>
+  <year>1995</year>
+  <genre>Puzzle</genre>
+  <publisher>AV Artisan</publisher>
+  <developer />
+  <rating>Other - NR (Not Rated)</rating>
+</game>
+<game ROM="Gambling Lord (Taiwan)">
+  <title>Gambling Lord</title>
+  <year>1996</year>
+  <genre>Mahjong</genre>
+  <publisher>Panda Entertainment/Funtech</publisher>
+  <developer />
+  <rating>Other - NR (Not Rated)</rating>
+</game>
+<game ROM="Magical Pool (Taiwan)">
+  <title>Magical Pool</title>
+  <year>199x</year>
+  <genre>Sports</genre>
+  <publisher>Funtech</publisher>
+  <developer />
+  <rating>Other - NR (Not Rated)</rating>
+</game>
+<game ROM="REBEL (Taiwan)">
+  <title>REBEL</title>
+  <year>1996</year>
+  <genre>Role-Playing</genre>
+  <publisher>Horng Shen Information Co., Ltd</publisher>
+  <developer />
+  <rating>Other - NR (Not Rated)</rating>
+</game>
+<game ROM="Sango Fighter (Taiwan)">
+  <title>Sango Fighter</title>
+  <year>1995</year>
+  <genre>Fighting</genre>
+  <publisher>Panda Entertainment</publisher>
+  <developer />
+  <rating>Other - NR (Not Rated)</rating>
+</game>
+<game ROM="Speedy Dragon (Taiwan)">
+  <title>Speedy Dragon</title>
+  <year>1995</year>
+  <genre>Platform</genre>
+  <publisher>AV Artisan</publisher>
+  <developer />
+  <rating>Other - NR (Not Rated)</rating>
+</game>
+<game ROM="Super Dragon Force (Taiwan)">
+  <title>Super Dragon Force</title>
+  <year>1996</year>
+  <genre>Role-Playing</genre>
+  <publisher>Kingformation Co., Ltd</publisher>
+  <developer />
+  <rating>Other - NR (Not Rated)</rating>
+</game>
+<game ROM="Super Taiwanese Baseball League (Taiwan)">
+  <title>Super Taiwanese Baseball League</title>
+  <year>1995</year>
+  <genre>Sports</genre>
+  <publisher>Quan Wei Technology/C&amp;E</publisher>
+  <developer />
+  <rating>Other - NR (Not Rated)</rating>
+</game>
+<game ROM="The Son of Evil (Taiwan)">
+  <title>The Son of Evil</title>
+  <year>1995</year>
+  <genre>Role-Playing</genre>
+  <publisher>Funtech</publisher>
+  <developer />
+  <rating>Other - NR (Not Rated)</rating>
+</game>
+</menu>
