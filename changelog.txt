@@ -140,18 +140,18 @@ WIP      [SCRAPERS] Change the Offline Scraper format from XML to JSON. Include 
          have a look at NOTES.md for guidelines. Create the XML databases to be merged with the
          No-Intro/Redump DATs, also giving support to Extra ROMs (hacks, etc.).
 
+WIP      [SCRAPERS] Add a delay to ScreenScraper scraper to avoid overloading.
+         See https://forum.kodi.tv/showthread.php?tid=287826&pid=2923181#pid2923181
+
 
 [B]Advanced Emulator Launcher | version 0.9.9 | xx March 2020[/B]
 
-WIP      [CORE] Rename offline scraper XML databases to use new platform name.
+FEATURE  [CORE] Rename offline scraper XML databases to use new platform name.
 
-WIP      [CORE] Changed the Offline Scraper XML fields. Now the XML files are not compatible
+FEATURE  [CORE] Changed the Offline Scraper XML fields. Now the XML files are not compatible
          with HyperSpin but they make more sense.
 
-WIP      [CORE] Update the platform icons. Github issue #112.
-
-WIP      [SCRAPERS] Add a delay to ScreenScraper scraper to avoid overloading.
-         See https://forum.kodi.tv/showthread.php?tid=287826&pid=2923181#pid2923181
+FEATURE  [CORE] Update the platform icons. Github issue #112.
 
 FEATURE  [SCRAPERS] Store when there is a bad JSON from the scrapers for further
          analysis. Working for ScreenScraper scraper.
