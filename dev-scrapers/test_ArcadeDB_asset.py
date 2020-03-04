@@ -30,15 +30,11 @@ scraper_obj.set_debug_file_dump(True, os.path.join(os.path.dirname(__file__), 'a
 status_dic = kodi_new_status_dic('Scraper test was OK')
 
 # --- Choose data for testing ---
-# search_term, rombase, platform = common.games['metroid']
-# search_term, rombase, platform = common.games['mworld']
-search_term, rombase, platform = common.games['sonic']
-# search_term, rombase, platform = common.games['chakan']
-# search_term, rombase, platform = common.games['console_wrong_title']
-# search_term, rombase, platform = common.games['console_wrong_platform']
-
-# --- Debug call to test API function jeuRecherche.php ---
-# scraper_obj.debug_game_search(*common.games['ff7'], status_dic = status_dic)
+# search_term, rombase, platform = common.games['tetris']
+# search_term, rombase, platform = common.games['mslug']
+search_term, rombase, platform = common.games['dino']
+# search_term, rombase, platform = common.games['MAME_wrong_title']
+# search_term, rombase, platform = common.games['MAME_wrong_platform']
 
 # --- Get candidates, print them and set first candidate ---
 rom_FN = FileName(rombase)

@@ -43,9 +43,6 @@ search_term, rombase, platform = common.games['sonic_genesis'] # Aliased platfor
 # search_term, rombase, platform = common.games['console_wrong_title']
 # search_term, rombase, platform = common.games['console_wrong_platform']
 
-# --- Debug call to test API function jeuRecherche.php ---
-# scraper_obj.debug_game_search(*common.games['ff7'], status_dic = status_dic)
-
 # --- Get candidates, print them and set first candidate ---
 rom_FN = FileName(rombase)
 rom_checksums_FN = FileName(rombase)
