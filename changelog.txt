@@ -145,6 +145,9 @@ WIP      [SCRAPERS] Change the Offline Scraper format from XML to JSON. Include 
 
 WIP      [CORE] Rename offline scraper XML databases to use new platform name.
 
+WIP      [CORE] Changed the Offline Scraper XML fields. Now the XML files are not compatible
+         with HyperSpin but they make more sense.
+
 WIP      [CORE] Update the platform icons. Github issue #112.
 
 WIP      [SCRAPERS] Add a delay to ScreenScraper scraper to avoid overloading.

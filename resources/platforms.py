@@ -68,6 +68,9 @@ class Platform:
 # * Unsuported scraper platforms must be set to None. The conversion function will then
 #   translate None to the appropiate value for the scraper.
 #
+# * The Offline Scraper database filenames use the long_name. The platform icons
+#   PNG/JPG files also use the platform long_name.
+#
 # Get TGDB platform list from script ./dev-scrapers/scrap_TGDB_list_platforms.py
 # Get MobyGames platform list from script ./dev-scrapers/scrap_MobyGames_list_platforms.py
 # Get ScreenScraper platform list from script ./dev-scrapers/scrap_ScreenScraper_list_platforms.py
@@ -125,10 +128,16 @@ AEL_platforms = [
         DAT_NOINTRO, 'Coleco - ColecoVision'),
 
     # --- Commodore ---
+    # The Commodore 16 and the Plus/4 are the same computer, the Plus/4 having more memory
+    # and better ROM software. Make the Plus/4 an alias of the Commodore 16.
+    # No-Intro has a DAT for the Plus/4 and not for the C16.
+    # MobyGames "Commodore 16, Plus/4". Not found in GameFAQs.
+    Platform('Commodore 16', 'computer-16', 'c16', None, None, '115', '99', None,
+        DAT_NOINTRO, 'Commodore - Plus-4'),
     # Commodore 64 No-Intro DATs:
-    # *) Commodore - 64 (Parent-Clone) (20151122-035618).dat
-    # *) Commodore - 64 (PP) (Parent-Clone) (20131204-081826).dat
-    # *) Commodore - 64 (Tapes) (Parent-Clone) (20180307-232531).dat
+    # * Commodore - 64 (Parent-Clone) (20151122-035618).dat
+    # * Commodore - 64 (PP) (Parent-Clone) (20131204-081826).dat
+    # * Commodore - 64 (Tapes) (Parent-Clone) (20180307-232531).dat
     Platform('Commodore 64', 'computer-c64', 'c64', None, '40', '27', '66', '24',
         DAT_NOINTRO, 'Commodore - 64'),
     Platform('Commodore Amiga', 'computer-amiga', 'amiga', None, '4911', '19', '64', '39',
@@ -141,10 +150,10 @@ AEL_platforms = [
     # remote control.
     Platform('Commodore Amiga CDTV', 'console-cdtv', 'cdtv', None, None, '83', '129', None,
         DAT_REDUMP, 'Commodore - Amiga CDTV - Datfile'),
-    # MobyGames "Commodore 16, Plus/4"
-    # Not found in GameFAQs.
-    Platform('Commodore Plus-4', 'computer-plus4', 'plus4', None, None, '115', '99', None,
-        DAT_NOINTRO, 'Commodore - Plus-4'),
+    # MobyGames "Commodore 16, Plus/4". Not found in GameFAQs.
+    Platform('Commodore Plus-4', 'computer-plus4', 'plus4', 'c16'),
+    # The PET is the first computer sold by Commodore.
+    Platform('Commodore PET', 'computer-pet', 'pet', None, None, None, None, None),
     Platform('Commodore VIC-20', 'computer-vic20', 'vic20', None, '4945', '43', '73', '11',
         DAT_NOINTRO, 'Commodore - VIC-20'),
 
@@ -532,126 +541,6 @@ def AEL_platform_to_GameFAQs(platform_long_name):
         return AEL_platform_to_GameFAQs(parent_long_name)
 
     return DEFAULT_PLAT_GAMEFAQS if scraper_platform is None else scraper_platform
-
-# -------------------------------------------------------------------------------------------------
-# Translation of AEL oficial gamesys (platform) name to scraper particular name
-# -------------------------------------------------------------------------------------------------
-# NOTE change the offline scraper so the database name is the same as the platform long name.
-# NOTE This dictionary must be deleted ASAP. Offline Database filenames must be renamed.
-platform_AEL_to_Offline_GameDBInfo_XML = {
-    '3DO Interactive Multiplayer' : 'GameDBInfo/Panasonic 3DO.xml',
-
-    'Amstrad CPC'                 : '',
-
-    'Atari 2600'                  : 'GameDBInfo/Atari 2600.xml',
-    'Atari 5200'                  : 'GameDBInfo/Atari 5200.xml',
-    'Atari 7800'                  : 'GameDBInfo/Atari 7800.xml',
-    'Atari Jaguar'                : 'GameDBInfo/Atari Jaguar.xml',
-    'Atari Jaguar CD'             : 'GameDBInfo/Atari Jaguar CD.xml',
-    'Atari Lynx'                  : 'GameDBInfo/Atari Lynx.xml',
-    'Atari 8-bit'                 : '',
-    'Atari ST'                    : 'GameDBInfo/Atari ST.xml',
-
-    'Bandai WonderSwan'           : '',
-    'Bandai WonderSwan Color'     : '',
-
-    'Colecovision'                : 'GameDBInfo/Colecovision.xml',
-
-    'Commodore 64'                : 'GameDBInfo/Commodore 64.xml',
-    'Commodore Amiga'             : 'GameDBInfo/Commodore Amiga.xml',
-    'Commodore Amiga CD32'        : '',
-    'Commodore Plus-4'            : 'GameDBInfo/Commodore Plus-4.xml',
-    'Commodore VIC-20'            : 'GameDBInfo/Commodore VIC-20.xml',
-
-    'Emerson Arcadia 2001'        : '',
-
-    'Fairchild Channel F'         : '',
-
-    'Fujitsu FM Towns Marty'      : '',
-    
-    'GCE Vectrex'                 : '',
-
-    'Magnavox Odyssey2'           : 'GameDBInfo/Magnavox Odyssey2.xml',
-
-    'MAME'                        : 'GameDBInfo/MAME.xml',
-
-    'Mattel Intellivision'        : '',
-
-    'Microsoft MS-DOS'            : 'GameDBInfo/Microsoft MS-DOS.xml',
-    'Microsoft MSX'               : '',
-    'Microsoft MSX2'              : 'GameDBInfo/Microsoft MSX 2.xml',
-    'Microsoft Windows'           : '',
-    'Microsoft Xbox'              : '',
-    'Microsoft Xbox 360'          : '',
-    'Microsoft Xbox One'          : '',
-
-    'NEC PC Engine'               : 'GameDBInfo/NEC PC Engine.xml',
-    'NEC PC Engine CDROM2'        : 'GameDBInfo/NEC PC Engine CDROM2.xml',
-    'NEC TurboGrafx 16'           : 'GameDBInfo/NEC TurboGrafx 16.xml',
-    'NEC TurboGrafx CD'           : 'GameDBInfo/NEC TurboGrafx CD.xml',
-    'NEC SuperGrafx'              : 'GameDBInfo/NEC SuperGrafx.xml',
-    'NEC PC-FX'                   : 'GameDBInfo/NEC PC-FX.xml',
-
-    'Nintendo 3DS'                : '',
-    'Nintendo 64'                 : 'GameDBInfo/Nintendo 64.xml',
-    'Nintendo 64DD'               : '',
-    'Nintendo DS'                 : 'GameDBInfo/Nintendo DS.xml',
-    'Nintendo DSi'                : '',
-    'Nintendo Famicom'            : 'GameDBInfo/Nintendo NES.xml',
-    'Nintendo Famicom Disk System': 'GameDBInfo/Nintendo Famicom Disk System.xml',
-    'Nintendo GameBoy'            : 'GameDBInfo/Nintendo Game Boy.xml',
-    'Nintendo GameBoy Advance'    : 'GameDBInfo/Nintendo Game Boy Advance.xml',
-    'Nintendo GameBoy Color'      : 'GameDBInfo/Nintendo Game Boy Color.xml',
-    'Nintendo GameCube'           : 'GameDBInfo/Nintendo GameCube.xml',
-    'Nintendo NES'                : 'GameDBInfo/Nintendo NES.xml',
-    'Nintendo Pokemon Mini'       : '',
-    'Nintendo SNES'               : 'GameDBInfo/Nintendo SNES.xml',
-    'Nintendo Switch'             : '',
-    'Nintendo Virtual Boy'        : 'GameDBInfo/Nintendo Virtual Boy.xml',
-    'Nintendo Wii'                : 'GameDBInfo/Nintendo Wii.xml',
-    'Nintendo Wii U'              : '',
-
-    'Philips Videopac G7000'      : 'GameDBInfo/Magnavox Odyssey2.xml',
-    'Philips Videopac Plus G7400' : '',
-
-    'RCA Studio II'               : '',
-
-    'ScummVM'                     : '',
-
-    'Sega 32X'                    : 'GameDBInfo/Sega 32x.xml',
-    'Sega Dreamcast'              : 'GameDBInfo/Sega Dreamcast.xml',
-    'Sega Game Gear'              : 'GameDBInfo/Sega Game Gear.xml',
-    'Sega Genesis'                : 'GameDBInfo/Sega MegaDrive.xml',
-    'Sega Master System'          : 'GameDBInfo/Sega Master System.xml',
-    'Sega MegaCD'                 : 'GameDBInfo/Sega CD.xml',
-    'Sega MegaDrive'              : 'GameDBInfo/Sega MegaDrive.xml',
-    'Sega PICO'                   : '',
-    'Sega Saturn'                 : 'GameDBInfo/Sega Saturn.xml',
-    'Sega SC-3000'                : '',
-    'Sega SegaCD'                 : 'GameDBInfo/Sega CD.xml',
-    'Sega SG-1000'                : 'GameDBInfo/Sega SG-1000.xml',
-
-    'Sharp X68000'                : '',
-
-    'Sinclair ZX Spectrum'        : 'GameDBInfo/Sinclair ZX Spectrum.xml',
-
-    'SNK Neo-Geo AES'             : '',
-    'SNK Neo-Geo CD'              : 'GameDBInfo/SNK Neo-Geo CD.xml',
-    'SNK Neo-Geo MVS'             : '',
-    'SNK Neo-Geo Pocket'          : 'GameDBInfo/SNK Neo-Geo Pocket.xml',
-    'SNK Neo-Geo Pocket Color'    : 'GameDBInfo/SNK Neo-Geo Pocket Color.xml',
-
-    'Sony PlayStation'            : 'GameDBInfo/Sony PlayStation.xml',
-    'Sony PlayStation 2'          : 'GameDBInfo/Sony Playstation 2.xml',
-    'Sony PlayStation 3'          : '',
-    'Sony PlayStation 4'          : '',
-    'Sony PlayStation Portable'   : 'GameDBInfo/Sony PlayStation Portable.xml',
-    'Sony PlayStation Vita'       : '',
-
-    'Watara Supervision'          : '',
-
-    'Unknown'                     : ''
-}
 
 # -------------------------------------------------------------------------------------------------
 # Miscellaneous emulator and gamesys (platforms) supported.
