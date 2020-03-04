@@ -6,140 +6,140 @@
   <listversion>V1</listversion>
   <exporterversion>V1 GameDBInfo converter</exporterversion>
 </header>
-<game name="Air Sea Attack (Asia, Europe)">
+<game ROM="Air Sea Attack (Asia, Europe)">
   <title>Air Sea Attack (Asia, Europe)</title>
   <year>1981</year>
-  <rating>HSRS - GA (General Audience)</rating>
+  <genre>Shooter</genre>
   <publisher>V-Tech</publisher>
   <developer />
-  <genre>Shooter</genre>
+  <rating>HSRS - GA (General Audience)</rating>
 </game>
-<game name="Astro Pinball (Asia, Europe)">
+<game ROM="Astro Pinball (Asia, Europe)">
   <title>Astro Pinball (Asia, Europe)</title>
   <year>1982</year>
-  <rating>HSRS - GA (General Audience)</rating>
+  <genre>Pinball</genre>
   <publisher>V-Tech</publisher>
   <developer />
-  <genre>Pinball</genre>
+  <rating>HSRS - GA (General Audience)</rating>
 </game>
-<game name="Auto Chase (Asia, Europe)">
+<game ROM="Auto Chase (Asia, Europe)">
   <title>Auto Chase (Asia, Europe)</title>
   <year>1981</year>
-  <rating>HSRS - GA (General Audience)</rating>
+  <genre>Driving</genre>
   <publisher>V-Tech</publisher>
   <developer />
-  <genre>Driving</genre>
+  <rating>HSRS - GA (General Audience)</rating>
 </game>
-<game name="Chopper Rescue (Asia, Europe)">
+<game ROM="Chopper Rescue (Asia, Europe)">
   <title>Chopper Rescue (Asia, Europe)</title>
   <year>1983</year>
-  <rating>HSRS - GA (General Audience)</rating>
+  <genre>Action</genre>
   <publisher>V-Tech</publisher>
   <developer />
-  <genre>Action</genre>
+  <rating>HSRS - GA (General Audience)</rating>
 </game>
-<game name="Crazy Chicky (Asia, Europe)">
+<game ROM="Crazy Chicky (Asia, Europe)">
   <title>Crazy Chicky (Asia, Europe)</title>
   <year>1981</year>
-  <rating>HSRS - GA (General Audience)</rating>
+  <genre>Action</genre>
   <publisher>V-Tech</publisher>
   <developer />
-  <genre>Action</genre>
+  <rating>HSRS - GA (General Audience)</rating>
 </game>
-<game name="Crazy Pucker (Asia, Europe)">
+<game ROM="Crazy Pucker (Asia, Europe)">
   <title>Crazy Pucker (Asia, Europe)</title>
   <year>1981</year>
-  <rating>HSRS - GA (General Audience)</rating>
+  <genre>Action</genre>
   <publisher>V-Tech</publisher>
   <developer />
-  <genre>Action</genre>
+  <rating>HSRS - GA (General Audience)</rating>
 </game>
-<game name="Deep Sea Adventure (Asia, Europe)">
+<game ROM="Deep Sea Adventure (Asia, Europe)">
   <title>Deep Sea Adventure (Asia, Europe)</title>
   <year>1982</year>
-  <rating>HSRS - GA (General Audience)</rating>
+  <genre>Action</genre>
   <publisher>V-Tech</publisher>
   <developer />
-  <genre>Action</genre>
+  <rating>HSRS - GA (General Audience)</rating>
 </game>
-<game name="Locomotive (Asia, Europe)">
+<game ROM="Locomotive (Asia, Europe)">
   <title>Locomotive (Asia, Europe)</title>
   <year>1983</year>
-  <rating>HSRS - GA (General Audience)</rating>
+  <genre>Action</genre>
   <publisher>V-Tech</publisher>
   <developer />
-  <genre>Action</genre>
+  <rating>HSRS - GA (General Audience)</rating>
 </game>
-<game name="Mouse Puzzle (Asia, Europe)">
+<game ROM="Mouse Puzzle (Asia, Europe)">
   <title>Mouse Puzzle (Asia, Europe)</title>
   <year>1982</year>
-  <rating>HSRS - GA (General Audience)</rating>
+  <genre>Puzzle</genre>
   <publisher>V-Tech</publisher>
   <developer />
-  <genre>Puzzle</genre>
+  <rating>HSRS - GA (General Audience)</rating>
 </game>
-<game name="Music Maker (Asia, Europe)">
+<game ROM="Music Maker (Asia, Europe)">
   <title>Music Maker (Asia, Europe)</title>
   <year>1983</year>
-  <rating>HSRS - GA (General Audience)</rating>
+  <genre>Miscellaneous</genre>
   <publisher>V-Tech</publisher>
   <developer />
-  <genre>Miscellaneous</genre>
+  <rating>HSRS - GA (General Audience)</rating>
 </game>
-<game name="Planet Defender (Asia, Europe)">
+<game ROM="Planet Defender (Asia, Europe)">
   <title>Planet Defender (Asia, Europe)</title>
   <year>1981</year>
-  <rating>HSRS - GA (General Audience)</rating>
+  <genre>Shooter</genre>
   <publisher>V-Tech</publisher>
   <developer />
-  <genre>Shooter</genre>
+  <rating>HSRS - GA (General Audience)</rating>
 </game>
-<game name="Police Jump (Asia, Europe)">
+<game ROM="Police Jump (Asia, Europe)">
   <title>Police Jump (Asia, Europe)</title>
   <year>1982</year>
-  <rating>HSRS - GA (General Audience)</rating>
+  <genre>Action</genre>
   <publisher>V-Tech</publisher>
   <developer />
-  <genre>Action</genre>
+  <rating>HSRS - GA (General Audience)</rating>
 </game>
-<game name="Soccer (Asia, Europe)">
+<game ROM="Soccer (Asia, Europe)">
   <title>Soccer (Asia, Europe)</title>
   <year>1983</year>
-  <rating>HSRS - GA (General Audience)</rating>
+  <genre>Soccer/Sports</genre>
   <publisher>V-Tech</publisher>
   <developer />
-  <genre>Soccer/Sports</genre>
+  <rating>HSRS - GA (General Audience)</rating>
 </game>
-<game name="Sonic Invader (Asia, Europe)">
+<game ROM="Sonic Invader (Asia, Europe)">
   <title>Sonic Invader (Asia, Europe)</title>
   <year>1981</year>
-  <rating>HSRS - GA (General Audience)</rating>
+  <genre>Shooter</genre>
   <publisher>V-Tech</publisher>
   <developer />
-  <genre>Shooter</genre>
+  <rating>HSRS - GA (General Audience)</rating>
 </game>
-<game name="Stone Age (Asia, Europe)">
+<game ROM="Stone Age (Asia, Europe)">
   <title>Stone Age (Asia, Europe)</title>
   <year>1984</year>
-  <rating>HSRS - GA (General Audience)</rating>
+  <genre>Action</genre>
   <publisher>V-Tech</publisher>
   <developer />
-  <genre>Action</genre>
+  <rating>HSRS - GA (General Audience)</rating>
 </game>
-<game name="Tank Attack (Asia, Europe)">
+<game ROM="Tank Attack (Asia, Europe)">
   <title>Tank Attack (Asia, Europe)</title>
   <year>1981</year>
-  <rating>HSRS - GA (General Audience)</rating>
+  <genre>Shooter</genre>
   <publisher>V-Tech</publisher>
   <developer />
-  <genre>Shooter</genre>
+  <rating>HSRS - GA (General Audience)</rating>
 </game>
-<game name="Tennis (Asia, Europe)">
+<game ROM="Tennis (Asia, Europe)">
   <title>Tennis (Asia, Europe)</title>
   <year>1981</year>
-  <rating>HSRS - GA (General Audience)</rating>
+  <genre>Sports/Tennis</genre>
   <publisher>V-Tech</publisher>
   <developer />
-  <genre>Sports/Tennis</genre>
+  <rating>HSRS - GA (General Audience)</rating>
 </game>
 </menu>

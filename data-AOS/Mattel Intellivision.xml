@@ -6,1132 +6,1132 @@
   <listversion>V1</listversion>
   <exporterversion>V1 GameDBInfo converter</exporterversion>
 </header>
-<game name="4-TRIS (World)">
+<game ROM="4-TRIS (World)">
   <title>4-TRIS (World)</title>
   <year>2000</year>
-  <rating>HSRS - GA (General Audience)</rating>
+  <genre>Puzzle</genre>
   <publisher>Joseph Zbiciak</publisher>
   <developer />
-  <genre>Puzzle</genre>
+  <rating>HSRS - GA (General Audience)</rating>
 </game>
-<game name="ABPA Backgammon (World)">
+<game ROM="ABPA Backgammon (World)">
   <title>ABPA Backgammon (World)</title>
   <year>1978</year>
-  <rating>HSRS - GA (General Audience)</rating>
+  <genre>Board Games</genre>
   <publisher>Mattel</publisher>
   <developer />
-  <genre>Board Games</genre>
+  <rating>HSRS - GA (General Audience)</rating>
 </game>
-<game name="Advanced Dungeons &amp; Dragons (World)">
+<game ROM="Advanced Dungeons &amp; Dragons (World)">
   <title>Advanced Dungeons &amp; Dragons (World)</title>
   <year>1982</year>
-  <rating>HSRS - GA (General Audience)</rating>
+  <genre>Role-Playing</genre>
   <publisher>Mattel</publisher>
   <developer />
-  <genre>Role-Playing</genre>
+  <rating>HSRS - GA (General Audience)</rating>
 </game>
-<game name="Advanced Dungeons &amp; Dragons - Treasure of Tarmin (World)">
+<game ROM="Advanced Dungeons &amp; Dragons - Treasure of Tarmin (World)">
   <title>Advanced Dungeons &amp; Dragons - Treasure of Tarmin (World)</title>
   <year>1982</year>
-  <rating>HSRS - GA (General Audience)</rating>
+  <genre>Role-Playing</genre>
   <publisher>Mattel</publisher>
   <developer />
-  <genre>Role-Playing</genre>
+  <rating>HSRS - GA (General Audience)</rating>
 </game>
-<game name="Armor Battle (World)">
+<game ROM="Armor Battle (World)">
   <title>Armor Battle (World)</title>
   <year>1978</year>
-  <rating>HSRS - GA (General Audience)</rating>
+  <genre>Action</genre>
   <publisher>Mattel</publisher>
   <developer />
-  <genre>Action</genre>
+  <rating>HSRS - GA (General Audience)</rating>
 </game>
-<game name="Astrosmash (World)">
+<game ROM="Astrosmash (World)">
   <title>Astrosmash (World)</title>
   <year>1981</year>
-  <rating>HSRS - GA (General Audience)</rating>
+  <genre>Shooter</genre>
   <publisher>Mattel</publisher>
   <developer />
-  <genre>Shooter</genre>
+  <rating>HSRS - GA (General Audience)</rating>
 </game>
-<game name="Atlantis (World)">
+<game ROM="Atlantis (World)">
   <title>Atlantis (World)</title>
   <year>1982</year>
-  <rating>HSRS - GA (General Audience)</rating>
+  <genre>Shooter</genre>
   <publisher>Imagic</publisher>
   <developer />
-  <genre>Shooter</genre>
+  <rating>HSRS - GA (General Audience)</rating>
 </game>
-<game name="Auto Racing (World)">
+<game ROM="Auto Racing (World)">
   <title>Auto Racing (World)</title>
   <year>1979</year>
-  <rating>HSRS - GA (General Audience)</rating>
+  <genre>Driving</genre>
   <publisher>Mattel</publisher>
   <developer />
-  <genre>Driving</genre>
+  <rating>HSRS - GA (General Audience)</rating>
 </game>
-<game name="B-17 Bomber (World)">
+<game ROM="B-17 Bomber (World)">
   <title>B-17 Bomber (World)</title>
   <year>1981</year>
-  <rating>HSRS - GA (General Audience)</rating>
+  <genre>Flying</genre>
   <publisher>Mattel</publisher>
   <developer />
-  <genre>Flying</genre>
+  <rating>HSRS - GA (General Audience)</rating>
 </game>
-<game name="BeamRider (World)">
+<game ROM="BeamRider (World)">
   <title>BeamRider (World)</title>
   <year>1983</year>
-  <rating>HSRS - GA (General Audience)</rating>
+  <genre>Shooter</genre>
   <publisher>Activision</publisher>
   <developer />
-  <genre>Shooter</genre>
+  <rating>HSRS - GA (General Audience)</rating>
 </game>
-<game name="Beauty and the Beast (World)">
+<game ROM="Beauty and the Beast (World)">
   <title>Beauty and the Beast (World)</title>
   <year>1982</year>
-  <rating>HSRS - GA (General Audience)</rating>
+  <genre>Platform</genre>
   <publisher>Imagic</publisher>
   <developer />
-  <genre>Platform</genre>
+  <rating>HSRS - GA (General Audience)</rating>
 </game>
-<game name="Blockade Runner (World)">
+<game ROM="Blockade Runner (World)">
   <title>Blockade Runner (World)</title>
   <year>1983</year>
-  <rating>HSRS - GA (General Audience)</rating>
+  <genre>Shooter</genre>
   <publisher>Interphase</publisher>
   <developer />
-  <genre>Shooter</genre>
+  <rating>HSRS - GA (General Audience)</rating>
 </game>
-<game name="Body Slam - Super Pro Wrestling (World)">
+<game ROM="Body Slam - Super Pro Wrestling (World)">
   <title>Body Slam - Super Pro Wrestling (World)</title>
   <year>1988</year>
-  <rating>HSRS - GA (General Audience)</rating>
+  <genre>Sports/Wrestling</genre>
   <publisher>Intv Corp</publisher>
   <developer />
-  <genre>Sports/Wrestling</genre>
+  <rating>HSRS - GA (General Audience)</rating>
 </game>
-<game name="Bomb Squad (World)">
+<game ROM="Bomb Squad (World)">
   <title>Bomb Squad (World)</title>
   <year>1982</year>
-  <rating>HSRS - GA (General Audience)</rating>
+  <genre>Puzzle</genre>
   <publisher>Mattel</publisher>
   <developer />
-  <genre>Puzzle</genre>
+  <rating>HSRS - GA (General Audience)</rating>
 </game>
-<game name="Boxing (World)">
+<game ROM="Boxing (World)">
   <title>Boxing (World)</title>
   <year>1980</year>
-  <rating>HSRS - GA (General Audience)</rating>
+  <genre>Sports/Boxing</genre>
   <publisher>Mattel</publisher>
   <developer />
-  <genre>Sports/Boxing</genre>
+  <rating>HSRS - GA (General Audience)</rating>
 </game>
-<game name="Bump &apos;N&apos; Jump (World)">
+<game ROM="Bump &apos;N&apos; Jump (World)">
   <title>Bump \&apos;N\&apos; Jump (World)</title>
   <year>1983</year>
-  <rating>HSRS - GA (General Audience)</rating>
+  <genre>Driving</genre>
   <publisher>Mattel</publisher>
   <developer />
-  <genre>Driving</genre>
+  <rating>HSRS - GA (General Audience)</rating>
 </game>
-<game name="BurgerTime (World)">
+<game ROM="BurgerTime (World)">
   <title>BurgerTime (World)</title>
   <year>1982</year>
-  <rating>HSRS - GA (General Audience)</rating>
+  <genre>Platform</genre>
   <publisher>Mattel</publisher>
   <developer />
-  <genre>Platform</genre>
+  <rating>HSRS - GA (General Audience)</rating>
 </game>
-<game name="Buzz Bombers (World)">
+<game ROM="Buzz Bombers (World)">
   <title>Buzz Bombers (World)</title>
   <year>1982</year>
-  <rating>HSRS - GA (General Audience)</rating>
+  <genre>Shooter</genre>
   <publisher>Mattel</publisher>
   <developer />
-  <genre>Shooter</genre>
+  <rating>HSRS - GA (General Audience)</rating>
 </game>
-<game name="Carnival (World)">
+<game ROM="Carnival (World)">
   <title>Carnival (World)</title>
   <year>1982</year>
-  <rating>HSRS - GA (General Audience)</rating>
+  <genre>Shooter</genre>
   <publisher>Coleco-CBS</publisher>
   <developer />
-  <genre>Shooter</genre>
+  <rating>HSRS - GA (General Audience)</rating>
 </game>
-<game name="Centipede (World)">
+<game ROM="Centipede (World)">
   <title>Centipede (World)</title>
   <year>1983</year>
-  <rating>HSRS - GA (General Audience)</rating>
+  <genre>Shooter</genre>
   <publisher>Atarisoft</publisher>
   <developer />
-  <genre>Shooter</genre>
+  <rating>HSRS - GA (General Audience)</rating>
 </game>
-<game name="Championship Tennis (World)">
+<game ROM="Championship Tennis (World)">
   <title>Championship Tennis (World)</title>
   <year>1985</year>
-  <rating>HSRS - GA (General Audience)</rating>
+  <genre>Sports/Tennis</genre>
   <publisher>Nice Ideas</publisher>
   <developer />
-  <genre>Sports/Tennis</genre>
+  <rating>HSRS - GA (General Audience)</rating>
 </game>
-<game name="Checkers (World)">
+<game ROM="Checkers (World)">
   <title>Checkers (World)</title>
   <year>1978</year>
-  <rating>HSRS - GA (General Audience)</rating>
+  <genre>Board Games</genre>
   <publisher>Mattel</publisher>
   <developer />
-  <genre>Board Games</genre>
+  <rating>HSRS - GA (General Audience)</rating>
 </game>
-<game name="Chip Shot - Super Pro Golf (World)">
+<game ROM="Chip Shot - Super Pro Golf (World)">
   <title>Chip Shot - Super Pro Golf (World)</title>
   <year>1987</year>
-  <rating>HSRS - GA (General Audience)</rating>
+  <genre>Sports/Golf</genre>
   <publisher>Intv Corp</publisher>
   <developer />
-  <genre>Sports/Golf</genre>
+  <rating>HSRS - GA (General Audience)</rating>
 </game>
-<game name="Commando (World)">
+<game ROM="Commando (World)">
   <title>Commando (World)</title>
   <year>1987</year>
-  <rating>HSRS - GA (General Audience)</rating>
+  <genre>Shooter</genre>
   <publisher>Intv Corp</publisher>
   <developer />
-  <genre>Shooter</genre>
+  <rating>HSRS - GA (General Audience)</rating>
 </game>
-<game name="Congo Bongo (World)">
+<game ROM="Congo Bongo (World)">
   <title>Congo Bongo (World)</title>
   <year>1983</year>
-  <rating>HSRS - GA (General Audience)</rating>
+  <genre>Platform</genre>
   <publisher>Sega</publisher>
   <developer />
-  <genre>Platform</genre>
+  <rating>HSRS - GA (General Audience)</rating>
 </game>
-<game name="Deep Pockets - Super Pro Pool and Billiards (World)">
+<game ROM="Deep Pockets - Super Pro Pool and Billiards (World)">
   <title>Deep Pockets - Super Pro Pool and Billiards (World)</title>
   <year>1990</year>
-  <rating>HSRS - GA (General Audience)</rating>
+  <genre>Sports/Pool and Dart</genre>
   <publisher>Realtime/Intv Corp</publisher>
   <developer />
-  <genre>Sports/Pool and Dart</genre>
+  <rating>HSRS - GA (General Audience)</rating>
 </game>
-<game name="Defender (World)">
+<game ROM="Defender (World)">
   <title>Defender (World)</title>
   <year>1983</year>
-  <rating>HSRS - GA (General Audience)</rating>
+  <genre>Shooter</genre>
   <publisher>Atarisoft</publisher>
   <developer />
-  <genre>Shooter</genre>
+  <rating>HSRS - GA (General Audience)</rating>
 </game>
-<game name="Demon Attack (World)">
+<game ROM="Demon Attack (World)">
   <title>Demon Attack (World)</title>
   <year>1982</year>
-  <rating>HSRS - GA (General Audience)</rating>
+  <genre>Shooter</genre>
   <publisher>Imagic</publisher>
   <developer />
-  <genre>Shooter</genre>
+  <rating>HSRS - GA (General Audience)</rating>
 </game>
-<game name="Dig Dug (World)">
+<game ROM="Dig Dug (World)">
   <title>Dig Dug (World)</title>
   <year>1987</year>
-  <rating>HSRS - GA (General Audience)</rating>
+  <genre>Maze</genre>
   <publisher>Intv Corp</publisher>
   <developer />
-  <genre>Maze</genre>
+  <rating>HSRS - GA (General Audience)</rating>
 </game>
-<game name="Diner (World)">
+<game ROM="Diner (World)">
   <title>Diner (World)</title>
   <year>1987</year>
-  <rating>HSRS - GA (General Audience)</rating>
+  <genre>Platform</genre>
   <publisher>Intv Corp</publisher>
   <developer />
-  <genre>Platform</genre>
+  <rating>HSRS - GA (General Audience)</rating>
 </game>
-<game name="Donkey Kong (World)">
+<game ROM="Donkey Kong (World)">
   <title>Donkey Kong (World)</title>
   <year>1982</year>
-  <rating>HSRS - GA (General Audience)</rating>
+  <genre>Platform</genre>
   <publisher>Coleco</publisher>
   <developer />
-  <genre>Platform</genre>
+  <rating>HSRS - GA (General Audience)</rating>
 </game>
-<game name="Donkey Kong Jr (World)">
+<game ROM="Donkey Kong Jr (World)">
   <title>Donkey Kong Jr (World)</title>
   <year>1983</year>
-  <rating>HSRS - GA (General Audience)</rating>
+  <genre>Platform</genre>
   <publisher>Coleco</publisher>
   <developer />
-  <genre>Platform</genre>
+  <rating>HSRS - GA (General Audience)</rating>
 </game>
-<game name="Dracula (World)">
+<game ROM="Dracula (World)">
   <title>Dracula (World)</title>
   <year>1982</year>
-  <rating>HSRS - GA (General Audience)</rating>
+  <genre>Action</genre>
   <publisher>Imagic</publisher>
   <developer />
-  <genre>Action</genre>
+  <rating>HSRS - GA (General Audience)</rating>
 </game>
-<game name="Dragonfire (World)">
+<game ROM="Dragonfire (World)">
   <title>Dragonfire (World)</title>
   <year>1982</year>
-  <rating>HSRS - GA (General Audience)</rating>
+  <genre>Action</genre>
   <publisher>Imagic</publisher>
   <developer />
-  <genre>Action</genre>
+  <rating>HSRS - GA (General Audience)</rating>
 </game>
-<game name="Dreadnaught Factor, The (World)">
+<game ROM="Dreadnaught Factor, The (World)">
   <title>Dreadnaught Factor, The (World)</title>
   <year>1983</year>
-  <rating>HSRS - GA (General Audience)</rating>
+  <genre>Flying</genre>
   <publisher>Activision</publisher>
   <developer />
-  <genre>Flying</genre>
+  <rating>HSRS - GA (General Audience)</rating>
 </game>
-<game name="Duncan&apos;s Thin Ice (World)">
+<game ROM="Duncan&apos;s Thin Ice (World)">
   <title>Duncan\&apos;s Thin Ice (World)</title>
   <year>1986</year>
-  <rating>HSRS - GA (General Audience)</rating>
+  <genre>Puzzle</genre>
   <publisher>Intv Corp</publisher>
   <developer />
-  <genre>Puzzle</genre>
+  <rating>HSRS - GA (General Audience)</rating>
 </game>
-<game name="Electric Company - Math Fun (World)">
+<game ROM="Electric Company - Math Fun (World)">
   <title>Electric Company - Math Fun (World)</title>
   <year>1978</year>
-  <rating>HSRS - GA (General Audience)</rating>
+  <genre>Educational</genre>
   <publisher>CTW/Mattel</publisher>
   <developer />
-  <genre>Educational</genre>
+  <rating>HSRS - GA (General Audience)</rating>
 </game>
-<game name="Electric Company - Word Fun (World)">
+<game ROM="Electric Company - Word Fun (World)">
   <title>Electric Company - Word Fun (World)</title>
   <year>1980</year>
-  <rating>HSRS - GA (General Audience)</rating>
+  <genre>Educational</genre>
   <publisher>CTW/Mattel</publisher>
   <developer />
-  <genre>Educational</genre>
+  <rating>HSRS - GA (General Audience)</rating>
 </game>
-<game name="Fathom (World)">
+<game ROM="Fathom (World)">
   <title>Fathom (World)</title>
   <year>1983</year>
-  <rating>HSRS - GA (General Audience)</rating>
+  <genre>Action</genre>
   <publisher>Imagic</publisher>
   <developer />
-  <genre>Action</genre>
+  <rating>HSRS - GA (General Audience)</rating>
 </game>
-<game name="Frog Bog (World)">
+<game ROM="Frog Bog (World)">
   <title>Frog Bog (World)</title>
   <year>1982</year>
-  <rating>HSRS - GA (General Audience)</rating>
+  <genre>Action</genre>
   <publisher>Mattel</publisher>
   <developer />
-  <genre>Action</genre>
+  <rating>HSRS - GA (General Audience)</rating>
 </game>
-<game name="Frogger (World)">
+<game ROM="Frogger (World)">
   <title>Frogger (World)</title>
   <year>1983</year>
-  <rating>HSRS - GA (General Audience)</rating>
+  <genre>Maze</genre>
   <publisher>Parker Bros</publisher>
   <developer />
-  <genre>Maze</genre>
+  <rating>HSRS - GA (General Audience)</rating>
 </game>
-<game name="Game Factory (World)">
+<game ROM="Game Factory (World)">
   <title>Game Factory (World)</title>
   <year>1983</year>
-  <rating>HSRS - GA (General Audience)</rating>
+  <genre>Miscellaneous</genre>
   <publisher>Mattel</publisher>
   <developer />
-  <genre>Miscellaneous</genre>
+  <rating>HSRS - GA (General Audience)</rating>
 </game>
-<game name="Grid Shock (World)">
+<game ROM="Grid Shock (World)">
   <title>Grid Shock (World)</title>
   <year>1982</year>
-  <rating>HSRS - GA (General Audience)</rating>
+  <genre>Action</genre>
   <publisher>Mattel</publisher>
   <developer />
-  <genre>Action</genre>
+  <rating>HSRS - GA (General Audience)</rating>
 </game>
-<game name="Happy Trails (World)">
+<game ROM="Happy Trails (World)">
   <title>Happy Trails (World)</title>
   <year>1983</year>
-  <rating>HSRS - GA (General Audience)</rating>
+  <genre>Strategy</genre>
   <publisher>Activision</publisher>
   <developer />
-  <genre>Strategy</genre>
+  <rating>HSRS - GA (General Audience)</rating>
 </game>
-<game name="Hard Hat (World)">
+<game ROM="Hard Hat (World)">
   <title>Hard Hat (World)</title>
   <year>1983</year>
-  <rating>HSRS - GA (General Audience)</rating>
+  <genre>Action</genre>
   <publisher>Mattel</publisher>
   <developer />
-  <genre>Action</genre>
+  <rating>HSRS - GA (General Audience)</rating>
 </game>
-<game name="Horse Racing (World)">
+<game ROM="Horse Racing (World)">
   <title>Horse Racing (World)</title>
   <year>1980</year>
-  <rating>HSRS - GA (General Audience)</rating>
+  <genre>Sports/Horse Racing</genre>
   <publisher>Mattel</publisher>
   <developer />
-  <genre>Sports/Horse Racing</genre>
+  <rating>HSRS - GA (General Audience)</rating>
 </game>
-<game name="Hover Force (World)">
+<game ROM="Hover Force (World)">
   <title>Hover Force (World)</title>
   <year>1986</year>
-  <rating>HSRS - GA (General Audience)</rating>
+  <genre>Flying</genre>
   <publisher>Intv Corp</publisher>
   <developer />
-  <genre>Flying</genre>
+  <rating>HSRS - GA (General Audience)</rating>
 </game>
-<game name="Ice Trek (World)">
+<game ROM="Ice Trek (World)">
   <title>Ice Trek (World)</title>
   <year>1983</year>
-  <rating>HSRS - GA (General Audience)</rating>
+  <genre>Action</genre>
   <publisher>Imagic</publisher>
   <developer />
-  <genre>Action</genre>
+  <rating>HSRS - GA (General Audience)</rating>
 </game>
-<game name="Jetsons, The - Ways With Words (World)">
+<game ROM="Jetsons, The - Ways With Words (World)">
   <title>Jetsons, The - Ways With Words (World)</title>
   <year>1983</year>
-  <rating>HSRS - GA (General Audience)</rating>
+  <genre>Educational</genre>
   <publisher>Mattel</publisher>
   <developer />
-  <genre>Educational</genre>
+  <rating>HSRS - GA (General Audience)</rating>
 </game>
-<game name="Kool-Aid Man (World)">
+<game ROM="Kool-Aid Man (World)">
   <title>Kool-Aid Man (World)</title>
   <year>1983</year>
-  <rating>HSRS - GA (General Audience)</rating>
+  <genre>Platform</genre>
   <publisher>Mattel</publisher>
   <developer />
-  <genre>Platform</genre>
+  <rating>HSRS - GA (General Audience)</rating>
 </game>
-<game name="Lady Bug (World)">
+<game ROM="Lady Bug (World)">
   <title>Lady Bug (World)</title>
   <year>1983</year>
-  <rating>HSRS - GA (General Audience)</rating>
+  <genre>Maze</genre>
   <publisher>Coleco</publisher>
   <developer />
-  <genre>Maze</genre>
+  <rating>HSRS - GA (General Audience)</rating>
 </game>
-<game name="Land Battle (World)">
+<game ROM="Land Battle (World)">
   <title>Land Battle (World)</title>
   <year>1982</year>
-  <rating>HSRS - GA (General Audience)</rating>
+  <genre>Action</genre>
   <publisher>Mattel</publisher>
   <developer />
-  <genre>Action</genre>
+  <rating>HSRS - GA (General Audience)</rating>
 </game>
-<game name="Las Vegas Blackjack and Poker (World)">
+<game ROM="Las Vegas Blackjack and Poker (World)">
   <title>Las Vegas Blackjack and Poker (World)</title>
   <year>1979</year>
-  <rating>HSRS - GA (General Audience)</rating>
+  <genre>Casino</genre>
   <publisher>Mattel</publisher>
   <developer />
-  <genre>Casino</genre>
+  <rating>HSRS - GA (General Audience)</rating>
 </game>
-<game name="Las Vegas Roulette (World)">
+<game ROM="Las Vegas Roulette (World)">
   <title>Las Vegas Roulette (World)</title>
   <year>1979</year>
-  <rating>HSRS - GA (General Audience)</rating>
+  <genre>Casino</genre>
   <publisher>Mattel</publisher>
   <developer />
-  <genre>Casino</genre>
+  <rating>HSRS - GA (General Audience)</rating>
 </game>
-<game name="League of Light (World)">
+<game ROM="League of Light (World)">
   <title>League of Light (World)</title>
   <year>1983</year>
-  <rating>HSRS - GA (General Audience)</rating>
+  <genre>Action</genre>
   <publisher>Activision</publisher>
   <developer />
-  <genre>Action</genre>
+  <rating>HSRS - GA (General Audience)</rating>
 </game>
-<game name="Learning Fun I - Math Master Factor Fun (World)">
+<game ROM="Learning Fun I - Math Master Factor Fun (World)">
   <title>Learning Fun I - Math Master Factor Fun (World)</title>
   <year>1987</year>
-  <rating>HSRS - GA (General Audience)</rating>
+  <genre>Educational</genre>
   <publisher>Intv Corp</publisher>
   <developer />
-  <genre>Educational</genre>
+  <rating>HSRS - GA (General Audience)</rating>
 </game>
-<game name="Learning Fun II - Word Wizard Memory Fun (World)">
+<game ROM="Learning Fun II - Word Wizard Memory Fun (World)">
   <title>Learning Fun II - Word Wizard Memory Fun (World)</title>
   <year>1987</year>
-  <rating>HSRS - GA (General Audience)</rating>
+  <genre>Educational</genre>
   <publisher>Intv Corp</publisher>
   <developer />
-  <genre>Educational</genre>
+  <rating>HSRS - GA (General Audience)</rating>
 </game>
-<game name="Lock &apos;N&apos; Chase (World)">
+<game ROM="Lock &apos;N&apos; Chase (World)">
   <title>Lock \&apos;N\&apos; Chase (World)</title>
   <year>1982</year>
-  <rating>HSRS - GA (General Audience)</rating>
+  <genre>Maze</genre>
   <publisher>Mattel</publisher>
   <developer />
-  <genre>Maze</genre>
+  <rating>HSRS - GA (General Audience)</rating>
 </game>
-<game name="Loco-Motion (World)">
+<game ROM="Loco-Motion (World)">
   <title>Loco-Motion (World)</title>
   <year>1982</year>
-  <rating>HSRS - GA (General Audience)</rating>
+  <genre>Puzzle</genre>
   <publisher>Mattel</publisher>
   <developer />
-  <genre>Puzzle</genre>
+  <rating>HSRS - GA (General Audience)</rating>
 </game>
-<game name="Magic Carousel (World)">
+<game ROM="Magic Carousel (World)">
   <title>Magic Carousel (World)</title>
   <year>1983</year>
-  <rating>HSRS - GA (General Audience)</rating>
+  <genre>Educational</genre>
   <publisher>Intv Corp</publisher>
   <developer />
-  <genre>Educational</genre>
+  <rating>HSRS - GA (General Audience)</rating>
 </game>
-<game name="Major League Baseball (World)">
+<game ROM="Major League Baseball (World)">
   <title>Major League Baseball (World)</title>
   <year>1978</year>
-  <rating>HSRS - GA (General Audience)</rating>
+  <genre>Sports/Baseball</genre>
   <publisher>Mattel</publisher>
   <developer />
-  <genre>Sports/Baseball</genre>
+  <rating>HSRS - GA (General Audience)</rating>
 </game>
-<game name="Masters of the Universe - The Power of He-Man! (World)">
+<game ROM="Masters of the Universe - The Power of He-Man! (World)">
   <title>Masters of the Universe - The Power of He-Man! (World)</title>
   <year>1983</year>
-  <rating>HSRS - GA (General Audience)</rating>
+  <genre>Action</genre>
   <publisher>Mattel</publisher>
   <developer />
-  <genre>Action</genre>
+  <rating>HSRS - GA (General Audience)</rating>
 </game>
-<game name="Melody Blaster (World)">
+<game ROM="Melody Blaster (World)">
   <title>Melody Blaster (World)</title>
   <year>1983</year>
-  <rating>HSRS - GA (General Audience)</rating>
+  <genre>Miscellaneous</genre>
   <publisher>Mattel</publisher>
   <developer />
-  <genre>Miscellaneous</genre>
+  <rating>HSRS - GA (General Audience)</rating>
 </game>
-<game name="Meteor (World)">
+<game ROM="Meteor (World)">
   <title>Meteor (World)</title>
   <year>1981</year>
-  <rating>HSRS - GA (General Audience)</rating>
+  <genre>Shooter</genre>
   <publisher>Mattel</publisher>
   <developer />
-  <genre>Shooter</genre>
+  <rating>HSRS - GA (General Audience)</rating>
 </game>
-<game name="Microsurgeon (World)">
+<game ROM="Microsurgeon (World)">
   <title>Microsurgeon (World)</title>
   <year>1982</year>
-  <rating>HSRS - GA (General Audience)</rating>
+  <genre>Action</genre>
   <publisher>Imagic</publisher>
   <developer />
-  <genre>Action</genre>
+  <rating>HSRS - GA (General Audience)</rating>
 </game>
-<game name="Mind Strike! (World)">
+<game ROM="Mind Strike! (World)">
   <title>Mind Strike! (World)</title>
   <year>1982</year>
-  <rating>HSRS - GA (General Audience)</rating>
+  <genre>Strategy</genre>
   <publisher>Mattel</publisher>
   <developer />
-  <genre>Strategy</genre>
+  <rating>HSRS - GA (General Audience)</rating>
 </game>
-<game name="Mine Hunter (World)">
+<game ROM="Mine Hunter (World)">
   <title>Mine Hunter (World)</title>
   <year>2004</year>
-  <rating>HSRS - GA (General Audience)</rating>
+  <genre>Strategy</genre>
   <publisher>IntelligentVision</publisher>
   <developer />
-  <genre>Strategy</genre>
+  <rating>HSRS - GA (General Audience)</rating>
 </game>
-<game name="Mission X (World)">
+<game ROM="Mission X (World)">
   <title>Mission X (World)</title>
   <year>1982</year>
-  <rating>HSRS - GA (General Audience)</rating>
+  <genre>Flying</genre>
   <publisher>Mattel</publisher>
   <developer />
-  <genre>Flying</genre>
+  <rating>HSRS - GA (General Audience)</rating>
 </game>
-<game name="Moto-Cross (World)">
+<game ROM="Moto-Cross (World)">
   <title>Moto-Cross (World)</title>
   <year>1982</year>
-  <rating>HSRS - GA (General Audience)</rating>
+  <genre>Motorcycle</genre>
   <publisher>Mattel</publisher>
   <developer />
-  <genre>Motorcycle</genre>
+  <rating>HSRS - GA (General Audience)</rating>
 </game>
-<game name="Mountain Madness - Super Pro Skiing (World)">
+<game ROM="Mountain Madness - Super Pro Skiing (World)">
   <title>Mountain Madness - Super Pro Skiing (World)</title>
   <year>1987</year>
-  <rating>HSRS - GA (General Audience)</rating>
+  <genre>Sports</genre>
   <publisher>Intv Corp</publisher>
   <developer />
-  <genre>Sports</genre>
+  <rating>HSRS - GA (General Audience)</rating>
 </game>
-<game name="Mouse Trap (World)">
+<game ROM="Mouse Trap (World)">
   <title>Mouse Trap (World)</title>
   <year>1982</year>
-  <rating>HSRS - GA (General Audience)</rating>
+  <genre>Maze</genre>
   <publisher>Coleco</publisher>
   <developer />
-  <genre>Maze</genre>
+  <rating>HSRS - GA (General Audience)</rating>
 </game>
-<game name="Mr. Basic Meets Bits &apos;N Bytes (World)">
+<game ROM="Mr. Basic Meets Bits &apos;N Bytes (World)">
   <title>Mr. Basic Meets Bits \&apos;N Bytes (World)</title>
   <year>1983</year>
-  <rating>HSRS - GA (General Audience)</rating>
+  <genre>Action</genre>
   <publisher>Mattel</publisher>
   <developer />
-  <genre>Action</genre>
+  <rating>HSRS - GA (General Audience)</rating>
 </game>
-<game name="NASL Soccer (World)">
+<game ROM="NASL Soccer (World)">
   <title>NASL Soccer (World)</title>
   <year>1979</year>
-  <rating>HSRS - GA (General Audience)</rating>
+  <genre>Sports/Soccer</genre>
   <publisher>Mattel</publisher>
   <developer />
-  <genre>Sports/Soccer</genre>
+  <rating>HSRS - GA (General Audience)</rating>
 </game>
-<game name="NBA Basketball (World)">
+<game ROM="NBA Basketball (World)">
   <title>NBA Basketball (World)</title>
   <year>1978</year>
-  <rating>HSRS - GA (General Audience)</rating>
+  <genre>Sports/Basketball</genre>
   <publisher>Mattel</publisher>
   <developer />
-  <genre>Sports/Basketball</genre>
+  <rating>HSRS - GA (General Audience)</rating>
 </game>
-<game name="NFL Football (World)">
+<game ROM="NFL Football (World)">
   <title>NFL Football (World)</title>
   <year>1978</year>
-  <rating>HSRS - GA (General Audience)</rating>
+  <genre>Sports/Football</genre>
   <publisher>Mattel</publisher>
   <developer />
-  <genre>Sports/Football</genre>
+  <rating>HSRS - GA (General Audience)</rating>
 </game>
-<game name="NHL Hockey (World)">
+<game ROM="NHL Hockey (World)">
   <title>NHL Hockey (World)</title>
   <year>1979</year>
-  <rating>HSRS - GA (General Audience)</rating>
+  <genre>Sports/Hockey</genre>
   <publisher>Mattel</publisher>
   <developer />
-  <genre>Sports/Hockey</genre>
+  <rating>HSRS - GA (General Audience)</rating>
 </game>
-<game name="Night Stalker (World)">
+<game ROM="Night Stalker (World)">
   <title>Night Stalker (World)</title>
   <year>1982</year>
-  <rating>HSRS - GA (General Audience)</rating>
+  <genre>Maze</genre>
   <publisher>Mattel</publisher>
   <developer />
-  <genre>Maze</genre>
+  <rating>HSRS - GA (General Audience)</rating>
 </game>
-<game name="Nova Blast (World)">
+<game ROM="Nova Blast (World)">
   <title>Nova Blast (World)</title>
   <year>1983</year>
-  <rating>HSRS - GA (General Audience)</rating>
+  <genre>Shooter</genre>
   <publisher>Imagic</publisher>
   <developer />
-  <genre>Shooter</genre>
+  <rating>HSRS - GA (General Audience)</rating>
 </game>
-<game name="Number Jumble (World)">
+<game ROM="Number Jumble (World)">
   <title>Number Jumble (World)</title>
   <year>1983</year>
-  <rating>HSRS - GA (General Audience)</rating>
+  <genre>Miscellaneous</genre>
   <publisher>Mattel</publisher>
   <developer />
-  <genre>Miscellaneous</genre>
+  <rating>HSRS - GA (General Audience)</rating>
 </game>
-<game name="Pac-Man (World)">
+<game ROM="Pac-Man (World)">
   <title>Pac-Man (World)</title>
   <year>1983</year>
-  <rating>HSRS - GA (General Audience)</rating>
+  <genre>Maze</genre>
   <publisher>Atarisoft</publisher>
   <developer />
-  <genre>Maze</genre>
+  <rating>HSRS - GA (General Audience)</rating>
 </game>
-<game name="PBA Bowling (World)">
+<game ROM="PBA Bowling (World)">
   <title>PBA Bowling (World)</title>
   <year>1980</year>
-  <rating>HSRS - GA (General Audience)</rating>
+  <genre>Sports/Bowling</genre>
   <publisher>Mattel</publisher>
   <developer />
-  <genre>Sports/Bowling</genre>
+  <rating>HSRS - GA (General Audience)</rating>
 </game>
-<game name="PGA Golf (World)">
+<game ROM="PGA Golf (World)">
   <title>PGA Golf (World)</title>
   <year>1979</year>
-  <rating>HSRS - GA (General Audience)</rating>
+  <genre>Sports/Golf</genre>
   <publisher>Mattel</publisher>
   <developer />
-  <genre>Sports/Golf</genre>
+  <rating>HSRS - GA (General Audience)</rating>
 </game>
-<game name="Pinball (World)">
+<game ROM="Pinball (World)">
   <title>Pinball (World)</title>
   <year>1981</year>
-  <rating>HSRS - GA (General Audience)</rating>
+  <genre>Pinball</genre>
   <publisher>Mattel</publisher>
   <developer />
-  <genre>Pinball</genre>
+  <rating>HSRS - GA (General Audience)</rating>
 </game>
-<game name="Pitfall! (World)">
+<game ROM="Pitfall! (World)">
   <title>Pitfall! (World)</title>
   <year>1982</year>
-  <rating>HSRS - GA (General Audience)</rating>
+  <genre>Platform</genre>
   <publisher>Activision</publisher>
   <developer />
-  <genre>Platform</genre>
+  <rating>HSRS - GA (General Audience)</rating>
 </game>
-<game name="Pole Position (World)">
+<game ROM="Pole Position (World)">
   <title>Pole Position (World)</title>
   <year>1987</year>
-  <rating>HSRS - GA (General Audience)</rating>
+  <genre>Driving</genre>
   <publisher>Intv Corp</publisher>
   <developer />
-  <genre>Driving</genre>
+  <rating>HSRS - GA (General Audience)</rating>
 </game>
-<game name="Popeye (World)">
+<game ROM="Popeye (World)">
   <title>Popeye (World)</title>
   <year>1983</year>
-  <rating>HSRS - GA (General Audience)</rating>
+  <genre>Platform</genre>
   <publisher>Parker Bros</publisher>
   <developer />
-  <genre>Platform</genre>
+  <rating>HSRS - GA (General Audience)</rating>
 </game>
-<game name="Q-bert (World)">
+<game ROM="Q-bert (World)">
   <title>Q-bert (World)</title>
   <year>1983</year>
-  <rating>HSRS - GA (General Audience)</rating>
+  <genre>Platform</genre>
   <publisher>Parker Bros</publisher>
   <developer />
-  <genre>Platform</genre>
+  <rating>HSRS - GA (General Audience)</rating>
 </game>
-<game name="Reversi (World)">
+<game ROM="Reversi (World)">
   <title>Reversi (World)</title>
   <year>1981</year>
-  <rating>HSRS - GA (General Audience)</rating>
+  <genre>Board Games</genre>
   <publisher>Mattel</publisher>
   <developer />
-  <genre>Board Games</genre>
+  <rating>HSRS - GA (General Audience)</rating>
 </game>
-<game name="River Raid (World)">
+<game ROM="River Raid (World)">
   <title>River Raid (World)</title>
   <year>1983</year>
-  <rating>HSRS - GA (General Audience)</rating>
+  <genre>Flying</genre>
   <publisher>Activision</publisher>
   <developer />
-  <genre>Flying</genre>
+  <rating>HSRS - GA (General Audience)</rating>
 </game>
-<game name="Robot Rubble (World)">
+<game ROM="Robot Rubble (World)">
   <title>Robot Rubble (World)</title>
   <year>1983</year>
-  <rating>HSRS - GA (General Audience)</rating>
+  <genre>Action</genre>
   <publisher>Activision</publisher>
   <developer />
-  <genre>Action</genre>
+  <rating>HSRS - GA (General Audience)</rating>
 </game>
-<game name="Royal Dealer (World)">
+<game ROM="Royal Dealer (World)">
   <title>Royal Dealer (World)</title>
   <year>1981</year>
-  <rating>HSRS - GA (General Audience)</rating>
+  <genre>Casino</genre>
   <publisher>Mattel</publisher>
   <developer />
-  <genre>Casino</genre>
+  <rating>HSRS - GA (General Audience)</rating>
 </game>
-<game name="Safecracker (World)">
+<game ROM="Safecracker (World)">
   <title>Safecracker (World)</title>
   <year>1983</year>
-  <rating>HSRS - GA (General Audience)</rating>
+  <genre>Action</genre>
   <publisher>Imagic</publisher>
   <developer />
-  <genre>Action</genre>
+  <rating>HSRS - GA (General Audience)</rating>
 </game>
-<game name="Same Game &amp; Robots (World)">
+<game ROM="Same Game &amp; Robots (World)">
   <title>Same Game &amp; Robots (World)</title>
   <year>2005</year>
-  <rating>HSRS - GA (General Audience)</rating>
+  <genre>Puzzle</genre>
   <publisher>IntelligentVision</publisher>
   <developer />
-  <genre>Puzzle</genre>
+  <rating>HSRS - GA (General Audience)</rating>
 </game>
-<game name="Scooby Doo&apos;s Maze Chase (World)">
+<game ROM="Scooby Doo&apos;s Maze Chase (World)">
   <title>Scooby Doo\&apos;s Maze Chase (World)</title>
   <year>1983</year>
-  <rating>HSRS - GA (General Audience)</rating>
+  <genre>Maze</genre>
   <publisher>Mattel</publisher>
   <developer />
-  <genre>Maze</genre>
+  <rating>HSRS - GA (General Audience)</rating>
 </game>
-<game name="Sea Battle (World)">
+<game ROM="Sea Battle (World)">
   <title>Sea Battle (World)</title>
   <year>1980</year>
-  <rating>HSRS - GA (General Audience)</rating>
+  <genre>Strategy</genre>
   <publisher>Mattel</publisher>
   <developer />
-  <genre>Strategy</genre>
+  <rating>HSRS - GA (General Audience)</rating>
 </game>
-<game name="Sewer Sam (World)">
+<game ROM="Sewer Sam (World)">
   <title>Sewer Sam (World)</title>
   <year>1983</year>
-  <rating>HSRS - GA (General Audience)</rating>
+  <genre>Action</genre>
   <publisher>Interphase</publisher>
   <developer />
-  <genre>Action</genre>
+  <rating>HSRS - GA (General Audience)</rating>
 </game>
-<game name="Shark! Shark! (World)">
+<game ROM="Shark! Shark! (World)">
   <title>Shark! Shark! (World)</title>
   <year>1982</year>
-  <rating>HSRS - GA (General Audience)</rating>
+  <genre>Action</genre>
   <publisher>Mattel</publisher>
   <developer />
-  <genre>Action</genre>
+  <rating>HSRS - GA (General Audience)</rating>
 </game>
-<game name="Sharp Shot (World)">
+<game ROM="Sharp Shot (World)">
   <title>Sharp Shot (World)</title>
   <year>1982</year>
-  <rating>HSRS - GA (General Audience)</rating>
+  <genre>Miscellaneous</genre>
   <publisher>Mattel</publisher>
   <developer />
-  <genre>Miscellaneous</genre>
+  <rating>HSRS - GA (General Audience)</rating>
 </game>
-<game name="Slam Dunk - Super Pro Basketball (World)">
+<game ROM="Slam Dunk - Super Pro Basketball (World)">
   <title>Slam Dunk - Super Pro Basketball (World)</title>
   <year>1987</year>
-  <rating>HSRS - GA (General Audience)</rating>
+  <genre>Sports/Basketball</genre>
   <publisher>Intv Corp</publisher>
   <developer />
-  <genre>Sports/Basketball</genre>
+  <rating>HSRS - GA (General Audience)</rating>
 </game>
-<game name="Slap Shot - Super Pro Hockey (World)">
+<game ROM="Slap Shot - Super Pro Hockey (World)">
   <title>Slap Shot - Super Pro Hockey (World)</title>
   <year>1987</year>
-  <rating>HSRS - GA (General Audience)</rating>
+  <genre>Sports/Hockey</genre>
   <publisher>Intv Corp</publisher>
   <developer />
-  <genre>Sports/Hockey</genre>
+  <rating>HSRS - GA (General Audience)</rating>
 </game>
-<game name="Snafu (World)">
+<game ROM="Snafu (World)">
   <title>Snafu (World)</title>
   <year>1981</year>
-  <rating>HSRS - GA (General Audience)</rating>
+  <genre>Maze</genre>
   <publisher>Mattel</publisher>
   <developer />
-  <genre>Maze</genre>
+  <rating>HSRS - GA (General Audience)</rating>
 </game>
-<game name="Space Armada (World)">
+<game ROM="Space Armada (World)">
   <title>Space Armada (World)</title>
   <year>1981</year>
-  <rating>HSRS - GA (General Audience)</rating>
+  <genre>Shooter</genre>
   <publisher>Mattel</publisher>
   <developer />
-  <genre>Shooter</genre>
+  <rating>HSRS - GA (General Audience)</rating>
 </game>
-<game name="Space Battle (World)">
+<game ROM="Space Battle (World)">
   <title>Space Battle (World)</title>
   <year>1979</year>
-  <rating>HSRS - GA (General Audience)</rating>
+  <genre>Shooter</genre>
   <publisher>Mattel</publisher>
   <developer />
-  <genre>Shooter</genre>
+  <rating>HSRS - GA (General Audience)</rating>
 </game>
-<game name="Space Cadet (World)">
+<game ROM="Space Cadet (World)">
   <title>Space Cadet (World)</title>
   <year>1982</year>
-  <rating>HSRS - GA (General Audience)</rating>
+  <genre>Action</genre>
   <publisher>Mattel</publisher>
   <developer />
-  <genre>Action</genre>
+  <rating>HSRS - GA (General Audience)</rating>
 </game>
-<game name="Space Hawk (World)">
+<game ROM="Space Hawk (World)">
   <title>Space Hawk (World)</title>
   <year>1981</year>
-  <rating>HSRS - GA (General Audience)</rating>
+  <genre>Shooter</genre>
   <publisher>Mattel</publisher>
   <developer />
-  <genre>Shooter</genre>
+  <rating>HSRS - GA (General Audience)</rating>
 </game>
-<game name="Space Spartans (World)">
+<game ROM="Space Spartans (World)">
   <title>Space Spartans (World)</title>
   <year>1981</year>
-  <rating>HSRS - GA (General Audience)</rating>
+  <genre>Strategy</genre>
   <publisher>Mattel</publisher>
   <developer />
-  <genre>Strategy</genre>
+  <rating>HSRS - GA (General Audience)</rating>
 </game>
-<game name="Spiker! - Super Pro Volleyball (World)">
+<game ROM="Spiker! - Super Pro Volleyball (World)">
   <title>Spiker! - Super Pro Volleyball (World)</title>
   <year>1988</year>
-  <rating>HSRS - GA (General Audience)</rating>
+  <genre>Sports/Volleyball</genre>
   <publisher>Intv Corp</publisher>
   <developer />
-  <genre>Sports/Volleyball</genre>
+  <rating>HSRS - GA (General Audience)</rating>
 </game>
-<game name="Stadium Mud Buggies (World)">
+<game ROM="Stadium Mud Buggies (World)">
   <title>Stadium Mud Buggies (World)</title>
   <year>1988</year>
-  <rating>HSRS - GA (General Audience)</rating>
+  <genre>Driving</genre>
   <publisher>Intv Corp</publisher>
   <developer />
-  <genre>Driving</genre>
+  <rating>HSRS - GA (General Audience)</rating>
 </game>
-<game name="Stampede (World)">
+<game ROM="Stampede (World)">
   <title>Stampede (World)</title>
   <year>1982</year>
-  <rating>HSRS - GA (General Audience)</rating>
+  <genre>Miscellaneous</genre>
   <publisher>Activision</publisher>
   <developer />
-  <genre>Miscellaneous</genre>
+  <rating>HSRS - GA (General Audience)</rating>
 </game>
-<game name="Star Strike (World)">
+<game ROM="Star Strike (World)">
   <title>Star Strike (World)</title>
   <year>1981</year>
-  <rating>HSRS - GA (General Audience)</rating>
+  <genre>Flying</genre>
   <publisher>Mattel</publisher>
   <developer />
-  <genre>Flying</genre>
+  <rating>HSRS - GA (General Audience)</rating>
 </game>
-<game name="Star Wars - The Empire Strikes Back (World)">
+<game ROM="Star Wars - The Empire Strikes Back (World)">
   <title>Star Wars - The Empire Strikes Back (World)</title>
   <year>1983</year>
-  <rating>HSRS - GA (General Audience)</rating>
+  <genre>Shooter</genre>
   <publisher>Parker Bros</publisher>
   <developer />
-  <genre>Shooter</genre>
+  <rating>HSRS - GA (General Audience)</rating>
 </game>
-<game name="Stonix (World)">
+<game ROM="Stonix (World)">
   <title>Stonix (World)</title>
   <year>2004</year>
-  <rating>HSRS - GA (General Audience)</rating>
+  <genre>Action</genre>
   <publisher>IntelligentVision</publisher>
   <developer />
-  <genre>Action</genre>
+  <rating>HSRS - GA (General Audience)</rating>
 </game>
-<game name="Sub Hunt (World)">
+<game ROM="Sub Hunt (World)">
   <title>Sub Hunt (World)</title>
   <year>1981</year>
-  <rating>HSRS - GA (General Audience)</rating>
+  <genre>Simulation</genre>
   <publisher>Mattel</publisher>
   <developer />
-  <genre>Simulation</genre>
+  <rating>HSRS - GA (General Audience)</rating>
 </game>
-<game name="Super Cobra (World)">
+<game ROM="Super Cobra (World)">
   <title>Super Cobra (World)</title>
   <year>1983</year>
-  <rating>HSRS - GA (General Audience)</rating>
+  <genre>Shooter</genre>
   <publisher>Konami</publisher>
   <developer />
-  <genre>Shooter</genre>
+  <rating>HSRS - GA (General Audience)</rating>
 </game>
-<game name="Super Pro Decathlon (World)">
+<game ROM="Super Pro Decathlon (World)">
   <title>Super Pro Decathlon (World)</title>
   <year>1988</year>
-  <rating>HSRS - GA (General Audience)</rating>
+  <genre>Sports/Track &amp; Field</genre>
   <publisher>Intv Corp</publisher>
   <developer />
-  <genre>Sports/Track &amp; Field</genre>
+  <rating>HSRS - GA (General Audience)</rating>
 </game>
-<game name="Super Pro Football (World)">
+<game ROM="Super Pro Football (World)">
   <title>Super Pro Football (World)</title>
   <year>1986</year>
-  <rating>HSRS - GA (General Audience)</rating>
+  <genre>Sports/Football</genre>
   <publisher>Intv Corp</publisher>
   <developer />
-  <genre>Sports/Football</genre>
+  <rating>HSRS - GA (General Audience)</rating>
 </game>
-<game name="Swords &amp; Serpents (World)">
+<game ROM="Swords &amp; Serpents (World)">
   <title>Swords &amp; Serpents (World)</title>
   <year>1982</year>
-  <rating>HSRS - GA (General Audience)</rating>
+  <genre>Role-Playing</genre>
   <publisher>Imagic</publisher>
   <developer />
-  <genre>Role-Playing</genre>
+  <rating>HSRS - GA (General Audience)</rating>
 </game>
-<game name="Takeover (World)">
+<game ROM="Takeover (World)">
   <title>Takeover (World)</title>
   <year>1982</year>
-  <rating>HSRS - GA (General Audience)</rating>
+  <genre>Strategy</genre>
   <publisher>Mattel</publisher>
   <developer />
-  <genre>Strategy</genre>
+  <rating>HSRS - GA (General Audience)</rating>
 </game>
-<game name="Tennis (World)">
+<game ROM="Tennis (World)">
   <title>Tennis (World)</title>
   <year>1980</year>
-  <rating>HSRS - GA (General Audience)</rating>
+  <genre>Sports/Tennis</genre>
   <publisher>Mattel</publisher>
   <developer />
-  <genre>Sports/Tennis</genre>
+  <rating>HSRS - GA (General Audience)</rating>
 </game>
-<game name="Thunder Castle (World)">
+<game ROM="Thunder Castle (World)">
   <title>Thunder Castle (World)</title>
   <year>1986</year>
-  <rating>HSRS - GA (General Audience)</rating>
+  <genre>Maze</genre>
   <publisher>Intv Corp</publisher>
   <developer />
-  <genre>Maze</genre>
+  <rating>HSRS - GA (General Audience)</rating>
 </game>
-<game name="Tower of Doom (World)">
+<game ROM="Tower of Doom (World)">
   <title>Tower of Doom (World)</title>
   <year>1986</year>
-  <rating>HSRS - GA (General Audience)</rating>
+  <genre>Role-Playing</genre>
   <publisher>Intv Corp</publisher>
   <developer />
-  <genre>Role-Playing</genre>
+  <rating>HSRS - GA (General Audience)</rating>
 </game>
-<game name="Triple Action (World)">
+<game ROM="Triple Action (World)">
   <title>Triple Action (World)</title>
   <year>1981</year>
-  <rating>HSRS - GA (General Audience)</rating>
+  <genre>Miscellaneous</genre>
   <publisher>Mattel</publisher>
   <developer />
-  <genre>Miscellaneous</genre>
+  <rating>HSRS - GA (General Audience)</rating>
 </game>
-<game name="Triple Challenge (World)">
+<game ROM="Triple Challenge (World)">
   <title>Triple Challenge (World)</title>
   <year>1986</year>
-  <rating>HSRS - GA (General Audience)</rating>
+  <genre>Board Games</genre>
   <publisher>Intv Corp</publisher>
   <developer />
-  <genre>Board Games</genre>
+  <rating>HSRS - GA (General Audience)</rating>
 </game>
-<game name="TRON - Deadly Discs (World)">
+<game ROM="TRON - Deadly Discs (World)">
   <title>TRON - Deadly Discs (World)</title>
   <year>1981</year>
-  <rating>HSRS - GA (General Audience)</rating>
+  <genre>Action</genre>
   <publisher>Mattel</publisher>
   <developer />
-  <genre>Action</genre>
+  <rating>HSRS - GA (General Audience)</rating>
 </game>
-<game name="TRON - Maze-A-Tron (World)">
+<game ROM="TRON - Maze-A-Tron (World)">
   <title>TRON - Maze-A-Tron (World)</title>
   <year>1981</year>
-  <rating>HSRS - GA (General Audience)</rating>
+  <genre>Maze</genre>
   <publisher>Mattel</publisher>
   <developer />
-  <genre>Maze</genre>
+  <rating>HSRS - GA (General Audience)</rating>
 </game>
-<game name="TRON - Solar Sailer (World)">
+<game ROM="TRON - Solar Sailer (World)">
   <title>TRON - Solar Sailer (World)</title>
   <year>1982</year>
-  <rating>HSRS - GA (General Audience)</rating>
+  <genre>Action</genre>
   <publisher>Mattel</publisher>
   <developer />
-  <genre>Action</genre>
+  <rating>HSRS - GA (General Audience)</rating>
 </game>
-<game name="Tropical Trouble (World)">
+<game ROM="Tropical Trouble (World)">
   <title>Tropical Trouble (World)</title>
   <year>1982</year>
-  <rating>HSRS - GA (General Audience)</rating>
+  <genre>Platform</genre>
   <publisher>Imagic</publisher>
   <developer />
-  <genre>Platform</genre>
+  <rating>HSRS - GA (General Audience)</rating>
 </game>
-<game name="Truckin&apos; (World)">
+<game ROM="Truckin&apos; (World)">
   <title>Truckin\&apos; (World)</title>
   <year>1983</year>
-  <rating>HSRS - GA (General Audience)</rating>
+  <genre>Driving</genre>
   <publisher>Imagic</publisher>
   <developer />
-  <genre>Driving</genre>
+  <rating>HSRS - GA (General Audience)</rating>
 </game>
-<game name="Turbo (World)">
+<game ROM="Turbo (World)">
   <title>Turbo (World)</title>
   <year>1983</year>
-  <rating>HSRS - GA (General Audience)</rating>
+  <genre>Driving</genre>
   <publisher>Coleco</publisher>
   <developer />
-  <genre>Driving</genre>
+  <rating>HSRS - GA (General Audience)</rating>
 </game>
-<game name="Tutankham (World)">
+<game ROM="Tutankham (World)">
   <title>Tutankham (World)</title>
   <year>1983</year>
-  <rating>HSRS - GA (General Audience)</rating>
+  <genre>Maze</genre>
   <publisher>Parker Bros</publisher>
   <developer />
-  <genre>Maze</genre>
+  <rating>HSRS - GA (General Audience)</rating>
 </game>
-<game name="U.S. Ski Team Skiing (World)">
+<game ROM="U.S. Ski Team Skiing (World)">
   <title>U.S. Ski Team Skiing (World)</title>
   <year>1980</year>
-  <rating>HSRS - GA (General Audience)</rating>
+  <genre>Skiing/Sports</genre>
   <publisher>Mattel</publisher>
   <developer />
-  <genre>Skiing/Sports</genre>
+  <rating>HSRS - GA (General Audience)</rating>
 </game>
-<game name="USCF Chess (World)">
+<game ROM="USCF Chess (World)">
   <title>USCF Chess (World)</title>
   <year>1981</year>
-  <rating>HSRS - GA (General Audience)</rating>
+  <genre>Board Games</genre>
   <publisher>Mattel</publisher>
   <developer />
-  <genre>Board Games</genre>
+  <rating>HSRS - GA (General Audience)</rating>
 </game>
-<game name="Utopia (World)">
+<game ROM="Utopia (World)">
   <title>Utopia (World)</title>
   <year>1981</year>
-  <rating>HSRS - GA (General Audience)</rating>
+  <genre>Strategy</genre>
   <publisher>Mattel</publisher>
   <developer />
-  <genre>Strategy</genre>
+  <rating>HSRS - GA (General Audience)</rating>
 </game>
-<game name="Vectron (World)">
+<game ROM="Vectron (World)">
   <title>Vectron (World)</title>
   <year>1982</year>
-  <rating>HSRS - GA (General Audience)</rating>
+  <genre>Action</genre>
   <publisher>Mattel</publisher>
   <developer />
-  <genre>Action</genre>
+  <rating>HSRS - GA (General Audience)</rating>
 </game>
-<game name="Venture (World)">
+<game ROM="Venture (World)">
   <title>Venture (World)</title>
   <year>1982</year>
-  <rating>HSRS - GA (General Audience)</rating>
+  <genre>Maze</genre>
   <publisher>Coleco</publisher>
   <developer />
-  <genre>Maze</genre>
+  <rating>HSRS - GA (General Audience)</rating>
 </game>
-<game name="White Water! (World)">
+<game ROM="White Water! (World)">
   <title>White Water! (World)</title>
   <year>1983</year>
-  <rating>HSRS - GA (General Audience)</rating>
+  <genre>Miscellaneous</genre>
   <publisher>Imagic</publisher>
   <developer />
-  <genre>Miscellaneous</genre>
+  <rating>HSRS - GA (General Audience)</rating>
 </game>
-<game name="World Championship Baseball (World)">
+<game ROM="World Championship Baseball (World)">
   <title>World Championship Baseball (World)</title>
   <year>1986</year>
-  <rating>HSRS - GA (General Audience)</rating>
+  <genre>Baseball/Sports</genre>
   <publisher>Intv Corp</publisher>
   <developer />
-  <genre>Baseball/Sports</genre>
+  <rating>HSRS - GA (General Audience)</rating>
 </game>
-<game name="World Cup Soccer (World)">
+<game ROM="World Cup Soccer (World)">
   <title>World Cup Soccer (World)</title>
   <year>1985</year>
-  <rating>HSRS - GA (General Audience)</rating>
+  <genre>Soccer/Sports</genre>
   <publisher>Nice Ideas</publisher>
   <developer />
-  <genre>Soccer/Sports</genre>
+  <rating>HSRS - GA (General Audience)</rating>
 </game>
-<game name="World Series Major League Baseball (World)">
+<game ROM="World Series Major League Baseball (World)">
   <title>World Series Major League Baseball (World)</title>
   <year>1982</year>
-  <rating>HSRS - GA (General Audience)</rating>
+  <genre>Sports/Baseball</genre>
   <publisher>Mattel</publisher>
   <developer />
-  <genre>Sports/Baseball</genre>
+  <rating>HSRS - GA (General Audience)</rating>
 </game>
-<game name="Worm Whomper (World)">
+<game ROM="Worm Whomper (World)">
   <title>Worm Whomper (World)</title>
   <year>1983</year>
-  <rating>HSRS - GA (General Audience)</rating>
+  <genre>Shooter</genre>
   <publisher>Activision</publisher>
   <developer />
-  <genre>Shooter</genre>
+  <rating>HSRS - GA (General Audience)</rating>
 </game>
-<game name="Zaxxon (World)">
+<game ROM="Zaxxon (World)">
   <title>Zaxxon (World)</title>
   <year>1982</year>
-  <rating>HSRS - GA (General Audience)</rating>
+  <genre>Shooter</genre>
   <publisher>Coleco</publisher>
   <developer />
-  <genre>Shooter</genre>
+  <rating>HSRS - GA (General Audience)</rating>
 </game>
 </menu>

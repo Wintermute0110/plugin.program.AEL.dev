@@ -6,36 +6,36 @@
   <listversion>V1</listversion>
   <exporterversion>V1 GameDBInfo converter</exporterversion>
 </header>
-<game name="Defender (USA, Europe)">
+<game ROM="Defender (USA, Europe)">
   <title>Defender (USA, Europe)</title>
   <year>1982</year>
-  <rating>HSRS - GA (General Audience)</rating>
+  <genre>Shooter</genre>
   <publisher>Entex Industries</publisher>
   <developer />
-  <genre>Shooter</genre>
+  <rating>HSRS - GA (General Audience)</rating>
 </game>
-<game name="Space Force (USA, Europe)">
+<game ROM="Space Force (USA, Europe)">
   <title>Space Force (USA, Europe)</title>
   <year>1982</year>
-  <rating>HSRS - GA (General Audience)</rating>
+  <genre>Shooter</genre>
   <publisher>Entex Industries</publisher>
   <developer />
-  <genre>Shooter</genre>
+  <rating>HSRS - GA (General Audience)</rating>
 </game>
-<game name="Super Cobra (USA, Europe)">
+<game ROM="Super Cobra (USA, Europe)">
   <title>Super Cobra (USA, Europe)</title>
   <year>1982</year>
-  <rating>HSRS - GA (General Audience)</rating>
+  <genre>Shooter</genre>
   <publisher>Entex Industries</publisher>
   <developer />
-  <genre>Shooter</genre>
+  <rating>HSRS - GA (General Audience)</rating>
 </game>
-<game name="Turtles (USA, Europe)">
+<game ROM="Turtles (USA, Europe)">
   <title>Turtles (USA, Europe)</title>
   <year>1982</year>
-  <rating>HSRS - GA (General Audience)</rating>
+  <genre>Action</genre>
   <publisher>Entex Industries</publisher>
   <developer />
-  <genre>Action</genre>
+  <rating>HSRS - GA (General Audience)</rating>
 </game>
 </menu>

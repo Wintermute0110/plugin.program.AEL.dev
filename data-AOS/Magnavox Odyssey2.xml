@@ -6,796 +6,796 @@
   <listversion>V1</listversion>
   <exporterversion>V1 GameDBInfo converter</exporterversion>
 </header>
-<game name="4 in 1 Row (Europe)">
+<game ROM="4 in 1 Row (Europe)">
   <title>4 in 1 Row (Europe)</title>
   <year>1982</year>
-  <rating>HSRS - GA (General Audience)</rating>
+  <genre>Puzzle</genre>
   <publisher>Philips</publisher>
   <developer />
-  <genre>Puzzle</genre>
+  <rating>HSRS - GA (General Audience)</rating>
 </game>
-<game name="Alien Invaders - Plus (USA, Europe)">
+<game ROM="Alien Invaders - Plus (USA, Europe)">
   <title>Alien Invaders - Plus (USA, Europe)</title>
   <year>1980</year>
-  <rating>HSRS - GA (General Audience)</rating>
+  <genre>Shooter</genre>
   <publisher>Magnavox</publisher>
   <developer />
-  <genre>Shooter</genre>
+  <rating>HSRS - GA (General Audience)</rating>
 </game>
-<game name="Alpine Skiing (USA, Europe)">
+<game ROM="Alpine Skiing (USA, Europe)">
   <title>Alpine Skiing (USA, Europe)</title>
   <year>1978</year>
-  <rating>HSRS - GA (General Audience)</rating>
+  <genre>Sports/Skiing</genre>
   <publisher>Magnavox</publisher>
   <developer />
-  <genre>Sports/Skiing</genre>
+  <rating>HSRS - GA (General Audience)</rating>
 </game>
-<game name="Amok (USA) (Unl)">
+<game ROM="Amok (USA) (Unl)">
   <title>Amok (USA) (Unl)</title>
   <year>1998</year>
-  <rating>HSRS - GA (General Audience)</rating>
+  <genre>Action</genre>
   <publisher>John Dondzilla</publisher>
   <developer />
-  <genre>Action</genre>
+  <rating>HSRS - GA (General Audience)</rating>
 </game>
-<game name="Armored Encounter + Sub Chase (USA, Europe)">
+<game ROM="Armored Encounter + Sub Chase (USA, Europe)">
   <title>Armored Encounter + Sub Chase (USA, Europe)</title>
   <year>1978</year>
-  <rating>HSRS - GA (General Audience)</rating>
+  <genre>Shooter</genre>
   <publisher>Magnavox</publisher>
   <developer />
-  <genre>Shooter</genre>
+  <rating>HSRS - GA (General Audience)</rating>
 </game>
-<game name="Atlantis (USA, Europe)">
+<game ROM="Atlantis (USA, Europe)">
   <title>Atlantis (USA, Europe)</title>
   <year>1983</year>
-  <rating>HSRS - GA (General Audience)</rating>
+  <genre>Shooter</genre>
   <publisher>Imagic</publisher>
   <developer />
-  <genre>Shooter</genre>
+  <rating>HSRS - GA (General Audience)</rating>
 </game>
-<game name="Attack of the Timelord (USA)">
+<game ROM="Attack of the Timelord (USA)">
   <title>Attack of the Timelord (USA)</title>
   <year>1982</year>
-  <rating>HSRS - GA (General Audience)</rating>
+  <genre>Shooter</genre>
   <publisher>Philips</publisher>
   <developer />
-  <genre>Shooter</genre>
+  <rating>HSRS - GA (General Audience)</rating>
 </game>
-<game name="Backgammon (Europe)">
+<game ROM="Backgammon (Europe)">
   <title>Backgammon (Europe)</title>
   <year>1982</year>
-  <rating>HSRS - GA (General Audience)</rating>
+  <genre>Board Games</genre>
   <publisher>Philips</publisher>
   <developer />
-  <genre>Board Games</genre>
+  <rating>HSRS - GA (General Audience)</rating>
 </game>
-<game name="Baseball (USA, Europe)">
+<game ROM="Baseball (USA, Europe)">
   <title>Baseball (USA, Europe)</title>
   <year>1978</year>
-  <rating>HSRS - GA (General Audience)</rating>
+  <genre>Sports/Baseball</genre>
   <publisher>Magnavox</publisher>
   <developer />
-  <genre>Sports/Baseball</genre>
+  <rating>HSRS - GA (General Audience)</rating>
 </game>
-<game name="Blobbers, The (Europe)">
+<game ROM="Blobbers, The (Europe)">
   <title>Blobbers, The (Europe)</title>
   <year>1983</year>
-  <rating>HSRS - GA (General Audience)</rating>
+  <genre>Action</genre>
   <publisher>Philips</publisher>
   <developer />
-  <genre>Action</genre>
+  <rating>HSRS - GA (General Audience)</rating>
 </game>
-<game name="Blockout + Breakdown (USA, Europe)">
+<game ROM="Blockout + Breakdown (USA, Europe)">
   <title>Blockout + Breakdown (USA, Europe)</title>
   <year>1980</year>
-  <rating>HSRS - GA (General Audience)</rating>
+  <genre>Breakout</genre>
   <publisher>Magnavox</publisher>
   <developer />
-  <genre>Breakout</genre>
+  <rating>HSRS - GA (General Audience)</rating>
 </game>
-<game name="Bowling + Basketball (USA, Europe)">
+<game ROM="Bowling + Basketball (USA, Europe)">
   <title>Bowling + Basketball (USA, Europe)</title>
   <year>1978</year>
-  <rating>HSRS - GA (General Audience)</rating>
+  <genre>Sports</genre>
   <publisher>Magnavox</publisher>
   <developer />
-  <genre>Sports</genre>
+  <rating>HSRS - GA (General Audience)</rating>
 </game>
-<game name="Calculator! (USA) (Unl)">
+<game ROM="Calculator! (USA) (Unl)">
   <title>Calculator! (USA) (Unl)</title>
   <year>2008</year>
-  <rating>HSRS - GA (General Audience)</rating>
+  <genre>Miscellaneous</genre>
   <publisher>Pakrat</publisher>
   <developer />
-  <genre>Miscellaneous</genre>
+  <rating>HSRS - GA (General Audience)</rating>
 </game>
-<game name="Casino Slot Machine (USA, Europe)">
+<game ROM="Casino Slot Machine (USA, Europe)">
   <title>Casino Slot Machine (USA, Europe)</title>
   <year>1978</year>
-  <rating>HSRS - GA (General Audience)</rating>
+  <genre>Casino</genre>
   <publisher>Magnavox</publisher>
   <developer />
-  <genre>Casino</genre>
+  <rating>HSRS - GA (General Audience)</rating>
 </game>
-<game name="Catch the Ball + Noughts and Crosses (Europe)">
+<game ROM="Catch the Ball + Noughts and Crosses (Europe)">
   <title>Catch the Ball + Noughts and Crosses (Europe)</title>
   <year>1979</year>
-  <rating>HSRS - GA (General Audience)</rating>
+  <genre>Compilation</genre>
   <publisher>Philips</publisher>
   <developer />
-  <genre>Compilation</genre>
+  <rating>HSRS - GA (General Audience)</rating>
 </game>
-<game name="Chess (Europe)">
+<game ROM="Chess (Europe)">
   <title>Chess (Europe)</title>
   <year>1982</year>
-  <rating>HSRS - GA (General Audience)</rating>
+  <genre>Board Games</genre>
   <publisher>Philips</publisher>
   <developer />
-  <genre>Board Games</genre>
+  <rating>HSRS - GA (General Audience)</rating>
 </game>
-<game name="Chez Maxime (France)">
+<game ROM="Chez Maxime (France)">
   <title>Chez Maxime (France)</title>
   <year>1983</year>
-  <rating>HSRS - GA (General Audience)</rating>
+  <genre>Platform</genre>
   <publisher>Jopac</publisher>
   <developer />
-  <genre>Platform</genre>
+  <rating>HSRS - GA (General Audience)</rating>
 </game>
-<game name="Chinese Logic (Europe)">
+<game ROM="Chinese Logic (Europe)">
   <title>Chinese Logic (Europe)</title>
   <year>1980</year>
-  <rating>HSRS - GA (General Audience)</rating>
+  <genre>Puzzle</genre>
   <publisher>Philips</publisher>
   <developer />
-  <genre>Puzzle</genre>
+  <rating>HSRS - GA (General Audience)</rating>
 </game>
-<game name="Clay Pigeon (Brazil)">
+<game ROM="Clay Pigeon (Brazil)">
   <title>Clay Pigeon (Brazil)</title>
   <year>1984</year>
-  <rating>HSRS - GA (General Audience)</rating>
+  <genre>Shooter</genre>
   <publisher>Philips</publisher>
   <developer />
-  <genre>Shooter</genre>
+  <rating>HSRS - GA (General Audience)</rating>
 </game>
-<game name="Computer Golf (USA)">
+<game ROM="Computer Golf (USA)">
   <title>Computer Golf (USA)</title>
   <year>1978</year>
-  <rating>HSRS - GA (General Audience)</rating>
+  <genre>Sports/Golf</genre>
   <publisher>Magnavox</publisher>
   <developer />
-  <genre>Sports/Golf</genre>
+  <rating>HSRS - GA (General Audience)</rating>
 </game>
-<game name="Computer Intro (USA)">
+<game ROM="Computer Intro (USA)">
   <title>Computer Intro (USA)</title>
   <year>1978</year>
-  <rating>HSRS - GA (General Audience)</rating>
+  <genre>Miscellaneous</genre>
   <publisher>Magnavox</publisher>
   <developer />
-  <genre>Miscellaneous</genre>
+  <rating>HSRS - GA (General Audience)</rating>
 </game>
-<game name="Conquest of the World (USA, Europe)">
+<game ROM="Conquest of the World (USA, Europe)">
   <title>Conquest of the World (USA, Europe)</title>
   <year>1981</year>
-  <rating>HSRS - GA (General Audience)</rating>
+  <genre>Strategy</genre>
   <publisher>Philips</publisher>
   <developer />
-  <genre>Strategy</genre>
+  <rating>HSRS - GA (General Audience)</rating>
 </game>
-<game name="Cosmic Conflict (USA)">
+<game ROM="Cosmic Conflict (USA)">
   <title>Cosmic Conflict (USA)</title>
   <year>1978</year>
-  <rating>HSRS - GA (General Audience)</rating>
+  <genre>Shooter</genre>
   <publisher>Magnavox</publisher>
   <developer />
-  <genre>Shooter</genre>
+  <rating>HSRS - GA (General Audience)</rating>
 </game>
-<game name="Demon Attack (USA, Europe)">
+<game ROM="Demon Attack (USA, Europe)">
   <title>Demon Attack (USA, Europe)</title>
   <year>1983</year>
-  <rating>HSRS - GA (General Audience)</rating>
+  <genre>Shooter</genre>
   <publisher>Imagic</publisher>
   <developer />
-  <genre>Shooter</genre>
+  <rating>HSRS - GA (General Audience)</rating>
 </game>
-<game name="Depth Charge + Marksman (Europe)">
+<game ROM="Depth Charge + Marksman (Europe)">
   <title>Depth Charge + Marksman (Europe)</title>
   <year>1979</year>
-  <rating>HSRS - GA (General Audience)</rating>
+  <genre>Shooter</genre>
   <publisher>Philips</publisher>
   <developer />
-  <genre>Shooter</genre>
+  <rating>HSRS - GA (General Audience)</rating>
 </game>
-<game name="Dynasty (USA)">
+<game ROM="Dynasty (USA)">
   <title>Dynasty (USA)</title>
   <year>1978</year>
-  <rating>HSRS - GA (General Audience)</rating>
+  <genre>Strategy</genre>
   <publisher>Magnavox</publisher>
   <developer />
-  <genre>Strategy</genre>
+  <rating>HSRS - GA (General Audience)</rating>
 </game>
-<game name="Electronic Table Soccer (USA, Europe)">
+<game ROM="Electronic Table Soccer (USA, Europe)">
   <title>Electronic Table Soccer (USA, Europe)</title>
   <year>1980</year>
-  <rating>HSRS - GA (General Audience)</rating>
+  <genre>Sports/Soccer</genre>
   <publisher>Magnavox</publisher>
   <developer />
-  <genre>Sports/Soccer</genre>
+  <rating>HSRS - GA (General Audience)</rating>
 </game>
-<game name="Exojet (France)">
+<game ROM="Exojet (France)">
   <title>Exojet (France)</title>
   <year>1980</year>
-  <rating>HSRS - GA (General Audience)</rating>
+  <genre>Shooter</genre>
   <publisher>Jopac</publisher>
   <developer />
-  <genre>Shooter</genre>
+  <rating>HSRS - GA (General Audience)</rating>
 </game>
-<game name="Football (USA, Europe)">
+<game ROM="Football (USA, Europe)">
   <title>Football (USA, Europe)</title>
   <year>1978</year>
-  <rating>HSRS - GA (General Audience)</rating>
+  <genre>Sports/Football</genre>
   <publisher>Magnavox</publisher>
   <developer />
-  <genre>Sports/Football</genre>
+  <rating>HSRS - GA (General Audience)</rating>
 </game>
-<game name="Freedom Fighters (USA, Europe)">
+<game ROM="Freedom Fighters (USA, Europe)">
   <title>Freedom Fighters (USA, Europe)</title>
   <year>1982</year>
-  <rating>HSRS - GA (General Audience)</rating>
+  <genre>Shooter</genre>
   <publisher>Philips</publisher>
   <developer />
-  <genre>Shooter</genre>
+  <rating>HSRS - GA (General Audience)</rating>
 </game>
-<game name="Frogger (Europe)">
+<game ROM="Frogger (Europe)">
   <title>Frogger (Europe)</title>
   <year>1982</year>
-  <rating>HSRS - GA (General Audience)</rating>
+  <genre>Action</genre>
   <publisher>Parker Bros.</publisher>
   <developer />
-  <genre>Action</genre>
+  <rating>HSRS - GA (General Audience)</rating>
 </game>
-<game name="Great Wall Street Fortune Hunt, The (USA, Europe)">
+<game ROM="Great Wall Street Fortune Hunt, The (USA, Europe)">
   <title>Great Wall Street Fortune Hunt, The (USA, Europe)</title>
   <year>1978</year>
-  <rating>HSRS - GA (General Audience)</rating>
+  <genre>Simulation</genre>
   <publisher>Philips</publisher>
   <developer />
-  <genre>Simulation</genre>
+  <rating>HSRS - GA (General Audience)</rating>
 </game>
-<game name="Hockey + Soccer (USA, Europe)">
+<game ROM="Hockey + Soccer (USA, Europe)">
   <title>Hockey + Soccer (USA, Europe)</title>
   <year>1978</year>
-  <rating>HSRS - GA (General Audience)</rating>
+  <genre>Sports/Hockey</genre>
   <publisher>Magnavox</publisher>
   <developer />
-  <genre>Sports/Hockey</genre>
+  <rating>HSRS - GA (General Audience)</rating>
 </game>
-<game name="I&apos;ve Got Your Number (USA, Europe)">
+<game ROM="I&apos;ve Got Your Number (USA, Europe)">
   <title>I&apos;ve Got Your Number (USA, Europe)</title>
   <year>1978</year>
-  <rating>HSRS - GA (General Audience)</rating>
+  <genre>Miscellaneous</genre>
   <publisher>Magnavox</publisher>
   <developer />
-  <genre>Miscellaneous</genre>
+  <rating>HSRS - GA (General Audience)</rating>
 </game>
-<game name="Interpol (Europe) (Proto)">
+<game ROM="Interpol (Europe) (Proto)">
   <title>Interpol (Europe) (Proto)</title>
   <year>2000</year>
-  <rating>HSRS - GA (General Audience)</rating>
+  <genre>Action</genre>
   <publisher>GST Video</publisher>
   <developer />
-  <genre>Action</genre>
+  <rating>HSRS - GA (General Audience)</rating>
 </game>
-<game name="Invaders from Hyperspace (USA)">
+<game ROM="Invaders from Hyperspace (USA)">
   <title>Invaders from Hyperspace (USA)</title>
   <year>1979</year>
-  <rating>HSRS - GA (General Audience)</rating>
+  <genre>Shooter</genre>
   <publisher>Magnavox</publisher>
   <developer />
-  <genre>Shooter</genre>
+  <rating>HSRS - GA (General Audience)</rating>
 </game>
-<game name="J.G. Munchkin (USA, Brazil) (Unl)">
+<game ROM="J.G. Munchkin (USA, Brazil) (Unl)">
   <title>J.G. Munchkin (USA, Brazil) (Unl)</title>
   <year>1980</year>
-  <rating>HSRS - GA (General Audience)</rating>
+  <genre>Maze</genre>
   <publisher>Magnavox</publisher>
   <developer />
-  <genre>Maze</genre>
+  <rating>HSRS - GA (General Audience)</rating>
 </game>
-<game name="K.C. Munchkin (USA)">
+<game ROM="K.C. Munchkin (USA)">
   <title>K.C. Munchkin (USA)</title>
   <year>1981</year>
-  <rating>HSRS - GA (General Audience)</rating>
+  <genre>Maze</genre>
   <publisher>Philips</publisher>
   <developer />
-  <genre>Maze</genre>
+  <rating>HSRS - GA (General Audience)</rating>
 </game>
-<game name="K.C.&apos;s Krazy Chase (USA, Europe)">
+<game ROM="K.C.&apos;s Krazy Chase (USA, Europe)">
   <title>K.C.&apos;s Krazy Chase (USA, Europe)</title>
   <year>1982</year>
-  <rating>HSRS - GA (General Audience)</rating>
+  <genre>Maze</genre>
   <publisher>Philips</publisher>
   <developer />
-  <genre>Maze</genre>
+  <rating>HSRS - GA (General Audience)</rating>
 </game>
-<game name="Keyboard Creations (USA)">
+<game ROM="Keyboard Creations (USA)">
   <title>Keyboard Creations (USA)</title>
   <year>1978</year>
-  <rating>HSRS - GA (General Audience)</rating>
+  <genre>Miscellaneous</genre>
   <publisher>Philips</publisher>
   <developer />
-  <genre>Miscellaneous</genre>
+  <rating>HSRS - GA (General Audience)</rating>
 </game>
-<game name="Kill The Attacking Aliens (Europe)">
+<game ROM="Kill The Attacking Aliens (Europe)">
   <title>Kill The Attacking Aliens (Europe)</title>
   <year>2003</year>
-  <rating>HSRS - GA (General Audience)</rating>
+  <genre>Shooter</genre>
   <publisher>Soeren Gurst</publisher>
   <developer />
-  <genre>Shooter</genre>
+  <rating>HSRS - GA (General Audience)</rating>
 </game>
-<game name="Killer Bees (USA)">
+<game ROM="Killer Bees (USA)">
   <title>Killer Bees (USA)</title>
   <year>1978</year>
-  <rating>HSRS - GA (General Audience)</rating>
+  <genre>Action</genre>
   <publisher>Philips</publisher>
   <developer />
-  <genre>Action</genre>
+  <rating>HSRS - GA (General Audience)</rating>
 </game>
-<game name="Kinder im Verkehr 1 (Germany)">
+<game ROM="Kinder im Verkehr 1 (Germany)">
   <title>Kinder im Verkehr 1 (Germany)</title>
   <year>1982</year>
-  <rating>HSRS - GA (General Audience)</rating>
+  <genre>Miscellaneous</genre>
   <publisher>Philips</publisher>
   <developer />
-  <genre>Miscellaneous</genre>
+  <rating>HSRS - GA (General Audience)</rating>
 </game>
-<game name="Kinder im Verkehr 2 (Germany)">
+<game ROM="Kinder im Verkehr 2 (Germany)">
   <title>Kinder im Verkehr 2 (Germany)</title>
   <year>1982</year>
-  <rating>HSRS - GA (General Audience)</rating>
+  <genre>Miscellaneous</genre>
   <publisher>Philips</publisher>
   <developer />
-  <genre>Miscellaneous</genre>
+  <rating>HSRS - GA (General Audience)</rating>
 </game>
-<game name="Labyrinth Game, A + Supermind (Europe)">
+<game ROM="Labyrinth Game, A + Supermind (Europe)">
   <title>Labyrinth Game, A + Supermind (Europe)</title>
   <year>1981</year>
-  <rating>HSRS - GA (General Audience)</rating>
+  <genre>Maze</genre>
   <publisher>Philips</publisher>
   <developer />
-  <genre>Maze</genre>
+  <rating>HSRS - GA (General Audience)</rating>
 </game>
-<game name="Las Vegas Blackjack (USA, Europe)">
+<game ROM="Las Vegas Blackjack (USA, Europe)">
   <title>Las Vegas Blackjack (USA, Europe)</title>
   <year>1978</year>
-  <rating>HSRS - GA (General Audience)</rating>
+  <genre>Casino</genre>
   <publisher>Magnavox</publisher>
   <developer />
-  <genre>Casino</genre>
+  <rating>HSRS - GA (General Audience)</rating>
 </game>
-<game name="Le Tresor Englouti (France)">
+<game ROM="Le Tresor Englouti (France)">
   <title>Le Tresor Englouti (France)</title>
   <year>1984</year>
-  <rating>HSRS - GA (General Audience)</rating>
+  <genre>Adventure</genre>
   <publisher>Jopac</publisher>
   <developer />
-  <genre>Adventure</genre>
+  <rating>HSRS - GA (General Audience)</rating>
 </game>
-<game name="Loony Balloon (Europe) (Proto)">
+<game ROM="Loony Balloon (Europe) (Proto)">
   <title>Loony Balloon (Europe) (Proto)</title>
   <year>1984</year>
-  <rating>HSRS - GA (General Audience)</rating>
+  <genre>Action</genre>
   <publisher>Philips</publisher>
   <developer />
-  <genre>Action</genre>
+  <rating>HSRS - GA (General Audience)</rating>
 </game>
-<game name="Martian Threat (Europe) (Proto)">
+<game ROM="Martian Threat (Europe) (Proto)">
   <title>Martian Threat (Europe) (Proto)</title>
   <year>2008</year>
-  <rating>HSRS - GA (General Audience)</rating>
+  <genre>Shooter</genre>
   <publisher>GST Video</publisher>
   <developer />
-  <genre>Shooter</genre>
+  <rating>HSRS - GA (General Audience)</rating>
 </game>
-<game name="Matchmaker + Logix + Buzzword (USA)">
+<game ROM="Matchmaker + Logix + Buzzword (USA)">
   <title>Matchmaker + Logix + Buzzword (USA)</title>
   <year>1978</year>
-  <rating>HSRS - GA (General Audience)</rating>
+  <genre>Puzzle</genre>
   <publisher>Magnavox</publisher>
   <developer />
-  <genre>Puzzle</genre>
+  <rating>HSRS - GA (General Audience)</rating>
 </game>
-<game name="Math-A-Magic + Echo (USA, Europe)">
+<game ROM="Math-A-Magic + Echo (USA, Europe)">
   <title>Math-A-Magic + Echo (USA, Europe)</title>
   <year>1978</year>
-  <rating>HSRS - GA (General Audience)</rating>
+  <genre>Compilation</genre>
   <publisher>Magnavox</publisher>
   <developer />
-  <genre>Compilation</genre>
+  <rating>HSRS - GA (General Audience)</rating>
 </game>
-<game name="Mission Impossible + Programmed Trip (Brazil) (Proto)">
+<game ROM="Mission Impossible + Programmed Trip (Brazil) (Proto)">
   <title>Mission Impossible + Programmed Trip (Brazil) (Proto)</title>
   <year>2004</year>
-  <rating>HSRS - GA (General Audience)</rating>
+  <genre>Action</genre>
   <publisher>Ectron</publisher>
   <developer />
-  <genre>Action</genre>
+  <rating>HSRS - GA (General Audience)</rating>
 </game>
-<game name="Monkeyshines (USA, Europe)">
+<game ROM="Monkeyshines (USA, Europe)">
   <title>Monkeyshines (USA, Europe)</title>
   <year>1981</year>
-  <rating>HSRS - GA (General Audience)</rating>
+  <genre>Action</genre>
   <publisher>Philips</publisher>
   <developer />
-  <genre>Action</genre>
+  <rating>HSRS - GA (General Audience)</rating>
 </game>
-<game name="Morse (Europe)">
+<game ROM="Morse (Europe)">
   <title>Morse (Europe)</title>
   <year>1982</year>
-  <rating>HSRS - GA (General Audience)</rating>
+  <genre>Miscellaneous</genre>
   <publisher>Philips</publisher>
   <developer />
-  <genre>Miscellaneous</genre>
+  <rating>HSRS - GA (General Audience)</rating>
 </game>
-<game name="Moto-Crash (France)">
+<game ROM="Moto-Crash (France)">
   <title>Moto-Crash (France)</title>
   <year>1983</year>
-  <rating>HSRS - GA (General Audience)</rating>
+  <genre>Driving</genre>
   <publisher>Magnavox</publisher>
   <developer />
-  <genre>Driving</genre>
+  <rating>HSRS - GA (General Audience)</rating>
 </game>
-<game name="Mousing Cat, The (Europe)">
+<game ROM="Mousing Cat, The (Europe)">
   <title>Mousing Cat, The (Europe)</title>
   <year>1982</year>
-  <rating>HSRS - GA (General Audience)</rating>
+  <genre>Action</genre>
   <publisher>Philips</publisher>
   <developer />
-  <genre>Action</genre>
+  <rating>HSRS - GA (General Audience)</rating>
 </game>
-<game name="Mr. Roboto! (USA) (Unl)">
+<game ROM="Mr. Roboto! (USA) (Unl)">
   <title>Mr. Roboto! (USA) (Unl)</title>
   <year>2007</year>
-  <rating>HSRS - GA (General Audience)</rating>
+  <genre>Action</genre>
   <publisher>Pakrat</publisher>
   <developer />
-  <genre>Action</genre>
+  <rating>HSRS - GA (General Audience)</rating>
 </game>
-<game name="Musician (Europe)">
+<game ROM="Musician (Europe)">
   <title>Musician (Europe)</title>
   <year>1981</year>
-  <rating>HSRS - GA (General Audience)</rating>
+  <genre>Miscellaneous</genre>
   <publisher>Philips</publisher>
   <developer />
-  <genre>Miscellaneous</genre>
+  <rating>HSRS - GA (General Audience)</rating>
 </game>
-<game name="Neutron Star (Europe) (Proto)">
+<game ROM="Neutron Star (Europe) (Proto)">
   <title>Neutron Star (Europe) (Proto)</title>
   <year>1983</year>
-  <rating>HSRS - GA (General Audience)</rating>
+  <genre>Action</genre>
   <publisher>Philips</publisher>
   <developer />
-  <genre>Action</genre>
+  <rating>HSRS - GA (General Audience)</rating>
 </game>
-<game name="Nightfighter (Europe) (Proto)">
+<game ROM="Nightfighter (Europe) (Proto)">
   <title>Nightfighter (Europe) (Proto)</title>
   <year>1982</year>
-  <rating>HSRS - GA (General Audience)</rating>
+  <genre>Shooter</genre>
   <publisher>GST Video</publisher>
   <developer />
-  <genre>Shooter</genre>
+  <rating>HSRS - GA (General Audience)</rating>
 </game>
-<game name="Nightmare (Europe)">
+<game ROM="Nightmare (Europe)">
   <title>Nightmare (Europe)</title>
   <year>1983</year>
-  <rating>HSRS - GA (General Audience)</rating>
+  <genre>Action</genre>
   <publisher>Philips</publisher>
   <developer />
-  <genre>Action</genre>
+  <rating>HSRS - GA (General Audience)</rating>
 </game>
-<game name="Nimble Numbers Ned (USA)">
+<game ROM="Nimble Numbers Ned (USA)">
   <title>Nimble Numbers Ned (USA)</title>
   <year>1978</year>
-  <rating>HSRS - GA (General Audience)</rating>
+  <genre>Miscellaneous</genre>
   <publisher>Philips</publisher>
   <developer />
-  <genre>Miscellaneous</genre>
+  <rating>HSRS - GA (General Audience)</rating>
 </game>
-<game name="Out of this World + Helicopter Rescue (USA)">
+<game ROM="Out of this World + Helicopter Rescue (USA)">
   <title>Out of this World + Helicopter Rescue (USA)</title>
   <year>1979</year>
-  <rating>HSRS - GA (General Audience)</rating>
+  <genre>Action</genre>
   <publisher>Magnavox</publisher>
   <developer />
-  <genre>Action</genre>
+  <rating>HSRS - GA (General Audience)</rating>
 </game>
-<game name="P.T. Barnum&apos;s Acrobats (USA)">
+<game ROM="P.T. Barnum&apos;s Acrobats (USA)">
   <title>P.T. Barnum&apos;s Acrobats (USA)</title>
   <year>1978</year>
-  <rating>HSRS - GA (General Audience)</rating>
+  <genre>Action</genre>
   <publisher>Philips</publisher>
   <developer />
-  <genre>Action</genre>
+  <rating>HSRS - GA (General Audience)</rating>
 </game>
-<game name="Pachinko (USA, Europe)">
+<game ROM="Pachinko (USA, Europe)">
   <title>Pachinko (USA, Europe)</title>
   <year>1980</year>
-  <rating>HSRS - GA (General Audience)</rating>
+  <genre>Casino</genre>
   <publisher>Magnavox</publisher>
   <developer />
-  <genre>Casino</genre>
+  <rating>HSRS - GA (General Audience)</rating>
 </game>
-<game name="Pairs + Space Rendezvous + Logic (Europe)">
+<game ROM="Pairs + Space Rendezvous + Logic (Europe)">
   <title>Pairs + Space Rendezvous + Logic (Europe)</title>
   <year>1978</year>
-  <rating>HSRS - GA (General Audience)</rating>
+  <genre>Compilation</genre>
   <publisher>Philips</publisher>
   <developer />
-  <genre>Compilation</genre>
+  <rating>HSRS - GA (General Audience)</rating>
 </game>
-<game name="Pick Axe Pete (USA, Europe)">
+<game ROM="Pick Axe Pete (USA, Europe)">
   <title>Pick Axe Pete (USA, Europe)</title>
   <year>1982</year>
-  <rating>HSRS - GA (General Audience)</rating>
+  <genre>Action</genre>
   <publisher>Philips</publisher>
   <developer />
-  <genre>Action</genre>
+  <rating>HSRS - GA (General Audience)</rating>
 </game>
-<game name="Pinball (USA) (Proto)">
+<game ROM="Pinball (USA) (Proto)">
   <title>Pinball (USA) (Proto)</title>
   <year>2000</year>
-  <rating>HSRS - GA (General Audience)</rating>
+  <genre>Pinball</genre>
   <publisher>CGE Services</publisher>
   <developer />
-  <genre>Pinball</genre>
+  <rating>HSRS - GA (General Audience)</rating>
 </game>
-<game name="Planet Lander (USA) (Unl)">
+<game ROM="Planet Lander (USA) (Unl)">
   <title>Planet Lander (USA) (Unl)</title>
   <year>2004</year>
-  <rating>HSRS - GA (General Audience)</rating>
+  <genre>Action</genre>
   <publisher>Ted Follery</publisher>
   <developer />
-  <genre>Action</genre>
+  <rating>HSRS - GA (General Audience)</rating>
 </game>
-<game name="Playtag (Europe) (Proto)">
+<game ROM="Playtag (Europe) (Proto)">
   <title>Playtag (Europe) (Proto)</title>
   <year>2009</year>
-  <rating>HSRS - GA (General Audience)</rating>
+  <genre>Action</genre>
   <publisher>CCC</publisher>
   <developer />
-  <genre>Action</genre>
+  <rating>HSRS - GA (General Audience)</rating>
 </game>
-<game name="Pocket Billiards (USA, Europe)">
+<game ROM="Pocket Billiards (USA, Europe)">
   <title>Pocket Billiards (USA, Europe)</title>
   <year>1978</year>
-  <rating>HSRS - GA (General Audience)</rating>
+  <genre>Sports/Pool and Dart</genre>
   <publisher>Magnavox</publisher>
   <developer />
-  <genre>Sports/Pool and Dart</genre>
+  <rating>HSRS - GA (General Audience)</rating>
 </game>
-<game name="Pong (2003) (USA) (Unl)">
+<game ROM="Pong (2003) (USA) (Unl)">
   <title>Pong (2003) (USA) (Unl)</title>
   <year>2003</year>
-  <rating>HSRS - GA (General Audience)</rating>
+  <genre>Action</genre>
   <publisher>Pakrat</publisher>
   <developer />
-  <genre>Action</genre>
+  <rating>HSRS - GA (General Audience)</rating>
 </game>
-<game name="Pong (2004) (USA) (Unl)">
+<game ROM="Pong (2004) (USA) (Unl)">
   <title>Pong (2004) (USA) (Unl)</title>
   <year>2004</year>
-  <rating>HSRS - GA (General Audience)</rating>
+  <genre>Action</genre>
   <publisher>Pakrat</publisher>
   <developer />
-  <genre>Action</genre>
+  <rating>HSRS - GA (General Audience)</rating>
 </game>
-<game name="Popeye (Europe)">
+<game ROM="Popeye (Europe)">
   <title>Popeye (Europe)</title>
   <year>1978</year>
-  <rating>HSRS - GA (General Audience)</rating>
+  <genre>Action</genre>
   <publisher>Philips</publisher>
   <developer />
-  <genre>Action</genre>
+  <rating>HSRS - GA (General Audience)</rating>
 </game>
-<game name="Power Lords (USA)">
+<game ROM="Power Lords (USA)">
   <title>Power Lords (USA)</title>
   <year>1983</year>
-  <rating>HSRS - GA (General Audience)</rating>
+  <genre>Action</genre>
   <publisher>Philips</publisher>
   <developer />
-  <genre>Action</genre>
+  <rating>HSRS - GA (General Audience)</rating>
 </game>
-<game name="Puzzle Piece Panic! (USA) (Proto)">
+<game ROM="Puzzle Piece Panic! (USA) (Proto)">
   <title>Puzzle Piece Panic! (USA) (Proto)</title>
   <year>2007</year>
-  <rating>HSRS - GA (General Audience)</rating>
+  <genre>Puzzle</genre>
   <publisher>Ted Foolery</publisher>
   <developer />
-  <genre>Puzzle</genre>
+  <rating>HSRS - GA (General Audience)</rating>
 </game>
-<game name="Q-Bert (Europe)">
+<game ROM="Q-Bert (Europe)">
   <title>Q-Bert (Europe)</title>
   <year>1983</year>
-  <rating>HSRS - GA (General Audience)</rating>
+  <genre>Action</genre>
   <publisher>Parker Bros.</publisher>
   <developer />
-  <genre>Action</genre>
+  <rating>HSRS - GA (General Audience)</rating>
 </game>
-<game name="Quest for the Rings (USA, Europe)">
+<game ROM="Quest for the Rings (USA, Europe)">
   <title>Quest for the Rings (USA, Europe)</title>
   <year>1981</year>
-  <rating>HSRS - GA (General Audience)</rating>
+  <genre>Role-Playing</genre>
   <publisher>Philips</publisher>
   <developer />
-  <genre>Role-Playing</genre>
+  <rating>HSRS - GA (General Audience)</rating>
 </game>
-<game name="Red Baron (Europe) (Proto)">
+<game ROM="Red Baron (Europe) (Proto)">
   <title>Red Baron (Europe) (Proto)</title>
   <year>1983</year>
-  <rating>HSRS - GA (General Audience)</rating>
+  <genre>Flying</genre>
   <publisher>Philips</publisher>
   <developer />
-  <genre>Flying</genre>
+  <rating>HSRS - GA (General Audience)</rating>
 </game>
-<game name="Robot City (Europe) (Proto)">
+<game ROM="Robot City (Europe) (Proto)">
   <title>Robot City (Europe) (Proto)</title>
   <year>2009</year>
-  <rating>HSRS - GA (General Audience)</rating>
+  <genre>Action</genre>
   <publisher>GST Video</publisher>
   <developer />
-  <genre>Action</genre>
+  <rating>HSRS - GA (General Audience)</rating>
 </game>
-<game name="Route 66 (Europe) (Proto)">
+<game ROM="Route 66 (Europe) (Proto)">
   <title>Route 66 (Europe) (Proto)</title>
   <year>2007</year>
-  <rating>HSRS - GA (General Audience)</rating>
+  <genre>Driving</genre>
   <publisher>Humanoid Games</publisher>
   <developer />
-  <genre>Driving</genre>
+  <rating>HSRS - GA (General Audience)</rating>
 </game>
-<game name="Secret of the Pharaohs (Europe)">
+<game ROM="Secret of the Pharaohs (Europe)">
   <title>Secret of the Pharaohs (Europe)</title>
   <year>1981</year>
-  <rating>HSRS - GA (General Audience)</rating>
+  <genre>Strategy</genre>
   <publisher>Philips</publisher>
   <developer />
-  <genre>Strategy</genre>
+  <rating>HSRS - GA (General Audience)</rating>
 </game>
-<game name="Shark Hunter (Europe) (Proto)">
+<game ROM="Shark Hunter (Europe) (Proto)">
   <title>Shark Hunter (Europe) (Proto)</title>
   <year>2006</year>
-  <rating>HSRS - GA (General Audience)</rating>
+  <genre>Action</genre>
   <publisher>GST Video</publisher>
   <developer />
-  <genre>Action</genre>
+  <rating>HSRS - GA (General Audience)</rating>
 </game>
-<game name="Showdown in 2100 A.D. (USA)">
+<game ROM="Showdown in 2100 A.D. (USA)">
   <title>Showdown in 2100 A.D. (USA)</title>
   <year>1978</year>
-  <rating>HSRS - GA (General Audience)</rating>
+  <genre>Shooter</genre>
   <publisher>Magnavox</publisher>
   <developer />
-  <genre>Shooter</genre>
+  <rating>HSRS - GA (General Audience)</rating>
 </game>
-<game name="Sid the Spellbinder (USA)">
+<game ROM="Sid the Spellbinder (USA)">
   <title>Sid the Spellbinder (USA)</title>
   <year>1978</year>
-  <rating>HSRS - GA (General Audience)</rating>
+  <genre>Shooter</genre>
   <publisher>Philips</publisher>
   <developer />
-  <genre>Shooter</genre>
+  <rating>HSRS - GA (General Audience)</rating>
 </game>
-<game name="Smithereens (USA)">
+<game ROM="Smithereens (USA)">
   <title>Smithereens (USA)</title>
   <year>1982</year>
-  <rating>HSRS - GA (General Audience)</rating>
+  <genre>Strategy</genre>
   <publisher>Philips</publisher>
   <developer />
-  <genre>Strategy</genre>
+  <rating>HSRS - GA (General Audience)</rating>
 </game>
-<game name="Speedway + Spin-out + Crypto-logic (USA, Europe)">
+<game ROM="Speedway + Spin-out + Crypto-logic (USA, Europe)">
   <title>Speedway + Spin-out + Crypto-logic (USA, Europe)</title>
   <year>1978</year>
-  <rating>HSRS - GA (General Audience)</rating>
+  <genre>Compilation</genre>
   <publisher>Magnavox</publisher>
   <developer />
-  <genre>Compilation</genre>
+  <rating>HSRS - GA (General Audience)</rating>
 </game>
-<game name="Spider-Man (Europe) (Proto)">
+<game ROM="Spider-Man (Europe) (Proto)">
   <title>Spider-Man (Europe) (Proto)</title>
   <year>2006</year>
-  <rating>HSRS - GA (General Audience)</rating>
+  <genre>Action</genre>
   <publisher>Parker Bros.</publisher>
   <developer />
-  <genre>Action</genre>
+  <rating>HSRS - GA (General Audience)</rating>
 </game>
-<game name="Super Bee (Europe)">
+<game ROM="Super Bee (Europe)">
   <title>Super Bee (Europe)</title>
   <year>1983</year>
-  <rating>HSRS - GA (General Audience)</rating>
+  <genre>Action</genre>
   <publisher>Philips</publisher>
   <developer />
-  <genre>Action</genre>
+  <rating>HSRS - GA (General Audience)</rating>
 </game>
-<game name="Super Cobra (Europe)">
+<game ROM="Super Cobra (Europe)">
   <title>Super Cobra (Europe)</title>
   <year>1983</year>
-  <rating>HSRS - GA (General Audience)</rating>
+  <genre>Shooter</genre>
   <publisher>Parker Bros.</publisher>
   <developer />
-  <genre>Shooter</genre>
+  <rating>HSRS - GA (General Audience)</rating>
 </game>
-<game name="Syracuse (France)">
+<game ROM="Syracuse (France)">
   <title>Syracuse (France)</title>
   <year>1980</year>
-  <rating>HSRS - GA (General Audience)</rating>
+  <genre>Action</genre>
   <publisher>Magnavox</publisher>
   <developer />
-  <genre>Action</genre>
+  <rating>HSRS - GA (General Audience)</rating>
 </game>
-<game name="Take the Money and Run (USA, Europe)">
+<game ROM="Take the Money and Run (USA, Europe)">
   <title>Take the Money and Run (USA, Europe)</title>
   <year>1978</year>
-  <rating>HSRS - GA (General Audience)</rating>
+  <genre>Action</genre>
   <publisher>Magnavox</publisher>
   <developer />
-  <genre>Action</genre>
+  <rating>HSRS - GA (General Audience)</rating>
 </game>
-<game name="Thunderball (USA, Europe)">
+<game ROM="Thunderball (USA, Europe)">
   <title>Thunderball (USA, Europe)</title>
   <year>1979</year>
-  <rating>HSRS - GA (General Audience)</rating>
+  <genre>Simulation</genre>
   <publisher>Magnavox</publisher>
   <developer />
-  <genre>Simulation</genre>
+  <rating>HSRS - GA (General Audience)</rating>
 </game>
-<game name="Turtles (USA)">
+<game ROM="Turtles (USA)">
   <title>Turtles (USA)</title>
   <year>1983</year>
-  <rating>HSRS - GA (General Audience)</rating>
+  <genre>Action</genre>
   <publisher>Philips</publisher>
   <developer />
-  <genre>Action</genre>
+  <rating>HSRS - GA (General Audience)</rating>
 </game>
-<game name="Tutankham (Europe) (Proto)">
+<game ROM="Tutankham (Europe) (Proto)">
   <title>Tutankham (Europe) (Proto)</title>
   <year>2007</year>
-  <rating>HSRS - GA (General Audience)</rating>
+  <genre>Action</genre>
   <publisher>Parker Bros.</publisher>
   <developer />
-  <genre>Action</genre>
+  <rating>HSRS - GA (General Audience)</rating>
 </game>
-<game name="Type &amp; Tell (USA)">
+<game ROM="Type &amp; Tell (USA)">
   <title>Type &amp; Tell (USA)</title>
   <year>1982</year>
-  <rating>HSRS - GA (General Audience)</rating>
+  <genre>Miscellaneous</genre>
   <publisher>Philips</publisher>
   <developer />
-  <genre>Miscellaneous</genre>
+  <rating>HSRS - GA (General Audience)</rating>
 </game>
-<game name="UFO (USA)">
+<game ROM="UFO (USA)">
   <title>UFO (USA)</title>
   <year>1981</year>
-  <rating>HSRS - GA (General Audience)</rating>
+  <genre>Shooter</genre>
   <publisher>Magnavox</publisher>
   <developer />
-  <genre>Shooter</genre>
+  <rating>HSRS - GA (General Audience)</rating>
 </game>
-<game name="Volleyball (USA, Europe)">
+<game ROM="Volleyball (USA, Europe)">
   <title>Volleyball (USA, Europe)</title>
   <year>1980</year>
-  <rating>HSRS - GA (General Audience)</rating>
+  <genre>Sports/Volleyball</genre>
   <publisher>Magnavox</publisher>
   <developer />
-  <genre>Sports/Volleyball</genre>
+  <rating>HSRS - GA (General Audience)</rating>
 </game>
-<game name="War of Nerves (USA, Europe)">
+<game ROM="War of Nerves (USA, Europe)">
   <title>War of Nerves (USA, Europe)</title>
   <year>1979</year>
-  <rating>HSRS - GA (General Audience)</rating>
+  <genre>Strategy</genre>
   <publisher>Magnavox</publisher>
   <developer />
-  <genre>Strategy</genre>
+  <rating>HSRS - GA (General Audience)</rating>
 </game>
 </menu>

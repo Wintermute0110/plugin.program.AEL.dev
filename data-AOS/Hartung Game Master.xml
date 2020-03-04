@@ -6,92 +6,92 @@
   <listversion>V1</listversion>
   <exporterversion>V1 GameDBInfo converter</exporterversion>
 </header>
-<game name="Bubble Boy">
+<game ROM="Bubble Boy">
   <title>Bubble Boy</title>
   <year>1990</year>
-  <rating>Other - NR (Not Rated)</rating>
+  <genre>Puzzle</genre>
   <publisher>Hartung</publisher>
   <developer />
-  <genre>Puzzle</genre>
+  <rating>Other - NR (Not Rated)</rating>
 </game>
-<game name="Continental Galaxy 2020">
+<game ROM="Continental Galaxy 2020">
   <title>Continental Galaxy 2020</title>
   <year>1990</year>
-  <rating>Other - NR (Not Rated)</rating>
+  <genre>Shoot Em-Up</genre>
   <publisher>Hartung</publisher>
   <developer />
-  <genre>Shoot Em-Up</genre>
+  <rating>Other - NR (Not Rated)</rating>
 </game>
-<game name="Dungeon Adventure">
+<game ROM="Dungeon Adventure">
   <title>Dungeon Adventure</title>
   <year>1990</year>
-  <rating>Other - NR (Not Rated)</rating>
+  <genre>Action</genre>
   <publisher>Hartung</publisher>
   <developer />
-  <genre>Action</genre>
+  <rating>Other - NR (Not Rated)</rating>
 </game>
-<game name="Falling Block!">
+<game ROM="Falling Block!">
   <title>Falling Block!</title>
   <year>1990</year>
-  <rating>Other - NR (Not Rated)</rating>
+  <genre>Puzzle</genre>
   <publisher>Hartung</publisher>
   <developer />
-  <genre>Puzzle</genre>
+  <rating>Other - NR (Not Rated)</rating>
 </game>
-<game name="Go Bang">
+<game ROM="Go Bang">
   <title>Go Bang</title>
   <year>1990</year>
-  <rating>Other - NR (Not Rated)</rating>
+  <genre>Puzzle</genre>
   <publisher>Hartung</publisher>
   <developer />
-  <genre>Puzzle</genre>
+  <rating>Other - NR (Not Rated)</rating>
 </game>
-<game name="Hyper Space">
+<game ROM="Hyper Space">
   <title>Hyper Space</title>
   <year>1990</year>
-  <rating>Other - NR (Not Rated)</rating>
+  <genre>Action</genre>
   <publisher>Hartung</publisher>
   <developer />
-  <genre>Action</genre>
+  <rating>Other - NR (Not Rated)</rating>
 </game>
-<game name="Kung Fu Challenge">
+<game ROM="Kung Fu Challenge">
   <title>Kung Fu Challenge</title>
   <year>1990</year>
-  <rating>Other - NR (Not Rated)</rating>
+  <genre>Fighter</genre>
   <publisher>Hartung</publisher>
   <developer />
-  <genre>Fighter</genre>
+  <rating>Other - NR (Not Rated)</rating>
 </game>
-<game name="Pin Ball">
+<game ROM="Pin Ball">
   <title>Pin Ball</title>
   <year>1990</year>
-  <rating>Other - NR (Not Rated)</rating>
+  <genre>Pinball</genre>
   <publisher>Hartung</publisher>
   <developer />
-  <genre>Pinball</genre>
+  <rating>Other - NR (Not Rated)</rating>
 </game>
-<game name="Space Castle">
+<game ROM="Space Castle">
   <title>Space Castle</title>
   <year>1990</year>
-  <rating>Other - NR (Not Rated)</rating>
+  <genre>Shoot Em-Up</genre>
   <publisher>Hartung</publisher>
   <developer />
-  <genre>Shoot Em-Up</genre>
+  <rating>Other - NR (Not Rated)</rating>
 </game>
-<game name="Tennis Master">
+<game ROM="Tennis Master">
   <title>Tennis Master</title>
   <year>1990</year>
-  <rating>Other - NR (Not Rated)</rating>
+  <genre>Tennis</genre>
   <publisher>Hartung</publisher>
   <developer />
-  <genre>Tennis</genre>
+  <rating>Other - NR (Not Rated)</rating>
 </game>
-<game name="Urban Champion">
+<game ROM="Urban Champion">
   <title>Urban Champion</title>
   <year>1990</year>
-  <rating>Other - NR (Not Rated)</rating>
+  <genre>Action</genre>
   <publisher>Hartung</publisher>
   <developer />
-  <genre>Action</genre>
+  <rating>Other - NR (Not Rated)</rating>
 </game>
 </menu>

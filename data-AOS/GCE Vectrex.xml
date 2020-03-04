@@ -6,257 +6,257 @@
   <listversion>V1</listversion>
   <exporterversion>V1 GameDBInfo converter</exporterversion>
 </header>
-<game name="Armor..Attack (World)">
+<game ROM="Armor..Attack (World)">
   <title>Armor..Attack</title>
   <year>1982</year>
-  <rating>ESRB - E (Everyone)</rating>
+  <genre>Shooter</genre>
   <publisher>GCE</publisher>
   <developer>Cinematronics</developer>
-  <genre>Shooter</genre>
-  <score>3.0</score>
+  <rating>ESRB - E (Everyone)</rating>
   <nplayers>1-2 Players</nplayers>
+  <score>3.0</score>
   <plot>You will be driving a jeep through a maze (Top-Down View). Of course such mazes , as we all know, are often not very safe when they are in a video game. Tanks and Helicopters will appear on the screen, you will have to shoot them before they shoot you. If you are hit by enemy fire you will lose a life.</plot>
 </game>
-<game name="Bedlam (USA, Europe)">
+<game ROM="Bedlam (USA, Europe)">
   <title>Bedlam</title>
   <year>1982</year>
-  <rating>ESRB - E (Everyone)</rating>
+  <genre>Action</genre>
   <publisher>GCE</publisher>
   <developer>Milton Bradley</developer>
-  <genre>Action</genre>
-  <score>3.8</score>
+  <rating>ESRB - E (Everyone)</rating>
   <nplayers>1 Player</nplayers>
+  <score>3.8</score>
   <plot>Bedlam is a multi-directional shooter. The player controls a cannon in the center of the screen that can rotate 360°. Around the player is a star-shaped geometric form that changes from stage to stage. The corners of the star emit enemy ships that must be destroyed. The ships have different attack patterns, from ones that just travel in a straight line towards to ones which are indestructible and can only be pushed away from the player. If one of the enemy ships makes contact with the player, they will lose a life.Besides the fire button, the player can use a quick turn to better defend against opponents coming in from the other side and a &quot;zap,&quot; which destroys all ships on screen. Later levels feature stars with corners slowly moving towards the player (and thus with enemies spawning much closer) and rotating star shapes.</plot>
 </game>
-<game name="Berzerk (World)">
+<game ROM="Berzerk (World)">
   <title>Berzerk</title>
   <year>1982</year>
-  <rating>ESRB - E (Everyone)</rating>
+  <genre>Action</genre>
   <publisher>GCE</publisher>
   <developer>Stern Electronics</developer>
-  <genre>Action</genre>
-  <score>2.8</score>
+  <rating>ESRB - E (Everyone)</rating>
   <nplayers>1 Player</nplayers>
+  <score>2.8</score>
   <plot>You have been sent into a building infested with robots, and must do your best to clear it out. Each rooms has a number of walls through the middle, which restrict your movement. There will be a number of bad guys in the room - on early screens they may be immobile and not shoot at you, but after a few levels they become capable of shooting in multiple directions. You can shoot at them in 8 directions, but can&apos;t shoot diagonally while moving. There are gaps at the side of each room, through which you exit, before or after clearing the room (there is a bonus for clearance). You get an extra life every 2000 points.</plot>
 </game>
-<game name="Blitz! - Action Football (USA, Europe)">
+<game ROM="Blitz! - Action Football (USA, Europe)">
   <title>Blitz! - Action Football</title>
   <year>1982</year>
-  <rating>ESRB - E (Everyone)</rating>
+  <genre>Sports/Football</genre>
   <publisher>GCE</publisher>
   <developer>GCE</developer>
-  <genre>Sports/Football</genre>
-  <score>3.5</score>
+  <rating>ESRB - E (Everyone)</rating>
   <nplayers>1 Player</nplayers>
+  <score>3.5</score>
   <plot>Blitz! is one of the oldest football games, using X&apos;s and O&apos;s using a top-down look on a football field with four options a piece for offense and defense. Two player game play is supported through an additional control panel. There are three game options that change the game&apos;s speed and difficulty.</plot>
 </game>
-<game name="Clean Sweep (World)">
+<game ROM="Clean Sweep (World)">
   <title>Clean Sweep</title>
   <year>1982</year>
-  <rating>ESRB - E (Everyone)</rating>
+  <genre>Action</genre>
   <publisher>GCE</publisher>
   <developer>GCE</developer>
-  <genre>Action</genre>
-  <score>3.3</score>
+  <rating>ESRB - E (Everyone)</rating>
   <nplayers>1 Player</nplayers>
+  <score>3.3</score>
   <plot>Clean Sweep is an arcade action game similar to Pac-Man. Robbers have just blown up your bank scattering the money around the now maze like passages. You control a vacuum cleaner trying to recollect all of the money! Wandering about the maze trying to catch you are the bank robbers. If they do manage to catch you, you will lose one of your lives. Each corner of the screen contains a room where your vacuum can become supercharged. While supercharged, you can destroy the bank robbers. You can only become supercharged four times, so use this sparingly. As you collect the money, your vacuum slowly becomes full. When your vacuum no longer has room to collect money, you will need to return to the vault in the center of the room to deposit the money before continuing on. When you have collected all of the money, you will move on to the next level. A second game variation is available where the maze walls are invisible making it more difficult to navigate.</plot>
 </game>
-<game name="Cosmic Chasm (World)">
+<game ROM="Cosmic Chasm (World)">
   <title>Cosmic Chasm</title>
   <year>1982</year>
-  <rating>ESRB - E (Everyone)</rating>
+  <genre>Action</genre>
   <publisher>GCE</publisher>
   <developer>Milton Bradley</developer>
-  <genre>Action</genre>
-  <score>3.8</score>
+  <rating>ESRB - E (Everyone)</rating>
   <nplayers>1 Player</nplayers>
+  <score>3.8</score>
   <plot>In Cosmic Chasm, the player&apos;s mission is to penetrate an alien planet underground maze and destroy the planet&apos;s power structure in the central cavern. It can be played by one or two players taking turns.The maze consists of several caverns connected by tunnels. The player is shown an overview map before entering each cavern. They have to choose the shortest route towards the centre. Each cavern contains several drones that should be destroyed. Exits to caverns deeper in the system are blocked and must be opened with a drill first. In the middle of each cavern is a trap that slowly expands, the player must avoid touching it at all costs. The further the player penetrates into the system, the faster the drones are moving. After placing the bomb in the centre cavern, the player has 15 seconds to escape the maze, preferably using the way they came in.The game uses three buttons: one for thrust, one for a shield to defend against the drones and one for firing. Points are awarded for destroying the central structure, successfully escaping and drilling through walls.</plot>
 </game>
-<game name="Fortress of Narzod (USA, Europe)">
+<game ROM="Fortress of Narzod (USA, Europe)">
   <title>Fortress of Narzod</title>
   <year>1982</year>
-  <rating>ESRB - E (Everyone)</rating>
+  <genre>Action</genre>
   <publisher>GCE</publisher>
   <developer>GCE</developer>
-  <genre>Action</genre>
-  <score>4.0</score>
+  <rating>ESRB - E (Everyone)</rating>
   <nplayers>1 Player</nplayers>
+  <score>4.0</score>
   <plot>You are in a hovercraft in a interestingly drawn land, Ahead is the Fortress of Narzod. From it&apos;s gate come many different foes, you will have to blast your way through to Narzod. You one of the worlds few remaining good wizards fighting the evil Narzod. He has surrounded himself in a powerful fortress guarded by minions of darkness and the fearsome Mystic Hurler. You will be shooting wave after wave of guardian to destroy the Mystic Hurler and with it the power of Narzod. To do this you will have to make your way through several canyons while enemies both try to shoot and crash into you. Your shoots also have the interesting effect of ricocheting round the curving canyons, this can be a danger though as you can be hit with your own shots.</plot>
 </game>
-<game name="Heads-Up - Action Soccer (USA)">
+<game ROM="Heads-Up - Action Soccer (USA)">
   <title>Heads-Up - Action Soccer</title>
   <year>1983</year>
-  <rating>ESRB - E (Everyone)</rating>
+  <genre>Sports/Soccer</genre>
   <publisher>GCE</publisher>
   <developer>GCE</developer>
-  <genre>Sports/Soccer</genre>
-  <score>3.8</score>
+  <rating>ESRB - E (Everyone)</rating>
   <nplayers>1-2 Players</nplayers>
+  <score>3.8</score>
   <plot>Heads Up Action Soccer is a football game played in a slightly tilted side view perspective for one or two players. The game offers three difficulty grades. To win the game, the player has to get the ball into the opponents goal as often as possible within a certain time frame, while avoiding getting any balls into their own goal.Depending on whether the player&apos;s team has the ball, the control buttons change their functions. In offense, one button is used to pass/dribble while the other shoots the ball. When defending, one button can be used to cycle through currently available teammates. It is also possible to tackle the opponent currently having the ball in an attempt to separate them from it. The goalie is controlled by holding one button, and pushing the joystick up or down to slide the goalie along a vertical line in front of the goal.Due to the Vectrex only being able to display one colour, the two teams can only be discerned by their line brightness. When playing alone, the human player controls the brighter team. In a multiplayer match, player two controls the darker team.</plot>
 </game>
-<game name="HyperChase - Auto Race (World)">
+<game ROM="HyperChase - Auto Race (World)">
   <title>HyperChase - Auto Race</title>
   <year>1982</year>
-  <rating>ESRB - E (Everyone)</rating>
+  <genre>Action</genre>
   <publisher>GCE</publisher>
   <developer>GCE</developer>
-  <genre>Action</genre>
-  <score>4.3</score>
+  <rating>ESRB - E (Everyone)</rating>
   <nplayers>1 Player</nplayers>
+  <score>4.3</score>
   <plot>Hyperchase is an action racing game similar to Pole Position. The game is played with a 3D point of view from behind your car. Your goal is to race through the course in the shortest amount of time possible; in the easier game variation, you are allowed an unlimited number of crashes, and in the harder game you are allowed only 5 crashes or the game ends. In addition to staying on the varied course roads, you will also need to avoid numerous other cars as a crash will cost you precious time. Your score in the game is based on how quickly you can complete the course.</plot>
 </game>
-<game name="Mine Storm (World)">
+<game ROM="Mine Storm (World)">
   <title>Mine Storm</title>
   <year>1982</year>
-  <rating>ESRB - E (Everyone)</rating>
+  <genre>Shooter</genre>
   <publisher>GCE</publisher>
   <developer>GCE</developer>
-  <genre>Shooter</genre>
-  <score>4.0</score>
+  <rating>ESRB - E (Everyone)</rating>
   <nplayers>1 Player</nplayers>
+  <score>4.0</score>
   <plot>An alien force is laying mines through out the intergalactic lanes of travel! You are going to destroy those mines before they can harm innocents. You will be pitted against the following mines: Floating Mines: Simple mines that drift through space in the hope of colliding with ships. Fireball Mines: Not Surprisingly these hurl fire, which can be avoided or dispersed with a shot from your ship Magnetic Mines: These have a nasty tendency of following ships. Magnetic-Fireball Mines: These both follow and shoot at you! The game itself plays much like Classic Asteroids</plot>
 </game>
-<game name="Mine Storm II (USA) (Rev 2)">
+<game ROM="Mine Storm II (USA) (Rev 2)">
   <title>Mine Storm II</title>
   <year>1982</year>
-  <rating>ESRB - E (Everyone)</rating>
+  <genre>Shooter</genre>
   <publisher>GCE</publisher>
   <developer>GCE</developer>
-  <genre>Shooter</genre>
-  <score>4.0</score>
+  <rating>ESRB - E (Everyone)</rating>
   <nplayers>1 Player</nplayers>
+  <score>4.0</score>
   <plot>Minestorm II Gameplay is similar to the arcade game Asteroids. The player moves around the screen shooting at star-shaped Mines of various sizes that have various mannerisms. All the dots on a screen can potentially turn into Mines; once a Mine is shot, two dots on the screen will turn into medium-sized Mines, which will then turn into two small Mines when shot (note: for the most part; sometimes, perhaps due to a glitch, a medium-sized Mine will just hatch one small Mine). When all dots have been turned into Mines on a screen, the Minelayer will come out, laying Mines in its wake until the player destroys it.Making contact with anything will destroy the player&apos;s ship and the game will end once there are no more reserve ships left. The Escape function acts as Hyperspace, which moves the player&apos;s ship to a random area on the screen.</plot>
 </game>
-<game name="Polar Rescue (USA)">
+<game ROM="Polar Rescue (USA)">
   <title>Polar Rescue</title>
   <year>1983</year>
-  <rating>ESRB - E (Everyone)</rating>
+  <genre>Shooter</genre>
   <publisher>GCE</publisher>
   <developer>GCE</developer>
-  <genre>Shooter</genre>
-  <score>4.0</score>
+  <rating>ESRB - E (Everyone)</rating>
   <nplayers>1 Player</nplayers>
+  <score>4.0</score>
   <plot>Polar Rescue is an action game played from a first person point of view. You are the commander of a submarine on a rescue mission beneath the ice of the north pole. On each level your goal is to locate and rescue the survivors of an expedition. The waters you need to explore are quite dangerous; in addition to large chunks of ice and maelstroms, you will also need to deal with enemy submarines and numerous underwater mines. Your sub is equipped with a limited number of torpedoes to help you destroy obstacles and enemies in your way. Of course, to make the game more challenging your sub has a limited amount of oxygen. More oxygen can be collected by destroying enemy subs, but if you run out you lose one of your subs. The game ends when all of your subs have been destroyed.</plot>
 </game>
-<game name="Pole Position (USA)">
+<game ROM="Pole Position (USA)">
   <title>Pole Position</title>
   <year>1983</year>
-  <rating>ESRB - E (Everyone)</rating>
+  <genre>Driving</genre>
   <publisher>Namco</publisher>
   <developer>Namco</developer>
-  <genre>Driving</genre>
-  <score>3.5</score>
+  <rating>ESRB - E (Everyone)</rating>
   <nplayers>1 Player</nplayers>
+  <score>3.5</score>
   <plot>Pole Position is a Formula 1 racing game. Enter the Grand Prix, race against other racing cars to achieve the highest score possible in the shortest amount of time.Before the player can enter the Grand Prix, the player must first qualify by competing in the Qualifying Lap within 73 seconds or less. If the player however, does not qualify in the Qualifying Lap, the player may continue to race until the Race Timer runs after 90 seconds. The player will score 50 point per 5 meters and additionally 50 points for every racing car passed. When the time runs out - Game Over. The player will have to restart the Qualifying Lap.Qualifying will enable the player to start in one of the eight available positions. The faster the lap time was, the better the starting position in addition to bonus score points. The number one starting position, is the Pole Position.During the Grand Prix, the player will compete against the Race Timer as well as against other racing cars. If the player fails to beat the Race Timer in any lap, the player drops out of the race - Game Over. Completing the race by reaching finishing line will grant the player 200 points per each second left on the Race Timer, bonus score for distance covered, and passing bonus points.</plot>
 </game>
-<game name="Rip Off (World)">
+<game ROM="Rip Off (World)">
   <title>Rip Off</title>
   <year>1982</year>
-  <rating>ESRB - E (Everyone)</rating>
+  <genre>Shooter</genre>
   <publisher>GCE</publisher>
   <developer>Cinematronics</developer>
-  <genre>Shooter</genre>
-  <score>3.5</score>
+  <rating>ESRB - E (Everyone)</rating>
   <nplayers>1-2 Players</nplayers>
+  <score>3.5</score>
   <plot>Guard several fuel cells in the center of the screen from thieving pirates! As the pirates swoop in from the sides you will be charged with the duty to control a tank (Space ship) that can shoot down the pirates. The pirates can destroy you by using their own crafts to crash into you, or with short distance lasers. The moment the pirates drag off your last fuel cell you lose.</plot>
 </game>
-<game name="Scramble (USA, Europe)">
+<game ROM="Scramble (USA, Europe)">
   <title>Scramble</title>
   <year>1982</year>
-  <rating>ESRB - E (Everyone)</rating>
+  <genre>Action</genre>
   <publisher>Konami</publisher>
   <developer>Konami</developer>
-  <genre>Action</genre>
-  <score>3.3</score>
+  <rating>ESRB - E (Everyone)</rating>
   <nplayers>1 Player</nplayers>
+  <score>3.3</score>
   <plot>Scramble is a side scrolling shooter. Piloting a plane through varied (and mountainous) terrain, your goal is to infiltrate an enemy base and destroy it. Missiles, tanks, UFO&apos;s, and other enemy artillery can all be found and will try to stop you. Colliding with any of these enemies, enemy fire, or the landscape will cause you to lose one of your planes. To fight back, your plane is equipped with both bombs and guns which can destroy most of the enemies you&apos;ll encounter. Your plane has a limited amount of fuel, and you&apos;ll crash if you run out. To replenish the fuel supply, you must bomb the fuel depots which will appear on the ground occasionally.</plot>
 </game>
-<game name="Solar Quest (World)">
+<game ROM="Solar Quest (World)">
   <title>Solar Quest</title>
   <year>1982</year>
-  <rating>ESRB - E (Everyone)</rating>
+  <genre>Shooter</genre>
   <publisher>GCE</publisher>
   <developer>GCE</developer>
-  <genre>Shooter</genre>
-  <score>4.0</score>
+  <rating>ESRB - E (Everyone)</rating>
   <nplayers>1 Player</nplayers>
+  <score>4.0</score>
   <plot>In Solar Quest the player has to defend their star against incoming waves of enemy ships. Up to two players can play, taking turns. The player controls their ship from a top-down view. It is possible to rotate the ship 360° and exit/enter the screen at opposite edges. To defend themselves, players are equipped with rockets and nukes. Nukes are only available in limited supply. After firing a nuke, it can be detonated with a second push of the button, destroying a larger amount of enemies in its vicinity. Pressing the first button on the pad warps the player to a random position on the screen. After destroying an enemy ship, its survivor will float towards the sun. The survivor can either be shot or collected with the ship by flying through them. Scoring depends on the type of alien ship. Later waves bring more points when destroyed. The player can lose a life by crashing into an enemy ship or getting too close to the sun.</plot>
 </game>
-<game name="Space Wars (World)">
+<game ROM="Space Wars (World)">
   <title>Space Wars</title>
   <year>1982</year>
-  <rating>ESRB - E (Everyone)</rating>
+  <genre>Action</genre>
   <publisher>GCE</publisher>
   <developer>Cinematronics</developer>
-  <genre>Action</genre>
-  <score>4.0</score>
+  <rating>ESRB - E (Everyone)</rating>
   <nplayers>1 Player</nplayers>
+  <score>4.0</score>
   <plot>Space Wars is an action game where two space ships battle each other. The game control is similar to Asteroids: you move by thrusting and rotating your ship left or right, you can fire in the direction you&apos;re facing, or enter hyperspace to randomly relocate your ship on the screen. If you can successfully destroy your opponent, a point is earned and the first player to reach 10 points wins the game. Besides the two ships, other obstacles are on the screen: a meteorite floats about randomly and in the center of the screen is a sun, both of which can destroy your ship. Two players can battle each other, or one player can battle the computer and several skill levels are available.</plot>
 </game>
-<game name="Spike (USA, Europe)">
+<game ROM="Spike (USA, Europe)">
   <title>Spike</title>
   <year>1983</year>
-  <rating>ESRB - E (Everyone)</rating>
+  <genre>Action</genre>
   <publisher>GCE</publisher>
   <developer>GCE</developer>
-  <genre>Action</genre>
-  <score>3.3</score>
+  <rating>ESRB - E (Everyone)</rating>
   <nplayers>1 Player</nplayers>
+  <score>3.3</score>
   <plot>The villain Spud has captured your girlfriend Molly! As the hero Spike you need to rescue her. She is being held in a cage at the top of the screen; you need to find the key to the cage, and climb your way to the top. The screen consists of a moving catwalk which has several floors and gaps in it you need to jump over. There is also a ladder which can be moved around allowing you to climb between the different floors of the catwalk. As the levels progress, several enemies also appear which will be attempting to stop spike from reaching the top of the screen. To help out, Molly will occasionally drop a bow tie; if you collect this, all of the enemies on screen will temporarily freeze. When you have collected the key and reach the cage at the top, the level is complete and you move on to the next round.</plot>
 </game>
-<game name="Spin ball (USA)">
+<game ROM="Spin ball (USA)">
   <title>Spin ball</title>
   <year>1983</year>
-  <rating>ESRB - E (Everyone)</rating>
+  <genre>Pinball</genre>
   <publisher>GCE</publisher>
   <developer>GCE</developer>
-  <genre>Pinball</genre>
-  <score>2.5</score>
+  <rating>ESRB - E (Everyone)</rating>
   <nplayers>1 Player</nplayers>
+  <score>2.5</score>
   <plot>Spin Ball is a pinball simulation game. The games pinball table comes complete with a variety of bumpers, spinners, and other targets which can earn you varying amounts of points with several combinations possible for even more points. Bonuses can be earned as well, both in point form and also ball savers which block the chutes on the corners of the screen. A ball splitter may also appear, allowing you to have two balls in play at one time. The joystick is used to set the tension on the spring when putting a ball into play or to shake the table during play, and the buttons are used to control the left and right paddles on the table. You begin each game with 5 balls, and the game ends when all 5 are lost.</plot>
 </game>
-<game name="Star Castle (USA)">
+<game ROM="Star Castle (USA)">
   <title>Star Castle</title>
   <year>1983</year>
-  <rating>ESRB - E (Everyone)</rating>
+  <genre>Action</genre>
   <publisher>GCE</publisher>
   <developer>Cinematronics</developer>
-  <genre>Action</genre>
-  <score>3.5</score>
+  <rating>ESRB - E (Everyone)</rating>
   <nplayers>1 Player</nplayers>
+  <score>3.5</score>
   <plot>In this game you find yourself in a small ship opposed against a Star Castle. This fortress is a powerful turret placed behind three circular protective force fields. You will have to puncture through the force fields and make that demanding shot for the center. Each of the forcefields is made up of eight segments, each such segments take two hits to destroy.Of course it&apos;s not quite that easy... First small sparks will come out of the center trying to hit you. The turret in the center can also launch a very fast, and very accurate, laser at you. On top of that if you destroy a entire circular layer of force field it will regenerate along with another layer! This makes it impossible for you to stay in the same spot, as the layers rotate in opposite directions you will inevitable destroy one before breaching and destroying the center. Being hit by anything will cause the loss of one of your four lives, however if you hit the Forcefields you&apos;ll only bounce off.</plot>
 </game>
-<game name="Star Trek - The Motion Picture (USA)">
+<game ROM="Star Trek - The Motion Picture (USA)">
   <title>Star Trek - The Motion Picture</title>
   <year>1982</year>
-  <rating>ESRB - E (Everyone)</rating>
+  <genre>Action</genre>
   <publisher>GCE</publisher>
   <developer>GCE</developer>
-  <genre>Action</genre>
-  <score>3.4</score>
+  <rating>ESRB - E (Everyone)</rating>
   <nplayers>1 Player</nplayers>
+  <score>3.4</score>
   <plot>Star Trek: The Motion Picture is a first-person shooter set in the Star Trek universe. The player controls a ship equipped with photon torpedoes, trying to eliminate as many enemy ships as possible. After destroying a sufficient amount of enemies, the player advances to the next level.The screen has two status bars, one for the amount of torpedoes left, and one for the remaining shield. The shield is used to repel the star-shaped projectiles fired by enemy ships. Both bars can be replenished by docking with the space station that comes into view from time to time. It is also possible to warp into a black hole, where the player has to take on a Klingon mothership.</plot>
 </game>
-<game name="StarHawk (World)">
+<game ROM="StarHawk (World)">
   <title>StarHawk</title>
   <year>1982</year>
-  <rating>ESRB - E (Everyone)</rating>
+  <genre>Shooter</genre>
   <publisher>GCE</publisher>
   <developer>Cinematronics</developer>
-  <genre>Shooter</genre>
-  <score>4.0</score>
+  <rating>ESRB - E (Everyone)</rating>
   <nplayers>1-2 Players</nplayers>
+  <score>4.0</score>
   <plot>In StarHawk you zoom along a trench in a large sphere like object. All around space going vessels will fly past in set patterns. You will have the control of a target which you can move about the screen to blast those little fighters into oblivion, each will die in one hit. See how many you can shoot before you reach the end of the game.</plot>
 </game>
-<game name="WebWars (USA)">
+<game ROM="WebWars (USA)">
   <title>WebWars</title>
   <year>1983</year>
-  <rating>ESRB - E (Everyone)</rating>
+  <genre>Action</genre>
   <publisher>GCE</publisher>
   <developer>GCE</developer>
-  <genre>Action</genre>
-  <score>4.0</score>
+  <rating>ESRB - E (Everyone)</rating>
   <nplayers>1 Player</nplayers>
+  <score>4.0</score>
   <plot>The player slips into the role of Hawk King. His mission is to search the Web of Fantasy for certain legendary creatures and collect them all.The Hawk King is controlled in a third person perspective, flying through the Web. The 20 creatures that can be captured are protected by drones, which can in turn be destroyed with the blaster weapon. Other actions the player can take is speeding up or slowing down the Hawk King, and extending a rod to capture a rare species once the player encounters one.After a creature has been successfully captured, the player enters the trophy room though a portal, which displays all captured creatures. If the player proves unsuccessful after two attempts however, they will have to face the Cosmic Dragon, at which point the only defence the player has left is avoiding its deadly fireballs.</plot>
 </game>
 </menu>

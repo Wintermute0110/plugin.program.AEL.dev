@@ -6,92 +6,92 @@
   <listversion>V1</listversion>
   <exporterversion>V1 GameDBInfo converter</exporterversion>
 </header>
-<game name="Pichu Bros. Mini (Japan)">
+<game ROM="Pichu Bros. Mini (Japan)">
   <title>Pichu Bros. Mini (Japan)</title>
   <year>2000</year>
-  <rating>ESRB - E (Everyone)</rating>
+  <genre>Multiplay</genre>
   <publisher>Denyusha Co. Ltd.</publisher>
   <developer />
-  <genre>Multiplay</genre>
+  <rating>ESRB - E (Everyone)</rating>
 </game>
-<game name="Pokemon Breeder Mini (Japan) (Translated En)">
+<game ROM="Pokemon Breeder Mini (Japan) (Translated En)">
   <title>Pokemon Breeder Mini (Japan) (Translated En)</title>
   <year>2002</year>
-  <rating>ESRB - E (Everyone)</rating>
+  <genre>Simulation</genre>
   <publisher>Jupiter Corp.</publisher>
   <developer />
-  <genre>Simulation</genre>
+  <rating>ESRB - E (Everyone)</rating>
 </game>
-<game name="Pokemon Party Mini (USA)">
+<game ROM="Pokemon Party Mini (USA)">
   <title>Pokemon Party Mini (USA)</title>
   <year>2001</year>
-  <rating>ESRB - E (Everyone)</rating>
+  <genre>Multiplay</genre>
   <publisher>Denyusha Co. Ltd.</publisher>
   <developer />
-  <genre>Multiplay</genre>
+  <rating>ESRB - E (Everyone)</rating>
 </game>
-<game name="Pokemon Pinball Mini (USA)">
+<game ROM="Pokemon Pinball Mini (USA)">
   <title>Pokemon Pinball Mini (USA)</title>
   <year>2001</year>
-  <rating>ESRB - E (Everyone)</rating>
+  <genre>Pinball</genre>
   <publisher>Jupiter Corp.</publisher>
   <developer />
-  <genre>Pinball</genre>
+  <rating>ESRB - E (Everyone)</rating>
 </game>
-<game name="Pokemon Puzzle Collection (USA)">
+<game ROM="Pokemon Puzzle Collection (USA)">
   <title>Pokemon Puzzle Collection (USA)</title>
   <year>2001</year>
-  <rating>ESRB - E (Everyone)</rating>
+  <genre>Puzzle</genre>
   <publisher>Jupiter Corp.</publisher>
   <developer />
-  <genre>Puzzle</genre>
+  <rating>ESRB - E (Everyone)</rating>
 </game>
-<game name="Pokemon Puzzle Collection Vol. 2 (Japan) (Translated En)">
+<game ROM="Pokemon Puzzle Collection Vol. 2 (Japan) (Translated En)">
   <title>Pokemon Puzzle Collection Vol. 2 (Japan) (Translated En)</title>
   <year>2002</year>
-  <rating>ESRB - E (Everyone)</rating>
+  <genre>Puzzle</genre>
   <publisher>Jupiter Corp.</publisher>
   <developer />
-  <genre>Puzzle</genre>
+  <rating>ESRB - E (Everyone)</rating>
 </game>
-<game name="Pokemon Race Mini (Japan)">
+<game ROM="Pokemon Race Mini (Japan)">
   <title>Pokemon Race Mini (Japan)</title>
   <year>2002</year>
-  <rating>ESRB - E (Everyone)</rating>
+  <genre>Driving</genre>
   <publisher>Jupiter Corp.</publisher>
   <developer />
-  <genre>Driving</genre>
+  <rating>ESRB - E (Everyone)</rating>
 </game>
-<game name="Pokemon Tetris (Europe)">
+<game ROM="Pokemon Tetris (Europe)">
   <title>Pokemon Tetris (Europe)</title>
   <year>2002</year>
-  <rating>ESRB - E (Everyone)</rating>
+  <genre>Puzzle</genre>
   <publisher>Nintendo</publisher>
   <developer />
-  <genre>Puzzle</genre>
+  <rating>ESRB - E (Everyone)</rating>
 </game>
-<game name="Pokemon Zany Cards (USA)">
+<game ROM="Pokemon Zany Cards (USA)">
   <title>Pokemon Zany Cards (USA)</title>
   <year>2001</year>
-  <rating>ESRB - E (Everyone)</rating>
+  <genre>Card Battle</genre>
   <publisher>Denyusha Co. Ltd.</publisher>
   <developer />
-  <genre>Card Battle</genre>
+  <rating>ESRB - E (Everyone)</rating>
 </game>
-<game name="Snorlax&apos;s Lunch Time (USA) (GameCube)">
+<game ROM="Snorlax&apos;s Lunch Time (USA) (GameCube)">
   <title>Snorlax&apos;s Lunch Time (USA) (GameCube)</title>
   <year>2003</year>
-  <rating>ESRB - E (Everyone)</rating>
+  <genre>Miscellaneous</genre>
   <publisher>Nintendo</publisher>
   <developer />
-  <genre>Miscellaneous</genre>
+  <rating>ESRB - E (Everyone)</rating>
 </game>
-<game name="Togepi no Daibouken (Japan) (Translated En)">
+<game ROM="Togepi no Daibouken (Japan) (Translated En)">
   <title>Togepi no Daibouken (Japan) (Translated En)</title>
   <year>2002</year>
-  <rating>ESRB - E (Everyone)</rating>
+  <genre>Adventure</genre>
   <publisher>Jupiter Corp.</publisher>
   <developer />
-  <genre>Adventure</genre>
+  <rating>ESRB - E (Everyone)</rating>
 </game>
 </menu>

@@ -6,108 +6,108 @@
   <listversion>V1</listversion>
   <exporterversion>V1 GameDBInfo converter</exporterversion>
 </header>
-<game name="Amidar (Japan)">
+<game ROM="Amidar (Japan)">
   <title>Amidar (Japan)</title>
   <year>1983</year>
-  <rating>HSRS - GA (General Audience)</rating>
+  <genre>Action</genre>
   <publisher>Casio</publisher>
   <developer />
-  <genre>Action</genre>
+  <rating>HSRS - GA (General Audience)</rating>
 </game>
-<game name="Dig Dug (Japan)">
+<game ROM="Dig Dug (Japan)">
   <title>Dig Dug (Japan)</title>
   <year>1983</year>
-  <rating>Other - NR (Not Rated)</rating>
+  <genre>Maze</genre>
   <publisher>Casio</publisher>
   <developer />
-  <genre>Maze</genre>
+  <rating>Other - NR (Not Rated)</rating>
 </game>
-<game name="Dirty Chameleon (Japan)">
+<game ROM="Dirty Chameleon (Japan)">
   <title>Dirty Chameleon (Japan)</title>
   <year>1983</year>
-  <rating>Other - NR (Not Rated)</rating>
+  <genre>Platform</genre>
   <publisher>Casio</publisher>
   <developer />
-  <genre>Platform</genre>
+  <rating>Other - NR (Not Rated)</rating>
 </game>
-<game name="Excite Mahjong (Japan)">
+<game ROM="Excite Mahjong (Japan)">
   <title>Excite Mahjong (Japan)</title>
   <year>1983</year>
-  <rating>HSRS - GA (General Audience)</rating>
+  <genre>Mahjong</genre>
   <publisher>Casio</publisher>
   <developer />
-  <genre>Mahjong</genre>
+  <rating>HSRS - GA (General Audience)</rating>
 </game>
-<game name="Fighting Bug (Japan)">
+<game ROM="Fighting Bug (Japan)">
   <title>Fighting Bug (Japan)</title>
   <year>1983</year>
-  <rating>Other - NR (Not Rated)</rating>
+  <genre>Maze</genre>
   <publisher>Casio</publisher>
   <developer />
-  <genre>Maze</genre>
+  <rating>Other - NR (Not Rated)</rating>
 </game>
-<game name="Naughty Boy (Japan)">
+<game ROM="Naughty Boy (Japan)">
   <title>Naughty Boy (Japan)</title>
   <year>1983</year>
-  <rating>Other - NR (Not Rated)</rating>
+  <genre>Maze</genre>
   <publisher>Casio</publisher>
   <developer />
-  <genre>Maze</genre>
+  <rating>Other - NR (Not Rated)</rating>
 </game>
-<game name="Pachinko-UFO (Japan)">
+<game ROM="Pachinko-UFO (Japan)">
   <title>Pachinko-UFO (Japan)</title>
   <year>1983</year>
-  <rating>HSRS - GA (General Audience)</rating>
+  <genre>Casino</genre>
   <publisher>Casio</publisher>
   <developer />
-  <genre>Casino</genre>
+  <rating>HSRS - GA (General Audience)</rating>
 </game>
-<game name="Pooyan (Japan)">
+<game ROM="Pooyan (Japan)">
   <title>Pooyan (Japan)</title>
   <year>1983</year>
-  <rating>HSRS - GA (General Audience)</rating>
+  <genre>Action</genre>
   <publisher>Casio</publisher>
   <developer />
-  <genre>Action</genre>
+  <rating>HSRS - GA (General Audience)</rating>
 </game>
-<game name="Space Panic (Japan)">
+<game ROM="Space Panic (Japan)">
   <title>Space Panic (Japan)</title>
   <year>1983</year>
-  <rating>Other - NR (Not Rated)</rating>
+  <genre>Platform</genre>
   <publisher>Casio</publisher>
   <developer />
-  <genre>Platform</genre>
+  <rating>Other - NR (Not Rated)</rating>
 </game>
-<game name="Super Cobra (Japan)">
+<game ROM="Super Cobra (Japan)">
   <title>Super Cobra (Japan)</title>
   <year>1983</year>
-  <rating>HSRS - GA (General Audience)</rating>
+  <genre>Shooter</genre>
   <publisher>Casio</publisher>
   <developer />
-  <genre>Shooter</genre>
+  <rating>HSRS - GA (General Audience)</rating>
 </game>
-<game name="Turpin (Japan)">
+<game ROM="Turpin (Japan)">
   <title>Turpin (Japan)</title>
   <year>1983</year>
-  <rating>Other - NR (Not Rated)</rating>
+  <genre>Action</genre>
   <publisher>Casio</publisher>
   <developer />
-  <genre>Action</genre>
+  <rating>Other - NR (Not Rated)</rating>
 </game>
-<game name="Tutankham (Japan)">
+<game ROM="Tutankham (Japan)">
   <title>Tutankham (Japan)</title>
   <year>1983</year>
-  <rating>Other - NR (Not Rated)</rating>
+  <genre>Maze</genre>
   <publisher>Casio</publisher>
   <developer />
-  <genre>Maze</genre>
+  <rating>Other - NR (Not Rated)</rating>
 </game>
-<game name="Warp &amp; Warp (Japan)">
+<game ROM="Warp &amp; Warp (Japan)">
   <title>Warp &amp; Warp (Japan)</title>
   <year>1983</year>
-  <rating>Other - NR (Not Rated)</rating>
+  <genre>Shooter</genre>
   <publisher>Casio</publisher>
   <developer />
-  <genre>Shooter</genre>
+  <rating>Other - NR (Not Rated)</rating>
 </game>
 </menu>

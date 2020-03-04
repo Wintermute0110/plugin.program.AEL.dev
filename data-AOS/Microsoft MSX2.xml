@@ -6,1324 +6,1324 @@
   <listversion>V1</listversion>
   <exporterversion>V1 GameDBInfo converter</exporterversion>
 </header>
-<game name="1942 (Japan)">
+<game ROM="1942 (Japan)">
   <title>1942 (Japan)</title>
   <year>1986</year>
-  <rating>Other - NR (Not Rated)</rating>
+  <genre>Shoot-&apos;Em-Up</genre>
   <publisher>ASCII</publisher>
   <developer />
-  <genre>Shoot-&apos;Em-Up</genre>
+  <rating>Other - NR (Not Rated)</rating>
 </game>
-<game name="AcroJet (Japan)">
+<game ROM="AcroJet (Japan)">
   <title>AcroJet (Japan)</title>
   <year>1988</year>
-  <rating>Other - NR (Not Rated)</rating>
+  <genre>Simulation</genre>
   <publisher>SystemSoft</publisher>
   <developer />
-  <genre>Simulation</genre>
+  <rating>Other - NR (Not Rated)</rating>
 </game>
-<game name="Aleste (Japan)">
+<game ROM="Aleste (Japan)">
   <title>Aleste (Japan)</title>
   <year>1988</year>
-  <rating>Other - NR (Not Rated)</rating>
+  <genre>Shoot-&apos;Em-Up</genre>
   <publisher>Compile</publisher>
   <developer />
-  <genre>Shoot-&apos;Em-Up</genre>
+  <rating>Other - NR (Not Rated)</rating>
 </game>
-<game name="Alges no Yoku (Japan)">
+<game ROM="Alges no Yoku (Japan)">
   <title>Alges no Yoku (Japan)</title>
   <year>1986</year>
-  <rating>Other - NR (Not Rated)</rating>
+  <genre>Role-Playing</genre>
   <publisher>Kogado</publisher>
   <developer />
-  <genre>Role-Playing</genre>
+  <rating>Other - NR (Not Rated)</rating>
 </game>
-<game name="American Soccer (Japan)">
+<game ROM="American Soccer (Japan)">
   <title>American Soccer (Japan)</title>
   <year>1988</year>
-  <rating>Other - NR (Not Rated)</rating>
+  <genre>Sports</genre>
   <publisher>Nidecom Soft</publisher>
   <developer />
-  <genre>Sports</genre>
+  <rating>Other - NR (Not Rated)</rating>
 </game>
-<game name="Aoki Ookami to Shiroki Mejika - Genchou Hishi (Japan)">
+<game ROM="Aoki Ookami to Shiroki Mejika - Genchou Hishi (Japan)">
   <title>Aoki Ookami to Shiroki Mejika - Genchou Hishi (Japan)</title>
   <year>1992</year>
-  <rating>Other - NR (Not Rated)</rating>
+  <genre>Strategy</genre>
   <publisher>Koei</publisher>
   <developer />
-  <genre>Strategy</genre>
+  <rating>Other - NR (Not Rated)</rating>
 </game>
-<game name="Aoki Ookami to Shiroki Mejika - Genghis Khan (Japan)">
+<game ROM="Aoki Ookami to Shiroki Mejika - Genghis Khan (Japan)">
   <title>Aoki Ookami to Shiroki Mejika - Genghis Khan (Japan)</title>
   <year>1991</year>
-  <rating>Other - NR (Not Rated)</rating>
+  <genre>Strategy</genre>
   <publisher>Koei</publisher>
   <developer />
-  <genre>Strategy</genre>
+  <rating>Other - NR (Not Rated)</rating>
 </game>
-<game name="Arctic - Active Rail Playing (Japan)">
+<game ROM="Arctic - Active Rail Playing (Japan)">
   <title>Arctic - Active Rail Playing (Japan)</title>
   <year>1989</year>
-  <rating>Other - NR (Not Rated)</rating>
+  <genre>Puzzle</genre>
   <publisher>Pony Canyon</publisher>
   <developer />
-  <genre>Puzzle</genre>
+  <rating>Other - NR (Not Rated)</rating>
 </game>
-<game name="Arkanoid II - Revenge of Doh (Japan)">
+<game ROM="Arkanoid II - Revenge of Doh (Japan)">
   <title>Arkanoid II - Revenge of Doh (Japan)</title>
   <year>1988</year>
-  <rating>Other - NR (Not Rated)</rating>
+  <genre>Action</genre>
   <publisher>Taito</publisher>
   <developer />
-  <genre>Action</genre>
+  <rating>Other - NR (Not Rated)</rating>
 </game>
-<game name="Asada Tetsuya no Akyoo Mahjong (Japan)">
+<game ROM="Asada Tetsuya no Akyoo Mahjong (Japan)">
   <title>Asada Tetsuya no Akyoo Mahjong (Japan)</title>
   <year>1989</year>
-  <rating>Other - NR (Not Rated)</rating>
+  <genre>Mahjong</genre>
   <publisher>Pony Canyon</publisher>
   <developer />
-  <genre>Mahjong</genre>
+  <rating>Other - NR (Not Rated)</rating>
 </game>
-<game name="AshGuine - Densetsu no Seisenshi (Japan)">
+<game ROM="AshGuine - Densetsu no Seisenshi (Japan)">
   <title>AshGuine - Densetsu no Seisenshi (Japan)</title>
   <year>1987</year>
-  <rating>Other - NR (Not Rated)</rating>
+  <genre>Action</genre>
   <publisher>Bit2</publisher>
   <developer />
-  <genre>Action</genre>
+  <rating>Other - NR (Not Rated)</rating>
 </game>
-<game name="AshGuine Story II - Citadel in the Void (Japan) (Translated En)">
+<game ROM="AshGuine Story II - Citadel in the Void (Japan) (Translated En)">
   <title>AshGuine Story II - Citadel in the Void (Japan) (Translated En)</title>
   <year>1987</year>
-  <rating>Other - NR (Not Rated)</rating>
+  <genre>Action</genre>
   <publisher>Bit2</publisher>
   <developer />
-  <genre>Action</genre>
+  <rating>Other - NR (Not Rated)</rating>
 </game>
-<game name="AshGuine Story II - Kokuu no Gajou (Japan)">
+<game ROM="AshGuine Story II - Kokuu no Gajou (Japan)">
   <title>AshGuine Story II - Kokuu no Gajou (Japan)</title>
   <year>1987</year>
-  <rating>Other - NR (Not Rated)</rating>
+  <genre>Action</genre>
   <publisher>TE Soft</publisher>
   <developer />
-  <genre>Action</genre>
+  <rating>Other - NR (Not Rated)</rating>
 </game>
-<game name="AshGuine Story III - Fukushuu no Honoo (Japan)">
+<game ROM="AshGuine Story III - Fukushuu no Honoo (Japan)">
   <title>AshGuine Story III - Fukushuu no Honoo (Japan)</title>
   <year>1987</year>
-  <rating>Other - NR (Not Rated)</rating>
+  <genre>Action</genre>
   <publisher>Micro Cabin - Panasoft</publisher>
   <developer />
-  <genre>Action</genre>
+  <rating>Other - NR (Not Rated)</rating>
 </game>
-<game name="Blade Lords (Japan)">
+<game ROM="Blade Lords (Japan)">
   <title>Blade Lords (Japan)</title>
   <year>1994</year>
-  <rating>Other - NR (Not Rated)</rating>
+  <genre>Platform</genre>
   <publisher>Parallax</publisher>
   <developer />
-  <genre>Platform</genre>
+  <rating>Other - NR (Not Rated)</rating>
 </game>
-<game name="Bubble Bobble (Japan)">
+<game ROM="Bubble Bobble (Japan)">
   <title>Bubble Bobble (Japan)</title>
   <year>1987</year>
-  <rating>Other - NR (Not Rated)</rating>
+  <genre>Platform</genre>
   <publisher>Taito</publisher>
   <developer />
-  <genre>Platform</genre>
+  <rating>Other - NR (Not Rated)</rating>
 </game>
-<game name="Cockpit, The (Japan)">
+<game ROM="Cockpit, The (Japan)">
   <title>Cockpit, The (Japan)</title>
   <year>1988</year>
-  <rating>Other - NR (Not Rated)</rating>
+  <genre>Simulation</genre>
   <publisher>Taito</publisher>
   <developer />
-  <genre>Simulation</genre>
+  <rating>Other - NR (Not Rated)</rating>
 </game>
-<game name="Contra (Japan)">
+<game ROM="Contra (Japan)">
   <title>Contra (Japan)</title>
   <year>1987</year>
-  <rating>Other - NR (Not Rated)</rating>
+  <genre>Shooter</genre>
   <publisher>Konami</publisher>
   <developer />
-  <genre>Shooter</genre>
+  <rating>Other - NR (Not Rated)</rating>
 </game>
-<game name="Crimson (Japan)">
+<game ROM="Crimson (Japan)">
   <title>Crimson (Japan)</title>
   <year>1988</year>
-  <rating>Other - NR (Not Rated)</rating>
+  <genre>Role-Playing</genre>
   <publisher>XTALSOFT</publisher>
   <developer />
-  <genre>Role-Playing</genre>
+  <rating>Other - NR (Not Rated)</rating>
 </game>
-<game name="Daikoukai Jidai (Japan)">
+<game ROM="Daikoukai Jidai (Japan)">
   <title>Daikoukai Jidai (Japan)</title>
   <year>1990</year>
-  <rating>Other - NR (Not Rated)</rating>
+  <genre>Strategy</genre>
   <publisher>Koei</publisher>
   <developer />
-  <genre>Strategy</genre>
+  <rating>Other - NR (Not Rated)</rating>
 </game>
-<game name="Daisenryaku Risk (Japan)">
+<game ROM="Daisenryaku Risk (Japan)">
   <title>Daisenryaku Risk (Japan)</title>
   <year>1987</year>
-  <rating>Other - NR (Not Rated)</rating>
+  <genre>Strategy</genre>
   <publisher>Micro Cabin</publisher>
   <developer />
-  <genre>Strategy</genre>
+  <rating>Other - NR (Not Rated)</rating>
 </game>
-<game name="Darwin 4078 (Japan)">
+<game ROM="Darwin 4078 (Japan)">
   <title>Darwin 4078 (Japan)</title>
   <year>1987</year>
-  <rating>Other - NR (Not Rated)</rating>
+  <genre>Shoot-&apos;Em-Up</genre>
   <publisher>Hudson</publisher>
   <developer />
-  <genre>Shoot-&apos;Em-Up</genre>
+  <rating>Other - NR (Not Rated)</rating>
 </game>
-<game name="Deep Forest (Japan)">
+<game ROM="Deep Forest (Japan)">
   <title>Deep Forest (Japan)</title>
   <year>1987</year>
-  <rating>Other - NR (Not Rated)</rating>
+  <genre>Role-Playing</genre>
   <publisher>XAIN</publisher>
   <developer />
-  <genre>Role-Playing</genre>
+  <rating>Other - NR (Not Rated)</rating>
 </game>
-<game name="Dires - Giger Loop (Japan)">
+<game ROM="Dires - Giger Loop (Japan)">
   <title>Dires - Giger Loop (Japan)</title>
   <year>1987</year>
-  <rating>Other - NR (Not Rated)</rating>
+  <genre>Action</genre>
   <publisher>Bothtec</publisher>
   <developer />
-  <genre>Action</genre>
+  <rating>Other - NR (Not Rated)</rating>
 </game>
-<game name="Double Vision (Japan)">
+<game ROM="Double Vision (Japan)">
   <title>Double Vision (Japan)</title>
   <year>1987</year>
-  <rating>Other - NR (Not Rated)</rating>
+  <genre>Simulation</genre>
   <publisher>Hard</publisher>
   <developer />
-  <genre>Simulation</genre>
+  <rating>Other - NR (Not Rated)</rating>
 </game>
-<game name="Dragon Buster (Japan)">
+<game ROM="Dragon Buster (Japan)">
   <title>Dragon Buster (Japan)</title>
   <year>1987</year>
-  <rating>Other - NR (Not Rated)</rating>
+  <genre>Role-Playing</genre>
   <publisher>TOSE</publisher>
   <developer />
-  <genre>Role-Playing</genre>
+  <rating>Other - NR (Not Rated)</rating>
 </game>
-<game name="Dragon Quest (Japan)">
+<game ROM="Dragon Quest (Japan)">
   <title>Dragon Quest (Japan)</title>
   <year>1986</year>
-  <rating>Other - NR (Not Rated)</rating>
+  <genre>Role-Playing</genre>
   <publisher>Enix</publisher>
   <developer />
-  <genre>Role-Playing</genre>
+  <rating>Other - NR (Not Rated)</rating>
 </game>
-<game name="Dragon Quest II (Japan)">
+<game ROM="Dragon Quest II (Japan)">
   <title>Dragon Quest II (Japan)</title>
   <year>1988</year>
-  <rating>Other - NR (Not Rated)</rating>
+  <genre>Role-Playing</genre>
   <publisher>Enix</publisher>
   <developer />
-  <genre>Role-Playing</genre>
+  <rating>Other - NR (Not Rated)</rating>
 </game>
-<game name="Dragon Slayer IV - Drasle Family (Japan)">
+<game ROM="Dragon Slayer IV - Drasle Family (Japan)">
   <title>Dragon Slayer IV - Drasle Family (Japan)</title>
   <year>1987</year>
-  <rating>Other - NR (Not Rated)</rating>
+  <genre>Role-Playing</genre>
   <publisher>Falcom</publisher>
   <developer />
-  <genre>Role-Playing</genre>
+  <rating>Other - NR (Not Rated)</rating>
 </game>
-<game name="Dragon Slayer IV - Drasle Family (Japan)(Translated En)">
+<game ROM="Dragon Slayer IV - Drasle Family (Japan)(Translated En)">
   <title>Dragon Slayer IV - Drasle Family (Japan)(Translated En)</title>
   <year>1987</year>
-  <rating>Other - NR (Not Rated)</rating>
+  <genre>Role-Playing</genre>
   <publisher>Falcom</publisher>
   <developer />
-  <genre>Role-Playing</genre>
+  <rating>Other - NR (Not Rated)</rating>
 </game>
-<game name="Dragon Slayer Jr. - Romancia (Japan)">
+<game ROM="Dragon Slayer Jr. - Romancia (Japan)">
   <title>Dragon Slayer Jr. - Romancia (Japan)</title>
   <year>1986</year>
-  <rating>Other - NR (Not Rated)</rating>
+  <genre>Role-Playing</genre>
   <publisher>Falcom</publisher>
   <developer />
-  <genre>Role-Playing</genre>
+  <rating>Other - NR (Not Rated)</rating>
 </game>
-<game name="Dragon Slayer Jr. - Romancia (Japan) (Translated En)">
+<game ROM="Dragon Slayer Jr. - Romancia (Japan) (Translated En)">
   <title>Dragon Slayer Jr. - Romancia (Japan) (Translated En)</title>
   <year>1986</year>
-  <rating>Other - NR (Not Rated)</rating>
+  <genre>Role-Playing</genre>
   <publisher>Falcom</publisher>
   <developer />
-  <genre>Role-Playing</genre>
+  <rating>Other - NR (Not Rated)</rating>
 </game>
-<game name="Druid (Japan)">
+<game ROM="Druid (Japan)">
   <title>Druid (Japan)</title>
   <year>1988</year>
-  <rating>Other - NR (Not Rated)</rating>
+  <genre>Role-Playing</genre>
   <publisher>Nippon</publisher>
   <developer />
-  <genre>Role-Playing</genre>
+  <rating>Other - NR (Not Rated)</rating>
 </game>
-<game name="Dynamite Bowl (Japan)">
+<game ROM="Dynamite Bowl (Japan)">
   <title>Dynamite Bowl (Japan)</title>
   <year>1987</year>
-  <rating>Other - NR (Not Rated)</rating>
+  <genre>Sports</genre>
   <publisher>Toshiba EMI</publisher>
   <developer />
-  <genre>Sports</genre>
+  <rating>Other - NR (Not Rated)</rating>
 </game>
-<game name="Eidolon, The (Europe)">
+<game ROM="Eidolon, The (Europe)">
   <title>Eidolon, The (Europe)</title>
   <year>1985</year>
-  <rating>Other - NR (Not Rated)</rating>
+  <genre>Action</genre>
   <publisher>LucasFilm</publisher>
   <developer />
-  <genre>Action</genre>
+  <rating>Other - NR (Not Rated)</rating>
 </game>
-<game name="Elslid (Japan)">
+<game ROM="Elslid (Japan)">
   <title>Elslid (Japan)</title>
   <year>1989</year>
-  <rating>Other - NR (Not Rated)</rating>
+  <genre>Strategy</genre>
   <publisher>NCS</publisher>
   <developer />
-  <genre>Strategy</genre>
+  <rating>Other - NR (Not Rated)</rating>
 </game>
-<game name="Empereur, L&apos; (Japan)">
+<game ROM="Empereur, L&apos; (Japan)">
   <title>Empereur, L&apos; (Japan)</title>
   <year>1990</year>
-  <rating>Other - NR (Not Rated)</rating>
+  <genre>Simulation</genre>
   <publisher>Koei</publisher>
   <developer />
-  <genre>Simulation</genre>
+  <rating>Other - NR (Not Rated)</rating>
 </game>
-<game name="Europe Sensen (Japan)">
+<game ROM="Europe Sensen (Japan)">
   <title>Europe Sensen (Japan)</title>
   <year>1992</year>
-  <rating>Other - NR (Not Rated)</rating>
+  <genre>Strategy</genre>
   <publisher>Koei</publisher>
   <developer />
-  <genre>Strategy</genre>
+  <rating>Other - NR (Not Rated)</rating>
 </game>
-<game name="F-15 Strike Eagle (Japan)">
+<game ROM="F-15 Strike Eagle (Japan)">
   <title>F-15 Strike Eagle (Japan)</title>
   <year>1990</year>
-  <rating>Other - NR (Not Rated)</rating>
+  <genre>Flying</genre>
   <publisher>Novotrade / MicroProse</publisher>
   <developer />
-  <genre>Flying</genre>
+  <rating>Other - NR (Not Rated)</rating>
 </game>
-<game name="Famicle Parodic (Japan)">
+<game ROM="Famicle Parodic (Japan)">
   <title>Famicle Parodic (Japan)</title>
   <year>1988</year>
-  <rating>Other - NR (Not Rated)</rating>
+  <genre>Shoot-&apos;Em-Up</genre>
   <publisher>Bit2</publisher>
   <developer />
-  <genre>Shoot-&apos;Em-Up</genre>
+  <rating>Other - NR (Not Rated)</rating>
 </game>
-<game name="Family Billiards (Japan)">
+<game ROM="Family Billiards (Japan)">
   <title>Family Billiards (Japan)</title>
   <year>1988</year>
-  <rating>Other - NR (Not Rated)</rating>
+  <genre>Pool and Dart</genre>
   <publisher>Dual / Pack-In-Video</publisher>
   <developer />
-  <genre>Pool and Dart</genre>
+  <rating>Other - NR (Not Rated)</rating>
 </game>
-<game name="Family Boxing - MSX Title Match (Japan)">
+<game ROM="Family Boxing - MSX Title Match (Japan)">
   <title>Family Boxing - MSX Title Match (Japan)</title>
   <year>1988</year>
-  <rating>Other - NR (Not Rated)</rating>
+  <genre>Sports</genre>
   <publisher>SCEI</publisher>
   <developer />
-  <genre>Sports</genre>
+  <rating>Other - NR (Not Rated)</rating>
 </game>
-<game name="Fantasy Zone II - The Tears of Opa-Opa (Japan)">
+<game ROM="Fantasy Zone II - The Tears of Opa-Opa (Japan)">
   <title>Fantasy Zone II - The Tears of Opa-Opa (Japan)</title>
   <year>1989</year>
-  <rating>Other - NR (Not Rated)</rating>
+  <genre>Shoot-&apos;Em-Up</genre>
   <publisher>Atelier Double / Pony Canyon</publisher>
   <developer />
-  <genre>Shoot-&apos;Em-Up</genre>
+  <rating>Other - NR (Not Rated)</rating>
 </game>
-<game name="Final Mystery Murder Club - Satsujin Club (Japan)">
+<game ROM="Final Mystery Murder Club - Satsujin Club (Japan)">
   <title>Final Mystery Murder Club - Satsujin Club (Japan)</title>
   <year>1988</year>
-  <rating>Other - NR (Not Rated)</rating>
+  <genre>Adventure</genre>
   <publisher>Micro Cabin</publisher>
   <developer />
-  <genre>Adventure</genre>
+  <rating>Other - NR (Not Rated)</rating>
 </game>
-<game name="Fire Ball (Japan)">
+<game ROM="Fire Ball (Japan)">
   <title>Fire Ball (Japan)</title>
   <year>1988</year>
-  <rating>Other - NR (Not Rated)</rating>
+  <genre>Pinball</genre>
   <publisher>Hummingbird Soft</publisher>
   <developer />
-  <genre>Pinball</genre>
+  <rating>Other - NR (Not Rated)</rating>
 </game>
-<game name="Fleet Commander II - Koukon no Kaiiki (Japan)">
+<game ROM="Fleet Commander II - Koukon no Kaiiki (Japan)">
   <title>Fleet Commander II - Koukon no Kaiiki (Japan)</title>
   <year>1990</year>
-  <rating>Other - NR (Not Rated)</rating>
+  <genre>Strategy</genre>
   <publisher>ASCII</publisher>
   <developer />
-  <genre>Strategy</genre>
+  <rating>Other - NR (Not Rated)</rating>
 </game>
-<game name="Gakuen Monogatari - High School Story (Japan)">
+<game ROM="Gakuen Monogatari - High School Story (Japan)">
   <title>Gakuen Monogatari - High School Story (Japan)</title>
   <year>1988</year>
-  <rating>Other - NR (Not Rated)</rating>
+  <genre>Adventure</genre>
   <publisher>Great</publisher>
   <developer />
-  <genre>Adventure</genre>
+  <rating>Other - NR (Not Rated)</rating>
 </game>
-<game name="Gambler Jiko Chuushinha 2 - Jishou! Kyougou Janshi Hen (Japan)">
+<game ROM="Gambler Jiko Chuushinha 2 - Jishou! Kyougou Janshi Hen (Japan)">
   <title>Gambler Jiko Chuushinha 2 - Jishou! Kyougou Janshi Hen (Japan)</title>
   <year>1989</year>
-  <rating>Other - NR (Not Rated)</rating>
+  <genre>Tabletop</genre>
   <publisher>Game Arts</publisher>
   <developer />
-  <genre>Tabletop</genre>
+  <rating>Other - NR (Not Rated)</rating>
 </game>
-<game name="Ganbare Goemon! - Karakuri Douchuu (Japan)">
+<game ROM="Ganbare Goemon! - Karakuri Douchuu (Japan)">
   <title>Ganbare Goemon! - Karakuri Douchuu (Japan)</title>
   <year>1987</year>
-  <rating>Other - NR (Not Rated)</rating>
+  <genre>Action</genre>
   <publisher>Konami</publisher>
   <developer />
-  <genre>Action</genre>
+  <rating>Other - NR (Not Rated)</rating>
 </game>
-<game name="Garyuu Ou (Japan)">
+<game ROM="Garyuu Ou (Japan)">
   <title>Garyuu Ou (Japan)</title>
   <year>1987</year>
-  <rating>Other - NR (Not Rated)</rating>
+  <genre>Action</genre>
   <publisher>XAIN</publisher>
   <developer />
-  <genre>Action</genre>
+  <rating>Other - NR (Not Rated)</rating>
 </game>
-<game name="Gekitotsu Pennant Race - Pro Yakyuu, The (Japan)">
+<game ROM="Gekitotsu Pennant Race - Pro Yakyuu, The (Japan)">
   <title>Gekitotsu Pennant Race - Pro Yakyuu, The (Japan)</title>
   <year>1988</year>
-  <rating>Other - NR (Not Rated)</rating>
+  <genre>Sports</genre>
   <publisher>Konami</publisher>
   <developer />
-  <genre>Sports</genre>
+  <rating>Other - NR (Not Rated)</rating>
 </game>
-<game name="Gekitotsu Pennant Race 2 (Japan) (English Menu)">
+<game ROM="Gekitotsu Pennant Race 2 (Japan) (English Menu)">
   <title>Gekitotsu Pennant Race 2 (Japan) (English Menu)</title>
   <year>1989</year>
-  <rating>Other - NR (Not Rated)</rating>
+  <genre>Sports</genre>
   <publisher>Konami</publisher>
   <developer />
-  <genre>Sports</genre>
+  <rating>Other - NR (Not Rated)</rating>
 </game>
-<game name="Girly Block (Japan)">
+<game ROM="Girly Block (Japan)">
   <title>Girly Block (Japan)</title>
   <year>1988</year>
-  <rating>Other - NR (Not Rated)</rating>
+  <genre>Action</genre>
   <publisher>Compile / Nippon Telenet</publisher>
   <developer />
-  <genre>Action</genre>
+  <rating>Other - NR (Not Rated)</rating>
 </game>
-<game name="Gitahei (Japan)">
+<game ROM="Gitahei (Japan)">
   <title>Gitahei (Japan)</title>
   <year>1986</year>
-  <rating>Other - NR (Not Rated)</rating>
+  <genre>Tabletop</genre>
   <publisher>Micro Cabin</publisher>
   <developer />
-  <genre>Tabletop</genre>
+  <rating>Other - NR (Not Rated)</rating>
 </game>
-<game name="Go Othello. Connect Stones (Japan)">
+<game ROM="Go Othello. Connect Stones (Japan)">
   <title>Go Othello. Connect Stones (Japan)</title>
   <year>1990</year>
-  <rating>Other - NR (Not Rated)</rating>
+  <genre>Tabletop</genre>
   <publisher>Konami</publisher>
   <developer />
-  <genre>Tabletop</genre>
+  <rating>Other - NR (Not Rated)</rating>
 </game>
-<game name="Hacker (Japan)">
+<game ROM="Hacker (Japan)">
   <title>Hacker (Japan)</title>
   <year>1988</year>
-  <rating>Other - NR (Not Rated)</rating>
+  <genre>Adventure</genre>
   <publisher>Pony Canyon</publisher>
   <developer />
-  <genre>Adventure</genre>
+  <rating>Other - NR (Not Rated)</rating>
 </game>
-<game name="Hai no Majutsushi (Japan)">
+<game ROM="Hai no Majutsushi (Japan)">
   <title>Hai no Majutsushi (Japan)</title>
   <year>1989</year>
-  <rating>Other - NR (Not Rated)</rating>
+  <genre>Tabletop</genre>
   <publisher>Konami</publisher>
   <developer />
-  <genre>Tabletop</genre>
+  <rating>Other - NR (Not Rated)</rating>
 </game>
-<game name="Han Seimei Senki Andorogynus (Japan)">
+<game ROM="Han Seimei Senki Andorogynus (Japan)">
   <title>Han Seimei Senki Andorogynus (Japan)</title>
   <year>1987</year>
-  <rating>Other - NR (Not Rated)</rating>
+  <genre>Action</genre>
   <publisher>Telenet Japan Co., Ltd.</publisher>
   <developer />
-  <genre>Action</genre>
+  <rating>Other - NR (Not Rated)</rating>
 </game>
-<game name="Hard Ball (Japan)">
+<game ROM="Hard Ball (Japan)">
   <title>Hard Ball (Japan)</title>
   <year>1987</year>
-  <rating>Other - NR (Not Rated)</rating>
+  <genre>Sports</genre>
   <publisher>SCEI</publisher>
   <developer />
-  <genre>Sports</genre>
+  <rating>Other - NR (Not Rated)</rating>
 </game>
-<game name="Heroes of the Lance (Japan)">
+<game ROM="Heroes of the Lance (Japan)">
   <title>Heroes of the Lance (Japan)</title>
   <year>1991</year>
-  <rating>Other - NR (Not Rated)</rating>
+  <genre>Role-Playing</genre>
   <publisher>Pony Canyon</publisher>
   <developer />
-  <genre>Role-Playing</genre>
+  <rating>Other - NR (Not Rated)</rating>
 </game>
-<game name="Higemaru Makai Shima - Nanatsu no Shima Daibouken (Japan)">
+<game ROM="Higemaru Makai Shima - Nanatsu no Shima Daibouken (Japan)">
   <title>Higemaru Makai Shima - Nanatsu no Shima Daibouken (Japan)</title>
   <year>1987</year>
-  <rating>Other - NR (Not Rated)</rating>
+  <genre>Action</genre>
   <publisher>Compile / Capcom</publisher>
   <developer />
-  <genre>Action</genre>
+  <rating>Other - NR (Not Rated)</rating>
 </game>
-<game name="High School! Kimengumi (Japan)">
+<game ROM="High School! Kimengumi (Japan)">
   <title>High School! Kimengumi (Japan)</title>
   <year>1987</year>
-  <rating>Other - NR (Not Rated)</rating>
+  <genre>Action</genre>
   <publisher>Pony Canyon</publisher>
   <developer />
-  <genre>Action</genre>
+  <rating>Other - NR (Not Rated)</rating>
 </game>
-<game name="Hinotori - Houou Hen (Japan)">
+<game ROM="Hinotori - Houou Hen (Japan)">
   <title>Hinotori - Houou Hen (Japan)</title>
   <year>1987</year>
-  <rating>Other - NR (Not Rated)</rating>
+  <genre>Shoot-&apos;Em-Up</genre>
   <publisher>Konami</publisher>
   <developer />
-  <genre>Shoot-&apos;Em-Up</genre>
+  <rating>Other - NR (Not Rated)</rating>
 </game>
-<game name="Hole in One Special (Japan)">
+<game ROM="Hole in One Special (Japan)">
   <title>Hole in One Special (Japan)</title>
   <year>1986</year>
-  <rating>Other - NR (Not Rated)</rating>
+  <genre>Sports</genre>
   <publisher>Hal</publisher>
   <developer />
-  <genre>Sports</genre>
+  <rating>Other - NR (Not Rated)</rating>
 </game>
-<game name="Hydlide 3 - The Space Memories (Japan)">
+<game ROM="Hydlide 3 - The Space Memories (Japan)">
   <title>Hydlide 3 - The Space Memories (Japan)</title>
   <year>1987</year>
-  <rating>Other - NR (Not Rated)</rating>
+  <genre>Role-Playing</genre>
   <publisher>TE Soft</publisher>
   <developer />
-  <genre>Role-Playing</genre>
+  <rating>Other - NR (Not Rated)</rating>
 </game>
-<game name="Hyper Somen (Japan)">
+<game ROM="Hyper Somen (Japan)">
   <title>Hyper Somen (Japan)</title>
   <year>1989</year>
-  <rating>Other - NR (Not Rated)</rating>
+  <genre>Miscellaneous</genre>
   <publisher>Konami</publisher>
   <developer />
-  <genre>Miscellaneous</genre>
+  <rating>Other - NR (Not Rated)</rating>
 </game>
-<game name="Ide Yousuke Meijin no Jissen Mahjong (Japan)">
+<game ROM="Ide Yousuke Meijin no Jissen Mahjong (Japan)">
   <title>Ide Yousuke Meijin no Jissen Mahjong (Japan)</title>
   <year>1988</year>
-  <rating>Other - NR (Not Rated)</rating>
+  <genre>Mahjong</genre>
   <publisher>Pack-In-Video</publisher>
   <developer />
-  <genre>Mahjong</genre>
+  <rating>Other - NR (Not Rated)</rating>
 </game>
-<game name="Ikari (Japan)">
+<game ROM="Ikari (Japan)">
   <title>Ikari (Japan)</title>
   <year>1987</year>
-  <rating>Other - NR (Not Rated)</rating>
+  <genre>Shooter</genre>
   <publisher>SNK</publisher>
   <developer />
-  <genre>Shooter</genre>
+  <rating>Other - NR (Not Rated)</rating>
 </game>
-<game name="Inindou - Datou Nobunaga (Japan)">
+<game ROM="Inindou - Datou Nobunaga (Japan)">
   <title>Inindou - Datou Nobunaga (Japan)</title>
   <year>1991</year>
-  <rating>Other - NR (Not Rated)</rating>
+  <genre>Role-Playing</genre>
   <publisher>Koei</publisher>
   <developer />
-  <genre>Role-Playing</genre>
+  <rating>Other - NR (Not Rated)</rating>
 </game>
-<game name="Ishin no Arashi (Japan)">
+<game ROM="Ishin no Arashi (Japan)">
   <title>Ishin no Arashi (Japan)</title>
   <year>1989</year>
-  <rating>Other - NR (Not Rated)</rating>
+  <genre>Strategy</genre>
   <publisher>Koei</publisher>
   <developer />
-  <genre>Strategy</genre>
+  <rating>Other - NR (Not Rated)</rating>
 </game>
-<game name="Jansei (Japan)">
+<game ROM="Jansei (Japan)">
   <title>Jansei (Japan)</title>
   <year>1986</year>
-  <rating>Other - NR (Not Rated)</rating>
+  <genre>Tabletop</genre>
   <publisher>Chatnoir / Sony Corporation</publisher>
   <developer />
-  <genre>Tabletop</genre>
+  <rating>Other - NR (Not Rated)</rating>
 </game>
-<game name="Janyuu (Japan)">
+<game ROM="Janyuu (Japan)">
   <title>Janyuu (Japan)</title>
   <year>1986</year>
-  <rating>Other - NR (Not Rated)</rating>
+  <genre>Mahjong</genre>
   <publisher>SCEE</publisher>
   <developer />
-  <genre>Mahjong</genre>
+  <rating>Other - NR (Not Rated)</rating>
 </game>
-<game name="Kenpelen Chess (Japan)">
+<game ROM="Kenpelen Chess (Japan)">
   <title>Kempelen Chess (Japan)</title>
   <year>1988</year>
-  <rating>Other - NR (Not Rated)</rating>
+  <genre>Tabletop</genre>
   <publisher>Pony Canyon</publisher>
   <developer />
-  <genre>Tabletop</genre>
+  <rating>Other - NR (Not Rated)</rating>
 </game>
-<game name="Kikikai-kai (Japan)">
+<game ROM="Kikikai-kai (Japan)">
   <title>Kikikai-kai (Japan)</title>
   <year>1987</year>
-  <rating>Other - NR (Not Rated)</rating>
+  <genre>Shooter</genre>
   <publisher>Pixel / SCEI</publisher>
   <developer />
-  <genre>Shooter</genre>
+  <rating>Other - NR (Not Rated)</rating>
 </game>
-<game name="King Kong 2 - Yomigaeru Densetsu (Japan)">
+<game ROM="King Kong 2 - Yomigaeru Densetsu (Japan)">
   <title>King Kong 2 - Yomigaeru Densetsu (Japan)</title>
   <year>1987</year>
-  <rating>Other - NR (Not Rated)</rating>
+  <genre>Action</genre>
   <publisher>Konami</publisher>
   <developer />
-  <genre>Action</genre>
+  <rating>Other - NR (Not Rated)</rating>
 </game>
-<game name="King Kong 2 - Yomigaeru Densetsu (Japan)(Translated En)">
+<game ROM="King Kong 2 - Yomigaeru Densetsu (Japan)(Translated En)">
   <title>King Kong 2 - Yomigaeru Densetsu (Japan)(Translated En) (Japan)</title>
   <year>1987</year>
-  <rating>Other - NR (Not Rated)</rating>
+  <genre>Action</genre>
   <publisher>Konami</publisher>
   <developer />
-  <genre>Action</genre>
+  <rating>Other - NR (Not Rated)</rating>
 </game>
-<game name="King&apos;s Valley II - The Seal of El Giza (Japan)">
+<game ROM="King&apos;s Valley II - The Seal of El Giza (Japan)">
   <title>King&apos;s Valley II - The Seal of El Giza (Japan)</title>
   <year>1988</year>
-  <rating>Other - NR (Not Rated)</rating>
+  <genre>Action</genre>
   <publisher>Konami</publisher>
   <developer />
-  <genre>Action</genre>
+  <rating>Other - NR (Not Rated)</rating>
 </game>
-<game name="King&apos;s Valley II - The Seal of El Giza - Edit Contest Version (Japan)">
+<game ROM="King&apos;s Valley II - The Seal of El Giza - Edit Contest Version (Japan)">
   <title>King&apos;s Valley II - The Seal of El Giza - Edit Contest Version (Japan)</title>
   <year>1988</year>
-  <rating>Other - NR (Not Rated)</rating>
+  <genre>Action</genre>
   <publisher>Konami</publisher>
   <developer />
-  <genre>Action</genre>
+  <rating>Other - NR (Not Rated)</rating>
 </game>
-<game name="Kisei (Japan)">
+<game ROM="Kisei (Japan)">
   <title>Kisei (Japan)</title>
   <year>1987</year>
-  <rating>Other - NR (Not Rated)</rating>
+  <genre>Tabletop</genre>
   <publisher>SCEI</publisher>
   <developer />
-  <genre>Tabletop</genre>
+  <rating>Other - NR (Not Rated)</rating>
 </game>
-<game name="Koji Tanigawa&apos;s Shougi Shinan II (Japan)">
+<game ROM="Koji Tanigawa&apos;s Shougi Shinan II (Japan)">
   <title>Koji Tanigawa&apos;s Shougi Shinan II (Japan)</title>
   <year>1988</year>
-  <rating>Other - NR (Not Rated)</rating>
+  <genre>Tabletop</genre>
   <publisher>Pony Canyon</publisher>
   <developer />
-  <genre>Tabletop</genre>
+  <rating>Other - NR (Not Rated)</rating>
 </game>
-<game name="Koronis Rift (Europe)">
+<game ROM="Koronis Rift (Europe)">
   <title>Koronis Rift (Europe)</title>
   <year>1987</year>
-  <rating>Other - NR (Not Rated)</rating>
+  <genre>Action</genre>
   <publisher>Pony Canyon</publisher>
   <developer />
-  <genre>Action</genre>
+  <rating>Other - NR (Not Rated)</rating>
 </game>
-<game name="Kyoto Ryu no Tera Satsujin Jiken (Japan)">
+<game ROM="Kyoto Ryu no Tera Satsujin Jiken (Japan)">
   <title>Kyoto Ryu no Tera Satsujin Jiken (Japan)</title>
   <year>1988</year>
-  <rating>Other - NR (Not Rated)</rating>
+  <genre>Adventure</genre>
   <publisher>Taito</publisher>
   <developer />
-  <genre>Adventure</genre>
+  <rating>Other - NR (Not Rated)</rating>
 </game>
-<game name="Labyrinth (Japan)">
+<game ROM="Labyrinth (Japan)">
   <title>Labyrinth (Japan)</title>
   <year>1987</year>
-  <rating>Other - NR (Not Rated)</rating>
+  <genre>Shooter</genre>
   <publisher>Pack-In-Video</publisher>
   <developer />
-  <genre>Shooter</genre>
+  <rating>Other - NR (Not Rated)</rating>
 </game>
-<game name="Livingstone Supongo (Japan)">
+<game ROM="Livingstone Supongo (Japan)">
   <title>Livingstone Supongo (Japan)</title>
   <year>1987</year>
-  <rating>Other - NR (Not Rated)</rating>
+  <genre>Platform</genre>
   <publisher>Opera Soft</publisher>
   <developer />
-  <genre>Platform</genre>
+  <rating>Other - NR (Not Rated)</rating>
 </game>
-<game name="Lupin Sansei - Babylon no Ougon Densetsu (Japan)">
+<game ROM="Lupin Sansei - Babylon no Ougon Densetsu (Japan)">
   <title>Lupin Sansei - Babylon no Ougon Densetsu (Japan)</title>
   <year>1988</year>
-  <rating>Other - NR (Not Rated)</rating>
+  <genre>Platform</genre>
   <publisher>Toho</publisher>
   <developer />
-  <genre>Platform</genre>
+  <rating>Other - NR (Not Rated)</rating>
 </game>
-<game name="Lupin Sansei - Cagliostro no Shiro (Japan)">
+<game ROM="Lupin Sansei - Cagliostro no Shiro (Japan)">
   <title>Lupin Sansei - Cagliostro no Shiro (Japan)</title>
   <year>1987</year>
-  <rating>Other - NR (Not Rated)</rating>
+  <genre>Platform</genre>
   <publisher>Toho</publisher>
   <developer />
-  <genre>Platform</genre>
+  <rating>Other - NR (Not Rated)</rating>
 </game>
-<game name="Mad Rider (Japan)">
+<game ROM="Mad Rider (Japan)">
   <title>Mad Rider (Japan)</title>
   <year>1987</year>
-  <rating>Other - NR (Not Rated)</rating>
+  <genre>Driving</genre>
   <publisher>Carry Lab</publisher>
   <developer />
-  <genre>Driving</genre>
+  <rating>Other - NR (Not Rated)</rating>
 </game>
-<game name="Maison Ikkoku - Kanketsu Hen - Sayonara, Soshite... (Japan)">
+<game ROM="Maison Ikkoku - Kanketsu Hen - Sayonara, Soshite... (Japan)">
   <title>Maison Ikkoku - Kanketsu Hen - Sayonara, Soshite... (Japan)</title>
   <year>1988</year>
-  <rating>Other - NR (Not Rated)</rating>
+  <genre>Adventure</genre>
   <publisher>Micro Cabin</publisher>
   <developer />
-  <genre>Adventure</genre>
+  <rating>Other - NR (Not Rated)</rating>
 </game>
-<game name="Maison Ikkoku - Omoide no Photograph (Japan)">
+<game ROM="Maison Ikkoku - Omoide no Photograph (Japan)">
   <title>Maison Ikkoku - Omoide no Photograph (Japan)</title>
   <year>1987</year>
-  <rating>Other - NR (Not Rated)</rating>
+  <genre>Adventure</genre>
   <publisher>Micro Cabin</publisher>
   <developer />
-  <genre>Adventure</genre>
+  <rating>Other - NR (Not Rated)</rating>
 </game>
-<game name="Malaya no Hibou (Japan)">
+<game ROM="Malaya no Hibou (Japan)">
   <title>Malaya no Hibou (Japan)</title>
   <year>1988</year>
-  <rating>Other - NR (Not Rated)</rating>
+  <genre>Action</genre>
   <publisher>Pony Canyon</publisher>
   <developer />
-  <genre>Action</genre>
+  <rating>Other - NR (Not Rated)</rating>
 </game>
-<game name="Metal Gear (Europe)">
+<game ROM="Metal Gear (Europe)">
   <title>Metal Gear (Europe)</title>
   <year>1987</year>
-  <rating>Other - NR (Not Rated)</rating>
+  <genre>Action</genre>
   <publisher>Konami</publisher>
   <developer />
-  <genre>Action</genre>
+  <rating>Other - NR (Not Rated)</rating>
 </game>
-<game name="Metal Gear (Japan)">
+<game ROM="Metal Gear (Japan)">
   <title>Metal Gear (Japan)</title>
   <year>1987</year>
-  <rating>Other - NR (Not Rated)</rating>
+  <genre>Action</genre>
   <publisher>Konami</publisher>
   <developer />
-  <genre>Action</genre>
+  <rating>Other - NR (Not Rated)</rating>
 </game>
-<game name="Metal Gear 2 - Solid Snake (Japan)">
+<game ROM="Metal Gear 2 - Solid Snake (Japan)">
   <title>Metal Gear 2 - Solid Snake (Japan)</title>
   <year>1990</year>
-  <rating>Other - NR (Not Rated)</rating>
+  <genre>Action</genre>
   <publisher>Konami</publisher>
   <developer />
-  <genre>Action</genre>
+  <rating>Other - NR (Not Rated)</rating>
 </game>
-<game name="Metal Gear 2 - Solid Snake (Japan) (Demo)">
+<game ROM="Metal Gear 2 - Solid Snake (Japan) (Demo)">
   <title>Metal Gear 2 - Solid Snake (Japan) (Demo)</title>
   <year>1990</year>
-  <rating>Other - NR (Not Rated)</rating>
+  <genre>Action</genre>
   <publisher>Konami</publisher>
   <developer />
-  <genre>Action</genre>
+  <rating>Other - NR (Not Rated)</rating>
 </game>
-<game name="Metal Gear 2 - Solid Snake (Japan)(Translated En)">
+<game ROM="Metal Gear 2 - Solid Snake (Japan)(Translated En)">
   <title>Metal Gear 2 - Solid Snake (Japan)(Translated En)</title>
   <year>1990</year>
-  <rating>Other - NR (Not Rated)</rating>
+  <genre>Action</genre>
   <publisher>Konami</publisher>
   <developer />
-  <genre>Action</genre>
+  <rating>Other - NR (Not Rated)</rating>
 </game>
-<game name="Mirai (Japan)">
+<game ROM="Mirai (Japan)">
   <title>Mirai (Japan)</title>
   <year>1987</year>
-  <rating>Other - NR (Not Rated)</rating>
+  <genre>Role-Playing</genre>
   <publisher>XAIN</publisher>
   <developer />
-  <genre>Role-Playing</genre>
+  <rating>Other - NR (Not Rated)</rating>
 </game>
-<game name="Mississippi Satsujinjiken (Japan)">
+<game ROM="Mississippi Satsujinjiken (Japan)">
   <title>Mississippi Satsujinjiken (Japan)</title>
   <year>1987</year>
-  <rating>Other - NR (Not Rated)</rating>
+  <genre>Adventure</genre>
   <publisher>Jaleco Entertainment</publisher>
   <developer />
-  <genre>Adventure</genre>
+  <rating>Other - NR (Not Rated)</rating>
 </game>
-<game name="Moero!! Nettou Yakyuu &apos;88 (Japan)">
+<game ROM="Moero!! Nettou Yakyuu &apos;88 (Japan)">
   <title>Moero!! Nettou Yakyuu &apos;88 (Japan)</title>
   <year>1988</year>
-  <rating>Other - NR (Not Rated)</rating>
+  <genre>Sports</genre>
   <publisher>Jaleco Entertainment</publisher>
   <developer />
-  <genre>Sports</genre>
+  <rating>Other - NR (Not Rated)</rating>
 </game>
-<game name="Monmon Kaibutsu (Japan)">
+<game ROM="Monmon Kaibutsu (Japan)">
   <title>Monmon Kaibutsu (Japan)</title>
   <year>1989</year>
-  <rating>Other - NR (Not Rated)</rating>
+  <genre>Action</genre>
   <publisher>Hot-B</publisher>
   <developer />
-  <genre>Action</genre>
+  <rating>Other - NR (Not Rated)</rating>
 </game>
-<game name="Nekketsu Juudou (Japan)">
+<game ROM="Nekketsu Juudou (Japan)">
   <title>Nekketsu Juudou (Japan)</title>
   <year>1989</year>
-  <rating>Other - NR (Not Rated)</rating>
+  <genre>Sports</genre>
   <publisher>Opera House / Pony Canyon</publisher>
   <developer />
-  <genre>Sports</genre>
+  <rating>Other - NR (Not Rated)</rating>
 </game>
-<game name="Ninja-kun - Asura no Shou (Japan)">
+<game ROM="Ninja-kun - Asura no Shou (Japan)">
   <title>Ninja-kun - Asura no Shou (Japan)</title>
   <year>1987</year>
-  <rating>Other - NR (Not Rated)</rating>
+  <genre>Action</genre>
   <publisher>Opera House / HAL Labs</publisher>
   <developer />
-  <genre>Action</genre>
+  <rating>Other - NR (Not Rated)</rating>
 </game>
-<game name="Nobunaga no Yabou - Zenkoku Ban (Japan)">
+<game ROM="Nobunaga no Yabou - Zenkoku Ban (Japan)">
   <title>Nobunaga no Yabou - Zenkoku Ban (Japan)</title>
   <year>1987</year>
-  <rating>Other - NR (Not Rated)</rating>
+  <genre>Strategy</genre>
   <publisher>Koei</publisher>
   <developer />
-  <genre>Strategy</genre>
+  <rating>Other - NR (Not Rated)</rating>
 </game>
-<game name="Nobunaga no Yabou 2 - Sengoku Gunyuu Den (Japan)">
+<game ROM="Nobunaga no Yabou 2 - Sengoku Gunyuu Den (Japan)">
   <title>Nobunaga no Yabou 2 - Sengoku Gunyuu Den (Japan)</title>
   <year>1989</year>
-  <rating>Other - NR (Not Rated)</rating>
+  <genre>Strategy</genre>
   <publisher>Koei</publisher>
   <developer />
-  <genre>Strategy</genre>
+  <rating>Other - NR (Not Rated)</rating>
 </game>
-<game name="Nobunaga no Yabou 3 - Bushou Fuuun Roku (Japan)">
+<game ROM="Nobunaga no Yabou 3 - Bushou Fuuun Roku (Japan)">
   <title>Nobunaga no Yabou 3 - Bushou Fuuun Roku (Japan)</title>
   <year>1991</year>
-  <rating>Other - NR (Not Rated)</rating>
+  <genre>Strategy</genre>
   <publisher>Koei</publisher>
   <developer />
-  <genre>Strategy</genre>
+  <rating>Other - NR (Not Rated)</rating>
 </game>
-<game name="Ogre (Japan)">
+<game ROM="Ogre (Japan)">
   <title>Ogre (Japan)</title>
   <year>1987</year>
-  <rating>Other - NR (Not Rated)</rating>
+  <genre>Action</genre>
   <publisher>SystemSoft</publisher>
   <developer />
-  <genre>Action</genre>
+  <rating>Other - NR (Not Rated)</rating>
 </game>
-<game name="Out Run (Japan)">
+<game ROM="Out Run (Japan)">
   <title>Out Run (Japan)</title>
   <year>1988</year>
-  <rating>Other - NR (Not Rated)</rating>
+  <genre>Driving</genre>
   <publisher>Bedrock Software / US Gold</publisher>
   <developer />
-  <genre>Driving</genre>
+  <rating>Other - NR (Not Rated)</rating>
 </game>
-<game name="Pac-Mania (Japan)">
+<game ROM="Pac-Mania (Japan)">
   <title>Pac-Mania (Japan)</title>
   <year>1989</year>
-  <rating>Other - NR (Not Rated)</rating>
+  <genre>Action</genre>
   <publisher>Namco</publisher>
   <developer />
-  <genre>Action</genre>
+  <rating>Other - NR (Not Rated)</rating>
 </game>
-<game name="Pachi Pro Densetsu (Japan)">
+<game ROM="Pachi Pro Densetsu (Japan)">
   <title>Pachi Pro Densetsu (Japan)</title>
   <year>1989</year>
-  <rating>Other - NR (Not Rated)</rating>
+  <genre>Miscellaneous</genre>
   <publisher>Hal</publisher>
   <developer />
-  <genre>Miscellaneous</genre>
+  <rating>Other - NR (Not Rated)</rating>
 </game>
-<game name="Penguin-kun Wars 2 (Japan)">
+<game ROM="Penguin-kun Wars 2 (Japan)">
   <title>Penguin-kun Wars 2 (Japan)</title>
   <year>1988</year>
-  <rating>Other - NR (Not Rated)</rating>
+  <genre>Action</genre>
   <publisher>ASCII Entertainment</publisher>
   <developer />
-  <genre>Action</genre>
+  <rating>Other - NR (Not Rated)</rating>
 </game>
-<game name="Penguin-kun Wars 2 (Japan)(Translated En)">
+<game ROM="Penguin-kun Wars 2 (Japan)(Translated En)">
   <title>Penguin-kun Wars 2 (Japan)(Translated En)</title>
   <year>1988</year>
-  <rating>Other - NR (Not Rated)</rating>
+  <genre>Action</genre>
   <publisher>ASCII Entertainment</publisher>
   <developer />
-  <genre>Action</genre>
+  <rating>Other - NR (Not Rated)</rating>
 </game>
-<game name="Persevere Goemon! A Tricky Journey (Japan)(Translated En)">
+<game ROM="Persevere Goemon! A Tricky Journey (Japan)(Translated En)">
   <title>Persevere Goemon! A Tricky Journey (Japan)(Translated En)</title>
   <year>1987</year>
-  <rating>Other - NR (Not Rated)</rating>
+  <genre>Action</genre>
   <publisher>Konami</publisher>
   <developer />
-  <genre>Action</genre>
+  <rating>Other - NR (Not Rated)</rating>
 </game>
-<game name="Predator (Japan)">
+<game ROM="Predator (Japan)">
   <title>Predator (Japan)</title>
   <year>1988</year>
-  <rating>Other - NR (Not Rated)</rating>
+  <genre>Shooter</genre>
   <publisher>Pack-In-Video</publisher>
   <developer />
-  <genre>Shooter</genre>
+  <rating>Other - NR (Not Rated)</rating>
 </game>
-<game name="Pro Yakyuu Family Stadium - Pennant Race (Japan)">
+<game ROM="Pro Yakyuu Family Stadium - Pennant Race (Japan)">
   <title>Pro Yakyuu Family Stadium - Pennant Race (Japan)</title>
   <year>1989</year>
-  <rating>Other - NR (Not Rated)</rating>
+  <genre>Sports</genre>
   <publisher>Compile / Namco</publisher>
   <developer />
-  <genre>Sports</genre>
+  <rating>Other - NR (Not Rated)</rating>
 </game>
-<game name="Pro Yakyuu Fan - Telenet Stadium (Japan)">
+<game ROM="Pro Yakyuu Fan - Telenet Stadium (Japan)">
   <title>Pro Yakyuu Fan - Telenet Stadium (Japan)</title>
   <year>1987</year>
-  <rating>Other - NR (Not Rated)</rating>
+  <genre>Action</genre>
   <publisher>Nippon Telenet</publisher>
   <developer />
-  <genre>Action</genre>
+  <rating>Other - NR (Not Rated)</rating>
 </game>
-<game name="Professional Mahjong Gokuu (Japan)">
+<game ROM="Professional Mahjong Gokuu (Japan)">
   <title>Professional Mahjong Gokuu (Japan)</title>
   <year>1988</year>
-  <rating>Other - NR (Not Rated)</rating>
+  <genre>Mahjong</genre>
   <publisher>Chat Noir</publisher>
   <developer />
-  <genre>Mahjong</genre>
+  <rating>Other - NR (Not Rated)</rating>
 </game>
-<game name="Project A2 - Shijousaidai no Hyouteki (Japan)">
+<game ROM="Project A2 - Shijousaidai no Hyouteki (Japan)">
   <title>Project A2 - Shijousaidai no Hyouteki (Japan)</title>
   <year>1987</year>
-  <rating>Other - NR (Not Rated)</rating>
+  <genre>Action</genre>
   <publisher>Opera House / Pony Canyon</publisher>
   <developer />
-  <genre>Action</genre>
+  <rating>Other - NR (Not Rated)</rating>
 </game>
-<game name="Quarth (Japan)">
+<game ROM="Quarth (Japan)">
   <title>Quarth (Japan)</title>
   <year>1990</year>
-  <rating>Other - NR (Not Rated)</rating>
+  <genre>Puzzle</genre>
   <publisher>Konami</publisher>
   <developer />
-  <genre>Puzzle</genre>
+  <rating>Other - NR (Not Rated)</rating>
 </game>
-<game name="Quarth (Japan) (Demo)">
+<game ROM="Quarth (Japan) (Demo)">
   <title>Quarth (Japan) (Demo)</title>
   <year>1990</year>
-  <rating>Other - NR (Not Rated)</rating>
+  <genre>Puzzle</genre>
   <publisher>Konami</publisher>
   <developer />
-  <genre>Puzzle</genre>
+  <rating>Other - NR (Not Rated)</rating>
 </game>
-<game name="Quarth (Korea)">
+<game ROM="Quarth (Korea)">
   <title>Quarth (Korea)</title>
   <year>1990</year>
-  <rating>Other - NR (Not Rated)</rating>
+  <genre>Puzzle</genre>
   <publisher>Konami</publisher>
   <developer />
-  <genre>Puzzle</genre>
+  <rating>Other - NR (Not Rated)</rating>
 </game>
-<game name="Quinpl (Japan)">
+<game ROM="Quinpl (Japan)">
   <title>Quinpl (Japan)</title>
   <year>1988</year>
-  <rating>Other - NR (Not Rated)</rating>
+  <genre>Action</genre>
   <publisher>Bit2</publisher>
   <developer />
-  <genre>Action</genre>
+  <rating>Other - NR (Not Rated)</rating>
 </game>
-<game name="Rastan Saga (Japan)">
+<game ROM="Rastan Saga (Japan)">
   <title>Rastan Saga (Japan)</title>
   <year>1988</year>
-  <rating>Other - NR (Not Rated)</rating>
+  <genre>Platform</genre>
   <publisher>Taito Corporation</publisher>
   <developer />
-  <genre>Platform</genre>
+  <rating>Other - NR (Not Rated)</rating>
 </game>
-<game name="Relics (Japan)">
+<game ROM="Relics (Japan)">
   <title>Relics (Japan)</title>
   <year>1988</year>
-  <rating>Other - NR (Not Rated)</rating>
+  <genre>Action</genre>
   <publisher>Bothtec / Eaglesoft</publisher>
   <developer />
-  <genre>Action</genre>
+  <rating>Other - NR (Not Rated)</rating>
 </game>
-<game name="Replicart (Japan)">
+<game ROM="Replicart (Japan)">
   <title>Replicart (Japan)</title>
   <year>1987</year>
-  <rating>Other - NR (Not Rated)</rating>
+  <genre>Action</genre>
   <publisher>Dual / SCEI</publisher>
   <developer />
-  <genre>Action</genre>
+  <rating>Other - NR (Not Rated)</rating>
 </game>
-<game name="Return of Ishtar, The (Japan)">
+<game ROM="Return of Ishtar, The (Japan)">
   <title>Return of Ishtar, The (Japan)</title>
   <year>1988</year>
-  <rating>Other - NR (Not Rated)</rating>
+  <genre>Action</genre>
   <publisher>Namco</publisher>
   <developer />
-  <genre>Action</genre>
+  <rating>Other - NR (Not Rated)</rating>
 </game>
-<game name="Return of Jelda (Japan)">
+<game ROM="Return of Jelda (Japan)">
   <title>Return of Jelda (Japan)</title>
   <year>1987</year>
-  <rating>Other - NR (Not Rated)</rating>
+  <genre>Action</genre>
   <publisher>Carry Lab</publisher>
   <developer />
-  <genre>Action</genre>
+  <rating>Other - NR (Not Rated)</rating>
 </game>
-<game name="Rick to Mick no Daibouken (Japan)">
+<game ROM="Rick to Mick no Daibouken (Japan)">
   <title>Rick to Mick no Daibouken (Japan)</title>
   <year>1987</year>
-  <rating>Other - NR (Not Rated)</rating>
+  <genre>Action</genre>
   <publisher>Hummingbird Soft</publisher>
   <developer />
-  <genre>Action</genre>
+  <rating>Other - NR (Not Rated)</rating>
 </game>
-<game name="Royal Blood (Japan)">
+<game ROM="Royal Blood (Japan)">
   <title>Royal Blood (Japan)</title>
   <year>1991</year>
-  <rating>Other - NR (Not Rated)</rating>
+  <genre>Strategy</genre>
   <publisher>Koei</publisher>
   <developer />
-  <genre>Strategy</genre>
+  <rating>Other - NR (Not Rated)</rating>
 </game>
-<game name="Sangokushi (Japan)">
+<game ROM="Sangokushi (Japan)">
   <title>Sangokushi (Japan)</title>
   <year>1986</year>
-  <rating>Other - NR (Not Rated)</rating>
+  <genre>Strategy</genre>
   <publisher>Koei</publisher>
   <developer />
-  <genre>Strategy</genre>
+  <rating>Other - NR (Not Rated)</rating>
 </game>
-<game name="Sangokushi II (Japan)">
+<game ROM="Sangokushi II (Japan)">
   <title>Sangokushi II (Japan)</title>
   <year>1990</year>
-  <rating>Other - NR (Not Rated)</rating>
+  <genre>Strategy</genre>
   <publisher>Koei</publisher>
   <developer />
-  <genre>Strategy</genre>
+  <rating>Other - NR (Not Rated)</rating>
 </game>
-<game name="Scramble Formation (Japan)">
+<game ROM="Scramble Formation (Japan)">
   <title>Scramble Formation (Japan)</title>
   <year>1987</year>
-  <rating>Other - NR (Not Rated)</rating>
+  <genre>Shoot-&apos;Em-Up</genre>
   <publisher>Taito Corporation</publisher>
   <developer />
-  <genre>Shoot-&apos;Em-Up</genre>
+  <rating>Other - NR (Not Rated)</rating>
 </game>
-<game name="Seigimatsu II Special Attack Devil (Japan)">
+<game ROM="Seigimatsu II Special Attack Devil (Japan)">
   <title>Seigimatsu II Special Attack Devil (Japan)</title>
   <year>1987</year>
-  <rating>Other - NR (Not Rated)</rating>
+  <genre>Action</genre>
   <publisher>Sony</publisher>
   <developer />
-  <genre>Action</genre>
+  <rating>Other - NR (Not Rated)</rating>
 </game>
-<game name="Shanghai (Japan)">
+<game ROM="Shanghai (Japan)">
   <title>Shanghai (Japan)</title>
   <year>1987</year>
-  <rating>Other - NR (Not Rated)</rating>
+  <genre>Mahjong</genre>
   <publisher>System Soft / Activision</publisher>
   <developer />
-  <genre>Mahjong</genre>
+  <rating>Other - NR (Not Rated)</rating>
 </game>
-<game name="Shirei Sensen - War of the Dead (Japan)">
+<game ROM="Shirei Sensen - War of the Dead (Japan)">
   <title>Shirei Sensen - War of the Dead (Japan)</title>
   <year>1988</year>
-  <rating>Other - NR (Not Rated)</rating>
+  <genre>Role-Playing</genre>
   <publisher>Fun Factory</publisher>
   <developer />
-  <genre>Role-Playing</genre>
+  <rating>Other - NR (Not Rated)</rating>
 </game>
-<game name="Space Manbow (Japan)">
+<game ROM="Space Manbow (Japan)">
   <title>Space Manbow (Japan)</title>
   <year>1989</year>
-  <rating>Other - NR (Not Rated)</rating>
+  <genre>Shoot-&apos;Em-Up</genre>
   <publisher>Konami</publisher>
   <developer />
-  <genre>Shoot-&apos;Em-Up</genre>
+  <rating>Other - NR (Not Rated)</rating>
 </game>
-<game name="Star Virgin (Japan)">
+<game ROM="Star Virgin (Japan)">
   <title>Star Virgin (Japan)</title>
   <year>1988</year>
-  <rating>Other - NR (Not Rated)</rating>
+  <genre>Action</genre>
   <publisher>Marionette / Pony Canyon</publisher>
   <developer />
-  <genre>Action</genre>
+  <rating>Other - NR (Not Rated)</rating>
 </game>
-<game name="Strategic Mars (Japan)">
+<game ROM="Strategic Mars (Japan)">
   <title>Strategic Mars (Japan)</title>
   <year>1988</year>
-  <rating>Other - NR (Not Rated)</rating>
+  <genre>Shooter</genre>
   <publisher>DB Soft</publisher>
   <developer />
-  <genre>Shooter</genre>
+  <rating>Other - NR (Not Rated)</rating>
 </game>
-<game name="Suikoden - Tenmei no Chikai (Japan)">
+<game ROM="Suikoden - Tenmei no Chikai (Japan)">
   <title>Suikoden - Tenmei no Chikai (Japan)</title>
   <year>1988</year>
-  <rating>Other - NR (Not Rated)</rating>
+  <genre>Strategy</genre>
   <publisher>Koei</publisher>
   <developer />
-  <genre>Strategy</genre>
+  <rating>Other - NR (Not Rated)</rating>
 </game>
-<game name="Super Daisenryaku (Japan)">
+<game ROM="Super Daisenryaku (Japan)">
   <title>Super Daisenryaku (Japan)</title>
   <year>1989</year>
-  <rating>Other - NR (Not Rated)</rating>
+  <genre>Strategy</genre>
   <publisher>Koei</publisher>
   <developer />
-  <genre>Strategy</genre>
+  <rating>Other - NR (Not Rated)</rating>
 </game>
-<game name="Super Load Runner (Japan)">
+<game ROM="Super Load Runner (Japan)">
   <title>Super Load Runner (Japan)</title>
   <year>1987</year>
-  <rating>Other - NR (Not Rated)</rating>
+  <genre>Platform</genre>
   <publisher>Irem</publisher>
   <developer />
-  <genre>Platform</genre>
+  <rating>Other - NR (Not Rated)</rating>
 </game>
-<game name="Super Rambo Special (Japan)">
+<game ROM="Super Rambo Special (Japan)">
   <title>Super Rambo Special (Japan)</title>
   <year>1986</year>
-  <rating>Other - NR (Not Rated)</rating>
+  <genre>Shooter</genre>
   <publisher>Pack-In-Video</publisher>
   <developer />
-  <genre>Shooter</genre>
+  <rating>Other - NR (Not Rated)</rating>
 </game>
-<game name="Super Runner (Japan)">
+<game ROM="Super Runner (Japan)">
   <title>Super Runner (Japan)</title>
   <year>1987</year>
-  <rating>Other - NR (Not Rated)</rating>
+  <genre>Action</genre>
   <publisher>Opera House / Pony Canyon</publisher>
   <developer />
-  <genre>Action</genre>
+  <rating>Other - NR (Not Rated)</rating>
 </game>
-<game name="Super Tritorn (Japan)">
+<game ROM="Super Tritorn (Japan)">
   <title>Super Tritorn (Japan)</title>
   <year>1986</year>
-  <rating>Other - NR (Not Rated)</rating>
+  <genre>Action</genre>
   <publisher>XAIN</publisher>
   <developer />
-  <genre>Action</genre>
+  <rating>Other - NR (Not Rated)</rating>
 </game>
-<game name="Taiyou no Shinden - Asteka II (Japan)">
+<game ROM="Taiyou no Shinden - Asteka II (Japan)">
   <title>Taiyou no Shinden - Asteka II (Japan)</title>
   <year>1988</year>
-  <rating>Other - NR (Not Rated)</rating>
+  <genre>Action</genre>
   <publisher>Zap / Tokyo Shoseki</publisher>
   <developer />
-  <genre>Action</genre>
+  <rating>Other - NR (Not Rated)</rating>
 </game>
-<game name="Take the A Train (Japan)">
+<game ROM="Take the A Train (Japan)">
   <title>Take the A Train (Japan)</title>
   <year>1989</year>
-  <rating>Other - NR (Not Rated)</rating>
+  <genre>Simulation</genre>
   <publisher>Pony Canyon</publisher>
   <developer />
-  <genre>Simulation</genre>
+  <rating>Other - NR (Not Rated)</rating>
 </game>
-<game name="Tengoku Yoitoko (Japan)">
+<game ROM="Tengoku Yoitoko (Japan)">
   <title>Tengoku Yoitoko (Japan)</title>
   <year>1987</year>
-  <rating>Other - NR (Not Rated)</rating>
+  <genre>Role-Playing</genre>
   <publisher>Taito Corporation</publisher>
   <developer />
-  <genre>Role-Playing</genre>
+  <rating>Other - NR (Not Rated)</rating>
 </game>
-<game name="Tetris (Japan)">
+<game ROM="Tetris (Japan)">
   <title>Tetris (Japan)</title>
   <year>1987</year>
-  <rating>Other - NR (Not Rated)</rating>
+  <genre>Puzzle</genre>
   <publisher>AcademySoft / Mirrorsoft</publisher>
   <developer />
-  <genre>Puzzle</genre>
+  <rating>Other - NR (Not Rated)</rating>
 </game>
-<game name="Title Memory (Japan)">
+<game ROM="Title Memory (Japan)">
   <title>Title Memory (Japan)</title>
   <year>1988</year>
-  <rating>Other - NR (Not Rated)</rating>
+  <genre>Puzzle</genre>
   <publisher>Konami</publisher>
   <developer />
-  <genre>Puzzle</genre>
+  <rating>Other - NR (Not Rated)</rating>
 </game>
-<game name="Topple Zip (Japan)">
+<game ROM="Topple Zip (Japan)">
   <title>Topple Zip (Japan)</title>
   <year>1986</year>
-  <rating>Other - NR (Not Rated)</rating>
+  <genre>Action</genre>
   <publisher>Bothtec / Eaglesoft</publisher>
   <developer />
-  <genre>Action</genre>
+  <rating>Other - NR (Not Rated)</rating>
 </game>
-<game name="Treasure of Usas, The (Japan, Europe)">
+<game ROM="Treasure of Usas, The (Japan, Europe)">
   <title>Treasure of Usas, The (Japan, Europe)</title>
   <year>1987</year>
-  <rating>Other - NR (Not Rated)</rating>
+  <genre>Action</genre>
   <publisher>Konami</publisher>
   <developer />
-  <genre>Action</genre>
+  <rating>Other - NR (Not Rated)</rating>
 </game>
-<game name="Tsurikichi Sanpei - Blue Marine Hen (Japan)">
+<game ROM="Tsurikichi Sanpei - Blue Marine Hen (Japan)">
   <title>Tsurikichi Sanpei - Blue Marine Hen (Japan)</title>
   <year>1988</year>
-  <rating>Other - NR (Not Rated)</rating>
+  <genre>Sports</genre>
   <publisher>Victor Interactive Software</publisher>
   <developer />
-  <genre>Sports</genre>
+  <rating>Other - NR (Not Rated)</rating>
 </game>
-<game name="Turikichi Sampei Turisennin Hen (Japan)">
+<game ROM="Turikichi Sampei Turisennin Hen (Japan)">
   <title>Turikichi Sampei Turisennin Hen (Japan)</title>
   <year>1989</year>
-  <rating>Other - NR (Not Rated)</rating>
+  <genre>Sports</genre>
   <publisher>Victor Interactive Software</publisher>
   <developer />
-  <genre>Sports</genre>
+  <rating>Other - NR (Not Rated)</rating>
 </game>
-<game name="Ultima III - Exodus (Japan)">
+<game ROM="Ultima III - Exodus (Japan)">
   <title>Ultima III - Exodus (Japan)</title>
   <year>1988</year>
-  <rating>Other - NR (Not Rated)</rating>
+  <genre>Role-Playing</genre>
   <publisher>Pony Canyon</publisher>
   <developer />
-  <genre>Role-Playing</genre>
+  <rating>Other - NR (Not Rated)</rating>
 </game>
-<game name="Urusei Yatsura - Koi no Survival Birthday (Japan)">
+<game ROM="Urusei Yatsura - Koi no Survival Birthday (Japan)">
   <title>Urusei Yatsura - Koi no Survival Birthday (Japan)</title>
   <year>1987</year>
-  <rating>Other - NR (Not Rated)</rating>
+  <genre>Adventure</genre>
   <publisher>Micro Cabin</publisher>
   <developer />
-  <genre>Adventure</genre>
+  <rating>Other - NR (Not Rated)</rating>
 </game>
-<game name="Vampire Killer (Japan)">
+<game ROM="Vampire Killer (Japan)">
   <title>Vampire Killer (Japan)</title>
   <year>1986</year>
-  <rating>Other - NR (Not Rated)</rating>
+  <genre>Action</genre>
   <publisher>Konami</publisher>
   <developer />
-  <genre>Action</genre>
+  <rating>Other - NR (Not Rated)</rating>
 </game>
-<game name="Victorius Nine II (Japan)">
+<game ROM="Victorius Nine II (Japan)">
   <title>Victorius Nine II (Japan)</title>
   <year>1988</year>
-  <rating>Other - NR (Not Rated)</rating>
+  <genre>Sports</genre>
   <publisher>Taito Corporation</publisher>
   <developer />
-  <genre>Sports</genre>
+  <rating>Other - NR (Not Rated)</rating>
 </game>
-<game name="Wizardry - Proving Grounds of Mad Overload (Japan)">
+<game ROM="Wizardry - Proving Grounds of Mad Overload (Japan)">
   <title>Wizardry - Proving Grounds of Mad Overload (Japan)</title>
   <year>1987</year>
-  <rating>Other - NR (Not Rated)</rating>
+  <genre>Role-Playing</genre>
   <publisher>ASCII Entertainment</publisher>
   <developer />
-  <genre>Role-Playing</genre>
+  <rating>Other - NR (Not Rated)</rating>
 </game>
-<game name="Woody Poco (Japan)">
+<game ROM="Woody Poco (Japan)">
   <title>Woody Poco (Japan)</title>
   <year>1987</year>
-  <rating>Other - NR (Not Rated)</rating>
+  <genre>Action</genre>
   <publisher>DB Soft</publisher>
   <developer />
-  <genre>Action</genre>
+  <rating>Other - NR (Not Rated)</rating>
 </game>
-<game name="Woody Poco (Japan)(Translated En)">
+<game ROM="Woody Poco (Japan)(Translated En)">
   <title>Woody Poco (Japan)(Translated En)</title>
   <year>1987</year>
-  <rating>Other - NR (Not Rated)</rating>
+  <genre>Action</genre>
   <publisher>DB Soft</publisher>
   <developer />
-  <genre>Action</genre>
+  <rating>Other - NR (Not Rated)</rating>
 </game>
-<game name="Xevious - Fardraut Saga (Japan)">
+<game ROM="Xevious - Fardraut Saga (Japan)">
   <title>Xevious - Fardraut Saga (Japan)</title>
   <year>1988</year>
-  <rating>Other - NR (Not Rated)</rating>
+  <genre>Shoot-&apos;Em-Up</genre>
   <publisher>Compile / Namco</publisher>
   <developer />
-  <genre>Shoot-&apos;Em-Up</genre>
+  <rating>Other - NR (Not Rated)</rating>
 </game>
-<game name="Yaksa (Japan)">
+<game ROM="Yaksa (Japan)">
   <title>Yaksa (Japan)</title>
   <year>1987</year>
-  <rating>Other - NR (Not Rated)</rating>
+  <genre>Role-Playing</genre>
   <publisher>Wolf Tam</publisher>
   <developer />
-  <genre>Role-Playing</genre>
+  <rating>Other - NR (Not Rated)</rating>
 </game>
-<game name="Yuurei Kun (Japan)">
+<game ROM="Yuurei Kun (Japan)">
   <title>Yuurei Kun (Japan)</title>
   <year>1988</year>
-  <rating>Other - NR (Not Rated)</rating>
+  <genre>Platform</genre>
   <publisher>System Sacom</publisher>
   <developer />
-  <genre>Platform</genre>
+  <rating>Other - NR (Not Rated)</rating>
 </game>
-<game name="Zanac-Ex (Japan)">
+<game ROM="Zanac-Ex (Japan)">
   <title>Zanac-Ex (Japan)</title>
   <year>1986</year>
-  <rating>Other - NR (Not Rated)</rating>
+  <genre>Shoot-&apos;Em-Up</genre>
   <publisher>Compile</publisher>
   <developer />
-  <genre>Shoot-&apos;Em-Up</genre>
+  <rating>Other - NR (Not Rated)</rating>
 </game>
-<game name="Zoids (Japan)">
+<game ROM="Zoids (Japan)">
   <title>Zoids (Japan)</title>
   <year>1987</year>
-  <rating>Other - NR (Not Rated)</rating>
+  <genre>Action</genre>
   <publisher>Micronics / Toshiba EMI</publisher>
   <developer />
-  <genre>Action</genre>
+  <rating>Other - NR (Not Rated)</rating>
 </game>
-<game name="Zombie Hunter (Japan)">
+<game ROM="Zombie Hunter (Japan)">
   <title>Zombie Hunter (Japan)</title>
   <year>1988</year>
-  <rating>Other - NR (Not Rated)</rating>
+  <genre>Action</genre>
   <publisher>Hi-Score Media Work</publisher>
   <developer />
-  <genre>Action</genre>
+  <rating>Other - NR (Not Rated)</rating>
 </game>
-<game name="Zukkoke Yajikita Onmitsudoutyuu (Japan)">
+<game ROM="Zukkoke Yajikita Onmitsudoutyuu (Japan)">
   <title>Zukkoke Yajikita Onmitsudoutyuu (Japan)</title>
   <year>1987</year>
-  <rating>Other - NR (Not Rated)</rating>
+  <genre>Action</genre>
   <publisher>Hal</publisher>
   <developer />
-  <genre>Action</genre>
+  <rating>Other - NR (Not Rated)</rating>
 </game>
 </menu>

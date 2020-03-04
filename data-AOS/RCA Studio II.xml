@@ -6,44 +6,44 @@
   <listversion>V1</listversion>
   <exporterversion>V1 GameDBInfo converter</exporterversion>
 </header>
-<game name="TV Arcade I - Space War (USA)">
+<game ROM="TV Arcade I - Space War (USA)">
   <title>TV Arcade I - Space War (USA)</title>
   <year>1977</year>
-  <rating>HSRS - GA (General Audience)</rating>
+  <genre>Shooter</genre>
   <publisher>RCA</publisher>
   <developer />
-  <genre>Shooter</genre>
+  <rating>HSRS - GA (General Audience)</rating>
 </game>
-<game name="TV Arcade III - Tennis + Squash (USA)">
+<game ROM="TV Arcade III - Tennis + Squash (USA)">
   <title>TV Arcade III - Tennis + Squash (USA)</title>
   <year>1977</year>
-  <rating>HSRS - GA (General Audience)</rating>
+  <genre>Sports</genre>
   <publisher>RCA</publisher>
   <developer />
-  <genre>Sports</genre>
+  <rating>HSRS - GA (General Audience)</rating>
 </game>
-<game name="TV Arcade IV - Baseball (USA)">
+<game ROM="TV Arcade IV - Baseball (USA)">
   <title>TV Arcade IV - Baseball (USA)</title>
   <year>1977</year>
-  <rating>HSRS - GA (General Audience)</rating>
+  <genre>Sports/Baseball</genre>
   <publisher>RCA</publisher>
   <developer />
-  <genre>Sports/Baseball</genre>
+  <rating>HSRS - GA (General Audience)</rating>
 </game>
-<game name="TV Arcade V - Speedway + Tag (USA)">
+<game ROM="TV Arcade V - Speedway + Tag (USA)">
   <title>TV Arcade V - Speedway + Tag (USA)</title>
   <year>1977</year>
-  <rating>HSRS - GA (General Audience)</rating>
+  <genre>Driving</genre>
   <publisher>RCA</publisher>
   <developer />
-  <genre>Driving</genre>
+  <rating>HSRS - GA (General Audience)</rating>
 </game>
-<game name="TV Casino I - Blackjack (USA)">
+<game ROM="TV Casino I - Blackjack (USA)">
   <title>TV Casino I - Blackjack (USA)</title>
   <year>1977</year>
-  <rating>HSRS - GA (General Audience)</rating>
+  <genre>Casino</genre>
   <publisher>RCA</publisher>
   <developer />
-  <genre>Casino</genre>
+  <rating>HSRS - GA (General Audience)</rating>
 </game>
 </menu>

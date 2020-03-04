@@ -6,1852 +6,1852 @@
   <listversion>V1</listversion>
   <exporterversion>V1 GameDBInfo converter</exporterversion>
 </header>
-<game name="rom">
+<game ROM="rom">
   <title>title</title>
   <year>year</year>
-  <rating>rating</rating>
+  <genre>genre</genre>
   <publisher>publisher</publisher>
   <developer>developer</developer>
-  <genre>genre</genre>
-  <score>score</score>
+  <rating>rating</rating>
   <nplayers>players</nplayers>
+  <score>score</score>
   <plot>description</plot>
 </game>
-<game name="17 Bit - Collection for Amiga CDTV (1993)(Almathera)(Disc 1 of 2)[!]">
+<game ROM="17 Bit - Collection for Amiga CDTV (1993)(Almathera)(Disc 1 of 2)[!]">
   <title>17 Bit - Collection for Amiga CDTV (1993)(Almathera)(Disc 1 of 2)[!]</title>
   <year />
-  <rating>Other - NR (Not Rated)</rating>
+  <genre />
   <publisher />
   <developer />
-  <genre />
-  <score />
+  <rating>Other - NR (Not Rated)</rating>
   <nplayers />
+  <score />
   <plot />
 </game>
-<game name="17 Bit - Collection for Amiga CDTV (1993)(Almathera)(Disc 2 of 2)[!][H-1530]">
+<game ROM="17 Bit - Collection for Amiga CDTV (1993)(Almathera)(Disc 2 of 2)[!][H-1530]">
   <title>17 Bit - Collection for Amiga CDTV (1993)(Almathera)(Disc 2 of 2)[!][H-1530]</title>
   <year />
-  <rating>Other - NR (Not Rated)</rating>
+  <genre />
   <publisher />
   <developer />
-  <genre />
-  <score />
+  <rating>Other - NR (Not Rated)</rating>
   <nplayers />
+  <score />
   <plot />
 </game>
-<game name="17 Bit - Collection for Amiga CDTV (1993)(Almathera)(Disc 2 of 2)[G-9256]">
+<game ROM="17 Bit - Collection for Amiga CDTV (1993)(Almathera)(Disc 2 of 2)[G-9256]">
   <title>17 Bit - Collection for Amiga CDTV (1993)(Almathera)(Disc 2 of 2)[G-9256]</title>
   <year />
-  <rating>Other - NR (Not Rated)</rating>
+  <genre />
   <publisher />
   <developer />
-  <genre />
-  <score />
+  <rating>Other - NR (Not Rated)</rating>
   <nplayers />
+  <score />
   <plot />
 </game>
-<game name="17 Bit - The Continuation Disc (1993)(Almathera)[!][I-0363]">
+<game ROM="17 Bit - The Continuation Disc (1993)(Almathera)[!][I-0363]">
   <title>17 Bit - The Continuation Disc (1993)(Almathera)[!][I-0363]</title>
   <year />
-  <rating>Other - NR (Not Rated)</rating>
+  <genre />
   <publisher />
   <developer />
-  <genre />
-  <score />
+  <rating>Other - NR (Not Rated)</rating>
   <nplayers />
+  <score />
   <plot />
 </game>
-<game name="17 Bit - The Continuation Disc (1993)(Almathera)[H-7603]">
+<game ROM="17 Bit - The Continuation Disc (1993)(Almathera)[H-7603]">
   <title>17 Bit - The Continuation Disc (1993)(Almathera)[H-7603]</title>
   <year />
-  <rating>Other - NR (Not Rated)</rating>
+  <genre />
   <publisher />
   <developer />
-  <genre />
-  <score />
+  <rating>Other - NR (Not Rated)</rating>
   <nplayers />
+  <score />
   <plot />
 </game>
-<game name="A Bun for Barney (1991)(MultiMedia Corporation)[!]">
+<game ROM="A Bun for Barney (1991)(MultiMedia Corporation)[!]">
   <title>A Bun for Barney (1991)(MultiMedia Corporation)[!]</title>
   <year />
-  <rating>Other - NR (Not Rated)</rating>
+  <genre />
   <publisher />
   <developer />
-  <genre />
-  <score />
+  <rating>Other - NR (Not Rated)</rating>
   <nplayers />
+  <score />
   <plot />
 </game>
-<game name="A Long Hard Day at the Ranch (1991)(Discis)(en-es)">
+<game ROM="A Long Hard Day at the Ranch (1991)(Discis)(en-es)">
   <title>A Long Hard Day at the Ranch (1991)(Discis)(en-es)</title>
   <year />
-  <rating>Other - NR (Not Rated)</rating>
+  <genre />
   <publisher />
   <developer />
-  <genre />
-  <score />
+  <rating>Other - NR (Not Rated)</rating>
   <nplayers />
+  <score />
   <plot />
 </game>
-<game name="Advanced Military Systems (1991)(Dominion Software &amp; Design)[!]">
+<game ROM="Advanced Military Systems (1991)(Dominion Software &amp; Design)[!]">
   <title>Advanced Military Systems (1991)(Dominion Software &amp; Design)[!]</title>
   <year />
-  <rating>Other - NR (Not Rated)</rating>
+  <genre />
   <publisher />
   <developer />
-  <genre />
-  <score />
+  <rating>Other - NR (Not Rated)</rating>
   <nplayers />
+  <score />
   <plot />
 </game>
-<game name="All Dogs Go To Heaven (1991)(Merit Software)[!]">
+<game ROM="All Dogs Go To Heaven (1991)(Merit Software)[!]">
   <title>All Dogs Go To Heaven (1991)(Merit Software)[!]</title>
   <year />
-  <rating>Other - NR (Not Rated)</rating>
+  <genre />
   <publisher />
   <developer />
-  <genre />
-  <score />
+  <rating>Other - NR (Not Rated)</rating>
   <nplayers />
+  <score />
   <plot />
 </game>
-<game name="American Heritage - Illustrated Encyclopedic Dictionary - 1991a Edition (1991)(Xiphias)[!]">
+<game ROM="American Heritage - Illustrated Encyclopedic Dictionary - 1991a Edition (1991)(Xiphias)[!]">
   <title>American Heritage - Illustrated Encyclopedic Dictionary - 1991a Edition (1991)(Xiphias)[!]</title>
   <year />
-  <rating>Other - NR (Not Rated)</rating>
+  <genre />
   <publisher />
   <developer />
-  <genre />
-  <score />
+  <rating>Other - NR (Not Rated)</rating>
   <nplayers />
+  <score />
   <plot />
 </game>
-<game name="American Vista - The Multimedia U.S. Atlas (1991)(Applied Optical Media Corporation)[!][56588AOM 01]">
+<game ROM="American Vista - The Multimedia U.S. Atlas (1991)(Applied Optical Media Corporation)[!][56588AOM 01]">
   <title>American Vista - The Multimedia U.S. Atlas (1991)(Applied Optical Media Corporation)[!][56588AOM 01]</title>
   <year />
-  <rating>Other - NR (Not Rated)</rating>
+  <genre />
   <publisher />
   <developer />
-  <genre />
-  <score />
+  <rating>Other - NR (Not Rated)</rating>
   <nplayers />
+  <score />
   <plot />
 </game>
-<game name="American Vista - The Multimedia U.S. Atlas (1991)(Applied Optical Media Corporation)[56264AOM 02]">
+<game ROM="American Vista - The Multimedia U.S. Atlas (1991)(Applied Optical Media Corporation)[56264AOM 02]">
   <title>American Vista - The Multimedia U.S. Atlas (1991)(Applied Optical Media Corporation)[56264AOM 02]</title>
   <year />
-  <rating>Other - NR (Not Rated)</rating>
+  <genre />
   <publisher />
   <developer />
-  <genre />
-  <score />
+  <rating>Other - NR (Not Rated)</rating>
   <nplayers />
+  <score />
   <plot />
 </game>
-<game name="AMOS PD CD - The Official AMOS PD Library on CD (1994)(Weird Science)[!][Amiga-CD32-CDTV]">
+<game ROM="AMOS PD CD - The Official AMOS PD Library on CD (1994)(Weird Science)[!][Amiga-CD32-CDTV]">
   <title>AMOS PD CD - The Official AMOS PD Library on CD (1994)(Weird Science)[!][Amiga-CD32-CDTV]</title>
   <year />
-  <rating>Other - NR (Not Rated)</rating>
+  <genre />
   <publisher />
   <developer />
-  <genre />
-  <score />
+  <rating>Other - NR (Not Rated)</rating>
   <nplayers />
+  <score />
   <plot />
 </game>
-<game name="Apprenez L&apos;Anglais Avec Asterix - Asterix and Son - Disque 1 (1991)(EuroTalk)(FR)">
+<game ROM="Apprenez L&apos;Anglais Avec Asterix - Asterix and Son - Disque 1 (1991)(EuroTalk)(FR)">
   <title>Apprenez L&apos;Anglais Avec Asterix - Asterix and Son - Disque 1 (1991)(EuroTalk)(FR)</title>
   <year />
-  <rating>Other - NR (Not Rated)</rating>
+  <genre />
   <publisher />
   <developer />
-  <genre />
-  <score />
+  <rating>Other - NR (Not Rated)</rating>
   <nplayers />
+  <score />
   <plot />
 </game>
-<game name="Barney Bear Goes Camping (1991)(Free Spirit Software)[!]">
+<game ROM="Barney Bear Goes Camping (1991)(Free Spirit Software)[!]">
   <title>Barney Bear Goes Camping (1991)(Free Spirit Software)[!]</title>
   <year />
-  <rating>Other - NR (Not Rated)</rating>
+  <genre />
   <publisher />
   <developer />
-  <genre />
-  <score />
+  <rating>Other - NR (Not Rated)</rating>
   <nplayers />
+  <score />
   <plot />
 </game>
-<game name="Barney Bear Goes to School (1990)(Free Spirit Software)[!]">
+<game ROM="Barney Bear Goes to School (1990)(Free Spirit Software)[!]">
   <title>Barney Bear Goes to School (1990)(Free Spirit Software)[!]</title>
   <year />
-  <rating>Other - NR (Not Rated)</rating>
+  <genre />
   <publisher />
   <developer />
-  <genre />
-  <score />
+  <rating>Other - NR (Not Rated)</rating>
   <nplayers />
+  <score />
   <plot />
 </game>
-<game name="Battlestorm (1991)(Titus)[!]">
+<game ROM="Battlestorm (1991)(Titus)[!]">
   <title>Battlestorm (1991)(Titus)[!]</title>
   <year />
-  <rating>Other - NR (Not Rated)</rating>
+  <genre />
   <publisher />
   <developer />
-  <genre />
-  <score />
+  <rating>Other - NR (Not Rated)</rating>
   <nplayers />
+  <score />
   <plot />
 </game>
-<game name="Benvenuti CDTV Multimedia (1991)(Commodore)(IT)[!]">
+<game ROM="Benvenuti CDTV Multimedia (1991)(Commodore)(IT)[!]">
   <title>Benvenuti CDTV Multimedia (1991)(Commodore)(IT)[!]</title>
   <year />
-  <rating>Other - NR (Not Rated)</rating>
+  <genre />
   <publisher />
   <developer />
-  <genre />
-  <score />
+  <rating>Other - NR (Not Rated)</rating>
   <nplayers />
+  <score />
   <plot />
 </game>
-<game name="Black Viper (1996)(neo)[m DaNi][ISO]">
+<game ROM="Black Viper (1996)(neo)[m DaNi][ISO]">
   <title>Black Viper (1996)(neo)[m DaNi][ISO]</title>
   <year />
-  <rating>Other - NR (Not Rated)</rating>
+  <genre />
   <publisher />
   <developer />
-  <genre />
-  <score />
+  <rating>Other - NR (Not Rated)</rating>
   <nplayers />
+  <score />
   <plot />
 </game>
-<game name="Caplex - Multimedia Leksikon (1991)(J.W. Cappelens Forlag)(NO)">
+<game ROM="Caplex - Multimedia Leksikon (1991)(J.W. Cappelens Forlag)(NO)">
   <title>Caplex - Multimedia Leksikon (1991)(J.W. Cappelens Forlag)(NO)</title>
   <year />
-  <rating>Other - NR (Not Rated)</rating>
+  <genre />
   <publisher />
   <developer />
-  <genre />
-  <score />
+  <rating>Other - NR (Not Rated)</rating>
   <nplayers />
+  <score />
   <plot />
 </game>
-<game name="Case of the Cautious Condor, The (1990)(Tiger Media)[!]">
+<game ROM="Case of the Cautious Condor, The (1990)(Tiger Media)[!]">
   <title>Case of the Cautious Condor, The (1990)(Tiger Media)[!]</title>
   <year />
-  <rating>Other - NR (Not Rated)</rating>
+  <genre />
   <publisher />
   <developer />
-  <genre />
-  <score />
+  <rating>Other - NR (Not Rated)</rating>
   <nplayers />
+  <score />
   <plot />
 </game>
-<game name="CD Remix - The D.J. in a box (1991)(Microdeal)[!]">
+<game ROM="CD Remix - The D.J. in a box (1991)(Microdeal)[!]">
   <title>CD Remix - The D.J. in a box (1991)(Microdeal)[!]</title>
   <year />
-  <rating>Other - NR (Not Rated)</rating>
+  <genre />
   <publisher />
   <developer />
-  <genre />
-  <score />
+  <rating>Other - NR (Not Rated)</rating>
   <nplayers />
+  <score />
   <plot />
 </game>
-<game name="CD Remix Version II (1991)(Microdeal)[!]">
+<game ROM="CD Remix Version II (1991)(Microdeal)[!]">
   <title>CD Remix Version II (1991)(Microdeal)[!]</title>
   <year />
-  <rating>Other - NR (Not Rated)</rating>
+  <genre />
   <publisher />
   <developer />
-  <genre />
-  <score />
+  <rating>Other - NR (Not Rated)</rating>
   <nplayers />
+  <score />
   <plot />
 </game>
-<game name="CDPD 1 (1995)(Almathera)[!][compilation Ten On Ten]">
+<game ROM="CDPD 1 (1995)(Almathera)[!][compilation Ten On Ten]">
   <title>CDPD 1 (1995)(Almathera)[!][compilation Ten On Ten]</title>
   <year />
-  <rating>Other - NR (Not Rated)</rating>
+  <genre />
   <publisher />
   <developer />
-  <genre />
-  <score />
+  <rating>Other - NR (Not Rated)</rating>
   <nplayers />
+  <score />
   <plot />
 </game>
-<game name="CDPD 2 (1995)(Almathera)[!][compilation Ten On Ten]">
+<game ROM="CDPD 2 (1995)(Almathera)[!][compilation Ten On Ten]">
   <title>CDPD 2 (1995)(Almathera)[!][compilation Ten On Ten]</title>
   <year />
-  <rating>Other - NR (Not Rated)</rating>
+  <genre />
   <publisher />
   <developer />
-  <genre />
-  <score />
+  <rating>Other - NR (Not Rated)</rating>
   <nplayers />
+  <score />
   <plot />
 </game>
-<game name="CDPD II (1992)(Almathera)[!][Amiga-CDTV]">
+<game ROM="CDPD II (1992)(Almathera)[!][Amiga-CDTV]">
   <title>CDPD II (1992)(Almathera)[!][Amiga-CDTV]</title>
   <year />
-  <rating>Other - NR (Not Rated)</rating>
+  <genre />
   <publisher />
   <developer />
-  <genre />
-  <score />
+  <rating>Other - NR (Not Rated)</rating>
   <nplayers />
+  <score />
   <plot />
 </game>
-<game name="CDPD III - Amiga Public Domain Collection (1993)(Almathera)[!][Amiga-CDTV]">
+<game ROM="CDPD III - Amiga Public Domain Collection (1993)(Almathera)[!][Amiga-CDTV]">
   <title>CDPD III - Amiga Public Domain Collection (1993)(Almathera)[!][Amiga-CDTV]</title>
   <year />
-  <rating>Other - NR (Not Rated)</rating>
+  <genre />
   <publisher />
   <developer />
-  <genre />
-  <score />
+  <rating>Other - NR (Not Rated)</rating>
   <nplayers />
+  <score />
   <plot />
 </game>
-<game name="CDPD Public Domain Collection for CDTV, The (1992)(Almathera)[!][Amiga-CDTV][CD ROM 3030]">
+<game ROM="CDPD Public Domain Collection for CDTV, The (1992)(Almathera)[!][Amiga-CDTV][CD ROM 3030]">
   <title>CDPD Public Domain Collection for CDTV, The (1992)(Almathera)[!][Amiga-CDTV][CD ROM 3030]</title>
   <year />
-  <rating>Other - NR (Not Rated)</rating>
+  <genre />
   <publisher />
   <developer />
-  <genre />
-  <score />
+  <rating>Other - NR (Not Rated)</rating>
   <nplayers />
+  <score />
   <plot />
 </game>
-<game name="CDPD Public Domain Collection for CDTV, The (1992)(Almathera)[Amiga-CDTV][MULTI MEDIA MASTERS]">
+<game ROM="CDPD Public Domain Collection for CDTV, The (1992)(Almathera)[Amiga-CDTV][MULTI MEDIA MASTERS]">
   <title>CDPD Public Domain Collection for CDTV, The (1992)(Almathera)[Amiga-CDTV][MULTI MEDIA MASTERS]</title>
   <year />
-  <rating>Other - NR (Not Rated)</rating>
+  <genre />
   <publisher />
   <developer />
-  <genre />
-  <score />
+  <rating>Other - NR (Not Rated)</rating>
   <nplayers />
+  <score />
   <plot />
 </game>
-<game name="CDTV Genlock Demo v1.0 (1991)(Commodore)">
+<game ROM="CDTV Genlock Demo v1.0 (1991)(Commodore)">
   <title>CDTV Genlock Demo v1.0 (1991)(Commodore)</title>
   <year />
-  <rating>Other - NR (Not Rated)</rating>
+  <genre />
   <publisher />
   <developer />
-  <genre />
-  <score />
+  <rating>Other - NR (Not Rated)</rating>
   <nplayers />
+  <score />
   <plot />
 </game>
-<game name="CDTV Interactive Point of Sale Compact Disc, The (1991)(Commodore)(US)">
+<game ROM="CDTV Interactive Point of Sale Compact Disc, The (1991)(Commodore)(US)">
   <title>CDTV Interactive Point of Sale Compact Disc, The (1991)(Commodore)(US)</title>
   <year />
-  <rating>Other - NR (Not Rated)</rating>
+  <genre />
   <publisher />
   <developer />
-  <genre />
-  <score />
+  <rating>Other - NR (Not Rated)</rating>
   <nplayers />
+  <score />
   <plot />
 </game>
-<game name="CDTV Vol.1 (2001-12)(Spanish Company)(FW)[CloneCD]">
+<game ROM="CDTV Vol.1 (2001-12)(Spanish Company)(FW)[CloneCD]">
   <title>CDTV Vol.1 (2001-12)(Spanish Company)(FW)[CloneCD]</title>
   <year />
-  <rating>Other - NR (Not Rated)</rating>
+  <genre />
   <publisher />
   <developer />
-  <genre />
-  <score />
+  <rating>Other - NR (Not Rated)</rating>
   <nplayers />
+  <score />
   <plot />
 </game>
-<game name="CDTV Vol.1 (2001-12)(Spanish Company)(FW)[ISO]">
+<game ROM="CDTV Vol.1 (2001-12)(Spanish Company)(FW)[ISO]">
   <title>CDTV Vol.1 (2001-12)(Spanish Company)(FW)[ISO]</title>
   <year />
-  <rating>Other - NR (Not Rated)</rating>
+  <genre />
   <publisher />
   <developer />
-  <genre />
-  <score />
+  <rating>Other - NR (Not Rated)</rating>
   <nplayers />
+  <score />
   <plot />
 </game>
-<game name="Chaos in Andromeda - Eyes of the Eagle (1992)(On-line)[!][1122-094-0321]">
+<game ROM="Chaos in Andromeda - Eyes of the Eagle (1992)(On-line)[!][1122-094-0321]">
   <title>Chaos in Andromeda - Eyes of the Eagle (1992)(On-line)[!][1122-094-0321]</title>
   <year />
-  <rating>Other - NR (Not Rated)</rating>
+  <genre />
   <publisher />
   <developer />
-  <genre />
-  <score />
+  <rating>Other - NR (Not Rated)</rating>
   <nplayers />
+  <score />
   <plot />
 </game>
-<game name="Cinderella - The Original Fairy Tale (1991)(Discis)(en-es)[CDRM-575000 3]">
+<game ROM="Cinderella - The Original Fairy Tale (1991)(Discis)(en-es)[CDRM-575000 3]">
   <title>Cinderella - The Original Fairy Tale (1991)(Discis)(en-es)[CDRM-575000 3]</title>
   <year />
-  <rating>Other - NR (Not Rated)</rating>
+  <genre />
   <publisher />
   <developer />
-  <genre />
-  <score />
+  <rating>Other - NR (Not Rated)</rating>
   <nplayers />
+  <score />
   <plot />
 </game>
-<game name="Cinderella - The Original Fairy Tale (1992)(Discis)(M5)[!][CDRM-735100 1]">
+<game ROM="Cinderella - The Original Fairy Tale (1992)(Discis)(M5)[!][CDRM-735100 1]">
   <title>Cinderella - The Original Fairy Tale (1992)(Discis)(M5)[!][CDRM-735100 1]</title>
   <year />
-  <rating>Other - NR (Not Rated)</rating>
+  <genre />
   <publisher />
   <developer />
-  <genre />
-  <score />
+  <rating>Other - NR (Not Rated)</rating>
   <nplayers />
+  <score />
   <plot />
 </game>
-<game name="Classic Board Games (1991)(Merit Software)(M6)[!][compilation]">
+<game ROM="Classic Board Games (1991)(Merit Software)(M6)[!][compilation]">
   <title>Classic Board Games (1991)(Merit Software)(M6)[!][compilation]</title>
   <year />
-  <rating>Other - NR (Not Rated)</rating>
+  <genre />
   <publisher />
   <developer />
-  <genre />
-  <score />
+  <rating>Other - NR (Not Rated)</rating>
   <nplayers />
+  <score />
   <plot />
 </game>
-<game name="Clipart &amp; Fonts CD (1995)(Almathera)[!][compilation Ten On Ten]">
+<game ROM="Clipart &amp; Fonts CD (1995)(Almathera)[!][compilation Ten On Ten]">
   <title>Clipart &amp; Fonts CD (1995)(Almathera)[!][compilation Ten On Ten]</title>
   <year />
-  <rating>Other - NR (Not Rated)</rating>
+  <genre />
   <publisher />
   <developer />
-  <genre />
-  <score />
+  <rating>Other - NR (Not Rated)</rating>
   <nplayers />
+  <score />
   <plot />
 </game>
-<game name="Commodore A570 Public-Domain-Kollektion auf CD-ROM (1992)(Commodore)(DE)[Amiga-CDTV]">
+<game ROM="Commodore A570 Public-Domain-Kollektion auf CD-ROM (1992)(Commodore)(DE)[Amiga-CDTV]">
   <title>Commodore A570 Public-Domain-Kollektion auf CD-ROM (1992)(Commodore)(DE)[Amiga-CDTV]</title>
   <year />
-  <rating>Other - NR (Not Rated)</rating>
+  <genre />
   <publisher />
   <developer />
-  <genre />
-  <score />
+  <rating>Other - NR (Not Rated)</rating>
   <nplayers />
+  <score />
   <plot />
 </game>
-<game name="Commodore Amiga CDTV, Amiga 600, Amiga 600HD Demo Disc (1992)(Commodore)">
+<game ROM="Commodore Amiga CDTV, Amiga 600, Amiga 600HD Demo Disc (1992)(Commodore)">
   <title>Commodore Amiga CDTV, Amiga 600, Amiga 600HD Demo Disc (1992)(Commodore)</title>
   <year />
-  <rating>Other - NR (Not Rated)</rating>
+  <genre />
   <publisher />
   <developer />
-  <genre />
-  <score />
+  <rating>Other - NR (Not Rated)</rating>
   <nplayers />
+  <score />
   <plot />
 </game>
-<game name="Commodore Amiga CDTV, Amiga 600, Amiga 600HD Demo Disc 2 (1992)(Commodore)[!]">
+<game ROM="Commodore Amiga CDTV, Amiga 600, Amiga 600HD Demo Disc 2 (1992)(Commodore)[!]">
   <title>Commodore Amiga CDTV, Amiga 600, Amiga 600HD Demo Disc 2 (1992)(Commodore)[!]</title>
   <year />
-  <rating>Other - NR (Not Rated)</rating>
+  <genre />
   <publisher />
   <developer />
-  <genre />
-  <score />
+  <rating>Other - NR (Not Rated)</rating>
   <nplayers />
+  <score />
   <plot />
 </game>
-<game name="Comms &amp; Networking CD (1995)(Almathera)[!][compilation Ten On Ten]">
+<game ROM="Comms &amp; Networking CD (1995)(Almathera)[!][compilation Ten On Ten]">
   <title>Comms &amp; Networking CD (1995)(Almathera)[!][compilation Ten On Ten]</title>
   <year />
-  <rating>Other - NR (Not Rated)</rating>
+  <genre />
   <publisher />
   <developer />
-  <genre />
-  <score />
+  <rating>Other - NR (Not Rated)</rating>
   <nplayers />
+  <score />
   <plot />
 </game>
-<game name="Connoisseur, The - Fine Art Collection (1992)(Lascelles Productions)[!]">
+<game ROM="Connoisseur, The - Fine Art Collection (1992)(Lascelles Productions)[!]">
   <title>Connoisseur, The - Fine Art Collection (1992)(Lascelles Productions)[!]</title>
   <year />
-  <rating>Other - NR (Not Rated)</rating>
+  <genre />
   <publisher />
   <developer />
-  <genre />
-  <score />
+  <rating>Other - NR (Not Rated)</rating>
   <nplayers />
+  <score />
   <plot />
 </game>
-<game name="Cubulus &amp; Magic Serpent (1991)(Software 2000)(DE)(en)[!][compilation]">
+<game ROM="Cubulus &amp; Magic Serpent (1991)(Software 2000)(DE)(en)[!][compilation]">
   <title>Cubulus &amp; Magic Serpent (1991)(Software 2000)(DE)(en)[!][compilation]</title>
   <year />
-  <rating>Other - NR (Not Rated)</rating>
+  <genre />
   <publisher />
   <developer />
-  <genre />
-  <score />
+  <rating>Other - NR (Not Rated)</rating>
   <nplayers />
+  <score />
   <plot />
 </game>
-<game name="Curse of RA, The (1992)(Rainbow Arts)[!]">
+<game ROM="Curse of RA, The (1992)(Rainbow Arts)[!]">
   <title>Curse of RA, The (1992)(Rainbow Arts)[!]</title>
   <year />
-  <rating>Other - NR (Not Rated)</rating>
+  <genre />
   <publisher />
   <developer />
-  <genre />
-  <score />
+  <rating>Other - NR (Not Rated)</rating>
   <nplayers />
+  <score />
   <plot />
 </game>
-<game name="Dark Seed v1.0 (1993)(Cyberdreams)(ES)[cr QTX][m DaNi][ISO]">
+<game ROM="Dark Seed v1.0 (1993)(Cyberdreams)(ES)[cr QTX][m DaNi][ISO]">
   <title>Dark Seed v1.0 (1993)(Cyberdreams)(ES)[cr QTX][m DaNi][ISO]</title>
   <year />
-  <rating>Other - NR (Not Rated)</rating>
+  <genre />
   <publisher />
   <developer />
-  <genre />
-  <score />
+  <rating>Other - NR (Not Rated)</rating>
   <nplayers />
+  <score />
   <plot />
 </game>
-<game name="Defender of the Crown (1991)(CDTV Publishing)[!]">
+<game ROM="Defender of the Crown (1991)(CDTV Publishing)[!]">
   <title>Defender of the Crown (1991)(CDTV Publishing)[!]</title>
   <year />
-  <rating>Other - NR (Not Rated)</rating>
+  <genre />
   <publisher />
   <developer />
-  <genre />
-  <score />
+  <rating>Other - NR (Not Rated)</rating>
   <nplayers />
+  <score />
   <plot />
 </game>
-<game name="DeLuxe Galaga v2.4 (1994)(Vigdal, Edgar M.)(SW)[m DaNi][ISO]">
+<game ROM="DeLuxe Galaga v2.4 (1994)(Vigdal, Edgar M.)(SW)[m DaNi][ISO]">
   <title>DeLuxe Galaga v2.4 (1994)(Vigdal, Edgar M.)(SW)[m DaNi][ISO]</title>
   <year />
-  <rating>Other - NR (Not Rated)</rating>
+  <genre />
   <publisher />
   <developer />
-  <genre />
-  <score />
+  <rating>Other - NR (Not Rated)</rating>
   <nplayers />
+  <score />
   <plot />
 </game>
-<game name="Demo 1 (1995)(Almathera)[!][compilation Ten On Ten]">
+<game ROM="Demo 1 (1995)(Almathera)[!][compilation Ten On Ten]">
   <title>Demo 1 (1995)(Almathera)[!][compilation Ten On Ten]</title>
   <year />
-  <rating>Other - NR (Not Rated)</rating>
+  <genre />
   <publisher />
   <developer />
-  <genre />
-  <score />
+  <rating>Other - NR (Not Rated)</rating>
   <nplayers />
+  <score />
   <plot />
 </game>
-<game name="Demo Collection for Amiga CDTV, The (1992)(Almathera)[!][Amiga-CDTV][H-2059]">
+<game ROM="Demo Collection for Amiga CDTV, The (1992)(Almathera)[!][Amiga-CDTV][H-2059]">
   <title>Demo Collection for Amiga CDTV, The (1992)(Almathera)[!][Amiga-CDTV][H-2059]</title>
   <year />
-  <rating>Other - NR (Not Rated)</rating>
+  <genre />
   <publisher />
   <developer />
-  <genre />
-  <score />
+  <rating>Other - NR (Not Rated)</rating>
   <nplayers />
+  <score />
   <plot />
 </game>
-<game name="Demo Collection for Amiga CDTV, The (1992)(Almathera)[!][Amiga-CDTV][MULTIMEDIA MASTERS]">
+<game ROM="Demo Collection for Amiga CDTV, The (1992)(Almathera)[!][Amiga-CDTV][MULTIMEDIA MASTERS]">
   <title>Demo Collection for Amiga CDTV, The (1992)(Almathera)[!][Amiga-CDTV][MULTIMEDIA MASTERS]</title>
   <year />
-  <rating>Other - NR (Not Rated)</rating>
+  <genre />
   <publisher />
   <developer />
-  <genre />
-  <score />
+  <rating>Other - NR (Not Rated)</rating>
   <nplayers />
+  <score />
   <plot />
 </game>
-<game name="Demo II - Amiga Public Domain Collection (1993)(Almathera)[!][Amiga-CD32-CDTV][80034 DEMO CD II CD TV 01]">
+<game ROM="Demo II - Amiga Public Domain Collection (1993)(Almathera)[!][Amiga-CD32-CDTV][80034 DEMO CD II CD TV 01]">
   <title>Demo II - Amiga Public Domain Collection (1993)(Almathera)[!][Amiga-CD32-CDTV][80034 DEMO CD II CD TV 01]</title>
   <year />
-  <rating>Other - NR (Not Rated)</rating>
+  <genre />
   <publisher />
   <developer />
-  <genre />
-  <score />
+  <rating>Other - NR (Not Rated)</rating>
   <nplayers />
+  <score />
   <plot />
 </game>
-<game name="Demo II - Amiga Public Domain Collection (1993)(Almathera)[!][Amiga-CD32-CDTV][DEMO CD II CDTV 01]">
+<game ROM="Demo II - Amiga Public Domain Collection (1993)(Almathera)[!][Amiga-CD32-CDTV][DEMO CD II CDTV 01]">
   <title>Demo II - Amiga Public Domain Collection (1993)(Almathera)[!][Amiga-CD32-CDTV][DEMO CD II CDTV 01]</title>
   <year />
-  <rating>Other - NR (Not Rated)</rating>
+  <genre />
   <publisher />
   <developer />
-  <genre />
-  <score />
+  <rating>Other - NR (Not Rated)</rating>
   <nplayers />
+  <score />
   <plot />
 </game>
-<game name="Deutschland Kompakt (1991)(MSPI)(DE)[!]">
+<game ROM="Deutschland Kompakt (1991)(MSPI)(DE)[!]">
   <title>Deutschland Kompakt (1991)(MSPI)(DE)[!]</title>
   <year />
-  <rating>Other - NR (Not Rated)</rating>
+  <genre />
   <publisher />
   <developer />
-  <genre />
-  <score />
+  <rating>Other - NR (Not Rated)</rating>
   <nplayers />
+  <score />
   <plot />
 </game>
-<game name="Dinosaurs for Hire (1992)(Wright Works III)">
+<game ROM="Dinosaurs for Hire (1992)(Wright Works III)">
   <title>Dinosaurs for Hire (1992)(Wright Works III)</title>
   <year />
-  <rating>Other - NR (Not Rated)</rating>
+  <genre />
   <publisher />
   <developer />
-  <genre />
-  <score />
+  <rating>Other - NR (Not Rated)</rating>
   <nplayers />
+  <score />
   <plot />
 </game>
-<game name="Dr. Wellman - A Guide to Good Health for You &amp; Your Family (1991)(CDTV Publishing)">
+<game ROM="Dr. Wellman - A Guide to Good Health for You &amp; Your Family (1991)(CDTV Publishing)">
   <title>Dr. Wellman - A Guide to Good Health for You &amp; Your Family (1991)(CDTV Publishing)</title>
   <year />
-  <rating>Other - NR (Not Rated)</rating>
+  <genre />
   <publisher />
   <developer />
-  <genre />
-  <score />
+  <rating>Other - NR (Not Rated)</rating>
   <nplayers />
+  <score />
   <plot />
 </game>
-<game name="Dune (1992)(Virgin)[cr][m][ISO]">
+<game ROM="Dune (1992)(Virgin)[cr][m][ISO]">
   <title>Dune (1992)(Virgin)[cr][m][ISO]</title>
   <year />
-  <rating>Other - NR (Not Rated)</rating>
+  <genre />
   <publisher />
   <developer />
-  <genre />
-  <score />
+  <rating>Other - NR (Not Rated)</rating>
   <nplayers />
+  <score />
   <plot />
 </game>
-<game name="Enciclopedia Italiana Grolier (1991)(Grolier Hachette International)(IT)[!]">
+<game ROM="Enciclopedia Italiana Grolier (1991)(Grolier Hachette International)(IT)[!]">
   <title>Enciclopedia Italiana Grolier (1991)(Grolier Hachette International)(IT)[!]</title>
   <year />
-  <rating>Other - NR (Not Rated)</rating>
+  <genre />
   <publisher />
   <developer />
-  <genre />
-  <score />
+  <rating>Other - NR (Not Rated)</rating>
   <nplayers />
+  <score />
   <plot />
 </game>
-<game name="Fantastic Voyage (1992)(Centaur)">
+<game ROM="Fantastic Voyage (1992)(Centaur)">
   <title>Fantastic Voyage (1992)(Centaur)</title>
   <year />
-  <rating>Other - NR (Not Rated)</rating>
+  <genre />
   <publisher />
   <developer />
-  <genre />
-  <score />
+  <rating>Other - NR (Not Rated)</rating>
   <nplayers />
+  <score />
   <plot />
 </game>
-<game name="Fractal Universe (1992)(Almathera)[!]">
+<game ROM="Fractal Universe (1992)(Almathera)[!]">
   <title>Fractal Universe (1992)(Almathera)[!]</title>
   <year />
-  <rating>Other - NR (Not Rated)</rating>
+  <genre />
   <publisher />
   <developer />
-  <genre />
-  <score />
+  <rating>Other - NR (Not Rated)</rating>
   <nplayers />
+  <score />
   <plot />
 </game>
-<game name="Fred Fish Collection on CD ROM, The - Volume 1.2 May 1991 (1991)(HyperMedia Concepts)[Amiga-CDTV]">
+<game ROM="Fred Fish Collection on CD ROM, The - Volume 1.2 May 1991 (1991)(HyperMedia Concepts)[Amiga-CDTV]">
   <title>Fred Fish Collection on CD ROM, The - Volume 1.2 May 1991 (1991)(HyperMedia Concepts)[Amiga-CDTV]</title>
   <year />
-  <rating>Other - NR (Not Rated)</rating>
+  <genre />
   <publisher />
   <developer />
-  <genre />
-  <score />
+  <rating>Other - NR (Not Rated)</rating>
   <nplayers />
+  <score />
   <plot />
 </game>
-<game name="Fred Fish Collection on CD ROM, The - Volume 1.3 September 1991 (1991)(HyperMedia Concepts)[Amiga-CDTV]">
+<game ROM="Fred Fish Collection on CD ROM, The - Volume 1.3 September 1991 (1991)(HyperMedia Concepts)[Amiga-CDTV]">
   <title>Fred Fish Collection on CD ROM, The - Volume 1.3 September 1991 (1991)(HyperMedia Concepts)[Amiga-CDTV]</title>
   <year />
-  <rating>Other - NR (Not Rated)</rating>
+  <genre />
   <publisher />
   <developer />
-  <genre />
-  <score />
+  <rating>Other - NR (Not Rated)</rating>
   <nplayers />
+  <score />
   <plot />
 </game>
-<game name="Fred Fish Collection on CD ROM, The - Volume 1.5 August 1992 (1992)(HyperMedia Concepts)[Amiga-CDTV]">
+<game ROM="Fred Fish Collection on CD ROM, The - Volume 1.5 August 1992 (1992)(HyperMedia Concepts)[Amiga-CDTV]">
   <title>Fred Fish Collection on CD ROM, The - Volume 1.5 August 1992 (1992)(HyperMedia Concepts)[Amiga-CDTV]</title>
   <year />
-  <rating>Other - NR (Not Rated)</rating>
+  <genre />
   <publisher />
   <developer />
-  <genre />
-  <score />
+  <rating>Other - NR (Not Rated)</rating>
   <nplayers />
+  <score />
   <plot />
 </game>
-<game name="Fred Fish Collection on CD ROM, The - Volume 1.6 February 1993 (1993)(HyperMedia Concepts)[!][Amiga-CDTV]">
+<game ROM="Fred Fish Collection on CD ROM, The - Volume 1.6 February 1993 (1993)(HyperMedia Concepts)[!][Amiga-CDTV]">
   <title>Fred Fish Collection on CD ROM, The - Volume 1.6 February 1993 (1993)(HyperMedia Concepts)[!][Amiga-CDTV]</title>
   <year />
-  <rating>Other - NR (Not Rated)</rating>
+  <genre />
   <publisher />
   <developer />
-  <genre />
-  <score />
+  <rating>Other - NR (Not Rated)</rating>
   <nplayers />
+  <score />
   <plot />
 </game>
-<game name="Fred Fish Collection on CD ROM, The - Volume 1.7 October 1993 (1993)(HyperMedia Concepts)[Amiga-CDTV]">
+<game ROM="Fred Fish Collection on CD ROM, The - Volume 1.7 October 1993 (1993)(HyperMedia Concepts)[Amiga-CDTV]">
   <title>Fred Fish Collection on CD ROM, The - Volume 1.7 October 1993 (1993)(HyperMedia Concepts)[Amiga-CDTV]</title>
   <year />
-  <rating>Other - NR (Not Rated)</rating>
+  <genre />
   <publisher />
   <developer />
-  <genre />
-  <score />
+  <rating>Other - NR (Not Rated)</rating>
   <nplayers />
+  <score />
   <plot />
 </game>
-<game name="Fred Fish Collection On-Line, The - Volume 1.4 Spring 1992 (1992)(HyperMedia Concepts)[Amiga-CDTV]">
+<game ROM="Fred Fish Collection On-Line, The - Volume 1.4 Spring 1992 (1992)(HyperMedia Concepts)[Amiga-CDTV]">
   <title>Fred Fish Collection On-Line, The - Volume 1.4 Spring 1992 (1992)(HyperMedia Concepts)[Amiga-CDTV]</title>
   <year />
-  <rating>Other - NR (Not Rated)</rating>
+  <genre />
   <publisher />
   <developer />
-  <genre />
-  <score />
+  <rating>Other - NR (Not Rated)</rating>
   <nplayers />
+  <score />
   <plot />
 </game>
-<game name="Fred Fish Collection On-Line, The - Volume 1.5 November 1992 (1992)(HyperMedia Concepts)[Amiga-CDTV]">
+<game ROM="Fred Fish Collection On-Line, The - Volume 1.5 November 1992 (1992)(HyperMedia Concepts)[Amiga-CDTV]">
   <title>Fred Fish Collection On-Line, The - Volume 1.5 November 1992 (1992)(HyperMedia Concepts)[Amiga-CDTV]</title>
   <year />
-  <rating>Other - NR (Not Rated)</rating>
+  <genre />
   <publisher />
   <developer />
-  <genre />
-  <score />
+  <rating>Other - NR (Not Rated)</rating>
   <nplayers />
+  <score />
   <plot />
 </game>
-<game name="Fun School 3 - for 5 to 7 year olds (1991)(Europress Software)[!]">
+<game ROM="Fun School 3 - for 5 to 7 year olds (1991)(Europress Software)[!]">
   <title>Fun School 3 - for 5 to 7 year olds (1991)(Europress Software)[!]</title>
   <year />
-  <rating>Other - NR (Not Rated)</rating>
+  <genre />
   <publisher />
   <developer />
-  <genre />
-  <score />
+  <rating>Other - NR (Not Rated)</rating>
   <nplayers />
+  <score />
   <plot />
 </game>
-<game name="Fun School 3 - for the over 7s (1991)(Europress Software)">
+<game ROM="Fun School 3 - for the over 7s (1991)(Europress Software)">
   <title>Fun School 3 - for the over 7s (1991)(Europress Software)</title>
   <year />
-  <rating>Other - NR (Not Rated)</rating>
+  <genre />
   <publisher />
   <developer />
-  <genre />
-  <score />
+  <rating>Other - NR (Not Rated)</rating>
   <nplayers />
+  <score />
   <plot />
 </game>
-<game name="Fun School 3 - for the under 5s (1991)(Database Educational Software)[!]">
+<game ROM="Fun School 3 - for the under 5s (1991)(Database Educational Software)[!]">
   <title>Fun School 3 - for the under 5s (1991)(Database Educational Software)[!]</title>
   <year />
-  <rating>Other - NR (Not Rated)</rating>
+  <genre />
   <publisher />
   <developer />
-  <genre />
-  <score />
+  <rating>Other - NR (Not Rated)</rating>
   <nplayers />
+  <score />
   <plot />
 </game>
-<game name="Garden Fax - Fruits, Vegetables &amp; Herbs (1991)(CDTV Publishing)[!]">
+<game ROM="Garden Fax - Fruits, Vegetables &amp; Herbs (1991)(CDTV Publishing)[!]">
   <title>Garden Fax - Fruits, Vegetables &amp; Herbs (1991)(CDTV Publishing)[!]</title>
   <year />
-  <rating>Other - NR (Not Rated)</rating>
+  <genre />
   <publisher />
   <developer />
-  <genre />
-  <score />
+  <rating>Other - NR (Not Rated)</rating>
   <nplayers />
+  <score />
   <plot />
 </game>
-<game name="Garden Fax - Indoor Plants (1991)(CDTV Publishing)[!]">
+<game ROM="Garden Fax - Indoor Plants (1991)(CDTV Publishing)[!]">
   <title>Garden Fax - Indoor Plants (1991)(CDTV Publishing)[!]</title>
   <year />
-  <rating>Other - NR (Not Rated)</rating>
+  <genre />
   <publisher />
   <developer />
-  <genre />
-  <score />
+  <rating>Other - NR (Not Rated)</rating>
   <nplayers />
+  <score />
   <plot />
 </game>
-<game name="Garden Fax - Trees, Shrubs, Roses &amp; Conifers (1991)(CDTV Publishing)[!]">
+<game ROM="Garden Fax - Trees, Shrubs, Roses &amp; Conifers (1991)(CDTV Publishing)[!]">
   <title>Garden Fax - Trees, Shrubs, Roses &amp; Conifers (1991)(CDTV Publishing)[!]</title>
   <year />
-  <rating>Other - NR (Not Rated)</rating>
+  <genre />
   <publisher />
   <developer />
-  <genre />
-  <score />
+  <rating>Other - NR (Not Rated)</rating>
   <nplayers />
+  <score />
   <plot />
 </game>
-<game name="Global Chaos (1992)(Hex)[!]">
+<game ROM="Global Chaos (1992)(Hex)[!]">
   <title>Global Chaos (1992)(Hex)[!]</title>
   <year />
-  <rating>Other - NR (Not Rated)</rating>
+  <genre />
   <publisher />
   <developer />
-  <genre />
-  <score />
+  <rating>Other - NR (Not Rated)</rating>
   <nplayers />
+  <score />
   <plot />
 </game>
-<game name="Guinness CDTV Disc of Records, The - 1991 Edition (1991)(CDTV Publishing)[!]">
+<game ROM="Guinness CDTV Disc of Records, The - 1991 Edition (1991)(CDTV Publishing)[!]">
   <title>Guinness CDTV Disc of Records, The - 1991 Edition (1991)(CDTV Publishing)[!]</title>
   <year />
-  <rating>Other - NR (Not Rated)</rating>
+  <genre />
   <publisher />
   <developer />
-  <genre />
-  <score />
+  <rating>Other - NR (Not Rated)</rating>
   <nplayers />
+  <score />
   <plot />
 </game>
-<game name="Guy Spy and the Crystals of Armageddon v1.0 (1992)(ReadySoft)[!][CDTV-PC]">
+<game ROM="Guy Spy and the Crystals of Armageddon v1.0 (1992)(ReadySoft)[!][CDTV-PC]">
   <title>Guy Spy and the Crystals of Armageddon v1.0 (1992)(ReadySoft)[!][CDTV-PC]</title>
   <year />
-  <rating>Other - NR (Not Rated)</rating>
+  <genre />
   <publisher />
   <developer />
-  <genre />
-  <score />
+  <rating>Other - NR (Not Rated)</rating>
   <nplayers />
+  <score />
   <plot />
 </game>
-<game name="Heather Hits Her First Home Run (1991)(Discis)(en-es)[!]">
+<game ROM="Heather Hits Her First Home Run (1991)(Discis)(en-es)[!]">
   <title>Heather Hits Her First Home Run (1991)(Discis)(en-es)[!]</title>
   <year />
-  <rating>Other - NR (Not Rated)</rating>
+  <genre />
   <publisher />
   <developer />
-  <genre />
-  <score />
+  <rating>Other - NR (Not Rated)</rating>
   <nplayers />
+  <score />
   <plot />
 </game>
-<game name="Heroic Age of Spaceflight - NASA... The 25th Year (1991)(Troika Multimedia)[!]">
+<game ROM="Heroic Age of Spaceflight - NASA... The 25th Year (1991)(Troika Multimedia)[!]">
   <title>Heroic Age of Spaceflight - NASA... The 25th Year (1991)(Troika Multimedia)[!]</title>
   <year />
-  <rating>Other - NR (Not Rated)</rating>
+  <genre />
   <publisher />
   <developer />
-  <genre />
-  <score />
+  <rating>Other - NR (Not Rated)</rating>
   <nplayers />
+  <score />
   <plot />
 </game>
-<game name="Historyline 1914-1918 (1993)(Blue Byte)(DE)[m Haflinger][ISO]">
+<game ROM="Historyline 1914-1918 (1993)(Blue Byte)(DE)[m Haflinger][ISO]">
   <title>Historyline 1914-1918 (1993)(Blue Byte)(DE)[m Haflinger][ISO]</title>
   <year />
-  <rating>Other - NR (Not Rated)</rating>
+  <genre />
   <publisher />
   <developer />
-  <genre />
-  <score />
+  <rating>Other - NR (Not Rated)</rating>
   <nplayers />
+  <score />
   <plot />
 </game>
-<game name="Hound of the Baskervilles, The (1991)(On-line)[!]">
+<game ROM="Hound of the Baskervilles, The (1991)(On-line)[!]">
   <title>Hound of the Baskervilles, The (1991)(On-line)[!]</title>
   <year />
-  <rating>Other - NR (Not Rated)</rating>
+  <genre />
   <publisher />
   <developer />
-  <genre />
-  <score />
+  <rating>Other - NR (Not Rated)</rating>
   <nplayers />
+  <score />
   <plot />
 </game>
-<game name="Human Body, The (1993)(Giunti Multimedia)(M5)">
+<game ROM="Human Body, The (1993)(Giunti Multimedia)(M5)">
   <title>Human Body, The (1993)(Giunti Multimedia)(M5)</title>
   <year />
-  <rating>Other - NR (Not Rated)</rating>
+  <genre />
   <publisher />
   <developer />
-  <genre />
-  <score />
+  <rating>Other - NR (Not Rated)</rating>
   <nplayers />
+  <score />
   <plot />
 </game>
-<game name="Hutchinson Encyclopedia, The - PAL Version (1991)(Attica Cybernetics)(PAL)[!]">
+<game ROM="Hutchinson Encyclopedia, The - PAL Version (1991)(Attica Cybernetics)(PAL)[!]">
   <title>Hutchinson Encyclopedia, The - PAL Version (1991)(Attica Cybernetics)(PAL)[!]</title>
   <year />
-  <rating>Other - NR (Not Rated)</rating>
+  <genre />
   <publisher />
   <developer />
-  <genre />
-  <score />
+  <rating>Other - NR (Not Rated)</rating>
   <nplayers />
+  <score />
   <plot />
 </game>
-<game name="Illustrated Holy Bible, The (1991)(Animated Pixels)[!][CDTV-PC]">
+<game ROM="Illustrated Holy Bible, The (1991)(Animated Pixels)[!][CDTV-PC]">
   <title>Illustrated Holy Bible, The (1991)(Animated Pixels)[!][CDTV-PC]</title>
   <year />
-  <rating>Other - NR (Not Rated)</rating>
+  <genre />
   <publisher />
   <developer />
-  <genre />
-  <score />
+  <rating>Other - NR (Not Rated)</rating>
   <nplayers />
+  <score />
   <plot />
 </game>
-<game name="Illustrated Works of Shakespeare, The (1990)(Animated Pixels)[!][CDTV-PC]">
+<game ROM="Illustrated Works of Shakespeare, The (1990)(Animated Pixels)[!][CDTV-PC]">
   <title>Illustrated Works of Shakespeare, The (1990)(Animated Pixels)[!][CDTV-PC]</title>
   <year />
-  <rating>Other - NR (Not Rated)</rating>
+  <genre />
   <publisher />
   <developer />
-  <genre />
-  <score />
+  <rating>Other - NR (Not Rated)</rating>
   <nplayers />
+  <score />
   <plot />
 </game>
-<game name="Illustrated Works of Shakespeare, The (1995)(Almathera)[!][compilation Ten On Ten]">
+<game ROM="Illustrated Works of Shakespeare, The (1995)(Almathera)[!][compilation Ten On Ten]">
   <title>Illustrated Works of Shakespeare, The (1995)(Almathera)[!][compilation Ten On Ten]</title>
   <year />
-  <rating>Other - NR (Not Rated)</rating>
+  <genre />
   <publisher />
   <developer />
-  <genre />
-  <score />
+  <rating>Other - NR (Not Rated)</rating>
   <nplayers />
+  <score />
   <plot />
 </game>
-<game name="Indiana Jones and the Fate of Atlantis - The Graphic Adventure (1993)(U.S. Gold)(ES)[m DaNi][ISO]">
+<game ROM="Indiana Jones and the Fate of Atlantis - The Graphic Adventure (1993)(U.S. Gold)(ES)[m DaNi][ISO]">
   <title>Indiana Jones and the Fate of Atlantis - The Graphic Adventure (1993)(U.S. Gold)(ES)[m DaNi][ISO]</title>
   <year />
-  <rating>Other - NR (Not Rated)</rating>
+  <genre />
   <publisher />
   <developer />
-  <genre />
-  <score />
+  <rating>Other - NR (Not Rated)</rating>
   <nplayers />
+  <score />
   <plot />
 </game>
-<game name="Indiana Jones and the Last Crusade (1992)(Softgold)(DE)[!][cp code]">
+<game ROM="Indiana Jones and the Last Crusade (1992)(Softgold)(DE)[!][cp code]">
   <title>Indiana Jones and the Last Crusade (1992)(Softgold)(DE)[!][cp code]</title>
   <year />
-  <rating>Other - NR (Not Rated)</rating>
+  <genre />
   <publisher />
   <developer />
-  <genre />
-  <score />
+  <rating>Other - NR (Not Rated)</rating>
   <nplayers />
+  <score />
   <plot />
 </game>
-<game name="It Came from the Desert (1989)(Cinemaware)[m][b][ISO]">
+<game ROM="It Came from the Desert (1989)(Cinemaware)[m][b][ISO]">
   <title>It Came from the Desert (1989)(Cinemaware)[m][b][ISO]</title>
   <year />
-  <rating>Other - NR (Not Rated)</rating>
+  <genre />
   <publisher />
   <developer />
-  <genre />
-  <score />
+  <rating>Other - NR (Not Rated)</rating>
   <nplayers />
+  <score />
   <plot />
 </game>
-<game name="Kickstart Public Domain Nr. 1-550 (1993)(Geuther, Mirko)(DE)[Amiga-CDTV]">
+<game ROM="Kickstart Public Domain Nr. 1-550 (1993)(Geuther, Mirko)(DE)[Amiga-CDTV]">
   <title>Kickstart Public Domain Nr. 1-550 (1993)(Geuther, Mirko)(DE)[Amiga-CDTV]</title>
   <year />
-  <rating>Other - NR (Not Rated)</rating>
+  <genre />
   <publisher />
   <developer />
-  <genre />
-  <score />
+  <rating>Other - NR (Not Rated)</rating>
   <nplayers />
+  <score />
   <plot />
 </game>
-<game name="King&apos;s Quest VI - Heir Today, Gone Tomorrow (1994)(Sierra)[m DaNi][ISO]">
+<game ROM="King&apos;s Quest VI - Heir Today, Gone Tomorrow (1994)(Sierra)[m DaNi][ISO]">
   <title>King&apos;s Quest VI - Heir Today, Gone Tomorrow (1994)(Sierra)[m DaNi][ISO]</title>
   <year />
-  <rating>Other - NR (Not Rated)</rating>
+  <genre />
   <publisher />
   <developer />
-  <genre />
-  <score />
+  <rating>Other - NR (Not Rated)</rating>
   <nplayers />
+  <score />
   <plot />
 </game>
-<game name="Language TV - English (1991)(Jeriko)(FR)[!]">
+<game ROM="Language TV - English (1991)(Jeriko)(FR)[!]">
   <title>Language TV - English (1991)(Jeriko)(FR)[!]</title>
   <year />
-  <rating>Other - NR (Not Rated)</rating>
+  <genre />
   <publisher />
   <developer />
-  <genre />
-  <score />
+  <rating>Other - NR (Not Rated)</rating>
   <nplayers />
+  <score />
   <plot />
 </game>
-<game name="Learn French with Asterix - Le Fils d&apos;Asterix - Disk One (1991)(EuroTalk)[!]">
+<game ROM="Learn French with Asterix - Le Fils d&apos;Asterix - Disk One (1991)(EuroTalk)[!]">
   <title>Learn French with Asterix - Le Fils d&apos;Asterix - Disk One (1991)(EuroTalk)[!]</title>
   <year />
-  <rating>Other - NR (Not Rated)</rating>
+  <genre />
   <publisher />
   <developer />
-  <genre />
-  <score />
+  <rating>Other - NR (Not Rated)</rating>
   <nplayers />
+  <score />
   <plot />
 </game>
-<game name="Learn French with Asterix - Le Fils d&apos;Asterix - Disk Two (1991)(EuroTalk)[!]">
+<game ROM="Learn French with Asterix - Le Fils d&apos;Asterix - Disk Two (1991)(EuroTalk)[!]">
   <title>Learn French with Asterix - Le Fils d&apos;Asterix - Disk Two (1991)(EuroTalk)[!]</title>
   <year />
-  <rating>Other - NR (Not Rated)</rating>
+  <genre />
   <publisher />
   <developer />
-  <genre />
-  <score />
+  <rating>Other - NR (Not Rated)</rating>
   <nplayers />
+  <score />
   <plot />
 </game>
-<game name="Lemmings (1994)(Psygnosis)[!]">
+<game ROM="Lemmings (1994)(Psygnosis)[!]">
   <title>Lemmings (1994)(Psygnosis)[!]</title>
   <year />
-  <rating>Other - NR (Not Rated)</rating>
+  <genre />
   <publisher />
   <developer />
-  <genre />
-  <score />
+  <rating>Other - NR (Not Rated)</rating>
   <nplayers />
+  <score />
   <plot />
 </game>
-<game name="Log!cal (1992)(Rainbow Arts)[!]">
+<game ROM="Log!cal (1992)(Rainbow Arts)[!]">
   <title>Log!cal (1992)(Rainbow Arts)[!]</title>
   <year />
-  <rating>Other - NR (Not Rated)</rating>
+  <genre />
   <publisher />
   <developer />
-  <genre />
-  <score />
+  <rating>Other - NR (Not Rated)</rating>
   <nplayers />
+  <score />
   <plot />
 </game>
-<game name="Loom (1990)(Lucasfilm)(fr)[cr Angels][m][BIN-MP3-CUE]">
+<game ROM="Loom (1990)(Lucasfilm)(fr)[cr Angels][m][BIN-MP3-CUE]">
   <title>Loom (1990)(Lucasfilm)(fr)[cr Angels][m][BIN-MP3-CUE]</title>
   <year />
-  <rating>Other - NR (Not Rated)</rating>
+  <genre />
   <publisher />
   <developer />
-  <genre />
-  <score />
+  <rating>Other - NR (Not Rated)</rating>
   <nplayers />
+  <score />
   <plot />
 </game>
-<game name="Mind Run (1991)(Crealude)(FR)(M6)[!][CFI MINDRUM 91148]">
+<game ROM="Mind Run (1991)(Crealude)(FR)(M6)[!][CFI MINDRUM 91148]">
   <title>Mind Run (1991)(Crealude)(FR)(M6)[!][CFI MINDRUM 91148]</title>
   <year />
-  <rating>Other - NR (Not Rated)</rating>
+  <genre />
   <publisher />
   <developer />
-  <genre />
-  <score />
+  <rating>Other - NR (Not Rated)</rating>
   <nplayers />
+  <score />
   <plot />
 </game>
-<game name="Mind Run (1991)(Crealude)(FR)(M6)[CFI MINDRUM 91137]">
+<game ROM="Mind Run (1991)(Crealude)(FR)(M6)[CFI MINDRUM 91137]">
   <title>Mind Run (1991)(Crealude)(FR)(M6)[CFI MINDRUM 91137]</title>
   <year />
-  <rating>Other - NR (Not Rated)</rating>
+  <genre />
   <publisher />
   <developer />
-  <genre />
-  <score />
+  <rating>Other - NR (Not Rated)</rating>
   <nplayers />
+  <score />
   <plot />
 </game>
-<game name="Monopoly (1994)(Supervision)[m][BIN-CUE]">
+<game ROM="Monopoly (1994)(Supervision)[m][BIN-CUE]">
   <title>Monopoly (1994)(Supervision)[m][BIN-CUE]</title>
   <year />
-  <rating>Other - NR (Not Rated)</rating>
+  <genre />
   <publisher />
   <developer />
-  <genre />
-  <score />
+  <rating>Other - NR (Not Rated)</rating>
   <nplayers />
+  <score />
   <plot />
 </game>
-<game name="Moving Gives Me A Stomach Ache (1991)(Discis)(en-es)[!][CDRM-573800 3]">
+<game ROM="Moving Gives Me A Stomach Ache (1991)(Discis)(en-es)[!][CDRM-573800 3]">
   <title>Moving Gives Me A Stomach Ache (1991)(Discis)(en-es)[!][CDRM-573800 3]</title>
   <year />
-  <rating>Other - NR (Not Rated)</rating>
+  <genre />
   <publisher />
   <developer />
-  <genre />
-  <score />
+  <rating>Other - NR (Not Rated)</rating>
   <nplayers />
+  <score />
   <plot />
 </game>
-<game name="Moving Gives Me A Stomach Ache (1992)(Discis)(M5)[!][CDRM-734800 3]">
+<game ROM="Moving Gives Me A Stomach Ache (1992)(Discis)(M5)[!][CDRM-734800 3]">
   <title>Moving Gives Me A Stomach Ache (1992)(Discis)(M5)[!][CDRM-734800 3]</title>
   <year />
-  <rating>Other - NR (Not Rated)</rating>
+  <genre />
   <publisher />
   <developer />
-  <genre />
-  <score />
+  <rating>Other - NR (Not Rated)</rating>
   <nplayers />
+  <score />
   <plot />
 </game>
-<game name="Mud Puddle (1991)(Discis)(en-es)[!][CDRM-573600 3]">
+<game ROM="Mud Puddle (1991)(Discis)(en-es)[!][CDRM-573600 3]">
   <title>Mud Puddle (1991)(Discis)(en-es)[!][CDRM-573600 3]</title>
   <year />
-  <rating>Other - NR (Not Rated)</rating>
+  <genre />
   <publisher />
   <developer />
-  <genre />
-  <score />
+  <rating>Other - NR (Not Rated)</rating>
   <nplayers />
+  <score />
   <plot />
 </game>
-<game name="Mud Puddle (1992)(Discis)(M5)[CDRM-735000 2]">
+<game ROM="Mud Puddle (1992)(Discis)(M5)[CDRM-735000 2]">
   <title>Mud Puddle (1992)(Discis)(M5)[CDRM-735000 2]</title>
   <year />
-  <rating>Other - NR (Not Rated)</rating>
+  <genre />
   <publisher />
   <developer />
-  <genre />
-  <score />
+  <rating>Other - NR (Not Rated)</rating>
   <nplayers />
+  <score />
   <plot />
 </game>
-<game name="Multimedia Toolkit (1993)(Weird Science)[!][Amiga-CD32-CDTV]">
+<game ROM="Multimedia Toolkit (1993)(Weird Science)[!][Amiga-CD32-CDTV]">
   <title>Multimedia Toolkit (1993)(Weird Science)[!][Amiga-CD32-CDTV]</title>
   <year />
-  <rating>Other - NR (Not Rated)</rating>
+  <genre />
   <publisher />
   <developer />
-  <genre />
-  <score />
+  <rating>Other - NR (Not Rated)</rating>
   <nplayers />
+  <score />
   <plot />
 </game>
-<game name="My Paint - The Paint Program Just for Kids! (1991)(Saddleback Graphics)[!]">
+<game ROM="My Paint - The Paint Program Just for Kids! (1991)(Saddleback Graphics)[!]">
   <title>My Paint - The Paint Program Just for Kids! (1991)(Saddleback Graphics)[!]</title>
   <year />
-  <rating>Other - NR (Not Rated)</rating>
+  <genre />
   <publisher />
   <developer />
-  <genre />
-  <score />
+  <rating>Other - NR (Not Rated)</rating>
   <nplayers />
+  <score />
   <plot />
 </game>
-<game name="Network CD (1994)(Weird Science)[!][Amiga-CD32-CDTV]">
+<game ROM="Network CD (1994)(Weird Science)[!][Amiga-CD32-CDTV]">
   <title>Network CD (1994)(Weird Science)[!][Amiga-CD32-CDTV]</title>
   <year />
-  <rating>Other - NR (Not Rated)</rating>
+  <genre />
   <publisher />
   <developer />
-  <genre />
-  <score />
+  <rating>Other - NR (Not Rated)</rating>
   <nplayers />
+  <score />
   <plot />
 </game>
-<game name="New Basics Electronic Cookbook, The - 1991a Edition (1991)(Xiphias)[!]">
+<game ROM="New Basics Electronic Cookbook, The - 1991a Edition (1991)(Xiphias)[!]">
   <title>New Basics Electronic Cookbook, The - 1991a Edition (1991)(Xiphias)[!]</title>
   <year />
-  <rating>Other - NR (Not Rated)</rating>
+  <genre />
   <publisher />
   <developer />
-  <genre />
-  <score />
+  <rating>Other - NR (Not Rated)</rating>
   <nplayers />
+  <score />
   <plot />
 </game>
-<game name="New Grolier Electronic Encyclopedia, The (1991)(CDTV Publishing)[!]">
+<game ROM="New Grolier Electronic Encyclopedia, The (1991)(CDTV Publishing)[!]">
   <title>New Grolier Electronic Encyclopedia, The (1991)(CDTV Publishing)[!]</title>
   <year />
-  <rating>Other - NR (Not Rated)</rating>
+  <genre />
   <publisher />
   <developer />
-  <genre />
-  <score />
+  <rating>Other - NR (Not Rated)</rating>
   <nplayers />
+  <score />
   <plot />
 </game>
-<game name="Night Before Christmas, The (1991)(Discis)(en-es)">
+<game ROM="Night Before Christmas, The (1991)(Discis)(en-es)">
   <title>Night Before Christmas, The (1991)(Discis)(en-es)</title>
   <year />
-  <rating>Other - NR (Not Rated)</rating>
+  <genre />
   <publisher />
   <developer />
-  <genre />
-  <score />
+  <rating>Other - NR (Not Rated)</rating>
   <nplayers />
+  <score />
   <plot />
 </game>
-<game name="Original CDPD Public Domain Collection, The (1994)(Almathera)[!][Amiga-CD32-CDTV]">
+<game ROM="Original CDPD Public Domain Collection, The (1994)(Almathera)[!][Amiga-CD32-CDTV]">
   <title>Original CDPD Public Domain Collection, The (1994)(Almathera)[!][Amiga-CD32-CDTV]</title>
   <year />
-  <rating>Other - NR (Not Rated)</rating>
+  <genre />
   <publisher />
   <developer />
-  <genre />
-  <score />
+  <rating>Other - NR (Not Rated)</rating>
   <nplayers />
+  <score />
   <plot />
 </game>
-<game name="Pandora&apos;s CD (1995)(Almathera)[!][compilation Ten On Ten]">
+<game ROM="Pandora&apos;s CD (1995)(Almathera)[!][compilation Ten On Ten]">
   <title>Pandora&apos;s CD (1995)(Almathera)[!][compilation Ten On Ten]</title>
   <year />
-  <rating>Other - NR (Not Rated)</rating>
+  <genre />
   <publisher />
   <developer />
-  <genre />
-  <score />
+  <rating>Other - NR (Not Rated)</rating>
   <nplayers />
+  <score />
   <plot />
 </game>
-<game name="Pandora&apos;s CD v1.0 (1993)(Optonica)(PAL)[!]">
+<game ROM="Pandora&apos;s CD v1.0 (1993)(Optonica)(PAL)[!]">
   <title>Pandora&apos;s CD v1.0 (1993)(Optonica)(PAL)[!]</title>
   <year />
-  <rating>Other - NR (Not Rated)</rating>
+  <genre />
   <publisher />
   <developer />
-  <genre />
-  <score />
+  <rating>Other - NR (Not Rated)</rating>
   <nplayers />
+  <score />
   <plot />
 </game>
-<game name="Paper Bag Princess, The (1991)(Discis)(en-es)[CDRM-573500 2]">
+<game ROM="Paper Bag Princess, The (1991)(Discis)(en-es)[CDRM-573500 2]">
   <title>Paper Bag Princess, The (1991)(Discis)(en-es)[CDRM-573500 2]</title>
   <year />
-  <rating>Other - NR (Not Rated)</rating>
+  <genre />
   <publisher />
   <developer />
-  <genre />
-  <score />
+  <rating>Other - NR (Not Rated)</rating>
   <nplayers />
+  <score />
   <plot />
 </game>
-<game name="Paper Bag Princess, The (1992)(Discis)(M5)[!][CDRM-734700 3]">
+<game ROM="Paper Bag Princess, The (1992)(Discis)(M5)[!][CDRM-734700 3]">
   <title>Paper Bag Princess, The (1992)(Discis)(M5)[!][CDRM-734700 3]</title>
   <year />
-  <rating>Other - NR (Not Rated)</rating>
+  <genre />
   <publisher />
   <developer />
-  <genre />
-  <score />
+  <rating>Other - NR (Not Rated)</rating>
   <nplayers />
+  <score />
   <plot />
 </game>
-<game name="Photo Library CD (1995)(Almathera)[!][compilation Ten On Ten]">
+<game ROM="Photo Library CD (1995)(Almathera)[!][compilation Ten On Ten]">
   <title>Photo Library CD (1995)(Almathera)[!][compilation Ten On Ten]</title>
   <year />
-  <rating>Other - NR (Not Rated)</rating>
+  <genre />
   <publisher />
   <developer />
-  <genre />
-  <score />
+  <rating>Other - NR (Not Rated)</rating>
   <nplayers />
+  <score />
   <plot />
 </game>
-<game name="Pinocchio (1993)(Giunti Multimedia)(M6)[!][Amiga-CD32-CDTV]">
+<game ROM="Pinocchio (1993)(Giunti Multimedia)(M6)[!][Amiga-CD32-CDTV]">
   <title>Pinocchio (1993)(Giunti Multimedia)(M6)[!][Amiga-CD32-CDTV]</title>
   <year />
-  <rating>Other - NR (Not Rated)</rating>
+  <genre />
   <publisher />
   <developer />
-  <genre />
-  <score />
+  <rating>Other - NR (Not Rated)</rating>
   <nplayers />
+  <score />
   <plot />
 </game>
-<game name="Power Pinball (1990)(KarmaSoft)">
+<game ROM="Power Pinball (1990)(KarmaSoft)">
   <title>Power Pinball (1990)(KarmaSoft)</title>
   <year />
-  <rating>Other - NR (Not Rated)</rating>
+  <genre />
   <publisher />
   <developer />
-  <genre />
-  <score />
+  <rating>Other - NR (Not Rated)</rating>
   <nplayers />
+  <score />
   <plot />
 </game>
-<game name="Prehistorik (1991)(Titus)[!]">
+<game ROM="Prehistorik (1991)(Titus)[!]">
   <title>Prehistorik (1991)(Titus)[!]</title>
   <year />
-  <rating>Other - NR (Not Rated)</rating>
+  <genre />
   <publisher />
   <developer />
-  <genre />
-  <score />
+  <rating>Other - NR (Not Rated)</rating>
   <nplayers />
+  <score />
   <plot />
 </game>
-<game name="Psycho Killer (1992)(On-line)[!][U2A2030UB]">
+<game ROM="Psycho Killer (1992)(On-line)[!][U2A2030UB]">
   <title>Psycho Killer (1992)(On-line)[!][U2A2030UB]</title>
   <year />
-  <rating>Other - NR (Not Rated)</rating>
+  <genre />
   <publisher />
   <developer />
-  <genre />
-  <score />
+  <rating>Other - NR (Not Rated)</rating>
   <nplayers />
+  <score />
   <plot />
 </game>
-<game name="Psygnosis Demo (1992)(Commodore)[!]">
+<game ROM="Psygnosis Demo (1992)(Commodore)[!]">
   <title>Psygnosis Demo (1992)(Commodore)[!]</title>
   <year />
-  <rating>Other - NR (Not Rated)</rating>
+  <genre />
   <publisher />
   <developer />
-  <genre />
-  <score />
+  <rating>Other - NR (Not Rated)</rating>
   <nplayers />
+  <score />
   <plot />
 </game>
-<game name="Raffles (1991)(Edge)[Amiga-CDTV]">
+<game ROM="Raffles (1991)(Edge)[Amiga-CDTV]">
   <title>Raffles (1991)(Edge)[Amiga-CDTV]</title>
   <year />
-  <rating>Other - NR (Not Rated)</rating>
+  <genre />
   <publisher />
   <developer />
-  <genre />
-  <score />
+  <rating>Other - NR (Not Rated)</rating>
   <nplayers />
+  <score />
   <plot />
 </game>
-<game name="Read with Asterix - Asterix and Son (1991)(EuroTalk)[!]">
+<game ROM="Read with Asterix - Asterix and Son (1991)(EuroTalk)[!]">
   <title>Read with Asterix - Asterix and Son (1991)(EuroTalk)[!]</title>
   <year />
-  <rating>Other - NR (Not Rated)</rating>
+  <genre />
   <publisher />
   <developer />
-  <genre />
-  <score />
+  <rating>Other - NR (Not Rated)</rating>
   <nplayers />
+  <score />
   <plot />
 </game>
-<game name="Rise of the Dragon (1990)(Dynamix)[m][ISO]">
+<game ROM="Rise of the Dragon (1990)(Dynamix)[m][ISO]">
   <title>Rise of the Dragon (1990)(Dynamix)[m][ISO]</title>
   <year />
-  <rating>Other - NR (Not Rated)</rating>
+  <genre />
   <publisher />
   <developer />
-  <genre />
-  <score />
+  <rating>Other - NR (Not Rated)</rating>
   <nplayers />
+  <score />
   <plot />
 </game>
-<game name="Scary Poems for Rotten Kids (1991)(Discis)(en-es)[!]">
+<game ROM="Scary Poems for Rotten Kids (1991)(Discis)(en-es)[!]">
   <title>Scary Poems for Rotten Kids (1991)(Discis)(en-es)[!]</title>
   <year />
-  <rating>Other - NR (Not Rated)</rating>
+  <genre />
   <publisher />
   <developer />
-  <genre />
-  <score />
+  <rating>Other - NR (Not Rated)</rating>
   <nplayers />
+  <score />
   <plot />
 </game>
-<game name="Shiftrix &amp; Lettrix (1991)(Software 2000)(DE)[!]">
+<game ROM="Shiftrix &amp; Lettrix (1991)(Software 2000)(DE)[!]">
   <title>Shiftrix &amp; Lettrix (1991)(Software 2000)(DE)[!]</title>
   <year />
-  <rating>Other - NR (Not Rated)</rating>
+  <genre />
   <publisher />
   <developer />
-  <genre />
-  <score />
+  <rating>Other - NR (Not Rated)</rating>
   <nplayers />
+  <score />
   <plot />
 </game>
-<game name="Sim City (1991)(Infogrames)(M5)[!]">
+<game ROM="Sim City (1991)(Infogrames)(M5)[!]">
   <title>Sim City (1991)(Infogrames)(M5)[!]</title>
   <year />
-  <rating>Other - NR (Not Rated)</rating>
+  <genre />
   <publisher />
   <developer />
-  <genre />
-  <score />
+  <rating>Other - NR (Not Rated)</rating>
   <nplayers />
+  <score />
   <plot />
 </game>
-<game name="Snoopy - The Case of the Missing Blanket (1991)(Edge)[!]">
+<game ROM="Snoopy - The Case of the Missing Blanket (1991)(Edge)[!]">
   <title>Snoopy - The Case of the Missing Blanket (1991)(Edge)[!]</title>
   <year />
-  <rating>Other - NR (Not Rated)</rating>
+  <genre />
   <publisher />
   <developer />
-  <genre />
-  <score />
+  <rating>Other - NR (Not Rated)</rating>
   <nplayers />
+  <score />
   <plot />
 </game>
-<game name="Sprachraetsel Englisch 2 - Spielend Sprachen lernen! (1990)(Ingenio)(DE)[!]">
+<game ROM="Sprachraetsel Englisch 2 - Spielend Sprachen lernen! (1990)(Ingenio)(DE)[!]">
   <title>Sprachraetsel Englisch 2 - Spielend Sprachen lernen! (1990)(Ingenio)(DE)[!]</title>
   <year />
-  <rating>Other - NR (Not Rated)</rating>
+  <genre />
   <publisher />
   <developer />
-  <genre />
-  <score />
+  <rating>Other - NR (Not Rated)</rating>
   <nplayers />
+  <score />
   <plot />
 </game>
-<game name="Sprachraetsel Englisch 3 - Spielend Sprachen lernen! (1990)(Ingenio)(DE)">
+<game ROM="Sprachraetsel Englisch 3 - Spielend Sprachen lernen! (1990)(Ingenio)(DE)">
   <title>Sprachraetsel Englisch 3 - Spielend Sprachen lernen! (1990)(Ingenio)(DE)</title>
   <year />
-  <rating>Other - NR (Not Rated)</rating>
+  <genre />
   <publisher />
   <developer />
-  <genre />
-  <score />
+  <rating>Other - NR (Not Rated)</rating>
   <nplayers />
+  <score />
   <plot />
 </game>
-<game name="Sprachraetsel Franzoesisch 1 - Spielend Sprachen lernen! (1990)(Ingenio)(DE)[!]">
+<game ROM="Sprachraetsel Franzoesisch 1 - Spielend Sprachen lernen! (1990)(Ingenio)(DE)[!]">
   <title>Sprachraetsel Franzoesisch 1 - Spielend Sprachen lernen! (1990)(Ingenio)(DE)[!]</title>
   <year />
-  <rating>Other - NR (Not Rated)</rating>
+  <genre />
   <publisher />
   <developer />
-  <genre />
-  <score />
+  <rating>Other - NR (Not Rated)</rating>
   <nplayers />
+  <score />
   <plot />
 </game>
-<game name="Sprachraetsel Latein 1 - Spielend Sprachen lernen! (1990)(Ingenio)(DE)">
+<game ROM="Sprachraetsel Latein 1 - Spielend Sprachen lernen! (1990)(Ingenio)(DE)">
   <title>Sprachraetsel Latein 1 - Spielend Sprachen lernen! (1990)(Ingenio)(DE)</title>
   <year />
-  <rating>Other - NR (Not Rated)</rating>
+  <genre />
   <publisher />
   <developer />
-  <genre />
-  <score />
+  <rating>Other - NR (Not Rated)</rating>
   <nplayers />
+  <score />
   <plot />
 </game>
-<game name="Sprachraetsel Spanisch 1 - Spielend Sprachen lernen! (1990)(Ingenio)(DE)[!]">
+<game ROM="Sprachraetsel Spanisch 1 - Spielend Sprachen lernen! (1990)(Ingenio)(DE)[!]">
   <title>Sprachraetsel Spanisch 1 - Spielend Sprachen lernen! (1990)(Ingenio)(DE)[!]</title>
   <year />
-  <rating>Other - NR (Not Rated)</rating>
+  <genre />
   <publisher />
   <developer />
-  <genre />
-  <score />
+  <rating>Other - NR (Not Rated)</rating>
   <nplayers />
+  <score />
   <plot />
 </game>
-<game name="Stadt der Loewen, Die (1991)(Software 2000)(DE)">
+<game ROM="Stadt der Loewen, Die (1991)(Software 2000)(DE)">
   <title>Stadt der Loewen, Die (1991)(Software 2000)(DE)</title>
   <year />
-  <rating>Other - NR (Not Rated)</rating>
+  <genre />
   <publisher />
   <developer />
-  <genre />
-  <score />
+  <rating>Other - NR (Not Rated)</rating>
   <nplayers />
+  <score />
   <plot />
 </game>
-<game name="Super Games Pak (1991)(Odyssey)[!][compilation]">
+<game ROM="Super Games Pak (1991)(Odyssey)[!][compilation]">
   <title>Super Games Pak (1991)(Odyssey)[!][compilation]</title>
   <year />
-  <rating>Other - NR (Not Rated)</rating>
+  <genre />
   <publisher />
   <developer />
-  <genre />
-  <score />
+  <rating>Other - NR (Not Rated)</rating>
   <nplayers />
+  <score />
   <plot />
 </game>
-<game name="Tale of Benjamin Bunny, The (1991)(Discis)(en-es)[!]">
+<game ROM="Tale of Benjamin Bunny, The (1991)(Discis)(en-es)[!]">
   <title>Tale of Benjamin Bunny, The (1991)(Discis)(en-es)[!]</title>
   <year />
-  <rating>Other - NR (Not Rated)</rating>
+  <genre />
   <publisher />
   <developer />
-  <genre />
-  <score />
+  <rating>Other - NR (Not Rated)</rating>
   <nplayers />
+  <score />
   <plot />
 </game>
-<game name="Tale of Peter Rabbit, The (1992)(Discis)(M5)[!][CDRM-734900 1]">
+<game ROM="Tale of Peter Rabbit, The (1992)(Discis)(M5)[!][CDRM-734900 1]">
   <title>Tale of Peter Rabbit, The (1992)(Discis)(M5)[!][CDRM-734900 1]</title>
   <year />
-  <rating>Other - NR (Not Rated)</rating>
+  <genre />
   <publisher />
   <developer />
-  <genre />
-  <score />
+  <rating>Other - NR (Not Rated)</rating>
   <nplayers />
+  <score />
   <plot />
 </game>
-<game name="Team Yankee (1995)(Almathera)[!][compilation Ten On Ten]">
+<game ROM="Team Yankee (1995)(Almathera)[!][compilation Ten On Ten]">
   <title>Team Yankee (1995)(Almathera)[!][compilation Ten On Ten]</title>
   <year />
-  <rating>Other - NR (Not Rated)</rating>
+  <genre />
   <publisher />
   <developer />
-  <genre />
-  <score />
+  <rating>Other - NR (Not Rated)</rating>
   <nplayers />
+  <score />
   <plot />
 </game>
-<game name="Thomas&apos; Snowsuit (1991)(Discis)(en-es)[!]">
+<game ROM="Thomas&apos; Snowsuit (1991)(Discis)(en-es)[!]">
   <title>Thomas&apos; Snowsuit (1991)(Discis)(en-es)[!]</title>
   <year />
-  <rating>Other - NR (Not Rated)</rating>
+  <genre />
   <publisher />
   <developer />
-  <genre />
-  <score />
+  <rating>Other - NR (Not Rated)</rating>
   <nplayers />
+  <score />
   <plot />
 </game>
-<game name="Tie Break (1991)(Starbyte)[!]">
+<game ROM="Tie Break (1991)(Starbyte)[!]">
   <title>Tie Break (1991)(Starbyte)[!]</title>
   <year />
-  <rating>Other - NR (Not Rated)</rating>
+  <genre />
   <publisher />
   <developer />
-  <genre />
-  <score />
+  <rating>Other - NR (Not Rated)</rating>
   <nplayers />
+  <score />
   <plot />
 </game>
-<game name="Time Table of History - Business, Politics &amp; Media - 1991a Edition (1991)(Xiphias)[!]">
+<game ROM="Time Table of History - Business, Politics &amp; Media - 1991a Edition (1991)(Xiphias)[!]">
   <title>Time Table of History - Business, Politics &amp; Media - 1991a Edition (1991)(Xiphias)[!]</title>
   <year />
-  <rating>Other - NR (Not Rated)</rating>
+  <genre />
   <publisher />
   <developer />
-  <genre />
-  <score />
+  <rating>Other - NR (Not Rated)</rating>
   <nplayers />
+  <score />
   <plot />
 </game>
-<game name="Time Table of History - Science and Innovation - 1991a Edition (1991)(Xiphias)[!]">
+<game ROM="Time Table of History - Science and Innovation - 1991a Edition (1991)(Xiphias)[!]">
   <title>Time Table of History - Science and Innovation - 1991a Edition (1991)(Xiphias)[!]</title>
   <year />
-  <rating>Other - NR (Not Rated)</rating>
+  <genre />
   <publisher />
   <developer />
-  <genre />
-  <score />
+  <rating>Other - NR (Not Rated)</rating>
   <nplayers />
+  <score />
   <plot />
 </game>
-<game name="Town With No Name (1992)(On-line)(M6)[!][CDTV-TOWNS]">
+<game ROM="Town With No Name (1992)(On-line)(M6)[!][CDTV-TOWNS]">
   <title>Town With No Name (1992)(On-line)(M6)[!][CDTV-TOWNS]</title>
   <year />
-  <rating>Other - NR (Not Rated)</rating>
+  <genre />
   <publisher />
   <developer />
-  <genre />
-  <score />
+  <rating>Other - NR (Not Rated)</rating>
   <nplayers />
+  <score />
   <plot />
 </game>
-<game name="Trivial Pursuit - The CDTV Edition v1.0A (1991)(Domark)(PAL)(Disc 1 of 2)[!][Amiga-CDTV]">
+<game ROM="Trivial Pursuit - The CDTV Edition v1.0A (1991)(Domark)(PAL)(Disc 1 of 2)[!][Amiga-CDTV]">
   <title>Trivial Pursuit - The CDTV Edition v1.0A (1991)(Domark)(PAL)(Disc 1 of 2)[!][Amiga-CDTV]</title>
   <year />
-  <rating>Other - NR (Not Rated)</rating>
+  <genre />
   <publisher />
   <developer />
-  <genre />
-  <score />
+  <rating>Other - NR (Not Rated)</rating>
   <nplayers />
+  <score />
   <plot />
 </game>
-<game name="Trivial Pursuit - The CDTV Edition v1.0A (1991)(Domark)(PAL)(Disc 2 of 2)[!][Amiga-CDTV]">
+<game ROM="Trivial Pursuit - The CDTV Edition v1.0A (1991)(Domark)(PAL)(Disc 2 of 2)[!][Amiga-CDTV]">
   <title>Trivial Pursuit - The CDTV Edition v1.0A (1991)(Domark)(PAL)(Disc 2 of 2)[!][Amiga-CDTV]</title>
   <year />
-  <rating>Other - NR (Not Rated)</rating>
+  <genre />
   <publisher />
   <developer />
-  <genre />
-  <score />
+  <rating>Other - NR (Not Rated)</rating>
   <nplayers />
+  <score />
   <plot />
 </game>
-<game name="Turrican (1992)(Rainbow Arts)">
+<game ROM="Turrican (1992)(Rainbow Arts)">
   <title>Turrican (1992)(Rainbow Arts)</title>
   <year />
-  <rating>Other - NR (Not Rated)</rating>
+  <genre />
   <publisher />
   <developer />
-  <genre />
-  <score />
+  <rating>Other - NR (Not Rated)</rating>
   <nplayers />
+  <score />
   <plot />
 </game>
-<game name="Ultimate Basketball! (1991)(Context Systems)[!]">
+<game ROM="Ultimate Basketball! (1991)(Context Systems)[!]">
   <title>Ultimate Basketball! (1991)(Context Systems)[!]</title>
   <year />
-  <rating>Other - NR (Not Rated)</rating>
+  <genre />
   <publisher />
   <developer />
-  <genre />
-  <score />
+  <rating>Other - NR (Not Rated)</rating>
   <nplayers />
+  <score />
   <plot />
 </game>
-<game name="Welcome Disk - Einfuehrung in die Multimedia-Welt von CDTV (1991)(Commodore)(DE)[!]">
+<game ROM="Welcome Disk - Einfuehrung in die Multimedia-Welt von CDTV (1991)(Commodore)(DE)[!]">
   <title>Welcome Disk - Einfuehrung in die Multimedia-Welt von CDTV (1991)(Commodore)(DE)[!]</title>
   <year />
-  <rating>Other - NR (Not Rated)</rating>
+  <genre />
   <publisher />
   <developer />
-  <genre />
-  <score />
+  <rating>Other - NR (Not Rated)</rating>
   <nplayers />
+  <score />
   <plot />
 </game>
-<game name="Welcome to CDTV Multimedia (1991)(Commodore)(DE)[!][CDRM-567400 1]">
+<game ROM="Welcome to CDTV Multimedia (1991)(Commodore)(DE)[!][CDRM-567400 1]">
   <title>Welcome to CDTV Multimedia (1991)(Commodore)(DE)[!][CDRM-567400 1]</title>
   <year />
-  <rating>Other - NR (Not Rated)</rating>
+  <genre />
   <publisher />
   <developer />
-  <genre />
-  <score />
+  <rating>Other - NR (Not Rated)</rating>
   <nplayers />
+  <score />
   <plot />
 </game>
-<game name="Welcome to CDTV Multimedia (1991)(Commodore)(DE)[CDRM-567400 2]">
+<game ROM="Welcome to CDTV Multimedia (1991)(Commodore)(DE)[CDRM-567400 2]">
   <title>Welcome to CDTV Multimedia (1991)(Commodore)(DE)[CDRM-567400 2]</title>
   <year />
-  <rating>Other - NR (Not Rated)</rating>
+  <genre />
   <publisher />
   <developer />
-  <genre />
-  <score />
+  <rating>Other - NR (Not Rated)</rating>
   <nplayers />
+  <score />
   <plot />
 </game>
-<game name="Welcome to CDTV Multimedia (1991)(Commodore)(IT)[!]">
+<game ROM="Welcome to CDTV Multimedia (1991)(Commodore)(IT)[!]">
   <title>Welcome to CDTV Multimedia (1991)(Commodore)(IT)[!]</title>
   <year />
-  <rating>Other - NR (Not Rated)</rating>
+  <genre />
   <publisher />
   <developer />
-  <genre />
-  <score />
+  <rating>Other - NR (Not Rated)</rating>
   <nplayers />
+  <score />
   <plot />
 </game>
-<game name="Welcome to CDTV Multimedia (1991)(Commodore)(NL)[!]">
+<game ROM="Welcome to CDTV Multimedia (1991)(Commodore)(NL)[!]">
   <title>Welcome to CDTV Multimedia (1991)(Commodore)(NL)[!]</title>
   <year />
-  <rating>Other - NR (Not Rated)</rating>
+  <genre />
   <publisher />
   <developer />
-  <genre />
-  <score />
+  <rating>Other - NR (Not Rated)</rating>
   <nplayers />
+  <score />
   <plot />
 </game>
-<game name="Welcome to CDTV Multimedia (1991)(Commodore)[!][367808-01 33]">
+<game ROM="Welcome to CDTV Multimedia (1991)(Commodore)[!][367808-01 33]">
   <title>Welcome to CDTV Multimedia (1991)(Commodore)[!][367808-01 33]</title>
   <year />
-  <rating>Other - NR (Not Rated)</rating>
+  <genre />
   <publisher />
   <developer />
-  <genre />
-  <score />
+  <rating>Other - NR (Not Rated)</rating>
   <nplayers />
+  <score />
   <plot />
 </game>
-<game name="Welcome to CDTV Multimedia (1991)(Commodore)[!][CDRM-519600 1]">
+<game ROM="Welcome to CDTV Multimedia (1991)(Commodore)[!][CDRM-519600 1]">
   <title>Welcome to CDTV Multimedia (1991)(Commodore)[!][CDRM-519600 1]</title>
   <year />
-  <rating>Other - NR (Not Rated)</rating>
+  <genre />
   <publisher />
   <developer />
-  <genre />
-  <score />
+  <rating>Other - NR (Not Rated)</rating>
   <nplayers />
+  <score />
   <plot />
 </game>
-<game name="Welcome to CDTV Multimedia (1991)(Commodore)[CDRM-449600 1]">
+<game ROM="Welcome to CDTV Multimedia (1991)(Commodore)[CDRM-449600 1]">
   <title>Welcome to CDTV Multimedia (1991)(Commodore)[CDRM-449600 1]</title>
   <year />
-  <rating>Other - NR (Not Rated)</rating>
+  <genre />
   <publisher />
   <developer />
-  <genre />
-  <score />
+  <rating>Other - NR (Not Rated)</rating>
   <nplayers />
+  <score />
   <plot />
 </game>
-<game name="Welcome to CDTV Multimedia (1991)(Commodore)[WELCOME DISC 3]">
+<game ROM="Welcome to CDTV Multimedia (1991)(Commodore)[WELCOME DISC 3]">
   <title>Welcome to CDTV Multimedia (1991)(Commodore)[WELCOME DISC 3]</title>
   <year />
-  <rating>Other - NR (Not Rated)</rating>
+  <genre />
   <publisher />
   <developer />
-  <genre />
-  <score />
+  <rating>Other - NR (Not Rated)</rating>
   <nplayers />
+  <score />
   <plot />
 </game>
-<game name="Will Bridge - Practice 1 - Introduction to Bidding (1991)(Will Bridge)[Will Bridge - Practice 1 - Initiation aux Encheres]">
+<game ROM="Will Bridge - Practice 1 - Introduction to Bidding (1991)(Will Bridge)[Will Bridge - Practice 1 - Initiation aux Encheres]">
   <title>Will Bridge - Practice 1 - Introduction to Bidding (1991)(Will Bridge)[Will Bridge - Practice 1 - Initiation aux Encheres]</title>
   <year />
-  <rating>Other - NR (Not Rated)</rating>
+  <genre />
   <publisher />
   <developer />
-  <genre />
-  <score />
+  <rating>Other - NR (Not Rated)</rating>
   <nplayers />
+  <score />
   <plot />
 </game>
-<game name="Will Bridge - Practice 2 - Intermediate (1991)(Will Bridge)">
+<game ROM="Will Bridge - Practice 2 - Intermediate (1991)(Will Bridge)">
   <title>Will Bridge - Practice 2 - Intermediate (1991)(Will Bridge)</title>
   <year />
-  <rating>Other - NR (Not Rated)</rating>
+  <genre />
   <publisher />
   <developer />
-  <genre />
-  <score />
+  <rating>Other - NR (Not Rated)</rating>
   <nplayers />
+  <score />
   <plot />
 </game>
-<game name="Will Bridge - Practice 2 - Perfectionnement (1991)(Will Bridge)(FR)[!]">
+<game ROM="Will Bridge - Practice 2 - Perfectionnement (1991)(Will Bridge)(FR)[!]">
   <title>Will Bridge - Practice 2 - Perfectionnement (1991)(Will Bridge)(FR)[!]</title>
   <year />
-  <rating>Other - NR (Not Rated)</rating>
+  <genre />
   <publisher />
   <developer />
-  <genre />
-  <score />
+  <rating>Other - NR (Not Rated)</rating>
   <nplayers />
+  <score />
   <plot />
 </game>
-<game name="Will Bridge - Practice 3 - Standard (1991)(Will Bridge)(FR)">
+<game ROM="Will Bridge - Practice 3 - Standard (1991)(Will Bridge)(FR)">
   <title>Will Bridge - Practice 3 - Standard (1991)(Will Bridge)(FR)</title>
   <year />
-  <rating>Other - NR (Not Rated)</rating>
+  <genre />
   <publisher />
   <developer />
-  <genre />
-  <score />
+  <rating>Other - NR (Not Rated)</rating>
   <nplayers />
+  <score />
   <plot />
 </game>
-<game name="Will Bridge - Practice 4 - Competition (1991)(Will Bridge)">
+<game ROM="Will Bridge - Practice 4 - Competition (1991)(Will Bridge)">
   <title>Will Bridge - Practice 4 - Competition (1991)(Will Bridge)</title>
   <year />
-  <rating>Other - NR (Not Rated)</rating>
+  <genre />
   <publisher />
   <developer />
-  <genre />
-  <score />
+  <rating>Other - NR (Not Rated)</rating>
   <nplayers />
+  <score />
   <plot />
 </game>
-<game name="Will Bridge - Practice 4 - Competition (1991)(Will Bridge)(FR)[!]">
+<game ROM="Will Bridge - Practice 4 - Competition (1991)(Will Bridge)(FR)[!]">
   <title>Will Bridge - Practice 4 - Competition (1991)(Will Bridge)(FR)[!]</title>
   <year />
-  <rating>Other - NR (Not Rated)</rating>
+  <genre />
   <publisher />
   <developer />
-  <genre />
-  <score />
+  <rating>Other - NR (Not Rated)</rating>
   <nplayers />
+  <score />
   <plot />
 </game>
-<game name="Will Bridge - Practice 5 - Haute Competition (1991)(Will Bridge)(FR)">
+<game ROM="Will Bridge - Practice 5 - Haute Competition (1991)(Will Bridge)(FR)">
   <title>Will Bridge - Practice 5 - Haute Competition (1991)(Will Bridge)(FR)</title>
   <year />
-  <rating>Other - NR (Not Rated)</rating>
+  <genre />
   <publisher />
   <developer />
-  <genre />
-  <score />
+  <rating>Other - NR (Not Rated)</rating>
   <nplayers />
+  <score />
   <plot />
 </game>
-<game name="Winzer v1.15 (1992)(Starbyte)(DE)[!]">
+<game ROM="Winzer v1.15 (1992)(Starbyte)(DE)[!]">
   <title>Winzer v1.15 (1992)(Starbyte)(DE)[!]</title>
   <year />
-  <rating>Other - NR (Not Rated)</rating>
+  <genre />
   <publisher />
   <developer />
-  <genre />
-  <score />
+  <rating>Other - NR (Not Rated)</rating>
   <nplayers />
+  <score />
   <plot />
 </game>
-<game name="Women in Motion - Eadweard Muybridge (1991)(On-line)[!][U29Y010UA]">
+<game ROM="Women in Motion - Eadweard Muybridge (1991)(On-line)[!][U29Y010UA]">
   <title>Women in Motion - Eadweard Muybridge (1991)(On-line)[!][U29Y010UA]</title>
   <year />
-  <rating>Other - NR (Not Rated)</rating>
+  <genre />
   <publisher />
   <developer />
-  <genre />
-  <score />
+  <rating>Other - NR (Not Rated)</rating>
   <nplayers />
+  <score />
   <plot />
 </game>
-<game name="World Vista (1991)(Applied Optical Media Corporation)[!]">
+<game ROM="World Vista (1991)(Applied Optical Media Corporation)[!]">
   <title>World Vista (1991)(Applied Optical Media Corporation)[!]</title>
   <year />
-  <rating>Other - NR (Not Rated)</rating>
+  <genre />
   <publisher />
   <developer />
-  <genre />
-  <score />
+  <rating>Other - NR (Not Rated)</rating>
   <nplayers />
+  <score />
   <plot />
 </game>
-<game name="World Vista (1995)(Almathera)[!][compilation Ten On Ten]">
+<game ROM="World Vista (1995)(Almathera)[!][compilation Ten On Ten]">
   <title>World Vista (1995)(Almathera)[!][compilation Ten On Ten]</title>
   <year />
-  <rating>Other - NR (Not Rated)</rating>
+  <genre />
   <publisher />
   <developer />
-  <genre />
-  <score />
+  <rating>Other - NR (Not Rated)</rating>
   <nplayers />
+  <score />
   <plot />
 </game>
-<game name="Wrath of the Demon (1990)(ReadySoft)[!]">
+<game ROM="Wrath of the Demon (1990)(ReadySoft)[!]">
   <title>Wrath of the Demon (1990)(ReadySoft)[!]</title>
   <year />
-  <rating>Other - NR (Not Rated)</rating>
+  <genre />
   <publisher />
   <developer />
-  <genre />
-  <score />
+  <rating>Other - NR (Not Rated)</rating>
   <nplayers />
+  <score />
   <plot />
 </game>
 </menu>

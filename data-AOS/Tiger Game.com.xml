@@ -6,164 +6,164 @@
   <listversion>V1</listversion>
   <exporterversion>V1 GameDBInfo converter</exporterversion>
 </header>
-<game name="Batman &amp; Robin (USA)">
+<game ROM="Batman &amp; Robin (USA)">
   <title>Batman &amp; Robin (USA)</title>
   <year>1997</year>
-  <rating>ESRB - T (Teen)</rating>
+  <genre>Action</genre>
   <publisher>Acclaim</publisher>
   <developer />
-  <genre>Action</genre>
+  <rating>ESRB - T (Teen)</rating>
 </game>
-<game name="Centipede (USA)">
+<game ROM="Centipede (USA)">
   <title>Centipede (USA)</title>
   <year>1999</year>
-  <rating>ESRB - E (Everyone)</rating>
+  <genre>Shooter</genre>
   <publisher>Hasbro-Tiger Electronics</publisher>
   <developer />
-  <genre>Shooter</genre>
+  <rating>ESRB - E (Everyone)</rating>
 </game>
-<game name="Duke Nukem 3D (USA)">
+<game ROM="Duke Nukem 3D (USA)">
   <title>Duke Nukem 3D (USA)</title>
   <year>1997</year>
-  <rating>ESRB - M (Mature)</rating>
+  <genre>Action</genre>
   <publisher>Tiger Electronics</publisher>
   <developer />
-  <genre>Action</genre>
+  <rating>ESRB - M (Mature)</rating>
 </game>
-<game name="Fighters Megamix (USA)">
+<game ROM="Fighters Megamix (USA)">
   <title>Fighters Megamix (USA)</title>
   <year>1998</year>
-  <rating>ESRB - T (Teen)</rating>
+  <genre>Fighter</genre>
   <publisher>Sega</publisher>
   <developer />
-  <genre>Fighter</genre>
+  <rating>ESRB - T (Teen)</rating>
 </game>
-<game name="Frogger (USA)">
+<game ROM="Frogger (USA)">
   <title>Frogger (USA)</title>
   <year>1999</year>
-  <rating>ESRB - E (Everyone)</rating>
+  <genre>Action</genre>
   <publisher>Hasbro-Tiger Electronics</publisher>
   <developer />
-  <genre>Action</genre>
+  <rating>ESRB - E (Everyone)</rating>
 </game>
-<game name="Henry (USA)">
+<game ROM="Henry (USA)">
   <title>Henry (USA)</title>
   <year>1997</year>
-  <rating>ESRB - E (Everyone)</rating>
+  <genre>Action</genre>
   <publisher>Tiger Electronics</publisher>
   <developer />
-  <genre>Action</genre>
+  <rating>ESRB - E (Everyone)</rating>
 </game>
-<game name="Indy 500 (USA)">
+<game ROM="Indy 500 (USA)">
   <title>Indy 500 (USA)</title>
   <year>1997</year>
-  <rating>ESRB - E (Everyone)</rating>
+  <genre>Driving</genre>
   <publisher>Tiger Electronics</publisher>
   <developer />
-  <genre>Driving</genre>
+  <rating>ESRB - E (Everyone)</rating>
 </game>
-<game name="Jeopardy! (USA)">
+<game ROM="Jeopardy! (USA)">
   <title>Jeopardy! (USA)</title>
   <year>1997</year>
-  <rating>ESRB - E (Everyone)</rating>
+  <genre>Quiz</genre>
   <publisher>Tiger Electronics</publisher>
   <developer />
-  <genre>Quiz</genre>
+  <rating>ESRB - E (Everyone)</rating>
 </game>
-<game name="Jurassic Park - The Lost World (USA)">
+<game ROM="Jurassic Park - The Lost World (USA)">
   <title>Jurassic Park - The Lost World (USA)</title>
   <year>1997</year>
-  <rating>ESRB - T (Teen)</rating>
+  <genre>Action</genre>
   <publisher>Tiger Electronics</publisher>
   <developer />
-  <genre>Action</genre>
+  <rating>ESRB - T (Teen)</rating>
 </game>
-<game name="Lights Out (USA)">
+<game ROM="Lights Out (USA)">
   <title>Lights Out (USA)</title>
   <year>1997</year>
-  <rating>ESRB - E (Everyone)</rating>
+  <genre>Puzzle</genre>
   <publisher>Tiger Electronics</publisher>
   <developer />
-  <genre>Puzzle</genre>
+  <rating>ESRB - E (Everyone)</rating>
 </game>
-<game name="Monopoly (USA)">
+<game ROM="Monopoly (USA)">
   <title>Monopoly (USA)</title>
   <year>1999</year>
-  <rating>ESRB - E (Everyone)</rating>
+  <genre>Board Games</genre>
   <publisher>Tiger Electronics</publisher>
   <developer />
-  <genre>Board Games</genre>
+  <rating>ESRB - E (Everyone)</rating>
 </game>
-<game name="Mortal Kombat Trilogy (USA)">
+<game ROM="Mortal Kombat Trilogy (USA)">
   <title>Mortal Kombat Trilogy (USA)</title>
   <year>1997</year>
-  <rating>ESRB - M (Mature)</rating>
+  <genre>Fighter</genre>
   <publisher>Midway</publisher>
   <developer />
-  <genre>Fighter</genre>
+  <rating>ESRB - M (Mature)</rating>
 </game>
-<game name="Quiz Wiz - Cyber Trivia (USA)">
+<game ROM="Quiz Wiz - Cyber Trivia (USA)">
   <title>Quiz Wiz - Cyber Trivia (USA)</title>
   <year>1997</year>
-  <rating>ESRB - E (Everyone)</rating>
+  <genre>Quiz</genre>
   <publisher>Tiger Electronics</publisher>
   <developer />
-  <genre>Quiz</genre>
+  <rating>ESRB - E (Everyone)</rating>
 </game>
-<game name="Resident Evil 2 (USA)">
+<game ROM="Resident Evil 2 (USA)">
   <title>Resident Evil 2 (USA)</title>
   <year>1998</year>
-  <rating>ESRB - M (Mature)</rating>
+  <genre>Action</genre>
   <publisher>Capcom</publisher>
   <developer />
-  <genre>Action</genre>
+  <rating>ESRB - M (Mature)</rating>
 </game>
-<game name="Scrabble (USA)">
+<game ROM="Scrabble (USA)">
   <title>Scrabble (USA)</title>
   <year>1999</year>
-  <rating>ESRB - E (Everyone)</rating>
+  <genre>Board Games</genre>
   <publisher>Hasbro-Tiger Electronics</publisher>
   <developer />
-  <genre>Board Games</genre>
+  <rating>ESRB - E (Everyone)</rating>
 </game>
-<game name="Sonic Jam (USA)">
+<game ROM="Sonic Jam (USA)">
   <title>Sonic Jam (USA)</title>
   <year>1998</year>
-  <rating>ESRB - E (Everyone)</rating>
+  <genre>Platform</genre>
   <publisher>Sega</publisher>
   <developer />
-  <genre>Platform</genre>
+  <rating>ESRB - E (Everyone)</rating>
 </game>
-<game name="Tiger Casino (USA)">
+<game ROM="Tiger Casino (USA)">
   <title>Tiger Casino (USA)</title>
   <year>1998</year>
-  <rating>ESRB - E (Everyone)</rating>
+  <genre>Casino</genre>
   <publisher>Tiger Electronics</publisher>
   <developer />
-  <genre>Casino</genre>
+  <rating>ESRB - E (Everyone)</rating>
 </game>
-<game name="Wheel of Fortune (USA)">
+<game ROM="Wheel of Fortune (USA)">
   <title>Wheel of Fortune (USA)</title>
   <year>1997</year>
-  <rating>ESRB - E (Everyone)</rating>
+  <genre>Puzzle</genre>
   <publisher>Tiger Electronics</publisher>
   <developer />
-  <genre>Puzzle</genre>
+  <rating>ESRB - E (Everyone)</rating>
 </game>
-<game name="Wheel of Fortune 2 (USA)">
+<game ROM="Wheel of Fortune 2 (USA)">
   <title>Wheel of Fortune 2 (USA)</title>
   <year>1998</year>
-  <rating>ESRB - E (Everyone)</rating>
+  <genre>Puzzle</genre>
   <publisher>Tiger Electronics</publisher>
   <developer />
-  <genre>Puzzle</genre>
+  <rating>ESRB - E (Everyone)</rating>
 </game>
-<game name="Williams Arcade Classics (USA)">
+<game ROM="Williams Arcade Classics (USA)">
   <title>Williams Arcade Classics (USA)</title>
   <year>1997</year>
-  <rating>ESRB - E (Everyone)</rating>
+  <genre>Miscellaneous</genre>
   <publisher>Tiger Electronics</publisher>
   <developer />
-  <genre>Miscellaneous</genre>
+  <rating>ESRB - E (Everyone)</rating>
 </game>
 </menu>

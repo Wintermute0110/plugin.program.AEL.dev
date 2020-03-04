@@ -6,1268 +6,1268 @@
   <listversion>V1</listversion>
   <exporterversion>V1 GameDBInfo converter</exporterversion>
 </header>
-<game name="007 Legends (USA)">
+<game ROM="007 Legends (USA)">
   <title>007 Legends (USA)</title>
   <year>2012</year>
-  <rating>Other - NR (Not Rated)</rating>
+  <genre>Shooter</genre>
   <publisher>Activision</publisher>
   <developer />
-  <genre>Shooter</genre>
+  <rating>Other - NR (Not Rated)</rating>
 </game>
-<game name="Adventure Time - Explore the Dungeon Because I Don&apos;t Know! (USA)">
+<game ROM="Adventure Time - Explore the Dungeon Because I Don&apos;t Know! (USA)">
   <title>Adventure Time: Explore the Dungeon Because I Don&apos;t Know! (USA)</title>
   <year>2013</year>
-  <rating>Other - NR (Not Rated)</rating>
+  <genre>Adventure</genre>
   <publisher>D3Publisher</publisher>
   <developer />
-  <genre>Adventure</genre>
+  <rating>Other - NR (Not Rated)</rating>
 </game>
-<game name="Adventure Time - Finn and Jake Investigations (USA)">
+<game ROM="Adventure Time - Finn and Jake Investigations (USA)">
   <title>Adventure Time: Finn and Jake Investigations (USA)</title>
   <year>2015</year>
-  <rating>Other - NR (Not Rated)</rating>
+  <genre>Adventure</genre>
   <publisher>Little Orbit</publisher>
   <developer />
-  <genre>Adventure</genre>
+  <rating>Other - NR (Not Rated)</rating>
 </game>
-<game name="Amazing Spider-Man 2, The (USA)">
+<game ROM="Amazing Spider-Man 2, The (USA)">
   <title>Amazing Spider-Man 2, The (USA)</title>
   <year>2014</year>
-  <rating>Other - NR (Not Rated)</rating>
+  <genre>Action</genre>
   <publisher>Activision</publisher>
   <developer />
-  <genre>Action</genre>
+  <rating>Other - NR (Not Rated)</rating>
 </game>
-<game name="Amazing Spider-Man, The - Ultimate Edition (USA)">
+<game ROM="Amazing Spider-Man, The - Ultimate Edition (USA)">
   <title>Amazing Spider-Man, The: Ultimate Edition (USA)</title>
   <year>2013</year>
-  <rating>Other - NR (Not Rated)</rating>
+  <genre>Action</genre>
   <publisher>Activision</publisher>
   <developer />
-  <genre>Action</genre>
+  <rating>Other - NR (Not Rated)</rating>
 </game>
-<game name="Angry Birds Star Wars (USA)">
+<game ROM="Angry Birds Star Wars (USA)">
   <title>Angry Birds Star Wars (USA)</title>
   <year>2013</year>
-  <rating>Other - NR (Not Rated)</rating>
+  <genre>Miscellaneous</genre>
   <publisher>Activision</publisher>
   <developer />
-  <genre>Miscellaneous</genre>
+  <rating>Other - NR (Not Rated)</rating>
 </game>
-<game name="Angry Birds Trilogy (USA)">
+<game ROM="Angry Birds Trilogy (USA)">
   <title>Angry Birds Trilogy (USA)</title>
   <year>2013</year>
-  <rating>Other - NR (Not Rated)</rating>
+  <genre>Miscellaneous</genre>
   <publisher>Activision</publisher>
   <developer />
-  <genre>Miscellaneous</genre>
+  <rating>Other - NR (Not Rated)</rating>
 </game>
-<game name="Animal Crossing - amiibo Festival (USA)">
+<game ROM="Animal Crossing - amiibo Festival (USA)">
   <title>Animal Crossing: amiibo Festival (USA)</title>
   <year>2015</year>
-  <rating>Other - NR (Not Rated)</rating>
+  <genre>Board Games</genre>
   <publisher>Nintendo</publisher>
   <developer />
-  <genre>Board Games</genre>
+  <rating>Other - NR (Not Rated)</rating>
 </game>
-<game name="Art Academy - Atelier (Europe)">
+<game ROM="Art Academy - Atelier (Europe)">
   <title>Art Academy: Atelier (Europe)</title>
   <year>2015</year>
-  <rating>Other - NR (Not Rated)</rating>
+  <genre>Educational</genre>
   <publisher>Nintendo</publisher>
   <developer />
-  <genre>Educational</genre>
+  <rating>Other - NR (Not Rated)</rating>
 </game>
-<game name="Assassin&apos;s Creed III (USA)">
+<game ROM="Assassin&apos;s Creed III (USA)">
   <title>Assassin&apos;s Creed III (USA)</title>
   <year>2012</year>
-  <rating>Other - NR (Not Rated)</rating>
+  <genre>Action</genre>
   <publisher>Ubisoft</publisher>
   <developer />
-  <genre>Action</genre>
+  <rating>Other - NR (Not Rated)</rating>
 </game>
-<game name="Assassin&apos;s Creed IV - Black Flag (USA)">
+<game ROM="Assassin&apos;s Creed IV - Black Flag (USA)">
   <title>Assassin&apos;s Creed IV: Black Flag (USA)</title>
   <year>2013</year>
-  <rating>Other - NR (Not Rated)</rating>
+  <genre>Action</genre>
   <publisher>Ubisoft</publisher>
   <developer />
-  <genre>Action</genre>
+  <rating>Other - NR (Not Rated)</rating>
 </game>
-<game name="Baila Latino (Europe)">
+<game ROM="Baila Latino (Europe)">
   <title>Baila Latino (Europe)</title>
   <year>2015</year>
-  <rating>Other - NR (Not Rated)</rating>
+  <genre>Rhythm</genre>
   <publisher>Oxygene</publisher>
   <developer />
-  <genre>Rhythm</genre>
+  <rating>Other - NR (Not Rated)</rating>
 </game>
-<game name="Barbie and Her Sisters - Puppy Rescue (USA)">
+<game ROM="Barbie and Her Sisters - Puppy Rescue (USA)">
   <title>Barbie and Her Sisters: Puppy Rescue (USA)</title>
   <year>2015</year>
-  <rating>Other - NR (Not Rated)</rating>
+  <genre>Virtual Life</genre>
   <publisher>Little Orbit</publisher>
   <developer />
-  <genre>Virtual Life</genre>
+  <rating>Other - NR (Not Rated)</rating>
 </game>
-<game name="Barbie Dreamhouse Party (USA)">
+<game ROM="Barbie Dreamhouse Party (USA)">
   <title>Barbie Dreamhouse Party (USA)</title>
   <year>2013</year>
-  <rating>Other - NR (Not Rated)</rating>
+  <genre>Adventure</genre>
   <publisher>Little Orbit</publisher>
   <developer />
-  <genre>Adventure</genre>
+  <rating>Other - NR (Not Rated)</rating>
 </game>
-<game name="Batman - Arkham City - Armored Edition (USA)">
+<game ROM="Batman - Arkham City - Armored Edition (USA)">
   <title>Batman: Arkham City - Armored Edition (USA)</title>
   <year>2012</year>
-  <rating>Other - NR (Not Rated)</rating>
+  <genre>Action</genre>
   <publisher>Warner Bros. Interactive Entertainment</publisher>
   <developer />
-  <genre>Action</genre>
+  <rating>Other - NR (Not Rated)</rating>
 </game>
-<game name="Batman - Arkham Origins (USA)">
+<game ROM="Batman - Arkham Origins (USA)">
   <title>Batman: Arkham Origins (USA)</title>
   <year>2013</year>
-  <rating>Other - NR (Not Rated)</rating>
+  <genre>Action</genre>
   <publisher>Warner Bros. Interactive Entertainment</publisher>
   <developer />
-  <genre>Action</genre>
+  <rating>Other - NR (Not Rated)</rating>
 </game>
-<game name="Bayonetta (USA)">
+<game ROM="Bayonetta (USA)">
   <title>Bayonetta (USA)</title>
   <year>2014</year>
-  <rating>Other - NR (Not Rated)</rating>
+  <genre>Action</genre>
   <publisher>Nintendo</publisher>
   <developer />
-  <genre>Action</genre>
+  <rating>Other - NR (Not Rated)</rating>
 </game>
-<game name="Bayonetta 2 (USA)">
+<game ROM="Bayonetta 2 (USA)">
   <title>Bayonetta 2 (USA)</title>
   <year>2014</year>
-  <rating>Other - NR (Not Rated)</rating>
+  <genre>Action</genre>
   <publisher>Nintendo</publisher>
   <developer />
-  <genre>Action</genre>
+  <rating>Other - NR (Not Rated)</rating>
 </game>
-<game name="Ben 10 - Omniverse (USA)">
+<game ROM="Ben 10 - Omniverse (USA)">
   <title>Ben 10: Omniverse (USA)</title>
   <year>2012</year>
-  <rating>Other - NR (Not Rated)</rating>
+  <genre>Action</genre>
   <publisher>D3Publisher</publisher>
   <developer />
-  <genre>Action</genre>
+  <rating>Other - NR (Not Rated)</rating>
 </game>
-<game name="Ben 10 - Omniverse 2 (USA)">
+<game ROM="Ben 10 - Omniverse 2 (USA)">
   <title>Ben 10: Omniverse 2 (USA)</title>
   <year>2013</year>
-  <rating>Other - NR (Not Rated)</rating>
+  <genre>Action</genre>
   <publisher>D3Publisher</publisher>
   <developer />
-  <genre>Action</genre>
+  <rating>Other - NR (Not Rated)</rating>
 </game>
-<game name="Brunswick Pro Bowling (USA)">
+<game ROM="Brunswick Pro Bowling (USA)">
   <title>Brunswick Pro Bowling (USA)</title>
   <year>2015</year>
-  <rating>Other - NR (Not Rated)</rating>
+  <genre>Sports/Bowling</genre>
   <publisher>Alliance Digital Media</publisher>
   <developer />
-  <genre>Sports/Bowling</genre>
+  <rating>Other - NR (Not Rated)</rating>
 </game>
-<game name="Cabela&apos;s Big Game Hunter - Pro Hunts (USA)">
+<game ROM="Cabela&apos;s Big Game Hunter - Pro Hunts (USA)">
   <title>Cabela&apos;s Big Game Hunter: Pro Hunts (USA)</title>
   <year>2014</year>
-  <rating>Other - NR (Not Rated)</rating>
+  <genre>Sports/Hunting</genre>
   <publisher>Activision</publisher>
   <developer />
-  <genre>Sports/Hunting</genre>
+  <rating>Other - NR (Not Rated)</rating>
 </game>
-<game name="Cabela&apos;s Dangerous Hunts 2013 (USA)">
+<game ROM="Cabela&apos;s Dangerous Hunts 2013 (USA)">
   <title>Cabela&apos;s Dangerous Hunts 2013 (USA)</title>
   <year>2012</year>
-  <rating>Other - NR (Not Rated)</rating>
+  <genre>Sports/Hunting</genre>
   <publisher>Activision</publisher>
   <developer />
-  <genre>Sports/Hunting</genre>
+  <rating>Other - NR (Not Rated)</rating>
 </game>
-<game name="Call of Duty - Black Ops II (USA)">
+<game ROM="Call of Duty - Black Ops II (USA)">
   <title>Call of Duty: Black Ops II (USA)</title>
   <year>2012</year>
-  <rating>Other - NR (Not Rated)</rating>
+  <genre>Shooter</genre>
   <publisher>Activision</publisher>
   <developer />
-  <genre>Shooter</genre>
+  <rating>Other - NR (Not Rated)</rating>
 </game>
-<game name="Call of Duty - Ghosts (USA)">
+<game ROM="Call of Duty - Ghosts (USA)">
   <title>Call of Duty: Ghosts (USA)</title>
   <year>2013</year>
-  <rating>Other - NR (Not Rated)</rating>
+  <genre>Shooter</genre>
   <publisher>Activision</publisher>
   <developer />
-  <genre>Shooter</genre>
+  <rating>Other - NR (Not Rated)</rating>
 </game>
-<game name="Captain Toad - Treasure Tracker (USA)">
+<game ROM="Captain Toad - Treasure Tracker (USA)">
   <title>Captain Toad: Treasure Tracker (USA)</title>
   <year>2014</year>
-  <rating>Other - NR (Not Rated)</rating>
+  <genre>Platform</genre>
   <publisher>Nintendo</publisher>
   <developer />
-  <genre>Platform</genre>
+  <rating>Other - NR (Not Rated)</rating>
 </game>
-<game name="Cocoto Magic Circus 2 (Europe)">
+<game ROM="Cocoto Magic Circus 2 (Europe)">
   <title>Cocoto Magic Circus 2 (Europe)</title>
   <year>2014</year>
-  <rating>Other - NR (Not Rated)</rating>
+  <genre>Gun</genre>
   <publisher>Bigben Interactive</publisher>
   <developer />
-  <genre>Gun</genre>
+  <rating>Other - NR (Not Rated)</rating>
 </game>
-<game name="Croods, The - Prehistoric Party! (USA)">
+<game ROM="Croods, The - Prehistoric Party! (USA)">
   <title>Croods, The: Prehistoric Party! (USA)</title>
   <year>2013</year>
-  <rating>Other - NR (Not Rated)</rating>
+  <genre>Mini-Games</genre>
   <publisher>D3Publisher</publisher>
   <developer />
-  <genre>Mini-Games</genre>
+  <rating>Other - NR (Not Rated)</rating>
 </game>
-<game name="Darksiders II (USA)">
+<game ROM="Darksiders II (USA)">
   <title>Darksiders II (USA)</title>
   <year>2012</year>
-  <rating>Other - NR (Not Rated)</rating>
+  <genre>Action</genre>
   <publisher>THQ</publisher>
   <developer />
-  <genre>Action</genre>
+  <rating>Other - NR (Not Rated)</rating>
 </game>
-<game name="Deus Ex - Human Revolution - Director&apos;s Cut (USA)">
+<game ROM="Deus Ex - Human Revolution - Director&apos;s Cut (USA)">
   <title>Deus Ex: Human Revolution - Director&apos;s Cut (USA)</title>
   <year>2013</year>
-  <rating>Other - NR (Not Rated)</rating>
+  <genre>Action</genre>
   <publisher>Square Enix</publisher>
   <developer />
-  <genre>Action</genre>
+  <rating>Other - NR (Not Rated)</rating>
 </game>
-<game name="Devil&apos;s Third (USA)">
+<game ROM="Devil&apos;s Third (USA)">
   <title>Devil&apos;s Third (USA)</title>
   <year>2015</year>
-  <rating>Other - NR (Not Rated)</rating>
+  <genre>Shooter</genre>
   <publisher>Nintendo</publisher>
   <developer />
-  <genre>Shooter</genre>
+  <rating>Other - NR (Not Rated)</rating>
 </game>
-<game name="Disney Infinity (USA)">
+<game ROM="Disney Infinity (USA)">
   <title>Disney Infinity (USA)</title>
   <year>2013</year>
-  <rating>Other - NR (Not Rated)</rating>
+  <genre>Adventure</genre>
   <publisher>Disney Interactive Studios</publisher>
   <developer />
-  <genre>Adventure</genre>
+  <rating>Other - NR (Not Rated)</rating>
 </game>
-<game name="Disney Infinity 2.0 Edition (USA)">
+<game ROM="Disney Infinity 2.0 Edition (USA)">
   <title>Disney Infinity 2.0 Edition (USA)</title>
   <year>2014</year>
-  <rating>Other - NR (Not Rated)</rating>
+  <genre>Adventure</genre>
   <publisher>Disney Interactive Studios</publisher>
   <developer />
-  <genre>Adventure</genre>
+  <rating>Other - NR (Not Rated)</rating>
 </game>
-<game name="Disney Infinity 3.0 Edition (USA)">
+<game ROM="Disney Infinity 3.0 Edition (USA)">
   <title>Disney Infinity 3.0 Edition (USA)</title>
   <year>2015</year>
-  <rating>Other - NR (Not Rated)</rating>
+  <genre>Adventure</genre>
   <publisher>Disney Interactive Studios</publisher>
   <developer />
-  <genre>Adventure</genre>
+  <rating>Other - NR (Not Rated)</rating>
 </game>
-<game name="Donkey Kong Country - Tropical Freeze (USA)">
+<game ROM="Donkey Kong Country - Tropical Freeze (USA)">
   <title>Donkey Kong Country: Tropical Freeze (USA)</title>
   <year>2014</year>
-  <rating>Other - NR (Not Rated)</rating>
+  <genre>Platform</genre>
   <publisher>Nintendo</publisher>
   <developer />
-  <genre>Platform</genre>
+  <rating>Other - NR (Not Rated)</rating>
 </game>
-<game name="DuckTales - Remastered (USA)">
+<game ROM="DuckTales - Remastered (USA)">
   <title>DuckTales: Remastered (USA)</title>
   <year>2013</year>
-  <rating>Other - NR (Not Rated)</rating>
+  <genre>Platform</genre>
   <publisher>Capcom</publisher>
   <developer />
-  <genre>Platform</genre>
+  <rating>Other - NR (Not Rated)</rating>
 </game>
-<game name="Epic Mickey 2 - The Power of Two (USA)">
+<game ROM="Epic Mickey 2 - The Power of Two (USA)">
   <title>Epic Mickey 2: The Power of Two (USA)</title>
   <year>2012</year>
-  <rating>Other - NR (Not Rated)</rating>
+  <genre>Platform</genre>
   <publisher>Disney Interactive Studios</publisher>
   <developer />
-  <genre>Platform</genre>
+  <rating>Other - NR (Not Rated)</rating>
 </game>
-<game name="ESPN Sports Connection (USA)">
+<game ROM="ESPN Sports Connection (USA)">
   <title>ESPN Sports Connection (USA)</title>
   <year>2012</year>
-  <rating>Other - NR (Not Rated)</rating>
+  <genre>Sports</genre>
   <publisher>Ubisoft</publisher>
   <developer />
-  <genre>Sports</genre>
+  <rating>Other - NR (Not Rated)</rating>
 </game>
-<game name="Family Party - 30 Great Games Obstacle Arcade (USA)">
+<game ROM="Family Party - 30 Great Games Obstacle Arcade (USA)">
   <title>Family Party: 30 Great Games Obstacle Arcade (USA)</title>
   <year>2012</year>
-  <rating>Other - NR (Not Rated)</rating>
+  <genre>Mini-Games</genre>
   <publisher>D3Publisher</publisher>
   <developer />
-  <genre>Mini-Games</genre>
+  <rating>Other - NR (Not Rated)</rating>
 </game>
-<game name="Fast &amp; Furious - Showdown (USA)">
+<game ROM="Fast &amp; Furious - Showdown (USA)">
   <title>Fast &amp; Furious: Showdown (USA)</title>
   <year>2013</year>
-  <rating>Other - NR (Not Rated)</rating>
+  <genre>Driving</genre>
   <publisher>Activision</publisher>
   <developer />
-  <genre>Driving</genre>
+  <rating>Other - NR (Not Rated)</rating>
 </game>
-<game name="FIFA Soccer 13 (USA)">
+<game ROM="FIFA Soccer 13 (USA)">
   <title>FIFA Soccer 13 (USA)</title>
   <year>2012</year>
-  <rating>Other - NR (Not Rated)</rating>
+  <genre>Sports/Soccer</genre>
   <publisher>EA Sports</publisher>
   <developer />
-  <genre>Sports/Soccer</genre>
+  <rating>Other - NR (Not Rated)</rating>
 </game>
-<game name="Fit Music for Wii U (Europe)">
+<game ROM="Fit Music for Wii U (Europe)">
   <title>Fit Music for Wii U (Europe)</title>
   <year>2014</year>
-  <rating>Other - NR (Not Rated)</rating>
+  <genre>Miscellaneous</genre>
   <publisher>Oxygene</publisher>
   <developer />
-  <genre>Miscellaneous</genre>
+  <rating>Other - NR (Not Rated)</rating>
 </game>
-<game name="Funky Barn (USA)">
+<game ROM="Funky Barn (USA)">
   <title>Funky Barn (USA)</title>
   <year>2012</year>
-  <rating>Other - NR (Not Rated)</rating>
+  <genre>Simulation</genre>
   <publisher>505 Games</publisher>
   <developer />
-  <genre>Simulation</genre>
+  <rating>Other - NR (Not Rated)</rating>
 </game>
-<game name="Game &amp; Wario (USA)">
+<game ROM="Game &amp; Wario (USA)">
   <title>Game &amp; Wario (USA)</title>
   <year>2013</year>
-  <rating>Other - NR (Not Rated)</rating>
+  <genre>Mini-Games</genre>
   <publisher>Nintendo</publisher>
   <developer />
-  <genre>Mini-Games</genre>
+  <rating>Other - NR (Not Rated)</rating>
 </game>
-<game name="Game Party Champions (USA)">
+<game ROM="Game Party Champions (USA)">
   <title>Game Party Champions (USA)</title>
   <year>2012</year>
-  <rating>Other - NR (Not Rated)</rating>
+  <genre>Mini-Games</genre>
   <publisher>Warner Bros. Interactive Entertainment</publisher>
   <developer />
-  <genre>Mini-Games</genre>
+  <rating>Other - NR (Not Rated)</rating>
 </game>
-<game name="Giana Sisters - Twisted Dreams - Director&apos;s Cut (USA)">
+<game ROM="Giana Sisters - Twisted Dreams - Director&apos;s Cut (USA)">
   <title>Giana Sisters: Twisted Dreams - Director&apos;s Cut (USA)</title>
   <year>2015</year>
-  <rating>Other - NR (Not Rated)</rating>
+  <genre>Platform</genre>
   <publisher>Alliance Digital Media</publisher>
   <developer />
-  <genre>Platform</genre>
+  <rating>Other - NR (Not Rated)</rating>
 </game>
-<game name="Guitar Hero Live (USA)">
+<game ROM="Guitar Hero Live (USA)">
   <title>Guitar Hero Live (USA)</title>
   <year>2015</year>
-  <rating>Other - NR (Not Rated)</rating>
+  <genre>Rhythm</genre>
   <publisher>Activision</publisher>
   <developer />
-  <genre>Rhythm</genre>
+  <rating>Other - NR (Not Rated)</rating>
 </game>
-<game name="Hello Kitty Kruisers (USA)">
+<game ROM="Hello Kitty Kruisers (USA)">
   <title>Hello Kitty Kruisers (USA)</title>
   <year>2014</year>
-  <rating>Other - NR (Not Rated)</rating>
+  <genre>Driving</genre>
   <publisher>Bergsala-Lightweight</publisher>
   <developer />
-  <genre>Driving</genre>
+  <rating>Other - NR (Not Rated)</rating>
 </game>
-<game name="Hot Wheels - World&apos;s Best Driver (USA)">
+<game ROM="Hot Wheels - World&apos;s Best Driver (USA)">
   <title>Hot Wheels: World&apos;s Best Driver (USA)</title>
   <year>2013</year>
-  <rating>Other - NR (Not Rated)</rating>
+  <genre>Driving</genre>
   <publisher>Warner Bros. Interactive Entertainment</publisher>
   <developer />
-  <genre>Driving</genre>
+  <rating>Other - NR (Not Rated)</rating>
 </game>
-<game name="How to Train Your Dragon 2 (USA)">
+<game ROM="How to Train Your Dragon 2 (USA)">
   <title>How to Train Your Dragon 2 (USA)</title>
   <year>2014</year>
-  <rating>Other - NR (Not Rated)</rating>
+  <genre>Adventure</genre>
   <publisher>Little Orbit</publisher>
   <developer />
-  <genre>Adventure</genre>
+  <rating>Other - NR (Not Rated)</rating>
 </game>
-<game name="Hunter&apos;s Trophy 2 - Europa (Europe)">
+<game ROM="Hunter&apos;s Trophy 2 - Europa (Europe)">
   <title>Hunter&apos;s Trophy 2 - Europa (Europe)</title>
   <year>2013</year>
-  <rating>Other - NR (Not Rated)</rating>
+  <genre>Sports/Hunting</genre>
   <publisher>Bigben Interactive</publisher>
   <developer />
-  <genre>Sports/Hunting</genre>
+  <rating>Other - NR (Not Rated)</rating>
 </game>
-<game name="Hyrule Warriors (USA)">
+<game ROM="Hyrule Warriors (USA)">
   <title>Hyrule Warriors (USA)</title>
   <year>2014</year>
-  <rating>Other - NR (Not Rated)</rating>
+  <genre>Beat-&apos;Em-Up</genre>
   <publisher>Nintendo</publisher>
   <developer />
-  <genre>Beat-&apos;Em-Up</genre>
+  <rating>Other - NR (Not Rated)</rating>
 </game>
-<game name="Injustice - Gods Among Us (USA)">
+<game ROM="Injustice - Gods Among Us (USA)">
   <title>Injustice: Gods Among Us (USA)</title>
   <year>2013</year>
-  <rating>Other - NR (Not Rated)</rating>
+  <genre>Fighter</genre>
   <publisher>Warner Bros. Interactive Entertainment</publisher>
   <developer />
-  <genre>Fighter</genre>
+  <rating>Other - NR (Not Rated)</rating>
 </game>
-<game name="Jeopardy! (USA)">
+<game ROM="Jeopardy! (USA)">
   <title>Jeopardy! (USA)</title>
   <year>2012</year>
-  <rating>Other - NR (Not Rated)</rating>
+  <genre>Game Show</genre>
   <publisher>THQ</publisher>
   <developer />
-  <genre>Game Show</genre>
+  <rating>Other - NR (Not Rated)</rating>
 </game>
-<game name="Jett Tailfin (Europe)">
+<game ROM="Jett Tailfin (Europe)">
   <title>Jett Tailfin (Europe)</title>
   <year>2014</year>
-  <rating>Other - NR (Not Rated)</rating>
+  <genre>Driving</genre>
   <publisher>Hoplite Research</publisher>
   <developer />
-  <genre>Driving</genre>
+  <rating>Other - NR (Not Rated)</rating>
 </game>
-<game name="Just Dance 2014 (Europe)">
+<game ROM="Just Dance 2014 (Europe)">
   <title>Just Dance 2014 (Europe)</title>
   <year>2013</year>
-  <rating>Other - NR (Not Rated)</rating>
+  <genre>Rhythm</genre>
   <publisher>Ubisoft</publisher>
   <developer />
-  <genre>Rhythm</genre>
+  <rating>Other - NR (Not Rated)</rating>
 </game>
-<game name="Just Dance 2014 (USA)">
+<game ROM="Just Dance 2014 (USA)">
   <title>Just Dance 2014 (USA)</title>
   <year>2013</year>
-  <rating>Other - NR (Not Rated)</rating>
+  <genre>Rhythm</genre>
   <publisher>Ubisoft</publisher>
   <developer />
-  <genre>Rhythm</genre>
+  <rating>Other - NR (Not Rated)</rating>
 </game>
-<game name="Just Dance 2015 (Europe)">
+<game ROM="Just Dance 2015 (Europe)">
   <title>Just Dance 2015 (Europe)</title>
   <year>2014</year>
-  <rating>Other - NR (Not Rated)</rating>
+  <genre>Rhythm</genre>
   <publisher>Ubisoft</publisher>
   <developer />
-  <genre>Rhythm</genre>
+  <rating>Other - NR (Not Rated)</rating>
 </game>
-<game name="Just Dance 2015 (USA)">
+<game ROM="Just Dance 2015 (USA)">
   <title>Just Dance 2015 (USA)</title>
   <year>2014</year>
-  <rating>Other - NR (Not Rated)</rating>
+  <genre>Rhythm</genre>
   <publisher>Ubisoft</publisher>
   <developer />
-  <genre>Rhythm</genre>
+  <rating>Other - NR (Not Rated)</rating>
 </game>
-<game name="Just Dance 2016 (Europe)">
+<game ROM="Just Dance 2016 (Europe)">
   <title>Just Dance 2016 (Europe)</title>
   <year>2015</year>
-  <rating>Other - NR (Not Rated)</rating>
+  <genre>Rhythm</genre>
   <publisher>Ubisoft</publisher>
   <developer />
-  <genre>Rhythm</genre>
+  <rating>Other - NR (Not Rated)</rating>
 </game>
-<game name="Just Dance 2016 (USA)">
+<game ROM="Just Dance 2016 (USA)">
   <title>Just Dance 2016 (USA)</title>
   <year>2015</year>
-  <rating>Other - NR (Not Rated)</rating>
+  <genre>Rhythm</genre>
   <publisher>Ubisoft</publisher>
   <developer />
-  <genre>Rhythm</genre>
+  <rating>Other - NR (Not Rated)</rating>
 </game>
-<game name="Just Dance 4 (Europe)">
+<game ROM="Just Dance 4 (Europe)">
   <title>Just Dance 4 (Europe)</title>
   <year>2012</year>
-  <rating>Other - NR (Not Rated)</rating>
+  <genre>Rhythm</genre>
   <publisher>Ubisoft</publisher>
   <developer />
-  <genre>Rhythm</genre>
+  <rating>Other - NR (Not Rated)</rating>
 </game>
-<game name="Just Dance 4 (USA)">
+<game ROM="Just Dance 4 (USA)">
   <title>Just Dance 4 (USA)</title>
   <year>2012</year>
-  <rating>Other - NR (Not Rated)</rating>
+  <genre>Rhythm</genre>
   <publisher>Ubisoft</publisher>
   <developer />
-  <genre>Rhythm</genre>
+  <rating>Other - NR (Not Rated)</rating>
 </game>
-<game name="Just Dance Kids 2014 (USA)">
+<game ROM="Just Dance Kids 2014 (USA)">
   <title>Just Dance Kids 2014 (USA)</title>
   <year>2013</year>
-  <rating>Other - NR (Not Rated)</rating>
+  <genre>Rhythm</genre>
   <publisher>Ubisoft</publisher>
   <developer />
-  <genre>Rhythm</genre>
+  <rating>Other - NR (Not Rated)</rating>
 </game>
-<game name="Just Dance - Disney Party 2 (USA)">
+<game ROM="Just Dance - Disney Party 2 (USA)">
   <title>Just Dance: Disney Party 2 (USA)</title>
   <year>2015</year>
-  <rating>Other - NR (Not Rated)</rating>
+  <genre>Rhythm</genre>
   <publisher>Ubisoft</publisher>
   <developer />
-  <genre>Rhythm</genre>
+  <rating>Other - NR (Not Rated)</rating>
 </game>
-<game name="Kirby and the Rainbow Curse (USA)">
+<game ROM="Kirby and the Rainbow Curse (USA)">
   <title>Kirby and the Rainbow Curse (USA)</title>
   <year>2015</year>
-  <rating>Other - NR (Not Rated)</rating>
+  <genre>Platform</genre>
   <publisher>Nintendo</publisher>
   <developer />
-  <genre>Platform</genre>
+  <rating>Other - NR (Not Rated)</rating>
 </game>
-<game name="Kung Fu Panda - Showdown of Legendary Legends (USA)">
+<game ROM="Kung Fu Panda - Showdown of Legendary Legends (USA)">
   <title>Kung Fu Panda: Showdown of Legendary Legends (USA)</title>
   <year>2015</year>
-  <rating>Other - NR (Not Rated)</rating>
+  <genre>Action</genre>
   <publisher>Little Orbit</publisher>
   <developer />
-  <genre>Action</genre>
+  <rating>Other - NR (Not Rated)</rating>
 </game>
-<game name="Legend of Kay Anniversary (USA)">
+<game ROM="Legend of Kay Anniversary (USA)">
   <title>Legend of Kay Anniversary (USA)</title>
   <year>2015</year>
-  <rating>Other - NR (Not Rated)</rating>
+  <genre>Action</genre>
   <publisher>Nordic Games Publishing</publisher>
   <developer />
-  <genre>Action</genre>
+  <rating>Other - NR (Not Rated)</rating>
 </game>
-<game name="Legend of Zelda, The - The Wind Waker HD (USA)">
+<game ROM="Legend of Zelda, The - The Wind Waker HD (USA)">
   <title>Legend of Zelda, The: The Wind Waker HD (USA)</title>
   <year>2013</year>
-  <rating>Other - NR (Not Rated)</rating>
+  <genre>Adventure</genre>
   <publisher>Nintendo</publisher>
   <developer />
-  <genre>Adventure</genre>
+  <rating>Other - NR (Not Rated)</rating>
 </game>
-<game name="Legend of Zelda, The - Twilight Princess HD (USA)">
+<game ROM="Legend of Zelda, The - Twilight Princess HD (USA)">
   <title>Legend of Zelda, The: Twilight Princess HD (USA)</title>
   <year>2016</year>
-  <rating>Other - NR (Not Rated)</rating>
+  <genre>Adventure</genre>
   <publisher>Nintendo</publisher>
   <developer />
-  <genre>Adventure</genre>
+  <rating>Other - NR (Not Rated)</rating>
 </game>
-<game name="LEGO Batman 2 - DC Super Heroes (USA)">
+<game ROM="LEGO Batman 2 - DC Super Heroes (USA)">
   <title>LEGO Batman 2: DC Super Heroes (USA)</title>
   <year>2013</year>
-  <rating>Other - NR (Not Rated)</rating>
+  <genre>Adventure</genre>
   <publisher>Warner Bros. Interactive Entertainment</publisher>
   <developer />
-  <genre>Adventure</genre>
+  <rating>Other - NR (Not Rated)</rating>
 </game>
-<game name="LEGO Batman 3 - Beyond Gotham (USA)">
+<game ROM="LEGO Batman 3 - Beyond Gotham (USA)">
   <title>LEGO Batman 3: Beyond Gotham (USA)</title>
   <year>2014</year>
-  <rating>Other - NR (Not Rated)</rating>
+  <genre>Adventure</genre>
   <publisher>Warner Bros. Interactive Entertainment</publisher>
   <developer />
-  <genre>Adventure</genre>
+  <rating>Other - NR (Not Rated)</rating>
 </game>
-<game name="LEGO City Undercover (USA)">
+<game ROM="LEGO City Undercover (USA)">
   <title>LEGO City Undercover (USA)</title>
   <year>2013</year>
-  <rating>Other - NR (Not Rated)</rating>
+  <genre>Adventure</genre>
   <publisher>Nintendo</publisher>
   <developer />
-  <genre>Adventure</genre>
+  <rating>Other - NR (Not Rated)</rating>
 </game>
-<game name="LEGO Dimensions (USA)">
+<game ROM="LEGO Dimensions (USA)">
   <title>LEGO Dimensions (USA)</title>
   <year>2015</year>
-  <rating>Other - NR (Not Rated)</rating>
+  <genre>Adventure</genre>
   <publisher>Warner Bros. Interactive Entertainment</publisher>
   <developer />
-  <genre>Adventure</genre>
+  <rating>Other - NR (Not Rated)</rating>
 </game>
-<game name="LEGO Jurassic World (USA)">
+<game ROM="LEGO Jurassic World (USA)">
   <title>LEGO Jurassic World (USA)</title>
   <year>2015</year>
-  <rating>Other - NR (Not Rated)</rating>
+  <genre>Adventure</genre>
   <publisher>Warner Bros. Interactive Entertainment</publisher>
   <developer />
-  <genre>Adventure</genre>
+  <rating>Other - NR (Not Rated)</rating>
 </game>
-<game name="LEGO Marvel Super Heroes (USA)">
+<game ROM="LEGO Marvel Super Heroes (USA)">
   <title>LEGO Marvel Super Heroes (USA)</title>
   <year>2013</year>
-  <rating>Other - NR (Not Rated)</rating>
+  <genre>Adventure</genre>
   <publisher>Warner Bros. Interactive Entertainment</publisher>
   <developer />
-  <genre>Adventure</genre>
+  <rating>Other - NR (Not Rated)</rating>
 </game>
-<game name="LEGO Marvel&apos;s Avengers (USA)">
+<game ROM="LEGO Marvel&apos;s Avengers (USA)">
   <title>LEGO Marvel&apos;s Avengers (USA)</title>
   <year>2016</year>
-  <rating>Other - NR (Not Rated)</rating>
+  <genre>Adventure</genre>
   <publisher>Warner Bros. Interactive Entertainment</publisher>
   <developer />
-  <genre>Adventure</genre>
+  <rating>Other - NR (Not Rated)</rating>
 </game>
-<game name="LEGO Movie Videogame, The (USA)">
+<game ROM="LEGO Movie Videogame, The (USA)">
   <title>LEGO Movie Videogame, The (USA)</title>
   <year>2014</year>
-  <rating>Other - NR (Not Rated)</rating>
+  <genre>Adventure</genre>
   <publisher>Warner Bros. Interactive Entertainment</publisher>
   <developer />
-  <genre>Adventure</genre>
+  <rating>Other - NR (Not Rated)</rating>
 </game>
-<game name="LEGO The Hobbit (USA)">
+<game ROM="LEGO The Hobbit (USA)">
   <title>LEGO The Hobbit (USA)</title>
   <year>2014</year>
-  <rating>Other - NR (Not Rated)</rating>
+  <genre>Adventure</genre>
   <publisher>Warner Bros. Interactive Entertainment</publisher>
   <developer />
-  <genre>Adventure</genre>
+  <rating>Other - NR (Not Rated)</rating>
 </game>
-<game name="Luv me Buddies Wonderland (Europe)">
+<game ROM="Luv me Buddies Wonderland (Europe)">
   <title>Luv me Buddies Wonderland (Europe)</title>
   <year>2014</year>
-  <rating>Other - NR (Not Rated)</rating>
+  <genre>Mini-Games</genre>
   <publisher>Oxygene</publisher>
   <developer />
-  <genre>Mini-Games</genre>
+  <rating>Other - NR (Not Rated)</rating>
 </game>
-<game name="Madden NFL 13 (USA)">
+<game ROM="Madden NFL 13 (USA)">
   <title>Madden NFL 13 (USA)</title>
   <year>2012</year>
-  <rating>Other - NR (Not Rated)</rating>
+  <genre>Sports/Football</genre>
   <publisher>EA Sports</publisher>
   <developer />
-  <genre>Sports/Football</genre>
+  <rating>Other - NR (Not Rated)</rating>
 </game>
-<game name="Mario &amp; Sonic at the Sochi 2014 Olympic Winter Games (USA)">
+<game ROM="Mario &amp; Sonic at the Sochi 2014 Olympic Winter Games (USA)">
   <title>Mario &amp; Sonic at the Sochi 2014 Olympic Winter Games (USA)</title>
   <year>2013</year>
-  <rating>Other - NR (Not Rated)</rating>
+  <genre>Sports</genre>
   <publisher>Nintendo</publisher>
   <developer />
-  <genre>Sports</genre>
+  <rating>Other - NR (Not Rated)</rating>
 </game>
-<game name="Mario Kart 8 (USA)">
+<game ROM="Mario Kart 8 (USA)">
   <title>Mario Kart 8 (USA)</title>
   <year>2014</year>
-  <rating>Other - NR (Not Rated)</rating>
+  <genre>Driving</genre>
   <publisher>Nintendo</publisher>
   <developer />
-  <genre>Driving</genre>
+  <rating>Other - NR (Not Rated)</rating>
 </game>
-<game name="Mario Party 10 (USA)">
+<game ROM="Mario Party 10 (USA)">
   <title>Mario Party 10 (USA)</title>
   <year>2015</year>
-  <rating>Other - NR (Not Rated)</rating>
+  <genre>Party</genre>
   <publisher>Nintendo</publisher>
   <developer />
-  <genre>Party</genre>
+  <rating>Other - NR (Not Rated)</rating>
 </game>
-<game name="Mario Tennis - Ultra Smash (USA)">
+<game ROM="Mario Tennis - Ultra Smash (USA)">
   <title>Mario Tennis: Ultra Smash (USA)</title>
   <year>2015</year>
-  <rating>Other - NR (Not Rated)</rating>
+  <genre>Sports/Tennis</genre>
   <publisher>Nintendo</publisher>
   <developer />
-  <genre>Sports/Tennis</genre>
+  <rating>Other - NR (Not Rated)</rating>
 </game>
-<game name="Marvel Avengers - Battle for Earth (USA)">
+<game ROM="Marvel Avengers - Battle for Earth (USA)">
   <title>Marvel Avengers: Battle for Earth (USA)</title>
   <year>2012</year>
-  <rating>Other - NR (Not Rated)</rating>
+  <genre>Action</genre>
   <publisher>Ubisoft</publisher>
   <developer />
-  <genre>Action</genre>
+  <rating>Other - NR (Not Rated)</rating>
 </game>
-<game name="Mass Effect 3 - Special Edition (USA)">
+<game ROM="Mass Effect 3 - Special Edition (USA)">
   <title>Mass Effect 3: Special Edition (USA)</title>
   <year>2012</year>
-  <rating>Other - NR (Not Rated)</rating>
+  <genre>Action</genre>
   <publisher>Electronic Arts</publisher>
   <developer />
-  <genre>Action</genre>
+  <rating>Other - NR (Not Rated)</rating>
 </game>
-<game name="Monster High - 13 Wishes (USA)">
+<game ROM="Monster High - 13 Wishes (USA)">
   <title>Monster High: 13 Wishes (USA)</title>
   <year>2013</year>
-  <rating>Other - NR (Not Rated)</rating>
+  <genre>Adventure</genre>
   <publisher>Little Orbit</publisher>
   <developer />
-  <genre>Adventure</genre>
+  <rating>Other - NR (Not Rated)</rating>
 </game>
-<game name="Monster High - New Ghoul in School (USA)">
+<game ROM="Monster High - New Ghoul in School (USA)">
   <title>Monster High: New Ghoul in School (USA)</title>
   <year>2015</year>
-  <rating>Other - NR (Not Rated)</rating>
+  <genre>Adventure</genre>
   <publisher>Little Orbit</publisher>
   <developer />
-  <genre>Adventure</genre>
+  <rating>Other - NR (Not Rated)</rating>
 </game>
-<game name="Monster Hunter 3 Ultimate (USA)">
+<game ROM="Monster Hunter 3 Ultimate (USA)">
   <title>Monster Hunter 3 Ultimate (USA)</title>
   <year>2013</year>
-  <rating>Other - NR (Not Rated)</rating>
+  <genre>Role-Playing</genre>
   <publisher>Capcom</publisher>
   <developer />
-  <genre>Role-Playing</genre>
+  <rating>Other - NR (Not Rated)</rating>
 </game>
-<game name="NBA 2K13 (USA)">
+<game ROM="NBA 2K13 (USA)">
   <title>NBA 2K13 (USA)</title>
   <year>2012</year>
-  <rating>Other - NR (Not Rated)</rating>
+  <genre>Sports/Basketball</genre>
   <publisher>2K Sports</publisher>
   <developer />
-  <genre>Sports/Basketball</genre>
+  <rating>Other - NR (Not Rated)</rating>
 </game>
-<game name="Need for Speed - Most Wanted U (USA)">
+<game ROM="Need for Speed - Most Wanted U (USA)">
   <title>Need for Speed: Most Wanted U (USA)</title>
   <year>2013</year>
-  <rating>Other - NR (Not Rated)</rating>
+  <genre>Driving</genre>
   <publisher>Electronic Arts</publisher>
   <developer />
-  <genre>Driving</genre>
+  <rating>Other - NR (Not Rated)</rating>
 </game>
-<game name="NES Remix Pack (USA)">
+<game ROM="NES Remix Pack (USA)">
   <title>NES Remix Pack (USA)</title>
   <year>2014</year>
-  <rating>Other - NR (Not Rated)</rating>
+  <genre>Compilation</genre>
   <publisher>Nintendo</publisher>
   <developer />
-  <genre>Compilation</genre>
+  <rating>Other - NR (Not Rated)</rating>
 </game>
-<game name="New Super Luigi U (USA)">
+<game ROM="New Super Luigi U (USA)">
   <title>New Super Luigi U (USA)</title>
   <year>2013</year>
-  <rating>Other - NR (Not Rated)</rating>
+  <genre>Platform</genre>
   <publisher>Nintendo</publisher>
   <developer />
-  <genre>Platform</genre>
+  <rating>Other - NR (Not Rated)</rating>
 </game>
-<game name="New Super Mario Bros. U (USA)">
+<game ROM="New Super Mario Bros. U (USA)">
   <title>New Super Mario Bros. U (USA)</title>
   <year>2012</year>
-  <rating>Other - NR (Not Rated)</rating>
+  <genre>Platform</genre>
   <publisher>Nintendo</publisher>
   <developer />
-  <genre>Platform</genre>
+  <rating>Other - NR (Not Rated)</rating>
 </game>
-<game name="New Super Mario Bros. U + New Super Luigi U (USA)">
+<game ROM="New Super Mario Bros. U + New Super Luigi U (USA)">
   <title>New Super Mario Bros. U + New Super Luigi U (USA)</title>
   <year>2013</year>
-  <rating>Other - NR (Not Rated)</rating>
+  <genre>Platform</genre>
   <publisher>Nintendo</publisher>
   <developer />
-  <genre>Platform</genre>
+  <rating>Other - NR (Not Rated)</rating>
 </game>
-<game name="Ninja Gaiden 3 - Razor&apos;s Edge (USA)">
+<game ROM="Ninja Gaiden 3 - Razor&apos;s Edge (USA)">
   <title>Ninja Gaiden 3: Razor&apos;s Edge (USA)</title>
   <year>2012</year>
-  <rating>Other - NR (Not Rated)</rating>
+  <genre>Action</genre>
   <publisher>Nintendo</publisher>
   <developer />
-  <genre>Action</genre>
+  <rating>Other - NR (Not Rated)</rating>
 </game>
-<game name="Nintendo Land (USA)">
+<game ROM="Nintendo Land (USA)">
   <title>Nintendo Land (USA)</title>
   <year>2012</year>
-  <rating>Other - NR (Not Rated)</rating>
+  <genre>Mini-Games</genre>
   <publisher>Nintendo</publisher>
   <developer />
-  <genre>Mini-Games</genre>
+  <rating>Other - NR (Not Rated)</rating>
 </game>
-<game name="One Piece - Unlimited World Red (Europe)">
+<game ROM="One Piece - Unlimited World Red (Europe)">
   <title>One Piece: Unlimited World Red (Europe)</title>
   <year>2014</year>
-  <rating>Other - NR (Not Rated)</rating>
+  <genre>Action</genre>
   <publisher>Bandai Namco Games</publisher>
   <developer />
-  <genre>Action</genre>
+  <rating>Other - NR (Not Rated)</rating>
 </game>
-<game name="Pac-Man and the Ghostly Adventures (USA)">
+<game ROM="Pac-Man and the Ghostly Adventures (USA)">
   <title>Pac-Man and the Ghostly Adventures (USA)</title>
   <year>2013</year>
-  <rating>Other - NR (Not Rated)</rating>
+  <genre>Platform</genre>
   <publisher>Bandai Namco Games</publisher>
   <developer />
-  <genre>Platform</genre>
+  <rating>Other - NR (Not Rated)</rating>
 </game>
-<game name="Pac-Man and the Ghostly Adventures 2 (USA)">
+<game ROM="Pac-Man and the Ghostly Adventures 2 (USA)">
   <title>Pac-Man and the Ghostly Adventures 2 (USA)</title>
   <year>2014</year>
-  <rating>Other - NR (Not Rated)</rating>
+  <genre>Platform</genre>
   <publisher>Bandai Namco Games</publisher>
   <developer />
-  <genre>Platform</genre>
+  <rating>Other - NR (Not Rated)</rating>
 </game>
-<game name="Peanuts Movie, The - Snoopy&apos;s Grand Adventure (USA)">
+<game ROM="Peanuts Movie, The - Snoopy&apos;s Grand Adventure (USA)">
   <title>Peanuts Movie, The: Snoopy&apos;s Grand Adventure (USA)</title>
   <year>2015</year>
-  <rating>Other - NR (Not Rated)</rating>
+  <genre>Platform</genre>
   <publisher>Activision</publisher>
   <developer />
-  <genre>Platform</genre>
+  <rating>Other - NR (Not Rated)</rating>
 </game>
-<game name="Penguins of Madagascar (USA)">
+<game ROM="Penguins of Madagascar (USA)">
   <title>Penguins of Madagascar (USA)</title>
   <year>2014</year>
-  <rating>Other - NR (Not Rated)</rating>
+  <genre>Action</genre>
   <publisher>Little Orbit</publisher>
   <developer />
-  <genre>Action</genre>
+  <rating>Other - NR (Not Rated)</rating>
 </game>
-<game name="Phineas and Ferb - Quest for Cool Stuff (USA)">
+<game ROM="Phineas and Ferb - Quest for Cool Stuff (USA)">
   <title>Phineas and Ferb: Quest for Cool Stuff (USA)</title>
   <year>2013</year>
-  <rating>Other - NR (Not Rated)</rating>
+  <genre>Adventure</genre>
   <publisher>Majesco</publisher>
   <developer />
-  <genre>Adventure</genre>
+  <rating>Other - NR (Not Rated)</rating>
 </game>
-<game name="Pikmin 3 (USA)">
+<game ROM="Pikmin 3 (USA)">
   <title>Pikmin 3 (USA)</title>
   <year>2013</year>
-  <rating>Other - NR (Not Rated)</rating>
+  <genre>Strategy</genre>
   <publisher>Nintendo</publisher>
   <developer />
-  <genre>Strategy</genre>
+  <rating>Other - NR (Not Rated)</rating>
 </game>
-<game name="Planes (USA)">
+<game ROM="Planes (USA)">
   <title>Planes (USA)</title>
   <year>2013</year>
-  <rating>Other - NR (Not Rated)</rating>
+  <genre>Adventure</genre>
   <publisher>Disney Interactive Studios</publisher>
   <developer />
-  <genre>Adventure</genre>
+  <rating>Other - NR (Not Rated)</rating>
 </game>
-<game name="Planes - Fire &amp; Rescue (USA)">
+<game ROM="Planes - Fire &amp; Rescue (USA)">
   <title>Planes: Fire &amp; Rescue (USA)</title>
   <year>2014</year>
-  <rating>Other - NR (Not Rated)</rating>
+  <genre>Adventure</genre>
   <publisher>Little Orbit</publisher>
   <developer />
-  <genre>Adventure</genre>
+  <rating>Other - NR (Not Rated)</rating>
 </game>
-<game name="Pokken Tournament (USA)">
+<game ROM="Pokken Tournament (USA)">
   <title>Pokken Tournament (USA)</title>
   <year>2016</year>
-  <rating>Other - NR (Not Rated)</rating>
+  <genre>Fighter</genre>
   <publisher>Nintendo</publisher>
   <developer />
-  <genre>Fighter</genre>
+  <rating>Other - NR (Not Rated)</rating>
 </game>
-<game name="Project Zero - Maiden of Black Water (Europe)">
+<game ROM="Project Zero - Maiden of Black Water (Europe)">
   <title>Project Zero: Maiden of Black Water (Europe)</title>
   <year>2015</year>
-  <rating>Other - NR (Not Rated)</rating>
+  <genre>Action</genre>
   <publisher>Nintendo</publisher>
   <developer />
-  <genre>Action</genre>
+  <rating>Other - NR (Not Rated)</rating>
 </game>
-<game name="Rabbids Land (USA)">
+<game ROM="Rabbids Land (USA)">
   <title>Rabbids Land (USA)</title>
   <year>2012</year>
-  <rating>Other - NR (Not Rated)</rating>
+  <genre>Mini-Games</genre>
   <publisher>Ubisoft</publisher>
   <developer />
-  <genre>Mini-Games</genre>
+  <rating>Other - NR (Not Rated)</rating>
 </game>
-<game name="Rapala Pro Bass Fishing (USA)">
+<game ROM="Rapala Pro Bass Fishing (USA)">
   <title>Rapala Pro Bass Fishing (USA)</title>
   <year>2012</year>
-  <rating>Other - NR (Not Rated)</rating>
+  <genre>Sports/Fishing</genre>
   <publisher>Activision</publisher>
   <developer />
-  <genre>Sports/Fishing</genre>
+  <rating>Other - NR (Not Rated)</rating>
 </game>
-<game name="Rayman Legends (USA)">
+<game ROM="Rayman Legends (USA)">
   <title>Rayman Legends (USA)</title>
   <year>2013</year>
-  <rating>Other - NR (Not Rated)</rating>
+  <genre>Platform</genre>
   <publisher>Ubisoft</publisher>
   <developer />
-  <genre>Platform</genre>
+  <rating>Other - NR (Not Rated)</rating>
 </game>
-<game name="Resident Evil - Revelations (USA)">
+<game ROM="Resident Evil - Revelations (USA)">
   <title>Resident Evil: Revelations (USA)</title>
   <year>2013</year>
-  <rating>Other - NR (Not Rated)</rating>
+  <genre>Action</genre>
   <publisher>Capcom</publisher>
   <developer />
-  <genre>Action</genre>
+  <rating>Other - NR (Not Rated)</rating>
 </game>
-<game name="Rise of the Guardians (USA)">
+<game ROM="Rise of the Guardians (USA)">
   <title>Rise of the Guardians (USA)</title>
   <year>2012</year>
-  <rating>Other - NR (Not Rated)</rating>
+  <genre>Adventure</genre>
   <publisher>D3Publisher</publisher>
   <developer />
-  <genre>Adventure</genre>
+  <rating>Other - NR (Not Rated)</rating>
 </game>
-<game name="Rodea the Sky Soldier (USA)">
+<game ROM="Rodea the Sky Soldier (USA)">
   <title>Rodea the Sky Soldier (USA)</title>
   <year>2015</year>
-  <rating>Other - NR (Not Rated)</rating>
+  <genre>Platform</genre>
   <publisher>NIS America</publisher>
   <developer />
-  <genre>Platform</genre>
+  <rating>Other - NR (Not Rated)</rating>
 </game>
-<game name="Scribblenauts Unlimited (USA)">
+<game ROM="Scribblenauts Unlimited (USA)">
   <title>Scribblenauts Unlimited (USA)</title>
   <year>2012</year>
-  <rating>Other - NR (Not Rated)</rating>
+  <genre>Action</genre>
   <publisher>Warner Bros. Interactive Entertainment</publisher>
   <developer />
-  <genre>Action</genre>
+  <rating>Other - NR (Not Rated)</rating>
 </game>
-<game name="Scribblenauts Unmasked - A DC Comics Adventure (USA)">
+<game ROM="Scribblenauts Unmasked - A DC Comics Adventure (USA)">
   <title>Scribblenauts Unmasked: A DC Comics Adventure (USA)</title>
   <year>2013</year>
-  <rating>Other - NR (Not Rated)</rating>
+  <genre>Action</genre>
   <publisher>Warner Bros. Interactive Entertainment</publisher>
   <developer />
-  <genre>Action</genre>
+  <rating>Other - NR (Not Rated)</rating>
 </game>
-<game name="Shovel Knight (USA)">
+<game ROM="Shovel Knight (USA)">
   <title>Shovel Knight (USA)</title>
   <year>2015</year>
-  <rating>Other - NR (Not Rated)</rating>
+  <genre>Platform</genre>
   <publisher>Yacht Club Games</publisher>
   <developer />
-  <genre>Platform</genre>
+  <rating>Other - NR (Not Rated)</rating>
 </game>
-<game name="SiNG Party (USA)">
+<game ROM="SiNG Party (USA)">
   <title>SiNG Party (USA)</title>
   <year>2012</year>
-  <rating>Other - NR (Not Rated)</rating>
+  <genre>Rhythm</genre>
   <publisher>Nintendo</publisher>
   <developer />
-  <genre>Rhythm</genre>
+  <rating>Other - NR (Not Rated)</rating>
 </game>
-<game name="Skylanders Giants (USA)">
+<game ROM="Skylanders Giants (USA)">
   <title>Skylanders Giants (USA)</title>
   <year>2012</year>
-  <rating>Other - NR (Not Rated)</rating>
+  <genre>Platform</genre>
   <publisher>Activision</publisher>
   <developer />
-  <genre>Platform</genre>
+  <rating>Other - NR (Not Rated)</rating>
 </game>
-<game name="Skylanders SuperChargers (USA)">
+<game ROM="Skylanders SuperChargers (USA)">
   <title>Skylanders SuperChargers (USA)</title>
   <year>2015</year>
-  <rating>Other - NR (Not Rated)</rating>
+  <genre>Platform</genre>
   <publisher>Activision</publisher>
   <developer />
-  <genre>Platform</genre>
+  <rating>Other - NR (Not Rated)</rating>
 </game>
-<game name="Skylanders Swap Force (USA)">
+<game ROM="Skylanders Swap Force (USA)">
   <title>Skylanders Swap Force (USA)</title>
   <year>2013</year>
-  <rating>Other - NR (Not Rated)</rating>
+  <genre>Platform</genre>
   <publisher>Activision</publisher>
   <developer />
-  <genre>Platform</genre>
+  <rating>Other - NR (Not Rated)</rating>
 </game>
-<game name="Skylanders Trap Team (USA)">
+<game ROM="Skylanders Trap Team (USA)">
   <title>Skylanders Trap Team (USA)</title>
   <year>2014</year>
-  <rating>Other - NR (Not Rated)</rating>
+  <genre>Platform</genre>
   <publisher>Activision</publisher>
   <developer />
-  <genre>Platform</genre>
+  <rating>Other - NR (Not Rated)</rating>
 </game>
-<game name="Smurfs 2, The (USA)">
+<game ROM="Smurfs 2, The (USA)">
   <title>Smurfs 2, The (USA)</title>
   <year>2013</year>
-  <rating>Other - NR (Not Rated)</rating>
+  <genre>Platform</genre>
   <publisher>Ubisoft</publisher>
   <developer />
-  <genre>Platform</genre>
+  <rating>Other - NR (Not Rated)</rating>
 </game>
-<game name="Sniper Elite V2 (USA)">
+<game ROM="Sniper Elite V2 (USA)">
   <title>Sniper Elite V2 (USA)</title>
   <year>2013</year>
-  <rating>Other - NR (Not Rated)</rating>
+  <genre>Shooter</genre>
   <publisher>505 Games</publisher>
   <developer />
-  <genre>Shooter</genre>
+  <rating>Other - NR (Not Rated)</rating>
 </game>
-<game name="Sonic &amp; All-Stars Racing Transformed (USA)">
+<game ROM="Sonic &amp; All-Stars Racing Transformed (USA)">
   <title>Sonic &amp; All-Stars Racing Transformed (USA)</title>
   <year>2012</year>
-  <rating>Other - NR (Not Rated)</rating>
+  <genre>Driving</genre>
   <publisher>Sega</publisher>
   <developer />
-  <genre>Driving</genre>
+  <rating>Other - NR (Not Rated)</rating>
 </game>
-<game name="Sonic Boom - Rise of Lyric (USA)">
+<game ROM="Sonic Boom - Rise of Lyric (USA)">
   <title>Sonic Boom: Rise of Lyric (USA)</title>
   <year>2014</year>
-  <rating>Other - NR (Not Rated)</rating>
+  <genre>Platform</genre>
   <publisher>Sega</publisher>
   <developer />
-  <genre>Platform</genre>
+  <rating>Other - NR (Not Rated)</rating>
 </game>
-<game name="Sonic - Lost World (USA)">
+<game ROM="Sonic - Lost World (USA)">
   <title>Sonic: Lost World (USA)</title>
   <year>2013</year>
-  <rating>Other - NR (Not Rated)</rating>
+  <genre>Platform</genre>
   <publisher>Sega</publisher>
   <developer />
-  <genre>Platform</genre>
+  <rating>Other - NR (Not Rated)</rating>
 </game>
-<game name="Splatoon (USA)">
+<game ROM="Splatoon (USA)">
   <title>Splatoon (USA)</title>
   <year>2015</year>
-  <rating>Other - NR (Not Rated)</rating>
+  <genre>Shooter</genre>
   <publisher>Nintendo</publisher>
   <developer />
-  <genre>Shooter</genre>
+  <rating>Other - NR (Not Rated)</rating>
 </game>
-<game name="SpongeBob SquarePants - Plankton&apos;s Robotic Revenge (USA)">
+<game ROM="SpongeBob SquarePants - Plankton&apos;s Robotic Revenge (USA)">
   <title>SpongeBob SquarePants: Plankton&apos;s Robotic Revenge (USA)</title>
   <year>2013</year>
-  <rating>Other - NR (Not Rated)</rating>
+  <genre>Adventure</genre>
   <publisher>Activision</publisher>
   <developer />
-  <genre>Adventure</genre>
+  <rating>Other - NR (Not Rated)</rating>
 </game>
-<game name="Star Fox Guard (USA)">
+<game ROM="Star Fox Guard (USA)">
   <title>Star Fox Guard (USA)</title>
   <year>2016</year>
-  <rating>Other - NR (Not Rated)</rating>
+  <genre>Simulation</genre>
   <publisher>Nintendo</publisher>
   <developer />
-  <genre>Simulation</genre>
+  <rating>Other - NR (Not Rated)</rating>
 </game>
-<game name="Star Fox Zero (USA)">
+<game ROM="Star Fox Zero (USA)">
   <title>Star Fox Zero (USA)</title>
   <year>2016</year>
-  <rating>Other - NR (Not Rated)</rating>
+  <genre>Simulation</genre>
   <publisher>Nintendo</publisher>
   <developer />
-  <genre>Simulation</genre>
+  <rating>Other - NR (Not Rated)</rating>
 </game>
-<game name="Super Mario 3D World (USA)">
+<game ROM="Super Mario 3D World (USA)">
   <title>Super Mario 3D World (USA)</title>
   <year>2013</year>
-  <rating>Other - NR (Not Rated)</rating>
+  <genre>Platform</genre>
   <publisher>Nintendo</publisher>
   <developer />
-  <genre>Platform</genre>
+  <rating>Other - NR (Not Rated)</rating>
 </game>
-<game name="Super Mario Maker (USA)">
+<game ROM="Super Mario Maker (USA)">
   <title>Super Mario Maker (USA)</title>
   <year>2015</year>
-  <rating>Other - NR (Not Rated)</rating>
+  <genre>Platform</genre>
   <publisher>Nintendo</publisher>
   <developer />
-  <genre>Platform</genre>
+  <rating>Other - NR (Not Rated)</rating>
 </game>
-<game name="Super Smash Bros. for Wii U (USA)">
+<game ROM="Super Smash Bros. for Wii U (USA)">
   <title>Super Smash Bros. for Wii U (USA)</title>
   <year>2014</year>
-  <rating>Other - NR (Not Rated)</rating>
+  <genre>Fighter</genre>
   <publisher>Nintendo</publisher>
   <developer />
-  <genre>Fighter</genre>
+  <rating>Other - NR (Not Rated)</rating>
 </game>
-<game name="Tank! Tank! Tank! (USA)">
+<game ROM="Tank! Tank! Tank! (USA)">
   <title>Tank! Tank! Tank! (USA)</title>
   <year>2012</year>
-  <rating>Other - NR (Not Rated)</rating>
+  <genre>Simulation</genre>
   <publisher>Namco Bandai Games</publisher>
   <developer />
-  <genre>Simulation</genre>
+  <rating>Other - NR (Not Rated)</rating>
 </game>
-<game name="Tekken Tag Tournament 2 - Wii U Edition (USA)">
+<game ROM="Tekken Tag Tournament 2 - Wii U Edition (USA)">
   <title>Tekken Tag Tournament 2: Wii U Edition (USA)</title>
   <year>2012</year>
-  <rating>Other - NR (Not Rated)</rating>
+  <genre>Fighter</genre>
   <publisher>Namco Bandai Games</publisher>
   <developer />
-  <genre>Fighter</genre>
+  <rating>Other - NR (Not Rated)</rating>
 </game>
-<game name="Teslagrad (Europe)">
+<game ROM="Teslagrad (Europe)">
   <title>Teslagrad (Europe)</title>
   <year>2014</year>
-  <rating>Other - NR (Not Rated)</rating>
+  <genre>Platform</genre>
   <publisher>Rain Games</publisher>
   <developer />
-  <genre>Platform</genre>
+  <rating>Other - NR (Not Rated)</rating>
 </game>
-<game name="Tom Clancy&apos;s Splinter Cell - Blacklist (USA)">
+<game ROM="Tom Clancy&apos;s Splinter Cell - Blacklist (USA)">
   <title>Tom Clancy&apos;s Splinter Cell: Blacklist (USA)</title>
   <year>2013</year>
-  <rating>Other - NR (Not Rated)</rating>
+  <genre>Action</genre>
   <publisher>Ubisoft</publisher>
   <developer />
-  <genre>Action</genre>
+  <rating>Other - NR (Not Rated)</rating>
 </game>
-<game name="Transformers Prime - The Game (USA)">
+<game ROM="Transformers Prime - The Game (USA)">
   <title>Transformers Prime: The Game (USA)</title>
   <year>2012</year>
-  <rating>Other - NR (Not Rated)</rating>
+  <genre>Action</genre>
   <publisher>Activision</publisher>
   <developer />
-  <genre>Action</genre>
+  <rating>Other - NR (Not Rated)</rating>
 </game>
-<game name="Transformers - Rise of the Dark Spark (USA)">
+<game ROM="Transformers - Rise of the Dark Spark (USA)">
   <title>Transformers: Rise of the Dark Spark (USA)</title>
   <year>2014</year>
-  <rating>Other - NR (Not Rated)</rating>
+  <genre>Action</genre>
   <publisher>Activision</publisher>
   <developer />
-  <genre>Action</genre>
+  <rating>Other - NR (Not Rated)</rating>
 </game>
-<game name="Turbo - Super Stunt Squad (USA)">
+<game ROM="Turbo - Super Stunt Squad (USA)">
   <title>Turbo: Super Stunt Squad (USA)</title>
   <year>2013</year>
-  <rating>Other - NR (Not Rated)</rating>
+  <genre>Action</genre>
   <publisher>D3Publisher</publisher>
   <developer />
-  <genre>Action</genre>
+  <rating>Other - NR (Not Rated)</rating>
 </game>
-<game name="Voice, The - I Want You (USA)">
+<game ROM="Voice, The - I Want You (USA)">
   <title>Voice, The - I Want You (USA)</title>
   <year>2014</year>
-  <rating>Other - NR (Not Rated)</rating>
+  <genre>Rhythm</genre>
   <publisher>Activision</publisher>
   <developer />
-  <genre>Rhythm</genre>
+  <rating>Other - NR (Not Rated)</rating>
 </game>
-<game name="Walking Dead, The - Survival Instinct (USA)">
+<game ROM="Walking Dead, The - Survival Instinct (USA)">
   <title>Walking Dead, The: Survival Instinct (USA)</title>
   <year>2013</year>
-  <rating>Other - NR (Not Rated)</rating>
+  <genre>Shooter</genre>
   <publisher>Activision</publisher>
   <developer />
-  <genre>Shooter</genre>
+  <rating>Other - NR (Not Rated)</rating>
 </game>
-<game name="Warriors Orochi 3 Hyper (USA)">
+<game ROM="Warriors Orochi 3 Hyper (USA)">
   <title>Warriors Orochi 3 Hyper (USA)</title>
   <year>2012</year>
-  <rating>Other - NR (Not Rated)</rating>
+  <genre>Beat-&apos;Em-Up</genre>
   <publisher>Tecmo Koei Games</publisher>
   <developer />
-  <genre>Beat-&apos;Em-Up</genre>
+  <rating>Other - NR (Not Rated)</rating>
 </game>
-<game name="Watch Dogs (USA)">
+<game ROM="Watch Dogs (USA)">
   <title>Watch Dogs (USA)</title>
   <year>2014</year>
-  <rating>Other - NR (Not Rated)</rating>
+  <genre>Action</genre>
   <publisher>Ubisoft</publisher>
   <developer />
-  <genre>Action</genre>
+  <rating>Other - NR (Not Rated)</rating>
 </game>
-<game name="Wheel of Fortune (USA)">
+<game ROM="Wheel of Fortune (USA)">
   <title>Wheel of Fortune (USA)</title>
   <year>2012</year>
-  <rating>Other - NR (Not Rated)</rating>
+  <genre>Game Show</genre>
   <publisher>THQ</publisher>
   <developer />
-  <genre>Game Show</genre>
+  <rating>Other - NR (Not Rated)</rating>
 </game>
-<game name="Wii Fit U (USA)">
+<game ROM="Wii Fit U (USA)">
   <title>Wii Fit U (USA)</title>
   <year>2014</year>
-  <rating>Other - NR (Not Rated)</rating>
+  <genre>Miscellaneous</genre>
   <publisher>Nintendo</publisher>
   <developer />
-  <genre>Miscellaneous</genre>
+  <rating>Other - NR (Not Rated)</rating>
 </game>
-<game name="Wii Party U (USA)">
+<game ROM="Wii Party U (USA)">
   <title>Wii Party U (USA)</title>
   <year>2013</year>
-  <rating>Other - NR (Not Rated)</rating>
+  <genre>Mini-Games</genre>
   <publisher>Nintendo</publisher>
   <developer />
-  <genre>Mini-Games</genre>
+  <rating>Other - NR (Not Rated)</rating>
 </game>
-<game name="Wii Sports Club (USA)">
+<game ROM="Wii Sports Club (USA)">
   <title>Wii Sports Club (USA)</title>
   <year>2014</year>
-  <rating>Other - NR (Not Rated)</rating>
+  <genre>Sports</genre>
   <publisher>Nintendo</publisher>
   <developer />
-  <genre>Sports</genre>
+  <rating>Other - NR (Not Rated)</rating>
 </game>
-<game name="Wipeout 3 (USA)">
+<game ROM="Wipeout 3 (USA)">
   <title>Wipeout 3 (USA)</title>
   <year>2012</year>
-  <rating>Other - NR (Not Rated)</rating>
+  <genre>Mini-Games</genre>
   <publisher>Activision</publisher>
   <developer />
-  <genre>Mini-Games</genre>
+  <rating>Other - NR (Not Rated)</rating>
 </game>
-<game name="Wipeout - Create &amp; Crash (USA)">
+<game ROM="Wipeout - Create &amp; Crash (USA)">
   <title>Wipeout: Create &amp; Crash (USA)</title>
   <year>2013</year>
-  <rating>Other - NR (Not Rated)</rating>
+  <genre>Mini-Games</genre>
   <publisher>Activision</publisher>
   <developer />
-  <genre>Mini-Games</genre>
+  <rating>Other - NR (Not Rated)</rating>
 </game>
-<game name="Wonderful 101, The (USA)">
+<game ROM="Wonderful 101, The (USA)">
   <title>Wonderful 101, The (USA)</title>
   <year>2013</year>
-  <rating>Other - NR (Not Rated)</rating>
+  <genre>Action</genre>
   <publisher>Nintendo</publisher>
   <developer />
-  <genre>Action</genre>
+  <rating>Other - NR (Not Rated)</rating>
 </game>
-<game name="Xenoblade Chronicles X (USA)">
+<game ROM="Xenoblade Chronicles X (USA)">
   <title>Xenoblade Chronicles X (USA)</title>
   <year>2015</year>
-  <rating>Other - NR (Not Rated)</rating>
+  <genre>Role-Playing</genre>
   <publisher>Nintendo</publisher>
   <developer />
-  <genre>Role-Playing</genre>
+  <rating>Other - NR (Not Rated)</rating>
 </game>
-<game name="Yoshi&apos;s Woolly World (USA)">
+<game ROM="Yoshi&apos;s Woolly World (USA)">
   <title>Yoshi&apos;s Woolly World (USA)</title>
   <year>2015</year>
-  <rating>Other - NR (Not Rated)</rating>
+  <genre>Platform</genre>
   <publisher>Nintendo</publisher>
   <developer />
-  <genre>Platform</genre>
+  <rating>Other - NR (Not Rated)</rating>
 </game>
-<game name="Your Shape - Fitness Evolved 2013 (USA)">
+<game ROM="Your Shape - Fitness Evolved 2013 (USA)">
   <title>Your Shape: Fitness Evolved 2013 (USA)</title>
   <year>2012</year>
-  <rating>Other - NR (Not Rated)</rating>
+  <genre>Miscellaneous</genre>
   <publisher>Ubisoft</publisher>
   <developer />
-  <genre>Miscellaneous</genre>
+  <rating>Other - NR (Not Rated)</rating>
 </game>
-<game name="ZombiU (USA)">
+<game ROM="ZombiU (USA)">
   <title>ZombiU (USA)</title>
   <year>2012</year>
-  <rating>Other - NR (Not Rated)</rating>
+  <genre>Shooter</genre>
   <publisher>Ubisoft</publisher>
   <developer />
-  <genre>Shooter</genre>
+  <rating>Other - NR (Not Rated)</rating>
 </game>
-<game name="Zumba Fitness World Party (USA)">
+<game ROM="Zumba Fitness World Party (USA)">
   <title>Zumba Fitness World Party (USA)</title>
   <year>2013</year>
-  <rating>Other - NR (Not Rated)</rating>
+  <genre>Miscellaneous</genre>
   <publisher>Majesco</publisher>
   <developer />
-  <genre>Miscellaneous</genre>
+  <rating>Other - NR (Not Rated)</rating>
 </game>
 </menu>

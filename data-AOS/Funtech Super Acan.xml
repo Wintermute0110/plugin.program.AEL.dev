@@ -6,100 +6,100 @@
   <listversion>V1</listversion>
   <exporterversion>V1 GameDBInfo converter</exporterversion>
 </header>
-<game name="African Adventures (Taiwan)">
+<game ROM="African Adventures (Taiwan)">
   <title>African Adventures</title>
   <year>1995</year>
-  <rating>Other - NR (Not Rated)</rating>
+  <genre>Puzzle</genre>
   <publisher>Panda Entertainment</publisher>
   <developer />
-  <genre>Puzzle</genre>
+  <rating>Other - NR (Not Rated)</rating>
 </game>
-<game name="Boom Zoo (Taiwan)">
+<game ROM="Boom Zoo (Taiwan)">
   <title>Boom Zoo</title>
   <year>1996</year>
-  <rating>Other - NR (Not Rated)</rating>
+  <genre>Action</genre>
   <publisher>Funtech</publisher>
   <developer />
-  <genre>Action</genre>
+  <rating>Other - NR (Not Rated)</rating>
 </game>
-<game name="C.U.G. (Taiwan)">
+<game ROM="C.U.G. (Taiwan)">
   <title>C.U.G.</title>
   <year>1995</year>
-  <rating>Other - NR (Not Rated)</rating>
+  <genre>Platform</genre>
   <publisher>Funtech</publisher>
   <developer />
-  <genre>Platform</genre>
+  <rating>Other - NR (Not Rated)</rating>
 </game>
-<game name="Formosa Duel (Taiwan)">
+<game ROM="Formosa Duel (Taiwan)">
   <title>Formosa Duel</title>
   <year>1995</year>
-  <rating>Other - NR (Not Rated)</rating>
+  <genre>Puzzle</genre>
   <publisher>AV Artisan</publisher>
   <developer />
-  <genre>Puzzle</genre>
+  <rating>Other - NR (Not Rated)</rating>
 </game>
-<game name="Gambling Lord (Taiwan)">
+<game ROM="Gambling Lord (Taiwan)">
   <title>Gambling Lord</title>
   <year>1996</year>
-  <rating>Other - NR (Not Rated)</rating>
+  <genre>Mahjong</genre>
   <publisher>Panda Entertainment/Funtech</publisher>
   <developer />
-  <genre>Mahjong</genre>
+  <rating>Other - NR (Not Rated)</rating>
 </game>
-<game name="Magical Pool (Taiwan)">
+<game ROM="Magical Pool (Taiwan)">
   <title>Magical Pool</title>
   <year>199x</year>
-  <rating>Other - NR (Not Rated)</rating>
+  <genre>Sports</genre>
   <publisher>Funtech</publisher>
   <developer />
-  <genre>Sports</genre>
+  <rating>Other - NR (Not Rated)</rating>
 </game>
-<game name="REBEL (Taiwan)">
+<game ROM="REBEL (Taiwan)">
   <title>REBEL</title>
   <year>1996</year>
-  <rating>Other - NR (Not Rated)</rating>
+  <genre>Role-Playing</genre>
   <publisher>Horng Shen Information Co., Ltd</publisher>
   <developer />
-  <genre>Role-Playing</genre>
+  <rating>Other - NR (Not Rated)</rating>
 </game>
-<game name="Sango Fighter (Taiwan)">
+<game ROM="Sango Fighter (Taiwan)">
   <title>Sango Fighter</title>
   <year>1995</year>
-  <rating>Other - NR (Not Rated)</rating>
+  <genre>Fighting</genre>
   <publisher>Panda Entertainment</publisher>
   <developer />
-  <genre>Fighting</genre>
+  <rating>Other - NR (Not Rated)</rating>
 </game>
-<game name="Speedy Dragon (Taiwan)">
+<game ROM="Speedy Dragon (Taiwan)">
   <title>Speedy Dragon</title>
   <year>1995</year>
-  <rating>Other - NR (Not Rated)</rating>
+  <genre>Platform</genre>
   <publisher>AV Artisan</publisher>
   <developer />
-  <genre>Platform</genre>
+  <rating>Other - NR (Not Rated)</rating>
 </game>
-<game name="Super Dragon Force (Taiwan)">
+<game ROM="Super Dragon Force (Taiwan)">
   <title>Super Dragon Force</title>
   <year>1996</year>
-  <rating>Other - NR (Not Rated)</rating>
+  <genre>Role-Playing</genre>
   <publisher>Kingformation Co., Ltd</publisher>
   <developer />
-  <genre>Role-Playing</genre>
+  <rating>Other - NR (Not Rated)</rating>
 </game>
-<game name="Super Taiwanese Baseball League (Taiwan)">
+<game ROM="Super Taiwanese Baseball League (Taiwan)">
   <title>Super Taiwanese Baseball League</title>
   <year>1995</year>
-  <rating>Other - NR (Not Rated)</rating>
+  <genre>Sports</genre>
   <publisher>Quan Wei Technology/C&amp;E</publisher>
   <developer />
-  <genre>Sports</genre>
+  <rating>Other - NR (Not Rated)</rating>
 </game>
-<game name="The Son of Evil (Taiwan)">
+<game ROM="The Son of Evil (Taiwan)">
   <title>The Son of Evil</title>
   <year>1995</year>
-  <rating>Other - NR (Not Rated)</rating>
+  <genre>Role-Playing</genre>
   <publisher>Funtech</publisher>
   <developer />
-  <genre>Role-Playing</genre>
+  <rating>Other - NR (Not Rated)</rating>
 </game>
 </menu>

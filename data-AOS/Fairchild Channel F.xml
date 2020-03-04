@@ -6,244 +6,244 @@
   <listversion>V1</listversion>
   <exporterversion>V1 GameDBInfo converter</exporterversion>
 </header>
-<game name="Alien Invasion (USA)">
+<game ROM="Alien Invasion (USA)">
   <title>Alien Invasion (USA)</title>
   <year>1979</year>
-  <rating>HSRS - GA (General Audience)</rating>
+  <genre>Shooter</genre>
   <publisher>Zircon</publisher>
   <developer />
-  <genre>Shooter</genre>
+  <rating>HSRS - GA (General Audience)</rating>
 </game>
-<game name="Backgammon, Acey-Deucey (USA)">
+<game ROM="Backgammon, Acey-Deucey (USA)">
   <title>Backgammon, Acey-Deucey (USA)</title>
   <year>1977</year>
-  <rating>HSRS - GA (General Audience)</rating>
+  <genre>Card Battle</genre>
   <publisher>Fairchild</publisher>
   <developer />
-  <genre>Card Battle</genre>
+  <rating>HSRS - GA (General Audience)</rating>
 </game>
-<game name="Baseball (USA)">
+<game ROM="Baseball (USA)">
   <title>Baseball (USA)</title>
   <year>1977</year>
-  <rating>HSRS - GA (General Audience)</rating>
+  <genre>Sports/Baseball</genre>
   <publisher>Fairchild</publisher>
   <developer />
-  <genre>Sports/Baseball</genre>
+  <rating>HSRS - GA (General Audience)</rating>
 </game>
-<game name="Bowling (USA)">
+<game ROM="Bowling (USA)">
   <title>Bowling (USA)</title>
   <year>1978</year>
-  <rating>HSRS - GA (General Audience)</rating>
+  <genre>Sports/Bowling</genre>
   <publisher>Fairchild</publisher>
   <developer />
-  <genre>Sports/Bowling</genre>
+  <rating>HSRS - GA (General Audience)</rating>
 </game>
-<game name="Casino Poker (USA)">
+<game ROM="Casino Poker (USA)">
   <title>Casino Poker (USA)</title>
   <year>1979</year>
-  <rating>HSRS - GA (General Audience)</rating>
+  <genre>Casino</genre>
   <publisher>Zircon</publisher>
   <developer />
-  <genre>Casino</genre>
+  <rating>HSRS - GA (General Audience)</rating>
 </game>
-<game name="Checkers (USA)">
+<game ROM="Checkers (USA)">
   <title>Checkers (USA)</title>
   <year>1978</year>
-  <rating>HSRS - GA (General Audience)</rating>
+  <genre>Board Games</genre>
   <publisher>Zircon</publisher>
   <developer />
-  <genre>Board Games</genre>
+  <rating>HSRS - GA (General Audience)</rating>
 </game>
-<game name="Desert Fox, Shooting Gallery (USA)">
+<game ROM="Desert Fox, Shooting Gallery (USA)">
   <title>Desert Fox, Shooting Gallery (USA)</title>
   <year>1976</year>
-  <rating>HSRS - GA (General Audience)</rating>
+  <genre>Shooter</genre>
   <publisher>Zircon</publisher>
   <developer />
-  <genre>Shooter</genre>
+  <rating>HSRS - GA (General Audience)</rating>
 </game>
-<game name="Dodge It (USA)">
+<game ROM="Dodge It (USA)">
   <title>Dodge It (USA)</title>
   <year>1978</year>
-  <rating>HSRS - GA (General Audience)</rating>
+  <genre>Action</genre>
   <publisher>Fairchild</publisher>
   <developer />
-  <genre>Action</genre>
+  <rating>HSRS - GA (General Audience)</rating>
 </game>
-<game name="Drag Strip (USA)">
+<game ROM="Drag Strip (USA)">
   <title>Drag Strip (USA)</title>
   <year>1977</year>
-  <rating>HSRS - GA (General Audience)</rating>
+  <genre>Racing</genre>
   <publisher>Fairchild</publisher>
   <developer />
-  <genre>Racing</genre>
+  <rating>HSRS - GA (General Audience)</rating>
 </game>
-<game name="Galactic Space Wars, Lunar Lander (USA)">
+<game ROM="Galactic Space Wars, Lunar Lander (USA)">
   <title>Galactic Space Wars, Lunar Lander (USA)</title>
   <year>1990</year>
-  <rating>HSRS - GA (General Audience)</rating>
+  <genre>Shooter</genre>
   <publisher>Zircon</publisher>
   <developer />
-  <genre>Shooter</genre>
+  <rating>HSRS - GA (General Audience)</rating>
 </game>
-<game name="Hangman (USA)">
+<game ROM="Hangman (USA)">
   <title>Hangman (USA)</title>
   <year>1978</year>
-  <rating>HSRS - GA (General Audience)</rating>
+  <genre>Puzzle</genre>
   <publisher>Fairchild</publisher>
   <developer />
-  <genre>Puzzle</genre>
+  <rating>HSRS - GA (General Audience)</rating>
 </game>
-<game name="Hockey &amp; Tennis (USA)">
+<game ROM="Hockey &amp; Tennis (USA)">
   <title>Hockey &amp; Tennis (USA)</title>
   <year>1976</year>
-  <rating>HSRS - GA (General Audience)</rating>
+  <genre>Sports</genre>
   <publisher>Fairchild</publisher>
   <developer />
-  <genre>Sports</genre>
+  <rating>HSRS - GA (General Audience)</rating>
 </game>
-<game name="Lights Out (USA)">
+<game ROM="Lights Out (USA)">
   <title>Lights Out (USA)</title>
   <year>2004</year>
-  <rating>HSRS - GA (General Audience)</rating>
+  <genre>Puzzle</genre>
   <publisher>Sean Riddle</publisher>
   <developer />
-  <genre>Puzzle</genre>
+  <rating>HSRS - GA (General Audience)</rating>
 </game>
-<game name="Magic Numbers - Mind Reader + Nim (USA)">
+<game ROM="Magic Numbers - Mind Reader + Nim (USA)">
   <title>Magic Numbers - Mind Reader + Nim (USA)</title>
   <year>1977</year>
-  <rating>HSRS - GA (General Audience)</rating>
+  <genre>Miscellaneous</genre>
   <publisher>Fairchild</publisher>
   <developer />
-  <genre>Miscellaneous</genre>
+  <rating>HSRS - GA (General Audience)</rating>
 </game>
-<game name="Math Quiz I - Addition + Subtraction (USA)">
+<game ROM="Math Quiz I - Addition + Subtraction (USA)">
   <title>Math Quiz I - Addition + Subtraction (USA)</title>
   <year>1977</year>
-  <rating>HSRS - GA (General Audience)</rating>
+  <genre>Miscellaneous</genre>
   <publisher>Fairchild</publisher>
   <developer />
-  <genre>Miscellaneous</genre>
+  <rating>HSRS - GA (General Audience)</rating>
 </game>
-<game name="Math Quiz II - Multiplication + Division (USA)">
+<game ROM="Math Quiz II - Multiplication + Division (USA)">
   <title>Math Quiz II - Multiplication + Division (USA)</title>
   <year>1977</year>
-  <rating>HSRS - GA (General Audience)</rating>
+  <genre>Miscellaneous</genre>
   <publisher>Fairchild</publisher>
   <developer />
-  <genre>Miscellaneous</genre>
+  <rating>HSRS - GA (General Audience)</rating>
 </game>
-<game name="Maze, Jailbreak, Blind-man&apos;s-bluff, Trailblazer (USA)">
+<game ROM="Maze, Jailbreak, Blind-man&apos;s-bluff, Trailblazer (USA)">
   <title>Maze, Jailbreak, Blind-man&apos;s-bluff, Trailblazer (USA)</title>
   <year>1977</year>
-  <rating>HSRS - GA (General Audience)</rating>
+  <genre>Action</genre>
   <publisher>Fairchild</publisher>
   <developer />
-  <genre>Action</genre>
+  <rating>HSRS - GA (General Audience)</rating>
 </game>
-<game name="Memory Match 1 &amp; 2 (USA)">
+<game ROM="Memory Match 1 &amp; 2 (USA)">
   <title>Memory Match 1 &amp; 2 (USA)</title>
   <year>1978</year>
-  <rating>HSRS - GA (General Audience)</rating>
+  <genre>Miscellaneous</genre>
   <publisher>Fairchild</publisher>
   <developer />
-  <genre>Miscellaneous</genre>
+  <rating>HSRS - GA (General Audience)</rating>
 </game>
-<game name="Pac-Man (USA)">
+<game ROM="Pac-Man (USA)">
   <title>Pac-Man (USA)</title>
   <year>2006</year>
-  <rating>HSRS - GA (General Audience)</rating>
+  <genre>Maze</genre>
   <publisher>Fredrid Blaholtz</publisher>
   <developer />
-  <genre>Maze</genre>
+  <rating>HSRS - GA (General Audience)</rating>
 </game>
-<game name="Pinball Challenge (USA)">
+<game ROM="Pinball Challenge (USA)">
   <title>Pinball Challenge (USA)</title>
   <year>1978</year>
-  <rating>HSRS - GA (General Audience)</rating>
+  <genre>Pinball</genre>
   <publisher>Fairchild</publisher>
   <developer />
-  <genre>Pinball</genre>
+  <rating>HSRS - GA (General Audience)</rating>
 </game>
-<game name="Pro Football (USA)">
+<game ROM="Pro Football (USA)">
   <title>Pro Football (USA)</title>
   <year>1990</year>
-  <rating>HSRS - GA (General Audience)</rating>
+  <genre>Sports/Football</genre>
   <publisher>Zircon</publisher>
   <developer />
-  <genre>Sports/Football</genre>
+  <rating>HSRS - GA (General Audience)</rating>
 </game>
-<game name="Robot War, Torpedo Alley (USA)">
+<game ROM="Robot War, Torpedo Alley (USA)">
   <title>Robot War, Torpedo Alley (USA)</title>
   <year>1977</year>
-  <rating>HSRS - GA (General Audience)</rating>
+  <genre>Shooter</genre>
   <publisher>Fairchild</publisher>
   <developer />
-  <genre>Shooter</genre>
+  <rating>HSRS - GA (General Audience)</rating>
 </game>
-<game name="Slot Machine (USA)">
+<game ROM="Slot Machine (USA)">
   <title>Slot Machine (USA)</title>
   <year>1980</year>
-  <rating>HSRS - GA (General Audience)</rating>
+  <genre>Casino</genre>
   <publisher>Zircon</publisher>
   <developer />
-  <genre>Casino</genre>
+  <rating>HSRS - GA (General Audience)</rating>
 </game>
-<game name="Sonar Search (USA)">
+<game ROM="Sonar Search (USA)">
   <title>Sonar Search (USA)</title>
   <year>1977</year>
-  <rating>HSRS - GA (General Audience)</rating>
+  <genre>Strategy</genre>
   <publisher>Fairchild</publisher>
   <developer />
-  <genre>Strategy</genre>
+  <rating>HSRS - GA (General Audience)</rating>
 </game>
-<game name="Space War (USA)">
+<game ROM="Space War (USA)">
   <title>Space War (USA)</title>
   <year>1977</year>
-  <rating>HSRS - GA (General Audience)</rating>
+  <genre>Action</genre>
   <publisher>Fairchild</publisher>
   <developer />
-  <genre>Action</genre>
+  <rating>HSRS - GA (General Audience)</rating>
 </game>
-<game name="Spitfire (USA)">
+<game ROM="Spitfire (USA)">
   <title>Spitfire (USA)</title>
   <year>1977</year>
-  <rating>HSRS - GA (General Audience)</rating>
+  <genre>Shooter</genre>
   <publisher>Fairchild</publisher>
   <developer />
-  <genre>Shooter</genre>
+  <rating>HSRS - GA (General Audience)</rating>
 </game>
-<game name="Tetris (USA)">
+<game ROM="Tetris (USA)">
   <title>Tetris (USA)</title>
   <year>2004</year>
-  <rating>HSRS - GA (General Audience)</rating>
+  <genre>Puzzle</genre>
   <publisher>Peter Trauner</publisher>
   <developer />
-  <genre>Puzzle</genre>
+  <rating>HSRS - GA (General Audience)</rating>
 </game>
-<game name="Tic-Tac-Toe, Shooting Gallery, Doodle, Quadra-Doodle (USA)">
+<game ROM="Tic-Tac-Toe, Shooting Gallery, Doodle, Quadra-Doodle (USA)">
   <title>Tic-Tac-Toe, Shooting Gallery, Doodle, Quadra-Doodle (USA)</title>
   <year>1976</year>
-  <rating>HSRS - GA (General Audience)</rating>
+  <genre>Miscellaneous</genre>
   <publisher>Fairchild</publisher>
   <developer />
-  <genre>Miscellaneous</genre>
+  <rating>HSRS - GA (General Audience)</rating>
 </game>
-<game name="Video Blackjack (USA)">
+<game ROM="Video Blackjack (USA)">
   <title>Video Blackjack (USA)</title>
   <year>1976</year>
-  <rating>HSRS - GA (General Audience)</rating>
+  <genre>Casino</genre>
   <publisher>Fairchild</publisher>
   <developer />
-  <genre>Casino</genre>
+  <rating>HSRS - GA (General Audience)</rating>
 </game>
-<game name="Video Whizball (USA)">
+<game ROM="Video Whizball (USA)">
   <title>Video Whizball (USA)</title>
   <year>1978</year>
-  <rating>HSRS - GA (General Audience)</rating>
+  <genre>Action</genre>
   <publisher>Fairchild</publisher>
   <developer />
-  <genre>Action</genre>
+  <rating>HSRS - GA (General Audience)</rating>
 </game>
 </menu>
