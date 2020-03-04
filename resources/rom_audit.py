@@ -28,18 +28,16 @@ from utils_kodi import *
 # -------------------------------------------------------------------------------------------------
 # DTD "http://www.logiqx.com/Dats/datafile.dtd"
 def audit_new_rom_logiqx(): 
-    rom = {
+    return {
         'name'         : '',
         'cloneof'      : '',
         'year'         : '',
         'manufacturer' : ''
     }
 
-    return rom
-
 # HyperList doesn't include Plot
 def audit_new_rom_HyperList(): 
-    rom = {
+    return {
         'name'         : '',
         'description'  : '',
         'cloneof'      : '',
@@ -51,10 +49,8 @@ def audit_new_rom_HyperList():
         'enabled'      : ''
     }
 
-    return rom
-
 def audit_new_rom_GameDB():
-    rom = {
+    return {
         'name'         : '',
         'description'  : '',
         'year'         : '',
@@ -65,28 +61,22 @@ def audit_new_rom_GameDB():
         'story'        : ''
     }
 
-    return rom
-
-# Manufacturer is Publisher
 def audit_new_rom_AEL_Offline(): 
-    rom = {
-        'name'         : '',
-        'description'  : '',
-        'cloneof'      : '',
-        'source'       : '',
-        'status'       : '',
-        'year'         : '',
-        'genre'        : '',
-        'manufacturer' : '',
-        'nplayers'     : '',
-        'rating'       : '',
-        'plot'         : ''
+    return {
+        'ROM'       : '',
+        'title'     : '',
+        'year'      : '',
+        'genre'     : '',
+        'publisher' : '',
+        'developer' : '',
+        'rating'    : '',
+        'nplayers'  : '',
+        'score'     : '',
+        'plot'      : ''
     }
 
-    return rom
-
 def audit_new_LB_game():
-    g = {
+    return {
         'Name'              : '',
         'ReleaseYear'       : '',
         'Overview'          : '',
@@ -110,10 +100,8 @@ def audit_new_LB_game():
         'StartupParameters' : '',
     }
 
-    return g
-
 def audit_new_LB_platform():
-    g = {
+    return {
         'Name'           : '',
         'Emulated'       : '',
         'ReleaseDate'    : '',
@@ -131,18 +119,14 @@ def audit_new_LB_platform():
         'UseMameFiles'   : '',
     }
 
-    return g
-
 def audit_new_LB_gameImage():
-    g = {
+    return {
         'DatabaseID' : '',
         'FileName'   : '',
         'Type'       : '',
         'CRC32'      : '',
         'Region'     : '',
     }
-
-    return g
 
 def audit_load_LB_metadata_XML(filename_FN, games_dic, platforms_dic, gameimages_dic):
     if not filename_FN.exists():
@@ -234,11 +218,11 @@ def audit_load_OfflineScraper_XML(xml_file):
 
         if game_element.tag == 'game':
             # Default values
-            game = audit_new_rom_logiqx()
+            game = audit_new_rom_AEL_Offline()
 
             # ROM name is an attribute of <game>
-            game['name'] = game_element.attrib['name']
-            if __debug_xml_parser: log_debug('Game name = "{}"'.format(game['name']))
+            game['ROM'] = game_element.attrib['ROM']
+            if __debug_xml_parser: log_debug('Game name = "{}"'.format(game['ROM']))
 
             # Parse child tags of category
             for game_child in game_element:
@@ -248,8 +232,7 @@ def audit_load_OfflineScraper_XML(xml_file):
                 xml_tag  = game_child.tag
                 if __debug_xml_parser: log_debug('Tag "{}" --> "{}"'.format(xml_tag, xml_text))
                 game[xml_tag] = xml_text
-            key = game['name']
-            games[key] = game
+            games[game['ROM']] = game
 
     return games
 
