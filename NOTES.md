@@ -120,6 +120,7 @@ Future ROMs database fields:
     'i_regions' : ['', ''],        Same as m_region
     'i_languages' : ['', ''],      Same as m_language
     'i_tags' : ['', ''],           Always extracted from filename
+                                   Other unrecognised tags not region or language
 ```
 
 ### Computation of the Parent/Clone ROMs
