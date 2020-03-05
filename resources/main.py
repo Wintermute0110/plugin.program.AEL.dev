@@ -10689,6 +10689,10 @@ class Main:
         num_launchers = len(self.launchers)
         main_slist = []
         detailed_slist = []
+        sum_table_slist = [
+            ['left', 'right', 'right', 'right', 'right'],
+            ['Launcher', 'ROMs', 'Images', 'Missing', 'Problematic'],
+        ]
         pdialog.startProgress('Checking ROM artwork integrity', num_launchers)
         processed_launchers = 0
         total_images = 0
@@ -10723,6 +10727,7 @@ class Main:
             problems_detected = False
             launcher_images = 0
             launcher_missing_images = 0
+            launcher_problematic_images = 0
             pdialog.updateMessage2('Checking image files')
             for rom_id in roms:
                 rom = roms[rom_id]
@@ -10740,8 +10745,7 @@ class Main:
                     total_images += 1
                     # If asset file does not exits that's an error.
                     if not os.path.exists(asset_fname):
-                        detailed_slist.append('File {}'.format(asset_fname))
-                        detailed_slist.append('Does not exist.')
+                        detailed_slist.append('Not found {}'.format(asset_fname))
                         launcher_missing_images += 1
                         missing_images += 1
                         problems_detected = True
@@ -10755,39 +10759,44 @@ class Main:
                     # detailed_slist.append('img_id_ext "{}" | img_id_real "{}"'.format(img_id_ext, img_id_real))
                     # Unrecognised or corrupted image.
                     if img_id_ext == IMAGE_UKNOWN_ID:
-                        detailed_slist.append('File {}'.format(asset_fname))
-                        detailed_slist.append('Unrecognised image extension.')
+                        detailed_slist.append('Unrecognised extension {}'.format(asset_fname))
                         problems_detected = True
                         problematic_images += 1
+                        launcher_problematic_images += 1
                         continue
                     # Corrupted image.
                     if img_id_real == IMAGE_CORRUPT_ID:
-                        detailed_slist.append('File {}'.format(asset_fname))
-                        detailed_slist.append('Corrupted image.')
+                        detailed_slist.append('Corrupted {}'.format(asset_fname))
                         problems_detected = True
                         problematic_images += 1
+                        launcher_problematic_images += 1
                         continue
                     # Unrecognised or corrupted image.
                     if img_id_real == IMAGE_UKNOWN_ID:
-                        detailed_slist.append('File {}'.format(asset_fname))
-                        detailed_slist.append('Unrecognised or corrupted image file contents.')
+                        detailed_slist.append('Bin unrecog or corrupted {}'.format(asset_fname))
                         problems_detected = True
                         problematic_images += 1
+                        launcher_problematic_images += 1
                         continue
                     # At this point the image is recognised but has wrong extension
                     if img_id_ext != img_id_real:
-                        detailed_slist.append('File {}'.format(asset_fname))
-                        detailed_slist.append('Wrong file extension. It is {} and must be {}'.format(
-                            asset_ext, IMAGE_EXTENSIONS[img_id_real][0]))
+                        detailed_slist.append('Wrong extension ({}) {}'.format(
+                            IMAGE_EXTENSIONS[img_id_real][0], asset_fname))
                         problems_detected = True
                         problematic_images += 1
+                        launcher_problematic_images += 1
                         continue
                 # On big setups this can take forever. Allow the user to cancel.
                 if pdialog.isCanceled(): break
             else:
                 # only executed if the inner loop did NOT break
-                detailed_slist.append('Number of images {:,}'.format(launcher_images))
-                detailed_slist.append('Missing images   {:,}'.format(launcher_missing_images))
+                sum_table_slist.append([
+                    launcher['m_name'], '{:,d}'.format(num_roms), '{:,d}'.format(launcher_images), 
+                    '{:,d}'.format(launcher_missing_images), '{:,d}'.format(launcher_problematic_images),
+                ])
+                detailed_slist.append('Number of images    {:6,d}'.format(launcher_images))
+                detailed_slist.append('Missing images      {:6,d}'.format(launcher_missing_images))
+                detailed_slist.append('Problematic images  {:6,d}'.format(launcher_problematic_images))
                 if problems_detected:
                     detailed_slist.append(KC_RED + 'Launcher should be updated' + KC_END)
                 else:
@@ -10804,10 +10813,12 @@ class Main:
         pdialog.startProgress('Saving report')
         main_slist.append('*** Summary ***')
         main_slist.append('There are {:,} ROM launchers.'.format(num_launchers))
-        main_slist.append('Total images       {:,}'.format(total_images))
-        main_slist.append('Missing images     {:,}'.format(missing_images))
-        main_slist.append('Processed images   {:,}'.format(processed_images))
-        main_slist.append('Problematic images {:,}'.format(problematic_images))
+        main_slist.append('Total images        {:7,d}'.format(total_images))
+        main_slist.append('Missing images      {:7,d}'.format(missing_images))
+        main_slist.append('Processed images    {:7,d}'.format(processed_images))
+        main_slist.append('Problematic images  {:7,d}'.format(problematic_images))
+        main_slist.append('')
+        main_slist.extend(text_render_table(sum_table_slist))
         main_slist.append('')
         main_slist.append('*** Detailed report ***')
         main_slist.extend(detailed_slist)
