@@ -10689,7 +10689,7 @@ class Main:
         num_launchers = len(self.launchers)
         main_slist = []
         detailed_slist = []
-        pdialog.startProgress('Checking ROM sync status', num_launchers)
+        pdialog.startProgress('Checking ROM artwork integrity', num_launchers)
         processed_launchers = 0
         total_images = 0
         missing_images = 0
@@ -10701,10 +10701,10 @@ class Main:
             launcher = self.launchers[launcher_id]
             # Skip non-ROM launcher.
             if not launcher['rompath']: continue
-            log_debug('Checking ROM Launcher "{}"'.format(launcher['m_name']))
+            log_debug('Checking ROM Launcher "{}"...'.format(launcher['m_name']))
             detailed_slist.append(KC_ORANGE + 'Launcher "{}"'.format(launcher['m_name']) + KC_END)
             # Load ROMs.
-            pdialog.updateMessage2('Loading ROMs...')
+            pdialog.updateMessage2('Loading ROMs')
             roms = fs_load_ROMs_JSON(g_PATHS.ROMS_DIR, launcher)
             num_roms = len(roms)
             R_str = 'ROM' if num_roms == 1 else 'ROMs'
@@ -10723,6 +10723,7 @@ class Main:
             problems_detected = False
             launcher_images = 0
             launcher_missing_images = 0
+            pdialog.updateMessage2('Checking image files')
             for rom_id in roms:
                 rom = roms[rom_id]
                 # detailed_slist.append('\nProcessing ROM {}'.format(rom['filename']))
@@ -10759,6 +10760,13 @@ class Main:
                         problems_detected = True
                         problematic_images += 1
                         continue
+                    # Corrupted image.
+                    if img_id_real == IMAGE_CORRUPT_ID:
+                        detailed_slist.append('File {}'.format(asset_fname))
+                        detailed_slist.append('Corrupted image.')
+                        problems_detected = True
+                        problematic_images += 1
+                        continue
                     # Unrecognised or corrupted image.
                     if img_id_real == IMAGE_UKNOWN_ID:
                         detailed_slist.append('File {}'.format(asset_fname))
@@ -10774,13 +10782,21 @@ class Main:
                         problems_detected = True
                         problematic_images += 1
                         continue
-            detailed_slist.append('Number of images {:,}'.format(launcher_images))
-            detailed_slist.append('Missing images   {:,}'.format(launcher_missing_images))
-            if problems_detected:
-                detailed_slist.append(KC_RED + 'Launcher should be updated' + KC_END)
+                # On big setups this can take forever. Allow the user to cancel.
+                if pdialog.isCanceled(): break
             else:
-                detailed_slist.append(KC_GREEN + 'Launcher OK' + KC_END)
-            detailed_slist.append('')
+                # only executed if the inner loop did NOT break
+                detailed_slist.append('Number of images {:,}'.format(launcher_images))
+                detailed_slist.append('Missing images   {:,}'.format(launcher_missing_images))
+                if problems_detected:
+                    detailed_slist.append(KC_RED + 'Launcher should be updated' + KC_END)
+                else:
+                    detailed_slist.append(KC_GREEN + 'Launcher OK' + KC_END)
+                detailed_slist.append('')
+                continue
+            # only executed if the inner loop DID break
+            detailed_slist.append('Interrupted by user (pDialog cancelled).')
+            break
         pdialog.endProgress()
 
         # Generate, save and display report.
