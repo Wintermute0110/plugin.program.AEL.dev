@@ -161,6 +161,9 @@ FEATURE  [SCRAPERS] Store when there is a bad JSON from the scrapers for further
 
 FEATURE  [SCRAPERS] Update MAME Offline Scraper database to version latest version 0.219.
 
+FEATURE  [SCRAPERS] Include isBIOS, isDevice, isMechanical in AOL MAME database. This is
+         required to filter BIOSes and Devices in MAME launchers.
+
 FEATURE  [CORE] New Utility "Check Launcher ROMs sync status"
 
 FEATURE  [CORE] New Utility "Check ROMs artwork image integrity"
