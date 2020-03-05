@@ -10691,6 +10691,10 @@ class Main:
         detailed_slist = []
         pdialog.startProgress('Checking ROM sync status', num_launchers)
         processed_launchers = 0
+        total_images = 0
+        missing_images = 0
+        processed_images = 0
+        problematic_images = 0
         for launcher_id in sorted(self.launchers, key = lambda x : self.launchers[x]['m_name']):
             pdialog.updateProgress(processed_launchers)
             processed_launchers += 1
@@ -10698,7 +10702,7 @@ class Main:
             # Skip non-ROM launcher.
             if not launcher['rompath']: continue
             log_debug('Checking ROM Launcher "{}"'.format(launcher['m_name']))
-            detailed_slist.append('[COLOR orange]Launcher "{0}"[/COLOR]'.format(launcher['m_name']))
+            detailed_slist.append(KC_ORANGE + 'Launcher "{}"'.format(launcher['m_name']) + KC_END)
             # Load ROMs.
             pdialog.updateMessage2('Loading ROMs...')
             roms = fs_load_ROMs_JSON(g_PATHS.ROMS_DIR, launcher)
@@ -10710,52 +10714,72 @@ class Main:
             if num_roms < 1:
                 log_debug('Launcher is empty')
                 detailed_slist.append('Launcher is empty')
-                detailed_slist.append('[COLOR yellow]Skipping launcher[/COLOR]')
+                detailed_slist.append(KC_YELLOW + 'Skipping launcher' + KC_END)
                 continue
 
             # Traverse all ROMs in Launcher.
             # For every asset check the artwork file.
             # First check if the image has the correct extension.
+            problems_detected = False
+            launcher_images = 0
+            launcher_missing_images = 0
             for rom_id in roms:
                 rom = roms[rom_id]
-                detailed_slist.append('\nProcessing ROM {}'.format(rom['filename']))
+                # detailed_slist.append('\nProcessing ROM {}'.format(rom['filename']))
                 for asset_id in ROM_ASSET_ID_LIST:
                     A = assets_get_info_scheme(asset_id)
                     asset_fname = rom[A.key]
-                    detailed_slist.append('\nProcessing asset {}'.format(A.name))
+                    # detailed_slist.append('\nProcessing asset {}'.format(A.name))
                     # Skip empty assets
                     if not asset_fname: continue
                     # Skip manuals and trailers
                     if asset_id == ASSET_MANUAL_ID: continue
                     if asset_id == ASSET_TRAILER_ID: continue
+                    launcher_images += 1
+                    total_images += 1
                     # If asset file does not exits that's an error.
                     if not os.path.exists(asset_fname):
                         detailed_slist.append('File {}'.format(asset_fname))
                         detailed_slist.append('Does not exist.')
+                        launcher_missing_images += 1
+                        missing_images += 1
+                        problems_detected = True
                         continue
                     # Process asset
+                    processed_images += 1
                     asset_root, asset_ext = os.path.splitext(asset_fname)
                     asset_ext = asset_ext[1:] # Remove leading dot '.png' -> 'png'
                     img_id_ext = misc_identify_image_id_by_ext(asset_fname)
                     img_id_real = misc_identify_image_id_by_contents(asset_fname)
-                    detailed_slist.append('img_id_ext "{}" | img_id_real "{}"'.format(img_id_ext, img_id_real))
+                    # detailed_slist.append('img_id_ext "{}" | img_id_real "{}"'.format(img_id_ext, img_id_real))
                     # Unrecognised or corrupted image.
                     if img_id_ext == IMAGE_UKNOWN_ID:
                         detailed_slist.append('File {}'.format(asset_fname))
-                        detailed_slist.append('Unrecognised file extension.')
+                        detailed_slist.append('Unrecognised image extension.')
+                        problems_detected = True
+                        problematic_images += 1
                         continue
                     # Unrecognised or corrupted image.
                     if img_id_real == IMAGE_UKNOWN_ID:
                         detailed_slist.append('File {}'.format(asset_fname))
-                        detailed_slist.append('Unrecognised file binary contents.')
+                        detailed_slist.append('Unrecognised or corrupted image file contents.')
+                        problems_detected = True
+                        problematic_images += 1
                         continue
                     # At this point the image is recognised but has wrong extension
                     if img_id_ext != img_id_real:
                         detailed_slist.append('File {}'.format(asset_fname))
                         detailed_slist.append('Wrong file extension. It is {} and must be {}'.format(
                             asset_ext, IMAGE_EXTENSIONS[img_id_real][0]))
+                        problems_detected = True
+                        problematic_images += 1
                         continue
-            # Complete detailed report.
+            detailed_slist.append('Number of images {:,}'.format(launcher_images))
+            detailed_slist.append('Missing images   {:,}'.format(launcher_missing_images))
+            if problems_detected:
+                detailed_slist.append(KC_RED + 'Launcher should be updated' + KC_END)
+            else:
+                detailed_slist.append(KC_GREEN + 'Launcher OK' + KC_END)
             detailed_slist.append('')
         pdialog.endProgress()
 
@@ -10763,10 +10787,12 @@ class Main:
         log_info('Writing report file "{}"'.format(g_PATHS.ROM_ART_INTEGRITY_REPORT_FILE_PATH.getPath()))
         pdialog.startProgress('Saving report')
         main_slist.append('*** Summary ***')
-        main_slist.append('There are {} ROM launchers.'.format(num_launchers))
+        main_slist.append('There are {:,} ROM launchers.'.format(num_launchers))
+        main_slist.append('Total images       {:,}'.format(total_images))
+        main_slist.append('Missing images     {:,}'.format(missing_images))
+        main_slist.append('Processed images   {:,}'.format(processed_images))
+        main_slist.append('Problematic images {:,}'.format(problematic_images))
         main_slist.append('')
-        # main_slist.extend(text_render_table_NO_HEADER(short_slist, trim_Kodi_colours = True))
-        # main_slist.append('')
         main_slist.append('*** Detailed report ***')
         main_slist.extend(detailed_slist)
         full_string = '\n'.join(main_slist).encode('utf-8')

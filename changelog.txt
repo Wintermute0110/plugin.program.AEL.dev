@@ -163,7 +163,7 @@ FEATURE  [SCRAPERS] Update MAME Offline Scraper database to version latest versi
 
 FEATURE  [CORE] New Utility "Check Launcher ROMs sync status"
 
-WIP      [CORE] New Utility "Check ROMs artwork image integrity"
+FEATURE  [CORE] New Utility "Check ROMs artwork image integrity"
          Sometimes the scrapers download wrong/corrupt data, or produce 0 sized files
          if a file is open() and there is an exception. Sometimes a JPG image is renamed
          as PNG, etc. Check that all artwork have correct file extensions, etc.

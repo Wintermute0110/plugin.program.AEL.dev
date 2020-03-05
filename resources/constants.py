@@ -45,6 +45,13 @@ class AddonError(Exception):
     def __init__(self, err_str): self.err_str = err_str
     def __str__(self): return self.err_str
 
+# This is to ease printing colours in Kodi.
+KC_RED    = '[COLOR red]'
+KC_ORANGE = '[COLOR orange]'
+KC_GREEN  = '[COLOR green]'
+KC_YELLOW = '[COLOR yellow]'
+KC_END    = '[/COLOR]'
+
 # -------------------------------------------------------------------------------------------------
 # Addon constants
 # -------------------------------------------------------------------------------------------------
