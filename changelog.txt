@@ -113,8 +113,6 @@ WIP      [SCRAPERS] MAME offline scraper: include ESRB field. Take it from GameI
 
 WIP      [SCRAPERS] MAME offline scraper: include plot field. Take it from GameInfoDB.
 
-WIP      [SCRAPERS] Update MAME Offline Scraper database to version latest version 0.217.
-
 WIP      [SCRAPERS] Persistent scraper cache browser. Ability to browse the stored scraper
          searches. Also, context menu to delete stored cached data.
 
@@ -125,6 +123,11 @@ WIP      [CORE] New fields in database to be prepared for the future.
 
 WIP      [CORE] Support for Spines artwork. Support for BoxTextures artwork.
          Have a look at LaunchBox for other types of artwork that may be interesting.
+
+WIP      [CORE] New Utility "Delete ROMs redundant artwork"
+         Redundant artwork is orphaned artwork. This is not easy to code specially
+         for launcher with recursive scan where ROMs can be in different
+         directories.
 
 WIP      [COLLECTIONS] Current way of storing the collection artwork, in a unified JSON file,
          is not good. Think of a good way to exporting collections (for example, store the
@@ -156,15 +159,14 @@ FEATURE  [CORE] Update the platform icons. Github issue #112.
 FEATURE  [SCRAPERS] Store when there is a bad JSON from the scrapers for further
          analysis. Working for ScreenScraper scraper.
 
+FEATURE  [SCRAPERS] Update MAME Offline Scraper database to version latest version 0.219.
+
 FEATURE  [CORE] New Utility "Check Launcher ROMs sync status"
 
 WIP      [CORE] New Utility "Check ROMs artwork image integrity"
          Sometimes the scrapers download wrong/corrupt data, or produce 0 sized files
          if a file is open() and there is an exception. Sometimes a JPG image is renamed
          as PNG, etc. Check that all artwork have correct file extensions, etc.
-
-WIP      [CORE] New Utility "Delete ROMs redundant artwork"
-         Redundant artwork is orphaned artwork.
 
 FEATURE  [CORE] Extra ROMs directory. Extra ROMs are not audited. The extra ROMs directory
          is intended for ROM translations and hacks that should not be taken into account

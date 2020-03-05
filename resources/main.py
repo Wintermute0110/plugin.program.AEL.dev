@@ -74,9 +74,10 @@ class AEL_Paths:
         self.MOST_PLAYED_FILE_PATH     = self.ADDON_DATA_DIR.pjoin('most_played.json')
 
         # Reports
-        self.BIOS_REPORT_FILE_PATH     = self.ADDON_DATA_DIR.pjoin('report_BIOS.txt')
+        self.BIOS_REPORT_FILE_PATH = self.ADDON_DATA_DIR.pjoin('report_BIOS.txt')
         self.LAUNCHER_REPORT_FILE_PATH = self.ADDON_DATA_DIR.pjoin('report_Launchers.txt')
         self.ROM_SYNC_REPORT_FILE_PATH = self.ADDON_DATA_DIR.pjoin('report_ROM_sync_status.txt')
+        self.ROM_ART_INTEGRITY_REPORT_FILE_PATH = self.ADDON_DATA_DIR.pjoin('report_ROM_artwork_integrity.txt')
 
         # --- Offline scraper databases ---
         self.GAMEDB_INFO_DIR           = self.ADDON_CODE_DIR.pjoin('data-AOS')
@@ -10663,7 +10664,7 @@ class Main:
         pdialog.endProgress()
 
         # Generate, save and display report.
-        log_info('Writing report file "{0}"'.format(g_PATHS.ROM_SYNC_REPORT_FILE_PATH.getPath()))
+        log_info('Writing report file "{}"'.format(g_PATHS.ROM_SYNC_REPORT_FILE_PATH.getPath()))
         pdialog.startProgress('Saving report')
         main_slist.append('*** Summary ***')
         main_slist.append('There are {} ROM launchers.'.format(num_launchers))
@@ -10684,12 +10685,104 @@ class Main:
 
     def _command_exec_utils_check_ROM_artwork_integrity(self):
         log_info('_command_exec_utils_check_ROM_artwork_integrity() Beginning...')
-        kodi_dialog_OK('EXECUTE_UTILS_CHECK_ROM_ARTWORK_INTEGRITY not implemented yet.')
+        pdialog = KodiProgressDialog()
+        num_launchers = len(self.launchers)
+        main_slist = []
+        detailed_slist = []
+        pdialog.startProgress('Checking ROM sync status', num_launchers)
+        processed_launchers = 0
+        for launcher_id in sorted(self.launchers, key = lambda x : self.launchers[x]['m_name']):
+            pdialog.updateProgress(processed_launchers)
+            processed_launchers += 1
+            launcher = self.launchers[launcher_id]
+            # Skip non-ROM launcher.
+            if not launcher['rompath']: continue
+            log_debug('Checking ROM Launcher "{}"'.format(launcher['m_name']))
+            detailed_slist.append('[COLOR orange]Launcher "{0}"[/COLOR]'.format(launcher['m_name']))
+            # Load ROMs.
+            pdialog.updateMessage2('Loading ROMs...')
+            roms = fs_load_ROMs_JSON(g_PATHS.ROMS_DIR, launcher)
+            num_roms = len(roms)
+            R_str = 'ROM' if num_roms == 1 else 'ROMs'
+            log_debug('Launcher has {} DB {}'.format(num_roms, R_str))
+            detailed_slist.append('Launcher has {} DB {}'.format(num_roms, R_str))
+            # If Launcher is empty there is nothing to do.
+            if num_roms < 1:
+                log_debug('Launcher is empty')
+                detailed_slist.append('Launcher is empty')
+                detailed_slist.append('[COLOR yellow]Skipping launcher[/COLOR]')
+                continue
+
+            # Traverse all ROMs in Launcher.
+            # For every asset check the artwork file.
+            # First check if the image has the correct extension.
+            for rom_id in roms:
+                rom = roms[rom_id]
+                detailed_slist.append('\nProcessing ROM {}'.format(rom['filename']))
+                for asset_id in ROM_ASSET_ID_LIST:
+                    A = assets_get_info_scheme(asset_id)
+                    asset_fname = rom[A.key]
+                    detailed_slist.append('\nProcessing asset {}'.format(A.name))
+                    # Skip empty assets
+                    if not asset_fname: continue
+                    # Skip manuals and trailers
+                    if asset_id == ASSET_MANUAL_ID: continue
+                    if asset_id == ASSET_TRAILER_ID: continue
+                    # If asset file does not exits that's an error.
+                    if not os.path.exists(asset_fname):
+                        detailed_slist.append('File {}'.format(asset_fname))
+                        detailed_slist.append('Does not exist.')
+                        continue
+                    # Process asset
+                    asset_root, asset_ext = os.path.splitext(asset_fname)
+                    asset_ext = asset_ext[1:] # Remove leading dot '.png' -> 'png'
+                    img_id_ext = misc_identify_image_id_by_ext(asset_fname)
+                    img_id_real = misc_identify_image_id_by_contents(asset_fname)
+                    detailed_slist.append('img_id_ext "{}" | img_id_real "{}"'.format(img_id_ext, img_id_real))
+                    # Unrecognised or corrupted image.
+                    if img_id_ext == IMAGE_UKNOWN_ID:
+                        detailed_slist.append('File {}'.format(asset_fname))
+                        detailed_slist.append('Unrecognised file extension.')
+                        continue
+                    # Unrecognised or corrupted image.
+                    if img_id_real == IMAGE_UKNOWN_ID:
+                        detailed_slist.append('File {}'.format(asset_fname))
+                        detailed_slist.append('Unrecognised file binary contents.')
+                        continue
+                    # At this point the image is recognised but has wrong extension
+                    if img_id_ext != img_id_real:
+                        detailed_slist.append('File {}'.format(asset_fname))
+                        detailed_slist.append('Wrong file extension. It is {} and must be {}'.format(
+                            asset_ext, IMAGE_EXTENSIONS[img_id_real][0]))
+                        continue
+            # Complete detailed report.
+            detailed_slist.append('')
+        pdialog.endProgress()
+
+        # Generate, save and display report.
+        log_info('Writing report file "{}"'.format(g_PATHS.ROM_ART_INTEGRITY_REPORT_FILE_PATH.getPath()))
+        pdialog.startProgress('Saving report')
+        main_slist.append('*** Summary ***')
+        main_slist.append('There are {} ROM launchers.'.format(num_launchers))
+        main_slist.append('')
+        # main_slist.extend(text_render_table_NO_HEADER(short_slist, trim_Kodi_colours = True))
+        # main_slist.append('')
+        main_slist.append('*** Detailed report ***')
+        main_slist.extend(detailed_slist)
+        full_string = '\n'.join(main_slist).encode('utf-8')
+        file = open(g_PATHS.ROM_ART_INTEGRITY_REPORT_FILE_PATH.getPath(), 'w')
+        file.write(full_string)
+        file.close()
+        pdialog.endProgress()
+        kodi_display_text_window_mono('ROM artwork integrity report', full_string)
 
     def _command_exec_utils_delete_redundant_artwork(self):
         kodi_dialog_OK('EXECUTE_UTILS_DELETE_REDUNDANT_ARTWORK not implemented yet.')
 
     def _command_exec_utils_delete_ROM_redundant_artwork(self):
+        kodi_dialog_OK('EXECUTE_UTILS_DELETE_ROM_REDUNDANT_ARTWORK not implemented yet.')
+        return
+
         log_info('_command_exec_utils_delete_ROM_redundant_artwork() Beginning...')
         pdialog = KodiProgressDialog()
         num_launchers = len(self.launchers)

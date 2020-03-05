@@ -309,9 +309,36 @@ ROM_ASSET_ID_LIST = [
     ASSET_TRAILER_ID,
 ]
 
+# Supported image files in:
+# 1. misc_identify_image_id_by_contents()
+# 2. misc_identify_image_id_by_ext()
+IMAGE_PNG_ID     = 'PNG'
+IMAGE_JPEG_ID    = 'JPEG'
+IMAGE_GIF_ID     = 'GIF'
+IMAGE_BMP_ID     = 'BMP'
+IMAGE_TIFF_ID    = 'TIFF'
+IMAGE_UKNOWN_ID  = 'Image unknown'
+IMAGE_CORRUPT_ID = 'Image corrupt'
+
+IMAGE_IDS = [
+    IMAGE_PNG_ID,
+    IMAGE_JPEG_ID,
+    IMAGE_GIF_ID,
+    IMAGE_BMP_ID,
+    IMAGE_TIFF_ID,
+]
+
+IMAGE_EXTENSIONS = {
+    IMAGE_PNG_ID  : ['png'],
+    IMAGE_JPEG_ID : ['jpg', 'jpeg'],
+    IMAGE_GIF_ID  : ['gif'],
+    IMAGE_BMP_ID  : ['bmp'],
+    IMAGE_TIFF_ID : ['tif', 'tiff'],
+}
+
 # --- Addon will search these file extensions for assets ---
 # Check http://kodi.wiki/view/advancedsettings.xml#videoextensions
-IMAGE_EXTENSION_LIST   = ['png', 'jpg', 'gif', 'bmp']
+IMAGE_EXTENSION_LIST   = ['png', 'jpg', 'jpeg', 'gif', 'bmp', 'tif', 'tiff']
 MANUAL_EXTENSION_LIST  = ['pdf', 'cbz', 'cbr']
 TRAILER_EXTENSION_LIST = ['mov', 'divx', 'xvid', 'wmv', 'avi', 'mpg', 'mpeg', 'mp4', 'mkv', 'avc']
 
