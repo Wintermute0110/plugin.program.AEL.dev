@@ -11343,8 +11343,8 @@ class Main:
         if num_games == 1:
             sl.append('')
             sl.append('ArcadeDB scraper seems to be working OK.')
-            sl.append('Remember this scraper only works with platform MAME. It will only return')
-            sl.append('valid data for MAME games.')
+            sl.append('Remember this scraper only works with platform MAME.')
+            sl.append('It will only return valid data for MAME games.')
         kodi_display_text_window_mono(window_title, '\n'.join(sl))
 
     def _command_exec_global_rom_stats(self):
