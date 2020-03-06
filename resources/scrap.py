@@ -2123,7 +2123,7 @@ class TheGamesDB(Scraper):
         'clearlogo': ASSET_CLEARLOGO_ID,
         'banner': ASSET_BANNER_ID,
     }
-
+    # This allows to change the API version easily.
     URL_ByGameName = 'https://api.thegamesdb.net/v1/Games/ByGameName'
     URL_ByGameID   = 'https://api.thegamesdb.net/v1/Games/ByGameID'
     URL_Platforms  = 'https://api.thegamesdb.net/v1/Platforms'
@@ -2688,6 +2688,9 @@ class MobyGames(Scraper):
         'full cover'    : None,
         'soundtrack'    : None,
     }
+    # This allows to change the API version easily.
+    URL_games     = 'https://api.mobygames.com/v1/games'
+    URL_platforms = 'https://api.mobygames.com/v1/platforms'
 
     # --- Constructor ----------------------------------------------------------------------------
     def __init__(self, settings):
@@ -2723,7 +2726,7 @@ class MobyGames(Scraper):
     # and print an error.
     def check_before_scraping(self, status_dic):
         if self.api_key:
-            log_error('MobyGames.check_before_scraping() MobiGames API key looks OK.')
+            log_debug('MobyGames.check_before_scraping() MobiGames API key looks OK.')
             return
         log_error('MobyGames.check_before_scraping() MobiGames API key not configured.')
         log_error('MobyGames.check_before_scraping() Disabling MobyGames scraper.')
@@ -2748,10 +2751,10 @@ class MobyGames(Scraper):
 
         # --- Request is not cached. Get candidates and introduce in the cache ---
         scraper_platform = AEL_platform_to_MobyGames(platform)
-        log_debug('MobyGames.get_candidates() search_term        "{0}"'.format(search_term))
-        log_debug('MobyGames.get_candidates() rombase_noext      "{0}"'.format(rombase_noext))
-        log_debug('MobyGames.get_candidates() AEL platform       "{0}"'.format(platform))
-        log_debug('MobyGames.get_candidates() MobyGames platform "{0}"'.format(scraper_platform))
+        log_debug('MobyGames.get_candidates() search_term        "{}"'.format(search_term))
+        log_debug('MobyGames.get_candidates() rombase_noext      "{}"'.format(rombase_noext))
+        log_debug('MobyGames.get_candidates() AEL platform       "{}"'.format(platform))
+        log_debug('MobyGames.get_candidates() MobyGames platform "{}"'.format(scraper_platform))
         candidate_list = self._search_candidates(
             search_term, platform, scraper_platform, status_dic)
         if not status_dic['status']: return None
@@ -2768,12 +2771,13 @@ class MobyGames(Scraper):
 
         # --- Check if search term is in the cache ---
         if self._check_disk_cache(Scraper.CACHE_METADATA, self.cache_key):
-            log_debug('MobyGames.get_metadata() Metadata cache hit "{0}"'.format(self.cache_key))
+            log_debug('MobyGames.get_metadata() Metadata cache hit "{}"'.format(self.cache_key))
             return self._retrieve_from_disk_cache(Scraper.CACHE_METADATA, self.cache_key)
 
         # --- Request is not cached. Get candidates and introduce in the cache ---
-        log_debug('TheGamesDB.get_metadata() Metadata cache miss "{0}"'.format(self.cache_key))
-        url = 'https://api.mobygames.com/v1/games/{}?api_key={}'.format(self.candidate['id'], self.api_key)
+        log_debug('TheGamesDB.get_metadata() Metadata cache miss "{}"'.format(self.cache_key))
+        url_tail = '/{}?api_key={}'.format(self.candidate['id'], self.api_key)
+        url = MobyGames.URL_games + url_tail
         json_data = self._retrieve_URL_as_JSON(url, status_dic)
         if not status_dic['status']: return None
         self._dump_json_debug('MobyGames_get_metadata.json', json_data)
@@ -2833,8 +2837,8 @@ class MobyGames(Scraper):
     # --- This class own methods -----------------------------------------------------------------
     def debug_get_platforms(self, status_dic):
         log_debug('MobyGames.debug_get_platforms() BEGIN...')
-        url_str = 'https://api.mobygames.com/v1/platforms?api_key={}'
-        url = url_str.format(self.api_key)
+        url_tail = '?api_key={}'.format(self.api_key)
+        url = MobyGames.URL_platforms + url_tail
         json_data = self._retrieve_URL_as_JSON(url, status_dic)
         if not status_dic['status']: return None
         self._dump_json_debug('MobyGames_get_platforms.json', json_data)
@@ -2847,11 +2851,12 @@ class MobyGames(Scraper):
         search_string_encoded = urllib.quote_plus(search_term.encode('utf8'))
         if scraper_platform == '0':
             # Unkwnon or wrong platform case.
-            url_str = 'https://api.mobygames.com/v1/games?api_key={}&format=brief&title={}'
-            url = url_str.format(self.api_key, search_string_encoded)
+            url_tail = '?api_key={}&format=brief&title={}'.format(
+                self.api_key, search_string_encoded)
         else:
-            url_str = 'https://api.mobygames.com/v1/games?api_key={}&format=brief&title={}&platform={}'
-            url = url_str.format(self.api_key, search_string_encoded, scraper_platform)
+            url_tail = '?api_key={}&format=brief&title={}&platform={}'.format(
+                self.api_key, search_string_encoded, scraper_platform)
+        url = MobyGames.URL_games + url_tail
         json_data = self._retrieve_URL_as_JSON(url, status_dic)
         if not status_dic['status']: return None
         self._dump_json_debug('MobyGames_get_candidates.json', json_data)
@@ -2879,8 +2884,7 @@ class MobyGames(Scraper):
         return candidate_list
 
     def _parse_metadata_title(self, json_data):
-        if 'title' in json_data: title_str = json_data['title']
-        else:                    title_str = DEFAULT_META_TITLE
+        title_str = json_data['title'] if 'title' in json_data else DEFAULT_META_TITLE
 
         return title_str
 
@@ -2918,29 +2922,29 @@ class MobyGames(Scraper):
     def _retrieve_all_assets(self, candidate, status_dic):
         # --- Cache hit ---
         if self._check_disk_cache(Scraper.CACHE_INTERNAL, self.cache_key):
-            log_debug('MobyGames._retrieve_all_assets() Internal cache hit "{0}"'.format(self.cache_key))
+            log_debug('MobyGames._retrieve_all_assets() Internal cache hit "{}"'.format(self.cache_key))
             return self._retrieve_from_disk_cache(Scraper.CACHE_INTERNAL, self.cache_key)
 
         # --- Cache miss. Retrieve data and update cache ---
-        log_debug('MobyGames._retrieve_all_assets() Internal cache miss "{0}"'.format(self.cache_key))
+        log_debug('MobyGames._retrieve_all_assets() Internal cache miss "{}"'.format(self.cache_key))
         snap_assets = self._retrieve_snap_assets(candidate, candidate['scraper_platform'], status_dic)
         if not status_dic['status']: return None
         cover_assets = self._retrieve_cover_assets(candidate, candidate['scraper_platform'], status_dic)
         if not status_dic['status']: return None
         asset_list = snap_assets + cover_assets
-        log_debug('MobyGames._retrieve_all_assets() A total of {0} assets found for candidate ID {1}'.format(
+        log_debug('MobyGames._retrieve_all_assets() Total {} assets found for candidate ID {}'.format(
             len(asset_list), candidate['id']))
 
         # --- Put metadata in the cache ---
-        log_debug('MobyGames._retrieve_all_assets() Adding to internal cache "{0}"'.format(self.cache_key))
+        log_debug('MobyGames._retrieve_all_assets() Adding to internal cache "{}"'.format(self.cache_key))
         self._update_disk_cache(Scraper.CACHE_INTERNAL, self.cache_key, asset_list)
 
         return asset_list
 
     def _retrieve_snap_assets(self, candidate, platform_id, status_dic):
         log_debug('MobyGames._retrieve_snap_assets() Getting Snaps...')
-        url = 'https://api.mobygames.com/v1/games/{}/platforms/{}/screenshots?api_key={}'.format(
-            candidate['id'], platform_id, self.api_key)
+        url_tail = '/{}/platforms/{}/screenshots?api_key={}'.format(candidate['id'], platform_id, self.api_key)
+        url = MobyGames.URL_games + url_tail
         json_data = self._retrieve_URL_as_JSON(url, status_dic)
         if not status_dic['status']: return None
         self._dump_json_debug('MobyGames_assets_snap.json', json_data)
@@ -2961,7 +2965,7 @@ class MobyGames(Scraper):
             asset_data['url_thumb'] = image_data['thumbnail_image']
             # URL is not mandatory here but MobyGames provides it anyway.
             asset_data['url'] = image_data['image']
-            if self.verbose_flag: log_debug('Found Snap {0}'.format(asset_data['url_thumb']))
+            if self.verbose_flag: log_debug('Found Snap {}'.format(asset_data['url_thumb']))
             asset_list.append(asset_data)
         log_debug('MobyGames._retrieve_snap_assets() Found {} snap assets for candidate #{}'.format(
             len(asset_list), candidate['id']))
@@ -2970,8 +2974,8 @@ class MobyGames(Scraper):
 
     def _retrieve_cover_assets(self, candidate, platform_id, status_dic):
         log_debug('MobyGames._retrieve_cover_assets() Getting Covers...')
-        url = 'https://api.mobygames.com/v1/games/{}/platforms/{}/covers?api_key={}'.format(
-            candidate['id'], platform_id, self.api_key)
+        url_tail = '/{}/platforms/{}/covers?api_key={}'.format(candidate['id'], platform_id, self.api_key)
+        url = MobyGames.URL_games + url_tail
         json_data = self._retrieve_URL_as_JSON(url, status_dic)
         if not status_dic['status']: return None
         self._dump_json_debug('MobyGames_assets_cover.json', json_data)
@@ -3058,10 +3062,8 @@ class MobyGames(Scraper):
 
         return json_data
 
-    # From xxxxx
-    # 
     def _wait_for_API_request(self):
-        # Make sure we dont go over the TooManyRequests limit of 1 second.
+        # Make sure we dont go over the MobyGames TooManyRequests limit of 1 second.
         now = datetime.datetime.now()
         if (now - self.last_http_call).total_seconds() < 1:
             log_debug('MobyGames._wait_for_API_request() Sleeping 1 second to avoid overloading...')
