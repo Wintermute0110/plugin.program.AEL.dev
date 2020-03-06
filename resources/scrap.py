@@ -3262,16 +3262,31 @@ class ScreenScraper(Scraper):
         'tr',  # Turkish
         'zh',  # Chinese
     ]
+    # This allows to change the API version easily.
+    URL_jeuInfos            = 'https://www.screenscraper.fr/api2/jeuInfos.php'
+    URL_jeuRecherche        = 'https://www.screenscraper.fr/api2/jeuRecherche.php'
+    URL_image               = 'https://www.screenscraper.fr/image.php'
+    URL_mediaJeu            = 'https://www.screenscraper.fr/api2/mediaJeu.php'
+
+    URL_ssuserInfos         = 'https://www.screenscraper.fr/api2/ssuserInfos.php'
+    URL_userlevelsListe     = 'https://www.screenscraper.fr/api2/userlevelsListe.php'
+    URL_supportTypesListe   = 'https://www.screenscraper.fr/api2/supportTypesListe.php'
+    URL_romTypesListe       = 'https://www.screenscraper.fr/api2/romTypesListe.php'
+    URL_genresListe         = 'https://www.screenscraper.fr/api2/genresListe.php'
+    URL_regionsListe        = 'https://www.screenscraper.fr/api2/regionsListe.php'
+    URL_languesListe        = 'https://www.screenscraper.fr/api2/languesListe.php'
+    URL_classificationListe = 'https://www.screenscraper.fr/api2/classificationListe.php'
+    URL_systemesListe       = 'https://www.screenscraper.fr/api2/systemesListe.php'
 
     # --- Constructor ----------------------------------------------------------------------------
     def __init__(self, settings):
         # --- This scraper settings ---
-        self.dev_id     = 'V2ludGVybXV0ZTAxMTA='
-        self.dev_pass   = 'VDlwU3J6akZCbWZRbWM4Yg=='
-        self.softname   = settings['scraper_screenscraper_AEL_softname']
-        self.ssid       = settings['scraper_screenscraper_ssid']
-        self.sspassword = settings['scraper_screenscraper_sspass']
-        self.region_idx = settings['scraper_screenscraper_region']
+        self.dev_id       = 'V2ludGVybXV0ZTAxMTA='
+        self.dev_pass     = 'VDlwU3J6akZCbWZRbWM4Yg=='
+        self.softname     = settings['scraper_screenscraper_AEL_softname']
+        self.ssid         = settings['scraper_screenscraper_ssid']
+        self.sspassword   = settings['scraper_screenscraper_sspass']
+        self.region_idx   = settings['scraper_screenscraper_region']
         self.language_idx = settings['scraper_screenscraper_language']
 
         # --- Internal stuff ---
@@ -3327,7 +3342,8 @@ class ScreenScraper(Scraper):
     # ScreenScraper uses the candidates and internal cache. It does not use the
     # medatada and asset caches at all because the metadata and assets are generated
     # with the internal cache.
-    # Search term is always None for this scraper.
+    # Search term is always None for this scraper. rom_FN and ROM checksums are used
+    # to search ROMs.
     def get_candidates(self, search_term, rom_FN, rom_checksums_FN, platform, status_dic):
         # If the scraper is disabled return None and do not mark error in status_dic.
         # Candidate will not be introduced in the disk cache and will be scraped again.
@@ -3366,7 +3382,7 @@ class ScreenScraper(Scraper):
 
         # --- Retrieve jeu_dic from internal cache ---
         if self._check_disk_cache(Scraper.CACHE_INTERNAL, self.cache_key):
-            log_debug('ScreenScraper.get_metadata() Internal cache hit "{0}"'.format(self.cache_key))
+            log_debug('ScreenScraper.get_metadata() Internal cache hit "{}"'.format(self.cache_key))
             jeu_dic = self._retrieve_from_disk_cache(Scraper.CACHE_INTERNAL, self.cache_key)
         else:
             raise ValueError('Logic error')
@@ -3397,7 +3413,7 @@ class ScreenScraper(Scraper):
 
         # --- Retrieve jeu_dic from internal cache ---
         if self._check_disk_cache(Scraper.CACHE_INTERNAL, self.cache_key):
-            log_debug('ScreenScraper.get_assets() Internal cache hit "{0}"'.format(self.cache_key))
+            log_debug('ScreenScraper.get_assets() Internal cache hit "{}"'.format(self.cache_key))
             jeu_dic = self._retrieve_from_disk_cache(Scraper.CACHE_INTERNAL, self.cache_key)
         else:
             raise ValueError('Logic error')
@@ -3408,6 +3424,12 @@ class ScreenScraper(Scraper):
         asset_list = [asset_dic for asset_dic in all_asset_list if asset_dic['asset_ID'] == asset_ID]
         log_debug('ScreenScraper.get_assets() Total assets {} / Returned assets {}'.format(
             len(all_asset_list), len(asset_list)))
+
+        # Wait some time to avoid scraper overloading.
+        # As soon as we return from get_assets() the ROM scanner quickly chooses one
+        # asset and start the download. Then, get_assets() is called again with different
+        # asset_ID. Make sure we wait some time here so there is some time between asset
+        # download to not overload ScreenScraper.
 
         return asset_list
 
@@ -3429,24 +3451,9 @@ class ScreenScraper(Scraper):
         return selected_asset['SS_format']
 
     # --- This class own methods -----------------------------------------------------------------
-    # Plumbing function to get the cached jeu_dic dictionary returned by ScreenScraper.
-    # This is cached in the internal cache.
-    # Scraper.get_candiates() must be called before this function to fill the cache.
-    #
-    # THIS FUNCTION IS OBSOLETE. jeu_dic is now in the internal cache.
-    def debug_get_gameInfos_dic(self, candidate):
-        log_debug('ScreenScraper.debug_get_gameInfos_dic() Internal cache retrieving "{}"'.format(
-            candidate['SS_cache_str']))
-        gameInfos_dic = self.cache_jeuInfos[candidate['SS_cache_str']]
-
-        return gameInfos_dic
-
     def debug_get_user_info(self, status_dic):
         log_debug('ScreenScraper.debug_get_user_info() Geting SS user info...')
-        url_a = 'https://www.screenscraper.fr/api2/ssuserInfos.php?devid={}&devpassword={}'
-        url_b = '&softname={}&output=json&ssid={}&sspassword={}'
-        url = url_a.format(base64.b64decode(self.dev_id), base64.b64decode(self.dev_pass), ) + \
-              url_b.format(self.softname, self.ssid, self.sspassword)
+        url = ScreenScraper.URL_ssuserInfos + self._get_common_SS_URL()
         json_data = self._retrieve_URL_as_JSON(url, status_dic)
         if not status_dic['status']: return None
         self._dump_json_debug('ScreenScraper_get_user_info.json', json_data)
@@ -3455,10 +3462,7 @@ class ScreenScraper(Scraper):
 
     def debug_get_user_levels(self, status_dic):
         log_debug('ScreenScraper.debug_get_user_levels() Geting SS user level list...')
-        url_a = 'https://www.screenscraper.fr/api2/userlevelsListe.php?devid={}&devpassword={}'
-        url_b = '&softname={}&output=json&ssid={}&sspassword={}'
-        url = url_a.format(base64.b64decode(self.dev_id), base64.b64decode(self.dev_pass), ) + \
-              url_b.format(self.softname, self.ssid, self.sspassword)
+        url = ScreenScraper.URL_userlevelsListe + self._get_common_SS_URL()
         json_data = self._retrieve_URL_as_JSON(url, status_dic)
         if not status_dic['status']: return None
         self._dump_json_debug('ScreenScraper_get_user_level_list.json', json_data)
@@ -3466,13 +3470,11 @@ class ScreenScraper(Scraper):
         return json_data
 
     # nbJoueursListe.php : Liste des nombres de joueurs 
+    # This function not coded at the moment.
 
     def debug_get_support_types(self, status_dic):
         log_debug('ScreenScraper.debug_get_support_types() Geting SS Support Types list...')
-        url_a = 'https://www.screenscraper.fr/api2/supportTypesListe.php?devid={}&devpassword={}'
-        url_b = '&softname={}&output=json&ssid={}&sspassword={}'
-        url = url_a.format(base64.b64decode(self.dev_id), base64.b64decode(self.dev_pass), ) + \
-              url_b.format(self.softname, self.ssid, self.sspassword)
+        url = ScreenScraper.URL_supportTypesListe + self._get_common_SS_URL()
         json_data = self._retrieve_URL_as_JSON(url, status_dic)
         if not status_dic['status']: return None
         self._dump_json_debug('ScreenScraper_get_support_types_list.json', json_data)
@@ -3481,10 +3483,7 @@ class ScreenScraper(Scraper):
 
     def debug_get_ROM_types(self, status_dic):
         log_debug('ScreenScraper.debug_get_ROM_types() Geting SS ROM types list...')
-        url_a = 'https://www.screenscraper.fr/api2/romTypesListe.php?devid={}&devpassword={}'
-        url_b = '&softname={}&output=json&ssid={}&sspassword={}'
-        url = url_a.format(base64.b64decode(self.dev_id), base64.b64decode(self.dev_pass), ) + \
-              url_b.format(self.softname, self.ssid, self.sspassword)
+        url = ScreenScraper.URL_romTypesListe + self._get_common_SS_URL()
         json_data = self._retrieve_URL_as_JSON(url, status_dic)
         if not status_dic['status']: return None
         self._dump_json_debug('ScreenScraper_get_ROM_types_list.json', json_data)
@@ -3493,10 +3492,7 @@ class ScreenScraper(Scraper):
 
     def debug_get_genres(self, status_dic):
         log_debug('ScreenScraper.debug_get_genres() Geting SS Genre list...')
-        url_a = 'https://www.screenscraper.fr/api2/genresListe.php?devid={}&devpassword={}'
-        url_b = '&softname={}&output=json&ssid={}&sspassword={}'
-        url = url_a.format(base64.b64decode(self.dev_id), base64.b64decode(self.dev_pass), ) + \
-              url_b.format(self.softname, self.ssid, self.sspassword)
+        url = ScreenScraper.URL_genresListe + self._get_common_SS_URL()
         json_data = self._retrieve_URL_as_JSON(url, status_dic)
         if not status_dic['status']: return None
         self._dump_json_debug('ScreenScraper_get_genres_list.json', json_data)
@@ -3505,10 +3501,7 @@ class ScreenScraper(Scraper):
 
     def debug_get_regions(self, status_dic):
         log_debug('ScreenScraper.debug_get_regions() Geting SS Regions list...')
-        url_a = 'https://www.screenscraper.fr/api2/regionsListe.php?devid={}&devpassword={}'
-        url_b = '&softname={}&output=json&ssid={}&sspassword={}'
-        url = url_a.format(base64.b64decode(self.dev_id), base64.b64decode(self.dev_pass), ) + \
-              url_b.format(self.softname, self.ssid, self.sspassword)
+        url = ScreenScraper.URL_regionsListe + self._get_common_SS_URL()
         json_data = self._retrieve_URL_as_JSON(url, status_dic)
         if not status_dic['status']: return None
         self._dump_json_debug('ScreenScraper_get_regions_list.json', json_data)
@@ -3517,10 +3510,7 @@ class ScreenScraper(Scraper):
 
     def debug_get_languages(self, status_dic):
         log_debug('ScreenScraper.debug_get_languages() Geting SS Languages list...')
-        url_a = 'https://www.screenscraper.fr/api2/languesListe.php?devid={}&devpassword={}'
-        url_b = '&softname={}&output=json&ssid={}&sspassword={}'
-        url = url_a.format(base64.b64decode(self.dev_id), base64.b64decode(self.dev_pass), ) + \
-              url_b.format(self.softname, self.ssid, self.sspassword)
+        url = ScreenScraper.URL_languesListe + self._get_common_SS_URL()
         json_data = self._retrieve_URL_as_JSON(url, status_dic)
         if not status_dic['status']: return None
         self._dump_json_debug('ScreenScraper_get_language_list.json', json_data)
@@ -3529,10 +3519,7 @@ class ScreenScraper(Scraper):
 
     def debug_get_clasifications(self, status_dic):
         log_debug('ScreenScraper.debug_get_clasifications() Geting SS Clasifications list...')
-        url_a = 'https://www.screenscraper.fr/api2/classificationListe.php?devid={}&devpassword={}'
-        url_b = '&softname={}&output=json&ssid={}&sspassword={}'
-        url = url_a.format(base64.b64decode(self.dev_id), base64.b64decode(self.dev_pass), ) + \
-              url_b.format(self.softname, self.ssid, self.sspassword)
+        url = ScreenScraper.URL_classificationListe + self._get_common_SS_URL()
         json_data = self._retrieve_URL_as_JSON(url, status_dic)
         if not status_dic['status']: return None
         self._dump_json_debug('ScreenScraper_get_clasifications_list.json', json_data)
@@ -3541,11 +3528,7 @@ class ScreenScraper(Scraper):
 
     def debug_get_platforms(self, status_dic):
         log_debug('ScreenScraper.debug_get_platforms() Getting SS platforms...')
-        url_a = 'https://www.screenscraper.fr/api2/systemesListe.php?'
-        url_b = 'devid={}&devpassword={}&softname={}&output=json&ssid={}&sspassword={}'.format(
-            base64.b64decode(self.dev_id), base64.b64decode(self.dev_pass),
-            self.softname, self.ssid, self.sspassword)
-        url = url_a + url_b
+        url = ScreenScraper.URL_systemesListe + self._get_common_SS_URL()
         json_data = self._retrieve_URL_as_JSON(url, status_dic)
         if not status_dic['status']: return None
         self._dump_json_debug('ScreenScraper_get_platform_list.json', json_data)
@@ -3558,15 +3541,11 @@ class ScreenScraper(Scraper):
         scraper_platform = AEL_platform_to_ScreenScraper(platform)
         system_id = scraper_platform
         recherche = urllib.quote(rombase_noext)
-        log_debug('ScreenScraper.debug_game_search() system_id  "{0}"'.format(system_id))
-        log_debug('ScreenScraper.debug_game_search() recherche  "{0}"'.format(recherche))
+        log_debug('ScreenScraper.debug_game_search() system_id  "{}"'.format(system_id))
+        log_debug('ScreenScraper.debug_game_search() recherche  "{}"'.format(recherche))
 
-        url_a = 'https://www.screenscraper.fr/api2/jeuRecherche.php?'
-        url_b = 'devid={}&devpassword={}&softname={}&output=json&ssid={}&sspassword={}'.format(
-            base64.b64decode(self.dev_id), base64.b64decode(self.dev_pass),
-            self.softname, self.ssid, self.sspassword)
-        url_c = '&systemeid={}&recherche={}'.format(system_id, recherche)
-        url = url_a + url_b + url_c
+        url_tail = '&systemeid={}&recherche={}'.format(system_id, recherche)
+        url = ScreenScraper.URL_jeuRecherche + self._get_common_SS_URL() + url_tail
         json_data = self._retrieve_URL_as_JSON(url, status_dic)
         if json_data is None or not status_dic['status']: return None
         self._dump_json_debug('ScreenScraper_gameSearch.json', json_data)
@@ -3582,6 +3561,7 @@ class ScreenScraper(Scraper):
         # * If rom_type = 'rom' SS returns gargabe for CD-based platforms like Playstation.
 
         # ISO-based platform set.
+        # This must be moved somewhere else...
         ISO_platform_set = set([
             'Fujitsu FM Towns Marty',
             'NEC PC Engine CDROM2',
@@ -3622,28 +3602,22 @@ class ScreenScraper(Scraper):
         # rom_name = urllib.quote(checksums['rom_name'])
         rom_name = urllib.quote_plus(checksums['rom_name'])
         rom_size = checksums['size']
-        # log_debug('ScreenScraper._search_candidates_jeuInfos() ssid       "{0}"'.format(self.ssid))
-        # log_debug('ScreenScraper._search_candidates_jeuInfos() ssid       "{0}"'.format('***'))
-        # log_debug('ScreenScraper._search_candidates_jeuInfos() sspassword "{0}"'.format(self.sspassword))
-        # log_debug('ScreenScraper._search_candidates_jeuInfos() sspassword "{0}"'.format('***'))
-        log_debug('ScreenScraper._search_candidates_jeuInfos() rom_type   "{0}"'.format(rom_type))
-        log_debug('ScreenScraper._search_candidates_jeuInfos() system_id  "{0}"'.format(system_id))
-        log_debug('ScreenScraper._search_candidates_jeuInfos() crc_str    "{0}"'.format(crc_str))
-        log_debug('ScreenScraper._search_candidates_jeuInfos() md5_str    "{0}"'.format(md5_str))
-        log_debug('ScreenScraper._search_candidates_jeuInfos() sha1_str   "{0}"'.format(sha1_str))
-        log_debug('ScreenScraper._search_candidates_jeuInfos() rom_name   "{0}"'.format(rom_name))
-        log_debug('ScreenScraper._search_candidates_jeuInfos() rom_size   "{0}"'.format(rom_size))
+        # log_debug('ScreenScraper._search_candidates_jeuInfos() ssid       "{}"'.format(self.ssid))
+        # log_debug('ScreenScraper._search_candidates_jeuInfos() ssid       "{}"'.format('***'))
+        # log_debug('ScreenScraper._search_candidates_jeuInfos() sspassword "{}"'.format(self.sspassword))
+        # log_debug('ScreenScraper._search_candidates_jeuInfos() sspassword "{}"'.format('***'))
+        log_debug('ScreenScraper._search_candidates_jeuInfos() rom_type   "{}"'.format(rom_type))
+        log_debug('ScreenScraper._search_candidates_jeuInfos() system_id  "{}"'.format(system_id))
+        log_debug('ScreenScraper._search_candidates_jeuInfos() crc_str    "{}"'.format(crc_str))
+        log_debug('ScreenScraper._search_candidates_jeuInfos() md5_str    "{}"'.format(md5_str))
+        log_debug('ScreenScraper._search_candidates_jeuInfos() sha1_str   "{}"'.format(sha1_str))
+        log_debug('ScreenScraper._search_candidates_jeuInfos() rom_name   "{}"'.format(rom_name))
+        log_debug('ScreenScraper._search_candidates_jeuInfos() rom_size   "{}"'.format(rom_size))
 
         # --- Build URL and retrieve JSON ---
-        # It is more convenient to dump XML files for development.
-        # For regular scraping JSON is more efficient.
-        url_a = 'https://www.screenscraper.fr/api2/jeuInfos.php?'
-        url_b = 'devid={}&devpassword={}&softname={}&output=json&ssid={}&sspassword={}'.format(
-            base64.b64decode(self.dev_id), base64.b64decode(self.dev_pass),
-            self.softname, self.ssid, self.sspassword)
-        url_c = '&romtype={}&systemeid={}&crc={}&md5={}&sha1={}&romnom={}&romtaille={}'.format(
+        url_tail = '&romtype={}&systemeid={}&crc={}&md5={}&sha1={}&romnom={}&romtaille={}'.format(
             rom_type, system_id, crc_str, md5_str, sha1_str, rom_name, rom_size)
-        url = url_a + url_b + url_c
+        url = ScreenScraper.URL_jeuInfos + self._get_common_SS_URL() + url_tail
         json_data = self._retrieve_URL_as_JSON(url, status_dic)
         # If status_dic mark an error there was an exception. Return None.
         if not status_dic['status']: return None
@@ -3674,28 +3648,27 @@ class ScreenScraper(Scraper):
             self.cache_key))
         # IMPORTANT Do not clean URLs. There could be problems reconstructing some URLs.
         # self._clean_JSON_for_dumping(jeu_dic)
+        # Remove the ROM information to decrease the size of the SS internal cache.
+        # ROM information in SS is huge.
         jeu_dic['roms'] = []
         self._update_disk_cache(Scraper.CACHE_INTERNAL, self.cache_key, jeu_dic)
 
         return [ candidate ]
 
     # Call to ScreenScraper jeuRecherche.php.
+    # Not used at the moment, just here for research.
     def _search_candidates_jeuRecherche(self, search_term, rombase_noext, platform, scraper_platform, status_dic):
         # --- Actual data for scraping in AEL ---
         log_debug('ScreenScraper._search_candidates_jeuRecherche() Calling jeuRecherche.php...')
         scraper_platform = AEL_platform_to_ScreenScraper(platform)
         system_id = scraper_platform
         recherche = urllib.quote_plus(rombase_noext)
-        log_debug('ScreenScraper._search_candidates_jeuRecherche() system_id  "{0}"'.format(system_id))
-        log_debug('ScreenScraper._search_candidates_jeuRecherche() recherche  "{0}"'.format(recherche))
+        log_debug('ScreenScraper._search_candidates_jeuRecherche() system_id  "{}"'.format(system_id))
+        log_debug('ScreenScraper._search_candidates_jeuRecherche() recherche  "{}"'.format(recherche))
 
         # --- Build URL and retrieve JSON ---
-        url_a = 'https://www.screenscraper.fr/api2/jeuRecherche.php?'
-        url_b = 'devid={}&devpassword={}&softname={}&output=json&ssid={}&sspassword={}'.format(
-            base64.b64decode(self.dev_id), base64.b64decode(self.dev_pass),
-            self.softname, self.ssid, self.sspassword)
-        url_c = '&systemeid={}&recherche={}'.format(system_id, recherche)
-        url = url_a + url_b + url_c
+        url_tail = '&systemeid={}&recherche={}'.format(system_id, recherche)
+        url = ScreenScraper.URL_jeuRecherche + self._get_common_SS_URL() + url_tail
         json_data = self._retrieve_URL_as_JSON(url, status_dic)
         if json_data is None or not status_dic['status']: return None
         self._dump_json_debug('ScreenScraper_gameSearch.json', json_data)
@@ -3804,10 +3777,13 @@ class ScreenScraper(Scraper):
 
         return DEFAULT_META_PLOT
 
-    # Get ALL available assets for game.
-    # Returns all assets found in the jeu_dic dictionary. It is not necessary to cache this
-    # because it can be easily generated.
-    # For now asset do not support region or language settings.
+    # Get ALL available assets for game. Returns all assets found in the jeu_dic dictionary.
+    # It is not necessary to cache this function because all the assets can be easily
+    # extracted from jeu_dic.
+    #
+    # For now assets do not support region or language settings. I plan to match ROM
+    # Language and Region with ScreenScraper Language and Region soon. For example, if we
+    # are scraping a Japan ROM we must get the Japan artwork and not other region artwork.
     #
     # Examples:
     # https://www.screenscraper.fr/gameinfos.php?gameid=5     # Sonic 1 Megadrive
@@ -3821,6 +3797,7 @@ class ScreenScraper(Scraper):
     # https://www.screenscraper.fr/image.php?gameid=5&media=steamgrid&hd=0&region=&num=&version=&maxwidth=338&maxheight=190
     #
     # TODO: support Manuals and Trailers.
+    # TODO: match ROM region and ScreenScraper region.
     def _retrieve_all_assets(self, jeu_dic, status_dic):
         asset_list = []
         medias_list = jeu_dic['medias']
@@ -3831,28 +3808,28 @@ class ScreenScraper(Scraper):
             else:
                 # Skip unknwon assets
                 continue
+
             # Build thumb URL
             game_ID = jeu_dic['id']
             region = media_dic['region'] if 'region' in media_dic else ''
             if region: media_type = media_dic['type'] + ' ' + region
             else:      media_type = media_dic['type']
-            # Build thumb URL
-            url_thumb_a = 'https://www.screenscraper.fr/image.php?'
-            url_thumb_b = 'gameid={}&media={}&region={}'.format(game_ID, media_type, region)
+            url_thumb_b = '?gameid={}&media={}&region={}'.format(game_ID, media_type, region)
             url_thumb_c = '&hd=0&num=&version=&maxwidth=338&maxheight=190'
-            url_thumb = url_thumb_a + url_thumb_b + url_thumb_c
+            url_thumb = URL_image + url_thumb_b + url_thumb_c
+
             # Build asset URL. ScreenScraper URLs are stripped down when saved to the cache
             # to save space and time. FEATURE CANCELED. There could be problems reconstructing
             # some URLs and the space saved is not so great for most games.
             # systemeid = jeu_dic['systemeid']
             # media = '{}({})'.format(media_type, region)
-            # url_thumb_a = 'https://www.screenscraper.fr/api2/mediaJeu.php?'
-            # url_b = 'devid={}&devpassword={}&softname={}&ssid={}&sspassword={}'.format(
+            # url_b = '?devid={}&devpassword={}&softname={}&ssid={}&sspassword={}'.format(
             #     base64.b64decode(self.dev_id), base64.b64decode(self.dev_pass),
             #     self.softname, self.ssid, self.sspassword)
-            # url_thumb_c = '&systemeid={}&jeuid={}&media={}'.format(systemeid, game_ID, media)
-            # url_asset = url_thumb_a + url_thumb_b + url_thumb_c
+            # url_c = '&systemeid={}&jeuid={}&media={}'.format(systemeid, game_ID, media)
+            # url_asset = URL_mediaJeu + url_b + url_c
             # log_debug('URL "{}"'.format(url_asset))
+
             # Create asset dictionary
             asset_data = self._new_assetdata_dic()
             asset_data['asset_ID'] = asset_ID
@@ -4071,6 +4048,14 @@ class ScreenScraper(Scraper):
             self._handle_exception(ex, status_dic,
                 'Error decoding JSON data from ScreenScraper (fixed version).')
             return None
+
+    # All ScreenScraper URLs must have this arguments.
+    def _get_common_SS_URL(self):
+        url_SS = '?devid={}&devpassword={}&softname={}&output=json&ssid={}&sspassword={}'.format(
+            base64.b64decode(self.dev_id), base64.b64decode(self.dev_pass),
+            self.softname, self.ssid, self.sspassword)
+
+        return url_SS
 
 # ------------------------------------------------------------------------------------------------
 # GameFAQs online scraper.
