@@ -3822,7 +3822,7 @@ class ScreenScraper(Scraper):
             else:      media_type = media_dic['type']
             url_thumb_b = '?gameid={}&media={}&region={}'.format(game_ID, media_type, region)
             url_thumb_c = '&hd=0&num=&version=&maxwidth=338&maxheight=190'
-            url_thumb = URL_image + url_thumb_b + url_thumb_c
+            url_thumb = ScreenScraper.URL_image + url_thumb_b + url_thumb_c
 
             # Build asset URL. ScreenScraper URLs are stripped down when saved to the cache
             # to save space and time. FEATURE CANCELED. There could be problems reconstructing
@@ -3833,7 +3833,7 @@ class ScreenScraper(Scraper):
             #     base64.b64decode(self.dev_id), base64.b64decode(self.dev_pass),
             #     self.softname, self.ssid, self.sspassword)
             # url_c = '&systemeid={}&jeuid={}&media={}'.format(systemeid, game_ID, media)
-            # url_asset = URL_mediaJeu + url_b + url_c
+            # url_asset = ScreenScraper.URL_mediaJeu + url_b + url_c
             # log_debug('URL "{}"'.format(url_asset))
 
             # Create asset dictionary
