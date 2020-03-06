@@ -10544,7 +10544,7 @@ class Main:
     # there are ROM files not in AEL database. If either 1) or 2) is true launcher must be
     # updated with the ROM scanner.
     def _command_exec_utils_check_launcher_sync_status(self):
-        log_info('_command_exec_utils_check_launcher_sync_status() Checking ROM Launcher sync status...')
+        log_debug('_command_exec_utils_check_launcher_sync_status() Checking ROM Launcher sync status...')
         pdialog = KodiProgressDialog()
         num_launchers = len(self.launchers)
         main_slist = []
@@ -10684,7 +10684,7 @@ class Main:
         kodi_dialog_OK('EXECUTE_UTILS_CHECK_ARTWORK_INTEGRITY not implemented yet.')
 
     def _command_exec_utils_check_ROM_artwork_integrity(self):
-        log_info('_command_exec_utils_check_ROM_artwork_integrity() Beginning...')
+        log_debug('_command_exec_utils_check_ROM_artwork_integrity() Beginning...')
         pdialog = KodiProgressDialog()
         num_launchers = len(self.launchers)
         main_slist = []
@@ -10693,7 +10693,7 @@ class Main:
             ['left', 'right', 'right', 'right', 'right'],
             ['Launcher', 'ROMs', 'Images', 'Missing', 'Problematic'],
         ]
-        pdialog.startProgress('Checking ROM artwork integrity', num_launchers)
+        pdialog.startProgress('Checking ROM artwork integrity...', num_launchers)
         processed_launchers = 0
         total_images = 0
         missing_images = 0
