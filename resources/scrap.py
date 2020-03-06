@@ -2696,7 +2696,6 @@ class MobyGames(Scraper):
     def __init__(self, settings):
         # --- This scraper settings ---
         self.api_key = settings['scraper_mobygames_apikey']
-
         # --- Misc stuff ---
         self.last_http_call = datetime.datetime.now()
 
@@ -3262,6 +3261,7 @@ class ScreenScraper(Scraper):
         'tr',  # Turkish
         'zh',  # Chinese
     ]
+
     # This allows to change the API version easily.
     URL_jeuInfos            = 'https://www.screenscraper.fr/api2/jeuInfos.php'
     URL_jeuRecherche        = 'https://www.screenscraper.fr/api2/jeuRecherche.php'
@@ -3278,6 +3278,9 @@ class ScreenScraper(Scraper):
     URL_classificationListe = 'https://www.screenscraper.fr/api2/classificationListe.php'
     URL_systemesListe       = 'https://www.screenscraper.fr/api2/systemesListe.php'
 
+    # Time to wait in get_assets() in seconds (float) to avoid scraper overloading.
+    TIME_WAIT_GET_ASSETS = 1.2
+
     # --- Constructor ----------------------------------------------------------------------------
     def __init__(self, settings):
         # --- This scraper settings ---
@@ -3290,6 +3293,8 @@ class ScreenScraper(Scraper):
         self.language_idx = settings['scraper_screenscraper_language']
 
         # --- Internal stuff ---
+        self.last_get_assets_call = datetime.datetime.now()
+
         # Create list of regions to search stuff. Put the user preference first.
         self.user_region = ScreenScraper.region_list[self.region_idx]
         log_debug('ScreenScraper.__init__() User preferred region "{}"'.format(self.user_region))
@@ -3430,6 +3435,7 @@ class ScreenScraper(Scraper):
         # asset and start the download. Then, get_assets() is called again with different
         # asset_ID. Make sure we wait some time here so there is some time between asset
         # download to not overload ScreenScraper.
+        self._wait_for_asset_request()
 
         return asset_list
 
@@ -4056,6 +4062,17 @@ class ScreenScraper(Scraper):
             self.softname, self.ssid, self.sspassword)
 
         return url_SS
+
+    # If less than TIME_WAIT_GET_ASSETS seconds have passed since the last call
+    # to this function then wait TIME_WAIT_GET_ASSETS seconds.
+    def _wait_for_asset_request(self):
+        now = datetime.datetime.now()
+        seconds_since_last_call = (now - self.last_get_assets_call).total_seconds()
+        if seconds_since_last_call < ScreenScraper.TIME_WAIT_GET_ASSETS:
+            log_debug('SS._wait_for_asset_request() Sleeping to avoid overloading...')
+            time.sleep(ScreenScraper.TIME_WAIT_GET_ASSETS)
+        # Update waiting time for next call.
+        self.last_get_assets_call = datetime.datetime.now()
 
 # ------------------------------------------------------------------------------------------------
 # GameFAQs online scraper.
