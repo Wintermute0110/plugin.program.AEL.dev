@@ -797,16 +797,16 @@ def fs_write_ROMs_JSON(roms_dir_FN, launcher, roms):
     roms_base_noext = launcher['roms_base_noext']
     roms_json_file = roms_dir_FN.pjoin(roms_base_noext + '.json')
     roms_xml_file  = roms_dir_FN.pjoin(roms_base_noext + '.xml')
-    log_verb('fs_write_ROMs_JSON() Dir  {0}'.format(roms_dir_FN.getOriginalPath()))
-    log_verb('fs_write_ROMs_JSON() JSON {0}'.format(roms_base_noext + '.json'))
-    log_verb('fs_write_ROMs_JSON() XML  {0}'.format(roms_base_noext + '.xml'))
+    log_verb('fs_write_ROMs_JSON()  Dir {}'.format(roms_dir_FN.getOriginalPath()))
+    log_verb('fs_write_ROMs_JSON() JSON {}'.format(roms_base_noext + '.json'))
+    log_verb('fs_write_ROMs_JSON()  XML {}'.format(roms_base_noext + '.xml'))
 
     # >> JSON files cannot have comments. Write an auxiliar NFO file with same prefix
     # >> to store launcher information for a set of ROMs
     try:
         str_list = []
         str_list.append('<?xml version="1.0" encoding="utf-8" standalone="yes"?>\n')
-        str_list.append('<advanced_emulator_launcher_ROMs version="{0}">\n'.format(AEL_STORAGE_FORMAT))
+        str_list.append('<advanced_emulator_launcher_ROMs version="{}">\n'.format(AEL_STORAGE_FORMAT))
 
         # Print some information in the XML so the user can now which launcher created it.
         # Note that this is ignored when reading the file.
@@ -825,11 +825,11 @@ def fs_write_ROMs_JSON(roms_dir_FN, launcher, roms):
         file_obj.write(full_string)
         file_obj.close()
     except OSError:
-        kodi_notify_warn('(OSError) Cannot write {0} file'.format(roms_xml_file.getPath()))
-        log_error('fs_write_ROMs_JSON() (OSerror) Cannot write file "{0}"'.format(roms_xml_file.getPath()))
+        kodi_notify_warn('(OSError) Cannot write {} file'.format(roms_xml_file.getPath()))
+        log_error('fs_write_ROMs_JSON() (OSerror) Cannot write file "{}"'.format(roms_xml_file.getPath()))
     except IOError:
-        kodi_notify_warn('(IOError) Cannot write {0} file'.format(roms_xml_file.getPath()))
-        log_error('fs_write_ROMs_JSON() (IOError) Cannot write file "{0}"'.format(roms_xml_file.getPath()))
+        kodi_notify_warn('(IOError) Cannot write {} file'.format(roms_xml_file.getPath()))
+        log_error('fs_write_ROMs_JSON() (IOError) Cannot write file "{}"'.format(roms_xml_file.getPath()))
 
     # >> Write ROMs JSON dictionary.
     # >> Do note that there is a bug in the json module where the ensure_ascii=False flag can produce
@@ -845,9 +845,9 @@ def fs_write_ROMs_JSON(roms_dir_FN, launcher, roms):
             file.write(unicode(json_data))
             file.close()
     except OSError:
-        kodi_notify_warn('(OSError) Cannot write {0} file'.format(roms_json_file.getPath()))
+        kodi_notify_warn('(OSError) Cannot write {} file'.format(roms_json_file.getPath()))
     except IOError:
-        kodi_notify_warn('(IOError) Cannot write {0} file'.format(roms_json_file.getPath()))
+        kodi_notify_warn('(IOError) Cannot write {} file'.format(roms_json_file.getPath()))
 
 #
 # Loads an JSON file containing the Virtual Launcher ROMs
@@ -864,17 +864,17 @@ def fs_load_ROMs_JSON(roms_dir_FN, launcher):
     # >> On Github issue #8 a user had an empty JSON file for ROMs. This raises
     #    exception exceptions.ValueError and launcher cannot be deleted. Deal
     #    with this exception so at least launcher can be rescanned.
-    log_verb('fs_load_ROMs_JSON() Dir  {0}'.format(roms_dir_FN.getOriginalPath()))
-    log_verb('fs_load_ROMs_JSON() JSON {0}'.format(roms_base_noext + '.json'))
+    log_verb('fs_load_ROMs_JSON()  Dir {}'.format(roms_dir_FN.getOriginalPath()))
+    log_verb('fs_load_ROMs_JSON() JSON {}'.format(roms_base_noext + '.json'))
     with open(roms_json_file.getPath().decode('utf-8')) as file:
         try:
             roms = json.load(file)
         except ValueError:
             statinfo = roms_json_file.stat()
             log_error('fs_load_ROMs_JSON() ValueError exception in json.load() function')
-            log_error('fs_load_ROMs_JSON() Dir  {0}'.format(roms_dir_FN.getPath()))
-            log_error('fs_load_ROMs_JSON() File {0}'.format(roms_base_noext + '.json'))
-            log_error('fs_load_ROMs_JSON() Size {0}'.format(statinfo.st_size))
+            log_error('fs_load_ROMs_JSON()  Dir {}'.format(roms_dir_FN.getPath()))
+            log_error('fs_load_ROMs_JSON() File {}'.format(roms_base_noext + '.json'))
+            log_error('fs_load_ROMs_JSON() Size {}'.format(statinfo.st_size))
         file.close()
 
     return roms
@@ -886,7 +886,7 @@ def fs_load_ROMs_JSON(roms_dir_FN, launcher):
 # Save Favourites JSON file
 #
 def fs_write_Favourites_JSON(roms_json_file, roms):
-    log_info('fs_write_Favourites_JSON() File {0}'.format(roms_json_file.getOriginalPath()))
+    log_info('fs_write_Favourites_JSON() File {}'.format(roms_json_file.getOriginalPath()))
 
     # --- Create JSON data structure, including version number ---
     control_dic = {
@@ -905,16 +905,16 @@ def fs_write_Favourites_JSON(roms_json_file, roms):
             file.write(unicode(json_data))
             file.close()
     except OSError:
-        kodi_notify_warn('(OSError) Cannot write {0} file'.format(roms_json_file.getPath()))
+        kodi_notify_warn('(OSError) Cannot write {} file'.format(roms_json_file.getPath()))
     except IOError:
-        kodi_notify_warn('(IOError) Cannot write {0} file'.format(roms_json_file.getPath()))
+        kodi_notify_warn('(IOError) Cannot write {} file'.format(roms_json_file.getPath()))
 
 #
 # Loads an JSON file containing the Favourite ROMs
 #
 def fs_load_Favourites_JSON(roms_json_file):
     # --- If file does not exist return empty dictionary ---
-    log_verb('fs_load_Favourites_JSON() File {0}'.format(roms_json_file.getOriginalPath()))
+    log_verb('fs_load_Favourites_JSON() File {}'.format(roms_json_file.getOriginalPath()))
     if not roms_json_file.exists(): 
         return {}
 
@@ -925,8 +925,8 @@ def fs_load_Favourites_JSON(roms_json_file):
         except ValueError:
             statinfo = roms_json_file.stat()
             log_error('fs_load_Favourites_JSON() ValueError exception in json.load() function')
-            log_error('fs_load_Favourites_JSON() File {0}'.format(roms_json_file.getPath()))
-            log_error('fs_load_Favourites_JSON() Size {0}'.format(statinfo.st_size))
+            log_error('fs_load_Favourites_JSON() File {}'.format(roms_json_file.getPath()))
+            log_error('fs_load_Favourites_JSON() Size {}'.format(statinfo.st_size))
             return {}
 
     # --- Extract roms from JSON data structe and ensure version is correct ---
@@ -940,11 +940,11 @@ def fs_load_Favourites_JSON(roms_json_file):
 # ROM Collections
 # -------------------------------------------------------------------------------------------------
 def fs_write_Collection_index_XML(collections_xml_file, collections):
-    log_info('fs_write_Collection_index_XML() File {0}'.format(collections_xml_file.getOriginalPath()))
+    log_info('fs_write_Collection_index_XML() File {}'.format(collections_xml_file.getOriginalPath()))
     try:
         str_list = []
         str_list.append('<?xml version="1.0" encoding="utf-8" standalone="yes"?>\n')
-        str_list.append('<advanced_emulator_launcher_Collection_index version="{0}">\n'.format(AEL_STORAGE_FORMAT))
+        str_list.append('<advanced_emulator_launcher_Collection_index version="{}">\n'.format(AEL_STORAGE_FORMAT))
 
         # --- Control information ---
         _t = time.time()
@@ -980,9 +980,9 @@ def fs_write_Collection_index_XML(collections_xml_file, collections):
         file_obj.write(full_string)
         file_obj.close()
     except OSError:
-        kodi_notify_warn('(OSError) Cannot write {0} file'.format(collections_xml_file.getPath()))
+        kodi_notify_warn('(OSError) Cannot write {} file'.format(collections_xml_file.getPath()))
     except IOError:
-        kodi_notify_warn('(IOError) Cannot write {0} file'.format(collections_xml_file.getPath()))
+        kodi_notify_warn('(IOError) Cannot write {} file'.format(collections_xml_file.getPath()))
 
 def fs_load_Collection_index_XML(collections_xml_file):
     __debug_xml_parser = 0
@@ -993,16 +993,16 @@ def fs_load_Collection_index_XML(collections_xml_file):
     if not collections_xml_file.exists(): return (collections, update_timestamp)
 
     # --- Parse using cElementTree ---
-    log_verb('fs_load_Collection_index_XML() Loading {0}'.format(collections_xml_file.getOriginalPath()))
+    log_verb('fs_load_Collection_index_XML() Loading {}'.format(collections_xml_file.getOriginalPath()))
     try:
         xml_tree = ET.parse(collections_xml_file.getPath())
     except ET.ParseError, e:
         log_error('(ParseError) Exception parsing XML categories.xml')
-        log_error('(ParseError) {0}'.format(str(e)))
+        log_error('(ParseError) {}'.format(str(e)))
         return roms
     xml_root = xml_tree.getroot()
     for root_element in xml_root:
-        if __debug_xml_parser: log_debug('Root child {0}'.format(root_element.tag))
+        if __debug_xml_parser: log_debug('Root child {}'.format(root_element.tag))
 
         if root_element.tag == 'control':
             for control_child in root_element:
@@ -1016,14 +1016,14 @@ def fs_load_Collection_index_XML(collections_xml_file):
                 xml_text = rom_child.text if rom_child.text is not None else ''
                 xml_text = text_unescape_XML(xml_text)
                 xml_tag  = rom_child.tag
-                if __debug_xml_parser: log_debug('{0} --> {1}'.format(xml_tag, xml_text))
+                if __debug_xml_parser: log_debug('{} --> {}'.format(xml_tag, xml_text))
                 collection[xml_tag] = xml_text
             collections[collection['id']] = collection
 
     return (collections, update_timestamp)
 
 def fs_write_Collection_ROMs_JSON(roms_json_file, roms):
-    log_verb('fs_write_Collection_ROMs_JSON() File {0}'.format(roms_json_file.getOriginalPath()))
+    log_verb('fs_write_Collection_ROMs_JSON() File {}'.format(roms_json_file.getOriginalPath()))
 
     control_dic = {
         'control' : 'Advanced Emulator Launcher Collection ROMs',
@@ -1040,9 +1040,9 @@ def fs_write_Collection_ROMs_JSON(roms_json_file, roms):
             file.write(unicode(json_data))
             file.close()
     except OSError:
-        kodi_notify_warn('(OSError) Cannot write {0} file'.format(roms_json_file.getPath()))
+        kodi_notify_warn('(OSError) Cannot write {} file'.format(roms_json_file.getPath()))
     except IOError:
-        kodi_notify_warn('(IOError) Cannot write {0} file'.format(roms_json_file.getPath()))
+        kodi_notify_warn('(IOError) Cannot write {} file'.format(roms_json_file.getPath()))
 
 #
 # Loads an JSON file containing the Virtual Launcher ROMs
@@ -1054,7 +1054,7 @@ def fs_load_Collection_ROMs_JSON(roms_json_file):
         return []
 
     # --- Parse using JSON ---
-    log_verb('fs_load_Collection_ROMs_JSON() {0}'.format(roms_json_file.getOriginalPath()))
+    log_verb('fs_load_Collection_ROMs_JSON() {}'.format(roms_json_file.getOriginalPath()))
 
     with open(roms_json_file.getPath()) as file:    
         try:
@@ -1062,8 +1062,8 @@ def fs_load_Collection_ROMs_JSON(roms_json_file):
         except ValueError:
             statinfo = roms_json_file.stat()
             log_error('fs_load_Collection_ROMs_JSON() ValueError exception in json.load() function')
-            log_error('fs_load_Collection_ROMs_JSON() File {0}'.format(roms_json_file.getOriginalPath()))
-            log_error('fs_load_Collection_ROMs_JSON() Size {0}'.format(statinfo.st_size))
+            log_error('fs_load_Collection_ROMs_JSON() File {}'.format(roms_json_file.getOriginalPath()))
+            log_error('fs_load_Collection_ROMs_JSON() Size {}'.format(statinfo.st_size))
             return []
 
     # --- Extract roms from JSON data structe and ensure version is correct ---
@@ -1074,7 +1074,7 @@ def fs_load_Collection_ROMs_JSON(roms_json_file):
     return roms
 
 def fs_export_ROM_collection(output_filename, collection, collection_rom_list):
-    log_info('fs_export_ROM_collection() File {0}'.format(output_filename.getOriginalPath()))
+    log_info('fs_export_ROM_collection() File {}'.format(output_filename.getOriginalPath()))
     
     control_dic = {
         'control' : 'Advanced Emulator Launcher Collection ROMs',
@@ -1111,9 +1111,9 @@ def fs_export_ROM_collection(output_filename, collection, collection_rom_list):
             file.write(unicode(json_data))
             file.close()
     except OSError:
-        kodi_notify_warn('(OSError) Cannot write {0} file'.format(output_filename.getPath()))
+        kodi_notify_warn('(OSError) Cannot write {} file'.format(output_filename.getPath()))
     except IOError:
-        kodi_notify_warn('(IOError) Cannot write {0} file'.format(output_filename.getPath()))
+        kodi_notify_warn('(IOError) Cannot write {} file'.format(output_filename.getPath()))
 
 #
 # Export collection assets. Use base64 encoding to store binary files in JSON.
@@ -1123,7 +1123,7 @@ def fs_export_ROM_collection(output_filename, collection, collection_rom_list):
 # collections_asset_dir_FN -> FileName object of self.settings['collections_asset_dir']
 #
 def fs_export_ROM_collection_assets(output_FileName, collection, collection_rom_list, collections_asset_dir_FN):
-    log_info('fs_export_ROM_collection_assets() File {0}'.format(output_FileName.getOriginalPath()))
+    log_info('fs_export_ROM_collection_assets() File {}'.format(output_FileName.getOriginalPath()))
 
     control_dic = {
         'control' : 'Advanced Emulator Launcher Collection ROM assets',
