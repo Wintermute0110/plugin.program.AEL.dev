@@ -9791,10 +9791,10 @@ class Main:
             asset_directory = FileName(self.settings['collections_asset_dir'])
             asset_path_noext = assets_get_path_noext_SUFIX(
                 AInfo, asset_directory, object_dic['m_name'], object_dic['id'])
-            log_info('_gui_edit_asset() Editing Collection "{0}"'.format(AInfo.name))
-            log_info('_gui_edit_asset() ID {0}'.format(object_dic['id']))
-            log_debug('_gui_edit_asset() asset_directory  "{0}"'.format(asset_directory.getOriginalPath()))
-            log_debug('_gui_edit_asset() asset_path_noext "{0}"'.format(asset_path_noext.getOriginalPath()))
+            log_info('_gui_edit_asset() Editing Collection "{}"'.format(AInfo.name))
+            log_info('_gui_edit_asset() ID {}'.format(object_dic['id']))
+            log_debug('_gui_edit_asset() asset_directory  "{}"'.format(asset_directory.getOriginalPath()))
+            log_debug('_gui_edit_asset() asset_path_noext "{}"'.format(asset_path_noext.getOriginalPath()))
             if not asset_directory.isdir():
                 kodi_dialog_OK('Directory to store Collection artwork not configured or not found. '
                                'Configure it before you can edit artwork.')
@@ -9832,9 +9832,11 @@ class Main:
             elif categoryID == VCATEGORY_COLLECTIONS_ID:
                 log_info('_gui_edit_asset() ROM is in Collection')
                 asset_directory  = FileName(self.settings['collections_asset_dir'])
-                platform         = object_dic['platform']
-                asset_path_noext = assets_get_path_noext_SUFIX(
-                    AInfo, asset_directory, ROMfile.getBase_noext(), object_dic['id'])
+                platform = object_dic['platform']
+                new_asset_basename = assets_get_collection_asset_basename(
+                    AInfo, ROMfile.getBase_noext(), platform, '.png')
+                new_asset_basename_FN = FileName(new_asset_basename)
+                asset_path_noext = asset_directory.pjoin(new_asset_basename_FN.getBase_noext())
             else:
                 log_info('_gui_edit_asset() ROM is in Launcher id {0}'.format(launcherID))
                 launcher         = self.launchers[launcherID]
