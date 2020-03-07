@@ -129,12 +129,6 @@ WIP      [CORE] New Utility "Delete ROMs redundant artwork"
          for launcher with recursive scan where ROMs can be in different
          directories.
 
-WIP      [COLLECTIONS] Current way of storing the collection artwork, in a unified JSON file,
-         is not good. Think of a good way to exporting collections (for example, store the
-         artwork in a subdirectory). Possible way of solving filename collisions
-         ROM_name_platform_fanart.png, platform is the short name and it's only used if
-         there is filename amgibuity (same ROM name in different platforms in the collection).
-
 WIP      [SCRAPERS] Improve the Offline Scraper. Improve the quality of the databases.
 
 WIP      [SCRAPERS] Change the Offline Scraper format from XML to JSON. Include the new fields
@@ -145,6 +139,24 @@ WIP      [SCRAPERS] Change the Offline Scraper format from XML to JSON. Include 
 
 
 [B]Advanced Emulator Launcher | version 0.9.9 | xx March 2020[/B]
+
+FEATURE  [COLLECTIONS] When exporting ROM Collections assets are always exported. The option
+         to export only metadata has been removed. When importing assets are also always
+         imported to the ROM Collection asset directory.
+
+FEATURE  [COLLECTIONS] Current way of storing the collection artwork, in a unified JSON file,
+         is not good. Think of a good way to exporting collections (for example, store the
+         artwork in a subdirectory).
+
+WIP      [COLLECTIONS] Do not consolidate Collection artwork before exporting. Also, when
+         importing always import to the Collection artwork directory. Exported artwork
+         collection filenames must be relative, not absolute paths.
+
+WIP      [COLLECTIONS] Store Collection ROMs artwork as filename_platformCompactName_assetType.png
+         and not filename_ROMID_assetType.png. This solves a lot of problems of duplicate
+         artwork. ROMs with same name are allowed on different platforms but not on the
+         same platform, which makes sense. Collection own artwork use the special
+         platform name 'collection'.
 
 FEATURE  [CORE] Rename offline scraper XML databases to use new platform name.
 

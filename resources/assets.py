@@ -501,16 +501,18 @@ def assets_get_path_noext_SUFIX(Asset, AssetPath, asset_base_noext, objectID = '
 
     return asset_path_noext_FileName
 
-# Returns the filename_noext of a collection asset as a FileName object.
-# Example: '/asset/path/Super Mario Bros_nes_title'
+# Returns the basename of a collection asset as a FileName object.
+# Example: 'Super Mario Bros_nes_title.png'
 #
 # TODO Make basename_noext safe (remove forbidden characters). It is the title of the
 #      object, not necessarily a filename.
-def assets_get_collection_asset_fname_noext(AInfo, asset_dir_FN, basename_noext, platform):
+#
+# Returns a Unicode string
+def assets_get_collection_asset_basename(AInfo, basename_noext, platform, ext):
     pindex = get_AEL_platform_index(platform)
     platform_compact_name = AEL_platforms[pindex].compact_name
     
-    return asset_dir_FN.pjoin(basename_noext + '_' + platform_compact_name + '_' + AInfo.fname_infix)
+    return basename_noext + '_' + platform_compact_name + '_' + AInfo.fname_infix + ext
 
 #
 # Get a list of enabled assets.
