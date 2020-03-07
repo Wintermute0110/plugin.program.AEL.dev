@@ -609,7 +609,7 @@ class Main:
             self.settings['collections_asset_dir'] = g_PATHS.DEFAULT_COL_ASSET_DIR.getOriginalPath()
 
         # Settings required by the scrapers (they are not really settings).
-        self.settings['scraper_screenscraper_AEL_softname'] = 'AEL_{0}'.format(__addon_version__)
+        self.settings['scraper_screenscraper_AEL_softname'] = 'AEL_{}'.format(__addon_version__)
         self.settings['scraper_aeloffline_addon_code_dir'] = g_PATHS.ADDON_CODE_DIR.getPath()
         self.settings['scraper_cache_dir'] = g_PATHS.SCRAPER_CACHE_DIR.getPath()
 
