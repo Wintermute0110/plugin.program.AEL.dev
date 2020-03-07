@@ -6071,32 +6071,6 @@ class Main:
             listitem.setArt({'icon'   : icon_path,   'fanart' : fanart_path,
                              'banner' : banner_path, 'poster' : poster_path, 'clearlogo' : clearlogo_path})
 
-            # --- Extrafanart ---
-            collections_asset_dir = FileName(self.settings['collections_asset_dir'])
-            extrafanart_dir = collections_asset_dir + collection['m_name']
-            log_debug('_command_render_collections() EF dir {0}'.format(extrafanart_dir.getPath()))
-            extrafanart_dic = {}
-            for i in range(25):
-                # --- PNG ---
-                extrafanart_file = extrafanart_dir + 'fanart{0}.png'.format(i)
-                log_debug('_command_render_collections() test   {0}'.format(extrafanart_file.getPath()))
-                if extrafanart_file.exists():
-                    log_debug('_command_render_collections() Adding extrafanart #{0}'.format(i))
-                    extrafanart_dic['extrafanart{0}'.format(i)] = extrafanart_file.getOriginalPath()
-                    continue
-                # --- JPG ---
-                extrafanart_file = extrafanart_dir + 'fanart{0}.jpg'.format(i)
-                log_debug('_command_render_collections() test   {0}'.format(extrafanart_file.getPath()))
-                if extrafanart_file.exists():
-                    log_debug('_command_render_collections() Adding extrafanart #{0}'.format(i))
-                    extrafanart_dic['extrafanart{0}'.format(i)] = extrafanart_file.getOriginalPath()
-                    continue
-                # >> No extrafanart found, exit loop.
-                break
-            if extrafanart_dic:
-                log_debug('_command_render_collections() Extrafanart setArt() "{0}"'.format(unicode(extrafanart_dic)))
-                listitem.setArt(extrafanart_dic)
-
             # --- Create context menu ---
             commands = []
             commands.append(('View ROM Collection data', self._misc_url_RunPlugin('VIEW', VCATEGORY_COLLECTIONS_ID, collection_id)))
@@ -6419,22 +6393,24 @@ class Main:
         # --- Confirm deletion ---
         num_roms = len(collection_rom_list)
         collection_name = collection['m_name']
-        ret = kodi_dialog_yesno('Collection "{0}" has {1} ROMs. '.format(collection_name, num_roms) +
+        ret = kodi_dialog_yesno('Collection "{}" has {} ROMs. '.format(collection_name, num_roms) +
                                 'Are you sure you want to delete it?')
         if not ret: return
 
         # --- Remove JSON file and delete collection object ---
         collection_file_path = g_PATHS.COLLECTIONS_DIR.pjoin(collection['roms_base_noext'] + '.json')
-        log_debug('Removing Collection JSON "{0}"'.format(collection_file_path.getOriginalPath()))
+        log_debug('Removing Collection JSON "{}"'.format(collection_file_path.getOriginalPath()))
         try:
             if collection_file_path.exists(): collection_file_path.unlink()
         except OSError:
-            log_error('_gui_remove_launcher() (OSError) exception deleting "{0}"'.format(collection_file_path.getOriginalPath()))
+            log_error('_gui_remove_launcher() (OSError) exception deleting "{}"'.format(collection_file_path.getOriginalPath()))
             kodi_notify_warn('OSError exception deleting collection JSON')
         collections.pop(launcherID)
         fs_write_Collection_index_XML(g_PATHS.COLLECTIONS_FILE_PATH, collections)
         kodi_refresh_container()
-        kodi_notify('Deleted ROM Collection "{0}"'.format(collection_name))
+        kodi_notify('Deleted ROM Collection "{}"'.format(collection_name))
+
+        # TODO Remove assets in the collections asset directory.
 
     #
     # Imports a ROM Collection.
@@ -6442,146 +6418,139 @@ class Main:
     def _command_import_collection(self):
         # --- Choose collection to import ---
         dialog = xbmcgui.Dialog()
-        collection_file_str = dialog.browse(1, 'Select the ROM Collection file', 'files', '.json', False, False).decode('utf-8')
+        collection_file_str = dialog.browse(1, 'Select the ROM Collection file', 
+            'files', '.json', False, False).decode('utf-8')
         if not collection_file_str: return
 
         # --- Load ROM Collection file ---
-        collection_FN = FileName(collection_file_str)
-        control_dic, collection_dic, collection_rom_list = fs_import_ROM_collection(collection_FN)
-        if not collection_dic:
+        i_collection_FN = FileName(collection_file_str)
+        i_control_dic, i_collection, i_rom_list = fs_import_ROM_collection(i_collection_FN)
+        if not i_collection:
             kodi_dialog_OK('Error reading Collection JSON file. JSON file corrupted or wrong.')
             return
-        if not collection_rom_list:
+        if not i_rom_list:
             kodi_dialog_OK('Collection is empty.')
             return
-        if control_dic['control'] != 'Advanced Emulator Launcher Collection ROMs':
+        if i_control_dic['control'] != 'Advanced Emulator Launcher Collection ROMs':
             kodi_dialog_OK('JSON file is not an AEL ROM Collection file.')
             return
-
-        # --- Check if asset JSON exist. If so, ask the user about importing it. ---
-        collection_asset_FN = FileName(collection_FN.getPath_noext() + '_assets.json')
-        log_debug('_command_import_collection() collection_asset_FN "{0}"'.format(collection_asset_FN.getPath()))
-        import_collection_assets = False
-        if collection_asset_FN.exists():
-            log_debug('_command_import_collection() Collection asset JSON found')
-            ret = kodi_dialog_yesno('Collection asset JSON found. Import collection assets as well?')
-            if ret: 
-                import_collection_assets = True
-                asset_control_dic, assets_dic = fs_import_ROM_collection_assets(collection_asset_FN)
-        else:
-            log_debug('_command_import_collection() Collection asset JSON NOT found')
 
         # --- Load collection indices ---
         collections, update_timestamp = fs_load_Collection_index_XML(g_PATHS.COLLECTIONS_FILE_PATH)
 
         # --- If collectionID already on index warn the user ---
-        if collection_dic['id'] in collections:
-            log_info('_command_import_collection() Collection {0} already in AEL'.format(collection_dic['m_name']))
+        if i_collection['id'] in collections:
+            log_info('_command_import_collection() Collection {} already in AEL'.format(i_collection['m_name']))
             ret = kodi_dialog_yesno('A Collection with same ID exists. Overwrite?')
             if not ret: return
 
         # --- Regenrate roms_base_noext field ---
-        collection_base_name = fs_get_collection_ROMs_basename(collection_dic['m_name'], collection_dic['id'])
-        collection_dic['roms_base_noext'] = collection_base_name
-        log_debug('_command_import_collection() roms_base_noext "{0}"'.format(collection_dic['roms_base_noext']))
+        collection_base_name = fs_get_collection_ROMs_basename(i_collection['m_name'], i_collection['id'])
+        i_collection['roms_base_noext'] = collection_base_name
+        log_debug('_command_import_collection() roms_base_noext "{}"'.format(i_collection['roms_base_noext']))
 
-        # --- Also import assets if loaded ---
-        if import_collection_assets:
-            collections_asset_dir_FN = FileName(self.settings['collections_asset_dir'])
+        # --- Import assets ---
+        collections_asset_dir_FN = FileName(self.settings['collections_asset_dir'])
 
-            # --- Import Collection assets ---
-            log_info('_command_import_collection() Importing ROM Collection assets ...')
-            for asset_kind in CATEGORY_ASSET_ID_LIST:
-                # >> Get asset filename with no extension
+        # --- Import Collection assets ---
+        # When importing assets copy them to the Collection assets dir set in AEL addon settings.
+        log_info('_command_import_collection() Importing ROM Collection assets ...')
+        in_dir_FN = FileName(i_collection_FN.getDir())
+        for asset_kind in CATEGORY_ASSET_ID_LIST:
+            # Test if assets exists before copy.
+            AInfo = assets_get_info_scheme(asset_kind)
+            if not i_collection[AInfo.key]:
+                log_debug('{:<9s} undefined (empty str)'.format(AInfo.name))
+                continue
+            in_asset_FN = in_dir_FN.pjoin(i_collection[AInfo.key])
+            log_debug('{:<9s} path "{}"'.format(AInfo.name, in_asset_FN.getPath()))
+            if not in_asset_FN.exists():
+                # Asset not found. Make sure asset is unset in imported Collection.
+                i_collection[AInfo.key] = ''
+                log_debug('{:<9s} NOT found in imported asset dictionary'.format(AInfo.name))
+                continue
+            log_debug('{:<9s} found in imported asset dictionary'.format(AInfo.name))
+
+            # Copy Collection asset from input directory to Collections asset directory.
+            new_asset_basename = i_collection['m_name'] + '_' + AInfo.fname_infix + in_asset_FN.getExt()
+            new_asset_FN = collections_asset_dir_FN.pjoin(new_asset_basename)
+            log_debug('{:<9s} COPY "{}"'.format(AInfo.name, in_asset_FN.getPath()))
+            log_debug('{:<9s}   TO "{}"'.format(AInfo.name, new_asset_FN.getPath()))
+            try:
+                source_path = in_asset_FN.getPath().decode(get_fs_encoding(), 'ignore')
+                dest_path = new_asset_FN.getPath().decode(get_fs_encoding(), 'ignore')
+                shutil.copy(source_path, dest_path)
+            except OSError:
+                log_error('fs_export_ROM_collection_assets() OSError exception copying image')
+                kodi_notify_warn('OSError exception copying image')
+                return
+            except IOError:
+                log_error('fs_export_ROM_collection_assets() IOError exception copying image')
+                kodi_notify_warn('IOError exception copying image')
+                return
+
+            # Update imported asset filename in database.
+            log_debug('{:<9s} collection[{}] is "{}"'.format(
+                AInfo.name, AInfo.key, new_asset_FN.getOriginalPath()))
+            i_collection[AInfo.key] = new_asset_FN.getOriginalPath()
+
+        # --- Import ROM assets ---
+        log_info('_command_import_collection() Importing ROM assets ...')
+        for rom in i_rom_list:
+            log_debug('_command_import_collection() ROM "{}"'.format(rom['m_name']))
+            log_debug('ROM platform "{}"'.format(rom['platform']))
+            for asset_kind in ROM_ASSET_ID_LIST:
+                # Test if assets exists before copy.
                 AInfo = assets_get_info_scheme(asset_kind)
-                asset_noext_FN = assets_get_path_noext_SUFIX(
-                    AInfo, collections_asset_dir_FN, collection_dic['m_name'], collection_dic['id'])
-                log_debug('{0:<9s} base_noext "{1}"'.format(AInfo.name, asset_noext_FN.getBase()))
-                if asset_noext_FN.getBase() not in assets_dic:
-                    # >> Asset not found. Make sure asset is unset in imported Collection.
-                    collection_dic[AInfo.key] = ''
-                    log_debug('{0:<9s} NOT found in imported asset dictionary'.format(AInfo.name))
+                if not rom[AInfo.key]:
+                    log_debug('{:<9s} undefined (empty str)'.format(AInfo.name))
                     continue
-                log_debug('{0:<9s} found in imported asset dictionary'.format(AInfo.name))
-                asset_dic = assets_dic[asset_noext_FN.getBase()]
-                new_asset_FN = collections_asset_dir_FN.pjoin(asset_dic['basename'])
+                in_asset_FN = in_dir_FN.pjoin(rom[AInfo.key])
+                log_debug('{:<9s} path "{}"'.format(AInfo.name, in_asset_FN.getPath()))
+                if not in_asset_FN.exists():
+                    # Asset not found. Make sure asset is unset in imported Collection.
+                    i_collection[AInfo.key] = ''
+                    log_debug('{:<9s} NOT found in imported asset dictionary'.format(AInfo.name))
+                    continue
+                log_debug('{:<9s} found in imported asset dictionary'.format(AInfo.name))
 
-                # >> Create asset file
-                asset_base64_data = asset_dic['data']
-                asset_filesize    = asset_dic['filesize']
-                fileData = base64.b64decode(asset_base64_data)
-                log_debug('{0:<9s} Creating OP "{1}"'.format(AInfo.name, new_asset_FN.getOriginalPath()))
-                log_debug('{0:<9s} Creating P  "{1}"'.format(AInfo.name, new_asset_FN.getPath()))
-                with open(new_asset_FN.getPath(), mode = 'wb') as file: # b is important -> binary
-                    file.write(fileData)
-                statinfo = new_asset_FN.stat()
-                file_size = statinfo.st_size
-                if asset_filesize != file_size:
-                    # >> File creation/Unpacking error. Make sure asset is unset in imported Collection.
-                    collection_dic[AInfo.key] = ''
-                    log_error('{0:<9s} wrong file size {1} (must be {2})'.format(A.name, file_size, asset_filesize))
+                # Copy ROM Collection asset from input directory to Collections asset directory.
+                ROM_FileName = FileName(rom['filename'])
+                new_asset_basename = assets_get_collection_asset_basename(
+                    AInfo, ROM_FileName.getBase_noext(), rom['platform'], in_asset_FN.getExt())
+                new_asset_FN = collections_asset_dir_FN.pjoin(new_asset_basename)
+                log_debug('{:<9s} COPY "{}"'.format(AInfo.name, in_asset_FN.getPath()))
+                log_debug('{:<9s}   TO "{}"'.format(AInfo.name, new_asset_FN.getPath()))
+                try:
+                    source_path = in_asset_FN.getPath().decode(get_fs_encoding(), 'ignore')
+                    dest_path = new_asset_FN.getPath().decode(get_fs_encoding(), 'ignore')
+                    shutil.copy(source_path, dest_path)
+                except OSError:
+                    log_error('fs_export_ROM_collection_assets() OSError exception copying image')
+                    kodi_notify_warn('OSError exception copying image')
                     return
-                else:
-                    log_debug('{0:<9s} file size OK ({1} bytes)'.format(AInfo.name, asset_filesize))
-                # >> Update imported asset filename in database.
-                log_debug('{0:<9s} collection[{1}] linked to "{2}"'.format(AInfo.name, AInfo.key, new_asset_FN.getOriginalPath()))
-                collection_dic[AInfo.key] = new_asset_FN.getOriginalPath()
+                except IOError:
+                    log_error('fs_export_ROM_collection_assets() IOError exception copying image')
+                    kodi_notify_warn('IOError exception copying image')
+                    return
 
-            # --- Import ROM assets ---
-            log_info('_command_import_collection() Importing ROM assets ...')
-            for rom_item in collection_rom_list:
-                log_debug('_command_import_collection() ROM "{0}"'.format(rom_item['m_name']))
-                for asset_kind in ROM_ASSET_ID_LIST:
-                    # >> Get assets filename with no extension
-                    AInfo = assets_get_info_scheme(asset_kind)
-                    ROM_FN = FileName(rom_item['filename'])                    
-                    ROM_asset_noext_FN = assets_get_path_noext_SUFIX(AInfo, collections_asset_dir_FN, 
-                                                                     ROM_FN.getBase_noext(), rom_item['id'])
-                    ROM_asset_FN = ROM_asset_noext_FN.append(ROM_asset_noext_FN.getExt())
-                    log_debug('{0:<9s} base_noext "{1}"'.format(AInfo.name, ROM_asset_FN.getBase_noext()))
-                    if ROM_asset_FN.getBase_noext() not in assets_dic:
-                        # >> Asset not found. Make sure asset is unset in imported Collection.
-                        rom_item[AInfo.key] = ''
-                        log_debug('{0:<9s} NOT found in imported asset dictionary'.format(AInfo.name))
-                        continue
-                    log_debug('{0:<9s} found in imported asset dictionary'.format(AInfo.name))
-                    asset_dic = assets_dic[ROM_asset_FN.getBase_noext()]                        
-                    new_asset_FN = collections_asset_dir_FN.pjoin(asset_dic['basename'])
-
-                    # >> Create asset file
-                    asset_base64_data = asset_dic['data']
-                    asset_filesize    = asset_dic['filesize']
-                    fileData = base64.b64decode(asset_base64_data)
-                    log_debug('{0:<9s} Creating OP "{1}"'.format(AInfo.name, new_asset_FN.getOriginalPath()))
-                    log_debug('{0:<9s} Creating P  "{1}"'.format(AInfo.name, new_asset_FN.getPath()))
-                    with open(new_asset_FN.getPath(), mode = 'wb') as file: # b is important -> binary
-                        file.write(fileData)
-                    statinfo = new_asset_FN.stat()
-                    file_size = statinfo.st_size
-                    if asset_filesize != file_size:
-                        # >> File creation/Unpacking error. Make sure asset is unset in imported Collection.
-                        rom_item[AInfo.key] = ''
-                        log_error('{0:<9s} wrong file size {1} (must be {2})'.format(AInfo.name, file_size, asset_filesize))
-                        return
-                    else:
-                        log_debug('{0:<9s} file size OK ({1} bytes)'.format(AInfo.name, asset_filesize))
-                    # >> Update asset info in database
-                    log_debug('{0:<9s} rom_item[{1}] linked to "{2}"'.format(AInfo.name, AInfo.key, new_asset_FN.getOriginalPath()))
-                    rom_item[AInfo.key] = new_asset_FN.getOriginalPath()
-            log_debug('_command_import_collection() Finished importing assets')
+                # Update asset info in database
+                log_debug('{:<9s} rom[{}] is "{}"'.format(
+                    AInfo.name, AInfo.key, new_asset_FN.getOriginalPath()))
+                rom[AInfo.key] = new_asset_FN.getOriginalPath()
+        log_debug('_command_import_collection() Finished importing assets')
 
         # --- Add imported collection to database ---
-        collections[collection_dic['id']] = collection_dic
-        log_info('_command_import_collection() Imported Collection "{0}" (id {1})'.format(
-            collection_dic['m_name'], collection_dic['id']))
+        collections[i_collection['id']] = i_collection
+        log_info('_command_import_collection() Imported Collection "{}" (id {})'.format(
+            i_collection['m_name'], i_collection['id']))
 
         # --- Write ROM Collection databases ---
         fs_write_Collection_index_XML(g_PATHS.COLLECTIONS_FILE_PATH, collections)
-        fs_write_Collection_ROMs_JSON(g_PATHS.COLLECTIONS_DIR.pjoin(collection_base_name + '.json'), collection_rom_list)
-        if import_collection_assets:
-            kodi_dialog_OK("Imported ROM Collection '{0}' metadata and assets.".format(collection_dic['m_name']))
-        else:
-            kodi_dialog_OK("Imported ROM Collection '{0}' metadata.".format(collection_dic['m_name']))
+        fs_write_Collection_ROMs_JSON(g_PATHS.COLLECTIONS_DIR.pjoin(
+            collection_base_name + '.json'), i_rom_list)
+        kodi_dialog_OK('Imported ROM Collection "{}" metadata and assets.'.format(
+            i_collection['m_name']))
         kodi_refresh_container()
 
     #

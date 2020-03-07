@@ -148,11 +148,11 @@ FEATURE  [COLLECTIONS] Current way of storing the collection artwork, in a unifi
          is not good. Think of a good way to exporting collections (for example, store the
          artwork in a subdirectory).
 
-WIP      [COLLECTIONS] Do not consolidate Collection artwork before exporting. Also, when
+FEATURE  [COLLECTIONS] Do not consolidate Collection artwork before exporting. Also, when
          importing always import to the Collection artwork directory. Exported artwork
-         collection filenames must be relative, not absolute paths.
+         collection filenames in the JSON file must be relative, not absolute paths.
 
-WIP      [COLLECTIONS] Store Collection ROMs artwork as filename_platformCompactName_assetType.png
+FEATURE  [COLLECTIONS] Store Collection ROMs artwork as filename_platformCompactName_assetType.png
          and not filename_ROMID_assetType.png. This solves a lot of problems of duplicate
          artwork. ROMs with same name are allowed on different platforms but not on the
          same platform, which makes sense. Collection own artwork use the special
