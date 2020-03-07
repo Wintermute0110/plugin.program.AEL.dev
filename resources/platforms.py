@@ -471,12 +471,23 @@ for index, p_obj in enumerate(AEL_platforms):
     AEL_platform_list.append(p_obj.long_name)
 
 # Returns the platform numerical index from the platform name. If the platform name is not
-# found then returns the index of the 'Unknown' platform
-def get_AEL_platform_index(platform_long):
-    if platform_long in platform_long_to_index_dic:
-        return platform_long_to_index_dic[platform_long]
-    else:
-        return platform_long_to_index_dic[PLATFORM_UNKNOWN_LONG]
+# found then returns the index of the 'Unknown' platform.
+# platform may be a long_name, short_name or compact_name, all platform names are searched.
+def get_AEL_platform_index(platform):
+    try:
+        return platform_long_to_index_dic[platform]
+    except KeyError:
+        pass
+    try:
+        return platform_short_to_index_dic[platform]
+    except KeyError:
+        pass
+    try:
+        return platform_compact_to_index_dic[platform]
+    except KeyError:
+        pass
+    
+    return platform_long_to_index_dic[PLATFORM_UNKNOWN_LONG]
 
 # NOTE must take into account platform aliases.
 # '0' means any platform in TGDB and must be returned when there is no platform matching.

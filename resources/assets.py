@@ -20,6 +20,7 @@ import os
 
 # --- AEL packages ---
 from .constants import *
+from .platforms import *
 from .utils import *
 
 #
@@ -471,15 +472,16 @@ def assets_get_path_noext_DIR(Asset, AssetPath, ROM):
 # asset_base_noext  Unicode string
 # objectID          Object MD5 ID fingerprint (Unicode string)
 #
-# Returns a FileName object
+# Returns asset/artwork path_noext as FileName object.
 #
 def assets_get_path_noext_SUFIX(Asset, AssetPath, asset_base_noext, objectID = '000'):
-    # >> Returns asset/artwork path_noext
     asset_path_noext_FileName = FileName('')
     objectID_str = '_' + objectID[0:3]
 
-    if   Asset.ID == ASSET_ICON_ID:       asset_path_noext_FileName = AssetPath.pjoin(asset_base_noext + objectID_str + '_icon')
-    elif Asset.ID == ASSET_FANART_ID:     asset_path_noext_FileName = AssetPath.pjoin(asset_base_noext + objectID_str + '_fanart')
+    if Asset.ID == ASSET_ICON_ID:
+        asset_path_noext_FileName = AssetPath.pjoin(asset_base_noext + objectID_str + '_icon')
+    elif Asset.ID == ASSET_FANART_ID:
+        asset_path_noext_FileName = AssetPath.pjoin(asset_base_noext + objectID_str + '_fanart')
     elif Asset.ID == ASSET_BANNER_ID:     asset_path_noext_FileName = AssetPath.pjoin(asset_base_noext + objectID_str + '_banner')
     elif Asset.ID == ASSET_POSTER_ID:     asset_path_noext_FileName = AssetPath.pjoin(asset_base_noext + objectID_str + '_poster')
     elif Asset.ID == ASSET_CLEARLOGO_ID:  asset_path_noext_FileName = AssetPath.pjoin(asset_base_noext + objectID_str + '_clearlogo')
@@ -495,9 +497,20 @@ def assets_get_path_noext_SUFIX(Asset, AssetPath, asset_base_noext, objectID = '
     elif Asset.ID == ASSET_MAP_ID:        asset_path_noext_FileName = AssetPath.pjoin(asset_base_noext + objectID_str + '_map')
     elif Asset.ID == ASSET_MANUAL_ID:     asset_path_noext_FileName = AssetPath.pjoin(asset_base_noext + objectID_str + '_manual')
     else:
-        raise AddonError('assets_get_path_noext_SUFIX() Wrong asset ID = {0}'.format(Asset.ID))
+        raise AddonError('assets_get_path_noext_SUFIX() Wrong asset ID = {}'.format(Asset.ID))
 
     return asset_path_noext_FileName
+
+# Returns the filename_noext of a collection asset as a FileName object.
+# Example: '/asset/path/Super Mario Bros_nes_title'
+#
+# TODO Make basename_noext safe (remove forbidden characters). It is the title of the
+#      object, not necessarily a filename.
+def assets_get_collection_asset_fname_noext(AInfo, asset_dir_FN, basename_noext, platform):
+    pindex = get_AEL_platform_index(platform)
+    platform_compact_name = AEL_platforms[pindex].compact_name
+    
+    return asset_dir_FN.pjoin(basename_noext + '_' + platform_compact_name + '_' + AInfo.fname_infix)
 
 #
 # Get a list of enabled assets.
