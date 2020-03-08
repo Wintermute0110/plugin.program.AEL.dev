@@ -1156,16 +1156,17 @@ class ScrapeStrategy(object):
 
         # --- Download image ---
         log_debug('Downloading image from {}...'.format(scraper_name))
-        image_local_path = asset_path_noext_FN.append('.' + image_ext).getPath()
-        log_verb('Download  "{0}"'.format(image_url_log))
-        log_verb('Into file "{0}"'.format(image_local_path))
+        image_local_path_FN = asset_path_noext_FN.append('.' + image_ext)
+        log_verb('Download "{}"'.format(image_url_log))
+        log_verb('      OP "{}"'.format(image_local_path_FN.getOriginalPath()))
+        log_verb('  Into P "{}"'.format(image_local_path_FN.getPath()))
         pdialog.startProgress('Downloading {} from {}...'.format(asset_name, scraper_name))
         try:
             # net_download_img() never prints URLs or paths.
-            net_download_img(image_url, image_local_path)
+            net_download_img(image_url, image_local_path_FN.getPath())
         except socket.timeout:
             pdialog.endProgress()
-            kodi_notify_warn('Cannot download {0} image (Timeout)'.format(image_name))
+            kodi_notify_warn('Cannot download {} image (Timeout)'.format(image_name))
             status_dic['status'] = False
             status_dic['msg'] = 'Network timeout'
             return status_dic
@@ -1174,12 +1175,13 @@ class ScrapeStrategy(object):
 
         # --- Update Kodi cache with downloaded image ---
         # Recache only if local image is in the Kodi cache, this function takes care of that.
-        # kodi_update_image_cache(image_local_path)
+        # kodi_update_image_cache(image_local_path_FN.getPath())
 
         # --- Edit using Python pass by assigment ---
         # If we reach this point is because an image was downloaded.
         # Caller is responsible to save Categories/Launchers/ROMs databases.
-        object_dic[asset_info.key] = image_local_path
+        # In the DB always store original paths, never translated paths.
+        object_dic[asset_info.key] = image_local_path_FN.getOriginalPath()
         status_dic['msg'] = 'Downloaded {} with {} scraper'.format(asset_name, scraper_name)
 
         return status_dic
