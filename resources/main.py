@@ -444,6 +444,7 @@ class Main:
         elif command == 'EXPORT_COLLECTION':
             self._command_export_collection(args['catID'][0], args['launID'][0])
 
+        # Manages Favourites and ROM Collections.
         elif command == 'MANAGE_FAV':
             self._command_manage_favourites(args['catID'][0], args['launID'][0], args['romID'][0])
 
@@ -5449,17 +5450,20 @@ class Main:
         # --- Show selection dialog ---
         dialog = xbmcgui.Dialog()
         if categoryID == VCATEGORY_FAVOURITES_ID:
-            type = dialog.select('Manage Favourite ROMs',
-                                ['Check Favourite ROMs',
-                                 'Repair Unlinked Launcher/Broken ROMs (by filename)',
-                                 'Repair Unlinked Launcher/Broken ROMs (by basename)',
-                                 'Repair Unlinked ROMs'])
+            type = dialog.select('Manage Favourite ROMs', [
+                'Check Favourite ROMs',
+                'Repair Unlinked Launcher/Broken ROMs (by filename)',
+                'Repair Unlinked Launcher/Broken ROMs (by basename)',
+                'Repair Unlinked ROMs',
+            ])
         elif categoryID == VCATEGORY_COLLECTIONS_ID:
-            type = dialog.select('Manage Collection ROMs',
-                                ['Check Collection ROMs',
-                                 'Repair Unlinked Launcher/Broken ROMs (by filename)',
-                                 'Repair Unlinked Launcher/Broken ROMs (by basename)',
-                                 'Repair Unlinked ROMs'])
+            type = dialog.select('Manage Collection ROMs', [
+                'Check Collection ROMs',
+                'Repair Unlinked Launcher/Broken ROMs (by filename)',
+                'Repair Unlinked Launcher/Broken ROMs (by basename)',
+                'Repair Unlinked ROMs',
+                'Sort Collection ROMs alphabetically',
+            ])
 
         # --- Check Favourite ROMs ---
         if type == 0:
@@ -5468,15 +5472,17 @@ class Main:
 
             # --- Print a report of issues found ---
             if categoryID == VCATEGORY_FAVOURITES_ID:
-                kodi_dialog_OK('You have {0} ROMs in Favourites. '.format(self.num_fav_roms) +
-                               '{0} Unlinked Launcher, '.format(self.num_fav_ulauncher) +
-                               '{0} Unliked ROM and '.format(self.num_fav_urom) +
-                               '{0} Broken.'.format(self.num_fav_broken))
+                kodi_dialog_OK(
+                    'You have {} ROMs in Favourites. '.format(self.num_fav_roms) +
+                    '{} Unlinked Launcher, '.format(self.num_fav_ulauncher) +
+                    '{} Unliked ROM and '.format(self.num_fav_urom) +
+                    '{} Broken.'.format(self.num_fav_broken))
             elif categoryID == VCATEGORY_COLLECTIONS_ID:
-                kodi_dialog_OK('You have {0} ROMs in Collection "{1}". '.format(self.num_fav_roms, collection['m_name']) +
-                               '{0} Unlinked Launcher, '.format(self.num_fav_ulauncher) +
-                               '{0} Unliked ROM and '.format(self.num_fav_urom) +
-                               '{0} are Broken.'.format(self.num_fav_broken))
+                kodi_dialog_OK(
+                    'You have {} ROMs in Collection "{1}". '.format(self.num_fav_roms, collection['m_name']) +
+                    '{} Unlinked Launcher, '.format(self.num_fav_ulauncher) +
+                    '{} Unliked ROM and '.format(self.num_fav_urom) +
+                    '{} are Broken.'.format(self.num_fav_broken))
 
         # --- Repair all Unlinked Launcher/Broken ROMs ---
         # type == 1 --> Repair by filename match
@@ -5696,21 +5702,33 @@ class Main:
 
             # >> Show info to user
             kodi_dialog_OK(
-                'Found {0} Unlinked ROMs. '.format(num_unlinked_ROMs) +
-                'Of those, {0} were repaired.'.format(num_repaired_ROMs))
+                'Found {} Unlinked ROMs. '.format(num_unlinked_ROMs) +
+                'Of those, {} were repaired.'.format(num_repaired_ROMs))
+
+        # --- Short collection ROMs alphabetically ---
+        # https://docs.python.org/3/howto/sorting.html
+        # https://stackoverflow.com/questions/3382352/equivalent-of-numpy-argsort-in-basic-python/3383106
+        elif type == 4:
+            log_debug('Sorting Collecion ROMs alphabetically...')
+            col_rom_list = [roms_fav[key] for key in roms_fav]
+            name_list = [rom['m_name'] for rom in col_rom_list]
+            sorted_idx_list = [i for (v, i) in sorted((v.lower(), i) for (i, v) in enumerate(name_list))]
+            new_roms_fav = OrderedDict()
+            for idx in sorted_idx_list:
+                rom = col_rom_list[idx]
+                new_roms_fav[rom['id']] = rom
+                # log_debug('Index {:03d} ROM "{}"'.format(idx, rom['m_name']))
+            roms_fav = new_roms_fav
 
         # --- User cancelled dialog ---
-        elif type < 0:
-            return
+        elif type < 0: return
 
         # --- If we reach this point save favourites and refresh container ---
         if categoryID == VCATEGORY_FAVOURITES_ID:
             fs_write_Favourites_JSON(g_PATHS.FAV_JSON_FILE_PATH, roms_fav)
         elif categoryID == VCATEGORY_COLLECTIONS_ID:
-            # >> Convert back the OrderedDict into a list and save Collection
-            collection_rom_list = []
-            for key in roms_fav:
-                collection_rom_list.append(roms_fav[key])
+            # Convert back the OrderedDict into a list and save Collection
+            collection_rom_list = [roms_fav[key] for key in roms_fav]
             json_file = g_PATHS.COLLECTIONS_DIR.pjoin(collection['roms_base_noext'] + '.json')
             fs_write_Collection_ROMs_JSON(json_file, collection_rom_list)
         kodi_refresh_container()
