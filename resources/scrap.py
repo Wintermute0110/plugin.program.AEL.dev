@@ -1935,18 +1935,18 @@ class AEL_Offline(Scraper):
         gamedata = self._new_gamedata_dic()
 
         if self.cached_platform == 'MAME':
-            # --- MAME scraper ---
             key_id = self.candidate['id']
             log_verb("AEL_Offline.get_metadata() Mode MAME id = '{}'".format(key_id))
-            gamedata['title']     = self.cached_games[key_id]['description']
+            gamedata['title']     = self.cached_games[key_id]['title']
             gamedata['year']      = self.cached_games[key_id]['year']
             gamedata['genre']     = self.cached_games[key_id]['genre']
-            gamedata['developer'] = self.cached_games[key_id]['manufacturer']
+            gamedata['developer'] = self.cached_games[key_id]['developer']
+            gamedata['nplayers']  = self.cached_games[key_id]['nplayers']
         elif self.cached_platform == 'Unknown':
-            # --- Unknown platform. Behave like NULL scraper ---
+            # Unknown platform. Behave like NULL scraper
             log_verb("AEL_Offline.get_metadata() Mode Unknown. Doing nothing.")
         else:
-            # --- No-Intro scraper ---
+            # No-Intro scraper by default.
             key_id = self.candidate['id']
             log_verb("AEL_Offline.get_metadata() Mode No-Intro id = '{}'".format(key_id))
             gamedata['title']     = self.cached_games[key_id]['title']
@@ -1975,7 +1975,7 @@ class AEL_Offline(Scraper):
         if rom_base_noext_lower in self.cached_games:
             candidate = self._new_candidate_dic()
             candidate['id'] = self.cached_games[rom_base_noext_lower]['ROM']
-            candidate['display_name'] = self.cached_games[rom_base_noext_lower]['description']
+            candidate['display_name'] = self.cached_games[rom_base_noext_lower]['title']
             candidate['platform'] = platform
             candidate['scraper_platform'] = platform
             candidate['order'] = 1
