@@ -233,6 +233,11 @@ class Main:
             # log_debug('JSON      ''{0}'''.format(c_str))
             # log_debug('Response  ''{0}'''.format(response.decode('utf-8')))
 
+        # Kiosk mode for skins.
+        # Do not change context menus with listitem.addContextMenuItems() in Kiosk mode.
+        # In other words, change the CM if Kiosk mode is disabled.
+        self.g_kiosk_mode_disabled = xbmc.getCondVisibility("!Skin.HasSetting(KioskMode.Enabled)")
+
         # --- Addon data paths creation ---
         if not g_PATHS.ADDON_DATA_DIR.exists():            g_PATHS.ADDON_DATA_DIR.makedirs()
         if not g_PATHS.SCRAPER_CACHE_DIR.exists():         g_PATHS.SCRAPER_CACHE_DIR.makedirs()
@@ -3926,19 +3931,29 @@ class Main:
         gamedb_info_dic = fs_load_JSON_file(data_dir_FN, g_PATHS.GAMEDB_JSON_BASE_NOEXT)
         for pobj in AEL_platforms:
             if pobj.long_name == PLATFORM_UNKNOWN_LONG: continue
-            platform_dic = gamedb_info_dic[pobj.long_name]
-            self._gui_render_AEL_scraper_launchers_row(pobj.long_name, platform_dic)
+            self._gui_render_AEL_scraper_launchers_row(pobj, gamedb_info_dic)
         xbmcplugin.endOfDirectory(handle = self.addon_handle, succeeded = True, cacheToDisc = False)
 
-    def _gui_render_AEL_scraper_launchers_row(self, plong_name, platform_dic):
-        # Mark platform whose XML DB is not available
-        title_str = plong_name
-        num_ROMs = platform_dic['numROMs']
+    def _gui_render_AEL_scraper_launchers_row(self, pobj, gamedb_info_dic):
+        if pobj.aliasof:
+            pobj_parent = AEL_platforms[get_AEL_platform_index(pobj.aliasof)]
+            plot_text = 'Browse ' + KC_ORANGE + pobj.long_name + KC_END + ' ROMs ' + \
+                'in AEL Offline Scraper database. ' + \
+                KC_ORANGE + pobj.long_name + KC_END + ' is an alias of ' + \
+                KC_VIOLET + pobj_parent.long_name + KC_END + '.'
+            # User ROMs of parent.
+            num_ROMs = gamedb_info_dic[pobj_parent.long_name]['numROMs']
+        else:
+            plot_text = 'Browse ' + KC_ORANGE + pobj.long_name + KC_END + ' ROMs ' + \
+                'in AEL Offline Scraper database. '
+            num_ROMs = gamedb_info_dic[pobj.long_name]['numROMs']
+
+        # Build ListItem object.
+        title_str = pobj.long_name
         if num_ROMs > 0:
-            title_str += ' [COLOR orange]({} ROMs)[/COLOR]'.format(platform_dic['numROMs'])
+            title_str += ' [COLOR orange]({} ROMs)[/COLOR]'.format(num_ROMs)
         else:
             title_str += ' [COLOR red][Not available][/COLOR]'
-        plot_text = 'Browse [COLOR orange]{}[/COLOR] ROMs in AEL Offline Scraper database'.format(title_str)
         vlauncher_icon   = g_PATHS.ADDON_CODE_DIR.pjoin('media/theme/Browse_AEL_Offline_icon.png').getPath()
         vlauncher_fanart = g_PATHS.FANART_FILE_PATH.getPath()
         vlauncher_poster = g_PATHS.ADDON_CODE_DIR.pjoin('media/theme/Browse_AEL_Offline_poster.png').getPath()
@@ -3947,16 +3962,19 @@ class Main:
         listitem.setInfo('video', {'title' : title_str, 'plot' : plot_text, 'overlay' : 4 })
         listitem.setArt({'icon' : vlauncher_icon, 'fanart' : vlauncher_fanart, 'poster' : vlauncher_poster})
         # Set platform property to render platform icon on skins.
-        listitem.setProperty('platform', plong_name)
+        listitem.setProperty('platform', pobj.long_name)
         listitem.setProperty(AEL_CONTENT_LABEL, AEL_CONTENT_VALUE_ROM_LAUNCHER)
 
-        commands = []
-        commands.append(('Kodi File Manager', 'ActivateWindow(filemanager)'))
-        commands.append(('AEL addon settings', 'Addon.OpenSettings({})'.format(__addon_id__)))
-        if xbmc.getCondVisibility("!Skin.HasSetting(KioskMode.Enabled)"):
+        if self.g_kiosk_mode_disabled:
+            commands = [
+                ('Kodi File Manager', 'ActivateWindow(filemanager)'),
+                ('AEL addon settings', 'Addon.OpenSettings({})'.format(__addon_id__)),
+            ]
             listitem.addContextMenuItems(commands, replaceItems = True)
 
-        url_str = self._misc_url('SHOW_AEL_SCRAPER_ROMS', plong_name)
+        # User the original platform here, otherwise the list goes to the parent
+        # platform instead of the aliased platform when user goes back in the list.
+        url_str = self._misc_url('SHOW_AEL_SCRAPER_ROMS', pobj.long_name)
         xbmcplugin.addDirectoryItem(handle = self.addon_handle, url = url_str, listitem = listitem, isFolder = True)
 
     def _gui_render_LB_scraper_launchers(self):
@@ -5191,17 +5209,26 @@ class Main:
     # Renders ROMs in a AEL offline Scraper virtual launcher (aka platform)
     #
     def _command_render_AEL_scraper_roms(self, platform):
-        log_debug('_command_render_AEL_scraper_roms() platform = "{}"'.format(platform))
+        log_debug('_command_render_AEL_scraper_roms() platform "{}"'.format(platform))
+        pobj = AEL_platforms[get_AEL_platform_index(platform)]
+        if pobj.aliasof:
+            log_debug('_command_view_offline_scraper_rom() aliasof "{}"'.format(pobj.aliasof))
+            pobj_parent = AEL_platforms[get_AEL_platform_index(pobj.aliasof)]
+            db_platform = pobj_parent.long_name
+        else:
+            db_platform = pobj.long_name
+        log_debug('_command_view_offline_scraper_rom() db_platform "{}"'.format(db_platform))
+
         # Content type and sorting method
         self._misc_set_all_sorting_methods()
         self._misc_set_AEL_Content(AEL_CONTENT_VALUE_ROMS)
 
         # If XML DB not available tell user and leave
-        xml_path_FN = g_PATHS.GAMEDB_INFO_DIR.pjoin(platform + '.xml')
+        xml_path_FN = g_PATHS.GAMEDB_INFO_DIR.pjoin(db_platform + '.xml')
         log_debug('xml_path_FN OP {}'.format(xml_path_FN.getOriginalPath()))
         log_debug('xml_path_FN  P {}'.format(xml_path_FN.getPath()))
         if not xml_path_FN.exists():
-            kodi_notify_warn('{} database not available yet.'.format(platform))
+            kodi_notify_warn('{} database not available yet.'.format(db_platform))
             # kodi_refresh_container()
             return
 
@@ -7621,23 +7648,32 @@ class Main:
         log_debug('_command_view_offline_scraper_rom() scraper   "{}"'.format(scraper))
         log_debug('_command_view_offline_scraper_rom() platform  "{}"'.format(platform))
         log_debug('_command_view_offline_scraper_rom() game_name "{}"'.format(game_name))
+        pobj = AEL_platforms[get_AEL_platform_index(platform)]
+        if pobj.aliasof:
+            log_debug('_command_view_offline_scraper_rom() aliasof "{}"'.format(pobj.aliasof))
+            pobj_parent = AEL_platforms[get_AEL_platform_index(pobj.aliasof)]
+            db_platform = pobj_parent.long_name
+        else:
+            db_platform = pobj.long_name
+        log_debug('_command_view_offline_scraper_rom() db_platform "{}"'.format(db_platform))
 
         # --- Load Offline Scraper database ---
         # --- Load offline scraper XML file ---
         loading_ticks_start = time.time()
         if scraper == 'AEL':
+            xml_path_FN = g_PATHS.GAMEDB_INFO_DIR.pjoin(db_platform + '.xml')
+            log_debug('Loading AEL XML {}'.format(xml_path_FN.getPath()))
             pDialog = KodiProgressDialog()
-            pDialog.startProgress('Loading AEL Offline Scraper {} XML database...'.format(platform))
-            xml_path_FN = g_PATHS.GAMEDB_INFO_DIR.pjoin(platform + '.xml')
-            xml_path = xml_path_FN.getPath()
-            log_debug('Loading AEL XML {}'.format(xml_path))
-            games = audit_load_OfflineScraper_XML(xml_path)
+            pDialog.startProgress('Loading AEL Offline Scraper {} XML database...'.format(db_platform))
+            games = audit_load_OfflineScraper_XML(xml_path_FN.getPath())
             pDialog.endProgress()
-            game = games[game_name]
 
+            game = games[game_name]
             info_text  = '[COLOR orange]ROM information[/COLOR]\n'
             info_text += "[COLOR violet]ROM basename[/COLOR]: '{}'\n".format(game_name)
             info_text += "[COLOR violet]platform[/COLOR]: '{}'\n".format(platform)
+            if pobj.aliasof:
+                info_text += "[COLOR violet]alias of[/COLOR]: '{}'\n".format(pobj_parent.long_name)
             info_text += '\n[COLOR orange]Metadata[/COLOR]\n'
 
             # Old Offline Scraper

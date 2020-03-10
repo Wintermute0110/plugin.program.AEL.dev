@@ -472,7 +472,8 @@ for index, p_obj in enumerate(AEL_platforms):
 
 # Returns the platform numerical index from the platform name. If the platform name is not
 # found then returns the index of the 'Unknown' platform.
-# platform may be a long_name, short_name or compact_name, all platform names are searched.
+# platform may be a long_name, short_name or compact_name, all platform names are searched
+# in an efficient way.
 def get_AEL_platform_index(platform):
     try:
         return platform_long_to_index_dic[platform]
@@ -486,7 +487,7 @@ def get_AEL_platform_index(platform):
         return platform_compact_to_index_dic[platform]
     except KeyError:
         pass
-    
+
     return platform_long_to_index_dic[PLATFORM_UNKNOWN_LONG]
 
 # NOTE must take into account platform aliases.
