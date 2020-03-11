@@ -132,9 +132,24 @@ from .rom_audit import *
 # In the Standalone Launcher context menu the situation is similar to the ROM context menu.
 # The difference is that rom_obj is a Launcher object instance instead of a ROM object.
 # ------------------------------------------------------------------------------------------------
+
+# This class is used to filter No-Intro BIOS ROMs and MAME BIOS, Devices and Mecanichal machines.
+# No-Intro BIOSes are easy to filter, filename starts with '[BIOS]'
+# MAME is more complicated. The Offline Scraper includes 3 JSON filenames
+#   MAME_BIOSes.json
+#   MAME_Devices.json
+#   MAME_Mechanical.json
+# used to filter MAME machines.
+# This class is (will be) used in the ROM Scanner.
+class FilterROM(object):
+    def __init__(self, PATHS, settings):
+        log_debug('FilterROM.__init__() BEGIN...')
+        self.PATHS = PATHS
+        self.settings = settings
+
 class ScraperFactory(object):
     def __init__(self, PATHS, settings):
-        # log_debug('ScraperFactory.__init__() BEGIN ...')
+        # log_debug('ScraperFactory.__init__() BEGIN...')
         self.PATHS = PATHS
         self.settings = settings
 
