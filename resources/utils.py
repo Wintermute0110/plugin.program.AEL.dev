@@ -998,15 +998,19 @@ class FileName:
     def getBase(self):
         return os.path.basename(self.path)
 
+    # Deprecated method name.
     def getBase_noext(self):
         basename  = os.path.basename(self.path)
         root, ext = os.path.splitext(basename)
-        
+        return root
+
+    def getBaseNoExt(self):
+        basename  = os.path.basename(self.path)
+        root, ext = os.path.splitext(basename)
         return root
 
     def getExt(self):
         root, ext = os.path.splitext(self.path)
-        
         return ext
 
     # ---------------------------------------------------------------------------------------------

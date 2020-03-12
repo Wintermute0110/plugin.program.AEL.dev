@@ -9706,8 +9706,8 @@ class Main:
                 report_fobj.write('  File not in launcher ROM list. Processing it ...\n')
 
             # --- Ignore BIOS ROMs ---
-            if romfilter.ROM_is_filtered(ROM.getBase()): 
-                log_debug('ROM filtered.')
+            if romfilter.ROM_is_filtered(ROM.getBaseNoExt()): 
+                log_debug('ROM filtered. Skipping ROM processing.')
                 continue
 
             # --- Create new ROM and process metadata and assets ---------------------------------

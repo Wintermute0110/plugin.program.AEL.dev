@@ -171,6 +171,11 @@ class FilterROM(object):
 
     # Returns True if ROM is filtered, False otherwise.
     def ROM_is_filtered(self, basename):
+        log_debug('FilterROM::ROM_is_filtered() Testing "{}"'.format(basename))
+        if not self.settings['scan_ignore_bios']:
+            log_debug('FilterROM::ROM_is_filtered() Filters disabled. Return False.')
+            return False
+
         if self.platform == PLATFORM_MAME_LONG:
             if basename in self.BIOS_set:
                 log_debug('FilterROM::ROM_is_filtered() Filtered MAME BIOS "{}"'.format(basename))
