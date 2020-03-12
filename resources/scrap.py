@@ -142,10 +142,54 @@ from .rom_audit import *
 # used to filter MAME machines.
 # This class is (will be) used in the ROM Scanner.
 class FilterROM(object):
-    def __init__(self, PATHS, settings):
+    def __init__(self, PATHS, settings, platform):
         log_debug('FilterROM.__init__() BEGIN...')
         self.PATHS = PATHS
         self.settings = settings
+        self.platform = platform
+        self.addon_dir = self.settings['scraper_aeloffline_addon_code_dir']
+
+        # If platform is MAME load the BIOS, Devices and Mechanical databases.
+        if self.platform == PLATFORM_MAME_LONG:
+            BIOS_path = os.path.join(self.addon_dir, 'data-AOS', 'MAME_BIOSes.json')
+            Devices_path = os.path.join(self.addon_dir, 'data-AOS', 'MAME_Devices.json')
+            Mechanical_path = os.path.join(self.addon_dir, 'data-AOS', 'MAME_Mechanical.json')
+            BIOS_list = self._load_JSON(BIOS_path)
+            Devices_list = self._load_JSON(Devices_path)
+            Mechanical_list = self._load_JSON(Mechanical_path)
+            # Convert lists to sets to execute efficiently 'x in y' operation.
+            self.BIOS_set = {i for i in BIOS_list}
+            self.Devices_set = {i for i in Devices_list}
+            self.Mechanical_set = {i for i in Mechanical_list}
+
+    def _load_JSON(self, filename):
+        log_debug('FilterROM::_load_JSON() Loading "{}"'.format(filename))
+        with open(filename) as file:
+            data = json.load(file)
+
+        return data
+
+    # Returns True if ROM is filtered, False otherwise.
+    def ROM_is_filtered(self, basename):
+        if self.platform == PLATFORM_MAME_LONG:
+            if basename in self.BIOS_set:
+                log_debug('FilterROM::ROM_is_filtered() Filtered MAME BIOS "{}"'.format(basename))
+                return True
+            if basename in self.Devices_set:
+                log_debug('FilterROM::ROM_is_filtered() Filtered MAME Device "{}"'.format(basename))
+                return True
+            if basename in self.Mechanical_set:
+                log_debug('FilterROM::ROM_is_filtered() Filtered MAME Mechanical "{}"'.format(basename))
+                return True
+        else:
+            # If it is not MAME it is No-Intro
+            # Name of bios is: '[BIOS] Rom name example (Rev A).zip'
+            BIOS_m = re.findall('\[BIOS\]', basename)
+            if BIOS_m:
+                log_debug('FilterROM::ROM_is_filtered() Filtered No-Intro BIOS "{}"'.format(basename))
+                return True
+
+        return False
 
 class ScraperFactory(object):
     def __init__(self, PATHS, settings):

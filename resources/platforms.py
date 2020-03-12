@@ -28,6 +28,9 @@ DEFAULT_PLAT_TGDB          = '0'
 DEFAULT_PLAT_MOBYGAMES     = '0'
 DEFAULT_PLAT_SCREENSCRAPER = '0'
 DEFAULT_PLAT_GAMEFAQS      = '0'
+PLATFORM_MAME_LONG    = 'MAME'
+PLATFORM_MAME_SHORT   = 'arcade-mame'
+PLATFORM_MAME_COMPACT = 'mame'
 PLATFORM_UNKNOWN_LONG    = 'Unknown'
 PLATFORM_UNKNOWN_SHORT   = 'unknown'
 PLATFORM_UNKNOWN_COMPACT = 'unknown'
@@ -222,7 +225,7 @@ AEL_platforms = [
         DAT_NOINTRO, 'Magnavox - Odyssey2'),
 
     # --- MAME/Arcade ---
-    Platform('MAME', 'arcade-mame', 'mame', None, '23', '143', '75', '2', DAT_MAME),
+    Platform(PLATFORM_MAME_LONG, PLATFORM_MAME_SHORT, PLATFORM_MAME_COMPACT, None, '23', '143', '75', '2', DAT_MAME),
 
     # --- Mattel ---
     Platform('Mattel Intellivision', 'console-ivision', 'ivision', None, '32', '30', '115', '16',

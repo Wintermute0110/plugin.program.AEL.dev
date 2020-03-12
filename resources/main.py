@@ -9464,16 +9464,16 @@ class Main:
 
         # --- Open ROM scanner report file ---
         launcher_report_FN = g_PATHS.REPORTS_DIR.pjoin(launcher['roms_base_noext'] + '_report.txt')
-        log_info('Report file OP "{0}"'.format(launcher_report_FN.getOriginalPath()))
-        log_info('Report file  P "{0}"'.format(launcher_report_FN.getPath()))
+        log_info('Report file OP "{}"'.format(launcher_report_FN.getOriginalPath()))
+        log_info('Report file  P "{}"'.format(launcher_report_FN.getPath()))
         report_fobj = open(launcher_report_FN.getPath(), "w")
         report_fobj.write('*** Starting ROM scanner ... ***\n'.format())
-        report_fobj.write('Launcher name  "{0}"\n'.format(launcher['m_name']))
-        report_fobj.write('Launcher ID    "{0}"\n'.format(launcher['id']))
-        report_fobj.write('ROM path       "{0}"\n'.format(rom_path.getPath()))
-        report_fobj.write('ROM ext        "{0}"\n'.format(launcher_exts))
-        report_fobj.write('ROM extra path "{0}"\n'.format(rom_extra_path.getPath()))
-        report_fobj.write('Platform       "{0}"\n'.format(launcher['platform']))
+        report_fobj.write('Launcher name  "{}"\n'.format(launcher['m_name']))
+        report_fobj.write('Launcher ID    "{}"\n'.format(launcher['id']))
+        report_fobj.write('ROM path       "{}"\n'.format(rom_path.getPath()))
+        report_fobj.write('ROM ext        "{}"\n'.format(launcher_exts))
+        report_fobj.write('ROM extra path "{}"\n'.format(rom_extra_path.getPath()))
+        report_fobj.write('Platform       "{}"\n'.format(launcher['platform']))
 
         # Check if there is an XML for this launcher. If so, load it.
         # If file does not exist or is empty then return an empty dictionary.
@@ -9494,14 +9494,17 @@ class Main:
         # Check if scraper is ready for operation. Otherwise disable it internally.
         scraper_strategy.scanner_check_before_scraping()
 
+        # Create ROMFilter object. Loads filter databases for MAME.
+        romfilter = FilterROM(g_PATHS, self.settings, launcher['platform'])
+
         # --- Assets/artwork stuff ----------------------------------------------------------------
         # Ensure there is no duplicate asset dirs. Abort scanning of assets if duplicate dirs found.
         log_debug('Checking for duplicated artwork directories...')
         duplicated_name_list = asset_get_duplicated_dir_list(launcher)
         if duplicated_name_list:
             duplicated_asset_srt = ', '.join(duplicated_name_list)
-            log_info('Duplicated asset dirs: {0}'.format(duplicated_asset_srt))
-            kodi_dialog_OK('Duplicated asset directories: {0}. '.format(duplicated_asset_srt) +
+            log_info('Duplicated asset dirs: {}'.format(duplicated_asset_srt))
+            kodi_dialog_OK('Duplicated asset directories: {}. '.format(duplicated_asset_srt) +
                            'Change asset directories before continuing.')
             return
         else:
@@ -9513,7 +9516,7 @@ class Main:
         if scraper_strategy.unconfigured_name_list:
             unconfigured_asset_srt = ', '.join(scraper_strategy.unconfigured_name_list)
             kodi_dialog_OK(
-                'Assets directories not set: {0}. '.format(unconfigured_asset_srt) +
+                'Assets directories not set: {}. '.format(unconfigured_asset_srt) +
                 'Asset scanner will be disabled for this/those.')
 
         # --- Create a cache of assets ---
@@ -9703,12 +9706,9 @@ class Main:
                 report_fobj.write('  File not in launcher ROM list. Processing it ...\n')
 
             # --- Ignore BIOS ROMs ---
-            # Name of bios is: '[BIOS] Rom name example (Rev A).zip'
-            if self.settings['scan_ignore_bios']:
-                BIOS_re = re.findall('\[BIOS\]', ROM.getBase())
-                if len(BIOS_re) > 0:
-                    log_info("BIOS detected. Skipping ROM '{0}'".format(ROM.path))
-                    continue
+            if romfilter.ROM_is_filtered(ROM.getBase()): 
+                log_debug('ROM filtered.')
+                continue
 
             # --- Create new ROM and process metadata and assets ---------------------------------
             romdata = fs_new_rom()
