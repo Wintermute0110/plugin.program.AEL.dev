@@ -29,7 +29,8 @@ games = {
     # Console games
     'metroid'                : ('Metroid', 'Metroid.zip', 'Nintendo SNES'),
     'mworld'                 : ('Super Mario World', 'Super Mario World.zip', 'Nintendo SNES'),
-    'sonic'                  : ('Sonic the Hedgehog', 'Sonic the Hedgehog (USA, Europe).zip', 'Sega MegaDrive'),
+    'sonic_megaDrive'        : ('Sonic the Hedgehog', 'Sonic the Hedgehog (USA, Europe).zip', 'Sega Mega Drive'),
+    'sonic_genesis'          : ('Sonic the Hedgehog', 'Sonic the Hedgehog (USA, Europe).zip', 'Sega Genesis'),
     'chakan'                 : ('Chakan', 'Chakan (USA, Europe).zip', 'Sega MegaDrive'),
     'ff7'                    : ('Final Fantasy VII', 'Final Fantasy VII (USA) (Disc 1).iso', 'Sony PlayStation'),
     'console_wrong_title'    : ('Console invalid game', 'mjhyewqr.zip', 'Sega MegaDrive'),

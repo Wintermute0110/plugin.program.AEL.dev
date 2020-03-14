@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<menu>
+<header>
+  <listname>Nintendo 64DD</listname>
+  <lastlistupdate></lastlistupdate>
+  <listversion>V1</listversion>
+  <exporterversion>V1 GameDBInfo converter</exporterversion>
+</header>
+<game ROM="Dezaemon DD (Japan) (Proto)">
+  <title>Dezaemon DD (Japan) (Proto)</title>
+  <year>1998</year>
+  <genre>Miscellaneous</genre>
+  <developer />
+  <publisher>Athena</publisher>
+  <rating>Other - NR (Not Rated)</rating>
+</game>
+<game ROM="Doshin the Giant (Japan)">
+  <title>Doshin the Giant (Japan)</title>
+  <year>1999</year>
+  <genre>Simulation</genre>
+  <developer />
+  <publisher>Nintendo</publisher>
+  <rating>Other - NR (Not Rated)</rating>
+</game>
+<game ROM="Doshin the Giant (Japan) (Demo)">
+  <title>Doshin the Giant (Japan) (Demo)</title>
+  <year>1999</year>
+  <genre>Simulation</genre>
+  <developer />
+  <publisher>Nintendo</publisher>
+  <rating>Other - NR (Not Rated)</rating>
+</game>
+<game ROM="Doshin the Giant Tinkling Toddler Liberation Front! Assemble (Japan)">
+  <title>Doshin the Giant Tinkling Toddler Liberation Front! Assemble (Japan)</title>
+  <year>2000</year>
+  <genre>Simulation</genre>
+  <developer />
+  <publisher>Nintendo</publisher>
+  <rating>Other - NR (Not Rated)</rating>
+</game>
+<game ROM="F-Zero X Expansion Kit (Japan) (Translated En)">
+  <title>F-Zero X Expansion Kit (Japan) (Translated En)</title>
+  <year>2000</year>
+  <genre>Driving</genre>
+  <developer />
+  <publisher>Nintendo</publisher>
+  <rating>Other - NR (Not Rated)</rating>
+</game>
+<game ROM="Japan Pro Golf Tour 64 (Japan)">
+  <title>Japan Pro Golf Tour 64 (Japan)</title>
+  <year>2000</year>
+  <genre>Sports/Golf</genre>
+  <developer />
+  <publisher>Seta</publisher>
+  <rating>Other - NR (Not Rated)</rating>
+</game>
+<game ROM="Mario Artist Communication Kit (Japan)">
+  <title>Mario Artist Communication Kit (Japan)</title>
+  <year>2000</year>
+  <genre>Multimedia</genre>
+  <developer />
+  <publisher>Nintendo</publisher>
+  <rating>Other - NR (Not Rated)</rating>
+</game>
+<game ROM="Mario Artist Paint Studio (Japan)">
+  <title>Mario Artist Paint Studio (Japan)</title>
+  <year>1999</year>
+  <genre>Multimedia</genre>
+  <developer />
+  <publisher>Nintendo</publisher>
+  <rating>Other - NR (Not Rated)</rating>
+</game>
+<game ROM="Mario Artist Polygon Studio (Japan)">
+  <title>Mario Artist Polygon Studio (Japan)</title>
+  <year>2000</year>
+  <genre>Multimedia</genre>
+  <developer />
+  <publisher>Nintendo</publisher>
+  <rating>Other - NR (Not Rated)</rating>
+</game>
+<game ROM="Mario Artist Talent Studio (Japan)">
+  <title>Mario Artist Talent Studio (Japan)</title>
+  <year>2000</year>
+  <genre>Multimedia</genre>
+  <developer />
+  <publisher>Nintendo</publisher>
+  <rating>Other - NR (Not Rated)</rating>
+</game>
+<game ROM="Sim City 64 (Japan)">
+  <title>Sim City 64 (Japan)</title>
+  <year>2000</year>
+  <genre>Simulation</genre>
+  <developer />
+  <publisher>Nintendo</publisher>
+  <rating>Other - NR (Not Rated)</rating>
+</game>
+<game ROM="Super Mario 64 (Japan) (Proto)">
+  <title>Super Mario 64 (Japan) (Proto)</title>
+  <year>19??</year>
+  <genre>Platform</genre>
+  <developer />
+  <publisher>Nintendo</publisher>
+  <rating>Other - NR (Not Rated)</rating>
+</game>
+</menu>

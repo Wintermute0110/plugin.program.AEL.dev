@@ -165,9 +165,73 @@ class ScraperSettings(object):
         
         return scraper_settings
     
+
+# This class is used to filter No-Intro BIOS ROMs and MAME BIOS, Devices and Mecanichal machines.
+# No-Intro BIOSes are easy to filter, filename starts with '[BIOS]'
+# MAME is more complicated. The Offline Scraper includes 3 JSON filenames
+#   MAME_BIOSes.json
+#   MAME_Devices.json
+#   MAME_Mechanical.json
+# used to filter MAME machines.
+# This class is (will be) used in the ROM Scanner.
+class FilterROM(object):
+    def __init__(self, PATHS, settings, platform):
+        log_debug('FilterROM.__init__() BEGIN...')
+        self.PATHS = PATHS
+        self.settings = settings
+        self.platform = platform
+        self.addon_dir = self.settings['scraper_aeloffline_addon_code_dir']
+
+        # If platform is MAME load the BIOS, Devices and Mechanical databases.
+        if self.platform == PLATFORM_MAME_LONG:
+            BIOS_path = os.path.join(self.addon_dir, 'data-AOS', 'MAME_BIOSes.json')
+            Devices_path = os.path.join(self.addon_dir, 'data-AOS', 'MAME_Devices.json')
+            Mechanical_path = os.path.join(self.addon_dir, 'data-AOS', 'MAME_Mechanical.json')
+            BIOS_list = self._load_JSON(BIOS_path)
+            Devices_list = self._load_JSON(Devices_path)
+            Mechanical_list = self._load_JSON(Mechanical_path)
+            # Convert lists to sets to execute efficiently 'x in y' operation.
+            self.BIOS_set = {i for i in BIOS_list}
+            self.Devices_set = {i for i in Devices_list}
+            self.Mechanical_set = {i for i in Mechanical_list}
+
+    def _load_JSON(self, filename):
+        log_debug('FilterROM::_load_JSON() Loading "{}"'.format(filename))
+        with open(filename) as file:
+            data = json.load(file)
+
+        return data
+
+    # Returns True if ROM is filtered, False otherwise.
+    def ROM_is_filtered(self, basename):
+        log_debug('FilterROM::ROM_is_filtered() Testing "{}"'.format(basename))
+        if not self.settings['scan_ignore_bios']:
+            log_debug('FilterROM::ROM_is_filtered() Filters disabled. Return False.')
+            return False
+
+        if self.platform == PLATFORM_MAME_LONG:
+            if basename in self.BIOS_set:
+                log_debug('FilterROM::ROM_is_filtered() Filtered MAME BIOS "{}"'.format(basename))
+                return True
+            if basename in self.Devices_set:
+                log_debug('FilterROM::ROM_is_filtered() Filtered MAME Device "{}"'.format(basename))
+                return True
+            if basename in self.Mechanical_set:
+                log_debug('FilterROM::ROM_is_filtered() Filtered MAME Mechanical "{}"'.format(basename))
+                return True
+        else:
+            # If it is not MAME it is No-Intro
+            # Name of bios is: '[BIOS] Rom name example (Rev A).zip'
+            BIOS_m = re.findall('\[BIOS\]', basename)
+            if BIOS_m:
+                log_debug('FilterROM::ROM_is_filtered() Filtered No-Intro BIOS "{}"'.format(basename))
+                return True
+
+        return False
+
 class ScraperFactory(object):
     def __init__(self, PATHS, settings):
-        # log_debug('ScraperFactory.__init__() BEGIN ...')
+        # log_debug('ScraperFactory.__init__() BEGIN...')
         self.PATHS = PATHS
         self.settings = settings
 
@@ -1096,7 +1160,8 @@ class Scraper(object):
     def __init__(self, settings, fallbackScraper = None):
         self.settings = settings
         self.verbose_flag = False
-        self.dump_file_flag = False
+        self.dump_file_flag = False # Dump DEBUG files only if this is true.
+        self.dump_dir = None # Directory to dump DEBUG files.
         self.debug_checksums_flag = False
         # Record the number of network error/exceptions. If this number is bigger than a
         # threshold disable the scraper.
@@ -1712,9 +1777,9 @@ class AEL_Offline(Scraper):
     def get_candidates(self, search_term, rom_FN, rom_checksums_FN, platform, status_dic):
         # AEL Offline cannot be disabled.
         # Prepare data for scraping.
-        rombase_noext = rom_FN.getBaseNoExt()
-        log_debug('AEL_Offline.get_candidates() rombase_noext "{0}"'.format(rombase_noext))
-        log_debug('AEL_Offline.get_candidates() AEL platform  "{0}"'.format(platform))
+        rombase_noext = rom_FN.getBase_noext()
+        log_debug('AEL_Offline.get_candidates() rombase_noext "{}"'.format(rombase_noext))
+        log_debug('AEL_Offline.get_candidates() AEL platform  "{}"'.format(platform))
 
         # If not cached XML data found (maybe offline scraper does not exist for this platform or 
         # cannot be loaded) return an empty list of candidates.
@@ -1734,27 +1799,27 @@ class AEL_Offline(Scraper):
         gamedata = self._new_gamedata_dic()
 
         if self.cached_platform == 'MAME':
-            # --- MAME scraper ---
             key_id = self.candidate['id']
-            log_verb("AEL_Offline.get_metadata() Mode MAME id = '{0}'".format(key_id))
-            gamedata['title']     = self.cached_games[key_id]['description']
+            log_verb("AEL_Offline.get_metadata() Mode MAME id = '{}'".format(key_id))
+            gamedata['title']     = self.cached_games[key_id]['title']
             gamedata['year']      = self.cached_games[key_id]['year']
             gamedata['genre']     = self.cached_games[key_id]['genre']
-            gamedata['developer'] = self.cached_games[key_id]['manufacturer']
+            gamedata['developer'] = self.cached_games[key_id]['developer']
+            gamedata['nplayers']  = self.cached_games[key_id]['nplayers']
         elif self.cached_platform == 'Unknown':
-            # --- Unknown platform. Behave like NULL scraper ---
+            # Unknown platform. Behave like NULL scraper
             log_verb("AEL_Offline.get_metadata() Mode Unknown. Doing nothing.")
         else:
-            # --- No-Intro scraper ---
+            # No-Intro scraper by default.
             key_id = self.candidate['id']
-            log_verb("AEL_Offline.get_metadata() Mode No-Intro id = '{0}'".format(key_id))
-            gamedata['title']     = self.cached_games[key_id]['description']
+            log_verb("AEL_Offline.get_metadata() Mode No-Intro id = '{}'".format(key_id))
+            gamedata['title']     = self.cached_games[key_id]['title']
             gamedata['year']      = self.cached_games[key_id]['year']
             gamedata['genre']     = self.cached_games[key_id]['genre']
-            gamedata['developer'] = self.cached_games[key_id]['manufacturer']
-            gamedata['nplayers']  = self.cached_games[key_id]['player']
+            gamedata['developer'] = self.cached_games[key_id]['developer']
+            gamedata['nplayers']  = self.cached_games[key_id]['nplayers']
             gamedata['esrb']      = self.cached_games[key_id]['rating']
-            gamedata['plot']      = self.cached_games[key_id]['story']
+            gamedata['plot']      = self.cached_games[key_id]['plot']
 
         return gamedata
 
@@ -1773,8 +1838,8 @@ class AEL_Offline(Scraper):
         rom_base_noext_lower = rombase_noext.lower()
         if rom_base_noext_lower in self.cached_games:
             candidate = self._new_candidate_dic()
-            candidate['id'] = self.cached_games[rom_base_noext_lower]['name']
-            candidate['display_name'] = self.cached_games[rom_base_noext_lower]['description']
+            candidate['id'] = self.cached_games[rom_base_noext_lower]['ROM']
+            candidate['display_name'] = self.cached_games[rom_base_noext_lower]['title']
             candidate['platform'] = platform
             candidate['scraper_platform'] = platform
             candidate['order'] = 1
@@ -1785,14 +1850,14 @@ class AEL_Offline(Scraper):
     def _get_NoIntro_candidates(self, rombase_noext, platform):
         # --- First try an exact match using rombase_noext ---
         log_verb("AEL_Offline._get_NoIntro_candidates() Scraper working in No-Intro mode.")
-        log_verb("AEL_Offline._get_NoIntro_candidates() Trying exact search for '{0}'".format(
+        log_verb("AEL_Offline._get_NoIntro_candidates() Trying exact search for '{}'".format(
             rombase_noext))
         candidate_list = []
         if rombase_noext in self.cached_games:
             log_verb("AEL_Offline._get_NoIntro_candidates() Exact match found.")
             candidate = self._new_candidate_dic()
             candidate['id'] = rombase_noext
-            candidate['display_name'] = self.cached_games[rombase_noext]['name']
+            candidate['display_name'] = self.cached_games[rombase_noext]['ROM']
             candidate['platform'] = platform
             candidate['scraper_platform'] = platform
             candidate['order'] = 1
@@ -1802,7 +1867,7 @@ class AEL_Offline(Scraper):
             # Here implement a Levenshtein distance algorithm.
             search_term = text_format_ROM_name_for_scraping(rombase_noext)
             log_verb("AEL_Offline._get_NoIntro_candidates() No exact match found.")
-            log_verb("AEL_Offline._get_NoIntro_candidates() Trying fuzzy search '{0}'".format(
+            log_verb("AEL_Offline._get_NoIntro_candidates() Trying fuzzy search '{}'".format(
                 search_term))
             search_string_lower = rombase_noext.lower()
             regexp = '.*{}.*'.format(search_string_lower)
@@ -1811,25 +1876,25 @@ class AEL_Offline(Scraper):
                 p = re.compile(regexp)
             except:
                 log_info('AEL_Offline._get_NoIntro_candidates() Exception in re.compile(regexp)')
-                log_info('AEL_Offline._get_NoIntro_candidates() regexp = "{0}"'.format(regexp))
+                log_info('AEL_Offline._get_NoIntro_candidates() regexp = "{}"'.format(regexp))
                 return []
 
             for key in self.cached_games:
-                this_game_name = self.cached_games[key]['name']
+                this_game_name = self.cached_games[key]['ROM']
                 this_game_name_lower = this_game_name.lower()
                 match = p.match(this_game_name_lower)
                 if not match: continue
                 # --- Add match to candidate list ---
                 candidate = self._new_candidate_dic()
-                candidate['id'] = self.cached_games[key]['name']
-                candidate['display_name'] = self.cached_games[key]['name']
+                candidate['id'] = self.cached_games[key]['ROM']
+                candidate['display_name'] = self.cached_games[key]['ROM']
                 candidate['platform'] = platform
                 candidate['scraper_platform'] = platform
                 candidate['order'] = 1
                 # If there is an exact match of the No-Intro name put that candidate game first.
-                if search_term == this_game_name:                          candidate['order'] += 1
-                if rombase_noext == this_game_name:                        candidate['order'] += 1
-                if self.cached_games[key]['name'].startswith(search_term): candidate['order'] += 1
+                if search_term == this_game_name:                         candidate['order'] += 1
+                if rombase_noext == this_game_name:                       candidate['order'] += 1
+                if self.cached_games[key]['ROM'].startswith(search_term): candidate['order'] += 1
                 candidate_list.append(candidate)
             candidate_list.sort(key = lambda result: result['order'], reverse = True)
 
@@ -1839,34 +1904,42 @@ class AEL_Offline(Scraper):
     def _initialise_platform(self, platform):
         # Check if we have data already cached in object memory for this platform
         if self.cached_platform == platform:
-            log_debug('AEL_Offline._initialise_platform() platform = "{0}" is cached in object.'.format(
+            log_debug('AEL_Offline._initialise_platform() platform = "{}" is cached in object.'.format(
                 platform))
             return
         else:
-            log_debug('AEL_Offline._initialise_platform() platform = "{0}" not cached. Loading XML.'.format(
+            log_debug('AEL_Offline._initialise_platform() platform = "{}" not cached. Loading XML.'.format(
                 platform))
 
-        # What if platform is not in the official list dictionary? Then load
-        # nothing and behave like the NULL scraper.
-        try:
-            xml_file = platform_AEL_to_Offline_GameDBInfo_XML[platform]
-        except:
-            log_debug('AEL_Offline._initialise_platform() Platform {0} not found'.format(platform))
+        # What if platform is not in the official list dictionary?
+        # Then load nothing and behave like the NULL scraper.
+        if platform in platform_long_to_index_dic:
+            # Check for aliased platforms
+            pobj = AEL_platforms[platform_long_to_index_dic[platform]]
+            if pobj.aliasof:
+                log_debug('AEL_Offline._initialise_platform() Aliased platform. Using parent XML.')
+                parent_pobj = AEL_platforms[platform_compact_to_index_dic[pobj.aliasof]]
+                xml_file = 'data-AOS/' + parent_pobj.long_name + '.xml'
+            else:
+                xml_file = 'data-AOS/' + platform + '.xml'
+
+        else:
+            log_debug('AEL_Offline._initialise_platform() Platform "{}" not found'.format(platform))
             log_debug('AEL_Offline._initialise_platform() Defaulting to Unknown')
             self._reset_cached_games()
             return
 
         # Load XML database and keep it in memory for subsequent calls
         xml_path = os.path.join(self.addon_dir, xml_file)
-        # log_debug('AEL_Offline._initialise_platform() Loading XML {0}'.format(xml_path))
+        # log_debug('AEL_Offline._initialise_platform() Loading XML {}'.format(xml_path))
         self.cached_games = audit_load_OfflineScraper_XML(xml_path)
         if not self.cached_games:
             self._reset_cached_games()
             return
         self.cached_xml_path = xml_path
         self.cached_platform = platform
-        log_debug('AEL_Offline._initialise_platform() cached_xml_path = {0}'.format(self.cached_xml_path))
-        log_debug('AEL_Offline._initialise_platform() cached_platform = {0}'.format(self.cached_platform))
+        log_debug('AEL_Offline._initialise_platform() cached_xml_path = {}'.format(self.cached_xml_path))
+        log_debug('AEL_Offline._initialise_platform() cached_platform = {}'.format(self.cached_platform))
 
     def _reset_cached_games(self):
         self.cached_games = {}
@@ -1916,7 +1989,7 @@ class TheGamesDB(Scraper):
         'clearlogo': ASSET_CLEARLOGO_ID,
         'banner': ASSET_BANNER_ID,
     }
-
+    # This allows to change the API version easily.
     URL_ByGameName = 'https://api.thegamesdb.net/v1/Games/ByGameName'
     URL_ByGameID   = 'https://api.thegamesdb.net/v1/Games/ByGameID'
     URL_Platforms  = 'https://api.thegamesdb.net/v1/Platforms'
@@ -2501,14 +2574,17 @@ class MobyGames(Scraper):
         'inside cover'  : None,
         'full cover'    : None,
         'soundtrack'    : None,
-
         'map'           : ASSET_MAP_ID
     }
+    
+    # This allows to change the API version easily.
+    URL_games     = 'https://api.mobygames.com/v1/games'
+    URL_platforms = 'https://api.mobygames.com/v1/platforms'
+    
     # --- Constructor ----------------------------------------------------------------------------
     def __init__(self, settings):
         # --- This scraper settings ---
         self.api_key = settings['scraper_mobygames_apikey']
-
         # --- Misc stuff ---
         self.cache_candidates = {}
         self.cache_metadata = {}
@@ -2542,7 +2618,7 @@ class MobyGames(Scraper):
     # and print an error.
     def check_before_scraping(self, status_dic):
         if self.api_key:
-            log_error('MobyGames.check_before_scraping() MobiGames API key looks OK.')
+            log_debug('MobyGames.check_before_scraping() MobiGames API key looks OK.')
             return
         log_error('MobyGames.check_before_scraping() MobiGames API key not configured.')
         log_error('MobyGames.check_before_scraping() Disabling MobyGames scraper.')
@@ -2567,10 +2643,10 @@ class MobyGames(Scraper):
 
         # --- Request is not cached. Get candidates and introduce in the cache ---
         scraper_platform = AEL_platform_to_MobyGames(platform)
-        log_debug('MobyGames.get_candidates() search_term        "{0}"'.format(search_term))
-        log_debug('MobyGames.get_candidates() rombase_noext      "{0}"'.format(rombase_noext))
-        log_debug('MobyGames.get_candidates() AEL platform       "{0}"'.format(platform))
-        log_debug('MobyGames.get_candidates() MobyGames platform "{0}"'.format(scraper_platform))
+        log_debug('MobyGames.get_candidates() search_term        "{}"'.format(search_term))
+        log_debug('MobyGames.get_candidates() rombase_noext      "{}"'.format(rombase_noext))
+        log_debug('MobyGames.get_candidates() AEL platform       "{}"'.format(platform))
+        log_debug('MobyGames.get_candidates() MobyGames platform "{}"'.format(scraper_platform))
         candidate_list = self._search_candidates(
             search_term, platform, scraper_platform, status_dic)
         if not status_dic['status']: return None
@@ -2587,12 +2663,13 @@ class MobyGames(Scraper):
 
         # --- Check if search term is in the cache ---
         if self._check_disk_cache(Scraper.CACHE_METADATA, self.cache_key):
-            log_debug('MobyGames.get_metadata() Metadata cache hit "{0}"'.format(self.cache_key))
+            log_debug('MobyGames.get_metadata() Metadata cache hit "{}"'.format(self.cache_key))
             return self._retrieve_from_disk_cache(Scraper.CACHE_METADATA, self.cache_key)
 
         # --- Request is not cached. Get candidates and introduce in the cache ---
-        log_debug('MobyGames.get_metadata() Metadata cache miss "{0}"'.format(self.cache_key))
-        url = 'https://api.mobygames.com/v1/games/{}?api_key={}'.format(self.candidate['id'], self.api_key)
+        log_debug('MobyGames.get_metadata() Metadata cache miss "{}"'.format(self.cache_key))
+        url_tail = '/{}?api_key={}'.format(self.candidate['id'], self.api_key)
+        url = MobyGames.URL_games + url_tail
         json_data = self._retrieve_URL_as_JSON(url, status_dic)
         if not status_dic['status']: return None
         self._dump_json_debug('MobyGames_get_metadata.json', json_data)
@@ -2662,8 +2739,8 @@ class MobyGames(Scraper):
     # --- This class own methods -----------------------------------------------------------------
     def debug_get_platforms(self, status_dic):
         log_debug('MobyGames.debug_get_platforms() BEGIN...')
-        url_str = 'https://api.mobygames.com/v1/platforms?api_key={}'
-        url = url_str.format(self.api_key)
+        url_tail = '?api_key={}'.format(self.api_key)
+        url = MobyGames.URL_platforms + url_tail
         json_data = self._retrieve_URL_as_JSON(url, status_dic)
         if not status_dic['status']: return None
         self._dump_json_debug('MobyGames_get_platforms.json', json_data)
@@ -2676,11 +2753,12 @@ class MobyGames(Scraper):
         search_string_encoded = urllib.quote_plus(search_term.encode('utf8'))
         if scraper_platform == '0':
             # Unkwnon or wrong platform case.
-            url_str = 'https://api.mobygames.com/v1/games?api_key={}&format=brief&title={}'
-            url = url_str.format(self.api_key, search_string_encoded)
+            url_tail = '?api_key={}&format=brief&title={}'.format(
+                self.api_key, search_string_encoded)
         else:
-            url_str = 'https://api.mobygames.com/v1/games?api_key={}&format=brief&title={}&platform={}'
-            url = url_str.format(self.api_key, search_string_encoded, scraper_platform)
+            url_tail = '?api_key={}&format=brief&title={}&platform={}'.format(
+                self.api_key, search_string_encoded, scraper_platform)
+        url = MobyGames.URL_games + url_tail
         json_data = self._retrieve_URL_as_JSON(url, status_dic)
         if not status_dic['status']: return None
         self._dump_json_debug('MobyGames_get_candidates.json', json_data)
@@ -2708,8 +2786,7 @@ class MobyGames(Scraper):
         return candidate_list
 
     def _parse_metadata_title(self, json_data):
-        if 'title' in json_data: title_str = json_data['title']
-        else:                    title_str = DEFAULT_META_TITLE
+        title_str = json_data['title'] if 'title' in json_data else DEFAULT_META_TITLE
 
         return title_str
 
@@ -2747,29 +2824,29 @@ class MobyGames(Scraper):
     def _retrieve_all_assets(self, candidate, status_dic):
         # --- Cache hit ---
         if self._check_disk_cache(Scraper.CACHE_INTERNAL, self.cache_key):
-            log_debug('MobyGames._retrieve_all_assets() Internal cache hit "{0}"'.format(self.cache_key))
+            log_debug('MobyGames._retrieve_all_assets() Internal cache hit "{}"'.format(self.cache_key))
             return self._retrieve_from_disk_cache(Scraper.CACHE_INTERNAL, self.cache_key)
 
         # --- Cache miss. Retrieve data and update cache ---
-        log_debug('MobyGames._retrieve_all_assets() Internal cache miss "{0}"'.format(self.cache_key))
+        log_debug('MobyGames._retrieve_all_assets() Internal cache miss "{}"'.format(self.cache_key))
         snap_assets = self._retrieve_snap_assets(candidate, candidate['scraper_platform'], status_dic)
         if not status_dic['status']: return None
         cover_assets = self._retrieve_cover_assets(candidate, candidate['scraper_platform'], status_dic)
         if not status_dic['status']: return None
         asset_list = snap_assets + cover_assets
-        log_debug('MobyGames._retrieve_all_assets() A total of {0} assets found for candidate ID {1}'.format(
+        log_debug('MobyGames._retrieve_all_assets() Total {} assets found for candidate ID {}'.format(
             len(asset_list), candidate['id']))
 
         # --- Put metadata in the cache ---
-        log_debug('MobyGames._retrieve_all_assets() Adding to internal cache "{0}"'.format(self.cache_key))
+        log_debug('MobyGames._retrieve_all_assets() Adding to internal cache "{}"'.format(self.cache_key))
         self._update_disk_cache(Scraper.CACHE_INTERNAL, self.cache_key, asset_list)
 
         return asset_list
 
     def _retrieve_snap_assets(self, candidate, platform_id, status_dic):
         log_debug('MobyGames._retrieve_snap_assets() Getting Snaps...')
-        url = 'https://api.mobygames.com/v1/games/{}/platforms/{}/screenshots?api_key={}'.format(
-            candidate['id'], platform_id, self.api_key)
+        url_tail = '/{}/platforms/{}/screenshots?api_key={}'.format(candidate['id'], platform_id, self.api_key)
+        url = MobyGames.URL_games + url_tail
         json_data = self._retrieve_URL_as_JSON(url, status_dic)
         if not status_dic['status']: return None
         self._dump_json_debug('MobyGames_assets_snap.json', json_data)
@@ -2790,7 +2867,7 @@ class MobyGames(Scraper):
             asset_data['url_thumb'] = image_data['thumbnail_image']
             # URL is not mandatory here but MobyGames provides it anyway.
             asset_data['url'] = image_data['image']
-            if self.verbose_flag: log_debug('Found Snap {0}'.format(asset_data['url_thumb']))
+            if self.verbose_flag: log_debug('Found Snap {}'.format(asset_data['url_thumb']))
             asset_list.append(asset_data)
         log_debug('MobyGames._retrieve_snap_assets() Found {} snap assets for candidate #{}'.format(
             len(asset_list), candidate['id']))
@@ -2799,8 +2876,8 @@ class MobyGames(Scraper):
 
     def _retrieve_cover_assets(self, candidate, platform_id, status_dic):
         log_debug('MobyGames._retrieve_cover_assets() Getting Covers...')
-        url = 'https://api.mobygames.com/v1/games/{}/platforms/{}/covers?api_key={}'.format(
-            candidate['id'], platform_id, self.api_key)
+        url_tail = '/{}/platforms/{}/covers?api_key={}'.format(candidate['id'], platform_id, self.api_key)
+        url = MobyGames.URL_games + url_tail
         json_data = self._retrieve_URL_as_JSON(url, status_dic)
         if not status_dic['status']: return None
         self._dump_json_debug('MobyGames_assets_cover.json', json_data)
@@ -3098,18 +3175,39 @@ class ScreenScraper(Scraper):
         'zh',  # Chinese
     ]
 
+    # This allows to change the API version easily.
+    URL_jeuInfos            = 'https://www.screenscraper.fr/api2/jeuInfos.php'
+    URL_jeuRecherche        = 'https://www.screenscraper.fr/api2/jeuRecherche.php'
+    URL_image               = 'https://www.screenscraper.fr/image.php'
+    URL_mediaJeu            = 'https://www.screenscraper.fr/api2/mediaJeu.php'
+
+    URL_ssuserInfos         = 'https://www.screenscraper.fr/api2/ssuserInfos.php'
+    URL_userlevelsListe     = 'https://www.screenscraper.fr/api2/userlevelsListe.php'
+    URL_supportTypesListe   = 'https://www.screenscraper.fr/api2/supportTypesListe.php'
+    URL_romTypesListe       = 'https://www.screenscraper.fr/api2/romTypesListe.php'
+    URL_genresListe         = 'https://www.screenscraper.fr/api2/genresListe.php'
+    URL_regionsListe        = 'https://www.screenscraper.fr/api2/regionsListe.php'
+    URL_languesListe        = 'https://www.screenscraper.fr/api2/languesListe.php'
+    URL_classificationListe = 'https://www.screenscraper.fr/api2/classificationListe.php'
+    URL_systemesListe       = 'https://www.screenscraper.fr/api2/systemesListe.php'
+
+    # Time to wait in get_assets() in seconds (float) to avoid scraper overloading.
+    TIME_WAIT_GET_ASSETS = 1.2
+
     # --- Constructor ----------------------------------------------------------------------------
     def __init__(self, settings):
         # --- This scraper settings ---
-        self.dev_id     = 'V2ludGVybXV0ZTAxMTA='
-        self.dev_pass   = 'VDlwU3J6akZCbWZRbWM4Yg=='
-        self.softname   = settings['scraper_screenscraper_AEL_softname']
-        self.ssid       = settings['scraper_screenscraper_ssid']
-        self.sspassword = settings['scraper_screenscraper_sspass']
-        self.region_idx = settings['scraper_screenscraper_region']
+        self.dev_id       = 'V2ludGVybXV0ZTAxMTA='
+        self.dev_pass     = 'VDlwU3J6akZCbWZRbWM4Yg=='
+        self.softname     = settings['scraper_screenscraper_AEL_softname']
+        self.ssid         = settings['scraper_screenscraper_ssid']
+        self.sspassword   = settings['scraper_screenscraper_sspass']
+        self.region_idx   = settings['scraper_screenscraper_region']
         self.language_idx = settings['scraper_screenscraper_language']
 
         # --- Internal stuff ---
+        self.last_get_assets_call = datetime.datetime.now()
+
         # Create list of regions to search stuff. Put the user preference first.
         self.user_region = ScreenScraper.region_list[self.region_idx]
         log_debug('ScreenScraper.__init__() User preferred region "{}"'.format(self.user_region))
@@ -3164,7 +3262,8 @@ class ScreenScraper(Scraper):
     # ScreenScraper uses the candidates and internal cache. It does not use the
     # medatada and asset caches at all because the metadata and assets are generated
     # with the internal cache.
-    # Search term is always None for this scraper.
+    # Search term is always None for this scraper. rom_FN and ROM checksums are used
+    # to search ROMs.
     def get_candidates(self, search_term, rom_FN, rom_checksums_FN, platform, status_dic):
         # If the scraper is disabled return None and do not mark error in status_dic.
         # Candidate will not be introduced in the disk cache and will be scraped again.
@@ -3206,7 +3305,7 @@ class ScreenScraper(Scraper):
 
         # --- Retrieve jeu_dic from internal cache ---
         if self._check_disk_cache(Scraper.CACHE_INTERNAL, self.cache_key):
-            log_debug('ScreenScraper.get_metadata() Internal cache hit "{0}"'.format(self.cache_key))
+            log_debug('ScreenScraper.get_metadata() Internal cache hit "{}"'.format(self.cache_key))
             jeu_dic = self._retrieve_from_disk_cache(Scraper.CACHE_INTERNAL, self.cache_key)
         else:
             raise ValueError('Logic error')
@@ -3236,7 +3335,7 @@ class ScreenScraper(Scraper):
 
         # --- Retrieve jeu_dic from internal cache ---
         if self._check_disk_cache(Scraper.CACHE_INTERNAL, self.cache_key):
-            log_debug('ScreenScraper.get_assets() Internal cache hit "{0}"'.format(self.cache_key))
+            log_debug('ScreenScraper.get_assets() Internal cache hit "{}"'.format(self.cache_key))
             jeu_dic = self._retrieve_from_disk_cache(Scraper.CACHE_INTERNAL, self.cache_key)
         else:
             raise ValueError('Logic error')
@@ -3247,6 +3346,13 @@ class ScreenScraper(Scraper):
         asset_list = [asset_dic for asset_dic in all_asset_list if asset_dic['asset_ID'] == asset_info.id]
         log_debug('ScreenScraper.get_assets() Total assets {} / Returned assets {}'.format(
             len(all_asset_list), len(asset_list)))
+
+        # Wait some time to avoid scraper overloading.
+        # As soon as we return from get_assets() the ROM scanner quickly chooses one
+        # asset and start the download. Then, get_assets() is called again with different
+        # asset_ID. Make sure we wait some time here so there is some time between asset
+        # download to not overload ScreenScraper.
+        self._wait_for_asset_request()
 
         return asset_list
 
@@ -3268,24 +3374,9 @@ class ScreenScraper(Scraper):
         return selected_asset['SS_format']
 
     # --- This class own methods -----------------------------------------------------------------
-    # Plumbing function to get the cached jeu_dic dictionary returned by ScreenScraper.
-    # This is cached in the internal cache.
-    # Scraper.get_candiates() must be called before this function to fill the cache.
-    #
-    # THIS FUNCTION IS OBSOLETE. jeu_dic is now in the internal cache.
-    def debug_get_gameInfos_dic(self, candidate):
-        log_debug('ScreenScraper.debug_get_gameInfos_dic() Internal cache retrieving "{}"'.format(
-            candidate['SS_cache_str']))
-        gameInfos_dic = self.cache_jeuInfos[candidate['SS_cache_str']]
-
-        return gameInfos_dic
-
     def debug_get_user_info(self, status_dic):
         log_debug('ScreenScraper.debug_get_user_info() Geting SS user info...')
-        url_a = 'https://www.screenscraper.fr/api2/ssuserInfos.php?devid={}&devpassword={}'
-        url_b = '&softname={}&output=json&ssid={}&sspassword={}'
-        url = url_a.format(base64.b64decode(self.dev_id), base64.b64decode(self.dev_pass), ) + \
-              url_b.format(self.softname, self.ssid, self.sspassword)
+        url = ScreenScraper.URL_ssuserInfos + self._get_common_SS_URL()
         json_data = self._retrieve_URL_as_JSON(url, status_dic)
         if not status_dic['status']: return None
         self._dump_json_debug('ScreenScraper_get_user_info.json', json_data)
@@ -3294,10 +3385,7 @@ class ScreenScraper(Scraper):
 
     def debug_get_user_levels(self, status_dic):
         log_debug('ScreenScraper.debug_get_user_levels() Geting SS user level list...')
-        url_a = 'https://www.screenscraper.fr/api2/userlevelsListe.php?devid={}&devpassword={}'
-        url_b = '&softname={}&output=json&ssid={}&sspassword={}'
-        url = url_a.format(base64.b64decode(self.dev_id), base64.b64decode(self.dev_pass), ) + \
-              url_b.format(self.softname, self.ssid, self.sspassword)
+        url = ScreenScraper.URL_userlevelsListe + self._get_common_SS_URL()
         json_data = self._retrieve_URL_as_JSON(url, status_dic)
         if not status_dic['status']: return None
         self._dump_json_debug('ScreenScraper_get_user_level_list.json', json_data)
@@ -3305,13 +3393,11 @@ class ScreenScraper(Scraper):
         return json_data
 
     # nbJoueursListe.php : Liste des nombres de joueurs 
+    # This function not coded at the moment.
 
     def debug_get_support_types(self, status_dic):
         log_debug('ScreenScraper.debug_get_support_types() Geting SS Support Types list...')
-        url_a = 'https://www.screenscraper.fr/api2/supportTypesListe.php?devid={}&devpassword={}'
-        url_b = '&softname={}&output=json&ssid={}&sspassword={}'
-        url = url_a.format(base64.b64decode(self.dev_id), base64.b64decode(self.dev_pass), ) + \
-              url_b.format(self.softname, self.ssid, self.sspassword)
+        url = ScreenScraper.URL_supportTypesListe + self._get_common_SS_URL()
         json_data = self._retrieve_URL_as_JSON(url, status_dic)
         if not status_dic['status']: return None
         self._dump_json_debug('ScreenScraper_get_support_types_list.json', json_data)
@@ -3320,10 +3406,7 @@ class ScreenScraper(Scraper):
 
     def debug_get_ROM_types(self, status_dic):
         log_debug('ScreenScraper.debug_get_ROM_types() Geting SS ROM types list...')
-        url_a = 'https://www.screenscraper.fr/api2/romTypesListe.php?devid={}&devpassword={}'
-        url_b = '&softname={}&output=json&ssid={}&sspassword={}'
-        url = url_a.format(base64.b64decode(self.dev_id), base64.b64decode(self.dev_pass), ) + \
-              url_b.format(self.softname, self.ssid, self.sspassword)
+        url = ScreenScraper.URL_romTypesListe + self._get_common_SS_URL()
         json_data = self._retrieve_URL_as_JSON(url, status_dic)
         if not status_dic['status']: return None
         self._dump_json_debug('ScreenScraper_get_ROM_types_list.json', json_data)
@@ -3332,10 +3415,7 @@ class ScreenScraper(Scraper):
 
     def debug_get_genres(self, status_dic):
         log_debug('ScreenScraper.debug_get_genres() Geting SS Genre list...')
-        url_a = 'https://www.screenscraper.fr/api2/genresListe.php?devid={}&devpassword={}'
-        url_b = '&softname={}&output=json&ssid={}&sspassword={}'
-        url = url_a.format(base64.b64decode(self.dev_id), base64.b64decode(self.dev_pass), ) + \
-              url_b.format(self.softname, self.ssid, self.sspassword)
+        url = ScreenScraper.URL_genresListe + self._get_common_SS_URL()
         json_data = self._retrieve_URL_as_JSON(url, status_dic)
         if not status_dic['status']: return None
         self._dump_json_debug('ScreenScraper_get_genres_list.json', json_data)
@@ -3344,10 +3424,7 @@ class ScreenScraper(Scraper):
 
     def debug_get_regions(self, status_dic):
         log_debug('ScreenScraper.debug_get_regions() Geting SS Regions list...')
-        url_a = 'https://www.screenscraper.fr/api2/regionsListe.php?devid={}&devpassword={}'
-        url_b = '&softname={}&output=json&ssid={}&sspassword={}'
-        url = url_a.format(base64.b64decode(self.dev_id), base64.b64decode(self.dev_pass), ) + \
-              url_b.format(self.softname, self.ssid, self.sspassword)
+        url = ScreenScraper.URL_regionsListe + self._get_common_SS_URL()
         json_data = self._retrieve_URL_as_JSON(url, status_dic)
         if not status_dic['status']: return None
         self._dump_json_debug('ScreenScraper_get_regions_list.json', json_data)
@@ -3356,10 +3433,7 @@ class ScreenScraper(Scraper):
 
     def debug_get_languages(self, status_dic):
         log_debug('ScreenScraper.debug_get_languages() Geting SS Languages list...')
-        url_a = 'https://www.screenscraper.fr/api2/languesListe.php?devid={}&devpassword={}'
-        url_b = '&softname={}&output=json&ssid={}&sspassword={}'
-        url = url_a.format(base64.b64decode(self.dev_id), base64.b64decode(self.dev_pass), ) + \
-              url_b.format(self.softname, self.ssid, self.sspassword)
+        url = ScreenScraper.URL_languesListe + self._get_common_SS_URL()
         json_data = self._retrieve_URL_as_JSON(url, status_dic)
         if not status_dic['status']: return None
         self._dump_json_debug('ScreenScraper_get_language_list.json', json_data)
@@ -3368,10 +3442,7 @@ class ScreenScraper(Scraper):
 
     def debug_get_clasifications(self, status_dic):
         log_debug('ScreenScraper.debug_get_clasifications() Geting SS Clasifications list...')
-        url_a = 'https://www.screenscraper.fr/api2/classificationListe.php?devid={}&devpassword={}'
-        url_b = '&softname={}&output=json&ssid={}&sspassword={}'
-        url = url_a.format(base64.b64decode(self.dev_id), base64.b64decode(self.dev_pass), ) + \
-              url_b.format(self.softname, self.ssid, self.sspassword)
+        url = ScreenScraper.URL_classificationListe + self._get_common_SS_URL()
         json_data = self._retrieve_URL_as_JSON(url, status_dic)
         if not status_dic['status']: return None
         self._dump_json_debug('ScreenScraper_get_clasifications_list.json', json_data)
@@ -3380,11 +3451,7 @@ class ScreenScraper(Scraper):
 
     def debug_get_platforms(self, status_dic):
         log_debug('ScreenScraper.debug_get_platforms() Getting SS platforms...')
-        url_a = 'https://www.screenscraper.fr/api2/systemesListe.php?'
-        url_b = 'devid={}&devpassword={}&softname={}&output=json&ssid={}&sspassword={}'.format(
-            base64.b64decode(self.dev_id), base64.b64decode(self.dev_pass),
-            self.softname, self.ssid, self.sspassword)
-        url = url_a + url_b
+        url = ScreenScraper.URL_systemesListe + self._get_common_SS_URL()
         json_data = self._retrieve_URL_as_JSON(url, status_dic)
         if not status_dic['status']: return None
         self._dump_json_debug('ScreenScraper_get_platform_list.json', json_data)
@@ -3397,15 +3464,11 @@ class ScreenScraper(Scraper):
         scraper_platform = AEL_platform_to_ScreenScraper(platform)
         system_id = scraper_platform
         recherche = urllib.quote(rombase_noext)
-        log_debug('ScreenScraper.debug_game_search() system_id  "{0}"'.format(system_id))
-        log_debug('ScreenScraper.debug_game_search() recherche  "{0}"'.format(recherche))
+        log_debug('ScreenScraper.debug_game_search() system_id  "{}"'.format(system_id))
+        log_debug('ScreenScraper.debug_game_search() recherche  "{}"'.format(recherche))
 
-        url_a = 'https://www.screenscraper.fr/api2/jeuRecherche.php?'
-        url_b = 'devid={}&devpassword={}&softname={}&output=json&ssid={}&sspassword={}'.format(
-            base64.b64decode(self.dev_id), base64.b64decode(self.dev_pass),
-            self.softname, self.ssid, self.sspassword)
-        url_c = '&systemeid={}&recherche={}'.format(system_id, recherche)
-        url = url_a + url_b + url_c
+        url_tail = '&systemeid={}&recherche={}'.format(system_id, recherche)
+        url = ScreenScraper.URL_jeuRecherche + self._get_common_SS_URL() + url_tail
         json_data = self._retrieve_URL_as_JSON(url, status_dic)
         if json_data is None or not status_dic['status']: return None
         self._dump_json_debug('ScreenScraper_gameSearch.json', json_data)
@@ -3425,6 +3488,7 @@ class ScreenScraper(Scraper):
         # * If rom_type = 'rom' SS returns gargabe for CD-based platforms like Playstation.
 
         # ISO-based platform set.
+        # This must be moved somewhere else...
         ISO_platform_set = set([
             'Fujitsu FM Towns Marty',
             'NEC PC Engine CDROM2',
@@ -3465,28 +3529,22 @@ class ScreenScraper(Scraper):
         # rom_name = urllib.quote(checksums['rom_name'])
         rom_name = urllib.quote_plus(checksums['rom_name'])
         rom_size = checksums['size']
-        # log_debug('ScreenScraper._search_candidates_jeuInfos() ssid       "{0}"'.format(self.ssid))
-        # log_debug('ScreenScraper._search_candidates_jeuInfos() ssid       "{0}"'.format('***'))
-        # log_debug('ScreenScraper._search_candidates_jeuInfos() sspassword "{0}"'.format(self.sspassword))
-        # log_debug('ScreenScraper._search_candidates_jeuInfos() sspassword "{0}"'.format('***'))
-        log_debug('ScreenScraper._search_candidates_jeuInfos() rom_type   "{0}"'.format(rom_type))
-        log_debug('ScreenScraper._search_candidates_jeuInfos() system_id  "{0}"'.format(system_id))
-        log_debug('ScreenScraper._search_candidates_jeuInfos() crc_str    "{0}"'.format(crc_str))
-        log_debug('ScreenScraper._search_candidates_jeuInfos() md5_str    "{0}"'.format(md5_str))
-        log_debug('ScreenScraper._search_candidates_jeuInfos() sha1_str   "{0}"'.format(sha1_str))
-        log_debug('ScreenScraper._search_candidates_jeuInfos() rom_name   "{0}"'.format(rom_name))
-        log_debug('ScreenScraper._search_candidates_jeuInfos() rom_size   "{0}"'.format(rom_size))
+        # log_debug('ScreenScraper._search_candidates_jeuInfos() ssid       "{}"'.format(self.ssid))
+        # log_debug('ScreenScraper._search_candidates_jeuInfos() ssid       "{}"'.format('***'))
+        # log_debug('ScreenScraper._search_candidates_jeuInfos() sspassword "{}"'.format(self.sspassword))
+        # log_debug('ScreenScraper._search_candidates_jeuInfos() sspassword "{}"'.format('***'))
+        log_debug('ScreenScraper._search_candidates_jeuInfos() rom_type   "{}"'.format(rom_type))
+        log_debug('ScreenScraper._search_candidates_jeuInfos() system_id  "{}"'.format(system_id))
+        log_debug('ScreenScraper._search_candidates_jeuInfos() crc_str    "{}"'.format(crc_str))
+        log_debug('ScreenScraper._search_candidates_jeuInfos() md5_str    "{}"'.format(md5_str))
+        log_debug('ScreenScraper._search_candidates_jeuInfos() sha1_str   "{}"'.format(sha1_str))
+        log_debug('ScreenScraper._search_candidates_jeuInfos() rom_name   "{}"'.format(rom_name))
+        log_debug('ScreenScraper._search_candidates_jeuInfos() rom_size   "{}"'.format(rom_size))
 
         # --- Build URL and retrieve JSON ---
-        # It is more convenient to dump XML files for development.
-        # For regular scraping JSON is more efficient.
-        url_a = 'https://www.screenscraper.fr/api2/jeuInfos.php?'
-        url_b = 'devid={}&devpassword={}&softname={}&output=json&ssid={}&sspassword={}'.format(
-            base64.b64decode(self.dev_id), base64.b64decode(self.dev_pass),
-            self.softname, self.ssid, self.sspassword)
-        url_c = '&romtype={}&systemeid={}&crc={}&md5={}&sha1={}&romnom={}&romtaille={}'.format(
+        url_tail = '&romtype={}&systemeid={}&crc={}&md5={}&sha1={}&romnom={}&romtaille={}'.format(
             rom_type, system_id, crc_str, md5_str, sha1_str, rom_name, rom_size)
-        url = url_a + url_b + url_c
+        url = ScreenScraper.URL_jeuInfos + self._get_common_SS_URL() + url_tail
         json_data = self._retrieve_URL_as_JSON(url, status_dic)
         # If status_dic mark an error there was an exception. Return None.
         if not status_dic['status']: return None
@@ -3517,28 +3575,27 @@ class ScreenScraper(Scraper):
             self.cache_key))
         # IMPORTANT Do not clean URLs. There could be problems reconstructing some URLs.
         # self._clean_JSON_for_dumping(jeu_dic)
+        # Remove the ROM information to decrease the size of the SS internal cache.
+        # ROM information in SS is huge.
         jeu_dic['roms'] = []
         self._update_disk_cache(Scraper.CACHE_INTERNAL, self.cache_key, jeu_dic)
 
         return [ candidate ]
 
     # Call to ScreenScraper jeuRecherche.php.
+    # Not used at the moment, just here for research.
     def _search_candidates_jeuRecherche(self, search_term, rombase_noext, platform, scraper_platform, status_dic):
         # --- Actual data for scraping in AEL ---
         log_debug('ScreenScraper._search_candidates_jeuRecherche() Calling jeuRecherche.php...')
         scraper_platform = AEL_platform_to_ScreenScraper(platform)
         system_id = scraper_platform
         recherche = urllib.quote_plus(rombase_noext)
-        log_debug('ScreenScraper._search_candidates_jeuRecherche() system_id  "{0}"'.format(system_id))
-        log_debug('ScreenScraper._search_candidates_jeuRecherche() recherche  "{0}"'.format(recherche))
+        log_debug('ScreenScraper._search_candidates_jeuRecherche() system_id  "{}"'.format(system_id))
+        log_debug('ScreenScraper._search_candidates_jeuRecherche() recherche  "{}"'.format(recherche))
 
         # --- Build URL and retrieve JSON ---
-        url_a = 'https://www.screenscraper.fr/api2/jeuRecherche.php?'
-        url_b = 'devid={}&devpassword={}&softname={}&output=json&ssid={}&sspassword={}'.format(
-            base64.b64decode(self.dev_id), base64.b64decode(self.dev_pass),
-            self.softname, self.ssid, self.sspassword)
-        url_c = '&systemeid={}&recherche={}'.format(system_id, recherche)
-        url = url_a + url_b + url_c
+        url_tail = '&systemeid={}&recherche={}'.format(system_id, recherche)
+        url = ScreenScraper.URL_jeuRecherche + self._get_common_SS_URL() + url_tail
         json_data = self._retrieve_URL_as_JSON(url, status_dic)
         if json_data is None or not status_dic['status']: return None
         self._dump_json_debug('ScreenScraper_gameSearch.json', json_data)
@@ -3647,10 +3704,13 @@ class ScreenScraper(Scraper):
 
         return DEFAULT_META_PLOT
 
-    # Get ALL available assets for game.
-    # Returns all assets found in the jeu_dic dictionary. It is not necessary to cache this
-    # because it can be easily generated.
-    # For now asset do not support region or language settings.
+    # Get ALL available assets for game. Returns all assets found in the jeu_dic dictionary.
+    # It is not necessary to cache this function because all the assets can be easily
+    # extracted from jeu_dic.
+    #
+    # For now assets do not support region or language settings. I plan to match ROM
+    # Language and Region with ScreenScraper Language and Region soon. For example, if we
+    # are scraping a Japan ROM we must get the Japan artwork and not other region artwork.
     #
     # Examples:
     # https://www.screenscraper.fr/gameinfos.php?gameid=5     # Sonic 1 Megadrive
@@ -3664,6 +3724,7 @@ class ScreenScraper(Scraper):
     # https://www.screenscraper.fr/image.php?gameid=5&media=steamgrid&hd=0&region=&num=&version=&maxwidth=338&maxheight=190
     #
     # TODO: support Manuals and Trailers.
+    # TODO: match ROM region and ScreenScraper region.
     def _retrieve_all_assets(self, jeu_dic, status_dic):
         asset_list = []
         medias_list = jeu_dic['medias']
@@ -3674,28 +3735,28 @@ class ScreenScraper(Scraper):
             else:
                 # Skip unknwon assets
                 continue
+
             # Build thumb URL
             game_ID = jeu_dic['id']
             region = media_dic['region'] if 'region' in media_dic else ''
             if region: media_type = media_dic['type'] + ' ' + region
             else:      media_type = media_dic['type']
-            # Build thumb URL
-            url_thumb_a = 'https://www.screenscraper.fr/image.php?'
-            url_thumb_b = 'gameid={}&media={}&region={}'.format(game_ID, media_type, region)
+            url_thumb_b = '?gameid={}&media={}&region={}'.format(game_ID, media_type, region)
             url_thumb_c = '&hd=0&num=&version=&maxwidth=338&maxheight=190'
-            url_thumb = url_thumb_a + url_thumb_b + url_thumb_c
+            url_thumb = ScreenScraper.URL_image + url_thumb_b + url_thumb_c
+
             # Build asset URL. ScreenScraper URLs are stripped down when saved to the cache
             # to save space and time. FEATURE CANCELED. There could be problems reconstructing
             # some URLs and the space saved is not so great for most games.
             # systemeid = jeu_dic['systemeid']
             # media = '{}({})'.format(media_type, region)
-            # url_thumb_a = 'https://www.screenscraper.fr/api2/mediaJeu.php?'
-            # url_b = 'devid={}&devpassword={}&softname={}&ssid={}&sspassword={}'.format(
+            # url_b = '?devid={}&devpassword={}&softname={}&ssid={}&sspassword={}'.format(
             #     base64.b64decode(self.dev_id), base64.b64decode(self.dev_pass),
             #     self.softname, self.ssid, self.sspassword)
-            # url_thumb_c = '&systemeid={}&jeuid={}&media={}'.format(systemeid, game_ID, media)
-            # url_asset = url_thumb_a + url_thumb_b + url_thumb_c
+            # url_c = '&systemeid={}&jeuid={}&media={}'.format(systemeid, game_ID, media)
+            # url_asset = ScreenScraper.URL_mediaJeu + url_b + url_c
             # log_debug('URL "{}"'.format(url_asset))
+
             # Create asset dictionary
             asset_data = self._new_assetdata_dic()
             asset_data['asset_ID'] = asset_ID
@@ -3899,19 +3960,55 @@ class ScreenScraper(Scraper):
         # Sometimes ScreenScraper API V2 returns badly formatted JSON. Try to fix this.
         # See https://github.com/muldjord/skyscraper/blob/master/src/screenscraper.cpp
         # The badly formatted JSON is at the end of the file, for example:
-        #
-        #			],     <-- Here it should be a ']' and not '],'.
+        #			],     <----- Here it should be a ']' and not '],'.
         #		}
         #	}
         #}
-        log_error('Trying to repair ScreenScraper data string before parsing JSON again.')
-        page_data_raw = page_data_raw.replace('],\n\t\t}', ']\n\t\t}')
+        log_error('Trying to repair ScreenScraper raw data (Try 1).')
+        new_page_data_raw = page_data_raw.replace('],\n\t\t}', ']\n\t\t}')
         try:
-            return json.loads(page_data_raw)
-        except:
+            return json.loads(new_page_data_raw)
+        except Exception as ex:
+            log_error('Error decoding JSON data from ScreenScraper (Try 1).')
+
+        # At the end of the JSON data file...
+        #		},         <----- Here it should be a '}' and not '},'.
+        #		}
+        #	}
+        #            
+        log_error('Trying to repair ScreenScraper raw data (Try 2).')
+        new_page_data_raw = page_data_raw.replace('\t\t},\n\t\t}', '\t\t}\n\t\t}')
+        try:
+            return json.loads(new_page_data_raw)
+        except Exception as ex:
+            log_error('Error decoding JSON data from ScreenScraper (Try 2).')
+            log_error('Cannot decode JSON (invalid JSON returned). Dumping debug files...')
+            file_path = os.path.join(self.scraper_cache_dir, 'ScreenScraper_url.txt')
+            text_dump_str_to_file(file_path, url)
+            file_path = os.path.join(self.scraper_cache_dir, 'ScreenScraper_page_data_raw.txt')
+            text_dump_str_to_file(file_path, page_data_raw)
             self._handle_exception(ex, status_dic,
                 'Error decoding JSON data from ScreenScraper (fixed version).')
             return None
+
+    # All ScreenScraper URLs must have this arguments.
+    def _get_common_SS_URL(self):
+        url_SS = '?devid={}&devpassword={}&softname={}&output=json&ssid={}&sspassword={}'.format(
+            base64.b64decode(self.dev_id), base64.b64decode(self.dev_pass),
+            self.softname, self.ssid, self.sspassword)
+
+        return url_SS
+
+    # If less than TIME_WAIT_GET_ASSETS seconds have passed since the last call
+    # to this function then wait TIME_WAIT_GET_ASSETS seconds.
+    def _wait_for_asset_request(self):
+        now = datetime.datetime.now()
+        seconds_since_last_call = (now - self.last_get_assets_call).total_seconds()
+        if seconds_since_last_call < ScreenScraper.TIME_WAIT_GET_ASSETS:
+            log_debug('SS._wait_for_asset_request() Sleeping to avoid overloading...')
+            time.sleep(ScreenScraper.TIME_WAIT_GET_ASSETS)
+        # Update waiting time for next call.
+        self.last_get_assets_call = datetime.datetime.now()
 
 # ------------------------------------------------------------------------------------------------
 # GameFAQs online scraper.
