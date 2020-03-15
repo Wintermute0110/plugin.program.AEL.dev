@@ -16,6 +16,8 @@
 # --- Python standard library ---
 from __future__ import unicode_literals
 
+from resources.constants import *
+
 # -------------------------------------------------------------------------------------------------
 # New platform engine
 # -------------------------------------------------------------------------------------------------
@@ -34,19 +36,20 @@ PLATFORM_UNKNOWN_COMPACT = 'unknown'
 class Platform:
     def __init__(self, name, shortname, compactname, aliasof = None,
         TGDB_plat = None, MG_plat = None, SS_plat = None, GF_plat = None,
-        DAT = DAT_NONE, DAT_prefix = ''):
+        DAT = DAT_NONE, DAT_prefix = '', default_box_size = None):
         # Autocompleted later with data from the short name.
-        self.category     = ''
-        self.long_name    = name
-        self.short_name   = shortname
-        self.compact_name = compactname
-        self.aliasof      = aliasof
-        self.TGDB_plat    = TGDB_plat
-        self.MG_plat      = MG_plat
-        self.SS_plat      = SS_plat
-        self.GF_plat      = GF_plat
-        self.DAT          = DAT
-        self.DAT_prefix   = DAT_prefix
+        self.category         = ''
+        self.long_name        = name
+        self.short_name       = shortname
+        self.compact_name     = compactname
+        self.aliasof          = aliasof
+        self.TGDB_plat        = TGDB_plat
+        self.MG_plat          = MG_plat
+        self.SS_plat          = SS_plat
+        self.GF_plat          = GF_plat
+        self.DAT              = DAT
+        self.DAT_prefix       = DAT_prefix
+        self.default_box_size = default_box_size
 
 # * From this list create simplified lists to access platform information.
 # * Shorted alphabetically by long name. Alphabetical order is veryfied with script
@@ -70,38 +73,40 @@ class Platform:
 AEL_platforms = [
     # --- 3DO Interactive Multiplayer ---
     Platform('3DO Interactive Multiplayer', 'console-3do', '3do', None, '25', '35', '29', '61',
-        DAT_REDUMP, 'Panasonic - 3DO Interactive Multiplayer - Datfile'),
+        DAT_REDUMP, 'Panasonic - 3DO Interactive Multiplayer - Datfile', default_box_size=BOX_SIZE_SLIM),
 
     # --- Amstrad ---
-    Platform('Amstrad CPC', 'computer-cpc', 'cpc', None, '4914', '60', '65', '46', DAT_NONE),
+    Platform('Amstrad CPC', 'computer-cpc', 'cpc', None, '4914', '60', '65', '46', DAT_NONE, 
+             default_box_size=BOX_SIZE_POSTER),
 
     # --- Atari ---
     Platform('Atari 2600', 'atari-2600', 'a2600', None, '22', '28', '26', '6',
-        DAT_NOINTRO, 'Atari - 2600'),
+        DAT_NOINTRO, 'Atari - 2600', default_box_size=BOX_SIZE_POSTER),
     Platform('Atari 5200', 'atari-5200', 'a5200', None, '26', '33', '40', '20',
-        DAT_NOINTRO, 'Atari - 5200'),
+        DAT_NOINTRO, 'Atari - 5200', default_box_size=BOX_SIZE_POSTER),
     Platform('Atari 7800', 'atari-7800', 'a7800', None, '27', '34', '41', '51',
-        DAT_NOINTRO, 'Atari - 7800'),
+        DAT_NOINTRO, 'Atari - 7800', default_box_size=BOX_SIZE_POSTER),
     # Atari 8-bit includes: Atari 400, Atari 800, Atari 1200XL, Atari 65XE, Atari 130XE, Atari XEGS
-    Platform('Atari 8-bit', 'computer-atari-8bit', 'atari-8bit', None, '30', '39', '43', None, DAT_NONE),
+    Platform('Atari 8-bit', 'computer-atari-8bit', 'atari-8bit', None, '30', '39', '43', None, DAT_NONE, 
+             default_box_size=BOX_SIZE_POSTER),
     # Atari Jaguar No-Intro DATs:
     # *) Atari - Jaguar (J64) (20190518-213240).dat
     # *) Atari - Jaguar (J64) (Parent-Clone) (Parent-Clone) (20190518-213240).dat
     # *) Atari - Jaguar (ROM) (20190518-213240).dat
     Platform('Atari Jaguar', 'atari-jaguar', 'jaguar', None, '28', '17', '27', '72',
-        DAT_NOINTRO, 'Atari - Jaguar (J64) (Parent-Clone)'),
+        DAT_NOINTRO, 'Atari - Jaguar (J64) (Parent-Clone)', default_box_size=BOX_SIZE_POSTER),
     Platform('Atari Jaguar CD', 'atari-jaguarcd', 'jaguarcd', None, '29', '17', '171', '82',
-        DAT_REDUMP, 'Atari - Jaguar CD Interactive Multimedia System - Datfile'),
+        DAT_REDUMP, 'Atari - Jaguar CD Interactive Multimedia System - Datfile', default_box_size=BOX_SIZE_POSTER),
     Platform('Atari Lynx', 'atari-lynx', 'lynx', None, '4924', '18', '28', '58',
-        DAT_NOINTRO, 'Atari - Lynx'),
+        DAT_NOINTRO, 'Atari - Lynx', default_box_size=BOX_SIZE_POSTER),
     Platform('Atari ST', 'computer-atari-st', 'atari-st', None, '4937', '24', '42', '38',
-        DAT_NOINTRO, 'Atari - ST'),
+        DAT_NOINTRO, 'Atari - ST', default_box_size=BOX_SIZE_POSTER),
 
     # --- Bandai ---
     Platform('Bandai WonderSwan', 'bandai-wswan', 'wswan', None, '4925', '48', '45', '90',
-        DAT_NOINTRO, 'Bandai - WonderSwan'),
+        DAT_NOINTRO, 'Bandai - WonderSwan', default_box_size=BOX_SIZE_POSTER),
     Platform('Bandai WonderSwan Color', 'bandai-wswancolor', 'wswancolor', None, '4926', '49', '46', '95',
-        DAT_NOINTRO, 'Bandai - WonderSwan Color'),
+        DAT_NOINTRO, 'Bandai - WonderSwan Color', default_box_size=BOX_SIZE_POSTER),
 
     Platform('Benesse Pocket Challenge V2', 'console-bpc', 'bpc', None, None, None, None, None,
         DAT_NOINTRO, 'Benesse - Pocket Challenge V2'),
@@ -122,17 +127,17 @@ AEL_platforms = [
     # *) Commodore - 64 (PP) (Parent-Clone) (20131204-081826).dat
     # *) Commodore - 64 (Tapes) (Parent-Clone) (20180307-232531).dat
     Platform('Commodore 64', 'computer-c64', 'c64', None, '40', '27', '66', '24',
-        DAT_NOINTRO, 'Commodore - 64'),
+        DAT_NOINTRO, 'Commodore - 64', default_box_size=BOX_SIZE_POSTER),
     Platform('Commodore Amiga', 'computer-amiga', 'amiga', None, '4911', '19', '64', '39',
-        DAT_NOINTRO, 'Commodore - Amiga'),
+        DAT_NOINTRO, 'Commodore - Amiga', default_box_size=BOX_SIZE_POSTER),
     # The CD32 is part of a family of Amiga computers and is of similar specification to the
     # Amiga 1200 computer.
     Platform('Commodore Amiga CD32', 'console-cd32', 'cd32', None, '4947', '56', '130', '70',
-        DAT_REDUMP, 'Commodore - Amiga CD32 - Datfile'),
+        DAT_REDUMP, 'Commodore - Amiga CD32 - Datfile', default_box_size=BOX_SIZE_POSTER),
     # The CDTV is essentially a Commodore Amiga 500 home computer with a CD-ROM drive and
     # remote control.
     Platform('Commodore Amiga CDTV', 'console-cdtv', 'cdtv', None, None, '83', '129', None,
-        DAT_REDUMP, 'Commodore - Amiga CDTV - Datfile'),
+        DAT_REDUMP, 'Commodore - Amiga CDTV - Datfile', default_box_size=BOX_SIZE_POSTER),
     # MobyGames "Commodore 16, Plus/4"
     # Not found in GameFAQs.
     Platform('Commodore Plus-4', 'computer-plus4', 'plus4', None, None, '115', '99', None,
@@ -205,23 +210,28 @@ AEL_platforms = [
         DAT_NOINTRO, 'Magnavox - Odyssey2'),
 
     # --- MAME/Arcade ---
-    Platform('MAME', 'arcade-mame', 'mame', None, '23', '143', '75', '2', DAT_MAME),
+    Platform('MAME', 'arcade-mame', 'mame', None, '23', '143', '75', '2', DAT_MAME, default_box_size=BOX_SIZE_SCREEN),
 
     # --- Mattel ---
     Platform('Mattel Intellivision', 'console-ivision', 'ivision', None, '32', '30', '115', '16',
         DAT_NOINTRO, 'Mattel - Intellivision'),
 
     # --- Microsoft ---
-    Platform('Microsoft MS-DOS', 'microsoft-msdos', 'msdos', None, '1', '2', '135', '19', DAT_NONE),
+    Platform('Microsoft MS-DOS', 'microsoft-msdos', 'msdos', None, '1', '2', '135', '19', DAT_NONE,
+             default_box_size=BOX_SIZE_POSTER),
     Platform('Microsoft MSX', 'microsoft-msx', 'msx', None, '4929', '57', '113', '40',
         DAT_NOINTRO, 'Microsoft - MSX'),
     Platform('Microsoft MSX2', 'microsoft-msx2', 'msx2', None, '4929', '57', '116', '40',
         DAT_NOINTRO, 'Microsoft - MSX2'),
     # MobyGames differentiates Windows = '3' and Windows 3.x = '5'
-    Platform('Microsoft Windows', 'microsoft-windows', 'windows', None, '1', '3', '136', '19', DAT_NONE),
-    Platform('Microsoft Xbox', 'microsoft-xbox', 'xbox', None, '14', '13', '32', '98', DAT_NONE),
-    Platform('Microsoft Xbox 360', 'microsoft-xbox360', 'xbox360', None, '15', '69', '33', '111', DAT_NONE),
-    Platform('Microsoft Xbox One', 'microsoft-xboxone', 'xboxone', None, '4920', '142', None, '121', DAT_NONE),
+    Platform('Microsoft Windows', 'microsoft-windows', 'windows', None, '1', '3', '136', '19', DAT_NONE,
+              default_box_size=BOX_SIZE_STEAM),
+    Platform('Microsoft Xbox', 'microsoft-xbox', 'xbox', None, '14', '13', '32', '98', DAT_NONE,
+             default_box_size=BOX_SIZE_DVD),
+    Platform('Microsoft Xbox 360', 'microsoft-xbox360', 'xbox360', None, '15', '69', '33', '111', DAT_NONE,
+             default_box_size=BOX_SIZE_DVD),
+    Platform('Microsoft Xbox One', 'microsoft-xboxone', 'xboxone', None, '4920', '142', None, '121', DAT_NONE,
+             default_box_size=BOX_SIZE_BLURAY),
 
     # --- NEC ---
     Platform('NEC PC Engine', 'nec-pce', 'pce', None, '34', '40', '31', '53',
@@ -248,16 +258,16 @@ AEL_platforms = [
     # *) Nintendo - Nintendo 3DS (Encrypted) (20191109-080816)
     # *) Nintendo - Nintendo 3DS (Encrypted) (Parent-Clone) (Parent-Clone) (20191109-080816)
     Platform('Nintendo 3DS', 'nintendo-n3ds', 'n3ds', None, '4912', '101', '17', '116',
-        DAT_NOINTRO, 'Nintendo - Nintendo 3DS (Encrypted) (Parent-Clone)'),
+        DAT_NOINTRO, 'Nintendo - Nintendo 3DS (Encrypted) (Parent-Clone)', default_box_size=BOX_SIZE_3DS),
     # No-Intro Nintendo 64 DAT files:
     # *) Nintendo - Nintendo 64 (BigEndian) (20190918-121135)
     # *) Nintendo - Nintendo 64 (BigEndian) (Parent-Clone) (Parent-Clone) (20190918-121135)
     # *) Nintendo - Nintendo 64 (ByteSwapped) (20190918-121135)
     Platform('Nintendo 64', 'nintendo-n64', 'n64', None, '3', '9', '14', '84',
-        DAT_NOINTRO, 'Nintendo - Nintendo 64 (BigEndian) (Parent-Clone)'),
+        DAT_NOINTRO, 'Nintendo - Nintendo 64 (BigEndian) (Parent-Clone)', default_box_size=BOX_SIZE_WIDE),
     # Nintendo 64DD not found on MobyGames.
     Platform('Nintendo 64DD', 'nintendo-n64dd', 'n64dd', None, '3', '9', '122', '92',
-        DAT_NOINTRO, 'Nintendo - Nintendo 64DD'),
+        DAT_NOINTRO, 'Nintendo - Nintendo 64DD', default_box_size=BOX_SIZE_WIDE),
     # No-Intro Nintendo DS DAT files:
     # *) Nintendo - Nintendo DS (Decrypted) (20191117-150815)
     # *) Nintendo - Nintendo DS (Decrypted) (Parent-Clone) (Parent-Clone) (20191117-150815)
@@ -265,7 +275,7 @@ AEL_platforms = [
     # *) Nintendo - Nintendo DS (Download Play) (Parent-Clone) (20190825-082425)
     # *) Nintendo - Nintendo DS (Encrypted) (20191117-150815)
     Platform('Nintendo DS', 'nintendo-nds', 'nds', None, '8', '44', '15', '108',
-        DAT_NOINTRO, 'Nintendo - Nintendo DS (Decrypted) (Parent-Clone)'),
+        DAT_NOINTRO, 'Nintendo - Nintendo DS (Decrypted) (Parent-Clone)', default_box_size=BOX_SIZE_3DS),
     # No-Intro Nintendo DSi DAT files:
     # *) Nintendo - Nintendo DSi (Decrypted) (20190503-112150)
     # *) Nintendo - Nintendo DSi (Decrypted) (Parent-Clone) (Parent-Clone) (20190503-112150)
@@ -273,10 +283,10 @@ AEL_platforms = [
     # *) Nintendo - Nintendo DSi (Digital) (Parent-Clone) (20190813-061824)
     # *) Nintendo - Nintendo DSi (Encrypted) (20190503-112150)
     Platform('Nintendo DSi', 'nintendo-ndsi', 'ndsi', None, '8', '87', '15', '108',
-        DAT_NOINTRO, 'Nintendo - Nintendo DSi (Decrypted) (Parent-Clone)'),
+        DAT_NOINTRO, 'Nintendo - Nintendo DSi (Decrypted) (Parent-Clone)', default_box_size=BOX_SIZE_3DS),
     Platform('Nintendo e-Reader', 'nintendo-ereader', 'ereader', None, None, None, '119', None,
         DAT_NOINTRO, 'Nintendo - e-Reader'),
-    Platform('Nintendo Famicon', 'nintendo-famicon', 'famicon', 'nes'),
+    Platform('Nintendo Famicon', 'nintendo-famicon', 'famicon', 'nes', default_box_size=BOX_SIZE_WIDE),
     # FDS not found on MobyGames, make same as NES.
     # FDS No-Intro DAT files:
     # *) Nintendo - Family Computer Disk System (FDS) (20191109-080316)
@@ -285,17 +295,17 @@ AEL_platforms = [
     # *) Nintendo - Family Computer Disk System (FDSStickRAW) (20191109-080316)
     # *) Nintendo - Family Computer Disk System (QD) (20191109-080316)
     Platform('Nintendo Famicon Disk System', 'nintendo-fds', 'fds', None, '4936', '22', '106', '47',
-        DAT_NOINTRO, 'Nintendo - Family Computer Disk System (FDS) (Parent-Clone)'),
+        DAT_NOINTRO, 'Nintendo - Family Computer Disk System (FDS) (Parent-Clone)', default_box_size=BOX_SIZE_WIDE),
     Platform('Nintendo GameBoy', 'nintendo-gb', 'gb', None, '4', '10', '9', '59',
-        DAT_NOINTRO, 'Nintendo - Game Boy'),
+        DAT_NOINTRO, 'Nintendo - Game Boy', default_box_size=BOX_SIZE_SQUARE),
     Platform('Nintendo GameBoy Advance', 'nintendo-gba', 'gba', None, '5', '12', '12', '91',
-        DAT_NOINTRO, 'Nintendo - Game Boy Advance'),
+        DAT_NOINTRO, 'Nintendo - Game Boy Advance', default_box_size=BOX_SIZE_SQUARE),
     Platform('Nintendo GameBoy Color', 'nintendo-gbcolor', 'gbcolor', None, '41', '11', '10', '57',
-        DAT_NOINTRO, 'Nintendo - Game Boy Color'),
+        DAT_NOINTRO, 'Nintendo - Game Boy Color', default_box_size=BOX_SIZE_SQUARE),
     Platform('Nintendo GameCube', 'nintendo-gamecube', 'gamecube', None, '2', '14', '13', '99',
-        DAT_REDUMP, 'Nintendo - GameCube - Datfile'),
+        DAT_REDUMP, 'Nintendo - GameCube - Datfile', default_box_size=BOX_SIZE_DVD),
     Platform('Nintendo NES', 'nintendo-nes', 'nes', None, '7', '22', '3', '41',
-        DAT_NOINTRO, 'Nintendo - Nintendo Entertainment System (Parent-Clone)'),
+        DAT_NOINTRO, 'Nintendo - Nintendo Entertainment System (Parent-Clone)', default_box_size=BOX_SIZE_POSTER),
     # No-Intro New Nintendo 3DS DAT files:
     # *) Nintendo - New Nintendo 3DS (Decrypted) (20190402-125456)
     # *) Nintendo - New Nintendo 3DS (Digital) (20181009-100544)
@@ -303,22 +313,25 @@ AEL_platforms = [
     # *) Nintendo - New Nintendo 3DS (Encrypted) (20190402-125456)
     # *) Nintendo - New Nintendo 3DS (Encrypted) (Parent-Clone) (Parent-Clone) (20190402-125456)
     Platform('Nintendo New Nintendo 3DS', 'nintendo-new3ds', 'new3ds', None, None, None, None, None,
-        DAT_NOINTRO, 'Nintendo - New Nintendo 3DS (Encrypted) (Parent-Clone)'),
+        DAT_NOINTRO, 'Nintendo - New Nintendo 3DS (Encrypted) (Parent-Clone)', default_box_size=BOX_SIZE_3DS),
     # Pokemon Mini not found in GameFAQs.
     Platform('Nintendo Pokemon Mini', 'nintendo-pokemini', 'pokemini', None, '4957', '152', '211', None,
         DAT_NOINTRO, 'Nintendo - Pokemon Mini'),
     Platform('Nintendo Satellaview', 'nintendo-satellaview', 'satellaview', None, None, None, '107', None,
         DAT_NOINTRO, 'Nintendo - Satellaview'),
     Platform('Nintendo SNES', 'nintendo-snes', 'snes', None, '6', '15', '4', '63',
-        DAT_NOINTRO, 'Nintendo - Super Nintendo Entertainment System (Combined) (Parent-Clone)'),
+        DAT_NOINTRO, 'Nintendo - Super Nintendo Entertainment System (Combined) (Parent-Clone)', default_box_size=BOX_SIZE_WIDE),
     Platform('Nintendo Sufami Turbo', 'nintendo-sufami', 'sufami', None, None, None, '108', None,
         DAT_NOINTRO, 'Nintendo - Sufami Turbo'),
-    Platform('Nintendo Switch', 'nintendo-switch', 'switch', None, '4971', '203', None, '124', DAT_NONE),
+    Platform('Nintendo Switch', 'nintendo-switch', 'switch', None, '4971', '203', None, '124', DAT_NONE, 
+             default_box_size=BOX_SIZE_SLIM),
     Platform('Nintendo Virtual Boy', 'nintendo-vb', 'vb', None, '4918', '38', '11', '83',
         DAT_NOINTRO, 'Nintendo - Virtual Boy'),
     # No-Intro has some DATs for Wii and Wii U with tags Digital, CDN and WAD.
-    Platform('Nintendo Wii', 'nintendo-wii', 'wii', None, '9', '82', '16', '114', DAT_NONE),
-    Platform('Nintendo Wii U', 'nintendo-wiiu', 'wiiu', None, '38', '132', '18', '118', DAT_NONE),
+    Platform('Nintendo Wii', 'nintendo-wii', 'wii', None, '9', '82', '16', '114', DAT_NONE, 
+             default_box_size=BOX_SIZE_DVD),
+    Platform('Nintendo Wii U', 'nintendo-wiiu', 'wiiu', None, '38', '132', '18', '118', DAT_NONE,
+             default_box_size=BOX_SIZE_DVD),
 
     Platform('Ouya Ouya', 'console-ouya', 'ouya', None, '4921', '144', None, None,
         DAT_NOINTRO, 'Ouya - Ouya'),
@@ -339,25 +352,25 @@ AEL_platforms = [
 
     # --- Sega ---
     Platform('Sega 32X', 'sega-32x', '32x', None, '33', '21', '19', '74',
-        DAT_NOINTRO, 'Sega - 32X'),
+        DAT_NOINTRO, 'Sega - 32X', default_box_size=BOX_SIZE_DVD),
     # The Advanced Pico Beena is an upgraded Sega PICO.
     Platform('Sega Beena', 'sega-beena', 'beena', None, None, None, None, None,
         DAT_NOINTRO, 'Sega - Beena'),
     Platform('Sega Dreamcast', 'sega-dreamcast', 'dreamcast', None, '16', '8', '23', '67',
-        DAT_REDUMP, 'Sega - Dreamcast - Datfile'),
+        DAT_REDUMP, 'Sega - Dreamcast - Datfile', default_box_size=BOX_SIZE_DVD),
     Platform('Sega Game Gear', 'sega-gamegear', 'gamegear', None, '20', '25', '21', '62',
         DAT_NOINTRO, 'Sega - Game Gear'),
-    Platform('Sega Genesis', 'sega-genesis', 'genesis', 'megadrive'),
+    Platform('Sega Genesis', 'sega-genesis', 'genesis', 'megadrive', default_box_size=BOX_SIZE_POSTER),
     Platform('Sega Master System', 'sega-sms', 'sms', None, '35', '26', '2', '49',
-        DAT_NOINTRO, 'Sega - Master System - Mark III'),
+        DAT_NOINTRO, 'Sega - Master System - Mark III', default_box_size=BOX_SIZE_POSTER),
     Platform('Sega Mega Drive', 'sega-megadrive', 'megadrive', None, '36', '16', '1', '54',
-        DAT_NOINTRO, 'Sega - Mega Drive - Genesis'),
+        DAT_NOINTRO, 'Sega - Mega Drive - Genesis', default_box_size=BOX_SIZE_POSTER),
     Platform('Sega MegaCD', 'sega-megacd', 'megacd', None, '21', '20', '20', '65',
-        DAT_REDUMP, 'Sega - Mega CD & Sega CD - Datfile'),
+        DAT_REDUMP, 'Sega - Mega CD & Sega CD - Datfile', default_box_size=BOX_SIZE_POSTER),
     Platform('Sega PICO', 'sega-pico', 'pico', None, '4958', '103', None, None,
         DAT_NOINTRO, 'Sega - PICO'),
     Platform('Sega Saturn', 'sega-saturn', 'saturn', None, '17', '23', '22', '76',
-        DAT_REDUMP, 'Sega - Saturn - Datfile'),
+        DAT_REDUMP, 'Sega - Saturn - Datfile', default_box_size=BOX_SIZE_SLIM),
     # The SG-1000 was released in several forms, including the SC-3000 computer and
     # the redesigned SG-1000 II.
     Platform('Sega SC-3000', 'sega-sc3000', 'sc3000', 'sg1000'),
@@ -392,11 +405,11 @@ AEL_platforms = [
 
     # --- SONY ---
     Platform('Sony PlayStation', 'sony-psx', 'psx', None, '10', '6', '57', '78',
-        DAT_REDUMP, 'Sony - PlayStation - Datfile'),
+        DAT_REDUMP, 'Sony - PlayStation - Datfile', default_box_size=BOX_SIZE_DVD),
     Platform('Sony PlayStation 2', 'sony-ps2', 'ps2', None, '11', '7', '58', '94',
-        DAT_REDUMP, 'Sony - PlayStation 2 - Datfile'),
-    Platform('Sony PlayStation 3', 'sony-ps3', 'ps3', None, '12', '81', '59', '113', DAT_NONE),
-    Platform('Sony PlayStation 4', 'sony-ps4', 'ps4', None, '4919', '141', None, '120', DAT_NONE),
+        DAT_REDUMP, 'Sony - PlayStation 2 - Datfile', default_box_size=BOX_SIZE_DVD),
+    Platform('Sony PlayStation 3', 'sony-ps3', 'ps3', None, '12', '81', '59', '113', DAT_NONE, default_box_size=BOX_SIZE_BLURAY),
+    Platform('Sony PlayStation 4', 'sony-ps4', 'ps4', None, '4919', '141', None, '120', DAT_NONE, default_box_size=BOX_SIZE_BLURAY),
     # No-Intro has PSP DATs:
     # *) Sony - PlayStation Portable (20191005-125849)
     # *) Sony - PlayStation Portable (Parent-Clone) (20191005-125849)
@@ -412,9 +425,10 @@ AEL_platforms = [
     #
     # Should the Redump or No-Intro DAT used for PSP?
     Platform('Sony PlayStation Portable', 'sony-psp', 'psp', None, '13', '46', '61', '109',
-        DAT_REDUMP, 'Sony - PlayStation Portable - Datfile'),
+        DAT_REDUMP, 'Sony - PlayStation Portable - Datfile', default_box_size=BOX_SIZE_SLIM),
     # No-Intro has PS Vita DATs.
-    Platform('Sony PlayStation Vita', 'sony-psvita', 'psvita', None, '39', '105', '62', '117', DAT_NONE),
+    Platform('Sony PlayStation Vita', 'sony-psvita', 'psvita', None, '39', '105', '62', '117', DAT_NONE, 
+             default_box_size=BOX_SIZE_BLURAY),
 
     Platform('Tiger Game.com', 'console-tigergame', 'tigergame', None, '4940', '50', '121', None,
         DAT_NOINTRO, 'Tiger - Game.com'),
@@ -461,6 +475,10 @@ def get_AEL_platform_index(platform_long):
         return platform_long_to_index_dic[platform_long]
     else:
         return platform_long_to_index_dic[PLATFORM_UNKNOWN_LONG]
+
+def get_AEL_platform(platform_long):
+    idx = get_AEL_platform_index(platform_long)
+    return AEL_platform_list[idx]
 
 # NOTE must take into account platform aliases.
 # '0' means any platform in TGDB and must be returned when there is no platform matching.

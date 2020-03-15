@@ -129,6 +129,8 @@ AEL_CONTENT_VALUE_NONE         = ''
 AEL_LAUNCHER_NAME_LABEL        = 'AEL_Launch_Name'
 AEL_LAUNCHER_ICON_LABEL        = 'AEL_Launch_Icon'
 AEL_LAUNCHER_CLEARLOGO_LABEL   = 'AEL_Launch_Clearlogo'
+AEL_LAUNCHER_PLATFORM_LABEL    = 'AEL_Launch_Platform'
+AEL_LAUNCHER_BOXSIZE_LABEL     = 'AEL_Launch_Boxsize'
 
 # Value is the number of items inside a launcher.
 AEL_NUMITEMS_LABEL             = 'AEL_NumItems'
@@ -345,6 +347,30 @@ ROM_ASSET_ID_LIST = [
     ASSET_MAP_ID,
     ASSET_MANUAL_ID,
     ASSET_TRAILER_ID,
+]
+
+BOX_SIZE_POSTER     = 'poster'
+BOX_SIZE_DVD        = 'dvd'
+BOX_SIZE_BLURAY     = 'bluray'
+BOX_SIZE_CD         = 'cd'
+BOX_SIZE_WIDE       = 'widebox'
+BOX_SIZE_SLIM       = 'slimbox'
+BOX_SIZE_SQUARE     = 'squarebox'
+BOX_SIZE_3DS        = '3dsbox'
+BOX_SIZE_STEAM      = 'steambanner'
+BOX_SIZE_SCREEN     = 'screenshot'
+
+BOX_SIZES = [
+    BOX_SIZE_POSTER,
+    BOX_SIZE_DVD,
+    BOX_SIZE_BLURAY,
+    BOX_SIZE_CD,
+    BOX_SIZE_WIDE,
+    BOX_SIZE_SLIM,
+    BOX_SIZE_SQUARE,
+    BOX_SIZE_3DS,
+    BOX_SIZE_STEAM,
+    BOX_SIZE_SCREEN
 ]
 
 # --- Addon will search these file extensions for assets ---
