@@ -161,8 +161,8 @@ class Main:
     # ---------------------------------------------------------------------------------------------
     def run_plugin(self):
         # --- Initialise log system ---
-        # >> Force DEBUG log level for development.
-        # >> Place it before settings loading so settings can be dumped during debugging.
+        # Force DEBUG log level for development.
+        # Place it before settings loading so settings can be dumped during debugging.
         # set_log_level(LOG_DEBUG)
 
         # --- Fill in settings dictionary using __addon_obj__.getSetting() ---
@@ -171,67 +171,55 @@ class Main:
 
         # --- Some debug stuff for development ---
         log_debug('---------- Called AEL Main::run_plugin() constructor ----------')
-        log_debug('sys.platform   "{0}"'.format(sys.platform))
-        # log_debug('WindowId       "{0}"'.format(xbmcgui.getCurrentWindowId()))
-        # log_debug('WindowName     "{0}"'.format(xbmc.getInfoLabel('Window.Property(xmlfile)')))
+        log_debug('sys.platform   "{}"'.format(sys.platform))
+        # log_debug('WindowId       "{}"'.format(xbmcgui.getCurrentWindowId()))
+        # log_debug('WindowName     "{}"'.format(xbmc.getInfoLabel('Window.Property(xmlfile)')))
         log_debug('Python version "' + sys.version.replace('\n', '') + '"')
         # log_debug('__a_name__     "{0}"'.format(__addon_name__))
-        log_debug('__a_id__       "{0}"'.format(__addon_id__))
-        log_debug('__a_version__  "{0}"'.format(__addon_version__))
-        # log_debug('__a_author__   "{0}"'.format(__addon_author__))
-        # log_debug('__a_profile__  "{0}"'.format(__addon_profile__))
-        # log_debug('__a_type__     "{0}"'.format(__addon_type__))
-        for i in range(len(sys.argv)): log_debug('sys.argv[{0}] "{1}"'.format(i, sys.argv[i]))
-        # log_debug('PLUGIN_DATA_DIR OP "{0}"'.format(g_PATHS.PLUGIN_DATA_DIR.getOriginalPath()))
-        # log_debug('PLUGIN_DATA_DIR  P "{0}"'.format(g_PATHS.PLUGIN_DATA_DIR.getPath()))
-        # log_debug('ADDON_CODE_DIR OP "{0}"'.format(g_PATHS.ADDON_CODE_DIR.getOriginalPath()))
-        # log_debug('ADDON_CODE_DIR  P "{0}"'.format(g_PATHS.ADDON_CODE_DIR.getPath()))
+        log_debug('__a_id__       "{}"'.format(__addon_id__))
+        log_debug('__a_version__  "{}"'.format(__addon_version__))
+        # log_debug('__a_author__   "{}"'.format(__addon_author__))
+        # log_debug('__a_profile__  "{}"'.format(__addon_profile__))
+        # log_debug('__a_type__     "{}"'.format(__addon_type__))
+        for i in range(len(sys.argv)): log_debug('sys.argv[{}] "{}"'.format(i, sys.argv[i]))
+        # log_debug('PLUGIN_DATA_DIR OP "{}"'.format(g_PATHS.PLUGIN_DATA_DIR.getOriginalPath()))
+        # log_debug('PLUGIN_DATA_DIR  P "{}"'.format(g_PATHS.PLUGIN_DATA_DIR.getPath()))
+        # log_debug('ADDON_CODE_DIR OP "{}"'.format(g_PATHS.ADDON_CODE_DIR.getOriginalPath()))
+        # log_debug('ADDON_CODE_DIR  P "{}"'.format(g_PATHS.ADDON_CODE_DIR.getPath()))
 
         # --- Get DEBUG information for the log --
         if self.settings['log_level'] == LOG_DEBUG:
             json_rpc_start = time.time()
 
-            # >> Properties: Kodi name and version <<
-            c_str = ('{"id" : 1, "jsonrpc" : "2.0",'
-                     ' "method" : "Application.GetProperties",'
-                     ' "params" : {"properties" : ["name", "version"]}'
-                     '}')
-            response_props = xbmc.executeJSONRPC(c_str)
-            # log_debug('JSON      ''{0}'''.format(c_str))
-            # log_debug('Response  ''{0}'''.format(response_props))
+            # Properties: Kodi name and version
+            p_dic = {'properties' : ['name', 'version']}
+            response_props = kodi_jsonrpc_dict('Application.GetProperties', p_dic)
+            # Skin in use
+            p_dic = {'setting' : 'lookandfeel.skin'}
+            response_skin = kodi_jsonrpc_dict('Settings.GetSettingValue', p_dic)
 
-            # >> Skin in use <<
-            c_str = ('{"id" : 1, "jsonrpc" : "2.0",'
-                     ' "method" : "Settings.GetSettingValue",'
-                     ' "params" : {"setting" : "lookandfeel.skin"}'
-                     '}')
-            response_skin = xbmc.executeJSONRPC(c_str)
-            # log_debug('JSON      ''{0}'''.format(c_str))
-            # log_debug('Response  ''{0}'''.format(response_skin))
-
-            # >> Print time consumed by JSON RPC calls <<
+            # Print time consumed by JSON RPC calls
             json_rpc_end = time.time()
             # log_debug('JSON RPC time {0:.3f} ms'.format((json_rpc_end - json_rpc_start) * 1000))
 
-            # >> Parse returned JSON and nice print <<
-            properties_dic = json.loads(response_props)
-            r_name     = properties_dic['result']['name']
-            r_major    = properties_dic['result']['version']['major']
-            r_minor    = properties_dic['result']['version']['minor']
-            r_revision = properties_dic['result']['version']['revision']
-            r_tag      = properties_dic['result']['version']['tag']
-            properties_dic = json.loads(response_skin)
-            r_skin = properties_dic['result']['value']
-            log_debug('JSON version "{0}" "{1}" "{2}" "{3}" "{4}"'.format(r_name, r_major, r_minor, r_revision, r_tag))
-            log_debug('JSON skin    "{0}"'.format(r_skin))
+            # Parse returned JSON and nice print.
+            r_name = response_props['name']
+            r_major = response_props['version']['major']
+            r_minor = response_props['version']['minor']
+            r_revision = response_props['version']['revision']
+            r_tag = response_props['version']['tag']
+            r_skin = response_skin['value']
+            log_debug('JSON version "{}" "{}" "{}" "{}" "{}"'.format(
+                r_name, r_major, r_minor, r_revision, r_tag))
+            log_debug('JSON skin    "{}"'.format(r_skin))
 
             # --- Save all Kodi settings into a file for DEBUG ---
             # c_str = ('{"id" : 1, "jsonrpc" : "2.0",'
             #          ' "method" : "Settings.GetSettings",'
             #          ' "params" : {"level":"expert"}}')
             # response = xbmc.executeJSONRPC(c_str)
-            # log_debug('JSON      ''{0}'''.format(c_str))
-            # log_debug('Response  ''{0}'''.format(response.decode('utf-8')))
+            # log_debug('JSON      "{}"'.format(c_str))
+            # log_debug('Response  "{}"'.format(response.decode('utf-8')))
 
         # Kiosk mode for skins.
         # Do not change context menus with listitem.addContextMenuItems() in Kiosk mode.
@@ -593,16 +581,17 @@ class Main:
         self.settings['collections_asset_dir']    = o.getSetting('collections_asset_dir').decode('utf-8')
 
         # --- Advanced ---
-        self.settings['media_state_action']       = int(o.getSetting('media_state_action'))
-        self.settings['delay_tempo']              = int(round(float(o.getSetting('delay_tempo'))))
-        self.settings['suspend_audio_engine']     = True if o.getSetting('suspend_audio_engine') == 'true' else False
-        # self.settings['suspend_joystick_engine']  = True if o.getSetting('suspend_joystick_engine') == 'true' else False
-        self.settings['escape_romfile']           = True if o.getSetting('escape_romfile') == 'true' else False
-        self.settings['lirc_state']               = True if o.getSetting('lirc_state') == 'true' else False
-        self.settings['show_batch_window']        = True if o.getSetting('show_batch_window') == 'true' else False
-        self.settings['windows_close_fds']        = True if o.getSetting('windows_close_fds') == 'true' else False
-        self.settings['windows_cd_apppath']       = True if o.getSetting('windows_cd_apppath') == 'true' else False
-        self.settings['log_level']                = int(o.getSetting('log_level'))
+        self.settings['media_state_action'] = int(o.getSetting('media_state_action'))
+        self.settings['delay_tempo'] = int(round(float(o.getSetting('delay_tempo'))))
+        self.settings['suspend_audio_engine'] = True if o.getSetting('suspend_audio_engine') == 'true' else False
+        self.settings['suspend_screensaver'] = True if o.getSetting('suspend_screensaver') == 'true' else False
+        # self.settings['suspend_joystick_engine'] = True if o.getSetting('suspend_joystick_engine') == 'true' else False
+        self.settings['escape_romfile'] = True if o.getSetting('escape_romfile') == 'true' else False
+        self.settings['lirc_state'] = True if o.getSetting('lirc_state') == 'true' else False
+        self.settings['show_batch_window'] = True if o.getSetting('show_batch_window') == 'true' else False
+        self.settings['windows_close_fds'] = True if o.getSetting('windows_close_fds') == 'true' else False
+        self.settings['windows_cd_apppath'] = True if o.getSetting('windows_cd_apppath') == 'true' else False
+        self.settings['log_level'] = int(o.getSetting('log_level'))
 
         # Check if user changed default artwork paths for categories/launchers. If not, set defaults.
         if self.settings['categories_asset_dir'] == '':
@@ -8564,9 +8553,16 @@ class Main:
         else:
             log_verb('_run_before_execution() Toggling Kodi fullscreen DEACTIVATED in Launcher')
 
+        # Disable screensaver
+        if self.settings['suspend_screensaver']:
+            kodi_disable_screensaver()
+        else:
+            screensaver_mode = kodi_get_screensaver_mode()
+            log_debug('_run_before_execution() Screensaver status "{}"'.format(screensaver_mode))
+
         # --- Pause Kodi execution some time ---
         delay_tempo_ms = self.settings['delay_tempo']
-        log_verb('_run_before_execution() Pausing {0} ms'.format(delay_tempo_ms))
+        log_verb('_run_before_execution() Pausing {} ms'.format(delay_tempo_ms))
         xbmc.sleep(delay_tempo_ms)
         log_debug('_run_before_execution() function ENDS')
 
@@ -8607,6 +8603,13 @@ class Main:
             log_verb('_run_before_execution() Not supported on Kodi Krypton!')
         else:
             log_verb('_run_after_execution() DO NOT resume Kodi joystick engine')
+
+        # Restore screensaver status.
+        if self.settings['suspend_screensaver']:
+            kodi_restore_screensaver()
+        else:
+            screensaver_mode = kodi_get_screensaver_mode()
+            log_debug('_run_after_execution() Screensaver status "{}"'.format(screensaver_mode))
 
         # --- Resume Kodi playing if it was paused. If it was stopped, keep it stopped. ---
         media_state_action = self.settings['media_state_action']

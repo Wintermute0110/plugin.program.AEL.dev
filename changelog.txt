@@ -97,6 +97,10 @@ WIP      [MANUALS] Port the PDF manual reader from AML into AEL.
 
 [B]Advanced Emulator Launcher | version 0.9.10 | xx July 2020[/B]
 
+FEATURE  [CORE] Disable Kodi screensaver when launching MAME and reenable after MAME finishes.
+         Featured ported from AML.
+         See https://forum.kodi.tv/showthread.php?tid=304186&pid=2934194#pid2934194
+
 WIP      [CORE] Unified ROM artwork directory. This will require heavy changes in categories.xml.
          I still have to think how to properly implement this. This is related to the
          desing of a prototype Kodi games database.

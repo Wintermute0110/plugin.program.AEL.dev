@@ -17,7 +17,7 @@
 
 # --- Python standard library ---
 from __future__ import unicode_literals
-import sys, os, shutil, time, random, hashlib, urlparse
+import sys, os, shutil, time, random, hashlib, urlparse, json
 import pprint
 
 # --- Kodi modules ---
@@ -89,16 +89,14 @@ def log_error(str_text):
     log_text = 'AEL ERROR: ' + str_text
     xbmc.log(log_text.encode('utf-8'), level=xbmc.LOGERROR)
 
-# -----------------------------------------------------------------------------
+# ------------------------------------------------------------------------------------------------
 # Kodi notifications and dialogs
-# -----------------------------------------------------------------------------
-#
+# ------------------------------------------------------------------------------------------------
 # Displays a modal dialog with an OK button. Dialog can have up to 3 rows of text, however first
 # row is multiline.
 # Call examples:
 #  1) ret = kodi_dialog_OK('Launch ROM?')
 #  2) ret = kodi_dialog_OK('Launch ROM?', title = 'AEL - Launcher')
-#
 def kodi_dialog_OK(text, title = 'Advanced Emulator Launcher'):
     xbmcgui.Dialog().ok(title, text)
 
@@ -113,22 +111,15 @@ def kodi_dialog_yesno_custom(text, yeslabel_str, nolabel_str, title = 'Advanced 
 def kodi_dialog_yesno_timer(text, timer_ms = 30000, title = 'Advanced Emulator Launcher'):
     return xbmcgui.Dialog().yesno(title, text, autoclose = timer_ms)
 
-#
 # Displays a small box in the low right corner
-#
 def kodi_notify(text, title = 'Advanced Emulator Launcher', time = 5000):
-    # --- Old way ---
-    # xbmc.executebuiltin("XBMC.Notification(%s,%s,%s,%s)" % (title, text, time, ICON_IMG_FILE_PATH))
-
-    # --- New way ---
     xbmcgui.Dialog().notification(title, text, xbmcgui.NOTIFICATION_INFO, time)
 
 def kodi_notify_warn(text, title = 'Advanced Emulator Launcher warning', time = 7000):
     xbmcgui.Dialog().notification(title, text, xbmcgui.NOTIFICATION_WARNING, time)
 
-#
-# Do not use this function much because it is the same icon as when Python fails, and that may confuse the user.
-#
+# Do not use this function much because it is the same icon displayed when Python fails
+# with an exception and that may confuse the user.
 def kodi_notify_error(text, title = 'Advanced Emulator Launcher error', time = 7000):
     xbmcgui.Dialog().notification(title, text, xbmcgui.NOTIFICATION_ERROR, time)
 
@@ -369,12 +360,63 @@ def kodi_update_image_cache(img_path):
     # xbmc.executebuiltin('XBMC.ReloadSkin()')
 
 def kodi_toogle_fullscreen():
-    # Frodo and up compatible
-    xbmc.executeJSONRPC('{"jsonrpc":"2.0", "method":"Input.ExecuteAction", "params":{"action":"togglefullscreen"}, "id":"1"}')
+    kodi_jsonrpc_dict('Input.ExecuteAction', {'action' : 'togglefullscreen'})
 
-#
+def kodi_get_screensaver_mode():
+    r_dic = kodi_jsonrpc_dict('Settings.getSettingValue', {'setting' : 'screensaver.mode'})
+    screensaver_mode = r_dic['value']
+    return screensaver_mode
+
+g_screensaver_mode = None # Global variable to store screensaver status.
+def kodi_disable_screensaver():
+    global g_screensaver_mode
+    g_screensaver_mode = kodi_get_screensaver_mode()
+    log_debug('kodi_disable_screensaver() g_screensaver_mode "{}"'.format(g_screensaver_mode))
+    p_dic = {
+        'setting' : 'screensaver.mode',
+        'value' : '',
+    }
+    kodi_jsonrpc_dict('Settings.setSettingValue', p_dic)
+    log_debug('kodi_disable_screensaver() Screensaver disabled.')
+
+# kodi_disable_screensaver() must be called before this function or bad things will happen.
+def kodi_restore_screensaver():
+    if g_screensaver_mode is None:
+        log_error('kodi_disable_screensaver() must be called before kodi_restore_screensaver()')
+        raise RuntimeError
+    log_debug('kodi_restore_screensaver() Screensaver mode "{}"'.format(g_screensaver_mode))
+    p_dic = {
+        'setting' : 'screensaver.mode',
+        'value' : g_screensaver_mode,
+    }
+    kodi_jsonrpc_dict('Settings.setSettingValue', p_dic)
+    log_debug('kodi_restore_screensaver() Restored previous screensaver status.')
+
+def kodi_jsonrpc_dict(method_str, params_dic, verbose = False):
+    params_str = json.dumps(params_dic)
+    if verbose:
+        log_debug('kodi_jsonrpc_dict() method_str "{}"'.format(method_str))
+        log_debug('kodi_jsonrpc_dict() params_dic = \n{}'.format(pprint.pformat(params_dic)))
+        log_debug('kodi_jsonrpc_dict() params_str "{}"'.format(params_str))
+
+    # --- Do query ---
+    header = '"id" : 1, "jsonrpc" : "2.0"'
+    query_str = '{{{}, "method" : "{}", "params" : {} }}'.format(header, method_str, params_str)
+    response_json_str = xbmc.executeJSONRPC(query_str)
+
+    # --- Parse JSON response ---
+    response_dic = json.loads(response_json_str)
+    if 'error' in response_dic:
+        result_dic = response_dic['error']
+        log_warning('kodi_jsonrpc_dict() JSONRPC ERROR {}'.format(result_dic['message']))
+    else:
+        result_dic = response_dic['result']
+    if verbose:
+        log_debug('kodi_jsonrpc_dict() result_dic = \n{}'.format(pprint.pformat(result_dic)))
+
+    return result_dic
+
 # Displays a text window and requests a monospaced font.
-#
 def kodi_display_text_window_mono(window_title, info_text):
     log_debug('Setting Window(10000) Property "FontWidth" = "monospaced"')
     xbmcgui.Window(10000).setProperty('FontWidth', 'monospaced')
@@ -382,8 +424,6 @@ def kodi_display_text_window_mono(window_title, info_text):
     log_debug('Setting Window(10000) Property "FontWidth" = "proportional"')
     xbmcgui.Window(10000).setProperty('FontWidth', 'proportional')
 
-#
 # Displays a text window with a proportional font (default).
-#
 def kodi_display_text_window(window_title, info_text):
     xbmcgui.Dialog().textviewer(window_title, info_text)
