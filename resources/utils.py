@@ -1643,7 +1643,7 @@ class NewFileName:
             if len(row) < 2:
                continue
             
-           s key = unicode(row[0],'utf-8').strip()
+            key = unicode(row[0],'utf-8').strip()
             value = unicode(row[1],'utf-8').strip().lstrip('"').rstrip('"')
             result[key] = value
 
