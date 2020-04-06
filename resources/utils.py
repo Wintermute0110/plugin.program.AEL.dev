@@ -1638,14 +1638,20 @@ class NewFileName:
         file_lines = file_contents.splitlines()
 
         result={ }
-        reader = csv.reader(file_lines, delimiter=str('='), quotechar=str('"'), quoting=csv.QUOTE_MINIMAL, skipinitialspace=True)
+        reader = csv.reader(self._utf_8_encoder(file_lines), delimiter=str('='), quotechar=str('"'), quoting=csv.QUOTE_MINIMAL, skipinitialspace=True)
         for row in reader:
             if len(row) < 2:
                continue
-           
-            result[row[0].strip()] = row[1].strip().lstrip('"').rstrip('"')
+            
+           s key = unicode(row[0],'utf-8').strip()
+            value = unicode(row[1],'utf-8').strip().lstrip('"').rstrip('"')
+            result[key] = value
 
         return result
+
+    def _utf_8_encoder(self, unicode_csv_data):
+        for line in unicode_csv_data:
+            yield line.encode('utf-8')
 
     # Opens JSON file and reads it
     def readJson(self):
