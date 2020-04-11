@@ -4461,12 +4461,12 @@ def m_subcommand_collection_edit_default_assets(collection):
 
 # --- Atomic commands ---
 # TODO: implement
-@router.action('EXOIRT')
+@router.action('EXPORT')
 def m_subcommand_collection_export_collection_xml(collection):
     pass
 
 # -------------------------------------------------------------------------------------------------
-# ROMs context menu atomic commands. 
+# Launcher advanced commands. 
 # -------------------------------------------------------------------------------------------------
 
 # --- Choose default ROMs assets/artwork ---
@@ -4844,7 +4844,7 @@ def m_subcommand_update_rom_audit(category, launcher):
 @router.action('EDIT_APPLICATION')
 def m_subcommand_change_launcher_application(category, launcher):
     if launcher.change_application():
-        g_ObjectRepository.save_launcher(launcher)
+        launcher.save_to_disk()
         kodi_notify('Changed launcher application')
 
     return
@@ -4936,6 +4936,20 @@ def m_subcommand_change_launcher_rompath(category, launcher):
     launcher.save_to_disk()
 
     kodi_notify('Changed ROM path')
+
+    if kodi_dialog_yesno('Apply changed path to current ROMs?'):
+        roms = launcher.get_roms()
+        pdialog = KodiProgressDialog()
+        pdialog.startProgress('Updating ROMs...', len(roms))
+        i = 1
+        for rom in roms:
+            pdialog.updateProgress(i, 'Updating "{}"'.format(rom.get_name()))
+            new_rom_filename = rom.get_filename().replace(current_path.getPath(), rom_path)
+            rom.set_file(FileName(new_rom_filename))
+            i = i+1
+        launcher.update_ROM_set(roms)
+        pdialog.endProgress()
+
     return
 
 # --- Edition of the launcher ROM extension (Only ROM launchers). Command: EDIT_ROMEXT ---
@@ -5008,10 +5022,25 @@ def m_subcommand_toggle_multidisc(category, launcher):
 # -------------------------------------------------------------------------------------------------
 # Launcher specific advanced commands
 # -------------------------------------------------------------------------------------------------
+@router.action('CHANGE_RETROARCH_CONF')
+def m_subcommand_change_retroarch_config(category, launcher):
+    options = launcher.get_available_configs()
+       
+    dialog = KodiOrdDictionaryDialog()
+    selected_option = dialog.select('Select Retroarch config', options)
+     
+    if selected_option is None:
+        log_debug('m_subcommand_change_retroarch_config(): Selected option = NONE')
+        return
+            
+    log_debug('m_subcommand_change_retroarch_config(): Selected option = {0}'.format(selected_option))
+    launcher.change_config(selected_option)
+    launcher.save_to_disk()
+
 @router.action('CHANGE_RETROARCH_CORE')
 def m_subcommand_change_retroarch_core(category, launcher):
     options = launcher.get_available_cores()
-    
+       
     dialog = KodiOrdDictionaryDialog()
     selected_option = dialog.select('Select Retroach Core', options)
      
@@ -5305,7 +5334,6 @@ def m_subcommand_advanced_rom_modifications(launcher, rom):
      
     if selected_option is None:
         log_debug('_subcommand_advanced_rom_modifications(): Selected option = NONE')
-        self._command_edit_rom(launcher.get_category_id(), launcher.get_id(), rom.get_id())
         return
             
     log_debug('_subcommand_advanced_rom_modifications(): Selected option = {0}'.format(selected_option))

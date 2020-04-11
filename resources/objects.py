@@ -2399,7 +2399,7 @@ class StandaloneLauncher(LauncherABC):
         non_blocking_str  = 'ON' if self.entity_data['non_blocking'] else 'OFF'
 
         options = collections.OrderedDict()
-        options['CHANGE_APPLICATION']   = "Change Application: '{0}'".format(self.entity_data['application'])
+        options['EDIT_APPLICATION']     = "Change Application: '{0}'".format(self.entity_data['application'])
         options['MODIFY_ARGS']          = "Modify Arguments: '{0}'".format(self.entity_data['args'])
         options['ADDITIONAL_ARGS']      = "Modify aditional arguments ..."
         options['TOGGLE_WINDOWED']      = "Toggle Kodi into windowed mode (now {0})".format(toggle_window_str)
@@ -2437,7 +2437,7 @@ class StandaloneLauncher(LauncherABC):
     def change_application(self):
         current_application = self.entity_data['application']
         selected_application = xbmcgui.Dialog().browse(1, 'Select the launcher application', 'files',
-                                                      self._get_appbrowser_filter('application', self.entity_data),
+                                                      self._builder_get_appbrowser_filter('application', self.entity_data),
                                                       False, False, current_application).decode('utf-8')
 
         if selected_application is None or selected_application == current_application:
@@ -2497,8 +2497,6 @@ class ROMLauncherABC(LauncherABC):
     def supports_launching_roms(self): return True
 
     def supports_parent_clone_roms(self): return True
-
-    def supports_parent_clone_roms(self): return False
 
     def supports_ROM_audit(self): return True
 
@@ -3799,6 +3797,12 @@ class RetroarchLauncher(StandardRomLauncher):
             cores_ext = 'so'
 
         config_file   = FileName(launcher['retro_config'])
+
+        if not config_file.exists():
+            log_warning('Retroarch config file not found: {}'.format(config_file.getPath()))
+            kodi_notify_error('Retroarch config file not found {}. Change path first.'.format(config_file.getPath()))
+            return cores_sorted
+
         parent_dir    = FileName(config_file.getDir())
         configuration = config_file.readPropertyFile()
         info_folder   = self._create_path_from_retroarch_setting(configuration['libretro_info_path'], parent_dir)
@@ -3912,7 +3916,8 @@ class RetroarchLauncher(StandardRomLauncher):
         multidisc_str     = 'ON' if self.entity_data['multidisc'] else 'OFF'
 
         options = collections.OrderedDict()
-        options['CHANGE_APPLICATION']   = "Change Retroarch path: '{0}'".format(self.entity_data['application'])
+        options['EDIT_APPLICATION']     = "Change Retroarch App path: '{0}'".format(self.entity_data['application'])
+        options['CHANGE_RETROARCH_CONF']= "Change config: '{0}'".format(self.entity_data['retro_config'])
         options['CHANGE_RETROARCH_CORE']= "Change core: '{0}'".format(self.entity_data['retro_core'])
         options['EDIT_ARGS']            = "Modify Arguments: '{0}'".format(self.entity_data['args'])
         options['EDIT_ADDITIONAL_ARGS'] = "Modify aditional arguments ..."
@@ -3927,9 +3932,12 @@ class RetroarchLauncher(StandardRomLauncher):
     def get_available_cores(self):
         return self._builder_get_available_retroarch_cores('retro_core_info', self.get_data_dic())
     
+    def get_available_configs(self):
+        return self._builder_get_available_retroarch_configurations('retro_config', self.get_data_dic())
+
     def change_application(self):
         current_application = self.entity_data['application']
-        selected_application = xbmcgui.Dialog().browse(0, 'Select the Retroarch path', 'files',
+        selected_application = xbmcgui.Dialog().browse(0, 'Select the Retroarch App path', 'files',
                                                        '', False, False, current_application).decode('utf-8')
 
         if selected_application is None or selected_application == current_application:
@@ -3937,6 +3945,9 @@ class RetroarchLauncher(StandardRomLauncher):
         self.entity_data['application'] = selected_application
 
         return True
+    
+    def change_config(self, config_path):
+        self.entity_data['retro_config'] = config_path
 
     def change_core(self, selected_core_file):
         self._builder_load_selected_core_info(selected_core_file, 'retro_core_info', self.entity_data, True)
@@ -3968,8 +3979,12 @@ class RetroarchLauncher(StandardRomLauncher):
             return True
 
         if is_android():
+            android_app_path = self.entity_data['application']
+            android_app = next(s for s in reversed(android_app_path.split('/')) if s)
+
             self.arguments =  'start --user 0 -a android.intent.action.MAIN -c android.intent.category.LAUNCHER '
-            self.arguments += '-n com.retroarch/.browser.retroactivity.RetroActivityFuture '
+
+            self.arguments += '-n {}/com.retroarch.browser.retroactivity.RetroActivityFuture '.format(android_app)
             self.arguments += '-e ROM \'$rom$\' '
             self.arguments += '-e LIBRETRO $retro_core$ '
             self.arguments += '-e CONFIGFILE $retro_config$ '
