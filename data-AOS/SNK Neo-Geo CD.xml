@@ -1,0 +1,729 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<menu>
+<header>
+  <listname>SNK Neo-Geo CD</listname>
+  <lastlistupdate></lastlistupdate>
+  <listversion>V1</listversion>
+  <exporterversion>V1 GameDBInfo converter</exporterversion>
+</header>
+<game ROM="2020 Super Baseball (World)">
+  <title>2020 Super Baseball (World)</title>
+  <year>1995</year>
+  <genre>Sports/Baseball</genre>
+  <developer />
+  <publisher>SNK</publisher>
+  <rating>ESRB - E (Everyone)</rating>
+</game>
+<game ROM="3 Count Bout (World)">
+  <title>3 Count Bout (World)</title>
+  <year>1995</year>
+  <genre>Sports/Wrestling</genre>
+  <developer />
+  <publisher>SNK</publisher>
+  <rating>ESRB - T (Teen)</rating>
+</game>
+<game ROM="ADK World (Japan)">
+  <title>ADK World (Japan)</title>
+  <year>1995</year>
+  <genre>Miscellaneous</genre>
+  <developer />
+  <publisher>ADK</publisher>
+  <rating>ESRB - E10+ (Everyone 10+)</rating>
+</game>
+<game ROM="Aero Fighters 2 (World)">
+  <title>Aero Fighters 2 (World)</title>
+  <year>1994</year>
+  <genre>Shooter</genre>
+  <developer />
+  <publisher>Video Systems</publisher>
+  <rating>ESRB - E10+ (Everyone 10+)</rating>
+</game>
+<game ROM="Aero Fighters 3 (World)">
+  <title>Aero Fighters 3 (World)</title>
+  <year>1995</year>
+  <genre>Shooter</genre>
+  <developer />
+  <publisher>Video Systems</publisher>
+  <rating>ESRB - E10+ (Everyone 10+)</rating>
+</game>
+<game ROM="Aggressors of Dark Kombat (World)">
+  <title>Aggressors of Dark Kombat (World)</title>
+  <year>1995</year>
+  <genre>Fighter</genre>
+  <developer />
+  <publisher>ADK</publisher>
+  <rating>ESRB - E10+ (Everyone 10+)</rating>
+</game>
+<game ROM="Alpha Mission II (World)">
+  <title>Alpha Mission II (World)</title>
+  <year>1994</year>
+  <genre>Shooter</genre>
+  <developer />
+  <publisher>SNK</publisher>
+  <rating>ESRB - E (Everyone)</rating>
+</game>
+<game ROM="Art of Fighting (World)">
+  <title>Art of Fighting (World)</title>
+  <year>1994</year>
+  <genre>Fighter</genre>
+  <developer />
+  <publisher>SNK</publisher>
+  <rating>ESRB - T (Teen)</rating>
+</game>
+<game ROM="Art of Fighting 2 (World)">
+  <title>Art of Fighting 2 (World)</title>
+  <year>1994</year>
+  <genre>Fighter</genre>
+  <developer />
+  <publisher>SNK</publisher>
+  <rating>ESRB - T (Teen)</rating>
+</game>
+<game ROM="Art of Fighting 3 - The Path of the Warrior (World)">
+  <title>Art of Fighting 3 - The Path of the Warrior (World)</title>
+  <year>1996</year>
+  <genre>Fighter</genre>
+  <developer />
+  <publisher>SNK</publisher>
+  <rating>ESRB - T (Teen)</rating>
+</game>
+<game ROM="Baseball Stars 2 (World)">
+  <title>Baseball Stars 2 (World)</title>
+  <year>1994</year>
+  <genre>Sports/Baseball</genre>
+  <developer />
+  <publisher>SNK</publisher>
+  <rating>ESRB - E (Everyone)</rating>
+</game>
+<game ROM="Baseball Stars Professional (World)">
+  <title>Baseball Stars Professional (World)</title>
+  <year>1995</year>
+  <genre>Sports/Baseball</genre>
+  <developer />
+  <publisher>SNK</publisher>
+  <rating>ESRB - E (Everyone)</rating>
+</game>
+<game ROM="Blue&apos;s Journey (World)">
+  <title>Blue&apos;s Journey (World)</title>
+  <year>1994</year>
+  <genre>Platform</genre>
+  <developer />
+  <publisher>ADK</publisher>
+  <rating>ESRB - E (Everyone)</rating>
+</game>
+<game ROM="Breakers (World)">
+  <title>Breakers (World)</title>
+  <year>1997</year>
+  <genre>Fighter</genre>
+  <developer />
+  <publisher>Visco</publisher>
+  <rating>ESRB - T (Teen)</rating>
+</game>
+<game ROM="Burning Fight (World)">
+  <title>Burning Fight (World)</title>
+  <year>1994</year>
+  <genre>Fighter</genre>
+  <developer />
+  <publisher>SNK</publisher>
+  <rating>ESRB - T (Teen)</rating>
+</game>
+<game ROM="Crossed Swords (World)">
+  <title>Crossed Swords (World)</title>
+  <year>1994</year>
+  <genre>Action</genre>
+  <developer />
+  <publisher>ADK</publisher>
+  <rating>ESRB - T (Teen)</rating>
+</game>
+<game ROM="Crossed Swords II (World)">
+  <title>Crossed Swords II (World)</title>
+  <year>1995</year>
+  <genre>Action</genre>
+  <developer />
+  <publisher>ADK</publisher>
+  <rating>ESRB - T (Teen)</rating>
+</game>
+<game ROM="Cyber-Lip (World)">
+  <title>Cyber-Lip (World)</title>
+  <year>1995</year>
+  <genre>Platform</genre>
+  <developer />
+  <publisher>SNK</publisher>
+  <rating>ESRB - T (Teen)</rating>
+</game>
+<game ROM="Double Dragon (World)">
+  <title>Double Dragon (World)</title>
+  <year>1995</year>
+  <genre>Fighter</genre>
+  <developer />
+  <publisher>Technos</publisher>
+  <rating>ESRB - T (Teen)</rating>
+</game>
+<game ROM="Fatal Fury - The Battle of Fury (World)">
+  <title>Fatal Fury - The Battle of Fury (World)</title>
+  <year>1994</year>
+  <genre>Fighter</genre>
+  <developer />
+  <publisher>SNK</publisher>
+  <rating>ESRB - T (Teen)</rating>
+</game>
+<game ROM="Fatal Fury 2 (World)">
+  <title>Fatal Fury 2 (World)</title>
+  <year>1994</year>
+  <genre>Fighter</genre>
+  <developer />
+  <publisher>SNK</publisher>
+  <rating>ESRB - T (Teen)</rating>
+</game>
+<game ROM="Fatal Fury 3 - Road to the Final Victory (World)">
+  <title>Fatal Fury 3 - Road to the Final Victory (World)</title>
+  <year>1995</year>
+  <genre>Fighter</genre>
+  <developer />
+  <publisher>SNK</publisher>
+  <rating>ESRB - T (Teen)</rating>
+</game>
+<game ROM="Fatal Fury Special (World)">
+  <title>Fatal Fury Special (World)</title>
+  <year>1994</year>
+  <genre>Fighter</genre>
+  <developer />
+  <publisher>SNK</publisher>
+  <rating>ESRB - T (Teen)</rating>
+</game>
+<game ROM="Football Frenzy (World)">
+  <title>Football Frenzy (World)</title>
+  <year>1994</year>
+  <genre>Sports/Football</genre>
+  <developer />
+  <publisher>SNK</publisher>
+  <rating>ESRB - E (Everyone)</rating>
+</game>
+<game ROM="Galaxy Fight - Universal Warriors (World)">
+  <title>Galaxy Fight - Universal Warriors (World)</title>
+  <year>1995</year>
+  <genre>Fighter</genre>
+  <developer />
+  <publisher>Sunsoft</publisher>
+  <rating>ESRB - T (Teen)</rating>
+</game>
+<game ROM="Ghost Pilots (World)">
+  <title>Ghost Pilots (World)</title>
+  <year>1995</year>
+  <genre>Shooter</genre>
+  <developer />
+  <publisher>SNK</publisher>
+  <rating>ESRB - T (Teen)</rating>
+</game>
+<game ROM="Ironclad (World)">
+  <title>Ironclad (World)</title>
+  <year>1996</year>
+  <genre>Shooter</genre>
+  <developer />
+  <publisher>Saurus</publisher>
+  <rating>ESRB - T (Teen)</rating>
+</game>
+<game ROM="Kabuki Klash (World)">
+  <title>Kabuki Klash (World)</title>
+  <year>1995</year>
+  <genre>Fighter</genre>
+  <developer />
+  <publisher>Hudson</publisher>
+  <rating>ESRB - T (Teen)</rating>
+</game>
+<game ROM="Karnov&apos;s Revenge (World)">
+  <title>Karnov&apos;s Revenge (World)</title>
+  <year>1994</year>
+  <genre>Fighter</genre>
+  <developer />
+  <publisher>Data East</publisher>
+  <rating>ESRB - T (Teen)</rating>
+</game>
+<game ROM="King of Fighters &apos;94, The (World)">
+  <title>King of Fighters &apos;94, The (World)</title>
+  <year>1994</year>
+  <genre>Fighter</genre>
+  <developer />
+  <publisher>SNK</publisher>
+  <rating>ESRB - T (Teen)</rating>
+</game>
+<game ROM="King of Fighters &apos;95, The (World)">
+  <title>King of Fighters &apos;95, The (World)</title>
+  <year>1995</year>
+  <genre>Fighter</genre>
+  <developer />
+  <publisher>SNK</publisher>
+  <rating>ESRB - T (Teen)</rating>
+</game>
+<game ROM="King of Fighters &apos;96, The (World)">
+  <title>King of Fighters &apos;96, The (World)</title>
+  <year>1996</year>
+  <genre>Fighter</genre>
+  <developer />
+  <publisher>SNK</publisher>
+  <rating>ESRB - T (Teen)</rating>
+</game>
+<game ROM="King of Fighters &apos;97, The (World)">
+  <title>King of Fighters &apos;97, The (World)</title>
+  <year>1997</year>
+  <genre>Fighter</genre>
+  <developer />
+  <publisher>SNK</publisher>
+  <rating>ESRB - T (Teen)</rating>
+</game>
+<game ROM="King of Fighters &apos;98, The - The Slugfest (World)">
+  <title>King of Fighters &apos;98, The - The Slugfest (World)</title>
+  <year>1998</year>
+  <genre>Fighter</genre>
+  <developer />
+  <publisher>SNK</publisher>
+  <rating>ESRB - T (Teen)</rating>
+</game>
+<game ROM="King of Fighters &apos;99, The - Millennium Battle (World)">
+  <title>King of Fighters &apos;99, The - Millennium Battle (World)</title>
+  <year>1999</year>
+  <genre>Fighter</genre>
+  <developer />
+  <publisher>SNK</publisher>
+  <rating>ESRB - T (Teen)</rating>
+</game>
+<game ROM="King of the Monsters 2 - The Next Thing (World)">
+  <title>King of the Monsters 2 - The Next Thing (World)</title>
+  <year>1994</year>
+  <genre>Fighter</genre>
+  <developer />
+  <publisher>SNK</publisher>
+  <rating>ESRB - T (Teen)</rating>
+</game>
+<game ROM="Last Blade 2, The (World)">
+  <title>Last Blade 2, The (World)</title>
+  <year>1999</year>
+  <genre>Fighter</genre>
+  <developer />
+  <publisher>SNK</publisher>
+  <rating>ESRB - T (Teen)</rating>
+</game>
+<game ROM="Last Blade, The (World)">
+  <title>Last Blade, The (World)</title>
+  <year>1998</year>
+  <genre>Fighter</genre>
+  <developer />
+  <publisher>SNK</publisher>
+  <rating>ESRB - T (Teen)</rating>
+</game>
+<game ROM="Last Hope (World)">
+  <title>Last Hope (World)</title>
+  <year>2006</year>
+  <genre>Shooter</genre>
+  <developer />
+  <publisher>NG:DEV.TEAM</publisher>
+  <rating>ESRB - E (Everyone)</rating>
+</game>
+<game ROM="Last Resort (World)">
+  <title>Last Resort (World)</title>
+  <year>1994</year>
+  <genre>Shooter</genre>
+  <developer />
+  <publisher>SNK</publisher>
+  <rating>ESRB - E (Everyone)</rating>
+</game>
+<game ROM="League Bowling (World)">
+  <title>League Bowling (World)</title>
+  <year>1994</year>
+  <genre>Sports/Bowling</genre>
+  <developer />
+  <publisher>SNK</publisher>
+  <rating>ESRB - E (Everyone)</rating>
+</game>
+<game ROM="Magical Drop 2 (World)">
+  <title>Magical Drop 2 (World)</title>
+  <year>1996</year>
+  <genre>Puzzle</genre>
+  <developer />
+  <publisher>Data East</publisher>
+  <rating>ESRB - E (Everyone)</rating>
+</game>
+<game ROM="Magician Lord (World)">
+  <title>Magician Lord (World)</title>
+  <year>1994</year>
+  <genre>Platform</genre>
+  <developer />
+  <publisher>ADK</publisher>
+  <rating>ESRB - T (Teen)</rating>
+</game>
+<game ROM="Metal Slug (World)">
+  <title>Metal Slug (World)</title>
+  <year>1996</year>
+  <genre>Platform</genre>
+  <developer />
+  <publisher>Nazca</publisher>
+  <rating>ESRB - T (Teen)</rating>
+</game>
+<game ROM="Metal Slug 2 (World)">
+  <title>Metal Slug 2 (World)</title>
+  <year>1998</year>
+  <genre>Platform</genre>
+  <developer />
+  <publisher>SNK</publisher>
+  <rating>ESRB - T (Teen)</rating>
+</game>
+<game ROM="Mutation Nation (World)">
+  <title>Mutation Nation (World)</title>
+  <year>1995</year>
+  <genre>Fighter</genre>
+  <developer />
+  <publisher>SNK</publisher>
+  <rating>ESRB - T (Teen)</rating>
+</game>
+<game ROM="NAM-1975 (World)">
+  <title>NAM-1975 (World)</title>
+  <year>1994</year>
+  <genre>Shooter</genre>
+  <developer />
+  <publisher>SNK</publisher>
+  <rating>ESRB - T (Teen)</rating>
+</game>
+<game ROM="Neo DriftOut (World)">
+  <title>Neo DriftOut (World)</title>
+  <year>1996</year>
+  <genre>Driving</genre>
+  <developer />
+  <publisher>Visco</publisher>
+  <rating>ESRB - E (Everyone)</rating>
+</game>
+<game ROM="Neo Turf Masters (World)">
+  <title>Neo Turf Masters (World)</title>
+  <year>1996</year>
+  <genre>Sports/Golf</genre>
+  <developer />
+  <publisher>SNK</publisher>
+  <rating>ESRB - E (Everyone)</rating>
+</game>
+<game ROM="Ninja Combat (World)">
+  <title>Ninja Combat (World)</title>
+  <year>1994</year>
+  <genre>Beat-&apos;Em-Up</genre>
+  <developer />
+  <publisher>ADK</publisher>
+  <rating>ESRB - T (Teen)</rating>
+</game>
+<game ROM="Ninja Commando (World)">
+  <title>Ninja Commando (World)</title>
+  <year>1994</year>
+  <genre>Shooter</genre>
+  <developer />
+  <publisher>ADK</publisher>
+  <rating>ESRB - E (Everyone)</rating>
+</game>
+<game ROM="Ninja Master&apos;s - Haou Ninpou-Chou (World)">
+  <title>Ninja Master&apos;s - Haou Ninpou-Chou (World)</title>
+  <year>1996</year>
+  <genre>Fighter</genre>
+  <developer />
+  <publisher>ADK</publisher>
+  <rating>ESRB - T (Teen)</rating>
+</game>
+<game ROM="OverTop (World)">
+  <title>OverTop (World)</title>
+  <year>1996</year>
+  <genre>Driving</genre>
+  <developer />
+  <publisher>ADK</publisher>
+  <rating>ESRB - E (Everyone)</rating>
+</game>
+<game ROM="Pleasuregoal - 5 on 5 Mini Soccer (World)">
+  <title>Pleasuregoal - 5 on 5 Mini Soccer (World)</title>
+  <year>1996</year>
+  <genre>Sports/Soccer</genre>
+  <developer />
+  <publisher>Saurus</publisher>
+  <rating>ESRB - E (Everyone)</rating>
+</game>
+<game ROM="Power Spikes II (World)">
+  <title>Power Spikes II (World)</title>
+  <year>1995</year>
+  <genre>Sports/Volleyball</genre>
+  <developer />
+  <publisher>Video System</publisher>
+  <rating>ESRB - E (Everyone)</rating>
+</game>
+<game ROM="Pulstar (World)">
+  <title>Pulstar (World)</title>
+  <year>1995</year>
+  <genre>Shooter</genre>
+  <developer />
+  <publisher>Aicom</publisher>
+  <rating>ESRB - T (Teen)</rating>
+</game>
+<game ROM="Puzzle Bobble (World)">
+  <title>Puzzle Bobble (World)</title>
+  <year>1995</year>
+  <genre>Puzzle</genre>
+  <developer />
+  <publisher>Taito</publisher>
+  <rating>ESRB - E (Everyone)</rating>
+</game>
+<game ROM="Puzzled (World)">
+  <title>Puzzled (World)</title>
+  <year>1994</year>
+  <genre>Puzzle</genre>
+  <developer />
+  <publisher>SNK</publisher>
+  <rating>ESRB - E (Everyone)</rating>
+</game>
+<game ROM="Ragnagard (World)">
+  <title>Ragnagard (World)</title>
+  <year>1996</year>
+  <genre>Fighter</genre>
+  <developer />
+  <publisher>Saurus</publisher>
+  <rating>ESRB - E (Everyone)</rating>
+</game>
+<game ROM="Rally Chase (World)">
+  <title>Rally Chase (World)</title>
+  <year>1994</year>
+  <genre>Driving</genre>
+  <developer />
+  <publisher>Alpha Denshi</publisher>
+  <rating>ESRB - E (Everyone)</rating>
+</game>
+<game ROM="Real Bout Fatal Fury (World)">
+  <title>Real Bout Fatal Fury (World)</title>
+  <year>1996</year>
+  <genre>Fighter</genre>
+  <developer />
+  <publisher>SNK</publisher>
+  <rating>ESRB - T (Teen)</rating>
+</game>
+<game ROM="Real Bout Fatal Fury 2 - The Newcomers (World)">
+  <title>Real Bout Fatal Fury 2 - The Newcomers (World)</title>
+  <year>1998</year>
+  <genre>Fighter</genre>
+  <developer />
+  <publisher>SNK</publisher>
+  <rating>ESRB - T (Teen)</rating>
+</game>
+<game ROM="Real Bout Fatal Fury Special (World)">
+  <title>Real Bout Fatal Fury Special (World)</title>
+  <year>1997</year>
+  <genre>Fighter</genre>
+  <developer />
+  <publisher>SNK</publisher>
+  <rating>ESRB - T (Teen)</rating>
+</game>
+<game ROM="Riding Hero (World)">
+  <title>Riding Hero (World)</title>
+  <year>1995</year>
+  <genre>Driving</genre>
+  <developer />
+  <publisher>SNK</publisher>
+  <rating>ESRB - E (Everyone)</rating>
+</game>
+<game ROM="Robo Army (World)">
+  <title>Robo Army (World)</title>
+  <year>1995</year>
+  <genre>Action</genre>
+  <developer />
+  <publisher>SNK</publisher>
+  <rating>ESRB - T (Teen)</rating>
+</game>
+<game ROM="Samurai Shodown (World)">
+  <title>Samurai Shodown (World)</title>
+  <year>1994</year>
+  <genre>Fighter</genre>
+  <developer />
+  <publisher>SNK</publisher>
+  <rating>ESRB - T (Teen)</rating>
+</game>
+<game ROM="Samurai Shodown II (World)">
+  <title>Samurai Shodown II (World)</title>
+  <year>1994</year>
+  <genre>Fighter</genre>
+  <developer />
+  <publisher>SNK</publisher>
+  <rating>ESRB - T (Teen)</rating>
+</game>
+<game ROM="Samurai Shodown III (World)">
+  <title>Samurai Shodown III (World)</title>
+  <year>1995</year>
+  <genre>Fighter</genre>
+  <developer />
+  <publisher>SNK</publisher>
+  <rating>ESRB - T (Teen)</rating>
+</game>
+<game ROM="Samurai Shodown IV - Amakusa&apos;s Revenge (World)">
+  <title>Samurai Shodown IV - Amakusa&apos;s Revenge (World)</title>
+  <year>1996</year>
+  <genre>Fighter</genre>
+  <developer />
+  <publisher>SNK</publisher>
+  <rating>ESRB - T (Teen)</rating>
+</game>
+<game ROM="Savage Reign (World)">
+  <title>Savage Reign (World)</title>
+  <year>1995</year>
+  <genre>Fighter</genre>
+  <developer />
+  <publisher>SNK</publisher>
+  <rating>ESRB - T (Teen)</rating>
+</game>
+<game ROM="Sengoku (World)">
+  <title>Sengoku (World)</title>
+  <year>1995</year>
+  <genre>Beat-&apos;Em-Up</genre>
+  <developer />
+  <publisher>SNK</publisher>
+  <rating>ESRB - T (Teen)</rating>
+</game>
+<game ROM="Sengoku 2 (World)">
+  <title>Sengoku 2 (World)</title>
+  <year>1995</year>
+  <genre>Beat-&apos;Em-Up</genre>
+  <developer />
+  <publisher>SNK</publisher>
+  <rating>ESRB - T (Teen)</rating>
+</game>
+<game ROM="Soccer Brawl (World)">
+  <title>Soccer Brawl (World)</title>
+  <year>1995</year>
+  <genre>Sports/Soccer</genre>
+  <developer />
+  <publisher>SNK</publisher>
+  <rating>ESRB - E (Everyone)</rating>
+</game>
+<game ROM="Stakes Winner - GI Kanzen Seiha Heno Machi (Japan)">
+  <title>Stakes Winner - GI Kanzen Seiha Heno Machi (Japan)</title>
+  <year>1996</year>
+  <genre>Sports/Horse Racing</genre>
+  <developer />
+  <publisher>Saurus</publisher>
+  <rating>ESRB - E (Everyone)</rating>
+</game>
+<game ROM="Street Hoop (World)">
+  <title>Street Hoop (World)</title>
+  <year>1995</year>
+  <genre>Sports/Basketball</genre>
+  <developer />
+  <publisher>Data East</publisher>
+  <rating>ESRB - E (Everyone)</rating>
+</game>
+<game ROM="Super Sidekicks (World)">
+  <title>Super Sidekicks (World)</title>
+  <year>1995</year>
+  <genre>Sports/Soccer</genre>
+  <developer />
+  <publisher>SNK</publisher>
+  <rating>ESRB - E (Everyone)</rating>
+</game>
+<game ROM="Super Sidekicks 2 (World)">
+  <title>Super Sidekicks 2 (World)</title>
+  <year>1994</year>
+  <genre>Sports/Soccer</genre>
+  <developer />
+  <publisher>SNK</publisher>
+  <rating>ESRB - E (Everyone)</rating>
+</game>
+<game ROM="Super Sidekicks 3 - The Next Glory (World)">
+  <title>Super Sidekicks 3 - The Next Glory (World)</title>
+  <year>1995</year>
+  <genre>Sports/Soccer</genre>
+  <developer />
+  <publisher>SNK</publisher>
+  <rating>ESRB - E (Everyone)</rating>
+</game>
+<game ROM="Super Spy, The (World)">
+  <title>Super Spy, The (World)</title>
+  <year>1994</year>
+  <genre>Action</genre>
+  <developer />
+  <publisher>SNK</publisher>
+  <rating>ESRB - T (Teen)</rating>
+</game>
+<game ROM="Top Hunter - Roddy &amp; Cathy (World)">
+  <title>Top Hunter - Roddy &amp; Cathy (World)</title>
+  <year>1994</year>
+  <genre>Action</genre>
+  <developer />
+  <publisher>SNK</publisher>
+  <rating>ESRB - E (Everyone)</rating>
+</game>
+<game ROM="Top Player&apos;s Golf (World)">
+  <title>Top Player&apos;s Golf (World)</title>
+  <year>1994</year>
+  <genre>Sports/Golf</genre>
+  <developer />
+  <publisher>SNK</publisher>
+  <rating>ESRB - E (Everyone)</rating>
+</game>
+<game ROM="Twinkle Star Sprites (World)">
+  <title>Twinkle Star Sprites (World)</title>
+  <year>1997</year>
+  <genre>Shooter</genre>
+  <developer />
+  <publisher>ADK</publisher>
+  <rating>ESRB - E (Everyone)</rating>
+</game>
+<game ROM="Viewpoint (World)">
+  <title>Viewpoint (World)</title>
+  <year>1995</year>
+  <genre>Shooter</genre>
+  <developer />
+  <publisher>Sammy</publisher>
+  <rating>ESRB - E (Everyone)</rating>
+</game>
+<game ROM="Voltage Fighter Gowcaizer (World)">
+  <title>Voltage Fighter Gowcaizer (World)</title>
+  <year>1995</year>
+  <genre>Fighter</genre>
+  <developer />
+  <publisher>Technos</publisher>
+  <rating>ESRB - T (Teen)</rating>
+</game>
+<game ROM="Windjammers (World)">
+  <title>Windjammers (World)</title>
+  <year>1995</year>
+  <genre>Sports</genre>
+  <developer />
+  <publisher>Data East</publisher>
+  <rating>ESRB - E (Everyone)</rating>
+</game>
+<game ROM="World Heroes (World)">
+  <title>World Heroes (World)</title>
+  <year>1995</year>
+  <genre>Fighter</genre>
+  <developer />
+  <publisher>ADK</publisher>
+  <rating>ESRB - T (Teen)</rating>
+</game>
+<game ROM="World Heroes 2 (World)">
+  <title>World Heroes 2 (World)</title>
+  <year>1995</year>
+  <genre>Fighter</genre>
+  <developer />
+  <publisher>ADK</publisher>
+  <rating>ESRB - T (Teen)</rating>
+</game>
+<game ROM="World Heroes 2 Jet (World)">
+  <title>World Heroes 2 Jet (World)</title>
+  <year>1994</year>
+  <genre>Fighter</genre>
+  <developer />
+  <publisher>ADK</publisher>
+  <rating>ESRB - T (Teen)</rating>
+</game>
+<game ROM="World Heroes Perfect (World)">
+  <title>World Heroes Perfect (World)</title>
+  <year>1995</year>
+  <genre>Fighter</genre>
+  <developer />
+  <publisher>ADK</publisher>
+  <rating>ESRB - T (Teen)</rating>
+</game>
+<game ROM="Zintrick (World)">
+  <title>Zintrick (World)</title>
+  <year>1996</year>
+  <genre>Puzzle</genre>
+  <developer />
+  <publisher>ADK</publisher>
+  <rating>ESRB - E (Everyone)</rating>
+</game>
+</menu>

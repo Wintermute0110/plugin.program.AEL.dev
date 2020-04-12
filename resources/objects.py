@@ -1563,6 +1563,15 @@ class ROM(MetaDataItemABC):
     def set_alternative_arguments(self, arg):
         self.entity_data['altarg'] = arg
 
+    def get_box_sizing(self):        
+        if 'box_size' in self.entity_data: return self.entity_data['box_size'] 
+        # fallback to launcher size 
+        if self.launcher: return self.launcher.get_box_sizing()
+        return BOX_SIZE_POSTER
+    
+    def set_box_sizing(self, box_size):
+        self.entity_data['box_size'] = box_size
+
     def copy(self):
         data = self.copy_of_data_dic()
         return ROM(data, self.launcher)
@@ -1713,10 +1722,11 @@ class ROM(MetaDataItemABC):
         options['EDIT_METADATA_DEVELOPER']   = u"Edit Developer: '{0}'".format(self.get_developer()).encode('utf-8')
         options['EDIT_METADATA_NPLAYERS']    = u"Edit NPlayers: '{0}'".format(self.get_number_of_players()).encode('utf-8')
         options['EDIT_METADATA_ESRB']        = u"Edit ESRB rating: '{0}'".format(self.get_esrb_rating()).encode('utf-8')
-        options['EDIT_METADATA_RATING']      = u"Edit Rating: '{0}'".format(rating).encode('utf-8')
-        options['EDIT_METADATA_PLOT']        = u"Edit Plot: '{0}'".format(plot_str).encode('utf-8')
+        options['EDIT_METADATA_RATING']      = u"Edit Rating: '{}'".format(rating).encode('utf-8')
+        options['EDIT_METADATA_PLOT']        = u"Edit Plot: '{}'".format(plot_str).encode('utf-8')
+        options['EDIT_METADATA_BOXSIZE']     = u"Edit Box Size: '{}'".format(self.get_box_sizing())
         options['LOAD_PLOT']                 = "Load Plot from TXT file ..."
-        options['IMPORT_NFO_FILE']           = u"Import NFO file (default, {0})".format(NFO_found_str).encode('utf-8')
+        options['IMPORT_NFO_FILE']           = u"Import NFO file (default, {})".format(NFO_found_str).encode('utf-8')
         options['SAVE_NFO_FILE']             = "Save NFO file (default location)"
         options['SCRAPE_ROM_METADATA']       = "Scrape Metadata"
 
@@ -1911,14 +1921,15 @@ class LauncherABC(MetaDataItemABC):
         NFO_found_str = 'NFO found' if NFO_FileName.exists() else 'NFO not found'
 
         options = collections.OrderedDict()
-        options['EDIT_METADATA_TITLE']       = "Edit Title: '{0}'".format(self.get_name())
-        options['EDIT_METADATA_PLATFORM']    = "Edit Platform: {0}".format(self.entity_data['platform'])
-        options['EDIT_METADATA_RELEASEYEAR'] = "Edit Release Year: '{0}'".format(self.entity_data['m_year'])
-        options['EDIT_METADATA_GENRE']       = "Edit Genre: '{0}'".format(self.entity_data['m_genre'])
-        options['EDIT_METADATA_DEVELOPER']   = "Edit Developer: '{0}'".format(self.entity_data['m_developer'])
-        options['EDIT_METADATA_RATING']      = "Edit Rating: '{0}'".format(rating)
-        options['EDIT_METADATA_PLOT']        = "Edit Plot: '{0}'".format(plot_str)
-        options['IMPORT_NFO_FILE']           = 'Import NFO file (default {0})'.format(NFO_found_str)
+        options['EDIT_METADATA_TITLE']       = "Edit Title: '{}'".format(self.get_name())
+        options['EDIT_METADATA_PLATFORM']    = "Edit Platform: {}".format(self.entity_data['platform'])
+        options['EDIT_METADATA_RELEASEYEAR'] = "Edit Release Year: '{}'".format(self.entity_data['m_year'])
+        options['EDIT_METADATA_GENRE']       = "Edit Genre: '{}'".format(self.entity_data['m_genre'])
+        options['EDIT_METADATA_DEVELOPER']   = "Edit Developer: '{}'".format(self.entity_data['m_developer'])
+        options['EDIT_METADATA_RATING']      = "Edit Rating: '{}'".format(rating)
+        options['EDIT_METADATA_PLOT']        = "Edit Plot: '{}'".format(plot_str)
+        options['EDIT_METADATA_BOXSIZE']     = "Edit Box Size: '{}'".format(self.get_box_sizing())
+        options['IMPORT_NFO_FILE']           = 'Import NFO file (default {})'.format(NFO_found_str)
         options['IMPORT_NFO_FILE_BROWSE']    = 'Import NFO file (browse NFO file) ...'
         options['SAVE_NFO_FILE']             = 'Save NFO file (default location)'
 
@@ -1944,20 +1955,20 @@ class LauncherABC(MetaDataItemABC):
         # --- Create executor object ---
         if self.executorFactory is None:
             log_error('LauncherABC::launch() self.executorFactory is None')
-            log_error('Cannot create an executor for {0}'.format(self.application.getPath()))
+            log_error('Cannot create an executor for {}'.format(self.application.getPath()))
             kodi_notify_error('LauncherABC::launch() self.executorFactory is None'
                               'This is a bug, please report it.')
             return
         executor = self.executorFactory.create(self.application)
         if executor is None:
-            log_error('Cannot create an executor for {0}'.format(self.application.getPath()))
+            log_error('Cannot create an executor for {}'.format(self.application.getPath()))
             kodi_notify_error('Cannot execute application')
             return
 
-        log_debug('Name        = "{0}"'.format(self.title))
-        log_debug('Application = "{0}"'.format(self.application.getPath()))
-        log_debug('Arguments   = "{0}"'.format(self.arguments))
-        log_debug('Executor    = "{0}"'.format(executor.__class__.__name__))
+        log_debug('Name        = "{}"'.format(self.title))
+        log_debug('Application = "{}"'.format(self.application.getPath()))
+        log_debug('Arguments   = "{}"'.format(self.arguments))
+        log_debug('Executor    = "{}"'.format(executor.__class__.__name__))
 
         # --- Execute app ---
         self._launch_pre_exec(self.title, self.is_in_windowed_mode())
@@ -1975,14 +1986,14 @@ class LauncherABC(MetaDataItemABC):
 
         # --- User notification ---
         if self.settings['display_launcher_notify']:
-            kodi_notify('Launching {0}'.format(title))
+            kodi_notify('Launching {}'.format(title))
 
         # --- Stop/Pause Kodi mediaplayer if requested in settings ---
         self.kodi_was_playing = False
         # id="media_state_action" default="0" values="Stop|Pause|Let Play"
         media_state_action = self.settings['media_state_action']
         media_state_str = ['Stop', 'Pause', 'Let Play'][media_state_action]
-        log_verb('_launch_pre_exec() media_state_action is "{0}" ({1})'.format(media_state_str, media_state_action))
+        log_verb('_launch_pre_exec() media_state_action is "{}" ({})'.format(media_state_str, media_state_action))
         if media_state_action == 0 and xbmc.Player().isPlaying():
             log_verb('_launch_pre_exec() Calling xbmc.Player().stop()')
             xbmc.Player().stop()
@@ -2037,13 +2048,20 @@ class LauncherABC(MetaDataItemABC):
         # --- Toggle Kodi windowed/fullscreen if requested ---
         if toggle_screen_flag:
             log_verb('_launch_pre_exec() Toggling Kodi fullscreen')
-            kodi_toogle_fullscreen()
+            kodi_toggle_fullscreen()
         else:
             log_verb('_launch_pre_exec() Toggling Kodi fullscreen DEACTIVATED in Launcher')
 
+        # Disable screensaver
+        if self.settings['suspend_screensaver']:
+            kodi_disable_screensaver()
+        else:
+            screensaver_mode = kodi_get_screensaver_mode()
+            log_debug('_run_before_execution() Screensaver status "{}"'.format(screensaver_mode))
+
         # --- Pause Kodi execution some time ---
         delay_tempo_ms = self.settings['delay_tempo']
-        log_verb('_launch_pre_exec() Pausing {0} ms'.format(delay_tempo_ms))
+        log_verb('_launch_pre_exec() Pausing {} ms'.format(delay_tempo_ms))
         xbmc.sleep(delay_tempo_ms)
         log_debug('LauncherABC::_launch_pre_exec() function ENDS')
 
@@ -2052,13 +2070,13 @@ class LauncherABC(MetaDataItemABC):
 
         # --- Stop Kodi some time ---
         delay_tempo_ms = self.settings['delay_tempo']
-        log_verb('_launch_post_exec() Pausing {0} ms'.format(delay_tempo_ms))
+        log_verb('_launch_post_exec() Pausing {} ms'.format(delay_tempo_ms))
         xbmc.sleep(delay_tempo_ms)
 
         # --- Toggle Kodi windowed/fullscreen if requested ---
         if toggle_screen_flag:
             log_verb('_launch_post_exec() Toggling Kodi fullscreen')
-            kodi_toogle_fullscreen()
+            kodi_toggle_fullscreen()
         else:
             log_verb('_launch_post_exec() Toggling Kodi fullscreen DEACTIVATED in Launcher')
 
@@ -2087,11 +2105,18 @@ class LauncherABC(MetaDataItemABC):
         else:
             log_verb('_launch_post_exec() DO NOT resume Kodi joystick engine')
 
+        # Restore screensaver status.
+        if self.settings['suspend_screensaver']:
+            kodi_restore_screensaver()
+        else:
+            screensaver_mode = kodi_get_screensaver_mode()
+            log_debug('_run_after_execution() Screensaver status "{}"'.format(screensaver_mode))
+
         # --- Resume Kodi playing if it was paused. If it was stopped, keep it stopped. ---
         media_state_action = self.settings['media_state_action']
         media_state_str = ['Stop', 'Pause', 'Let Play'][media_state_action]
-        log_verb('_launch_post_exec() media_state_action is "{0}" ({1})'.format(media_state_str, media_state_action))
-        log_verb('_launch_post_exec() self.kodi_was_playing is {0}'.format(self.kodi_was_playing))
+        log_verb('_launch_post_exec() media_state_action is "{}" ({})'.format(media_state_str, media_state_action))
+        log_verb('_launch_post_exec() self.kodi_was_playing is {}'.format(self.kodi_was_playing))
         if self.kodi_was_playing and media_state_action == 1:
             log_verb('_launch_post_exec() Calling xbmc.Player().play()')
             xbmc.Player().play()
@@ -2141,6 +2166,12 @@ class LauncherABC(MetaDataItemABC):
         return float(timestamp)
 
     def update_report_timestamp(self): self.entity_data['timestamp_report'] = time.time()
+
+    def get_box_sizing(self):
+        return self.entity_data['box_size'] if 'box_size' in self.entity_data else BOX_SIZE_POSTER
+    
+    def set_box_sizing(self, box_size):
+        self.entity_data['box_size'] = box_size
 
     # ---------------------------------------------------------------------------------------------
     # Launcher asset methods
@@ -2368,7 +2399,6 @@ class StandaloneLauncher(LauncherABC):
             self._builder_get_title_from_app_path)
         wizard = WizardDialog_Selection(wizard, 'platform', 'Select the platform',
             AEL_platform_list)
-
         return wizard
 
     def _build_pre_wizard_hook(self): return True
@@ -2524,6 +2554,10 @@ class ROMLauncherABC(LauncherABC):
         # >> launcher is edited using Python passing by assignment.
         self.rom_assets_init_dirs()
 
+        # --- Determine box size based on platform --
+        platform = get_AEL_platform(self.entity_data['platform'])
+        self.set_box_sizing(platform.default_box_size)
+        
         return True
 
     def _builder_get_extensions_from_app_path(self, input, item_key ,launcher):
@@ -4312,13 +4346,17 @@ class NvidiaGameStreamLauncher(ROMLauncherABC):
     
     def _build_pre_wizard_hook(self):
         log_debug('NvidiaGameStreamLauncher::_build_pre_wizard_hook() Starting ...')
-
         return True
 
     def _build_post_wizard_hook(self):
         log_debug('NvidiaGameStreamLauncher::_build_post_wizard_hook() Starting ...')
 
-        return super(NvidiaGameStreamLauncher, self)._build_post_wizard_hook()
+        success = super(NvidiaGameStreamLauncher, self)._build_post_wizard_hook()
+        if not success:
+            return success
+        
+        self.set_box_sizing(BOX_SIZE_STEAM)
+        return success
     
     def _builder_generatePairPinCode(self, input, item_key, launcher):
         return GameStreamServer(None, None).generatePincode()

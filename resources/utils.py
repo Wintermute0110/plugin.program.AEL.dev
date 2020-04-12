@@ -799,9 +799,9 @@ def misc_search_file_cache(dir_path, filename_noext, file_exts):
     current_cache_set = file_cache[dir_str]
     for ext in file_exts:
         file_base = filename_noext + '.' + ext
-        file_base = file_base.lower()
+        file_base_as_cached = file_base.lower()
         #log_debug('misc_search_file_cache() file_Base = "{0}"'.format(file_base))
-        if file_base in current_cache_set:
+        if file_base_as_cached in current_cache_set:
             # log_debug('misc_search_file_cache() Found in cache')
             return dir_path.pjoin(file_base)
 
@@ -1175,6 +1175,59 @@ def misc_replace_fav(dict_in, old_item_key, new_item_key, new_value):
         return dict_out
     else:
         raise TypeError
+
+# Image file magic numbers. All at file offset 0.
+# See https://en.wikipedia.org/wiki/List_of_file_signatures
+IMAGE_MAGIC_DIC = {
+    IMAGE_PNG_ID  : [ b'\x89\x50\x4E\x47\x0D\x0A\x1A\x0A' ],
+    IMAGE_JPEG_ID : [
+        b'\xFF\xD8\xFF\xDB',
+        b'\xFF\xD8\xFF\xE0\x00\x10\x4A\x46\x49\x46\x00\x01',
+        b'\xFF\xD8\xFF\xEE',
+        b'\xFF\xD8\xFF\xE1',
+    ],
+    IMAGE_GIF_ID  : [
+        b'\x47\x49\x46\x38\x37\x61',
+        b'\x47\x49\x46\x38\x39\x61',
+    ],
+    IMAGE_BMP_ID  : [ b'\x42\x4D' ],
+    IMAGE_TIFF_ID : [
+        b'\x49\x49\x2A\x00',
+        b'\x4D\x4D\x00\x2A',
+    ]
+}
+
+# Inspects an image file and determine its type by using the magic numbers,
+# Returns an image id defined in list IMAGE_IDS or IMAGE_UKNOWN_ID.
+def misc_identify_image_id_by_contents(asset_fname):
+    # If file size is 0 or less than 64 bytes it is corrupt.
+    statinfo = os.stat(asset_fname)
+    if statinfo.st_size < 64: return IMAGE_CORRUPT_ID
+
+    # Read first 64 bytes of file.
+    # Search for the magic number of the beginning of the file.
+    with open(asset_fname, "rb") as f:
+        file_bytes = f.read(64)
+    for img_id in IMAGE_MAGIC_DIC:
+        for magic_bytes in IMAGE_MAGIC_DIC[img_id]:
+            magic_bytes_len = len(magic_bytes)
+            file_chunk = file_bytes[0:magic_bytes_len]
+            if len(file_chunk) != magic_bytes_len: raise TypeError
+            if file_chunk == magic_bytes: return img_id
+
+    return IMAGE_UKNOWN_ID
+
+# Returns an image id defined in list IMAGE_IDS or IMAGE_UKNOWN_ID.
+def misc_identify_image_id_by_ext(asset_fname):
+    asset_root, asset_ext = os.path.splitext(asset_fname)
+    # log_debug('asset_ext {}'.format(asset_ext))
+    if not asset_ext: return IMAGE_UKNOWN_ID
+    asset_ext = asset_ext[1:] # Remove leading dot '.png' -> 'png'
+    for img_id in IMAGE_EXTENSIONS:
+        for img_ext in IMAGE_EXTENSIONS[img_id]:
+            if asset_ext.lower() == img_ext: return img_id
+
+    return IMAGE_UKNOWN_ID
 
 # -------------------------------------------------------------------------------------------------
 # --- New Filesystem class ---
@@ -1848,14 +1901,62 @@ def kodi_refresh_container():
     log_debug('kodi_refresh_container()')
     xbmc.executebuiltin('Container.Refresh')
 
-def kodi_toogle_fullscreen():
-    json_str = ('{'
-        '"jsonrpc" : "2.0", "id" : "1", '
-        '"method" : "Input.ExecuteAction", '
-        '"params" : { "action" : "togglefullscreen" }'
-        '}'
-    )
-    xbmc.executeJSONRPC(json_str)
+def kodi_toggle_fullscreen():
+    kodi_jsonrpc_dict('Input.ExecuteAction', {'action' : 'togglefullscreen'})
+
+def kodi_get_screensaver_mode():
+    r_dic = kodi_jsonrpc_dict('Settings.getSettingValue', {'setting' : 'screensaver.mode'})
+    screensaver_mode = r_dic['value']
+    return screensaver_mode
+
+g_screensaver_mode = None # Global variable to store screensaver status.
+def kodi_disable_screensaver():
+    global g_screensaver_mode
+    g_screensaver_mode = kodi_get_screensaver_mode()
+    log_debug('kodi_disable_screensaver() g_screensaver_mode "{}"'.format(g_screensaver_mode))
+    p_dic = {
+        'setting' : 'screensaver.mode',
+        'value' : '',
+    }
+    kodi_jsonrpc_dict('Settings.setSettingValue', p_dic)
+    log_debug('kodi_disable_screensaver() Screensaver disabled.')
+
+# kodi_disable_screensaver() must be called before this function or bad things will happen.
+def kodi_restore_screensaver():
+    if g_screensaver_mode is None:
+        log_error('kodi_disable_screensaver() must be called before kodi_restore_screensaver()')
+        raise RuntimeError
+    log_debug('kodi_restore_screensaver() Screensaver mode "{}"'.format(g_screensaver_mode))
+    p_dic = {
+        'setting' : 'screensaver.mode',
+        'value' : g_screensaver_mode,
+    }
+    kodi_jsonrpc_dict('Settings.setSettingValue', p_dic)
+    log_debug('kodi_restore_screensaver() Restored previous screensaver status.')
+
+def kodi_jsonrpc_dict(method_str, params_dic, verbose = False):
+    params_str = json.dumps(params_dic)
+    if verbose:
+        log_debug('kodi_jsonrpc_dict() method_str "{}"'.format(method_str))
+        log_debug('kodi_jsonrpc_dict() params_dic = \n{}'.format(pprint.pformat(params_dic)))
+        log_debug('kodi_jsonrpc_dict() params_str "{}"'.format(params_str))
+
+    # --- Do query ---
+    header = '"id" : 1, "jsonrpc" : "2.0"'
+    query_str = '{{{}, "method" : "{}", "params" : {} }}'.format(header, method_str, params_str)
+    response_json_str = xbmc.executeJSONRPC(query_str)
+
+    # --- Parse JSON response ---
+    response_dic = json.loads(response_json_str)
+    if 'error' in response_dic:
+        result_dic = response_dic['error']
+        log_warning('kodi_jsonrpc_dict() JSONRPC ERROR {}'.format(result_dic['message']))
+    else:
+        result_dic = response_dic['result']
+    if verbose:
+        log_debug('kodi_jsonrpc_dict() result_dic = \n{}'.format(pprint.pformat(result_dic)))
+
+    return result_dic
 
 #
 # Access Kodi JSON-RPC interface in an easy way.

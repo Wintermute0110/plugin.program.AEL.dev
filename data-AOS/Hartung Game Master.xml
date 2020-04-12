@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<menu>
+<header>
+  <listname>Hartung Game Master</listname>
+  <lastlistupdate></lastlistupdate>
+  <listversion>V1</listversion>
+  <exporterversion>V1 GameDBInfo converter</exporterversion>
+</header>
+<game ROM="Bubble Boy">
+  <title>Bubble Boy</title>
+  <year>1990</year>
+  <genre>Puzzle</genre>
+  <developer />
+  <publisher>Hartung</publisher>
+  <rating>Other - NR (Not Rated)</rating>
+</game>
+<game ROM="Continental Galaxy 2020">
+  <title>Continental Galaxy 2020</title>
+  <year>1990</year>
+  <genre>Shoot Em-Up</genre>
+  <developer />
+  <publisher>Hartung</publisher>
+  <rating>Other - NR (Not Rated)</rating>
+</game>
+<game ROM="Dungeon Adventure">
+  <title>Dungeon Adventure</title>
+  <year>1990</year>
+  <genre>Action</genre>
+  <developer />
+  <publisher>Hartung</publisher>
+  <rating>Other - NR (Not Rated)</rating>
+</game>
+<game ROM="Falling Block!">
+  <title>Falling Block!</title>
+  <year>1990</year>
+  <genre>Puzzle</genre>
+  <developer />
+  <publisher>Hartung</publisher>
+  <rating>Other - NR (Not Rated)</rating>
+</game>
+<game ROM="Go Bang">
+  <title>Go Bang</title>
+  <year>1990</year>
+  <genre>Puzzle</genre>
+  <developer />
+  <publisher>Hartung</publisher>
+  <rating>Other - NR (Not Rated)</rating>
+</game>
+<game ROM="Hyper Space">
+  <title>Hyper Space</title>
+  <year>1990</year>
+  <genre>Action</genre>
+  <developer />
+  <publisher>Hartung</publisher>
+  <rating>Other - NR (Not Rated)</rating>
+</game>
+<game ROM="Kung Fu Challenge">
+  <title>Kung Fu Challenge</title>
+  <year>1990</year>
+  <genre>Fighter</genre>
+  <developer />
+  <publisher>Hartung</publisher>
+  <rating>Other - NR (Not Rated)</rating>
+</game>
+<game ROM="Pin Ball">
+  <title>Pin Ball</title>
+  <year>1990</year>
+  <genre>Pinball</genre>
+  <developer />
+  <publisher>Hartung</publisher>
+  <rating>Other - NR (Not Rated)</rating>
+</game>
+<game ROM="Space Castle">
+  <title>Space Castle</title>
+  <year>1990</year>
+  <genre>Shoot Em-Up</genre>
+  <developer />
+  <publisher>Hartung</publisher>
+  <rating>Other - NR (Not Rated)</rating>
+</game>
+<game ROM="Tennis Master">
+  <title>Tennis Master</title>
+  <year>1990</year>
+  <genre>Tennis</genre>
+  <developer />
+  <publisher>Hartung</publisher>
+  <rating>Other - NR (Not Rated)</rating>
+</game>
+<game ROM="Urban Champion">
+  <title>Urban Champion</title>
+  <year>1990</year>
+  <genre>Action</genre>
+  <developer />
+  <publisher>Hartung</publisher>
+  <rating>Other - NR (Not Rated)</rating>
+</game>
+</menu>

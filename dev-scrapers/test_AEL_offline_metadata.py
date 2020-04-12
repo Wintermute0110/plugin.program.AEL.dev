@@ -14,7 +14,7 @@ import sys
 # --- AEL modules ---
 if __name__ == "__main__" and __package__ is None:
     path = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
-    print('Adding to sys.path {0}'.format(path))
+    print('Adding to sys.path {}'.format(path))
     sys.path.append(path)
 from resources.scrap import *
 from resources.utils import *
@@ -37,25 +37,18 @@ status_dic = kodi_new_status_dic('Scraper test was OK')
 # --- Get candidates non-MAME ---
 # search_term, rombase, platform = common.games['metroid']
 # search_term, rombase, platform = common.games['mworld']
-search_term, rombase, platform = common.games['sonic']
+search_term, rombase, platform = common.games['sonic_megaDrive']
+# search_term, rombase, platform = common.games['sonic_genesis'] # Aliased platform
 # search_term, rombase, platform = common.games['chakan']
 # search_term, rombase, platform = common.games['console_wrong_title']
 # search_term, rombase, platform = common.games['console_wrong_platform']
 
 # --- Get candidates MAME ---
-# search_term, rombase, platform = common.games['tetris']
+# search_term, rombase, platform = common.games['atetris']
 # search_term, rombase, platform = common.games['mslug']
 # search_term, rombase, platform = common.games['dino']
 # search_term, rombase, platform = common.games['MAME_wrong_title']
 # search_term, rombase, platform = common.games['MAME_wrong_platform']
-
-# --- Get candidates non-MAME ---
-# candidate_list = scraper_obj.get_candidates(*common.games['metroid'], status_dic = status_dic)
-# candidate_list = scraper_obj.get_candidates(*common.games['mworld'], status_dic = status_dic)
-# candidate_list = scraper_obj.get_candidates(*common.games['sonic'], status_dic = status_dic)
-# candidate_list = scraper_obj.get_candidates(*common.games['chakan'], status_dic = status_dic)
-# candidate_list = scraper_obj.get_candidates(*common.games['console_wrong_title'], status_dic = status_dic)
-# candidate_list = scraper_obj.get_candidates(*common.games['console_wrong_platform'], status_dic = status_dic)
 
 # --- Get candidates, print them and set first candidate ---
 rom_FN = FileName(rombase)

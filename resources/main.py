@@ -110,13 +110,14 @@ class AEL_Paths:
         self.MOST_PLAYED_FILE_PATH     = self.ADDON_DATA_DIR.pjoin('most_played.json')
 
         # Reports
-        self.BIOS_REPORT_FILE_PATH     = self.ADDON_DATA_DIR.pjoin('report_BIOS.txt')
+        self.BIOS_REPORT_FILE_PATH = self.ADDON_DATA_DIR.pjoin('report_BIOS.txt')
         self.LAUNCHER_REPORT_FILE_PATH = self.ADDON_DATA_DIR.pjoin('report_Launchers.txt')
         self.ROM_SYNC_REPORT_FILE_PATH = self.ADDON_DATA_DIR.pjoin('report_ROM_sync_status.txt')
+        self.ROM_ART_INTEGRITY_REPORT_FILE_PATH = self.ADDON_DATA_DIR.pjoin('report_ROM_artwork_integrity.txt')
 
         # --- Offline scraper databases ---
-        self.GAMEDB_INFO_DIR           = self.ADDON_CODE_DIR.pjoin('GameDBInfo')
-        self.GAMEDB_JSON_BASE_NOEXT    = 'GameDB_info'
+        self.GAMEDB_INFO_DIR           = self.ADDON_CODE_DIR.pjoin('data-AOS')
+        self.GAMEDB_JSON_BASE_NOEXT    = 'AOS_GameDB_info'
         # self.LAUNCHBOX_INFO_DIR        = self.ADDON_CODE_DIR.pjoin('LaunchBox')
         # self.LAUNCHBOX_JSON_BASE_NOEXT = 'LaunchBox_info'
 
@@ -179,25 +180,25 @@ def run_plugin(addon_argv):
 
     # --- Some debug stuff for development ---
     log_debug('------------ Called Advanced Emulator Launcher run_plugin(addon_argv) ------------')
-    log_debug('sys.platform   "{0}"'.format(sys.platform))
+    log_debug('sys.platform   "{}"'.format(sys.platform))
     if is_android(): log_debug('OS             "Android"')
     if is_windows(): log_debug('OS             "Windows"')
     if is_osx(): log_debug('OS             "OSX"')
     if is_linux(): log_debug('OS             "Linux"')
-    # log_debug('WindowId       "{0}"'.format(xbmcgui.getCurrentWindowId()))
-    # log_debug('WindowName     "{0}"'.format(xbmc.getInfoLabel('Window.Property(xmlfile)')))
+    # log_debug('WindowId       "{}"'.format(xbmcgui.getCurrentWindowId()))
+    # log_debug('WindowName     "{}"'.format(xbmc.getInfoLabel('Window.Property(xmlfile)')))
     log_debug('Python version "' + sys.version.replace('\n', '') + '"')
-    # log_debug('__a_name__     "{0}"'.format(__addon_name__))
-    log_debug('__a_id__       "{0}"'.format(__addon_id__))
-    log_debug('__a_version__  "{0}"'.format(__addon_version__))
-    # log_debug('__a_author__   "{0}"'.format(__addon_author__))
-    # log_debug('__a_profile__  "{0}"'.format(__addon_profile__))
-    # log_debug('__a_type__     "{0}"'.format(__addon_type__))
-    for i in range(len(sys.argv)): log_debug('sys.argv[{0}] "{1}"'.format(i, sys.argv[i]))
-    # log_debug('ADDON_DATA_DIR OP "{0}"'.format(ADDON_DATA_DIR.getPath()))
-    # log_debug('ADDON_DATA_DIR  P "{0}"'.format(ADDON_DATA_DIR.getPath()))
-    # log_debug('g_PATHS.ADDON_CODE_DIR OP "{0}"'.format(g_PATHS.ADDON_CODE_DIR.getPath()))
-    # log_debug('g_PATHS.ADDON_CODE_DIR  P "{0}"'.format(g_PATHS.ADDON_CODE_DIR.getPath()))
+    # log_debug('__a_name__     "{}"'.format(__addon_name__))
+    log_debug('__a_id__       "{}"'.format(__addon_id__))
+    log_debug('__a_version__  "{}"'.format(__addon_version__))
+    # log_debug('__a_author__   "{}"'.format(__addon_author__))
+    # log_debug('__a_profile__  "{}"'.format(__addon_profile__))
+    # log_debug('__a_type__     "{}"'.format(__addon_type__))
+    for i in range(len(sys.argv)): log_debug('sys.argv[{}] "{}"'.format(i, sys.argv[i]))
+    # log_debug('ADDON_DATA_DIR OP "{}"'.format(ADDON_DATA_DIR.getPath()))
+    # log_debug('ADDON_DATA_DIR  P "{}"'.format(ADDON_DATA_DIR.getPath()))
+    # log_debug('g_PATHS.ADDON_CODE_DIR OP "{}"'.format(g_PATHS.ADDON_CODE_DIR.getPath()))
+    # log_debug('g_PATHS.ADDON_CODE_DIR  P "{}"'.format(g_PATHS.ADDON_CODE_DIR.getPath()))
 
     # --- Get DEBUG information for the log --
     if g_settings['log_level'] == LOG_DEBUG:
@@ -214,8 +215,8 @@ def run_plugin(addon_argv):
         r_minor    = getprops_dic['version']['minor']
         r_revision = getprops_dic['version']['revision']
         r_tag      = getprops_dic['version']['tag']
-        log_debug('Kodi version "{0}" "{1}" "{2}" "{3}" "{4}"'.format(r_name, r_major, r_minor, r_revision, r_tag))
-        log_debug('Kodi skin    "{0}"'.format(getskin_dic['value']))
+        log_debug('Kodi version "{}" "{}" "{}" "{}" "{}"'.format(r_name, r_major, r_minor, r_revision, r_tag))
+        log_debug('Kodi skin    "{}"'.format(getskin_dic['value']))
 
     # --- Addon data paths creation ---
     if not g_PATHS.ADDON_DATA_DIR.exists():            g_PATHS.ADDON_DATA_DIR.makedirs()
@@ -244,9 +245,9 @@ def run_plugin(addon_argv):
         last_migrated_to_version = LooseVersion(str_version)
     except:
         last_migrated_to_version = LooseVersion('0.0.0')
-    log_debug('current_version           {0}'.format(current_version))
-    log_debug('str_version               {0}'.format(str_version))
-    log_debug('last_migrated_to_version  {0}'.format(last_migrated_to_version))
+    log_debug('current_version           {}'.format(current_version))
+    log_debug('str_version               {}'.format(str_version))
+    log_debug('last_migrated_to_version  {}'.format(last_migrated_to_version))
 
     # WARNING Right now concentrate on stabilising AEL code. Once AEL works well again then
     #         think about the migration from 0.9.7 to 0.10.0.
@@ -379,6 +380,8 @@ def m_get_settings():
     g_settings['delay_tempo']              = int(round(float(o.getSetting('delay_tempo'))))
     g_settings['suspend_audio_engine']     = True if o.getSetting('suspend_audio_engine') == 'true' else False
     # g_settings['suspend_joystick_engine']  = True if o.getSetting('suspend_joystick_engine') == 'true' else False
+    g_settings['suspend_screensaver']      = True if o.getSetting('suspend_screensaver') == 'true' else False
+    
     g_settings['escape_romfile']           = True if o.getSetting('escape_romfile') == 'true' else False
     g_settings['lirc_state']               = True if o.getSetting('lirc_state') == 'true' else False
     g_settings['show_batch_window']        = True if o.getSetting('show_batch_window') == 'true' else False
@@ -1170,7 +1173,7 @@ def m_command_render_roms(categoryID, launcherID):
     # --- Set content type and sorting methods ---
     m_misc_set_all_sorting_methods()
     m_misc_set_AEL_Content(AEL_CONTENT_VALUE_ROMS)
-    # m_misc_set_AEL_Launcher_Content(selectedLauncher)
+    m_misc_set_AEL_Launcher_Content(launcher)
 
     # --- Render in Flat mode (all ROMs) or Parent/Clone or 1G1R mode---
     # >> Parent/Clone mode and 1G1R modes are very similar in terms of programming.
@@ -4048,6 +4051,10 @@ def m_subcommand_launcher_metadata_rating(category, launcher):
 @router.action('EDIT_METADATA_PLOT')
 def m_subcommand_launcher_metadata_plot(category, launcher):
     m_gui_edit_field_by_str(launcher, 'Plot', launcher.get_plot, launcher.set_plot)
+
+@router.action('EDIT_METADATA_BOXSIZE')
+def m_subcommand_launcher_metadata_boxsize(category, launcher):
+    m_gui_edit_field_by_list(launcher, 'Default box size', BOX_SIZES, launcher.get_box_sizing, launcher.set_box_sizing)
     
 # --- Import launcher metadata from NFO file (default location) ---
 @router.action('IMPORT_NFO_FILE_DEFAULT')
@@ -4159,6 +4166,10 @@ def m_scraper_settings_asset_selection_mode(category, launcher, scraper_settings
         return
     
     scraper_settings.asset_selection_mode = selected_option
+
+@router.action('SC_OVERWRITE_MODE')
+def m_scraper_settings_overwrite_mode(category, launcher, scraper_settings):  
+    scraper_settings.overwrite_existing = not scraper_settings.overwrite_existing
 
 @router.action('SC_METADATA_SCRAPER')
 def m_scraper_settings_metadata_scraper(category, launcher, scraper_settings):    
@@ -5182,6 +5193,10 @@ def m_subcommand_edit_rom_rating(launcher, rom):
 def m_subcommand_edit_rom_description(launcher, rom):
     m_gui_edit_field_by_str(rom, 'plot', rom.get_plot, rom.update_plot)
 
+@router.action('EDIT_METADATA_BOXSIZE')
+def m_subcommand_edit_rom_boxsize(launcher, rom):
+    m_gui_edit_field_by_list(rom, 'Box size', BOX_SIZES, rom.get_box_sizing, rom.set_box_sizing)
+
 # --- Import of the rom game plot from TXT file ---
 @router.action('LOAD_PLOT')
 def m_subcommand_import_rom_plot_from_txt(launcher, rom):
@@ -5282,6 +5297,7 @@ def m_subcommand_rescrape_rom_assets(rom):
     
     # --- Make a menu list of available asset scrapers ---
     options =  g_ScraperFactory.get_asset_scraper_menu_list()
+    options[SCRAPER_NULL_ID] = 'Scrape assets from local folder'
     selected_option = KodiOrdDictionaryDialog().select('Rescrape ROM assets', options)
     if selected_option is None:
         # >> Exits context menu
@@ -5293,10 +5309,11 @@ def m_subcommand_rescrape_rom_assets(rom):
     scraper_settings = ScraperSettings()
     scraper_settings.assets_scraper_ID       = selected_option
     scraper_settings.scrape_metadata_policy  = SCRAPE_ACTION_NONE
-    scraper_settings.scrape_assets_policy    = SCRAPE_POLICY_SCRAPE_ONLY
-    scraper_settings.search_term_mode        = SCRAPE_MANUAL
-    scraper_settings.game_selection_mode     = SCRAPE_MANUAL
-    scraper_settings.asset_selection_mode    = SCRAPE_MANUAL
+    scraper_settings.scrape_assets_policy    = SCRAPE_POLICY_SCRAPE_ONLY if selected_option != SCRAPER_NULL_ID else SCRAPE_POLICY_LOCAL_ONLY
+    scraper_settings.search_term_mode        = SCRAPE_MANUAL if selected_option != SCRAPER_NULL_ID else SCRAPE_AUTOMATIC
+    scraper_settings.game_selection_mode     = SCRAPE_MANUAL if selected_option != SCRAPER_NULL_ID else SCRAPE_AUTOMATIC
+    scraper_settings.asset_selection_mode    = SCRAPE_MANUAL if selected_option != SCRAPER_NULL_ID else SCRAPE_AUTOMATIC
+    scraper_settings.overwrite_existing      = kodi_dialog_yesno('Overwrite existing assets settings?')
     
     pdialog             = KodiProgressDialog()
     ROM_file            = rom.get_file()
@@ -6053,7 +6070,7 @@ def m_command_exec_utils_check_launcher_sync_status():
         pdialog.updateMessage2('Scanning files in ROM paths...')
         launcher_path = FileName(launcher['rompath'])
         log_debug('Scanning files in {}'.format(launcher_path.getPath()))
-        if self.settings['scan_recursive']:
+        if g_settings['scan_recursive']:
             log_debug('Recursive scan activated')
             files = launcher_path.recursiveScanFilesInPath('*.*')
         else:
@@ -6697,19 +6714,25 @@ def m_misc_set_AEL_Content(AEL_Content_Value):
 #   1. Title of the launcher.
 #   2. Icon of the launcher.
 #   3. Clearlogo of the launcher.
-#   ---- TODO Deprecated?
-def m_misc_set_AEL_Launcher_Content(launcher_dic):
-    kodi_thumb     = 'DefaultFolder.png' if launcher_dic['rompath'] else 'DefaultProgram.png'
-    #icon_path      = asset_get_default_asset_Category(launcher_dic, 'default_icon', kodi_thumb)
-    #clearlogo_path = asset_get_default_asset_Category(launcher_dic, 'default_clearlogo')
-    xbmcgui.Window(AEL_CONTENT_WINDOW_ID).setProperty(AEL_LAUNCHER_NAME_LABEL, launcher_dic['m_name'])
+#   4. Default box size of the launcher
+def m_misc_set_AEL_Launcher_Content(launcher):
+    kodi_thumb     = 'DefaultFolder.png' if launcher.supports_launching_roms() else 'DefaultProgram.png'
+    icon_path      = launcher.get_mapped_asset_str(asset_id=ASSET_ICON_ID, fallback=kodi_thumb)
+    clearlogo_path = launcher.get_mapped_asset_str(asset_id=ASSET_CLEARLOGO_ID)
+    
+    xbmcgui.Window(AEL_CONTENT_WINDOW_ID).setProperty(AEL_LAUNCHER_NAME_LABEL, launcher.get_name())
     xbmcgui.Window(AEL_CONTENT_WINDOW_ID).setProperty(AEL_LAUNCHER_ICON_LABEL, icon_path)
     xbmcgui.Window(AEL_CONTENT_WINDOW_ID).setProperty(AEL_LAUNCHER_CLEARLOGO_LABEL, clearlogo_path)
+    xbmcgui.Window(AEL_CONTENT_WINDOW_ID).setProperty(AEL_LAUNCHER_PLATFORM_LABEL, launcher.get_platform())
+    xbmcgui.Window(AEL_CONTENT_WINDOW_ID).setProperty(AEL_LAUNCHER_BOXSIZE_LABEL, launcher.get_box_sizing())
 
 def m_misc_clear_AEL_Launcher_Content():
     xbmcgui.Window(AEL_CONTENT_WINDOW_ID).setProperty(AEL_LAUNCHER_NAME_LABEL, '')
     xbmcgui.Window(AEL_CONTENT_WINDOW_ID).setProperty(AEL_LAUNCHER_ICON_LABEL, '')
     xbmcgui.Window(AEL_CONTENT_WINDOW_ID).setProperty(AEL_LAUNCHER_CLEARLOGO_LABEL, '')
+    xbmcgui.Window(AEL_CONTENT_WINDOW_ID).setProperty(AEL_LAUNCHER_PLATFORM_LABEL, '')
+    xbmcgui.Window(AEL_CONTENT_WINDOW_ID).setProperty(AEL_LAUNCHER_BOXSIZE_LABEL, '')
+    
 #
 # Edits an object field which is a Unicode string.
 #
@@ -7106,6 +7129,7 @@ def m_gui_edit_asset(obj_instance, asset_info):
         scraper_settings.game_selection_mode     = SCRAPE_MANUAL
         scraper_settings.asset_selection_mode    = SCRAPE_MANUAL
         scraper_settings.asset_IDs_to_scrape     = [asset_info.id]
+        scraper_settings.overwrite_existing      = kodi_dialog_yesno('Overwrite existing assets settings?')
         
         rom                 = obj_instance
         pdialog             = KodiProgressDialog()
@@ -7618,6 +7642,7 @@ def m_gui_render_launcher_row(launcher, launcher_raw_name = None):
                                    'genre'   : launcher_dic['m_genre'],   'studio'  : launcher_dic['m_developer'],
                                    'rating'  : launcher_dic['m_rating'],  'plot'    : launcher_dic['m_plot'],
                                    'trailer' : launcher_dic['s_trailer'], 'overlay' : ICON_OVERLAY })
+    
     listitem.setProperty('platform', launcher_dic['platform'])
     if launcher_dic['rompath']:
         listitem.setProperty(AEL_CONTENT_LABEL, AEL_CONTENT_VALUE_ROM_LAUNCHER)
@@ -7808,11 +7833,10 @@ def m_gui_render_rom_row(categoryID, launcher, rom,
     # labels are set as Title in setInfo(), then they work but the alphabetical order is lost!
     # I solved this alphabetical ordering issue by placing a coloured tag [Fav] at the and of the ROM name
     # instead of changing the whole row colour.
-    trailer = rom.get_asset_str(asset_id=ASSET_TRAILER_ID)    
-    listitem.setInfo('video', {'title'   : rom_name,
+    listitem.setInfo('video', { 'title'   : rom_name,
                                 'genre'   : rom.get_genre(),  'studio'  : rom.get_developer(),
                                 'rating'  : rom.get_rating(), 'plot'    : rom.get_plot(),
-                                'trailer' : trailer,          'overlay' : ICON_OVERLAY })
+                                'trailer' : rom.get_trailer(),'overlay' : ICON_OVERLAY })
     
     # >> BUG in Jarvis/Krypton skins. If 'year' is set to empty string a 0 is displayed on the
     # >>     skin. If year is not set then the correct icon is shown.
@@ -7823,6 +7847,7 @@ def m_gui_render_rom_row(categoryID, launcher, rom,
     listitem.setProperty('nplayers', rom.get_number_of_players())
     listitem.setProperty('esrb', rom.get_esrb_rating())
     listitem.setProperty('platform', platform)
+    listitem.setProperty('boxsize', rom.get_box_sizing())
     listitem.setProperty(AEL_CONTENT_LABEL, AEL_CONTENT_VALUE_ROM)
 
     # --- Set ROM artwork ---
