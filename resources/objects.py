@@ -1955,20 +1955,20 @@ class LauncherABC(MetaDataItemABC):
         # --- Create executor object ---
         if self.executorFactory is None:
             log_error('LauncherABC::launch() self.executorFactory is None')
-            log_error('Cannot create an executor for {0}'.format(self.application.getPath()))
+            log_error('Cannot create an executor for {}'.format(self.application.getPath()))
             kodi_notify_error('LauncherABC::launch() self.executorFactory is None'
                               'This is a bug, please report it.')
             return
         executor = self.executorFactory.create(self.application)
         if executor is None:
-            log_error('Cannot create an executor for {0}'.format(self.application.getPath()))
+            log_error('Cannot create an executor for {}'.format(self.application.getPath()))
             kodi_notify_error('Cannot execute application')
             return
 
-        log_debug('Name        = "{0}"'.format(self.title))
-        log_debug('Application = "{0}"'.format(self.application.getPath()))
-        log_debug('Arguments   = "{0}"'.format(self.arguments))
-        log_debug('Executor    = "{0}"'.format(executor.__class__.__name__))
+        log_debug('Name        = "{}"'.format(self.title))
+        log_debug('Application = "{}"'.format(self.application.getPath()))
+        log_debug('Arguments   = "{}"'.format(self.arguments))
+        log_debug('Executor    = "{}"'.format(executor.__class__.__name__))
 
         # --- Execute app ---
         self._launch_pre_exec(self.title, self.is_in_windowed_mode())
@@ -1986,14 +1986,14 @@ class LauncherABC(MetaDataItemABC):
 
         # --- User notification ---
         if self.settings['display_launcher_notify']:
-            kodi_notify('Launching {0}'.format(title))
+            kodi_notify('Launching {}'.format(title))
 
         # --- Stop/Pause Kodi mediaplayer if requested in settings ---
         self.kodi_was_playing = False
         # id="media_state_action" default="0" values="Stop|Pause|Let Play"
         media_state_action = self.settings['media_state_action']
         media_state_str = ['Stop', 'Pause', 'Let Play'][media_state_action]
-        log_verb('_launch_pre_exec() media_state_action is "{0}" ({1})'.format(media_state_str, media_state_action))
+        log_verb('_launch_pre_exec() media_state_action is "{}" ({})'.format(media_state_str, media_state_action))
         if media_state_action == 0 and xbmc.Player().isPlaying():
             log_verb('_launch_pre_exec() Calling xbmc.Player().stop()')
             xbmc.Player().stop()
@@ -2048,13 +2048,20 @@ class LauncherABC(MetaDataItemABC):
         # --- Toggle Kodi windowed/fullscreen if requested ---
         if toggle_screen_flag:
             log_verb('_launch_pre_exec() Toggling Kodi fullscreen')
-            kodi_toogle_fullscreen()
+            kodi_toggle_fullscreen()
         else:
             log_verb('_launch_pre_exec() Toggling Kodi fullscreen DEACTIVATED in Launcher')
 
+        # Disable screensaver
+        if self.settings['suspend_screensaver']:
+            kodi_disable_screensaver()
+        else:
+            screensaver_mode = kodi_get_screensaver_mode()
+            log_debug('_run_before_execution() Screensaver status "{}"'.format(screensaver_mode))
+
         # --- Pause Kodi execution some time ---
         delay_tempo_ms = self.settings['delay_tempo']
-        log_verb('_launch_pre_exec() Pausing {0} ms'.format(delay_tempo_ms))
+        log_verb('_launch_pre_exec() Pausing {} ms'.format(delay_tempo_ms))
         xbmc.sleep(delay_tempo_ms)
         log_debug('LauncherABC::_launch_pre_exec() function ENDS')
 
@@ -2063,13 +2070,13 @@ class LauncherABC(MetaDataItemABC):
 
         # --- Stop Kodi some time ---
         delay_tempo_ms = self.settings['delay_tempo']
-        log_verb('_launch_post_exec() Pausing {0} ms'.format(delay_tempo_ms))
+        log_verb('_launch_post_exec() Pausing {} ms'.format(delay_tempo_ms))
         xbmc.sleep(delay_tempo_ms)
 
         # --- Toggle Kodi windowed/fullscreen if requested ---
         if toggle_screen_flag:
             log_verb('_launch_post_exec() Toggling Kodi fullscreen')
-            kodi_toogle_fullscreen()
+            kodi_toggle_fullscreen()
         else:
             log_verb('_launch_post_exec() Toggling Kodi fullscreen DEACTIVATED in Launcher')
 
@@ -2098,11 +2105,18 @@ class LauncherABC(MetaDataItemABC):
         else:
             log_verb('_launch_post_exec() DO NOT resume Kodi joystick engine')
 
+        # Restore screensaver status.
+        if self.settings['suspend_screensaver']:
+            kodi_restore_screensaver()
+        else:
+            screensaver_mode = kodi_get_screensaver_mode()
+            log_debug('_run_after_execution() Screensaver status "{}"'.format(screensaver_mode))
+
         # --- Resume Kodi playing if it was paused. If it was stopped, keep it stopped. ---
         media_state_action = self.settings['media_state_action']
         media_state_str = ['Stop', 'Pause', 'Let Play'][media_state_action]
-        log_verb('_launch_post_exec() media_state_action is "{0}" ({1})'.format(media_state_str, media_state_action))
-        log_verb('_launch_post_exec() self.kodi_was_playing is {0}'.format(self.kodi_was_playing))
+        log_verb('_launch_post_exec() media_state_action is "{}" ({})'.format(media_state_str, media_state_action))
+        log_verb('_launch_post_exec() self.kodi_was_playing is {}'.format(self.kodi_was_playing))
         if self.kodi_was_playing and media_state_action == 1:
             log_verb('_launch_post_exec() Calling xbmc.Player().play()')
             xbmc.Player().play()
