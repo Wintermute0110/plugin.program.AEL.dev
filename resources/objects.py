@@ -1563,6 +1563,15 @@ class ROM(MetaDataItemABC):
     def set_alternative_arguments(self, arg):
         self.entity_data['altarg'] = arg
 
+    def get_box_sizing(self):        
+        if 'box_size' in self.entity_data: return self.entity_data['box_size'] 
+        # fallback to launcher size 
+        if self.launcher: return self.launcher.get_box_sizing()
+        return BOX_SIZE_POSTER
+    
+    def set_box_sizing(self, box_size):
+        self.entity_data['box_size'] = box_size
+
     def copy(self):
         data = self.copy_of_data_dic()
         return ROM(data, self.launcher)
@@ -1713,10 +1722,11 @@ class ROM(MetaDataItemABC):
         options['EDIT_METADATA_DEVELOPER']   = u"Edit Developer: '{0}'".format(self.get_developer()).encode('utf-8')
         options['EDIT_METADATA_NPLAYERS']    = u"Edit NPlayers: '{0}'".format(self.get_number_of_players()).encode('utf-8')
         options['EDIT_METADATA_ESRB']        = u"Edit ESRB rating: '{0}'".format(self.get_esrb_rating()).encode('utf-8')
-        options['EDIT_METADATA_RATING']      = u"Edit Rating: '{0}'".format(rating).encode('utf-8')
-        options['EDIT_METADATA_PLOT']        = u"Edit Plot: '{0}'".format(plot_str).encode('utf-8')
+        options['EDIT_METADATA_RATING']      = u"Edit Rating: '{}'".format(rating).encode('utf-8')
+        options['EDIT_METADATA_PLOT']        = u"Edit Plot: '{}'".format(plot_str).encode('utf-8')
+        options['EDIT_METADATA_BOXSIZE']     = u"Edit Box Size: '{}'".format(self.get_box_sizing())
         options['LOAD_PLOT']                 = "Load Plot from TXT file ..."
-        options['IMPORT_NFO_FILE']           = u"Import NFO file (default, {0})".format(NFO_found_str).encode('utf-8')
+        options['IMPORT_NFO_FILE']           = u"Import NFO file (default, {})".format(NFO_found_str).encode('utf-8')
         options['SAVE_NFO_FILE']             = "Save NFO file (default location)"
         options['SCRAPE_ROM_METADATA']       = "Scrape Metadata"
 
@@ -1911,14 +1921,15 @@ class LauncherABC(MetaDataItemABC):
         NFO_found_str = 'NFO found' if NFO_FileName.exists() else 'NFO not found'
 
         options = collections.OrderedDict()
-        options['EDIT_METADATA_TITLE']       = "Edit Title: '{0}'".format(self.get_name())
-        options['EDIT_METADATA_PLATFORM']    = "Edit Platform: {0}".format(self.entity_data['platform'])
-        options['EDIT_METADATA_RELEASEYEAR'] = "Edit Release Year: '{0}'".format(self.entity_data['m_year'])
-        options['EDIT_METADATA_GENRE']       = "Edit Genre: '{0}'".format(self.entity_data['m_genre'])
-        options['EDIT_METADATA_DEVELOPER']   = "Edit Developer: '{0}'".format(self.entity_data['m_developer'])
-        options['EDIT_METADATA_RATING']      = "Edit Rating: '{0}'".format(rating)
-        options['EDIT_METADATA_PLOT']        = "Edit Plot: '{0}'".format(plot_str)
-        options['IMPORT_NFO_FILE']           = 'Import NFO file (default {0})'.format(NFO_found_str)
+        options['EDIT_METADATA_TITLE']       = "Edit Title: '{}'".format(self.get_name())
+        options['EDIT_METADATA_PLATFORM']    = "Edit Platform: {}".format(self.entity_data['platform'])
+        options['EDIT_METADATA_RELEASEYEAR'] = "Edit Release Year: '{}'".format(self.entity_data['m_year'])
+        options['EDIT_METADATA_GENRE']       = "Edit Genre: '{}'".format(self.entity_data['m_genre'])
+        options['EDIT_METADATA_DEVELOPER']   = "Edit Developer: '{}'".format(self.entity_data['m_developer'])
+        options['EDIT_METADATA_RATING']      = "Edit Rating: '{}'".format(rating)
+        options['EDIT_METADATA_PLOT']        = "Edit Plot: '{}'".format(plot_str)
+        options['EDIT_METADATA_BOXSIZE']     = "Edit Box Size: '{}'".format(self.get_box_sizing())
+        options['IMPORT_NFO_FILE']           = 'Import NFO file (default {})'.format(NFO_found_str)
         options['IMPORT_NFO_FILE_BROWSE']    = 'Import NFO file (browse NFO file) ...'
         options['SAVE_NFO_FILE']             = 'Save NFO file (default location)'
 
@@ -2141,6 +2152,12 @@ class LauncherABC(MetaDataItemABC):
         return float(timestamp)
 
     def update_report_timestamp(self): self.entity_data['timestamp_report'] = time.time()
+
+    def get_box_sizing(self):
+        return self.entity_data['box_size'] if 'box_size' in self.entity_data else BOX_SIZE_POSTER
+    
+    def set_box_sizing(self, box_size):
+        self.entity_data['box_size'] = box_size
 
     # ---------------------------------------------------------------------------------------------
     # Launcher asset methods
@@ -2368,7 +2385,6 @@ class StandaloneLauncher(LauncherABC):
             self._builder_get_title_from_app_path)
         wizard = WizardDialog_Selection(wizard, 'platform', 'Select the platform',
             AEL_platform_list)
-
         return wizard
 
     def _build_pre_wizard_hook(self): return True
@@ -2526,6 +2542,10 @@ class ROMLauncherABC(LauncherABC):
         # >> launcher is edited using Python passing by assignment.
         self.rom_assets_init_dirs()
 
+        # --- Determine box size based on platform --
+        platform = get_AEL_platform(self.entity_data['platform'])
+        self.set_box_sizing(platform.default_box_size)
+        
         return True
 
     def _builder_get_extensions_from_app_path(self, input, item_key ,launcher):
@@ -4297,13 +4317,17 @@ class NvidiaGameStreamLauncher(ROMLauncherABC):
     
     def _build_pre_wizard_hook(self):
         log_debug('NvidiaGameStreamLauncher::_build_pre_wizard_hook() Starting ...')
-
         return True
 
     def _build_post_wizard_hook(self):
         log_debug('NvidiaGameStreamLauncher::_build_post_wizard_hook() Starting ...')
 
-        return super(NvidiaGameStreamLauncher, self)._build_post_wizard_hook()
+        success = super(NvidiaGameStreamLauncher, self)._build_post_wizard_hook()
+        if not success:
+            return success
+        
+        self.set_box_sizing(BOX_SIZE_STEAM)
+        return success
     
     def _builder_generatePairPinCode(self, input, item_key, launcher):
         return GameStreamServer(None, None).generatePincode()

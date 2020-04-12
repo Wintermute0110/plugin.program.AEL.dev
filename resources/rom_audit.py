@@ -27,18 +27,16 @@ from utils import *
 # -------------------------------------------------------------------------------------------------
 # DTD "http://www.logiqx.com/Dats/datafile.dtd"
 def audit_new_rom_logiqx(): 
-    rom = {
+    return {
         'name'         : '',
         'cloneof'      : '',
         'year'         : '',
         'manufacturer' : ''
     }
 
-    return rom
-
 # HyperList doesn't include Plot
 def audit_new_rom_HyperList(): 
-    rom = {
+    return {
         'name'         : '',
         'description'  : '',
         'cloneof'      : '',
@@ -50,10 +48,8 @@ def audit_new_rom_HyperList():
         'enabled'      : ''
     }
 
-    return rom
-
 def audit_new_rom_GameDB():
-    rom = {
+    return {
         'name'         : '',
         'description'  : '',
         'year'         : '',
@@ -64,28 +60,22 @@ def audit_new_rom_GameDB():
         'story'        : ''
     }
 
-    return rom
-
-# Manufacturer is Publisher
 def audit_new_rom_AEL_Offline(): 
-    rom = {
-        'name'         : '',
-        'description'  : '',
-        'cloneof'      : '',
-        'source'       : '',
-        'status'       : '',
-        'year'         : '',
-        'genre'        : '',
-        'manufacturer' : '',
-        'nplayers'     : '',
-        'rating'       : '',
-        'plot'         : ''
+    return {
+        'ROM'       : '',
+        'title'     : '',
+        'year'      : '',
+        'genre'     : '',
+        'publisher' : '',
+        'developer' : '',
+        'rating'    : '',
+        'nplayers'  : '',
+        'score'     : '',
+        'plot'      : ''
     }
 
-    return rom
-
 def audit_new_LB_game():
-    g = {
+    return {
         'Name'              : '',
         'ReleaseYear'       : '',
         'Overview'          : '',
@@ -109,10 +99,8 @@ def audit_new_LB_game():
         'StartupParameters' : '',
     }
 
-    return g
-
 def audit_new_LB_platform():
-    g = {
+    return {
         'Name'           : '',
         'Emulated'       : '',
         'ReleaseDate'    : '',
@@ -130,18 +118,14 @@ def audit_new_LB_platform():
         'UseMameFiles'   : '',
     }
 
-    return g
-
 def audit_new_LB_gameImage():
-    g = {
+    return {
         'DatabaseID' : '',
         'FileName'   : '',
         'Type'       : '',
         'CRC32'      : '',
         'Region'     : '',
     }
-
-    return g
 
 def audit_load_LB_metadata_XML(filename_FN, games_dic, platforms_dic, gameimages_dic):
     if not filename_FN.exists():
@@ -215,29 +199,29 @@ def audit_load_OfflineScraper_XML(xml_file):
 
     # --- Check that file exists ---
     if not os.path.isfile(xml_file):
-        log_error("Cannot load file '{0}'".format(xml_file))
+        log_error("Cannot load file '{}'".format(xml_file))
         return games
 
     # --- Parse using cElementTree ---
-    log_debug('audit_load_OfflineScraper_XML() Loading "{0}"'.format(xml_file))
+    log_debug('audit_load_OfflineScraper_XML() Loading "{}"'.format(xml_file))
     try:
         xml_tree = ET.parse(xml_file)
     except ET.ParseError, e:
         log_error('(ParseError) Exception parsing XML categories.xml')
-        log_error('(ParseError) {0}'.format(str(e)))
+        log_error('(ParseError) {}'.format(str(e)))
         return games
     xml_root = xml_tree.getroot()
     for game_element in xml_root:
         if __debug_xml_parser:
-            log_debug('=== Root child tag "{0}" ==='.format(game_element.tag))
+            log_debug('=== Root child tag "{}" ==='.format(game_element.tag))
 
         if game_element.tag == 'game':
             # Default values
-            game = audit_new_rom_logiqx()
+            game = audit_new_rom_AEL_Offline()
 
             # ROM name is an attribute of <game>
-            game['name'] = game_element.attrib['name']
-            if __debug_xml_parser: log_debug('Game name = "{0}"'.format(game['name']))
+            game['ROM'] = game_element.attrib['ROM']
+            if __debug_xml_parser: log_debug('Game name = "{}"'.format(game['ROM']))
 
             # Parse child tags of category
             for game_child in game_element:
@@ -245,10 +229,9 @@ def audit_load_OfflineScraper_XML(xml_file):
                 xml_text = game_child.text if game_child.text is not None else ''
                 xml_text = text_unescape_XML(xml_text)
                 xml_tag  = game_child.tag
-                if __debug_xml_parser: log_debug('Tag "{0}" --> "{1}"'.format(xml_tag, xml_text))
+                if __debug_xml_parser: log_debug('Tag "{}" --> "{}"'.format(xml_tag, xml_text))
                 game[xml_tag] = xml_text
-            key = game['name']
-            games[key] = game
+            games[game['ROM']] = game
 
     return games
 
@@ -518,25 +501,28 @@ def audit_generate_DAT_PClone_index(roms, roms_nointro, unknown_ROMs_are_parents
 
         if rom['nointro_status'] == AUDIT_STATUS_UNKNOWN:
             if unknown_ROMs_are_parents:
-                # >> Unknown ROMs are parents
+                # Unknown ROMs are parents
                 if rom_id not in roms_pclone_index_by_id:
                     roms_pclone_index_by_id[rom_id] = []
             else:
-                # >> Unknown ROMs are clones
-                #    Also, if the parent ROMs of all clones does not exist yet then create it
+                # Unknown ROMs are clones
+                # Also, if the parent ROMs of all clones does not exist yet then create it
                 if UNKNOWN_ROMS_PARENT_ID not in roms_pclone_index_by_id:
                     roms_pclone_index_by_id[UNKNOWN_ROMS_PARENT_ID] = []
                     roms_pclone_index_by_id[UNKNOWN_ROMS_PARENT_ID].append(rom_id)
                 else:
                     roms_pclone_index_by_id[UNKNOWN_ROMS_PARENT_ID].append(rom_id)
+        elif rom['nointro_status'] == AUDIT_STATUS_EXTRA:
+            # Extra ROMs are parents.
+            if rom_id not in roms_pclone_index_by_id:
+                roms_pclone_index_by_id[rom_id] = []
         else:
             nointro_rom = roms_nointro[rom_nointro_name]
-
-            # >> ROM is a parent
+            # ROM is a parent
             if nointro_rom['cloneof'] == '':
                 if rom_id not in roms_pclone_index_by_id:
                     roms_pclone_index_by_id[rom_id] = []
-            # >> ROM is a clone
+            # ROM is a clone
             else:
                 parent_name = nointro_rom['cloneof']
                 parent_id   = names_to_ids_dic[parent_name]

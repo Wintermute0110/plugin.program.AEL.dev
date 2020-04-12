@@ -1,0 +1,513 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<menu>
+<header>
+  <listname>Fujitsu FM Towns Marty</listname>
+  <lastlistupdate></lastlistupdate>
+  <listversion>V1</listversion>
+  <exporterversion>V1 GameDBInfo converter</exporterversion>
+</header>
+<game ROM="4D Sports Boxing (1991)(Distinctive Software)(Jp-En)">
+  <title>4D Sports Boxing</title>
+  <year>1991</year>
+  <genre>sports</genre>
+  <developer />
+  <publisher>Distinctive Software</publisher>
+  <rating>Other - NR (Not Rated)</rating>
+</game>
+<game ROM="4D Sports Driving (1992)(Distinctive Software)(Jp-En)">
+  <title>4D Sports Driving</title>
+  <year>1992</year>
+  <genre>driving</genre>
+  <developer />
+  <publisher>Distinctive Software</publisher>
+  <rating>Other - NR (Not Rated)</rating>
+</game>
+<game ROM="AD&amp;D Dragons of Flame (1992)(PonyCanyon)(Jp-En)">
+  <title>AD&amp;D Dragons of Flame</title>
+  <year>1992</year>
+  <genre>rpg</genre>
+  <developer />
+  <publisher>Pony Canyon</publisher>
+  <rating>Other - NR (Not Rated)</rating>
+</game>
+<game ROM="Advantage Tennis (1992)(Fujitsu)(Jp-En)">
+  <title>Advantage Tennis</title>
+  <year>1992</year>
+  <genre>sports</genre>
+  <developer />
+  <publisher>Fujitsu</publisher>
+  <rating>Other - NR (Not Rated)</rating>
+</game>
+<game ROM="Afterburner (1987)(Sega)(Jp-En)">
+  <title>Afterburner</title>
+  <year>1987</year>
+  <genre>flyer</genre>
+  <developer />
+  <publisher>Sega</publisher>
+  <rating>Other - NR (Not Rated)</rating>
+</game>
+<game ROM="Afterburner 2 (1989)(Sega)(Jp-En)">
+  <title>Afterburner 2</title>
+  <year>1989</year>
+  <genre>flyer</genre>
+  <developer />
+  <publisher>Sega</publisher>
+  <rating>Other - NR (Not Rated)</rating>
+</game>
+<game ROM="Afterburner 3 (1992)(Sega)(Jp)">
+  <title>Afterburner 3</title>
+  <year>1992</year>
+  <genre>flyer</genre>
+  <developer />
+  <publisher>Sega</publisher>
+  <rating>Other - NR (Not Rated)</rating>
+</game>
+<game ROM="Blandia (1994)(Ving)(Jp-En)[mp3 source]">
+  <title>Blandia</title>
+  <year>1994</year>
+  <genre>fighter</genre>
+  <developer />
+  <publisher>Ving</publisher>
+  <rating>Other - NR (Not Rated)</rating>
+</game>
+<game ROM="Bubble Bobble (1993)(Ving)(Jp-En)">
+  <title>Bubble Bobble</title>
+  <year>1993</year>
+  <genre>action</genre>
+  <developer />
+  <publisher>Ving</publisher>
+  <rating>Other - NR (Not Rated)</rating>
+</game>
+<game ROM="Castles (1992)(Victor)(Jp-En)">
+  <title>Castles</title>
+  <year>1992</year>
+  <genre>strategy</genre>
+  <developer />
+  <publisher>Victor</publisher>
+  <rating>Other - NR (Not Rated)</rating>
+</game>
+<game ROM="Chase HQ (1991)(Ving)(Jp-En)">
+  <title>Chase HQ</title>
+  <year>1991</year>
+  <genre>driving</genre>
+  <developer />
+  <publisher>Ving</publisher>
+  <rating>Other - NR (Not Rated)</rating>
+</game>
+<game ROM="Drakkhen (1990)(Fujitsu)(Jp-En)">
+  <title>Drakkhen</title>
+  <year>1990</year>
+  <genre>rpg</genre>
+  <developer />
+  <publisher>Fujitsu</publisher>
+  <rating>Other - NR (Not Rated)</rating>
+</game>
+<game ROM="Dungeon Master (1987)(FTL)(Jp-En)">
+  <title>Dungeon Master</title>
+  <year>1987</year>
+  <genre>rpg</genre>
+  <developer />
+  <publisher>FTL</publisher>
+  <rating>Other - NR (Not Rated)</rating>
+</game>
+<game ROM="Dungeon Master Chaos Strikes Back (1990)(Victor)(Jp-En)">
+  <title>Dungeon Master Chaos Strikes Back</title>
+  <year>1990</year>
+  <genre>rpg</genre>
+  <developer />
+  <publisher>Victor</publisher>
+  <rating>Other - NR (Not Rated)</rating>
+</game>
+<game ROM="Evolution (1989)(System Sacom)(Jp-En)">
+  <title>Evolution</title>
+  <year>1989</year>
+  <genre>shooter</genre>
+  <developer />
+  <publisher>System Sacom</publisher>
+  <rating>Other - NR (Not Rated)</rating>
+</game>
+<game ROM="Final Blow (1990)(Ving)(Jp-En)">
+  <title>Final Blow</title>
+  <year>1990</year>
+  <genre>sports</genre>
+  <developer />
+  <publisher>Ving</publisher>
+  <rating>Other - NR (Not Rated)</rating>
+</game>
+<game ROM="Flying Shark (1993)(Ving)(Jp-En)">
+  <title>Flying Shark</title>
+  <year>1993</year>
+  <genre>shoot-em up</genre>
+  <developer />
+  <publisher>Ving</publisher>
+  <rating>Other - NR (Not Rated)</rating>
+</game>
+<game ROM="Galaxy Force II (1990)(CSK)(Jp-En)">
+  <title>Galaxy Force II</title>
+  <year>1990</year>
+  <genre>flying</genre>
+  <developer />
+  <publisher>CSK</publisher>
+  <rating>Other - NR (Not Rated)</rating>
+</game>
+<game ROM="Genocide Squared (1993)(Zoom)(Jp-En)">
+  <title>Genocide Squared</title>
+  <year>1993</year>
+  <genre>action</genre>
+  <developer />
+  <publisher>Zoom</publisher>
+  <rating>Other - NR (Not Rated)</rating>
+</game>
+<game ROM="Image Fight (1990)(Ving)(Jp-En)">
+  <title>Image Fight</title>
+  <year>1990</year>
+  <genre>shoot-em up</genre>
+  <developer />
+  <publisher>Ving</publisher>
+  <rating>Other - NR (Not Rated)</rating>
+</game>
+<game ROM="Indiana Jones and the Fate of Atlantis (1993)(LucasFilm)(Jp-En)">
+  <title>Indiana Jones and the Fate of Atlantis</title>
+  <year>1993</year>
+  <genre>adventure</genre>
+  <developer />
+  <publisher>Lucas Film</publisher>
+  <rating>Other - NR (Not Rated)</rating>
+</game>
+<game ROM="Indiana Jones and the Last Crusade (1989)(LucasFilm)(Jp-En)">
+  <title>Indiana Jones and the Last Crusade</title>
+  <year>1989</year>
+  <genre>adventure</genre>
+  <developer />
+  <publisher>Lucas Film</publisher>
+  <rating>Other - NR (Not Rated)</rating>
+</game>
+<game ROM="Kyukyoku Tiger (aka Twin Cobra) (1994)(Ving)(Jp-En)[mp3 source]">
+  <title>Kyukyoku Tiger</title>
+  <year>1994</year>
+  <genre>shoot-em up</genre>
+  <developer />
+  <publisher>Ving</publisher>
+  <rating>Other - NR (Not Rated)</rating>
+</game>
+<game ROM="Lemmings (1991)(Psygnosis)(Jp-En)">
+  <title>Lemmings</title>
+  <year>1991</year>
+  <genre>puzzle</genre>
+  <developer />
+  <publisher>Psygnosis</publisher>
+  <rating>Other - NR (Not Rated)</rating>
+</game>
+<game ROM="LibbleRabble (1993)(Namco)(Jp-En)">
+  <title>LibbleRabble</title>
+  <year>1993</year>
+  <genre>puzzle</genre>
+  <developer />
+  <publisher>Namco</publisher>
+  <rating>Other - NR (Not Rated)</rating>
+</game>
+<game ROM="Loom (1991)(LucasFilm)(Jp-En)">
+  <title>Loom</title>
+  <year>1991</year>
+  <genre>adventure</genre>
+  <developer />
+  <publisher>Lucas Film</publisher>
+  <rating>Other - NR (Not Rated)</rating>
+</game>
+<game ROM="Mad Stalker (1994)(Family Soft)(Jp-En)">
+  <title>Mad Stalker</title>
+  <year>1994</year>
+  <genre>action</genre>
+  <developer />
+  <publisher>Family Soft</publisher>
+  <rating>Other - NR (Not Rated)</rating>
+</game>
+<game ROM="Marble Madness (1991)(Homedata)(Jp-En)">
+  <title>Marble Madness</title>
+  <year>1991</year>
+  <genre>puzzle</genre>
+  <developer />
+  <publisher>Homedata</publisher>
+  <rating>Other - NR (Not Rated)</rating>
+</game>
+<game ROM="Monkey Island 2 - LeChuck&apos;s Revenge (1991)(LucasFilm)(Jp-En)">
+  <title>Monkey Island 2 - LeChuck&apos;s Revenge</title>
+  <year>1991</year>
+  <genre>adventure</genre>
+  <developer />
+  <publisher>Lucas Film</publisher>
+  <rating>Other - NR (Not Rated)</rating>
+</game>
+<game ROM="Muscle Bomber (1994)(CapCom)">
+  <title>Muscle Bomber</title>
+  <year>1994</year>
+  <genre>wrestling</genre>
+  <developer />
+  <publisher>Capcom</publisher>
+  <rating>Other - NR (Not Rated)</rating>
+</game>
+<game ROM="New Zealand Story, The (1989)(Ving)(Jp-En)">
+  <title>New Zealand Story, The</title>
+  <year>1989</year>
+  <genre>platform</genre>
+  <developer />
+  <publisher>Ving</publisher>
+  <rating>Other - NR (Not Rated)</rating>
+</game>
+<game ROM="Operation Wolf (1990)(Ving)(Jp-En)[mp3 source]">
+  <title>Operation Wolf</title>
+  <year>1990</year>
+  <genre>shooter</genre>
+  <developer />
+  <publisher>Ving</publisher>
+  <rating>Other - NR (Not Rated)</rating>
+</game>
+<game ROM="Populous (1990)(Imagineer)(Jp-En)">
+  <title>Populous</title>
+  <year>1990</year>
+  <genre>Strategy</genre>
+  <developer />
+  <publisher>Imagineer</publisher>
+  <rating>Other - NR (Not Rated)</rating>
+</game>
+<game ROM="Power Monger (1992)(Imagineer)(Jp-En)">
+  <title>Power Monger</title>
+  <year>1992</year>
+  <genre>Strategy</genre>
+  <developer />
+  <publisher>Imagineer</publisher>
+  <rating>Other - NR (Not Rated)</rating>
+</game>
+<game ROM="Prince of Persia (1992)(Riverhill Soft)(Jp)">
+  <title>Prince of Persia</title>
+  <year>1992</year>
+  <genre>platformer</genre>
+  <developer />
+  <publisher>Riverhill Soft</publisher>
+  <rating>Other - NR (Not Rated)</rating>
+</game>
+<game ROM="Pu-Li-Ru-La (1994)(Ving)(Jp-En)">
+  <title>Pu-Li-Ru-La</title>
+  <year>1994</year>
+  <genre>beat-em up</genre>
+  <developer />
+  <publisher>Ving</publisher>
+  <rating>Other - NR (Not Rated)</rating>
+</game>
+<game ROM="Puyo Puyo (1994)(CRI)(Jp)">
+  <title>Puyo Puyo</title>
+  <year>1994</year>
+  <genre>puzzle</genre>
+  <developer />
+  <publisher>CRI</publisher>
+  <rating>Other - NR (Not Rated)</rating>
+</game>
+<game ROM="Queen Of Duellist, The (199x)(Agumix)(Jp-En)">
+  <title>Queen Of Duellist, The</title>
+  <year>1994</year>
+  <genre>fighter</genre>
+  <developer />
+  <publisher>Aqumix</publisher>
+  <rating>Other - NR (Not Rated)</rating>
+</game>
+<game ROM="RAC Rally (1995)(Victor)(En)">
+  <title>RAC Rally</title>
+  <year>1995</year>
+  <genre>Driving</genre>
+  <developer />
+  <publisher>Victor</publisher>
+  <rating>Other - NR (Not Rated)</rating>
+</game>
+<game ROM="Raiden Densetsu (1991)(Kid Corp)(Jp-En)">
+  <title>Raiden Densetsu</title>
+  <year>1991</year>
+  <genre>shoot-em up</genre>
+  <developer />
+  <publisher>Kid Corp</publisher>
+  <rating>Other - NR (Not Rated)</rating>
+</game>
+<game ROM="Rainbow Islands Extra (1992)(Ving)(Jp-En)">
+  <title>Rainbow Islands Extra</title>
+  <year>1992</year>
+  <genre>platform</genre>
+  <developer />
+  <publisher>Ving</publisher>
+  <rating>Other - NR (Not Rated)</rating>
+</game>
+<game ROM="Rayxanber (1990)(Datawest)(Jp-En)">
+  <title>Rayxanber</title>
+  <year>1990</year>
+  <genre>shoot-em up</genre>
+  <developer />
+  <publisher>Datawest</publisher>
+  <rating>Other - NR (Not Rated)</rating>
+</game>
+<game ROM="Samurai Spirits (1995)(Ving)(Jp-En)[mp3 source]">
+  <title>Samurai Spirits</title>
+  <year>1995</year>
+  <genre>fighter</genre>
+  <developer />
+  <publisher>Ving</publisher>
+  <rating>Other - NR (Not Rated)</rating>
+</game>
+<game ROM="Scavenger 4 (1994)(Psygnosis)(Jp-En)">
+  <title>Scavenger 4</title>
+  <year>1994</year>
+  <genre>shoot-em up</genre>
+  <developer />
+  <publisher>Psygnosis</publisher>
+  <rating>Other - NR (Not Rated)</rating>
+</game>
+<game ROM="Secret of Monkey Island, The (1992)(LucasFilm)(Jp-En)">
+  <title>Secret of Monkey Island, The</title>
+  <year>1992</year>
+  <genre>adventure</genre>
+  <developer />
+  <publisher>Lucas Film</publisher>
+  <rating>Other - NR (Not Rated)</rating>
+</game>
+<game ROM="Shadow of the Beast (1994)(Psygnosis)(Jp-En)">
+  <title>Shadow of the Beast</title>
+  <year>1994</year>
+  <genre>action</genre>
+  <developer />
+  <publisher>Psygnosis</publisher>
+  <rating>Other - NR (Not Rated)</rating>
+</game>
+<game ROM="Sherlock Holmes no Tantei Kouza (1991)(Fujitsu)(Jp-En)">
+  <title>Sherlock Holmes no Tantei Kouza</title>
+  <year>1991</year>
+  <genre>Adventure</genre>
+  <developer />
+  <publisher>Fujitsu</publisher>
+  <rating>Other - NR (Not Rated)</rating>
+</game>
+<game ROM="Sim City (1990)(Maxis)(Jp-En)">
+  <title>Sim City</title>
+  <year>1990</year>
+  <genre>simulation</genre>
+  <developer />
+  <publisher>Maxis</publisher>
+  <rating>Other - NR (Not Rated)</rating>
+</game>
+<game ROM="Splatterhouse (1992)(Ving)(Jp-En)">
+  <title>Splatterhouse</title>
+  <year>1992</year>
+  <genre>action</genre>
+  <developer />
+  <publisher>Ving</publisher>
+  <rating>Other - NR (Not Rated)</rating>
+</game>
+<game ROM="Strike Commander Plus (1994)(Origin)(Jp-En)">
+  <title>Strike Commander Plus</title>
+  <year>1994</year>
+  <genre>simulation</genre>
+  <developer />
+  <publisher>Origin</publisher>
+  <rating>Other - NR (Not Rated)</rating>
+</game>
+<game ROM="Super Shooting Towns (199x)(-)(Jp-En)">
+  <title>Super Shooting Towns</title>
+  <year>199x</year>
+  <genre>shoot-em up</genre>
+  <developer />
+  <publisher>Amorphous</publisher>
+  <rating>Other - NR (Not Rated)</rating>
+</game>
+<game ROM="Super Street Fighter II (1993)(Capcom)(Jp-En)">
+  <title>Super Street Fighter II</title>
+  <year>1993</year>
+  <genre>fighter</genre>
+  <developer />
+  <publisher>Capcom</publisher>
+  <rating>Other - NR (Not Rated)</rating>
+</game>
+<game ROM="Syndicate (1994)(Bullfrog)(US)">
+  <title>Syndicate</title>
+  <year>1994</year>
+  <genre>simulation</genre>
+  <developer />
+  <publisher>Bullfrog</publisher>
+  <rating>Other - NR (Not Rated)</rating>
+</game>
+<game ROM="Tatsujin Ou (aka Truxton II) (1993)(Ving)(Jp-En)">
+  <title>Tatsujin Ou</title>
+  <year>1993</year>
+  <genre>shoot-em up</genre>
+  <developer />
+  <publisher>Ving</publisher>
+  <rating>Other - NR (Not Rated)</rating>
+</game>
+<game ROM="Turbo Outrun (1988)(Sega)(Jp)">
+  <title>Turbo Outrun</title>
+  <year>1988</year>
+  <genre>driving</genre>
+  <developer />
+  <publisher>Sega</publisher>
+  <rating>Other - NR (Not Rated)</rating>
+</game>
+<game ROM="Ultima Trilogy 1-3 (1990)(Origins)(Jp-En)">
+  <title>Ultima Trilogy 1-3</title>
+  <year>1990</year>
+  <genre>rpg</genre>
+  <developer />
+  <publisher>Origins</publisher>
+  <rating>Other - NR (Not Rated)</rating>
+</game>
+<game ROM="Ultima V - Warriors of Destiny (1988)(Origins)(Jp-En)">
+  <title>Ultima V - Warriors of Destiny</title>
+  <year>1988</year>
+  <genre>rpg</genre>
+  <developer />
+  <publisher>Origins</publisher>
+  <rating>Other - NR (Not Rated)</rating>
+</game>
+<game ROM="Ultima VI - The False Prophet (1990)(Origins)(Jp-En)">
+  <title>Ultima VI - The False Prophet</title>
+  <year>1990</year>
+  <genre>rpg</genre>
+  <developer />
+  <publisher>Origins</publisher>
+  <rating>Other - NR (Not Rated)</rating>
+</game>
+<game ROM="Viewpoint (1993)(Ving)(Jp-En)[mp3 source]">
+  <title>Viewpoint</title>
+  <year>1993</year>
+  <genre>shoot-em up</genre>
+  <developer />
+  <publisher>Ving</publisher>
+  <rating>Other - NR (Not Rated)</rating>
+</game>
+<game ROM="Volfied (1991)(Ving)(Jp-En)">
+  <title>Volfied</title>
+  <year>1991</year>
+  <genre>puzzle</genre>
+  <developer />
+  <publisher>Ving</publisher>
+  <rating>Other - NR (Not Rated)</rating>
+</game>
+<game ROM="Where in the World is Carmen Sandiego (1993)(Fujitsu)(Jp-En)">
+  <title>Where in the World is Carmen Sandiego</title>
+  <year>1993</year>
+  <genre>Adventure</genre>
+  <developer />
+  <publisher>Fujitsu</publisher>
+  <rating>Other - NR (Not Rated)</rating>
+</game>
+<game ROM="Wing Commander+Secret Missions (1990)(Origin)(Jp-En)">
+  <title>Wing Commander+Secret Missions</title>
+  <year>1990</year>
+  <genre>simulation</genre>
+  <developer />
+  <publisher>Origin</publisher>
+  <rating>Other - NR (Not Rated)</rating>
+</game>
+<game ROM="Zak McKracken and The Alien Mindbenders (1990)(Lucasarts)(Jp-En)">
+  <title>Zak McKracken and The Alien Mindbenders</title>
+  <year>1990</year>
+  <genre>adventure</genre>
+  <developer />
+  <publisher>Lucasarts</publisher>
+  <rating>Other - NR (Not Rated)</rating>
+</game>
+</menu>
