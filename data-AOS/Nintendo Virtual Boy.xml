@@ -1,0 +1,229 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<menu>
+<header>
+  <listname>Nintendo Virtual Boy</listname>
+  <lastlistupdate></lastlistupdate>
+  <listversion>V1</listversion>
+  <exporterversion>V1 GameDBInfo converter</exporterversion>
+</header>
+<game ROM="3-D Tetris (USA)">
+  <title>3-D Tetris</title>
+  <year>1996</year>
+  <genre>Puzzle</genre>
+  <developer>T&amp;E Soft</developer>
+  <publisher>Nintendo</publisher>
+  <rating>ESRB - E (Everyone)</rating>
+  <nplayers>1 Player</nplayers>
+  <score>2.9</score>
+  <plot>A 3D Tetris game with a supply of three modes: A. A three dimensional well appears, large enough to hold five layers of Tetris blocks. Every time you complete a layer with you falling blocks it will vanish and you will be rewarded by a hefty dose of points. If you ever stack over the five layers you will lose one of your layers, once all five are lost your game is over. B. In this mode you place blocks around the center of the well, any blocks placed in the center will vanish, unless the block completes a layer in which case it will vanish. C. In this mode a shape will be shown before the game begins. You will have to replicate this shape perfectly, even one block out of place and your game is over. Succeed and after a short animation a new shape will be given.</plot>
+</game>
+<game ROM="Galactic Pinball (Japan,USA)">
+  <title>Galactic Pinball</title>
+  <year>1995</year>
+  <genre>Pinball</genre>
+  <developer>Intelligent Systems</developer>
+  <publisher>Nintendo</publisher>
+  <rating>ESRB - E (Everyone)</rating>
+  <nplayers>1 Player</nplayers>
+  <score>3.5</score>
+  <plot>A 3D pinball game set in a space theme. There are 4 different space tables you can choose from plus a bonus game. Bounce the ball around to destroy alien ships to save the world.</plot>
+</game>
+<game ROM="Golf (USA)">
+  <title>Golf</title>
+  <year>1995</year>
+  <genre>Sports/Golf</genre>
+  <developer>T&amp;E Soft</developer>
+  <publisher>Nintendo</publisher>
+  <rating>ESRB - E (Everyone)</rating>
+  <nplayers>1 Player</nplayers>
+  <score>2.8</score>
+  <plot>Play one course of 18 holes in this 3D game of golf. Pick your club, factor in the wind and course conditions, swing away by watching the meter. Be careful of the hazardous of this course as it will challenge players of all handicaps.</plot>
+</game>
+<game ROM="Innsmouth no Yakata (Japan)">
+  <title>Innsmouth no Yakata</title>
+  <year>1995</year>
+  <genre>Action</genre>
+  <developer>Be Top</developer>
+  <publisher>I&apos;Max</publisher>
+  <rating>ESRB - E (Everyone)</rating>
+  <nplayers>1 Player</nplayers>
+  <score>1.5</score>
+  <plot>Insmouse no Yakata is an action game where the player must survive many mazes filled with mutated monsters. When starting a new game or loading a password the player starts with three hearts and six bullets for their revolver, but more health and ammunition can be found randomly in each maze. The goal of each maze is to first find a key and then locate the exit door while avoiding monsters when possible. Finishing a level quickly will put the player on the path of harder mazes as well as the best ending.</plot>
+</game>
+<game ROM="Jack Bros. (USA)">
+  <title>Jack Bros.</title>
+  <year>1995</year>
+  <genre>Action</genre>
+  <developer>Atlus</developer>
+  <publisher>Atlus</publisher>
+  <rating>ESRB - E (Everyone)</rating>
+  <nplayers>1 Player</nplayers>
+  <score>3.4</score>
+  <plot>Once a year, on Halloween, the portal between the World of Fairies and the human world is open, allowing the fairies to come and visit the children for one day. However, they must return home before the end of the day; otherwise they&apos;ll never be able to return to the World of Fairies again. It&apos;s up to you to get Jack back home before Halloween is over. You start the game by choosing one of the three Jack Bros: Jack Frost, Lantern or Ripper. You then must make your way through six levels consisting of sixty floors of play. The core gameplay is very much like Namco&apos;s coin-op classic, The Tower of Druaga. Within the time limit, you must locate all the keys on a floor, which opens up the exit and allows you to venture to a lower floor. In your way are both obstacles and enemies, which you must avoid or take out if you are to reach the exit. On the lowest floor of each level is a boss enemy whom you must defeat if you are to get Jack home in time. </plot>
+</game>
+<game ROM="Mario Clash (Japan,USA)">
+  <title>Mario Clash</title>
+  <year>1995</year>
+  <genre>Platform</genre>
+  <developer>Nintendo</developer>
+  <publisher>Nintendo</publisher>
+  <rating>ESRB - E (Everyone)</rating>
+  <nplayers>1 Player</nplayers>
+  <score>3.2</score>
+  <plot>This game is essentially a single-player sequel to Mario Bros. While the Super Mario Advance games would later contain a graphically-enhanced version of Mario Bros., Mario Clash contains many more additions and changes to gameplay. As before, the goal is to clear a screen of enemies and move on to the next level. However, rather than doing this by flipping an enemy upside-down from underneath and kicking them away, you throw shells at them. Also, taking advantage of Virtual Boy&apos;s added depth, there is a front area and a back area which can be traveled to and from using pipes. Shells can also be thrown at enemies on the other depth area.</plot>
+</game>
+<game ROM="Mario&apos;s Tennis (Japan,USA)">
+  <title>Mario&apos;s Tennis</title>
+  <year>1995</year>
+  <genre>Sports/Tennis</genre>
+  <developer>Nintendo</developer>
+  <publisher>Nintendo</publisher>
+  <rating>ESRB - E (Everyone)</rating>
+  <nplayers>1 Player</nplayers>
+  <score>3.2</score>
+  <plot>Up for a game of tennis with Mario and his cohorts? You get to choose from seven different characters, (Mario, Luigi, Princess Toadstool, Yoshi, Toad, Koopa Troopa, and Donkey Kong Jr.) all with different ability levels, to play against each other in either singles or doubles matches. You can also play in an exhibition or tournament mode. In regular mode, you play against an opponent that you choose yourself for either one or three rounds. In tournament mode, you get to play against three others in a tournament to see who is the greatest at tennis in a given game.</plot>
+</game>
+<game ROM="Nester&apos;s Funky Bowling (USA)">
+  <title>Nester&apos;s Funky Bowling</title>
+  <year>1996</year>
+  <genre>Sports/Bowling</genre>
+  <developer>Nintendo</developer>
+  <publisher>Nintendo</publisher>
+  <rating>ESRB - E (Everyone)</rating>
+  <nplayers>1 Player</nplayers>
+  <score>2.9</score>
+  <plot>Nester, once the mascot of Nintendo Power, and his sister Hester have decided to star in a bowling game As with every other bowling game in existence, you roll a ball down an alley in an attempt to knock down 10 pins. To do this in this game, you have to try and match up two gauges: Spin and Power. The Spin gauge determines how far left or right the ball will go, and the Power gauge determines how hard your character throws the ball.</plot>
+</game>
+<game ROM="Panic Bomber (USA)">
+  <title>Panic Bomber</title>
+  <year>1995</year>
+  <genre>Puzzle</genre>
+  <developer>Hudson Soft</developer>
+  <publisher>Nintendo</publisher>
+  <rating>ESRB - E (Everyone)</rating>
+  <nplayers>1 Player</nplayers>
+  <score>3.3</score>
+  <plot>Panic Bomber is a Tetris-style game set in the Bomberman universe. The aim is to form a chain of 3 identical blocks to make them disappear. This causes bombs (not lit) to drop in your play field. These can only explode if you can place a lit bomb (which drops regularly from the top of the screen) close enough. Doing well at this will fill your opponent&apos;s field with rubbish and make his life that much harder.</plot>
+</game>
+<game ROM="Red Alarm (USA)">
+  <title>Red Alarm</title>
+  <year>1995</year>
+  <genre>Shooter</genre>
+  <developer>T&amp;E Soft</developer>
+  <publisher>Nintendo</publisher>
+  <rating>ESRB - E (Everyone)</rating>
+  <nplayers>1 Player</nplayers>
+  <score>3.3</score>
+  <plot>At the beginning of the 21st Century, a World War raged not stop for 70 devestating years. It wasn&apos;t until the creation of an advanced program called K.O.S (Killer Operating System) that the threat to the world was ended. The people rejoiced as the system eliminated the enemy and peace was restored. With a new government in place, the order was placed to destroy all weapons so as to protect the world from any future threat. KAOS, as it was later called, was also on the list of weapons to be destroyed. Unknown to the people, KAOS had a plan of its own. It had become a sentient being of its own, and it had one goal ... to survive. Unleashing it&apos;s weapons on the undefended world, true chaos erupted. It&apos;s up to you, in the last remaining fighter, to take to the sky and end the threat once and for all. This 3D fighter will have you flying through a host of evil and dangerous areas, where your only hope is to blast anything in sight.</plot>
+</game>
+<game ROM="SD Gundam - Dimension War (Japan)">
+  <title>SD Gundam - Dimension War</title>
+  <year>1995</year>
+  <genre>Strategy</genre>
+  <developer>Locomotive Corporation</developer>
+  <publisher>Bandai</publisher>
+  <rating>ESRB - E (Everyone)</rating>
+  <nplayers>1 Player</nplayers>
+  <score>1.6</score>
+  <plot>SD Gundam: Dimension War brings together Gundams from every Gundam series, from Mobile Suit Gundam to Gundam Wing, to fight an equally diverse range of foes. Each mission in the game, which takes place after a text story segment, begins with both armies arranged on a square grid. The player can move their Gundams in close to attack, try to hit a target from long range, or hide in an attempt to ambush the enemy on their turn. If two units close to melee range then the game switches into a third-person action mode, which both units flying towards and away from the camera. Each unit has unique ranged and close range attacks, and is controlled by the player while fighting another MS, or controlled by the CPU when attacking capital ships.</plot>
+</game>
+<game ROM="Space Invaders - Virtual Collection (Japan)">
+  <title>Space Invaders - Virtual Collection</title>
+  <year>1995</year>
+  <genre>Shooter</genre>
+  <developer>Taito Corporation</developer>
+  <publisher>Taito Corporation</publisher>
+  <rating>ESRB - E (Everyone)</rating>
+  <nplayers>1 Player</nplayers>
+  <score>2.5</score>
+  <plot>Space Invaders: Virtual Collection features both Space Invaders and Space Invaders Part II along with a few frills. Both games are available in their original format, although Part II&apos;s multiple colors are lost seeing as how the Virtual Boy can&apos;t display any colors other than red. The two games are also available in a &quot;3D&quot; mode where the camera is tilted down 45°, although player and enemy movement remains unchanged. Finally two challenge modes are available for both games: Time attack, where the player is tasked with clearing a screen as fast as possible on a single life, and Score attack, where the player aims for the highest score possible on only three lives, with an extra life awarded every 1,500 points.</plot>
+</game>
+<game ROM="Teleroboxer (Japan,USA)">
+  <title>Teleroboxer</title>
+  <year>1995</year>
+  <genre>Sports/Boxing</genre>
+  <developer>Nintendo</developer>
+  <publisher>Nintendo</publisher>
+  <rating>ESRB - E (Everyone)</rating>
+  <nplayers>1 Player</nplayers>
+  <score>3.3</score>
+  <plot>In the 22nd century a special form of robotics known as Telerobotics allows robots to mimic human body movements, has become prevalent. Dr. Edward Maki Jr., a prominent scientist in the field, has brought new life to the sport of boxing using this technology. Robots that are remotely controlled by human controllers now duke it out in the ring. Similar to the boxing game Punch Out!!, the player ducks to the left and right avoiding blows from the robotic competitor, getting jabs in when they&apos;re off guard. Each of the 8 or so opponents has a different weakness for the player to exploit. A special variety of &quot;Machine Gun&quot; charge attacks can be utilized to help the player make it up to the top of the Teleroboxer circuit. </plot>
+</game>
+<game ROM="V-Tetris (Japan)">
+  <title>V-Tetris</title>
+  <year>1995</year>
+  <genre>Puzzle</genre>
+  <developer>Bullet-Proof Software</developer>
+  <publisher>Bullet-Proof Software</publisher>
+  <rating>ESRB - E (Everyone)</rating>
+  <nplayers>1 Player</nplayers>
+  <score>3.8</score>
+  <plot>At its core, this is just another version of Tetris with its own set of graphics, sounds, and other quirks. Rotate blocks, and when you&apos;ve formed a complete line they disappear. Mode A is the familiar endless mode of play, where you&apos;ll keep going until you&apos;ve let the pile reach too high. Mode B is another common mode, where there are a set number of lines you must clear before victory is declared. Mode C is the most unique in this game. The game field is twice as wide, but you only use half of it at once; the other half is displayed further away in the background. You can scroll left or right at any time, creating new possibilities for creating lines and strategies.</plot>
+</game>
+<game ROM="Vertical Force (USA)">
+  <title>Vertical Force</title>
+  <year>1995</year>
+  <genre>Shooter</genre>
+  <developer>Hudson Soft</developer>
+  <publisher>Nintendo</publisher>
+  <rating>ESRB - E (Everyone)</rating>
+  <nplayers>1 Player</nplayers>
+  <score>3.4</score>
+  <plot>This is a Gradius style top down shooter with the standard power-ups of Laser, Wide Shot, and Shield. Each power-up can be enhanced up to three levels. You can also pick up AI Drones that can be powered up as well. You can use up to four drones or they can be placed into reserve. Three types of drones are available. Laser, Wide Shot and Repair. Each can be powered up to 4 levels. Repair drones carry out repairs that restore your damage meter when they are not fighting. The 3D component of this game has you switching between high-altitude and low-altitude to face the enemies.</plot>
+</game>
+<game ROM="Virtual Bowling (Japan)">
+  <title>Virtual Bowling</title>
+  <year>1995</year>
+  <genre>Sports/Bowling</genre>
+  <developer>Athena</developer>
+  <publisher>Athena</publisher>
+  <rating>ESRB - E (Everyone)</rating>
+  <nplayers>1 Player</nplayers>
+  <score>3.0</score>
+  <plot>Virtual Bowling is a, of course, bowling game not too dissimilar from the only other bowling game on the Virtual Boy: Nester&apos;s Funky Bowling. The game includes Standard Mode (10 frames of 10-pin bowling), Training Mode (The player can place pins where they want before taking a shot), and Tournament Mode (Four games of 10 frames each in which the player can move on only if they score higher than their competitors). Before a game the player can choose a name and make adjustments to the ball such as size or amount of wax applied. The player then chooses where to toss the ball, and sets the spin and strength with a sliding gauge.</plot>
+</game>
+<game ROM="Virtual Boy Wario Land (Japan,USA)">
+  <title>Virtual Boy Wario Land</title>
+  <year>1995</year>
+  <genre>Platform</genre>
+  <developer>Nintendo</developer>
+  <publisher>Nintendo</publisher>
+  <rating>ESRB - E (Everyone)</rating>
+  <nplayers>1 Player</nplayers>
+  <score>3.9</score>
+  <plot>On a vacation in the Awazon river, Wario stumbles across a hidden cave filled with treasure. Of course, being Wario, he wants it all to himself. But the treasure is guarded and soon he finds himself deep within the Earth as the floor crumbles underneath his feet. Now Wario must find his way back to the surface, all the while collecting the treasure he believes rightly belongs to him. This 3D style platform game, following the tradition of the Mario and Wario platform games of the Game Boy, will have you using Wario&apos;s unique abilities (butt stomping for one) to crash his way through the earth to the surface. His other abilities depend upon the hard hat he wears, and different ones are available that can come as an advantage.</plot>
+</game>
+<game ROM="Virtual Lab (Japan)">
+  <title>Virtual Lab</title>
+  <year>1995</year>
+  <genre>Puzzle</genre>
+  <developer>J-Wing</developer>
+  <publisher>Nintendo</publisher>
+  <rating>ESRB - E (Everyone)</rating>
+  <nplayers>1 Player</nplayers>
+  <score>1.8</score>
+  <plot>Virtual Lab combines the falling blocks of Tetris with the linking pipes of Pipe Dream. After selecting the game speed a game field is generated with randomly placed and shaped worms. More randomly shaped worms drop from the top of the screen, and the goal is to link them together so that all open orifices are linked together or shut. If worms get linked together in such a way as to make it impossibly to close then off then a fairy will cut away all worms on the bottom of the screen. The game is over if any stack of worms reaches the top of the screen.</plot>
+</game>
+<game ROM="Virtual League Baseball (USA)">
+  <title>Virtual League Baseball</title>
+  <year>1995</year>
+  <genre>Sports/Baseball</genre>
+  <developer>Kemco</developer>
+  <publisher>Kemco</publisher>
+  <rating>ESRB - E (Everyone)</rating>
+  <nplayers>1 Player</nplayers>
+  <score>2.5</score>
+  <plot>Virtual Boy&apos;s take on baseball, this one features four different leagues and a plethora of teams to choose from: Pan-Am League •USA •Canada •Cuba •Dominican •Chile •Argentina •Pan-Am All-Star Team Asian League •Japan •Taiwan •India •Saudi Arabia •Singapore •Australia •Asian League All-Star Team European League •France •United Kingdom •Germany •Russia •Italy •Switzerland •European League All-Star Team Special League •Miracle Team •Galaxy Team Gameplay for batting consists of the left control pad to position the batter in the batter&apos;s box, &quot;A&quot; to swing the bat and the &quot;R or L&quot; Shoulder buttons to bunt. They can also have field runners steal base when at bat by choosing the base they want stolen and press the &quot;A&quot; button. When field the player uses the left D-Pad to position their player under the shadow of the ball, and using the D-Pad to choose which base they want to choose and pressing &quot;A&quot; to throw. They can also dive for the ball using the &quot;A&quot; button. Pitching has the player use the D-Pad to position their player and pressing &quot;A&quot; to bring up a pitching meter, pressing the &quot;A&quot; button again to release the ball. The higher the meter is, the faster the ball will travel. There are only two pitches, Fastball which is the &quot;A&quot; button and Forkball which is the &quot;B&quot; button. Pressing &quot;R or L&quot; shoulder buttons and pressing the desired direction on the D-pad will thrown the ball to that designated to base in an attempt to pick off a runner. There are three modes to choose from: 1P vs. CPU which is a standard exhibition game, All Star where the player chooses from one of three All-Star teams from the game to play against another and Pennant Race where the player chooses a league and a team, playing against every team in the league. If a player wins their league, they can play against the champions of the other leagues as well. Progress can be saved through a password feature.</plot>
+</game>
+<game ROM="Waterworld (USA)">
+  <title>Waterworld</title>
+  <year>1995</year>
+  <genre>Shooter</genre>
+  <developer>Ocean Software Ltd.</developer>
+  <publisher>Ocean Software Ltd.</publisher>
+  <rating>ESRB - E (Everyone)</rating>
+  <nplayers>1 Player</nplayers>
+  <score>1.6</score>
+  <plot>Waterworld, based on the 1995 movie of the same name, has you assuming the role of Mariner and tasks you with the mission of protecting the Atollers from the vicious, pillaging Smokers. The underlying concept of the game borrows heavily from Williams&apos; coin-op classic, Defender. You must destroy all the enemies in the area, while preventing them from capturing the Atollers. If an Atoller is captured, you can still rescue it by destroying the Smoker before it leaves the playing area. Once all the enemies are gone, you&apos;ll be given a bonus based on how many Atollers you have remaining, and then move on to the next level. And, like old coin-ops, the game ends when you run out of lives.</plot>
+</game>
+</menu>

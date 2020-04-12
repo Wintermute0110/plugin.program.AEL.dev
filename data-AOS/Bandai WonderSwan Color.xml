@@ -1,0 +1,737 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<menu>
+<header>
+  <listname>Bandai WonderSwan Color</listname>
+  <lastlistupdate></lastlistupdate>
+  <listversion>V1</listversion>
+  <exporterversion>V1 GameDBInfo converter</exporterversion>
+</header>
+<game ROM="Alchemist Marie &amp; Elie - Futari no Atelier (Japan)">
+  <title>Alchemist Marie &amp; Elie - Futari no Atelier (Japan)</title>
+  <year>2001</year>
+  <genre>Role-Playing</genre>
+  <developer />
+  <publisher>Gust Corporation</publisher>
+  <rating>Other - NR (Not Rated)</rating>
+</game>
+<game ROM="Another Heaven - Memory of those Days (Japan)">
+  <title>Another Heaven - Memory of those Days (Japan)</title>
+  <year>2000</year>
+  <genre>Adventure</genre>
+  <developer />
+  <publisher>Omega Mikotto</publisher>
+  <rating>Other - NR (Not Rated)</rating>
+</game>
+<game ROM="Arc the Lad - Kishin Fukkatsu (Japan)">
+  <title>Arc the Lad - Kishin Fukkatsu (Japan)</title>
+  <year>2002</year>
+  <genre>Role-Playing</genre>
+  <developer />
+  <publisher>Bandai</publisher>
+  <rating>Other - NR (Not Rated)</rating>
+</game>
+<game ROM="Battle Spirit - Digimon Frontier (Japan)">
+  <title>Battle Spirit - Digimon Frontier (Japan)</title>
+  <year>2002</year>
+  <genre>Fighter</genre>
+  <developer />
+  <publisher>Bandai</publisher>
+  <rating>Other - NR (Not Rated)</rating>
+</game>
+<game ROM="Blue Wing Blitz (Japan)">
+  <title>Blue Wing Blitz (Japan)</title>
+  <year>2001</year>
+  <genre>Strategy</genre>
+  <developer />
+  <publisher>Square</publisher>
+  <rating>Other - NR (Not Rated)</rating>
+</game>
+<game ROM="Dark Eyes - Battle Gate (Japan)">
+  <title>Dark Eyes - Battle Gate (Japan)</title>
+  <year>2001</year>
+  <genre>Role-Playing</genre>
+  <developer />
+  <publisher>Bandai</publisher>
+  <rating>Other - NR (Not Rated)</rating>
+</game>
+<game ROM="Dicing Knight. (Japan) (Translated En)">
+  <title>Dicing Knight. (Japan) (Translated En)</title>
+  <year>2004</year>
+  <genre>Role-Playing</genre>
+  <developer />
+  <publisher>Qute</publisher>
+  <rating>Other - NR (Not Rated)</rating>
+</game>
+<game ROM="Digimon - Anode Tamer &amp; Cathode Tamer (Asia)">
+  <title>Digimon - Anode Tamer &amp; Cathode Tamer (Asia)</title>
+  <year>2001</year>
+  <genre>Role-Playing</genre>
+  <developer />
+  <publisher>Banda1</publisher>
+  <rating>Other - NR (Not Rated)</rating>
+</game>
+<game ROM="Digimon Adventure 02 - D1 Tamers (Japan)">
+  <title>Digimon Adventure 02 - D1 Tamers (Japan)</title>
+  <year>2000</year>
+  <genre>Role-Playing</genre>
+  <developer />
+  <publisher>Bandai</publisher>
+  <rating>Other - NR (Not Rated)</rating>
+</game>
+<game ROM="Digimon Tamers - Battle Spirit (Japan)">
+  <title>Digimon Tamers - Battle Spirit (Japan)</title>
+  <year>2001</year>
+  <genre>Fighter</genre>
+  <developer />
+  <publisher>Bandai</publisher>
+  <rating>Other - NR (Not Rated)</rating>
+</game>
+<game ROM="Digimon Tamers - Battle Spirit Ver. 1.5 (Japan)">
+  <title>Digimon Tamers - Battle Spirit Ver. 1.5 (Japan)</title>
+  <year>2002</year>
+  <genre>Fighter</genre>
+  <developer />
+  <publisher>Bandai</publisher>
+  <rating>Other - NR (Not Rated)</rating>
+</game>
+<game ROM="Digimon Tamers - Brave Tamer (Japan)">
+  <title>Digimon Tamers - Brave Tamer (Japan)</title>
+  <year>2001</year>
+  <genre>Role-Playing</genre>
+  <developer />
+  <publisher>Bandai</publisher>
+  <rating>Other - NR (Not Rated)</rating>
+</game>
+<game ROM="Digimon Tamers - Digimon Medley (Japan)">
+  <title>Digimon Tamers - Digimon Medley (Japan)</title>
+  <year>2001</year>
+  <genre>Role-Playing</genre>
+  <developer />
+  <publisher>Bandai</publisher>
+  <rating>Other - NR (Not Rated)</rating>
+</game>
+<game ROM="Digital Monster - D-Project (Japan)">
+  <title>Digital Monster - D-Project (Japan)</title>
+  <year>2002</year>
+  <genre>Role-Playing</genre>
+  <developer />
+  <publisher>Bandai</publisher>
+  <rating>Other - NR (Not Rated)</rating>
+</game>
+<game ROM="Digital Monster Card Game - Ver. WonderSwan Color (Japan)">
+  <title>Digital Monster Card Game - Ver. WonderSwan Color (Japan)</title>
+  <year>2002</year>
+  <genre>Card Battle</genre>
+  <developer />
+  <publisher>Bandai</publisher>
+  <rating>Other - NR (Not Rated)</rating>
+</game>
+<game ROM="Dokodemo Hamster 3 - Odekake Saffron (Japan)">
+  <title>Dokodemo Hamster 3 - Odekake Saffron (Japan)</title>
+  <year>2000</year>
+  <genre>Simulation</genre>
+  <developer />
+  <publisher>Bandai</publisher>
+  <rating>Other - NR (Not Rated)</rating>
+</game>
+<game ROM="Dragon Ball (Japan)">
+  <title>Dragon Ball (Japan)</title>
+  <year>2003</year>
+  <genre>Role-Playing</genre>
+  <developer />
+  <publisher>Bandai</publisher>
+  <rating>Other - NR (Not Rated)</rating>
+</game>
+<game ROM="Final Fantasy (Japan)">
+  <title>Final Fantasy (Japan)</title>
+  <year>2000</year>
+  <genre>Role-Playing</genre>
+  <developer />
+  <publisher>Square</publisher>
+  <rating>Other - NR (Not Rated)</rating>
+</game>
+<game ROM="Final Fantasy II (Japan)">
+  <title>Final Fantasy II (Japan)</title>
+  <year>2001</year>
+  <genre>Role-Playing</genre>
+  <developer />
+  <publisher>Square</publisher>
+  <rating>Other - NR (Not Rated)</rating>
+</game>
+<game ROM="Final Fantasy IV (Japan)">
+  <title>Final Fantasy IV (Japan)</title>
+  <year>2002</year>
+  <genre>Role-Playing</genre>
+  <developer />
+  <publisher>Square</publisher>
+  <rating>Other - NR (Not Rated)</rating>
+</game>
+<game ROM="Final Lap Special - GT &amp; Formula Machine (Japan)">
+  <title>Final Lap Special - GT &amp; Formula Machine (Japan)</title>
+  <year>2001</year>
+  <genre>Driving</genre>
+  <developer />
+  <publisher>Bandai</publisher>
+  <rating>Other - NR (Not Rated)</rating>
+</game>
+<game ROM="Flash Koibito-kun (Japan)">
+  <title>Flash Koibito-kun (Japan)</title>
+  <year>2000</year>
+  <genre>Puzzle</genre>
+  <developer />
+  <publisher>Koubunsha</publisher>
+  <rating>Other - NR (Not Rated)</rating>
+</game>
+<game ROM="From TV Animation One Piece - Chopper no Daibouken (Japan)">
+  <title>From TV Animation One Piece - Chopper no Daibouken (Japan)</title>
+  <year>2003</year>
+  <genre>Role-Playing</genre>
+  <developer />
+  <publisher>Bandai</publisher>
+  <rating>Other - NR (Not Rated)</rating>
+</game>
+<game ROM="From TV Animation One Piece - Grand Battle Swan Colosseum (Japan)">
+  <title>From TV Animation One Piece - Grand Battle Swan Colosseum (Japan)</title>
+  <year>2002</year>
+  <genre>Fighter</genre>
+  <developer />
+  <publisher>Bandai</publisher>
+  <rating>Other - NR (Not Rated)</rating>
+</game>
+<game ROM="From TV Animation One Piece - Niji no Shima Densetsu (Japan)">
+  <title>From TV Animation One Piece - Niji no Shima Densetsu (Japan)</title>
+  <year>2001</year>
+  <genre>Action</genre>
+  <developer />
+  <publisher>Bandai</publisher>
+  <rating>Other - NR (Not Rated)</rating>
+</game>
+<game ROM="From TV Animation One Piece - Treasure Wars (Japan)">
+  <title>From TV Animation One Piece - Treasure Wars (Japan)</title>
+  <year>2002</year>
+  <genre>Board Games</genre>
+  <developer />
+  <publisher>Bandai</publisher>
+  <rating>Other - NR (Not Rated)</rating>
+</game>
+<game ROM="From TV Animation One Piece - Treasure Wars 2 - Buggy Land e Youkoso (Japan)">
+  <title>From TV Animation One Piece - Treasure Wars 2 - Buggy Land e Youkoso (Japan)</title>
+  <year>2002</year>
+  <genre>Board Games</genre>
+  <developer />
+  <publisher>Bandai</publisher>
+  <rating>Other - NR (Not Rated)</rating>
+</game>
+<game ROM="Front Mission (Japan)">
+  <title>Front Mission (Japan)</title>
+  <year>2002</year>
+  <genre>Role-Playing</genre>
+  <developer />
+  <publisher>Square</publisher>
+  <rating>Other - NR (Not Rated)</rating>
+</game>
+<game ROM="Gekitou! Crash Gear Turbo - Gear Champion League (Japan)">
+  <title>Gekitou! Crash Gear Turbo - Gear Champion League (Japan)</title>
+  <year>2002</year>
+  <genre>Action</genre>
+  <developer />
+  <publisher>Bandai</publisher>
+  <rating>Other - NR (Not Rated)</rating>
+</game>
+<game ROM="Gensou Maden Saiyuuki Retribution - Hi no Ataru Basho de (Japan)">
+  <title>Gensou Maden Saiyuuki Retribution - Hi no Ataru Basho de (Japan)</title>
+  <year>2001</year>
+  <genre>Role-Playing</genre>
+  <developer />
+  <publisher>Mubik</publisher>
+  <rating>Other - NR (Not Rated)</rating>
+</game>
+<game ROM="Golden Axe (Japan)">
+  <title>Golden Axe (Japan)</title>
+  <year>2002</year>
+  <genre>Beat-&apos;Em-Up</genre>
+  <developer />
+  <publisher>Bandai</publisher>
+  <rating>Other - NR (Not Rated)</rating>
+</game>
+<game ROM="Gransta Chronicle (Japan)">
+  <title>Gransta Chronicle (Japan)</title>
+  <year>2002</year>
+  <genre>Role-Playing</genre>
+  <developer />
+  <publisher>Omega Micott</publisher>
+  <rating>Other - NR (Not Rated)</rating>
+</game>
+<game ROM="Guilty Gear Petit (Japan)">
+  <title>Guilty Gear Petit (Japan)</title>
+  <year>2001</year>
+  <genre>Fighter</genre>
+  <developer />
+  <publisher>Sammy</publisher>
+  <rating>Other - NR (Not Rated)</rating>
+</game>
+<game ROM="Guilty Gear Petit 2 (Japan)">
+  <title>Guilty Gear Petit 2 (Japan)</title>
+  <year>2001</year>
+  <genre>Fighter</genre>
+  <developer />
+  <publisher>Sammy</publisher>
+  <rating>Other - NR (Not Rated)</rating>
+</game>
+<game ROM="GunPey EX (Japan)">
+  <title>GunPey EX (Japan)</title>
+  <year>2000</year>
+  <genre>Puzzle</genre>
+  <developer />
+  <publisher>Bandai</publisher>
+  <rating>Other - NR (Not Rated)</rating>
+</game>
+<game ROM="Hanjuku Hero - Ah, Sekai yo Hanjuku Nare...!! (Japan)">
+  <title>Hanjuku Hero - Ah, Sekai yo Hanjuku Nare...!! (Japan)</title>
+  <year>2002</year>
+  <genre>Strategy</genre>
+  <developer />
+  <publisher>Square</publisher>
+  <rating>Other - NR (Not Rated)</rating>
+</game>
+<game ROM="Hataraku Chocobo (Japan)">
+  <title>Hataraku Chocobo (Japan)</title>
+  <year>2000</year>
+  <genre>Simulation</genre>
+  <developer />
+  <publisher>Square</publisher>
+  <rating>Other - NR (Not Rated)</rating>
+</game>
+<game ROM="Hunter X Hunter - Greed Island (Japan)">
+  <title>Hunter X Hunter - Greed Island (Japan)</title>
+  <year>2003</year>
+  <genre>Role-Playing</genre>
+  <developer />
+  <publisher>Bandai</publisher>
+  <rating>Other - NR (Not Rated)</rating>
+</game>
+<game ROM="Hunter X Hunter - Michibikareshi Mono (Japan)">
+  <title>Hunter X Hunter - Michibikareshi Mono (Japan)</title>
+  <year>2001</year>
+  <genre>Role-Playing</genre>
+  <developer />
+  <publisher>Bandai</publisher>
+  <rating>Other - NR (Not Rated)</rating>
+</game>
+<game ROM="Hunter X Hunter - Sorezore no Ketsui (Japan)">
+  <title>Hunter X Hunter - Sorezore no Ketsui (Japan)</title>
+  <year>2001</year>
+  <genre>Role-Playing</genre>
+  <developer />
+  <publisher>Bandai</publisher>
+  <rating>Other - NR (Not Rated)</rating>
+</game>
+<game ROM="Inuyasha - Fuuun Emaki (Japan)">
+  <title>Inuyasha - Fuuun Emaki (Japan)</title>
+  <year>2002</year>
+  <genre>Adventure</genre>
+  <developer />
+  <publisher>Bandai</publisher>
+  <rating>Other - NR (Not Rated)</rating>
+</game>
+<game ROM="Inuyasha - Kagome no Sengoku Nikki (Japan)">
+  <title>Inuyasha - Kagome no Sengoku Nikki (Japan)</title>
+  <year>2001</year>
+  <genre>Adventure</genre>
+  <developer />
+  <publisher>Bandai</publisher>
+  <rating>Other - NR (Not Rated)</rating>
+</game>
+<game ROM="Inuyasha - Kagome no Yume Nikki (Japan)">
+  <title>Inuyasha - Kagome no Yume Nikki (Japan)</title>
+  <year>2002</year>
+  <genre>Adventure</genre>
+  <developer />
+  <publisher>Bandai</publisher>
+  <rating>Other - NR (Not Rated)</rating>
+</game>
+<game ROM="Judgement Silversword - Rebirth Edition (Japan)">
+  <title>Judgement Silversword - Rebirth Edition (Japan)</title>
+  <year>2004</year>
+  <genre>Shoot-&apos;Em-Up</genre>
+  <developer />
+  <publisher>Qute</publisher>
+  <rating>Other - NR (Not Rated)</rating>
+</game>
+<game ROM="Kidou Senshi Gundam - Giren no Yabou - Tokubetsu Hen - Aoki Hoshi no Hasha (Japan)">
+  <title>Kidou Senshi Gundam - Giren no Yabou - Tokubetsu Hen - Aoki Hoshi no Hasha (Japan)</title>
+  <year>2003</year>
+  <genre>Strategy</genre>
+  <developer />
+  <publisher>Bandai</publisher>
+  <rating>Other - NR (Not Rated)</rating>
+</game>
+<game ROM="Kidou Senshi Gundam Seed (Japan)">
+  <title>Kidou Senshi Gundam Seed (Japan)</title>
+  <year>2003</year>
+  <genre>Action</genre>
+  <developer />
+  <publisher>Bandai</publisher>
+  <rating>Other - NR (Not Rated)</rating>
+</game>
+<game ROM="Kidou Senshi Gundam Vol. 1 - Side 7 (Japan)">
+  <title>Kidou Senshi Gundam Vol. 1 - Side 7 (Japan)</title>
+  <year>2001</year>
+  <genre>Strategy</genre>
+  <developer />
+  <publisher>Bandai</publisher>
+  <rating>Other - NR (Not Rated)</rating>
+</game>
+<game ROM="Kidou Senshi Gundam Vol. 2 - Jaburo (Japan)">
+  <title>Kidou Senshi Gundam Vol. 2 - Jaburo (Japan)</title>
+  <year>2001</year>
+  <genre>Strategy</genre>
+  <developer />
+  <publisher>Bandai</publisher>
+  <rating>Other - NR (Not Rated)</rating>
+</game>
+<game ROM="Kidou Senshi Gundam Vol. 3 - A Baoa Qu (Japan)">
+  <title>Kidou Senshi Gundam Vol. 3 - A Baoa Qu (Japan)</title>
+  <year>2002</year>
+  <genre>Strategy</genre>
+  <developer />
+  <publisher>Bandai</publisher>
+  <rating>Other - NR (Not Rated)</rating>
+</game>
+<game ROM="Kinnikuman IIsei - Choujin Seisenshi (Japan)">
+  <title>Kinnikuman IIsei - Choujin Seisenshi (Japan)</title>
+  <year>2003</year>
+  <genre>Fighter</genre>
+  <developer />
+  <publisher>Bandai</publisher>
+  <rating>Other - NR (Not Rated)</rating>
+</game>
+<game ROM="Kinnikuman IIsei - Dream Tag Match (Japan)">
+  <title>Kinnikuman IIsei - Dream Tag Match (Japan)</title>
+  <year>2002</year>
+  <genre>Fighter</genre>
+  <developer />
+  <publisher>Bandai</publisher>
+  <rating>Other - NR (Not Rated)</rating>
+</game>
+<game ROM="Kurupara! (Japan)">
+  <title>Kurupara! (Japan)</title>
+  <year>2001</year>
+  <genre>Puzzle</genre>
+  <developer />
+  <publisher>Tom Create</publisher>
+  <rating>Other - NR (Not Rated)</rating>
+</game>
+<game ROM="Last Alive (Japan)">
+  <title>Last Alive (Japan)</title>
+  <year>2001</year>
+  <genre>Adventure</genre>
+  <developer />
+  <publisher>Bandai</publisher>
+  <rating>Other - NR (Not Rated)</rating>
+</game>
+<game ROM="Makai Toushi SaGa (Japan) (Translated En)">
+  <title>Makai Toushi SaGa (Japan) (Translated En)</title>
+  <year>2002</year>
+  <genre>Role-Playing</genre>
+  <developer />
+  <publisher>Square</publisher>
+  <rating>Other - NR (Not Rated)</rating>
+</game>
+<game ROM="Meitantei Conan - Yuugure no Koujo (Japan)">
+  <title>Meitantei Conan - Yuugure no Koujo (Japan)</title>
+  <year>2001</year>
+  <genre>Adventure</genre>
+  <developer />
+  <publisher>Bandai</publisher>
+  <rating>Other - NR (Not Rated)</rating>
+</game>
+<game ROM="Memories Off - Festa (Japan)">
+  <title>Memories Off - Festa (Japan)</title>
+  <year>2001</year>
+  <genre>Mahjong</genre>
+  <developer />
+  <publisher>Kid</publisher>
+  <rating>Other - NR (Not Rated)</rating>
+</game>
+<game ROM="Mikeneko Holmes - Ghost Panic (Japan)">
+  <title>Mikeneko Holmes - Ghost Panic (Japan)</title>
+  <year>2001</year>
+  <genre>Adventure</genre>
+  <developer />
+  <publisher>Kobunsha</publisher>
+  <rating>Other - NR (Not Rated)</rating>
+</game>
+<game ROM="Mr. Driller (Japan)">
+  <title>Mr. Driller (Japan)</title>
+  <year>2001</year>
+  <genre>Puzzle</genre>
+  <developer />
+  <publisher>Namco</publisher>
+  <rating>Other - NR (Not Rated)</rating>
+</game>
+<game ROM="Namco Super Wars (Japan)">
+  <title>Namco Super Wars (Japan)</title>
+  <year>2001</year>
+  <genre>Strategy</genre>
+  <developer />
+  <publisher>Namco</publisher>
+  <rating>Other - NR (Not Rated)</rating>
+</game>
+<game ROM="Naruto - Konoha Ninpouchou (Japan)">
+  <title>Naruto - Konoha Ninpouchou (Japan)</title>
+  <year>2003</year>
+  <genre>Adventure</genre>
+  <developer />
+  <publisher>Bandai</publisher>
+  <rating>Other - NR (Not Rated)</rating>
+</game>
+<game ROM="Pocket no Naka no Doraemon (Japan)">
+  <title>Pocket no Naka no Doraemon (Japan)</title>
+  <year>2001</year>
+  <genre>Adventure</genre>
+  <developer />
+  <publisher>Bandai</publisher>
+  <rating>Other - NR (Not Rated)</rating>
+</game>
+<game ROM="Raku Jongg (Japan)">
+  <title>Raku Jongg (Japan)</title>
+  <year>2001</year>
+  <genre>Mahjong</genre>
+  <developer />
+  <publisher>Bandai</publisher>
+  <rating>Other - NR (Not Rated)</rating>
+</game>
+<game ROM="Rhyme Rider Kerorican (Japan)">
+  <title>Rhyme Rider Kerorican (Japan)</title>
+  <year>2000</year>
+  <genre>Rhythm</genre>
+  <developer />
+  <publisher>Bandai</publisher>
+  <rating>Other - NR (Not Rated)</rating>
+</game>
+<game ROM="Riviera - Yakusoku no Chi Riviera (Japan)">
+  <title>Riviera - Yakusoku no Chi Riviera (Japan)</title>
+  <year>2002</year>
+  <genre>Role-Playing</genre>
+  <developer />
+  <publisher>Bandai</publisher>
+  <rating>Other - NR (Not Rated)</rating>
+</game>
+<game ROM="Rockman EXE - N1 Battle (Japan)">
+  <title>Rockman EXE - N1 Battle (Japan)</title>
+  <year>2003</year>
+  <genre>Simulation</genre>
+  <developer />
+  <publisher>Capcom</publisher>
+  <rating>Other - NR (Not Rated)</rating>
+</game>
+<game ROM="Rockman EXE WS (Japan) (Translated En)">
+  <title>Rockman EXE WS (Japan) (Translated En)</title>
+  <year>2003</year>
+  <genre>Platform</genre>
+  <developer />
+  <publisher>Bandai</publisher>
+  <rating>Other - NR (Not Rated)</rating>
+</game>
+<game ROM="Romancing SaGa (Japan)">
+  <title>Romancing SaGa (Japan)</title>
+  <year>2001</year>
+  <genre>Role-Playing</genre>
+  <developer />
+  <publisher>Square</publisher>
+  <rating>Other - NR (Not Rated)</rating>
+</game>
+<game ROM="RUN=DIM - Return to Earth (Japan)">
+  <title>RUN=DIM - Return to Earth (Japan)</title>
+  <year>2002</year>
+  <genre>Shooter</genre>
+  <developer />
+  <publisher>Digital Dream</publisher>
+  <rating>Other - NR (Not Rated)</rating>
+</game>
+<game ROM="Saint Seiya - Ougon Densetsuhen Perfect Edition (Japan)">
+  <title>Saint Seiya - Ougon Densetsuhen Perfect Edition (Japan)</title>
+  <year>2003</year>
+  <genre>Role-Playing</genre>
+  <developer />
+  <publisher>TOSE</publisher>
+  <rating>Other - NR (Not Rated)</rating>
+</game>
+<game ROM="SD Gundam - Operation U.C. (Japan)">
+  <title>SD Gundam - Operation U.C. (Japan)</title>
+  <year>2002</year>
+  <genre>Shoot-&apos;Em-Up</genre>
+  <developer />
+  <publisher>Bandai</publisher>
+  <rating>Other - NR (Not Rated)</rating>
+</game>
+<game ROM="SD Gundam Eiyuuden - Kishi Densetsu (Japan)">
+  <title>SD Gundam Eiyuuden - Kishi Densetsu (Japan)</title>
+  <year>2001</year>
+  <genre>Role-Playing</genre>
+  <developer />
+  <publisher>Bandai</publisher>
+  <rating>Other - NR (Not Rated)</rating>
+</game>
+<game ROM="SD Gundam Eiyuuden - Musha Densetsu (Japan)">
+  <title>SD Gundam Eiyuuden - Musha Densetsu (Japan)</title>
+  <year>2001</year>
+  <genre>Role-Playing</genre>
+  <developer />
+  <publisher>Bec</publisher>
+  <rating>Other - NR (Not Rated)</rating>
+</game>
+<game ROM="SD Gundam G-Generation - Gather Beat 2 (Japan)">
+  <title>SD Gundam G-Generation - Gather Beat 2 (Japan)</title>
+  <year>2001</year>
+  <genre>Strategy</genre>
+  <developer />
+  <publisher>Vanguard Works</publisher>
+  <rating>Other - NR (Not Rated)</rating>
+</game>
+<game ROM="SD Gundam G-Generation - Mono-Eye Gundams (Japan)">
+  <title>SD Gundam G-Generation - Mono-Eye Gundams (Japan)</title>
+  <year>2001</year>
+  <genre>Strategy</genre>
+  <developer />
+  <publisher>Vanguard Works</publisher>
+  <rating>Other - NR (Not Rated)</rating>
+</game>
+<game ROM="Senkaiden Ni - TV Animation Senkaiden Houshin Engi Yori (Japan)">
+  <title>Senkaiden Ni - TV Animation Senkaiden Houshin Engi Yori (Japan)</title>
+  <year>2000</year>
+  <genre>Role-Playing</genre>
+  <developer />
+  <publisher>Graphic Research</publisher>
+  <rating>Other - NR (Not Rated)</rating>
+</game>
+<game ROM="Shaman King - Asu e no Ishi (Japan)">
+  <title>Shaman King - Asu e no Ishi (Japan)</title>
+  <year>2002</year>
+  <genre>Action</genre>
+  <developer />
+  <publisher>Graphic Research</publisher>
+  <rating>Other - NR (Not Rated)</rating>
+</game>
+<game ROM="Soroban Gu (Japan)">
+  <title>Soroban Gu (Japan)</title>
+  <year>2000</year>
+  <genre>Puzzle</genre>
+  <developer />
+  <publisher>Mechanic Arms</publisher>
+  <rating>Other - NR (Not Rated)</rating>
+</game>
+<game ROM="Star Hearts - Hoshi to Daichi no Shisha (Japan)">
+  <title>Star Hearts - Hoshi to Daichi no Shisha (Japan)</title>
+  <year>2001</year>
+  <genre>Role-Playing</genre>
+  <developer />
+  <publisher>Bandai</publisher>
+  <rating>Other - NR (Not Rated)</rating>
+</game>
+<game ROM="Super Robot Taisen Compact 3 (Japan)">
+  <title>Super Robot Taisen Compact 3 (Japan)</title>
+  <year>2003</year>
+  <genre>Strategy</genre>
+  <developer />
+  <publisher>Banpresto</publisher>
+  <rating>Other - NR (Not Rated)</rating>
+</game>
+<game ROM="Super Robot Taisen Compact for WonderSwan Color (Japan)">
+  <title>Super Robot Taisen Compact for WonderSwan Color (Japan)</title>
+  <year>2001</year>
+  <genre>Strategy</genre>
+  <developer />
+  <publisher>TOSE</publisher>
+  <rating>Other - NR (Not Rated)</rating>
+</game>
+<game ROM="Terrors 2 (Japan)">
+  <title>Terrors 2 (Japan)</title>
+  <year>2000</year>
+  <genre>Adventure</genre>
+  <developer />
+  <publisher>Megas</publisher>
+  <rating>Other - NR (Not Rated)</rating>
+</game>
+<game ROM="Tetris (Japan)">
+  <title>Tetris (Japan)</title>
+  <year>2002</year>
+  <genre>Puzzle</genre>
+  <developer />
+  <publisher>Vanguard</publisher>
+  <rating>Other - NR (Not Rated)</rating>
+</game>
+<game ROM="Tonpuusou (Japan)">
+  <title>Tonpuusou (Japan)</title>
+  <year>2001</year>
+  <genre>Board Games</genre>
+  <developer />
+  <publisher>Bandai</publisher>
+  <rating>Other - NR (Not Rated)</rating>
+</game>
+<game ROM="Uchuu Senkan Yamato (Japan)">
+  <title>Uchuu Senkan Yamato (Japan)</title>
+  <year>2001</year>
+  <genre>Strategy</genre>
+  <developer />
+  <publisher>Tom Create</publisher>
+  <rating>Other - NR (Not Rated)</rating>
+</game>
+<game ROM="Ultraman - Hikari no Kuni no Shisha (Japan)">
+  <title>Ultraman - Hikari no Kuni no Shisha (Japan)</title>
+  <year>2001</year>
+  <genre>Fighter</genre>
+  <developer />
+  <publisher>Tom Create</publisher>
+  <rating>Other - NR (Not Rated)</rating>
+</game>
+<game ROM="Wild Card (Japan)">
+  <title>Wild Card (Japan)</title>
+  <year>2001</year>
+  <genre>Role-Playing</genre>
+  <developer />
+  <publisher>SquareSoft</publisher>
+  <rating>Other - NR (Not Rated)</rating>
+</game>
+<game ROM="With You - Mitsumete Itai (Japan)">
+  <title>With You - Mitsumete Itai (Japan)</title>
+  <year>2001</year>
+  <genre>Adventure</genre>
+  <developer />
+  <publisher>Shall Luck Plus</publisher>
+  <rating>Other - NR (Not Rated)</rating>
+</game>
+<game ROM="Wizardry Scenario 1 - Proving Grounds of the Mad Overlord (Japan)">
+  <title>Wizardry Scenario 1 - Proving Grounds of the Mad Overlord (Japan)</title>
+  <year>2001</year>
+  <genre>Role-Playing</genre>
+  <developer />
+  <publisher>Sting</publisher>
+  <rating>Other - NR (Not Rated)</rating>
+</game>
+<game ROM="Wonder Classic (Japan)">
+  <title>Wonder Classic (Japan)</title>
+  <year>2001</year>
+  <genre>Sports/Golf</genre>
+  <developer />
+  <publisher>Yoshidayama Workshop</publisher>
+  <rating>Other - NR (Not Rated)</rating>
+</game>
+<game ROM="X - Card of Fate (Japan)">
+  <title>X - Card of Fate (Japan)</title>
+  <year>2002</year>
+  <genre>Strategy</genre>
+  <developer />
+  <publisher>Access</publisher>
+  <rating>Other - NR (Not Rated)</rating>
+</game>
+<game ROM="XI (Sai) Little (Japan)">
+  <title>XI (Sai) Little (Japan)</title>
+  <year>2001</year>
+  <genre>Puzzle</genre>
+  <developer />
+  <publisher>MBI</publisher>
+  <rating>Other - NR (Not Rated)</rating>
+</game>
+</menu>

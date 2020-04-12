@@ -1,0 +1,834 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<menu>
+<header>
+  <listname>Atari Lynx</listname>
+  <lastlistupdate></lastlistupdate>
+  <listversion>V1</listversion>
+  <exporterversion>V1 GameDBInfo converter</exporterversion>
+</header>
+<game ROM="A.P.B. - All Points Bulletin (USA, Europe)">
+  <title>A.P.B. - All Points Bulletin</title>
+  <year>1991</year>
+  <genre>Driving</genre>
+  <developer>Quicksilver Software</developer>
+  <publisher>Atari</publisher>
+  <rating>ESRB - RP (Rating Pending)</rating>
+  <nplayers>1 Player</nplayers>
+  <score>3.2</score>
+  <plot>You are police officer Bob, whose aim is to apprehend a certain quota of criminals (litterbugs, speeders and the like) each day. This is done by chasing them and sounding your siren at them - in some cases they will need ramming off the road. There are also hardened criminals to catch - if you can get one of these to confess, your day&apos;s work is considered done.&amp;#xA;The game&apos;s action is presented with an overhead view of your squad car. Car upgrades are available, to be brought from your reward money. You earn Demerits by crashing, wrongly arresting innocents, or failing to meet your quota. Too many demerits and it is game over.</plot>
+</game>
+<game ROM="Awesome Golf (USA, Europe)">
+  <title>Awesome Golf</title>
+  <year>1991</year>
+  <genre>Golf/Sports</genre>
+  <developer>Hand Made Software, Ltd.</developer>
+  <publisher>Atari</publisher>
+  <rating>ESRB - RP (Rating Pending)</rating>
+  <nplayers>1-4 Players</nplayers>
+  <score>4.1</score>
+  <plot>Awesome Golf is as the name suggests, a golf simulator. There are 3 courses to play one in the U.K one in the U.S and the third one in Japan. The gameplay involves you lining up your shot via an overhead view which when set up switches to a third person view. Whilst in this view you need to swing the club and stop it at the desired power and then stop it on the correct symbol to get the perfect hit. If you don&apos;t get it right you will either miss the ball or hit the earth. There are 14 clubs at your disposal, 8 irons, 3 woods 2 wedges and a putter which are selected by moving the hand cursor over you Golf bag and selecting the desired club.</plot>
+</game>
+<game ROM="Basketbrawl (USA, Europe)">
+  <title>Basketbrawl</title>
+  <year>1992</year>
+  <genre>Basketball/Sports</genre>
+  <developer>Atari</developer>
+  <publisher>Atari</publisher>
+  <rating>ESRB - RP (Rating Pending)</rating>
+  <nplayers>1-2 Players</nplayers>
+  <score>3.1</score>
+  <plot>In a desperate attempt to stop inner-city gang wars, the city leaders organized a basketball league. The league is scheduled to play on three courts: a street, a junkyard, and a rooftop. The mayor figured that a friendly game of hoops would be a much more peaceful way to settle disputes. He was wrong.&amp;#xA;You can choose 1-on-1 or 2-on-2 game modes. There are six characters to choose from (ten in Atari Lynx version); each with their own health, speed, and power attributes. Each player without the ball can jump to block a shot or punch there opponent to get the ball. There&apos;s also an option to perform a power throw on an opposing player. Players with the ball can shoot or pass. Power ups appear on the court at random instances. These power up one attribute for the player. For example, the lightning power up increases the player&apos;s speed.&amp;#xA;The referee does not call fouls, but does hurl knives at the players.</plot>
+</game>
+<game ROM="Batman Returns (USA, Europe)">
+  <title>Batman Returns</title>
+  <year>1992</year>
+  <genre>Action</genre>
+  <developer>Atari</developer>
+  <publisher>Atari</publisher>
+  <rating>ESRB - RP (Rating Pending)</rating>
+  <nplayers>1 Player</nplayers>
+  <score>2.2</score>
+  <plot>Atari themselves adapted the 1992 superhero sequel Batman Returns for their Lynx handheld as a side-scrolling beat&apos;em&apos;up.&amp;#xA;Batman must move through four levels on his quest to stop the Penguin and Catwoman. Enemies trying to stop him include circus clowns on the streets, policemen (whom Catwoman put on his trail) on the roofs of Gotham City, and penguin commandos in the sewers and the Penguin&apos;s lair.&amp;#xA;Batman can beat them up with his fists or destroy them using Batarangs and acid vials (which must be collected first). Several of the levels end in boss encounters with the two main villains, while in the last level, Batman must also save industrialist Max Shreck from the Penguin&apos;s wrath before finishing him off.</plot>
+</game>
+<game ROM="Battle Wheels (USA, Europe)">
+  <title>Battle Wheels</title>
+  <year>1992</year>
+  <genre>Driving</genre>
+  <developer>Beyond Games</developer>
+  <publisher>Beyond Games</publisher>
+  <rating>ESRB - RP (Rating Pending)</rating>
+  <nplayers>1-6 Players</nplayers>
+  <score>2.1</score>
+  <plot>The year is 2019, and the world is bored with conventional entertainment. Enter the world of BattleWheels, where contestants fight in post-apocalyptic deserts and dead cities in the most violent destruction derby ever. At your disposal are machine guns, flame throwers, missiles, mines, and even paint (to obstruct someone&apos;s view). And if you survive your car getting destroyed, you can hoof it and try to wreak as much carnage as possible before becoming roadkill. You can buy a pre-made car, or customize your own car with different levels of engine power, suspension, and armor.&amp;#xA;BattleWheels can be comlynxed up to 6 simultaneous players.</plot>
+</game>
+<game ROM="Battlezone 2000 (USA, Europe)">
+  <title>Battlezone 2000</title>
+  <year>1994</year>
+  <genre>Action</genre>
+  <developer>Atari</developer>
+  <publisher>Atari</publisher>
+  <rating>ESRB - RP (Rating Pending)</rating>
+  <nplayers>1-4 Players</nplayers>
+  <score>3.3</score>
+  <plot>In this game you play the role of a tank commander who is fighting in a future war in the 21st century. The game is an update on the classic arcade game Battlezone and stays true to the original in terms of gameplay. The gameplay involves you driving round a landscape destroying enemy tanks and U.F.O.s whilst trying not to run out of fuel and also not getting destroyed yourself though luckily there are fuel pick-ups and power-ups to collect. You can also use the credits earned for completing missions to upgrade your tank. There are also a few different tanks to choose from including the Rhino which is heavily armoured but runs out of fuel faster than the other tanks.</plot>
+</game>
+<game ROM="Bill &amp; Ted&apos;s Excellent Adventure (USA, Europe)">
+  <title>Bill &amp; Ted&apos;s Excellent Adventure</title>
+  <year>1989</year>
+  <genre>Adventure</genre>
+  <developer>Atari</developer>
+  <publisher>Atari</publisher>
+  <rating>ESRB - RP (Rating Pending)</rating>
+  <nplayers>1-2 Players</nplayers>
+  <score>2.5</score>
+  <plot>The Lynx title based on the Keanu Reeves/Alex Winter film franchise actually takes place after the second film, Bill and Ted&apos;s Bogus Journey. Out for revenge after being humiliated by the high-school duo, Death kidnaps their &quot;medieval babe&quot; girlfriends from the first film, and drags them throughout history. Luckily, the girls are able to leave behind pages of the band&apos;s latest song as a trail for Bill and Ted to follow.&amp;#xA;Playing as either Bill or Ted (with a friend able to take control of the other character over ComLynx), the player must search historical periods in an overhead perspective and collect enough musical notes to open travel to a new area. Along the way, they can encounter historical figures who will offer assistance in return for a favor. Bad guys do populate the levels, but can be pacified with a rippin&apos; guitar solo. If Bill or Ted are defeated, they simply reappear back at the last checkpoint.&amp;#xA;Other items can be found and collected in an inventory. The Lynx title makes use of the series&apos; interesting take on the time continuum, allowing the player to leave items for themselves in the past to collect and use in the future. Likewise, if the player happens upon a sudden fortuitous item that &quot;they&quot; left, they must remember to go and leave the item in the past themselves to avoid creating a time paradox. This quirky view of time forms the basis of many of the game&apos;s puzzles.&amp;#xA;A password system is constantly updated (viewable at the pause screen) to save the player&apos;s progress.</plot>
+</game>
+<game ROM="Block Out (USA, Europe)">
+  <title>Block Out</title>
+  <year>1991</year>
+  <genre>Puzzle</genre>
+  <developer>California Dreams</developer>
+  <publisher>Atari</publisher>
+  <rating>ESRB - RP (Rating Pending)</rating>
+  <nplayers>1 Player</nplayers>
+  <score>3.3</score>
+  <plot>Blockout is a Tetris clone with an added twist: it&apos;s in 3D. You can rotate the blocks in 3D in order to fit them into the pit they are being guided into. Advanced users can play this game with odd three-dimensional pieces, or change the size of the pit, for depth of between 6 and 18 piles, and width and length of between 3 and 7.</plot>
+</game>
+<game ROM="Blue Lightning (USA, Europe)">
+  <title>Blue Lightning</title>
+  <year>1989</year>
+  <genre>Flying</genre>
+  <developer>Epyx</developer>
+  <publisher>Atari</publisher>
+  <rating>ESRB - RP (Rating Pending)</rating>
+  <nplayers>1 Player</nplayers>
+  <score>3.5</score>
+  <plot>The insanely evil General Drako is spreading his own special blend of spite and chaos around the globe. You are a top fighter pilot for the UN&apos;s Blue Lightning squad. You have to travel from continent to continent, and end Drako&apos;s plans at each stop using your awesome flight skills.&amp;#xA;Blue Lightning is a 3D flight game featuring 7 real-life fighter jets. There are several types of missions, including dogfights, ground targets, and escorts. Your arsenal consists of various cannons, missiles, and special bombs. The game can be played either from a behind-the-plane perspective, or an in-cockpit perspective.</plot>
+</game>
+<game ROM="Bubble Trouble (USA, Europe)">
+  <title>Bubble Trouble</title>
+  <year>1991</year>
+  <genre>Platform</genre>
+  <developer>Telegames, Inc.</developer>
+  <publisher>Atari</publisher>
+  <rating>ESRB - RP (Rating Pending)</rating>
+  <nplayers>1 Player</nplayers>
+  <score>2.7</score>
+  <plot>You are Travis, a scientist doing experiments with dense matter for the creation of artificial black holes for interstellar travel. While testing a piece of equipment, you are transported into a bubble world. Fortunately, a friendly denizen decides to help you. You must locate the correct type of radioactive particles to move from world to world and finally home, before the hostile denizens of these worlds burst your bubble.&amp;#xA;You move your bubble by pushing in the desired direction. Be advised that you do not stop easily and can bounce out of control if you are not careful. Pushing the A button fires a bubble shot that will ricochet around. You can use this action to bounce shots at enemies that are around a corner. Pressing B drops a bubble bomb straight down. Pressing Option 1 switches options on the screen, including the suicidal &quot;Burst!!!&quot;, that are then activated by pressing Option 2. The one you will use most is &quot;Use scanner&quot;. This will bring up the scanner that looks like a radar screen and will show you the approximate location of your needed particles. Once you locate and gather all the particles needed in the level, you move on to the next level. After you finish five levels, you win the game.</plot>
+</game>
+<game ROM="California Games (USA, Europe)">
+  <title>California Games</title>
+  <year>1989</year>
+  <genre>Sports</genre>
+  <developer>Epyx</developer>
+  <publisher>Atari</publisher>
+  <rating>ESRB - RP (Rating Pending)</rating>
+  <nplayers>1-4 Players</nplayers>
+  <score>3.1</score>
+  <plot>California Games was the original &quot;Extreme Games&quot; - what today&apos;s generation might call &quot;X-Games in the sun&quot;. Players can select sponsors (absent in some versions) and compete in events such as skateboarding, footbag, surfing, roller skating, flying disc (frisbee) and BMX. The surfing event is ranked by judges, which give a score to help the players improve their routine.&amp;#xA;The Atari versions (2600 and Lynx) of the game omit the flying disc and roller skating events, while the Genesis version omits only the flying disc event.</plot>
+</game>
+<game ROM="Checkered Flag (USA, Europe)">
+  <title>Checkered Flag</title>
+  <year>1991</year>
+  <genre>Driving</genre>
+  <developer>Atari</developer>
+  <publisher>Atari</publisher>
+  <rating>ESRB - RP (Rating Pending)</rating>
+  <nplayers>1-6 Players</nplayers>
+  <score>4.0</score>
+  <plot>Checkered Flag for the Jaguar is a 3D F1-style racing game. The racing game staples are here: single race, practice, and tournament. You can choose to set up a variety of options for each race, also. You can choose various weather conditions. Or, you can set up your car to change it&apos;s handling characteristics. There are 10 different tracks on which to race, each with a different theme. Some take place on sunny beaches, others take place in the arctic.</plot>
+</game>
+<game ROM="Chip&apos;s Challenge (USA, Europe)">
+  <title>Chip&apos;s Challenge</title>
+  <year>1989</year>
+  <genre>Puzzle</genre>
+  <developer>Epyx</developer>
+  <publisher>Atari</publisher>
+  <rating>ESRB - RP (Rating Pending)</rating>
+  <nplayers>1 Player</nplayers>
+  <score>4.3</score>
+  <plot>Nerdy Chip desperately wants to join the &quot;Bit Busters&quot; computer club, led by Melinda the Mental Marvel. However, before she&apos;ll let him in, he must prove his intelligence by passing the initiation test. 149 increasingly difficult levels, including a few hidden ones, await Chip in this tile-based puzzle game. Use tools such as keys, and special shoes to bypass obstacles. Manipulate switches to and use dirt blocks to build bridges across waterways. Avoid enemy creatures, grab all the computer chips in the level, and hurry to the exit: On top of everything else, there&apos;s a time limit!</plot>
+</game>
+<game ROM="Crystal Mines II (USA, Europe)">
+  <title>Crystal Mines II</title>
+  <year>1990</year>
+  <genre>Strategy</genre>
+  <developer>Color Dreams</developer>
+  <publisher>Color Dreams</publisher>
+  <rating>ESRB - RP (Rating Pending)</rating>
+  <nplayers>1 Player</nplayers>
+  <score>3.5</score>
+  <plot>Crystal Mines II is an update of the gameplay in its predecessor; in a nutshell, overhead puzzle-solving best described as Chip&apos;s Challenge meets Boulder Dash, with a touch of real-time elements thrown in.&amp;#xA;In Crystal Mines II, you operate a robot going through the abandoned crystal mines, picking up crystals and avoiding the underground demons that inhabit the mine. Mine levels are completed when a crystal quota is reached, however the quota is usually not the entire level so bonus points can be obtained by finding additional crystals. Like Boulder Dash, gravity is a factor and affects any boulders, crystals, etc. so they can be used as weapons against demons. There are also deceptive elements, such as &amp;quot;Dormant&amp;quot; demons that look like boulders, that add to the challenge. Finally, the robot has weapons that can be used to eliminate certain obstacles.</plot>
+</game>
+<game ROM="Desert Strike - Return to the Gulf (USA, Europe)">
+  <title>Desert Strike - Return to the Gulf</title>
+  <year>1993</year>
+  <genre>Action</genre>
+  <developer>Teque London</developer>
+  <publisher>Telegames, Inc.</publisher>
+  <rating>ESRB - RP (Rating Pending)</rating>
+  <nplayers>1 Player</nplayers>
+  <score>4.0</score>
+  <plot>The first game in the Strike series. A year after the Gulf War, a self styled General named Kilbaba (Muababa in the GBA version) takes over an Arab Emirate and threatens to start WWIII against its enemy in the West, the U.S. The whole world holds their breath as the President chooses you to destroy Kilbaba and his terrorist army before he launches a nuclear attack on the world!&amp;#xA;You must fly an specially designed AH-64A Apache on a series of missions from rescuing MIAs, destroying power plants, to blowing apart SCUD missles! Take out his defenses while trying to find out Kilbaba&apos;s plans. Take on the Madman and forever rid this threat...in the desert!</plot>
+</game>
+<game ROM="Dinolympics (USA, Europe)">
+  <title>Dinolympics</title>
+  <year>1992</year>
+  <genre>Puzzle</genre>
+  <developer>Imagitec Design, Inc.</developer>
+  <publisher>Atari</publisher>
+  <rating>ESRB - RP (Rating Pending)</rating>
+  <nplayers>1 Player</nplayers>
+  <score>3.1</score>
+  <plot>Your job in this action puzzler is to help prehistoric man to evolve by helping them discover tools, the wheel, weapons, or even fire. Each level in the game will have a given task to help in this, and you are allotted a number of characters who must accomplish the task. The player can switch from person to person while moving the characters around each scrolling puzzle, and teamwork is essential to success.&amp;#xA;Tasks can include finding objects (like a spear) on the screen, or trying to reach a specific destination which may require the use of objects you have discovered so far. Each level has a time limit, when time runs out the level can be restarted.</plot>
+</game>
+<game ROM="Dirty Larry - Renegade Cop (USA, Europe)">
+  <title>Dirty Larry - Renegade Cop</title>
+  <year>1992</year>
+  <genre>Beat-&apos;Em-Up</genre>
+  <developer>Atari</developer>
+  <publisher>Atari</publisher>
+  <rating>ESRB - RP (Rating Pending)</rating>
+  <nplayers>1 Player</nplayers>
+  <score>1.9</score>
+  <plot>In this game you play the role of Dirty Larry, an obvious pastiche of the no nonsense cop Dirty Harry of the movie of the same name, played by Clint Eastwood. The game starts of with the police chief giving you a harsh talking. You are ordered to bring in Mr Snuff, a high ranking goon in the criminal gang run by the Kingpin. The gameplay offers side-scrolling gameplay through the various streets, beating up the numerous thugs that try to attack you. Luckily Larry is armed with his trusty .45, though ammo is limited so it is best to use your fists when possible. There are pick-ups to collect which will replenish some of you health or give you ammo for your gun. Sometimes, weapons such as hand grenades or a machine gun can be found as well. You only have one life and once you die you have to start from the beginning again.</plot>
+</game>
+<game ROM="Double Dragon (USA, Europe)">
+  <title>Double Dragon</title>
+  <year>1993</year>
+  <genre>Beat-&apos;Em-Up</genre>
+  <developer>Knight Technologies</developer>
+  <publisher>Telegames, Inc.</publisher>
+  <rating>ESRB - RP (Rating Pending)</rating>
+  <nplayers>1-2 Players</nplayers>
+  <score>2.5</score>
+  <plot>Set in a post-apocalyptic New York, Double Dragon is the story of Billy and Jimmy Lee, twin brothers trained in the fighting style of Sou-Setsu-Ken. Together, they manage a small martial arts training school, teaching their students in self-defense. One day, Billy&apos;s girlfriend, Marian, is kidnapped off the street by the &quot;Black Warriors&quot;, a savage street gang led by a man named Willy. The Black Warriors demand the Lee brothers disclose their martial arts secrets in exchange for Marian&apos;s freedom. The Lee brothers set out on a rescue mission to crush the Black Warriors and save Marian.&amp;#xA;Using whatever techniques they have at their disposal, from the basic punches and kicks to the invulnerable elbow strike, as well any weapon that comes into their hands, the Lee brothers must pursue the gang through the city slum, industrial area and the forest before reaching their hideout to confront the big boss, Willy.</plot>
+</game>
+<game ROM="Dracula the Undead (USA, Europe)">
+  <title>Dracula the Undead</title>
+  <year>1991</year>
+  <genre>Adventure</genre>
+  <developer>Hand Made Software</developer>
+  <publisher>Atari</publisher>
+  <rating>ESRB - RP (Rating Pending)</rating>
+  <nplayers>1 Player</nplayers>
+  <score>1.8</score>
+  <plot>In this game you play the role of Jonathan Harker, an Estate Agent who has visited Dracula&apos;s castle to conduct some business. The gameplay is a point and click style adventure except it has been tweaked to accommodate the Lynx controls. To interact with an object you move Jonathan next to the object with the D-Pad and then its name will pop up in the interaction bar. You then need to select an action such as Open, Close examine e.t.c.. The main idea of the game is to explore Dracula&apos;s castle while he is away and try to gather information that will prove he is a very serious threat to the mortal world. there are also other character in the game to interact with and Bram Stoker (the writer of Dracula which this game is based on) is in the game in digital form to narrate the story.</plot>
+</game>
+<game ROM="Electrocop (USA, Europe)">
+  <title>Electrocop</title>
+  <year>1989</year>
+  <genre>Shooter</genre>
+  <developer>Epyx</developer>
+  <publisher>Atari</publisher>
+  <rating>ESRB - RP (Rating Pending)</rating>
+  <nplayers>1 Player</nplayers>
+  <score>2.3</score>
+  <plot>Today, if a daughter of the President goes missing, I would look in the nearest bar. However, in the near future, the explanation is that she&apos;s been kidnapped by a Criminal Brain robot, and held in a booby-trapped lair. As the advanced hybrid Electrocop, your task is to rescue her within an hour.&amp;#xA;Gameplay involves working your way through the complex warehouse maze, unlocking coded door along the way. Extra weapons can be collected to help dealing with the drones. There are also computer terminals to buy new weapons - these also have simple subgames built in. What makes the game unique, and intended as a showpiece for the Lynx hardware, is that full 3D is used, so that the character walks in and out of the screen as well as across it.</plot>
+</game>
+<game ROM="European Soccer Challenge (USA, Europe)">
+  <title>European Soccer Challenge</title>
+  <year>1993</year>
+  <genre>Soccer/Sports</genre>
+  <developer>Krisalis Software</developer>
+  <publisher>Telegames, Inc.</publisher>
+  <rating>ESRB - RP (Rating Pending)</rating>
+  <nplayers>1-2 Players</nplayers>
+  <score>3.2</score>
+  <plot>European Soccer Challenge allows you to play as one of fourteen European football teams (including the mighty Wrexham) against another player or the computer. Options include the number of players, your skill level and the team you want to play as. The match is viewed from above showing a small part of the pitch. The joystick controls the nearest player to the ball and the fire button allows you to shoot or pass. The keyboard is used to select your options on the menu screens.</plot>
+</game>
+<game ROM="Fat Bobby (USA, Europe)">
+  <title>Fat Bobby</title>
+  <year>1997</year>
+  <genre>Action</genre>
+  <developer>Telegames, Inc.</developer>
+  <publisher>Atari</publisher>
+  <rating>ESRB - RP (Rating Pending)</rating>
+  <nplayers>1 Player</nplayers>
+  <score>3.1</score>
+  <plot>Lead guitarist, Fat Bobby is rocking the house with his band when the evil Dr. Mephisto swoops down from the rafters. He kidnaps the band leaving Fat Bobby to finish his solo or go on a musical rampage to get his bros back. Not one to give up, Fat Bobby takes his guitar and chases down Dr. Mephisto and his henchman. He loves to rock, but his guitar can &quot;strum&quot; more than notes. Musically weaponized, he&apos;s off to get his bandmates with the help of his guitar-gun (maybe it&apos;s a mortar - hard to say). Fat Bobby is a single player platformer that primarily side scrolls, but also has some vertical territory to explore. There&apos;s nothing particularly stellar about the graphics or game play... which is a shame because I like the story - brief as it is.A rocker sets out to rescue his band with his weaponized guitar! That&apos;s awesome and deserves a much better game to accompany that story. The graphics aren&apos;t bad, they just don&apos;t pop the way they should when a rockstar is shooting enemies with a guitar-gun. The real issue is jumping. That B button combined with directional movement can result in some unpredictable results. By &quot;unpredictable&quot; I mean you die.As Fat Bobby jumps, his impressive vertical rise causes a slight jerk to the screen as it scrolls to keep him in view. Thankfully, each leap can be made As you seek out your bandmates, you&apos;ll encounter Dr. Mephisto&apos;s henchmen and a variety of items to pick up from musical notes to egg timers and shields. Each level is timed, but you should have no problem cruising through it without watching the clock. Fat Bobby rocks out at the conclusion of each level.</plot>
+</game>
+<game ROM="Fidelity Ultimate Chess Challenge, The (USA, Europe)">
+  <title>Fidelity Ultimate Chess Challenge, The</title>
+  <year>1992</year>
+  <genre>Board Games</genre>
+  <developer>Telegames, Inc.</developer>
+  <publisher>Telegames, Inc.</publisher>
+  <rating>ESRB - RP (Rating Pending)</rating>
+  <nplayers>1-2 Players</nplayers>
+  <score>3.1</score>
+  <plot>This handheld chess game uses Chesmaster 2100&quot;&apos;s basic game engine. This includes such items as en passant attacks for pawn, castling, check and checkmate, and draws for various reasons. Move time limits are optional, and the CPU&apos;s thinking time can be specified. If you need a hint, you can press the B button and the computer may or may not give you a hint. You can also play against another human opponent, alternating.</plot>
+</game>
+<game ROM="Gates of Zendocon, The (USA, Europe)">
+  <title>Gates of Zendocon, The</title>
+  <year>1993</year>
+  <genre>Shoot-&apos;Em-Up</genre>
+  <developer>Epyx</developer>
+  <publisher>Atari</publisher>
+  <rating>ESRB - RP (Rating Pending)</rating>
+  <nplayers>1 Player</nplayers>
+  <score>3.4</score>
+  <plot>The evil spider Zendocon has trapped you in its web of universes. Your mission is to defeat Zendocon&apos;s droids and brave the 51 universes to fight Zendocon itself to the death!&amp;#xA;Gates of Zendocon is a side-scrolling shooter very similar to the original arcade shooter of this type, Scramble. Unlike Scramble, there are 51 game areas in total, but the player fights through a subset of them through branches, choosing the next area to visit.&amp;#xA;Some aliens will join you when shot (power-ups). Alien bases in each area allow you to repair your weapons and shield, but landing at the wrong time will cause your ship to explode and lose all power-ups.</plot>
+</game>
+<game ROM="Gauntlet - The Third Encounter (USA, Europe)">
+  <title>Gauntlet - The Third Encounter</title>
+  <year>1990</year>
+  <genre>Adventure</genre>
+  <developer>Epyx</developer>
+  <publisher>Atari</publisher>
+  <rating>ESRB - RP (Rating Pending)</rating>
+  <nplayers>1-4 Players</nplayers>
+  <score>3.3</score>
+  <plot>Generations ago an enchanted Star Gen crashed to Earth at the base of an ancient castle. Loathsome creatures crept from the castle and carried the Gem into the depths of the fortress.&amp;#xA;All attempts to retrieve the Star Gem failed. The adventurers were destroyed.&amp;#xA;The creatures in the castle gain magical strength from the Star Gem. Unless the Gem is taken from them, the evil ones will soon have the strength to venture forth and destroy mankind!&amp;#xA;You and your friends must take up the quest to rescue the Star Gem... and your world!</plot>
+</game>
+<game ROM="Gordo 106 - The Mutated Lab Monkey (USA, Europe)">
+  <title>Gordo 106 - The Mutated Lab Monkey</title>
+  <year>1991</year>
+  <genre>Platform</genre>
+  <developer>Epyx</developer>
+  <publisher>Atari</publisher>
+  <rating>ESRB - RP (Rating Pending)</rating>
+  <nplayers>1 Player</nplayers>
+  <score>3.0</score>
+  <plot>You are a monkey named Gordo, resident of N. Human Labs cage 106, a laboratory experimenting with animals. One day Gordo accidentally ingests a nuclear spiked banana, causing his brain to become larger and become more human and thought and figures out what is going on. He gets loose and is now on a mission to free his animal friends and escape the evil clutches of the N. Human Laboratory.&amp;#xA;Banana&apos;s are your only health pick up and you use apples to fight off enemies. Gordo is very agile and can swing from chains that hang from the ceiling to avoid the many pits that litter the floor.</plot>
+</game>
+<game ROM="Hard Drivin&apos; (USA, Europe)">
+  <title>Hard Drivin&apos;</title>
+  <year>1991</year>
+  <genre>Driving</genre>
+  <developer>NuFX</developer>
+  <publisher>Atari</publisher>
+  <rating>ESRB - RP (Rating Pending)</rating>
+  <nplayers>1 Player</nplayers>
+  <score>3.6</score>
+  <plot>Hard Drivin&apos; is a 3D arcade hit from Atari Games. You are in control of a high-performance sports car. Your objective is to race around the course as fast as possible and hit as many checkpoints as possible. If you hit a checkpoint you gain extra time to go farther. You will see traffic on the road both in your direction and coming down the opposite direction, so be careful when you pass...&amp;#xA;The course has two sections: speed track, and stunt track. Speed track is longer, but you can usually achieve higher speeds. Stunt track requires you to perform several stunts such as jumping bridges, driving through a loop, and so on.&amp;#xA;Crashing the car has no serious consequences and indeed shows a replay of your crash from a cinematic angle. Admire your crash head-on into the cement truck, or clipping the minivan, or flying off the bridge in the wrong angle... You lose several seconds as your car is &quot;reset&quot; and you get up to speed again.&amp;#xA;The home conversions retain most of the then-advanced 3D graphics but lack the force-feedback that was in the arcade version.</plot>
+</game>
+<game ROM="Hockey (USA, Europe)">
+  <title>Hockey</title>
+  <year>1992</year>
+  <genre>Hockey/Sports</genre>
+  <developer>Alpine Studios</developer>
+  <publisher>Atari</publisher>
+  <rating>ESRB - RP (Rating Pending)</rating>
+  <nplayers>1-2 Players</nplayers>
+  <score>2.6</score>
+  <plot>This game, as the name suggests, is a hockey simulation which is very similar to Mario Lemieux Hockey. There are 22 teams to choose from which are based on the NHL 91 line up though they can be changed if the player wishes. You control 1 player at a time and the CPU controls the rest of your team though you can switch to a different player at any time if the need arises. There is also a fight penalty system where you have to continually punch the an opponent in order to proceed. The game is viewed from an isometric perspective as if you were sat in one of the crowd seats.</plot>
+</game>
+<game ROM="Hydra (USA, Europe)">
+  <title>Hydra</title>
+  <year>1992</year>
+  <genre>Water</genre>
+  <developer>NuFX</developer>
+  <publisher>Atari</publisher>
+  <rating>ESRB - RP (Rating Pending)</rating>
+  <nplayers>1 Player</nplayers>
+  <score>2.7</score>
+  <plot>If being the best speedboat racer in the world were all there was to life, you&apos;d live on easy street. But when the government of Hydra has asked for your help in defeating Hydra&apos;s enemies by couriering parts to a secret weapon, and those enemies know you&apos;re coming... well then, life gets interesting.&amp;#xA;Race down narrow swamp lanes to deliver parts of a secret weapon to bases at the finish of each section. Enemies will be shooting at you, but you can shoot back with Uzi Cannons and Nukes. Collect crystals along the way to boost your speed or shields.</plot>
+</game>
+<game ROM="Ishido - The Way of Stones (USA, Europe)">
+  <title>Ishido - The Way of Stones</title>
+  <year>1991</year>
+  <genre>Puzzle</genre>
+  <developer>California Dreams</developer>
+  <publisher>Atari</publisher>
+  <rating>ESRB - RP (Rating Pending)</rating>
+  <nplayers>1-2 Players</nplayers>
+  <score>4.0</score>
+  <plot>Ishido is a solitaire board game played with tiles (like Shanghai). The objective is to place all of the tiles onto the board and obtain the highest possible score by following specific rules of play. It is a solitaire game. There are ways to play that can dramatically increase the score, which makes the game very strategic in nature. Additionally, when desired, the player can get an oracle reading by asking a question...the question is answered when the player makes a very elegant play (4 way match).&amp;#xA;There is also a &quot;construction set&quot; where players can create their own tiles and backgrounds. But the game comes with numerous tile sets and backgrounds.</plot>
+</game>
+<game ROM="Jimmy Connors&apos; Tennis (USA, Europe)">
+  <title>Jimmy Connors&apos; Tennis</title>
+  <year>1993</year>
+  <genre>Sports/Tennis</genre>
+  <developer>HandMade Software</developer>
+  <publisher>Atari</publisher>
+  <rating>ESRB - RP (Rating Pending)</rating>
+  <nplayers>1-4 Players</nplayers>
+  <score>2.2</score>
+  <plot>Endorsed by famous tennis player, Jimmy Connors, this game offers tournament and single play on multiple court types.&amp;#xA;Using crosshairs, aim your ball to the other side of the court and hope you hit where you want. If you are lucky, you might even score an Ace. If not, you will need to be ready to return your opponent&apos;s return. Run back and forth as you try to keep hitting the ball over the net until your opponent misses, or you do. When you hit the ball, you will want to attempt changing the direction and speed of the ball to throw your opponent off balance. This is the real challenge of any tennis game.</plot>
+</game>
+<game ROM="Joust (USA, Europe)">
+  <title>Joust</title>
+  <year>1992</year>
+  <genre>Action</genre>
+  <developer>Shadowsoft</developer>
+  <publisher>Williams</publisher>
+  <rating>ESRB - RP (Rating Pending)</rating>
+  <nplayers>1-2 Players</nplayers>
+  <score>3.8</score>
+  <plot>In Joust, players take control of a knight with a lance who rides their flying ostrich (or stork, for Player 2) to do battle against computer-controlled evil knights who ride atop vultures.&amp;#xA;Players must flap their steed&apos;s wings to hit the enemy from a higher jousting point to destroy the vulture and its rider. Once the enemy has been hit, an egg falls to one of the platforms below. The heroic knights must destroy the eggs before they hatch and release new and increasingly more difficult knights. The three strengths of enemy knights are Bounder (red knight), Hunter (white knight), and Shadow Lord (blue knight). These enemy knights are not the only challenge to be found in the game. Players must also contend with crumbling platforms, lava trolls who attempt to pull knights into the fire, and the dreaded &quot;unbeatable&quot;(?) pterodactyl.&amp;#xA;The game was novel for its time for being one of the few two-player simultaneous games in the arcade.</plot>
+</game>
+<game ROM="Klax (USA, Europe)">
+  <title>Klax</title>
+  <year>1990</year>
+  <genre>Puzzle</genre>
+  <developer>Atari</developer>
+  <publisher>Atari</publisher>
+  <rating>ESRB - RP (Rating Pending)</rating>
+  <nplayers>1 Player</nplayers>
+  <score>3.6</score>
+  <plot>An action/puzzle game, the object is to catch assorted color falling tiles and create rows, columns, or diagonals of a single color. Each level requires a different pattern to be made, and the tiles fall faster, more at a time, and in an increasing number of colors as the game progresses.</plot>
+</game>
+<game ROM="Krazy Ace - Miniature Golf (USA, Europe)">
+  <title>Krazy Ace - Miniature Golf</title>
+  <year>1993</year>
+  <genre>Golf/Sports</genre>
+  <developer>Telegames</developer>
+  <publisher>Telegames</publisher>
+  <rating>ESRB - RP (Rating Pending)</rating>
+  <nplayers>1-4 Players</nplayers>
+  <score>3.2</score>
+  <plot>Krazy Ace Miniature Golf is a miniature golf game for one to four players. You must hit the golf ball into the hole in the fewest shots while avoiding obstacles and traps. Try to get a better score than your opponent(s) or at least get within the number of shots per hole (par).</plot>
+</game>
+<game ROM="Kung Food (USA, Europe)">
+  <title>Kung Food</title>
+  <year>1992</year>
+  <genre>Beat-&apos;Em-Up</genre>
+  <developer>Lore Games</developer>
+  <publisher>Atari</publisher>
+  <rating>ESRB - RP (Rating Pending)</rating>
+  <nplayers>1 Player</nplayers>
+  <score>3.1</score>
+  <plot>The ultimate food fight! Mutant munchies from your freezer invade your kitchen, your life and your world. Speed and your martial arts skills are required to overcome the vicious veggies!</plot>
+</game>
+<game ROM="Lemmings (USA, Europe)">
+  <title>Lemmings</title>
+  <year>1993</year>
+  <genre>Strategy</genre>
+  <developer>DMA Design Limited</developer>
+  <publisher>Psygnosis</publisher>
+  <rating>ESRB - RP (Rating Pending)</rating>
+  <nplayers>1 Player</nplayers>
+  <score>4.1</score>
+  <plot>Your task is to rescue the Lemmings across 120 levels of fast-paced puzzling. These creatures simply walk blindly through the world in the hope of reaching safety at the end of the level - unfortunately these levels include steep drops, gaps in the ground, barriers and rivers amongst other hazards.&amp;#xA;You are in control not of any individual Lemming, but of a cross-hair, which can be moved over any of the Lemmings. Along the bottom are a selection of functions which can be assigned to a Lemming, including climbing, floating and bashing. You must click to select the appropriate function, then click on the Lemming to activate it. Each level has a different range of skills on offer, a different amount of Lemmings, and a different percentage target in order to progress.</plot>
+</game>
+<game ROM="Lexis (USA, Europe)">
+  <title>Lexis</title>
+  <year>1999</year>
+  <genre>Puzzle</genre>
+  <developer>Shadowsoft</developer>
+  <publisher>Songbird Productions</publisher>
+  <rating>ESRB - RP (Rating Pending)</rating>
+  <nplayers>1-2 Players</nplayers>
+  <score>1.6</score>
+  <plot>This is much like the game Tetris but instead of falling blocks, you have to make words out of falling letters. Some words will give you cheats or unlock a bonus game. Keep going until the letters reach the top of the screen, at which point the game is over. Words can be formed horizontally, vertically, forwards or backwards.</plot>
+</game>
+<game ROM="Lynx Casino (USA, Europe)">
+  <title>Lynx Casino</title>
+  <year>1992</year>
+  <genre>Casino</genre>
+  <developer>Atari</developer>
+  <publisher>Atari</publisher>
+  <rating>ESRB - RP (Rating Pending)</rating>
+  <nplayers>1-2 Players</nplayers>
+  <score>2.3</score>
+  <plot>This game is a collection of casino games which are accessed by moving the player around the casino and selecting the preferred game table or machine to play that game. You start off with $1,000 to gamble with though you can get two loans of $500 if needed from the dealers. Once all your money has been gambled away it is game over.&amp;#xA;The 5 games available are:&amp;#xA;1. Blackjack&amp;#xA;2. Craps&amp;#xA;3. Roulette&amp;#xA;4. Slot Machines (Fruit Machines)&amp;#xA;5. Video Poker</plot>
+</game>
+<game ROM="Malibu Bikini Volleyball (USA, Europe)">
+  <title>Malibu Bikini Volleyball</title>
+  <year>1993</year>
+  <genre>Sports/Volleyball</genre>
+  <developer>HandMade Software</developer>
+  <publisher>Atari</publisher>
+  <rating>ESRB - RP (Rating Pending)</rating>
+  <nplayers>1-4 Players</nplayers>
+  <score>3.0</score>
+  <plot>This is Malibu Bikini Volleyball, written by Handmade Software, which brings sand, surf, and scantily-clad members of both genders together for some two-on-two fun. You can serve, spike, and dive either in a three-round elimination tournament, or a single game with four difficulty levels. Options allow you to change the ball speed, turn indicator boxes and winds on or off, and set the score and time limits.</plot>
+</game>
+<game ROM="Ms. Pac-Man (USA, Europe)">
+  <title>Ms. Pac-Man</title>
+  <year>1990</year>
+  <genre>Action</genre>
+  <developer>Namco</developer>
+  <publisher>Atari</publisher>
+  <rating>ESRB - RP (Rating Pending)</rating>
+  <nplayers>1 Player</nplayers>
+  <score>4.1</score>
+  <plot>In 1982, a sequel to the incredibly popular Pac-Man was introduced in the form of his girlfriend, Ms. Pac-Man. This sequel continued on the &quot;eat the dots/avoid the ghosts&quot; gameplay of the original game, but added new features to keep the title fresh.&amp;#xA;Like her boyfriend, Ms. Pac-Man attempts to clear four various and challenging mazes filled with dots and ever-moving bouncing fruit while avoiding Inky, Blinky, Pinky and Sue, each with their own personalities and tactics. One touch from any of these ghosts means a loss of life for Ms. Pac-Man.&amp;#xA;Ms. Pac-Man can turn the tables on her pursuers by eating one of the four Energizers located within the maze. During this time, the ghosts turn blue, and Ms. Pac-Man can eat them for bonus points (ranging from 200, 400, 800 and 1600, progressively). The Energizer power only lasts for a limited amount of time, as the ghost&apos;s eyes float back to their center box, and regenerate to chase after Ms. Pac-Man again.&amp;#xA;Survive a few rounds of gameplay, and the player will be treated to humorous intermissions showing the growing romantic relationship between Pac-Man and Ms. Pac-Man, leading all the way up to the arrival of &quot;Junior&quot;.</plot>
+</game>
+<game ROM="NFL Football (USA, Europe)">
+  <title>NFL Football</title>
+  <year>1992</year>
+  <genre>Football/Sports</genre>
+  <developer>Atari</developer>
+  <publisher>Atari</publisher>
+  <rating>ESRB - RP (Rating Pending)</rating>
+  <nplayers>1-2 Players</nplayers>
+  <score>2.5</score>
+  <plot>NFL Football is an officially licensed NFL Americal football game. The game is played by holding the Lynx vertically and sports zooming and scaling graphical features, with an overhead, top-down view. Games last for four 15-minute quarters and it contains circa 25 offensive plays. Passing is done by holding down the B button and then moving a cross-hair to an open receiver, and then releasing the button to throw. Strategies can be changed in real-time. Two players can compete head-to-head with the ComLynx cable.</plot>
+</game>
+<game ROM="Ninja Gaiden (USA, Europe)">
+  <title>Ninja Gaiden</title>
+  <year>1991</year>
+  <genre>Beat-&apos;Em-Up</genre>
+  <developer>Tecmo</developer>
+  <publisher>Atari</publisher>
+  <rating>ESRB - RP (Rating Pending)</rating>
+  <nplayers>1 Player</nplayers>
+  <score>3.5</score>
+  <plot>Ninja Gaiden begins with a cinematic animation in which 2 ninjas duel to the death; one goes down. It is revealed that the doomed ninja is the father of Ryu Hayabusa. When Ryu learns of this, he embarks on a quest to find out who killed his father and why. This quest takes him to America to find an archaeologist with whom Ryu&apos;s father was working. From there, Ryu becomes embroiled in an evil, supernatural conspiracy involving a villain named Jaquio who has plans to use an ancient castle and some relics to unleash a terrifying evil upon the world.&amp;#xA;Ninja Gaiden is a side scrolling game where Ryu the ninja can run, jump, and slash with his ninja sword. He can also attach to any vertical surface. Powerups are littered throughout the landscape that allow Ryu to toss fireballs and ninja stars, and perform other feats.&amp;#xA;Ryu will battle through urban city settings, forests, jungles, snow covered castles, underground railroads, and ancient castles. A major feature in Ninja Gaiden are the cinematic scenes -- sometimes fullscreen -- through which the storyline unfolds.</plot>
+</game>
+<game ROM="Ninja Gaiden III - The Ancient Ship of Doom (USA, Europe)">
+  <title>Ninja Gaiden III - The Ancient Ship of Doom</title>
+  <year>1993</year>
+  <genre>Beat-&apos;Em-Up</genre>
+  <developer>Tecmo</developer>
+  <publisher>Atari</publisher>
+  <rating>ESRB - RP (Rating Pending)</rating>
+  <nplayers>1 Player</nplayers>
+  <score>4.0</score>
+  <plot>This is the third entry in the series of fast-paced ninja action games, and is the last game in the series to be released on the Nintendo Entertainment System.&amp;#xA;Some time has passed since the defeat of Ashtar and the resurrected Jaquio, and Irene Lew has received a new mission to complete. She is to observe a strange factory that has been constructed recently for an unknown purpose, and investigate it. She proceeds to reconnoiter it, but is intercepted and apparently assassinated by her friend Ryu Hayabusa...except it isn&apos;t Ryu. It is an imposter. The real Ryu, angered over her death, and the subsequent false accusation that he murdered her, continues her mission and proceeds to investigate the factory.&amp;#xA;As stated, this was the last game in the regular series produced for the NES. It had many features the previous games in the series did not, such as a power up to extend the length of your sword, a new vertical &quot;wave&quot; attack and vertically-scrolling levels. The US version of the game is reputed to be the hardest in the series, due to the extra damage incurred when hit, slightly shorter regular sword length, limited continues and more enemies.&amp;#xA;The Lynx port is the second Ninja Gaiden game on the platform, the first being a port from the Arcade Version. This port is identical to the NES game, but the in-game picture is compressed for the smaller screen of the Lynx.</plot>
+</game>
+<game ROM="Pac-Land (USA, Europe)">
+  <title>Pac-Land</title>
+  <year>1991</year>
+  <genre>Action</genre>
+  <developer>Namco</developer>
+  <publisher>Atari</publisher>
+  <rating>ESRB - RP (Rating Pending)</rating>
+  <nplayers>1-2 Players</nplayers>
+  <score>2.6</score>
+  <plot>Pac-Land is a side-scrolling 1-2 player game with a cartoony feel to it. Now equipped with arms, face, and legs, Pac must guide a fairy back to her home in Fairy Land, but this task will not be easy because Inky, Blinky, Pinky, Clyde, and Sue will pursue Pac-Man as he travels through Pac-Land. When he finally transports the fairy back to her home, Pac is given some magic shoes, which will help him get to his own home, where he will be greeted by his family: Ms. Pac-Man, Baby Pac-Man, Chomp Chomp, and Sourpuss.&amp;#xA;There are sixteen rounds to complete, with four trips each. During each round, he can grab a power pellet, which cause ghosts to turn blue, allowing Pac-Man to eat them for points. Points are also awarded by collecting fruit that appear, like cherries and strawberries. In some rounds, Pac must use a springboard to jump over a lake. He must also make it to the end of each round before time runs out, otherwise a ghost will chase him.</plot>
+</game>
+<game ROM="Paperboy (USA, Europe)">
+  <title>Paperboy</title>
+  <year>1990</year>
+  <genre>Action</genre>
+  <developer>Tengen</developer>
+  <publisher>Atari</publisher>
+  <rating>ESRB - RP (Rating Pending)</rating>
+  <nplayers>1 Player</nplayers>
+  <score>3.0</score>
+  <plot>Based on the arcade game, the object of Paperboy is to deliver papers to your customers while inflicting as much damage as possible to the houses of your non-customers. To make things more difficult, numerous obstacles get in your way including construction workers, rogue tires, skateboarders, dogs and cats, cars, and even the occasional tornado.</plot>
+</game>
+<game ROM="Pinball Jam (USA, Europe)">
+  <title>Pinball Jam</title>
+  <year>1992</year>
+  <genre>Pinball</genre>
+  <developer>Midway</developer>
+  <publisher>Atari</publisher>
+  <rating>ESRB - RP (Rating Pending)</rating>
+  <nplayers>1 Player</nplayers>
+  <score>3.5</score>
+  <plot>Pinball Jam is a Lynx conversion of two pinball tables: &quot;Elvira and the Party Monsters&quot; (Midway, 1989), and &quot;Police Force&quot; (Williams, 1989). Both feature authentic table layouts, targets, and bonuses; the conversion of Elvira and the Party Monsters also features digitzed sound effects, including the voice of Cassandra Peterson (Elvira).&amp;#xA;Each table scrolls up and down during gameplay (as opposed to just &quot;snapping&quot; to a new area as the ball reaches it).</plot>
+</game>
+<game ROM="Pit Fighter - The Ultimate Competition (USA, Europe)">
+  <title>Pit Fighter - The Ultimate Competition</title>
+  <year>1992</year>
+  <genre>Fighter</genre>
+  <developer>Tengen</developer>
+  <publisher>Atari</publisher>
+  <rating>ESRB - RP (Rating Pending)</rating>
+  <nplayers>1-2 Players</nplayers>
+  <score>1.6</score>
+  <plot>Pit-Fighter is a 3rd-person fight game that features digitized graphics of real fighters and zooming effects. Players select one of three fighters (Buzz, Ty or Kato) to take on anyone who dares. At the conclusion of a match, players are individually awarded a Knockout Bonus, Brutality Bonus, and a Fight Purse. Every third match is a Grudge Match where players test the skills of each other. The last man standing is the winner of this three-knockdown match. Players fight their way to the Elimination Match to decide who wins the opportunity to dethrone the champion, the Masked Warrior.</plot>
+</game>
+<game ROM="Power Factor (USA, Europe)">
+  <title>Power Factor</title>
+  <year>1992</year>
+  <genre>Action</genre>
+  <developer>HandMade Software</developer>
+  <publisher>Atari</publisher>
+  <rating>ESRB - RP (Rating Pending)</rating>
+  <nplayers>1 Player</nplayers>
+  <score>3.0</score>
+  <plot>Power Factor is an action-platformer starring the single campily-named hero, Redd Ace, fighting alien creatures known as the Ceegarians from the Ceeg dimension. Of course, aliens being played out, the Ceegarians are actually referred to as &quot;transdimensional intruders,&quot; and the Ceegarian creatures the player faces off against are referred to as evil invading &quot;Sinlendo Techmods.&amp;#xA;The primary goal of the game is to work through stages and bosses essentially to build a bomb to destroy the Ceegarians. Pertaining to the bomb, there are six components. The entire game takes place within, as the box refers to it, &quot;our dimension&apos;s reactor. As such, the environments of the game are aimed to look like the inside of a machine. To further convolute the storyline, the instruction manual actually refers to the game itself as a Virtual Reality simulation the player is experiencing in the future, based on the exploits of Redd Ace, and you&apos;re meandering through this simulator on the &quot;famous Atarian Leisure Moon.&amp;#xA;Stages are fairly small, but designed like a maze à la Metroid. However, unlike Metroid, completed areas cannot be revisited. Each stage ends with a boss battle showcasing enemy characters that are often two screens high.&amp;#xA;Redd Ace is armed with a multi-use weapon known as the &quot;Tmat MOW. Tmat MOW is intended to be short for &quot;TRANSMAT Multi-Ordinance Weapon. Four different weapons may be acquired and used for both the A and B buttons, with eight total weapons in the game, and one gun as a standard. Other weapons include lasers, a flame thrower, missiles, bombs, and the like. Weapons must be picked up through playing the stages and collecting various weapon icons. Once the ammunition is used, the weapon is gone and must be recollected. As such, weapon pick-ups must be used sparingly, especially since most contain very small numbers of ammunition, often as low as two shots. Choosing weapons is awkwardly assigned to the Directional-pad, which is also where character movement is assigned. Tapping the D-pad allows the player to select different weapons, while holding it down moves Redd.&amp;#xA;Controlling Redd Ace is somewhat different from a typical platformer of the era. There is no jump button, as both the A and B buttons have weapons assigned to them. Instead, our hero is also armed with a levitation pack on his back, which allows flight. Tapping &quot;up&quot; on the D-Pad allows Redd to jump, while holding &quot;up&quot; activates the levitator and allows Redd to fly. Aside from a health bar, there is also a fuel bar showing that flight isn&apos;t a luxury to be wasted. When crouching, Redd automatically aims upwards at a 45-degree angle, rather than straight ahead.&amp;#xA;Pressing the &quot;Option 2&quot; button allows the player to see a menu with information about the bomb pieces the player is collecting, as well as details on the various weapons. If the player is standing in front of a computer monitor when Option 2 is pressed, the menu shows a map of the current area, and information on enemy characters.&amp;#xA;The player starts with three lives, and there are no continues. There are, however, three difficulty modes--Easy, Normal, and Hard—which may be selected prior to gameplay.</plot>
+</game>
+<game ROM="Qix (USA, Europe)">
+  <title>Qix</title>
+  <year>1991</year>
+  <genre>Puzzle</genre>
+  <developer>Knight Technologies</developer>
+  <publisher>Telegames</publisher>
+  <rating>ESRB - RP (Rating Pending)</rating>
+  <nplayers>1-2 Players</nplayers>
+  <score>2.1</score>
+  <plot>In this game, you guide a marker which must draw rectangles and other weird objects in order to claim your territory, and you can either draw these rectangles fast or slow. Drawing the rectangles using the &quot;slow&quot; method awards you the most points. Once a rectangle has been made, it will be colored in to show that you have claimed your territory. While drawing the rectangles, you need to watch out for Qix (pronounced &quot;kicks&quot;), a series of colored lines that crawl the screen. In addition to Qix, you also need to avoid the Sparks who travel around the border, as well as any lines that you have made, as well as The Fuse, who travels along the line that you are drawing. Once you have claimed enough territory, you proceed to the next level.</plot>
+</game>
+<game ROM="Raiden (USA) (v3.0)">
+  <title>Raiden</title>
+  <year>1997</year>
+  <genre>Shoot-&apos;Em-Up</genre>
+  <developer>Seibu Kaihatsu Inc.</developer>
+  <publisher>Telegames</publisher>
+  <rating>ESRB - RP (Rating Pending)</rating>
+  <nplayers>1 Player</nplayers>
+  <score>3.4</score>
+  <plot>In the year 2090, Earth is invaded by extra-terrestrials. The World Alliance of Nations has developed a supersonic attack fighter, Raiden, to defend the Earth. A pilot must take control of the experimental fighter to destroy the alien warships that just happen to look like odd variations of typical military tanks and planes with gadgets attached to them.&amp;#xA;Raiden (called Raiden Trad on the Genesis and SNES) is an over-head vertical-scrolling shooter, based on an arcade game of the same title. It features two forms of weapon upgrades and two types of missiles (normal or homing). You start the game with several bombs which you can use to destroy most enemies on the screen to get yourself out of a jam. Each level ends with a large boss or bosses.</plot>
+</game>
+<game ROM="Rampage (USA, Europe)">
+  <title>Rampage</title>
+  <year>1990</year>
+  <genre>Action</genre>
+  <developer>Midway</developer>
+  <publisher>Atari</publisher>
+  <rating>ESRB - RP (Rating Pending)</rating>
+  <nplayers>1-4 Players</nplayers>
+  <score>2.4</score>
+  <plot>George, Lizzy and Ralph were just ordinary Americans, until an experiment went wrong, turning them into a Gorilla, Lizard and Werewolf respectively. Following this, the three of them plan to go round destroying buildings, and up to 3 human players can join in.&amp;#xA;Smashing at the edges of the buildings for long enough will make them collapse. The police and military are after you, and will shoot at you, so try to destroy them (failing that, you can avoid the bullets). You will need to eat regularly, with things like plants on offer, to avoid shrinking back to being human</plot>
+</game>
+<game ROM="Rampart (USA, Europe)">
+  <title>Rampart</title>
+  <year>1992</year>
+  <genre>Action</genre>
+  <developer>Tengen</developer>
+  <publisher>Atari</publisher>
+  <rating>ESRB - RP (Rating Pending)</rating>
+  <nplayers>1-2 Players</nplayers>
+  <score>2.7</score>
+  <plot>Tetris meets shoot-&apos;em-up, Rampart was originally a one or two-player arcade game combining strategy and artillery action. Build your castle from Tetris-style pieces, place your cannons, bombard the enemy, try to repair, do it all over again. Later arcade revisions incorporated 3-player, and the PC conversion does as well, making it a faithful, entertaining classic for multiple players on the same PC.</plot>
+</game>
+<game ROM="RoadBlasters (USA, Europe)">
+  <title>RoadBlasters</title>
+  <year>1990</year>
+  <genre>Driving</genre>
+  <developer>Tengen</developer>
+  <publisher>Atari</publisher>
+  <rating>ESRB - RP (Rating Pending)</rating>
+  <nplayers>1 Player</nplayers>
+  <score>3.9</score>
+  <plot>RoadBlasters is a futuristic racing action game. The goal is to reach the finish line in one piece throughout each of 50 levels. Numerous enemies are out on the road to try and stop you, including armored cars, motorcycles, canons on the side of the road, landmines, and more.&amp;#xA;Your vehicle is equipped with a machine gun to help you out, and occasionally a weapons plane will fly in and drop additional power ups that can be collected. Some of these are the U.Z. canon, cruise missiles, and speed boost. Your car has a very limited amount of fuel, however more can be picked up along the way by crossing the halfway point of a level, or by collecting the red and green fuel spheres that appear in the road or after destroying certain enemies. On many levels collecting fuel is critical otherwise you won&apos;t be able to reach the finish line.</plot>
+</game>
+<game ROM="Robo-Squash (USA, Europe)">
+  <title>Robo-Squash</title>
+  <year>1990</year>
+  <genre>Sports</genre>
+  <developer>Atari</developer>
+  <publisher>Atari</publisher>
+  <rating>ESRB - RP (Rating Pending)</rating>
+  <nplayers>1-2 Players</nplayers>
+  <score>1.7</score>
+  <plot>Set in the 31st Century, this game begins when the President of the World has died at age 281 after being in power for 200 years. The United World Federation is in chaos. After nearly four centuries of the World Party being in control, the International Party is inclined to take over. Rumors regarding the President&apos;s death not being accidental are unconfirmed, but the World Party is still going on the defensive. Conventional warfare has been relegated to the obsolete and uncivilized past so the two parties are to settle the dispute the new, modern way, Robo-Squash.Robo-Squash is a game in which the player must catch as many balls in rows or columns as possible to win. An alternative way to win is to be the first player to hit the mechanical spider. As a round continues longer and longer, the balls will increase in speed, making the round progressively harder. Points can be collected by hitting bricks, special items, and the spider. When one of the players loses three balls or hits the mechanical spider, the round is over.If the player wins, the World Party will remain in power. If the player loses the International Party will win and divide the world into separate countries surely resulting in the same petty fighting that almost destroyed civilization in the 21st Century.</plot>
+</game>
+<game ROM="Robotron 2084 (USA, Europe)">
+  <title>Robotron 2084</title>
+  <year>1991</year>
+  <genre>Shoot-&apos;Em-Up</genre>
+  <developer>Shadowsoft</developer>
+  <publisher>Williams</publisher>
+  <rating>ESRB - RP (Rating Pending)</rating>
+  <nplayers>1 Player</nplayers>
+  <score>3.8</score>
+  <plot>This is a port of the arcade game of the same name.&amp;#xA;You are a mutant human, who by some freak of nature has the ability to shoot energy pulses from his body in eight different directions! Your job is simple: save humanity from their own creation -- the ROBOTRONS! The gameplay is pretty unique for the time. You can move and fire in any of eight directions. You get thrown in a room with various evil baddies strewn about, you&apos;ve got to kill all the robots while at the same time finding some way to grab humans and avoid death.</plot>
+</game>
+<game ROM="Rygar - Legendary Warrior (USA, Europe)">
+  <title>Rygar - Legendary Warrior</title>
+  <year>1990</year>
+  <genre>Platform</genre>
+  <developer>Tecmo</developer>
+  <publisher>Atari</publisher>
+  <rating>ESRB - RP (Rating Pending)</rating>
+  <nplayers>1 Player</nplayers>
+  <score>3.9</score>
+  <plot>An evil being known as Ligar is about to conquer the land of Argool. Such is his power that no living creature dares to cross paths with him. But the legendary warrior Rygar rises from his grave to restore peace and justice. Armed with his famed weapon Diskarmor, Rygar begins to traverse the vast lands that lead to the lair of the demon, as his minions are trying in vain to stop him...&amp;#xA;Originally released on the arcades, Rygar is a side-scrolling action game. The player controls the titular hero, advancing through stages populated by hostile creatures. Beside the Diskarmor, a weapon that looks like a shield with a chain attached to it, the hero can use a variety of other weapons, including projectiles that can be fired in four directions. Various &quot;powers&quot; are scattered through the levels and can be collected. The effects of these powers include increasing the fire power of the equipped weapon, adding time to the clock, temporary invisibility, extra points, etc.</plot>
+</game>
+<game ROM="S.T.U.N. Runner (USA, Europe)">
+  <title>S.T.U.N. Runner</title>
+  <year>1991</year>
+  <genre>Driving</genre>
+  <developer>Tengen</developer>
+  <publisher>Atari</publisher>
+  <rating>ESRB - RP (Rating Pending)</rating>
+  <nplayers>1 Player</nplayers>
+  <score>3.6</score>
+  <plot>Based on the 1989 Atari Games (not to be confused with Atari Corporation, producers of the Lynx) coin-op by Ed Rotberg. It&apos;s 2492 and you must pilot your Sub-Terranean Underground Network (S.T.U.N.) craft at speeds over 900 miles per hour through a series of courses to retain your title as S.T.U.N. Runner, completing each course before time runs out.&amp;#xA;There are also enemies on each course, such as cycles, indestructible armored drones, and flying bird-like craft. Shoot or avoid them. If you hit them, you lose one of your shields (your craft has six total) and are slowed down temporarily. The more shields you have at the finish line, the more bonus points you get. Getting hit with no shields does not kill you, however. There are no lives in this game. The only way to lose is to fail to cross the finish line.&amp;#xA;Along the way you&apos;ll encounter Boost Pads that temporarily speed you up to incredible speeds and make you indestructible. By running over enough green stars on each course, you can also earn Shockwaves, which destroy all enemies in your path.&amp;#xA;Note that there is no accelerator in this game. Your craft always goes full speed, unless you hit something. Then you will slow down, but quickly accelerate back to full speed. Other than that, you cannot slow down and the only way to speed up is to run over a Boost Pad. Your only controls are steering left and right and aiming the gun on top of your craft up and down.</plot>
+</game>
+<game ROM="Scrapyard Dog (USA, Europe)">
+  <title>Scrapyard Dog</title>
+  <year>1991</year>
+  <genre>Platform</genre>
+  <developer>Creative Software Designs</developer>
+  <publisher>Atari</publisher>
+  <rating>ESRB - RP (Rating Pending)</rating>
+  <nplayers>1 Player</nplayers>
+  <score>3.8</score>
+  <plot>In Scrapyard Dog you play the role of Louie, the junkyard guy, who&apos;s companion Scraps has been dognapped by the dastardly Mr. Big. Louie has bombs and cans at his disposal to use against the enemies, which include gangsters, rats, and mice. He can also use shields to protect himself on route to the sixteen checkpoints in the game. Louie must reach each checkpoint in a certain amount of time in order to save Scraps.</plot>
+</game>
+<game ROM="Shadow of the Beast (USA, Europe)">
+  <title>Shadow of the Beast</title>
+  <year>1992</year>
+  <genre>Platform</genre>
+  <developer>Digital Developments</developer>
+  <publisher>Psygnosis</publisher>
+  <rating>ESRB - RP (Rating Pending)</rating>
+  <nplayers>1 Player</nplayers>
+  <score>2.8</score>
+  <plot>While very young, Aarbron was kidnapped and enslaved by the Priests of the Beast Lord. He grew up on drugs made to destroy his own will and turn him into the Beast Messenger, a powerful creature serving Maletoth, The Beast Lord himself. He did his job, until one day he noticed a man about to be sacrificed in a ritual, his face triggering ancient memories... and as the sacrificial knife descended into the man&apos;s body, Aarbron recognizes the face. Of his father.&amp;#xA;As his father dies in the altar, memories of his childhood and tormented past at the hands of the Beast Lord emerged, and as feelings of hate over his captors took over him, he swore revenge and fled the temple, knowing the road to avenge his father and redemption would be hard.&amp;#xA;Shadow of the Beast, one of Psygnosis most popular titles during the 16-bit computer era is a side-scrolling platformer best known for the use of parallax scrolling along lush graphics, a musical score by David Whittaker, a iconic cover by Roger Dean and what many consider to be unforgiving gameplay, balancing between the &quot;very challenging&quot; and the &quot;impossible&quot;. The player has to navigate through several areas filled with enemies and traps, collecting keys and activating triggers than open new areas or give Aarbron the means to overcome a sub-boss. The number of moves the player has at disposal is limited: duck, jump and only two attacks: punch and a flying kick. While most enemies die with just one hit, the player must time each attack accurately. However, there are also traps of objects that cannot be destroyed, and these require the player to jump, duck or move according the sequence. The player has only one life with 12 hit points that can be replenished by collecting some objects hidden in the level (like an off-route location or a under a megalith), which also contributes to the difficulty level.</plot>
+</game>
+<game ROM="Shanghai (USA, Europe)">
+  <title>Shanghai</title>
+  <year>1990</year>
+  <genre>Puzzle</genre>
+  <developer>Mediagenic</developer>
+  <publisher>Atari</publisher>
+  <rating>ESRB - RP (Rating Pending)</rating>
+  <nplayers>1-2 Players</nplayers>
+  <score>4.4</score>
+  <plot>Shanghai is a tile-based game based on the ancient Chinese game of Mah-Jong - this was the first of many computer versions.&amp;#xA;The gameplay involves 144 tiles, each depicting different images, which have to be removed by matching them into pairs. The tiles are arranged in a gridded pattern, which is higher near the centre. A tile can only be removed if it has no tile next to it on at least one side.&amp;#xA;This computer implementation can generate a random board layout to take on, as well as featuring 5 preset challenges, some of which have time limits of 5 or 10 minutes, as well as a multiplayer mode.</plot>
+</game>
+<game ROM="Steel Talons (USA, Europe)">
+  <title>Steel Talons</title>
+  <year>1992</year>
+  <genre>Flying</genre>
+  <developer>NuFX</developer>
+  <publisher>Atari</publisher>
+  <rating>ESRB - RP (Rating Pending)</rating>
+  <nplayers>1 Player</nplayers>
+  <score>3.3</score>
+  <plot>Steel Talons brought realism-oriented helicopter combat to the arcades, and later to home systems. The action is viewed from behind your helicopter, with the 3D polygon world rotating around you, taking in mountains, rivers and deserts.&amp;#xA;There are 12 missions in total, each of which requires you to destroy targets in a set time limit. There are also training and head-to-head (against a CPU-controlled drone) modes.&amp;#xA;You have a limited number of automatically-targeting missiles as well as a cannon. A tracking map tells you where you are on the level, and where the enemies are.Contact with the ground, mountains or other vehicles will damage or destroy your helicopter.</plot>
+</game>
+<game ROM="Super Asteroids, Missile Command (USA, Europe)">
+  <title>Super Asteroids, Missile Command</title>
+  <year>1995</year>
+  <genre>Shoot-&apos;Em-Up/Shooter</genre>
+  <developer>Atari</developer>
+  <publisher>Atari</publisher>
+  <rating>ESRB - RP (Rating Pending)</rating>
+  <nplayers>1 Player</nplayers>
+  <score>4.3</score>
+  <plot>Two classic Atari arcade games were updated for this compilation. This Lynx version of Asteroids and Missile Command contains some enhanced features to justify the &quot;super&quot; in the title.Super Asteroids has all new graphics to replace the vector outlines of the original. Your ship has a shield that can absorb several collisions before it blows up. There are also power ups to increase your firepower.Super Missile Command also has all new graphics. Between rounds, you can trade credits earned during gameplay to purchase special weapons that will help you later in the game.</plot>
+</game>
+<game ROM="Super Off-Road (USA, Europe)">
+  <title>Super Off-Road</title>
+  <year>1993</year>
+  <genre>Driving</genre>
+  <developer>Tradewest</developer>
+  <publisher>Telegames</publisher>
+  <rating>ESRB - RP (Rating Pending)</rating>
+  <nplayers>1-4 Players</nplayers>
+  <score>2.0</score>
+  <plot>Enter the world of off-road racing as 4 vehicles will face each other, on a series of tracks which are based around flipped and reversed versions of a core selection. Fame, glory and bikini clad women await your victories and the taste of dirt awaits if you fail. Let a computer car beat you and you lose one of your 3 credits.&amp;#xA;Successful races bring more money, which can be used to soup up their machine. Boosts to top speed, grip and acceleration can be purchased, and your nitro boost must be kept topped up. If you are desperate for upgrades, you can buy into your spare credits&amp;#xA;Only your off-road driving abilities will be enough to pull you to first place in these races. Play alone or with up to 3 other players (depending on the version) in this conversion of a classic arcade game.</plot>
+</game>
+<game ROM="Super Skweek (USA, Europe)">
+  <title>Super Skweek</title>
+  <year>1991</year>
+  <genre>Puzzle</genre>
+  <developer>Loriciel</developer>
+  <publisher>Atari</publisher>
+  <rating>ESRB - RP (Rating Pending)</rating>
+  <nplayers>1-2 Players</nplayers>
+  <score>3.8</score>
+  <plot>Super Skweek is a game inspired by the wide success of Chip&apos;s Challenge, and share some elements of that puzzler while combining other elements from games such as Pengo.&amp;#xA;In Super Skweek, you play the title character who must walk around and either paint all the tiles of the game board pink, complete a specific mission, or both. Some tiles react in various ways when you walk on them, like exploding.&amp;#xA;Unlike Chip&apos;s Challenge, the game plays in realtime and you can pick up and use weapons to keep away certain monsters as you paint the tiles. There is also a shop you can enter to purchase items. Finally, levels have a time limit for completion.</plot>
+</game>
+<game ROM="Switchblade II (USA, Europe)">
+  <title>Switchblade II</title>
+  <year>1992</year>
+  <genre>Platform</genre>
+  <developer>Gremlin Graphics</developer>
+  <publisher>Gremlin Graphics</publisher>
+  <rating>ESRB - RP (Rating Pending)</rating>
+  <nplayers>1 Player</nplayers>
+  <score>3.6</score>
+  <plot>As Hiro, you must once again defeat the ninja lord Havok. Using ninja throwing stars and other weapons, you must defeat the minions of Havok to reach him.&amp;#xA;Switchblade II is a side-scrolling platform action game. One key aspect of the game is obtaining coins from defeated enemies, which can be traded at shops for extra lives, energy, and weapons.</plot>
+</game>
+<game ROM="Todd&apos;s Adventures in Slime World (USA, Europe)">
+  <title>Todd&apos;s Adventures in Slime World</title>
+  <year>1990</year>
+  <genre>Action</genre>
+  <developer>Epyx</developer>
+  <publisher>Atari</publisher>
+  <rating>ESRB - RP (Rating Pending)</rating>
+  <nplayers>1-8 Players</nplayers>
+  <score>3.5</score>
+  <plot>While flying your spaceship, you crash land on a planet covered entirely in slime. You and a friend explore the labyrinthine planet of slime, armed with a water pistol and all manner of gadgets you find along the way in an effort to find your way back out. The game world is a giant maze with quirky hidden areas and plenty of original layout ideas. Depending on the game mode, you are either cooperating or competing with your &quot;friend&quot; to find and get to an exit first. Due to the massive sizes of the slime worlds (about 6 entries to choose from), games often take several hours to complete.&amp;#xA;The basis of the game is exploration, with varying game modes further focusing on competition, puzzle solving, speed, exploration, or cooperation&quot;</plot>
+</game>
+<game ROM="Toki (USA, Europe)">
+  <title>Toki</title>
+  <year>1992</year>
+  <genre>Platform</genre>
+  <developer>Fabtek</developer>
+  <publisher>Atari</publisher>
+  <rating>ESRB - RP (Rating Pending)</rating>
+  <nplayers>1 Player</nplayers>
+  <score>3.4</score>
+  <plot>The hero of the game is a young jungle-man named Toki. One day the evil wizard Dr. Stark kidnaps his girlfriend Wanda. When Toki tries to save her, he is turned into a monkey! Now Toki has to find Dr. Stark in his palace, to rescue Wanda, and to become a human being again!&amp;#xA;It is a platform game with a lot of various levels: jungle, underwater, volcanic caves, on the ice... Toki&apos;s only weapons are spitting on the enemies or jumping on them and crashing them. There are many possibilities to upgrade his spitting &quot;weapon&quot;; for example, if he finds an upgrade, he can spit fireballs.&amp;#xA;This game is ported from an older arcade version.</plot>
+</game>
+<game ROM="Tournament Cyberball (USA, Europe)">
+  <title>Tournament Cyberball</title>
+  <year>1991</year>
+  <genre>Sports</genre>
+  <developer>Tengen</developer>
+  <publisher>Atari</publisher>
+  <rating>ESRB - RP (Rating Pending)</rating>
+  <nplayers>1-4 Players</nplayers>
+  <score>3.0</score>
+  <plot>After American Football players started cheating by using bionic parts, the game was forced to change its rules. By 2022, the game was played not by humans, but two teams of seven robots. To spice things up, the usual pig skin ball was replaced with a 350 pound bomb.&amp;#xA;Cyberball brings this fast and furious action to life. Gameplay is essentially the same as the real sport, although the &apos;downs&apos; are replaced by the bomb&apos;s heat gradually increasing towards &apos;critical&apos;. After this it will explode and possession will be swapped. This is prevented when you cross the 50-yard line, lose possession or score a touchdown, in which cases it resets to &apos;cool&apos;. Field goals and punts are not featured - the only kick is the initial kick-off you receive.&amp;#xA;Control passes from the quarterback (thrower) to the intended catcher as soon as a pass is released. The two-player game is co-operative - on offense one player passes and the other receives</plot>
+</game>
+<game ROM="Turbo Sub (USA, Europe)">
+  <title>Turbo Sub</title>
+  <year>1991</year>
+  <genre>Shooter</genre>
+  <developer>Atari</developer>
+  <publisher>Atari</publisher>
+  <rating>ESRB - RP (Rating Pending)</rating>
+  <nplayers>1 Player</nplayers>
+  <score>2.7</score>
+  <plot>Turbo Sub is a first person shoot &apos;em up. The player is the pilot of the Turbo Sub, the most advanced war device, with both flying and diving capabilities. Earth is attacked by evil aliens so the player is the last hope of the human race. He has to destroy numerous waves of aliens, dodging quickly to avoid collisions and enemy shots. Gameplay is simple: D-Pad is used to move up/down left/right and any button is used to shoot. The speed is not controllable. The aerial phase looks like the classic Afterburner but in a first person view. The player can dive whenever he wants. Sometimes headquarters will order the player to dive and it means the player is near a gem pod were he can collect diamonds. Near gem pods there is always a supply depot where bonuses (powerful shots, tracking missiles...) can be bought with the collected diamonds. Underwater the player moves a bit slower, and there are obstacles to avoid (like sunken antic temple columns).In the two player mode, the winner of a level is the one who has the higher score in this level.</plot>
+</game>
+<game ROM="Viking Child (USA, Europe)">
+  <title>Viking Child</title>
+  <year>1991</year>
+  <genre>Action</genre>
+  <developer>Imagitec Design</developer>
+  <publisher>Atari</publisher>
+  <rating>ESRB - RP (Rating Pending)</rating>
+  <nplayers>1 Player</nplayers>
+  <score>2.8</score>
+  <plot>Cartoony side-scroller where you take the role of, as the title states, a viking child, in his quest to free his friends and family, held by the evil god Loki inside the Great Halls of Valhalla.&amp;#xA;Fight your way through 16 levels with diverse scenarios, including medieval castles and mountains. Spread throughout the levels are shops in which you can buy potions and other magical items to help you along the way. Before you finally face the Dark Lord Loki, you must also defeat the 8 Apprentices of Darkness.&amp;#xA;The game features colorful graphics and 22 different tunes to make the whole trip a bit more pleasant.</plot>
+</game>
+<game ROM="Warbirds (USA, Europe)">
+  <title>Warbirds</title>
+  <year>1991</year>
+  <genre>Simulation</genre>
+  <developer>Atari</developer>
+  <publisher>Atari</publisher>
+  <rating>ESRB - RP (Rating Pending)</rating>
+  <nplayers>1-4 Players</nplayers>
+  <score>3.9</score>
+  <plot>A combat flight action/simulation with colorful graphics and pretty straight-forward gameplay.&amp;#xA;Step inside the cockpit of a World War I plane, when there were no sophisticated weaponry, and try to gun down the enemy. Simple as that.&amp;#xA;The graphics were faux-3D, as the planes were 2D sprites (natural, considering the release date), but the sky seemed very vast and you could fly around freely.</plot>
+</game>
+<game ROM="World Class Soccer (USA, Europe)">
+  <title>World Class Soccer</title>
+  <year>1992</year>
+  <genre>Sports/Soccer</genre>
+  <developer>Atari</developer>
+  <publisher>Atari</publisher>
+  <rating>ESRB - RP (Rating Pending)</rating>
+  <nplayers>1-2 Players</nplayers>
+  <score>3.3</score>
+  <plot>World Class Soccer brings football to the Lynx, allowing players to stage matches featuring more than 100 different national teams. The game features selectable skill levels, adjustable game time (from 10 to 90 minutes), dry or muddy fields, and manual or automatic player switching.During matches, the field is horizontally aligned, with the scrolling screen showing an angled view centered on the active player. When playing the goalie, the view zooms out for a better overview. On offense, the Lynx&apos; two buttons allow players to make passes or kicks, on defense, tackles and sliding tackles, and for the goalie, high or low dives. On penalty shots, there is a choice of kicking high or low. The game supports two players via ComLynx connection.</plot>
+</game>
+<game ROM="Xenophobe (USA, Europe)">
+  <title>Xenophobe</title>
+  <year>1990</year>
+  <genre>Action</genre>
+  <developer>Atari</developer>
+  <publisher>Atari</publisher>
+  <rating>ESRB - RP (Rating Pending)</rating>
+  <nplayers>1-4 Players</nplayers>
+  <score>3.8</score>
+  <plot>Xenos. The very name strikes fear into every colonist&apos;s heart. A distress call is received from space stations orbiting your homeworld, then silence. A single ship escapes, piloted by a battered man who tells the tale of pods that hatch into acid-spitting Xenos.&amp;#xA;A small band of engineers has been dispatched to combat the Xeno threat before it takes over all the space stations and, eventually, your homeworld. Assemble your band of engineers and fight the Xenos on each station, striving to either clear it or abandon it. You start out with a standard issue laser, but can pick up additiona weapons as you find them, including Phasers, Lightning Rifles, Poofer guns, and bombs.&amp;#xA;Xenophobe was originally an arcade coin-op by Bally/Midway, released in 1987. Gameplay premise and setting is heavily inspired/influenced by the movie Aliens.</plot>
+</game>
+<game ROM="Xybots (USA, Europe)">
+  <title>Xybots</title>
+  <year>1991</year>
+  <genre>Action</genre>
+  <developer>Tengen</developer>
+  <publisher>Atari</publisher>
+  <rating>ESRB - RP (Rating Pending)</rating>
+  <nplayers>1-2 Players</nplayers>
+  <score>2.7</score>
+  <plot>Xybots is either an unusually simple computer game or an unusually complex coin-op shoot &apos;em up, depending on your point of view. With either one or two players, you must move through a series of Gauntlet-style underground mazes, killing the bad guys and collecting health and other bonuses from flying saucers (underground? SLIGHT logic gap there, methinks).It&apos;s designed to be played co-operatively, although bullets from one player can harm the other.&amp;#xA;The Xybots are out to stop you, of course, and many have advanced attack patterns as well as bullets to fire at you. Being able to view round corners is useful, allowing you to plan a strategy - often it&apos;s good to send one player forward and let the other play the waiting game, as in Gauntlet.</plot>
+</game>
+<game ROM="Zarlor Mercenary (USA, Europe)">
+  <title>Zarlor Mercenary</title>
+  <year>1990</year>
+  <genre>Action</genre>
+  <developer>Epyx</developer>
+  <publisher>Atari</publisher>
+  <rating>ESRB - RP (Rating Pending)</rating>
+  <nplayers>1-4 Players</nplayers>
+  <score>3.2</score>
+  <plot>Zarlor Mercenary is a vertically scrolling shooter in which players takes the role of a mercenary group. The scenario is a long-time war between the Mendicant and Zarlor races and the mercenaries are hired by the Zarlors to clear out six levels hold by Mendicants. The basic gameplay consists of using a space ship to kill all enemy opposition on the way to the level end. Getting hit by their attacks lowers the health bar which leads to a life loss when completely gone. On the other hand, every killed enemy or destroyed building gives money which can be used between levels to buy upgrades like mega bombs (damages all enemies on the screen), a back cannon, extra lives or a powerful shield. While the direction is always vertically, the screen can be slightly scrolled left and right. Up to four players can participate in co-op gameplay; the difficulty is only effected by starting out with less lives. Then there are also two additional upgrades to buy: invisibility to hide from other players and back stabber which damages the other players instead of the enemies.</plot>
+</game>
+</menu>

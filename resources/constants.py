@@ -48,6 +48,15 @@ class AddonError(Exception):
     def __init__(self, err_str): self.err_str = err_str
     def __str__(self): return self.err_str
 
+# This is to ease printing colours in Kodi.
+KC_RED        = '[COLOR red]'
+KC_ORANGE     = '[COLOR orange]'
+KC_GREEN      = '[COLOR green]'
+KC_YELLOW     = '[COLOR yellow]'
+KC_VIOLET     = '[COLOR violet]'
+KC_BLUEVIOLET = '[COLOR blueviolet]'
+KC_END        = '[/COLOR]'
+
 # -------------------------------------------------------------------------------------------------
 # Addon constants
 # -------------------------------------------------------------------------------------------------
@@ -152,6 +161,7 @@ AEL_NOINTRO_STAT_LABEL               = 'AEL_NoIntro_stat'
 AEL_NOINTRO_STAT_VALUE_HAVE          = 'NoIntro_Have'
 AEL_NOINTRO_STAT_VALUE_MISS          = 'NoIntro_Miss'
 AEL_NOINTRO_STAT_VALUE_UNKNOWN       = 'NoIntro_Unknown'
+AEL_NOINTRO_STAT_VALUE_EXTRA         = 'NoIntro_Extra'
 AEL_NOINTRO_STAT_VALUE_NONE          = 'NoIntro_None'
 AEL_PCLONE_STAT_LABEL                = 'AEL_PClone_stat'
 AEL_PCLONE_STAT_VALUE_PARENT         = 'PClone_Parent'
@@ -349,6 +359,33 @@ ROM_ASSET_ID_LIST = [
     ASSET_TRAILER_ID,
 ]
 
+# Supported image files in:
+# 1. misc_identify_image_id_by_contents()
+# 2. misc_identify_image_id_by_ext()
+IMAGE_PNG_ID     = 'PNG'
+IMAGE_JPEG_ID    = 'JPEG'
+IMAGE_GIF_ID     = 'GIF'
+IMAGE_BMP_ID     = 'BMP'
+IMAGE_TIFF_ID    = 'TIFF'
+IMAGE_UKNOWN_ID  = 'Image unknown'
+IMAGE_CORRUPT_ID = 'Image corrupt'
+
+IMAGE_IDS = [
+    IMAGE_PNG_ID,
+    IMAGE_JPEG_ID,
+    IMAGE_GIF_ID,
+    IMAGE_BMP_ID,
+    IMAGE_TIFF_ID,
+]
+
+IMAGE_EXTENSIONS = {
+    IMAGE_PNG_ID  : ['png'],
+    IMAGE_JPEG_ID : ['jpg', 'jpeg'],
+    IMAGE_GIF_ID  : ['gif'],
+    IMAGE_BMP_ID  : ['bmp'],
+    IMAGE_TIFF_ID : ['tif', 'tiff'],
+}
+
 BOX_SIZE_POSTER     = 'poster'
 BOX_SIZE_DVD        = 'dvd'
 BOX_SIZE_BLURAY     = 'bluray'
@@ -374,8 +411,8 @@ BOX_SIZES = [
 ]
 
 # --- Addon will search these file extensions for assets ---
-# >> Check http://kodi.wiki/view/advancedsettings.xml#videoextensions
-IMAGE_EXTENSION_LIST   = ['png', 'jpg', 'gif', 'bmp']
+# Check http://kodi.wiki/view/advancedsettings.xml#videoextensions
+IMAGE_EXTENSION_LIST   = ['png', 'jpg', 'jpeg', 'gif', 'bmp', 'tif', 'tiff']
 MANUAL_EXTENSION_LIST  = ['pdf', 'cbz', 'cbr']
 TRAILER_EXTENSION_LIST = ['mov', 'divx', 'xvid', 'wmv', 'avi', 'mpg', 'mpeg', 'mp4', 'mkv', 'avc']
 

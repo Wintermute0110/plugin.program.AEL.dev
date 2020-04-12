@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<menu>
+<header>
+  <listname>RCA Studio II</listname>
+  <lastlistupdate></lastlistupdate>
+  <listversion>V1</listversion>
+  <exporterversion>V1 GameDBInfo converter</exporterversion>
+</header>
+<game ROM="TV Arcade I - Space War (USA)">
+  <title>TV Arcade I - Space War (USA)</title>
+  <year>1977</year>
+  <genre>Shooter</genre>
+  <developer />
+  <publisher>RCA</publisher>
+  <rating>HSRS - GA (General Audience)</rating>
+</game>
+<game ROM="TV Arcade III - Tennis + Squash (USA)">
+  <title>TV Arcade III - Tennis + Squash (USA)</title>
+  <year>1977</year>
+  <genre>Sports</genre>
+  <developer />
+  <publisher>RCA</publisher>
+  <rating>HSRS - GA (General Audience)</rating>
+</game>
+<game ROM="TV Arcade IV - Baseball (USA)">
+  <title>TV Arcade IV - Baseball (USA)</title>
+  <year>1977</year>
+  <genre>Sports/Baseball</genre>
+  <developer />
+  <publisher>RCA</publisher>
+  <rating>HSRS - GA (General Audience)</rating>
+</game>
+<game ROM="TV Arcade V - Speedway + Tag (USA)">
+  <title>TV Arcade V - Speedway + Tag (USA)</title>
+  <year>1977</year>
+  <genre>Driving</genre>
+  <developer />
+  <publisher>RCA</publisher>
+  <rating>HSRS - GA (General Audience)</rating>
+</game>
+<game ROM="TV Casino I - Blackjack (USA)">
+  <title>TV Casino I - Blackjack (USA)</title>
+  <year>1977</year>
+  <genre>Casino</genre>
+  <developer />
+  <publisher>RCA</publisher>
+  <rating>HSRS - GA (General Audience)</rating>
+</game>
+</menu>
