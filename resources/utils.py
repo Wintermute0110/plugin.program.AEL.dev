@@ -1895,14 +1895,62 @@ def kodi_refresh_container():
     log_debug('kodi_refresh_container()')
     xbmc.executebuiltin('Container.Refresh')
 
-def kodi_toogle_fullscreen():
-    json_str = ('{'
-        '"jsonrpc" : "2.0", "id" : "1", '
-        '"method" : "Input.ExecuteAction", '
-        '"params" : { "action" : "togglefullscreen" }'
-        '}'
-    )
-    xbmc.executeJSONRPC(json_str)
+def kodi_toggle_fullscreen():
+    kodi_jsonrpc_dict('Input.ExecuteAction', {'action' : 'togglefullscreen'})
+
+def kodi_get_screensaver_mode():
+    r_dic = kodi_jsonrpc_dict('Settings.getSettingValue', {'setting' : 'screensaver.mode'})
+    screensaver_mode = r_dic['value']
+    return screensaver_mode
+
+g_screensaver_mode = None # Global variable to store screensaver status.
+def kodi_disable_screensaver():
+    global g_screensaver_mode
+    g_screensaver_mode = kodi_get_screensaver_mode()
+    log_debug('kodi_disable_screensaver() g_screensaver_mode "{}"'.format(g_screensaver_mode))
+    p_dic = {
+        'setting' : 'screensaver.mode',
+        'value' : '',
+    }
+    kodi_jsonrpc_dict('Settings.setSettingValue', p_dic)
+    log_debug('kodi_disable_screensaver() Screensaver disabled.')
+
+# kodi_disable_screensaver() must be called before this function or bad things will happen.
+def kodi_restore_screensaver():
+    if g_screensaver_mode is None:
+        log_error('kodi_disable_screensaver() must be called before kodi_restore_screensaver()')
+        raise RuntimeError
+    log_debug('kodi_restore_screensaver() Screensaver mode "{}"'.format(g_screensaver_mode))
+    p_dic = {
+        'setting' : 'screensaver.mode',
+        'value' : g_screensaver_mode,
+    }
+    kodi_jsonrpc_dict('Settings.setSettingValue', p_dic)
+    log_debug('kodi_restore_screensaver() Restored previous screensaver status.')
+
+def kodi_jsonrpc_dict(method_str, params_dic, verbose = False):
+    params_str = json.dumps(params_dic)
+    if verbose:
+        log_debug('kodi_jsonrpc_dict() method_str "{}"'.format(method_str))
+        log_debug('kodi_jsonrpc_dict() params_dic = \n{}'.format(pprint.pformat(params_dic)))
+        log_debug('kodi_jsonrpc_dict() params_str "{}"'.format(params_str))
+
+    # --- Do query ---
+    header = '"id" : 1, "jsonrpc" : "2.0"'
+    query_str = '{{{}, "method" : "{}", "params" : {} }}'.format(header, method_str, params_str)
+    response_json_str = xbmc.executeJSONRPC(query_str)
+
+    # --- Parse JSON response ---
+    response_dic = json.loads(response_json_str)
+    if 'error' in response_dic:
+        result_dic = response_dic['error']
+        log_warning('kodi_jsonrpc_dict() JSONRPC ERROR {}'.format(result_dic['message']))
+    else:
+        result_dic = response_dic['result']
+    if verbose:
+        log_debug('kodi_jsonrpc_dict() result_dic = \n{}'.format(pprint.pformat(result_dic)))
+
+    return result_dic
 
 #
 # Access Kodi JSON-RPC interface in an easy way.
