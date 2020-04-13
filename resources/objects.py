@@ -4431,14 +4431,45 @@ class NvidiaGameStreamLauncher(ROMLauncherABC):
         toggle_window_str = 'ON' if self.entity_data['toggle_window'] else 'OFF'
         non_blocking_str  = 'ON' if self.entity_data['non_blocking'] else 'OFF'
         
+        streamClient = self.entity_data['application']
+        if streamClient == 'NVIDIA':
+            streamClient = 'Nvidia'
+        elif streamClient == 'MOONLIGHT':
+            streamClient = 'Moonlight'
+
         options = collections.OrderedDict()
-        options['TOGGLE_WINDOWED']    = "Toggle Kodi into windowed mode (now {0})".format(toggle_window_str)
-        options['TOGGLE_NONBLOCKING'] = "Non-blocking launcher (now {0})".format(non_blocking_str)
         
+        options['EDIT_APPLICATION']      = "Change Application: '{0}'".format(streamClient)
         options['CHANGE_NVGS_SERVER_ID'] = "Change server ID: '{}'".format(self.get_server_id())
         options['CHANGE_NVGS_HOST']      = "Change host: '{}'".format(self.entity_data['server'])
-        
+        options['TOGGLE_WINDOWED']       = "Toggle Kodi into windowed mode (now {0})".format(toggle_window_str)
+        options['TOGGLE_NONBLOCKING']    = "Non-blocking launcher (now {0})".format(non_blocking_str)
         return options
+
+    def change_application(self):
+        current_application = self.entity_data['application']
+        
+        if is_android():            
+            options = {'NVIDIA': 'Nvidia', 'MOONLIGHT': 'Moonlight'}  
+        else:
+            options = {'JAVA': 'Moonlight-PC (java)', 'EXE': 'Moonlight-Chrome (not supported yet)'}
+
+        dialog = KodiOrdDictionaryDialog()    
+        selected_application = dialog.select('Select the client', options)
+            
+        if is_android() and not self._builder_check_if_selected_gamestream_client_exists(selected_application, None, None):
+            return False
+
+        if not is_android() and selected_application == 'JAVA':
+            selected_application = xbmcgui.Dialog().browse(1, 'Select the Gamestream client jar', 'files',
+                                                      self._builder_get_appbrowser_filter('application', self.entity_data),
+                                                      False, False, current_application).decode('utf-8')
+
+        if selected_application is None or selected_application == current_application:
+            return False
+
+        self.entity_data['application'] = selected_application
+        return True
 
     # ---------------------------------------------------------------------------------------------
     # Execution methods
