@@ -180,25 +180,25 @@ def run_plugin(addon_argv):
 
     # --- Some debug stuff for development ---
     log_debug('------------ Called Advanced Emulator Launcher run_plugin(addon_argv) ------------')
-    log_debug('sys.platform   "{0}"'.format(sys.platform))
+    log_debug('sys.platform   "{}"'.format(sys.platform))
     if is_android(): log_debug('OS             "Android"')
     if is_windows(): log_debug('OS             "Windows"')
     if is_osx(): log_debug('OS             "OSX"')
     if is_linux(): log_debug('OS             "Linux"')
-    # log_debug('WindowId       "{0}"'.format(xbmcgui.getCurrentWindowId()))
-    # log_debug('WindowName     "{0}"'.format(xbmc.getInfoLabel('Window.Property(xmlfile)')))
+    # log_debug('WindowId       "{}"'.format(xbmcgui.getCurrentWindowId()))
+    # log_debug('WindowName     "{}"'.format(xbmc.getInfoLabel('Window.Property(xmlfile)')))
     log_debug('Python version "' + sys.version.replace('\n', '') + '"')
-    # log_debug('__a_name__     "{0}"'.format(__addon_name__))
-    log_debug('__a_id__       "{0}"'.format(__addon_id__))
-    log_debug('__a_version__  "{0}"'.format(__addon_version__))
-    # log_debug('__a_author__   "{0}"'.format(__addon_author__))
-    # log_debug('__a_profile__  "{0}"'.format(__addon_profile__))
-    # log_debug('__a_type__     "{0}"'.format(__addon_type__))
-    for i in range(len(sys.argv)): log_debug('sys.argv[{0}] "{1}"'.format(i, sys.argv[i]))
-    # log_debug('ADDON_DATA_DIR OP "{0}"'.format(ADDON_DATA_DIR.getPath()))
-    # log_debug('ADDON_DATA_DIR  P "{0}"'.format(ADDON_DATA_DIR.getPath()))
-    # log_debug('g_PATHS.ADDON_CODE_DIR OP "{0}"'.format(g_PATHS.ADDON_CODE_DIR.getPath()))
-    # log_debug('g_PATHS.ADDON_CODE_DIR  P "{0}"'.format(g_PATHS.ADDON_CODE_DIR.getPath()))
+    # log_debug('__a_name__     "{}"'.format(__addon_name__))
+    log_debug('__a_id__       "{}"'.format(__addon_id__))
+    log_debug('__a_version__  "{}"'.format(__addon_version__))
+    # log_debug('__a_author__   "{}"'.format(__addon_author__))
+    # log_debug('__a_profile__  "{}"'.format(__addon_profile__))
+    # log_debug('__a_type__     "{}"'.format(__addon_type__))
+    for i in range(len(sys.argv)): log_debug('sys.argv[{}] "{}"'.format(i, sys.argv[i]))
+    # log_debug('ADDON_DATA_DIR OP "{}"'.format(ADDON_DATA_DIR.getPath()))
+    # log_debug('ADDON_DATA_DIR  P "{}"'.format(ADDON_DATA_DIR.getPath()))
+    # log_debug('g_PATHS.ADDON_CODE_DIR OP "{}"'.format(g_PATHS.ADDON_CODE_DIR.getPath()))
+    # log_debug('g_PATHS.ADDON_CODE_DIR  P "{}"'.format(g_PATHS.ADDON_CODE_DIR.getPath()))
 
     # --- Get DEBUG information for the log --
     if g_settings['log_level'] == LOG_DEBUG:
@@ -215,8 +215,8 @@ def run_plugin(addon_argv):
         r_minor    = getprops_dic['version']['minor']
         r_revision = getprops_dic['version']['revision']
         r_tag      = getprops_dic['version']['tag']
-        log_debug('Kodi version "{0}" "{1}" "{2}" "{3}" "{4}"'.format(r_name, r_major, r_minor, r_revision, r_tag))
-        log_debug('Kodi skin    "{0}"'.format(getskin_dic['value']))
+        log_debug('Kodi version "{}" "{}" "{}" "{}" "{}"'.format(r_name, r_major, r_minor, r_revision, r_tag))
+        log_debug('Kodi skin    "{}"'.format(getskin_dic['value']))
 
     # --- Addon data paths creation ---
     if not g_PATHS.ADDON_DATA_DIR.exists():            g_PATHS.ADDON_DATA_DIR.makedirs()
@@ -245,9 +245,9 @@ def run_plugin(addon_argv):
         last_migrated_to_version = LooseVersion(str_version)
     except:
         last_migrated_to_version = LooseVersion('0.0.0')
-    log_debug('current_version           {0}'.format(current_version))
-    log_debug('str_version               {0}'.format(str_version))
-    log_debug('last_migrated_to_version  {0}'.format(last_migrated_to_version))
+    log_debug('current_version           {}'.format(current_version))
+    log_debug('str_version               {}'.format(str_version))
+    log_debug('last_migrated_to_version  {}'.format(last_migrated_to_version))
 
     # WARNING Right now concentrate on stabilising AEL code. Once AEL works well again then
     #         think about the migration from 0.9.7 to 0.10.0.
@@ -380,6 +380,8 @@ def m_get_settings():
     g_settings['delay_tempo']              = int(round(float(o.getSetting('delay_tempo'))))
     g_settings['suspend_audio_engine']     = True if o.getSetting('suspend_audio_engine') == 'true' else False
     # g_settings['suspend_joystick_engine']  = True if o.getSetting('suspend_joystick_engine') == 'true' else False
+    g_settings['suspend_screensaver']      = True if o.getSetting('suspend_screensaver') == 'true' else False
+    
     g_settings['escape_romfile']           = True if o.getSetting('escape_romfile') == 'true' else False
     g_settings['lirc_state']               = True if o.getSetting('lirc_state') == 'true' else False
     g_settings['show_batch_window']        = True if o.getSetting('show_batch_window') == 'true' else False
@@ -4470,12 +4472,12 @@ def m_subcommand_collection_edit_default_assets(collection):
 
 # --- Atomic commands ---
 # TODO: implement
-@router.action('EXOIRT')
+@router.action('EXPORT')
 def m_subcommand_collection_export_collection_xml(collection):
     pass
 
 # -------------------------------------------------------------------------------------------------
-# ROMs context menu atomic commands. 
+# Launcher advanced commands. 
 # -------------------------------------------------------------------------------------------------
 
 # --- Choose default ROMs assets/artwork ---
@@ -4853,7 +4855,7 @@ def m_subcommand_update_rom_audit(category, launcher):
 @router.action('EDIT_APPLICATION')
 def m_subcommand_change_launcher_application(category, launcher):
     if launcher.change_application():
-        g_ObjectRepository.save_launcher(launcher)
+        launcher.save_to_disk()
         kodi_notify('Changed launcher application')
 
     return
@@ -4945,6 +4947,20 @@ def m_subcommand_change_launcher_rompath(category, launcher):
     launcher.save_to_disk()
 
     kodi_notify('Changed ROM path')
+
+    if kodi_dialog_yesno('Apply changed path to current ROMs?'):
+        roms = launcher.get_roms()
+        pdialog = KodiProgressDialog()
+        pdialog.startProgress('Updating ROMs...', len(roms))
+        i = 1
+        for rom in roms:
+            pdialog.updateProgress(i, 'Updating "{}"'.format(rom.get_name()))
+            new_rom_filename = rom.get_filename().replace(current_path.getPath(), rom_path)
+            rom.set_file(FileName(new_rom_filename))
+            i = i+1
+        launcher.update_ROM_set(roms)
+        pdialog.endProgress()
+
     return
 
 # --- Edition of the launcher ROM extension (Only ROM launchers). Command: EDIT_ROMEXT ---
@@ -5017,10 +5033,25 @@ def m_subcommand_toggle_multidisc(category, launcher):
 # -------------------------------------------------------------------------------------------------
 # Launcher specific advanced commands
 # -------------------------------------------------------------------------------------------------
+@router.action('CHANGE_RETROARCH_CONF')
+def m_subcommand_change_retroarch_config(category, launcher):
+    options = launcher.get_available_configs()
+       
+    dialog = KodiOrdDictionaryDialog()
+    selected_option = dialog.select('Select Retroarch config', options)
+     
+    if selected_option is None:
+        log_debug('m_subcommand_change_retroarch_config(): Selected option = NONE')
+        return
+            
+    log_debug('m_subcommand_change_retroarch_config(): Selected option = {0}'.format(selected_option))
+    launcher.change_config(selected_option)
+    launcher.save_to_disk()
+
 @router.action('CHANGE_RETROARCH_CORE')
 def m_subcommand_change_retroarch_core(category, launcher):
     options = launcher.get_available_cores()
-    
+       
     dialog = KodiOrdDictionaryDialog()
     selected_option = dialog.select('Select Retroach Core', options)
      
@@ -5320,7 +5351,6 @@ def m_subcommand_advanced_rom_modifications(launcher, rom):
      
     if selected_option is None:
         log_debug('_subcommand_advanced_rom_modifications(): Selected option = NONE')
-        self._command_edit_rom(launcher.get_category_id(), launcher.get_id(), rom.get_id())
         return
             
     log_debug('_subcommand_advanced_rom_modifications(): Selected option = {0}'.format(selected_option))

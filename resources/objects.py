@@ -1955,20 +1955,20 @@ class LauncherABC(MetaDataItemABC):
         # --- Create executor object ---
         if self.executorFactory is None:
             log_error('LauncherABC::launch() self.executorFactory is None')
-            log_error('Cannot create an executor for {0}'.format(self.application.getPath()))
+            log_error('Cannot create an executor for {}'.format(self.application.getPath()))
             kodi_notify_error('LauncherABC::launch() self.executorFactory is None'
                               'This is a bug, please report it.')
             return
         executor = self.executorFactory.create(self.application)
         if executor is None:
-            log_error('Cannot create an executor for {0}'.format(self.application.getPath()))
+            log_error('Cannot create an executor for {}'.format(self.application.getPath()))
             kodi_notify_error('Cannot execute application')
             return
 
-        log_debug('Name        = "{0}"'.format(self.title))
-        log_debug('Application = "{0}"'.format(self.application.getPath()))
-        log_debug('Arguments   = "{0}"'.format(self.arguments))
-        log_debug('Executor    = "{0}"'.format(executor.__class__.__name__))
+        log_debug('Name        = "{}"'.format(self.title))
+        log_debug('Application = "{}"'.format(self.application.getPath()))
+        log_debug('Arguments   = "{}"'.format(self.arguments))
+        log_debug('Executor    = "{}"'.format(executor.__class__.__name__))
 
         # --- Execute app ---
         self._launch_pre_exec(self.title, self.is_in_windowed_mode())
@@ -1986,14 +1986,14 @@ class LauncherABC(MetaDataItemABC):
 
         # --- User notification ---
         if self.settings['display_launcher_notify']:
-            kodi_notify('Launching {0}'.format(title))
+            kodi_notify('Launching {}'.format(title))
 
         # --- Stop/Pause Kodi mediaplayer if requested in settings ---
         self.kodi_was_playing = False
         # id="media_state_action" default="0" values="Stop|Pause|Let Play"
         media_state_action = self.settings['media_state_action']
         media_state_str = ['Stop', 'Pause', 'Let Play'][media_state_action]
-        log_verb('_launch_pre_exec() media_state_action is "{0}" ({1})'.format(media_state_str, media_state_action))
+        log_verb('_launch_pre_exec() media_state_action is "{}" ({})'.format(media_state_str, media_state_action))
         if media_state_action == 0 and xbmc.Player().isPlaying():
             log_verb('_launch_pre_exec() Calling xbmc.Player().stop()')
             xbmc.Player().stop()
@@ -2048,13 +2048,20 @@ class LauncherABC(MetaDataItemABC):
         # --- Toggle Kodi windowed/fullscreen if requested ---
         if toggle_screen_flag:
             log_verb('_launch_pre_exec() Toggling Kodi fullscreen')
-            kodi_toogle_fullscreen()
+            kodi_toggle_fullscreen()
         else:
             log_verb('_launch_pre_exec() Toggling Kodi fullscreen DEACTIVATED in Launcher')
 
+        # Disable screensaver
+        if self.settings['suspend_screensaver']:
+            kodi_disable_screensaver()
+        else:
+            screensaver_mode = kodi_get_screensaver_mode()
+            log_debug('_run_before_execution() Screensaver status "{}"'.format(screensaver_mode))
+
         # --- Pause Kodi execution some time ---
         delay_tempo_ms = self.settings['delay_tempo']
-        log_verb('_launch_pre_exec() Pausing {0} ms'.format(delay_tempo_ms))
+        log_verb('_launch_pre_exec() Pausing {} ms'.format(delay_tempo_ms))
         xbmc.sleep(delay_tempo_ms)
         log_debug('LauncherABC::_launch_pre_exec() function ENDS')
 
@@ -2063,13 +2070,13 @@ class LauncherABC(MetaDataItemABC):
 
         # --- Stop Kodi some time ---
         delay_tempo_ms = self.settings['delay_tempo']
-        log_verb('_launch_post_exec() Pausing {0} ms'.format(delay_tempo_ms))
+        log_verb('_launch_post_exec() Pausing {} ms'.format(delay_tempo_ms))
         xbmc.sleep(delay_tempo_ms)
 
         # --- Toggle Kodi windowed/fullscreen if requested ---
         if toggle_screen_flag:
             log_verb('_launch_post_exec() Toggling Kodi fullscreen')
-            kodi_toogle_fullscreen()
+            kodi_toggle_fullscreen()
         else:
             log_verb('_launch_post_exec() Toggling Kodi fullscreen DEACTIVATED in Launcher')
 
@@ -2098,11 +2105,18 @@ class LauncherABC(MetaDataItemABC):
         else:
             log_verb('_launch_post_exec() DO NOT resume Kodi joystick engine')
 
+        # Restore screensaver status.
+        if self.settings['suspend_screensaver']:
+            kodi_restore_screensaver()
+        else:
+            screensaver_mode = kodi_get_screensaver_mode()
+            log_debug('_run_after_execution() Screensaver status "{}"'.format(screensaver_mode))
+
         # --- Resume Kodi playing if it was paused. If it was stopped, keep it stopped. ---
         media_state_action = self.settings['media_state_action']
         media_state_str = ['Stop', 'Pause', 'Let Play'][media_state_action]
-        log_verb('_launch_post_exec() media_state_action is "{0}" ({1})'.format(media_state_str, media_state_action))
-        log_verb('_launch_post_exec() self.kodi_was_playing is {0}'.format(self.kodi_was_playing))
+        log_verb('_launch_post_exec() media_state_action is "{}" ({})'.format(media_state_str, media_state_action))
+        log_verb('_launch_post_exec() self.kodi_was_playing is {}'.format(self.kodi_was_playing))
         if self.kodi_was_playing and media_state_action == 1:
             log_verb('_launch_post_exec() Calling xbmc.Player().play()')
             xbmc.Player().play()
@@ -2415,7 +2429,7 @@ class StandaloneLauncher(LauncherABC):
         non_blocking_str  = 'ON' if self.entity_data['non_blocking'] else 'OFF'
 
         options = collections.OrderedDict()
-        options['CHANGE_APPLICATION']   = "Change Application: '{0}'".format(self.entity_data['application'])
+        options['EDIT_APPLICATION']     = "Change Application: '{0}'".format(self.entity_data['application'])
         options['MODIFY_ARGS']          = "Modify Arguments: '{0}'".format(self.entity_data['args'])
         options['ADDITIONAL_ARGS']      = "Modify aditional arguments ..."
         options['TOGGLE_WINDOWED']      = "Toggle Kodi into windowed mode (now {0})".format(toggle_window_str)
@@ -2453,7 +2467,7 @@ class StandaloneLauncher(LauncherABC):
     def change_application(self):
         current_application = self.entity_data['application']
         selected_application = xbmcgui.Dialog().browse(1, 'Select the launcher application', 'files',
-                                                      self._get_appbrowser_filter('application', self.entity_data),
+                                                      self._builder_get_appbrowser_filter('application', self.entity_data),
                                                       False, False, current_application).decode('utf-8')
 
         if selected_application is None or selected_application == current_application:
@@ -2513,8 +2527,6 @@ class ROMLauncherABC(LauncherABC):
     def supports_launching_roms(self): return True
 
     def supports_parent_clone_roms(self): return True
-
-    def supports_parent_clone_roms(self): return False
 
     def supports_ROM_audit(self): return True
 
@@ -3819,6 +3831,12 @@ class RetroarchLauncher(StandardRomLauncher):
             cores_ext = 'so'
 
         config_file   = FileName(launcher['retro_config'])
+
+        if not config_file.exists():
+            log_warning('Retroarch config file not found: {}'.format(config_file.getPath()))
+            kodi_notify_error('Retroarch config file not found {}. Change path first.'.format(config_file.getPath()))
+            return cores_sorted
+
         parent_dir    = FileName(config_file.getDir())
         configuration = config_file.readPropertyFile()
         info_folder   = self._create_path_from_retroarch_setting(configuration['libretro_info_path'], parent_dir)
@@ -3932,7 +3950,8 @@ class RetroarchLauncher(StandardRomLauncher):
         multidisc_str     = 'ON' if self.entity_data['multidisc'] else 'OFF'
 
         options = collections.OrderedDict()
-        options['CHANGE_APPLICATION']   = "Change Retroarch path: '{0}'".format(self.entity_data['application'])
+        options['EDIT_APPLICATION']     = "Change Retroarch App path: '{0}'".format(self.entity_data['application'])
+        options['CHANGE_RETROARCH_CONF']= "Change config: '{0}'".format(self.entity_data['retro_config'])
         options['CHANGE_RETROARCH_CORE']= "Change core: '{0}'".format(self.entity_data['retro_core'])
         options['EDIT_ARGS']            = "Modify Arguments: '{0}'".format(self.entity_data['args'])
         options['EDIT_ADDITIONAL_ARGS'] = "Modify aditional arguments ..."
@@ -3947,9 +3966,12 @@ class RetroarchLauncher(StandardRomLauncher):
     def get_available_cores(self):
         return self._builder_get_available_retroarch_cores('retro_core_info', self.get_data_dic())
     
+    def get_available_configs(self):
+        return self._builder_get_available_retroarch_configurations('retro_config', self.get_data_dic())
+
     def change_application(self):
         current_application = self.entity_data['application']
-        selected_application = xbmcgui.Dialog().browse(0, 'Select the Retroarch path', 'files',
+        selected_application = xbmcgui.Dialog().browse(0, 'Select the Retroarch App path', 'files',
                                                        '', False, False, current_application).decode('utf-8')
 
         if selected_application is None or selected_application == current_application:
@@ -3957,6 +3979,9 @@ class RetroarchLauncher(StandardRomLauncher):
         self.entity_data['application'] = selected_application
 
         return True
+    
+    def change_config(self, config_path):
+        self.entity_data['retro_config'] = config_path
 
     def change_core(self, selected_core_file):
         self._builder_load_selected_core_info(selected_core_file, 'retro_core_info', self.entity_data, True)
@@ -3988,8 +4013,12 @@ class RetroarchLauncher(StandardRomLauncher):
             return True
 
         if is_android():
+            android_app_path = self.entity_data['application']
+            android_app = next(s for s in reversed(android_app_path.split('/')) if s)
+
             self.arguments =  'start --user 0 -a android.intent.action.MAIN -c android.intent.category.LAUNCHER '
-            self.arguments += '-n com.retroarch/.browser.retroactivity.RetroActivityFuture '
+
+            self.arguments += '-n {}/com.retroarch.browser.retroactivity.RetroActivityFuture '.format(android_app)
             self.arguments += '-e ROM \'$rom$\' '
             self.arguments += '-e LIBRETRO $retro_core$ '
             self.arguments += '-e CONFIGFILE $retro_config$ '

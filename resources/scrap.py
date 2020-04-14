@@ -3211,7 +3211,7 @@ class ScreenScraper(Scraper):
         self.language_idx = settings['scraper_screenscraper_language']
 
         # --- Internal stuff ---
-        self.last_get_assets_call = datetime.datetime.now()
+        self.last_get_assets_call = datetime.now()
 
         # Create list of regions to search stuff. Put the user preference first.
         self.user_region = ScreenScraper.region_list[self.region_idx]
@@ -4007,13 +4007,13 @@ class ScreenScraper(Scraper):
     # If less than TIME_WAIT_GET_ASSETS seconds have passed since the last call
     # to this function then wait TIME_WAIT_GET_ASSETS seconds.
     def _wait_for_asset_request(self):
-        now = datetime.datetime.now()
+        now = datetime.now()
         seconds_since_last_call = (now - self.last_get_assets_call).total_seconds()
         if seconds_since_last_call < ScreenScraper.TIME_WAIT_GET_ASSETS:
             log_debug('SS._wait_for_asset_request() Sleeping to avoid overloading...')
             time.sleep(ScreenScraper.TIME_WAIT_GET_ASSETS)
         # Update waiting time for next call.
-        self.last_get_assets_call = datetime.datetime.now()
+        self.last_get_assets_call = datetime.now()
 
 # ------------------------------------------------------------------------------------------------
 # GameFAQs online scraper.
