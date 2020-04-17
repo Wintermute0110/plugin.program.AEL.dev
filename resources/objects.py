@@ -4395,6 +4395,7 @@ class NvidiaGameStreamLauncher(ROMLauncherABC):
         gs = GameStreamServer(input, None)
         if not gs.connect():
             kodi_notify_warn('Could not connect to gamestream server')
+            return input
 
         launcher['server_id'] = 4 # not yet known what the origin is
         launcher['server_uuid'] = gs.get_uniqueid()
@@ -4442,6 +4443,8 @@ class NvidiaGameStreamLauncher(ROMLauncherABC):
         options['EDIT_APPLICATION']      = "Change Application: '{0}'".format(streamClient)
         options['CHANGE_NVGS_SERVER_ID'] = "Change server ID: '{}'".format(self.get_server_id())
         options['CHANGE_NVGS_HOST']      = "Change host: '{}'".format(self.entity_data['server'])
+        options['UPDATE_NVGS_SERVER']    = "Update server info"
+        
         options['TOGGLE_WINDOWED']       = "Toggle Kodi into windowed mode (now {0})".format(toggle_window_str)
         options['TOGGLE_NONBLOCKING']    = "Non-blocking launcher (now {0})".format(non_blocking_str)
         return options
@@ -4470,6 +4473,9 @@ class NvidiaGameStreamLauncher(ROMLauncherABC):
 
         self.entity_data['application'] = selected_application
         return True
+    
+    def update_server_info(self):
+        self._builder_validate_gamestream_server_connection(self.entity_data['server'],'server', self.entity_data)
 
     # ---------------------------------------------------------------------------------------------
     # Execution methods
@@ -4519,7 +4525,7 @@ class NvidiaGameStreamLauncher(ROMLauncherABC):
             elif streamClient == 'MOONLIGHT':
                 self.arguments =  'start --user 0 -a android.intent.action.MAIN '
                 self.arguments += '-c android.intent.category.LAUNCHER ' 
-                self.arguments += '-n com.limelight/.Game '
+                self.arguments += '-n com.limelight/com.limelight.ShortcutTrampoline '
                 self.arguments += '-e Host $server$ '
                 self.arguments += '-e AppId $streamid$ '
                 self.arguments += '-e AppName "$gamestream_name$" '
@@ -4634,7 +4640,7 @@ class NvidiaGameStreamLauncher(ROMLauncherABC):
 #     favourites = AELObjectFactory.find_launcher(VCATEGORY_FAVOURITES_ID) # Launcher ID implicit
 #     favourites.add_ROM(ROM)
 #     favourites.save_to_disk()
-#
+#F
 # 17. Add ROM to Collection:
 #     launcher = AELObjectFactory.find_launcher(VCATEGORY_ACTUAL_LAUN_ID, launcher_id)
 #     ROM = launcher.create_new_ROM()

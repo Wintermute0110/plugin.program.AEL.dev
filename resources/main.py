@@ -5070,7 +5070,16 @@ def m_subcommand_change_gamestream_server_id(category, launcher):
 @router.action("CHANGE_NVGS_HOST")
 def m_subcommand_change_gamestream_server_id(category, launcher):
     m_gui_edit_field_by_ipaddr(launcher, 'Gamestream Host', launcher.get_server, launcher.set_server)
+
+@router.action("UPDATE_NVGS_SERVER")
+def m_subcommand_update_gamestream_server_info(category, launcher):
+    if not kodi_dialog_yesno('Are you sure you want to update all server info?'):
+        return
     
+    launcher.update_server_info()
+    launcher.save_to_disk()
+    kodi_notify('Done retrieving server info')
+
 # -------------------------------------------------------------------------------------------------
 # ROM item context menu atomic comands.
 # -------------------------------------------------------------------------------------------------
