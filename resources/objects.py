@@ -2429,7 +2429,7 @@ class StandaloneLauncher(LauncherABC):
         non_blocking_str  = 'ON' if self.entity_data['non_blocking'] else 'OFF'
 
         options = collections.OrderedDict()
-        options['CHANGE_APPLICATION']   = "Change Application: '{0}'".format(self.entity_data['application'])
+        options['EDIT_APPLICATION']     = "Change Application: '{0}'".format(self.entity_data['application'])
         options['MODIFY_ARGS']          = "Modify Arguments: '{0}'".format(self.entity_data['args'])
         options['ADDITIONAL_ARGS']      = "Modify aditional arguments ..."
         options['TOGGLE_WINDOWED']      = "Toggle Kodi into windowed mode (now {0})".format(toggle_window_str)
@@ -2467,7 +2467,7 @@ class StandaloneLauncher(LauncherABC):
     def change_application(self):
         current_application = self.entity_data['application']
         selected_application = xbmcgui.Dialog().browse(1, 'Select the launcher application', 'files',
-                                                      self._get_appbrowser_filter('application', self.entity_data),
+                                                      self._builder_get_appbrowser_filter('application', self.entity_data),
                                                       False, False, current_application).decode('utf-8')
 
         if selected_application is None or selected_application == current_application:
@@ -2527,8 +2527,6 @@ class ROMLauncherABC(LauncherABC):
     def supports_launching_roms(self): return True
 
     def supports_parent_clone_roms(self): return True
-
-    def supports_parent_clone_roms(self): return False
 
     def supports_ROM_audit(self): return True
 
@@ -3833,6 +3831,12 @@ class RetroarchLauncher(StandardRomLauncher):
             cores_ext = 'so'
 
         config_file   = FileName(launcher['retro_config'])
+
+        if not config_file.exists():
+            log_warning('Retroarch config file not found: {}'.format(config_file.getPath()))
+            kodi_notify_error('Retroarch config file not found {}. Change path first.'.format(config_file.getPath()))
+            return cores_sorted
+
         parent_dir    = FileName(config_file.getDir())
         configuration = config_file.readPropertyFile()
         info_folder   = self._create_path_from_retroarch_setting(configuration['libretro_info_path'], parent_dir)
@@ -3946,7 +3950,8 @@ class RetroarchLauncher(StandardRomLauncher):
         multidisc_str     = 'ON' if self.entity_data['multidisc'] else 'OFF'
 
         options = collections.OrderedDict()
-        options['CHANGE_APPLICATION']   = "Change Retroarch path: '{0}'".format(self.entity_data['application'])
+        options['EDIT_APPLICATION']     = "Change Retroarch App path: '{0}'".format(self.entity_data['application'])
+        options['CHANGE_RETROARCH_CONF']= "Change config: '{0}'".format(self.entity_data['retro_config'])
         options['CHANGE_RETROARCH_CORE']= "Change core: '{0}'".format(self.entity_data['retro_core'])
         options['EDIT_ARGS']            = "Modify Arguments: '{0}'".format(self.entity_data['args'])
         options['EDIT_ADDITIONAL_ARGS'] = "Modify aditional arguments ..."
@@ -3961,9 +3966,12 @@ class RetroarchLauncher(StandardRomLauncher):
     def get_available_cores(self):
         return self._builder_get_available_retroarch_cores('retro_core_info', self.get_data_dic())
     
+    def get_available_configs(self):
+        return self._builder_get_available_retroarch_configurations('retro_config', self.get_data_dic())
+
     def change_application(self):
         current_application = self.entity_data['application']
-        selected_application = xbmcgui.Dialog().browse(0, 'Select the Retroarch path', 'files',
+        selected_application = xbmcgui.Dialog().browse(0, 'Select the Retroarch App path', 'files',
                                                        '', False, False, current_application).decode('utf-8')
 
         if selected_application is None or selected_application == current_application:
@@ -3971,6 +3979,9 @@ class RetroarchLauncher(StandardRomLauncher):
         self.entity_data['application'] = selected_application
 
         return True
+    
+    def change_config(self, config_path):
+        self.entity_data['retro_config'] = config_path
 
     def change_core(self, selected_core_file):
         self._builder_load_selected_core_info(selected_core_file, 'retro_core_info', self.entity_data, True)
@@ -4002,8 +4013,12 @@ class RetroarchLauncher(StandardRomLauncher):
             return True
 
         if is_android():
+            android_app_path = self.entity_data['application']
+            android_app = next(s for s in reversed(android_app_path.split('/')) if s)
+
             self.arguments =  'start --user 0 -a android.intent.action.MAIN -c android.intent.category.LAUNCHER '
-            self.arguments += '-n com.retroarch/.browser.retroactivity.RetroActivityFuture '
+
+            self.arguments += '-n {}/com.retroarch.browser.retroactivity.RetroActivityFuture '.format(android_app)
             self.arguments += '-e ROM \'$rom$\' '
             self.arguments += '-e LIBRETRO $retro_core$ '
             self.arguments += '-e CONFIGFILE $retro_config$ '
@@ -4380,6 +4395,7 @@ class NvidiaGameStreamLauncher(ROMLauncherABC):
         gs = GameStreamServer(input, None)
         if not gs.connect():
             kodi_notify_warn('Could not connect to gamestream server')
+            return input
 
         launcher['server_id'] = 4 # not yet known what the origin is
         launcher['server_uuid'] = gs.get_uniqueid()
@@ -4416,14 +4432,50 @@ class NvidiaGameStreamLauncher(ROMLauncherABC):
         toggle_window_str = 'ON' if self.entity_data['toggle_window'] else 'OFF'
         non_blocking_str  = 'ON' if self.entity_data['non_blocking'] else 'OFF'
         
+        streamClient = self.entity_data['application']
+        if streamClient == 'NVIDIA':
+            streamClient = 'Nvidia'
+        elif streamClient == 'MOONLIGHT':
+            streamClient = 'Moonlight'
+
         options = collections.OrderedDict()
-        options['TOGGLE_WINDOWED']    = "Toggle Kodi into windowed mode (now {0})".format(toggle_window_str)
-        options['TOGGLE_NONBLOCKING'] = "Non-blocking launcher (now {0})".format(non_blocking_str)
         
+        options['EDIT_APPLICATION']      = "Change Application: '{0}'".format(streamClient)
         options['CHANGE_NVGS_SERVER_ID'] = "Change server ID: '{}'".format(self.get_server_id())
         options['CHANGE_NVGS_HOST']      = "Change host: '{}'".format(self.entity_data['server'])
+        options['UPDATE_NVGS_SERVER']    = "Update server info"
         
+        options['TOGGLE_WINDOWED']       = "Toggle Kodi into windowed mode (now {0})".format(toggle_window_str)
+        options['TOGGLE_NONBLOCKING']    = "Non-blocking launcher (now {0})".format(non_blocking_str)
         return options
+
+    def change_application(self):
+        current_application = self.entity_data['application']
+        
+        if is_android():            
+            options = {'NVIDIA': 'Nvidia', 'MOONLIGHT': 'Moonlight'}  
+        else:
+            options = {'JAVA': 'Moonlight-PC (java)', 'EXE': 'Moonlight-Chrome (not supported yet)'}
+
+        dialog = KodiOrdDictionaryDialog()    
+        selected_application = dialog.select('Select the client', options)
+            
+        if is_android() and not self._builder_check_if_selected_gamestream_client_exists(selected_application, None, None):
+            return False
+
+        if not is_android() and selected_application == 'JAVA':
+            selected_application = xbmcgui.Dialog().browse(1, 'Select the Gamestream client jar', 'files',
+                                                      self._builder_get_appbrowser_filter('application', self.entity_data),
+                                                      False, False, current_application).decode('utf-8')
+
+        if selected_application is None or selected_application == current_application:
+            return False
+
+        self.entity_data['application'] = selected_application
+        return True
+    
+    def update_server_info(self):
+        self._builder_validate_gamestream_server_connection(self.entity_data['server'],'server', self.entity_data)
 
     # ---------------------------------------------------------------------------------------------
     # Execution methods
@@ -4473,7 +4525,7 @@ class NvidiaGameStreamLauncher(ROMLauncherABC):
             elif streamClient == 'MOONLIGHT':
                 self.arguments =  'start --user 0 -a android.intent.action.MAIN '
                 self.arguments += '-c android.intent.category.LAUNCHER ' 
-                self.arguments += '-n com.limelight/.Game '
+                self.arguments += '-n com.limelight/com.limelight.ShortcutTrampoline '
                 self.arguments += '-e Host $server$ '
                 self.arguments += '-e AppId $streamid$ '
                 self.arguments += '-e AppName "$gamestream_name$" '
@@ -4588,7 +4640,7 @@ class NvidiaGameStreamLauncher(ROMLauncherABC):
 #     favourites = AELObjectFactory.find_launcher(VCATEGORY_FAVOURITES_ID) # Launcher ID implicit
 #     favourites.add_ROM(ROM)
 #     favourites.save_to_disk()
-#
+#F
 # 17. Add ROM to Collection:
 #     launcher = AELObjectFactory.find_launcher(VCATEGORY_ACTUAL_LAUN_ID, launcher_id)
 #     ROM = launcher.create_new_ROM()
