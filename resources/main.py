@@ -5349,7 +5349,7 @@ class Main:
     # Adds ROM to favourites
     #
     def _command_add_to_favourites(self, categoryID, launcherID, romID):
-        # >> ROM in Virtual Launcher
+        # ROM in Virtual Launcher
         if categoryID == VCATEGORY_TITLE_ID:
             roms = fs_load_VCategory_ROMs_JSON(g_PATHS.VIRTUAL_CAT_TITLE_DIR, launcherID)
             launcher = self.launchers[roms[romID]['launcherID']]
@@ -5365,12 +5365,20 @@ class Main:
         elif categoryID == VCATEGORY_CATEGORY_ID:
             roms = fs_load_VCategory_ROMs_JSON(g_PATHS.VIRTUAL_CAT_CATEGORY_DIR, launcherID)
             launcher = self.launchers[roms[romID]['launcherID']]
-        # >> ROMs in standard launcher
+        # ROM in ROM Collection
+        elif categoryID == VCATEGORY_COLLECTIONS_ID:
+            collections, update_tstamp = fs_load_Collection_index_XML(g_PATHS.COLLECTIONS_FILE_PATH)
+            roms_json_file = g_PATHS.COLLECTIONS_DIR.pjoin(collections[launcherID]['roms_base_noext'] + '.json')
+            rom_list = fs_load_Collection_ROMs_JSON(roms_json_file)
+            roms = OrderedDict()
+            for crom in rom_list: roms[crom['id']] = crom
+            launcher = self.launchers[roms[romID]['launcherID']]
+        # ROM in standard launcher
         else:
-            launcher = self.launchers[launcherID]
             roms = fs_load_ROMs_JSON(g_PATHS.ROMS_DIR, launcher)
+            launcher = self.launchers[launcherID]
 
-        # >> Sanity check
+        # Sanity check
         if not roms:
             kodi_dialog_OK('Empty roms launcher in _command_add_to_favourites(). This is a bug, please report it.')
             return
@@ -5380,15 +5388,15 @@ class Main:
 
         # --- DEBUG info ---
         log_verb('_command_add_to_favourites() Adding ROM to Favourites')
-        log_verb('_command_add_to_favourites() romID  {0}'.format(romID))
-        log_verb('_command_add_to_favourites() m_name {0}'.format(roms[romID]['m_name']))
+        log_verb('_command_add_to_favourites() romID  {}'.format(romID))
+        log_verb('_command_add_to_favourites() m_name {}'.format(roms[romID]['m_name']))
 
         # Check if ROM already in favourites an warn user if so
         if romID in roms_fav:
             log_verb('Already in favourites')
             dialog = xbmcgui.Dialog()
             ret = dialog.yesno('Advanced Emulator Launcher',
-                               'ROM {0} is already on AEL Favourites. Overwrite it?'.format(roms[romID]['m_name']))
+                               'ROM {} is already on AEL Favourites. Overwrite it?'.format(roms[romID]['m_name']))
             if not ret:
                 log_verb('User does not want to overwrite. Exiting.')
                 return
@@ -5396,7 +5404,7 @@ class Main:
         else:
             dialog = xbmcgui.Dialog()
             ret = dialog.yesno('Advanced Emulator Launcher',
-                                'ROM {0}. Add this ROM to AEL Favourites?'.format(roms[romID]['m_name']))
+                                'ROM {}. Add this ROM to AEL Favourites?'.format(roms[romID]['m_name']))
             if not ret:
                 log_verb('User does not confirm addition. Exiting.')
                 return
@@ -5407,7 +5415,7 @@ class Main:
         # if roms_fav[romID]['thumb']  == '': roms_fav[romID]['thumb']  = launcher['thumb']
         # if roms_fav[romID]['fanart'] == '': roms_fav[romID]['fanart'] = launcher['fanart']
         fs_write_Favourites_JSON(g_PATHS.FAV_JSON_FILE_PATH, roms_fav)
-        kodi_notify('ROM {0} added to Favourites'.format(roms[romID]['m_name']))
+        kodi_notify('ROM {} added to Favourites'.format(roms[romID]['m_name']))
         kodi_refresh_container()
 
     #
