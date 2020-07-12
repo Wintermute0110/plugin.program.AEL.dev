@@ -332,6 +332,8 @@ def fs_aux_copy_ROM_metadata(source_rom, dest_rom):
     dest_rom['cloneof']        = source_rom['cloneof']
 
 def fs_aux_copy_ROM_artwork(source_launcher, source_rom, dest_rom):
+    # TODO Replace this with a for loop and use the contant definitions in constants.py
+    dest_rom['s_3dbox']     = source_rom['s_3dbox']
     dest_rom['s_title']     = source_rom['s_title']
     dest_rom['s_snap']      = source_rom['s_snap']
     dest_rom['s_fanart']    = source_rom['s_fanart']
