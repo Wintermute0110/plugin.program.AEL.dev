@@ -5350,6 +5350,9 @@ class Main:
     #
     def _command_add_to_favourites(self, categoryID, launcherID, romID):
         # ROM in Virtual Launcher
+        # TODO if ROM in virtual launcher is not correctly linked, for example, if launcher
+        #      does not currently exists, AEL will crash. Unlinked launcher/Broken ROMs
+        #      must be detected and rejected to be added to Favourites.
         if categoryID == VCATEGORY_TITLE_ID:
             roms = fs_load_VCategory_ROMs_JSON(g_PATHS.VIRTUAL_CAT_TITLE_DIR, launcherID)
             launcher = self.launchers[roms[romID]['launcherID']]
@@ -5375,8 +5378,8 @@ class Main:
             launcher = self.launchers[roms[romID]['launcherID']]
         # ROM in standard launcher
         else:
-            roms = fs_load_ROMs_JSON(g_PATHS.ROMS_DIR, launcher)
             launcher = self.launchers[launcherID]
+            roms = fs_load_ROMs_JSON(g_PATHS.ROMS_DIR, launcher)
 
         # Sanity check
         if not roms:
