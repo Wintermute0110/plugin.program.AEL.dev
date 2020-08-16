@@ -584,19 +584,7 @@ class ScrapeStrategy(object):
         
             if self.pdialog_verbose:
                 self.pdialog.updateMessage2('Loading NFO file {0}'.format(self.NFO_file.getPath()))
-            # If this point is reached the NFO file was found previosly.
-            log_debug('Loading NFO P "{0}"'.format(self.NFO_file.getPath()))
-            nfo_dic = fs_import_ROM_NFO_file_scanner(self.NFO_file)
-            # NOTE <platform> is chosen by AEL, never read from NFO files. Indeed, platform
-            #      is a Launcher property, not a ROM property.
-            ROM.set_name(nfo_dic['title'])                  # <title>
-            ROM.set_releaseyear(nfo_dic['year'])            # <year>
-            ROM.set_genre(nfo_dic['genre'])                 # <genre>
-            ROM.set_developer(nfo_dic['developer'])         # <developer>
-            ROM.set_number_of_players(nfo_dic['nplayers'])  # <nplayers>
-            ROM.set_esrb_rating(nfo_dic['esrb'])            # <esrb>
-            ROM.set_rating(nfo_dic['rating'])               # <rating>
-            ROM.set_plot(nfo_dic['plot'])                   # <plot>
+            ROM.update_with_nfo_file(NFO_file, self.pdialog_verbose)
 
         elif self.metadata_action == ScrapeStrategy.ACTION_META_SCRAPER:
             self._scanner_scrap_ROM_metadata(ROM)

@@ -1627,7 +1627,8 @@ def fs_import_ROM_NFO(roms, romID, verbose = True):
 def fs_import_ROM_NFO_file_scanner(nfo_file_path):
     nfo_dic = {
         'title' : '', 'year' : '', 'genre' : '', 'developer' : '',
-        'nplayers' : '', 'esrb' : '', 'rating' : '', 'plot' : ''
+        'nplayers' : '', 'esrb' : '', 'rating' : '', 'plot' : '',
+        'trailer': ''
     }
 
     # >> Read file, put in a string and remove line endings
@@ -1643,6 +1644,7 @@ def fs_import_ROM_NFO_file_scanner(nfo_file_path):
     item_esrb      = re.findall('<esrb>(.*?)</esrb>', nfo_str)
     item_rating    = re.findall('<rating>(.*?)</rating>', nfo_str)
     item_plot      = re.findall('<plot>(.*?)</plot>', nfo_str)
+    item_trailer   = re.findall('<trailer>(.*?)</trailer>', nfo_str)
 
     # >> Future work: ESRB and maybe nplayer fields must be sanitized.
     if len(item_title) > 0:     nfo_dic['title']     = text_unescape_XML(item_title[0])
@@ -1653,6 +1655,7 @@ def fs_import_ROM_NFO_file_scanner(nfo_file_path):
     if len(item_esrb) > 0:      nfo_dic['esrb']      = text_unescape_XML(item_esrb[0])
     if len(item_rating) > 0:    nfo_dic['rating']    = text_unescape_XML(item_rating[0])
     if len(item_plot) > 0:      nfo_dic['plot']      = text_unescape_XML(item_plot[0])
+    if len(item_trailer) > 0:   nfo_dic['trailer']   = text_unescape_XML(item_trailer[0])
 
     return nfo_dic
 

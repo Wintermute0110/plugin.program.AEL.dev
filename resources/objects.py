@@ -4356,6 +4356,7 @@ class NvidiaGameStreamLauncher(ROMLauncherABC):
             return success
         
         self.set_box_sizing(BOX_SIZE_STEAM)
+
         return success
     
     def _builder_generatePairPinCode(self, input, item_key, launcher):
@@ -4389,7 +4390,6 @@ class NvidiaGameStreamLauncher(ROMLauncherABC):
                 'the server with the Shield or Moonlight applications.')
 
         return certificates_path.getPath()
-
     def _builder_validate_gamestream_server_connection(self, input, item_key, launcher):
         gs = GameStreamServer(input, None)
         if not gs.connect():
