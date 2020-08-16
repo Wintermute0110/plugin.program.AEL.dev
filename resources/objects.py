@@ -4378,7 +4378,6 @@ class NvidiaGameStreamLauncher(ROMLauncherABC):
 
     def _builder_try_to_resolve_path_to_nvidia_certificates(self, input, item_key, launcher):
         path = GameStreamServer.try_to_resolve_path_to_nvidia_certificates()
-
         return path
 
     def _builder_validate_nvidia_certificates(self, input, item_key, launcher):
@@ -4443,6 +4442,7 @@ class NvidiaGameStreamLauncher(ROMLauncherABC):
         options['EDIT_APPLICATION']      = "Change Application: '{0}'".format(streamClient)
         options['CHANGE_NVGS_SERVER_ID'] = "Change server ID: '{}'".format(self.get_server_id())
         options['CHANGE_NVGS_HOST']      = "Change host: '{}'".format(self.entity_data['server'])
+        options['CHANGE_NVGS_CERTS']     = "Change certificates: '{}'".format(self.get_certificates_path().getPath())
         options['UPDATE_NVGS_SERVER']    = "Update server info"
         
         options['TOGGLE_WINDOWED']       = "Toggle Kodi into windowed mode (now {0})".format(toggle_window_str)
@@ -4474,6 +4474,10 @@ class NvidiaGameStreamLauncher(ROMLauncherABC):
         self.entity_data['application'] = selected_application
         return True
     
+    def change_certificate_path(self, path_str):
+        validated_path = self._builder_validate_nvidia_certificates(path_str, 'certificates_path', self.entity_data)
+        self.entity_data['certificates_path'] = validated_path
+
     def update_server_info(self):
         self._builder_validate_gamestream_server_connection(self.entity_data['server'],'server', self.entity_data)
 
@@ -6464,6 +6468,10 @@ class GameStreamServer(object):
 
     def getApps(self):
         apps_response = self._perform_server_request('applist', True)
+        if apps_response is None:
+            kodi_notify_error('Failure to connect to GameStream server')
+            return []
+
         appnodes = apps_response.findall('App')
         apps = []
         for appnode in appnodes:

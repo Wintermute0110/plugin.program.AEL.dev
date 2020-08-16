@@ -5071,6 +5071,19 @@ def m_subcommand_change_gamestream_server_id(category, launcher):
 def m_subcommand_change_gamestream_server_id(category, launcher):
     m_gui_edit_field_by_ipaddr(launcher, 'Gamestream Host', launcher.get_server, launcher.set_server)
 
+@router.action("CHANGE_NVGS_CERTS")
+def m_subcommand_change_gamestream_certificates(category, launcher):
+    current_path  = launcher.get_certificates_path().getPath()
+    selected_path = kodi_dialog_GetDirectory('Select the path with valid certificates', '', current_path) 
+
+    if selected_path is None or selected_path == current_path:
+        log_debug('m_subcommand_change_gamestream_certificates(): Selected path = NONE')
+        return
+
+    launcher.change_certificate_path(selected_path)
+    launcher.save_to_disk()
+    kodi_notify('Done changing certificates path')
+
 @router.action("UPDATE_NVGS_SERVER")
 def m_subcommand_update_gamestream_server_info(category, launcher):
     if not kodi_dialog_yesno('Are you sure you want to update all server info?'):
