@@ -5775,7 +5775,7 @@ class NvidiaStreamScanner(RomScannerStrategy):
         server_host = self.launcher.get_server()
         certificates_path = self.launcher.get_certificates_path()
 
-        streamServer = GameStreamServer(server_host, certificates_path, True)
+        streamServer = GameStreamServer(server_host, certificates_path, False)
         connected = streamServer.connect()
 
         if not connected:
