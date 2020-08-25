@@ -4,6 +4,9 @@ from resources.objects import *
 from resources.utils import *
 from resources.scrap import *
 
+def print_log(msg, level):
+    print('[{}] {}'.format(level, msg))
+
 class FakeRomSetRepository(ROMSetRepository):
     
     def __init__(self, roms):

@@ -26,6 +26,7 @@ import collections
 import shlex
 import subprocess
 import webbrowser
+import re 
 
 from os.path import expanduser
 import uuid
@@ -1221,6 +1222,12 @@ class MetaDataItemABC(object):
         return self.entity_data['s_trailer'] if 's_trailer' in self.entity_data else ''
 
     def set_trailer(self, trailer_str):
+        if 'http' in trailer_str:
+            matches = re.search(r'^.*((youtu.(be|com)\/)|(v\/)|(\/u\/\w\/)|(embed\/)|(watch\?))\??v?=?([^#\&\?]*).*', trailer_str, re.I)
+            if matches is not None:
+                video_id = matches.groups()[-1]
+                trailer_str = 'plugin://plugin.video.youtube/play/?video_id={}'.format(video_id)
+
         self.entity_data['s_trailer'] = trailer_str
 
     # --- Finished status stuff -------------------------------------------------------------------
@@ -1781,21 +1788,23 @@ class ROM(MetaDataItemABC):
         item_esrb      = re.findall('<esrb>(.*?)</esrb>', nfo_str)
         item_rating    = re.findall('<rating>(.*?)</rating>', nfo_str)
         item_plot      = re.findall('<plot>(.*?)</plot>', nfo_str)
+        item_trailer   = re.findall('<trailer>(.*?)</trailer>', nfo_str)
 
         # >> Future work: ESRB and maybe nplayer fields must be sanitized.
-        if len(item_title) > 0:     self.entity_data['m_name']      = text_unescape_XML(item_title[0])
-        if len(item_year) > 0:      self.entity_data['m_year']      = text_unescape_XML(item_year[0])
-        if len(item_genre) > 0:     self.entity_data['m_genre']     = text_unescape_XML(item_genre[0])
-        if len(item_developer) > 0: self.entity_data['m_developer'] = text_unescape_XML(item_developer[0])
-        if len(item_nplayers) > 0:  self.entity_data['m_nplayers']  = text_unescape_XML(item_nplayers[0])
-        if len(item_esrb) > 0:      self.entity_data['m_esrb']      = text_unescape_XML(item_esrb[0])
-        if len(item_rating) > 0:    self.entity_data['m_rating']    = text_unescape_XML(item_rating[0])
-        if len(item_plot) > 0:      self.entity_data['m_plot']      = text_unescape_XML(item_plot[0])
+        if len(item_title) > 0:     self.set_name(text_unescape_XML(item_title[0]))
+        if len(item_year) > 0:      self.set_releaseyear(text_unescape_XML(item_year[0]))
+        if len(item_genre) > 0:     self.set_genre(text_unescape_XML(item_genre[0]))
+        if len(item_developer) > 0: self.set_developer(text_unescape_XML(item_developer[0]))
+        if len(item_rating) > 0:    self.set_rating(text_unescape_XML(item_rating[0]))
+        if len(item_plot) > 0:      self.set_plot(text_unescape_XML(item_plot[0]))
+        if len(item_nplayers) > 0:  self.set_number_of_players(text_unescape_XML(item_nplayers[0]))
+        if len(item_esrb) > 0:      self.set_esrb_rating(text_unescape_XML(item_esrb[0]))
+        if len(item_trailer) > 0:   self.set_trailer(text_unescape_XML(item_trailer[0]))
 
         if verbose:
             kodi_notify('Imported {0}'.format(nfo_file_path.getPath()))
 
-        return
+        return True
 
     def __str__(self):
         """Overrides the default implementation"""
@@ -2265,11 +2274,11 @@ class LauncherABC(MetaDataItemABC):
 
         # >> Careful about object mutability! This should modify the dictionary
         # >> passed as argument outside this function.
-        if item_year:      self.set_releaseyear(text_unescape_XML(item_year[0]))
-        if item_genre:     self.set_genre(text_unescape_XML(item_genre[0]))
-        if item_developer: self.set_developer(text_unescape_XML(item_developer[0]))
-        if item_rating:    self.set_rating(text_unescape_XML(item_rating[0]))
-        if item_plot:      self.set_plot(text_unescape_XML(item_plot[0]))
+        if len(item_year) > 0:      self.set_releaseyear(text_unescape_XML(item_year[0]))
+        if len(item_genre) > 0:     self.set_genre(text_unescape_XML(item_genre[0]))
+        if len(item_developer) > 0: self.set_developer(text_unescape_XML(item_developer[0]))
+        if len(item_rating) > 0:    self.set_rating(text_unescape_XML(item_rating[0]))
+        if len(item_plot) > 0:      self.set_plot(text_unescape_XML(item_plot[0]))
 
         log_verb("import_nfo_file() Imported '{0}'".format(nfo_file_path.getPath()))
 
@@ -4356,6 +4365,7 @@ class NvidiaGameStreamLauncher(ROMLauncherABC):
             return success
         
         self.set_box_sizing(BOX_SIZE_STEAM)
+
         return success
     
     def _builder_generatePairPinCode(self, input, item_key, launcher):
@@ -4389,7 +4399,6 @@ class NvidiaGameStreamLauncher(ROMLauncherABC):
                 'the server with the Shield or Moonlight applications.')
 
         return certificates_path.getPath()
-
     def _builder_validate_gamestream_server_connection(self, input, item_key, launcher):
         gs = GameStreamServer(input, None)
         if not gs.connect():
