@@ -55,7 +55,7 @@ class Test_clean_title_scraper(unittest.TestCase):
         target = ScrapeStrategy(paths,settings)
                 
         # act
-        actual = target.process_ROM_metadata( ,)
+        actual = target.process_ROM_metadata()
                 
         # assert
         self.assertTrue(actual)

@@ -291,6 +291,10 @@ class ScraperFactory(object):
         scraper_menu_list = {}
         for scraper_ID in self.scraper_objs:
             scraper_obj = self.scraper_objs[scraper_ID]
+            if scraper_obj is None:
+                kodi_dialog_OK('Incorrect Scraper ID "{}"'.format(scraper_ID))
+                return None
+
             s_name = scraper_obj.get_name()
             if asset_info is not None and scraper_obj.supports_asset_ID(asset_info.id):
                 scraper_menu_list[scraper_ID] = 'Scrape {0} with {1}'.format(asset_info.name, s_name)
@@ -400,6 +404,7 @@ class ScraperFactory(object):
         if scraper_id == SCRAPER_LIBRETRO_ID: return Libretro(self.settings)
         if scraper_id == SCRAPER_STEAMGRIDDB_ID: return SteamGridDB(self.settings)
         if scraper_id == SCRAPER_GOOGLESEARCH_ID: return GoogleImageSearch(self.settings)
+        if scraper_id == SCRAPER_YOUTUBESEARCH_ID: return YouTubeSearch(self.settings)
         
         return None
 #
@@ -612,12 +617,15 @@ class ScrapeStrategy(object):
             elif self.asset_action_list[AInfo.id] == ScrapeStrategy.ACTION_ASSET_LOCAL_ASSET:
                 log_debug('Using local asset for {}'.format(AInfo.name))
                 ROM.set_asset(AInfo, self.local_asset_list[AInfo.id])
-            elif self.asset_action_list[AInfo.id] == ScrapeStrategy.ACTION_ASSET_SCRAPER:   
+            elif self.asset_action_list[AInfo.id] == ScrapeStrategy.ACTION_ASSET_SCRAPER:
                 asset_path = self._scanner_scrap_ROM_asset(AInfo, self.local_asset_list[AInfo.id], ROM)
-                if asset_path is None or asset_path.getPath() == '':
+                if asset_path is None:
                     log_debug('No asset scraped. Skipping {}'.format(AInfo.name))
-                    continue                             
-                ROM.set_asset(AInfo, asset_path)
+                    continue      
+                if AInfo.id == ASSET_TRAILER_ID:
+                    ROM.set_trailer(asset_path)
+                else:                       
+                    ROM.set_asset(AInfo, asset_path)
             else:
                 raise ValueError('Asset {} index {} ID {} unknown action {}'.format(
                     AInfo.name, i, AInfo.id, self.asset_action_list[AInfo.id]))
@@ -976,7 +984,7 @@ class ScrapeStrategy(object):
             else:
                 self.pdialog.close()
                 image_selected_index = xbmcgui.Dialog().select(
-                    'Select {0} image'.format(asset_name), list = ListItem_list, useDetails = True)
+                    'Select {0} asset'.format(asset_name), list = ListItem_list, useDetails = True)
                 log_debug('{0} dialog returned index {1}'.format(asset_name, image_selected_index))
                 if image_selected_index < 0: image_selected_index = 0
                 self.pdialog.reopen()
@@ -1027,7 +1035,7 @@ class ScrapeStrategy(object):
         if image_ext is None or not image_ext:
             log_debug('Error resolving URL')
             return ret_asset_path
-        log_debug('Resolved URL extension "{0}"'.format(image_ext))
+        log_debug('Resolved URL extension "{}"'.format(image_ext))
 
         # --- Download image ---
         if self.pdialog_verbose:
@@ -1035,12 +1043,11 @@ class ScrapeStrategy(object):
                 asset_name, self.asset_scraper_obj.get_name())
             self.pdialog.updateMessage2(scraper_text)
         image_local_path = asset_path_noext_FN.append('.' + image_ext)
-        log_verb('Download  "{0}"'.format(image_url_log))
-        log_verb('Into file "{0}"'.format(image_local_path.getPath()))
+        log_verb('Download  "{}"'.format(image_url_log))
+        log_verb('Into file "{}"'.format(image_local_path.getPath()))
         try:
-            # net_download_img() never prints URLs or paths.
-            net_download_img(image_url, image_local_path)
-        except socket.timeout:
+            image_local_path = self.asset_scraper_obj.download_image(image_url, image_local_path)
+        except:
             self.pdialog.close()
             # Close error message dialog automatically 1 minute to keep scanning.
             # kodi_dialog_OK(status_dic['msg'])
@@ -1481,6 +1488,7 @@ class Scraper(object):
     def download_image(self, image_url, image_local_path):
         # net_download_img() never prints URLs or paths.
         net_download_img(image_url, image_local_path)
+        return image_local_path
 
     # Not used now. candidate['id'] is used as hash value for the whole candidate dictionary.
     # candidate['id'] must be unique for each game.
@@ -1526,6 +1534,7 @@ class Scraper(object):
             'display_name' : '',
             'url_thumb'    : '',
             'url'          : '',
+            'downloadable' : True
         }
 
     # This functions is called when an error that is not an exception and needs to increase
@@ -1713,7 +1722,7 @@ class Null_Scraper(Scraper):
 
     def resolve_asset_URL_extension(self, selected_asset, image_url, status_dic): return ''
 
-    def download_image(self, image_url, image_local_path): pass
+    def download_image(self, image_url, image_local_path): return None
     
 # ------------------------------------------------------------------------------------------------
 # AEL offline metadata scraper.
@@ -2728,6 +2737,7 @@ class MobyGames(Scraper):
             log_debug('Download failed. Retry after 5 seconds')
             self._wait_for_API_request(5000)
             net_download_img(image_url, image_local_path)
+        return image_local_path
         
     # --- This class own methods -----------------------------------------------------------------
     def debug_get_platforms(self, status_dic):
@@ -4793,6 +4803,7 @@ class SteamGridDB(Scraper):
             log_debug('Download failed. Retry after 5 seconds')
             self._wait_for_API_request(5000)
             net_download_img(image_url, image_local_path)
+        return image_local_path
 
     # --- Retrieve list of games ---
     def _search_candidates(self, search_term, platform, status_dic):
@@ -5010,7 +5021,8 @@ class GoogleImageSearch(Scraper):
 
     def supports_metadata(self): return False
 
-    def supports_asset_ID(self, asset_ID): return True
+    def supports_asset_ID(self, asset_ID): 
+        return asset_ID != ASSET_TRAILER_ID
 
     def supports_assets(self): return True
 
@@ -5086,13 +5098,14 @@ class GoogleImageSearch(Scraper):
             log_debug('Download failed. Retry after 5 seconds')
             self._wait_for_API_request(5000)
             net_download_img(image_url, image_local_path)
+        return image_local_path
 
     # --- Retrieve list of games ---
     def _search_candidates(self, search_term, platform, status_dic):
         # --- Retrieve JSON data with list of games ---
         search_string_encoded = urllib.quote_plus(search_term.encode('utf8'))
         search_string_encoded = search_string_encoded + '+{}'
-        url = 'https://www.google.com/search?q={}&biw=1536&bih=447&source=lnms&tbm=isch&sa=X&ei=Vd2BVaeSOoPeU4vwg4gL&ved=0CAYQ_AUoAQ#tbm=isch'.format(search_string_encoded)
+        url = 'https://www.google.com/search?q={}&source=lnms&tbm=isch'.format(search_string_encoded)
 
         # --- Parse game list ---
         candidate_list = []
@@ -5120,7 +5133,9 @@ class GoogleImageSearch(Scraper):
         
         url = candidate['url'].format(asset_info_term)
         json_data = self._retrieve_URL_as_JSON(url, status_dic)
-        if not status_dic['status']: return None
+        if not json_data or not status_dic['status']: 
+            log_warning('No data could be retrieved from the results page')
+            return None
         self._dump_json_debug('GoogleImageSearch_retrieve_assets.json', json_data)
 
         # --- Parse images page data ---
@@ -5186,9 +5201,9 @@ class GoogleImageSearch(Scraper):
         # Convert data to JSON.
         results = {}
         results['images'] = []
-        
-        ## looking for <script nonce="xoK1dLqTFF+mzuRvsjh/Xg">AF_initDataCallbackAF_initDataCallback({key: 'ds:2', isError:  false , hash: '3', data:function(){
-        hits = re.findall(r"<script nonce=\".*\">AF_initDataCallback\({key: '.*?', isError:  false , hash: '.*?', data:function\(\){return(.*?)}}\);</script>", page_data_raw, flags=re.S)
+
+        ## looking for <script nonce="xoK1dLqTFF+mzuRvsjh/Xg">AF_initDataCallbackAF_initDataCallback({key: 'ds:2', isError:  false , hash: '3', data:[..]
+        hits = re.findall(r"<script nonce=\".*\">AF_initDataCallback\({key: '.*?', isError:  false , hash: '.*?', data:(.*?), sideChannel: {}}\);</script>", page_data_raw, flags=re.S)
         if len(hits) == 0: return None
                         
         hit = hits[::-1][0]
@@ -5199,4 +5214,244 @@ class GoogleImageSearch(Scraper):
             log_error('Error creating JSON data from GoogleImageSearch.')
             self._handle_error(status_dic, 'Error creating JSON data from GoogleImageSearch.')
             return None
+       
+# ------------------------------------------------------------------------------------------------
+# Youtube/Google video search: simple free search for youtube clips
+#
+# ------------------------------------------------------------------------------------------------       
+class YouTubeSearch(Scraper):
     
+    # --- Constructor ----------------------------------------------------------------------------
+    def __init__(self, settings):
+        
+        # --- Pass down common scraper settings ---
+        super(YouTubeSearch, self).__init__(settings)
+
+    # --- Base class abstract methods ------------------------------------------------------------
+    def get_id(self): return SCRAPER_YOUTUBESEARCH_ID
+    
+    def get_name(self): return 'YouTube Search'
+
+    def get_filename(self): return 'YouTubeSearch'
+
+    def supports_disk_cache(self): return True
+
+    def supports_search_string(self): return True
+
+    def supports_metadata_ID(self, metadata_ID): return False
+
+    def supports_metadata(self): return False
+
+    def supports_asset_ID(self, asset_ID):
+        return asset_ID == ASSET_TRAILER_ID
+
+    def supports_assets(self): return True
+
+    def check_before_scraping(self, status_dic): return
+
+    def get_candidates(self, search_term, rom_FN, rom_checksums_FN, platform, status_dic):
+        # --- If scraper is disabled return immediately and silently ---
+        if self.scraper_disabled:
+            # If the scraper is disabled return None and do not mark error in status_dic.
+            log_debug('YouTubeSearch.get_candidates() Scraper disabled. Returning empty data.')
+            return None
+
+        # Prepare data for scraping.
+        rombase_noext = rom_FN.getBaseNoExt()
+        
+        # --- Request is not cached. Get candidates and introduce in the cache ---
+        log_debug('YouTubeSearch.get_candidates() search_term          "{0}"'.format(search_term))
+        log_debug('YouTubeSearch.get_candidates() rombase_noext        "{0}"'.format(rombase_noext))
+        log_debug('YouTubeSearch.get_candidates() AEL platform         "{0}"'.format(platform))
+        candidate_list = self._search_candidates(search_term, platform, status_dic)
+        if not status_dic['status']: return None
+
+        return candidate_list
+
+    # YouTubeSearch does not support metadata
+    def get_metadata(self, status_dic): return None
+
+    # This function may be called many times in the ROM Scanner.
+    # See comments for this function in the Scraper abstract class.
+    def get_assets(self, asset_info, status_dic):
+        # --- If scraper is disabled return immediately and silently ---
+        if self.scraper_disabled:
+            log_debug('YouTubeSearch.get_assets() Scraper disabled. Returning empty data.')
+            return []
+
+        log_debug('YouTubeSearch.get_assets() Getting assets {} (ID {}) for candidate ID "{}"'.format(
+            asset_info.name, asset_info.id, self.candidate['id']))
+
+        asset_specific_cache_key = '{}_{}'.format(self.cache_key, asset_info.id)
+        # --- Cache hit ---
+        if self._check_disk_cache(Scraper.CACHE_INTERNAL, asset_specific_cache_key):
+            log_debug('YouTubeSearch.get_assets() Internal cache hit "{0}"'.format(asset_specific_cache_key))
+            return self._retrieve_from_disk_cache(Scraper.CACHE_INTERNAL, asset_specific_cache_key)
+
+        # --- Cache miss. Retrieve data and update cache ---
+        log_debug('YouTubeSearch.get_assets() Internal cache miss "{0}"'.format(asset_specific_cache_key))
+        
+        asset_list = self._retrieve_assets(self.candidate, asset_info, status_dic)
+        if not status_dic['status']: return None
+        log_debug('YouTubeSearch::get_assets()  A total of {} assets found for candidate ID {}'.format(len(asset_list), self.candidate['id']))
+
+        # --- Put YouTubeSearch in the cache ---
+        log_debug('YouTubeSearch.get_assets() Adding to internal cache "{0}"'.format(asset_specific_cache_key))
+        self._update_disk_cache(Scraper.CACHE_INTERNAL, asset_specific_cache_key, asset_list)
+        return asset_list
+
+    # YouTubeSearch returns both the asset thumbnail URL and the full resolution URL so in
+    # this scraper this method is trivial.
+    def resolve_asset_URL(self, selected_asset, status_dic):
+        url = selected_asset['url']
+        return url, url
+
+    def resolve_asset_URL_extension(self, selected_asset, image_url, status_dic):
+        return 'url'
+
+    def download_image(self, image_url, image_local_path):
+        return image_url
+
+    # --- Retrieve list of games ---
+    def _search_candidates(self, search_term, platform, status_dic):
+        # --- Retrieve JSON data with list of games ---
+        search_string_encoded = urllib.quote_plus(search_term.encode('utf8'))
+        search_string_encoded = search_string_encoded + '+{}'
+        url = 'https://www.youtube.com/results?search_query={}'.format(search_string_encoded)
+
+        # --- Parse game list ---
+        candidate_list = []
+        candidate = self._new_candidate_dic()
+        candidate['id'] = search_term
+        candidate['display_name'] = search_term
+        candidate['platform'] = platform
+        candidate['scraper_platform'] = platform
+        candidate['order'] = 1
+        candidate['url'] = url
+        candidate_list.append(candidate)
+
+        return candidate_list
+
+    def _retrieve_assets(self, candidate, asset_info, status_dic):
+        log_debug('YouTubeSearch._retrieve_assets() Getting {}...'.format(asset_info.name))
+        asset_info_term = '{}+game+{}'.format(candidate['platform'].replace(' ', '+'), asset_info.fname_infix)
+        
+        url = candidate['url'].format(asset_info_term)
+        json_data = self._retrieve_URL_as_JSON(url, status_dic)
+        if not json_data or not status_dic['status']: 
+            log_warning('Could not extract candidates from result page')
+            return None
+        self._dump_json_debug('YouTubeSearch._retrieve_assets.json', json_data)
+
+        # --- Parse images page data ---
+        asset_list = []
+
+        videos = json_data["contents"]["twoColumnSearchResultsRenderer"]["primaryContents"][
+            "sectionListRenderer"
+        ]["contents"][0]["itemSectionRenderer"]["contents"]
+
+        for video in videos:
+            res = {}
+            if "videoRenderer" in video.keys():    
+                try:  
+                    video_data = video.get("videoRenderer", {})
+                    asset_data = self._new_assetdata_dic()
+                    asset_data["video_ID"] = video_data.get("videoId", None)
+                    asset_data['asset_ID'] = asset_info.id
+                    asset_data['display_name'] = video_data.get("title", {}).get("runs", [[{}]])[0].get("text", None)
+                    asset_data['description'] = video_data.get("descriptionSnippet", {}).get("runs", [{}])[0].get("text", None)
+                    asset_data['url_thumb'] = video_data.get("thumbnail", {}).get("thumbnails", [{}])[0]['url']
+                    asset_data['url'] = 'https://youtu.be/watch?v={}'.format(video_data.get("videoId", None))
+                    asset_data['downloadable'] = False
+
+                    if self.verbose_flag: log_debug('Found asset {0}'.format(asset_data['url_thumb']))
+                    asset_list.append(asset_data)    
+                except Exception as ex:
+                    log_error('Error while parsing single result.')
+                    if self.verbose_flag: log_error('Failed result: {}'.format(json.dumps(search_result)))
+                    
+        log_debug('YouTubeSearch._retrieve_assets() Found {} assets for candidate #{} of type {}'.format(
+            len(asset_list), candidate['id'], asset_info.name))
+
+        return asset_list
+    
+    # Retrieve URL and create a JSON object.
+    # YouTubeSearch
+    #
+    def _retrieve_URL_as_JSON(self, url, status_dic, retry=0):
+        self._wait_for_API_request(50)
+        page_data_raw, http_code = net_get_URL(url, url)
+        self.last_http_call = datetime.now()
+        
+        # --- Check HTTP error codes ---
+        if http_code == 400:
+            # Code 400 describes an error. See API description page.
+            log_debug('YouTubeSearch._retrieve_URL_as_JSON() HTTP status 400: general error.')
+            self._handle_error(status_dic, 'Bad HTTP status code {}'.format(http_code))
+            return None
+        elif http_code == 429 and retry < Scraper.RETRY_THRESHOLD:
+            log_debug('YouTubeSearch._retrieve_URL_as_JSON() HTTP status 429: Limit exceeded.')
+            # Number of requaests limit, wait at least 2 minutes. Increments with every retry.
+            amount_seconds = 120*(retry+1)
+            wait_till_time = datetime.now() + timedelta(seconds=amount_seconds)
+            kodi_dialog_OK('You\'ve exceeded the max rate limit.', 
+                           'Respecting the website and we wait at least till {}.'.format(wait_till_time))
+            self._wait_for_API_request(amount_seconds*1000)
+            # waited long enough? Try again
+            retry_after_wait = retry + 1
+            return self._retrieve_URL_as_JSON(url, status_dic, retry_after_wait)
+        elif http_code == 404:
+            # Code 404 means nothing found. Return None but do not mark
+            # error in status_dic.
+            log_debug('YouTubeSearch._retrieve_URL_as_JSON() HTTP status 404: no candidates found.')
+            return None
+        elif http_code != 200:
+            # Unknown HTTP status code.
+            self._handle_error(status_dic, 'Bad HTTP status code {}'.format(http_code))
+            return None
+        
+        try:
+            results = []
+            start = (
+                page_data_raw.index('window["ytInitialData"]')
+                + len('window["ytInitialData"]')
+                + 3
+            )
+            end = page_data_raw.index("};", start) + 1
+            json_str = page_data_raw[start:end]
+            data = json.loads(json_str)
+            return data
+        except Exception as ex:
+            log_error('Error creating JSON data from YouTubeSearch with google.')
+            self._handle_error(status_dic, 'Error creating JSON data from YouTubeSearch.')
+            return None
+
+    def parse_html(self, response):
+        results = []
+        start = (
+            response.index('window["ytInitialData"]')
+            + len('window["ytInitialData"]')
+            + 3
+        )
+        end = response.index("};", start) + 1
+        json_str = response[start:end]
+        data = json.loads(json_str)
+
+        videos = data["contents"]["twoColumnSearchResultsRenderer"]["primaryContents"][
+            "sectionListRenderer"
+        ]["contents"][0]["itemSectionRenderer"]["contents"]
+
+        for video in videos:
+            res = {}
+            if "videoRenderer" in video.keys():
+                video_data = video.get("videoRenderer", {})
+                res["id"] = video_data.get("videoId", None)
+                res["thumbnails"] = [thumb.get("url", None) for thumb in video_data.get("thumbnail", {}).get("thumbnails", [{}]) ]
+                res["title"] = video_data.get("title", {}).get("runs", [[{}]])[0].get("text", None)
+                res["long_desc"] = video_data.get("descriptionSnippet", {}).get("runs", [{}])[0].get("text", None)
+                res["channel"] = video_data.get("longBylineText", {}).get("runs", [[{}]])[0].get("text", None)
+                res["duration"] = video_data.get("lengthText", {}).get("simpleText", 0)
+                res["views"] = video_data.get("viewCountText", {}).get("simpleText", 0) 
+                res["url_suffix"] = video_data.get("navigationEndpoint", {}).get("commandMetadata", {}).get("webCommandMetadata", {}).get("url", None)
+                results.append(res)
+        return results
