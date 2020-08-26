@@ -94,7 +94,7 @@ class Test_LauncherRepository(unittest.TestCase):
         # arrange
         settings = self._get_test_settings()
         
-        xml_path = PythonFileName(self.TEST_ASSETS_DIR+ "\\ms_categories.xml")
+        xml_path = FileName(self.TEST_ASSETS_DIR+ "\\ms_categories.xml")
         paths = Fake_Paths('\\fake\\')
         paths.CATEGORIES_FILE_PATH = xml_path
         
@@ -109,13 +109,13 @@ class Test_LauncherRepository(unittest.TestCase):
         self.assertIsNotNone(actual)
         self.assertEqual(len(actual), expected)
 
-    @patch('resources.objects.FileName', side_effect = PythonFileName)
+    @patch('resources.objects.FileName', side_effect = FileName)
     def test_when_reading_rom_files_it_will_get_the_correct_collection(self, mock_file):
 
         # arrange
         settings = self._get_test_settings()
         
-        rom_dir = PythonFileName(self.TEST_ASSETS_DIR)
+        rom_dir = FileName(self.TEST_ASSETS_DIR)
         paths = Fake_Paths('\\fake\\')
         paths.ROMS_DIR = rom_dir
         
@@ -132,13 +132,13 @@ class Test_LauncherRepository(unittest.TestCase):
         self.assertIsNotNone(actual)
         self.assertEqual(len(actual), expected)
         
-    @patch('resources.objects.FileName', side_effect = PythonFileName)
+    @patch('resources.objects.FileName', side_effect = FileName)
     def test_when_reading_favourites_rom_files_it_will_get_the_correct_values(self, mock_file):
 
         # arrange
         settings = self._get_test_settings()
         
-        rom_dir = PythonFileName(self.TEST_ASSETS_DIR)
+        rom_dir = FileName(self.TEST_ASSETS_DIR)
         paths = Fake_Paths('\\fake\\')
         paths.ROMS_DIR = rom_dir
         

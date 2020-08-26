@@ -433,6 +433,7 @@ SCRAPER_ARCADEDB_ID      = 10070
 SCRAPER_LIBRETRO_ID      = 10080 # Not coded yet.
 SCRAPER_STEAMGRIDDB_ID   = 10090
 SCRAPER_GOOGLESEARCH_ID  = 10100
+SCRAPER_YOUTUBESEARCH_ID = 10110
 
 # List of enabled scrapers. If a scraper ID is in this list then a unique scraper object
 # will be instantiated and cached in the global ScraperFactory object.
@@ -445,7 +446,8 @@ SCRAPER_LIST = [
     SCRAPER_SCREENSCRAPER_ID,
     SCRAPER_ARCADEDB_ID,
     SCRAPER_STEAMGRIDDB_ID,
-    SCRAPER_GOOGLESEARCH_ID
+    SCRAPER_GOOGLESEARCH_ID,
+    SCRAPER_YOUTUBESEARCH_ID
 ]
 
 SCRAPE_ACTION_NONE             = 20000
