@@ -528,7 +528,7 @@ class ScrapeStrategy(object):
     def scanner_process_ROM(self, ROM, ROM_checksums):
         log_debug('ScrapeStrategy.scanner_process_ROM() Determining metadata and asset actions...')
                 
-        if self.scraper_settings.scrape_metadata_policy != SCRAPE_ACTION_NONE:
+        if self.scraper_settings.scrape_metadata_policy != SCRAPE_ACTION_NONE
             self._scanner_process_ROM_metadata_begin(ROM)
         
         if self.scraper_settings.scrape_assets_policy != SCRAPE_ACTION_NONE:
@@ -551,7 +551,8 @@ class ScrapeStrategy(object):
         log_debug('ScrapeStrategy.scanner_process_ROM() Getting candidates for game')
         meta_candidate_set = False
         if self.scraper_settings.scrape_metadata_policy != SCRAPE_ACTION_NONE:
-            self._scanner_get_candidate(ROM, ROM_checksums, search_term, self.meta_scraper_obj, status_dic)
+            if self.metadata_action == ScrapeStrategy.ACTION_META_SCRAPER:
+                self._scanner_get_candidate(ROM, ROM_checksums, search_term, self.meta_scraper_obj, status_dic)
             meta_candidate_set = True
         
         asset_candidate_set = False
@@ -770,7 +771,7 @@ class ScrapeStrategy(object):
         if self.pdialog_verbose:
             scraper_text = 'Searching games with scraper {}...'.format(scraper_obj.get_name())
             self.pdialog.updateMessage2(scraper_text)
-        log_debug('Searching games with scaper {}'.format(scraper_obj.get_name()))
+        log_debug('Searching games with scraper {}'.format(scraper_obj.get_name()))
 
         # * The scanner uses the cached ROM candidate always.
         # * If the candidate is empty it means it was previously searched and the scraper
