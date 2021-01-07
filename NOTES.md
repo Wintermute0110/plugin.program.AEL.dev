@@ -1,5 +1,152 @@
 ## AEL technical notes ##
 
+### New AEL platform and ROM model
+
+This changes improve the AEL experience and smotths the transition to the Kodi games database.
+
+#### Platform information directory (PID)
+
+The PID can be used to automatically import ROM Launcher assets.
+
+The layout of the PID is the following.
+
+```
+<pid>/<pname>/<pname>.nfo
+<pid>/<pname>/banner.png
+<pid>/<pname>/clearlogo.png
+<pid>/<pname>/controller.png -> Picture of controller.
+<pid>/<pname>/fanart.png
+<pid>/<pname>/media.png      -> Picture of cartridge, CD, etc.
+<pid>/<pname>/icon.png
+<pid>/<pname>/poster.png
+<pid>/<pname>/system.png     -> Picture of the system, SS picture or illustration.
+```
+
+`<pname>` is the standardized platform name. Extra artwork is supported for every asset, for example. `banner.png`, `banner1.png`, `banner2.png`.
+
+#### ROM asset directory (RAD)
+
+#### Scanning launcher artwork and metadata at launcher creation time
+
+```
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<advanced_emulator_launcher_configuration>
+<launcher>
+  <name>PlayStation (Retroarch)</name>
+  <category>SONY</category>
+
+  <!--
+      * This tag specifies an NFO file to read the metadata from. This is to share the metadata
+        among different XML configuration files to avoid duplicate information. For example, to
+        share the same NFO file in the Launher configuration of several emulators among different
+        platforms.
+      * The metadata in the launcher NFO file is: year, genre, developer, rating and plot. If any
+        metadata tags are included in the XML file they overrides whatever metadata on the NFO file.
+      * <Launcher_NFO> may be a relative path, for example "../NFO dir/Playstation.nfo". This path
+        is relative to the directory where this XML file is stored.
+    -->
+  <Launcher_NFO>Playstation.nfo</Launcher_NFO>
+  <year>1994</year>
+  <genre>Fifth generation console</genre>
+  <developer>SONY</developer>
+  <rating></rating>
+  <plot>The PlayStation is a home video game console released on 3 December 1994.</plot>
+
+  <platform>Sony PlayStation</platform>
+
+  <application>/home/kodi/bin/retroarch</application>
+  <args>-L /home/kodi/bin/libretro/mednafen_psx_libretro.so -f -v &quot;$rom$&quot;</args>
+  <ROM_path>/home/kodi/AEL-ROMs/sony-psx/</ROM_path>
+  <ROM_ext>cue|m3u</ROM_ext>
+  <Options>Blocking, StaticWindow, Unfinished</Options>
+
+  <!--
+      This path is the main path of the ROM assets. When importing, AEL will create the following
+      directories automatically:
+           Any platform launcher                MAME launcher
+          ------------------------------------------------------------------
+          <ROM_asset_path>/banners/            <ROM_asset_path>/marquees/
+          <ROM_asset_path>/boxbacks/           <ROM_asset_path>/cpanels/
+          <ROM_asset_path>/boxfronts/          <ROM_asset_path>/cabinets/
+          <ROM_asset_path>/cartridges/         <ROM_asset_path>/PCBs/
+          <ROM_asset_path>/clearlogos/         <ROM_asset_path>/clearlogos/
+          <ROM_asset_path>/fanarts/            <ROM_asset_path>/fanarts/
+          <ROM_asset_path>/flyers/             <ROM_asset_path>/flyers/
+          <ROM_asset_path>/manuals/            <ROM_asset_path>/manuals/
+          <ROM_asset_path>/maps/               <ROM_asset_path>/maps/
+          <ROM_asset_path>/snaps/              <ROM_asset_path>/snaps/
+          <ROM_asset_path>/titles/             <ROM_asset_path>/titles/
+          <ROM_asset_path>/trailers/           <ROM_asset_path>/trailers/
+      If <ROM_asset_path> does not exists a YES/NO dialog shows up to tell if the directory should be
+      created or not. Note that if <ROM_asset_path> does not exists or could not be created then
+      the ROM artwork paths will be left unconfigured.
+    -->
+  <ROM_asset_path>/home/kodi/AEL-assets/sony-psx/</ROM_asset_path>
+
+  <!--
+       * When AEL exports an XML configuration, these tags will have the corresponding paths so 
+         it could be restored during a Categories/Launchers XML backup.
+       * When exporting, if all paths share a common <ROM_asset_path> these tags won't be used.
+       * When importing these tags will override <ROM_asset_path>. However, if <ROM_asset_path> is
+         specified then the ROM assets directories will be created if they don't exists as usual.
+       * When using the XML file to configure a launcher for the first time it is not recommended
+         to use these tags, just use <ROM_asset_path>.
+    -->
+  <path_title />
+  <path_snap />
+  <path_boxfront />
+  <path_boxback />
+  <path_cartridge />
+  <path_fanart />
+  <path_banner />
+  <path_clearlogo />
+  <path_flyer />
+  <path_map />
+  <path_manual />
+  <path_trailer />
+
+  <!--
+      This tag configures the assets of the launcher itself. Image files must be on the same
+      directory as this XML configuration file. AEL will search for graphic files having the 
+      following names:
+          a) <Asset_Prefix>_[icon|fanart|banner|poster|clearlogo|controller].[png|jpg|gif]
+          b) <Asset_Prefix>_[icon|fanart|banner|poster|clearlogo|controller]_NN.[png|jpg|gif]
+      If several images are present then AEL will show a dialog and user chooses which image to
+      import. For example: 'PlayStation_icon_1.jpg' and 'PlayStation_icon_2.jpg'.
+      Image files may have an optinal comment at the end of the filename. For example:
+          a) 'PlayStation_fanart_Artist_Name.jpg'
+          b) 'PlayStation_fanart_1_Artist Name.jpg'
+          c) 'PlayStation_fanart_01_Artist Name.jpg'
+          
+      <Asset_Prefix> may be a relative path, for example "../Artwork dir/PlayStation"
+    -->
+  <Asset_Prefix>PlayStation</Asset_Prefix>
+
+  <!--
+       * When AEL exports an XML configuration, these tags will have the corresponding artwork so 
+         it could be restored during a Categories/Launchers XML backup.
+       * During the XML import process, the user will choose the artwork from here and also from 
+         the artwork found using the <Asset_Prefix> tag.
+       * When using the XML file to configure a launcher for the first time it is not recommended
+         to use these tags, just use <Asset_Prefix>.
+    -->
+  <s_icon />
+  <s_fanart />
+  <s_banner />
+  <s_poster />
+  <s_clearlogo />
+  <s_controller />
+  <s_trailer />
+</launcher>
+</advanced_emulator_launcher_configuration>
+```
+
+#### Scanning launcher artwork in the ROM scanner
+
+#### Scanning ROM artwork in the ROM scanner
+
+#### Saving scrapped ROM artwork
+
 ### Current menus in 0.9.8
 
 Context menu **Edit Launcher**, submenu **Manage ROMs ...**:
@@ -275,7 +422,7 @@ To be written...
 
 ### No-Intro ROM names
 
-The official No-Intro naming convention PDF can be downloaded from [ DAT-o-matic](https://datomatic.no-intro.org/) website.
+The official No-Intro naming convention PDF can be downloaded from [DAT-o-matic](https://datomatic.no-intro.org/) website.
 
 The only mandatory elements are the **Title** and the **Region**.
 
