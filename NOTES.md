@@ -112,7 +112,16 @@ Scraping of Category artwork is no supported. User must place their assets on di
 
 #### AEL theme directory (ATD)
 
-Write me.
+The default ATD is distributed with AEL in `ADDON_CODE_PATH/media/theme`.
+
+If tue user wants to change the AEL theme then it must change the ATD in AEL settings and then execute an utility to refresh the theme images.
+
+```
+<atd>/Browse_AEL_Offline_<arttype>.png
+<atd>/Browse_by_Category_<arttype>.png
+...
+<atd>/Utilities_<arttype>.png
+```
 
 #### Canonical example of Launcher XML file
 
@@ -529,11 +538,7 @@ To be written...
 
 ### Multidisc support
 
-The current implementation of multidisc ROMs is deficient and must be improved.
-
-In the current implementation there is a virtual ROM in the database that represents all the ROMs in the set. The virtual multidisc ROM have the ROM basenames of the set in the `disks` list.
-
-This implementation has problems with the ROM audit because not all the real ROMs are in the database.
+In the current implementation there is a virtual ROM in the database that represents all the ROMs in the set. The virtual multidisc ROM have the ROM basenames of the set in the `disks` list. This implementation has problems with the ROM audit because not all the real ROMs are in the database.
 
 #### Multidisc ROM scanner implementation (current)
 
@@ -611,31 +616,39 @@ disk_parent : ROMID_MD5_str,
 
 **ROM scanner algorithm for multidisc sets**
 
- 1. Determine if the ROM is a multidisc ROM using the ROM filename. If so, determine the **set name** (ROM basename excluding the multidisc tag), the **disk name** (ROM basename), the **set index**, and so on. For example, set name = `Final Fantasy VII (USA)`, disk name = `Final Fantasy VII (USA) (Disc 3)` and set index = `3`.
+If `multidisc` is `True` and the user sets it to `False` then the **multidisc virtual set ROMs** are removed and the **multidisc ROMs** converted to normal ROMs. If `multidisc` is `False` and then the user sets it to `True` the ROM scanner must be run to create the **multidisc virtual set ROMs** and to convert the multidisc normal ROMs into **multidisc ROMs**.
 
- 2. Check if the set exists in the database. Linear search of the set name in the base name of the `filename` field of all ROMs. This can be optimized by creating a dictionary with keys the set names and values the ROM IDs of the multidisc virtual set ROMs but this optimization is not critical.
+Maybe doing the ROM scanning for the multidisc case in one pass is difficult. It could be simpler to do a first pass to scan and process metadata/assets of all ROMs, and then do a second pass to remove dead **multidisc virtual set ROM** and to create new **multidisc virtual set ROM**.
 
- 3. If the set is not found:
+Another feature to code is a consistency checker that verifies the consistency of the whole ROMs database in AEL. This could be necessary every time the ROMs in the launcher are changed (added or removed).
+
+**IMPORTANT** This algorithm is incomplete, finish it!
+
+ 1. First pass is to remove dead real ROMs (`filename` not found), No-Intro/Redump missing ROMs. Do not remove **multidisc virtual set ROMs**.
+
+ 2. In the second pass process each real ROM as normal. Scrape assets and metadata for all ROMs.
+
+ 3. In the third pass add No-Intro/Redump missing ROMs if audit is enabled. Missing ROMs are never scraped for metadata/assets.
+
+ 4. In the fourth pass remove dead **multidisc virtual set ROMs**. Traverse all the ROMs in the database. For each ROM determine if the ROM is a **multidisc ROM** using the ROM filename and also determine if the ROM is a **multidisc virtual set ROMs**.
+
+    If the ROM is a **multidisc ROM** then determine the **set name** (ROM basename excluding the multidisc tag), the **disk name** (ROM basename), the **set index**, and so on. For example, set name = `Final Fantasy VII (USA)`, disk name = `Final Fantasy VII (USA) (Disc 3)` and set index = `3`. 
+
+ 5. In a fourth pass
+
+ 4. If the ROM is a **multidisc virtual set ROM** it means it was in the DB before the ROM scanner. In this case verify that all set multidisc ROMs exist. If a **multidisc ROMs** cannot be found by ROM ID then remove it from the `disks` list. If at the end the `disks` field is empty then remove this **multidisc virtual set ROM**.
+
+ 5. Else If the ROM is a **multidisc ROM** and the **multidisc virtual set ROM** is not found:
 
     a. Create the **multidisc virtual set ROM**.
 
-    b. Create the **multidisc ROM**.
+    c. Process metadata and assets for the **multidisc virtual set ROM** only and not for the multidisc ROM.
 
-    c. Process metadata and assets for the multidisc virtual set ROM only and not for the multidisc ROM.
+ 6. Else If the ROM is a **multidisc ROM** and the **multidisc virtual set ROM** is found:
 
-    d. Resume ROM scanning.
+    a. Modify the `disks` field of the **multidisc virtual set ROM**.
 
- 4. If the set is found (set ROM already exists):
-
-    a. Create the **multidisc ROM**. Do not process metadata and assets for the multidisc ROM.
-
-    b. Modify the `disks` field of the **multidisc virtual set ROM**.
-
-    c. Resume ROM scanning.
-
-If `multidisc` is `True` and the user sets it to `False` then the **multidisc virtual set ROMs** are removed and the **multidisc ROMs** converted to normal ROMs. If `multidisc` is `False` and then the user sets it to `True` the ROM scanner must be run to create the **multidisc virtual set ROMs** and to convert the multidisc normal ROMs into **multidisc ROMs**.
-
-Should metadata and assets be processed for the multidisc ROMs? If `multidisc` is `True` and the user never changes that then there is no need for the **multidisc ROMs** to have metadata/assets.
+ 7. ROMs database consistency check.
 
 ### No-Intro ROM names
 
