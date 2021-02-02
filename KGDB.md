@@ -4,15 +4,13 @@ This is a design proposal for the Kodi games database. First there are a set of 
 
 ## 1) Getting started (documentation section)
 
-**Write a short tutorial of how to use the KGDB. First describe the simple case of all ROMs in one directory and then the case of ROMs in several directories.**
+The purpose of this section is to serve as a tutorial to enable you to properly setup your games/ROMs an the Kodi Game library. Retrogaming could be a vast an overwhelming topic and hence this tutorial has been created with minimal jargon.
 
-The purpose of this section is to serve as a tutorial to enable you to properly setup your games. Retrogaming could be a vast an overwhelming topic and hence this tutorial has been created with minimal jargon and explanations.
-
-The first thing for you to understand is what type of games database you would like to have. If you are a **casual user** with just a bunch of games in a single directory the setup is very simple. However, as you expand your collection by adding more games it is necessary to organize your game collection, it pays off. Arcade emulators in particular require that your ROMs have very specific file names and must be placed in specific locations.
+The first thing for you to understand is what type of games library you would like to have. If you are a **casual user** with just a bunch of games in a single directory the setup is very simple. However, as you expand your collection by adding more games it is necessary to organize your game collection. Also, if you like arcade games, arcade emulators require that your ROMs have specific file names and must be placed in specific locations.
 
 ### 1.1) An introduction to emulation and retrogaming
 
-The purpose of this section is to explain some basic concepts for the very beginners. This section is organized as a frequently answered questions (FAQ).
+The purpose of this section is to explain some basic concepts for the very beginners, so skip this section if you are not so. This section is organized as a frequently answered questions (FAQ).
 
 **What is retrogaming and emulation?**
 
@@ -50,12 +48,31 @@ There are other DAT producers like Goodsets, Trurip, etc.
 
 A ROM audit is the process of scanning a set of ROMs and comparing them against a DAT file. The results of the audit is **Have** for ROMs you have that match the DAT, **Missing** for ROMs in the DAT you don't have, and **Unknown** for files you have not in the DAT. ROM manager may have other features, for example renaming ROMs to the correct name and fixing other problems.
 
+### 1.2) A very short guide for the impatient casual user
+
+**Step1** Create a directory and put your ROMs there.
+
+**Step 2** Add the ROMs directory as a game source.
+
+**Step 3** Scan your game library to update the Kodi database.
+
+### 1.3) A very short guide for the impatient amateur/advanced
+
+**Step 1** Create one directory for each platform and place your ROMs there. It is advised that you follow the Kodi platform list for the platform names.
+
+**Step 2** For each directory with ROMs add it as a games source, making sure you set the correct platform name.
+
+**Step 3** Create the ROMs artwork directory. Then go to Kodi Game settings and set this directory as the **ROM asset directory**.
+
+**Step 4** Download a Kodi Platform Artwork Theme and place it in a directory. Then go to Kodi Game settings and set this directory as the **Platform information directory**.
+
+**Step 5** Scan your game library to update the Kodi database.
+
 ## 2) Game ROM file layout and ROM file names
 
 This section describes the recommended file layout, that is, how to organize your games/ROMs into directories, and the correct file names for your ROMs.
 
 If you just have some games you can place all of them in a single directory, for example:
-
 ```
 /home/user/ROMs/dino.zip
 /home/user/ROMs/qsound_hle.zip
@@ -63,8 +80,7 @@ If you just have some games you can place all of them in a single directory, for
 /home/user/ROMs/Super Mario All-Stars and Super Mario World (Europe).zip
 ```
 
-It is strongly recommended that you organise your games in directories, with one directory for each platform.
-
+It is strongly recommended that you organise your games in directories, with one directory for each platform, like in the following example:
 ```
 /home/user/ROMs/mame/dino.zip
 /home/user/ROMs/mame/qsound_hle.zip
@@ -72,7 +88,11 @@ It is strongly recommended that you organise your games in directories, with one
 /home/user/ROMs/nintendo-snes/Super Mario All-Stars and Super Mario World (Europe).zip
 ```
 
-You can use the names you wish for the platform names. However, it is advised that you use some logic that suits your needs.
+You can use the names you wish for the platform names. However, it is advised that you use some logic that suits your needs or even better, take the platform names from the official Kodi platform list.
+
+It is recommended that your ROMs for cartridge-based platforms follow the No-Intro naming convention. For optical media-based platforms it is recommended to follow the Redump naming convention.
+
+## 2.1) Notes for particular platforms
 
 ## 3) Game database settings
 
@@ -83,6 +103,8 @@ The settings described here are relevant to the games database and not to Reptro
 **ROM asset directory** If set it will be used to scan for local ROM artwork and for saving ROM scraped artwork.
 
 **ROM asset naming scheme** Choose from `Long name`, `Short name`, `Compact name`. This is used for the platform directory names in the RAD.
+
+**Use only ROMs local artwork** Bollean, default ON. Do not scrape artwork for ROMs and pick it only from the ROM asset directory. If OFF use the scrapers for ROM artwork.
 
 **Recursive scan for ROMs** Boolean, default OFF.
 
@@ -136,8 +158,7 @@ Once the scanner finishes you will have a working games library.
 
 **Casual user**
 
-This user has only a few games. Possibly all the ROMs are in a single directory.
-
+This user has only a few games, no more than 100. Possibly all the ROMs are in a single directory.
 ```
 /home/user/ROMs/dino.zip
 /home/user/ROMs/qsound_hle.zip
@@ -145,26 +166,32 @@ This user has only a few games. Possibly all the ROMs are in a single directory.
 /home/user/ROMs/Super Mario All-Stars and Super Mario World (Europe).zip
 ```
 
-**Amateur user**
+**Amateur/Advanced user**
 
 This user has games from several platforms and possibly multiple games of each platform. ROMs of the same platform are separated into directories.
-
 ```
 /home/user/ROMs/mame/dino.zip
 /home/user/ROMs/mame/qsound_hle.zip
+/home/user/ROMs/mame/...
 /home/user/ROMs/sega-megadrive/Sonic The Hedgehog 3 (Europe).zip
+/home/user/ROMs/sega-megadrive/...
 /home/user/ROMs/nintendo-snes/Super Mario All-Stars and Super Mario World (Europe).zip
+/home/user/ROMs/nintendo-snes/...
 ```
 
-**Advanced user**
-
-Has full No-Intro and/or MAME romsets. Layout of ROMs is same as the amateur user. ROMs of the same platform are separated into directories. This user is likely to download artwork collections for No-Intro and MAME.
+Compared with the Amateur user, the Advanced user has full No-Intro and MAME collections which includes thousands of games for each of the main platforms. For example, recent version of MAME have about 40.000 machines and a full collection of SNES games is about 3500 games.
 
 ## D2) Game sources and platform names (design section)
 
-Game sources have an associated platform property. The platform name is chosen from a select dialog with a fixed-name list. If a game source directory has mixed ROMs (casual user) then the platform name is `Unknown`.
+Game sources have an associated platform property. The platform name is chosen from a select dialog with a fixed-name list. If a game source directory has mixed ROMs (casual user) then the platform name is `Unknown`. Some platform names could be aliases. There are `Long names`, `Short names` and `Compact names`. Users are not allowed to freely choose platform names, this is to keep the theme layout consistent. A fixed list of platforms also enables automatic Libretro core selection. For example, for platform `megadrive` Kodi knows what libretro cores could be used to launch ROMs.
 
-Platform names are a fixed list. Some platform names could be aliases. There are `Long names`, `Short names` and `Compact names`. Users are not allowed to freely choose platform names, this is to keep the theme layout consistent. A fixed list of platforms also enables automatic Libretro core selection. For example, for platform `megadrive` Kodi knows what libretro cores could be used to launch ROMs.
+Some example of platform names:
+
+| Long name       | Short name     | Compact name |
+|-----------------|----------------|--------------|
+| Arcade - MAME   | arcade-mame    | mame         |
+| Nintendo SNES   | nintendo-snes  | snes         |
+| Sega Mega Drive | sega-megadrive | megadrive    |
 
 ## D3) Kodi game graphical interface (design section)
 
@@ -180,15 +207,16 @@ Add games...  --> Opens DialogMediaSource.xml
 After adding some game sources and updating the database the user will see the following:
 
 ```
-Platforms       --> Opens a list of platforms. Inside each platform ROMs can be browsed.
-Games by Yitle  --> Opens a list of initial letter.
-Games by Year   --> 
-Games by Genre  --> 
-Something more???
-Game sources    --> Opens a list of game sources???
-Something more???
-Game add-ons    --> Opens MyGames.xml
-Add games...    --> Opens DialogMediaSource.xml
+games by Platform           --> Opens a list of platforms. Inside each platform ROMs can be browsed.
+Games by Title              --> Opens a list of title initial letters.
+Games by Year               --> 
+Games by Genre              --> 
+Games by Developer          --> 
+Games by Publisher          --> 
+Games by Number of players  -->
+Game sources                --> Opens a list of game sources???
+Game add-ons                --> Opens game addons
+Add games...                --> Opens DialogMediaSource.xml
 ```
 
 **Add game source window**
@@ -242,9 +270,18 @@ Put the table for all the artwork types supported for each platform.
 
 ## D5) Game database fields and infolabels (design section)
 
+[Music database model MusicDatabase.cpp](https://github.com/xbmc/xbmc/blob/master/xbmc/music/MusicDatabase.cpp)
+
 **Describe the game metadata fields and infolabels**
 
-**How to deal with the platforms?** For example, each game have an associated platform and this platform have metadata and artwork that can be useful to display in game views.
+### D5.1) Game metadata fields
+
+| Name  | Type   | Comment |
+|-------|--------|---------|
+| title | string | Displayed name for the game |
+
+### D5.2) Game artwork fields
+
 
 ## D6) Previous work (design section)
 
