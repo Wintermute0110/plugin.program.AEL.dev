@@ -2,13 +2,13 @@
 
 This is a design proposal for the Kodi games database. First there are a set of chapters written in the form of user documentation or tutorial. These chapters are numbered like *1*, *2*, etc. Then there are a set of chapters with documentation for developers, numbered like *D1*, *D2*, etc.
 
-## 1) Getting started (documentation section)
+## 1 Getting started (documentation section)
 
 The purpose of this section is to serve as a tutorial to enable you to properly setup your games/ROMs an the Kodi Game library. Retrogaming could be a vast an overwhelming topic and hence this tutorial has been created with minimal jargon.
 
 The first thing for you to understand is what type of games library you would like to have. If you are a **casual user** with just a bunch of games in a single directory the setup is very simple. However, as you expand your collection by adding more games it is necessary to organize your game collection. Also, if you like arcade games, arcade emulators require that your ROMs have specific file names and must be placed in specific locations.
 
-### 1.1) An introduction to emulation and retrogaming
+### 1.1 An introduction to emulation and retrogaming
 
 The purpose of this section is to explain some basic concepts for the very beginners, so skip this section if you are not so. This section is organized as a frequently answered questions (FAQ).
 
@@ -48,15 +48,15 @@ There are other DAT producers like Goodsets, Trurip, etc.
 
 A ROM audit is the process of scanning a set of ROMs and comparing them against a DAT file. The results of the audit is **Have** for ROMs you have that match the DAT, **Missing** for ROMs in the DAT you don't have, and **Unknown** for files you have not in the DAT. ROM manager may have other features, for example renaming ROMs to the correct name and fixing other problems.
 
-### 1.2) A very short guide for the impatient casual user
+### 1.2 A very short guide for the impatient casual user
 
 **Step1** Create a directory and put your ROMs there.
 
-**Step 2** Add the ROMs directory as a game source.
+**Step 2** Add the ROMs directory as a game source. As platform select **Mixed** or **Unknown**.
 
 **Step 3** Scan your game library to update the Kodi database.
 
-### 1.3) A very short guide for the impatient amateur/advanced
+### 1.3 A very short guide for the impatient amateur/advanced user
 
 **Step 1** Create one directory for each platform and place your ROMs there. It is advised that you follow the Kodi platform list for the platform names.
 
@@ -68,7 +68,31 @@ A ROM audit is the process of scanning a set of ROMs and comparing them against 
 
 **Step 5** Scan your game library to update the Kodi database.
 
-## 2) Game ROM file layout and ROM file names
+This is an example of the filesystem layout for this setup:
+```
+# Put your ROMs in separate directories, one directory per platform.
+/home/user/ROMs/mame/dino.zip
+/home/user/ROMs/mame/qsound_hle.zip
+/home/user/ROMs/sega-megadrive/Sonic The Hedgehog 3 (Europe).zip
+/home/user/ROMs/nintendo-snes/Super Mario All-Stars and Super Mario World (Europe).zip
+
+# Create a directory for the ROMs assets/artwork.
+# Configure this directory as the ROM asset directory in Kodi Game settings.
+# Kodi will create the platform subdirectories automatically when scanning you game library.
+# You can place the ROMs artwork files there.
+/home/user/ROM-assets/
+/home/user/ROM-assets/Nintendo SNES/
+/home/user/ROM-assets/Sega Mega Drive/
+
+# Create a directory for the Platform Artwork.
+# Configure this directory as the Platform information directory in Kodi Game settings.
+# Kodi will use the platform metadata NFO files and the platform artwork from here.
+/home/user/Platform-assets/
+/home/user/ROM-assets/Nintendo SNES/
+/home/user/ROM-assets/Sega Mega Drive/
+```
+
+## 2 Game ROM file layout and ROM file names
 
 This section describes the recommended file layout, that is, how to organize your games/ROMs into directories, and the correct file names for your ROMs.
 
@@ -90,31 +114,96 @@ It is strongly recommended that you organise your games in directories, with one
 
 You can use the names you wish for the platform names. However, it is advised that you use some logic that suits your needs or even better, take the platform names from the official Kodi platform list.
 
-It is recommended that your ROMs for cartridge-based platforms follow the No-Intro naming convention. For optical media-based platforms it is recommended to follow the Redump naming convention.
+It is recommended that your ROMs for cartridge-based platforms follow the **No-Intro** naming convention. For optical media-based platforms it is recommended to follow the **Redump** naming convention.
+```
+# Example of No-Intro ROM file names
+xxxxx
 
-## 2.1) Notes for particular platforms
+# Example of Redump file names
+xxxxx
+```
 
-## 3) Game database settings
+### 2.1 Notes for particular platforms
 
-The settings described here are relevant to the games database and not to Reptroplayer, the Kodi Libretro frontend.
+### 2.1.1 Arcade ROMs
 
-**ROM asset placement** Choose from `In the RAD` (default) or `Next to the ROMs`.
+## 3 Game database settings and filesystem layout formats
 
-**ROM asset directory** If set it will be used to scan for local ROM artwork and for saving ROM scraped artwork.
+The settings described here are relevant to the Kodi Games database and not to Reptroplayer, the Kodi Libretro player.
 
-**ROM asset naming scheme** Choose from `Long name`, `Short name`, `Compact name`. This is used for the platform directory names in the RAD.
+In all examples in this section `<pid>` is the **ar**, for example `` in Linux or `` in Windows. ``
 
-**Use only ROMs local artwork** Bollean, default ON. Do not scrape artwork for ROMs and pick it only from the ROM asset directory. If OFF use the scrapers for ROM artwork.
+**ROM asset placement**
 
-**Recursive scan for ROMs** Boolean, default OFF.
+Choose from `In the RAD` (default) or `Next to the ROMs`.
 
-**Platform information directory** If set it will be used to scan for platform metadata/artwork and saving scraped platform metadata/artwork.
+If this setting is `In the RAD` Kodi will look for ROM artwork in the ROM asset directory and scrapers will save the artwork there. For example:
+```
+<rad>/Nintendo SNES/snaps/
+<rad>/Nintendo SNES/titles/
+```
+
+If this settings is `Next to the ROMs` then the ROM asset directory setting will be ignored and your artwork files will be searched with a pattern like this:
+```
+/home/user/ROMs/sega-megadrive/Sonic The Hedgehog 3 (Europe).zip
+/home/user/ROMs/sega-megadrive/Sonic The Hedgehog 3 (Europe)_fanart.png
+/home/user/ROMs/sega-megadrive/Sonic The Hedgehog 3 (Europe)_title.png
+...
+```
+
+**ROM asset directory**
+
+If set it will be used to scan for local ROM artwork and for saving ROM scraped artwork.
+
+**ROM asset naming scheme**
+
+Choose from `Long name`, `Short name`, `Compact name`. If the ROM asset directory is not set this setting is ignored.
+
+If this setting is `Long name` then the platform long name will be used for the platform subdirectories. In the following example `/home/user/ROM-assets` is the ROM asset directory.
+```
+/home/user/ROM-assets/Nintendo SNES/titles
+/home/user/ROM-assets/Nintendo SNES/snaps
+...
+```
+
+If this setting is `Short name`
+```
+/home/user/ROM-assets/nintendo-snes/titles
+/home/user/ROM-assets/nintendo-snes/snaps
+...
+```
+
+If this setting is `Compact name`
+```
+/home/user/ROM-assets/snes/titles
+/home/user/ROM-assets/snes/snaps
+...
+/home/user/ROM-assets/megadrive/titles
+/home/user/ROM-assets/megadrive/snaps
+...
+```
+
+**Use only ROMs local artwork**
+
+Boolean, default ON.
+
+If ON do not scrape artwork for ROMs and pick it only from the ROM asset directory.
+
+If OFF use the scrapers for ROM artwork.
+
+**Recursive scan for ROMs**
+
+Boolean, default OFF.
+
+**Platform information directory**
+
+If set it will be used to scan for platform metadata/artwork and saving scraped platform metadata/artwork.
 
 **Platform naming scheme** Choose from `Long name`, `Short name`, `Compact name`.
 
-## 4) Scanning games to the library
+## 4 Scanning games to the library
 
-### 4.1) Adding games sources to the library
+### 4.1 Adding games sources to the library
 
 The first step is to set your game sources. In other words, you tell Kodi the directories where your games are.
 
@@ -128,7 +217,7 @@ The first step is to set your game sources. In other words, you tell Kodi the di
 
  * **Step 5**: Under *Enter a platform for this game source* choose the platform of this game source. If this game source has ROM for several platforms select the platform **Mixed**. If you are not sure about the platform then choose **Unknown**.
 
-### 4.2) Manually scanning games to the library
+### 4.2 Manually scanning games to the library
 
 After adding one or more game sources these game sources must be scanned to introduce your games into the game library. To manually scan all sources for new and changed items, follow these steps:
 
@@ -140,21 +229,54 @@ After adding one or more game sources these game sources must be scanned to intr
 
 Once the scanner finishes you will have a working games library.
 
-### 4.3) Removing games from library
+### 4.3 Removing games from library
 
-#### 4.3.1) Removing game sources
+#### 4.3.1 Removing game sources
 
-#### 4.3.2) Removing individual games
+#### 4.3.2 Removing individual games
 
-## 5) Platform information directory
+## 5 Platform information directory
 
-## 6) Game artwork and game metadata NFO files
+```
+<pid>/<pname>/<pname>.nfo
+<pid>/<pname>/banner.png
+<pid>/<pname>/clearlogo.png
+<pid>/<pname>/controller.png -> Picture of controller.
+<pid>/<pname>/fanart.png
+<pid>/<pname>/media.png      -> Picture of cartridge, CD, etc.
+<pid>/<pname>/icon.png
+<pid>/<pname>/poster.png
+<pid>/<pname>/system.png     -> Picture of the system, for example SS picture or illustration.
+```
 
-## 7) Updating the games database
+### 5.1 Platform NFO files
 
-## 8) Backup and recovery
+See https://kodi.wiki/view/NFO_files/Music
 
-## D1) Type of game users (design section)
+### 5.2 Official names for the platforms
+
+## 6 Game artwork and game metadata NFO files
+
+### 6.1 Supported game artwork types
+
+### 6.2 ROM
+
+All ROMs belonging to the same platform share the artwork.
+
+```
+<rad>/<pname>/3dboxes/<ROM_name>.png
+...
+<rad>/<pname>/titles/<ROM_name>.png
+<rad>/<pname>/trailers/<ROM_name>.png
+```
+
+### 6.2 Game metadata NFO files
+
+## 7 Updating the games database
+
+## 8 Backup and recovery
+
+## D1 Type of game users (design section)
 
 **Casual user**
 
@@ -181,7 +303,7 @@ This user has games from several platforms and possibly multiple games of each p
 
 Compared with the Amateur user, the Advanced user has full No-Intro and MAME collections which includes thousands of games for each of the main platforms. For example, recent version of MAME have about 40.000 machines and a full collection of SNES games is about 3500 games.
 
-## D2) Game sources and platform names (design section)
+## D2 Game sources and platform names (design section)
 
 Game sources have an associated platform property. The platform name is chosen from a select dialog with a fixed-name list. If a game source directory has mixed ROMs (casual user) then the platform name is `Unknown`. Some platform names could be aliases. There are `Long names`, `Short names` and `Compact names`. Users are not allowed to freely choose platform names, this is to keep the theme layout consistent. A fixed list of platforms also enables automatic Libretro core selection. For example, for platform `megadrive` Kodi knows what libretro cores could be used to launch ROMs.
 
@@ -193,97 +315,80 @@ Some example of platform names:
 | Nintendo SNES   | nintendo-snes  | snes         |
 | Sega Mega Drive | sega-megadrive | megadrive    |
 
-## D3) Kodi game graphical interface (design section)
+## D3 Kodi game graphical interface (design section)
 
 **MyGames.xml**
 
 In a new installation the user will see the following:
-
 ```
 Game add-ons  --> Opens MyGames.xml
 Add games...  --> Opens DialogMediaSource.xml
 ```
 
 After adding some game sources and updating the database the user will see the following:
-
 ```
-games by Platform           --> Opens a list of platforms. Inside each platform ROMs can be browsed.
+Games by Platform           --> Opens a list of platforms. Inside each platform ROMs can be browsed.
 Games by Title              --> Opens a list of title initial letters.
 Games by Year               --> 
 Games by Genre              --> 
 Games by Developer          --> 
 Games by Publisher          --> 
-Games by Number of players  -->
-Game sources                --> Opens a list of game sources???
-Game add-ons                --> Opens game addons
-Add games...                --> Opens DialogMediaSource.xml
+Games by Number of players  --> 
+Most played games           --> Shows the most played games.
+Recently added games        --> Shows the recently added games to the database.
+Game sources                --> Opens a list of game sources.
+Game add-ons                --> Opens the game addons.
+Add games...                --> Opens DialogMediaSource.xml.
+```
+
+Inside `Games by Platform`:
+```
+Nintendo SNES
+Sega Mega Drive
+...
+```
+
+Inside `Games by Title`:
+```
+A
+B
+...
 ```
 
 **Add game source window**
 
-*Label* Enter the paths or browse for the game locations.
+**Label** Enter the paths or browse for the game locations.
 
-*Box with source paths* Buttons *Browse*, *Add* and *Remove*.
+**Box with source paths** Buttons *Browse*, *Add* and *Remove*.
 
-*Label* Enter a name for this game source.
+**Label** Enter a name for this game source.
 
-*string edit box* Default name is the last directory name of the source.
+**string edit box** Default name is the last directory name of the source.
 
-*Label* Enter a platform for this game source.
+**Label** Enter a platform for this game source.
 
-*Drop down menu or button that opens a select dialog* Default platform is Unknown.
+**Drop down menu or button that opens a select dialog** Default platform is Unknown.
 
-## D4) Game database scanning algortihm (design section)
+## D4 Game database scanning algorithm (design section)
 
 **Describe the algorithm used for the database scanning**.
 
-### Scanning for platform artwork
-
- * If the **platform information directory** is configured Kodi will search for platform metadata and artwork there.
-
-```
-<pid>/<pname>/<pname>.nfo
-<pid>/<pname>/banner.png
-<pid>/<pname>/clearlogo.png
-<pid>/<pname>/controller.png -> Picture of controller.
-<pid>/<pname>/fanart.png
-<pid>/<pname>/media.png      -> Picture of cartridge, CD, etc.
-<pid>/<pname>/icon.png
-<pid>/<pname>/poster.png
-<pid>/<pname>/system.png     -> Picture of the system, SS picture or illustration.
-```
-
- * If the platform information directory is not set...
-
-### ROMs asset directory
-
-All ROMs belonging to the same platform share the artwork.
-
-```
-<rad>/<pname>/3dboxes/<ROM_name>.png
-...
-<rad>/<pname>/titles/<ROM_name>.png
-<rad>/<pname>/trailers/<ROM_name>.png
-```
-
-Put the table for all the artwork types supported for each platform.
-
-## D5) Game database fields and infolabels (design section)
+## D5 Game database fields and infolabels (design section)
 
 [Music database model MusicDatabase.cpp](https://github.com/xbmc/xbmc/blob/master/xbmc/music/MusicDatabase.cpp)
 
 **Describe the game metadata fields and infolabels**
 
-### D5.1) Game metadata fields
+### D5.1 Game metadata fields
 
 | Name  | Type   | Comment |
 |-------|--------|---------|
 | title | string | Displayed name for the game |
 
-### D5.2) Game artwork fields
+### D5.2 Game artwork fields
 
 
-## D6) Previous work (design section)
+## D6 Previous work (design section)
 
 ### Internet Archive Game Launhcer (IAGL)
 
@@ -334,7 +439,7 @@ Music add-ons -> Opens MyMusicNav.xml
 
 Music settings (complete).
 
-## D7) References and links
+## D7 References and links
 
 [KW: HOW-TO:Create Music Library](https://kodi.wiki/view/HOW-TO:Create_Music_Library)
 
