@@ -88,11 +88,11 @@ This is an example of the filesystem layout for this setup:
 # Configure this directory as the Platform information directory in Kodi Game settings.
 # Kodi will use the platform metadata NFO files and the platform artwork from here.
 /home/user/Platform-assets/
-/home/user/ROM-assets/Nintendo SNES/
-/home/user/ROM-assets/Sega Mega Drive/
+/home/user/Platform-assets/Nintendo SNES/
+/home/user/Platform-assets/Sega Mega Drive/
 ```
 
-## 2 Game ROM file layout and ROM file names
+## 2 Preparing the files: Game ROM file layout and ROM file names
 
 This section describes the recommended file layout, that is, how to organize your games/ROMs into directories, and the correct file names for your ROMs.
 
@@ -116,34 +116,46 @@ You can use the names you wish for the platform names. However, it is advised th
 
 It is recommended that your ROMs for cartridge-based platforms follow the **No-Intro** naming convention. For optical media-based platforms it is recommended to follow the **Redump** naming convention.
 ```
-# Example of No-Intro ROM file names
-xxxxx
+# Examples of No-Intro ROM file names
+Super Mario World (Europe) (Rev 1).zip
+Super Mario World (USA, Europe) (Virtual Console, Classic Mini, Switch Online).zip
+Sonic The Hedgehog (USA, Europe).zip
+Sonic The Hedgehog 2 (World).zip
+Sonic The Hedgehog 3 (USA).zip
 
-# Example of Redump file names
-xxxxx
+# Examples of Redump file names
+Final Fantasy VII (Europe) (Disc 1).chd
+Final Fantasy VII (Europe) (Disc 2).chd
+Final Fantasy VII (Europe) (Disc 3).chd
 ```
 
-### 2.1 Notes for particular platforms
+### 2.1 Notes for special platforms
 
 ### 2.1.1 Arcade ROMs
 
-## 3 Game database settings and filesystem layout formats
+**Questions for devs** The arcade ROMs in MAME and other arcade emulators have special names, for example `atetris.zip` or `dino.zip`. This games must be translated to proper names when scanning the database.
 
-The settings described here are relevant to the Kodi Games database and not to Reptroplayer, the Kodi Libretro player.
+### 2.1.2 ScummVM
 
-In all examples in this section `<pid>` is the **ar**, for example `` in Linux or `` in Windows. ``
+**Questions for devs** The ScummVM ROMs consist of several files and are usually kept in a subdirectory. This subdirectory has the real game name.
+
+## 3 Game database settings
+
+The settings described here are relevant to the Kodi Games database and not to Reptroplayer, the Kodi Libretro player. In all examples in this section:
+
+ * `<rad>` is the **ROM asset directory**, for example `/home/kodi/ROM-assets/` in Linux or `Z:\ROM-assets\` in Windows.
+
+ * `<pid>` is the **Platform information directory**, for example `/home/user/Platform-assets/` in Linux or `Z:\Platform-assets/` in Windows.
 
 **ROM asset placement**
 
-Choose from `In the RAD` (default) or `Next to the ROMs`.
-
-If this setting is `In the RAD` Kodi will look for ROM artwork in the ROM asset directory and scrapers will save the artwork there. For example:
+Choose from `In the RAD` (default) or `Next to the ROMs`. If this setting is `In the RAD` Kodi will look for ROM artwork in the ROM asset directory and scrapers will save the artwork there. For example:
 ```
 <rad>/Nintendo SNES/snaps/
 <rad>/Nintendo SNES/titles/
 ```
 
-If this settings is `Next to the ROMs` then the ROM asset directory setting will be ignored and your artwork files will be searched with a pattern like this:
+If this setting is `Next to the ROMs` then the ROM asset directory setting will be ignored and your artwork files will be searched with a pattern like this:
 ```
 /home/user/ROMs/sega-megadrive/Sonic The Hedgehog 3 (Europe).zip
 /home/user/ROMs/sega-megadrive/Sonic The Hedgehog 3 (Europe)_fanart.png
@@ -157,39 +169,32 @@ If set it will be used to scan for local ROM artwork and for saving ROM scraped 
 
 **ROM asset naming scheme**
 
-Choose from `Long name`, `Short name`, `Compact name`. If the ROM asset directory is not set this setting is ignored.
+Choose from `Long name`, `Short name`, `Compact name`. If the ROM asset directory is not set this setting is ignored. Kodi will create the platform subdirectories automatically when the game library is scanned.
 
-If this setting is `Long name` then the platform long name will be used for the platform subdirectories. In the following example `/home/user/ROM-assets` is the ROM asset directory.
+If this setting is `Long name` then the platform long name will be used for the platform subdirectories.
 ```
-/home/user/ROM-assets/Nintendo SNES/titles
-/home/user/ROM-assets/Nintendo SNES/snaps
+<rad>/Nintendo SNES/titles
+<rad>/Nintendo SNES/snaps
 ...
 ```
 
 If this setting is `Short name`
 ```
-/home/user/ROM-assets/nintendo-snes/titles
-/home/user/ROM-assets/nintendo-snes/snaps
+<rad>/nintendo-snes/titles
+<rad>/nintendo-snes/snaps
 ...
 ```
 
 If this setting is `Compact name`
 ```
-/home/user/ROM-assets/snes/titles
-/home/user/ROM-assets/snes/snaps
-...
-/home/user/ROM-assets/megadrive/titles
-/home/user/ROM-assets/megadrive/snaps
+<rad>/snes/titles
+<rad>/snes/snaps
 ...
 ```
 
 **Use only ROMs local artwork**
 
-Boolean, default ON.
-
-If ON do not scrape artwork for ROMs and pick it only from the ROM asset directory.
-
-If OFF use the scrapers for ROM artwork.
+Boolean, default ON. If ON do not scrape artwork for ROMs and pick it only from the ROM asset directory. If OFF use the scrapers for ROM artwork.
 
 **Recursive scan for ROMs**
 
@@ -198,8 +203,6 @@ Boolean, default OFF.
 **Platform information directory**
 
 If set it will be used to scan for platform metadata/artwork and saving scraped platform metadata/artwork.
-
-**Platform naming scheme** Choose from `Long name`, `Short name`, `Compact name`.
 
 ## 4 Scanning games to the library
 
@@ -229,14 +232,11 @@ After adding one or more game sources these game sources must be scanned to intr
 
 Once the scanner finishes you will have a working games library.
 
-### 4.3 Removing games from library
-
-#### 4.3.1 Removing game sources
-
-#### 4.3.2 Removing individual games
-
 ## 5 Platform information directory
 
+The **Platform information directory** is a read-only directory to place the platform metadata NFO files and the platform arwork. This allows to create platform themes for Kodi that can be downloaded and changed, or even placed inside Kodi addons.
+
+The layout for the platform information directory is a follows:
 ```
 <pid>/<pname>/<pname>.nfo
 <pid>/<pname>/banner.png
@@ -251,15 +251,19 @@ Once the scanner finishes you will have a working games library.
 
 ### 5.1 Platform NFO files
 
-See https://kodi.wiki/view/NFO_files/Music
+See [KW: NFO_files/Music](https://kodi.wiki/view/NFO_files/Music)
 
-### 5.2 Official names for the platforms
+### 5.2 Supported platform artwork
+
+See...
+
+### 5.3 Official names for the platforms
 
 ## 6 Game artwork and game metadata NFO files
 
 ### 6.1 Supported game artwork types
 
-### 6.2 ROM
+### 6.2 ROM artwork
 
 All ROMs belonging to the same platform share the artwork.
 
@@ -272,9 +276,53 @@ All ROMs belonging to the same platform share the artwork.
 
 ### 6.2 Game metadata NFO files
 
-## 7 Updating the games database
+## 7 Scraping additional game data and artwork
 
-## 8 Backup and recovery
+## 8 Updating the games database
+
+This page will provide information to enable you to add new games, modify existing games and removing games from your **existing** games library.
+
+### 8.1 Scanning the games library
+
+The **Update library** function scans your game sources looking for new or changed games.
+
+### 8.2 Scraping game library metadata and artwork
+
+To be written.
+
+### 8.3 Removing games from the library
+
+Removing games from the library can be done using two methods.
+
+#### 8.3.1 Removing a game source
+
+If you remove a game source all the games contained in that source will be reomved from the game library. To remove a game source follow these steps:
+
+**Step 1** Select **Games** from the main menu.
+
+**Step 2** Navigate to and enter the **Game sources** section.
+
+**Step 3** Highlight the game source to be removed and open the context menu. In the game source context menu select **Remove source**
+
+**Questions for devs** Should the games be removed inmmediately or when the library is next updated? Does it make sense to have games in the library if the game source has been removed?
+
+#### 8.3.2 Removing a single game from the library
+
+Single games can be removed from the game library. However, note that if you do not remove the ROM filename of the game it will be added again when you update your library. There are two methods to remove a single game from the library:
+
+**Option 1** Use the file browser or manager in your operating system and remove the game ROM or place in a directory that is not a game source. Then, in Kodi settings run a **Clean games library**.
+
+**Option 2** In the Kodi main menu select **Games**, enter and select **Files**. Browse and locate the game ROM you want to delete. Open the context menu and select **Delete**. Be aware that this will delete your game ROM file from your hard disk. Finally go to Kodi settings and run **Clean games library**.
+
+**Questions for devs** This procedure works for standard No-Intro ROM ZIP files or MAME zipped ROMs where each game is a single file. However, in some platforms like ScummVM each game is composed of multiple files, usually inside a subdirectory in the game source.
+
+## 9 Importing and exporting your games library
+
+To be written.
+
+## 10 Backup and recovery
+
+To be written.
 
 ## D1 Type of game users (design section)
 
