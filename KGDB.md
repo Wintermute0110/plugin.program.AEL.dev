@@ -125,7 +125,7 @@ You can use the names you wish for the platform names. However, it is advised th
 
 ## 2.3 Game/ROM file names
 
-You can choose the filenames you want for your ROMs and Kodi and the scrapers will do their best to correctly deal with your game. However, in order to maximize your experience with the game library it is recommended that your ROMs for cartridge-based platforms follow the **No-Intro** naming convention. For optical media-based platforms it is recommended to follow the **Redump** naming convention. No-Intro and Redump file names include the game region and the game languages which will improve the scraping of your ROMs.
+You can choose the filenames you want for your ROMs and Kodi and the scrapers will do their best to correctly deal with your game. However, in order to maximize your experience with the game library it is recommended that your ROMs for cartridge-based platforms follow the **No-Intro** naming convention. For optical media-based platforms it is recommended to follow the **Redump** or **Trurip** naming conventions. No-Intro and Redump file names include the game region and the game languages which will improve the scraping of your ROMs.
 ```
 # Examples of No-Intro ROM file names
 Super Mario World (Europe) (Rev 1).zip
@@ -138,6 +138,9 @@ Sonic The Hedgehog 3 (USA).zip
 Final Fantasy VII (Europe) (Disc 1).chd
 Final Fantasy VII (Europe) (Disc 2).chd
 Final Fantasy VII (Europe) (Disc 3).chd
+
+# Examples of Trurip file names
+xxxxx
 ```
 
 Note that arcade emulators, and MAME in particular, require the game ROMs to have specific and often cryptical names, for example Capcom's Cadillacs and Dinosaurs ROM must be named `dino.zip`.
@@ -159,6 +162,8 @@ The settings described here are relevant to the Kodi Games database and not to R
  * `<rad>` is the **ROM asset directory**, for example `/home/kodi/ROM-assets/` in Linux or `Z:\ROM-assets\` in Windows.
 
  * `<pid>` is the **Platform information directory**, for example `/home/user/Platform-assets/` in Linux or `Z:\Platform-assets/` in Windows.
+
+> **TODO** How to support multidisc games? 
 
 **ROM asset placement**
 
