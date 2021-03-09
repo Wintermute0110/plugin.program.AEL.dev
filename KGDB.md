@@ -349,7 +349,7 @@ This user has games from several platforms and possibly multiple games of each p
 /home/user/ROMs/nintendo-snes/...
 ```
 
-Compared with the Amateur user, the Advanced user has full No-Intro and MAME collections which includes thousands of games for each of the main platforms. For example, recent version of MAME have about 40.000 machines and a full collection of SNES games is about 3500 games.
+Compared with the Amateur user, the Advanced user has full No-Intro and MAME collections which includes thousands of games for each of the main platforms. For example, recent version of MAME have about 40,000 machines and a full collection of SNES games is about 3,500 games.
 
 ## D2 Game sources and platform names (design section)
 
@@ -425,16 +425,40 @@ B
 
 [Music database model MusicDatabase.cpp](https://github.com/xbmc/xbmc/blob/master/xbmc/music/MusicDatabase.cpp)
 
-**Describe the game metadata fields and infolabels**
+**NOTE** Here I use Python data types to describe the database. I will change this to an SQL model ASAP. Proper changes must be made when translating to SQL, for example, **genre** is a list of string in Python which requires a table for the unique genres plus an additional table to link game_ids to genre_ids.
 
 ### D5.1 Game metadata fields
 
-| Name  | Type   | Comment |
-|-------|--------|---------|
-| title | string | Displayed name for the game |
+[KW: Infolabels#Game](https://kodi.wiki/view/InfoLabels#Game)
+
+| Kodi v | Name       | Type            | Infolabel       | Comment |
+|--------|------------|-----------------|-----------------|---------|
+| v18    | title      | string          | Game.Title      | Displayed name for the game |
+| v18    | platform   | string          | Game.Platform   | Platform list is fixed. (4) |
+| v18    | genres     | list of strings | Game.Genres     | Genres |
+| v18    | developer  | string          | Game.Publisher  | |
+| v18    | publisher  | string          | Game.Developer  | |
+| v18    | overview   | string          | Game.Overview   | Game plot or description. |
+| v18    | year       | date            | Game.Year       | Release year. Delete and use release. |
+| v18    | gameclinet | date            | Game.GameClient | |
+|        | release    | date            |                 | Release date. |
+|        | nplayers   | string          |                 | Number of players (1) |
+|        | esrb       | string          |                 | ESRB rating. |
+|        | regions    | list of strings |                 | Game regions (2)   |
+|        | languages  | list of strings |                 | Game languages (3) |
+|        | rating     | string?         |                 | User rating. |
+
+(1) Use the MAME nplayers.ini format, "1P", "2P sim", "2P alt", etc.
+
+(2) Use No-Intro region names.
+
+(3) Use No-Intro language names. Language is set if not implicit from the region. For example, a game for the region Japan in Japanese do not need to set this field. However, if the Japanese game is in Japanese and English then this field is set to En,Ja.
+
+(4) The name of the platforms is a fixed list. The user can choose the platform but not change the platform name. There is the platform "Unknown" and its alias "Mixed".
 
 ### D5.2 Game artwork fields
 
+See [AEL technical notes](https://github.com/Wintermute0110/plugin.program.AEL/blob/release-0.x.y-python2/NOTES.md).
 
 ## D6 Previous work (design section)
 
