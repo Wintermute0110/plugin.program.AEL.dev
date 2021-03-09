@@ -24,9 +24,9 @@ In most cases the definition is obvious, for example for console game systems. H
 
 ROM stands for read-only memory and comes from the systems that used cartridges for game distribution, for example the Sega Mega Drive or the Super Nintendo Entertaiment System. Modern emulators require the original software to execute the games in the form of file dumps of the contents of the cartridge ROMs. By extension, modern files containing the dumps of the cartridges are called ROMs itself and the term can be used interchangably with games. Even platforms that did not use cartridges are also called ROMs by extension.
 
-Typically ROMs for console systems consist of a single file which is in a ZIP file to save disk space. However, ROMs for arcade systems are usually complex and each game has several ROM files with strange names in a single ZIP file. For example, this is the ROM contents for the arcade game Tetris.
+Typically ROMs for console systems consist of a single file which is in a ZIP file to save disk space. However, ROMs for arcade systems are usually complex and each game has several ROM files with strange names in a single ZIP file. For example, this is the ROM contents for the arcade game Tetris. In order to play the game, these 2 files must reside in a ZIP file named `atetris.zip` that must be placed in a specific directory. Otherwise, the emulator won't work.
 
-| ROMname         | Size   | 
+| ROM name        | Size   |
 |-----------------|--------|
 | 136066-1100.45f | 65,536 |
 | 136066-1101.35a | 65,536 |
@@ -55,7 +55,7 @@ A ROM audit is the process of scanning a set of ROM files and comparing them aga
 
 ### 1.2 A very short guide for the impatient casual user
 
-**Step1** Create a directory and put your ROMs there.
+**Step 1** Create a directory and put your ROMs there.
 
 **Step 2** Add the ROMs directory as a game source. As platform select **Mixed** or **Unknown**.
 
@@ -125,7 +125,9 @@ Place you games in directories with one directory for each platform, like in the
 
 You can use the names you wish for the platform names. However, it is advised that you use some logic that suits your needs or even better, take the platform names from the official Kodi platform list.
 
-It is recommended that your ROMs for cartridge-based platforms follow the **No-Intro** naming convention. For optical media-based platforms it is recommended to follow the **Redump** naming convention.
+### 2.3 Game/ROM file names
+
+You can choose the filenames you want for your ROMs and Kodi and the scrapers will do their best to correctly deal with your name. However, in order to maximize your experience with the game library it is recommended that your ROMs for cartridge-based platforms follow the **No-Intro** naming convention. For optical media-based platforms it is recommended to follow the **Redump** naming convention. No-Intro and Redump file names include the game region and the game languages which will improve the scraping of your ROMs.
 ```
 # Examples of No-Intro ROM file names
 Super Mario World (Europe) (Rev 1).zip
@@ -140,13 +142,17 @@ Final Fantasy VII (Europe) (Disc 2).chd
 Final Fantasy VII (Europe) (Disc 3).chd
 ```
 
-### 2.3 Notes for special platforms
+Note that arcade emulators, and MAME in particular, require the game ROMs to have specific names and often cryptical, for example Capcom's Cadillacs and Dinosaurs ROM must be named `dino.zip`.
 
-### 2.3.1 Arcade ROMs
+**Question for the devs** Should Kodi include a database to convert MAME names into proper titles? Should this XML/JSON database included in an addon? EmulationStation, AEL, and other front-ends use this offline scraper databases.
+
+### 2.4 Notes for special platforms
+
+### 2.4.1 Arcade ROMs
 
 **Questions for devs** The arcade ROMs in MAME and other arcade emulators have special names, for example `atetris.zip` or `dino.zip`. This games must be translated to proper names when scanning the database.
 
-### 2.3.2 ScummVM
+### 2.4.2 ScummVM
 
 **Questions for devs** The ScummVM ROMs consist of several files and are usually kept in a subdirectory. This subdirectory has the real game name.
 
