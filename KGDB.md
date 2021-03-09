@@ -127,7 +127,7 @@ You can use the names you wish for the platform names. However, it is advised th
 
 ### 2.3 Game/ROM file names
 
-You can choose the filenames you want for your ROMs and Kodi and the scrapers will do their best to correctly deal with your name. However, in order to maximize your experience with the game library it is recommended that your ROMs for cartridge-based platforms follow the **No-Intro** naming convention. For optical media-based platforms it is recommended to follow the **Redump** naming convention. No-Intro and Redump file names include the game region and the game languages which will improve the scraping of your ROMs.
+You can choose the filenames you want for your ROMs and Kodi and the scrapers will do their best to correctly deal with your game. However, in order to maximize your experience with the game library it is recommended that your ROMs for cartridge-based platforms follow the **No-Intro** naming convention. For optical media-based platforms it is recommended to follow the **Redump** naming convention. No-Intro and Redump file names include the game region and the game languages which will improve the scraping of your ROMs.
 ```
 # Examples of No-Intro ROM file names
 Super Mario World (Europe) (Rev 1).zip
@@ -142,19 +142,17 @@ Final Fantasy VII (Europe) (Disc 2).chd
 Final Fantasy VII (Europe) (Disc 3).chd
 ```
 
-Note that arcade emulators, and MAME in particular, require the game ROMs to have specific names and often cryptical, for example Capcom's Cadillacs and Dinosaurs ROM must be named `dino.zip`.
-
-**Question for the devs** Should Kodi include a database to convert MAME names into proper titles? Should this XML/JSON database included in an addon? EmulationStation, AEL, and other front-ends use this offline scraper databases.
+Note that arcade emulators, and MAME in particular, require the game ROMs to have specific and often cryptical names, for example Capcom's Cadillacs and Dinosaurs ROM must be named `dino.zip`.
 
 ### 2.4 Notes for special platforms
 
 ### 2.4.1 Arcade ROMs
 
-**Questions for devs** The arcade ROMs in MAME and other arcade emulators have special names, for example `atetris.zip` or `dino.zip`. This games must be translated to proper names when scanning the database.
+> **Question for devs** The arcade ROMs in MAME and other arcade emulators have special names, for example `atetris.zip` or `dino.zip`. This games must be translated to proper names when scanning the database. Should Kodi include a database to convert MAME names into proper titles? Should this XML/JSON database included in an addon? EmulationStation, AEL, and other front-ends use this offline scraper databases.
 
 ### 2.4.2 ScummVM
 
-**Questions for devs** The ScummVM ROMs consist of several files and are usually kept in a subdirectory. This subdirectory has the real game name.
+> **Question for devs** The ScummVM ROMs consist of several files and are usually kept in a subdirectory. This subdirectory has the real game name.
 
 ## 3 Game database settings
 
@@ -171,6 +169,8 @@ Choose from `In the RAD` (default) or `Next to the ROMs`. If this setting is `In
 <rad>/Nintendo SNES/snaps/
 <rad>/Nintendo SNES/titles/
 ```
+
+> **Question for devs** If recursive ROM scan is enabled how to generate the ROM artwork filenames? Note that in some special platform like ScummVM the ROM title is the subdirectory name...
 
 If this setting is `Next to the ROMs` then the ROM asset directory setting will be ignored and your artwork files will be searched with a pattern like this:
 ```
