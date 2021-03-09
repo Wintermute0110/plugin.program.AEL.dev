@@ -4,9 +4,9 @@ This is a design proposal for the Kodi games database. First there are a set of 
 
 ## 1 Getting started (documentation section)
 
-The purpose of this section is to serve as a tutorial to enable you to properly setup your games/ROMs an the Kodi Game library. Retrogaming could be a vast an overwhelming topic and hence this tutorial has been created with minimal jargon.
+The purpose of this section is to serve as a tutorial to enable you to properly setup your games/ROMs and the Kodi Game library. Retrogaming could be a vast an overwhelming topic and hence this tutorial has been created with minimal jargon.
 
-The first thing for you to understand is what type of games library you would like to have. If you are a **casual user** with just a bunch of games in a single directory the setup is very simple. However, as you expand your collection by adding more games it is necessary to organize your game collection. Also, if you like arcade games, arcade emulators require that your ROMs have specific file names and must be placed in specific locations.
+The first thing for you to understand is what type of games library you would like to have. If you are a **casual user** with just a bunch of games in a single directory the setup is very simple. However, as you expand your library by adding more games it is necessary to organize your game collection. Also, if you like arcade games then proper organization is a must because arcade emulators require that your ROMs have specific file names and must be placed in specific locations.
 
 ### 1.1 An introduction to emulation and retrogaming
 
@@ -14,39 +14,44 @@ The purpose of this section is to explain some basic concepts for the very begin
 
 **What is retrogaming and emulation?**
 
-Retrogaming is to play old games for obsoleted and/or abandoned systems on modern hardware and computers. There are several ways to do this and the most common is with **emulation**. Emulation means recreating in software the behaviour of the old hardware. Because modern hardware is much faster than the old one, in most cases emulated machines run at the same speed or faster than in the original hardware but this is not always the case.
+Retrogaming is to preserve and play old games for obsolete or abandoned systems on modern hardware and computers. There are several ways to do this and the most common is with **emulation**. Emulation means recreating in software the behaviour of the old hardware. Because modern hardware is much faster than the old one, in most cases emulated machines run at the same speed or even much faster than in the original hardware. However, this is not always the case and as a rule of thumb the more recent a system is the more powerful a computer you need to emulate it at full speed.
 
 **What is a game platform?**
 
-For some platforms the definition is obvious, for example game consoles systems. However, things get complicated for arcade or other kind of systems. In Kodi, a game platform is the set of all games that can be run by a Libretro core. Sega Megadrive and Nintendo SNES are platforms, but also the single game Cave Story is a platform.
+In most cases the definition is obvious, for example for console game systems. However, things get complicated for arcade or computer systems. In Kodi, a game platform is the set of all games that can be run by a Libretro core. Sega Megadrive and Nintendo SNES are platforms, but also the single game Cave Story is a platform.
 
 **Why games are sometimes named ROMs?**
 
-ROM stands for read-only memory and comes for the systems that used cartridges for game distribution, for example the Sega Mega Drive or the Super Nintendo Entertaiment System. Modern emulators require the original software to execute the games in the form of file dumps of the contents of the ROM cartridges. By extension, modern files containing the dumps of the cartridges are called ROMs itself and the term can be used interchangably with games. Even platforms that did not use cartridges are also called ROMs by extension.
+ROM stands for read-only memory and comes from the systems that used cartridges for game distribution, for example the Sega Mega Drive or the Super Nintendo Entertaiment System. Modern emulators require the original software to execute the games in the form of file dumps of the contents of the cartridge ROMs. By extension, modern files containing the dumps of the cartridges are called ROMs itself and the term can be used interchangably with games. Even platforms that did not use cartridges are also called ROMs by extension.
 
-Typically ROMs for console systems consist of a single file, for example ... However, ROMs for arcaded systems are usually complicated and each game has several ROM files with strange names in a single ZIP file. For example, this is the ROM contents for the game Tetris.
+Typically ROMs for console systems consist of a single file which is in a ZIP file to save disk space. However, ROMs for arcade systems are usually complex and each game has several ROM files with strange names in a single ZIP file. For example, this is the ROM contents for the arcade game Tetris.
+
+| ROMname         | Size   | 
+|-----------------|--------|
+| 136066-1100.45f | 65,536 |
+| 136066-1101.35a | 65,536 |
 
 **What is a ROM Manager?**
 
-A ROM manager is a program to verify your ROMs. A ROM manager can also fix some problems with your ROMs, for example renaming ROMs with incorrect file name or deleting unknown ROMs. A ROM manager requires a DAT file.
+A ROM manager is a program to verify your ROMs. A ROM manager can also fix some problems with your ROMs, for example renaming ROMs with incorrect file name or deleting unknown ROMs. A ROM manager requires a DAT file for each platform to verify.
 
 **What is a DAT file?**
 
-A DAT file is a text file, usually in XML, that contain the ROM names and the file checksums. DAT files can be used to verify your ROMs.
+A DAT file is a text file, usually in XML format, that contain the ROM names and the file checksums. DAT files are databases and can be used to verify your ROMs.
 
 **What are No-Intro, Redump and TOSEC?**
 
-No-Intro is an organisation of ROM dumpers that produce DAT files. No-Intro DAT files contain the officially released games but often oficial betas or pre-release versions are also included. No-Intro focuses on cartridge-based platforms. No-Intro ROM sets are the closes possible thing to having the original cartridges. The name No-Intro comes because some ROM dumpers modify the original ROMs to include their group logo and the like, what is called an "intro".
+No-Intro is an organisation of ROM dumpers that produce DAT files. No-Intro DAT files contain the officially released games and often betas or pre-release versions for preservation and historical purposes. No-Intro focuses on cartridge-based platforms. No-Intro ROM sets are the closest possible thing to having the original cartridges. The name No-Intro comes because some ROM dumpers modify the original ROMs to include their group logo and the like, what is called an "intro".
 
 Redump is similar to No-Intro but focused on optical media systems (CD-ROMs, DVDs, LaserDiscs, etc.).
 
-TOSEC is another organisation that provides that files. However, the aim of TOSEC is to catalog every piece of software.
+TOSEC is another organisation that provides DAT files. However, the aim of TOSEC is to catalog every piece of software including what many people consider garbage, for example, incorrect ROM dumps, overdumped files, etc.
 
 There are other DAT producers like Goodsets, Trurip, etc.
 
 **What is a ROM audit?**
 
-A ROM audit is the process of scanning a set of ROMs and comparing them against a DAT file. The results of the audit is **Have** for ROMs you have that match the DAT, **Missing** for ROMs in the DAT you don't have, and **Unknown** for files you have not in the DAT. ROM manager may have other features, for example renaming ROMs to the correct name and fixing other problems.
+A ROM audit is the process of scanning a set of ROM files and comparing them against a DAT database file. The results of the audit is **Have** for ROMs you have that match the DAT, **Missing** for ROMs in the DAT you don't have, and **Unknown** for files you have not in the DAT. ROM managers may have other features, for example renaming ROMs to the correct name and fixing other problems.
 
 ### 1.2 A very short guide for the impatient casual user
 
@@ -54,11 +59,11 @@ A ROM audit is the process of scanning a set of ROMs and comparing them against 
 
 **Step 2** Add the ROMs directory as a game source. As platform select **Mixed** or **Unknown**.
 
-**Step 3** Scan your game library to update the Kodi database.
+**Step 3** Scan your game library to update the Kodi games library.
 
 ### 1.3 A very short guide for the impatient amateur/advanced user
 
-**Step 1** Create one directory for each platform and place your ROMs there. It is advised that you follow the Kodi platform list for the platform names.
+**Step 1** Create one directory for each platform and place your ROMs there. It is advised that you follow the Kodi platform list for the platform names to keep your setup tidy and organized.
 
 **Step 2** For each directory with ROMs add it as a games source, making sure you set the correct platform name.
 
@@ -66,7 +71,7 @@ A ROM audit is the process of scanning a set of ROMs and comparing them against 
 
 **Step 4** Download a Kodi Platform Artwork Theme and place it in a directory. Then go to Kodi Game settings and set this directory as the **Platform information directory**.
 
-**Step 5** Scan your game library to update the Kodi database.
+**Step 5** Scan your game library to update the Kodi games library.
 
 This is an example of the filesystem layout for this setup:
 ```
@@ -96,6 +101,8 @@ This is an example of the filesystem layout for this setup:
 
 This section describes the recommended file layout, that is, how to organize your games/ROMs into directories, and the correct file names for your ROMs.
 
+### 2.1 Preparation of files for the casual user
+
 If you just have some games you can place all of them in a single directory, for example:
 ```
 /home/user/ROMs/dino.zip
@@ -104,7 +111,11 @@ If you just have some games you can place all of them in a single directory, for
 /home/user/ROMs/Super Mario All-Stars and Super Mario World (Europe).zip
 ```
 
-It is strongly recommended that you organise your games in directories, with one directory for each platform, like in the following example:
+This is the most simple setup and some users will find it suitable. However, it is strongly advised that you separate you ROMs into per-platform directories. If you place all your ROMs in a single directory then Kodi has to guess the platform of each game and in some cases this is very difficult and prone to mistakes.
+
+### 2.2 Preparation of files for the amateur/advanced user
+
+Place you games in directories with one directory for each platform, like in the following example:
 ```
 /home/user/ROMs/mame/dino.zip
 /home/user/ROMs/mame/qsound_hle.zip
@@ -129,13 +140,13 @@ Final Fantasy VII (Europe) (Disc 2).chd
 Final Fantasy VII (Europe) (Disc 3).chd
 ```
 
-### 2.1 Notes for special platforms
+### 2.3 Notes for special platforms
 
-### 2.1.1 Arcade ROMs
+### 2.3.1 Arcade ROMs
 
 **Questions for devs** The arcade ROMs in MAME and other arcade emulators have special names, for example `atetris.zip` or `dino.zip`. This games must be translated to proper names when scanning the database.
 
-### 2.1.2 ScummVM
+### 2.3.2 ScummVM
 
 **Questions for devs** The ScummVM ROMs consist of several files and are usually kept in a subdirectory. This subdirectory has the real game name.
 
@@ -435,12 +446,12 @@ B
 |--------|------------|-----------------|-----------------|---------|
 | v18    | title      | string          | Game.Title      | Displayed name for the game |
 | v18    | platform   | string          | Game.Platform   | Platform list is fixed. (4) |
-| v18    | genres     | list of strings | Game.Genres     | Genres |
-| v18    | developer  | string          | Game.Publisher  | |
-| v18    | publisher  | string          | Game.Developer  | |
+| v18    | genres     | list of strings | Game.Genres     | Genres of the game (eg. Action) |
+| v18    | developer  | string          | Game.Publisher  | Game developer. |
+| v18    | publisher  | string          | Game.Developer  | Publishing company of the game. |
 | v18    | overview   | string          | Game.Overview   | Game plot or description. |
 | v18    | year       | date            | Game.Year       | Release year. Delete and use release. |
-| v18    | gameclinet | date            | Game.GameClient | |
+| v18    | gameclinet | date            | Game.GameClient | Name of the used emulator. |
 |        | release    | date            |                 | Release date. |
 |        | nplayers   | string          |                 | Number of players (1) |
 |        | esrb       | string          |                 | ESRB rating. |
