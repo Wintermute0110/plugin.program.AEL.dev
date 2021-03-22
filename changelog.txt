@@ -25,11 +25,8 @@ WIP      [SCRAPERS] Fix GameFAQs scraper.
          does not work due to changes in GameFAQs. See the comments of method
          GameFAQs._load_assets_from_page()
 
-WIP      [SCRAPERS] Persistent scraper cache browser. Ability to browse the stored scraper
-         searches. Also, context menu to delete stored cached data.
 
-
-[B]Planned features / TODO[/B]
+[B]Current planned features[/B]
 
 WIP      [CORE] Check out the ListItem constructor offscreen parameter in Leia. It can
          dramatically speed up ListItem creation and population.
@@ -51,6 +48,8 @@ WIP      [CORE] Support for Advanced MAME Launcher exported virtual launchers or
 WIP      [CORE] Use Libretro_BIOS_cores.json for the Retroarch BIOS audit and not the internal
          database. However, Libretro_BIOS_cores.json does not have the ROM size.
 
+WIP      [MANUALS] Port the PDF manual reader from AML into AEL.
+
 WIP      [MULTIDISC] Edit multidisc ROMs. In general, improve the support for
          multidisc ROMs.
 
@@ -61,6 +60,9 @@ WIP      [MISC] Changes and suggestions propoed by Atsumori.
          See http://forum.kodi.tv/showthread.php?tid=287826&pid=2560843#pid2560843
          See http://forum.kodi.tv/showthread.php?tid=287826&pid=2586596#pid2586596
 
+WIP      [SCRAPERS] Persistent scraper cache browser. Ability to browse the stored scraper
+         searches. Also, context menu to delete stored cached data.
+
 WIP      [SCRAPERS] Asset scrapers are disabled/not working for standalone launchers. Fix this.
          See https://github.com/Wintermute0110/plugin.program.advanced.emulator.launcher/issues/62
 
@@ -69,10 +71,9 @@ WIP      [SCRAPERS] MAME offline scraper: include ESRB field. Take it from GameI
 WIP      [SCRAPERS] MAME offline scraper: include plot field. Take it from GameInfoDB.
 
 
-[B]Advanced Emulator Launcher | version 0.10.0 | xx xxxxxx 2020[/B]
+[B]Advanced Emulator Launcher | version 0.11.0 | xx xxxxxx 2021[/B]
 
-FEATURE  [CORE] First AEL version to support Python 3 and Kodi 19 Matrix.
-         The plan is to release AEL 0.10.0 once Kodi Matrix reaches the release candidate stage.
+NOTE     Implement these features in master branch for Python 3.
 
 WIP      [CORE] Rename the plugin from `plugin.program.advanced.emulator.launcher` to
          `plugin.program.AEL`. Create a development version `plugin.program.AEL.dev` that
@@ -91,15 +92,6 @@ WIP      [CORE] Automatic generation of 3D Boxes using BoxFront and BoxSpine.
 
 WIP      [CORE] Automatic generation of BoxTextures from BoxBack, BoxSpine and BoxFront.
          Copy this feature from AML.
-
-WIP      [MANUALS] Port the PDF manual reader from AML into AEL.
-
-
-[B]Advanced Emulator Launcher | version 0.9.10 | xx July 2020[/B]
-
-FEATURE  [CORE] Disable Kodi screensaver when launching MAME and reenable after MAME finishes.
-         Featured ported from AML.
-         See https://forum.kodi.tv/showthread.php?tid=304186&pid=2934194#pid2934194
 
 WIP      [CORE] Unified ROM artwork directory. This will require heavy changes in categories.xml.
          I still have to think how to properly implement this. This is related to the
@@ -137,12 +129,36 @@ WIP      [SCRAPERS] Change the Offline Scraper format from XML to JSON. Include 
          have a look at NOTES.md for guidelines. Create the XML databases to be merged with the
          No-Intro/Redump DATs, also giving support to Extra ROMs (hacks, etc.).
 
-WIP      [SCRAPERS] In ScreenScraper, check for daily allowance and scraper overflows in general.
-
 WIP      [SCRAPERS] ScreenScraper must choose the correct artwork depending on the region/language.
          AEL must have an official list of regions/languages, extracted from the No-Intro/Redump
          DATs, to translate to ScreenScraper values. A No-Intro filename parser is also
          required.
+
+
+[B]Advanced Emulator Launcher | version 0.10.0 | xx xxxxx 2021[/B]
+
+NOTE     Python 3 version for Matrix in branch release-0.10.x-python3
+
+WIP      Create a Python 3 Matrix version 0.10.x to track release 0.9.x.
+         Current master branch will be release 0.11.x in Python 3.
+         First release 0.9.10 Python 2 and then do the Python 3 conversion into 0.10.0.
+
+WIP      Port release 0.9.10 to Python 3.
+
+
+[B]Advanced Emulator Launcher | version 0.9.10 | xx xxxxx 2021[/B]
+
+NOTE     Python 2 version for Leia/Krypon in branch release-0.9.x-python2
+
+FEATURE  [CORE] Disable Kodi screensaver when launching and reenable after app finishes.
+         Featured ported from AML.
+         See https://forum.kodi.tv/showthread.php?tid=304186&pid=2934194#pid2934194
+
+WIP      Have a look at the forum and Github issues to find urgent things to be fixed.
+
+WIP      [SCRAPERS] In ScreenScraper, check for daily allowance and scraper overflows in general.
+
+WIP FIX  Fix TheGamesDB scraper. Have a look at Github issues.
 
 WIP FIX  Fix launching of ROMs with Windows network filenames.
          See https://forum.kodi.tv/showthread.php?tid=287826&pid=2919639#pid2919639
