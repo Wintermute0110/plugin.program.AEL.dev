@@ -3,7 +3,6 @@
 #
 # Common data to test the scrapers.
 #
-from __future__ import unicode_literals
 import sys
 
 settings = {

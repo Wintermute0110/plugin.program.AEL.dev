@@ -7,9 +7,9 @@
 
             2.25.0 Kodi 17 Krypton
             2.26.0 Kodi 18 Leia
-            2.27.0 Kodi 19 Matrix (actual version not fixed yet).
+            3.0.0  Kodi 19 Matrix.
         -->
-        <import addon="xbmc.python" version="2.25.0" />
+        <import addon="xbmc.python" version="3.0.0" />
     </requires>
     <extension point="xbmc.python.pluginsource" library="addon.py">
         <provides>executable game</provides>

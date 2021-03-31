@@ -19,7 +19,6 @@
 #
 
 # --- Python standard library ---
-from __future__ import unicode_literals
 import collections
 import sys
 import os
@@ -27,11 +26,11 @@ import shutil
 import time
 import random
 import hashlib
-import urlparse
+import urllib.parse
 import re
 import string
 import fnmatch
-import HTMLParser
+import html.parser
 import zlib
 
 # --- Kodi modules ---
@@ -93,7 +92,7 @@ def XML_text(tag_name, tag_text, num_spaces = 2):
         tag_text = text_escape_XML(tag_text)
         line = '{0}<{1}>{2}</{3}>\n'.format(' ' * num_spaces, tag_name, tag_text, tag_name)
     else:
-        # >> Empty tag    
+        # >> Empty tag
         line = '{0}<{1} />\n'.format(' ' * num_spaces, tag_name)
 
     return line
@@ -103,7 +102,7 @@ def text_str_2_Uni(string):
     if type(string).__name__ == 'unicode':
         unicode_str = string
     elif type(string).__name__ == 'str':
-        unicode_str = string.decode('utf-8', errors = 'replace')
+        unicode_str = string#.decode('utf-8', errors = 'replace')
     else:
         print('TypeError: ' + type(string).__name__)
         raise TypeError
@@ -219,7 +218,7 @@ def text_render_table_NO_HEADER(table_str, trim_Kodi_colours = False):
     # Remove Kodi tags [COLOR string] and [/COLOR]
     # BUG Currently this code removes all the colour tags so the table is rendered
     #     with no colours.
-    # NOTE To render tables with colours is more difficult than this... 
+    # NOTE To render tables with colours is more difficult than this...
     #      All the paddings changed. I will left this for the future.
     if trim_Kodi_colours:
         new_table_str = []
@@ -344,7 +343,7 @@ def text_escape_XML(data_str):
 
     data_str = data_str.replace("'", '&apos;')
     data_str = data_str.replace('"', '&quot;')
-    
+
     # --- Unprintable characters ---
     data_str = data_str.replace('\n', '&#10;')
     data_str = data_str.replace('\r', '&#13;')
@@ -360,12 +359,12 @@ def text_unescape_XML(data_str):
     data_str = data_str.replace('&gt;', '>')
     # Ampersand MUST BE replaced LAST
     data_str = data_str.replace('&amp;', '&')
-    
+
     # --- Unprintable characters ---
     data_str = data_str.replace('&#10;', '\n')
     data_str = data_str.replace('&#13;', '\r')
     data_str = data_str.replace('&#9;', '\t')
-    
+
     return data_str
 
 #
@@ -407,27 +406,27 @@ def text_unescape_HTML(s):
     # s = s.replace('&gt;',   '>')
     # s = s.replace('&quot;', '"')
     # s = s.replace('&nbsp;', ' ')
-    # s = s.replace('&copy;', '©')
+    # s = s.replace('&copy;', 'Â©')
     # s = s.replace('&amp;',  '&') # >> Must be done last
 
     # --- HTML Unicode entities ---
     # s = s.replace('&#039;', "'")
-    # s = s.replace('&#149;', "•")
+    # s = s.replace('&#149;', "â¢")
     # s = s.replace('&#x22;', '"')
     # s = s.replace('&#x26;', '&')
     # s = s.replace('&#x27;', "'")
 
-    # s = s.replace('&#x101;', "ā")
-    # s = s.replace('&#x113;', "ē")
-    # s = s.replace('&#x12b;', "ī")
-    # s = s.replace('&#x12B;', "ī")
-    # s = s.replace('&#x14d;', "ō")
-    # s = s.replace('&#x14D;', "ō")
-    # s = s.replace('&#x16b;', "ū")
-    # s = s.replace('&#x16B;', "ū")
+    # s = s.replace('&#x101;', "Ä")
+    # s = s.replace('&#x113;', "Ä")
+    # s = s.replace('&#x12b;', "Ä«")
+    # s = s.replace('&#x12B;', "Ä«")
+    # s = s.replace('&#x14d;', "Å")
+    # s = s.replace('&#x14D;', "Å")
+    # s = s.replace('&#x16b;', "Å«")
+    # s = s.replace('&#x16B;', "Å«")
 
     # >> Use HTMLParser module to decode HTML entities.
-    s = HTMLParser.HTMLParser().unescape(s)
+    s = html.parser.HTMLParser().unescape(s)
 
     if __debug_text_unescape_HTML:
         log_debug('text_unescape_HTML() output "{0}"'.format(s))
@@ -450,7 +449,7 @@ def text_unescape_and_untag_HTML(s):
 def text_dump_str_to_file(filename, full_string):
     log_debug('Dumping file "{0}"'.format(filename))
     file_obj = open(filename, 'w')
-    file_obj.write(full_string.encode('utf-8'))
+    file_obj.write(full_string)
     file_obj.close()
 
 # -------------------------------------------------------------------------------------------------
@@ -466,7 +465,7 @@ def text_format_ROM_name_for_scraping(title):
     title = re.sub('\[.*?\]', '', title)
     title = re.sub('\(.*?\)', '', title)
     title = re.sub('\{.*?\}', '', title)
-    
+
     title = title.replace('_', '')
     title = title.replace('-', '')
     title = title.replace(':', '')
@@ -533,9 +532,9 @@ def text_get_ROM_basename_tokens(basename_str):
 
     # >> Remove empty tokens ''
     tokens_clean = list()
-    for token in tokens_strip: 
+    for token in tokens_strip:
         if token: tokens_clean.append(token)
-    if DEBUG_TOKEN_PARSER:        
+    if DEBUG_TOKEN_PARSER:
         log_debug('text_get_ROM_basename_tokens() tokens_clean {0}'.format(tokens_clean))
 
     # >> Remove '-' tokens from Trurip multidisc names
@@ -559,7 +558,7 @@ class MultiDiscInfo:
 
 def text_get_multidisc_info(ROM_FN):
     MDSet = MultiDiscInfo(ROM_FN)
-    
+
     # --- Parse ROM base_noext into tokens ---
     tokens = text_get_ROM_basename_tokens(ROM_FN.getBase_noext())
 
@@ -574,7 +573,7 @@ def text_get_multidisc_info(ROM_FN):
         matchObj = re.match(r'\(Dis[ck] ([0-9]+)\)', token)
         if matchObj:
             log_debug('text_get_multidisc_info() ### Matched Redump multidisc ROM ###')
-            tokens_idx = range(0, len(tokens))
+            tokens_idx = list(range(0, len(tokens)))
             tokens_idx.remove(index)
             tokens_nodisc_idx = list(tokens_idx)
             tokens_mdisc = [tokens[x] for x in tokens_nodisc_idx]
@@ -585,7 +584,7 @@ def text_get_multidisc_info(ROM_FN):
         matchObj = re.match(r'\(Dis[ck] ([0-9]+) of ([0-9]+)\)', token)
         if matchObj:
             log_debug('text_get_multidisc_info() ### Matched TOSEC/Trurip multidisc ROM ###')
-            tokens_idx = range(0, len(tokens))
+            tokens_idx = list(range(0, len(tokens)))
             tokens_idx.remove(index)
             tokens_nodisc_idx = list(tokens_idx)
             # log_debug('text_get_multidisc_info() tokens_idx         = {0}'.format(tokens_idx))
@@ -616,7 +615,7 @@ def text_get_multidisc_info(ROM_FN):
 # Get extension of URL. Returns '' if not found. Examples: 'png', 'jpg', 'gif'.
 #
 def text_get_URL_extension(url):
-    path = urlparse.urlparse(url).path
+    path = urllib.parse.urlparse(url).path
     ext = os.path.splitext(path)[1]
     if ext[0] == '.': ext = ext[1:] # Remove initial dot
 
@@ -626,7 +625,7 @@ def text_get_URL_extension(url):
 # Defaults to 'jpg' if URL extension cannot be determined
 #
 def text_get_image_URL_extension(url):
-    path = urlparse.urlparse(url).path
+    path = urllib.parse.urlparse(url).path
     ext = os.path.splitext(path)[1]
     if ext[0] == '.': ext = ext[1:] # Remove initial dot
     ret = 'jpg' if ext == '' else ext
@@ -672,7 +671,7 @@ def misc_search_file_cache(dir_str, filename_noext, file_exts):
 # Misc stuff
 # -------------------------------------------------------------------------------------------------
 #
-# Given the image path, image filename with no extension and a list of file extensions search for 
+# Given the image path, image filename with no extension and a list of file extensions search for
 # a file.
 #
 # rootPath       -> FileName object
@@ -746,7 +745,7 @@ def misc_look_for_Redump_DAT(platform, DAT_list):
 def misc_generate_random_SID():
     t1 = time.time()
     t2 = t1 + random.getrandbits(32)
-    base = hashlib.md5( str(t1 + t2) )
+    base = hashlib.md5( str(t1 + t2).encode('utf-8') )
     sid = base.hexdigest()
 
     return sid
@@ -765,7 +764,7 @@ def misc_read_file_in_chunks(file_object, chunk_size = 8192):
 # Returns a dictionary with the checksums or None in case of error.
 #
 # https://stackoverflow.com/questions/519633/lazy-method-for-reading-big-file-in-python
-# https://stackoverflow.com/questions/1742866/compute-crc-of-file-in-python 
+# https://stackoverflow.com/questions/1742866/compute-crc-of-file-in-python
 #
 def misc_calculate_file_checksums(full_file_path):
     log_debug('Computing checksums "{}"'.format(full_file_path))
@@ -919,7 +918,7 @@ class FileName:
     def __init__(self, pathString):
         self.originalPath = pathString
         self.path         = pathString
-        
+
         # --- Path transformation ---
         if self.originalPath.lower().startswith('smb:'):
             self.path = self.path.replace('smb:', '')
@@ -959,8 +958,7 @@ class FileName:
     def __add__(self, other):
         current_path = self.originalPath
         if type(other) is FileName:  other_path = other.originalPath
-        elif type(other) is unicode: other_path = other
-        elif type(other) is str:     other_path = other.decode('utf-8')
+        elif type(other) is str: other_path = other
         else: raise NameError('Unknown type for overloaded + in FileName object')
         new_path = os.path.join(current_path, other_path)
         child    = FileName(new_path)
@@ -1051,12 +1049,12 @@ class FileName:
 
     def isdir(self):
         return os.path.isdir(self.path)
-        
+
     def isfile(self):
         return os.path.isfile(self.path)
 
     def makedirs(self):
-        if not os.path.exists(self.path): 
+        if not os.path.exists(self.path):
             os.makedirs(self.path)
 
     # os.remove() and os.unlink() are exactly the same.

@@ -4,7 +4,6 @@
 # Show why JSON cannot be decoded
 
 # --- Python standard library ---
-from __future__ import unicode_literals
 import json
 import pprint
 import sys

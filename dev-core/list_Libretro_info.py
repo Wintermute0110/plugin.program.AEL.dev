@@ -4,7 +4,6 @@
 # List Libretro info stuff.
 
 # --- Python standard library ---
-from __future__ import unicode_literals
 import copy
 import json
 import os

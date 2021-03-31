@@ -14,7 +14,7 @@
 # See the GNU General Public License for more details.
 
 # --- Python standard library ---
-from __future__ import unicode_literals
+
 
 # -------------------------------------------------------------------------------------------------
 # New platform engine
@@ -574,7 +574,7 @@ def emudata_get_program_arguments(app):
         'retroarch'   : '-L /path/to/core -f "$rom$"',
         'yabause'     : '-a -f -i "$rom$"',
     }
-    for application, arguments in applications.iteritems():
+    for application, arguments in applications.items():
         if app.lower().find(application) >= 0:
             return arguments
 
@@ -590,7 +590,7 @@ def emudata_get_program_extensions(app):
         'retroarch'  : 'zip|cue',
         'yabause'    : 'cue',
     }
-    for application, extensions in applications.iteritems():
+    for application, extensions in applications.items():
         if app.lower().find(application) >= 0:
             return extensions
 

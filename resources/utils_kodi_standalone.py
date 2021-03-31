@@ -21,7 +21,7 @@
 #
 
 # --- Python standard library ---
-from __future__ import unicode_literals
+
 
 # --- Make fake Kodi functions ---
 class xbmc_wrapper:

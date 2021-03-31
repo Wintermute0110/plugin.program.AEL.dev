@@ -15,19 +15,18 @@
 # GNU General Public License for more details.
 
 # --- Python standard library ---
-from __future__ import unicode_literals
 import xml.etree.ElementTree as ET
 
 # --- Modules/packages in this plugin ---
-from constants import *
-from utils import *
-from utils_kodi import *
+from .constants import *
+from .utils import *
+from .utils_kodi import *
 
 # -------------------------------------------------------------------------------------------------
 # Data structures
 # -------------------------------------------------------------------------------------------------
 # DTD "http://www.logiqx.com/Dats/datafile.dtd"
-def audit_new_rom_logiqx(): 
+def audit_new_rom_logiqx():
     return {
         'name'         : '',
         'cloneof'      : '',
@@ -36,7 +35,7 @@ def audit_new_rom_logiqx():
     }
 
 # HyperList doesn't include Plot
-def audit_new_rom_HyperList(): 
+def audit_new_rom_HyperList():
     return {
         'name'         : '',
         'description'  : '',
@@ -61,7 +60,7 @@ def audit_new_rom_GameDB():
         'story'        : ''
     }
 
-def audit_new_rom_AEL_Offline(): 
+def audit_new_rom_AEL_Offline():
     return {
         'ROM'       : '',
         'title'     : '',
@@ -137,7 +136,7 @@ def audit_load_LB_metadata_XML(filename_FN, games_dic, platforms_dic, gameimages
     log_verb('audit_load_LB_metadata_XML() Loading "{0}"'.format(filename_FN.getPath()))
     try:
         xml_tree = ET.parse(filename_FN.getPath())
-    except ET.ParseError, e:
+    except ET.ParseError as e:
         log_error('(ParseError) Exception parsing XML categories.xml')
         log_error('(ParseError) {0}'.format(str(e)))
         return
@@ -207,7 +206,7 @@ def audit_load_OfflineScraper_XML(xml_file):
     log_debug('audit_load_OfflineScraper_XML() Loading "{}"'.format(xml_file))
     try:
         xml_tree = ET.parse(xml_file)
-    except ET.ParseError, e:
+    except ET.ParseError as e:
         log_error('(ParseError) Exception parsing XML categories.xml')
         log_error('(ParseError) {}'.format(str(e)))
         return games
@@ -613,7 +612,7 @@ def audit_get_ROM_base_name(romFileName):
     if regSearch is None:
         raise NameError('audit_get_ROM_base_name() regSearch is None')
     regExp_result = regSearch.group()
-  
+
     return regExp_result.strip()
 
 # -------------------------------------------------------------------------------------------------
@@ -641,7 +640,7 @@ Retro_core_dic = {
     'vba_next' : 'Game Boy Advance (VBA Next)',
     'dolphin' : 'GameCube / Wii (Dolphin)',
     'parallel_n64' : 'Nintendo 64 (ParaLLEl N64)',
-    'pokemini' : 'Pokémon Mini (PokeMini)',
+    'pokemini' : 'PokÃ©mon Mini (PokeMini)',
     'bsnes_accuracy' : 'SNES / Super Famicom (bsnes Accuracy)',
     'bsnes_balanced' : 'SNES / Super Famicom (bsnes Balanced)',
     'bsnes_performance' : 'SNES / Super Famicom (bsnes Performance)',
@@ -688,7 +687,7 @@ Libretro_BIOS_list = [
      'mandatory' : True, 'cores' : ['hatari']},
 
     # --- Id Software - Doom ---
-    
+
 
     # --- Magnavox - Odyssey2 ---
     # https://github.com/libretro/libretro-super/blob/master/dist/info/o2em_libretro.info
@@ -754,7 +753,7 @@ Libretro_BIOS_list = [
      'mandatory' : False, 'cores' : ['gpsp', 'mednafen_gba', 'mgba', 'tempgba', 'vba_next']},
 
     # --- Nintendo - Gameboy Color ---
-    
+
     # --- Nintendo - GameCube ---
     # Dolphin files must be in a special directory, not in the system directory.
     # https://github.com/libretro/libretro-super/blob/master/dist/info/dolphin_libretro.info
@@ -788,7 +787,7 @@ Libretro_BIOS_list = [
     #  'mandatory' : True, 'cores' : []},
 
     # --- Nintendo - Nintendo Entertainment System ---
-    
+
     # --- Nintendo - Pokemon Mini ---
     # https://github.com/libretro/libretro-super/blob/master/dist/info/pokemini_libretro.info
     {'filename' : 'bios.min', 'size' : 4096, 'md5': '1e4fb124a3a886865acb574f388c803d',

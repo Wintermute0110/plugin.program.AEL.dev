@@ -15,7 +15,6 @@
 # GNU General Public License for more details.
 
 # --- Pyhton standard library
-from __future__ import unicode_literals
 import copy
 import json
 import io
@@ -36,10 +35,10 @@ import errno
 import xml.etree.ElementTree as ET
 
 # --- AEL packages ---
-from constants import *
-from utils import *
-from utils_kodi import *
-from assets import *
+from .constants import *
+from .utils import *
+from .utils_kodi import *
+from .assets import *
 
 # --- AEL ROM storage version format ---
 # >> An integer number incremented whenever there is a change in the ROM storage format.
@@ -56,7 +55,7 @@ JSON_separators = (',', ':')
 # Internally all string in the data model are Unicode. They will be encoded to
 # UTF-8 when writing files.
 # -------------------------------------------------------------------------------------------------
-# These three functions create a new data structure for the given object and (very importantly) 
+# These three functions create a new data structure for the given object and (very importantly)
 # fill the correct default values). These must match what is written/read from/to the XML files.
 # Tag name in the XML is the same as in the data dictionary.
 #
@@ -410,7 +409,7 @@ def fs_write_catfile(categories_file, categories, launchers, update_timestamp = 
         # >> Write a timestamp when file is created. This enables the Virtual Launchers to know if
         # >> it's time for an update.
         str_list.append('<control>\n')
-        str_list.append(XML_text('update_timestamp', unicode(_t)))
+        str_list.append(XML_text('update_timestamp', str(_t)))
         str_list.append('</control>\n')
 
         # --- Create Categories XML list ---
@@ -426,7 +425,7 @@ def fs_write_catfile(categories_file, categories, launchers, update_timestamp = 
             str_list.append(XML_text('m_developer', category['m_developer']))
             str_list.append(XML_text('m_rating', category['m_rating']))
             str_list.append(XML_text('m_plot', category['m_plot']))
-            str_list.append(XML_text('finished', unicode(category['finished'])))
+            str_list.append(XML_text('finished', str(category['finished'])))
             str_list.append(XML_text('default_icon', category['default_icon']))
             str_list.append(XML_text('default_fanart', category['default_fanart']))
             str_list.append(XML_text('default_banner', category['default_banner']))
@@ -463,25 +462,25 @@ def fs_write_catfile(categories_file, categories, launchers, update_timestamp = 
             str_list.append(XML_text('rompath', launcher['rompath']))
             str_list.append(XML_text('romext', launcher['romext']))
             str_list.append(XML_text('romextrapath', launcher['romextrapath']))
-            str_list.append(XML_text('finished', unicode(launcher['finished'])))
-            str_list.append(XML_text('toggle_window', unicode(launcher['toggle_window'])))
-            str_list.append(XML_text('non_blocking', unicode(launcher['non_blocking'])))
-            str_list.append(XML_text('multidisc', unicode(launcher['multidisc'])))
+            str_list.append(XML_text('finished', str(launcher['finished'])))
+            str_list.append(XML_text('toggle_window', str(launcher['toggle_window'])))
+            str_list.append(XML_text('non_blocking', str(launcher['non_blocking'])))
+            str_list.append(XML_text('multidisc', str(launcher['multidisc'])))
             str_list.append(XML_text('roms_base_noext', launcher['roms_base_noext']))
             str_list.append(XML_text('audit_state', launcher['audit_state']))
             str_list.append(XML_text('audit_auto_dat_file', launcher['audit_auto_dat_file']))
             str_list.append(XML_text('audit_custom_dat_file', launcher['audit_custom_dat_file']))
             str_list.append(XML_text('audit_display_mode', launcher['audit_display_mode']))
-            str_list.append(XML_text('launcher_display_mode', unicode(launcher['launcher_display_mode'])))
-            str_list.append(XML_text('num_roms', unicode(launcher['num_roms'])))
-            str_list.append(XML_text('num_parents', unicode(launcher['num_parents'])))
-            str_list.append(XML_text('num_clones', unicode(launcher['num_clones'])))
-            str_list.append(XML_text('num_have', unicode(launcher['num_have'])))
-            str_list.append(XML_text('num_miss', unicode(launcher['num_miss'])))
-            str_list.append(XML_text('num_unknown', unicode(launcher['num_unknown'])))
-            str_list.append(XML_text('num_extra', unicode(launcher['num_extra'])))
-            str_list.append(XML_text('timestamp_launcher', unicode(launcher['timestamp_launcher'])))
-            str_list.append(XML_text('timestamp_report', unicode(launcher['timestamp_report'])))
+            str_list.append(XML_text('launcher_display_mode', str(launcher['launcher_display_mode'])))
+            str_list.append(XML_text('num_roms', str(launcher['num_roms'])))
+            str_list.append(XML_text('num_parents', str(launcher['num_parents'])))
+            str_list.append(XML_text('num_clones', str(launcher['num_clones'])))
+            str_list.append(XML_text('num_have', str(launcher['num_have'])))
+            str_list.append(XML_text('num_miss', str(launcher['num_miss'])))
+            str_list.append(XML_text('num_unknown', str(launcher['num_unknown'])))
+            str_list.append(XML_text('num_extra', str(launcher['num_extra'])))
+            str_list.append(XML_text('timestamp_launcher', str(launcher['timestamp_launcher'])))
+            str_list.append(XML_text('timestamp_report', str(launcher['timestamp_report'])))
             # >> Launcher artwork
             str_list.append(XML_text('default_icon', launcher['default_icon']))
             str_list.append(XML_text('default_fanart', launcher['default_fanart']))
@@ -523,7 +522,7 @@ def fs_write_catfile(categories_file, categories, launchers, update_timestamp = 
 
         # Strings in the list are Unicode. Encode to UTF-8
         # Join string, and save categories.xml file
-        full_string = ''.join(str_list).encode('utf-8')
+        full_string = ''.join(str_list)
         file_obj = open(categories_file.getPath(), 'w')
         file_obj.write(full_string)
         file_obj.close()
@@ -638,7 +637,7 @@ def fs_write_str_list_to_file(str_list, export_FN):
     log_verb('fs_write_str_list_to_file() Exporting OP "{0}"'.format(export_FN.getOriginalPath()))
     log_verb('fs_write_str_list_to_file() Exporting  P "{0}"'.format(export_FN.getPath()))
     try:
-        full_string = ''.join(str_list).encode('utf-8')
+        full_string = ''.join(str_list)
         file_obj = open(export_FN.getPath(), 'w')
         file_obj.write(full_string)
         file_obj.close()
@@ -663,9 +662,9 @@ def fs_write_JSON_file(file_dir, file_base_noext, data):
 
     try:
         with io.open(json_file.getPath(), 'w', encoding = 'utf-8') as file:
-            json_data = json.dumps(data, ensure_ascii = False, sort_keys = True, 
+            json_data = json.dumps(data, ensure_ascii = False, sort_keys = True,
                                    indent = JSON_indent, separators = JSON_separators)
-            file.write(unicode(json_data))
+            file.write(str(json_data))
             file.close()
     except OSError:
         kodi_notify_warn('(OSError) Cannot write {0} file'.format(json_file.getPath()))
@@ -823,7 +822,7 @@ def fs_write_ROMs_JSON(roms_dir_FN, launcher, roms):
         str_list.append('</launcher>\n')
         str_list.append('</advanced_emulator_launcher_ROMs>\n')
 
-        full_string = ''.join(str_list).encode('utf-8')
+        full_string = ''.join(str_list)
         file_obj = open(roms_xml_file.getPath(), 'w')
         file_obj.write(full_string)
         file_obj.close()
@@ -845,7 +844,7 @@ def fs_write_ROMs_JSON(roms_dir_FN, launcher, roms):
             json_data = json.dumps(roms, ensure_ascii = False, sort_keys = True,
                                    indent = JSON_indent, separators = JSON_separators)
             # unicode(json_data) auto-decodes data to unicode if str
-            file.write(unicode(json_data))
+            file.write(str(json_data))
             file.close()
     except OSError:
         kodi_notify_warn('(OSError) Cannot write {} file'.format(roms_json_file.getPath()))
@@ -869,7 +868,7 @@ def fs_load_ROMs_JSON(roms_dir_FN, launcher):
     #    with this exception so at least launcher can be rescanned.
     log_verb('fs_load_ROMs_JSON()  Dir {}'.format(roms_dir_FN.getOriginalPath()))
     log_verb('fs_load_ROMs_JSON() JSON {}'.format(roms_base_noext + '.json'))
-    with open(roms_json_file.getPath().decode('utf-8')) as file:
+    with open(roms_json_file.getPath()) as file:
         try:
             roms = json.load(file)
         except ValueError:
@@ -903,9 +902,9 @@ def fs_write_Favourites_JSON(roms_json_file, roms):
     # --- Write JSON file ---
     try:
         with io.open(roms_json_file.getPath(), 'w', encoding='utf-8') as file:
-            json_data = json.dumps(raw_data, ensure_ascii = False, sort_keys = True, 
+            json_data = json.dumps(raw_data, ensure_ascii = False, sort_keys = True,
                                    indent = JSON_indent, separators = JSON_separators)
-            file.write(unicode(json_data))
+            file.write(str(json_data))
             file.close()
     except OSError:
         kodi_notify_warn('(OSError) Cannot write {} file'.format(roms_json_file.getPath()))
@@ -918,11 +917,11 @@ def fs_write_Favourites_JSON(roms_json_file, roms):
 def fs_load_Favourites_JSON(roms_json_file):
     # --- If file does not exist return empty dictionary ---
     log_verb('fs_load_Favourites_JSON() File {}'.format(roms_json_file.getOriginalPath()))
-    if not roms_json_file.exists(): 
+    if not roms_json_file.exists():
         return {}
 
     # --- Parse JSON ---
-    with open(roms_json_file.getPath()) as file:    
+    with open(roms_json_file.getPath()) as file:
         try:
             raw_data = json.load(file)
         except ValueError:
@@ -952,7 +951,7 @@ def fs_write_Collection_index_XML(collections_xml_file, collections):
         # --- Control information ---
         _t = time.time()
         str_list.append('<control>\n')
-        str_list.append(XML_text('update_timestamp', unicode(_t)))
+        str_list.append(XML_text('update_timestamp', str(_t)))
         str_list.append('</control>\n')
 
         # --- Virtual Launchers ---
@@ -978,7 +977,7 @@ def fs_write_Collection_index_XML(collections_xml_file, collections):
             str_list.append(XML_text('s_trailer', collection['s_trailer']))
             str_list.append('</Collection>\n')
         str_list.append('</advanced_emulator_launcher_Collection_index>\n')
-        full_string = ''.join(str_list).encode('utf-8')
+        full_string = ''.join(str_list)
         file_obj = open(collections_xml_file.getPath(), 'w')
         file_obj.write(full_string)
         file_obj.close()
@@ -999,7 +998,7 @@ def fs_load_Collection_index_XML(collections_xml_file):
     log_verb('fs_load_Collection_index_XML() Loading {}'.format(collections_xml_file.getOriginalPath()))
     try:
         xml_tree = ET.parse(collections_xml_file.getPath())
-    except ET.ParseError, e:
+    except ET.ParseError as e:
         log_error('(ParseError) Exception parsing XML categories.xml')
         log_error('(ParseError) {}'.format(str(e)))
         return roms
@@ -1038,9 +1037,9 @@ def fs_write_Collection_ROMs_JSON(roms_json_file, roms):
 
     try:
         with io.open(roms_json_file.getPath(), 'w', encoding = 'utf-8') as file:
-            json_data = json.dumps(raw_data, ensure_ascii = False, sort_keys = True, 
+            json_data = json.dumps(raw_data, ensure_ascii = False, sort_keys = True,
                                    indent = JSON_indent, separators = JSON_separators)
-            file.write(unicode(json_data))
+            file.write(str(json_data))
     except OSError:
         kodi_notify_warn('(OSError) Cannot write {} file'.format(roms_json_file.getPath()))
     except IOError:
@@ -1058,7 +1057,7 @@ def fs_load_Collection_ROMs_JSON(roms_json_file):
     # --- Parse using JSON ---
     log_verb('fs_load_Collection_ROMs_JSON() {}'.format(roms_json_file.getOriginalPath()))
 
-    with open(roms_json_file.getPath()) as file:    
+    with open(roms_json_file.getPath()) as file:
         try:
             raw_data = json.load(file)
         except ValueError:
@@ -1080,7 +1079,7 @@ def fs_load_Collection_ROMs_JSON(roms_json_file):
 # comments in fs_export_ROM_collection_assets()
 def fs_export_ROM_collection(output_filename, collection, rom_list):
     log_info('fs_export_ROM_collection() File {}'.format(output_filename.getOriginalPath()))
-    
+
     ex_collection_dic = copy.deepcopy(collection)
     for asset_kind in COLLECTION_ASSET_ID_LIST:
         AInfo = assets_get_info_scheme(asset_kind)
@@ -1113,9 +1112,9 @@ def fs_export_ROM_collection(output_filename, collection, rom_list):
     raw_data.append(ex_rom_list)
     try:
         with io.open(output_filename.getPath(), 'w', encoding = 'utf-8') as file:
-            json_data = json.dumps(raw_data, ensure_ascii = False, sort_keys = True, 
+            json_data = json.dumps(raw_data, ensure_ascii = False, sort_keys = True,
                                    indent = 2, separators = (', ', ' : '))
-            file.write(unicode(json_data))
+            file.write(str(json_data))
     except OSError:
         kodi_notify_warn('(OSError) Cannot write {} file'.format(output_filename.getPath()))
     except IOError:
@@ -1127,12 +1126,12 @@ def fs_export_ROM_collection(output_filename, collection, rom_list):
 #
 # {
 #    "s_fanart" : "Chrono Trigger_fanart.jpg",  -- Collection artwork
-#    "s_icon" : "Chrono Trigger_icon.png", 
+#    "s_icon" : "Chrono Trigger_icon.png",
 # },
 # [
 #   {
 #     "s_fanart" : "Chrono Trigger/Chrono Trigger_snes_fanart.jpg", -- Collection ROM artwork
-#     "s_icon" : "Chrono Trigger/Chrono Trigger_snes_icon.png", 
+#     "s_icon" : "Chrono Trigger/Chrono Trigger_snes_icon.png",
 #   },
 # ]
 #
@@ -1148,7 +1147,7 @@ def fs_export_ROM_collection(output_filename, collection, rom_list):
 # /output/dir/Collection Name_icon.png                          -- Collection assets.
 # /output/dir/Collection Name_fanart.png
 # /output/dir/Collection Name/ROM Name_platform_cname_icon.png  -- Collection ROM assets
-# /output/dir/Collection Name/ROM Name_platform_cname_icon.png  
+# /output/dir/Collection Name/ROM Name_platform_cname_icon.png
 #
 # Parameters:
 #   out_dir_FN    FileName object
@@ -1180,8 +1179,8 @@ def fs_export_ROM_collection_assets(out_dir_FN, collection, rom_list, asset_dir_
         log_debug('{:<9s} P  COPY "{}"'.format(AInfo.name, asset_FN.getPath()))
         log_debug('{:<9s} P    TO "{}"'.format(AInfo.name, new_asset_FN.getPath()))
         try:
-            source_path = asset_FN.getPath().decode(get_fs_encoding(), 'ignore')
-            dest_path = new_asset_FN.getPath().decode(get_fs_encoding(), 'ignore')
+            source_path = asset_FN.getPath()#.decode(get_fs_encoding(), 'ignore')
+            dest_path = new_asset_FN.getPath()#.decode(get_fs_encoding(), 'ignore')
             shutil.copy(source_path, dest_path)
         except OSError:
             log_error('fs_export_ROM_collection_assets() OSError exception copying image')
@@ -1224,8 +1223,8 @@ def fs_export_ROM_collection_assets(out_dir_FN, collection, rom_list, asset_dir_
             log_debug('{:<9s} COPY "{}"'.format(AInfo.name, asset_FN.getPath()))
             log_debug('{:<9s}   TO "{}"'.format(AInfo.name, new_asset_FN.getPath()))
             try:
-                source_path = asset_FN.getPath().decode(get_fs_encoding(), 'ignore')
-                dest_path = new_asset_FN.getPath().decode(get_fs_encoding(), 'ignore')
+                source_path = asset_FN.getPath()#.decode(get_fs_encoding(), 'ignore')
+                dest_path = new_asset_FN.getPath()#.decode(get_fs_encoding(), 'ignore')
                 shutil.copy(source_path, dest_path)
             except OSError:
                 log_error('fs_export_ROM_collection_assets() OSError exception copying image')
@@ -1326,7 +1325,7 @@ def fs_write_VCategory_XML(roms_xml_file, roms):
         # --- Control information ---
         _t = time.time()
         str_list.append('<control>\n')
-        str_list.append(XML_text('update_timestamp', unicode(_t)))
+        str_list.append(XML_text('update_timestamp', str(_t)))
         str_list.append('</control>\n')
 
         # --- Virtual Launchers ---
@@ -1339,7 +1338,7 @@ def fs_write_VCategory_XML(roms_xml_file, roms):
             str_list.append(XML_text('roms_base_noext', rom['roms_base_noext']))
             str_list.append('</VLauncher>\n')
         str_list.append('</advanced_emulator_launcher_Virtual_Category_index>\n')
-        full_string = ''.join(str_list).encode('utf-8')
+        full_string = ''.join(str_list)
         file_obj = open(roms_xml_file.getPath(), 'w')
         file_obj.write(full_string)
         file_obj.close()
@@ -1364,7 +1363,7 @@ def fs_load_VCategory_XML(roms_xml_file):
     log_verb('fs_load_VCategory_XML() Loading XML file {0}'.format(roms_xml_file.getOriginalPath()))
     try:
         xml_tree = ET.parse(roms_xml_file.getPath())
-    except ET.ParseError, e:
+    except ET.ParseError as e:
         log_error('(ParseError) Exception parsing XML categories.xml')
         log_error('(ParseError) {0}'.format(str(e)))
         return roms
@@ -1400,9 +1399,9 @@ def fs_write_VCategory_ROMs_JSON(roms_dir, roms_base_noext, roms):
     log_verb('fs_write_VCategory_ROMs_JSON() Saving JSON file {0}'.format(roms_json_file.getOriginalPath()))
     try:
         with io.open(roms_json_file.getPath(), 'w', encoding = 'utf-8') as file:
-            json_data = json.dumps(roms, ensure_ascii = False, sort_keys = True, 
+            json_data = json.dumps(roms, ensure_ascii = False, sort_keys = True,
                                    indent = JSON_indent, separators = JSON_separators)
-            file.write(unicode(json_data))
+            file.write(str(json_data))
             file.close()
     except OSError:
         kodi_notify_warn('(OSError) Cannot write {0} file'.format(roms_json_file.getPath()))
@@ -1419,7 +1418,7 @@ def fs_load_VCategory_ROMs_JSON(roms_dir, roms_base_noext):
 
     # --- Parse using cElementTree ---
     log_verb('fs_load_VCategory_ROMs_JSON() Loading JSON file {0}'.format(roms_json_file.getOriginalPath()))
-    with open(roms_json_file.getPath()) as file:    
+    with open(roms_json_file.getPath()) as file:
         try:
             roms = json.load(file)
         except ValueError:
@@ -1453,7 +1452,7 @@ def fs_fix_launchers_xml(launchers_xml_path, sanitized_xml_path):
     line_counter = 1
     for line in lines:
         # >> line is str, convert to Unicode
-        line = line.decode('utf-8')
+        line = line
 
         # >> Filter lines of type \t\t<tag>text</tag>\n
         m = p.match(line)
@@ -1479,7 +1478,7 @@ def fs_fix_launchers_xml(launchers_xml_path, sanitized_xml_path):
             # log_debug('New line   "{0}"'.format(line.rstrip()))
 
         # >> Write line
-        f_out.write(line.encode('utf-8'))
+        f_out.write(line)
         line_counter += 1
     f_out.close()
     log_info('fs_fix_launchers_xml() Processed {0} XML lines'.format(line_counter))
@@ -1498,7 +1497,7 @@ def fs_load_legacy_AL_launchers(AL_launchers_filepath, categories, launchers):
     log_info('fs_load_legacy_AL_launchers() Loading "{0}"'.format(AL_launchers_filepath.getOriginalPath()))
     try:
         xml_tree = ET.parse(AL_launchers_filepath.getPath())
-    except ET.ParseError, e:
+    except ET.ParseError as e:
         log_error('ParseError exception parsing XML categories.xml')
         log_error('ParseError: {0}'.format(str(e)))
         kodi_notify_warn('ParseError exception reading launchers.xml')
@@ -1628,7 +1627,7 @@ def fs_export_ROM_NFO(rom, verbose = True):
     nfo_content.append(XML_text('rating',    rom['m_rating']))
     nfo_content.append(XML_text('plot',      rom['m_plot']))
     nfo_content.append('</game>\n')
-    full_string = ''.join(nfo_content).encode('utf-8')
+    full_string = ''.join(nfo_content)
     try:
         usock = open(nfo_file_path, 'w')
         usock.write(full_string)
@@ -1766,7 +1765,7 @@ def fs_export_launcher_NFO(nfo_FileName, launcher):
     nfo_content.append(XML_text('rating',    launcher['m_rating']))
     nfo_content.append(XML_text('plot',      launcher['m_plot']))
     nfo_content.append('</launcher>\n')
-    full_string = ''.join(nfo_content).encode('utf-8')
+    full_string = ''.join(nfo_content)
     try:
         f = open(nfo_FileName.getPath(), 'w')
         f.write(full_string)
@@ -1896,12 +1895,12 @@ def fs_export_category_NFO(nfo_FileName, category):
     nfo_content.append('<!-- Exported by AEL on {0} -->\n'.format(time.strftime("%Y-%m-%d %H:%M:%S")))
     nfo_content.append('<category>\n')
     nfo_content.append(XML_text('year',      category['m_year']))
-    nfo_content.append(XML_text('genre',     category['m_genre'])) 
+    nfo_content.append(XML_text('genre',     category['m_genre']))
     nfo_content.append(XML_text('developer', category['m_developer']))
     nfo_content.append(XML_text('rating',    category['m_rating']))
     nfo_content.append(XML_text('plot',      category['m_plot']))
     nfo_content.append('</category>\n')
-    full_string = ''.join(nfo_content).encode('utf-8')
+    full_string = ''.join(nfo_content)
     try:
         f = open(nfo_FileName.getPath(), 'w')
         f.write(full_string)
@@ -1976,7 +1975,7 @@ def fs_export_collection_NFO(nfo_FileName, collection):
     nfo_content.append(XML_text('rating', collection['m_rating']))
     nfo_content.append(XML_text('plot',   collection['m_plot']))
     nfo_content.append('</collection>\n')
-    full_string = ''.join(nfo_content).encode('utf-8')
+    full_string = ''.join(nfo_content)
     try:
         f = open(nfo_FileName.getPath(), 'w')
         f.write(full_string)

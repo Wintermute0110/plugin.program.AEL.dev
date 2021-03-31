@@ -4,7 +4,6 @@
 # Test regular expressions
 
 # --- Python standard library ---
-from __future__ import unicode_literals
 import pprint
 import re
 import sys

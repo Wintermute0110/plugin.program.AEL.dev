@@ -16,7 +16,7 @@
 # GNU General Public License for more details.
 
 # --- Python standard library ---
-from __future__ import unicode_literals
+
 
 # -------------------------------------------------------------------------------------------------
 # A universal addon error reporting exception

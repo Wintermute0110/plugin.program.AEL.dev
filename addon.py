@@ -1,4 +1,4 @@
-﻿# -*- coding: utf-8 -*-
+# -*- coding: utf-8 -*-
 
 # Advanced Emulator Launcher main script file
 
@@ -15,7 +15,7 @@
 # See the GNU General Public License for more details.
 
 # --- Python standard library ---
-from __future__ import unicode_literals
+
 
 # --- Modules/packages in this plugin ---
 import resources.main as main

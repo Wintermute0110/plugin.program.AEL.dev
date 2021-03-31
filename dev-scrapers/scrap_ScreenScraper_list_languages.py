@@ -6,7 +6,6 @@
 #
 
 # --- Python standard library ---
-from __future__ import unicode_literals
 from collections import OrderedDict
 import os
 import pprint
@@ -93,7 +92,7 @@ for shortname in sn_languages_od:
     # print(region['id'])
     try:
         table_str.append([
-            unicode(region['id']), region['nomcourt'], region['parent'], region['nom_en'],
+            str(region['id']), region['nomcourt'], region['parent'], region['nom_en'],
         ])
     except UnicodeEncodeError as ex:
         print('Exception UnicodeEncodeError')

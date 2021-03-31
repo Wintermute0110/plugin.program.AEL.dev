@@ -16,7 +16,6 @@
 # GNU General Public License for more details.
 
 # --- Python standard library ---
-from __future__ import unicode_literals
 import os
 import pprint
 import re
@@ -58,9 +57,9 @@ def text_get_ROM_basename_tokens(basename_str):
 
     # >> Remove empty tokens ''
     tokens_clean = list()
-    for token in tokens_strip: 
+    for token in tokens_strip:
         if token: tokens_clean.append(token)
-    if DEBUG_TOKEN_PARSER:        
+    if DEBUG_TOKEN_PARSER:
         log_debug('text_get_ROM_basename_tokens() tokens_clean {0}'.format(tokens_clean))
 
     # >> Remove '-' tokens from Trurip multidisc names
@@ -83,7 +82,7 @@ class MultiDiscInfo:
 
 def text_get_multidisc_info(ROM_FN):
     MDSet = MultiDiscInfo(ROM_FN)
-    
+
     # --- Parse ROM base_noext into tokens ---
     tokens = text_get_ROM_basename_tokens(ROM_FN.getBase_noext())
 
@@ -98,7 +97,7 @@ def text_get_multidisc_info(ROM_FN):
         matchObj = re.match(r'\(Disc ([0-9]+)\)', token)
         if matchObj:
             log_debug('text_get_multidisc_info() ### Matched Redump multidisc ROM ###')
-            tokens_idx = range(0, len(tokens))
+            tokens_idx = list(range(0, len(tokens)))
             tokens_idx.remove(index)
             tokens_nodisc_idx = list(tokens_idx)
             tokens_mdisc = [tokens[x] for x in tokens_nodisc_idx]
@@ -109,7 +108,7 @@ def text_get_multidisc_info(ROM_FN):
         matchObj = re.match(r'\(Disc ([0-9]+) of ([0-9]+)\)', token)
         if matchObj:
             log_debug('text_get_multidisc_info() ### Matched TOSEC/Trurip multidisc ROM ###')
-            tokens_idx = range(0, len(tokens))
+            tokens_idx = list(range(0, len(tokens)))
             tokens_idx.remove(index)
             tokens_nodisc_idx = list(tokens_idx)
             # log_debug('text_get_multidisc_info() tokens_idx         = {0}'.format(tokens_idx))

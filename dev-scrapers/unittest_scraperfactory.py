@@ -30,10 +30,10 @@ class Test_scraperfactorytests(unittest.TestCase):
         cls.ROOT_DIR = os.path.abspath(os.path.join(cls.TEST_DIR, os.pardir))
         cls.TEST_ASSETS_DIR = os.path.abspath(os.path.join(cls.TEST_DIR,'assets/'))
                 
-        print 'ROOT DIR: {}'.format(cls.ROOT_DIR)
-        print 'TEST DIR: {}'.format(cls.TEST_DIR)
-        print 'TEST ASSETS DIR: {}'.format(cls.TEST_ASSETS_DIR)
-        print '---------------------------------------------------------------------------'
+        print('ROOT DIR: {}'.format(cls.ROOT_DIR))
+        print('TEST DIR: {}'.format(cls.TEST_DIR))
+        print('TEST ASSETS DIR: {}'.format(cls.TEST_ASSETS_DIR))
+        print('---------------------------------------------------------------------------')
 
     def read_file(self, path):
         with open(path, 'r') as f:
@@ -193,7 +193,7 @@ class Test_scraperfactorytests(unittest.TestCase):
     def test_when_scraping_with_nfoscraper_it_will_give_the_correct_result(self, mock_filename):
 
          # arrange
-        mock_filename.return_value = unicode(self.read_file(self.TEST_ASSETS_DIR + "\\test-nfo.xml"), "utf-8")
+        mock_filename.return_value = str(self.read_file(self.TEST_ASSETS_DIR + "\\test-nfo.xml"), "utf-8")
 
         settings = {}
         settings['scan_clean_tags'] = True
@@ -335,7 +335,7 @@ class Test_scraperfactorytests(unittest.TestCase):
             'game_dic' : expectedCandidate
         }
 
-        expectedUrl = u'http://thegamesdb.net/banners/screenshots/12345-1.jpg'
+        expectedUrl = 'http://thegamesdb.net/banners/screenshots/12345-1.jpg'
                 
         # act
         actualResult = target.scrape('Pitfall', romPath, rom)

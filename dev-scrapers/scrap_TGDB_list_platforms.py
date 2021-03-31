@@ -5,7 +5,6 @@
 #
 
 # --- Python standard library ---
-from __future__ import unicode_literals
 import os
 import pprint
 import sys
@@ -55,9 +54,9 @@ for pname in sorted(pname_dic, reverse = False):
     # print('{0} {1} {2}'.format(platform['id'], platform['name'], platform['alias']))
     try:
         table_str.append([
-            unicode(platform['id']),
-            unicode(platform['name']),
-            unicode(platform['alias'])
+            str(platform['id']),
+            str(platform['name']),
+            str(platform['alias'])
         ])
     except UnicodeEncodeError as ex:
         print('Exception UnicodeEncodeError')

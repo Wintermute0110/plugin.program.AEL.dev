@@ -6,7 +6,6 @@
 # calls until the scraper object is destroyed or the platform is changed.
 
 # --- Python standard library ---
-from __future__ import unicode_literals
 import os
 import pprint
 import sys

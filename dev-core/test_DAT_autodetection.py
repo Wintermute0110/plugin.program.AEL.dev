@@ -4,7 +4,6 @@
 # Test the autodetection of No-Intro and Redump files.
 
 # --- Python standard library ---
-from __future__ import unicode_literals
 import os
 import pprint
 import sys

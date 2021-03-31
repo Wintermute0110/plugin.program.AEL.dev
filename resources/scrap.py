@@ -18,8 +18,6 @@
 # See the GNU General Public License for more details.
 
 # --- Python standard library ---
-from __future__ import unicode_literals
-from __future__ import division
 import abc
 import base64
 import collections
@@ -28,8 +26,8 @@ import datetime
 import json
 import socket
 import time
-import urllib
-import urlparse
+import urllib.request, urllib.parse, urllib.error
+import urllib.parse
 import zipfile
 
 # --- AEL packages ---
@@ -67,7 +65,7 @@ from .rom_audit import *
 # 4) The actual object metadata/asset scraping is done by an scrap_strategy object instance.
 #
 # 5) progress_dialog_obj object instance is passed to the scrap_strategy instance.
-#    In the ROM scanner the progress dialog is created in the scanner instance and 
+#    In the ROM scanner the progress dialog is created in the scanner instance and
 #    changed by the scanner/scraper objects.
 #
 # --- Use case A: ROM scanner ---------------------------------------------------------------------
@@ -1210,7 +1208,7 @@ class ScrapeStrategy(object):
             return status_dic
         pdialog.startProgress('Resolving URL extension with {}...'.format(scraper_name))
         image_ext = self.scraper_obj.resolve_asset_URL_extension(selected_asset, image_url, status_dic)
-        pdialog.endProgress()        
+        pdialog.endProgress()
         log_debug('Resolved URL extension "{}"'.format(image_ext))
         if not image_ext:
             log_error('_gui_edit_asset() Error in scraper.resolve_asset_URL_extension()')
@@ -1312,7 +1310,7 @@ class ScrapeStrategy(object):
                     status_dic['dialog'] = KODI_MESSAGE_NOTIFY
                     status_dic['msg'] = '{0} metadata unchanged'.format(object_name)
                     return
-                search_term = keyboard.getText().decode('utf-8')
+                search_term = keyboard.getText()
             else:
                 log_debug('Scraper does not support search strings. Setting it to None.')
                 search_term = None
@@ -1358,14 +1356,7 @@ class ScrapeStrategy(object):
 # The scrapers are Launcher and ROM agnostic. All the required Launcher/ROM properties are
 # stored in the strategy object.
 #
-class Scraper(object):
-    __metaclass__ = abc.ABCMeta
-
-    # --- Class variables ------------------------------------------------------------------------
-    # When then number of network error/exceptions is bigger than this threshold the scraper
-    # is deactivated. This is useful in the ROM Scanner to not flood the user with error
-    # messages in case something is wrong (for example, the internet connection is broken or
-    # the number of API calls is exceeded).
+class Scraper(object, metaclass=abc.ABCMeta):
     EXCEPTION_COUNTER_THRESHOLD = 5
 
     # Disk cache types. These string will be part of the cache file names.
@@ -1527,7 +1518,7 @@ class Scraper(object):
         self.candidate = candidate
         log_debug('Scrape.set_candidate() Setting "{}" "{}"'.format(self.cache_key, platform))
         # Do not introduce None candidates in the cache so the game will be rescraped later.
-        # Keep the None candidate in the object internal variables so later calls to 
+        # Keep the None candidate in the object internal variables so later calls to
         # get_metadata() and get_assets() will know an error happened.
         if candidate is None: return
         self._update_disk_cache(Scraper.CACHE_CANDIDATES, self.cache_key, candidate)
@@ -1588,7 +1579,7 @@ class Scraper(object):
             # Write to disk
             json_file_path, json_fname = self._get_scraper_file_name(cache_type, self.platform)
             file = io.open(json_file_path, 'w', encoding = 'utf-8')
-            file.write(unicode(json_data))
+            file.write(str(json_data))
             file.close()
             # log_debug('Saved "{}"'.format(json_file_path))
             log_debug('Saved "<SCRAPER_CACHE_DIR>/{}"'.format(json_fname))
@@ -1625,7 +1616,7 @@ class Scraper(object):
             # Write to disk
             json_file_path, json_fname = self._get_global_file_name(cache_type)
             file = io.open(json_file_path, 'w', encoding = 'utf-8')
-            file.write(unicode(json_data))
+            file.write(str(json_data))
             file.close()
             # log_debug('Saved global "{}"'.format(json_file_path))
             log_debug('Saved global "<SCRAPER_CACHE_DIR>/{}"'.format(json_fname))
@@ -1688,9 +1679,9 @@ class Scraper(object):
     # Other scrapers, for example MobyGames, return both the thumbnail and the true asset URLs
     # in get_assets(). In such case, the implementation of this method is trivial.
     #
-    # @param selected_asset: 
+    # @param selected_asset:
     # @param status_dic: [dict] kodi_new_status_dic() status dictionary.
-    # @return: [tuple of strings] or None 
+    # @return: [tuple of strings] or None
     #          First item, string with the URL to download the asset.
     #          Second item, string with the URL for printing in logs. URL may have sensitive
     #          information in some scrapers.
@@ -1701,8 +1692,8 @@ class Scraper(object):
     # Get the URL image extension. In some scrapers the type of asset cannot be obtained by
     # the asset URL and must be resolved to save the asset in the filesystem.
     #
-    # @param selected_asset: 
-    # @param image_url: 
+    # @param selected_asset:
+    # @param image_url:
     # @param status_dic: [dict] kodi_new_status_dic() status dictionary.
     # @return: [str] String with the image extension in lowercase 'png', 'jpg', etc.
     #          None is returned in case or error/exception and status_dic updated.
@@ -1767,7 +1758,7 @@ class Scraper(object):
         status_dic['status'] = False
         status_dic['dialog'] = KODI_MESSAGE_DIALOG
         status_dic['msg'] = user_msg
-        
+
         # Record the number of error/exceptions produced in the scraper and disable the scraper
         # if the number of errors is higher than a threshold.
         self.exception_counter += 1
@@ -1789,7 +1780,7 @@ class Scraper(object):
     def _get_scraper_file_name(self, cache_type, platform):
         scraper_filename = self.get_filename()
         json_fname = scraper_filename + '__' + platform + '__' + cache_type + '.json'
-        json_full_path = os.path.join(self.scraper_cache_dir, json_fname).decode('utf-8')
+        json_full_path = os.path.join(self.scraper_cache_dir, json_fname)
 
         return json_full_path, json_fname
 
@@ -1842,7 +1833,7 @@ class Scraper(object):
     # --- Private global disk caches -------------------------------------------------------------
     def _get_global_file_name(self, cache_type):
         json_fname = cache_type + '.json'
-        json_full_path = os.path.join(self.scraper_cache_dir, json_fname).decode('utf-8')
+        json_full_path = os.path.join(self.scraper_cache_dir, json_fname)
 
         return json_full_path, json_fname
 
@@ -1981,7 +1972,7 @@ class AEL_Offline(Scraper):
         log_debug('AEL_Offline.get_candidates() rombase_noext "{}"'.format(rombase_noext))
         log_debug('AEL_Offline.get_candidates() AEL platform  "{}"'.format(platform))
 
-        # If not cached XML data found (maybe offline scraper does not exist for this platform or 
+        # If not cached XML data found (maybe offline scraper does not exist for this platform or
         # cannot be loaded) return an empty list of candidates.
         self._initialise_platform(platform)
         if not self.cached_games: return []
@@ -2383,7 +2374,7 @@ class TheGamesDB(Scraper):
         # quote_plus() will convert the spaces into '+'. Note that quote_plus() requires an
         # UTF-8 encoded string and does not work with Unicode strings.
         # https://stackoverflow.com/questions/22415345/using-pythons-urllib-quote-plus-on-utf-8-strings-with-safe-arguments
-        search_string_encoded = urllib.quote_plus(search_term.encode('utf8'))
+        search_string_encoded = urllib.parse.quote_plus(search_term.encode('utf8'))
         url_tail = '?apikey={}&name={}&filter[platform]={}'.format(
             self._get_API_key(), search_string_encoded, scraper_platform)
         url = TheGamesDB.URL_ByGameName + url_tail
@@ -2913,7 +2904,7 @@ class MobyGames(Scraper):
     # --- Retrieve list of games ---
     def _search_candidates(self, search_term, platform, scraper_platform, status_dic):
         # --- Retrieve JSON data with list of games ---
-        search_string_encoded = urllib.quote_plus(search_term.encode('utf8'))
+        search_string_encoded = urllib.parse.quote_plus(search_term.encode('utf8'))
         if scraper_platform == '0':
             # Unkwnon or wrong platform case.
             url_tail = '?api_key={}&format=brief&title={}'.format(
@@ -3150,7 +3141,7 @@ class MobyGames(Scraper):
 #   platform.
 #
 # ssuserInfos.php : Informations sur l'utilisateur ScreenScraper
-# userlevelsListe.php : Liste des niveaux utilisateurs de ScreenScraper 
+# userlevelsListe.php : Liste des niveaux utilisateurs de ScreenScraper
 # nbJoueursListe.php : Liste des nombres de joueurs
 # supportTypesListe.php : Liste des types de supports
 # romTypesListe.php : Liste des types de roms
@@ -3159,28 +3150,28 @@ class MobyGames(Scraper):
 # languesListe.php : Liste des langues
 # classificationListe.php : Liste des Classification (Game Rating)
 #
-# mediaGroup.php : Téléchargement des médias images des groupes de jeux
-# mediaCompagnie.php : Téléchargement des médias images des groupes de jeux
+# mediaGroup.php : TÃ©lÃ©chargement des mÃ©dias images des groupes de jeux
+# mediaCompagnie.php : TÃ©lÃ©chargement des mÃ©dias images des groupes de jeux
 #
-# systemesListe.php : Liste des systèmes / informations systèmes / informations médias systèmes
-# mediaSysteme.php : Téléchargement des médias images des systèmes
-# mediaVideoSysteme.php : Téléchargement des médias vidéos des systèmes
+# systemesListe.php : Liste des systÃ¨mes / informations systÃ¨mes / informations mÃ©dias systÃ¨mes
+# mediaSysteme.php : TÃ©lÃ©chargement des mÃ©dias images des systÃ¨mes
+# mediaVideoSysteme.php : TÃ©lÃ©chargement des mÃ©dias vidÃ©os des systÃ¨mes
 #
-# jeuRecherche.php : Recherche d'un jeu avec son nom (retourne une table de jeux (limité a 30 jeux)
-#                    classés par probabilité)
-# jeuInfos.php : Informations sur un jeu / Médias d'un jeu
-# mediaJeu.php : Téléchargement des médias images des jeux
-# mediaVideoJeu.php : Téléchargement des médias vidéos des jeux
-# mediaManuelJeu.php : Téléchargement des manuels des jeux
+# jeuRecherche.php : Recherche d'un jeu avec son nom (retourne une table de jeux (limitÃ© a 30 jeux)
+#                    classÃ©s par probabilitÃ©)
+# jeuInfos.php : Informations sur un jeu / MÃ©dias d'un jeu
+# mediaJeu.php : TÃ©lÃ©chargement des mÃ©dias images des jeux
+# mediaVideoJeu.php : TÃ©lÃ©chargement des mÃ©dias vidÃ©os des jeux
+# mediaManuelJeu.php : TÃ©lÃ©chargement des manuels des jeux
 #
-# botNote.php : Système pour l'automatisation d'envoi de note de jeu d'un membre ScreenScraper
-# botProposition.php : Système pour automatisation d'envoi de propositions d'infos ou de médias
+# botNote.php : SystÃ¨me pour l'automatisation d'envoi de note de jeu d'un membre ScreenScraper
+# botProposition.php : SystÃ¨me pour automatisation d'envoi de propositions d'infos ou de mÃ©dias
 #                      a ScreenScraper
 #
 # >>> Liste des types d'infos textuelles pour les jeux (modiftypeinfo) <<<
 # >>> Liste des types d'infos textuelles pour les roms (modiftypeinfo) <<<
 #
-# >>> Liste des types de média (regionsListe) <<<
+# >>> Liste des types de mÃ©dia (regionsListe) <<<
 # sstitle  Screenshot  Titre  png  obligatoire
 # ss       Screenshot         png  obligatoire
 # fanart   Fan Art            jpg
@@ -3541,7 +3532,7 @@ class ScreenScraper(Scraper):
 
         return json_data
 
-    # nbJoueursListe.php : Liste des nombres de joueurs 
+    # nbJoueursListe.php : Liste des nombres de joueurs
     # This function not coded at the moment.
 
     def debug_get_support_types(self, status_dic):
@@ -3612,7 +3603,7 @@ class ScreenScraper(Scraper):
         log_debug('ScreenScraper.debug_game_search() Calling jeuRecherche.php...')
         scraper_platform = AEL_platform_to_ScreenScraper(platform)
         system_id = scraper_platform
-        recherche = urllib.quote(rombase_noext)
+        recherche = urllib.parse.quote(rombase_noext)
         log_debug('ScreenScraper.debug_game_search() system_id  "{}"'.format(system_id))
         log_debug('ScreenScraper.debug_game_search() recherche  "{}"'.format(recherche))
 
@@ -3672,7 +3663,7 @@ class ScreenScraper(Scraper):
         md5_str = checksums['md5']
         sha1_str = checksums['sha1']
         # rom_name = urllib.quote(checksums['rom_name'])
-        rom_name = urllib.quote_plus(checksums['rom_name'])
+        rom_name = urllib.parse.quote_plus(checksums['rom_name'])
         rom_size = checksums['size']
         # log_debug('ScreenScraper._search_candidates_jeuInfos() ssid       "{}"'.format(self.ssid))
         # log_debug('ScreenScraper._search_candidates_jeuInfos() ssid       "{}"'.format('***'))
@@ -3734,7 +3725,7 @@ class ScreenScraper(Scraper):
         log_debug('ScreenScraper._search_candidates_jeuRecherche() Calling jeuRecherche.php...')
         scraper_platform = AEL_platform_to_ScreenScraper(platform)
         system_id = scraper_platform
-        recherche = urllib.quote_plus(rombase_noext)
+        recherche = urllib.parse.quote_plus(rombase_noext)
         log_debug('ScreenScraper._search_candidates_jeuRecherche() system_id  "{}"'.format(system_id))
         log_debug('ScreenScraper._search_candidates_jeuRecherche() recherche  "{}"'.format(recherche))
 
@@ -3998,7 +3989,7 @@ class ScreenScraper(Scraper):
     # https://stackoverflow.com/questions/14692690/access-nested-dictionary-items-via-a-list-of-keys
     def _recursive_iter(self, obj, keys = ()):
         if isinstance(obj, dict):
-            for k, v in obj.iteritems():
+            for k, v in obj.items():
                 # yield from self._recursive_iter(item)
                 for k_t, v_t in self._recursive_iter(v, keys + (k,)):
                     yield k_t, v_t
@@ -4027,7 +4018,7 @@ class ScreenScraper(Scraper):
             # log_debug('{} "{}"'.format(keys, item))
             # log_debug('Type item "{}"'.format(type(item)))
             # Skip non string objects.
-            if not isinstance(item, str) and not isinstance(item, unicode): continue
+            if not isinstance(item, str) and not isinstance(item, str): continue
             if item.startswith('http'):
                 # log_debug('Adding URL "{}"'.format(item))
                 URL_key_list.append(keys)
@@ -4105,7 +4096,7 @@ class ScreenScraper(Scraper):
         #		},         <----- Here it should be a '}' and not '},'.
         #		}
         #	}
-        #            
+        #
         log_error('Trying to repair ScreenScraper raw data (Try 2).')
         new_page_data_raw = page_data_raw.replace('\t\t},\n\t\t}', '\t\t}\n\t\t}')
         try:
@@ -4295,7 +4286,7 @@ class GameFAQs(Scraper):
         # --- Get URL data as a text string ---
         if url is None:
             url = 'https://gamefaqs.gamespot.com/search_advanced'
-            data = urllib.urlencode({'game': search_term, 'platform': scraper_platform})
+            data = urllib.parse.urlencode({'game': search_term, 'platform': scraper_platform})
             page_data = net_post_URL(url, data)
         else:
             page_data = net_get_URL(url)
@@ -4419,7 +4410,7 @@ class GameFAQs(Scraper):
 
     # Load assets from assets web page.
     # The Game Images URL shows a page with boxart and screenshots thumbnails.
-    # Boxart can be diferent depending on the ROM/game region. Each region has then a 
+    # Boxart can be diferent depending on the ROM/game region. Each region has then a
     # separate page with the full size artwork (boxfront, boxback, etc.)
     #
     # TODO In the assets web page only the Boxfront is shown. The Boxback and Spine are in the

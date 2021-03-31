@@ -4,7 +4,6 @@
 # Reads all Libretro INFO files, parses them and puts information into a JSON file.
 
 # --- Python standard library ---
-from __future__ import unicode_literals
 import glob
 import json
 import os
@@ -61,7 +60,7 @@ for f in sorted(file_list):
     # Skip some files.
     if f == 'info/00_example_libretro.info': continue
     json_data[f] = {}
-    for keyword in INFO_KEYWORDS: 
+    for keyword in INFO_KEYWORDS:
         if keyword == 'notes':
             json_data[f][keyword] = []
         else:
@@ -174,7 +173,7 @@ for f in sorted(file_list):
                 print('Firmware {} matched with MD5 hash'.format(BIOS_dic['path']))
                 BIOS_dic['md5'] = f_MD5
                 break
-                
+
 # Save output JSON.
 print('\nSaving file "{}"'.format(json_fname))
 with open(json_fname, 'w') as outfile:

@@ -9,7 +9,6 @@
 # Sega Master System  | sega-sms       | sms
 
 # --- Python standard library ---
-from __future__ import unicode_literals
 import copy
 import os
 import pprint
@@ -82,9 +81,9 @@ table_str = [
 ]
 for p_obj in AEL_platforms:
     table_str.append([
-        p_obj.long_name, p_obj.short_name, p_obj.compact_name, unicode(p_obj.aliasof), 
-        unicode(p_obj.TGDB_plat), unicode(p_obj.MG_plat), unicode(p_obj.SS_plat), unicode(p_obj.GF_plat),
-        unicode(p_obj.DAT),
+        p_obj.long_name, p_obj.short_name, p_obj.compact_name, str(p_obj.aliasof),
+        str(p_obj.TGDB_plat), str(p_obj.MG_plat), str(p_obj.SS_plat), str(p_obj.GF_plat),
+        str(p_obj.DAT),
     ])
 header_list = []
 header_list.append('Number of AEL platforms {}'.format(len(AEL_platforms)))
@@ -107,9 +106,9 @@ table_str = [
 ]
 for p_obj in sorted(AEL_platforms, key = lambda x: x.short_name.lower(), reverse = False):
     table_str.append([
-        p_obj.long_name, p_obj.short_name, p_obj.compact_name, unicode(p_obj.aliasof),
-        unicode(p_obj.TGDB_plat), unicode(p_obj.MG_plat), unicode(p_obj.SS_plat), unicode(p_obj.GF_plat),
-        unicode(p_obj.DAT),
+        p_obj.long_name, p_obj.short_name, p_obj.compact_name, str(p_obj.aliasof),
+        str(p_obj.TGDB_plat), str(p_obj.MG_plat), str(p_obj.SS_plat), str(p_obj.GF_plat),
+        str(p_obj.DAT),
     ])
 header_list = []
 header_list.append('Number of AEL platforms {}'.format(len(AEL_platforms)))
@@ -131,9 +130,9 @@ table_str = [
 ]
 for p_obj in sorted(AEL_platforms, key = lambda x: (x.category.lower(), x.long_name.lower()), reverse = False):
     table_str.append([
-        p_obj.long_name, p_obj.short_name, p_obj.compact_name, unicode(p_obj.aliasof),
-        unicode(p_obj.TGDB_plat), unicode(p_obj.MG_plat), unicode(p_obj.SS_plat), unicode(p_obj.GF_plat),
-        unicode(p_obj.DAT),
+        p_obj.long_name, p_obj.short_name, p_obj.compact_name, str(p_obj.aliasof),
+        str(p_obj.TGDB_plat), str(p_obj.MG_plat), str(p_obj.SS_plat), str(p_obj.GF_plat),
+        str(p_obj.DAT),
     ])
 header_list = []
 header_list.append('Number of AEL platforms {}'.format(len(AEL_platforms)))

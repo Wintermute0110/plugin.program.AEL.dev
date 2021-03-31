@@ -16,7 +16,7 @@ from resources.constants import *
 def read_file(path):
     with open(path, 'r') as f:
         return f.read()
-    
+
 def read_file_as_json(path):
     file_data = read_file(path)
     return json.loads(file_data, encoding = 'utf-8')
@@ -31,16 +31,16 @@ def mocked_gamesdb(url):
     if '/Genres' in url:
         mocked_json_file = Test_gamesdb_scraper.TEST_ASSETS_DIR + "\\thegamesdb_genres.json"
 
-    
+
     if '/Publishers' in url:
         mocked_json_file = Test_gamesdb_scraper.TEST_ASSETS_DIR + "\\thegamesdb_publishers.json"
 
     if '/Games/ByGameName' in url:
         mocked_json_file = Test_gamesdb_scraper.TEST_ASSETS_DIR + "\\thegamesdb_castlevania_list.json"
-        
+
     if '/Games/ByGameID' in url:
         mocked_json_file = Test_gamesdb_scraper.TEST_ASSETS_DIR + "\\thegamesdb_castlevania.json"
-        
+
     if '/Games/Images' in url:
         print('reading fake image file')
         mocked_json_file = Test_gamesdb_scraper.TEST_ASSETS_DIR + "\\thegamesdb_images.json"
@@ -55,7 +55,7 @@ def mocked_gamesdb(url):
     return read_file_as_json(mocked_json_file)
 
 class Test_gamesdb_scraper(unittest.TestCase):
-    
+
     ROOT_DIR = ''
     TEST_DIR = ''
     TEST_ASSETS_DIR = ''
@@ -63,11 +63,11 @@ class Test_gamesdb_scraper(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         set_log_level(LOG_DEBUG)
-        
+
         cls.TEST_DIR = os.path.dirname(os.path.abspath(__file__))
         cls.ROOT_DIR = os.path.abspath(os.path.join(cls.TEST_DIR, os.pardir))
         cls.TEST_ASSETS_DIR = os.path.abspath(os.path.join(cls.TEST_DIR,'assets/'))
-                
+
         print('ROOT DIR: {}'.format(cls.ROOT_DIR))
         print('TEST DIR: {}'.format(cls.TEST_DIR))
         print('TEST ASSETS DIR: {}'.format(cls.TEST_ASSETS_DIR))
@@ -86,17 +86,17 @@ class Test_gamesdb_scraper(unittest.TestCase):
         settings['escape_romfile'] = False
 
         return settings
-    
+
     @patch('resources.scrap.net_get_URL_as_json', side_effect = mocked_gamesdb)
     def test_scraping_metadata_for_game(self, mock_json_downloader):
-        
+
         # arrange
         settings = self.get_test_settings()
         asset_factory = g_assetFactory
-        
+
         launcher = StandardRomLauncher(None, settings, None, None, None, None, None)
         launcher.set_platform('Nintendo NES')
-        
+
         rom = ROM({'id': 1234})
         fakeRomPath = FakeFile('/my/nice/roms/castlevania.zip')
 
@@ -104,12 +104,12 @@ class Test_gamesdb_scraper(unittest.TestCase):
 
         # act
         actual = target.scrape_metadata('castlevania', fakeRomPath, rom)
-                
+
         # assert
         self.assertTrue(actual)
-        self.assertEqual(u'Castlevania - The Lecarde Chronicles', rom.get_name())
+        self.assertEqual('Castlevania - The Lecarde Chronicles', rom.get_name())
         print(rom)
-        
+
     # add actual gamesdb apikey above and comment out patch attributes to do live tests
     @patch('resources.scrap.net_get_URL_as_json', side_effect = mocked_gamesdb)
     @patch('resources.scrap.net_download_img')
@@ -117,14 +117,14 @@ class Test_gamesdb_scraper(unittest.TestCase):
 
         # arrange
         settings = self.get_test_settings()
-        
+
         assets_to_scrape = [g_assetFactory.get_asset_info(ASSET_BANNER_ID), g_assetFactory.get_asset_info(ASSET_FANART_ID)]
-        
+
         launcher = StandardRomLauncher(None, settings, None, None, None, None, None)
         launcher.set_platform('Nintendo NES')
         launcher.set_asset_path(g_assetFactory.get_asset_info(ASSET_BANNER_ID),'/my/nice/assets/banners/')
         launcher.set_asset_path(g_assetFactory.get_asset_info(ASSET_FANART_ID),'/my/nice/assets/fans/')
-        
+
         rom = ROM({'id': 1234})
         fakeRomPath = FakeFile('/my/nice/roms/castlevania.zip')
 
@@ -135,9 +135,9 @@ class Test_gamesdb_scraper(unittest.TestCase):
         for asset_to_scrape in assets_to_scrape:
             an_actual = target.scrape_asset('castlevania', asset_to_scrape, fakeRomPath, rom)
             actuals.append(an_actual)
-                
+
         # assert
         for actual in actuals:
             self.assertTrue(actual)
-        
+
         print(rom)

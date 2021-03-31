@@ -4,7 +4,6 @@
 # Test fnmatch wildcard behaviour.
 
 # --- Python standard library ---
-from __future__ import unicode_literals
 import fnmatch
 import sys
 

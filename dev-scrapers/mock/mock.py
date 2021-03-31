@@ -31,7 +31,6 @@
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-from __future__ import absolute_import
 
 __all__ = (
     '__version__',
@@ -62,7 +61,7 @@ import sys
 try:
     import builtins
 except ImportError:
-    import __builtin__ as builtins
+    import builtins as builtins
 from types import ModuleType, MethodType
 from unittest.util import safe_repr
 
@@ -83,13 +82,13 @@ except AttributeError:
 
 # TODO: use six.
 try:
-    unicode
+    str
 except NameError:
     # Python 3
-    basestring = unicode = str
+    str = str = str
 
 try:
-    long
+    int
 except NameError:
     # Python 3
     long = int
@@ -210,7 +209,7 @@ def _copy_func_details(func, funcopy):
             pass
     if six.PY2:
         try:
-            funcopy.func_defaults = func.func_defaults
+            funcopy.__defaults__ = func.__defaults__
         except AttributeError:
             pass
 
@@ -655,7 +654,7 @@ class NonCallableMock(Base):
         if side_effect:
             self._mock_side_effect = None
 
-        for child in self._mock_children.values():
+        for child in list(self._mock_children.values()):
             if isinstance(child, _SpecState) or child is _deleted:
                 continue
             child.reset_mock(visited)
@@ -674,7 +673,7 @@ class NonCallableMock(Base):
 
         >>> attrs = {'method.return_value': 3, 'other.side_effect': KeyError}
         >>> mock.configure_mock(**attrs)"""
-        for arg, val in sorted(kwargs.items(),
+        for arg, val in sorted(list(kwargs.items()),
                                # we sort on the number of dots so that
                                # attributes are set before we set attributes on
                                # attributes
@@ -783,7 +782,7 @@ class NonCallableMock(Base):
         from_type = dir(type(self))
         from_dict = list(self.__dict__)
         from_child_mocks = [
-            m_name for m_name, m_value in self._mock_children.items()
+            m_name for m_name, m_value in list(self._mock_children.items())
             if m_value is not _deleted]
 
         if mock.FILTER_DIR:
@@ -1596,7 +1595,7 @@ def _patch_multiple(target, spec=None, create=False, spec_set=None,
     When used as a class decorator `patch.multiple` honours `patch.TEST_PREFIX`
     for choosing which methods to wrap.
     """
-    if type(target) in (unicode, str):
+    if type(target) in (str, str):
         getter = lambda: _importer(target)
     else:
         getter = lambda: target
@@ -1769,7 +1768,7 @@ class _patch_dict(object):
 
     def _patch_dict(self):
         values = self.values
-        if isinstance(self.in_dict, basestring):
+        if isinstance(self.in_dict, str):
             self.in_dict = _importer(self.in_dict)
         in_dict = self.in_dict
         clear = self.clear
@@ -1906,7 +1905,7 @@ _calculate_return_value = {
     '__hash__': lambda self: object.__hash__(self),
     '__str__': lambda self: object.__str__(self),
     '__sizeof__': lambda self: object.__sizeof__(self),
-    '__unicode__': lambda self: unicode(object.__str__(self)),
+    '__unicode__': lambda self: str(object.__str__(self)),
     '__fspath__': lambda self: type(self).__name__+'/'+self._extract_mock_name()+'/'+str(id(self)),
 }
 
@@ -1925,7 +1924,7 @@ _return_values = {
     '__nonzero__': True,
     '__oct__': '1',
     '__hex__': '0x1',
-    '__long__': long(1),
+    '__long__': int(1),
     '__index__': 1,
 }
 
@@ -2099,7 +2098,7 @@ def _format_call_signature(name, args, kwargs):
     args_string = ', '.join([repr(arg) for arg in args])
 
     def encode_item(item):
-        if six.PY2 and isinstance(item, unicode):
+        if six.PY2 and isinstance(item, str):
             return item.encode("utf-8")
         else:
             return item
@@ -2146,7 +2145,7 @@ class _Call(tuple):
             name, args, kwargs = value
         elif _len == 2:
             first, second = value
-            if isinstance(first, basestring):
+            if isinstance(first, str):
                 name = first
                 if isinstance(second, tuple):
                     args = second
@@ -2156,7 +2155,7 @@ class _Call(tuple):
                 args, kwargs = first, second
         elif _len == 1:
             value, = value
-            if isinstance(value, basestring):
+            if isinstance(value, str):
                 name = value
             elif isinstance(value, tuple):
                 args = value
@@ -2204,7 +2203,7 @@ class _Call(tuple):
             if isinstance(value, tuple):
                 other_args = value
                 other_kwargs = {}
-            elif isinstance(value, basestring):
+            elif isinstance(value, str):
                 other_name = value
                 other_args, other_kwargs = (), {}
             else:
@@ -2213,7 +2212,7 @@ class _Call(tuple):
         elif len_other == 2:
             # could be (name, args) or (name, kwargs) or (args, kwargs)
             first, second = other
-            if isinstance(first, basestring):
+            if isinstance(first, str):
                 other_name = first
                 if isinstance(second, tuple):
                     other_args, other_kwargs = second, {}

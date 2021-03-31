@@ -16,15 +16,14 @@
 # See theGNU General Public License for more details.
 
 # --- Python standard library ---
-from __future__ import unicode_literals
-import sys, os, shutil, time, random, hashlib, urlparse, json
+import sys, os, shutil, time, random, hashlib, urllib.parse, json
 import pprint
 
 # --- Kodi modules ---
 try:
     import xbmc, xbmcgui
 except:
-    from utils_kodi_standalone import *
+    from .utils_kodi_standalone import *
 
 # --- AEL modules ---
 # utils.py and utils_kodi.py must not depend on any other AEL module to avoid circular dependencies.
@@ -50,44 +49,34 @@ def set_log_level(level):
 def log_variable(var_name, var):
     if current_log_level < LOG_DEBUG: return
     log_text = 'AEL DUMP : Dumping variable "{}"\n{}'.format(var_name, pprint.pformat(var))
-    xbmc.log(log_text.encode('utf-8'), level = xbmc.LOGERROR)
+    xbmc.log(log_text, level = xbmc.LOGERROR)
 
 # For Unicode stuff in Kodi log see http://forum.kodi.tv/showthread.php?tid=144677
 def log_debug(str_text):
     # Return inmediately is log level is less than this function level.
     if current_log_level < LOG_DEBUG: return
-
-    # If str_text has type str then we assume it is utf-8 encoded.
-    # This will fail if str_text has other encoding (latin, etc).
-    if isinstance(str_text, str): str_text = str_text.decode('utf-8')
-
-    # At this point we are sure str_text is a unicode string.
     log_text = 'AEL DEBUG: ' + str_text
-    xbmc.log(log_text.encode('utf-8'), level = xbmc.LOGERROR)
+    xbmc.log(log_text, level = xbmc.LOGERROR)
 
 def log_verb(str_text):
     if current_log_level < LOG_VERB: return
-    if isinstance(str_text, str): str_text = str_text.decode('utf-8')
     log_text = 'AEL VERB : ' + str_text
-    xbmc.log(log_text.encode('utf-8'), level=xbmc.LOGERROR)
+    xbmc.log(log_text, level=xbmc.LOGERROR)
 
 def log_info(str_text):
     if current_log_level < LOG_INFO: return
-    if isinstance(str_text, str): str_text = str_text.decode('utf-8')
     log_text = 'AEL INFO : ' + str_text
-    xbmc.log(log_text.encode('utf-8'), level=xbmc.LOGERROR)
+    xbmc.log(log_text, level=xbmc.LOGERROR)
 
 def log_warning(str_text):
     if current_log_level < LOG_WARNING: return
-    if isinstance(str_text, str): str_text = str_text.decode('utf-8')
     log_text = 'AEL WARN : ' + str_text
-    xbmc.log(log_text.encode('utf-8'), level=xbmc.LOGERROR)
+    xbmc.log(log_text, level=xbmc.LOGERROR)
 
 def log_error(str_text):
     # Errors are always printed to log.
-    if isinstance(str_text, str): str_text = str_text.decode('utf-8')
     log_text = 'AEL ERROR: ' + str_text
-    xbmc.log(log_text.encode('utf-8'), level=xbmc.LOGERROR)
+    xbmc.log(log_text, level=xbmc.LOGERROR)
 
 # ------------------------------------------------------------------------------------------------
 # Kodi notifications and dialogs
@@ -144,12 +133,15 @@ class KodiProgressDialog(object):
         self.dialog_active = True
         self.message1 = message1
         self.message2 = message2
-        if self.message2:
-            self.progressDialog.create(self.title, self.message1, self.message2)
-        else:
-            # The ' ' is to avoid a bug in Kodi progress dialog that keeps old messages 2
-            # if an empty string is passed.
-            self.progressDialog.create(self.title, self.message1, ' ')
+        # progressDialog.create modifiÃ©e dans la v19 :
+        # @python_v19 Renamed option line1 to message.
+        # @python_v19 Removed option line2.
+        # @python_v19 Removed option line3.
+        #if self.message2:
+        #    self.progressDialog.create(self.title, self.message1, self.message2)
+        #else:
+        #    self.progressDialog.create(self.title, self.message1, ' ')
+        self.progressDialog.create(self.title, self.message1)
         self.progressDialog.update(self.progress)
 
     # Update progress and optionally update messages as well.
@@ -304,7 +296,7 @@ def kodi_display_user_message(op_dic):
 # cache_file_path is a Unicode string.
 #
 def kodi_get_cached_image_FN(image_path):
-    THUMBS_CACHE_PATH = os.path.join(xbmc.translatePath('special://profile/' ), 'Thumbnails')
+    THUMBS_CACHE_PATH = os.path.join(xbmcvfs.translatePath('special://profile/' ), 'Thumbnails')
 
     # --- Get the Kodi cached image ---
     # This function return the cache file base name

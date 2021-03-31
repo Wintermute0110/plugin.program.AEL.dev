@@ -15,7 +15,6 @@
 # See the GNU General Public License for more details.
 
 # --- Python standard library ---
-from __future__ import unicode_literals
 import os
 import time
 
@@ -30,11 +29,11 @@ import xml.etree.ElementTree as ET
 import xbmc, xbmcgui, xbmcplugin, xbmcaddon
 
 # --- AEL packages ---
-from constants import *
-from utils import *
-from disk_IO import *
-from assets import *
-from platforms import *
+from .constants import *
+from .utils import *
+from .disk_IO import *
+from .assets import *
+from .platforms import *
 
 # -------------------------------------------------------------------------------------------------
 # Exports launchers to an XML file.
@@ -279,7 +278,7 @@ def autoconfig_search_all_by_name(i_launcher, categories, launchers):
     # >> If the category was found then search the launcher inside that category.
     if s_category:
         s_launcher = None
-        for launcherID, launcher in launchers.iteritems():
+        for launcherID, launcher in launchers.items():
             if s_category != launcher['categoryID']: continue
             if laun_name == launcher['m_name']:
                 s_launcher = launcher['id']
@@ -310,7 +309,7 @@ def autoconfig_search_category_by_name(i_category, categories):
 #         if launcher_name == launcher['m_name']:
 #             s_launcher = launcher['id']
 #             return s_launcher
-# 
+#
 #     return s_launcher
 
 def autoconfig_import_launchers(CATEGORIES_FILE_PATH, ROMS_DIR, categories, launchers, import_FN):
@@ -406,7 +405,7 @@ def autoconfig_import_launchers(CATEGORIES_FILE_PATH, ROMS_DIR, categories, laun
     for i_launcher in imported_launchers_list:
         log_info('Processing Launcher "{0}"'.format(i_launcher['name']))
         log_info('      with Category "{0}"'.format(i_launcher['category']))
-        
+
         # >> Search category/launcher database to check if imported launcher/category exist.
         (s_categoryID, s_launcherID) = autoconfig_search_all_by_name(i_launcher, categories, launchers)
         log_debug('s_launcher = "{0}"'.format(s_launcherID))
@@ -787,12 +786,12 @@ def autoconfig_import_launcher(ROMS_DIR, categories, launchers, categoryID, laun
 
     # --- Launcher options ---
     if i_launcher['Options']:
-        opt_string = unicode(i_launcher['Options']).strip()
+        opt_string = str(i_launcher['Options']).strip()
         log_debug('Imported Options "{0}"'.format(opt_string))
         # >> Parse options
         raw_opt_list = opt_string.split(',')
         opt_list = [w.strip() for w in raw_opt_list]
-        log_debug('Stripped options list {0}'.format(unicode(opt_list)))
+        log_debug('Stripped options list {0}'.format(str(opt_list)))
         launcher = launchers[launcherID]
         for option in opt_list:
             if option == 'Blocking':

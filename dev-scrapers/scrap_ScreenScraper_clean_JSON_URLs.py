@@ -7,7 +7,6 @@
 #
 
 # --- Python standard library ---
-from __future__ import unicode_literals
 from collections import OrderedDict
 import os
 import pprint

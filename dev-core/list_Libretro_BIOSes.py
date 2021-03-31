@@ -4,7 +4,6 @@
 # List Libretro BIOS list.
 
 # --- Python standard library ---
-from __future__ import unicode_literals
 import copy
 import json
 import os
@@ -142,7 +141,7 @@ for BIOS_dic in BIOS_data:
     for B_dic in sorted(BIOS_dic['core_list'], key = lambda x: x['corename']):
         if counter == 0:
             table_str.append([
-                BIOS_dic['path'], B_dic['md5'][0:8], remove_commas(B_dic['desc']), 
+                BIOS_dic['path'], B_dic['md5'][0:8], remove_commas(B_dic['desc']),
                 str(not B_dic['opt']), B_dic['corename'],
             ])
         else:
