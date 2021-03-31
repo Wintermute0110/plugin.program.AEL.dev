@@ -406,24 +406,24 @@ def text_unescape_HTML(s):
     # s = s.replace('&gt;',   '>')
     # s = s.replace('&quot;', '"')
     # s = s.replace('&nbsp;', ' ')
-    # s = s.replace('&copy;', 'Â©')
+    # s = s.replace('&copy;', '©')
     # s = s.replace('&amp;',  '&') # >> Must be done last
 
     # --- HTML Unicode entities ---
     # s = s.replace('&#039;', "'")
-    # s = s.replace('&#149;', "â¢")
+    # s = s.replace('&#149;', "•")
     # s = s.replace('&#x22;', '"')
     # s = s.replace('&#x26;', '&')
     # s = s.replace('&#x27;', "'")
 
-    # s = s.replace('&#x101;', "Ä")
-    # s = s.replace('&#x113;', "Ä")
-    # s = s.replace('&#x12b;', "Ä«")
-    # s = s.replace('&#x12B;', "Ä«")
-    # s = s.replace('&#x14d;', "Å")
-    # s = s.replace('&#x14D;', "Å")
-    # s = s.replace('&#x16b;', "Å«")
-    # s = s.replace('&#x16B;', "Å«")
+    # s = s.replace('&#x101;', "ā")
+    # s = s.replace('&#x113;', "ē")
+    # s = s.replace('&#x12b;', "ī")
+    # s = s.replace('&#x12B;', "ī")
+    # s = s.replace('&#x14d;', "ō")
+    # s = s.replace('&#x14D;', "ō")
+    # s = s.replace('&#x16b;', "ū")
+    # s = s.replace('&#x16B;', "ū")
 
     # >> Use HTMLParser module to decode HTML entities.
     s = html.parser.HTMLParser().unescape(s)

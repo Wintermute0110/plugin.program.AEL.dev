@@ -3150,28 +3150,28 @@ class MobyGames(Scraper):
 # languesListe.php : Liste des langues
 # classificationListe.php : Liste des Classification (Game Rating)
 #
-# mediaGroup.php : TÃ©lÃ©chargement des mÃ©dias images des groupes de jeux
-# mediaCompagnie.php : TÃ©lÃ©chargement des mÃ©dias images des groupes de jeux
+# mediaGroup.php : Téléchargement des médias images des groupes de jeux
+# mediaCompagnie.php : Téléchargement des médias images des groupes de jeux
 #
-# systemesListe.php : Liste des systÃ¨mes / informations systÃ¨mes / informations mÃ©dias systÃ¨mes
-# mediaSysteme.php : TÃ©lÃ©chargement des mÃ©dias images des systÃ¨mes
-# mediaVideoSysteme.php : TÃ©lÃ©chargement des mÃ©dias vidÃ©os des systÃ¨mes
+# systemesListe.php : Liste des systèmes / informations systèmes / informations médias systèmes
+# mediaSysteme.php : Téléchargement des médias images des systèmes
+# mediaVideoSysteme.php : Téléchargement des médias vidéos des systèmes
 #
-# jeuRecherche.php : Recherche d'un jeu avec son nom (retourne une table de jeux (limitÃ© a 30 jeux)
-#                    classÃ©s par probabilitÃ©)
-# jeuInfos.php : Informations sur un jeu / MÃ©dias d'un jeu
-# mediaJeu.php : TÃ©lÃ©chargement des mÃ©dias images des jeux
-# mediaVideoJeu.php : TÃ©lÃ©chargement des mÃ©dias vidÃ©os des jeux
-# mediaManuelJeu.php : TÃ©lÃ©chargement des manuels des jeux
+# jeuRecherche.php : Recherche d'un jeu avec son nom (retourne une table de jeux (limité a 30 jeux)
+#                    classés par probabilité)
+# jeuInfos.php : Informations sur un jeu / Médias d'un jeu
+# mediaJeu.php : Téléchargement des médias images des jeux
+# mediaVideoJeu.php : Téléchargement des médias vidéos des jeux
+# mediaManuelJeu.php : Téléchargement des manuels des jeux
 #
-# botNote.php : SystÃ¨me pour l'automatisation d'envoi de note de jeu d'un membre ScreenScraper
-# botProposition.php : SystÃ¨me pour automatisation d'envoi de propositions d'infos ou de mÃ©dias
+# botNote.php : Système pour l'automatisation d'envoi de note de jeu d'un membre ScreenScraper
+# botProposition.php : Système pour automatisation d'envoi de propositions d'infos ou de médias
 #                      a ScreenScraper
 #
 # >>> Liste des types d'infos textuelles pour les jeux (modiftypeinfo) <<<
 # >>> Liste des types d'infos textuelles pour les roms (modiftypeinfo) <<<
 #
-# >>> Liste des types de mÃ©dia (regionsListe) <<<
+# >>> Liste des types de média (regionsListe) <<<
 # sstitle  Screenshot  Titre  png  obligatoire
 # ss       Screenshot         png  obligatoire
 # fanart   Fan Art            jpg

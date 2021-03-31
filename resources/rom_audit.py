@@ -640,7 +640,7 @@ Retro_core_dic = {
     'vba_next' : 'Game Boy Advance (VBA Next)',
     'dolphin' : 'GameCube / Wii (Dolphin)',
     'parallel_n64' : 'Nintendo 64 (ParaLLEl N64)',
-    'pokemini' : 'PokÃ©mon Mini (PokeMini)',
+    'pokemini' : 'Pokémon Mini (PokeMini)',
     'bsnes_accuracy' : 'SNES / Super Famicom (bsnes Accuracy)',
     'bsnes_balanced' : 'SNES / Super Famicom (bsnes Balanced)',
     'bsnes_performance' : 'SNES / Super Famicom (bsnes Performance)',

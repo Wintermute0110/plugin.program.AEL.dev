@@ -133,7 +133,7 @@ class KodiProgressDialog(object):
         self.dialog_active = True
         self.message1 = message1
         self.message2 = message2
-        # progressDialog.create modifiÃ©e dans la v19 :
+        # progressDialog.create modifiée dans la v19 :
         # @python_v19 Renamed option line1 to message.
         # @python_v19 Removed option line2.
         # @python_v19 Removed option line3.
