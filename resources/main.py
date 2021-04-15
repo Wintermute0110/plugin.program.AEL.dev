@@ -169,8 +169,6 @@ class Main:
         #set_log_level(self.settings['log_level'])
         set_log_level(LOG_DEBUG)
 
-        log_debug('JCA')
-
         # --- Some debug stuff for development ---
         log_debug('---------- Called AEL Main::run_plugin() constructor ----------')
         log_debug('sys.platform   "{}"'.format(sys.platform))
@@ -10246,7 +10244,7 @@ class Main:
 
             # Update dialog
             processed_launchers += 1
-            update_number = (processed_launchers * 100) / num_launchers
+            update_number = int((processed_launchers * 100) / num_launchers)
             pDialog.update(update_number)
         # >> Save categories.xml because launcher timestamps changed
         fs_write_catfile(g_PATHS.CATEGORIES_FILE_PATH, self.categories, self.launchers)

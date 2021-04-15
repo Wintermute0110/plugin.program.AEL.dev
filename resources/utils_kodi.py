@@ -21,7 +21,7 @@ import pprint
 
 # --- Kodi modules ---
 try:
-    import xbmc, xbmcgui
+    import xbmc, xbmcgui, xbmcvfs
 except:
     from .utils_kodi_standalone import *
 
@@ -133,21 +133,16 @@ class KodiProgressDialog(object):
         self.dialog_active = True
         self.message1 = message1
         self.message2 = message2
-        # progressDialog.create modifiée dans la v19 :
-        # @python_v19 Renamed option line1 to message.
-        # @python_v19 Removed option line2.
-        # @python_v19 Removed option line3.
-        #if self.message2:
-        #    self.progressDialog.create(self.title, self.message1, self.message2)
-        #else:
-        #    self.progressDialog.create(self.title, self.message1, ' ')
-        self.progressDialog.create(self.title, self.message1)
+        if self.message2:
+            self.progressDialog.create(self.title, self.message1+'\n'+self.message2)
+        else:
+            self.progressDialog.create(self.title, self.message1)
         self.progressDialog.update(self.progress)
 
     # Update progress and optionally update messages as well.
     # If not messages specified then keep current message/s
     def updateProgress(self, step_index, message1 = None, message2 = None):
-        self.progress = (step_index * 100) / self.num_steps
+        self.progress = int((step_index * 100) / self.num_steps)
         # Update both messages
         if message1 and message2:
             self.message1 = message1
@@ -156,31 +151,29 @@ class KodiProgressDialog(object):
         elif message1:
             self.message1 = message1
             self.message2 = None
-            self.progressDialog.update(self.progress, message1, ' ')
+            self.progressDialog.update(self.progress, message1)
             return
         if self.message2:
-            self.progressDialog.update(self.progress, self.message1, self.message2)
+            self.progressDialog.update(self.progress, self.message1+'\n'+self.message2)
         else:
-            # The ' ' is to avoid a bug in Kodi progress dialog that keeps old messages 2
-            # if an empty string is passed.
-            self.progressDialog.update(self.progress, self.message1, ' ')
+            self.progressDialog.update(self.progress, self.message1)
 
     # Update dialog message but keep same progress. message2 is removed if any.
     def updateMessage(self, message1):
         self.message1 = message1
         self.message2 = None
-        self.progressDialog.update(self.progress, self.message1, ' ')
+        self.progressDialog.update(self.progress, self.message1)
 
     # Update message2 and keeps same progress and message1
     def updateMessage2(self, message2):
         self.message2 = message2
-        self.progressDialog.update(self.progress, self.message1, self.message2)
+        self.progressDialog.update(self.progress, self.message1+'\n'+self.message2)
 
     # Update dialog message but keep same progress.
     def updateMessages(self, message1, message2):
         self.message1 = message1
         self.message2 = message2
-        self.progressDialog.update(self.progress, message1, message2)
+        self.progressDialog.update(self.progress, message1+'\n'+message2)
 
     def isCanceled(self):
         # If the user pressed the cancel button before then return it now.
@@ -209,11 +202,9 @@ class KodiProgressDialog(object):
     # when it was closed.
     def reopen(self):
         if self.message2:
-            self.progressDialog.create(self.title, self.message1, self.message2)
+            self.progressDialog.create(self.title, self.message1+'\n'+self.message2)
         else:
-            # The ' ' is to avoid a bug in Kodi progress dialog that keeps old messages 2
-            # if an empty string is passed.
-            self.progressDialog.create(self.title, self.message1, ' ')
+            self.progressDialog.create(self.title, self.message1)
         self.progressDialog.update(self.progress)
         self.dialog_active = True
 
@@ -232,12 +223,12 @@ class KodiProgressDialog_Chrisism(object):
         if not self.verbose:
             self.progressDialog.update(progress)
         else:
-            self.progressDialog.update(progress, message1, message2)
+            self.progressDialog.update(progress, message1+'\n'+message2)
 
     def _updateProgressMessage(self, message1, message2 = None):
         if not self.verbose: return
 
-        self.progressDialog.update(self.progress, message1, message2)
+        self.progressDialog.update(self.progress, message1+'\n'+message2)
 
     def _isProgressCanceled(self):
         return self.progressDialog.iscanceled()

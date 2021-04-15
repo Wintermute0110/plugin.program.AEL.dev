@@ -35,6 +35,7 @@ import zlib
 
 # --- Kodi modules ---
 # FileName class uses xbmc.translatePath()
+import xbmcvfs
 from .constants import *
 from .utils_kodi import *
 
@@ -911,7 +912,7 @@ def misc_identify_image_id_by_ext(asset_fname):
 # This class always takes and returns Unicode string paths. Decoding to UTF-8 must be done in
 # caller code.
 # A) Transform paths like smb://server/directory/ into \\server\directory\
-# B) Use xbmc.translatePath() for paths starting with special://
+# B) Use xbmcvfs.translatePath() for paths starting with special://
 # -------------------------------------------------------------------------------------------------
 class FileName:
     # pathString must be a Unicode string object
@@ -927,7 +928,7 @@ class FileName:
             self.path = self.path.replace('/', '\\')
 
         elif self.originalPath.lower().startswith('special:'):
-            self.path = xbmc.translatePath(self.path)
+            self.path = xbmcvfs.translatePath(self.path)
 
     def _join_raw(self, arg):
         self.path         = os.path.join(self.path, arg)

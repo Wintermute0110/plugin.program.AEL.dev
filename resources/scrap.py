@@ -2167,11 +2167,13 @@ class TheGamesDB(Scraper):
         ASSET_FANART_ID,
         ASSET_BANNER_ID,
         ASSET_CLEARLOGO_ID,
+        ASSET_TITLE_ID,
         ASSET_SNAP_ID,
         ASSET_BOXFRONT_ID,
         ASSET_BOXBACK_ID,
     ]
     asset_name_mapping = {
+        'titlescreen': ASSET_TITLE_ID,
         'screenshot': ASSET_SNAP_ID,
         'boxart' : ASSET_BOXFRONT_ID,
         'boxartfront': ASSET_BOXFRONT_ID,
@@ -2392,7 +2394,7 @@ class TheGamesDB(Scraper):
     # Return a list of candiate games.
     # Return None if error/exception.
     # Return empty list if no candidates found.
-    def _retrieve_games_from_url(self, url, search_term, platform, scraper_platform, status_dic):
+    def _retrieve_games_from_url(self, url, search_term, platform, scraper_platform:int, status_dic):
         # --- Get URL data as JSON ---
         json_data = self._retrieve_URL_as_JSON(url, status_dic)
         # If status_dic mark an error there was an exception. Return None.
@@ -2902,10 +2904,10 @@ class MobyGames(Scraper):
         return json_data
 
     # --- Retrieve list of games ---
-    def _search_candidates(self, search_term, platform, scraper_platform, status_dic):
+    def _search_candidates(self, search_term, platform, scraper_platform:int, status_dic):
         # --- Retrieve JSON data with list of games ---
         search_string_encoded = urllib.parse.quote_plus(search_term.encode('utf8'))
-        if scraper_platform == '0':
+        if scraper_platform == 0:
             # Unkwnon or wrong platform case.
             url_tail = '?api_key={}&format=brief&title={}'.format(
                 self.api_key, search_string_encoded)
