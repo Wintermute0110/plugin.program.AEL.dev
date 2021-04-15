@@ -135,6 +135,12 @@ AEL_CONTENT_VALUE_ROM_LAUNCHER = 'rom_launcher'
 AEL_CONTENT_VALUE_ROM          = 'rom'
 AEL_CONTENT_VALUE_NONE         = ''
 
+AEL_CATEGORY_NAME_LABEL        = 'category.name'
+AEL_CATEGORY_ICON_LABEL        = 'category.icon'
+AEL_CATEGORY_CLEARLOGO_LABEL   = 'category.clearlogo'
+AEL_CATEGORY_PLOT_LABEL        = 'category.plot'
+AEL_CATEGORY_FANART_LABEL      = 'category.fanart'
+
 AEL_LAUNCHER_NAME_LABEL        = 'AEL_Launch_Name'
 AEL_LAUNCHER_ICON_LABEL        = 'AEL_Launch_Icon'
 AEL_LAUNCHER_CLEARLOGO_LABEL   = 'AEL_Launch_Clearlogo'
@@ -412,7 +418,7 @@ BOX_SIZES = [
 
 # --- Addon will search these file extensions for assets ---
 # Check http://kodi.wiki/view/advancedsettings.xml#videoextensions
-IMAGE_EXTENSION_LIST   = ['png', 'jpg', 'jpeg', 'gif', 'bmp', 'tif', 'tiff']
+IMAGE_EXTENSION_LIST   = ['png', 'jpg', 'jpeg', 'gif', 'bmp', 'tif', 'tiff', 'webp']
 MANUAL_EXTENSION_LIST  = ['pdf', 'cbz', 'cbr']
 TRAILER_EXTENSION_LIST = ['mov', 'divx', 'xvid', 'wmv', 'avi', 'mpg', 'mpeg', 'mp4', 'mkv', 'avc']
 

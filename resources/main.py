@@ -1122,6 +1122,7 @@ def m_command_render_launchers(categoryID):
     category = g_ObjectFactory.find_category(categoryID)
     launchers = g_ObjectFactory.find_launchers_in_cat(categoryID)
 
+    m_misc_set_AEL_Category_Content(category)
     # --- If the category has no launchers then render nothing ---
     if not launchers or len(launchers) == 0:
         kodi_notify('Category {0} has no launchers. Add launchers first.'.format(category.get_name()))
@@ -6730,6 +6731,24 @@ def m_misc_set_AEL_Content(AEL_Content_Value):
         xbmcgui.Window(AEL_CONTENT_WINDOW_ID).setProperty(AEL_CONTENT_LABEL, AEL_CONTENT_VALUE_NONE)
     else:
         log_error('m_misc_set_AEL_Content() Invalid AEL_Content_Value "{0}"'.format(AEL_Content_Value))
+
+
+# When rendering Launcher in category set container properties:
+#   1. Title of the launcher.
+#   2. Icon of the launcher.
+#   3. Clearlogo of the launcher.
+#   4. Default box size of the launcher
+def m_misc_set_AEL_Category_Content(category):
+    kodi_thumb     = 'DefaultFolder.png'
+    icon_path      = category.get_mapped_asset_str(asset_id=ASSET_ICON_ID, fallback=kodi_thumb)
+    clearlogo_path = category.get_mapped_asset_str(asset_id=ASSET_CLEARLOGO_ID)
+    fanart_path    = category.get_mapped_asset_str(asset_id=ASSET_FANART_ID)
+
+    xbmcplugin.setProperty(g_addon_handle, AEL_CATEGORY_NAME_LABEL, category.get_name())
+    xbmcplugin.setProperty(g_addon_handle, AEL_CATEGORY_ICON_LABEL, icon_path)
+    xbmcplugin.setProperty(g_addon_handle, AEL_CATEGORY_FANART_LABEL, fanart_path)
+    xbmcplugin.setProperty(g_addon_handle, AEL_CATEGORY_CLEARLOGO_LABEL, clearlogo_path)
+    xbmcplugin.setProperty(g_addon_handle, AEL_CATEGORY_PLOT_LABEL, category.get_plot())
 
 #
 # When rendering ROMs set some Window(10000) properties so the skin knows:

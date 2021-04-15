@@ -528,10 +528,10 @@ class ScrapeStrategy(object):
     def scanner_process_ROM(self, ROM, ROM_checksums):
         log_debug('ScrapeStrategy.scanner_process_ROM() Determining metadata and asset actions...')
                 
-        if self.scraper_settings.scrape_metadata_policy != SCRAPE_ACTION_NONE
+        if self.scraper_settings.scrape_metadata_policy is not SCRAPE_ACTION_NONE:
             self._scanner_process_ROM_metadata_begin(ROM)
         
-        if self.scraper_settings.scrape_assets_policy != SCRAPE_ACTION_NONE:
+        if self.scraper_settings.scrape_assets_policy is not SCRAPE_ACTION_NONE:
             self._scanner_process_ROM_assets_begin(ROM)
 
         # --- If metadata or any asset is scraped then select the game among the candidates ---
