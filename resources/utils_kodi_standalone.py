@@ -22,7 +22,6 @@
 
 # --- Python standard library ---
 
-
 # --- Make fake Kodi functions ---
 class xbmc_wrapper:
     LOGINFO  = 3

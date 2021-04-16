@@ -39,8 +39,8 @@ def net_get_random_UserAgent():
         os_str  = random.choice(['68K', 'PPC'])
     elif platform == 'Windows':
         os_str  = random.choice([
-            'Win3.11', 'WinNT3.51', 'WinNT4.0', 'Windows NT 5.0', 'Windows NT 5.1',
-            'Windows NT 5.2', 'Windows NT 6.0', 'Windows NT 6.1', 'Windows NT 6.2',
+            'Win3.11', 'WinNT3.51', 'WinNT4.0', 'Windows NT 5.0', 'Windows NT 5.1', 
+            'Windows NT 5.2', 'Windows NT 6.0', 'Windows NT 6.1', 'Windows NT 6.2', 
             'Win95', 'Win98', 'Win 9x 4.90', 'WindowsCE'])
     elif platform == 'X11':
         os_str  = random.choice(['Linux i686', 'Linux x86_64'])
@@ -64,7 +64,7 @@ def net_get_random_UserAgent():
             day = str(day)
         gecko = year + month + day
         version = random.choice([
-            '1.0', '2.0', '3.0', '4.0', '5.0', '6.0', '7.0', '8.0',
+            '1.0', '2.0', '3.0', '4.0', '5.0', '6.0', '7.0', '8.0', 
             '9.0', '10.0', '11.0', '12.0', '13.0', '14.0', '15.0'])
         return 'Mozilla/5.0 (' + os_str + '; rv:' + version + ') Gecko/' + gecko + ' Firefox/' + version
 
@@ -121,8 +121,8 @@ def net_download_img(img_url, file_path):
 #
 # @param url: [Unicode string] URL to open
 # @param url_log: [Unicode string] If not None this URL will be used in the logs.
-# @return: [tuple] Tuple of strings. First tuple element is a string with the web content as
-#          a Unicode string or None if network error/exception. Second tuple element is the
+# @return: [tuple] Tuple of strings. First tuple element is a string with the web content as 
+#          a Unicode string or None if network error/exception. Second tuple element is the 
 #          HTTP status code as integer or None if network error/exception.
 def net_get_URL(url, url_log = None):
     req = urllib.request.Request(url)

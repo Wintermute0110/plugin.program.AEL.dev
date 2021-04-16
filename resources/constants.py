@@ -17,7 +17,6 @@
 
 # --- Python standard library ---
 
-
 # -------------------------------------------------------------------------------------------------
 # A universal addon error reporting exception
 # This exception is raised to report errors in the GUI.

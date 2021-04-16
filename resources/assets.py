@@ -99,7 +99,7 @@ def assets_get_default_artwork_dir(asset_ID, launcher):
 
 # Creates path for assets (artwork) and automatically fills in the path_ fields in the launcher
 # struct.
-#
+# 
 def assets_init_asset_dir(assets_path_FName, launcher):
     log_verb('assets_init_asset_dir() asset_path "{0}"'.format(assets_path_FName.getPath()))
 
@@ -186,7 +186,7 @@ def assets_get_asset_name_str(default_asset):
     else:
         kodi_notify_warn('Wrong asset key {0}'.format(default_asset))
         log_error('assets_get_asset_name_str() Wrong default_thumb {0}'.format(default_asset))
-
+    
     return asset_name_str
 
 #
@@ -510,7 +510,7 @@ def assets_get_path_noext_SUFIX(Asset, AssetPath, asset_base_noext, objectID = '
 def assets_get_collection_asset_basename(AInfo, basename_noext, platform, ext):
     pindex = get_AEL_platform_index(platform)
     platform_compact_name = AEL_platforms[pindex].compact_name
-
+    
     return basename_noext + '_' + platform_compact_name + '_' + AInfo.fname_infix + ext
 
 #

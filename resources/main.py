@@ -132,7 +132,7 @@ class SingleInstance:
                            'or close the launched application before launching a new one and try '
                            'again.')
             raise SystemExit
-        if monitor.abortRequested():
+        if monitor.abortRequested(): 
             log_info('monitor.abortRequested() is True. Exiting plugin ...')
             raise SystemExit
 
@@ -162,12 +162,11 @@ class Main:
         # --- Initialise log system ---
         # Force DEBUG log level for development.
         # Place it before settings loading so settings can be dumped during debugging.
-        #set_log_level(LOG_DEBUG)
+        # set_log_level(LOG_DEBUG)
 
         # --- Fill in settings dictionary using __addon_obj__.getSetting() ---
         self._get_settings()
-        #set_log_level(self.settings['log_level'])
-        set_log_level(LOG_DEBUG)
+        set_log_level(self.settings['log_level'])
 
         # --- Some debug stuff for development ---
         log_debug('---------- Called AEL Main::run_plugin() constructor ----------')
@@ -983,7 +982,7 @@ class Main:
             log_debug('_command_edit_category() l_fn_str "{0}"'.format(category_fn_str))
 
             # --- Ask user for a path to export the launcher configuration ---
-            dir_path = xbmcgui.Dialog().browse(0, 'Select directory to export XML', 'files',
+            dir_path = xbmcgui.Dialog().browse(0, 'Select directory to export XML', 'files', 
                                                '', False, False)
             if not dir_path: return
 
@@ -1913,11 +1912,11 @@ class Main:
                             if not enabled_asset_list[i]: continue
                             # >> Only look for local asset if current file do not exists. This avoid
                             # >> clearing user-customised assets. Also, first check if the field
-                            # >> is defined (which is very quick) to avoid an extra filesystem
+                            # >> is defined (which is very quick) to avoid an extra filesystem 
                             # >> exist check() for missing images.
                             if rom[AInfo.key]:
                                 # >> However, if the artwork is a substitution from the PClone group
-                                # >> and the user updated the artwork collection for this ROM the
+                                # >> and the user updated the artwork collection for this ROM the 
                                 # >> new image will not be picked with the current implementation ...
                                 #
                                 # >> How to differentiate substituted PClone artwork from user
@@ -2280,7 +2279,7 @@ class Main:
                         log_info('Setting audit_state = AUDIT_STATE_OFF')
                         self.launchers[launcherID]['audit_state'] = AUDIT_STATE_OFF
 
-                    # Just remove ROMs database files. Keep the value of roms_base_noext to be reused
+                    # Just remove ROMs database files. Keep the value of roms_base_noext to be reused 
                     # when user add more ROMs.
                     fs_unlink_ROMs_database(g_PATHS.ROMS_DIR, self.launchers[launcherID])
                     self.launchers[launcherID]['num_roms'] = 0
@@ -2294,11 +2293,11 @@ class Main:
         #    of the DAT file.
         # B) If the DAT file cannot be loaded or the audit cannot be completed, 'xml_dat_file'
         #    will be set to ''. Hence, if 'xml_dat_file' is not empty launcher ROMs have been audited.
-        # C) The audit will be refreshed every time a change is made to the ROMs of the launcher
+        # C) The audit will be refreshed every time a change is made to the ROMs of the launcher 
         #    to keep Parent/Clone database consistency.
-        # D) There is no option to delete the added Missing ROMs, but the user can choose to display
+        # D) There is no option to delete the added Missing ROMs, but the user can choose to display 
         #    them or not.
-        # E) To remove the audit status and revert the launcher back to normal, user must delete the
+        # E) To remove the audit status and revert the launcher back to normal, user must delete the 
         #    No-Intro/Redump DAT file.
         #
         if self.launchers[launcherID]['rompath'] != '':
@@ -2494,7 +2493,7 @@ class Main:
                     self.launchers[launcherID]['application'] = LNK_LAUNCHER_APP_NAME
                     kodi_notify('Launcher app is Windows LNK launcher')
                 elif launcher_type == LAUNCHER_ROM:
-                    app = xbmcgui.Dialog().browse(1, 'Select the launcher application', 'files', '',
+                    app = xbmcgui.Dialog().browse(1, 'Select the launcher application', 'files', '', 
                                                   False, False, self.launchers[launcherID]['application'])
                     if not app: return
                     self.launchers[launcherID]['application'] = app
@@ -2531,7 +2530,7 @@ class Main:
                 elif type_aux >= 1:
                     arg_index = type_aux - 1
                     type_aux_2 = dialog.select('Modify extra arguments {0}'.format(type_aux),
-                                               ["Edit '{0}' ...".format(launcher['args_extra'][arg_index]),
+                                               ["Edit '{0}' ...".format(launcher['args_extra'][arg_index]), 
                                                 'Delete extra arguments'])
                     if type_aux_2 < 0: return
 
@@ -2610,7 +2609,7 @@ class Main:
             log_debug('_command_edit_launcher() l_fn_str "{0}"'.format(launcher_fn_str))
 
             # >> Ask user for a path to export the launcher configuration
-            dir_path = xbmcgui.Dialog().browse(0, 'Select XML export directory', 'files',
+            dir_path = xbmcgui.Dialog().browse(0, 'Select XML export directory', 'files', 
                                                '', False, False)
             if not dir_path: return
             export_FN = FileName(dir_path).pjoin(launcher_fn_str)
@@ -2848,7 +2847,7 @@ class Main:
             # --- Import of the rom game plot from TXT file ---
             elif type2 == 8:
                 dialog = xbmcgui.Dialog()
-                text_file = dialog.browse(1, 'Select description file (TXT|DAT)',
+                text_file = dialog.browse(1, 'Select description file (TXT|DAT)', 
                                           'files', '.txt|.dat', False, False)
                 text_file_path = FileName(text_file)
                 if text_file_path.exists():
@@ -2978,17 +2977,17 @@ class Main:
             listitems = [
                 fanart_listitem,
                 banner_listitem,
-                clearlogo_listitem,
+                clearlogo_listitem, 
                 title_listitem,
                 snap_listitem,
                 boxfront_listitem,
                 boxback_listitem,
                 tdbox_listitem,
-                cartridge_listitem,
+                cartridge_listitem, 
                 flyer_listitem,
                 map_listitem,
                 manual_listitem,
-                trailer_listitem,
+                trailer_listitem, 
             ]
             type2 = dialog.select('Edit ROM Assets/Artwork', list = listitems, useDetails = True)
             if type2 < 0: return
@@ -3479,8 +3478,6 @@ class Main:
     # Renders the addon Root window.
     #
     def _command_render_root_window(self):
-        log_debug('Advanced Emulator Launcher _command_render_root_window() BEGIN')
-
         self._misc_set_all_sorting_methods()
         self._misc_set_AEL_Content(AEL_CONTENT_VALUE_LAUNCHERS)
         self._misc_clear_AEL_Launcher_Content()
@@ -3542,8 +3539,6 @@ class Main:
 
         xbmcplugin.endOfDirectory(handle = self.addon_handle, succeeded = True, cacheToDisc = False)
 
-        log_debug('Advanced Emulator Launcher _command_render_root_window() END')
-
     #
     # Renders all categories without Favourites, Collections, virtual categories, etc.
     # This function is called by skins to build shortcuts menu.
@@ -3585,7 +3580,7 @@ class Main:
         banner_path    = asset_get_default_asset_Category(category_dic, 'default_banner')
         poster_path    = asset_get_default_asset_Category(category_dic, 'default_poster')
         clearlogo_path = asset_get_default_asset_Category(category_dic, 'default_clearlogo')
-        listitem.setArt({'icon'   : icon_path,   'fanart' : fanart_path,
+        listitem.setArt({'icon'   : icon_path,   'fanart' : fanart_path, 
                          'banner' : banner_path, 'poster' : poster_path, 'clearlogo' : clearlogo_path})
 
         # --- Create context menu ---
@@ -4714,7 +4709,7 @@ class Main:
         AEL_PClone_stat_value    = AEL_PCLONE_STAT_VALUE_NONE
 
         # --- Create listitem row ---
-        # NOTE A possible optimization is to compute rom_name, asset paths and flags on the calling
+        # NOTE A possible optimization is to compute rom_name, asset paths and flags on the calling 
         #      function. A lot of ifs will be avoided here and that will increase speed.
         rom_raw_name = rom['m_name']
         if categoryID == VCATEGORY_FAVOURITES_ID:
@@ -4885,8 +4880,8 @@ class Main:
         # --- Set ROM artwork ---
         # AEL custom artwork fields
         listitem.setArt({'title'    : rom['s_title'],    'snap'      : rom['s_snap'],
-                         'boxfront' : rom['s_boxfront'], 'boxback'   : rom['s_boxback'],
-                         '3dbox'    : rom['s_3dbox'],    'cartridge' : rom['s_cartridge'],
+                         'boxfront' : rom['s_boxfront'], 'boxback'   : rom['s_boxback'], 
+                         '3dbox'    : rom['s_3dbox'],    'cartridge' : rom['s_cartridge'], 
                          'flyer'    : rom['s_flyer'],    'map'       : rom['s_map'] })
 
         #  Kodi official artwork fields
@@ -6207,7 +6202,7 @@ class Main:
 
         # --- Edit category metadata ---
         if type == 0:
-            NFO_FileName = fs_get_collection_NFO_name(self.settings, collection)
+            NFO_FileName = fs_get_collection_NFO_name(self.settings, collection)            
             NFO_str = 'NFO found' if NFO_FileName.exists() else 'NFO not found'
             plot_str = text_limit_string(collection['m_plot'], PLOT_STR_MAXSIZE)
             dialog = xbmcgui.Dialog()
@@ -6467,7 +6462,7 @@ class Main:
     def _command_import_collection(self):
         # --- Choose collection to import ---
         dialog = xbmcgui.Dialog()
-        collection_file_str = dialog.browse(1, 'Select the ROM Collection file',
+        collection_file_str = dialog.browse(1, 'Select the ROM Collection file', 
             'files', '.json', False, False)
         if not collection_file_str: return
 
@@ -7490,7 +7485,7 @@ class Main:
         info_text += "[COLOR violet]m_rating[/COLOR]: '{0}'\n".format(rom['m_rating'])
         info_text += "[COLOR violet]m_plot[/COLOR]: '{0}'\n".format(rom['m_plot'])
         # >> Info
-        info_text += "[COLOR violet]filename[/COLOR]: '{0}'\n".format(rom['filename'])
+        info_text += "[COLOR violet]filename[/COLOR]: '{0}'\n".format(rom['filename'])        
         info_text += "[COLOR skyblue]disks[/COLOR]: {0}\n".format(rom['disks'])
         info_text += "[COLOR violet]altapp[/COLOR]: '{0}'\n".format(rom['altapp'])
         info_text += "[COLOR violet]altarg[/COLOR]: '{0}'\n".format(rom['altarg'])
@@ -8355,15 +8350,15 @@ class Main:
 
         # >> Windoze
         # NOTE subprocess24_hack.py was hacked to always set CreateProcess() bInheritHandles to 0.
-        # bInheritHandles [in] If this parameter TRUE, each inheritable handle in the calling
-        # process is inherited by the new process. If the parameter is FALSE, the handles are not
+        # bInheritHandles [in] If this parameter TRUE, each inheritable handle in the calling 
+        # process is inherited by the new process. If the parameter is FALSE, the handles are not 
         # inherited. Note that inherited handles have the same value and access rights as the original handles.
         # See https://msdn.microsoft.com/en-us/library/windows/desktop/ms682425(v=vs.85).aspx
         #
         # Same behaviour can be achieved in current version of subprocess with close_fds.
-        # If close_fds is true, all file descriptors except 0, 1 and 2 will be closed before the
-        # child process is executed. (Unix only). Or, on Windows, if close_fds is true then no handles
-        # will be inherited by the child process. Note that on Windows, you cannot set close_fds to
+        # If close_fds is true, all file descriptors except 0, 1 and 2 will be closed before the 
+        # child process is executed. (Unix only). Or, on Windows, if close_fds is true then no handles 
+        # will be inherited by the child process. Note that on Windows, you cannot set close_fds to 
         # true and also redirect the standard handles by setting stdin, stdout or stderr.
         #
         # If I keep old launcher behaviour in Windows (close_fds = True) then program output cannot
@@ -8424,7 +8419,7 @@ class Main:
                 exec_list = list(new_exec_list)
                 log_debug('_run_process() (Windows) exec_list = {0}'.format(exec_list))
 
-                # >> cwd = apppath fails if application path has Unicode on Windows
+                # >> cwd = apppath.encode('utf-8') fails if application path has Unicode on Windows
                 # >> A workaraound is to use cwd = apppath.encode(sys.getfilesystemencoding()) --> DOES NOT WORK
                 # >> For the moment AEL cannot launch executables on Windows having Unicode paths.
                 windows_cd_apppath = self.settings['windows_cd_apppath']
@@ -8432,7 +8427,7 @@ class Main:
                 log_debug('_run_process() (Windows) Launching regular application')
                 log_debug('_run_process() (Windows) windows_cd_apppath = {0}'.format(windows_cd_apppath))
                 log_debug('_run_process() (Windows) windows_close_fds  = {0}'.format(windows_close_fds))
-                # >>  Note that on Windows, you cannot set close_fds to true and also redirect the
+                # >>  Note that on Windows, you cannot set close_fds to true and also redirect the 
                 # >> standard handles by setting stdin, stdout or stderr.
                 if windows_cd_apppath and windows_close_fds:
                     retcode = subprocess.call(exec_list, cwd = apppath, close_fds = True)
@@ -8452,7 +8447,7 @@ class Main:
 
         # Android
         elif is_android():
-
+             
             retcode = os.system("{0} {1}".format(application, arguments))
             log_info('_run_process() Process retcode = {0}'.format(retcode))
 
@@ -8761,7 +8756,7 @@ class Main:
                 missing_s_boxback += 1
             if rom['s_cartridge']:
                 rom_info['s_cartridge'] = self._aux_get_info(FileName(rom['s_cartridge']), path_cartridge_P, romfile_getBase_noext)
-            else:
+            else:                  
                 rom_info['s_cartridge'] = '-'
                 missing_s_cartridge += 1
             if rom['s_fanart']:    rom_info['s_fanart']    = 'Y'
@@ -8968,7 +8963,7 @@ class Main:
             log_error('Cannot write categories.xml file (IOError)')
             kodi_notify_warn('Cannot write Launcher Report (IOError)')
 
-
+        
     def _aux_get_info(self, asset_FN, path_asset_P, romfile_getBase_noext):
         # log_debug('title_FN.getDir() "{0}"'.format(title_FN.getDir()))
         # log_debug('path_title_P      "{0}"'.format(path_title_P))
@@ -9120,7 +9115,7 @@ class Main:
     #   1) ADDON_DATA_DIR/db_ROMs/roms_base_noext_PClone_index.json
     #   2) ADDON_DATA_DIR/db_ROMs/roms_base_noext_parents.json
     #
-    # A) If there are Unkown ROMs, a fake rom with name [Unknown ROMs] and
+    # A) If there are Unkown ROMs, a fake rom with name [Unknown ROMs] and 
     #    id UNKNOWN_ROMS_PARENT_ID is created. This fake ROM is the parent of all Unknown ROMs.
     #    This fake ROM is added to roms_base_noext_parents.json database.
     #    This fake ROM is not present in the main JSON ROM database.
@@ -9644,7 +9639,7 @@ class Main:
             num_files_checked += 1
 
             # --- Check if filename matchs ROM extensions ---
-            # The recursive scan has scanned all files. Check if this file matches some of
+            # The recursive scan has scanned all files. Check if this file matches some of 
             # the ROM extensions. If this file isn't a ROM skip it and go for next one in the list.
             processROM = False
             for ext in launcher_exts.split("|"):
@@ -9697,7 +9692,7 @@ class Main:
                     log_debug('Adding additional disk "{0}" to set'.format(MDSet.discName))
                     roms[MultiDisc_rom_id]['disks'].append(MDSet.discName)
                     # >> Reorder disks like Disk 1, Disk 2, ...
-
+                    
                     # >> Process next file
                     log_debug('Processing next file ...')
                     continue
@@ -9724,7 +9719,7 @@ class Main:
                 report_fobj.write('  File not in launcher ROM list. Processing it ...\n')
 
             # --- Ignore BIOS ROMs ---
-            if romfilter.ROM_is_filtered(ROM.getBaseNoExt()):
+            if romfilter.ROM_is_filtered(ROM.getBaseNoExt()): 
                 log_debug('ROM filtered. Skipping ROM processing.')
                 continue
 
@@ -10077,7 +10072,7 @@ class Main:
     # CAREFUL deletes current categories!
     #
     def _cat_create_default(self):
-        # The key in the categories dictionary is an MD5 hash generate with current time plus some
+        # The key in the categories dictionary is an MD5 hash generate with current time plus some 
         # random number. This will make it unique and different for every category created.
         category = fs_new_category()
         category_key = misc_generate_random_SID()
@@ -10099,7 +10094,7 @@ class Main:
         return True
 
     #
-    # Reads a text file with category/launcher plot.
+    # Reads a text file with category/launcher plot. 
     # Checks file size to avoid importing binary files!
     #
     def _gui_import_TXT_file(text_file):
@@ -10127,9 +10122,8 @@ class Main:
             1, 'Select XML category/launcher configuration file', 'files', '.xml', enableMultiple = True)
         # Process file by file
         for xml_file in file_list:
-            xml_file_unicode = xml_file
-            log_debug('_command_exec_utils_import_launchers() Importing "{0}"'.format(xml_file_unicode))
-            import_FN = FileName(xml_file_unicode)
+            log_debug('_command_exec_utils_import_launchers() Importing "{0}"'.format(xml_file))
+            import_FN = FileName(xml_file)
             if not import_FN.exists(): continue
             # >> This function edits self.categories, self.launchers dictionaries
             autoconfig_import_launchers(g_PATHS.CATEGORIES_FILE_PATH, g_PATHS.ROMS_DIR,
@@ -10261,7 +10255,7 @@ class Main:
             self._misc_fix_Favourite_rom_object(rom)
             # >> Update dialog
             processed_fav_roms += 1
-            update_number = (float(processed_fav_roms) / float(num_fav_roms)) * 100
+            update_number = (float(processed_fav_roms) / float(num_fav_roms)) * 100 
             pDialog.update(int(update_number))
         fs_write_Favourites_JSON(g_PATHS.FAV_JSON_FILE_PATH, roms_fav)
         pDialog.update(100)
@@ -10303,7 +10297,7 @@ class Main:
             fs_write_Collection_ROMs_JSON(roms_json_file, collection_rom_list)
             # >> Update progress dialog
             processed_collections += 1
-            update_number = (float(processed_collections) / float(num_collections)) * 100
+            update_number = (float(processed_collections) / float(num_collections)) * 100 
             pDialog.update(int(update_number))
         # >> Save ROM Collection index
         fs_write_Collection_index_XML(g_PATHS.COLLECTIONS_FILE_PATH, collections)
@@ -10437,7 +10431,7 @@ class Main:
             self._aux_check_for_file(l_str, 'path_trailer', launcher)
 
             # >> Check for duplicate asset paths
-
+            
             # >> If l_str is empty is because no problems were found.
             if l_str:
                 main_str_list.extend(l_str)
@@ -10495,7 +10489,7 @@ class Main:
             # in the set.
             has_multidisc_ROMs = False
             for rom_id in roms:
-                if roms[rom_id]['disks']:
+                if roms[rom_id]['disks']: 
                     has_multidisc_ROMs = True
                     break
             if has_multidisc_ROMs:
@@ -10711,7 +10705,7 @@ class Main:
             else:
                 # only executed if the inner loop did NOT break
                 sum_table_slist.append([
-                    launcher['m_name'], '{:,d}'.format(num_roms), '{:,d}'.format(launcher_images),
+                    launcher['m_name'], '{:,d}'.format(num_roms), '{:,d}'.format(launcher_images), 
                     '{:,d}'.format(launcher_missing_images), '{:,d}'.format(launcher_problematic_images),
                 ])
                 detailed_slist.append('Number of images    {:6,d}'.format(launcher_images))
@@ -10784,7 +10778,7 @@ class Main:
             # in the set.
             has_multidisc_ROMs = False
             for rom_id in roms:
-                if roms[rom_id]['disks']:
+                if roms[rom_id]['disks']: 
                     has_multidisc_ROMs = True
                     break
             if has_multidisc_ROMs:
@@ -10812,7 +10806,7 @@ class Main:
             # romfiles_dic = {real_roms[rom_id]['filename'] : rom_id for rom_id in real_roms}
 
             # Process all asset directories one by one.
-
+            
 
             # Complete detailed report.
             detailed_slist.append('')
@@ -10912,7 +10906,7 @@ class Main:
         # arguments and check that the core pointed with argument -L exists.
         # Sort launcher by category and then name.
         num_retro_launchers = 0
-        for launcher_id in sorted(self.launchers,
+        for launcher_id in sorted(self.launchers, 
             key = lambda x: (self.launchers[x]['category'], self.launchers[x]['m_name'])):
             launcher = self.launchers[launcher_id]
             m_name = launcher['m_name']
@@ -11034,12 +11028,12 @@ class Main:
         pDialog.close()
 
         # >> Output format:
-        #    BIOS name             Mandatory  Status      Cores affected
+        #    BIOS name             Mandatory  Status      Cores affected 
         #    -------------------------------------------------
-        #    5200.rom              YES        OK          ---
-        #    7800 BIOS (E).rom     NO         Wrong MD5   core a name
-        #                                                 core b name
-        #    7800 BIOS (U).rom     YES        OK          ---
+        #    5200.rom              YES        OK          ---            
+        #    7800 BIOS (E).rom     NO         Wrong MD5   core a name    
+        #                                                 core b name    
+        #    7800 BIOS (U).rom     YES        OK          ---            
         #
         max_size_BIOS_filename = 0
         for BIOS_dic in Libretro_BIOS_list:
@@ -11378,8 +11372,6 @@ class Main:
     # A set of functions to help making plugin URLs
     # NOTE probably this can be implemented in a more elegant way with optinal arguments...
     def _misc_url_RunPlugin(self, command, categoryID = None, launcherID = None, romID = None):
-        log_debug('Advanced Emulator Launcher _misc_url_RunPlugin() BEGIN')
-
         if romID is not None:
             return 'RunPlugin({0}?com={1}&catID={2}&launID={3}&romID={4})'.format(
                 self.base_url, command, categoryID, launcherID, romID)

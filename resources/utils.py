@@ -93,7 +93,7 @@ def XML_text(tag_name, tag_text, num_spaces = 2):
         tag_text = text_escape_XML(tag_text)
         line = '{0}<{1}>{2}</{3}>\n'.format(' ' * num_spaces, tag_name, tag_text, tag_name)
     else:
-        # >> Empty tag
+        # >> Empty tag    
         line = '{0}<{1} />\n'.format(' ' * num_spaces, tag_name)
 
     return line
@@ -103,7 +103,7 @@ def text_str_2_Uni(string):
     if type(string).__name__ == 'unicode':
         unicode_str = string
     elif type(string).__name__ == 'str':
-        unicode_str = string#.decode('utf-8', errors = 'replace')
+        unicode_str = string
     else:
         print('TypeError: ' + type(string).__name__)
         raise TypeError

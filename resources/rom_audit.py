@@ -26,7 +26,7 @@ from .utils_kodi import *
 # Data structures
 # -------------------------------------------------------------------------------------------------
 # DTD "http://www.logiqx.com/Dats/datafile.dtd"
-def audit_new_rom_logiqx():
+def audit_new_rom_logiqx(): 
     return {
         'name'         : '',
         'cloneof'      : '',
@@ -35,7 +35,7 @@ def audit_new_rom_logiqx():
     }
 
 # HyperList doesn't include Plot
-def audit_new_rom_HyperList():
+def audit_new_rom_HyperList(): 
     return {
         'name'         : '',
         'description'  : '',
@@ -60,7 +60,7 @@ def audit_new_rom_GameDB():
         'story'        : ''
     }
 
-def audit_new_rom_AEL_Offline():
+def audit_new_rom_AEL_Offline(): 
     return {
         'ROM'       : '',
         'title'     : '',
@@ -612,7 +612,7 @@ def audit_get_ROM_base_name(romFileName):
     if regSearch is None:
         raise NameError('audit_get_ROM_base_name() regSearch is None')
     regExp_result = regSearch.group()
-
+  
     return regExp_result.strip()
 
 # -------------------------------------------------------------------------------------------------
@@ -687,7 +687,7 @@ Libretro_BIOS_list = [
      'mandatory' : True, 'cores' : ['hatari']},
 
     # --- Id Software - Doom ---
-
+    
 
     # --- Magnavox - Odyssey2 ---
     # https://github.com/libretro/libretro-super/blob/master/dist/info/o2em_libretro.info
@@ -753,7 +753,7 @@ Libretro_BIOS_list = [
      'mandatory' : False, 'cores' : ['gpsp', 'mednafen_gba', 'mgba', 'tempgba', 'vba_next']},
 
     # --- Nintendo - Gameboy Color ---
-
+    
     # --- Nintendo - GameCube ---
     # Dolphin files must be in a special directory, not in the system directory.
     # https://github.com/libretro/libretro-super/blob/master/dist/info/dolphin_libretro.info
@@ -787,7 +787,7 @@ Libretro_BIOS_list = [
     #  'mandatory' : True, 'cores' : []},
 
     # --- Nintendo - Nintendo Entertainment System ---
-
+    
     # --- Nintendo - Pokemon Mini ---
     # https://github.com/libretro/libretro-super/blob/master/dist/info/pokemini_libretro.info
     {'filename' : 'bios.min', 'size' : 4096, 'md5': '1e4fb124a3a886865acb574f388c803d',

@@ -309,7 +309,7 @@ def autoconfig_search_category_by_name(i_category, categories):
 #         if launcher_name == launcher['m_name']:
 #             s_launcher = launcher['id']
 #             return s_launcher
-#
+# 
 #     return s_launcher
 
 def autoconfig_import_launchers(CATEGORIES_FILE_PATH, ROMS_DIR, categories, launchers, import_FN):
@@ -405,7 +405,7 @@ def autoconfig_import_launchers(CATEGORIES_FILE_PATH, ROMS_DIR, categories, laun
     for i_launcher in imported_launchers_list:
         log_info('Processing Launcher "{0}"'.format(i_launcher['name']))
         log_info('      with Category "{0}"'.format(i_launcher['category']))
-
+        
         # >> Search category/launcher database to check if imported launcher/category exist.
         (s_categoryID, s_launcherID) = autoconfig_search_all_by_name(i_launcher, categories, launchers)
         log_debug('s_launcher = "{0}"'.format(s_launcherID))
