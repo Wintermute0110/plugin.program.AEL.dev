@@ -1,4 +1,4 @@
-Number of TGDB platforms 109
+Number of TGDB platforms 115
 
 ID    Name                                 Short name                       
 ----------------------------------------------------------------------------
@@ -35,6 +35,7 @@ ID    Name                                 Short name
 4973  Entex Select-a-Game                  entex-select-a-game              
 4965  Epoch Cassette Vision                epoch-cassette-vision            
 4966  Epoch Super Cassette Vision          epoch-super-cassette-vision      
+4985  Evercade                             evercade                         
 4932  FM Towns Marty                       fmtowns                          
 4928  Fairchild Channel F                  fairchild                        
 4936  Famicom Disk System                  fds                              
@@ -52,6 +53,7 @@ ID    Name                                 Short name
 14    Microsoft Xbox                       microsoft-xbox                   
 15    Microsoft Xbox 360                   microsoft-xbox-360               
 4920  Microsoft Xbox One                   microsoft-xbox-one               
+4981  Microsoft Xbox Series X              microsoft-xbox-series-x          
 4972  Milton Bradley Microvision           milton-bradley-microvision       
 4938  N-Gage                               ngage                            
 24    Neo Geo                              neogeo                           
@@ -79,8 +81,9 @@ ID    Name                                 Short name
 4930  PC-FX                                pcfx                             
 4917  Philips CD-i                         philips-cd-i                     
 4975  Pioneer LaserActive                                                   
+4983  R-Zone                               r-zone                           
 4967  RCA Studio II                        rca-studio-ii                    
-4979  SAM Coupé                            None                             
+4979  SAM Coupé                            sam-coupe                        
 4949  SEGA SG-1000                         sg1000                           
 33    Sega 32X                             sega-32x                         
 21    Sega CD                              sega-cd                          
@@ -98,10 +101,12 @@ ID    Name                                 Short name
 11    Sony Playstation 2                   sony-playstation-2               
 12    Sony Playstation 3                   sony-playstation-3               
 4919  Sony Playstation 4                   sony-playstation-4               
+4980  Sony Playstation 5                   sony-playstation-5               
 13    Sony Playstation Portable            sony-psp                         
 39    Sony Playstation Vita                sony-playstation-vita            
 6     Super Nintendo (SNES)                super-nintendo-snes              
 4941  TRS-80 Color Computer                trs80-color                      
+4982  Tandy Visual Interactive System      tandy-vis                        
 4953  Texas Instruments TI-99/4A           texas-instruments-ti-99-4a       
 4960  Tomy Tutor                           tomy-pyta                        
 34    TurboGrafx 16                        turbografx-16                    
@@ -110,4 +115,5 @@ ID    Name                                 Short name
 4959  Watara Supervision                   watara-supervision               
 4925  WonderSwan                           wonderswan                       
 4926  WonderSwan Color                     wonderswan-color                 
+4984  Xavix Port                           xavix-port                       
 4915  iOS                                  ios                              

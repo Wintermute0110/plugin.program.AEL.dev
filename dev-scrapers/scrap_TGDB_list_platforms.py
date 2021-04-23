@@ -1,8 +1,7 @@
-#!/usr/bin/python -B
+#!/usr/bin/python2 -B
 # -*- coding: utf-8 -*-
-#
+
 # Get all TGDB platform IDs and outputs JSON and CSV files.
-#
 
 # --- Python standard library ---
 from __future__ import unicode_literals
