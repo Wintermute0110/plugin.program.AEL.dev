@@ -158,7 +158,9 @@ WIP      Have a look at the forum and Github issues to find urgent things to be 
 
 WIP      [SCRAPERS] In ScreenScraper, check for daily allowance and scraper overflows in general.
 
-WIP FIX  Fix TheGamesDB scraper. Have a look at Github issues.
+WIP FIX  Fix TheGamesDB scraper. New asset titlescreen in TheGamesDB.
+         See https://forums.thegamesdb.net/viewtopic.php?f=5&t=1947
+         See https://github.com/Wintermute0110/plugin.program.AEL/issues/127
 
 WIP FIX  Fix launching of ROMs with Windows network filenames.
          See https://forum.kodi.tv/showthread.php?tid=287826&pid=2919639#pid2919639

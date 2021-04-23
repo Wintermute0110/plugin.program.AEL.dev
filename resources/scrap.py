@@ -2176,11 +2176,13 @@ class TheGamesDB(Scraper):
         ASSET_FANART_ID,
         ASSET_BANNER_ID,
         ASSET_CLEARLOGO_ID,
+        ASSET_TITLE_ID,
         ASSET_SNAP_ID,
         ASSET_BOXFRONT_ID,
         ASSET_BOXBACK_ID,
     ]
     asset_name_mapping = {
+        'titlescreen' : ASSET_TITLE_ID,
         'screenshot': ASSET_SNAP_ID,
         'boxart' : ASSET_BOXFRONT_ID,
         'boxartfront': ASSET_BOXFRONT_ID,

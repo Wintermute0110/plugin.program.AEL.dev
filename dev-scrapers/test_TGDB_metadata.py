@@ -1,8 +1,7 @@
-#!/usr/bin/python -B
+#!/usr/bin/python2 -B
 # -*- coding: utf-8 -*-
-#
+
 # Test AEL TheGamesDB metadata scraper.
-#
 
 # --- Python standard library ---
 from __future__ import unicode_literals
@@ -31,9 +30,9 @@ status_dic = kodi_new_status_dic('Scraper test was OK')
 
 # --- Choose data for testing ---
 # search_term, rombase, platform = common.games['metroid']
-# search_term, rombase, platform = common.games['mworld']
-#search_term, rombase, platform = common.games['sonic_megaDrive']
-search_term, rombase, platform = common.games['sonic_genesis'] # Aliased platform
+search_term, rombase, platform = common.games['mworld']
+# search_term, rombase, platform = common.games['sonic_megadrive']
+# search_term, rombase, platform = common.games['sonic_genesis'] # Aliased platform
 # search_term, rombase, platform = common.games['chakan']
 # search_term, rombase, platform = common.games['console_wrong_title']
 # search_term, rombase, platform = common.games['console_wrong_platform']
