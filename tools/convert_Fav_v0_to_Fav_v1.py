@@ -42,23 +42,23 @@ for rom_id in old_roms:
     new_rom['args']        = old_rom['args']
     new_rom['fav_status']  = old_rom['fav_status']
     new_rom['filename']    = old_rom['filename']
-    new_rom['finished']    = old_rom['finished']    
+    new_rom['finished']    = old_rom['finished']
     new_rom['id']          = old_rom['id']
     new_rom['launcherID']  = old_rom['launcherID']
 
     new_rom['m_genre']     = old_rom['genre']
     new_rom['m_name']      = old_rom['name']
     new_rom['m_plot']      = old_rom['plot']
-    new_rom['m_rating']    = ''     
+    new_rom['m_rating']    = ''
     new_rom['m_studio']    = old_rom['studio']
     new_rom['m_year']      = old_rom['year']
-     
+
     new_rom['minimize']       = old_rom['minimize']
     new_rom['nointro_status'] = old_rom['nointro_status']
     new_rom['platform']       = old_rom['platform']
     new_rom['romext']         = old_rom['romext']
     new_rom['rompath']        = old_rom['rompath']
-     
+
     new_rom['roms_default_banner']    = 's_banner'
     new_rom['roms_default_clearlogo'] = 's_clearlogo'
     new_rom['roms_default_fanart']    = 's_fanart'

@@ -17,7 +17,7 @@
 
 # --- Python standar library ---
 from __future__ import unicode_literals
-import xml.etree.ElementTree as ET 
+import xml.etree.ElementTree as ET
 import re
 import sys
 

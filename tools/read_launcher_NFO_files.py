@@ -24,7 +24,7 @@
 launcher_ROM_dir   = '/home/test/roms/'
 
 # --- Python standard library ---
-import xml.etree.ElementTree as ET 
+import xml.etree.ElementTree as ET
 import re
 import sys
 
@@ -56,6 +56,6 @@ for root, dirs, filess in os.walk(launcher_path):
         files.append(os.path.join(root, filename))
 
 # Pretty print results found
-nfo_dic = {'title' : '', 'platform' : '', 'year' : '', 'publisher' : '', 
+nfo_dic = {'title' : '', 'platform' : '', 'year' : '', 'publisher' : '',
            'genre' : '', 'plot' : '' }
 nfo_dic = fs_load_NFO_file_scanner(nfo_file)
