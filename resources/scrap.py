@@ -69,7 +69,7 @@ import zipfile
 # 4) The actual object metadata/asset scraping is done by an scrap_strategy object instance.
 #
 # 5) progress_dialog_obj object instance is passed to the scrap_strategy instance.
-#    In the ROM scanner the progress dialog is created in the scanner instance and 
+#    In the ROM scanner the progress dialog is created in the scanner instance and
 #    changed by the scanner/scraper objects.
 #
 # --- Use case A: ROM scanner ---------------------------------------------------------------------
@@ -1212,7 +1212,7 @@ class ScrapeStrategy(object):
             return status_dic
         pdialog.startProgress('Resolving URL extension with {}...'.format(scraper_name))
         image_ext = self.scraper_obj.resolve_asset_URL_extension(selected_asset, image_url, status_dic)
-        pdialog.endProgress()        
+        pdialog.endProgress()
         log_debug('Resolved URL extension "{}"'.format(image_ext))
         if not image_ext:
             log_error('_gui_edit_asset() Error in scraper.resolve_asset_URL_extension()')
@@ -1529,7 +1529,7 @@ class Scraper(object):
         self.candidate = candidate
         log_debug('Scrape.set_candidate() Setting "{}" "{}"'.format(self.cache_key, platform))
         # Do not introduce None candidates in the cache so the game will be rescraped later.
-        # Keep the None candidate in the object internal variables so later calls to 
+        # Keep the None candidate in the object internal variables so later calls to
         # get_metadata() and get_assets() will know an error happened.
         if candidate is None: return
         self._update_disk_cache(Scraper.CACHE_CANDIDATES, self.cache_key, candidate)
@@ -1690,9 +1690,9 @@ class Scraper(object):
     # Other scrapers, for example MobyGames, return both the thumbnail and the true asset URLs
     # in get_assets(). In such case, the implementation of this method is trivial.
     #
-    # @param selected_asset: 
+    # @param selected_asset:
     # @param status_dic: [dict] kodi_new_status_dic() status dictionary.
-    # @return: [tuple of strings] or None 
+    # @return: [tuple of strings] or None
     #          First item, string with the URL to download the asset.
     #          Second item, string with the URL for printing in logs. URL may have sensitive
     #          information in some scrapers.
@@ -1703,8 +1703,8 @@ class Scraper(object):
     # Get the URL image extension. In some scrapers the type of asset cannot be obtained by
     # the asset URL and must be resolved to save the asset in the filesystem.
     #
-    # @param selected_asset: 
-    # @param image_url: 
+    # @param selected_asset:
+    # @param image_url:
     # @param status_dic: [dict] kodi_new_status_dic() status dictionary.
     # @return: [str] String with the image extension in lowercase 'png', 'jpg', etc.
     #          None is returned in case or error/exception and status_dic updated.
@@ -1769,7 +1769,7 @@ class Scraper(object):
         status_dic['status'] = False
         status_dic['dialog'] = KODI_MESSAGE_DIALOG
         status_dic['msg'] = user_msg
-        
+
         # Record the number of error/exceptions produced in the scraper and disable the scraper
         # if the number of errors is higher than a threshold.
         self.exception_counter += 1
@@ -1983,7 +1983,7 @@ class AEL_Offline(Scraper):
         log_debug('AEL_Offline.get_candidates() rombase_noext "{}"'.format(rombase_noext))
         log_debug('AEL_Offline.get_candidates() AEL platform  "{}"'.format(platform))
 
-        # If not cached XML data found (maybe offline scraper does not exist for this platform or 
+        # If not cached XML data found (maybe offline scraper does not exist for this platform or
         # cannot be loaded) return an empty list of candidates.
         self._initialise_platform(platform)
         if not self.cached_games: return []
@@ -3154,7 +3154,7 @@ class MobyGames(Scraper):
 #   platform.
 #
 # ssuserInfos.php : Informations sur l'utilisateur ScreenScraper
-# userlevelsListe.php : Liste des niveaux utilisateurs de ScreenScraper 
+# userlevelsListe.php : Liste des niveaux utilisateurs de ScreenScraper
 # nbJoueursListe.php : Liste des nombres de joueurs
 # supportTypesListe.php : Liste des types de supports
 # romTypesListe.php : Liste des types de roms
@@ -3545,7 +3545,7 @@ class ScreenScraper(Scraper):
 
         return json_data
 
-    # nbJoueursListe.php : Liste des nombres de joueurs 
+    # nbJoueursListe.php : Liste des nombres de joueurs
     # This function not coded at the moment.
 
     def debug_get_support_types(self, status_dic):
@@ -4109,7 +4109,7 @@ class ScreenScraper(Scraper):
         #		},         <----- Here it should be a '}' and not '},'.
         #		}
         #	}
-        #            
+        #
         log_error('Trying to repair ScreenScraper raw data (Try 2).')
         new_page_data_raw = page_data_raw.replace('\t\t},\n\t\t}', '\t\t}\n\t\t}')
         try:
@@ -4423,7 +4423,7 @@ class GameFAQs(Scraper):
 
     # Load assets from assets web page.
     # The Game Images URL shows a page with boxart and screenshots thumbnails.
-    # Boxart can be diferent depending on the ROM/game region. Each region has then a 
+    # Boxart can be diferent depending on the ROM/game region. Each region has then a
     # separate page with the full size artwork (boxfront, boxback, etc.)
     #
     # TODO In the assets web page only the Boxfront is shown. The Boxback and Spine are in the

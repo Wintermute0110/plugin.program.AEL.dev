@@ -53,7 +53,7 @@ JSON_separators = (',', ':')
 # Internally all string in the data model are Unicode. They will be encoded to
 # UTF-8 when writing files.
 # -------------------------------------------------------------------------------------------------
-# These three functions create a new data structure for the given object and (very importantly) 
+# These three functions create a new data structure for the given object and (very importantly)
 # fill the correct default values). These must match what is written/read from/to the XML files.
 # Tag name in the XML is the same as in the data dictionary.
 #
@@ -660,7 +660,7 @@ def fs_write_JSON_file(file_dir, file_base_noext, data):
 
     try:
         with io.open(json_file.getPath(), 'w', encoding = 'utf-8') as file:
-            json_data = json.dumps(data, ensure_ascii = False, sort_keys = True, 
+            json_data = json.dumps(data, ensure_ascii = False, sort_keys = True,
                                    indent = JSON_indent, separators = JSON_separators)
             file.write(unicode(json_data))
             file.close()
@@ -900,7 +900,7 @@ def fs_write_Favourites_JSON(roms_json_file, roms):
     # --- Write JSON file ---
     try:
         with io.open(roms_json_file.getPath(), 'w', encoding='utf-8') as file:
-            json_data = json.dumps(raw_data, ensure_ascii = False, sort_keys = True, 
+            json_data = json.dumps(raw_data, ensure_ascii = False, sort_keys = True,
                                    indent = JSON_indent, separators = JSON_separators)
             file.write(unicode(json_data))
             file.close()
@@ -915,11 +915,11 @@ def fs_write_Favourites_JSON(roms_json_file, roms):
 def fs_load_Favourites_JSON(roms_json_file):
     # --- If file does not exist return empty dictionary ---
     log_verb('fs_load_Favourites_JSON() File {}'.format(roms_json_file.getOriginalPath()))
-    if not roms_json_file.exists(): 
+    if not roms_json_file.exists():
         return {}
 
     # --- Parse JSON ---
-    with open(roms_json_file.getPath()) as file:    
+    with open(roms_json_file.getPath()) as file:
         try:
             raw_data = json.load(file)
         except ValueError:
@@ -1035,7 +1035,7 @@ def fs_write_Collection_ROMs_JSON(roms_json_file, roms):
 
     try:
         with io.open(roms_json_file.getPath(), 'w', encoding = 'utf-8') as file:
-            json_data = json.dumps(raw_data, ensure_ascii = False, sort_keys = True, 
+            json_data = json.dumps(raw_data, ensure_ascii = False, sort_keys = True,
                                    indent = JSON_indent, separators = JSON_separators)
             file.write(unicode(json_data))
     except OSError:
@@ -1055,7 +1055,7 @@ def fs_load_Collection_ROMs_JSON(roms_json_file):
     # --- Parse using JSON ---
     log_verb('fs_load_Collection_ROMs_JSON() {}'.format(roms_json_file.getOriginalPath()))
 
-    with open(roms_json_file.getPath()) as file:    
+    with open(roms_json_file.getPath()) as file:
         try:
             raw_data = json.load(file)
         except ValueError:
@@ -1077,7 +1077,7 @@ def fs_load_Collection_ROMs_JSON(roms_json_file):
 # comments in fs_export_ROM_collection_assets()
 def fs_export_ROM_collection(output_filename, collection, rom_list):
     log_info('fs_export_ROM_collection() File {}'.format(output_filename.getOriginalPath()))
-    
+
     ex_collection_dic = copy.deepcopy(collection)
     for asset_kind in COLLECTION_ASSET_ID_LIST:
         AInfo = assets_get_info_scheme(asset_kind)
@@ -1110,7 +1110,7 @@ def fs_export_ROM_collection(output_filename, collection, rom_list):
     raw_data.append(ex_rom_list)
     try:
         with io.open(output_filename.getPath(), 'w', encoding = 'utf-8') as file:
-            json_data = json.dumps(raw_data, ensure_ascii = False, sort_keys = True, 
+            json_data = json.dumps(raw_data, ensure_ascii = False, sort_keys = True,
                                    indent = 2, separators = (', ', ' : '))
             file.write(unicode(json_data))
     except OSError:
@@ -1124,12 +1124,12 @@ def fs_export_ROM_collection(output_filename, collection, rom_list):
 #
 # {
 #    "s_fanart" : "Chrono Trigger_fanart.jpg",  -- Collection artwork
-#    "s_icon" : "Chrono Trigger_icon.png", 
+#    "s_icon" : "Chrono Trigger_icon.png",
 # },
 # [
 #   {
 #     "s_fanart" : "Chrono Trigger/Chrono Trigger_snes_fanart.jpg", -- Collection ROM artwork
-#     "s_icon" : "Chrono Trigger/Chrono Trigger_snes_icon.png", 
+#     "s_icon" : "Chrono Trigger/Chrono Trigger_snes_icon.png",
 #   },
 # ]
 #
@@ -1145,7 +1145,7 @@ def fs_export_ROM_collection(output_filename, collection, rom_list):
 # /output/dir/Collection Name_icon.png                          -- Collection assets.
 # /output/dir/Collection Name_fanart.png
 # /output/dir/Collection Name/ROM Name_platform_cname_icon.png  -- Collection ROM assets
-# /output/dir/Collection Name/ROM Name_platform_cname_icon.png  
+# /output/dir/Collection Name/ROM Name_platform_cname_icon.png
 #
 # Parameters:
 #   out_dir_FN    FileName object
@@ -1397,7 +1397,7 @@ def fs_write_VCategory_ROMs_JSON(roms_dir, roms_base_noext, roms):
     log_verb('fs_write_VCategory_ROMs_JSON() Saving JSON file {0}'.format(roms_json_file.getOriginalPath()))
     try:
         with io.open(roms_json_file.getPath(), 'w', encoding = 'utf-8') as file:
-            json_data = json.dumps(roms, ensure_ascii = False, sort_keys = True, 
+            json_data = json.dumps(roms, ensure_ascii = False, sort_keys = True,
                                    indent = JSON_indent, separators = JSON_separators)
             file.write(unicode(json_data))
             file.close()
@@ -1416,7 +1416,7 @@ def fs_load_VCategory_ROMs_JSON(roms_dir, roms_base_noext):
 
     # --- Parse using cElementTree ---
     log_verb('fs_load_VCategory_ROMs_JSON() Loading JSON file {0}'.format(roms_json_file.getOriginalPath()))
-    with open(roms_json_file.getPath()) as file:    
+    with open(roms_json_file.getPath()) as file:
         try:
             roms = json.load(file)
         except ValueError:
@@ -1893,7 +1893,7 @@ def fs_export_category_NFO(nfo_FileName, category):
     nfo_content.append('<!-- Exported by AEL on {0} -->\n'.format(time.strftime("%Y-%m-%d %H:%M:%S")))
     nfo_content.append('<category>\n')
     nfo_content.append(XML_text('year',      category['m_year']))
-    nfo_content.append(XML_text('genre',     category['m_genre'])) 
+    nfo_content.append(XML_text('genre',     category['m_genre']))
     nfo_content.append(XML_text('developer', category['m_developer']))
     nfo_content.append(XML_text('rating',    category['m_rating']))
     nfo_content.append(XML_text('plot',      category['m_plot']))

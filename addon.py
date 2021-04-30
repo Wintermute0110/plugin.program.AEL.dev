@@ -30,7 +30,7 @@ import resources.main as main
 # -------------------------------------------------------------------------------------------------
 # main()
 # -------------------------------------------------------------------------------------------------
-# Put the main bulk of the code in files inside /resources/, which is a package directory. 
+# Put the main bulk of the code in files inside /resources/, which is a package directory.
 # This way, the Python interpreter will precompile them into bytecode (files PYC/PYO) so
 # loading time is faster compared to loading PY files.
 # See http://www.network-theory.co.uk/docs/pytut/CompiledPythonfiles.html

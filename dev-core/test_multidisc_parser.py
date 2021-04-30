@@ -58,9 +58,9 @@ def text_get_ROM_basename_tokens(basename_str):
 
     # >> Remove empty tokens ''
     tokens_clean = list()
-    for token in tokens_strip: 
+    for token in tokens_strip:
         if token: tokens_clean.append(token)
-    if DEBUG_TOKEN_PARSER:        
+    if DEBUG_TOKEN_PARSER:
         log_debug('text_get_ROM_basename_tokens() tokens_clean {0}'.format(tokens_clean))
 
     # >> Remove '-' tokens from Trurip multidisc names
@@ -83,7 +83,7 @@ class MultiDiscInfo:
 
 def text_get_multidisc_info(ROM_FN):
     MDSet = MultiDiscInfo(ROM_FN)
-    
+
     # --- Parse ROM base_noext into tokens ---
     tokens = text_get_ROM_basename_tokens(ROM_FN.getBase_noext())
 

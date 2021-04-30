@@ -193,7 +193,7 @@ AEL_platforms = [
     Platform('Hartung Game Master', 'console-gamemaster', 'gamemaster', None, None, None, '103', None,
         DAT_NOINTRO, 'Hartung - Game Master'),
     # The iQue Player is based on the Nintendo 64, but uses system-on-a-chip technology to reduce size.
-    # It plays Nintendo 64 games specifically ported to the system. 
+    # It plays Nintendo 64 games specifically ported to the system.
     # iQue No-Intro DATs:
     # *) iQue - iQue (CDN) (20190927-125114).dat
     # *) iQue - iQue (Decrypted) (20190927-125114)

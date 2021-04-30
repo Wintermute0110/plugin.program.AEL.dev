@@ -189,7 +189,7 @@ def assets_get_asset_name_str(default_asset):
     else:
         kodi_notify_warn('Wrong asset key {0}'.format(default_asset))
         log_error('assets_get_asset_name_str() Wrong default_thumb {0}'.format(default_asset))
-    
+
     return asset_name_str
 
 #
@@ -513,7 +513,7 @@ def assets_get_path_noext_SUFIX(Asset, AssetPath, asset_base_noext, objectID = '
 def assets_get_collection_asset_basename(AInfo, basename_noext, platform, ext):
     pindex = get_AEL_platform_index(platform)
     platform_compact_name = AEL_platforms[pindex].compact_name
-    
+
     return basename_noext + '_' + platform_compact_name + '_' + AInfo.fname_infix + ext
 
 #
