@@ -1,9 +1,6 @@
 # -*- coding: utf-8 -*-
-#
-# Advanced Emulator Launcher
-#
 
-# Copyright (c) 2016-2017 Wintermute0110 <wintermute0110@gmail.com>
+# Copyright (c) 2016-2021 Wintermute0110 <wintermute0110@gmail.com>
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -11,17 +8,19 @@
 #
 # This program is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-# GNU General Public License for more details.
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+# See the GNU General Public License for more details.
+
+# Write here main contents of this file.
 
 # --- Python standard library ---
 from __future__ import unicode_literals
 import xml.etree.ElementTree as ET
 
 # --- Modules/packages in this plugin ---
-from constants import *
-from utils import *
-from utils_kodi import *
+from .constants import *
+from .utils import *
+from .utils_kodi import *
 
 # -------------------------------------------------------------------------------------------------
 # Data structures

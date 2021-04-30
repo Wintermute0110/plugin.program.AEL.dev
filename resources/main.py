@@ -1,8 +1,6 @@
 # -*- coding: utf-8 -*-
 
-# Advanced Emulator Launcher main script file
-
-# Copyright (c) 2016-2019 Wintermute0110 <wintermute0110@gmail.com>
+# Copyright (c) 2016-2021 Wintermute0110 <wintermute0110@gmail.com>
 # Portions (c) 2010-2015 Angelscry
 #
 # This program is free software; you can redistribute it and/or modify
@@ -14,25 +12,53 @@
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 # See the GNU General Public License for more details.
 
-# --- Python standard library ---
-from __future__ import unicode_literals
-import sys, os, shutil, fnmatch, string, time, traceback
-import re, urllib, urllib2, urlparse, socket, exceptions, hashlib, shlex
-from collections import OrderedDict
+# Advanced Emulator Launcher main script file.
 
-# --- Kodi stuff ---
-import xbmc, xbmcgui, xbmcplugin, xbmcaddon
+# First include modules in this package, then Kodi modules, finally standard library modules.
+
+# --- Be prepared for the future ---
+from __future__ import unicode_literals
+from __future__ import division
 
 # --- Modules/packages in this plugin ---
-from constants import *
-from utils import *
-from utils_kodi import *
-from disk_IO import *
-from net_IO import *
-from assets import *
-from rom_audit import *
-from scrap import *
-from autoconfig import *
+from .constants import *
+from .utils import *
+from .utils_kodi import *
+from .disk_IO import *
+from .net_IO import *
+from .assets import *
+from .rom_audit import *
+from .scrap import *
+from .autoconfig import *
+
+# --- Kodi stuff ---
+import xbmc
+import xbmcaddon
+import xbmcgui
+import xbmcplugin
+
+# --- Python standard library ---
+# Fix this: from collections import OrderedDict
+import collections
+import exceptions
+import fnmatch
+import hashlib
+import os
+import re
+import shlex
+import shutil
+import socket
+import string
+import sys
+import time
+import traceback
+# Fix this: import urllib, urllib2, urlparse
+if ADDON_RUNNING_PYTHON_2:
+    import urlparse
+elif ADDON_RUNNING_PYTHON_3:
+    import urllib.parse
+else:
+    raise TypeError('Undefined Python runtime version.')
 
 # --- Addon object (used to access settings) ---
 __addon_obj__     = xbmcaddon.Addon()

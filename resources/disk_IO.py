@@ -1,8 +1,6 @@
 # -*- coding: utf-8 -*-
-# Advanced Emulator Launcher filesystem I/O functions
-#
 
-# Copyright (c) 2016-2017 Wintermute0110 <wintermute0110@gmail.com>
+# Copyright (c) 2016-2021 Wintermute0110 <wintermute0110@gmail.com>
 # Portions (c) 2010-2015 Angelscry and others
 #
 # This program is free software; you can redistribute it and/or modify
@@ -11,39 +9,38 @@
 #
 # This program is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-# GNU General Public License for more details.
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+# See the GNU General Public License for more details.
 
-# --- Pyhton standard library
+# Advanced Emulator Launcher filesystem I/O functions.
+
+# --- Be prepared for the future ---
 from __future__ import unicode_literals
-import copy
-import json
-import io
-import codecs
-import time
-import os
-import sys
-import string
-import base64
-import pprint
-import errno
-
-# --- XML stuff ---
-# ~~~ cElementTree sometimes fails to parse XML in Kodi's Python interpreter... I don't know why
-# import xml.etree.cElementTree as ET
-
-# ~~~ Using ElementTree seems to solve the problem
-import xml.etree.ElementTree as ET
+from __future__ import division
 
 # --- AEL packages ---
-from constants import *
-from utils import *
-from utils_kodi import *
-from assets import *
+from .constants import *
+from .utils import *
+from .utils_kodi import *
+from .assets import *
+
+# --- Pyhton standard library ---
+import base64
+import codecs
+import copy
+import errno
+import io
+import json
+import os
+import pprint
+import string
+import sys
+import time
+import xml.etree.ElementTree as ET
 
 # --- AEL ROM storage version format ---
-# >> An integer number incremented whenever there is a change in the ROM storage format.
-# >> This will allow easy migrations.
+# An integer number incremented whenever there is a change in the ROM storage format.
+# This will allow easy migrations.
 AEL_STORAGE_FORMAT = 1
 
 # --- Configure JSON writer ---

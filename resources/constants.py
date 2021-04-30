@@ -1,10 +1,6 @@
 # -*- coding: utf-8 -*-
-#
-# Advanced Emulator Launcher platform constants.
-# This module has no external dependencies.
-#
 
-# Copyright (c) 2016-2019 Wintermute0110 <wintermute0110@gmail.com>
+# Copyright (c) 2016-2021 Wintermute0110 <wintermute0110@gmail.com>
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -12,38 +8,29 @@
 #
 # This program is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-# GNU General Public License for more details.
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+# See the GNU General Public License for more details.
+
+# Advanced Emulator Launcher platform constants.
+#
+# This module has no external dependencies.
 
 # --- Python standard library ---
 from __future__ import unicode_literals
+from __future__ import division
 
-# -------------------------------------------------------------------------------------------------
-# A universal addon error reporting exception
-# This exception is raised to report errors in the GUI.
-# Unhandled exceptions must not raise AddonError() so the addon crashes and the traceback is
-# printed in the Kodi log file.
-# -------------------------------------------------------------------------------------------------
-# Top-level GUI code looks like this
-# try:
-#     autoconfig_export_category(category, export_FN)
-# except AddonError as E:
-#     kodi_notify_warn('{0}'.format(E))
-# else:
-#     kodi_notify('Exported Category "{0}" XML config'.format(category['m_name']))
-#
-# Low-level code looks like this
-# def autoconfig_export_category(category, export_FN):
-#     try:
-#         do_something_that_may_fail()
-#     except OSError:
-#         log_error('(OSError) Cannot write {0} file'.format(export_FN.getBase()))
-#         # Message to be printed in the GUI
-#         raise AddonError('Error writing file (OSError)')
-#
-class AddonError(Exception):
-    def __init__(self, err_str): self.err_str = err_str
-    def __str__(self): return self.err_str
+# Transitional code from Python 2 to Python 3 (https://github.com/benjaminp/six/blob/master/six.py)
+import sys
+ADDON_RUNNING_PYTHON_2 = sys.version_info[0] == 2
+ADDON_RUNNING_PYTHON_3 = sys.version_info[0] == 3
+if ADDON_RUNNING_PYTHON_3:
+    text_type = str
+    binary_type = bytes
+elif ADDON_RUNNING_PYTHON_2:
+    text_type = unicode
+    binary_type = str
+else:
+    raise TypeError('Unknown Python runtime version')
 
 # This is to ease printing colours in Kodi.
 KC_RED        = '[COLOR red]'

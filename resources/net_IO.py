@@ -1,9 +1,6 @@
 # -*- coding: utf-8 -*-
-#
-# Advanced Emulator Launcher network IO module
-#
 
-# Copyright (c) 2016-2017 Wintermute0110 <wintermute0110@gmail.com>
+# Copyright (c) 2016-2021 Wintermute0110 <wintermute0110@gmail.com>
 # Portions (c) 2010-2015 Angelscry
 #
 # This program is free software; you can redistribute it and/or modify
@@ -12,18 +9,30 @@
 #
 # This program is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-# GNU General Public License for more details.
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+# See the GNU General Public License for more details.
+
+# Advanced Emulator Launcher network IO module.
+
+# --- Be prepared for the future ---
+from __future__ import unicode_literals
+from __future__ import division
+
+# --- Modules/packages in this plugin ---
+from .constants import *
+from .utils import *
 
 # --- Python standard library ---
-from __future__ import unicode_literals
-import sys
-import random
-import urllib2
 import os
-
-# --- AEL packages ---
-from .utils import *
+import random
+import sys
+# Fix this: import urllib, urllib2, urlparse
+if ADDON_RUNNING_PYTHON_2:
+    import urllib2
+elif ADDON_RUNNING_PYTHON_3:
+    raise TypeError('Change this for Python 3.')
+else:
+    raise TypeError('Undefined Python runtime version.')
 
 # --- GLOBALS -----------------------------------------------------------------
 # Firefox user agents

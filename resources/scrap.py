@@ -1,12 +1,6 @@
 # -*- coding: utf-8 -*-
 
-# Advanced Emulator Launcher scraping engine.
-#
-# --- Information about scraping ---
-# https://github.com/muldjord/skyscraper
-# https://github.com/muldjord/skyscraper/blob/master/docs/SCRAPINGMODULES.md
-
-# Copyright (c) 2016-2019 Wintermute0110 <wintermute0110@gmail.com>
+# Copyright (c) 2016-2021 Wintermute0110 <wintermute0110@gmail.com>
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -17,9 +11,26 @@
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 # See the GNU General Public License for more details.
 
-# --- Python standard library ---
+# Advanced Emulator Launcher scraping engine.
+#
+# --- Information about scraping ---
+# https://github.com/muldjord/skyscraper
+# https://github.com/muldjord/skyscraper/blob/master/docs/SCRAPINGMODULES.md
+
+# --- Be prepared for the future ---
 from __future__ import unicode_literals
 from __future__ import division
+
+# --- Modules/packages in this plugin ---
+from .constants import *
+from .platforms import *
+from .utils import *
+from .assets import *
+from .disk_IO import *
+from .net_IO import *
+from .rom_audit import *
+
+# --- Python standard library ---
 import abc
 import base64
 import collections
@@ -31,15 +42,6 @@ import time
 import urllib
 import urlparse
 import zipfile
-
-# --- AEL packages ---
-from .constants import *
-from .platforms import *
-from .utils import *
-from .assets import *
-from .disk_IO import *
-from .net_IO import *
-from .rom_audit import *
 
 # --- Scraper use cases ---------------------------------------------------------------------------
 # THIS DOCUMENTATION IS OBSOLETE, IT MUST BE UPDATED TO INCLUDE THE SCRAPER DISK CACHE.

@@ -149,6 +149,7 @@ WIP      Port release 0.9.10 to Python 3.
 [B]Advanced Emulator Launcher | version 0.9.10 | xx xxxxx 2021[/B]
 
 NOTE     Python 2 version for Leia/Krypon in branch release-0.9.x-python2
+         Have a look at AML code to ease the conversion.
 
 FEATURE  [CORE] Disable Kodi screensaver when launching and reenable after app finishes.
          Featured ported from AML.
@@ -158,9 +159,14 @@ WIP      Have a look at the forum and Github issues to find urgent things to be 
 
 WIP      [SCRAPERS] In ScreenScraper, check for daily allowance and scraper overflows in general.
 
-WIP FIX  Fix TheGamesDB scraper. New asset titlescreen in TheGamesDB.
+WIP      Add support to remove unneeded blank spaces in `dev-core/check_line_endings.py`.
+
+FIX      Fix TheGamesDB scraper. New asset titlescreen in TheGamesDB.
          See https://forums.thegamesdb.net/viewtopic.php?f=5&t=1947
          See https://github.com/Wintermute0110/plugin.program.AEL/issues/127
+
+WIP FIX  Fix launching of LNK ROM launchers with spaces in LNK filename.
+         See https://github.com/Wintermute0110/plugin.program.AEL/issues/125
 
 WIP FIX  Fix launching of ROMs with Windows network filenames.
          See https://forum.kodi.tv/showthread.php?tid=287826&pid=2919639#pid2919639

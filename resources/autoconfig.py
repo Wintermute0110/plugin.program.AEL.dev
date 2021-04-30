@@ -1,9 +1,6 @@
 # -*- coding: utf-8 -*-
-#
-# Advanced Emulator Launcher XML autoconfiguration stuff.
-#
 
-# Copyright (c) 2016-2019 Wintermute0110 <wintermute0110@gmail.com>
+# Copyright (c) 2016-2021 Wintermute0110 <wintermute0110@gmail.com>
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -14,27 +11,29 @@
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 # See the GNU General Public License for more details.
 
-# --- Python standard library ---
+# Advanced Emulator Launcher XML autoconfiguration stuff.
+
+# --- Be prepared for the future ---
 from __future__ import unicode_literals
-import os
-import time
+from __future__ import division
 
-# --- XML stuff ---
-# ~~~ cElementTree sometimes fails to parse XML in Kodi's Python interpreter... I don't know why
-# import xml.etree.cElementTree as ET
-
-# ~~~ Using ElementTree seems to solve the problem
-import xml.etree.ElementTree as ET
+# --- Modules/packages in this plugin ---
+from .constants import *
+from .utils import *
+from .disk_IO import *
+from .assets import *
+from .platforms import *
 
 # --- Kodi stuff ---
-import xbmc, xbmcgui, xbmcplugin, xbmcaddon
+import xbmc
+import xbmcaddon
+import xbmcgui
+import xbmcplugin
 
-# --- AEL packages ---
-from constants import *
-from utils import *
-from disk_IO import *
-from assets import *
-from platforms import *
+# --- Python standard library ---
+import os
+import time
+import xml.etree.ElementTree as ET
 
 # -------------------------------------------------------------------------------------------------
 # Exports launchers to an XML file.

@@ -1,8 +1,6 @@
 # -*- coding: utf-8 -*-
 
-# Advanced Emulator Launcher miscellaneous functions
-
-# Copyright (c) 2016-2019 Wintermute0110 <wintermute0110@gmail.com>
+# Copyright (c) 2016-2021 Wintermute0110 <wintermute0110@gmail.com>
 # Portions (c) 2010-2015 Angelscry and others
 #
 # This program is free software; you can redistribute it and/or modify
@@ -14,50 +12,63 @@
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 # See the GNU General Public License for more details.
 
+# Advanced Emulator Launcher miscellaneous functions
 #
-# Utility functions which does not depend on Kodi modules (except log_* functions)
-#
+# Utility functions which does not depend on Kodi modules (except log_* functions).
 
-# --- Python standard library ---
+# --- Be prepared for the future ---
 from __future__ import unicode_literals
-import collections
-import sys
-import os
-import shutil
-import time
-import random
-import hashlib
-import urlparse
-import re
-import string
-import fnmatch
-import HTMLParser
-import zlib
+from __future__ import division
 
-# --- Kodi modules ---
+# --- Modules/packages in this plugin ---
+# utils.py and utils_kodi.py must not depend on any other AEL module to avoid circular dependencies.
 # FileName class uses xbmc.translatePath()
 from .constants import *
 from .utils_kodi import *
 
-# --- AEL modules ---
-# utils.py and utils_kodi.py must not depend on any other AEL module to avoid circular dependencies.
+# --- Python standard library ---
+import collections
+import fnmatch
+import hashlib
+import HTMLParser
+import os
+import random
+import re
+import shutil
+import string
+import sys
+import time
+import zlib
+# Fix this: import urllib, urllib2, urlparse
+if ADDON_RUNNING_PYTHON_2:
+    import urlparse
+elif ADDON_RUNNING_PYTHON_3:
+    import urllib.parse
+else:
+    raise TypeError('Undefined Python runtime version.')
 
-# OS utils
-# >> Determine platform
-# >> See http://stackoverflow.com/questions/446209/possible-values-from-sys-platform
-def is_windows():
-    return sys.platform == 'win32' or sys.platform == 'win64' or sys.platform == 'cygwin'
-
-def is_osx():
-    return sys.platform.startswith('darwin')
-
-def is_linux():
-    return sys.platform.startswith('linux') and not is_android()
-
-def is_android():
-    if not sys.platform.startswith('linux'): return False
-
+# -------------------------------------------------------------------------------------------------
+# Interpreter running platform
+# -------------------------------------------------------------------------------------------------
+# Cache all possible platform values in global variables for maximum speed.
+# See http://stackoverflow.com/questions/446209/possible-values-from-sys-platform
+cached_sys_platform = sys.platform
+def _aux_is_android():
+    if not cached_sys_platform.startswith('linux'): return False
     return 'ANDROID_ROOT' in os.environ or 'ANDROID_DATA' in os.environ or 'XBMC_ANDROID_APK' in os.environ
+
+is_windows_bool = cached_sys_platform == 'win32' or cached_sys_platform == 'win64' or cached_sys_platform == 'cygwin'
+is_osx_bool = cached_sys_platform.startswith('darwin')
+is_android_bool = _aux_is_android()
+is_linux_bool = cached_sys_platform.startswith('linux') and not is_android_bool
+
+def is_windows(): return is_windows_bool
+
+def is_osx(): return is_osx_bool
+
+def is_android(): return is_android_bool
+
+def is_linux(): return is_linux_bool
 
 # -------------------------------------------------------------------------------------------------
 # Strings and text

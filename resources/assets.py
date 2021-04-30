@@ -1,9 +1,6 @@
 # -*- coding: utf-8 -*-
-#
-# Advanced Emulator Launcher asset (artwork) related stuff
-#
 
-# Copyright (c) 2016-2019 Wintermute0110 <wintermute0110@gmail.com>
+# Copyright (c) 2016-2021 Wintermute0110 <wintermute0110@gmail.com>
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -11,17 +8,22 @@
 #
 # This program is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-# GNU General Public License for more details.
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+# See the GNU General Public License for more details.
 
-# --- Python standard library ---
+# Advanced Emulator Launcher asset (artwork) related stuff.
+
+# --- Be prepared for the future ---
 from __future__ import unicode_literals
-import os
+from __future__ import division
 
-# --- AEL packages ---
+# --- Modules/packages in this plugin ---
 from .constants import *
 from .platforms import *
 from .utils import *
+
+# --- Python standard library ---
+import os
 
 #
 # Get extensions to search for files
