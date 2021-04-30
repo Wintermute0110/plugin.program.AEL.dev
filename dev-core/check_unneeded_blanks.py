@@ -66,7 +66,7 @@ def check_file_for_blanks(filename):
             continue
 
         # Check blank characters at the end of the line
-        m = re.search(r'^(.+)( +)$', l)
+        m = re.search(r'^(.+[^ ])( +)$', l)
         if m:
             # print('Match B found on line {} file {}'.format(linec, filename))
             num_B_cases += 1
