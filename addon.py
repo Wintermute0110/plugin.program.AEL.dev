@@ -1,4 +1,4 @@
-﻿# -*- coding: utf-8 -*-
+# -*- coding: utf-8 -*-
 
 # Copyright (c) 2016-2021 Wintermute0110 <wintermute0110@gmail.com>
 # Portions (c) 2010-2015 Angelscry and others
