@@ -2,12 +2,11 @@
 <addon id="plugin.program.advanced.emulator.launcher" name="Advanced Emulator Launcher" version="0.9.10-alpha" provider-name="Wintermute0110">
     <requires>
         <!--
-            Check addon versions in https://github.com/xbmc/xbmc/tree/master/addons/xbmc.python/addon.xml
+            Check main addon versions in https://github.com/xbmc/xbmc/tree/master/addons
             Change the branch according to the Kodi version.
-
-            2.25.0 Kodi 17 Krypton
-            2.26.0 Kodi 18 Leia
-            2.27.0 Kodi 19 Matrix (actual version not fixed yet).
+            Kodi 17 Krypton | xbmc.python 2.25.0 | script.module.pil 1.1.7
+            Kodi 18 Leia    | xbmc.python 2.26.0 | script.module.pil 1.1.7
+            Kodi 19 Matrix  | xbmc.python 3.0.0  | script.module.pil 5.1.0
         -->
         <import addon="xbmc.python" version="2.25.0" />
     </requires>
@@ -16,8 +15,7 @@
     </extension>
     <extension point="xbmc.addon.metadata">
         <!--
-            This must be commented when releasing the addon.
-            Kodi must be restarted if this setting is changed.
+            This must be commented when releasing the addon. Kodi must be restarted if this setting is changed.
             See https://github.com/xbmc/xbmc/pull/13814
         -->
         <!-- <reuselanguageinvoker>false</reuselanguageinvoker> -->
@@ -26,9 +24,9 @@
         <platform>android freebsd ios linux osx windows</platform>
         <license>GPL-2.0-only</license>
         <email>wintermute0110@gmail.com</email>
-        <forum>http://forum.kodi.tv/showthread.php?tid=287826</forum>
+        <forum>https://forum.kodi.tv/showthread.php?tid=287826</forum>
         <website>https://github.com/Wintermute0110/plugin.program.AEL/wiki</website>
-        <source>https://github.com/Wintermute0110/plugin.program.AEL</source>
+        <source>https://github.com/Wintermute0110/plugin.program.AEL/</source>
         <assets>
             <icon>media/icon.png</icon>
             <fanart>media/fanart.jpg</fanart>
@@ -36,6 +34,6 @@
             <screenshot>media/Estuary_ROM_Console.jpg</screenshot>
             <screenshot>media/Estuary_ROM_MAME.jpg</screenshot>
         </assets>
-        <news>See changelog.txt for information about the latest release.</news>
+        <news>See changelog.txt file in https://github.com/Wintermute0110/plugin.program.AEL for information about the latest release.</news>
     </extension>
 </addon>
