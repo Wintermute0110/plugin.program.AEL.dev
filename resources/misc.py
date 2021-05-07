@@ -806,6 +806,7 @@ def misc_addon_version_str_to_int(AML_version_str):
 # Utilities to test scrapers
 # -------------------------------------------------------------------------------------------------
 # These must be replaced with the table-making functions.
+# TODO Move this code to dev-scrapers/common.py
 
 # Candidates
 NAME_L      = 65

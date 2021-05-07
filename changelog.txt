@@ -155,6 +155,8 @@ WIP      Rename plugin from plugin.program.advanced.emulator.launcher to plugin.
          Create version plugin.program.AEL.dev. Copy this feature from AML.
 
 WIP      Create file misc.py and refactor utils.py. Copy structure from AML.
+         STATUS: Mostly done but not tested yet. Addon opens root window but
+         everything else must be tested.
 
 FEATURE  [CORE] Disable Kodi screensaver when launching and reenable after app finishes.
          Featured ported from AML.

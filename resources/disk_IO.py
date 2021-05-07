@@ -20,11 +20,11 @@ from __future__ import division
 
 # --- AEL packages ---
 from .constants import *
+from .misc import *
 from .utils import *
-from .utils_kodi import *
 from .assets import *
 
-# --- Pyhton standard library ---
+# --- Python standard library ---
 import base64
 import codecs
 import copy

@@ -23,7 +23,6 @@ from __future__ import division
 # --- Modules/packages in this plugin ---
 from .constants import *
 from .utils import *
-from .utils_kodi import *
 from .disk_IO import *
 from .net_IO import *
 from .assets import *
