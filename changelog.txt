@@ -154,6 +154,8 @@ NOTE     Python 2 version for Leia/Krypon in branch release-0.9.x-python2
 WIP      Rename plugin from plugin.program.advanced.emulator.launcher to plugin.program.AEL.
          Create version plugin.program.AEL.dev. Copy this feature from AML.
 
+WIP      Create file misc.py and refactor utils.py. Copy structure from AML.
+
 FEATURE  [CORE] Disable Kodi screensaver when launching and reenable after app finishes.
          Featured ported from AML.
          See https://forum.kodi.tv/showthread.php?tid=304186&pid=2934194#pid2934194

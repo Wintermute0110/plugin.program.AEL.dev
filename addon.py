@@ -14,11 +14,15 @@
 
 # Advanced Emulator Launcher main script file.
 
-# --- Python standard library ---
+# --- Be prepared for the future ---
 from __future__ import unicode_literals
+from __future__ import division
 
 # --- Modules/packages in this plugin ---
 import resources.main as main
+
+# --- Python standard library ---
+import sys
 
 # -------------------------------------------------------------------------------------------------
 # Hacks and tests
@@ -34,4 +38,4 @@ import resources.main as main
 # This way, the Python interpreter will precompile them into bytecode (files PYC/PYO) so
 # loading time is faster compared to loading PY files.
 # See http://www.network-theory.co.uk/docs/pytut/CompiledPythonfiles.html
-main.Main().run_plugin()
+main.Main().run_plugin(sys.argv)
