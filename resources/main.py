@@ -185,7 +185,7 @@ class Main:
     # ---------------------------------------------------------------------------------------------
     # This is the plugin entry point.
     # ---------------------------------------------------------------------------------------------
-    def run_plugin(self):
+    def run_plugin(self, addon_argv):
         # --- Initialise log system ---
         # Force DEBUG log level for development.
         # Place it before settings loading so settings can be dumped during debugging.
@@ -207,7 +207,7 @@ class Main:
         # log_debug('__a_author__   "{}"'.format(__addon_author__))
         # log_debug('__a_profile__  "{}"'.format(__addon_profile__))
         # log_debug('__a_type__     "{}"'.format(__addon_type__))
-        for i in range(len(sys.argv)): log_debug('sys.argv[{}] "{}"'.format(i, sys.argv[i]))
+        for i in range(len(addon_argv)): log_debug('addon_argv[{}] "{}"'.format(i, addon_argv[i]))
         # log_debug('PLUGIN_DATA_DIR OP "{}"'.format(g_PATHS.PLUGIN_DATA_DIR.getOriginalPath()))
         # log_debug('PLUGIN_DATA_DIR  P "{}"'.format(g_PATHS.PLUGIN_DATA_DIR.getPath()))
         # log_debug('ADDON_CODE_DIR OP "{}"'.format(g_PATHS.ADDON_CODE_DIR.getOriginalPath()))
@@ -272,15 +272,20 @@ class Main:
         if not g_PATHS.REPORTS_DIR.exists():               g_PATHS.REPORTS_DIR.makedirs()
 
         # --- Process URL ---
-        self.base_url     = sys.argv[0]
-        self.addon_handle = int(sys.argv[1])
-        args              = urlparse.parse_qs(sys.argv[2][1:])
-        # log_debug('args = {0}'.format(args))
-        # >> Interestingly, if plugin is called as type executable then args is empty.
-        # >> However, if plugin is called as type video then Kodi adds the following
-        # >> even for the first call: 'content_type': ['video']
+        self.base_url = addon_argv[0]
+        self.addon_handle = int(addon_argv[1])
+        if ADDON_RUNNING_PYTHON_2:
+            args = urlparse.parse_qs(addon_argv[2][1:])
+        elif ADDON_RUNNING_PYTHON_3:
+            args = urllib.parse.parse_qs(addon_argv[2][1:])
+        else:
+            raise TypeError('Undefined Python runtime version.')
+        # log_debug('args = {}'.format(args))
+        # Interestingly, if plugin is called as type executable then args is empty.
+        # However, if plugin is called as type video then Kodi adds the following
+        # even for the first call: 'content_type': ['video']
         self.content_type = args['content_type'] if 'content_type' in args else None
-        # log_debug('content_type = {0}'.format(self.content_type))
+        log_debug('content_type = {}'.format(self.content_type))
 
         # --- Addon first-time initialisation ---
         # >> When the addon is installed and the file categories.xml does not exist, just
@@ -300,7 +305,7 @@ class Main:
 
         # --- Get addon command ---
         command = args['com'][0] if 'com' in args else 'SHOW_ADDON_ROOT'
-        log_debug('command = "{0}"'.format(command))
+        log_debug('command = "{}"'.format(command))
 
         # --- Commands that do not modify the databases are allowed to run concurrently ---
         concurrent_command_set = {
