@@ -26,6 +26,9 @@ from __future__ import division
 from .constants import *
 
 # --- Python standard library ---
+import hashlib
+import HTMLParser
+import random
 import re
 import time
 
@@ -55,10 +58,10 @@ def text_title_to_filename_str(title_str):
 def text_XML(tag_name, tag_text, num_spaces = 2):
     if tag_text:
         tag_text = text_escape_XML(tag_text)
-        line = '{}<{}>{}</{}>\n'.format(' ' * num_spaces, tag_name, tag_text, tag_name)
+        line = '{}<{}>{}</{}>'.format(' ' * num_spaces, tag_name, tag_text, tag_name)
     else:
         # Empty tag.
-        line = '{}<{} />\n'.format(' ' * num_spaces, tag_name)
+        line = '{}<{} />'.format(' ' * num_spaces, tag_name)
 
     return line
 
