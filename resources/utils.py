@@ -343,11 +343,9 @@ def utils_write_JSON_file(json_filename, json_data, verbose = True):
                 file.write(text_type(json.dumps(json_data, ensure_ascii = False, sort_keys = True,
                     indent = 1, separators = (',', ':'))))
     except OSError:
-        kodi_notify('Advanced MAME Launcher',
-                    'Cannot write {} file (OSError)'.format(json_filename))
+        kodi_notify(dialog_title, 'Cannot write {} file (OSError)'.format(json_filename))
     except IOError:
-        kodi_notify('Advanced MAME Launcher',
-                    'Cannot write {} file (IOError)'.format(json_filename))
+        kodi_notify(dialog_title, 'Cannot write {} file (IOError)'.format(json_filename))
     l_end = time.time()
     if verbose:
         write_time_s = l_end - l_start
@@ -362,11 +360,9 @@ def utils_write_JSON_file_pprint(json_filename, json_data, verbose = True):
             file.write(text_type(json.dumps(json_data, ensure_ascii = False, sort_keys = True,
                 indent = 1, separators = (', ', ' : '))))
     except OSError:
-        kodi_notify('Advanced MAME Launcher',
-                    'Cannot write {} file (OSError)'.format(json_filename))
+        kodi_notify(dialog_title, 'Cannot write {} file (OSError)'.format(json_filename))
     except IOError:
-        kodi_notify('Advanced MAME Launcher',
-                    'Cannot write {} file (IOError)'.format(json_filename))
+        kodi_notify(dialog_title, 'Cannot write {} file (IOError)'.format(json_filename))
     l_end = time.time()
     if verbose:
         write_time_s = l_end - l_start
@@ -387,11 +383,9 @@ def utils_write_JSON_file_lowmem(json_filename, json_data, verbose = True):
             for chunk in jobj.iterencode(json_data):
                 file.write(text_type(chunk))
     except OSError:
-        kodi_notify('Advanced MAME Launcher',
-                    'Cannot write {} file (OSError)'.format(json_filename))
+        kodi_notify(dialog_title, 'Cannot write {} file (OSError)'.format(json_filename))
     except IOError:
-        kodi_notify('Advanced MAME Launcher',
-                    'Cannot write {} file (IOError)'.format(json_filename))
+        kodi_notify(dialog_title, 'Cannot write {} file (IOError)'.format(json_filename))
     l_end = time.time()
     if verbose:
         write_time_s = l_end - l_start
@@ -577,18 +571,18 @@ def log_error_Python(text_line): print(text_line)
 # Call examples:
 #  1) ret = kodi_dialog_OK('Launch ROM?')
 #  2) ret = kodi_dialog_OK('Launch ROM?', title = 'AML - Launcher')
-def kodi_dialog_OK(text, title = dialog_title_str):
+def kodi_dialog_OK(text, title = dialog_title):
     xbmcgui.Dialog().ok(title, text)
 
 # Returns True is YES was pressed, returns False if NO was pressed or dialog canceled.
-def kodi_dialog_yesno(text, title = dialog_title_str):
+def kodi_dialog_yesno(text, title = dialog_title):
     return xbmcgui.Dialog().yesno(title, text)
 
 # Returns True is YES was pressed, returns False if NO was pressed or dialog canceled.
-def kodi_dialog_yesno_custom(text, yeslabel_str, nolabel_str, title = dialog_title_str):
+def kodi_dialog_yesno_custom(text, yeslabel_str, nolabel_str, title = dialog_title):
     return xbmcgui.Dialog().yesno(title, text, yeslabel = yeslabel_str, nolabel = nolabel_str)
 
-def kodi_dialog_yesno_timer(text, timer_ms = 30000, title = dialog_title_str):
+def kodi_dialog_yesno_timer(text, timer_ms = 30000, title = dialog_title):
     return xbmcgui.Dialog().yesno(title, text, autoclose = timer_ms)
 
 # Returns a directory.
@@ -612,15 +606,15 @@ def kodi_dialog_get_wdirectory(dialog_heading):
     return xbmcgui.Dialog().browse(3, dialog_heading, '').decode('utf-8')
 
 # Displays a small box in the bottom right corner
-def kodi_notify(text, title = dialog_title_str, time = 5000):
+def kodi_notify(text, title = dialog_title, time = 5000):
     xbmcgui.Dialog().notification(title, text, xbmcgui.NOTIFICATION_INFO, time)
 
-def kodi_notify_warn(text, title = dialog_title_str, time = 7000):
+def kodi_notify_warn(text, title = dialog_title, time = 7000):
     xbmcgui.Dialog().notification(title, text, xbmcgui.NOTIFICATION_WARNING, time)
 
 # Do not use this function much because it is the same icon displayed when Python fails
 # with an exception and that may confuse the user.
-def kodi_notify_error(text, title = dialog_title_str, time = 7000):
+def kodi_notify_error(text, title = dialog_title, time = 7000):
     xbmcgui.Dialog().notification(title, text, xbmcgui.NOTIFICATION_ERROR, time)
 
 def kodi_refresh_container():
