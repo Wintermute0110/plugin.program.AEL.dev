@@ -674,17 +674,17 @@ def fs_write_ROMs_JSON(roms_dir_FN, launcher, roms):
     # Print some information in the XML so the user can now which launcher created it.
     # Note that this is ignored when reading the file.
     slist = []
-    slist.append('<?xml version="1.0" encoding="utf-8" standalone="yes"?>\n')
-    slist.append('<advanced_emulator_launcher_ROMs version="{}">\n'.format(AEL_STORAGE_FORMAT))
-    slist.append('<launcher>\n')
+    slist.append('<?xml version="1.0" encoding="utf-8" standalone="yes"?>')
+    slist.append('<advanced_emulator_launcher_ROMs version="{}">'.format(AEL_STORAGE_FORMAT))
+    slist.append('<launcher>')
     slist.append(text_XML('id', launcher['id']))
     slist.append(text_XML('m_name', launcher['m_name']))
     slist.append(text_XML('categoryID', launcher['categoryID']))
     slist.append(text_XML('platform', launcher['platform']))
     slist.append(text_XML('rompath', launcher['rompath']))
     slist.append(text_XML('romext', launcher['romext']))
-    slist.append('</launcher>\n')
-    slist.append('</advanced_emulator_launcher_ROMs>\n')
+    slist.append('</launcher>')
+    slist.append('</advanced_emulator_launcher_ROMs>')
 
     #  Write ROMs XML info file and JSON database file.
     utils_write_slist_to_file(roms_xml_file.getPath(), slist)
@@ -736,18 +736,16 @@ def fs_load_Favourites_JSON(roms_json_FN):
 def fs_write_Collection_index_XML(collections_xml_file, collections):
     log_info('fs_write_Collection_index_XML() File {}'.format(collections_xml_file.getOriginalPath()))
     slist = []
-    slist.append('<?xml version="1.0" encoding="utf-8" standalone="yes"?>\n')
-    slist.append('<advanced_emulator_launcher_Collection_index version="{}">\n'.format(AEL_STORAGE_FORMAT))
-
-    # --- Control information ---
-    slist.append('<control>\n')
+    slist.append('<?xml version="1.0" encoding="utf-8" standalone="yes"?>')
+    slist.append('<advanced_emulator_launcher_Collection_index version="{}">'.format(AEL_STORAGE_FORMAT))
+    # Control information.
+    slist.append('<control>')
     slist.append(text_XML('update_timestamp', unicode(time.time())))
-    slist.append('</control>\n')
-
-    # --- Virtual Launchers ---
+    slist.append('</control>')
+    # Virtual Launchers.
     for collection_id in sorted(collections, key = lambda x : collections[x]['m_name']):
         collection = collections[collection_id]
-        slist.append('<Collection>\n')
+        slist.append('<Collection>')
         slist.append(text_XML('id', collection['id']))
         slist.append(text_XML('m_name', collection['m_name']))
         slist.append(text_XML('m_genre', collection['m_genre']))
@@ -765,8 +763,8 @@ def fs_write_Collection_index_XML(collections_xml_file, collections):
         slist.append(text_XML('s_poster', collection['s_poster']))
         slist.append(text_XML('s_clearlogo', collection['s_clearlogo']))
         slist.append(text_XML('s_trailer', collection['s_trailer']))
-        slist.append('</Collection>\n')
-    slist.append('</advanced_emulator_launcher_Collection_index>\n')
+        slist.append('</Collection>')
+    slist.append('</advanced_emulator_launcher_Collection_index>')
     utils_write_slist_to_file(collections_xml_file.getPath(), slist)
 
 def fs_load_Collection_index_XML(collections_xml_file):
