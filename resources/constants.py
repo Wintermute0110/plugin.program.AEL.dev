@@ -32,7 +32,34 @@ elif ADDON_RUNNING_PYTHON_2:
 else:
     raise TypeError('Unknown Python runtime version')
 
-# This is to ease printing colours in Kodi.
+# -------------------------------------------------------------------------------------------------
+# Addon options and tuneables.
+# -------------------------------------------------------------------------------------------------
+# Compact, smaller size, non-human readable JSON. False forces human-readable JSON for development.
+# This setting must be True when releasing.
+OPTION_COMPACT_JSON = True
+
+# Use less memory when writing big JSON files, but writing is slower.
+# This setting must be True when releasing.
+OPTION_LOWMEM_WRITE_JSON = True
+
+# The addon name in the GUI. Title of Kodi dialogs (yesno, progress, etc.) and used also in log functions.
+DIALOG_TITLE = 'Advanced Emulator Launcher'
+
+# These parameters are used in utils_write_JSON_file() when pprint is True or
+# OPTION_COMPACT_JSON is False. Otherwise non-human readable, compact JSON is written.
+# pprint = True function parameter overrides option OPTION_COMPACT_JSON.
+# More compact JSON files (less blanks) load faster because file size is smaller.
+JSON_INDENT = 1
+JSON_SEP = (',', ':')
+
+# An integer number incremented whenever there is a change in the ROM storage format.
+# This enables easy migrations, at least in theory.
+AEL_STORAGE_FORMAT = 1
+
+# -------------------------------------------------------------------------------------------------
+# This is to ease printing colors in Kodi.
+# -------------------------------------------------------------------------------------------------
 KC_RED        = '[COLOR red]'
 KC_ORANGE     = '[COLOR orange]'
 KC_GREEN      = '[COLOR green]'
@@ -40,11 +67,6 @@ KC_YELLOW     = '[COLOR yellow]'
 KC_VIOLET     = '[COLOR violet]'
 KC_BLUEVIOLET = '[COLOR blueviolet]'
 KC_END        = '[/COLOR]'
-
-# -------------------------------------------------------------------------------------------------
-# Addon options and tuneables.
-# -------------------------------------------------------------------------------------------------
-dialog_title = 'Advanced Emulator Launcher'
 
 # -------------------------------------------------------------------------------------------------
 # Addon constants

@@ -158,6 +158,8 @@ WIP      Create file misc.py and refactor utils.py. Copy structure from AML.
          STATUS: Mostly done but not tested yet. Addon opens root window but
          everything else must be tested.
 
+FEATURE  Complete remove legacy Advanced Launcher launcher.xml loading/parsing functions.
+
 FEATURE  [CORE] Disable Kodi screensaver when launching and reenable after app finishes.
          Featured ported from AML.
          See https://forum.kodi.tv/showthread.php?tid=304186&pid=2934194#pid2934194
