@@ -47,20 +47,19 @@ except:
 # --- Python standard library ---
 # Check what modules are really used and remove not used ones.
 import collections
+import errno
 import fnmatch
 import io
 import json
 import math
-import hashlib
-import HTMLParser
 import os
-import random
 import re
 import shutil
 import string
 import sys
 import threading
 import time
+import xml
 import zlib
 
 # --- Determine interpreter running platform ---
@@ -260,6 +259,12 @@ class FileName:
 # 2) Use AEL approach and report status in a control dictionary? Caller code is responsible
 #    to report the error in the GUI.
 #
+# A convention must be chosen. 
+# A) Low-level, basic IO functions raise KodiAddonError exception. However, any other function
+#    uses st_dic to report errors.
+# B) All functions use st_dic. IO functions are responsible to catch exceptions and fill st_dic.
+# C) Do not use st_dic at all, only use KodiAddonError.
+
 # -------------------------------------------------------------------------------------------------
 # Low level filesystem functions.
 # -------------------------------------------------------------------------------------------------
@@ -300,96 +305,109 @@ def utils_load_file_to_slist(filename):
         slist = f.readlines()
     return slist
 
+# If there are issues in the XML file (for example, invalid XML chars) ET.parse will fail.
+# Returns None if error.
+# Returns xml_tree = ET.parse() if success.
+def utils_load_XML_to_ET(filename):
+    log_verb('utils_load_XML_to_ET() Loading {}'.format(filename))
+    xml_tree = None
+    try:
+        xml_tree = xml.etree.ElementTree.parse(filename)
+    except IOError as ex:
+        log_debug('utils_load_XML_to_ET() (IOError) errno = {}'.format(ex.errno))
+        # log_debug(unicode(ex.errno.errorcode))
+        # No such file or directory
+        if ex.errno == errno.ENOENT:
+            log_error('utils_load_XML_to_ET() (IOError) No such file or directory.')
+        else:
+            log_error('utils_load_XML_to_ET() (IOError) Unhandled errno value.')
+    except xml.etree.ElementTree.ParseError as ex:
+        log_error('utils_load_XML_to_ET() (ParseError) Exception parsing XML categories.xml')
+        log_error('utils_load_XML_to_ET() (ParseError) {}'.format(str(ex)))
+        # kodi_dialog_OK('(ET.ParseError) when reading categories.xml. '
+        #     'XML file is corrupt or contains invalid characters.')
+
+    return xml_tree
+
 # -------------------------------------------------------------------------------------------------
 # JSON write/load
 # -------------------------------------------------------------------------------------------------
-def utils_load_JSON_file_dic(json_filename, verbose = True):
-    # --- If file does not exist return empty dictionary ---
-    data_dic = {}
+# Replace fs_load_JSON_file with this.
+#
+# json_FN = file_dir.pjoin(file_base_noext + '.json')
+# json_filename = json_FN.getPath()
+def utils_load_JSON_file(json_filename, default_obj = {}, verbose = True):
+    # If file does not exist return default object (usually empty object)
+    json_data = default_obj
     if not os.path.isfile(json_filename):
         log_warning('utils_load_JSON_file_dic() Not found "{}"'.format(json_filename))
-        return data_dic
-    if verbose:
-        log_debug('utils_load_JSON_file_dic() "{}"'.format(json_filename))
+        return json_data
+    # Load and parse JSON file.
+    if verbose: log_debug('utils_load_JSON_file_dic() "{}"'.format(json_filename))
     with io.open(json_filename, 'rt', encoding = 'utf-8') as file:
-        data_dic = json.load(file)
+        try:
+            json_data = json.load(file)
+        except ValueError as ex:
+            log_error('utils_load_JSON_file_dic() ValueError exception in json.load() function')
 
-    return data_dic
-
-def utils_load_JSON_file_list(json_filename, verbose = True):
-    # --- If file does not exist return empty dictionary ---
-    data_list = []
-    if not os.path.isfile(json_filename):
-        log_warning('utils_load_JSON_file_list() Not found "{}"'.format(json_filename))
-        return data_list
-    if verbose:
-        log_debug('utils_load_JSON_file_list() "{}"'.format(json_filename))
-    with io.open(json_filename, 'rt', encoding = 'utf-8') as file:
-        data_list = json.load(file)
-
-    return data_list
+    return json_data
 
 # This consumes a lot of memory but it is fast.
 # See https://stackoverflow.com/questions/24239613/memoryerror-using-json-dumps
-def utils_write_JSON_file(json_filename, json_data, verbose = True):
+#
+# Note that there is a bug in the json module where the ensure_ascii=False flag can produce
+# a mix of unicode and str objects.
+# See http://stackoverflow.com/questions/18337407/saving-utf-8-texts-in-json-dumps-as-utf8-not-as-u-escape-sequence
+#
+# json_file = file_dir.pjoin(file_base_noext + '.json')
+# log_verb('fs_write_JSON_file() Dir  {}'.format(file_dir.getOriginalPath()))
+# log_verb('fs_write_JSON_file() JSON {}'.format(file_base_noext + '.json'))
+#
+def utils_write_JSON_file(json_filename, json_data, verbose = True, pprint = False, lowmem = False):
     l_start = time.time()
-    if verbose:
-        log_debug('utils_write_JSON_file() "{}"'.format(json_filename))
+    if verbose: log_debug('utils_write_JSON_file() "{}"'.format(json_filename))
+
+    # Choose JSON iterative encoder or normal encoder.
+    if lowmem:
+        if verbose: log_debug('utils_write_JSON_file() Using lowmem option')
+        if pprint:
+            jobj = json.JSONEncoder(ensure_ascii = False, sort_keys = True,
+                indent = JSON_INDENT, separators = JSON_SEP)
+        else:
+            if OPTION_COMPACT_JSON:
+                jobj = json.JSONEncoder(ensure_ascii = False, sort_keys = True)
+            else:
+                jobj = json.JSONEncoder(ensure_ascii = False, sort_keys = True,
+                    indent = JSON_INDENT, separators = JSON_SEP)
+    else:
+        # Parameter pprint == True overrides option OPTION_COMPACT_JSON.
+        if pprint:
+            f_data = text_type(json.dumps(json_data, ensure_ascii = False, sort_keys = True,
+                indent = JSON_INDENT, separators = JSON_SEP))
+        else:
+            if OPTION_COMPACT_JSON:
+                f_data = text_type(json.dumps(json_data, ensure_ascii = False, sort_keys = True))
+            else:
+                f_data = text_type(json.dumps(json_data, ensure_ascii = False, sort_keys = True,
+                    indent = JSON_INDENT, separators = JSON_SEP))
+
+    # Write JSON to disk
     try:
         with io.open(json_filename, 'wt', encoding = 'utf-8') as file:
-            if OPTION_COMPACT_JSON:
-                file.write(text_type(json.dumps(json_data, ensure_ascii = False, sort_keys = True)))
+            if lowmem:
+                # Chunk by chunk JSON writer, uses less memory but takes longer.
+                for chunk in jobj.iterencode(json_data):
+                    file.write(text_type(chunk))
             else:
-                file.write(text_type(json.dumps(json_data, ensure_ascii = False, sort_keys = True,
-                    indent = 1, separators = (',', ':'))))
+                file.write(f_data)
     except OSError:
-        kodi_notify(dialog_title, 'Cannot write {} file (OSError)'.format(json_filename))
+        kodi_notify(DIALOG_TITLE, 'Cannot write {} file (OSError)'.format(json_filename))
     except IOError:
-        kodi_notify(dialog_title, 'Cannot write {} file (IOError)'.format(json_filename))
+        kodi_notify(DIALOG_TITLE, 'Cannot write {} file (IOError)'.format(json_filename))
     l_end = time.time()
     if verbose:
         write_time_s = l_end - l_start
         log_debug('utils_write_JSON_file() Writing time {:f} s'.format(write_time_s))
-
-def utils_write_JSON_file_pprint(json_filename, json_data, verbose = True):
-    l_start = time.time()
-    if verbose:
-        log_debug('utils_write_JSON_file_pprint() "{}"'.format(json_filename))
-    try:
-        with io.open(json_filename, 'wt', encoding = 'utf-8') as file:
-            file.write(text_type(json.dumps(json_data, ensure_ascii = False, sort_keys = True,
-                indent = 1, separators = (', ', ' : '))))
-    except OSError:
-        kodi_notify(dialog_title, 'Cannot write {} file (OSError)'.format(json_filename))
-    except IOError:
-        kodi_notify(dialog_title, 'Cannot write {} file (IOError)'.format(json_filename))
-    l_end = time.time()
-    if verbose:
-        write_time_s = l_end - l_start
-        log_debug('utils_write_JSON_file_pprint() Writing time {:f} s'.format(write_time_s))
-
-def utils_write_JSON_file_lowmem(json_filename, json_data, verbose = True):
-    l_start = time.time()
-    if verbose:
-        log_debug('utils_write_JSON_file_lowmem() "{}"'.format(json_filename))
-    try:
-        if OPTION_COMPACT_JSON:
-            jobj = json.JSONEncoder(ensure_ascii = False, sort_keys = True)
-        else:
-            jobj = json.JSONEncoder(ensure_ascii = False, sort_keys = True,
-                indent = 1, separators = (',', ':'))
-        # --- Chunk by chunk JSON writer ---
-        with io.open(json_filename, 'wt', encoding = 'utf-8') as file:
-            for chunk in jobj.iterencode(json_data):
-                file.write(text_type(chunk))
-    except OSError:
-        kodi_notify(dialog_title, 'Cannot write {} file (OSError)'.format(json_filename))
-    except IOError:
-        kodi_notify(dialog_title, 'Cannot write {} file (IOError)'.format(json_filename))
-    l_end = time.time()
-    if verbose:
-        write_time_s = l_end - l_start
-        log_debug('utils_write_JSON_file_lowmem() Writing time {:f} s'.format(write_time_s))
 
 # -------------------------------------------------------------------------------------------------
 # Threaded JSON loader
@@ -571,18 +589,18 @@ def log_error_Python(text_line): print(text_line)
 # Call examples:
 #  1) ret = kodi_dialog_OK('Launch ROM?')
 #  2) ret = kodi_dialog_OK('Launch ROM?', title = 'AML - Launcher')
-def kodi_dialog_OK(text, title = dialog_title):
+def kodi_dialog_OK(text, title = DIALOG_TITLE):
     xbmcgui.Dialog().ok(title, text)
 
 # Returns True is YES was pressed, returns False if NO was pressed or dialog canceled.
-def kodi_dialog_yesno(text, title = dialog_title):
+def kodi_dialog_yesno(text, title = DIALOG_TITLE):
     return xbmcgui.Dialog().yesno(title, text)
 
 # Returns True is YES was pressed, returns False if NO was pressed or dialog canceled.
-def kodi_dialog_yesno_custom(text, yeslabel_str, nolabel_str, title = dialog_title):
+def kodi_dialog_yesno_custom(text, yeslabel_str, nolabel_str, title = DIALOG_TITLE):
     return xbmcgui.Dialog().yesno(title, text, yeslabel = yeslabel_str, nolabel = nolabel_str)
 
-def kodi_dialog_yesno_timer(text, timer_ms = 30000, title = dialog_title):
+def kodi_dialog_yesno_timer(text, timer_ms = 30000, title = DIALOG_TITLE):
     return xbmcgui.Dialog().yesno(title, text, autoclose = timer_ms)
 
 # Returns a directory.
@@ -606,15 +624,15 @@ def kodi_dialog_get_wdirectory(dialog_heading):
     return xbmcgui.Dialog().browse(3, dialog_heading, '').decode('utf-8')
 
 # Displays a small box in the bottom right corner
-def kodi_notify(text, title = dialog_title, time = 5000):
+def kodi_notify(text, title = DIALOG_TITLE, time = 5000):
     xbmcgui.Dialog().notification(title, text, xbmcgui.NOTIFICATION_INFO, time)
 
-def kodi_notify_warn(text, title = dialog_title, time = 7000):
+def kodi_notify_warn(text, title = DIALOG_TITLE, time = 7000):
     xbmcgui.Dialog().notification(title, text, xbmcgui.NOTIFICATION_WARNING, time)
 
 # Do not use this function much because it is the same icon displayed when Python fails
 # with an exception and that may confuse the user.
-def kodi_notify_error(text, title = dialog_title, time = 7000):
+def kodi_notify_error(text, title = DIALOG_TITLE, time = 7000):
     xbmcgui.Dialog().notification(title, text, xbmcgui.NOTIFICATION_ERROR, time)
 
 def kodi_refresh_container():
