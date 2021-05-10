@@ -23,7 +23,7 @@ from .constants import *
 # -------------------------------------------------------------------------------------------------
 # Multidisc ROM support
 # -------------------------------------------------------------------------------------------------
-def md_get_ROM_basename_tokens(basename_str):
+def get_ROM_basename_tokens(basename_str):
     DEBUG_TOKEN_PARSER = False
 
     # --- Parse ROM base_noext/basename_str into tokens ---
@@ -64,7 +64,7 @@ class MultiDiscInfo:
         self.extension   = ROM_FN.getExt()
         self.order       = 0
 
-def md_get_multidisc_info(ROM_FN):
+def get_multidisc_info(ROM_FN):
     MDSet = MultiDiscInfo(ROM_FN)
 
     # --- Parse ROM base_noext into tokens ---
