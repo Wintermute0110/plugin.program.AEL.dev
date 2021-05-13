@@ -170,9 +170,8 @@ class FileName:
     def getPath(self):
         return self.path
 
-    def getPath_noext(self):
+    def getPathNoExt(self):
         root, ext = os.path.splitext(self.path)
-
         return root
 
     def getDir(self):
@@ -198,7 +197,6 @@ class FileName:
         filenames = os.listdir(self.path)
         for filename in fnmatch.filter(filenames, mask):
             files.append(os.path.join(self.path, filename))
-
         return files
 
     def scanFilesInPathAsPaths(self, mask):
@@ -206,7 +204,6 @@ class FileName:
         filenames = os.listdir(self.path)
         for filename in fnmatch.filter(filenames, mask):
             files.append(FileName(os.path.join(self.path, filename)))
-
         return files
 
     def recursiveScanFilesInPath(self, mask):
@@ -214,7 +211,6 @@ class FileName:
         for root, dirs, foundfiles in os.walk(self.path):
             for filename in fnmatch.filter(foundfiles, mask):
                 files.append(os.path.join(root, filename))
-
         return files
 
     # ---------------------------------------------------------------------------------------------
@@ -647,7 +643,7 @@ def kodi_refresh_container():
 # --- Example 1 ---
 # pDialog = KodiProgressDialog()
 # pDialog.startProgress('Doing something...', step_total)
-# for ...
+# for i in range():
 #     pDialog.updateProgressInc()
 #     # Do stuff...
 # pDialog.endProgress()
