@@ -87,6 +87,22 @@ def text_remove_Kodi_color_tags(s):
 
     return s
 
+# Have a look at this https://beautifultable.readthedocs.io/en/latest/quickstart.html
+# It may be used to improve the current functions.
+#
+# >>> from beautifultable import BeautifulTable
+# >>> table = BeautifulTable()
+# >>> table.rows.append(["Jacob", 1, "boy"])
+# >>> table.rows.append(["Isabella", 1, "girl"])
+# >>> table.columns.header = ["name", "rank", "gender"]
+# >>> table.rows.header = ["S1", "S2", "S3", "S4", "S5"]
+# >>> print(table)
+# +----+----------+------+--------+
+# |    |   name   | rank | gender |
+# +----+----------+------+--------+
+# | S1 |  Jacob   |  1   |  boy   |
+# +----+----------+------+--------+
+
 # Renders a list of list of strings table into a CSV list of strings.
 # The list of strings must be joined with '\n'.join()
 def text_render_table_CSV(table_str):
