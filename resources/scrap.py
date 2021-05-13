@@ -30,6 +30,7 @@ from .assets import *
 from .disk_IO import *
 from .net_IO import *
 from .rom_audit import *
+from settings.config import Appconfig, Userconfig, Config
 
 # --- Python standard library ---
 import abc
@@ -104,7 +105,7 @@ else:
 # scrap_strategy.process_ROM_assets() scrapes all enabled assets in sequence using all the
 # configured scrapers (primary, secondary).
 #
-# g_scraper_factory = ScraperFactory(g_PATHS, g_settings)
+# g_scraper_factory = ScraperFactory()
 # scrap_strategy = g_scraper_factory.create_scanner(launcher_obj, progress_dialog_obj)
 # scrap_strategy.process_ROM_metadata(rom_obj)
 # scrap_strategy.process_ROM_assets(rom_obj)
@@ -119,7 +120,7 @@ else:
 #
 # --- Code example METADATA ---
 # >> g_scraper_factory is a global object created when the addon is initialised.
-# g_scrap_factory = ScraperFactory(g_PATHS, self.settings)
+# g_scrap_factory = ScraperFactory()
 # scraper_menu_list = g_scrap_factory.get_metadata_scraper_menu_list()
 # scraper_index = dialog.select( ... )
 # scraper_ID = g_scrap_factory.get_metadata_scraper_ID_from_menu_idx(scraper_index)
@@ -130,7 +131,7 @@ else:
 #
 # --- Code example ASSETS ---
 # >> g_scraper_factory is a global object created when the addon is initialised.
-# g_scrap_factory = ScraperFactory(g_PATHS, self.settings)
+# g_scrap_factory = ScraperFactory()
 # scraper_menu_list = g_scrap_factory.get_asset_scraper_menu_list(asset_ID)
 # scraper_index = dialog.select( ... )
 # scraper_ID = g_scrap_factory.get_asset_scraper_ID_from_menu_idx(scraper_index)
@@ -152,12 +153,10 @@ else:
 # used to filter MAME machines.
 # This class is (will be) used in the ROM Scanner.
 class FilterROM(object):
-    def __init__(self, PATHS, settings, platform):
+    def __init__(self, platform):
         log_debug('FilterROM.__init__() BEGIN...')
-        self.PATHS = PATHS
-        self.settings = settings
         self.platform = platform
-        self.addon_dir = self.settings['scraper_aeloffline_addon_code_dir']
+        self.addon_dir = Config.get(Appconfig.SCRAPER_AELOFFLINE_ADDON_CODE_DIR_STR)
 
         # If platform is MAME load the BIOS, Devices and Mechanical databases.
         if self.platform == PLATFORM_MAME_LONG:
@@ -182,7 +181,7 @@ class FilterROM(object):
     # Returns True if ROM is filtered, False otherwise.
     def ROM_is_filtered(self, basename):
         log_debug('FilterROM::ROM_is_filtered() Testing "{}"'.format(basename))
-        if not self.settings['scan_ignore_bios']:
+        if not Config.get(Userconfig.SCAN_IGNORE_BIOS):
             log_debug('FilterROM::ROM_is_filtered() Filters disabled. Return False.')
             return False
 
@@ -207,10 +206,8 @@ class FilterROM(object):
         return False
 
 class ScraperFactory(object):
-    def __init__(self, PATHS, settings):
+    def __init__(self):
         # log_debug('ScraperFactory.__init__() BEGIN...')
-        self.PATHS = PATHS
-        self.settings = settings
 
         # Instantiate the scraper objects and cache them in a dictionary. Each scraper is a
         # unique object instance which is reused as many times as necessary. For example,
@@ -223,21 +220,21 @@ class ScraperFactory(object):
         log_debug('ScraperFactory.__init__() Creating scraper objects...')
         self.scraper_objs = collections.OrderedDict()
         if SCRAPER_NULL_ID in SCRAPER_LIST:
-            self.scraper_objs[SCRAPER_NULL_ID] = Null_Scraper(self.settings)
+            self.scraper_objs[SCRAPER_NULL_ID] = Null_Scraper()
         if SCRAPER_AEL_OFFLINE_ID in SCRAPER_LIST:
-            self.scraper_objs[SCRAPER_AEL_OFFLINE_ID] = AEL_Offline(self.settings)
+            self.scraper_objs[SCRAPER_AEL_OFFLINE_ID] = AEL_Offline()
         if SCRAPER_THEGAMESDB_ID in SCRAPER_LIST:
-            self.scraper_objs[SCRAPER_THEGAMESDB_ID] = TheGamesDB(self.settings)
+            self.scraper_objs[SCRAPER_THEGAMESDB_ID] = TheGamesDB()
         if SCRAPER_MOBYGAMES_ID in SCRAPER_LIST:
-            self.scraper_objs[SCRAPER_MOBYGAMES_ID] = MobyGames(self.settings)
+            self.scraper_objs[SCRAPER_MOBYGAMES_ID] = MobyGames()
         if SCRAPER_SCREENSCRAPER_ID in SCRAPER_LIST:
-           self.scraper_objs[SCRAPER_SCREENSCRAPER_ID] = ScreenScraper(self.settings)
+           self.scraper_objs[SCRAPER_SCREENSCRAPER_ID] = ScreenScraper()
         if SCRAPER_GAMEFAQS_ID in SCRAPER_LIST:
-            self.scraper_objs[SCRAPER_GAMEFAQS_ID] = GameFAQs(self.settings)
+            self.scraper_objs[SCRAPER_GAMEFAQS_ID] = GameFAQs()
         if SCRAPER_ARCADEDB_ID in SCRAPER_LIST:
-            self.scraper_objs[SCRAPER_ARCADEDB_ID] = ArcadeDB(self.settings)
+            self.scraper_objs[SCRAPER_ARCADEDB_ID] = ArcadeDB()
         if SCRAPER_LIBRETRO_ID in SCRAPER_LIST:
-           self.scraper_objs[SCRAPER_LIBRETRO_ID] = Libretro(self.settings)
+           self.scraper_objs[SCRAPER_LIBRETRO_ID] = Libretro()
 
     # Return a list with instantiated scrapers IDs. List always has same order.
     def get_scraper_list(self):
@@ -310,21 +307,21 @@ class ScraperFactory(object):
     # Returns a ScrapeStrategy object which is used for the actual scraping.
     def create_scanner(self, launcher):
         # log_debug('ScraperFactory.create_scanner() BEGIN ...')
-        self.strategy_obj = ScrapeStrategy(self.PATHS, self.settings)
+        self.strategy_obj = ScrapeStrategy()
 
         # --- Read addon settings and configure the scrapers selected -----------------------------
         if launcher['platform'] == 'MAME':
             log_debug('ScraperFactory.create_scanner() Platform is MAME.')
             log_debug('Using MAME scrapers from settings.xml')
-            scraper_metadata_index = self.settings['scraper_metadata_MAME']
-            scraper_asset_index = self.settings['scraper_asset_MAME']
+            scraper_metadata_index = Config.get(Userconfig.SCRAPER_METADATA_MAME)
+            scraper_asset_index = Config.get(Userconfig.SCRAPER_ASSET_MAME)
             scraper_metadata_ID = SCRAP_METADATA_MAME_SETTINGS_LIST[scraper_metadata_index]
             scraper_asset_ID = SCRAP_ASSET_MAME_SETTINGS_LIST[scraper_asset_index]
         else:
             log_debug('ScraperFactory.create_scanner() Platform is NON-MAME.')
             log_debug('Using standard scrapers from settings.xml')
-            scraper_metadata_index = self.settings['scraper_metadata']
-            scraper_asset_index = self.settings['scraper_asset']
+            scraper_metadata_index = Config.get(Userconfig.SCRAPER_METADATA)
+            scraper_asset_index = Config.get(Userconfig.SCRAPER_ASSET)
             scraper_metadata_ID = SCRAP_METADATA_SETTINGS_LIST[scraper_metadata_index]
             scraper_asset_ID = SCRAP_ASSET_SETTINGS_LIST[scraper_asset_index]
         log_debug('Metadata scraper name {} (index {}, ID {})'.format(
@@ -368,7 +365,7 @@ class ScraperFactory(object):
         log_debug('ScraperFactory.create_CM_metadata() Creating ScrapeStrategy {}'.format(
             scraper_ID))
         self.scraper_ID = scraper_ID
-        self.strategy_obj = ScrapeStrategy(self.PATHS, self.settings)
+        self.strategy_obj = ScrapeStrategy()
 
         # --- Choose scraper and set platform ---
         self.strategy_obj.scraper_obj = self.scraper_objs[scraper_ID]
@@ -388,7 +385,7 @@ class ScraperFactory(object):
     def create_CM_asset(self, scraper_ID):
         log_debug('ScraperFactory.create_CM_asset() BEGIN ...')
         self.scraper_ID = scraper_ID
-        self.strategy_obj = ScrapeStrategy(self.PATHS, self.settings)
+        self.strategy_obj = ScrapeStrategy()
 
         # --- Choose scraper ---
         self.strategy_obj.scraper_obj = self.scraper_objs[scraper_ID]
@@ -422,23 +419,19 @@ class ScrapeStrategy(object):
     SCRAPE_LAUNCHER = 'Launcher'
 
     # --- Constructor ----------------------------------------------------------------------------
-    # @param PATHS: PATH object.
-    # @param settings: [dict] Addon settings.
-    def __init__(self, PATHS, settings):
+    def __init__(self):
         log_debug('ScrapeStrategy.__init__() Initializing ScrapeStrategy...')
-        self.PATHS = PATHS
-        self.settings = settings
 
         # --- Read addon settings and configure scraper setings ---
-        self.scan_metadata_policy = self.settings['scan_metadata_policy']
-        self.scan_asset_policy    = self.settings['scan_asset_policy']
-        self.game_selection_mode  = self.settings['game_selection_mode']
-        self.asset_selection_mode = self.settings['asset_selection_mode']
+        self.scan_metadata_policy = Config.get(Userconfig.SCAN_METADATA_POLICY)
+        self.scan_asset_policy    = Config.get(Userconfig.SCAN_ASSET_POLICY)
+        self.game_selection_mode  = Config.get(Userconfig.GAME_SELECTION_MODE)
+        self.asset_selection_mode = Config.get(Userconfig.ASSET_SELECTION_MODE)
 
         # Boolean options used by the scanner.
-        self.scan_ignore_scrap_title = self.settings['scan_ignore_scrap_title']
-        self.scan_clean_tags         = self.settings['scan_clean_tags']
-        self.scan_update_NFO_files   = self.settings['scan_update_NFO_files']
+        self.scan_ignore_scrap_title = Config.get(Userconfig.SCAN_IGNORE_SCRAP_TITLE)
+        self.scan_clean_tags         = Config.get(Userconfig.SCAN_CLEAN_TAGS)
+        self.scan_update_NFO_files   = Config.get(Userconfig.SCAN_UPDATE_NFO_FILES)
 
     # Call this function before the ROM Scanning starts.
     def scanner_set_progress_dialog(self, pdialog, pdialog_verbose):
@@ -1371,10 +1364,8 @@ class Scraper(object):
     JSON_separators = (',', ':')
 
     # --- Constructor ----------------------------------------------------------------------------
-    # @param settings: [dict] Addon settings.
-    def __init__(self, settings):
+    def __init__(self):
         # --- Initialize common scraper settings ---
-        self.settings = settings
         self.verbose_flag = False
         self.dump_file_flag = False # Dump DEBUG files only if this is true.
         self.dump_dir = None # Directory to dump DEBUG files.
@@ -1386,7 +1377,7 @@ class Scraper(object):
         # empty data like the NULL scraper.
         self.scraper_disabled = False
         # Directory to store on-disk scraper caches.
-        self.scraper_cache_dir = settings['scraper_cache_dir']
+        self.scraper_cache_dir = Config.get(Appconfig.SCRAPER_CACHE_DIR_STR)
         # Do not log here. Otherwise the same thing will be printed for every scraper instantiated.
         # log_debug('Scraper.__init__() scraper_cache_dir "{}"'.format(self.scraper_cache_dir))
 
@@ -1874,8 +1865,7 @@ class Scraper(object):
 # NULL scraper, does nothing.
 # ------------------------------------------------------------------------------------------------
 class Null_Scraper(Scraper):
-    # @param settings: [dict] Addon settings. Particular scraper settings taken from here.
-    def __init__(self, settings): super(Null_Scraper, self).__init__(settings)
+    def __init__(self): super(Null_Scraper, self).__init__()
 
     def get_name(self): return 'Null'
 
@@ -1923,17 +1913,16 @@ class AEL_Offline(Scraper):
     ]
 
     # --- Constructor ----------------------------------------------------------------------------
-    # @param settings: [dict] Addon settings. Particular scraper settings taken from here.
-    def __init__(self, settings):
+    def __init__(self):
         # --- This scraper settings ---
-        self.addon_dir = settings['scraper_aeloffline_addon_code_dir']
+        self.addon_dir = Config.get(Appconfig.SCRAPER_AELOFFLINE_ADDON_CODE_DIR_STR)
         log_debug('AEL_Offline.__init__() Setting addon dir "{}"'.format(self.addon_dir))
 
         # --- Cached TGDB metadata ---
         self._reset_cached_games()
 
         # --- Pass down common scraper settings ---
-        super(AEL_Offline, self).__init__(settings)
+        super(AEL_Offline, self).__init__()
 
     # --- Base class abstract methods ------------------------------------------------------------
     def get_name(self): return 'AEL Offline'
@@ -2183,13 +2172,13 @@ class TheGamesDB(Scraper):
     URL_Images     = 'https://api.thegamesdb.net/v1/Games/Images'
 
     # --- Constructor ----------------------------------------------------------------------------
-    def __init__(self, settings):
+    def __init__(self):
         # --- This scraper settings ---
         # Make sure this is the public key (limited by IP) and not the private key.
         self.api_public_key = '828be1fb8f3182d055f1aed1f7d4da8bd4ebc160c3260eae8ee57ea823b42415'
 
         # --- Pass down common scraper settings ---
-        super(TheGamesDB, self).__init__(settings)
+        super(TheGamesDB, self).__init__()
 
     # --- Base class abstract methods ------------------------------------------------------------
     def get_name(self): return 'TheGamesDB'
@@ -2741,14 +2730,14 @@ class MobyGames(Scraper):
     URL_platforms = 'https://api.mobygames.com/v1/platforms'
 
     # --- Constructor ----------------------------------------------------------------------------
-    def __init__(self, settings):
+    def __init__(self):
         # --- This scraper settings ---
-        self.api_key = settings['scraper_mobygames_apikey']
+        self.api_key = Config.get(Userconfig.SCRAPER_MOBYGAMES_APIKEY)
         # --- Misc stuff ---
         self.last_http_call = datetime.datetime.now()
 
         # --- Pass down common scraper settings ---
-        super(MobyGames, self).__init__(settings)
+        super(MobyGames, self).__init__()
 
     # --- Base class abstract methods ------------------------------------------------------------
     def get_name(self): return 'MobyGames'
@@ -3326,15 +3315,15 @@ class ScreenScraper(Scraper):
     TIME_WAIT_GET_ASSETS = 1.2
 
     # --- Constructor ----------------------------------------------------------------------------
-    def __init__(self, settings):
+    def __init__(self):
         # --- This scraper settings ---
         self.dev_id       = 'V2ludGVybXV0ZTAxMTA='
         self.dev_pass     = 'VDlwU3J6akZCbWZRbWM4Yg=='
-        self.softname     = settings['scraper_screenscraper_AEL_softname']
-        self.ssid         = settings['scraper_screenscraper_ssid']
-        self.sspassword   = settings['scraper_screenscraper_sspass']
-        self.region_idx   = settings['scraper_screenscraper_region']
-        self.language_idx = settings['scraper_screenscraper_language']
+        self.softname     = Config.get(Appconfig.SCRAPER_SCREENSCRAPER_AEL_SOFTNAME)
+        self.ssid         = Config.get(Userconfig.SCRAPER_SCREENSCRAPER_SSID)
+        self.sspassword   = Config.get(Userconfig.SCRAPER_SCREENSCRAPER_SSPASS)
+        self.region_idx   = Config.get(Userconfig.SCRAPER_SCREENSCRAPER_REGION)
+        self.language_idx = Config.get(Userconfig.SCRAPER_SCREENSCRAPER_LANGUAGE)
 
         # --- Internal stuff ---
         self.last_get_assets_call = datetime.datetime.now()
@@ -3348,7 +3337,7 @@ class ScreenScraper(Scraper):
         log_debug('ScreenScraper.__init__() User preferred language "{}"'.format(self.user_language))
 
         # --- Pass down common scraper settings ---
-        super(ScreenScraper, self).__init__(settings)
+        super(ScreenScraper, self).__init__()
 
     # --- Base class abstract methods ------------------------------------------------------------
     def get_name(self): return 'ScreenScraper'
@@ -4139,14 +4128,14 @@ class GameFAQs(Scraper):
     ]
 
     # --- Constructor ----------------------------------------------------------------------------
-    def __init__(self, settings):
+    def __init__(self):
         # --- This scraper settings ---
 
         # --- Internal stuff ---
         self.all_asset_cache = {}
 
         # --- Pass down common scraper settings ---
-        super(GameFAQs, self).__init__(settings)
+        super(GameFAQs, self).__init__()
 
     # --- Base class abstract methods ------------------------------------------------------------
     def get_name(self): return 'GameFAQs'
@@ -4515,9 +4504,9 @@ class ArcadeDB(Scraper):
     ]
 
     # --- Constructor ----------------------------------------------------------------------------
-    def __init__(self, settings):
+    def __init__(self):
         # --- Pass down common scraper settings ---
-        super(ArcadeDB, self).__init__(settings)
+        super(ArcadeDB, self).__init__()
 
     # --- Base class abstract methods ------------------------------------------------------------
     def get_name(self): return 'ArcadeDB'

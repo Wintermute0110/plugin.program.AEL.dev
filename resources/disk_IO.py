@@ -23,6 +23,7 @@ from .constants import *
 from .misc import *
 from .utils import *
 from .assets import *
+from settings.config import Appconfig, Userconfig, Config
 
 # --- Python standard library ---
 import copy
@@ -1299,9 +1300,9 @@ def fs_read_launcher_NFO(nfo_FN):
     return launcher_dic
 
 # Returns a FileName object
-def fs_get_launcher_NFO_name(settings, launcher):
+def fs_get_launcher_NFO_name(launcher):
     launcher_name = launcher['m_name']
-    nfo_dir = settings['launchers_asset_dir']
+    nfo_dir = Config.get(Userconfig.LAUNCHERS_ASSET_DIR)
     nfo_FN = FileName(os.path.join(nfo_dir, launcher_name + '.nfo'))
     return nfo_FN
 
@@ -1343,9 +1344,9 @@ def fs_import_category_NFO(nfo_FN, categories, categoryID):
     return True
 
 # Returns a FileName object.
-def fs_get_category_NFO_name(settings, category):
+def fs_get_category_NFO_name(category):
     category_name = category['m_name']
-    nfo_dir = settings['categories_asset_dir']
+    nfo_dir = Config.get(Userconfig.CATEGORIES_ASSET_DIR)
     nfo_FN = FileName(os.path.join(nfo_dir, category_name + '.nfo'))
     return nfo_FN
 
@@ -1383,8 +1384,8 @@ def fs_import_collection_NFO(nfo_FileName, collections, launcherID):
     update_dic_with_NFO_str(nfo_str, 'plot', nfo_dic, 'm_plot')
     return True
 
-def fs_get_collection_NFO_name(settings, collection):
+def fs_get_collection_NFO_name(collection):
     collection_name = collection['m_name']
-    nfo_dir = settings['collections_asset_dir']
+    nfo_dir = Config.get(Userconfig.COLLECTIONS_ASSET_DIR)
     nfo_FN = FileName(os.path.join(nfo_dir, collection_name + '.nfo'))
     return nfo_FN
