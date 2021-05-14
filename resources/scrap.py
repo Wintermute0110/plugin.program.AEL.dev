@@ -24,6 +24,7 @@ from __future__ import division
 # --- Modules/packages in this plugin ---
 from .constants import *
 from .platforms import *
+from .misc import *
 from .utils import *
 from .assets import *
 from .disk_IO import *
@@ -907,7 +908,7 @@ class ScrapeStrategy(object):
         elif self.asset_selection_mode == 1:
             image_selected_index = 0
         else:
-            raise AddonError('Invalid asset_selection_mode {0}'.format(self.asset_selection_mode))
+            raise KodiAddonError('Invalid asset_selection_mode {}'.format(self.asset_selection_mode))
 
         # --- Download scraped image --------------------------------------------------------------
         selected_asset = assetdata_list[image_selected_index]

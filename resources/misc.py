@@ -30,6 +30,7 @@ import hashlib
 import HTMLParser
 import random
 import re
+import string
 import time
 
 # -------------------------------------------------------------------------------------------------

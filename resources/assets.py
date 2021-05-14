@@ -499,7 +499,7 @@ def assets_get_path_noext_SUFIX(Asset, AssetPath, asset_base_noext, objectID = '
     elif Asset.ID == ASSET_MAP_ID:        asset_path_noext_FileName = AssetPath.pjoin(asset_base_noext + objectID_str + '_map')
     elif Asset.ID == ASSET_MANUAL_ID:     asset_path_noext_FileName = AssetPath.pjoin(asset_base_noext + objectID_str + '_manual')
     else:
-        raise AddonError('assets_get_path_noext_SUFIX() Wrong asset ID = {}'.format(Asset.ID))
+        raise KodiAddonError('assets_get_path_noext_SUFIX() Wrong asset ID = {}'.format(Asset.ID))
 
     return asset_path_noext_FileName
 
