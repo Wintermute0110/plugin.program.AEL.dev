@@ -1095,6 +1095,25 @@ def fs_load_VCategory_ROMs_JSON(roms_dir, roms_base_noext):
 # -------------------------------------------------------------------------------------------------
 # NFO files
 # -------------------------------------------------------------------------------------------------
+# Updates a dictionary with the contents of a XML tag.
+# Dictionary field is updated by reference.
+# Regular expressions are greedy by default.
+# If RE has no groups it returns a list of strings with the matches.
+# If RE has groups then it returns a list of groups.
+# See https://docs.python.org/2/library/re.html#re.findall
+#
+# Example: mydic[mydic_field_name] = contents of tag <xml_tag_name> as a string
+def update_dic_with_NFO_str(nfo_str, xml_tag_name, mydic, mydic_field_name):
+    # log_debug('update_dic_with_NFO_str() nfo_str "{}"'.format(nfo_str))
+    # log_debug('update_dic_with_NFO_str() xml_tag_name "{}"'.format(xml_tag_name))
+    # log_debug('update_dic_with_NFO_str() mydic_field_name "{}"'.format(mydic_field_name))
+    regex_str = '<{}>(.*?)</{}>'.format(xml_tag_name, xml_tag_name)
+    findall_slist = re.findall(regex_str, nfo_str)
+    if len(findall_slist) < 1: return
+    findall_str = findall_slist[0].strip()
+    unescaped_XML_str = text_unescape_XML(findall_str)
+    mydic[mydic_field_name] = unescaped_XML_str
+
 # When called from "Edit ROM" --> "Edit Metadata" --> "Import metadata from NFO file" function
 # should be verbose and print notifications.
 # However, this function is also used to export launcher ROMs in bulk in
@@ -1108,40 +1127,27 @@ def fs_export_ROM_NFO(rom, verbose = True):
     log_debug('fs_export_ROM_NFO() Exporting "{}"'.format(nfo_file_path))
 
     # Always overwrite NFO files.
-    nfo_content = []
-    nfo_content.append('<?xml version="1.0" encoding="utf-8" standalone="yes"?>')
-    nfo_content.append('<!-- Exported by AEL on {} -->'.format(time.strftime("%Y-%m-%d %H:%M:%S")))
-    nfo_content.append('<game>')
-    nfo_content.append(text_XML('title', rom['m_name']))
-    nfo_content.append(text_XML('year', rom['m_year']))
-    nfo_content.append(text_XML('genre', rom['m_genre']))
-    nfo_content.append(text_XML('developer', rom['m_developer']))
-    nfo_content.append(text_XML('nplayers', rom['m_nplayers']))
-    nfo_content.append(text_XML('esrb', rom['m_esrb']))
-    nfo_content.append(text_XML('rating', rom['m_rating']))
-    nfo_content.append(text_XML('plot', rom['m_plot']))
-    nfo_content.append('</game>')
+    nfo_content = [
+        '<?xml version="1.0" encoding="utf-8" standalone="yes"?>',
+        '<!-- Exported by AEL on {} -->'.format(time.strftime("%Y-%m-%d %H:%M:%S")),
+        '<game>',
+        text_XML('title', rom['m_name']),
+        text_XML('year', rom['m_year']),
+        text_XML('genre', rom['m_genre']),
+        text_XML('developer', rom['m_developer']),
+        text_XML('nplayers', rom['m_nplayers']),
+        text_XML('esrb', rom['m_esrb']),
+        text_XML('rating', rom['m_rating']),
+        text_XML('plot', rom['m_plot']),
+        '</game>',
+        '',
+    ]
     # TODO: report error if exception is produced here.
     utils_write_slist_to_file(nfo_file_path)
     if verbose:
         kodi_notify('Created NFO file {}'.format(nfo_file_path))
 
     return
-
-# Updates a dictionary with the contents of a XML tag.
-# Dictionary field is updated by reference.
-# Regular expressions are greedy by default.
-# If RE has no groups it returns a list of strings with the matches.
-# If RE has groups then it returns a list of groups.
-# See https://docs.python.org/2/library/re.html#re.findall
-#
-# Example: mydic[mydic_field_name] = contents of tag <xml_tag_name> as a string
-def update_dic_with_NFO_str(nfo_str, xml_tag_name, mydic, mydic_field_name):
-    regex_str = '<{}>(.*?)</{}>'.format(xml_tag_name)
-    findall_slist = re.findall(regex_str, nfo_str)
-    if len(findall_slist) < 1: return
-    unescaped_XML_str = text_unescape_XML(findall_slist[0])
-    mydic[mydic_field_name] = unescaped_XML_str
 
 # Reads an NFO file with ROM information.
 # Modifies roms dictionary even outside this function. See comments in fs_import_launcher_NFO()
@@ -1215,10 +1221,9 @@ def fs_import_ROM_NFO_file_scanner(NFO_FN):
 # Returns a FileName object
 def fs_get_ROM_NFO_name(rom):
     ROMFileName = FileName(rom['filename'])
-    nfo_file_path = FileName(ROMFileName.getPath_noext() + '.nfo')
-    log_debug("fs_get_ROM_NFO_name() nfo_file_path = '{}'".format(nfo_file_path.getOriginalPath()))
+    nfo_FN = FileName(ROMFileName.getPath_noext() + '.nfo')
 
-    return nfo_file_path
+    return nfo_FN
 
 # Standalone launchers: NFO files are stored in self.settings["launchers_nfo_dir"] if not empty.
 # If empty, it defaults to DEFAULT_LAUN_NFO_DIR.
@@ -1229,19 +1234,20 @@ def fs_export_launcher_NFO(nfo_FileName, launcher):
     log_debug('fs_export_launcher_NFO() Exporting launcher NFO "{}"'.format(nfo_FileName.getPath()))
 
     # If NFO file does not exist then create them. If it exists, overwrite.
-    nfo_content = []
-    nfo_content.append('<?xml version="1.0" encoding="utf-8" standalone="yes"?>')
-    nfo_content.append('<!-- Exported by AEL on {} -->\n'.format(time.strftime("%Y-%m-%d %H:%M:%S")))
-    nfo_content.append('<launcher>')
-    nfo_content.append(text_XML('year', launcher['m_year']))
-    nfo_content.append(text_XML('genre', launcher['m_genre']))
-    nfo_content.append(text_XML('developer', launcher['m_developer']))
-    nfo_content.append(text_XML('rating', launcher['m_rating']))
-    nfo_content.append(text_XML('plot', launcher['m_plot']))
-    nfo_content.append('</launcher>')
+    nfo_content = [
+        '<?xml version="1.0" encoding="utf-8" standalone="yes"?>',
+        '<!-- Exported by AEL on {} -->\n'.format(time.strftime("%Y-%m-%d %H:%M:%S")),
+        '<launcher>',
+        text_XML('year', launcher['m_year']),
+        text_XML('genre', launcher['m_genre']),
+        text_XML('developer', launcher['m_developer']),
+        text_XML('rating', launcher['m_rating']),
+        text_XML('plot', launcher['m_plot']),
+        '</launcher>',
+        '',
+    ]
     # TODO: correctly catch and report errors here.
     utils_write_slist_to_file(nfo_FileName.getPath())
-    log_debug("fs_export_launcher_NFO() Created '{}'".format(nfo_FileName.getPath()))
 
     return True
 
@@ -1250,7 +1256,7 @@ def fs_export_launcher_NFO(nfo_FileName, launcher):
 def fs_import_launcher_NFO(nfo_FileName, launchers, launcherID):
     nfo_dic = launchers[launcherID]
 
-    log_debug('fs_import_launcher_NFO() Importing launcher NFO "{}"'.format(nfo_FileName.getPath()))
+    log_debug('fs_import_launcher_NFO() Importing "{}"'.format(nfo_FileName.getPath()))
     if not os.path.isfile(nfo_FileName.getPath()):
         kodi_notify_warn('NFO file not found {}'.format(os.path.basename(nfo_FileName.getPath())))
         log_info("fs_import_launcher_NFO() NFO file not found '{}'".format(nfo_FileName.getPath()))
@@ -1264,7 +1270,6 @@ def fs_import_launcher_NFO(nfo_FileName, launchers, launcherID):
     update_dic_with_NFO_str(nfo_str, 'developer', nfo_dic, 'm_developer')
     update_dic_with_NFO_str(nfo_str, 'rating', nfo_dic, 'm_rating')
     update_dic_with_NFO_str(nfo_str, 'plot', nfo_dic, 'm_plot')
-    log_verb("fs_import_launcher_NFO() Imported '{}'".format(nfo_FileName.getPath()))
 
     return True
 
@@ -1279,7 +1284,7 @@ def fs_read_launcher_NFO(nfo_FileName):
         'plot' : '',
     }
 
-    log_debug('fs_read_launcher_NFO() Importing launcher NFO "{}"'.format(nfo_FileName.getPath()))
+    log_debug('fs_read_launcher_NFO() Importing "{}"'.format(nfo_FileName.getPath()))
     # Return a dictionary with empty values if file not found.
     if not os.path.isfile(nfo_FileName.getPath()):
         kodi_notify_warn('NFO file not found {}'.format(os.path.basename(nfo_FileName.getPath())))
@@ -1294,7 +1299,6 @@ def fs_read_launcher_NFO(nfo_FileName):
     update_dic_with_NFO_str(nfo_str, 'developer', nfo_dic, 'm_developer')
     update_dic_with_NFO_str(nfo_str, 'rating', nfo_dic, 'm_rating')
     update_dic_with_NFO_str(nfo_str, 'plot', nfo_dic, 'm_plot')
-    log_verb("fs_read_launcher_NFO() Imported '{}'".format(nfo_FileName.getPath()))
 
     return launcher_dic
 
@@ -1302,79 +1306,79 @@ def fs_read_launcher_NFO(nfo_FileName):
 def fs_get_launcher_NFO_name(settings, launcher):
     launcher_name = launcher['m_name']
     nfo_dir = settings['launchers_asset_dir']
-    nfo_file_path = FileName(os.path.join(nfo_dir, launcher_name + '.nfo'))
-    log_debug("fs_get_launcher_NFO_name() nfo_file_path = '{}'".format(nfo_file_path.getOriginalPath()))
+    nfo_FN = FileName(os.path.join(nfo_dir, launcher_name + '.nfo'))
 
-    return nfo_file_path
+    return nfo_FN
 
 # Look at the Launcher NFO files for a reference implementation.
 def fs_export_category_NFO(nfo_FileName, category):
-    log_debug('fs_export_category_NFO() Exporting launcher NFO "{}"'.format(nfo_FileName.getPath()))
+    log_debug('fs_export_category_NFO() Exporting "{}"'.format(nfo_FileName.getPath()))
 
     # If NFO file does not exist then create them. If it exists, overwrite.
-    nfo_content = []
-    nfo_content.append('<?xml version="1.0" encoding="utf-8" standalone="yes"?>')
-    nfo_content.append('<!-- Exported by AEL on {} -->'.format(time.strftime("%Y-%m-%d %H:%M:%S")))
-    nfo_content.append('<category>')
-    nfo_content.append(text_XML('year', category['m_year']))
-    nfo_content.append(text_XML('genre', category['m_genre']))
-    nfo_content.append(text_XML('developer', category['m_developer']))
-    nfo_content.append(text_XML('rating', category['m_rating']))
-    nfo_content.append(text_XML('plot', category['m_plot']))
-    nfo_content.append('</category>')
-    utils_write_slist_to_file(nfo_FileName.getPath())
-    log_debug("fs_export_category_NFO() Created '{}'".format(nfo_FileName.getPath()))
+    nfo_content = [
+        '<?xml version="1.0" encoding="utf-8" standalone="yes"?>',
+        '<!-- Exported by AEL on {} -->'.format(time.strftime("%Y-%m-%d %H:%M:%S")),
+        '<category>',
+        text_XML('year', category['m_year']),
+        text_XML('genre', category['m_genre']),
+        text_XML('developer', category['m_developer']),
+        text_XML('rating', category['m_rating']),
+        text_XML('plot', category['m_plot']),
+        '</category>',
+        '', # End file in newline
+    ]
+    utils_write_slist_to_file(nfo_FileName.getPath(), nfo_content)
 
     return True
 
-def fs_import_category_NFO(nfo_FileName, categories, categoryID):
+def fs_import_category_NFO(nfo_FN, categories, categoryID):
     nfo_dic = categories[categoryID]
 
-    log_debug('fs_import_category_NFO() Importing launcher NFO "{}"'.format(nfo_FileName.getPath()))
-    if not nfo_FileName.isfile():
-        kodi_notify_warn('NFO file not found {}'.format(os.path.basename(nfo_FileName.getPath())))
-        log_error("fs_import_category_NFO() NFO file not found '{}'".format(nfo_FileName.getPath()))
+    log_debug('fs_import_category_NFO() Importing "{}"'.format(nfo_FN.getPath()))
+    if not nfo_FN.isfile():
+        kodi_notify_warn('NFO file not found {}'.format(os.path.basename(nfo_FN.getPath())))
+        log_error("fs_import_category_NFO() Not found '{}'".format(nfo_FN.getPath()))
         return False
-
+    nfo_str = utils_load_file_to_str(nfo_FN.getPath())
+    nfo_str = nfo_str.replace('\r', '').replace('\n', '')
     update_dic_with_NFO_str(nfo_str, 'year', nfo_dic, 'm_year')
     update_dic_with_NFO_str(nfo_str, 'genre', nfo_dic, 'm_genre')
     update_dic_with_NFO_str(nfo_str, 'developer', nfo_dic, 'm_developer')
     update_dic_with_NFO_str(nfo_str, 'rating', nfo_dic, 'm_rating')
     update_dic_with_NFO_str(nfo_str, 'plot', nfo_dic, 'm_plot')
-    log_verb("fs_import_category_NFO() Imported '{}'".format(nfo_FileName.getPath()))
 
     return True
 
-# Returns a FileName object
+# Returns a FileName object.
 def fs_get_category_NFO_name(settings, category):
     category_name = category['m_name']
     nfo_dir = settings['categories_asset_dir']
-    nfo_file_path = FileName(os.path.join(nfo_dir, category_name + '.nfo'))
-    log_debug("fs_get_category_NFO_name() nfo_file_path = '{0}'".format(nfo_file_path.getOriginalPath()))
+    nfo_FN = FileName(os.path.join(nfo_dir, category_name + '.nfo'))
 
-    return nfo_file_path
+    return nfo_FN
 
 # Collection NFO files. Same as Category NFO files.
 def fs_export_collection_NFO(nfo_FileName, collection):
-    log_debug('fs_export_collection_NFO() Exporting launcher NFO "{}"'.format(nfo_FileName.getPath()))
+    log_debug('fs_export_collection_NFO() Exporting "{}"'.format(nfo_FileName.getPath()))
 
     # If NFO file does not exist then create them. If it exists, overwrite.
-    nfo_slist = []
-    nfo_slist.append('<?xml version="1.0" encoding="utf-8" standalone="yes"?>')
-    nfo_slist.append('<!-- Exported by AEL on {} -->'.format(time.strftime("%Y-%m-%d %H:%M:%S")))
-    nfo_slist.append('<collection>')
-    nfo_slist.append(text_XML('genre', collection['m_genre']))
-    nfo_slist.append(text_XML('rating', collection['m_rating']))
-    nfo_slist.append(text_XML('plot', collection['m_plot']))
-    nfo_slist.append('</collection>')
+    nfo_slist = [
+        '<?xml version="1.0" encoding="utf-8" standalone="yes"?>',
+        '<!-- Exported by AEL on {} -->'.format(time.strftime("%Y-%m-%d %H:%M:%S")),
+        '<collection>',
+        text_XML('genre', collection['m_genre']),
+        text_XML('rating', collection['m_rating']),
+        text_XML('plot', collection['m_plot']),
+        '</collection>',
+        '',
+    ]
     utils_write_slist_to_file(nfo_FileName.getPath(), nfo_slist)
-    log_debug("fs_export_collection_NFO() Created '{}'".format(nfo_FileName.getPath()))
 
     return True
 
 def fs_import_collection_NFO(nfo_FileName, collections, launcherID):
 
-    log_debug('fs_import_collection_NFO() Importing launcher NFO "{}"'.format(nfo_FileName.getPath()))
+    log_debug('fs_import_collection_NFO() Importing "{}"'.format(nfo_FileName.getPath()))
     if not nfo_FileName.isfile():
         kodi_notify_warn('NFO file not found {}'.format(os.path.basename(nfo_FileName.getOriginalPath())))
         log_error("fs_import_collection_NFO() Not found '{}'".format(nfo_FileName.getPath()))
@@ -1385,14 +1389,12 @@ def fs_import_collection_NFO(nfo_FileName, collections, launcherID):
     update_dic_with_NFO_str(nfo_str, 'genre', nfo_dic, 'm_genre')
     update_dic_with_NFO_str(nfo_str, 'rating', nfo_dic, 'm_rating')
     update_dic_with_NFO_str(nfo_str, 'plot', nfo_dic, 'm_plot')
-    log_verb("fs_import_collection_NFO() Imported '{}'".format(nfo_FileName.getOriginalPath()))
 
     return True
 
 def fs_get_collection_NFO_name(settings, collection):
     collection_name = collection['m_name']
     nfo_dir = settings['collections_asset_dir']
-    nfo_file_path = FileName(os.path.join(nfo_dir, collection_name + '.nfo'))
-    log_debug("fs_get_collection_NFO_name() nfo_file_path = '{}'".format(nfo_file_path.getOriginalPath()))
+    nfo_FN = FileName(os.path.join(nfo_dir, collection_name + '.nfo'))
 
-    return nfo_file_path
+    return nfo_FN
