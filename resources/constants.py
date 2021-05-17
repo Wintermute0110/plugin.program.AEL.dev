@@ -273,13 +273,14 @@ DEFAULT_META_PLOT      = ''
 # Assets
 # -------------------------------------------------------------------------------------------------
 # --- Kodi standard artwork types. Mappable to any other artwork type including itself ---
-# # Use unique string as IDs. Then, if asset order changes the IDs are the same.
+# Use unique string as IDs. Then, if asset order changes the IDs are the same.
 ASSET_ICON_ID       = 'icon'
 ASSET_FANART_ID     = 'fanart'
 ASSET_CLEARLOGO_ID  = 'clearlogo'
 ASSET_POSTER_ID     = 'poster'
 ASSET_BANNER_ID     = 'banner' # Marquee in MAME
 ASSET_TRAILER_ID    = 'trailer'
+
 # --- AEL artwork types ---
 # What about supporting BOXSPINE and composite box (fron, spine and back in one image).
 ASSET_TITLE_ID      = 'title'
@@ -293,9 +294,7 @@ ASSET_MAP_ID        = 'map'
 ASSET_MANUAL_ID     = 'manual'
 ASSET_CONTROLLER_ID = 'controller'
 
-#
 # The order of this list must match order in dialog.select() in the GUI, or bad things will happen.
-#
 CATEGORY_ASSET_ID_LIST = [
     ASSET_ICON_ID,
     ASSET_FANART_ID,
