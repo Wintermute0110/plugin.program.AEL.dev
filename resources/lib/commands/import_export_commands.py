@@ -98,3 +98,15 @@ def cmd_execute_import_launchers(args):
 
     kodi.event(method='RENDER_VIEWS')
     kodi.notify('Finished importing Categories/Launchers')
+
+
+@AppMediator.register('RESET_DATABASE')
+def cmd_execute_reset_db(args):
+    if not kodi.dialog_yesno('Are you sure you want to reset the database?'):
+        return
+    
+    uow = UnitOfWork(globals.g_PATHS.DATABASE_FILE_PATH)
+    uow.reset_database(globals.g_PATHS.DATABASE_SCHEMA_PATH)
+
+    kodi.event(method='RENDER_VIEWS')
+    kodi.notify('Finished resetting the database')

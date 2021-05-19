@@ -54,7 +54,7 @@ class ViewRepository(object):
         
         return item_data
 
-    def find_items(self, collection_id):
+    def find_items(self, collection_id) -> typing.Any:
         repository_file = self.paths.COLLECTIONS_DIR.pjoin('collection_{}.json'.format(collection_id))
         logger.debug('find_items(): Loading path data from file {}'.format(repository_file.getPath()))
         try:
@@ -190,7 +190,7 @@ class UnitOfWork(object):
         self.close_session()
         
     def reset_database(self, schema_file_path: io.FileName):
-        schema_file_path.unlink()
+        self._db_path.unlink()
         self.create_empty_database(schema_file_path)
 
     def open_session(self):

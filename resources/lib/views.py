@@ -80,8 +80,8 @@ def vw_route_render_root():
     xbmcplugin.endOfDirectory(handle = router.handle, succeeded = True, cacheToDisc = False)
 
 @router.route('/collection/<collection_id>')
-def vw_route_render_collection(collection_id):
-    list_items_data = g_ViewRepository.find_items(collection_id)
+def vw_route_render_collection(collection_id: str):
+    list_items_data = qry_get_collection_items(collection_id)
     
     render_list_items(list_items_data)
     xbmcplugin.endOfDirectory(handle = router.handle, succeeded = True, cacheToDisc = False)

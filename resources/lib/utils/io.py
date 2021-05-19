@@ -42,6 +42,7 @@ import sys
 import os
 import shutil
 from typing import TextIO
+import typing
 
 # Python 3
 #from html.parser import HTMLParser
@@ -532,7 +533,7 @@ class FileName:
             yield line.encode('utf-8')
 
     # Opens JSON file and reads it
-    def readJson(self):
+    def readJson(self) -> typing.Any:
         contents = self.loadFileToStr()
         return json.loads(contents)
         

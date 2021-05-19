@@ -25,6 +25,7 @@ from __future__ import unicode_literals
 from __future__ import division
 
 import logging
+import typing
 
 from resources.lib import globals
 from resources.lib.settings import *
@@ -137,6 +138,10 @@ def qry_get_root_items():
             'art': { 'icon' : vcategory_icon, 'fanart' : vcategory_fanart, 'poster' : vcategory_poster },
             'properties': { AEL_CONTENT_LABEL: AEL_CONTENT_VALUE_CATEGORY }
         }
+
+def qry_get_collection_items(collection_id: str) -> typing.Iterator[typing.Any]:
+    list_items_data = globals.g_ViewRepository.find_items(collection_id)
+    yield from list_items_data
 
 def qry_get_utilities_items():
     # --- Common artwork for all Utilities VLaunchers ---
