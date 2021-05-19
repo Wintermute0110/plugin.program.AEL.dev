@@ -68,7 +68,7 @@ def get_multidisc_info(ROM_FN):
     MDSet = MultiDiscInfo(ROM_FN)
 
     # --- Parse ROM base_noext into tokens ---
-    tokens = text_get_ROM_basename_tokens(ROM_FN.getBase_noext())
+    tokens = get_ROM_basename_tokens(ROM_FN.getBase_noext())
 
     # --- Check if ROM belongs to a multidisc set and get set name and order ---
     # Algortihm:
