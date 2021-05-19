@@ -20,8 +20,16 @@
 from __future__ import unicode_literals
 from __future__ import division
 
+import sys
+import logging
+
 # --- Modules/packages in this plugin ---
-import resources.main
+from resources.lib.utils import kodilogging
+from resources.lib.utils import text
+from resources.lib import views
+
+kodilogging.config()
+logger = logging.getLogger(__name__)
 
 # -------------------------------------------------------------------------------------------------
 # Hacks and tests
@@ -38,4 +46,9 @@ import resources.main
 # loading time is faster compared to loading PY files.
 # See http://www.network-theory.co.uk/docs/pytut/CompiledPythonfiles.html
 #
-resources.main.run_plugin(sys.argv)
+
+try:
+    views.run_plugin(sys.argv)
+except Exception as ex:
+    message = text.createError(ex)
+    logger.fatal(message)

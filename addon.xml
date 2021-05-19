@@ -1,17 +1,13 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <addon id="plugin.program.AEL" name="Advanced Emulator Launcher (dev version)" version="0.10.0-alpha.56" provider-name="Wintermute0110">
   <requires>
-    <!--
-        See https://github.com/xbmc/xbmc/blob/master/addons/xbmc.python/addon.xml
-        2.25.0 Kodi 17 Krypton
-        2.26.0 Kodi 18 Leia
-        2.27.0 Kodi 19 Matrix (actual version not fixed yet).
-    -->
-    <import addon="xbmc.python" version="2.25.0"/>
+      <import addon="xbmc.python" version="3.0.0"/>
+      <import addon="script.module.routing" version="0.2.3"/>
   </requires>
   <extension point="xbmc.python.pluginsource" library="addon.py">
-    <provides>executable game</provides>
+      <provides>game</provides>
   </extension>
+  <extension point="xbmc.service" library="service.py"/>
   <extension point="xbmc.addon.metadata">
     <!--
         This must be commented when releasing the addon.

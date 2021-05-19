@@ -1,0 +1,316 @@
+# -*- coding: utf-8 -*-
+import logging
+import typing
+
+import sqlite3
+from sqlite3.dbapi2 import Cursor
+
+from routing import Plugin
+
+from resources.lib.settings import *
+from resources.lib.constants import *
+from resources.lib.domain import *
+from resources.lib.utils import text
+
+logger = logging.getLogger(__name__)
+
+# #################################################################################################
+# #################################################################################################
+# Data storage objects.
+# #################################################################################################
+# #################################################################################################
+#
+# * Repository class for creating and retrieveing Container/Categories/Launchers/ROM Collection objects.
+#
+
+#
+# ViewRepository works with json files that contain pre-generated data
+# to be shown in list containers.
+#
+class ViewRepository(object):
+
+    def __init__(self, paths: AEL_Paths, router: Plugin):
+        self.paths = paths
+        self.router = router
+
+    def find_root_items(self):
+        repository_file = self.paths.ROOT_PATH
+        logger.debug('find_root_items(): Loading path data from file {}'.format(repository_file.getPath()))
+        if not repository_file.exists():
+            logger.debug('find_root_items(): Path does not exist {}'.format(repository_file.getPath()))
+            return []
+
+        try:
+            item_data = repository_file.readJson()
+        except ValueError as ex:
+            statinfo = repository_file.stat()
+            logger.error('find_root_items(): ValueError exception in file.readJson() function')
+            message = text.createError(ex)
+            logger.error(message)
+            logger.error('find_root_items(): Dir  {}'.format(repository_file.getPath()))
+            logger.error('find_root_items(): Size {}'.format(statinfo.st_size))
+            return []
+        
+        return item_data
+
+    def find_items(self, collection_id):
+        repository_file = self.paths.COLLECTIONS_DIR.pjoin('collection_{}.json'.format(collection_id))
+        logger.debug('find_items(): Loading path data from file {}'.format(repository_file.getPath()))
+        try:
+            item_data = repository_file.readJson()
+        except ValueError as ex:
+            statinfo = repository_file.stat()
+            logger.error('find_items(): ValueError exception in file.readJson() function')
+            message = text.createError(ex)
+            logger.error(message)
+            logger.error('find_items(): Dir  {}'.format(repository_file.getPath()))
+            logger.error('find_items(): Size {}'.format(statinfo.st_size))
+            return []
+        
+        return item_data
+
+    def store_root_view(self, view_data):
+        repository_file = self.paths.ROOT_PATH
+        logger.debug('store_root_view(): Storing data in file {}'.format(repository_file.getPath()))
+        repository_file.writeJson(view_data)
+
+    def store_view(self, collection_id, view_data):
+        repository_file = self.paths.COLLECTIONS_DIR.pjoin('collection_{}.json'.format(collection_id))
+        
+        if len(view_data) == 0: 
+            if repository_file.exists():
+                logger.debug('store_view(): No data for file {}. Removing file'.format(repository_file.getPath()))
+                repository_file.unlink()
+            return
+
+        logger.debug('store_view(): Storing data in file {}'.format(repository_file.getPath()))
+        repository_file.writeJson(view_data)
+
+class XmlConfigurationRepository(object):
+
+    def __init__(self, file_path: io.FileName, debug = False):
+        self.file_path = file_path
+        self.debug = debug
+
+    def get_categories(self) -> typing.Iterator[Category]:
+        # --- Parse using cElementTree ---
+        # >> If there are issues in the XML file (for example, invalid XML chars) ET.parse will fail
+        logger.debug('XmlRepository.get_categories() Loading {0}'.format(self.file_path.getPath()))
+
+        xml_tree = self.file_path.readXml()
+        if xml_tree is None:
+            return None
+
+        xml_root = xml_tree.getroot()
+        # >> Process tags in XML configuration file
+        for root_element in xml_root:
+            if self.debug: logger.debug('>>> Root child tag <{0}>'.format(root_element.tag))
+
+            if not root_element.tag == 'category':
+                continue
+
+            category_temp = {}
+            for root_child in root_element:
+                # >> By default read strings
+                text_XML_line = root_child.text if root_child.text is not None else ''
+                text_XML_line = text.unescape_XML(text_XML_line)
+                xml_tag  = root_child.tag
+                if self.debug: logger.debug('>>> "{0:<11s}" --> "{1}"'.format(xml_tag, text_XML_line))
+                category_temp[xml_tag] = text_XML_line
+            # --- Add category to categories dictionary ---
+            logger.debug('Adding category "{0}" to import list'.format(category_temp['m_name']))
+            yield Category(category_temp)
+
+    def get_launchers(self) -> typing.Iterator[ROMSet]:    
+        # --- Parse using cElementTree ---
+        # >> If there are issues in the XML file (for example, invalid XML chars) ET.parse will fail
+        logger.debug('XmlRepository.get_launchers() Loading {0}'.format(self.file_path.getPath()))
+
+        xml_tree = self.file_path.readXml()
+        if xml_tree is None:
+            return None
+
+        xml_root = xml_tree.getroot()
+        # >> Process tags in XML configuration file
+        for root_element in xml_root:
+            if self.debug: logger.debug('>>> Root child tag <{0}>'.format(root_element.tag))
+
+            if not root_element.tag == 'launcher':
+                continue
+
+            launcher_temp = {}
+            for root_child in root_element:
+                # >> By default read strings
+                text_XML_line = root_child.text if root_child.text is not None else ''
+                text_XML_line = text.unescape_XML(text_XML_line)
+                xml_tag  = root_child.tag
+                if self.debug: logger.debug('>>> "{0:<11s}" --> "{1}"'.format(xml_tag, text_XML_line))
+                launcher_temp[xml_tag] = text_XML_line
+            # --- Add launcher to launchers dictionary ---
+            logger.debug('Adding launcher "{0}" to import list'.format(launcher_temp['m_name']))
+            yield ROMSet(launcher_temp)
+
+#
+# UnitOfWork to be used with sqlite repositories.
+# Can be used to create database scopes/sessions (unit of work pattern).
+#
+class UnitOfWork(object):
+
+    def __init__(self, db_path: io.FileName):
+        self._db_path = db_path
+        self._commit = False
+    
+    def check_database(self):
+        if not self._db_path.exists():
+            logger.warning("UnitOfWork.check_database(): Database '%s' missing" % self._db_path)
+            return False
+
+        self.open_session()
+        self.execute("SELECT name FROM sqlite_master WHERE type='table';")
+        tables = self.result_set()
+
+        if not len(tables):
+            logger.warning("UnitOfWork.check_database(): Database: '%s' no tables" % self._db_path)
+            self.close_session()
+            return False
+
+        self.close_session()
+        return len(tables) > 1
+
+    def create_empty_database(self, schema_file_path: io.FileName):
+        self.open_session()
+        
+        sql_statements = schema_file_path.loadFileToStr()
+        self.conn.executescript(sql_statements)
+
+        self.commit()
+        self.close_session()
+
+    def open_session(self):
+        self.conn = sqlite3.connect(self._db_path.getPathTranslated())
+        self.conn.row_factory = UnitOfWork.dict_factory
+        self.cursor = self.conn.cursor()
+
+    def commit(self):
+        self._commit = True
+
+    def rollback(self):
+        self._commit = False
+        self.conn.rollback()
+
+    def close_session(self):
+        if self._commit:
+            self.conn.commit()
+
+        self.cursor.close()
+        self.conn.close()
+
+    def execute(self, sql, *args) -> Cursor:
+        return self.cursor.execute(sql, args)
+
+    def result_set(self):
+        return self.cursor.fetchall()
+
+    def result_id(self):
+        return self.cursor.lastrowid
+
+    def __enter__(self):
+        self.open_session()
+
+    def __exit__(self, type, value, traceback):
+        if type is not None: # errors raised
+            logger.error("type: %s value: %s", type, value)
+        self.close_session()
+
+    def dict_factory(cursor, row):
+        d = {}
+        for idx, col in enumerate(cursor.description):
+            d[col[0]] = row[idx]
+        return d
+
+QUERY_SELECT_CATEGORIES           = "SELECT * FROM vw_categories"
+QUERY_SELECT_ROOT_CATEGORIES      = "SELECT * FROM vw_categories WHERE parent_id IS NULL"
+QUERY_SELECT_CATEGORIES_BY_PARENT = "SELECT * FROM vw_categories WHERE parent_id = ?"
+QUERY_SELECT_ROMSETS              = "SELECT * FROM vw_romsets"
+
+QUERY_INSERT_METADATA       = "INSERT INTO metadata (id,year,genre,developer,rating,plot) VALUES (?,?,?,?,?,?)"
+QUERY_INSERT_CATEGORY       = "INSERT INTO categories (id,name,parent_id,metadata_id) VALUES (?,?,?,?)"
+QUERY_INSERT_ASSET          = "INSERT INTO assets (id, filepath, asset_type) VALUES (?,?,?)"
+QUERY_INSERT_CATEGORY_ASSET = "INSERT INTO category_assets (category_id, asset_id) VALUES (?, ?)"
+
+QUERY_UPDATE_METADATA   = "UPDATE metadata SET year=?, genre=?, developer=?, rating=?, plot=? WHERE id=?"
+QUERY_UPDATE_CATEGORY   = "UPDATE categories SET name=? WHERE id =?"
+QUERY_UPDATE_ASSET      = "UPDATE assets SET filepath = ?, asset_type = ? WHERE id = ?"
+
+class CategoryRepository(object):
+
+    def __init__(self, uow: UnitOfWork):
+        self._uow = uow
+
+    def find_root_categories(self) -> typing.Iterator[Category]:
+        self._uow.execute(QUERY_SELECT_ROOT_CATEGORIES)
+        result_set = self._uow.result_set()
+        for category_data in result_set:
+            yield Category(category_data)
+
+    def find_categories_by_parent(self, category_id) -> typing.Iterator[Category]:
+        self._uow.execute(QUERY_SELECT_CATEGORIES_BY_PARENT, category_id)
+        result_set = self._uow.result_set()
+        for category_data in result_set:
+            yield Category(category_data)
+
+    def find_all_categories(self) -> typing.Iterator[Category]:
+        self._uow.execute(QUERY_SELECT_CATEGORIES)
+        result_set = self._uow.result_set()
+        for category_data in result_set:
+            yield Category(category_data)
+
+    def save_category(self, category_obj: Category, parent_obj: Category = None):
+        logger.info("CategoryRepository.save_category(): Inserting new category '{}'".format(category_obj.get_name()))
+        metadata_id = text.misc_generate_random_SID()
+        self._uow.execute(QUERY_INSERT_METADATA,
+            metadata_id,
+            category_obj.get_releaseyear(),
+            category_obj.get_genre(),
+            category_obj.get_developer(),
+            category_obj.get_rating(),
+            category_obj.get_plot())
+
+        self._uow.execute(QUERY_INSERT_CATEGORY,
+            category_obj.get_id(),
+            category_obj.get_name(),
+            parent_obj.get_id() if parent_obj is not None else None,
+            metadata_id)
+
+        category_assets = category_obj.get_assets_odict()
+        for asset in category_assets:
+            asset_db_id = text.misc_generate_random_SID()
+            self._uow.execute(QUERY_INSERT_ASSET,
+                asset_db_id, category_assets[asset], asset.id)
+            self._uow.execute(QUERY_INSERT_CATEGORY_ASSET,
+                category_obj.get_id(), asset_db_id)
+            
+    def update_category(self, category_obj: Category):
+        logger.info("CategoryRepository.update_category(): Updating category '{}'".format(category_obj.get_name()))
+        self._uow.execute(QUERY_UPDATE_METADATA,
+            category_obj.get_releaseyear(),
+            category_obj.get_genre(),
+            category_obj.get_developer(),
+            category_obj.get_rating(),
+            category_obj.get_plot(),
+            category_obj.get_id())
+
+        self._uow.execute(QUERY_UPDATE_CATEGORY,
+            category_obj.get_name(),
+            category_obj.get_id())
+
+class ROMSetRepository(object):
+
+    def __init__(self, uow: UnitOfWork):
+        self._uow = uow
+
+    def find_all_romsets(self) -> typing.Iterator[ROMSet]:
+        self._uow.execute(QUERY_SELECT_ROMSETS)
+        result_set = self._uow.result_set()
+        for romset_data in result_set:
+            yield ROMSet(romset_data)
