@@ -188,6 +188,10 @@ class UnitOfWork(object):
 
         self.commit()
         self.close_session()
+        
+    def reset_database(self, schema_file_path: io.FileName):
+        schema_file_path.unlink()
+        self.create_empty_database(schema_file_path)
 
     def open_session(self):
         self.conn = sqlite3.connect(self._db_path.getPathTranslated())

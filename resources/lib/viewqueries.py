@@ -145,13 +145,26 @@ def qry_get_utilities_items():
     vcategory_poster = globals.g_PATHS.ADDON_CODE_DIR.pjoin('media/theme/Utilities_poster.png').getPath()
     
     yield {
+        'name': 'Reset database',
+        'url': globals.router.url_for_path('execute/command/reset_database'),
+        'is_folder': False,
+        'type': 'video',
+        'info': {
+            'title': 'Reset database',
+            'plot': 'Reset the AEL database. You will loose all data.',
+            'overlay': 4
+        },
+        'art': { 'icon' : vcategory_icon, 'fanart' : vcategory_fanart, 'poster' : vcategory_poster  },
+        'properties': { AEL_CONTENT_LABEL: AEL_CONTENT_VALUE_ROM_LAUNCHER }
+    }
+    yield {
         'name': 'Rebuild views',
-        'url': globals.router.url_for_path('utilities/rebuild_views'),
+        'url': globals.router.url_for_path('execute/command/render_views'),
         'is_folder': False,
         'type': 'video',
         'info': {
             'title': 'Rebuild views',
-            'plot': 'Execute several [COLOR orange]Utilities[/COLOR].',
+            'plot': 'Rebuild all the container views in the application',
             'overlay': 4
         },
         'art': { 'icon' : vcategory_icon, 'fanart' : vcategory_fanart, 'poster' : vcategory_poster  },
@@ -160,7 +173,7 @@ def qry_get_utilities_items():
 
     yield {
         'name': 'Import category/launcher XML configuration file',
-        'url': globals.router.url_for_path('utilities/import_launchers'),
+        'url': globals.router.url_for_path('execute/command/import_launchers'),
         'is_folder': False,
         'type': 'video',
         'info': {

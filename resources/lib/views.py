@@ -97,13 +97,9 @@ def vw_route_render_utilities_vlaunchers():
     render_list_items(list_items_data, context_items)
     xbmcplugin.endOfDirectory(handle = router.handle, succeeded = True, cacheToDisc = False)
 
-@router.route('/utilities/import_launchers')
-def vw_route_import_launchers():
-    kodi.event(method='import_launchers')
-
-@router.route('/utilities/rebuild_views')
-def vw_rebuild_views():
-    kodi.event(method='RENDER_VIEWS')
+@router.route('/execute/command/<cmd>')
+def vw_execute_cmd(cmd: str):
+    kodi.event(method=cmd.capitalize())
 
 @router.route('EXECUTE')
 def vw_route_execute_rom(rom_id):
