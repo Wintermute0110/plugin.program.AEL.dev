@@ -227,7 +227,7 @@ class FileName:
     # ---------------------------------------------------------------------------------------------
     # Path manipulation and file information
     # ---------------------------------------------------------------------------------------------
-    def getPath(self):
+    def getPath(self) -> str:
         return self.path_str
 
     def getPathTranslated(self):

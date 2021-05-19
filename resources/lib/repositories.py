@@ -11,6 +11,7 @@ from resources.lib.settings import *
 from resources.lib.constants import *
 from resources.lib.domain import *
 from resources.lib.utils import text
+from resources.lib import globals
 
 logger = logging.getLogger(__name__)
 
@@ -145,6 +146,7 @@ class XmlConfigurationRepository(object):
                 text_XML_line = text.unescape_XML(text_XML_line)
                 xml_tag  = root_child.tag
                 if self.debug: logger.debug('>>> "{0:<11s}" --> "{1}"'.format(xml_tag, text_XML_line))
+                if xml_tag == 'categoryID': xml_tag = 'parent_id'                
                 launcher_temp[xml_tag] = text_XML_line
             # --- Add launcher to launchers dictionary ---
             logger.debug('Adding launcher "{0}" to import list'.format(launcher_temp['m_name']))
@@ -182,6 +184,7 @@ class UnitOfWork(object):
         
         sql_statements = schema_file_path.loadFileToStr()
         self.conn.executescript(sql_statements)
+        self.conn.execute("INSERT INTO ael_version VALUES(?, ?)", [globals.addon_id, globals.addon_version])
 
         self.commit()
         self.close_session()
@@ -232,14 +235,30 @@ QUERY_SELECT_CATEGORIES           = "SELECT * FROM vw_categories"
 QUERY_SELECT_ROOT_CATEGORIES      = "SELECT * FROM vw_categories WHERE parent_id IS NULL"
 QUERY_SELECT_CATEGORIES_BY_PARENT = "SELECT * FROM vw_categories WHERE parent_id = ?"
 QUERY_SELECT_ROMSETS              = "SELECT * FROM vw_romsets"
+QUERY_SELECT_ROOT_ROMSETS         = "SELECT * FROM vw_romsets WHERE parent_id IS NULL"
+QUERY_SELECT_ROMSETS_BY_PARENT    = "SELECT * FROM vw_romsets WHERE parent_id = ?"
 
-QUERY_INSERT_METADATA       = "INSERT INTO metadata (id,year,genre,developer,rating,plot) VALUES (?,?,?,?,?,?)"
-QUERY_INSERT_CATEGORY       = "INSERT INTO categories (id,name,parent_id,metadata_id) VALUES (?,?,?,?)"
+QUERY_INSERT_METADATA       = "INSERT INTO metadata (id,year,genre,developer,rating,plot,assets_path,finished) VALUES (?,?,?,?,?,?,?,?)"
+QUERY_INSERT_CATEGORY       = """
+                              INSERT INTO categories (id,name,parent_id,metadata_id,default_icon,default_fanart,default_banner,default_poster,default_clearlogo) 
+                              VALUES (?,?,?,?,?,?,?,?,?)
+                              """
+QUERY_INSERT_ROMSET         = """
+                              INSERT INTO romsets (
+                                    id,name,parent_id,metadata_id,platform, 
+                                    default_icon,default_fanart,default_banner,default_poster,default_controller,default_clearlogo
+                                ) VALUES (?,?,?,?,?,?,?,?,?,?,?)
+                              """
 QUERY_INSERT_ASSET          = "INSERT INTO assets (id, filepath, asset_type) VALUES (?,?,?)"
 QUERY_INSERT_CATEGORY_ASSET = "INSERT INTO category_assets (category_id, asset_id) VALUES (?, ?)"
+QUERY_INSERT_ROMSET_ASSET   = "INSERT INTO romset_assets (romset_id, asset_id) VALUES (?, ?)"
 
-QUERY_UPDATE_METADATA   = "UPDATE metadata SET year=?, genre=?, developer=?, rating=?, plot=? WHERE id=?"
+QUERY_INSERT_ASSET_PATH         = "INSERT INTO assetspaths (id, path, asset_type) VALUES (?,?,?)"
+QUERY_INSERT_ROMSET_ASSET_PATH  = "INSERT INTO romset_assetspaths (romset_id, assetspaths_id) VALUES (?, ?)"
+
+QUERY_UPDATE_METADATA   = "UPDATE metadata SET year=?, genre=?, developer=?, rating=?, plot=?, assets_path=?, finished=? WHERE id=?"
 QUERY_UPDATE_CATEGORY   = "UPDATE categories SET name=? WHERE id =?"
+QUERY_UPDATE_ROMSET     = "UPDATE romsets SET name=?,platform=? WHERE id =?"
 QUERY_UPDATE_ASSET      = "UPDATE assets SET filepath = ?, asset_type = ? WHERE id = ?"
 
 class CategoryRepository(object):
@@ -268,19 +287,28 @@ class CategoryRepository(object):
     def save_category(self, category_obj: Category, parent_obj: Category = None):
         logger.info("CategoryRepository.save_category(): Inserting new category '{}'".format(category_obj.get_name()))
         metadata_id = text.misc_generate_random_SID()
+        assets_path = category_obj.get_assets_path_FN()
+        
         self._uow.execute(QUERY_INSERT_METADATA,
             metadata_id,
             category_obj.get_releaseyear(),
             category_obj.get_genre(),
             category_obj.get_developer(),
             category_obj.get_rating(),
-            category_obj.get_plot())
+            category_obj.get_plot(),
+            assets_path.getPath() if assets_path is not None else None,
+            category_obj.is_finished())
 
         self._uow.execute(QUERY_INSERT_CATEGORY,
             category_obj.get_id(),
             category_obj.get_name(),
             parent_obj.get_id() if parent_obj is not None else None,
-            metadata_id)
+            metadata_id,
+            category_obj.get_mapped_asset_info(asset_id=ASSET_ICON_ID).key,
+            category_obj.get_mapped_asset_info(asset_id=ASSET_FANART_ID).key,
+            category_obj.get_mapped_asset_info(asset_id=ASSET_BANNER_ID).key,
+            category_obj.get_mapped_asset_info(asset_id=ASSET_POSTER_ID).key,
+            category_obj.get_mapped_asset_info(asset_id=ASSET_CLEARLOGO_ID).key)
 
         category_assets = category_obj.get_assets_odict()
         for asset in category_assets:
@@ -292,13 +320,17 @@ class CategoryRepository(object):
             
     def update_category(self, category_obj: Category):
         logger.info("CategoryRepository.update_category(): Updating category '{}'".format(category_obj.get_name()))
+        assets_path = category_obj.get_assets_path_FN()
+        
         self._uow.execute(QUERY_UPDATE_METADATA,
             category_obj.get_releaseyear(),
             category_obj.get_genre(),
             category_obj.get_developer(),
             category_obj.get_rating(),
             category_obj.get_plot(),
-            category_obj.get_id())
+            assets_path.getPath() if assets_path is not None else None,
+            category_obj.is_finished(),
+            category_obj.get_custom_attribute('metadata_id'))
 
         self._uow.execute(QUERY_UPDATE_CATEGORY,
             category_obj.get_name(),
@@ -314,3 +346,70 @@ class ROMSetRepository(object):
         result_set = self._uow.result_set()
         for romset_data in result_set:
             yield ROMSet(romset_data)
+
+    def find_root_romsets(self) -> typing.Iterator[ROMSet]:
+        self._uow.execute(QUERY_SELECT_ROOT_ROMSETS)
+        result_set = self._uow.result_set()
+        for romset_data in result_set:
+            yield ROMSet(romset_data)
+
+    def find_romsets_by_parent(self, category_id) -> typing.Iterator[ROMSet]:
+        self._uow.execute(QUERY_SELECT_ROMSETS_BY_PARENT, category_id)
+        result_set = self._uow.result_set()
+        for romset_data in result_set:
+            yield ROMSet(romset_data)
+            
+    def save_romset(self, romset_obj: ROMSet, parent_obj: Category = None):
+        logger.info("ROMSetRepository.save_romset(): Inserting new romset '{}'".format(romset_obj.get_name()))
+        metadata_id = text.misc_generate_random_SID()
+        assets_path = romset_obj.get_assets_path_FN()
+        
+        self._uow.execute(QUERY_INSERT_METADATA,
+            metadata_id,
+            romset_obj.get_releaseyear(),
+            romset_obj.get_genre(),
+            romset_obj.get_developer(),
+            romset_obj.get_rating(),
+            romset_obj.get_plot(),
+            assets_path.getPath() if assets_path is not None else None,
+            romset_obj.is_finished())
+
+        self._uow.execute(QUERY_INSERT_ROMSET,
+            romset_obj.get_id(),
+            romset_obj.get_name(),
+            parent_obj.get_id() if parent_obj is not None else None,
+            metadata_id,
+            romset_obj.get_platform(),
+            romset_obj.get_mapped_asset_info(asset_id=ASSET_ICON_ID).key,
+            romset_obj.get_mapped_asset_info(asset_id=ASSET_FANART_ID).key,
+            romset_obj.get_mapped_asset_info(asset_id=ASSET_BANNER_ID).key,
+            romset_obj.get_mapped_asset_info(asset_id=ASSET_POSTER_ID).key,
+            romset_obj.get_mapped_asset_info(asset_id=ASSET_CONTROLLER_ID).key,
+            romset_obj.get_mapped_asset_info(asset_id=ASSET_CLEARLOGO_ID).key)
+
+        romset_assets = romset_obj.get_assets_odict()
+        for asset in romset_assets:
+            asset_db_id = text.misc_generate_random_SID()
+            self._uow.execute(QUERY_INSERT_ASSET,
+                asset_db_id, romset_assets[asset], asset.id)
+            self._uow.execute(QUERY_INSERT_ROMSET_ASSET,
+                romset_obj.get_id(), asset_db_id)           
+              
+    def update_romset(self, romset_obj: ROMSet):
+        logger.info("ROMSetRepository.update_romset(): Updating romset '{}'".format(romset_obj.get_name()))
+        assets_path = romset_obj.get_assets_path_FN()
+        
+        self._uow.execute(QUERY_UPDATE_METADATA,
+            romset_obj.get_releaseyear(),
+            romset_obj.get_genre(),
+            romset_obj.get_developer(),
+            romset_obj.get_rating(),
+            romset_obj.get_plot(),
+            assets_path.getPath() if assets_path is not None else None,
+            romset_obj.is_finished(),
+            romset_obj.get_custom_attribute('metadata_id'))
+
+        self._uow.execute(QUERY_UPDATE_ROMSET,
+            romset_obj.get_name(),
+            romset_obj.get_platform(),
+            romset_obj.get_id())

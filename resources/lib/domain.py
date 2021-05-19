@@ -466,9 +466,13 @@ class ROMSet(MetaDataItemABC):
     def __init__(self, entity_data):
         super(ROMSet, self).__init__(entity_data)
 
+    def get_platform(self): return self.entity_data['platform']
 
-    def get_asset_ids_list(self): 
-        return LAUNCHER_ASSET_ID_LIST
+    def set_platform(self, platform): self.entity_data['platform'] = platform
+
+    def get_assets_kind(self): return KIND_ASSET_LAUNCHER
+
+    def get_asset_ids_list(self): return LAUNCHER_ASSET_ID_LIST
 
     def __str__(self):
         return super().__str__()

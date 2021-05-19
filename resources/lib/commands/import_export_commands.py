@@ -37,16 +37,18 @@ def cmd_execute_import_launchers(args):
     uow = UnitOfWork(globals.g_PATHS.DATABASE_FILE_PATH)
     with uow:
         categories_repository = CategoryRepository(uow)
-        existing_categories   = categories_repository.find_all_categories()
+        existing_categories   = [*categories_repository.find_all_categories()]
 
         romsets_repository    = ROMSetRepository(uow)
-        existing_launchers    = romsets_repository.find_all_romsets()
+        existing_romsets      = [*romsets_repository.find_all_romsets()]
 
         existing_category_ids = map(lambda c: c.get_id(), existing_categories)
-        existing_romset_ids   = map(lambda c: c.get_id(), existing_categories)
+        existing_romset_ids   = map(lambda r: r.get_id(), existing_romsets)
 
-        categories_to_insert = []
-        categories_to_update = []
+        categories_to_insert:typing.List[Category]  = []
+        categories_to_update:typing.List[Category]  = []
+        romsets_to_insert:typing.List[ROMSet]       = []
+        romsets_to_update:typing.List[ROMSet]       = []
 
         # >> Process file by file
         for xml_file in file_list:
@@ -59,24 +61,40 @@ def cmd_execute_import_launchers(args):
             launchers_to_import  = xml_file_repository.get_launchers()
 
             for category_to_import in categories_to_import:
-                if category_to_import in existing_category_ids:
+                if category_to_import.get_id() in existing_category_ids:
                      # >> Category exists (by name). Overwrite?
-                    logger.debug('Case B) Category found. Edit existing category.')
-                    if kodi.dialog_yesno('Category "{}" found in AEL database. Overwrite?'.format(categories_to_import.get_name())):
+                    logger.debug('Category found. Edit existing category.')
+                    if kodi.dialog_yesno('Category "{}" found in AEL database. Overwrite?'.format(category_to_import.get_name())):
                         categories_to_update.append(category_to_import)
                 else:
                     categories_to_insert.append(category_to_import)
 
-            for launchers
+            for launcher_to_import in launchers_to_import:
+                if launcher_to_import.get_id() in existing_romset_ids:
+                     # >> Romset exists (by name). Overwrite?
+                    logger.debug('ROMSet found. Edit existing ROMSet.')
+                    if kodi.dialog_yesno('ROMSet "{}" found in AEL database. Overwrite?'.format(launcher_to_import.get_name())):
+                        romsets_to_update.append(launcher_to_import)
+                else:
+                    romsets_to_insert.append(launcher_to_import)
 
         for category_to_insert in categories_to_insert:
             categories_repository.save_category(category_to_insert)
+            existing_categories.append(category_to_insert)
 
         for category_to_update in categories_to_update:
             categories_repository.update_category(category_to_update)
+            
+        for romset_to_insert in romsets_to_insert:
+            parent_id = romset_to_insert.get_custom_attribute('parent_id')
+            parent_obj = next((c for c in existing_categories if c.get_id() == parent_id), None)
+            romsets_repository.save_romset(romset_to_insert, parent_obj)
+            existing_romsets.append(romset_to_insert)
+
+        for romset_to_update in romsets_to_update:
+            romsets_repository.update_romset(romset_to_update)
 
         uow.commit()
-        #autoconfig_import_launchers(CATEGORIES_FILE_PATH, ROMS_DIR, category_datas, launcher_datas, import_FN)
 
     kodi.event(method='RENDER_VIEWS')
     kodi.notify('Finished importing Categories/Launchers')
