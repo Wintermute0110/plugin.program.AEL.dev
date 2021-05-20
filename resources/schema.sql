@@ -82,6 +82,14 @@ CREATE TABLE IF NOT EXISTS romset_assetspaths(
         ON DELETE CASCADE ON UPDATE NO ACTION
 );
 
+CREATE TABLE IF NOT EXISTS ael_addon(
+    id TEXT PRIMARY KEY, 
+    addon_id TEXT,
+    version TEXT,
+    is_launcher INTEGER DEFAULT 0 NOT NULL,
+    launcher_uri TEXT
+)
+
 CREATE VIEW IF NOT EXISTS vw_categories AS SELECT 
     c.id AS id, 
     c.parent_id AS parent_id,

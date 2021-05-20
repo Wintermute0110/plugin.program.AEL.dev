@@ -30,8 +30,9 @@ def cmd_render_view_data(args):
     kodi.notify('Rendering all views')
     uow = UnitOfWork(globals.g_PATHS.DATABASE_FILE_PATH)
     with uow:
-        categories_repository = CategoryRepository(uow)
-        romsets_repository = ROMSetRepository(uow)
+        categories_repository   = CategoryRepository(uow)
+        romsets_repository      = ROMSetRepository(uow)
+        views_repository        = ViewRepository(globals.g_PATHS, globals.router)
         
         root_categories = categories_repository.find_root_categories()
         root_romsets = romsets_repository.find_root_romsets()
@@ -40,7 +41,7 @@ def cmd_render_view_data(args):
         for root_category in root_categories:
             logger.debug('Processing category "{}"'.format(root_category.get_name()))
             root_data.append(_render_category_view(root_category))
-            _process_category_into_container(root_category, categories_repository, romsets_repository)
+            _process_category_into_container(root_category, categories_repository, romsets_repository, views_repository)
 
         for root_romset in root_romsets:
             logger.debug('Processing romset "{}"'.format(root_romset.get_name()))
@@ -48,12 +49,13 @@ def cmd_render_view_data(args):
             ## process roms view
 
         logger.debug('Storing {} items in root view.'.format(len(root_data)))
-        globals.g_ViewRepository.store_root_view(root_data)
+        views_repository.store_root_view(root_data)
         
     kodi.notify('All views rendered')
     kodi.refresh_container()
 
-def _process_category_into_container(category_obj: Category, categories_repository: CategoryRepository, romsets_repository: ROMSetRepository):
+def _process_category_into_container(category_obj: Category, categories_repository: CategoryRepository, 
+                                     romsets_repository: ROMSetRepository, views_repository: ViewRepository):
     sub_categories = categories_repository.find_categories_by_parent(category_obj.get_id())
     romsets = romsets_repository.find_romsets_by_parent(category_obj.get_id())
     
@@ -69,7 +71,7 @@ def _process_category_into_container(category_obj: Category, categories_reposito
         ## process roms view
         
     logger.debug('Storing {} items for category "{}" view.'.format(len(view_data), category_obj.get_name()))
-    globals.g_ViewRepository.store_view(category_obj.get_id(), view_data)
+    views_repository.store_view(category_obj.get_id(), view_data)
 
 def _render_category_view(category_obj: Category):
     # --- Do not render row if category finished ---

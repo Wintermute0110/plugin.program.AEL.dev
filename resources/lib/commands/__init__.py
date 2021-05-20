@@ -18,3 +18,4 @@
 import resources.lib.commands.mediator
 import resources.lib.commands.import_export_commands
 import resources.lib.commands.view_rendering_commands
+import resources.lib.commands.addon_commands

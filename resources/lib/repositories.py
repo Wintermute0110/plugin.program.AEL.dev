@@ -87,6 +87,10 @@ class ViewRepository(object):
         logger.debug('store_view(): Storing data in file {}'.format(repository_file.getPath()))
         repository_file.writeJson(view_data)
 
+#
+# XmlConfigurationRepository works with original XML configuration files, which contained the 
+# categories and launchers. This repository is to read these files and migrate to current solution.
+#
 class XmlConfigurationRepository(object):
 
     def __init__(self, file_path: io.FileName, debug = False):
@@ -190,7 +194,9 @@ class UnitOfWork(object):
         self.close_session()
         
     def reset_database(self, schema_file_path: io.FileName):
-        self._db_path.unlink()
+        if self._db_path.exists():
+            self._db_path.unlink()
+            
         self.create_empty_database(schema_file_path)
 
     def open_session(self):
@@ -235,35 +241,25 @@ class UnitOfWork(object):
             d[col[0]] = row[idx]
         return d
 
+# Shared Queries
+QUERY_INSERT_METADATA       = "INSERT INTO metadata (id,year,genre,developer,rating,plot,assets_path,finished) VALUES (?,?,?,?,?,?,?,?)"
+QUERY_INSERT_ASSET          = "INSERT INTO assets (id, filepath, asset_type) VALUES (?,?,?)"
+QUERY_INSERT_ASSET_PATH     = "INSERT INTO assetspaths (id, path, asset_type) VALUES (?,?,?)"
+QUERY_UPDATE_METADATA       = "UPDATE metadata SET year=?, genre=?, developer=?, rating=?, plot=?, assets_path=?, finished=? WHERE id=?"
+QUERY_UPDATE_ASSET          = "UPDATE assets SET filepath = ?, asset_type = ? WHERE id = ?"
+
+#
+# CategoryRepository -> Category from SQLite DB
+#
 QUERY_SELECT_CATEGORIES           = "SELECT * FROM vw_categories"
 QUERY_SELECT_ROOT_CATEGORIES      = "SELECT * FROM vw_categories WHERE parent_id IS NULL"
 QUERY_SELECT_CATEGORIES_BY_PARENT = "SELECT * FROM vw_categories WHERE parent_id = ?"
-QUERY_SELECT_ROMSETS              = "SELECT * FROM vw_romsets"
-QUERY_SELECT_ROOT_ROMSETS         = "SELECT * FROM vw_romsets WHERE parent_id IS NULL"
-QUERY_SELECT_ROMSETS_BY_PARENT    = "SELECT * FROM vw_romsets WHERE parent_id = ?"
-
-QUERY_INSERT_METADATA       = "INSERT INTO metadata (id,year,genre,developer,rating,plot,assets_path,finished) VALUES (?,?,?,?,?,?,?,?)"
-QUERY_INSERT_CATEGORY       = """
-                              INSERT INTO categories (id,name,parent_id,metadata_id,default_icon,default_fanart,default_banner,default_poster,default_clearlogo) 
-                              VALUES (?,?,?,?,?,?,?,?,?)
-                              """
-QUERY_INSERT_ROMSET         = """
-                              INSERT INTO romsets (
-                                    id,name,parent_id,metadata_id,platform, 
-                                    default_icon,default_fanart,default_banner,default_poster,default_controller,default_clearlogo
-                                ) VALUES (?,?,?,?,?,?,?,?,?,?,?)
-                              """
-QUERY_INSERT_ASSET          = "INSERT INTO assets (id, filepath, asset_type) VALUES (?,?,?)"
-QUERY_INSERT_CATEGORY_ASSET = "INSERT INTO category_assets (category_id, asset_id) VALUES (?, ?)"
-QUERY_INSERT_ROMSET_ASSET   = "INSERT INTO romset_assets (romset_id, asset_id) VALUES (?, ?)"
-
-QUERY_INSERT_ASSET_PATH         = "INSERT INTO assetspaths (id, path, asset_type) VALUES (?,?,?)"
-QUERY_INSERT_ROMSET_ASSET_PATH  = "INSERT INTO romset_assetspaths (romset_id, assetspaths_id) VALUES (?, ?)"
-
-QUERY_UPDATE_METADATA   = "UPDATE metadata SET year=?, genre=?, developer=?, rating=?, plot=?, assets_path=?, finished=? WHERE id=?"
-QUERY_UPDATE_CATEGORY   = "UPDATE categories SET name=? WHERE id =?"
-QUERY_UPDATE_ROMSET     = "UPDATE romsets SET name=?,platform=? WHERE id =?"
-QUERY_UPDATE_ASSET      = "UPDATE assets SET filepath = ?, asset_type = ? WHERE id = ?"
+QUERY_INSERT_CATEGORY             = """
+                                    INSERT INTO categories (id,name,parent_id,metadata_id,default_icon,default_fanart,default_banner,default_poster,default_clearlogo) 
+                                    VALUES (?,?,?,?,?,?,?,?,?)
+                                    """
+QUERY_UPDATE_CATEGORY             = "UPDATE categories SET name=? WHERE id =?"
+QUERY_INSERT_CATEGORY_ASSET       = "INSERT INTO category_assets (category_id, asset_id) VALUES (?, ?)"
 
 class CategoryRepository(object):
 
@@ -339,6 +335,22 @@ class CategoryRepository(object):
         self._uow.execute(QUERY_UPDATE_CATEGORY,
             category_obj.get_name(),
             category_obj.get_id())
+
+#
+# ROMSetRepository -> ROM Sets from SQLite DB
+#
+QUERY_SELECT_ROMSETS              = "SELECT * FROM vw_romsets"
+QUERY_SELECT_ROOT_ROMSETS         = "SELECT * FROM vw_romsets WHERE parent_id IS NULL"
+QUERY_SELECT_ROMSETS_BY_PARENT    = "SELECT * FROM vw_romsets WHERE parent_id = ?"
+QUERY_INSERT_ROMSET               = """
+                                    INSERT INTO romsets (
+                                            id,name,parent_id,metadata_id,platform, 
+                                            default_icon,default_fanart,default_banner,default_poster,default_controller,default_clearlogo
+                                        ) VALUES (?,?,?,?,?,?,?,?,?,?,?)
+                                    """
+QUERY_UPDATE_ROMSET               = "UPDATE romsets SET name=?,platform=? WHERE id =?"
+QUERY_INSERT_ROMSET_ASSET         = "INSERT INTO romset_assets (romset_id, asset_id) VALUES (?, ?)"
+QUERY_INSERT_ROMSET_ASSET_PATH    = "INSERT INTO romset_assetspaths (romset_id, assetspaths_id) VALUES (?, ?)"
 
 class ROMSetRepository(object):
 
@@ -417,3 +429,38 @@ class ROMSetRepository(object):
             romset_obj.get_name(),
             romset_obj.get_platform(),
             romset_obj.get_id())
+         
+#
+# AelAddonRepository -> AEL Adoon objects from SQLite DB
+#     
+QUERY_SELECT_ADDONS = "SELECT * FROM ael_addon"
+QUERY_INSERT_ADDON  = "INSERT INTO ael_addon(id, addon_id, version, is_launcher, launcher_uri) VALUES(?,?,?,?,?)" 
+QUERY_UPDATE_ADDON  = "UPDATE ael_addon SET addon_id = ?, version = ?, is_launcher = ?, launcher_uri = ? WHERE id = ?" 
+class AelAddonRepository(object):
+
+    def __init__(self, uow: UnitOfWork):
+        self._uow = uow
+
+    def find_all(self) -> typing.Iterator[AelAddon]:
+        self._uow.execute(QUERY_SELECT_ADDONS)
+        result_set = self._uow.result_set()
+        for addon_data in result_set:
+            yield AelAddon(addon_data)
+
+    def save_addon(self, addon: AelAddon):
+        logger.info("AelAddonRepository.save_addon(): Saving addon '{}'".format(addon.get_addon_id()))        
+        self._uow.execute(QUERY_INSERT_ADDON,
+                    addon.get_id(),
+                    addon.get_addon_id(),
+                    addon.get_version(),
+                    addon.supports_launching(),
+                    addon.get_custom_attribute('launcher_uri'))
+        
+    def update_addon(self, addon: AelAddon):
+        logger.info("AelAddonRepository.update_addon(): Updating addon '{}'".format(addon.get_addon_id()))        
+        self._uow.execute(QUERY_INSERT_ADDON,
+                    addon.get_addon_id(),
+                    addon.get_version(),
+                    addon.supports_launching(),
+                    addon.get_custom_attribute('launcher_uri'),
+                    addon.get_id())

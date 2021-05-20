@@ -28,13 +28,15 @@ import logging
 import typing
 
 from resources.lib import globals
+from resources.lib.repositories import ViewRepository
 from resources.lib.settings import *
 from resources.lib.constants import *
 
 logger = logging.getLogger(__name__)
 
 def qry_get_root_items():
-    list_items_data = globals.g_ViewRepository.find_root_items()
+    views_repository = ViewRepository(globals.g_PATHS, globals.router)
+    list_items_data = views_repository.find_root_items()
     yield from list_items_data
 
     vcategory_fanart = globals.g_PATHS.FANART_FILE_PATH.getPath()
@@ -140,7 +142,8 @@ def qry_get_root_items():
         }
 
 def qry_get_collection_items(collection_id: str) -> typing.Iterator[typing.Any]:
-    list_items_data = globals.g_ViewRepository.find_items(collection_id)
+    views_repository = ViewRepository(globals.g_PATHS, globals.router)
+    list_items_data = views_repository.find_items(collection_id)
     yield from list_items_data
 
 def qry_get_utilities_items():
@@ -162,6 +165,7 @@ def qry_get_utilities_items():
         'art': { 'icon' : vcategory_icon, 'fanart' : vcategory_fanart, 'poster' : vcategory_poster  },
         'properties': { AEL_CONTENT_LABEL: AEL_CONTENT_VALUE_ROM_LAUNCHER }
     }
+    
     yield {
         'name': 'Rebuild views',
         'url': globals.router.url_for_path('execute/command/render_views'),
@@ -176,6 +180,20 @@ def qry_get_utilities_items():
         'properties': { AEL_CONTENT_LABEL: AEL_CONTENT_VALUE_ROM_LAUNCHER }
     }
 
+    yield {
+        'name': 'Scan for plugin-addons',
+        'url': globals.router.url_for_path('execute/command/scan_for_addons'),
+        'is_folder': False,
+        'type': 'video',
+        'info': {
+            'title': 'Scan for plugin-addons',
+            'plot': 'Scan for addons that can be used by AEL (launchers, scrapers etc.)',
+            'overlay': 4
+        },
+        'art': { 'icon' : vcategory_icon, 'fanart' : vcategory_fanart, 'poster' : vcategory_poster  },
+        'properties': { AEL_CONTENT_LABEL: AEL_CONTENT_VALUE_ROM_LAUNCHER }
+    }
+    
     yield {
         'name': 'Import category/launcher XML configuration file',
         'url': globals.router.url_for_path('execute/command/import_launchers'),

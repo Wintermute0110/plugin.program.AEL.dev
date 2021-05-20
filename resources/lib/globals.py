@@ -19,12 +19,10 @@
 # Globals to be used by the addon
 
 import routing
-
 # --- Kodi stuff ---
 import xbmcaddon
-
+# --- AEL stuff ---
 from resources.lib.settings import *
-from resources.lib.repositories import ViewRepository
 
 # --- Addon object (used to access settings) ---
 addon           = xbmcaddon.Addon()
@@ -37,7 +35,6 @@ addon_type      = addon.getAddonInfo('type')
 
 router: routing.Plugin = routing.Plugin()
 g_PATHS: AEL_Paths
-g_ViewRepository: ViewRepository
 
 #
 # Bootstrap factory object instances.
@@ -45,5 +42,3 @@ g_ViewRepository: ViewRepository
 def g_bootstrap_instances():
     global g_PATHS
     g_PATHS = AEL_Paths(addon_id).build()
-    global g_ViewRepository
-    g_ViewRepository = ViewRepository(g_PATHS, router)
