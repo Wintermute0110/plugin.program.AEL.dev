@@ -1119,9 +1119,10 @@ def update_dic_with_NFO_str(nfo_str, xml_tag_name, mydic, mydic_field_name):
 # However, this function is also used to export launcher ROMs in bulk in
 # "Edit Launcher" --> "Manage ROM List" --> "Export ROMs metadata to NFO files". In that case,
 # function must not be verbose because it can be called thousands of times for big ROM sets!
+# Returns True if success, False if error (IO exception or file not written).
 def fs_export_ROM_NFO(rom, verbose = True):
     # Skip No-Intro Added ROMs. rom['filename'] will be empty.
-    if not rom['filename']: return
+    if not rom['filename']: return False
     ROMFileName = FileName(rom['filename'])
     nfo_file_path = ROMFileName.getPath_noext() + '.nfo'
     log_debug('fs_export_ROM_NFO() Exporting "{}"'.format(nfo_file_path))
@@ -1146,13 +1147,11 @@ def fs_export_ROM_NFO(rom, verbose = True):
     utils_write_slist_to_file(nfo_file_path)
     if verbose:
         kodi_notify('Created NFO file {}'.format(nfo_file_path))
-
-    return
+    return True
 
 # Reads an NFO file with ROM information.
 # Modifies roms dictionary even outside this function. See comments in fs_import_launcher_NFO()
-# See comments in fs_export_ROM_NFO() about verbosity.
-# About reading files in Unicode http://stackoverflow.com/questions/147741/character-reading-from-file-in-python
+# Returns True if success, False if error (IO exception).
 def fs_import_ROM_NFO(roms, romID, verbose = True):
     nfo_dic = roms[romID]
     ROMFileName = FileName(roms[romID]['filename'])
@@ -1185,10 +1184,9 @@ def fs_import_ROM_NFO(roms, romID, verbose = True):
 
     if verbose:
         kodi_notify('Imported {}'.format(nfo_file_path))
-
     return True
 
-# This file is called by the ROM scanner to read a ROM info file automatically.
+# This file is called by the ROM scanner to read a ROM NFO file automatically.
 # NFO file existence is checked before calling this function, so NFO file must always exist.
 def fs_import_ROM_NFO_file_scanner(NFO_FN):
     nfo_dic = {
@@ -1228,10 +1226,10 @@ def fs_get_ROM_NFO_name(rom):
 # Standalone launchers: NFO files are stored in self.settings["launchers_nfo_dir"] if not empty.
 # If empty, it defaults to DEFAULT_LAUN_NFO_DIR.
 # ROM launchers: Same as standalone launchers.
-#
-# Returns True if sucess, False if error (IO exception).
-def fs_export_launcher_NFO(nfo_FileName, launcher):
-    log_debug('fs_export_launcher_NFO() Exporting launcher NFO "{}"'.format(nfo_FileName.getPath()))
+# Notifies errors in Kodi GUI. Success is notified in the caller.
+# Returns True if success, False if error (IO exception).
+def fs_export_launcher_NFO(nfo_FN, launcher):
+    log_debug('fs_export_launcher_NFO() Exporting launcher NFO "{}"'.format(nfo_FN.getPath()))
 
     # If NFO file does not exist then create them. If it exists, overwrite.
     nfo_content = [
@@ -1247,35 +1245,34 @@ def fs_export_launcher_NFO(nfo_FileName, launcher):
         '',
     ]
     # TODO: correctly catch and report errors here.
-    utils_write_slist_to_file(nfo_FileName.getPath())
-
+    utils_write_slist_to_file(nfo_FN.getPath())
     return True
 
 # Launcher dictionary is edited by Python passing by reference.
-# Returns True if success, False if error. Notifies errors in Kodi GUI.
-def fs_import_launcher_NFO(nfo_FileName, launchers, launcherID):
+# Notifies errors in Kodi GUI. Success is notified in the caller.
+# Returns True if dictionary edited, False otherwise.
+def fs_import_launcher_NFO(nfo_FN, launchers, launcherID):
     nfo_dic = launchers[launcherID]
 
-    log_debug('fs_import_launcher_NFO() Importing "{}"'.format(nfo_FileName.getPath()))
-    if not os.path.isfile(nfo_FileName.getPath()):
-        kodi_notify_warn('NFO file not found {}'.format(os.path.basename(nfo_FileName.getPath())))
-        log_info("fs_import_launcher_NFO() NFO file not found '{}'".format(nfo_FileName.getPath()))
+    log_debug('fs_import_launcher_NFO() Importing "{}"'.format(nfo_FN.getPath()))
+    if not os.path.isfile(nfo_FN.getPath()):
+        kodi_notify_warn('NFO file not found {}'.format(os.path.basename(nfo_FN.getPath())))
+        log_info("fs_import_launcher_NFO() NFO file not found '{}'".format(nfo_FN.getPath()))
         return False
 
     # Read file, put in a single-line string and remove all line endings.
-    nfo_str = utils_load_file_to_str(nfo_FileName.getPath())
+    nfo_str = utils_load_file_to_str(nfo_FN.getPath())
     nfo_str = nfo_str.replace('\r', '').replace('\n', '')
     update_dic_with_NFO_str(nfo_str, 'year', nfo_dic, 'm_year')
     update_dic_with_NFO_str(nfo_str, 'genre', nfo_dic, 'm_genre')
     update_dic_with_NFO_str(nfo_str, 'developer', nfo_dic, 'm_developer')
     update_dic_with_NFO_str(nfo_str, 'rating', nfo_dic, 'm_rating')
     update_dic_with_NFO_str(nfo_str, 'plot', nfo_dic, 'm_plot')
-
     return True
 
 # Used by autoconfig_import_launcher(). Returns a dictionary with the Launcher NFO file information.
 # If there is any error return a dictionary with empty information.
-def fs_read_launcher_NFO(nfo_FileName):
+def fs_read_launcher_NFO(nfo_FN):
     launcher_dic = {
         'year' : '',
         'genre' : '',
@@ -1284,22 +1281,21 @@ def fs_read_launcher_NFO(nfo_FileName):
         'plot' : '',
     }
 
-    log_debug('fs_read_launcher_NFO() Importing "{}"'.format(nfo_FileName.getPath()))
+    log_debug('fs_read_launcher_NFO() Importing "{}"'.format(nfo_FN.getPath()))
     # Return a dictionary with empty values if file not found.
-    if not os.path.isfile(nfo_FileName.getPath()):
-        kodi_notify_warn('NFO file not found {}'.format(os.path.basename(nfo_FileName.getPath())))
-        log_info("fs_read_launcher_NFO() NFO file not found '{}'".format(nfo_FileName.getPath()))
+    if not os.path.isfile(nfo_FN.getPath()):
+        kodi_notify_warn('NFO file not found {}'.format(os.path.basename(nfo_FN.getPath())))
+        log_info("fs_read_launcher_NFO() NFO file not found '{}'".format(nfo_FN.getPath()))
         return launcher_dic
 
     # Read file, put in a single-line string and remove all line endings.
-    nfo_str = utils_load_file_to_str(nfo_FileName.getPath())
+    nfo_str = utils_load_file_to_str(nfo_FN.getPath())
     nfo_str = nfo_str.replace('\r', '').replace('\n', '')
     update_dic_with_NFO_str(nfo_str, 'year', nfo_dic, 'm_year')
     update_dic_with_NFO_str(nfo_str, 'genre', nfo_dic, 'm_genre')
     update_dic_with_NFO_str(nfo_str, 'developer', nfo_dic, 'm_developer')
     update_dic_with_NFO_str(nfo_str, 'rating', nfo_dic, 'm_rating')
     update_dic_with_NFO_str(nfo_str, 'plot', nfo_dic, 'm_plot')
-
     return launcher_dic
 
 # Returns a FileName object
@@ -1307,12 +1303,11 @@ def fs_get_launcher_NFO_name(settings, launcher):
     launcher_name = launcher['m_name']
     nfo_dir = settings['launchers_asset_dir']
     nfo_FN = FileName(os.path.join(nfo_dir, launcher_name + '.nfo'))
-
     return nfo_FN
 
 # Look at the Launcher NFO files for a reference implementation.
-def fs_export_category_NFO(nfo_FileName, category):
-    log_debug('fs_export_category_NFO() Exporting "{}"'.format(nfo_FileName.getPath()))
+def fs_export_category_NFO(nfo_FN, category):
+    log_debug('fs_export_category_NFO() Exporting "{}"'.format(nfo_FN.getPath()))
 
     # If NFO file does not exist then create them. If it exists, overwrite.
     nfo_content = [
@@ -1327,8 +1322,7 @@ def fs_export_category_NFO(nfo_FileName, category):
         '</category>',
         '', # End file in newline
     ]
-    utils_write_slist_to_file(nfo_FileName.getPath(), nfo_content)
-
+    utils_write_slist_to_file(nfo_FN.getPath(), nfo_content)
     return True
 
 def fs_import_category_NFO(nfo_FN, categories, categoryID):
@@ -1346,7 +1340,6 @@ def fs_import_category_NFO(nfo_FN, categories, categoryID):
     update_dic_with_NFO_str(nfo_str, 'developer', nfo_dic, 'm_developer')
     update_dic_with_NFO_str(nfo_str, 'rating', nfo_dic, 'm_rating')
     update_dic_with_NFO_str(nfo_str, 'plot', nfo_dic, 'm_plot')
-
     return True
 
 # Returns a FileName object.
@@ -1354,7 +1347,6 @@ def fs_get_category_NFO_name(settings, category):
     category_name = category['m_name']
     nfo_dir = settings['categories_asset_dir']
     nfo_FN = FileName(os.path.join(nfo_dir, category_name + '.nfo'))
-
     return nfo_FN
 
 # Collection NFO files. Same as Category NFO files.
@@ -1373,11 +1365,11 @@ def fs_export_collection_NFO(nfo_FileName, collection):
         '',
     ]
     utils_write_slist_to_file(nfo_FileName.getPath(), nfo_slist)
-
     return True
 
+# Notifies errors in Kodi GUI. Success is notified in the caller.
+# Returns True if dictionary edited, False otherwise.
 def fs_import_collection_NFO(nfo_FileName, collections, launcherID):
-
     log_debug('fs_import_collection_NFO() Importing "{}"'.format(nfo_FileName.getPath()))
     if not nfo_FileName.isfile():
         kodi_notify_warn('NFO file not found {}'.format(os.path.basename(nfo_FileName.getOriginalPath())))
@@ -1389,12 +1381,10 @@ def fs_import_collection_NFO(nfo_FileName, collections, launcherID):
     update_dic_with_NFO_str(nfo_str, 'genre', nfo_dic, 'm_genre')
     update_dic_with_NFO_str(nfo_str, 'rating', nfo_dic, 'm_rating')
     update_dic_with_NFO_str(nfo_str, 'plot', nfo_dic, 'm_plot')
-
     return True
 
 def fs_get_collection_NFO_name(settings, collection):
     collection_name = collection['m_name']
     nfo_dir = settings['collections_asset_dir']
     nfo_FN = FileName(os.path.join(nfo_dir, collection_name + '.nfo'))
-
     return nfo_FN
