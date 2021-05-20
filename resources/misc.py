@@ -839,7 +839,7 @@ ASSET_URL_THUMB_L = 100
 # PUT functions to print things returned by Scraper object (which are common to all scrapers)
 # into util.py, to be resused by all scraper tests.
 def print_candidate_list(results):
-    p_str = "{0} {1} {2} {3} {4}"
+    p_str = "{} {} {} {} {}"
     print('Found {} candidate/s'.format(len(results)))
     print(p_str.format(
         'Display name'.ljust(NAME_L), 'Score'.ljust(SCORE_L),
@@ -866,7 +866,7 @@ def print_game_metadata(metadata):
     esrb      = text_limit_string(metadata['esrb'], ESRB_L)
     plot      = text_limit_string(metadata['plot'], PLOT_L)
 
-    p_str = "{0} {1} {2} {3} {4} {5} {6}"
+    p_str = "{} {} {} {} {} {} {}"
     print('Displaying metadata for title "{}"'.format(title))
     print(p_str.format(
         'Title'.ljust(TITLE_L), 'Year'.ljust(YEAR_L), 'Genre'.ljust(GENRE_L),
@@ -881,7 +881,7 @@ def print_game_metadata(metadata):
 
 def print_game_assets(image_list):
     # print('Found {} image/s'.format(len(image_list)))
-    p_str = "{0} {1} {2}"
+    p_str = "{} {} {}"
     print(p_str.format(
         'Asset ID'.ljust(ASSET_ID_L), 'Name'.ljust(ASSET_NAME_L),
         'URL thumb'.ljust(ASSET_URL_THUMB_L)))

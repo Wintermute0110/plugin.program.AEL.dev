@@ -1156,17 +1156,15 @@ def kodi_get_cached_image_FN(image_path):
 
     return cache_file_path
 
-#
 # Updates Kodi image cache for the image provided in img_path.
 # In other words, copies the image img_path into Kodi cache entry.
 # Needles to say, only update image cache if image already was on the cache.
 # img_path is a Unicode string
-#
 def kodi_update_image_cache(img_path):
     # What if image is not cached?
     cached_thumb = kodi_get_cached_image_FN(img_path)
-    log_debug('kodi_update_image_cache()       img_path {0}'.format(img_path))
-    log_debug('kodi_update_image_cache()   cached_thumb {0}'.format(cached_thumb))
+    log_debug('kodi_update_image_cache()       img_path {}'.format(img_path))
+    log_debug('kodi_update_image_cache()   cached_thumb {}'.format(cached_thumb))
 
     # For some reason Kodi xbmc.getCacheThumbName() returns a filename ending in TBN.
     # However, images in the cache have the original extension. Replace TBN extension
@@ -1175,7 +1173,7 @@ def kodi_update_image_cache(img_path):
     if cached_thumb_ext == '.tbn':
         img_path_root, img_path_ext = os.path.splitext(img_path)
         cached_thumb = cached_thumb.replace('.tbn', img_path_ext)
-        log_debug('kodi_update_image_cache() U cached_thumb {0}'.format(cached_thumb))
+        log_debug('kodi_update_image_cache() U cached_thumb {}'.format(cached_thumb))
 
     # --- Check if file exists in the cache ---
     # xbmc.getCacheThumbName() seems to return a filename even if the local file does not exist!
@@ -1186,10 +1184,10 @@ def kodi_update_image_cache(img_path):
     # --- Copy local image into Kodi image cache ---
     # >> See https://docs.python.org/2/library/sys.html#sys.getfilesystemencoding
     log_debug('kodi_update_image_cache() Image found in cache. Updating Kodi image cache')
-    log_debug('kodi_update_image_cache() copying {0}'.format(img_path))
-    log_debug('kodi_update_image_cache() into    {0}'.format(cached_thumb))
+    log_debug('kodi_update_image_cache() copying {}'.format(img_path))
+    log_debug('kodi_update_image_cache() into    {}'.format(cached_thumb))
     fs_encoding = sys.getfilesystemencoding()
-    log_debug('kodi_update_image_cache() fs_encoding = "{0}"'.format(fs_encoding))
+    log_debug('kodi_update_image_cache() fs_encoding = "{}"'.format(fs_encoding))
     encoded_img_path = img_path.encode(fs_encoding, 'ignore')
     encoded_cached_thumb = cached_thumb.encode(fs_encoding, 'ignore')
     try:

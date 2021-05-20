@@ -295,7 +295,7 @@ def audit_load_GameDB_XML(xml_FN):
 
             # ROM name is an attribute of <game>
             game['name'] = game_element.attrib['name']
-            if __debug_xml_parser: log_debug('Game name = "{0}"'.format(game['name']))
+            if __debug_xml_parser: log_debug('Game name = "{}"'.format(game['name']))
 
             # Parse child tags of category
             for game_child in game_element:
@@ -303,7 +303,7 @@ def audit_load_GameDB_XML(xml_FN):
                 xml_text = game_child.text if game_child.text is not None else ''
                 xml_text = text_unescape_XML(xml_text)
                 xml_tag  = game_child.tag
-                if __debug_xml_parser: log_debug('Tag "{0}" --> "{1}"'.format(xml_tag, xml_text))
+                if __debug_xml_parser: log_debug('Tag "{}" --> "{}"'.format(xml_tag, xml_text))
                 game[xml_tag] = xml_text
             key = game['name']
             games[key] = game
@@ -320,13 +320,13 @@ def audit_load_Tempest_INI(file_FN):
 
     # --- Check that file exists ---
     if not file_FN.exists():
-        log_error('Does not exists "{0}"'.format(file_FN.getPath()))
+        log_error('Does not exists "{}"'.format(file_FN.getPath()))
         return games
-    log_verb('Loading XML "{0}"'.format(file_FN.getPath()))
+    log_verb('Loading XML "{}"'.format(file_FN.getPath()))
     try:
         f = open(file_FN.getPath(), 'rt')
     except IOError:
-        log_info('audit_load_Tempest_INI() IOError opening "{0}"'.format(filename))
+        log_info('audit_load_Tempest_INI() IOError opening "{}"'.format(filename))
         return {}
     for file_line in f:
         stripped_line = file_line.strip().decode(errors = 'replace')
@@ -369,7 +369,7 @@ def audit_load_Tempest_INI(file_FN):
         else:
             raise CriticalError('Unknown read_status FSM value')
     f.close()
-    log_info('audit_load_Tempest_INI() Number of games {0}'.format(len(games)))
+    log_info('audit_load_Tempest_INI() Number of games {}'.format(len(games)))
 
     return games
 
@@ -402,7 +402,7 @@ def audit_load_HyperList_XML(xml_FN):
 
             # ROM name is an attribute of <game>
             game['name'] = game_element.attrib['name']
-            if __debug_xml_parser: log_debug('Game name = "{0}"'.format(game['name']))
+            if __debug_xml_parser: log_debug('Game name = "{}"'.format(game['name']))
 
             # Parse child tags of category
             for game_child in game_element:
@@ -410,7 +410,7 @@ def audit_load_HyperList_XML(xml_FN):
                 xml_text = game_child.text if game_child.text is not None else ''
                 xml_text = text_unescape_XML(xml_text)
                 xml_tag  = game_child.tag
-                if __debug_xml_parser: log_debug('Tag "{0}" --> "{1}"'.format(xml_tag, xml_text))
+                if __debug_xml_parser: log_debug('Tag "{}" --> "{}"'.format(xml_tag, xml_text))
                 game[xml_tag] = xml_text
             key = game['name']
             games[key] = game
@@ -480,8 +480,8 @@ def audit_generate_DAT_PClone_index(roms, roms_nointro, unknown_ROMs_are_parents
         rom = roms[rom_id]
         ROMFileName = FileName(rom['filename'])
         rom_name = ROMFileName.getBase_noext()
-        # log_debug('{0} --> {1}'.format(rom_name, rom_id))
-        # log_debug('{0}'.format(rom))
+        # log_debug('{} --> {}'.format(rom_name, rom_id))
+        # log_debug('{}'.format(rom))
         names_to_ids_dic[rom_name] = rom_id
 
     # --- Build PClone dictionary using ROM base_noext names ---
@@ -489,11 +489,11 @@ def audit_generate_DAT_PClone_index(roms, roms_nointro, unknown_ROMs_are_parents
         rom = roms[rom_id]
         ROMFileName = FileName(rom['filename'])
         rom_nointro_name = ROMFileName.getBase_noext()
-        # log_debug('rom_id {0}'.format(rom_id))
-        # log_debug('  nointro_status   "{0}"'.format(rom['nointro_status']))
-        # log_debug('  filename         "{0}"'.format(rom['filename']))
-        # log_debug('  ROM_base_noext   "{0}"'.format(ROMFileName.getBase_noext()))
-        # log_debug('  rom_nointro_name "{0}"'.format(rom_nointro_name))
+        # log_debug('rom_id {}'.format(rom_id))
+        # log_debug('  nointro_status   "{}"'.format(rom['nointro_status']))
+        # log_debug('  filename         "{}"'.format(rom['filename']))
+        # log_debug('  ROM_base_noext   "{}"'.format(ROMFileName.getBase_noext()))
+        # log_debug('  rom_nointro_name "{}"'.format(rom_nointro_name))
 
         if rom['nointro_status'] == AUDIT_STATUS_UNKNOWN:
             if unknown_ROMs_are_parents:

@@ -222,7 +222,7 @@ class Main:
         # log_debug('WindowId       "{}"'.format(xbmcgui.getCurrentWindowId()))
         # log_debug('WindowName     "{}"'.format(xbmc.getInfoLabel('Window.Property(xmlfile)')))
         log_debug('Python version "' + sys.version.replace('\n', '') + '"')
-        # log_debug('__a_name__     "{0}"'.format(__addon_name__))
+        # log_debug('__a_name__     "{}"'.format(__addon_name__))
         log_debug('__a_id__       "{}"'.format(__addon_id__))
         log_debug('__a_version__  "{}"'.format(__addon_version__))
         # log_debug('__a_author__   "{}"'.format(__addon_author__))
@@ -411,7 +411,7 @@ class Main:
         # Auxiliar command to render clone ROM list from context menu in Parent/Clone mode.
         elif command == 'EXEC_SHOW_CLONE_ROMS':
             url = self._misc_url('SHOW_CLONE_ROMS', args['catID'][0], args['launID'][0], args['romID'][0])
-            xbmc.executebuiltin('Container.Update({0})'.format(url))
+            xbmc.executebuiltin('Container.Update({})'.format(url))
         elif command == 'SHOW_CLONE_ROMS':
             self._command_render_clone_roms(args['catID'][0], args['launID'][0], args['romID'][0])
 
@@ -432,7 +432,7 @@ class Main:
 
         # >> Unknown command
         else:
-            kodi_dialog_OK('Unknown command {0}'.format(args['com'][0]) )
+            kodi_dialog_OK('Unknown command {}'.format(args['com'][0]) )
         log_debug('Advanced Emulator Launcher run_concurrent() END')
 
     #
@@ -556,7 +556,7 @@ class Main:
 
         # Unknown command
         else:
-            kodi_dialog_OK('Unknown command {0}'.format(args['com'][0]) )
+            kodi_dialog_OK('Unknown command {}'.format(args['com'][0]) )
         log_debug('Advanced Emulator Launcher run_protected() END')
 
     #
@@ -3312,9 +3312,9 @@ class Main:
                 if current_ROM_position < 0:
                     kodi_notify_warn('ROM ID not found in Collection. This is a bug!')
                     return
-                log_verb('_command_edit_rom() Collection {0} ({1})'.format(collection['m_name'], collection['id']))
-                log_verb('_command_edit_rom() Collection has {0} ROMs'.format(num_roms))
-                log_verb('_command_edit_rom() Moving ROM in position {0} up'.format(current_ROM_position))
+                log_verb('_command_edit_rom() Collection {} ({})'.format(collection['m_name'], collection['id']))
+                log_verb('_command_edit_rom() Collection has {} ROMs'.format(num_roms))
+                log_verb('_command_edit_rom() Moving ROM in position {} up'.format(current_ROM_position))
 
                 # If ROM is first of the list do nothing
                 if current_ROM_position == 0:
@@ -3435,12 +3435,13 @@ class Main:
                 # Render list of launchers for this category.
                 cat_name = self.categories[cat_id]['m_name']
                 for launcher in launcher_list:
-                    launcher_name = '[COLOR thistle]{0}[/COLOR] - {1}'.format(cat_name, launcher['m_name'])
+                    launcher_name = '[COLOR thistle]{}[/COLOR] - {}'.format(cat_name, launcher['m_name'])
                     self._gui_render_launcher_row(launcher, launcher_name)
 
         # --- Render categoryless launchers. Order alphabetically by name ---
         catless_launchers = {}
-        for launcher_id, launcher in self.launchers.iteritems():
+        for launcher_id in self.launchers:
+            launcher = self.launchers[launcher_id]
             if launcher['categoryID'] == VCATEGORY_ADDONROOT_ID:
                 catless_launchers[launcher_id] = launcher
         for launcher_id in sorted(catless_launchers, key = lambda x : catless_launchers[x]['m_name']):
@@ -3527,7 +3528,7 @@ class Main:
         commands.append(('Create New Category', self._misc_url_RunPlugin('ADD_CATEGORY')))
         commands.append(('Add New Launcher', self._misc_url_RunPlugin('ADD_LAUNCHER', categoryID)))
         commands.append(('Kodi File Manager', 'ActivateWindow(filemanager)', )) # If using window ID then use "10003"
-        commands.append(('AEL addon settings', 'Addon.OpenSettings({0})'.format(__addon_id__), ))
+        commands.append(('AEL addon settings', 'Addon.OpenSettings({})'.format(__addon_id__), ))
         # In Krypton "Add to favourites" appears always in the last position of context menu.
 
         if (xbmc.getCondVisibility("!Skin.HasSetting(KioskMode.Enabled)")):
@@ -3556,7 +3557,7 @@ class Main:
         commands.append(('Create New Category', self._misc_url_RunPlugin('ADD_CATEGORY')))
         commands.append(('Add New Launcher', self._misc_url_RunPlugin('ADD_LAUNCHER_ROOT')))
         commands.append(('Kodi File Manager', 'ActivateWindow(filemanager)'))
-        commands.append(('AEL addon settings', 'Addon.OpenSettings({0})'.format(__addon_id__)))
+        commands.append(('AEL addon settings', 'Addon.OpenSettings({})'.format(__addon_id__)))
         if (xbmc.getCondVisibility("!Skin.HasSetting(KioskMode.Enabled)")):
             listitem.addContextMenuItems(commands, replaceItems = True)
 
@@ -3581,7 +3582,7 @@ class Main:
         commands.append(('Create New Category', self._misc_url_RunPlugin('ADD_CATEGORY')))
         commands.append(('Add New Launcher', self._misc_url_RunPlugin('ADD_LAUNCHER_ROOT')))
         commands.append(('Kodi File Manager', 'ActivateWindow(filemanager)'))
-        commands.append(('AEL addon settings', 'Addon.OpenSettings({0})'.format(__addon_id__)))
+        commands.append(('AEL addon settings', 'Addon.OpenSettings({})'.format(__addon_id__)))
         if (xbmc.getCondVisibility("!Skin.HasSetting(KioskMode.Enabled)")):
             listitem.addContextMenuItems(commands, replaceItems = True)
 
@@ -3606,7 +3607,7 @@ class Main:
         commands.append(('Create New Category', self._misc_url_RunPlugin('ADD_CATEGORY')))
         commands.append(('Add New Launcher', self._misc_url_RunPlugin('ADD_LAUNCHER_ROOT')))
         commands.append(('Kodi File Manager', 'ActivateWindow(filemanager)'))
-        commands.append(('AEL addon settings', 'Addon.OpenSettings({0})'.format(__addon_id__)))
+        commands.append(('AEL addon settings', 'Addon.OpenSettings({})'.format(__addon_id__)))
         if (xbmc.getCondVisibility("!Skin.HasSetting(KioskMode.Enabled)")):
             listitem.addContextMenuItems(commands, replaceItems = True)
 
@@ -3629,7 +3630,7 @@ class Main:
         commands.append(('Create New Category', self._misc_url_RunPlugin('ADD_CATEGORY')))
         commands.append(('Add New Launcher', self._misc_url_RunPlugin('ADD_LAUNCHER_ROOT')))
         commands.append(('Kodi File Manager', 'ActivateWindow(filemanager)'))
-        commands.append(('AEL addon settings', 'Addon.OpenSettings({0})'.format(__addon_id__)))
+        commands.append(('AEL addon settings', 'Addon.OpenSettings({})'.format(__addon_id__)))
         if (xbmc.getCondVisibility("!Skin.HasSetting(KioskMode.Enabled)")):
             listitem.addContextMenuItems(commands, replaceItems = True)
 
@@ -3652,7 +3653,7 @@ class Main:
         commands.append(('Create New Category', self._misc_url_RunPlugin('ADD_CATEGORY')))
         commands.append(('Add New Launcher', self._misc_url_RunPlugin('ADD_LAUNCHER_ROOT')))
         commands.append(('Kodi File Manager', 'ActivateWindow(filemanager)'))
-        commands.append(('AEL addon settings', 'Addon.OpenSettings({0})'.format(__addon_id__)))
+        commands.append(('AEL addon settings', 'Addon.OpenSettings({})'.format(__addon_id__)))
         if (xbmc.getCondVisibility("!Skin.HasSetting(KioskMode.Enabled)")):
             listitem.addContextMenuItems(commands, replaceItems = True)
 
@@ -3675,7 +3676,7 @@ class Main:
         commands.append(('Create New Category', self._misc_url_RunPlugin('ADD_CATEGORY')))
         commands.append(('Add New Launcher', self._misc_url_RunPlugin('ADD_LAUNCHER_ROOT')))
         commands.append(('Kodi File Manager', 'ActivateWindow(filemanager)'))
-        commands.append(('AEL addon settings', 'Addon.OpenSettings({0})'.format(__addon_id__)))
+        commands.append(('AEL addon settings', 'Addon.OpenSettings({})'.format(__addon_id__)))
         if (xbmc.getCondVisibility("!Skin.HasSetting(KioskMode.Enabled)")):
             listitem.addContextMenuItems(commands, replaceItems = True)
 
@@ -3698,7 +3699,7 @@ class Main:
         commands.append(('Create New Category', self._misc_url_RunPlugin('ADD_CATEGORY')))
         commands.append(('Add New Launcher', self._misc_url_RunPlugin('ADD_LAUNCHER_ROOT')))
         commands.append(('Kodi File Manager', 'ActivateWindow(filemanager)'))
-        commands.append(('AEL addon settings', 'Addon.OpenSettings({0})'.format(__addon_id__)))
+        commands.append(('AEL addon settings', 'Addon.OpenSettings({})'.format(__addon_id__)))
         if (xbmc.getCondVisibility("!Skin.HasSetting(KioskMode.Enabled)")):
             listitem.addContextMenuItems(commands, replaceItems = True)
 
@@ -3719,7 +3720,7 @@ class Main:
 
         commands = []
         commands.append(('Open Kodi file manager', 'ActivateWindow(filemanager)'))
-        commands.append(('AEL addon settings', 'Addon.OpenSettings({0})'.format(__addon_id__)))
+        commands.append(('AEL addon settings', 'Addon.OpenSettings({})'.format(__addon_id__)))
         if (xbmc.getCondVisibility("!Skin.HasSetting(KioskMode.Enabled)")):
             listitem.addContextMenuItems(commands)
 
@@ -3740,7 +3741,7 @@ class Main:
 
         commands = []
         commands.append(('Open Kodi file manager', 'ActivateWindow(filemanager)'))
-        commands.append(('AEL addon settings', 'Addon.OpenSettings({0})'.format(__addon_id__)))
+        commands.append(('AEL addon settings', 'Addon.OpenSettings({})'.format(__addon_id__)))
         if (xbmc.getCondVisibility("!Skin.HasSetting(KioskMode.Enabled)")):
             listitem.addContextMenuItems(commands)
 
@@ -3768,62 +3769,62 @@ class Main:
         if virtual_category_kind == VCATEGORY_TITLE_ID:
             vcategory_name   = 'Browse ROMs by Title'
             vcategory_label  = 'Title'
-            vcategory_plot   = 'Browse virtual launchers in {0} virtual category'.format(vcategory_label)
+            vcategory_plot   = 'Browse virtual launchers in {} virtual category'.format(vcategory_label)
             vcategory_icon   = g_PATHS.ADDON_CODE_DIR.pjoin('media/theme/Browse_by_Title_icon.png').getPath()
             vcategory_fanart = g_PATHS.FANART_FILE_PATH.getPath()
             vcategory_poster = g_PATHS.ADDON_CODE_DIR.pjoin('media/theme/Browse_by_Title_poster.png').getPath()
         elif virtual_category_kind == VCATEGORY_YEARS_ID:
             vcategory_name   = 'Browse by Year'
             vcategory_label  = 'Year'
-            vcategory_plot   = 'Browse virtual launchers in {0} virtual category'.format(vcategory_label)
+            vcategory_plot   = 'Browse virtual launchers in {} virtual category'.format(vcategory_label)
             vcategory_icon   = g_PATHS.ADDON_CODE_DIR.pjoin('media/theme/Browse_by_Year_icon.png').getPath()
             vcategory_fanart = g_PATHS.FANART_FILE_PATH.getPath()
             vcategory_poster = g_PATHS.ADDON_CODE_DIR.pjoin('media/theme/Browse_by_Year_poster.png').getPath()
         elif virtual_category_kind == VCATEGORY_GENRE_ID:
             vcategory_name   = 'Browse by Genre'
             vcategory_label  = 'Genre'
-            vcategory_plot   = 'Browse virtual launchers in {0} virtual category'.format(vcategory_label)
+            vcategory_plot   = 'Browse virtual launchers in {} virtual category'.format(vcategory_label)
             vcategory_icon   = g_PATHS.ADDON_CODE_DIR.pjoin('media/theme/Browse_by_Genre_icon.png').getPath()
             vcategory_fanart = g_PATHS.FANART_FILE_PATH.getPath()
             vcategory_poster = g_PATHS.ADDON_CODE_DIR.pjoin('media/theme/Browse_by_Genre_poster.png').getPath()
         elif virtual_category_kind == VCATEGORY_DEVELOPER_ID:
             vcategory_name   = 'Browse by Developer'
             vcategory_label  = 'Developer'
-            vcategory_plot   = 'Browse virtual launchers in {0} virtual category'.format(vcategory_label)
+            vcategory_plot   = 'Browse virtual launchers in {} virtual category'.format(vcategory_label)
             vcategory_icon   = g_PATHS.ADDON_CODE_DIR.pjoin('media/theme/Browse_by_Developer_icon.png').getPath()
             vcategory_fanart = g_PATHS.FANART_FILE_PATH.getPath()
             vcategory_poster = g_PATHS.ADDON_CODE_DIR.pjoin('media/theme/Browse_by_Developer_poster.png').getPath()
         elif virtual_category_kind == VCATEGORY_NPLAYERS_ID:
             vcategory_name   = 'Browse by Number of Players'
             vcategory_label  = 'NPlayers'
-            vcategory_plot   = 'Browse virtual launchers in {0} virtual category'.format(vcategory_label)
+            vcategory_plot   = 'Browse virtual launchers in {} virtual category'.format(vcategory_label)
             vcategory_icon   = g_PATHS.ADDON_CODE_DIR.pjoin('media/theme/Browse_by_NPlayers_icon.png').getPath()
             vcategory_fanart = g_PATHS.FANART_FILE_PATH.getPath()
             vcategory_poster = g_PATHS.ADDON_CODE_DIR.pjoin('media/theme/Browse_by_NPlayers_poster.png').getPath()
         elif virtual_category_kind == VCATEGORY_ESRB_ID:
             vcategory_name   = 'Browse by ESRB Rating'
             vcategory_label  = 'ESRB'
-            vcategory_plot   = 'Browse virtual launchers in {0} virtual category'.format(vcategory_label)
+            vcategory_plot   = 'Browse virtual launchers in {} virtual category'.format(vcategory_label)
             vcategory_icon   = g_PATHS.ADDON_CODE_DIR.pjoin('media/theme/Browse_by_ESRB_icon.png').getPath()
             vcategory_fanart = g_PATHS.FANART_FILE_PATH.getPath()
             vcategory_poster = g_PATHS.ADDON_CODE_DIR.pjoin('media/theme/Browse_by_ESRB_poster.png').getPath()
         elif virtual_category_kind == VCATEGORY_RATING_ID:
             vcategory_name   = 'Browse by User Rating'
             vcategory_label  = 'Rating'
-            vcategory_plot   = 'Browse virtual launchers in {0} virtual category'.format(vcategory_label)
+            vcategory_plot   = 'Browse virtual launchers in {} virtual category'.format(vcategory_label)
             vcategory_icon   = g_PATHS.ADDON_CODE_DIR.pjoin('media/theme/Browse_by_User_Rating_icon.png').getPath()
             vcategory_fanart = g_PATHS.FANART_FILE_PATH.getPath()
             vcategory_poster = g_PATHS.ADDON_CODE_DIR.pjoin('media/theme/Browse_by_User_Rating_poster.png').getPath()
         elif virtual_category_kind == VCATEGORY_CATEGORY_ID:
             vcategory_name   = 'Browse by Category'
             vcategory_label  = 'Category'
-            vcategory_plot   = 'Browse virtual launchers in {0} virtual category'.format(vcategory_label)
+            vcategory_plot   = 'Browse virtual launchers in {} virtual category'.format(vcategory_label)
             vcategory_icon   = g_PATHS.ADDON_CODE_DIR.pjoin('media/theme/Browse_by_Category_icon.png').getPath()
             vcategory_fanart = g_PATHS.FANART_FILE_PATH.getPath()
             vcategory_poster = g_PATHS.ADDON_CODE_DIR.pjoin('media/theme/Browse_by_Category_poster.png').getPath()
         else:
-            log_error('_gui_render_virtual_category_row() Wrong virtual_category_kind = {0}'.format(virtual_category_kind))
-            kodi_dialog_OK('Wrong virtual_category_kind = {0}'.format(virtual_category_kind))
+            log_error('_gui_render_virtual_category_row() Wrong virtual_category_kind = {}'.format(virtual_category_kind))
+            kodi_dialog_OK('Wrong virtual_category_kind = {}'.format(virtual_category_kind))
             return
         listitem = xbmcgui.ListItem(vcategory_name)
         listitem.setInfo('video', {'title': vcategory_name, 'plot' : vcategory_plot, 'overlay': 4})
@@ -3833,12 +3834,12 @@ class Main:
         commands = []
         update_vcat_URL = self._misc_url_RunPlugin('UPDATE_VIRTUAL_CATEGORY', virtual_category_kind)
         update_vcat_all_URL = self._misc_url_RunPlugin('UPDATE_ALL_VCATEGORIES')
-        commands.append(('Update {0} database'.format(vcategory_label), update_vcat_URL))
+        commands.append(('Update {} database'.format(vcategory_label), update_vcat_URL))
         commands.append(('Update all databases', update_vcat_all_URL))
         commands.append(('Create New Category', self._misc_url_RunPlugin('ADD_CATEGORY')))
         commands.append(('Add New Launcher',    self._misc_url_RunPlugin('ADD_LAUNCHER_ROOT')))
         commands.append(('Kodi File Manager', 'ActivateWindow(filemanager)'))
-        commands.append(('AEL addon settings', 'Addon.OpenSettings({0})'.format(__addon_id__)))
+        commands.append(('AEL addon settings', 'Addon.OpenSettings({})'.format(__addon_id__)))
         if (xbmc.getCondVisibility("!Skin.HasSetting(KioskMode.Enabled)")):
             listitem.addContextMenuItems(commands, replaceItems = True)
 
@@ -3922,8 +3923,8 @@ class Main:
         if not db_suffix:
             title_str += ' [COLOR red][Not available][/COLOR]'
         else:
-            title_str += ' [COLOR orange]({0} ROMs)[/COLOR]'.format(platform_info['numROMs'])
-        plot_text = 'Browse [COLOR orange]{0}[/COLOR] ROMs in LaunchBox Offline Scraper database'.format(platform)
+            title_str += ' [COLOR orange]({} ROMs)[/COLOR]'.format(platform_info['numROMs'])
+        plot_text = 'Browse [COLOR orange]{}[/COLOR] ROMs in LaunchBox Offline Scraper database'.format(platform)
         vlauncher_icon   = g_PATHS.ADDON_CODE_DIR.pjoin('media/theme/Browse_LaunchBox_Offline_icon.png').getPath()
         vlauncher_fanart = g_PATHS.FANART_FILE_PATH.getPath()
         vlauncher_poster = g_PATHS.ADDON_CODE_DIR.pjoin('media/theme/Browse_LaunchBox_Offline_poster.png').getPath()
@@ -3937,7 +3938,7 @@ class Main:
 
         commands = []
         commands.append(('Kodi File Manager', 'ActivateWindow(filemanager)'))
-        commands.append(('AEL addon settings', 'Addon.OpenSettings({0})'.format(__addon_id__)))
+        commands.append(('AEL addon settings', 'Addon.OpenSettings({})'.format(__addon_id__)))
         if (xbmc.getCondVisibility("!Skin.HasSetting(KioskMode.Enabled)")):
             listitem.addContextMenuItems(commands, replaceItems = True)
 
@@ -3948,7 +3949,7 @@ class Main:
         # --- Common context menu for all VLaunchers ---
         commands = [
             ('Kodi File Manager', 'ActivateWindow(filemanager)'),
-            ('AEL addon settings', 'Addon.OpenSettings({0})'.format(__addon_id__)),
+            ('AEL addon settings', 'Addon.OpenSettings({})'.format(__addon_id__)),
         ]
 
         # --- Common artwork for all Utilities VLaunchers ---
@@ -4179,7 +4180,7 @@ class Main:
         # --- Common context menu for all VLaunchers ---
         commands = []
         commands.append(('Kodi File Manager', 'ActivateWindow(filemanager)'))
-        commands.append(('AEL addon settings', 'Addon.OpenSettings({0})'.format(__addon_id__)))
+        commands.append(('AEL addon settings', 'Addon.OpenSettings({})'.format(__addon_id__)))
 
         # --- Common artwork for all VLaunchers ---
         vcategory_icon   = g_PATHS.ADDON_CODE_DIR.pjoin('media/theme/Global_Reports_icon.png').getPath()
@@ -4259,7 +4260,7 @@ class Main:
             if self.launchers[launcher_id]['categoryID'] == categoryID: launcher_IDs.append(launcher_id)
         if not launcher_IDs:
             category_name = self.categories[categoryID]['m_name']
-            kodi_notify('Category {0} has no launchers. Add launchers first.'.format(category_name))
+            kodi_notify('Category {} has no launchers. Add launchers first.'.format(category_name))
             # NOTE If we return at this point Kodi produces and error:
             # ERROR: GetDirectory - Error getting plugin://plugin.program.advanced.emulator.launcher/?catID=8...f&com=SHOW_LAUNCHERS
             # ERROR: CGUIMediaWindow::GetDirectory(plugin://plugin.program.advanced.emulator.launcher/?catID=8...2f&com=SHOW_LAUNCHERS) failed
@@ -4270,8 +4271,8 @@ class Main:
             # self._command_render_categories()
             #
             # What about replacewindow? I also get the error, still not clear why...
-            # xbmc.executebuiltin('ReplaceWindow(Programs,{0})'.format(self.base_url)) # Does not work
-            # xbmc.executebuiltin('ReplaceWindow({0})'.format(self.base_url)) # Does not work
+            # xbmc.executebuiltin('ReplaceWindow(Programs,{})'.format(self.base_url)) # Does not work
+            # xbmc.executebuiltin('ReplaceWindow({})'.format(self.base_url)) # Does not work
             #
             # Container.Refresh does not work either...
             # kodi_refresh_container()
@@ -4398,7 +4399,7 @@ class Main:
         if categoryID == VCATEGORY_ADDONROOT_ID:
                 commands.append(('Create New Category', self._misc_url_RunPlugin('ADD_CATEGORY')))
         commands.append(('Kodi File Manager', 'ActivateWindow(filemanager)'))
-        commands.append(('AEL addon settings', 'Addon.OpenSettings({0})'.format(__addon_id__)))
+        commands.append(('AEL addon settings', 'Addon.OpenSettings({})'.format(__addon_id__)))
         if (xbmc.getCondVisibility("!Skin.HasSetting(KioskMode.Enabled)")):
             listitem.addContextMenuItems(commands, replaceItems = True)
 
@@ -4464,11 +4465,11 @@ class Main:
         if romID != UNKNOWN_ROMS_PARENT_ID: roms[romID] = all_roms[romID]
         # >> Add clones, if any
         for rom_id in pclone_index[romID]: roms[rom_id] = all_roms[rom_id]
-        log_verb('_command_render_clone_roms() Parent ID {0}'.format(romID))
-        log_verb('_command_render_clone_roms() Number of clone ROMs = {0}'.format(len(roms)))
+        log_verb('_command_render_clone_roms() Parent ID {}'.format(romID))
+        log_verb('_command_render_clone_roms() Number of clone ROMs = {}'.format(len(roms)))
         # for key in roms:
-        #     log_debug('key   = {0}'.format(key))
-        #     log_debug('value = {0}'.format(roms[key]))
+        #     log_debug('key   = {}'.format(key))
+        #     log_debug('value = {}'.format(roms[key]))
 
         # --- ROM display filter ---
         dp_mode = selectedLauncher['audit_display_mode']
@@ -4619,17 +4620,13 @@ class Main:
         rendering_ticks_end = time.time()
 
         # --- DEBUG Data loading/rendering statistics ---
-        log_debug('Loading seconds   {0}'.format(loading_ticks_end - loading_ticks_start))
-        log_debug('Rendering seconds {0}'.format(rendering_ticks_end - rendering_ticks_start))
+        log_debug('Loading seconds   {}'.format(loading_ticks_end - loading_ticks_start))
+        log_debug('Rendering seconds {}'.format(rendering_ticks_end - rendering_ticks_start))
 
-    #
-    # Former _add_rom()
     # Note that if we are rendering favourites, categoryID = VCATEGORY_FAVOURITES_ID
     # Note that if we are rendering virtual launchers, categoryID = VCATEGORY_*_ID
-    #
     def _gui_render_rom_row(self, categoryID, launcherID, rom,
-                            rom_in_fav = False, view_mode = LAUNCHER_DMODE_FLAT,
-                            is_parent_launcher = False, num_clones = 0):
+        rom_in_fav = False, view_mode = LAUNCHER_DMODE_FLAT, is_parent_launcher = False, num_clones = 0):
         # --- Do not render row if ROM is finished ---
         if rom['finished'] and self.settings['display_hide_finished']: return
 
@@ -4763,7 +4760,7 @@ class Main:
             else:
                 rom_name = rom_raw_name
             if is_parent_launcher and num_clones > 0:
-                rom_name += ' [COLOR orange][{0} clones][/COLOR]'.format(num_clones)
+                rom_name += ' [COLOR orange][{} clones][/COLOR]'.format(num_clones)
             if   nstat == AUDIT_STATUS_HAVE:    AEL_NoIntro_stat_value = AEL_NOINTRO_STAT_VALUE_HAVE
             elif nstat == AUDIT_STATUS_MISS:    AEL_NoIntro_stat_value = AEL_NOINTRO_STAT_VALUE_MISS
             elif nstat == AUDIT_STATUS_UNKNOWN: AEL_NoIntro_stat_value = AEL_NOINTRO_STAT_VALUE_UNKNOWN
@@ -4886,7 +4883,7 @@ class Main:
             commands.append(('Add ROM to Collection',     self._misc_url_RunPlugin('ADD_TO_COLLECTION', categoryID, launcherID, romID)))
             commands.append(('Search ROMs in Launcher',   self._misc_url_RunPlugin('SEARCH_LAUNCHER',   categoryID, launcherID)))
             commands.append(('Edit Launcher',             self._misc_url_RunPlugin('EDIT_LAUNCHER',     categoryID, launcherID)))
-        commands.append(('AEL addon settings', 'Addon.OpenSettings({0})'.format(__addon_id__), ))
+        commands.append(('AEL addon settings', 'Addon.OpenSettings({})'.format(__addon_id__), ))
         if (xbmc.getCondVisibility("!Skin.HasSetting(KioskMode.Enabled)")):
             listitem.addContextMenuItems(commands, replaceItems = True)
 
@@ -4922,7 +4919,7 @@ class Main:
 
         # --- Create context menu ---
         commands = []
-        commands.append(('AEL addon settings', 'Addon.OpenSettings({0})'.format(__addon_id__)))
+        commands.append(('AEL addon settings', 'Addon.OpenSettings({})'.format(__addon_id__)))
         if (xbmc.getCondVisibility("!Skin.HasSetting(KioskMode.Enabled)")):
             listitem.addContextMenuItems(commands, replaceItems = True)
 
@@ -4951,7 +4948,7 @@ class Main:
 
         # --- Create context menu ---
         commands = []
-        commands.append(('AEL addon settings', 'Addon.OpenSettings({0})'.format(__addon_id__)))
+        commands.append(('AEL addon settings', 'Addon.OpenSettings({})'.format(__addon_id__)))
         if (xbmc.getCondVisibility("!Skin.HasSetting(KioskMode.Enabled)")):
             listitem.addContextMenuItems(commands, replaceItems = True)
 
@@ -5037,15 +5034,15 @@ class Main:
             vcategory_db_filename = g_PATHS.VCAT_CATEGORY_FILE_PATH
             vcategory_name        = 'Browse by Category'
         else:
-            log_error('_command_render_virtual_category() Wrong virtual_category_kind = {0}'.format(virtual_categoryID))
-            kodi_dialog_OK('Wrong virtual_category_kind = {0}'.format(virtual_categoryID))
+            log_error('_command_render_virtual_category() Wrong virtual_category_kind = {}'.format(virtual_categoryID))
+            kodi_dialog_OK('Wrong virtual_category_kind = {}'.format(virtual_categoryID))
             return
 
         # --- If the virtual category has no launchers then render nothing ---
         # >> Also, tell the user to update the virtual launcher database
         if not vcategory_db_filename.exists():
-            kodi_dialog_OK('{0} database not found. '.format(vcategory_name) +
-                           'Update the virtual category database first.')
+            kodi_dialog_OK('{} database not found. '.format(vcategory_name) +
+                'Update the virtual category database first.')
             xbmcplugin.endOfDirectory(handle = self.addon_handle, succeeded = True, cacheToDisc = False)
             return
 
@@ -5059,7 +5056,7 @@ class Main:
         # --- Render virtual launchers rows ---
         for vlauncher_id in vcategory_launchers:
             vlauncher = vcategory_launchers[vlauncher_id]
-            vlauncher_name = vlauncher['name'] + '  ({0} ROM/s)'.format(vlauncher['rom_count'])
+            vlauncher_name = vlauncher['name'] + '  ({} ROM/s)'.format(vlauncher['rom_count'])
             listitem = xbmcgui.ListItem(vlauncher_name)
             listitem.setInfo('video', {'title'    : 'Title text',
                                        # 'label'    : 'Label text',
@@ -5074,7 +5071,7 @@ class Main:
             commands = []
             commands.append(('Search ROMs in Virtual Launcher', self._misc_url_RunPlugin('SEARCH_LAUNCHER', virtual_categoryID, vlauncher_id)))
             commands.append(('Kodi File Manager', 'ActivateWindow(filemanager)', ))
-            commands.append(('AEL addon settings', 'Addon.OpenSettings({0})'.format(__addon_id__), ))
+            commands.append(('AEL addon settings', 'Addon.OpenSettings({})'.format(__addon_id__), ))
             if (xbmc.getCondVisibility("!Skin.HasSetting(KioskMode.Enabled)")):
                 listitem.addContextMenuItems(commands, replaceItems = True)
 
@@ -5101,8 +5098,8 @@ class Main:
         elif virtual_categoryID == VCATEGORY_RATING_ID:    vcategory_db_dir = g_PATHS.VIRTUAL_CAT_RATING_DIR
         elif virtual_categoryID == VCATEGORY_CATEGORY_ID:  vcategory_db_dir = g_PATHS.VIRTUAL_CAT_CATEGORY_DIR
         else:
-            log_error('_command_render_virtual_launcher_roms() Wrong virtual_category_kind = {0}'.format(virtual_categoryID))
-            kodi_dialog_OK('Wrong virtual_category_kind = {0}'.format(virtual_categoryID))
+            log_error('_command_render_virtual_launcher_roms() Wrong virtual_category_kind = {}'.format(virtual_categoryID))
+            kodi_dialog_OK('Wrong virtual_category_kind = {}'.format(virtual_categoryID))
             return
 
         # --- Load Virtual Launcher DB ---
@@ -5615,7 +5612,7 @@ class Main:
                 new_fav_rom = fs_repair_Favourite_ROM(repair_mode, old_fav_rom, parent_rom, parent_launcher)
                 roms_fav = misc_replace_fav(roms_fav, old_fav_rom_ID, new_fav_rom['id'], new_fav_rom)
                 num_repaired_ROMs += 1
-            log_debug('_command_manage_favourites() Repaired {0} ROMs'.format(num_repaired_ROMs))
+            log_debug('_command_manage_favourites() Repaired {} ROMs'.format(num_repaired_ROMs))
 
             # Show info to user
             kodi_dialog_OK('Found {} Unlinked ROMs. '.format(num_unlinked_ROMs) +
@@ -5741,12 +5738,12 @@ class Main:
 
         # --- Determine view type ---
         log_debug('_command_manage_most_played() BEGIN...')
-        log_debug('rom_ID "{0}"'.format(rom_ID))
+        log_debug('rom_ID "{}"'.format(rom_ID))
         if rom_ID:
             view_type = VIEW_INSIDE_MENU
         else:
             view_type = VIEW_ROOT_MENU
-        log_debug('view_type {0}'.format(view_type))
+        log_debug('view_type {}'.format(view_type))
 
         # --- Build menu base on view_type (Polymorphic menu, determine action) ---
         d_list = [menu[0] for menu in menus_dic[view_type]]
@@ -5897,13 +5894,13 @@ class Main:
             # --- Confirm deletion ---
             rom_name = roms[rom_ID]['m_name']
             msg_str = 'Are you sure you want to delete it from Most Played ROMs?'
-            ret = kodi_dialog_yesno('ROM "{0}". '.format(rom_name) + msg_str)
+            ret = kodi_dialog_yesno('ROM "{}". '.format(rom_name) + msg_str)
             if not ret: return
             roms.pop(rom_ID)
 
             # --- Save ROMs and notify user ---
             fs_write_Favourites_JSON(g_PATHS.MOST_PLAYED_FILE_PATH, roms)
-            kodi_notify('Deleted ROM {0}'.format(rom_name))
+            kodi_notify('Deleted ROM {}'.format(rom_name))
             kodi_refresh_container()
 
         elif action == ACTION_DELETE_ALL:
@@ -6016,7 +6013,7 @@ class Main:
             commands.append(('Create New Collection',    self._misc_url_RunPlugin('ADD_COLLECTION')))
             commands.append(('Import Collection',        self._misc_url_RunPlugin('IMPORT_COLLECTION')))
             commands.append(('Kodi File Manager', 'ActivateWindow(filemanager)'))
-            commands.append(('AEL addon settings', 'Addon.OpenSettings({0})'.format(__addon_id__)))
+            commands.append(('AEL addon settings', 'Addon.OpenSettings({})'.format(__addon_id__)))
             if (xbmc.getCondVisibility("!Skin.HasSetting(KioskMode.Enabled)")):
                 listitem.addContextMenuItems(commands, replaceItems = True)
 
@@ -7009,7 +7006,7 @@ class Main:
                     log_info('_command_view_menu() Viewing ROM in Title Virtual Launcher ...')
                     hashed_db_filename = g_PATHS.VIRTUAL_CAT_TITLE_DIR.pjoin(launcherID + '.json')
                     if not hashed_db_filename.exists():
-                        log_error('_command_view_menu() Cannot find file "{0}"'.format(hashed_db_filename.getPath()))
+                        log_error('_command_view_menu() Cannot find file "{}"'.format(hashed_db_filename.getPath()))
                         kodi_dialog_OK('Virtual launcher XML/JSON file not found.')
                         return
                     roms = fs_load_VCategory_ROMs_JSON(g_PATHS.VIRTUAL_CAT_TITLE_DIR, launcherID)
@@ -7022,7 +7019,7 @@ class Main:
                     log_info('_command_view_menu() Viewing ROM in Year Virtual Launcher ...')
                     hashed_db_filename = g_PATHS.VIRTUAL_CAT_YEARS_DIR.pjoin(launcherID + '.json')
                     if not hashed_db_filename.exists():
-                        log_error('_command_view_menu() Cannot find file "{0}"'.format(hashed_db_filename.getPath()))
+                        log_error('_command_view_menu() Cannot find file "{}"'.format(hashed_db_filename.getPath()))
                         kodi_dialog_OK('Virtual launcher XML/JSON file not found.')
                         return
                     roms = fs_load_VCategory_ROMs_JSON(g_PATHS.VIRTUAL_CAT_YEARS_DIR, launcherID)
@@ -7035,7 +7032,7 @@ class Main:
                     log_info('_command_view_menu() Viewing ROM in Genre Virtual Launcher ...')
                     hashed_db_filename = g_PATHS.VIRTUAL_CAT_GENRE_DIR.pjoin(launcherID + '.json')
                     if not hashed_db_filename.exists():
-                        log_error('_command_view_menu() Cannot find file "{0}"'.format(hashed_db_filename.getPath()))
+                        log_error('_command_view_menu() Cannot find file "{}"'.format(hashed_db_filename.getPath()))
                         kodi_dialog_OK('Virtual launcher XML/JSON file not found.')
                         return
                     roms = fs_load_VCategory_ROMs_JSON(g_PATHS.VIRTUAL_CAT_GENRE_DIR, launcherID)
@@ -7048,7 +7045,7 @@ class Main:
                     log_info('_command_view_menu() Viewing ROM in Developer Virtual Launcher ...')
                     hashed_db_filename = g_PATHS.VIRTUAL_CAT_DEVELOPER_DIR.pjoin(launcherID + '.json')
                     if not hashed_db_filename.exists():
-                        log_error('_command_view_menu() Cannot find file "{0}"'.format(hashed_db_filename.getPath()))
+                        log_error('_command_view_menu() Cannot find file "{}"'.format(hashed_db_filename.getPath()))
                         kodi_dialog_OK('Virtual launcher XML/JSON file not found.')
                         return
                     roms = fs_load_VCategory_ROMs_JSON(g_PATHS.VIRTUAL_CAT_DEVELOPER_DIR, launcherID)
@@ -7061,7 +7058,7 @@ class Main:
                     log_info('_command_view_menu() Viewing ROM in NPlayers Virtual Launcher ...')
                     hashed_db_filename = g_PATHS.VIRTUAL_CAT_NPLAYERS_DIR.pjoin(launcherID + '.json')
                     if not hashed_db_filename.exists():
-                        log_error('_command_view_menu() Cannot find file "{0}"'.format(hashed_db_filename.getPath()))
+                        log_error('_command_view_menu() Cannot find file "{}"'.format(hashed_db_filename.getPath()))
                         kodi_dialog_OK('Virtual launcher XML/JSON file not found.')
                         return
                     roms = fs_load_VCategory_ROMs_JSON(g_PATHS.VIRTUAL_CAT_NPLAYERS_DIR, launcherID)
@@ -7074,7 +7071,7 @@ class Main:
                     log_info('_command_view_menu() Viewing ROM in ESRB Launcher ...')
                     hashed_db_filename = g_PATHS.VIRTUAL_CAT_ESRB_DIR.pjoin(launcherID + '.json')
                     if not hashed_db_filename.exists():
-                        log_error('_command_view_menu() Cannot find file "{0}"'.format(hashed_db_filename.getPath()))
+                        log_error('_command_view_menu() Cannot find file "{}"'.format(hashed_db_filename.getPath()))
                         kodi_dialog_OK('Virtual launcher XML/JSON file not found.')
                         return
                     roms = fs_load_VCategory_ROMs_JSON(g_PATHS.VIRTUAL_CAT_ESRB_DIR, launcherID)
@@ -7087,7 +7084,7 @@ class Main:
                     log_info('_command_view_menu() Viewing ROM in Rating Launcher ...')
                     hashed_db_filename = g_PATHS.VIRTUAL_CAT_RATING_DIR.pjoin(launcherID + '.json')
                     if not hashed_db_filename.exists():
-                        log_error('_command_view_menu() Cannot find file "{0}"'.format(hashed_db_filename.getPath()))
+                        log_error('_command_view_menu() Cannot find file "{}"'.format(hashed_db_filename.getPath()))
                         kodi_dialog_OK('Virtual launcher XML/JSON file not found.')
                         return
                     roms = fs_load_VCategory_ROMs_JSON(g_PATHS.VIRTUAL_CAT_RATING_DIR, launcherID)
@@ -7100,7 +7097,7 @@ class Main:
                     log_info('_command_view_menu() Viewing ROM in Category Virtual Launcher ...')
                     hashed_db_filename = g_PATHS.VIRTUAL_CAT_CATEGORY_DIR.pjoin(launcherID + '.json')
                     if not hashed_db_filename.exists():
-                        log_error('_command_view_menu() Cannot find file "{0}"'.format(hashed_db_filename.getPath()))
+                        log_error('_command_view_menu() Cannot find file "{}"'.format(hashed_db_filename.getPath()))
                         kodi_dialog_OK('Virtual launcher XML/JSON file not found.')
                         return
                     roms = fs_load_VCategory_ROMs_JSON(g_PATHS.VIRTUAL_CAT_CATEGORY_DIR, launcherID)
@@ -7121,7 +7118,7 @@ class Main:
                         kodi_dialog_OK('Collection ROM not found in list. This is a bug!')
                         return
                     rom = collection_rom_list[current_ROM_position]
-                    window_title = '{0} Collection ROM data'.format(collection['m_name'])
+                    window_title = '{} Collection ROM data'.format(collection['m_name'])
                     regular_launcher = False
                     vlauncher_label = 'Collection'
 
@@ -7156,7 +7153,7 @@ class Main:
                     else:
                         info_text += 'No Category (Launcher in addon root)'
                 else:
-                    info_text += '\n[COLOR orange]{0} ROM additional information[/COLOR]\n'.format(vlauncher_label)
+                    info_text += '\n[COLOR orange]{} ROM additional information[/COLOR]\n'.format(vlauncher_label)
                     info_text += self._misc_print_string_ROM_additional(rom)
 
             # Show information window
@@ -7276,13 +7273,13 @@ class Main:
             # Show map image
             s_map = rom['s_map']
             if not s_map:
-                kodi_dialog_OK('Map image file not set for ROM "{0}"'.format(rom['m_name']))
+                kodi_dialog_OK('Map image file not set for ROM "{}"'.format(rom['m_name']))
                 return
             map_FN = FileName(s_map)
             if not map_FN.exists():
                 kodi_dialog_OK('Map image file not found.')
                 return
-            xbmc.executebuiltin('ShowPicture("{0}")'.format(map_FN.getPath()))
+            xbmc.executebuiltin('ShowPicture("{}")'.format(map_FN.getPath()))
 
         # --- View last execution output ---
         elif action == ACTION_VIEW_EXEC_OUTPUT:
@@ -7309,190 +7306,190 @@ class Main:
     # This should be converted into a slist.
     def _misc_print_string_ROM(self, rom):
         info_text  = ''
-        info_text += "[COLOR violet]id[/COLOR]: '{0}'\n".format(rom['id'])
+        info_text += "[COLOR violet]id[/COLOR]: '{}'\n".format(rom['id'])
         # Metadata
-        info_text += "[COLOR violet]m_name[/COLOR]: '{0}'\n".format(rom['m_name'])
-        info_text += "[COLOR violet]m_year[/COLOR]: '{0}'\n".format(rom['m_year'])
-        info_text += "[COLOR violet]m_genre[/COLOR]: '{0}'\n".format(rom['m_genre'])
-        info_text += "[COLOR violet]m_developer[/COLOR]: '{0}'\n".format(rom['m_developer'])
-        info_text += "[COLOR violet]m_nplayers[/COLOR]: '{0}'\n".format(rom['m_nplayers'])
-        info_text += "[COLOR violet]m_esrb[/COLOR]: '{0}'\n".format(rom['m_esrb'])
-        info_text += "[COLOR violet]m_rating[/COLOR]: '{0}'\n".format(rom['m_rating'])
-        info_text += "[COLOR violet]m_plot[/COLOR]: '{0}'\n".format(rom['m_plot'])
+        info_text += "[COLOR violet]m_name[/COLOR]: '{}'\n".format(rom['m_name'])
+        info_text += "[COLOR violet]m_year[/COLOR]: '{}'\n".format(rom['m_year'])
+        info_text += "[COLOR violet]m_genre[/COLOR]: '{}'\n".format(rom['m_genre'])
+        info_text += "[COLOR violet]m_developer[/COLOR]: '{}'\n".format(rom['m_developer'])
+        info_text += "[COLOR violet]m_nplayers[/COLOR]: '{}'\n".format(rom['m_nplayers'])
+        info_text += "[COLOR violet]m_esrb[/COLOR]: '{}'\n".format(rom['m_esrb'])
+        info_text += "[COLOR violet]m_rating[/COLOR]: '{}'\n".format(rom['m_rating'])
+        info_text += "[COLOR violet]m_plot[/COLOR]: '{}'\n".format(rom['m_plot'])
         # Info
-        info_text += "[COLOR violet]filename[/COLOR]: '{0}'\n".format(rom['filename'])
-        info_text += "[COLOR skyblue]disks[/COLOR]: {0}\n".format(rom['disks'])
-        info_text += "[COLOR violet]altapp[/COLOR]: '{0}'\n".format(rom['altapp'])
-        info_text += "[COLOR violet]altarg[/COLOR]: '{0}'\n".format(rom['altarg'])
-        info_text += "[COLOR skyblue]finished[/COLOR]: {0}\n".format(rom['finished'])
-        info_text += "[COLOR violet]nointro_status[/COLOR]: '{0}'\n".format(rom['nointro_status'])
-        info_text += "[COLOR violet]pclone_status[/COLOR]: '{0}'\n".format(rom['pclone_status'])
-        info_text += "[COLOR violet]cloneof[/COLOR]: '{0}'\n".format(rom['cloneof'])
-        info_text += "[COLOR skyblue]i_extra_ROM[/COLOR]: {0}\n".format(rom['i_extra_ROM'])
+        info_text += "[COLOR violet]filename[/COLOR]: '{}'\n".format(rom['filename'])
+        info_text += "[COLOR skyblue]disks[/COLOR]: {}\n".format(rom['disks'])
+        info_text += "[COLOR violet]altapp[/COLOR]: '{}'\n".format(rom['altapp'])
+        info_text += "[COLOR violet]altarg[/COLOR]: '{}'\n".format(rom['altarg'])
+        info_text += "[COLOR skyblue]finished[/COLOR]: {}\n".format(rom['finished'])
+        info_text += "[COLOR violet]nointro_status[/COLOR]: '{}'\n".format(rom['nointro_status'])
+        info_text += "[COLOR violet]pclone_status[/COLOR]: '{}'\n".format(rom['pclone_status'])
+        info_text += "[COLOR violet]cloneof[/COLOR]: '{}'\n".format(rom['cloneof'])
+        info_text += "[COLOR skyblue]i_extra_ROM[/COLOR]: {}\n".format(rom['i_extra_ROM'])
         # >> Assets/artwork
-        info_text += "[COLOR violet]s_3dbox[/COLOR]: '{0}'\n".format(rom['s_3dbox'])
-        info_text += "[COLOR violet]s_title[/COLOR]: '{0}'\n".format(rom['s_title'])
-        info_text += "[COLOR violet]s_snap[/COLOR]: '{0}'\n".format(rom['s_snap'])
-        info_text += "[COLOR violet]s_boxfront[/COLOR]: '{0}'\n".format(rom['s_boxfront'])
-        info_text += "[COLOR violet]s_boxback[/COLOR]: '{0}'\n".format(rom['s_boxback'])
-        info_text += "[COLOR violet]s_cartridge[/COLOR]: '{0}'\n".format(rom['s_cartridge'])
-        info_text += "[COLOR violet]s_fanart[/COLOR]: '{0}'\n".format(rom['s_fanart'])
-        info_text += "[COLOR violet]s_banner[/COLOR]: '{0}'\n".format(rom['s_banner'])
-        info_text += "[COLOR violet]s_clearlogo[/COLOR]: '{0}'\n".format(rom['s_clearlogo'])
-        info_text += "[COLOR violet]s_flyer[/COLOR]: '{0}'\n".format(rom['s_flyer'])
-        info_text += "[COLOR violet]s_map[/COLOR]: '{0}'\n".format(rom['s_map'])
-        info_text += "[COLOR violet]s_manual[/COLOR]: '{0}'\n".format(rom['s_manual'])
-        info_text += "[COLOR violet]s_trailer[/COLOR]: '{0}'\n".format(rom['s_trailer'])
+        info_text += "[COLOR violet]s_3dbox[/COLOR]: '{}'\n".format(rom['s_3dbox'])
+        info_text += "[COLOR violet]s_title[/COLOR]: '{}'\n".format(rom['s_title'])
+        info_text += "[COLOR violet]s_snap[/COLOR]: '{}'\n".format(rom['s_snap'])
+        info_text += "[COLOR violet]s_boxfront[/COLOR]: '{}'\n".format(rom['s_boxfront'])
+        info_text += "[COLOR violet]s_boxback[/COLOR]: '{}'\n".format(rom['s_boxback'])
+        info_text += "[COLOR violet]s_cartridge[/COLOR]: '{}'\n".format(rom['s_cartridge'])
+        info_text += "[COLOR violet]s_fanart[/COLOR]: '{}'\n".format(rom['s_fanart'])
+        info_text += "[COLOR violet]s_banner[/COLOR]: '{}'\n".format(rom['s_banner'])
+        info_text += "[COLOR violet]s_clearlogo[/COLOR]: '{}'\n".format(rom['s_clearlogo'])
+        info_text += "[COLOR violet]s_flyer[/COLOR]: '{}'\n".format(rom['s_flyer'])
+        info_text += "[COLOR violet]s_map[/COLOR]: '{}'\n".format(rom['s_map'])
+        info_text += "[COLOR violet]s_manual[/COLOR]: '{}'\n".format(rom['s_manual'])
+        info_text += "[COLOR violet]s_trailer[/COLOR]: '{}'\n".format(rom['s_trailer'])
 
         return info_text
 
     def _misc_print_string_ROM_additional(self, rom):
         info_text  = ''
-        info_text += "[COLOR violet]launcherID[/COLOR]: '{0}'\n".format(rom['launcherID'])
-        info_text += "[COLOR violet]platform[/COLOR]: '{0}'\n".format(rom['platform'])
-        info_text += "[COLOR violet]application[/COLOR]: '{0}'\n".format(rom['application'])
-        info_text += "[COLOR violet]args[/COLOR]: '{0}'\n".format(rom['args'])
-        info_text += "[COLOR skyblue]args_extra[/COLOR]: {0}\n".format(rom['args_extra'])
-        info_text += "[COLOR violet]rompath[/COLOR]: '{0}'\n".format(rom['rompath'])
-        info_text += "[COLOR violet]romext[/COLOR]: '{0}'\n".format(rom['romext'])
-        info_text += "[COLOR skyblue]toggle_window[/COLOR]: {0}\n".format(rom['toggle_window'])
-        info_text += "[COLOR skyblue]non_blocking[/COLOR]: {0}\n".format(rom['non_blocking'])
-        info_text += "[COLOR violet]roms_default_icon[/COLOR]: '{0}'\n".format(rom['roms_default_icon'])
-        info_text += "[COLOR violet]roms_default_fanart[/COLOR]: '{0}'\n".format(rom['roms_default_fanart'])
-        info_text += "[COLOR violet]roms_default_banner[/COLOR]: '{0}'\n".format(rom['roms_default_banner'])
-        info_text += "[COLOR violet]roms_default_poster[/COLOR]: '{0}'\n".format(rom['roms_default_poster'])
-        info_text += "[COLOR violet]roms_default_clearlogo[/COLOR]: '{0}'\n".format(rom['roms_default_clearlogo'])
+        info_text += "[COLOR violet]launcherID[/COLOR]: '{}'\n".format(rom['launcherID'])
+        info_text += "[COLOR violet]platform[/COLOR]: '{}'\n".format(rom['platform'])
+        info_text += "[COLOR violet]application[/COLOR]: '{}'\n".format(rom['application'])
+        info_text += "[COLOR violet]args[/COLOR]: '{}'\n".format(rom['args'])
+        info_text += "[COLOR skyblue]args_extra[/COLOR]: {}\n".format(rom['args_extra'])
+        info_text += "[COLOR violet]rompath[/COLOR]: '{}'\n".format(rom['rompath'])
+        info_text += "[COLOR violet]romext[/COLOR]: '{}'\n".format(rom['romext'])
+        info_text += "[COLOR skyblue]toggle_window[/COLOR]: {}\n".format(rom['toggle_window'])
+        info_text += "[COLOR skyblue]non_blocking[/COLOR]: {}\n".format(rom['non_blocking'])
+        info_text += "[COLOR violet]roms_default_icon[/COLOR]: '{}'\n".format(rom['roms_default_icon'])
+        info_text += "[COLOR violet]roms_default_fanart[/COLOR]: '{}'\n".format(rom['roms_default_fanart'])
+        info_text += "[COLOR violet]roms_default_banner[/COLOR]: '{}'\n".format(rom['roms_default_banner'])
+        info_text += "[COLOR violet]roms_default_poster[/COLOR]: '{}'\n".format(rom['roms_default_poster'])
+        info_text += "[COLOR violet]roms_default_clearlogo[/COLOR]: '{}'\n".format(rom['roms_default_clearlogo'])
 
         # Favourite ROMs unique fields.
-        info_text += "[COLOR violet]fav_status[/COLOR]: '{0}'\n".format(rom['fav_status'])
+        info_text += "[COLOR violet]fav_status[/COLOR]: '{}'\n".format(rom['fav_status'])
         # 'launch_count' only in Favourite ROMs in "Most played ROMs"
         if 'launch_count' in rom:
-            info_text += "[COLOR skyblue]launch_count[/COLOR]: {0}\n".format(rom['launch_count'])
+            info_text += "[COLOR skyblue]launch_count[/COLOR]: {}\n".format(rom['launch_count'])
 
         return info_text
 
     def _misc_print_string_Launcher(self, launcher):
         info_text  = ''
-        info_text += "[COLOR violet]id[/COLOR]: '{0}'\n".format(launcher['id'])
-        info_text += "[COLOR violet]m_name[/COLOR]: '{0}'\n".format(launcher['m_name'])
-        info_text += "[COLOR violet]m_year[/COLOR]: '{0}'\n".format(launcher['m_year'])
-        info_text += "[COLOR violet]m_genre[/COLOR]: '{0}'\n".format(launcher['m_genre'])
-        info_text += "[COLOR violet]m_developer[/COLOR]: '{0}'\n".format(launcher['m_developer'])
-        info_text += "[COLOR violet]m_rating[/COLOR]: '{0}'\n".format(launcher['m_rating'])
-        info_text += "[COLOR violet]m_plot[/COLOR]: '{0}'\n".format(launcher['m_plot'])
+        info_text += "[COLOR violet]id[/COLOR]: '{}'\n".format(launcher['id'])
+        info_text += "[COLOR violet]m_name[/COLOR]: '{}'\n".format(launcher['m_name'])
+        info_text += "[COLOR violet]m_year[/COLOR]: '{}'\n".format(launcher['m_year'])
+        info_text += "[COLOR violet]m_genre[/COLOR]: '{}'\n".format(launcher['m_genre'])
+        info_text += "[COLOR violet]m_developer[/COLOR]: '{}'\n".format(launcher['m_developer'])
+        info_text += "[COLOR violet]m_rating[/COLOR]: '{}'\n".format(launcher['m_rating'])
+        info_text += "[COLOR violet]m_plot[/COLOR]: '{}'\n".format(launcher['m_plot'])
 
-        info_text += "[COLOR violet]platform[/COLOR]: '{0}'\n".format(launcher['platform'])
-        info_text += "[COLOR violet]categoryID[/COLOR]: '{0}'\n".format(launcher['categoryID'])
-        info_text += "[COLOR violet]application[/COLOR]: '{0}'\n".format(launcher['application'])
-        info_text += "[COLOR violet]args[/COLOR]: '{0}'\n".format(launcher['args'])
-        info_text += "[COLOR skyblue]args_extra[/COLOR]: {0}\n".format(launcher['args_extra'])
-        info_text += "[COLOR violet]rompath[/COLOR]: '{0}'\n".format(launcher['rompath'])
-        info_text += "[COLOR violet]romextrapath[/COLOR]: '{0}'\n".format(launcher['romextrapath'])
-        info_text += "[COLOR violet]romext[/COLOR]: '{0}'\n".format(launcher['romext'])
+        info_text += "[COLOR violet]platform[/COLOR]: '{}'\n".format(launcher['platform'])
+        info_text += "[COLOR violet]categoryID[/COLOR]: '{}'\n".format(launcher['categoryID'])
+        info_text += "[COLOR violet]application[/COLOR]: '{}'\n".format(launcher['application'])
+        info_text += "[COLOR violet]args[/COLOR]: '{}'\n".format(launcher['args'])
+        info_text += "[COLOR skyblue]args_extra[/COLOR]: {}\n".format(launcher['args_extra'])
+        info_text += "[COLOR violet]rompath[/COLOR]: '{}'\n".format(launcher['rompath'])
+        info_text += "[COLOR violet]romextrapath[/COLOR]: '{}'\n".format(launcher['romextrapath'])
+        info_text += "[COLOR violet]romext[/COLOR]: '{}'\n".format(launcher['romext'])
         # Bool settings
-        info_text += "[COLOR skyblue]finished[/COLOR]: {0}\n".format(launcher['finished'])
-        info_text += "[COLOR skyblue]toggle_window[/COLOR]: {0}\n".format(launcher['toggle_window'])
-        info_text += "[COLOR skyblue]non_blocking[/COLOR]: {0}\n".format(launcher['non_blocking'])
-        info_text += "[COLOR skyblue]multidisc[/COLOR]: {0}\n".format(launcher['multidisc'])
+        info_text += "[COLOR skyblue]finished[/COLOR]: {}\n".format(launcher['finished'])
+        info_text += "[COLOR skyblue]toggle_window[/COLOR]: {}\n".format(launcher['toggle_window'])
+        info_text += "[COLOR skyblue]non_blocking[/COLOR]: {}\n".format(launcher['non_blocking'])
+        info_text += "[COLOR skyblue]multidisc[/COLOR]: {}\n".format(launcher['multidisc'])
         # Strings
-        info_text += "[COLOR violet]roms_base_noext[/COLOR]: '{0}'\n".format(launcher['roms_base_noext'])
-        info_text += "[COLOR violet]audit_state[/COLOR]: '{0}'\n".format(launcher['audit_state'])
-        info_text += "[COLOR violet]audit_auto_dat_file[/COLOR]: '{0}'\n".format(launcher['audit_auto_dat_file'])
-        info_text += "[COLOR violet]audit_custom_dat_file[/COLOR]: '{0}'\n".format(launcher['audit_custom_dat_file'])
-        info_text += "[COLOR violet]audit_display_mode[/COLOR]: '{0}'\n".format(launcher['audit_display_mode'])
-        info_text += "[COLOR violet]launcher_display_mode[/COLOR]: '{0}'\n".format(launcher['launcher_display_mode'])
+        info_text += "[COLOR violet]roms_base_noext[/COLOR]: '{}'\n".format(launcher['roms_base_noext'])
+        info_text += "[COLOR violet]audit_state[/COLOR]: '{}'\n".format(launcher['audit_state'])
+        info_text += "[COLOR violet]audit_auto_dat_file[/COLOR]: '{}'\n".format(launcher['audit_auto_dat_file'])
+        info_text += "[COLOR violet]audit_custom_dat_file[/COLOR]: '{}'\n".format(launcher['audit_custom_dat_file'])
+        info_text += "[COLOR violet]audit_display_mode[/COLOR]: '{}'\n".format(launcher['audit_display_mode'])
+        info_text += "[COLOR violet]launcher_display_mode[/COLOR]: '{}'\n".format(launcher['launcher_display_mode'])
         # Integers/Floats
-        info_text += "[COLOR skyblue]num_roms[/COLOR]: {0}\n".format(launcher['num_roms'])
-        info_text += "[COLOR skyblue]num_parents[/COLOR]: {0}\n".format(launcher['num_parents'])
-        info_text += "[COLOR skyblue]num_clones[/COLOR]: {0}\n".format(launcher['num_clones'])
-        info_text += "[COLOR skyblue]num_have[/COLOR]: {0}\n".format(launcher['num_have'])
-        info_text += "[COLOR skyblue]num_miss[/COLOR]: {0}\n".format(launcher['num_miss'])
-        info_text += "[COLOR skyblue]num_unknown[/COLOR]: {0}\n".format(launcher['num_unknown'])
-        info_text += "[COLOR skyblue]num_extra[/COLOR]: {0}\n".format(launcher['num_extra'])
-        info_text += "[COLOR skyblue]timestamp_launcher[/COLOR]: {0}\n".format(launcher['timestamp_launcher'])
-        info_text += "[COLOR skyblue]timestamp_report[/COLOR]: {0}\n".format(launcher['timestamp_report'])
+        info_text += "[COLOR skyblue]num_roms[/COLOR]: {}\n".format(launcher['num_roms'])
+        info_text += "[COLOR skyblue]num_parents[/COLOR]: {}\n".format(launcher['num_parents'])
+        info_text += "[COLOR skyblue]num_clones[/COLOR]: {}\n".format(launcher['num_clones'])
+        info_text += "[COLOR skyblue]num_have[/COLOR]: {}\n".format(launcher['num_have'])
+        info_text += "[COLOR skyblue]num_miss[/COLOR]: {}\n".format(launcher['num_miss'])
+        info_text += "[COLOR skyblue]num_unknown[/COLOR]: {}\n".format(launcher['num_unknown'])
+        info_text += "[COLOR skyblue]num_extra[/COLOR]: {}\n".format(launcher['num_extra'])
+        info_text += "[COLOR skyblue]timestamp_launcher[/COLOR]: {}\n".format(launcher['timestamp_launcher'])
+        info_text += "[COLOR skyblue]timestamp_report[/COLOR]: {}\n".format(launcher['timestamp_report'])
 
-        info_text += "[COLOR violet]default_icon[/COLOR]: '{0}'\n".format(launcher['default_icon'])
-        info_text += "[COLOR violet]default_fanart[/COLOR]: '{0}'\n".format(launcher['default_fanart'])
-        info_text += "[COLOR violet]default_banner[/COLOR]: '{0}'\n".format(launcher['default_banner'])
-        info_text += "[COLOR violet]default_poster[/COLOR]: '{0}'\n".format(launcher['default_poster'])
-        info_text += "[COLOR violet]default_clearlogo[/COLOR]: '{0}'\n".format(launcher['default_clearlogo'])
-        info_text += "[COLOR violet]default_controller[/COLOR]: '{0}'\n".format(launcher['default_controller'])
-        info_text += "[COLOR violet]Asset_Prefix[/COLOR]: '{0}'\n".format(launcher['Asset_Prefix'])
-        info_text += "[COLOR violet]s_icon[/COLOR]: '{0}'\n".format(launcher['s_icon'])
-        info_text += "[COLOR violet]s_fanart[/COLOR]: '{0}'\n".format(launcher['s_fanart'])
-        info_text += "[COLOR violet]s_banner[/COLOR]: '{0}'\n".format(launcher['s_banner'])
-        info_text += "[COLOR violet]s_poster[/COLOR]: '{0}'\n".format(launcher['s_poster'])
-        info_text += "[COLOR violet]s_clearlogo[/COLOR]: '{0}'\n".format(launcher['s_clearlogo'])
-        info_text += "[COLOR violet]s_controller[/COLOR]: '{0}'\n".format(launcher['s_controller'])
-        info_text += "[COLOR violet]s_trailer[/COLOR]: '{0}'\n".format(launcher['s_trailer'])
+        info_text += "[COLOR violet]default_icon[/COLOR]: '{}'\n".format(launcher['default_icon'])
+        info_text += "[COLOR violet]default_fanart[/COLOR]: '{}'\n".format(launcher['default_fanart'])
+        info_text += "[COLOR violet]default_banner[/COLOR]: '{}'\n".format(launcher['default_banner'])
+        info_text += "[COLOR violet]default_poster[/COLOR]: '{}'\n".format(launcher['default_poster'])
+        info_text += "[COLOR violet]default_clearlogo[/COLOR]: '{}'\n".format(launcher['default_clearlogo'])
+        info_text += "[COLOR violet]default_controller[/COLOR]: '{}'\n".format(launcher['default_controller'])
+        info_text += "[COLOR violet]Asset_Prefix[/COLOR]: '{}'\n".format(launcher['Asset_Prefix'])
+        info_text += "[COLOR violet]s_icon[/COLOR]: '{}'\n".format(launcher['s_icon'])
+        info_text += "[COLOR violet]s_fanart[/COLOR]: '{}'\n".format(launcher['s_fanart'])
+        info_text += "[COLOR violet]s_banner[/COLOR]: '{}'\n".format(launcher['s_banner'])
+        info_text += "[COLOR violet]s_poster[/COLOR]: '{}'\n".format(launcher['s_poster'])
+        info_text += "[COLOR violet]s_clearlogo[/COLOR]: '{}'\n".format(launcher['s_clearlogo'])
+        info_text += "[COLOR violet]s_controller[/COLOR]: '{}'\n".format(launcher['s_controller'])
+        info_text += "[COLOR violet]s_trailer[/COLOR]: '{}'\n".format(launcher['s_trailer'])
 
-        info_text += "[COLOR violet]roms_default_icon[/COLOR]: '{0}'\n".format(launcher['roms_default_icon'])
-        info_text += "[COLOR violet]roms_default_fanart[/COLOR]: '{0}'\n".format(launcher['roms_default_fanart'])
-        info_text += "[COLOR violet]roms_default_banner[/COLOR]: '{0}'\n".format(launcher['roms_default_banner'])
-        info_text += "[COLOR violet]roms_default_poster[/COLOR]: '{0}'\n".format(launcher['roms_default_poster'])
-        info_text += "[COLOR violet]roms_default_clearlogo[/COLOR]: '{0}'\n".format(launcher['roms_default_clearlogo'])
-        info_text += "[COLOR violet]ROM_asset_path[/COLOR]: '{0}'\n".format(launcher['ROM_asset_path'])
-        info_text += "[COLOR violet]path_3dbox[/COLOR]: '{0}'\n".format(launcher['path_3dbox'])
-        info_text += "[COLOR violet]path_title[/COLOR]: '{0}'\n".format(launcher['path_title'])
-        info_text += "[COLOR violet]path_snap[/COLOR]: '{0}'\n".format(launcher['path_snap'])
-        info_text += "[COLOR violet]path_boxfront[/COLOR]: '{0}'\n".format(launcher['path_boxfront'])
-        info_text += "[COLOR violet]path_boxback[/COLOR]: '{0}'\n".format(launcher['path_boxback'])
-        info_text += "[COLOR violet]path_cartridge[/COLOR]: '{0}'\n".format(launcher['path_cartridge'])
-        info_text += "[COLOR violet]path_fanart[/COLOR]: '{0}'\n".format(launcher['path_fanart'])
-        info_text += "[COLOR violet]path_banner[/COLOR]: '{0}'\n".format(launcher['path_banner'])
-        info_text += "[COLOR violet]path_clearlogo[/COLOR]: '{0}'\n".format(launcher['path_clearlogo'])
-        info_text += "[COLOR violet]path_flyer[/COLOR]: '{0}'\n".format(launcher['path_flyer'])
-        info_text += "[COLOR violet]path_map[/COLOR]: '{0}'\n".format(launcher['path_map'])
-        info_text += "[COLOR violet]path_manual[/COLOR]: '{0}'\n".format(launcher['path_manual'])
-        info_text += "[COLOR violet]path_trailer[/COLOR]: '{0}'\n".format(launcher['path_trailer'])
+        info_text += "[COLOR violet]roms_default_icon[/COLOR]: '{}'\n".format(launcher['roms_default_icon'])
+        info_text += "[COLOR violet]roms_default_fanart[/COLOR]: '{}'\n".format(launcher['roms_default_fanart'])
+        info_text += "[COLOR violet]roms_default_banner[/COLOR]: '{}'\n".format(launcher['roms_default_banner'])
+        info_text += "[COLOR violet]roms_default_poster[/COLOR]: '{}'\n".format(launcher['roms_default_poster'])
+        info_text += "[COLOR violet]roms_default_clearlogo[/COLOR]: '{}'\n".format(launcher['roms_default_clearlogo'])
+        info_text += "[COLOR violet]ROM_asset_path[/COLOR]: '{}'\n".format(launcher['ROM_asset_path'])
+        info_text += "[COLOR violet]path_3dbox[/COLOR]: '{}'\n".format(launcher['path_3dbox'])
+        info_text += "[COLOR violet]path_title[/COLOR]: '{}'\n".format(launcher['path_title'])
+        info_text += "[COLOR violet]path_snap[/COLOR]: '{}'\n".format(launcher['path_snap'])
+        info_text += "[COLOR violet]path_boxfront[/COLOR]: '{}'\n".format(launcher['path_boxfront'])
+        info_text += "[COLOR violet]path_boxback[/COLOR]: '{}'\n".format(launcher['path_boxback'])
+        info_text += "[COLOR violet]path_cartridge[/COLOR]: '{}'\n".format(launcher['path_cartridge'])
+        info_text += "[COLOR violet]path_fanart[/COLOR]: '{}'\n".format(launcher['path_fanart'])
+        info_text += "[COLOR violet]path_banner[/COLOR]: '{}'\n".format(launcher['path_banner'])
+        info_text += "[COLOR violet]path_clearlogo[/COLOR]: '{}'\n".format(launcher['path_clearlogo'])
+        info_text += "[COLOR violet]path_flyer[/COLOR]: '{}'\n".format(launcher['path_flyer'])
+        info_text += "[COLOR violet]path_map[/COLOR]: '{}'\n".format(launcher['path_map'])
+        info_text += "[COLOR violet]path_manual[/COLOR]: '{}'\n".format(launcher['path_manual'])
+        info_text += "[COLOR violet]path_trailer[/COLOR]: '{}'\n".format(launcher['path_trailer'])
 
         return info_text
 
     def _misc_print_string_Category(self, category):
         info_text  = ''
-        info_text += "[COLOR violet]id[/COLOR]: '{0}'\n".format(category['id'])
-        info_text += "[COLOR violet]m_name[/COLOR]: '{0}'\n".format(category['m_name'])
-        info_text += "[COLOR violet]m_year[/COLOR]: '{0}'\n".format(category['m_year'])
-        info_text += "[COLOR violet]m_genre[/COLOR]: '{0}'\n".format(category['m_genre'])
-        info_text += "[COLOR violet]m_developer[/COLOR]: '{0}'\n".format(category['m_developer'])
-        info_text += "[COLOR violet]m_rating[/COLOR]: '{0}'\n".format(category['m_rating'])
-        info_text += "[COLOR violet]m_plot[/COLOR]: '{0}'\n".format(category['m_plot'])
-        info_text += "[COLOR skyblue]finished[/COLOR]: {0}\n".format(category['finished'])
-        info_text += "[COLOR violet]default_icon[/COLOR]: '{0}'\n".format(category['default_icon'])
-        info_text += "[COLOR violet]default_fanart[/COLOR]: '{0}'\n".format(category['default_fanart'])
-        info_text += "[COLOR violet]default_banner[/COLOR]: '{0}'\n".format(category['default_banner'])
-        info_text += "[COLOR violet]default_poster[/COLOR]: '{0}'\n".format(category['default_poster'])
-        info_text += "[COLOR violet]default_clearlogo[/COLOR]: '{0}'\n".format(category['default_clearlogo'])
-        info_text += "[COLOR violet]Asset_Prefix[/COLOR]: '{0}'\n".format(category['Asset_Prefix'])
-        info_text += "[COLOR violet]s_icon[/COLOR]: '{0}'\n".format(category['s_icon'])
-        info_text += "[COLOR violet]s_fanart[/COLOR]: '{0}'\n".format(category['s_fanart'])
-        info_text += "[COLOR violet]s_banner[/COLOR]: '{0}'\n".format(category['s_banner'])
-        info_text += "[COLOR violet]s_poster[/COLOR]: '{0}'\n".format(category['s_poster'])
-        info_text += "[COLOR violet]s_clearlogo[/COLOR]: '{0}'\n".format(category['s_clearlogo'])
-        info_text += "[COLOR violet]s_trailer[/COLOR]: '{0}'\n".format(category['s_trailer'])
+        info_text += "[COLOR violet]id[/COLOR]: '{}'\n".format(category['id'])
+        info_text += "[COLOR violet]m_name[/COLOR]: '{}'\n".format(category['m_name'])
+        info_text += "[COLOR violet]m_year[/COLOR]: '{}'\n".format(category['m_year'])
+        info_text += "[COLOR violet]m_genre[/COLOR]: '{}'\n".format(category['m_genre'])
+        info_text += "[COLOR violet]m_developer[/COLOR]: '{}'\n".format(category['m_developer'])
+        info_text += "[COLOR violet]m_rating[/COLOR]: '{}'\n".format(category['m_rating'])
+        info_text += "[COLOR violet]m_plot[/COLOR]: '{}'\n".format(category['m_plot'])
+        info_text += "[COLOR skyblue]finished[/COLOR]: {}\n".format(category['finished'])
+        info_text += "[COLOR violet]default_icon[/COLOR]: '{}'\n".format(category['default_icon'])
+        info_text += "[COLOR violet]default_fanart[/COLOR]: '{}'\n".format(category['default_fanart'])
+        info_text += "[COLOR violet]default_banner[/COLOR]: '{}'\n".format(category['default_banner'])
+        info_text += "[COLOR violet]default_poster[/COLOR]: '{}'\n".format(category['default_poster'])
+        info_text += "[COLOR violet]default_clearlogo[/COLOR]: '{}'\n".format(category['default_clearlogo'])
+        info_text += "[COLOR violet]Asset_Prefix[/COLOR]: '{}'\n".format(category['Asset_Prefix'])
+        info_text += "[COLOR violet]s_icon[/COLOR]: '{}'\n".format(category['s_icon'])
+        info_text += "[COLOR violet]s_fanart[/COLOR]: '{}'\n".format(category['s_fanart'])
+        info_text += "[COLOR violet]s_banner[/COLOR]: '{}'\n".format(category['s_banner'])
+        info_text += "[COLOR violet]s_poster[/COLOR]: '{}'\n".format(category['s_poster'])
+        info_text += "[COLOR violet]s_clearlogo[/COLOR]: '{}'\n".format(category['s_clearlogo'])
+        info_text += "[COLOR violet]s_trailer[/COLOR]: '{}'\n".format(category['s_trailer'])
 
         return info_text
 
     def _misc_print_string_Collection(self, collection):
         info_text  = ''
-        info_text += "[COLOR violet]id[/COLOR]: '{0}'\n".format(collection['id'])
-        info_text += "[COLOR violet]m_name[/COLOR]: '{0}'\n".format(collection['m_name'])
-        info_text += "[COLOR violet]m_genre[/COLOR]: '{0}'\n".format(collection['m_genre'])
-        info_text += "[COLOR violet]m_rating[/COLOR]: '{0}'\n".format(collection['m_rating'])
-        info_text += "[COLOR violet]m_plot[/COLOR]: '{0}'\n".format(collection['m_plot'])
-        info_text += "[COLOR violet]roms_base_noext[/COLOR]: {0}\n".format(collection['roms_base_noext'])
-        info_text += "[COLOR violet]default_icon[/COLOR]: '{0}'\n".format(collection['default_icon'])
-        info_text += "[COLOR violet]default_fanart[/COLOR]: '{0}'\n".format(collection['default_fanart'])
-        info_text += "[COLOR violet]default_banner[/COLOR]: '{0}'\n".format(collection['default_banner'])
-        info_text += "[COLOR violet]default_poster[/COLOR]: '{0}'\n".format(collection['default_poster'])
-        info_text += "[COLOR violet]default_clearlogo[/COLOR]: '{0}'\n".format(collection['default_clearlogo'])
-        info_text += "[COLOR violet]s_icon[/COLOR]: '{0}'\n".format(collection['s_icon'])
-        info_text += "[COLOR violet]s_fanart[/COLOR]: '{0}'\n".format(collection['s_fanart'])
-        info_text += "[COLOR violet]s_banner[/COLOR]: '{0}'\n".format(collection['s_banner'])
-        info_text += "[COLOR violet]s_poster[/COLOR]: '{0}'\n".format(collection['s_poster'])
-        info_text += "[COLOR violet]s_clearlogo[/COLOR]: '{0}'\n".format(collection['s_clearlogo'])
-        info_text += "[COLOR violet]s_trailer[/COLOR]: '{0}'\n".format(collection['s_trailer'])
+        info_text += "[COLOR violet]id[/COLOR]: '{}'\n".format(collection['id'])
+        info_text += "[COLOR violet]m_name[/COLOR]: '{}'\n".format(collection['m_name'])
+        info_text += "[COLOR violet]m_genre[/COLOR]: '{}'\n".format(collection['m_genre'])
+        info_text += "[COLOR violet]m_rating[/COLOR]: '{}'\n".format(collection['m_rating'])
+        info_text += "[COLOR violet]m_plot[/COLOR]: '{}'\n".format(collection['m_plot'])
+        info_text += "[COLOR violet]roms_base_noext[/COLOR]: {}\n".format(collection['roms_base_noext'])
+        info_text += "[COLOR violet]default_icon[/COLOR]: '{}'\n".format(collection['default_icon'])
+        info_text += "[COLOR violet]default_fanart[/COLOR]: '{}'\n".format(collection['default_fanart'])
+        info_text += "[COLOR violet]default_banner[/COLOR]: '{}'\n".format(collection['default_banner'])
+        info_text += "[COLOR violet]default_poster[/COLOR]: '{}'\n".format(collection['default_poster'])
+        info_text += "[COLOR violet]default_clearlogo[/COLOR]: '{}'\n".format(collection['default_clearlogo'])
+        info_text += "[COLOR violet]s_icon[/COLOR]: '{}'\n".format(collection['s_icon'])
+        info_text += "[COLOR violet]s_fanart[/COLOR]: '{}'\n".format(collection['s_fanart'])
+        info_text += "[COLOR violet]s_banner[/COLOR]: '{}'\n".format(collection['s_banner'])
+        info_text += "[COLOR violet]s_poster[/COLOR]: '{}'\n".format(collection['s_poster'])
+        info_text += "[COLOR violet]s_clearlogo[/COLOR]: '{}'\n".format(collection['s_clearlogo'])
+        info_text += "[COLOR violet]s_trailer[/COLOR]: '{}'\n".format(collection['s_trailer'])
 
         return info_text
 
@@ -8334,15 +8331,15 @@ class Main:
             #          ' "method" : "Settings.GetSettingValue",'
             #          ' "params" : {"setting":"input.enablejoystick"}}')
             # response = xbmc.executeJSONRPC(c_str)
-            # log_debug('JSON      ''{0}'''.format(c_str))
-            # log_debug('Response  ''{0}'''.format(response))
+            # log_debug('JSON      ''{}'''.format(c_str))
+            # log_debug('Response  ''{}'''.format(response))
 
             # c_str = ('{"id" : 1, "jsonrpc" : "2.0",'
             #          ' "method" : "Settings.SetSettingValue",'
             #          ' "params" : {"setting" : "input.enablejoystick", "value" : false} }')
             # response = xbmc.executeJSONRPC(c_str)
-            # log_debug('JSON      ''{0}'''.format(c_str))
-            # log_debug('Response  ''{0}'''.format(response))
+            # log_debug('JSON      ''{}'''.format(c_str))
+            # log_debug('Response  ''{}'''.format(response))
             # self.kodi_joystick_suspended = True
 
             # log_error('_run_before_execution() Suspending Kodi joystick engine not supported on Kodi Krypton!')
@@ -8401,8 +8398,8 @@ class Main:
             log_verb('_run_after_execution() Kodi joystick engine was suspended before launching')
             log_verb('_run_after_execution() Resuming Kodi joystick engine')
             # response = xbmc.executeJSONRPC(c_str)
-            # log_debug('JSON      ''{0}'''.format(c_str))
-            # log_debug('Response  ''{0}'''.format(response))
+            # log_debug('JSON      ''{}'''.format(c_str))
+            # log_debug('Response  ''{}'''.format(response))
             log_verb('_run_before_execution() Not supported on Kodi Krypton!')
         else:
             log_verb('_run_after_execution() DO NOT resume Kodi joystick engine')
@@ -8566,15 +8563,15 @@ class Main:
             elif rom['nointro_status'] == AUDIT_STATUS_MISS:    audit_miss += 1
             elif rom['nointro_status'] == AUDIT_STATUS_UNKNOWN: audit_unknown += 1
             else:
-                log_error('Unknown audit status {0}.'.format(rom['nointro_status']))
-                kodi_dialog_OK('Unknown audit status {0}. This is a bug, please report it.'.format(rom['nointro_status']))
+                log_error('Unknown audit status {}.'.format(rom['nointro_status']))
+                kodi_dialog_OK('Unknown audit status {}. This is a bug, please report it.'.format(rom['nointro_status']))
                 return
             if   rom['pclone_status'] == PCLONE_STATUS_PARENT: audit_num_parents += 1
             elif rom['pclone_status'] == PCLONE_STATUS_CLONE:  audit_num_clones += 1
             elif rom['pclone_status'] == PCLONE_STATUS_NONE:   pass
             else:
-                log_error('Unknown pclone status {0}.'.format(rom['pclone_status']))
-                kodi_dialog_OK('Unknown pclone status {0}. This is a bug, please report it.'.format(rom['pclone_status']))
+                log_error('Unknown pclone status {}.'.format(rom['pclone_status']))
+                kodi_dialog_OK('Unknown pclone status {}. This is a bug, please report it.'.format(rom['pclone_status']))
                 return
 
             # Add to list
@@ -8701,28 +8698,28 @@ class Main:
 
         # Step 3: Metadata report
         str_meta_list = []
-        str_meta_list.append('{0} Year Genre Developer Rating Plot Audit    PClone\n'.format('Name'.ljust(ROM_NAME_LENGHT)))
-        str_meta_list.append('{0}\n'.format('-' * 99))
+        str_meta_list.append('{} Year Genre Developer Rating Plot Audit    PClone\n'.format('Name'.ljust(ROM_NAME_LENGHT)))
+        str_meta_list.append('{}\n'.format('-' * 99))
         for m in check_list:
-            # >> Limit ROM name string length
+            # Limit ROM name string length
             name_str = text_limit_string(m['m_name'], ROM_NAME_LENGHT)
-            str_meta_list.append('{0} {1}  {2}   {3}       {4}    {5}  {6:<7}  {7}\n'.format(
-                            name_str.ljust(ROM_NAME_LENGHT),
-                            m['m_year'], m['m_genre'], m['m_developer'],
-                            m['m_rating'], m['m_plot'], m['m_nointro_status'], m['m_pclone_status']))
+            str_meta_list.append('{} {}  {}   {}       {}    {}  {:<7}  {}\n'.format(
+                name_str.ljust(ROM_NAME_LENGHT),
+                m['m_year'], m['m_genre'], m['m_developer'],
+                m['m_rating'], m['m_plot'], m['m_nointro_status'], m['m_pclone_status']))
 
         # Step 4: Asset report
         str_asset_list = []
         str_asset_list.append('{} Tit Sna Fan Ban Clr Bxf Bxb Car Fly Map Man Tra\n'.format('Name'.ljust(ROM_NAME_LENGHT)))
         str_asset_list.append('{}\n'.format('-' * 98))
         for m in check_list:
-            # >> Limit ROM name string length
+            # Limit ROM name string length
             name_str = text_limit_string(m['m_name'], ROM_NAME_LENGHT)
-            str_asset_list.append('{0}  {1}   {2}   {3}   {4}   {5}   {6}   {7}   {8}   {9}   {10}   {11}   {12}\n'.format(
-                            name_str.ljust(ROM_NAME_LENGHT),
-                            m['s_title'],     m['s_snap'],     m['s_fanart'],  m['s_banner'],
-                            m['s_clearlogo'], m['s_boxfront'], m['s_boxback'], m['s_cartridge'],
-                            m['s_flyer'],     m['s_map'],      m['s_manual'],  m['s_trailer']))
+            str_asset_list.append('{}  {}   {}   {}   {}   {}   {}   {}   {}   {}   {}   {}   {}\n'.format(
+                name_str.ljust(ROM_NAME_LENGHT),
+                m['s_title'],     m['s_snap'],     m['s_fanart'],  m['s_banner'],
+                m['s_clearlogo'], m['s_boxfront'], m['s_boxback'], m['s_cartridge'],
+                m['s_flyer'],     m['s_map'],      m['s_manual'],  m['s_trailer']))
 
         # Step 5: Join string and write TXT reports
         try:
@@ -9032,7 +9029,7 @@ class Main:
 
         # --- Generate main pclone dictionary ---
         # audit_unknown_roms is an int of list = ['Parents', 'Clones']
-        # log_debug("settings['audit_unknown_roms'] = {0}".format(self.settings['audit_unknown_roms']))
+        # log_debug("settings['audit_unknown_roms'] = {}".format(self.settings['audit_unknown_roms']))
         unknown_ROMs_are_parents = True if self.settings['audit_unknown_roms'] == 0 else False
         log_debug('unknown_ROMs_are_parents = {}'.format(unknown_ROMs_are_parents))
         # if num_dat_clones == 0 and self.settings['audit_create_pclone_groups']:
@@ -9433,8 +9430,8 @@ class Main:
 
                 # Check if the set is already in launcher ROMs.
                 MultiDisc_rom_id = None
-                for rom_id, rom_dic in roms.iteritems():
-                    temp_FN = FileName(rom_dic['filename'])
+                for rom_id in roms:
+                    temp_FN = FileName(roms[rom_id]['filename'])
                     if temp_FN.getBase() == MDSet.setName:
                         MultiDiscInROMs  = True
                         MultiDisc_rom_id = rom_id
@@ -9672,7 +9669,7 @@ class Main:
                 new_asset_basename_FN = FileName(new_asset_basename)
                 asset_path_noext = asset_directory.pjoin(new_asset_basename_FN.getBase_noext())
             else:
-                log_info('_gui_edit_asset() ROM is in Launcher id {0}'.format(launcherID))
+                log_info('_gui_edit_asset() ROM is in Launcher id {}'.format(launcherID))
                 launcher         = self.launchers[launcherID]
                 asset_directory  = FileName(launcher[AInfo.path_key])
                 platform         = launcher['platform']
@@ -10474,7 +10471,7 @@ class Main:
             # Skip non-ROM launcher.
             if not launcher['rompath']: continue
             log_debug('Checking ROM Launcher "{}"'.format(launcher['m_name']))
-            detailed_slist.append('[COLOR orange]Launcher "{0}"[/COLOR]'.format(launcher['m_name']))
+            detailed_slist.append('[COLOR orange]Launcher "{}"[/COLOR]'.format(launcher['m_name']))
             # Load ROMs.
             roms = fs_load_ROMs_JSON(g_PATHS.ROMS_DIR, launcher)
             num_roms = len(roms)
@@ -10971,8 +10968,8 @@ class Main:
         ]
 
         # Traverse categories and sort alphabetically.
-        log_debug('Number of categories {0}'.format(len(self.categories)))
-        log_debug('Number of launchers {0}'.format(len(self.launchers)))
+        log_debug('Number of categories {}'.format(len(self.categories)))
+        log_debug('Number of launchers {}'.format(len(self.launchers)))
         for cat_id in sorted(self.categories, key = lambda x : self.categories[x]['m_name']):
             # Get launchers of this category alphabetically sorted.
             launcher_list = []
@@ -10985,9 +10982,10 @@ class Main:
             cat_name = self.categories[cat_id]['m_name']
             for launcher in launcher_list:
                 table_str.append([cat_name, launcher['m_name'], text_type(launcher['num_roms'])])
-        # Traverse categoryless launchers.
+        # Traverse launchers with no category.
         catless_launchers = {}
-        for launcher_id, launcher in self.launchers.iteritems():
+        for launcher_id in self.launchers:
+            launcher = self.launchers[launcher_id]
             if launcher['categoryID'] == VCATEGORY_ADDONROOT_ID:
                 catless_launchers[launcher_id] = launcher
         for launcher_id in sorted(catless_launchers, key = lambda x : catless_launchers[x]['m_name']):
@@ -11039,9 +11037,10 @@ class Main:
                     text_type(launcher['num_roms']), text_type(launcher['num_have']),
                     text_type(launcher['num_miss']), text_type(launcher['num_unknown']),
                 ])
-        # Traverse categoryless launchers.
+        # Traverse launchers with no category.
         catless_launchers = {}
-        for launcher_id, launcher in self.launchers.iteritems():
+        for launcher_id in self.launchers:
+            launcher = self.launchers[launcher_id]
             if launcher['categoryID'] == VCATEGORY_ADDONROOT_ID:
                 catless_launchers[launcher_id] = launcher
         for launcher_id in sorted(catless_launchers, key = lambda x : catless_launchers[x]['m_name']):
@@ -11069,35 +11068,35 @@ class Main:
     # NOTE probably this can be implemented in a more elegant way with optinal arguments...
     def _misc_url_RunPlugin(self, command, categoryID = None, launcherID = None, romID = None):
         if romID is not None:
-            return 'XBMC.RunPlugin({0}?com={1}&catID={2}&launID={3}&romID={4})'.format(
+            return 'XBMC.RunPlugin({}?com={}&catID={}&launID={}&romID={})'.format(
                 self.base_url, command, categoryID, launcherID, romID)
         elif launcherID is not None:
-            return 'XBMC.RunPlugin({0}?com={1}&catID={2}&launID={3})'.format(
+            return 'XBMC.RunPlugin({}?com={}&catID={}&launID={})'.format(
                 self.base_url, command, categoryID, launcherID)
         elif categoryID is not None:
-            return 'XBMC.RunPlugin({0}?com={1}&catID={2})'.format(
+            return 'XBMC.RunPlugin({}?com={}&catID={})'.format(
                 self.base_url, command, categoryID)
 
-        return 'XBMC.RunPlugin({0}?com={1})'.format(self.base_url, command)
+        return 'XBMC.RunPlugin({}?com={})'.format(self.base_url, command)
 
     def _misc_url(self, command, categoryID = None, launcherID = None, romID = None):
         if romID is not None:
-            return '{0}?com={1}&catID={2}&launID={3}&romID={4}'.format(
+            return '{}?com={}&catID={}&launID={}&romID={}'.format(
                 self.base_url, command, categoryID, launcherID, romID)
         elif launcherID is not None:
-            return '{0}?com={1}&catID={2}&launID={3}'.format(
+            return '{}?com={}&catID={}&launID={}'.format(
                 self.base_url, command, categoryID, launcherID)
         elif categoryID is not None:
-            return '{0}?com={1}&catID={2}'.format(self.base_url, command, categoryID)
+            return '{}?com={}&catID={}'.format(self.base_url, command, categoryID)
 
-        return '{0}?com={1}'.format(self.base_url, command)
+        return '{}?com={}'.format(self.base_url, command)
 
     def _misc_url_search(self, command, categoryID, launcherID, search_type, search_string):
-        return '{0}?com={1}&catID={2}&launID={3}&search_type={4}&search_string={5}'.format(
+        return '{}?com={}&catID={}&launID={}&search_type={}&search_string={}'.format(
             self.base_url, command, categoryID, launcherID, search_type, search_string)
 
     def _command_buildMenu(self):
-        log_debug('_command_buildMenu() Starting ...')
+        log_debug('_command_buildMenu() Starting...')
 
         hasSkinshortcuts = xbmc.getCondVisibility('System.HasAddon(script.skinshortcuts)') == 1
         if hasSkinshortcuts == False:
@@ -11181,7 +11180,7 @@ class Main:
                 fanart = asset_get_default_asset_Category(category_dic, 'default_fanart')
                 thumb = asset_get_default_asset_Category(category_dic, 'default_thumb', 'DefaultFolder.png')
 
-                log_debug('_command_buildMenu() Adding Category "{0}"'.format(name))
+                log_debug('_command_buildMenu() Adding Category "{}"'.format(name))
                 listitem = self._buildMenuItem(key, name, url_str, thumb, fanart, count, ui)
                 selectedMenuItems.append(listitem)
 
@@ -11195,7 +11194,7 @@ class Main:
                 fanart = asset_get_default_asset_Category(launcher_dic, 'default_fanart')
                 thumb = asset_get_default_asset_Category(launcher_dic, 'default_thumb', 'DefaultFolder.png')
 
-                log_debug('_command_buildMenu() Adding Launcher "{0}"'.format(name))
+                log_debug('_command_buildMenu() Adding Launcher "{}"'.format(name))
                 listitem = self._buildMenuItem(key, name, url_str, thumb, fanart, count, ui)
                 selectedMenuItems.append(listitem)
 

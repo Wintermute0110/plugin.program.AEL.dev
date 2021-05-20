@@ -257,15 +257,16 @@ def autoconfig_search_all_by_name(i_launcher, categories, launchers):
                 s_category = category['id']
                 break
 
-    # >> If the category was found then search the launcher inside that category.
+    # If the category was found then search the launcher inside that category.
     if s_category:
         s_launcher = None
-        for launcherID, launcher in launchers.iteritems():
+        for launcherID in launchers:
+            launcher = launchers[launcherID]
             if s_category != launcher['categoryID']: continue
             if laun_name == launcher['m_name']:
                 s_launcher = launcher['id']
                 break
-    # >> If the category was not found then launcher does not exist.
+    # If the category was not found then launcher does not exist.
     else:
         s_launcher = None
 
@@ -823,68 +824,68 @@ def autoconfig_import_launcher(ROMS_DIR, categories, launchers, categoryID, laun
     # Note that path_* tags will be imported only if they are non-empty.
     if i_launcher['path_3dbox']:
         launchers[launcherID]['path_3dbox'] = i_launcher['path_3dbox']
-        log_debug('Imported path_3dbox "{0}"'.format(i_launcher['path_3dbox']))
+        log_debug('Imported path_3dbox "{}"'.format(i_launcher['path_3dbox']))
 
     if i_launcher['path_title']:
         launchers[launcherID]['path_title'] = i_launcher['path_title']
-        log_debug('Imported path_title "{0}"'.format(i_launcher['path_title']))
+        log_debug('Imported path_title "{}"'.format(i_launcher['path_title']))
 
     if i_launcher['path_snap']:
         launchers[launcherID]['path_snap'] = i_launcher['path_snap']
-        log_debug('Imported path_snap "{0}"'.format(i_launcher['path_snap']))
+        log_debug('Imported path_snap "{}"'.format(i_launcher['path_snap']))
 
     if i_launcher['path_boxfront']:
         launchers[launcherID]['path_boxfront'] = i_launcher['path_boxfront']
-        log_debug('Imported path_boxfront "{0}"'.format(i_launcher['path_boxfront']))
+        log_debug('Imported path_boxfront "{}"'.format(i_launcher['path_boxfront']))
 
     if i_launcher['path_boxback']:
         launchers[launcherID]['path_boxback'] = i_launcher['path_boxback']
-        log_debug('Imported path_boxback "{0}"'.format(i_launcher['path_boxback']))
+        log_debug('Imported path_boxback "{}"'.format(i_launcher['path_boxback']))
 
     if i_launcher['path_cartridge']:
         launchers[launcherID]['path_cartridge'] = i_launcher['path_cartridge']
-        log_debug('Imported path_cartridge "{0}"'.format(i_launcher['path_cartridge']))
+        log_debug('Imported path_cartridge "{}"'.format(i_launcher['path_cartridge']))
 
     if i_launcher['path_fanart']:
         launchers[launcherID]['path_fanart'] = i_launcher['path_fanart']
-        log_debug('Imported path_fanart "{0}"'.format(i_launcher['path_fanart']))
+        log_debug('Imported path_fanart "{}"'.format(i_launcher['path_fanart']))
 
     if i_launcher['path_banner']:
         launchers[launcherID]['path_banner'] = i_launcher['path_banner']
-        log_debug('Imported path_banner "{0}"'.format(i_launcher['path_banner']))
+        log_debug('Imported path_banner "{}"'.format(i_launcher['path_banner']))
 
     if i_launcher['path_clearlogo']:
         launchers[launcherID]['path_clearlogo'] = i_launcher['path_clearlogo']
-        log_debug('Imported path_clearlogo "{0}"'.format(i_launcher['path_clearlogo']))
+        log_debug('Imported path_clearlogo "{}"'.format(i_launcher['path_clearlogo']))
 
     if i_launcher['path_flyer']:
         launchers[launcherID]['path_flyer'] = i_launcher['path_flyer']
-        log_debug('Imported path_flyer "{0}"'.format(i_launcher['path_flyer']))
+        log_debug('Imported path_flyer "{}"'.format(i_launcher['path_flyer']))
 
     if i_launcher['path_map']:
         launchers[launcherID]['path_map'] = i_launcher['path_map']
-        log_debug('Imported path_map "{0}"'.format(i_launcher['path_map']))
+        log_debug('Imported path_map "{}"'.format(i_launcher['path_map']))
 
     if i_launcher['path_manual']:
         launchers[launcherID]['path_manual'] = i_launcher['path_manual']
-        log_debug('Imported path_manual "{0}"'.format(i_launcher['path_manual']))
+        log_debug('Imported path_manual "{}"'.format(i_launcher['path_manual']))
 
     if i_launcher['path_trailer']:
         launchers[launcherID]['path_trailer'] = i_launcher['path_trailer']
-        log_debug('Imported path_trailer "{0}"'.format(i_launcher['path_trailer']))
+        log_debug('Imported path_trailer "{}"'.format(i_launcher['path_trailer']))
 
     # --- Launcher assets/artwork ---
     if i_launcher['Asset_Prefix']:
         launchers[launcherID]['Asset_Prefix'] = i_launcher['Asset_Prefix']
-        log_debug('Imported Asset_Prefix "{0}"'.format(i_launcher['Asset_Prefix']))
+        log_debug('Imported Asset_Prefix "{}"'.format(i_launcher['Asset_Prefix']))
     Asset_Prefix = i_launcher['Asset_Prefix']
     # >> Look at autoconfig_import_category() for a reference implementation.
     if Asset_Prefix:
         log_debug('Asset_Prefix non empty. Looking for asset files.')
         (Asset_Prefix_head, Asset_Prefix_tail) = os.path.split(Asset_Prefix)
-        log_debug('Effective Asset_Prefix "{0}"'.format(Asset_Prefix))
-        log_debug('Asset_Prefix_head      "{0}"'.format(Asset_Prefix_head))
-        log_debug('Asset_Prefix_tail      "{0}"'.format(Asset_Prefix_tail))
+        log_debug('Effective Asset_Prefix "{}"'.format(Asset_Prefix))
+        log_debug('Asset_Prefix_head      "{}"'.format(Asset_Prefix_head))
+        log_debug('Asset_Prefix_tail      "{}"'.format(Asset_Prefix_tail))
         if Asset_Prefix_head:
             log_debug('Asset_Prefix head not empty')
             asset_dir_FN = FileName(import_FN.getDir()).pjoin(Asset_Prefix_head)
@@ -895,32 +896,32 @@ def autoconfig_import_launcher(ROMS_DIR, categories, launchers, categoryID, laun
             asset_dir_FN = FileName(import_FN.getDir())
             norm_asset_dir_FN = FileName(os.path.normpath(asset_dir_FN.getPath()))
             effective_Asset_Prefix = Asset_Prefix_tail
-        log_debug('import_FN              "{0}"'.format(import_FN.getPath()))
-        log_debug('asset_dir_FN           "{0}"'.format(asset_dir_FN.getPath()))
-        log_debug('norm_asset_dir_FN      "{0}"'.format(norm_asset_dir_FN.getPath()))
-        log_debug('effective_Asset_Prefix "{0}"'.format(effective_Asset_Prefix))
+        log_debug('import_FN              "{}"'.format(import_FN.getPath()))
+        log_debug('asset_dir_FN           "{}"'.format(asset_dir_FN.getPath()))
+        log_debug('norm_asset_dir_FN      "{}"'.format(norm_asset_dir_FN.getPath()))
+        log_debug('effective_Asset_Prefix "{}"'.format(effective_Asset_Prefix))
 
-        # >> Get a list of all files in the directory pointed by Asset_Prefix and use this list as
-        # >> a file cache. This list has filenames withouth path.
-        log_debug('Scanning files in dir "{0}"'.format(norm_asset_dir_FN.getPath()))
+        # Get a list of all files in the directory pointed by Asset_Prefix and use this list as
+        # a file cache. This list has filenames withouth path.
+        log_debug('Scanning files in dir "{}"'.format(norm_asset_dir_FN.getPath()))
         file_list = sorted(os.listdir(norm_asset_dir_FN.getPath()))
-        log_debug('Found {0} files'.format(len(file_list)))
+        log_debug('Found {} files'.format(len(file_list)))
         # log_debug('--- File list ---')
-        # for file in file_list: log_debug('--- "{0}"'.format(file))
+        # for file in file_list: log_debug('--- "{}"'.format(file))
     else:
         log_debug('Asset_Prefix empty. Not looking for any asset files.')
         norm_asset_dir_FN = None
         effective_Asset_Prefix = ''
         file_list = []
 
-    # >> Traverse list of category assets and search for image files for each asset
+    # Traverse list of category assets and search for image files for each asset
     for laun_asset in LAUNCHER_ASSET_ID_LIST:
-        # >> Bypass trailers now
+        # Bypass trailers now
         if laun_asset == ASSET_TRAILER_ID: continue
 
         # >> Look for assets
         AInfo = assets_get_info_scheme(laun_asset)
-        log_debug('>> Asset "{0}"'.format(AInfo.name))
+        log_debug('>> Asset "{}"'.format(AInfo.name))
         asset_file_list = autoconfig_search_asset_file_list(effective_Asset_Prefix, AInfo, norm_asset_dir_FN, file_list)
         # --- Create image list for selection dialog ---
         listitems_list = []
@@ -928,30 +929,30 @@ def autoconfig_import_launcher(ROMS_DIR, categories, launchers, categoryID, laun
         # >> Current image if found
         current_FN = FileName(launchers[launcherID][AInfo.key])
         if current_FN.exists():
-            log_debug('Current asset found "{0}"'.format(current_FN.getPath()))
+            log_debug('Current asset found "{}"'.format(current_FN.getPath()))
             asset_listitem = xbmcgui.ListItem(label = 'Current image', label2 = current_FN.getPath())
             asset_listitem.setArt({'icon' : current_FN.getPath()})
             listitems_list.append(asset_listitem)
             listitems_asset_paths.append(current_FN.getPath())
         else:
-            log_debug('Current asset NOT found "{0}"'.format(current_FN.getPath()))
+            log_debug('Current asset NOT found "{}"'.format(current_FN.getPath()))
         # >> Image in <s_icon>, <s_fanart>, ... tags if found
         tag_asset_FN = FileName(i_launcher[AInfo.key])
         if tag_asset_FN.exists():
-            log_debug('<{0}> tag found "{1}"'.format(AInfo.key, tag_asset_FN.getPath()))
-            asset_listitem = xbmcgui.ListItem(label = 'XML <{0}> image'.format(AInfo.key),
+            log_debug('<{}> tag found "{}"'.format(AInfo.key, tag_asset_FN.getPath()))
+            asset_listitem = xbmcgui.ListItem(label = 'XML <{}> image'.format(AInfo.key),
                                               label2 = tag_asset_FN.getPath())
             asset_listitem.setArt({'icon' : tag_asset_FN.getPath()})
             listitems_list.append(asset_listitem)
             listitems_asset_paths.append(tag_asset_FN.getPath())
         else:
-            log_debug('<{0}> tag NOT found "{1}"'.format(AInfo.key, tag_asset_FN.getPath()))
+            log_debug('<{}> tag NOT found "{}"'.format(AInfo.key, tag_asset_FN.getPath()))
         # >> Images found in XML configuration via <Asset_Prefix> tag
         image_count = 1
         for asset_file_name in asset_file_list:
-            log_debug('Asset_Prefix found "{0}"'.format(asset_file_name))
+            log_debug('Asset_Prefix found "{}"'.format(asset_file_name))
             asset_FN = FileName(asset_file_name)
-            asset_listitem = xbmcgui.ListItem(label = 'Asset_Prefix #{0} "{1}"'.format(image_count, asset_FN.getBase()),
+            asset_listitem = xbmcgui.ListItem(label = 'Asset_Prefix #{} "{}"'.format(image_count, asset_FN.getBase()),
                                               label2 = asset_file_name)
             asset_listitem.setArt({'icon' : asset_file_name})
             listitems_list.append(asset_listitem)
@@ -959,7 +960,7 @@ def autoconfig_import_launcher(ROMS_DIR, categories, launchers, categoryID, laun
             image_count += 1
         # If list is empty at this point no images were found at all.
         if not listitems_list:
-            log_debug('listitems_list is empty. Keeping {0} as it was.'.format(AInfo.name))
+            log_debug('listitems_list is empty. Keeping {} as it was.'.format(AInfo.name))
             continue
         # No image
         asset_listitem = xbmcgui.ListItem(label = 'No image')
@@ -1002,25 +1003,25 @@ def autoconfig_import_launcher(ROMS_DIR, categories, launchers, categoryID, laun
 # N is a number [0-9]
 # Comment may have spaces
 def autoconfig_search_asset_file_list(asset_prefix, AInfo, norm_asset_dir_FN, file_list):
-    log_debug('autoconfig_search_asset_file_list() BEGIN asset infix "{0}"'.format(AInfo.fname_infix))
+    log_debug('autoconfig_search_asset_file_list() BEGIN asset infix "{}"'.format(AInfo.fname_infix))
 
     # >> Traverse list of filenames (no paths)
     filename_noext = asset_prefix + '_' + AInfo.fname_infix
-    # log_debug('filename_noext "{0}"'.format(filename_noext))
+    # log_debug('filename_noext "{}"'.format(filename_noext))
     img_ext_regexp = asset_get_regexp_extension_list(IMAGE_EXTENSION_LIST)
-    # log_debug('img_ext_regexp "{0}"'.format(img_ext_regexp))
-    pattern = '({0})([ \w]*?)\.{1}'.format(filename_noext, img_ext_regexp)
-    log_debug('autoconfig_search_asset_file_list() pattern "{0}"'.format(pattern))
+    # log_debug('img_ext_regexp "{}"'.format(img_ext_regexp))
+    pattern = '({})([ \w]*?)\.{}'.format(filename_noext, img_ext_regexp)
+    log_debug('autoconfig_search_asset_file_list() pattern "{}"'.format(pattern))
 
     # --- Search for files in case A, B and C ---
     asset_file_list = []
     for file in file_list:
-        # log_debug('Testing "{0}"'.format(file))
+        # log_debug('Testing "{}"'.format(file))
         m = re.match(pattern, file)
         if m:
-            # log_debug('MATCH   "{0}"'.format(m.group(0)))
+            # log_debug('MATCH   "{}"'.format(m.group(0)))
             asset_full_path = norm_asset_dir_FN.pjoin(file)
-            # log_verb('Adding  "{0}"'.format(asset_full_path.getPath()))
+            # log_verb('Adding  "{}"'.format(asset_full_path.getPath()))
             asset_file_list.append(asset_full_path.getPath())
     # log_debug('autoconfig_search_asset_file_list() END')
 

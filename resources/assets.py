@@ -102,9 +102,8 @@ def assets_get_default_artwork_dir(asset_ID, launcher):
 
 # Creates path for assets (artwork) and automatically fills in the path_ fields in the launcher
 # struct.
-# 
 def assets_init_asset_dir(assets_path_FName, launcher):
-    log_verb('assets_init_asset_dir() asset_path "{0}"'.format(assets_path_FName.getPath()))
+    log_verb('assets_init_asset_dir() asset_path "{}"'.format(assets_path_FName.getPath()))
 
     # --- Fill in launcher fields and create asset directories ---
     if launcher['platform'] == 'MAME':
@@ -142,7 +141,7 @@ def assets_init_asset_dir(assets_path_FName, launcher):
 def assets_parse_asset_dir(launcher, assets_path_FName, key, pathName):
     subPath       = assets_path_FName.pjoin(pathName)
     launcher[key] = subPath.getOriginalPath()
-    log_debug('assets_parse_asset_dir() Creating dir "{0}"'.format(subPath.getPath()))
+    log_debug('assets_parse_asset_dir() Creating dir "{}"'.format(subPath.getPath()))
     subPath.makedirs()
 
 #
@@ -187,8 +186,8 @@ def assets_get_asset_name_str(default_asset):
     elif default_asset == 's_poster':     asset_name_str = 'Poster'
     elif default_asset == 's_controller': asset_name_str = 'Controller'
     else:
-        kodi_notify_warn('Wrong asset key {0}'.format(default_asset))
-        log_error('assets_get_asset_name_str() Wrong default_thumb {0}'.format(default_asset))
+        kodi_notify_warn('Wrong asset key {}'.format(default_asset))
+        log_error('assets_get_asset_name_str() Wrong default_thumb {}'.format(default_asset))
 
     return asset_name_str
 
@@ -436,17 +435,17 @@ def assets_get_info_scheme(asset_kind):
         A.exts_dialog = asset_get_dialog_extension_list(MANUAL_EXTENSION_LIST)
         A.path_key    = 'path_manual'
     else:
-        log_error('assets_get_info_scheme() Wrong asset_kind = {0}'.format(asset_kind))
+        log_error('assets_get_info_scheme() Wrong asset_kind = {}'.format(asset_kind))
 
     # --- Ultra DEBUG ---
-    # log_debug('assets_get_info_scheme() asset_kind    {0}'.format(asset_kind))
-    # log_debug('assets_get_info_scheme() A.key         {0}'.format(A.key))
-    # log_debug('assets_get_info_scheme() A.name        {0}'.format(A.name))
-    # log_debug('assets_get_info_scheme() A.fname_infix {0}'.format(A.fname_infix))
-    # log_debug('assets_get_info_scheme() A.kind_str    {0}'.format(A.kind_str))
-    # log_debug('assets_get_info_scheme() A.exts        {0}'.format(A.exts))
-    # log_debug('assets_get_info_scheme() A.exts_dialog {0}'.format(A.exts_dialog))
-    # log_debug('assets_get_info_scheme() A.path_key    {0}'.format(A.path_key))
+    # log_debug('assets_get_info_scheme() asset_kind    {}'.format(asset_kind))
+    # log_debug('assets_get_info_scheme() A.key         {}'.format(A.key))
+    # log_debug('assets_get_info_scheme() A.name        {}'.format(A.name))
+    # log_debug('assets_get_info_scheme() A.fname_infix {}'.format(A.fname_infix))
+    # log_debug('assets_get_info_scheme() A.kind_str    {}'.format(A.kind_str))
+    # log_debug('assets_get_info_scheme() A.exts        {}'.format(A.exts))
+    # log_debug('assets_get_info_scheme() A.exts_dialog {}'.format(A.exts_dialog))
+    # log_debug('assets_get_info_scheme() A.path_key    {}'.format(A.path_key))
 
     return A
 
@@ -564,12 +563,11 @@ def asset_get_duplicated_dir_list(launcher):
             # log_debug('asset_get_duplicated_asset_list() Checking {0:<9} vs {1:<9}'.format(A_i.name, A_j.name))
             if launcher[A_i.path_key] == launcher[A_j.path_key]:
                 duplicated_bool_list[i] = True
-                duplicated_name_list.append('{0} and {1}'.format(A_i.name, A_j.name))
-                log_info('asset_get_duplicated_asset_list() DUPLICATED {0} and {1}'.format(A_i.name, A_j.name))
+                duplicated_name_list.append('{} and {}'.format(A_i.name, A_j.name))
+                log_info('asset_get_duplicated_asset_list() DUPLICATED {} and {}'.format(A_i.name, A_j.name))
 
     return duplicated_name_list
 
-#
 # Search for local assets and place found files into a list.
 # Returned list all has assets as defined in ROM_ASSET_ID_LIST.
 # This function is used in the ROM Scanner.
@@ -577,7 +575,6 @@ def asset_get_duplicated_dir_list(launcher):
 # launcher               -> launcher dictionary
 # ROMFile                -> FileName object
 # enabled_ROM_ASSET_ID_LIST -> list of booleans
-#
 def assets_search_local_cached_assets(launcher, ROMFile, enabled_ROM_ASSET_ID_LIST):
     log_verb('assets_search_local_cached_assets() Searching for ROM local assets...')
     local_asset_list = [''] * len(ROM_ASSET_ID_LIST)
@@ -585,16 +582,16 @@ def assets_search_local_cached_assets(launcher, ROMFile, enabled_ROM_ASSET_ID_LI
     for i, asset_kind in enumerate(ROM_ASSET_ID_LIST):
         AInfo = assets_get_info_scheme(asset_kind)
         if not enabled_ROM_ASSET_ID_LIST[i]:
-            log_verb('Disabled {0:<9}'.format(AInfo.name))
+            log_verb('Disabled {:<9}'.format(AInfo.name))
             continue
         local_asset = misc_search_file_cache(launcher[AInfo.path_key], rom_basename_noext, AInfo.exts)
 
         if local_asset:
             local_asset_list[i] = local_asset.getOriginalPath()
-            log_verb('Found    {0:<9} "{1}"'.format(AInfo.name, local_asset_list[i]))
+            log_verb('Found    {:<9} "{}"'.format(AInfo.name, local_asset_list[i]))
         else:
             local_asset_list[i] = ''
-            log_verb('Missing  {0:<9}'.format(AInfo.name))
+            log_verb('Missing  {:<9}'.format(AInfo.name))
 
     return local_asset_list
 
@@ -608,17 +605,17 @@ def assets_search_local_assets(launcher, ROMFile, enabled_ROM_ASSET_ID_LIST):
     for i, asset_kind in enumerate(ROM_ASSET_ID_LIST):
         AInfo = assets_get_info_scheme(asset_kind)
         if not enabled_ROM_ASSET_ID_LIST[i]:
-            log_verb('assets_search_local_assets() Disabled {0:<9}'.format(AInfo.name))
+            log_verb('assets_search_local_assets() Disabled {:<9}'.format(AInfo.name))
             continue
         asset_path = FileName(launcher[AInfo.path_key])
         local_asset = misc_look_for_file(asset_path, ROMFile.getBase_noext(), AInfo.exts)
 
         if local_asset:
             local_asset_list[i] = local_asset.getOriginalPath()
-            log_verb('assets_search_local_assets() Found    {0:<9} "{1}"'.format(AInfo.name, local_asset_list[i]))
+            log_verb('assets_search_local_assets() Found    {:<9} "{}"'.format(AInfo.name, local_asset_list[i]))
         else:
             local_asset_list[i] = ''
-            log_verb('assets_search_local_assets() Missing  {0:<9}'.format(AInfo.name))
+            log_verb('assets_search_local_assets() Missing  {:<9}'.format(AInfo.name))
 
     return local_asset_list
 
@@ -635,9 +632,9 @@ def assets_get_ROM_asset_path(launcher):
     AInfo_first = assets_get_info_scheme(ROM_ASSET_ID_LIST[0])
     path_first_asset_FN = FileName(launcher[AInfo_first.path_key])
     ROM_asset_path_FN = FileName(path_first_asset_FN.getDir())
-    log_debug('assets_get_ROM_asset_path() path_first_asset_FN OP "{0}"'.format(path_first_asset_FN.getOriginalPath()))
-    log_debug('assets_get_ROM_asset_path() path_first_asset_FN Base "{0}"'.format(path_first_asset_FN.getBase()))
-    log_debug('assets_get_ROM_asset_path() ROM_asset_path_FN Dir "{0}"'.format(ROM_asset_path_FN.getDir()))
+    log_debug('assets_get_ROM_asset_path() path_first_asset_FN OP "{}"'.format(path_first_asset_FN.getOriginalPath()))
+    log_debug('assets_get_ROM_asset_path() path_first_asset_FN Base "{}"'.format(path_first_asset_FN.getBase()))
+    log_debug('assets_get_ROM_asset_path() ROM_asset_path_FN Dir "{}"'.format(ROM_asset_path_FN.getDir()))
     for i, asset_kind in enumerate(ROM_ASSET_ID_LIST):
         AInfo = assets_get_info_scheme(asset_kind)
         # If asset path is unconfigured consider it as common so a default path will

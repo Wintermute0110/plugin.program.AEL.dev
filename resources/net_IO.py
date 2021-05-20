@@ -195,7 +195,7 @@ def net_post_URL(url, data):
     req.add_unredirected_header('User-Agent', USER_AGENT)
     req.add_header("Content-type", "application/x-www-form-urlencoded")
     req.add_header("Acept", "text/plain")
-    log_debug('net_post_URL() POST URL "{0}"'.format(req.get_full_url()))
+    log_debug('net_post_URL() POST URL "{}"'.format(req.get_full_url()))
 
     try:
         f = urllib2.urlopen(req, timeout = 120)

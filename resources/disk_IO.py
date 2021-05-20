@@ -252,9 +252,9 @@ def fs_repair_Favourite_ROM(repair_mode, old_fav_rom, parent_rom, parent_launche
 
     # --- Step 0 is always done in any Favourite/Collection repair ---
     log_info('fs_repair_Favourite_ROM() Relinking ROM and launcher (common stuff)')
-    log_info('fs_repair_Favourite_ROM() Old ROM name "{0}"'.format(old_fav_rom['m_name']))
-    log_info('fs_repair_Favourite_ROM() New ROM name "{0}"'.format(parent_rom['m_name']))
-    log_info('fs_repair_Favourite_ROM() New launcher "{0}"'.format(parent_launcher['m_name']))
+    log_info('fs_repair_Favourite_ROM() Old ROM name "{}"'.format(old_fav_rom['m_name']))
+    log_info('fs_repair_Favourite_ROM() New ROM name "{}"'.format(parent_rom['m_name']))
+    log_info('fs_repair_Favourite_ROM() New launcher "{}"'.format(parent_launcher['m_name']))
 
     # >> Main stuff
     fs_aux_copy_ROM_main_stuff(parent_launcher, parent_rom, new_fav_rom)
@@ -338,14 +338,14 @@ def fs_get_ROMs_basename(category_name, launcher_name, launcherID):
     clean_cat_name = ''.join([i if i in string.printable else '_' for i in category_name]).replace(' ', '_')
     clean_launch_title = ''.join([i if i in string.printable else '_' for i in launcher_name]).replace(' ', '_')
     roms_base_noext = 'roms_' + clean_cat_name + '_' + clean_launch_title + '_' + launcherID[0:6]
-    log_verb('fs_get_ROMs_basename() roms_base_noext "{0}"'.format(roms_base_noext))
+    log_verb('fs_get_ROMs_basename() roms_base_noext "{}"'.format(roms_base_noext))
 
     return roms_base_noext
 
 def fs_get_collection_ROMs_basename(collection_name, collectionID):
     clean_collection_name = ''.join([i if i in string.printable else '_' for i in collection_name]).replace(' ', '_')
     roms_base_noext = clean_collection_name + '_' + collectionID[0:6]
-    log_verb('fs_get_collection_ROMs_basename() roms_base_noext "{0}"'.format(roms_base_noext))
+    log_verb('fs_get_collection_ROMs_basename() roms_base_noext "{}"'.format(roms_base_noext))
 
     return roms_base_noext
 
@@ -515,7 +515,7 @@ def fs_load_catfile(categories_file, categories, launchers):
                 text_XML = category_child.text if category_child.text is not None else ''
                 text_XML = text_unescape_XML(text_XML)
                 xml_tag  = category_child.tag
-                if __debug_xml_parser: log_debug('{0} --> {1}'.format(xml_tag, text_XML))
+                if __debug_xml_parser: log_debug('{} --> {}'.format(xml_tag, text_XML))
 
                 # Now transform data depending on tag name
                 if xml_tag == 'finished':
@@ -535,7 +535,7 @@ def fs_load_catfile(categories_file, categories, launchers):
                 text_XML = category_child.text if category_child.text is not None else ''
                 text_XML = text_unescape_XML(text_XML)
                 xml_tag  = category_child.tag
-                if __debug_xml_parser: log_debug('{0} --> {1}'.format(xml_tag, text_XML))
+                if __debug_xml_parser: log_debug('{} --> {}'.format(xml_tag, text_XML))
 
                 if xml_tag == 'args_extra':
                     # Transform list() datatype
@@ -556,8 +556,8 @@ def fs_load_catfile(categories_file, categories, launchers):
                 else:
                     launcher[xml_tag] = text_XML
             launchers[launcher['id']] = launcher
-    # log_verb('fs_load_catfile() Loaded {0} categories'.format(len(categories)))
-    # log_verb('fs_load_catfile() Loaded {0} launchers'.format(len(launchers)))
+    # log_verb('fs_load_catfile() Loaded {} categories'.format(len(categories)))
+    # log_verb('fs_load_catfile() Loaded {} launchers'.format(len(launchers)))
 
     return update_timestamp
 
