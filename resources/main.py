@@ -663,19 +663,17 @@ class Main:
         # --- Dump settings for DEBUG ---
         # log_debug('Settings dump BEGIN')
         # for key in sorted(self.settings):
-        #     log_debug('{0} --> {1:10s} {2}'.format(key.rjust(21), str(self.settings[key]), type(self.settings[key])))
+        #     log_debug('{} --> {:10s} {}'.format(key.rjust(21), text_type(self.settings[key]), type(self.settings[key])))
         # log_debug('Settings dump END')
 
-    #
     # Set Sorting methods
-    #
     def _misc_set_default_sorting_method(self):
-        # >> This must be called only if self.addon_handle > 0, otherwise Kodi will complain in the log.
+        # This must be called only if self.addon_handle > 0, otherwise Kodi will complain in the log.
         if self.addon_handle < 0: return
         xbmcplugin.addSortMethod(handle = self.addon_handle, sortMethod = xbmcplugin.SORT_METHOD_UNSORTED)
 
     def _misc_set_all_sorting_methods(self):
-        # >> This must be called only if self.addon_handle > 0, otherwise Kodi will complain in the log.
+        # This must be called only if self.addon_handle > 0, otherwise Kodi will complain in the log.
         if self.addon_handle < 0: return
         xbmcplugin.addSortMethod(handle = self.addon_handle, sortMethod = xbmcplugin.SORT_METHOD_LABEL_IGNORE_FOLDERS)
         xbmcplugin.addSortMethod(handle = self.addon_handle, sortMethod = xbmcplugin.SORT_METHOD_VIDEO_YEAR)
@@ -4364,7 +4362,7 @@ class Main:
         listitem.setProperty('platform', launcher_dic['platform'])
         if launcher_dic['rompath']:
             listitem.setProperty(AEL_CONTENT_LABEL, AEL_CONTENT_VALUE_ROM_LAUNCHER)
-            listitem.setProperty(AEL_NUMITEMS_LABEL, str(launcher_dic['num_roms']))
+            listitem.setProperty(AEL_NUMITEMS_LABEL, text_type(launcher_dic['num_roms']))
         else:
             listitem.setProperty(AEL_CONTENT_LABEL, AEL_CONTENT_VALUE_STD_LAUNCHER)
 
@@ -6399,7 +6397,7 @@ class Main:
             # Test if assets exists before copy.
             AInfo = assets_get_info_scheme(asset_kind)
             if not i_collection[AInfo.key]:
-                log_debug('{:<9s} undefined (empty str)'.format(AInfo.name))
+                log_debug('{:<9s} undefined (empty string)'.format(AInfo.name))
                 continue
             in_asset_FN = in_dir_FN.pjoin(i_collection[AInfo.key])
             log_debug('{:<9s} path "{}"'.format(AInfo.name, in_asset_FN.getPath()))
@@ -6442,7 +6440,7 @@ class Main:
                 # Test if assets exists before copy.
                 AInfo = assets_get_info_scheme(asset_kind)
                 if not rom[AInfo.key]:
-                    log_debug('{:<9s} undefined (empty str)'.format(AInfo.name))
+                    log_debug('{:<9s} undefined (empty string)'.format(AInfo.name))
                     continue
                 in_asset_FN = in_dir_FN.pjoin(rom[AInfo.key])
                 log_debug('{:<9s} path "{}"'.format(AInfo.name, in_asset_FN.getPath()))
@@ -7812,7 +7810,7 @@ class Main:
             vcategory_launchers[hashed_db_UUID] = {
                 'id'              : hashed_db_UUID,
                 'name'            : vlauncher_id,
-                'rom_count'       : str(len(vlauncher_roms)),
+                'rom_count'       : text_type(len(vlauncher_roms)),
                 'roms_base_noext' : hashed_db_UUID,
             }
         pDialog.endProgress()
@@ -10817,7 +10815,7 @@ class Main:
         extra_allowance = json_data['extra_allowance']
         remaining_monthly_allowance = json_data['remaining_monthly_allowance']
         allowance_refresh_timer = json_data['allowance_refresh_timer']
-        allowance_refresh_timer_str = str(datetime.timedelta(seconds = allowance_refresh_timer))
+        allowance_refresh_timer_str = text_type(datetime.timedelta(seconds = allowance_refresh_timer))
 
         # --- Print and display report ---
         window_title = 'TheGamesDB scraper information'
@@ -10986,7 +10984,7 @@ class Main:
             # Render list of launchers for this category.
             cat_name = self.categories[cat_id]['m_name']
             for launcher in launcher_list:
-                table_str.append([cat_name, launcher['m_name'], str(launcher['num_roms'])])
+                table_str.append([cat_name, launcher['m_name'], text_type(launcher['num_roms'])])
         # Traverse categoryless launchers.
         catless_launchers = {}
         for launcher_id, launcher in self.launchers.iteritems():
@@ -10996,7 +10994,7 @@ class Main:
             launcher = self.launchers[launcher_id]
             # Skip Standalone Launchers
             if not launcher['rompath']: continue
-            table_str.append(['', launcher['m_name'], str(launcher['num_roms'])])
+            table_str.append(['', launcher['m_name'], text_type(launcher['num_roms'])])
 
         # Generate table and print report
         # log_debug(text_type(table_str))
@@ -11038,8 +11036,8 @@ class Main:
                 if report_type == AUDIT_REPORT_REDUMP and p_obj.DAT != DAT_REDUMP: continue
                 table_str.append([
                     cat_name, launcher['m_name'], p_obj.compact_name, p_obj.DAT,
-                    str(launcher['num_roms']), str(launcher['num_have']),
-                    str(launcher['num_miss']), str(launcher['num_unknown']),
+                    text_type(launcher['num_roms']), text_type(launcher['num_have']),
+                    text_type(launcher['num_miss']), text_type(launcher['num_unknown']),
                 ])
         # Traverse categoryless launchers.
         catless_launchers = {}
@@ -11058,8 +11056,8 @@ class Main:
             if report_type == AUDIT_REPORT_REDUMP and p_obj.DAT != DAT_REDUMP: continue
             table_str.append([
                 ' ', launcher['m_name'], p_obj.compact_name, p_obj.DAT,
-                str(launcher['num_roms']), str(launcher['num_have']),
-                str(launcher['num_miss']), str(launcher['num_unknown']),
+                text_type(launcher['num_roms']), text_type(launcher['num_have']),
+                text_type(launcher['num_miss']), text_type(launcher['num_unknown']),
             ])
 
         # Generate table and print report
@@ -11216,16 +11214,15 @@ class Main:
         # log_info("Done building menu for AEL")
 
     def _buildMenuItem(self, key, name, action, thumb, fanart, count, ui):
-
         listitem = xbmcgui.ListItem(name)
         listitem.setProperty("defaultID", key)
-        listitem.setProperty("Path", action )
-        listitem.setProperty("displayPath", action )
-        listitem.setProperty("icon", thumb )
-        listitem.setProperty("skinshortcuts-orderindex", str( count ) )
-        listitem.setProperty("additionalListItemProperties", "[]" )
-        ui._add_additional_properties( listitem )
-        ui._add_additionalproperty( listitem, "background", fanart )
-        ui._add_additionalproperty( listitem, "backgroundName", fanart )
+        listitem.setProperty("Path", action)
+        listitem.setProperty("displayPath", action)
+        listitem.setProperty("icon", thumb)
+        listitem.setProperty("skinshortcuts-orderindex", text_type(count))
+        listitem.setProperty("additionalListItemProperties", "[]")
+        ui._add_additional_properties(listitem)
+        ui._add_additionalproperty(listitem, "background", fanart)
+        ui._add_additionalproperty(listitem, "backgroundName", fanart)
 
         return listitem

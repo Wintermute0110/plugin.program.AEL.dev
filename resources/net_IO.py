@@ -56,22 +56,22 @@ def net_get_random_UserAgent():
         os_str  = random.choice(['Linux i686', 'Linux x86_64'])
     browser = random.choice(['chrome', 'firefox', 'ie'])
     if browser == 'chrome':
-        webkit = str(random.randint(500, 599))
-        version = str(random.randint(0, 24)) + '.0' + str(random.randint(0, 1500)) + '.' + str(random.randint(0, 999))
+        webkit = text_type(random.randint(500, 599))
+        version = text_type(random.randint(0, 24)) + '.0' + text_type(random.randint(0, 1500)) + '.' + text_type(random.randint(0, 999))
         return 'Mozilla/5.0 (' + os_str + ') AppleWebKit/' + webkit + '.0 (KHTML, live Gecko) Chrome/' + version + ' Safari/' + webkit
 
     elif browser == 'firefox':
-        year = str(random.randint(2000, 2012))
+        year = text_type(random.randint(2000, 2012))
         month = random.randint(1, 12)
         if month < 10:
-            month = '0' + str(month)
+            month = '0' + text_type(month)
         else:
-            month = str(month)
+            month = text_type(month)
         day = random.randint(1, 30)
         if day < 10:
-            day = '0' + str(day)
+            day = '0' + text_type(day)
         else:
-            day = str(day)
+            day = text_type(day)
         gecko = year + month + day
         version = random.choice([
             '1.0', '2.0', '3.0', '4.0', '5.0', '6.0', '7.0', '8.0',
@@ -79,8 +79,8 @@ def net_get_random_UserAgent():
         return 'Mozilla/5.0 (' + os_str + '; rv:' + version + ') Gecko/' + gecko + ' Firefox/' + version
 
     elif browser == 'ie':
-        version = str(random.randint(1, 10)) + '.0'
-        engine = str(random.randint(1, 5)) + '.0'
+        version = text_type(random.randint(1, 10)) + '.0'
+        engine = text_type(random.randint(1, 5)) + '.0'
         option = random.choice([True, False])
         if option == True:
             token = random.choice(['.NET CLR', 'SV1', 'Tablet PC', 'Win64; IA64', 'Win64; x64', 'WOW64']) + '; '
@@ -102,12 +102,12 @@ def net_download_img(img_url, file_path):
     except IOError as ex:
         log_error('(IOError) In net_download_img(), network code.')
         log_error('(IOError) Object type "{}"'.format(type(ex)))
-        log_error('(IOError) Message "{0}"'.format(str(ex)))
+        log_error('(IOError) Message "{}"'.format(text_type(ex)))
         return
     except Exception as ex:
         log_error('(Exception) In net_download_img(), network code.')
         log_error('(Exception) Object type "{}"'.format(type(ex)))
-        log_error('(Exception) Message "{0}"'.format(str(ex)))
+        log_error('(Exception) Message "{}"'.format(text_type(ex)))
         return
 
     # --- Write image file to disk ---
@@ -119,13 +119,12 @@ def net_download_img(img_url, file_path):
     except IOError as ex:
         log_error('(IOError) In net_download_img(), disk code.')
         log_error('(IOError) Object type "{}"'.format(type(ex)))
-        log_error('(IOError) Message "{0}"'.format(str(ex)))
+        log_error('(IOError) Message "{}"'.format(text_type(ex)))
     except Exception as ex:
         log_error('(Exception) In net_download_img(), disk code.')
         log_error('(Exception) Object type "{}"'.format(type(ex)))
-        log_error('(Exception) Message "{0}"'.format(str(ex)))
+        log_error('(Exception) Message "{}"'.format(text_type(ex)))
 
-#
 # User agent is fixed and defined in global var USER_AGENT
 # https://docs.python.org/2/library/urllib2.html
 #
@@ -161,14 +160,14 @@ def net_get_URL(url, url_log = None):
             page_bytes = unicode(ex.reason)
         log_error('(HTTPError) In net_get_URL()')
         log_error('(HTTPError) Object type "{}"'.format(type(ex)))
-        log_error('(HTTPError) Message "{}"'.format(str(ex)))
+        log_error('(HTTPError) Message "{}"'.format(text_type(ex)))
         log_error('(HTTPError) Code {}'.format(http_code))
         return page_bytes, http_code
     # If an unknown exception happens return empty data.
     except Exception as ex:
         log_error('(Exception) In net_get_URL()')
         log_error('(Exception) Object type "{}"'.format(type(ex)))
-        log_error('(Exception) Message "{}"'.format(str(ex)))
+        log_error('(Exception) Message "{}"'.format(text_type(ex)))
         return page_bytes, http_code
     log_debug('net_get_URL() Read {} bytes'.format(len(page_bytes)))
     log_debug('net_get_URL() HTTP status code {}'.format(http_code))
@@ -205,15 +204,15 @@ def net_post_URL(url, data):
     # If an exception happens return empty data.
     except IOError as ex:
         log_error('(IOError exception) In net_get_URL()')
-        log_error('Message: {0}'.format(str(ex)))
+        log_error('Message: {}'.format(text_type(ex)))
         return page_data
     except Exception as ex:
         log_error('(General exception) In net_get_URL()')
-        log_error('Message: {0}'.format(str(ex)))
+        log_error('Message: {}'.format(text_type(ex)))
         return page_data
 
     num_bytes = len(page_bytes)
-    log_debug('net_post_URL() Read {0} bytes'.format(num_bytes))
+    log_debug('net_post_URL() Read {} bytes'.format(num_bytes))
 
     # --- Convert page data to Unicode ---
     encoding = f.headers['content-type'].split('charset=')[-1]
@@ -221,20 +220,21 @@ def net_post_URL(url, data):
 
     return page_data
 
-def net_decode_URL_data(page_bytes, encoding):
-    # --- Try to guess enconding ---
-    if   encoding == 'text/html':                             encoding = 'utf-8'
-    elif encoding == 'application/json':                      encoding = 'utf-8'
-    elif encoding == 'text/plain' and 'UTF-8' in page_bytes:  encoding = 'utf-8'
-    elif encoding == 'text/plain' and 'UTF-16' in page_bytes: encoding = 'utf-16'
-    else:                                                     encoding = 'utf-8'
-    # log_debug('net_decode_URL_data() encoding = "{}"'.format(encoding))
-
-    # --- Decode ---
-    if encoding == 'utf-16':
-        page_data = page_bytes.decode('utf-16')
+def net_decode_URL_data(page_bytes, MIME_type):
+    # --- Try to guess encoding ---
+    if MIME_type == 'text/html':
+        encoding = 'utf-8'
+    elif MIME_type == 'application/json':
+        encoding = 'utf-8'
+    elif MIME_type == 'text/plain' and 'UTF-8' in page_bytes:
+        encoding = 'utf-8'
+    elif MIME_type == 'text/plain' and 'UTF-16' in page_bytes:
+        encoding = 'utf-16'
     else:
-        # python3: page_data = str(page_bytes, encoding)
-        page_data = text_type(page_bytes, encoding)
+        encoding = 'utf-8'
+    # log_debug('net_decode_URL_data() MIME_type "{}", encoding "{}"'.format(MIME_type, encoding))
+
+    # Decode
+    page_data.decode(encoding)
 
     return page_data

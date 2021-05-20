@@ -295,46 +295,39 @@ def autoconfig_search_category_by_name(i_category, categories):
 #     return s_launcher
 
 def autoconfig_import_launchers(CATEGORIES_FILE_PATH, ROMS_DIR, categories, launchers, import_FN):
-    # >> Load XML file. Fill missing XML tags with sensible defaults.
+    # Load XML file. Fill missing XML tags with sensible defaults.
     __debug_xml_parser = True
-    log_verb('autoconfig_import_launchers() Loading {0}'.format(import_FN.getOriginalPath()))
-    try:
-        xml_tree = ET.parse(import_FN.getPath())
-    except ET.ParseError as e:
-        log_error('(ParseError) Exception parsing XML categories.xml')
-        log_error('(ParseError) {0}'.format(str(e)))
-        kodi_dialog_OK('(ParseError) Exception reading categories.xml. '
-                       'Maybe XML file is corrupt or contains invalid characters.')
-        return
+    log_verb('autoconfig_import_launchers() Loading {}'.format(import_FN.getOriginalPath()))
+    xml_tree = utils_load_XML_to_ET(import_FN.getOriginalPath())
     xml_root = xml_tree.getroot()
 
-    # >> Process tags in XML configuration file
+    # Process tags in XML configuration file
     imported_categories_list = []
     imported_launchers_list = []
     list_type_tags = ['args', 'args_extra']
     for root_element in xml_root:
-        if __debug_xml_parser: log_debug('>>> Root child tag <{0}>'.format(root_element.tag))
+        if __debug_xml_parser: log_debug('>>> Root child tag <{}>'.format(root_element.tag))
 
         if root_element.tag == 'category':
             category_temp = autoconfig_get_default_import_category()
             for root_child in root_element:
-                # >> By default read strings
+                # By default read strings
                 text_XML = root_child.text if root_child.text is not None else ''
                 text_XML = text_unescape_XML(text_XML)
                 xml_tag  = root_child.tag
-                if __debug_xml_parser: log_debug('>>> "{0:<11s}" --> "{1}"'.format(xml_tag, text_XML))
+                if __debug_xml_parser: log_debug('>>> "{:<11s}" --> "{}"'.format(xml_tag, text_XML))
                 category_temp[xml_tag] = text_XML
             # --- Add category to categories dictionary ---
-            log_debug('Adding category "{0}" to import list'.format(category_temp['name']))
+            log_debug('Adding category "{}" to import list'.format(category_temp['name']))
             imported_categories_list.append(category_temp)
         elif root_element.tag == 'launcher':
             launcher_temp = autoconfig_get_default_import_launcher()
             for root_child in root_element:
-                # >> By default read strings
+                # By default read strings
                 text_XML = root_child.text if root_child.text is not None else ''
                 text_XML = text_unescape_XML(text_XML)
                 xml_tag  = root_child.tag
-                if __debug_xml_parser: log_debug('>>> "{0:<11s}" --> "{1}"'.format(xml_tag, text_XML))
+                if __debug_xml_parser: log_debug('>>> "{:<11s}" --> "{}"'.format(xml_tag, text_XML))
 
                 # Transform list datatype. Only add to the list if string is non empty.
                 if xml_tag in list_type_tags and text_XML:
@@ -342,56 +335,56 @@ def autoconfig_import_launchers(CATEGORIES_FILE_PATH, ROMS_DIR, categories, laun
                     continue
                 launcher_temp[xml_tag] = text_XML
             # --- Add launcher to categories dictionary ---
-            log_debug('Adding launcher "{0}" to import list'.format(launcher_temp['name']))
+            log_debug('Adding launcher "{}" to import list'.format(launcher_temp['name']))
             imported_launchers_list.append(launcher_temp)
         else:
-            log_warning('Unrecognised root tag <{0}>'.format(root_element.tag))
+            log_warning('Unrecognised root tag <{}>'.format(root_element.tag))
 
-    # >> Traverse category import list and import all launchers found in XML file.
+    # Traverse category import list and import all launchers found in XML file.
     for i_category in imported_categories_list:
-        log_info('Processing Category "{0}"'.format(i_category['name']))
+        log_info('Processing Category "{}"'.format(i_category['name']))
 
-        # >> Search category/launcher database to check if imported launcher/category exist.
+        # Search category/launcher database to check if imported launcher/category exist.
         s_categoryID = autoconfig_search_category_by_name(i_category, categories)
-        log_debug('s_category = "{0}"'.format(s_categoryID))
+        log_debug('s_category = "{}"'.format(s_categoryID))
 
         # --- Options ---
         # A) Category not found. Create new category.
         # B) Category found. Edit existing category.
         if not s_categoryID:
-            # >> Create category AND launcher and import.
-            # >> NOTE root_addon category is always found in autoconfig_search_all_by_name()
+            # Create category AND launcher and import.
+            # NOTE root_addon category is always found in autoconfig_search_all_by_name()
             log_debug('Case A) Category not found. Create new category.')
             category = fs_new_category()
             categoryID = misc_generate_random_SID()
             category['id'] = categoryID
             category['m_name'] = i_category['name']
             categories[categoryID] = category
-            log_debug('New Category "{0}" (ID {1})'.format(i_category['name'], categoryID))
+            log_debug('New Category "{}" (ID {})'.format(i_category['name'], categoryID))
 
-            # >> Import launcher. Only import fields that are not empty strings.
+            # Import launcher. Only import fields that are not empty strings.
             autoconfig_import_category(categories, categoryID, i_category, import_FN)
         else:
-            # >> Category exists (by name). Overwrite?
+            # Category exists (by name). Overwrite?
             log_debug('Case B) Category found. Edit existing category.')
-            ret = kodi_dialog_yesno('Category "{0}" found in AEL database. Overwrite?'.format(i_category['name']))
+            ret = kodi_dialog_yesno('Category "{}" found in AEL database. Overwrite?'.format(i_category['name']))
             if ret < 1: continue
 
-            # >> Import launcher. Only import fields that are not empty strings.
+            # Import launcher. Only import fields that are not empty strings.
             autoconfig_import_category(categories, s_categoryID, i_category, import_FN)
 
-    # >> Traverse launcher import list and import all launchers found in XML file.
+    # Traverse launcher import list and import all launchers found in XML file.
     # A) Match categories by name. If multiple categories with same name pick the first one.
     # B) If category does not exist create a new one.
     # C) Launchers are matched by name. If launcher name not found then create a new launcherID.
     for i_launcher in imported_launchers_list:
-        log_info('Processing Launcher "{0}"'.format(i_launcher['name']))
-        log_info('      with Category "{0}"'.format(i_launcher['category']))
+        log_info('Processing Launcher "{}"'.format(i_launcher['name']))
+        log_info('      with Category "{}"'.format(i_launcher['category']))
 
-        # >> Search category/launcher database to check if imported launcher/category exist.
+        # Search category/launcher database to check if imported launcher/category exist.
         (s_categoryID, s_launcherID) = autoconfig_search_all_by_name(i_launcher, categories, launchers)
-        log_debug('s_launcher = "{0}"'.format(s_launcherID))
-        log_debug('s_category = "{0}"'.format(s_categoryID))
+        log_debug('s_launcher = "{}"'.format(s_launcherID))
+        log_debug('s_category = "{}"'.format(s_categoryID))
 
         # --- Options ---
         # NOTE If category not found then create a new one for this imported launcher
@@ -399,31 +392,31 @@ def autoconfig_import_launchers(CATEGORIES_FILE_PATH, ROMS_DIR, categories, laun
         # B) Category found and Launcher not found.
         # C) Category found and Launcher found.
         if not s_categoryID:
-            # >> Create category AND launcher and import.
-            # >> NOTE root_addon category is always found in autoconfig_search_all_by_name()
+            # Create category AND launcher and import.
+            # NOTE root_addon category is always found in autoconfig_search_all_by_name()
             log_debug('Case A) Category not found. This implies launcher not found.')
             category = fs_new_category()
             categoryID = misc_generate_random_SID()
             category['id'] = categoryID
             category['m_name'] = i_launcher['category']
             categories[categoryID] = category
-            log_debug('New Category "{0}" (ID {1})'.format(i_launcher['category'], categoryID))
+            log_debug('New Category "{}" (ID {})'.format(i_launcher['category'], categoryID))
 
-            # >> Create new launcher inside newly created category and import launcher.
+            # Create new launcher inside newly created category and import launcher.
             launcherID = misc_generate_random_SID()
             launcherdata = fs_new_launcher()
             launcherdata['id'] = launcherID
             launcherdata['categoryID'] = categoryID
             launcherdata['timestamp_launcher'] = time.time()
             launchers[launcherID] = launcherdata
-            log_debug('New Launcher "{0}" (ID {1})'.format(i_launcher['name'], launcherID))
+            log_debug('New Launcher "{}" (ID {})'.format(i_launcher['name'], launcherID))
 
-            # >> Import launcher. Only import fields that are not empty strings.
-            # >> Function edits self.launchers dictionary using first argument key
+            # Import launcher. Only import fields that are not empty strings.
+            # Function edits self.launchers dictionary using first argument key
             autoconfig_import_launcher(ROMS_DIR, categories, launchers, categoryID, launcherID, i_launcher, import_FN)
 
         elif s_categoryID and not s_launcherID:
-            # >> Create new launcher inside existing category and import launcher.
+            # Create new launcher inside existing category and import launcher.
             log_debug('Case B) Category found and Launcher not found.')
             launcherID = misc_generate_random_SID()
             launcherdata = fs_new_launcher()
@@ -431,62 +424,62 @@ def autoconfig_import_launchers(CATEGORIES_FILE_PATH, ROMS_DIR, categories, laun
             launcherdata['categoryID'] = s_categoryID
             launcherdata['timestamp_launcher'] = time.time()
             launchers[launcherID] = launcherdata
-            log_debug('New Launcher "{0}" (ID {1})'.format(i_launcher['name'], launcherID))
+            log_debug('New Launcher "{}" (ID {})'.format(i_launcher['name'], launcherID))
 
-            # >> Import launcher. Only import fields that are not empty strings.
+            # Import launcher. Only import fields that are not empty strings.
             autoconfig_import_launcher(ROMS_DIR, categories, launchers, s_categoryID, launcherID, i_launcher, import_FN)
 
         else:
-            # >> Both category and launcher exists (by name). Overwrite?
+            # Both category and launcher exists (by name). Overwrite?
             log_debug('Case C) Category and Launcher found.')
             cat_name = i_launcher['category'] if i_launcher['category'] != VCATEGORY_ADDONROOT_ID else 'Root Category'
-            ret = kodi_dialog_yesno('Launcher "{0}" in Category "{1}" '.format(i_launcher['name'], cat_name) +
-                                    'found in AEL database. Overwrite?')
+            ret = kodi_dialog_yesno('Launcher "{}" in Category "{}" '.format(i_launcher['name'], cat_name) +
+                'found in AEL database. Overwrite?')
             if ret < 1: continue
 
-            # >> Import launcher. Only import fields that are not empty strings.
+            # Import launcher. Only import fields that are not empty strings.
             autoconfig_import_launcher(ROMS_DIR, categories, launchers, s_categoryID, s_launcherID, i_launcher, import_FN)
 
-# Imports/edits a category with an extenal XML config file.
+# Imports/edits a category with an external XML config file.
 def autoconfig_import_category(categories, categoryID, i_category, import_FN):
-    log_debug('autoconfig_import_category() categoryID = {0}'.format(categoryID))
+    log_debug('autoconfig_import_category() categoryID = {}'.format(categoryID))
 
     # --- Category metadata ---
     if i_category['name']:
         categories[categoryID]['m_name'] = i_category['name']
-        log_debug('Imported m_name       "{0}"'.format(i_category['name']))
+        log_debug('Imported m_name       "{}"'.format(i_category['name']))
 
     if i_category['year']:
         categories[categoryID]['m_year'] = i_category['year']
-        log_debug('Imported m_year       "{0}"'.format(i_category['year']))
+        log_debug('Imported m_year       "{}"'.format(i_category['year']))
 
     if i_category['genre']:
         categories[categoryID]['m_genre'] = i_category['genre']
-        log_debug('Imported m_genre      "{0}"'.format(i_category['genre']))
+        log_debug('Imported m_genre      "{}"'.format(i_category['genre']))
 
     if i_category['developer']:
         categories[categoryID]['m_developer'] = i_category['developer']
-        log_debug('Imported m_developer  "{0}"'.format(i_category['developer']))
+        log_debug('Imported m_developer  "{}"'.format(i_category['developer']))
 
     if i_category['rating']:
         categories[categoryID]['m_rating'] = i_category['rating']
-        log_debug('Imported m_rating =   "{0}"'.format(i_category['rating']))
+        log_debug('Imported m_rating =   "{}"'.format(i_category['rating']))
 
     if i_category['plot']:
         categories[categoryID]['m_plot'] = i_category['plot']
-        log_debug('Imported m_plot       "{0}"'.format(i_category['plot']))
+        log_debug('Imported m_plot       "{}"'.format(i_category['plot']))
 
     # --- Category assets/artwork ---
     if i_category['Asset_Prefix']:
         categories[categoryID]['Asset_Prefix'] = i_category['Asset_Prefix']
-        log_debug('Imported Asset_Prefix "{0}"'.format(i_category['Asset_Prefix']))
+        log_debug('Imported Asset_Prefix "{}"'.format(i_category['Asset_Prefix']))
     Asset_Prefix = i_category['Asset_Prefix']
     if Asset_Prefix:
         log_debug('Asset_Prefix non empty. Looking for asset files.')
         (Asset_Prefix_head, Asset_Prefix_tail) = os.path.split(Asset_Prefix)
-        log_debug('Effective Asset_Prefix "{0}"'.format(Asset_Prefix))
-        log_debug('Asset_Prefix_head      "{0}"'.format(Asset_Prefix_head))
-        log_debug('Asset_Prefix_tail      "{0}"'.format(Asset_Prefix_tail))
+        log_debug('Effective Asset_Prefix "{}"'.format(Asset_Prefix))
+        log_debug('Asset_Prefix_head      "{}"'.format(Asset_Prefix_head))
+        log_debug('Asset_Prefix_tail      "{}"'.format(Asset_Prefix_tail))
         if Asset_Prefix_head:
             log_debug('Asset_Prefix head not empty')
             asset_dir_FN = FileName(import_FN.getDir()).pjoin(Asset_Prefix_head)
@@ -497,26 +490,26 @@ def autoconfig_import_category(categories, categoryID, i_category, import_FN):
             asset_dir_FN = FileName(import_FN.getDir())
             norm_asset_dir_FN = FileName(os.path.normpath(asset_dir_FN.getPath()))
             effective_Asset_Prefix = Asset_Prefix_tail
-        log_debug('import_FN              "{0}"'.format(import_FN.getPath()))
-        log_debug('asset_dir_FN           "{0}"'.format(asset_dir_FN.getPath()))
-        log_debug('norm_asset_dir_FN      "{0}"'.format(norm_asset_dir_FN.getPath()))
-        log_debug('effective_Asset_Prefix "{0}"'.format(effective_Asset_Prefix))
+        log_debug('import_FN              "{}"'.format(import_FN.getPath()))
+        log_debug('asset_dir_FN           "{}"'.format(asset_dir_FN.getPath()))
+        log_debug('norm_asset_dir_FN      "{}"'.format(norm_asset_dir_FN.getPath()))
+        log_debug('effective_Asset_Prefix "{}"'.format(effective_Asset_Prefix))
 
-        # >> Get a list of all files in the directory pointed by Asset_Prefix and use this list as
-        # >> a file cache. This list has filenames withouth path.
-        log_debug('Scanning files in dir "{0}"'.format(norm_asset_dir_FN.getPath()))
+        # Get a list of all files in the directory pointed by Asset_Prefix and use this list as
+        # a file cache. This list has filenames withouth path.
+        log_debug('Scanning files in dir "{}"'.format(norm_asset_dir_FN.getPath()))
         try:
             file_list = sorted(os.listdir(norm_asset_dir_FN.getPath()))
         except WindowsError as E:
             log_error('autoconfig_import_category() (exceptions.WindowsError) exception')
-            log_error('Exception message: "{0}"'.format(E))
-            kodi_dialog_OK('WindowsError exception. {0}'.format(E))
+            log_error('Exception message: "{}"'.format(E))
+            kodi_dialog_OK('WindowsError exception. {}'.format(E))
             kodi_dialog_OK('Scanning assets using the Asset_Prefix tag in '
-                           'Category "{0}" will be disabled.'.format(i_category['name']))
+                           'Category "{}" will be disabled.'.format(i_category['name']))
             file_list = []
-        log_debug('Found {0} files'.format(len(file_list)))
+        log_debug('Found {} files'.format(len(file_list)))
         # log_debug('--- File list ---')
-        # for file in file_list: log_debug('--- "{0}"'.format(file))
+        # for file in file_list: log_debug('--- "{}"'.format(file))
     else:
         log_debug('Asset_Prefix empty. Not looking for any asset files.')
         norm_asset_dir_FN = None
@@ -525,40 +518,40 @@ def autoconfig_import_category(categories, categoryID, i_category, import_FN):
 
     # Traverse list of category assets and search for image files for each asset.
     for cat_asset in CATEGORY_ASSET_ID_LIST:
-        # >> Bypass trailers now
+        # Bypass trailers now
         if cat_asset == ASSET_TRAILER_ID: continue
 
-        # >> Look for assets using the file list cache.
+        # Look for assets using the file list cache.
         AInfo = assets_get_info_scheme(cat_asset)
-        log_debug('>> Asset "{0}"'.format(AInfo.name))
+        log_debug('>> Asset "{}"'.format(AInfo.name))
         asset_file_list = autoconfig_search_asset_file_list(
             effective_Asset_Prefix, AInfo, norm_asset_dir_FN, file_list)
 
         # --- Create image list for selection dialog ---
         listitems_list = []
         listitems_asset_paths = []
-        # >> Current image if found
+        # Current image if found
         current_FN = FileName(categories[categoryID][AInfo.key])
         if current_FN.exists():
             asset_listitem = xbmcgui.ListItem(label = 'Current image', label2 = current_FN.getPath())
             asset_listitem.setArt({'icon' : current_FN.getPath()})
             listitems_list.append(asset_listitem)
             listitems_asset_paths.append(current_FN.getPath())
-        # >> Image in <s_icon>, <s_fanart>, ... tags if found
+        # Image in <s_icon>, <s_fanart>, ... tags if found
         tag_asset_FN = FileName(i_category[AInfo.key])
         if tag_asset_FN.exists():
-            asset_listitem = xbmcgui.ListItem(label = 'XML <{0}> image'.format(AInfo.key),
+            asset_listitem = xbmcgui.ListItem(label = 'XML <{}> image'.format(AInfo.key),
                                               label2 = tag_asset_FN.getPath())
             asset_listitem.setArt({'icon' : tag_asset_FN.getPath()})
             listitems_list.append(asset_listitem)
             listitems_asset_paths.append(tag_asset_FN.getPath())
-        # >> Images found in XML configuration via <Asset_Prefix> tag if found
+        # Images found in XML configuration via <Asset_Prefix> tag if found
         image_count = 1
         for asset_file_name in asset_file_list:
-            log_debug('asset_file_name "{0}"'.format(asset_file_name))
+            log_debug('asset_file_name "{}"'.format(asset_file_name))
             asset_FN = FileName(asset_file_name)
             asset_listitem = xbmcgui.ListItem(
-                label = 'Asset_Prefix #{0} "{1}"'.format(image_count, asset_FN.getBase()),
+                label = 'Asset_Prefix #{} "{}"'.format(image_count, asset_FN.getBase()),
                 label2 = asset_file_name)
             asset_listitem.setArt({'icon' : asset_file_name})
             listitems_list.append(asset_listitem)
@@ -566,7 +559,7 @@ def autoconfig_import_category(categories, categoryID, i_category, import_FN):
             image_count += 1
         # >> If list is empty at this point no images were found at all.
         if not listitems_list:
-            log_debug('listitems_list is empty. Keeping {0} as it was.'.format(AInfo.name))
+            log_debug('listitems_list is empty. Keeping {} as it was.'.format(AInfo.name))
             continue
         # >> No image
         asset_listitem = xbmcgui.ListItem(label = 'No image')
@@ -585,8 +578,8 @@ def autoconfig_import_category(categories, categoryID, i_category, import_FN):
 
 # Imports/Edits a launcher with an extenal XML config file.
 def autoconfig_import_launcher(ROMS_DIR, categories, launchers, categoryID, launcherID, i_launcher, import_FN):
-    log_debug('autoconfig_import_launcher() categoryID = {0}'.format(categoryID))
-    log_debug('autoconfig_import_launcher() launcherID = {0}'.format(launcherID))
+    log_debug('autoconfig_import_launcher() categoryID = {}'.format(categoryID))
+    log_debug('autoconfig_import_launcher() launcherID = {}'.format(launcherID))
     Launcher_NFO_meta = {'year' : '', 'genre' : '', 'developer' : '', 'rating' : '', 'plot' : ''}
     XML_meta          = {'year' : '', 'genre' : '', 'developer' : '', 'rating' : '', 'plot' : ''}
 
@@ -594,92 +587,92 @@ def autoconfig_import_launcher(ROMS_DIR, categories, launchers, categoryID, laun
     if i_launcher['name']:
         old_launcher_name = launchers[launcherID]['m_name']
         new_launcher_name = i_launcher['name']
-        log_debug('old_launcher_name "{0}"'.format(old_launcher_name))
-        log_debug('new_launcher_name "{0}"'.format(new_launcher_name))
+        log_debug('old_launcher_name "{}"'.format(old_launcher_name))
+        log_debug('new_launcher_name "{}"'.format(new_launcher_name))
         launchers[launcherID]['m_name'] = i_launcher['name']
-        log_debug('Imported m_name "{0}"'.format(i_launcher['name']))
+        log_debug('Imported m_name "{}"'.format(i_launcher['name']))
 
     # >> Process <Launcher_NFO> before any metadata tag
     if i_launcher['Launcher_NFO']:
-        log_debug('Imported Launcher_NFO "{0}"'.format(i_launcher['Launcher_NFO']))
+        log_debug('Imported Launcher_NFO "{}"'.format(i_launcher['Launcher_NFO']))
         Launcher_NFO_FN = FileName(import_FN.getDir()).pjoin(i_launcher['Launcher_NFO'])
         Launcher_NFO_meta = fs_read_launcher_NFO(Launcher_NFO_FN)
-        log_debug('NFO year      "{0}"'.format(Launcher_NFO_meta['year']))
-        log_debug('NFO genre     "{0}"'.format(Launcher_NFO_meta['genre']))
-        log_debug('NFO developer "{0}"'.format(Launcher_NFO_meta['developer']))
-        log_debug('NFO rating    "{0}"'.format(Launcher_NFO_meta['rating']))
-        log_debug('NFO plot      "{0}"'.format(Launcher_NFO_meta['plot']))
+        log_debug('NFO year      "{}"'.format(Launcher_NFO_meta['year']))
+        log_debug('NFO genre     "{}"'.format(Launcher_NFO_meta['genre']))
+        log_debug('NFO developer "{}"'.format(Launcher_NFO_meta['developer']))
+        log_debug('NFO rating    "{}"'.format(Launcher_NFO_meta['rating']))
+        log_debug('NFO plot      "{}"'.format(Launcher_NFO_meta['plot']))
 
-    # >> Process XML metadata and put in temporal dictionary
+    # Process XML metadata and put in temporal dictionary
     if i_launcher['year']:
         XML_meta['year'] = i_launcher['year']
-        log_debug('XML year      "{0}"'.format(i_launcher['year']))
+        log_debug('XML year      "{}"'.format(i_launcher['year']))
 
     if i_launcher['genre']:
         XML_meta['genre'] = i_launcher['genre']
-        log_debug('XML genre     "{0}"'.format(i_launcher['genre']))
+        log_debug('XML genre     "{}"'.format(i_launcher['genre']))
 
     if i_launcher['developer']:
         XML_meta['developer'] = i_launcher['developer']
-        log_debug('XML developer "{0}"'.format(i_launcher['developer']))
+        log_debug('XML developer "{}"'.format(i_launcher['developer']))
 
     if i_launcher['rating']:
         XML_meta['rating'] = i_launcher['rating']
-        log_debug('XML rating    "{0}"'.format(i_launcher['rating']))
+        log_debug('XML rating    "{}"'.format(i_launcher['rating']))
 
     if i_launcher['plot']:
         XML_meta['plot'] = i_launcher['plot']
-        log_debug('XML plot      "{0}"'.format(i_launcher['plot']))
+        log_debug('XML plot      "{}"'.format(i_launcher['plot']))
 
-    # >> Process metadata. XML metadata overrides Launcher_NFO metadata, if exists.
+    # Process metadata. XML metadata overrides Launcher_NFO metadata, if exists.
     if XML_meta['year']:
         launchers[launcherID]['m_year'] = XML_meta['year']
-        log_debug('Imported m_year "{0}"'.format(XML_meta['year']))
+        log_debug('Imported m_year "{}"'.format(XML_meta['year']))
     elif Launcher_NFO_meta['year']:
         launchers[launcherID]['m_year'] = Launcher_NFO_meta['year']
-        log_debug('Imported m_year "{0}"'.format(Launcher_NFO_meta['year']))
+        log_debug('Imported m_year "{}"'.format(Launcher_NFO_meta['year']))
 
     if XML_meta['genre']:
         launchers[launcherID]['m_genre'] = XML_meta['genre']
-        log_debug('Imported m_genre "{0}"'.format(XML_meta['genre']))
+        log_debug('Imported m_genre "{}"'.format(XML_meta['genre']))
     elif Launcher_NFO_meta['genre']:
         launchers[launcherID]['m_genre'] = Launcher_NFO_meta['genre']
-        log_debug('Imported m_genre "{0}"'.format(Launcher_NFO_meta['genre']))
+        log_debug('Imported m_genre "{}"'.format(Launcher_NFO_meta['genre']))
 
     if XML_meta['developer']:
         launchers[launcherID]['m_developer'] = XML_meta['developer']
-        log_debug('Imported m_developer "{0}"'.format(XML_meta['developer']))
+        log_debug('Imported m_developer "{}"'.format(XML_meta['developer']))
     elif Launcher_NFO_meta['developer']:
         launchers[launcherID]['m_developer'] = Launcher_NFO_meta['developer']
-        log_debug('Imported m_developer "{0}"'.format(Launcher_NFO_meta['developer']))
+        log_debug('Imported m_developer "{}"'.format(Launcher_NFO_meta['developer']))
 
     if XML_meta['rating']:
         launchers[launcherID]['m_rating'] = XML_meta['rating']
-        log_debug('Imported m_rating "{0}"'.format(XML_meta['rating']))
+        log_debug('Imported m_rating "{}"'.format(XML_meta['rating']))
     elif Launcher_NFO_meta['rating']:
         launchers[launcherID]['m_rating'] = Launcher_NFO_meta['rating']
-        log_debug('Imported m_rating "{0}"'.format(Launcher_NFO_meta['rating']))
+        log_debug('Imported m_rating "{}"'.format(Launcher_NFO_meta['rating']))
 
     if XML_meta['plot']:
         launchers[launcherID]['m_plot'] = XML_meta['plot']
-        log_debug('Imported m_plot "{0}"'.format(XML_meta['plot']))
+        log_debug('Imported m_plot "{}"'.format(XML_meta['plot']))
     elif Launcher_NFO_meta['plot']:
         launchers[launcherID]['m_plot'] = Launcher_NFO_meta['plot']
-        log_debug('Imported m_plot "{0}"'.format(Launcher_NFO_meta['plot']))
+        log_debug('Imported m_plot "{}"'.format(Launcher_NFO_meta['plot']))
 
     # --- Launcher stuff ---
     # If platform cannot be found in the official list then warn user and set it to 'Unknown'
     if i_launcher['platform']:
         platform = i_launcher['platform']
         if i_launcher['platform'] in platform_long_to_index_dic:
-            log_debug('Platform name "{0}" recognised'.format(platform))
+            log_debug('Platform name "{}" recognised'.format(platform))
         else:
             kodi_dialog_OK(
-                'Unrecognised platform name "{0}".'.format(platform),
-                title = 'Launcher "{0}"'.format(i_launcher['name']))
-            log_debug('Unrecognised platform name "{0}".'.format(platform))
+                'Unrecognised platform name "{}".'.format(platform),
+                title = 'Launcher "{}"'.format(i_launcher['name']))
+            log_debug('Unrecognised platform name "{}".'.format(platform))
         launchers[launcherID]['platform'] = platform
-        log_debug('Imported platform "{0}"'.format(platform))
+        log_debug('Imported platform "{}"'.format(platform))
 
     # >> If application not found warn user.
     if i_launcher['application']:
@@ -687,12 +680,12 @@ def autoconfig_import_launcher(ROMS_DIR, categories, launchers, categoryID, laun
         if not app_FN.exists():
             log_debug('Application NOT found.')
             kodi_dialog_OK(
-                'Application "{0}" not found'.format(app_FN.getPath()),
-                title = 'Launcher "{0}"'.format(i_launcher['name']))
+                'Application "{}" not found'.format(app_FN.getPath()),
+                title = 'Launcher "{}"'.format(i_launcher['name']))
         else:
             log_debug('Application found.')
         launchers[launcherID]['application'] = i_launcher['application']
-        log_debug('Imported application "{0}"'.format(i_launcher['application']))
+        log_debug('Imported application "{}"'.format(i_launcher['application']))
 
     # Both <args> and <args_extra> are lists. <args_extra> is deprecated.
     # Case 1) Only one <args> tag
@@ -704,26 +697,26 @@ def autoconfig_import_launcher(ROMS_DIR, categories, launchers, categoryID, laun
         args_str = i_launcher['args'][0]
         launchers[launcherID]['args'] = args_str
         launchers[launcherID]['args_extra'] = []
-        log_debug('Imported args "{0}"'.format(i_launcher['args']))
+        log_debug('Imported args "{}"'.format(i_launcher['args']))
         log_debug('Resetted args_extra')
     elif len_args > 1 and len_extra_args == 0:
         args_str = i_launcher['args'][0]
         args_extra_list = i_launcher['args'][1:]
         launchers[launcherID]['args'] = args_str
-        log_debug('Imported args "{0}"'.format(args_str))
+        log_debug('Imported args "{}"'.format(args_str))
         launchers[launcherID]['args_extra'] = []
         for args in args_extra_list:
             launchers[launcherID]['args_extra'].append(args)
-            log_debug('Imported args_extra "{0}"'.format(args))
+            log_debug('Imported args_extra "{}"'.format(args))
     elif len_args == 1 and len_extra_args >= 1:
         args_str = i_launcher['args'][0]
         args_extra_list = i_launcher['args_extra']
         launchers[launcherID]['args'] = args_str
-        log_debug('Imported args "{0}"'.format(args_str))
+        log_debug('Imported args "{}"'.format(args_str))
         launchers[launcherID]['args_extra'] = []
         for args in args_extra_list:
             launchers[launcherID]['args_extra'].append(args)
-            log_debug('Imported args_extra "{0}"'.format(args))
+            log_debug('Imported args_extra "{}"'.format(args))
     else:
         log_error('Wrong usage of <args> and <args_extra>')
         log_error('len_args = {}, len_extra_args = {}'.format(len_args, len_extra_args))

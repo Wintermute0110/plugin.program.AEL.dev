@@ -320,7 +320,7 @@ def utils_load_XML_to_ET(filename):
             log_error('utils_load_XML_to_ET() (IOError) Unhandled errno value.')
     except xml.etree.ElementTree.ParseError as ex:
         log_error('utils_load_XML_to_ET() (ParseError) Exception parsing XML categories.xml')
-        log_error('utils_load_XML_to_ET() (ParseError) {}'.format(str(ex)))
+        log_error('utils_load_XML_to_ET() (ParseError) {}'.format(text_type(ex)))
         # kodi_dialog_OK('(ET.ParseError) when reading categories.xml. '
         #     'XML file is corrupt or contains invalid characters.')
 

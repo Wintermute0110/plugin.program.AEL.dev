@@ -848,10 +848,10 @@ def print_candidate_list(results):
         '-'*NAME_L, '-'*SCORE_L, '-'*ID_L, '-'*PLATFORM_L, '-'*SPLATFORM_L))
     for game in results:
         display_name = text_limit_string(game['display_name'], NAME_L)
-        score = text_limit_string(str(game['order']), SCORE_L)
-        id = text_limit_string(str(game['id']), ID_L)
-        platform = text_limit_string(str(game['platform']), PLATFORM_L)
-        splatform = text_limit_string(str(game['scraper_platform']), SPLATFORM_L)
+        score = text_limit_string(text_type(game['order']), SCORE_L)
+        id = text_limit_string(text_type(game['id']), ID_L)
+        platform = text_limit_string(text_type(game['platform']), PLATFORM_L)
+        splatform = text_limit_string(text_type(game['scraper_platform']), SPLATFORM_L)
         print(p_str.format(
             display_name.ljust(NAME_L), score.ljust(SCORE_L), id.ljust(ID_L),
             platform.ljust(PLATFORM_L), splatform.ljust(SPLATFORM_L)))
@@ -887,7 +887,7 @@ def print_game_assets(image_list):
         'URL thumb'.ljust(ASSET_URL_THUMB_L)))
     print(p_str.format('-'*ASSET_ID_L, '-'*ASSET_NAME_L, '-'*ASSET_URL_THUMB_L))
     for image in image_list:
-        id           = text_limit_string(str(image['asset_ID']), ASSET_ID_L)
+        id           = text_limit_string(text_type(image['asset_ID']), ASSET_ID_L)
         display_name = text_limit_string(image['display_name'], ASSET_NAME_L)
         url_thumb    = text_limit_string(image['url_thumb'], ASSET_URL_THUMB_L)
         print(p_str.format(

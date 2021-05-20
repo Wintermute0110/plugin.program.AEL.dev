@@ -1782,7 +1782,7 @@ class Scraper(object):
     # All messages from the scrapers are KODI_MESSAGE_DIALOG.
     def _handle_exception(self, ex, status_dic, user_msg):
         log_error('(Exception) Object type "{}"'.format(type(ex)))
-        log_error('(Exception) Message "{}"'.format(str(ex)))
+        log_error('(Exception) Message "{}"'.format(text_type(ex)))
         self._handle_error(status_dic, user_msg)
 
     # --- Private disk cache functions -----------------------------------------------------------
@@ -2479,7 +2479,7 @@ class TheGamesDB(Scraper):
         if not genre_ids: return DEFAULT_META_GENRE
         # Convert integers to strings because the cached genres dictionary keys are strings.
         # This is because a JSON limitation.
-        genre_ids = [str(id) for id in genre_ids]
+        genre_ids = [text_type(id) for id in genre_ids]
         TGDB_genres = self._retrieve_genres(status_dic)
         if not status_dic['status']: return None
         genre_list = [TGDB_genres[genre_id] for genre_id in genre_ids]
@@ -2493,7 +2493,7 @@ class TheGamesDB(Scraper):
         if not developers_ids: return DEFAULT_META_DEVELOPER
         # Convert integers to strings because the cached genres dictionary keys are strings.
         # This is because a JSON limitation.
-        developers_ids = [str(id) for id in developers_ids]
+        developers_ids = [text_type(id) for id in developers_ids]
         TGDB_developers = self._retrieve_developers(status_dic)
         if not status_dic['status']: return None
         developer_list = [TGDB_developers[dev_id] for dev_id in developers_ids]
@@ -2502,7 +2502,7 @@ class TheGamesDB(Scraper):
 
     def _parse_metadata_nplayers(self, online_data):
         if 'players' in online_data and online_data['players'] is not None:
-            nplayers_str = str(online_data['players'])
+            nplayers_str = text_type(online_data['players'])
         else:
             nplayers_str = DEFAULT_META_NPLAYERS
 
@@ -2622,7 +2622,7 @@ class TheGamesDB(Scraper):
         base_url_thumb = page_data['data']['base_url']['thumb']
         base_url = page_data['data']['base_url']['original']
         assets_list = []
-        for image_data in page_data['data']['images'][str(candidate_id)]:
+        for image_data in page_data['data']['images'][text_type(candidate_id)]:
             asset_name = '{0} ID {1}'.format(image_data['type'], image_data['id'])
             if image_data['type'] == 'boxart':
                 if   image_data['side'] == 'front': asset_ID = ASSET_BOXFRONT_ID
@@ -3702,7 +3702,7 @@ class ScreenScraper(Scraper):
 
         # --- Print some info ---
         jeu_dic = json_data['response']['jeu']
-        id_str = str(jeu_dic['id'])
+        id_str = text_type(jeu_dic['id'])
         title = jeu_dic['noms'][0]['text']
         log_debug('Game "{}" (ID {})'.format(title, id_str))
         log_debug('Number of ROMs {} / Number of assets {}'.format(
@@ -4029,7 +4029,7 @@ class ScreenScraper(Scraper):
             # log_debug('{} "{}"'.format(keys, item))
             # log_debug('Type item "{}"'.format(type(item)))
             # Skip non string objects.
-            if not isinstance(item, str) and not isinstance(item, text_type): continue
+            if not isinstance(item, binary_type) and not isinstance(item, text_type): continue
             if item.startswith('http'):
                 # log_debug('Adding URL "{}"'.format(item))
                 URL_key_list.append(keys)
@@ -4406,14 +4406,14 @@ class GameFAQs(Scraper):
     # Cache the results because this function may be called multiple times for the
     # same candidate game.
     def _scraper_get_assets_all(self, candidate):
-        cache_key = str(candidate['id'])
+        cache_key = text_type(candidate['id'])
         if cache_key in self.all_asset_cache:
-            log_debug('MobyGames._scraper_get_assets_all() Cache hit "{0}"'.format(cache_key))
+            log_debug('MobyGames._scraper_get_assets_all() Cache hit "{}"'.format(cache_key))
             asset_list = self.all_asset_cache[cache_key]
         else:
-            log_debug('MobyGames._scraper_get_assets_all() Cache miss "{0}"'.format(cache_key))
+            log_debug('MobyGames._scraper_get_assets_all() Cache miss "{}"'.format(cache_key))
             asset_list = self._load_assets_from_page(candidate)
-            log_debug('A total of {0} assets found for candidate ID {1}'.format(
+            log_debug('A total of {} assets found for candidate ID {}'.format(
                 len(asset_list), candidate['id']))
             self.all_asset_cache[cache_key] = asset_list
 
@@ -4635,7 +4635,7 @@ class ArcadeDB(Scraper):
         gamedata['year']      = gameinfo_dic['year']
         gamedata['genre']     = gameinfo_dic['genre']
         gamedata['developer'] = gameinfo_dic['manufacturer']
-        gamedata['nplayers']  = str(gameinfo_dic['players'])
+        gamedata['nplayers']  = text_type(gameinfo_dic['players'])
         gamedata['esrb']      = DEFAULT_META_ESRB
         gamedata['plot']      = gameinfo_dic['history']
 
