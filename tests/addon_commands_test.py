@@ -43,5 +43,9 @@ class Test_cmd_scan_addons(unittest.TestCase):
         
     @patch('resources.lib.utils.kodi.jsonrpc_query')
     def test_saving_new_addons(self, jsonrpc_response_mock):
-        jsonrpc_response_mock.return_value = False
+        jsonrpc_response_mock.return_value = [
+            { 'addonid': 'plugin.mock.A' },
+            { 'addonid': 'plugin.mock.B' },
+            { 'addonid': 'plugin.mock.c' }
+        ]
         target.cmd_scan_addons({})

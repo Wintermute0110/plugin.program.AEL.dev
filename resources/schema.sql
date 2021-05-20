@@ -88,7 +88,7 @@ CREATE TABLE IF NOT EXISTS ael_addon(
     version TEXT,
     is_launcher INTEGER DEFAULT 0 NOT NULL,
     launcher_uri TEXT
-)
+);
 
 CREATE VIEW IF NOT EXISTS vw_categories AS SELECT 
     c.id AS id, 
