@@ -755,9 +755,9 @@ class ScrapeStrategy(object):
                     log_debug('Metadata manual scraping. User chooses game.')
                     self.pdialog.close()
                     game_name_list = [candidate['display_name'] for candidate in candidates]
-                    select_candidate_idx = xbmcgui.Dialog().select(
-                        'Select game for ROM {}'.format(ROM_FN.getBase_noext()), game_name_list)
-                    if select_candidate_idx < 0: select_candidate_idx = 0
+                    title_str = 'Select game for ROM {}'.format(ROM_FN.getBase_noext())
+                    select_candidate_idx = KodiSelectDialog(title_str, game_name_list).executeDialog()
+                    if select_candidate_idx is None: select_candidate_idx = 0
                     self.pdialog.reopen()
             elif self.game_selection_mode == 1:
                 log_debug('Metadata automatic scraping. Selecting first result.')
@@ -895,10 +895,10 @@ class ScrapeStrategy(object):
                 image_selected_index = 0
             else:
                 self.pdialog.close()
-                image_selected_index = xbmcgui.Dialog().select(
-                    'Select {0} image'.format(asset_name), list = ListItem_list, useDetails = True)
-                log_debug('{0} dialog returned index {1}'.format(asset_name, image_selected_index))
-                if image_selected_index < 0: image_selected_index = 0
+                heading = 'Select {} image'.format(asset_name)
+                image_selected_index = KodiSelectDialog(heading, ListItem_list, useDetails = True).executeDialog()
+                log_debug('{} dialog returned index {}'.format(asset_name, image_selected_index))
+                if image_selected_index is None: image_selected_index = 0
                 self.pdialog.reopen()
             # User chose to keep current asset.
             if local_asset_in_list_flag and image_selected_index == 0:
@@ -1180,18 +1180,17 @@ class ScrapeStrategy(object):
             log_debug('_gui_edit_asset() ListItem_list has one element. Do not show select dialog.')
             image_selected_index = 0
         else:
-            image_selected_index = xbmcgui.Dialog().select(
-                'Select image', list = ListItem_list, useDetails = True)
-            log_debug('{0} dialog returned index {1}'.format(asset_name, image_selected_index))
-        # User cancelled dialog
-        if image_selected_index < 0:
+            image_selected_index = KodiSelectDialog('Select image', ListItem_list, useDetails = True).executeDialog()
+            log_debug('{} dialog returned index {}'.format(asset_name, image_selected_index))
+        # User canceled dialog
+        if image_selected_index is None:
             log_debug('_gui_edit_asset() User cancelled image select dialog. Returning.')
             status_dic['status'] = False
             status_dic['msg'] = 'Image not changed'
             return status_dic
         # User chose to keep current asset.
         if local_asset_in_list_flag and image_selected_index == 0:
-            log_debug('_gui_edit_asset() Selected current image "{0}"'.format(current_asset_FN.getPath()))
+            log_debug('_gui_edit_asset() Selected current image "{}"'.format(current_asset_FN.getPath()))
             status_dic['status'] = False
             status_dic['msg'] = 'Image not changed'
             return status_dic
@@ -1308,14 +1307,14 @@ class ScrapeStrategy(object):
                 log_debug('Asking user for a search string.')
                 # If ROM title has tags remove them for scraping.
                 search_term = text_format_ROM_name_for_scraping(object_dic['m_name'])
-                keyboard = xbmc.Keyboard(search_term, 'Enter the search term ...')
-                keyboard.doModal()
+                keyboard = KodiKeyboardDialog('Enter the search term...', search_term)
+                keyboard.executeDialog()
                 if not keyboard.isConfirmed():
                     status_dic['status'] = False
                     status_dic['dialog'] = KODI_MESSAGE_NOTIFY
-                    status_dic['msg'] = '{0} metadata unchanged'.format(object_name)
+                    status_dic['msg'] = '{} metadata unchanged'.format(object_name)
                     return
-                search_term = keyboard.getText().decode('utf-8')
+                search_term = keyboard.getData().strip().decode('utf-8')
             else:
                 log_debug('Scraper does not support search strings. Setting it to None.')
                 search_term = None
@@ -1342,25 +1341,23 @@ class ScrapeStrategy(object):
             if len(game_name_list) == 1:
                 select_candidate_idx = 0
             else:
-                select_candidate_idx = xbmcgui.Dialog().select(
-                    'Select game for ROM "{0}"'.format(object_dic['m_name']), game_name_list)
-                if select_candidate_idx < 0:
+                heading = 'Select game for ROM "{}"'.format(object_dic['m_name'])
+                select_candidate_idx = KodiSelectDialog(heading, game_name_list).executeDialog()
+                if select_candidate_idx is None:
                     status_dic['status'] = False
                     status_dic['dialog'] = KODI_MESSAGE_NOTIFY
-                    status_dic['msg'] = '{0} metadata unchanged'.format(object_name)
+                    status_dic['msg'] = '{} metadata unchanged'.format(object_name)
                     return
-            # log_debug('select_candidate_idx {0}'.format(select_candidate_idx))
+            # log_debug('select_candidate_idx {}'.format(select_candidate_idx))
             candidate = candidate_list[select_candidate_idx]
-            log_verb('User chose game "{0}"'.format(candidate['display_name']))
+            log_verb('User chose game "{}"'.format(candidate['display_name']))
 
             # --- Set candidate. This will introduce it in the cache ---
             self.scraper_obj.set_candidate(rom_FN, platform, candidate)
 
-#
 # Abstract base class for all scrapers (offline or online, metadata or asset).
 # The scrapers are Launcher and ROM agnostic. All the required Launcher/ROM properties are
 # stored in the strategy object.
-#
 class Scraper(object):
     __metaclass__ = abc.ABCMeta
 

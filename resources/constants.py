@@ -294,7 +294,7 @@ ASSET_MAP_ID        = 'map'
 ASSET_MANUAL_ID     = 'manual'
 ASSET_CONTROLLER_ID = 'controller'
 
-# The order of this list must match order in dialog.select() in the GUI, or bad things will happen.
+# The order of this list must match order in select dialogs in the GUI, or bad things will happen.
 CATEGORY_ASSET_ID_LIST = [
     ASSET_ICON_ID,
     ASSET_FANART_ID,

@@ -154,9 +154,10 @@ NOTE     Python 2 version for Leia/Krypon in branch release-0.9.x-python2
 WIP      Rename plugin from plugin.program.advanced.emulator.launcher to plugin.program.AEL.
          Create version plugin.program.AEL.dev. Copy this feature from AML.
 
-WIP      Create file misc.py and refactor utils.py. Copy structure from AML.
-         STATUS: Mostly done but not tested yet. Addon opens root window but
-         everything else must be tested.
+FEATURE  Create file misc.py and refactor utils.py. Copy structure from AML.
+         Replace Kodi dialog functions with wrapper functions to facilitate the transition
+         to Python 3. For example, eliminate all the .decode('utf-8') functions or
+         at least as much as possible.
 
 FEATURE  Complete remove legacy Advanced Launcher launcher.xml loading/parsing functions.
 

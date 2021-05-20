@@ -255,7 +255,7 @@ class FileName:
 # 2) Use AEL approach and report status in a control dictionary? Caller code is responsible
 #    to report the error in the GUI.
 #
-# A convention must be chosen. 
+# A convention must be chosen.
 # A) Low-level, basic IO functions raise KodiAddonError exception. However, any other function
 #    uses st_dic to report errors.
 # B) All functions use st_dic. IO functions are responsible to catch exceptions and fill st_dic.
@@ -266,7 +266,8 @@ class FileName:
 # -------------------------------------------------------------------------------------------------
 def utils_write_str_to_file(filename, full_string):
     log_debug('utils_write_str_to_file() File "{}"'.format(filename))
-    with io.open(filename, 'wt', encoding = 'utf-8') as f:
+    # Always write UNIX end of lines regarding of the operating system.
+    with io.open(filename, 'wt', encoding = 'utf-8', newline = '\n') as f:
         f.write(full_string)
 
 def utils_load_file_to_str(filename):
@@ -418,11 +419,11 @@ def utils_write_JSON_file(json_filename, json_data, verbose = True, pprint = Fal
 #     MAME_db_dic = render_thread.output_dic
 #     MAME_assets_dic = assets_thread.output_dic
 class Threaded_Load_JSON(threading.Thread):
-    def __init__(self, json_filename): 
-        threading.Thread.__init__(self) 
+    def __init__(self, json_filename):
+        threading.Thread.__init__(self)
         self.json_filename = json_filename
- 
-    def run(self): 
+
+    def run(self):
         self.output_dic = utils_load_JSON_file_dic(self.json_filename)
 
 # -------------------------------------------------------------------------------------------------
@@ -599,25 +600,75 @@ def kodi_dialog_yesno_custom(text, yeslabel_str, nolabel_str, title = DIALOG_TIT
 def kodi_dialog_yesno_timer(text, timer_ms = 30000, title = DIALOG_TITLE):
     return xbmcgui.Dialog().yesno(title, text, autoclose = timer_ms)
 
+# Returns a directory. See https://codedocs.xyz/AlwinEsch/kodi
+#
+# This supports directories, files, images and writable directories.
+# xbmcgui.Dialog().browse(type, heading, shares[, mask, useThumbs, treatAsFolder, defaultt, enableMultiple])
+#
+# This supports files and images only.
+# xbmcgui.Dialog().browseMultiple(type, heading, shares[, mask, useThumbs, treatAsFolder, defaultt])
+# 
+# This supports directories, files, images and writable directories.
+# xbmcgui.Dialog().browseSingle(type, heading, shares[, mask, useThumbs, treatAsFolder, defaultt])
+#
+# shares   string or unicode - from sources.xml
+# "files"  list file sources (added through filemanager)
+# "local"  list local drives
+# ""       list local drives and network shares
+
 # Returns a directory.
-def kodi_dialog_get_directory(dialog_heading):
-    return xbmcgui.Dialog().browse(0, dialog_heading, '').decode('utf-8')
+def kodi_dialog_get_directory(d_heading, d_dir = ''):
+    if d_dir:
+        ret = xbmcgui.Dialog().browse(0, d_heading, '', defaultt = d_dir)
+    else:
+        ret =  xbmcgui.Dialog().browse(0, d_heading, '')
 
-def kodi_dialog_get_file(dialog_heading):
-    return xbmcgui.Dialog().browse(1, dialog_heading, '').decode('utf-8')
+    return ret.decode('utf-8')
 
-def kodi_dialog_get_image(dialog_heading):
-    return xbmcgui.Dialog().browse(2, dialog_heading, '').decode('utf-8')
+# Mask is supported only for files.
+# mask  [opt] string or unicode - '|' separated file mask. (i.e. '.jpg|.png')
+#
+# KODI BUG For some reason *.dat files are not shown on the dialog, but XML files are OK!!!
+# Fixed in Krypton Beta 6 http://forum.kodi.tv/showthread.php?tid=298161
+def kodi_dialog_get_file(d_heading, mask = '', default_file = ''):
+    if mask and default_file:
+        ret = xbmcgui.Dialog().browse(1, d_heading, '', mask = mask, defaultt = default_file)
+    elif default_file:
+        ret = xbmcgui.Dialog().browse(1, d_heading, '', defaultt = default_file)
+    elif mask:
+        ret = xbmcgui.Dialog().browse(1, d_heading, '', mask = mask)
+    else:
+        ret = xbmcgui.Dialog().browse(1, d_heading, '')
 
-# Returns a writable directory.
-# Arg 1: type 3 ShowAndGetWriteableDirectory
-# Arg 2: heading
-# Arg 3: shares
-#     shares  'files'  list file sources (added through filemanager)
-#     shares  'local'  list local drives
-#     shares  ''       list local drives and network shares
-def kodi_dialog_get_wdirectory(dialog_heading):
-    return xbmcgui.Dialog().browse(3, dialog_heading, '').decode('utf-8')
+    return ret.decode('utf-8')
+
+def kodi_dialog_get_image(d_heading, mask = '', default_file = ''):
+    if mask and default_file:
+        ret = xbmcgui.Dialog().browse(2, d_heading, '', mask = mask, defaultt = default_file)
+    elif default_file:
+        ret = xbmcgui.Dialog().browse(2, d_heading, '', defaultt = default_file)
+    elif mask:
+        ret = xbmcgui.Dialog().browse(2, d_heading, '', mask = mask)
+    else:
+        ret = xbmcgui.Dialog().browse(2, d_heading, '')
+
+    return ret.decode('utf-8')
+
+def kodi_dialog_get_wdirectory(d_heading):
+    return xbmcgui.Dialog().browse(3, d_heading, '').decode('utf-8')
+
+# Select multiple versions of the avobe functions.
+def kodi_dialog_get_file_multiple(d_heading, mask = '', d_file = ''):
+    if mask and d_file:
+        ret = xbmcgui.Dialog().browse(1, d_heading, '', mask = mask, defaultt = d_file, enableMultiple = True)
+    elif d_file:
+        ret = xbmcgui.Dialog().browse(1, d_heading, '', defaultt = d_file, enableMultiple = True)
+    elif mask:
+        ret = xbmcgui.Dialog().browse(1, d_heading, '', mask = mask, enableMultiple = True)
+    else:
+        ret = xbmcgui.Dialog().browse(1, d_heading, '', enableMultiple = True)
+
+    return ret.decode('utf-8')
 
 # Displays a small box in the bottom right corner
 def kodi_notify(text, title = DIALOG_TITLE, time = 5000):
@@ -649,7 +700,7 @@ def kodi_refresh_container():
 # pDialog.endProgress()
 class KodiProgressDialog(object):
     def __init__(self):
-        self.heading = 'Advanced MAME Launcher'
+        self.heading = DIALOG_TITLE
         self.progress = 0
         self.flag_dialog_canceled = False
         self.dialog_active = False
@@ -748,6 +799,69 @@ class KodiProgressDialog(object):
         self.progressDialog.update(self.progress)
         self.dialog_active = True
 
+# Wrapper class for xbmcgui.Dialog().select(). Takes care of Kodi bugs.
+# v17 (Krypton) Python API changes:
+#   Preselect option added.
+#   Added new option useDetails.
+#   Allow listitems for parameter list
+class KodiSelectDialog(object):
+    def __init__(self, heading = DIALOG_TITLE, rows = [], preselect = -1, useDetails = False):
+        self.heading = heading
+        self.rows = rows
+        self.preselect = preselect
+        self.useDetails = useDetails
+        self.dialog = xbmcgui.Dialog()
+
+    def setHeading(self, heading): self.heading = heading
+
+    def setRows(self, row_list): self.rows = row_list
+
+    def setPreselect(self, preselect): self.preselect = preselect
+
+    def setUseDetails(self, useDetails): self.useDetails = useDetails
+
+    def executeDialog(self):
+        # Kodi Krypton bug: if preselect is used then dialog never returns < 0 even if cancel
+        # button is pressed. This bug has been solved in Leia.
+        # See https://forum.kodi.tv/showthread.php?tid=337011
+        if self.preselect >= 0 and kodi_running_version >= KODI_VERSION_LEIA:
+            selection = self.dialog.select(self.heading, self.rows, useDetails = self.useDetails,
+                preselect = self.preselect)
+        else:
+            selection = self.dialog.select(self.heading, self.rows, useDetails = self.useDetails)
+        selection = None if selection < 0 else selection
+        return selection
+
+# Wrapper class for xbmc.Keyboard()
+class KodiKeyboardDialog(object):
+    def __init__(self, heading = 'Kodi keyboard', default_text = ''):
+        self.heading = heading
+        self.default_text = default_text
+        self.keyboard = xbmc.Keyboard()
+
+    def setHeading(self, heading): self.heading = heading
+
+    def setDefaultText(self, default_text): self.default_text = default_text
+
+    def executeDialog(self):
+        self.keyboard.setHeading(self.heading)
+        self.keyboard.setDefault(self.default_text)
+        self.keyboard.doModal()
+
+    def isConfirmed(self): return self.keyboard.isConfirmed()
+
+    # Use a different name from getText() to avoid coding errors.
+    def getData(self): return self.keyboard.getText().decode('utf-8')
+
+# Wrapper function to get a text from the keyboard or None if the keyboard modal
+# dialog was canceled.
+def kodi_get_keyboard_text(heading = 'Kodi keyboard', default_text = ''):
+    keyboard = KodiKeyboardDialog(heading, default_text)
+    keyboard.executeDialog()
+    if not keyboard.isConfirmed(): return None
+    new_value_str = keyboard.getData().strip().decode('utf-8')
+    return new_value_str
+
 def kodi_toogle_fullscreen():
     kodi_jsonrpc_dict('Input.ExecuteAction', {'action' : 'togglefullscreen'})
 
@@ -838,11 +952,11 @@ def kodi_jsonrpc_dict(method_str, params_dic, verbose = False):
 # Displays a text window and requests a monospaced font.
 # v18 Leia change: New optional param added usemono.
 def kodi_display_text_window_mono(window_title, info_text):
-    xbmcgui.Dialog().textviewer(window_title, info_text, True)
+    xbmcgui.Dialog().textviewer(window_title, info_text.encode('utf-8'), True)
 
 # Displays a text window with a proportional font (default).
 def kodi_display_text_window(window_title, info_text):
-    xbmcgui.Dialog().textviewer(window_title, info_text)
+    xbmcgui.Dialog().textviewer(window_title, info_text.encode('utf-8'))
 
 # Displays a text window and requests a monospaced font.
 # def kodi_display_text_window_mono(window_title, info_text):
@@ -940,7 +1054,7 @@ KODI_MESSAGE_DIALOG      = 400
 
 # If st_dic['abort'] is False then everything is OK.
 # If st_dic['abort'] is True then execution must be aborted and error displayed.
-# Success message can also be displayed (st_dic['abort'] False and 
+# Success message can also be displayed (st_dic['abort'] False and
 # st_dic['dialog'] is different from KODI_MESSAGE_NONE).
 def kodi_new_status_dic():
     return {

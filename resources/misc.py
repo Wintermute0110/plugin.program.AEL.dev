@@ -445,7 +445,7 @@ def text_format_ROM_name_for_scraping(title):
     title = re.sub('\[.*?\]', '', title)
     title = re.sub('\(.*?\)', '', title)
     title = re.sub('\{.*?\}', '', title)
-    
+
     title = title.replace('_', '')
     title = title.replace('-', '')
     title = title.replace(':', '')
@@ -756,7 +756,7 @@ def misc_identify_image_id_by_ext(asset_fname):
 #
 # aa.bb.cc.Xdd    formatted aab,bcc,Xdd
 #  |  |  | | |--> Beta/Alpha flag 0, 1, ..., 99
-#  |  |  | |----> Release kind flag 
+#  |  |  | |----> Release kind flag
 #  |  |  |        5 for non-beta, non-alpha, non RC versions.
 #  |  |  |        2 for RC versions
 #  |  |  |        1 for beta versions

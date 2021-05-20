@@ -574,14 +574,14 @@ def autoconfig_import_category(categories, categoryID, i_category, import_FN):
         listitems_list.append(asset_listitem)
         listitems_asset_paths.append('')
 
-        # >> Show image selection select() dialog
-        title_str = 'Category "{0}". Choose {1} ...'.format(i_category['name'], AInfo.name)
-        ret_idx = xbmcgui.Dialog().select(title_str, list = listitems_list, useDetails = True)
-        if ret_idx < 0: return
+        # Show image selection select() dialog
+        title_str = 'Category "{}". Choose {} ...'.format(i_category['name'], AInfo.name)
+        ret_idx = KodiSelectDialog(title_str, listitems_list, useDetails = True).executeDialog()
+        if ret_idx is None: return
 
-        # >> Set asset field
+        # Set asset field
         categories[categoryID][AInfo.key] = listitems_asset_paths[ret_idx]
-        log_verb('Set category artwork "{0}" = "{1}"'.format(AInfo.key, listitems_asset_paths[ret_idx]))
+        log_verb('Set category artwork "{}" = "{}"'.format(AInfo.key, listitems_asset_paths[ret_idx]))
 
 # Imports/Edits a launcher with an extenal XML config file.
 def autoconfig_import_launcher(ROMS_DIR, categories, launchers, categoryID, launcherID, i_launcher, import_FN):
@@ -964,31 +964,31 @@ def autoconfig_import_launcher(ROMS_DIR, categories, launchers, categoryID, laun
             listitems_list.append(asset_listitem)
             listitems_asset_paths.append(asset_FN.getPath())
             image_count += 1
-        # >> If list is empty at this point no images were found at all.
+        # If list is empty at this point no images were found at all.
         if not listitems_list:
             log_debug('listitems_list is empty. Keeping {0} as it was.'.format(AInfo.name))
             continue
-        # >> No image
+        # No image
         asset_listitem = xbmcgui.ListItem(label = 'No image')
         asset_listitem.setArt({'icon' : 'DefaultAddonNone.png'})
         listitems_list.append(asset_listitem)
         listitems_asset_paths.append('')
 
-        title_str = 'Launcher "{0}". Choose {1} file'.format(i_launcher['name'], AInfo.name)
-        ret_idx = xbmcgui.Dialog().select(title_str, list = listitems_list, useDetails = True)
-        if ret_idx < 0: return
+        title_str = 'Launcher "{}". Choose {} file'.format(i_launcher['name'], AInfo.name)
+        ret_idx = KodiSelectDialog(title_str, listitems_list, useDetails = True).executeDialog()
+        if ret_idx is None: return
 
-        # >> Set asset field
+        # Set asset field
         launchers[launcherID][AInfo.key] = listitems_asset_paths[ret_idx]
-        log_verb('Set launcher artwork "{0}" = "{1}"'.format(AInfo.key, listitems_asset_paths[ret_idx]))
+        log_verb('Set launcher artwork "{}" = "{}"'.format(AInfo.key, listitems_asset_paths[ret_idx]))
 
-    # >> Rename ROMS JSON/XML only if there is a change in filenames.
-    #    Regenerate roms_base_noext and rename old one if necessary.
+    # Rename ROMS JSON/XML only if there is a change in filenames.
+    # Regenerate roms_base_noext and rename old one if necessary.
     old_roms_base_noext = launchers[launcherID]['roms_base_noext']
     category_name       = categories[categoryID]['m_name'] if categoryID in categories else VCATEGORY_ADDONROOT_ID
     new_roms_base_noext = fs_get_ROMs_basename(category_name, new_launcher_name, launcherID)
-    log_debug('old_roms_base_noext "{0}"'.format(old_roms_base_noext))
-    log_debug('new_roms_base_noext "{0}"'.format(new_roms_base_noext))
+    log_debug('old_roms_base_noext "{}"'.format(old_roms_base_noext))
+    log_debug('new_roms_base_noext "{}"'.format(new_roms_base_noext))
     if old_roms_base_noext != new_roms_base_noext:
         log_debug('Renaming JSON/XML launcher databases')
         launchers[launcherID]['roms_base_noext'] = new_roms_base_noext
