@@ -228,13 +228,13 @@ def net_decode_URL_data(page_bytes, encoding):
     elif encoding == 'text/plain' and 'UTF-8' in page_bytes:  encoding = 'utf-8'
     elif encoding == 'text/plain' and 'UTF-16' in page_bytes: encoding = 'utf-16'
     else:                                                     encoding = 'utf-8'
-    # log_debug('net_decode_URL_data() encoding = "{0}"'.format(encoding))
+    # log_debug('net_decode_URL_data() encoding = "{}"'.format(encoding))
 
     # --- Decode ---
     if encoding == 'utf-16':
-        page_data = page_bytes.encode('utf-16')
+        page_data = page_bytes.decode('utf-16')
     else:
         # python3: page_data = str(page_bytes, encoding)
-        page_data = unicode(page_bytes, encoding)
+        page_data = text_type(page_bytes, encoding)
 
     return page_data

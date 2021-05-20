@@ -66,20 +66,6 @@ def text_XML(tag_name, tag_text, num_spaces = 2):
 
     return line
 
-# This function is Python 2. Should I remove it?
-def text_str_2_Uni(mystring):
-    # print(type(mystring))
-    if type(mystring).__name__ == 'unicode':
-        unicode_str = mystring
-    elif type(mystring).__name__ == 'str':
-        unicode_str = mystring.decode('utf-8', errors = 'replace')
-    else:
-        print('TypeError: ' + type(mystring).__name__)
-        raise TypeError
-    # print(type(unicode_str))
-
-    return unicode_str
-
 def text_remove_Kodi_color_tags(s):
     s = re.sub('\[COLOR \S+?\]', '', s)
     s = re.sub('\[color \S+?\]', '', s)

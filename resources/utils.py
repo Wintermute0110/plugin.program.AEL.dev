@@ -149,9 +149,9 @@ class FileName:
     # transformation not required)
     # def __add__(self, other):
     #     current_path = self.originalPath
-    #     if type(other) is FileName:  other_path = other.originalPath
-    #     elif type(other) is unicode: other_path = other
-    #     elif type(other) is str:     other_path = other.decode('utf-8')
+    #     if type(other) is FileName:      other_path = other.originalPath
+    #     elif type(other) is text_type:   other_path = other
+    #     elif type(other) is binary_type: other_path = other.decode('utf-8')
     #     else: raise NameError('Unknown type for overloaded + in FileName object')
     #     new_path = os.path.join(current_path, other_path)
     #     child    = FileName(new_path)
@@ -312,7 +312,7 @@ def utils_load_XML_to_ET(filename):
         xml_tree = xml.etree.ElementTree.parse(filename)
     except IOError as ex:
         log_debug('utils_load_XML_to_ET() (IOError) errno = {}'.format(ex.errno))
-        # log_debug(unicode(ex.errno.errorcode))
+        # log_debug(text_type(ex.errno.errorcode))
         # No such file or directory
         if ex.errno == errno.ENOENT:
             log_error('utils_load_XML_to_ET() (IOError) No such file or directory.')

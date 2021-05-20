@@ -1588,7 +1588,7 @@ class Scraper(object):
             # Write to disk
             json_file_path, json_fname = self._get_scraper_file_name(cache_type, self.platform)
             file = io.open(json_file_path, 'w', encoding = 'utf-8')
-            file.write(unicode(json_data))
+            file.write(text_type(json_data))
             file.close()
             # log_debug('Saved "{}"'.format(json_file_path))
             log_debug('Saved "<SCRAPER_CACHE_DIR>/{}"'.format(json_fname))
@@ -1625,7 +1625,7 @@ class Scraper(object):
             # Write to disk
             json_file_path, json_fname = self._get_global_file_name(cache_type)
             file = io.open(json_file_path, 'w', encoding = 'utf-8')
-            file.write(unicode(json_data))
+            file.write(text_type(json_data))
             file.close()
             # log_debug('Saved global "{}"'.format(json_file_path))
             log_debug('Saved global "<SCRAPER_CACHE_DIR>/{}"'.format(json_fname))
@@ -4029,7 +4029,7 @@ class ScreenScraper(Scraper):
             # log_debug('{} "{}"'.format(keys, item))
             # log_debug('Type item "{}"'.format(type(item)))
             # Skip non string objects.
-            if not isinstance(item, str) and not isinstance(item, unicode): continue
+            if not isinstance(item, str) and not isinstance(item, text_type): continue
             if item.startswith('http'):
                 # log_debug('Adding URL "{}"'.format(item))
                 URL_key_list.append(keys)

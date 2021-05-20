@@ -764,60 +764,60 @@ def autoconfig_import_launcher(ROMS_DIR, categories, launchers, categoryID, laun
 
     # --- Launcher options ---
     if i_launcher['Options']:
-        opt_string = unicode(i_launcher['Options']).strip()
-        log_debug('Imported Options "{0}"'.format(opt_string))
-        # >> Parse options
+        opt_string = text_type(i_launcher['Options']).strip()
+        log_debug('Imported Options "{}"'.format(opt_string))
+        # Parse options
         raw_opt_list = opt_string.split(',')
         opt_list = [w.strip() for w in raw_opt_list]
-        log_debug('Stripped options list {0}'.format(unicode(opt_list)))
+        log_debug('Stripped options list {}'.format(text_type(opt_list)))
         launcher = launchers[launcherID]
         for option in opt_list:
             if option == 'Blocking':
                 launcher['non_blocking'] = False
-                log_debug('Set launcher non_blocking to {0}'.format(launcher['non_blocking']))
+                log_debug('Set launcher non_blocking to {}'.format(launcher['non_blocking']))
             elif option == 'NonBlocking':
                 launcher['non_blocking'] = True
-                log_debug('Set launcher non_blocking to {0}'.format(launcher['non_blocking']))
+                log_debug('Set launcher non_blocking to {}'.format(launcher['non_blocking']))
 
             elif option == 'StaticWindow':
                 launcher['minimize'] = False
-                log_debug('Set launcher minimize to {0}'.format(launcher['minimize']))
+                log_debug('Set launcher minimize to {}'.format(launcher['minimize']))
             elif option == 'ToggleWindow':
                 launcher['minimize'] = True
-                log_debug('Set launcher minimize to {0}'.format(launcher['minimize']))
+                log_debug('Set launcher minimize to {}'.format(launcher['minimize']))
 
             elif option == 'Unfinished':
                 launcher['finished'] = False
-                log_debug('Set launcher finished to {0}'.format(launcher['finished']))
+                log_debug('Set launcher finished to {}'.format(launcher['finished']))
             elif option == 'Finished':
                 launcher['finished'] = True
-                log_debug('Set launcher finished to {0}'.format(launcher['finished']))
+                log_debug('Set launcher finished to {}'.format(launcher['finished']))
 
             else:
                 kodi_dialog_OK('Unrecognised launcher <Option> "{}"'.format(option))
 
     # --- ROM assets path ---
-    # >> If ROM_asset_path not found warn the user and tell him if should be created or not.
+    # If ROM_asset_path not found warn the user and tell him if should be created or not.
     if i_launcher['ROM_asset_path']:
         launchers[launcherID]['ROM_asset_path'] = i_launcher['ROM_asset_path']
-        log_debug('Imported ROM_asset_path  "{0}"'.format(i_launcher['ROM_asset_path']))
+        log_debug('Imported ROM_asset_path  "{}"'.format(i_launcher['ROM_asset_path']))
         ROM_asset_path_FN = FileName(i_launcher['ROM_asset_path'])
-        log_debug('ROM_asset_path_FN OP "{0}"'.format(ROM_asset_path_FN.getOriginalPath()))
-        log_debug('ROM_asset_path_FN  P "{0}"'.format(ROM_asset_path_FN.getPath()))
+        log_debug('ROM_asset_path_FN OP "{}"'.format(ROM_asset_path_FN.getOriginalPath()))
+        log_debug('ROM_asset_path_FN  P "{}"'.format(ROM_asset_path_FN.getPath()))
 
-        # >> Warn user if ROM_asset_path_FN directory does not exist
+        # Warn user if ROM_asset_path_FN directory does not exist
         if not ROM_asset_path_FN.exists():
-            log_debug('Not found ROM_asset_path "{0}"'.format(ROM_asset_path_FN.getPath()))
+            log_debug('Not found ROM_asset_path "{}"'.format(ROM_asset_path_FN.getPath()))
             ret = kodi_dialog_yesno(
-                'ROM asset path "{0}" not found. '.format(ROM_asset_path_FN.getPath()) +
-                'Create it?', title = 'Launcher "{0}"'.format(i_launcher['name']))
+                'ROM asset path "{}" not found. '.format(ROM_asset_path_FN.getPath()) +
+                'Create it?', title = 'Launcher "{}"'.format(i_launcher['name']))
             if ret:
-                log_debug('Creating dir "{0}"'.format(ROM_asset_path_FN.getPath()))
+                log_debug('Creating dir "{}"'.format(ROM_asset_path_FN.getPath()))
                 ROM_asset_path_FN.makedirs()
             else:
-                log_debug('Do not create "{0}"'.format(ROM_asset_path_FN.getPath()))
+                log_debug('Do not create "{}"'.format(ROM_asset_path_FN.getPath()))
 
-        # >> Create asset directories if ROM path exists
+        # Create asset directories if ROM path exists
         if ROM_asset_path_FN.exists():
             log_debug('ROM_asset_path path found. Creating assets subdirectories.')
             assets_init_asset_dir(ROM_asset_path_FN, launchers[launcherID])

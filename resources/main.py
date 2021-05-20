@@ -1948,7 +1948,7 @@ class Main:
                             pclone_set_id_list += roms_pclone_index[parent_id]
                             # Remove current ROM from PClone group
                             pclone_set_id_list.remove(rom_id)
-                            # log_debug(unicode(pclone_set_id_list))
+                            # log_debug(text_type(pclone_set_id_list))
                             log_debug('PClone group list has {} ROMs (after stripping current ROM)'.format(len(pclone_set_id_list)))
                             if len(pclone_set_id_list) == 0: continue
 
@@ -2924,7 +2924,7 @@ class Main:
                 map_listitem,
                 manual_listitem,
                 trailer_listitem,
-            ]
+            ])
             mindex2 = sDialog.executeDialog()
             if mindex2 is None: return
             # If this function returns False no changes were made. No need to save categories XML
@@ -2959,7 +2959,7 @@ class Main:
                 filename = roms[romID]['filename']
                 launcher = self.launchers[launcherID]
                 romext = launcher['romext']
-                item_file = kodi_dialog_get_file('Select the file', '.' + romext.replace('|', '|.', filename)
+                item_file = kodi_dialog_get_file('Select the file', '.' + romext.replace('|', '|.', filename))
                 if not item_file: return
                 roms[romID]['filename'] = item_file
             # Alternative launcher application file path
@@ -6591,7 +6591,7 @@ class Main:
         if rom_already_in_collection:
             log_info('ROM already in collection')
             ret = kodi_dialog_yesno('ROM {} is already on Collection {}. Overwrite it?'.format(
-                roms[romID]['m_name'], collection['m_name'])
+                roms[romID]['m_name'], collection['m_name']))
             if not ret:
                 log_verb('User does not want to overwrite. Exiting.')
                 return
@@ -7562,7 +7562,7 @@ class Main:
             log_debug('Loading LaunchBox XML {}'.format(xml_path))
             games = audit_load_OfflineScraper_XML(xml_path)
             game = games[game_name]
-            # log_debug(unicode(game))
+            # log_debug(text_type(game))
 
             info_text  = '[COLOR orange]ROM information[/COLOR]\n'
             info_text += "[COLOR violet]game_name[/COLOR]: '{}'\n".format(game_name)
@@ -9877,9 +9877,9 @@ class Main:
         file_list = kodi_dialog_get_file_multiple('Select XML category/launcher configuration file', '.xml')
         # Process file by file
         for xml_file in file_list:
-            xml_file_unicode = xml_file.decode('utf-8')
-            log_debug('_command_exec_utils_import_launchers() Importing "{}"'.format(xml_file_unicode))
-            import_FN = FileName(xml_file_unicode)
+            xml_file_data = xml_file.decode('utf-8')
+            log_debug('_command_exec_utils_import_launchers() Importing "{}"'.format(xml_file_data))
+            import_FN = FileName(xml_file_data)
             if not import_FN.exists(): continue
             # This function edits self.categories, self.launchers dictionaries
             autoconfig_import_launchers(g_PATHS.CATEGORIES_FILE_PATH, g_PATHS.ROMS_DIR,
@@ -10999,7 +10999,7 @@ class Main:
             table_str.append(['', launcher['m_name'], str(launcher['num_roms'])])
 
         # Generate table and print report
-        # log_debug(unicode(table_str))
+        # log_debug(text_type(table_str))
         sl.extend(text_render_table(table_str))
         kodi_display_text_window_mono(window_title, '\n'.join(sl))
 
@@ -11063,7 +11063,7 @@ class Main:
             ])
 
         # Generate table and print report
-        # log_debug(unicode(table_str))
+        # log_debug(text_type(table_str))
         sl.extend(text_render_table(table_str))
         kodi_display_text_window_mono(window_title, '\n'.join(sl))
 

@@ -377,7 +377,7 @@ def fs_write_catfile(categories_file, categories, launchers, update_timestamp = 
     # Write a timestamp when file is created. This enables the Virtual Launchers to know if
     # it's time for an update.
     slist.append('<control>')
-    slist.append(text_XML('update_timestamp', unicode(_t)))
+    slist.append(text_XML('update_timestamp', text_type(_t)))
     slist.append('</control>')
 
     # --- Create Categories XML list ---
@@ -393,7 +393,7 @@ def fs_write_catfile(categories_file, categories, launchers, update_timestamp = 
         slist.append(text_XML('m_developer', category['m_developer']))
         slist.append(text_XML('m_rating', category['m_rating']))
         slist.append(text_XML('m_plot', category['m_plot']))
-        slist.append(text_XML('finished', unicode(category['finished'])))
+        slist.append(text_XML('finished', text_type(category['finished'])))
         slist.append(text_XML('default_icon', category['default_icon']))
         slist.append(text_XML('default_fanart', category['default_fanart']))
         slist.append(text_XML('default_banner', category['default_banner']))
@@ -430,25 +430,25 @@ def fs_write_catfile(categories_file, categories, launchers, update_timestamp = 
         slist.append(text_XML('rompath', launcher['rompath']))
         slist.append(text_XML('romext', launcher['romext']))
         slist.append(text_XML('romextrapath', launcher['romextrapath']))
-        slist.append(text_XML('finished', unicode(launcher['finished'])))
-        slist.append(text_XML('toggle_window', unicode(launcher['toggle_window'])))
-        slist.append(text_XML('non_blocking', unicode(launcher['non_blocking'])))
-        slist.append(text_XML('multidisc', unicode(launcher['multidisc'])))
+        slist.append(text_XML('finished', text_type(launcher['finished'])))
+        slist.append(text_XML('toggle_window', text_type(launcher['toggle_window'])))
+        slist.append(text_XML('non_blocking', text_type(launcher['non_blocking'])))
+        slist.append(text_XML('multidisc', text_type(launcher['multidisc'])))
         slist.append(text_XML('roms_base_noext', launcher['roms_base_noext']))
         slist.append(text_XML('audit_state', launcher['audit_state']))
         slist.append(text_XML('audit_auto_dat_file', launcher['audit_auto_dat_file']))
         slist.append(text_XML('audit_custom_dat_file', launcher['audit_custom_dat_file']))
         slist.append(text_XML('audit_display_mode', launcher['audit_display_mode']))
-        slist.append(text_XML('launcher_display_mode', unicode(launcher['launcher_display_mode'])))
-        slist.append(text_XML('num_roms', unicode(launcher['num_roms'])))
-        slist.append(text_XML('num_parents', unicode(launcher['num_parents'])))
-        slist.append(text_XML('num_clones', unicode(launcher['num_clones'])))
-        slist.append(text_XML('num_have', unicode(launcher['num_have'])))
-        slist.append(text_XML('num_miss', unicode(launcher['num_miss'])))
-        slist.append(text_XML('num_unknown', unicode(launcher['num_unknown'])))
-        slist.append(text_XML('num_extra', unicode(launcher['num_extra'])))
-        slist.append(text_XML('timestamp_launcher', unicode(launcher['timestamp_launcher'])))
-        slist.append(text_XML('timestamp_report', unicode(launcher['timestamp_report'])))
+        slist.append(text_XML('launcher_display_mode', text_type(launcher['launcher_display_mode'])))
+        slist.append(text_XML('num_roms', text_type(launcher['num_roms'])))
+        slist.append(text_XML('num_parents', text_type(launcher['num_parents'])))
+        slist.append(text_XML('num_clones', text_type(launcher['num_clones'])))
+        slist.append(text_XML('num_have', text_type(launcher['num_have'])))
+        slist.append(text_XML('num_miss', text_type(launcher['num_miss'])))
+        slist.append(text_XML('num_unknown', text_type(launcher['num_unknown'])))
+        slist.append(text_XML('num_extra', text_type(launcher['num_extra'])))
+        slist.append(text_XML('timestamp_launcher', text_type(launcher['timestamp_launcher'])))
+        slist.append(text_XML('timestamp_report', text_type(launcher['timestamp_report'])))
         # Launcher artwork
         slist.append(text_XML('default_icon', launcher['default_icon']))
         slist.append(text_XML('default_fanart', launcher['default_fanart']))
@@ -503,7 +503,7 @@ def fs_load_catfile(categories_file, categories, launchers):
         if category_element.tag == 'control':
             for control_child in category_element:
                 if control_child.tag == 'update_timestamp':
-                    update_timestamp = float(control_child.text) # Convert Unicode to float
+                    update_timestamp = float(control_child.text)
 
         elif category_element.tag == 'category':
             # Default values
@@ -740,7 +740,7 @@ def fs_write_Collection_index_XML(collections_xml_file, collections):
     slist.append('<advanced_emulator_launcher_Collection_index version="{}">'.format(AEL_STORAGE_FORMAT))
     # Control information.
     slist.append('<control>')
-    slist.append(text_XML('update_timestamp', unicode(time.time())))
+    slist.append(text_XML('update_timestamp', text_type(time.time())))
     slist.append('</control>')
     # Virtual Launchers.
     for collection_id in sorted(collections, key = lambda x : collections[x]['m_name']):
@@ -783,7 +783,7 @@ def fs_load_Collection_index_XML(collections_xml_file):
         if root_element.tag == 'control':
             for control_child in root_element:
                 if control_child.tag == 'update_timestamp':
-                    update_timestamp = float(control_child.text) # Convert Unicode to float
+                    update_timestamp = float(control_child.text)
 
         elif root_element.tag == 'Collection':
             collection = fs_new_collection()
@@ -1030,7 +1030,7 @@ def fs_write_VCategory_XML(roms_xml_file, roms):
 
     # --- Control information ---
     slist.append('<control>')
-    slist.append(text_XML('update_timestamp', unicode(time.time())))
+    slist.append(text_XML('update_timestamp', text_type(time.time())))
     slist.append('</control>')
 
     # --- Virtual Launchers ---
@@ -1061,7 +1061,7 @@ def fs_load_VCategory_XML(roms_xml_file):
         if root_element.tag == 'control':
             for control_child in root_element:
                 if control_child.tag == 'update_timestamp':
-                    update_timestamp = float(control_child.text) # Convert Unicode to float
+                    update_timestamp = float(control_child.text)
 
         elif root_element.tag == 'VLauncher':
             # Default values

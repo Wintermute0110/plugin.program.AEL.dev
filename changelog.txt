@@ -75,6 +75,9 @@ WIP      [SCRAPERS] MAME offline scraper: include plot field. Take it from GameI
 
 NOTE     Implement these features in master branch for Python 3.
 
+WIP      Rename plugin from plugin.program.advanced.emulator.launcher to plugin.program.AEL.
+         Create version plugin.program.AEL.dev. Copy this feature from AML.
+
 WIP      [CORE] Rename the plugin from `plugin.program.advanced.emulator.launcher` to
          `plugin.program.AEL`. Create a development version `plugin.program.AEL.dev` that
          can coexist with the stable version. See how AML does it.
@@ -151,9 +154,6 @@ WIP      Port release 0.9.10 to Python 3.
 NOTE     Python 2 version for Leia/Krypon in branch release-0.9.x-python2
          Have a look at AML code to ease the conversion.
 
-WIP      Rename plugin from plugin.program.advanced.emulator.launcher to plugin.program.AEL.
-         Create version plugin.program.AEL.dev. Copy this feature from AML.
-
 FEATURE  Create file misc.py and refactor utils.py. Copy structure from AML.
          Replace Kodi dialog functions with wrapper functions to facilitate the transition
          to Python 3. For example, eliminate all the .decode('utf-8') functions or
@@ -165,11 +165,11 @@ FEATURE  [CORE] Disable Kodi screensaver when launching and reenable after app f
          Featured ported from AML.
          See https://forum.kodi.tv/showthread.php?tid=304186&pid=2934194#pid2934194
 
-WIP      Have a look at the forum and Github issues to find urgent things to be fixed.
-
 WIP      [SCRAPERS] In ScreenScraper, check for daily allowance and scraper overflows in general.
 
-WIP      Add support to remove unneeded blank spaces in `dev-core/check_line_endings.py`.
+FEATURE  Add support to remove unneeded blank spaces in `dev-core/check_line_endings.py`.
+
+WIP      Have a look at the forum and Github issues to find urgent things to be fixed.
 
 FIX      Fix TheGamesDB scraper. New asset titlescreen in TheGamesDB.
          See https://forums.thegamesdb.net/viewtopic.php?f=5&t=1947
