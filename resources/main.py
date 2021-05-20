@@ -30,7 +30,7 @@ from .assets import *
 from .rom_audit import *
 from .scrap import *
 from .autoconfig import *
-import md
+import resources.md
 
 # --- Kodi stuff ---
 import xbmc
@@ -41,7 +41,7 @@ import xbmcplugin
 # --- Python standard library ---
 # Fix this: from collections import OrderedDict
 import collections
-import exceptions
+# import exceptions
 import fnmatch
 import hashlib
 import os
@@ -64,12 +64,12 @@ else:
 
 # --- Addon object (used to access settings) ---
 __addon_obj__     = xbmcaddon.Addon()
-__addon_id__      = __addon_obj__.getAddonInfo('id').decode('utf-8')
-__addon_name__    = __addon_obj__.getAddonInfo('name').decode('utf-8')
-__addon_version__ = __addon_obj__.getAddonInfo('version').decode('utf-8')
-__addon_author__  = __addon_obj__.getAddonInfo('author').decode('utf-8')
-__addon_profile__ = __addon_obj__.getAddonInfo('profile').decode('utf-8')
-__addon_type__    = __addon_obj__.getAddonInfo('type').decode('utf-8')
+__addon_id__      = __addon_obj__.getAddonInfo('id')
+__addon_name__    = __addon_obj__.getAddonInfo('name')
+__addon_version__ = __addon_obj__.getAddonInfo('version')
+__addon_author__  = __addon_obj__.getAddonInfo('author')
+__addon_profile__ = __addon_obj__.getAddonInfo('profile')
+__addon_type__    = __addon_obj__.getAddonInfo('type')
 
 # --- Addon paths and constant definition ---
 # _PATH is a filename | _DIR is a directory name (with trailing /).
@@ -559,9 +559,7 @@ class Main:
             kodi_dialog_OK('Unknown command {}'.format(args['com'][0]) )
         log_debug('Advanced Emulator Launcher run_protected() END')
 
-    #
     # Get Addon Settings
-    #
     def _get_settings(self):
         # Get the users preference settings
         o = __addon_obj__

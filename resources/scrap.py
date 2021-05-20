@@ -40,9 +40,16 @@ import datetime
 import json
 import socket
 import time
-import urllib
-import urlparse
 import zipfile
+if ADDON_RUNNING_PYTHON_2:
+    # https://docs.python.org/2.7/library/urllib2.html
+    import urllib2
+elif ADDON_RUNNING_PYTHON_3:
+    import urllib.request
+    import urllib.parse
+    import urllib.error
+else:
+    raise TypeError('Undefined Python runtime version.')
 
 # --- Scraper use cases ---------------------------------------------------------------------------
 # THIS DOCUMENTATION IS OBSOLETE, IT MUST BE UPDATED TO INCLUDE THE SCRAPER DISK CACHE.

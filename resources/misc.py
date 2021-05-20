@@ -27,11 +27,16 @@ from .constants import *
 
 # --- Python standard library ---
 import hashlib
-import HTMLParser
 import random
 import re
 import string
 import time
+if ADDON_RUNNING_PYTHON_2:
+    import HTMLParser
+elif ADDON_RUNNING_PYTHON_3:
+    import html.parser
+else:
+    raise TypeError('Undefined Python runtime version.')
 
 # -------------------------------------------------------------------------------------------------
 # Strings and text functions.
@@ -394,7 +399,12 @@ def text_unescape_HTML(s):
     # s = s.replace('&#x16B;', "ū")
 
     # Use HTMLParser module to decode HTML entities.
-    s = HTMLParser.HTMLParser().unescape(s)
+    if ADDON_RUNNING_PYTHON_2:
+        s = HTMLParser.HTMLParser().unescape(s)
+    elif ADDON_RUNNING_PYTHON_3:
+        s = html.parser.HTMLParser().unescape(s)
+    else:
+        raise TypeError('Undefined Python runtime version.')
 
     if __debug_text_unescape_HTML:
         log_debug('text_unescape_HTML() output "{}"'.format(s))

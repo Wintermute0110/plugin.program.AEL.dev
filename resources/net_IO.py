@@ -26,11 +26,12 @@ from .utils import *
 import os
 import random
 import sys
-# Fix this: import urllib, urllib2, urlparse
 if ADDON_RUNNING_PYTHON_2:
+    # https://docs.python.org/2.7/library/urllib2.html
     import urllib2
 elif ADDON_RUNNING_PYTHON_3:
-    raise TypeError('Change this for Python 3.')
+    import urllib.request
+    import urllib.error
 else:
     raise TypeError('Undefined Python runtime version.')
 
