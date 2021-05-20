@@ -996,7 +996,7 @@ def fs_import_ROM_collection(input_FileName):
 def fs_import_ROM_collection_assets(input_FileName):
     default_return = ({}, {})
 
-    log_info('fs_import_ROM_collection_assets() Loading {}'.format(input_FileName.getOriginalPath()))    
+    log_info('fs_import_ROM_collection_assets() Loading {}'.format(input_FileName.getOriginalPath()))
     raw_data = utils_load_JSON_file(input_FileName.getPath())
     if not raw_data: return default_return
     control_dic = raw_data[0]
