@@ -247,10 +247,10 @@ class FileName:
     def getDirAsFileName(self):
         return FileName(self.getDir())
 
-    def getBase(self):
+    def getBase(self) -> str:
         return os.path.basename(self.path_str)
 
-    def getBaseNoExt(self):
+    def getBaseNoExt(self) -> str:
         basename  = os.path.basename(self.path_str)
         root, ext = os.path.splitext(basename)
 

@@ -26,7 +26,7 @@ import logging
 # --- Modules/packages in this plugin ---
 from resources.lib.utils import kodilogging
 from resources.lib.utils import text
-from resources.lib import views
+from resources.app import views
 
 kodilogging.config()
 logger = logging.getLogger(__name__)

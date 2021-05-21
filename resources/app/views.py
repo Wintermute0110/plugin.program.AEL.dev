@@ -42,7 +42,7 @@ from resources.lib.globals import *
 from resources.lib.constants import *
 from resources.lib.repositories import *
 from resources.lib.settings import *
-from resources.lib.viewqueries import *
+from resources.app.viewqueries import *
 
 from resources.lib.utils import kodi
 

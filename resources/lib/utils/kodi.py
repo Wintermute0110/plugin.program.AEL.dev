@@ -6,12 +6,10 @@ import pprint
 
 import xbmc
 import xbmcgui
-import xbmcaddon
+
+from resources.lib import globals
 
 logger = logging.getLogger(__name__)
-
-__addon__         = xbmcaddon.Addon()
-__addon_id__      = __addon__.getAddonInfo('id')
 
 #
 # Access Kodi JSON-RPC interface in an easy way.
@@ -63,7 +61,7 @@ def jsonrpc_query(method=None, params=None, verbose = False):
         response = {}
     return response
 
-def event(sender=__addon_id__, method='test', data=None):
+def event(sender=globals.addon_id, method='test', data=None):
 
     ''' Data is a dictionary.
     '''

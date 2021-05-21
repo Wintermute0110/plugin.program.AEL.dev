@@ -15,7 +15,7 @@
 
 # Import each command file for automatically registration by
 # the mediator implementation.
-import resources.lib.commands.mediator
-import resources.lib.commands.import_export_commands
-import resources.lib.commands.view_rendering_commands
-import resources.lib.commands.addon_commands
+import resources.app.commands.mediator
+import resources.app.commands.import_export_commands
+import resources.app.commands.view_rendering_commands
+import resources.app.commands.addon_commands

@@ -6,8 +6,8 @@ import xbmc
 
 from resources.lib import globals
 from resources.lib.repositories import UnitOfWork
-from resources.lib.commands.mediator import AppMediator
-import resources.lib.commands
+from resources.app.commands.mediator import AppMediator
+import resources.app.commands
 
 from resources.lib.utils import io
 

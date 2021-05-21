@@ -21,7 +21,7 @@ import logging
 
 import xbmcaddon
 
-from resources.lib.commands.mediator import AppMediator
+from resources.app.commands.mediator import AppMediator
 from resources.lib import globals
 from resources.lib.repositories import *
 from resources.lib.utils import kodi

@@ -19,7 +19,7 @@ from __future__ import division
 
 import logging
 
-from resources.lib.commands.mediator import AppMediator
+from resources.app.commands.mediator import AppMediator
 from resources.lib import globals, settings
 from resources.lib.repositories import *
 
