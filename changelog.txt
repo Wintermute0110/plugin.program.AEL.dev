@@ -153,6 +153,7 @@ WIP      Port release 0.9.10 to Python 3.
 
 TODO     1. Test test test release-0.9.x-python2
          2. Merge changes from release-0.9.x-python2 into release-0.10.x-python3.
+         3. Test release-0.10.x-python3.
 
 NOTE     Python 2 version for Leia/Krypon in branch release-0.9.x-python2
          Have a look at AML code to ease the conversion.

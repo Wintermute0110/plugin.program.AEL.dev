@@ -671,7 +671,11 @@ def kodi_dialog_get_file_multiple(d_heading, mask = '', d_file = ''):
     else:
         ret = xbmcgui.Dialog().browse(1, d_heading, '', enableMultiple = True)
 
-    return ret.decode('utf-8')
+    # ret is a list
+    for i in range(len(ret)):
+        ret[i] = ret[i].decode('utf-8')
+
+    return ret
 
 # Displays a small box in the bottom right corner
 def kodi_notify(text, title = DIALOG_TITLE, time = 5000):
@@ -1088,7 +1092,7 @@ def kodi_new_status_dic():
     }
 
 # Display an error message in the GUI.
-# Returns True in case of error and addon must abort immediately.
+# Returns True in case of error and addon must abort/exit immediately.
 # Returns False if no error.
 def kodi_display_status_message(st_dic):
     # Display (error) message and return status.

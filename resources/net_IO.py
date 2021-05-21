@@ -236,6 +236,6 @@ def net_decode_URL_data(page_bytes, MIME_type):
     # log_debug('net_decode_URL_data() MIME_type "{}", encoding "{}"'.format(MIME_type, encoding))
 
     # Decode
-    page_data.decode(encoding)
+    page_data = page_bytes.decode(encoding)
 
     return page_data
