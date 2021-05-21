@@ -41,7 +41,6 @@ import xbmcplugin
 # --- Python standard library ---
 # Fix this: from collections import OrderedDict
 import collections
-# import exceptions
 import fnmatch
 import hashlib
 import os
@@ -54,15 +53,12 @@ import subprocess
 import sys
 import time
 import traceback
-# Fix this: import urllib, urllib2, urlparse
 if ADDON_RUNNING_PYTHON_2:
     import urlparse
 elif ADDON_RUNNING_PYTHON_3:
     import urllib.parse
 else:
     raise TypeError('Undefined Python runtime version.')
-
-# --- Addon object (used to access settings) ---
 
 # --- Addon paths and constant definition ---
 # _PATH is a filename | _DIR is a directory name (with trailing /).
@@ -133,7 +129,7 @@ class AEL_Paths:
 # This should not be a global variable. Use functional programming!
 g_PATHS = AEL_Paths()
 # For compatibility with the future (to easy the transition).
-# See the code in AML.
+# See the code in AML. Global cfg variable to simulate function parameter.
 cfg = g_PATHS
 
 # Make AEL to run only 1 single instance
@@ -141,31 +137,31 @@ cfg = g_PATHS
 class SingleInstance:
     # Class variables
     monitor = xbmc.Monitor()
-    main_window = xbmcgui.Window(10000)
-    AEL_LOCK_PROPNAME = 'AEL_instance_lock'
-    AEL_LOCK_VALUE = 'True'
+    window = xbmcgui.Window(10000)
+    LOCK_PROPNAME = 'AEL_instance_lock'
+    LOCK_VALUE = 'True'
 
-    # When using with SingleInstance() the constructor/destructor is never called!
     def __init__(self): log_debug('SingleInstance::__init__() Begin...')
 
     def __del__(self): log_debug('SingleInstance::__del__() Begin...')
 
     def __enter__(self):
         # --- If property is True then another instance of AEL is running ---
-        if main_window.getProperty(AEL_LOCK_PROPNAME) == AEL_LOCK_VALUE:
+        prop_name = SingleInstance.window.getProperty(SingleInstance.LOCK_PROPNAME)
+        if prop_name == SingleInstance.LOCK_VALUE:
             log_warning('SingleInstance::__enter__() Lock in use. Aborting AEL execution')
             # Apparently this message pulls the focus out of the launcher app. Disable it.
             # Has not effect. Kodi steals the focus from the launched app even if not message.
             kodi_dialog_OK('Another instance of AEL is running! Wait until the scraper finishes '
                 'or close the launched application before launching a new one and try again.')
             raise SystemExit
-        if monitor.abortRequested():
+        if SingleInstance.monitor.abortRequested():
             log_info('monitor.abortRequested() is True. Exiting plugin ...')
             raise SystemExit
 
         # --- Acquire lock for this instance ---
         log_debug('SingleInstance::__enter__() Lock not in use. Setting lock')
-        main_window.setProperty(AEL_LOCK_PROPNAME, AEL_LOCK_VALUE)
+        SingleInstance.window.setProperty(SingleInstance.LOCK_PROPNAME, SingleInstance.LOCK_VALUE)
         return True
 
     def __exit__(self, type, value, traceback):
@@ -176,7 +172,7 @@ class SingleInstance:
 
         # --- Release lock even if an exception happened ---
         log_debug('SingleInstance::__exit__() Releasing lock')
-        main_window.setProperty(AEL_LOCK_PROPNAME, '')
+        SingleInstance.window.setProperty(SingleInstance.LOCK_PROPNAME, '')
 
 # Edits a generic string using the GUI.
 # 
@@ -9957,7 +9953,7 @@ class Main:
         # Traverse all launchers. Load ROMs and check every ROMs.
         pDialog.startProgress('Checking Launcher ROMs...', len(self.launchers))
         for launcher_id in self.launchers:
-            pDialog.updateProgressInc(update_number)
+            pDialog.updateProgressInc()
             s = '_command_edit_rom() Checking Launcher "{}"'
             log_debug(s.format(self.launchers[launcher_id]['m_name']))
             # Load and fix standard ROM database.
@@ -9979,8 +9975,8 @@ class Main:
         pDialog.endProgress()
 
         # Load Favourite ROMs and update JSON
-        pDialog.startProgress('Checking Favourite ROMs...', len(roms_fav))
         roms_fav = fs_load_Favourites_JSON(g_PATHS.FAV_JSON_FILE_PATH)
+        pDialog.startProgress('Checking Favourite ROMs...', len(roms_fav))
         for rom_id in roms_fav:
             pDialog.updateProgressInc()
             rom = roms_fav[rom_id]
@@ -9989,8 +9985,8 @@ class Main:
         pDialog.endProgress()
 
         # Traverse every ROM Collection database and check/update Favourite ROMs.
-        pDialog.startProgress('Checking Collection ROMs...', len(collections))
         (collections, update_timestamp) = fs_load_Collection_index_XML(g_PATHS.COLLECTIONS_FILE_PATH)
+        pDialog.startProgress('Checking Collection ROMs...', len(collections))
         for collection_id in collections:
             pDialog.updateProgressInc()
 
@@ -10080,40 +10076,40 @@ class Main:
     def _command_exec_utils_check_launchers(self):
         log_info('_command_exec_utils_check_launchers() Checking all Launchers configuration ...')
 
-        main_str_list = []
-        main_str_list.append('Number of launchers: {}\n\n'.format(len(self.launchers)))
+        main_slist = []
+        main_slist.append('Number of launchers: {}\n'.format(len(self.launchers)))
         for launcher_id in sorted(self.launchers, key = lambda x : self.launchers[x]['m_name']):
             launcher = self.launchers[launcher_id]
             l_str = []
-            main_str_list.append('[COLOR orange]Launcher "{}"[/COLOR]\n'.format(launcher['m_name']))
+            main_slist.append('[COLOR orange]Launcher "{}"[/COLOR]'.format(launcher['m_name']))
 
             # Check that platform is on AEL official platform list
             platform = launcher['platform']
             if platform not in platform_long_to_index_dic:
-                l_str.append('Unrecognised platform "{}"\n'.format(platform))
+                l_str.append('Unrecognised platform "{}"'.format(platform))
 
             # Check that category exists
             categoryID = launcher['categoryID']
             if categoryID != VCATEGORY_ADDONROOT_ID and categoryID not in self.categories:
-                l_str.append('Category not found (unlinked launcher)\n')
+                l_str.append('Category not found (unlinked launcher)')
 
             # Check that application exists
             app_FN = FileName(launcher['application'])
             if not app_FN.exists():
-                l_str.append('Application "{}" not found\n'.format(app_FN.getPath()))
+                l_str.append('Application "{}" not found'.format(app_FN.getPath()))
 
             # Check that rompath exists if rompath is not empty
             # Empty rompath means standalone launcher
             rompath = launcher['rompath']
             rompath_FN = FileName(rompath)
             if rompath and not rompath_FN.exists():
-                l_str.append('ROM path "{}" not found\n'.format(rompath_FN.getPath()))
+                l_str.append('ROM path "{}" not found'.format(rompath_FN.getPath()))
 
             # Check that DAT file exists if not empty
             audit_custom_dat_file = launcher['audit_custom_dat_file']
             audit_custom_dat_FN = FileName(audit_custom_dat_file)
             if audit_custom_dat_file and not audit_custom_dat_FN.exists():
-                l_str.append('Custom DAT file "{}" not found\n'.format(audit_custom_dat_FN.getPath()))
+                l_str.append('Custom DAT file "{}" not found'.format(audit_custom_dat_FN.getPath()))
 
             # audit_auto_dat_file = launcher['audit_auto_dat_file']
             # audit_auto_dat_FN = FileName(audit_auto_dat_file)
@@ -10133,7 +10129,7 @@ class Main:
             ROM_asset_path = launcher['ROM_asset_path']
             ROM_asset_path_FN = FileName(ROM_asset_path)
             if ROM_asset_path and not ROM_asset_path_FN.exists():
-                l_str.append('ROM_asset_path "{}" not found\n'.format(ROM_asset_path_FN.getPath()))
+                l_str.append('ROM_asset_path "{}" not found'.format(ROM_asset_path_FN.getPath()))
 
             # Test that ROM asset paths exist if not empty (path_* fields)
             self._aux_check_for_file(l_str, 'path_3dbox', launcher)
@@ -10154,15 +10150,15 @@ class Main:
 
             # If l_str is empty is because no problems were found.
             if l_str:
-                main_str_list.extend(l_str)
+                main_slist.extend(l_str)
             else:
-                main_str_list.append('No problems found\n')
-            main_str_list.append('\n')
+                main_slist.append('No problems found')
+            main_slist.append('')
 
         # Stats report
         log_info('Writing report file "{}"'.format(g_PATHS.LAUNCHER_REPORT_FILE_PATH.getPath()))
         utils_write_slist_to_file(g_PATHS.LAUNCHER_REPORT_FILE_PATH.getPath(), main_slist)
-        full_string = ''.join(main_str_list)
+        full_string = '\n'.join(main_slist)
         kodi_display_text_window_mono('Launchers report', full_string)
 
     def _aux_check_for_file(self, str_list, dic_key_name, launcher):
@@ -10170,7 +10166,7 @@ class Main:
         path_FN = FileName(path)
         if path and not path_FN.exists():
             problems_found = True
-            str_list.append('{} "{}" not found\n'.format(dic_key_name, path_FN.getPath()))
+            str_list.append('{} "{}" not found'.format(dic_key_name, path_FN.getPath()))
 
     # For every ROM launcher scans the ROM path and check 1) if there are dead ROMs and 2) if
     # there are ROM files not in AEL database. If either 1) or 2) is true launcher must be
@@ -10184,7 +10180,7 @@ class Main:
         d_msg = 'Checking ROM sync status'
         pdialog.startProgress(d_msg, len(self.launchers))
         for launcher_id in sorted(self.launchers, key = lambda x : self.launchers[x]['m_name']):
-            pdialog.updateProgressInc(processed_launchers, d_msg)
+            pdialog.updateProgressInc(d_msg)
             launcher = self.launchers[launcher_id]
             # Skip non-ROM launchers.
             if not launcher['rompath']: continue
@@ -10301,7 +10297,7 @@ class Main:
         main_slist.append('')
         main_slist.append('*** Detailed report ***')
         main_slist.extend(detailed_slist)
-        utils_write_str_to_file(g_PATHS.ROM_SYNC_REPORT_FILE_PATH.getPath(), main_slist)
+        utils_write_slist_to_file(g_PATHS.ROM_SYNC_REPORT_FILE_PATH.getPath(), main_slist)
         pdialog.endProgress()
         full_string = '\n'.join(main_slist)
         kodi_display_text_window_mono('ROM sync status report', full_string)
@@ -10447,7 +10443,7 @@ class Main:
         main_slist.append('')
         main_slist.append('*** Detailed report ***')
         main_slist.extend(detailed_slist)
-        utils_write_str_to_file(g_PATHS.ROM_ART_INTEGRITY_REPORT_FILE_PATH.getPath(), main_slist)
+        utils_write_slist_to_file(g_PATHS.ROM_ART_INTEGRITY_REPORT_FILE_PATH.getPath(), main_slist)
         pdialog.endProgress()
         full_string = '\n'.join(main_slist)
         kodi_display_text_window_mono('ROM artwork integrity report', full_string)
@@ -10791,23 +10787,19 @@ class Main:
     def _command_exec_utils_TGDB_check(self):
         # --- Get scraper object and retrieve information ---
         # Treat any error message returned by the scraper as an OK dialog.
-        status_dic = kodi_new_status_dic('No error')
+        st_dic = kodi_new_status_dic()
         g_scraper_factory = ScraperFactory(g_PATHS, self.settings)
         TGDB = g_scraper_factory.get_scraper_object(SCRAPER_THEGAMESDB_ID)
-        TGDB.check_before_scraping(status_dic)
-        if not status_dic['status']:
-            kodi_dialog_OK(status_dic['msg'])
-            return
+        TGDB.check_before_scraping(st_dic)
+        if kodi_display_status_message(st_dic): return
 
         # To check the scraper monthly allowance, get the list of platforms as JSON. This JSON
         # data contains the monthly allowance.
         pdialog = KodiProgressDialog()
         pdialog.startProgress('Retrieving info from TheGamesDB...')
-        json_data = TGDB.debug_get_genres(status_dic)
+        json_data = TGDB.debug_get_genres(st_dic)
         pdialog.endProgress()
-        if not status_dic['status']:
-            kodi_dialog_OK(status_dic['msg'])
-            return
+        if kodi_display_status_message(st_dic): return
         extra_allowance = json_data['extra_allowance']
         remaining_monthly_allowance = json_data['remaining_monthly_allowance']
         allowance_refresh_timer = json_data['allowance_refresh_timer']
@@ -10829,23 +10821,19 @@ class Main:
     def _command_exec_utils_MobyGames_check(self):
         # --- Get scraper object and retrieve information ---
         # Treat any error message returned by the scraper as an OK dialog.
-        status_dic = kodi_new_status_dic('No error')
+        st_dic = kodi_new_status_dic()
         g_scraper_factory = ScraperFactory(g_PATHS, self.settings)
         MobyGames = g_scraper_factory.get_scraper_object(SCRAPER_MOBYGAMES_ID)
-        MobyGames.check_before_scraping(status_dic)
-        if not status_dic['status']:
-            kodi_dialog_OK(status_dic['msg'])
-            return
+        MobyGames.check_before_scraping(st_dic)
+        if kodi_display_status_message(st_dic): return
 
         # TTBOMK, there is no way to know the current limits of MobyGames scraper.
         # Just get the list of platforms and report to the user.
         pdialog = KodiProgressDialog()
         pdialog.startProgress('Retrieving info from MobyGames...')
-        json_data = MobyGames.debug_get_platforms(status_dic)
+        json_data = MobyGames.debug_get_platforms(st_dic)
         pdialog.endProgress()
-        if not status_dic['status']:
-            kodi_dialog_OK(status_dic['msg'])
-            return
+        if kodi_display_status_message(st_dic): return
 
         # --- Print and display report ---
         window_title = 'MobyGames scraper information'
@@ -10861,22 +10849,18 @@ class Main:
     def _command_exec_utils_ScreenScraper_check(self):
         # --- Get scraper object and retrieve information ---
         # Treat any error message returned by the scraper as an OK dialog.
-        status_dic = kodi_new_status_dic('No error')
+        st_dic = kodi_new_status_dic()
         g_scraper_factory = ScraperFactory(g_PATHS, self.settings)
         ScreenScraper = g_scraper_factory.get_scraper_object(SCRAPER_SCREENSCRAPER_ID)
-        ScreenScraper.check_before_scraping(status_dic)
-        if not status_dic['status']:
-            kodi_dialog_OK(status_dic['msg'])
-            return
+        ScreenScraper.check_before_scraping(st_dic)
+        if kodi_display_status_message(st_dic): return
 
         # Get ScreenScraper user information
         pdialog = KodiProgressDialog()
         pdialog.startProgress('Retrieving info from ScreenScraper...')
-        json_data = ScreenScraper.debug_get_user_info(status_dic)
+        json_data = ScreenScraper.debug_get_user_info(st_dic)
         pdialog.endProgress()
-        if not status_dic['status']:
-            kodi_dialog_OK(status_dic['msg'])
-            return
+        if kodi_display_status_message(st_dic): return
 
         # --- Print and display report ---
         header = json_data['header']
@@ -10910,13 +10894,11 @@ class Main:
     # Retrieve an example game to test if ArcadeDB works.
     # TTBOMK there are not API retrictions at the moment (August 2019).
     def _command_exec_utils_ArcadeDB_check(self):
-        status_dic = kodi_new_status_dic('No error')
+        st_dic = kodi_new_status_dic()
         g_scraper_factory = ScraperFactory(g_PATHS, self.settings)
         ArcadeDB = g_scraper_factory.get_scraper_object(SCRAPER_ARCADEDB_ID)
-        ArcadeDB.check_before_scraping(status_dic)
-        if not status_dic['status']:
-            kodi_dialog_OK(status_dic['msg'])
-            return
+        ArcadeDB.check_before_scraping(st_dic)
+        if kodi_display_status_message(st_dic): return
 
         search_str = 'atetris'
         rom_FN = FileName('atetris.zip')
@@ -10927,11 +10909,9 @@ class Main:
         pdialog.startProgress('Retrieving info from ArcadeDB...')
         ArcadeDB.check_candidates_cache(rom_FN, platform)
         ArcadeDB.clear_cache(rom_FN, platform)
-        candidates = ArcadeDB.get_candidates(search_str, rom_FN, rom_checksums_FN, platform, status_dic)
+        candidates = ArcadeDB.get_candidates(search_str, rom_FN, rom_checksums_FN, platform, st_dic)
         pdialog.endProgress()
-        if not status_dic['status']:
-            kodi_dialog_OK(status_dic['msg'])
-            return
+        if kodi_display_status_message(st_dic): return
         if len(candidates) != 1:
             kodi_dialog_OK('There is a problem with ArcadeDB scraper.')
             return
@@ -11053,13 +11033,14 @@ class Main:
             if report_type == AUDIT_REPORT_NOINTRO and p_obj.DAT != DAT_NOINTRO: continue
             if report_type == AUDIT_REPORT_REDUMP and p_obj.DAT != DAT_REDUMP: continue
             table_str.append([
-                ' ', launcher['m_name'], p_obj.compact_name, p_obj.DAT,
+                ' ', launcher['m_name'], p_obj.compact_name, text_type(p_obj.DAT),
                 text_type(launcher['num_roms']), text_type(launcher['num_have']),
                 text_type(launcher['num_miss']), text_type(launcher['num_unknown']),
             ])
 
         # Generate table and print report
         # log_debug(text_type(table_str))
+        log_debug(text_type(table_str))
         sl.extend(text_render_table(table_str))
         kodi_display_text_window_mono(window_title, '\n'.join(sl))
 
