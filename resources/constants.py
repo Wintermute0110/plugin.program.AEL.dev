@@ -144,6 +144,11 @@ AEL_PCLONE_STAT_VALUE_NONE           = 'PClone_None'
 # --- ID of the fake ROM parent of all Unknown ROMs ---
 UNKNOWN_ROMS_PARENT_ID = 'Unknown_ROMs_Parent'
 
+# --- Audit reports ---
+AUDIT_REPORT_ALL = 'AUDIT_REPORT_ALL'
+AUDIT_REPORT_NOINTRO = 'AUDIT_REPORT_NOINTRO'
+AUDIT_REPORT_REDUMP = 'AUDIT_REPORT_REDUMP'
+
 # -------------------------------------------------------------------------------------------------
 # Metadata
 # -------------------------------------------------------------------------------------------------
