@@ -63,26 +63,22 @@ else:
     raise TypeError('Undefined Python runtime version.')
 
 # --- Addon object (used to access settings) ---
-__addon_obj__     = xbmcaddon.Addon()
-__addon_id__      = __addon_obj__.getAddonInfo('id')
-__addon_name__    = __addon_obj__.getAddonInfo('name')
-__addon_version__ = __addon_obj__.getAddonInfo('version')
-__addon_author__  = __addon_obj__.getAddonInfo('author')
-__addon_profile__ = __addon_obj__.getAddonInfo('profile')
-__addon_type__    = __addon_obj__.getAddonInfo('type')
 
 # --- Addon paths and constant definition ---
 # _PATH is a filename | _DIR is a directory name (with trailing /).
 class AEL_Paths:
     def __init__(self):
+        # --- Kodi-related variables and data ---
+        self.addon = kodi_addon_obj()
+
         # --- Base paths ---
-        self.HOME_DIR         = FileName('special://home')
-        self.PROFILE_DIR      = FileName('special://profile')
-        self.ADDONS_DATA_DIR  = FileName('special://profile/addon_data')
-        self.ADDON_DATA_DIR   = self.ADDONS_DATA_DIR.pjoin(__addon_id__)
-        self.ADDONS_CODE_DIR  = self.HOME_DIR.pjoin('addons')
-        self.ADDON_CODE_DIR   = self.ADDONS_CODE_DIR.pjoin(__addon_id__)
-        self.ICON_FILE_PATH   = self.ADDON_CODE_DIR.pjoin('media/icon.png')
+        self.HOME_DIR = FileName('special://home')
+        self.PROFILE_DIR = FileName('special://profile')
+        self.ADDONS_DATA_DIR = FileName('special://profile/addon_data')
+        self.ADDON_DATA_DIR = self.ADDONS_DATA_DIR.pjoin(self.addon.info_id)
+        self.ADDONS_CODE_DIR = self.HOME_DIR.pjoin('addons')
+        self.ADDON_CODE_DIR = self.ADDONS_CODE_DIR.pjoin(self.addon.info_id)
+        self.ICON_FILE_PATH = self.ADDON_CODE_DIR.pjoin('media/icon.png')
         self.FANART_FILE_PATH = self.ADDON_CODE_DIR.pjoin('media/fanart.jpg')
 
         # --- Databases and reports ---
@@ -134,30 +130,34 @@ class AEL_Paths:
         self.REPORTS_DIR               = self.ADDON_DATA_DIR.pjoin('reports')
 
 # --- Global variables ---
+# This should not be a global variable. Use functional programming!
 g_PATHS = AEL_Paths()
+# For compatibility with the future (to easy the transition).
+# See the code in AML.
+cfg = g_PATHS
 
 # Make AEL to run only 1 single instance
 # See http://forum.kodi.tv/showthread.php?tid=310697
-monitor           = xbmc.Monitor()
-main_window       = xbmcgui.Window(10000)
-AEL_LOCK_PROPNAME = 'AEL_instance_lock'
-AEL_LOCK_VALUE    = 'True'
-
-# Audit reports constants
-AUDIT_REPORT_ALL = 'AUDIT_REPORT_ALL'
-AUDIT_REPORT_NOINTRO = 'AUDIT_REPORT_NOINTRO'
-AUDIT_REPORT_REDUMP = 'AUDIT_REPORT_REDUMP'
-
 class SingleInstance:
+    # Class variables
+    monitor = xbmc.Monitor()
+    main_window = xbmcgui.Window(10000)
+    AEL_LOCK_PROPNAME = 'AEL_instance_lock'
+    AEL_LOCK_VALUE = 'True'
+
+    # When using with SingleInstance() the constructor/destructor is never called!
+    def __init__(self): log_debug('SingleInstance::__init__() Begin...')
+
+    def __del__(self): log_debug('SingleInstance::__del__() Begin...')
+
     def __enter__(self):
         # --- If property is True then another instance of AEL is running ---
         if main_window.getProperty(AEL_LOCK_PROPNAME) == AEL_LOCK_VALUE:
             log_warning('SingleInstance::__enter__() Lock in use. Aborting AEL execution')
-            # >> Apparently this message pulls the focus out of the launcher app. Disable it.
-            # >> Has not effect. Kodi steals the focus from the launched app even if not message.
+            # Apparently this message pulls the focus out of the launcher app. Disable it.
+            # Has not effect. Kodi steals the focus from the launched app even if not message.
             kodi_dialog_OK('Another instance of AEL is running! Wait until the scraper finishes '
-                           'or close the launched application before launching a new one and try '
-                           'again.')
+                'or close the launched application before launching a new one and try again.')
             raise SystemExit
         if monitor.abortRequested():
             log_info('monitor.abortRequested() is True. Exiting plugin ...')
@@ -170,7 +170,7 @@ class SingleInstance:
 
     def __exit__(self, type, value, traceback):
         # --- Print information about exception if any ---
-        # >> If type == value == tracebak == None no exception happened
+        # If type == value == tracebak == None no exception happened
         if type:
             log_error('SingleInstance::__exit__() Unhandled excepcion in protected code')
 
@@ -201,11 +201,8 @@ def _aux_edit_str(edict, fname, prop_name):
     kodi_notify('{} is now {}'.format(prop_name, new_value_str))
     return True
 
-# Main code
 class Main:
-    # ---------------------------------------------------------------------------------------------
-    # This is the plugin entry point.
-    # ---------------------------------------------------------------------------------------------
+    # Main code. This is the plugin entry point.
     def run_plugin(self, addon_argv):
         # --- Initialise log system ---
         # Force DEBUG log level for development.
@@ -213,6 +210,7 @@ class Main:
         # set_log_level(LOG_DEBUG)
 
         # --- Fill in settings dictionary using __addon_obj__.getSetting() ---
+        self.settings = {}
         self._get_settings()
         set_log_level(self.settings['log_level'])
 
@@ -222,17 +220,20 @@ class Main:
         # log_debug('WindowId       "{}"'.format(xbmcgui.getCurrentWindowId()))
         # log_debug('WindowName     "{}"'.format(xbmc.getInfoLabel('Window.Property(xmlfile)')))
         log_debug('Python version "' + sys.version.replace('\n', '') + '"')
-        # log_debug('__a_name__     "{}"'.format(__addon_name__))
-        log_debug('__a_id__       "{}"'.format(__addon_id__))
-        log_debug('__a_version__  "{}"'.format(__addon_version__))
-        # log_debug('__a_author__   "{}"'.format(__addon_author__))
-        # log_debug('__a_profile__  "{}"'.format(__addon_profile__))
-        # log_debug('__a_type__     "{}"'.format(__addon_type__))
+        # log_debug('addon_name     "{}"'.format(g_PATHS.addon.info_name))
+        log_debug('addon_id       "{}"'.format(g_PATHS.addon.info_id))
+        log_debug('addon_version  "{}"'.format(g_PATHS.addon.info_version))
+        # log_debug('addon_author   "{}"'.format(g_PATHS.addon.info_author))
+        # log_debug('addon_profile  "{}"'.format(g_PATHS.addon.info_profile))
+        # log_debug('addon_type     "{}"'.format(g_PATHS.addon.info_type))
         for i in range(len(addon_argv)): log_debug('addon_argv[{}] "{}"'.format(i, addon_argv[i]))
         # log_debug('PLUGIN_DATA_DIR OP "{}"'.format(g_PATHS.PLUGIN_DATA_DIR.getOriginalPath()))
         # log_debug('PLUGIN_DATA_DIR  P "{}"'.format(g_PATHS.PLUGIN_DATA_DIR.getPath()))
         # log_debug('ADDON_CODE_DIR OP "{}"'.format(g_PATHS.ADDON_CODE_DIR.getOriginalPath()))
         # log_debug('ADDON_CODE_DIR  P "{}"'.format(g_PATHS.ADDON_CODE_DIR.getPath()))
+
+        # Print Python module path..
+        # for i in range(len(sys.path)): log_debug('sys.path[{}] "{}"'.format(i, text_type(sys.path[i])))
 
         # --- Get DEBUG information for the log --
         if self.settings['log_level'] == LOG_DEBUG:
@@ -560,88 +561,87 @@ class Main:
         log_debug('Advanced Emulator Launcher run_protected() END')
 
     # Get Addon Settings
+    # In the future use the cfg = Configuration() class and not g_PATHS. See the AML code.
     def _get_settings(self):
-        # Get the users preference settings
-        o = __addon_obj__
-        self.settings = {}
+        cfg = g_PATHS
 
         # --- ROM Scanner settings ---
-        self.settings['scan_recursive']          = True if o.getSetting('scan_recursive') == 'true' else False
-        self.settings['scan_ignore_bios']        = True if o.getSetting('scan_ignore_bios') == 'true' else False
-        self.settings['scan_ignore_scrap_title'] = True if o.getSetting('scan_ignore_scrap_title') == 'true' else False
-        self.settings['scan_clean_tags']         = True if o.getSetting('scan_clean_tags') == 'true' else False
-        self.settings['scan_update_NFO_files']   = True if o.getSetting('scan_update_NFO_files') == 'true' else False
+        self.settings['scan_recursive'] = kodi_get_bool_setting(cfg, 'scan_recursive')
+        self.settings['scan_ignore_bios'] = kodi_get_bool_setting(cfg, 'scan_ignore_bios')
+        self.settings['scan_ignore_scrap_title'] = kodi_get_bool_setting(cfg, 'scan_ignore_scrap_title')
+        self.settings['scan_clean_tags'] = kodi_get_bool_setting(cfg, 'scan_clean_tags')
+        self.settings['scan_update_NFO_files'] = kodi_get_bool_setting(cfg, 'scan_update_NFO_files')
 
         # --- ROM scraping ---
         # Scanner settings
-        self.settings['scan_metadata_policy'] = int(o.getSetting('scan_metadata_policy'))
-        self.settings['scan_asset_policy']    = int(o.getSetting('scan_asset_policy'))
-        self.settings['game_selection_mode']  = int(o.getSetting('game_selection_mode'))
-        self.settings['asset_selection_mode'] = int(o.getSetting('asset_selection_mode'))
+        self.settings['scan_metadata_policy'] = kodi_get_int_setting(cfg, 'scan_metadata_policy')
+        self.settings['scan_asset_policy'] = kodi_get_int_setting(cfg, 'scan_asset_policy')
+        self.settings['game_selection_mode'] = kodi_get_int_setting(cfg, 'game_selection_mode')
+        self.settings['asset_selection_mode'] = kodi_get_int_setting(cfg, 'asset_selection_mode')
         # Scanner scrapers
-        self.settings['scraper_metadata']      = int(o.getSetting('scraper_metadata'))
-        self.settings['scraper_asset']         = int(o.getSetting('scraper_asset'))
-        self.settings['scraper_metadata_MAME'] = int(o.getSetting('scraper_metadata_MAME'))
-        self.settings['scraper_asset_MAME']    = int(o.getSetting('scraper_asset_MAME'))
+        self.settings['scraper_metadata'] = kodi_get_int_setting(cfg, 'scraper_metadata')
+        self.settings['scraper_asset'] = kodi_get_int_setting(cfg, 'scraper_asset')
+        self.settings['scraper_metadata_MAME'] = kodi_get_int_setting(cfg, 'scraper_metadata_MAME')
+        self.settings['scraper_asset_MAME'] = kodi_get_int_setting(cfg, 'scraper_asset_MAME')
 
         # --- Misc settings ---
-        self.settings['scraper_mobygames_apikey']     = o.getSetting('scraper_mobygames_apikey').decode('utf-8')
-        self.settings['scraper_screenscraper_ssid']   = o.getSetting('scraper_screenscraper_ssid').decode('utf-8')
-        self.settings['scraper_screenscraper_sspass'] = o.getSetting('scraper_screenscraper_sspass').decode('utf-8')
+        self.settings['scraper_mobygames_apikey'] = kodi_get_str_setting(cfg, 'scraper_mobygames_apikey')
+        self.settings['scraper_screenscraper_ssid'] = kodi_get_str_setting(cfg, 'scraper_screenscraper_ssid')
+        self.settings['scraper_screenscraper_sspass'] = kodi_get_str_setting(cfg, 'scraper_screenscraper_sspass')
 
-        self.settings['scraper_screenscraper_region']   = int(o.getSetting('scraper_screenscraper_region'))
-        self.settings['scraper_screenscraper_language'] = int(o.getSetting('scraper_screenscraper_language'))
+        self.settings['scraper_screenscraper_region'] = kodi_get_int_setting(cfg, 'scraper_screenscraper_region')
+        self.settings['scraper_screenscraper_language'] = kodi_get_int_setting(cfg, 'scraper_screenscraper_language')
 
-        self.settings['io_retroarch_sys_dir']        = o.getSetting('io_retroarch_sys_dir').decode('utf-8')
-        self.settings['io_retroarch_only_mandatory'] = True if o.getSetting('io_retroarch_only_mandatory') == 'true' else False
+        self.settings['io_retroarch_sys_dir'] = kodi_get_str_setting(cfg, 'io_retroarch_sys_dir')
+        self.settings['io_retroarch_only_mandatory'] = kodi_get_bool_setting(cfg, 'io_retroarch_only_mandatory')
 
         # --- ROM audit ---
-        self.settings['audit_unknown_roms']         = int(o.getSetting('audit_unknown_roms'))
-        self.settings['audit_pclone_assets']        = True if o.getSetting('audit_pclone_assets') == 'true' else False
-        self.settings['audit_nointro_dir']          = o.getSetting('audit_nointro_dir').decode('utf-8')
-        self.settings['audit_redump_dir']           = o.getSetting('audit_redump_dir').decode('utf-8')
+        self.settings['audit_unknown_roms'] = kodi_get_int_setting(cfg, 'audit_unknown_roms')
+        self.settings['audit_pclone_assets'] = kodi_get_bool_setting(cfg, 'audit_pclone_assets')
+        self.settings['audit_nointro_dir'] = kodi_get_str_setting(cfg, 'audit_nointro_dir')
+        self.settings['audit_redump_dir'] = kodi_get_str_setting(cfg, 'audit_redump_dir')
 
-        # self.settings['audit_1G1R_first_region']     = int(o.getSetting('audit_1G1R_first_region'))
-        # self.settings['audit_1G1R_second_region']   = int(o.getSetting('audit_1G1R_second_region'))
-        # self.settings['audit_1G1R_third_region']   = int(o.getSetting('audit_1G1R_third_region'))
+        # self.settings['audit_1G1R_first_region'] = kodi_get_int_setting(cfg, 'audit_1G1R_first_region')
+        # self.settings['audit_1G1R_second_region'] = kodi_get_int_setting(cfg, 'audit_1G1R_second_region')
+        # self.settings['audit_1G1R_third_region'] = kodi_get_int_setting(cfg, 'audit_1G1R_third_region')
 
         # --- Display ---
-        self.settings['display_category_mode']    = int(o.getSetting('display_category_mode'))
-        self.settings['display_launcher_notify']  = True if o.getSetting('display_launcher_notify') == 'true' else False
-        self.settings['display_hide_finished']    = True if o.getSetting('display_hide_finished') == 'true' else False
-        self.settings['display_launcher_roms']    = True if o.getSetting('display_launcher_roms') == 'true' else False
+        self.settings['display_category_mode'] = kodi_get_int_setting(cfg, 'display_category_mode')
+        self.settings['display_launcher_notify'] = kodi_get_bool_setting(cfg, 'display_launcher_notify')
+        self.settings['display_hide_finished'] = kodi_get_bool_setting(cfg, 'display_hide_finished')
+        self.settings['display_launcher_roms'] = kodi_get_bool_setting(cfg, 'display_launcher_roms')
 
-        self.settings['display_rom_in_fav']       = True if o.getSetting('display_rom_in_fav') == 'true' else False
-        self.settings['display_nointro_stat']     = True if o.getSetting('display_nointro_stat') == 'true' else False
-        self.settings['display_fav_status']       = True if o.getSetting('display_fav_status') == 'true' else False
+        self.settings['display_rom_in_fav'] = kodi_get_bool_setting(cfg, 'display_rom_in_fav')
+        self.settings['display_nointro_stat'] = kodi_get_bool_setting(cfg, 'display_nointro_stat')
+        self.settings['display_fav_status'] = kodi_get_bool_setting(cfg, 'display_fav_status')
 
-        self.settings['display_hide_favs']        = True if o.getSetting('display_hide_favs') == 'true' else False
-        self.settings['display_hide_collections'] = True if o.getSetting('display_hide_collections') == 'true' else False
-        self.settings['display_hide_vlaunchers']  = True if o.getSetting('display_hide_vlaunchers') == 'true' else False
-        self.settings['display_hide_AEL_scraper'] = True if o.getSetting('display_hide_AEL_scraper') == 'true' else False
-        self.settings['display_hide_recent']      = True if o.getSetting('display_hide_recent') == 'true' else False
-        self.settings['display_hide_mostplayed']  = True if o.getSetting('display_hide_mostplayed') == 'true' else False
-        self.settings['display_hide_utilities']   = True if o.getSetting('display_hide_utilities') == 'true' else False
-        self.settings['display_hide_g_reports']   = True if o.getSetting('display_hide_g_reports') == 'true' else False
+        self.settings['display_hide_favs'] = kodi_get_bool_setting(cfg, 'display_hide_favs')
+        self.settings['display_hide_collections'] = kodi_get_bool_setting(cfg, 'display_hide_collections')
+        self.settings['display_hide_vlaunchers'] = kodi_get_bool_setting(cfg, 'display_hide_vlaunchers')
+        self.settings['display_hide_AEL_scraper'] = kodi_get_bool_setting(cfg, 'display_hide_AEL_scraper')
+        self.settings['display_hide_recent'] = kodi_get_bool_setting(cfg, 'display_hide_recent')
+        self.settings['display_hide_mostplayed'] = kodi_get_bool_setting(cfg, 'display_hide_mostplayed')
+        self.settings['display_hide_utilities'] = kodi_get_bool_setting(cfg, 'display_hide_utilities')
+        self.settings['display_hide_g_reports'] = kodi_get_bool_setting(cfg, 'display_hide_g_reports')
 
         # --- Paths ---
-        self.settings['categories_asset_dir']     = o.getSetting('categories_asset_dir').decode('utf-8')
-        self.settings['launchers_asset_dir']      = o.getSetting('launchers_asset_dir').decode('utf-8')
-        self.settings['favourites_asset_dir']     = o.getSetting('favourites_asset_dir').decode('utf-8')
-        self.settings['collections_asset_dir']    = o.getSetting('collections_asset_dir').decode('utf-8')
+        self.settings['categories_asset_dir'] = kodi_get_str_setting(cfg, 'categories_asset_dir')
+        self.settings['launchers_asset_dir'] = kodi_get_str_setting(cfg, 'launchers_asset_dir')
+        self.settings['favourites_asset_dir'] = kodi_get_str_setting(cfg, 'favourites_asset_dir')
+        self.settings['collections_asset_dir'] = kodi_get_str_setting(cfg, 'collections_asset_dir')
 
         # --- Advanced ---
-        self.settings['media_state_action'] = int(o.getSetting('media_state_action'))
-        self.settings['delay_tempo'] = int(round(float(o.getSetting('delay_tempo'))))
-        self.settings['suspend_audio_engine'] = True if o.getSetting('suspend_audio_engine') == 'true' else False
-        self.settings['suspend_screensaver'] = True if o.getSetting('suspend_screensaver') == 'true' else False
-        # self.settings['suspend_joystick_engine'] = True if o.getSetting('suspend_joystick_engine') == 'true' else False
-        self.settings['escape_romfile'] = True if o.getSetting('escape_romfile') == 'true' else False
-        self.settings['lirc_state'] = True if o.getSetting('lirc_state') == 'true' else False
-        self.settings['show_batch_window'] = True if o.getSetting('show_batch_window') == 'true' else False
-        self.settings['windows_close_fds'] = True if o.getSetting('windows_close_fds') == 'true' else False
-        self.settings['windows_cd_apppath'] = True if o.getSetting('windows_cd_apppath') == 'true' else False
-        self.settings['log_level'] = int(o.getSetting('log_level'))
+        self.settings['media_state_action'] = kodi_get_int_setting(cfg, 'media_state_action')
+        self.settings['delay_tempo'] = kodi_get_float_setting_as_int(cfg, 'delay_tempo')
+        self.settings['suspend_audio_engine'] = kodi_get_bool_setting(cfg, 'suspend_audio_engine')
+        self.settings['suspend_screensaver'] = kodi_get_bool_setting(cfg, 'suspend_screensaver')
+        # self.settings['suspend_joystick_engine'] = kodi_get_bool_setting(cfg, 'suspend_joystick_engine')
+        self.settings['escape_romfile'] = kodi_get_bool_setting(cfg, 'escape_romfile')
+        self.settings['lirc_state'] = kodi_get_bool_setting(cfg, 'lirc_state')
+        self.settings['show_batch_window'] = kodi_get_bool_setting(cfg, 'show_batch_window')
+        self.settings['windows_close_fds'] = kodi_get_bool_setting(cfg, 'windows_close_fds')
+        self.settings['windows_cd_apppath'] = kodi_get_bool_setting(cfg, 'windows_cd_apppath')
+        self.settings['log_level'] = kodi_get_int_setting(cfg, 'log_level')
 
         # Check if user changed default artwork paths for categories/launchers. If not, set defaults.
         if self.settings['categories_asset_dir'] == '':
@@ -654,14 +654,15 @@ class Main:
             self.settings['collections_asset_dir'] = g_PATHS.DEFAULT_COL_ASSET_DIR.getOriginalPath()
 
         # Settings required by the scrapers (they are not really settings).
-        self.settings['scraper_screenscraper_AEL_softname'] = 'AEL_{}'.format(__addon_version__)
+        self.settings['scraper_screenscraper_AEL_softname'] = 'AEL_{}'.format(cfg.addon.info_version)
         self.settings['scraper_aeloffline_addon_code_dir'] = g_PATHS.ADDON_CODE_DIR.getPath()
         self.settings['scraper_cache_dir'] = g_PATHS.SCRAPER_CACHE_DIR.getPath()
 
         # --- Dump settings for DEBUG ---
         # log_debug('Settings dump BEGIN')
         # for key in sorted(self.settings):
-        #     log_debug('{} --> {:10s} {}'.format(key.rjust(21), text_type(self.settings[key]), type(self.settings[key])))
+        #     log_debug('{} --> {:10s} {}'.format(key.rjust(21),
+        #         text_type(self.settings[key]), type(self.settings[key])))
         # log_debug('Settings dump END')
 
     # Set Sorting methods
@@ -3406,9 +3407,7 @@ class Main:
     # ---------------------------------------------------------------------------------------------
     # Categories LisItem rendering
     # ---------------------------------------------------------------------------------------------
-    #
     # Renders the addon Root window.
-    #
     def _command_render_root_window(self):
         self._misc_set_all_sorting_methods()
         self._misc_set_AEL_Content(AEL_CONTENT_VALUE_LAUNCHERS)
@@ -3491,19 +3490,21 @@ class Main:
         ICON_OVERLAY = 5 if category_dic['finished'] else 4
         listitem = xbmcgui.ListItem(category_dic['m_name'])
         if category_dic['m_year']:
-            listitem.setInfo('video', {'title'   : category_dic['m_name'],    'year'    : category_dic['m_year'],
-                                       'genre'   : category_dic['m_genre'],   'studio'  : category_dic['m_developer'],
-                                       'rating'  : category_dic['m_rating'],  'plot'    : category_dic['m_plot'],
-                                       'trailer' : category_dic['s_trailer'], 'overlay' : ICON_OVERLAY })
+            listitem.setInfo('video', {
+                'title'   : category_dic['m_name'],    'year'    : category_dic['m_year'],
+                'genre'   : category_dic['m_genre'],   'studio'  : category_dic['m_developer'],
+                'rating'  : category_dic['m_rating'],  'plot'    : category_dic['m_plot'],
+                'trailer' : category_dic['s_trailer'], 'overlay' : ICON_OVERLAY })
         else:
-            listitem.setInfo('video', {'title'   : category_dic['m_name'],
-                                       'genre'   : category_dic['m_genre'],   'studio'  : category_dic['m_developer'],
-                                       'rating'  : category_dic['m_rating'],  'plot'    : category_dic['m_plot'],
-                                       'trailer' : category_dic['s_trailer'], 'overlay' : ICON_OVERLAY })
+            listitem.setInfo('video', {
+                'title'   : category_dic['m_name'],
+                'genre'   : category_dic['m_genre'],   'studio'  : category_dic['m_developer'],
+                'rating'  : category_dic['m_rating'],  'plot'    : category_dic['m_plot'],
+                'trailer' : category_dic['s_trailer'], 'overlay' : ICON_OVERLAY })
         listitem.setProperty(AEL_CONTENT_LABEL, AEL_CONTENT_VALUE_CATEGORY)
 
         # --- Set Category artwork ---
-        # >> Set thumb/fanart/banner/poster/clearlogo based on user preferences
+        # Set thumb/fanart/banner/poster/clearlogo based on user preferences.
         icon_path      = asset_get_default_asset_Category(category_dic, 'default_icon', 'DefaultFolder.png')
         fanart_path    = asset_get_default_asset_Category(category_dic, 'default_fanart')
         banner_path    = asset_get_default_asset_Category(category_dic, 'default_banner')
@@ -3526,10 +3527,10 @@ class Main:
         commands.append(('Create New Category', self._misc_url_RunPlugin('ADD_CATEGORY')))
         commands.append(('Add New Launcher', self._misc_url_RunPlugin('ADD_LAUNCHER', categoryID)))
         commands.append(('Kodi File Manager', 'ActivateWindow(filemanager)', )) # If using window ID then use "10003"
-        commands.append(('AEL addon settings', 'Addon.OpenSettings({})'.format(__addon_id__), ))
+        commands.append(('AEL addon settings', 'Addon.OpenSettings({})'.format(cfg.addon.info_id)))
         # In Krypton "Add to favourites" appears always in the last position of context menu.
 
-        if (xbmc.getCondVisibility("!Skin.HasSetting(KioskMode.Enabled)")):
+        if xbmc.getCondVisibility("!Skin.HasSetting(KioskMode.Enabled)"):
             listitem.addContextMenuItems(commands, replaceItems = True)
 
         # --- Add row ---
@@ -3555,7 +3556,7 @@ class Main:
         commands.append(('Create New Category', self._misc_url_RunPlugin('ADD_CATEGORY')))
         commands.append(('Add New Launcher', self._misc_url_RunPlugin('ADD_LAUNCHER_ROOT')))
         commands.append(('Kodi File Manager', 'ActivateWindow(filemanager)'))
-        commands.append(('AEL addon settings', 'Addon.OpenSettings({})'.format(__addon_id__)))
+        commands.append(('AEL addon settings', 'Addon.OpenSettings({})'.format(cfg.addon.info_id)))
         if (xbmc.getCondVisibility("!Skin.HasSetting(KioskMode.Enabled)")):
             listitem.addContextMenuItems(commands, replaceItems = True)
 
@@ -3580,7 +3581,7 @@ class Main:
         commands.append(('Create New Category', self._misc_url_RunPlugin('ADD_CATEGORY')))
         commands.append(('Add New Launcher', self._misc_url_RunPlugin('ADD_LAUNCHER_ROOT')))
         commands.append(('Kodi File Manager', 'ActivateWindow(filemanager)'))
-        commands.append(('AEL addon settings', 'Addon.OpenSettings({})'.format(__addon_id__)))
+        commands.append(('AEL addon settings', 'Addon.OpenSettings({})'.format(cfg.addon.info_id)))
         if (xbmc.getCondVisibility("!Skin.HasSetting(KioskMode.Enabled)")):
             listitem.addContextMenuItems(commands, replaceItems = True)
 
@@ -3605,7 +3606,7 @@ class Main:
         commands.append(('Create New Category', self._misc_url_RunPlugin('ADD_CATEGORY')))
         commands.append(('Add New Launcher', self._misc_url_RunPlugin('ADD_LAUNCHER_ROOT')))
         commands.append(('Kodi File Manager', 'ActivateWindow(filemanager)'))
-        commands.append(('AEL addon settings', 'Addon.OpenSettings({})'.format(__addon_id__)))
+        commands.append(('AEL addon settings', 'Addon.OpenSettings({})'.format(cfg.addon.info_id)))
         if (xbmc.getCondVisibility("!Skin.HasSetting(KioskMode.Enabled)")):
             listitem.addContextMenuItems(commands, replaceItems = True)
 
@@ -3628,7 +3629,7 @@ class Main:
         commands.append(('Create New Category', self._misc_url_RunPlugin('ADD_CATEGORY')))
         commands.append(('Add New Launcher', self._misc_url_RunPlugin('ADD_LAUNCHER_ROOT')))
         commands.append(('Kodi File Manager', 'ActivateWindow(filemanager)'))
-        commands.append(('AEL addon settings', 'Addon.OpenSettings({})'.format(__addon_id__)))
+        commands.append(('AEL addon settings', 'Addon.OpenSettings({})'.format(cfg.addon.info_id)))
         if (xbmc.getCondVisibility("!Skin.HasSetting(KioskMode.Enabled)")):
             listitem.addContextMenuItems(commands, replaceItems = True)
 
@@ -3651,7 +3652,7 @@ class Main:
         commands.append(('Create New Category', self._misc_url_RunPlugin('ADD_CATEGORY')))
         commands.append(('Add New Launcher', self._misc_url_RunPlugin('ADD_LAUNCHER_ROOT')))
         commands.append(('Kodi File Manager', 'ActivateWindow(filemanager)'))
-        commands.append(('AEL addon settings', 'Addon.OpenSettings({})'.format(__addon_id__)))
+        commands.append(('AEL addon settings', 'Addon.OpenSettings({})'.format(cfg.addon.info_id)))
         if (xbmc.getCondVisibility("!Skin.HasSetting(KioskMode.Enabled)")):
             listitem.addContextMenuItems(commands, replaceItems = True)
 
@@ -3674,7 +3675,7 @@ class Main:
         commands.append(('Create New Category', self._misc_url_RunPlugin('ADD_CATEGORY')))
         commands.append(('Add New Launcher', self._misc_url_RunPlugin('ADD_LAUNCHER_ROOT')))
         commands.append(('Kodi File Manager', 'ActivateWindow(filemanager)'))
-        commands.append(('AEL addon settings', 'Addon.OpenSettings({})'.format(__addon_id__)))
+        commands.append(('AEL addon settings', 'Addon.OpenSettings({})'.format(cfg.addon.info_id)))
         if (xbmc.getCondVisibility("!Skin.HasSetting(KioskMode.Enabled)")):
             listitem.addContextMenuItems(commands, replaceItems = True)
 
@@ -3697,7 +3698,7 @@ class Main:
         commands.append(('Create New Category', self._misc_url_RunPlugin('ADD_CATEGORY')))
         commands.append(('Add New Launcher', self._misc_url_RunPlugin('ADD_LAUNCHER_ROOT')))
         commands.append(('Kodi File Manager', 'ActivateWindow(filemanager)'))
-        commands.append(('AEL addon settings', 'Addon.OpenSettings({})'.format(__addon_id__)))
+        commands.append(('AEL addon settings', 'Addon.OpenSettings({})'.format(cfg.addon.info_id)))
         if (xbmc.getCondVisibility("!Skin.HasSetting(KioskMode.Enabled)")):
             listitem.addContextMenuItems(commands, replaceItems = True)
 
@@ -3718,7 +3719,7 @@ class Main:
 
         commands = []
         commands.append(('Open Kodi file manager', 'ActivateWindow(filemanager)'))
-        commands.append(('AEL addon settings', 'Addon.OpenSettings({})'.format(__addon_id__)))
+        commands.append(('AEL addon settings', 'Addon.OpenSettings({})'.format(cfg.addon.info_id)))
         if (xbmc.getCondVisibility("!Skin.HasSetting(KioskMode.Enabled)")):
             listitem.addContextMenuItems(commands)
 
@@ -3739,7 +3740,7 @@ class Main:
 
         commands = []
         commands.append(('Open Kodi file manager', 'ActivateWindow(filemanager)'))
-        commands.append(('AEL addon settings', 'Addon.OpenSettings({})'.format(__addon_id__)))
+        commands.append(('AEL addon settings', 'Addon.OpenSettings({})'.format(cfg.addon.info_id)))
         if (xbmc.getCondVisibility("!Skin.HasSetting(KioskMode.Enabled)")):
             listitem.addContextMenuItems(commands)
 
@@ -3837,7 +3838,7 @@ class Main:
         commands.append(('Create New Category', self._misc_url_RunPlugin('ADD_CATEGORY')))
         commands.append(('Add New Launcher',    self._misc_url_RunPlugin('ADD_LAUNCHER_ROOT')))
         commands.append(('Kodi File Manager', 'ActivateWindow(filemanager)'))
-        commands.append(('AEL addon settings', 'Addon.OpenSettings({})'.format(__addon_id__)))
+        commands.append(('AEL addon settings', 'Addon.OpenSettings({})'.format(cfg.addon.info_id)))
         if (xbmc.getCondVisibility("!Skin.HasSetting(KioskMode.Enabled)")):
             listitem.addContextMenuItems(commands, replaceItems = True)
 
@@ -3892,7 +3893,7 @@ class Main:
         if self.g_kiosk_mode_disabled:
             commands = [
                 ('Kodi File Manager', 'ActivateWindow(filemanager)'),
-                ('AEL addon settings', 'Addon.OpenSettings({})'.format(__addon_id__)),
+                ('AEL addon settings', 'Addon.OpenSettings({})'.format(cfg.addon.info_id)),
             ]
             listitem.addContextMenuItems(commands, replaceItems = True)
 
@@ -3936,7 +3937,7 @@ class Main:
 
         commands = []
         commands.append(('Kodi File Manager', 'ActivateWindow(filemanager)'))
-        commands.append(('AEL addon settings', 'Addon.OpenSettings({})'.format(__addon_id__)))
+        commands.append(('AEL addon settings', 'Addon.OpenSettings({})'.format(cfg.addon.info_id)))
         if (xbmc.getCondVisibility("!Skin.HasSetting(KioskMode.Enabled)")):
             listitem.addContextMenuItems(commands, replaceItems = True)
 
@@ -3947,7 +3948,7 @@ class Main:
         # --- Common context menu for all VLaunchers ---
         commands = [
             ('Kodi File Manager', 'ActivateWindow(filemanager)'),
-            ('AEL addon settings', 'Addon.OpenSettings({})'.format(__addon_id__)),
+            ('AEL addon settings', 'Addon.OpenSettings({})'.format(cfg.addon.info_id)),
         ]
 
         # --- Common artwork for all Utilities VLaunchers ---
@@ -4178,7 +4179,7 @@ class Main:
         # --- Common context menu for all VLaunchers ---
         commands = []
         commands.append(('Kodi File Manager', 'ActivateWindow(filemanager)'))
-        commands.append(('AEL addon settings', 'Addon.OpenSettings({})'.format(__addon_id__)))
+        commands.append(('AEL addon settings', 'Addon.OpenSettings({})'.format(cfg.addon.info_id)))
 
         # --- Common artwork for all VLaunchers ---
         vcategory_icon   = g_PATHS.ADDON_CODE_DIR.pjoin('media/theme/Global_Reports_icon.png').getPath()
@@ -4397,7 +4398,7 @@ class Main:
         if categoryID == VCATEGORY_ADDONROOT_ID:
                 commands.append(('Create New Category', self._misc_url_RunPlugin('ADD_CATEGORY')))
         commands.append(('Kodi File Manager', 'ActivateWindow(filemanager)'))
-        commands.append(('AEL addon settings', 'Addon.OpenSettings({})'.format(__addon_id__)))
+        commands.append(('AEL addon settings', 'Addon.OpenSettings({})'.format(cfg.addon.info_id)))
         if (xbmc.getCondVisibility("!Skin.HasSetting(KioskMode.Enabled)")):
             listitem.addContextMenuItems(commands, replaceItems = True)
 
@@ -4881,7 +4882,7 @@ class Main:
             commands.append(('Add ROM to Collection',     self._misc_url_RunPlugin('ADD_TO_COLLECTION', categoryID, launcherID, romID)))
             commands.append(('Search ROMs in Launcher',   self._misc_url_RunPlugin('SEARCH_LAUNCHER',   categoryID, launcherID)))
             commands.append(('Edit Launcher',             self._misc_url_RunPlugin('EDIT_LAUNCHER',     categoryID, launcherID)))
-        commands.append(('AEL addon settings', 'Addon.OpenSettings({})'.format(__addon_id__), ))
+        commands.append(('AEL addon settings', 'Addon.OpenSettings({})'.format(cfg.addon.info_id), ))
         if (xbmc.getCondVisibility("!Skin.HasSetting(KioskMode.Enabled)")):
             listitem.addContextMenuItems(commands, replaceItems = True)
 
@@ -4917,7 +4918,7 @@ class Main:
 
         # --- Create context menu ---
         commands = []
-        commands.append(('AEL addon settings', 'Addon.OpenSettings({})'.format(__addon_id__)))
+        commands.append(('AEL addon settings', 'Addon.OpenSettings({})'.format(cfg.addon.info_id)))
         if (xbmc.getCondVisibility("!Skin.HasSetting(KioskMode.Enabled)")):
             listitem.addContextMenuItems(commands, replaceItems = True)
 
@@ -4946,7 +4947,7 @@ class Main:
 
         # --- Create context menu ---
         commands = []
-        commands.append(('AEL addon settings', 'Addon.OpenSettings({})'.format(__addon_id__)))
+        commands.append(('AEL addon settings', 'Addon.OpenSettings({})'.format(cfg.addon.info_id)))
         if (xbmc.getCondVisibility("!Skin.HasSetting(KioskMode.Enabled)")):
             listitem.addContextMenuItems(commands, replaceItems = True)
 
@@ -5069,7 +5070,7 @@ class Main:
             commands = []
             commands.append(('Search ROMs in Virtual Launcher', self._misc_url_RunPlugin('SEARCH_LAUNCHER', virtual_categoryID, vlauncher_id)))
             commands.append(('Kodi File Manager', 'ActivateWindow(filemanager)', ))
-            commands.append(('AEL addon settings', 'Addon.OpenSettings({})'.format(__addon_id__), ))
+            commands.append(('AEL addon settings', 'Addon.OpenSettings({})'.format(cfg.addon.info_id), ))
             if (xbmc.getCondVisibility("!Skin.HasSetting(KioskMode.Enabled)")):
                 listitem.addContextMenuItems(commands, replaceItems = True)
 
@@ -6011,7 +6012,7 @@ class Main:
             commands.append(('Create New Collection',    self._misc_url_RunPlugin('ADD_COLLECTION')))
             commands.append(('Import Collection',        self._misc_url_RunPlugin('IMPORT_COLLECTION')))
             commands.append(('Kodi File Manager', 'ActivateWindow(filemanager)'))
-            commands.append(('AEL addon settings', 'Addon.OpenSettings({})'.format(__addon_id__)))
+            commands.append(('AEL addon settings', 'Addon.OpenSettings({})'.format(cfg.addon.info_id)))
             if (xbmc.getCondVisibility("!Skin.HasSetting(KioskMode.Enabled)")):
                 listitem.addContextMenuItems(commands, replaceItems = True)
 

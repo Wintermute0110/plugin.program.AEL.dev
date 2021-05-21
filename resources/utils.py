@@ -39,10 +39,13 @@ from .constants import *
 # --- Kodi modules ---
 try:
     import xbmc
+    import xbmcaddon
     import xbmcgui
-    KODI_RUNTIME_AVAILABLE_UTILS = True
+    import xbmcplugin
 except:
     KODI_RUNTIME_AVAILABLE_UTILS = False
+else:
+    KODI_RUNTIME_AVAILABLE_UTILS = True
 
 # --- Python standard library ---
 # Check what modules are really used and remove not used ones.
@@ -971,20 +974,41 @@ def kodi_display_text_window(window_title, info_text):
 #     xbmcgui.Dialog().textviewer(window_title, info_text)
 
 # -------------------------------------------------------------------------------------------------
+# Kodi addon functions
+# -------------------------------------------------------------------------------------------------
+class KodiAddon: pass
+
+def kodi_addon_obj():
+    addon = KodiAddon()
+
+    # Get an instance of the Addon object and keep it.
+    addon.addon = xbmcaddon.Addon()
+
+    # Cache useful addon information.
+    addon.info_id      = addon.addon.getAddonInfo('id').decode('utf-8')
+    addon.info_name    = addon.addon.getAddonInfo('name').decode('utf-8')
+    addon.info_version = addon.addon.getAddonInfo('version').decode('utf-8')
+    addon.info_author  = addon.addon.getAddonInfo('author').decode('utf-8')
+    addon.info_profile = addon.addon.getAddonInfo('profile').decode('utf-8')
+    addon.info_type    = addon.addon.getAddonInfo('type').decode('utf-8')
+
+    return addon
+
+# -------------------------------------------------------------------------------------------------
 # Abstraction layer for settings to easy the Leia-Matrix transition.
 # Settings are only read once on every execution and they are not performance critical.
 # -------------------------------------------------------------------------------------------------
 def kodi_get_int_setting(cfg, setting_str):
-    return int(cfg.__addon__.getSetting(setting_str))
+    return int(cfg.addon.addon.getSetting(setting_str))
 
 def kodi_get_float_setting_as_int(cfg, setting_str):
-    return int(round(float(cfg.__addon__.getSetting(setting_str))))
+    return int(round(float(cfg.addon.addon.getSetting(setting_str))))
 
 def kodi_get_bool_setting(cfg, setting_str):
-    return True if cfg.__addon__.getSetting(setting_str) == 'true' else False
+    return True if cfg.addon.addon.getSetting(setting_str) == 'true' else False
 
 def kodi_get_str_setting(cfg, setting_str):
-    return cfg.__addon__.getSetting(setting_str).decode('utf-8')
+    return cfg.addon.addon.getSetting(setting_str).decode('utf-8')
 
 # -------------------------------------------------------------------------------------------------
 # Determine Kodi version and create some constants to allow version-dependent code.
