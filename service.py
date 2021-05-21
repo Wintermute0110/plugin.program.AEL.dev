@@ -3,8 +3,8 @@
 import logging
 
 from resources.lib.utils import kodilogging, text
-from resources.lib.services import AppService
 from resources.lib.globals import addon_id, addon_version
+from resources.app.services import AppService
 
 kodilogging.config()
 logger = logging.getLogger(__name__)
