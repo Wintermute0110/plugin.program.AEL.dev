@@ -30,7 +30,7 @@ from .assets import *
 from .rom_audit import *
 from .scrap import *
 from .autoconfig import *
-import resources.md
+from .md import *
 
 # --- Kodi stuff ---
 import xbmc
@@ -141,9 +141,9 @@ class SingleInstance:
     LOCK_PROPNAME = 'AEL_instance_lock'
     LOCK_VALUE = 'True'
 
-    def __init__(self): log_debug('SingleInstance::__init__() Begin...')
+    # def __init__(self): log_debug('SingleInstance::__init__() Begin...')
 
-    def __del__(self): log_debug('SingleInstance::__del__() Begin...')
+    # def __del__(self): log_debug('SingleInstance::__del__() Begin...')
 
     def __enter__(self):
         # --- If property is True then another instance of AEL is running ---
@@ -565,6 +565,7 @@ class Main:
         self.settings['scan_recursive'] = kodi_get_bool_setting(cfg, 'scan_recursive')
         self.settings['scan_ignore_bios'] = kodi_get_bool_setting(cfg, 'scan_ignore_bios')
         self.settings['scan_ignore_scrap_title'] = kodi_get_bool_setting(cfg, 'scan_ignore_scrap_title')
+        self.settings['scan_ignore_scrap_title_MAME'] = kodi_get_bool_setting(cfg, 'scan_ignore_scrap_title_MAME')
         self.settings['scan_clean_tags'] = kodi_get_bool_setting(cfg, 'scan_clean_tags')
         self.settings['scan_update_NFO_files'] = kodi_get_bool_setting(cfg, 'scan_update_NFO_files')
 
@@ -1164,25 +1165,6 @@ class Main:
                 app = LNK_LAUNCHER_APP_NAME
             app_FName = FileName(app)
 
-            # --- ROM path ---
-            if launcher_type == LAUNCHER_ROM or launcher_type == LAUNCHER_RETROPLAYER:
-                msg = 'Select the ROMs path'
-            elif launcher_type == LAUNCHER_LNK:
-                msg = 'Select the LNKs path'
-            roms_path = kodi_dialog_get_directory(msg)
-            if not roms_path: return
-            roms_path_FName   = FileName(roms_path)
-
-            # --- ROM extensions ---
-            if launcher_type == LAUNCHER_ROM or launcher_type == LAUNCHER_RETROPLAYER:
-                extensions = emudata_get_program_extensions(app_FName.getBase())
-                keyboard = KodiKeyboardDialog('Set file extension, use "|" as separator (e.g. lnk|cbr)', extensions)
-                keyboard.executeDialog()
-                if not keyboard.isConfirmed(): return
-                ext = keyboard.getData()
-            elif launcher_type == LAUNCHER_LNK:
-                ext = 'lnk'
-
             # --- Launcher arguments ---
             if launcher_type == LAUNCHER_ROM:
                 default_arguments = emudata_get_program_arguments(app_FName.getBase())
@@ -1209,11 +1191,30 @@ class Main:
             if sel_platform is None: return
             launcher_platform = AEL_platform_list[sel_platform]
 
-            # --- Select asset path ---
+            # --- ROM path ---
+            if launcher_type == LAUNCHER_ROM or launcher_type == LAUNCHER_RETROPLAYER:
+                msg = 'Select the ROMs path'
+            elif launcher_type == LAUNCHER_LNK:
+                msg = 'Select the LNKs path'
+            roms_path = kodi_dialog_get_directory(msg)
+            if not roms_path: return
+            roms_path_FName   = FileName(roms_path)
+
+            # --- ROM extensions ---
+            if launcher_type == LAUNCHER_ROM or launcher_type == LAUNCHER_RETROPLAYER:
+                extensions = emudata_get_program_extensions(app_FName.getBase())
+                keyboard = KodiKeyboardDialog('Set ROM file extension, use "|" as separator (e.g. lnk|cbr)', extensions)
+                keyboard.executeDialog()
+                if not keyboard.isConfirmed(): return
+                ext = keyboard.getData()
+            elif launcher_type == LAUNCHER_LNK:
+                ext = 'lnk'
+
+            # --- Select ROM asset path ---
             # A) User chooses one and only one assets path
             # B) If this path is different from the ROM path then asset naming scheme 1 is used.
             # C) If this path is the same as the ROM path then asset naming scheme 2 is used.
-            assets_path = kodi_dialog_get_directory('Select asset/artwork directory')
+            assets_path = kodi_dialog_get_directory('Select ROM asset directory')
             if not assets_path: return
             assets_path_FName = FileName(assets_path)
 
@@ -1327,8 +1328,7 @@ class Main:
 
             # --- Edition of the launcher name ---
             if mindex2 == 0:
-                launcher = self.launchers[launcherID]
-                old_value_str = self.launchers[launcherID]['m_year']
+                old_value_str = self.launchers[launcherID]['m_name']
                 keyboard = KodiKeyboardDialog('Edit Launcher Title', old_value_str)
                 keyboard.executeDialog()
                 if not keyboard.isConfirmed(): return
@@ -1340,6 +1340,7 @@ class Main:
                     return
 
                 # --- Rename ROMs XML/JSON file (if it exists) and change launcher ---
+                launcher = self.launchers[launcherID]
                 old_roms_base_noext = launcher['roms_base_noext']
                 categoryID = launcher['categoryID']
                 category_name = self.categories[categoryID]['m_name'] if categoryID in self.categories else VCATEGORY_ADDONROOT_ID
@@ -1411,8 +1412,8 @@ class Main:
             elif mindex2 == 8:
                 NFO_file_str = kodi_dialog_get_file('Select Launcher NFO file', '.nfo')
                 log_debug('_command_edit_launcher() kodi_dialog_get_file() -> "{}"'.format(NFO_file_str))
-                if not NFO_file: return
-                NFO_FN = FileName(NFO_file)
+                if not NFO_file_str: return
+                NFO_FN = FileName(NFO_file_str)
                 if not NFO_FN.exists(): return
                 save_DB = fs_import_launcher_NFO(NFO_FN, self.launchers, launcherID)
                 if not save_DB: return
@@ -1853,7 +1854,7 @@ class Main:
                     for asset_kind in ROM_ASSET_ID_LIST:
                         pdialog.updateProgressInc()
                         AInfo = assets_get_info_scheme(asset_kind)
-                        misc_add_file_cache(launcher[AInfo.path_key])
+                        utils_file_cache_add_dir(launcher[AInfo.path_key])
                     pdialog.endProgress()
 
                     # --- Traverse ROM list and check local asset/artwork ---
@@ -1865,7 +1866,7 @@ class Main:
                         # --- Search assets for current ROM ---
                         rom = roms[rom_id]
                         ROMFile = FileName(rom['filename'])
-                        rom_basename_noext = ROMFile.getBase_noext()
+                        rom_basename_noext = ROMFile.getBaseNoExt()
                         log_verb('Checking ROM "{}" (ID {})'.format(ROMFile.getBase(), rom_id))
 
                         # --- Search assets ---
@@ -1894,9 +1895,9 @@ class Main:
                             # Old implementation (slow). Using FileName().exists() to check many
                             # files becames really slow.
                             # asset_dir = FileName(launcher[AInfo.path_key])
-                            # local_asset = misc_look_for_file(asset_dir, rom_basename_noext, AInfo.exts)
+                            # local_asset = utils_look_for_file(asset_dir, rom_basename_noext, AInfo.exts)
                             # New implementation using a cache.
-                            local_asset = misc_search_file_cache(launcher[AInfo.path_key], rom_basename_noext, AInfo.exts)
+                            local_asset = utils_file_cache_search(launcher[AInfo.path_key], rom_basename_noext, AInfo.exts)
                             if local_asset:
                                 rom[AInfo.key] = local_asset.getOriginalPath()
                                 log_debug('Found {:<9} "{}"'.format(AInfo.name, local_asset.getPath()))
@@ -1925,7 +1926,7 @@ class Main:
                             # --- Search assets for current ROM ---
                             rom = roms[rom_id]
                             ROMFile = FileName(rom['filename'])
-                            rom_basename_noext = ROMFile.getBase_noext()
+                            rom_basename_noext = ROMFile.getBaseNoExt()
                             log_verb('Checking ROM "{}" (ID {})'.format(ROMFile.getBase(), rom_id))
 
                             # --- Make a PClone group list for this ROM ---
@@ -2013,6 +2014,12 @@ class Main:
                     scraper_strategy = g_scraper_factory.create_scanner(launcher)
                     scraper_strategy.scanner_set_progress_dialog(pdialog, pdialog_verbose)
                     scraper_strategy.scanner_check_before_scraping()
+                    # Confirm scraper operation with user.
+                    t = ('Launcher {}{}{} missing artwork will be scraped with '
+                        'scraper {}{}{}. Continue?'.format(KC_ORANGE, launcher['m_name'], KC_END,
+                        KC_ORANGE, scraper_strategy.asset_scraper_name, KC_END))
+                    ret = kodi_dialog_yesno(t)
+                    if not ret: return
 
                     # --- Ensure there is no duplicate asset dirs ---
                     duplicated_name_list = asset_get_duplicated_dir_list(launcher)
@@ -2043,7 +2050,7 @@ class Main:
                     for asset_kind in ROM_ASSET_ID_LIST:
                         pdialog.updateProgressInc()
                         AInfo = assets_get_info_scheme(asset_kind)
-                        misc_add_file_cache(launcher[AInfo.path_key])
+                        utils_file_cache_add_dir(launcher[AInfo.path_key])
                     pdialog.endProgress()
 
                     # --- Traverse ROM list and check local asset/artwork ---
@@ -2081,13 +2088,13 @@ class Main:
                         temp_asset_list = [x == ScrapeStrategy.ACTION_ASSET_SCRAPER for x in asset_action_list]
                         if any(temp_asset_list):
                             log_debug('Getting asset candidate game.')
-                            # What if status_dic reports and error here? It is ignored?
-                            status_dic = kodi_new_status_dic('No error')
+                            # What if st_dic reports and error here? It is ignored?
+                            st_dic = kodi_new_status_dic()
                             # This is a workaround! It will fail for multidisc ROMs.
                             # See proper implementation in _roms_import_roms()
                             ROM_checksums = ROMFile
-                            candidate_asset = scraper_strategy._scanner_get_candidate(
-                                rom, ROMFile, ROM_checksums, asset_scraper_obj, asset_scraper_name, status_dic)
+                            candidate_asset = scraper_strategy._scanner_get_candidate(rom, ROMFile,
+                                ROM_checksums, asset_scraper_obj, asset_scraper_name, st_dic)
                             scraper_strategy.candidate_asset = candidate_asset
                         else:
                             log_debug('Setting candidate game to None.')
@@ -2100,11 +2107,12 @@ class Main:
                                 log_debug('Using local asset for {}'.format(AInfo.name))
                                 rom[AInfo.key] = local_asset_list[i]
                             elif asset_action_list[i] == ScrapeStrategy.ACTION_ASSET_SCRAPER:
-                                rom[AInfo.key] = scraper_strategy._scanner_scrap_ROM_asset(
-                                    asset_ID, local_asset_list[i], ROMFile)
+                                rom[AInfo.key] = scraper_strategy._scanner_scrap_ROM_asset(asset_ID,
+                                    local_asset_list[i], ROMFile)
                             else:
-                                raise ValueError('Asset {} index {} ID {} unknown action {}'.format(
-                                    AInfo.name, i, asset_ID, asset_action_list[i]))
+                                t = 'Asset {} index {} ID {} unknown action {}'.format(AInfo.name,
+                                    i, asset_ID, asset_action_list[i])
+                                raise ValueError(t)
 
                         # --- Check if user pressed the cancel button ---
                         if pdialog.isCanceled():
@@ -2152,7 +2160,7 @@ class Main:
                     pDialog = KodiProgressDialog()
                     pDialog.startProgress('Saving ROM JSON database...')
                     fs_write_ROMs_JSON(g_PATHS.ROMS_DIR, self.launchers[launcherID], roms)
-                    pdialog.endProgress()
+                    pDialog.endProgress()
                     self.launchers[launcherID]['num_roms'] = len(roms)
                     kodi_notify('Removed {} dead ROMs'.format(num_removed_roms))
 
@@ -2168,7 +2176,7 @@ class Main:
                     pDialog = KodiProgressDialog()
                     pDialog.startProgress('Saving ROM JSON database...')
                     fs_write_ROMs_JSON(g_PATHS.ROMS_DIR, self.launchers[launcherID], roms)
-                    pdialog.endProgress()
+                    pDialog.endProgress()
                     kodi_notify('Imported {} NFO files'.format(num_read_NFO_files))
 
                 # --- Export ROM metadata to NFO files ---
@@ -2585,20 +2593,21 @@ class Main:
         if mindex == type_nb:
             rompath = self.launchers[launcherID]['rompath']
             launcher_name = self.launchers[launcherID]['m_name']
-            # Standalone launcher
-            if rompath == '':
-                ret = kodi_dialog_yesno('Launcher "{}" is standalone. '.format(launcher_name) +
-                    'Are you sure you want to delete it?')
             # ROMs launcher
-            else:
+            if rompath == '':
                 roms = fs_load_ROMs_JSON(g_PATHS.ROMS_DIR, self.launchers[launcherID])
                 ret = kodi_dialog_yesno('Launcher "{}" has {} ROMs. '.format(launcher_name, len(roms)) +
+                    'Are you sure you want to delete it?')
+            # Standalone launcher
+            else:
+                ret = kodi_dialog_yesno('Launcher "{}" is standalone. '.format(launcher_name) +
                     'Are you sure you want to delete it?')
             if not ret: return
 
             # Remove JSON/XML file if exist
             # Remove launcher from database. Categories.xml will be saved at the end of function
-            fs_unlink_ROMs_database(g_PATHS.ROMS_DIR, self.launchers[launcherID])
+            if rompath:
+                fs_unlink_ROMs_database(g_PATHS.ROMS_DIR, self.launchers[launcherID])
             self.launchers.pop(launcherID)
             kodi_notify('Deleted Launcher {}'.format(launcher_name))
 
@@ -6446,7 +6455,7 @@ class Main:
                 # Copy ROM Collection asset from input directory to Collections asset directory.
                 ROM_FileName = FileName(rom['filename'])
                 new_asset_basename = assets_get_collection_asset_basename(
-                    AInfo, ROM_FileName.getBase_noext(), rom['platform'], in_asset_FN.getExt())
+                    AInfo, ROM_FileName.getBaseNoExt(), rom['platform'], in_asset_FN.getExt())
                 new_asset_FN = collections_asset_dir_FN.pjoin(new_asset_basename)
                 log_debug('{:<9s} COPY "{}"'.format(AInfo.name, in_asset_FN.getPath()))
                 log_debug('{:<9s}   TO "{}"'.format(AInfo.name, new_asset_FN.getPath()))
@@ -6559,7 +6568,7 @@ class Main:
         for key in sorted(collections, key = lambda x : collections[x]['m_name']):
             collections_id.append(collections[key]['id'])
             collections_name.append(collections[key]['m_name'])
-        selected_idx = KodiKeyboardDialog('Select the collection', collections_name).executeDialog()
+        selected_idx = KodiSelectDialog('Select the collection', collections_name).executeDialog()
         if selected_idx is None: return
         collectionID = collections_id[selected_idx]
 
@@ -6876,65 +6885,86 @@ class Main:
             kodi_dialog_OK(
                 'Wrong view_type = {}. This is a bug, please report it.'.format(view_type))
             return
-        selected_value = KodiSelectDialog('View', d_list)
+        selected_value = KodiSelectDialog('View', d_list).executeDialog()
         if selected_value is None: return
 
         # --- Polymorphic menu. Determine action to do. ---
         if view_type == VIEW_CATEGORY:
-            if   selected_value == 0: action = ACTION_VIEW_CATEGORY
-            elif selected_value == 1: action = ACTION_VIEW_EXEC_OUTPUT
-            else:
-                kodi_dialog_OK('view_type == VIEW_CATEGORY and selected_value = {}. '.format(selected_value) +
-                    'This is a bug, please report it.')
+            try:
+                action = [
+                    ACTION_VIEW_CATEGORY,
+                    ACTION_VIEW_EXEC_OUTPUT,
+                ][selected_value]
+            except:
+                t = 'view_type == VIEW_CATEGORY and selected_value = {}. '.format(selected_value) + \
+                    'This is a bug, please report it.'
+                kodi_dialog_OK(t)
                 return
         elif view_type == VIEW_LAUNCHER:
-            if   selected_value == 0: action = ACTION_VIEW_LAUNCHER
-            elif selected_value == 1: action = ACTION_VIEW_LAUNCHER_STATS
-            elif selected_value == 2: action = ACTION_VIEW_LAUNCHER_METADATA
-            elif selected_value == 3: action = ACTION_VIEW_LAUNCHER_ASSETS
-            elif selected_value == 4: action = ACTION_VIEW_LAUNCHER_SCANNER
-            elif selected_value == 5: action = ACTION_VIEW_EXEC_OUTPUT
-            else:
-                kodi_dialog_OK('view_type == VIEW_LAUNCHER and selected_value = {}. '.format(selected_value) +
-                    'This is a bug, please report it.')
+            try:
+                action = [
+                    ACTION_VIEW_LAUNCHER,
+                    ACTION_VIEW_LAUNCHER_STATS,
+                    ACTION_VIEW_LAUNCHER_METADATA,
+                    ACTION_VIEW_LAUNCHER_ASSETS,
+                    ACTION_VIEW_LAUNCHER_SCANNER,
+                    ACTION_VIEW_EXEC_OUTPUT,
+                ][selected_value]
+            except:
+                t = 'view_type == VIEW_LAUNCHER and selected_value = {}. '.format(selected_value) + \
+                    'This is a bug, please report it.'
+                kodi_dialog_OK(t)
                 return
         elif view_type == VIEW_COLLECTION:
-            if   selected_value == 0: action = ACTION_VIEW_COLLECTION
-            elif selected_value == 1: action = ACTION_VIEW_EXEC_OUTPUT
-            else:
-                kodi_dialog_OK('view_type == VIEW_COLLECTION and selected_value = {}. '.format(selected_value) +
-                    'This is a bug, please report it.')
+            try:
+                action = [ACTION_VIEW_COLLECTION, ACTION_VIEW_EXEC_OUTPUT][selected_value]
+            except:
+                t = 'view_type == VIEW_COLLECTION and selected_value = {}. '.format(selected_value) + \
+                    'This is a bug, please report it.'
+                kodi_dialog_OK(t)
                 return
         elif view_type == VIEW_ROM_LAUNCHER:
-            if   selected_value == 0: action = ACTION_VIEW_ROM
-            elif selected_value == 1: action = ACTION_VIEW_MANUAL
-            elif selected_value == 2: action = ACTION_VIEW_MAP
-            elif selected_value == 3: action = ACTION_VIEW_LAUNCHER_STATS
-            elif selected_value == 4: action = ACTION_VIEW_LAUNCHER_METADATA
-            elif selected_value == 5: action = ACTION_VIEW_LAUNCHER_ASSETS
-            elif selected_value == 6: action = ACTION_VIEW_LAUNCHER_SCANNER
-            elif selected_value == 7: action = ACTION_VIEW_EXEC_OUTPUT
-            else:
-                kodi_dialog_OK('view_type == VIEW_ROM_LAUNCHER and selected_value = {}. '.format(selected_value) +
-                    'This is a bug, please report it.')
+            try:
+                action = [
+                    ACTION_VIEW_ROM,
+                    ACTION_VIEW_MANUAL,
+                    ACTION_VIEW_MAP,
+                    ACTION_VIEW_LAUNCHER_STATS,
+                    ACTION_VIEW_LAUNCHER_METADATA,
+                    ACTION_VIEW_LAUNCHER_ASSETS,
+                    ACTION_VIEW_LAUNCHER_SCANNER,
+                    ACTION_VIEW_EXEC_OUTPUT,
+                ][selected_value]
+            except:
+                t = 'view_type == VIEW_ROM_LAUNCHER and selected_value = {}. '.format(selected_value) + \
+                    'This is a bug, please report it.'
+                kodi_dialog_OK(t)
                 return
         elif view_type == VIEW_ROM_VLAUNCHER:
-            if   selected_value == 0: action = ACTION_VIEW_ROM
-            elif selected_value == 1: action = ACTION_VIEW_MANUAL
-            elif selected_value == 2: action = ACTION_VIEW_MAP
-            elif selected_value == 3: action = ACTION_VIEW_EXEC_OUTPUT
-            else:
-                kodi_dialog_OK('view_type == VIEW_ROM_VLAUNCHER and selected_value = {}. '.format(selected_value) +
-                    'This is a bug, please report it.')
+            try:
+                action = [
+                    ACTION_VIEW_ROM,
+                    ACTION_VIEW_MANUAL,
+                    ACTION_VIEW_MAP,
+                    ACTION_VIEW_EXEC_OUTPUT,
+                ][selected_value]
+            except:
+                t = 'view_type == VIEW_ROM_VLAUNCHER and selected_value = {}. '.format(selected_value) + \
+                    'This is a bug, please report it.'
+                kodi_dialog_OK(t)
                 return
         elif view_type == VIEW_ROM_COLLECTION:
-            if   selected_value == 2: action = ACTION_VIEW_ROM
-            elif selected_value == 0: action = ACTION_VIEW_MANUAL
-            elif selected_value == 1: action = ACTION_VIEW_MAP
-            elif selected_value == 3: action = ACTION_VIEW_EXEC_OUTPUT
-            else:
-                kodi_dialog_OK('view_type == VIEW_ROM_COLLECTION and selected_value = {}. '.format(selected_value) +
-                    'This is a bug, please report it.')
+            try:
+                action = [
+                    ACTION_VIEW_ROM,
+                    ACTION_VIEW_MANUAL,
+                    ACTION_VIEW_MAP,
+                    ACTION_VIEW_EXEC_OUTPUT,
+                ][selected_value]
+            except:
+                t = 'view_type == VIEW_ROM_COLLECTION and selected_value = {}. '.format(selected_value) + \
+                    'This is a bug, please report it.'
+                kodi_dialog_OK(t)
                 return
         else:
             kodi_dialog_OK('Wrong view_type == {}. '.format(view_type) +
@@ -6944,7 +6974,7 @@ class Main:
 
         # --- Execute action ---
         if action == ACTION_VIEW_CATEGORY or action == ACTION_VIEW_LAUNCHER or \
-           action == ACTION_VIEW_COLLECTION or action == ACTION_VIEW_ROM:
+            action == ACTION_VIEW_COLLECTION or action == ACTION_VIEW_ROM:
             if view_type == VIEW_CATEGORY:
                 window_title = 'Category data'
                 category = self.categories[categoryID]
@@ -8013,7 +8043,7 @@ class Main:
         apppath = application.getDir()
         rompath = ROMFileName.getDir()
         rombase = ROMFileName.getBase()
-        rombase_noext = ROMFileName.getBase_noext()
+        rombase_noext = ROMFileName.getBaseNoExt()
         romtitle = rom['m_name']
         log_info('_command_run_rom() categoryID   {}'.format(categoryID))
         log_info('_command_run_rom() launcherID   {}'.format(launcherID))
@@ -8512,7 +8542,7 @@ class Main:
             # To differentiate between S and C a test in the PClone group must be done.
             #
             romfile_FN = FileName(rom['filename'])
-            romfile_getBase_noext = romfile_FN.getBase_noext()
+            romfile_getBase_noext = romfile_FN.getBaseNoExt()
             if rom['s_title']:
                 rom_info['s_title'] = self._aux_get_info(FileName(rom['s_title']), path_title_P, romfile_getBase_noext)
             else:
@@ -8749,7 +8779,7 @@ class Main:
         if path_asset_P != asset_FN.getDir():
             ret_str = 'C'
         else:
-            if romfile_getBase_noext == asset_FN.getBase_noext():
+            if romfile_getBase_noext == asset_FN.getBaseNoExt():
                 ret_str = 'Y'
             else:
                 ret_str = 'O'
@@ -8969,15 +8999,15 @@ class Main:
             if roms[rom_id]['i_extra_ROM']:
                 roms[rom_id]['nointro_status'] = AUDIT_STATUS_EXTRA
                 audit_extra += 1
-                # log_debug('_roms_update_NoIntro_status() EXTRA   "{}"'.format(ROMFileName.getBase_noext()))
-            elif ROMFileName.getBase_noext() in roms_nointro_set:
+                # log_debug('_roms_update_NoIntro_status() EXTRA   "{}"'.format(ROMFileName.getBaseNoExt()))
+            elif ROMFileName.getBaseNoExt() in roms_nointro_set:
                 roms[rom_id]['nointro_status'] = AUDIT_STATUS_HAVE
                 audit_have += 1
-                # log_debug('_roms_update_NoIntro_status() HAVE    "{}"'.format(ROMFileName.getBase_noext()))
+                # log_debug('_roms_update_NoIntro_status() HAVE    "{}"'.format(ROMFileName.getBaseNoExt()))
             else:
                 roms[rom_id]['nointro_status'] = AUDIT_STATUS_UNKNOWN
                 audit_unknown += 1
-                # log_debug('_roms_update_NoIntro_status() UNKNOWN "{}"'.format(ROMFileName.getBase_noext()))
+                # log_debug('_roms_update_NoIntro_status() UNKNOWN "{}"'.format(ROMFileName.getBaseNoExt()))
         pDialog.endProgress()
 
         # --- Mark Launcher dead ROMs as Missing ---
@@ -8989,7 +9019,7 @@ class Main:
             if not ROMFileName.exists():
                 roms[rom_id]['nointro_status'] = AUDIT_STATUS_MISS
                 audit_miss += 1
-                # log_debug('_roms_update_NoIntro_status() MISSING "{}"'.format(ROMFileName.getBase_noext()))
+                # log_debug('_roms_update_NoIntro_status() MISSING "{}"'.format(ROMFileName.getBaseNoExt()))
         pDialog.endProgress()
 
         # --- Now add Missing ROMs to Launcher ---
@@ -9152,7 +9182,7 @@ class Main:
         # --- Format title ---
         scan_clean_tags = self.settings['scan_clean_tags']
         ROMFile = FileName(romfile)
-        rom_name = text_format_ROM_title(ROMFile.getBase_noext(), scan_clean_tags)
+        rom_name = text_format_ROM_title(ROMFile.getBaseNoExt(), scan_clean_tags)
 
         # ~~~ Check asset dirs and disable scanning for unset dirs ~~~
         # >> Do not warn about unconfigured dirs here
@@ -9292,15 +9322,15 @@ class Main:
                 'Asset scanner will be disabled for this/those.')
 
         # --- Create a cache of assets ---
-        # misc_add_file_cache() creates a set with all files in a given directory.
+        # utils_file_cache_add_dir() creates a set with all files in a given directory.
         # That set is stored in a function internal cache associated with the path.
-        # Files in the cache can be searched with misc_search_file_cache()
+        # Files in the cache can be searched with utils_file_cache_search()
         log_info('Scanning and caching files in asset directories...')
         pdialog.startProgress('Scanning files in asset directories...', len(ROM_ASSET_ID_LIST))
         for i, asset_kind in enumerate(ROM_ASSET_ID_LIST):
             pdialog.updateProgress(i)
             AInfo = assets_get_info_scheme(asset_kind)
-            misc_add_file_cache(launcher[AInfo.path_key])
+            utils_file_cache_add_dir(launcher[AInfo.path_key])
         pdialog.endProgress()
 
         # --- Remove dead ROM entries ------------------------------------------------------------
@@ -9382,19 +9412,21 @@ class Main:
             log_debug('------------------------------ Processing cached file -------------------')
             log_debug('ROM.getPath()         "{}"'.format(ROM.getPath()))
             log_debug('ROM.getOriginalPath() "{}"'.format(ROM.getOriginalPath()))
-            # log_debug('ROM.getPath_noext()   "{}"'.format(ROM.getPath_noext()))
+            # log_debug('ROM.getPathNoExt()    "{}"'.format(ROM.getPathNoExt()))
             # log_debug('ROM.getDir()          "{}"'.format(ROM.getDir()))
             # log_debug('ROM.getBase()         "{}"'.format(ROM.getBase()))
-            # log_debug('ROM.getBase_noext()   "{}"'.format(ROM.getBase_noext()))
+            # log_debug('ROM.getBaseNoExt()    "{}"'.format(ROM.getBaseNoExt()))
             # log_debug('ROM.getExt()          "{}"'.format(ROM.getExt()))
             report_fobj.write('>>> {}\n'.format(ROM.getPath()).encode('utf-8'))
 
             # Update progress dialog.
             file_text = 'ROM [COLOR orange]{}[/COLOR]'.format(ROM.getBase())
-            if not pdialog_verbose:
-                pdialog.updateProgress(num_files_checked, file_text)
-            else:
-                pdialog.updateProgress(num_files_checked, file_text, 'Checking if has ROM extension...')
+            if pdialog_verbose: file_text += '\nChecking if has ROM extension...'
+            pdialog.updateProgress(num_files_checked, file_text)
+            # if not pdialog_verbose:
+            #     pdialog.updateProgress(num_files_checked, file_text)
+            # else:
+            #     pdialog.updateProgress(num_files_checked, file_text, 'Checking if has ROM extension...')
             num_files_checked += 1
 
             # --- Check if filename matchs ROM extensions ---
@@ -9413,7 +9445,7 @@ class Main:
 
             # --- Check if ROM belongs to a multidisc set ---
             MultiDiscInROMs = False
-            MDSet = md.get_multidisc_info(ROM)
+            MDSet = get_multidisc_info(ROM)
             if MDSet.isMultiDisc and launcher_multidisc:
                 log_debug('ROM belongs to a multidisc set.')
                 log_debug('isMultiDisc "{}"'.format(MDSet.isMultiDisc))
@@ -9654,15 +9686,15 @@ class Main:
                 asset_directory  = FileName(self.settings['favourites_asset_dir'])
                 platform         = object_dic['platform']
                 asset_path_noext = assets_get_path_noext_SUFIX(
-                    AInfo, asset_directory, ROMfile.getBase_noext(), object_dic['id'])
+                    AInfo, asset_directory, ROMfile.getBaseNoExt(), object_dic['id'])
             elif categoryID == VCATEGORY_COLLECTIONS_ID:
                 log_info('_gui_edit_asset() ROM is in Collection')
                 asset_directory  = FileName(self.settings['collections_asset_dir'])
                 platform = object_dic['platform']
                 new_asset_basename = assets_get_collection_asset_basename(
-                    AInfo, ROMfile.getBase_noext(), platform, '.png')
+                    AInfo, ROMfile.getBaseNoExt(), platform, '.png')
                 new_asset_basename_FN = FileName(new_asset_basename)
-                asset_path_noext = asset_directory.pjoin(new_asset_basename_FN.getBase_noext())
+                asset_path_noext = asset_directory.pjoin(new_asset_basename_FN.getBaseNoExt())
             else:
                 log_info('_gui_edit_asset() ROM is in Launcher id {}'.format(launcherID))
                 launcher         = self.launchers[launcherID]
@@ -9745,7 +9777,7 @@ class Main:
             if not image_FileName.exists(): return False
 
             # Determine image extension and dest filename. Check for errors.
-            dest_path_FileName = asset_path_noext.append(image_FileName.getExt())
+            dest_path_FileName = asset_path_noext.pappend(image_FileName.getExt())
             log_debug('_gui_edit_asset() image_file   "{}"'.format(image_FileName.getOriginalPath()))
             log_debug('_gui_edit_asset() img_ext      "{}"'.format(image_FileName.getExt()))
             log_debug('_gui_edit_asset() dest_path    "{}"'.format(dest_path_FileName.getOriginalPath()))
@@ -9756,8 +9788,11 @@ class Main:
 
             # --- Copy image file ---
             try:
-                fs_encoding = get_fs_encoding()
-                shutil.copy(image_FileName.getPath().decode(fs_encoding), dest_path_FileName.getPath().decode(fs_encoding))
+                fs_encoding = utils_get_fs_encoding()
+                log_debug('fs_encoding "{}"'.format(fs_encoding))
+                source = image_FileName.getPath().decode(fs_encoding)
+                dest = dest_path_FileName.getPath().decode(fs_encoding)
+                shutil.copy(source, dest)
             except OSError:
                 log_error('_gui_edit_asset() OSError exception copying image')
                 kodi_notify_warn('OSError exception copying image')

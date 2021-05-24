@@ -479,7 +479,7 @@ def audit_generate_DAT_PClone_index(roms, roms_nointro, unknown_ROMs_are_parents
     for rom_id in roms:
         rom = roms[rom_id]
         ROMFileName = FileName(rom['filename'])
-        rom_name = ROMFileName.getBase_noext()
+        rom_name = ROMFileName.getBaseNoExt()
         # log_debug('{} --> {}'.format(rom_name, rom_id))
         # log_debug('{}'.format(rom))
         names_to_ids_dic[rom_name] = rom_id
@@ -488,11 +488,11 @@ def audit_generate_DAT_PClone_index(roms, roms_nointro, unknown_ROMs_are_parents
     for rom_id in roms:
         rom = roms[rom_id]
         ROMFileName = FileName(rom['filename'])
-        rom_nointro_name = ROMFileName.getBase_noext()
+        rom_nointro_name = ROMFileName.getBaseNoExt()
         # log_debug('rom_id {}'.format(rom_id))
         # log_debug('  nointro_status   "{}"'.format(rom['nointro_status']))
         # log_debug('  filename         "{}"'.format(rom['filename']))
-        # log_debug('  ROM_base_noext   "{}"'.format(ROMFileName.getBase_noext()))
+        # log_debug('  ROM_base_noext   "{}"'.format(ROMFileName.getBaseNoExt()))
         # log_debug('  rom_nointro_name "{}"'.format(rom_nointro_name))
 
         if rom['nointro_status'] == AUDIT_STATUS_UNKNOWN:

@@ -508,31 +508,15 @@ def text_get_image_URL_extension(url):
 
 # -------------------------------------------------------------------------------------------------
 # Misc stuff
+#
+# TODO Filesystem IO functions must be moved to utils.py
 # -------------------------------------------------------------------------------------------------
-# Given the image path, image filename with no extension and a list of file extensions search for
-# a file.
-#
-# rootPath       -> FileName object
-# filename_noext -> Unicode string
-# file_exts      -> list of extenstions with no dot [ 'zip', 'rar' ]
-#
-# Returns a FileName object if a valid filename is found.
-# Returns None if no file was found.
-def misc_look_for_file(rootPath, filename_noext, file_exts):
-    for ext in file_exts:
-        file_path = rootPath.pjoin(filename_noext + '.' + ext)
-        if file_path.exists():
-            return file_path
-
-    return None
-
 # Generates a random an unique MD5 hash and returns a string with the hash
 def misc_generate_random_SID():
     t1 = time.time()
     t2 = t1 + random.getrandbits(32)
     base = hashlib.md5(text_type(t1 + t2))
     sid = base.hexdigest()
-
     return sid
 
 # See https://docs.python.org/3.8/library/time.html#time.gmtime
@@ -694,6 +678,7 @@ def misc_replace_fav(dict_in, old_item_key, new_item_key, new_value):
 
 # Image file magic numbers. All at file offset 0.
 # See https://en.wikipedia.org/wiki/List_of_file_signatures
+# b prefix is a byte string in both Pyhton 2 and 3.
 IMAGE_MAGIC_DIC = {
     IMAGE_PNG_ID  : [ b'\x89\x50\x4E\x47\x0D\x0A\x1A\x0A' ],
     IMAGE_JPEG_ID : [

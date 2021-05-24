@@ -20,6 +20,9 @@ from __future__ import division
 # --- Addon modules ---
 from .constants import *
 
+# --- Python standard library ---
+import re
+
 # -------------------------------------------------------------------------------------------------
 # Multidisc ROM support
 # -------------------------------------------------------------------------------------------------
@@ -68,7 +71,7 @@ def get_multidisc_info(ROM_FN):
     MDSet = MultiDiscInfo(ROM_FN)
 
     # --- Parse ROM base_noext into tokens ---
-    tokens = get_ROM_basename_tokens(ROM_FN.getBase_noext())
+    tokens = get_ROM_basename_tokens(ROM_FN.getBaseNoExt())
 
     # --- Check if ROM belongs to a multidisc set and get set name and order ---
     # Algortihm:
@@ -106,7 +109,7 @@ def get_multidisc_info(ROM_FN):
         MDSet.isMultiDisc = True
         MDSet.setName = ' '.join(tokens_mdisc) + MDSet.extension
         MDSet.order = int(matchObj.group(1))
-        log_debug('text_get_multidisc_info() base_noext   "{}"'.format(ROM_FN.getBase_noext()))
+        log_debug('text_get_multidisc_info() base_noext   "{}"'.format(ROM_FN.getBaseNoExt()))
         log_debug('text_get_multidisc_info() tokens       {}'.format(tokens))
         log_debug('text_get_multidisc_info() tokens_mdisc {}'.format(tokens_mdisc))
         log_debug('text_get_multidisc_info() setName      "{}"'.format(MDSet.setName))
