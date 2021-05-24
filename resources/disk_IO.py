@@ -18,7 +18,7 @@
 from __future__ import unicode_literals
 from __future__ import division
 
-# --- AEL packages ---
+# --- Addon modules ---
 from .constants import *
 from .misc import *
 from .utils import *
@@ -846,7 +846,7 @@ def fs_export_ROM_collection(output_filename, collection, rom_list):
             asset_FN = FileName(rom[AInfo.key])
             ROM_FileName = FileName(rom['filename'])
             new_asset_basename = assets_get_collection_asset_basename(
-                AInfo, ROM_FileName.getBase_noext(), rom['platform'], asset_FN.getExt())
+                AInfo, ROM_FileName.getBaseNoExt(), rom['platform'], asset_FN.getExt())
             rom[AInfo.key] = collection['m_name'] + ' assets' + '/' + new_asset_basename
 
     # Produce nicely formatted JSON when exporting
@@ -953,7 +953,7 @@ def fs_export_ROM_collection_assets(out_dir_FN, collection, rom_list, asset_dir_
             # Copy asset file to output dir with new filename.
             ROM_FileName = FileName(rom['filename'])
             new_asset_basename = assets_get_collection_asset_basename(
-                AInfo, ROM_FileName.getBase_noext(), rom['platform'], asset_FN.getExt())
+                AInfo, ROM_FileName.getBaseNoExt(), rom['platform'], asset_FN.getExt())
             new_asset_FN = ROM_out_dir_FN.pjoin(new_asset_basename)
             # log_debug('{:<9s} OP COPY "{}"'.format(AInfo.name, asset_FN.getOriginalPath()))
             # log_debug('{:<9s} OP   TO "{}"'.format(AInfo.name, new_asset_FN.getOriginalPath()))
@@ -1050,19 +1050,21 @@ def fs_write_VCategory_XML(roms_xml_file, roms):
 # It is basically the same as ROMs, but with some more fields to store launching application data.
 def fs_load_VCategory_XML(roms_xml_file):
     __debug_xml_parser = 0
-    default_return = (0.0, {})
+    ret = {
+        'timestamp' : 0.0, 
+        'vlaunchers' : {}
+    }
 
     log_verb('fs_load_VCategory_XML() Loading XML file {}'.format(roms_xml_file.getOriginalPath()))
-    xml_tree = utils_load_XML_to_ET(roms_xml_file.getOriginalPath())
-    if not xml_tree: return None
+    xml_tree = utils_load_XML_to_ET(roms_xml_file.getPath())
+    if not xml_tree: return ret
     xml_root = xml_tree.getroot()
     for root_element in xml_root:
         if __debug_xml_parser: log_debug('Root child {}'.format(root_element.tag))
-
         if root_element.tag == 'control':
             for control_child in root_element:
                 if control_child.tag == 'update_timestamp':
-                    update_timestamp = float(control_child.text)
+                    ret['timestamp'] = float(control_child.text)
 
         elif root_element.tag == 'VLauncher':
             # Default values
@@ -1074,9 +1076,8 @@ def fs_load_VCategory_XML(roms_xml_file):
                 xml_tag  = rom_child.tag
                 if __debug_xml_parser: log_debug('{} --> {}'.format(xml_tag, text_XML))
                 VLauncher[xml_tag] = text_XML
-            VLaunchers[VLauncher['id']] = VLauncher
-
-    return (update_timestamp, VLaunchers)
+            ret['vlaunchers'][VLauncher['id']] = VLauncher
+    return ret
 
 # Write virtual category ROMs
 def fs_write_VCategory_ROMs_JSON(roms_dir, roms_base_noext, roms):
@@ -1087,10 +1088,9 @@ def fs_write_VCategory_ROMs_JSON(roms_dir, roms_base_noext, roms):
 # Loads an JSON file containing the Virtual Launcher ROMs
 # If file does not exist or any other error return an empty dictionary.
 def fs_load_VCategory_ROMs_JSON(roms_dir, roms_base_noext):
-    log_verb('fs_load_VCategory_ROMs_JSON() Loading JSON file {}'.format(roms_json_file.getOriginalPath()))
     roms_json_file = roms_dir.pjoin(roms_base_noext + '.json')
+    log_verb('fs_load_VCategory_ROMs_JSON() Loading JSON file {}'.format(roms_json_file.getOriginalPath()))
     roms = utils_load_JSON_file(roms_json_file.getPath())
-
     return roms
 
 # -------------------------------------------------------------------------------------------------
@@ -1124,8 +1124,8 @@ def update_dic_with_NFO_str(nfo_str, xml_tag_name, mydic, mydic_field_name):
 def fs_export_ROM_NFO(rom, verbose = True):
     # Skip No-Intro Added ROMs. rom['filename'] will be empty.
     if not rom['filename']: return False
-    ROMFileName = FileName(rom['filename'])
-    nfo_file_path = ROMFileName.getPath_noext() + '.nfo'
+    ROM_FN = FileName(rom['filename'])
+    nfo_file_path = ROM_FN.getPathNoExt() + '.nfo'
     log_debug('fs_export_ROM_NFO() Exporting "{}"'.format(nfo_file_path))
 
     # Always overwrite NFO files.
@@ -1145,7 +1145,7 @@ def fs_export_ROM_NFO(rom, verbose = True):
         '',
     ]
     # TODO: report error if exception is produced here.
-    utils_write_slist_to_file(nfo_file_path)
+    utils_write_slist_to_file(nfo_file_path, nfo_content)
     if verbose:
         kodi_notify('Created NFO file {}'.format(nfo_file_path))
     return True
@@ -1156,7 +1156,7 @@ def fs_export_ROM_NFO(rom, verbose = True):
 def fs_import_ROM_NFO(roms, romID, verbose = True):
     nfo_dic = roms[romID]
     ROMFileName = FileName(roms[romID]['filename'])
-    nfo_file_path = ROMFileName.getPath_noext() + '.nfo'
+    nfo_file_path = ROMFileName.getPathNoExt() + '.nfo'
     log_debug('fs_import_ROM_NFO() Loading "{}"'.format(nfo_file_path))
 
     # Check if file exists.
@@ -1220,7 +1220,7 @@ def fs_import_ROM_NFO_file_scanner(NFO_FN):
 # Returns a FileName object
 def fs_get_ROM_NFO_name(rom):
     ROMFileName = FileName(rom['filename'])
-    nfo_FN = FileName(ROMFileName.getPath_noext() + '.nfo')
+    nfo_FN = FileName(ROMFileName.getPathNoExt() + '.nfo')
 
     return nfo_FN
 
@@ -1233,9 +1233,9 @@ def fs_export_launcher_NFO(nfo_FN, launcher):
     log_debug('fs_export_launcher_NFO() Exporting launcher NFO "{}"'.format(nfo_FN.getPath()))
 
     # If NFO file does not exist then create them. If it exists, overwrite.
-    nfo_content = [
+    nfo_slist = [
         '<?xml version="1.0" encoding="utf-8" standalone="yes"?>',
-        '<!-- Exported by AEL on {} -->\n'.format(time.strftime("%Y-%m-%d %H:%M:%S")),
+        '<!-- Exported by AEL on {} -->'.format(time.strftime("%Y-%m-%d %H:%M:%S")),
         '<launcher>',
         text_XML('year', launcher['m_year']),
         text_XML('genre', launcher['m_genre']),
@@ -1246,7 +1246,7 @@ def fs_export_launcher_NFO(nfo_FN, launcher):
         '',
     ]
     # TODO: correctly catch and report errors here.
-    utils_write_slist_to_file(nfo_FN.getPath())
+    utils_write_slist_to_file(nfo_FN.getPath(), nfo_slist)
     return True
 
 # Launcher dictionary is edited by Python passing by reference.
@@ -1311,7 +1311,7 @@ def fs_export_category_NFO(nfo_FN, category):
     log_debug('fs_export_category_NFO() Exporting "{}"'.format(nfo_FN.getPath()))
 
     # If NFO file does not exist then create them. If it exists, overwrite.
-    nfo_content = [
+    nfo_slist = [
         '<?xml version="1.0" encoding="utf-8" standalone="yes"?>',
         '<!-- Exported by AEL on {} -->'.format(time.strftime("%Y-%m-%d %H:%M:%S")),
         '<category>',
@@ -1323,7 +1323,7 @@ def fs_export_category_NFO(nfo_FN, category):
         '</category>',
         '', # End file in newline
     ]
-    utils_write_slist_to_file(nfo_FN.getPath(), nfo_content)
+    utils_write_slist_to_file(nfo_FN.getPath(), nfo_slist)
     return True
 
 def fs_import_category_NFO(nfo_FN, categories, categoryID):

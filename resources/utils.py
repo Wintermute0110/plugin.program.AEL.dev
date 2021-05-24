@@ -100,17 +100,17 @@ def is_linux(): return is_linux_bool
 # Decomposes a file name path or directory into its constituents
 #   FileName.getOriginalPath()  Full path                                     /home/Wintermute/Sonic.zip
 #   FileName.getPath()          Full path                                     /home/Wintermute/Sonic.zip
-#   FileName.getPath_noext()    Full path with no extension                   /home/Wintermute/Sonic
+#   FileName.getPathNoExt()     Full path with no extension                   /home/Wintermute/Sonic
 #   FileName.getDir()           Directory name of file. Does not end in '/'   /home/Wintermute/
 #   FileName.getBase()          File name with no path                        Sonic.zip
-#   FileName.getBase_noext()    File name with no path and no extension       Sonic
+#   FileName.getBaseNoExt()     File name with no path and no extension       Sonic
 #   FileName.getExt()           File extension                                .zip
 # -------------------------------------------------------------------------------------------------
 class FileName:
     # pathString must be a Unicode string object
     def __init__(self, pathString):
         self.originalPath = pathString
-        self.path         = pathString
+        self.path = pathString
 
         # --- Path transformation ---
         if self.originalPath.lower().startswith('smb:'):
@@ -123,17 +123,15 @@ class FileName:
             self.path = xbmc.translatePath(self.path)
 
     def _join_raw(self, arg):
-        self.path         = os.path.join(self.path, arg)
+        self.path = os.path.join(self.path, arg)
         self.originalPath = os.path.join(self.originalPath, arg)
-
         return self
 
     # Appends a string to path. Returns self FileName object
     # Instead of append() use pappend(). This will avoid using string.append() instead of FileName.append()
     def pappend(self, arg):
-        self.path         = self.path + arg
+        self.path = self.path + arg
         self.originalPath = self.originalPath + arg
-
         return self
 
     # Behaves like os.path.join(). Returns a FileName object
@@ -142,7 +140,6 @@ class FileName:
         child = FileName(self.originalPath)
         for arg in args:
             child._join_raw(arg)
-
         return child
 
     # Behaves like os.path.join()
@@ -267,6 +264,10 @@ class FileName:
 # -------------------------------------------------------------------------------------------------
 # Low level filesystem functions.
 # -------------------------------------------------------------------------------------------------
+def utils_get_fs_encoding():
+    fs_encoding = sys.getfilesystemencoding()
+    return fs_encoding
+
 def utils_write_str_to_file(filename, full_string):
     log_debug('utils_write_str_to_file() File "{}"'.format(filename))
     # Always write UNIX end of lines regarding of the operating system.
@@ -445,19 +446,19 @@ def utils_file_cache_add_dir(dir_str, verbose = True):
 
     # Create a set with all the files in the directory
     if not dir_str:
-        log_warning('file_cache_add_dir() Empty dir_str. Exiting')
+        log_warning('utils_file_cache_add_dir() Empty dir_str. Exiting')
         return
     dir_FN = FileName(dir_str)
     if not dir_FN.exists():
-        log_debug('file_cache_add_dir() Does not exist "{}"'.format(dir_str))
+        log_debug('utils_file_cache_add_dir() Does not exist "{}"'.format(dir_str))
         file_cache[dir_str] = set()
         return
     if not dir_FN.isdir():
-        log_warning('file_cache_add_dir() Not a directory "{}"'.format(dir_str))
+        log_warning('utils_file_cache_add_dir() Not a directory "{}"'.format(dir_str))
         return
     if verbose:
-        # log_debug('file_cache_add_dir() Scanning OP "{}"'.format(dir_FN.getOriginalPath()))
-        log_debug('file_cache_add_dir() Scanning  P "{}"'.format(dir_FN.getPath()))
+        # log_debug('utils_file_cache_add_dir() Scanning OP "{}"'.format(dir_FN.getOriginalPath()))
+        log_debug('utils_file_cache_add_dir() Scanning  P "{}"'.format(dir_FN.getPath()))
     # A recursive scanning function is needed. os.listdir() is not. os.walk() is recursive
     # file_list = os.listdir(dir_FN.getPath())
     file_list = []
@@ -473,22 +474,20 @@ def utils_file_cache_add_dir(dir_str, verbose = True):
         for f in files:
             my_file = os.path.join(root, f)
             cache_file = my_file.replace(root_dir_str, '')
-            # >> In the cache always store paths as '/' and not as '\'
+            # In the cache always store paths as '/' and not as '\'
             cache_file = cache_file.replace('\\', '/')
-            # >> Remove '/' character at the beginning of the file. If the directory dir_str
-            # >> is like '/example/dir/' then the slash at the beginning will be removed. However,
-            # >> if dir_str is like '/example/dir' it will be present.
+            # Remove '/' character at the beginning of the file. If the directory dir_str
+            # is like '/example/dir/' then the slash at the beginning will be removed. However,
+            # if dir_str is like '/example/dir' it will be present.
             if cache_file.startswith('/'): cache_file = cache_file[1:]
             file_list.append(cache_file)
     file_set = set(file_list)
     if verbose:
         # for file in file_set: log_debug('File "{}"'.format(file))
-        log_debug('file_cache_add_dir() Adding {} files to cache'.format(len(file_set)))
+        log_debug('utils_file_cache_add_dir() Adding {} files to cache'.format(len(file_set)))
     file_cache[dir_str] = file_set
 
-#
-# See misc_look_for_file() documentation below.
-#
+# See utils_look_for_file() documentation below.
 def utils_file_cache_search(dir_str, filename_noext, file_exts):
     # Check for empty, unconfigured dirs
     if not dir_str: return None
@@ -502,7 +501,21 @@ def utils_file_cache_search(dir_str, filename_noext, file_exts):
         if file_base in current_cache_set:
             # log_debug('utils_file_cache_search() Found in cache')
             return FileName(dir_str).pjoin(file_base)
+    return None
 
+# Given the image path, image filename with no extension and a list of file
+# extensions search for a file.
+#
+# rootPath       -> FileName object
+# filename_noext -> Unicode string
+# file_exts      -> list of extensions with no dot ['zip', 'rar']
+#
+# Returns a FileName object if a valid filename is found.
+# Returns None if no file was found.
+def utils_look_for_file(rootPath, filename_noext, file_exts):
+    for ext in file_exts:
+        file_path = rootPath.pjoin(filename_noext + '.' + ext)
+        if file_path.exists(): return file_path
     return None
 
 # -------------------------------------------------------------------------------------------------
@@ -757,6 +770,8 @@ class KodiProgressDialog(object):
             self.message = message
             self.progressDialog.update(self.progress, self.message, ' ', ' ') # Workaround for Kodi Leia
             # self.progressDialog.update(self.progress, self.message) # Code for Krypton and up.
+        # DEBUG code
+        # time.sleep(1)
 
     # Update progress, optionally update message as well, and autoincrements.
     # Progress is incremented AFTER dialog is updated.
@@ -1210,7 +1225,7 @@ def kodi_update_image_cache(img_path):
         return
 
     # --- Copy local image into Kodi image cache ---
-    # >> See https://docs.python.org/2/library/sys.html#sys.getfilesystemencoding
+    # See https://docs.python.org/2/library/sys.html#sys.getfilesystemencoding
     log_debug('kodi_update_image_cache() Image found in cache. Updating Kodi image cache')
     log_debug('kodi_update_image_cache() copying {}'.format(img_path))
     log_debug('kodi_update_image_cache() into    {}'.format(cached_thumb))

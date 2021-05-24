@@ -130,6 +130,7 @@ class Userconfig:
     SCAN_RECURSIVE = ("scan_recursive", BOOL)
     SCAN_IGNORE_BIOS = ("scan_ignore_bios", BOOL)
     SCAN_IGNORE_SCRAP_TITLE = ("scan_ignore_scrap_title", BOOL)
+    SCAN_IGNORE_SCRAP_TITLE_MAME = ("scan_ignore_scrap_title_MAME", BOOL)
     SCAN_CLEAN_TAGS = ("scan_clean_tags", BOOL)
     SCAN_UPDATE_NFO_FILES = ("scan_update_NFO_files", BOOL)
 

@@ -570,7 +570,7 @@ def AEL_platform_to_GameFAQs(platform_long_name):
 def emudata_get_program_arguments(app_name):
     # Based on the application name, retrieve the default arguments.
     applications = {
-        'mame'        : '"$rom$"',
+        'mame'        : '"$rombasenoext$"',
         'mednafen'    : '-fs 1 "$rom$"',
         'mupen64plus' : '--nogui --noask --noosd --fullscreen "$rom$"',
         'nestopia'    : '"$rom$"',
