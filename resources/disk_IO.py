@@ -1049,19 +1049,21 @@ def fs_write_VCategory_XML(roms_xml_file, roms):
 # It is basically the same as ROMs, but with some more fields to store launching application data.
 def fs_load_VCategory_XML(roms_xml_file):
     __debug_xml_parser = 0
-    default_return = (0.0, {})
+    ret = {
+        'timestamp' : 0.0, 
+        'vlaunchers' : {}
+    }
 
     log_verb('fs_load_VCategory_XML() Loading XML file {}'.format(roms_xml_file.getOriginalPath()))
-    xml_tree = utils_load_XML_to_ET(roms_xml_file.getOriginalPath())
-    if not xml_tree: return None
+    xml_tree = utils_load_XML_to_ET(roms_xml_file.getPath())
+    if not xml_tree: return ret
     xml_root = xml_tree.getroot()
     for root_element in xml_root:
         if __debug_xml_parser: log_debug('Root child {}'.format(root_element.tag))
-
         if root_element.tag == 'control':
             for control_child in root_element:
                 if control_child.tag == 'update_timestamp':
-                    update_timestamp = float(control_child.text)
+                    ret['timestamp'] = float(control_child.text)
 
         elif root_element.tag == 'VLauncher':
             # Default values
@@ -1073,9 +1075,8 @@ def fs_load_VCategory_XML(roms_xml_file):
                 xml_tag  = rom_child.tag
                 if __debug_xml_parser: log_debug('{} --> {}'.format(xml_tag, text_XML))
                 VLauncher[xml_tag] = text_XML
-            VLaunchers[VLauncher['id']] = VLauncher
-
-    return (update_timestamp, VLaunchers)
+            ret['vlaunchers'][VLauncher['id']] = VLauncher
+    return ret
 
 # Write virtual category ROMs
 def fs_write_VCategory_ROMs_JSON(roms_dir, roms_base_noext, roms):
@@ -1086,10 +1087,9 @@ def fs_write_VCategory_ROMs_JSON(roms_dir, roms_base_noext, roms):
 # Loads an JSON file containing the Virtual Launcher ROMs
 # If file does not exist or any other error return an empty dictionary.
 def fs_load_VCategory_ROMs_JSON(roms_dir, roms_base_noext):
-    log_verb('fs_load_VCategory_ROMs_JSON() Loading JSON file {}'.format(roms_json_file.getOriginalPath()))
     roms_json_file = roms_dir.pjoin(roms_base_noext + '.json')
+    log_verb('fs_load_VCategory_ROMs_JSON() Loading JSON file {}'.format(roms_json_file.getOriginalPath()))
     roms = utils_load_JSON_file(roms_json_file.getPath())
-
     return roms
 
 # -------------------------------------------------------------------------------------------------

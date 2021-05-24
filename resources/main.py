@@ -5004,8 +5004,7 @@ class Main:
     # Render virtual launchers inside a virtual category: Title, year, Genre, Studio, Category
     #
     def _command_render_virtual_category(self, virtual_categoryID):
-        log_error('_command_render_virtual_category() Starting ...')
-        # >> Kodi sorting methods
+        log_debug('_command_render_virtual_category() Starting ...')
         xbmcplugin.addSortMethod(handle = self.addon_handle, sortMethod = xbmcplugin.SORT_METHOD_LABEL)
         xbmcplugin.addSortMethod(handle = self.addon_handle, sortMethod = xbmcplugin.SORT_METHOD_SIZE)
         xbmcplugin.addSortMethod(handle = self.addon_handle, sortMethod = xbmcplugin.SORT_METHOD_UNSORTED)
@@ -5043,7 +5042,7 @@ class Main:
             return
 
         # --- If the virtual category has no launchers then render nothing ---
-        # >> Also, tell the user to update the virtual launcher database
+        # Also, tell the user to update the virtual launcher database
         if not vcategory_db_filename.exists():
             kodi_dialog_OK('{} database not found. '.format(vcategory_name) +
                 'Update the virtual category database first.')
@@ -5051,44 +5050,44 @@ class Main:
             return
 
         # --- Load Virtual launchers XML file ---
-        (VLauncher_timestamp, vcategory_launchers) = fs_load_VCategory_XML(vcategory_db_filename)
+        VL = fs_load_VCategory_XML(vcategory_db_filename)
 
         # --- Check timestamps and warn user if database should be regenerated ---
-        if VLauncher_timestamp < self.update_timestamp:
-            kodi_dialog_OK('Categories/Launchers/ROMs were modified. Virtual category database should be updated!')
+        if VL['timestamp'] < self.update_timestamp:
+            kodi_dialog_OK('Categories/Launchers/ROMs were modified. '
+                'Virtual category database should be updated!')
 
         # --- Render virtual launchers rows ---
-        for vlauncher_id in vcategory_launchers:
-            vlauncher = vcategory_launchers[vlauncher_id]
+        for vlauncher_id in VL['vlaunchers']:
+            vlauncher = VL['vlaunchers'][vlauncher_id]
             vlauncher_name = vlauncher['name'] + '  ({} ROM/s)'.format(vlauncher['rom_count'])
             listitem = xbmcgui.ListItem(vlauncher_name)
-            listitem.setInfo('video', {'title'    : 'Title text',
-                                       # 'label'    : 'Label text',
-                                       # 'plot'     : 'Plot text',
-                                       # 'genre'    : 'Genre text',
-                                       # 'year'     : 'Year text',
-                                       'overlay'  : 4,
-                                       'size'     : vlauncher['rom_count'] })
+            listitem.setInfo('video', {
+                'title' : 'Title text',
+                # 'plot' : 'Test plot',
+                'overlay' : 4,
+                'size' : vlauncher['rom_count'],
+            })
             listitem.setArt({'icon': 'DefaultFolder.png'})
 
             # --- Create context menu ---
+            url_a = self._misc_url_RunPlugin('SEARCH_LAUNCHER', virtual_categoryID, vlauncher_id)
             commands = []
-            commands.append(('Search ROMs in Virtual Launcher', self._misc_url_RunPlugin('SEARCH_LAUNCHER', virtual_categoryID, vlauncher_id)))
-            commands.append(('Kodi File Manager', 'ActivateWindow(filemanager)', ))
-            commands.append(('AEL addon settings', 'Addon.OpenSettings({})'.format(cfg.addon.info_id), ))
-            if (xbmc.getCondVisibility("!Skin.HasSetting(KioskMode.Enabled)")):
+            commands.append(('Search ROMs in Virtual Launcher', url_a))
+            commands.append(('Kodi File Manager', 'ActivateWindow(filemanager)'))
+            commands.append(('AEL addon settings', 'Addon.OpenSettings({})'.format(cfg.addon.info_id)))
+            if xbmc.getCondVisibility("!Skin.HasSetting(KioskMode.Enabled)"):
                 listitem.addContextMenuItems(commands, replaceItems = True)
 
             url_str = self._misc_url('SHOW_VLAUNCHER_ROMS', virtual_categoryID, vlauncher_id)
-            xbmcplugin.addDirectoryItem(handle = self.addon_handle, url = url_str, listitem = listitem, isFolder = True)
+            xbmcplugin.addDirectoryItem(handle = self.addon_handle, url = url_str,
+                listitem = listitem, isFolder = True)
         xbmcplugin.endOfDirectory(handle = self.addon_handle, succeeded = True, cacheToDisc = False)
 
-    #
     # Renders ROMs in a virtual launcher.
-    #
     def _command_render_virtual_launcher_roms(self, virtual_categoryID, virtual_launcherID):
         log_error('_command_render_virtual_launcher_roms() Starting ...')
-        # >> Content type and sorting method
+        # Content type and sorting method
         self._misc_set_all_sorting_methods()
         self._misc_set_AEL_Content(AEL_CONTENT_VALUE_ROMS)
 
