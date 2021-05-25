@@ -50,6 +50,7 @@ def cmd_scan_addons(args):
             addon_obj = AelAddon({
                 'addon_id': addon_id,
                 'version': addon.getAddonInfo('version'),
+                'name': addon.getAddonInfo('name'),
                 'is_launcher': addon.getSetting('ael.launcher_uri') != '',
                 'launcher_uri': addon.getSetting('ael.launcher_uri')
             })

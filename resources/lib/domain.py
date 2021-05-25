@@ -130,6 +130,9 @@ class AelAddon(EntityABC):
     def get_id(self) -> str:
         return self.entity_data['id'] 
     
+    def get_name(self) -> str:
+        return self.entity_data['name']
+
     def get_addon_id(self) -> str:
         return self.entity_data['addon_id']
     
@@ -495,6 +498,10 @@ class ROMSet(MetaDataItemABC):
     def get_assets_kind(self): return KIND_ASSET_LAUNCHER
 
     def get_asset_ids_list(self): return LAUNCHER_ASSET_ID_LIST
+
+    def get_default_launcher_addon(self): return self.entity_data['launcher_id']
+
+    def set_default_launcher_addon(self, launcher_id: str): self.entity_data['launcher_id']
 
     def __str__(self):
         return super().__str__()

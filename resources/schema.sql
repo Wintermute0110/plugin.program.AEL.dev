@@ -21,6 +21,14 @@ CREATE TABLE IF NOT EXISTS assetspaths(
     asset_type INTEGER NOT NULL
 );
 
+CREATE TABLE IF NOT EXISTS ael_addon(
+    id TEXT PRIMARY KEY, 
+    addon_id TEXT,
+    version TEXT,
+    is_launcher INTEGER DEFAULT 0 NOT NULL,
+    launcher_uri TEXT
+);
+
 CREATE TABLE IF NOT EXISTS categories(
     id TEXT PRIMARY KEY, 
     name TEXT NOT NULL,
@@ -40,9 +48,10 @@ CREATE TABLE IF NOT EXISTS categories(
 CREATE TABLE IF NOT EXISTS romsets(
     id TEXT PRIMARY KEY, 
     name TEXT NOT NULL,
+    platform TEXT,
     parent_id TEXT NULL,
     metadata_id TEXT,
-    platform TEXT,
+    launcher_id TEXT,
     default_icon TEXT DEFAULT 's_icon' NOT NULL,
     default_fanart TEXT DEFAULT 's_fanart' NOT NULL,
     default_banner TEXT DEFAULT 's_banner' NOT NULL,
@@ -52,6 +61,8 @@ CREATE TABLE IF NOT EXISTS romsets(
     FOREIGN KEY (parent_id) REFERENCES categories (id) 
         ON DELETE CASCADE ON UPDATE NO ACTION,
     FOREIGN KEY (metadata_id) REFERENCES metadata (id) 
+        ON DELETE CASCADE ON UPDATE NO ACTION,
+    FOREIGN KEY (launcher_id) REFERENCES ael_addon (id) 
         ON DELETE CASCADE ON UPDATE NO ACTION
 );
 
@@ -80,14 +91,6 @@ CREATE TABLE IF NOT EXISTS romset_assetspaths(
         ON DELETE CASCADE ON UPDATE NO ACTION,
     FOREIGN KEY (assetspaths_id) REFERENCES assetspaths (id) 
         ON DELETE CASCADE ON UPDATE NO ACTION
-);
-
-CREATE TABLE IF NOT EXISTS ael_addon(
-    id TEXT PRIMARY KEY, 
-    addon_id TEXT,
-    version TEXT,
-    is_launcher INTEGER DEFAULT 0 NOT NULL,
-    launcher_uri TEXT
 );
 
 CREATE VIEW IF NOT EXISTS vw_categories AS SELECT 
