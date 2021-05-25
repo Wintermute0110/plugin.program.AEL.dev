@@ -29,7 +29,7 @@ common.settings['scraper_aeloffline_addon_code_dir'] = path
 print('Setting scraper_aeloffline_addon_code_dir = "{}"'.format(path))
 
 # --- Create scraper object ---
-scraper_obj = AEL_Offline(common.settings)
+scraper_obj = AEL_Offline()
 scraper_obj.set_verbose_mode(False)
 scraper_obj.set_debug_file_dump(True, os.path.join(os.path.dirname(__file__), 'assets'))
 status_dic = kodi_new_status_dic('Scraper test was OK')

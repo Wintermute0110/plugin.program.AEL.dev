@@ -199,15 +199,15 @@ AEL_platforms = [
     # *) iQue - iQue (Decrypted) (20190927-125114)
     # *) iQue - iQue (Decrypted) (Parent-Clone) (Parent-Clone) (20190927-125114)
     Platform('iQue iQue Player', 'console-ique', 'ique', 'n64', None, None, None, None,
-        DAT_NOINTRO, 'iQue - iQue (Decrypted) (Parent-Clone)'),
+        DAT_NOINTRO, 'iQue - iQue (CDN) (Parent-Clone)'),
     Platform('Konami Picno', 'console-picno', 'picno', None, None, None, None, None,
         DAT_NOINTRO, 'Konami - Picno'),
     Platform('LeapFrog LeapPad', 'console-leappad', 'leappad', None, None, None, None, None,
         DAT_NOINTRO, 'LeapFrog - LeapPad'),
     Platform('LeapFrog Leapster Learning Game System', 'console-llgs', 'llgs', None, None, None, None, None,
         DAT_NOINTRO, 'LeapFrog - Leapster Learning Game System'),
-    Platform('LeapFrog My First LeapPad', 'console-mfleappad', 'mfleappad', None, None, None, None, None,
-        DAT_NOINTRO, 'LeapFrog - My First LeapPad'),
+    # Platform('LeapFrog My First LeapPad', 'console-mfleappad', 'mfleappad', None, None, None, None, None,
+    #     DAT_NOINTRO, 'LeapFrog - My First LeapPad'),
 
     # --- Libretro ---
     # Use nxengine and not cavestory because in the future there could be nxengine-evo.
@@ -275,7 +275,7 @@ AEL_platforms = [
     # *) Nintendo - Nintendo 3DS (Encrypted) (20191109-080816)
     # *) Nintendo - Nintendo 3DS (Encrypted) (Parent-Clone) (Parent-Clone) (20191109-080816)
     Platform('Nintendo 3DS', 'nintendo-n3ds', 'n3ds', None, '4912', '101', '17', '116',
-        DAT_NOINTRO, 'Nintendo - Nintendo 3DS (Encrypted) (Parent-Clone)'),
+        DAT_NOINTRO, 'Nintendo - Nintendo 3DS (Decrypted) (Parent-Clone)'),
     # No-Intro Nintendo 64 DAT files:
     # *) Nintendo - Nintendo 64 (BigEndian) (20190918-121135)
     # *) Nintendo - Nintendo 64 (BigEndian) (Parent-Clone) (Parent-Clone) (20190918-121135)
@@ -330,14 +330,14 @@ AEL_platforms = [
     # *) Nintendo - New Nintendo 3DS (Encrypted) (20190402-125456)
     # *) Nintendo - New Nintendo 3DS (Encrypted) (Parent-Clone) (Parent-Clone) (20190402-125456)
     Platform('Nintendo New Nintendo 3DS', 'nintendo-new3ds', 'new3ds', None, None, None, None, None,
-        DAT_NOINTRO, 'Nintendo - New Nintendo 3DS (Encrypted) (Parent-Clone)'),
+        DAT_NOINTRO, 'Nintendo - New Nintendo 3DS (Decrypted) (Parent-Clone)'),
     # Pokemon Mini not found in GameFAQs.
     Platform('Nintendo Pokemon Mini', 'nintendo-pokemini', 'pokemini', None, '4957', '152', '211', None,
         DAT_NOINTRO, 'Nintendo - Pokemon Mini'),
     Platform('Nintendo Satellaview', 'nintendo-satellaview', 'satellaview', None, None, None, '107', None,
         DAT_NOINTRO, 'Nintendo - Satellaview'),
     Platform('Nintendo SNES', 'nintendo-snes', 'snes', None, '6', '15', '4', '63',
-        DAT_NOINTRO, 'Nintendo - Super Nintendo Entertainment System (Combined) (Parent-Clone)'),
+        DAT_NOINTRO, 'Nintendo - Super Nintendo Entertainment System (Combined)'),
     Platform('Nintendo Sufami Turbo', 'nintendo-sufami', 'sufami', None, None, None, '108', None,
         DAT_NOINTRO, 'Nintendo - Sufami Turbo'),
     Platform('Nintendo Switch', 'nintendo-switch', 'switch', None, '4971', '203', None, '124', DAT_NONE),

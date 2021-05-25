@@ -43,12 +43,9 @@ import socket
 import time
 import zipfile
 if ADDON_RUNNING_PYTHON_2:
-    # https://docs.python.org/2.7/library/urllib2.html
-    import urllib2
+    import urllib
 elif ADDON_RUNNING_PYTHON_3:
-    import urllib.request
     import urllib.parse
-    import urllib.error
 else:
     raise TypeError('Undefined Python runtime version.')
 
@@ -263,9 +260,9 @@ class ScraperFactory(object):
             if scraper_obj.supports_metadata():
                 scraper_menu_list.append('Scrape with {}'.format(s_name))
                 self.metadata_menu_ID_list.append(scraper_ID)
-                log_verb('Scraper {} supports metadata (ENABLED)'.format(s_name))
+                log_debug('Scraper {} supports metadata (ENABLED)'.format(s_name))
             else:
-                log_verb('Scraper {} lacks metadata (DISABLED)'.format(s_name))
+                log_debug('Scraper {} lacks metadata (DISABLED)'.format(s_name))
 
         return scraper_menu_list
 
@@ -287,9 +284,9 @@ class ScraperFactory(object):
             if scraper_obj.supports_asset_ID(asset_ID):
                 scraper_menu_list.append('Scrape {} with {}'.format(AInfo.name, s_name))
                 self.asset_menu_ID_list.append(scraper_ID)
-                log_verb('Scraper {} supports asset {} (ENABLED)'.format(s_name, AInfo.name))
+                log_debug('Scraper {} supports asset {} (ENABLED)'.format(s_name, AInfo.name))
             else:
-                log_verb('Scraper {} lacks asset {} (DISABLED)'.format(s_name, AInfo.name))
+                log_debug('Scraper {} lacks asset {} (DISABLED)'.format(s_name, AInfo.name))
 
         return scraper_menu_list
 
@@ -340,13 +337,13 @@ class ScraperFactory(object):
         log_debug('Are metadata and asset scrapers the same? {}'.format(
             self.strategy_obj.meta_and_asset_scraper_same))
 
-        # --- Add launcher properties to ScrapeStrategy object ---
+        # --- Add launcher/platform properties to ScrapeStrategy object ---
         self.strategy_obj.launcher = launcher
         self.strategy_obj.platform = launcher['platform']
         if self.strategy_obj.platform == 'MAME':
-            self.strategy_obj.scan_ignore_scrap_title = self.settings['scan_ignore_scrap_title_MAME']
+            self.strategy_obj.scan_ignore_scrap_title = Config.get(Userconfig.SCAN_IGNORE_SCRAP_TITLE_MAME)
         else:
-            self.strategy_obj.scan_ignore_scrap_title = self.settings['scan_ignore_scrap_title']
+            self.strategy_obj.scan_ignore_scrap_title = Config.get(Userconfig.SCAN_IGNORE_SCRAP_TITLE)
         log_debug('self.strategy_obj.scan_ignore_scrap_title is {}'.format(text_type(
             self.strategy_obj.scan_ignore_scrap_title)))
 
@@ -367,15 +364,24 @@ class ScraperFactory(object):
     # * Create a ScraperStrategy object to be used in the "Edit metadata" context menu.
     # * The scraper disk cache is organised by platform. The scraper object is restricted
     #   to scrape one platform per session.
-    def create_CM_metadata(self, scraper_ID):
-        log_debug('ScraperFactory.create_CM_metadata() Creating ScrapeStrategy {}'.format(
-            scraper_ID))
+    def create_CM_metadata(self, scraper_ID, platform):
+        log_debug('ScraperFactory.create_CM_metadata() Creating ScrapeStrategy ID {}'.format(scraper_ID))
         self.scraper_ID = scraper_ID
         self.strategy_obj = ScrapeStrategy()
 
         # --- Choose scraper and set platform ---
         self.strategy_obj.scraper_obj = self.scraper_objs[scraper_ID]
         log_debug('User chose scraper "{}"'.format(self.strategy_obj.scraper_obj.get_name()))
+
+        # --- Add launcher/platform properties to ScrapeStrategy object ---
+        self.strategy_obj.platform = platform
+        if self.strategy_obj.platform == 'MAME':
+            self.strategy_obj.scan_ignore_scrap_title = Config.get(Userconfig.SCAN_IGNORE_SCRAP_TITLE_MAME)
+        else:
+            self.strategy_obj.scan_ignore_scrap_title = Config.get(Userconfig.SCAN_IGNORE_SCRAP_TITLE)
+        log_debug('self.strategy_obj.scan_ignore_scrap_title is {}'.format(text_type(
+            self.strategy_obj.scan_ignore_scrap_title)))
+
 
         # --- Load candidate cache ---
         # We do lazy loading when calling Scraper.check_candidates_cache
@@ -486,31 +492,31 @@ class ScrapeStrategy(object):
 
         # Action depends configured metadata policy and wheter the NFO files was found or not.
         if self.scan_metadata_policy == 0:
-            log_verb('Metadata policy: Read NFO file OFF | Scraper OFF')
-            log_verb('Metadata policy: Only cleaning ROM name.')
+            log_debug('Metadata policy: Read NFO file OFF | Scraper OFF')
+            log_debug('Metadata policy: Only cleaning ROM name.')
             self.metadata_action = ScrapeStrategy.ACTION_META_TITLE_ONLY
 
         elif self.scan_metadata_policy == 1:
-            log_verb('Metadata policy: Read NFO file ON | Scraper OFF')
+            log_debug('Metadata policy: Read NFO file ON | Scraper OFF')
             if NFO_file_found:
-                log_verb('Metadata policy: NFO file found.')
+                log_debug('Metadata policy: NFO file found.')
                 self.metadata_action = ScrapeStrategy.ACTION_META_NFO_FILE
             else:
-                log_verb('Metadata policy: NFO file not found. Only cleaning ROM name')
+                log_debug('Metadata policy: NFO file not found. Only cleaning ROM name')
                 self.metadata_action = ScrapeStrategy.ACTION_META_TITLE_ONLY
 
         elif self.scan_metadata_policy == 2:
-            log_verb('Metadata policy: Read NFO file ON | Scraper ON')
+            log_debug('Metadata policy: Read NFO file ON | Scraper ON')
             if NFO_file_found:
-                log_verb('Metadata policy: NFO file found. Scraper not used.')
+                log_debug('Metadata policy: NFO file found. Scraper not used.')
                 self.metadata_action = ScrapeStrategy.ACTION_META_NFO_FILE
             else:
-                log_verb('Metadata policy: NFO file not found. Using scraper.')
+                log_debug('Metadata policy: NFO file not found. Using scraper.')
                 self.metadata_action = ScrapeStrategy.ACTION_META_SCRAPER
 
         elif self.scan_metadata_policy == 3:
-            log_verb('Metadata policy: Read NFO file OFF | Scraper ON')
-            log_verb('Metadata policy: Using metadata scraper {}'.format(self.meta_scraper_name))
+            log_debug('Metadata policy: Read NFO file OFF | Scraper ON')
+            log_debug('Metadata policy: Using metadata scraper {}'.format(self.meta_scraper_name))
             self.metadata_action = ScrapeStrategy.ACTION_META_SCRAPER
 
         else:
@@ -666,18 +672,18 @@ class ScrapeStrategy(object):
                     AInfo.name, i, asset_ID, self.asset_action_list[i]))
 
         # --- Print some debug info ---
-        log_verb('Set Title     file "{}"'.format(romdata['s_title']))
-        log_verb('Set Snap      file "{}"'.format(romdata['s_snap']))
-        log_verb('Set Boxfront  file "{}"'.format(romdata['s_boxfront']))
-        log_verb('Set Boxback   file "{}"'.format(romdata['s_boxback']))
-        log_verb('Set Cartridge file "{}"'.format(romdata['s_cartridge']))
-        log_verb('Set Fanart    file "{}"'.format(romdata['s_fanart']))
-        log_verb('Set Banner    file "{}"'.format(romdata['s_banner']))
-        log_verb('Set Clearlogo file "{}"'.format(romdata['s_clearlogo']))
-        log_verb('Set Flyer     file "{}"'.format(romdata['s_flyer']))
-        log_verb('Set Map       file "{}"'.format(romdata['s_map']))
-        log_verb('Set Manual    file "{}"'.format(romdata['s_manual']))
-        log_verb('Set Trailer   file "{}"'.format(romdata['s_trailer']))
+        log_debug('Set Title     file "{}"'.format(romdata['s_title']))
+        log_debug('Set Snap      file "{}"'.format(romdata['s_snap']))
+        log_debug('Set Boxfront  file "{}"'.format(romdata['s_boxfront']))
+        log_debug('Set Boxback   file "{}"'.format(romdata['s_boxback']))
+        log_debug('Set Cartridge file "{}"'.format(romdata['s_cartridge']))
+        log_debug('Set Fanart    file "{}"'.format(romdata['s_fanart']))
+        log_debug('Set Banner    file "{}"'.format(romdata['s_banner']))
+        log_debug('Set Clearlogo file "{}"'.format(romdata['s_clearlogo']))
+        log_debug('Set Flyer     file "{}"'.format(romdata['s_flyer']))
+        log_debug('Set Map       file "{}"'.format(romdata['s_map']))
+        log_debug('Set Manual    file "{}"'.format(romdata['s_manual']))
+        log_debug('Set Trailer   file "{}"'.format(romdata['s_trailer']))
 
         return romdata
 
@@ -789,11 +795,11 @@ class ScrapeStrategy(object):
 
         # --- If no candidates available just clean the ROM Title and return ---
         if self.meta_scraper_obj.candidate is None:
-            log_verb('Medatada candidates is None. Cleaning ROM name only.')
+            log_debug('Medatada candidates is None. Cleaning ROM name only.')
             romdata['m_name'] = text_format_ROM_title(ROM_FN.getBaseNoExt(), self.scan_clean_tags)
             return
         if not self.meta_scraper_obj.candidate:
-            log_verb('Medatada candidate is empty (no candidates found). Cleaning ROM name only.')
+            log_debug('Medatada candidate is empty (no candidates found). Cleaning ROM name only.')
             romdata['m_name'] = text_format_ROM_title(ROM_FN.getBaseNoExt(), self.scan_clean_tags)
             # Update the empty NFO file to mark the ROM as scraped and avoid rescraping
             # if launcher is scanned again.
@@ -843,10 +849,10 @@ class ScrapeStrategy(object):
 
         # --- If no candidates available just clean the ROM Title and return ---
         if self.asset_scraper_obj.candidate is None:
-            log_verb('Asset candidate is None (previous error). Doing nothing.')
+            log_debug('Asset candidate is None (previous error). Doing nothing.')
             return ret_asset_path
         if not self.asset_scraper_obj.candidate:
-            log_verb('Asset candidate is empty (no candidates found). Doing nothing.')
+            log_debug('Asset candidate is empty (no candidates found). Doing nothing.')
             return ret_asset_path
 
         # --- If scraper does not support particular asset return inmediately ---
@@ -874,7 +880,7 @@ class ScrapeStrategy(object):
             # If scraper returns no images return current local asset.
             log_debug('{} {} found no images.'.format(self.asset_scraper_name, asset_name))
             return ret_asset_path
-        # log_verb('{} scraper returned {} images.'.format(asset_name, len(assetdata_list)))
+        # log_debug('{} scraper returned {} images.'.format(asset_name, len(assetdata_list)))
 
         # --- Semi-automatic scraping (user choses an image from a list) ---
         if self.asset_selection_mode == 0:
@@ -961,8 +967,8 @@ class ScrapeStrategy(object):
             scraper_text = 'Downloading {} from {}...'.format(asset_name, self.asset_scraper_name)
             self.pdialog.updateMessage(scraper_text)
         image_local_path = asset_path_noext_FN.pappend('.' + image_ext).getPath()
-        log_verb('Download  "{}"'.format(image_url_log))
-        log_verb('Into file "{}"'.format(image_local_path))
+        log_debug('Download  "{}"'.format(image_url_log))
+        log_debug('Into file "{}"'.format(image_local_path))
         try:
             # net_download_img() never prints URLs or paths.
             net_download_img(image_url, image_local_path)
@@ -1142,7 +1148,7 @@ class ScrapeStrategy(object):
         assetdata_list = self.scraper_obj.get_assets(asset_ID, st_dic)
         pdialog.endProgress()
         if kodi_is_error_status(st_dic): return
-        log_verb('{} {} scraper returned {} images'.format(scraper_name, asset_name, len(assetdata_list)))
+        log_debug('{} {} scraper returned {} images'.format(scraper_name, asset_name, len(assetdata_list)))
         # Scraper found no assets. Return immediately.
         if not assetdata_list:
             kodi_set_error_status(st_dic, '{} scraper found no {} images.'.format(scraper_name, asset_name))
@@ -1212,10 +1218,10 @@ class ScrapeStrategy(object):
 
         # --- Download image ---
         log_debug('Downloading image from {}...'.format(scraper_name))
-        image_local_path_FN = asset_path_noext_FN.append('.' + image_ext)
-        log_verb('Download "{}"'.format(image_url_log))
-        log_verb('      OP "{}"'.format(image_local_path_FN.getOriginalPath()))
-        log_verb('  Into P "{}"'.format(image_local_path_FN.getPath()))
+        image_local_path_FN = asset_path_noext_FN.pappend('.' + image_ext)
+        log_debug('Download "{}"'.format(image_url_log))
+        log_debug('      OP "{}"'.format(image_local_path_FN.getOriginalPath()))
+        log_debug('  Into P "{}"'.format(image_local_path_FN.getPath()))
         pdialog.startProgress('Downloading {} from {}...'.format(asset_name, scraper_name))
         try:
             # net_download_img() never prints URLs or paths.
@@ -1232,11 +1238,14 @@ class ScrapeStrategy(object):
         # Recache only if local image is in the Kodi cache, this function takes care of that.
         # kodi_update_image_cache(image_local_path_FN.getPath())
 
-        # --- Edit using Python pass by assigment ---
+        # --- Edit using Python pass by assignment ---
         # If we reach this point is because an image was downloaded.
         # Caller is responsible to save Categories/Launchers/ROMs databases.
         # In the DB always store original paths, never translated paths.
         object_dic[asset_info.key] = image_local_path_FN.getOriginalPath()
+
+        # Display notification in caller.
+        st_dic['dialog'] = KODI_MESSAGE_NOTIFY
         st_dic['msg'] = 'Downloaded {} with {} scraper'.format(asset_name, scraper_name)
 
     # This function is used when scraping stuff from the context menu.
@@ -1314,10 +1323,10 @@ class ScrapeStrategy(object):
         candidate_list = self.scraper_obj.get_candidates(
             search_term, rom_FN, rom_checksums_FN, platform, st_dic)
         # If the there was an error/exception in the scraper return immediately.
-        if kodi_is_error_status(): return
+        if kodi_is_error_status(st_dic): return
         # If the scraper is disabled candidate_list will be None. However, it is impossible
         # that the scraper is disabled when scraping from the context menu.
-        log_verb('Scraper found {} result/s'.format(len(candidate_list)))
+        log_debug('Scraper found {} result/s'.format(len(candidate_list)))
         if not candidate_list:
             kodi_set_error_status('Scraper found no matching games')
             return
@@ -1335,7 +1344,7 @@ class ScrapeStrategy(object):
                 return
         # log_debug('select_candidate_idx {}'.format(select_candidate_idx))
         candidate = candidate_list[select_candidate_idx]
-        log_verb('User chose game "{}"'.format(candidate['display_name']))
+        log_debug('User chose game "{}"'.format(candidate['display_name']))
 
         # Set candidate. This will introduce it in the cache.
         self.scraper_obj.set_candidate(rom_FN, platform, candidate)
@@ -1979,7 +1988,7 @@ class AEL_Offline(Scraper):
 
         if self.cached_platform == 'MAME':
             key_id = self.candidate['id']
-            log_verb("AEL_Offline.get_metadata() Mode MAME id = '{}'".format(key_id))
+            log_debug("AEL_Offline.get_metadata() Mode MAME id = '{}'".format(key_id))
             gamedata['title']     = self.cached_games[key_id]['title']
             gamedata['year']      = self.cached_games[key_id]['year']
             gamedata['genre']     = self.cached_games[key_id]['genre']
@@ -1987,11 +1996,11 @@ class AEL_Offline(Scraper):
             gamedata['nplayers']  = self.cached_games[key_id]['nplayers']
         elif self.cached_platform == 'Unknown':
             # Unknown platform. Behave like NULL scraper
-            log_verb("AEL_Offline.get_metadata() Mode Unknown. Doing nothing.")
+            log_debug("AEL_Offline.get_metadata() Mode Unknown. Doing nothing.")
         else:
             # No-Intro scraper by default.
             key_id = self.candidate['id']
-            log_verb("AEL_Offline.get_metadata() Mode No-Intro id = '{}'".format(key_id))
+            log_debug("AEL_Offline.get_metadata() Mode No-Intro id = '{}'".format(key_id))
             gamedata['title']     = self.cached_games[key_id]['title']
             gamedata['year']      = self.cached_games[key_id]['year']
             gamedata['genre']     = self.cached_games[key_id]['genre']
@@ -2010,7 +2019,7 @@ class AEL_Offline(Scraper):
 
     # --- This class own methods -----------------------------------------------------------------
     def _get_MAME_candidates(self, rombase_noext, platform):
-        log_verb("AEL_Offline._get_MAME_candidates() Scraper working in MAME mode.")
+        log_debug("AEL_Offline._get_MAME_candidates() Scraper working in MAME mode.")
 
         # --- MAME rombase_noext is exactly the rom name ---
         # MAME offline scraper either returns one candidate game or nothing at all.
@@ -2028,12 +2037,12 @@ class AEL_Offline(Scraper):
 
     def _get_NoIntro_candidates(self, rombase_noext, platform):
         # --- First try an exact match using rombase_noext ---
-        log_verb("AEL_Offline._get_NoIntro_candidates() Scraper working in No-Intro mode.")
-        log_verb("AEL_Offline._get_NoIntro_candidates() Trying exact search for '{}'".format(
+        log_debug("AEL_Offline._get_NoIntro_candidates() Scraper working in No-Intro mode.")
+        log_debug("AEL_Offline._get_NoIntro_candidates() Trying exact search for '{}'".format(
             rombase_noext))
         candidate_list = []
         if rombase_noext in self.cached_games:
-            log_verb("AEL_Offline._get_NoIntro_candidates() Exact match found.")
+            log_debug("AEL_Offline._get_NoIntro_candidates() Exact match found.")
             candidate = self._new_candidate_dic()
             candidate['id'] = rombase_noext
             candidate['display_name'] = self.cached_games[rombase_noext]['ROM']
@@ -2045,8 +2054,8 @@ class AEL_Offline(Scraper):
             # --- If nothing found, do a fuzzy search ---
             # Here implement a Levenshtein distance algorithm.
             search_term = text_format_ROM_name_for_scraping(rombase_noext)
-            log_verb("AEL_Offline._get_NoIntro_candidates() No exact match found.")
-            log_verb("AEL_Offline._get_NoIntro_candidates() Trying fuzzy search '{}'".format(
+            log_debug("AEL_Offline._get_NoIntro_candidates() No exact match found.")
+            log_debug("AEL_Offline._get_NoIntro_candidates() Trying fuzzy search '{}'".format(
                 search_term))
             search_string_lower = rombase_noext.lower()
             regexp = '.*{}.*'.format(search_string_lower)
@@ -2363,15 +2372,17 @@ class TheGamesDB(Scraper):
     def _search_candidates(self, search_term, platform, scraper_platform, st_dic):
         # quote_plus() will convert the spaces into '+'. Note that quote_plus() requires an
         # UTF-8 encoded string and does not work with Unicode strings.
-        # https://stackoverflow.com/questions/22415345/using-pythons-urllib-quote-plus-on-utf-8-strings-with-safe-arguments
-        search_string_encoded = urllib.quote_plus(search_term.encode('utf8'))
-        url_tail = '?apikey={}&name={}&filter[platform]={}'.format(
-            self._get_API_key(), search_string_encoded, scraper_platform)
+        if ADDON_RUNNING_PYTHON_2:
+            search_string_encoded = urllib.quote_plus(search_term.encode('utf8'))
+        elif ADDON_RUNNING_PYTHON_3:
+            search_string_encoded = urllib.parse.quote_plus(search_term.encode('utf8'))
+        url_tail = '?apikey={}&name={}&filter[platform]={}'.format(self._get_API_key(),
+            search_string_encoded, scraper_platform)
         url = TheGamesDB.URL_ByGameName + url_tail
         # _retrieve_games_from_url() may load files recursively from several pages so this code
         # must be in a separate function.
-        candidate_list = self._retrieve_games_from_url(
-            url, search_term, platform, scraper_platform, st_dic)
+        candidate_list = self._retrieve_games_from_url(url, search_term,
+            platform, scraper_platform, st_dic)
         if kodi_is_error_status(st_dic): return None
 
         # --- Sort game list based on the score. High scored candidates go first ---
@@ -2888,14 +2899,17 @@ class MobyGames(Scraper):
     # --- Retrieve list of games ---
     def _search_candidates(self, search_term, platform, scraper_platform, st_dic):
         # --- Retrieve JSON data with list of games ---
-        search_string_encoded = urllib.quote_plus(search_term.encode('utf8'))
+        if ADDON_RUNNING_PYTHON_2:
+            search_string_encoded = urllib.quote_plus(search_term.encode('utf8'))
+        elif ADDON_RUNNING_PYTHON_3:
+            search_string_encoded = urllib.parse.quote_plus(search_term.encode('utf8'))
         if scraper_platform == '0':
             # Unkwnon or wrong platform case.
-            url_tail = '?api_key={}&format=brief&title={}'.format(
-                self.api_key, search_string_encoded)
+            url_tail = '?api_key={}&format=brief&title={}'.format(self.api_key,
+                search_string_encoded)
         else:
-            url_tail = '?api_key={}&format=brief&title={}&platform={}'.format(
-                self.api_key, search_string_encoded, scraper_platform)
+            url_tail = '?api_key={}&format=brief&title={}&platform={}'.format(self.api_key,
+                search_string_encoded, scraper_platform)
         url = MobyGames.URL_games + url_tail
         json_data = self._retrieve_URL_as_JSON(url, st_dic)
         if kodi_is_error_status(st_dic): return None
@@ -3641,8 +3655,11 @@ class ScreenScraper(Scraper):
         crc_str = checksums['crc']
         md5_str = checksums['md5']
         sha1_str = checksums['sha1']
-        # rom_name = urllib.quote(checksums['rom_name'])
-        rom_name = urllib.quote_plus(checksums['rom_name'])
+        if ADDON_RUNNING_PYTHON_2:
+            # rom_name = urllib.quote(checksums['rom_name'])
+            rom_name = urllib.quote_plus(checksums['rom_name'])
+        elif ADDON_RUNNING_PYTHON_3:
+            rom_name = urllib.parse.quote_plus(checksums['rom_name'])
         rom_size = checksums['size']
         # log_debug('ScreenScraper._search_candidates_jeuInfos() ssid       "{}"'.format(self.ssid))
         # log_debug('ScreenScraper._search_candidates_jeuInfos() ssid       "{}"'.format('***'))
@@ -3704,7 +3721,10 @@ class ScreenScraper(Scraper):
         log_debug('ScreenScraper._search_candidates_jeuRecherche() Calling jeuRecherche.php...')
         scraper_platform = AEL_platform_to_ScreenScraper(platform)
         system_id = scraper_platform
-        recherche = urllib.quote_plus(rombase_noext)
+        if ADDON_RUNNING_PYTHON_2:
+            recherche = urllib.quote_plus(rombase_noext)
+        elif ADDON_RUNNING_PYTHON_3:
+            recherche = urllib.parse.quote_plus(rombase_noext)
         log_debug('ScreenScraper._search_candidates_jeuRecherche() system_id  "{}"'.format(system_id))
         log_debug('ScreenScraper._search_candidates_jeuRecherche() recherche  "{}"'.format(recherche))
 
@@ -4242,7 +4262,7 @@ class GameFAQs(Scraper):
         for image_data in images_on_page:
             image_on_page = image_data.groupdict()
             image_asset_ids = self._parse_asset_type(image_on_page['alt'])
-            log_verb('Found "{}" of types {} with url {}'.format(image_on_page['alt'], image_asset_ids, image_on_page['url']))
+            log_debug('Found "{}" of types {} with url {}'.format(image_on_page['alt'], image_asset_ids, image_on_page['url']))
             if asset_info.id in image_asset_ids:
                 log_debug('GameFAQs._scraper_resolve_asset_URL() Found match {}'.format(image_on_page['alt']))
                 return image_on_page['url']

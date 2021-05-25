@@ -310,7 +310,7 @@ def utils_load_file_to_slist(filename):
 # Returns None if error.
 # Returns xml_tree = ET.parse() if success.
 def utils_load_XML_to_ET(filename):
-    log_verb('utils_load_XML_to_ET() Loading {}'.format(filename))
+    log_debug('utils_load_XML_to_ET() Loading {}'.format(filename))
     xml_tree = None
     try:
         xml_tree = xml.etree.ElementTree.parse(filename)
@@ -361,8 +361,8 @@ def utils_load_JSON_file(json_filename, default_obj = {}, verbose = True):
 # See http://stackoverflow.com/questions/18337407/saving-utf-8-texts-in-json-dumps-as-utf8-not-as-u-escape-sequence
 #
 # json_file = file_dir.pjoin(file_base_noext + '.json')
-# log_verb('fs_write_JSON_file() Dir  {}'.format(file_dir.getOriginalPath()))
-# log_verb('fs_write_JSON_file() JSON {}'.format(file_base_noext + '.json'))
+# log_debug('fs_write_JSON_file() Dir  {}'.format(file_dir.getOriginalPath()))
+# log_debug('fs_write_JSON_file() JSON {}'.format(file_base_noext + '.json'))
 #
 def utils_write_JSON_file(json_filename, json_data, verbose = True, pprint = False, lowmem = False):
     l_start = time.time()
@@ -402,9 +402,9 @@ def utils_write_JSON_file(json_filename, json_data, verbose = True, pprint = Fal
             else:
                 file.write(f_data)
     except OSError:
-        kodi_notify(DIALOG_TITLE, 'Cannot write {} file (OSError)'.format(json_filename))
+        kodi_notify(ADDON_LONG_NAME, 'Cannot write {} file (OSError)'.format(json_filename))
     except IOError:
-        kodi_notify(DIALOG_TITLE, 'Cannot write {} file (IOError)'.format(json_filename))
+        kodi_notify(ADDON_LONG_NAME, 'Cannot write {} file (IOError)'.format(json_filename))
     l_end = time.time()
     if verbose:
         write_time_s = l_end - l_start
@@ -519,28 +519,35 @@ def utils_look_for_file(rootPath, filename_noext, file_exts):
     return None
 
 # -------------------------------------------------------------------------------------------------
-# Logging functions
-# Kodi Matrix has changed the log levels. See
+# Logging functions.
+# AEL never uses LOG_FATAL. Fatal error in my addons use LOG_ERROR. When an ERROR message is
+# printed the addon must stop execution and exit.
+# Kodi Matrix has changed the log levels.
+# Valid set of log levels should now be: DEBUG, INFO, WARNING, ERROR and FATAL
+#
+# @python_v17 Default level changed from LOGNOTICE to LOGDEBUG
+# @python_v19 Removed LOGNOTICE (use LOGINFO) and LOGSEVERE (use LOGFATAL)
+#
 # https://forum.kodi.tv/showthread.php?tid=344263&pid=2943703#pid2943703
+# https://github.com/xbmc/xbmc/pull/17730
 # -------------------------------------------------------------------------------------------------
 # Constants
 LOG_ERROR   = 0
 LOG_WARNING = 1
 LOG_INFO    = 2
-LOG_VERB    = 3
-LOG_DEBUG   = 4
+LOG_DEBUG   = 3
 
 # Internal globals
 current_log_level = LOG_INFO
 
 def set_log_level(level):
     global current_log_level
-
     current_log_level = level
 
 def log_variable(var_name, var):
     if current_log_level < LOG_DEBUG: return
-    log_text = 'AXL DUMP : Dumping variable "{}"\n{}'.format(var_name, pprint.pformat(var))
+    log_text = '{} DUMP : Dumping variable "{}"\n{}'.format(ADDON_SHORT_NAME,
+        var_name, pprint.pformat(var))
     xbmc.log(log_text.encode('utf-8'), level = xbmc.LOGERROR)
 
 # For Unicode stuff in Kodi log see https://github.com/romanvm/kodi.six
@@ -554,39 +561,29 @@ def log_debug_KR(text_line):
     # At this point we are sure text_line is a Unicode string.
     # Kodi functions (Python 3) require Unicode strings as arguments.
     # Kodi functions (Python 2) require UTF-8 encoded bytes as arguments.
-    log_text = 'AML DEBUG: ' + text_line
-    xbmc.log(log_text.encode('utf-8'), level = xbmc.LOGNOTICE)
-
-def log_verb_KR(text_line):
-    if current_log_level < LOG_VERB: return
-    if isinstance(text_line, binary_type): text_line = text_line.decode('utf-8')
-    log_text = 'AML VERB : ' + text_line
+    log_text = ADDON_SHORT_NAME + ' DEBUG: ' + text_line
     xbmc.log(log_text.encode('utf-8'), level = xbmc.LOGNOTICE)
 
 def log_info_KR(text_line):
     if current_log_level < LOG_INFO: return
     if isinstance(text_line, binary_type): text_line = text_line.decode('utf-8')
-    log_text = 'AML INFO : ' + text_line
+    log_text = ADDON_SHORT_NAME + ' INFO : ' + text_line
     xbmc.log(log_text.encode('utf-8'), level = xbmc.LOGNOTICE)
 
 def log_warning_KR(text_line):
     if current_log_level < LOG_WARNING: return
     if isinstance(text_line, binary_type): text_line = text_line.decode('utf-8')
-    log_text = 'AML WARN : ' + text_line
+    log_text = ADDON_SHORT_NAME + ' WARN : ' + text_line
     xbmc.log(log_text.encode('utf-8'), level = xbmc.LOGWARNING)
 
 def log_error_KR(text_line):
     if current_log_level < LOG_ERROR: return
     if isinstance(text_line, binary_type): text_line = text_line.decode('utf-8')
-    log_text = 'AML ERROR: ' + text_line
+    log_text = ADDON_SHORT_NAME + ' ERROR: ' + text_line
     xbmc.log(log_text.encode('utf-8'), level = xbmc.LOGERROR)
 
-#
 # Replacement functions when running outside Kodi with the standard Python interpreter.
-#
 def log_debug_Python(text_line): print(text_line)
-
-def log_verb_Python(text_line): print(text_line)
 
 def log_info_Python(text_line): print(text_line)
 
@@ -602,18 +599,18 @@ def log_error_Python(text_line): print(text_line)
 # Call examples:
 #  1) ret = kodi_dialog_OK('Launch ROM?')
 #  2) ret = kodi_dialog_OK('Launch ROM?', title = 'AML - Launcher')
-def kodi_dialog_OK(text, title = DIALOG_TITLE):
+def kodi_dialog_OK(text, title = ADDON_LONG_NAME):
     xbmcgui.Dialog().ok(title, text)
 
 # Returns True is YES was pressed, returns False if NO was pressed or dialog canceled.
-def kodi_dialog_yesno(text, title = DIALOG_TITLE):
+def kodi_dialog_yesno(text, title = ADDON_LONG_NAME):
     return xbmcgui.Dialog().yesno(title, text)
 
 # Returns True is YES was pressed, returns False if NO was pressed or dialog canceled.
-def kodi_dialog_yesno_custom(text, yeslabel_str, nolabel_str, title = DIALOG_TITLE):
+def kodi_dialog_yesno_custom(text, yeslabel_str, nolabel_str, title = ADDON_LONG_NAME):
     return xbmcgui.Dialog().yesno(title, text, yeslabel = yeslabel_str, nolabel = nolabel_str)
 
-def kodi_dialog_yesno_timer(text, timer_ms = 30000, title = DIALOG_TITLE):
+def kodi_dialog_yesno_timer(text, timer_ms = 30000, title = ADDON_LONG_NAME):
     return xbmcgui.Dialog().yesno(title, text, autoclose = timer_ms)
 
 # Returns a directory. See https://codedocs.xyz/AlwinEsch/kodi
@@ -691,15 +688,15 @@ def kodi_dialog_get_file_multiple(d_heading, mask = '', d_file = ''):
     return ret
 
 # Displays a small box in the bottom right corner
-def kodi_notify(text, title = DIALOG_TITLE, time = 5000):
+def kodi_notify(text, title = ADDON_LONG_NAME, time = 5000):
     xbmcgui.Dialog().notification(title, text, xbmcgui.NOTIFICATION_INFO, time)
 
-def kodi_notify_warn(text, title = DIALOG_TITLE, time = 7000):
+def kodi_notify_warn(text, title = ADDON_LONG_NAME, time = 7000):
     xbmcgui.Dialog().notification(title, text, xbmcgui.NOTIFICATION_WARNING, time)
 
 # Do not use this function much because it is the same icon displayed when Python fails
 # with an exception and that may confuse the user.
-def kodi_notify_error(text, title = DIALOG_TITLE, time = 7000):
+def kodi_notify_error(text, title = ADDON_LONG_NAME, time = 7000):
     xbmcgui.Dialog().notification(title, text, xbmcgui.NOTIFICATION_ERROR, time)
 
 def kodi_refresh_container():
@@ -720,7 +717,7 @@ def kodi_refresh_container():
 # pDialog.endProgress()
 class KodiProgressDialog(object):
     def __init__(self):
-        self.heading = DIALOG_TITLE
+        self.heading = ADDON_LONG_NAME
         self.progress = 0
         self.flag_dialog_canceled = False
         self.dialog_active = False
@@ -827,7 +824,7 @@ class KodiProgressDialog(object):
 #   Added new option useDetails.
 #   Allow listitems for parameter list
 class KodiSelectDialog(object):
-    def __init__(self, heading = DIALOG_TITLE, rows = [], preselect = -1, useDetails = False):
+    def __init__(self, heading = ADDON_LONG_NAME, rows = [], preselect = -1, useDetails = False):
         self.heading = heading
         self.rows = rows
         self.preselect = preselect
@@ -1055,16 +1052,26 @@ kodi_running_version = kodi_get_Kodi_major_version()
 # -------------------------------------------------------------------------------------------------
 if KODI_RUNTIME_AVAILABLE_UTILS:
     log_debug   = log_debug_KR
-    log_verb    = log_verb_KR
     log_info    = log_info_KR
     log_warning = log_warning_KR
     log_error   = log_error_KR
 else:
     log_debug   = log_debug_Python
-    log_verb    = log_verb_Python
     log_info    = log_info_Python
     log_warning = log_warning_Python
     log_error   = log_error_Python
+
+# -------------------------------------------------------------------------------------------------
+# Kodi useful definition
+# -------------------------------------------------------------------------------------------------
+# https://codedocs.xyz/AlwinEsch/kodi/group__kodi__guilib__listitem__iconoverlay.html
+KODI_ICON_OVERLAY_NONE = 0
+KODI_ICON_OVERLAY_RAR = 1
+KODI_ICON_OVERLAY_ZIP = 2
+KODI_ICON_OVERLAY_LOCKED = 3
+KODI_ICON_OVERLAY_UNWATCHED = 4
+KODI_ICON_OVERLAY_WATCHED = 5
+KODI_ICON_OVERLAY_HD = 6
 
 # -------------------------------------------------------------------------------------------------
 # Kodi GUI error reporting.
@@ -1106,9 +1113,12 @@ def kodi_new_status_dic():
         'msg' : '',
     }
 
-# Display an error message in the GUI.
+# Display an status/error message in the GUI.
+# Note that it is perfectly OK to display an error message and not abort execution.
 # Returns True in case of error and addon must abort/exit immediately.
 # Returns False if no error.
+#
+# Example of use: if kodi_display_user_message(st_dic): return
 def kodi_display_status_message(st_dic):
     # Display (error) message and return status.
     if st_dic['dialog'] == KODI_MESSAGE_NONE:
@@ -1184,11 +1194,9 @@ def kodi_display_exception(ex):
 # large images are scaled down to the default values shown below, but they can be sized
 # even smaller to save additional space.
 
-#
 # Gets where in Kodi image cache an image is located.
 # image_path is a Unicode string.
 # cache_file_path is a Unicode string.
-#
 def kodi_get_cached_image_FN(image_path):
     THUMBS_CACHE_PATH = os.path.join(xbmc.translatePath('special://profile/' ), 'Thumbnails')
 

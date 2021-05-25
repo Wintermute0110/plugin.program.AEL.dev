@@ -26,15 +26,20 @@ from __future__ import division
 from .constants import *
 
 # --- Python standard library ---
+import collections
 import hashlib
+import os
 import random
 import re
 import string
 import time
+import zlib
 if ADDON_RUNNING_PYTHON_2:
     import HTMLParser
+    import urlparse
 elif ADDON_RUNNING_PYTHON_3:
     import html.parser
+    import urllib.parse
 else:
     raise TypeError('Undefined Python runtime version.')
 
@@ -187,7 +192,6 @@ def text_render_table(table_str, trim_Kodi_colours = False):
 # ]
 #
 # Output:
-#
 def text_render_table_NO_HEADER(table_str, trim_Kodi_colours = False):
     rows = len(table_str)
     cols = len(table_str[0])
@@ -491,19 +495,23 @@ def text_format_ROM_title(title, clean_tags):
 # -------------------------------------------------------------------------------------------------
 # Get extension of URL. Returns '' if not found. Examples: 'png', 'jpg', 'gif'.
 def text_get_URL_extension(url):
-    path = urlparse.urlparse(url).path
+    if ADDON_RUNNING_PYTHON_2:
+        path = urlparse.urlparse(url).path
+    elif ADDON_RUNNING_PYTHON_3:
+        path = urllib.parse.urlparse(url).path
     ext = os.path.splitext(path)[1]
     if ext[0] == '.': ext = ext[1:] # Remove initial dot
-
     return ext
 
 # Defaults to 'jpg' if URL extension cannot be determined
 def text_get_image_URL_extension(url):
-    path = urlparse.urlparse(url).path
+    if ADDON_RUNNING_PYTHON_2:
+        path = urlparse.urlparse(url).path
+    elif ADDON_RUNNING_PYTHON_3:
+        path = urllib.parse.urlparse(url).path
     ext = os.path.splitext(path)[1]
     if ext[0] == '.': ext = ext[1:] # Remove initial dot
     ret = 'jpg' if ext == '' else ext
-
     return ret
 
 # -------------------------------------------------------------------------------------------------
@@ -574,6 +582,7 @@ def misc_look_for_Redump_DAT(platform, DAT_list):
         return ''
 
 # Lazy function (generator) to read a file piece by piece. Default chunk size: 8k.
+# Default return value in Python is None.
 # Usage example:
 #  f = open()
 #  for chunk in misc_read_file_in_chunks(f):
@@ -628,7 +637,7 @@ def misc_read_bytes_in_chunks(file_bytes, chunk_size = 8192):
         yield data
 
 def misc_calculate_stream_checksums(file_bytes):
-    log_debug('Computing checksums of bytes stream...'.format(len(file_bytes)))
+    # log_debug('Computing checksums of bytes stream...'.format(len(file_bytes)))
     crc_prev = 0
     md5 = hashlib.md5()
     sha1 = hashlib.sha1()
@@ -641,18 +650,17 @@ def misc_calculate_stream_checksums(file_bytes):
     crc_prev = zlib.crc32(file_bytes, crc_prev)
     md5.update(file_bytes)
     sha1.update(file_bytes)
+    # Output data.
     crc_digest = '{:08X}'.format(crc_prev & 0xFFFFFFFF)
     md5_digest = md5.hexdigest()
     sha1_digest = sha1.hexdigest()
     size = len(file_bytes)
-
     checksums = {
         'crc'  : crc_digest.upper(),
         'md5'  : md5_digest.upper(),
         'sha1' : sha1_digest.upper(),
         'size' : size,
     }
-
     return checksums
 
 # Replace an item in dictionary. If dict_in is an OrderedDict then keep original order.
@@ -802,90 +810,3 @@ def misc_addon_version_str_to_int(AML_version_str):
     # log_debug('misc_addon_version_str_to_int() version_int = {}'.format(version_int))
 
     return version_int
-
-# -------------------------------------------------------------------------------------------------
-# Utilities to test scrapers
-# -------------------------------------------------------------------------------------------------
-# These must be replaced with the table-making functions.
-# TODO Move this code to dev-scrapers/common.py
-
-# Candidates
-NAME_L      = 65
-SCORE_L     = 5
-ID_L        = 55
-PLATFORM_L  = 20
-SPLATFORM_L = 20
-URL_L       = 70
-
-# Metadata
-TITLE_L     = 50
-YEAR_L      = 4
-GENRE_L     = 20
-DEVELOPER_L = 10
-NPLAYERS_L  = 10
-ESRB_L      = 20
-PLOT_L      = 70
-
-# Assets
-ASSET_ID_L        = 10
-ASSET_NAME_L      = 60
-ASSET_URL_THUMB_L = 100
-
-# PUT functions to print things returned by Scraper object (which are common to all scrapers)
-# into util.py, to be resused by all scraper tests.
-def print_candidate_list(results):
-    p_str = "{} {} {} {} {}"
-    print('Found {} candidate/s'.format(len(results)))
-    print(p_str.format(
-        'Display name'.ljust(NAME_L), 'Score'.ljust(SCORE_L),
-        'Id'.ljust(ID_L), 'Platform'.ljust(PLATFORM_L), 'SPlatform'.ljust(SPLATFORM_L)))
-    print(p_str.format(
-        '-'*NAME_L, '-'*SCORE_L, '-'*ID_L, '-'*PLATFORM_L, '-'*SPLATFORM_L))
-    for game in results:
-        display_name = text_limit_string(game['display_name'], NAME_L)
-        score = text_limit_string(text_type(game['order']), SCORE_L)
-        id = text_limit_string(text_type(game['id']), ID_L)
-        platform = text_limit_string(text_type(game['platform']), PLATFORM_L)
-        splatform = text_limit_string(text_type(game['scraper_platform']), SPLATFORM_L)
-        print(p_str.format(
-            display_name.ljust(NAME_L), score.ljust(SCORE_L), id.ljust(ID_L),
-            platform.ljust(PLATFORM_L), splatform.ljust(SPLATFORM_L)))
-    print('')
-
-def print_game_metadata(metadata):
-    title     = text_limit_string(metadata['title'], TITLE_L)
-    year      = metadata['year']
-    genre     = text_limit_string(metadata['genre'], GENRE_L)
-    developer = text_limit_string(metadata['developer'], DEVELOPER_L)
-    nplayers  = text_limit_string(metadata['nplayers'], NPLAYERS_L)
-    esrb      = text_limit_string(metadata['esrb'], ESRB_L)
-    plot      = text_limit_string(metadata['plot'], PLOT_L)
-
-    p_str = "{} {} {} {} {} {} {}"
-    print('Displaying metadata for title "{}"'.format(title))
-    print(p_str.format(
-        'Title'.ljust(TITLE_L), 'Year'.ljust(YEAR_L), 'Genre'.ljust(GENRE_L),
-        'Developer'.ljust(DEVELOPER_L), 'NPlayers'.ljust(NPLAYERS_L), 'ESRB'.ljust(ESRB_L),
-        'Plot'.ljust(PLOT_L)))
-    print(p_str.format(
-        '-'*TITLE_L, '-'*YEAR_L, '-'*GENRE_L, '-'*DEVELOPER_L, '-'*NPLAYERS_L, '-'*ESRB_L, '-'*PLOT_L))
-    print(p_str.format(
-        title.ljust(TITLE_L), year.ljust(YEAR_L), genre.ljust(GENRE_L), developer.ljust(DEVELOPER_L),
-        nplayers.ljust(NPLAYERS_L), esrb.ljust(ESRB_L), plot.ljust(PLOT_L) ))
-    print('')
-
-def print_game_assets(image_list):
-    # print('Found {} image/s'.format(len(image_list)))
-    p_str = "{} {} {}"
-    print(p_str.format(
-        'Asset ID'.ljust(ASSET_ID_L), 'Name'.ljust(ASSET_NAME_L),
-        'URL thumb'.ljust(ASSET_URL_THUMB_L)))
-    print(p_str.format('-'*ASSET_ID_L, '-'*ASSET_NAME_L, '-'*ASSET_URL_THUMB_L))
-    for image in image_list:
-        id           = text_limit_string(text_type(image['asset_ID']), ASSET_ID_L)
-        display_name = text_limit_string(image['display_name'], ASSET_NAME_L)
-        url_thumb    = text_limit_string(image['url_thumb'], ASSET_URL_THUMB_L)
-        print(p_str.format(
-            id.ljust(ASSET_ID_L), display_name.ljust(ASSET_NAME_L),
-            url_thumb.ljust(ASSET_URL_THUMB_L)))
-    print('')

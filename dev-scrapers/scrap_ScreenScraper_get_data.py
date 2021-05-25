@@ -25,7 +25,7 @@ import common
 set_log_level(LOG_DEBUG)
 
 # --- Create scraper object ---
-scraper_obj = ScreenScraper(common.settings)
+scraper_obj = ScreenScraper()
 scraper_obj.set_verbose_mode(False)
 scraper_obj.set_debug_file_dump(True, os.path.join(os.path.dirname(__file__), 'assets'))
 status_dic = kodi_new_status_dic('Scraper test was OK')

@@ -44,7 +44,8 @@ OPTION_COMPACT_JSON = True
 OPTION_LOWMEM_WRITE_JSON = True
 
 # The addon name in the GUI. Title of Kodi dialogs (yesno, progress, etc.) and used also in log functions.
-DIALOG_TITLE = 'Advanced Emulator Launcher'
+ADDON_LONG_NAME = 'Advanced Emulator Launcher'
+ADDON_SHORT_NAME = 'AEL'
 
 # These parameters are used in utils_write_JSON_file() when pprint is True or
 # OPTION_COMPACT_JSON is False. Otherwise non-human readable, compact JSON is written.

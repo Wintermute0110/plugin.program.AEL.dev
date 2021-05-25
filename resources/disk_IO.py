@@ -339,14 +339,14 @@ def fs_get_ROMs_basename(category_name, launcher_name, launcherID):
     clean_cat_name = ''.join([i if i in string.printable else '_' for i in category_name]).replace(' ', '_')
     clean_launch_title = ''.join([i if i in string.printable else '_' for i in launcher_name]).replace(' ', '_')
     roms_base_noext = 'roms_' + clean_cat_name + '_' + clean_launch_title + '_' + launcherID[0:6]
-    log_verb('fs_get_ROMs_basename() roms_base_noext "{}"'.format(roms_base_noext))
+    log_debug('fs_get_ROMs_basename() roms_base_noext "{}"'.format(roms_base_noext))
 
     return roms_base_noext
 
 def fs_get_collection_ROMs_basename(collection_name, collectionID):
     clean_collection_name = ''.join([i if i in string.printable else '_' for i in collection_name]).replace(' ', '_')
     roms_base_noext = clean_collection_name + '_' + collectionID[0:6]
-    log_verb('fs_get_collection_ROMs_basename() roms_base_noext "{}"'.format(roms_base_noext))
+    log_debug('fs_get_collection_ROMs_basename() roms_base_noext "{}"'.format(roms_base_noext))
 
     return roms_base_noext
 
@@ -357,7 +357,7 @@ def fs_get_collection_ROMs_basename(collection_name, collectionID):
 # Write to disk categories.xml
 #
 def fs_write_catfile(categories_file, categories, launchers, update_timestamp = 0.0):
-    log_verb('fs_write_catfile() Writing {}'.format(categories_file.getOriginalPath()))
+    log_debug('fs_write_catfile() Writing {}'.format(categories_file.getOriginalPath()))
 
     # Original Angelscry method for generating the XML was to grow a string, like this
     # xml_content = 'test'
@@ -557,8 +557,8 @@ def fs_load_catfile(categories_file, categories, launchers):
                 else:
                     launcher[xml_tag] = text_XML
             launchers[launcher['id']] = launcher
-    # log_verb('fs_load_catfile() Loaded {} categories'.format(len(categories)))
-    # log_verb('fs_load_catfile() Loaded {} launchers'.format(len(launchers)))
+    # log_debug('fs_load_catfile() Loaded {} categories'.format(len(categories)))
+    # log_debug('fs_load_catfile() Loaded {} launchers'.format(len(launchers)))
 
     return update_timestamp
 
@@ -665,9 +665,9 @@ def fs_write_ROMs_JSON(roms_dir_FN, launcher, roms):
     roms_base_noext = launcher['roms_base_noext']
     roms_json_file = roms_dir_FN.pjoin(roms_base_noext + '.json')
     roms_xml_file  = roms_dir_FN.pjoin(roms_base_noext + '.xml')
-    log_verb('fs_write_ROMs_JSON()  Dir {}'.format(roms_dir_FN.getOriginalPath()))
-    log_verb('fs_write_ROMs_JSON() JSON {}'.format(roms_base_noext + '.json'))
-    log_verb('fs_write_ROMs_JSON()  XML {}'.format(roms_base_noext + '.xml'))
+    log_debug('fs_write_ROMs_JSON()  Dir {}'.format(roms_dir_FN.getOriginalPath()))
+    log_debug('fs_write_ROMs_JSON() JSON {}'.format(roms_base_noext + '.json'))
+    log_debug('fs_write_ROMs_JSON()  XML {}'.format(roms_base_noext + '.xml'))
 
     # JSON files cannot have comments. Write an auxiliar NFO file with same prefix
     # to store launcher information for a set of ROMs
@@ -698,8 +698,8 @@ def fs_load_ROMs_JSON(roms_dir_FN, launcher):
     # with this exception so at least launcher can be rescanned.
     roms_base_noext = launcher['roms_base_noext']
     roms_json_file = roms_dir_FN.pjoin(roms_base_noext + '.json')
-    log_verb('fs_load_ROMs_JSON()  Dir {}'.format(roms_dir_FN.getOriginalPath()))
-    log_verb('fs_load_ROMs_JSON() JSON {}'.format(roms_base_noext + '.json'))
+    log_debug('fs_load_ROMs_JSON()  Dir {}'.format(roms_dir_FN.getOriginalPath()))
+    log_debug('fs_load_ROMs_JSON() JSON {}'.format(roms_base_noext + '.json'))
     roms = utils_load_JSON_file(roms_json_file.getPath())
 
     return roms
@@ -770,22 +770,22 @@ def fs_write_Collection_index_XML(collections_xml_file, collections):
 
 def fs_load_Collection_index_XML(collections_xml_file):
     __debug_xml_parser = 0
-    update_timestamp = 0.0
-    collections = {}
+    ret = {
+        'timestamp' : 0.0, 
+        'collections' : {}
+    }
 
-    # --- If file does not exist return empty dictionary ---
-    if not collections_xml_file.exists(): return (collections, update_timestamp)
+    log_debug('fs_load_Collection_index_XML() Loading XML file {}'.format(
+        collections_xml_file.getOriginalPath()))
     xml_tree = utils_load_XML_to_ET(collections_xml_file.getPath())
-    if not xml_tree: return (collections, update_timestamp)
+    if not xml_tree: return ret
     xml_root = xml_tree.getroot()
     for root_element in xml_root:
         if __debug_xml_parser: log_debug('Root child {}'.format(root_element.tag))
-
         if root_element.tag == 'control':
             for control_child in root_element:
                 if control_child.tag == 'update_timestamp':
-                    update_timestamp = float(control_child.text)
-
+                    ret['timestamp'] = float(control_child.text)
         elif root_element.tag == 'Collection':
             collection = fs_new_collection()
             for rom_child in root_element:
@@ -795,13 +795,11 @@ def fs_load_Collection_index_XML(collections_xml_file):
                 xml_tag  = rom_child.tag
                 if __debug_xml_parser: log_debug('{} --> {}'.format(xml_tag, text_XML))
                 collection[xml_tag] = text_XML
-            collections[collection['id']] = collection
-
-    return (collections, update_timestamp)
+            ret['collections'][collection['id']] = collection
+    return ret
 
 def fs_write_Collection_ROMs_JSON(roms_json_FN, roms):
-    log_verb('fs_write_Collection_ROMs_JSON() File {}'.format(roms_json_FN.getOriginalPath()))
-
+    log_debug('fs_write_Collection_ROMs_JSON() File {}'.format(roms_json_FN.getOriginalPath()))
     control_dic = {
         'control' : 'Advanced Emulator Launcher Collection ROMs',
         'version' : AEL_STORAGE_FORMAT,
@@ -1055,7 +1053,7 @@ def fs_load_VCategory_XML(roms_xml_file):
         'vlaunchers' : {}
     }
 
-    log_verb('fs_load_VCategory_XML() Loading XML file {}'.format(roms_xml_file.getOriginalPath()))
+    log_debug('fs_load_VCategory_XML() Loading XML file {}'.format(roms_xml_file.getOriginalPath()))
     xml_tree = utils_load_XML_to_ET(roms_xml_file.getPath())
     if not xml_tree: return ret
     xml_root = xml_tree.getroot()
@@ -1065,7 +1063,6 @@ def fs_load_VCategory_XML(roms_xml_file):
             for control_child in root_element:
                 if control_child.tag == 'update_timestamp':
                     ret['timestamp'] = float(control_child.text)
-
         elif root_element.tag == 'VLauncher':
             # Default values
             VLauncher = {'id' : '', 'name' : '', 'rom_count' : '', 'roms_base_noext' : ''}
@@ -1082,14 +1079,14 @@ def fs_load_VCategory_XML(roms_xml_file):
 # Write virtual category ROMs
 def fs_write_VCategory_ROMs_JSON(roms_dir, roms_base_noext, roms):
     roms_json_file = roms_dir.pjoin(roms_base_noext + '.json')
-    log_verb('fs_write_VCategory_ROMs_JSON() Saving JSON file {}'.format(roms_json_file.getOriginalPath()))
+    log_debug('fs_write_VCategory_ROMs_JSON() Saving JSON file {}'.format(roms_json_file.getOriginalPath()))
     utils_write_JSON_file(roms_json_file.getPath(), roms)
 
 # Loads an JSON file containing the Virtual Launcher ROMs
 # If file does not exist or any other error return an empty dictionary.
 def fs_load_VCategory_ROMs_JSON(roms_dir, roms_base_noext):
     roms_json_file = roms_dir.pjoin(roms_base_noext + '.json')
-    log_verb('fs_load_VCategory_ROMs_JSON() Loading JSON file {}'.format(roms_json_file.getOriginalPath()))
+    log_debug('fs_load_VCategory_ROMs_JSON() Loading JSON file {}'.format(roms_json_file.getOriginalPath()))
     roms = utils_load_JSON_file(roms_json_file.getPath())
     return roms
 
