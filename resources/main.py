@@ -9109,11 +9109,14 @@ class Main:
 
         # --- Save JSON databases ---
         pDialog.startProgress('Saving NO-Intro/Redump JSON databases...', 3)
-        fs_write_JSON_file(g_PATHS.ROMS_DIR, launcher['roms_base_noext'] + '_index_PClone', roms_pclone_index)
+        f_FN = g_PATHS.ROMS_DIR.pjoin(launcher['roms_base_noext'] + '_index_PClone')
+        utils_write_JSON_file(f_FN.getPath(), roms_pclone_index)
         pDialog.updateProgress(1)
-        fs_write_JSON_file(g_PATHS.ROMS_DIR, launcher['roms_base_noext'] + '_index_CParent', clone_parent_dic)
+        f_FN = g_PATHS.ROMS_DIR.pjoin(launcher['roms_base_noext'] + '_index_CParent')
+        utils_write_JSON_file(f_FN.getPath(), clone_parent_dic)
         pDialog.updateProgress(2)
-        fs_write_JSON_file(g_PATHS.ROMS_DIR, launcher['roms_base_noext'] + '_parents', parent_roms)
+        f_FN = g_PATHS.ROMS_DIR.pjoin(launcher['roms_base_noext'] + '_parents')
+        utils_write_JSON_file(f_FN.getPath(), parent_roms)
         pDialog.endProgress()
 
         # --- Update launcher number of ROMs ---
