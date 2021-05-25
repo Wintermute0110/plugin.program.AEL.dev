@@ -769,22 +769,22 @@ def fs_write_Collection_index_XML(collections_xml_file, collections):
 
 def fs_load_Collection_index_XML(collections_xml_file):
     __debug_xml_parser = 0
-    update_timestamp = 0.0
-    collections = {}
+    ret = {
+        'timestamp' : 0.0, 
+        'collections' : {}
+    }
 
-    # --- If file does not exist return empty dictionary ---
-    if not collections_xml_file.exists(): return (collections, update_timestamp)
+    log_debug('fs_load_Collection_index_XML() Loading XML file {}'.format(
+        collections_xml_file.getOriginalPath()))
     xml_tree = utils_load_XML_to_ET(collections_xml_file.getPath())
-    if not xml_tree: return (collections, update_timestamp)
+    if not xml_tree: return ret
     xml_root = xml_tree.getroot()
     for root_element in xml_root:
         if __debug_xml_parser: log_debug('Root child {}'.format(root_element.tag))
-
         if root_element.tag == 'control':
             for control_child in root_element:
                 if control_child.tag == 'update_timestamp':
-                    update_timestamp = float(control_child.text)
-
+                    ret['timestamp'] = float(control_child.text)
         elif root_element.tag == 'Collection':
             collection = fs_new_collection()
             for rom_child in root_element:
@@ -794,13 +794,11 @@ def fs_load_Collection_index_XML(collections_xml_file):
                 xml_tag  = rom_child.tag
                 if __debug_xml_parser: log_debug('{} --> {}'.format(xml_tag, text_XML))
                 collection[xml_tag] = text_XML
-            collections[collection['id']] = collection
-
-    return (collections, update_timestamp)
+            ret['collections'][collection['id']] = collection
+    return ret
 
 def fs_write_Collection_ROMs_JSON(roms_json_FN, roms):
     log_debug('fs_write_Collection_ROMs_JSON() File {}'.format(roms_json_FN.getOriginalPath()))
-
     control_dic = {
         'control' : 'Advanced Emulator Launcher Collection ROMs',
         'version' : AEL_STORAGE_FORMAT,
@@ -1064,7 +1062,6 @@ def fs_load_VCategory_XML(roms_xml_file):
             for control_child in root_element:
                 if control_child.tag == 'update_timestamp':
                     ret['timestamp'] = float(control_child.text)
-
         elif root_element.tag == 'VLauncher':
             # Default values
             VLauncher = {'id' : '', 'name' : '', 'rom_count' : '', 'roms_base_noext' : ''}

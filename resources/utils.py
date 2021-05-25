@@ -1062,6 +1062,18 @@ else:
     log_error   = log_error_Python
 
 # -------------------------------------------------------------------------------------------------
+# Kodi useful definition
+# -------------------------------------------------------------------------------------------------
+# https://codedocs.xyz/AlwinEsch/kodi/group__kodi__guilib__listitem__iconoverlay.html
+KODI_ICON_OVERLAY_NONE = 0
+KODI_ICON_OVERLAY_RAR = 1
+KODI_ICON_OVERLAY_ZIP = 2
+KODI_ICON_OVERLAY_LOCKED = 3
+KODI_ICON_OVERLAY_UNWATCHED = 4
+KODI_ICON_OVERLAY_WATCHED = 5
+KODI_ICON_OVERLAY_HD = 6
+
+# -------------------------------------------------------------------------------------------------
 # Kodi GUI error reporting.
 # * Errors can be reported up in the function backtrace with `if not st_dic['status']: return` after
 #   every function call.
@@ -1101,9 +1113,12 @@ def kodi_new_status_dic():
         'msg' : '',
     }
 
-# Display an error message in the GUI.
+# Display an status/error message in the GUI.
+# Note that it is perfectly OK to display an error message and not abort execution.
 # Returns True in case of error and addon must abort/exit immediately.
 # Returns False if no error.
+#
+# Example of use: if kodi_display_user_message(st_dic): return
 def kodi_display_status_message(st_dic):
     # Display (error) message and return status.
     if st_dic['dialog'] == KODI_MESSAGE_NONE:
@@ -1179,11 +1194,9 @@ def kodi_display_exception(ex):
 # large images are scaled down to the default values shown below, but they can be sized
 # even smaller to save additional space.
 
-#
 # Gets where in Kodi image cache an image is located.
 # image_path is a Unicode string.
 # cache_file_path is a Unicode string.
-#
 def kodi_get_cached_image_FN(image_path):
     THUMBS_CACHE_PATH = os.path.join(xbmc.translatePath('special://profile/' ), 'Thumbnails')
 

@@ -42,12 +42,9 @@ import socket
 import time
 import zipfile
 if ADDON_RUNNING_PYTHON_2:
-    # https://docs.python.org/2.7/library/urllib2.html
-    import urllib2
+    import urllib
 elif ADDON_RUNNING_PYTHON_3:
-    import urllib.request
     import urllib.parse
-    import urllib.error
 else:
     raise TypeError('Undefined Python runtime version.')
 
@@ -343,7 +340,7 @@ class ScraperFactory(object):
         log_debug('Are metadata and asset scrapers the same? {}'.format(
             self.strategy_obj.meta_and_asset_scraper_same))
 
-        # --- Add launcher properties to ScrapeStrategy object ---
+        # --- Add launcher/platform properties to ScrapeStrategy object ---
         self.strategy_obj.launcher = launcher
         self.strategy_obj.platform = launcher['platform']
         if self.strategy_obj.platform == 'MAME':
@@ -370,15 +367,24 @@ class ScraperFactory(object):
     # * Create a ScraperStrategy object to be used in the "Edit metadata" context menu.
     # * The scraper disk cache is organised by platform. The scraper object is restricted
     #   to scrape one platform per session.
-    def create_CM_metadata(self, scraper_ID):
-        log_debug('ScraperFactory.create_CM_metadata() Creating ScrapeStrategy {}'.format(
-            scraper_ID))
+    def create_CM_metadata(self, scraper_ID, platform):
+        log_debug('ScraperFactory.create_CM_metadata() Creating ScrapeStrategy ID {}'.format(scraper_ID))
         self.scraper_ID = scraper_ID
         self.strategy_obj = ScrapeStrategy(self.PATHS, self.settings)
 
         # --- Choose scraper and set platform ---
         self.strategy_obj.scraper_obj = self.scraper_objs[scraper_ID]
         log_debug('User chose scraper "{}"'.format(self.strategy_obj.scraper_obj.get_name()))
+
+        # --- Add launcher/platform properties to ScrapeStrategy object ---
+        self.strategy_obj.platform = platform
+        if self.strategy_obj.platform == 'MAME':
+            self.strategy_obj.scan_ignore_scrap_title = self.settings['scan_ignore_scrap_title_MAME']
+        else:
+            self.strategy_obj.scan_ignore_scrap_title = self.settings['scan_ignore_scrap_title']
+        log_debug('self.strategy_obj.scan_ignore_scrap_title is {}'.format(text_type(
+            self.strategy_obj.scan_ignore_scrap_title)))
+
 
         # --- Load candidate cache ---
         # We do lazy loading when calling Scraper.check_candidates_cache
@@ -1219,7 +1225,7 @@ class ScrapeStrategy(object):
 
         # --- Download image ---
         log_debug('Downloading image from {}...'.format(scraper_name))
-        image_local_path_FN = asset_path_noext_FN.append('.' + image_ext)
+        image_local_path_FN = asset_path_noext_FN.pappend('.' + image_ext)
         log_debug('Download "{}"'.format(image_url_log))
         log_debug('      OP "{}"'.format(image_local_path_FN.getOriginalPath()))
         log_debug('  Into P "{}"'.format(image_local_path_FN.getPath()))
@@ -1239,11 +1245,14 @@ class ScrapeStrategy(object):
         # Recache only if local image is in the Kodi cache, this function takes care of that.
         # kodi_update_image_cache(image_local_path_FN.getPath())
 
-        # --- Edit using Python pass by assigment ---
+        # --- Edit using Python pass by assignment ---
         # If we reach this point is because an image was downloaded.
         # Caller is responsible to save Categories/Launchers/ROMs databases.
         # In the DB always store original paths, never translated paths.
         object_dic[asset_info.key] = image_local_path_FN.getOriginalPath()
+
+        # Display notification in caller.
+        st_dic['dialog'] = KODI_MESSAGE_NOTIFY
         st_dic['msg'] = 'Downloaded {} with {} scraper'.format(asset_name, scraper_name)
 
     # This function is used when scraping stuff from the context menu.
@@ -1321,7 +1330,7 @@ class ScrapeStrategy(object):
         candidate_list = self.scraper_obj.get_candidates(
             search_term, rom_FN, rom_checksums_FN, platform, st_dic)
         # If the there was an error/exception in the scraper return immediately.
-        if kodi_is_error_status(): return
+        if kodi_is_error_status(st_dic): return
         # If the scraper is disabled candidate_list will be None. However, it is impossible
         # that the scraper is disabled when scraping from the context menu.
         log_debug('Scraper found {} result/s'.format(len(candidate_list)))
@@ -2374,15 +2383,17 @@ class TheGamesDB(Scraper):
     def _search_candidates(self, search_term, platform, scraper_platform, st_dic):
         # quote_plus() will convert the spaces into '+'. Note that quote_plus() requires an
         # UTF-8 encoded string and does not work with Unicode strings.
-        # https://stackoverflow.com/questions/22415345/using-pythons-urllib-quote-plus-on-utf-8-strings-with-safe-arguments
-        search_string_encoded = urllib.quote_plus(search_term.encode('utf8'))
-        url_tail = '?apikey={}&name={}&filter[platform]={}'.format(
-            self._get_API_key(), search_string_encoded, scraper_platform)
+        if ADDON_RUNNING_PYTHON_2:
+            search_string_encoded = urllib.quote_plus(search_term.encode('utf8'))
+        elif ADDON_RUNNING_PYTHON_3:
+            search_string_encoded = urllib.parse.quote_plus(search_term.encode('utf8'))
+        url_tail = '?apikey={}&name={}&filter[platform]={}'.format(self._get_API_key(),
+            search_string_encoded, scraper_platform)
         url = TheGamesDB.URL_ByGameName + url_tail
         # _retrieve_games_from_url() may load files recursively from several pages so this code
         # must be in a separate function.
-        candidate_list = self._retrieve_games_from_url(
-            url, search_term, platform, scraper_platform, st_dic)
+        candidate_list = self._retrieve_games_from_url(url, search_term,
+            platform, scraper_platform, st_dic)
         if kodi_is_error_status(st_dic): return None
 
         # --- Sort game list based on the score. High scored candidates go first ---
@@ -2899,14 +2910,17 @@ class MobyGames(Scraper):
     # --- Retrieve list of games ---
     def _search_candidates(self, search_term, platform, scraper_platform, st_dic):
         # --- Retrieve JSON data with list of games ---
-        search_string_encoded = urllib.quote_plus(search_term.encode('utf8'))
+        if ADDON_RUNNING_PYTHON_2:
+            search_string_encoded = urllib.quote_plus(search_term.encode('utf8'))
+        elif ADDON_RUNNING_PYTHON_3:
+            search_string_encoded = urllib.parse.quote_plus(search_term.encode('utf8'))
         if scraper_platform == '0':
             # Unkwnon or wrong platform case.
-            url_tail = '?api_key={}&format=brief&title={}'.format(
-                self.api_key, search_string_encoded)
+            url_tail = '?api_key={}&format=brief&title={}'.format(self.api_key,
+                search_string_encoded)
         else:
-            url_tail = '?api_key={}&format=brief&title={}&platform={}'.format(
-                self.api_key, search_string_encoded, scraper_platform)
+            url_tail = '?api_key={}&format=brief&title={}&platform={}'.format(self.api_key,
+                search_string_encoded, scraper_platform)
         url = MobyGames.URL_games + url_tail
         json_data = self._retrieve_URL_as_JSON(url, st_dic)
         if kodi_is_error_status(st_dic): return None
@@ -3652,8 +3666,11 @@ class ScreenScraper(Scraper):
         crc_str = checksums['crc']
         md5_str = checksums['md5']
         sha1_str = checksums['sha1']
-        # rom_name = urllib.quote(checksums['rom_name'])
-        rom_name = urllib.quote_plus(checksums['rom_name'])
+        if ADDON_RUNNING_PYTHON_2:
+            # rom_name = urllib.quote(checksums['rom_name'])
+            rom_name = urllib.quote_plus(checksums['rom_name'])
+        elif ADDON_RUNNING_PYTHON_3:
+            rom_name = urllib.parse.quote_plus(checksums['rom_name'])
         rom_size = checksums['size']
         # log_debug('ScreenScraper._search_candidates_jeuInfos() ssid       "{}"'.format(self.ssid))
         # log_debug('ScreenScraper._search_candidates_jeuInfos() ssid       "{}"'.format('***'))
@@ -3715,7 +3732,10 @@ class ScreenScraper(Scraper):
         log_debug('ScreenScraper._search_candidates_jeuRecherche() Calling jeuRecherche.php...')
         scraper_platform = AEL_platform_to_ScreenScraper(platform)
         system_id = scraper_platform
-        recherche = urllib.quote_plus(rombase_noext)
+        if ADDON_RUNNING_PYTHON_2:
+            recherche = urllib.quote_plus(rombase_noext)
+        elif ADDON_RUNNING_PYTHON_3:
+            recherche = urllib.parse.quote_plus(rombase_noext)
         log_debug('ScreenScraper._search_candidates_jeuRecherche() system_id  "{}"'.format(system_id))
         log_debug('ScreenScraper._search_candidates_jeuRecherche() recherche  "{}"'.format(recherche))
 

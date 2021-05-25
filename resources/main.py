@@ -2643,17 +2643,15 @@ class Main:
             roms = fs_load_Favourites_JSON(g_PATHS.FAV_JSON_FILE_PATH)
         elif categoryID == VCATEGORY_COLLECTIONS_ID:
             log_debug('_command_edit_rom() Editing Collection ROM')
-            (collections, update_timestamp) = fs_load_Collection_index_XML(g_PATHS.COLLECTIONS_FILE_PATH)
-            collection = collections[launcherID]
-
+            COL = fs_load_Collection_index_XML(g_PATHS.COLLECTIONS_FILE_PATH)
+            collection = COL['collections'][launcherID]
             roms_json_file = g_PATHS.COLLECTIONS_DIR.pjoin(collection['roms_base_noext'] + '.json')
             collection_rom_list = fs_load_Collection_ROMs_JSON(roms_json_file)
             # NOTE ROMs in a collection are stored as a list and ROMs in Favourites are stored as
             #      a dictionary. Convert the Collection list into an ordered dictionary and then
             #      converted back the ordered dictionary into a list before saving the collection.
-            roms = OrderedDict()
-            for collection_rom in collection_rom_list:
-                roms[collection_rom['id']] = collection_rom
+            roms = collections.OrderedDict()
+            for collection_rom in collection_rom_list: roms[collection_rom['id']] = collection_rom
         else:
             log_debug('_command_edit_rom() Editing ROM in Launcher')
             launcher = self.launchers[launcherID]
@@ -2841,11 +2839,11 @@ class Main:
                 # Scraper caches are flushed. An error here could mean that no metadata
                 # was found, however the cache can have valid data for the candidates.
                 # Remember to flush caches after scraping.
-                scrap_strategy = g_scrap_factory.create_CM_metadata(scraper_ID)
-                status_dic = scrap_strategy.scrap_CM_metadata_ROM(object_dic, data_dic)
+                st_dic = kodi_new_status_dic()
+                s_strategy = g_scrap_factory.create_CM_metadata(scraper_ID, platform)
+                s_strategy.scrap_CM_metadata_ROM(object_dic, data_dic, st_dic)
                 g_scrap_factory.destroy_CM()
-                kodi_display_user_message(status_dic)
-                if not status_dic['status']: return
+                if kodi_display_status_message(st_dic): return
 
         # --- Edit ROMs Assets/Artwork ---
         elif mindex == 1:
@@ -3330,7 +3328,7 @@ class Main:
                 new_order                           = range(num_roms)
                 new_order[current_ROM_position - 1] = current_ROM_position
                 new_order[current_ROM_position]     = current_ROM_position - 1
-                new_roms = OrderedDict()
+                new_roms = collections.OrderedDict()
                 for order_idx in new_order:
                     key_value_tuple = roms.items()[order_idx]
                     new_roms.update({key_value_tuple[0] : key_value_tuple[1]})
@@ -3362,7 +3360,7 @@ class Main:
                 new_order                           = range(num_roms)
                 new_order[current_ROM_position]     = current_ROM_position + 1
                 new_order[current_ROM_position + 1] = current_ROM_position
-                new_roms = OrderedDict()
+                new_roms = collections.OrderedDict()
                 for order_idx in new_order:
                     key_value_tuple = roms.items()[order_idx]
                     new_roms.update({key_value_tuple[0] : key_value_tuple[1]})
@@ -5276,9 +5274,7 @@ class Main:
                 all_roms[rom_id], rom_id in roms_fav_set)
         xbmcplugin.endOfDirectory(handle = self.addon_handle, succeeded = True, cacheToDisc = False)
 
-    #
     # Adds ROM to favourites
-    #
     def _command_add_to_favourites(self, categoryID, launcherID, romID):
         # ROM in Virtual Launcher
         # TODO if ROM in virtual launcher is not correctly linked, for example, if launcher
@@ -5301,10 +5297,11 @@ class Main:
             launcher = self.launchers[roms[romID]['launcherID']]
         # ROM in ROM Collection
         elif categoryID == VCATEGORY_COLLECTIONS_ID:
-            collections, update_tstamp = fs_load_Collection_index_XML(g_PATHS.COLLECTIONS_FILE_PATH)
-            roms_json_file = g_PATHS.COLLECTIONS_DIR.pjoin(collections[launcherID]['roms_base_noext'] + '.json')
+            COL = fs_load_Collection_index_XML(g_PATHS.COLLECTIONS_FILE_PATH)
+            roms_base_noext = COL['collections'][launcherID]['roms_base_noext']
+            roms_json_file = g_PATHS.COLLECTIONS_DIR.pjoin(roms_base_noext + '.json')
             rom_list = fs_load_Collection_ROMs_JSON(roms_json_file)
-            roms = OrderedDict()
+            roms = collections.OrderedDict()
             for crom in rom_list: roms[crom['id']] = crom
             launcher = self.launchers[roms[romID]['launcherID']]
         # ROM in standard launcher
@@ -5348,9 +5345,7 @@ class Main:
         kodi_notify('ROM {} added to Favourites'.format(roms[romID]['m_name']))
         kodi_refresh_container()
 
-    #
     # Manage Favourite/Collection ROMs as a whole.
-    #
     def _command_manage_favourites(self, categoryID, launcherID, romID):
         # --- Load ROMs ---
         if categoryID == VCATEGORY_FAVOURITES_ID:
@@ -5358,19 +5353,17 @@ class Main:
             roms_fav = fs_load_Favourites_JSON(g_PATHS.FAV_JSON_FILE_PATH)
         elif categoryID == VCATEGORY_COLLECTIONS_ID:
             log_debug('_command_manage_favourites() Managing Collection ROMs')
-            (collections, update_timestamp) = fs_load_Collection_index_XML(g_PATHS.COLLECTIONS_FILE_PATH)
-            collection = collections[launcherID]
+            COL = fs_load_Collection_index_XML(g_PATHS.COLLECTIONS_FILE_PATH)
+            collection = COL['collections'][launcherID]
             roms_json_file = g_PATHS.COLLECTIONS_DIR.pjoin(collection['roms_base_noext'] + '.json')
             collection_rom_list = fs_load_Collection_ROMs_JSON(roms_json_file)
             # NOTE ROMs in a collection are stored as a list and ROMs in Favourites are stored as
             #      a dictionary. Convert the Collection list into an ordered dictionary and then
             #      converted back the ordered dictionary into a list before saving the collection.
-            roms_fav = OrderedDict()
-            for collection_rom in collection_rom_list:
-                roms_fav[collection_rom['id']] = collection_rom
+            roms_fav = collections.OrderedDict()
+            for collection_rom in collection_rom_list: roms_fav[collection_rom['id']] = collection_rom
         else:
-            kodi_dialog_OK(
-                '_command_manage_favourites() should be called for Favourites or Collections. '
+            kodi_dialog_OK('_command_manage_favourites() should be called for Favourites or Collections. '
                 'This is a bug, please report it.')
             return
 
@@ -5629,7 +5622,7 @@ class Main:
             col_rom_list = [roms_fav[key] for key in roms_fav]
             name_list = [rom['m_name'] for rom in col_rom_list]
             sorted_idx_list = [i for (v, i) in sorted((v.lower(), i) for (i, v) in enumerate(name_list))]
-            new_roms_fav = OrderedDict()
+            new_roms_fav = collections.OrderedDict()
             for idx in sorted_idx_list:
                 rom = col_rom_list[idx]
                 new_roms_fav[rom['id']] = rom
@@ -5759,7 +5752,7 @@ class Main:
         if action == ACTION_DELETE_MACHINE:
             log_debug('_command_manage_most_played() ACTION_DELETE_MACHINE')
             rom_list = fs_load_Collection_ROMs_JSON(g_PATHS.RECENT_PLAYED_FILE_PATH)
-            roms = OrderedDict()
+            roms = collections.OrderedDict()
             for rom in rom_list: roms[rom['id']] = rom
             if not roms:
                 kodi_notify('Recently Played ROMs list is empty. Play some ROMs first!.')
@@ -5795,7 +5788,7 @@ class Main:
         elif action == ACTION_DELETE_MISSING:
             log_debug('_command_manage_most_played() ACTION_DELETE_MISSING')
             rom_list = fs_load_Collection_ROMs_JSON(g_PATHS.RECENT_PLAYED_FILE_PATH)
-            roms = OrderedDict()
+            roms = collections.OrderedDict()
             for rom in rom_list: roms[rom['id']] = rom
             if not roms:
                 kodi_notify('Recently Played ROMs list is empty. Play some ROMs first!.')
@@ -5976,51 +5969,53 @@ class Main:
     # Renders a listview with all collections
     #
     def _command_render_collections(self):
-        # >> Kodi sorting method
+        # Kodi sorting method
         xbmcplugin.addSortMethod(handle = self.addon_handle, sortMethod = xbmcplugin.SORT_METHOD_LABEL)
         xbmcplugin.addSortMethod(handle = self.addon_handle, sortMethod = xbmcplugin.SORT_METHOD_UNSORTED)
         self._misc_set_AEL_Content(AEL_CONTENT_VALUE_LAUNCHERS)
 
         # --- Load collection index ---
-        (collections, update_timestamp) = fs_load_Collection_index_XML(g_PATHS.COLLECTIONS_FILE_PATH)
-
-        # --- If the virtual category has no launchers then render nothing ---
-        if not collections:
+        COL = fs_load_Collection_index_XML(g_PATHS.COLLECTIONS_FILE_PATH)
+        if not COL['collections']:
             kodi_notify('No collections in database. Add a collection first.')
             xbmcplugin.endOfDirectory(handle = self.addon_handle, succeeded = True, cacheToDisc = False)
             return
 
         # --- Render ROM Collections as Categories ---
-        for collection_id in collections:
+        for collection_id in COL['collections']:
             # --- Create listitem ---
-            collection = collections[collection_id]
+            collection = COL['collections'][collection_id]
             collection_name = collection['m_name']
             listitem = xbmcgui.ListItem(collection_name)
-            listitem.setInfo('video', {'title'   : collection['m_name'],    'genre'   : collection['m_genre'],
-                                       'plot'    : collection['m_plot'],    'rating'  : collection['m_rating'],
-                                       'trailer' : collection['s_trailer'], 'overlay' : 4 })
+            listitem.setInfo('video', {
+                'title'   : collection['m_name'],    'genre'   : collection['m_genre'],
+                'plot'    : collection['m_plot'],    'rating'  : collection['m_rating'],
+                'trailer' : collection['s_trailer'], 'overlay' : KODI_ICON_OVERLAY_UNWATCHED,
+            })
             icon_path      = asset_get_default_asset_Category(collection, 'default_icon', 'DefaultFolder.png')
             fanart_path    = asset_get_default_asset_Category(collection, 'default_fanart')
             banner_path    = asset_get_default_asset_Category(collection, 'default_banner')
             poster_path    = asset_get_default_asset_Category(collection, 'default_poster')
             clearlogo_path = asset_get_default_asset_Category(collection, 'default_clearlogo')
-            listitem.setArt({'icon'   : icon_path,   'fanart' : fanart_path,
-                             'banner' : banner_path, 'poster' : poster_path, 'clearlogo' : clearlogo_path})
+            listitem.setArt({
+                'icon'   : icon_path,   'fanart' : fanart_path,
+                'banner' : banner_path, 'poster' : poster_path, 'clearlogo' : clearlogo_path,
+            })
 
             # --- Create context menu ---
             commands = []
             commands.append(('View ROM Collection data', self._misc_url_RunPlugin('VIEW', VCATEGORY_COLLECTIONS_ID, collection_id)))
-            commands.append(('Export Collection',        self._misc_url_RunPlugin('EXPORT_COLLECTION', VCATEGORY_COLLECTIONS_ID, collection_id)))
-            commands.append(('Edit Collection',          self._misc_url_RunPlugin('EDIT_COLLECTION', VCATEGORY_COLLECTIONS_ID, collection_id)))
-            commands.append(('Delete Collection',        self._misc_url_RunPlugin('DELETE_COLLECTION', VCATEGORY_COLLECTIONS_ID, collection_id), ))
-            commands.append(('Create New Collection',    self._misc_url_RunPlugin('ADD_COLLECTION')))
-            commands.append(('Import Collection',        self._misc_url_RunPlugin('IMPORT_COLLECTION')))
+            commands.append(('Export Collection', self._misc_url_RunPlugin('EXPORT_COLLECTION', VCATEGORY_COLLECTIONS_ID, collection_id)))
+            commands.append(('Edit Collection', self._misc_url_RunPlugin('EDIT_COLLECTION', VCATEGORY_COLLECTIONS_ID, collection_id)))
+            commands.append(('Delete Collection', self._misc_url_RunPlugin('DELETE_COLLECTION', VCATEGORY_COLLECTIONS_ID, collection_id), ))
+            commands.append(('Create New Collection', self._misc_url_RunPlugin('ADD_COLLECTION')))
+            commands.append(('Import Collection', self._misc_url_RunPlugin('IMPORT_COLLECTION')))
             commands.append(('Kodi File Manager', 'ActivateWindow(filemanager)'))
             commands.append(('AEL addon settings', 'Addon.OpenSettings({})'.format(cfg.addon.info_id)))
             if (xbmc.getCondVisibility("!Skin.HasSetting(KioskMode.Enabled)")):
                 listitem.addContextMenuItems(commands, replaceItems = True)
 
-            # >> Use ROMs renderer to display collection ROMs
+            # --- Add ROM Collection ---
             url_str = self._misc_url('SHOW_COLLECTION_ROMS', VCATEGORY_COLLECTIONS_ID, collection_id)
             xbmcplugin.addDirectoryItem(handle = self.addon_handle, url = url_str, listitem = listitem, isFolder = True)
         xbmcplugin.endOfDirectory(handle = self.addon_handle, succeeded = True, cacheToDisc = False)
@@ -6029,34 +6024,22 @@ class Main:
         self._misc_set_default_sorting_method()
         self._misc_set_AEL_Content(AEL_CONTENT_VALUE_ROMS)
 
-        # --- Load Collection index and ROMs ---
-        (collections, update_timestamp) = fs_load_Collection_index_XML(g_PATHS.COLLECTIONS_FILE_PATH)
-        collection = collections[launcherID]
+        # --- Load Collection index, ROMs, and render ---
+        COL = fs_load_Collection_index_XML(g_PATHS.COLLECTIONS_FILE_PATH)
+        collection = COL['collections'][launcherID]
         roms_json_file = g_PATHS.COLLECTIONS_DIR.pjoin(collection['roms_base_noext'] + '.json')
         collection_rom_list = fs_load_Collection_ROMs_JSON(roms_json_file)
         if not collection_rom_list:
             kodi_notify('Collection is empty. Add ROMs to this collection first.')
             xbmcplugin.endOfDirectory(handle = self.addon_handle, succeeded = True, cacheToDisc = False)
             return
-
-        # --- Display Collection ---
-        for rom in collection_rom_list:
-            self._gui_render_rom_row(categoryID, launcherID, rom)
+        for rom in collection_rom_list: self._gui_render_rom_row(categoryID, launcherID, rom)
         xbmcplugin.endOfDirectory(handle = self.addon_handle, succeeded = True, cacheToDisc = False)
 
-    #
     # Adds a new collection
-    #
     def _command_add_collection(self):
-        (collections, update_timestamp) = fs_load_Collection_index_XML(g_PATHS.COLLECTIONS_FILE_PATH)
-
-        # --- Get new collection name ---
-        keyboard = KodiKeyboardDialog('New Collection name')
-        keyboard.executeDialog()
-        if not keyboard.isConfirmed(): return
-        new_value_str = keyboard.getData().strip().decode('utf-8')
-
-        # --- Add new collection to database ---
+        COL = fs_load_Collection_index_XML(g_PATHS.COLLECTIONS_FILE_PATH)
+        new_value_str = kodi_get_keyboard_text('New Collection name')
         collection = fs_new_collection()
         collection_name = new_value_str
         collection_id_md5 = hashlib.md5(collection_name.encode('utf-8'))
@@ -6065,21 +6048,20 @@ class Main:
         collection['id']              = collection_UUID
         collection['m_name']          = collection_name
         collection['roms_base_noext'] = collection_base_name
-        collections[collection_UUID]  = collection
+        COL['collections'][collection_UUID]  = collection
         log_debug('_command_add_collection() id              "{}"'.format(collection['id']))
         log_debug('_command_add_collection() m_name          "{}"'.format(collection['m_name']))
         log_debug('_command_add_collection() roms_base_noext "{}"'.format(collection['roms_base_noext']))
 
         # --- Save collections XML database ---
-        fs_write_Collection_index_XML(g_PATHS.COLLECTIONS_FILE_PATH, collections)
+        fs_write_Collection_index_XML(g_PATHS.COLLECTIONS_FILE_PATH, COL['collections'])
         kodi_refresh_container()
         kodi_notify('Created ROM Collection "{}"'.format(collection_name))
 
     # Edits collection artwork
     def _command_edit_collection(self, categoryID, launcherID):
-        # --- Load collection index ---
-        (collections, update_timestamp) = fs_load_Collection_index_XML(g_PATHS.COLLECTIONS_FILE_PATH)
-        collection = collections[launcherID]
+        COL = fs_load_Collection_index_XML(g_PATHS.COLLECTIONS_FILE_PATH)
+        collection = COL['collections'][launcherID]
 
         # --- Shows a select box with the options to edit ---
         sDialog = KodiSelectDialog('Select action for ROM Collection {}'.format(collection['m_name']), [
@@ -6320,14 +6302,14 @@ class Main:
                 kodi_notify('ROM Collection Clearlogo mapped to {}'.format(asset_name))
 
         # Save collection index and refresh view.
-        fs_write_Collection_index_XML(g_PATHS.COLLECTIONS_FILE_PATH, collections)
+        fs_write_Collection_index_XML(g_PATHS.COLLECTIONS_FILE_PATH, COL['collections'])
         kodi_refresh_container()
 
     # Deletes a collection and associated ROMs.
     def _command_delete_collection(self, categoryID, launcherID):
         # --- Load collection index and ROMs ---
-        (collections, update_timestamp) = fs_load_Collection_index_XML(g_PATHS.COLLECTIONS_FILE_PATH)
-        collection = collections[launcherID]
+        COL = fs_load_Collection_index_XML(g_PATHS.COLLECTIONS_FILE_PATH)
+        collection = COL['collections'][launcherID]
         roms_json_file = g_PATHS.COLLECTIONS_DIR.pjoin(collection['roms_base_noext'] + '.json')
         collection_rom_list = fs_load_Collection_ROMs_JSON(roms_json_file)
 
@@ -6346,8 +6328,8 @@ class Main:
         except OSError:
             log_error('_gui_remove_launcher() (OSError) exception deleting "{}"'.format(collection_file_path.getOriginalPath()))
             kodi_notify_warn('OSError exception deleting collection JSON')
-        collections.pop(launcherID)
-        fs_write_Collection_index_XML(g_PATHS.COLLECTIONS_FILE_PATH, collections)
+        COL['collections'].pop(launcherID)
+        fs_write_Collection_index_XML(g_PATHS.COLLECTIONS_FILE_PATH, COL['collections'])
         kodi_refresh_container()
         kodi_notify('Deleted ROM Collection "{}"'.format(collection_name))
 
@@ -6373,10 +6355,10 @@ class Main:
             return
 
         # --- Load collection indices ---
-        collections, update_timestamp = fs_load_Collection_index_XML(g_PATHS.COLLECTIONS_FILE_PATH)
+        COL = fs_load_Collection_index_XML(g_PATHS.COLLECTIONS_FILE_PATH)
 
         # --- If collectionID already on index warn the user ---
-        if i_collection['id'] in collections:
+        if i_collection['id'] in COL['collections']:
             log_info('_command_import_collection() Collection {} already in AEL'.format(i_collection['m_name']))
             ret = kodi_dialog_yesno('A Collection with same ID exists. Overwrite?')
             if not ret: return
@@ -6478,12 +6460,12 @@ class Main:
         log_debug('_command_import_collection() Finished importing assets')
 
         # --- Add imported collection to database ---
-        collections[i_collection['id']] = i_collection
+        COL['collections'][i_collection['id']] = i_collection
         log_info('_command_import_collection() Imported Collection "{}" (id {})'.format(
             i_collection['m_name'], i_collection['id']))
 
         # --- Write ROM Collection databases ---
-        fs_write_Collection_index_XML(g_PATHS.COLLECTIONS_FILE_PATH, collections)
+        fs_write_Collection_index_XML(g_PATHS.COLLECTIONS_FILE_PATH, COL['collections'])
         fs_write_Collection_ROMs_JSON(g_PATHS.COLLECTIONS_DIR.pjoin(
             collection_base_name + '.json'), i_rom_list)
         kodi_dialog_OK('Imported ROM Collection "{}" metadata and assets.'.format(
@@ -6500,8 +6482,8 @@ class Main:
         out_dir_FN = FileName(output_dir)
 
         # --- Load collection ROMs ---
-        (collections, update_timestamp) = fs_load_Collection_index_XML(g_PATHS.COLLECTIONS_FILE_PATH)
-        collection = collections[launcherID]
+        COL = fs_load_Collection_index_XML(g_PATHS.COLLECTIONS_FILE_PATH)
+        collection = COL['collections'][launcherID]
         roms_json_file = g_PATHS.COLLECTIONS_DIR.pjoin(collection['roms_base_noext'] + '.json')
         rom_list = fs_load_Collection_ROMs_JSON(roms_json_file)
         if not rom_list:
@@ -6554,25 +6536,25 @@ class Main:
             new_collection_rom = fs_get_Favourite_from_ROM(roms[romID], launcher)
 
         # --- Load Collection index ---
-        (collections, update_timestamp) = fs_load_Collection_index_XML(g_PATHS.COLLECTIONS_FILE_PATH)
+        COL = fs_load_Collection_index_XML(g_PATHS.COLLECTIONS_FILE_PATH)
 
         # --- If no collections so long and thanks for all the fish ---
-        if not collections:
+        if not COL['collections']:
             kodi_dialog_OK('You have no Collections! Create a collection first before adding ROMs.')
             return
 
         # --- Ask user which Collection wants to add the ROM to ---
         collections_id = []
         collections_name = []
-        for key in sorted(collections, key = lambda x : collections[x]['m_name']):
-            collections_id.append(collections[key]['id'])
-            collections_name.append(collections[key]['m_name'])
+        for key in sorted(COL['collections'], key = lambda x : COL['collections'][x]['m_name']):
+            collections_id.append(COL['collections'][key]['id'])
+            collections_name.append(COL['collections'][key]['m_name'])
         selected_idx = KodiSelectDialog('Select the collection', collections_name).executeDialog()
         if selected_idx is None: return
         collectionID = collections_id[selected_idx]
 
         # --- Load Collection ROMs ---
-        collection = collections[collectionID]
+        collection = COL['collections'][collectionID]
         roms_json_file = g_PATHS.COLLECTIONS_DIR.pjoin(collection['roms_base_noext'] + '.json')
         collection_rom_list = fs_load_Collection_ROMs_JSON(roms_json_file)
         log_info('Adding ROM to Collection')
@@ -6991,8 +6973,8 @@ class Main:
                     info_text += self._misc_print_string_Category(category)
             elif view_type == VIEW_COLLECTION:
                 window_title = 'ROM Collection data'
-                (collections, update_timestamp) = fs_load_Collection_index_XML(g_PATHS.COLLECTIONS_FILE_PATH)
-                collection = collections[launcherID]
+                COL = fs_load_Collection_index_XML(g_PATHS.COLLECTIONS_FILE_PATH)
+                collection = COL['collections'][launcherID]
                 info_text = '[COLOR orange]ROM Collection information[/COLOR]\n'
                 info_text += self._misc_print_string_Collection(collection)
             else:
@@ -7133,8 +7115,8 @@ class Main:
                 # --- ROM in Collection ---
                 elif categoryID == VCATEGORY_COLLECTIONS_ID:
                     log_info('_command_view_menu() Viewing ROM in Collection ...')
-                    (collections, update_timestamp) = fs_load_Collection_index_XML(g_PATHS.COLLECTIONS_FILE_PATH)
-                    collection = collections[launcherID]
+                    COL = fs_load_Collection_index_XML(g_PATHS.COLLECTIONS_FILE_PATH)
+                    collection = COL['collections'][launcherID]
                     roms_json_file = g_PATHS.COLLECTIONS_DIR.pjoin(collection['roms_base_noext'] + '.json')
                     collection_rom_list = fs_load_Collection_ROMs_JSON(roms_json_file)
                     current_ROM_position = fs_collection_ROM_index_by_romID(romID, collection_rom_list)
@@ -7273,8 +7255,8 @@ class Main:
                     return
                 rom = recent_roms_list[current_ROM_position]
             elif categoryID == VCATEGORY_COLLECTIONS_ID:
-                (collections, update_timestamp) = fs_load_Collection_index_XML(g_PATHS.COLLECTIONS_FILE_PATH)
-                collection = collections[launcherID]
+                COL = fs_load_Collection_index_XML(g_PATHS.COLLECTIONS_FILE_PATH)
+                collection = COL['collections'][launcherID]
                 roms_json_file = g_PATHS.COLLECTIONS_DIR.pjoin(collection['roms_base_noext'] + '.json')
                 collection_rom_list = fs_load_Collection_ROMs_JSON(roms_json_file)
                 current_ROM_position = fs_collection_ROM_index_by_romID(romID, collection_rom_list)
@@ -7933,8 +7915,8 @@ class Main:
         # --- ROM in Collection ---
         elif categoryID == VCATEGORY_COLLECTIONS_ID:
             log_info('_command_run_rom() Launching ROM in Collection ...')
-            (collections, update_timestamp) = fs_load_Collection_index_XML(g_PATHS.COLLECTIONS_FILE_PATH)
-            collection = collections[launcherID]
+            COL = fs_load_Collection_index_XML(g_PATHS.COLLECTIONS_FILE_PATH)
+            collection = COL['collections'][launcherID]
             roms_json_file = g_PATHS.COLLECTIONS_DIR.pjoin(collection['roms_base_noext'] + '.json')
             collection_rom_list = fs_load_Collection_ROMs_JSON(roms_json_file)
             current_ROM_position = fs_collection_ROM_index_by_romID(romID, collection_rom_list)
@@ -9838,15 +9820,15 @@ class Main:
             # Scraper disk caches are flushed (written to disk) even if there is a message
             # to be printed here. A message here is that no images were found, however the
             # caches (internal, etc.) may have valid data.
+            st_dic = kodi_new_status_dic()
             scraper_strategy = g_scrap_factory.create_CM_asset(scraper_ID)
-            status_dic = scraper_strategy.scrap_CM_asset(object_dic, asset_ID, data_dic)
+            scraper_strategy.scrap_CM_asset(object_dic, asset_ID, data_dic, st_dic)
             # Flush caches.
             pDialog = KodiProgressDialog()
             pDialog.startProgress('Flushing scraper disk caches...')
             g_scrap_factory.destroy_CM()
             pDialog.endProgress()
-            kodi_display_user_message(status_dic)
-            if not status_dic['status']: return False
+            if kodi_display_status_message(st_dic): return False
 
         # If we reach this point, changes were made.
         # Categories/Launchers/ROMs must be saved, container must be refreshed.
@@ -9867,8 +9849,8 @@ class Main:
         self.launchers = {}
         self.categories[category_key] = category
 
-    # Checks if the category is empty (no launchers defined)
-    # Returns True if the category is empty. Returns False if non-empty
+    # Checks if a category is empty (no launchers defined)
+    # Returns True if the category is empty. Returns False if non-empty.
     def _cat_is_empty(self, categoryID):
         for launcherID in self.launchers.iterkeys():
             if self.launchers[launcherID]['categoryID'] == categoryID: return False
@@ -10019,13 +10001,13 @@ class Main:
         pDialog.endProgress()
 
         # Traverse every ROM Collection database and check/update Favourite ROMs.
-        (collections, update_timestamp) = fs_load_Collection_index_XML(g_PATHS.COLLECTIONS_FILE_PATH)
+        COL = fs_load_Collection_index_XML(g_PATHS.COLLECTIONS_FILE_PATH)
         pDialog.startProgress('Checking Collection ROMs...', len(collections))
-        for collection_id in collections:
+        for collection_id in COL['collections']:
             pDialog.updateProgressInc()
 
             # Fix collection
-            collection = collections[collection_id]
+            collection = COL['collections'][collection_id]
             if 'default_thumb' in collection:
                 collection['default_icon'] = collection['default_thumb']
                 collection.pop('default_thumb')
@@ -10053,7 +10035,7 @@ class Main:
             collection_rom_list = fs_load_Collection_ROMs_JSON(roms_json_file)
             for rom in collection_rom_list: self._misc_fix_Favourite_rom_object(rom)
             fs_write_Collection_ROMs_JSON(roms_json_file, collection_rom_list)
-        fs_write_Collection_index_XML(g_PATHS.COLLECTIONS_FILE_PATH, collections)
+        fs_write_Collection_index_XML(g_PATHS.COLLECTIONS_FILE_PATH, COL['collections'])
         pDialog.endProgress()
 
         # Load Most Played ROMs and check/update.

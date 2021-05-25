@@ -26,16 +26,20 @@ from __future__ import division
 from .constants import *
 
 # --- Python standard library ---
+import collections
 import hashlib
 import os
 import random
 import re
 import string
 import time
+import zlib
 if ADDON_RUNNING_PYTHON_2:
     import HTMLParser
+    import urlparse
 elif ADDON_RUNNING_PYTHON_3:
     import html.parser
+    import urllib.parse
 else:
     raise TypeError('Undefined Python runtime version.')
 
@@ -491,19 +495,23 @@ def text_format_ROM_title(title, clean_tags):
 # -------------------------------------------------------------------------------------------------
 # Get extension of URL. Returns '' if not found. Examples: 'png', 'jpg', 'gif'.
 def text_get_URL_extension(url):
-    path = urlparse.urlparse(url).path
+    if ADDON_RUNNING_PYTHON_2:
+        path = urlparse.urlparse(url).path
+    elif ADDON_RUNNING_PYTHON_3:
+        path = urllib.parse.urlparse(url).path
     ext = os.path.splitext(path)[1]
     if ext[0] == '.': ext = ext[1:] # Remove initial dot
-
     return ext
 
 # Defaults to 'jpg' if URL extension cannot be determined
 def text_get_image_URL_extension(url):
-    path = urlparse.urlparse(url).path
+    if ADDON_RUNNING_PYTHON_2:
+        path = urlparse.urlparse(url).path
+    elif ADDON_RUNNING_PYTHON_3:
+        path = urllib.parse.urlparse(url).path
     ext = os.path.splitext(path)[1]
     if ext[0] == '.': ext = ext[1:] # Remove initial dot
     ret = 'jpg' if ext == '' else ext
-
     return ret
 
 # -------------------------------------------------------------------------------------------------
@@ -629,7 +637,7 @@ def misc_read_bytes_in_chunks(file_bytes, chunk_size = 8192):
         yield data
 
 def misc_calculate_stream_checksums(file_bytes):
-    log_debug('Computing checksums of bytes stream...'.format(len(file_bytes)))
+    # log_debug('Computing checksums of bytes stream...'.format(len(file_bytes)))
     crc_prev = 0
     md5 = hashlib.md5()
     sha1 = hashlib.sha1()
@@ -642,18 +650,17 @@ def misc_calculate_stream_checksums(file_bytes):
     crc_prev = zlib.crc32(file_bytes, crc_prev)
     md5.update(file_bytes)
     sha1.update(file_bytes)
+    # Output data.
     crc_digest = '{:08X}'.format(crc_prev & 0xFFFFFFFF)
     md5_digest = md5.hexdigest()
     sha1_digest = sha1.hexdigest()
     size = len(file_bytes)
-
     checksums = {
         'crc'  : crc_digest.upper(),
         'md5'  : md5_digest.upper(),
         'sha1' : sha1_digest.upper(),
         'size' : size,
     }
-
     return checksums
 
 # Replace an item in dictionary. If dict_in is an OrderedDict then keep original order.
