@@ -10567,18 +10567,16 @@ class Main:
     # Offline Scraper database generation.
     def _command_exec_utils_show_DATs(self):
         log_debug('_command_exec_utils_show_DATs() Starting...')
-        DAT_STRING_LIMIT_CHARS = 80
+        DAT_STRING_LIMIT_CHARS = 75
 
         # --- Get files in No-Intro and Redump DAT directories ---
         NOINTRO_PATH_FN = FileName(self.settings['audit_nointro_dir'])
         if not NOINTRO_PATH_FN.exists():
-            kodi_dialog_OK('No-Intro DAT directory not found. '
-                'Please set it up in AEL addon settings.')
+            kodi_dialog_OK('No-Intro DAT directory not found. Please set it up in AEL addon settings.')
             return
         REDUMP_PATH_FN = FileName(self.settings['audit_redump_dir'])
         if not REDUMP_PATH_FN.exists():
-            kodi_dialog_OK('No-Intro DAT directory not found. '
-                'Please set it up in AEL addon settings.')
+            kodi_dialog_OK('No-Intro DAT directory not found. Please set it up in AEL addon settings.')
             return
 
         # --- Table header ---
@@ -10618,8 +10616,7 @@ class Main:
                 table_str.append([platform.compact_name, platform.DAT, DAT_str])
 
         # Print report
-        slist = []
-        slist.extend(text_render_table(table_str))
+        slist = text_render_table(table_str)
         full_string = '\n'.join(slist)
         kodi_display_text_window_mono('No-Intro/Redump DAT files report', full_string)
 
@@ -10758,7 +10755,6 @@ class Main:
         #    7800 BIOS (E).rom     NO         Wrong MD5   core a name
         #                                                 core b name
         #    7800 BIOS (U).rom     YES        OK          ---
-        #
         max_size_BIOS_filename = 0
         for BIOS_dic in Libretro_BIOS_list:
             if len(BIOS_dic['filename']) > max_size_BIOS_filename:
@@ -10769,19 +10765,19 @@ class Main:
             if len(BIOS_status_dic[key]) > max_size_status:
                 max_size_status = len(BIOS_status_dic[key])
 
-        str_list = []
-        str_list.append('Retroarch system dir "{}"\n'.format(sys_dir_FN.getPath()))
+        slist = []
+        slist.append('Retroarch system dir "{}"'.format(sys_dir_FN.getPath()))
         if check_only_mandatory:
-            str_list.append('Checking only mandatory BIOSes.\n\n')
+            slist.append('Checking only mandatory BIOSes.\n')
         else:
-            str_list.append('Checking mandatory and optional BIOSes.\n\n')
+            slist.append('Checking mandatory and optional BIOSes.\n')
         bios_str      = '{}{}'.format('BIOS name', ' ' * (max_size_BIOS_filename - len('BIOS name')))
         mandatory_str = 'Mandatory'
         status_str    = '{}{}'.format('Status', ' ' * (max_size_status - len('Status')))
         cores_str     = 'Cores affected'
         size_total = len(bios_str) + len(mandatory_str) + len(status_str) + len(cores_str) + 6
-        str_list.append('{}  {}  {}  {}\n'.format(bios_str, mandatory_str, status_str, cores_str))
-        str_list.append('{}\n'.format('-' * size_total))
+        slist.append('{}  {}  {}  {}'.format(bios_str, mandatory_str, status_str, cores_str))
+        slist.append('{}'.format('-' * size_total))
 
         for BIOS_dic in Libretro_BIOS_list:
             BIOS_filename = BIOS_dic['filename']
@@ -10797,23 +10793,24 @@ class Main:
             # Print affected core list
             core_list = BIOS_dic['cores']
             if len(core_list) == 0:
-                line_str = '{}  {}  {}\n'.format(filename_str, mandatory_str, status_str)
-                str_list.append(line_str)
+                line_str = '{}  {}  {}'.format(filename_str, mandatory_str, status_str)
+                slist.append(line_str)
             else:
                 num_spaces = len(filename_str) + 9 + len_status_str + 4
                 for i, core_name in enumerate(core_list):
                     beautiful_core_name = Retro_core_dic[core_name] if core_name in Retro_core_dic else core_name
                     if i == 0:
-                        line_str = '{}  {}  {}  {}\n'.format(filename_str, mandatory_str, status_str, beautiful_core_name)
-                        str_list.append(line_str)
+                        line_str = '{}  {}  {}  {}'.format(filename_str, mandatory_str,
+                            status_str, beautiful_core_name)
+                        slist.append(line_str)
                     else:
-                        line_str = '{}  {}\n'.format(' ' * num_spaces, beautiful_core_name)
-                        str_list.append(line_str)
+                        line_str = '{}  {}'.format(' ' * num_spaces, beautiful_core_name)
+                        slist.append(line_str)
 
         # Stats report
         log_info('Writing report file "{}"'.format(g_PATHS.BIOS_REPORT_FILE_PATH.getPath()))
-        utils_write_str_to_file(g_PATHS.BIOS_REPORT_FILE_PATH.getPath(), str_list)
-        full_string = ''.join(str_list)
+        utils_write_slist_to_file(g_PATHS.BIOS_REPORT_FILE_PATH.getPath(), slist)
+        full_string = '\n'.join(slist)
         kodi_display_text_window_mono('Retroarch BIOS report', full_string)
 
     # Use TGDB scraper to get the monthly allowance and report to the user.
