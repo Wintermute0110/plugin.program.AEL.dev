@@ -87,6 +87,6 @@
     <setting label="Show batch command window (Windows only)" type="bool" id="show_batch_window" default="false"/>
     <setting label="Close file descriptors (Windows only)" type="bool" id="windows_close_fds" default="true"/>
     <setting label="CD into aplication dir (Windows only)" type="bool" id="windows_cd_apppath" default="true"/>
-    <setting label="Log level" type="enum" id="log_level" default="2" values="ERROR|WARNING|INFO|VERBOSE|DEBUG" />
+    <setting label="Log level" type="enum" id="log_level" default="2" values="ERROR|WARNING|INFO|DEBUG" />
 </category>
 </settings>

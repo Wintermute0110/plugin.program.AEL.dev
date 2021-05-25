@@ -67,7 +67,7 @@ def autoconfig_export_launcher_str_list(launcher, category_name, str_list):
     # B) If path_* do not share a common root directory this function returns '' and then
     #    AEL writes all <path_*> tags in the XML file.
     ROM_asset_path = assets_get_ROM_asset_path(launcher)
-    log_verb('autoconfig_export_all() ROM_asset_path "{}"'.format(ROM_asset_path))
+    log_debug('autoconfig_export_all() ROM_asset_path "{}"'.format(ROM_asset_path))
 
     # Export Launcher
     str_list.append('<launcher>')
@@ -127,7 +127,7 @@ def autoconfig_export_all(categories, launchers, export_FN):
     # Data which is not string must be converted to string
     for categoryID in sorted(categories, key = lambda x : categories[x]['m_name']):
         category = categories[categoryID]
-        log_verb('autoconfig_export_all() Category "{}" (ID "{}")'.format(category['m_name'], categoryID))
+        log_debug('autoconfig_export_all() Category "{}" (ID "{}")'.format(category['m_name'], categoryID))
         autoconfig_export_category_str_list(category, str_list)
 
     # --- Export Launchers and add XML tail ---
@@ -141,7 +141,7 @@ def autoconfig_export_all(categories, launchers, export_FN):
         else:
             kodi_dialog_OK('Launcher category not found. This is a bug, please report it.')
             return
-        log_verb('autoconfig_export_all() Launcher "{}" (ID "{}")'.format(launcher['m_name'], launcherID))
+        log_debug('autoconfig_export_all() Launcher "{}" (ID "{}")'.format(launcher['m_name'], launcherID))
         autoconfig_export_launcher_str_list(launcher, category_name, str_list)
     str_list.append('</advanced_emulator_launcher_configuration>')
     str_list.append('')
@@ -158,7 +158,7 @@ def autoconfig_export_launcher(launcher, export_FN, categories):
     else:
         kodi_dialog_OK('Launcher category not found. This is a bug, please report it.')
         raise AEL_Error('Error exporting Launcher XML configuration')
-    log_verb('autoconfig_export_launcher() Launcher "{}" (ID "{}")'.format(launcher['m_name'], launcherID))
+    log_debug('autoconfig_export_launcher() Launcher "{}" (ID "{}")'.format(launcher['m_name'], launcherID))
 
     str_list = []
     str_list.append('<?xml version="1.0" encoding="utf-8" standalone="yes"?>')
@@ -172,7 +172,7 @@ def autoconfig_export_launcher(launcher, export_FN, categories):
 # Export a single Category XML configuration.
 # Check if the output XML file exists (and show a warning dialog if so) is done in caller.
 def autoconfig_export_category(category, export_FN):
-    log_verb('autoconfig_export_category() Category "{}" (ID "{}")'.format(category['m_name'], category['id']))
+    log_debug('autoconfig_export_category() Category "{}" (ID "{}")'.format(category['m_name'], category['id']))
     str_list = []
     str_list.append('<?xml version="1.0" encoding="utf-8" standalone="yes"?>')
     str_list.append('<!-- Exported by AEL on {} -->'.format(time.strftime("%Y-%m-%d %H:%M:%S")))
@@ -298,7 +298,7 @@ def autoconfig_search_category_by_name(i_category, categories):
 def autoconfig_import_launchers(CATEGORIES_FILE_PATH, ROMS_DIR, categories, launchers, import_FN):
     # Load XML file. Fill missing XML tags with sensible defaults.
     __debug_xml_parser = True
-    log_verb('autoconfig_import_launchers() Loading {}'.format(import_FN.getOriginalPath()))
+    log_debug('autoconfig_import_launchers() Loading {}'.format(import_FN.getOriginalPath()))
     xml_tree = utils_load_XML_to_ET(import_FN.getOriginalPath())
     xml_root = xml_tree.getroot()
 
@@ -575,7 +575,7 @@ def autoconfig_import_category(categories, categoryID, i_category, import_FN):
 
         # Set asset field
         categories[categoryID][AInfo.key] = listitems_asset_paths[ret_idx]
-        log_verb('Set category artwork "{}" = "{}"'.format(AInfo.key, listitems_asset_paths[ret_idx]))
+        log_debug('Set category artwork "{}" = "{}"'.format(AInfo.key, listitems_asset_paths[ret_idx]))
 
 # Imports/Edits a launcher with an extenal XML config file.
 def autoconfig_import_launcher(ROMS_DIR, categories, launchers, categoryID, launcherID, i_launcher, import_FN):
@@ -974,7 +974,7 @@ def autoconfig_import_launcher(ROMS_DIR, categories, launchers, categoryID, laun
 
         # Set asset field
         launchers[launcherID][AInfo.key] = listitems_asset_paths[ret_idx]
-        log_verb('Set launcher artwork "{}" = "{}"'.format(AInfo.key, listitems_asset_paths[ret_idx]))
+        log_debug('Set launcher artwork "{}" = "{}"'.format(AInfo.key, listitems_asset_paths[ret_idx]))
 
     # Rename ROMS JSON/XML only if there is a change in filenames.
     # Regenerate roms_base_noext and rename old one if necessary.
@@ -1021,7 +1021,7 @@ def autoconfig_search_asset_file_list(asset_prefix, AInfo, norm_asset_dir_FN, fi
         if m:
             # log_debug('MATCH   "{}"'.format(m.group(0)))
             asset_full_path = norm_asset_dir_FN.pjoin(file)
-            # log_verb('Adding  "{}"'.format(asset_full_path.getPath()))
+            # log_debug('Adding  "{}"'.format(asset_full_path.getPath()))
             asset_file_list.append(asset_full_path.getPath())
     # log_debug('autoconfig_search_asset_file_list() END')
 
