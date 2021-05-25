@@ -23,6 +23,7 @@ from resources.lib.repositories import *
 from resources.app.commands.mediator import AppMediator
 
 from resources.lib.settings import *
+from resources.lib.constants import *
 from resources.lib import globals
 from resources.lib.utils import kodi
 from resources.lib.utils import io
@@ -36,12 +37,16 @@ def cmd_execute_import_launchers(args):
 
     uow = UnitOfWork(globals.g_PATHS.DATABASE_FILE_PATH)
     with uow:
+        addon_repository      = AelAddonRepository(uow)
+        available_addons      = addon_repository.find_all()
+        
         categories_repository = CategoryRepository(uow)
         existing_categories   = [*categories_repository.find_all_categories()]
 
         romsets_repository    = ROMSetRepository(uow)
         existing_romsets      = [*romsets_repository.find_all_romsets()]
 
+        available_addon_ids   = { a.get_addon_id() : a for a in available_addons }
         existing_category_ids = map(lambda c: c.get_id(), existing_categories)
         existing_romset_ids   = map(lambda r: r.get_id(), existing_romsets)
 
@@ -70,6 +75,7 @@ def cmd_execute_import_launchers(args):
                     categories_to_insert.append(category_to_import)
 
             for launcher_to_import in launchers_to_import:
+                _apply_addon_launcher_for_legacy_launcher(launcher_to_import, available_addon_ids)                
                 if launcher_to_import.get_id() in existing_romset_ids:
                      # >> Romset exists (by name). Overwrite?
                     logger.debug('ROMSet found. Edit existing ROMSet.')
@@ -99,7 +105,6 @@ def cmd_execute_import_launchers(args):
     kodi.event(method='RENDER_VIEWS')
     kodi.notify('Finished importing Categories/Launchers')
 
-
 @AppMediator.register('RESET_DATABASE')
 def cmd_execute_reset_db(args):
     if not kodi.dialog_yesno('Are you sure you want to reset the database?'):
@@ -110,3 +115,84 @@ def cmd_execute_reset_db(args):
 
     kodi.event(method='RENDER_VIEWS')
     kodi.notify('Finished resetting the database')
+
+def _apply_addon_launcher_for_legacy_launcher(launcher_data: ROMSet, available_addons: typing.Dict[str, AelAddon]):
+    
+    launcher_type = launcher_data.get_custom_attribute('type')
+    
+    if launcher_type is None:
+        # 1.9x version
+        launcher_addon = available_addons['plugin.program.AEL.AppLauncher'] if 'plugin.program.AEL.AppLauncher' in available_addons else None
+        launcher_args = {
+            'application': launcher_data.get_custom_attribute['application'],
+            'args': launcher_data.get_custom_attribute['args'],
+            'args_extra': launcher_data.get_custom_attribute['args_extra']
+        }        
+        launcher_data.add_launcher(launcher_addon, launcher_args, True)
+        return
+    
+    if launcher_type == OBJ_LAUNCHER_STANDALONE:
+        launcher_addon =  available_addons['plugin.program.AEL.AppLauncher'] if 'plugin.program.AEL.AppLauncher' in available_addons else None
+        if launcher_addon is None: return
+        launcher_args = {
+            'application': launcher_data.get_custom_attribute['application'],
+            'args': launcher_data.get_custom_attribute['args'],
+            'args_extra': launcher_data.get_custom_attribute['args_extra']
+        }        
+        launcher_data.add_launcher(launcher_addon, launcher_args, True)
+        return
+    
+    if launcher_type == OBJ_LAUNCHER_ROM:
+        launcher_addon =  available_addons['plugin.program.AEL.AppLauncher'] if 'plugin.program.AEL.AppLauncher' in available_addons else None
+        if launcher_addon is None: return
+        launcher_args = {
+            'application': launcher_data.get_custom_attribute['application'],
+            'args': launcher_data.get_custom_attribute['args'],
+            'args_extra': launcher_data.get_custom_attribute['args_extra']
+        }        
+        launcher_data.add_launcher(launcher_addon, launcher_args, True)
+        return
+    
+    if launcher_type == OBJ_LAUNCHER_RETROPLAYER:
+        launcher_addon =  available_addons['plugin.program.AEL.RetroplayerLauncher'] if 'plugin.program.AEL.RetroplayerLauncher' in available_addons else None
+        if launcher_addon is None: return
+        launcher_args = {
+            'application': launcher_data.get_custom_attribute['application'],
+            'args': launcher_data.get_custom_attribute['args'],
+            'args_extra': launcher_data.get_custom_attribute['args_extra']
+        }        
+        launcher_data.add_launcher(launcher_addon, launcher_args, True)
+        return
+    
+    if launcher_type == OBJ_LAUNCHER_RETROARCH:
+        launcher_addon =  available_addons['plugin.program.AEL.RetroarchLauncher'] if 'plugin.program.AEL.RetroarchLauncher' in available_addons else None
+        if launcher_addon is None: return
+        launcher_args = {
+            'core': launcher_data.get_custom_attribute['retro_core'],
+            'core_info': launcher_data.get_custom_attribute['retro_core_info'],
+            'config': launcher_data.get_custom_attribute['retro_config']
+        }        
+        launcher_data.add_launcher(launcher_addon, launcher_args, True)
+        return
+    
+    if launcher_type == OBJ_LAUNCHER_NVGAMESTREAM:
+        launcher_addon =  available_addons['plugin.program.AEL.GamestreamLauncher'] if 'plugin.program.AEL.GamestreamLauncher' in available_addons else None   
+        if launcher_addon is None: return
+        launcher_args = {
+            'application': launcher_data.get_custom_attribute['application'],
+            'args': launcher_data.get_custom_attribute['args'],
+            'args_extra': launcher_data.get_custom_attribute['args_extra']
+        }        
+        launcher_data.add_launcher(launcher_addon, launcher_args, True)
+        return
+    
+    if launcher_type == OBJ_LAUNCHER_STEAM:
+        launcher_addon =  available_addons['plugin.program.AEL.SteamLauncher'] if 'plugin.program.AEL.SteamLauncher' in available_addons else None   
+        if launcher_addon is None: return
+        launcher_args = {
+            'application': launcher_data.get_custom_attribute['application'],
+            'args': launcher_data.get_custom_attribute['args'],
+            'args_extra': launcher_data.get_custom_attribute['args_extra']
+        }        
+        launcher_data.add_launcher(launcher_addon, launcher_args, True)
+        return

@@ -73,17 +73,18 @@ def run_plugin(addon_argv):
 # -------------------------------------------------------------------------------------------------
 @router.route('/')
 def vw_route_render_root():
-    list_items_data = qry_get_root_items()
-    context_items = build_context_menu_items(is_category=True)
+    container = qry_get_root_items()
+    container_context_items = qry_container_context_menu_items(container)
 
-    render_list_items(list_items_data, context_items)
+    render_list_items(container, container_context_items)
     xbmcplugin.endOfDirectory(handle = router.handle, succeeded = True, cacheToDisc = False)
 
 @router.route('/collection/<collection_id>')
 def vw_route_render_collection(collection_id: str):
-    list_items_data = qry_get_collection_items(collection_id)
-    
-    render_list_items(list_items_data)
+    container = qry_get_collection_items(collection_id)
+    container_context_items = qry_container_context_menu_items(container)
+
+    render_list_items(container, container_context_items)
     xbmcplugin.endOfDirectory(handle = router.handle, succeeded = True, cacheToDisc = False)
 
 # -------------------------------------------------------------------------------------------------
@@ -91,15 +92,22 @@ def vw_route_render_collection(collection_id: str):
 # -------------------------------------------------------------------------------------------------
 @router.route('/utilities')
 def vw_route_render_utilities_vlaunchers():
-    list_items_data = qry_get_utilities_items()
-    context_items = build_context_menu_items()
+    container = qry_get_utilities_items()
+    container_context_items = qry_container_context_menu_items(container)
 
-    render_list_items(list_items_data, context_items)
+    render_list_items(container, container_context_items)
     xbmcplugin.endOfDirectory(handle = router.handle, succeeded = True, cacheToDisc = False)
 
+# -------------------------------------------------------------------------------------------------
+# Command execution
+# -------------------------------------------------------------------------------------------------
 @router.route('/execute/command/<cmd>')
 def vw_execute_cmd(cmd: str):
     kodi.event(method=cmd.capitalize())
+
+@router.route('execute/categories/add/<category_id>')
+def vw_add_category(category_id: str):
+    kodi.event(method='ADD_CATEGORY', data={'category_id': category_id})
 
 @router.route('EXECUTE')
 def vw_route_execute_rom(rom_id):
@@ -112,12 +120,12 @@ def vw_route_execute_rom(rom_id):
 #
 # Renders all categories without Favourites, Collections, virtual categories, etc.
 #
-def render_list_items(list_items_data, context_items = []):
+def render_list_items(container_data, container_context_items = []):
     vw_misc_set_all_sorting_methods()
-    vw_misc_set_AEL_Content(AEL_CONTENT_VALUE_LAUNCHERS)
+    vw_misc_set_AEL_Content(container_data['type'])
     vw_misc_clear_AEL_Launcher_Content()
 
-    for list_item_data in list_items_data:
+    for list_item_data in container_data['items']:
         
         name        = list_item_data['name']
         url_str     = list_item_data['url']
@@ -130,19 +138,10 @@ def render_list_items(list_items_data, context_items = []):
         list_item.setProperties(list_item_data['properties'])
 
         if xbmc.getCondVisibility("!Skin.HasSetting(KioskMode.Enabled)"):
-            list_item.addContextMenuItems(context_items)
+            item_context_items = qry_listitem_context_menu_items(list_item_data, container_data)
+            list_item.addContextMenuItems(item_context_items + container_context_items)
 
         xbmcplugin.addDirectoryItem(handle = router.handle, url = url_str, listitem = list_item, isFolder = folder_flag)
-
-def build_context_menu_items(is_category = False):
-    # --- Create context menu ---
-    commands = []
-    is_category: commands.append(('Add new Collection', router.url_for('ADD_LAUNCHER_ROOT')))
-    is_category: commands.append(('Add new Category', router.url_for('ADD_CATEGORY')))
-    commands.append(('Open Kodi file manager', 'ActivateWindow(filemanager)'))
-    commands.append(('AEL addon settings', 'Addon.OpenSettings({0})'.format(addon_id)))
-
-    return commands
 
 # -------------------------------------------------------------------------------------------------
 # UI helper methods

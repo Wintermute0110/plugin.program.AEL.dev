@@ -113,6 +113,13 @@ def dialog_yesno_timer(text, timer_ms = 30000, title = 'Advanced Emulator Launch
 def browse(type = 1, text='Choose files', shares='files', mask=None, multiple=False):
     return xbmcgui.Dialog().browse(type, text, shares, mask, enableMultiple = multiple)
 
+# Show keyboard dialog for user input. Returns None if not confirmed.
+def dialog_keyboard(title, text='') -> str:
+    keyboard = xbmc.Keyboard(text, title)
+    keyboard.doModal()
+    if not keyboard.isConfirmed(): return None
+    return keyboard.getText()
+
 def refresh_container():
     logger.debug('kodi_refresh_container()')
     xbmc.executebuiltin('Container.Refresh')

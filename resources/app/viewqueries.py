@@ -34,11 +34,21 @@ from resources.lib.constants import *
 
 logger = logging.getLogger(__name__)
 
+#
+# Root view items
+#
 def qry_get_root_items():
     views_repository = ViewRepository(globals.g_PATHS, globals.router)
-    list_items_data = views_repository.find_root_items()
-    yield from list_items_data
-
+    container = views_repository.find_root_items()
+    
+    if container is None:
+        container = {
+            'id': '',
+            'name': 'root',
+            'type': OBJ_CATEGORY,
+            'items': []
+        }
+    
     vcategory_fanart = globals.g_PATHS.FANART_FILE_PATH.getPath()
     # --- AEL Favourites special category ---
     if not getSettingAsBool('display_hide_favs'): 
@@ -46,7 +56,7 @@ def qry_get_root_items():
         vcategory_name   = '<Favourites>'
         vcategory_icon   = globals.g_PATHS.ADDON_CODE_DIR.pjoin('media/theme/Favourites_icon.png').getPath()
         vcategory_poster = globals.g_PATHS.ADDON_CODE_DIR.pjoin('media/theme/Favourites_poster.png').getPath()
-        yield {
+        container['items'].append({
             'name': vcategory_name,
             'url': globals.router.url_for_path('vcategory/favourites'), #SHOW_FAVOURITES
             'is_folder': True,
@@ -58,7 +68,7 @@ def qry_get_root_items():
             },
             'art': { 'icon' : vcategory_icon, 'fanart' : vcategory_fanart, 'poster' : vcategory_poster },
             'properties': { AEL_CONTENT_LABEL: AEL_CONTENT_VALUE_ROM_LAUNCHER }
-        }
+        })
 
     # --- AEL Collections special category ---
     #if not getSettingAsBool('display_hide_collections'): render_vcategory_collections_row()
@@ -73,7 +83,7 @@ def qry_get_root_items():
         vcategory_name   = '[Recently played ROMs]'
         vcategory_icon   = globals.g_PATHS.ADDON_CODE_DIR.pjoin('media/theme/Recently_played_icon.png').getPath()
         vcategory_poster = globals.g_PATHS.ADDON_CODE_DIR.pjoin('media/theme/Recently_played_poster.png').getPath()
-        yield {
+        container['items'].append({
             'name': vcategory_name,
             'url': globals.router.url_for_path('vcategory/recently_played'), #SHOW_RECENTLY_PLAYED'
             'is_folder': True,
@@ -85,13 +95,13 @@ def qry_get_root_items():
             },
             'art': { 'icon' : vcategory_icon, 'fanart' : vcategory_fanart, 'poster' : vcategory_poster },
             'properties': { AEL_CONTENT_LABEL: AEL_CONTENT_VALUE_ROM_LAUNCHER }
-        }
+        })
 
     if not getSettingAsBool('display_hide_mostplayed'): 
         vcategory_name   = '[Most played ROMs]'
         vcategory_icon   = globals.g_PATHS.ADDON_CODE_DIR.pjoin('media/theme/Most_played_icon.png').getPath()
         vcategory_poster = globals.g_PATHS.ADDON_CODE_DIR.pjoin('media/theme/Most_played_poster.png').getPath()
-        yield {
+        container['items'].append({
             'name': vcategory_name,
             'url': globals.router.url_for_path('vcategory/most_played'), #SHOW_MOST_PLAYED
             'is_folder': True,
@@ -103,13 +113,13 @@ def qry_get_root_items():
             },
             'art': { 'icon' : vcategory_icon, 'fanart' : vcategory_fanart, 'poster' : vcategory_poster },
             'properties': { AEL_CONTENT_LABEL: AEL_CONTENT_VALUE_ROM_LAUNCHER }
-        }
+        })
         
     if not getSettingAsBool('display_hide_utilities'): 
         vcategory_name   = 'Utilities'
         vcategory_icon   = globals.g_PATHS.ICON_FILE_PATH.getPath()
         vcategory_fanart = globals.g_PATHS.FANART_FILE_PATH.getPath()
-        yield {
+        container['items'].append({
             'name': vcategory_name,
             'url': globals.router.url_for_path('utilities'), #SHOW_UTILITIES_VLAUNCHERS
             'is_folder': True,
@@ -121,13 +131,13 @@ def qry_get_root_items():
             },
             'art': { 'icon' : vcategory_icon, 'fanart' : vcategory_fanart, 'poster' : vcategory_poster },
             'properties': { AEL_CONTENT_LABEL: AEL_CONTENT_VALUE_CATEGORY }
-        }
+        })
         
     if not getSettingAsBool('display_hide_g_reports'): 
         vcategory_name   = 'Global Reports'
         vcategory_icon   = globals.g_PATHS.ICON_FILE_PATH.getPath()
         vcategory_fanart = globals.g_PATHS.FANART_FILE_PATH.getPath()
-        yield {
+        container['items'].append({
             'name': vcategory_name,
             'url': globals.router.url_for_path('globalreports'), #SHOW_GLOBALREPORTS_VLAUNCHERS'
             'is_folder': True,
@@ -139,20 +149,35 @@ def qry_get_root_items():
             },
             'art': { 'icon' : vcategory_icon, 'fanart' : vcategory_fanart, 'poster' : vcategory_poster },
             'properties': { AEL_CONTENT_LABEL: AEL_CONTENT_VALUE_CATEGORY }
-        }
+        })
+    
+    return container
 
-def qry_get_collection_items(collection_id: str) -> typing.Iterator[typing.Any]:
+#
+# Collection items.
+#
+def qry_get_collection_items(collection_id: str):
     views_repository = ViewRepository(globals.g_PATHS, globals.router)
-    list_items_data = views_repository.find_items(collection_id)
-    yield from list_items_data
+    container = views_repository.find_items(collection_id)
+    return container
 
+#
+# Utilities items
+#
 def qry_get_utilities_items():
     # --- Common artwork for all Utilities VLaunchers ---
     vcategory_icon   = globals.g_PATHS.ADDON_CODE_DIR.pjoin('media/theme/Utilities_icon.png').getPath()
     vcategory_fanart = globals.g_PATHS.FANART_FILE_PATH.getPath()
     vcategory_poster = globals.g_PATHS.ADDON_CODE_DIR.pjoin('media/theme/Utilities_poster.png').getPath()
     
-    yield {
+    container = {
+        'id': '',
+        'name': 'utilities',
+        'type': OBJ_NONE,
+        'items': []
+    }
+
+    container['items'].append({
         'name': 'Reset database',
         'url': globals.router.url_for_path('execute/command/reset_database'),
         'is_folder': False,
@@ -163,10 +188,9 @@ def qry_get_utilities_items():
             'overlay': 4
         },
         'art': { 'icon' : vcategory_icon, 'fanart' : vcategory_fanart, 'poster' : vcategory_poster  },
-        'properties': { AEL_CONTENT_LABEL: AEL_CONTENT_VALUE_ROM_LAUNCHER }
-    }
-    
-    yield {
+        'properties': { AEL_CONTENT_LABEL: AEL_CONTENT_VALUE_NONE }
+    })
+    container['items'].append({
         'name': 'Rebuild views',
         'url': globals.router.url_for_path('execute/command/render_views'),
         'is_folder': False,
@@ -177,10 +201,9 @@ def qry_get_utilities_items():
             'overlay': 4
         },
         'art': { 'icon' : vcategory_icon, 'fanart' : vcategory_fanart, 'poster' : vcategory_poster  },
-        'properties': { AEL_CONTENT_LABEL: AEL_CONTENT_VALUE_ROM_LAUNCHER }
-    }
-
-    yield {
+        'properties': { AEL_CONTENT_LABEL: AEL_CONTENT_VALUE_NONE }
+    })
+    container['items'].append({
         'name': 'Scan for plugin-addons',
         'url': globals.router.url_for_path('execute/command/scan_for_addons'),
         'is_folder': False,
@@ -191,10 +214,9 @@ def qry_get_utilities_items():
             'overlay': 4
         },
         'art': { 'icon' : vcategory_icon, 'fanart' : vcategory_fanart, 'poster' : vcategory_poster  },
-        'properties': { AEL_CONTENT_LABEL: AEL_CONTENT_VALUE_ROM_LAUNCHER }
-    }
-    
-    yield {
+        'properties': { AEL_CONTENT_LABEL: AEL_CONTENT_VALUE_NONE }
+    })
+    container['items'].append({
         'name': 'Import category/launcher XML configuration file',
         'url': globals.router.url_for_path('execute/command/import_launchers'),
         'is_folder': False,
@@ -205,10 +227,9 @@ def qry_get_utilities_items():
             'overlay': 4
         },
         'art': { 'icon' : vcategory_icon, 'fanart' : vcategory_fanart, 'poster' : vcategory_poster  },
-        'properties': { AEL_CONTENT_LABEL: AEL_CONTENT_VALUE_ROM_LAUNCHER }
-    }
-
-    yield {
+        'properties': { AEL_CONTENT_LABEL: AEL_CONTENT_VALUE_NONE }
+    })
+    container['items'].append({
         'name': 'Export category/launcher XML configuration file',
         'url': globals.router.url_for_path('utilities/export_launchers'), #EXECUTE_UTILS_EXPORT_LAUNCHERS
         'is_folder': False,
@@ -221,10 +242,9 @@ def qry_get_utilities_items():
             'overlay': 4
         },
         'art': { 'icon' : vcategory_icon, 'fanart' : vcategory_fanart, 'poster' : vcategory_poster  },
-        'properties': { AEL_CONTENT_LABEL: AEL_CONTENT_VALUE_ROM_LAUNCHER }
-    }
-
-    yield {
+        'properties': { AEL_CONTENT_LABEL: AEL_CONTENT_VALUE_NONE }
+    })
+    container['items'].append({
         'name': 'Check/Update all databases',
         'url': globals.router.url_for_path('EXECUTE_UTILS_CHECK_DATABASE'),
         'is_folder': False,
@@ -237,10 +257,9 @@ def qry_get_utilities_items():
             'overlay': 4
         },
         'art': { 'icon' : vcategory_icon, 'fanart' : vcategory_fanart, 'poster' : vcategory_poster  },
-        'properties': { AEL_CONTENT_LABEL: AEL_CONTENT_VALUE_ROM_LAUNCHER }
-    }
-
-    yield {
+        'properties': { AEL_CONTENT_LABEL: AEL_CONTENT_VALUE_NONE }
+    })
+    container['items'].append({
         'name': 'Check Launchers',
         'url': globals.router.url_for_path('EXECUTE_UTILS_CHECK_LAUNCHERS'),
         'is_folder': False,
@@ -252,10 +271,9 @@ def qry_get_utilities_items():
             'overlay': 4
         },
         'art': { 'icon' : vcategory_icon, 'fanart' : vcategory_fanart, 'poster' : vcategory_poster  },
-        'properties': { AEL_CONTENT_LABEL: AEL_CONTENT_VALUE_ROM_LAUNCHER }
-    }
-
-    yield {
+        'properties': { AEL_CONTENT_LABEL: AEL_CONTENT_VALUE_NONE }
+    })
+    container['items'].append({
         'name': 'Check Launcher ROMs sync status',
         'url': globals.router.url_for_path('EXECUTE_UTILS_CHECK_LAUNCHER_SYNC_STATUS'),
         'is_folder': False,
@@ -269,10 +287,9 @@ def qry_get_utilities_items():
             'overlay': 4
         },
         'art': { 'icon' : vcategory_icon, 'fanart' : vcategory_fanart, 'poster' : vcategory_poster  },
-        'properties': { AEL_CONTENT_LABEL: AEL_CONTENT_VALUE_ROM_LAUNCHER }
-    }
-
-    yield {
+        'properties': { AEL_CONTENT_LABEL: AEL_CONTENT_VALUE_NONE }
+    })
+    container['items'].append({
         'name': 'Check ROMs artwork image integrity',
         'url': globals.router.url_for_path('EXECUTE_UTILS_CHECK_ROM_ARTWORK_INTEGRITY'),
         'is_folder': False,
@@ -285,10 +302,9 @@ def qry_get_utilities_items():
             'overlay': 4
         },
         'art': { 'icon' : vcategory_icon, 'fanart' : vcategory_fanart, 'poster' : vcategory_poster  },
-        'properties': { AEL_CONTENT_LABEL: AEL_CONTENT_VALUE_ROM_LAUNCHER }
-    }
-
-    yield {
+        'properties': { AEL_CONTENT_LABEL: AEL_CONTENT_VALUE_NONE }
+    })
+    container['items'].append({
         'name': 'Delete ROMs redundant artwork',
         'url': globals.router.url_for_path('EXECUTE_UTILS_DELETE_ROM_REDUNDANT_ARTWORK'),
         'is_folder': False,
@@ -300,19 +316,31 @@ def qry_get_utilities_items():
             'overlay': 4
         },
         'art': { 'icon' : vcategory_icon, 'fanart' : vcategory_fanart, 'poster' : vcategory_poster  },
-        'properties': { AEL_CONTENT_LABEL: AEL_CONTENT_VALUE_ROM_LAUNCHER }
-    }
+        'properties': { AEL_CONTENT_LABEL: AEL_CONTENT_VALUE_NONE }
+    })
+    
+    return container
 
+#
+# Virtual category items
+#
 def qry_get_vcategory_items(self):
     vcategory_fanart = globals.g_PATHS.FANART_FILE_PATH.getPath()
-
+    
+    container = {
+        'id': '',
+        'name': 'virtual categories',
+        'type': OBJ_CATEGORY_VIRTUAL,
+        'items': []
+    }
+    
     # --- AEL Favourites special category ---
     if not getSettingAsBool('display_hide_favs'): 
         # fav_icon   = 'DefaultFolder.png'
         vcategory_name   = '<Favourites>'
         vcategory_icon   = globals.g_PATHS.ADDON_CODE_DIR.pjoin('media/theme/Favourites_icon.png').getPath()
         vcategory_poster = globals.g_PATHS.ADDON_CODE_DIR.pjoin('media/theme/Favourites_poster.png').getPath()
-        yield {
+        container['items'].append({
             'name': vcategory_name,
             'url': globals.router.url_for_path('vcategory/favourites'), #SHOW_FAVOURITES
             'is_folder': True,
@@ -323,8 +351,8 @@ def qry_get_vcategory_items(self):
                 'overlay': 4
             },
             'art': { 'icon' : vcategory_icon, 'fanart' : vcategory_fanart, 'poster' : vcategory_poster },
-            'properties': { AEL_CONTENT_LABEL: AEL_CONTENT_VALUE_ROM_LAUNCHER }
-        }
+            'properties': { AEL_CONTENT_LABEL: AEL_CONTENT_VALUE_CATEGORY }
+        })
 
     # --- AEL Collections special category ---
     #if not getSettingAsBool('display_hide_collections'): render_vcategory_collections_row()
@@ -339,7 +367,7 @@ def qry_get_vcategory_items(self):
         vcategory_name   = '[Recently played ROMs]'
         vcategory_icon   = globals.g_PATHS.ADDON_CODE_DIR.pjoin('media/theme/Recently_played_icon.png').getPath()
         vcategory_poster = globals.g_PATHS.ADDON_CODE_DIR.pjoin('media/theme/Recently_played_poster.png').getPath()
-        yield {
+        container['items'].append({
             'name': vcategory_name,
             'url': globals.router.url_for_path('vcategory/recently_played'), #SHOW_RECENTLY_PLAYED'
             'is_folder': True,
@@ -350,14 +378,14 @@ def qry_get_vcategory_items(self):
                 'overlay': 4
             },
             'art': { 'icon' : vcategory_icon, 'fanart' : vcategory_fanart, 'poster' : vcategory_poster },
-            'properties': { AEL_CONTENT_LABEL: AEL_CONTENT_VALUE_ROM_LAUNCHER }
-        }
+            'properties': { AEL_CONTENT_LABEL: AEL_CONTENT_VALUE_VCATEGORY }
+        })
 
     if not getSettingAsBool('display_hide_mostplayed'): 
         vcategory_name   = '[Most played ROMs]'
         vcategory_icon   = globals.g_PATHS.ADDON_CODE_DIR.pjoin('media/theme/Most_played_icon.png').getPath()
         vcategory_poster = globals.g_PATHS.ADDON_CODE_DIR.pjoin('media/theme/Most_played_poster.png').getPath()
-        yield {
+        container['items'].append({
             'name': vcategory_name,
             'url': globals.router.url_for_path('vcategory/most_played'), #SHOW_MOST_PLAYED
             'is_folder': True,
@@ -368,14 +396,14 @@ def qry_get_vcategory_items(self):
                 'overlay': 4
             },
             'art': { 'icon' : vcategory_icon, 'fanart' : vcategory_fanart, 'poster' : vcategory_poster },
-            'properties': { AEL_CONTENT_LABEL: AEL_CONTENT_VALUE_ROM_LAUNCHER }
-        }
+            'properties': { AEL_CONTENT_LABEL: AEL_CONTENT_VALUE_VCATEGORY }
+        })
         
     if not getSettingAsBool('display_hide_utilities'): 
         vcategory_name   = 'Utilities'
         vcategory_icon   = globals.g_PATHS.ICON_FILE_PATH.getPath()
         vcategory_fanart = globals.g_PATHS.FANART_FILE_PATH.getPath()
-        yield {
+        container['items'].append({
             'name': vcategory_name,
             'url': globals.router.url_for_path('utilities'), #SHOW_UTILITIES_VLAUNCHERS
             'is_folder': True,
@@ -386,14 +414,14 @@ def qry_get_vcategory_items(self):
                 'overlay': 4
             },
             'art': { 'icon' : vcategory_icon, 'fanart' : vcategory_fanart, 'poster' : vcategory_poster },
-            'properties': { AEL_CONTENT_LABEL: AEL_CONTENT_VALUE_CATEGORY }
-        }
+            'properties': { AEL_CONTENT_LABEL: AEL_CONTENT_VALUE_VCATEGORY }
+        })
         
     if not getSettingAsBool('display_hide_g_reports'): 
         vcategory_name   = 'Global Reports'
         vcategory_icon   = globals.g_PATHS.ICON_FILE_PATH.getPath()
         vcategory_fanart = globals.g_PATHS.FANART_FILE_PATH.getPath()
-        yield {
+        container['items'].append({
             'name': vcategory_name,
             'url': globals.router.url_for_path('globalreports'), #SHOW_GLOBALREPORTS_VLAUNCHERS'
             'is_folder': True,
@@ -404,109 +432,36 @@ def qry_get_vcategory_items(self):
                 'overlay': 4
             },
             'art': { 'icon' : vcategory_icon, 'fanart' : vcategory_fanart, 'poster' : vcategory_poster },
-            'properties': { AEL_CONTENT_LABEL: AEL_CONTENT_VALUE_CATEGORY }
-        }
-
-def find_root_vcategory_items(self):
-    vcategory_fanart = globals.g_PATHS.FANART_FILE_PATH.getPath()
-
-    # --- AEL Favourites special category ---
-    if not getSettingAsBool('display_hide_favs'): 
-        # fav_icon   = 'DefaultFolder.png'
-        vcategory_name   = '<Favourites>'
-        vcategory_icon   = globals.g_PATHS.ADDON_CODE_DIR.pjoin('media/theme/Favourites_icon.png').getPath()
-        vcategory_poster = globals.g_PATHS.ADDON_CODE_DIR.pjoin('media/theme/Favourites_poster.png').getPath()
-        yield {
-            'name': vcategory_name,
-            'url': globals.router.url_for_path('vcategory/favourites'), #SHOW_FAVOURITES
-            'is_folder': True,
-            'type': 'video',
-            'info': {
-                'title': vcategory_name,
-                'plot': 'Browse AEL Favourite ROMs',
-                'overlay': 4
-            },
-            'art': { 'icon' : vcategory_icon, 'fanart' : vcategory_fanart, 'poster' : vcategory_poster },
-            'properties': { AEL_CONTENT_LABEL: AEL_CONTENT_VALUE_ROM_LAUNCHER }
-        }
-
-    # --- AEL Collections special category ---
-    #if not getSettingAsBool('display_hide_collections'): render_vcategory_collections_row()
-    # --- AEL Virtual Categories ---
-    #if not getSettingAsBool('display_hide_vlaunchers'): render_vcategory_Browse_by_row()
-    # --- Browse Offline Scraper database ---
-    #if not getSettingAsBool('display_hide_AEL_scraper'): render_vcategory_AEL_offline_scraper_row()
-    #if not getSettingAsBool('display_hide_LB_scraper'):  render_vcategory_LB_offline_scraper_row()
-
-    # --- Recently played and most played ROMs ---
-    if not getSettingAsBool('display_hide_recent'): 
-        vcategory_name   = '[Recently played ROMs]'
-        vcategory_icon   = globals.g_PATHS.ADDON_CODE_DIR.pjoin('media/theme/Recently_played_icon.png').getPath()
-        vcategory_poster = globals.g_PATHS.ADDON_CODE_DIR.pjoin('media/theme/Recently_played_poster.png').getPath()
-        yield {
-            'name': vcategory_name,
-            'url': globals.router.url_for_path('vcategory/recently_played'), #SHOW_RECENTLY_PLAYED'
-            'is_folder': True,
-            'type': 'video',
-            'info': {
-                'title': vcategory_name,
-                'plot': 'Browse the ROMs you played recently',
-                'overlay': 4
-            },
-            'art': { 'icon' : vcategory_icon, 'fanart' : vcategory_fanart, 'poster' : vcategory_poster },
-            'properties': { AEL_CONTENT_LABEL: AEL_CONTENT_VALUE_ROM_LAUNCHER }
-        }
-
-    if not getSettingAsBool('display_hide_mostplayed'): 
-        vcategory_name   = '[Most played ROMs]'
-        vcategory_icon   = globals.g_PATHS.ADDON_CODE_DIR.pjoin('media/theme/Most_played_icon.png').getPath()
-        vcategory_poster = globals.g_PATHS.ADDON_CODE_DIR.pjoin('media/theme/Most_played_poster.png').getPath()
-        yield {
-            'name': vcategory_name,
-            'url': globals.router.url_for_path('vcategory/most_played'), #SHOW_MOST_PLAYED
-            'is_folder': True,
-            'type': 'video',
-            'info': {
-                'title': vcategory_name,
-                'plot': 'Browse the ROMs you play most',
-                'overlay': 4
-            },
-            'art': { 'icon' : vcategory_icon, 'fanart' : vcategory_fanart, 'poster' : vcategory_poster },
-            'properties': { AEL_CONTENT_LABEL: AEL_CONTENT_VALUE_ROM_LAUNCHER }
-        }
+            'properties': { AEL_CONTENT_LABEL: AEL_CONTENT_VALUE_VCATEGORY }
+        })
         
-    if not getSettingAsBool('display_hide_utilities'): 
-        vcategory_name   = 'Utilities'
-        vcategory_icon   = globals.g_PATHS.ICON_FILE_PATH.getPath()
-        vcategory_fanart = globals.g_PATHS.FANART_FILE_PATH.getPath()
-        yield {
-            'name': vcategory_name,
-            'url': globals.router.url_for_path('utilities'), #SHOW_UTILITIES_VLAUNCHERS
-            'is_folder': True,
-            'type': 'video',
-            'info': {
-                'title': vcategory_name,
-                'plot': 'Execute several [COLOR orange]Utilities[/COLOR].',
-                'overlay': 4
-            },
-            'art': { 'icon' : vcategory_icon, 'fanart' : vcategory_fanart, 'poster' : vcategory_poster },
-            'properties': { AEL_CONTENT_LABEL: AEL_CONTENT_VALUE_CATEGORY }
-        }
-        
-    if not getSettingAsBool('display_hide_g_reports'): 
-        vcategory_name   = 'Global Reports'
-        vcategory_icon   = globals.g_PATHS.ICON_FILE_PATH.getPath()
-        vcategory_fanart = globals.g_PATHS.FANART_FILE_PATH.getPath()
-        yield {
-            'name': vcategory_name,
-            'url': globals.router.url_for_path('globalreports'), #SHOW_GLOBALREPORTS_VLAUNCHERS'
-            'is_folder': True,
-            'type': 'video',
-            'info': {
-                'title': vcategory_name,
-                'plot': 'Generate and view [COLOR orange]Global Reports[/COLOR].',
-                'overlay': 4
-            },
-            'art': { 'icon' : vcategory_icon, 'fanart' : vcategory_fanart, 'poster' : vcategory_poster },
-            'properties': { AEL_CONTENT_LABEL: AEL_CONTENT_VALUE_CATEGORY }
-        }
+#
+# Default context menu items for the whole container.
+#
+def qry_container_context_menu_items(container_data) -> typing.List[typing.Tuple[str,str]]:
+    # --- Create context menu items to be applied to each item in this container ---
+    is_category: bool = container_data['type'] == OBJ_CATEGORY
+    is_romset: bool   = container_data['type'] == OBJ_ROMSET
+    
+    commands = []
+    is_category: commands.append(('Add new Category', globals.router.url_for_path('execute/categories/add/{}'.format(container_data['id']))))
+    is_category: commands.append(('Add new Collection', globals.url_for_path('execute/collections/add/{}'.format(container_data['id']))))
+    commands.append(('Open Kodi file manager', 'ActivateWindow(filemanager)'))
+    commands.append(('AEL addon settings', 'Addon.OpenSettings({0})'.format(globals.addon_id)))
+
+    return commands
+
+#
+# ListItem specific context menu items.
+#
+def qry_listitem_context_menu_items(list_item_data, container_data)-> typing.List[typing.Tuple[str,str]]:
+    # --- Create context menu items only applicable on this item ---
+    properties = list_item_data['properties'] if 'properties' in list_item_data else {}
+    item_type  = properties['type'] if 'type' in properties else ''
+    
+    is_category: bool = item_type == OBJ_CATEGORY 
+    is_romset: bool   = item_type == OBJ_ROMSET
+    
+    commands = []
+    
+    return commands

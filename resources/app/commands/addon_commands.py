@@ -30,10 +30,12 @@ logger = logging.getLogger(__name__)
 
 @AppMediator.register('SCAN_FOR_ADDONS')
 def cmd_scan_addons(args):
+    kodi.notify('Scanning for AEL supported addons')
     json_response = kodi.jsonrpc_query("Addons.GetAddons", params={
         'installed': True, 'enabled': True, 
         'type': 'xbmc.python.pluginsource'})
     
+    addon_count = 0
     uow = UnitOfWork(globals.g_PATHS.DATABASE_FILE_PATH)
     with uow:
         addon_repository    = AelAddonRepository(uow)
@@ -46,7 +48,9 @@ def cmd_scan_addons(args):
             # Check if add-on is a AEL support plugin
             if addon.getSetting('ael.enabled').lower() != 'true':
                 continue
-                        
+            
+            logger.debug('cmd_scan_addons(): Found addon {}'.format(addon_id))
+            addon_count = addon_count + 1                        
             addon_obj = AelAddon({
                 'addon_id': addon_id,
                 'version': addon.getAddonInfo('version'),
@@ -60,8 +64,13 @@ def cmd_scan_addons(args):
                     continue
                 addon_obj.set_id(existing_addon_ids[addon_id].get_id())
                 addon_repository.update_addon(addon_obj)
+                logger.debug('cmd_scan_addons(): Updated addon {}'.format(addon_id))
             else:
                 addon_repository.save_addon(addon_obj)
+                logger.debug('cmd_scan_addons(): Added addon {}'.format(addon_id))
             
         uow.commit()
+        
+    logger.info('cmd_scan_addons(): Processed {} addons'.format(addon_count))
+    kodi.notify('Scan completed. Found {} addons'.format(addon_count))
 

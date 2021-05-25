@@ -51,7 +51,6 @@ CREATE TABLE IF NOT EXISTS romsets(
     platform TEXT,
     parent_id TEXT NULL,
     metadata_id TEXT,
-    launcher_id TEXT,
     default_icon TEXT DEFAULT 's_icon' NOT NULL,
     default_fanart TEXT DEFAULT 's_fanart' NOT NULL,
     default_banner TEXT DEFAULT 's_banner' NOT NULL,
@@ -61,8 +60,6 @@ CREATE TABLE IF NOT EXISTS romsets(
     FOREIGN KEY (parent_id) REFERENCES categories (id) 
         ON DELETE CASCADE ON UPDATE NO ACTION,
     FOREIGN KEY (metadata_id) REFERENCES metadata (id) 
-        ON DELETE CASCADE ON UPDATE NO ACTION,
-    FOREIGN KEY (launcher_id) REFERENCES ael_addon (id) 
         ON DELETE CASCADE ON UPDATE NO ACTION
 );
 
@@ -90,6 +87,17 @@ CREATE TABLE IF NOT EXISTS romset_assetspaths(
     FOREIGN KEY (romset_id) REFERENCES romsets (id) 
         ON DELETE CASCADE ON UPDATE NO ACTION,
     FOREIGN KEY (assetspaths_id) REFERENCES assetspaths (id) 
+        ON DELETE CASCADE ON UPDATE NO ACTION
+);
+
+CREATE TABLE IF NOT EXISTS romset_launchers(
+    romset_id TEXT,
+    ael_addon_id TEXT,
+    args TEXT,
+    is_default INTEGER DEFAULT 0 NOT NULL,
+    FOREIGN KEY (romset_id) REFERENCES romsets (id) 
+        ON DELETE CASCADE ON UPDATE NO ACTION,
+    FOREIGN KEY (ael_addon_id) REFERENCES ael_addon (id) 
         ON DELETE CASCADE ON UPDATE NO ACTION
 );
 
@@ -131,7 +139,7 @@ FROM categories AS c
         INNER JOIN assets AS a_banner ON a_banner.id = ca_banner.asset_id AND a_banner.asset_type = 'banner'
     LEFT JOIN category_assets AS ca_trailer ON ca_trailer.category_id = c.id
         INNER JOIN assets AS a_trailer ON a_trailer.id = ca_trailer.asset_id AND a_trailer.asset_type = 'trailer';
-        
+       
 
 CREATE VIEW IF NOT EXISTS vw_romsets AS SELECT 
     r.id AS id, 
@@ -174,5 +182,11 @@ FROM romsets AS r
         INNER JOIN assets AS a_controller ON a_controller.id = rsa_controller.asset_id AND a_controller.asset_type = 'controller'
     LEFT JOIN romset_assets AS rsa_trailer ON rsa_trailer.romset_id = r.id
         INNER JOIN assets AS a_trailer ON a_trailer.id = rsa_trailer.asset_id AND a_trailer.asset_type = 'trailer';
-        
+
+CREATE VIEW IF NOT EXISTS vw_rom_launchers AS SELECT 
+    r.*,
+    a.*
+FROM romset_launchers AS r
+    INNER JOIN ael_addon AS a ON r.ael_addon_id = a.id;
+
 CREATE TABLE IF NOT EXISTS ael_version(app TEXT, version TEXT);

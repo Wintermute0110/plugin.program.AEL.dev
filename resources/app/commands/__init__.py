@@ -19,3 +19,4 @@ import resources.app.commands.mediator
 import resources.app.commands.import_export_commands
 import resources.app.commands.view_rendering_commands
 import resources.app.commands.addon_commands
+import resources.app.commands.category_commands

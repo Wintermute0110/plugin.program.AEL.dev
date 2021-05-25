@@ -39,7 +39,7 @@ class ViewRepository(object):
         logger.debug('find_root_items(): Loading path data from file {}'.format(repository_file.getPath()))
         if not repository_file.exists():
             logger.debug('find_root_items(): Path does not exist {}'.format(repository_file.getPath()))
-            return []
+            return None
 
         try:
             item_data = repository_file.readJson()
@@ -50,7 +50,7 @@ class ViewRepository(object):
             logger.error(message)
             logger.error('find_root_items(): Dir  {}'.format(repository_file.getPath()))
             logger.error('find_root_items(): Size {}'.format(statinfo.st_size))
-            return []
+            return None
         
         return item_data
 
@@ -66,7 +66,7 @@ class ViewRepository(object):
             logger.error(message)
             logger.error('find_items(): Dir  {}'.format(repository_file.getPath()))
             logger.error('find_items(): Size {}'.format(statinfo.st_size))
-            return []
+            return None
         
         return item_data
 
@@ -78,7 +78,7 @@ class ViewRepository(object):
     def store_view(self, collection_id, view_data):
         repository_file = self.paths.COLLECTIONS_DIR.pjoin('collection_{}.json'.format(collection_id))
         
-        if len(view_data) == 0: 
+        if len(view_data['items']) == 0: 
             if repository_file.exists():
                 logger.debug('store_view(): No data for file {}. Removing file'.format(repository_file.getPath()))
                 repository_file.unlink()
@@ -189,6 +189,10 @@ class UnitOfWork(object):
         sql_statements = schema_file_path.loadFileToStr()
         self.conn.executescript(sql_statements)
         self.conn.execute("INSERT INTO ael_version VALUES(?, ?)", [globals.addon_id, globals.addon_version])
+        # default addons
+        self.conn.execute(QUERY_INSERT_ADDON, 
+                          [text.misc_generate_random_SID(), '{}.AppLauncher'.format(globals.addon_id), 
+                           globals.addon_version, True, globals.router.url_for_path('launcher/app')])
 
         self.commit()
         self.close_session()
@@ -351,6 +355,8 @@ QUERY_INSERT_ROMSET               = """
 QUERY_UPDATE_ROMSET               = "UPDATE romsets SET name=?,platform=? WHERE id =?"
 QUERY_INSERT_ROMSET_ASSET         = "INSERT INTO romset_assets (romset_id, asset_id) VALUES (?, ?)"
 QUERY_INSERT_ROMSET_ASSET_PATH    = "INSERT INTO romset_assetspaths (romset_id, assetspaths_id) VALUES (?, ?)"
+QUERY_INSERT_ROMSET_LAUNCHER      = "INSERT INTO romset_launchers (romset_id, ael_addon_id, args, is_default) VALUES (?,?,?,?)"
+QUERY_DELETE_ROMSET_LAUNCHERS     = "DELETE FROM romset_launchers WHERE romset_id = ?"
 
 class ROMSetRepository(object):
 
@@ -409,7 +415,12 @@ class ROMSetRepository(object):
             self._uow.execute(QUERY_INSERT_ASSET,
                 asset_db_id, romset_assets[asset], asset.id)
             self._uow.execute(QUERY_INSERT_ROMSET_ASSET,
-                romset_obj.get_id(), asset_db_id)           
+                romset_obj.get_id(), asset_db_id)     
+            
+        romset_launchers = romset_obj.get_launchers_data()
+        for romset_launcher in romset_launchers:
+            self._uow.execute(QUERY_INSERT_ROMSET_LAUNCHER,
+                romset_obj.get_id(), romset_launcher.addon.get_id(), romset_launcher.get_arguments(), romset_launcher.is_default)
               
     def update_romset(self, romset_obj: ROMSet):
         logger.info("ROMSetRepository.update_romset(): Updating romset '{}'".format(romset_obj.get_name()))
@@ -430,6 +441,12 @@ class ROMSetRepository(object):
             romset_obj.get_platform(),
             romset_obj.get_id())
          
+        self._uow.execute(QUERY_DELETE_ROMSET_LAUNCHERS, romset_obj.get_id())
+        romset_launchers = romset_obj.get_launchers_data()
+        for romset_launcher in romset_launchers:
+            self._uow.execute(QUERY_INSERT_ROMSET_LAUNCHER,
+                romset_obj.get_id(), romset_launcher.addon.get_id(), romset_launcher.get_arguments(), romset_launcher.is_default)
+                   
 #
 # AelAddonRepository -> AEL Adoon objects from SQLite DB
 #     

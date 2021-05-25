@@ -193,7 +193,7 @@ class MetaDataItemABC(EntityABC):
     # some addon settings.
     #
     def __init__(self, entity_data: typing.Dict[str, typing.Any]):
-        super(EntityABC, self).__init__(entity_data)
+        super(MetaDataItemABC, self).__init__(entity_data)
 
     # --------------------------------------------------------------------------------------------
     # Core functions
@@ -484,11 +484,22 @@ class VirtualCategory(MetaDataItemABC):
 
     def delete_from_disk(self): pass
 
+class ROMSetLauncher(object):
+    
+    def __init__(self, addon: AelAddon, args: dict, is_default: bool):
+        self.addon = addon
+        self.args = args
+        self.is_default = is_default
+        
+    def get_arguments(self) -> str:
+        return json.dumps(self.args)
+    
 # -------------------------------------------------------------------------------------------------
 # Class representing a collection of ROMs.
 # -------------------------------------------------------------------------------------------------
 class ROMSet(MetaDataItemABC):
-    def __init__(self, entity_data):
+    def __init__(self, entity_data, launchers_data: typing.List[ROMSetLauncher] = []):
+        self.launchers_data = launchers_data
         super(ROMSet, self).__init__(entity_data)
 
     def get_platform(self): return self.entity_data['platform']
@@ -499,9 +510,21 @@ class ROMSet(MetaDataItemABC):
 
     def get_asset_ids_list(self): return LAUNCHER_ASSET_ID_LIST
 
-    def get_default_launcher_addon(self): return self.entity_data['launcher_id']
+    def add_launcher(self, addon: AelAddon, args: dict, is_default: bool = False):
+        launcher = next((l for l in self.launchers_data if l.addon.get_id() == addon.get_id()), None)
+        if launcher is None:
+            launcher = ROMSetLauncher(addon, args, is_default)
+            self.launchers_data.append(launcher)
+        
+        launcher.args = args
+        if launcher.is_default != is_default:
+            if is_default:
+                current_default_launcher = next((l for l in self.launchers_data if l.is_default), None)
+                current_default_launcher.is_default = False
+            launcher.is_default = is_default
 
-    def set_default_launcher_addon(self, launcher_id: str): self.entity_data['launcher_id']
+    def get_launchers_data(self) -> typing.List[ROMSetLauncher]:
+        return self.launchers_data
 
     def __str__(self):
         return super().__str__()
