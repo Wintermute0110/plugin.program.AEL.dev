@@ -136,7 +136,7 @@ def audit_load_LB_metadata_XML(filename_FN, games_dic, platforms_dic, gameimages
         return
 
     # --- Parse using cElementTree ---
-    log_verb('audit_load_LB_metadata_XML() Loading "{}"'.format(filename_FN.getPath()))
+    log_debug('audit_load_LB_metadata_XML() Loading "{}"'.format(filename_FN.getPath()))
     xml_tree = utils_load_XML_to_ET(filename_FN.getPath())
     xml_root = xml_tree.getroot()
     for xml_element in xml_root:
@@ -181,9 +181,9 @@ def audit_load_LB_metadata_XML(filename_FN, games_dic, platforms_dic, gameimages
         else:
             log_info('Unknwon main tag <{}>'.format(xml_element.tag))
             return
-    log_verb('audit_load_LB_metadata_XML() Loaded {} games ({} bytes)'.format(len(games_dic), sys.getsizeof(games_dic)))
-    log_verb('audit_load_LB_metadata_XML() Loaded {} platforms'.format(len(platforms_dic)))
-    log_verb('audit_load_LB_metadata_XML() Loaded {} game images'.format(len(gameimages_dic)))
+    log_debug('audit_load_LB_metadata_XML() Loaded {} games ({} bytes)'.format(len(games_dic), sys.getsizeof(games_dic)))
+    log_debug('audit_load_LB_metadata_XML() Loaded {} platforms'.format(len(platforms_dic)))
+    log_debug('audit_load_LB_metadata_XML() Loaded {} game images'.format(len(gameimages_dic)))
 
 # -------------------------------------------------------------------------------------------------
 # Functions
@@ -247,7 +247,7 @@ def audit_load_NoIntro_XML_file(xml_FN):
         return nointro_roms
 
     # --- Parse using cElementTree ---
-    log_verb('Loading XML "{}"'.format(xml_FN.getOriginalPath()))
+    log_debug('Loading XML "{}"'.format(xml_FN.getOriginalPath()))
     try:
         xml_tree = xml.etree.ElementTree.parse(xml_FN.getPath())
     except xml.etree.ElementTree.ParseError as ex:
@@ -277,7 +277,7 @@ def audit_load_GameDB_XML(xml_FN):
     if not xml_FN.exists():
         log_error('Does not exists "{}"'.format(xml_FN.getPath()))
         return games
-    log_verb('Loading XML "{}"'.format(xml_FN.getPath()))
+    log_debug('Loading XML "{}"'.format(xml_FN.getPath()))
     try:
         xml_tree = xml.etree.ElementTree.parse(xml_FN.getPath())
     except xml.etree.ElementTree.ParseError as ex:
@@ -322,7 +322,7 @@ def audit_load_Tempest_INI(file_FN):
     if not file_FN.exists():
         log_error('Does not exists "{}"'.format(file_FN.getPath()))
         return games
-    log_verb('Loading XML "{}"'.format(file_FN.getPath()))
+    log_debug('Loading XML "{}"'.format(file_FN.getPath()))
     try:
         f = open(file_FN.getPath(), 'rt')
     except IOError:
@@ -381,7 +381,7 @@ def audit_load_HyperList_XML(xml_FN):
     if not xml_FN.exists():
         log_error('Does not exists "{}"'.format(xml_FN.getPath()))
         return games
-    log_verb('Loading XML "{}"'.format(xml_FN.getPath()))
+    log_debug('Loading XML "{}"'.format(xml_FN.getPath()))
     try:
         xml_tree = ET.parse(xml_FN.getPath())
     except ET.ParseError as ex:
@@ -479,7 +479,7 @@ def audit_generate_DAT_PClone_index(roms, roms_nointro, unknown_ROMs_are_parents
     for rom_id in roms:
         rom = roms[rom_id]
         ROMFileName = FileName(rom['filename'])
-        rom_name = ROMFileName.getBase_noext()
+        rom_name = ROMFileName.getBaseNoExt()
         # log_debug('{} --> {}'.format(rom_name, rom_id))
         # log_debug('{}'.format(rom))
         names_to_ids_dic[rom_name] = rom_id
@@ -488,11 +488,11 @@ def audit_generate_DAT_PClone_index(roms, roms_nointro, unknown_ROMs_are_parents
     for rom_id in roms:
         rom = roms[rom_id]
         ROMFileName = FileName(rom['filename'])
-        rom_nointro_name = ROMFileName.getBase_noext()
+        rom_nointro_name = ROMFileName.getBaseNoExt()
         # log_debug('rom_id {}'.format(rom_id))
         # log_debug('  nointro_status   "{}"'.format(rom['nointro_status']))
         # log_debug('  filename         "{}"'.format(rom['filename']))
-        # log_debug('  ROM_base_noext   "{}"'.format(ROMFileName.getBase_noext()))
+        # log_debug('  ROM_base_noext   "{}"'.format(ROMFileName.getBaseNoExt()))
         # log_debug('  rom_nointro_name "{}"'.format(rom_nointro_name))
 
         if rom['nointro_status'] == AUDIT_STATUS_UNKNOWN:

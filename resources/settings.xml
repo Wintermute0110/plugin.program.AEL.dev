@@ -4,6 +4,7 @@
     <setting label="Recursive scan" type="bool" id="scan_recursive" default="true" />
     <setting label="Ignore BIOS files" type="bool" id="scan_ignore_bios" default="true"/>
     <setting label="Ignore Scraped Titles (use ROM filenames)" type="bool" id="scan_ignore_scrap_title" default="true" />
+    <setting label="MAME Ignore Scraped Titles (use ROM filenames)" type="bool" id="scan_ignore_scrap_title_MAME" default="false" />
     <setting label="Clean No-Intro/TOSEC Title Tags (tag) [tag] {tag}" type="bool" id="scan_clean_tags" default="false" />
     <setting label="Update NFO files after ROM scraping" type="bool" id="scan_update_NFO_files" default="false" />
 </category>
@@ -86,6 +87,6 @@
     <setting label="Show batch command window (Windows only)" type="bool" id="show_batch_window" default="false"/>
     <setting label="Close file descriptors (Windows only)" type="bool" id="windows_close_fds" default="true"/>
     <setting label="CD into aplication dir (Windows only)" type="bool" id="windows_cd_apppath" default="true"/>
-    <setting label="Log level" type="enum" id="log_level" default="2" values="ERROR|WARNING|INFO|VERBOSE|DEBUG" />
+    <setting label="Log level" type="enum" id="log_level" default="2" values="ERROR|WARNING|INFO|DEBUG" />
 </category>
 </settings>
