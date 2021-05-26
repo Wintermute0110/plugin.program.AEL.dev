@@ -84,7 +84,16 @@ def vw_route_render_collection(collection_id: str):
     container = qry_get_collection_items(collection_id)
     container_context_items = qry_container_context_menu_items(container)
 
-    render_list_items(container, container_context_items)
+    if container is None:
+        kodi.notify('Current view is not rendered correctly. Re-render views first.')
+    elif len(container['items']) == 0:
+        if container['type'] == OBJ_CATEGORY:
+            kodi.notify('Category {} has no items. Add romsets or categories first.'.format(container['name']))
+        if container['type'] == OBJ_ROMSET:
+            kodi.notify('ROMSet {} has no items. Add ROMs'.format(container['name']))
+    else:
+        render_list_items(container, container_context_items)
+        
     xbmcplugin.endOfDirectory(handle = router.handle, succeeded = True, cacheToDisc = False)
 
 # -------------------------------------------------------------------------------------------------
@@ -105,9 +114,14 @@ def vw_route_render_utilities_vlaunchers():
 def vw_execute_cmd(cmd: str):
     kodi.event(method=cmd.capitalize())
 
-@router.route('execute/categories/add/<category_id>')
+@router.route('categories/add/<category_id>')
 def vw_add_category(category_id: str):
     kodi.event(method='ADD_CATEGORY', data={'category_id': category_id})
+
+@router.route('categories/edit/<category_id>')
+def vw_add_category(category_id: str):
+    logger.info('TEST')
+    kodi.event(method='EDIT_CATEGORY', data={'category_id': category_id })
 
 @router.route('EXECUTE')
 def vw_route_execute_rom(rom_id):
@@ -122,7 +136,7 @@ def vw_route_execute_rom(rom_id):
 #
 def render_list_items(container_data, container_context_items = []):
     vw_misc_set_all_sorting_methods()
-    vw_misc_set_AEL_Content(container_data['type'])
+    vw_misc_set_AEL_Content(container_data['obj_type'] if 'obj_type' in container_data else OBJ_NONE)
     vw_misc_clear_AEL_Launcher_Content()
 
     for list_item_data in container_data['items']:
@@ -139,7 +153,7 @@ def render_list_items(container_data, container_context_items = []):
 
         if xbmc.getCondVisibility("!Skin.HasSetting(KioskMode.Enabled)"):
             item_context_items = qry_listitem_context_menu_items(list_item_data, container_data)
-            list_item.addContextMenuItems(item_context_items + container_context_items)
+            list_item.addContextMenuItems(item_context_items + container_context_items, replaceItems = True)
 
         xbmcplugin.addDirectoryItem(handle = router.handle, url = url_str, listitem = list_item, isFolder = folder_flag)
 
@@ -168,6 +182,11 @@ def vw_misc_set_AEL_Content(AEL_Content_Value):
         logger.debug('vw_misc_set_AEL_Content() Setting Window({0}) '.format(AEL_CONTENT_WINDOW_ID) +
                   'property "{0}" = "{1}"'.format(AEL_CONTENT_LABEL, AEL_CONTENT_VALUE_LAUNCHERS))
         xbmcgui.Window(AEL_CONTENT_WINDOW_ID).setProperty(AEL_CONTENT_LABEL, AEL_CONTENT_VALUE_LAUNCHERS)
+        
+    elif AEL_Content_Value == AEL_CONTENT_VALUE_LAUNCHERS:
+        logger.debug('vw_misc_set_AEL_Content() Setting Window({0}) '.format(AEL_CONTENT_WINDOW_ID) +
+                  'property "{0}" = "{1}"'.format(AEL_CONTENT_LABEL, AEL_CONTENT_VALUE_CATEGORY))
+        xbmcgui.Window(AEL_CONTENT_WINDOW_ID).setProperty(AEL_CONTENT_LABEL, AEL_CONTENT_VALUE_CATEGORY)        
     elif AEL_Content_Value == AEL_CONTENT_VALUE_ROMS:
         logger.debug('vw_misc_set_AEL_Content() Setting Window({0}) '.format(AEL_CONTENT_WINDOW_ID) +
                   'property "{0}" = "{1}"'.format(AEL_CONTENT_LABEL, AEL_CONTENT_VALUE_ROMS))

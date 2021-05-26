@@ -21,6 +21,7 @@ import collections
 import typing
 import logging
 import re 
+import time
 import json
 
 from os.path import expanduser
@@ -30,6 +31,7 @@ import binascii
 
 # --- AEL packages ---
 from resources.lib.utils import io, kodi, text
+from resources.lib import settings
 from resources.lib.constants import *
 
 logger = logging.getLogger(__name__)
@@ -403,52 +405,115 @@ class Category(MetaDataItemABC):
     def get_assets_kind(self): return KIND_ASSET_CATEGORY
 
     def is_virtual(self): return False
-
-    def save_to_disk(self): self.objectRepository.save_category(self.entity_data)
-
-    def delete_from_disk(self):
-        # Object becomes invalid after deletion.
-        self.objectRepository.delete_category(self.entity_data)
-        self.entity_data = None
-        self.objectRepository = None
-
+    
     def num_romsets(self) -> int:
         return self.entity_data['num_romsets'] if 'num_romsets' in self.entity_data else 0
-
-    def get_main_edit_options(self):
-        options = collections.OrderedDict()
-        options['EDIT_METADATA']       = 'Edit Metadata ...'
-        options['EDIT_ASSETS']         = 'Edit Assets/Artwork ...'
-        options['EDIT_DEFAULT_ASSETS'] = 'Choose default Assets/Artwork ...'
-        options['CATEGORY_STATUS']     = 'Category status: {0}'.format(self.get_finished_str())
-        options['EXPORT_CATEGORY_XML'] = 'Export Category XML configuration ...'
-        options['DELETE_CATEGORY']     = 'Delete Category'
-
-        return options
-
-    def get_metadata_edit_options(self):
-        # NOTE The Category NFO file logic must be moved to this class. Settings not need to
-        #      be used as a parameter here.
-        NFO_FileName = fs_get_category_NFO_name(self.settings, self.entity_data)
-        NFO_found_str = 'NFO found' if NFO_FileName.exists() else 'NFO not found'
-        plot_str = text.limit_string(self.get_plot(), PLOT_STR_MAXSIZE)
-
-        options = collections.OrderedDict()
-        options['EDIT_METADATA_TITLE']       = "Edit Title: '{0}'".format(self.get_name())
-        options['EDIT_METADATA_RELEASEYEAR'] = "Edit Release Year: '{0}'".format(self.get_releaseyear())
-        options['EDIT_METADATA_GENRE']       = "Edit Genre: '{0}'".format(self.get_genre())
-        options['EDIT_METADATA_DEVELOPER']   = "Edit Developer: '{0}'".format(self.get_developer())
-        options['EDIT_METADATA_RATING']      = "Edit Rating: '{0}'".format(self.get_rating())
-        options['EDIT_METADATA_PLOT']        = "Edit Plot: '{0}'".format(plot_str)
-        options['IMPORT_NFO_FILE']           = 'Import NFO file (default, {0})'.format(NFO_found_str)
-        options['IMPORT_NFO_FILE_BROWSE']    = 'Import NFO file (browse NFO file) ...'
-        options['SAVE_NFO_FILE']             = 'Save NFO file (default location)'
-
-        return options
 
     def get_asset_ids_list(self): 
         return COLLECTION_ASSET_ID_LIST
     
+    def get_NFO_name(self) -> io.FileName:
+        nfo_dir = io.FileName(settings.getSetting('categories_asset_dir'), isdir = True)
+        nfo_file_path = nfo_dir.pjoin(self.get_name() + '.nfo')
+        logger.debug("Category.get_NFO_name() nfo_file_path = '{0}'".format(nfo_file_path.getPath()))
+        return nfo_file_path
+    
+    # ---------------------------------------------------------------------------------------------
+    # NFO files for metadata
+    # ---------------------------------------------------------------------------------------------
+    #
+    # Python data model: lists and dictionaries are mutable. It means the can be changed if passed as
+    # parameters of functions. However, items can not be replaced by new objects!
+    # Notably, numbers, strings and tuples are immutable. Dictionaries and lists are mutable.
+    #
+    # See http://stackoverflow.com/questions/986006/how-do-i-pass-a-variable-by-reference
+    # See https://docs.python.org/2/reference/datamodel.html
+    #
+    # Function asumes that the NFO file already exists.
+    #
+    def import_NFO_file(self, nfo_FileName: io.FileName) -> bool:
+        # --- Get NFO file name ---
+        logger.debug('Category.import_NFO_file() Importing launcher NFO "{0}"'.format(nfo_FileName.getPath()))
+
+        # --- Import data ---
+        if nfo_FileName.exists():
+            try:
+                item_nfo = nfo_FileName.loadFileToStr()
+                item_nfo = item_nfo.replace('\r', '').replace('\n', '')
+            except:
+                kodi.notify_warn('Exception reading NFO file {0}'.format(nfo_FileName.getPath()))
+                logger.error("Category.import_NFO_file() Exception reading NFO file '{0}'".format(nfo_FileName.getPath()))
+                return False
+        else:
+            kodi.notify_warn('NFO file not found {0}'.format(nfo_FileName.getBase()))
+            logger.error("Category.import_NFO_file() NFO file not found '{0}'".format(nfo_FileName.getPath()))
+            return False
+
+        item_year      = re.findall('<year>(.*?)</year>',           item_nfo)
+        item_genre     = re.findall('<genre>(.*?)</genre>',         item_nfo)
+        item_developer = re.findall('<developer>(.*?)</developer>', item_nfo)
+        item_rating    = re.findall('<rating>(.*?)</rating>',       item_nfo)
+        item_plot      = re.findall('<plot>(.*?)</plot>',           item_nfo)
+
+        # >> Careful about object mutability! This should modify the dictionary
+        # >> passed as argument outside this function.
+        if len(item_year) > 0:      self.set_releaseyear(text.unescape_XML(item_year[0]))
+        if len(item_genre) > 0:     self.set_genre(text.unescape_XML(item_genre[0]))
+        if len(item_developer) > 0: self.set_developer(text.unescape_XML(item_developer[0]))
+        if len(item_rating) > 0:    self.set_rating(text.unescape_XML(item_rating[0]))
+        if len(item_plot) > 0:      self.set_plot(text.unescape_XML(item_plot[0]))
+
+        logger.debug("Category.import_NFO_file() Imported '{0}'".format(nfo_FileName.getPath()))
+
+        return True
+    
+    def export_to_NFO_file(self, nfo_FileName: io.FileName):
+        # --- Get NFO file name ---
+        logger.debug('Category.export_to_NFO_file() Exporting launcher NFO "{0}"'.format(nfo_FileName.getPath()))
+
+        # If NFO file does not exist then create them. If it exists, overwrite.
+        nfo_content = []
+        nfo_content.append('<?xml version="1.0" encoding="utf-8" standalone="yes"?>\n')
+        nfo_content.append('<!-- Exported by AEL on {0} -->\n'.format(time.strftime("%Y-%m-%d %H:%M:%S")))
+        nfo_content.append('<category>\n')
+        nfo_content.append(text.XML_line('year',      self.get_year()))
+        nfo_content.append(text.XML_line('genre',     self.get_genre())) 
+        nfo_content.append(text.XML_line('developer', self.get_developer()))
+        nfo_content.append(text.XML_line('rating',    self.get_rating()))
+        nfo_content.append(text.XML_line('plot',      self.get_plot()))
+        
+        nfo_content.append('</category>\n')
+        full_string = ''.join(nfo_content)
+        nfo_FileName.writeAll(full_string)
+            
+    def export_to_file(self, file: io.FileName):
+        logger.debug('Category.export_to_file() Category "{0}" (ID "{1}")'.format(self.get_name(), self.get_id()))
+
+        # --- Create list of strings ---
+        str_list = []
+        str_list.append('<?xml version="1.0" encoding="utf-8" standalone="yes"?>\n')
+        str_list.append('<!-- Exported by AEL on {0} -->\n'.format(time.strftime("%Y-%m-%d %H:%M:%S")))
+        str_list.append('<advanced_emulator_launcher_configuration>\n')
+        str_list.append('<category>\n')
+        str_list.append(text.XML_line('name', self.get_name()))
+        str_list.append(text.XML_line('year', self.get_releaseyear()))
+        str_list.append(text.XML_line('genre', self.get_genre()))
+        str_list.append(text.XML_line('developer', self.get_developer()))
+        str_list.append(text.XML_line('rating', self.get_rating()))
+        str_list.append(text.XML_line('plot', self.get_plot()))
+        str_list.append(text.XML_line('Asset_Prefix', self.get_custom_attribute('Asset_Prefix')))
+        str_list.append(text.XML_line('s_icon', self['s_icon']))
+        str_list.append(text.XML_line('s_fanart', self['s_fanart']))
+        str_list.append(text.XML_line('s_banner', self['s_banner']))
+        str_list.append(text.XML_line('s_poster', self['s_poster']))
+        str_list.append(text.XML_line('s_clearlogo', self.get_asset_()))
+        str_list.append(text.XML_line('s_trailer', self.get_trailer()))
+        str_list.append('</category>\n')
+        str_list.append('</advanced_emulator_launcher_configuration>\n')
+        
+        full_string = ''.join(str_list)
+        file.writeAll(full_string)
+        
     def __str__(self):
         return super().__str__()
     
