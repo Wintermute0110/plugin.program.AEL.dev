@@ -225,6 +225,9 @@ class UnitOfWork(object):
     def execute(self, sql, *args) -> Cursor:
         return self.cursor.execute(sql, args)
 
+    def single_result(self):
+        return self.cursor.fetchone()
+
     def result_set(self):
         return self.cursor.fetchall()
 
@@ -255,6 +258,7 @@ QUERY_UPDATE_ASSET          = "UPDATE assets SET filepath = ?, asset_type = ? WH
 #
 # CategoryRepository -> Category from SQLite DB
 #
+QUERY_SELECT_CATEGORY             = "SELECT * FROM vw_categories WHERE id = ?"
 QUERY_SELECT_CATEGORIES           = "SELECT * FROM vw_categories"
 QUERY_SELECT_ROOT_CATEGORIES      = "SELECT * FROM vw_categories WHERE parent_id IS NULL"
 QUERY_SELECT_CATEGORIES_BY_PARENT = "SELECT * FROM vw_categories WHERE parent_id = ?"
@@ -269,6 +273,11 @@ class CategoryRepository(object):
 
     def __init__(self, uow: UnitOfWork):
         self._uow = uow
+
+    def find_category(self, category_id: str) -> Category:
+        self._uow.execute(QUERY_SELECT_CATEGORIES_BY_PARENT, category_id)
+        category_data = self._uow.single_result()
+        return Category(category_data)
 
     def find_root_categories(self) -> typing.Iterator[Category]:
         self._uow.execute(QUERY_SELECT_ROOT_CATEGORIES)

@@ -68,7 +68,7 @@ def _render_root_view(categories_repository: CategoryRepository, romsets_reposit
     root_data = {
         'id': '',
         'name': 'root',
-        'type': OBJ_CATEGORY,
+        'obj_type': OBJ_CATEGORY,
         'items': []
     }
     root_items = []
@@ -96,7 +96,7 @@ def _render_category_view(category_obj: Category, categories_repository: Categor
     view_data = {
         'id': category_obj.get_id(),
         'name': category_obj.get_name(),
-        'type': OBJ_CATEGORY,
+        'obj_type': OBJ_CATEGORY,
         'items': []
     }
     view_items = []
@@ -138,7 +138,7 @@ def _render_category_listitem(category_obj: Category):
         'art': assets,
         'properties': { 
             AEL_CONTENT_LABEL: AEL_CONTENT_VALUE_CATEGORY,
-            'type': OBJ_CATEGORY,
+            'obj_type': OBJ_CATEGORY,
             'num_romsets': category_obj.num_romsets() 
         }
     }
@@ -167,7 +167,7 @@ def _render_romset_listitem(romset_obj: ROMSet):
         'properties': { 
             AEL_CONTENT_LABEL: AEL_CONTENT_VALUE_LAUNCHERS,
             'platform': romset_obj.get_platform(),
-            'type': OBJ_ROMSET
+            'obj_type': OBJ_ROMSET
             #,'launcher_type': 'ROM'
         }
     }

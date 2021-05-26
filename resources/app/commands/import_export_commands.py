@@ -124,9 +124,9 @@ def _apply_addon_launcher_for_legacy_launcher(launcher_data: ROMSet, available_a
         # 1.9x version
         launcher_addon = available_addons['plugin.program.AEL.AppLauncher'] if 'plugin.program.AEL.AppLauncher' in available_addons else None
         launcher_args = {
-            'application': launcher_data.get_custom_attribute['application'],
-            'args': launcher_data.get_custom_attribute['args'],
-            'args_extra': launcher_data.get_custom_attribute['args_extra']
+            'application': launcher_data.get_custom_attribute('application'),
+            'args': launcher_data.get_custom_attribute('args'),
+            'args_extra': launcher_data.get_custom_attribute('args_extra')
         }        
         launcher_data.add_launcher(launcher_addon, launcher_args, True)
         return
@@ -135,9 +135,9 @@ def _apply_addon_launcher_for_legacy_launcher(launcher_data: ROMSet, available_a
         launcher_addon =  available_addons['plugin.program.AEL.AppLauncher'] if 'plugin.program.AEL.AppLauncher' in available_addons else None
         if launcher_addon is None: return
         launcher_args = {
-            'application': launcher_data.get_custom_attribute['application'],
-            'args': launcher_data.get_custom_attribute['args'],
-            'args_extra': launcher_data.get_custom_attribute['args_extra']
+            'application': launcher_data.get_custom_attribute('application'),
+            'args': launcher_data.get_custom_attribute('args'),
+            'args_extra': launcher_data.get_custom_attribute('args_extra')
         }        
         launcher_data.add_launcher(launcher_addon, launcher_args, True)
         return
@@ -146,9 +146,9 @@ def _apply_addon_launcher_for_legacy_launcher(launcher_data: ROMSet, available_a
         launcher_addon =  available_addons['plugin.program.AEL.AppLauncher'] if 'plugin.program.AEL.AppLauncher' in available_addons else None
         if launcher_addon is None: return
         launcher_args = {
-            'application': launcher_data.get_custom_attribute['application'],
-            'args': launcher_data.get_custom_attribute['args'],
-            'args_extra': launcher_data.get_custom_attribute['args_extra']
+            'application': launcher_data.get_custom_attribute('application'),
+            'args': launcher_data.get_custom_attribute('args'),
+            'args_extra': launcher_data.get_custom_attribute('args_extra')
         }        
         launcher_data.add_launcher(launcher_addon, launcher_args, True)
         return
@@ -157,9 +157,9 @@ def _apply_addon_launcher_for_legacy_launcher(launcher_data: ROMSet, available_a
         launcher_addon =  available_addons['plugin.program.AEL.RetroplayerLauncher'] if 'plugin.program.AEL.RetroplayerLauncher' in available_addons else None
         if launcher_addon is None: return
         launcher_args = {
-            'application': launcher_data.get_custom_attribute['application'],
-            'args': launcher_data.get_custom_attribute['args'],
-            'args_extra': launcher_data.get_custom_attribute['args_extra']
+            'application': launcher_data.get_custom_attribute('application'),
+            'args': launcher_data.get_custom_attribute('args'),
+            'args_extra': launcher_data.get_custom_attribute('args_extra')
         }        
         launcher_data.add_launcher(launcher_addon, launcher_args, True)
         return
@@ -168,9 +168,9 @@ def _apply_addon_launcher_for_legacy_launcher(launcher_data: ROMSet, available_a
         launcher_addon =  available_addons['plugin.program.AEL.RetroarchLauncher'] if 'plugin.program.AEL.RetroarchLauncher' in available_addons else None
         if launcher_addon is None: return
         launcher_args = {
-            'core': launcher_data.get_custom_attribute['retro_core'],
-            'core_info': launcher_data.get_custom_attribute['retro_core_info'],
-            'config': launcher_data.get_custom_attribute['retro_config']
+            'application': launcher_data.get_custom_attribute('application'),
+            'args': launcher_data.get_custom_attribute('args'),
+            'args_extra': launcher_data.get_custom_attribute('args_extra')
         }        
         launcher_data.add_launcher(launcher_addon, launcher_args, True)
         return
@@ -179,9 +179,9 @@ def _apply_addon_launcher_for_legacy_launcher(launcher_data: ROMSet, available_a
         launcher_addon =  available_addons['plugin.program.AEL.GamestreamLauncher'] if 'plugin.program.AEL.GamestreamLauncher' in available_addons else None   
         if launcher_addon is None: return
         launcher_args = {
-            'application': launcher_data.get_custom_attribute['application'],
-            'args': launcher_data.get_custom_attribute['args'],
-            'args_extra': launcher_data.get_custom_attribute['args_extra']
+            'application': launcher_data.get_custom_attribute('application'),
+            'args': launcher_data.get_custom_attribute('args'),
+            'args_extra': launcher_data.get_custom_attribute('args_extra')
         }        
         launcher_data.add_launcher(launcher_addon, launcher_args, True)
         return
@@ -190,9 +190,9 @@ def _apply_addon_launcher_for_legacy_launcher(launcher_data: ROMSet, available_a
         launcher_addon =  available_addons['plugin.program.AEL.SteamLauncher'] if 'plugin.program.AEL.SteamLauncher' in available_addons else None   
         if launcher_addon is None: return
         launcher_args = {
-            'application': launcher_data.get_custom_attribute['application'],
-            'args': launcher_data.get_custom_attribute['args'],
-            'args_extra': launcher_data.get_custom_attribute['args_extra']
+            'application': launcher_data.get_custom_attribute('application'),
+            'args': launcher_data.get_custom_attribute('args'),
+            'args_extra': launcher_data.get_custom_attribute('args_extra')
         }        
         launcher_data.add_launcher(launcher_addon, launcher_args, True)
         return

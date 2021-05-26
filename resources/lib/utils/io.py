@@ -32,7 +32,6 @@
 # --- Python standard library ---
 from __future__ import unicode_literals
 from __future__ import division
-from io import FileIO, TextIOWrapper
 
 import logging
 import errno
@@ -41,7 +40,6 @@ import json
 import sys
 import os
 import shutil
-from typing import TextIO
 import typing
 
 # Python 3
@@ -51,7 +49,6 @@ import typing
 # --- Python standard library named imports ---
 import xml.etree.ElementTree as ET
 
-import xbmc
 import xbmcvfs
 
 from resources.lib.constants import *
