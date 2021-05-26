@@ -1,6 +1,7 @@
 import threading
 import logging
 import sys
+import json
 
 import xbmc
 
@@ -78,8 +79,14 @@ class AppMonitor(xbmc.Monitor):
         if sender != self.addon_id:
             return
 
-        data = {
+        data_obj = None
+        try:
+            data_obj = json.loads(data)
+        except:
+            logger.error('Failed to load arguments as json')
+
+        action_data = {
             'action': method.split('.')[1].upper(),
-            'data': data
+            'data': data_obj
         }
-        self.action(data)
+        self.action(action_data)

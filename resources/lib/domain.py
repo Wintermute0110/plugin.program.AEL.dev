@@ -273,7 +273,7 @@ class MetaDataItemABC(EntityABC):
         return 'finished' in self.entity_data and self.entity_data['finished']
 
     def get_finished_str(self):
-        finished = self.entity_data['finished']
+        finished = self.is_finished()
         finished_display = 'Finished' if finished == True else 'Unfinished'
 
         return finished_display

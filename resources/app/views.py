@@ -114,11 +114,11 @@ def vw_route_render_utilities_vlaunchers():
 def vw_execute_cmd(cmd: str):
     kodi.event(method=cmd.capitalize())
 
-@router.route('categories/add/<category_id>')
+@router.route('/categories/add/<category_id>')
 def vw_add_category(category_id: str):
     kodi.event(method='ADD_CATEGORY', data={'category_id': category_id})
 
-@router.route('categories/edit/<category_id>')
+@router.route('/categories/edit/<category_id>')
 def vw_add_category(category_id: str):
     logger.info('TEST')
     kodi.event(method='EDIT_CATEGORY', data={'category_id': category_id })

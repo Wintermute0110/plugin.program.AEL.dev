@@ -476,4 +476,4 @@ def qry_listitem_context_menu_items(list_item_data, container_data)-> typing.Lis
 
 def _context_menu_url_for(url: str) -> str:
     url = globals.router.url_for_path(url)
-    return 'XBMC.RunPlugin({})'.format(url)
+    return 'RunPlugin({})'.format(url)
