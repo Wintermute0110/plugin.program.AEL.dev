@@ -79,7 +79,7 @@
 </category>
 <category label="Advanced">
     <setting label="Action on Kodi playing media" type="enum" id="media_state_action" default="0" values="Stop|Pause|Let Play" />
-    <setting label="After/before launch delay (ms)" type="slider" id="delay_tempo" default="500" range="0,100,15000" option="int"/>
+    <setting label="After/before launch delay (ms)" type="slider" id="delay_tempo" default="500" range="0,100,15000" option="int" />
     <setting label="Suspend/resume Kodi audio engine" type="bool" id="suspend_audio_engine" default="false"/>
     <setting label="Suspend/resume Kodi screensaver" type="bool" id="suspend_screensaver" default="false" />
     <setting label="Escape $rom$ quotes" type="bool" id="escape_romfile" default="false" />

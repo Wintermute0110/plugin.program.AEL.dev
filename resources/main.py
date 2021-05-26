@@ -128,9 +128,17 @@ class AEL_Paths:
 # --- Global variables ---
 # This should not be a global variable. Use functional programming!
 g_PATHS = AEL_Paths()
+
 # For compatibility with the future (to easy the transition).
 # See the code in AML. Global cfg variable to simulate function parameter.
 cfg = g_PATHS
+
+# Use functional programming as much as possible and avoid global variables.
+# g_base_url must be a global variable because it is used in the misc_url_*() functions.
+g_base_url = ''
+
+# Module loading time. This variable is read only (only modified here).
+g_time_str = text_type(datetime.datetime.now())
 
 # Make AEL to run only 1 single instance
 # See http://forum.kodi.tv/showthread.php?tid=310697
@@ -174,6 +182,49 @@ class SingleInstance:
         log_debug('SingleInstance::__exit__() Releasing lock')
         SingleInstance.window.setProperty(SingleInstance.LOCK_PROPNAME, '')
 
+# ---------------------------------------------------------------------------------------------
+# URL building functions. A set of functions to help making plugin URLs.
+# g_base_url is plugin://plugin.program.AML/
+# Normal URLs: plugin://plugin.program.AML/?command=xxxxx
+# RunPlugin URLs: RunPlugin(plugin://plugin.program.AML/?command=xxxxx)
+#
+# Normal URLs are used in xbmcplugin.addDirectoryItem()
+# RunPlugin URLs are used in listitem.addContextMenuItems()
+#
+# '&' must be scaped to '%26' in all URLs. What about other non-ASCII characters?
+# ---------------------------------------------------------------------------------------------
+# To speed up it could be interesting to add custom functions that do not check
+# the number of arguments, specially for ROM rendering.
+def aux_url(command, categoryID = None, launcherID = None, romID = None):
+    if romID is not None:
+        return '{}?com={}&catID={}&launID={}&romID={}'.format(g_base_url, command,
+            categoryID, launcherID, romID)
+    elif launcherID is not None:
+        return '{}?com={}&catID={}&launID={}'.format(g_base_url, command, categoryID, launcherID)
+    elif categoryID is not None:
+        return '{}?com={}&catID={}'.format(g_base_url, command, categoryID)
+
+    return '{}?com={}'.format(g_base_url, command)
+
+# Kodi Matrix do not support XBMC.RunPlugin() anymore.
+# Leia can run RunPlugin() commands w/o XBMC prefix.
+# What about Krypton?
+def aux_url_RP(command, categoryID = None, launcherID = None, romID = None):
+    if romID is not None:
+        return 'RunPlugin({}?com={}&catID={}&launID={}&romID={})'.format(g_base_url, command,
+            categoryID, launcherID, romID)
+    elif launcherID is not None:
+        return 'RunPlugin({}?com={}&catID={}&launID={})'.format(g_base_url, command,
+            categoryID, launcherID)
+    elif categoryID is not None:
+        return 'RunPlugin({}?com={}&catID={})'.format(g_base_url, command, categoryID)
+
+    return 'RunPlugin({}?com={})'.format(g_base_url, command)
+
+def aux_url_search(self, command, categoryID, launcherID, search_type, search_string):
+    return '{}?com={}&catID={}&launID={}&search_type={}&search_string={}'.format(g_base_url,
+        command, categoryID, launcherID, search_type, search_string)
+
 # Edits a generic string using the GUI.
 # 
 # edict -> Dictionary to be edited. Category, Launcher or ROM.
@@ -181,14 +232,14 @@ class SingleInstance:
 # prop_name -> Property name string. Example: 'Launcher Release Year'
 #
 # Returns True if edict was changed, false otherwise.
-def _aux_edit_str(edict, fname, prop_name):
+def aux_edit_str(edict, fname, prop_name):
     old_value_str = edict[fname]
     keyboard = KodiKeyboardDialog('Edit {}'.format(prop_name), old_value_str)
     keyboard.executeDialog()
     if not keyboard.isConfirmed():
         kodi_notify('{} not changed'.format(prop_name))
         return False
-    new_value_str = keyboard.getData().strip().decode('utf-8')
+    new_value_str = keyboard.getData().strip()
     new_value_str = new_value_str if new_value_str else old_value_str
     if old_value_str == new_value_str:
         kodi_notify('{} not changed'.format(prop_name))
@@ -200,6 +251,8 @@ def _aux_edit_str(edict, fname, prop_name):
 class Main:
     # Main code. This is the plugin entry point.
     def run_plugin(self, addon_argv):
+        global g_base_url
+
         # --- Initialise log system ---
         # Force DEBUG log level for development.
         # Place it before settings loading so settings can be dumped during debugging.
@@ -263,12 +316,12 @@ class Main:
             #          ' "params" : {"level":"expert"}}')
             # response = xbmc.executeJSONRPC(c_str)
             # log_debug('JSON      "{}"'.format(c_str))
-            # log_debug('Response  "{}"'.format(response.decode('utf-8')))
+            # log_debug('Response  "{}"'.format(response))
 
         # Kiosk mode for skins.
         # Do not change context menus with listitem.addContextMenuItems() in Kiosk mode.
         # In other words, change the CM if Kiosk mode is disabled.
-        self.g_kiosk_mode_disabled = xbmc.getCondVisibility("!Skin.HasSetting(KioskMode.Enabled)")
+        self.g_kiosk_mode_disabled = xbmc.getCondVisibility('!Skin.HasSetting(KioskMode.Enabled)')
 
         # --- Addon data paths creation ---
         if not g_PATHS.ADDON_DATA_DIR.exists():            g_PATHS.ADDON_DATA_DIR.makedirs()
@@ -290,7 +343,7 @@ class Main:
         if not g_PATHS.REPORTS_DIR.exists():               g_PATHS.REPORTS_DIR.makedirs()
 
         # --- Process URL ---
-        self.base_url = addon_argv[0]
+        g_base_url = addon_argv[0]
         self.addon_handle = int(addon_argv[1])
         if ADDON_RUNNING_PYTHON_2:
             args = urlparse.parse_qs(addon_argv[2][1:])
@@ -407,7 +460,7 @@ class Main:
             self._command_render_LB_scraper_roms(args['catID'][0])
         # Auxiliar command to render clone ROM list from context menu in Parent/Clone mode.
         elif command == 'EXEC_SHOW_CLONE_ROMS':
-            url = self._misc_url('SHOW_CLONE_ROMS', args['catID'][0], args['launID'][0], args['romID'][0])
+            url = aux_url('SHOW_CLONE_ROMS', args['catID'][0], args['launID'][0], args['romID'][0])
             xbmc.executebuiltin('Container.Update({})'.format(url))
         elif command == 'SHOW_CLONE_ROMS':
             self._command_render_clone_roms(args['catID'][0], args['launID'][0], args['romID'][0])
@@ -423,11 +476,10 @@ class Main:
         elif command == 'SHOW_ALL_ROMS':
             self._command_render_all_ROMs()
 
-        # >> Command to build/fill the menu with categories or launcher using skinshortcuts
+        # Command to build/fill the menu with categories or launcher using skinshortcuts
         elif command == 'BUILD_GAMES_MENU':
             self._command_buildMenu()
 
-        # >> Unknown command
         else:
             kodi_dialog_OK('Unknown command {}'.format(args['com'][0]) )
         log_debug('Advanced Emulator Launcher run_concurrent() END')
@@ -629,7 +681,7 @@ class Main:
 
         # --- Advanced ---
         self.settings['media_state_action'] = kodi_get_int_setting(cfg, 'media_state_action')
-        self.settings['delay_tempo'] = kodi_get_float_setting_as_int(cfg, 'delay_tempo')
+        self.settings['delay_tempo'] = kodi_get_int_setting(cfg, 'delay_tempo')
         self.settings['suspend_audio_engine'] = kodi_get_bool_setting(cfg, 'suspend_audio_engine')
         self.settings['suspend_screensaver'] = kodi_get_bool_setting(cfg, 'suspend_screensaver')
         # self.settings['suspend_joystick_engine'] = kodi_get_bool_setting(cfg, 'suspend_joystick_engine')
@@ -1640,9 +1692,9 @@ class Main:
             # For some reason ReplaceWindow() does not work, bu Container.Update() does.
             # See http://forum.kodi.tv/showthread.php?tid=293844
             if new_categoryID == VCATEGORY_ADDONROOT_ID:
-                plugin_url = self.base_url
+                plugin_url = g_base_url
             else:
-                plugin_url = '{}?com=SHOW_LAUNCHERS&amp;catID={}'.format(self.base_url, new_categoryID)
+                plugin_url = '{}?com=SHOW_LAUNCHERS&amp;catID={}'.format(g_base_url, new_categoryID)
             exec_str = 'Container.Update({},replace)'.format(plugin_url)
             log_debug('_command_edit_launcher() Plugin URL     "{}"'.format(plugin_url))
             log_debug('_command_edit_launcher() Executebuiltin "{}"'.format(exec_str))
@@ -2475,10 +2527,7 @@ class Main:
 
                 # Add new additional arguments
                 if type_aux == 0:
-                    keyboard = KodiKeyboardDialog('Edit launcher additional arguments')
-                    keyboard.executeDialog()
-                    if not keyboard.isConfirmed(): return
-                    new_value_str = keyboard.getData().strip().decode('utf-8')
+                    new_value_str = kodi_get_keyboard_text('Edit launcher additional arguments')
                     launcher['args_extra'].append(new_value_str)
                     log_debug('_command_edit_launcher() Appending extra_args to launcher {}'.format(launcherID))
                     kodi_notify('Added additional arguments in position {}'.format(len(launcher['args_extra'])))
@@ -2491,16 +2540,15 @@ class Main:
                     type_aux_2 = sDialog.executeDialog()
                     if type_aux_2 is None: return
                     if type_aux_2 == 0:
-                        keyboard = KodiKeyboardDialog('Edit application arguments', launcher['args_extra'][arg_index])
-                        keyboard.executeDialog()
-                        if not keyboard.isConfirmed(): return
-                        new_value_str = keyboard.getData().strip().decode('utf-8')
+                        new_value_str = kodi_get_keyboard_text('Edit application arguments',
+                            launcher['args_extra'][arg_index])
                         launcher['args_extra'][arg_index] = new_value_str
                         log_debug('_command_edit_launcher() Edited args_extra[{}] to "{}"'.format(
                             arg_index, launcher['args_extra'][arg_index]))
                         kodi_notify('Changed launcher extra arguments {}'.format(type_aux))
                     elif type_aux_2 == 1:
-                        ret = kodi_dialog_yesno('Are you sure you want to delete Launcher additional arguments {}?'.format(type_aux))
+                        ret = kodi_dialog_yesno('Are you sure you want to delete Launcher '
+                            'additional arguments {}?'.format(type_aux))
                         if not ret: return
                         del launcher['args_extra'][arg_index]
                         log_debug("_command_edit_launcher() Deleted launcher['args_extra'][{}]".format(arg_index))
@@ -2517,11 +2565,8 @@ class Main:
                 # --- Edition of the launcher ROM extension (Only ROM launchers) ---
                 type2_nb = type2_nb + 1
                 if mindex2 == type2_nb:
-                    keyboard = KodiKeyboardDialog('Edit ROM extension, use "|" as separator. (e.g lnk|cbr)',
-                        self.launchers[launcherID]['romext'])
-                    keyboard.executeDialog()
-                    if not keyboard.isConfirmed(): return
-                    new_value_str = keyboard.getData().strip().decode('utf-8')
+                    t = 'Edit ROM extension, use "|" as separator. (e.g lnk|cbr)'
+                    new_value_str = kodi_get_keyboard_text(t, self.launchers[launcherID]['romext'])
                     self.launchers[launcherID]['romext'] = new_value_str
                     kodi_notify('Changed ROM extensions')
 
@@ -2751,10 +2796,7 @@ class Main:
                     kodi_notify('Launcher NPlayers change to Not Set')
                 elif np_idx == 1:
                     # Manual entry. Open a text entry dialog.
-                    keyboard = KodiKeyboardDialog('Edit NPlayers', roms[romID]['m_nplayers'])
-                    keyboard.executeDialog()
-                    if not keyboard.isConfirmed(): return
-                    new_value_str = keyboard.getData().strip().decode('utf-8')
+                    new_value_str = kodi_get_keyboard_text('Edit NPlayers', roms[romID]['m_nplayers'])
                     roms[romID]['m_nplayers'] = new_value_str
                     kodi_notify('Changed Launcher NPlayers')
                 else:
@@ -2971,10 +3013,8 @@ class Main:
                 roms[romID]['altapp'] = altapp
             # Alternative launcher arguments
             elif mindex2 == 2:
-                keyboard = KodiKeyboardDialog('Edit ROM custom application arguments', roms[romID]['altarg'])
-                keyboard.executeDialog()
-                if not keyboard.isConfirmed(): return
-                roms[romID]['altarg'] = keyboard.getData().strip().decode('utf-8')
+                t = 'Edit ROM custom application arguments'
+                roms[romID]['altarg'] = kodi_get_keyboard_text(t, roms[romID]['altarg'])
 
         # --- Delete ROM ---
         elif mindex == 4:
@@ -3472,7 +3512,7 @@ class Main:
         if not self.settings['display_hide_utilities']: self._gui_render_Utilities_root()
         if not self.settings['display_hide_g_reports']: self._gui_render_GlobalReports_root()
 
-        xbmcplugin.endOfDirectory(handle = self.addon_handle, succeeded = True, cacheToDisc = False)
+        xbmcplugin.endOfDirectory(self.addon_handle, succeeded = True, cacheToDisc = False)
 
     # Renders all categories without Favourites, Collections, virtual categories, etc.
     # This function is called by skins to build shortcuts menu.
@@ -3483,7 +3523,7 @@ class Main:
         # For every category, add it to the listbox. Order alphabetically by name
         for key in sorted(self.categories, key = lambda x : self.categories[x]['m_name']):
             self._gui_render_category_row(self.categories[key], key)
-        xbmcplugin.endOfDirectory(handle = self.addon_handle, succeeded = True, cacheToDisc = False)
+        xbmcplugin.endOfDirectory(self.addon_handle, succeeded = True, cacheToDisc = False)
 
     def _gui_render_category_row(self, category_dic, key):
         # --- Do not render row if category finished ---
@@ -3523,22 +3563,21 @@ class Main:
 
         # --- Create context menu ---
         # To remove default entries like "Go to root", etc, see http://forum.kodi.tv/showthread.php?tid=227358
-        commands = []
-        categoryID = category_dic['id']
-        commands.append(('View Category data', self._misc_url_RunPlugin('VIEW', categoryID)))
-        commands.append(('Edit Category', self._misc_url_RunPlugin('EDIT_CATEGORY', categoryID)))
-        commands.append(('Create New Category', self._misc_url_RunPlugin('ADD_CATEGORY')))
-        commands.append(('Add New Launcher', self._misc_url_RunPlugin('ADD_LAUNCHER', categoryID)))
-        commands.append(('Kodi File Manager', 'ActivateWindow(filemanager)', )) # If using window ID then use "10003"
-        commands.append(('AEL addon settings', 'Addon.OpenSettings({})'.format(cfg.addon.info_id)))
         # In Krypton "Add to favourites" appears always in the last position of context menu.
-
-        if xbmc.getCondVisibility("!Skin.HasSetting(KioskMode.Enabled)"):
+        if self.g_kiosk_mode_disabled:
+            categoryID = category_dic['id']
+            commands = [
+                ('View Category data', aux_url_RP('VIEW', categoryID)),
+                ('Edit Category', aux_url_RP('EDIT_CATEGORY', categoryID)),
+                ('Create New Category', aux_url_RP('ADD_CATEGORY')),
+                ('Add New Launcher', aux_url_RP('ADD_LAUNCHER', categoryID)),
+                ('Kodi File Manager', 'ActivateWindow(filemanager)'),
+                ('AEL addon settings', 'Addon.OpenSettings({})'.format(cfg.addon.info_id)),
+            ]
             listitem.addContextMenuItems(commands, replaceItems = True)
 
-        # --- Add row ---
-        url_str = self._misc_url('SHOW_LAUNCHERS', key)
-        xbmcplugin.addDirectoryItem(handle = self.addon_handle, url=url_str, listitem=listitem, isFolder=True)
+        url_str = aux_url('SHOW_LAUNCHERS', key)
+        xbmcplugin.addDirectoryItem(self.addon_handle, url_str, listitem, True)
 
     def _gui_render_category_favourites_row(self):
         # fav_icon   = 'DefaultFolder.png'
@@ -3554,18 +3593,18 @@ class Main:
         listitem.setArt({'icon' : vcategory_icon, 'fanart' : vcategory_fanart, 'poster' : vcategory_poster})
         listitem.setProperty(AEL_CONTENT_LABEL, AEL_CONTENT_VALUE_ROM_LAUNCHER)
 
-        # --- Create context menu ---
-        commands = []
-        commands.append(('Create New Category', self._misc_url_RunPlugin('ADD_CATEGORY')))
-        commands.append(('Add New Launcher', self._misc_url_RunPlugin('ADD_LAUNCHER_ROOT')))
-        commands.append(('Kodi File Manager', 'ActivateWindow(filemanager)'))
-        commands.append(('AEL addon settings', 'Addon.OpenSettings({})'.format(cfg.addon.info_id)))
-        if (xbmc.getCondVisibility("!Skin.HasSetting(KioskMode.Enabled)")):
+        # Create context menu if Kiosk mode is disabled (normal mode).
+        if self.g_kiosk_mode_disabled:
+            commands = [
+                ('Create New Category', aux_url_RP('ADD_CATEGORY')),
+                ('Add New Launcher', aux_url_RP('ADD_LAUNCHER_ROOT')),
+                ('Kodi File Manager', 'ActivateWindow(filemanager)'),
+                ('AEL addon settings', 'Addon.OpenSettings({})'.format(cfg.addon.info_id)),
+            ]
             listitem.addContextMenuItems(commands, replaceItems = True)
-
-        # --- Add row ---
-        url_str = self._misc_url('SHOW_FAVOURITES')
-        xbmcplugin.addDirectoryItem(handle = self.addon_handle, url = url_str, listitem = listitem, isFolder = True)
+        # Add row.
+        url_str = aux_url('SHOW_FAVOURITES')
+        xbmcplugin.addDirectoryItem(self.addon_handle, url_str, listitem, True)
 
     def _gui_render_category_collections_row(self):
         vcategory_name   = '[COLOR lightblue]ROM Collections[/COLOR]'
@@ -3578,18 +3617,19 @@ class Main:
         listitem.setArt({'icon' : vcategory_icon, 'fanart' : vcategory_fanart, 'poster' : vcategory_poster})
         listitem.setProperty(AEL_CONTENT_LABEL, AEL_CONTENT_VALUE_CATEGORY)
 
-        commands = []
-        commands.append(('Create New Collection', self._misc_url_RunPlugin('ADD_COLLECTION')))
-        commands.append(('Import Collection', self._misc_url_RunPlugin('IMPORT_COLLECTION')))
-        commands.append(('Create New Category', self._misc_url_RunPlugin('ADD_CATEGORY')))
-        commands.append(('Add New Launcher', self._misc_url_RunPlugin('ADD_LAUNCHER_ROOT')))
-        commands.append(('Kodi File Manager', 'ActivateWindow(filemanager)'))
-        commands.append(('AEL addon settings', 'Addon.OpenSettings({})'.format(cfg.addon.info_id)))
-        if (xbmc.getCondVisibility("!Skin.HasSetting(KioskMode.Enabled)")):
+        if self.g_kiosk_mode_disabled:
+            commands = [
+                ('Create New Collection', aux_url_RP('ADD_COLLECTION')),
+                ('Import Collection', aux_url_RP('IMPORT_COLLECTION')),
+                ('Create New Category', aux_url_RP('ADD_CATEGORY')),
+                ('Add New Launcher', aux_url_RP('ADD_LAUNCHER_ROOT')),
+                ('Kodi File Manager', 'ActivateWindow(filemanager)'),
+                ('AEL addon settings', 'Addon.OpenSettings({})'.format(cfg.addon.info_id)),
+            ]
             listitem.addContextMenuItems(commands, replaceItems = True)
 
-        url_str = self._misc_url('SHOW_COLLECTIONS')
-        xbmcplugin.addDirectoryItem(handle = self.addon_handle, url = url_str, listitem = listitem, isFolder = True)
+        url_str = aux_url('SHOW_COLLECTIONS')
+        xbmcplugin.addDirectoryItem(self.addon_handle, url_str, listitem, True)
 
     def _gui_render_virtual_category_root_row(self):
         vcategory_name   = '[COLOR violet]Browse by ...[/COLOR]'
@@ -3603,18 +3643,19 @@ class Main:
         listitem.setArt({'icon' : vcategory_icon, 'fanart' : vcategory_fanart, 'poster' : vcategory_poster})
         listitem.setProperty(AEL_CONTENT_LABEL, AEL_CONTENT_VALUE_CATEGORY)
 
-        commands = []
-        update_vcat_all_URL = self._misc_url_RunPlugin('UPDATE_ALL_VCATEGORIES')
-        commands.append(('Update all databases'.format(vcategory_label), update_vcat_all_URL))
-        commands.append(('Create New Category', self._misc_url_RunPlugin('ADD_CATEGORY')))
-        commands.append(('Add New Launcher', self._misc_url_RunPlugin('ADD_LAUNCHER_ROOT')))
-        commands.append(('Kodi File Manager', 'ActivateWindow(filemanager)'))
-        commands.append(('AEL addon settings', 'Addon.OpenSettings({})'.format(cfg.addon.info_id)))
-        if (xbmc.getCondVisibility("!Skin.HasSetting(KioskMode.Enabled)")):
+        if self.g_kiosk_mode_disabled:
+            update_vcat_all_URL = aux_url_RP('UPDATE_ALL_VCATEGORIES')
+            commands = [
+                ('Update all databases'.format(vcategory_label), update_vcat_all_URL),
+                ('Create New Category', aux_url_RP('ADD_CATEGORY')),
+                ('Add New Launcher', aux_url_RP('ADD_LAUNCHER_ROOT')),
+                ('Kodi File Manager', 'ActivateWindow(filemanager)'),
+                ('AEL addon settings', 'Addon.OpenSettings({})'.format(cfg.addon.info_id)),
+            ]
             listitem.addContextMenuItems(commands, replaceItems = True)
 
-        url_str = self._misc_url('SHOW_VCATEGORIES_ROOT')
-        xbmcplugin.addDirectoryItem(handle = self.addon_handle, url = url_str, listitem = listitem, isFolder = True)
+        url_str = aux_url('SHOW_VCATEGORIES_ROOT')
+        xbmcplugin.addDirectoryItem(self.addon_handle, url_str, listitem, True)
 
     def _gui_render_category_AEL_offline_scraper_row(self):
         vcategory_name   = '[COLOR violet]Browse AEL Offline Scraper[/COLOR]'
@@ -3628,16 +3669,17 @@ class Main:
         listitem.setArt({'icon' : vcategory_icon, 'fanart' : vcategory_fanart, 'poster' : vcategory_poster})
         listitem.setProperty(AEL_CONTENT_LABEL, AEL_CONTENT_VALUE_CATEGORY)
 
-        commands = []
-        commands.append(('Create New Category', self._misc_url_RunPlugin('ADD_CATEGORY')))
-        commands.append(('Add New Launcher', self._misc_url_RunPlugin('ADD_LAUNCHER_ROOT')))
-        commands.append(('Kodi File Manager', 'ActivateWindow(filemanager)'))
-        commands.append(('AEL addon settings', 'Addon.OpenSettings({})'.format(cfg.addon.info_id)))
-        if (xbmc.getCondVisibility("!Skin.HasSetting(KioskMode.Enabled)")):
+        if self.g_kiosk_mode_disabled:
+            commands = [
+                ('Create New Category', aux_url_RP('ADD_CATEGORY')),
+                ('Add New Launcher', aux_url_RP('ADD_LAUNCHER_ROOT')),
+                ('Kodi File Manager', 'ActivateWindow(filemanager)'),
+                ('AEL addon settings', 'Addon.OpenSettings({})'.format(cfg.addon.info_id)),
+            ]
             listitem.addContextMenuItems(commands, replaceItems = True)
 
-        url_str = self._misc_url('SHOW_AEL_OFFLINE_LAUNCHERS_ROOT')
-        xbmcplugin.addDirectoryItem(handle = self.addon_handle, url = url_str, listitem = listitem, isFolder = True)
+        url_str = aux_url('SHOW_AEL_OFFLINE_LAUNCHERS_ROOT')
+        xbmcplugin.addDirectoryItem(self.addon_handle, url_str, listitem, True)
 
     def _gui_render_category_LB_offline_scraper_row(self):
         vcategory_name   = '[COLOR violet]Browse LaunchBox Offline Scraper[/COLOR]'
@@ -3651,16 +3693,17 @@ class Main:
         listitem.setArt({'icon' : vcategory_icon, 'fanart' : vcategory_fanart, 'poster' : vcategory_poster})
         listitem.setProperty(AEL_CONTENT_LABEL, AEL_CONTENT_VALUE_CATEGORY)
 
-        commands = []
-        commands.append(('Create New Category', self._misc_url_RunPlugin('ADD_CATEGORY')))
-        commands.append(('Add New Launcher', self._misc_url_RunPlugin('ADD_LAUNCHER_ROOT')))
-        commands.append(('Kodi File Manager', 'ActivateWindow(filemanager)'))
-        commands.append(('AEL addon settings', 'Addon.OpenSettings({})'.format(cfg.addon.info_id)))
-        if (xbmc.getCondVisibility("!Skin.HasSetting(KioskMode.Enabled)")):
+        if self.g_kiosk_mode_disabled:
+            commands = [
+                ('Create New Category', aux_url_RP('ADD_CATEGORY')),
+                ('Add New Launcher', aux_url_RP('ADD_LAUNCHER_ROOT')),
+                ('Kodi File Manager', 'ActivateWindow(filemanager)'),
+                ('AEL addon settings', 'Addon.OpenSettings({})'.format(cfg.addon.info_id)),
+            ]
             listitem.addContextMenuItems(commands, replaceItems = True)
 
-        url_str = self._misc_url('SHOW_LB_OFFLINE_LAUNCHERS_ROOT')
-        xbmcplugin.addDirectoryItem(handle = self.addon_handle, url = url_str, listitem = listitem, isFolder = True)
+        url_str = aux_url('SHOW_LB_OFFLINE_LAUNCHERS_ROOT')
+        xbmcplugin.addDirectoryItem(self.addon_handle, url_str, listitem, True)
 
     def _gui_render_category_recently_played_row(self):
         vcategory_name   = '[COLOR thistle]Recently played ROMs[/COLOR]'
@@ -3673,17 +3716,18 @@ class Main:
         listitem.setArt({'icon' : vcategory_icon, 'fanart' : vcategory_fanart, 'poster' : vcategory_poster})
         listitem.setProperty(AEL_CONTENT_LABEL, AEL_CONTENT_VALUE_ROM_LAUNCHER)
 
-        commands = []
-        commands.append(('Manage Recently Played', self._misc_url_RunPlugin('MANAGE_RECENT_PLAYED')))
-        commands.append(('Create New Category', self._misc_url_RunPlugin('ADD_CATEGORY')))
-        commands.append(('Add New Launcher', self._misc_url_RunPlugin('ADD_LAUNCHER_ROOT')))
-        commands.append(('Kodi File Manager', 'ActivateWindow(filemanager)'))
-        commands.append(('AEL addon settings', 'Addon.OpenSettings({})'.format(cfg.addon.info_id)))
-        if (xbmc.getCondVisibility("!Skin.HasSetting(KioskMode.Enabled)")):
+        if self.g_kiosk_mode_disabled:
+            commands = [
+                ('Manage Recently Played', aux_url_RP('MANAGE_RECENT_PLAYED')),
+                ('Create New Category', aux_url_RP('ADD_CATEGORY')),
+                ('Add New Launcher', aux_url_RP('ADD_LAUNCHER_ROOT')),
+                ('Kodi File Manager', 'ActivateWindow(filemanager)'),
+                ('AEL addon settings', 'Addon.OpenSettings({})'.format(cfg.addon.info_id)),
+            ]
             listitem.addContextMenuItems(commands, replaceItems = True)
 
-        url_str = self._misc_url('SHOW_RECENTLY_PLAYED')
-        xbmcplugin.addDirectoryItem(handle = self.addon_handle, url = url_str, listitem = listitem, isFolder = True)
+        url_str = aux_url('SHOW_RECENTLY_PLAYED')
+        xbmcplugin.addDirectoryItem(self.addon_handle, url_str, listitem, True)
 
     def _gui_render_category_most_played_row(self):
         vcategory_name   = '[COLOR thistle]Most played ROMs[/COLOR]'
@@ -3696,17 +3740,18 @@ class Main:
         listitem.setArt({'icon' : vcategory_icon, 'fanart' : vcategory_fanart, 'poster' : vcategory_poster})
         listitem.setProperty(AEL_CONTENT_LABEL, AEL_CONTENT_VALUE_ROM_LAUNCHER)
 
-        commands = []
-        commands.append(('Manage Most Played', self._misc_url_RunPlugin('MANAGE_MOST_PLAYED')))
-        commands.append(('Create New Category', self._misc_url_RunPlugin('ADD_CATEGORY')))
-        commands.append(('Add New Launcher', self._misc_url_RunPlugin('ADD_LAUNCHER_ROOT')))
-        commands.append(('Kodi File Manager', 'ActivateWindow(filemanager)'))
-        commands.append(('AEL addon settings', 'Addon.OpenSettings({})'.format(cfg.addon.info_id)))
-        if (xbmc.getCondVisibility("!Skin.HasSetting(KioskMode.Enabled)")):
+        if self.g_kiosk_mode_disabled:
+            commands = [
+                ('Manage Most Played', aux_url_RP('MANAGE_MOST_PLAYED')),
+                ('Create New Category', aux_url_RP('ADD_CATEGORY')),
+                ('Add New Launcher', aux_url_RP('ADD_LAUNCHER_ROOT')),
+                ('Kodi File Manager', 'ActivateWindow(filemanager)'),
+                ('AEL addon settings', 'Addon.OpenSettings({})'.format(cfg.addon.info_id)),
+            ]
             listitem.addContextMenuItems(commands, replaceItems = True)
 
-        url_str = self._misc_url('SHOW_MOST_PLAYED')
-        xbmcplugin.addDirectoryItem(handle = self.addon_handle, url = url_str, listitem = listitem, isFolder = True)
+        url_str = aux_url('SHOW_MOST_PLAYED')
+        xbmcplugin.addDirectoryItem(self.addon_handle, url_str, listitem, True)
 
     def _gui_render_Utilities_root(self):
         vcategory_name   = '[COLOR sandybrown]Utilities[/COLOR]'
@@ -3720,14 +3765,15 @@ class Main:
         listitem.setArt({'icon' : vcategory_icon, 'fanart' : vcategory_fanart, 'poster' : vcategory_poster})
         listitem.setProperty(AEL_CONTENT_LABEL, AEL_CONTENT_VALUE_CATEGORY)
 
-        commands = []
-        commands.append(('Open Kodi file manager', 'ActivateWindow(filemanager)'))
-        commands.append(('AEL addon settings', 'Addon.OpenSettings({})'.format(cfg.addon.info_id)))
-        if (xbmc.getCondVisibility("!Skin.HasSetting(KioskMode.Enabled)")):
-            listitem.addContextMenuItems(commands)
+        if self.g_kiosk_mode_disabled:
+            commands = [
+                ('Open Kodi file manager', 'ActivateWindow(filemanager)'),
+                ('AEL addon settings', 'Addon.OpenSettings({})'.format(cfg.addon.info_id)),
+            ]
+            listitem.addContextMenuItems(commands, replaceItems = True)
 
-        url_str = self._misc_url('SHOW_UTILITIES_VLAUNCHERS')
-        xbmcplugin.addDirectoryItem(handle = self.addon_handle, url = url_str, listitem = listitem, isFolder = True)
+        url_str = aux_url('SHOW_UTILITIES_VLAUNCHERS')
+        xbmcplugin.addDirectoryItem(self.addon_handle, url_str, listitem, True)
 
     def _gui_render_GlobalReports_root(self):
         vcategory_name   = '[COLOR salmon]Global Reports[/COLOR]'
@@ -3741,14 +3787,15 @@ class Main:
         listitem.setArt({'icon' : vcategory_icon, 'fanart' : vcategory_fanart, 'poster' : vcategory_poster})
         listitem.setProperty(AEL_CONTENT_LABEL, AEL_CONTENT_VALUE_CATEGORY)
 
-        commands = []
-        commands.append(('Open Kodi file manager', 'ActivateWindow(filemanager)'))
-        commands.append(('AEL addon settings', 'Addon.OpenSettings({})'.format(cfg.addon.info_id)))
-        if (xbmc.getCondVisibility("!Skin.HasSetting(KioskMode.Enabled)")):
-            listitem.addContextMenuItems(commands)
+        if self.g_kiosk_mode_disabled:
+            commands = [
+                ('Open Kodi file manager', 'ActivateWindow(filemanager)'),
+                ('AEL addon settings', 'Addon.OpenSettings({})'.format(cfg.addon.info_id)),
+            ]
+            listitem.addContextMenuItems(commands, replaceItems = True)
 
-        url_str = self._misc_url('SHOW_GLOBALREPORTS_VLAUNCHERS')
-        xbmcplugin.addDirectoryItem(handle = self.addon_handle, url = url_str, listitem = listitem, isFolder = True)
+        url_str = aux_url('SHOW_GLOBALREPORTS_VLAUNCHERS')
+        xbmcplugin.addDirectoryItem(self.addon_handle, url_str, listitem, True)
 
     # ---------------------------------------------------------------------------------------------
     # Virtual categories [Browse by ...]
@@ -3765,7 +3812,7 @@ class Main:
         self._gui_render_virtual_category_row(VCATEGORY_ESRB_ID)
         self._gui_render_virtual_category_row(VCATEGORY_RATING_ID)
         self._gui_render_virtual_category_row(VCATEGORY_CATEGORY_ID)
-        xbmcplugin.endOfDirectory(handle = self.addon_handle, succeeded = True, cacheToDisc = False)
+        xbmcplugin.endOfDirectory(self.addon_handle, succeeded = True, cacheToDisc = False)
 
     def _gui_render_virtual_category_row(self, virtual_category_kind):
         if virtual_category_kind == VCATEGORY_TITLE_ID:
@@ -3833,20 +3880,21 @@ class Main:
         listitem.setArt({'icon' : vcategory_icon, 'fanart' : vcategory_fanart, 'poster' : vcategory_poster})
         listitem.setProperty(AEL_CONTENT_LABEL, AEL_CONTENT_VALUE_ROM_LAUNCHER)
 
-        commands = []
-        update_vcat_URL = self._misc_url_RunPlugin('UPDATE_VIRTUAL_CATEGORY', virtual_category_kind)
-        update_vcat_all_URL = self._misc_url_RunPlugin('UPDATE_ALL_VCATEGORIES')
-        commands.append(('Update {} database'.format(vcategory_label), update_vcat_URL))
-        commands.append(('Update all databases', update_vcat_all_URL))
-        commands.append(('Create New Category', self._misc_url_RunPlugin('ADD_CATEGORY')))
-        commands.append(('Add New Launcher',    self._misc_url_RunPlugin('ADD_LAUNCHER_ROOT')))
-        commands.append(('Kodi File Manager', 'ActivateWindow(filemanager)'))
-        commands.append(('AEL addon settings', 'Addon.OpenSettings({})'.format(cfg.addon.info_id)))
-        if (xbmc.getCondVisibility("!Skin.HasSetting(KioskMode.Enabled)")):
+        if self.g_kiosk_mode_disabled:
+            update_vcat_URL = aux_url_RP('UPDATE_VIRTUAL_CATEGORY', virtual_category_kind)
+            update_vcat_all_URL = aux_url_RP('UPDATE_ALL_VCATEGORIES')
+            commands = [
+                ('Update {} database'.format(vcategory_label), update_vcat_URL),
+                ('Update all databases', update_vcat_all_URL),
+                ('Create New Category', aux_url_RP('ADD_CATEGORY')),
+                ('Add New Launcher', aux_url_RP('ADD_LAUNCHER_ROOT')),
+                ('Kodi File Manager', 'ActivateWindow(filemanager)'),
+                ('AEL addon settings', 'Addon.OpenSettings({})'.format(cfg.addon.info_id)),
+            ]
             listitem.addContextMenuItems(commands, replaceItems = True)
 
-        url_str = self._misc_url('SHOW_VIRTUAL_CATEGORY', virtual_category_kind)
-        xbmcplugin.addDirectoryItem(handle = self.addon_handle, url = url_str, listitem = listitem, isFolder = True)
+        url_str = aux_url('SHOW_VIRTUAL_CATEGORY', virtual_category_kind)
+        xbmcplugin.addDirectoryItem(self.addon_handle, url_str, listitem, True)
 
     def _gui_render_AEL_scraper_launchers(self):
         self._misc_set_default_sorting_method()
@@ -3902,8 +3950,8 @@ class Main:
 
         # User the original platform here, otherwise the list goes to the parent
         # platform instead of the aliased platform when user goes back in the list.
-        url_str = self._misc_url('SHOW_AEL_SCRAPER_ROMS', pobj.long_name)
-        xbmcplugin.addDirectoryItem(handle = self.addon_handle, url = url_str, listitem = listitem, isFolder = True)
+        url_str = aux_url('SHOW_AEL_SCRAPER_ROMS', pobj.long_name)
+        xbmcplugin.addDirectoryItem(self.addon_handle, url_str, listitem, True)
 
     def _gui_render_LB_scraper_launchers(self):
         self._misc_set_default_sorting_method()
@@ -3917,10 +3965,10 @@ class Main:
             if platform == 'Unknown': continue
             db_suffix = platform_AEL_to_LB_XML[platform]
             self._gui_render_LB_scraper_launchers_row(platform, gamedb_info_dic[platform], db_suffix)
-        xbmcplugin.endOfDirectory(handle = self.addon_handle, succeeded = True, cacheToDisc = False)
+        xbmcplugin.endOfDirectory(self.addon_handle, succeeded = True, cacheToDisc = False)
 
     def _gui_render_LB_scraper_launchers_row(self, platform, platform_info, db_suffix):
-        # >> Mark platform whose XML DB is not available
+        # Mark platform whose XML DB is not available
         title_str = platform
         if not db_suffix:
             title_str += ' [COLOR red][Not available][/COLOR]'
@@ -3934,18 +3982,19 @@ class Main:
         listitem = xbmcgui.ListItem(title_str)
         listitem.setInfo('video', {'title' : title_str, 'plot' : plot_text, 'overlay' : 4 })
         listitem.setArt({'icon' : vlauncher_icon, 'fanart' : vlauncher_fanart, 'poster' : vlauncher_poster})
-        # >> Set platform property to render platform icon on skins.
+        # Set platform property to render platform icon on skins.
         listitem.setProperty('platform', platform)
         listitem.setProperty(AEL_CONTENT_LABEL, AEL_CONTENT_VALUE_ROM_LAUNCHER)
 
-        commands = []
-        commands.append(('Kodi File Manager', 'ActivateWindow(filemanager)'))
-        commands.append(('AEL addon settings', 'Addon.OpenSettings({})'.format(cfg.addon.info_id)))
-        if (xbmc.getCondVisibility("!Skin.HasSetting(KioskMode.Enabled)")):
+        if self.g_kiosk_mode_disabled:
+            commands = [
+                ('Kodi File Manager', 'ActivateWindow(filemanager)'),
+                ('AEL addon settings', 'Addon.OpenSettings({})'.format(cfg.addon.info_id)),
+            ]
             listitem.addContextMenuItems(commands, replaceItems = True)
 
-        url_str = self._misc_url('SHOW_LB_SCRAPER_ROMS', platform)
-        xbmcplugin.addDirectoryItem(handle = self.addon_handle, url = url_str, listitem = listitem, isFolder = True)
+        url_str = aux_url('SHOW_LB_SCRAPER_ROMS', platform)
+        xbmcplugin.addDirectoryItem(self.addon_handle, url_str, listitem, True)
 
     def _gui_render_Utilities_vlaunchers(self):
         # --- Common context menu for all VLaunchers ---
@@ -3968,10 +4017,10 @@ class Main:
         listitem.setInfo('video', {'title': vcategory_name, 'plot' : vcategory_plot, 'overlay': 4})
         listitem.setArt({'icon' : vcategory_icon, 'fanart' : vcategory_fanart, 'poster' : vcategory_poster})
         listitem.setProperty(AEL_CONTENT_LABEL, AEL_CONTENT_VALUE_ROM_LAUNCHER)
-        if xbmc.getCondVisibility("!Skin.HasSetting(KioskMode.Enabled)"):
+        if self.g_kiosk_mode_disabled:
             listitem.addContextMenuItems(commands)
-        url_str = self._misc_url('EXECUTE_UTILS_IMPORT_LAUNCHERS')
-        xbmcplugin.addDirectoryItem(handle = self.addon_handle, url = url_str, listitem = listitem, isFolder = False)
+        url_str = aux_url('EXECUTE_UTILS_IMPORT_LAUNCHERS')
+        xbmcplugin.addDirectoryItem(self.addon_handle, url_str, listitem, False)
 
         # <setting label="Export category/launcher configuration ..."
         #  action="RunPlugin(plugin://plugin.program.advanced.emulator.launcher/?com=EXPORT_LAUNCHERS)"/>
@@ -3983,10 +4032,10 @@ class Main:
         listitem.setInfo('video', {'title': vcategory_name, 'plot' : vcategory_plot, 'overlay': 4})
         listitem.setArt({'icon' : vcategory_icon, 'fanart' : vcategory_fanart, 'poster' : vcategory_poster})
         listitem.setProperty(AEL_CONTENT_LABEL, AEL_CONTENT_VALUE_ROM_LAUNCHER)
-        if xbmc.getCondVisibility("!Skin.HasSetting(KioskMode.Enabled)"):
+        if self.g_kiosk_mode_disabled:
             listitem.addContextMenuItems(commands)
-        url_str = self._misc_url('EXECUTE_UTILS_EXPORT_LAUNCHERS')
-        xbmcplugin.addDirectoryItem(handle = self.addon_handle, url = url_str, listitem = listitem, isFolder = False)
+        url_str = aux_url('EXECUTE_UTILS_EXPORT_LAUNCHERS')
+        xbmcplugin.addDirectoryItem(self.addon_handle, url_str, listitem, False)
 
         # <setting label="Check/Update all databases ..."
         #  action="RunPlugin(plugin://plugin.program.advanced.emulator.launcher/?com=CHECK_DATABASE)"/>
@@ -3997,10 +4046,10 @@ class Main:
         listitem.setInfo('video', {'title': vcategory_name, 'plot' : vcategory_plot, 'overlay': 4})
         listitem.setArt({'icon' : vcategory_icon, 'fanart' : vcategory_fanart, 'poster' : vcategory_poster})
         listitem.setProperty(AEL_CONTENT_LABEL, AEL_CONTENT_VALUE_ROM_LAUNCHER)
-        if xbmc.getCondVisibility("!Skin.HasSetting(KioskMode.Enabled)"):
+        if self.g_kiosk_mode_disabled:
             listitem.addContextMenuItems(commands)
-        url_str = self._misc_url('EXECUTE_UTILS_CHECK_DATABASE')
-        xbmcplugin.addDirectoryItem(handle = self.addon_handle, url = url_str, listitem = listitem, isFolder = False)
+        url_str = aux_url('EXECUTE_UTILS_CHECK_DATABASE')
+        xbmcplugin.addDirectoryItem(self.addon_handle, url_str, listitem, False)
 
         # <setting label="Check Launchers ..."
         #  action="RunPlugin(plugin://plugin.program.advanced.emulator.launcher/?com=CHECK_LAUNCHERS)"/>
@@ -4011,10 +4060,10 @@ class Main:
         listitem.setInfo('video', {'title': vcategory_name, 'plot' : vcategory_plot, 'overlay': 4})
         listitem.setArt({'icon' : vcategory_icon, 'fanart' : vcategory_fanart, 'poster' : vcategory_poster})
         listitem.setProperty(AEL_CONTENT_LABEL, AEL_CONTENT_VALUE_ROM_LAUNCHER)
-        if xbmc.getCondVisibility("!Skin.HasSetting(KioskMode.Enabled)"):
+        if self.g_kiosk_mode_disabled:
             listitem.addContextMenuItems(commands)
-        url_str = self._misc_url('EXECUTE_UTILS_CHECK_LAUNCHERS')
-        xbmcplugin.addDirectoryItem(handle = self.addon_handle, url = url_str, listitem = listitem, isFolder = False)
+        url_str = aux_url('EXECUTE_UTILS_CHECK_LAUNCHERS')
+        xbmcplugin.addDirectoryItem(self.addon_handle, url_str, listitem, False)
 
         vcategory_name = 'Check Launcher ROMs sync status'
         vcategory_plot = ('For all ROM Launchers, check if all the ROMs in the ROM path are in AEL '
@@ -4025,10 +4074,10 @@ class Main:
         listitem.setInfo('video', {'title': vcategory_name, 'plot' : vcategory_plot, 'overlay': 4})
         listitem.setArt({'icon' : vcategory_icon, 'fanart' : vcategory_fanart, 'poster' : vcategory_poster})
         listitem.setProperty(AEL_CONTENT_LABEL, AEL_CONTENT_VALUE_ROM_LAUNCHER)
-        if xbmc.getCondVisibility("!Skin.HasSetting(KioskMode.Enabled)"):
+        if self.g_kiosk_mode_disabled:
             listitem.addContextMenuItems(commands)
-        url_str = self._misc_url('EXECUTE_UTILS_CHECK_LAUNCHER_SYNC_STATUS')
-        xbmcplugin.addDirectoryItem(handle = self.addon_handle, url = url_str, listitem = listitem, isFolder = False)
+        url_str = aux_url('EXECUTE_UTILS_CHECK_LAUNCHER_SYNC_STATUS')
+        xbmcplugin.addDirectoryItem(self.addon_handle, url_str, listitem, False)
 
         # vcategory_name = 'Check artwork image integrity'
         # vcategory_plot = ('Scans existing [COLOR=orange]artwork images[/COLOR] in Launchers, Favourites '
@@ -4038,10 +4087,10 @@ class Main:
         # listitem.setInfo('video', {'title': vcategory_name, 'plot' : vcategory_plot, 'overlay': 4})
         # listitem.setArt({'icon' : vcategory_icon, 'fanart' : vcategory_fanart, 'poster' : vcategory_poster})
         # listitem.setProperty(AEL_CONTENT_LABEL, AEL_CONTENT_VALUE_ROM_LAUNCHER)
-        # if xbmc.getCondVisibility("!Skin.HasSetting(KioskMode.Enabled)"):
+        # if self.g_kiosk_mode_disabled:
         #     listitem.addContextMenuItems(commands)
-        # url_str = self._misc_url('EXECUTE_UTILS_CHECK_ARTWORK_INTEGRITY')
-        # xbmcplugin.addDirectoryItem(handle = self.addon_handle, url = url_str, listitem = listitem, isFolder = False)
+        # url_str = aux_url('EXECUTE_UTILS_CHECK_ARTWORK_INTEGRITY')
+        # xbmcplugin.addDirectoryItem(self.addon_handle, url_str, listitem, False)
 
         vcategory_name = 'Check ROMs artwork image integrity'
         vcategory_plot = ('Scans existing [COLOR=orange]ROMs artwork images[/COLOR] in ROM Launchers '
@@ -4051,10 +4100,10 @@ class Main:
         listitem.setInfo('video', {'title': vcategory_name, 'plot' : vcategory_plot, 'overlay': 4})
         listitem.setArt({'icon' : vcategory_icon, 'fanart' : vcategory_fanart, 'poster' : vcategory_poster})
         listitem.setProperty(AEL_CONTENT_LABEL, AEL_CONTENT_VALUE_ROM_LAUNCHER)
-        if xbmc.getCondVisibility("!Skin.HasSetting(KioskMode.Enabled)"):
+        if self.g_kiosk_mode_disabled:
             listitem.addContextMenuItems(commands)
-        url_str = self._misc_url('EXECUTE_UTILS_CHECK_ROM_ARTWORK_INTEGRITY')
-        xbmcplugin.addDirectoryItem(handle = self.addon_handle, url = url_str, listitem = listitem, isFolder = False)
+        url_str = aux_url('EXECUTE_UTILS_CHECK_ROM_ARTWORK_INTEGRITY')
+        xbmcplugin.addDirectoryItem(self.addon_handle, url_str, listitem, False)
 
         # vcategory_name = 'Delete redundant artwork'
         # vcategory_plot = ('Scans all Launchers, Favourites and Collections and finds redundant '
@@ -4063,10 +4112,10 @@ class Main:
         # listitem.setInfo('video', {'title': vcategory_name, 'plot' : vcategory_plot, 'overlay': 4})
         # listitem.setArt({'icon' : vcategory_icon, 'fanart' : vcategory_fanart, 'poster' : vcategory_poster})
         # listitem.setProperty(AEL_CONTENT_LABEL, AEL_CONTENT_VALUE_ROM_LAUNCHER)
-        # if xbmc.getCondVisibility("!Skin.HasSetting(KioskMode.Enabled)"):
+        # if self.g_kiosk_mode_disabled:
         #     listitem.addContextMenuItems(commands)
-        # url_str = self._misc_url('EXECUTE_UTILS_DELETE_REDUNDANT_ARTWORK')
-        # xbmcplugin.addDirectoryItem(handle = self.addon_handle, url = url_str, listitem = listitem, isFolder = False)
+        # url_str = aux_url('EXECUTE_UTILS_DELETE_REDUNDANT_ARTWORK')
+        # xbmcplugin.addDirectoryItem(self.addon_handle, url_str, listitem, False)
 
         vcategory_name = 'Delete ROMs redundant artwork'
         vcategory_plot = ('Scans all ROM Launchers and finds '
@@ -4075,10 +4124,10 @@ class Main:
         listitem.setInfo('video', {'title': vcategory_name, 'plot' : vcategory_plot, 'overlay': 4})
         listitem.setArt({'icon' : vcategory_icon, 'fanart' : vcategory_fanart, 'poster' : vcategory_poster})
         listitem.setProperty(AEL_CONTENT_LABEL, AEL_CONTENT_VALUE_ROM_LAUNCHER)
-        if xbmc.getCondVisibility("!Skin.HasSetting(KioskMode.Enabled)"):
+        if self.g_kiosk_mode_disabled:
             listitem.addContextMenuItems(commands)
-        url_str = self._misc_url('EXECUTE_UTILS_DELETE_ROM_REDUNDANT_ARTWORK')
-        xbmcplugin.addDirectoryItem(handle = self.addon_handle, url = url_str, listitem = listitem, isFolder = False)
+        url_str = aux_url('EXECUTE_UTILS_DELETE_ROM_REDUNDANT_ARTWORK')
+        xbmcplugin.addDirectoryItem(self.addon_handle, url_str, listitem, False)
 
         vcategory_name = 'Show detected No-Intro/Redump DATs'
         vcategory_plot = ('Display the auto-detected No-Intro/Redump DATs that will be used for the '
@@ -4088,10 +4137,10 @@ class Main:
         listitem.setInfo('video', {'title': vcategory_name, 'plot' : vcategory_plot, 'overlay': 4})
         listitem.setArt({'icon' : vcategory_icon, 'fanart' : vcategory_fanart, 'poster' : vcategory_poster})
         listitem.setProperty(AEL_CONTENT_LABEL, AEL_CONTENT_VALUE_ROM_LAUNCHER)
-        if xbmc.getCondVisibility("!Skin.HasSetting(KioskMode.Enabled)"):
+        if self.g_kiosk_mode_disabled:
             listitem.addContextMenuItems(commands)
-        url_str = self._misc_url('EXECUTE_UTILS_SHOW_DETECTED_DATS')
-        xbmcplugin.addDirectoryItem(handle = self.addon_handle, url = url_str, listitem = listitem, isFolder = False)
+        url_str = aux_url('EXECUTE_UTILS_SHOW_DETECTED_DATS')
+        xbmcplugin.addDirectoryItem(self.addon_handle, url_str, listitem, False)
 
         vcategory_name = 'Check Retroarch launchers'
         vcategory_plot = ('Check [COLOR orange]Retroarch ROM launchers[/COLOR] for missing '
@@ -4101,10 +4150,10 @@ class Main:
         listitem.setInfo('video', {'title': vcategory_name, 'plot' : vcategory_plot, 'overlay': 4})
         listitem.setArt({'icon' : vcategory_icon, 'fanart' : vcategory_fanart, 'poster' : vcategory_poster})
         listitem.setProperty(AEL_CONTENT_LABEL, AEL_CONTENT_VALUE_ROM_LAUNCHER)
-        if xbmc.getCondVisibility("!Skin.HasSetting(KioskMode.Enabled)"):
+        if self.g_kiosk_mode_disabled:
             listitem.addContextMenuItems(commands)
-        url_str = self._misc_url('EXECUTE_UTILS_CHECK_RETRO_LAUNCHERS')
-        xbmcplugin.addDirectoryItem(handle = self.addon_handle, url = url_str, listitem = listitem, isFolder = False)
+        url_str = aux_url('EXECUTE_UTILS_CHECK_RETRO_LAUNCHERS')
+        xbmcplugin.addDirectoryItem(self.addon_handle, url_str, listitem, False)
 
         # <setting label="Check Retroarch BIOSes ..."
         #  action="RunPlugin(plugin://plugin.program.advanced.emulator.launcher/?com=CHECK_RETRO_BIOS)"/>
@@ -4117,10 +4166,10 @@ class Main:
         listitem.setInfo('video', {'title': vcategory_name, 'plot' : vcategory_plot, 'overlay': 4})
         listitem.setArt({'icon' : vcategory_icon, 'fanart' : vcategory_fanart, 'poster' : vcategory_poster})
         listitem.setProperty(AEL_CONTENT_LABEL, AEL_CONTENT_VALUE_ROM_LAUNCHER)
-        if xbmc.getCondVisibility("!Skin.HasSetting(KioskMode.Enabled)"):
+        if self.g_kiosk_mode_disabled:
             listitem.addContextMenuItems(commands)
-        url_str = self._misc_url('EXECUTE_UTILS_CHECK_RETRO_BIOS')
-        xbmcplugin.addDirectoryItem(handle = self.addon_handle, url = url_str, listitem = listitem, isFolder = False)
+        url_str = aux_url('EXECUTE_UTILS_CHECK_RETRO_BIOS')
+        xbmcplugin.addDirectoryItem(self.addon_handle, url_str, listitem, False)
 
         # Importing AL configuration is not supported any more. It will cause a lot of trouble
         # because AL and AEL have diverged too much.
@@ -4134,10 +4183,10 @@ class Main:
         listitem.setInfo('video', {'title': vcategory_name, 'plot' : vcategory_plot, 'overlay': 4})
         listitem.setArt({'icon' : vcategory_icon, 'fanart' : vcategory_fanart, 'poster' : vcategory_poster})
         listitem.setProperty(AEL_CONTENT_LABEL, AEL_CONTENT_VALUE_ROM_LAUNCHER)
-        if xbmc.getCondVisibility("!Skin.HasSetting(KioskMode.Enabled)"):
+        if self.g_kiosk_mode_disabled:
             listitem.addContextMenuItems(commands)
-        url_str = self._misc_url('EXECUTE_UTILS_TGDB_CHECK')
-        xbmcplugin.addDirectoryItem(handle = self.addon_handle, url = url_str, listitem = listitem, isFolder = False)
+        url_str = aux_url('EXECUTE_UTILS_TGDB_CHECK')
+        xbmcplugin.addDirectoryItem(self.addon_handle, url_str, listitem, False)
 
         # --- Check MobyGames scraper ---
         vcategory_name = 'Check MobyGames scraper'
@@ -4146,10 +4195,10 @@ class Main:
         listitem.setInfo('video', {'title': vcategory_name, 'plot' : vcategory_plot, 'overlay': 4})
         listitem.setArt({'icon' : vcategory_icon, 'fanart' : vcategory_fanart, 'poster' : vcategory_poster})
         listitem.setProperty(AEL_CONTENT_LABEL, AEL_CONTENT_VALUE_ROM_LAUNCHER)
-        if xbmc.getCondVisibility("!Skin.HasSetting(KioskMode.Enabled)"):
+        if self.g_kiosk_mode_disabled:
             listitem.addContextMenuItems(commands)
-        url_str = self._misc_url('EXECUTE_UTILS_MOBYGAMES_CHECK')
-        xbmcplugin.addDirectoryItem(handle = self.addon_handle, url = url_str, listitem = listitem, isFolder = False)
+        url_str = aux_url('EXECUTE_UTILS_MOBYGAMES_CHECK')
+        xbmcplugin.addDirectoryItem(self.addon_handle, url_str, listitem, False)
 
         # --- Check ScreenScraper scraper ---
         vcategory_name = 'Check ScreenScraper scraper'
@@ -4158,10 +4207,10 @@ class Main:
         listitem.setInfo('video', {'title': vcategory_name, 'plot' : vcategory_plot, 'overlay': 4})
         listitem.setArt({'icon' : vcategory_icon, 'fanart' : vcategory_fanart, 'poster' : vcategory_poster})
         listitem.setProperty(AEL_CONTENT_LABEL, AEL_CONTENT_VALUE_ROM_LAUNCHER)
-        if xbmc.getCondVisibility("!Skin.HasSetting(KioskMode.Enabled)"):
+        if self.g_kiosk_mode_disabled:
             listitem.addContextMenuItems(commands)
-        url_str = self._misc_url('EXECUTE_UTILS_SCREENSCRAPER_CHECK')
-        xbmcplugin.addDirectoryItem(handle = self.addon_handle, url = url_str, listitem = listitem, isFolder = False)
+        url_str = aux_url('EXECUTE_UTILS_SCREENSCRAPER_CHECK')
+        xbmcplugin.addDirectoryItem(self.addon_handle, url_str, listitem, False)
 
         # --- Check ArcadeDB scraper ---
         vcategory_name = 'Check Arcade DB scraper'
@@ -4170,19 +4219,20 @@ class Main:
         listitem.setInfo('video', {'title': vcategory_name, 'plot' : vcategory_plot, 'overlay': 4})
         listitem.setArt({'icon' : vcategory_icon, 'fanart' : vcategory_fanart, 'poster' : vcategory_poster})
         listitem.setProperty(AEL_CONTENT_LABEL, AEL_CONTENT_VALUE_ROM_LAUNCHER)
-        if xbmc.getCondVisibility("!Skin.HasSetting(KioskMode.Enabled)"):
+        if self.g_kiosk_mode_disabled:
             listitem.addContextMenuItems(commands)
-        url_str = self._misc_url('EXECUTE_UTILS_ARCADEDB_CHECK')
-        xbmcplugin.addDirectoryItem(handle = self.addon_handle, url = url_str, listitem = listitem, isFolder = False)
+        url_str = aux_url('EXECUTE_UTILS_ARCADEDB_CHECK')
+        xbmcplugin.addDirectoryItem(self.addon_handle, url_str, listitem, False)
 
         # --- End of directory ---
-        xbmcplugin.endOfDirectory(handle = self.addon_handle, succeeded = True, cacheToDisc = False)
+        xbmcplugin.endOfDirectory(self.addon_handle, succeeded = True, cacheToDisc = False)
 
     def _gui_render_GlobalReports_vlaunchers(self):
         # --- Common context menu for all VLaunchers ---
-        commands = []
-        commands.append(('Kodi File Manager', 'ActivateWindow(filemanager)'))
-        commands.append(('AEL addon settings', 'Addon.OpenSettings({})'.format(cfg.addon.info_id)))
+        commands = [
+            ('Kodi File Manager', 'ActivateWindow(filemanager)'),
+            ('AEL addon settings', 'Addon.OpenSettings({})'.format(cfg.addon.info_id)),
+        ]
 
         # --- Common artwork for all VLaunchers ---
         vcategory_icon   = g_PATHS.ADDON_CODE_DIR.pjoin('media/theme/Global_Reports_icon.png').getPath()
@@ -4196,10 +4246,10 @@ class Main:
         listitem.setInfo('video', {'title': vcategory_name, 'plot' : vcategory_plot, 'overlay': 4})
         listitem.setArt({'icon' : vcategory_icon, 'fanart' : vcategory_fanart, 'poster' : vcategory_poster})
         listitem.setProperty(AEL_CONTENT_LABEL, AEL_CONTENT_VALUE_ROM_LAUNCHER)
-        if (xbmc.getCondVisibility("!Skin.HasSetting(KioskMode.Enabled)")):
+        if self.g_kiosk_mode_disabled:
             listitem.addContextMenuItems(commands)
-        url_str = self._misc_url('EXECUTE_GLOBAL_ROM_STATS')
-        xbmcplugin.addDirectoryItem(handle = self.addon_handle, url = url_str, listitem = listitem, isFolder = False)
+        url_str = aux_url('EXECUTE_GLOBAL_ROM_STATS')
+        xbmcplugin.addDirectoryItem(self.addon_handle, url_str, listitem, False)
 
         # --- Global ROM Audit statistics ---
         vcategory_name   = 'Global ROM Audit statistics (All)'
@@ -4210,10 +4260,10 @@ class Main:
         listitem.setInfo('video', {'title': vcategory_name, 'plot' : vcategory_plot, 'overlay': 4})
         listitem.setArt({'icon' : vcategory_icon, 'fanart' : vcategory_fanart, 'poster' : vcategory_poster})
         listitem.setProperty(AEL_CONTENT_LABEL, AEL_CONTENT_VALUE_ROM_LAUNCHER)
-        if (xbmc.getCondVisibility("!Skin.HasSetting(KioskMode.Enabled)")):
+        if self.g_kiosk_mode_disabled:
             listitem.addContextMenuItems(commands)
-        url_str = self._misc_url('EXECUTE_GLOBAL_AUDIT_STATS_ALL')
-        xbmcplugin.addDirectoryItem(handle = self.addon_handle, url = url_str, listitem = listitem, isFolder = False)
+        url_str = aux_url('EXECUTE_GLOBAL_AUDIT_STATS_ALL')
+        xbmcplugin.addDirectoryItem(self.addon_handle, url_str, listitem, False)
 
         vcategory_name   = 'Global ROM Audit statistics (No-Intro only)'
         vcategory_plot   = (
@@ -4223,10 +4273,10 @@ class Main:
         listitem.setInfo('video', {'title': vcategory_name, 'plot' : vcategory_plot, 'overlay': 4})
         listitem.setArt({'icon' : vcategory_icon, 'fanart' : vcategory_fanart, 'poster' : vcategory_poster})
         listitem.setProperty(AEL_CONTENT_LABEL, AEL_CONTENT_VALUE_ROM_LAUNCHER)
-        if (xbmc.getCondVisibility("!Skin.HasSetting(KioskMode.Enabled)")):
+        if self.g_kiosk_mode_disabled:
             listitem.addContextMenuItems(commands)
-        url_str = self._misc_url('EXECUTE_GLOBAL_AUDIT_STATS_NOINTRO')
-        xbmcplugin.addDirectoryItem(handle = self.addon_handle, url = url_str, listitem = listitem, isFolder = False)
+        url_str = aux_url('EXECUTE_GLOBAL_AUDIT_STATS_NOINTRO')
+        xbmcplugin.addDirectoryItem(self.addon_handle, url_str, listitem, False)
 
         vcategory_name   = 'Global ROM Audit statistics (Redump only)'
         vcategory_plot   = (
@@ -4236,13 +4286,13 @@ class Main:
         listitem.setInfo('video', {'title': vcategory_name, 'plot' : vcategory_plot, 'overlay': 4})
         listitem.setArt({'icon' : vcategory_icon, 'fanart' : vcategory_fanart, 'poster' : vcategory_poster})
         listitem.setProperty(AEL_CONTENT_LABEL, AEL_CONTENT_VALUE_ROM_LAUNCHER)
-        if (xbmc.getCondVisibility("!Skin.HasSetting(KioskMode.Enabled)")):
+        if self.g_kiosk_mode_disabled:
             listitem.addContextMenuItems(commands)
-        url_str = self._misc_url('EXECUTE_GLOBAL_AUDIT_STATS_REDUMP')
-        xbmcplugin.addDirectoryItem(handle = self.addon_handle, url = url_str, listitem = listitem, isFolder = False)
+        url_str = aux_url('EXECUTE_GLOBAL_AUDIT_STATS_REDUMP')
+        xbmcplugin.addDirectoryItem(self.addon_handle, url_str, listitem, False)
 
         # --- End of directory ---
-        xbmcplugin.endOfDirectory(handle = self.addon_handle, succeeded = True, cacheToDisc = False)
+        xbmcplugin.endOfDirectory(self.addon_handle, succeeded = True, cacheToDisc = False)
 
     # ---------------------------------------------------------------------------------------------
     # Launcher LisItem rendering
@@ -4273,8 +4323,8 @@ class Main:
             # self._command_render_categories()
             #
             # What about replacewindow? I also get the error, still not clear why...
-            # xbmc.executebuiltin('ReplaceWindow(Programs,{})'.format(self.base_url)) # Does not work
-            # xbmc.executebuiltin('ReplaceWindow({})'.format(self.base_url)) # Does not work
+            # xbmc.executebuiltin('ReplaceWindow(Programs,{})'.format(g_base_url)) # Does not work
+            # xbmc.executebuiltin('ReplaceWindow({})'.format(g_base_url)) # Does not work
             #
             # Container.Refresh does not work either...
             # kodi_refresh_container()
@@ -4285,18 +4335,16 @@ class Main:
             xbmcplugin.endOfDirectory(handle = self.addon_handle, succeeded = True, cacheToDisc = False)
             return
 
-        # >> Render launcher rows of this launcher
+        # Render launcher rows of this launcher
         for key in sorted(self.launchers, key = lambda x : self.launchers[x]['m_name']):
             if self.launchers[key]['categoryID'] == categoryID:
                 self._gui_render_launcher_row(self.launchers[key])
         xbmcplugin.endOfDirectory(handle = self.addon_handle, succeeded = True, cacheToDisc = False)
 
-    #
     # Renders all launchers belonging to all categories.
     # This function is called by skins to create shortcuts.
-    #
     def _command_render_all_launchers(self):
-        # >> If no launchers render nothing
+        # If no launchers render nothing
         if not self.launchers:
             xbmcplugin.endOfDirectory(handle = self.addon_handle, succeeded = True, cacheToDisc = False)
             return
@@ -4348,8 +4396,8 @@ class Main:
         # --- Create listitem row ---
         ICON_OVERLAY = 5 if launcher_dic['finished'] else 4
         listitem = xbmcgui.ListItem(launcher_name)
-        # >> BUG in Jarvis/Krypton skins. If 'year' is set to empty string a 0 is displayed on the
-        # >>     skin. If year is not set then the correct icon is shown.
+        # BUG in Jarvis/Krypton skins. If 'year' is set to empty string a 0 is displayed on the
+        #     skin. If year is not set then the correct icon is shown.
         if launcher_dic['m_year']:
             listitem.setInfo('video', {
                 'title'   : launcher_name,             'year'    : launcher_dic['m_year'],
@@ -4376,9 +4424,11 @@ class Main:
         banner_path    = asset_get_default_asset_Category(launcher_dic, 'default_banner')
         poster_path    = asset_get_default_asset_Category(launcher_dic, 'default_poster')
         clearlogo_path = asset_get_default_asset_Category(launcher_dic, 'default_clearlogo')
-        listitem.setArt({'icon'   : icon_path,   'fanart' : fanart_path, 'banner' : banner_path,
-                         'poster' : poster_path, 'clearlogo' : clearlogo_path,
-                         'controller' : launcher_dic['s_controller']})
+        listitem.setArt({
+            'icon' : icon_path, 'fanart' : fanart_path, 'banner' : banner_path,
+            'poster' : poster_path, 'clearlogo' : clearlogo_path,
+            'controller' : launcher_dic['s_controller'],
+        })
 
         # --- Create context menu ---
         # Categories/Launchers/ROMs context menu order
@@ -4390,27 +4440,27 @@ class Main:
         commands = []
         launcherID = launcher_dic['id']
         categoryID = launcher_dic['categoryID']
-        commands.append(('View Launcher', self._misc_url_RunPlugin('VIEW', categoryID, launcherID)))
-        commands.append(('Edit Launcher', self._misc_url_RunPlugin('EDIT_LAUNCHER', categoryID, launcherID)))
-        # >> ONLY for ROM launchers
+        commands.append(('View Launcher', aux_url_RP('VIEW', categoryID, launcherID)))
+        commands.append(('Edit Launcher', aux_url_RP('EDIT_LAUNCHER', categoryID, launcherID)))
+        # ONLY for ROM launchers
         if launcher_dic['rompath']:
-            commands.append(('Scan ROMs', self._misc_url_RunPlugin('SCAN_ROMS', categoryID, launcherID)))
-        commands.append(('Search ROMs in Launcher', self._misc_url_RunPlugin('SEARCH_LAUNCHER', categoryID, launcherID)))
-        commands.append(('Add New Launcher', self._misc_url_RunPlugin('ADD_LAUNCHER', categoryID)))
-        # >> Launchers in addon root should be able to create a new category
+            commands.append(('Scan ROMs', aux_url_RP('SCAN_ROMS', categoryID, launcherID)))
+        commands.append(('Search ROMs in Launcher', aux_url_RP('SEARCH_LAUNCHER', categoryID, launcherID)))
+        commands.append(('Add New Launcher', aux_url_RP('ADD_LAUNCHER', categoryID)))
+        # Launchers in addon root should be able to create a new category
         if categoryID == VCATEGORY_ADDONROOT_ID:
-                commands.append(('Create New Category', self._misc_url_RunPlugin('ADD_CATEGORY')))
+                commands.append(('Create New Category', aux_url_RP('ADD_CATEGORY')))
         commands.append(('Kodi File Manager', 'ActivateWindow(filemanager)'))
         commands.append(('AEL addon settings', 'Addon.OpenSettings({})'.format(cfg.addon.info_id)))
-        if (xbmc.getCondVisibility("!Skin.HasSetting(KioskMode.Enabled)")):
+        if xbmc.getCondVisibility('!Skin.HasSetting(KioskMode.Enabled)'):
             listitem.addContextMenuItems(commands, replaceItems = True)
 
         # --- Add Launcher row to ListItem ---
         if launcher_dic['rompath']:
-            url_str = self._misc_url('SHOW_ROMS', categoryID, launcherID)
+            url_str = aux_url('SHOW_ROMS', categoryID, launcherID)
             folder_flag = True
         else:
-            url_str = self._misc_url('LAUNCH_STANDALONE', categoryID, launcherID)
+            url_str = aux_url('LAUNCH_STANDALONE', categoryID, launcherID)
             folder_flag = False
         xbmcplugin.addDirectoryItem(handle = self.addon_handle, url = url_str, listitem = listitem, isFolder = folder_flag)
 
@@ -4420,7 +4470,6 @@ class Main:
     #
     # Render clone ROMs. romID is the parent ROM.
     # This is only called in Parent/Clone display modes.
-    #
     def _command_render_clone_roms(self, categoryID, launcherID, romID):
         # --- Set content type and sorting methods ---
         self._misc_set_all_sorting_methods()
@@ -4788,20 +4837,25 @@ class Main:
         # labels are set as Title in setInfo(), then they work but the alphabetical order is lost!
         # I solved this alphabetical ordering issue by placing a coloured tag [Fav] at the and of the ROM name
         # instead of changing the whole row colour.
-        # >> BUG in Jarvis/Krypton skins. If 'year' is set to empty string a 0 is displayed on the
-        # >>     skin. If year is not set then the correct icon is shown.
+        # BUG in Jarvis/Krypton skins. If 'year' is set to empty string a 0 is displayed on the
+        #     skin. If year is not set then the correct icon is shown.
+        # NOTE This must be improved. See AML code.
         if rom['m_year']:
-            listitem.setInfo('video', {'title'   : rom_name,         'year'    : rom['m_year'],
-                                       'genre'   : rom['m_genre'],   'studio'  : rom['m_developer'],
-                                       'rating'  : rom['m_rating'],  'plot'    : rom['m_plot'],
-                                       'trailer' : rom['s_trailer'], 'overlay' : ICON_OVERLAY,
-                                       'path'    : rom['filename'] })
+            listitem.setInfo('video', {
+                'title'   : rom_name,         'year'    : rom['m_year'],
+                'genre'   : rom['m_genre'],   'studio'  : rom['m_developer'],
+                'rating'  : rom['m_rating'],  'plot'    : rom['m_plot'],
+                'trailer' : rom['s_trailer'], 'overlay' : ICON_OVERLAY,
+                'path'    : rom['filename'],
+            })
         else:
-            listitem.setInfo('video', {'title'   : rom_name,
-                                       'genre'   : rom['m_genre'],   'studio'  : rom['m_developer'],
-                                       'rating'  : rom['m_rating'],  'plot'    : rom['m_plot'],
-                                       'trailer' : rom['s_trailer'], 'overlay' : ICON_OVERLAY,
-                                       'path'    : rom['filename'] })
+            listitem.setInfo('video', {
+                'title'   : rom_name,
+                'genre'   : rom['m_genre'],   'studio'  : rom['m_developer'],
+                'rating'  : rom['m_rating'],  'plot'    : rom['m_plot'],
+                'trailer' : rom['s_trailer'], 'overlay' : ICON_OVERLAY,
+                'path'    : rom['filename'],
+            })
         listitem.setProperty('nplayers', rom['m_nplayers'])
         listitem.setProperty('esrb', rom['m_esrb'])
         listitem.setProperty('platform', platform)
@@ -4810,17 +4864,21 @@ class Main:
 
         # --- Set ROM artwork ---
         # AEL custom artwork fields
-        listitem.setArt({'title'    : rom['s_title'],    'snap'      : rom['s_snap'],
-                         'boxfront' : rom['s_boxfront'], 'boxback'   : rom['s_boxback'],
-                         '3dbox'    : rom['s_3dbox'],    'cartridge' : rom['s_cartridge'],
-                         'flyer'    : rom['s_flyer'],    'map'       : rom['s_map'] })
+        listitem.setArt({
+            'title'    : rom['s_title'],    'snap'      : rom['s_snap'],
+            'boxfront' : rom['s_boxfront'], 'boxback'   : rom['s_boxback'],
+            '3dbox'    : rom['s_3dbox'],    'cartridge' : rom['s_cartridge'],
+            'flyer'    : rom['s_flyer'],    'map'       : rom['s_map'],
+        })
 
         #  Kodi official artwork fields
-        listitem.setArt({'icon'   : icon_path,   'fanart' : fanart_path, 'banner' : banner_path,
-                         'poster' : poster_path, 'clearlogo' : clearlogo_path})
+        listitem.setArt({
+            'icon'   : icon_path,   'fanart' : fanart_path, 'banner' : banner_path,
+            'poster' : poster_path, 'clearlogo' : clearlogo_path,
+        })
 
         # --- ROM extrafanart ---
-        # >> Build extrafanart dictionary
+        # Build extrafanart dictionary
         # extrafanart_dic = {}
         # listitem.setArt(extrafanart_dic)
 
@@ -4846,60 +4904,66 @@ class Main:
 
         # --- Create context menu ---
         romID = rom['id']
-        commands = []
-        if categoryID == VCATEGORY_FAVOURITES_ID:
-            commands.append(('View Favourite ROM',         self._misc_url_RunPlugin('VIEW',              categoryID, launcherID, romID)))
-            commands.append(('Edit ROM in Favourites',     self._misc_url_RunPlugin('EDIT_ROM',          categoryID, launcherID, romID)))
-            commands.append(('Add ROM to Collection',      self._misc_url_RunPlugin('ADD_TO_COLLECTION', categoryID, launcherID, romID)))
-            commands.append(('Search ROMs in Favourites',  self._misc_url_RunPlugin('SEARCH_LAUNCHER',   categoryID, launcherID)))
-            commands.append(('Manage Favourite ROMs',      self._misc_url_RunPlugin('MANAGE_FAV',        categoryID, launcherID, romID)))
-        elif categoryID == VCATEGORY_COLLECTIONS_ID:
-            commands.append(('View Collection ROM',        self._misc_url_RunPlugin('VIEW',              categoryID, launcherID, romID)))
-            commands.append(('Edit ROM in Collection',     self._misc_url_RunPlugin('EDIT_ROM',          categoryID, launcherID, romID)))
-            commands.append(('Add ROM to AEL Favourites',  self._misc_url_RunPlugin('ADD_TO_FAV',        categoryID, launcherID, romID)))
-            commands.append(('Search ROMs in Collection',  self._misc_url_RunPlugin('SEARCH_LAUNCHER',   categoryID, launcherID)))
-            commands.append(('Manage Collection ROMs',     self._misc_url_RunPlugin('MANAGE_FAV',        categoryID, launcherID, romID)))
+        if self.g_kiosk_mode_disabled:
+            commands = []
+            if categoryID == VCATEGORY_FAVOURITES_ID:
+                commands.append(('View Favourite ROM', aux_url_RP('VIEW', categoryID, launcherID, romID)))
+                commands.append(('Edit ROM in Favourites', aux_url_RP('EDIT_ROM', categoryID, launcherID, romID)))
+                commands.append(('Add ROM to Collection', aux_url_RP('ADD_TO_COLLECTION', categoryID, launcherID, romID)))
+                commands.append(('Search ROMs in Favourites', aux_url_RP('SEARCH_LAUNCHER', categoryID, launcherID)))
+                commands.append(('Manage Favourite ROMs', aux_url_RP('MANAGE_FAV', categoryID, launcherID, romID)))
 
-        elif categoryID == VCATEGORY_RECENT_ID:
-            commands.append(('View ROM data', self._misc_url_RunPlugin('VIEW', categoryID, launcherID, romID)))
-            commands.append(('Manage Recently Played', self._misc_url_RunPlugin('MANAGE_RECENT_PLAYED', categoryID, launcherID, romID)))
+            elif categoryID == VCATEGORY_COLLECTIONS_ID:
+                commands.append(('View Collection ROM', aux_url_RP('VIEW', categoryID, launcherID, romID)))
+                commands.append(('Edit ROM in Collection', aux_url_RP('EDIT_ROM', categoryID, launcherID, romID)))
+                commands.append(('Add ROM to AEL Favourites', aux_url_RP('ADD_TO_FAV', categoryID, launcherID, romID)))
+                commands.append(('Search ROMs in Collection', aux_url_RP('SEARCH_LAUNCHER', categoryID, launcherID)))
+                commands.append(('Manage Collection ROMs', aux_url_RP('MANAGE_FAV', categoryID, launcherID, romID)))
 
-        elif categoryID == VCATEGORY_MOST_PLAYED_ID:
-            commands.append(('View ROM data', self._misc_url_RunPlugin('VIEW', categoryID, launcherID, romID)))
-            commands.append(('Manage Most Played', self._misc_url_RunPlugin('MANAGE_MOST_PLAYED', categoryID, launcherID, romID)))
+            elif categoryID == VCATEGORY_RECENT_ID:
+                commands.append(('View ROM data', aux_url_RP('VIEW', categoryID, launcherID, romID)))
+                commands.append(('Manage Recently Played', aux_url_RP('MANAGE_RECENT_PLAYED', categoryID, launcherID, romID)))
 
-        elif categoryID == VCATEGORY_TITLE_ID    or categoryID == VCATEGORY_YEARS_ID  or \
-             categoryID == VCATEGORY_GENRE_ID    or categoryID == VCATEGORY_DEVELOPER_ID or \
-             categoryID == VCATEGORY_NPLAYERS_ID or categoryID == VCATEGORY_ESRB_ID   or \
-             categoryID == VCATEGORY_RATING_ID   or categoryID == VCATEGORY_CATEGORY_ID:
-            commands.append(('View ROM data',                   self._misc_url_RunPlugin('VIEW',              categoryID, launcherID, romID)))
-            commands.append(('Add ROM to AEL Favourites',       self._misc_url_RunPlugin('ADD_TO_FAV',        categoryID, launcherID, romID)))
-            commands.append(('Add ROM to Collection',           self._misc_url_RunPlugin('ADD_TO_COLLECTION', categoryID, launcherID, romID)))
-            commands.append(('Search ROMs in Virtual Launcher', self._misc_url_RunPlugin('SEARCH_LAUNCHER',   categoryID, launcherID)))
-        else:
-            commands.append(('View ROM/Launcher', self._misc_url_RunPlugin('VIEW', categoryID, launcherID, romID)))
-            if is_parent_launcher and num_clones > 0:
-                commands.append(('Show clones', self._misc_url_RunPlugin('EXEC_SHOW_CLONE_ROMS', categoryID, launcherID, romID)))
-            commands.append(('Edit ROM',                  self._misc_url_RunPlugin('EDIT_ROM',          categoryID, launcherID, romID)))
-            commands.append(('Add ROM to AEL Favourites', self._misc_url_RunPlugin('ADD_TO_FAV',        categoryID, launcherID, romID)))
-            commands.append(('Add ROM to Collection',     self._misc_url_RunPlugin('ADD_TO_COLLECTION', categoryID, launcherID, romID)))
-            commands.append(('Search ROMs in Launcher',   self._misc_url_RunPlugin('SEARCH_LAUNCHER',   categoryID, launcherID)))
-            commands.append(('Edit Launcher',             self._misc_url_RunPlugin('EDIT_LAUNCHER',     categoryID, launcherID)))
-        commands.append(('AEL addon settings', 'Addon.OpenSettings({})'.format(cfg.addon.info_id), ))
-        if (xbmc.getCondVisibility("!Skin.HasSetting(KioskMode.Enabled)")):
+            elif categoryID == VCATEGORY_MOST_PLAYED_ID:
+                commands.append(('View ROM data', aux_url_RP('VIEW', categoryID, launcherID, romID)))
+                commands.append(('Manage Most Played', aux_url_RP('MANAGE_MOST_PLAYED', categoryID, launcherID, romID)))
+
+            elif categoryID == VCATEGORY_TITLE_ID or categoryID == VCATEGORY_YEARS_ID or \
+                categoryID == VCATEGORY_GENRE_ID or categoryID == VCATEGORY_DEVELOPER_ID or \
+                categoryID == VCATEGORY_NPLAYERS_ID or categoryID == VCATEGORY_ESRB_ID or \
+                categoryID == VCATEGORY_RATING_ID or categoryID == VCATEGORY_CATEGORY_ID:
+                commands.append(('View ROM data', aux_url_RP('VIEW', categoryID, launcherID, romID)))
+                commands.append(('Add ROM to AEL Favourites', aux_url_RP('ADD_TO_FAV', categoryID, launcherID, romID)))
+                commands.append(('Add ROM to Collection', aux_url_RP('ADD_TO_COLLECTION', categoryID, launcherID, romID)))
+                commands.append(('Search ROMs in Virtual Launcher', aux_url_RP('SEARCH_LAUNCHER', categoryID, launcherID)))
+
+            else:
+                commands.append(('View ROM/Launcher', aux_url_RP('VIEW', categoryID, launcherID, romID)))
+                if is_parent_launcher and num_clones > 0:
+                    commands.append(('Show clones', aux_url_RP('EXEC_SHOW_CLONE_ROMS', categoryID, launcherID, romID)))
+                commands.append(('Edit ROM', aux_url_RP('EDIT_ROM', categoryID, launcherID, romID)))
+                commands.append(('Add ROM to AEL Favourites', aux_url_RP('ADD_TO_FAV', categoryID, launcherID, romID)))
+                commands.append(('Add ROM to Collection', aux_url_RP('ADD_TO_COLLECTION', categoryID, launcherID, romID)))
+                commands.append(('Search ROMs in Launcher', aux_url_RP('SEARCH_LAUNCHER', categoryID, launcherID)))
+                commands.append(('Edit Launcher', aux_url_RP('EDIT_LAUNCHER', categoryID, launcherID)))
+            commands.append(('AEL addon settings', 'Addon.OpenSettings({})'.format(cfg.addon.info_id)))
             listitem.addContextMenuItems(commands, replaceItems = True)
 
         # --- Add row ---
         # URLs must be different depending on the content type. If not Kodi log will be filled with:
         # WARNING: CreateLoader - unsupported protocol(plugin) in the log. See http://forum.kodi.tv/showthread.php?tid=187954
         # if is_parent_launcher and num_clones > 0 and view_mode == LAUNCHER_DMODE_PCLONE:
-        #     url_str = self._misc_url('SHOW_CLONE_ROMS', categoryID, launcherID, romID)
+        #     url_str = aux_url('SHOW_CLONE_ROMS', categoryID, launcherID, romID)
         #     xbmcplugin.addDirectoryItem(handle = self.addon_handle, url = url_str, listitem = listitem, isFolder = True)
         # else:
-        #     url_str = self._misc_url('LAUNCH_ROM', categoryID, launcherID, romID)
-        #     xbmcplugin.addDirectoryItem(handle = self.addon_handle, url = url_str, listitem = listitem, isFolder = False)
-        url_str = self._misc_url('LAUNCH_ROM', categoryID, launcherID, romID)
-        xbmcplugin.addDirectoryItem(handle = self.addon_handle, url = url_str, listitem = listitem, isFolder = False)
+        #     url_str = aux_url('LAUNCH_ROM', categoryID, launcherID, romID)
+        #     xbmcplugin.addDirectoryItem(self.addon_handle, url_str, listitem, False)
+
+        # For speed reasons build URL here instead of calling a function.
+        # url_str = aux_url('LAUNCH_ROM', categoryID, launcherID, romID)
+        url_str = '{}?com=LAUNCH_ROM&catID={}&launID={}&romID={}'.format(g_base_url, categoryID, launcherID, romID)
+
+        xbmcplugin.addDirectoryItem(self.addon_handle, url_str, listitem, False)
 
     def _gui_render_AEL_scraper_rom_row(self, platform, game):
         # --- Add ROM to lisitem ---
@@ -4920,15 +4984,16 @@ class Main:
         listitem.setArt({'icon' : kodi_def_thumb})
 
         # --- Create context menu ---
-        commands = []
-        commands.append(('AEL addon settings', 'Addon.OpenSettings({})'.format(cfg.addon.info_id)))
-        if (xbmc.getCondVisibility("!Skin.HasSetting(KioskMode.Enabled)")):
+        if self.g_kiosk_mode_disabled:
+            commands = [
+                ('AEL addon settings', 'Addon.OpenSettings({})'.format(cfg.addon.info_id)),
+            ]
             listitem.addContextMenuItems(commands, replaceItems = True)
 
         # --- Add row ---
         # When user clicks on a ROM show the raw database entry
-        url_str = self._misc_url('VIEW_OS_ROM', 'AEL', platform, game['ROM'])
-        xbmcplugin.addDirectoryItem(handle = self.addon_handle, url = url_str, listitem = listitem, isFolder = False)
+        url_str = aux_url('VIEW_OS_ROM', 'AEL', platform, game['ROM'])
+        xbmcplugin.addDirectoryItem(self.addon_handle, url_str, listitem, False)
 
     def _gui_render_LB_scraper_rom_row(self, platform, game):
         # --- Add ROM to lisitem ---
@@ -4951,13 +5016,13 @@ class Main:
         # --- Create context menu ---
         commands = []
         commands.append(('AEL addon settings', 'Addon.OpenSettings({})'.format(cfg.addon.info_id)))
-        if (xbmc.getCondVisibility("!Skin.HasSetting(KioskMode.Enabled)")):
+        if self.g_kiosk_mode_disabled:
             listitem.addContextMenuItems(commands, replaceItems = True)
 
         # --- Add row ---
         # When user clicks on a ROM show the raw database entry
-        url_str = self._misc_url('VIEW_OS_ROM', 'LaunchBox', platform, game['name'])
-        xbmcplugin.addDirectoryItem(handle = self.addon_handle, url = url_str, listitem = listitem, isFolder = False)
+        url_str = aux_url('VIEW_OS_ROM', 'LaunchBox', platform, game['name'])
+        xbmcplugin.addDirectoryItem(self.addon_handle, url_str, listitem, False)
 
     #
     # Renders the special category favourites, which is actually very similar to a ROM launcher
@@ -5068,19 +5133,18 @@ class Main:
             })
             listitem.setArt({'icon': 'DefaultFolder.png'})
 
-            # --- Create context menu ---
-            url_a = self._misc_url_RunPlugin('SEARCH_LAUNCHER', virtual_categoryID, vlauncher_id)
-            commands = []
-            commands.append(('Search ROMs in Virtual Launcher', url_a))
-            commands.append(('Kodi File Manager', 'ActivateWindow(filemanager)'))
-            commands.append(('AEL addon settings', 'Addon.OpenSettings({})'.format(cfg.addon.info_id)))
-            if xbmc.getCondVisibility("!Skin.HasSetting(KioskMode.Enabled)"):
+            # Create context menu.
+            if self.g_kiosk_mode_disabled:
+                url_a = aux_url_RP('SEARCH_LAUNCHER', virtual_categoryID, vlauncher_id)
+                commands = [
+                    ('Search ROMs in Virtual Launcher', url_a),
+                    ('Kodi File Manager', 'ActivateWindow(filemanager)'),
+                    ('AEL addon settings', 'Addon.OpenSettings({})'.format(cfg.addon.info_id)),
+                ]
                 listitem.addContextMenuItems(commands, replaceItems = True)
-
-            url_str = self._misc_url('SHOW_VLAUNCHER_ROMS', virtual_categoryID, vlauncher_id)
-            xbmcplugin.addDirectoryItem(handle = self.addon_handle, url = url_str,
-                listitem = listitem, isFolder = True)
-        xbmcplugin.endOfDirectory(handle = self.addon_handle, succeeded = True, cacheToDisc = False)
+            url_str = aux_url('SHOW_VLAUNCHER_ROMS', virtual_categoryID, vlauncher_id)
+            xbmcplugin.addDirectoryItem(self.addon_handle, url_str, listitem, True)
+        xbmcplugin.endOfDirectory(self.addon_handle, succeeded = True, cacheToDisc = False)
 
     # Renders ROMs in a virtual launcher.
     def _command_render_virtual_launcher_roms(self, virtual_categoryID, virtual_launcherID):
@@ -6003,22 +6067,23 @@ class Main:
             })
 
             # --- Create context menu ---
-            commands = []
-            commands.append(('View ROM Collection data', self._misc_url_RunPlugin('VIEW', VCATEGORY_COLLECTIONS_ID, collection_id)))
-            commands.append(('Export Collection', self._misc_url_RunPlugin('EXPORT_COLLECTION', VCATEGORY_COLLECTIONS_ID, collection_id)))
-            commands.append(('Edit Collection', self._misc_url_RunPlugin('EDIT_COLLECTION', VCATEGORY_COLLECTIONS_ID, collection_id)))
-            commands.append(('Delete Collection', self._misc_url_RunPlugin('DELETE_COLLECTION', VCATEGORY_COLLECTIONS_ID, collection_id), ))
-            commands.append(('Create New Collection', self._misc_url_RunPlugin('ADD_COLLECTION')))
-            commands.append(('Import Collection', self._misc_url_RunPlugin('IMPORT_COLLECTION')))
-            commands.append(('Kodi File Manager', 'ActivateWindow(filemanager)'))
-            commands.append(('AEL addon settings', 'Addon.OpenSettings({})'.format(cfg.addon.info_id)))
-            if (xbmc.getCondVisibility("!Skin.HasSetting(KioskMode.Enabled)")):
+            if self.g_kiosk_mode_disabled:
+                commands = [
+                    ('View ROM Collection data', aux_url_RP('VIEW', VCATEGORY_COLLECTIONS_ID, collection_id)),
+                    ('Export Collection', aux_url_RP('EXPORT_COLLECTION', VCATEGORY_COLLECTIONS_ID, collection_id)),
+                    ('Edit Collection', aux_url_RP('EDIT_COLLECTION', VCATEGORY_COLLECTIONS_ID, collection_id)),
+                    ('Delete Collection', aux_url_RP('DELETE_COLLECTION', VCATEGORY_COLLECTIONS_ID, collection_id)),
+                    ('Create New Collection', aux_url_RP('ADD_COLLECTION')),
+                    ('Import Collection', aux_url_RP('IMPORT_COLLECTION')),
+                    ('Kodi File Manager', 'ActivateWindow(filemanager)'),
+                    ('AEL addon settings', 'Addon.OpenSettings({})'.format(cfg.addon.info_id)),
+                ]
                 listitem.addContextMenuItems(commands, replaceItems = True)
 
             # --- Add ROM Collection ---
-            url_str = self._misc_url('SHOW_COLLECTION_ROMS', VCATEGORY_COLLECTIONS_ID, collection_id)
-            xbmcplugin.addDirectoryItem(handle = self.addon_handle, url = url_str, listitem = listitem, isFolder = True)
-        xbmcplugin.endOfDirectory(handle = self.addon_handle, succeeded = True, cacheToDisc = False)
+            url_str = aux_url('SHOW_COLLECTION_ROMS', VCATEGORY_COLLECTIONS_ID, collection_id)
+            xbmcplugin.addDirectoryItem(self.addon_handle, url_str, listitem, True)
+        xbmcplugin.endOfDirectory(self.addon_handle, succeeded = True, cacheToDisc = False)
 
     def _command_render_collection_ROMs(self, categoryID, launcherID):
         self._misc_set_default_sorting_method()
@@ -6396,9 +6461,7 @@ class Main:
             log_debug('{:<9s} COPY "{}"'.format(AInfo.name, in_asset_FN.getPath()))
             log_debug('{:<9s}   TO "{}"'.format(AInfo.name, new_asset_FN.getPath()))
             try:
-                source_path = in_asset_FN.getPath().decode(get_fs_encoding(), 'ignore')
-                dest_path = new_asset_FN.getPath().decode(get_fs_encoding(), 'ignore')
-                shutil.copy(source_path, dest_path)
+                utils_copy_file(in_asset_FN.getPath(), new_asset_FN.getPath())
             except OSError:
                 log_error('fs_export_ROM_collection_assets() OSError exception copying image')
                 kodi_notify_warn('OSError exception copying image')
@@ -6441,9 +6504,7 @@ class Main:
                 log_debug('{:<9s} COPY "{}"'.format(AInfo.name, in_asset_FN.getPath()))
                 log_debug('{:<9s}   TO "{}"'.format(AInfo.name, new_asset_FN.getPath()))
                 try:
-                    source_path = in_asset_FN.getPath().decode(get_fs_encoding(), 'ignore')
-                    dest_path = new_asset_FN.getPath().decode(get_fs_encoding(), 'ignore')
-                    shutil.copy(source_path, dest_path)
+                    utils_copy_file(in_asset_FN.getPath(), new_asset_FN.getPath())
                 except OSError:
                     log_error('fs_export_ROM_collection_assets() OSError exception copying image')
                     kodi_notify_warn('OSError exception copying image')
@@ -7198,19 +7259,13 @@ class Main:
             try:
                 if action == ACTION_VIEW_LAUNCHER_STATS:
                     window_title = 'Launcher "{}" Statistics Report'.format(launcher['m_name'])
-                    file = open(report_stats_FN.getPath(), 'r')
-                    info_text = file.read().decode('utf-8')
-                    file.close()
+                    info_text = utils_load_file_to_str(report_stats_FN.getPath())
                 elif action == ACTION_VIEW_LAUNCHER_METADATA:
                     window_title = 'Launcher "{}" Metadata Report'.format(launcher['m_name'])
-                    file = open(report_meta_FN.getPath(), 'r')
-                    info_text = file.read().decode('utf-8')
-                    file.close()
+                    info_text = utils_load_file_to_str(report_meta_FN.getPath())
                 elif action == ACTION_VIEW_LAUNCHER_ASSETS:
                     window_title = 'Launcher "{}" Asset Report'.format(launcher['m_name'])
-                    file = open(report_assets_FN.getPath(), 'r')
-                    info_text = file.read().decode('utf-8')
-                    file.close()
+                    info_text = utils_load_file_to_str(report_assets_FN.getPath())
             except IOError:
                 log_error('_command_view_menu() (IOError) Exception reading report TXT file')
                 window_title = 'Error'
@@ -9770,13 +9825,8 @@ class Main:
                 kodi_notify_warn('image_FileName and dest_path_FileName are the same. Returning')
                 return False
 
-            # --- Copy image file ---
             try:
-                fs_encoding = utils_get_fs_encoding()
-                log_debug('fs_encoding "{}"'.format(fs_encoding))
-                source = image_FileName.getPath().decode(fs_encoding)
-                dest = dest_path_FileName.getPath().decode(fs_encoding)
-                shutil.copy(source, dest)
+                utils_copy_file(image_FileName.getPath(), dest_path_FileName.getPath())
             except OSError:
                 log_error('_gui_edit_asset() OSError exception copying image')
                 kodi_notify_warn('OSError exception copying image')
@@ -9795,7 +9845,7 @@ class Main:
             log_info('_gui_edit_asset() Selected {} {} "{}"'.format(object_name,
                 AInfo.name, dest_path_FileName.getOriginalPath()))
 
-            # --- Update Kodi image cache ---
+            # Update Kodi image cache.
             kodi_update_image_cache(dest_path_FileName.getOriginalPath())
 
         # --- Unset asset ---
@@ -9886,9 +9936,8 @@ class Main:
         file_list = kodi_dialog_get_file_multiple('Select XML category/launcher configuration file', '.xml')
         # Process file by file
         for xml_file in file_list:
-            xml_file_data = xml_file.decode('utf-8')
-            log_debug('_command_exec_utils_import_launchers() Importing "{}"'.format(xml_file_data))
-            import_FN = FileName(xml_file_data)
+            log_debug('_command_exec_utils_import_launchers() Importing "{}"'.format(xml_file))
+            import_FN = FileName(xml_file)
             if not import_FN.exists(): continue
             # This function edits self.categories, self.launchers dictionaries
             autoconfig_import_launchers(g_PATHS.CATEGORIES_FILE_PATH, g_PATHS.ROMS_DIR,
@@ -11060,37 +11109,6 @@ class Main:
         sl.extend(text_render_table(table_str))
         kodi_display_text_window_mono(window_title, '\n'.join(sl))
 
-    # A set of functions to help making plugin URLs
-    # NOTE probably this can be implemented in a more elegant way with optinal arguments...
-    def _misc_url_RunPlugin(self, command, categoryID = None, launcherID = None, romID = None):
-        if romID is not None:
-            return 'XBMC.RunPlugin({}?com={}&catID={}&launID={}&romID={})'.format(
-                self.base_url, command, categoryID, launcherID, romID)
-        elif launcherID is not None:
-            return 'XBMC.RunPlugin({}?com={}&catID={}&launID={})'.format(
-                self.base_url, command, categoryID, launcherID)
-        elif categoryID is not None:
-            return 'XBMC.RunPlugin({}?com={}&catID={})'.format(
-                self.base_url, command, categoryID)
-
-        return 'XBMC.RunPlugin({}?com={})'.format(self.base_url, command)
-
-    def _misc_url(self, command, categoryID = None, launcherID = None, romID = None):
-        if romID is not None:
-            return '{}?com={}&catID={}&launID={}&romID={}'.format(
-                self.base_url, command, categoryID, launcherID, romID)
-        elif launcherID is not None:
-            return '{}?com={}&catID={}&launID={}'.format(
-                self.base_url, command, categoryID, launcherID)
-        elif categoryID is not None:
-            return '{}?com={}&catID={}'.format(self.base_url, command, categoryID)
-
-        return '{}?com={}'.format(self.base_url, command)
-
-    def _misc_url_search(self, command, categoryID, launcherID, search_type, search_string):
-        return '{}?com={}&catID={}&launID={}&search_type={}&search_string={}'.format(
-            self.base_url, command, categoryID, launcherID, search_type, search_string)
-
     def _command_buildMenu(self):
         log_debug('_command_buildMenu() Starting...')
 
@@ -11114,7 +11132,7 @@ class Main:
             sys.path.append(libPath.getPath())
 
             sys.modules[ "__main__" ].ADDON    = skinshortcutsAddon
-            sys.modules[ "__main__" ].ADDONID  = skinshortcutsAddon.getAddonInfo('id').decode( 'utf-8' )
+            sys.modules[ "__main__" ].ADDONID  = text_type(skinshortcutsAddon.getAddonInfo('id'))
             sys.modules[ "__main__" ].CWD      = path.getPath()
             sys.modules[ "__main__" ].LANGUAGE = skinshortcutsAddon.getLocalizedString
 
@@ -11172,7 +11190,7 @@ class Main:
             for key in sorted(self.categories, key = lambda x : self.categories[x]['m_name']):
                 category_dic = self.categories[key]
                 name = category_dic['m_name']
-                url_str =  "ActivateWindow(Programs,\"%s\",return)" % self._misc_url('SHOW_LAUNCHERS', key)
+                url_str = 'ActivateWindow(Programs,"{}",return)'.format(aux_url('SHOW_LAUNCHERS', key))
                 fanart = asset_get_default_asset_Category(category_dic, 'default_fanart')
                 thumb = asset_get_default_asset_Category(category_dic, 'default_thumb', 'DefaultFolder.png')
 
@@ -11186,7 +11204,7 @@ class Main:
                 name = launcher_dic['m_name']
                 launcherID = launcher_dic['id']
                 categoryID = launcher_dic['categoryID']
-                url_str =  "ActivateWindow(Programs,\"%s\",return)" % self._misc_url('SHOW_ROMS', categoryID, launcherID)
+                url_str = 'ActivateWindow(Programs,"%s",return)'.format(aux_url('SHOW_ROMS', categoryID, launcherID))
                 fanart = asset_get_default_asset_Category(launcher_dic, 'default_fanart')
                 thumb = asset_get_default_asset_Category(launcher_dic, 'default_thumb', 'DefaultFolder.png')
 

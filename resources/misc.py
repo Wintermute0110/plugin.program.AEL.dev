@@ -523,7 +523,7 @@ def text_get_image_URL_extension(url):
 def misc_generate_random_SID():
     t1 = time.time()
     t2 = t1 + random.getrandbits(32)
-    base = hashlib.md5(text_type(t1 + t2))
+    base = hashlib.md5(text_type(t1 + t2).encode('utf-8'))
     sid = base.hexdigest()
     return sid
 
