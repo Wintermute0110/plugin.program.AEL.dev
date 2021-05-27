@@ -57,7 +57,7 @@ class AppService(object):
                 data = self.queue.pop(0)
                 self._execute_service_actions(data)
 
-            if self.monitor.waitForAbort(1):
+            if self.monitor.waitForAbort(0.5):
                 # abort requested, end service
                 break
 

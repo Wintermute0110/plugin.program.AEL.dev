@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 #
+import collections
 import logging
 import json
 import pprint
@@ -171,14 +172,14 @@ class OrdDictionaryDialog(object):
     def __init__(self):
         self.dialog = xbmcgui.Dialog()
 
-    def select(self, title, options_odict, preselect = None, use_details = False):
+    def select(self, title: str, options_odict: collections.OrderedDict, preselect = None, use_details: bool = False):
         preselected_index = -1
         if preselect is not None:
             preselected_value = options_odict[preselect]
-            preselected_index = options_odict.values().index(preselected_value)
+            preselected_index = list(options_odict.values()).index(preselected_value)
             
         # --- Execute select dialog menu logic ---
-        selection = self.dialog.select(title, options_odict.values(), useDetails = use_details, preselect = preselected_index)       
+        selection = self.dialog.select(title, [v for v in options_odict.values()], useDetails = use_details, preselect = preselected_index)       
         if selection < 0: return None
         key = list(options_odict.keys())[selection]
 

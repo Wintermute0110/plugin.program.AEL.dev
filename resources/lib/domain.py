@@ -114,7 +114,7 @@ class EntityABC(object):
     def _get_directory_filename_from_field(self, field) -> io.FileName:
         if not field in self.entity_data: return None
         path = self.entity_data[field]
-        if path == '': return None
+        if path == '' or path is None: return None
 
         return io.FileName(path, isdir=True)
 
@@ -206,12 +206,10 @@ class MetaDataItemABC(EntityABC):
     @abc.abstractmethod
     def get_assets_kind(self): pass
 
-    @abc.abstractmethod
-    def save_to_disk(self): pass
+    # parent category / romset this item belongs to.
+    def get_parent_id(self) -> str:
+        return self.entity_data['parent_id'] if 'parent_id' in self.entity_data else None
 
-    @abc.abstractmethod
-    def delete_from_disk(self): pass
-   
     # --- Metadata --------------------------------------------------------------------------------
     def get_name(self):
         return self.entity_data['m_name'] if 'm_name' in self.entity_data else 'Unknown'

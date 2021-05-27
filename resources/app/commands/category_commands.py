@@ -53,7 +53,7 @@ def cmd_add_category(args):
 @AppMediator.register('EDIT_CATEGORY')
 def cmd_edit_category(args):    
     logger.debug('EDIT_CATEGORY: cmd_edit_category() BEGIN')
-    category_id = args['category_id'] if 'category_id' in args else None
+    category_id:str = args['category_id'] if 'category_id' in args else None
     
     if category_id is None:
         logger.warn('cmd_add_category(): No category id supplied.')
@@ -139,10 +139,13 @@ def cmd_category_metadata_title(args):
         repository = CategoryRepository(uow)
         category = repository.find_category(category_id)
         
-        is_changed = editors.edit_field_by_str(category, 'Title', category.get_name, category.set_name)
-        if is_changed:
+        if editors.edit_field_by_str(category, 'Title', category.get_name, category.set_name):
             repository.update_category(category)
             uow.commit()
+            
+            kodi.event(method='RENDER_VIEW', data={'category_id': category.get_id()})
+            kodi.event(method='RENDER_VIEW', data={'category_id': category.get_parent_id()})
+            
     kodi.event(method='CATEGORY_EDIT_METADATA', data=args)
     
 @AppMediator.register('CATEGORY_EDIT_METADATA_RELEASEYEAR')

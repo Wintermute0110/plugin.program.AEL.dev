@@ -120,7 +120,6 @@ def vw_add_category(category_id: str):
 
 @router.route('/categories/edit/<category_id>')
 def vw_add_category(category_id: str):
-    logger.info('TEST')
     kodi.event(method='EDIT_CATEGORY', data={'category_id': category_id })
 
 @router.route('EXECUTE')

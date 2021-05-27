@@ -94,7 +94,8 @@ class FileName:
     # Constructor
     # path_str is an Unicode string.
     # ---------------------------------------------------------------------------------------------
-    def __init__(self, path_str, isdir = False):
+    def __init__(self, path_str: str, isdir: bool = False):
+        if path_str is None: path_str = ''
         self.path_str = path_str
         self.is_a_dir = isdir
 

@@ -275,7 +275,7 @@ class CategoryRepository(object):
         self._uow = uow
 
     def find_category(self, category_id: str) -> Category:
-        self._uow.execute(QUERY_SELECT_CATEGORIES_BY_PARENT, category_id)
+        self._uow.execute(QUERY_SELECT_CATEGORY, category_id)
         category_data = self._uow.single_result()
         return Category(category_data)
 

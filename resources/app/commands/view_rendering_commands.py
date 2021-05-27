@@ -42,7 +42,8 @@ def cmd_render_views_data(args):
 @AppMediator.register('RENDER_VIEW')
 def cmd_render_view_data(args):
     kodi.notify('Rendering views')
-    category_id = args['category_id'] if 'category_id' in args else None    
+    category_id = args['category_id'] if 'category_id' in args else None
+    render_recursive = args['render_recursive'] if 'render_recursive' in args else False
     
     uow = UnitOfWork(globals.g_PATHS.DATABASE_FILE_PATH)
     with uow:
@@ -51,9 +52,9 @@ def cmd_render_view_data(args):
         views_repository        = ViewRepository(globals.g_PATHS, globals.router)
                 
         if category_id is None:
-            _render_root_view(categories_repository, romsets_repository, views_repository, False)
+            _render_root_view(categories_repository, romsets_repository, views_repository, render_recursive)
         else:
-            category = categories_repository.find_categories_by_parent(category_id)
+            category = categories_repository.find_category(category_id)
             _render_category_view(category, categories_repository, romsets_repository, views_repository)
         
     kodi.notify('Selected views rendered')
