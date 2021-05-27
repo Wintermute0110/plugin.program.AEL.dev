@@ -59,7 +59,27 @@ def cmd_render_view_data(args):
         
     kodi.notify('Selected views rendered')
     kodi.refresh_container()
-   
+
+@AppMediator.register('CLEANUP_VIEWS')
+def cmd_cleanup_views(args):    
+    uow = UnitOfWork(globals.g_PATHS.DATABASE_FILE_PATH)
+    with uow:
+        categories_repository   = CategoryRepository(uow)
+        romsets_repository      = ROMSetRepository(uow)
+        
+        categories = categories_repository.find_all_categories()
+        romsets = romsets_repository.find_all_romsets()
+        
+        category_ids = list(map(c.get_id() for c in categories))
+        romset_ids = list(map(r.get_id() for r in romsets))
+        
+        view_files = globals.g_PATHS.COLLECTIONS_DIR.scanFilesInPath('collection_*.json')
+        for view_file in view_files:
+            view_id = view_file.getBaseNoExt().replace('collection_', '')
+            if not view_id in category_ids and not view_id in romset_ids:
+                logger.info('Removing files for collection "{}"'.format(view_id))
+                view_file.unlink()
+       
 def _render_root_view(categories_repository: CategoryRepository, romsets_repository: ROMSetRepository, 
                       views_repository: ViewRepository, render_sub_views = False):
     

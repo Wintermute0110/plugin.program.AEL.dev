@@ -451,6 +451,9 @@ def qry_container_context_menu_items(container_data) -> typing.List[typing.Tuple
     if is_category: 
         commands.append(('Add new Category', _context_menu_url_for('/categories/add/{}'.format(container_data['id']))))
         commands.append(('Add new Collection', _context_menu_url_for('/collections/add/{}'.format(container_data['id']))))
+    if is_romset:
+        commands.append(('Add new Category', _context_menu_url_for('/categories/add/{}'.format(container_data['id']))))
+        
     commands.append(('Open Kodi file manager', 'ActivateWindow(filemanager)'))
     commands.append(('AEL addon settings', 'Addon.OpenSettings({0})'.format(globals.addon_id)))
 

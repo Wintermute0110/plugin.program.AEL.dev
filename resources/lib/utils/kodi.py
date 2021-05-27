@@ -9,6 +9,7 @@ import xbmc
 import xbmcgui
 
 from resources.lib import globals
+from resources.lib.utils import text
 
 logger = logging.getLogger(__name__)
 
@@ -86,6 +87,11 @@ def notify(text, title = 'Advanced Emulator Launcher', time = 5000):
 def notify_warn(text, title = 'Advanced Emulator Launcher warning', time = 7000):
     xbmcgui.Dialog().notification(title, text, xbmcgui.NOTIFICATION_WARNING, time)
 
+#
+# Do not use this function much because it is the same icon as when Python fails, and that may confuse the user.
+#
+def notify_error(text, title = 'Advanced Emulator Launcher error', time = 7000):
+    xbmcgui.Dialog().notification(title, text, xbmcgui.NOTIFICATION_ERROR, time)
 
 # -------------------------------------------------------------------------------------------------
 # Kodi notifications and dialogs
@@ -149,6 +155,60 @@ def clear_windowprops(keys=None, prefix="", window_id=10000):
 def get_info_label(name):
     return xbmc.getInfoLabel(name)
 
+def translate(id):
+    return globals.addon.getLocalizedString(id)
+
+#
+# See https://kodi.wiki/view/JSON-RPC_API/v8#Textures
+# See https://forum.kodi.tv/showthread.php?tid=337014
+# See https://forum.kodi.tv/showthread.php?tid=236320
+#
+def delete_cache_texture(database_path_str):
+    logger.debug('kodi_delete_cache_texture() Deleting texture "{0}:'.format(database_path_str))
+
+    # --- Query texture database ---
+    json_fname_str = text.escape_JSON(database_path_str)
+    prop_str = (
+        '{' +
+        '"properties" : [ "url", "cachedurl", "lasthashcheck", "imagehash", "sizes"], ' +
+        '"filter" : {{ "field" : "url", "operator" : "is", "value" : "{0}" }}'.format(json_fname_str) +
+        '}'
+    )
+    r_dic = jsonrpc_query('Textures.GetTextures', prop_str, verbose = False)
+
+    # --- Delete cached texture ---
+    num_textures = len(r_dic['textures'])
+    logger.debug('kodi_delete_cache_texture() Returned list with {0} textures'.format(num_textures))
+    if num_textures == 1:
+        textureid = r_dic['textures'][0]['textureid']
+        logger.debug('kodi_delete_cache_texture() Deleting texture with id {0}'.format(textureid))
+        prop_str = '{{ "textureid" : {0} }}'.format(textureid)
+        r_dic = jsonrpc_query('Textures.RemoveTexture', prop_str, verbose = False)
+    else:
+        logger.warning('kodi_delete_cache_texture() Number of textures different from 1. No texture deleted from cache')
+
+def print_texture_info(database_path_str):
+    logger.debug('kodi_print_texture_info() File "{0}"'.format(database_path_str))
+
+    # --- Query texture database ---
+    json_fname_str = text.escape_JSON(database_path_str)
+    prop_str = (
+        '{' +
+        '"properties" : [ "url", "cachedurl", "lasthashcheck", "imagehash", "sizes"], ' +
+        '"filter" : {{ "field" : "url", "operator" : "is", "value" : "{0}" }}'.format(json_fname_str) +
+        '}'
+    )
+    r_dic = jsonrpc_query('Textures.GetTextures', prop_str, verbose = False)
+
+    # --- Delete cached texture ---
+    num_textures = len(r_dic['textures'])
+    logger.debug('print_texture_info() Returned list with {0} textures'.format(num_textures))
+    if num_textures == 1:
+        logger.debug('Cached URL  {0}'.format(r_dic['textures'][0]['cachedurl']))
+        logger.debug('Hash        {0}'.format(r_dic['textures'][0]['imagehash']))
+        logger.debug('Last check  {0}'.format(r_dic['textures'][0]['lasthashcheck']))
+        logger.debug('Texture ID  {0}'.format(r_dic['textures'][0]['textureid']))
+        logger.debug('Texture URL {0}'.format(r_dic['textures'][0]['url']))
 
 #
 # Kodi dialog with select box based on a list.
@@ -172,7 +232,7 @@ class OrdDictionaryDialog(object):
     def __init__(self):
         self.dialog = xbmcgui.Dialog()
 
-    def select(self, title: str, options_odict: collections.OrderedDict, preselect = None, use_details: bool = False):
+    def select(self, title: str, options_odict: collections.OrderedDict, preselect = None, use_details: bool = False) -> str:
         preselected_index = -1
         if preselect is not None:
             preselected_value = options_odict[preselect]

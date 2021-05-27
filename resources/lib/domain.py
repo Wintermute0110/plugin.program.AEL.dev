@@ -407,6 +407,12 @@ class Category(MetaDataItemABC):
     def num_romsets(self) -> int:
         return self.entity_data['num_romsets'] if 'num_romsets' in self.entity_data else 0
 
+    def num_categories(self) -> int:
+        return self.entity_data['num_categories'] if 'num_categories' in self.entity_data else 0
+
+    def has_items(self) -> bool:
+        return len(self.num_romsets()) > 0 or len(self.num_categories()) > 0
+
     def get_asset_ids_list(self): 
         return COLLECTION_ASSET_ID_LIST
     

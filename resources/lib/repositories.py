@@ -277,7 +277,7 @@ QUERY_INSERT_CATEGORY             = """
                                     """
 QUERY_UPDATE_CATEGORY             = "UPDATE categories SET name=? WHERE id =?"
 QUERY_INSERT_CATEGORY_ASSET       = "INSERT INTO category_assets (category_id, asset_id) VALUES (?, ?)"
-
+QUERY_DELETE_CATEGORY             = "DELETE FROM category WHERE id = ?"
 class CategoryRepository(object):
 
     def __init__(self, uow: UnitOfWork):
@@ -358,6 +358,10 @@ class CategoryRepository(object):
             category_obj.get_name(),
             category_obj.get_id())
 
+    def delete_category(self, category_id: str):
+        logger.info("CategoryRepository.delete_category(): Deleting category '{}'".format(category_id))
+        self._uow.execute(QUERY_DELETE_CATEGORY)
+        
 #
 # ROMSetRepository -> ROM Sets from SQLite DB
 #

@@ -86,6 +86,7 @@ def cmd_edit_category(args):
     logger.debug('EDIT_CATEGORY_MENU: cmd_edit_category() Selected {}'.format(selected_option))
     kodi.event(method=selected_option, data=args)
     
+# --- Submenu command ---    
 @AppMediator.register('CATEGORY_EDIT_METADATA')
 def cmd_edit_metadata_category(args):    
     logger.debug('CATEGORY_EDIT_METADATA: cmd_edit_metadata_category() BEGIN')
@@ -125,6 +126,90 @@ def cmd_edit_metadata_category(args):
     logger.debug('CATEGORY_EDIT_METADATA: cmd_edit_metadata_category() Selected {0}'.format(selected_option))
     kodi.event(method=selected_option, data=args)
 
+@AppMediator.register('CATEGORY_EDIT_ASSETS')
+def cmd_category_edit_assets(args):
+    category_id = args['category_id'] if 'category_id' in args else None
+    preselected_option = args['selected_asset'] if 'selected_asset' in args else None
+    
+    uow = UnitOfWork(globals.g_PATHS.DATABASE_FILE_PATH)
+    with uow:
+        repository = CategoryRepository(uow)
+        category = repository.find_category(category_id)
+        
+        selected_asset_to_edit = editors.edit_object_assets(category, preselected_option)
+        if selected_asset_to_edit is None:
+            kodi.event(method='EDIT_CATEGORY_MENU', data=args)
+        
+        asset = g_assetFactory.get_asset_info(selected_asset_to_edit)
+        #if selected_asset_to_edit == editors.SCRAPE_CMD:
+        #    kodi.event(method='EDIT_CATEGORY_MENU', data=args)
+        #    globals.run_command(scrape_cmd, rom=obj_instance)
+        #    edit_object_assets(obj_instance, selected_option)
+        #    return True
+        
+        # >> Execute edit asset menu subcommand. Then, execute recursively this submenu again.
+        # >> The menu dialog is instantiated again so it reflects the changes just edited.
+        # >> If edit_asset() returns True changes were made.
+        if editors.edit_asset(category, asset):
+            repository.update_category(category)
+            uow.commit()
+            kodi.event(method='RENDER_VIEW', data={'category_id': category.get_id()})
+            kodi.event(method='RENDER_VIEW', data={'category_id': category.get_parent_id()})   
+            kodi.event(method='CATEGORY_EDIT_ASSETS', data={'category_id': category_id, 'selected_asset': asset.id})         
+
+@AppMediator.register('CATEGORY_EDIT_DEFAULT_ASSETS')
+def cmd_category_edit_default_assets(args):
+    
+    m_gui_edit_object_default_assets(category)
+
+@AppMediator.register('CATEGORY_STATUS')
+def cmd_category_status(args):
+    category_id = args['category_id'] if 'category_id' in args else None    
+    uow = UnitOfWork(globals.g_PATHS.DATABASE_FILE_PATH)
+    with uow:
+        repository = CategoryRepository(uow)
+        category = repository.find_category(category_id)
+        category.change_finished_status()
+        kodi.dialog_OK('Category "{}" status is now {}'.format(category.get_name(), category.get_finished_str()))
+        repository.update_category(category)
+        uow.commit()
+        
+    kodi.event(method='RENDER_VIEW', data=args) 
+    kodi.event(method='RENDER_VIEW', data={'category_id': category.get_parent_id()})           
+    kodi.event(method='EDIT_CATEGORY', data=args)
+    
+#
+# Remove category. Also removes launchers in that category
+#
+@AppMediator.register.action('DELETE_CATEGORY')
+def cmd_category_delete(args):
+    category_id = args['category_id'] if 'category_id' in args else None    
+    uow = UnitOfWork(globals.g_PATHS.DATABASE_FILE_PATH)
+    with uow:
+        repository = CategoryRepository(uow)
+        category = repository.find_category(category_id)
+        category_name = category.get_name()
+        
+        if category.has_items():
+            question = 'Category "{}" has {} sub-categories and {} romsets. '.format(category_name, category.num_categories(), category.num_romsets()) + \
+                        'Deleting it will also delete related items. ' + \
+                        'Are you sure you want to delete "{}"?'.format(category_name)
+        else:
+            question = 'Category "{}" has no categories or romsets. '.format(category_name) + \
+                        'Are you sure you want to delete "{}"?'.format(category_name)
+    
+        ret = kodi.dialog_yesno(question)
+        if not ret: return
+            
+        logger.info('Deleting category "{}" ID {}'.format(category_name, category.get_id()))
+        repository.delete_category(category_id)
+        uow.commit()
+        
+    kodi.notify('Deleted category {0}'.format(category_name))
+    kodi.event(method='RENDER_VIEW', data={'category_id': category.get_parent_id()})            
+    kodi.event(method='CLEANUP_VIEWS')
+    kodi.event(method='EDIT_CATEGORY', data=args)
+
 # -------------------------------------------------------------------------------------------------
 # Category context menu atomic commands.
 # Only Category context menu functions have debug statemets. This debug messages are to
@@ -142,10 +227,8 @@ def cmd_category_metadata_title(args):
         if editors.edit_field_by_str(category, 'Title', category.get_name, category.set_name):
             repository.update_category(category)
             uow.commit()
-            
             kodi.event(method='RENDER_VIEW', data={'category_id': category.get_id()})
-            kodi.event(method='RENDER_VIEW', data={'category_id': category.get_parent_id()})
-            
+            kodi.event(method='RENDER_VIEW', data={'category_id': category.get_parent_id()})            
     kodi.event(method='CATEGORY_EDIT_METADATA', data=args)
     
 @AppMediator.register('CATEGORY_EDIT_METADATA_RELEASEYEAR')
@@ -156,12 +239,12 @@ def cmd_category_metadata_releaseyear(args):
         repository = CategoryRepository(uow)
         category = repository.find_category(category_id)
         
-        is_changed = editors.edit_field_by_str(category, 'Release Year', category.get_releaseyear, category.set_releaseyear)
-        if is_changed:
+        if editors.edit_field_by_str(category, 'Release Year', category.get_releaseyear, category.set_releaseyear):
             repository.update_category(category)
             uow.commit()
+            kodi.event(method='RENDER_VIEW', data={'category_id': category.get_id()})
+            kodi.event(method='RENDER_VIEW', data={'category_id': category.get_parent_id()})
     kodi.event(method='CATEGORY_EDIT_METADATA', data=args)
-
 
 @AppMediator.register('CATEGORY_EDIT_METADATA_GENRE')
 def cmd_category_metadata_genre(args):
@@ -171,10 +254,11 @@ def cmd_category_metadata_genre(args):
         repository = CategoryRepository(uow)
         category = repository.find_category(category_id)
         
-        is_changed = editors.edit_field_by_str(category, 'Genre', category.get_genre, category.set_genre)
-        if is_changed:
+        if editors.edit_field_by_str(category, 'Genre', category.get_genre, category.set_genre):
             repository.update_category(category)
-            uow.commit()
+            uow.commit()            
+            kodi.event(method='RENDER_VIEW', data={'category_id': category.get_id()})
+            kodi.event(method='RENDER_VIEW', data={'category_id': category.get_parent_id()})            
     kodi.event(method='CATEGORY_EDIT_METADATA', data=args)
     
 @AppMediator.register('CATEGORY_EDIT_METADATA_DEVELOPER')
@@ -185,10 +269,11 @@ def cmd_category_metadata_developer(args):
         repository = CategoryRepository(uow)
         category = repository.find_category(category_id)
         
-        is_changed = editors.edit_field_by_str(category, 'Developer', category.get_developer, category.set_developer)
-        if is_changed:
+        if editors.edit_field_by_str(category, 'Developer', category.get_developer, category.set_developer):
             repository.update_category(category)
-            uow.commit()
+            uow.commit()    
+            kodi.event(method='RENDER_VIEW', data={'category_id': category.get_id()})
+            kodi.event(method='RENDER_VIEW', data={'category_id': category.get_parent_id()})
     kodi.event(method='CATEGORY_EDIT_METADATA', data=args)
 
 @AppMediator.register('CATEGORY_EDIT_METADATA_RATING')
@@ -199,10 +284,11 @@ def cmd_category_metadata_rating(args):
         repository = CategoryRepository(uow)
         category = repository.find_category(category_id)
         
-        is_changed = editors.edit_rating(category, category.get_rating, category.set_rating)
-        if is_changed:
+        if editors.edit_rating(category, category.get_rating, category.set_rating):
             repository.update_category(category)
             uow.commit()
+            kodi.event(method='RENDER_VIEW', data={'category_id': category.get_id()})
+            kodi.event(method='RENDER_VIEW', data={'category_id': category.get_parent_id()})
     kodi.event(method='CATEGORY_EDIT_METADATA', data=args)
 
 @AppMediator.register('CATEGORY_EDIT_METADATA_PLOT')
@@ -213,12 +299,13 @@ def cmd_category_metadata_plot(args):
         repository = CategoryRepository(uow)
         category = repository.find_category(category_id)
         
-        is_changed = editors.edit_field_by_str(category, 'Plot', category.get_plot, category.set_plot)
-        if is_changed:
+        if editors.edit_field_by_str(category, 'Plot', category.get_plot, category.set_plot):
             repository.update_category(category)
             uow.commit()
+            kodi.event(method='RENDER_VIEW', data={'category_id': category.get_id()})
+            kodi.event(method='RENDER_VIEW', data={'category_id': category.get_parent_id()})
     kodi.event(method='CATEGORY_EDIT_METADATA', data=args)
-
+    
 @AppMediator.register('CATEGORY_IMPORT_NFO_FILE_DEFAULT')
 def cmd_category_import_nfo_file(args):
     category_id = args['category_id'] if 'category_id' in args else None    
@@ -232,6 +319,8 @@ def cmd_category_import_nfo_file(args):
             repository.update_category(category)
             uow.commit()
             kodi.notify('Imported Category NFO file {0}'.format(NFO_file.getPath()))
+            kodi.event(method='RENDER_VIEW', data={'category_id': category.get_id()})
+            kodi.event(method='RENDER_VIEW', data={'category_id': category.get_parent_id()})
     
     kodi.event(method='CATEGORY_EDIT_METADATA', data=args)
 
@@ -253,7 +342,9 @@ def cmd_category_browse_import_nfo_file(args):
         if category.import_NFO_file(NFO_FileName):
             repository.update_category(category)
             uow.commit()
-            kodi.notify('Imported Category NFO file {0}'.format(NFO_FileName.getPath()))  
+            kodi.notify('Imported Category NFO file {0}'.format(NFO_FileName.getPath()))
+            kodi.event(method='RENDER_VIEW', data={'category_id': category.get_id()})
+            kodi.event(method='RENDER_VIEW', data={'category_id': category.get_parent_id()})
     
     kodi.event(method='CATEGORY_EDIT_METADATA', data=args)
 

@@ -124,7 +124,8 @@ CREATE VIEW IF NOT EXISTS vw_categories AS SELECT
     c.default_banner AS default_banner,
     c.default_poster AS default_poster,
     c.default_clearlogo AS default_clearlogo,
-    0 AS num_romsets
+    0 AS num_romsets,
+    0 AS num_categories
 FROM categories AS c 
     INNER JOIN metadata AS m ON c.metadata_id = m.id
     LEFT JOIN category_assets AS ca_icon ON ca_icon.category_id = c.id

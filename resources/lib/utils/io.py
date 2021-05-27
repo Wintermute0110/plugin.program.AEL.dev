@@ -48,6 +48,7 @@ import typing
 
 # --- Python standard library named imports ---
 import xml.etree.ElementTree as ET
+from resources.lib import constants
 
 import xbmcvfs
 
@@ -254,7 +255,7 @@ class FileName:
 
         return root
 
-    def getExt(self):
+    def getExt(self) -> str:
         root, ext = os.path.splitext(self.path_str)
         return ext
 
@@ -271,6 +272,18 @@ class FileName:
         self.path_tr = self.path_tr.replace("'", "\\'")
         self.path_tr = self.path_tr.replace('"', '\\"')
         
+    def isImageFile(self):
+        ext = self.getExt().replace('.', '')
+        return ext in constants.IMAGE_EXTENSION_LIST
+    
+    def isVideoFile(self):
+        ext = self.getExt().replace('.', '')
+        return ext in constants.TRAILER_EXTENSION_LIST
+    
+    def isManualFile(self):
+        ext = self.getExt().replace('.', '')
+        return ext in constants.MANUAL_EXTENSION_LIST
+    
     # ---------------------------------------------------------------------------------------------
     # Filesystem functions. Python Standard Library implementation
     # ---------------------------------------------------------------------------------------------
