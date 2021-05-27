@@ -78,7 +78,7 @@ class ViewRepository(object):
     def store_view(self, collection_id, view_data):
         repository_file = self.paths.COLLECTIONS_DIR.pjoin('collection_{}.json'.format(collection_id))
         
-        if len(view_data['items']) == 0: 
+        if view_data is None: 
             if repository_file.exists():
                 logger.debug('store_view(): No data for file {}. Removing file'.format(repository_file.getPath()))
                 repository_file.unlink()
@@ -200,6 +200,15 @@ class UnitOfWork(object):
     def reset_database(self, schema_file_path: io.FileName):
         if self._db_path.exists():
             self._db_path.unlink()
+        
+        # cleanup collection json files
+        collection_files = globals.g_PATHS.COLLECTIONS_DIR.scanFilesInPath("collection_*.json")
+        for collection_file in collection_files:
+            collection_file.unlink()
+            
+        # cleanup root file
+        if globals.g_PATHS.ROOT_PATH.exists():
+            globals.g_PATHS.ROOT_PATH.unlink()
             
         self.create_empty_database(schema_file_path)
 

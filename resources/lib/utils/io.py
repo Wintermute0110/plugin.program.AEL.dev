@@ -582,7 +582,7 @@ class FileName:
     # Scanner functions
     # ---------------------------------------------------------------------------------------------
     def scanFilesInPath(self, mask = '*.*'):
-        files = []
+        files: typing.List[FileName] = []
         all_files = self.list()
         
         for filename in fnmatch.filter(all_files, mask):
@@ -591,7 +591,7 @@ class FileName:
         return files
     
     def recursiveScanFilesInPath(self, mask = '*.*'):
-        files = []
+        files: typing.List[FileName] = []
         all_files = self.recursive_list()
         
         for filename in fnmatch.filter(all_files, mask):

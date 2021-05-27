@@ -81,15 +81,16 @@ def vw_route_render_root():
 
 @router.route('/collection/<collection_id>')
 def vw_route_render_collection(collection_id: str):
-    container = qry_get_collection_items(collection_id)
+    container               = qry_get_collection_items(collection_id)
     container_context_items = qry_container_context_menu_items(container)
+    container_type          = container['obj_type'] if 'obj_type' in container else OBJ_NONE
 
     if container is None:
         kodi.notify('Current view is not rendered correctly. Re-render views first.')
     elif len(container['items']) == 0:
-        if container['type'] == OBJ_CATEGORY:
+        if container_type == OBJ_CATEGORY:
             kodi.notify('Category {} has no items. Add romsets or categories first.'.format(container['name']))
-        if container['type'] == OBJ_ROMSET:
+        if container_type == OBJ_ROMSET:
             kodi.notify('ROMSet {} has no items. Add ROMs'.format(container['name']))
     else:
         render_list_items(container, container_context_items)
