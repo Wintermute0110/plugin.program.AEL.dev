@@ -2341,8 +2341,9 @@ class Main:
                     except ValueError:
                         p_idx = 0
                     # log_debug('p_idx = "{}"'.format(p_idx))
-                    type_temp = KodiSelectDialog('Launcher display mode', LAUNCHER_DMODE_LIST, p_idx)
-                    if type_temp < 0: return
+                    type_temp = KodiSelectDialog('Launcher display mode', LAUNCHER_DMODE_LIST,
+                        p_idx).executeDialog()
+                    if type_temp is None: return
 
                     # LAUNCHER_DMODE_FLAT
                     if type_temp == 0:
@@ -2378,8 +2379,9 @@ class Main:
                     except ValueError:
                         p_idx = 0
                     # log_debug('p_idx = "{}"'.format(p_idx))
-                    type_temp = KodiSelectDialog('Launcher audit display filter', AUDIT_DMODE_LIST, p_idx)
-                    if type_temp < 0: return
+                    type_temp = KodiSelectDialog('Launcher audit display filter', AUDIT_DMODE_LIST,
+                        p_idx).executeDialog()
+                    if type_temp is None: return
                     launcher['audit_display_mode'] = AUDIT_DMODE_LIST[type_temp]
                     log_info('Launcher audit display mode changed to "{}"'.format(launcher['audit_display_mode']))
                     kodi_notify('Display ROMs changed to "{}"'.format(launcher['audit_display_mode']))
@@ -3637,8 +3639,8 @@ class Main:
         xbmcplugin.addDirectoryItem(self.addon_handle, url_str, listitem, True)
 
     def _gui_render_virtual_category_root_row(self):
-        vcategory_name   = '[COLOR violet]Browse by ...[/COLOR]'
-        vcategory_label  = 'Browse by ...'
+        vcategory_name   = '[COLOR violet]Browse by...[/COLOR]'
+        vcategory_label  = 'Browse by...'
         vcategory_plot   = 'Browse AEL Virtual Launchers'
         vcategory_icon   = g_PATHS.ADDON_CODE_DIR.pjoin('media/theme/Browse_by_icon.png').getPath()
         vcategory_fanart = g_PATHS.FANART_FILE_PATH.getPath()
@@ -4472,9 +4474,8 @@ class Main:
     # ---------------------------------------------------------------------------------------------
     # ROM LisItem rendering
     # ---------------------------------------------------------------------------------------------
-    #
-    # Render clone ROMs. romID is the parent ROM.
-    # This is only called in Parent/Clone display modes.
+    # Render clone ROMs. romID is always a parent ROM.
+    # This is only called in Parent/Clone display mode.
     def _command_render_clone_roms(self, categoryID, launcherID, romID):
         # --- Set content type and sorting methods ---
         self._misc_set_all_sorting_methods()
@@ -4517,45 +4518,15 @@ class Main:
 
         # --- Build parent and clones dictionary of ROMs ---
         roms = {}
-        # >> Add parent ROM except if the parent if the fake paren ROM
+        # Add parent ROM unless the parent ROM is a fake parent ROM
         if romID != UNKNOWN_ROMS_PARENT_ID: roms[romID] = all_roms[romID]
-        # >> Add clones, if any
+        # Add clones, if any
         for rom_id in pclone_index[romID]: roms[rom_id] = all_roms[rom_id]
         log_debug('_command_render_clone_roms() Parent ID {}'.format(romID))
-        log_debug('_command_render_clone_roms() Number of clone ROMs = {}'.format(len(roms)))
-        # for key in roms:
-        #     log_debug('key   = {}'.format(key))
-        #     log_debug('value = {}'.format(roms[key]))
+        log_debug('_command_render_clone_roms() Number of ROMs in PClone set = {}'.format(len(roms)))
 
         # --- ROM display filter ---
-        dp_mode = selectedLauncher['audit_display_mode']
-        if selectedLauncher['audit_state'] == AUDIT_STATE_ON and dp_mode != AUDIT_DMODE_ALL:
-            filtered_roms = {}
-            for rom_id in roms:
-                rom = roms[rom_id]
-                if rom['nointro_status'] == AUDIT_STATUS_HAVE:
-                    if dp_mode == AUDIT_DMODE_HAVE or \
-                       dp_mode == AUDIT_DMODE_HAVE_UNK or \
-                       dp_mode == AUDIT_DMODE_HAVE_MISS:
-                        filtered_roms[rom_id] = rom
-                elif rom['nointro_status'] == AUDIT_STATUS_MISS:
-                    if dp_mode == AUDIT_DMODE_HAVE_MISS or \
-                       dp_mode == AUDIT_DMODE_MISS or \
-                       dp_mode == AUDIT_DMODE_MISS_UNK:
-                        filtered_roms[rom_id] = rom
-                elif rom['nointro_status'] == AUDIT_STATUS_UNKNOWN:
-                    if dp_mode == AUDIT_DMODE_HAVE_UNK or \
-                       dp_mode == AUDIT_DMODE_MISS_UNK or \
-                       dp_mode == AUDIT_DMODE_UNK:
-                        filtered_roms[rom_id] = rom
-                else:
-                    # Always copy roms with unknown status (NOINTRO_STATUS_NONE)
-                    filtered_roms[rom_id] = rom
-            roms = filtered_roms
-            if not roms:
-                kodi_notify('No ROMs to show with current filtering settings.')
-                xbmcplugin.endOfDirectory(handle = self.addon_handle, succeeded = True, cacheToDisc = False)
-                return
+        # NOTE Never filter ROMs in the PClone set. They are not that many so no need to filter.
 
         # --- Render ROMs ---
         roms_fav = fs_load_Favourites_JSON(g_PATHS.FAV_JSON_FILE_PATH)
@@ -4618,36 +4589,49 @@ class Main:
                 xbmcplugin.endOfDirectory(handle = self.addon_handle, succeeded = True, cacheToDisc = False)
                 return
 
+            # --- Load ROMs for this launcher ---
+            roms_json_FN = g_PATHS.ROMS_DIR.pjoin(selectedLauncher['roms_base_noext'] + '.json')
+            if not roms_json_FN.exists():
+                kodi_notify('Launcher JSON database not found. Add ROMs to launcher.')
+                xbmcplugin.endOfDirectory(handle = self.addon_handle, succeeded = True, cacheToDisc = False)
+                return
+            roms_all = fs_load_ROMs_JSON(g_PATHS.ROMS_DIR, selectedLauncher)
+            if not roms:
+                kodi_notify('Launcher JSON database empty. Add ROMs to launcher.')
+                xbmcplugin.endOfDirectory(handle = self.addon_handle, succeeded = True, cacheToDisc = False)
+                return
+
         # --- ROM display filter ---
         dp_mode = selectedLauncher['audit_display_mode']
         if selectedLauncher['audit_state'] == AUDIT_STATE_ON and dp_mode != AUDIT_DMODE_ALL:
             filtered_roms = {}
+            show_have = dp_mode == AUDIT_DMODE_HAVE or dp_mode == AUDIT_DMODE_HAVE_UNK or dp_mode == AUDIT_DMODE_HAVE_MISS
+            show_miss = dp_mode == AUDIT_DMODE_HAVE_MISS or dp_mode == AUDIT_DMODE_MISS or dp_mode == AUDIT_DMODE_MISS_UNK
+            show_unknown = dp_mode == AUDIT_DMODE_HAVE_UNK or dp_mode == AUDIT_DMODE_MISS_UNK or dp_mode == AUDIT_DMODE_UNK
             for rom_id in roms:
-                rom = roms[rom_id]
-                # >> Always include a parent ROM regardless of filters in 'Parent/Clone mode'
-                # >> launcher_display_mode if it has 1 or more clones.
-                if not selectedLauncher['launcher_display_mode'] == LAUNCHER_DMODE_FLAT and len(pclone_index[rom_id]):
-                    filtered_roms[rom_id] = rom
-                    continue
-                # >> Filter ROM
-                if rom['nointro_status'] == AUDIT_STATUS_HAVE:
-                    if dp_mode == AUDIT_DMODE_HAVE or \
-                       dp_mode == AUDIT_DMODE_HAVE_UNK or \
-                       dp_mode == AUDIT_DMODE_HAVE_MISS:
-                        filtered_roms[rom_id] = rom
-                elif rom['nointro_status'] == AUDIT_STATUS_MISS:
-                    if dp_mode == AUDIT_DMODE_HAVE_MISS or \
-                       dp_mode == AUDIT_DMODE_MISS or \
-                       dp_mode == AUDIT_DMODE_MISS_UNK:
-                        filtered_roms[rom_id] = rom
-                elif rom['nointro_status'] == AUDIT_STATUS_UNKNOWN:
-                    if dp_mode == AUDIT_DMODE_HAVE_UNK or \
-                       dp_mode == AUDIT_DMODE_MISS_UNK or \
-                       dp_mode == AUDIT_DMODE_UNK:
-                        filtered_roms[rom_id] = rom
-                # >> Always copy roms with unknown status (NOINTRO_STATUS_NONE)
-                else:
-                    filtered_roms[rom_id] = rom
+                nointro_status = roms[rom_id]['nointro_status']
+                a = (nointro_status == AUDIT_STATUS_HAVE) and show_have
+                b = (nointro_status == AUDIT_STATUS_MISS) and show_miss
+                c = (nointro_status == AUDIT_STATUS_UNKNOWN) and show_unknown
+                # ROM is shown.
+                if a or b or c:
+                    filtered_roms[rom_id] = roms[rom_id]
+                # ROM is not shown.
+                # In PClone mode do not filter out the parent ROM if one of the clones must be shown.
+                elif view_mode == LAUNCHER_DMODE_PCLONE:
+                    for clone_id in pclone_index[rom_id]:
+                        nointro_status_clone = roms_all[clone_id]['nointro_status']
+                        a = (nointro_status_clone == AUDIT_STATUS_HAVE) and show_have
+                        b = (nointro_status_clone == AUDIT_STATUS_MISS) and show_miss
+                        c = (nointro_status_clone == AUDIT_STATUS_UNKNOWN) and show_unknown
+                        if a or b or c:
+                            filtered_roms[rom_id] = roms[rom_id]
+                            break
+                # Always copy ROMs with NONE or EXTRA status.
+                elif nointro_status == AUDIT_STATUS_EXTRA:
+                    filtered_roms[rom_id] = roms[rom_id]
+                elif nointro_status == AUDIT_STATUS_NONE:
+                    filtered_roms[rom_id] = roms[rom_id]
             roms = filtered_roms
             if not roms:
                 kodi_notify('No ROMs to show with current filtering settings.')
@@ -9170,13 +9154,13 @@ class Main:
 
         # --- Save JSON databases ---
         pDialog.startProgress('Saving NO-Intro/Redump JSON databases...', 3)
-        f_FN = g_PATHS.ROMS_DIR.pjoin(launcher['roms_base_noext'] + '_index_PClone')
+        f_FN = g_PATHS.ROMS_DIR.pjoin(launcher['roms_base_noext'] + '_index_PClone.json')
         utils_write_JSON_file(f_FN.getPath(), roms_pclone_index)
-        pDialog.updateProgress(1)
-        f_FN = g_PATHS.ROMS_DIR.pjoin(launcher['roms_base_noext'] + '_index_CParent')
+        pDialog.updateProgressInc()
+        f_FN = g_PATHS.ROMS_DIR.pjoin(launcher['roms_base_noext'] + '_index_CParent.json')
         utils_write_JSON_file(f_FN.getPath(), clone_parent_dic)
-        pDialog.updateProgress(2)
-        f_FN = g_PATHS.ROMS_DIR.pjoin(launcher['roms_base_noext'] + '_parents')
+        pDialog.updateProgressInc()
+        f_FN = g_PATHS.ROMS_DIR.pjoin(launcher['roms_base_noext'] + '_parents.json')
         utils_write_JSON_file(f_FN.getPath(), parent_roms)
         pDialog.endProgress()
 
