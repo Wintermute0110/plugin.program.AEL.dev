@@ -142,18 +142,14 @@ WIP      [SCRAPERS] ScreenScraper must choose the correct artwork depending on t
 
 NOTE     Python 3 version for Matrix in branch release-0.10.x-python3
 
-WIP      Create a Python 3 Matrix version 0.10.x to track release 0.9.x.
+FEATURE  Create a Python 3 Matrix version 0.10.x to track release 0.9.x.
          Current master branch will be release 0.11.x in Python 3.
          First release 0.9.10 Python 2 and then do the Python 3 conversion into 0.10.0.
 
-WIP      Port release 0.9.10 to Python 3.
+FEATURE  Port release 0.9.10 to Python 3.
 
 
 [B]Advanced Emulator Launcher | version 0.9.10 | xx xxxxx 2021[/B]
-
-TODO     1. Test test test release-0.9.x-python2
-         2. Merge changes from release-0.9.x-python2 into release-0.10.x-python3.
-         3. Test release-0.10.x-python3.
 
 NOTE     Python 2 version for Leia/Krypon in branch release-0.9.x-python2
          Have a look at AML code to ease the conversion.
