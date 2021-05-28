@@ -14,10 +14,6 @@
 
 # Advanced Emulator Launcher filesystem I/O functions.
 
-# --- Be prepared for the future ---
-from __future__ import unicode_literals
-from __future__ import division
-
 # --- Addon modules ---
 from .constants import *
 from .misc import *
@@ -852,7 +848,7 @@ def fs_export_ROM_collection(output_filename, collection, rom_list):
         'version' : AEL_STORAGE_FORMAT
     }
     raw_data = [control_dic, ex_collection_dic, ex_rom_list]
-    utils_write_JSON_file(output_filename.getPath(), raw_data)
+    utils_write_JSON_file(output_filename.getPath(), raw_data, pprint = True)
 
 # Export collection assets.
 #
@@ -888,7 +884,6 @@ def fs_export_ROM_collection(output_filename, collection, rom_list):
 #   collection    dictionary
 #   rom_list      list of dictionaries
 #   asset_dir_FN  FileName object default self.settings['collections_asset_dir']
-#
 def fs_export_ROM_collection_assets(out_dir_FN, collection, rom_list, asset_dir_FN):
     log_info('fs_export_ROM_collection_assets() Dir {}'.format(out_dir_FN.getOriginalPath()))
 
@@ -957,9 +952,7 @@ def fs_export_ROM_collection_assets(out_dir_FN, collection, rom_list, asset_dir_
             log_debug('{:<9s} COPY "{}"'.format(AInfo.name, asset_FN.getPath()))
             log_debug('{:<9s}   TO "{}"'.format(AInfo.name, new_asset_FN.getPath()))
             try:
-                source_path = asset_FN.getPath().decode(get_fs_encoding(), 'ignore')
-                dest_path = new_asset_FN.getPath().decode(get_fs_encoding(), 'ignore')
-                shutil.copy(source_path, dest_path)
+                utils_copy_file(asset_FN.getPath(), new_asset_FN.getPath())
             except OSError:
                 log_error('fs_export_ROM_collection_assets() OSError exception copying image')
                 kodi_notify_warn('OSError exception copying image')

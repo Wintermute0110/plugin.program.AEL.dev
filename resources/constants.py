@@ -15,10 +15,6 @@
 #
 # This module has no external dependencies.
 
-# --- Python standard library ---
-from __future__ import unicode_literals
-from __future__ import division
-
 # Transitional code from Python 2 to Python 3 (https://github.com/benjaminp/six/blob/master/six.py)
 import sys
 ADDON_RUNNING_PYTHON_2 = sys.version_info[0] == 2
@@ -52,7 +48,7 @@ ADDON_SHORT_NAME = 'AEL'
 # pprint = True function parameter overrides option OPTION_COMPACT_JSON.
 # More compact JSON files (less blanks) load faster because file size is smaller.
 JSON_INDENT = 1
-JSON_SEP = (',', ':')
+JSON_SEP = (', ', ': ')
 
 # An integer number incremented whenever there is a change in the ROM storage format.
 # This enables easy migrations, at least in theory.

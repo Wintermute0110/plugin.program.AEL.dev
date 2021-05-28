@@ -17,10 +17,6 @@
 # https://github.com/muldjord/skyscraper
 # https://github.com/muldjord/skyscraper/blob/master/docs/SCRAPINGMODULES.md
 
-# --- Be prepared for the future ---
-from __future__ import unicode_literals
-from __future__ import division
-
 # --- Modules/packages in this plugin ---
 from .constants import *
 from .platforms import *
@@ -1788,8 +1784,10 @@ class Scraper(object):
     def _get_scraper_file_name(self, cache_type, platform):
         scraper_filename = self.get_filename()
         json_fname = scraper_filename + '__' + platform + '__' + cache_type + '.json'
-        json_full_path = os.path.join(self.scraper_cache_dir, json_fname).decode('utf-8')
-
+        if ADDON_RUNNING_PYTHON_2:
+            json_full_path = os.path.join(self.scraper_cache_dir, json_fname).decode('utf-8')
+        elif ADDON_RUNNING_PYTHON_3:
+            json_full_path = os.path.join(self.scraper_cache_dir, json_fname)
         return json_full_path, json_fname
 
     def _lazy_load_disk_cache(self, cache_type):

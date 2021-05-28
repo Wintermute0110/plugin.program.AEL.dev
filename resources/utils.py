@@ -29,10 +29,6 @@
 #
 # How to report errors on the low-level filesystem functions??? See the end of the file.
 
-# --- Be prepared for the future ---
-from __future__ import unicode_literals
-from __future__ import division
-
 # --- Addon modules ---
 from .constants import *
 
@@ -42,6 +38,7 @@ try:
     import xbmcaddon
     import xbmcgui
     import xbmcplugin
+    import xbmcvfs
 except:
     KODI_RUNTIME_AVAILABLE_UTILS = False
 else:
@@ -95,7 +92,7 @@ def is_linux(): return is_linux_bool
 # caller code.
 #
 # A) Transform paths like smb://server/directory/ into \\server\directory\
-# B) Use xbmc.translatePath() for paths starting with special://
+# B) Use xbmcvfs.translatePath() for paths starting with special://
 #
 # Decomposes a file name path or directory into its constituents
 #   FileName.getOriginalPath()  Full path                                     /home/Wintermute/Sonic.zip
@@ -120,7 +117,7 @@ class FileName:
             self.path = self.path.replace('/', '\\')
 
         elif self.originalPath.lower().startswith('special:'):
-            self.path = xbmc.translatePath(self.path)
+            self.path = xbmcvfs.translatePath(self.path)
 
     def _join_raw(self, arg):
         self.path = os.path.join(self.path, arg)
@@ -151,7 +148,7 @@ class FileName:
     #     current_path = self.originalPath
     #     if type(other) is FileName:      other_path = other.originalPath
     #     elif type(other) is text_type:   other_path = other
-    #     elif type(other) is binary_type: other_path = other.decode('utf-8')
+    #     elif type(other) is binary_type: other_path = other
     #     else: raise NameError('Unknown type for overloaded + in FileName object')
     #     new_path = os.path.join(current_path, other_path)
     #     child    = FileName(new_path)
@@ -268,6 +265,16 @@ def utils_get_fs_encoding():
     fs_encoding = sys.getfilesystemencoding()
     return fs_encoding
 
+def utils_copy_file(source_str, dest_str):
+    if ADDON_RUNNING_PYTHON_2:
+        source_bytes = source_str.decode(utils_get_fs_encoding(), 'ignore')
+        dest_bytes = dest_str.decode(utils_get_fs_encoding(), 'ignore')
+        shutil.copy(source_bytes, dest_bytes)
+    elif ADDON_RUNNING_PYTHON_3:
+        shutil.copy(source_str, dest_str)
+    else:
+        raise TypeError('Undefined Python runtime version.')
+
 def utils_write_str_to_file(filename, full_string):
     log_debug('utils_write_str_to_file() File "{}"'.format(filename))
     # Always write UNIX end of lines regarding of the operating system.
@@ -383,14 +390,14 @@ def utils_write_JSON_file(json_filename, json_data, verbose = True, pprint = Fal
     else:
         # Parameter pprint == True overrides option OPTION_COMPACT_JSON.
         if pprint:
-            f_data = text_type(json.dumps(json_data, ensure_ascii = False, sort_keys = True,
-                indent = JSON_INDENT, separators = JSON_SEP))
+            f_data = json.dumps(json_data, ensure_ascii = False, sort_keys = True,
+                indent = JSON_INDENT, separators = JSON_SEP)
         else:
             if OPTION_COMPACT_JSON:
-                f_data = text_type(json.dumps(json_data, ensure_ascii = False, sort_keys = True))
+                f_data = json.dumps(json_data, ensure_ascii = False, sort_keys = True)
             else:
-                f_data = text_type(json.dumps(json_data, ensure_ascii = False, sort_keys = True,
-                    indent = JSON_INDENT, separators = JSON_SEP))
+                f_data = json.dumps(json_data, ensure_ascii = False, sort_keys = True,
+                    indent = JSON_INDENT, separators = JSON_SEP)
 
     # Write JSON to disk
     try:
@@ -398,7 +405,7 @@ def utils_write_JSON_file(json_filename, json_data, verbose = True, pprint = Fal
             if lowmem:
                 # Chunk by chunk JSON writer, uses less memory but takes longer.
                 for chunk in jobj.iterencode(json_data):
-                    file.write(text_type(chunk))
+                    file.write(chunk)
             else:
                 file.write(f_data)
     except OSError:
@@ -548,7 +555,7 @@ def log_variable(var_name, var):
     if current_log_level < LOG_DEBUG: return
     log_text = '{} DUMP : Dumping variable "{}"\n{}'.format(ADDON_SHORT_NAME,
         var_name, pprint.pformat(var))
-    xbmc.log(log_text.encode('utf-8'), level = xbmc.LOGERROR)
+    xbmc.log(log_text, level = xbmc.LOGERROR)
 
 # For Unicode stuff in Kodi log see https://github.com/romanvm/kodi.six
 def log_debug_KR(text_line):
@@ -562,25 +569,25 @@ def log_debug_KR(text_line):
     # Kodi functions (Python 3) require Unicode strings as arguments.
     # Kodi functions (Python 2) require UTF-8 encoded bytes as arguments.
     log_text = ADDON_SHORT_NAME + ' DEBUG: ' + text_line
-    xbmc.log(log_text.encode('utf-8'), level = xbmc.LOGNOTICE)
+    xbmc.log(log_text, level = xbmc.LOGINFO)
 
 def log_info_KR(text_line):
     if current_log_level < LOG_INFO: return
     if isinstance(text_line, binary_type): text_line = text_line.decode('utf-8')
     log_text = ADDON_SHORT_NAME + ' INFO : ' + text_line
-    xbmc.log(log_text.encode('utf-8'), level = xbmc.LOGNOTICE)
+    xbmc.log(log_text, level = xbmc.LOGINFO)
 
 def log_warning_KR(text_line):
     if current_log_level < LOG_WARNING: return
     if isinstance(text_line, binary_type): text_line = text_line.decode('utf-8')
     log_text = ADDON_SHORT_NAME + ' WARN : ' + text_line
-    xbmc.log(log_text.encode('utf-8'), level = xbmc.LOGWARNING)
+    xbmc.log(log_text, level = xbmc.LOGWARNING)
 
 def log_error_KR(text_line):
     if current_log_level < LOG_ERROR: return
     if isinstance(text_line, binary_type): text_line = text_line.decode('utf-8')
     log_text = ADDON_SHORT_NAME + ' ERROR: ' + text_line
-    xbmc.log(log_text.encode('utf-8'), level = xbmc.LOGERROR)
+    xbmc.log(log_text, level = xbmc.LOGERROR)
 
 # Replacement functions when running outside Kodi with the standard Python interpreter.
 def log_debug_Python(text_line): print(text_line)
@@ -636,7 +643,7 @@ def kodi_dialog_get_directory(d_heading, d_dir = ''):
     else:
         ret =  xbmcgui.Dialog().browse(0, d_heading, '')
 
-    return ret.decode('utf-8')
+    return ret
 
 # Mask is supported only for files.
 # mask  [opt] string or unicode - '|' separated file mask. (i.e. '.jpg|.png')
@@ -653,7 +660,7 @@ def kodi_dialog_get_file(d_heading, mask = '', default_file = ''):
     else:
         ret = xbmcgui.Dialog().browse(1, d_heading, '')
 
-    return ret.decode('utf-8')
+    return ret
 
 def kodi_dialog_get_image(d_heading, mask = '', default_file = ''):
     if mask and default_file:
@@ -665,10 +672,10 @@ def kodi_dialog_get_image(d_heading, mask = '', default_file = ''):
     else:
         ret = xbmcgui.Dialog().browse(2, d_heading, '')
 
-    return ret.decode('utf-8')
+    return ret
 
 def kodi_dialog_get_wdirectory(d_heading):
-    return xbmcgui.Dialog().browse(3, d_heading, '').decode('utf-8')
+    return xbmcgui.Dialog().browse(3, d_heading, '')
 
 # Select multiple versions of the avobe functions.
 def kodi_dialog_get_file_multiple(d_heading, mask = '', d_file = ''):
@@ -680,10 +687,6 @@ def kodi_dialog_get_file_multiple(d_heading, mask = '', d_file = ''):
         ret = xbmcgui.Dialog().browse(1, d_heading, '', mask = mask, enableMultiple = True)
     else:
         ret = xbmcgui.Dialog().browse(1, d_heading, '', enableMultiple = True)
-
-    # ret is a list
-    for i in range(len(ret)):
-        ret[i] = ret[i].decode('utf-8')
 
     return ret
 
@@ -706,7 +709,9 @@ def kodi_refresh_container():
 # Progress dialog that can be closed and reopened.
 # Messages and progress in the dialog are always remembered, even if closed and reopened.
 # If the dialog is canceled this class remembers it forever.
+#
 # Kodi Matrix change: Renamed option line1 to message. Removed option line2. Removed option line3.
+# See https://forum.kodi.tv/showthread.php?tid=344263&pid=2933596#pid2933596
 #
 # --- Example 1 ---
 # pDialog = KodiProgressDialog()
@@ -729,15 +734,17 @@ class KodiProgressDialog(object):
         self.step_total = step_total
         self.step_counter = step_counter
         try:
-            self.progress = int(math.floor((self.step_counter * 100) / self.step_total))
+            self.progress = math.floor((self.step_counter * 100) / self.step_total)
         except ZeroDivisionError:
             # Fix case when step_total is 0.
             self.step_total = 0.001
-            self.progress = int(math.floor((self.step_counter * 100) / self.step_total))
+            self.progress = math.floor((self.step_counter * 100) / self.step_total)
         self.dialog_active = True
         self.message = message
-        self.progressDialog.create(self.heading, self.message, ' ', ' ') # Workaround for Kodi Leia
-        # self.progressDialog.create(self.heading, self.message) # Code for Krypton and up.
+        if kodi_running_version >= KODI_VERSION_MATRIX:
+            self.progressDialog.create(self.heading, self.message)
+        else:
+            self.progressDialog.create(self.heading, self.message, ' ', ' ')
         self.progressDialog.update(self.progress)
 
     # Changes message and resets progress.
@@ -746,27 +753,31 @@ class KodiProgressDialog(object):
         self.step_total = step_total
         self.step_counter = step_counter
         try:
-            self.progress = int(math.floor((self.step_counter * 100) / self.step_total))
+            self.progress = math.floor((self.step_counter * 100) / self.step_total)
         except ZeroDivisionError:
             # Fix case when step_total is 0.
             self.step_total = 0.001
-            self.progress = int(math.floor((self.step_counter * 100) / self.step_total))
+            self.progress = math.floor((self.step_counter * 100) / self.step_total)
         self.message = message
-        self.progressDialog.update(self.progress, self.message, ' ', ' ') # Workaround for Kodi Leia
-        # self.progressDialog.update(self.progress, self.message) # Code for Krypton and up.
+        if kodi_running_version >= KODI_VERSION_MATRIX:
+            self.progressDialog.update(self.progress, self.message)
+        else:
+            self.progressDialog.update(self.progress, self.message, ' ', ' ')
 
     # Update progress and optionally update message as well.
     def updateProgress(self, step_counter, message = None):
         if not self.dialog_active: raise TypeError
         self.step_counter = step_counter
-        self.progress = int(math.floor((self.step_counter * 100) / self.step_total))
+        self.progress = math.floor((self.step_counter * 100) / self.step_total)
         if message is None:
             self.progressDialog.update(self.progress)
         else:
             if type(message) is not text_type: raise TypeError
             self.message = message
-            self.progressDialog.update(self.progress, self.message, ' ', ' ') # Workaround for Kodi Leia
-            # self.progressDialog.update(self.progress, self.message) # Code for Krypton and up.
+            if kodi_running_version >= KODI_VERSION_MATRIX:
+                self.progressDialog.update(self.progress, self.message)
+            else:
+                self.progressDialog.update(self.progress, self.message, ' ', ' ')
         # DEBUG code
         # time.sleep(1)
 
@@ -774,23 +785,27 @@ class KodiProgressDialog(object):
     # Progress is incremented AFTER dialog is updated.
     def updateProgressInc(self, message = None):
         if not self.dialog_active: raise TypeError
-        self.progress = int(math.floor((self.step_counter * 100) / self.step_total))
+        self.progress = math.floor((self.step_counter * 100) / self.step_total)
         self.step_counter += 1
         if message is None:
             self.progressDialog.update(self.progress)
         else:
             if type(message) is not text_type: raise TypeError
             self.message = message
-            self.progressDialog.update(self.progress, self.message, ' ', ' ') # Workaround for Kodi Leia
-            # self.progressDialog.update(self.progress, self.message) # Code for Matrix and up.
+            if kodi_running_version >= KODI_VERSION_MATRIX:
+                self.progressDialog.update(self.progress, self.message)
+            else:
+                self.progressDialog.update(self.progress, self.message, ' ', ' ')
 
     # Update dialog message but keep same progress.
     def updateMessage(self, message):
         if not self.dialog_active: raise TypeError
         if type(message) is not text_type: raise TypeError
         self.message = message
-        self.progressDialog.update(self.progress, self.message, ' ', ' ') # Workaround for Kodi Leia
-        # self.progressDialog.update(self.progress, self.message) # Code for Matrix and up.
+        if kodi_running_version >= KODI_VERSION_MATRIX:
+            self.progressDialog.update(self.progress, self.message)
+        else:
+            self.progressDialog.update(self.progress, self.message, ' ', ' ')
 
     def isCanceled(self):
         # If the user pressed the cancel button before then return it now.
@@ -809,12 +824,21 @@ class KodiProgressDialog(object):
         self.progressDialog.close()
         self.dialog_active = False
 
-    # Reopens a previously closed dialog with endProgress(), remembering the messages
+    # Like endProgress() but do not completely fills the progress bar.
+    def close(self):
+        if not self.dialog_active: raise TypeError
+        if self.progressDialog.iscanceled(): self.flag_dialog_canceled = True
+        self.progressDialog.close()
+        self.dialog_active = False
+
+    # Reopens a previously closed dialog with close(), remembering the messages
     # and the progress it had when it was closed.
     def reopen(self):
         if self.dialog_active: raise TypeError
-        self.progressDialog.create(self.heading, self.message, ' ', ' ') # Workaround for Kodi Leia
-        # self.progressDialog.create(self.heading, self.message) # Code for Matrix and up.
+        if kodi_running_version >= KODI_VERSION_MATRIX:
+            self.progressDialog.create(self.heading, self.message)
+        else:
+            self.progressDialog.create(self.heading, self.message, ' ', ' ')
         self.progressDialog.update(self.progress)
         self.dialog_active = True
 
@@ -870,7 +894,7 @@ class KodiKeyboardDialog(object):
     def isConfirmed(self): return self.keyboard.isConfirmed()
 
     # Use a different name from getText() to avoid coding errors.
-    def getData(self): return self.keyboard.getText().decode('utf-8')
+    def getData(self): return self.keyboard.getText()
 
 # Wrapper function to get a text from the keyboard or None if the keyboard modal
 # dialog was canceled.
@@ -878,7 +902,7 @@ def kodi_get_keyboard_text(heading = 'Kodi keyboard', default_text = ''):
     keyboard = KodiKeyboardDialog(heading, default_text)
     keyboard.executeDialog()
     if not keyboard.isConfirmed(): return None
-    new_value_str = keyboard.getData().strip().decode('utf-8')
+    new_value_str = keyboard.getData().strip()
     return new_value_str
 
 def kodi_toogle_fullscreen():
@@ -1001,12 +1025,12 @@ def kodi_addon_obj():
     addon.addon = xbmcaddon.Addon()
 
     # Cache useful addon information.
-    addon.info_id      = addon.addon.getAddonInfo('id').decode('utf-8')
-    addon.info_name    = addon.addon.getAddonInfo('name').decode('utf-8')
-    addon.info_version = addon.addon.getAddonInfo('version').decode('utf-8')
-    addon.info_author  = addon.addon.getAddonInfo('author').decode('utf-8')
-    addon.info_profile = addon.addon.getAddonInfo('profile').decode('utf-8')
-    addon.info_type    = addon.addon.getAddonInfo('type').decode('utf-8')
+    addon.info_id      = addon.addon.getAddonInfo('id')
+    addon.info_name    = addon.addon.getAddonInfo('name')
+    addon.info_version = addon.addon.getAddonInfo('version')
+    addon.info_author  = addon.addon.getAddonInfo('author')
+    addon.info_profile = addon.addon.getAddonInfo('profile')
+    addon.info_type    = addon.addon.getAddonInfo('type')
 
     return addon
 
@@ -1015,16 +1039,16 @@ def kodi_addon_obj():
 # Settings are only read once on every execution and they are not performance critical.
 # -------------------------------------------------------------------------------------------------
 def kodi_get_int_setting(cfg, setting_str):
-    return int(cfg.addon.addon.getSetting(setting_str))
+    return cfg.addon.addon.getSettingInt(setting_str)
 
 def kodi_get_float_setting_as_int(cfg, setting_str):
-    return int(round(float(cfg.addon.addon.getSetting(setting_str))))
+    return int(round(cfg.addon.addon.getSettingNumber(setting_str)))
 
 def kodi_get_bool_setting(cfg, setting_str):
-    return True if cfg.addon.addon.getSetting(setting_str) == 'true' else False
+    return cfg.addon.addon.getSettingBool(setting_str)
 
 def kodi_get_str_setting(cfg, setting_str):
-    return cfg.addon.addon.getSetting(setting_str).decode('utf-8')
+    return cfg.addon.addon.getSettingString(setting_str)
 
 # -------------------------------------------------------------------------------------------------
 # Determine Kodi version and create some constants to allow version-dependent code.
