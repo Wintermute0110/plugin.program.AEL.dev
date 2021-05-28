@@ -239,7 +239,12 @@ def aux_edit_str(edict, fname, prop_name):
     if not keyboard.isConfirmed():
         kodi_notify('{} not changed'.format(prop_name))
         return False
-    new_value_str = keyboard.getData().strip().decode('utf-8')
+    if ADDON_RUNNING_PYTHON_2:
+        new_value_str = keyboard.getData().strip().decode('utf-8')
+    elif ADDON_RUNNING_PYTHON_3:
+        new_value_str = keyboard.getData().strip()
+    else:
+        raise TypeError('Undefined Python runtime version.')
     new_value_str = new_value_str if new_value_str else old_value_str
     if old_value_str == new_value_str:
         kodi_notify('{} not changed'.format(prop_name))
@@ -315,8 +320,6 @@ class Main:
             #          ' "method" : "Settings.GetSettings",'
             #          ' "params" : {"level":"expert"}}')
             # response = xbmc.executeJSONRPC(c_str)
-            # log_debug('JSON      "{}"'.format(c_str))
-            # log_debug('Response  "{}"'.format(response.decode('utf-8')))
 
         # Kiosk mode for skins.
         # Do not change context menus with listitem.addContextMenuItems() in Kiosk mode.
@@ -674,7 +677,12 @@ class Main:
 
         # --- Advanced ---
         self.settings['media_state_action'] = kodi_get_int_setting(cfg, 'media_state_action')
-        self.settings['delay_tempo'] = kodi_get_float_setting_as_int(cfg, 'delay_tempo')
+        if ADDON_RUNNING_PYTHON_2:
+            self.settings['delay_tempo'] = kodi_get_float_setting_as_int(cfg, 'delay_tempo')
+        elif ADDON_RUNNING_PYTHON_3:
+            self.settings['delay_tempo'] = kodi_get_int_setting(cfg, 'delay_tempo')
+        else:
+            raise TypeError('Undefined Python runtime version.')
         self.settings['suspend_audio_engine'] = kodi_get_bool_setting(cfg, 'suspend_audio_engine')
         self.settings['suspend_screensaver'] = kodi_get_bool_setting(cfg, 'suspend_screensaver')
         # self.settings['suspend_joystick_engine'] = kodi_get_bool_setting(cfg, 'suspend_joystick_engine')
