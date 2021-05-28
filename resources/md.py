@@ -13,10 +13,6 @@
 
 # Advanced Emulator Launcher multi-disc related functions.
 
-# --- Be prepared for the future ---
-from __future__ import unicode_literals
-from __future__ import division
-
 # --- Addon modules ---
 from .constants import *
 

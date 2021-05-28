@@ -14,10 +14,6 @@
 
 # Advanced Emulator Launcher network IO module.
 
-# --- Be prepared for the future ---
-from __future__ import unicode_literals
-from __future__ import division
-
 # --- Modules/packages in this plugin ---
 from .constants import *
 from .utils import *

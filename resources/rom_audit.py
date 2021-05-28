@@ -13,10 +13,6 @@
 
 # Write here main contents of this file.
 
-# --- Python standard library ---
-from __future__ import unicode_literals
-from __future__ import division
-
 # --- Modules/packages in this plugin ---
 from .constants import *
 from .misc import *

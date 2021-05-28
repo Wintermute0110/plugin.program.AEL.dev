@@ -13,10 +13,6 @@
 
 # Advanced Emulator Launcher asset (artwork) related stuff.
 
-# --- Be prepared for the future ---
-from __future__ import unicode_literals
-from __future__ import division
-
 # --- Modules/packages in this plugin ---
 from .constants import *
 from .platforms import *

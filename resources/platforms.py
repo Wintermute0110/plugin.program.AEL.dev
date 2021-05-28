@@ -17,10 +17,6 @@
 # It has not external dependencies at all and can be used from anywhere.
 # External tools are used to test the validity of the information in this file.
 
-# --- Be prepared for the future ---
-from __future__ import unicode_literals
-from __future__ import division
-
 # -------------------------------------------------------------------------------------------------
 # New platform engine
 # -------------------------------------------------------------------------------------------------

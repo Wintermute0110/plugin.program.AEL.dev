@@ -13,10 +13,6 @@
 
 # Advanced Emulator Launcher XML autoconfiguration stuff.
 
-# --- Be prepared for the future ---
-from __future__ import unicode_literals
-from __future__ import division
-
 # --- Modules/packages in this plugin ---
 from .constants import *
 from .utils import *

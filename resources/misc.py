@@ -18,10 +18,6 @@
 # This module can be loaded anywhere without creating circular dependencies.
 # Optionally this module can include utils.py to use the log_*() functions but better avoid it.
 
-# --- Be prepared for the future ---
-from __future__ import unicode_literals
-from __future__ import division
-
 # --- Addon modules ---
 from .constants import *
 
