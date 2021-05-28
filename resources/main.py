@@ -1072,9 +1072,9 @@ class Main:
         elif mindex == 5:
             launcherID_list = []
             category_name = self.categories[categoryID]['m_name']
-            for launcherID in sorted(self.launchers.iterkeys()):
-                if self.launchers[launcherID]['categoryID'] == categoryID:
-                    launcherID_list.append(launcherID)
+            for launcherID in sorted(self.launchers, key = lambda x : self.launchers[x]['m_name']):
+                if self.launchers[launcherID]['categoryID'] != categoryID: continue
+                launcherID_list.append(launcherID)
 
             if len(launcherID_list) > 0:
                 ret = kodi_dialog_yesno('Category "{}" contains {} launchers. '.format(category_name, len(launcherID_list)) +
@@ -6795,7 +6795,6 @@ class Main:
         self._misc_set_all_sorting_methods()
         if not rl:
             kodi_dialog_OK('Search returned no results')
-        # for key in sorted(rl.iterkeys()):
         for key in sorted(rl, key = lambda x : rl[x]['m_name']):
             self._gui_render_rom_row(categoryID, launcherID, rl[key])
         xbmcplugin.endOfDirectory(handle = self.addon_handle, succeeded = True, cacheToDisc = False)
@@ -8874,7 +8873,7 @@ class Main:
             log_info('_roms_delete_missing_ROMs() Launcher is empty. No dead ROM check.')
             return num_removed_roms
         log_debug('_roms_delete_missing_ROMs() Starting dead items scan')
-        for rom_id in sorted(roms.iterkeys()):
+        for rom_id in sorted(roms, key = lambda x : roms[x]['m_name']):
             if not roms[rom_id]['filename']:
                 # log_debug('_roms_delete_missing_ROMs() Skip "{}"'.format(roms[rom_id]['m_name']))
                 continue
@@ -8908,7 +8907,7 @@ class Main:
         # Step 2) Set Audit status to AUDIT_STATUS_NONE and
         #         set PClone status to PCLONE_STATUS_NONE
         log_info('_roms_reset_NoIntro_status() Resetting No-Intro status of all ROMs to None')
-        for rom_id in sorted(roms.iterkeys()):
+        for rom_id in sorted(roms, key = lambda x : roms[x]['m_name']):
             roms[rom_id]['nointro_status'] = AUDIT_STATUS_NONE
             roms[rom_id]['pclone_status']  = PCLONE_STATUS_NONE
         log_info('_roms_reset_NoIntro_status() Now launcher has {} ROMs'.format(len(roms)))
@@ -9912,31 +9911,10 @@ class Main:
     # Checks if a category is empty (no launchers defined)
     # Returns True if the category is empty. Returns False if non-empty.
     def _cat_is_empty(self, categoryID):
-        for launcherID in self.launchers.iterkeys():
-            if self.launchers[launcherID]['categoryID'] == categoryID: return False
+        for launcherID in self.launchers:
+            if self.launchers[launcherID]['categoryID'] == categoryID:
+                return False
         return True
-
-    # THIS FUNCTION IS DEPRECATED AND WILL BE REMOVED.
-    # Reads a text file with category/launcher plot.
-    # Checks file size to avoid importing binary files!
-    def _gui_import_TXT_file(text_file):
-        # Warn user in case he chose a binary file or a very big one. Avoid categories.xml corruption.
-        log_debug('_gui_import_TXT_file() Importing plot from "{}"'.format(text_file.getOriginalPath()))
-        statinfo = text_file.stat()
-        file_size = statinfo.st_size
-        log_debug('_gui_import_TXT_file() File size is {}'.format(file_size))
-        if file_size > 16384:
-            ret = kodi_dialog_yesno('File "{}" has {} bytes and it is very big.'.format(text_file.getPath(), file_size) +
-                'Are you sure this is the correct file?')
-            if not ret: return ''
-
-        # Import file
-        log_debug('_gui_import_TXT_file() Importing description from "{}"'.format(text_file.getOriginalPath()))
-        text_plot = open(text_file.getPath(), 'rt')
-        file_data = text_plot.read()
-        text_plot.close()
-
-        return file_data
 
     def _command_exec_utils_import_launchers(self):
         # If enableMultiple = True this function always returns a list of strings in UTF-8
