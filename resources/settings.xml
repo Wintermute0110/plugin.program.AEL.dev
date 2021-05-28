@@ -42,7 +42,6 @@
     <setting label="Search assets in the Parent/Clone group" type="bool" id="audit_pclone_assets" default="true" />
     <setting label="No-Intro DAT directory" type="folder" id="audit_nointro_dir" default="" source="" />
     <setting label="Redump DAT directory" type="folder" id="audit_redump_dir" default="" source="" />
-
 <!--
     <setting label="1G1R primary region" type="enum" id="audit_1G1R_first_region" default="0" values="Europe|USA|Japan" />
     <setting label="1G1R secondary region" type="enum" id="audit_1G1R_second_region" default="0" values="Spain|France|Brazil|Korea" />
@@ -51,7 +50,7 @@
 </category>
 <category label="Display">
     <setting id="separator" type="lsep" label="General"/>
-    <setting label="Categories display mode" type="enum" id="display_category_mode" default="0" values="Standard|Flat"/>
+    <setting label="Categories display mode" type="enum" id="display_category_mode" default="0" values="Standard|Flat" />
     <setting label="Launching application notification" type="bool" id="display_launcher_notify" default="true" />
     <setting label="Hide categories/launchers/ROMs marked as finished" type="bool" id="display_hide_finished" default="false" />
     <setting label="Display number of ROMs in launchers" type="bool" id="display_launcher_roms" default="true" />
@@ -64,7 +63,7 @@
     <setting id="separator" type="lsep" label="Special Categories/Launchers"/>
     <setting label="Hide Favourites" type="bool" id="display_hide_favs" default="false" />
     <setting label="Hide ROM Collections" type="bool" id="display_hide_collections" default="false" />
-    <setting label="Hide Browse by ..." type="bool" id="display_hide_vlaunchers" default="false" />
+    <setting label="Hide Browse by..." type="bool" id="display_hide_vlaunchers" default="false" />
     <setting label="Hide Browse AEL Offline Scraper" type="bool" id="display_hide_AEL_scraper" default="false" />
     <setting label="Hide Recently played ROMs" type="bool" id="display_hide_recent" default="false" />
     <setting label="Hide Most played ROMs" type="bool" id="display_hide_mostplayed" default="false" />
@@ -80,13 +79,13 @@
 <category label="Advanced">
     <setting label="Action on Kodi playing media" type="enum" id="media_state_action" default="0" values="Stop|Pause|Let Play" />
     <setting label="After/before launch delay (ms)" type="slider" id="delay_tempo" default="500" range="0,100,15000" option="int" />
-    <setting label="Suspend/resume Kodi audio engine" type="bool" id="suspend_audio_engine" default="false"/>
+    <setting label="Suspend/resume Kodi audio engine" type="bool" id="suspend_audio_engine" default="false" />
     <setting label="Suspend/resume Kodi screensaver" type="bool" id="suspend_screensaver" default="false" />
     <setting label="Escape $rom$ quotes" type="bool" id="escape_romfile" default="false" />
     <setting label="Disable LIRC (Linux only)" type="bool" id="lirc_state" default="true" />
-    <setting label="Show batch command window (Windows only)" type="bool" id="show_batch_window" default="false"/>
-    <setting label="Close file descriptors (Windows only)" type="bool" id="windows_close_fds" default="true"/>
-    <setting label="CD into aplication dir (Windows only)" type="bool" id="windows_cd_apppath" default="true"/>
+    <setting label="Show batch command window (Windows only)" type="bool" id="show_batch_window" default="false" />
+    <setting label="Close file descriptors (Windows only)" type="bool" id="windows_close_fds" default="true" />
+    <setting label="CD into aplication dir (Windows only)" type="bool" id="windows_cd_apppath" default="true" />
     <setting label="Log level" type="enum" id="log_level" default="2" values="ERROR|WARNING|INFO|DEBUG" />
 </category>
 </settings>

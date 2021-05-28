@@ -32,12 +32,12 @@ else:
 # Addon options and tuneables.
 # -------------------------------------------------------------------------------------------------
 # Compact, smaller size, non-human readable JSON. False forces human-readable JSON for development.
-# This setting must be True when releasing.
-OPTION_COMPACT_JSON = True
+# In AEL speed is not as critical so False. In AML this must be True when releasing.
+OPTION_COMPACT_JSON = False
 
 # Use less memory when writing big JSON files, but writing is slower.
-# This setting must be True when releasing.
-OPTION_LOWMEM_WRITE_JSON = True
+# In AEL this can be False when releasing. In AML it must be True.
+OPTION_LOWMEM_WRITE_JSON = False
 
 # The addon name in the GUI. Title of Kodi dialogs (yesno, progress, etc.) and used also in log functions.
 ADDON_LONG_NAME = 'Advanced Emulator Launcher'

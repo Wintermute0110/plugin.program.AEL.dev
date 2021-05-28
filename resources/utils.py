@@ -315,7 +315,7 @@ def utils_load_file_to_slist(filename):
 
 # If there are issues in the XML file (for example, invalid XML chars) ET.parse will fail.
 # Returns None if error.
-# Returns xml_tree = ET.parse() if success.
+# Returns xml_tree = xml.etree.ElementTree.parse() if success.
 def utils_load_XML_to_ET(filename):
     log_debug('utils_load_XML_to_ET() Loading {}'.format(filename))
     xml_tree = None
@@ -341,9 +341,6 @@ def utils_load_XML_to_ET(filename):
 # JSON write/load
 # -------------------------------------------------------------------------------------------------
 # Replace fs_load_JSON_file with this.
-#
-# json_FN = file_dir.pjoin(file_base_noext + '.json')
-# json_filename = json_FN.getPath()
 def utils_load_JSON_file(json_filename, default_obj = {}, verbose = True):
     # If file does not exist return default object (usually empty object)
     json_data = default_obj
@@ -366,11 +363,6 @@ def utils_load_JSON_file(json_filename, default_obj = {}, verbose = True):
 # Note that there is a bug in the json module where the ensure_ascii=False flag can produce
 # a mix of unicode and str objects.
 # See http://stackoverflow.com/questions/18337407/saving-utf-8-texts-in-json-dumps-as-utf8-not-as-u-escape-sequence
-#
-# json_file = file_dir.pjoin(file_base_noext + '.json')
-# log_debug('fs_write_JSON_file() Dir  {}'.format(file_dir.getOriginalPath()))
-# log_debug('fs_write_JSON_file() JSON {}'.format(file_base_noext + '.json'))
-#
 def utils_write_JSON_file(json_filename, json_data, verbose = True, pprint = False, lowmem = False):
     l_start = time.time()
     if verbose: log_debug('utils_write_JSON_file() "{}"'.format(json_filename))
@@ -741,11 +733,13 @@ class KodiProgressDialog(object):
             self.progress = math.floor((self.step_counter * 100) / self.step_total)
         self.dialog_active = True
         self.message = message
+        # In Leia and lower xbmcgui.DialogProgress().update() requires an int.
         if kodi_running_version >= KODI_VERSION_MATRIX:
             self.progressDialog.create(self.heading, self.message)
+            self.progressDialog.update(self.progress)
         else:
             self.progressDialog.create(self.heading, self.message, ' ', ' ')
-        self.progressDialog.update(self.progress)
+            self.progressDialog.update(int(self.progress))
 
     # Changes message and resets progress.
     def resetProgress(self, message, step_total = 100, step_counter = 0):
@@ -762,7 +756,7 @@ class KodiProgressDialog(object):
         if kodi_running_version >= KODI_VERSION_MATRIX:
             self.progressDialog.update(self.progress, self.message)
         else:
-            self.progressDialog.update(self.progress, self.message, ' ', ' ')
+            self.progressDialog.update(int(self.progress), self.message, ' ', ' ')
 
     # Update progress and optionally update message as well.
     def updateProgress(self, step_counter, message = None):
@@ -770,14 +764,17 @@ class KodiProgressDialog(object):
         self.step_counter = step_counter
         self.progress = math.floor((self.step_counter * 100) / self.step_total)
         if message is None:
-            self.progressDialog.update(self.progress)
+            if kodi_running_version >= KODI_VERSION_MATRIX:
+                self.progressDialog.update(self.progress)
+            else:
+                self.progressDialog.update(int(self.progress))
         else:
             if type(message) is not text_type: raise TypeError
             self.message = message
             if kodi_running_version >= KODI_VERSION_MATRIX:
                 self.progressDialog.update(self.progress, self.message)
             else:
-                self.progressDialog.update(self.progress, self.message, ' ', ' ')
+                self.progressDialog.update(int(self.progress), self.message, ' ', ' ')
         # DEBUG code
         # time.sleep(1)
 
@@ -788,14 +785,17 @@ class KodiProgressDialog(object):
         self.progress = math.floor((self.step_counter * 100) / self.step_total)
         self.step_counter += 1
         if message is None:
-            self.progressDialog.update(self.progress)
+            if kodi_running_version >= KODI_VERSION_MATRIX:
+                self.progressDialog.update(self.progress)
+            else:
+                self.progressDialog.update(int(self.progress))
         else:
             if type(message) is not text_type: raise TypeError
             self.message = message
             if kodi_running_version >= KODI_VERSION_MATRIX:
                 self.progressDialog.update(self.progress, self.message)
             else:
-                self.progressDialog.update(self.progress, self.message, ' ', ' ')
+                self.progressDialog.update(int(self.progress), self.message, ' ', ' ')
 
     # Update dialog message but keep same progress.
     def updateMessage(self, message):
@@ -805,7 +805,7 @@ class KodiProgressDialog(object):
         if kodi_running_version >= KODI_VERSION_MATRIX:
             self.progressDialog.update(self.progress, self.message)
         else:
-            self.progressDialog.update(self.progress, self.message, ' ', ' ')
+            self.progressDialog.update(int(self.progress), self.message, ' ', ' ')
 
     def isCanceled(self):
         # If the user pressed the cancel button before then return it now.
@@ -837,9 +837,10 @@ class KodiProgressDialog(object):
         if self.dialog_active: raise TypeError
         if kodi_running_version >= KODI_VERSION_MATRIX:
             self.progressDialog.create(self.heading, self.message)
+            self.progressDialog.update(self.progress)
         else:
             self.progressDialog.create(self.heading, self.message, ' ', ' ')
-        self.progressDialog.update(self.progress)
+            self.progressDialog.update(int(self.progress))
         self.dialog_active = True
 
 # Wrapper class for xbmcgui.Dialog().select(). Takes care of Kodi bugs.
