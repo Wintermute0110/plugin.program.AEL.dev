@@ -268,6 +268,16 @@ def utils_get_fs_encoding():
     fs_encoding = sys.getfilesystemencoding()
     return fs_encoding
 
+def utils_copy_file(source_str, dest_str):
+    if ADDON_RUNNING_PYTHON_2:
+        source_bytes = source_str.decode(utils_get_fs_encoding(), 'ignore')
+        dest_bytes = dest_str.decode(utils_get_fs_encoding(), 'ignore')
+        shutil.copy(source_bytes, dest_bytes)
+    elif ADDON_RUNNING_PYTHON_3:
+        shutil.copy(source_str, dest_str)
+    else:
+        raise TypeError('Undefined Python runtime version.')
+
 def utils_write_str_to_file(filename, full_string):
     log_debug('utils_write_str_to_file() File "{}"'.format(filename))
     # Always write UNIX end of lines regarding of the operating system.
@@ -706,7 +716,9 @@ def kodi_refresh_container():
 # Progress dialog that can be closed and reopened.
 # Messages and progress in the dialog are always remembered, even if closed and reopened.
 # If the dialog is canceled this class remembers it forever.
+#
 # Kodi Matrix change: Renamed option line1 to message. Removed option line2. Removed option line3.
+# See https://forum.kodi.tv/showthread.php?tid=344263&pid=2933596#pid2933596
 #
 # --- Example 1 ---
 # pDialog = KodiProgressDialog()
@@ -729,15 +741,17 @@ class KodiProgressDialog(object):
         self.step_total = step_total
         self.step_counter = step_counter
         try:
-            self.progress = int(math.floor((self.step_counter * 100) / self.step_total))
+            self.progress = math.floor((self.step_counter * 100) / self.step_total)
         except ZeroDivisionError:
             # Fix case when step_total is 0.
             self.step_total = 0.001
-            self.progress = int(math.floor((self.step_counter * 100) / self.step_total))
+            self.progress = math.floor((self.step_counter * 100) / self.step_total)
         self.dialog_active = True
         self.message = message
-        self.progressDialog.create(self.heading, self.message, ' ', ' ') # Workaround for Kodi Leia
-        # self.progressDialog.create(self.heading, self.message) # Code for Krypton and up.
+        if kodi_running_version >= KODI_VERSION_MATRIX:
+            self.progressDialog.create(self.heading, self.message)
+        else:
+            self.progressDialog.create(self.heading, self.message, ' ', ' ')
         self.progressDialog.update(self.progress)
 
     # Changes message and resets progress.
@@ -746,27 +760,31 @@ class KodiProgressDialog(object):
         self.step_total = step_total
         self.step_counter = step_counter
         try:
-            self.progress = int(math.floor((self.step_counter * 100) / self.step_total))
+            self.progress = math.floor((self.step_counter * 100) / self.step_total)
         except ZeroDivisionError:
             # Fix case when step_total is 0.
             self.step_total = 0.001
-            self.progress = int(math.floor((self.step_counter * 100) / self.step_total))
+            self.progress = math.floor((self.step_counter * 100) / self.step_total)
         self.message = message
-        self.progressDialog.update(self.progress, self.message, ' ', ' ') # Workaround for Kodi Leia
-        # self.progressDialog.update(self.progress, self.message) # Code for Krypton and up.
+        if kodi_running_version >= KODI_VERSION_MATRIX:
+            self.progressDialog.update(self.progress, self.message)
+        else:
+            self.progressDialog.update(self.progress, self.message, ' ', ' ')
 
     # Update progress and optionally update message as well.
     def updateProgress(self, step_counter, message = None):
         if not self.dialog_active: raise TypeError
         self.step_counter = step_counter
-        self.progress = int(math.floor((self.step_counter * 100) / self.step_total))
+        self.progress = math.floor((self.step_counter * 100) / self.step_total)
         if message is None:
             self.progressDialog.update(self.progress)
         else:
             if type(message) is not text_type: raise TypeError
             self.message = message
-            self.progressDialog.update(self.progress, self.message, ' ', ' ') # Workaround for Kodi Leia
-            # self.progressDialog.update(self.progress, self.message) # Code for Krypton and up.
+            if kodi_running_version >= KODI_VERSION_MATRIX:
+                self.progressDialog.update(self.progress, self.message)
+            else:
+                self.progressDialog.update(self.progress, self.message, ' ', ' ')
         # DEBUG code
         # time.sleep(1)
 
@@ -774,23 +792,27 @@ class KodiProgressDialog(object):
     # Progress is incremented AFTER dialog is updated.
     def updateProgressInc(self, message = None):
         if not self.dialog_active: raise TypeError
-        self.progress = int(math.floor((self.step_counter * 100) / self.step_total))
+        self.progress = math.floor((self.step_counter * 100) / self.step_total)
         self.step_counter += 1
         if message is None:
             self.progressDialog.update(self.progress)
         else:
             if type(message) is not text_type: raise TypeError
             self.message = message
-            self.progressDialog.update(self.progress, self.message, ' ', ' ') # Workaround for Kodi Leia
-            # self.progressDialog.update(self.progress, self.message) # Code for Matrix and up.
+            if kodi_running_version >= KODI_VERSION_MATRIX:
+                self.progressDialog.update(self.progress, self.message)
+            else:
+                self.progressDialog.update(self.progress, self.message, ' ', ' ')
 
     # Update dialog message but keep same progress.
     def updateMessage(self, message):
         if not self.dialog_active: raise TypeError
         if type(message) is not text_type: raise TypeError
         self.message = message
-        self.progressDialog.update(self.progress, self.message, ' ', ' ') # Workaround for Kodi Leia
-        # self.progressDialog.update(self.progress, self.message) # Code for Matrix and up.
+        if kodi_running_version >= KODI_VERSION_MATRIX:
+            self.progressDialog.update(self.progress, self.message)
+        else:
+            self.progressDialog.update(self.progress, self.message, ' ', ' ')
 
     def isCanceled(self):
         # If the user pressed the cancel button before then return it now.
@@ -809,12 +831,21 @@ class KodiProgressDialog(object):
         self.progressDialog.close()
         self.dialog_active = False
 
-    # Reopens a previously closed dialog with endProgress(), remembering the messages
+    # Like endProgress() but do not completely fills the progress bar.
+    def close(self):
+        if not self.dialog_active: raise TypeError
+        if self.progressDialog.iscanceled(): self.flag_dialog_canceled = True
+        self.progressDialog.close()
+        self.dialog_active = False
+
+    # Reopens a previously closed dialog with close(), remembering the messages
     # and the progress it had when it was closed.
     def reopen(self):
         if self.dialog_active: raise TypeError
-        self.progressDialog.create(self.heading, self.message, ' ', ' ') # Workaround for Kodi Leia
-        # self.progressDialog.create(self.heading, self.message) # Code for Matrix and up.
+        if kodi_running_version >= KODI_VERSION_MATRIX:
+            self.progressDialog.create(self.heading, self.message)
+        else:
+            self.progressDialog.create(self.heading, self.message, ' ', ' ')
         self.progressDialog.update(self.progress)
         self.dialog_active = True
 

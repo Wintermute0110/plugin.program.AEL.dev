@@ -52,7 +52,7 @@ ADDON_SHORT_NAME = 'AEL'
 # pprint = True function parameter overrides option OPTION_COMPACT_JSON.
 # More compact JSON files (less blanks) load faster because file size is smaller.
 JSON_INDENT = 1
-JSON_SEP = (',', ':')
+JSON_SEP = (', ', ': ')
 
 # An integer number incremented whenever there is a change in the ROM storage format.
 # This enables easy migrations, at least in theory.
