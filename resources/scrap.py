@@ -2759,6 +2759,8 @@ class MobyGames(Scraper):
         ASSET_BOXFRONT_ID,
         ASSET_BOXBACK_ID,
         ASSET_CARTRIDGE_ID,
+        ASSET_FLYER_ID,
+        ASSET_MAP_ID,
     ]
     asset_name_mapping = {
         'front cover'   : ASSET_BOXFRONT_ID,
@@ -2767,11 +2769,12 @@ class MobyGames(Scraper):
         'manual'        : None,
         'spine/sides'   : None,
         'other'         : None,
-        'advertisement' : None,
+        'advertisement' : ASSET_FLYER_ID,
         'extras'        : None,
-        'inside cover'  : None,
-        'full cover'    : None,
+        'inside cover'  : ASSET_BOXBACK_ID,
+        'full cover'    : ASSET_BOXFRONT_ID,
         'soundtrack'    : None,
+        'map'           : ASSET_MAP_ID,
     }
     # This allows to change the API version easily.
     URL_games     = 'https://api.mobygames.com/v1/games'
@@ -3070,8 +3073,8 @@ class MobyGames(Scraper):
         for group_data in json_data['cover_groups']:
             country_names = ' / '.join(group_data['countries'])
             for image_data in group_data['covers']:
-                asset_name = '{} - {} ({})'.format(
-                    image_data['scan_of'], image_data['description'], country_names)
+                asset_name = '{} - {} ({})'.format(image_data['scan_of'],
+                    image_data['description'], country_names)
                 asset_ID = MobyGames.asset_name_mapping[image_data['scan_of'].lower()]
 
                 # url_thumb is mandatory.
