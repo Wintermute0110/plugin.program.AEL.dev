@@ -360,30 +360,37 @@ class CategoryRepository(object):
 
     def delete_category(self, category_id: str):
         logger.info("CategoryRepository.delete_category(): Deleting category '{}'".format(category_id))
-        self._uow.execute(QUERY_DELETE_CATEGORY)
+        self._uow.execute(QUERY_DELETE_CATEGORY, category_id)
         
 #
 # ROMSetRepository -> ROM Sets from SQLite DB
 #
+QUERY_SELECT_ROMSET               = "SELECT * FROM vw_romsets WHERE id = ?"
 QUERY_SELECT_ROMSETS              = "SELECT * FROM vw_romsets"
 QUERY_SELECT_ROOT_ROMSETS         = "SELECT * FROM vw_romsets WHERE parent_id IS NULL"
 QUERY_SELECT_ROMSETS_BY_PARENT    = "SELECT * FROM vw_romsets WHERE parent_id = ?"
 QUERY_INSERT_ROMSET               = """
                                     INSERT INTO romsets (
-                                            id,name,parent_id,metadata_id,platform, 
+                                            id,name,parent_id,metadata_id,platform,box_size, 
                                             default_icon,default_fanart,default_banner,default_poster,default_controller,default_clearlogo
-                                        ) VALUES (?,?,?,?,?,?,?,?,?,?,?)
+                                        ) VALUES (?,?,?,?,?,?,?,?,?,?,?,?)
                                     """
-QUERY_UPDATE_ROMSET               = "UPDATE romsets SET name=?,platform=? WHERE id =?"
+QUERY_UPDATE_ROMSET               = "UPDATE romsets SET name=?,platform=?,box_size=? WHERE id =?"
 QUERY_INSERT_ROMSET_ASSET         = "INSERT INTO romset_assets (romset_id, asset_id) VALUES (?, ?)"
 QUERY_INSERT_ROMSET_ASSET_PATH    = "INSERT INTO romset_assetspaths (romset_id, assetspaths_id) VALUES (?, ?)"
 QUERY_INSERT_ROMSET_LAUNCHER      = "INSERT INTO romset_launchers (romset_id, ael_addon_id, args, is_default) VALUES (?,?,?,?)"
 QUERY_DELETE_ROMSET_LAUNCHERS     = "DELETE FROM romset_launchers WHERE romset_id = ?"
+QUERY_DELETE_ROMSET               = "DELETE FROM romset WHERE id = ?"
 
 class ROMSetRepository(object):
 
     def __init__(self, uow: UnitOfWork):
         self._uow = uow
+
+    def find_romset(self, romset_id: str) -> ROMSet:
+        self._uow.execute(QUERY_SELECT_ROMSET, romset_id)
+        romset_data = self._uow.single_result()
+        return ROMSet(romset_data)
 
     def find_all_romsets(self) -> typing.Iterator[ROMSet]:
         self._uow.execute(QUERY_SELECT_ROMSETS)
@@ -424,6 +431,7 @@ class ROMSetRepository(object):
             parent_obj.get_id() if parent_obj is not None else None,
             metadata_id,
             romset_obj.get_platform(),
+            romset_obj.get_box_sizing(),    
             romset_obj.get_mapped_asset_info(asset_id=ASSET_ICON_ID).key,
             romset_obj.get_mapped_asset_info(asset_id=ASSET_FANART_ID).key,
             romset_obj.get_mapped_asset_info(asset_id=ASSET_BANNER_ID).key,
@@ -461,6 +469,7 @@ class ROMSetRepository(object):
         self._uow.execute(QUERY_UPDATE_ROMSET,
             romset_obj.get_name(),
             romset_obj.get_platform(),
+            romset_obj.get_box_sizing(),
             romset_obj.get_id())
          
         self._uow.execute(QUERY_DELETE_ROMSET_LAUNCHERS, romset_obj.get_id())
@@ -468,6 +477,10 @@ class ROMSetRepository(object):
         for romset_launcher in romset_launchers:
             self._uow.execute(QUERY_INSERT_ROMSET_LAUNCHER,
                 romset_obj.get_id(), romset_launcher.addon.get_id(), romset_launcher.get_arguments(), romset_launcher.is_default)
+
+    def delete_romset(self, romset_id: str):
+        logger.info("ROMSetRepository.delete_romset(): Deleting romset '{}'".format(romset_id))
+        self._uow.execute(QUERY_DELETE_ROMSET, romset_id)
                    
 #
 # AelAddonRepository -> AEL Adoon objects from SQLite DB

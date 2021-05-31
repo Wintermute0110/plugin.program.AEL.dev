@@ -16,7 +16,7 @@
 # --- Python standard library ---
 from __future__ import unicode_literals
 
-from resources.constants import *
+from resources.lib.constants import *
 
 # -------------------------------------------------------------------------------------------------
 # New platform engine

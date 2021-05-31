@@ -83,7 +83,7 @@ def cmd_edit_category(args):
         return
 
     # >> Execute subcommand. May be atomic, maybe a submenu.
-    logger.debug('EDIT_CATEGORY_MENU: cmd_edit_category() Selected {}'.format(selected_option))
+    logger.debug('EDIT_CATEGORY: cmd_edit_category() Selected {}'.format(selected_option))
     kodi.event(method=selected_option, data=args)
     
 # --- Submenu command ---    
@@ -138,7 +138,8 @@ def cmd_category_edit_assets(args):
         
         selected_asset_to_edit = editors.edit_object_assets(category, preselected_option)
         if selected_asset_to_edit is None:
-            kodi.event(method='EDIT_CATEGORY_MENU', data=args)
+            kodi.event(method='EDIT_CATEGORY', data=args)
+            return
         
         asset = g_assetFactory.get_asset_info(selected_asset_to_edit)
         #if selected_asset_to_edit == editors.SCRAPE_CMD:
@@ -159,8 +160,25 @@ def cmd_category_edit_assets(args):
 
 @AppMediator.register('CATEGORY_EDIT_DEFAULT_ASSETS')
 def cmd_category_edit_default_assets(args):
+    category_id = args['category_id'] if 'category_id' in args else None
+    preselected_option = args['selected_asset'] if 'selected_asset' in args else None
     
-    m_gui_edit_object_default_assets(category)
+    uow = UnitOfWork(globals.g_PATHS.DATABASE_FILE_PATH)
+    with uow:
+        repository = CategoryRepository(uow)
+        category = repository.find_category(category_id)
+        
+        selected_asset_to_edit = editors.edit_object_default_assets(category, preselected_option)
+        if selected_asset_to_edit is None:
+            kodi.event(method='EDIT_CATEGORY', data=args)
+            return
+
+        if editors.edit_default_asset(category, selected_asset_to_edit):
+            repository.update_category(category)
+            uow.commit()
+            kodi.event(method='RENDER_VIEW', data={'category_id': category.get_id()})
+            kodi.event(method='RENDER_VIEW', data={'category_id': category.get_parent_id()})   
+            kodi.event(method='CATEGORY_EDIT_DEFAULT_ASSETS', data={'category_id': category_id, 'selected_asset': selected_asset_to_edit.id})         
 
 @AppMediator.register('CATEGORY_STATUS')
 def cmd_category_status(args):

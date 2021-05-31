@@ -60,6 +60,22 @@ def cmd_render_view_data(args):
     kodi.notify('Selected views rendered')
     kodi.refresh_container()
 
+@AppMediator.register('RENDER_ROMSET_VIEW')
+def cmd_render_romset_view_data(args):
+    kodi.notify('Rendering romset views')
+    romset_id = args['romset_id'] if 'romset_id' in args else None
+    
+    uow = UnitOfWork(globals.g_PATHS.DATABASE_FILE_PATH)
+    with uow:
+        romsets_repository = ROMSetRepository(uow)
+        views_repository   = ViewRepository(globals.g_PATHS, globals.router)
+             
+        romset = romsets_repository.find_romset(romset_id)
+        #_render_romset_view(romset, romsets_repository, views_repository)
+    
+    kodi.notify('Selected views rendered')
+    kodi.refresh_container()
+
 @AppMediator.register('CLEANUP_VIEWS')
 def cmd_cleanup_views(args):    
     uow = UnitOfWork(globals.g_PATHS.DATABASE_FILE_PATH)

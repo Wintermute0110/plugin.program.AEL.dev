@@ -506,12 +506,12 @@ class Category(MetaDataItemABC):
         str_list.append(text.XML_line('rating', self.get_rating()))
         str_list.append(text.XML_line('plot', self.get_plot()))
         str_list.append(text.XML_line('Asset_Prefix', self.get_custom_attribute('Asset_Prefix')))
-        str_list.append(text.XML_line('s_icon', self['s_icon']))
-        str_list.append(text.XML_line('s_fanart', self['s_fanart']))
-        str_list.append(text.XML_line('s_banner', self['s_banner']))
-        str_list.append(text.XML_line('s_poster', self['s_poster']))
-        str_list.append(text.XML_line('s_clearlogo', self.get_asset_()))
-        str_list.append(text.XML_line('s_trailer', self.get_trailer()))
+        str_list.append(text.XML_line('s_icon', self.get_asset_str(asset_id=ASSET_ICON_ID)))
+        str_list.append(text.XML_line('s_fanart', self.get_asset_str(asset_id=ASSET_FANART_ID)))
+        str_list.append(text.XML_line('s_banner', self.get_asset_str(asset_id=ASSET_BANNER_ID)))
+        str_list.append(text.XML_line('s_poster', self.get_asset_str(asset_id=ASSET_POSTER_ID)))
+        str_list.append(text.XML_line('s_controller', self.get_asset_str(asset_id=ASSET_CONTROLLER_ID)))
+        str_list.append(text.XML_line('s_clearlogo', self.get_asset_str(asset_id=ASSET_CLEARLOGO_ID)))
         str_list.append('</category>\n')
         str_list.append('</advanced_emulator_launcher_configuration>\n')
         
@@ -549,10 +549,6 @@ class VirtualCategory(MetaDataItemABC):
 
     def is_virtual(self): return True
 
-    def save_to_disk(self): pass
-
-    def delete_from_disk(self): pass
-
 class ROMSetLauncher(object):
     
     def __init__(self, addon: AelAddon, args: dict, is_default: bool):
@@ -575,9 +571,51 @@ class ROMSet(MetaDataItemABC):
 
     def set_platform(self, platform): self.entity_data['platform'] = platform
 
+    def get_box_sizing(self):
+        return self.entity_data['box_size'] if 'box_size' in self.entity_data else BOX_SIZE_POSTER
+    
+    def set_box_sizing(self, box_size): self.entity_data['box_size'] = box_size
+
     def get_assets_kind(self): return KIND_ASSET_LAUNCHER
 
     def get_asset_ids_list(self): return LAUNCHER_ASSET_ID_LIST
+
+    def get_asset_path(self, asset_info: AssetInfo) -> io.FileName:
+        if not asset_info: return None
+        return self._get_value_as_filename(asset_info.path_key)
+
+    def get_ROM_mappable_asset_list(self):
+        MAPPABLE_ASSETS = [ASSET_ICON_ID, ASSET_FANART_ID, ASSET_BANNER_ID, ASSET_CLEARLOGO_ID, ASSET_POSTER_ID]
+        return g_assetFactory.get_asset_list_by_IDs(MAPPABLE_ASSETS)
+
+    #
+    # Gets the actual assetinfo object that is mapped for
+    # the given (ROM) assetinfo for this particular MetaDataItem.
+    #
+    def get_mapped_ROM_asset_info(self, asset_info=None, asset_id=None) -> AssetInfo:
+        if asset_info is None and asset_id is None: return None
+        if asset_id is not None: asset_info = g_assetFactory.get_asset_info(asset_id)
+        
+        mapped_key = self.get_mapped_ROM_asset_key(asset_info)
+        mapped_asset_info = g_assetFactory.get_asset_info_by_key(mapped_key)
+        return mapped_asset_info
+
+    #
+    # Gets the database filename mapped for asset_info.
+    # Note that the mapped asset uses diferent fields wheter it is a Category/Launcher/ROM
+    #
+    def get_mapped_ROM_asset_key(self, asset_info: AssetInfo) -> str:
+        if asset_info.rom_default_key is '':
+            logger.error('Requested mapping for AssetInfo without default key. Type {}'.format(asset_info.id))
+            raise AddonError('Not supported asset type used. This might be a bug!')  
+            
+        return self.entity_data[asset_info.rom_default_key]
+
+    def set_mapped_ROM_asset_key(self, asset_info: AssetInfo, mapped_to_info: AssetInfo):
+        self.entity_data[asset_info.rom_default_key] = mapped_to_info.key
+
+    def num_roms(self) -> int:
+        return self.entity_data['num_roms'] if 'num_roms' in self.entity_data else 0
 
     def add_launcher(self, addon: AelAddon, args: dict, is_default: bool = False):
         launcher = next((l for l in self.launchers_data if l.addon.get_id() == addon.get_id()), None)
@@ -595,6 +633,109 @@ class ROMSet(MetaDataItemABC):
     def get_launchers_data(self) -> typing.List[ROMSetLauncher]:
         return self.launchers_data
 
+    def get_NFO_name(self) -> io.FileName:
+        nfo_dir = io.FileName(settings.getSetting('launchers_asset_dir'), isdir = True)
+        nfo_file_path = nfo_dir.pjoin(self.get_name() + '.nfo')
+        logger.debug("ROMSet.get_NFO_name() nfo_file_path = '{0}'".format(nfo_file_path.getPath()))
+        return nfo_file_path
+
+    # ---------------------------------------------------------------------------------------------
+    # NFO files for metadata
+    # ---------------------------------------------------------------------------------------------
+    #
+    # Python data model: lists and dictionaries are mutable. It means the can be changed if passed as
+    # parameters of functions. However, items can not be replaced by new objects!
+    # Notably, numbers, strings and tuples are immutable. Dictionaries and lists are mutable.
+    #
+    # See http://stackoverflow.com/questions/986006/how-do-i-pass-a-variable-by-reference
+    # See https://docs.python.org/2/reference/datamodel.html
+    #
+    # Function asumes that the NFO file already exists.
+    #
+    def import_NFO_file(self, nfo_FileName: io.FileName) -> bool:
+        # --- Get NFO file name ---
+        logger.debug('ROMSet.import_NFO_file() Importing launcher NFO "{0}"'.format(nfo_FileName.getPath()))
+
+        # --- Import data ---
+        if nfo_FileName.exists():
+            try:
+                item_nfo = nfo_FileName.loadFileToStr()
+                item_nfo = item_nfo.replace('\r', '').replace('\n', '')
+            except:
+                kodi.notify_warn('Exception reading NFO file {0}'.format(nfo_FileName.getPath()))
+                logger.error("ROMSet.import_NFO_file() Exception reading NFO file '{0}'".format(nfo_FileName.getPath()))
+                return False
+        else:
+            kodi.notify_warn('NFO file not found {0}'.format(nfo_FileName.getBase()))
+            logger.error("ROMSet.import_NFO_file() NFO file not found '{0}'".format(nfo_FileName.getPath()))
+            return False
+
+        item_year      = re.findall('<year>(.*?)</year>',           item_nfo)
+        item_genre     = re.findall('<genre>(.*?)</genre>',         item_nfo)
+        item_developer = re.findall('<developer>(.*?)</developer>', item_nfo)
+        item_rating    = re.findall('<rating>(.*?)</rating>',       item_nfo)
+        item_plot      = re.findall('<plot>(.*?)</plot>',           item_nfo)
+
+        # >> Careful about object mutability! This should modify the dictionary
+        # >> passed as argument outside this function.
+        if len(item_year) > 0:      self.set_releaseyear(text.unescape_XML(item_year[0]))
+        if len(item_genre) > 0:     self.set_genre(text.unescape_XML(item_genre[0]))
+        if len(item_developer) > 0: self.set_developer(text.unescape_XML(item_developer[0]))
+        if len(item_rating) > 0:    self.set_rating(text.unescape_XML(item_rating[0]))
+        if len(item_plot) > 0:      self.set_plot(text.unescape_XML(item_plot[0]))
+
+        logger.debug("ROMSet.import_NFO_file() Imported '{0}'".format(nfo_FileName.getPath()))
+
+        return True
+    
+    def export_to_NFO_file(self, nfo_FileName: io.FileName):
+        # --- Get NFO file name ---
+        logger.debug('ROMSet.export_to_NFO_file() Exporting launcher NFO "{0}"'.format(nfo_FileName.getPath()))
+
+        # If NFO file does not exist then create them. If it exists, overwrite.
+        nfo_content = []
+        nfo_content.append('<?xml version="1.0" encoding="utf-8" standalone="yes"?>\n')
+        nfo_content.append('<!-- Exported by AEL on {0} -->\n'.format(time.strftime("%Y-%m-%d %H:%M:%S")))
+        nfo_content.append('<romset>\n')
+        nfo_content.append(text.XML_line('year',      self.get_releaseyear()))
+        nfo_content.append(text.XML_line('genre',     self.get_genre())) 
+        nfo_content.append(text.XML_line('developer', self.get_developer()))
+        nfo_content.append(text.XML_line('rating',    self.get_rating()))
+        nfo_content.append(text.XML_line('plot',      self.get_plot()))
+        
+        nfo_content.append('</romset>\n')
+        full_string = ''.join(nfo_content)
+        nfo_FileName.writeAll(full_string)
+            
+    def export_to_file(self, file: io.FileName):
+        logger.debug('ROMSet.export_to_file() ROMSet "{0}" (ID "{1}")'.format(self.get_name(), self.get_id()))
+
+        # --- Create list of strings ---
+        str_list = []
+        str_list.append('<?xml version="1.0" encoding="utf-8" standalone="yes"?>\n')
+        str_list.append('<!-- Exported by AEL on {0} -->\n'.format(time.strftime("%Y-%m-%d %H:%M:%S")))
+        str_list.append('<advanced_emulator_launcher_configuration>\n')
+        str_list.append('<romset>\n')
+        str_list.append(text.XML_line('name', self.get_name()))
+        str_list.append(text.XML_line('year', self.get_releaseyear()))
+        str_list.append(text.XML_line('genre', self.get_genre()))
+        str_list.append(text.XML_line('developer', self.get_developer()))
+        str_list.append(text.XML_line('rating', self.get_rating()))
+        str_list.append(text.XML_line('plot', self.get_plot()))
+        #str_list.append(text.XML_line('Asset_Prefix', self.get_custom_attribute('Asset_Prefix')))
+        str_list.append(text.XML_line('s_icon', self.get_asset_str(asset_id=ASSET_ICON_ID)))
+        str_list.append(text.XML_line('s_fanart', self.get_asset_str(asset_id=ASSET_FANART_ID)))
+        str_list.append(text.XML_line('s_banner', self.get_asset_str(asset_id=ASSET_BANNER_ID)))
+        str_list.append(text.XML_line('s_poster', self.get_asset_str(asset_id=ASSET_POSTER_ID)))
+        str_list.append(text.XML_line('s_controller', self.get_asset_str(asset_id=ASSET_CONTROLLER_ID)))
+        str_list.append(text.XML_line('s_clearlogo', self.get_asset_str(asset_id=ASSET_CLEARLOGO_ID)))
+        str_list.append(text.XML_line('s_trailer', self.get_trailer()))
+        str_list.append('</romset>\n')
+        str_list.append('</advanced_emulator_launcher_configuration>\n')
+        
+        full_string = ''.join(str_list)
+        file.writeAll(full_string)
+            
     def __str__(self):
         return super().__str__()
     
@@ -2311,7 +2452,7 @@ class AssetInfoFactory(object):
     # -------------------------------------------------------------------------------------------------
     # Asset functions
     # -------------------------------------------------------------------------------------------------
-    def get_all(self):
+    def get_all(self) -> typing.List[AssetInfo]:
         return list(self.ASSET_INFO_ID_DICT.values())
 
     def get_asset_info(self, asset_ID):
@@ -2430,7 +2571,7 @@ class AssetInfoFactory(object):
         elif asset_ID == ASSET_MAP_ID:        asset_path_noext_FN = AssetPath.pjoin(asset_base_noext + objectID_str + '_map')
         elif asset_ID == ASSET_MANUAL_ID:     asset_path_noext_FN = AssetPath.pjoin(asset_base_noext + objectID_str + '_manual')
         else:
-            asset_path_noext_FN = FileName('')
+            asset_path_noext_FN = io.FileName('')
             logger.error('assets_get_path_noext_SUFIX() Wrong asset_ID = {0}'.format(asset_ID))
 
         return asset_path_noext_FN
