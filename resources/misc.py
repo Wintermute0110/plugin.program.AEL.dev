@@ -429,12 +429,6 @@ def text_unescape_and_untag_HTML(s):
 
     return s
 
-def text_dump_str_to_file(filename, full_string):
-    log_debug('Dumping file "{}"'.format(filename))
-    file_obj = open(filename, 'w')
-    file_obj.write(full_string.encode('utf-8'))
-    file_obj.close()
-
 # -------------------------------------------------------------------------------------------------
 # ROM name cleaning and formatting
 # -------------------------------------------------------------------------------------------------

@@ -1465,12 +1465,12 @@ class Scraper(object):
             json_str = json.dumps(data_dic, indent = 4, separators = (', ', ' : '))
         else:
             json_str = json.dumps(data_dic)
-        text_dump_str_to_file(file_path, json_str)
+        self._write_str_to_file(file_path, json_str)
 
     def _dump_file_debug(self, file_name, page_data):
         if not self.dump_file_flag: return
         file_path = os.path.join(self.dump_dir, file_name)
-        text_dump_str_to_file(file_path, page_data)
+        self._write_str_to_file(file_path, page_data)
 
     @abc.abstractmethod
     def get_name(self): pass
@@ -4149,9 +4149,9 @@ class ScreenScraper(Scraper):
             log_error('Error decoding JSON data from ScreenScraper (Try 2).')
             log_error('Cannot decode JSON (invalid JSON returned). Dumping debug files...')
             file_path = os.path.join(self.scraper_cache_dir, 'ScreenScraper_url.txt')
-            text_dump_str_to_file(file_path, url)
+            self._write_str_to_file(file_path, url)
             file_path = os.path.join(self.scraper_cache_dir, 'ScreenScraper_page_data_raw.txt')
-            text_dump_str_to_file(file_path, page_data_raw)
+            self._write_str_to_file(file_path, page_data_raw)
             self._handle_exception(ex, st_dic,
                 'Error decoding JSON data from ScreenScraper (fixed version).')
             return None
