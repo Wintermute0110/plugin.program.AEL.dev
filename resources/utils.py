@@ -1066,9 +1066,6 @@ def kodi_get_Kodi_major_version():
     r_dic = kodi_jsonrpc_dict('Application.GetProperties', {'properties' : ['version']})
     return int(r_dic['version']['major'])
 
-# Execute the Kodi version query when module is loaded and store results in global variable.
-kodi_running_version = kodi_get_Kodi_major_version()
-
 # -------------------------------------------------------------------------------------------------
 # If running with Kodi Python interpreter use Kodi proper functions.
 # If running with the standard Python interpreter use replacement functions.
@@ -1080,11 +1077,18 @@ if KODI_RUNTIME_AVAILABLE_UTILS:
     log_info    = log_info_KR
     log_warning = log_warning_KR
     log_error   = log_error_KR
+
+    # Execute the Kodi version query when module is loaded and store results in global variable.
+    kodi_running_version = kodi_get_Kodi_major_version()
 else:
     log_debug   = log_debug_Python
     log_info    = log_info_Python
     log_warning = log_warning_Python
     log_error   = log_error_Python
+
+    # We are using this module with the Python interpreter outside Kodi.
+    # Simulate we are running a recent Kodi version.
+    kodi_running_version = KODI_VERSION_MATRIX
 
 # -------------------------------------------------------------------------------------------------
 # Kodi useful definition

@@ -732,8 +732,13 @@ def misc_identify_image_id_by_ext(asset_fname):
     for img_id in IMAGE_EXTENSIONS:
         for img_ext in IMAGE_EXTENSIONS[img_id]:
             if asset_ext.lower() == img_ext: return img_id
-
     return IMAGE_UKNOWN_ID
+
+# Remove initial and trailing quotation characters " or '
+def misc_strip_quotes(my_str):
+    my_str = my_str[1:] if my_str[0] == '"' or my_str[0] == "'" else my_str
+    my_str = my_str[:-1] if my_str[-1] == '"' or my_str[-1] == "'" else my_str
+    return my_str
 
 # All version numbers must be less than 100, except the major version.
 # AML version is like this: aa.bb.cc[-|~][alpha[dd]|beta[dd]]

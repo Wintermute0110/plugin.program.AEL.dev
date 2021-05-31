@@ -8187,7 +8187,6 @@ class Main:
         log_debug('_run_process() arg_list  = {}'.format(arg_list))
         log_debug('_run_process() exec_list = {}'.format(exec_list))
 
-        # --- Windoze ---
         # NOTE subprocess24_hack.py was hacked to always set CreateProcess() bInheritHandles to 0.
         # bInheritHandles [in] If this parameter TRUE, each inheritable handle in the calling
         # process is inherited by the new process. If the parameter is FALSE, the handles are not
@@ -8203,31 +8202,33 @@ class Main:
         # If I keep old launcher behavior in Windows (close_fds = True) then program output cannot
         # be redirected to a file.
         #
-        if sys.platform == 'win32':
+        if is_windows():
             app_ext = application.split('.')[-1]
+            # Remove initial and trailing quotes to avoid double quotation.
+            application = misc_strip_quotes(application)
+            arguments = misc_strip_quotes(arguments)
             log_debug('_run_process() (Windows) application = "{}"'.format(application))
             log_debug('_run_process() (Windows) arguments   = "{}"'.format(arguments))
             log_debug('_run_process() (Windows) apppath     = "{}"'.format(apppath))
             log_debug('_run_process() (Windows) romext      = "{}"'.format(romext))
             log_debug('_run_process() (Windows) app_ext     = "{}"'.format(app_ext))
+
             # Standalone launcher where application is a LNK file
             if app_ext == 'lnk' or app_ext == 'LNK':
                 log_debug('_run_process() (Windows) Launching LNK application')
-                # os.system('start "AEL" /b "{}"'.format(application).encode('utf-8'))
                 retcode = subprocess.call('start "AEL" /b "{}"'.format(application).encode('utf-8'), shell = True)
                 log_info('_run_process() (Windows) LNK app retcode = {}'.format(retcode))
 
             # ROM launcher where ROMs are LNK files
             elif romext == 'lnk' or romext == 'LNK':
                 log_debug('_run_process() (Windows) Launching LNK ROM')
-                # os.system('start "AEL" /b "{}"'.format(arguments).encode('utf-8'))
                 retcode = subprocess.call('start "AEL" /b "{}"'.format(arguments).encode('utf-8'), shell = True)
                 log_info('_run_process() (Windows) LNK ROM retcode = {}'.format(retcode))
 
             # CMD/BAT files in Windows
             elif app_ext == 'bat' or app_ext == 'BAT' or app_ext == 'cmd' or app_ext == 'CMD':
-                # --- Workaround to run UNC paths in Windows ---
-                # >> Retroarch now support ROMs in UNC paths (Samba remotes)
+                # Workaround to run UNC paths in Windows.
+                # Retroarch now support ROMs in UNC paths (Samba remotes)
                 new_exec_list = list(exec_list)
                 for i, _ in enumerate(exec_list):
                     if exec_list[i][0] == '\\':
@@ -8246,6 +8247,7 @@ class Main:
                 retcode = subprocess.call(exec_list, cwd = apppath.encode('utf-8'), close_fds = True, startupinfo = info)
                 log_info('_run_process() (Windows) Process BAR retcode = {}'.format(retcode))
 
+            # Normal Windows application.
             else:
                 # --- Workaround to run UNC paths in Windows ---
                 # Retroarch now support ROMs in UNC paths (Samba remotes)
@@ -8284,18 +8286,16 @@ class Main:
                     raise Exception('Logical error')
                 log_info('_run_process() (Windows) Process retcode = {}'.format(retcode))
 
-        # --- Android ---
         elif is_android():
             retcode = os.system("{} {}".format(application, arguments).encode('utf-8'))
             log_info('_run_process() Process retcode = {}'.format(retcode))
 
-        # --- Linux ---
         # New in 0.9.7: always close all file descriptions except 0, 1 and 2 on the child
         # process. This is to avoid Kodi opens sockets be inherited by the child process. A
         # wrapper script may terminate Kodi using JSON RPC and if file descriptors are not
         # closed Kodi will complain that the remote interfacte cannot be initialised. I believe
         # the cause is that the socket is kept open by the wrapper script.
-        elif sys.platform.startswith('linux'):
+        elif is_linux():
             # Old way of launching child process. os.system() is deprecated and should not
             # be used anymore.
             # os.system('"{}" {}'.format(application, arguments).encode('utf-8'))
@@ -8313,8 +8313,7 @@ class Main:
                 log_info('_run_process() Process retcode = {}'.format(retcode))
                 if self.settings['lirc_state']: xbmc.executebuiltin('LIRC.start')
 
-        # OS X
-        elif sys.platform.startswith('darwin'):
+        elif is_osx():
             # Old way
             # os.system('"{}" {}'.format(application, arguments).encode('utf-8'))
 
@@ -8324,7 +8323,7 @@ class Main:
             log_info('_run_process() Process retcode = {}'.format(retcode))
 
         else:
-            kodi_notify_warn('Cannot determine the running platform')
+            kodi_notify_warn('Cannot determine the running platform.')
 
     # These two functions do things like stopping music before lunch, toggling full screen, etc.
     # Variables set in this function:

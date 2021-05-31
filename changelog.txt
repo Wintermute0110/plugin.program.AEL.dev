@@ -177,7 +177,7 @@ FIX      Fix TheGamesDB scraper. New asset titlescreen in TheGamesDB.
          See https://forums.thegamesdb.net/viewtopic.php?f=5&t=1947
          See https://github.com/Wintermute0110/plugin.program.AEL/issues/127
 
-WIP FIX  Fix launching of LNK ROM launchers with spaces in LNK filename.
+WIP      Fix launching of LNK ROM launchers with spaces in LNK filename.
          See https://github.com/Wintermute0110/plugin.program.AEL/issues/125
 
 WIP FIX  Fix launching of ROMs with Windows network filenames.
