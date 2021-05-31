@@ -47,7 +47,7 @@ else:
 # --- Scraper use cases ---------------------------------------------------------------------------
 # THIS DOCUMENTATION IS OBSOLETE, IT MUST BE UPDATED TO INCLUDE THE SCRAPER DISK CACHE.
 #
-# The ScraperFactory class is resposible to create a ScraperStrategy object according to the
+# The ScraperFactory class is responsible to create a ScraperStrategy object according to the
 # addon settings and to keep a cached dictionary of Scraper objects.
 #
 # The actual scraping is done by the ScraperStrategy object, which has the logic to download
@@ -4149,11 +4149,19 @@ class ScreenScraper(Scraper):
             return None
 
     # All ScreenScraper URLs must have this arguments.
+    # In Python 3 base64.b64decode() returns bytes! https://docs.python.org/3/library/base64.html
     def _get_common_SS_URL(self):
-        url_SS = '?devid={}&devpassword={}&softname={}&output=json&ssid={}&sspassword={}'.format(
-            base64.b64decode(self.dev_id), base64.b64decode(self.dev_pass),
-            self.softname, self.ssid, self.sspassword)
-
+        t = '?devid={}&devpassword={}&softname={}&output=json&ssid={}&sspassword={}'
+        if ADDON_RUNNING_PYTHON_2:
+            url_SS = t.format(base64.b64decode(self.dev_id),
+                base64.b64decode(self.dev_pass), self.softname,
+                self.ssid, self.sspassword)
+        elif ADDON_RUNNING_PYTHON_3:
+            url_SS = t.format(base64.b64decode(self.dev_id).decode('utf-8'),
+                base64.b64decode(self.dev_pass).decode('utf-8'),
+                self.softname, self.ssid, self.sspassword)
+        else:
+            raise TypeError('Undefined Python runtime version.')
         return url_SS
 
     # If less than TIME_WAIT_GET_ASSETS seconds have passed since the last call
