@@ -425,12 +425,6 @@ def text_unescape_and_untag_HTML(s):
 
     return s
 
-def text_dump_str_to_file(filename, full_string):
-    log_debug('Dumping file "{}"'.format(filename))
-    file_obj = open(filename, 'w')
-    file_obj.write(full_string.encode('utf-8'))
-    file_obj.close()
-
 # -------------------------------------------------------------------------------------------------
 # ROM name cleaning and formatting
 # -------------------------------------------------------------------------------------------------
@@ -496,6 +490,8 @@ def text_get_URL_extension(url):
         path = urlparse.urlparse(url).path
     elif ADDON_RUNNING_PYTHON_3:
         path = urllib.parse.urlparse(url).path
+    else:
+        raise TypeError('Undefined Python runtime version.')
     ext = os.path.splitext(path)[1]
     if ext[0] == '.': ext = ext[1:] # Remove initial dot
     return ext
@@ -506,6 +502,8 @@ def text_get_image_URL_extension(url):
         path = urlparse.urlparse(url).path
     elif ADDON_RUNNING_PYTHON_3:
         path = urllib.parse.urlparse(url).path
+    else:
+        raise TypeError('Undefined Python runtime version.')
     ext = os.path.splitext(path)[1]
     if ext[0] == '.': ext = ext[1:] # Remove initial dot
     ret = 'jpg' if ext == '' else ext
@@ -520,7 +518,12 @@ def text_get_image_URL_extension(url):
 def misc_generate_random_SID():
     t1 = time.time()
     t2 = t1 + random.getrandbits(32)
-    base = hashlib.md5(text_type(t1 + t2).encode('utf-8'))
+    if ADDON_RUNNING_PYTHON_2:
+        base = hashlib.md5(text_type(t1 + t2))
+    elif ADDON_RUNNING_PYTHON_3:
+        base = hashlib.md5(text_type(t1 + t2).encode('utf-8'))
+    else:
+        raise TypeError('Undefined Python runtime version.')
     sid = base.hexdigest()
     return sid
 
