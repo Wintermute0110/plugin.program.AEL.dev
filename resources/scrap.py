@@ -51,7 +51,7 @@ else:
 # --- Scraper use cases ---------------------------------------------------------------------------
 # THIS DOCUMENTATION IS OBSOLETE, IT MUST BE UPDATED TO INCLUDE THE SCRAPER DISK CACHE.
 #
-# The ScraperFactory class is resposible to create a ScraperStrategy object according to the
+# The ScraperFactory class is responsible to create a ScraperStrategy object according to the
 # addon settings and to keep a cached dictionary of Scraper objects.
 #
 # The actual scraping is done by the ScraperStrategy object, which has the logic to download
@@ -169,11 +169,10 @@ class FilterROM(object):
             self.Devices_set = {i for i in Devices_list}
             self.Mechanical_set = {i for i in Mechanical_list}
 
-    def _load_JSON(self, filename):
-        log_debug('FilterROM::_load_JSON() Loading "{}"'.format(filename))
-        with open(filename) as file:
+    def _load_JSON(self, file_path):
+        log_debug('FilterROM::_load_JSON() Loading "{}"'.format(file_path))
+        with io.open(file_path, 'rt', encoding = 'utf-8') as file:
             data = json.load(file)
-
         return data
 
     # Returns True if ROM is filtered, False otherwise.
@@ -1319,7 +1318,12 @@ class ScrapeStrategy(object):
             if not keyboard.isConfirmed():
                 kodi_set_error_status(st_dic, '{} metadata unchanged'.format(object_name))
                 return
-            search_term = keyboard.getData().strip().decode('utf-8')
+            if ADDON_RUNNING_PYTHON_2:
+                search_term = keyboard.getData().strip().decode('utf-8')
+            elif ADDON_RUNNING_PYTHON_3:
+                search_term = keyboard.getData().strip()
+            else:
+                raise TypeError('Undefined Python runtime version.')
         else:
             log_debug('Scraper does not support search strings. Setting it to None.')
             search_term = None
@@ -1335,7 +1339,7 @@ class ScrapeStrategy(object):
         # that the scraper is disabled when scraping from the context menu.
         log_debug('Scraper found {} result/s'.format(len(candidate_list)))
         if not candidate_list:
-            kodi_set_error_status('Scraper found no matching games')
+            kodi_set_error_status(st_dic, 'Scraper found no matching games')
             return
 
         # --- Display corresponding game list found so user choses ---
@@ -1347,7 +1351,7 @@ class ScrapeStrategy(object):
             heading = 'Select game for ROM "{}"'.format(object_dic['m_name'])
             select_candidate_idx = KodiSelectDialog(heading, game_name_list).executeDialog()
             if select_candidate_idx is None:
-                kodi_set_error_status('{} metadata unchanged'.format(object_name))
+                kodi_set_error_status(st_dic, '{} metadata unchanged'.format(object_name))
                 return
         # log_debug('select_candidate_idx {}'.format(select_candidate_idx))
         candidate = candidate_list[select_candidate_idx]
@@ -1581,16 +1585,9 @@ class Scraper(object):
                 log_debug('Skipping {} (Clean)'.format(cache_type))
                 continue
 
-            # Get JSON data.
-            json_data = json.dumps(
-                self.disk_caches[cache_type], ensure_ascii = False, sort_keys = True,
-                indent = Scraper.JSON_indent, separators = Scraper.JSON_separators)
-
-            # Write to disk
+            # Write to disk JSON data.
             json_file_path, json_fname = self._get_scraper_file_name(cache_type, self.platform)
-            file = io.open(json_file_path, 'w', encoding = 'utf-8')
-            file.write(text_type(json_data))
-            file.close()
+            self._write_JSON(json_file_path, self.disk_caches[cache_type])
             # log_debug('Saved "{}"'.format(json_file_path))
             log_debug('Saved "<SCRAPER_CACHE_DIR>/{}"'.format(json_fname))
 
@@ -1618,16 +1615,9 @@ class Scraper(object):
                 log_debug('Skipping global {} (Clean)'.format(cache_type))
                 continue
 
-            # Get JSON data.
-            json_data = json.dumps(
-                self.global_disk_caches[cache_type], ensure_ascii = False, sort_keys = True,
-                indent = Scraper.JSON_indent, separators = Scraper.JSON_separators)
-
-            # Write to disk
+            # Write to disk JSON data.
             json_file_path, json_fname = self._get_global_file_name(cache_type)
-            file = io.open(json_file_path, 'w', encoding = 'utf-8')
-            file.write(text_type(json_data))
-            file.close()
+            self._write_JSON(json_file_path, self.global_disk_caches[cache_type])
             # log_debug('Saved global "{}"'.format(json_file_path))
             log_debug('Saved global "<SCRAPER_CACHE_DIR>/{}"'.format(json_fname))
 
@@ -1792,6 +1782,9 @@ class Scraper(object):
             json_full_path = os.path.join(self.scraper_cache_dir, json_fname).decode('utf-8')
         elif ADDON_RUNNING_PYTHON_3:
             json_full_path = os.path.join(self.scraper_cache_dir, json_fname)
+        else:
+            raise TypeError('Undefined Python runtime version.')
+
         return json_full_path, json_fname
 
     def _lazy_load_disk_cache(self, cache_type):
@@ -1805,10 +1798,7 @@ class Scraper(object):
 
         # --- Load cache if file exists ---
         if os.path.isfile(json_file_path):
-            file = open(json_file_path)
-            file_contents = file.read()
-            file.close()
-            self.disk_caches[cache_type] = json.loads(file_contents)
+            self.disk_caches[cache_type] = self._load_JSON(json_file_path)
             # log_debug('Loaded "{}"'.format(json_file_path))
             log_debug('Loaded "<SCRAPER_CACHE_DIR>/{}"'.format(json_fname))
         else:
@@ -1843,8 +1833,12 @@ class Scraper(object):
     # --- Private global disk caches -------------------------------------------------------------
     def _get_global_file_name(self, cache_type):
         json_fname = cache_type + '.json'
-        json_full_path = os.path.join(self.scraper_cache_dir, json_fname).decode('utf-8')
-
+        if ADDON_RUNNING_PYTHON_2:
+            json_full_path = os.path.join(self.scraper_cache_dir, json_fname).decode('utf-8')
+        elif ADDON_RUNNING_PYTHON_3:
+            json_full_path = os.path.join(self.scraper_cache_dir, json_fname)
+        else:
+            raise TypeError('Undefined Python runtime version.')
         return json_full_path, json_fname
 
     def _lazy_load_global_disk_cache(self, cache_type):
@@ -1858,10 +1852,7 @@ class Scraper(object):
 
         # --- Load cache if file exists ---
         if os.path.isfile(json_file_path):
-            file = open(json_file_path)
-            file_contents = file.read()
-            file.close()
-            self.global_disk_caches[cache_type] = json.loads(file_contents)
+            self.global_disk_caches[cache_type] = self._load_JSON(json_file_path)
             # log_debug('Loaded "{}"'.format(json_file_path))
             log_debug('Loaded "<SCRAPER_CACHE_DIR>/{}"'.format(json_fname))
         else:
@@ -1888,6 +1879,31 @@ class Scraper(object):
         self._lazy_load_global_disk_cache(cache_type)
         self.global_disk_caches[cache_type] = data
         self.global_disk_caches_dirty[cache_type] = True
+
+    # Scrapers have their own disk IO system.
+    # Everything is written and read in UTF-8.
+    def _load_file_to_str(self, filename):
+        # log_debug('Scraper::_load_file_to_str() Loading "{}"'.format(filename))
+        with io.open(filename, 'rt', encoding = 'utf-8') as file:
+            string = file.read()
+        return string
+
+    def _write_str_to_file(self, filename, data_str):
+        # log_debug('Scraper::_write_str_to_file() Saving "{}"'.format(filename))
+        with io.open(filename, 'wt', encoding = 'utf-8', newline = '\n') as file:
+            file.write(data_str)
+
+    def _load_JSON(self, filename):
+        # log_debug('Scraper::_load_JSON() Loading "{}"'.format(filename))
+        with io.open(filename, 'rt', encoding = 'utf-8') as file:
+            data = json.load(file)
+        return data
+
+    def _write_JSON(self, filename, data):
+        # log_debug('Scraper::_write_JSON() Loading "{}"'.format(filename))
+        with io.open(filename, 'wt', encoding = 'utf-8', newline = '\n') as file:
+            file.write(json.dumps(data, ensure_ascii = False, sort_keys = True,
+                indent = Scraper.JSON_indent, separators = Scraper.JSON_separators))
 
 # ------------------------------------------------------------------------------------------------
 # NULL scraper, does nothing.
@@ -2389,6 +2405,8 @@ class TheGamesDB(Scraper):
             search_string_encoded = urllib.quote_plus(search_term.encode('utf8'))
         elif ADDON_RUNNING_PYTHON_3:
             search_string_encoded = urllib.parse.quote_plus(search_term.encode('utf8'))
+        else:
+            raise TypeError('Undefined Python runtime version.')
         url_tail = '?apikey={}&name={}&filter[platform]={}'.format(self._get_API_key(),
             search_string_encoded, scraper_platform)
         url = TheGamesDB.URL_ByGameName + url_tail
@@ -2409,10 +2427,8 @@ class TheGamesDB(Scraper):
     def _retrieve_games_from_url(self, url, search_term, platform, scraper_platform, st_dic):
         # --- Get URL data as JSON ---
         json_data = self._retrieve_URL_as_JSON(url, st_dic)
-        # If st_dic mark an error there was an exception. Return None.
+        # If st_dic marks an error there was an exception. Return None.
         if kodi_is_error_status(st_dic): return None
-        # If no games were found st_dic['abort'] is False and json_data is None.
-        # Return empty list of candidates.
         self._dump_json_debug('TGDB_get_candidates.json', json_data)
 
         # --- Parse game list ---
@@ -2429,9 +2445,13 @@ class TheGamesDB(Scraper):
             candidate['scraper_platform'] = item['platform']
             candidate['order'] = 1
             # Increase search score based on our own search.
-            if title.lower() == search_term.lower():                  candidate['order'] += 2
-            if title.lower().find(search_term.lower()) != -1:         candidate['order'] += 1
-            if scraper_platform > 0 and platform == scraper_platform: candidate['order'] += 1
+            if title.lower() == search_term.lower():
+                candidate['order'] += 2
+            if title.lower().find(search_term.lower()) != -1:
+                candidate['order'] += 1
+            # if scraper_platform > 0 and platform == scraper_platform:
+            if scraper_platform != DEFAULT_PLAT_TGDB and platform == scraper_platform:
+                candidate['order'] += 1
             candidate_list.append(candidate)
 
         # --- Recursively load more games ---
@@ -2743,6 +2763,8 @@ class MobyGames(Scraper):
         ASSET_BOXFRONT_ID,
         ASSET_BOXBACK_ID,
         ASSET_CARTRIDGE_ID,
+        ASSET_FLYER_ID,
+        ASSET_MAP_ID,
     ]
     asset_name_mapping = {
         'front cover'   : ASSET_BOXFRONT_ID,
@@ -2751,11 +2773,12 @@ class MobyGames(Scraper):
         'manual'        : None,
         'spine/sides'   : None,
         'other'         : None,
-        'advertisement' : None,
+        'advertisement' : ASSET_FLYER_ID,
         'extras'        : None,
-        'inside cover'  : None,
-        'full cover'    : None,
+        'inside cover'  : ASSET_BOXBACK_ID,
+        'full cover'    : ASSET_BOXFRONT_ID,
         'soundtrack'    : None,
+        'map'           : ASSET_MAP_ID,
     }
     # This allows to change the API version easily.
     URL_games     = 'https://api.mobygames.com/v1/games'
@@ -2916,6 +2939,8 @@ class MobyGames(Scraper):
             search_string_encoded = urllib.quote_plus(search_term.encode('utf8'))
         elif ADDON_RUNNING_PYTHON_3:
             search_string_encoded = urllib.parse.quote_plus(search_term.encode('utf8'))
+        else:
+            raise TypeError('Undefined Python runtime version.')
         if scraper_platform == '0':
             # Unkwnon or wrong platform case.
             url_tail = '?api_key={}&format=brief&title={}'.format(self.api_key,
@@ -3052,8 +3077,8 @@ class MobyGames(Scraper):
         for group_data in json_data['cover_groups']:
             country_names = ' / '.join(group_data['countries'])
             for image_data in group_data['covers']:
-                asset_name = '{} - {} ({})'.format(
-                    image_data['scan_of'], image_data['description'], country_names)
+                asset_name = '{} - {} ({})'.format(image_data['scan_of'],
+                    image_data['description'], country_names)
                 asset_ID = MobyGames.asset_name_mapping[image_data['scan_of'].lower()]
 
                 # url_thumb is mandatory.
@@ -3669,10 +3694,11 @@ class ScreenScraper(Scraper):
         md5_str = checksums['md5']
         sha1_str = checksums['sha1']
         if ADDON_RUNNING_PYTHON_2:
-            # rom_name = urllib.quote(checksums['rom_name'])
             rom_name = urllib.quote_plus(checksums['rom_name'])
         elif ADDON_RUNNING_PYTHON_3:
             rom_name = urllib.parse.quote_plus(checksums['rom_name'])
+        else:
+            raise TypeError('Undefined Python runtime version.')
         rom_size = checksums['size']
         # log_debug('ScreenScraper._search_candidates_jeuInfos() ssid       "{}"'.format(self.ssid))
         # log_debug('ScreenScraper._search_candidates_jeuInfos() ssid       "{}"'.format('***'))
@@ -3738,6 +3764,8 @@ class ScreenScraper(Scraper):
             recherche = urllib.quote_plus(rombase_noext)
         elif ADDON_RUNNING_PYTHON_3:
             recherche = urllib.parse.quote_plus(rombase_noext)
+        else:
+            raise TypeError('Undefined Python runtime version.')
         log_debug('ScreenScraper._search_candidates_jeuRecherche() system_id  "{}"'.format(system_id))
         log_debug('ScreenScraper._search_candidates_jeuRecherche() recherche  "{}"'.format(recherche))
 
@@ -3880,22 +3908,23 @@ class ScreenScraper(Scraper):
             # Find known asset types. ScreenScraper has really a lot of different assets.
             if media_dic['type'] in ScreenScraper.asset_name_mapping:
                 asset_ID = ScreenScraper.asset_name_mapping[media_dic['type']]
+            # Skip unknwon assets
             else:
-                # Skip unknwon assets
                 continue
-
-            # Build thumb URL
             game_ID = jeu_dic['id']
             region = media_dic['region'] if 'region' in media_dic else ''
-            if region: media_type = media_dic['type'] + ' ' + region
-            else:      media_type = media_dic['type']
-            url_thumb_b = '?gameid={}&media={}&region={}'.format(game_ID, media_type, region)
-            url_thumb_c = '&hd=0&num=&version=&maxwidth=338&maxheight=190'
-            url_thumb = ScreenScraper.URL_image + url_thumb_b + url_thumb_c
+            media_type = media_dic['type'] + ' ' + region if region else media_dic['type']
+
+            # Build thumb URL
+            # FEATURE CANCELED: do not use thumbs in ScreenScraper to avoid overloading.
+            # url_thumb_b = '?gameid={}&media={}&region={}'.format(game_ID, media_type, region)
+            # url_thumb_c = '&hd=0&num=&version=&maxwidth=338&maxheight=190'
+            # url_thumb = ScreenScraper.URL_image + url_thumb_b + url_thumb_c
 
             # Build asset URL. ScreenScraper URLs are stripped down when saved to the cache
-            # to save space and time. FEATURE CANCELED. There could be problems reconstructing
-            # some URLs and the space saved is not so great for most games.
+            # to save space and JSON loading time.
+            # FEATURE CANCELED: There could be problems reconstructing some URLs and the
+            # space saved is not so great for most games.
             # systemeid = jeu_dic['systemeid']
             # media = '{}({})'.format(media_type, region)
             # url_b = '?devid={}&devpassword={}&softname={}&ssid={}&sspassword={}'.format(
@@ -3909,9 +3938,9 @@ class ScreenScraper(Scraper):
             asset_data = self._new_assetdata_dic()
             asset_data['asset_ID'] = asset_ID
             asset_data['display_name'] = media_type
-            asset_data['url_thumb'] = url_thumb
+            asset_data['url_thumb'] = 'DefaultAddonPicture.png'
             asset_data['url'] = media_dic['url']
-            # Special ScreenScraper field to resolve URL extension later.
+            # Custom ScreenScraper field to resolve URL extension later.
             asset_data['SS_format'] = media_dic['format']
             asset_list.append(asset_data)
 
@@ -4128,11 +4157,19 @@ class ScreenScraper(Scraper):
             return None
 
     # All ScreenScraper URLs must have this arguments.
+    # In Python 3 base64.b64decode() returns bytes! https://docs.python.org/3/library/base64.html
     def _get_common_SS_URL(self):
-        url_SS = '?devid={}&devpassword={}&softname={}&output=json&ssid={}&sspassword={}'.format(
-            base64.b64decode(self.dev_id), base64.b64decode(self.dev_pass),
-            self.softname, self.ssid, self.sspassword)
-
+        t = '?devid={}&devpassword={}&softname={}&output=json&ssid={}&sspassword={}'
+        if ADDON_RUNNING_PYTHON_2:
+            url_SS = t.format(base64.b64decode(self.dev_id),
+                base64.b64decode(self.dev_pass), self.softname,
+                self.ssid, self.sspassword)
+        elif ADDON_RUNNING_PYTHON_3:
+            url_SS = t.format(base64.b64decode(self.dev_id).decode('utf-8'),
+                base64.b64decode(self.dev_pass).decode('utf-8'),
+                self.softname, self.ssid, self.sspassword)
+        else:
+            raise TypeError('Undefined Python runtime version.')
         return url_SS
 
     # If less than TIME_WAIT_GET_ASSETS seconds have passed since the last call

@@ -75,12 +75,9 @@ WIP      [SCRAPERS] MAME offline scraper: include plot field. Take it from GameI
 
 NOTE     Implement these features in master branch for Python 3.
 
-WIP      Rename plugin from plugin.program.advanced.emulator.launcher to plugin.program.AEL.
-         Create version plugin.program.AEL.dev. Copy this feature from AML.
-
 WIP      [CORE] Rename the plugin from `plugin.program.advanced.emulator.launcher` to
          `plugin.program.AEL`. Create a development version `plugin.program.AEL.dev` that
-         can coexist with the stable version. See how AML does it.
+         can coexist with the stable version. Copy this feature from AML.
 
 WIP      [CORE] Massive AEL refactoring. Thanks a lot to Chrisism for the patch!
 
@@ -111,6 +108,11 @@ WIP      [CORE] New Utility "Delete ROMs redundant artwork"
          Redundant artwork is orphaned artwork. This is not easy to code specially
          for launcher with recursive scan where ROMs can be in different
          directories.
+
+WIP      [CORE] Make m_genre metadata field a list for Categories, Launchers and ROMs.
+         Support several genres as a comman separated string, for example
+         "Action, Adventure, Puzzle". See Sagrath comment here
+         https://github.com/Wintermute0110/plugin.program.AEL/issues/128
 
 WIP      [FAVOURITES] Change the way artwork is stored in Favourites, Launchers and
          Categories directories. Avoid using IDs in the artwork name unless absolutely
@@ -175,7 +177,7 @@ FIX      Fix TheGamesDB scraper. New asset titlescreen in TheGamesDB.
          See https://forums.thegamesdb.net/viewtopic.php?f=5&t=1947
          See https://github.com/Wintermute0110/plugin.program.AEL/issues/127
 
-WIP FIX  Fix launching of LNK ROM launchers with spaces in LNK filename.
+WIP      Fix launching of LNK ROM launchers with spaces in LNK filename.
          See https://github.com/Wintermute0110/plugin.program.AEL/issues/125
 
 WIP FIX  Fix launching of ROMs with Windows network filenames.

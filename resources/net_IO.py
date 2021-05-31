@@ -153,7 +153,7 @@ def net_get_URL(url, url_log = None):
             req = urllib2.Request(url)
             req.add_unredirected_header('User-Agent', USER_AGENT)
             if url_log is None: log_debug('net_get_URL() GET URL "{}"'.format(req.get_full_url()))
-            response = urllib2.urlopen(req, timeout = 120)
+            response = urllib2.urlopen(req, timeout = 120, context = ssl._create_unverified_context())
             page_bytes = response.read()
             http_code = response.getcode()
             encoding = response.headers['content-type'].split('charset=')[-1]
@@ -185,7 +185,7 @@ def net_get_URL(url, url_log = None):
             req = urllib.request.Request(url)
             req.add_unredirected_header('User-Agent', USER_AGENT)
             if url_log is None: log_debug('net_get_URL() GET URL "{}"'.format(req.get_full_url()))
-            response = urllib.request.urlopen(req, timeout = 120)
+            response = urllib.request.urlopen(req, timeout = 120, context = ssl._create_unverified_context())
             page_bytes = response.read()
             http_code = response.getcode()
             encoding = response.headers['content-type'].split('charset=')[-1]

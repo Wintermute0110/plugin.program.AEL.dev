@@ -810,21 +810,21 @@ class Main:
             if mindex2 is None: return
 
             if mindex2 == 0:
-                save_DB = _aux_edit_str(self.categories[categoryID], 'm_name', 'Category Title')
+                save_DB = aux_edit_str(self.categories[categoryID], 'm_name', 'Category Title')
                 if not save_DB: return
 
             elif mindex2 == 1:
-                save_DB = _aux_edit_str(self.categories[categoryID], 'm_year', 'Category Release Year')
+                save_DB = aux_edit_str(self.categories[categoryID], 'm_year', 'Category Release Year')
                 if not save_DB: return
 
             # --- Edition of the category genre ---
             elif mindex2 == 2:
-                save_DB = _aux_edit_str(self.categories[categoryID], 'm_genre', 'Category Genre')
+                save_DB = aux_edit_str(self.categories[categoryID], 'm_genre', 'Category Genre')
                 if not save_DB: return
 
             # --- Edition of the category developer ---
             elif mindex2 == 3:
-                save_DB = _aux_edit_str(self.categories[categoryID], 'm_developer', 'Category Developer')
+                save_DB = aux_edit_str(self.categories[categoryID], 'm_developer', 'Category Developer')
                 if not save_DB: return
 
             # --- Edition of the category rating ---
@@ -847,7 +847,7 @@ class Main:
 
             # --- Edition of the plot (description) ---
             elif mindex2 == 5:
-                save_DB = _aux_edit_str(self.categories[categoryID], 'm_plot', 'Category Plot')
+                save_DB = aux_edit_str(self.categories[categoryID], 'm_plot', 'Category Plot')
                 if not save_DB: return
 
             # --- Import category metadata from NFO file (automatic) ---
@@ -1076,9 +1076,9 @@ class Main:
         elif mindex == 5:
             launcherID_list = []
             category_name = self.categories[categoryID]['m_name']
-            for launcherID in sorted(self.launchers.iterkeys()):
-                if self.launchers[launcherID]['categoryID'] == categoryID:
-                    launcherID_list.append(launcherID)
+            for launcherID in sorted(self.launchers, key = lambda x : self.launchers[x]['m_name']):
+                if self.launchers[launcherID]['categoryID'] != categoryID: continue
+                launcherID_list.append(launcherID)
 
             if len(launcherID_list) > 0:
                 ret = kodi_dialog_yesno('Category "{}" contains {} launchers. '.format(category_name, len(launcherID_list)) +
@@ -1417,17 +1417,17 @@ class Main:
 
             # --- Edition of the launcher release date (year) ---
             elif mindex2 == 2:
-                save_DB = _aux_edit_str(self.launchers[launcherID], 'm_year', 'Launcher Release Year')
+                save_DB = aux_edit_str(self.launchers[launcherID], 'm_year', 'Launcher Release Year')
                 if not save_DB: return
 
             # --- Edition of the launcher genre ---
             elif mindex2 == 3:
-                save_DB = _aux_edit_str(self.launchers[launcherID], 'm_genre', 'Launcher Genre')
+                save_DB = aux_edit_str(self.launchers[launcherID], 'm_genre', 'Launcher Genre')
                 if not save_DB: return
 
             # --- Edition of the launcher developer ---
             elif mindex2 == 4:
-                save_DB = _aux_edit_str(self.launchers[launcherID], 'm_developer', 'Launcher Developer')
+                save_DB = aux_edit_str(self.launchers[launcherID], 'm_developer', 'Launcher Developer')
                 if not save_DB: return
 
             # --- Edition of the launcher rating ---
@@ -1450,7 +1450,7 @@ class Main:
 
             # --- Edit launcher description (plot) ---
             elif mindex2 == 6:
-                save_DB = _aux_edit_str(self.launchers[launcherID], 'm_plot', 'Launcher Plot')
+                save_DB = aux_edit_str(self.launchers[launcherID], 'm_plot', 'Launcher Plot')
                 if not save_DB: return
 
             # --- Import launcher metadata from NFO file (default location) ---
@@ -2341,8 +2341,9 @@ class Main:
                     except ValueError:
                         p_idx = 0
                     # log_debug('p_idx = "{}"'.format(p_idx))
-                    type_temp = KodiSelectDialog('Launcher display mode', LAUNCHER_DMODE_LIST, p_idx)
-                    if type_temp < 0: return
+                    type_temp = KodiSelectDialog('Launcher display mode', LAUNCHER_DMODE_LIST,
+                        p_idx).executeDialog()
+                    if type_temp is None: return
 
                     # LAUNCHER_DMODE_FLAT
                     if type_temp == 0:
@@ -2378,8 +2379,9 @@ class Main:
                     except ValueError:
                         p_idx = 0
                     # log_debug('p_idx = "{}"'.format(p_idx))
-                    type_temp = KodiSelectDialog('Launcher audit display filter', AUDIT_DMODE_LIST, p_idx)
-                    if type_temp < 0: return
+                    type_temp = KodiSelectDialog('Launcher audit display filter', AUDIT_DMODE_LIST,
+                        p_idx).executeDialog()
+                    if type_temp is None: return
                     launcher['audit_display_mode'] = AUDIT_DMODE_LIST[type_temp]
                     log_info('Launcher audit display mode changed to "{}"'.format(launcher['audit_display_mode']))
                     kodi_notify('Display ROMs changed to "{}"'.format(launcher['audit_display_mode']))
@@ -2765,22 +2767,22 @@ class Main:
 
             # --- Edit of the rom title ---
             if mindex2 == 0:
-                save_DB = _aux_edit_str(roms[romID], 'm_name', 'ROM Title')
+                save_DB = aux_edit_str(roms[romID], 'm_name', 'ROM Title')
                 if not save_DB: return
 
             # --- Edition of the rom release year ---
             elif mindex2 == 1:
-                save_DB = _aux_edit_str(roms[romID], 'm_year', 'ROM Release Year')
+                save_DB = aux_edit_str(roms[romID], 'm_year', 'ROM Release Year')
                 if not save_DB: return
 
             # --- Edition of the rom game genre ---
             elif mindex2 == 2:
-                save_DB = _aux_edit_str(roms[romID], 'm_genre', 'ROM Genre')
+                save_DB = aux_edit_str(roms[romID], 'm_genre', 'ROM Genre')
                 if not save_DB: return
 
             # --- Edition of the rom developer ---
             elif mindex2 == 3:
-                save_DB = _aux_edit_str(roms[romID], 'm_developer', 'ROM Developer')
+                save_DB = aux_edit_str(roms[romID], 'm_developer', 'ROM Developer')
                 if not save_DB: return
 
             # --- Edition of launcher NPlayers ---
@@ -2834,7 +2836,7 @@ class Main:
 
             # --- Edit ROM description (plot) ---
             elif mindex2 == 7:
-                save_DB = _aux_edit_str(roms[romID], 'm_plot', 'ROM Plot')
+                save_DB = aux_edit_str(roms[romID], 'm_plot', 'ROM Plot')
                 if not save_DB: return
 
             # --- Import ROM metadata from NFO file ---
@@ -3637,8 +3639,8 @@ class Main:
         xbmcplugin.addDirectoryItem(self.addon_handle, url_str, listitem, True)
 
     def _gui_render_virtual_category_root_row(self):
-        vcategory_name   = '[COLOR violet]Browse by ...[/COLOR]'
-        vcategory_label  = 'Browse by ...'
+        vcategory_name   = '[COLOR violet]Browse by...[/COLOR]'
+        vcategory_label  = 'Browse by...'
         vcategory_plot   = 'Browse AEL Virtual Launchers'
         vcategory_icon   = g_PATHS.ADDON_CODE_DIR.pjoin('media/theme/Browse_by_icon.png').getPath()
         vcategory_fanart = g_PATHS.FANART_FILE_PATH.getPath()
@@ -4472,9 +4474,8 @@ class Main:
     # ---------------------------------------------------------------------------------------------
     # ROM LisItem rendering
     # ---------------------------------------------------------------------------------------------
-    #
-    # Render clone ROMs. romID is the parent ROM.
-    # This is only called in Parent/Clone display modes.
+    # Render clone ROMs. romID is always a parent ROM.
+    # This is only called in Parent/Clone display mode.
     def _command_render_clone_roms(self, categoryID, launcherID, romID):
         # --- Set content type and sorting methods ---
         self._misc_set_all_sorting_methods()
@@ -4517,45 +4518,15 @@ class Main:
 
         # --- Build parent and clones dictionary of ROMs ---
         roms = {}
-        # >> Add parent ROM except if the parent if the fake paren ROM
+        # Add parent ROM unless the parent ROM is a fake parent ROM
         if romID != UNKNOWN_ROMS_PARENT_ID: roms[romID] = all_roms[romID]
-        # >> Add clones, if any
+        # Add clones, if any
         for rom_id in pclone_index[romID]: roms[rom_id] = all_roms[rom_id]
         log_debug('_command_render_clone_roms() Parent ID {}'.format(romID))
-        log_debug('_command_render_clone_roms() Number of clone ROMs = {}'.format(len(roms)))
-        # for key in roms:
-        #     log_debug('key   = {}'.format(key))
-        #     log_debug('value = {}'.format(roms[key]))
+        log_debug('_command_render_clone_roms() Number of ROMs in PClone set = {}'.format(len(roms)))
 
         # --- ROM display filter ---
-        dp_mode = selectedLauncher['audit_display_mode']
-        if selectedLauncher['audit_state'] == AUDIT_STATE_ON and dp_mode != AUDIT_DMODE_ALL:
-            filtered_roms = {}
-            for rom_id in roms:
-                rom = roms[rom_id]
-                if rom['nointro_status'] == AUDIT_STATUS_HAVE:
-                    if dp_mode == AUDIT_DMODE_HAVE or \
-                       dp_mode == AUDIT_DMODE_HAVE_UNK or \
-                       dp_mode == AUDIT_DMODE_HAVE_MISS:
-                        filtered_roms[rom_id] = rom
-                elif rom['nointro_status'] == AUDIT_STATUS_MISS:
-                    if dp_mode == AUDIT_DMODE_HAVE_MISS or \
-                       dp_mode == AUDIT_DMODE_MISS or \
-                       dp_mode == AUDIT_DMODE_MISS_UNK:
-                        filtered_roms[rom_id] = rom
-                elif rom['nointro_status'] == AUDIT_STATUS_UNKNOWN:
-                    if dp_mode == AUDIT_DMODE_HAVE_UNK or \
-                       dp_mode == AUDIT_DMODE_MISS_UNK or \
-                       dp_mode == AUDIT_DMODE_UNK:
-                        filtered_roms[rom_id] = rom
-                else:
-                    # Always copy roms with unknown status (NOINTRO_STATUS_NONE)
-                    filtered_roms[rom_id] = rom
-            roms = filtered_roms
-            if not roms:
-                kodi_notify('No ROMs to show with current filtering settings.')
-                xbmcplugin.endOfDirectory(handle = self.addon_handle, succeeded = True, cacheToDisc = False)
-                return
+        # NOTE Never filter ROMs in the PClone set. They are not that many so no need to filter.
 
         # --- Render ROMs ---
         roms_fav = fs_load_Favourites_JSON(g_PATHS.FAV_JSON_FILE_PATH)
@@ -4618,36 +4589,49 @@ class Main:
                 xbmcplugin.endOfDirectory(handle = self.addon_handle, succeeded = True, cacheToDisc = False)
                 return
 
+            # --- Load ROMs for this launcher ---
+            roms_json_FN = g_PATHS.ROMS_DIR.pjoin(selectedLauncher['roms_base_noext'] + '.json')
+            if not roms_json_FN.exists():
+                kodi_notify('Launcher JSON database not found. Add ROMs to launcher.')
+                xbmcplugin.endOfDirectory(handle = self.addon_handle, succeeded = True, cacheToDisc = False)
+                return
+            roms_all = fs_load_ROMs_JSON(g_PATHS.ROMS_DIR, selectedLauncher)
+            if not roms:
+                kodi_notify('Launcher JSON database empty. Add ROMs to launcher.')
+                xbmcplugin.endOfDirectory(handle = self.addon_handle, succeeded = True, cacheToDisc = False)
+                return
+
         # --- ROM display filter ---
         dp_mode = selectedLauncher['audit_display_mode']
         if selectedLauncher['audit_state'] == AUDIT_STATE_ON and dp_mode != AUDIT_DMODE_ALL:
             filtered_roms = {}
+            show_have = dp_mode == AUDIT_DMODE_HAVE or dp_mode == AUDIT_DMODE_HAVE_UNK or dp_mode == AUDIT_DMODE_HAVE_MISS
+            show_miss = dp_mode == AUDIT_DMODE_HAVE_MISS or dp_mode == AUDIT_DMODE_MISS or dp_mode == AUDIT_DMODE_MISS_UNK
+            show_unknown = dp_mode == AUDIT_DMODE_HAVE_UNK or dp_mode == AUDIT_DMODE_MISS_UNK or dp_mode == AUDIT_DMODE_UNK
             for rom_id in roms:
-                rom = roms[rom_id]
-                # >> Always include a parent ROM regardless of filters in 'Parent/Clone mode'
-                # >> launcher_display_mode if it has 1 or more clones.
-                if not selectedLauncher['launcher_display_mode'] == LAUNCHER_DMODE_FLAT and len(pclone_index[rom_id]):
-                    filtered_roms[rom_id] = rom
-                    continue
-                # >> Filter ROM
-                if rom['nointro_status'] == AUDIT_STATUS_HAVE:
-                    if dp_mode == AUDIT_DMODE_HAVE or \
-                       dp_mode == AUDIT_DMODE_HAVE_UNK or \
-                       dp_mode == AUDIT_DMODE_HAVE_MISS:
-                        filtered_roms[rom_id] = rom
-                elif rom['nointro_status'] == AUDIT_STATUS_MISS:
-                    if dp_mode == AUDIT_DMODE_HAVE_MISS or \
-                       dp_mode == AUDIT_DMODE_MISS or \
-                       dp_mode == AUDIT_DMODE_MISS_UNK:
-                        filtered_roms[rom_id] = rom
-                elif rom['nointro_status'] == AUDIT_STATUS_UNKNOWN:
-                    if dp_mode == AUDIT_DMODE_HAVE_UNK or \
-                       dp_mode == AUDIT_DMODE_MISS_UNK or \
-                       dp_mode == AUDIT_DMODE_UNK:
-                        filtered_roms[rom_id] = rom
-                # >> Always copy roms with unknown status (NOINTRO_STATUS_NONE)
-                else:
-                    filtered_roms[rom_id] = rom
+                nointro_status = roms[rom_id]['nointro_status']
+                a = (nointro_status == AUDIT_STATUS_HAVE) and show_have
+                b = (nointro_status == AUDIT_STATUS_MISS) and show_miss
+                c = (nointro_status == AUDIT_STATUS_UNKNOWN) and show_unknown
+                # ROM is shown.
+                if a or b or c:
+                    filtered_roms[rom_id] = roms[rom_id]
+                # ROM is not shown.
+                # In PClone mode do not filter out the parent ROM if one of the clones must be shown.
+                elif view_mode == LAUNCHER_DMODE_PCLONE:
+                    for clone_id in pclone_index[rom_id]:
+                        nointro_status_clone = roms_all[clone_id]['nointro_status']
+                        a = (nointro_status_clone == AUDIT_STATUS_HAVE) and show_have
+                        b = (nointro_status_clone == AUDIT_STATUS_MISS) and show_miss
+                        c = (nointro_status_clone == AUDIT_STATUS_UNKNOWN) and show_unknown
+                        if a or b or c:
+                            filtered_roms[rom_id] = roms[rom_id]
+                            break
+                # Always copy ROMs with NONE or EXTRA status.
+                elif nointro_status == AUDIT_STATUS_EXTRA:
+                    filtered_roms[rom_id] = roms[rom_id]
+                elif nointro_status == AUDIT_STATUS_NONE:
+                    filtered_roms[rom_id] = roms[rom_id]
             roms = filtered_roms
             if not roms:
                 kodi_notify('No ROMs to show with current filtering settings.')
@@ -6160,12 +6144,12 @@ class Main:
 
             # --- Edition of the collection name ---
             if type2 == 0:
-                save_DB = _aux_edit_str(collection, 'm_name', 'Collection Title')
+                save_DB = aux_edit_str(collection, 'm_name', 'Collection Title')
                 if not save_DB: return
 
             # --- Edition of the collection genre ---
             elif type2 == 1:
-                save_DB = _aux_edit_str(collection, 'm_genre', 'Collection Genre')
+                save_DB = aux_edit_str(collection, 'm_genre', 'Collection Genre')
                 if not save_DB: return
 
             # --- Edition of the collection rating ---
@@ -6188,7 +6172,7 @@ class Main:
 
             # --- Edition of the plot (description) ---
             elif type2 == 3:
-                save_DB = _aux_edit_str(collection, 'm_plot', 'Collection Plot')
+                save_DB = aux_edit_str(collection, 'm_plot', 'Collection Plot')
                 if not save_DB: return
 
             # --- Import collection metadata from NFO file (automatic) ---
@@ -6815,7 +6799,6 @@ class Main:
         self._misc_set_all_sorting_methods()
         if not rl:
             kodi_dialog_OK('Search returned no results')
-        # for key in sorted(rl.iterkeys()):
         for key in sorted(rl, key = lambda x : rl[x]['m_name']):
             self._gui_render_rom_row(categoryID, launcherID, rl[key])
         xbmcplugin.endOfDirectory(handle = self.addon_handle, succeeded = True, cacheToDisc = False)
@@ -8208,7 +8191,6 @@ class Main:
         log_debug('_run_process() arg_list  = {}'.format(arg_list))
         log_debug('_run_process() exec_list = {}'.format(exec_list))
 
-        # --- Windoze ---
         # NOTE subprocess24_hack.py was hacked to always set CreateProcess() bInheritHandles to 0.
         # bInheritHandles [in] If this parameter TRUE, each inheritable handle in the calling
         # process is inherited by the new process. If the parameter is FALSE, the handles are not
@@ -8224,31 +8206,33 @@ class Main:
         # If I keep old launcher behavior in Windows (close_fds = True) then program output cannot
         # be redirected to a file.
         #
-        if sys.platform == 'win32':
+        if is_windows():
             app_ext = application.split('.')[-1]
+            # Remove initial and trailing quotes to avoid double quotation.
+            application = misc_strip_quotes(application)
+            arguments = misc_strip_quotes(arguments)
             log_debug('_run_process() (Windows) application = "{}"'.format(application))
             log_debug('_run_process() (Windows) arguments   = "{}"'.format(arguments))
             log_debug('_run_process() (Windows) apppath     = "{}"'.format(apppath))
             log_debug('_run_process() (Windows) romext      = "{}"'.format(romext))
             log_debug('_run_process() (Windows) app_ext     = "{}"'.format(app_ext))
+
             # Standalone launcher where application is a LNK file
             if app_ext == 'lnk' or app_ext == 'LNK':
                 log_debug('_run_process() (Windows) Launching LNK application')
-                # os.system('start "AEL" /b "{}"'.format(application).encode('utf-8'))
                 retcode = subprocess.call('start "AEL" /b "{}"'.format(application).encode('utf-8'), shell = True)
                 log_info('_run_process() (Windows) LNK app retcode = {}'.format(retcode))
 
             # ROM launcher where ROMs are LNK files
             elif romext == 'lnk' or romext == 'LNK':
                 log_debug('_run_process() (Windows) Launching LNK ROM')
-                # os.system('start "AEL" /b "{}"'.format(arguments).encode('utf-8'))
                 retcode = subprocess.call('start "AEL" /b "{}"'.format(arguments).encode('utf-8'), shell = True)
                 log_info('_run_process() (Windows) LNK ROM retcode = {}'.format(retcode))
 
             # CMD/BAT files in Windows
             elif app_ext == 'bat' or app_ext == 'BAT' or app_ext == 'cmd' or app_ext == 'CMD':
-                # --- Workaround to run UNC paths in Windows ---
-                # >> Retroarch now support ROMs in UNC paths (Samba remotes)
+                # Workaround to run UNC paths in Windows.
+                # Retroarch now support ROMs in UNC paths (Samba remotes)
                 new_exec_list = list(exec_list)
                 for i, _ in enumerate(exec_list):
                     if exec_list[i][0] == '\\':
@@ -8267,6 +8251,7 @@ class Main:
                 retcode = subprocess.call(exec_list, cwd = apppath.encode('utf-8'), close_fds = True, startupinfo = info)
                 log_info('_run_process() (Windows) Process BAR retcode = {}'.format(retcode))
 
+            # Normal Windows application.
             else:
                 # --- Workaround to run UNC paths in Windows ---
                 # Retroarch now support ROMs in UNC paths (Samba remotes)
@@ -8305,18 +8290,16 @@ class Main:
                     raise Exception('Logical error')
                 log_info('_run_process() (Windows) Process retcode = {}'.format(retcode))
 
-        # --- Android ---
         elif is_android():
             retcode = os.system("{} {}".format(application, arguments).encode('utf-8'))
             log_info('_run_process() Process retcode = {}'.format(retcode))
 
-        # --- Linux ---
         # New in 0.9.7: always close all file descriptions except 0, 1 and 2 on the child
         # process. This is to avoid Kodi opens sockets be inherited by the child process. A
         # wrapper script may terminate Kodi using JSON RPC and if file descriptors are not
         # closed Kodi will complain that the remote interfacte cannot be initialised. I believe
         # the cause is that the socket is kept open by the wrapper script.
-        elif sys.platform.startswith('linux'):
+        elif is_linux():
             # Old way of launching child process. os.system() is deprecated and should not
             # be used anymore.
             # os.system('"{}" {}'.format(application, arguments).encode('utf-8'))
@@ -8334,8 +8317,7 @@ class Main:
                 log_info('_run_process() Process retcode = {}'.format(retcode))
                 if self.settings['lirc_state']: xbmc.executebuiltin('LIRC.start')
 
-        # OS X
-        elif sys.platform.startswith('darwin'):
+        elif is_osx():
             # Old way
             # os.system('"{}" {}'.format(application, arguments).encode('utf-8'))
 
@@ -8345,7 +8327,7 @@ class Main:
             log_info('_run_process() Process retcode = {}'.format(retcode))
 
         else:
-            kodi_notify_warn('Cannot determine the running platform')
+            kodi_notify_warn('Cannot determine the running platform.')
 
     # These two functions do things like stopping music before lunch, toggling full screen, etc.
     # Variables set in this function:
@@ -8894,7 +8876,7 @@ class Main:
             log_info('_roms_delete_missing_ROMs() Launcher is empty. No dead ROM check.')
             return num_removed_roms
         log_debug('_roms_delete_missing_ROMs() Starting dead items scan')
-        for rom_id in sorted(roms.iterkeys()):
+        for rom_id in sorted(roms, key = lambda x : roms[x]['m_name']):
             if not roms[rom_id]['filename']:
                 # log_debug('_roms_delete_missing_ROMs() Skip "{}"'.format(roms[rom_id]['m_name']))
                 continue
@@ -8928,7 +8910,7 @@ class Main:
         # Step 2) Set Audit status to AUDIT_STATUS_NONE and
         #         set PClone status to PCLONE_STATUS_NONE
         log_info('_roms_reset_NoIntro_status() Resetting No-Intro status of all ROMs to None')
-        for rom_id in sorted(roms.iterkeys()):
+        for rom_id in sorted(roms, key = lambda x : roms[x]['m_name']):
             roms[rom_id]['nointro_status'] = AUDIT_STATUS_NONE
             roms[rom_id]['pclone_status']  = PCLONE_STATUS_NONE
         log_info('_roms_reset_NoIntro_status() Now launcher has {} ROMs'.format(len(roms)))
@@ -9170,13 +9152,13 @@ class Main:
 
         # --- Save JSON databases ---
         pDialog.startProgress('Saving NO-Intro/Redump JSON databases...', 3)
-        f_FN = g_PATHS.ROMS_DIR.pjoin(launcher['roms_base_noext'] + '_index_PClone')
+        f_FN = g_PATHS.ROMS_DIR.pjoin(launcher['roms_base_noext'] + '_index_PClone.json')
         utils_write_JSON_file(f_FN.getPath(), roms_pclone_index)
-        pDialog.updateProgress(1)
-        f_FN = g_PATHS.ROMS_DIR.pjoin(launcher['roms_base_noext'] + '_index_CParent')
+        pDialog.updateProgressInc()
+        f_FN = g_PATHS.ROMS_DIR.pjoin(launcher['roms_base_noext'] + '_index_CParent.json')
         utils_write_JSON_file(f_FN.getPath(), clone_parent_dic)
-        pDialog.updateProgress(2)
-        f_FN = g_PATHS.ROMS_DIR.pjoin(launcher['roms_base_noext'] + '_parents')
+        pDialog.updateProgressInc()
+        f_FN = g_PATHS.ROMS_DIR.pjoin(launcher['roms_base_noext'] + '_parents.json')
         utils_write_JSON_file(f_FN.getPath(), parent_roms)
         pDialog.endProgress()
 
@@ -9932,31 +9914,10 @@ class Main:
     # Checks if a category is empty (no launchers defined)
     # Returns True if the category is empty. Returns False if non-empty.
     def _cat_is_empty(self, categoryID):
-        for launcherID in self.launchers.iterkeys():
-            if self.launchers[launcherID]['categoryID'] == categoryID: return False
+        for launcherID in self.launchers:
+            if self.launchers[launcherID]['categoryID'] == categoryID:
+                return False
         return True
-
-    # THIS FUNCTION IS DEPRECATED AND WILL BE REMOVED.
-    # Reads a text file with category/launcher plot.
-    # Checks file size to avoid importing binary files!
-    def _gui_import_TXT_file(text_file):
-        # Warn user in case he chose a binary file or a very big one. Avoid categories.xml corruption.
-        log_debug('_gui_import_TXT_file() Importing plot from "{}"'.format(text_file.getOriginalPath()))
-        statinfo = text_file.stat()
-        file_size = statinfo.st_size
-        log_debug('_gui_import_TXT_file() File size is {}'.format(file_size))
-        if file_size > 16384:
-            ret = kodi_dialog_yesno('File "{}" has {} bytes and it is very big.'.format(text_file.getPath(), file_size) +
-                'Are you sure this is the correct file?')
-            if not ret: return ''
-
-        # Import file
-        log_debug('_gui_import_TXT_file() Importing description from "{}"'.format(text_file.getOriginalPath()))
-        text_plot = open(text_file.getPath(), 'rt')
-        file_data = text_plot.read()
-        text_plot.close()
-
-        return file_data
 
     def _command_exec_utils_import_launchers(self):
         # If enableMultiple = True this function always returns a list of strings in UTF-8
