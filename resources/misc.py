@@ -525,7 +525,7 @@ def misc_generate_random_SID():
     if ADDON_RUNNING_PYTHON_2:
         base = hashlib.md5(text_type(t1 + t2))
     elif ADDON_RUNNING_PYTHON_3:
-        base = hashlib.md5(binary_type(t1 + t2))
+        base = hashlib.md5(text_type(t1 + t2).encode('utf-8'))
     else:
         raise TypeError('Undefined Python runtime version.')
     sid = base.hexdigest()
