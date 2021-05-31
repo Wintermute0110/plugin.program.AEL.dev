@@ -584,6 +584,10 @@ class ROMSet(MetaDataItemABC):
         if not asset_info: return None
         return self._get_value_as_filename(asset_info.path_key)
 
+    def set_asset_path(self, asset_info: AssetInfo, path: str):
+        logger.debug('Setting "{}" to {}'.format(asset_info.path_key, path))
+        self.entity_data[asset_info.path_key] = path
+
     def get_ROM_mappable_asset_list(self):
         MAPPABLE_ASSETS = [ASSET_ICON_ID, ASSET_FANART_ID, ASSET_BANNER_ID, ASSET_CLEARLOGO_ID, ASSET_POSTER_ID]
         return g_assetFactory.get_asset_list_by_IDs(MAPPABLE_ASSETS)
@@ -613,6 +617,30 @@ class ROMSet(MetaDataItemABC):
 
     def set_mapped_ROM_asset_key(self, asset_info: AssetInfo, mapped_to_info: AssetInfo):
         self.entity_data[asset_info.rom_default_key] = mapped_to_info.key
+
+    #
+    # Get a list of assets with duplicated paths. Refuse to do anything if duplicated paths found.
+    #
+    def get_duplicated_asset_dirs(self):
+        duplicated_bool_list   = [False] * len(ROM_ASSET_ID_LIST)
+        duplicated_name_list   = []
+
+        # >> Check for duplicated asset paths
+        for i, asset_i in enumerate(ROM_ASSET_ID_LIST[:-1]):
+            A_i = g_assetFactory.get_asset_info(asset_i)
+            for j, asset_j in enumerate(ROM_ASSET_ID_LIST[i+1:]):
+                A_j = g_assetFactory.get_asset_info(asset_j)
+                # >> Exclude unconfigured assets (empty strings).
+                if A_i.path_key not in self.entity_data or A_j.path_key not in self.entity_data  \
+                    or not self.entity_data[A_i.path_key] or not self.entity_data[A_j.path_key]: continue
+                
+                # log_debug('asset_get_duplicated_asset_list() Checking {0:<9} vs {1:<9}'.format(A_i.name, A_j.name))
+                if self.entity_data[A_i.path_key] == self.entity_data[A_j.path_key]:
+                    duplicated_bool_list[i] = True
+                    duplicated_name_list.append('{0} and {1}'.format(A_i.name, A_j.name))
+                    logger.info('asset_get_duplicated_asset_list() DUPLICATED {0} and {1}'.format(A_i.name, A_j.name))
+
+        return duplicated_name_list
 
     def num_roms(self) -> int:
         return self.entity_data['num_roms'] if 'num_roms' in self.entity_data else 0
@@ -744,27 +772,18 @@ class ROMSet(MetaDataItemABC):
 # -------------------------------------------------------------------------------------------------
 class ROM(MetaDataItemABC):
         
-    def __init__(self, rom_data = None, launcher = None):        
+    def __init__(self, rom_data = None):        
         if rom_data is None:
-            rom_data = fs_new_rom()
+            #rom_data = fs_new_rom()
             rom_data['id'] = text.misc_generate_random_SID()
             rom_data['type'] = OBJ_ROM
             
-        # back/parent reference 
-        self.launcher = launcher
-        
-        super(ROM, self).__init__(None, None, rom_data, None)
-
-    def get_launcher(self):
-        return self.launcher
+        super(ROM, self).__init__(rom_data)
     
     # is this virtual only? Should we make a VirtualRom(Rom)?
     def get_launcher_id(self):
-        return self.entity_data['launcherID']
+        return self.entity_data['poaren']
     
-    def is_virtual_rom(self):
-        return 'launcherID' in self.entity_data
-
     def get_platform(self):
         if self.is_virtual_rom():
             return self.entity_data['platform']

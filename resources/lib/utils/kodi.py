@@ -232,7 +232,7 @@ class OrdDictionaryDialog(object):
     def __init__(self):
         self.dialog = xbmcgui.Dialog()
 
-    def select(self, title: str, options_odict: collections.OrderedDict, preselect = None, use_details: bool = False) -> str:
+    def select(self, title: str, options_odict: collections.OrderedDict, preselect = None, use_details: bool = False):
         preselected_index = -1
         if preselect is not None:
             preselected_value = options_odict[preselect]

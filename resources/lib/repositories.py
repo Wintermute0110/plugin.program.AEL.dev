@@ -156,6 +156,63 @@ class XmlConfigurationRepository(object):
             logger.debug('Adding launcher "{0}" to import list'.format(launcher_temp['m_name']))
             yield ROMSet(launcher_temp)
 
+
+# -------------------------------------------------------------------------------------------------
+# --- Repository class for ROM set objects of Standard ROM Launchers (legacy json files) ---
+# Arranges retrieving and storing of roms belonging to a particular standard ROM launcher.
+#
+# NOTE ROMs in a collection are stored as a list and ROMs in Favourites are stored as
+#      a dictionary. Convert the Collection list into an ordered dictionary and then
+#      converted back the ordered dictionary into a list before saving the collection.
+# -------------------------------------------------------------------------------------------------
+class ROMsJsonFileRepository(object):
+
+    def __init__(self, file_path: io.FileName, debug = False):
+        self.file_path = file_path
+        self.debug = debug
+    #
+    # Loads ROM databases from disk
+    #
+    def load_ROMs(self) -> typing.List[ROM]:
+        logger.debug('ROMsJsonFileRepository::load_ROMs() Starting ...')
+        if not self.file_path.exists():
+            logger.warning('Launcher JSON not found "{0}"'.format(self.file_path.getPath()))
+            return []
+
+        roms_data = []
+        # --- Parse using json module ---
+        # >> On Github issue #8 a user had an empty JSON file for ROMs. This raises
+        #    exception exceptions.ValueError and launcher cannot be deleted. Deal
+        #    with this exception so at least launcher can be rescanned.
+        logger.debug('ROMsJsonFileRepository.find_by_launcher(): Loading roms from file {0}'.format(self.file_path.getPath()))
+        try:
+            roms_data = self.file_path.readJson()
+        except ValueError:
+            statinfo = self.file_path.stat()
+            logger.error('ROMsJsonFileRepository.find_by_launcher(): ValueError exception in json.load() function')
+            logger.error('ROMsJsonFileRepository.find_by_launcher(): Dir  {0}'.format(self.file_path.getPath()))
+            logger.error('ROMsJsonFileRepository.find_by_launcher(): Size {0}'.format(statinfo.st_size))
+            return None
+
+        # --- Extract roms from JSON data structure and ensure version is correct ---
+        if roms_data and isinstance(roms_data, list) and 'control' in roms_data[0]:
+            control_str = roms_data[0]['control']
+            version_int = roms_data[0]['version']
+            roms_data   = roms_data[1]
+
+        roms = []
+        if isinstance(roms_data, list):
+            for rom_data in roms_data:
+                r = ROM(rom_data)
+                key = r.get_id()
+                roms.append(r)
+        else:
+            for key in roms_data:
+                r = ROM(roms_data[key])
+                roms.append(r)
+
+        return roms
+    
 #
 # UnitOfWork to be used with sqlite repositories.
 # Can be used to create database scopes/sessions (unit of work pattern).
@@ -481,7 +538,63 @@ class ROMSetRepository(object):
     def delete_romset(self, romset_id: str):
         logger.info("ROMSetRepository.delete_romset(): Deleting romset '{}'".format(romset_id))
         self._uow.execute(QUERY_DELETE_ROMSET, romset_id)
-                   
+
+#
+# ROMsRepository -> ROMs from SQLite DB
+#     
+QUERY_SELECT_ROMS_BY_SET    = "SELECT * FROM vw_rom WHERE parent_id = ?"
+QUERY_INSERT_ROM            = """
+                                INSERT INTO roms (
+                                    id, parent_id, metadata_id, name, num_of_players, esrb_rating,
+                                    nointro_status, cloneof, fav_status, file_path)
+                                VALUES (?,?,?,?,?,?,?,?,?,?)
+                               """ 
+QUERY_INSERT_ROM_ASSET      = "INSERT INTO rom_assets (rom_id, asset_id) VALUES (?, ?)"
+QUERY_UPDATE_ROM            = "UPDATE roms SET name=?,num_of_players=?,esrb_rating=?,nointro_status=?,cloneof=?,fav_status=?,file_path=? WHERE id =?"
+          
+class ROMsRepository(object):
+       
+    def __init__(self, uow: UnitOfWork):
+        self._uow = uow
+
+    def find_roms_by_romset(self, romset_id: str) -> typing.Iterator[ROM]:
+        self._uow.execute(QUERY_SELECT_ROMS_BY_SET, romset_id)
+        result_set = self._uow.result_set()
+        for rom_data in result_set:
+            yield ROM(rom_data)
+
+    def save_rom(self, rom_obj: ROM): 
+        
+        rom_assets = rom_obj.get_assets_odict()
+        for asset in rom_assets:
+            asset_db_id = text.misc_generate_random_SID()
+            self._uow.execute(QUERY_INSERT_ASSET,
+                asset_db_id, rom_assets[asset], asset.id)
+            self._uow.execute(QUERY_INSERT_ROM_ASSET,
+                rom_obj.get_id(), asset_db_id)   
+
+    def update_rom(self, rom_obj: ROM):
+        logger.info("ROMsRepository.update_rom(): Updating ROM '{}'".format(rom_obj.get_name()))
+        assets_path = rom_obj.get_assets_path_FN()
+        
+        self._uow.execute(QUERY_UPDATE_METADATA,
+            rom_obj.get_releaseyear(),
+            rom_obj.get_genre(),
+            rom_obj.get_developer(),
+            rom_obj.get_rating(),
+            rom_obj.get_plot(),
+            assets_path.getPath() if assets_path is not None else None,
+            rom_obj.is_finished(),
+            rom_obj.get_custom_attribute('metadata_id'))
+
+        self._uow.execute(QUERY_UPDATE_ROM,
+            rom_obj.get_name(),
+            rom_obj.get_number_of_players(),
+            rom_obj.get_esrb_rating(),
+            rom_obj.get_nointro_status(),
+            rom_obj.get_clone(),
+            rom_obj.get_favourite_status(),
+            rom_obj.get_id())
 #
 # AelAddonRepository -> AEL Adoon objects from SQLite DB
 #     

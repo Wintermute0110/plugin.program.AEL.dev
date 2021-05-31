@@ -63,6 +63,7 @@ def cmd_manage_roms(args):
     if selected_option is None:
         # >> Exits context menu
         logger.debug('ROMSET_MANAGE_ROMS: cmd_manage_roms() Selected None. Closing context menu')
+        kodi.event(method='EDIT_ROMSET', data=args)
         return
     
     # >> Execute subcommand. May be atomic, maybe a submenu.
@@ -165,28 +166,133 @@ def cmd_set_rom_asset_dirs(args):
                 list_items[asset_info] = "Change {0} path: '{1}'".format(asset_info.plural, path.getPath())
 
         dialog = kodi.OrdDictionaryDialog()
-        selected_asset = dialog.select('ROM Asset directories ', list_items)
+        selected_asset: AssetInfo = dialog.select('ROM Asset directories ', list_items)
 
-        if selected_asset is None:    
+        if selected_asset is None:
+            kodi.event(method='ROMSET_MANAGE_ROMS', data=args)
             return
 
-        selected_asset_path = launcher.get_asset_path(selected_asset)
-        dialog = xbmcgui.Dialog()
-        dir_path = dialog.browse(0, 'Select {0} path'.format(selected_asset.plural), 'files', '', False, False, selected_asset_path.getPath()).decode('utf-8')
+        selected_asset_path = romset.get_asset_path(selected_asset)
+        dir_path = kodi.browse(0, 'Select {} path'.format(selected_asset.plural), 'files', '', False, False, selected_asset_path.getPath()).decode('utf-8')
         if not dir_path or dir_path == selected_asset_path.getPath():  
-            self._subcommand_set_rom_asset_dirs(launcher)
+            kodi.event(method='SET_ROMS_ASSET_DIRS', data=args)
             return
                 
-        launcher.set_asset_path(selected_asset, dir_path)
-        g_LauncherRepository.save(launcher)
+        romset.set_asset_path(selected_asset, dir_path)
+        repository.update_romset(romset)
+        uow.commit()
                 
     # >> Check for duplicate paths and warn user.
-    duplicated_name_list = launcher.get_duplicated_asset_dirs()
-    if duplicated_name_list:
-        duplicated_asset_srt = ', '.join(duplicated_name_list)
-        kodi_dialog_OK('Duplicated asset directories: {0}. '.format(duplicated_asset_srt) +
-                        'AEL will refuse to add/edit ROMs if there are duplicate asset directories.')
+    kodi.event(method='CHECK_DUPLICATE_ASSET_DIRS', data=args)
 
-    kodi_notify('Changed rom asset dir for {0} to {1}'.format(selected_asset.name, dir_path))
-    self._subcommand_set_rom_asset_dirs(launcher)
-    return    
+    kodi.notify('Changed rom asset dir for {0} to {1}'.format(selected_asset.name, dir_path))
+    kodi.event(method='SET_ROMS_ASSET_DIRS', data=args)
+    
+@AppMediator.register('IMPORT_ROMS')
+def cmd_import_roms(args):
+    logger.debug('IMPORT_ROMS: cmd_import_roms() SHOW MENU')
+    romset_id:str = args['romset_id'] if 'romset_id' in args else None
+        
+    selected_option = None
+    uow = UnitOfWork(globals.g_PATHS.DATABASE_FILE_PATH)
+    with uow:
+        repository = ROMSetRepository(uow)
+        romset = repository.find_romset(romset_id)
+
+    options = collections.OrderedDict()
+    options['SCAN_ROMS']            = 'Scan for new ROMs'
+    options['IMPORT_ROMS_NFO']      = 'Import ROMs metadata from NFO files'
+    options['IMPORT_ROMS_JSON']     = 'Import ROMs data from JSON files'
+
+    s = 'Import ROMs in ROMSet "{}"'.format(romset.get_name())
+    selected_option = kodi.OrdDictionaryDialog().select(s, options)
+    if selected_option is None:
+        # >> Exits context menu
+        logger.debug('IMPORT_ROMS: cmd_import_roms() Selected None. Closing context menu')
+        kodi.event(method='ROMSET_MANAGE_ROMS', data=args)
+        return
+    
+    # >> Execute subcommand. May be atomic, maybe a submenu.
+    logger.debug('IMPORT_ROMS: cmd_import_roms() Selected {}'.format(selected_option))
+    kodi.event(method=selected_option, data=args)
+    
+# --- Import ROM metadata from NFO files ---
+@AppMediator.register('IMPORT_ROMS_NFO')
+def cmd_import_roms_nfo(args):
+    romset_id:str = args['romset_id'] if 'romset_id' in args else None
+        
+    # >> Load ROMs, iterate and import NFO files
+    uow = UnitOfWork(globals.g_PATHS.DATABASE_FILE_PATH)
+    with uow:
+        repository = ROMsRepository(uow)
+        roms = repository.find_roms_by_romset(romset_id)
+    
+        pDialog = kodi.ProgressDialog()
+        pDialog.startProgress('Processing NFO files', num_steps=len(roms))
+        num_read_NFO_files = 0
+
+        step = 0
+        for rom in roms:
+            step = step + 1
+            nfo_filepath = rom.get_nfo_file()
+            pDialog.updateProgress(step)
+            if rom.update_with_nfo_file(nfo_filepath, verbose = False):
+                num_read_NFO_files += 1
+                repository.update_rom(rom)
+                
+        # >> Save ROMs XML file / Launcher/timestamp saved at the end of function
+        pDialog.updateProgress(len(roms), 'Saving ROM JSON database ...')
+        uow.commit()
+        pDialog.close()
+        
+    kodi.notify('Imported {0} NFO files'.format(num_read_NFO_files))
+    kodi.event(method='IMPORT_ROMS', data=args)
+    
+# --- Import ROM metadata from json config file ---
+@AppMediator.register('IMPORT_ROMS_JSON')
+def cmd_import_roms_json(args):
+    romset_id:str = args['romset_id'] if 'romset_id' in args else None
+    file_list = kodi.browse(1, 'Select ROMs JSON file', 'files', '.json', True)
+
+    uow = UnitOfWork(globals.g_PATHS.DATABASE_FILE_PATH)
+    with uow:
+        repository        = ROMsRepository(uow)
+        romset_repository = ROMSetRepository(uow) 
+        
+        romset            = romset_repository.find_romset(romset_id)
+        existing_roms     = [*repository.find_roms_by_romset(romset_id)]
+        existing_rom_ids  = map(lambda r: r.get_id(), existing_roms)
+
+        roms_to_insert:typing.List[ROM]  = []
+        roms_to_update:typing.List[ROM]  = []
+
+        # >> Process file by file
+        for json_file in file_list:
+            logger.debug('cmd_import_roms_json() Importing "{0}"'.format(json_file))
+            import_FN = io.FileName(json_file)
+            if not import_FN.exists(): continue
+
+            json_file_repository  = ROMsJsonFileRepository(import_FN)
+            imported_roms = json_file_repository.load_ROMs()
+    
+            for imported_rom in imported_roms:
+                if imported_rom.get_id() in existing_rom_ids:
+                     # >> ROM exists (by id). Overwrite?
+                    logger.debug('ROM found. Edit existing category.')
+                    if kodi.dialog_yesno('ROM "{}" found in AEL database. Overwrite?'.format(imported_rom.get_name())):
+                        roms_to_update.append(imported_rom)
+                else:
+                    roms_to_insert.append(imported_rom)
+                    
+        for rom_to_insert in roms_to_insert:
+            repository.save_rom(rom_to_insert)
+            existing_roms.append(rom_to_insert)
+
+        for rom_to_update in roms_to_update:
+            repository.update_rom(rom_to_update)
+            
+        uow.commit()
+
+    kodi.event(method='RENDER_ROMSET_VIEW', data={'romset_id': romset_id})
+    kodi.event(method='RENDER_VIEW', data={'category_id': romset.get_parent_id()})  
+    kodi.notify('Finished importing ROMS')

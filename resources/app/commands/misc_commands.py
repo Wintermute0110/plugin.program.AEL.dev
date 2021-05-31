@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 #
-# Advanced Emulator Launcher: Commands (import & export of configurations)
+# Advanced Emulator Launcher: Commands (miscellaneous)
 #
 # Copyright (c) 2016-2018 Wintermute0110 <wintermute0110@gmail.com>
 #
@@ -29,7 +29,6 @@ from resources.lib.utils import kodi
 from resources.lib.utils import io
 
 logger = logging.getLogger(__name__)
-
 @AppMediator.register('IMPORT_LAUNCHERS')
 def cmd_execute_import_launchers(args):
     file_list = kodi.browse(1, 'Select XML category/launcher configuration file',
@@ -115,6 +114,22 @@ def cmd_execute_reset_db(args):
 
     kodi.event(method='RENDER_VIEWS')
     kodi.notify('Finished resetting the database')
+
+@AppMediator.register('CHECK_DUPLICATE_ASSET_DIRS')
+def cmd_check_duplicate_asset_dirs(args):
+    romset_id:str = args['romset_id'] if 'romset_id' in args else None
+    
+    uow = UnitOfWork(globals.g_PATHS.DATABASE_FILE_PATH)
+    with uow:
+        repository = ROMSetRepository(uow)
+        romset = repository.find_romset(romset_id)
+
+    # >> Check for duplicate paths and warn user.
+    duplicated_name_list = romset.get_duplicated_asset_dirs()
+    if duplicated_name_list:
+        duplicated_asset_srt = ', '.join(duplicated_name_list)
+        kodi.dialog_OK('Duplicated asset directories: {0}. '.format(duplicated_asset_srt) +
+                        'AEL will refuse to add/edit ROMs if there are duplicate asset directories.')
 
 def _apply_addon_launcher_for_legacy_launcher(launcher_data: ROMSet, available_addons: typing.Dict[str, AelAddon]):
     
