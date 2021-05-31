@@ -1335,7 +1335,7 @@ class ScrapeStrategy(object):
         # that the scraper is disabled when scraping from the context menu.
         log_debug('Scraper found {} result/s'.format(len(candidate_list)))
         if not candidate_list:
-            kodi_set_error_status('Scraper found no matching games')
+            kodi_set_error_status(st_dic, 'Scraper found no matching games')
             return
 
         # --- Display corresponding game list found so user choses ---
@@ -1347,7 +1347,7 @@ class ScrapeStrategy(object):
             heading = 'Select game for ROM "{}"'.format(object_dic['m_name'])
             select_candidate_idx = KodiSelectDialog(heading, game_name_list).executeDialog()
             if select_candidate_idx is None:
-                kodi_set_error_status('{} metadata unchanged'.format(object_name))
+                kodi_set_error_status(st_dic, '{} metadata unchanged'.format(object_name))
                 return
         # log_debug('select_candidate_idx {}'.format(select_candidate_idx))
         candidate = candidate_list[select_candidate_idx]
