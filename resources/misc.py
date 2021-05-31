@@ -20,6 +20,7 @@
 
 # --- Addon modules ---
 from .constants import *
+from .utils import *
 
 # --- Python standard library ---
 import collections

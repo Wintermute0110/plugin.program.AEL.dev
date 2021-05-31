@@ -3901,22 +3901,23 @@ class ScreenScraper(Scraper):
             # Find known asset types. ScreenScraper has really a lot of different assets.
             if media_dic['type'] in ScreenScraper.asset_name_mapping:
                 asset_ID = ScreenScraper.asset_name_mapping[media_dic['type']]
+            # Skip unknwon assets
             else:
-                # Skip unknwon assets
                 continue
-
-            # Build thumb URL
             game_ID = jeu_dic['id']
             region = media_dic['region'] if 'region' in media_dic else ''
-            if region: media_type = media_dic['type'] + ' ' + region
-            else:      media_type = media_dic['type']
-            url_thumb_b = '?gameid={}&media={}&region={}'.format(game_ID, media_type, region)
-            url_thumb_c = '&hd=0&num=&version=&maxwidth=338&maxheight=190'
-            url_thumb = ScreenScraper.URL_image + url_thumb_b + url_thumb_c
+            media_type = media_dic['type'] + ' ' + region if region else media_dic['type']
+
+            # Build thumb URL
+            # FEATURE CANCELED: do not use thumbs in ScreenScraper to avoid overloading.
+            # url_thumb_b = '?gameid={}&media={}&region={}'.format(game_ID, media_type, region)
+            # url_thumb_c = '&hd=0&num=&version=&maxwidth=338&maxheight=190'
+            # url_thumb = ScreenScraper.URL_image + url_thumb_b + url_thumb_c
 
             # Build asset URL. ScreenScraper URLs are stripped down when saved to the cache
-            # to save space and time. FEATURE CANCELED. There could be problems reconstructing
-            # some URLs and the space saved is not so great for most games.
+            # to save space and JSON loading time.
+            # FEATURE CANCELED: There could be problems reconstructing some URLs and the
+            # space saved is not so great for most games.
             # systemeid = jeu_dic['systemeid']
             # media = '{}({})'.format(media_type, region)
             # url_b = '?devid={}&devpassword={}&softname={}&ssid={}&sspassword={}'.format(
@@ -3930,9 +3931,9 @@ class ScreenScraper(Scraper):
             asset_data = self._new_assetdata_dic()
             asset_data['asset_ID'] = asset_ID
             asset_data['display_name'] = media_type
-            asset_data['url_thumb'] = url_thumb
+            asset_data['url_thumb'] = 'DefaultAddonPicture.png'
             asset_data['url'] = media_dic['url']
-            # Special ScreenScraper field to resolve URL extension later.
+            # Custom ScreenScraper field to resolve URL extension later.
             asset_data['SS_format'] = media_dic['format']
             asset_list.append(asset_data)
 
