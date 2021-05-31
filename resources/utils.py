@@ -275,9 +275,9 @@ def utils_copy_file(source_str, dest_str):
     else:
         raise TypeError('Undefined Python runtime version.')
 
+# Always write UNIX end of lines regarding of the operating system.
 def utils_write_str_to_file(filename, full_string):
     log_debug('utils_write_str_to_file() File "{}"'.format(filename))
-    # Always write UNIX end of lines regarding of the operating system.
     with io.open(filename, 'wt', encoding = 'utf-8', newline = '\n') as f:
         f.write(full_string)
 

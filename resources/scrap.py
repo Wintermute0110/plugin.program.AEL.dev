@@ -165,11 +165,10 @@ class FilterROM(object):
             self.Devices_set = {i for i in Devices_list}
             self.Mechanical_set = {i for i in Mechanical_list}
 
-    def _load_JSON(self, filename):
-        log_debug('FilterROM::_load_JSON() Loading "{}"'.format(filename))
-        with open(filename) as file:
+    def _load_JSON(self, file_path):
+        log_debug('FilterROM::_load_JSON() Loading "{}"'.format(file_path))
+        with io.open(file_path, 'rt', encoding = 'utf-8') as file:
             data = json.load(file)
-
         return data
 
     # Returns True if ROM is filtered, False otherwise.
@@ -1315,7 +1314,12 @@ class ScrapeStrategy(object):
             if not keyboard.isConfirmed():
                 kodi_set_error_status(st_dic, '{} metadata unchanged'.format(object_name))
                 return
-            search_term = keyboard.getData().strip().decode('utf-8')
+            if ADDON_RUNNING_PYTHON_2:
+                search_term = keyboard.getData().strip().decode('utf-8')
+            elif ADDON_RUNNING_PYTHON_3:
+                search_term = keyboard.getData().strip()
+            else:
+                raise TypeError('Undefined Python runtime version.')
         else:
             log_debug('Scraper does not support search strings. Setting it to None.')
             search_term = None
@@ -1577,16 +1581,9 @@ class Scraper(object):
                 log_debug('Skipping {} (Clean)'.format(cache_type))
                 continue
 
-            # Get JSON data.
-            json_data = json.dumps(
-                self.disk_caches[cache_type], ensure_ascii = False, sort_keys = True,
-                indent = Scraper.JSON_indent, separators = Scraper.JSON_separators)
-
-            # Write to disk
+            # Write to disk JSON data.
             json_file_path, json_fname = self._get_scraper_file_name(cache_type, self.platform)
-            file = io.open(json_file_path, 'w', encoding = 'utf-8')
-            file.write(text_type(json_data))
-            file.close()
+            self._write_JSON(json_file_path, self.disk_caches[cache_type])
             # log_debug('Saved "{}"'.format(json_file_path))
             log_debug('Saved "<SCRAPER_CACHE_DIR>/{}"'.format(json_fname))
 
@@ -1614,16 +1611,9 @@ class Scraper(object):
                 log_debug('Skipping global {} (Clean)'.format(cache_type))
                 continue
 
-            # Get JSON data.
-            json_data = json.dumps(
-                self.global_disk_caches[cache_type], ensure_ascii = False, sort_keys = True,
-                indent = Scraper.JSON_indent, separators = Scraper.JSON_separators)
-
-            # Write to disk
+            # Write to disk JSON data.
             json_file_path, json_fname = self._get_global_file_name(cache_type)
-            file = io.open(json_file_path, 'w', encoding = 'utf-8')
-            file.write(text_type(json_data))
-            file.close()
+            self._write_JSON(json_file_path, self.global_disk_caches[cache_type])
             # log_debug('Saved global "{}"'.format(json_file_path))
             log_debug('Saved global "<SCRAPER_CACHE_DIR>/{}"'.format(json_fname))
 
@@ -1788,6 +1778,9 @@ class Scraper(object):
             json_full_path = os.path.join(self.scraper_cache_dir, json_fname).decode('utf-8')
         elif ADDON_RUNNING_PYTHON_3:
             json_full_path = os.path.join(self.scraper_cache_dir, json_fname)
+        else:
+            raise TypeError('Undefined Python runtime version.')
+
         return json_full_path, json_fname
 
     def _lazy_load_disk_cache(self, cache_type):
@@ -1801,10 +1794,7 @@ class Scraper(object):
 
         # --- Load cache if file exists ---
         if os.path.isfile(json_file_path):
-            file = open(json_file_path)
-            file_contents = file.read()
-            file.close()
-            self.disk_caches[cache_type] = json.loads(file_contents)
+            self.disk_caches[cache_type] = self._load_JSON(json_file_path)
             # log_debug('Loaded "{}"'.format(json_file_path))
             log_debug('Loaded "<SCRAPER_CACHE_DIR>/{}"'.format(json_fname))
         else:
@@ -1839,8 +1829,12 @@ class Scraper(object):
     # --- Private global disk caches -------------------------------------------------------------
     def _get_global_file_name(self, cache_type):
         json_fname = cache_type + '.json'
-        json_full_path = os.path.join(self.scraper_cache_dir, json_fname).decode('utf-8')
-
+        if ADDON_RUNNING_PYTHON_2:
+            json_full_path = os.path.join(self.scraper_cache_dir, json_fname).decode('utf-8')
+        elif ADDON_RUNNING_PYTHON_3:
+            json_full_path = os.path.join(self.scraper_cache_dir, json_fname)
+        else:
+            raise TypeError('Undefined Python runtime version.')
         return json_full_path, json_fname
 
     def _lazy_load_global_disk_cache(self, cache_type):
@@ -1854,10 +1848,7 @@ class Scraper(object):
 
         # --- Load cache if file exists ---
         if os.path.isfile(json_file_path):
-            file = open(json_file_path)
-            file_contents = file.read()
-            file.close()
-            self.global_disk_caches[cache_type] = json.loads(file_contents)
+            self.global_disk_caches[cache_type] = self._load_JSON(json_file_path)
             # log_debug('Loaded "{}"'.format(json_file_path))
             log_debug('Loaded "<SCRAPER_CACHE_DIR>/{}"'.format(json_fname))
         else:
@@ -1884,6 +1875,31 @@ class Scraper(object):
         self._lazy_load_global_disk_cache(cache_type)
         self.global_disk_caches[cache_type] = data
         self.global_disk_caches_dirty[cache_type] = True
+
+    # Scrapers have their own disk IO system.
+    # Everything is written and read in UTF-8.
+    def _load_file_to_str(self, filename):
+        # log_debug('Scraper::_load_file_to_str() Loading "{}"'.format(filename))
+        with io.open(filename, 'rt', encoding = 'utf-8') as file:
+            string = file.read()
+        return string
+
+    def _write_str_to_file(self, filename, data_str):
+        # log_debug('Scraper::_write_str_to_file() Saving "{}"'.format(filename))
+        with io.open(filename, 'wt', encoding = 'utf-8', newline = '\n') as file:
+            file.write(data_str)
+
+    def _load_JSON(self, filename):
+        # log_debug('Scraper::_load_JSON() Loading "{}"'.format(filename))
+        with io.open(filename, 'rt', encoding = 'utf-8') as file:
+            data = json.load(file)
+        return data
+
+    def _write_JSON(self, filename, data):
+        # log_debug('Scraper::_write_JSON() Loading "{}"'.format(filename))
+        with io.open(filename, 'wt', encoding = 'utf-8', newline = '\n') as file:
+            file.write(json.dumps(data, ensure_ascii = False, sort_keys = True,
+                indent = Scraper.JSON_indent, separators = Scraper.JSON_separators))
 
 # ------------------------------------------------------------------------------------------------
 # NULL scraper, does nothing.
@@ -2385,6 +2401,8 @@ class TheGamesDB(Scraper):
             search_string_encoded = urllib.quote_plus(search_term.encode('utf8'))
         elif ADDON_RUNNING_PYTHON_3:
             search_string_encoded = urllib.parse.quote_plus(search_term.encode('utf8'))
+        else:
+            raise TypeError('Undefined Python runtime version.')
         url_tail = '?apikey={}&name={}&filter[platform]={}'.format(self._get_API_key(),
             search_string_encoded, scraper_platform)
         url = TheGamesDB.URL_ByGameName + url_tail
@@ -2405,10 +2423,8 @@ class TheGamesDB(Scraper):
     def _retrieve_games_from_url(self, url, search_term, platform, scraper_platform, st_dic):
         # --- Get URL data as JSON ---
         json_data = self._retrieve_URL_as_JSON(url, st_dic)
-        # If st_dic mark an error there was an exception. Return None.
+        # If st_dic marks an error there was an exception. Return None.
         if kodi_is_error_status(st_dic): return None
-        # If no games were found st_dic['abort'] is False and json_data is None.
-        # Return empty list of candidates.
         self._dump_json_debug('TGDB_get_candidates.json', json_data)
 
         # --- Parse game list ---
@@ -2425,9 +2441,13 @@ class TheGamesDB(Scraper):
             candidate['scraper_platform'] = item['platform']
             candidate['order'] = 1
             # Increase search score based on our own search.
-            if title.lower() == search_term.lower():                  candidate['order'] += 2
-            if title.lower().find(search_term.lower()) != -1:         candidate['order'] += 1
-            if scraper_platform > 0 and platform == scraper_platform: candidate['order'] += 1
+            if title.lower() == search_term.lower():
+                candidate['order'] += 2
+            if title.lower().find(search_term.lower()) != -1:
+                candidate['order'] += 1
+            # if scraper_platform > 0 and platform == scraper_platform:
+            if scraper_platform != DEFAULT_PLAT_TGDB and platform == scraper_platform:
+                candidate['order'] += 1
             candidate_list.append(candidate)
 
         # --- Recursively load more games ---
@@ -2912,6 +2932,8 @@ class MobyGames(Scraper):
             search_string_encoded = urllib.quote_plus(search_term.encode('utf8'))
         elif ADDON_RUNNING_PYTHON_3:
             search_string_encoded = urllib.parse.quote_plus(search_term.encode('utf8'))
+        else:
+            raise TypeError('Undefined Python runtime version.')
         if scraper_platform == '0':
             # Unkwnon or wrong platform case.
             url_tail = '?api_key={}&format=brief&title={}'.format(self.api_key,
@@ -3665,10 +3687,11 @@ class ScreenScraper(Scraper):
         md5_str = checksums['md5']
         sha1_str = checksums['sha1']
         if ADDON_RUNNING_PYTHON_2:
-            # rom_name = urllib.quote(checksums['rom_name'])
             rom_name = urllib.quote_plus(checksums['rom_name'])
         elif ADDON_RUNNING_PYTHON_3:
             rom_name = urllib.parse.quote_plus(checksums['rom_name'])
+        else:
+            raise TypeError('Undefined Python runtime version.')
         rom_size = checksums['size']
         # log_debug('ScreenScraper._search_candidates_jeuInfos() ssid       "{}"'.format(self.ssid))
         # log_debug('ScreenScraper._search_candidates_jeuInfos() ssid       "{}"'.format('***'))
@@ -3734,6 +3757,8 @@ class ScreenScraper(Scraper):
             recherche = urllib.quote_plus(rombase_noext)
         elif ADDON_RUNNING_PYTHON_3:
             recherche = urllib.parse.quote_plus(rombase_noext)
+        else:
+            raise TypeError('Undefined Python runtime version.')
         log_debug('ScreenScraper._search_candidates_jeuRecherche() system_id  "{}"'.format(system_id))
         log_debug('ScreenScraper._search_candidates_jeuRecherche() recherche  "{}"'.format(recherche))
 
