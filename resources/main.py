@@ -806,21 +806,21 @@ class Main:
             if mindex2 is None: return
 
             if mindex2 == 0:
-                save_DB = _aux_edit_str(self.categories[categoryID], 'm_name', 'Category Title')
+                save_DB = aux_edit_str(self.categories[categoryID], 'm_name', 'Category Title')
                 if not save_DB: return
 
             elif mindex2 == 1:
-                save_DB = _aux_edit_str(self.categories[categoryID], 'm_year', 'Category Release Year')
+                save_DB = aux_edit_str(self.categories[categoryID], 'm_year', 'Category Release Year')
                 if not save_DB: return
 
             # --- Edition of the category genre ---
             elif mindex2 == 2:
-                save_DB = _aux_edit_str(self.categories[categoryID], 'm_genre', 'Category Genre')
+                save_DB = aux_edit_str(self.categories[categoryID], 'm_genre', 'Category Genre')
                 if not save_DB: return
 
             # --- Edition of the category developer ---
             elif mindex2 == 3:
-                save_DB = _aux_edit_str(self.categories[categoryID], 'm_developer', 'Category Developer')
+                save_DB = aux_edit_str(self.categories[categoryID], 'm_developer', 'Category Developer')
                 if not save_DB: return
 
             # --- Edition of the category rating ---
@@ -843,7 +843,7 @@ class Main:
 
             # --- Edition of the plot (description) ---
             elif mindex2 == 5:
-                save_DB = _aux_edit_str(self.categories[categoryID], 'm_plot', 'Category Plot')
+                save_DB = aux_edit_str(self.categories[categoryID], 'm_plot', 'Category Plot')
                 if not save_DB: return
 
             # --- Import category metadata from NFO file (automatic) ---
@@ -1413,17 +1413,17 @@ class Main:
 
             # --- Edition of the launcher release date (year) ---
             elif mindex2 == 2:
-                save_DB = _aux_edit_str(self.launchers[launcherID], 'm_year', 'Launcher Release Year')
+                save_DB = aux_edit_str(self.launchers[launcherID], 'm_year', 'Launcher Release Year')
                 if not save_DB: return
 
             # --- Edition of the launcher genre ---
             elif mindex2 == 3:
-                save_DB = _aux_edit_str(self.launchers[launcherID], 'm_genre', 'Launcher Genre')
+                save_DB = aux_edit_str(self.launchers[launcherID], 'm_genre', 'Launcher Genre')
                 if not save_DB: return
 
             # --- Edition of the launcher developer ---
             elif mindex2 == 4:
-                save_DB = _aux_edit_str(self.launchers[launcherID], 'm_developer', 'Launcher Developer')
+                save_DB = aux_edit_str(self.launchers[launcherID], 'm_developer', 'Launcher Developer')
                 if not save_DB: return
 
             # --- Edition of the launcher rating ---
@@ -1446,7 +1446,7 @@ class Main:
 
             # --- Edit launcher description (plot) ---
             elif mindex2 == 6:
-                save_DB = _aux_edit_str(self.launchers[launcherID], 'm_plot', 'Launcher Plot')
+                save_DB = aux_edit_str(self.launchers[launcherID], 'm_plot', 'Launcher Plot')
                 if not save_DB: return
 
             # --- Import launcher metadata from NFO file (default location) ---
@@ -2763,22 +2763,22 @@ class Main:
 
             # --- Edit of the rom title ---
             if mindex2 == 0:
-                save_DB = _aux_edit_str(roms[romID], 'm_name', 'ROM Title')
+                save_DB = aux_edit_str(roms[romID], 'm_name', 'ROM Title')
                 if not save_DB: return
 
             # --- Edition of the rom release year ---
             elif mindex2 == 1:
-                save_DB = _aux_edit_str(roms[romID], 'm_year', 'ROM Release Year')
+                save_DB = aux_edit_str(roms[romID], 'm_year', 'ROM Release Year')
                 if not save_DB: return
 
             # --- Edition of the rom game genre ---
             elif mindex2 == 2:
-                save_DB = _aux_edit_str(roms[romID], 'm_genre', 'ROM Genre')
+                save_DB = aux_edit_str(roms[romID], 'm_genre', 'ROM Genre')
                 if not save_DB: return
 
             # --- Edition of the rom developer ---
             elif mindex2 == 3:
-                save_DB = _aux_edit_str(roms[romID], 'm_developer', 'ROM Developer')
+                save_DB = aux_edit_str(roms[romID], 'm_developer', 'ROM Developer')
                 if not save_DB: return
 
             # --- Edition of launcher NPlayers ---
@@ -2832,7 +2832,7 @@ class Main:
 
             # --- Edit ROM description (plot) ---
             elif mindex2 == 7:
-                save_DB = _aux_edit_str(roms[romID], 'm_plot', 'ROM Plot')
+                save_DB = aux_edit_str(roms[romID], 'm_plot', 'ROM Plot')
                 if not save_DB: return
 
             # --- Import ROM metadata from NFO file ---
@@ -6140,12 +6140,12 @@ class Main:
 
             # --- Edition of the collection name ---
             if type2 == 0:
-                save_DB = _aux_edit_str(collection, 'm_name', 'Collection Title')
+                save_DB = aux_edit_str(collection, 'm_name', 'Collection Title')
                 if not save_DB: return
 
             # --- Edition of the collection genre ---
             elif type2 == 1:
-                save_DB = _aux_edit_str(collection, 'm_genre', 'Collection Genre')
+                save_DB = aux_edit_str(collection, 'm_genre', 'Collection Genre')
                 if not save_DB: return
 
             # --- Edition of the collection rating ---
@@ -6168,7 +6168,7 @@ class Main:
 
             # --- Edition of the plot (description) ---
             elif type2 == 3:
-                save_DB = _aux_edit_str(collection, 'm_plot', 'Collection Plot')
+                save_DB = aux_edit_str(collection, 'm_plot', 'Collection Plot')
                 if not save_DB: return
 
             # --- Import collection metadata from NFO file (automatic) ---
