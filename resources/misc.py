@@ -494,6 +494,8 @@ def text_get_URL_extension(url):
         path = urlparse.urlparse(url).path
     elif ADDON_RUNNING_PYTHON_3:
         path = urllib.parse.urlparse(url).path
+    else:
+        raise TypeError('Undefined Python runtime version.')
     ext = os.path.splitext(path)[1]
     if ext[0] == '.': ext = ext[1:] # Remove initial dot
     return ext
@@ -504,6 +506,8 @@ def text_get_image_URL_extension(url):
         path = urlparse.urlparse(url).path
     elif ADDON_RUNNING_PYTHON_3:
         path = urllib.parse.urlparse(url).path
+    else:
+        raise TypeError('Undefined Python runtime version.')
     ext = os.path.splitext(path)[1]
     if ext[0] == '.': ext = ext[1:] # Remove initial dot
     ret = 'jpg' if ext == '' else ext
@@ -518,7 +522,12 @@ def text_get_image_URL_extension(url):
 def misc_generate_random_SID():
     t1 = time.time()
     t2 = t1 + random.getrandbits(32)
-    base = hashlib.md5(text_type(t1 + t2))
+    if ADDON_RUNNING_PYTHON_2:
+        base = hashlib.md5(text_type(t1 + t2))
+    elif ADDON_RUNNING_PYTHON_3:
+        base = hashlib.md5(binary_type(t1 + t2))
+    else:
+        raise TypeError('Undefined Python runtime version.')
     sid = base.hexdigest()
     return sid
 
