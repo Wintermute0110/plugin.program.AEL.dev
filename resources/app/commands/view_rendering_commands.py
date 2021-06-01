@@ -49,13 +49,14 @@ def cmd_render_view_data(args):
     with uow:
         categories_repository   = CategoryRepository(uow)
         romsets_repository      = ROMSetRepository(uow)
+        roms_repository         = ROMsRepository(uow)
         views_repository        = ViewRepository(globals.g_PATHS, globals.router)
                 
         if category_id is None:
-            _render_root_view(categories_repository, romsets_repository, views_repository, render_recursive)
+            _render_root_view(categories_repository, romsets_repository, roms_repository, views_repository, render_recursive)
         else:
             category = categories_repository.find_category(category_id)
-            _render_category_view(category, categories_repository, romsets_repository, views_repository)
+            _render_category_view(category, categories_repository, romsets_repository, roms_repository, views_repository)
         
     kodi.notify('Selected views rendered')
     kodi.refresh_container()
@@ -97,7 +98,8 @@ def cmd_cleanup_views(args):
                 view_file.unlink()
        
 def _render_root_view(categories_repository: CategoryRepository, romsets_repository: ROMSetRepository, 
-                      views_repository: ViewRepository, render_sub_views = False):
+                      roms_repository: ROMsRepository, views_repository: ViewRepository, 
+                      render_sub_views = False):
     
     root_categories = categories_repository.find_root_categories()
     root_romsets = romsets_repository.find_root_romsets()
@@ -113,7 +115,8 @@ def _render_root_view(categories_repository: CategoryRepository, romsets_reposit
         logger.debug('Processing category "{}"'.format(root_category.get_name()))
         root_items.append(_render_category_listitem(root_category))
         if render_sub_views:
-            _render_category_view(root_category, categories_repository, romsets_repository, views_repository)
+            _render_category_view(root_category, categories_repository, romsets_repository, 
+                                  roms_repository, views_repository)
 
     for root_romset in root_romsets:
         logger.debug('Processing romset "{}"'.format(root_romset.get_name()))
@@ -124,8 +127,8 @@ def _render_root_view(categories_repository: CategoryRepository, romsets_reposit
     views_repository.store_root_view(root_data)
         
 def _render_category_view(category_obj: Category, categories_repository: CategoryRepository, 
-                         romsets_repository: ROMSetRepository, views_repository: ViewRepository,
-                         render_sub_views = False):
+                         romsets_repository: ROMSetRepository, roms_repository: ROMsRepository,
+                         views_repository: ViewRepository, render_sub_views = False):
     
     sub_categories = categories_repository.find_categories_by_parent(category_obj.get_id())
     romsets = romsets_repository.find_romsets_by_parent(category_obj.get_id())
@@ -187,6 +190,69 @@ def _render_romset_listitem(romset_obj: ROMSet):
     romset_name = romset_obj.get_name()
     ICON_OVERLAY = 5 if romset_obj.is_finished() else 4
     assets = romset_obj.get_mapped_assets()
+
+    return { 
+        'id': romset_obj.get_id(),
+        'name': romset_name,
+        'url': globals.router.url_for_path('collection/{}'.format(romset_obj.get_id())),
+        'is_folder': True,
+        'type': 'video',
+        'info': {
+            'title'   : romset_name,              'year'    : romset_obj.get_releaseyear(),
+            'genre'   : romset_obj.get_genre(),   'studio'  : romset_obj.get_developer(),
+            'rating'  : romset_obj.get_rating(),  'plot'    : romset_obj.get_plot(),
+            'trailer' : romset_obj.get_trailer(), 'overlay' : ICON_OVERLAY
+        },
+        'art': assets,
+        'properties': { 
+            AEL_CONTENT_LABEL: AEL_CONTENT_VALUE_LAUNCHERS,
+            'platform': romset_obj.get_platform(),
+            'obj_type': OBJ_ROMSET
+            #,'launcher_type': 'ROM'
+        }
+    }
+
+def _render_rom_listitem(rom_obj: ROM):
+    # --- Do not render row if romset finished ---
+    if rom_obj.is_finished() and settings.getSettingAsBool('display_hide_finished'): return
+
+    rom_raw_name    = rom_obj.get_name()
+    platform        = rom_obj.get_platform()
+
+    ICON_OVERLAY = 5 if rom_obj.is_finished() else 4
+    assets = rom_obj.get_mapped_assets()
+
+    # --- Default values for flags ---
+    AEL_InFav_bool_value     = AEL_INFAV_BOOL_VALUE_FALSE
+    AEL_MultiDisc_bool_value = AEL_MULTIDISC_BOOL_VALUE_FALSE
+    AEL_Fav_stat_value       = AEL_FAV_STAT_VALUE_NONE
+    AEL_NoIntro_stat_value   = AEL_NOINTRO_STAT_VALUE_NONE
+    AEL_PClone_stat_value    = AEL_PCLONE_STAT_VALUE_NONE
+
+    fav_status      = rom_obj.get_favourite_status()
+    if   fav_status == 'OK':                AEL_Fav_stat_value = AEL_FAV_STAT_VALUE_OK
+    elif fav_status == 'Unlinked ROM':      AEL_Fav_stat_value = AEL_FAV_STAT_VALUE_UNLINKED_ROM
+    elif fav_status == 'Unlinked Launcher': AEL_Fav_stat_value = AEL_FAV_STAT_VALUE_UNLINKED_LAUNCHER
+    elif fav_status == 'Broken':            AEL_Fav_stat_value = AEL_FAV_STAT_VALUE_BROKEN
+    else:                                   AEL_Fav_stat_value = AEL_FAV_STAT_VALUE_NONE
+
+    # --- NoIntro status flag ---
+    nstat = rom_obj.get_nointro_status()
+    if   nstat == AUDIT_STATUS_HAVE:    AEL_NoIntro_stat_value = AEL_NOINTRO_STAT_VALUE_HAVE
+    elif nstat == AUDIT_STATUS_MISS:    AEL_NoIntro_stat_value = AEL_NOINTRO_STAT_VALUE_MISS
+    elif nstat == AUDIT_STATUS_UNKNOWN: AEL_NoIntro_stat_value = AEL_NOINTRO_STAT_VALUE_UNKNOWN
+    elif nstat == AUDIT_STATUS_NONE:    AEL_NoIntro_stat_value = AEL_NOINTRO_STAT_VALUE_NONE
+
+    # --- Mark clone ROMs ---
+    pclone_status = rom_obj.get_pclone_status()
+    if   pclone_status == PCLONE_STATUS_PARENT: AEL_PClone_stat_value = AEL_PCLONE_STAT_VALUE_PARENT
+    elif pclone_status == PCLONE_STATUS_CLONE:  AEL_PClone_stat_value = AEL_PCLONE_STAT_VALUE_CLONE
+    
+    rom_in_fav = rom_obj.is_favourite()
+    if rom_in_fav: AEL_InFav_bool_value = AEL_INFAV_BOOL_VALUE_TRUE
+
+     # --- Set common flags to all launchers---
+    if rom_obj.has_multiple_disks(): AEL_MultiDisc_bool_value = AEL_MULTIDISC_BOOL_VALUE_TRUE
 
     return { 
         'id': romset_obj.get_id(),

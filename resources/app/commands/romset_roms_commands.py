@@ -103,6 +103,7 @@ def cmd_set_roms_default_artwork(args):
         if selected_asset_info is None:
             # >> Return to parent menu.
             logger.debug('cmd_set_roms_default_artwork() Main selected NONE. Returning to parent menu.')
+            kodi.event(method='ROMSET_MANAGE_ROMS', data=args)
             return
         
         logger.debug('cmd_set_roms_default_artwork() Main select() returned {0}'.format(selected_asset_info.name))    
@@ -259,9 +260,10 @@ def cmd_import_roms_json(args):
         repository        = ROMsRepository(uow)
         romset_repository = ROMSetRepository(uow) 
         
-        romset            = romset_repository.find_romset(romset_id)
-        existing_roms     = [*repository.find_roms_by_romset(romset_id)]
-        existing_rom_ids  = map(lambda r: r.get_id(), existing_roms)
+        romset              = romset_repository.find_romset(romset_id)
+        existing_roms       = [*repository.find_roms_by_romset(romset_id)]
+        existing_rom_ids    = map(lambda r: r.get_id(), existing_roms)
+        existing_rom_names  = map(lambda r: r.get_name(), existing_roms)
 
         roms_to_insert:typing.List[ROM]  = []
         roms_to_update:typing.List[ROM]  = []
@@ -278,6 +280,11 @@ def cmd_import_roms_json(args):
             for imported_rom in imported_roms:
                 if imported_rom.get_id() in existing_rom_ids:
                      # >> ROM exists (by id). Overwrite?
+                    logger.debug('ROM found. Edit existing category.')
+                    if kodi.dialog_yesno('ROM "{}" found in AEL database. Overwrite?'.format(imported_rom.get_name())):
+                        roms_to_update.append(imported_rom)
+                elif imported_rom.get_name() in existing_rom_names:
+                     # >> ROM exists (by name). Overwrite?
                     logger.debug('ROM found. Edit existing category.')
                     if kodi.dialog_yesno('ROM "{}" found in AEL database. Overwrite?'.format(imported_rom.get_name())):
                         roms_to_update.append(imported_rom)

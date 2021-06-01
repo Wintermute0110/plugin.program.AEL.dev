@@ -846,6 +846,9 @@ class ROM(MetaDataItemABC):
     def get_favourite_status(self):
         return self.entity_data['fav_status'] if 'fav_status' in self.entity_data else None
 
+    def is_favourite(self) -> bool:
+        return self.entity_data['is_favourite'] if 'is_favourite' in self.entity_data else False
+
     def get_launch_count(self):
         return self.entity_data['launch_count']
 
