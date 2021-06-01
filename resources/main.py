@@ -8161,10 +8161,11 @@ class Main:
             log_info('_command_run_rom() ROMFileName.getPath()         "{}"'.format(ROMFileName.getPath()))
             log_info('_command_run_rom() label_str                     "{}"'.format(label_str))
 
-            # --- User notification ---
+            # User notification.
             if self.settings['display_launcher_notify']:
                 kodi_notify('Launching "{}" with Retroplayer'.format(romtitle))
 
+            # Launch.
             log_debug('_command_run_rom() Calling xbmc.Player().play() ...')
             xbmc.Player().play(ROMFileName.getPath(), listitem)
             log_debug('_command_run_rom() Calling xbmc.Player().play() returned. Leaving function.')

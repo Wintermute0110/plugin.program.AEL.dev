@@ -144,6 +144,11 @@ WIP      [SCRAPERS] ScreenScraper must choose the correct artwork depending on t
          DATs, to translate to ScreenScraper values. A No-Intro filename parser is also
          required.
 
+WIP FIX  Fix launching of ROMs with Windows network filenames.
+         Fixing this requires the creation of a custom version of the shlex module.
+         To test this I created a test script in dev-core/test_argument_generation.py
+         See https://forum.kodi.tv/showthread.php?tid=287826&pid=2919639#pid2919639
+
 
 [B]Advanced Emulator Launcher | version 0.10.0 | xx xxxxx 2021[/B]
 
@@ -180,11 +185,8 @@ FIX      Fix TheGamesDB scraper. New asset titlescreen in TheGamesDB.
          See https://forums.thegamesdb.net/viewtopic.php?f=5&t=1947
          See https://github.com/Wintermute0110/plugin.program.AEL/issues/127
 
-WIP      Fix launching of LNK ROM launchers with spaces in LNK filename.
+FIX      Fix launching of LNK ROM launchers with spaces in LNK filename.
          See https://github.com/Wintermute0110/plugin.program.AEL/issues/125
-
-WIP FIX  Fix launching of ROMs with Windows network filenames.
-         See https://forum.kodi.tv/showthread.php?tid=287826&pid=2919639#pid2919639
 
 
 [B]Advanced Emulator Launcher | version 0.9.9 | 13 March 2020[/B]
