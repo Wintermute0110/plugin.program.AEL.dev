@@ -5109,9 +5109,8 @@ class Main:
             vlauncher_name = vlauncher['name'] + '  ({} ROM/s)'.format(vlauncher['rom_count'])
             listitem = xbmcgui.ListItem(vlauncher_name)
             listitem.setInfo('video', {
-                'title' : 'Title text',
-                # 'plot' : 'Test plot',
-                'overlay' : 4,
+                'title' : vlauncher_name,
+                'overlay' : KODI_ICON_OVERLAY_UNWATCHED,
                 'size' : vlauncher['rom_count'],
             })
             listitem.setArt({'icon': 'DefaultFolder.png'})
