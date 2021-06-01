@@ -904,8 +904,8 @@ class KodiKeyboardDialog(object):
     # Use a different name from getText() to avoid coding errors.
     def getData(self): return self.keyboard.getText().decode('utf-8')
 
-# Wrapper function to get a text from the keyboard or None if the keyboard modal
-# dialog was canceled.
+# Wrapper function to get a text from the keyboard or None if the keyboard
+# modal dialog was canceled.
 def kodi_get_keyboard_text(heading = 'Kodi keyboard', default_text = ''):
     keyboard = KodiKeyboardDialog(heading, default_text)
     keyboard.executeDialog()

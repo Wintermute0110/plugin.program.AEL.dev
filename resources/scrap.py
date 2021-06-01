@@ -3165,6 +3165,7 @@ class MobyGames(Scraper):
 # ScreenScraper online scraper. Uses V2 API.
 #
 # | Site        | https://www.screenscraper.fr             |
+# | FAQ         | https://www.screenscraper.fr/faq.php     |
 # | API V1 docs | https://www.screenscraper.fr/webapi.php  |
 # | API V2 docs | https://www.screenscraper.fr/webapi2.php |
 #
@@ -3396,6 +3397,12 @@ class ScreenScraper(Scraper):
         self.user_language = ScreenScraper.language_list[self.language_idx]
         log_debug('ScreenScraper.__init__() User preferred language "{}"'.format(self.user_language))
 
+        # Deque object to keep the timestamps of SS request, to check overloading.
+        # ScreenScraper has a limitation of max requests per minute.
+        #
+        # See comments in self._wait_for_asset_request()
+        # self.c_timestamps = collections.deque()
+
         # --- Pass down common scraper settings ---
         super(ScreenScraper, self).__init__(settings)
 
@@ -3519,12 +3526,20 @@ class ScreenScraper(Scraper):
         log_debug('ScreenScraper.get_assets() Total assets {} / Returned assets {}'.format(
             len(all_asset_list), len(asset_list)))
 
-        # Wait some time to avoid scraper overloading.
+        # Wait some time to avoid scraper overloading. Do not wait if the asset list is empty.
+        #
         # As soon as we return from get_assets() the ROM scanner quickly chooses one
         # asset and start the download. Then, get_assets() is called again with different
         # asset_ID. Make sure we wait some time here so there is some time between asset
         # download to not overload ScreenScraper.
-        self._wait_for_asset_request()
+        #
+        # In the future I will change the scraper API so the asset download will be done
+        # by the scraper object. Hence, all the communications with the scraper server will
+        # be handled by the scraper object and scraper overloading can be controlled much better.
+        if len(asset_list) > 0:
+            self._wait_for_asset_request()
+        else:
+            log_debug('ScreenScraper.get_assets() No assets returned so no overloading waiting time.')
 
         return asset_list
 
@@ -3539,7 +3554,6 @@ class ScreenScraper(Scraper):
         # else:                            raise ValueError
         url = selected_asset['url']
         url_log = self._clean_URL_for_log(url)
-
         return url, url_log
 
     def resolve_asset_URL_extension(self, selected_asset, url, st_dic):
@@ -4156,7 +4170,7 @@ class ScreenScraper(Scraper):
                 'Error decoding JSON data from ScreenScraper (fixed version).')
             return None
 
-    # All ScreenScraper URLs must have this arguments.
+    # All ScreenScraper URLs must have these arguments.
     # In Python 3 base64.b64decode() returns bytes! https://docs.python.org/3/library/base64.html
     def _get_common_SS_URL(self):
         t = '?devid={}&devpassword={}&softname={}&output=json&ssid={}&sspassword={}'
