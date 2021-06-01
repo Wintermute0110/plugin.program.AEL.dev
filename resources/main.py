@@ -6083,18 +6083,25 @@ class Main:
         xbmcplugin.endOfDirectory(handle = self.addon_handle, succeeded = True, cacheToDisc = False)
 
     # Adds a new collection
+    # A collection ID is not random, it is related to the collection name.
+    # In other words, there could not be two collections with the same name.
     def _command_add_collection(self):
         COL = fs_load_Collection_index_XML(g_PATHS.COLLECTIONS_FILE_PATH)
-        new_value_str = kodi_get_keyboard_text('New Collection name')
+        collection_name = kodi_get_keyboard_text('New Collection name')
+        if collection_name is None:
+            kodi_notify('ROM Collection creation cancelled')
+            return
         collection = fs_new_collection()
-        collection_name = new_value_str
         collection_id_md5 = hashlib.md5(collection_name.encode('utf-8'))
         collection_UUID = collection_id_md5.hexdigest()
         collection_base_name = fs_get_collection_ROMs_basename(collection_name, collection_UUID)
-        collection['id']              = collection_UUID
-        collection['m_name']          = collection_name
+        collection['id'] = collection_UUID
+        collection['m_name'] = collection_name
         collection['roms_base_noext'] = collection_base_name
-        COL['collections'][collection_UUID]  = collection
+        if collection_UUID in COL['collections']:
+            kodi_notify_error('ROM Collection repeated name')
+            return
+        COL['collections'][collection_UUID] = collection
         log_debug('_command_add_collection() id              "{}"'.format(collection['id']))
         log_debug('_command_add_collection() m_name          "{}"'.format(collection['m_name']))
         log_debug('_command_add_collection() roms_base_noext "{}"'.format(collection['roms_base_noext']))
