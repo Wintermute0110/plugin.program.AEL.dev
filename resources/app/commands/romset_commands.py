@@ -62,13 +62,13 @@ def cmd_edit_romset(args):
     options['ROMSET_EDIT_ASSETS']         = 'Edit Assets/Artwork ...'
     options['ROMSET_EDIT_DEFAULT_ASSETS'] = 'Choose default Assets/Artwork ...'
     options['EDIT_ROMSET_CATEGORY']       = "Change Category: '{0}'".format(category_name)
-    options['EDIT_ROMSET_STATUS']         = 'ROMSet status: {0}'.format(romset.get_finished_str())
+    options['EDIT_ROMSET_STATUS']         = 'ROM Collection status: {0}'.format(romset.get_finished_str())
     options['LAUNCHER_ADVANCED_MODS']     = 'Advanced Modifications ...'
     options['ROMSET_MANAGE_ROMS']         = 'Manage ROMs ...'
-    options['EXPORT_ROMSET']              = 'Export ROMSet XML configuration ...'
-    options['DELETE_ROMSET']              = 'Delete ROMSet'
+    options['EXPORT_ROMSET']              = 'Export ROM Collection XML configuration ...'
+    options['DELETE_ROMSET']              = 'Delete ROM Collection'
 
-    s = 'Select action for ROMSet "{}"'.format(romset.get_name())
+    s = 'Select action for ROM Collection "{}"'.format(romset.get_name())
     selected_option = kodi.OrdDictionaryDialog().select(s, options)
     if selected_option is None:
         # >> Exits context menu
@@ -77,7 +77,9 @@ def cmd_edit_romset(args):
     
     # >> Execute subcommand. May be atomic, maybe a submenu.
     logger.debug('EDIT_ROMSET: cmd_edit_romset() Selected {}'.format(selected_option))
-    kodi.event(method=selected_option, data={'romset_id': romset_id, 'category_id': romset.get_parent_id()})
+    kodi.event(method=selected_option, data = {
+        'romset_id': romset_id, 'category_id': romset.get_parent_id()
+    })
 
 # --- Submenu commands ---
 @AppMediator.register('ROMSET_EDIT_METADATA')
@@ -194,7 +196,7 @@ def cmd_romset_status(args):
 #
 # Remove ROMSet
 #
-@AppMediator.register.action('DELETE_ROMSET')
+@AppMediator.register('DELETE_ROMSET')
 def cmd_romset_delete(args):
     romset_id = args['romset_id'] if 'romset_id' in args else None
     uow = UnitOfWork(globals.g_PATHS.DATABASE_FILE_PATH)

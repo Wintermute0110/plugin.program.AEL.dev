@@ -542,7 +542,7 @@ class ROMSetRepository(object):
 #
 # ROMsRepository -> ROMs from SQLite DB
 #     
-QUERY_SELECT_ROMS_BY_SET    = "SELECT * FROM vw_rom WHERE parent_id = ?"
+QUERY_SELECT_ROMS_BY_SET    = "SELECT * FROM vw_roms WHERE parent_id = ?"
 QUERY_INSERT_ROM            = """
                                 INSERT INTO roms (
                                     id, parent_id, metadata_id, name, num_of_players, esrb_rating,
@@ -564,7 +564,6 @@ class ROMsRepository(object):
             yield ROM(rom_data)
 
     def save_rom(self, rom_obj: ROM): 
-        
         rom_assets = rom_obj.get_assets_odict()
         for asset in rom_assets:
             asset_db_id = text.misc_generate_random_SID()

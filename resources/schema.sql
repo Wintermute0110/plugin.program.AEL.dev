@@ -162,8 +162,8 @@ CREATE VIEW IF NOT EXISTS vw_categories AS SELECT
     c.default_banner AS default_banner,
     c.default_poster AS default_poster,
     c.default_clearlogo AS default_clearlogo,
-    0 AS num_romsets,
-    0 AS num_categories
+    (SELECT COUNT(*) FROM categories AS sc WHERE sc.parent_id = c.id) AS num_categories,
+    (SELECT COUNT(*) FROM romsets AS sr WHERE sr.parent_id = c.id) AS num_romsets
 FROM categories AS c 
     INNER JOIN metadata AS m ON c.metadata_id = m.id
     LEFT JOIN category_assets AS ca_icon ON ca_icon.category_id = c.id
@@ -179,7 +179,6 @@ FROM categories AS c
     LEFT JOIN category_assets AS ca_trailer ON ca_trailer.category_id = c.id
         INNER JOIN assets AS a_trailer ON a_trailer.id = ca_trailer.asset_id AND a_trailer.asset_type = 'trailer';
        
-
 CREATE VIEW IF NOT EXISTS vw_romsets AS SELECT 
     r.id AS id, 
     r.parent_id AS parent_id,
@@ -206,7 +205,8 @@ CREATE VIEW IF NOT EXISTS vw_romsets AS SELECT
     r.default_banner AS default_banner,
     r.default_poster AS default_poster,
     r.default_controller AS default_controller,
-    r.default_clearlogo AS default_clearlogo
+    r.default_clearlogo AS default_clearlogo,
+    (SELECT COUNT(*) FROM roms AS rms WHERE rms.parent_id = r.id) as num_roms
 FROM romsets AS r 
     INNER JOIN metadata AS m ON r.metadata_id = m.id
     LEFT JOIN romset_assets AS rsa_icon ON rsa_icon.romset_id = r.id
@@ -237,7 +237,7 @@ CREATE VIEW IF NOT EXISTS vw_roms AS SELECT
     r.name AS m_name,
     r.num_of_players AS m_nplayers,
     r.esrb_rating AS m_esrb,
-    r.file_path AS filename
+    r.file_path AS filename,
     r.nointro_status AS nointro_status,
     r.pclone_status AS pclone_status,
     r.cloneof AS cloneof,

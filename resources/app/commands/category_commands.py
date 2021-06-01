@@ -199,7 +199,7 @@ def cmd_category_status(args):
 #
 # Remove category. Also removes launchers in that category
 #
-@AppMediator.register.action('DELETE_CATEGORY')
+@AppMediator.register('DELETE_CATEGORY')
 def cmd_category_delete(args):
     category_id = args['category_id'] if 'category_id' in args else None    
     uow = UnitOfWork(globals.g_PATHS.DATABASE_FILE_PATH)

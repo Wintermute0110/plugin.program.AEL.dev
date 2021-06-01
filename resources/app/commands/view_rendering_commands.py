@@ -33,8 +33,10 @@ def cmd_render_views_data(args):
     with uow:
         categories_repository   = CategoryRepository(uow)
         romsets_repository      = ROMSetRepository(uow)
+        roms_repository         = ROMsRepository(uow)
         views_repository        = ViewRepository(globals.g_PATHS, globals.router)
-        _render_root_view(categories_repository, romsets_repository, views_repository, render_sub_views=True)
+        
+        _render_root_view(categories_repository, romsets_repository, roms_repository, views_repository, render_sub_views=True)
         
     kodi.notify('All views rendered')
     kodi.refresh_container()
@@ -69,10 +71,11 @@ def cmd_render_romset_view_data(args):
     uow = UnitOfWork(globals.g_PATHS.DATABASE_FILE_PATH)
     with uow:
         romsets_repository = ROMSetRepository(uow)
+        roms_repository    = ROMsRepository(uow)
         views_repository   = ViewRepository(globals.g_PATHS, globals.router)
              
         romset = romsets_repository.find_romset(romset_id)
-        #_render_romset_view(romset, romsets_repository, views_repository)
+        _render_romset_view(romset, roms_repository, views_repository)
     
     kodi.notify('Selected views rendered')
     kodi.refresh_container()
@@ -87,8 +90,8 @@ def cmd_cleanup_views(args):
         categories = categories_repository.find_all_categories()
         romsets = romsets_repository.find_all_romsets()
         
-        category_ids = list(map(c.get_id() for c in categories))
-        romset_ids = list(map(r.get_id() for r in romsets))
+        category_ids = list(c.get_id() for c in categories)
+        romset_ids = list(r.get_id() for r in romsets)
         
         view_files = globals.g_PATHS.COLLECTIONS_DIR.scanFilesInPath('collection_*.json')
         for view_file in view_files:
@@ -121,6 +124,8 @@ def _render_root_view(categories_repository: CategoryRepository, romsets_reposit
     for root_romset in root_romsets:
         logger.debug('Processing romset "{}"'.format(root_romset.get_name()))
         root_items.append(_render_romset_listitem(root_romset))
+        if render_sub_views:
+            _render_romset_view(root_romset, roms_repository, views_repository)
 
     logger.debug('Storing {} items in root view.'.format(len(root_items)))
     root_data['items'] = root_items
@@ -149,11 +154,31 @@ def _render_category_view(category_obj: Category, categories_repository: Categor
     for romset in romsets:
         logger.debug('Processing romset "{}"'.format(romset.get_name()))
         view_items.append(_render_romset_listitem(romset))
-        ## process roms view
+        if render_sub_views:
+            _render_romset_view(romset, roms_repository, views_repository)
         
     logger.debug('Storing {} items for category "{}" view.'.format(len(view_items), category_obj.get_name()))
     view_data['items'] = view_items
     views_repository.store_view(category_obj.get_id(), view_data)
+
+def _render_romset_view(romset_obj: ROMSet, roms_repository: ROMsRepository, views_repository: ViewRepository):
+    
+    roms = roms_repository.find_roms_by_romset(romset_obj.get_id())
+    
+    view_data = {
+        'id': romset_obj.get_id(),
+        'name': romset_obj.get_name(),
+        'obj_type': OBJ_ROMSET,
+        'items': []
+    }
+    view_items = []
+    for rom in roms:
+        logger.debug('Processing rom "{}"'.format(rom.get_name()))
+        view_items.append(_render_rom_listitem(rom))
+        
+    logger.debug('Storing {} items for romset "{}" view.'.format(len(view_items), romset_obj.get_name()))
+    view_data['items'] = view_items
+    views_repository.store_view(romset_obj.get_id(), view_data)
 
 def _render_category_listitem(category_obj: Category):
     # --- Do not render row if category finished ---
@@ -207,17 +232,14 @@ def _render_romset_listitem(romset_obj: ROMSet):
         'properties': { 
             AEL_CONTENT_LABEL: AEL_CONTENT_VALUE_LAUNCHERS,
             'platform': romset_obj.get_platform(),
+            'boxsize': romset_obj.get_box_sizing(),
             'obj_type': OBJ_ROMSET
-            #,'launcher_type': 'ROM'
         }
     }
 
 def _render_rom_listitem(rom_obj: ROM):
     # --- Do not render row if romset finished ---
     if rom_obj.is_finished() and settings.getSettingAsBool('display_hide_finished'): return
-
-    rom_raw_name    = rom_obj.get_name()
-    platform        = rom_obj.get_platform()
 
     ICON_OVERLAY = 5 if rom_obj.is_finished() else 4
     assets = rom_obj.get_mapped_assets()
@@ -255,22 +277,30 @@ def _render_rom_listitem(rom_obj: ROM):
     if rom_obj.has_multiple_disks(): AEL_MultiDisc_bool_value = AEL_MULTIDISC_BOOL_VALUE_TRUE
 
     return { 
-        'id': romset_obj.get_id(),
-        'name': romset_name,
-        'url': globals.router.url_for_path('collection/{}'.format(romset_obj.get_id())),
-        'is_folder': True,
+        'id': rom_obj.get_id(),
+        'name': rom_obj.get_name(),
+        'url': globals.router.url_for_path('execute/rom/{}'.format(rom_obj.get_id())),
+        'is_folder': False,
         'type': 'video',
         'info': {
-            'title'   : romset_name,              'year'    : romset_obj.get_releaseyear(),
-            'genre'   : romset_obj.get_genre(),   'studio'  : romset_obj.get_developer(),
-            'rating'  : romset_obj.get_rating(),  'plot'    : romset_obj.get_plot(),
-            'trailer' : romset_obj.get_trailer(), 'overlay' : ICON_OVERLAY
+            'title'   : rom_obj.get_name(),    'year'    : rom_obj.get_releaseyear(),
+            'genre'   : rom_obj.get_genre(),   'studio'  : rom_obj.get_developer(),
+            'rating'  : rom_obj.get_rating(),  'plot'    : rom_obj.get_plot(),
+            'trailer' : rom_obj.get_trailer(), 'overlay' : ICON_OVERLAY
         },
         'art': assets,
         'properties': { 
-            AEL_CONTENT_LABEL: AEL_CONTENT_VALUE_LAUNCHERS,
-            'platform': romset_obj.get_platform(),
-            'obj_type': OBJ_ROMSET
-            #,'launcher_type': 'ROM'
+            'platform': rom_obj.get_platform(),
+            'nplayers': rom_obj.get_number_of_players(),
+            'esrb':     rom_obj.get_esrb_rating(),
+            'boxsize':  rom_obj.get_box_sizing(),
+            'obj_type': OBJ_ROM,
+            # --- ROM flags (Skins will use these flags to render icons) ---
+            AEL_CONTENT_LABEL:        AEL_CONTENT_VALUE_ROM,
+            AEL_INFAV_BOOL_LABEL:     AEL_InFav_bool_value,
+            AEL_MULTIDISC_BOOL_LABEL: AEL_MultiDisc_bool_value,
+            AEL_FAV_STAT_LABEL:       AEL_Fav_stat_value,
+            AEL_NOINTRO_STAT_LABEL:   AEL_NoIntro_stat_value,
+            AEL_PCLONE_STAT_LABEL:    AEL_PClone_stat_value
         }
     }

@@ -9,7 +9,7 @@ import random
 import hashlib
 import re
 
-def createError(ex):
+def createError(ex: Exception):
     template = (
         "EXCEPTION Thrown (PythonToCppException) : -->Python callback/script returned the following error<--\n"
         " - NOTE: IGNORING THIS CAN LEAD TO MEMORY LEAKS!\n"

@@ -120,8 +120,16 @@ def vw_add_category(category_id: str):
     kodi.event(method='ADD_CATEGORY', data={'category_id': category_id})
 
 @router.route('/categories/edit/<category_id>')
-def vw_add_category(category_id: str):
+def vw_edit_category(category_id: str):
     kodi.event(method='EDIT_CATEGORY', data={'category_id': category_id })
+
+@router.route('/romset/add/<romset_id>')
+def vw_add_romset(romset_id: str):
+    kodi.event(method='ADD_ROMSET', data={'romset_id': romset_id})
+
+@router.route('/romset/edit/<romset_id>')
+def vw_edit_category(romset_id: str):
+    kodi.event(method='EDIT_ROMSET', data={'romset_id': romset_id })
 
 @router.route('EXECUTE')
 def vw_route_execute_rom(rom_id):
@@ -183,7 +191,7 @@ def vw_misc_set_AEL_Content(AEL_Content_Value):
                   'property "{0}" = "{1}"'.format(AEL_CONTENT_LABEL, AEL_CONTENT_VALUE_LAUNCHERS))
         xbmcgui.Window(AEL_CONTENT_WINDOW_ID).setProperty(AEL_CONTENT_LABEL, AEL_CONTENT_VALUE_LAUNCHERS)
         
-    elif AEL_Content_Value == AEL_CONTENT_VALUE_LAUNCHERS:
+    elif AEL_Content_Value == AEL_CONTENT_VALUE_CATEGORY:
         logger.debug('vw_misc_set_AEL_Content() Setting Window({0}) '.format(AEL_CONTENT_WINDOW_ID) +
                   'property "{0}" = "{1}"'.format(AEL_CONTENT_LABEL, AEL_CONTENT_VALUE_CATEGORY))
         xbmcgui.Window(AEL_CONTENT_WINDOW_ID).setProperty(AEL_CONTENT_LABEL, AEL_CONTENT_VALUE_CATEGORY)        

@@ -1,6 +1,6 @@
 import logging
 
-from resources.lib.utils import text
+from resources.lib.utils import text, kodi
 
 logger = logging.getLogger(__name__)
 
@@ -35,3 +35,4 @@ class AppMediator(object):
             except Exception as ex:
                 message = text.createError(ex)
                 logger.fatal(message)
+                kodi.notify_error('Failure processing command "{}"'.format(event))

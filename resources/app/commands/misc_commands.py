@@ -112,6 +112,7 @@ def cmd_execute_reset_db(args):
     uow = UnitOfWork(globals.g_PATHS.DATABASE_FILE_PATH)
     uow.reset_database(globals.g_PATHS.DATABASE_SCHEMA_PATH)
 
+    kodi.event(method='CLEANUP_VIEWS')
     kodi.event(method='RENDER_VIEWS')
     kodi.notify('Finished resetting the database')
 

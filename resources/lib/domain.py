@@ -609,7 +609,7 @@ class ROMSet(MetaDataItemABC):
     # Note that the mapped asset uses diferent fields wheter it is a Category/Launcher/ROM
     #
     def get_mapped_ROM_asset_key(self, asset_info: AssetInfo) -> str:
-        if asset_info.rom_default_key is '':
+        if asset_info.rom_default_key == '':
             logger.error('Requested mapping for AssetInfo without default key. Type {}'.format(asset_info.id))
             raise AddonError('Not supported asset type used. This might be a bug!')  
             

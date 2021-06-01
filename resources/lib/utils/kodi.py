@@ -70,7 +70,8 @@ def event(sender=globals.addon_id, method='test', data=None):
     sender = sender or "plugin.program.AEL"
     data = data or {}
     data = json.dumps(data)
-
+    data = '"[{}]"'.format(data.replace('"', '\\"'))
+    
     xbmc.executebuiltin('NotifyAll({}, {}, {})'.format(sender, method, data))
     logger.debug("event(): {}/{} => {}".format(sender, method, data))
 

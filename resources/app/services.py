@@ -75,13 +75,12 @@ class AppMonitor(xbmc.Monitor):
         pass
 
     def onNotification(self, sender, method, data):
-        
         if sender != self.addon_id:
             return
 
         data_obj = None
         try:
-            data_obj = json.loads(data)
+            data_obj = json.loads(data)[0]
         except:
             logger.error('Failed to load arguments as json')
 

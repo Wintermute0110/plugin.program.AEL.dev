@@ -53,12 +53,12 @@ def cmd_manage_roms(args):
     options['SET_ROMS_ASSET_DIRS']       = 'Manage ROMs asset directories ...'
     options['SCRAPE_ROMS']               = 'Scrape ROMs'
     options['REMOVE_DEAD_ROMS']          = 'Remove dead/missing ROMs'
-    options['IMPORT_ROMS']               = 'Import ROMs metadata from NFO files'
+    options['IMPORT_ROMS']               = 'Import ROMs (files/metadata)'
     options['EXPORT_ROMS']               = 'Export ROMs metadata to NFO files'
     options['DELETE_ROMS_NFO']           = 'Delete ROMs NFO files'
     options['CLEAR_ROMS']                = 'Clear ROMs from ROMSet'
 
-    s = 'Manage ROMSet "{}" ROMs'.format(romset.get_name())
+    s = 'Manage ROM Collection "{}" ROMs'.format(romset.get_name())
     selected_option = kodi.OrdDictionaryDialog().select(s, options)
     if selected_option is None:
         # >> Exits context menu
@@ -276,6 +276,7 @@ def cmd_import_roms_json(args):
 
             json_file_repository  = ROMsJsonFileRepository(import_FN)
             imported_roms = json_file_repository.load_ROMs()
+            logger.debug("cmd_import_roms_json() Loaded {} roms".format(len(imported_roms)))
     
             for imported_rom in imported_roms:
                 if imported_rom.get_id() in existing_rom_ids:
