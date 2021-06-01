@@ -126,6 +126,11 @@ WIP      [ROM AUDIT] Add an option to create a default Parent ROM for Redump DAT
 WIP      [ROM AUDIT] Options to generate the 1G1R parent list, like prefer ROMs from Europe,
          Japan or USA. This resembles what NARS No-Intro filtering does.
 
+WIP      [SCRAPERS] In ScreenScraper, check for daily allowance and scraper overflows in general.
+         This will require changes in the scrapers API. Currently, the scrapers return
+         the asset URL and the addon download the asset, not the scraper. In the future
+         the asset download must be done by the scraper and hence the overloading controlled.
+
 WIP      [SCRAPERS] Improve the Offline Scraper. Improve the quality of the databases.
 
 WIP      [SCRAPERS] Change the Offline Scraper format from XML to JSON. Include the new fields
@@ -166,8 +171,6 @@ FEATURE  Complete remove legacy Advanced Launcher launcher.xml loading/parsing f
 FEATURE  [CORE] Disable Kodi screensaver when launching and reenable after app finishes.
          Featured ported from AML.
          See https://forum.kodi.tv/showthread.php?tid=304186&pid=2934194#pid2934194
-
-WIP      [SCRAPERS] In ScreenScraper, check for daily allowance and scraper overflows in general.
 
 FEATURE  Add support to remove unneeded blank spaces in `dev-core/check_line_endings.py`.
 
