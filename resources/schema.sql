@@ -273,7 +273,7 @@ CREATE VIEW IF NOT EXISTS vw_roms AS SELECT
     a_trailer.filepath AS s_trailer
 FROM roms AS r 
     INNER JOIN metadata AS m ON r.metadata_id = m.id
-    INNER JOIN romsets AS rs ON r.parent_id = rs.id
+    LEFT JOIN romsets AS rs ON r.romset_id = rs.id
     -- LEFT JOIN rom_assets AS ra_icon ON ra_icon.rom_id = r.id
     --     INNER JOIN assets AS a_icon ON a_icon.id = ra_icon.asset_id AND a_icon.asset_type = 'icon'
     LEFT JOIN rom_assets AS ra_fanart ON ra_fanart.rom_id = r.id
