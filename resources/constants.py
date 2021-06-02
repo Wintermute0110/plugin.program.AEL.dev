@@ -11,8 +11,7 @@
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 # See the GNU General Public License for more details.
 
-# Advanced Emulator Launcher platform constants.
-#
+# Advanced Emulator/MAME Launcher constants and globals.
 # This module has no external dependencies.
 
 # --- Python standard library ---

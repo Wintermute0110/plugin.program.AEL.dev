@@ -16,12 +16,14 @@
 # The idea if this module is to share it between AEL and AML.
 #
 # All functions that depends on Kodi modules are here. This includes IO functions
-# and logging functions.
+# and logging functions. Misc function that do not depend on Kodi modules are
+# located in the misc module.
 #
-# Low-level filesystem and IO functions are here. disk_IO module contains high level functions.
+# Low-level filesystem and IO functions are here (FileName class).
+# db module (formaer disk_IO module) contains high level IO functions.
 #
-# When Kodi modules are not available replaces can be provided. This is useful to use addon
-# modules with CPython.
+# When Kodi modules are not available replacements can be provided. This is useful
+# to use addon modules with CPython for testing or debugging.
 #
 # This module must NOT include any other addon modules to avoid circular dependencies. The
 # only exception to this rule is the module .constants. This module is virtually included
