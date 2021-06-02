@@ -781,8 +781,11 @@ class ROM(MetaDataItemABC):
         super(ROM, self).__init__(rom_data)
     
     # is this virtual only? Should we make a VirtualRom(Rom)?
-    def get_launcher_id(self):
-        return self.entity_data['poaren']
+    def get_launcher_id(self) -> str: return self.entity_data['romset_id'] if 'romset_id' in self.entity_data else None
+    
+    def get_romset_id(self) -> str: return self.entity_data['romset_id'] if 'romset_id' in self.entity_data else None
+    
+    def get_category_id(self)-> str: return self.entity_data['category_id'] if 'category_id' in self.entity_data else None
     
     def get_platform(self):
         if self.is_virtual_rom():
@@ -851,6 +854,12 @@ class ROM(MetaDataItemABC):
 
     def get_launch_count(self):
         return self.entity_data['launch_count']
+
+    def set_romset_id(self, romset_id): 
+        self.entity_data['romset_id'] = romset_id
+    
+    def set_category_id(self, category_id): 
+        self.entity_data['category_id'] = category_id
 
     def set_file(self, file):
         self.entity_data['filename'] = file.getPath()
@@ -994,12 +1003,6 @@ class ROM(MetaDataItemABC):
             asset_odict[asset_info] = self.get_asset_str(asset_info)
 
         return asset_odict
-    
-    def get_assets_path_FN(self):
-        if not self.launcher:
-            return None
-        
-        return self.launcher.get_assets_path_FN()
     
     def get_asset_ids_list(self): 
         return ROM_ASSET_ID_LIST

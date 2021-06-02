@@ -542,12 +542,12 @@ class ROMSetRepository(object):
 #
 # ROMsRepository -> ROMs from SQLite DB
 #     
-QUERY_SELECT_ROMS_BY_SET    = "SELECT * FROM vw_roms WHERE parent_id = ?"
+QUERY_SELECT_ROMS_BY_SET    = "SELECT * FROM vw_roms WHERE romset_id = ?"
 QUERY_INSERT_ROM            = """
                                 INSERT INTO roms (
-                                    id, parent_id, metadata_id, name, num_of_players, esrb_rating,
+                                    id, romset_id, category_id, metadata_id, name, num_of_players, esrb_rating,
                                     nointro_status, cloneof, fav_status, file_path)
-                                VALUES (?,?,?,?,?,?,?,?,?,?)
+                                VALUES (?,?,?,?,?,?,?,?,?,?,?)
                                """ 
 QUERY_INSERT_ROM_ASSET      = "INSERT INTO rom_assets (rom_id, asset_id) VALUES (?, ?)"
 QUERY_UPDATE_ROM            = "UPDATE roms SET name=?,num_of_players=?,esrb_rating=?,nointro_status=?,cloneof=?,fav_status=?,file_path=? WHERE id =?"
@@ -563,7 +563,34 @@ class ROMsRepository(object):
         for rom_data in result_set:
             yield ROM(rom_data)
 
-    def save_rom(self, rom_obj: ROM): 
+    def save_rom(self, rom_obj: ROM, romset_obj: ROMSet = None, category_obj: Category = None): 
+        logger.info("ROMsRepository.save_rom(): Inserting new ROM '{}'".format(rom_obj.get_name()))
+        metadata_id = text.misc_generate_random_SID()
+        assets_path = rom_obj.get_assets_path_FN()
+        
+        self._uow.execute(QUERY_INSERT_METADATA,
+            metadata_id,
+            rom_obj.get_releaseyear(),
+            rom_obj.get_genre(),
+            rom_obj.get_developer(),
+            rom_obj.get_rating(),
+            rom_obj.get_plot(),
+            assets_path.getPath() if assets_path is not None else None,
+            rom_obj.is_finished())
+
+        self._uow.execute(QUERY_INSERT_ROM,
+            rom_obj.get_id(),
+            romset_obj.get_id() if romset_obj is not None else None,
+            category_obj.get_id() if category_obj is not None else None,
+            metadata_id,
+            rom_obj.get_name(),
+            rom_obj.get_number_of_players(),
+            rom_obj.get_esrb_rating(),    
+            rom_obj.get_nointro_status(),
+            rom_obj.get_clone(),
+            rom_obj.get_favourite_status(),
+            rom_obj.get_file().getPath())
+
         rom_assets = rom_obj.get_assets_odict()
         for asset in rom_assets:
             asset_db_id = text.misc_generate_random_SID()

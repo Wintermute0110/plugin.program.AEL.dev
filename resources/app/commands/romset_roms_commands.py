@@ -290,11 +290,11 @@ def cmd_import_roms_json(args):
                     if kodi.dialog_yesno('ROM "{}" found in AEL database. Overwrite?'.format(imported_rom.get_name())):
                         roms_to_update.append(imported_rom)
                 else:
+                    logger.debug('')
                     roms_to_insert.append(imported_rom)
-                    
+                        
         for rom_to_insert in roms_to_insert:
-            repository.save_rom(rom_to_insert)
-            existing_roms.append(rom_to_insert)
+            repository.save_rom(rom_to_insert, romset)
 
         for rom_to_update in roms_to_update:
             repository.update_rom(rom_to_update)
