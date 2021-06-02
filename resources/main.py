@@ -8226,48 +8226,66 @@ class Main:
 
             # Standalone launcher where application is a LNK file
             if app_ext == 'lnk' or app_ext == 'LNK':
+                if ADDON_RUNNING_PYTHON_2:
+                    c = 'start "AEL" /b "{}"'.format(application).encode('utf-8')
+                elif ADDON_RUNNING_PYTHON_3:
+                    c = 'start "AEL" /b "{}"'.format(application)
+                else:
+                    raise TypeError('Undefined Python runtime version.')
                 log_debug('_run_process() (Windows) Launching LNK application')
-                retcode = subprocess.call('start "AEL" /b "{}"'.format(application).encode('utf-8'), shell = True)
+                retcode = subprocess.call(c, shell = True)
                 log_info('_run_process() (Windows) LNK app retcode = {}'.format(retcode))
 
             # ROM launcher where ROMs are LNK files
             elif romext == 'lnk' or romext == 'LNK':
+                if ADDON_RUNNING_PYTHON_2:
+                    c = 'start "AEL" /b "{}"'.format(arguments).encode('utf-8')
+                elif ADDON_RUNNING_PYTHON_3:
+                    c = 'start "AEL" /b "{}"'.format(arguments)
+                else:
+                    raise TypeError('Undefined Python runtime version.')
                 log_debug('_run_process() (Windows) Launching LNK ROM')
-                retcode = subprocess.call('start "AEL" /b "{}"'.format(arguments).encode('utf-8'), shell = True)
+                retcode = subprocess.call(c, shell = True)
                 log_info('_run_process() (Windows) LNK ROM retcode = {}'.format(retcode))
 
-            # CMD/BAT files in Windows
+            # CMD/BAT applications in Windows.
             elif app_ext == 'bat' or app_ext == 'BAT' or app_ext == 'cmd' or app_ext == 'CMD':
                 # Workaround to run UNC paths in Windows.
                 # Retroarch now support ROMs in UNC paths (Samba remotes)
                 new_exec_list = list(exec_list)
-                for i, _ in enumerate(exec_list):
-                    if exec_list[i][0] == '\\':
-                        new_exec_list[i] = '\\' + exec_list[i]
-                        log_debug('_run_process() (Windows) Before arg #{} = "{}"'.format(i, exec_list[i]))
-                        log_debug('_run_process() (Windows) Now    arg #{} = "{}"'.format(i, new_exec_list[i]))
+                for i in range(len(exec_list)):
+                    if exec_list[i][0] != '\\': continue
+                    new_exec_list[i] = '\\' + exec_list[i]
+                    log_debug('_run_process() (Windows) Before arg #{} = "{}"'.format(i, exec_list[i]))
+                    log_debug('_run_process() (Windows) Now    arg #{} = "{}"'.format(i, new_exec_list[i]))
                 exec_list = list(new_exec_list)
                 log_debug('_run_process() (Windows) exec_list = {}'.format(exec_list))
-                log_debug('_run_process() (Windows) Launching BAT application')
+                log_debug('_run_process() (Windows) Launching BAT/CMD application')
                 log_debug('_run_process() (Windows) Ignoring setting windows_cd_apppath')
                 log_debug('_run_process() (Windows) Ignoring setting windows_close_fds')
                 log_debug('_run_process() (Windows) show_batch_window = {}'.format(self.settings['show_batch_window']))
                 info = subprocess.STARTUPINFO()
                 info.dwFlags = 1
                 info.wShowWindow = 5 if self.settings['show_batch_window'] else 0
-                retcode = subprocess.call(exec_list, cwd = apppath.encode('utf-8'), close_fds = True, startupinfo = info)
-                log_info('_run_process() (Windows) Process BAR retcode = {}'.format(retcode))
+                if ADDON_RUNNING_PYTHON_2:
+                    apppath_t = apppath.encode('utf-8')
+                elif ADDON_RUNNING_PYTHON_3:
+                    apppath_t = apppath
+                else:
+                    raise TypeError('Undefined Python runtime version.')
+                retcode = subprocess.call(exec_list, cwd = apppath_t, close_fds = True, startupinfo = info)
+                log_info('_run_process() (Windows) Process BAT/CMD retcode = {}'.format(retcode))
 
             # Normal Windows application.
             else:
                 # --- Workaround to run UNC paths in Windows ---
                 # Retroarch now support ROMs in UNC paths (Samba remotes)
                 new_exec_list = list(exec_list)
-                for i, _ in enumerate(exec_list):
-                    if exec_list[i][0] == '\\':
-                        new_exec_list[i] = '\\' + exec_list[i]
-                        log_debug('_run_process() (Windows) Before arg #{} = "{}"'.format(i, exec_list[i]))
-                        log_debug('_run_process() (Windows) Now    arg #{} = "{}"'.format(i, new_exec_list[i]))
+                for i in range(len(exec_list)):
+                    if exec_list[i][0] != '\\': continue
+                    new_exec_list[i] = '\\' + exec_list[i]
+                    log_debug('_run_process() (Windows) Before arg #{} = "{}"'.format(i, exec_list[i]))
+                    log_debug('_run_process() (Windows) Now    arg #{} = "{}"'.format(i, new_exec_list[i]))
                 exec_list = list(new_exec_list)
                 log_debug('_run_process() (Windows) exec_list = {}'.format(exec_list))
 
@@ -8279,13 +8297,20 @@ class Main:
                 log_debug('_run_process() (Windows) Launching regular application')
                 log_debug('_run_process() (Windows) windows_cd_apppath = {}'.format(windows_cd_apppath))
                 log_debug('_run_process() (Windows) windows_close_fds  = {}'.format(windows_close_fds))
+                # In Python 3 use Unicode to call functions in the subprocess module.
+                if ADDON_RUNNING_PYTHON_2:
+                    apppath_t = apppath.encode('utf-8')
+                elif ADDON_RUNNING_PYTHON_3:
+                    apppath_t = apppath
+                else:
+                    raise TypeError('Undefined Python runtime version.')
                 # Note that on Windows, you cannot set close_fds to true and also redirect the
                 # standard handles by setting stdin, stdout or stderr.
                 if windows_cd_apppath and windows_close_fds:
-                    retcode = subprocess.call(exec_list, cwd = apppath.encode('utf-8'), close_fds = True)
+                    retcode = subprocess.call(exec_list, cwd = apppath_t, close_fds = True)
                 elif windows_cd_apppath and not windows_close_fds:
                     with open(g_PATHS.LAUNCH_LOG_FILE_PATH.getPath(), 'w') as f:
-                        retcode = subprocess.call(exec_list, cwd = apppath.encode('utf-8'), close_fds = False,
+                        retcode = subprocess.call(exec_list, cwd = apppath_t, close_fds = False,
                             stdout = f, stderr = subprocess.STDOUT)
                 elif not windows_cd_apppath and windows_close_fds:
                     retcode = subprocess.call(exec_list, close_fds = True)
@@ -8298,20 +8323,23 @@ class Main:
                 log_info('_run_process() (Windows) Process retcode = {}'.format(retcode))
 
         elif is_android():
-            retcode = os.system("{} {}".format(application, arguments).encode('utf-8'))
+            if ADDON_RUNNING_PYTHON_2:
+                c = '{} {}'.format(application, arguments).encode('utf-8')
+            elif ADDON_RUNNING_PYTHON_3:
+                c = '{} {}'.format(application, arguments)
+            else:
+                raise TypeError('Undefined Python runtime version.')
+            retcode = os.system(c)
             log_info('_run_process() Process retcode = {}'.format(retcode))
 
         # New in 0.9.7: always close all file descriptions except 0, 1 and 2 on the child
-        # process. This is to avoid Kodi opens sockets be inherited by the child process. A
+        # process. This is to avoid Kodi open sockets be inherited by the child process. A
         # wrapper script may terminate Kodi using JSON RPC and if file descriptors are not
-        # closed Kodi will complain that the remote interfacte cannot be initialised. I believe
-        # the cause is that the socket is kept open by the wrapper script.
+        # closed Kodi will complain that the remote interface cannot be initialised. I believe
+        # the cause is that the listening socket is kept open by the wrapper script.
         elif is_linux():
-            # Old way of launching child process. os.system() is deprecated and should not
-            # be used anymore.
-            # os.system('"{}" {}'.format(application, arguments).encode('utf-8'))
-
-            # New way of launching, uses subproces module. Also, save child process stdout.
+            # os.system() is deprecated and should not be used anymore, use subprocess module.
+            # Also, save child process stdout to a file.
             if non_blocking_flag:
                 # In a non-blocking launch stdout/stderr of child process cannot be recorded.
                 log_info('_run_process() (Linux) Launching non-blocking process subprocess.Popen()')
@@ -8325,10 +8353,6 @@ class Main:
                 if self.settings['lirc_state']: xbmc.executebuiltin('LIRC.start')
 
         elif is_osx():
-            # Old way
-            # os.system('"{}" {}'.format(application, arguments).encode('utf-8'))
-
-            # New way.
             with open(g_PATHS.LAUNCH_LOG_FILE_PATH.getPath(), 'w') as f:
                 retcode = subprocess.call(exec_list, stdout = f, stderr = subprocess.STDOUT)
             log_info('_run_process() Process retcode = {}'.format(retcode))
