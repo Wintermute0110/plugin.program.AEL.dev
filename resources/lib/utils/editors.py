@@ -123,11 +123,12 @@ def edit_object_assets(obj_instance:MetaDataItemABC, preselected_asset = None) -
     logger.debug('edit_object_assets() preselected_asset {0}'.format(preselected_asset if preselected_asset is not None else 'NONE'))
 
     # --- Build options list ---
-    asset_odict = obj_instance.get_assets_odict()
-    
-    # dump_object_to_log('asset_odict', asset_odict)
+    assets = obj_instance.get_available_assets()
     options = collections.OrderedDict()
-    for asset_info_obj, asset_fname_str in asset_odict.items():
+    for asset in assets:
+        asset_info_obj = asset.get_asset_info()
+        asset_fname_str = asset.get_path()
+        
         # --- Create ListItems ---
         # >> Label1 is the asset name (Icon, Fanart, etc.)
         # >> Label2 is the asset filename str as in the database or 'Not set'

@@ -41,7 +41,7 @@ logger = logging.getLogger(__name__)
 # Returns an object with all the information
 # -------------------------------------------------------------------------------------------------
 class AssetInfo(object):
-    id              = 0
+    id              = ''
     key             = ''
     default_key     = ''
     rom_default_key = ''
@@ -143,7 +143,36 @@ class AelAddon(EntityABC):
     
     def supports_launching(self) -> bool:
         return self.entity_data['is_launcher']
+ 
+class Asset(EntityABC):
+
+    def __init__(self, asset_info: AssetInfo, entity_data: typing.Dict[str, typing.Any]):
+        self.asset_info = asset_info
+        super(Asset, self).__init__(entity_data)
+    
+    def get_asset_info_id(self) -> str:
+        return self.asset_info.id 
+    
+    def get_asset_info(self) -> AssetInfo:
+        return self.asset_info
+    
+    def get_path(self) -> str:
+        return self.entity_data['filepath']
+    
+    def get_path_FN(self) -> io.FileName:
+        return self._get_value_as_filename('filepath')
+    
+    def set_path(self, path_str):
+        self.entity_data['filepath'] = path_str
+    
+    def clear(self):
+        self.entity_data['filepath'] = ''
       
+    @staticmethod
+    def create(asset_info_id):
+        asset_info = g_assetFactory.get_asset_info(asset_info_id)
+        return Asset(asset_info, None)
+        
 # -------------------------------------------------------------------------------------------------
 # Abstract base class for business objects which support the generic
 # metadata fields and assets.
@@ -189,12 +218,10 @@ class AelAddon(EntityABC):
 class MetaDataItemABC(EntityABC):
     __metaclass__ = abc.ABCMeta
 
-    #
-    # Addon PATHS is required to store/retrieve assets.
-    # Addon settings is required because the way the metadata is displayed may depend on
-    # some addon settings.
-    #
-    def __init__(self, entity_data: typing.Dict[str, typing.Any]):
+    def __init__(self, entity_data: typing.Dict[str, typing.Any], assets: typing.List[Asset]):
+        self.assets: typing.Dict[str, Asset] = {}
+        for asset in assets:
+            self.assets[asset.get_asset_info_id()] = asset
         super(MetaDataItemABC, self).__init__(entity_data)
 
     # --------------------------------------------------------------------------------------------
@@ -255,7 +282,7 @@ class MetaDataItemABC(EntityABC):
     # Used when rendering Categories/Launchers/ROMs
     #
     def get_trailer(self):
-        return self.entity_data['s_trailer'] if 's_trailer' in self.entity_data else ''
+        return self.assets[ASSET_TRAILER_ID].get_path() if ASSET_TRAILER_ID in self.assets else ''
 
     def set_trailer(self, trailer_str):
         if 'http' in trailer_str:
@@ -264,7 +291,11 @@ class MetaDataItemABC(EntityABC):
                 video_id = matches.groups()[-1]
                 trailer_str = 'plugin://plugin.video.youtube/play/?video_id={}'.format(video_id)
 
-        self.entity_data['s_trailer'] = trailer_str
+        trailer_asset = self.get_asset(ASSET_TRAILER_ID)
+        if trailer_asset is None:
+            self.assets[ASSET_TRAILER_ID] = Asset.create(ASSET_TRAILER_ID)
+                        
+        self.assets[ASSET_TRAILER_ID].set_path(trailer_str)
 
     # --- Finished status stuff -------------------------------------------------------------------
     def is_finished(self):
@@ -282,53 +313,74 @@ class MetaDataItemABC(EntityABC):
         self.entity_data['finished'] = finished
 
     # --- Assets/artwork --------------------------------------------------------------------------
-    def has_asset(self, asset_info) -> bool:
-        if not asset_info.key in self.entity_data: return False
-        return self.entity_data[asset_info.key] != None and self.entity_data[asset_info.key] != ''
+    def has_asset(self, asset_info: AssetInfo) -> bool:
+        if not asset_info.id in self.assets: return False
+        return self.assets[asset_info.id] != None and self.asset[asset_info.id].get_path() != ''
 
+    def get_asset(self, asset_id: str) -> Asset:
+        return self.assets[asset_id] if asset_id in self.assets else None
+    
+    def get_assets(self) -> typing.List[Asset]:
+        return [*self.assets.values()]
+ 
+    #
+    # Returns a collection with the object assets, ready to be edited.
+    # Values are the current assets and a path value of '' if the asset is not set.
+    #
+    def get_available_assets(self) -> typing.List[Asset]:
+        asset_info_list = g_assetFactory.get_asset_list_by_IDs(self.get_asset_ids_list())
+        available_assets = []
+        for asset_info in asset_info_list:
+            asset = self.get_asset(asset_info.id)
+            if asset is None:
+                asset = Asset(asset_info, {})
+                
+            available_assets.append(asset)
+
+        return available_assets
+                
     # 
     # Gets the asset path (str) of the given assetinfo type.
     #
     def get_asset_str(self, asset_info=None, asset_id=None, fallback = '') -> str:
         if asset_info is None and asset_id is None: return None
-        if asset_id is not None: asset_info = g_assetFactory.get_asset_info(asset_id)
+        if asset_info is not None: asset_id = asset_info.id
         
-        if asset_info.key in self.entity_data and self.entity_data[asset_info.key]:
-            return self.entity_data[asset_info.key] 
+        asset = self.get_asset(asset_id)
+        
+        if asset is not None:
+            path = asset.get_path()
+            if path != '':
+                return path
+            
         return fallback
             
     def get_asset_FN(self, asset_info):
-        if not asset_info or not asset_info.key in self.entity_data :
-            return None
+        if asset_info is None: return None
         
-        return self._get_value_as_filename(asset_info.key)
+        asset = self.get_asset(asset_info.id)
+        if asset is None: return None
         
-    def set_asset(self, asset_info, path_FN):
+        return asset.get_path_FN()
+        
+    def set_asset(self, asset_info, path_FN: io.FileName):
         path = path_FN.getPath() if path_FN else ''
-        self.entity_data[asset_info.key] = path
+        
+        asset = self.get_asset(asset_info.id)
+        if asset is None: self.assets[asset_info.id] = Asset.create(asset_info.id)
+                        
+        self.assets[asset_info.id].set_path(path)
         
     def clear_asset(self, asset_info):
-        self.entity_data[asset_info.key] = ''
+        asset = self.get_asset(asset_info.id)
+        if asset is None: self.assets[asset_info.id] = Asset.create(asset_info.id)
+        asset.clear()
 
     def get_assets_path_FN(self):
         return self._get_directory_filename_from_field('assets_path')        
 
     @abc.abstractmethod
     def get_asset_ids_list(self) -> typing.List[str]: pass
-
-    #
-    # Returns an ordered dictionary with all the object assets, ready to be edited.
-    # Keys are AssetInfo objects.
-    # Values are the current file for the asset as Unicode string or '' if the asset is not set.
-    #
-    def get_assets_odict(self) -> typing.Dict[AssetInfo, str]:
-        asset_info_list = g_assetFactory.get_asset_list_by_IDs(self.get_asset_ids_list())
-        asset_odict = collections.OrderedDict()
-        for asset_info in asset_info_list:
-            asset_fname_str = self.entity_data[asset_info.key] if self.entity_data[asset_info.key] else ''
-            asset_odict[asset_info] = asset_fname_str
-
-        return asset_odict
      
     # 
     # Gets the asset path (str) of the mapped asset type following
@@ -336,8 +388,10 @@ class MetaDataItemABC(EntityABC):
     #
     def get_mapped_asset_str(self, asset_info=None, asset_id=None, fallback = '') -> str:
         asset_info = self.get_mapped_asset_info(asset_info, asset_id)
-        if asset_info.key in self.entity_data and self.entity_data[asset_info.key]:
-            return self.entity_data[asset_info.key] 
+        asset = self.get_asset(asset_info.id)
+        if asset is not None and asset.get_path() != '':
+            return asset.get_path()
+        
         return fallback
     
     #
@@ -379,7 +433,7 @@ class MetaDataItemABC(EntityABC):
             
         return self.entity_data[asset_info.default_key]
 	
-    def set_mapped_asset_key(self, asset_info, mapped_to_info):
+    def set_mapped_asset_key(self, asset_info: AssetInfo, mapped_to_info: AssetInfo):
         self.entity_data[asset_info.default_key] = mapped_to_info.key
         
     def __str__(self):
@@ -390,13 +444,13 @@ class MetaDataItemABC(EntityABC):
 # Contains code to generate the context menus passed to Dialog.select()
 # -------------------------------------------------------------------------------------------------
 class Category(MetaDataItemABC):
-    def __init__(self, category_dic: typing.Dict[str, typing.Any]):
+    def __init__(self, category_dic: typing.Dict[str, typing.Any], assets: typing.List[Asset]):
         # Concrete classes are responsible of creating a default entity_data dictionary
         # with sensible defaults.
         if category_dic is None:
             category_dic = {}#fs_new_category()
             category_dic['id'] = text.misc_generate_random_SID()
-        super(Category, self).__init__(category_dic)
+        super(Category, self).__init__(category_dic, assets)
 
     def get_object_name(self): return 'Category'
 
@@ -563,9 +617,9 @@ class ROMSetLauncher(object):
 # Class representing a collection of ROMs.
 # -------------------------------------------------------------------------------------------------
 class ROMSet(MetaDataItemABC):
-    def __init__(self, entity_data, launchers_data: typing.List[ROMSetLauncher] = []):
+    def __init__(self, entity_data, assets_data: typing.List[Asset], launchers_data: typing.List[ROMSetLauncher] = []):
         self.launchers_data = launchers_data
-        super(ROMSet, self).__init__(entity_data)
+        super(ROMSet, self).__init__(entity_data, assets_data)
 
     def get_platform(self): return self.entity_data['platform']
 
@@ -772,13 +826,13 @@ class ROMSet(MetaDataItemABC):
 # -------------------------------------------------------------------------------------------------
 class ROM(MetaDataItemABC):
         
-    def __init__(self, rom_data = None):        
+    def __init__(self, rom_data = None, assets_data = None):        
         if rom_data is None:
             #rom_data = fs_new_rom()
             rom_data['id'] = text.misc_generate_random_SID()
             rom_data['type'] = OBJ_ROM
             
-        super(ROM, self).__init__(rom_data)
+        super(ROM, self).__init__(rom_data, assets_data)
     
     # is this virtual only? Should we make a VirtualRom(Rom)?
     def get_launcher_id(self) -> str: return self.entity_data['romset_id'] if 'romset_id' in self.entity_data else None
@@ -987,22 +1041,6 @@ class ROM(MetaDataItemABC):
             raise AddonError('Launcher not set for ROM')
         
         self.launcher.save_ROM(self)
-
-    # ---------------------------------------------------------------------------------------------
-    # ROM asset methods
-    # ---------------------------------------------------------------------------------------------
-    #
-    # Returns an ordered dictionary with all the object assets, ready to be edited.
-    # Keys are AssetInfo objects.
-    # Values are the current file for the asset as Unicode string or '' if the asset is not set.
-    #
-    def get_assets_odict(self):
-        asset_info_list = g_assetFactory.get_asset_list_by_IDs(ROM_ASSET_ID_LIST)
-        asset_odict = collections.OrderedDict()
-        for asset_info in asset_info_list:
-            asset_odict[asset_info] = self.get_asset_str(asset_info)
-
-        return asset_odict
     
     def get_asset_ids_list(self): 
         return ROM_ASSET_ID_LIST

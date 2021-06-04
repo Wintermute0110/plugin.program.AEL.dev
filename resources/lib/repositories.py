@@ -291,10 +291,10 @@ class UnitOfWork(object):
     def execute(self, sql, *args) -> Cursor:
         return self.cursor.execute(sql, args)
 
-    def single_result(self):
+    def single_result(self) -> dict:
         return self.cursor.fetchone()
 
-    def result_set(self):
+    def result_set(self) -> typing.List[dict]:
         return self.cursor.fetchall()
 
     def result_id(self):
@@ -324,10 +324,15 @@ QUERY_UPDATE_ASSET          = "UPDATE assets SET filepath = ?, asset_type = ? WH
 #
 # CategoryRepository -> Category from SQLite DB
 #
-QUERY_SELECT_CATEGORY             = "SELECT * FROM vw_categories WHERE id = ?"
-QUERY_SELECT_CATEGORIES           = "SELECT * FROM vw_categories"
-QUERY_SELECT_ROOT_CATEGORIES      = "SELECT * FROM vw_categories WHERE parent_id IS NULL"
-QUERY_SELECT_CATEGORIES_BY_PARENT = "SELECT * FROM vw_categories WHERE parent_id = ?"
+QUERY_SELECT_CATEGORY                   = "SELECT * FROM vw_categories WHERE id = ?"
+QUERY_SELECT_CATEGORY_ASSETS            = "SELECT * FROM vw_category_assets WHERE category_id = ?"
+QUERY_SELECT_CATEGORIES                 = "SELECT * FROM vw_categories"
+QUERY_SELECT_ALL_CATEGORY_ASSETS        = "SELECT * FROM vw_category_assets"
+QUERY_SELECT_ROOT_CATEGORIES            = "SELECT * FROM vw_categories WHERE parent_id IS NULL"
+QUERY_SELECT_ROOT_CATEGORY_ASSETS       = "SELECT * FROM vw_category_assets WHERE parent_id IS NULL"
+QUERY_SELECT_CATEGORIES_BY_PARENT       = "SELECT * FROM vw_categories WHERE parent_id = ?"
+QUERY_SELECT_CATEGORY_ASSETS_BY_PARENT  = "SELECT * FROM vw_category_assets WHERE parent = ?"
+
 QUERY_INSERT_CATEGORY             = """
                                     INSERT INTO categories (id,name,parent_id,metadata_id,default_icon,default_fanart,default_banner,default_poster,default_clearlogo) 
                                     VALUES (?,?,?,?,?,?,?,?,?)
@@ -343,25 +348,61 @@ class CategoryRepository(object):
     def find_category(self, category_id: str) -> Category:
         self._uow.execute(QUERY_SELECT_CATEGORY, category_id)
         category_data = self._uow.single_result()
-        return Category(category_data)
+                
+        self._uow.execute(QUERY_SELECT_CATEGORY_ASSETS, category_id)
+        assets_result_set = self._uow.result_set()
+                
+        assets = []
+        for asset_data in assets_result_set:
+            asset_info = g_assetFactory.get_asset_info(asset_data['asset_type'])
+            assets.append(Asset(asset_info, asset_data))    
+            
+        return Category(category_data, assets)
 
     def find_root_categories(self) -> typing.Iterator[Category]:
         self._uow.execute(QUERY_SELECT_ROOT_CATEGORIES)
         result_set = self._uow.result_set()
+        
+        self._uow.execute(QUERY_SELECT_ROOT_CATEGORY_ASSETS)
+        assets_result_set = self._uow.result_set()
+                    
         for category_data in result_set:
-            yield Category(category_data)
+            assets = []
+            for asset_data in filter(lambda a: a['category_id'] == category_data['id'], assets_result_set):
+                asset_info = g_assetFactory.get_asset_info(asset_data['asset_type'])
+                assets.append(Asset(asset_info, asset_data))    
+                
+            yield Category(category_data, assets)
 
     def find_categories_by_parent(self, category_id) -> typing.Iterator[Category]:
         self._uow.execute(QUERY_SELECT_CATEGORIES_BY_PARENT, category_id)
         result_set = self._uow.result_set()
+        
+        self._uow.execute(QUERY_SELECT_CATEGORY_ASSETS_BY_PARENT, category_id)
+        assets_result_set = self._uow.result_set()
+                    
         for category_data in result_set:
-            yield Category(category_data)
+            assets = []
+            for asset_data in filter(lambda a: a['category_id'] == category_data['id'], assets_result_set):
+                asset_info = g_assetFactory.get_asset_info(asset_data['asset_type'])
+                assets.append(Asset(asset_info, asset_data))    
+                
+            yield Category(category_data, assets)
 
     def find_all_categories(self) -> typing.Iterator[Category]:
         self._uow.execute(QUERY_SELECT_CATEGORIES)
         result_set = self._uow.result_set()
+        
+        self._uow.execute(QUERY_SELECT_ALL_CATEGORY_ASSETS)
+        assets_result_set = self._uow.result_set()
+                    
         for category_data in result_set:
-            yield Category(category_data)
+            assets = []
+            for asset_data in filter(lambda a: a['category_id'] == category_data['id'], assets_result_set):
+                asset_info = g_assetFactory.get_asset_info(asset_data['asset_type'])
+                assets.append(Asset(asset_info, asset_data))    
+                
+            yield Category(category_data, assets)
 
     def save_category(self, category_obj: Category, parent_obj: Category = None):
         logger.info("CategoryRepository.save_category(): Inserting new category '{}'".format(category_obj.get_name()))
@@ -389,13 +430,9 @@ class CategoryRepository(object):
             category_obj.get_mapped_asset_info(asset_id=ASSET_POSTER_ID).key,
             category_obj.get_mapped_asset_info(asset_id=ASSET_CLEARLOGO_ID).key)
 
-        category_assets = category_obj.get_assets_odict()
-        for asset in category_assets:
-            asset_db_id = text.misc_generate_random_SID()
-            self._uow.execute(QUERY_INSERT_ASSET,
-                asset_db_id, category_assets[asset], asset.id)
-            self._uow.execute(QUERY_INSERT_CATEGORY_ASSET,
-                category_obj.get_id(), asset_db_id)
+        category_assets = category_obj.get_assets()
+        for asset in category_assets: 
+            self._insert_asset(asset, category_obj)  
             
     def update_category(self, category_obj: Category):
         logger.info("CategoryRepository.update_category(): Updating category '{}'".format(category_obj.get_name()))
@@ -414,18 +451,37 @@ class CategoryRepository(object):
         self._uow.execute(QUERY_UPDATE_CATEGORY,
             category_obj.get_name(),
             category_obj.get_id())
+        
+        for asset in category_obj.get_assets():
+            if asset.get_id() == '': self._insert_asset(asset, category_obj)
+            else: self._update_asset(asset, category_obj)    
 
     def delete_category(self, category_id: str):
         logger.info("CategoryRepository.delete_category(): Deleting category '{}'".format(category_id))
         self._uow.execute(QUERY_DELETE_CATEGORY, category_id)
         
+    def _insert_asset(self, asset: Asset, category_obj: Category):
+        asset_db_id = text.misc_generate_random_SID()
+        self._uow.execute(QUERY_INSERT_ASSET, asset_db_id, asset.get_path(), asset.get_asset_info_id())
+        self._uow.execute(QUERY_INSERT_CATEGORY_ASSET, category_obj.get_id(), asset_db_id)   
+    
+    def _update_asset(self, asset: Asset, category_obj: Category):
+        self._uow.execute(QUERY_UPDATE_ASSET, asset.get_path(), asset.get_asset_info_id(), asset.get_id())
+        if asset.get_custom_attribute('category_id') is None:
+            self._uow.execute(QUERY_INSERT_CATEGORY_ASSET, category_obj.get_id(), asset.get_id())   
+        
 #
 # ROMSetRepository -> ROM Sets from SQLite DB
 #
-QUERY_SELECT_ROMSET               = "SELECT * FROM vw_romsets WHERE id = ?"
-QUERY_SELECT_ROMSETS              = "SELECT * FROM vw_romsets"
-QUERY_SELECT_ROOT_ROMSETS         = "SELECT * FROM vw_romsets WHERE parent_id IS NULL"
-QUERY_SELECT_ROMSETS_BY_PARENT    = "SELECT * FROM vw_romsets WHERE parent_id = ?"
+QUERY_SELECT_ROMSET                     = "SELECT * FROM vw_romsets WHERE id = ?"
+QUERY_SELECT_ROMSET_ASSETS_BY_SET       = "SELECT * FROM vw_romset_assets WHERE romset_id = ?"
+QUERY_SELECT_ROMSETS                    = "SELECT * FROM vw_romsets"
+QUERY_SELECT_ROMSET_ASSETS              = "SELECT * FROM vw_romset_assets"
+QUERY_SELECT_ROOT_ROMSETS               = "SELECT * FROM vw_romsets WHERE parent_id IS NULL"
+QUERY_SELECT_ROOT_ROMSET_ASSETS         = "SELECT * FROM vw_romset_assets WHERE parent_id IS NULL"
+QUERY_SELECT_ROMSETS_BY_PARENT          = "SELECT * FROM vw_romsets WHERE parent_id = ?"
+QUERY_SELECT_ROMSETS_ASSETS_BY_PARENT   = "SELECT * FROM vw_romset_assets WHERE parent_id = ?"
+
 QUERY_INSERT_ROMSET               = """
                                     INSERT INTO romsets (
                                             id,name,parent_id,metadata_id,platform,box_size, 
@@ -447,25 +503,61 @@ class ROMSetRepository(object):
     def find_romset(self, romset_id: str) -> ROMSet:
         self._uow.execute(QUERY_SELECT_ROMSET, romset_id)
         romset_data = self._uow.single_result()
-        return ROMSet(romset_data)
+        
+        self._uow.execute(QUERY_SELECT_ROMSET_ASSETS_BY_SET, romset_id)
+        assets_result_set = self._uow.result_set()
+                
+        assets = []
+        for asset_data in assets_result_set:
+            asset_info = g_assetFactory.get_asset_info(asset_data['asset_type'])
+            assets.append(Asset(asset_info, asset_data))    
+            
+        return ROMSet(romset_data, assets)
 
     def find_all_romsets(self) -> typing.Iterator[ROMSet]:
         self._uow.execute(QUERY_SELECT_ROMSETS)
         result_set = self._uow.result_set()
+        
+        self._uow.execute(QUERY_SELECT_ROMSET_ASSETS)
+        assets_result_set = self._uow.result_set()
+                
         for romset_data in result_set:
-            yield ROMSet(romset_data)
+            assets = []
+            for asset_data in filter(lambda a: a['romset_id'] == romset_data['id'], assets_result_set):
+                asset_info = g_assetFactory.get_asset_info(asset_data['asset_type'])
+                assets.append(Asset(asset_info, asset_data))      
+                
+            yield ROMSet(romset_data, assets)
 
     def find_root_romsets(self) -> typing.Iterator[ROMSet]:
         self._uow.execute(QUERY_SELECT_ROOT_ROMSETS)
         result_set = self._uow.result_set()
+        
+        self._uow.execute(QUERY_SELECT_ROOT_ROMSET_ASSETS)
+        assets_result_set = self._uow.result_set()
+                
         for romset_data in result_set:
-            yield ROMSet(romset_data)
+            assets = []
+            for asset_data in filter(lambda a: a['romset_id'] == romset_data['id'], assets_result_set):
+                asset_info = g_assetFactory.get_asset_info(asset_data['asset_type'])
+                assets.append(Asset(asset_info, asset_data))      
+                
+            yield ROMSet(romset_data, assets)
 
     def find_romsets_by_parent(self, category_id) -> typing.Iterator[ROMSet]:
         self._uow.execute(QUERY_SELECT_ROMSETS_BY_PARENT, category_id)
         result_set = self._uow.result_set()
+        
+        self._uow.execute(QUERY_SELECT_ROMSETS_ASSETS_BY_PARENT, category_id)
+        assets_result_set = self._uow.result_set()
+                
         for romset_data in result_set:
-            yield ROMSet(romset_data)
+            assets = []
+            for asset_data in filter(lambda a: a['romset_id'] == romset_data['id'], assets_result_set):
+                asset_info = g_assetFactory.get_asset_info(asset_data['asset_type'])
+                assets.append(Asset(asset_info, asset_data))      
+                
+            yield ROMSet(romset_data, assets)
             
     def save_romset(self, romset_obj: ROMSet, parent_obj: Category = None):
         logger.info("ROMSetRepository.save_romset(): Inserting new romset '{}'".format(romset_obj.get_name()))
@@ -496,13 +588,9 @@ class ROMSetRepository(object):
             romset_obj.get_mapped_asset_info(asset_id=ASSET_CONTROLLER_ID).key,
             romset_obj.get_mapped_asset_info(asset_id=ASSET_CLEARLOGO_ID).key)
 
-        romset_assets = romset_obj.get_assets_odict()
-        for asset in romset_assets:
-            asset_db_id = text.misc_generate_random_SID()
-            self._uow.execute(QUERY_INSERT_ASSET,
-                asset_db_id, romset_assets[asset], asset.id)
-            self._uow.execute(QUERY_INSERT_ROMSET_ASSET,
-                romset_obj.get_id(), asset_db_id)     
+        romset_assets = romset_obj.get_assets()
+        for asset in romset_assets: 
+            self._insert_asset(asset, romset_obj)  
             
         romset_launchers = romset_obj.get_launchers_data()
         for romset_launcher in romset_launchers:
@@ -535,22 +623,37 @@ class ROMSetRepository(object):
             self._uow.execute(QUERY_INSERT_ROMSET_LAUNCHER,
                 romset_obj.get_id(), romset_launcher.addon.get_id(), romset_launcher.get_arguments(), romset_launcher.is_default)
 
+        for asset in romset_obj.get_assets():
+            if asset.get_id() == '': self._insert_asset(asset, romset_obj)
+            else: self._update_asset(asset, romset_obj)                
+            
     def delete_romset(self, romset_id: str):
         logger.info("ROMSetRepository.delete_romset(): Deleting romset '{}'".format(romset_id))
         self._uow.execute(QUERY_DELETE_ROMSET, romset_id)
 
+    def _insert_asset(self, asset: Asset, romset_obj: ROMSet):
+        asset_db_id = text.misc_generate_random_SID()
+        self._uow.execute(QUERY_INSERT_ASSET, asset_db_id, asset.get_path(), asset.get_asset_info_id())
+        self._uow.execute(QUERY_INSERT_ROMSET_ASSET, romset_obj.get_id(), asset_db_id)   
+    
+    def _update_asset(self, asset: Asset, romset_obj: ROMSet):
+        self._uow.execute(QUERY_UPDATE_ASSET, asset.get_path(), asset.get_asset_info_id(), asset.get_id())
+        if asset.get_custom_attribute('romset_id') is None:
+            self._uow.execute(QUERY_INSERT_ROMSET_ASSET, romset_obj.get_id(), asset.get_id())   
+            
 #
 # ROMsRepository -> ROMs from SQLite DB
 #     
-QUERY_SELECT_ROMS_BY_SET    = "SELECT * FROM vw_roms WHERE romset_id = ?"
-QUERY_INSERT_ROM            = """
+QUERY_SELECT_ROMS_BY_SET        = "SELECT * FROM vw_roms WHERE romset_id = ?"
+QUERY_SELECT_ROM_ASSETS_BY_SET  = "SELECT * FROM vw_rom_assets WHERE romset_id = ?"
+QUERY_INSERT_ROM                = """
                                 INSERT INTO roms (
                                     id, romset_id, category_id, metadata_id, name, num_of_players, esrb_rating,
                                     nointro_status, cloneof, fav_status, file_path)
                                 VALUES (?,?,?,?,?,?,?,?,?,?,?)
-                               """ 
-QUERY_INSERT_ROM_ASSET      = "INSERT INTO rom_assets (rom_id, asset_id) VALUES (?, ?)"
-QUERY_UPDATE_ROM            = "UPDATE roms SET name=?,num_of_players=?,esrb_rating=?,nointro_status=?,cloneof=?,fav_status=?,file_path=? WHERE id =?"
+                                """ 
+QUERY_INSERT_ROM_ASSET          = "INSERT INTO rom_assets (rom_id, asset_id) VALUES (?, ?)"
+QUERY_UPDATE_ROM                = "UPDATE roms SET name=?,num_of_players=?,esrb_rating=?,nointro_status=?,cloneof=?,fav_status=?,file_path=? WHERE id =?"
           
 class ROMsRepository(object):
        
@@ -560,8 +663,16 @@ class ROMsRepository(object):
     def find_roms_by_romset(self, romset_id: str) -> typing.Iterator[ROM]:
         self._uow.execute(QUERY_SELECT_ROMS_BY_SET, romset_id)
         result_set = self._uow.result_set()
+        
+        self._uow.execute(QUERY_SELECT_ROM_ASSETS_BY_SET, romset_id)
+        assets_result_set = self._uow.result_set()
+                
         for rom_data in result_set:
-            yield ROM(rom_data)
+            assets = []
+            for asset_data in filter(lambda a: a['rom_id'] == rom_data['id'], assets_result_set):
+                asset_info = g_assetFactory.get_asset_info(asset_data['asset_type'])
+                assets.append(Asset(asset_info, asset_data))                
+            yield ROM(rom_data, assets)
 
     def save_rom(self, rom_obj: ROM, romset_obj: ROMSet = None, category_obj: Category = None): 
         logger.info("ROMsRepository.save_rom(): Inserting new ROM '{}'".format(rom_obj.get_name()))
@@ -591,13 +702,9 @@ class ROMsRepository(object):
             rom_obj.get_favourite_status(),
             rom_obj.get_file().getPath())
 
-        rom_assets = rom_obj.get_assets_odict()
+        rom_assets = rom_obj.get_assets()
         for asset in rom_assets:
-            asset_db_id = text.misc_generate_random_SID()
-            self._uow.execute(QUERY_INSERT_ASSET,
-                asset_db_id, rom_assets[asset], asset.id)
-            self._uow.execute(QUERY_INSERT_ROM_ASSET,
-                rom_obj.get_id(), asset_db_id)   
+            self._insert_asset(asset, rom_obj)
 
     def update_rom(self, rom_obj: ROM):
         logger.info("ROMsRepository.update_rom(): Updating ROM '{}'".format(rom_obj.get_name()))
@@ -621,6 +728,21 @@ class ROMsRepository(object):
             rom_obj.get_clone(),
             rom_obj.get_favourite_status(),
             rom_obj.get_id())
+        
+        for asset in rom_obj.get_assets():
+            if asset.get_id() == '': self._insert_asset(asset, rom_obj)
+            else: self._update_asset(asset, rom_obj)                
+            
+    def _insert_asset(self, asset: Asset, rom_obj: ROM):
+        asset_db_id = text.misc_generate_random_SID()
+        self._uow.execute(QUERY_INSERT_ASSET, asset_db_id, asset.get_path(), asset.get_asset_info_id())
+        self._uow.execute(QUERY_INSERT_ROM_ASSET, rom_obj.get_id(), asset_db_id)   
+    
+    def _update_asset(self, asset: Asset, rom_obj: ROM):
+        self._uow.execute(QUERY_UPDATE_ASSET, asset.get_path(), asset.get_asset_info_id(), asset.get_id())
+        if asset.get_custom_attribute('rom_id') is None:
+            self._uow.execute(QUERY_INSERT_ROM_ASSET, rom_obj.get_id(), asset.get_id())   
+
 #
 # AelAddonRepository -> AEL Adoon objects from SQLite DB
 #     

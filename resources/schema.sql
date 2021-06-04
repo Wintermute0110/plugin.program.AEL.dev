@@ -168,19 +168,7 @@ CREATE VIEW IF NOT EXISTS vw_categories AS SELECT
     (SELECT COUNT(*) FROM categories AS sc WHERE sc.parent_id = c.id) AS num_categories,
     (SELECT COUNT(*) FROM romsets AS sr WHERE sr.parent_id = c.id) AS num_romsets
 FROM categories AS c 
-    INNER JOIN metadata AS m ON c.metadata_id = m.id
-    LEFT JOIN category_assets AS ca_icon ON ca_icon.category_id = c.id
-        INNER JOIN assets AS a_icon ON a_icon.id = ca_icon.asset_id AND a_icon.asset_type = 'icon'
-    LEFT JOIN category_assets AS ca_fanart ON ca_fanart.category_id = c.id
-        INNER JOIN assets AS a_fanart ON a_fanart.id = ca_fanart.asset_id AND a_fanart.asset_type = 'fanart'
-    LEFT JOIN category_assets AS ca_clearlogo ON ca_clearlogo.category_id = c.id
-        INNER JOIN assets AS a_clearlogo ON a_clearlogo.id = ca_clearlogo.asset_id AND a_clearlogo.asset_type = 'clearlogo'
-    LEFT JOIN category_assets AS ca_poster ON ca_poster.category_id = c.id
-        INNER JOIN assets AS a_poster ON a_poster.id = ca_poster.asset_id AND a_poster.asset_type = 'poster'
-    LEFT JOIN category_assets AS ca_banner ON ca_banner.category_id = c.id
-        INNER JOIN assets AS a_banner ON a_banner.id = ca_banner.asset_id AND a_banner.asset_type = 'banner'
-    LEFT JOIN category_assets AS ca_trailer ON ca_trailer.category_id = c.id
-        INNER JOIN assets AS a_trailer ON a_trailer.id = ca_trailer.asset_id AND a_trailer.asset_type = 'trailer';
+    INNER JOIN metadata AS m ON c.metadata_id = m.id;
        
 CREATE VIEW IF NOT EXISTS vw_romsets AS SELECT 
     r.id AS id, 
@@ -196,13 +184,6 @@ CREATE VIEW IF NOT EXISTS vw_romsets AS SELECT
     m.assets_path AS assets_path,
     r.platform AS platform,
     r.box_size AS box_size,
-    a_icon.filepath AS s_icon, 
-    a_fanart.filepath AS s_fanart,
-    a_clearlogo.filepath AS s_clearlogo,
-    a_poster.filepath AS s_poster,
-    a_banner.filepath AS s_banner,
-    a_controller.filepath As s_controller,
-    a_trailer.filepath AS s_trailer,
     r.default_icon AS default_icon,
     r.default_fanart AS default_fanart,
     r.default_banner AS default_banner,
@@ -211,21 +192,7 @@ CREATE VIEW IF NOT EXISTS vw_romsets AS SELECT
     r.default_clearlogo AS default_clearlogo,
     (SELECT COUNT(*) FROM roms AS rms WHERE rms.romset_id = r.id) as num_roms
 FROM romsets AS r 
-    INNER JOIN metadata AS m ON r.metadata_id = m.id
-    LEFT JOIN romset_assets AS rsa_icon ON rsa_icon.romset_id = r.id
-        INNER JOIN assets AS a_icon ON a_icon.id = rsa_icon.asset_id AND a_icon.asset_type = 'icon'
-    LEFT JOIN romset_assets AS rsa_fanart ON rsa_fanart.romset_id = r.id
-        INNER JOIN assets AS a_fanart ON a_fanart.id = rsa_fanart.asset_id AND a_fanart.asset_type = 'fanart'
-    LEFT JOIN romset_assets AS rsa_clearlogo ON rsa_clearlogo.romset_id = r.id
-        INNER JOIN assets AS a_clearlogo ON a_clearlogo.id = rsa_clearlogo.asset_id AND a_clearlogo.asset_type = 'clearlogo'
-    LEFT JOIN romset_assets AS rsa_poster ON rsa_poster.romset_id = r.id
-        INNER JOIN assets AS a_poster ON a_poster.id = rsa_poster.asset_id AND a_poster.asset_type = 'poster'
-    LEFT JOIN romset_assets AS rsa_banner ON rsa_banner.romset_id = r.id
-        INNER JOIN assets AS a_banner ON a_banner.id = rsa_banner.asset_id AND a_banner.asset_type = 'banner'
-    LEFT JOIN romset_assets AS rsa_controller ON rsa_controller.romset_id = r.id
-        INNER JOIN assets AS a_controller ON a_controller.id = rsa_controller.asset_id AND a_controller.asset_type = 'controller'
-    LEFT JOIN romset_assets AS rsa_trailer ON rsa_trailer.romset_id = r.id
-        INNER JOIN assets AS a_trailer ON a_trailer.id = rsa_trailer.asset_id AND a_trailer.asset_type = 'trailer';
+    INNER JOIN metadata AS m ON r.metadata_id = m.id;
 
 CREATE VIEW IF NOT EXISTS vw_rom_launchers AS SELECT 
     r.*,
@@ -258,6 +225,37 @@ CREATE VIEW IF NOT EXISTS vw_roms AS SELECT
     rs.box_size AS box_size
 FROM roms AS r 
     INNER JOIN metadata AS m ON r.metadata_id = m.id
-    LEFT JOIN romsets AS rs ON r.romset_id = rs.id
+    LEFT JOIN romsets AS rs ON r.romset_id = rs.id;
+
+CREATE VIEW IF NOT EXISTS vw_category_assets AS SELECT
+    c.id as category_id,
+    c.parent_id,
+    a.id as asset_id,
+    a.filepath,
+    a.asset_type
+FROM assets AS a
+ INNER JOIN category_assets AS ca ON a.id = ca.asset_id 
+ INNER JOIN categories AS c ON ca.category_id = c.id;
+
+CREATE VIEW IF NOT EXISTS vw_romset_assets AS SELECT
+    r.id as romset_id,
+    r.parent_id,
+    a.id as asset_id,
+    a.filepath,
+    a.asset_type
+FROM assets AS a
+ INNER JOIN romset_assets AS ra ON a.id = ra.asset_id 
+ INNER JOIN romsets AS r ON ra.romset_id = r.id;
+
+CREATE VIEW IF NOT EXISTS vw_rom_assets AS SELECT
+    r.id as rom_id, 
+    r.romset_id,
+    a.id as asset_id,
+    a.filepath,
+    a.asset_type
+FROM assets AS a
+ INNER JOIN rom_assets AS ra ON a.id = ra.asset_id 
+ INNER JOIN roms AS r ON ra.rom_id = r.id
+ LEFT JOIN romsets AS rs ON r.romset_id = rs.id;
 
 CREATE TABLE IF NOT EXISTS ael_version(app TEXT, version TEXT);
