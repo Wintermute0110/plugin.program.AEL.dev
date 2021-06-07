@@ -16,12 +16,14 @@
 # The idea if this module is to share it between AEL and AML.
 #
 # All functions that depends on Kodi modules are here. This includes IO functions
-# and logging functions.
+# and logging functions. Misc function that do not depend on Kodi modules are
+# located in the misc module.
 #
-# Low-level filesystem and IO functions are here. disk_IO module contains high level functions.
+# Low-level filesystem and IO functions are here (FileName class).
+# db module (formaer disk_IO module) contains high level IO functions.
 #
-# When Kodi modules are not available replaces can be provided. This is useful to use addon
-# modules with CPython.
+# When Kodi modules are not available replacements can be provided. This is useful
+# to use addon modules with CPython for testing or debugging.
 #
 # This module must NOT include any other addon modules to avoid circular dependencies. The
 # only exception to this rule is the module .constants. This module is virtually included
@@ -59,7 +61,7 @@ import string
 import sys
 import threading
 import time
-import xml
+import xml.etree.ElementTree
 import zlib
 
 # --- Determine interpreter running platform ---
@@ -326,15 +328,12 @@ def utils_load_XML_to_ET(filename):
         # log_debug(text_type(ex.errno.errorcode))
         # No such file or directory
         if ex.errno == errno.ENOENT:
-            log_error('utils_load_XML_to_ET() (IOError) No such file or directory.')
+            log_error('utils_load_XML_to_ET() (IOError) ENOENT No such file or directory.')
         else:
             log_error('utils_load_XML_to_ET() (IOError) Unhandled errno value.')
     except xml.etree.ElementTree.ParseError as ex:
-        log_error('utils_load_XML_to_ET() (ParseError) Exception parsing XML categories.xml')
+        log_error('utils_load_XML_to_ET() (ParseError) Exception parsing {}'.format(filename))
         log_error('utils_load_XML_to_ET() (ParseError) {}'.format(text_type(ex)))
-        # kodi_dialog_OK('(ET.ParseError) when reading categories.xml. '
-        #     'XML file is corrupt or contains invalid characters.')
-
     return xml_tree
 
 # -------------------------------------------------------------------------------------------------
@@ -345,15 +344,15 @@ def utils_load_JSON_file(json_filename, default_obj = {}, verbose = True):
     # If file does not exist return default object (usually empty object)
     json_data = default_obj
     if not os.path.isfile(json_filename):
-        log_warning('utils_load_JSON_file_dic() Not found "{}"'.format(json_filename))
+        log_warning('utils_load_JSON_file() Not found "{}"'.format(json_filename))
         return json_data
     # Load and parse JSON file.
-    if verbose: log_debug('utils_load_JSON_file_dic() "{}"'.format(json_filename))
+    if verbose: log_debug('utils_load_JSON_file() "{}"'.format(json_filename))
     with io.open(json_filename, 'rt', encoding = 'utf-8') as file:
         try:
             json_data = json.load(file)
         except ValueError as ex:
-            log_error('utils_load_JSON_file_dic() ValueError exception in json.load() function')
+            log_error('utils_load_JSON_file() ValueError exception in json.load() function')
 
     return json_data
 
@@ -427,7 +426,7 @@ class Threaded_Load_JSON(threading.Thread):
         self.json_filename = json_filename
 
     def run(self):
-        self.output_dic = utils_load_JSON_file_dic(self.json_filename)
+        self.output_dic = utils_load_JSON_file(self.json_filename)
 
 # -------------------------------------------------------------------------------------------------
 # File cache functions.

@@ -11,8 +11,7 @@
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 # See the GNU General Public License for more details.
 
-# Advanced Emulator Launcher platform constants.
-#
+# Advanced Emulator/MAME Launcher constants and globals.
 # This module has no external dependencies.
 
 # Transitional code from Python 2 to Python 3 (https://github.com/benjaminp/six/blob/master/six.py)
@@ -50,6 +49,9 @@ ADDON_SHORT_NAME = 'AEL'
 JSON_INDENT = 1
 JSON_SEP = (', ', ': ')
 
+# -------------------------------------------------------------------------------------------------
+# CUSTOM/DEBUG/TEST settings
+# -------------------------------------------------------------------------------------------------
 # An integer number incremented whenever there is a change in the ROM storage format.
 # This enables easy migrations, at least in theory.
 AEL_STORAGE_FORMAT = 1
@@ -64,6 +66,58 @@ KC_YELLOW     = '[COLOR yellow]'
 KC_VIOLET     = '[COLOR violet]'
 KC_BLUEVIOLET = '[COLOR blueviolet]'
 KC_END        = '[/COLOR]'
+
+# -------------------------------------------------------------------------------------------------
+# Image file constants.
+# -------------------------------------------------------------------------------------------------
+# Supported image files in:
+# 1. misc_identify_image_id_by_contents()
+# 2. misc_identify_image_id_by_ext()
+IMAGE_PNG_ID     = 'PNG'
+IMAGE_JPEG_ID    = 'JPEG'
+IMAGE_GIF_ID     = 'GIF'
+IMAGE_BMP_ID     = 'BMP'
+IMAGE_TIFF_ID    = 'TIFF'
+IMAGE_UKNOWN_ID  = 'Image unknown'
+IMAGE_CORRUPT_ID = 'Image corrupt'
+
+IMAGE_IDS = [
+    IMAGE_PNG_ID,
+    IMAGE_JPEG_ID,
+    IMAGE_GIF_ID,
+    IMAGE_BMP_ID,
+    IMAGE_TIFF_ID,
+]
+
+IMAGE_EXTENSIONS = {
+    IMAGE_PNG_ID  : ['png'],
+    IMAGE_JPEG_ID : ['jpg', 'jpeg'],
+    IMAGE_GIF_ID  : ['gif'],
+    IMAGE_BMP_ID  : ['bmp'],
+    IMAGE_TIFF_ID : ['tif', 'tiff'],
+}
+
+# Image file magic numbers. All at file offset 0.
+# See https://en.wikipedia.org/wiki/List_of_file_signatures
+# b prefix is a byte string in both Python 2 and 3.
+IMAGE_MAGIC_DIC = {
+    IMAGE_PNG_ID  : [ b'\x89\x50\x4E\x47\x0D\x0A\x1A\x0A' ],
+    IMAGE_JPEG_ID : [
+        b'\xFF\xD8\xFF\xDB',
+        b'\xFF\xD8\xFF\xE0\x00\x10\x4A\x46\x49\x46\x00\x01',
+        b'\xFF\xD8\xFF\xEE',
+        b'\xFF\xD8\xFF\xE1',
+    ],
+    IMAGE_GIF_ID  : [
+        b'\x47\x49\x46\x38\x37\x61',
+        b'\x47\x49\x46\x38\x39\x61',
+    ],
+    IMAGE_BMP_ID  : [ b'\x42\x4D' ],
+    IMAGE_TIFF_ID : [
+        b'\x49\x49\x2A\x00',
+        b'\x4D\x4D\x00\x2A',
+    ]
+}
 
 # -------------------------------------------------------------------------------------------------
 # Addon constants
@@ -332,33 +386,6 @@ ROM_ASSET_ID_LIST = [
     ASSET_MANUAL_ID,
     ASSET_TRAILER_ID,
 ]
-
-# Supported image files in:
-# 1. misc_identify_image_id_by_contents()
-# 2. misc_identify_image_id_by_ext()
-IMAGE_PNG_ID     = 'PNG'
-IMAGE_JPEG_ID    = 'JPEG'
-IMAGE_GIF_ID     = 'GIF'
-IMAGE_BMP_ID     = 'BMP'
-IMAGE_TIFF_ID    = 'TIFF'
-IMAGE_UKNOWN_ID  = 'Image unknown'
-IMAGE_CORRUPT_ID = 'Image corrupt'
-
-IMAGE_IDS = [
-    IMAGE_PNG_ID,
-    IMAGE_JPEG_ID,
-    IMAGE_GIF_ID,
-    IMAGE_BMP_ID,
-    IMAGE_TIFF_ID,
-]
-
-IMAGE_EXTENSIONS = {
-    IMAGE_PNG_ID  : ['png'],
-    IMAGE_JPEG_ID : ['jpg', 'jpeg'],
-    IMAGE_GIF_ID  : ['gif'],
-    IMAGE_BMP_ID  : ['bmp'],
-    IMAGE_TIFF_ID : ['tif', 'tiff'],
-}
 
 # --- Addon will search these file extensions for assets ---
 # Check http://kodi.wiki/view/advancedsettings.xml#videoextensions
