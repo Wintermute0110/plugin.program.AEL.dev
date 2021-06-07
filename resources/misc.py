@@ -688,28 +688,6 @@ def misc_replace_fav(dict_in, old_item_key, new_item_key, new_value):
     else:
         raise TypeError
 
-# Image file magic numbers. All at file offset 0.
-# See https://en.wikipedia.org/wiki/List_of_file_signatures
-# b prefix is a byte string in both Pyhton 2 and 3.
-IMAGE_MAGIC_DIC = {
-    IMAGE_PNG_ID  : [ b'\x89\x50\x4E\x47\x0D\x0A\x1A\x0A' ],
-    IMAGE_JPEG_ID : [
-        b'\xFF\xD8\xFF\xDB',
-        b'\xFF\xD8\xFF\xE0\x00\x10\x4A\x46\x49\x46\x00\x01',
-        b'\xFF\xD8\xFF\xEE',
-        b'\xFF\xD8\xFF\xE1',
-    ],
-    IMAGE_GIF_ID  : [
-        b'\x47\x49\x46\x38\x37\x61',
-        b'\x47\x49\x46\x38\x39\x61',
-    ],
-    IMAGE_BMP_ID  : [ b'\x42\x4D' ],
-    IMAGE_TIFF_ID : [
-        b'\x49\x49\x2A\x00',
-        b'\x4D\x4D\x00\x2A',
-    ]
-}
-
 # Inspects an image file and determine its type by using the magic numbers,
 # Returns an image id defined in list IMAGE_IDS or IMAGE_UKNOWN_ID.
 def misc_identify_image_id_by_contents(asset_fname):
