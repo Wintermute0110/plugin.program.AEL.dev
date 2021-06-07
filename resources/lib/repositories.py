@@ -114,6 +114,7 @@ class XmlConfigurationRepository(object):
             if not root_element.tag == 'category':
                 continue
 
+            assets = []
             category_temp = {}
             for root_child in root_element:
                 # >> By default read strings
@@ -122,9 +123,15 @@ class XmlConfigurationRepository(object):
                 xml_tag  = root_child.tag
                 if self.debug: logger.debug('>>> "{0:<11s}" --> "{1}"'.format(xml_tag, text_XML_line))
                 category_temp[xml_tag] = text_XML_line
+                                
+                if xml_tag.startswith('s_'):
+                    asset_info = g_assetFactory.get_asset_info_by_key(xml_tag)
+                    asset_data = { 'filepath': text_XML_line }
+                    assets.append(Asset(asset_info, asset_data))
+                
             # --- Add category to categories dictionary ---
             logger.debug('Adding category "{0}" to import list'.format(category_temp['m_name']))
-            yield Category(category_temp)
+            yield Category(category_temp, assets)
 
     def get_launchers(self) -> typing.Iterator[ROMSet]:    
         # --- Parse using cElementTree ---
@@ -142,7 +149,8 @@ class XmlConfigurationRepository(object):
 
             if not root_element.tag == 'launcher':
                 continue
-
+            
+            assets = []
             launcher_temp = {}
             for root_child in root_element:
                 # >> By default read strings
@@ -152,9 +160,15 @@ class XmlConfigurationRepository(object):
                 if self.debug: logger.debug('>>> "{0:<11s}" --> "{1}"'.format(xml_tag, text_XML_line))
                 if xml_tag == 'categoryID': xml_tag = 'parent_id'                
                 launcher_temp[xml_tag] = text_XML_line
-            # --- Add launcher to launchers dictionary ---
+                
+                if xml_tag.startswith('s_'):
+                    asset_info = g_assetFactory.get_asset_info_by_key(xml_tag)
+                    asset_data = { 'filepath': text_XML_line }
+                    assets.append(Asset(asset_info, asset_data))
+                    
+            # --- Add launcher to launchers collection ---
             logger.debug('Adding launcher "{0}" to import list'.format(launcher_temp['m_name']))
-            yield ROMSet(launcher_temp)
+            yield ROMSet(launcher_temp, assets)
 
 
 # -------------------------------------------------------------------------------------------------
@@ -203,16 +217,26 @@ class ROMsJsonFileRepository(object):
         roms = []
         if isinstance(roms_data, list):
             for rom_data in roms_data:
-                r = ROM(rom_data)
+                assets = self._get_assets_from_romdata(rom_data)
+                r = ROM(rom_data, assets)
                 key = r.get_id()
                 roms.append(r)
         else:
             for key in roms_data:
-                r = ROM(roms_data[key])
+                assets = self._get_assets_from_romdata(roms_data[key])
+                r = ROM(roms_data[key], assets)
                 roms.append(r)
 
         return roms
     
+    def _get_assets_from_romdata(self, rom_data: dict) -> typing.List[Asset]:
+        assets = []
+        for key, value in rom_data.items():
+            if key.startswith('s_'):
+                asset_info = g_assetFactory.get_asset_info_by_key(key)
+                asset_data = { 'filepath': value }
+                assets.append(Asset(asset_info, asset_data))
+        return assets
 #
 # UnitOfWork to be used with sqlite repositories.
 # Can be used to create database scopes/sessions (unit of work pattern).
@@ -331,13 +355,17 @@ QUERY_SELECT_ALL_CATEGORY_ASSETS        = "SELECT * FROM vw_category_assets"
 QUERY_SELECT_ROOT_CATEGORIES            = "SELECT * FROM vw_categories WHERE parent_id IS NULL"
 QUERY_SELECT_ROOT_CATEGORY_ASSETS       = "SELECT * FROM vw_category_assets WHERE parent_id IS NULL"
 QUERY_SELECT_CATEGORIES_BY_PARENT       = "SELECT * FROM vw_categories WHERE parent_id = ?"
-QUERY_SELECT_CATEGORY_ASSETS_BY_PARENT  = "SELECT * FROM vw_category_assets WHERE parent = ?"
+QUERY_SELECT_CATEGORY_ASSETS_BY_PARENT  = "SELECT * FROM vw_category_assets WHERE parent_id = ?"
 
 QUERY_INSERT_CATEGORY             = """
                                     INSERT INTO categories (id,name,parent_id,metadata_id,default_icon,default_fanart,default_banner,default_poster,default_clearlogo) 
                                     VALUES (?,?,?,?,?,?,?,?,?)
                                     """
-QUERY_UPDATE_CATEGORY             = "UPDATE categories SET name=? WHERE id =?"
+QUERY_UPDATE_CATEGORY             = """
+                                    UPDATE categories SET name=? 
+                                    default_icon=?, default_fanart=?, default_banner=?, default_poster=?, default_clearlogo=?
+                                    WHERE id =?
+                                    """
 QUERY_INSERT_CATEGORY_ASSET       = "INSERT INTO category_assets (category_id, asset_id) VALUES (?, ?)"
 QUERY_DELETE_CATEGORY             = "DELETE FROM category WHERE id = ?"
 class CategoryRepository(object):
@@ -450,6 +478,11 @@ class CategoryRepository(object):
 
         self._uow.execute(QUERY_UPDATE_CATEGORY,
             category_obj.get_name(),
+            category_obj.get_mapped_asset_info(asset_id=ASSET_ICON_ID).key,
+            category_obj.get_mapped_asset_info(asset_id=ASSET_FANART_ID).key,
+            category_obj.get_mapped_asset_info(asset_id=ASSET_BANNER_ID).key,
+            category_obj.get_mapped_asset_info(asset_id=ASSET_POSTER_ID).key,
+            category_obj.get_mapped_asset_info(asset_id=ASSET_CLEARLOGO_ID).key,
             category_obj.get_id())
         
         for asset in category_obj.get_assets():
@@ -485,10 +518,17 @@ QUERY_SELECT_ROMSETS_ASSETS_BY_PARENT   = "SELECT * FROM vw_romset_assets WHERE 
 QUERY_INSERT_ROMSET               = """
                                     INSERT INTO romsets (
                                             id,name,parent_id,metadata_id,platform,box_size, 
-                                            default_icon,default_fanart,default_banner,default_poster,default_controller,default_clearlogo
-                                        ) VALUES (?,?,?,?,?,?,?,?,?,?,?,?)
+                                            default_icon,default_fanart,default_banner,default_poster,default_controller,default_clearlogo,
+                                            roms_default_icon,roms_default_fanart,roms_default_banner,roms_default_poster,roms_default_clearlogo
+                                        ) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)
                                     """
-QUERY_UPDATE_ROMSET               = "UPDATE romsets SET name=?,platform=?,box_size=? WHERE id =?"
+QUERY_UPDATE_ROMSET               = """
+                                    UPDATE romsets SET 
+                                        name=?, platform=?, box_size=?, 
+                                        default_icon=?, default_fanart=?, default_banner=?, default_poster=?, default_controller=?, default_clearlogo=?,
+                                        roms_default_icon=?, roms_default_fanart=?, roms_default_banner=?, roms_default_poster=?, roms_default_clearlogo=?
+                                        WHERE id =?
+                                    """
 QUERY_INSERT_ROMSET_ASSET         = "INSERT INTO romset_assets (romset_id, asset_id) VALUES (?, ?)"
 QUERY_INSERT_ROMSET_ASSET_PATH    = "INSERT INTO romset_assetspaths (romset_id, assetspaths_id) VALUES (?, ?)"
 QUERY_INSERT_ROMSET_LAUNCHER      = "INSERT INTO romset_launchers (romset_id, ael_addon_id, args, is_default) VALUES (?,?,?,?)"
@@ -586,8 +626,13 @@ class ROMSetRepository(object):
             romset_obj.get_mapped_asset_info(asset_id=ASSET_BANNER_ID).key,
             romset_obj.get_mapped_asset_info(asset_id=ASSET_POSTER_ID).key,
             romset_obj.get_mapped_asset_info(asset_id=ASSET_CONTROLLER_ID).key,
-            romset_obj.get_mapped_asset_info(asset_id=ASSET_CLEARLOGO_ID).key)
-
+            romset_obj.get_mapped_asset_info(asset_id=ASSET_CLEARLOGO_ID).key,            
+            romset_obj.get_mapped_ROM_asset_info(asset_id=ASSET_ICON_ID).key,
+            romset_obj.get_mapped_ROM_asset_info(asset_id=ASSET_FANART_ID).key,
+            romset_obj.get_mapped_ROM_asset_info(asset_id=ASSET_BANNER_ID).key,
+            romset_obj.get_mapped_ROM_asset_info(asset_id=ASSET_POSTER_ID).key,
+            romset_obj.get_mapped_ROM_asset_info(asset_id=ASSET_CLEARLOGO_ID).key)
+        
         romset_assets = romset_obj.get_assets()
         for asset in romset_assets: 
             self._insert_asset(asset, romset_obj)  
@@ -615,6 +660,17 @@ class ROMSetRepository(object):
             romset_obj.get_name(),
             romset_obj.get_platform(),
             romset_obj.get_box_sizing(),
+            romset_obj.get_mapped_asset_info(asset_id=ASSET_ICON_ID).key,
+            romset_obj.get_mapped_asset_info(asset_id=ASSET_FANART_ID).key,
+            romset_obj.get_mapped_asset_info(asset_id=ASSET_BANNER_ID).key,
+            romset_obj.get_mapped_asset_info(asset_id=ASSET_POSTER_ID).key,
+            romset_obj.get_mapped_asset_info(asset_id=ASSET_CONTROLLER_ID).key,
+            romset_obj.get_mapped_asset_info(asset_id=ASSET_CLEARLOGO_ID).key,            
+            romset_obj.get_mapped_ROM_asset_info(asset_id=ASSET_ICON_ID).key,
+            romset_obj.get_mapped_ROM_asset_info(asset_id=ASSET_FANART_ID).key,
+            romset_obj.get_mapped_ROM_asset_info(asset_id=ASSET_BANNER_ID).key,
+            romset_obj.get_mapped_ROM_asset_info(asset_id=ASSET_POSTER_ID).key,
+            romset_obj.get_mapped_ROM_asset_info(asset_id=ASSET_CLEARLOGO_ID).key,
             romset_obj.get_id())
          
         self._uow.execute(QUERY_DELETE_ROMSET_LAUNCHERS, romset_obj.get_id())

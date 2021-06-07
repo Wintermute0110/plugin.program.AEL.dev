@@ -381,7 +381,29 @@ class MetaDataItemABC(EntityABC):
 
     @abc.abstractmethod
     def get_asset_ids_list(self) -> typing.List[str]: pass
-     
+    
+    @abc.abstractmethod
+    def get_mappable_asset_ids_list(self) -> typing.List[str]: pass
+    
+    def is_mappable_asset(self, asset_info) -> bool:
+        return asset_info.id in self.get_mappable_asset_ids_list()
+    
+    # returns the complete set of assets as they are mapped for the view
+    def get_view_assets(self) -> typing.Dict[str,str]:
+        assets = self.get_assets()
+        view_assets = {}
+        for asset in assets:
+            value = asset.get_path()
+            asset_info = asset.get_asset_info()
+            fallback_str = ''
+            
+            if self.is_mappable_asset(asset_info):
+                if asset_info.id == ASSET_ICON_ID:
+                    fallback_str = 'DefaultFolder.png'
+                value = self.get_mapped_asset_str(asset_info, fallback=fallback_str)
+                
+            view_assets[asset_info.fname_infix] = value
+        return view_assets
     # 
     # Gets the asset path (str) of the mapped asset type following
     # the given input of either an assetinfo object or asset id.
@@ -399,7 +421,7 @@ class MetaDataItemABC(EntityABC):
     # They must be images, no videos, no documents.
     #
     def get_mappable_asset_list(self) -> typing.List[AssetInfo]: 
-        return g_assetFactory.get_asset_list_by_IDs(self.get_asset_ids_list(), 'image')
+        return g_assetFactory.get_asset_list_by_IDs(self.get_mappable_asset_ids_list(), 'image')
 
     def get_mapped_assets(self) -> typing.Dict[str,str]:
         mappable_assets = self.get_mappable_asset_list()
@@ -430,7 +452,10 @@ class MetaDataItemABC(EntityABC):
         if asset_info.default_key == '':
             logger.error('Requested mapping for AssetInfo without default key. Type {}'.format(asset_info.id))
             raise AddonError('Not supported asset type used. This might be a bug!')  
-            
+        
+        if asset_info.default_key not in self.entity_data:
+            return asset_info.key
+        
         return self.entity_data[asset_info.default_key]
 	
     def set_mapped_asset_key(self, asset_info: AssetInfo, mapped_to_info: AssetInfo):
@@ -467,8 +492,9 @@ class Category(MetaDataItemABC):
     def has_items(self) -> bool:
         return len(self.num_romsets()) > 0 or len(self.num_categories()) > 0
 
-    def get_asset_ids_list(self): 
-        return COLLECTION_ASSET_ID_LIST
+    def get_asset_ids_list(self): return CATEGORY_ASSET_ID_LIST
+    
+    def get_mappable_asset_ids_list(self): return MAPPABLE_CATEGORY_ASSET_ID_LIST
     
     def get_NFO_name(self) -> io.FileName:
         nfo_dir = io.FileName(settings.getSetting('categories_asset_dir'), isdir = True)
@@ -634,6 +660,8 @@ class ROMSet(MetaDataItemABC):
 
     def get_asset_ids_list(self): return LAUNCHER_ASSET_ID_LIST
 
+    def get_mappable_asset_ids_list(self): return MAPPABLE_LAUNCHER_ASSET_ID_LIST
+
     def get_asset_path(self, asset_info: AssetInfo) -> io.FileName:
         if not asset_info: return None
         return self._get_value_as_filename(asset_info.path_key)
@@ -642,9 +670,8 @@ class ROMSet(MetaDataItemABC):
         logger.debug('Setting "{}" to {}'.format(asset_info.path_key, path))
         self.entity_data[asset_info.path_key] = path
 
-    def get_ROM_mappable_asset_list(self):
-        MAPPABLE_ASSETS = [ASSET_ICON_ID, ASSET_FANART_ID, ASSET_BANNER_ID, ASSET_CLEARLOGO_ID, ASSET_POSTER_ID]
-        return g_assetFactory.get_asset_list_by_IDs(MAPPABLE_ASSETS)
+    def get_ROM_mappable_asset_list(self) -> typing.List[AssetInfo]:
+        return g_assetFactory.get_asset_list_by_IDs(MAPPABLE_ROM_ASSET_ID_LIST)
 
     #
     # Gets the actual assetinfo object that is mapped for
@@ -666,7 +693,8 @@ class ROMSet(MetaDataItemABC):
         if asset_info.rom_default_key == '':
             logger.error('Requested mapping for AssetInfo without default key. Type {}'.format(asset_info.id))
             raise AddonError('Not supported asset type used. This might be a bug!')  
-            
+        
+        if asset_info.rom_default_key not in self.entity_data: return asset_info.key   
         return self.entity_data[asset_info.rom_default_key]
 
     def set_mapped_ROM_asset_key(self, asset_info: AssetInfo, mapped_to_info: AssetInfo):
@@ -1024,26 +1052,15 @@ class ROM(MetaDataItemABC):
         #favourite.set_custom_attribute('roms_default_clearlogo',self.get_custom_attribute('roms_default_clearlogo'))
 
         return favourite
-
-    def delete_from_disk(self):
-        if self.launcher is None:
-            raise AddonError('Launcher not set for ROM')
-        
-        self.launcher.delete_ROM(self)
         
     def get_assets_kind(self): return KIND_ASSET_ROM
 	
     def get_object_name(self): 
         return "ROM"
-	
-    def save_to_disk(self): 
-        if self.launcher is None:
-            raise AddonError('Launcher not set for ROM')
-        
-        self.launcher.save_ROM(self)
     
-    def get_asset_ids_list(self): 
-        return ROM_ASSET_ID_LIST
+    def get_asset_ids_list(self): return ROM_ASSET_ID_LIST
+    
+    def get_mappable_asset_ids_list(self): return MAPPABLE_ROM_ASSET_ID_LIST
                  
     def get_edit_options(self, category_id):
         delete_rom_txt = 'Delete ROM'
@@ -1162,7 +1179,13 @@ class ROM(MetaDataItemABC):
             kodi.notify('Imported {0}'.format(nfo_file_path.getPath()))
 
         return True
-
+    
+    def apply_romset_asset_mapping(self, romset: ROMSet):
+        mappable_assets = romset.get_mappable_asset_list()
+        for mappable_asset in mappable_assets:
+            mapped_asset = romset.get_mapped_ROM_asset_info(mappable_asset)
+            self.set_mapped_asset_key(mappable_asset, mapped_asset)
+        
     def __str__(self):
         """Overrides the default implementation"""
         return json.dumps(self.entity_data)

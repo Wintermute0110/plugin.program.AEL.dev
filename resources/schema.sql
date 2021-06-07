@@ -58,6 +58,11 @@ CREATE TABLE IF NOT EXISTS romsets(
     default_poster TEXT DEFAULT 's_poster' NOT NULL,
     default_controller TEXT DEFAULT 's_controller' NOT NULL,
     default_clearlogo TEXT DEFAULT 's_clearlogo' NOT NULL,
+    roms_default_icon TEXT DEFAULT 's_icon' NOT NULL,
+    roms_default_fanart TEXT DEFAULT 's_fanart' NOT NULL,
+    roms_default_banner TEXT DEFAULT 's_banner' NOT NULL,
+    roms_default_poster TEXT DEFAULT 's_poster' NOT NULL,
+    roms_default_clearlogo TEXT DEFAULT 's_clearlogo' NOT NULL,
     FOREIGN KEY (parent_id) REFERENCES categories (id) 
         ON DELETE CASCADE ON UPDATE NO ACTION,
     FOREIGN KEY (metadata_id) REFERENCES metadata (id) 
@@ -154,12 +159,6 @@ CREATE VIEW IF NOT EXISTS vw_categories AS SELECT
     m.plot AS m_plot,
     m.finished AS finished,
     m.assets_path AS assets_path,
-    a_icon.filepath AS s_icon, 
-    a_fanart.filepath AS s_fanart,
-    a_clearlogo.filepath AS s_clearlogo,
-    a_poster.filepath AS s_poster,
-    a_banner.filepath AS s_banner,
-    a_trailer.filepath AS s_trailer,
     c.default_icon AS default_icon,
     c.default_fanart AS default_fanart,
     c.default_banner AS default_banner,
@@ -190,6 +189,11 @@ CREATE VIEW IF NOT EXISTS vw_romsets AS SELECT
     r.default_poster AS default_poster,
     r.default_controller AS default_controller,
     r.default_clearlogo AS default_clearlogo,
+    r.roms_default_icon AS roms_default_icon,
+    r.roms_default_fanart AS roms_default_fanart,
+    r.roms_default_banner AS roms_default_banner,
+    r.roms_default_poster AS roms_default_poster,
+    roms_default_clearlogo TEXT DEFAULT 's_clearlogo' NOT NULL,
     (SELECT COUNT(*) FROM roms AS rms WHERE rms.romset_id = r.id) as num_roms
 FROM romsets AS r 
     INNER JOIN metadata AS m ON r.metadata_id = m.id;

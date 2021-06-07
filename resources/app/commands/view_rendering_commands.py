@@ -119,7 +119,7 @@ def _render_root_view(categories_repository: CategoryRepository, romsets_reposit
         root_items.append(_render_category_listitem(root_category))
         if render_sub_views:
             _render_category_view(root_category, categories_repository, romsets_repository, 
-                                  roms_repository, views_repository)
+                                  roms_repository, views_repository, render_sub_views)
 
     for root_romset in root_romsets:
         logger.debug('Processing romset "{}"'.format(root_romset.get_name()))
@@ -149,7 +149,7 @@ def _render_category_view(category_obj: Category, categories_repository: Categor
         logger.debug('Processing category "{}", part of "{}"'.format(sub_category.get_name(), category_obj.get_name()))
         view_items.append(_render_category_listitem(sub_category))
         if render_sub_views:
-            _render_category_view(sub_category, categories_repository)
+            _render_category_view(sub_category, categories_repository, render_sub_views)
     
     for romset in romsets:
         logger.debug('Processing romset "{}"'.format(romset.get_name()))
@@ -174,7 +174,7 @@ def _render_romset_view(romset_obj: ROMSet, roms_repository: ROMsRepository, vie
     view_items = []
     for rom in roms:
         logger.debug('Processing rom "{}"'.format(rom.get_name()))
-        view_items.append(_render_rom_listitem(rom))
+        view_items.append(_render_rom_listitem(rom, romset_obj))
         
     logger.debug('Storing {} items for romset "{}" view.'.format(len(view_items), romset_obj.get_name()))
     view_data['items'] = view_items
@@ -186,7 +186,7 @@ def _render_category_listitem(category_obj: Category):
 
     category_name = category_obj.get_name()
     ICON_OVERLAY = 5 if category_obj.is_finished() else 4
-    assets = category_obj.get_mapped_assets()
+    assets = category_obj.get_view_assets()
 
     return { 
         'id': category_obj.get_id(),
@@ -214,7 +214,7 @@ def _render_romset_listitem(romset_obj: ROMSet):
 
     romset_name = romset_obj.get_name()
     ICON_OVERLAY = 5 if romset_obj.is_finished() else 4
-    assets = romset_obj.get_mapped_assets()
+    assets = romset_obj.get_view_assets()
 
     return { 
         'id': romset_obj.get_id(),
@@ -237,12 +237,13 @@ def _render_romset_listitem(romset_obj: ROMSet):
         }
     }
 
-def _render_rom_listitem(rom_obj: ROM):
+def _render_rom_listitem(rom_obj: ROM, romset_obj: ROMSet):
     # --- Do not render row if romset finished ---
     if rom_obj.is_finished() and settings.getSettingAsBool('display_hide_finished'): return
 
     ICON_OVERLAY = 5 if rom_obj.is_finished() else 4
-    assets = rom_obj.get_mapped_assets()
+    rom_obj.apply_romset_asset_mapping(romset_obj)
+    assets = rom_obj.get_view_assets()
 
     # --- Default values for flags ---
     AEL_InFav_bool_value     = AEL_INFAV_BOOL_VALUE_FALSE
