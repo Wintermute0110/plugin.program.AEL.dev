@@ -2638,7 +2638,7 @@ class Main:
             rompath = self.launchers[launcherID]['rompath']
             launcher_name = self.launchers[launcherID]['m_name']
             # ROMs launcher
-            if rompath == '':
+            if rompath:
                 roms = fs_load_ROMs_JSON(g_PATHS.ROMS_DIR, self.launchers[launcherID])
                 ret = kodi_dialog_yesno('Launcher "{}" has {} ROMs. '.format(launcher_name, len(roms)) +
                     'Are you sure you want to delete it?')
@@ -2646,7 +2646,9 @@ class Main:
             else:
                 ret = kodi_dialog_yesno('Launcher "{}" is standalone. '.format(launcher_name) +
                     'Are you sure you want to delete it?')
-            if not ret: return
+            if not ret:
+                kodi_notify('Delete Launcher cancelled')
+                return
 
             # Remove JSON/XML file if exist
             # Remove launcher from database. Categories.xml will be saved at the end of function
@@ -7876,31 +7878,44 @@ class Main:
             return
         launcher = self.launchers[launcherID]
         minimize_flag = launcher['toggle_window']
-
-        # --- Execute Kodi built-in function under certain conditions ---
-        application = FileName(launcher['application'])
-        if application.getBase().lower().replace('.exe' , '') == 'xbmc'  or \
-            'xbmc-fav-' in launcher['application'] or \
-            'xbmc-sea-' in launcher['application']:
-            xbmc.executebuiltin('XBMC.{}'.format(launcher['args']))
-            return
-
-        # ~~~~~ External application ~~~~~
-        app_basename = application.getBase()
-        app_ext = application.getExt()
-        arguments = launcher['args']
-        launcher_title = launcher['m_name']
         log_info('_run_standalone_launcher() categoryID {}'.format(categoryID))
         log_info('_run_standalone_launcher() launcherID {}'.format(launcherID))
+
+        # --- Execute Kodi built-in function under certain conditions ---
+        # Application is "xbmc", "xbmc.exe" or starts with "xbmc-fav-" or "xbmc-sea-".
+        # Upgraded to support kodi.
+        # Arguments is the builtin function to execute, for example:
+        # ActivateWindow(10821,"plugin://plugin.program.iagl/game_list/list_all/Dreamcast_Downloaded/1",return)
+        application_str = launcher['application']
+        arguments_str = launcher['args']
+        app_cleaned = application_str.lower().replace('.exe' , '')
+        if app_cleaned == 'xbmc' or app_cleaned == 'kodi' or \
+            'xbmc-fav-' in app_cleaned or 'xbmc-sea-' in app_cleaned or \
+            'kodi-fav-' in app_cleaned or 'kodi-sea-' in app_cleaned:
+            log_info('_run_standalone_launcher() Executing Kodi builtin function')
+            log_info('_run_standalone_launcher() application "{}"'.format(application_str))
+            log_info('_run_standalone_launcher() app_cleaned "{}"'.format(app_cleaned))
+            log_info('_run_standalone_launcher() arguments   "{}"'.format(arguments_str))
+            if self.settings['display_launcher_notify']: kodi_notify('Launching Kodi builtin')
+            xbmc.executebuiltin('{}'.format(arguments_str))
+            log_info('_run_standalone_launcher() Exiting function.')
+            return
+
+        # ----- External application -----
+        application = FileName(launcher['application'])
+        app_basename = application.getBase()
+        app_ext = application.getExt()
+        launcher_title = launcher['m_name']
         log_info('_run_standalone_launcher() application   "{}"'.format(application.getPath()))
         log_info('_run_standalone_launcher() apppath       "{}"'.format(application.getDir()))
         log_info('_run_standalone_launcher() app_basename  "{}"'.format(app_basename))
         log_info('_run_standalone_launcher() app_ext       "{}"'.format(app_ext))
         log_info('_run_standalone_launcher() launcher name "{}"'.format(launcher_title))
 
-        # ~~~ Argument substitution ~~~
+        # --- Argument substitution ---
+        arguments = launcher['args']
         log_info('_run_standalone_launcher() raw arguments   "{}"'.format(arguments))
-        arguments = arguments.replace('$apppath%' , application.getDir())
+        arguments = arguments.replace('$apppath$' , application.getDir())
         log_info('_run_standalone_launcher() final arguments "{}"'.format(arguments))
 
         # --- Check for errors and abort if errors found ---
@@ -7909,7 +7924,7 @@ class Main:
             kodi_notify_warn('App {} not found.'.format(application.getOriginalPath()))
             return
 
-        # ~~~~~ Execute external application ~~~~~
+        # --- Execute external application ---
         non_blocking_flag = False
         self._run_before_execution(launcher_title, minimize_flag)
         self._run_process(application.getPath(), arguments, application.getDir(), app_ext, non_blocking_flag)
@@ -7920,7 +7935,7 @@ class Main:
     def _command_run_rom(self, categoryID, launcherID, romID):
         # --- ROM in Favourites ---
         if categoryID == VCATEGORY_FAVOURITES_ID and launcherID == VLAUNCHER_FAVOURITES_ID:
-            log_info('_command_run_rom() Launching ROM in Favourites ...')
+            log_info('_command_run_rom() Launching ROM in Favourites...')
             roms = fs_load_Favourites_JSON(g_PATHS.FAV_JSON_FILE_PATH)
             rom = roms[romID]
             recent_rom = rom
@@ -8211,9 +8226,6 @@ class Main:
         #
         if is_windows():
             app_ext = application.split('.')[-1]
-            # Remove initial and trailing quotes to avoid double quotation.
-            application = misc_strip_quotes(application)
-            arguments = misc_strip_quotes(arguments)
             log_debug('_run_process() (Windows) application = "{}"'.format(application))
             log_debug('_run_process() (Windows) arguments   = "{}"'.format(arguments))
             log_debug('_run_process() (Windows) apppath     = "{}"'.format(apppath))
@@ -8222,6 +8234,8 @@ class Main:
 
             # Standalone launcher where application is a LNK file
             if app_ext == 'lnk' or app_ext == 'LNK':
+                # Remove initial and trailing quotes to avoid double quotation.
+                application = misc_strip_quotes(application)
                 if ADDON_RUNNING_PYTHON_2:
                     c = 'start "AEL" /b "{}"'.format(application).encode('utf-8')
                 elif ADDON_RUNNING_PYTHON_3:
@@ -8234,6 +8248,8 @@ class Main:
 
             # ROM launcher where ROMs are LNK files
             elif romext == 'lnk' or romext == 'LNK':
+                # Remove initial and trailing quotes to avoid double quotation.
+                arguments = misc_strip_quotes(arguments)
                 if ADDON_RUNNING_PYTHON_2:
                     c = 'start "AEL" /b "{}"'.format(arguments).encode('utf-8')
                 elif ADDON_RUNNING_PYTHON_3:
