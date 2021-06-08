@@ -186,6 +186,9 @@ FIX      Fix TheGamesDB scraper. New asset titlescreen in TheGamesDB.
 FIX      Fix launching of LNK ROM launchers with spaces in LNK filename.
          See https://github.com/Wintermute0110/plugin.program.AEL/issues/125
 
+FIX      Fix Standalone Kodi builtin launchers.
+         See https://forum.kodi.tv/showthread.php?tid=287826&pid=3036064#pid3036064
+
 
 [B]Advanced Emulator Launcher | version 0.9.9 | 13 March 2020[/B]
 
