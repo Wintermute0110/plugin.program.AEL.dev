@@ -519,6 +519,19 @@ def utils_look_for_file(rootPath, filename_noext, file_exts):
         if file_path.exists(): return file_path
     return None
 
+# Updates the mtime of a local file.
+# This is to force and update of the image cache.
+# stat.ST_MTIME is the time in seconds since the epoch.
+def utils_update_file_mtime(fname_str):
+    log_debug('utils_update_file_mtime() Updating "{}"'.format(fname_str))
+    filestat = os.stat(fname_str)
+    time_str = time.ctime(filestat.st_mtime)
+    log_debug('utils_update_file_mtime()     Old mtime "{}"'.format(time_str))
+    os.utime(fname_str)
+    filestat = os.stat(fname_str)
+    time_str = time.ctime(filestat.st_mtime)
+    log_debug('utils_update_file_mtime() Current mtime "{}"'.format(time_str))
+
 # -------------------------------------------------------------------------------------------------
 # Logging functions.
 # AEL never uses LOG_FATAL. Fatal error in my addons use LOG_ERROR. When an ERROR message is
@@ -1233,18 +1246,16 @@ def kodi_display_exception(ex):
 # image_path is a Unicode string.
 # cache_file_path is a Unicode string.
 def kodi_get_cached_image_FN(image_path):
-    THUMBS_CACHE_PATH = os.path.join(xbmc.translatePath('special://profile/' ), 'Thumbnails')
-
-    # --- Get the Kodi cached image ---
+    THUMBS_CACHE_PATH = os.path.join(xbmc.translatePath('special://profile/'), 'Thumbnails')
     # This function return the cache file base name
     base_name = xbmc.getCacheThumbName(image_path)
     cache_file_path = os.path.join(THUMBS_CACHE_PATH, base_name[0], base_name)
-
     return cache_file_path
 
+# *** Experimental code not used for releases ***
 # Updates Kodi image cache for the image provided in img_path.
 # In other words, copies the image img_path into Kodi cache entry.
-# Needles to say, only update image cache if image already was on the cache.
+# Needles to say, only update the image cache if the image already was on the cache.
 # img_path is a Unicode string
 def kodi_update_image_cache(img_path):
     # What if image is not cached?

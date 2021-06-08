@@ -9850,6 +9850,7 @@ class Main:
 
         # --- Link to a local image ---
         if mindex == 0:
+            log_debug('_gui_edit_asset() Linking local image...')
             image_dir = FileName(object_dic[AInfo.key]).getDir() if object_dic[AInfo.key] else ''
             log_debug('_gui_edit_asset() Initial path "{}"'.format(image_dir))
             if asset_ID == ASSET_MANUAL_ID or asset_ID == ASSET_TRAILER_ID:
@@ -9869,18 +9870,20 @@ class Main:
             log_info('_gui_edit_asset() Linked {} {} "{}"'.format(object_name,
                 AInfo.name, image_file_path.getOriginalPath()))
 
-            # --- Update Kodi image cache ---
-            kodi_update_image_cache(image_file_path.getOriginalPath())
+            # Update Kodi image cache.
+            # TODO Only update mtime for local files and not for Kodi VFS files.
+            utils_update_file_mtime(image_file_path.getPath())
 
         # --- Import an image ---
         # Copy and rename a local image into asset directory.
         elif mindex == 1:
+            log_debug('_gui_edit_asset() Importing image...')
             # If assets exists start file dialog from current asset directory
             image_dir = ''
             if object_dic[AInfo.key]: image_dir = FileName(object_dic[AInfo.key]).getDir()
             log_debug('_gui_edit_asset() Initial path "{}"'.format(image_dir))
-            image_file = kodi_dialog_get_image('Select {} image'.format(AInfo.name),
-                AInfo.exts_dialog, image_dir)
+            t = 'Select {} image'.format(AInfo.name)
+            image_file = kodi_dialog_get_image(t, AInfo.exts_dialog, image_dir)
             image_FileName = FileName(image_file)
             if not image_FileName.exists(): return False
 
@@ -9915,16 +9918,19 @@ class Main:
                 AInfo.name, dest_path_FileName.getOriginalPath()))
 
             # Update Kodi image cache.
-            kodi_update_image_cache(dest_path_FileName.getOriginalPath())
+            utils_update_file_mtime(dest_path_FileName.getPath())
 
         # --- Unset asset ---
         elif mindex == 2:
+            log_debug('_gui_edit_asset() Unsetting asset...')
             object_dic[AInfo.key] = ''
             kodi_notify('{} {} has been unset'.format(object_name, AInfo.name))
             log_info('_gui_edit_asset() Unset {} {}'.format(object_name, AInfo.name))
 
         # --- Manual scrape and choose from a list of images ---
         elif mindex >= 3:
+            log_debug('_gui_edit_asset() Scraping image...')
+
             # --- Create ScrapeFactory object ---
             scraper_index = mindex - len(common_menu_list)
             log_debug('_gui_edit_asset() Scraper index {}'.format(scraper_index))
