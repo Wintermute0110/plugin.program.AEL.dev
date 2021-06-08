@@ -385,21 +385,30 @@ class MetaDataItemABC(EntityABC):
     @abc.abstractmethod
     def get_mappable_asset_ids_list(self) -> typing.List[str]: pass
     
+    @abc.abstractmethod
+    def get_default_icon(self) -> str: pass 
+    
     def is_mappable_asset(self, asset_info) -> bool:
         return asset_info.id in self.get_mappable_asset_ids_list()
     
     # returns the complete set of assets as they are mapped for the view
     def get_view_assets(self) -> typing.Dict[str,str]:
-        assets = self.get_assets()
+        asset_ids = self.get_asset_ids_list()
+        mappable_asset_ids = self.get_mappable_asset_ids_list()
+        view_asset_ids = asset_ids + list(set(mappable_asset_ids) - set(asset_ids))
+        
         view_assets = {}
-        for asset in assets:
-            value = asset.get_path()
-            asset_info = asset.get_asset_info()
+        for asset_id in view_asset_ids:
+            asset_info = g_assetFactory.get_asset_info(asset_id)
+            value = ''
             fallback_str = ''
             
+            if asset_id in self.assets:
+                asset = self.assets[asset_id]
+                value = asset.get_path()
+            
             if self.is_mappable_asset(asset_info):
-                if asset_info.id == ASSET_ICON_ID:
-                    fallback_str = 'DefaultFolder.png'
+                if asset_info.id == ASSET_ICON_ID: fallback_str = self.get_default_icon()
                 value = self.get_mapped_asset_str(asset_info, fallback=fallback_str)
                 
             view_assets[asset_info.fname_infix] = value
@@ -428,7 +437,7 @@ class MetaDataItemABC(EntityABC):
         mapped_assets = {}
         for mappable_asset in mappable_assets:
             if mappable_asset.id == ASSET_ICON_ID: 
-                mapped_assets[mappable_asset.fname_infix] = self.get_mapped_asset_str(mappable_asset, fallback='DefaultFolder.png')
+                mapped_assets[mappable_asset.fname_infix] = self.get_mapped_asset_str(mappable_asset, fallback=self.get_default_icon())
             else: mapped_assets[mappable_asset.fname_infix] = self.get_mapped_asset_str(mappable_asset)
         return mapped_assets
 
@@ -495,6 +504,8 @@ class Category(MetaDataItemABC):
     def get_asset_ids_list(self): return CATEGORY_ASSET_ID_LIST
     
     def get_mappable_asset_ids_list(self): return MAPPABLE_CATEGORY_ASSET_ID_LIST
+    
+    def get_default_icon(self) -> str: return 'DefaultFolder.png' 
     
     def get_NFO_name(self) -> io.FileName:
         nfo_dir = io.FileName(settings.getSetting('categories_asset_dir'), isdir = True)
@@ -661,6 +672,8 @@ class ROMSet(MetaDataItemABC):
     def get_asset_ids_list(self): return LAUNCHER_ASSET_ID_LIST
 
     def get_mappable_asset_ids_list(self): return MAPPABLE_LAUNCHER_ASSET_ID_LIST
+
+    def get_default_icon(self) -> str: return 'DefaultFolder.png' 
 
     def get_asset_path(self, asset_info: AssetInfo) -> io.FileName:
         if not asset_info: return None
@@ -869,11 +882,9 @@ class ROM(MetaDataItemABC):
     
     def get_category_id(self)-> str: return self.entity_data['category_id'] if 'category_id' in self.entity_data else None
     
+    # inherited value from ROMSet
     def get_platform(self):
-        if self.is_virtual_rom():
-            return self.entity_data['platform']
-                        
-        return self.launcher.get_platform()
+        return self.entity_data['platform']
     
     def get_nointro_status(self):
         return self.entity_data['nointro_status']
@@ -1055,12 +1066,13 @@ class ROM(MetaDataItemABC):
         
     def get_assets_kind(self): return KIND_ASSET_ROM
 	
-    def get_object_name(self): 
-        return "ROM"
+    def get_object_name(self): return "ROM"
     
     def get_asset_ids_list(self): return ROM_ASSET_ID_LIST
     
     def get_mappable_asset_ids_list(self): return MAPPABLE_ROM_ASSET_ID_LIST
+    
+    def get_default_icon(self) -> str: return 'DefaultProgram.png' 
                  
     def get_edit_options(self, category_id):
         delete_rom_txt = 'Delete ROM'
@@ -1181,7 +1193,7 @@ class ROM(MetaDataItemABC):
         return True
     
     def apply_romset_asset_mapping(self, romset: ROMSet):
-        mappable_assets = romset.get_mappable_asset_list()
+        mappable_assets = romset.get_ROM_mappable_asset_list()
         for mappable_asset in mappable_assets:
             mapped_asset = romset.get_mapped_ROM_asset_info(mappable_asset)
             self.set_mapped_asset_key(mappable_asset, mapped_asset)
