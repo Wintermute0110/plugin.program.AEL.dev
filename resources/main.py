@@ -4535,7 +4535,7 @@ class Main:
         roms_fav_set = set(roms_fav.keys())
         for key in sorted(roms, key = lambda x : roms[x]['m_name']):
             self._gui_render_rom_row(categoryID, launcherID, roms[key], key in roms_fav_set, view_mode, False)
-        xbmcplugin.endOfDirectory(handle = self.addon_handle, succeeded = True, cacheToDisc = False)
+        xbmcplugin.endOfDirectory(self.addon_handle, succeeded = True, cacheToDisc = False)
 
     # Renders the ROMs listbox for a given standard launcher or the Parent ROMs of a PClone launcher.
     def _command_render_roms(self, categoryID, launcherID):
@@ -4645,18 +4645,20 @@ class Main:
         # when checking if an element exists.
         roms_fav = fs_load_Favourites_JSON(g_PATHS.FAV_JSON_FILE_PATH)
         roms_fav_set = set(roms_fav.keys())
+        loading_ticks_end = time.time()
 
         # --- Display ROMs ---
-        loading_ticks_end = time.time()
         rendering_ticks_start = time.time()
         if view_mode == LAUNCHER_DMODE_FLAT:
             for key in sorted(roms, key = lambda x : roms[x]['m_name']):
-                self._gui_render_rom_row(categoryID, launcherID, roms[key], key in roms_fav_set, view_mode, False)
+                self._gui_render_rom_row(categoryID, launcherID, roms[key], key in roms_fav_set,
+                    view_mode, False)
         else:
             for key in sorted(roms, key = lambda x : roms[x]['m_name']):
                 num_clones = len(pclone_index[key])
-                self._gui_render_rom_row(categoryID, launcherID, roms[key], key in roms_fav_set, view_mode, True, num_clones)
-        xbmcplugin.endOfDirectory(handle = self.addon_handle, succeeded = True, cacheToDisc = False)
+                self._gui_render_rom_row(categoryID, launcherID, roms[key], key in roms_fav_set,
+                    view_mode, True, num_clones)
+        xbmcplugin.endOfDirectory(self.addon_handle, succeeded = True, cacheToDisc = False)
         rendering_ticks_end = time.time()
 
         # --- DEBUG Data loading/rendering statistics ---
@@ -4703,6 +4705,8 @@ class Main:
             elif rom['fav_status'] == 'Unlinked Launcher': AEL_Fav_stat_value = AEL_FAV_STAT_VALUE_UNLINKED_LAUNCHER
             elif rom['fav_status'] == 'Broken':            AEL_Fav_stat_value = AEL_FAV_STAT_VALUE_BROKEN
             else:                                          AEL_Fav_stat_value = AEL_FAV_STAT_VALUE_UNKNOWN
+            # Multidisc flag
+            if self.settings['display_rom_in_fav'] and rom['disks']: rom_name += ' [COLOR plum][MD][/COLOR]'
         elif categoryID == VCATEGORY_COLLECTIONS_ID:
             icon_path      = asset_get_default_asset_Launcher_ROM(rom, rom, 'roms_default_icon', 'DefaultProgram.png')
             fanart_path    = asset_get_default_asset_Launcher_ROM(rom, rom, 'roms_default_fanart')
@@ -4725,22 +4729,28 @@ class Main:
             elif rom['fav_status'] == 'Unlinked Launcher': AEL_Fav_stat_value = AEL_FAV_STAT_VALUE_UNLINKED_LAUNCHER
             elif rom['fav_status'] == 'Broken':            AEL_Fav_stat_value = AEL_FAV_STAT_VALUE_BROKEN
             else:                                          AEL_Fav_stat_value = AEL_FAV_STAT_VALUE_UNKNOWN
+            # Multidisc flag
+            if self.settings['display_rom_in_fav'] and rom['disks']: rom_name += ' [COLOR plum][MD][/COLOR]'
         elif categoryID == VCATEGORY_RECENT_ID:
             icon_path      = asset_get_default_asset_Launcher_ROM(rom, rom, 'roms_default_icon', 'DefaultProgram.png')
             fanart_path    = asset_get_default_asset_Launcher_ROM(rom, rom, 'roms_default_fanart')
             banner_path    = asset_get_default_asset_Launcher_ROM(rom, rom, 'roms_default_banner')
             poster_path    = asset_get_default_asset_Launcher_ROM(rom, rom, 'roms_default_poster')
             clearlogo_path = asset_get_default_asset_Launcher_ROM(rom, rom, 'roms_default_clearlogo')
-            platform       = rom['platform']
+            platform = rom['platform']
             rom_name = rom_raw_name
+            # Multidisc flag
+            if self.settings['display_rom_in_fav'] and rom['disks']: rom_name += ' [COLOR plum][MD][/COLOR]'
         elif categoryID == VCATEGORY_MOST_PLAYED_ID:
             icon_path      = asset_get_default_asset_Launcher_ROM(rom, rom, 'roms_default_icon', 'DefaultProgram.png')
             fanart_path    = asset_get_default_asset_Launcher_ROM(rom, rom, 'roms_default_fanart')
             banner_path    = asset_get_default_asset_Launcher_ROM(rom, rom, 'roms_default_banner')
             poster_path    = asset_get_default_asset_Launcher_ROM(rom, rom, 'roms_default_poster')
             clearlogo_path = asset_get_default_asset_Launcher_ROM(rom, rom, 'roms_default_clearlogo')
-            platform       = rom['platform']
-            # >> Render number of number the ROM has been launched
+            platform = rom['platform']
+            # Multidisc flag
+            if self.settings['display_rom_in_fav'] and rom['disks']: rom_name += ' [COLOR plum][MD][/COLOR]'
+            # Render number of number the ROM has been launched
             if rom['launch_count'] == 1:
                 rom_name = '{} [COLOR orange][{} time][/COLOR]'.format(rom_raw_name, rom['launch_count'])
             else:
@@ -4772,13 +4782,14 @@ class Main:
             elif nstat == AUDIT_STATUS_UNKNOWN: AEL_NoIntro_stat_value = AEL_NOINTRO_STAT_VALUE_UNKNOWN
             elif nstat == AUDIT_STATUS_EXTRA:   AEL_NoIntro_stat_value = AEL_NOINTRO_STAT_VALUE_EXTRA
             elif nstat == AUDIT_STATUS_NONE:    AEL_NoIntro_stat_value = AEL_NOINTRO_STAT_VALUE_NONE
-
-            # --- In Favourites ROM flag ---
+            # In Favourites ROM flag
             if self.settings['display_rom_in_fav'] and rom_in_fav: rom_name += ' [COLOR violet][Fav][/COLOR]'
             if rom_in_fav: AEL_InFav_bool_value = AEL_INFAV_BOOL_VALUE_TRUE
+            # Multidisc flag
+            if self.settings['display_rom_in_fav'] and rom['disks']: rom_name += ' [COLOR plum][MD][/COLOR]'
         # --- Standard launcher ---
         else:
-            # >> If ROM has no fanart then use launcher fanart
+            # If ROM has no fanart then use launcher fanart
             launcher = self.launchers[launcherID]
             kodi_def_icon = launcher['s_icon'] if launcher['s_icon'] else 'DefaultProgram.png'
             icon_path      = asset_get_default_asset_Launcher_ROM(rom, launcher, 'roms_default_icon', kodi_def_icon)
@@ -4788,7 +4799,7 @@ class Main:
             clearlogo_path = asset_get_default_asset_Launcher_ROM(rom, launcher, 'roms_default_clearlogo')
             platform = launcher['platform']
 
-            # --- parent_launcher is True when rendering Parent ROMs in Parent/Clone view mode ---
+            # parent_launcher is True when rendering Parent ROMs in Parent/Clone view mode.
             nstat = rom['nointro_status']
             if self.settings['display_nointro_stat']:
                 if   nstat == AUDIT_STATUS_HAVE:    rom_name = '{} [COLOR green][Have][/COLOR]'.format(rom_raw_name)
@@ -4806,20 +4817,22 @@ class Main:
             elif nstat == AUDIT_STATUS_UNKNOWN: AEL_NoIntro_stat_value = AEL_NOINTRO_STAT_VALUE_UNKNOWN
             elif nstat == AUDIT_STATUS_EXTRA:   AEL_NoIntro_stat_value = AEL_NOINTRO_STAT_VALUE_EXTRA
             elif nstat == AUDIT_STATUS_NONE:    AEL_NoIntro_stat_value = AEL_NOINTRO_STAT_VALUE_NONE
-            # --- Mark clone ROMs ---
+            # Mark clone ROMs.
             pclone_status = rom['pclone_status']
             if pclone_status == PCLONE_STATUS_CLONE: rom_name += ' [COLOR orange][Clo][/COLOR]'
             if   pclone_status == PCLONE_STATUS_PARENT: AEL_PClone_stat_value = AEL_PCLONE_STAT_VALUE_PARENT
             elif pclone_status == PCLONE_STATUS_CLONE:  AEL_PClone_stat_value = AEL_PCLONE_STAT_VALUE_CLONE
-            # --- In Favourites ROM flag ---
+            # In Favourites ROM flag.
             if self.settings['display_rom_in_fav'] and rom_in_fav: rom_name += ' [COLOR violet][Fav][/COLOR]'
             if rom_in_fav: AEL_InFav_bool_value = AEL_INFAV_BOOL_VALUE_TRUE
+            # Multidisc flag.
+            if self.settings['display_rom_in_fav'] and rom['disks']: rom_name += ' [COLOR plum][MD][/COLOR]'
 
-        # --- Set common flags to all launchers---
+        # Set common flags to all launchers.
         if rom['disks']: AEL_MultiDisc_bool_value = AEL_MULTIDISC_BOOL_VALUE_TRUE
 
-        # --- Add ROM to lisitem ---
-        ICON_OVERLAY = 5 if rom['finished'] else 4
+        # Add ROM to listitem.
+        ICON_OVERLAY = KODI_ICON_OVERLAY_WATCHED if rom['finished'] else KODI_ICON_OVERLAY_UNWATCHED
         listitem = xbmcgui.ListItem(rom_name)
 
         # Interesting... if text formatting labels are set in xbmcgui.ListItem() do not work. However, if
