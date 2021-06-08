@@ -720,7 +720,9 @@ def misc_identify_image_id_by_ext(asset_fname):
     return IMAGE_UKNOWN_ID
 
 # Remove initial and trailing quotation characters " or '
+# String must have 3 characters or more.
 def misc_strip_quotes(my_str):
+    if len(my_str) < 3: return my_str
     my_str = my_str[1:] if my_str[0] == '"' or my_str[0] == "'" else my_str
     my_str = my_str[:-1] if my_str[-1] == '"' or my_str[-1] == "'" else my_str
     return my_str

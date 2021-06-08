@@ -7893,7 +7893,7 @@ class Main:
         application_str = launcher['application']
         arguments_str = launcher['args']
         app_cleaned = application_str.lower().replace('.exe' , '')
-        if  app_cleaned == 'xbmc' or app_cleaned == 'kodi' or \
+        if app_cleaned == 'xbmc' or app_cleaned == 'kodi' or \
             'xbmc-fav-' in app_cleaned or 'xbmc-sea-' in app_cleaned or \
             'kodi-fav-' in app_cleaned or 'kodi-sea-' in app_cleaned:
             log_info('_run_standalone_launcher() Executing Kodi builtin function')
@@ -8230,9 +8230,6 @@ class Main:
         #
         if is_windows():
             app_ext = application.split('.')[-1]
-            # Remove initial and trailing quotes to avoid double quotation.
-            application = misc_strip_quotes(application)
-            arguments = misc_strip_quotes(arguments)
             log_debug('_run_process() (Windows) application = "{}"'.format(application))
             log_debug('_run_process() (Windows) arguments   = "{}"'.format(arguments))
             log_debug('_run_process() (Windows) apppath     = "{}"'.format(apppath))
@@ -8241,6 +8238,8 @@ class Main:
 
             # Standalone launcher where application is a LNK file
             if app_ext == 'lnk' or app_ext == 'LNK':
+                # Remove initial and trailing quotes to avoid double quotation.
+                application = misc_strip_quotes(application)
                 if ADDON_RUNNING_PYTHON_2:
                     c = 'start "AEL" /b "{}"'.format(application).encode('utf-8')
                 elif ADDON_RUNNING_PYTHON_3:
@@ -8253,6 +8252,8 @@ class Main:
 
             # ROM launcher where ROMs are LNK files
             elif romext == 'lnk' or romext == 'LNK':
+                # Remove initial and trailing quotes to avoid double quotation.
+                arguments = misc_strip_quotes(arguments)
                 if ADDON_RUNNING_PYTHON_2:
                     c = 'start "AEL" /b "{}"'.format(arguments).encode('utf-8')
                 elif ADDON_RUNNING_PYTHON_3:
