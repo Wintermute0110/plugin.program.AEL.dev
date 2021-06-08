@@ -35,7 +35,7 @@ def cmd_add_category(args):
     name = kodi.dialog_keyboard('New Category Name')
     if name is None: return
     
-    category = Category()
+    category = Category(None, None)
     category.set_name(name)
     
     # --- Save Category ---

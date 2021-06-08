@@ -220,8 +220,9 @@ class MetaDataItemABC(EntityABC):
 
     def __init__(self, entity_data: typing.Dict[str, typing.Any], assets: typing.List[Asset]):
         self.assets: typing.Dict[str, Asset] = {}
-        for asset in assets:
-            self.assets[asset.get_asset_info_id()] = asset
+        if assets is not None:
+            for asset in assets:
+                self.assets[asset.get_asset_info_id()] = asset
         super(MetaDataItemABC, self).__init__(entity_data)
 
     # --------------------------------------------------------------------------------------------

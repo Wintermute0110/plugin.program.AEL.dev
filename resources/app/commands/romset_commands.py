@@ -175,7 +175,7 @@ def cmd_romset_edit_default_assets(args):
             kodi.event(method='RENDER_ROMSET_VIEW', data={'romset_id': romset.get_id()})
             kodi.event(method='RENDER_VIEW', data={'category_id': romset.get_parent_id()})     
 
-    kodi.event(method='ROMSET_EDIT_DEFAULT_ASSETS', data={'romset_id': romset.get_id(), 'selected_asset': asset.id})         
+    kodi.event(method='ROMSET_EDIT_DEFAULT_ASSETS', data={'romset_id': romset.get_id(), 'selected_asset': selected_asset_to_edit.id})         
     
 @AppMediator.register('EDIT_ROMSET_STATUS')
 def cmd_romset_status(args):

@@ -478,7 +478,8 @@ def qry_listitem_context_menu_items(list_item_data, container_data)-> typing.Lis
     is_romset: bool   = item_type == OBJ_ROMSET
     
     commands = []
-    if is_category: commands.append(('Edit Category', _context_menu_url_for('/categories/edit/{}'.format(list_item_data['id']))))
+    if is_category: 
+        commands.append(('Edit Category', _context_menu_url_for('/categories/edit/{}'.format(list_item_data['id']))))
     if is_romset: commands.append(('Edit ROM Collection', _context_menu_url_for('/romset/edit/{}'.format(list_item_data['id']))))
     
     return commands

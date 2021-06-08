@@ -362,7 +362,7 @@ QUERY_INSERT_CATEGORY             = """
                                     VALUES (?,?,?,?,?,?,?,?,?)
                                     """
 QUERY_UPDATE_CATEGORY             = """
-                                    UPDATE categories SET name=? 
+                                    UPDATE categories SET name=?, 
                                     default_icon=?, default_fanart=?, default_banner=?, default_poster=?, default_clearlogo=?
                                     WHERE id =?
                                     """
