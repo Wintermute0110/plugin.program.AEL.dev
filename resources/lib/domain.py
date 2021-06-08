@@ -482,7 +482,7 @@ class Category(MetaDataItemABC):
         # Concrete classes are responsible of creating a default entity_data dictionary
         # with sensible defaults.
         if category_dic is None:
-            category_dic = {}#fs_new_category()
+            category_dic = settings.get_default_category_data_model()
             category_dic['id'] = text.misc_generate_random_SID()
         super(Category, self).__init__(category_dic, assets)
 
@@ -655,6 +655,12 @@ class ROMSetLauncher(object):
 # -------------------------------------------------------------------------------------------------
 class ROMSet(MetaDataItemABC):
     def __init__(self, entity_data, assets_data: typing.List[Asset], launchers_data: typing.List[ROMSetLauncher] = []):
+        # Concrete classes are responsible of creating a default entity_data dictionary
+        # with sensible defaults.
+        if entity_data is None:
+            entity_data = settings.get_default_ROMSet_data_model()
+            entity_data['id'] = text.misc_generate_random_SID()
+            
         self.launchers_data = launchers_data
         super(ROMSet, self).__init__(entity_data, assets_data)
 
@@ -869,9 +875,8 @@ class ROM(MetaDataItemABC):
         
     def __init__(self, rom_data = None, assets_data = None):        
         if rom_data is None:
-            #rom_data = fs_new_rom()
+            rom_data = settings.get_default_ROM_data_model()
             rom_data['id'] = text.misc_generate_random_SID()
-            rom_data['type'] = OBJ_ROM
             
         super(ROM, self).__init__(rom_data, assets_data)
     
@@ -1004,12 +1009,6 @@ class ROM(MetaDataItemABC):
     def copy(self):
         data = self.copy_of_data_dic()
         return ROM(data, self.launcher)
-
-    def copy_as_virtual_ROM(self):
-        data = self.copy_of_data_dic()
-        data['launcherID'] = self.launcher.get_id()
-        data['platform'] = self.get_platform()
-        return ROM(data, None)
 
     # -------------------------------------------------------------------------------------------------
     # Favourite ROM creation/management
