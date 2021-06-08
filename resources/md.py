@@ -19,6 +19,7 @@ from __future__ import division
 
 # --- Addon modules ---
 from .constants import *
+from .utils import *
 
 # --- Python standard library ---
 import re
