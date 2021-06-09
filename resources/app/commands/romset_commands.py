@@ -28,6 +28,13 @@ logger = logging.getLogger(__name__)
 
 @AppMediator.register('ADD_ROMSET')
 def cmd_add_collection(args):
+    
+    wizard = kodi.WizardDialog_Selection(wizard, 'platform', 'Select the platform',
+            AEL_platform_list)
+    wizard = kodi.WizardDialog_Dummy(wizard, 'assets_path', '',
+            _builder_get_value_from_rompath)
+    wizard = kodi.WizardDialog_FileBrowse(wizard, 'assets_path', 'Select asset/artwork directory',
+        0, '')
     pass
 
 # -------------------------------------------------------------------------------------------------
@@ -63,6 +70,7 @@ def cmd_edit_romset(args):
     options['ROMSET_EDIT_DEFAULT_ASSETS'] = 'Choose default Assets/Artwork ...'
     options['EDIT_ROMSET_CATEGORY']       = "Change Category: '{0}'".format(category_name)
     options['EDIT_ROMSET_STATUS']         = 'ROM Collection status: {0}'.format(romset.get_finished_str())
+    options['EDIT_ROMSET_LAUNCHERS']      = 'Manage associated launchers'
     options['LAUNCHER_ADVANCED_MODS']     = 'Advanced Modifications ...'
     options['ROMSET_MANAGE_ROMS']         = 'Manage ROMs ...'
     options['EXPORT_ROMSET']              = 'Export ROM Collection XML configuration ...'

@@ -112,8 +112,13 @@ def vw_route_render_utilities_vlaunchers():
 # Command execution
 # -------------------------------------------------------------------------------------------------
 @router.route('/execute/command/<cmd>')
-def vw_execute_cmd(cmd: str):
-    kodi.event(method=cmd.capitalize())
+def vw_execute_cmd(cmd: str):    
+    kodi.event(method=cmd.capitalize(), data=router.args)
+
+@router.route('/categories/view/<category_id>')
+def vw_view_category(category_id: str):
+    #todo
+    pass
 
 @router.route('/categories/add/<category_id>')
 def vw_add_category(category_id: str):
@@ -127,13 +132,25 @@ def vw_edit_category(category_id: str):
 def vw_add_romset(romset_id: str):
     kodi.event(method='ADD_ROMSET', data={'romset_id': romset_id})
 
+@router.route('/romset/view/<romset_id>')
+def vw_view_romset(romset_id: str):
+    #todo
+    pass
+
 @router.route('/romset/edit/<romset_id>')
-def vw_edit_category(romset_id: str):
+def vw_edit_romset(romset_id: str):
     kodi.event(method='EDIT_ROMSET', data={'romset_id': romset_id })
 
-@router.route('EXECUTE')
+@router.route('/execute/rom/<rom_id>')
 def vw_route_execute_rom(rom_id):
     pass
+
+# -------------------------------------------------------------------------------------------------
+# Internal launchers/scanner execution
+# -------------------------------------------------------------------------------------------------
+@router.route('/launcher/app/configure/')
+def vw_configure_app_launcher():
+    kodi.event(method='CONFIGURE_APP_LAUNCHER', data=router.args)   
 
 # -------------------------------------------------------------------------------------------------
 # UI render methods

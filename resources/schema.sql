@@ -23,10 +23,12 @@ CREATE TABLE IF NOT EXISTS assetspaths(
 
 CREATE TABLE IF NOT EXISTS ael_addon(
     id TEXT PRIMARY KEY, 
+    name TEXT,
     addon_id TEXT,
     version TEXT,
-    is_launcher INTEGER DEFAULT 0 NOT NULL,
-    launcher_uri TEXT
+    addon_type TEXT,
+    execute_uri TEXT,
+    configure_uri TEXT
 );
 
 CREATE TABLE IF NOT EXISTS categories(
@@ -122,7 +124,7 @@ CREATE TABLE IF NOT EXISTS romset_assetspaths(
         ON DELETE CASCADE ON UPDATE NO ACTION
 );
 
-CREATE TABLE IF NOT EXISTS rom_assets(
+CREATE TABLE IF NOT EXISTS rom_assets(-
     rom_id TEXT,
     asset_id TEXT,
     FOREIGN KEY (rom_id) REFERENCES roms (id) 
@@ -261,5 +263,19 @@ FROM assets AS a
  INNER JOIN rom_assets AS ra ON a.id = ra.asset_id 
  INNER JOIN roms AS r ON ra.rom_id = r.id
  LEFT JOIN romsets AS rs ON r.romset_id = rs.id;
+
+CREATE VIEW IF NOT EXISTS vw_romset_launchers AS SELECT
+    l.romset_id,
+    a.id AS id,
+    a.name,
+    a.addon_id,
+    a.version,
+    a.addon_type,
+    a.execute_uri,
+    a.configure_uri,
+    l.args,
+    l.is_default
+FROM romset_launchers AS l
+    INNER JOIN ael_addon AS a ON l.ael_addon_id = a.id
 
 CREATE TABLE IF NOT EXISTS ael_version(app TEXT, version TEXT);

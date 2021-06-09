@@ -26,6 +26,7 @@ from __future__ import division
 
 import logging
 import typing
+from urllib.parse import urlencode
 
 from resources.lib import globals
 from resources.lib.repositories import ViewRepository
@@ -444,6 +445,7 @@ def qry_container_context_menu_items(container_data) -> typing.List[typing.Tuple
     # --- Create context menu items to be applied to each item in this container ---
     container_type    = container_data['obj_type'] if 'obj_type' in container_data else OBJ_NONE
     container_name    = container_data['name'] if 'name' in container_data else 'Unknown'
+    container_id      = container_data['id'] if 'id' in container_data else ''
     
     is_category: bool = container_type == OBJ_CATEGORY
     is_romset: bool   = container_type == OBJ_ROMSET
@@ -451,14 +453,18 @@ def qry_container_context_menu_items(container_data) -> typing.List[typing.Tuple
     
     commands = []
     if is_category: 
-        commands.append(('Add new Category' if is_root else 'Add new Category to "{}"'.format(container_name),
-                         _context_menu_url_for('/categories/add/{}'.format(container_data['id']))))
-        commands.append(('Add new ROM Collection' if is_root else 'Add new ROM Collection to "{}"'.format(container_name),
-                         _context_menu_url_for('/romset/add/{}'.format(container_data['id']))))
+        if is_root:
+            commands.append(('Add new Category',_context_menu_url_for('/categories/add/{}'.format(container_id))))
+            commands.append(('Add new ROM Collection', _context_menu_url_for('/romset/add/{}'.format(container_id))))
+        else:
+            commands.append(('Rebuild {} view'.format(container_name),
+                            _context_menu_url_for('execute/command/render_view',{'category_id':container_id})))    
     if is_romset:
-        commands.append(('Add new Category' if is_root else 'Add new Category to "{}"'.format(container_name),
-                         _context_menu_url_for('/categories/add/{}'.format(container_data['id']))))
-        
+        commands.append(('Search ROM in collection', _context_menu_url_for('/search/{}'.format(container_id))))
+        commands.append(('Rebuild {} view'.format(container_name),
+                         _context_menu_url_for('execute/command/render_romset_view', {'romset_id':container_id})))    
+    
+    commands.append(('Rebuild all views', _context_menu_url_for('execute/command/render_views')))
     commands.append(('Open Kodi file manager', 'ActivateWindow(filemanager)'))
     commands.append(('AEL addon settings', 'Addon.OpenSettings({0})'.format(globals.addon_id)))
 
@@ -473,17 +479,32 @@ def qry_listitem_context_menu_items(list_item_data, container_data)-> typing.Lis
     # --- Create context menu items only applicable on this item ---
     properties = list_item_data['properties'] if 'properties' in list_item_data else {}
     item_type  = properties['obj_type'] if 'obj_type' in properties else OBJ_NONE
+    item_name  = list_item_data['name'] if 'name' in list_item_data else 'Unknown'
+    item_id    = list_item_data['id'] if 'id' in list_item_data else ''
     
     is_category: bool = item_type == OBJ_CATEGORY 
     is_romset: bool   = item_type == OBJ_ROMSET
+    is_rom: bool      = item_type == OBJ_ROM
     
     commands = []
+    if is_rom: 
+        commands.append(('View ROM', _context_menu_url_for('/rom/{}/view'.format(item_id))))
+        commands.append(('Edit ROM', _context_menu_url_for('/rom/edit/{}'.format(item_id))))
+        commands.append(('Link ROM in other collection', _context_menu_url_for('/execute/command/link_rom',{'rom_id':item_id})))
+        commands.append(('Add ROM to AEL Favourites', _context_menu_url_for('/execute/command/add_rom_to_favourites',{'rom_id':item_id})))
     if is_category: 
-        commands.append(('Edit Category', _context_menu_url_for('/categories/edit/{}'.format(list_item_data['id']))))
-    if is_romset: commands.append(('Edit ROM Collection', _context_menu_url_for('/romset/edit/{}'.format(list_item_data['id']))))
+        commands.append(('View Category', _context_menu_url_for('/categories/view/{}'.format(item_id))))
+        commands.append(('Edit Category', _context_menu_url_for('/categories/edit/{}'.format(item_id))))
+        commands.append(('Add new Category to {}'.format(item_name),_context_menu_url_for('/categories/add/{}'.format(item_id))))
+        commands.append(('Add new ROM Collection to {}'.format(item_name), _context_menu_url_for('/romset/add/{}'.format(item_id))))
+    if is_romset: 
+        commands.append(('View ROM Collection', _context_menu_url_for('/romset/view/{}'.format(item_id))))
+        commands.append(('Edit ROM Collection', _context_menu_url_for('/romset/edit/{}'.format(item_id))))
     
     return commands
 
-def _context_menu_url_for(url: str) -> str:
+def _context_menu_url_for(url: str, params: dict = None) -> str:
+    if params is not None:
+        url = '{}?{}'.format(url, urlencode(params))
     url = globals.router.url_for_path(url)
     return 'RunPlugin({})'.format(url)

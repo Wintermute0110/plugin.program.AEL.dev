@@ -141,8 +141,17 @@ class AelAddon(EntityABC):
     def get_version(self) -> str:
         return self.entity_data['version']
     
+    def get_addon_type(self) -> AddonType:
+        return AddonType[self.entity_data['addon_type']] if 'addon_type' in self.entity_data else AddonType.UNKNOWN
+    
     def supports_launching(self) -> bool:
-        return self.entity_data['is_launcher']
+        return self.get_addon_type() == AddonType.LAUNCHER
+ 
+    def get_execute_uri(self) -> str:
+        return self.entity_data['execute_uri']
+    
+    def get_configure_uri(self) -> str:
+        return self.entity_data['configure_uri']
  
 class Asset(EntityABC):
 
@@ -760,8 +769,11 @@ class ROMSet(MetaDataItemABC):
                 current_default_launcher.is_default = False
             launcher.is_default = is_default
 
-    def get_launchers_data(self) -> typing.List[ROMSetLauncher]:
+    def get_launchers(self) -> typing.List[ROMSetLauncher]:
         return self.launchers_data
+
+    def get_launcher(self, addon_id):
+        return next(l for l in self.launchers_data if l.addon.get_addon_id() == addon_id, None)
 
     def get_NFO_name(self) -> io.FileName:
         nfo_dir = io.FileName(settings.getSetting('launchers_asset_dir'), isdir = True)

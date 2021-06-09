@@ -2,8 +2,10 @@
 #
 import collections
 import logging
+import abc
 import json
 import pprint
+from urllib.parse import urlencode
 
 import xbmc
 import xbmcgui
@@ -74,6 +76,12 @@ def event(sender=globals.addon_id, method='test', data=None):
     
     xbmc.executebuiltin('NotifyAll({}, {}, {})'.format(sender, method, data))
     logger.debug("event(): {}/{} => {}".format(sender, method, data))
+
+def execute_uri(uri, *args):
+    if args is not None:    
+        uri = '{}?{}'.format(uri, urlencode(args))
+    logger.debug('Executing RunPlugin(%s)...', uri)
+    xbmc.executebuiltin('RunPlugin({})'.format(uri))
 
 #
 # Displays a small box in the low right corner
@@ -371,4 +379,227 @@ class ProgressDialog_Chrisism(object):
     def _endProgressPhase(self, canceled = False):
         if not canceled: self.progressDialog.update(100)
         self.progressDialog.close()
+        
+# -------------------------------------------------------------------------------------------------
+# Kodi Wizards (by Chrisism)
+# -------------------------------------------------------------------------------------------------
+#
+# The wizarddialog implementations can be used to chain a collection of
+# different kodi dialogs and use them to fill a dictionary with user input.
+#
+# Each wizarddialog accepts a key which will correspond with the key/value combination
+# in the dictionary. It will also accept a customFunction (delegate or lambda) which
+# will be called after the dialog has been shown. Depending on the type of dialog some
+# other arguments might be needed.
+#
+# The chaining is implemented by applying the decorator pattern and injecting
+# the previous wizarddialog in each new one.
+# You can then call the method 'runWizard()' on the last created instance.
+#
+# Each wizard has a customFunction which will can be called after executing this 
+# specific dialog. It also has a conditionalFunction which can be called before
+# executing this dialog which will indicate if this dialog may be shown (True return value).
+#
+class WizardDialog():
+    __metaclass__ = abc.ABCMeta
+
+    def __init__(self, decoratorDialog, property_key, title, customFunction = None, conditionalFunction = None):
+        self.decoratorDialog = decoratorDialog
+        self.property_key = property_key
+        self.title = title
+        self.customFunction = customFunction
+        self.conditionalFunction = conditionalFunction
+        self.cancelled = False
+
+    def runWizard(self, properties):
+        if not self.executeDialog(properties):
+            logger.warning('User stopped wizard')
+            return None
+
+        return properties
+
+    def executeDialog(self, properties):
+        if self.decoratorDialog is not None:
+            if not self.decoratorDialog.executeDialog(properties):
+                return False
+
+        if self.conditionalFunction is not None:
+            mayShow = self.conditionalFunction(self.property_key, properties)
+            if not mayShow:
+                logger.debug('Skipping dialog for key: {0}'.format(self.property_key))
+                return True
+
+        output = self.show(properties)
+        if self.cancelled: return False
+
+        if self.customFunction is not None:
+            output = self.customFunction(output, self.property_key, properties)
+
+        if self.property_key:
+            logger.debug('WizardDialog::executeDialog() props[{0}] =  {1}'.format(self.property_key, output))
+            properties[self.property_key] = output
+
+        return True
+
+    @abc.abstractmethod
+    def show(self, properties): return True
+
+    def _cancel(self): self.cancelled = True
+
+#
+# Wizard dialog which accepts a keyboard user input.
+# 
+class WizardDialog_Keyboard(WizardDialog):
+    def show(self, properties):
+        logger.debug('Executing keyboard wizard dialog for key: {0}'.format(self.property_key))
+        originalText = properties[self.property_key] if self.property_key in properties else ''
+        textInput = xbmc.Keyboard(originalText, self.title)
+        textInput.doModal()
+        if not textInput.isConfirmed(): 
+            self._cancel()
+            return None
+        output = textInput.getText().decode('utf-8')
+
+        return output
+
+#
+# Wizard dialog which shows a list of options to select from.
+#
+class WizardDialog_Selection(WizardDialog):
+    def __init__(self, decoratorDialog, property_key, title, options,
+                 customFunction = None, conditionalFunction = None):
+        self.options = options
+        super(WizardDialog_Selection, self).__init__(
+            decoratorDialog, property_key, title, customFunction, conditionalFunction)
+
+    def show(self, properties):
+        logger.debug('Executing selection wizard dialog for key: {0}'.format(self.property_key))
+        selection = xbmcgui.Dialog().select(self.title, self.options)
+        if selection < 0:
+            self._cancel()
+            return None
+        output = self.options[selection]
+
+        return output
+
+#
+# Wizard dialog which shows a list of options to select from.
+# In comparison with the normal SelectionWizardDialog, this version allows a dictionary or key/value
+# list as the selectable options. The selected key will be used.
+# 
+class WizardDialog_DictionarySelection(WizardDialog):
+    def __init__(self, decoratorDialog, property_key, title, options,
+                 customFunction = None, conditionalFunction = None):
+        self.options = options
+        super(WizardDialog_DictionarySelection, self).__init__(
+            decoratorDialog, property_key, title, customFunction, conditionalFunction)
+
+    def show(self, properties):
+        logger.debug('Executing dict selection wizard dialog for key: {0}'.format(self.property_key))
+        dialog = OrdDictionaryDialog()
+        if callable(self.options):
+            self.options = self.options(self.property_key, properties)
+        output = dialog.select(self.title, self.options)
+        if output is None:
+            self._cancel()
+            return None
+
+        return output
+
+#
+# Wizard dialog which shows a filebrowser.
+#
+class WizardDialog_FileBrowse(WizardDialog):
+    def __init__(self, decoratorDialog, property_key, title, browseType, filter,
+                 customFunction = None, conditionalFunction = None):
+        self.browseType = browseType
+        self.filter = filter
+        super(WizardDialog_FileBrowse, self).__init__(
+            decoratorDialog, property_key, title, customFunction, conditionalFunction
+        )
+
+    def show(self, properties):
+        logger.debug('WizardDialog_FileBrowse::show() key = {0}'.format(self.property_key))
+        originalPath = properties[self.property_key] if self.property_key in properties else ''
+
+        if callable(self.filter):
+            self.filter = self.filter(self.property_key, properties)
+        output = xbmcgui.Dialog().browse(self.browseType, self.title, 'files', self.filter, False, False, originalPath).decode('utf-8')
+
+        if not output:
+            self._cancel()
+            return None
+       
+        return output
+
+#
+# Wizard dialog which shows an input for one of the following types:
+#    - xbmcgui.INPUT_ALPHANUM (standard keyboard)
+#    - xbmcgui.INPUT_NUMERIC (format: #)
+#    - xbmcgui.INPUT_DATE (format: DD/MM/YYYY)
+#    - xbmcgui.INPUT_TIME (format: HH:MM)
+#    - xbmcgui.INPUT_IPADDRESS (format: #.#.#.#)
+#    - xbmcgui.INPUT_PASSWORD (return md5 hash of input, input is masked)
+#
+class WizardDialog_Input(WizardDialog):
+    def __init__(self, decoratorDialog, property_key, title, inputType,
+                 customFunction = None, conditionalFunction = None):
+        self.inputType = inputType
+        super(WizardDialog_Input, self).__init__(
+            decoratorDialog, property_key, title, customFunction, conditionalFunction)
+
+    def show(self, properties):
+        logger.debug('WizardDialog_Input::show() {} key = {}'.format(self.inputType, self.property_key))
+        originalValue = properties[self.property_key] if self.property_key in properties else ''
+        output = xbmcgui.Dialog().input(self.title, originalValue, self.inputType)
+        if not output:
+            self._cancel()
+            return None
+
+        return output
+
+#
+# Wizard dialog which shows you a message formatted with a value from the dictionary.
+#
+# Example:
+#   dictionary item {'token':'roms'}
+#   inputtext: 'I like {} a lot'
+#   result message on screen: 'I like roms a lot'
+#
+# Formatting is optional
+#
+class WizardDialog_FormattedMessage(WizardDialog):
+    def __init__(self, decoratorDialog, property_key, title, text,
+                 customFunction = None, conditionalFunction = None):
+        self.text = text
+        super(WizardDialog_FormattedMessage, self).__init__(
+            decoratorDialog, property_key, title, customFunction, conditionalFunction)
+
+    def show(self, properties):
+        logger.debug('Executing message wizard dialog for key: {0}'.format(self.property_key))
+        format_values = properties[self.property_key] if self.property_key in properties else ''
+        full_text = self.text.format(format_values)
+        output = xbmcgui.Dialog().ok(self.title, full_text)
+
+        if not output:
+            self._cancel()
+            return None
+
+        return output
+
+#
+# Wizard dialog which does nothing or shows anything.
+# It only sets a certain property with the predefined value.
+#
+class WizardDialog_Dummy(WizardDialog):
+    def __init__(self, decoratorDialog, property_key, predefinedValue,
+                 customFunction = None, conditionalFunction = None):
+        self.predefinedValue = predefinedValue
+        super(WizardDialog_Dummy, self).__init__(
+            decoratorDialog, property_key, None, customFunction, conditionalFunction)
+
+    def show(self, properties):
+        logger.debug('WizardDialog_Dummy::show() {0} key = {0}'.format(self.property_key))
+
+        return self.predefinedValue
         

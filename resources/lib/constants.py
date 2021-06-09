@@ -20,6 +20,7 @@
 
 # --- Python standard library ---
 from __future__ import unicode_literals
+from enum import Enum
 
 # -------------------------------------------------------------------------------------------------
 # A universal addon error reporting exception
@@ -488,3 +489,11 @@ SCRAPE_POLICY_SCRAPE_ONLY      = 20060
 
 SCRAPE_MANUAL    = 20510
 SCRAPE_AUTOMATIC = 20520
+
+## Addon type Enum
+class AddonType(Enum):
+    UNKNOWN = 'UNKNOWN',
+    LAUNCHER = 'LAUNCHER',
+    SCRAPER = 'SCRAPER',
+    SCANNER = 'SCANNER'
+    

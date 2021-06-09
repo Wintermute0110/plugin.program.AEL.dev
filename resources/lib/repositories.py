@@ -272,8 +272,10 @@ class UnitOfWork(object):
         self.conn.execute("INSERT INTO ael_version VALUES(?, ?)", [globals.addon_id, globals.addon_version])
         # default addons
         self.conn.execute(QUERY_INSERT_ADDON, 
-                          [text.misc_generate_random_SID(), '{}.AppLauncher'.format(globals.addon_id), 
-                           globals.addon_version, True, globals.router.url_for_path('launcher/app')])
+                          [text.misc_generate_random_SID(), 'App Launcher', '{}.AppLauncher'.format(globals.addon_id), 
+                           globals.addon_version, AddonType.LAUNCHER, 
+                           globals.router.url_for_path('launcher/app'),
+                           globals.router.url_for_path('launcher/app/configure')])
 
         self.commit()
         self.close_session()
@@ -514,6 +516,7 @@ QUERY_SELECT_ROOT_ROMSETS               = "SELECT * FROM vw_romsets WHERE parent
 QUERY_SELECT_ROOT_ROMSET_ASSETS         = "SELECT * FROM vw_romset_assets WHERE parent_id IS NULL"
 QUERY_SELECT_ROMSETS_BY_PARENT          = "SELECT * FROM vw_romsets WHERE parent_id = ?"
 QUERY_SELECT_ROMSETS_ASSETS_BY_PARENT   = "SELECT * FROM vw_romset_assets WHERE parent_id = ?"
+QUERY_SELECT_ROMSET_LAUNCHERS           = "SELECT * FROM vw_romset_launchers WHERE romset_id = ?"
 
 QUERY_INSERT_ROMSET               = """
                                     INSERT INTO romsets (
@@ -546,13 +549,19 @@ class ROMSetRepository(object):
         
         self._uow.execute(QUERY_SELECT_ROMSET_ASSETS_BY_SET, romset_id)
         assets_result_set = self._uow.result_set()
-                
         assets = []
         for asset_data in assets_result_set:
             asset_info = g_assetFactory.get_asset_info(asset_data['asset_type'])
             assets.append(Asset(asset_info, asset_data))    
-            
-        return ROMSet(romset_data, assets)
+        
+        self._uow.execute(QUERY_SELECT_ROMSET_LAUNCHERS, romset_id)
+        launchers_data = self._uow.result_set()
+        launchers = []
+        for launcher_data in launchers_data:
+            addon = AelAddon(launcher_data)
+            launchers.append(ROMSetLauncher(addon, launcher_data['args'], launcher_data['is)default']))
+        
+        return ROMSet(romset_data, assets, launchers)
 
     def find_all_romsets(self) -> typing.Iterator[ROMSet]:
         self._uow.execute(QUERY_SELECT_ROMSETS)
@@ -637,7 +646,7 @@ class ROMSetRepository(object):
         for asset in romset_assets: 
             self._insert_asset(asset, romset_obj)  
             
-        romset_launchers = romset_obj.get_launchers_data()
+        romset_launchers = romset_obj.get_launchers()
         for romset_launcher in romset_launchers:
             self._uow.execute(QUERY_INSERT_ROMSET_LAUNCHER,
                 romset_obj.get_id(), romset_launcher.addon.get_id(), romset_launcher.get_arguments(), romset_launcher.is_default)
@@ -674,7 +683,7 @@ class ROMSetRepository(object):
             romset_obj.get_id())
          
         self._uow.execute(QUERY_DELETE_ROMSET_LAUNCHERS, romset_obj.get_id())
-        romset_launchers = romset_obj.get_launchers_data()
+        romset_launchers = romset_obj.get_launchers()
         for romset_launcher in romset_launchers:
             self._uow.execute(QUERY_INSERT_ROMSET_LAUNCHER,
                 romset_obj.get_id(), romset_launcher.addon.get_id(), romset_launcher.get_arguments(), romset_launcher.is_default)
@@ -802,16 +811,29 @@ class ROMsRepository(object):
 #
 # AelAddonRepository -> AEL Adoon objects from SQLite DB
 #     
-QUERY_SELECT_ADDONS = "SELECT * FROM ael_addon"
-QUERY_INSERT_ADDON  = "INSERT INTO ael_addon(id, addon_id, version, is_launcher, launcher_uri) VALUES(?,?,?,?,?)" 
-QUERY_UPDATE_ADDON  = "UPDATE ael_addon SET addon_id = ?, version = ?, is_launcher = ?, launcher_uri = ? WHERE id = ?" 
+QUERY_SELECT_ADDON              = "SELECT * FROM ael_addon WHERE id = ?"
+QUERY_SELECT_ADDONS             = "SELECT * FROM ael_addon"
+QUERY_SELECT_LAUNCHER_ADDONS    = "SELECT * FROM ael_addon WHERE addon_type = 'LAUNCHER' ORDER BY name"
+QUERY_INSERT_ADDON              = "INSERT INTO ael_addon(id, name, addon_id, version, addon_type, execute_uri, configure_uri) VALUES(?,?,?,?,?,?,?)" 
+QUERY_UPDATE_ADDON              = "UPDATE ael_addon SET name = ?, addon_id = ?, version = ?, addon_type = ?, execute_uri = ?, configure_uri = ? WHERE id = ?" 
 class AelAddonRepository(object):
 
     def __init__(self, uow: UnitOfWork):
         self._uow = uow
 
+    def find(self, id:str) -> AelAddon:
+        self._uow.execute(QUERY_SELECT_ADDON, id)
+        result_set = self._uow.single_result()
+        return AelAddon(result_set)
+
     def find_all(self) -> typing.Iterator[AelAddon]:
         self._uow.execute(QUERY_SELECT_ADDONS)
+        result_set = self._uow.result_set()
+        for addon_data in result_set:
+            yield AelAddon(addon_data)
+
+    def find_all_launchers(self) -> typing.Iterator[AelAddon]:        
+        self._uow.execute(QUERY_SELECT_LAUNCHER_ADDONS)
         result_set = self._uow.result_set()
         for addon_data in result_set:
             yield AelAddon(addon_data)
@@ -820,16 +842,20 @@ class AelAddonRepository(object):
         logger.info("AelAddonRepository.save_addon(): Saving addon '{}'".format(addon.get_addon_id()))        
         self._uow.execute(QUERY_INSERT_ADDON,
                     addon.get_id(),
+                    addon.get_name(),
                     addon.get_addon_id(),
                     addon.get_version(),
-                    addon.supports_launching(),
-                    addon.get_custom_attribute('launcher_uri'))
+                    addon.get_addon_type(),
+                    addon.get_execute_uri(),
+                    addon.get_configure_uri())
         
     def update_addon(self, addon: AelAddon):
         logger.info("AelAddonRepository.update_addon(): Updating addon '{}'".format(addon.get_addon_id()))        
         self._uow.execute(QUERY_INSERT_ADDON,
+                    addon.get_name(),
                     addon.get_addon_id(),
                     addon.get_version(),
-                    addon.supports_launching(),
-                    addon.get_custom_attribute('launcher_uri'),
+                    addon.get_addon_type(),
+                    addon.get_execute_uri(),
+                    addon.get_configure_uri(),
                     addon.get_id())
