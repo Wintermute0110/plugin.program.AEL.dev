@@ -8225,6 +8225,7 @@ class Main:
         app_ext = application.split('.')[-1]
         log_debug('_run_process() arguments = "{}"'.format(arguments))
         log_debug('_run_process() arg_list  = {}'.format(arg_list))
+        log_debug('_run_process() exec_list = {}'.format(exec_list))
         log_debug('_run_process() app_ext   = "{}"'.format(app_ext))
         log_debug('_run_process() romext    = "{}"'.format(romext))
 
