@@ -30,6 +30,7 @@
 # --- Python standard library ---
 from __future__ import unicode_literals
 from __future__ import division
+from resources.lib.launchers import AppLauncher
 import sys
 import logging
 
@@ -143,14 +144,28 @@ def vw_edit_romset(romset_id: str):
 
 @router.route('/execute/rom/<rom_id>')
 def vw_route_execute_rom(rom_id):
-    pass
+    kodi.event(method="EXECUTE_ROM", data={'rom_id': rom_id} )
 
 # -------------------------------------------------------------------------------------------------
 # Internal launchers/scanner execution
 # -------------------------------------------------------------------------------------------------
 @router.route('/launcher/app/configure/')
 def vw_configure_app_launcher():
-    kodi.event(method='CONFIGURE_APP_LAUNCHER', data=router.args)   
+    romset_id:str = router.args['romset_id'] if 'romset_id' in router.args else None
+    platform:str = router.args['platform'] if 'platform' in router.args else None
+    
+    launcher = AppLauncher(None, None)
+    if launcher.build(romset_id, platform):
+        params = {
+            'romset_id': romset_id,
+            'addon_id': '{}.AppLauncher'.format(globals.addon_id),
+            'args': launcher.get_launcher_args()
+        }        
+        kodi.event(method='SET_LAUNCHER_ARGS', data=params)
+    
+@router.route('/launcher/app/')
+def vw_configure_app_launcher():
+    kodi.event(method='APP_LAUNCH', data=router.args)
 
 # -------------------------------------------------------------------------------------------------
 # UI render methods

@@ -43,7 +43,7 @@ def cmd_add_category(args):
     with uow:
         repository = CategoryRepository(uow)
         parent_category = repository.find_category(parent_id) if parent_id is not None else None
-        repository.save_category(category, parent_category)
+        repository.insert_category(category, parent_category)
         uow.commit()
         
     kodi.notify('Category {0} created'.format(category.get_name()))

@@ -91,19 +91,19 @@ def cmd_add_romset_launchers(args):
     
     # >> Execute subcommand. May be atomic, maybe a submenu.
     logger.debug('ADD_LAUNCHER: cmd_add_romset_launchers() Selected {}'.format(selected_option))
-    kodi.event(method='CONFIGURE_LAUNCHER', data={'romset_id': romset_id, 'addon_id': selected_option})
+    kodi.event(method='CONFIGURE_LAUNCHER', data={'romset_id': romset_id, 'ael_addon_id': selected_option})
         
 @AppMediator.register('CONFIGURE_LAUNCHER')
 def cmd_configure_romset_launchers(args):
     romset_id:str = args['romset_id'] if 'romset_id' in args else None
-    addon_id:str = args['addon_id'] if 'addon_id' in args else None
+    ael_addon_id:str = args['ael_addon_id'] if 'ael_addon_id' in args else None
     
     uow = UnitOfWork(globals.g_PATHS.DATABASE_FILE_PATH)
     with uow:
         addon_repository = AelAddonRepository(uow)
         romset_repository = ROMSetRepository(uow)
         
-        addon = addon_repository.find(addon_id)
+        addon = addon_repository.find(ael_addon_id)
         romset = romset_repository.find_romset(romset_id)
     
     kodi.execute_uri(addon.get_configure_uri(), {'romset_id': romset_id, 'platform': romset.get_platform()})        
@@ -111,11 +111,23 @@ def cmd_configure_romset_launchers(args):
 @AppMediator.register('SET_LAUNCHER_ARGS')
 def cmd_set_launcher_args(args):
     romset_id:str = args['romset_id'] if 'romset_id' in args else None
-    addon_id:str = args['romset_id'] if 'romset_id' in args else None
+    addon_id:str = args['addon_id'] if 'addon_id' in args else None
+    launcher_args = args['args'] if 'args' in args else None
     
     uow = UnitOfWork(globals.g_PATHS.DATABASE_FILE_PATH)
     with uow:
-        repository = ROMSetRepository(uow)
-        romset = repository.find_romset(romset_id)
-
-        launcher = romset.get_launcher(addon_id)
+        addon_repository = AelAddonRepository(uow)
+        romset_repository = ROMSetRepository(uow)
+        
+        addon = addon_repository.find_by_addon_id(addon_id)
+        romset = romset_repository.find_romset(romset_id)
+        
+        romset.add_launcher(addon, launcher_args)
+        romset_repository.update_romset(romset)
+        uow.commit()
+    
+    kodi.notify('Configured launcher {}'.format(addon.get_name()))
+    kodi.event(method='EDIT_ROMSET', data={'romset_id': romset_id})
+    
+    
+    EXECUTE_ROM

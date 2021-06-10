@@ -36,6 +36,9 @@ def cmd_add_collection(args):
     wizard = kodi.WizardDialog_FileBrowse(wizard, 'assets_path', 'Select asset/artwork directory',
         0, '')
     pass
+    # --- Determine box size based on platform --
+    platform = get_AEL_platform(self.entity_data['platform'])
+    self.set_box_sizing(platform.default_box_size)
 
 # -------------------------------------------------------------------------------------------------
 # ROMSet context menu.

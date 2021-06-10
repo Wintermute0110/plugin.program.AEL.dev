@@ -22,5 +22,5 @@ import resources.app.commands.category_commands
 import resources.app.commands.romset_commands
 import resources.app.commands.romset_roms_commands
 import resources.app.commands.romset_launcher_commands
-import resources.app.commands.app_launcher_configure_commands
+import resources.app.commands.app_launcher_commands
 import resources.app.commands.misc_commands

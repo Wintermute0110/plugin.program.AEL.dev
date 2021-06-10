@@ -294,7 +294,7 @@ def cmd_import_roms_json(args):
                     roms_to_insert.append(imported_rom)
                         
         for rom_to_insert in roms_to_insert:
-            repository.save_rom(rom_to_insert, romset)
+            repository.insert_rom(rom_to_insert, romset)
 
         for rom_to_update in roms_to_update:
             repository.update_rom(rom_to_update)

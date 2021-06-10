@@ -167,6 +167,39 @@ def get_info_label(name):
 def translate(id):
     return globals.addon.getLocalizedString(id)
 
+def toggle_fullscreen():
+    jsonrpc_query('Input.ExecuteAction', {'action' : 'togglefullscreen'})
+
+def get_screensaver_mode():
+    r_dic = jsonrpc_query('Settings.getSettingValue', {'setting' : 'screensaver.mode'})
+    screensaver_mode = r_dic['value']
+    return screensaver_mode
+
+g_screensaver_mode = None # Global variable to store screensaver status.
+def disable_screensaver():
+    global g_screensaver_mode
+    g_screensaver_mode = get_screensaver_mode()
+    logger.debug('kodi_disable_screensaver() g_screensaver_mode "{}"'.format(g_screensaver_mode))
+    p_dic = {
+        'setting' : 'screensaver.mode',
+        'value' : '',
+    }
+    jsonrpc_query('Settings.setSettingValue', p_dic)
+    logger.debug('kodi_disable_screensaver() Screensaver disabled.')
+
+# kodi_disable_screensaver() must be called before this function or bad things will happen.
+def kodi_restore_screensaver():
+    if g_screensaver_mode is None:
+        logger.error('kodi_disable_screensaver() must be called before kodi_restore_screensaver()')
+        raise RuntimeError
+    logger.debug('kodi_restore_screensaver() Screensaver mode "{}"'.format(g_screensaver_mode))
+    p_dic = {
+        'setting' : 'screensaver.mode',
+        'value' : g_screensaver_mode,
+    }
+    jsonrpc_query('Settings.setSettingValue', p_dic)
+    logger.debug('kodi_restore_screensaver() Restored previous screensaver status.')
+
 #
 # See https://kodi.wiki/view/JSON-RPC_API/v8#Textures
 # See https://forum.kodi.tv/showthread.php?tid=337014
@@ -545,19 +578,32 @@ class WizardDialog_Input(WizardDialog):
     def __init__(self, decoratorDialog, property_key, title, inputType,
                  customFunction = None, conditionalFunction = None):
         self.inputType = inputType
-        super(WizardDialog_Input, self).__init__(
+        super(WizardDialog, self).__init__(
             decoratorDialog, property_key, title, customFunction, conditionalFunction)
 
     def show(self, properties):
-        logger.debug('WizardDialog_Input::show() {} key = {}'.format(self.inputType, self.property_key))
+        logger.debug('WizardDialog::show() {} key = {}'.format(self.inputType, self.property_key))
         originalValue = properties[self.property_key] if self.property_key in properties else ''
-        output = xbmcgui.Dialog().input(self.title, originalValue, self.inputType)
+        output = xbmcgui.Dialog().yesno(self.title, originalValue, self.inputType)
         if not output:
             self._cancel()
             return None
 
         return output
 
+# YesNo Dialog
+class WizardDialog_YesNo(WizardDialog):
+    def __init__(self, decoratorDialog, property_key, title, yes_label='Yes', no_label='No',
+                 customFunction = None, conditionalFunction = None):
+        self.yes_label = yes_label
+        self.no_label = no_label
+        super(WizardDialog_Input, self).__init__(
+            decoratorDialog, property_key, title, customFunction, conditionalFunction)
+
+    def show(self, properties):
+        logger.debug('WizardDialog_YesNo::show() key = {}'.format(self.property_key))
+        output = xbmcgui.Dialog().input(self.title, self.yes_label, self.no_label)
+        return output
 #
 # Wizard dialog which shows you a message formatted with a value from the dictionary.
 #

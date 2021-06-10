@@ -84,7 +84,7 @@ def cmd_execute_import_launchers(args):
                     romsets_to_insert.append(launcher_to_import)
 
         for category_to_insert in categories_to_insert:
-            categories_repository.save_category(category_to_insert)
+            categories_repository.insert_category(category_to_insert)
             existing_categories.append(category_to_insert)
 
         for category_to_update in categories_to_update:
@@ -93,7 +93,7 @@ def cmd_execute_import_launchers(args):
         for romset_to_insert in romsets_to_insert:
             parent_id = romset_to_insert.get_custom_attribute('parent_id')
             parent_obj = next((c for c in existing_categories if c.get_id() == parent_id), None)
-            romsets_repository.save_romset(romset_to_insert, parent_obj)
+            romsets_repository.insert_romset(romset_to_insert, parent_obj)
             existing_romsets.append(romset_to_insert)
 
         for romset_to_update in romsets_to_update:

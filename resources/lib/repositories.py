@@ -434,8 +434,8 @@ class CategoryRepository(object):
                 
             yield Category(category_data, assets)
 
-    def save_category(self, category_obj: Category, parent_obj: Category = None):
-        logger.info("CategoryRepository.save_category(): Inserting new category '{}'".format(category_obj.get_name()))
+    def insert_category(self, category_obj: Category, parent_obj: Category = None):
+        logger.info("CategoryRepository.insert_category(): Inserting new category '{}'".format(category_obj.get_name()))
         metadata_id = text.misc_generate_random_SID()
         assets_path = category_obj.get_assets_path_FN()
         
@@ -608,8 +608,8 @@ class ROMSetRepository(object):
                 
             yield ROMSet(romset_data, assets)
             
-    def save_romset(self, romset_obj: ROMSet, parent_obj: Category = None):
-        logger.info("ROMSetRepository.save_romset(): Inserting new romset '{}'".format(romset_obj.get_name()))
+    def insert_romset(self, romset_obj: ROMSet, parent_obj: Category = None):
+        logger.info("ROMSetRepository.insert_romset(): Inserting new romset '{}'".format(romset_obj.get_name()))
         metadata_id = text.misc_generate_random_SID()
         assets_path = romset_obj.get_assets_path_FN()
         
@@ -739,8 +739,8 @@ class ROMsRepository(object):
                 assets.append(Asset(asset_info, asset_data))                
             yield ROM(rom_data, assets)
 
-    def save_rom(self, rom_obj: ROM, romset_obj: ROMSet = None, category_obj: Category = None): 
-        logger.info("ROMsRepository.save_rom(): Inserting new ROM '{}'".format(rom_obj.get_name()))
+    def insert_rom(self, rom_obj: ROM, romset_obj: ROMSet = None, category_obj: Category = None): 
+        logger.info("ROMsRepository.insert_rom(): Inserting new ROM '{}'".format(rom_obj.get_name()))
         metadata_id = text.misc_generate_random_SID()
         assets_path = rom_obj.get_assets_path_FN()
         
@@ -812,6 +812,7 @@ class ROMsRepository(object):
 # AelAddonRepository -> AEL Adoon objects from SQLite DB
 #     
 QUERY_SELECT_ADDON              = "SELECT * FROM ael_addon WHERE id = ?"
+QUERY_SELECT_ADDON_BY_ADDON_ID  = "SELECT * FROM ael_addon WHERE addon_id = ?"
 QUERY_SELECT_ADDONS             = "SELECT * FROM ael_addon"
 QUERY_SELECT_LAUNCHER_ADDONS    = "SELECT * FROM ael_addon WHERE addon_type = 'LAUNCHER' ORDER BY name"
 QUERY_INSERT_ADDON              = "INSERT INTO ael_addon(id, name, addon_id, version, addon_type, execute_uri, configure_uri) VALUES(?,?,?,?,?,?,?)" 
@@ -823,6 +824,11 @@ class AelAddonRepository(object):
 
     def find(self, id:str) -> AelAddon:
         self._uow.execute(QUERY_SELECT_ADDON, id)
+        result_set = self._uow.single_result()
+        return AelAddon(result_set)
+
+    def find_by_addon_id(self, addon_id:str) -> AelAddon:
+        self._uow.execute(QUERY_SELECT_ADDON_BY_ADDON_ID, addon_id)
         result_set = self._uow.single_result()
         return AelAddon(result_set)
 
@@ -838,8 +844,8 @@ class AelAddonRepository(object):
         for addon_data in result_set:
             yield AelAddon(addon_data)
 
-    def save_addon(self, addon: AelAddon):
-        logger.info("AelAddonRepository.save_addon(): Saving addon '{}'".format(addon.get_addon_id()))        
+    def insert_addon(self, addon: AelAddon):
+        logger.info("AelAddonRepository.insert_addon(): Saving addon '{}'".format(addon.get_addon_id()))        
         self._uow.execute(QUERY_INSERT_ADDON,
                     addon.get_id(),
                     addon.get_name(),

@@ -66,7 +66,7 @@ def cmd_scan_addons(args):
                 addon_repository.update_addon(addon_obj)
                 logger.debug('cmd_scan_addons(): Updated addon {}'.format(addon_id))
             else:
-                addon_repository.save_addon(addon_obj)
+                addon_repository.insert_addon(addon_obj)
                 logger.debug('cmd_scan_addons(): Added addon {}'.format(addon_id))
             
         uow.commit()

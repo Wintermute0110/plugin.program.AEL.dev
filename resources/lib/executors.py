@@ -45,11 +45,11 @@ class ExecutorABC():
         self.logFile = logFile
 
     @abc.abstractmethod
-    def execute(self, application, arguments, non_blocking): pass
+    def execute(self, application: io.FileName, arguments, non_blocking): pass
 
 class XbmcExecutor(ExecutorABC):
     # --- Execute Kodi built-in function under certain conditions ---
-    def execute(self, application, arguments, non_blocking):
+    def execute(self, application, arguments: str, non_blocking: bool):
         xbmc.executebuiltin('XBMC.{0}'.format(arguments))
 
 #
@@ -61,7 +61,7 @@ class XbmcExecutor(ExecutorABC):
 # the cause is that the socket is kept open by the wrapper script.
 #
 class LinuxExecutor(ExecutorABC):
-    def __init__(self, logFile, lirc_state):
+    def __init__(self, logFile: io.FileName, lirc_state:bool):
         self.lirc_state = lirc_state
         super(LinuxExecutor, self).__init__(logFile)
 
@@ -126,7 +126,7 @@ class WindowsLnkFileExecutor(ExecutorABC):
 # CMD/BAT files in Windows
 #
 class WindowsBatchFileExecutor(ExecutorABC):
-    def __init__(self, logFile, show_batch_window):
+    def __init__(self, logFile: io.FileName, show_batch_window: bool):
         self.show_batch_window = show_batch_window
         super(WindowsBatchFileExecutor, self).__init__(logFile)
 
@@ -176,7 +176,7 @@ class WindowsBatchFileExecutor(ExecutorABC):
 # be redirected to a file.
 #
 class WindowsExecutor(ExecutorABC):
-    def __init__(self, logFile, cd_apppath, close_fds):
+    def __init__(self, logFile, cd_apppath:bool, close_fds:bool):
         self.windows_cd_apppath = cd_apppath
         self.windows_close_fds  = close_fds
         super(WindowsExecutor, self).__init__(logFile)
@@ -231,19 +231,32 @@ class WebBrowserExecutor(ExecutorABC):
         webbrowser.open(command)
         logger.debug('WebBrowserExecutor::execute() function ENDS')
 
+class ExecutorSettings(object):
+    show_batch_window: False
+    lirc_state: False
+    windows_cd_apppath: False
+    windows_close_fds: False
+
+class ExecutorFactoryABC(object):
+    __metaclass__ = abc.ABCMeta
+    
+    @abc.abstractmethod
+    def create(self, application: io.FileName) -> ExecutorABC: pass
+
 # -------------------------------------------------------------------------------------------------
 # Abstract Factory Pattern
 # See https://www.oreilly.com/library/view/head-first-design/0596007124/ch04.html
 # -------------------------------------------------------------------------------------------------
-class ExecutorFactory(object):
-    def __init__(self, g_PATHS, settings):
+class ExecutorFactory(ExecutorFactoryABC):
+    def __init__(self, reportFilePath:io.FileName = None, settings: ExecutorSettings = ExecutorSettings()):
         self.settings = settings
-        self.logFile  = g_PATHS.LAUNCHER_REPORT_FILE_PATH
+        self.logFile  = reportFilePath
+        super(ExecutorFactory).__init__()
 
     def create_from_pathstring(self, application_string):
         return self.create(io.FileName(application_string))
 
-    def create(self, application: io.FileName):
+    def create(self, application: io.FileName) -> ExecutorABC:
         if application.getBase().lower().replace('.exe' , '') == 'xbmc' \
             or 'xbmc-fav-' in application.getPath() or 'xbmc-sea-' in application.getPath():
             return XbmcExecutor(self.logFile)
@@ -254,20 +267,20 @@ class ExecutorFactory(object):
         elif io.is_windows():
             # >> BAT/CMD file.
             if application.getExt().lower() == '.bat' or application.getExt().lower() == '.cmd' :
-                return WindowsBatchFileExecutor(self.logFile, self.settings['show_batch_window'])
+                return WindowsBatchFileExecutor(self.logFile, self.settings.show_batch_window)
             # >> Standalone launcher where application is a LNK file
             elif application.getExt().lower() == '.lnk': 
                 return WindowsLnkFileExecutor(self.logFile)
 
             # >> Standard Windows executor
             return WindowsExecutor(self.logFile,
-                self.settings['windows_cd_apppath'], self.settings['windows_close_fds'])
+                self.settings.windows_cd_apppath, self.settings.windows_close_fds)
 
         elif io.is_android():
             return AndroidExecutor()
 
         elif io.is_linux():
-            return LinuxExecutor(self.logFile, self.settings['lirc_state'])
+            return LinuxExecutor(self.logFile, self.settings.lirc_state)
 
         elif io.is_osx():
             return OSXExecutor(self.logFile)
