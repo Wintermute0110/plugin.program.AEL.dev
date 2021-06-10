@@ -8222,9 +8222,11 @@ class Main:
         # Decompose arguments to call subprocess module
         arg_list = shlex.split(arguments, posix = True)
         exec_list = [application] + arg_list
+        app_ext = application.split('.')[-1]
         log_debug('_run_process() arguments = "{}"'.format(arguments))
         log_debug('_run_process() arg_list  = {}'.format(arg_list))
-        log_debug('_run_process() exec_list = {}'.format(exec_list))
+        log_debug('_run_process() app_ext   = "{}"'.format(app_ext))
+        log_debug('_run_process() romext    = "{}"'.format(romext))
 
         # NOTE subprocess24_hack.py was hacked to always set CreateProcess() bInheritHandles to 0.
         # bInheritHandles [in] If this parameter TRUE, each inheritable handle in the calling
@@ -8242,12 +8244,9 @@ class Main:
         # be redirected to a file.
         #
         if is_windows():
-            app_ext = application.split('.')[-1]
             log_debug('_run_process() (Windows) application = "{}"'.format(application))
             log_debug('_run_process() (Windows) arguments   = "{}"'.format(arguments))
             log_debug('_run_process() (Windows) apppath     = "{}"'.format(apppath))
-            log_debug('_run_process() (Windows) romext      = "{}"'.format(romext))
-            log_debug('_run_process() (Windows) app_ext     = "{}"'.format(app_ext))
 
             # Standalone launcher where application is a LNK file
             if app_ext == 'lnk' or app_ext == 'LNK':
@@ -8369,6 +8368,12 @@ class Main:
         elif is_linux():
             # os.system() is deprecated and should not be used anymore, use subprocess module.
             # Also, save child process stdout to a file.
+
+            # Shell script can be launched with the command interpreter "sh"
+            # Only works in case of standalone laucher
+            if app_ext.lower() == 'sh':
+                exec_list.insert(0, 'sh') # Now exec_list looks like ['sh', '/path/script.sh']
+
             if non_blocking_flag:
                 # In a non-blocking launch stdout/stderr of child process cannot be recorded.
                 log_info('_run_process() (Linux) Launching non-blocking process subprocess.Popen()')
