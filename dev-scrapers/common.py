@@ -1,10 +1,8 @@
 # -*- coding: utf-8 -*-
 
-#
 # Common data to test the scrapers.
-#
-from __future__ import unicode_literals
-import sys
+
+from resources.misc import *
 
 settings = {
     # --- AEL Offline ---
@@ -36,6 +34,9 @@ games = {
     'ff7'                    : ('Final Fantasy VII', 'Final Fantasy VII (USA) (Disc 1).iso', 'Sony PlayStation'),
     'console_wrong_title'    : ('Console invalid game', 'mjhyewqr.zip', 'Sega MegaDrive'),
     'console_wrong_platform' : ('Sonic the Hedgehog', 'Sonic the Hedgehog (USA, Europe).zip', 'mjhyewqr'),
+    # Test Github AEL issue #142
+    'bforever'               : ('batman forever', 'batman forever.zip', 'Unknown'),
+    'bforever_snes'          : ('batman forever', 'batman forever.zip', 'Nintendo SNES'),
 
     # MAME games
     'atetris'             : ('Tetris (set 1)', 'atetris.zip', 'MAME'),
@@ -45,9 +46,10 @@ games = {
     'MAME_wrong_platform' : ('Tetris (set 1)', 'atetris.zip', 'mjhyewqr'),
 }
 
-def handle_get_candidates(candidate_list, status_dic):
-    if not status_dic['status']:
-        print('Status error "{}"'.format(status_dic['msg']))
+def handle_get_candidates(candidate_list, st_dic):
+    if st_dic['abort']:
+        print('st_dic abort dialog "{}"'.format(st_dic['dialog']))
+        print('st_dic abort msg "{}"'.format(st_dic['msg']))
         sys.exit(0)
     if candidate_list is None:
         print('Error/exception in get_candidates(). Exiting.')

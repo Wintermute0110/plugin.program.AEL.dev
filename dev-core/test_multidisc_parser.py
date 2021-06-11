@@ -14,7 +14,6 @@
 
 # Test the parser for multidisc support.
 
-
 # --- Import AEL modules ---
 import os, sys
 if __name__ == "__main__" and __package__ is None:

@@ -1,26 +1,25 @@
-#!/usr/bin/python2 -B
+#!/usr/bin/python3 -B
 # -*- coding: utf-8 -*-
 
 # Test AEL TheGamesDB asset scraper.
 # Super Mario World for SNES have titlescreen https://thegamesdb.net/game.php?id=136
 
-# --- Python standard library ---
-from __future__ import unicode_literals
+# --- Import AEL modules ---
 import os
-import pprint
 import sys
-
-# --- AEL modules ---
 if __name__ == "__main__" and __package__ is None:
     path = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
-    print('Adding to sys.path {0}'.format(path))
+    print('Adding to sys.path {}'.format(path))
     sys.path.append(path)
-from resources.scrap import *
 from resources.utils import *
+from resources.scrap import *
 import common
 
+# --- Python standard library ---
+import pprint
+
 # --- main ---------------------------------------------------------------------------------------
-print('*** Fetching candidate game list ********************************************************')
+print('\n*** Fetching candidate game list ********************************************************')
 set_log_level(LOG_DEBUG)
 
 # --- Create scraper object ---
@@ -48,22 +47,22 @@ else:
 candidate_list = scraper_obj.get_candidates(search_term, rom_FN, rom_checksums_FN, platform, status_dic)
 # pprint.pprint(candidate_list)
 common.handle_get_candidates(candidate_list, status_dic)
-print_candidate_list(candidate_list)
+common.print_candidate_list(candidate_list)
 scraper_obj.set_candidate(rom_FN, platform, candidate_list[0])
 
 # --- Print list of assets found -----------------------------------------------------------------
-print('*** Fetching game assets ****************************************************************')
+print('\n*** Fetching game assets ****************************************************************')
 # --- Get all assets (TGBD scraper custom function) ---
 # assets = scraper_obj.get_assets_all(candidate)
 # pprint.pprint(assets)
-# print_game_assets(assets)
+# common.print_game_assets(assets)
 
 # --- Get specific assets ---
-print_game_assets(scraper_obj.get_assets(ASSET_FANART_ID, status_dic))
-print_game_assets(scraper_obj.get_assets(ASSET_BANNER_ID, status_dic))
-print_game_assets(scraper_obj.get_assets(ASSET_CLEARLOGO_ID, status_dic))
-print_game_assets(scraper_obj.get_assets(ASSET_TITLE_ID, status_dic))
-print_game_assets(scraper_obj.get_assets(ASSET_SNAP_ID, status_dic))
-print_game_assets(scraper_obj.get_assets(ASSET_BOXFRONT_ID, status_dic))
-print_game_assets(scraper_obj.get_assets(ASSET_BOXBACK_ID, status_dic))
+common.print_game_assets(scraper_obj.get_assets(ASSET_FANART_ID, status_dic))
+common.print_game_assets(scraper_obj.get_assets(ASSET_BANNER_ID, status_dic))
+common.print_game_assets(scraper_obj.get_assets(ASSET_CLEARLOGO_ID, status_dic))
+common.print_game_assets(scraper_obj.get_assets(ASSET_TITLE_ID, status_dic))
+common.print_game_assets(scraper_obj.get_assets(ASSET_SNAP_ID, status_dic))
+common.print_game_assets(scraper_obj.get_assets(ASSET_BOXFRONT_ID, status_dic))
+common.print_game_assets(scraper_obj.get_assets(ASSET_BOXBACK_ID, status_dic))
 scraper_obj.flush_disk_cache()
