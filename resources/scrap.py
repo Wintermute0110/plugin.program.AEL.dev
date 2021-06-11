@@ -2205,7 +2205,7 @@ class TheGamesDB(Scraper):
         'banner': ASSET_BANNER_ID,
     }
     # This allows to change the API version easily.
-    URL_ByGameName = 'https://api.thegamesdb.net/v1/Games/ByGameName'
+    URL_ByGameName = 'https://api.thegamesdb.net/v1.1/Games/ByGameName'
     URL_ByGameID   = 'https://api.thegamesdb.net/v1/Games/ByGameID'
     URL_Platforms  = 'https://api.thegamesdb.net/v1/Platforms'
     URL_Genres     = 'https://api.thegamesdb.net/v1/Genres'
