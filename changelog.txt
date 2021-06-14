@@ -183,7 +183,8 @@ WIP      In the ROMs CM add a menu to edit all assets as once, including scrapin
          all assets at once.
          See https://github.com/Wintermute0110/plugin.program.AEL/issues/140
 
-WIP      Check issue #142, TGDB scraper not working well.
+FIX      Check issue #142, TGDB scraper not working well.
+         The issue was a bug with TGDB engine and has been fixed.
 
 FIX      Fix TheGamesDB scraper. New asset titlescreen in TheGamesDB.
          See https://forums.thegamesdb.net/viewtopic.php?f=5&t=1947
