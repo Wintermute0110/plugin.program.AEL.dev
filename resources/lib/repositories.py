@@ -709,7 +709,9 @@ class ROMSetRepository(object):
 #
 # ROMsRepository -> ROMs from SQLite DB
 #     
+QUERY_SELECT_ROM                = "SELECT * FROM vw_roms WHERE id = ?"
 QUERY_SELECT_ROMS_BY_SET        = "SELECT * FROM vw_roms WHERE romset_id = ?"
+QUERY_SELECT_ROM_ASSETS         = "SELECT * FROM vw_rom_assets WHERE rom_id = ?"
 QUERY_SELECT_ROM_ASSETS_BY_SET  = "SELECT * FROM vw_rom_assets WHERE romset_id = ?"
 QUERY_INSERT_ROM                = """
                                 INSERT INTO roms (
@@ -738,6 +740,20 @@ class ROMsRepository(object):
                 asset_info = g_assetFactory.get_asset_info(asset_data['asset_type'])
                 assets.append(Asset(asset_info, asset_data))                
             yield ROM(rom_data, assets)
+
+    def find_rom(self, rom_id:str) -> ROM:
+        self._uow.execute(QUERY_SELECT_ROM, rom_id)
+        rom_data = self._uow.single_result()
+
+        self._uow.execute(QUERY_SELECT_ROM_ASSETS, rom_id)
+        assets_result_set = self._uow.result_set()
+            
+        assets = []
+        for asset_data in assets_result_set:
+            asset_info = g_assetFactory.get_asset_info(asset_data['asset_type'])
+            assets.append(Asset(asset_info, asset_data))                
+        return ROM(rom_data, assets)
+
 
     def insert_rom(self, rom_obj: ROM, romset_obj: ROMSet = None, category_obj: Category = None): 
         logger.info("ROMsRepository.insert_rom(): Inserting new ROM '{}'".format(rom_obj.get_name()))

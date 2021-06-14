@@ -656,7 +656,10 @@ class ROMSetLauncher(object):
         self.addon = addon
         self.args = args
         self.is_default = is_default
-        
+
+    def get_name(self):
+        return self.addon.get_name()
+
     def get_arguments(self) -> str:
         return json.dumps(self.args)
     
@@ -913,18 +916,6 @@ class ROM(MetaDataItemABC):
     def get_clone(self):
         return self.entity_data['cloneof']
     
-    def has_alternative_application(self):
-        return 'altapp' in self.entity_data and self.entity_data['altapp']
-
-    def get_alternative_application(self):
-        return self.entity_data['altapp']
-
-    def has_alternative_arguments(self):
-        return 'altarg' in self.entity_data and self.entity_data['altarg']
-
-    def get_alternative_arguments(self):
-        return self.entity_data['altarg']
-
     def get_filename(self):
         return self.entity_data['filename']
 
@@ -1003,6 +994,84 @@ class ROM(MetaDataItemABC):
         launch_count = self.entity_data['launch_count'] if 'launch_count' in self.entity_data else 0
         launch_count += 1
         self.entity_data['launch_count'] = launch_count
+
+    def get_arguments(self):
+        return
+
+    # --- Argument substitution ---
+    def _launch_parseArguments(self):
+        logger.info('RomLauncher() raw arguments   "{0}"'.format(self.arguments))
+
+        #Application based arguments replacements
+        if self.application and isinstance(self.application, io.FileName):
+           apppath = self.application.getDir()
+
+           logger.info('RomLauncher() application  "{0}"'.format(self.application.getPath()))
+           logger.info('RomLauncher() appbase      "{0}"'.format(self.application.getBase()))
+           logger.info('RomLauncher() apppath      "{0}"'.format(apppath))
+
+           self.arguments = self.arguments.replace('$apppath$', apppath)
+           self.arguments = self.arguments.replace('$appbase$', self.application.getBase())
+
+        # ROM based arguments replacements
+        if self.selected_rom_file:
+            # --- Escape quotes and double quotes in ROMFileName ---
+            # >> This maybe useful to Android users with complex command line arguments
+            if self.settings['escape_romfile']:
+                logger.info("RomLauncher() Escaping ROMFileName ' and \"")
+                self.selected_rom_file.escapeQuotes()
+            rompath       = self.selected_rom_file.getDir()
+            rombase       = self.selected_rom_file.getBase()
+            rombase_noext = self.selected_rom_file.getBaseNoExt()
+
+            logger.info('RomLauncher() romfile      "{0}"'.format(self.selected_rom_file.getPath()))
+            logger.info('RomLauncher() rompath      "{0}"'.format(rompath))
+            logger.info('RomLauncher() rombase      "{0}"'.format(rombase))
+            logger.info('RomLauncher() rombasenoext "{0}"'.format(rombase_noext))
+
+            self.arguments = self.arguments.replace('$rom$', self.selected_rom_file.getPath())
+            self.arguments = self.arguments.replace('$romfile$', self.selected_rom_file.getPath())
+            self.arguments = self.arguments.replace('$rompath$', rompath)
+            self.arguments = self.arguments.replace('$rombase$', rombase)
+            self.arguments = self.arguments.replace('$rombasenoext$', rombase_noext)
+
+            # >> Legacy names for argument substitution
+            self.arguments = self.arguments.replace('%rom%', self.selected_rom_file.getPath())
+            self.arguments = self.arguments.replace('%ROM%', self.selected_rom_file.getPath())
+        category_id = self.get_category_id()
+        if category_id is None:
+            category_id = ''
+
+        # Default arguments replacements
+        self.arguments = self.arguments.replace('$categoryID$', category_id)
+        self.arguments = self.arguments.replace('$launcherID$', self.entity_data['id'])
+        self.arguments = self.arguments.replace('$romID$', self.rom.get_id())
+        self.arguments = self.arguments.replace('$romtitle$', self.title)
+
+        # automatic substitution of rom values
+        for rom_key, rom_value in self.rom.get_data_dic().iteritems():
+            if isinstance(rom_value, str):
+                self.arguments = self.arguments.replace('${}$'.format(rom_key), rom_value)        
+
+        # automatic substitution of launcher values
+        for launcher_key, launcher_value in self.entity_data.iteritems():
+            if isinstance(launcher_value, str):
+                self.arguments = self.arguments.replace('${}$'.format(launcher_key), launcher_value)
+
+        logger.info('RomLauncher() final arguments "{0}"'.format(self.arguments))
+
+
+    def has_alternative_application(self):
+        return 'altapp' in self.entity_data and self.entity_data['altapp']
+
+    def get_alternative_application(self):
+        return self.entity_data['altapp']
+
+    def has_alternative_arguments(self):
+        return 'altarg' in self.entity_data and self.entity_data['altarg']
+
+    def get_alternative_arguments(self):
+        return self.entity_data['altarg']
 
     def set_alternative_application(self, application):
         self.entity_data['altapp'] = application
@@ -1085,72 +1154,7 @@ class ROM(MetaDataItemABC):
     def get_mappable_asset_ids_list(self): return MAPPABLE_ROM_ASSET_ID_LIST
     
     def get_default_icon(self) -> str: return 'DefaultProgram.png' 
-                 
-    def get_edit_options(self, category_id):
-        delete_rom_txt = 'Delete ROM'
-        if category_id == VCATEGORY_FAVOURITES_ID:
-            delete_rom_txt = 'Delete Favourite ROM'
-        if category_id == VCATEGORY_COLLECTIONS_ID:
-            delete_rom_txt = 'Delete Collection ROM'
-
-        options = collections.OrderedDict()
-        options['EDIT_METADATA']    = 'Edit Metadata ...'
-        options['EDIT_ASSETS']      = 'Edit Assets/Artwork ...'
-        options['ROM_STATUS']       = 'Status: {0}'.format(self.get_finished_str()).encode('utf-8')
-
-        options['ADVANCED_MODS']    = 'Advanced Modifications ...'
-        options['DELETE_ROM']       = delete_rom_txt
-
-        if category_id == VCATEGORY_FAVOURITES_ID:
-            options['MANAGE_FAV_ROM']   = 'Manage Favourite ROM object ...'
-            
-        elif category_id == VCATEGORY_COLLECTIONS_ID:
-            options['MANAGE_COL_ROM']       = 'Manage Collection ROM object ...'
-            options['MANAGE_COL_ROM_POS']   = 'Manage Collection ROM position ...'
-
-        return options
-
-    # >> Metadata edit dialog
-    def get_metadata_edit_options(self):
-        NFO_FileName = fs_get_ROM_NFO_name(self.get_data_dic())
-        NFO_found_str = 'NFO found' if NFO_FileName.exists() else 'NFO not found'
-        plot_str = text.limit_string(self.entity_data['m_plot'], PLOT_STR_MAXSIZE)
-
-        rating = self.get_rating()
-        if rating == -1:
-            rating = 'not rated'
-
-        options = collections.OrderedDict()
-        options['EDIT_METADATA_TITLE']       = u"Edit Title: '{0}'".format(self.get_name()).encode('utf-8')
-        options['EDIT_METADATA_RELEASEYEAR'] = u"Edit Release Year: '{0}'".format(self.get_releaseyear()).encode('utf-8')
-        options['EDIT_METADATA_GENRE']       = u"Edit Genre: '{0}'".format(self.get_genre()).encode('utf-8')
-        options['EDIT_METADATA_DEVELOPER']   = u"Edit Developer: '{0}'".format(self.get_developer()).encode('utf-8')
-        options['EDIT_METADATA_NPLAYERS']    = u"Edit NPlayers: '{0}'".format(self.get_number_of_players()).encode('utf-8')
-        options['EDIT_METADATA_ESRB']        = u"Edit ESRB rating: '{0}'".format(self.get_esrb_rating()).encode('utf-8')
-        options['EDIT_METADATA_RATING']      = u"Edit Rating: '{}'".format(rating).encode('utf-8')
-        options['EDIT_METADATA_PLOT']        = u"Edit Plot: '{}'".format(plot_str).encode('utf-8')
-        options['EDIT_METADATA_BOXSIZE']     = u"Edit Box Size: '{}'".format(self.get_box_sizing())
-        options['LOAD_PLOT']                 = "Load Plot from TXT file ..."
-        options['IMPORT_NFO_FILE']           = u"Import NFO file (default, {})".format(NFO_found_str).encode('utf-8')
-        options['SAVE_NFO_FILE']             = "Save NFO file (default location)"
-        options['SCRAPE_ROM_METADATA']       = "Scrape Metadata"
-
-        return options
-
-    #
-    # Returns a dictionary of options to choose from
-    # with which you can do advanced modifications on this specific rom.
-    #
-    def get_advanced_modification_options(self):
-        logger.debug('ROM::get_advanced_modification_options() Returning edit options')
-        logger.debug('ROM::get_advanced_modification_options() Returning edit options')
-        options = collections.OrderedDict()
-        options['CHANGE_ROM_FILE']          = "Change ROM file: '{0}'".format(self.get_filename())
-        options['CHANGE_ALT_APPLICATION']   = "Alternative application: '{0}'".format(self.get_alternative_application())
-        options['CHANGE_ALT_ARGUMENTS']     = "Alternative arguments: '{0}'".format(self.get_alternative_arguments())
-
-        return options
-
+    
     #
     # Reads an NFO file with ROM information.
     # See comments in fs_export_ROM_NFO() about verbosity.

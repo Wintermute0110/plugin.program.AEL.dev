@@ -18,6 +18,7 @@ from __future__ import unicode_literals
 from __future__ import division
 
 import logging
+from typing import OrderedDict
 
 from resources.app.commands.mediator import AppMediator
 from resources.lib import constants, globals
@@ -130,4 +131,35 @@ def cmd_set_launcher_args(args):
     kodi.event(method='EDIT_ROMSET', data={'romset_id': romset_id})
     
     
-    EXECUTE_ROM
+@AppMediator.register('EXECUTE_ROM')
+def cmd_configure_romset_launchers(args):
+    rom_id:str = args['rom_id'] if 'rom_id' in args else None
+
+    uow = UnitOfWork(globals.g_PATHS.DATABASE_FILE_PATH)
+    with uow:
+        rom_repository = ROMsRepository(uow)
+        romset_repository = ROMSetRepository(uow)
+
+        rom = rom_repository.find_rom(rom_id)
+        romset = romset_repository.find_romset(rom.get_romset_id())
+
+    launchers = romset.get_launchers()
+    if launchers is None or len(launchers) == 0:
+        kodi.notify_warn('No launcher configured.')
+        return
+
+    selected_launcher = launchers[0]
+    if len(launchers) > 1:
+        launcher_options = OrderedDict()
+        preselected = None
+        for launcher in launchers:
+            launcher_options[launcher] = launcher.get_name()
+            if launcher.is_default():
+                preselected = launcher
+        dialog = kodi.OrdDictionaryDialog()
+        selected_launcher = dialog.select('Choose launcher', launcher_options,preselect=preselected)
+
+    kodi.execute_uri(selected_launcher.addon.get_execute_uri(), {
+        'rom_args': rom.get_arguments(), 
+        'launcher_args': selected_launcher.get_arguments()
+    })
