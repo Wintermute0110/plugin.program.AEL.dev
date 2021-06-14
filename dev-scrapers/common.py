@@ -46,6 +46,12 @@ games = {
     'MAME_wrong_platform' : ('Tetris (set 1)', 'atetris.zip', 'mjhyewqr'),
 }
 
+def abort_on_error(st_dic):
+    if st_dic['abort']:
+        print('st_dic abort dialog "{}"'.format(st_dic['dialog']))
+        print('st_dic abort msg "{}"'.format(st_dic['msg']))
+        sys.exit(0)
+
 def handle_get_candidates(candidate_list, st_dic):
     if st_dic['abort']:
         print('st_dic abort dialog "{}"'.format(st_dic['dialog']))

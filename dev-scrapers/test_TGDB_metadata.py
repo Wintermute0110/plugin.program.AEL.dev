@@ -18,14 +18,14 @@ import common
 import pprint
 
 # --- main ---------------------------------------------------------------------------------------
-print('\n*** Fetching candidate game list ********************************************************')
+print('\n*** Fetching candidate game list ******************************************************')
 set_log_level(LOG_DEBUG)
+st_dic = kodi_new_status_dic()
 
 # --- Create scraper object ---
 scraper_obj = TheGamesDB(common.settings)
 scraper_obj.set_verbose_mode(False)
 scraper_obj.set_debug_file_dump(True, os.path.join(os.path.dirname(__file__), 'assets'))
-st_dic = kodi_new_status_dic()
 
 # --- Choose data for testing ---
 # search_term, rombase, platform = common.games['metroid']
@@ -35,8 +35,8 @@ st_dic = kodi_new_status_dic()
 # search_term, rombase, platform = common.games['chakan']
 # search_term, rombase, platform = common.games['console_wrong_title']
 # search_term, rombase, platform = common.games['console_wrong_platform']
-# search_term, rombase, platform = common.games['bforever']
-search_term, rombase, platform = common.games['bforever_snes']
+search_term, rombase, platform = common.games['bforever']
+# search_term, rombase, platform = common.games['bforever_snes']
 
 # --- Get candidates, print them and set first candidate ---
 rom_FN = FileName(rombase)
@@ -52,8 +52,10 @@ common.print_candidate_list(candidate_list)
 scraper_obj.set_candidate(rom_FN, platform, candidate_list[0])
 
 # --- Print metadata of first candidate ----------------------------------------------------------
-print('\n*** Fetching game metadata **************************************************************')
+print('\n*** Fetching game metadata ************************************************************')
 metadata = scraper_obj.get_metadata(st_dic)
 # pprint.pprint(metadata)
 common.print_game_metadata(metadata)
+
+# --- Flush scraper disk cache -------------------------------------------------------------------
 scraper_obj.flush_disk_cache()
