@@ -15,7 +15,6 @@ ID,Name,Type,ROM type,Support type
 139,Amiga CD32 (hack),Console,iso,cd
 129,Amiga CDTV,Ordinateur,iso,cd
 63,Android,Smartphone,rom,download
-35,Another Arcade Emulator,Emulation Arcade,rom,pcb
 86,Apple II,Ordinateur,rom,k7-disquette
 217,Apple IIGS,Ordinateur,rom,disquette
 94,Arcadia 2001,Console,rom,cartouche
@@ -50,6 +49,7 @@ ID,Name,Type,ROM type,Support type
 177,Comad,Arcade,rom,pcb
 66,Commodore 64,Ordinateur,rom,k7-disquette
 50,CoreGrafX,Console,rom,cartouche
+241,CreatiVision,Console,rom,cartouche
 49,Daphne,Emulation Arcade,dossier,pcb
 162,Data East Classics,Arcade,rom,pcb
 91,Dragon 32/64,Ordinateur,rom,k7
@@ -57,6 +57,7 @@ ID,Name,Type,ROM type,Support type
 173,Dynax,Arcade,rom,pcb
 92,EG2000 Colour Genie,Ordinateur,rom,k7-disquette
 96,EXL 100,Ordinateur,rom,cartouche-k7-disquette
+231,EasyRPG,Machine Virtuelle,dossier,download
 152,Eighting / Raizing,Arcade,rom,pcb
 85,Electron,Ordinateur,rom,k7
 165,Exidy,Arcade,rom,pcb
@@ -90,7 +91,7 @@ ID,Name,Type,ROM type,Support type
 158,Konami Classics,Arcade,rom,pcb
 145,Linux,Ordinateur,rom,cd-disquette
 98,Loopy,Console,rom,cartouche
-206,Lutro,Autres,fichier,download
+206,Lutro,Machine Virtuelle,fichier,download
 28,Lynx,Console Portable,rom,cartouche
 213,MGT SAM Coupé,Ordinateur,rom,disquette
 113,MSX,Ordinateur,rom,disquette
@@ -120,6 +121,8 @@ ID,Name,Type,ROM type,Support type
 155,Namco Classics,Arcade,rom,pcb
 156,Namco System 22,Arcade,rom,pcb
 56,Naomi,Arcade,rom,pcb
+230,Naomi 2,Arcade,rom,pcb
+227,Naomi GD-ROM,Arcade,rom,pcb
 142,Neo-Geo,Console &amp; Arcade,rom,cartouche
 70,Neo-Geo CD,Console,iso,cd
 68,Neo-Geo MVS,Arcade,rom,cartouche
@@ -132,7 +135,7 @@ ID,Name,Type,ROM type,Support type
 161,Nintendo Classics,Arcade,rom,pcb
 15,Nintendo DS,Console Portable,rom,cartouche
 110,Nintendo Power,Autres,rom,cartouche
-214,OpenBOR,Console,fichier,non-applicable
+214,OpenBOR,Machine Virtuelle,fichier,non-applicable
 131,Oric 1 / Atmos,Ordinateur,rom,disquette
 135,PC Dos,Ordinateur,dossier,cd-disquette
 31,PC Engine,Console,rom,cartouche
@@ -141,12 +144,14 @@ ID,Name,Type,ROM type,Support type
 136,PC Win3.xx,Ordinateur,dossier,cd-disquette
 137,PC Win9X,Ordinateur,rom,disquette
 138,PC Windows,Ordinateur,iso,cd
-72,PC-FX,Console,rom,cartouche
+72,PC-FX,Console,iso,cd
+240,PET,Ordinateur,rom,k7-disquette
 62,PS Vita,Console Portable,rom,cartouche-download
 61,PSP,Console Portable,rom,cartouche
 74,PV-1000,Console,rom,cartouche
 219,Palm OS,Ordinateur,rom,carte
 125,Pecom 64,Ordinateur,rom,k7
+234,Pico-8,Machine Virtuelle,fichier,download
 143,Pinball FX2,Flipper,fichier,non-applicable
 201,Pinball FX3,Flipper,fichier,non-applicable
 184,PlayChoice,Arcade,rom,pcb
@@ -154,15 +159,16 @@ ID,Name,Type,ROM type,Support type
 58,Playstation 2,Console,iso,cd
 59,Playstation 3,Console,iso,cd
 172,Playstation minis,Console Portable,rom,download
-99,Plus/4,Ordinateur,rom,k7
+99,Plus/4,Ordinateur,rom,k7-disquette
+237,Pocket Challenge V2,Console Portable,rom,cartouche
 211,Pokémon mini,Console Portable,rom,cartouche
 167,Psikyo,Arcade,rom,pcb
 109,SG-1000,Console,rom,cartouche
 154,SNK Classics,Arcade,rom,pcb
 164,Sammy Classics,Arcade,rom,pcb
 107,Satellaview,Console,rom,download
-22,Saturn,Console,rom,cartouche-cd
-123,ScummVM,Autres,dossier,cd-disquette
+22,Saturn,Console,iso,cd
+123,ScummVM,Machine Virtuelle,dossier,cd-disquette
 147,Sega Classics,Arcade,rom,pcb
 69,Sega ST-V,Arcade,rom,cartouche
 190,Seibu Kaihatsu,Arcade,rom,pcb
@@ -171,7 +177,7 @@ ID,Name,Type,ROM type,Support type
 220,Sharp X1,Ordinateur,rom,k7
 79,Sharp X68000,Ordinateur,rom,disquette
 202,Snes - Super Mario World Hacks,Console,rom,cartouche
-223,Solarus,Autres,rom,download
+223,Solarus,Machine Virtuelle,rom,download
 218,Spectravideo,Ordinateur,rom,cartouche-k7
 108,Sufami Turbo,Accessoire,rom,cartouche
 100,Super A&apos;can,Console,rom,cartouche
@@ -180,8 +186,9 @@ ID,Name,Type,ROM type,Support type
 128,Super Game Boy 2,Accessoire,rom,cartouche
 4,Super Nintendo,Console,rom,cartouche
 210,Super Nintendo MSU-1,Console,rom,cd
+225,Switch,Console,dossier,cartouche
 205,TI-99/4A,Ordinateur,fichier,cartouche-k7-disquette
-222,TIC-80,Autres,rom,download
+222,TIC-80,Machine Virtuelle,rom,download
 144,TRS-80 Color Computer,Ordinateur,rom,disquette
 157,Taito Classics,Arcade,rom,pcb
 169,Technos,Arcade,rom,pcb
@@ -206,7 +213,8 @@ ID,Name,Type,ROM type,Support type
 46,WonderSwan Color,Console Portable,rom,cartouche
 32,Xbox,Console,iso,cd
 33,Xbox 360,Console,iso,cd
-215,Z-Machine,Autres,fichier,non-applicable
+34,Xbox One,Console,iso,cd
+215,Z-Machine,Machine Virtuelle,fichier,non-applicable
 76,ZX Spectrum,Ordinateur,rom,k7
 77,ZX81,Ordinateur,rom,k7
 168,non Jeu,Arcade,rom,pcb

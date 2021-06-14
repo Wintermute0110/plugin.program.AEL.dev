@@ -1,4 +1,4 @@
-Number of MobyGames platforms 274
+Number of MobyGames platforms 297
 
 ID   Name                                   
 --------------------------------------------
@@ -16,6 +16,7 @@ ID   Name
 60   Amstrad CPC                            
 136  Amstrad PCW                            
 91   Android                                
+286  Antstream                              
 245  Apple I                                
 31   Apple II                               
 51   Apple IIgs                             
@@ -34,11 +35,13 @@ ID   Name
 160  Bally Astrocade                        
 165  BeOS                                   
 90   BlackBerry                             
+290  Blacknut                               
 168  Blu-ray Disc Player                    
 84   Browser                                
 231  Bubble                                 
 73   CD-i                                   
 83   CDTV                                   
+216  COSMAC                                 
 261  CP/M                                   
 154  Camputers Lynx                         
 124  Casio Loopy                            
@@ -52,12 +55,14 @@ ID   Name
 115  Commodore 16, Plus/4                   
 27   Commodore 64                           
 77   Commodore PET/CBM                      
+277  Compal 80                              
 243  Compucolor I                           
 198  Compucolor II                          
 238  Compucorp Programmable Calculator      
 212  CreatiVision                           
 2    DOS                                    
 166  DVD Player                             
+285  Danger OS                              
 204  Dedicated console                      
 205  Dedicated handheld                     
 184  Didj                                   
@@ -70,12 +75,12 @@ ID   Name
 137  Epoch Cassette Vision                  
 139  Epoch Game Pocket Computer             
 138  Epoch Super Cassette Vision            
+284  Evercade                               
 70   ExEn                                   
 195  Exelvision                             
 176  Exidy Sorcerer                         
 102  FM Towns                               
 126  FM-7                                   
-216  FRED/COSMAC                            
 159  Fire OS                                
 268  Freebox                                
 251  GIMINI                                 
@@ -95,6 +100,7 @@ ID   Name
 155  GameStick                              
 16   Genesis                                
 55   Gizmondo                               
+292  Gloud                                  
 172  Glulx                                  
 167  HD DVD Player                          
 219  HP 9800                                
@@ -109,6 +115,7 @@ ID   Name
 224  Intel 8008                             
 225  Intel 8080                             
 30   Intellivision                          
+295  Interact Model One                     
 221  Interton Video 2000                    
 64   J2ME                                   
 17   Jaguar                                 
@@ -122,6 +129,7 @@ ID   Name
 186  LeapTV                                 
 183  Leapster                               
 1    Linux                                  
+297  Luna                                   
 18   Lynx                                   
 240  MOS Technology 6502                    
 229  MRE                                    
@@ -137,6 +145,7 @@ ID   Name
 97   Microvision                            
 71   Mophun                                 
 235  Motorola 6800                          
+275  Motorola 68k                           
 32   N-Gage                                 
 89   N-Gage (service)                       
 22   NES                                    
@@ -145,6 +154,7 @@ ID   Name
 54   Neo Geo CD                             
 52   Neo Geo Pocket                         
 53   Neo Geo Pocket Color                   
+279  Neo Geo X                              
 174  New Nintendo 3DS                       
 177  NewBrain                               
 207  Newton                                 
@@ -162,6 +172,7 @@ ID   Name
 75   Odyssey                                
 78   Odyssey 2                              
 178  Ohio Scientific                        
+282  OnLive                                 
 270  Orao                                   
 111  Oric                                   
 144  Ouya                                   
@@ -181,7 +192,10 @@ ID   Name
 7    PlayStation 2                          
 81   PlayStation 3                          
 141  PlayStation 4                          
+288  PlayStation 5                          
+294  PlayStation Now                        
 107  Playdia                                
+291  Plex Arcade                            
 230  Pokitto                                
 152  Pokémon Mini                           
 249  Poly-88                                
@@ -206,14 +220,18 @@ ID   Name
 121  Sharp X1                               
 106  Sharp X68000                           
 202  Sharp Zaurus                           
+278  Signetics 2650                         
 131  Sinclair QL                            
 190  Socrates                               
 199  Sol-20                                 
 134  Sord M5                                
 85   Spectravideo                           
+281  Stadia                                 
 110  Super A'can                            
+296  Super Vision 8000                      
 127  SuperGrafx                             
 109  Supervision                            
+287  Sure Shot HD                           
 67   Symbian                                
 171  TADS                                   
 239  TI Programmable Calculator             
@@ -222,6 +240,7 @@ ID   Name
 58   TRS-80                                 
 62   TRS-80 CoCo                            
 193  TRS-80 MC-10                           
+283  Taito X-55                             
 150  Tatung Einstein                        
 223  Tektronix 4050                         
 220  Tele-Spiel ES-2201                     
@@ -258,14 +277,18 @@ ID   Name
 191  XaviXPORT                              
 13   Xbox                                   
 69   Xbox 360                               
+293  Xbox Cloud Gaming                      
 142  Xbox One                               
+289  Xbox Series                            
 254  Xerox Alto                             
 169  Z-machine                              
 41   ZX Spectrum                            
+280  ZX Spectrum Next                       
 118  ZX80                                   
 119  ZX81                                   
 88   Zeebo                                  
 227  Zilog Z80                              
+276  Zilog Z8000                            
 68   Zodiac                                 
 211  Zune                                   
 99   bada                                   
