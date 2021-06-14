@@ -205,7 +205,7 @@ def net_get_URL(url, url_log = None):
             return page_bytes, http_code
 
     # --- Convert to Unicode ---
-    log_debug('net_get_URL() Read {} bytes'.format(len(page_bytes)))
+    log_debug('net_get_URL() Read {:,} bytes'.format(len(page_bytes)))
     log_debug('net_get_URL() HTTP status code {}'.format(http_code))
     log_debug('net_get_URL() encoding {}'.format(encoding))
     page_data = net_decode_URL_data(page_bytes, encoding)
