@@ -41,11 +41,13 @@ ID,Name,Short name
 4950,Game & Watch,game-and-watch
 4940,Game.com,game-com
 4951,Handheld Electronic Games (LCD),lcd
+4987,HyperScan,hyperscan
 32,Intellivision,intellivision
 4929,MSX,msx
 37,Mac OS,mac-os
 4961,Magnavox Odyssey 1,magnavox-odyssey
 4927,Magnavox Odyssey 2,magnavox-odyssey-2
+4989,Mattel Aquarius,mattel-aquarius
 4948,Mega Duck,megaduck
 14,Microsoft Xbox,microsoft-xbox
 15,Microsoft Xbox 360,microsoft-xbox-360
@@ -71,6 +73,8 @@ ID,Name,Short name
 9,Nintendo Wii,nintendo-wii
 38,Nintendo Wii U,nintendo-wii-u
 4935,Nuon,nuon
+4990,Oculus Quest,oculus-quest
+4986,Oric-1,oric-1
 4921,Ouya,ouya
 1,PC,pc
 4933,PC-88,pc88
@@ -108,6 +112,7 @@ ID,Name,Short name
 4960,Tomy Tutor,tomy-pyta
 34,TurboGrafx 16,turbografx-16
 4955,TurboGrafx CD,turbo-grafx-cd
+4988,V.Smile,v-smile
 4939,Vectrex,vectrex
 4959,Watara Supervision,watara-supervision
 4925,WonderSwan,wonderswan

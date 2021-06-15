@@ -179,6 +179,13 @@ FEATURE  [CORE] Disable Kodi screensaver when launching and reenable after app f
 
 FEATURE  Add support to remove unneeded blank spaces in `dev-core/check_line_endings.py`.
 
+FEATURE  In the ROMs CM add a menu to edit all assets as once, including scraping
+         all assets at once.
+         See https://github.com/Wintermute0110/plugin.program.AEL/issues/140
+
+FIX      Check issue #142, TGDB scraper not working well.
+         The issue was a bug with TGDB engine and has been fixed.
+
 FIX      Fix TheGamesDB scraper. New asset titlescreen in TheGamesDB.
          See https://forums.thegamesdb.net/viewtopic.php?f=5&t=1947
          See https://github.com/Wintermute0110/plugin.program.AEL/issues/127
