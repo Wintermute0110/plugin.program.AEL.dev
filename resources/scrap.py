@@ -1330,7 +1330,8 @@ class ScrapeStrategy(object):
         log_debug('{} {} scraper returned {} images'.format(scraper_name, asset_info.name, len(assetdata_list)))
         # Scraper found no assets. Return immediately.
         if not assetdata_list:
-            kodi_set_error_status(st_dic, '{} scraper found no {} images.'.format(scraper_name, asset_info.name))
+            kodi_set_error_status(st_dic, '{}{}{} scraper found no {}{}{} images.'.format(
+                KC_GREEN, scraper_name, KC_END, KC_ORANGE, asset_info.name, KC_END))
             return
 
         # If there is a local image add it to the list and show it to the user.
@@ -1371,8 +1372,8 @@ class ScrapeStrategy(object):
         # User chose to keep current asset.
         if local_asset_in_list_flag and image_selected_index == 0:
             log_debug('_scrap_CM_scrap_asset() Selected current image "{}"'.format(current_asset_FN.getPath()))
-            kodi_set_error_status(st_dic, 'Selected current {}. '.format(asset_info.name) + 
-                '{} image not changed'.format(asset_info.name))
+            kodi_set_error_status(st_dic, 'Selected current asset. '
+                '{}{}{} image not changed'.format(KC_ORANGE, asset_info.name, KC_END))
             return
 
         # --- Download scraped image (or use local image) ----------------------------------------
