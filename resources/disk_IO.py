@@ -770,7 +770,7 @@ def fs_write_Collection_index_XML(collections_xml_file, collections):
 def fs_load_Collection_index_XML(collections_xml_file):
     __debug_xml_parser = 0
     ret = {
-        'timestamp' : 0.0, 
+        'timestamp' : 0.0,
         'collections' : {}
     }
 
@@ -1045,7 +1045,7 @@ def fs_write_VCategory_XML(roms_xml_file, roms):
 def fs_load_VCategory_XML(roms_xml_file):
     __debug_xml_parser = 0
     ret = {
-        'timestamp' : 0.0, 
+        'timestamp' : 0.0,
         'vlaunchers' : {}
     }
 

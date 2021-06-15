@@ -236,8 +236,11 @@ class ScraperFactory(object):
            self.scraper_objs[SCRAPER_LIBRETRO_ID] = Libretro(self.settings)
 
     # Return a list with instantiated scrapers IDs. List always has same order.
-    def get_scraper_list(self):
+    def get_scraper_ID_list(self):
         return list(self.scraper_objs.keys())
+
+    def get_scraper_name_list(self):
+        return [self.scraper_objs[scraper_ID].get_name() for scraper_ID in self.scraper_objs]
 
     # Returns a scraper object reference.
     def get_scraper_object(self, scraper_ID):
@@ -252,6 +255,20 @@ class ScraperFactory(object):
     def supports_asset(self, scraper_ID, asset_ID):
         return self.scraper_objs[scraper_ID].supports_asset_ID(asset_ID)
 
+    # Menu list to choose scraper.
+    def get_all_scraper_menu_list(self):
+        log_debug('ScraperFactory.get_all_scraper_menu_list() Building scraper list...')
+        scraper_menu_list = []
+        self.all_menu_ID_list = []
+        for scraper_ID in self.scraper_objs:
+            scraper_menu_list.append('Scrape with {}'.format(self.scraper_objs[scraper_ID].get_name()))
+            self.all_menu_ID_list.append(scraper_ID)
+        return scraper_menu_list
+
+    # Call this function after calling get_all_scraper_menu_list()
+    def get_all_scraper_ID_from_menu_idx(self, menu_index):
+        return self.all_menu_ID_list[menu_index]
+
     def get_metadata_scraper_menu_list(self):
         log_debug('ScraperFactory.get_metadata_scraper_menu_list() Building scraper list...')
         scraper_menu_list = []
@@ -265,7 +282,6 @@ class ScraperFactory(object):
                 log_debug('Scraper {} supports metadata (ENABLED)'.format(s_name))
             else:
                 log_debug('Scraper {} lacks metadata (DISABLED)'.format(s_name))
-
         return scraper_menu_list
 
     def get_metadata_scraper_ID_from_menu_idx(self, menu_index):
@@ -1129,145 +1145,81 @@ class ScrapeStrategy(object):
     # @return: None
     def scrap_CM_asset(self, object_dic, asset_ID, data_dic, st_dic):
         # log_debug('ScrapeStrategy.scrap_CM_asset() BEGIN...')
-
-        # --- Cached frequent used things ---
-        asset_info = assets_get_info_scheme(asset_ID)
-        asset_name = asset_info.name
-        # In AEL 0.10.x this data is grabed from the objects, not passed using a dictionary.
-        platform = data_dic['platform']
-        current_asset_FN = data_dic['current_asset_FN']
-        asset_path_noext_FN = data_dic['asset_path_noext']
         log_info('ScrapeStrategy.scrap_CM_asset() Scraping {}...'.format(object_dic['m_name']))
-        scraper_name = self.scraper_obj.get_name()
 
-        # --- Check if scraper is OK (API keys configured, etc.) ---
+        # Check if scraper is OK (API keys configured, etc.)
         self.scraper_obj.check_before_scraping(st_dic)
         if kodi_is_error_status(st_dic): return
 
-        # --- Grab candidate game ---
+        # Grab candidate game.
         self._scrap_CM_get_candidate(ScrapeStrategy.SCRAPE_ROM, object_dic, data_dic, st_dic)
         if kodi_is_error_status(st_dic): return
 
-        # --- Grab list of images for the selected game -------------------------------------------
-        pdialog = KodiProgressDialog()
-        pdialog.startProgress('Getting {} images from {}...'.format(asset_name, scraper_name))
-        assetdata_list = self.scraper_obj.get_assets(asset_ID, st_dic)
-        pdialog.endProgress()
+        # Scrape image.
+        data_dic['asset_path_noext_FN'] = assets_get_ROM_path_noext(object_dic, data_dic, asset_ID)
+        self._scrap_CM_scrap_asset(ScrapeStrategy.SCRAPE_ROM, object_dic, data_dic, asset_ID, st_dic)
         if kodi_is_error_status(st_dic): return
-        log_debug('{} {} scraper returned {} images'.format(scraper_name, asset_name, len(assetdata_list)))
-        # Scraper found no assets. Return immediately.
-        if not assetdata_list:
-            kodi_set_error_status(st_dic, '{} scraper found no {} images.'.format(scraper_name, asset_name))
-            return
 
-        # If there is a local image add it to the list and show it to the user.
-        local_asset_in_list_flag = False
-        if current_asset_FN.exists():
-            local_asset = {
-                'asset_ID'     : asset_ID,
-                'display_name' : 'Current local image',
-                'url_thumb'    : current_asset_FN.getPath(),
-            }
-            # Make a copy of the asset list to not mess up with the asset cache.
-            assetdata_list_returned = assetdata_list
-            assetdata_list = copy.deepcopy(assetdata_list)
-            assetdata_list.insert(0, local_asset)
-            local_asset_in_list_flag = True
+        # Display notification in caller.
+        asset_info = assets_get_info_scheme(asset_ID)
+        st_dic['dialog'] = KODI_MESSAGE_NOTIFY
+        st_dic['msg'] = 'Downloaded {} with {} scraper'.format(asset_info.name, self.scraper_obj.get_name())
 
-        # Convert list returned by scraper into a list the Kodi select dialog uses.
-        ListItem_list = []
-        for item in assetdata_list:
-            listitem_obj = xbmcgui.ListItem(label = item['display_name'], label2 = item['url_thumb'])
-            listitem_obj.setArt({'icon' : item['url_thumb']})
-            ListItem_list.append(listitem_obj)
-        # ListItem_list has 1 or more elements at this point.
-        # If there is only one item in the list do not show select dialog.
-        if len(ListItem_list) == 1:
-            log_debug('_gui_edit_asset() ListItem_list has one element. Do not show select dialog.')
-            image_selected_index = 0
-        else:
-            image_selected_index = KodiSelectDialog('Select image', ListItem_list, useDetails = True).executeDialog()
-            log_debug('{} dialog returned index {}'.format(asset_name, image_selected_index))
-        # User canceled dialog
-        if image_selected_index is None:
-            log_debug('_gui_edit_asset() User cancelled image select dialog. Returning.')
-            kodi_set_error_status(st_dic, 'Image not changed')
-            return
-        # User chose to keep current asset.
-        if local_asset_in_list_flag and image_selected_index == 0:
-            log_debug('_gui_edit_asset() Selected current image "{}"'.format(current_asset_FN.getPath()))
-            kodi_set_error_status(st_dic, 'Image not changed')
-            return
+    # Called when scraping all assets from the context menu. Currently only one scraper
+    # is used. Assets are only scraped if local assets do not exist. All scraping
+    # is done in manual mode.
+    #
+    # @param object_dic: rom or launcher object.
+    # @param data_dic: dictionary with data needed by the scraper.
+    # @param st_dic: status dictionary to report errors.
+    # @return: None
+    def scrap_CM_asset_all(self, object_dic, data_dic, st_dic):
+        # log_debug('ScrapeStrategy.scrap_CM_asset_all() BEGIN...')
+        log_info('ScrapeStrategy.scrap_CM_asset_all() Scraping "{}"...'.format(object_dic['m_name']))
 
-        # --- Download scraped image (or use local image) ----------------------------------------
-        selected_asset = assetdata_list[image_selected_index]
-        log_debug('Selected asset_ID {}'.format(selected_asset['asset_ID']))
-        log_debug('Selected display_name {}'.format(selected_asset['display_name']))
+        # Check if scraper is OK (API keys configured, etc.)
+        self.scraper_obj.check_before_scraping(st_dic)
+        if kodi_is_error_status(st_dic): return
 
-        # --- Resolve asset URL ---
-        pdialog.startProgress('Resolving asset URL with {}...'.format(scraper_name))
-        image_url, image_url_log = self.scraper_obj.resolve_asset_URL(selected_asset, st_dic)
-        pdialog.endProgress()
-        log_debug('Resolved {} to URL "{}"'.format(asset_name, image_url_log))
-        if not image_url:
-            log_error('_gui_edit_asset() Error in scraper.resolve_asset_URL()')
-            kodi_set_error_status(st_dic, 'Error downloading asset')
-            return
-        pdialog.startProgress('Resolving URL extension with {}...'.format(scraper_name))
-        image_ext = self.scraper_obj.resolve_asset_URL_extension(selected_asset, image_url, st_dic)
-        pdialog.endProgress()
-        log_debug('Resolved URL extension "{}"'.format(image_ext))
-        if not image_ext:
-            log_error('_gui_edit_asset() Error in scraper.resolve_asset_URL_extension()')
-            kodi_set_error_status(st_dic, 'Error downloading asset')
-            return
+        # Grab candidate game.
+        self._scrap_CM_get_candidate(ScrapeStrategy.SCRAPE_ROM, object_dic, data_dic, st_dic)
+        if kodi_is_error_status(st_dic): return
 
-        # --- Download image ---
-        log_debug('Downloading image from {}...'.format(scraper_name))
-        image_local_path_FN = asset_path_noext_FN.pappend('.' + image_ext)
-        log_debug('Download "{}"'.format(image_url_log))
-        log_debug('      OP "{}"'.format(image_local_path_FN.getOriginalPath()))
-        log_debug('  Into P "{}"'.format(image_local_path_FN.getPath()))
-        pdialog.startProgress('Downloading {} from {}...'.format(asset_name, scraper_name))
-        try:
-            # net_download_img() never prints URLs or paths.
-            net_download_img(image_url, image_local_path_FN.getPath())
-        except socket.timeout:
-            pdialog.endProgress()
-            kodi_notify_warn('Cannot download {} image (Timeout)'.format(image_name))
-            kodi_set_error_status(st_dic, 'Network timeout')
-            return
-        else:
-            pdialog.endProgress()
-
-        # --- Update Kodi cache with downloaded image ---
-        # Recache only if local image is in the Kodi cache, this function takes care of that.
-        # kodi_update_image_cache(image_local_path_FN.getPath())
-
-        # --- Edit using Python pass by assignment ---
-        # If we reach this point is because an image was downloaded.
-        # Caller is responsible to save Categories/Launchers/ROMs databases.
-        # In the DB always store original paths, never translated paths.
-        object_dic[asset_info.key] = image_local_path_FN.getOriginalPath()
+        # Scrape image.
+        num_scraped_assets = 0
+        for asset_ID in ROM_ASSET_ID_LIST:
+            # Check if scraper supports this asset.
+            asset_info = assets_get_info_scheme(asset_ID)
+            if not self.scraper_obj.supports_asset_ID(asset_ID):
+                log_debug('ScrapeStrategy.scrap_CM_asset_all() Skip     {}'.format(asset_info.name))
+                continue
+            log_debug('ScrapeStrategy.scrap_CM_asset_all() Scraping {}'.format(asset_info.name))
+            num_scraped_assets += 1
+            # Scrape image
+            data_dic['asset_path_noext_FN'] = assets_get_ROM_path_noext(object_dic, data_dic, asset_ID)
+            current_st_dic = kodi_new_status_dic()
+            self._scrap_CM_scrap_asset(ScrapeStrategy.SCRAPE_ROM, object_dic, data_dic, asset_ID, current_st_dic)
+            # Only display status messages here, do no exit in case of error.
+            kodi_display_status_message(current_st_dic)
 
         # Display notification in caller.
         st_dic['dialog'] = KODI_MESSAGE_NOTIFY
-        st_dic['msg'] = 'Downloaded {} with {} scraper'.format(asset_name, scraper_name)
+        st_dic['msg'] = 'Scraped {} assets with {} scraper'.format(num_scraped_assets, self.scraper_obj.get_name())
 
     # This function is used when scraping stuff from the context menu.
-    # Introduce the search string, grab candidate games, and select a candidate for scraping.
+    # Introduce the search string, grab candidate games, and select a candidate
+    # for scraping either metadata or assets.
     #
-    # * Scraping from the context menu is always in manual mode.
+    # Scraping from the context menu is always in manual mode.
     #
     # @param object_name: [str] SCRAPE_ROM, SCRAPE_LAUNCHER.
-    #
     # @return: None
     def _scrap_CM_get_candidate(self, object_name, object_dic, data_dic, st_dic):
         # log_debug('ScrapeStrategy._scrap_CM_get_candidate() BEGIN...')
 
         # In AEL 0.10.x this data is grabed from the objects, not passed using a dictionary.
-        rom_FN = data_dic['rom_FN']
-        rom_checksums_FN = data_dic['rom_checksums_FN']
+        ROM_FN = data_dic['ROM_FN']
+        ROM_hash_FN = data_dic['ROM_hash_FN']
         platform = data_dic['platform']
         scraper_name = self.scraper_obj.get_name()
 
@@ -1277,33 +1229,31 @@ class ScrapeStrategy(object):
         # * In the context menu always rescrape empty candidates.
         # * In the ROM scanner empty candidates are never rescraped. In that cases
         #   the user must use the context menu to find a valid candidate.
-        if self.scraper_obj.check_candidates_cache(rom_FN, platform):
-            log_debug('ROM "{}" in candidates cache.'.format(rom_FN.getBaseNoExt()))
-            candidate = self.scraper_obj.retrieve_from_candidates_cache(rom_FN, platform)
+        if self.scraper_obj.check_candidates_cache(ROM_FN, platform):
+            log_debug('ROM "{}" in candidates cache.'.format(ROM_FN.getBaseNoExt()))
+            candidate = self.scraper_obj.retrieve_from_candidates_cache(ROM_FN, platform)
             if not candidate:
-                kodi_dialog_OK(
-                    'Candidate game in the scraper disk cache but empty. '
+                kodi_dialog_OK('Candidate game in the scraper disk cache but empty. '
                     'Forcing rescraping.')
                 log_debug('ROM "{}" candidate is empting. Force rescraping.')
                 use_from_cache = False
             else:
-                ret = kodi_dialog_yesno_custom(
-                    'Candidate game in the scraper disk cache. '
+                ret = kodi_dialog_yesno_custom('Candidate game in the scraper disk cache. '
                     'Use candidate from cache or rescrape?',
                     'Scrape', 'Use from cache')
                 use_from_cache = False if ret else True
         else:
-            log_debug('ROM "{}" NOT in candidates cache.'.format(rom_FN.getBaseNoExt()))
+            log_debug('ROM "{}" NOT in candidates cache.'.format(ROM_FN.getBaseNoExt()))
             use_from_cache = False
         log_debug('use_from_cache "{}"'.format(use_from_cache))
 
         # Set candidate from cache and return immediately.
         if use_from_cache:
-            self.scraper_obj.set_candidate_from_cache(rom_FN, platform)
+            self.scraper_obj.set_candidate_from_cache(ROM_FN, platform)
             return
 
         # Clear all caches to remove preexiting information, just in case user is rescraping.
-        self.scraper_obj.clear_cache(rom_FN, platform)
+        self.scraper_obj.clear_cache(ROM_FN, platform)
 
         # --- Ask user to enter ROM metadata search term ---
         # Only ask user for a search term if the scraper supports it.
@@ -1316,7 +1266,7 @@ class ScrapeStrategy(object):
             keyboard = KodiKeyboardDialog('Enter the search term...', search_term)
             keyboard.executeDialog()
             if not keyboard.isConfirmed():
-                kodi_set_error_status(st_dic, '{} metadata unchanged'.format(object_name))
+                kodi_set_error_status(st_dic, '{} scraping canceled'.format(object_name))
                 return
             if ADDON_RUNNING_PYTHON_2:
                 search_term = keyboard.getData().strip().decode('utf-8')
@@ -1332,7 +1282,7 @@ class ScrapeStrategy(object):
         pdialog = KodiProgressDialog()
         pdialog.startProgress('Searching games with scaper {}...'.format(scraper_name))
         candidate_list = self.scraper_obj.get_candidates(
-            search_term, rom_FN, rom_checksums_FN, platform, st_dic)
+            search_term, ROM_FN, ROM_hash_FN, platform, st_dic)
         # If the there was an error/exception in the scraper return immediately.
         if kodi_is_error_status(st_dic): return
         # If the scraper is disabled candidate_list will be None. However, it is impossible
@@ -1351,14 +1301,135 @@ class ScrapeStrategy(object):
             heading = 'Select game for ROM "{}"'.format(object_dic['m_name'])
             select_candidate_idx = KodiSelectDialog(heading, game_name_list).executeDialog()
             if select_candidate_idx is None:
-                kodi_set_error_status(st_dic, '{} metadata unchanged'.format(object_name))
+                kodi_set_error_status(st_dic, '{} scraping canceled'.format(object_name))
                 return
         # log_debug('select_candidate_idx {}'.format(select_candidate_idx))
         candidate = candidate_list[select_candidate_idx]
         log_debug('User chose game "{}"'.format(candidate['display_name']))
 
         # Set candidate. This will introduce it in the cache.
-        self.scraper_obj.set_candidate(rom_FN, platform, candidate)
+        self.scraper_obj.set_candidate(ROM_FN, platform, candidate)
+
+    def _scrap_CM_scrap_asset(self, object_name, object_dic, data_dic, asset_ID, st_dic):
+        # log_debug('ScrapeStrategy._scrap_CM_scrap_asset() BEGIN...')
+
+        # Cache frequent used variables.
+        asset_info = assets_get_info_scheme(asset_ID)
+        scraper_name = self.scraper_obj.get_name()
+        # Extract required data from data_dic
+        current_asset_FN = FileName(object_dic[asset_info.key])
+        asset_path_noext_FN = data_dic['asset_path_noext_FN']
+        # Debug info.
+        log_debug('ScraperStrategy._scrap_CM_scrap_asset()    current_asset_FN "{}"'.format(
+            current_asset_FN.getOriginalPath()))
+        log_debug('ScraperStrategy._scrap_CM_scrap_asset() asset_path_noext_FN "{}"'.format(
+            asset_path_noext_FN.getOriginalPath()))
+
+        # --- Grab list of images for the selected game -------------------------------------------
+        pdialog = KodiProgressDialog()
+        pdialog.startProgress('Getting {} images from {}...'.format(asset_info.name, scraper_name))
+        assetdata_list = self.scraper_obj.get_assets(asset_ID, st_dic)
+        pdialog.endProgress()
+        if kodi_is_error_status(st_dic): return
+        log_debug('{} {} scraper returned {} images'.format(scraper_name, asset_info.name, len(assetdata_list)))
+        # Scraper found no assets. Return immediately.
+        if not assetdata_list:
+            kodi_set_error_status(st_dic, '{}{}{} scraper found no {}{}{} images.'.format(
+                KC_GREEN, scraper_name, KC_END, KC_ORANGE, asset_info.name, KC_END))
+            return
+
+        # If there is a local image add it to the list and show it to the user.
+        local_asset_in_list_flag = False
+        if current_asset_FN.exists():
+            local_asset = {
+                'asset_ID' : asset_ID,
+                'display_name' : 'Current local image',
+                'url_thumb' : current_asset_FN.getPath(),
+            }
+            # Make a copy of the asset list to not mess up with the asset cache.
+            assetdata_list_returned = assetdata_list
+            assetdata_list = copy.deepcopy(assetdata_list)
+            assetdata_list.insert(0, local_asset)
+            local_asset_in_list_flag = True
+
+        # Convert list returned by scraper into a list the Kodi select dialog uses.
+        ListItem_list = []
+        for item in assetdata_list:
+            listitem_obj = xbmcgui.ListItem(label = item['display_name'], label2 = item['url_thumb'])
+            listitem_obj.setArt({'icon' : item['url_thumb']})
+            ListItem_list.append(listitem_obj)
+        # ListItem_list has 1 or more elements at this point.
+        # If there is only one item in the list do not show select dialog.
+        if len(ListItem_list) == 1:
+            log_debug('_scrap_CM_scrap_asset() ListItem_list has one element. Do not show select dialog.')
+            image_selected_index = 0
+        else:
+            s_diag = KodiSelectDialog('Select {} image'.format(asset_info.name), ListItem_list, useDetails = True)
+            image_selected_index = s_diag.executeDialog()
+            log_debug('{} dialog returned index {}'.format(asset_info.name, image_selected_index))
+        # User canceled dialog
+        if image_selected_index is None:
+            log_debug('_scrap_CM_scrap_asset() User cancelled image select dialog. Returning.')
+            kodi_set_error_status(st_dic, 'Select dialog canceled. '
+                '{} image not changed'.format(asset_info.name))
+            return
+        # User chose to keep current asset.
+        if local_asset_in_list_flag and image_selected_index == 0:
+            log_debug('_scrap_CM_scrap_asset() Selected current image "{}"'.format(current_asset_FN.getPath()))
+            kodi_set_error_status(st_dic, 'Selected current asset. '
+                '{}{}{} image not changed'.format(KC_ORANGE, asset_info.name, KC_END))
+            return
+
+        # --- Download scraped image (or use local image) ----------------------------------------
+        selected_asset = assetdata_list[image_selected_index]
+        log_debug('Selected asset_ID {}'.format(selected_asset['asset_ID']))
+        log_debug('Selected display_name {}'.format(selected_asset['display_name']))
+
+        # --- Resolve asset URL ---
+        pdialog.startProgress('Resolving asset URL with {}...'.format(scraper_name))
+        image_url, image_url_log = self.scraper_obj.resolve_asset_URL(selected_asset, st_dic)
+        pdialog.endProgress()
+        log_debug('Resolved {} to URL "{}"'.format(asset_info.name, image_url_log))
+        if not image_url:
+            log_error('_scrap_CM_scrap_asset() Error in scraper.resolve_asset_URL()')
+            kodi_set_error_status(st_dic, 'Error downloading asset')
+            return
+        pdialog.startProgress('Resolving URL extension with {}...'.format(scraper_name))
+        image_ext = self.scraper_obj.resolve_asset_URL_extension(selected_asset, image_url, st_dic)
+        pdialog.endProgress()
+        log_debug('Resolved URL extension "{}"'.format(image_ext))
+        if not image_ext:
+            log_error('_scrap_CM_scrap_asset() Error in scraper.resolve_asset_URL_extension()')
+            kodi_set_error_status(st_dic, 'Error downloading asset')
+            return
+
+        # --- Download image ---
+        log_debug('Downloading image from {}...'.format(scraper_name))
+        image_local_path_FN = asset_path_noext_FN.pappend('.' + image_ext)
+        log_debug('Download "{}"'.format(image_url_log))
+        log_debug('      OP "{}"'.format(image_local_path_FN.getOriginalPath()))
+        log_debug('  Into P "{}"'.format(image_local_path_FN.getPath()))
+        pdialog.startProgress('Downloading {}{}{} from {}{}{}...'.format(
+            KC_ORANGE, asset_info.name, KC_END, KC_GREEN, scraper_name, KC_END))
+        try:
+            net_download_img(image_url, image_local_path_FN.getPath())
+        except socket.timeout:
+            pdialog.endProgress()
+            kodi_notify_warn('Cannot download {} image (Timeout)'.format(image_name))
+            kodi_set_error_status(st_dic, 'Network timeout')
+            return
+        else:
+            pdialog.endProgress()
+
+        # --- Update Kodi cache with downloaded image ---
+        # Recache only if local image is in the Kodi cache, this function takes care of that.
+        # kodi_update_image_cache(image_local_path_FN.getPath())
+
+        # --- Edit using Python pass by assignment ---
+        # If we reach this point is because an image was downloaded.
+        # Caller is responsible to save Categories/Launchers/ROMs databases.
+        # In the DB always store original paths, never translated paths.
+        object_dic[asset_info.key] = image_local_path_FN.getOriginalPath()
 
 # Abstract base class for all scrapers (offline or online, metadata or asset).
 # The scrapers are Launcher and ROM agnostic. All the required Launcher/ROM properties are
@@ -2209,7 +2280,7 @@ class TheGamesDB(Scraper):
         'banner': ASSET_BANNER_ID,
     }
     # This allows to change the API version easily.
-    URL_ByGameName = 'https://api.thegamesdb.net/v1/Games/ByGameName'
+    URL_ByGameName = 'https://api.thegamesdb.net/v1.1/Games/ByGameName'
     URL_ByGameID   = 'https://api.thegamesdb.net/v1/Games/ByGameID'
     URL_Platforms  = 'https://api.thegamesdb.net/v1/Platforms'
     URL_Genres     = 'https://api.thegamesdb.net/v1/Genres'

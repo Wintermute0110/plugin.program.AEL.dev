@@ -502,6 +502,34 @@ def assets_get_path_noext_SUFIX(Asset, AssetPath, asset_base_noext, objectID = '
 
     return asset_path_noext_FileName
 
+# Get the asset path noext. Used in ScrapeStrategy.scrap_CM_asset_all()
+# Returns a FileName object.
+def assets_get_ROM_path_noext(object_dic, data_dic, asset_ID):
+    # Unpack data in data_dic
+    ROM_FN = data_dic['ROM_FN']
+    platform = data_dic['platform']
+    categoryID = data_dic['categoryID']
+    launcherID = data_dic['launcherID']
+    settings = data_dic['settings']
+    launchers = data_dic['launchers']
+
+    # Misc data
+    asset_info = assets_get_info_scheme(asset_ID)
+
+    # Compute asset_path_noext_FN and return.
+    if categoryID == VCATEGORY_FAVOURITES_ID:
+        asset_dir_FN = FileName(settings['favourites_asset_dir'])
+        asset_path_noext_FN = assets_get_path_noext_SUFIX(asset_info, asset_dir_FN, ROM_FN.getBaseNoExt(), object_dic['id'])
+    elif categoryID == VCATEGORY_COLLECTIONS_ID:
+        asset_dir_FN = FileName(settings['collections_asset_dir'])
+        temp_str = assets_get_collection_asset_basename(asset_info, ROM_FN.getBaseNoExt(), platform, '.png')
+        asset_path_noext_FN = asset_dir_FN.pjoin(FileName(temp_str).getBaseNoExt())
+    else:
+        asset_dir_FN = FileName(launchers[launcherID][asset_info.path_key])
+        asset_path_noext_FN = assets_get_path_noext_DIR(asset_info, asset_dir_FN, ROM_FN)
+    # log_debug('assets_get_ROM_path_noext() Return {}'.format(asset_path_noext_FN.getPath()))
+    return asset_path_noext_FN
+
 # Returns the basename of a collection asset as a FileName object.
 # Example: 'Super Mario Bros_nes_title.png'
 #
@@ -544,9 +572,7 @@ def asset_get_unconfigured_name_list(configured_bool_list):
 
     return unconfigured_name_list
 
-#
 # Get a list of assets with duplicated paths. Refuse to do anything if duplicated paths found.
-#
 def asset_get_duplicated_dir_list(launcher):
     duplicated_bool_list = [False] * len(ROM_ASSET_ID_LIST)
     duplicated_name_list = []
