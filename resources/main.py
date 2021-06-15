@@ -2053,7 +2053,7 @@ class Main:
                 # Mimic what the ROM scanner does. Use same settings as the ROM scanner.
                 # Like the ROM scanner, only scrape artwork not found locally.
                 elif mindex2 == 3:
-                    log_info('_command_edit_launcher() Rescraping local assets ...')
+                    log_info('_command_edit_launcher() Rescraping ROM assets...')
                     launcher = self.launchers[launcherID]
                     pdialog_verbose = True
                     pdialog = KodiProgressDialog()
@@ -2102,7 +2102,7 @@ class Main:
                         utils_file_cache_add_dir(launcher[AInfo.path_key])
                     pdialog.endProgress()
 
-                    # --- Traverse ROM list and check local asset/artwork ---
+                    # --- Traverse ROM list ---
                     roms = fs_load_ROMs_JSON(g_PATHS.ROMS_DIR, launcher)
                     pdialog.startProgress('Scraping assets...', len(roms))
                     for rom_id in roms:
@@ -2710,7 +2710,8 @@ class Main:
         if categoryID == VCATEGORY_FAVOURITES_ID:
             sDialog.setRows([
                 'Edit Metadata...',
-                'Edit Assets/Artwork...',
+                'Edit Assets...',
+                'Edit Assets (all)...',
                 finished_display,
                 'Advanced Modifications...',
                 'Delete Favourite ROM',
@@ -2719,7 +2720,8 @@ class Main:
         elif categoryID == VCATEGORY_COLLECTIONS_ID:
             sDialog.setRows([
                 'Edit Metadata...',
-                'Edit Assets/Artwork...',
+                'Edit Assets...',
+                'Edit Assets (all)...',
                 finished_display,
                 'Advanced Modifications...',
                 'Delete Collection ROM',
@@ -2729,7 +2731,8 @@ class Main:
         else:
             sDialog.setRows([
                 'Edit Metadata...',
-                'Edit Assets/Artwork...',
+                'Edit Assets...',
+                'Edit Assets (all)...',
                 finished_display,
                 'Advanced Modifications...',
                 'Delete ROM',
@@ -2888,7 +2891,7 @@ class Main:
                 g_scrap_factory.destroy_CM()
                 if kodi_display_status_message(st_dic): return
 
-        # --- Edit ROMs Assets/Artwork ---
+        # --- Edit ROM Assets (single asset) ---
         elif mindex == 1:
             rom = roms[romID]
 
@@ -2975,8 +2978,73 @@ class Main:
             asset_kind = ROM_ASSET_ID_LIST[mindex2]
             if not self._gui_edit_asset(KIND_ROM, asset_kind, rom, categoryID, launcherID): return
 
-        # --- Edit status ---
+        # --- Edit ROM Assets (all) ---
         elif mindex == 2:
+            sDialog = KodiSelectDialog('Edit ROM assets (all)', [
+                'Scrape all assets',
+                'Unset all assets',
+            ])
+            mindex2 = sDialog.executeDialog()
+            if mindex2 is None: return
+
+            # Scrape all assets.
+            # Scraper disk caches are flushed (written to disk) even if there is a message
+            # to be printed here. A message here could be that no images were found, network
+            # error when downloading image, etc., however the caches (internal, etc.) may have
+            # valid data that needs to be saved.
+            if mindex2 == 0:
+                log_info('_command_edit_rom() Rescraping ROM all assets...')
+                # Prepare data for scraper object.
+                rom = roms[romID]
+                ROM_FN = FileName(rom['filename'])
+                if rom['disks']:
+                    ROM_hash_FN = FileName(ROM_FN.getDir()).pjoin(rom['disks'][0])
+                else:
+                    ROM_hash_FN = ROM_FN
+                if categoryID == VCATEGORY_FAVOURITES_ID:
+                    platform = rom['platform']
+                elif categoryID == VCATEGORY_COLLECTIONS_ID:
+                    platform = rom['platform']
+                else:
+                    platform = self.launchers[launcherID]['platform']
+                data_dic = {
+                    'ROM_FN' : ROM_FN,
+                    'ROM_hash_FN' : ROM_hash_FN,
+                    'platform' : platform,
+                    'categoryID' : categoryID,
+                    'launcherID' : launcherID,
+                    'settings' : self.settings,
+                    'launchers' : self.launchers,
+                }
+                st_dic = kodi_new_status_dic()
+                # Create scraper factory and select scraper to use.
+                scrap_factory = ScraperFactory(g_PATHS, self.settings)
+                scraper_menu_list = scrap_factory.get_all_scraper_menu_list()
+                sDialog = KodiSelectDialog('Select scraper', scraper_menu_list)
+                scraper_index = sDialog.executeDialog()
+                if scraper_index is None: return False
+                scraper_ID = scrap_factory.get_all_scraper_ID_from_menu_idx(scraper_index)
+                # Create scraper object and scrap all assets
+                scrap_strategy = scrap_factory.create_CM_asset(scraper_ID)
+                scrap_strategy.scrap_CM_asset_all(rom, data_dic, st_dic)
+                # Flush disk caches
+                pDialog = KodiProgressDialog()
+                pDialog.startProgress('Flushing scraper disk caches...')
+                scrap_factory.destroy_CM()
+                pDialog.endProgress()
+                # Display notification or error. If error return and do not save ROMs database.
+                if kodi_display_status_message(st_dic): return
+
+            # Unset all assets
+            elif mindex2 == 1:
+                log_info('_command_edit_rom() Unsetting ROM all assets...')
+                for i, asset_ID in enumerate(ROM_ASSET_ID_LIST):
+                    AInfo = assets_get_info_scheme(asset_ID)
+                    roms[romID][AInfo.key] = ''
+                kodi_notify('All ROM assets unset')
+
+        # --- Edit status ---
+        elif mindex == 3:
             finished = roms[romID]['finished']
             finished = False if finished else True
             finished_display = 'Finished' if finished == True else 'Unfinished'
@@ -2984,7 +3052,7 @@ class Main:
             kodi_dialog_OK("ROM '{}' status is now {}".format(roms[romID]['m_name'], finished_display))
 
         # --- Advanced ROM Modifications ---
-        elif mindex == 3:
+        elif mindex == 4:
             sDialog = KodiSelectDialog('Advanced ROM Modifications', [
                 "Change ROM file: '{}'".format(roms[romID]['filename']),
                 "Alternative application: '{}'".format(roms[romID]['altapp']),
@@ -3018,7 +3086,7 @@ class Main:
                 roms[romID]['altarg'] = kodi_get_keyboard_text(t, roms[romID]['altarg'])
 
         # --- Delete ROM ---
-        elif mindex == 4:
+        elif mindex == 5:
             is_Normal_Launcher = True
             if categoryID == VCATEGORY_FAVOURITES_ID and launcherID == VLAUNCHER_FAVOURITES_ID:
                 log_info('_command_remove_rom() Deleting ROM from Favourites (id {})'.format(romID))
@@ -3056,7 +3124,7 @@ class Main:
             kodi_notify('Deleted ROM {}'.format(rom_name))
 
         # --- Manage Favourite/Collection ROM object (ONLY for Favourite/Collection ROMs) ---
-        elif mindex == 5:
+        elif mindex == 6:
             sDialog = KodiSelectDialog('Manage ROM object', [
                 'Choose another parent ROM (launcher info only)...',
                 'Choose another parent ROM (update all)...',
@@ -3294,7 +3362,7 @@ class Main:
                     assets_choose_category_ROM(rom, 'roms_default_clearlogo', type_s)
 
         # --- Manage Collection ROM position (ONLY for Favourite/Collection ROMs) ---
-        elif mindex == 6:
+        elif mindex == 7:
             sDialog = KodiSelectDialog('Manage ROM position', [
                 'Choose Collection ROM order...',
                 'Move Collection ROM up',
@@ -9735,14 +9803,12 @@ class Main:
         if object_kind == KIND_CATEGORY:
             # --- Grab asset information for editing ---
             object_name = 'Category'
-            asset_directory = FileName(self.settings['categories_asset_dir'])
-            asset_path_noext = assets_get_path_noext_SUFIX(
-                AInfo, asset_directory, object_dic['m_name'], object_dic['id'])
+            asset_dir_FN = FileName(self.settings['categories_asset_dir'])
+            asset_path_noext_FN = assets_get_path_noext_SUFIX(AInfo, asset_dir_FN,
+                object_dic['m_name'], object_dic['id'])
             log_info('_gui_edit_asset() Editing Category "{}"'.format(AInfo.name))
             log_info('_gui_edit_asset() ID {}'.format(object_dic['id']))
-            log_debug('_gui_edit_asset() asset_directory  "{}"'.format(asset_directory.getOriginalPath()))
-            log_debug('_gui_edit_asset() asset_path_noext "{}"'.format(asset_path_noext.getOriginalPath()))
-            if not asset_directory.isdir():
+            if not asset_dir_FN.isdir():
                 kodi_dialog_OK('Directory to store Category artwork not configured or not found. '
                     'Configure it before you can edit artwork.')
                 return False
@@ -9750,14 +9816,12 @@ class Main:
         elif object_kind == KIND_COLLECTION:
             # --- Grab asset information for editing ---
             object_name = 'Collection'
-            asset_directory = FileName(self.settings['collections_asset_dir'])
-            asset_path_noext = assets_get_path_noext_SUFIX(
-                AInfo, asset_directory, object_dic['m_name'], object_dic['id'])
+            asset_dir_FN = FileName(self.settings['collections_asset_dir'])
+            asset_path_noext_FN = assets_get_path_noext_SUFIX(AInfo, asset_dir_FN,
+                object_dic['m_name'], object_dic['id'])
             log_info('_gui_edit_asset() Editing Collection "{}"'.format(AInfo.name))
             log_info('_gui_edit_asset() ID {}'.format(object_dic['id']))
-            log_debug('_gui_edit_asset() asset_directory  "{}"'.format(asset_directory.getOriginalPath()))
-            log_debug('_gui_edit_asset() asset_path_noext "{}"'.format(asset_path_noext.getOriginalPath()))
-            if not asset_directory.isdir():
+            if not asset_dir_FN.isdir():
                 kodi_dialog_OK('Directory to store Collection artwork not configured or not found. '
                     'Configure it before you can edit artwork.')
                 return False
@@ -9765,14 +9829,12 @@ class Main:
         elif object_kind == KIND_LAUNCHER:
             # --- Grab asset information for editing ---
             object_name = 'Launcher'
-            asset_directory = FileName(self.settings['launchers_asset_dir'])
-            asset_path_noext = assets_get_path_noext_SUFIX(
-                AInfo, asset_directory, object_dic['m_name'], object_dic['id'])
+            asset_dir_FN = FileName(self.settings['launchers_asset_dir'])
+            asset_path_noext_FN = assets_get_path_noext_SUFIX(AInfo, asset_dir_FN,
+                object_dic['m_name'], object_dic['id'])
             log_info('_gui_edit_asset() Editing Launcher "{}"'.format(AInfo.name))
             log_info('_gui_edit_asset() ID {}'.format(object_dic['id']))
-            log_debug('_gui_edit_asset() asset_directory  "{}"'.format(asset_directory.getOriginalPath()))
-            log_debug('_gui_edit_asset() asset_path_noext "{}"'.format(asset_path_noext.getOriginalPath()))
-            if not asset_directory.isdir():
+            if not asset_dir_FN.isdir():
                 kodi_dialog_OK('Directory to store Launcher artwork not configured or not found. '
                     'Configure it before you can edit artwork.')
                 return False
@@ -9780,41 +9842,37 @@ class Main:
         elif object_kind == KIND_ROM:
             # --- Grab asset information for editing ---
             object_name = 'ROM'
-            ROMfile = FileName(object_dic['filename'])
+            ROM_FN = FileName(object_dic['filename'])
             if object_dic['disks']:
-                ROM_checksums_FN = FileName(ROMfile.getDir()).pjoin(object_dic['disks'][0])
+                ROM_hash_FN = FileName(ROM_FN.getDir()).pjoin(object_dic['disks'][0])
             else:
-                ROM_checksums_FN = ROMfile
+                ROM_hash_FN = ROM_FN
             if categoryID == VCATEGORY_FAVOURITES_ID:
                 log_info('_gui_edit_asset() ROM is in Favourites')
-                asset_directory  = FileName(self.settings['favourites_asset_dir'])
-                platform         = object_dic['platform']
-                asset_path_noext = assets_get_path_noext_SUFIX(
-                    AInfo, asset_directory, ROMfile.getBaseNoExt(), object_dic['id'])
+                platform = object_dic['platform']
+                asset_dir_FN = FileName(self.settings['favourites_asset_dir'])
+                asset_path_noext_FN = assets_get_path_noext_SUFIX(AInfo, asset_dir_FN,
+                    ROM_FN.getBaseNoExt(), object_dic['id'])
             elif categoryID == VCATEGORY_COLLECTIONS_ID:
                 log_info('_gui_edit_asset() ROM is in Collection')
-                asset_directory  = FileName(self.settings['collections_asset_dir'])
                 platform = object_dic['platform']
-                new_asset_basename = assets_get_collection_asset_basename(
-                    AInfo, ROMfile.getBaseNoExt(), platform, '.png')
+                asset_dir_FN = FileName(self.settings['collections_asset_dir'])
+                new_asset_basename = assets_get_collection_asset_basename(AInfo,
+                    ROM_FN.getBaseNoExt(), platform, '.png')
                 new_asset_basename_FN = FileName(new_asset_basename)
-                asset_path_noext = asset_directory.pjoin(new_asset_basename_FN.getBaseNoExt())
+                asset_path_noext_FN = asset_dir_FN.pjoin(new_asset_basename_FN.getBaseNoExt())
             else:
                 log_info('_gui_edit_asset() ROM is in Launcher id {}'.format(launcherID))
-                launcher         = self.launchers[launcherID]
-                asset_directory  = FileName(launcher[AInfo.path_key])
-                platform         = launcher['platform']
-                asset_path_noext = assets_get_path_noext_DIR(AInfo, asset_directory, ROMfile)
-            current_asset_FN = FileName(object_dic[AInfo.key])
+                launcher = self.launchers[launcherID]
+                platform = launcher['platform']
+                asset_dir_FN = FileName(launcher[AInfo.path_key])
+                asset_path_noext_FN = assets_get_path_noext_DIR(AInfo, asset_dir_FN, ROM_FN)
             log_info('_gui_edit_asset() Editing ROM {}'.format(AInfo.name))
             log_info('_gui_edit_asset() ROM ID {}'.format(object_dic['id']))
-            log_debug('_gui_edit_asset() asset_directory  "{}"'.format(asset_directory.getOriginalPath()))
-            log_debug('_gui_edit_asset() asset_path_noext "{}"'.format(asset_path_noext.getOriginalPath()))
-            log_debug('_gui_edit_asset() current_asset_FN "{}"'.format(current_asset_FN.getOriginalPath()))
-            log_debug('_gui_edit_asset() platform         "{}"'.format(platform))
+            log_debug('_gui_edit_asset() platform "{}"'.format(platform))
 
             # --- Do not edit asset if asset directory not configured ---
-            if not asset_directory.isdir():
+            if not asset_dir_FN.isdir():
                 kodi_dialog_OK('Directory to store {} not configured or not found. '.format(AInfo.name) + \
                     'Configure it before you can edit artwork.')
                 return False
@@ -9823,6 +9881,9 @@ class Main:
             log_error('_gui_edit_asset() Unknown object_kind = {}'.format(object_kind))
             kodi_notify_warn("Unknown object_kind '{}'".format(object_kind))
             return False
+        # Debug info
+        log_debug('_gui_edit_asset() asset_dir_FN "{}"'.format(asset_dir_FN.getOriginalPath()))
+        log_debug('_gui_edit_asset() asset_path_noext_FN "{}"'.format(asset_path_noext_FN.getOriginalPath()))
 
         # --- Only enable scraper if support the asset ---
         # Scrapers only loaded if editing a ROM.
@@ -9879,22 +9940,22 @@ class Main:
             if object_dic[AInfo.key]: image_dir = FileName(object_dic[AInfo.key]).getDir()
             log_debug('_gui_edit_asset() Initial path "{}"'.format(image_dir))
             t = 'Select {} image'.format(AInfo.name)
-            image_file = kodi_dialog_get_image(t, AInfo.exts_dialog, image_dir)
-            image_FileName = FileName(image_file)
-            if not image_FileName.exists(): return False
+            image_path_str = kodi_dialog_get_image(t, AInfo.exts_dialog, image_dir)
+            image_FN = FileName(image_path_str)
+            if not image_FN.exists(): return False
 
             # Determine image extension and dest filename. Check for errors.
-            dest_path_FileName = asset_path_noext.pappend(image_FileName.getExt())
-            log_debug('_gui_edit_asset() image_file   "{}"'.format(image_FileName.getOriginalPath()))
-            log_debug('_gui_edit_asset() img_ext      "{}"'.format(image_FileName.getExt()))
-            log_debug('_gui_edit_asset() dest_path    "{}"'.format(dest_path_FileName.getOriginalPath()))
-            if image_FileName.getPath() == dest_path_FileName.getPath():
-                log_info('_gui_edit_asset() image_FileName and dest_path_FileName are the same. Returning.')
-                kodi_notify_warn('image_FileName and dest_path_FileName are the same. Returning')
+            dest_image_FN = asset_path_noext_FN.pappend(image_FN.getExt())
+            log_debug('_gui_edit_asset() image_FN      "{}"'.format(image_FN.getOriginalPath()))
+            log_debug('_gui_edit_asset() img_ext       "{}"'.format(image_FN.getExt()))
+            log_debug('_gui_edit_asset() dest_image_FN "{}"'.format(dest_image_FN.getOriginalPath()))
+            if image_FN.getPath() == dest_image_FN.getPath():
+                log_info('_gui_edit_asset() image_FN and dest_image_FN are the same. Returning.')
+                kodi_notify_warn('image_FN and dest_image_FN are the same. Returning')
                 return False
 
             try:
-                utils_copy_file(image_FileName.getPath(), dest_path_FileName.getPath())
+                utils_copy_file(image_FN.getPath(), dest_image_FN.getPath())
             except OSError:
                 log_error('_gui_edit_asset() OSError exception copying image')
                 kodi_notify_warn('OSError exception copying image')
@@ -9906,15 +9967,15 @@ class Main:
 
             # Update object by assigment. XML will be save by parent.
             # Always store original/raw paths in database.
-            object_dic[AInfo.key] = dest_path_FileName.getOriginalPath()
+            object_dic[AInfo.key] = dest_image_FN.getOriginalPath()
             kodi_notify('{} {} has been updated'.format(object_name, AInfo.name))
-            log_info('_gui_edit_asset() Copied file  "{}"'.format(image_FileName.getOriginalPath()))
-            log_info('_gui_edit_asset() Into         "{}"'.format(dest_path_FileName.getOriginalPath()))
+            log_info('_gui_edit_asset() Copied file  "{}"'.format(image_FN.getOriginalPath()))
+            log_info('_gui_edit_asset() Into         "{}"'.format(dest_image_FN.getOriginalPath()))
             log_info('_gui_edit_asset() Selected {} {} "{}"'.format(object_name,
-                AInfo.name, dest_path_FileName.getOriginalPath()))
+                AInfo.name, dest_image_FN.getOriginalPath()))
 
             # Update Kodi image cache.
-            utils_update_file_mtime(dest_path_FileName.getPath())
+            utils_update_file_mtime(dest_image_FN.getPath())
 
         # --- Unset asset ---
         elif mindex == 2:
@@ -9927,31 +9988,37 @@ class Main:
         elif mindex >= 3:
             log_debug('_gui_edit_asset() Scraping image...')
 
-            # --- Create ScrapeFactory object ---
+            # Create ScrapeFactory object.
             scraper_index = mindex - len(common_menu_list)
             log_debug('_gui_edit_asset() Scraper index {}'.format(scraper_index))
             scraper_ID = g_scrap_factory.get_asset_scraper_ID_from_menu_idx(scraper_index)
 
-            # --- Scrape! ---
+            # Scrape!
             data_dic = {
-                'rom_FN' : ROMfile,
-                'rom_checksums_FN' : ROM_checksums_FN,
+                'ROM_FN' : ROM_FN,
+                'ROM_hash_FN' : ROM_hash_FN,
                 'platform' : platform,
-                'current_asset_FN' : current_asset_FN,
-                'asset_path_noext' : asset_path_noext,
+                # These vars are to compute asset_path_noext_FN
+                'categoryID' : categoryID,
+                'launcherID' : launcherID,
+                'settings' : self.settings,
+                'launchers' : self.launchers,
             }
-            # If this returns False there were no changes so no need to save ROMs JSON.
+            # If this function return False there were no changes so no need to save the
+            # ROMs JSON on the caller function.
             # Scraper disk caches are flushed (written to disk) even if there is a message
-            # to be printed here. A message here is that no images were found, however the
-            # caches (internal, etc.) may have valid data.
+            # to be printed here. A message here could be that no images were found, network
+            # error when downloading image, etc., however the caches (internal, etc.) may have
+            # valid data that needs to be saved.
             st_dic = kodi_new_status_dic()
             scraper_strategy = g_scrap_factory.create_CM_asset(scraper_ID)
             scraper_strategy.scrap_CM_asset(object_dic, asset_ID, data_dic, st_dic)
-            # Flush caches.
+            # Flush caches
             pDialog = KodiProgressDialog()
             pDialog.startProgress('Flushing scraper disk caches...')
             g_scrap_factory.destroy_CM()
             pDialog.endProgress()
+            # Display notification or error. If error return and do not save ROMs database.
             if kodi_display_status_message(st_dic): return False
 
         # If we reach this point, changes were made.

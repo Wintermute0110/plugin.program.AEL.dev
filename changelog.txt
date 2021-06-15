@@ -179,7 +179,7 @@ FEATURE  [CORE] Disable Kodi screensaver when launching and reenable after app f
 
 FEATURE  Add support to remove unneeded blank spaces in `dev-core/check_line_endings.py`.
 
-WIP      In the ROMs CM add a menu to edit all assets as once, including scraping
+FEATURE  In the ROMs CM add a menu to edit all assets as once, including scraping
          all assets at once.
          See https://github.com/Wintermute0110/plugin.program.AEL/issues/140
 
