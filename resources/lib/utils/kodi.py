@@ -188,7 +188,7 @@ def disable_screensaver():
     logger.debug('kodi_disable_screensaver() Screensaver disabled.')
 
 # kodi_disable_screensaver() must be called before this function or bad things will happen.
-def kodi_restore_screensaver():
+def restore_screensaver():
     if g_screensaver_mode is None:
         logger.error('kodi_disable_screensaver() must be called before kodi_restore_screensaver()')
         raise RuntimeError

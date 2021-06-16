@@ -48,7 +48,6 @@ def cmd_manage_romset_launchers(args):
     default_launcher = next((l for l in launchers if l.is_default), launchers[0]) if len(launchers) > 0 else None
     default_launcher_name = default_launcher.name if default_launcher is not None else 'None'
     
-    def_launcher_name = ''
     options = collections.OrderedDict()
     options['ADD_LAUNCHER']         = 'Add new launcher'
     options['EDIT_LAUNCHER']        = 'Edit launcher'
@@ -111,9 +110,11 @@ def cmd_configure_romset_launchers(args):
       
 @AppMediator.register('SET_LAUNCHER_ARGS')
 def cmd_set_launcher_args(args):
-    romset_id:str = args['romset_id'] if 'romset_id' in args else None
-    addon_id:str = args['addon_id'] if 'addon_id' in args else None
-    launcher_args = args['args'] if 'args' in args else None
+    romset_id:str   = args['romset_id'] if 'romset_id' in args else None
+    addon_id:str    = args['addon_id'] if 'addon_id' in args else None
+    application     = args['app'] if 'app' in args else None
+    launcher_args   = args['args'] if 'args' in args else None
+    is_non_blocking = args['is_non_blocking'] if 'is_non_blocking' in args else False
     
     uow = UnitOfWork(globals.g_PATHS.DATABASE_FILE_PATH)
     with uow:
@@ -123,7 +124,7 @@ def cmd_set_launcher_args(args):
         addon = addon_repository.find_by_addon_id(addon_id)
         romset = romset_repository.find_romset(romset_id)
         
-        romset.add_launcher(addon, launcher_args)
+        romset.add_launcher(addon, application, launcher_args, is_non_blocking)
         romset_repository.update_romset(romset)
         uow.commit()
     
@@ -159,7 +160,68 @@ def cmd_configure_romset_launchers(args):
         dialog = kodi.OrdDictionaryDialog()
         selected_launcher = dialog.select('Choose launcher', launcher_options,preselect=preselected)
 
+    application = selected_launcher.get_application()
+    arguments = selected_launcher.get_arguments()
+    logger.info('EXECUTE_ROM: selected launcher "{}"'.format(selected_launcher.get_name()))
+    logger.info('EXECUTE_ROM: raw arguments     "{}"'.format(arguments))
+
+    #Application based arguments replacements
+    if application:
+        app = io.FileName(application)
+        apppath = app.getDir()
+
+        logger.info('EXECUTE_ROM: application  "{0}"'.format(app.getPath()))
+        logger.info('EXECUTE_ROM: appbase      "{0}"'.format(app.getBase()))
+        logger.info('EXECUTE_ROM: apppath      "{0}"'.format(apppath))
+
+        arguments = arguments.replace('$apppath$', apppath)
+        arguments = arguments.replace('$appbase$', app.getBase())
+        
+    # ROM based arguments replacements
+    if rom:
+        rom_file = rom.get_file()
+        # --- Escape quotes and double quotes in ROMFileName ---
+        # >> This maybe useful to Android users with complex command line arguments
+        if settings.getSettingAsBool('escape_romfile'):
+            logger.info("EXECUTE_ROM: Escaping ROMFileName ' and \"")
+            rom_file.escapeQuotes()
+
+        rompath       = rom_file.getDir()
+        rombase       = rom_file.getBase()
+        rombase_noext = rom_file.getBaseNoExt()
+
+        logger.info('EXECUTE_ROM: romfile      "{0}"'.format(rom_file.getPath()))
+        logger.info('EXECUTE_ROM: rompath      "{0}"'.format(rompath))
+        logger.info('EXECUTE_ROM: rombase      "{0}"'.format(rombase))
+        logger.info('EXECUTE_ROM: rombasenoext "{0}"'.format(rombase_noext))
+
+        arguments = arguments.replace('$rom$',          rom_file.getPath())
+        arguments = arguments.replace('$romfile$',      rom_file.getPath())
+        arguments = arguments.replace('$rompath$',      rompath)
+        arguments = arguments.replace('$rombase$',      rombase)
+        arguments = arguments.replace('$rombasenoext$', rombase_noext)
+
+        # >> Legacy names for argument substitution
+        arguments = arguments.replace('%rom%', rom_file.getPath())
+        arguments = arguments.replace('%ROM%', rom_file.getPath())
+
+        # Default arguments replacements
+        arguments = arguments.replace('$romsetID$', romset.get_id())
+        arguments = arguments.replace('$romsetName$', romset.get_name())
+        arguments = arguments.replace('$launcherID$', launcher.addon.get_addon_id())
+        arguments = arguments.replace('$addonID$', launcher.addon.get_addon_id())
+        arguments = arguments.replace('$romID$', rom.get_id())
+        arguments = arguments.replace('$romtitle$', rom.get_name())
+
+        # automatic substitution of rom values
+        for rom_key, rom_value in rom.get_data_dic().items():
+            if isinstance(rom_value, str):
+                arguments = arguments.replace('${}$'.format(rom_key), rom_value)        
+
+        logger.info('EXECUTE_ROM: final arguments "{0}"'.format(arguments))
+
     kodi.execute_uri(selected_launcher.addon.get_execute_uri(), {
-        'rom_args': rom.get_arguments(), 
-        'launcher_args': selected_launcher.get_arguments()
+        'application': application,
+        'args': arguments,
+        'is_non_blocking': str(selected_launcher.is_non_blocking())
     })

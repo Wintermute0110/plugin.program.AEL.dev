@@ -20,12 +20,25 @@ import abc
 import logging
 
 # --- AEL packages ---
-from resources.lib.utils import io, kodi,
-from resources.lib import globals, platforms
+from resources.lib.utils import io, kodi
+from resources.lib import globals, platforms, settings
 from resources.lib.executors import *
 from resources.lib.constants import *
 
 logger = logging.getLogger(__name__)
+
+# -------------------------------------------------------------------------------------------------
+# Helper methods
+# -------------------------------------------------------------------------------------------------
+def get_executor_factory() -> ExecutorFactoryABC:
+    executorSettings                    = ExecutorSettings()
+    executorSettings.lirc_state         = settings.getSettingAsBool('lirc_state')
+    executorSettings.show_batch_window  = settings.getSettingAsBool('show_batch_window')
+    executorSettings.windows_cd_apppath = settings.getSettingAsBool('windows_cd_apppath')
+    executorSettings.windows_close_fds  = settings.getSettingAsBool('windows_close_fds')
+    
+    executorFactory = ExecutorFactory(globals.g_PATHS.LAUNCHER_REPORT_FILE_PATH, executorSettings)
+    return executorFactory
 
 class LauncherSettings(object):
     is_non_blocking = False
@@ -51,8 +64,8 @@ class LauncherABC(object):
         self.executorFactory = executorFactory
         self.settings        = settings
         self.launcher_args   = {}
-        self.application     = None
-        self.arguments       = None
+        self.application     = ''
+        self.non_blocking    = True
 
     # --------------------------------------------------------------------------------------------
     # Core methods
@@ -63,8 +76,14 @@ class LauncherABC(object):
     @abc.abstractmethod
     def get_launcher_addon_id(self) -> str: return ''
 
+    def get_application(self) -> str:
+        return self.application
+
     def get_launcher_args(self) -> dict:
         return self.launcher_args
+    
+    def is_non_blocking(self) -> bool:
+        return self.non_blocking
     
     def set_launcher_args(self, args:dict):
         self.launcher_args = args
@@ -104,7 +123,7 @@ class LauncherABC(object):
     # Child concrete classes must implement this method.
     #
     @abc.abstractmethod
-    def _builder_get_wizard(self, wizard): pass
+    def _builder_get_wizard(self, wizard) -> kodi.WizardDialog: pass
 
     @abc.abstractmethod
     def _build_pre_wizard_hook(self): pass
@@ -130,35 +149,39 @@ class LauncherABC(object):
     # Execution methods
     # ---------------------------------------------------------------------------------------------
     #
-    # Launchs a ROM launcher or standalone launcher
-    # For standalone launchers romext is the extension of the application (only used in Windoze)
+    # Launchs a custom launcher.
+    # Arguments are those send through the URI.
     #
     @abc.abstractmethod
-    def launch(self):
+    def launch(self, args: dict):
         logger.debug('LauncherABC::launch() Starting ...')
 
         # --- Create executor object ---
         if self.executorFactory is None:
             logger.error('LauncherABC::launch() self.executorFactory is None')
-            logger.error('Cannot create an executor for {}'.format(self.application.getPath()))
+            logger.error('Cannot create an executor for {}'.format(self.get_name()))
             kodi.notify_error('LauncherABC::launch() self.executorFactory is None'
                               'This is a bug, please report it.')
             return
         
-        executor = self.executorFactory.create(self.application)
+        executor = self.executorFactory.create(args)
+        
         if executor is None:
-            logger.error('Cannot create an executor for {}'.format(self.application.getPath()))
+            logger.error('Cannot create an executor for {}'.format(self.get_name()))
             kodi.notify_error('Cannot execute application')
             return
 
+        application = args['application'] if 'application' in args else ''
+        arguments = args['args']
+
         logger.debug('Name        = "{}"'.format(self.get_name()))
-        logger.debug('Application = "{}"'.format(self.application.getPath()))
-        logger.debug('Arguments   = "{}"'.format(self.arguments))
+        logger.debug('Application = "{}"'.format(application))
+        logger.debug('Arguments   = "{}"'.format(arguments))
         logger.debug('Executor    = "{}"'.format(executor.__class__.__name__))
 
         # --- Execute app ---
         self._launch_pre_exec(self.get_name(), self.settings.toggle_window)
-        executor.execute(self.application, self.arguments, self.settings.is_non_blocking)
+        executor.execute(application, arguments, self.settings.is_non_blocking)
         self._launch_post_exec(self.settings.toggle_window)
 
     #
@@ -177,7 +200,7 @@ class LauncherABC(object):
         # --- Stop/Pause Kodi mediaplayer if requested in settings ---
         self.kodi_was_playing = False
         # id="media_state_action" default="0" values="Stop|Pause|Let Play"
-        media_state_action = self.setting.media_state_action
+        media_state_action = self.settings.media_state_action
         media_state_str = ['Stop', 'Pause', 'Let Play'][media_state_action]
         logger.debug('_launch_pre_exec() media_state_action is "{}" ({})'.format(media_state_str, media_state_action))
         if media_state_action == 0 and xbmc.Player().isPlaying():
@@ -243,7 +266,7 @@ class LauncherABC(object):
             kodi.disable_screensaver()
         else:
             screensaver_mode = kodi.get_screensaver_mode()
-            logger.debug('_run_before_execution() Screensaver status "{}"'.format(screensaver_mode))
+            logger.debug('_launch_pre_exec() Screensaver status "{}"'.format(screensaver_mode))
 
         # --- Pause Kodi execution some time ---
         delay_tempo_ms = self.settings.delay_tempo
@@ -296,7 +319,7 @@ class LauncherABC(object):
             kodi.restore_screensaver()
         else:
             screensaver_mode = kodi.get_screensaver_mode()
-            logger.debug('_run_after_execution() Screensaver status "{}"'.format(screensaver_mode))
+            logger.debug('_launch_post_exec() Screensaver status "{}"'.format(screensaver_mode))
 
         # --- Resume Kodi playing if it was paused. If it was stopped, keep it stopped. ---
         media_state_action = self.settings.media_state_action
@@ -309,9 +332,8 @@ class LauncherABC(object):
         logger.debug('LauncherABC::_launch_post_exec() function ENDS')
 
 # -------------------------------------------------------------------------------------------------
-# Abstract base class for launching anything ROMs or item based.
-# This class support Parent/Clone generation, multidisc support, and ROM No-Intro/REDUMP audit.
-# Inherit from this base class to implement your own specific ROM launcher.
+# Base class for launching anything ROMs or item based using an application.
+# Inherit from this base class to implement your own specific ROM App launcher.
 # -------------------------------------------------------------------------------------------------
 class AppLauncher(LauncherABC):
 
@@ -343,6 +365,8 @@ class AppLauncher(LauncherABC):
         return wizard
     
     def _build_post_wizard_hook(self):
+        self.application = self.launcher_args.pop('application')
+        self.non_blocking = self.launcher_args.pop('is_non_blocking')
         return True
 
     def _builder_get_extensions_from_app_path(self, input, item_key ,launcher_args):
@@ -378,151 +402,19 @@ class AppLauncher(LauncherABC):
     # ---------------------------------------------------------------------------------------------
     # Execution methods
     # ---------------------------------------------------------------------------------------------
-    def launch(self):
-        self.title = self.rom.get_name()
-        self.selected_rom_file = None
-
-        applicationIsSet = self._launch_selectApplicationToUse()
-        argumentsAreSet  = self._launch_selectArgumentsToUse()
-        romIsSelected    = self._launch_selectRomFileToUse()
-
-        if not applicationIsSet or not argumentsAreSet or not romIsSelected:
+    def launch(self, args: dict):
+        if 'application' not in args:
+            logger.error('LauncherABC::launch() No application argument defined')            
+            return None
+        
+        application = io.FileName(args['application'])
+        
+        # --- Check for errors and abort if errors found ---
+        if not application.exists():
+            logger.error('Launching app not found "{0}"'.format(application.getPath()))
+            kodi.notify_warn('App {0} not found.'.format(application.getPath()))
             return
-
-        self._launch_parseArguments()
-
-        if self.statsStrategy is not None:
-            self.statsStrategy.update_launched_rom_stats(self.rom)
-            self.save_ROM(self.rom)
-
-        super(AppLauncher, self).launch()
-
-    def _launch_selectApplicationToUse(self):
-        if self.rom.has_alternative_application():
-            logger.info('StandardRomLauncher() Using ROM altapp')
-            self.application = io.FileName(self.rom.get_alternative_application())
-        else:
-            self.application = io.FileName(self.entity_data['application'])
-
-        # --- Check for errors and abort if found --- todo: CHECK
-        if not self.application.exists():
-            logger.error('StandardRomLauncher::_selectApplicationToUse(): Launching app not found "{0}"'.format(self.application.getPath()))
-            kodi.notify_warn('Launching app not found {0}'.format(self.application.getPath()))
-            return False
-
-        return True
-
-    def _launch_selectArgumentsToUse(self):
-        if self.rom.has_alternative_arguments():
-            logger.info('StandardRomLauncher() Using ROM altarg')
-            self.arguments = self.rom.get_alternative_arguments()
-        elif self.entity_data['args_extra']:
-             # >> Ask user what arguments to launch application
-            logger.info('StandardRomLauncher() Using Launcher args_extra')
-            launcher_args = self.entity_data['args']
-            arg_list = [self.entity_data_args] + self.entity_data['args_extra']
-            dialog = xbmcgui.Dialog()
-            dselect_ret = dialog.select('Select launcher arguments', arg_list)
-            if dselect_ret < 0:
-                return False
-            logger.info('StandardRomLauncher() User chose args index {0} ({1})'.format(dselect_ret, arg_list[dselect_ret]))
-            self.arguments = arg_list[dselect_ret]
-        else:
-            self.arguments = self.entity_data['args']
-
-        return True
-
-    def _launch_selectRomFileToUse(self):
-        if not self.rom.has_multiple_disks():
-            self.selected_rom_file = self.rom.get_file()
-            return True
-
-        disks = self.rom.get_disks()
-        logger.info('StandardRomLauncher._selectRomFileToUse() Multidisc ROM set detected')
-        dialog = xbmcgui.Dialog()
-        dselect_ret = dialog.select('Select ROM to launch in multidisc set', disks)
-        if dselect_ret < 0:
-           return False
-
-        selected_rom_base = disks[dselect_ret]
-        logger.info('StandardRomLauncher._selectRomFileToUse() Selected ROM "{0}"'.format(selected_rom_base))
-
-        ROM_temp = self.rom.get_file()
-        ROM_dir = io.FileName(ROM_temp.getDir())
-        ROMFileName = ROM_dir.pjoin(selected_rom_base)
-
-        logger.info('StandardRomLauncher._selectRomFileToUse() ROMFileName OP "{0}"'.format(ROMFileName.getPath()))
-        logger.info('StandardRomLauncher._selectRomFileToUse() ROMFileName  P "{0}"'.format(ROMFileName.getPath()))
-
-        if not ROMFileName.exists():
-            logger.error('ROM not found "{0}"'.format(ROMFileName.getPath()))
-            kodi.notify_warn('ROM not found "{0}"'.format(ROMFileName.getPath()))
-            return False
-
-        self.selected_rom_file = ROMFileName
-
-        return True
-
-    # --- Argument substitution ---
-    def _launch_parseArguments(self):
-        logger.info('RomLauncher() raw arguments   "{0}"'.format(self.arguments))
-
-        #Application based arguments replacements
-        if self.application and isinstance(self.application, io.FileName):
-           apppath = self.application.getDir()
-
-           logger.info('RomLauncher() application  "{0}"'.format(self.application.getPath()))
-           logger.info('RomLauncher() appbase      "{0}"'.format(self.application.getBase()))
-           logger.info('RomLauncher() apppath      "{0}"'.format(apppath))
-
-           self.arguments = self.arguments.replace('$apppath$', apppath)
-           self.arguments = self.arguments.replace('$appbase$', self.application.getBase())
-
-        # ROM based arguments replacements
-        if self.selected_rom_file:
-            # --- Escape quotes and double quotes in ROMFileName ---
-            # >> This maybe useful to Android users with complex command line arguments
-            if self.settings['escape_romfile']:
-                logger.info("RomLauncher() Escaping ROMFileName ' and \"")
-                self.selected_rom_file.escapeQuotes()
-
-            rompath       = self.selected_rom_file.getDir()
-            rombase       = self.selected_rom_file.getBase()
-            rombase_noext = self.selected_rom_file.getBaseNoExt()
-
-            logger.info('RomLauncher() romfile      "{0}"'.format(self.selected_rom_file.getPath()))
-            logger.info('RomLauncher() rompath      "{0}"'.format(rompath))
-            logger.info('RomLauncher() rombase      "{0}"'.format(rombase))
-            logger.info('RomLauncher() rombasenoext "{0}"'.format(rombase_noext))
-
-            self.arguments = self.arguments.replace('$rom$', self.selected_rom_file.getPath())
-            self.arguments = self.arguments.replace('$romfile$', self.selected_rom_file.getPath())
-            self.arguments = self.arguments.replace('$rompath$', rompath)
-            self.arguments = self.arguments.replace('$rombase$', rombase)
-            self.arguments = self.arguments.replace('$rombasenoext$', rombase_noext)
-
-            # >> Legacy names for argument substitution
-            self.arguments = self.arguments.replace('%rom%', self.selected_rom_file.getPath())
-            self.arguments = self.arguments.replace('%ROM%', self.selected_rom_file.getPath())
-
-        category_id = self.get_category_id()
-        if category_id is None:
-            category_id = ''
-
-        # Default arguments replacements
-        self.arguments = self.arguments.replace('$categoryID$', category_id)
-        self.arguments = self.arguments.replace('$launcherID$', self.entity_data['id'])
-        self.arguments = self.arguments.replace('$romID$', self.rom.get_id())
-        self.arguments = self.arguments.replace('$romtitle$', self.title)
-
-        # automatic substitution of rom values
-        for rom_key, rom_value in self.rom.get_data_dic().iteritems():
-            if isinstance(rom_value, str):
-                self.arguments = self.arguments.replace('${}$'.format(rom_key), rom_value)        
-
-        # automatic substitution of launcher values
-        for launcher_key, launcher_value in self.entity_data.iteritems():
-            if isinstance(launcher_value, str):
-                self.arguments = self.arguments.replace('${}$'.format(launcher_key), launcher_value)
-
-        logger.info('RomLauncher() final arguments "{0}"'.format(self.arguments))
+        
+        logger.debug('Application = "{}"'.format(application.getPath()))
+        
+        super(AppLauncher, self).launch(args)

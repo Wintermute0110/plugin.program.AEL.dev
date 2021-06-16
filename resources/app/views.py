@@ -30,7 +30,7 @@
 # --- Python standard library ---
 from __future__ import unicode_literals
 from __future__ import division
-from resources.lib.launchers import AppLauncher
+
 import sys
 import logging
 
@@ -44,6 +44,7 @@ from resources.lib.constants import *
 from resources.lib.repositories import *
 from resources.lib.settings import *
 from resources.app.viewqueries import *
+from resources.lib.launchers import *
 
 from resources.lib.utils import kodi
 
@@ -165,8 +166,20 @@ def vw_configure_app_launcher():
     
 @router.route('/launcher/app/')
 def vw_configure_app_launcher():
-    kodi.event(method='APP_LAUNCH', data=router.args)
-
+    logger.debug('App Launcher: Starting ...')
+    
+    launcher_settings = LauncherSettings()
+    launcher_settings.delay_tempo = settings.getSettingAsFloat('delay_tempo')
+    launcher_settings.display_launcher_notify = settings.getSettingAsBool('display_launcher_notify')
+    launcher_settings.is_non_blocking = True if router.args['is_non_blocking'] == 'true' else False
+    launcher_settings.media_state_action = settings.getSettingAsInt('media_state_action')
+    launcher_settings.suspend_audio_engine = settings.getSettingAsBool('suspend_audio_engine')
+    launcher_settings.suspend_screensaver = settings.getSettingAsBool('suspend_screensaver')
+            
+    executor_factory = get_executor_factory()
+    launcher = AppLauncher(executor_factory, launcher_settings)
+    launcher.launch(router.args)
+    
 # -------------------------------------------------------------------------------------------------
 # UI render methods
 # -------------------------------------------------------------------------------------------------

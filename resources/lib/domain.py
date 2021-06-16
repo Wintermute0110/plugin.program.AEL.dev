@@ -652,16 +652,24 @@ class VirtualCategory(MetaDataItemABC):
 
 class ROMSetLauncher(object):
     
-    def __init__(self, addon: AelAddon, args: dict, is_default: bool):
+    def __init__(self, addon: AelAddon, application:str, args: dict, is_non_blocking: bool, is_default: bool):
         self.addon = addon
+        self.application = application        
         self.args = args
+        self.is_non_blocking = is_non_blocking
         self.is_default = is_default
 
     def get_name(self):
         return self.addon.get_name()
+    
+    def get_application(self) -> str:
+        return self.application
 
     def get_arguments(self) -> str:
         return json.dumps(self.args)
+    
+    def is_non_blocking(self) -> bool:
+        return self.is_non_blocking
     
 # -------------------------------------------------------------------------------------------------
 # Class representing a collection of ROMs.
@@ -759,10 +767,10 @@ class ROMSet(MetaDataItemABC):
     def num_roms(self) -> int:
         return self.entity_data['num_roms'] if 'num_roms' in self.entity_data else 0
 
-    def add_launcher(self, addon: AelAddon, args: dict, is_default: bool = False):
+    def add_launcher(self, addon: AelAddon, application:str, args: dict, is_non_blocking = True, is_default: bool = False):
         launcher = next((l for l in self.launchers_data if l.addon.get_id() == addon.get_id()), None)
         if launcher is None:
-            launcher = ROMSetLauncher(addon, args, is_default)
+            launcher = ROMSetLauncher(addon, application, args, is_non_blocking, is_default)
             self.launchers_data.append(launcher)
         
         launcher.args = args
@@ -775,8 +783,8 @@ class ROMSet(MetaDataItemABC):
     def get_launchers(self) -> typing.List[ROMSetLauncher]:
         return self.launchers_data
 
-    def get_launcher(self, addon_id):
-        return next(l for l in self.launchers_data if l.addon.get_addon_id() == addon_id, None)
+    def get_launcher(self, addon_id) -> ROMSetLauncher:
+        return next((l for l in self.launchers_data if l.addon.get_addon_id() == addon_id), None)
 
     def get_NFO_name(self) -> io.FileName:
         nfo_dir = io.FileName(settings.getSetting('launchers_asset_dir'), isdir = True)
@@ -916,7 +924,7 @@ class ROM(MetaDataItemABC):
     def get_clone(self):
         return self.entity_data['cloneof']
     
-    def get_filename(self):
+    def get_filename(self) -> str:
         return self.entity_data['filename']
 
     def get_file(self):

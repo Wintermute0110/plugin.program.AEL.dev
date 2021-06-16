@@ -124,7 +124,7 @@ CREATE TABLE IF NOT EXISTS romset_assetspaths(
         ON DELETE CASCADE ON UPDATE NO ACTION
 );
 
-CREATE TABLE IF NOT EXISTS rom_assets(-
+CREATE TABLE IF NOT EXISTS rom_assets(
     rom_id TEXT,
     asset_id TEXT,
     FOREIGN KEY (rom_id) REFERENCES roms (id) 
@@ -138,7 +138,9 @@ CREATE TABLE IF NOT EXISTS rom_assets(-
 CREATE TABLE IF NOT EXISTS romset_launchers(
     romset_id TEXT,
     ael_addon_id TEXT,
+    application TEXT,
     args TEXT,
+    is_non_blocking INTEGER DEFAULT 1 NOT NULL,
     is_default INTEGER DEFAULT 0 NOT NULL,
     FOREIGN KEY (romset_id) REFERENCES romsets (id) 
         ON DELETE CASCADE ON UPDATE NO ACTION,
@@ -199,13 +201,7 @@ CREATE VIEW IF NOT EXISTS vw_romsets AS SELECT
     (SELECT COUNT(*) FROM roms AS rms WHERE rms.romset_id = r.id) as num_roms
 FROM romsets AS r 
     INNER JOIN metadata AS m ON r.metadata_id = m.id;
-
-CREATE VIEW IF NOT EXISTS vw_rom_launchers AS SELECT 
-    r.*,
-    a.*
-FROM romset_launchers AS r
-    INNER JOIN ael_addon AS a ON r.ael_addon_id = a.id;
-
+    
 CREATE VIEW IF NOT EXISTS vw_roms AS SELECT 
     r.id AS id, 
     r.romset_id AS romset_id,
@@ -273,9 +269,11 @@ CREATE VIEW IF NOT EXISTS vw_romset_launchers AS SELECT
     a.addon_type,
     a.execute_uri,
     a.configure_uri,
+    l.application,
     l.args,
+    l.is_non_blocking,
     l.is_default
 FROM romset_launchers AS l
-    INNER JOIN ael_addon AS a ON l.ael_addon_id = a.id
+    INNER JOIN ael_addon AS a ON l.ael_addon_id = a.id;
 
 CREATE TABLE IF NOT EXISTS ael_version(app TEXT, version TEXT);

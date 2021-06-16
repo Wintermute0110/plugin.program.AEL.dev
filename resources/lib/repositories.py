@@ -273,7 +273,7 @@ class UnitOfWork(object):
         # default addons
         self.conn.execute(QUERY_INSERT_ADDON, 
                           [text.misc_generate_random_SID(), 'App Launcher', '{}.AppLauncher'.format(globals.addon_id), 
-                           globals.addon_version, AddonType.LAUNCHER, 
+                           globals.addon_version, str(AddonType.LAUNCHER), 
                            globals.router.url_for_path('launcher/app'),
                            globals.router.url_for_path('launcher/app/configure')])
 
@@ -534,7 +534,7 @@ QUERY_UPDATE_ROMSET               = """
                                     """
 QUERY_INSERT_ROMSET_ASSET         = "INSERT INTO romset_assets (romset_id, asset_id) VALUES (?, ?)"
 QUERY_INSERT_ROMSET_ASSET_PATH    = "INSERT INTO romset_assetspaths (romset_id, assetspaths_id) VALUES (?, ?)"
-QUERY_INSERT_ROMSET_LAUNCHER      = "INSERT INTO romset_launchers (romset_id, ael_addon_id, args, is_default) VALUES (?,?,?,?)"
+QUERY_INSERT_ROMSET_LAUNCHER      = "INSERT INTO romset_launchers (romset_id, ael_addon_id, application, args, is_non_blocking, is_default) VALUES (?,?,?,?,?,?)"
 QUERY_DELETE_ROMSET_LAUNCHERS     = "DELETE FROM romset_launchers WHERE romset_id = ?"
 QUERY_DELETE_ROMSET               = "DELETE FROM romset WHERE id = ?"
 
@@ -649,7 +649,12 @@ class ROMSetRepository(object):
         romset_launchers = romset_obj.get_launchers()
         for romset_launcher in romset_launchers:
             self._uow.execute(QUERY_INSERT_ROMSET_LAUNCHER,
-                romset_obj.get_id(), romset_launcher.addon.get_id(), romset_launcher.get_arguments(), romset_launcher.is_default)
+                romset_obj.get_id(), 
+                romset_launcher.addon.get_id(), 
+                romset_launcher.get_application(),
+                romset_launcher.get_arguments(), 
+                romset_launcher.is_non_blocking(),
+                romset_launcher.is_default)
               
     def update_romset(self, romset_obj: ROMSet):
         logger.info("ROMSetRepository.update_romset(): Updating romset '{}'".format(romset_obj.get_name()))
@@ -686,7 +691,12 @@ class ROMSetRepository(object):
         romset_launchers = romset_obj.get_launchers()
         for romset_launcher in romset_launchers:
             self._uow.execute(QUERY_INSERT_ROMSET_LAUNCHER,
-                romset_obj.get_id(), romset_launcher.addon.get_id(), romset_launcher.get_arguments(), romset_launcher.is_default)
+                romset_obj.get_id(), 
+                romset_launcher.addon.get_id(), 
+                romset_launcher.get_application(),
+                romset_launcher.get_arguments(), 
+                romset_launcher.is_non_blocking(),
+                romset_launcher.is_default)
 
         for asset in romset_obj.get_assets():
             if asset.get_id() == '': self._insert_asset(asset, romset_obj)
@@ -867,7 +877,7 @@ class AelAddonRepository(object):
                     addon.get_name(),
                     addon.get_addon_id(),
                     addon.get_version(),
-                    addon.get_addon_type(),
+                    str(addon.get_addon_type()),
                     addon.get_execute_uri(),
                     addon.get_configure_uri())
         
@@ -877,7 +887,7 @@ class AelAddonRepository(object):
                     addon.get_name(),
                     addon.get_addon_id(),
                     addon.get_version(),
-                    addon.get_addon_type(),
+                    str(addon.get_addon_type()),
                     addon.get_execute_uri(),
                     addon.get_configure_uri(),
                     addon.get_id())

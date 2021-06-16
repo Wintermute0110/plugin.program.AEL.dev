@@ -41,16 +41,16 @@ logger = logging.getLogger(__name__)
 class ExecutorABC():
     __metaclass__ = abc.ABCMeta
 
-    def __init__(self, logFile):
+    def __init__(self, logFile: io.FileName):
         self.logFile = logFile
 
     @abc.abstractmethod
-    def execute(self, application: io.FileName, arguments, non_blocking): pass
+    def execute(self, application: str, arguments: str, non_blocking: bool): pass
 
 class XbmcExecutor(ExecutorABC):
     # --- Execute Kodi built-in function under certain conditions ---
-    def execute(self, application, arguments: str, non_blocking: bool):
-        xbmc.executebuiltin('XBMC.{0}'.format(arguments))
+    def execute(self, application: str, arguments: str, non_blocking: bool):
+        xbmc.executebuiltin('XBMC.{0}'.format(application))
 
 #
 # --- Linux ---
@@ -67,8 +67,8 @@ class LinuxExecutor(ExecutorABC):
 
     def execute(self, application, arguments, non_blocking):
         logger.debug('LinuxExecutor::execute() Starting ...')
-        arg_list  = shlex.split(arguments, posix = True)
-        command = [application.getPath()] + arg_list
+        arg_list = shlex.split(arguments, posix = True)
+        command = [application] + arg_list
 
         # >> Old way of launching child process. os.system() is deprecated and should not
         # >> be used anymore.
@@ -94,7 +94,7 @@ class AndroidExecutor(ExecutorABC):
 
     def execute(self, application, arguments, non_blocking):
         logger.debug('AndroidExecutor::execute() Starting ...')
-        retcode = os.system("{0} {1}".format(application.getPath(), arguments).encode('utf-8'))
+        retcode = os.system("{0} {1}".format(application, arguments).encode('utf-8'))
         logger.info('Process retcode = {0}'.format(retcode))
         logger.debug('AndroidExecutor::execute() function ENDS')
 
@@ -102,7 +102,7 @@ class OSXExecutor(ExecutorABC):
     def execute(self, application, arguments, non_blocking):
         logger.debug('OSXExecutor::execute() Starting ...')
         arg_list  = shlex.split(arguments, posix = True)
-        command = [application.getPath()] + arg_list
+        command = [application] + arg_list
 
         # >> Old way.
         # os.system('"{0}" {1}'.format(application, arguments).encode('utf-8'))
@@ -118,7 +118,7 @@ class WindowsLnkFileExecutor(ExecutorABC):
         logger.debug('WindowsLnkFileExecutor::execute() Starting ...')
         logger.debug('Launching LNK application')
         # os.system('start "AEL" /b "{0}"'.format(application).encode('utf-8'))
-        retcode = subprocess.call('start "AEL" /b "{0}"'.format(application.getPath()).encode('utf-8'), shell = True)
+        retcode = subprocess.call('start "AEL" /b "{0}"'.format(application).encode('utf-8'), shell = True)
         logger.info('LNK app retcode = {0}'.format(retcode))
         logger.debug('WindowsLnkFileExecutor::execute() function ENDS')
 
@@ -133,8 +133,10 @@ class WindowsBatchFileExecutor(ExecutorABC):
     def execute(self, application, arguments, non_blocking):
         logger.debug('WindowsBatchFileExecutor::execute() Starting ...')
         arg_list  = shlex.split(arguments, posix = True)
-        command = [application.getPath()] + arg_list
-        apppath = application.getDir()
+        command = [application] + arg_list
+        
+        apppath = io.FileName(application)
+        apppath = apppath.getDir()
         
         # --- Workaround to run UNC paths in Windows ---
         # >> Retroarch now support ROMs in UNC paths (Samba remotes)
@@ -184,8 +186,9 @@ class WindowsExecutor(ExecutorABC):
     def execute(self, application, arguments, non_blocking):
         logger.debug('WindowsExecutor::execute() Starting ...')
         arg_list  = shlex.split(arguments, posix = True)
-        command = [application.getPath()] + arg_list
-        apppath = application.getDir()
+        command = [application] + arg_list
+        apppath = io.FileName(application)
+        apppath = apppath.getDir()
 
         # --- Workaround to run UNC paths in Windows ---
         # >> Retroarch now support ROMs in UNC paths (Samba remotes)
@@ -226,7 +229,7 @@ class WindowsExecutor(ExecutorABC):
 class WebBrowserExecutor(ExecutorABC):
     def execute(self, application, arguments, non_blocking):
         logger.debug('WebBrowserExecutor::execute() Starting ...')
-        command = application.getPath() + arguments
+        command = application + arguments
         logger.debug('Launching URL "{0}"'.format(command))
         webbrowser.open(command)
         logger.debug('WebBrowserExecutor::execute() function ENDS')
@@ -241,7 +244,7 @@ class ExecutorFactoryABC(object):
     __metaclass__ = abc.ABCMeta
     
     @abc.abstractmethod
-    def create(self, application: io.FileName) -> ExecutorABC: pass
+    def create(self, args: dict) -> ExecutorABC: pass
 
 # -------------------------------------------------------------------------------------------------
 # Abstract Factory Pattern
@@ -253,10 +256,13 @@ class ExecutorFactory(ExecutorFactoryABC):
         self.logFile  = reportFilePath
         super(ExecutorFactory).__init__()
 
-    def create_from_pathstring(self, application_string):
-        return self.create(io.FileName(application_string))
-
-    def create(self, application: io.FileName) -> ExecutorABC:
+    def create(self, args: dict) -> ExecutorABC:
+        
+        if 'application' not in args:
+            logger.error('ExecutorFactory::create() No application argument defined')            
+            return None
+        
+        application = io.FileName(args['application'])
         if application.getBase().lower().replace('.exe' , '') == 'xbmc' \
             or 'xbmc-fav-' in application.getPath() or 'xbmc-sea-' in application.getPath():
             return XbmcExecutor(self.logFile)
