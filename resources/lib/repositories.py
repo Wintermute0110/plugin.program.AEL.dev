@@ -277,7 +277,7 @@ class UnitOfWork(object):
             'name':  'App Launcher', 
             'addon_id': '{}.AppLauncher'.format(globals.addon_id),
             'version': globals.addon_version,
-            'addon_type': AddonType.LAUNCHER, 
+            'addon_type': AddonType.LAUNCHER.name, 
             'execute_uri': globals.router.url_for_path('launcher/app'),
             'configure_uri': globals.router.url_for_path('launcher/app/configure')
         })
@@ -291,10 +291,11 @@ class UnitOfWork(object):
             self._db_path.unlink()
         
         # cleanup collection json files
-        collection_files = globals.g_PATHS.COLLECTIONS_DIR.scanFilesInPath("collection_*.json")
-        for collection_file in collection_files:
-            collection_file.unlink()
-            
+        if globals.g_PATHS.COLLECTIONS_DIR.exists():
+            collection_files = globals.g_PATHS.COLLECTIONS_DIR.scanFilesInPath("collection_*.json")
+            for collection_file in collection_files:
+                collection_file.unlink()
+                
         # cleanup root file
         if globals.g_PATHS.ROOT_PATH.exists():
             globals.g_PATHS.ROOT_PATH.unlink()
@@ -883,17 +884,17 @@ class AelAddonRepository(object):
                     addon.get_name(),
                     addon.get_addon_id(),
                     addon.get_version(),
-                    addon.get_addon_type(),
+                    addon.get_addon_type().name,
                     addon.get_execute_uri(),
                     addon.get_configure_uri())
         
     def update_addon(self, addon: AelAddon):
         logger.info("AelAddonRepository.update_addon(): Updating addon '{}'".format(addon.get_addon_id()))        
-        self._uow.execute(QUERY_INSERT_ADDON,
+        self._uow.execute(QUERY_UPDATE_ADDON,
                     addon.get_name(),
                     addon.get_addon_id(),
                     addon.get_version(),
-                    addon.get_addon_type(),
+                    addon.get_addon_type().name,
                     addon.get_execute_uri(),
                     addon.get_configure_uri(),
                     addon.get_id())

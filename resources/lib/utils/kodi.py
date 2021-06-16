@@ -1,10 +1,10 @@
 # -*- coding: utf-8 -*-
 #
-import collections
 import logging
-import abc
 import json
 import pprint
+import abc
+import collections
 from urllib.parse import urlencode
 
 import xbmc
@@ -77,7 +77,7 @@ def event(sender=globals.addon_id, method='test', data=None):
     xbmc.executebuiltin('NotifyAll({}, {}, {})'.format(sender, method, data))
     logger.debug("event(): {}/{} => {}".format(sender, method, data))
 
-def execute_uri(uri, *args):
+def execute_uri(uri, args:dict=None):
     if args is not None:    
         uri = '{}?{}'.format(uri, urlencode(args))
     logger.debug('Executing RunPlugin(%s)...', uri)

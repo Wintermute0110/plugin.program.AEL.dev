@@ -152,6 +152,8 @@ def vw_route_execute_rom(rom_id):
 # -------------------------------------------------------------------------------------------------
 @router.route('/launcher/app/configure/')
 def vw_configure_app_launcher():
+    logger.debug('App Launcher: Configuring ...')
+
     romset_id:str = router.args['romset_id'] if 'romset_id' in router.args else None
     platform:str = router.args['platform'] if 'platform' in router.args else None
     

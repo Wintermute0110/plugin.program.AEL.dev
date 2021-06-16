@@ -492,8 +492,8 @@ SCRAPE_AUTOMATIC = 20520
 
 ## Addon type Enum
 class AddonType(Enum):
-    UNKNOWN = 'UNKNOWN',
+    UNKNOWN  = 'UNKNOWN',
     LAUNCHER = 'LAUNCHER',
-    SCRAPER = 'SCRAPER',
-    SCANNER = 'SCANNER'
+    SCRAPER  = 'SCRAPER',
+    SCANNER  = 'SCANNER'
     

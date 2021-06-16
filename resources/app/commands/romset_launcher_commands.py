@@ -71,12 +71,12 @@ def cmd_manage_romset_launchers(args):
 def cmd_add_romset_launchers(args):
     romset_id:str = args['romset_id'] if 'romset_id' in args else None
     
+    options = collections.OrderedDict()
     uow = UnitOfWork(globals.g_PATHS.DATABASE_FILE_PATH)
     with uow:
         repository = AelAddonRepository(uow)
         addons = repository.find_all_launchers()
-    
-        options = collections.OrderedDict()
+
         for addon in addons:
             options[addon.get_id()] = addon.get_name()
     

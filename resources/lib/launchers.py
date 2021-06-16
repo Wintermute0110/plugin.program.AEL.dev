@@ -126,10 +126,10 @@ class LauncherABC(object):
     def _builder_get_wizard(self, wizard) -> kodi.WizardDialog: pass
 
     @abc.abstractmethod
-    def _build_pre_wizard_hook(self): pass
+    def _build_pre_wizard_hook(self): return True
 
     @abc.abstractmethod
-    def _build_post_wizard_hook(self): pass
+    def _build_post_wizard_hook(self): return True
 
     def _builder_get_appbrowser_filter(self, item_key, launcher):
         if item_key in launcher:
@@ -145,8 +145,8 @@ class LauncherABC(object):
     def _builder_user_selected_custom_browsing(self, item_key, launcher):
         return launcher[item_key] == 'BROWSE'
     
-    # ---------------------------------------------------------------------------------------------
     # Execution methods
+    # ---------------------------------------------------------------------------------------------
     # ---------------------------------------------------------------------------------------------
     #
     # Launchs a custom launcher.

@@ -13,7 +13,7 @@ from resources.lib import globals
 from resources.lib.utils import io
 from resources.lib.domain import *
 
-from resources.lib.commands import addon_commands as target
+from resources.app.commands import addon_commands as target
 
 logger = logging.getLogger(__name__)
 logging.basicConfig(format = '%(asctime)s %(module)s %(levelname)s: %(message)s',
@@ -38,12 +38,12 @@ class Test_cmd_scan_addons(unittest.TestCase):
         
         dbPath = io.FileName(os.path.join(cls.TEST_ASSETS_DIR, 'test_db.db'))
         schemaPath = io.FileName(os.path.join(cls.ROOT_DIR, 'resources/schema.sql'))
-        
-        uow = UnitOfWork(dbPath)
-        uow.reset_database(schemaPath)
                 
         globals.g_PATHS = AEL_Paths('plugin.tests')
         globals.g_PATHS.DATABASE_FILE_PATH = dbPath
+        
+        uow = UnitOfWork(dbPath)
+       # uow.reset_database(schemaPath)
         
     mocked_addons_collection = {}  
     def mocked_addons(addon_id):
@@ -76,3 +76,20 @@ class Test_cmd_scan_addons(unittest.TestCase):
         target.cmd_scan_addons({})
         # assert
         self.assertEqual(len(Test_cmd_scan_addons.saved_entities), 2)
+
+    def test_enums(self):
+        a = AddonType.SCRAPER
+        print(str(a))
+        print(a.name)
+        print(a.value)
+        b = AddonType['SCANNER']
+        print(str(b))
+        print(b.name)
+        print(b.value)
+
+        self.assertTrue(b == AddonType.SCANNER)
+
+        uri = 'aap.com'
+        kodi.execute_uri(uri, {'arg': 'a'})
+
+        
