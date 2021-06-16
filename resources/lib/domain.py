@@ -622,34 +622,6 @@ class Category(MetaDataItemABC):
     def __str__(self):
         return super().__str__()
     
-# -------------------------------------------------------------------------------------------------
-# Class representing the virtual categories in AEL.
-# All ROM Collections is a Virtual Category.
-# ...
-# -------------------------------------------------------------------------------------------------
-class VirtualCategory(MetaDataItemABC):
-    #
-    # obj_dic is mandatory in Virtual Categories an must have the following fields:
-    #  1) id
-    #  2) type
-    #  3) m_name
-    #
-    def __init__(self, PATHS, settings, obj_dic, objectRepository):
-        # Concrete classes are responsible of creating a default entity_data dictionary
-        # with sensible defaults.
-        # This object is special, obj_dic must be not None and have certain fields.
-        entity_data = fs_new_category()
-        entity_data['id'] = obj_dic['id']
-        entity_data['type'] = obj_dic['type']
-        entity_data['m_name'] = obj_dic['m_name']
-        super(VirtualCategory, self).__init__(PATHS, settings, entity_data, objectRepository)
-
-    def get_object_name(self): return 'Virtual Category'
-
-    def get_assets_kind(self): return KIND_ASSET_CATEGORY
-
-    def is_virtual(self): return True
-
 class ROMSetLauncher(object):
     
     def __init__(self, addon: AelAddon, application:str, args: dict, is_non_blocking: bool, is_default: bool):
@@ -658,9 +630,12 @@ class ROMSetLauncher(object):
         self.args = args
         self.is_non_blocking = is_non_blocking
         self.is_default = is_default
-
+        
+    def get_id(self) -> str:
+        return self.entity_data['id']
+    
     def get_name(self):
-        return self.addon.get_name()
+        return '{} ({})'.format(self.addon.get_name(), self.get_application())
     
     def get_application(self) -> str:
         return self.application

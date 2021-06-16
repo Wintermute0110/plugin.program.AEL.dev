@@ -271,11 +271,17 @@ class UnitOfWork(object):
         self.conn.executescript(sql_statements)
         self.conn.execute("INSERT INTO ael_version VALUES(?, ?)", [globals.addon_id, globals.addon_version])
         # default addons
-        self.conn.execute(QUERY_INSERT_ADDON, 
-                          [text.misc_generate_random_SID(), 'App Launcher', '{}.AppLauncher'.format(globals.addon_id), 
-                           globals.addon_version, str(AddonType.LAUNCHER), 
-                           globals.router.url_for_path('launcher/app'),
-                           globals.router.url_for_path('launcher/app/configure')])
+        addon_repository = AelAddonRepository(self)
+        app_launcher_addon = AelAddon({
+            'id': text.misc_generate_random_SID(),
+            'name':  'App Launcher', 
+            'addon_id': '{}.AppLauncher'.format(globals.addon_id),
+            'version': globals.addon_version,
+            'addon_type': AddonType.LAUNCHER, 
+            'execute_uri': globals.router.url_for_path('launcher/app'),
+            'configure_uri': globals.router.url_for_path('launcher/app/configure')
+        })
+        addon_repository.insert_addon(app_launcher_addon)
 
         self.commit()
         self.close_session()
@@ -877,7 +883,7 @@ class AelAddonRepository(object):
                     addon.get_name(),
                     addon.get_addon_id(),
                     addon.get_version(),
-                    str(addon.get_addon_type()),
+                    addon.get_addon_type(),
                     addon.get_execute_uri(),
                     addon.get_configure_uri())
         
@@ -887,7 +893,7 @@ class AelAddonRepository(object):
                     addon.get_name(),
                     addon.get_addon_id(),
                     addon.get_version(),
-                    str(addon.get_addon_type()),
+                    addon.get_addon_type(),
                     addon.get_execute_uri(),
                     addon.get_configure_uri(),
                     addon.get_id())

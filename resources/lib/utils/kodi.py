@@ -444,7 +444,7 @@ class WizardDialog():
         self.conditionalFunction = conditionalFunction
         self.cancelled = False
 
-    def runWizard(self, properties):
+    def runWizard(self, properties: dict) -> dict:
         if not self.executeDialog(properties):
             logger.warning('User stopped wizard')
             return None

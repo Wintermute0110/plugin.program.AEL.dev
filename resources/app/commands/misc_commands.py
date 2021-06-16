@@ -135,80 +135,88 @@ def cmd_check_duplicate_asset_dirs(args):
 def _apply_addon_launcher_for_legacy_launcher(launcher_data: ROMSet, available_addons: typing.Dict[str, AelAddon]):
     
     launcher_type = launcher_data.get_custom_attribute('type')
+    logger.debug('Migrating launcher of type "{}" for romset {}'.format(launcher_type, launcher_data.get_name()))
     
     if launcher_type is None:
         # 1.9x version
-        launcher_addon = available_addons['plugin.program.AEL.AppLauncher'] if 'plugin.program.AEL.AppLauncher' in available_addons else None
-        launcher_args = {
-            'application': launcher_data.get_custom_attribute('application'),
-            'args': launcher_data.get_custom_attribute('args'),
-            'args_extra': launcher_data.get_custom_attribute('args_extra')
-        }        
-        launcher_data.add_launcher(launcher_addon, launcher_args, True)
+        launcher_addon  = available_addons['plugin.program.AEL.AppLauncher'] if 'plugin.program.AEL.AppLauncher' in available_addons else None
+        if launcher_addon is None: 
+            logger.warn('Could not find launcher supporting type "{}"'.format(launcher_type)) 
+            return
+        application     = launcher_data.get_custom_attribute('application')
+        args            = launcher_data.get_custom_attribute('args')
+        non_blocking    = launcher_data.get_custom_attribute('non_blocking')
+        #'args_extra': launcher_data.get_custom_attribute('args_extra')
+        launcher_data.add_launcher(launcher_addon, application, args, non_blocking, True)
         return
     
     if launcher_type == OBJ_LAUNCHER_STANDALONE:
         launcher_addon =  available_addons['plugin.program.AEL.AppLauncher'] if 'plugin.program.AEL.AppLauncher' in available_addons else None
-        if launcher_addon is None: return
-        launcher_args = {
-            'application': launcher_data.get_custom_attribute('application'),
-            'args': launcher_data.get_custom_attribute('args'),
-            'args_extra': launcher_data.get_custom_attribute('args_extra')
-        }        
-        launcher_data.add_launcher(launcher_addon, launcher_args, True)
+        if launcher_addon is None: 
+            logger.warn('Could not find launcher supporting type "{}"'.format(launcher_type)) 
+            return
+        application     = launcher_data.get_custom_attribute('application')
+        args            = launcher_data.get_custom_attribute('args')
+        non_blocking    = launcher_data.get_custom_attribute('non_blocking')
+        #'args_extra': launcher_data.get_custom_attribute('args_extra')
+        launcher_data.add_launcher(launcher_addon, application, args, non_blocking, True)
         return
     
     if launcher_type == OBJ_LAUNCHER_ROM:
         launcher_addon =  available_addons['plugin.program.AEL.AppLauncher'] if 'plugin.program.AEL.AppLauncher' in available_addons else None
-        if launcher_addon is None: return
-        launcher_args = {
-            'application': launcher_data.get_custom_attribute('application'),
-            'args': launcher_data.get_custom_attribute('args'),
-            'args_extra': launcher_data.get_custom_attribute('args_extra')
-        }        
-        launcher_data.add_launcher(launcher_addon, launcher_args, True)
+        if launcher_addon is None: 
+            logger.warn('Could not find launcher supporting type "{}"'.format(launcher_type)) 
+            return
+        application     = launcher_data.get_custom_attribute('application')
+        args            = launcher_data.get_custom_attribute('args')
+        non_blocking    = launcher_data.get_custom_attribute('non_blocking')
+        #'args_extra': launcher_data.get_custom_attribute('args_extra')
+        launcher_data.add_launcher(launcher_addon, application, args, non_blocking, True)
         return
     
     if launcher_type == OBJ_LAUNCHER_RETROPLAYER:
         launcher_addon =  available_addons['plugin.program.AEL.RetroplayerLauncher'] if 'plugin.program.AEL.RetroplayerLauncher' in available_addons else None
-        if launcher_addon is None: return
-        launcher_args = {
-            'application': launcher_data.get_custom_attribute('application'),
-            'args': launcher_data.get_custom_attribute('args'),
-            'args_extra': launcher_data.get_custom_attribute('args_extra')
-        }        
-        launcher_data.add_launcher(launcher_addon, launcher_args, True)
+        if launcher_addon is None: 
+            logger.warn('Could not find launcher supporting type "{}"'.format(launcher_type)) 
+            return
+        application     = launcher_data.get_custom_attribute('application')
+        args            = launcher_data.get_custom_attribute('args')
+        non_blocking    = launcher_data.get_custom_attribute('non_blocking')
+        #'args_extra': launcher_data.get_custom_attribute('args_extra')
+        launcher_data.add_launcher(launcher_addon, application, args, non_blocking, True)
         return
     
     if launcher_type == OBJ_LAUNCHER_RETROARCH:
         launcher_addon =  available_addons['plugin.program.AEL.RetroarchLauncher'] if 'plugin.program.AEL.RetroarchLauncher' in available_addons else None
-        if launcher_addon is None: return
-        launcher_args = {
-            'application': launcher_data.get_custom_attribute('application'),
-            'args': launcher_data.get_custom_attribute('args'),
-            'args_extra': launcher_data.get_custom_attribute('args_extra')
-        }        
-        launcher_data.add_launcher(launcher_addon, launcher_args, True)
+        if launcher_addon is None: 
+            logger.warn('Could not find launcher supporting type "{}"'.format(launcher_type)) 
+            return
+        application     = launcher_data.get_custom_attribute('application')
+        args            = launcher_data.get_custom_attribute('args')
+        non_blocking    = launcher_data.get_custom_attribute('non_blocking')
+        #'args_extra': launcher_data.get_custom_attribute('args_extra')
+        launcher_data.add_launcher(launcher_addon, application, args, non_blocking, True)
         return
     
     if launcher_type == OBJ_LAUNCHER_NVGAMESTREAM:
-        launcher_addon =  available_addons['plugin.program.AEL.GamestreamLauncher'] if 'plugin.program.AEL.GamestreamLauncher' in available_addons else None   
-        if launcher_addon is None: return
-        launcher_args = {
-            'application': launcher_data.get_custom_attribute('application'),
-            'args': launcher_data.get_custom_attribute('args'),
-            'args_extra': launcher_data.get_custom_attribute('args_extra')
-        }        
-        launcher_data.add_launcher(launcher_addon, launcher_args, True)
+        launcher_addon =  available_addons['plugin.program.AEL.GamestreamLauncher'] if 'plugin.program.AEL.GamestreamLauncher' in available_addons else None 
+        if launcher_addon is None: 
+            logger.warn('Could not find launcher supporting type "{}"'.format(launcher_type)) 
+            return
+        application     = launcher_data.get_custom_attribute('application')
+        args            = launcher_data.get_custom_attribute('args')
+        non_blocking    = launcher_data.get_custom_attribute('non_blocking')
+        #'args_extra': launcher_data.get_custom_attribute('args_extra')
+        launcher_data.add_launcher(launcher_addon, application, args, non_blocking, True)
         return
     
     if launcher_type == OBJ_LAUNCHER_STEAM:
-        launcher_addon =  available_addons['plugin.program.AEL.SteamLauncher'] if 'plugin.program.AEL.SteamLauncher' in available_addons else None   
-        if launcher_addon is None: return
-        launcher_args = {
-            'application': launcher_data.get_custom_attribute('application'),
-            'args': launcher_data.get_custom_attribute('args'),
-            'args_extra': launcher_data.get_custom_attribute('args_extra')
-        }        
-        launcher_data.add_launcher(launcher_addon, launcher_args, True)
-        return
+        launcher_addon =  available_addons['plugin.program.AEL.SteamLauncher'] if 'plugin.program.AEL.SteamLauncher' in available_addons else None  
+        if launcher_addon is None: 
+            logger.warn('Could not find launcher supporting type "{}"'.format(launcher_type)) 
+            return
+        application     = launcher_data.get_custom_attribute('application')
+        args            = launcher_data.get_custom_attribute('args')
+        non_blocking    = launcher_data.get_custom_attribute('non_blocking')
+        #'args_extra': launcher_data.get_custom_attribute('args_extra')
+        launcher_data.add_launcher(launcher_addon, application, args, non_blocking, True)

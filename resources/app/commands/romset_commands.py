@@ -29,17 +29,19 @@ logger = logging.getLogger(__name__)
 @AppMediator.register('ADD_ROMSET')
 def cmd_add_collection(args):
     
-    wizard = kodi.WizardDialog_Selection(wizard, 'platform', 'Select the platform',
-            AEL_platform_list)
-    wizard = kodi.WizardDialog_Dummy(wizard, 'assets_path', '',
-            _builder_get_value_from_rompath)
-    wizard = kodi.WizardDialog_FileBrowse(wizard, 'assets_path', 'Select asset/artwork directory',
-        0, '')
-    pass
+    wizard = kodi.WizardDialog_Selection(None, 'platform', 'Select the platform', platforms.AEL_platform_list)
+    wizard = kodi.WizardDialog_Keyboard(wizard, 'm_name','Set the title of the launcher', get)
+    wizard = kodi.WizardDialog_FileBrowse(wizard, 'assets_path', 'Select asset/artwork directory',0, '')
+    
+    entity_data = {}
+    entity_data = wizard.runWizard(entity_data)
+    
+    romset = ROMSet(entity_data, [])
+    
     # --- Determine box size based on platform --
-    platform = get_AEL_platform(self.entity_data['platform'])
-    self.set_box_sizing(platform.default_box_size)
-
+    platform = platforms.get_AEL_platform(entity_data['platform'])
+    romset.set_box_sizing(platform.default_box_size)
+    
 # -------------------------------------------------------------------------------------------------
 # ROMSet context menu.
 # -------------------------------------------------------------------------------------------------
