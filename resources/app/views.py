@@ -154,17 +154,20 @@ def vw_route_execute_rom(rom_id):
 def vw_configure_app_launcher():
     logger.debug('App Launcher: Configuring ...')
 
-    romset_id:str = router.args['romset_id'] if 'romset_id' in router.args else None
-    platform:str = router.args['platform'] if 'platform' in router.args else None
+    romset_id:str   = router.args['romset_id'][0] if 'romset_id' in router.args else None
+    launcher_id:str = router.args['launcher_id'][0] if 'launcher_id' in router.args else None
+    settings:str    = router.args['settings'][0] if 'settings' in router.args else None
     
     launcher = AppLauncher(None, None)
-    if launcher.build(romset_id, platform):
-        params = {
-            'romset_id': romset_id,
-            'addon_id': '{}.AppLauncher'.format(globals.addon_id),
-            'args': launcher.get_launcher_args()
-        }        
-        kodi.event(method='SET_LAUNCHER_ARGS', data=params)
+    if launcher_id is None and launcher.build(json.loads(settings)):
+        launcher.store_launcher_settings(romset_id)
+        return
+    
+    if launcher_id is not None and launcher.edit(json.loads(settings)):
+        launcher.store_launcher_settings(romset_id, launcher_id)
+        return
+    
+    kodi.notify_warn('Cancelled creating launcher')
     
 @router.route('/launcher/app/')
 def vw_configure_app_launcher():

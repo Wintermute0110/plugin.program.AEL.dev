@@ -541,9 +541,11 @@ QUERY_UPDATE_ROMSET               = """
                                     """
 QUERY_INSERT_ROMSET_ASSET         = "INSERT INTO romset_assets (romset_id, asset_id) VALUES (?, ?)"
 QUERY_INSERT_ROMSET_ASSET_PATH    = "INSERT INTO romset_assetspaths (romset_id, assetspaths_id) VALUES (?, ?)"
-QUERY_INSERT_ROMSET_LAUNCHER      = "INSERT INTO romset_launchers (romset_id, ael_addon_id, application, args, is_non_blocking, is_default) VALUES (?,?,?,?,?,?)"
+QUERY_INSERT_ROMSET_LAUNCHER      = "INSERT INTO romset_launchers (id, romset_id, ael_addon_id, application, settings, is_non_blocking, is_default) VALUES (?,?,?,?,?,?,?)"
+QUERY_UPDATE_ROMSET_LAUNCHER      = "UPDATE romset_launchers SET application = ?, settings = ?, is_non_blocking = ?, is_default = ? WHERE id = ?"
 QUERY_DELETE_ROMSET_LAUNCHERS     = "DELETE FROM romset_launchers WHERE romset_id = ?"
 QUERY_DELETE_ROMSET               = "DELETE FROM romset WHERE id = ?"
+
 
 class ROMSetRepository(object):
 
@@ -566,7 +568,7 @@ class ROMSetRepository(object):
         launchers = []
         for launcher_data in launchers_data:
             addon = AelAddon(launcher_data)
-            launchers.append(ROMSetLauncher(addon, launcher_data['args'], launcher_data['is)default']))
+            launchers.append(ROMSetLauncher(addon, launcher_data))
         
         return ROMSet(romset_data, assets, launchers)
 
@@ -655,13 +657,15 @@ class ROMSetRepository(object):
             
         romset_launchers = romset_obj.get_launchers()
         for romset_launcher in romset_launchers:
+            romset_launcher.set_id(text.misc_generate_random_SID())
             self._uow.execute(QUERY_INSERT_ROMSET_LAUNCHER,
+                romset_launcher.get_id(),
                 romset_obj.get_id(), 
                 romset_launcher.addon.get_id(), 
                 romset_launcher.get_application(),
-                romset_launcher.get_arguments(), 
+                romset_launcher.get_settings(), 
                 romset_launcher.is_non_blocking(),
-                romset_launcher.is_default)
+                romset_launcher.is_default())
               
     def update_romset(self, romset_obj: ROMSet):
         logger.info("ROMSetRepository.update_romset(): Updating romset '{}'".format(romset_obj.get_name()))
@@ -694,16 +698,25 @@ class ROMSetRepository(object):
             romset_obj.get_mapped_ROM_asset_info(asset_id=ASSET_CLEARLOGO_ID).key,
             romset_obj.get_id())
          
-        self._uow.execute(QUERY_DELETE_ROMSET_LAUNCHERS, romset_obj.get_id())
         romset_launchers = romset_obj.get_launchers()
         for romset_launcher in romset_launchers:
-            self._uow.execute(QUERY_INSERT_ROMSET_LAUNCHER,
-                romset_obj.get_id(), 
-                romset_launcher.addon.get_id(), 
-                romset_launcher.get_application(),
-                romset_launcher.get_arguments(), 
-                romset_launcher.is_non_blocking(),
-                romset_launcher.is_default)
+            if romset_launcher.get_id() is None:
+                romset_launcher.set_id(text.misc_generate_random_SID())
+                self._uow.execute(QUERY_INSERT_ROMSET_LAUNCHER,
+                    romset_launcher.get_id(),
+                    romset_obj.get_id(), 
+                    romset_launcher.addon.get_id(), 
+                    romset_launcher.get_application(),
+                    romset_launcher.get_settings_str(), 
+                    romset_launcher.is_non_blocking(),
+                    romset_launcher.is_default())
+            else:
+                self._uow.execute(QUERY_UPDATE_ROMSET_LAUNCHER,
+                    romset_launcher.get_application(),
+                    romset_launcher.get_settings_str(), 
+                    romset_launcher.is_non_blocking(),
+                    romset_launcher.is_default(),
+                    romset_launcher.get_id())
 
         for asset in romset_obj.get_assets():
             if asset.get_id() == '': self._insert_asset(asset, romset_obj)

@@ -433,16 +433,23 @@ class ProgressDialog_Chrisism(object):
 # specific dialog. It also has a conditionalFunction which can be called before
 # executing this dialog which will indicate if this dialog may be shown (True return value).
 #
-class WizardDialog():
+class WizardDialogABC(object):
+    __metaclass__ = abc.ABCMeta
+    
+    @abc.abstractmethod
+    def executeDialog(self, properties:dict): pass
+        
+class WizardDialog(WizardDialogABC):
     __metaclass__ = abc.ABCMeta
 
-    def __init__(self, decoratorDialog, property_key, title, customFunction = None, conditionalFunction = None):
+    def __init__(self, decoratorDialog:WizardDialogABC, property_key:str, title:str, customFunction = None, conditionalFunction = None):
         self.decoratorDialog = decoratorDialog
         self.property_key = property_key
         self.title = title
         self.customFunction = customFunction
         self.conditionalFunction = conditionalFunction
         self.cancelled = False
+        super(WizardDialog, self).__init__()
 
     def runWizard(self, properties: dict) -> dict:
         if not self.executeDialog(properties):
@@ -491,7 +498,7 @@ class WizardDialog_Keyboard(WizardDialog):
         if not textInput.isConfirmed(): 
             self._cancel()
             return None
-        output = textInput.getText().decode('utf-8')
+        output = textInput.getText()
 
         return output
 
@@ -557,7 +564,7 @@ class WizardDialog_FileBrowse(WizardDialog):
 
         if callable(self.filter):
             self.filter = self.filter(self.property_key, properties)
-        output = xbmcgui.Dialog().browse(self.browseType, self.title, 'files', self.filter, False, False, originalPath).decode('utf-8')
+        output = xbmcgui.Dialog().browse(self.browseType, self.title, 'files', self.filter, False, False, originalPath)
 
         if not output:
             self._cancel()
@@ -597,12 +604,12 @@ class WizardDialog_YesNo(WizardDialog):
                  customFunction = None, conditionalFunction = None):
         self.yes_label = yes_label
         self.no_label = no_label
-        super(WizardDialog_Input, self).__init__(
+        super(WizardDialog_YesNo, self).__init__(
             decoratorDialog, property_key, title, customFunction, conditionalFunction)
 
     def show(self, properties):
         logger.debug('WizardDialog_YesNo::show() key = {}'.format(self.property_key))
-        output = xbmcgui.Dialog().input(self.title, self.yes_label, self.no_label)
+        output = xbmcgui.Dialog().yesno(self.title, self.yes_label, self.no_label)
         return output
 #
 # Wizard dialog which shows you a message formatted with a value from the dictionary.

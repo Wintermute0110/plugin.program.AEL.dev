@@ -80,7 +80,7 @@ class EntityABC(object):
         self.entity_data['id'] = id
 
     def get_id(self) -> str:
-        return self.entity_data['id']
+        return self.entity_data['id'] if 'id' in self.entity_data else None
 
     def get_data_dic(self):
         return self.entity_data
@@ -124,6 +124,10 @@ class AelAddon(EntityABC):
     def __init__(self, addon_dic=None):        
         if addon_dic is None:
             addon_dic = {}
+            
+        if 'launcher_addon_id' in addon_dic: 
+            addon_dic['id'] = addon_dic['launcher_addon_id']
+            
         if 'id' not in addon_dic:
             addon_dic['id'] = text.misc_generate_random_SID()
             
@@ -622,29 +626,47 @@ class Category(MetaDataItemABC):
     def __str__(self):
         return super().__str__()
     
-class ROMSetLauncher(object):
+class ROMSetLauncher(EntityABC):
     
-    def __init__(self, addon: AelAddon, application:str, args: dict, is_non_blocking: bool, is_default: bool):
-        self.addon = addon
-        self.application = application        
-        self.args = args
-        self.is_non_blocking = is_non_blocking
-        self.is_default = is_default
+    def __init__(self, addon: AelAddon, entity_data: dict):
+        self.addon = addon 
+        super(ROMSetLauncher, self).__init__(entity_data)
         
-    def get_id(self) -> str:
-        return self.entity_data['id']
-    
     def get_name(self):
         return '{} ({})'.format(self.addon.get_name(), self.get_application())
     
     def get_application(self) -> str:
-        return self.application
+        return self.entity_data['application'] if 'application' in self.entity_data else None
 
-    def get_arguments(self) -> str:
-        return json.dumps(self.args)
+    def set_application(self, application:str):
+        self.entity_data['application'] = application
+
+    def get_settings_str(self) -> str:
+        return self.entity_data['settings'] if 'settings' in self.entity_data else None
+    
+    def get_settings(self) -> dict:
+        settings = self.get_settings_str()
+        if settings is None:
+            return {}
+        return json.loads(settings)
+    
+    def set_settings_str(self, launcher_settings:str):
+        self.entity_data['settings'] = launcher_settings
+    
+    def set_settings(self, launcher_settings:dict):
+        self.entity_data['settings'] = json.dumps(launcher_settings)
     
     def is_non_blocking(self) -> bool:
-        return self.is_non_blocking
+        return self.entity_data['is_non_blocking'] if 'is_non_blocking' in self.entity_data else True
+    
+    def change_is_blocking(self, non_blocking: bool):
+        self.entity_data['is_non_blocking'] = non_blocking
+    
+    def is_default(self) -> bool:
+        return self.entity_data['is_default'] if 'is_default' in self.entity_data else False
+    
+    def set_default(self, default_launcher=False):
+        self.entity_data['is_default'] = default_launcher
     
 # -------------------------------------------------------------------------------------------------
 # Class representing a collection of ROMs.
@@ -742,24 +764,29 @@ class ROMSet(MetaDataItemABC):
     def num_roms(self) -> int:
         return self.entity_data['num_roms'] if 'num_roms' in self.entity_data else 0
 
-    def add_launcher(self, addon: AelAddon, application:str, args: dict, is_non_blocking = True, is_default: bool = False):
-        launcher = next((l for l in self.launchers_data if l.addon.get_id() == addon.get_id()), None)
-        if launcher is None:
-            launcher = ROMSetLauncher(addon, application, args, is_non_blocking, is_default)
-            self.launchers_data.append(launcher)
+    def has_launchers(self) -> bool:
+        return len(self.launchers_data) > 0
+
+    def add_launcher(self, addon: AelAddon, application:str, settings: dict, is_non_blocking = True, is_default: bool = False):
+        launcher = ROMSetLauncher(addon, {
+            'application': application,
+            'settings': json.dumps(settings),
+            'is_non_blocking': is_non_blocking,
+            'is_default': is_default
+        })
+        self.launchers_data.append(launcher)
         
-        launcher.args = args
-        if launcher.is_default != is_default:
+        if launcher.is_default() != is_default:
             if is_default:
-                current_default_launcher = next((l for l in self.launchers_data if l.is_default), None)
-                current_default_launcher.is_default = False
-            launcher.is_default = is_default
+                current_default_launcher = next((l for l in self.launchers_data if l.is_default()), None)
+                current_default_launcher.set_default(False)
+            launcher.set_default(is_default)
 
     def get_launchers(self) -> typing.List[ROMSetLauncher]:
         return self.launchers_data
 
-    def get_launcher(self, addon_id) -> ROMSetLauncher:
-        return next((l for l in self.launchers_data if l.addon.get_addon_id() == addon_id), None)
+    def get_launcher(self, id:str) -> ROMSetLauncher:
+        return next((l for l in self.launchers_data if l.get_id() == id), None)
 
     def get_NFO_name(self) -> io.FileName:
         nfo_dir = io.FileName(settings.getSetting('launchers_asset_dir'), isdir = True)
@@ -980,69 +1007,6 @@ class ROM(MetaDataItemABC):
 
     def get_arguments(self):
         return
-
-    # --- Argument substitution ---
-    def _launch_parseArguments(self):
-        logger.info('RomLauncher() raw arguments   "{0}"'.format(self.arguments))
-
-        #Application based arguments replacements
-        if self.application and isinstance(self.application, io.FileName):
-           apppath = self.application.getDir()
-
-           logger.info('RomLauncher() application  "{0}"'.format(self.application.getPath()))
-           logger.info('RomLauncher() appbase      "{0}"'.format(self.application.getBase()))
-           logger.info('RomLauncher() apppath      "{0}"'.format(apppath))
-
-           self.arguments = self.arguments.replace('$apppath$', apppath)
-           self.arguments = self.arguments.replace('$appbase$', self.application.getBase())
-
-        # ROM based arguments replacements
-        if self.selected_rom_file:
-            # --- Escape quotes and double quotes in ROMFileName ---
-            # >> This maybe useful to Android users with complex command line arguments
-            if self.settings['escape_romfile']:
-                logger.info("RomLauncher() Escaping ROMFileName ' and \"")
-                self.selected_rom_file.escapeQuotes()
-            rompath       = self.selected_rom_file.getDir()
-            rombase       = self.selected_rom_file.getBase()
-            rombase_noext = self.selected_rom_file.getBaseNoExt()
-
-            logger.info('RomLauncher() romfile      "{0}"'.format(self.selected_rom_file.getPath()))
-            logger.info('RomLauncher() rompath      "{0}"'.format(rompath))
-            logger.info('RomLauncher() rombase      "{0}"'.format(rombase))
-            logger.info('RomLauncher() rombasenoext "{0}"'.format(rombase_noext))
-
-            self.arguments = self.arguments.replace('$rom$', self.selected_rom_file.getPath())
-            self.arguments = self.arguments.replace('$romfile$', self.selected_rom_file.getPath())
-            self.arguments = self.arguments.replace('$rompath$', rompath)
-            self.arguments = self.arguments.replace('$rombase$', rombase)
-            self.arguments = self.arguments.replace('$rombasenoext$', rombase_noext)
-
-            # >> Legacy names for argument substitution
-            self.arguments = self.arguments.replace('%rom%', self.selected_rom_file.getPath())
-            self.arguments = self.arguments.replace('%ROM%', self.selected_rom_file.getPath())
-        category_id = self.get_category_id()
-        if category_id is None:
-            category_id = ''
-
-        # Default arguments replacements
-        self.arguments = self.arguments.replace('$categoryID$', category_id)
-        self.arguments = self.arguments.replace('$launcherID$', self.entity_data['id'])
-        self.arguments = self.arguments.replace('$romID$', self.rom.get_id())
-        self.arguments = self.arguments.replace('$romtitle$', self.title)
-
-        # automatic substitution of rom values
-        for rom_key, rom_value in self.rom.get_data_dic().iteritems():
-            if isinstance(rom_value, str):
-                self.arguments = self.arguments.replace('${}$'.format(rom_key), rom_value)        
-
-        # automatic substitution of launcher values
-        for launcher_key, launcher_value in self.entity_data.iteritems():
-            if isinstance(launcher_value, str):
-                self.arguments = self.arguments.replace('${}$'.format(launcher_key), launcher_value)
-
-        logger.info('RomLauncher() final arguments "{0}"'.format(self.arguments))
-
 
     def has_alternative_application(self):
         return 'altapp' in self.entity_data and self.entity_data['altapp']

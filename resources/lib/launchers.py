@@ -16,8 +16,10 @@
 # --- Python standard library ---
 from __future__ import unicode_literals
 from __future__ import division
+
 import abc
 import logging
+import json
 
 # --- AEL packages ---
 from resources.lib.utils import io, kodi
@@ -63,9 +65,10 @@ class LauncherABC(object):
     def __init__(self, executorFactory: ExecutorFactoryABC, settings: LauncherSettings):
         self.executorFactory = executorFactory
         self.settings        = settings
-        self.launcher_args   = {}
-        self.application     = ''
-        self.non_blocking    = True
+        
+        self.launcher_settings  = {}
+        self.application:str    = ''
+        self.non_blocking       = True
 
     # --------------------------------------------------------------------------------------------
     # Core methods
@@ -79,15 +82,12 @@ class LauncherABC(object):
     def get_application(self) -> str:
         return self.application
 
-    def get_launcher_args(self) -> dict:
-        return self.launcher_args
+    def get_launcher_settings(self) -> dict:
+        return self.launcher_settings
     
     def is_non_blocking(self) -> bool:
         return self.non_blocking
     
-    def set_launcher_args(self, args:dict):
-        self.launcher_args = args
-
     # --------------------------------------------------------------------------------------------
     # Launcher build wizard methods
     # --------------------------------------------------------------------------------------------
@@ -97,21 +97,39 @@ class LauncherABC(object):
     # Returns False if Launcher was not built (user canceled the dialogs or some other
     # error happened).
     #
-    def build(self, romset_id, platform:str):
+    def build(self, launcher_settings: dict) -> bool:
         logger.debug('LauncherABC::build() Starting ...')
-
+        self.launcher_settings = launcher_settings
+                
         # --- Call hook before wizard ---
         if not self._build_pre_wizard_hook(): return False
 
         # --- Launcher build code (ask user about launcher stuff) ---
-        wizard = kodi.WizardDialog_Dummy(None, 'romset_id', romset_id)
-        wizard = kodi.WizardDialog_Dummy(wizard, 'platform', platform)
-        wizard = kodi.WizardDialog_Dummy(wizard, 'addon_id', self.get_launcher_addon_id())
+        wizard = kodi.WizardDialog_Dummy(None, 'addon_id', self.get_launcher_addon_id())
         # >> Call Child class wizard builder method
         wizard = self._builder_get_wizard(wizard)
         # >> Run wizard
-        self.launcher_args = wizard.runWizard(self.launcher_args)
-        if not self.launcher_args: return False
+        self.launcher_args = wizard.runWizard(self.launcher_settings)
+        if not self.launcher_settings: return False
+
+        # --- Call hook after wizard ---
+        if not self._build_post_wizard_hook(): return False
+
+        return True
+
+    def edit(self,launcher_settings: dict) -> bool:
+        logger.debug('LauncherABC::edit() Starting ...')
+        self.launcher_settings = launcher_settings
+        
+        # --- Call hook before wizard ---
+        if not self._build_pre_wizard_hook(): return False
+
+        # --- Launcher edit code (ask user about launcher stuff) ---
+        wizard = self._editor_get_wizard(None)
+        
+        # >> Run wizard
+        self.launcher_args = wizard.runWizard(self.launcher_settings)
+        if not self.launcher_settings: return False
 
         # --- Call hook after wizard ---
         if not self._build_post_wizard_hook(): return False
@@ -124,6 +142,9 @@ class LauncherABC(object):
     #
     @abc.abstractmethod
     def _builder_get_wizard(self, wizard) -> kodi.WizardDialog: pass
+
+    @abc.abstractmethod
+    def _editor_get_wizard(self, wizard) -> kodi.WizardDialog: pass
 
     @abc.abstractmethod
     def _build_pre_wizard_hook(self): return True
@@ -145,6 +166,21 @@ class LauncherABC(object):
     def _builder_user_selected_custom_browsing(self, item_key, launcher):
         return launcher[item_key] == 'BROWSE'
     
+    #
+    # This method will call the AEL event to store launcher settings for a 
+    # specific romset in the database.
+    #
+    def store_launcher_settings(self, romset_id: str, launcher_id: str = None):
+        params = {
+            'romset_id': romset_id,
+            'launcher_id': launcher_id,
+            'addon_id': self.get_launcher_addon_id(),
+            'app': json.dumps(self.get_application()),
+            'settings': self.get_launcher_settings(),
+            'is_non_blocking': self.is_non_blocking()
+        }        
+        kodi.event(sender='plugin.program.AEL', method='SET_LAUNCHER_SETTINGS', data=params)
+           
     # Execution methods
     # ---------------------------------------------------------------------------------------------
     # ---------------------------------------------------------------------------------------------
@@ -353,20 +389,30 @@ class AppLauncher(LauncherABC):
     #
     # Creates a new launcher using a wizard of dialogs. Called by parent build() method.
     #
-    def _builder_get_wizard(self, wizard):
-    
+    def _builder_get_wizard(self, wizard):    
         wizard = kodi.WizardDialog_FileBrowse(wizard, 'application', 'Select the launcher application', 1, self._builder_get_appbrowser_filter)
         wizard = kodi.WizardDialog_Dummy(wizard, 'romext', '', self._builder_get_extensions_from_app_path)
         wizard = kodi.WizardDialog_Keyboard(wizard, 'romext','Set files extensions, use "|" as separator. (e.g lnk|cbr)')
         wizard = kodi.WizardDialog_Dummy(wizard, 'args', '', self._builder_get_arguments_from_application_path)
         wizard = kodi.WizardDialog_Keyboard(wizard, 'args', 'Application arguments')
-        wizard = kodi.WizardDialog_YesNo(wizard, 'is_non_blocking', 'Is non blocking?')
         
         return wizard
     
+    def _editor_get_wizard(self, wizard):
+        wizard = kodi.WizardDialog_YesNo(wizard, 'change_app', 'Change application? Currently {}'.format(self.application))
+        wizard = kodi.WizardDialog_FileBrowse(wizard, 'application', 'Select the launcher application', 1, self._builder_get_appbrowser_filter, 
+                                              None, self._builder_wants_to_change_app)
+        wizard = kodi.WizardDialog_Keyboard(wizard, 'romext','Set files extensions, use "|" as separator. (e.g lnk|cbr)')
+        wizard = kodi.WizardDialog_Keyboard(wizard, 'args', 'Application arguments')
+        
+        return wizard
+            
     def _build_post_wizard_hook(self):
-        self.application = self.launcher_args.pop('application')
-        self.non_blocking = self.launcher_args.pop('is_non_blocking')
+        
+        app = self.launcher_args.pop('application')
+        if app: self.application = app
+        
+        self.non_blocking = True
         return True
 
     def _builder_get_extensions_from_app_path(self, input, item_key ,launcher_args):
@@ -398,6 +444,12 @@ class AppLauncher(LauncherABC):
         romPath = romPath.pjoin('games')
 
         return romPath.getPath()
+    
+    #
+    # Wizard helper, when a user wants to change the application path.
+    #
+    def _builder_wants_to_change_app(self, item_key, launcher):
+        return launcher[item_key] == True
     
     # ---------------------------------------------------------------------------------------------
     # Execution methods

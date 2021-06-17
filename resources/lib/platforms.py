@@ -580,7 +580,7 @@ def AEL_platform_to_GameFAQs(platform_long_name):
 # -------------------------------------------------------------------------------------------------
 # Miscellaneous emulator and gamesys (platforms) supported.
 # -------------------------------------------------------------------------------------------------
-def emudata_get_program_arguments(app):
+def emudata_get_program_arguments(app:str) -> str:
     # Based on the app. name, retrieve the default arguments for the app.
     applications = {
         'mame'        : '"$rom$"',
@@ -592,13 +592,13 @@ def emudata_get_program_arguments(app):
         'retroarch'   : '-L /path/to/core -f "$rom$"',
         'yabause'     : '-a -f -i "$rom$"',
     }
-    for application, arguments in applications.iteritems():
+    for application, arguments in applications.items():
         if app.lower().find(application) >= 0:
             return arguments
 
     return '"$rom$"'
 
-def emudata_get_program_extensions(app):
+def emudata_get_program_extensions(app:str) -> str:
     # Based on the app. name, retrieve the recognized extension of the app.
     applications = {
         'mame'       : 'zip|7z',
@@ -608,7 +608,7 @@ def emudata_get_program_extensions(app):
         'retroarch'  : 'zip|cue',
         'yabause'    : 'cue',
     }
-    for application, extensions in applications.iteritems():
+    for application, extensions in applications.items():
         if app.lower().find(application) >= 0:
             return extensions
 

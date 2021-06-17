@@ -136,10 +136,11 @@ CREATE TABLE IF NOT EXISTS rom_assets(
 -- LAUNCHERS
 -------------------------------------------------
 CREATE TABLE IF NOT EXISTS romset_launchers(
+    id TEXT PRIMARY KEY, 
     romset_id TEXT,
     ael_addon_id TEXT,
     application TEXT,
-    args TEXT,
+    settings TEXT,
     is_non_blocking INTEGER DEFAULT 1 NOT NULL,
     is_default INTEGER DEFAULT 0 NOT NULL,
     FOREIGN KEY (romset_id) REFERENCES romsets (id) 
@@ -230,9 +231,9 @@ FROM roms AS r
     LEFT JOIN romsets AS rs ON r.romset_id = rs.id;
 
 CREATE VIEW IF NOT EXISTS vw_category_assets AS SELECT
+    a.id as id,
     c.id as category_id,
     c.parent_id,
-    a.id as asset_id,
     a.filepath,
     a.asset_type
 FROM assets AS a
@@ -240,9 +241,9 @@ FROM assets AS a
  INNER JOIN categories AS c ON ca.category_id = c.id;
 
 CREATE VIEW IF NOT EXISTS vw_romset_assets AS SELECT
+    a.id as id,
     r.id as romset_id,
     r.parent_id,
-    a.id as asset_id,
     a.filepath,
     a.asset_type
 FROM assets AS a
@@ -250,9 +251,9 @@ FROM assets AS a
  INNER JOIN romsets AS r ON ra.romset_id = r.id;
 
 CREATE VIEW IF NOT EXISTS vw_rom_assets AS SELECT
+    a.id as id,
     r.id as rom_id, 
     r.romset_id,
-    a.id as asset_id,
     a.filepath,
     a.asset_type
 FROM assets AS a
@@ -261,8 +262,9 @@ FROM assets AS a
  LEFT JOIN romsets AS rs ON r.romset_id = rs.id;
 
 CREATE VIEW IF NOT EXISTS vw_romset_launchers AS SELECT
+    l.id AS id,
     l.romset_id,
-    a.id AS id,
+    a.id AS launcher_addon_id,
     a.name,
     a.addon_id,
     a.version,
@@ -270,7 +272,7 @@ CREATE VIEW IF NOT EXISTS vw_romset_launchers AS SELECT
     a.execute_uri,
     a.configure_uri,
     l.application,
-    l.args,
+    l.settings,
     l.is_non_blocking,
     l.is_default
 FROM romset_launchers AS l
