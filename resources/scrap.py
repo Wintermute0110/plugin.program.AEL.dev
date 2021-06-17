@@ -251,20 +251,6 @@ class ScraperFactory(object):
     def supports_asset(self, scraper_ID, asset_ID):
         return self.scraper_objs[scraper_ID].supports_asset_ID(asset_ID)
 
-    # Menu list to choose scraper.
-    def get_all_scraper_menu_list(self):
-        log_debug('ScraperFactory.get_all_scraper_menu_list() Building scraper list...')
-        scraper_menu_list = []
-        self.all_menu_ID_list = []
-        for scraper_ID in self.scraper_objs:
-            scraper_menu_list.append('Scrape with {}'.format(self.scraper_objs[scraper_ID].get_name()))
-            self.all_menu_ID_list.append(scraper_ID)
-        return scraper_menu_list
-
-    # Call this function after calling get_all_scraper_menu_list()
-    def get_all_scraper_ID_from_menu_idx(self, menu_index):
-        return self.all_menu_ID_list[menu_index]
-
     def get_metadata_scraper_menu_list(self):
         log_debug('ScraperFactory.get_metadata_scraper_menu_list() Building scraper list...')
         scraper_menu_list = []
@@ -289,24 +275,42 @@ class ScraperFactory(object):
     # @return: [list of strings]
     def get_asset_scraper_menu_list(self, asset_ID):
         log_debug('ScraperFactory.get_asset_scraper_menu_list() Building scraper list...')
-        AInfo = assets_get_info_scheme(asset_ID)
+        asset_info = assets_get_info_scheme(asset_ID)
         scraper_menu_list = []
         self.asset_menu_ID_list = []
         for scraper_ID in self.scraper_objs:
             scraper_obj = self.scraper_objs[scraper_ID]
             s_name = scraper_obj.get_name()
             if scraper_obj.supports_asset_ID(asset_ID):
-                scraper_menu_list.append('Scrape {} with {}'.format(AInfo.name, s_name))
+                scraper_menu_list.append('Scrape {} with {}'.format(asset_info.name, s_name))
                 self.asset_menu_ID_list.append(scraper_ID)
-                log_debug('Scraper {} supports asset {} (ENABLED)'.format(s_name, AInfo.name))
+                log_debug('Scraper {} supports asset {} (ENABLED)'.format(s_name, asset_info.name))
             else:
-                log_debug('Scraper {} lacks asset {} (DISABLED)'.format(s_name, AInfo.name))
-
+                log_debug('Scraper {} lacks asset {} (DISABLED)'.format(s_name, asset_info.name))
         return scraper_menu_list
 
     # You must call get_asset_scraper_menu_list before calling this function.
     def get_asset_scraper_ID_from_menu_idx(self, menu_index):
         return self.asset_menu_ID_list[menu_index]
+
+    # Menu list to choose scraper.
+    def get_all_asset_scraper_menu_list(self):
+        log_debug('ScraperFactory.get_all_asset_scraper_menu_list() Building scraper list...')
+        scraper_menu_list = []
+        self.all_menu_ID_list = []
+        for scraper_ID in self.scraper_objs:
+            scraper_obj = self.scraper_objs[scraper_ID]
+            if scraper_obj.supports_assets():
+                scraper_menu_list.append('Scrape with {}'.format(scraper_obj.get_name()))
+                self.all_menu_ID_list.append(scraper_ID)
+                log_debug('Scraper {} supports assets (ENABLED)'.format(scraper_obj.get_name()))
+            else:
+                log_debug('Scraper {} lacks assets    (DISABLED)'.format(scraper_obj.get_name()))
+        return scraper_menu_list
+
+    # Call this function after calling get_all_asset_scraper_menu_list()
+    def get_all_asset_scraper_ID_from_menu_idx(self, menu_index):
+        return self.all_menu_ID_list[menu_index]
 
     # 1) Create the ScraperStrategy object to be used in the ROM Scanner.
     #
@@ -1196,6 +1200,11 @@ class ScrapeStrategy(object):
             current_st_dic = kodi_new_status_dic()
             self._scrap_CM_scrap_asset(ScrapeStrategy.SCRAPE_ROM, object_dic, data_dic, asset_ID, current_st_dic)
             # Only display status messages here, do no exit in case of error.
+            # _scrap_CM_scrap_asset() creates an special field in st_dic to reduce
+            # verbosity when scraping all assets.
+            if current_st_dic['scrap_all_assets_do_not_print']:
+                log_debug('Do not printing message in GUI due to reduced verbosity (scrape all)')
+                continue
             kodi_display_status_message(current_st_dic)
 
         # Display notification in caller.
@@ -1234,9 +1243,10 @@ class ScrapeStrategy(object):
                 log_debug('ROM "{}" candidate is empting. Force rescraping.')
                 use_from_cache = False
             else:
-                ret = kodi_dialog_yesno_custom('Candidate game in the scraper disk cache. '
-                    'Use candidate from cache or rescrape?',
-                    'Scrape', 'Use from cache')
+                t = '{}{}{}'.format(KC_ORANGE, scraper_name, KC_END)
+                m = ('Candidate game in the {} scraper disk cache. '.format(t) +
+                    'Use candidate from scraper cache or rescrape?')
+                ret = kodi_dialog_yesno_custom(m, 'Scrape', 'Use from cache')
                 use_from_cache = False if ret else True
         else:
             log_debug('ROM "{}" NOT in candidates cache.'.format(ROM_FN.getBaseNoExt()))
@@ -1321,6 +1331,11 @@ class ScrapeStrategy(object):
         log_debug('ScraperStrategy._scrap_CM_scrap_asset() asset_path_noext_FN "{}"'.format(
             asset_path_noext_FN.getOriginalPath()))
 
+        # Additional field in st_dic. If this is true then the message must not be printed
+        # in the caller function. This is useful to reduce the message verbosity when this
+        # function is used to scrape all assets of a ROM.
+        st_dic['scrap_all_assets_do_not_print'] = False
+
         # --- Grab list of images for the selected game -------------------------------------------
         pdialog = KodiProgressDialog()
         pdialog.startProgress('Getting {} images from {}...'.format(asset_info.name, scraper_name))
@@ -1332,6 +1347,7 @@ class ScrapeStrategy(object):
         if not assetdata_list:
             kodi_set_error_status(st_dic, '{}{}{} scraper found no {}{}{} images.'.format(
                 KC_GREEN, scraper_name, KC_END, KC_ORANGE, asset_info.name, KC_END))
+            st_dic['scrap_all_assets_do_not_print'] = True
             return
 
         # If there is a local image add it to the list and show it to the user.
@@ -1368,12 +1384,14 @@ class ScrapeStrategy(object):
             log_debug('_scrap_CM_scrap_asset() User cancelled image select dialog. Returning.')
             kodi_set_error_status(st_dic, 'Select dialog canceled. '
                 '{} image not changed'.format(asset_info.name))
+            st_dic['scrap_all_assets_do_not_print'] = True
             return
         # User chose to keep current asset.
         if local_asset_in_list_flag and image_selected_index == 0:
             log_debug('_scrap_CM_scrap_asset() Selected current image "{}"'.format(current_asset_FN.getPath()))
             kodi_set_error_status(st_dic, 'Selected current asset. '
                 '{}{}{} image not changed'.format(KC_ORANGE, asset_info.name, KC_END))
+            st_dic['scrap_all_assets_do_not_print'] = True
             return
 
         # --- Download scraped image (or use local image) ----------------------------------------
