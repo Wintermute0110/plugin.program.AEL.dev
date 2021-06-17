@@ -3023,11 +3023,10 @@ class Main:
                 st_dic = kodi_new_status_dic()
                 # Create scraper factory and select scraper to use.
                 scrap_factory = ScraperFactory(g_PATHS, self.settings)
-                scraper_menu_list = scrap_factory.get_all_scraper_menu_list()
-                sDialog = KodiSelectDialog('Select scraper', scraper_menu_list)
-                scraper_index = sDialog.executeDialog()
+                scraper_menu_list = scrap_factory.get_all_asset_scraper_menu_list()
+                scraper_index = KodiSelectDialog('Select scraper', scraper_menu_list).executeDialog()
                 if scraper_index is None: return False
-                scraper_ID = scrap_factory.get_all_scraper_ID_from_menu_idx(scraper_index)
+                scraper_ID = scrap_factory.get_all_asset_scraper_ID_from_menu_idx(scraper_index)
                 # Create scraper object and scrap all assets
                 scrap_strategy = scrap_factory.create_CM_asset(scraper_ID)
                 scrap_strategy.scrap_CM_asset_all(rom, data_dic, st_dic)
