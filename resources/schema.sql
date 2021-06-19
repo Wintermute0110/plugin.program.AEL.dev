@@ -139,7 +139,6 @@ CREATE TABLE IF NOT EXISTS romset_launchers(
     id TEXT PRIMARY KEY, 
     romset_id TEXT,
     ael_addon_id TEXT,
-    application TEXT,
     settings TEXT,
     is_non_blocking INTEGER DEFAULT 1 NOT NULL,
     is_default INTEGER DEFAULT 0 NOT NULL,
@@ -271,7 +270,6 @@ CREATE VIEW IF NOT EXISTS vw_romset_launchers AS SELECT
     a.addon_type,
     a.execute_uri,
     a.configure_uri,
-    l.application,
     l.settings,
     l.is_non_blocking,
     l.is_default

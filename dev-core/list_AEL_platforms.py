@@ -20,8 +20,8 @@ if __name__ == "__main__" and __package__ is None:
     path = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
     print('Adding to sys.path {0}'.format(path))
     sys.path.append(path)
-from resources.utils import *
-from resources.platforms import *
+    
+from resources.lib import platforms
 
 # --- configuration ------------------------------------------------------------------------------
 fname_longname_txt  = 'data/AEL_platform_list_longname.txt'
@@ -39,25 +39,25 @@ def write_txt_file(filename, text):
 # --- main ---------------------------------------------------------------------------------------
 # --- Check that short names are unique ---
 print('Checking that platform short names are unique...')
-for index in range(len(AEL_platforms)):
-    for subindex in range(len(AEL_platforms)):
+for index in range(len(platforms.AEL_platforms)):
+    for subindex in range(len(platforms.AEL_platforms)):
         if index == subindex: continue
-        if AEL_platforms[index].short_name == AEL_platforms[subindex].short_name:
-            print('Short name {} is repeated!'.format(AEL_platforms[index].short_name))
+        if platforms.AEL_platforms[index].short_name == platforms.AEL_platforms[subindex].short_name:
+            print('Short name {} is repeated!'.format(platforms.AEL_platforms[index].short_name))
             sys.exit(1)
 
 # --- Check that compact names are unique ---
 print('Checking that platform compact names are unique...')
-for index in range(len(AEL_platforms)):
-    for subindex in range(len(AEL_platforms)):
+for index in range(len(platforms.AEL_platforms)):
+    for subindex in range(len(platforms.AEL_platforms)):
         if index == subindex: continue
-        if AEL_platforms[index].compact_name == AEL_platforms[subindex].compact_name:
-            print('Compact name {} is repeated!'.format(AEL_platforms[index].compact_name))
+        if platforms.AEL_platforms[index].compact_name == platforms.AEL_platforms[subindex].compact_name:
+            print('Compact name {} is repeated!'.format(platforms.AEL_platforms[index].compact_name))
             sys.exit(1)
 
 # --- Check that the platform object list is alphabetically sorted ---
 # Unknown platform is special and it's always in last position. Remove from alphabetical check.
-p_longname_list = [pobj.long_name for pobj in AEL_platforms[:-1]]
+p_longname_list = [pobj.long_name for pobj in platforms.AEL_platforms[:-1]]
 p_longname_list_sorted = sorted(p_longname_list, key = lambda s: s.lower())
 table_str = [ ['left', 'left', 'left'], ['Marker', 'Original', 'Sorted'] ]
 not_sorted_flag = False
@@ -80,14 +80,14 @@ table_str = [
     ['left', 'left', 'left', 'left', 'left', 'left', 'left', 'left', 'left'],
     ['Long name', 'Short name', 'Compact name', 'Alias', 'TGDB', 'MG', 'SS', 'GF', 'DAT'],
 ]
-for p_obj in AEL_platforms:
+for p_obj in platforms.AEL_platforms:
     table_str.append([
-        p_obj.long_name, p_obj.short_name, p_obj.compact_name, unicode(p_obj.aliasof), 
-        unicode(p_obj.TGDB_plat), unicode(p_obj.MG_plat), unicode(p_obj.SS_plat), unicode(p_obj.GF_plat),
-        unicode(p_obj.DAT),
+        p_obj.long_name, p_obj.short_name, p_obj.compact_name, str(p_obj.aliasof), 
+        str(p_obj.TGDB_plat), str(p_obj.MG_plat), str(p_obj.SS_plat), str(p_obj.GF_plat),
+        str(p_obj.DAT),
     ])
 header_list = []
-header_list.append('Number of AEL platforms {}'.format(len(AEL_platforms)))
+header_list.append('Number of AEL platforms {}'.format(len(platforms..AEL_platforms)))
 header_list.append('')
 table_str_list = text_render_table(table_str)
 header_list.extend(table_str_list)

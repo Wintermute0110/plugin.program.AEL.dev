@@ -115,7 +115,7 @@ def vw_route_render_utilities_vlaunchers():
 # -------------------------------------------------------------------------------------------------
 @router.route('/execute/command/<cmd>')
 def vw_execute_cmd(cmd: str):    
-    kodi.event(method=cmd.capitalize(), data=router.args)
+    kodi.event(command=cmd.capitalize(), data=router.args)
 
 @router.route('/categories/view/<category_id>')
 def vw_view_category(category_id: str):
@@ -124,15 +124,15 @@ def vw_view_category(category_id: str):
 
 @router.route('/categories/add/<category_id>')
 def vw_add_category(category_id: str):
-    kodi.event(method='ADD_CATEGORY', data={'category_id': category_id})
+    kodi.event(command='ADD_CATEGORY', data={'category_id': category_id})
 
 @router.route('/categories/edit/<category_id>')
 def vw_edit_category(category_id: str):
-    kodi.event(method='EDIT_CATEGORY', data={'category_id': category_id })
+    kodi.event(command='EDIT_CATEGORY', data={'category_id': category_id })
 
 @router.route('/romset/add/<romset_id>')
 def vw_add_romset(romset_id: str):
-    kodi.event(method='ADD_ROMSET', data={'romset_id': romset_id})
+    kodi.event(command='ADD_ROMSET', data={'romset_id': romset_id})
 
 @router.route('/romset/view/<romset_id>')
 def vw_view_romset(romset_id: str):
@@ -141,11 +141,11 @@ def vw_view_romset(romset_id: str):
 
 @router.route('/romset/edit/<romset_id>')
 def vw_edit_romset(romset_id: str):
-    kodi.event(method='EDIT_ROMSET', data={'romset_id': romset_id })
+    kodi.event(command='EDIT_ROMSET', data={'romset_id': romset_id })
 
 @router.route('/execute/rom/<rom_id>')
 def vw_route_execute_rom(rom_id):
-    kodi.event(method="EXECUTE_ROM", data={'rom_id': rom_id} )
+    kodi.event(command="EXECUTE_ROM", data={'rom_id': rom_id} )
 
 # -------------------------------------------------------------------------------------------------
 # Internal launchers/scanner execution
@@ -158,12 +158,13 @@ def vw_configure_app_launcher():
     launcher_id:str = router.args['launcher_id'][0] if 'launcher_id' in router.args else None
     settings:str    = router.args['settings'][0] if 'settings' in router.args else None
     
+    launcher_settings = json.loads(settings)    
     launcher = AppLauncher(None, None)
-    if launcher_id is None and launcher.build(json.loads(settings)):
+    if launcher_id is None and launcher.build(launcher_settings):
         launcher.store_launcher_settings(romset_id)
         return
     
-    if launcher_id is not None and launcher.edit(json.loads(settings)):
+    if launcher_id is not None and launcher.edit(launcher_settings):
         launcher.store_launcher_settings(romset_id, launcher_id)
         return
     
@@ -173,16 +174,16 @@ def vw_configure_app_launcher():
 def vw_configure_app_launcher():
     logger.debug('App Launcher: Starting ...')
     
-    launcher_settings = LauncherSettings()
-    launcher_settings.delay_tempo = settings.getSettingAsFloat('delay_tempo')
-    launcher_settings.display_launcher_notify = settings.getSettingAsBool('display_launcher_notify')
-    launcher_settings.is_non_blocking = True if router.args['is_non_blocking'] == 'true' else False
-    launcher_settings.media_state_action = settings.getSettingAsInt('media_state_action')
-    launcher_settings.suspend_audio_engine = settings.getSettingAsBool('suspend_audio_engine')
-    launcher_settings.suspend_screensaver = settings.getSettingAsBool('suspend_screensaver')
+    execution_settings = ExecutionSettings()
+    execution_settings.delay_tempo = settings.getSettingAsFloat('delay_tempo')
+    execution_settings.display_launcher_notify = settings.getSettingAsBool('display_launcher_notify')
+    execution_settings.is_non_blocking = True if router.args['is_non_blocking'] == 'true' else False
+    execution_settings.media_state_action = settings.getSettingAsInt('media_state_action')
+    execution_settings.suspend_audio_engine = settings.getSettingAsBool('suspend_audio_engine')
+    execution_settings.suspend_screensaver = settings.getSettingAsBool('suspend_screensaver')
             
     executor_factory = get_executor_factory()
-    launcher = AppLauncher(executor_factory, launcher_settings)
+    launcher = AppLauncher(executor_factory, execution_settings)
     launcher.launch(router.args)
     
 # -------------------------------------------------------------------------------------------------

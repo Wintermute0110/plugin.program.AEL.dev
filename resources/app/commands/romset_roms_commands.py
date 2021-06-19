@@ -63,12 +63,12 @@ def cmd_manage_roms(args):
     if selected_option is None:
         # >> Exits context menu
         logger.debug('ROMSET_MANAGE_ROMS: cmd_manage_roms() Selected None. Closing context menu')
-        kodi.event(method='EDIT_ROMSET', data=args)
+        kodi.event(command='EDIT_ROMSET', data=args)
         return
     
     # >> Execute subcommand. May be atomic, maybe a submenu.
     logger.debug('ROMSET_MANAGE_ROMS: cmd_manage_roms() Selected {}'.format(selected_option))
-    kodi.event(method=selected_option, data=args)
+    kodi.event(command=selected_option, data=args)
 
 # --- Choose default ROMs assets/artwork ---
 @AppMediator.register('SET_ROMS_DEFAULT_ARTWORK')
@@ -103,7 +103,7 @@ def cmd_set_roms_default_artwork(args):
         if selected_asset_info is None:
             # >> Return to parent menu.
             logger.debug('cmd_set_roms_default_artwork() Main selected NONE. Returning to parent menu.')
-            kodi.event(method='ROMSET_MANAGE_ROMS', data=args)
+            kodi.event(command='ROMSET_MANAGE_ROMS', data=args)
             return
         
         logger.debug('cmd_set_roms_default_artwork() Main select() returned {0}'.format(selected_asset_info.name))    
@@ -126,7 +126,7 @@ def cmd_set_roms_default_artwork(args):
         if new_selected_asset_info is None:
             # >> Return to this method recursively to previous menu.
             logger.debug('cmd_set_roms_default_artwork() Mapable selected NONE. Returning to previous menu.')
-            kodi.event(method='ROMSET_MANAGE_ROMS', data=args)
+            kodi.event(command='ROMSET_MANAGE_ROMS', data=args)
             return   
         
         logger.debug('cmd_set_roms_default_artwork() Mapable selected {0}.'.format(new_selected_asset_info.name))
@@ -137,10 +137,10 @@ def cmd_set_roms_default_artwork(args):
         
         repository.update_romset(romset)
         uow.commit()
-        kodi.event(method='RENDER_ROMSET_VIEW', data={'romset_id': romset.get_id()})
-        kodi.event(method='RENDER_VIEW', data={'category_id': romset.get_parent_id()})     
+        kodi.event(command='RENDER_ROMSET_VIEW', data={'romset_id': romset.get_id()})
+        kodi.event(command='RENDER_VIEW', data={'category_id': romset.get_parent_id()})     
 
-    kodi.event(method='SET_ROMS_DEFAULT_ARTWORK', data={'romset_id': romset.get_id(), 'selected_asset': selected_asset_info.id})         
+    kodi.event(command='SET_ROMS_DEFAULT_ARTWORK', data={'romset_id': romset.get_id(), 'selected_asset': selected_asset_info.id})         
 
 @AppMediator.register('SET_ROMS_ASSET_DIRS')
 def cmd_set_rom_asset_dirs(args):
@@ -170,13 +170,13 @@ def cmd_set_rom_asset_dirs(args):
         selected_asset: AssetInfo = dialog.select('ROM Asset directories ', list_items)
 
         if selected_asset is None:
-            kodi.event(method='ROMSET_MANAGE_ROMS', data=args)
+            kodi.event(command='ROMSET_MANAGE_ROMS', data=args)
             return
 
         selected_asset_path = romset.get_asset_path(selected_asset)
         dir_path = kodi.browse(0, 'Select {} path'.format(selected_asset.plural), 'files', '', False, False, selected_asset_path.getPath()).decode('utf-8')
         if not dir_path or dir_path == selected_asset_path.getPath():  
-            kodi.event(method='SET_ROMS_ASSET_DIRS', data=args)
+            kodi.event(command='SET_ROMS_ASSET_DIRS', data=args)
             return
                 
         romset.set_asset_path(selected_asset, dir_path)
@@ -184,10 +184,10 @@ def cmd_set_rom_asset_dirs(args):
         uow.commit()
                 
     # >> Check for duplicate paths and warn user.
-    kodi.event(method='CHECK_DUPLICATE_ASSET_DIRS', data=args)
+    kodi.event(command='CHECK_DUPLICATE_ASSET_DIRS', data=args)
 
     kodi.notify('Changed rom asset dir for {0} to {1}'.format(selected_asset.name, dir_path))
-    kodi.event(method='SET_ROMS_ASSET_DIRS', data=args)
+    kodi.event(command='SET_ROMS_ASSET_DIRS', data=args)
     
 @AppMediator.register('IMPORT_ROMS')
 def cmd_import_roms(args):
@@ -210,12 +210,12 @@ def cmd_import_roms(args):
     if selected_option is None:
         # >> Exits context menu
         logger.debug('IMPORT_ROMS: cmd_import_roms() Selected None. Closing context menu')
-        kodi.event(method='ROMSET_MANAGE_ROMS', data=args)
+        kodi.event(command='ROMSET_MANAGE_ROMS', data=args)
         return
     
     # >> Execute subcommand. May be atomic, maybe a submenu.
     logger.debug('IMPORT_ROMS: cmd_import_roms() Selected {}'.format(selected_option))
-    kodi.event(method=selected_option, data=args)
+    kodi.event(command=selected_option, data=args)
     
 # --- Import ROM metadata from NFO files ---
 @AppMediator.register('IMPORT_ROMS_NFO')
@@ -247,7 +247,7 @@ def cmd_import_roms_nfo(args):
         pDialog.close()
         
     kodi.notify('Imported {0} NFO files'.format(num_read_NFO_files))
-    kodi.event(method='IMPORT_ROMS', data=args)
+    kodi.event(command='IMPORT_ROMS', data=args)
     
 # --- Import ROM metadata from json config file ---
 @AppMediator.register('IMPORT_ROMS_JSON')
@@ -301,6 +301,6 @@ def cmd_import_roms_json(args):
             
         uow.commit()
 
-    kodi.event(method='RENDER_ROMSET_VIEW', data={'romset_id': romset_id})
-    kodi.event(method='RENDER_VIEW', data={'category_id': romset.get_parent_id()})  
+    kodi.event(command='RENDER_ROMSET_VIEW', data={'romset_id': romset_id})
+    kodi.event(command='RENDER_VIEW', data={'category_id': romset.get_parent_id()})  
     kodi.notify('Finished importing ROMS')

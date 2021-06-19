@@ -1,11 +1,17 @@
+import sys
 import unittest, os
 import unittest.mock
-
 from mock import patch
 
 import logging
+import collections
 
+import tests.fake_routing
 import tests.fakes
+
+module = type(sys)('routing')
+module.Plugin = tests.fake_routing.Plugin
+sys.modules['routing'] = module
 
 from resources.lib.repositories import UnitOfWork
 from resources.lib.settings import AEL_Paths
@@ -43,7 +49,7 @@ class Test_cmd_scan_addons(unittest.TestCase):
         globals.g_PATHS.DATABASE_FILE_PATH = dbPath
         
         uow = UnitOfWork(dbPath)
-       # uow.reset_database(schemaPath)
+        uow.reset_database(schemaPath)
         
     mocked_addons_collection = {}  
     def mocked_addons(addon_id):
@@ -88,8 +94,18 @@ class Test_cmd_scan_addons(unittest.TestCase):
         print(b.value)
 
         self.assertTrue(b == AddonType.SCANNER)
-
-        uri = 'aap.com'
-        kodi.execute_uri(uri, {'arg': 'a'})
-
         
+        z = dict()
+        z['naam'] = 'piet'
+        z['adres'] = 'van "Houten"laan'
+        z['pad'] = "c:\\windows\\app"
+        
+        a = {
+            'x': 'xx',
+            'y': 'y"y',
+            'd': 'd-d\\aap',
+            'z': z
+        }
+        
+        astr = json.dumps(a)
+        logger.info(astr)

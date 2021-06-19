@@ -156,7 +156,6 @@ class AelAddon(EntityABC):
     
     def get_configure_uri(self) -> str:
         return self.entity_data['configure_uri']
- 
 class Asset(EntityABC):
 
     def __init__(self, asset_info: AssetInfo, entity_data: typing.Dict[str, typing.Any]):
@@ -633,14 +632,12 @@ class ROMSetLauncher(EntityABC):
         super(ROMSetLauncher, self).__init__(entity_data)
         
     def get_name(self):
-        return '{} ({})'.format(self.addon.get_name(), self.get_application())
-    
-    def get_application(self) -> str:
-        return self.entity_data['application'] if 'application' in self.entity_data else None
-
-    def set_application(self, application:str):
-        self.entity_data['application'] = application
-
+        settings = self.get_settings()
+        app = settings['application'] if 'application' in settings else None
+        
+        if app: return '{} ({})'.format(self.addon.get_name(), app)
+        return self.addon.get_name()
+            
     def get_settings_str(self) -> str:
         return self.entity_data['settings'] if 'settings' in self.entity_data else None
     
@@ -767,9 +764,8 @@ class ROMSet(MetaDataItemABC):
     def has_launchers(self) -> bool:
         return len(self.launchers_data) > 0
 
-    def add_launcher(self, addon: AelAddon, application:str, settings: dict, is_non_blocking = True, is_default: bool = False):
+    def add_launcher(self, addon: AelAddon, settings: dict, is_non_blocking = True, is_default: bool = False):
         launcher = ROMSetLauncher(addon, {
-            'application': application,
             'settings': json.dumps(settings),
             'is_non_blocking': is_non_blocking,
             'is_default': is_default

@@ -55,6 +55,7 @@ def jsonrpc_query(method=None, params=None, verbose = False):
         "id": 1}
     if params:
         query["params"] = params
+                
     try:
         jrpc = xbmc.executeJSONRPC(json.dumps(query))
         response = json.loads(jrpc)
@@ -62,20 +63,22 @@ def jsonrpc_query(method=None, params=None, verbose = False):
             logger.debug('jsonrpc_query() response = \n{}'.format(pprint.pformat(response)))
     except Exception as exc:
         logger.error(u'jsonrpc_query(): JSONRPC Error:\n{}'.format(exc), 1)
-        response = {}
+        response = {}    
     return response
 
-def event(sender=globals.addon_id, method='test', data=None):
+def event(sender=globals.addon_id, command='test', data=None):
 
-    ''' Data is a dictionary.
-    '''
     sender = sender or "plugin.program.AEL"
     data = data or {}
-    data = json.dumps(data)
-    data = '"[{}]"'.format(data.replace('"', '\\"'))
+    event_params = {
+        'sender': sender,
+        'message': command,
+        'data': data
+    }
     
-    xbmc.executebuiltin('NotifyAll({}, {}, {})'.format(sender, method, data))
-    logger.debug("event(): {}/{} => {}".format(sender, method, data))
+    logger.debug("event(): {}/{} => {}".format(sender, command, data))
+    jsonrpc_query('JSONRPC.NotifyAll', event_params)
+    #xbmc.executebuiltin('NotifyAll({}, {}, {})'.format(sender, method, data))
 
 def execute_uri(uri, args:dict=None):
     if args is not None:    
@@ -600,8 +603,9 @@ class WizardDialog_Input(WizardDialog):
 
 # YesNo Dialog
 class WizardDialog_YesNo(WizardDialog):
-    def __init__(self, decoratorDialog, property_key, title, yes_label='Yes', no_label='No',
+    def __init__(self, decoratorDialog, property_key, title, message, yes_label='Yes', no_label='No',
                  customFunction = None, conditionalFunction = None):
+        self.message = message
         self.yes_label = yes_label
         self.no_label = no_label
         super(WizardDialog_YesNo, self).__init__(
@@ -609,7 +613,7 @@ class WizardDialog_YesNo(WizardDialog):
 
     def show(self, properties):
         logger.debug('WizardDialog_YesNo::show() key = {}'.format(self.property_key))
-        output = xbmcgui.Dialog().yesno(self.title, self.yes_label, self.no_label)
+        output = xbmcgui.Dialog().yesno(self.title, self.message, self.yes_label, self.no_label)
         return output
 #
 # Wizard dialog which shows you a message formatted with a value from the dictionary.

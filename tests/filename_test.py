@@ -3,11 +3,14 @@ import mock
 from mock import *
 from tests.fakes import *
 
+import logging
 import os
 
-from resources.utils import *
-from resources.constants import *
-        
+from resources.lib.utils import io
+ 
+logger = logging.getLogger(__name__)
+logging.basicConfig(format = '%(asctime)s %(module)s %(levelname)s: %(message)s',
+                datefmt = '%m/%d/%Y %I:%M:%S %p', level = logging.INFO)       
 class Test_filename_test(unittest.TestCase):
      
     ROOT_DIR = ''
@@ -16,16 +19,15 @@ class Test_filename_test(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls):
-        set_log_level(LOG_DEBUG)
         
         cls.TEST_DIR = os.path.dirname(os.path.abspath(__file__))
         cls.ROOT_DIR = os.path.abspath(os.path.join(cls.TEST_DIR, os.pardir))
         cls.TEST_ASSETS_DIR = os.path.abspath(os.path.join(cls.TEST_DIR,'assets/'))
                 
-        print('ROOT DIR: {}'.format(cls.ROOT_DIR))
-        print('TEST DIR: {}'.format(cls.TEST_DIR))
-        print('TEST ASSETS DIR: {}'.format(cls.TEST_ASSETS_DIR))
-        print('---------------------------------------------------------------------------')
+        logger.info('ROOT DIR: {}'.format(cls.ROOT_DIR))
+        logger.info('TEST DIR: {}'.format(cls.TEST_DIR))
+        logger.info('TEST ASSETS DIR: {}'.format(cls.TEST_ASSETS_DIR))
+        logger.info('---------------------------------------------------------------------------')
 
     @patch('resources.utils.xbmcvfs.File')
     def test_reading_line_for_line(self, file_mock):
@@ -33,7 +35,7 @@ class Test_filename_test(unittest.TestCase):
         # arrange
         p = self.TEST_ASSETS_DIR + "\\test-nfo.xml"
         file_mock.return_value = open(p, 'r')
-        target = KodiFileName(p)       
+        target = io.FileName(p)       
 
         expected = "<game>"
 
@@ -54,7 +56,7 @@ class Test_filename_test(unittest.TestCase):
         # arrange
         p = self.TEST_ASSETS_DIR + "\\test-nfo.xml"
         file_mock.return_value = open(p, 'r')
-        target = KodiFileName(p)       
+        target = io.FileName(p)       
 
         # file contains 9 lines, so 10th should be passed the end of the file.
 
@@ -62,7 +64,7 @@ class Test_filename_test(unittest.TestCase):
         f = target.open('r')
         for x in range(0, 10):
             line = target.readline()
-            print('{}: {}'.format(x, line))
+            logger.debug('{}: {}'.format(x, line))
 
         actual = target.readline()
         
@@ -74,12 +76,12 @@ class Test_filename_test(unittest.TestCase):
     def test_reading_property_file_successfull(self):
         # arrange
         p = self.TEST_ASSETS_DIR + "\\retroarch.cfg"
-        target = NewFileName(p)       
+        target = io.FileName(p)       
 
         # act
         propfile = target.readPropertyFile()
         for key, value in propfile.items():
-            print('{}={}'.format(key, value))
+            logger.debug('{}={}'.format(key, value))
 
         actual = propfile['content_database_path']
 
@@ -92,12 +94,12 @@ class Test_filename_test(unittest.TestCase):
         path = '/data/user/0/com.retroarch/cores/'
         
         # act       
-        actual = NewFileName(path, isdir=True) 
+        actual = io.FileName(path, isdir=True) 
                 
         # assert
         self.assertIsNotNone(actual)
         self.assertEquals(u'/data/user/0/com.retroarch/cores/', actual.path_tr)
-        print actual.path_tr
+        logger.info(actual.path_tr)
         
 if __name__ == '__main__':
     unittest.main()

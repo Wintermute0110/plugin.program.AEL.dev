@@ -92,7 +92,7 @@ def unescape_XML(data_str):
 #
 def escape_JSON(s):
     s = s.replace('\\', '\\\\') # >> Must be done first
-    s = s.replace('"', '\\"')
+    #s = s.replace('"', '\\"')
 
     return s
 

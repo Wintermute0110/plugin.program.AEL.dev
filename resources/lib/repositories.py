@@ -5,8 +5,6 @@ import typing
 import sqlite3
 from sqlite3.dbapi2 import Cursor
 
-from routing import Plugin
-
 from resources.lib.settings import *
 from resources.lib.constants import *
 from resources.lib.domain import *
@@ -30,9 +28,8 @@ logger = logging.getLogger(__name__)
 #
 class ViewRepository(object):
 
-    def __init__(self, paths: AEL_Paths, router: Plugin):
+    def __init__(self, paths: AEL_Paths):
         self.paths = paths
-        self.router = router
 
     def find_root_items(self):
         repository_file = self.paths.ROOT_PATH
@@ -541,9 +538,10 @@ QUERY_UPDATE_ROMSET               = """
                                     """
 QUERY_INSERT_ROMSET_ASSET         = "INSERT INTO romset_assets (romset_id, asset_id) VALUES (?, ?)"
 QUERY_INSERT_ROMSET_ASSET_PATH    = "INSERT INTO romset_assetspaths (romset_id, assetspaths_id) VALUES (?, ?)"
-QUERY_INSERT_ROMSET_LAUNCHER      = "INSERT INTO romset_launchers (id, romset_id, ael_addon_id, application, settings, is_non_blocking, is_default) VALUES (?,?,?,?,?,?,?)"
-QUERY_UPDATE_ROMSET_LAUNCHER      = "UPDATE romset_launchers SET application = ?, settings = ?, is_non_blocking = ?, is_default = ? WHERE id = ?"
+QUERY_INSERT_ROMSET_LAUNCHER      = "INSERT INTO romset_launchers (id, romset_id, ael_addon_id, settings, is_non_blocking, is_default) VALUES (?,?,?,?,?,?)"
+QUERY_UPDATE_ROMSET_LAUNCHER      = "UPDATE romset_launchers SET settings = ?, is_non_blocking = ?, is_default = ? WHERE id = ?"
 QUERY_DELETE_ROMSET_LAUNCHERS     = "DELETE FROM romset_launchers WHERE romset_id = ?"
+QUERY_DELETE_ROMSET_LAUNCHER      = "DELETE FROM romset_launchers WHERE romset_id = ? AND id = ?"
 QUERY_DELETE_ROMSET               = "DELETE FROM romset WHERE id = ?"
 
 
@@ -567,7 +565,7 @@ class ROMSetRepository(object):
         launchers_data = self._uow.result_set()
         launchers = []
         for launcher_data in launchers_data:
-            addon = AelAddon(launcher_data)
+            addon = AelAddon(launcher_data.copy())
             launchers.append(ROMSetLauncher(addon, launcher_data))
         
         return ROMSet(romset_data, assets, launchers)
@@ -662,7 +660,6 @@ class ROMSetRepository(object):
                 romset_launcher.get_id(),
                 romset_obj.get_id(), 
                 romset_launcher.addon.get_id(), 
-                romset_launcher.get_application(),
                 romset_launcher.get_settings(), 
                 romset_launcher.is_non_blocking(),
                 romset_launcher.is_default())
@@ -706,13 +703,11 @@ class ROMSetRepository(object):
                     romset_launcher.get_id(),
                     romset_obj.get_id(), 
                     romset_launcher.addon.get_id(), 
-                    romset_launcher.get_application(),
                     romset_launcher.get_settings_str(), 
                     romset_launcher.is_non_blocking(),
                     romset_launcher.is_default())
             else:
                 self._uow.execute(QUERY_UPDATE_ROMSET_LAUNCHER,
-                    romset_launcher.get_application(),
                     romset_launcher.get_settings_str(), 
                     romset_launcher.is_non_blocking(),
                     romset_launcher.is_default(),
@@ -725,6 +720,9 @@ class ROMSetRepository(object):
     def delete_romset(self, romset_id: str):
         logger.info("ROMSetRepository.delete_romset(): Deleting romset '{}'".format(romset_id))
         self._uow.execute(QUERY_DELETE_ROMSET, romset_id)
+
+    def remove_launcher(self, romset_id: str, launcher_id:str):
+        self._uow.execute(QUERY_DELETE_ROMSET_LAUNCHER, romset_id, launcher_id)
 
     def _insert_asset(self, asset: Asset, romset_obj: ROMSet):
         asset_db_id = text.misc_generate_random_SID()

@@ -101,7 +101,7 @@ def cmd_execute_import_launchers(args):
 
         uow.commit()
 
-    kodi.event(method='RENDER_VIEWS')
+    kodi.event(command='RENDER_VIEWS')
     kodi.notify('Finished importing Categories/Launchers')
 
 @AppMediator.register('RESET_DATABASE')
@@ -112,8 +112,8 @@ def cmd_execute_reset_db(args):
     uow = UnitOfWork(globals.g_PATHS.DATABASE_FILE_PATH)
     uow.reset_database(globals.g_PATHS.DATABASE_SCHEMA_PATH)
 
-    kodi.event(method='CLEANUP_VIEWS')
-    kodi.event(method='RENDER_VIEWS')
+    kodi.event(command='CLEANUP_VIEWS')
+    kodi.event(command='RENDER_VIEWS')
     kodi.notify('Finished resetting the database')
 
 @AppMediator.register('CHECK_DUPLICATE_ASSET_DIRS')

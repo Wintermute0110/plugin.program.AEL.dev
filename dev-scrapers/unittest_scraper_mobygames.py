@@ -50,7 +50,7 @@ if __name__ == "__main__" and __package__ is None:
     path = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
     print('Adding to sys.path {0}'.format(path))
     sys.path.append(path)
-from resources.utils import *
+from resources.lib.utils import *
 from resources.net_IO import *
 from resources.scrap import *
 
@@ -64,7 +64,7 @@ class TestLauncher(object):
     def get_platform(self): return self.platform
 
 class TestROM(object):
-    def get_path(self): return FileName('/test/rom/filename.zip')
+    def get_path(self): return io.FileName('/test/rom/filename.zip')
 
     def set_ID(self, ID): self.ID = ID
     def get_ID(self): return self.ID
@@ -104,7 +104,7 @@ class Test_mobygames_scraper(unittest.TestCase):
         if mocked_json_file == '':
             return net_get_URL_as_json(url)
 
-        print 'reading mocked data from file: {}'.format(mocked_json_file)
+        print('reading mocked data from file: {}'.format(mocked_json_file))
 
         return read_file_as_json(mocked_json_file)
 

@@ -78,9 +78,10 @@ class AppMonitor(xbmc.Monitor):
         if sender != self.addon_id:
             return
 
+        logger.info(data)
         data_obj = None
         try:
-            data_obj = json.loads(data)[0]
+            data_obj = json.loads(data)
         except:
             logger.error('Failed to load arguments as json')
 

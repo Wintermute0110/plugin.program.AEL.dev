@@ -22,7 +22,7 @@ import logging
 import json
 
 # --- AEL packages ---
-from resources.lib.utils import io, kodi
+from resources.lib.utils import io, kodi, text
 from resources.lib import globals, platforms, settings
 from resources.lib.executors import *
 from resources.lib.constants import *
@@ -42,7 +42,7 @@ def get_executor_factory() -> ExecutorFactoryABC:
     executorFactory = ExecutorFactory(globals.g_PATHS.LAUNCHER_REPORT_FILE_PATH, executorSettings)
     return executorFactory
 
-class LauncherSettings(object):
+class ExecutionSettings(object):
     is_non_blocking = False
     toggle_window = False
     display_launcher_notify = True
@@ -62,12 +62,11 @@ class LauncherABC(object):
     #
     # In an abstract class launcher_data is mandatory.
     #
-    def __init__(self, executorFactory: ExecutorFactoryABC, settings: LauncherSettings):
-        self.executorFactory = executorFactory
-        self.settings        = settings
+    def __init__(self, executorFactory: ExecutorFactoryABC, execution_settings: ExecutionSettings):
+        self.executorFactory    = executorFactory
+        self.execution_settings = execution_settings
         
         self.launcher_settings  = {}
-        self.application:str    = ''
         self.non_blocking       = True
 
     # --------------------------------------------------------------------------------------------
@@ -78,9 +77,6 @@ class LauncherABC(object):
     
     @abc.abstractmethod
     def get_launcher_addon_id(self) -> str: return ''
-
-    def get_application(self) -> str:
-        return self.application
 
     def get_launcher_settings(self) -> dict:
         return self.launcher_settings
@@ -171,15 +167,19 @@ class LauncherABC(object):
     # specific romset in the database.
     #
     def store_launcher_settings(self, romset_id: str, launcher_id: str = None):
+        
+        launcher_settings = self.get_launcher_settings()
+        #for key in launcher_settings.keys():
+            #launcher_settings[key] = text.escape_JSON(launcher_settings[key])
+                    
         params = {
             'romset_id': romset_id,
             'launcher_id': launcher_id,
             'addon_id': self.get_launcher_addon_id(),
-            'app': json.dumps(self.get_application()),
-            'settings': self.get_launcher_settings(),
+            'settings': launcher_settings, #json.dumps(launcher_settings),
             'is_non_blocking': self.is_non_blocking()
         }        
-        kodi.event(sender='plugin.program.AEL', method='SET_LAUNCHER_SETTINGS', data=params)
+        kodi.event(sender='plugin.program.AEL',command='SET_LAUNCHER_SETTINGS', data=params)
            
     # Execution methods
     # ---------------------------------------------------------------------------------------------
@@ -216,9 +216,9 @@ class LauncherABC(object):
         logger.debug('Executor    = "{}"'.format(executor.__class__.__name__))
 
         # --- Execute app ---
-        self._launch_pre_exec(self.get_name(), self.settings.toggle_window)
-        executor.execute(application, arguments, self.settings.is_non_blocking)
-        self._launch_post_exec(self.settings.toggle_window)
+        self._launch_pre_exec(self.get_name(), self.execution_settings.toggle_window)
+        executor.execute(application, arguments, self.execution_settings.is_non_blocking)
+        self._launch_post_exec(self.execution_settings.toggle_window)
 
     #
     # These two functions do things like stopping music before lunch, toggling full screen, etc.
@@ -230,13 +230,13 @@ class LauncherABC(object):
         logger.debug('LauncherABC::_launch_pre_exec() Starting ...')
 
         # --- User notification ---
-        if self.settings.display_launcher_notify:
+        if self.execution_settings.display_launcher_notify:
             kodi.notify('Launching {}'.format(title))
 
         # --- Stop/Pause Kodi mediaplayer if requested in settings ---
         self.kodi_was_playing = False
         # id="media_state_action" default="0" values="Stop|Pause|Let Play"
-        media_state_action = self.settings.media_state_action
+        media_state_action = self.execution_settings.media_state_action
         media_state_str = ['Stop', 'Pause', 'Let Play'][media_state_action]
         logger.debug('_launch_pre_exec() media_state_action is "{}" ({})'.format(media_state_str, media_state_action))
         if media_state_action == 0 and xbmc.Player().isPlaying():
@@ -253,7 +253,7 @@ class LauncherABC(object):
         # --- Force audio suspend if requested in "Settings" --> "Advanced"
         # >> See http://forum.kodi.tv/showthread.php?tid=164522
         self.kodi_audio_suspended = False
-        if self.settings.suspend_audio_engine:
+        if self.execution_settings.suspend_audio_engine:
             logger.debug('_launch_pre_exec() Suspending Kodi audio engine')
             xbmc.audioSuspend()
             xbmc.enableNavSounds(False)
@@ -298,14 +298,14 @@ class LauncherABC(object):
             logger.debug('_launch_pre_exec() Toggling Kodi fullscreen DEACTIVATED in Launcher')
 
         # Disable screensaver
-        if self.settings.suspend_screensaver:
+        if self.execution_settings.suspend_screensaver:
             kodi.disable_screensaver()
         else:
             screensaver_mode = kodi.get_screensaver_mode()
             logger.debug('_launch_pre_exec() Screensaver status "{}"'.format(screensaver_mode))
 
         # --- Pause Kodi execution some time ---
-        delay_tempo_ms = self.settings.delay_tempo
+        delay_tempo_ms = self.execution_settings.delay_tempo
         logger.debug('_launch_pre_exec() Pausing {} ms'.format(delay_tempo_ms))
         xbmc.sleep(delay_tempo_ms)
         logger.debug('LauncherABC::_launch_pre_exec() function ENDS')
@@ -314,7 +314,7 @@ class LauncherABC(object):
         logger.debug('LauncherABC::_launch_post_exec() Starting ...')
 
         # --- Stop Kodi some time ---
-        delay_tempo_ms = self.settings.delay_tempo
+        delay_tempo_ms = self.execution_settings.delay_tempo
         logger.debug('_launch_post_exec() Pausing {} ms'.format(delay_tempo_ms))
         xbmc.sleep(delay_tempo_ms)
 
@@ -351,14 +351,14 @@ class LauncherABC(object):
             logger.debug('_launch_post_exec() DO NOT resume Kodi joystick engine')
 
         # Restore screensaver status.
-        if self.settings.suspend_screensaver:
+        if self.execution_settings.suspend_screensaver:
             kodi.restore_screensaver()
         else:
             screensaver_mode = kodi.get_screensaver_mode()
             logger.debug('_launch_post_exec() Screensaver status "{}"'.format(screensaver_mode))
 
         # --- Resume Kodi playing if it was paused. If it was stopped, keep it stopped. ---
-        media_state_action = self.settings.media_state_action
+        media_state_action = self.execution_settings.media_state_action
         media_state_str = ['Stop', 'Pause', 'Let Play'][media_state_action]
         logger.debug('_launch_post_exec() media_state_action is "{}" ({})'.format(media_state_str, media_state_action))
         logger.debug('_launch_post_exec() self.kodi_was_playing is {}'.format(self.kodi_was_playing))
@@ -373,8 +373,8 @@ class LauncherABC(object):
 # -------------------------------------------------------------------------------------------------
 class AppLauncher(LauncherABC):
 
-    def __init__(self, executorFactory: ExecutorFactoryABC, settings: LauncherSettings):
-        super(AppLauncher, self).__init__(executorFactory, settings)
+    def __init__(self, executorFactory: ExecutorFactoryABC, execution_settings: ExecutionSettings):
+        super(AppLauncher, self).__init__(executorFactory, execution_settings)
 
     # --------------------------------------------------------------------------------------------
     # Core methods
@@ -399,7 +399,7 @@ class AppLauncher(LauncherABC):
         return wizard
     
     def _editor_get_wizard(self, wizard):
-        wizard = kodi.WizardDialog_YesNo(wizard, 'change_app', 'Change application? Currently {}'.format(self.application))
+        wizard = kodi.WizardDialog_YesNo(wizard, 'change_app', 'Change application?', 'Set a different application? Currently "{}"'.format(self.launcher_settings['application']))
         wizard = kodi.WizardDialog_FileBrowse(wizard, 'application', 'Select the launcher application', 1, self._builder_get_appbrowser_filter, 
                                               None, self._builder_wants_to_change_app)
         wizard = kodi.WizardDialog_Keyboard(wizard, 'romext','Set files extensions, use "|" as separator. (e.g lnk|cbr)')
@@ -407,11 +407,7 @@ class AppLauncher(LauncherABC):
         
         return wizard
             
-    def _build_post_wizard_hook(self):
-        
-        app = self.launcher_args.pop('application')
-        if app: self.application = app
-        
+    def _build_post_wizard_hook(self):        
         self.non_blocking = True
         return True
 

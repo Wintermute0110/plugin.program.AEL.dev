@@ -18,11 +18,10 @@ from __future__ import unicode_literals
 from __future__ import division
 
 import logging
-from typing import OrderedDict
+import collections
 
 from resources.app.commands.mediator import AppMediator
-from resources.lib import constants, globals
-from resources.lib import repositories
+from resources.lib import globals
 from resources.lib.repositories import *
 from resources.lib.utils import kodi
 
@@ -59,12 +58,12 @@ def cmd_manage_romset_launchers(args):
     if selected_option is None:
         # >> Exits context menu
         logger.debug('EDIT_ROMSET_LAUNCHERS: cmd_manage_romset_launchers() Selected None. Closing context menu')
-        kodi.event(method='EDIT_ROMSET', data=args)
+        kodi.event(command='EDIT_ROMSET', data=args)
         return
     
     # >> Execute subcommand. May be atomic, maybe a submenu.
     logger.debug('EDIT_ROMSET_LAUNCHERS: cmd_manage_romset_launchers() Selected {}'.format(selected_option))
-    kodi.event(method=selected_option, data=args)
+    kodi.event(command=selected_option, data=args)
 
 # --- Sub commands ---
 @AppMediator.register('ADD_LAUNCHER')
@@ -81,23 +80,23 @@ def cmd_add_romset_launchers(args):
         romset = romset_repository.find_romset(romset_id)
 
         for addon in addons:
-            options[addon.get_id()] = addon.get_name()
+            options[addon] = addon.get_name()
     
     s = 'Choose launcher to associate'
-    selected_option = kodi.OrdDictionaryDialog().select(s, options)
+    selected_option:AelAddon = kodi.OrdDictionaryDialog().select(s, options)
     
     if selected_option is None:
         # >> Exits context menu
         logger.debug('ADD_LAUNCHER: cmd_add_romset_launchers() Selected None. Closing context menu')
-        kodi.event(method='EDIT_ROMSET_LAUNCHERS', data=args)
+        kodi.event(command='EDIT_ROMSET_LAUNCHERS', data=args)
         return
     
     # >> Execute subcommand. May be atomic, maybe a submenu.
-    logger.debug('ADD_LAUNCHER: cmd_add_romset_launchers() Selected {}'.format(selected_option))
-    selected_addon = next((a for a in addons if a.get_id() == selected_option), None)
-    kodi.execute_uri(selected_addon.get_configure_uri(), {
+    logger.debug('ADD_LAUNCHER: cmd_add_romset_launchers() Selected {}'.format(selected_option.get_id()))
+    
+    kodi.execute_uri(selected_option.get_configure_uri(), {
         'romset_id': romset_id, 
-        'settings': {'platform': romset.get_platform()}
+        'settings': json.dumps({'platform': romset.get_platform()})
     })
 
 @AppMediator.register('EDIT_LAUNCHER')
@@ -112,30 +111,28 @@ def cmd_edit_romset_launchers(args):
     launchers = romset.get_launchers()
     if len(launchers) == 0:
         kodi.notify('No launchers configured for this romset!')
-        kodi.event(method='EDIT_ROMSET_LAUNCHERS', data=args)
+        kodi.event(command='EDIT_ROMSET_LAUNCHERS', data=args)
         return
     
     options = collections.OrderedDict()
     for launcher in launchers:
-        options[launcher.get_id()] = launcher.get_name()
+        options[launcher] = launcher.get_name()
     
     s = 'Choose launcher to edit'
-    selected_option = kodi.OrdDictionaryDialog().select(s, options)
+    selected_option:ROMSetLauncher = kodi.OrdDictionaryDialog().select(s, options)
     
     if selected_option is None:
         # >> Exits context menu
         logger.debug('EDIT_LAUNCHER: cmd_edit_romset_launchers() Selected None. Closing context menu')
-        kodi.event(method='EDIT_ROMSET_LAUNCHERS', data=args)
+        kodi.event(command='EDIT_ROMSET_LAUNCHERS', data=args)
         return
     
-    
     # >> Execute subcommand. May be atomic, maybe a submenu.
-    logger.debug('EDIT_LAUNCHER: cmd_edit_romset_launchers() Selected {}'.format(selected_option))
-    selected_launcher = romset.get_launcher(selected_option)
-    kodi.execute_uri(selected_launcher.addon.get_configure_uri(), {
+    logger.debug('EDIT_LAUNCHER: cmd_edit_romset_launchers() Selected {}'.format(selected_option.get_id()))
+    kodi.execute_uri(selected_option.addon.get_configure_uri(), {
         'romset_id': romset_id, 
-        'launcher_id': selected_launcher.get_id(),
-        'settings': selected_launcher.get_settings_str()
+        'launcher_id': selected_option.get_id(),
+        'settings': selected_option.get_settings_str()
     })
        
 @AppMediator.register('REMOVE_LAUNCHER')
@@ -150,29 +147,34 @@ def cmd_remove_romset_launchers(args):
         launchers = romset.get_launchers()
         if len(launchers) == 0:
             kodi.notify('No launchers configured for this romset!')
-            kodi.event(method='EDIT_ROMSET_LAUNCHERS', data=args)
+            kodi.event(command='EDIT_ROMSET_LAUNCHERS', data=args)
             return
         
         options = collections.OrderedDict()
         for launcher in launchers:
-            options[launcher.get_id()] = launcher.get_name()
+            options[launcher] = launcher.get_name()
         
         s = 'Choose launcher to remove'
-        selected_option = kodi.OrdDictionaryDialog().select(s, options)
+        selected_option:ROMSetLauncher = kodi.OrdDictionaryDialog().select(s, options)
         
         if selected_option is None:
             # >> Exits context menu
             logger.debug('REMOVE_LAUNCHER: cmd_remove_romset_launchers() Selected None. Closing context menu')
-            kodi.event(method='EDIT_ROMSET_LAUNCHERS', data=args)
+            kodi.event(command='EDIT_ROMSET_LAUNCHERS', data=args)
             return
         
         # >> Execute subcommand. May be atomic, maybe a submenu.
-        logger.debug('REMOVE_LAUNCHER: cmd_remove_romset_launchers() Selected {}'.format(selected_option))
-        #@romset.set_launcher_as_default(launc)
-        romset_repository.update_romset(romset)
+        logger.debug('REMOVE_LAUNCHER: cmd_remove_romset_launchers() Selected {}'.format(selected_option.get_id()))
+        if not kodi.dialog_yesno('Are you sure to delete launcher "{}"'.format(selected_option.get_name())):
+            logger.debug('REMOVE_LAUNCHER: cmd_remove_romset_launchers() Cancelled operation.')
+            kodi.event(command='EDIT_ROMSET_LAUNCHERS', data=args)
+            return
+        
+        romset_repository.remove_launcher(romset.get_id(), selected_option.get_id())
+        logger.info('REMOVE_LAUNCHER: cmd_remove_romset_launchers() Removed launcher#{}'.format(selected_option.get_id()))
         uow.commit()
     
-    kodi.event(method='EDIT_ROMSET_LAUNCHERS', data=args)
+    kodi.event(command='EDIT_ROMSET_LAUNCHERS', data=args)
     
 @AppMediator.register('SET_DEFAULT_LAUNCHER')
 def cmd_set_default_romset_launchers(args):
@@ -186,7 +188,7 @@ def cmd_set_default_romset_launchers(args):
         launchers = romset.get_launchers()
         if len(launchers) == 0:
             kodi.notify('No launchers configured for this romset!')
-            kodi.event(method='EDIT_ROMSET_LAUNCHERS', data=args)
+            kodi.event(command='EDIT_ROMSET_LAUNCHERS', data=args)
             return
         
         options = collections.OrderedDict()
@@ -199,7 +201,7 @@ def cmd_set_default_romset_launchers(args):
         if selected_option is None:
             # >> Exits context menu
             logger.debug('SET_DEFAULT_LAUNCHER: cmd_set_default_romset_launchers() Selected None. Closing context menu')
-            kodi.event(method='EDIT_ROMSET_LAUNCHERS', data=args)
+            kodi.event(command='EDIT_ROMSET_LAUNCHERS', data=args)
             return
         
         # >> Execute subcommand. May be atomic, maybe a submenu.
@@ -208,7 +210,7 @@ def cmd_set_default_romset_launchers(args):
         romset_repository.update_romset(romset)
         uow.commit()
     
-    kodi.event(method='EDIT_ROMSET_LAUNCHERS', data=args)
+    kodi.event(command='EDIT_ROMSET_LAUNCHERS', data=args)
        
 # -------------------------------------------------------------------------------------------------
 # ROMSet launcher specific configuration.
@@ -218,9 +220,10 @@ def cmd_set_launcher_args(args):
     romset_id:str       = args['romset_id'] if 'romset_id' in args else None
     launcher_id:str     = args['launcher_id'] if 'launcher_id' in args else None
     addon_id:str        = args['addon_id'] if 'addon_id' in args else None
-    application         = args['app'] if 'app' in args else None
     launcher_settings   = args['settings'] if 'settings' in args else None
     is_non_blocking     = args['is_non_blocking'] if 'is_non_blocking' in args else False
+    
+    #launcher_settings = json.loads(launcher_settings)
     
     uow = UnitOfWork(globals.g_PATHS.DATABASE_FILE_PATH)
     with uow:
@@ -231,18 +234,17 @@ def cmd_set_launcher_args(args):
         romset = romset_repository.find_romset(romset_id)
         
         if launcher_id is None:
-            romset.add_launcher(addon, application, launcher_settings, is_non_blocking)
+            romset.add_launcher(addon, launcher_settings, is_non_blocking)
         else: 
             launcher = romset.get_launcher(launcher_id)
-            launcher.set_application(application)
-            launcher.set_settings_str(launcher_settings)
+            launcher.set_settings(launcher_settings)
             launcher.change_is_blocking(is_non_blocking)
             
         romset_repository.update_romset(romset)
         uow.commit()
     
     kodi.notify('Configured launcher {}'.format(addon.get_name()))
-    kodi.event(method='EDIT_ROMSET', data={'romset_id': romset_id})
+    kodi.event(command='EDIT_ROMSET', data={'romset_id': romset_id})
  
 # -------------------------------------------------------------------------------------------------
 # ROMSet Launcher executing
@@ -266,7 +268,7 @@ def cmd_configure_romset_launchers(args):
 
     selected_launcher = launchers[0]
     if len(launchers) > 1:
-        launcher_options = OrderedDict()
+        launcher_options = collections.OrderedDict()
         preselected = None
         for launcher in launchers:
             launcher_options[launcher] = launcher.get_name()

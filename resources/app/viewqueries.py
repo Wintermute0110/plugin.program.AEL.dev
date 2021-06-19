@@ -39,7 +39,7 @@ logger = logging.getLogger(__name__)
 # Root view items
 #
 def qry_get_root_items():
-    views_repository = ViewRepository(globals.g_PATHS, globals.router)
+    views_repository = ViewRepository(globals.g_PATHS)
     container = views_repository.find_root_items()
     
     if container is None:
@@ -158,7 +158,7 @@ def qry_get_root_items():
 # Collection items.
 #
 def qry_get_collection_items(collection_id: str):
-    views_repository = ViewRepository(globals.g_PATHS, globals.router)
+    views_repository = ViewRepository(globals.g_PATHS)
     container = views_repository.find_items(collection_id)
     return container
 
