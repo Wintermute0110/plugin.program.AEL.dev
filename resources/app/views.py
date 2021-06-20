@@ -188,6 +188,26 @@ def vw_configure_app_launcher():
     launcher = AppLauncher(executor_factory, execution_settings, launcher_settings)
     launcher.launch(arguments)
     
+@router.route('/scanner/folder/configure/')
+def vw_configure_folder_scanner():
+    logger.debug('ROM Folder scanner: Configuring ...')
+
+    romset_id:str   = router.args['romset_id'][0] if 'romset_id' in router.args else None
+    scanner_id:str = router.args['scanner_id'][0] if 'scanner_id' in router.args else None
+    settings:str    = router.args['settings'][0] if 'settings' in router.args else None
+    
+    scanner_settings = json.loads(settings)    
+    launcher = AppLauncher(None, None, scanner_settings)
+    if scanner_id is None and launcher.build():
+        launcher.store_launcher_settings(romset_id)
+        return
+    
+    if scanner_id is not None and launcher.edit():
+        launcher.store_launcher_settings(romset_id, scanner_id)
+        return
+    
+    kodi.notify_warn('Cancelled configuring scanner')
+
 # -------------------------------------------------------------------------------------------------
 # UI render methods
 # -------------------------------------------------------------------------------------------------

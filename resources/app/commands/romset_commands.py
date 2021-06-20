@@ -78,8 +78,8 @@ def cmd_edit_romset(args):
     else: options['ADD_LAUNCHER']         = 'Add new launcher'
     options['EDIT_ROMSET_CATEGORY']       = "Change Category: '{0}'".format(category_name)
     options['EDIT_ROMSET_STATUS']         = 'ROM Collection status: {0}'.format(romset.get_finished_str())
-    options['LAUNCHER_ADVANCED_MODS']     = 'Advanced Modifications ...'
     options['ROMSET_MANAGE_ROMS']         = 'Manage ROMs ...'
+    options['LAUNCHER_ADVANCED_MODS']     = 'Advanced Modifications ...'
     options['EXPORT_ROMSET']              = 'Export ROM Collection XML configuration ...'
     options['DELETE_ROMSET']              = 'Delete ROM Collection'
 

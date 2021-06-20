@@ -279,6 +279,16 @@ class UnitOfWork(object):
             'configure_uri': globals.router.url_for_path('launcher/app/configure')
         })
         addon_repository.insert_addon(app_launcher_addon)
+        folder_scanner_addon = AelAddon({
+            'id': text.misc_generate_random_SID(),
+            'name':  'Folder scanner', 
+            'addon_id': '{}.FolderScanner'.format(globals.addon_id),
+            'version': globals.addon_version,
+            'addon_type': AddonType.SCANNER.name, 
+            'execute_uri': globals.router.url_for_path('scanner/folder'),
+            'configure_uri': globals.router.url_for_path('scanner/folder/configure')
+        })
+        addon_repository.insert_addon(folder_scanner_addon)
 
         self.commit()
         self.close_session()
@@ -859,6 +869,7 @@ QUERY_SELECT_ADDON              = "SELECT * FROM ael_addon WHERE id = ?"
 QUERY_SELECT_ADDON_BY_ADDON_ID  = "SELECT * FROM ael_addon WHERE addon_id = ?"
 QUERY_SELECT_ADDONS             = "SELECT * FROM ael_addon"
 QUERY_SELECT_LAUNCHER_ADDONS    = "SELECT * FROM ael_addon WHERE addon_type = 'LAUNCHER' ORDER BY name"
+QUERY_SELECT_SCANNER_ADDONS     = "SELECT * FROM ael_addon WHERE addon_type = 'SCANNER' ORDER BY name"
 QUERY_INSERT_ADDON              = "INSERT INTO ael_addon(id, name, addon_id, version, addon_type, execute_uri, configure_uri) VALUES(?,?,?,?,?,?,?)" 
 QUERY_UPDATE_ADDON              = "UPDATE ael_addon SET name = ?, addon_id = ?, version = ?, addon_type = ?, execute_uri = ?, configure_uri = ? WHERE id = ?" 
 class AelAddonRepository(object):
@@ -884,6 +895,12 @@ class AelAddonRepository(object):
 
     def find_all_launchers(self) -> typing.Iterator[AelAddon]:        
         self._uow.execute(QUERY_SELECT_LAUNCHER_ADDONS)
+        result_set = self._uow.result_set()
+        for addon_data in result_set:
+            yield AelAddon(addon_data)
+
+    def find_all_scanners(self) -> typing.Iterator[AelAddon]:        
+        self._uow.execute(QUERY_SELECT_SCANNER_ADDONS)
         result_set = self._uow.result_set()
         for addon_data in result_set:
             yield AelAddon(addon_data)
