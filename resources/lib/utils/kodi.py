@@ -175,14 +175,14 @@ def toggle_fullscreen():
 
 def get_screensaver_mode():
     r_dic = jsonrpc_query('Settings.getSettingValue', {'setting' : 'screensaver.mode'})
-    screensaver_mode = r_dic['value']
+    screensaver_mode = r_dic['result']['value'] if 'result' in r_dic else None
     return screensaver_mode
 
 g_screensaver_mode = None # Global variable to store screensaver status.
 def disable_screensaver():
     global g_screensaver_mode
     g_screensaver_mode = get_screensaver_mode()
-    logger.debug('kodi_disable_screensaver() g_screensaver_mode "{}"'.format(g_screensaver_mode))
+    logger.debug('kodi.disable_screensaver() g_screensaver_mode "{}"'.format(g_screensaver_mode))
     p_dic = {
         'setting' : 'screensaver.mode',
         'value' : '',

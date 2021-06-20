@@ -159,12 +159,12 @@ def vw_configure_app_launcher():
     settings:str    = router.args['settings'][0] if 'settings' in router.args else None
     
     launcher_settings = json.loads(settings)    
-    launcher = AppLauncher(None, None)
-    if launcher_id is None and launcher.build(launcher_settings):
+    launcher = AppLauncher(None, None, launcher_settings)
+    if launcher_id is None and launcher.build():
         launcher.store_launcher_settings(romset_id)
         return
     
-    if launcher_id is not None and launcher.edit(launcher_settings):
+    if launcher_id is not None and launcher.edit():
         launcher.store_launcher_settings(romset_id, launcher_id)
         return
     
@@ -173,18 +173,20 @@ def vw_configure_app_launcher():
 @router.route('/launcher/app/')
 def vw_configure_app_launcher():
     logger.debug('App Launcher: Starting ...')
-    
+    launcher_settings   = json.loads(router.args['settings'][0])
+    arguments           = router.args['args'][0]
+
     execution_settings = ExecutionSettings()
-    execution_settings.delay_tempo = settings.getSettingAsFloat('delay_tempo')
+    execution_settings.delay_tempo = settings.getSettingAsInt('delay_tempo')
     execution_settings.display_launcher_notify = settings.getSettingAsBool('display_launcher_notify')
-    execution_settings.is_non_blocking = True if router.args['is_non_blocking'] == 'true' else False
+    execution_settings.is_non_blocking = True if router.args['is_non_blocking'][0] == 'true' else False
     execution_settings.media_state_action = settings.getSettingAsInt('media_state_action')
     execution_settings.suspend_audio_engine = settings.getSettingAsBool('suspend_audio_engine')
     execution_settings.suspend_screensaver = settings.getSettingAsBool('suspend_screensaver')
             
     executor_factory = get_executor_factory()
-    launcher = AppLauncher(executor_factory, execution_settings)
-    launcher.launch(router.args)
+    launcher = AppLauncher(executor_factory, execution_settings, launcher_settings)
+    launcher.launch(arguments)
     
 # -------------------------------------------------------------------------------------------------
 # UI render methods

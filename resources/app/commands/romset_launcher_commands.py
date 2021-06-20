@@ -221,7 +221,6 @@ def cmd_set_launcher_args(args):
     launcher_id:str     = args['launcher_id'] if 'launcher_id' in args else None
     addon_id:str        = args['addon_id'] if 'addon_id' in args else None
     launcher_settings   = args['settings'] if 'settings' in args else None
-    is_non_blocking     = args['is_non_blocking'] if 'is_non_blocking' in args else False
     
     #launcher_settings = json.loads(launcher_settings)
     
@@ -234,11 +233,10 @@ def cmd_set_launcher_args(args):
         romset = romset_repository.find_romset(romset_id)
         
         if launcher_id is None:
-            romset.add_launcher(addon, launcher_settings, is_non_blocking)
+            romset.add_launcher(addon, launcher_settings, True)
         else: 
             launcher = romset.get_launcher(launcher_id)
             launcher.set_settings(launcher_settings)
-            launcher.change_is_blocking(is_non_blocking)
             
         romset_repository.update_romset(romset)
         uow.commit()
@@ -250,7 +248,7 @@ def cmd_set_launcher_args(args):
 # ROMSet Launcher executing
 # -------------------------------------------------------------------------------------------------
 @AppMediator.register('EXECUTE_ROM')
-def cmd_configure_romset_launchers(args):
+def cmd_execute_rom_with_launcher(args):
     rom_id:str = args['rom_id'] if 'rom_id' in args else None
 
     uow = UnitOfWork(globals.g_PATHS.DATABASE_FILE_PATH)
@@ -277,9 +275,9 @@ def cmd_configure_romset_launchers(args):
         dialog = kodi.OrdDictionaryDialog()
         selected_launcher = dialog.select('Choose launcher', launcher_options,preselect=preselected)
 
-    application = selected_launcher.get_application()
-    settings = selected_launcher.get_settings()
-    arguments = settings['args']
+    launcher_settings:dict = selected_launcher.get_settings()
+    application   = launcher_settings['application'] if 'application' in launcher_settings else None
+    arguments:str = launcher_settings['args']
     
     logger.info('EXECUTE_ROM: selected launcher "{}"'.format(selected_launcher.get_name()))
     logger.info('EXECUTE_ROM: raw arguments     "{}"'.format(arguments))
@@ -327,8 +325,8 @@ def cmd_configure_romset_launchers(args):
         # Default arguments replacements
         arguments = arguments.replace('$romsetID$', romset.get_id())
         arguments = arguments.replace('$romsetName$', romset.get_name())
-        arguments = arguments.replace('$launcherID$', launcher.addon.get_addon_id())
-        arguments = arguments.replace('$addonID$', launcher.addon.get_addon_id())
+        arguments = arguments.replace('$launcherID$', selected_launcher.addon.get_addon_id())
+        arguments = arguments.replace('$addonID$', selected_launcher.addon.get_addon_id())
         arguments = arguments.replace('$romID$', rom.get_id())
         arguments = arguments.replace('$romtitle$', rom.get_name())
 
@@ -340,7 +338,6 @@ def cmd_configure_romset_launchers(args):
         logger.info('EXECUTE_ROM: final arguments "{0}"'.format(arguments))
 
     kodi.execute_uri(selected_launcher.addon.get_execute_uri(), {
-        'application': application,
         'settings': selected_launcher.get_settings_str(),
         'args': arguments,
         'is_non_blocking': str(selected_launcher.is_non_blocking())

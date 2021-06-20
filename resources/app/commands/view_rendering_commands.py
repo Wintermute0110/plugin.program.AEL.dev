@@ -34,7 +34,7 @@ def cmd_render_views_data(args):
         categories_repository   = CategoryRepository(uow)
         romsets_repository      = ROMSetRepository(uow)
         roms_repository         = ROMsRepository(uow)
-        views_repository        = ViewRepository(globals.g_PATHS, globals.router)
+        views_repository        = ViewRepository(globals.g_PATHS)
         
         _render_root_view(categories_repository, romsets_repository, roms_repository, views_repository, render_sub_views=True)
         
@@ -52,7 +52,7 @@ def cmd_render_view_data(args):
         categories_repository   = CategoryRepository(uow)
         romsets_repository      = ROMSetRepository(uow)
         roms_repository         = ROMsRepository(uow)
-        views_repository        = ViewRepository(globals.g_PATHS, globals.router)
+        views_repository        = ViewRepository(globals.g_PATHS)
                 
         if category_id is None:
             _render_root_view(categories_repository, romsets_repository, roms_repository, views_repository, render_recursive)
@@ -72,7 +72,7 @@ def cmd_render_romset_view_data(args):
     with uow:
         romsets_repository = ROMSetRepository(uow)
         roms_repository    = ROMsRepository(uow)
-        views_repository   = ViewRepository(globals.g_PATHS, globals.router)
+        views_repository   = ViewRepository(globals.g_PATHS)
              
         romset = romsets_repository.find_romset(romset_id)
         _render_romset_view(romset, roms_repository, views_repository)

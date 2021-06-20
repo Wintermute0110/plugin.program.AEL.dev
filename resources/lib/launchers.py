@@ -19,7 +19,6 @@ from __future__ import division
 
 import abc
 import logging
-import json
 
 # --- AEL packages ---
 from resources.lib.utils import io, kodi, text
@@ -43,7 +42,7 @@ def get_executor_factory() -> ExecutorFactoryABC:
     return executorFactory
 
 class ExecutionSettings(object):
-    is_non_blocking = False
+    is_non_blocking = True
     toggle_window = False
     display_launcher_notify = True
     media_state_action = 0 # id="media_state_action" default="0" values="Stop|Pause|Let Play"
@@ -62,12 +61,14 @@ class LauncherABC(object):
     #
     # In an abstract class launcher_data is mandatory.
     #
-    def __init__(self, executorFactory: ExecutorFactoryABC, execution_settings: ExecutionSettings):
+    def __init__(self, 
+        executorFactory: ExecutorFactoryABC, 
+        execution_settings: ExecutionSettings,
+        launcher_settings):
         self.executorFactory    = executorFactory
         self.execution_settings = execution_settings
         
-        self.launcher_settings  = {}
-        self.non_blocking       = True
+        self.launcher_settings  = launcher_settings
 
     # --------------------------------------------------------------------------------------------
     # Core methods
@@ -81,9 +82,9 @@ class LauncherABC(object):
     def get_launcher_settings(self) -> dict:
         return self.launcher_settings
     
-    def is_non_blocking(self) -> bool:
-        return self.non_blocking
-    
+    def get_application(self) -> str:
+        return self.launcher_settings['application'] if 'application' in self.launcher_settings else None
+
     # --------------------------------------------------------------------------------------------
     # Launcher build wizard methods
     # --------------------------------------------------------------------------------------------
@@ -93,9 +94,8 @@ class LauncherABC(object):
     # Returns False if Launcher was not built (user canceled the dialogs or some other
     # error happened).
     #
-    def build(self, launcher_settings: dict) -> bool:
+    def build(self) -> bool:
         logger.debug('LauncherABC::build() Starting ...')
-        self.launcher_settings = launcher_settings
                 
         # --- Call hook before wizard ---
         if not self._build_pre_wizard_hook(): return False
@@ -113,9 +113,8 @@ class LauncherABC(object):
 
         return True
 
-    def edit(self,launcher_settings: dict) -> bool:
+    def edit(self) -> bool:
         logger.debug('LauncherABC::edit() Starting ...')
-        self.launcher_settings = launcher_settings
         
         # --- Call hook before wizard ---
         if not self._build_pre_wizard_hook(): return False
@@ -169,15 +168,11 @@ class LauncherABC(object):
     def store_launcher_settings(self, romset_id: str, launcher_id: str = None):
         
         launcher_settings = self.get_launcher_settings()
-        #for key in launcher_settings.keys():
-            #launcher_settings[key] = text.escape_JSON(launcher_settings[key])
-                    
         params = {
             'romset_id': romset_id,
             'launcher_id': launcher_id,
             'addon_id': self.get_launcher_addon_id(),
-            'settings': launcher_settings, #json.dumps(launcher_settings),
-            'is_non_blocking': self.is_non_blocking()
+            'settings': launcher_settings
         }        
         kodi.event(sender='plugin.program.AEL',command='SET_LAUNCHER_SETTINGS', data=params)
            
@@ -189,7 +184,7 @@ class LauncherABC(object):
     # Arguments are those send through the URI.
     #
     @abc.abstractmethod
-    def launch(self, args: dict):
+    def launch(self, arguments: str):
         logger.debug('LauncherABC::launch() Starting ...')
 
         # --- Create executor object ---
@@ -200,24 +195,21 @@ class LauncherABC(object):
                               'This is a bug, please report it.')
             return
         
-        executor = self.executorFactory.create(args)
+        executor = self.executorFactory.create(self.launcher_settings)
         
         if executor is None:
             logger.error('Cannot create an executor for {}'.format(self.get_name()))
             kodi.notify_error('Cannot execute application')
             return
 
-        application = args['application'] if 'application' in args else ''
-        arguments = args['args']
-
         logger.debug('Name        = "{}"'.format(self.get_name()))
-        logger.debug('Application = "{}"'.format(application))
+        logger.debug('Application = "{}"'.format(self.get_application()))
         logger.debug('Arguments   = "{}"'.format(arguments))
         logger.debug('Executor    = "{}"'.format(executor.__class__.__name__))
 
         # --- Execute app ---
         self._launch_pre_exec(self.get_name(), self.execution_settings.toggle_window)
-        executor.execute(application, arguments, self.execution_settings.is_non_blocking)
+        executor.execute(self.get_application(), arguments, self.execution_settings.is_non_blocking)
         self._launch_post_exec(self.execution_settings.toggle_window)
 
     #
@@ -373,8 +365,11 @@ class LauncherABC(object):
 # -------------------------------------------------------------------------------------------------
 class AppLauncher(LauncherABC):
 
-    def __init__(self, executorFactory: ExecutorFactoryABC, execution_settings: ExecutionSettings):
-        super(AppLauncher, self).__init__(executorFactory, execution_settings)
+    def __init__(self, 
+        executorFactory: ExecutorFactoryABC, 
+        execution_settings: ExecutionSettings,
+        launcher_settings: dict):
+        super(AppLauncher, self).__init__(executorFactory, execution_settings, launcher_settings)
 
     # --------------------------------------------------------------------------------------------
     # Core methods
@@ -450,12 +445,12 @@ class AppLauncher(LauncherABC):
     # ---------------------------------------------------------------------------------------------
     # Execution methods
     # ---------------------------------------------------------------------------------------------
-    def launch(self, args: dict):
-        if 'application' not in args:
+    def launch(self, args: str):
+        if 'application' not in self.launcher_settings:
             logger.error('LauncherABC::launch() No application argument defined')            
             return None
         
-        application = io.FileName(args['application'])
+        application = io.FileName(self.get_application())
         
         # --- Check for errors and abort if errors found ---
         if not application.exists():
