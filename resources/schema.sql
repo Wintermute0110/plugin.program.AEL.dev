@@ -71,6 +71,30 @@ CREATE TABLE IF NOT EXISTS romsets(
         ON DELETE CASCADE ON UPDATE NO ACTION
 );
 
+CREATE TABLE IF NOT EXISTS romset_launchers(
+    id TEXT PRIMARY KEY, 
+    romset_id TEXT,
+    ael_addon_id TEXT,
+    settings TEXT,
+    is_non_blocking INTEGER DEFAULT 1 NOT NULL,
+    is_default INTEGER DEFAULT 0 NOT NULL,
+    FOREIGN KEY (romset_id) REFERENCES romsets (id) 
+        ON DELETE CASCADE ON UPDATE NO ACTION,
+    FOREIGN KEY (ael_addon_id) REFERENCES ael_addon (id) 
+        ON DELETE CASCADE ON UPDATE NO ACTION
+);
+
+CREATE TABLE IF NOT EXISTS romset_scanners(
+    id TEXT PRIMARY KEY, 
+    romset_id TEXT,
+    ael_addon_id TEXT,
+    settings TEXT,
+    FOREIGN KEY (romset_id) REFERENCES romsets (id) 
+        ON DELETE CASCADE ON UPDATE NO ACTION,
+    FOREIGN KEY (ael_addon_id) REFERENCES ael_addon (id) 
+        ON DELETE CASCADE ON UPDATE NO ACTION
+);
+
 CREATE TABLE IF NOT EXISTS roms(
     id TEXT PRIMARY KEY, 
     name TEXT NOT NULL,
@@ -87,11 +111,27 @@ CREATE TABLE IF NOT EXISTS roms(
     romset_id TEXT NULL,
     category_id TEXT NULL,
     metadata_id TEXT,
+    scanned_by_id TEXT NULL,
     FOREIGN KEY (romset_id) REFERENCES romset (id) 
         ON DELETE CASCADE ON UPDATE NO ACTION,
     FOREIGN KEY (category_id) REFERENCES categories (id) 
         ON DELETE CASCADE ON UPDATE NO ACTION,
     FOREIGN KEY (metadata_id) REFERENCES metadata (id) 
+        ON DELETE CASCADE ON UPDATE NO ACTION,
+    FOREIGN KEY (scanned_by_id) REFERENCES romset_scanner (id) 
+        ON DELETE SET NULL ON UPDATE NO ACTION
+);
+
+CREATE TABLE IF NOT EXISTS rom_launchers(
+    id TEXT PRIMARY KEY, 
+    rom_id TEXT,
+    ael_addon_id TEXT,
+    settings TEXT,
+    is_non_blocking INTEGER DEFAULT 1 NOT NULL,
+    is_default INTEGER DEFAULT 0 NOT NULL,
+    FOREIGN KEY (rom_id) REFERENCES roms (id) 
+        ON DELETE CASCADE ON UPDATE NO ACTION,
+    FOREIGN KEY (ael_addon_id) REFERENCES ael_addon (id) 
         ON DELETE CASCADE ON UPDATE NO ACTION
 );
 -------------------------------------------------
@@ -130,21 +170,6 @@ CREATE TABLE IF NOT EXISTS rom_assets(
     FOREIGN KEY (rom_id) REFERENCES roms (id) 
         ON DELETE CASCADE ON UPDATE NO ACTION,
     FOREIGN KEY (asset_id) REFERENCES assets (id) 
-        ON DELETE CASCADE ON UPDATE NO ACTION
-);
--------------------------------------------------
--- LAUNCHERS
--------------------------------------------------
-CREATE TABLE IF NOT EXISTS romset_launchers(
-    id TEXT PRIMARY KEY, 
-    romset_id TEXT,
-    ael_addon_id TEXT,
-    settings TEXT,
-    is_non_blocking INTEGER DEFAULT 1 NOT NULL,
-    is_default INTEGER DEFAULT 0 NOT NULL,
-    FOREIGN KEY (romset_id) REFERENCES romsets (id) 
-        ON DELETE CASCADE ON UPDATE NO ACTION,
-    FOREIGN KEY (ael_addon_id) REFERENCES ael_addon (id) 
         ON DELETE CASCADE ON UPDATE NO ACTION
 );
 
@@ -263,7 +288,7 @@ FROM assets AS a
 CREATE VIEW IF NOT EXISTS vw_romset_launchers AS SELECT
     l.id AS id,
     l.romset_id,
-    a.id AS launcher_addon_id,
+    a.id AS associated_addon_id,
     a.name,
     a.addon_id,
     a.version,
@@ -275,5 +300,19 @@ CREATE VIEW IF NOT EXISTS vw_romset_launchers AS SELECT
     l.is_default
 FROM romset_launchers AS l
     INNER JOIN ael_addon AS a ON l.ael_addon_id = a.id;
+    
+CREATE VIEW IF NOT EXISTS vw_romset_scanners AS SELECT
+    s.id AS id,
+    s.romset_id,
+    a.id AS associated_addon_id,
+    a.name,
+    a.addon_id,
+    a.version,
+    a.addon_type,
+    a.execute_uri,
+    a.configure_uri,
+    s.settings
+FROM romset_scanners AS s
+    INNER JOIN ael_addon AS a ON s.ael_addon_id = a.id;
 
 CREATE TABLE IF NOT EXISTS ael_version(app TEXT, version TEXT);

@@ -125,8 +125,8 @@ class AelAddon(EntityABC):
         if addon_dic is None:
             addon_dic = {}
             
-        if 'launcher_addon_id' in addon_dic: 
-            addon_dic['id'] = addon_dic['launcher_addon_id']
+        if 'associated_addon_id' in addon_dic: 
+            addon_dic['id'] = addon_dic['associated_addon_id']
             
         if 'id' not in addon_dic:
             addon_dic['id'] = text.misc_generate_random_SID()
@@ -197,7 +197,7 @@ class Asset(EntityABC):
 # |      |
 # |      |----- VirtualCategory
 # |
-# |----- Collection
+# |----- ROMSet (Collection)
 # |
 # |----- ROM
 # |
@@ -665,11 +665,43 @@ class ROMSetLauncher(EntityABC):
     def set_default(self, default_launcher=False):
         self.entity_data['is_default'] = default_launcher
     
+class ROMSetScanner(EntityABC):
+    
+    def __init__(self, addon: AelAddon, entity_data: dict):
+        self.addon = addon 
+        super(ROMSetScanner, self).__init__(entity_data)
+        
+    def get_name(self):
+        settings = self.get_settings()
+        app = settings['rom_path'] if 'rom_path' in settings else None
+        
+        if app: return '{} ({})'.format(self.addon.get_name(), app)
+        return self.addon.get_name()
+            
+    def get_settings_str(self) -> str:
+        return self.entity_data['settings'] if 'settings' in self.entity_data else None
+    
+    def get_settings(self) -> dict:
+        settings = self.get_settings_str()
+        if settings is None:
+            return {}
+        return json.loads(settings)
+    
+    def set_settings_str(self, scanner_settings:str):
+        self.entity_data['settings'] = scanner_settings
+    
+    def set_settings(self, scanner_settings:dict):
+        self.entity_data['settings'] = json.dumps(scanner_settings)
+        
 # -------------------------------------------------------------------------------------------------
 # Class representing a collection of ROMs.
 # -------------------------------------------------------------------------------------------------
 class ROMSet(MetaDataItemABC):
-    def __init__(self, entity_data, assets_data: typing.List[Asset], launchers_data: typing.List[ROMSetLauncher] = []):
+    def __init__(self, 
+                 entity_data: dict, 
+                 assets_data: typing.List[Asset], 
+                 launchers_data: typing.List[ROMSetLauncher] = [], 
+                 scanners_data: typing.List[ROMSetScanner] = []):
         # Concrete classes are responsible of creating a default entity_data dictionary
         # with sensible defaults.
         if entity_data is None:
@@ -677,6 +709,7 @@ class ROMSet(MetaDataItemABC):
             entity_data['id'] = text.misc_generate_random_SID()
             
         self.launchers_data = launchers_data
+        self.scanners_data = scanners_data
         super(ROMSet, self).__init__(entity_data, assets_data)
 
     def get_platform(self): return self.entity_data['platform']
@@ -783,6 +816,27 @@ class ROMSet(MetaDataItemABC):
 
     def get_launcher(self, id:str) -> ROMSetLauncher:
         return next((l for l in self.launchers_data if l.get_id() == id), None)
+
+    def get_default_launcher(self) -> ROMSetLauncher:
+        if len(self.launchers_data) == 0: return None
+        default_launcher = next((l for l in self.launchers_data if l.is_default()), None)
+        if default_launcher is None: return self.launchers_data[0]
+        
+        return default_launcher
+
+    def has_scanners(self) -> bool:
+        return len(self.scanners_data) > 0
+    
+    def add_scanner(self, addon: AelAddon, settings: dict):
+        scanner = ROMSetScanner(addon, {})
+        scanner.set_settings(settings)
+        self.scanners_data.append(scanner)
+
+    def get_scanners(self) -> typing.List[ROMSetScanner]:
+        return self.scanners_data
+
+    def get_scanner(self, id:str) -> ROMSetScanner:
+        return next((s for s in self.scanners_data if s.get_id() == id), None)
 
     def get_NFO_name(self) -> io.FileName:
         nfo_dir = io.FileName(settings.getSetting('launchers_asset_dir'), isdir = True)

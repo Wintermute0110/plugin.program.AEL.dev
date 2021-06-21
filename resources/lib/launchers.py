@@ -386,8 +386,6 @@ class AppLauncher(LauncherABC):
     #
     def _builder_get_wizard(self, wizard):    
         wizard = kodi.WizardDialog_FileBrowse(wizard, 'application', 'Select the launcher application', 1, self._builder_get_appbrowser_filter)
-        wizard = kodi.WizardDialog_Dummy(wizard, 'romext', '', self._builder_get_extensions_from_app_path)
-        wizard = kodi.WizardDialog_Keyboard(wizard, 'romext','Set files extensions, use "|" as separator. (e.g lnk|cbr)')
         wizard = kodi.WizardDialog_Dummy(wizard, 'args', '', self._builder_get_arguments_from_application_path)
         wizard = kodi.WizardDialog_Keyboard(wizard, 'args', 'Application arguments')
         
@@ -397,7 +395,6 @@ class AppLauncher(LauncherABC):
         wizard = kodi.WizardDialog_YesNo(wizard, 'change_app', 'Change application?', 'Set a different application? Currently "{}"'.format(self.launcher_settings['application']))
         wizard = kodi.WizardDialog_FileBrowse(wizard, 'application', 'Select the launcher application', 1, self._builder_get_appbrowser_filter, 
                                               None, self._builder_wants_to_change_app)
-        wizard = kodi.WizardDialog_Keyboard(wizard, 'romext','Set files extensions, use "|" as separator. (e.g lnk|cbr)')
         wizard = kodi.WizardDialog_Keyboard(wizard, 'args', 'Application arguments')
         
         return wizard
@@ -405,16 +402,7 @@ class AppLauncher(LauncherABC):
     def _build_post_wizard_hook(self):        
         self.non_blocking = True
         return True
-
-    def _builder_get_extensions_from_app_path(self, input, item_key ,launcher_args):
-        if input: return input
-
-        app = launcher_args['application']
-        appPath = io.FileName(app)
-
-        extensions = platforms.emudata_get_program_extensions(appPath.getBase())
-        return extensions
-
+    
     def _builder_get_arguments_from_application_path(self, input, item_key, launcher_args):
         if input: return input
         app = launcher_args['application']
@@ -422,19 +410,6 @@ class AppLauncher(LauncherABC):
         default_arguments = platforms.emudata_get_program_arguments(appPath.getBase())
 
         return default_arguments
-
-    def _builder_get_value_from_rompath(self, input, item_key, launcher_args):
-        if input: return input
-        romPath = launcher_args['rompath']
-
-        return romPath
-
-    def _builder_get_value_from_assetpath(self, input, item_key, launcher_args):
-        if input: return input
-        romPath = io.FileName(launcher_args['assets_path'])
-        romPath = romPath.pjoin('games')
-
-        return romPath.getPath()
     
     #
     # Wizard helper, when a user wants to change the application path.

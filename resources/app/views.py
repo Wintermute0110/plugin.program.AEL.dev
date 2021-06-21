@@ -44,7 +44,9 @@ from resources.lib.constants import *
 from resources.lib.repositories import *
 from resources.lib.settings import *
 from resources.app.viewqueries import *
+
 from resources.lib.launchers import *
+from resources.lib.scanners import *
 
 from resources.lib.utils import kodi
 
@@ -188,22 +190,27 @@ def vw_configure_app_launcher():
     launcher = AppLauncher(executor_factory, execution_settings, launcher_settings)
     launcher.launch(arguments)
     
-@router.route('/scanner/folder/configure/')
+@router.route('/scanner/folder/configure')
 def vw_configure_folder_scanner():
     logger.debug('ROM Folder scanner: Configuring ...')
 
-    romset_id:str   = router.args['romset_id'][0] if 'romset_id' in router.args else None
-    scanner_id:str = router.args['scanner_id'][0] if 'scanner_id' in router.args else None
-    settings:str    = router.args['settings'][0] if 'settings' in router.args else None
+    romset_id:str               = router.args['romset_id'][0] if 'romset_id' in router.args else None
+    scanner_id:str              = router.args['scanner_id'][0] if 'scanner_id' in router.args else None
+    settings:str                = router.args['settings'][0] if 'settings' in router.args else None
+    def_launcher_settings:str   = router.args['launcher'][0] if 'launcher' in router.args else None
     
-    scanner_settings = json.loads(settings)    
-    launcher = AppLauncher(None, None, scanner_settings)
-    if scanner_id is None and launcher.build():
-        launcher.store_launcher_settings(romset_id)
-        return
+    scanner_settings = json.loads(settings) if settings else None
+    launcher_settings = json.loads(def_launcher_settings) if def_launcher_settings else None
     
-    if scanner_id is not None and launcher.edit():
-        launcher.store_launcher_settings(romset_id, scanner_id)
+    scanner = RomFolderScanner(
+        globals.g_PATHS.REPORTS_DIR, 
+        globals.g_PATHS.ADDON_DATA_DIR,
+        scanner_settings,
+        launcher_settings,
+        kodi.ProgressDialog())
+    
+    if scanner.configure():
+        scanner.store_scanner_settings(romset_id, scanner_id)
         return
     
     kodi.notify_warn('Cancelled configuring scanner')

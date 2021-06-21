@@ -73,7 +73,8 @@ def cmd_add_romset_scanner(args):
         
         addons = repository.find_all_scanners()
         romset = romset_repository.find_romset(romset_id)
-
+        default_launcher = romset.get_default_launcher()
+        
         for addon in addons:
             options[addon] = addon.get_name()
     
@@ -89,6 +90,154 @@ def cmd_add_romset_scanner(args):
     # >> Execute subcommand. May be atomic, maybe a submenu.
     logger.debug('ADD_SCANNER: cmd_add_romset_scanner() Selected {}'.format(selected_option.get_id()))
     
-    kodi.execute_uri(selected_option.get_configure_uri(), {
-        'romset_id': romset_id
+    args = {}
+    args['romset_id'] = romset_id
+    if default_launcher: args['launcher'] = default_launcher.get_settings_str()
+    
+    kodi.execute_uri(selected_option.get_configure_uri(), args)  
+
+@AppMediator.register('EDIT_SCANNER')
+def cmd_edit_romset_scanners(args):
+    romset_id:str = args['romset_id'] if 'romset_id' in args else None
+    
+    uow = UnitOfWork(globals.g_PATHS.DATABASE_FILE_PATH)
+    with uow:
+        romset_repository = ROMSetRepository(uow)        
+        romset = romset_repository.find_romset(romset_id)
+        default_launcher = romset.get_default_launcher()
+    
+    scanners = romset.get_scanners()
+    if len(scanners) == 0:
+        kodi.notify('No scanners configured for this romset!')
+        kodi.event(command='EDIT_ROMSET_SCANNERS', data=args)
+        return
+    
+    options = collections.OrderedDict()
+    for scanner in scanners:
+        options[scanner] = scanner.get_name()
+    
+    s = 'Choose scanner to edit'
+    selected_option:ROMSetScanner = kodi.OrdDictionaryDialog().select(s, options)
+    
+    if selected_option is None:
+        # >> Exits context menu
+        logger.debug('EDIT_SCANNER: cmd_edit_romset_scanners() Selected None. Closing context menu')
+        kodi.event(command='EDIT_ROMSET_SCANNERS', data=args)
+        return
+    
+    # >> Execute subcommand. May be atomic, maybe a submenu.
+    logger.debug('EDIT_SCANNER: cmd_edit_romset_scanners() Selected {}'.format(selected_option.get_id()))
+    
+    args = {}
+    args['romset_id'] = romset_id
+    args['scanner_id'] = selected_option.get_id()
+    args['settings'] = selected_option.get_settings_str()
+    if default_launcher: args['launcher'] = default_launcher.get_settings_str()
+    
+    kodi.execute_uri(selected_option.addon.get_configure_uri(), args)
+       
+@AppMediator.register('REMOVE_SCANNER')
+def cmd_remove_romset_scanner(args):
+    romset_id:str = args['romset_id'] if 'romset_id' in args else None
+    
+    uow = UnitOfWork(globals.g_PATHS.DATABASE_FILE_PATH)
+    with uow:
+        romset_repository = ROMSetRepository(uow)        
+        romset = romset_repository.find_romset(romset_id)
+    
+        scanners = romset.get_scanners()
+        if len(scanners) == 0:
+            kodi.notify('No scanners configured for this romset!')
+            kodi.event(command='EDIT_ROMSET_SCANNERS', data=args)
+            return
+        
+        options = collections.OrderedDict()
+        for scanner in scanners:
+            options[scanner] = scanner.get_name()
+        
+        s = 'Choose scanner to remove'
+        selected_option:ROMSetScanner = kodi.OrdDictionaryDialog().select(s, options)
+        
+        if selected_option is None:
+            # >> Exits context menu
+            logger.debug('REMOVE_SCANNER: cmd_remove_romset_scanner() Selected None. Closing context menu')
+            kodi.event(command='EDIT_ROMSET_SCANNERS', data=args)
+            return
+        
+        # >> Execute subcommand. May be atomic, maybe a submenu.
+        logger.debug('REMOVE_SCANNER: cmd_remove_romset_scanner() Selected {}'.format(selected_option.get_id()))
+        if not kodi.dialog_yesno('Are you sure to delete ROM scanner "{}"'.format(selected_option.get_name())):
+            logger.debug('REMOVE_SCANNER: cmd_remove_romset_scanner() Cancelled operation.')
+            kodi.event(command='EDIT_ROMSET_SCANNERS', data=args)
+            return
+        
+        romset_repository.remove_scanner(romset.get_id(), selected_option.get_id())
+        logger.info('REMOVE_SCANNER: cmd_remove_romset_scanner() Removed scanner#{}'.format(selected_option.get_id()))
+        uow.commit()
+    
+    kodi.event(command='EDIT_ROMSET_SCANNERS', data=args) 
+  
+# -------------------------------------------------------------------------------------------------
+# ROMSet scanner specific configuration.
+# -------------------------------------------------------------------------------------------------      
+@AppMediator.register('SET_SCANNER_SETTINGS')
+def cmd_set_scanner_settings(args):
+    romset_id:str   = args['romset_id'] if 'romset_id' in args else None
+    scanner_id:str  = args['scanner_id'] if 'scanner_id' in args else None
+    addon_id:str    = args['addon_id'] if 'addon_id' in args else None
+    settings        = args['settings'] if 'settings' in args else None
+    
+    uow = UnitOfWork(globals.g_PATHS.DATABASE_FILE_PATH)
+    with uow:
+        addon_repository = AelAddonRepository(uow)
+        romset_repository = ROMSetRepository(uow)
+        
+        addon = addon_repository.find_by_addon_id(addon_id)
+        romset = romset_repository.find_romset(romset_id)
+        
+        if scanner_id is None:
+            romset.add_scanner(addon, settings)
+        else: 
+            scanner = romset.get_scanner(scanner_id)
+            scanner.set_settings(settings)
+            
+        romset_repository.update_romset(romset)
+        uow.commit()
+    
+    kodi.notify('Configured ROM scanner {}'.format(addon.get_name()))
+    kodi.event(command='EDIT_ROMSET', data={'romset_id': romset_id})
+ 
+# -------------------------------------------------------------------------------------------------
+# ROMSet Scanner executing
+# -------------------------------------------------------------------------------------------------
+@AppMediator.register('SCAN_ROMS')
+def cmd_execute_rom_scanner(args):
+    rom_id:str = args['rom_id'] if 'rom_id' in args else None
+
+    uow = UnitOfWork(globals.g_PATHS.DATABASE_FILE_PATH)
+    with uow:
+        rom_repository = ROMsRepository(uow)
+        romset_repository = ROMSetRepository(uow)
+
+        rom = rom_repository.find_rom(rom_id)
+        romset = romset_repository.find_romset(rom.get_romset_id())
+
+    scanners = romset.get_scanners()
+    if scanners is None or len(scanners) == 0:
+        kodi.notify_warn('No ROM scanners configured.')
+        return
+
+    selected_scanner = scanners[0]
+    if len(scanners) > 1:
+        scanner_options = collections.OrderedDict()
+        for scanner in scanners:
+            scanner_options[scanner] = scanner.get_name()
+        dialog = kodi.OrdDictionaryDialog()
+        selected_scanner = dialog.select('Choose ROM scanner', scanner_options)
+
+    scanner_settings:dict = selected_scanner.get_settings()    
+    logger.info('SCAN_ROMS: selected scanner "{}"'.format(selected_scanner.get_name()))
+
+    kodi.execute_uri(selected_scanner.addon.get_execute_uri(), {
+        'settings': selected_scanner.get_settings_str()
     })

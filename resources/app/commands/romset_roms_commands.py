@@ -51,6 +51,9 @@ def cmd_manage_roms(args):
     options = collections.OrderedDict()
     options['SET_ROMS_DEFAULT_ARTWORK']  = 'Choose ROMs default artwork ...'
     options['SET_ROMS_ASSET_DIRS']       = 'Manage ROMs asset directories ...'
+    options['SCAN_ROMS']                 = 'Scan for new ROMs'
+    if romset.has_scanners(): options['EDIT_ROMSET_SCANNERS'] = 'Configure ROM scanners'
+    else: options['ADD_SCANNER']         = 'Add new ROM scanner' 
     options['IMPORT_ROMS']               = 'Import ROMs (files/metadata)'
     options['EXPORT_ROMS']               = 'Export ROMs metadata to NFO files'
     options['SCRAPE_ROMS']               = 'Scrape ROMs'
@@ -201,8 +204,6 @@ def cmd_import_roms(args):
         romset = repository.find_romset(romset_id)
 
     options = collections.OrderedDict()
-    options['SCAN_ROMS']            = 'Scan for new ROMs'
-    options['EDIT_ROMSET_SCANNERS'] = 'Configure ROM scanners'
     options['IMPORT_ROMS_NFO']      = 'Import ROMs metadata from NFO files'
     options['IMPORT_ROMS_JSON']     = 'Import ROMs data from JSON files'
 

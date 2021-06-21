@@ -22,7 +22,7 @@ import logging
 
 # --- AEL packages ---
 from resources.lib.utils import io, kodi, text
-from resources.lib import globals, report
+from resources.lib import globals, report, platforms
 from resources.lib.constants import *
 
 logger = logging.getLogger(__name__)
@@ -35,54 +35,117 @@ logger = logging.getLogger(__name__)
 class ScannerStrategyABC(object):
     __metaclass__ = abc.ABCMeta
 
-    def __init__(self, launcher, settings, progress_dialog):
-        self.launcher = launcher
-        self.settings = settings
-        self.progress_dialog = progress_dialog     
+    def __init__(self,
+                 scanner_settings: dict, 
+                 default_launcher_settings: dict,
+                 progress_dialog: kodi.ProgressDialog):
+        
+        self.scanner_settings = scanner_settings if scanner_settings else {}
+        self.default_launcher_settings = default_launcher_settings
+        self.progress_dialog = progress_dialog
+        
         super(ScannerStrategyABC, self).__init__()
+  
+    # --------------------------------------------------------------------------------------------
+    # Core methods
+    # --------------------------------------------------------------------------------------------
+    @abc.abstractmethod
+    def get_name(self) -> str: return ''
+    
+    @abc.abstractmethod
+    def get_scanner_addon_id(self) -> str: return ''
 
+    def get_scanner_settings(self) -> dict: return self.scanner_settings
+    
     #
     # Configure this scanner.
     #
     @abc.abstractmethod
-    def configure(self):
-        return {}
+    def configure(self) -> bool: return True
 
     #
     # Scans for new roms based on the type of launcher.
     #
     @abc.abstractmethod
-    def scan(self):
-        return {}
+    def scan(self):  return {}
 
     #
     # Cleans up ROM collection.
     # Remove Remove dead/missing ROMs ROMs
     #
     @abc.abstractmethod
-    def cleanup(self):
-        return {}
+    def cleanup(self): return {}
+    
+    #
+    # This method will call the AEL event to store scanner settings for a 
+    # specific romset in the database.
+    #
+    def store_scanner_settings(self, romset_id: str, scanner_id: str = None):
+        
+        scanner_settings = self.get_scanner_settings()
+        params = {
+            'romset_id': romset_id,
+            'scanner_id': scanner_id,
+            'addon_id': self.get_scanner_addon_id(),
+            'settings': scanner_settings
+        }        
+        kodi.event(sender='plugin.program.AEL',command='SET_SCANNER_SETTINGS', data=params)
+        
 
 class NullScanner(ScannerStrategyABC):
-    def scan(self):
-        return {}
+    
+    def get_name(self) -> str: return 'NULL'
+    
+    def get_scanner_addon_id(self) -> str: return ''
+    
+    def configure(self): return True
+    
+    def scan(self): return {}
 
-    def cleanup(self):
-        return {}
+    def cleanup(self):return {}
 
 class RomScannerStrategy(ScannerStrategyABC):
     __metaclass__ = abc.ABCMeta
 
-    def __init__(self, reports_dir, addon_dir, launcher, settings, scraping_strategy, progress_dialog):
+    def __init__(self, 
+                 reports_dir: io.FileName, 
+                 addon_dir: io.FileName, 
+                 scanner_settings: dict, 
+                 default_launcher_settings: dict,
+                 progress_dialog: kodi.ProgressDialog):
         
         self.reports_dir = reports_dir
         self.addon_dir = addon_dir
-           
-        self.scraping_strategy = scraping_strategy
 
-        super(RomScannerStrategy, self).__init__(launcher, settings, progress_dialog)
+        super(RomScannerStrategy, self).__init__(scanner_settings, default_launcher_settings, progress_dialog)
 
+    # --------------------------------------------------------------------------------------------
+    # Scanner configuration wizard methods
+    # --------------------------------------------------------------------------------------------
+    #
+    # Builds up the settings for a Scanner
+    # Returns True if Scanner was sucesfully built.
+    # Returns False if Scanner was not built (user canceled the dialogs or some other
+    # error happened).
+    #
+    def configure(self) -> bool:
+        logger.debug('RomScannerStrategy::build() Starting ...')
+                
+        # --- Call hook before wizard ---
+        if not self._configure_pre_wizard_hook(): return False
 
+        # --- Scanner configuration code ---
+        wizard = kodi.WizardDialog_Dummy(None, 'addon_id', self.get_scanner_addon_id())
+        # >> Call Child class wizard builder method
+        wizard = self._configure_get_wizard(wizard)
+        # >> Run wizard
+        self.launcher_args = wizard.runWizard(self.scanner_settings)
+        if not self.scanner_settings: return False
+
+        # --- Call hook after wizard ---
+        if not self._configure_post_wizard_hook(): return False
+
+        return True
 
     def scan(self):
                
@@ -194,6 +257,20 @@ class RomScannerStrategy(ScannerStrategyABC):
 
         launcher_report.close()
         return roms
+    
+    #
+    # Creates a new scanner using a wizard of dialogs.
+    # Child concrete classes must implement this method.
+    #
+    @abc.abstractmethod
+    def _configure_get_wizard(self, wizard) -> kodi.WizardDialog: pass
+
+    # ~~~ Pre & Post configuration hooks ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    @abc.abstractmethod
+    def _configure_pre_wizard_hook(self): return True
+
+    @abc.abstractmethod
+    def _configure_post_wizard_hook(self): return True
 
     # ~~~ Scan for new files (*.*) and put them in a list ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     @abc.abstractmethod
@@ -212,6 +289,21 @@ class RomScannerStrategy(ScannerStrategyABC):
 
 class RomFolderScanner(RomScannerStrategy):
     
+    # --------------------------------------------------------------------------------------------
+    # Core methods
+    # --------------------------------------------------------------------------------------------
+    def get_name(self) -> str: return 'Folder scanner'
+    
+    def get_scanner_addon_id(self) -> str: return '{}.FolderScanner'.format(globals.addon_id)
+
+    def _configure_get_wizard(self, wizard) -> kodi.WizardDialog:
+        
+        wizard = kodi.WizardDialog_FileBrowse(wizard, 'rompath', 'Select the ROMs path',0, '')
+        wizard = kodi.WizardDialog_Dummy(wizard, 'romext', '', self._configuration_get_extensions_from_app_path)
+        wizard = kodi.WizardDialog_Keyboard(wizard, 'romext','Set files extensions, use "|" as separator. (e.g lnk|cbr)')
+        
+        return wizard
+            
     # ~~~ Scan for new files (*.*) and put them in a list ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def _getCandidates(self, launcher_report, rom_path = None):
         self.progress_dialog.startProgress('Scanning and caching files in ROM path ...')
@@ -421,6 +513,19 @@ class RomFolderScanner(RomScannerStrategy):
         self.progress_dialog.endProgress()
         return new_roms
 
+    def _configuration_get_extensions_from_app_path(self, input, item_key, scanner_settings):
+        if input: return input
+        extensions = scanner_settings[item_key] if item_key in scanner_settings else ''
+        if extensions != '': return extensions
+        
+        if self.default_launcher_settings and 'application' in self.default_launcher_settings:
+            app = self.default_launcher_settings['application'] 
+            appPath = io.FileName(app)
+
+            extensions = platforms.emudata_get_program_extensions(appPath.getBase())
+            
+        return extensions
+    
 class SteamScanner(RomScannerStrategy):
     
     # ~~~ Scan for new items not yet in the rom collection ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

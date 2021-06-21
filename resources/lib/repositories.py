@@ -522,15 +522,11 @@ class CategoryRepository(object):
 #
 # ROMSetRepository -> ROM Sets from SQLite DB
 #
-QUERY_SELECT_ROMSET                     = "SELECT * FROM vw_romsets WHERE id = ?"
-QUERY_SELECT_ROMSET_ASSETS_BY_SET       = "SELECT * FROM vw_romset_assets WHERE romset_id = ?"
-QUERY_SELECT_ROMSETS                    = "SELECT * FROM vw_romsets"
-QUERY_SELECT_ROMSET_ASSETS              = "SELECT * FROM vw_romset_assets"
-QUERY_SELECT_ROOT_ROMSETS               = "SELECT * FROM vw_romsets WHERE parent_id IS NULL"
-QUERY_SELECT_ROOT_ROMSET_ASSETS         = "SELECT * FROM vw_romset_assets WHERE parent_id IS NULL"
-QUERY_SELECT_ROMSETS_BY_PARENT          = "SELECT * FROM vw_romsets WHERE parent_id = ?"
-QUERY_SELECT_ROMSETS_ASSETS_BY_PARENT   = "SELECT * FROM vw_romset_assets WHERE parent_id = ?"
-QUERY_SELECT_ROMSET_LAUNCHERS           = "SELECT * FROM vw_romset_launchers WHERE romset_id = ?"
+QUERY_SELECT_ROMSET             = "SELECT * FROM vw_romsets WHERE id = ?"
+QUERY_SELECT_ROMSETS            = "SELECT * FROM vw_romsets"
+QUERY_SELECT_ROOT_ROMSETS       = "SELECT * FROM vw_romsets WHERE parent_id IS NULL"
+QUERY_SELECT_ROMSETS_BY_PARENT  = "SELECT * FROM vw_romsets WHERE parent_id = ?"
+QUERY_SELECT_ROMSET_SCANNERS    = "SELECT * FROM vw_romset_scanners WHERE romset_id = ?"
 
 QUERY_INSERT_ROMSET               = """
                                     INSERT INTO romsets (
@@ -546,15 +542,25 @@ QUERY_UPDATE_ROMSET               = """
                                         roms_default_icon=?, roms_default_fanart=?, roms_default_banner=?, roms_default_poster=?, roms_default_clearlogo=?
                                         WHERE id =?
                                     """
-QUERY_INSERT_ROMSET_ASSET         = "INSERT INTO romset_assets (romset_id, asset_id) VALUES (?, ?)"
-QUERY_INSERT_ROMSET_ASSET_PATH    = "INSERT INTO romset_assetspaths (romset_id, assetspaths_id) VALUES (?, ?)"
+QUERY_DELETE_ROMSET               = "DELETE FROM romset WHERE id = ?"
+
+QUERY_SELECT_ROMSET_ASSETS_BY_SET       = "SELECT * FROM vw_romset_assets WHERE romset_id = ?"
+QUERY_SELECT_ROOT_ROMSET_ASSETS         = "SELECT * FROM vw_romset_assets WHERE parent_id IS NULL"
+QUERY_SELECT_ROMSETS_ASSETS_BY_PARENT   = "SELECT * FROM vw_romset_assets WHERE parent_id = ?"
+QUERY_SELECT_ROMSET_ASSETS              = "SELECT * FROM vw_romset_assets"
+QUERY_INSERT_ROMSET_ASSET               = "INSERT INTO romset_assets (romset_id, asset_id) VALUES (?, ?)"
+QUERY_INSERT_ROMSET_ASSET_PATH          = "INSERT INTO romset_assetspaths (romset_id, assetspaths_id) VALUES (?, ?)"
+
+QUERY_SELECT_ROMSET_LAUNCHERS     = "SELECT * FROM vw_romset_launchers WHERE romset_id = ?"
 QUERY_INSERT_ROMSET_LAUNCHER      = "INSERT INTO romset_launchers (id, romset_id, ael_addon_id, settings, is_non_blocking, is_default) VALUES (?,?,?,?,?,?)"
 QUERY_UPDATE_ROMSET_LAUNCHER      = "UPDATE romset_launchers SET settings = ?, is_non_blocking = ?, is_default = ? WHERE id = ?"
 QUERY_DELETE_ROMSET_LAUNCHERS     = "DELETE FROM romset_launchers WHERE romset_id = ?"
 QUERY_DELETE_ROMSET_LAUNCHER      = "DELETE FROM romset_launchers WHERE romset_id = ? AND id = ?"
-QUERY_DELETE_ROMSET               = "DELETE FROM romset WHERE id = ?"
 
-
+QUERY_SELECT_ROMSET_SCANNERS      = "SELECT * FROM vw_romset_scanners WHERE romset_id = ?"
+QUERY_INSERT_ROMSET_SCANNER       = "INSERT INTO romset_scanners (id, romset_id, ael_addon_id, settings) VALUES (?,?,?,?)"
+QUERY_UPDATE_ROMSET_SCANNER       = "UPDATE romset_scanners SET settings = ? WHERE id = ?"
+QUERY_DELETE_ROMSET_SCANNER       = "DELETE FROM romset_scanners WHERE romset_id = ? AND id = ?"
 class ROMSetRepository(object):
 
     def __init__(self, uow: UnitOfWork):
@@ -578,7 +584,14 @@ class ROMSetRepository(object):
             addon = AelAddon(launcher_data.copy())
             launchers.append(ROMSetLauncher(addon, launcher_data))
         
-        return ROMSet(romset_data, assets, launchers)
+        self._uow.execute(QUERY_SELECT_ROMSET_SCANNERS, romset_id)
+        scanners_data = self._uow.result_set()
+        scanners = []
+        for scanner_data in scanners_data:
+            addon = AelAddon(scanner_data.copy())
+            scanners.append(ROMSetScanner(addon, scanner_data))
+            
+        return ROMSet(romset_data, assets, launchers, scanners)
 
     def find_all_romsets(self) -> typing.Iterator[ROMSet]:
         self._uow.execute(QUERY_SELECT_ROMSETS)
@@ -670,9 +683,18 @@ class ROMSetRepository(object):
                 romset_launcher.get_id(),
                 romset_obj.get_id(), 
                 romset_launcher.addon.get_id(), 
-                romset_launcher.get_settings(), 
+                romset_launcher.get_settings_str(), 
                 romset_launcher.is_non_blocking(),
                 romset_launcher.is_default())
+            
+        romset_scanners = romset_obj.get_scanners()
+        for romset_scanner in romset_scanners:
+            romset_scanner.set_id(text.misc_generate_random_SID())
+            self._uow.execute(QUERY_INSERT_ROMSET_SCANNER,
+                romset_scanner.get_id(),
+                romset_obj.get_id(), 
+                romset_scanner.addon.get_id(), 
+                romset_scanner.get_settings_str())
               
     def update_romset(self, romset_obj: ROMSet):
         logger.info("ROMSetRepository.update_romset(): Updating romset '{}'".format(romset_obj.get_name()))
@@ -722,6 +744,20 @@ class ROMSetRepository(object):
                     romset_launcher.is_non_blocking(),
                     romset_launcher.is_default(),
                     romset_launcher.get_id())
+                
+        romset_scanners = romset_obj.get_scanners()
+        for romset_scanner in romset_scanners:
+            if romset_scanner.get_id() is None:
+                romset_scanner.set_id(text.misc_generate_random_SID())
+                self._uow.execute(QUERY_INSERT_ROMSET_SCANNER,
+                    romset_scanner.get_id(),
+                    romset_obj.get_id(), 
+                    romset_scanner.addon.get_id(), 
+                    romset_scanner.get_settings_str())
+            else:
+                self._uow.execute(QUERY_UPDATE_ROMSET_SCANNER,
+                    romset_scanner.get_settings_str(), 
+                    romset_scanner.get_id())
 
         for asset in romset_obj.get_assets():
             if asset.get_id() == '': self._insert_asset(asset, romset_obj)
@@ -733,6 +769,9 @@ class ROMSetRepository(object):
 
     def remove_launcher(self, romset_id: str, launcher_id:str):
         self._uow.execute(QUERY_DELETE_ROMSET_LAUNCHER, romset_id, launcher_id)
+
+    def remove_scanner(self, romset_id: str, scanner_id:str):
+        self._uow.execute(QUERY_DELETE_ROMSET_SCANNER, romset_id, scanner_id)
 
     def _insert_asset(self, asset: Asset, romset_obj: ROMSet):
         asset_db_id = text.misc_generate_random_SID()
