@@ -235,9 +235,36 @@ def cmd_execute_rom_scanner(args):
         dialog = kodi.OrdDictionaryDialog()
         selected_scanner = dialog.select('Choose ROM scanner', scanner_options)
 
-    scanner_settings:dict = selected_scanner.get_settings()    
     logger.info('SCAN_ROMS: selected scanner "{}"'.format(selected_scanner.get_name()))
 
     kodi.execute_uri(selected_scanner.addon.get_execute_uri(), {
+        'romset_id': romset.get_id(),
+        'scanner_id': selected_scanner.get_id(),
         'settings': selected_scanner.get_settings_str()
     })
+    
+@AppMediator.register('STORE_SCANNED_ROMS')
+def cmd_store_scanned_roms(args):
+    romset_id:str   = args['romset_id'] if 'romset_id' in args else None
+    scanner_id:str  = args['scanner_id'] if 'scanner_id' in args else None
+    roms:list       = args['roms'] if 'roms' in args else None
+    
+    if roms is None:
+        return
+    
+    uow = UnitOfWork(globals.g_PATHS.DATABASE_FILE_PATH)
+    with uow:
+        romset_repository = ROMSetRepository(uow)
+        rom_repository    = ROMsRepository(uow)
+        
+        romset = romset_repository.find_romset(romset_id)
+        
+        for rom_data in roms:
+            rom_obj = ROM(rom_data)
+            rom_repository.insert_rom()
+        
+        romset_repository.update_romset(romset)
+        uow.commit()
+    
+    kodi.notify('Stored scanned ROMS in ROMs Collection {}'.format(romset.get_name()))
+    kodi.event(command='EDIT_ROMSET', data={'romset_id': romset_id})

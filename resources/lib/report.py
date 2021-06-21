@@ -17,7 +17,9 @@
 # --- Python standard library ---
 from __future__ import unicode_literals
 from __future__ import division
+
 import abc
+from datetime import datetime
 
 # --- AEL modules ---
 from resources.lib.domain import *
@@ -199,9 +201,7 @@ def report_print_Collection(slist, collection):
 class Reporter(object):
     __metaclass__ = abc.ABCMeta
 
-    def __init__(self, launcher_data, decoratorReporter = None):
-
-        self.launcher_data = launcher_data
+    def __init__(self, decoratorReporter = None):
         self.decoratorReporter = decoratorReporter
 
     @abc.abstractmethod
@@ -225,7 +225,7 @@ class Reporter(object):
 
 class LogReporter(Reporter):
     def open(self, report_title):
-        return super(LogReporter, self).close()
+        return super(LogReporter, self).open()
 
     def close(self):
         return super(LogReporter, self).close()
@@ -234,29 +234,28 @@ class LogReporter(Reporter):
         logger.info(message)
 
 class FileReporter(Reporter):
-    def __init__(self, reports_dir:io.FileName, launcher_data, decoratorReporter = None):
-        self.report_file = reports_dir.pjoin(launcher_data['roms_base_noext'] + '_report.txt')
-        super(FileReporter, self).__init__(launcher_data, decoratorReporter)
+    def __init__(self, reports_dir:io.FileName, scanner_name:str, decoratorReporter = None):
+        now = datetime.now()
+        self.report_file = reports_dir.pjoin('{}_{}_report.txt'.format(scanner_name, now.strftime("%Y%m%d%H%M%S")))
+        
+        super(FileReporter, self).__init__(decoratorReporter)
 
     def open(self, report_title):
         logger.info('Report file path "{0}"'.format(self.report_file.getPath()))
         self.report_file.open('w')
-
-        # --- Get information from launcher ---
-        launcher_path = io.FileName(self.launcher_data['rompath'])
         
         self.write('******************** Report: {} ...  ********************'.format(report_title))
-        self.write('  Launcher name "{0}"'.format(self.launcher_data['m_name']))
-        self.write('  Launcher type "{0}"'.format(self.launcher_data['type'] if 'type' in self.launcher_data else 'Unknown'))
-        self.write('  launcher ID   "{0}"'.format(self.launcher_data['id']))
-        self.write('  ROM path      "{0}"'.format(launcher_path.getPath()))
-        self.write('  ROM ext       "{0}"'.format(self.launcher_data['romext']))
-        self.write('  Platform      "{0}"'.format(self.launcher_data['platform']))
-        self.write(  'Multidisc     "{0}"'.format(self.launcher_data['multidisc']))
+        #self.write('  Launcher name "{0}"'.format(self.launcher_data['m_name']))
+        #self.write('  Launcher type "{0}"'.format(self.launcher_data['type'] if 'type' in self.launcher_data else 'Unknown'))
+        #self.write('  launcher ID   "{0}"'.format(self.launcher_data['id']))
+        #self.write('  ROM path      "{0}"'.format(launcher_path.getPath()))
+        #self.write('  ROM ext       "{0}"'.format(self.launcher_data['romext']))
+        #self.write('  Platform      "{0}"'.format(self.launcher_data['platform']))
+        #self.write(  'Multidisc     "{0}"'.format(self.launcher_data['multidisc']))
 
     def close(self):
         self.report_file.close()
 
-    def _write_message(self, message):
-        self.report_file.write(message.encode('utf-8'))
-        self.report_file.write('\n'.encode('utf-8'))
+    def _write_message(self, message:str):
+        self.report_file.write(message)
+        self.report_file.write('\n')

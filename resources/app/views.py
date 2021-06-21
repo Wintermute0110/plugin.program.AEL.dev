@@ -173,7 +173,7 @@ def vw_configure_app_launcher():
     kodi.notify_warn('Cancelled creating launcher')
     
 @router.route('/launcher/app/')
-def vw_configure_app_launcher():
+def vw_execute_app_launcher():
     logger.debug('App Launcher: Starting ...')
     launcher_settings   = json.loads(router.args['settings'][0])
     arguments           = router.args['args'][0]
@@ -215,6 +215,36 @@ def vw_configure_folder_scanner():
     
     kodi.notify_warn('Cancelled configuring scanner')
 
+@router.route('/scanner/folder')
+def vw_execute_folder_scanner():
+    logger.debug('ROM Folder scanner: Starting scan ...')
+    romset_id:str   = router.args['romset_id'][0] if 'romset_id' in router.args else None
+    scanner_id:str  = router.args['scanner_id'][0] if 'scanner_id' in router.args else None
+    settings:str    = router.args['settings'][0] if 'settings' in router.args else None
+
+    scanner_settings = json.loads(settings) if settings else None
+    progress_dialog = kodi.ProgressDialog()
+        
+    scanner = RomFolderScanner(
+        globals.g_PATHS.REPORTS_DIR, 
+        globals.g_PATHS.ADDON_DATA_DIR,
+        scanner_settings,
+        None,
+        progress_dialog)
+    
+    roms_scanned = scanner.scan(scanner_id)
+    progress_dialog.endProgress()
+    
+    logger.debug('vw_execute_folder_scanner(): Finished scanning')
+    
+    if roms_scanned is None:
+        logger.info('vw_execute_folder_scanner(): No roms scanned')
+        return
+        
+    logger.info('vw_execute_folder_scanner(): {} roms scanned'.format(len(roms_scanned)))
+    kodi.notify('ROMs scanning done')
+
+    
 # -------------------------------------------------------------------------------------------------
 # UI render methods
 # -------------------------------------------------------------------------------------------------
