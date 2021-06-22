@@ -2682,9 +2682,8 @@ class Main:
     # Note that categoryID = VCATEGORY_FAVOURITES_ID, launcherID = VLAUNCHER_FAVOURITES_ID
     # if we are editing a ROM in Favourites.
     def _command_edit_rom(self, categoryID, launcherID, romID):
-        # --- ---
         if romID == UNKNOWN_ROMS_PARENT_ID:
-            kodi_dialog_OK('You cannot edit this ROM!')
+            kodi_dialog_OK('You cannot edit this ROM! (Unknown parent ROM)')
             return
 
         # --- Load ROMs ---
@@ -2985,7 +2984,7 @@ class Main:
         # --- Edit ROM Assets (all) ---
         elif mindex == 2:
             sDialog = KodiSelectDialog('Edit ROM assets (all)', [
-                'Scrape all assets',
+                'Scrape all assets (choose scraper)',
                 'Unset all assets',
             ])
             mindex2 = sDialog.executeDialog()

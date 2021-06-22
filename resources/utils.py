@@ -1295,4 +1295,4 @@ def kodi_update_image_cache(img_path):
         lod_error('(OSError) Cannot update cached image')
 
     # Is this really needed?
-    # xbmc.executebuiltin('XBMC.ReloadSkin()')
+    # xbmc.executebuiltin('ReloadSkin()')
