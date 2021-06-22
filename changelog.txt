@@ -150,7 +150,7 @@ WIP FIX  Fix launching of ROMs with Windows network filenames.
          See https://forum.kodi.tv/showthread.php?tid=287826&pid=2919639#pid2919639
 
 
-[B]Advanced Emulator Launcher | version 0.10.0 | xx xxxxx 2021[/B]
+[B]Advanced Emulator Launcher | version 0.10.0 | 22 June 2021[/B]
 
 NOTE     Python 3 version for Matrix in branch release-0.10.x-python3
 
@@ -161,7 +161,7 @@ FEATURE  Create a Python 3 Matrix version 0.10.x to track release 0.9.x.
 FEATURE  Port release 0.9.10 to Python 3.
 
 
-[B]Advanced Emulator Launcher | version 0.9.10 | xx xxxxx 2021[/B]
+[B]Advanced Emulator Launcher | version 0.9.10 | 22 June 2021[/B]
 
 NOTE     Python 2 version for Leia/Krypon in branch release-0.9.x-python2
          Have a look at AML code to ease the conversion.
