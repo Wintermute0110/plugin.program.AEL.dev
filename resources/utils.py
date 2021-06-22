@@ -365,13 +365,13 @@ def utils_load_JSON_file(json_filename, default_obj = {}, verbose = True):
 # Note that there is a bug in the json module where the ensure_ascii=False flag can produce
 # a mix of unicode and str objects.
 # See http://stackoverflow.com/questions/18337407/saving-utf-8-texts-in-json-dumps-as-utf8-not-as-u-escape-sequence
-def utils_write_JSON_file(json_filename, json_data, verbose = True, pprint = False, lowmem = False):
+def utils_write_JSON_file(json_filename, json_data, verbose = True, pprint = False):
     l_start = time.time()
     if verbose: log_debug('utils_write_JSON_file() "{}"'.format(json_filename))
 
     # Choose JSON iterative encoder or normal encoder.
-    if lowmem:
-        if verbose: log_debug('utils_write_JSON_file() Using lowmem option')
+    if OPTION_LOWMEM_WRITE_JSON:
+        if verbose: log_debug('utils_write_JSON_file() Using OPTION_LOWMEM_WRITE_JSON option')
         if pprint:
             jobj = json.JSONEncoder(ensure_ascii = False, sort_keys = True,
                 indent = JSON_INDENT, separators = JSON_SEP)
@@ -396,7 +396,7 @@ def utils_write_JSON_file(json_filename, json_data, verbose = True, pprint = Fal
     # Write JSON to disk
     try:
         with io.open(json_filename, 'wt', encoding = 'utf-8') as file:
-            if lowmem:
+            if OPTION_LOWMEM_WRITE_JSON:
                 # Chunk by chunk JSON writer, uses less memory but takes longer.
                 for chunk in jobj.iterencode(json_data):
                     file.write(text_type(chunk))
