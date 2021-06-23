@@ -84,6 +84,9 @@ class ScannerStrategyABC(object):
 
     def get_scanner_settings(self) -> dict: return self.scanner_settings
     
+    def amount_of_scanned_roms(self) -> int:
+        return len(self.scanned_roms)
+
     #
     # Configure this scanner.
     #
@@ -94,7 +97,7 @@ class ScannerStrategyABC(object):
     # Scans for new roms based on the type of launcher.
     #
     @abc.abstractmethod
-    def scan(self, scanner_id: str):  pass
+    def scan(self):  pass
 
     #
     # Cleans up ROM collection.
@@ -118,10 +121,11 @@ class ScannerStrategyABC(object):
         kodi.event(sender='plugin.program.AEL',command='SET_SCANNER_SETTINGS', data=params)
      
     def store_scanned_roms(self, romset_id: str, scanner_id: str): 
+        roms = [*(r.get_data_dic() for r in self.scanned_roms)]
         params = {
             'romset_id': romset_id,
             'scanner_id': scanner_id,
-            'roms': (r.get_data_dic() for r in self.scanned_roms)
+            'roms': roms
         }      
         kodi.event(sender='plugin.program.AEL',command='STORE_SCANNED_ROMS', data=params)
 
@@ -133,9 +137,9 @@ class NullScanner(ScannerStrategyABC):
     
     def configure(self): return True
     
-    def scan(self, scanner_id: str): return {}
+    def scan(self): pass
 
-    def cleanup(self):return {}
+    def cleanup(self): pass
 
 class RomScannerStrategy(ScannerStrategyABC):
     __metaclass__ = abc.ABCMeta
@@ -180,7 +184,7 @@ class RomScannerStrategy(ScannerStrategyABC):
 
         return True
 
-    def scan(self, scanner_id: str):
+    def scan(self):
                
         # --- Open ROM scanner report file ---
         launcher_report = report.FileReporter(self.reports_dir, self.get_name(), report.LogReporter())
@@ -426,7 +430,7 @@ class RomFolderScanner(RomScannerStrategy):
 
             # ~~~ Update progress dialog ~~~
             file_text = 'ROM {0}'.format(ROM_file.getBase())
-            self.progress_dialog.updateMessage(file_text, 'Checking if has ROM extension ...')
+            self.progress_dialog.updateMessage('{}\nChecking if has ROM extension ...'.format(file_text))
                         
             # --- Check if filename matchs ROM extensions ---
             # The recursive scan has scanned all files. Check if this file matches some of 
@@ -444,7 +448,7 @@ class RomFolderScanner(RomScannerStrategy):
                 continue
                         
             # --- Check if ROM belongs to a multidisc set ---
-            self.progress_dialog.updateMessage(file_text, 'Checking if ROM belongs to multidisc set..')
+            self.progress_dialog.updateMessage('{}\nChecking if ROM belongs to multidisc set..'.format(file_text))
                        
             MultiDiscInROMs = False
             MDSet = MultiDiscInfo.get_multidisc_info(ROM_file)
@@ -494,7 +498,7 @@ class RomFolderScanner(RomScannerStrategy):
  
             # --- Check that ROM is not already in the list of ROMs ---
             # >> If file already in ROM list skip it
-            self.progress_dialog.updateMessage(file_text, 'Checking if ROM is not already in collection...')
+            self.progress_dialog.updateMessage('{}\nChecking if ROM is not already in collection...'.format(file_text))
             repeatedROM = False
             for rom in roms:
                 rpath = rom.get_file() 

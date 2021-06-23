@@ -259,7 +259,7 @@ def cmd_store_scanned_roms(args):
         for rom_data in roms:
             rom_obj = ROM(rom_data)
             rom_obj.scanned_with(scanner_id)
-            rom_repository.insert_rom(rom_obj, romset)
+            rom_repository.insert_rom(rom_obj)
             romset_repository.add_rom_to_romset(romset.get_id(), rom_obj.get_id())
         uow.commit()
     
