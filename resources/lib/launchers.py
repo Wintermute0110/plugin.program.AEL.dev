@@ -401,6 +401,10 @@ class AppLauncher(LauncherABC):
             
     def _build_post_wizard_hook(self):        
         self.non_blocking = True
+        app = self.launcher_settings['application']
+        app_FN = io.FileName(app)
+        
+        self.launcher_settings['secname'] = app_FN.getBase()
         return True
     
     def _builder_get_arguments_from_application_path(self, input, item_key, launcher_args):

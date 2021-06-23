@@ -3,11 +3,13 @@
 
 import traceback
 import string
-import base64
+import logging
 import time
 import random
 import hashlib
 import re
+
+logger = logging.getLogger(__name__)
 
 def createError(ex: Exception):
     template = (
@@ -153,3 +155,38 @@ def misc_generate_random_SID() -> str:
     sid = base.hexdigest()
 
     return sid
+
+# -------------------------------------------------------------------------------------------------
+# Multidisc ROM support
+# -------------------------------------------------------------------------------------------------
+def get_ROM_basename_tokens(basename_str):
+    DEBUG_TOKEN_PARSER = False
+
+    # --- Parse ROM base_noext/basename_str into tokens ---
+    reg_exp = '\[.+?\]|\(.+?\)|\{.+?\}|[^\[\(\{]+'
+    tokens_raw = re.findall(reg_exp, basename_str)
+    if DEBUG_TOKEN_PARSER:
+        logger.debug('text_get_ROM_basename_tokens() tokens_raw   {0}'.format(tokens_raw))
+
+    # >> Strip tokens
+    tokens_strip = list()
+    for token in tokens_raw: tokens_strip.append(token.strip())
+    if DEBUG_TOKEN_PARSER:
+        logger.debug('text_get_ROM_basename_tokens() tokens_strip {0}'.format(tokens_strip))
+
+    # >> Remove empty tokens ''
+    tokens_clean = list()
+    for token in tokens_strip: 
+        if token: tokens_clean.append(token)
+    if DEBUG_TOKEN_PARSER:        
+        logger.debug('text_get_ROM_basename_tokens() tokens_clean {0}'.format(tokens_clean))
+
+    # >> Remove '-' tokens from Trurip multidisc names
+    tokens = list()
+    for token in tokens_clean:
+        if token == '-': continue
+        tokens.append(token)
+    if DEBUG_TOKEN_PARSER:
+        logger.debug('text_get_ROM_basename_tokens() tokens       {0}'.format(tokens))
+
+    return tokens

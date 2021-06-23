@@ -173,17 +173,17 @@ def get_default_ROMSet_data_model():
         'm_plot' : '',
         'platform' : '',
         'categoryID' : '',
-        'application' : '',
-        'args' : '',
-        'args_extra' : [],
-        'rompath' : '',
-        'romext' : '',
-        'romextrapath' : '',
+        #'application' : '',
+        #'args' : '',
+        #'args_extra' : [],
+        #'rompath' : '',
+        #'romext' : '',
+        #'romextrapath' : '',
         'finished': False,
-        'toggle_window' : False, # Former 'minimize'
-        'non_blocking' : False,
-        'multidisc' : True,
-        'roms_base_noext' : '',
+        #'toggle_window' : False, # Former 'minimize'
+        #'non_blocking' : False,
+        #'multidisc' : True,
+        #'roms_base_noext' : '',
         'nointro_xml_file' : '', # deprecated? TODO: remove
         'nointro_display_mode' : AUDIT_DMODE_ALL, # deprecated? TODO: remove
         'audit_state' : AUDIT_STATE_OFF,

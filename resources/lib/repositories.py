@@ -551,6 +551,9 @@ QUERY_SELECT_ROMSET_ASSETS              = "SELECT * FROM vw_romset_assets"
 QUERY_INSERT_ROMSET_ASSET               = "INSERT INTO romset_assets (romset_id, asset_id) VALUES (?, ?)"
 QUERY_INSERT_ROMSET_ASSET_PATH          = "INSERT INTO romset_assetspaths (romset_id, assetspaths_id) VALUES (?, ?)"
 
+QUERY_INSERT_ROM_IN_ROMSET        = "INSERT INTO roms_in_romset (rom_id, romset_id) VALUES (?,?)"
+QUERY_REMOVE_ROM_FROM_ROMSET      = "DELETE FROM roms_in_romset WHERE rom_id = ? AND romset_id = ?"
+
 QUERY_SELECT_ROMSET_LAUNCHERS     = "SELECT * FROM vw_romset_launchers WHERE romset_id = ?"
 QUERY_INSERT_ROMSET_LAUNCHER      = "INSERT INTO romset_launchers (id, romset_id, ael_addon_id, settings, is_non_blocking, is_default) VALUES (?,?,?,?,?,?)"
 QUERY_UPDATE_ROMSET_LAUNCHER      = "UPDATE romset_launchers SET settings = ?, is_non_blocking = ?, is_default = ? WHERE id = ?"
@@ -763,6 +766,11 @@ class ROMSetRepository(object):
             if asset.get_id() == '': self._insert_asset(asset, romset_obj)
             else: self._update_asset(asset, romset_obj)                
             
+    def add_rom_to_romset(self, romset_id: str, rom_id: str):
+        self._uow.execute(QUERY_INSERT_ROM_IN_ROMSET, rom_id, romset_id)
+            
+    def remove_rom_from_romset(self, romset_id: str, rom_id: str):
+        self._uow.execute(QUERY_REMOVE_ROM_FROM_ROMSET, rom_id, romset_id)
     def delete_romset(self, romset_id: str):
         logger.info("ROMSetRepository.delete_romset(): Deleting romset '{}'".format(romset_id))
         self._uow.execute(QUERY_DELETE_ROMSET, romset_id)
@@ -787,17 +795,21 @@ class ROMSetRepository(object):
 # ROMsRepository -> ROMs from SQLite DB
 #     
 QUERY_SELECT_ROM                = "SELECT * FROM vw_roms WHERE id = ?"
-QUERY_SELECT_ROMS_BY_SET        = "SELECT * FROM vw_roms WHERE romset_id = ?"
+QUERY_SELECT_ROMS_BY_SET        = "SELECT r.* FROM vw_roms AS r INNER JOIN roms_in_romset AS rs ON rs.rom_id = r.id AND rs.romset_id = ?"
 QUERY_SELECT_ROM_ASSETS         = "SELECT * FROM vw_rom_assets WHERE rom_id = ?"
-QUERY_SELECT_ROM_ASSETS_BY_SET  = "SELECT * FROM vw_rom_assets WHERE romset_id = ?"
+QUERY_SELECT_ROM_ASSETS_BY_SET  = "SELECT ra.* FROM vw_rom_assets AS ra INNER JOIN roms_in_romset AS rs ON rs.rom_id = ra.rom_id AND rs.romset_id = ?"
 QUERY_INSERT_ROM                = """
                                 INSERT INTO roms (
-                                    id, romset_id, category_id, metadata_id, name, num_of_players, esrb_rating,
+                                    id, metadata_id, name, num_of_players, esrb_rating, platform, box_size,
                                     nointro_status, cloneof, fav_status, file_path)
                                 VALUES (?,?,?,?,?,?,?,?,?,?,?)
                                 """ 
 QUERY_INSERT_ROM_ASSET          = "INSERT INTO rom_assets (rom_id, asset_id) VALUES (?, ?)"
-QUERY_UPDATE_ROM                = "UPDATE roms SET name=?,num_of_players=?,esrb_rating=?,nointro_status=?,cloneof=?,fav_status=?,file_path=? WHERE id =?"
+QUERY_UPDATE_ROM                = """
+                                  UPDATE roms 
+                                  SET name=?, num_of_players=?, esrb_rating=?, platform = ?, box_size = ?,
+                                  nointro_status=?, cloneof=?, fav_status=?, file_path=? WHERE id =?
+                                  """
           
 class ROMsRepository(object):
        
@@ -832,7 +844,7 @@ class ROMsRepository(object):
         return ROM(rom_data, assets)
 
 
-    def insert_rom(self, rom_obj: ROM, romset_obj: ROMSet = None, category_obj: Category = None): 
+    def insert_rom(self, rom_obj: ROM): 
         logger.info("ROMsRepository.insert_rom(): Inserting new ROM '{}'".format(rom_obj.get_name()))
         metadata_id = text.misc_generate_random_SID()
         assets_path = rom_obj.get_assets_path_FN()
@@ -849,12 +861,12 @@ class ROMsRepository(object):
 
         self._uow.execute(QUERY_INSERT_ROM,
             rom_obj.get_id(),
-            romset_obj.get_id() if romset_obj is not None else None,
-            category_obj.get_id() if category_obj is not None else None,
             metadata_id,
             rom_obj.get_name(),
             rom_obj.get_number_of_players(),
-            rom_obj.get_esrb_rating(),    
+            rom_obj.get_esrb_rating(),   
+            rom_obj.get_platform(),
+            rom_obj.get_box_sizing(), 
             rom_obj.get_nointro_status(),
             rom_obj.get_clone(),
             rom_obj.get_favourite_status(),
@@ -882,6 +894,8 @@ class ROMsRepository(object):
             rom_obj.get_name(),
             rom_obj.get_number_of_players(),
             rom_obj.get_esrb_rating(),
+            rom_obj.get_platform(),
+            rom_obj.get_box_sizing(),
             rom_obj.get_nointro_status(),
             rom_obj.get_clone(),
             rom_obj.get_favourite_status(),
@@ -889,7 +903,7 @@ class ROMsRepository(object):
         
         for asset in rom_obj.get_assets():
             if asset.get_id() == '': self._insert_asset(asset, rom_obj)
-            else: self._update_asset(asset, rom_obj)                
+            else: self._update_asset(asset, rom_obj)            
             
     def _insert_asset(self, asset: Asset, rom_obj: ROM):
         asset_db_id = text.misc_generate_random_SID()

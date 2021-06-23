@@ -147,7 +147,8 @@ def _apply_addon_launcher_for_legacy_launcher(launcher_data: ROMSet, available_a
         args            = launcher_data.get_custom_attribute('args')
         non_blocking    = launcher_data.get_custom_attribute('non_blocking')
         #'args_extra': launcher_data.get_custom_attribute('args_extra')
-        launcher_data.add_launcher(launcher_addon, application, args, non_blocking, True)
+        settings = { 'application': application, 'args': args }
+        launcher_data.add_launcher(launcher_addon, settings, non_blocking, True)
         return
     
     if launcher_type == OBJ_LAUNCHER_STANDALONE:
@@ -159,7 +160,8 @@ def _apply_addon_launcher_for_legacy_launcher(launcher_data: ROMSet, available_a
         args            = launcher_data.get_custom_attribute('args')
         non_blocking    = launcher_data.get_custom_attribute('non_blocking')
         #'args_extra': launcher_data.get_custom_attribute('args_extra')
-        launcher_data.add_launcher(launcher_addon, application, args, non_blocking, True)
+        settings = { 'application': application, 'args': args }
+        launcher_data.add_launcher(launcher_addon, settings, non_blocking, True)
         return
     
     if launcher_type == OBJ_LAUNCHER_ROM:
@@ -171,7 +173,8 @@ def _apply_addon_launcher_for_legacy_launcher(launcher_data: ROMSet, available_a
         args            = launcher_data.get_custom_attribute('args')
         non_blocking    = launcher_data.get_custom_attribute('non_blocking')
         #'args_extra': launcher_data.get_custom_attribute('args_extra')
-        launcher_data.add_launcher(launcher_addon, application, args, non_blocking, True)
+        settings = { 'application': application, 'args': args }
+        launcher_data.add_launcher(launcher_addon, settings, non_blocking, True)
         return
     
     if launcher_type == OBJ_LAUNCHER_RETROPLAYER:
@@ -183,7 +186,8 @@ def _apply_addon_launcher_for_legacy_launcher(launcher_data: ROMSet, available_a
         args            = launcher_data.get_custom_attribute('args')
         non_blocking    = launcher_data.get_custom_attribute('non_blocking')
         #'args_extra': launcher_data.get_custom_attribute('args_extra')
-        launcher_data.add_launcher(launcher_addon, application, args, non_blocking, True)
+        settings = { 'application': application, 'args': args }
+        launcher_data.add_launcher(launcher_addon, settings, non_blocking, True)
         return
     
     if launcher_type == OBJ_LAUNCHER_RETROARCH:
@@ -195,7 +199,8 @@ def _apply_addon_launcher_for_legacy_launcher(launcher_data: ROMSet, available_a
         args            = launcher_data.get_custom_attribute('args')
         non_blocking    = launcher_data.get_custom_attribute('non_blocking')
         #'args_extra': launcher_data.get_custom_attribute('args_extra')
-        launcher_data.add_launcher(launcher_addon, application, args, non_blocking, True)
+        settings = { 'application': application, 'args': args }
+        launcher_data.add_launcher(launcher_addon, settings, non_blocking, True)
         return
     
     if launcher_type == OBJ_LAUNCHER_NVGAMESTREAM:
@@ -207,7 +212,8 @@ def _apply_addon_launcher_for_legacy_launcher(launcher_data: ROMSet, available_a
         args            = launcher_data.get_custom_attribute('args')
         non_blocking    = launcher_data.get_custom_attribute('non_blocking')
         #'args_extra': launcher_data.get_custom_attribute('args_extra')
-        launcher_data.add_launcher(launcher_addon, application, args, non_blocking, True)
+        settings = { 'application': application, 'args': args }
+        launcher_data.add_launcher(launcher_addon, settings, non_blocking, True)
         return
     
     if launcher_type == OBJ_LAUNCHER_STEAM:
@@ -219,4 +225,5 @@ def _apply_addon_launcher_for_legacy_launcher(launcher_data: ROMSet, available_a
         args            = launcher_data.get_custom_attribute('args')
         non_blocking    = launcher_data.get_custom_attribute('non_blocking')
         #'args_extra': launcher_data.get_custom_attribute('args_extra')
-        launcher_data.add_launcher(launcher_addon, application, args, non_blocking, True)
+        settings = { 'application': application, 'args': args }
+        launcher_data.add_launcher(launcher_addon, settings, non_blocking, True)

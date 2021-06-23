@@ -212,15 +212,12 @@ def cmd_set_scanner_settings(args):
 # -------------------------------------------------------------------------------------------------
 @AppMediator.register('SCAN_ROMS')
 def cmd_execute_rom_scanner(args):
-    rom_id:str = args['rom_id'] if 'rom_id' in args else None
+    romset_id:str = args['romset_id'] if 'romset_id' in args else None
 
     uow = UnitOfWork(globals.g_PATHS.DATABASE_FILE_PATH)
     with uow:
-        rom_repository = ROMsRepository(uow)
         romset_repository = ROMSetRepository(uow)
-
-        rom = rom_repository.find_rom(rom_id)
-        romset = romset_repository.find_romset(rom.get_romset_id())
+        romset = romset_repository.find_romset(romset_id)
 
     scanners = romset.get_scanners()
     if scanners is None or len(scanners) == 0:
@@ -261,9 +258,9 @@ def cmd_store_scanned_roms(args):
         
         for rom_data in roms:
             rom_obj = ROM(rom_data)
-            rom_repository.insert_rom()
-        
-        romset_repository.update_romset(romset)
+            rom_obj.scanned_with(scanner_id)
+            rom_repository.insert_rom(rom_obj, romset)
+            romset_repository.add_rom_to_romset(romset.get_id(), rom_obj.get_id())
         uow.commit()
     
     kodi.notify('Stored scanned ROMS in ROMs Collection {}'.format(romset.get_name()))

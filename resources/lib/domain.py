@@ -16,6 +16,8 @@
 # --- Python standard library ---
 from __future__ import unicode_literals
 from __future__ import division
+from __future__ import annotations
+
 import abc
 import collections
 import typing
@@ -624,19 +626,22 @@ class Category(MetaDataItemABC):
         
     def __str__(self):
         return super().__str__()
-    
-class ROMSetLauncher(EntityABC):
+
+class ROMSetAddon(EntityABC):
+    __metaclass__ = abc.ABCMeta
     
     def __init__(self, addon: AelAddon, entity_data: dict):
         self.addon = addon 
-        super(ROMSetLauncher, self).__init__(entity_data)
+        super(ROMSetAddon, self).__init__(entity_data)
         
     def get_name(self):
-        settings = self.get_settings()
-        app = settings['application'] if 'application' in settings else None
-        
-        if app: return '{} ({})'.format(self.addon.get_name(), app)
+        secondary_name = self.get_secondary_name()
+        if secondary_name: return '{} ({})'.format(self.addon.get_name(), secondary_name)
         return self.addon.get_name()
+    
+    def get_secondary_name(self):
+        settings = self.get_settings()
+        return settings['secname'] if 'secname' in settings else None   
             
     def get_settings_str(self) -> str:
         return self.entity_data['settings'] if 'settings' in self.entity_data else None
@@ -647,11 +652,13 @@ class ROMSetLauncher(EntityABC):
             return {}
         return json.loads(settings)
     
-    def set_settings_str(self, launcher_settings:str):
-        self.entity_data['settings'] = launcher_settings
+    def set_settings_str(self, addon_settings:str):
+        self.entity_data['settings'] = addon_settings
     
-    def set_settings(self, launcher_settings:dict):
-        self.entity_data['settings'] = json.dumps(launcher_settings)
+    def set_settings(self, addon_settings:dict):
+        self.entity_data['settings'] = json.dumps(addon_settings)
+            
+class ROMSetLauncher(ROMSetAddon):
     
     def is_non_blocking(self) -> bool:
         return self.entity_data['is_non_blocking'] if 'is_non_blocking' in self.entity_data else True
@@ -665,34 +672,11 @@ class ROMSetLauncher(EntityABC):
     def set_default(self, default_launcher=False):
         self.entity_data['is_default'] = default_launcher
     
-class ROMSetScanner(EntityABC):
+class ROMSetScanner(ROMSetAddon):
     
-    def __init__(self, addon: AelAddon, entity_data: dict):
-        self.addon = addon 
-        super(ROMSetScanner, self).__init__(entity_data)
-        
-    def get_name(self):
-        settings = self.get_settings()
-        app = settings['rom_path'] if 'rom_path' in settings else None
-        
-        if app: return '{} ({})'.format(self.addon.get_name(), app)
-        return self.addon.get_name()
-            
-    def get_settings_str(self) -> str:
-        return self.entity_data['settings'] if 'settings' in self.entity_data else None
+    def get_last_scan_timestamp(self):
+        return None
     
-    def get_settings(self) -> dict:
-        settings = self.get_settings_str()
-        if settings is None:
-            return {}
-        return json.loads(settings)
-    
-    def set_settings_str(self, scanner_settings:str):
-        self.entity_data['settings'] = scanner_settings
-    
-    def set_settings(self, scanner_settings:dict):
-        self.entity_data['settings'] = json.dumps(scanner_settings)
-        
 # -------------------------------------------------------------------------------------------------
 # Class representing a collection of ROMs.
 # -------------------------------------------------------------------------------------------------
@@ -783,7 +767,7 @@ class ROMSet(MetaDataItemABC):
                 if A_i.path_key not in self.entity_data or A_j.path_key not in self.entity_data  \
                     or not self.entity_data[A_i.path_key] or not self.entity_data[A_j.path_key]: continue
                 
-                # log_debug('asset_get_duplicated_asset_list() Checking {0:<9} vs {1:<9}'.format(A_i.name, A_j.name))
+                # logger.debug('asset_get_duplicated_asset_list() Checking {0:<9} vs {1:<9}'.format(A_i.name, A_j.name))
                 if self.entity_data[A_i.path_key] == self.entity_data[A_j.path_key]:
                     duplicated_bool_list[i] = True
                     duplicated_name_list.append('{0} and {1}'.format(A_i.name, A_j.name))
@@ -955,14 +939,7 @@ class ROM(MetaDataItemABC):
             rom_data['id'] = text.misc_generate_random_SID()
             
         super(ROM, self).__init__(rom_data, assets_data)
-    
-    # is this virtual only? Should we make a VirtualRom(Rom)?
-    def get_launcher_id(self) -> str: return self.entity_data['romset_id'] if 'romset_id' in self.entity_data else None
-    
-    def get_romset_id(self) -> str: return self.entity_data['romset_id'] if 'romset_id' in self.entity_data else None
-    
-    def get_category_id(self)-> str: return self.entity_data['category_id'] if 'category_id' in self.entity_data else None
-    
+        
     # inherited value from ROMSet
     def get_platform(self):
         return self.entity_data['platform']
@@ -1017,12 +994,6 @@ class ROM(MetaDataItemABC):
     def get_launch_count(self):
         return self.entity_data['launch_count']
 
-    def set_romset_id(self, romset_id): 
-        self.entity_data['romset_id'] = romset_id
-    
-    def set_category_id(self, category_id): 
-        self.entity_data['category_id'] = category_id
-
     def set_file(self, file):
         self.entity_data['filename'] = file.getPath()
 
@@ -1044,6 +1015,9 @@ class ROM(MetaDataItemABC):
     def set_clone(self, clone):
         self.entity_data['cloneof'] = clone
 
+    def scanned_with(self, scanner_id: str): 
+        self.entity_data['scanned_by_id'] = scanner_id
+
     # todo: definitly something for a inherited FavouriteRom class
     # >> Favourite ROM unique fields
     # >> Favourite ROMs in "Most played ROMs" DB also have 'launch_count' field.
@@ -1055,32 +1029,8 @@ class ROM(MetaDataItemABC):
         launch_count += 1
         self.entity_data['launch_count'] = launch_count
 
-    def get_arguments(self):
-        return
-
-    def has_alternative_application(self):
-        return 'altapp' in self.entity_data and self.entity_data['altapp']
-
-    def get_alternative_application(self):
-        return self.entity_data['altapp']
-
-    def has_alternative_arguments(self):
-        return 'altarg' in self.entity_data and self.entity_data['altarg']
-
-    def get_alternative_arguments(self):
-        return self.entity_data['altarg']
-
-    def set_alternative_application(self, application):
-        self.entity_data['altapp'] = application
-
-    def set_alternative_arguments(self, arg):
-        self.entity_data['altarg'] = arg
-
-    def get_box_sizing(self):        
-        if 'box_size' in self.entity_data: return self.entity_data['box_size'] 
-        # fallback to launcher size 
-        if self.launcher: return self.launcher.get_box_sizing()
-        return BOX_SIZE_POSTER
+    def get_box_sizing(self):
+        return self.entity_data['box_size'] if 'box_size' in self.entity_data else BOX_SIZE_POSTER
     
     def set_box_sizing(self, box_size):
         self.entity_data['box_size'] = box_size
@@ -2364,3 +2314,65 @@ class AssetInfoFactory(object):
 
 # --- Global object to get asset info ---
 g_assetFactory = AssetInfoFactory()
+
+class MultiDiscInfo:
+    def __init__(self, ROM_FN: io.FileName):
+        self.ROM_FN      = ROM_FN
+        self.isMultiDisc = False
+        self.setName     = ''
+        self.discName    = ROM_FN.getBase()
+        self.extension   = ROM_FN.getExt()
+        self.order       = 0
+
+    @staticmethod
+    def get_multidisc_info(ROM_FN: io.FileName) -> MultiDiscInfo:
+        MDSet = MultiDiscInfo(ROM_FN)
+        
+        # --- Parse ROM base_noext into tokens ---
+        tokens = text.get_ROM_basename_tokens(ROM_FN.getBaseNoExt())
+
+        # --- Check if ROM belongs to a multidisc set and get set name and order ---
+        # Algortihm:
+        # 1) Iterate list of tokens
+        # 2) If a token marks a multidisk ROM extract set order
+        # 3) Define the set basename by removing the multidisk token
+        MultDiscFound = False
+        for index, token in enumerate(tokens):
+            # --- Redump ---
+            matchObj = re.match(r'\(Dis[ck] ([0-9]+)\)', token)
+            if matchObj:
+                logger.debug('get_multidisc_info() ### Matched Redump multidisc ROM ###')
+                tokens_idx = list(range(0, len(tokens)))
+                tokens_idx.remove(index)
+                tokens_nodisc_idx = list(tokens_idx)
+                tokens_mdisc = [tokens[x] for x in tokens_nodisc_idx]
+                MultDiscFound = True
+                break
+
+            # --- TOSEC/Trurip ---
+            matchObj = re.match(r'\(Dis[ck] ([0-9]+) of ([0-9]+)\)', token)
+            if matchObj:
+                logger.debug('get_multidisc_info() ### Matched TOSEC/Trurip multidisc ROM ###')
+                tokens_idx = list(range(0, len(tokens)))
+                tokens_idx.remove(index)
+                tokens_nodisc_idx = list(tokens_idx)
+                # logger.debug('text_get_multidisc_info() tokens_idx         = {0}'.format(tokens_idx))
+                # logger.debug('text_get_multidisc_info() index              = {0}'.format(index))
+                # logger.debug('text_get_multidisc_info() tokens_nodisc_idx  = {0}'.format(tokens_nodisc_idx))
+                tokens_mdisc = [tokens[x] for x in tokens_nodisc_idx]
+                MultDiscFound = True
+                break
+
+        if MultDiscFound:
+            MDSet.isMultiDisc = True
+            MDSet.setName = ' '.join(tokens_mdisc) + MDSet.extension
+            MDSet.order = int(matchObj.group(1))
+            logger.debug('get_multidisc_info() base_noext   "{0}"'.format(ROM_FN.getBaseNoExt()))
+            logger.debug('get_multidisc_info() tokens       {0}'.format(tokens))
+            logger.debug('get_multidisc_info() tokens_mdisc {0}'.format(tokens_mdisc))
+            logger.debug('get_multidisc_info() setName      "{0}"'.format(MDSet.setName))
+            logger.debug('get_multidisc_info() discName     "{0}"'.format(MDSet.discName))
+            logger.debug('get_multidisc_info() extension    "{0}"'.format(MDSet.extension))
+            logger.debug('get_multidisc_info() order        {0}'.format(MDSet.order))
+
+        return MDSet

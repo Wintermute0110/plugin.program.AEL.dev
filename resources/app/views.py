@@ -242,6 +242,7 @@ def vw_execute_folder_scanner():
         return
         
     logger.info('vw_execute_folder_scanner(): {} roms scanned'.format(len(roms_scanned)))
+    scanner.store_scanned_roms(romset_id, scanner_id, roms_scanned)
     kodi.notify('ROMs scanning done')
 
     

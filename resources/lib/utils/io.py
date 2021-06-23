@@ -372,10 +372,10 @@ class FileName:
 
        return self.fileHandle.read()
 
-    def write_python(self, bytes): 
+    def write_python(self, data:str): 
        if self.fileHandle is None:
            raise OSError('file not opened')
-       self.fileHandle.write(bytes)
+       self.fileHandle.write(data)
 
     def unlink_python(self):
         os.remove(self.path_tr)
@@ -395,9 +395,9 @@ class FileName:
         if self.fileHandle is None: raise OSError('file not opened')
         return self.fileHandle.read()
  
-    def write_kodivfs(self, bytes):
+    def write_kodivfs(self, data):
         if self.fileHandle is None: raise OSError('file not opened')
-        self.fileHandle.write(bytes)
+        self.fileHandle.write(data)
 
     def close_kodivfs(self):
         if self.fileHandle is None: raise OSError('file not opened')

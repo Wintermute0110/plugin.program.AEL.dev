@@ -103,23 +103,37 @@ CREATE TABLE IF NOT EXISTS roms(
     nointro_status TEXT, 
     pclone_status TEXT,
     cloneof TEXT,
+    platform TEXT,
+    box_size TEXT,
     fav_status TEXT,
     is_favourite INTEGER DEFAULT 0 NOT NULL,
     launch_count INTEGER DEFAULT 0 NOT NULL,
     last_launch_timestamp TIMESTAMP,
     file_path TEXT,
-    romset_id TEXT NULL,
-    category_id TEXT NULL,
     metadata_id TEXT,
     scanned_by_id TEXT NULL,
-    FOREIGN KEY (romset_id) REFERENCES romset (id) 
-        ON DELETE CASCADE ON UPDATE NO ACTION,
-    FOREIGN KEY (category_id) REFERENCES categories (id) 
-        ON DELETE CASCADE ON UPDATE NO ACTION,
     FOREIGN KEY (metadata_id) REFERENCES metadata (id) 
         ON DELETE CASCADE ON UPDATE NO ACTION,
     FOREIGN KEY (scanned_by_id) REFERENCES romset_scanner (id) 
         ON DELETE SET NULL ON UPDATE NO ACTION
+);
+
+CREATE TABLE IF NOT EXISTS roms_in_romset(
+    rom_id TEXT,
+    romset_id TEXT,
+    FOREIGN KEY (rom_id) REFERENCES roms (id) 
+        ON DELETE CASCADE ON UPDATE NO ACTION,
+    FOREIGN KEY (romset_id) REFERENCES romset (id) 
+        ON DELETE CASCADE ON UPDATE NO ACTION
+);
+
+CREATE TABLE IF NOT EXISTS roms_in_category(
+    rom_id TEXT,
+    category_id TEXT,
+    FOREIGN KEY (rom_id) REFERENCES roms (id) 
+        ON DELETE CASCADE ON UPDATE NO ACTION,
+    FOREIGN KEY (category_id) REFERENCES categories (id) 
+        ON DELETE CASCADE ON UPDATE NO ACTION
 );
 
 CREATE TABLE IF NOT EXISTS rom_launchers(
@@ -223,14 +237,12 @@ CREATE VIEW IF NOT EXISTS vw_romsets AS SELECT
     r.roms_default_banner AS roms_default_banner,
     r.roms_default_poster AS roms_default_poster,
     r.roms_default_clearlogo AS roms_default_clearlogo,
-    (SELECT COUNT(*) FROM roms AS rms WHERE rms.romset_id = r.id) as num_roms
+    (SELECT COUNT(*) FROM roms AS rms INNER JOIN roms_in_romset AS rrs ON rms.id = rrs.rom_id AND rrs.romset_id = r.id) as num_roms
 FROM romsets AS r 
     INNER JOIN metadata AS m ON r.metadata_id = m.id;
     
 CREATE VIEW IF NOT EXISTS vw_roms AS SELECT 
     r.id AS id, 
-    r.romset_id AS romset_id,
-    r.category_id AS category_id,
     r.metadata_id,
     r.name AS m_name,
     r.num_of_players AS m_nplayers,
@@ -239,6 +251,9 @@ CREATE VIEW IF NOT EXISTS vw_roms AS SELECT
     r.nointro_status AS nointro_status,
     r.pclone_status AS pclone_status,
     r.cloneof AS cloneof,
+    r.platform AS platform,
+    r.box_size AS box_size,
+    r.scanned_by_id AS scanned_by_id,
     m.year AS m_year, 
     m.genre AS m_genre,
     m.developer AS m_developer,
@@ -247,12 +262,9 @@ CREATE VIEW IF NOT EXISTS vw_roms AS SELECT
     m.finished AS finished,
     r.fav_status AS fav_status,
     r.launch_count AS launch_count,
-    m.assets_path AS assets_path,
-    rs.platform AS platform,
-    rs.box_size AS box_size
+    m.assets_path AS assets_path
 FROM roms AS r 
-    INNER JOIN metadata AS m ON r.metadata_id = m.id
-    LEFT JOIN romsets AS rs ON r.romset_id = rs.id;
+    INNER JOIN metadata AS m ON r.metadata_id = m.id;
 
 CREATE VIEW IF NOT EXISTS vw_category_assets AS SELECT
     a.id as id,
@@ -277,13 +289,11 @@ FROM assets AS a
 CREATE VIEW IF NOT EXISTS vw_rom_assets AS SELECT
     a.id as id,
     r.id as rom_id, 
-    r.romset_id,
     a.filepath,
     a.asset_type
 FROM assets AS a
  INNER JOIN rom_assets AS ra ON a.id = ra.asset_id 
- INNER JOIN roms AS r ON ra.rom_id = r.id
- LEFT JOIN romsets AS rs ON r.romset_id = rs.id;
+ INNER JOIN roms AS r ON ra.rom_id = r.id;
 
 CREATE VIEW IF NOT EXISTS vw_romset_launchers AS SELECT
     l.id AS id,
