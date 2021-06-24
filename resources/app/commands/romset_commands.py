@@ -64,7 +64,7 @@ def cmd_edit_romset(args):
         repository = ROMSetRepository(uow)
         romset = repository.find_romset(romset_id)
 
-        cat_repository = ROMSetRepository(uow)
+        cat_repository = CategoryRepository(uow)
         parent_id = romset.get_parent_id()
         category = cat_repository.find_category(romset.get_parent_id()) if parent_id is None else None 
         category_name = 'None' if category is None else category.get_name()

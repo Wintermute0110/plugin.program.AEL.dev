@@ -627,12 +627,12 @@ class Category(MetaDataItemABC):
     def __str__(self):
         return super().__str__()
 
-class ROMSetAddon(EntityABC):
+class ROMAddon(EntityABC):
     __metaclass__ = abc.ABCMeta
     
     def __init__(self, addon: AelAddon, entity_data: dict):
         self.addon = addon 
-        super(ROMSetAddon, self).__init__(entity_data)
+        super(ROMAddon, self).__init__(entity_data)
         
     def get_name(self):
         secondary_name = self.get_secondary_name()
@@ -658,7 +658,7 @@ class ROMSetAddon(EntityABC):
     def set_settings(self, addon_settings:dict):
         self.entity_data['settings'] = json.dumps(addon_settings)
             
-class ROMSetLauncher(ROMSetAddon):
+class ROMLauncherAddon(ROMAddon):
     
     def is_non_blocking(self) -> bool:
         return self.entity_data['is_non_blocking'] if 'is_non_blocking' in self.entity_data else True
@@ -672,7 +672,7 @@ class ROMSetLauncher(ROMSetAddon):
     def set_default(self, default_launcher=False):
         self.entity_data['is_default'] = default_launcher
     
-class ROMSetScanner(ROMSetAddon):
+class ROMSetScanner(ROMAddon):
     
     def get_last_scan_timestamp(self):
         return None
@@ -684,7 +684,7 @@ class ROMSet(MetaDataItemABC):
     def __init__(self, 
                  entity_data: dict, 
                  assets_data: typing.List[Asset], 
-                 launchers_data: typing.List[ROMSetLauncher] = [], 
+                 launchers_data: typing.List[ROMLauncherAddon] = [], 
                  scanners_data: typing.List[ROMSetScanner] = []):
         # Concrete classes are responsible of creating a default entity_data dictionary
         # with sensible defaults.
@@ -782,7 +782,7 @@ class ROMSet(MetaDataItemABC):
         return len(self.launchers_data) > 0
 
     def add_launcher(self, addon: AelAddon, settings: dict, is_non_blocking = True, is_default: bool = False):
-        launcher = ROMSetLauncher(addon, {
+        launcher = ROMLauncherAddon(addon, {
             'settings': json.dumps(settings),
             'is_non_blocking': is_non_blocking,
             'is_default': is_default
@@ -795,13 +795,13 @@ class ROMSet(MetaDataItemABC):
                 current_default_launcher.set_default(False)
             launcher.set_default(is_default)
 
-    def get_launchers(self) -> typing.List[ROMSetLauncher]:
+    def get_launchers(self) -> typing.List[ROMLauncherAddon]:
         return self.launchers_data
 
-    def get_launcher(self, id:str) -> ROMSetLauncher:
+    def get_launcher(self, id:str) -> ROMLauncherAddon:
         return next((l for l in self.launchers_data if l.get_id() == id), None)
 
-    def get_default_launcher(self) -> ROMSetLauncher:
+    def get_default_launcher(self) -> ROMLauncherAddon:
         if len(self.launchers_data) == 0: return None
         default_launcher = next((l for l in self.launchers_data if l.is_default()), None)
         if default_launcher is None: return self.launchers_data[0]
@@ -933,11 +933,15 @@ class ROMSet(MetaDataItemABC):
 # -------------------------------------------------------------------------------------------------
 class ROM(MetaDataItemABC):
         
-    def __init__(self, rom_data = None, assets_data = None):        
+    def __init__(self, 
+                 rom_data: dict = None, 
+                 assets_data: typing.List[Asset] = None,
+                 launchers_data: typing.List[ROMLauncherAddon] = []):
         if rom_data is None:
             rom_data = settings.get_default_ROM_data_model()
             rom_data['id'] = text.misc_generate_random_SID()
-            
+        
+        self.launchers_data = launchers_data
         super(ROM, self).__init__(rom_data, assets_data)
         
     # inherited value from ROMSet
@@ -1034,6 +1038,12 @@ class ROM(MetaDataItemABC):
     
     def set_box_sizing(self, box_size):
         self.entity_data['box_size'] = box_size
+
+    def get_launchers(self) -> typing.List[ROMLauncherAddon]:
+        return self.launchers_data
+
+    def get_launcher(self, id:str) -> ROMLauncherAddon:
+        return next((l for l in self.launchers_data if l.get_id() == id), None)
 
     def copy(self):
         data = self.copy_of_data_dic()

@@ -119,7 +119,7 @@ def cmd_edit_romset_launchers(args):
         options[launcher] = launcher.get_name()
     
     s = 'Choose launcher to edit'
-    selected_option:ROMSetLauncher = kodi.OrdDictionaryDialog().select(s, options)
+    selected_option:ROMLauncherAddon = kodi.OrdDictionaryDialog().select(s, options)
     
     if selected_option is None:
         # >> Exits context menu
@@ -155,7 +155,7 @@ def cmd_remove_romset_launchers(args):
             options[launcher] = launcher.get_name()
         
         s = 'Choose launcher to remove'
-        selected_option:ROMSetLauncher = kodi.OrdDictionaryDialog().select(s, options)
+        selected_option:ROMLauncherAddon = kodi.OrdDictionaryDialog().select(s, options)
         
         if selected_option is None:
             # >> Exits context menu
@@ -249,7 +249,8 @@ def cmd_set_launcher_args(args):
 # -------------------------------------------------------------------------------------------------
 @AppMediator.register('EXECUTE_ROM')
 def cmd_execute_rom_with_launcher(args):
-    rom_id:str = args['rom_id'] if 'rom_id' in args else None
+    rom_id:str      = args['rom_id'] if 'rom_id' in args else None
+    romset_id:str   = args['romset_id'] if 'romset_id' in args else None
 
     uow = UnitOfWork(globals.g_PATHS.DATABASE_FILE_PATH)
     with uow:
@@ -257,9 +258,15 @@ def cmd_execute_rom_with_launcher(args):
         romset_repository = ROMSetRepository(uow)
 
         rom = rom_repository.find_rom(rom_id)
-        romset = romset_repository.find_romset(rom.get_romset_id())
+        if romset_id is not None:
+            romset = romset_repository.find_romset(romset_id)
+        else: 
+            romset = None
 
-    launchers = romset.get_launchers()
+    launchers = rom.get_launchers()
+    if romset is not None:
+        launchers = romset.get_launchers()
+            
     if launchers is None or len(launchers) == 0:
         kodi.notify_warn('No launcher configured.')
         return

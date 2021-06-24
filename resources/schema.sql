@@ -325,4 +325,20 @@ CREATE VIEW IF NOT EXISTS vw_romset_scanners AS SELECT
 FROM romset_scanners AS s
     INNER JOIN ael_addon AS a ON s.ael_addon_id = a.id;
 
+CREATE VIEW IF NOT EXISTS vw_rom_launchers AS SELECT
+    l.id AS id,
+    l.rom_id,
+    a.id AS associated_addon_id,
+    a.name,
+    a.addon_id,
+    a.version,
+    a.addon_type,
+    a.execute_uri,
+    a.configure_uri,
+    l.settings,
+    l.is_non_blocking,
+    l.is_default
+FROM rom_launchers AS l
+    INNER JOIN ael_addon AS a ON l.ael_addon_id = a.id;
+
 CREATE TABLE IF NOT EXISTS ael_version(app TEXT, version TEXT);

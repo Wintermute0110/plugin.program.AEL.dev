@@ -145,6 +145,13 @@ def vw_view_romset(romset_id: str):
 def vw_edit_romset(romset_id: str):
     kodi.event(command='EDIT_ROMSET', data={'romset_id': romset_id })
 
+# -------------------------------------------------------------------------------------------------
+# ROM execution
+# -------------------------------------------------------------------------------------------------
+@router.route('/execute/set/<romset_id>/rom/<rom_id>')
+def vw_route_execute_rom_in_romset(romset_id:str, rom_id:str):
+    kodi.event(command="EXECUTE_ROM", data={'rom_id': rom_id, 'romset_id': romset_id} )
+    
 @router.route('/execute/rom/<rom_id>')
 def vw_route_execute_rom(rom_id):
     kodi.event(command="EXECUTE_ROM", data={'rom_id': rom_id} )

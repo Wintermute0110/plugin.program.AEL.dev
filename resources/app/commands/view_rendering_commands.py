@@ -285,7 +285,7 @@ def _render_rom_listitem(rom_obj: ROM, romset_obj: ROMSet):
     return { 
         'id': rom_obj.get_id(),
         'name': list_name,
-        'url': globals.router.url_for_path('execute/rom/{}'.format(rom_obj.get_id())),
+        'url': globals.router.url_for_path('execute/set/{}/rom/{}'.format(romset_obj.get_id(), rom_obj.get_id())),
         'is_folder': False,
         'type': 'video',
         'info': {

@@ -526,7 +526,6 @@ QUERY_SELECT_ROMSET             = "SELECT * FROM vw_romsets WHERE id = ?"
 QUERY_SELECT_ROMSETS            = "SELECT * FROM vw_romsets"
 QUERY_SELECT_ROOT_ROMSETS       = "SELECT * FROM vw_romsets WHERE parent_id IS NULL"
 QUERY_SELECT_ROMSETS_BY_PARENT  = "SELECT * FROM vw_romsets WHERE parent_id = ?"
-QUERY_SELECT_ROMSET_SCANNERS    = "SELECT * FROM vw_romset_scanners WHERE romset_id = ?"
 
 QUERY_INSERT_ROMSET               = """
                                     INSERT INTO romsets (
@@ -585,7 +584,7 @@ class ROMSetRepository(object):
         launchers = []
         for launcher_data in launchers_data:
             addon = AelAddon(launcher_data.copy())
-            launchers.append(ROMSetLauncher(addon, launcher_data))
+            launchers.append(ROMLauncherAddon(addon, launcher_data))
         
         self._uow.execute(QUERY_SELECT_ROMSET_SCANNERS, romset_id)
         scanners_data = self._uow.result_set()
@@ -810,6 +809,12 @@ QUERY_UPDATE_ROM                = """
                                   SET name=?, num_of_players=?, esrb_rating=?, platform = ?, box_size = ?,
                                   nointro_status=?, cloneof=?, fav_status=?, file_path=? WHERE id =?
                                   """
+
+QUERY_SELECT_ROM_LAUNCHERS     = "SELECT * FROM vw_rom_launchers WHERE rom_id = ?"
+QUERY_INSERT_ROM_LAUNCHER      = "INSERT INTO rom_launchers (id, rom_id, ael_addon_id, settings, is_non_blocking, is_default) VALUES (?,?,?,?,?,?)"
+QUERY_UPDATE_ROM_LAUNCHER      = "UPDATE rom_launchers SET settings = ?, is_non_blocking = ?, is_default = ? WHERE id = ?"
+QUERY_DELETE_ROM_LAUNCHERS     = "DELETE FROM rom_launchers WHERE rom_id = ?"
+QUERY_DELETE_ROM_LAUNCHER      = "DELETE FROM rom_launchers WHERE romset_id = ? AND id = ?"
           
 class ROMsRepository(object):
        
@@ -835,13 +840,20 @@ class ROMsRepository(object):
         rom_data = self._uow.single_result()
 
         self._uow.execute(QUERY_SELECT_ROM_ASSETS, rom_id)
-        assets_result_set = self._uow.result_set()
-            
+        assets_result_set = self._uow.result_set()            
         assets = []
         for asset_data in assets_result_set:
             asset_info = g_assetFactory.get_asset_info(asset_data['asset_type'])
-            assets.append(Asset(asset_info, asset_data))                
-        return ROM(rom_data, assets)
+            assets.append(Asset(asset_info, asset_data))
+                    
+        self._uow.execute(QUERY_SELECT_ROM_LAUNCHERS, rom_id)
+        launchers_data = self._uow.result_set()
+        launchers = []
+        for launcher_data in launchers_data:
+            addon = AelAddon(launcher_data.copy())
+            launchers.append(ROMLauncherAddon(addon, launcher_data))
+            
+        return ROM(rom_data, assets, launchers)
 
 
     def insert_rom(self, rom_obj: ROM): 
@@ -871,10 +883,21 @@ class ROMsRepository(object):
             rom_obj.get_clone(),
             rom_obj.get_favourite_status(),
             rom_obj.get_file().getPath())
-
+        
         rom_assets = rom_obj.get_assets()
         for asset in rom_assets:
             self._insert_asset(asset, rom_obj)
+
+        rom_launchers = rom_obj.get_launchers()
+        for rom_launchers in rom_launchers:
+            rom_launchers.set_id(text.misc_generate_random_SID())
+            self._uow.execute(QUERY_INSERT_ROM_LAUNCHER,
+                rom_launchers.get_id(),
+                rom_obj.get_id(), 
+                rom_launchers.addon.get_id(), 
+                rom_launchers.get_settings_str(), 
+                rom_launchers.is_non_blocking(),
+                rom_launchers.is_default())
 
     def update_rom(self, rom_obj: ROM):
         logger.info("ROMsRepository.update_rom(): Updating ROM '{}'".format(rom_obj.get_name()))
@@ -904,7 +927,25 @@ class ROMsRepository(object):
         for asset in rom_obj.get_assets():
             if asset.get_id() == '': self._insert_asset(asset, rom_obj)
             else: self._update_asset(asset, rom_obj)            
-            
+        
+        rom_launchers = rom_obj.get_launchers()
+        for rom_launcher in rom_launchers:
+            if rom_launcher.get_id() is None:
+                rom_launcher.set_id(text.misc_generate_random_SID())
+                self._uow.execute(QUERY_INSERT_ROMSET_LAUNCHER,
+                    rom_launcher.get_id(),
+                    rom_obj.get_id(), 
+                    rom_launcher.addon.get_id(), 
+                    rom_launcher.get_settings_str(), 
+                    rom_launcher.is_non_blocking(),
+                    rom_launcher.is_default())
+            else:
+                self._uow.execute(QUERY_UPDATE_ROMSET_LAUNCHER,
+                    rom_launcher.get_settings_str(), 
+                    rom_launcher.is_non_blocking(),
+                    rom_launcher.is_default(),
+                    rom_launcher.get_id())
+                    
     def _insert_asset(self, asset: Asset, rom_obj: ROM):
         asset_db_id = text.misc_generate_random_SID()
         self._uow.execute(QUERY_INSERT_ASSET, asset_db_id, asset.get_path(), asset.get_asset_info_id())
