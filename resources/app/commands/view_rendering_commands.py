@@ -277,9 +277,14 @@ def _render_rom_listitem(rom_obj: ROM, romset_obj: ROMSet):
      # --- Set common flags to all launchers---
     if rom_obj.has_multiple_disks(): AEL_MultiDisc_bool_value = AEL_MULTIDISC_BOOL_VALUE_TRUE
 
+    list_name = rom_obj.get_name()
+    if list_name is None or list_name == '':
+        rom_file = rom_obj.get_file()
+        list_name = rom_file.getBaseNoExt()
+
     return { 
         'id': rom_obj.get_id(),
-        'name': rom_obj.get_name(),
+        'name': list_name,
         'url': globals.router.url_for_path('execute/rom/{}'.format(rom_obj.get_id())),
         'is_folder': False,
         'type': 'video',

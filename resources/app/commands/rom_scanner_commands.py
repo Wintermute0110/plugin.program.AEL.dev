@@ -264,4 +264,7 @@ def cmd_store_scanned_roms(args):
         uow.commit()
     
     kodi.notify('Stored scanned ROMS in ROMs Collection {}'.format(romset.get_name()))
+    
+    kodi.event(command='RENDER_ROMSET_VIEW', data={'romset_id': romset_id})
+    kodi.event(command='RENDER_VIEW', data={'category_id': romset.get_parent_id()})  
     kodi.event(command='EDIT_ROMSET', data={'romset_id': romset_id})
