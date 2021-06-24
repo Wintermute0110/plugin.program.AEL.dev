@@ -369,6 +369,7 @@ def utils_write_JSON_file(json_filename, json_data, verbose = True, pprint = Fal
     l_start = time.time()
     if verbose: log_debug('utils_write_JSON_file() "{}"'.format(json_filename))
 
+    # Parameter pprint == True overrides option OPTION_COMPACT_JSON.
     # Choose JSON iterative encoder or normal encoder.
     if OPTION_LOWMEM_WRITE_JSON:
         if verbose: log_debug('utils_write_JSON_file() Using OPTION_LOWMEM_WRITE_JSON option')
@@ -382,26 +383,26 @@ def utils_write_JSON_file(json_filename, json_data, verbose = True, pprint = Fal
                 jobj = json.JSONEncoder(ensure_ascii = False, sort_keys = True,
                     indent = JSON_INDENT, separators = JSON_SEP)
     else:
-        # Parameter pprint == True overrides option OPTION_COMPACT_JSON.
         if pprint:
-            f_data = text_type(json.dumps(json_data, ensure_ascii = False, sort_keys = True,
-                indent = JSON_INDENT, separators = JSON_SEP))
+            jdata = json.dumps(json_data, ensure_ascii = False, sort_keys = True,
+                indent = JSON_INDENT, separators = JSON_SEP)
         else:
             if OPTION_COMPACT_JSON:
-                f_data = text_type(json.dumps(json_data, ensure_ascii = False, sort_keys = True))
+                jdata = json.dumps(json_data, ensure_ascii = False, sort_keys = True)
             else:
-                f_data = text_type(json.dumps(json_data, ensure_ascii = False, sort_keys = True,
-                    indent = JSON_INDENT, separators = JSON_SEP))
+                jdata = json.dumps(json_data, ensure_ascii = False, sort_keys = True,
+                    indent = JSON_INDENT, separators = JSON_SEP)
 
     # Write JSON to disk
     try:
         with io.open(json_filename, 'wt', encoding = 'utf-8') as file:
             if OPTION_LOWMEM_WRITE_JSON:
-                # Chunk by chunk JSON writer, uses less memory but takes longer.
                 for chunk in jobj.iterencode(json_data):
-                    file.write(text_type(chunk))
+                    chunk = text_type(chunk) # Required in Python 2.
+                    file.write(chunk)
             else:
-                file.write(f_data)
+                jdata = text_type(jdata) # Required in Python 2.
+                file.write(jdata)
     except OSError:
         kodi_notify(ADDON_LONG_NAME, 'Cannot write {} file (OSError)'.format(json_filename))
     except IOError:
@@ -696,8 +697,7 @@ def kodi_dialog_get_file_multiple(d_heading, mask = '', d_file = ''):
         ret = xbmcgui.Dialog().browse(1, d_heading, '', enableMultiple = True)
 
     # ret is a list
-    for i in range(len(ret)):
-        ret[i] = ret[i].decode('utf-8')
+    for i in range(len(ret)): ret[i] = ret[i].decode('utf-8')
 
     return ret
 
