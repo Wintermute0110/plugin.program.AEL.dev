@@ -1263,7 +1263,7 @@ def fs_import_launcher_NFO(nfo_FN, launchers, launcherID):
 # Used by autoconfig_import_launcher(). Returns a dictionary with the Launcher NFO file information.
 # If there is any error return a dictionary with empty information.
 def fs_read_launcher_NFO(nfo_FN):
-    launcher_dic = {
+    nfo_dic = {
         'year' : '',
         'genre' : '',
         'developer' : '',
@@ -1272,21 +1272,19 @@ def fs_read_launcher_NFO(nfo_FN):
     }
 
     log_debug('fs_read_launcher_NFO() Importing "{}"'.format(nfo_FN.getPath()))
-    # Return a dictionary with empty values if file not found.
     if not os.path.isfile(nfo_FN.getPath()):
         kodi_notify_warn('NFO file not found {}'.format(os.path.basename(nfo_FN.getPath())))
-        log_info("fs_read_launcher_NFO() NFO file not found '{}'".format(nfo_FN.getPath()))
-        return launcher_dic
+        log_info('fs_read_launcher_NFO() NFO file not found "{}"'.format(nfo_FN.getPath()))
+        return nfo_dic
 
-    # Read file, put in a single-line string and remove all line endings.
-    nfo_str = utils_load_file_to_str(nfo_FN.getPath())
-    nfo_str = nfo_str.replace('\r', '').replace('\n', '')
-    update_dic_with_NFO_str(nfo_str, 'year', nfo_dic, 'm_year')
-    update_dic_with_NFO_str(nfo_str, 'genre', nfo_dic, 'm_genre')
-    update_dic_with_NFO_str(nfo_str, 'developer', nfo_dic, 'm_developer')
-    update_dic_with_NFO_str(nfo_str, 'rating', nfo_dic, 'm_rating')
-    update_dic_with_NFO_str(nfo_str, 'plot', nfo_dic, 'm_plot')
-    return launcher_dic
+    # Read file, put it in a single-line string by removing all line endings.
+    nfo_str = utils_load_file_to_str(nfo_FN.getPath()).replace('\r', '').replace('\n', '')
+    update_dic_with_NFO_str(nfo_str, 'year', nfo_dic, 'year')
+    update_dic_with_NFO_str(nfo_str, 'genre', nfo_dic, 'genre')
+    update_dic_with_NFO_str(nfo_str, 'developer', nfo_dic, 'developer')
+    update_dic_with_NFO_str(nfo_str, 'rating', nfo_dic, 'rating')
+    update_dic_with_NFO_str(nfo_str, 'plot', nfo_dic, 'plot')
+    return nfo_dic
 
 # Returns a FileName object
 def fs_get_launcher_NFO_name(settings, launcher):
