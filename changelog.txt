@@ -150,6 +150,18 @@ WIP FIX  Fix launching of ROMs with Windows network filenames.
          See https://forum.kodi.tv/showthread.php?tid=287826&pid=2919639#pid2919639
 
 
+[B]Advanced Emulator Launcher | version 0.10.1 | xx xxxxxx 2021[/B]
+
+FIX      Fix crash when reading a launcher NFO file when importing a launcher XML file.
+         Refactored the NFO file functions a bit.
+         See https://forum.kodi.tv/showthread.php?tid=287826&pid=3045045#pid3045045
+
+
+[B]Advanced Emulator Launcher | version 0.9.11 | xx xxxxxx 2021[/B]
+
+NOTE     This version is feature identical to 0.10.1
+
+
 [B]Advanced Emulator Launcher | version 0.10.0 | 22 June 2021[/B]
 
 NOTE     Python 3 version for Matrix in branch release-0.10.x-python3

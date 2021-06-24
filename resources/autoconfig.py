@@ -593,9 +593,9 @@ def autoconfig_import_launcher(ROMS_DIR, categories, launchers, categoryID, laun
         launchers[launcherID]['m_name'] = i_launcher['name']
         log_debug('Imported m_name "{}"'.format(i_launcher['name']))
 
-    # >> Process <Launcher_NFO> before any metadata tag
+    # Process <Launcher_NFO> before any metadata tag
     if i_launcher['Launcher_NFO']:
-        log_debug('Imported Launcher_NFO "{}"'.format(i_launcher['Launcher_NFO']))
+        log_debug('Processing <Launcher_NFO> "{}"'.format(i_launcher['Launcher_NFO']))
         Launcher_NFO_FN = FileName(import_FN.getDir()).pjoin(i_launcher['Launcher_NFO'])
         Launcher_NFO_meta = fs_read_launcher_NFO(Launcher_NFO_FN)
         log_debug('NFO year      "{}"'.format(Launcher_NFO_meta['year']))
