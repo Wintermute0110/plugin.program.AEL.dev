@@ -2864,21 +2864,20 @@ class Main:
                 scraper_index = mindex2 - len(common_menu_list)
                 scraper_ID = g_scrap_factory.get_metadata_scraper_ID_from_menu_idx(scraper_index)
 
-                # --- Grab data ---
-                object_dic = roms[romID]
-                ROM = FileName(roms[romID]['filename'])
+                # Prepare data for scraping.
+                rom = roms[romID]
+                ROM_FN = FileName(rom['filename'])
+                if rom['disks']:
+                    ROM_hash_FN = FileName(ROM_FN.getDir()).pjoin(rom['disks'][0])
+                else:
+                    ROM_hash_FN = ROM_FN
                 if categoryID == VCATEGORY_FAVOURITES_ID or categoryID == VCATEGORY_COLLECTIONS_ID:
-                    platform = roms[romID]['platform']
+                    platform = rom['platform']
                 else:
                     platform = self.launchers[launcherID]['platform']
-                if roms[romID]['disks']:
-                    # Multidisc ROM. Take first file of the set.
-                    ROM_checksums_FN = FileName(ROM.getDir()).pjoin(roms[romID]['disks'][0])
-                else:
-                    ROM_checksums_FN = ROM
                 data_dic = {
-                    'rom_FN' : ROM,
-                    'rom_checksums_FN' : ROM_checksums_FN,
+                    'ROM_FN' : ROM_FN,
+                    'ROM_hash_FN' : ROM_hash_FN,
                     'platform' : platform,
                 }
 
@@ -2890,7 +2889,7 @@ class Main:
                 # Remember to flush caches after scraping.
                 st_dic = kodi_new_status_dic()
                 s_strategy = g_scrap_factory.create_CM_metadata(scraper_ID, platform)
-                s_strategy.scrap_CM_metadata_ROM(object_dic, data_dic, st_dic)
+                s_strategy.scrap_CM_metadata_ROM(rom, data_dic, st_dic)
                 g_scrap_factory.destroy_CM()
                 if kodi_display_status_message(st_dic): return
 
@@ -3004,9 +3003,7 @@ class Main:
                     ROM_hash_FN = FileName(ROM_FN.getDir()).pjoin(rom['disks'][0])
                 else:
                     ROM_hash_FN = ROM_FN
-                if categoryID == VCATEGORY_FAVOURITES_ID:
-                    platform = rom['platform']
-                elif categoryID == VCATEGORY_COLLECTIONS_ID:
+                if categoryID == VCATEGORY_FAVOURITES_ID or categoryID == VCATEGORY_COLLECTIONS_ID:
                     platform = rom['platform']
                 else:
                     platform = self.launchers[launcherID]['platform']

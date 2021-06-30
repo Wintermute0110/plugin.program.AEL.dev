@@ -156,10 +156,14 @@ FIX      Fix crash when reading a launcher NFO file when importing a launcher XM
          Refactored the NFO file functions a bit.
          See https://forum.kodi.tv/showthread.php?tid=287826&pid=3045045#pid3045045
 
+FIX  Error when scraping metadata.
+         See https://github.com/Wintermute0110/plugin.program.AEL/issues/146
+
 
 [B]Advanced Emulator Launcher | version 0.9.11 | xx xxxxxx 2021[/B]
 
 NOTE     This version is feature identical to 0.10.1
+         Main development is in the Pyhton 3 branch.
 
 
 [B]Advanced Emulator Launcher | version 0.10.0 | 22 June 2021[/B]
