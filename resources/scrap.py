@@ -1074,8 +1074,7 @@ class ScrapeStrategy(object):
     def scrap_CM_metadata_ROM(self, object_dic, data_dic, st_dic):
         log_debug('ScrapeStrategy.scrap_CM_metadata_ROM() BEGIN ...')
         # In AEL 0.10.x this data is grabed from the objects, not passed using a dictionary.
-        rom_FN = data_dic['rom_FN']
-        rom_base_noext = rom_FN.getBaseNoExt()
+        rom_base_noext = data_dic['ROM_FN'].getBaseNoExt()
         scraper_name = self.scraper_obj.get_name()
 
         # --- Check if scraper is OK (API keys configured, etc.) ---
@@ -1222,14 +1221,14 @@ class ScrapeStrategy(object):
     def _scrap_CM_get_candidate(self, object_name, object_dic, data_dic, st_dic):
         # log_debug('ScrapeStrategy._scrap_CM_get_candidate() BEGIN...')
 
-        # In AEL 0.10.x this data is grabed from the objects, not passed using a dictionary.
+        # In AEL 0.10.x this data is grabbed from the objects, not passed using a dictionary.
         ROM_FN = data_dic['ROM_FN']
         ROM_hash_FN = data_dic['ROM_hash_FN']
         platform = data_dic['platform']
         scraper_name = self.scraper_obj.get_name()
 
         # * Note that empty candidates may be in the cache. An empty candidate means that
-        #   the scraper search was unsucessful. For some scrapers, changing the search
+        #   the scraper search was unsuccessful. For some scrapers, changing the search
         #   string may produce a valid candidate.
         # * In the context menu always rescrape empty candidates.
         # * In the ROM scanner empty candidates are never rescraped. In that cases
@@ -1458,7 +1457,7 @@ class Scraper(object):
     # the number of API calls is exceeded).
     EXCEPTION_COUNTER_THRESHOLD = 5
 
-    # Disk cache types. These string will be part of the cache file names.
+    # Disk cache types. These strings will be part of the cache JSON file names.
     CACHE_CANDIDATES = 'candidates'
     CACHE_METADATA   = 'metadata'
     CACHE_ASSETS     = 'assets'
