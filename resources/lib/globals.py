@@ -22,7 +22,7 @@ import routing
 # --- Kodi stuff ---
 import xbmcaddon
 # --- AEL stuff ---
-from resources.lib.settings import *
+from resources.lib import settings
 
 # --- Addon object (used to access settings) ---
 addon           = xbmcaddon.Addon()
@@ -34,11 +34,11 @@ addon_profile   = addon.getAddonInfo('profile')
 addon_type      = addon.getAddonInfo('type')
 
 router: routing.Plugin = routing.Plugin()
-g_PATHS: AEL_Paths
+g_PATHS: settings.AEL_Paths
 
 #
 # Bootstrap factory object instances.
 #
 def g_bootstrap_instances():
     global g_PATHS
-    g_PATHS = AEL_Paths(addon_id).build()
+    g_PATHS = settings.AEL_Paths(addon_id).build()
