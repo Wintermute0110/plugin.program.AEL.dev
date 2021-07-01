@@ -41,10 +41,10 @@ import xbmcgui
 import xbmcplugin
 
 from ael import constants, settings 
-from ael.launchers import AppLauncher, ExecutionSettings, get_executor_factory
-from ael.scanners import RomFolderScanner
+from ael.launchers import ExecutionSettings, get_executor_factory
 from ael.utils import kodi
 
+from resources.app.core import AppLauncher, RomFolderScanner
 from resources.app import viewqueries
 from resources.app.globals import *
 
