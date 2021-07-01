@@ -2,8 +2,8 @@
 #
 import logging
 
-from resources.lib.utils import kodilogging, text
-from resources.lib.globals import addon_id, addon_version
+from ael.utils import kodilogging, text
+from resources.app.globals import addon_id, addon_version
 from resources.app.services import AppService
 
 kodilogging.config()

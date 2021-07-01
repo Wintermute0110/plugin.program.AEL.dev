@@ -29,7 +29,7 @@ logger = logging.getLogger(__name__)
 #
 class ViewRepository(object):
 
-    def __init__(self, paths: AEL_Paths):
+    def __init__(self, paths: globals.AEL_Paths):
         self.paths = paths
 
     def find_root_items(self):
