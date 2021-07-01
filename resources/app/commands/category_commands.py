@@ -18,11 +18,15 @@ from __future__ import unicode_literals
 from __future__ import division
 
 import logging
+import collections
+
+from ael.utils import kodi, text, io
+from ael import constants
 
 from resources.app.commands.mediator import AppMediator
-from resources.lib import globals
-from resources.lib.repositories import *
-from resources.lib.utils import kodi, editors
+from resources.app import globals, editors
+from resources.app.repositories import UnitOfWork, CategoryRepository
+from resources.app.domain import Category, g_assetFactory
 
 logger = logging.getLogger(__name__)
 
@@ -100,7 +104,7 @@ def cmd_edit_metadata_category(args):
         
         NFO_FileName  = category.get_NFO_name()
         NFO_found_str = 'NFO found' if NFO_FileName.exists() else 'NFO not found'
-        plot_str      = text.limit_string(category.get_plot(), PLOT_STR_MAXSIZE)
+        plot_str      = text.limit_string(category.get_plot(), constants.PLOT_STR_MAXSIZE)
 
         options = collections.OrderedDict()
         options['CATEGORY_EDIT_METADATA_TITLE']       = "Edit Title: '{}'".format(category.get_name())
@@ -349,7 +353,7 @@ def cmd_category_browse_import_nfo_file(args):
     NFO_file = kodi.browse(1, 'Select NFO description file', 'files', '.nfo', False)
     logger.debug('cmd_category_browse_import_nfo_file() Dialog().browse returned "{0}"'.format(NFO_file))
     if not NFO_file: return
-    NFO_FileName = FileName(NFO_file)
+    NFO_FileName = io.FileName(NFO_file)
     if not NFO_FileName.exists(): return
     
     uow = UnitOfWork(globals.g_PATHS.DATABASE_FILE_PATH)
@@ -411,7 +415,7 @@ def cmd_category_export_xml(args):
         return
 
     # --- If XML exists then warn user about overwriting it ---
-    export_FN = FileName(dir_path).pjoin(category_fn_str)
+    export_FN = io.FileName(dir_path).pjoin(category_fn_str)
     if export_FN.exists():
         ret = kodi.dialog_yesno('Overwrite file {0}?'.format(export_FN.getPath()))
         if not ret:
@@ -425,7 +429,7 @@ def cmd_category_export_xml(args):
     # >> printed. This is the standard way of handling error messages in AEL code.
     try:
         category.export_to_file(export_FN)
-    except AddonError as E:
+    except constants.AddonError as E:
         kodi.notify_warn('{0}'.format(E))
     else:
         kodi.notify('Exported Category "{0}" XML config'.format(category.get_name()))

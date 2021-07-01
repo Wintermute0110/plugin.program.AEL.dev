@@ -19,11 +19,15 @@ from __future__ import division
 
 import logging
 import collections
+import json
+
+from ael import settings
+from ael.utils import kodi, io
 
 from resources.app.commands.mediator import AppMediator
-from resources.lib import globals
-from resources.lib.repositories import *
-from resources.lib.utils import kodi
+from resources.app import globals
+from resources.app.repositories import UnitOfWork, ROMSetRepository, ROMsRepository, AelAddonRepository
+from resources.app.domain import AelAddon, ROMLauncherAddon
 
 logger = logging.getLogger(__name__)
 

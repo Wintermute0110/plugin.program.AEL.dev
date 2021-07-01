@@ -18,11 +18,15 @@ from __future__ import unicode_literals
 from __future__ import division
 
 import logging
+import collections
+
+from ael import constants, platforms
+from ael.utils import kodi, text, io
 
 from resources.app.commands.mediator import AppMediator
-from resources.lib import constants, platforms, globals
-from resources.lib.repositories import *
-from resources.lib.utils import kodi, editors
+from resources.app import globals, editors
+from resources.app.repositories import UnitOfWork, CategoryRepository, ROMSetRepository
+from resources.app.domain import ROMSet, g_assetFactory
 
 logger = logging.getLogger(__name__)
 
@@ -106,7 +110,7 @@ def cmd_romset_metadata(args):
         repository = ROMSetRepository(uow)
         romset = repository.find_romset(romset_id)
 
-    plot_str = text.limit_string(romset.get_plot(), PLOT_STR_MAXSIZE)
+    plot_str = text.limit_string(romset.get_plot(), constants.PLOT_STR_MAXSIZE)
     rating = romset.get_rating() if romset.get_rating() != -1 else 'not rated'
     NFO_FileName = romset.get_NFO_name()
     NFO_found_str = 'NFO found' if NFO_FileName.exists() else 'NFO not found'
@@ -387,7 +391,7 @@ def cmd_romset_browse_import_nfo_file(args):
     NFO_file = kodi.browse(1, 'Select NFO description file', 'files', '.nfo', False)
     logger.debug('cmd_romset_browse_import_nfo_file() Dialog().browse returned "{0}"'.format(NFO_file))
     if not NFO_file: return
-    NFO_FileName = FileName(NFO_file)
+    NFO_FileName = io.FileName(NFO_file)
     if not NFO_FileName.exists(): return
     
     uow = UnitOfWork(globals.g_PATHS.DATABASE_FILE_PATH)
@@ -449,7 +453,7 @@ def cmd_romset_export_xml(args):
         return
 
     # --- If XML exists then warn user about overwriting it ---
-    export_FN = FileName(dir_path).pjoin(romset_fn_str)
+    export_FN = io.FileName(dir_path).pjoin(romset_fn_str)
     if export_FN.exists():
         ret = kodi.dialog_yesno('Overwrite file {0}?'.format(export_FN.getPath()))
         if not ret:
@@ -463,7 +467,7 @@ def cmd_romset_export_xml(args):
     # >> printed. This is the standard way of handling error messages in AEL code.
     try:
         romset.export_to_file(export_FN)
-    except AddonError as E:
+    except constants.AddonError as E:
         kodi.notify_warn('{0}'.format(E))
     else:
         kodi.notify('Exported ROMSet "{0}" XML config'.format(romset.get_name()))

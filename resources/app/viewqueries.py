@@ -28,10 +28,9 @@ import logging
 import typing
 from urllib.parse import urlencode
 
-from resources.lib import globals
-from resources.lib.repositories import ViewRepository
-from resources.lib.settings import *
-from resources.lib.constants import *
+from ael import constants, settings
+from resources.app import globals
+from resources.app.repositories import ViewRepository
 
 logger = logging.getLogger(__name__)
 
@@ -46,13 +45,13 @@ def qry_get_root_items():
         container = {
             'id': '',
             'name': 'root',
-            'obj_type': OBJ_CATEGORY,
+            'obj_type': constants.constants.OBJ_CATEGORY,
             'items': []
         }
     
     vcategory_fanart = globals.g_PATHS.FANART_FILE_PATH.getPath()
     # --- AEL Favourites special category ---
-    if not getSettingAsBool('display_hide_favs'): 
+    if not settings.getSettingAsBool('display_hide_favs'): 
         # fav_icon   = 'DefaultFolder.png'
         vcategory_name   = '<Favourites>'
         vcategory_icon   = globals.g_PATHS.ADDON_CODE_DIR.pjoin('media/theme/Favourites_icon.png').getPath()
@@ -68,19 +67,19 @@ def qry_get_root_items():
                 'overlay': 4
             },
             'art': { 'icon' : vcategory_icon, 'fanart' : vcategory_fanart, 'poster' : vcategory_poster },
-            'properties': { AEL_CONTENT_LABEL: AEL_CONTENT_VALUE_ROM_LAUNCHER, 'obj_type': OBJ_NONE }
+            'properties': { constants.AEL_CONTENT_LABEL: constants.AEL_CONTENT_VALUE_ROM_LAUNCHER, 'obj_type': constants.OBJ_NONE }
         })
 
     # --- AEL Collections special category ---
-    #if not getSettingAsBool('display_hide_collections'): render_vcategory_collections_row()
+    #if not settings.getSettingAsBool('display_hide_collections'): render_vcategory_collections_row()
     # --- AEL Virtual Categories ---
-    #if not getSettingAsBool('display_hide_vlaunchers'): render_vcategory_Browse_by_row()
+    #if not settings.getSettingAsBool('display_hide_vlaunchers'): render_vcategory_Browse_by_row()
     # --- Browse Offline Scraper database ---
-    #if not getSettingAsBool('display_hide_AEL_scraper'): render_vcategory_AEL_offline_scraper_row()
-    #if not getSettingAsBool('display_hide_LB_scraper'):  render_vcategory_LB_offline_scraper_row()
+    #if not settings.getSettingAsBool('display_hide_AEL_scraper'): render_vcategory_AEL_offline_scraper_row()
+    #if not settings.getSettingAsBool('display_hide_LB_scraper'):  render_vcategory_LB_offline_scraper_row()
 
     # --- Recently played and most played ROMs ---
-    if not getSettingAsBool('display_hide_recent'): 
+    if not settings.getSettingAsBool('display_hide_recent'): 
         vcategory_name   = '[Recently played ROMs]'
         vcategory_icon   = globals.g_PATHS.ADDON_CODE_DIR.pjoin('media/theme/Recently_played_icon.png').getPath()
         vcategory_poster = globals.g_PATHS.ADDON_CODE_DIR.pjoin('media/theme/Recently_played_poster.png').getPath()
@@ -95,10 +94,10 @@ def qry_get_root_items():
                 'overlay': 4
             },
             'art': { 'icon' : vcategory_icon, 'fanart' : vcategory_fanart, 'poster' : vcategory_poster },
-            'properties': { AEL_CONTENT_LABEL: AEL_CONTENT_VALUE_ROM_LAUNCHER, 'obj_type': OBJ_NONE }
+            'properties': { constants.AEL_CONTENT_LABEL: constants.AEL_CONTENT_VALUE_ROM_LAUNCHER, 'obj_type': constants.OBJ_NONE }
         })
 
-    if not getSettingAsBool('display_hide_mostplayed'): 
+    if not settings.getSettingAsBool('display_hide_mostplayed'): 
         vcategory_name   = '[Most played ROMs]'
         vcategory_icon   = globals.g_PATHS.ADDON_CODE_DIR.pjoin('media/theme/Most_played_icon.png').getPath()
         vcategory_poster = globals.g_PATHS.ADDON_CODE_DIR.pjoin('media/theme/Most_played_poster.png').getPath()
@@ -113,10 +112,10 @@ def qry_get_root_items():
                 'overlay': 4
             },
             'art': { 'icon' : vcategory_icon, 'fanart' : vcategory_fanart, 'poster' : vcategory_poster },
-            'properties': { AEL_CONTENT_LABEL: AEL_CONTENT_VALUE_ROM_LAUNCHER, 'obj_type': OBJ_NONE }
+            'properties': { constants.AEL_CONTENT_LABEL: constants.AEL_CONTENT_VALUE_ROM_LAUNCHER, 'obj_type': constants.OBJ_NONE }
         })
         
-    if not getSettingAsBool('display_hide_utilities'): 
+    if not settings.getSettingAsBool('display_hide_utilities'): 
         vcategory_name   = 'Utilities'
         vcategory_icon   = globals.g_PATHS.ICON_FILE_PATH.getPath()
         vcategory_fanart = globals.g_PATHS.FANART_FILE_PATH.getPath()
@@ -131,10 +130,10 @@ def qry_get_root_items():
                 'overlay': 4
             },
             'art': { 'icon' : vcategory_icon, 'fanart' : vcategory_fanart, 'poster' : vcategory_poster },
-            'properties': { AEL_CONTENT_LABEL: AEL_CONTENT_VALUE_CATEGORY, 'obj_type': OBJ_NONE }
+            'properties': { constants.AEL_CONTENT_LABEL: constants.AEL_CONTENT_VALUE_CATEGORY, 'obj_type': constants.OBJ_NONE }
         })
         
-    if not getSettingAsBool('display_hide_g_reports'): 
+    if not settings.getSettingAsBool('display_hide_g_reports'): 
         vcategory_name   = 'Global Reports'
         vcategory_icon   = globals.g_PATHS.ICON_FILE_PATH.getPath()
         vcategory_fanart = globals.g_PATHS.FANART_FILE_PATH.getPath()
@@ -149,7 +148,7 @@ def qry_get_root_items():
                 'overlay': 4
             },
             'art': { 'icon' : vcategory_icon, 'fanart' : vcategory_fanart, 'poster' : vcategory_poster },
-            'properties': { AEL_CONTENT_LABEL: AEL_CONTENT_VALUE_CATEGORY, 'obj_type': OBJ_NONE }
+            'properties': { constants.AEL_CONTENT_LABEL: constants.AEL_CONTENT_VALUE_CATEGORY, 'obj_type': constants.OBJ_NONE }
         })
     
     return container
@@ -174,7 +173,7 @@ def qry_get_utilities_items():
     container = {
         'id': '',
         'name': 'utilities',
-        'obj_type': OBJ_NONE,
+        'obj_type': constants.OBJ_NONE,
         'items': []
     }
 
@@ -189,7 +188,7 @@ def qry_get_utilities_items():
             'overlay': 4
         },
         'art': { 'icon' : vcategory_icon, 'fanart' : vcategory_fanart, 'poster' : vcategory_poster  },
-        'properties': { AEL_CONTENT_LABEL: AEL_CONTENT_VALUE_NONE, 'obj_type': OBJ_NONE }
+        'properties': { constants.AEL_CONTENT_LABEL: constants.AEL_CONTENT_VALUE_NONE, 'obj_type': constants.OBJ_NONE }
     })
     container['items'].append({
         'name': 'Rebuild views',
@@ -202,7 +201,7 @@ def qry_get_utilities_items():
             'overlay': 4
         },
         'art': { 'icon' : vcategory_icon, 'fanart' : vcategory_fanart, 'poster' : vcategory_poster  },
-        'properties': { AEL_CONTENT_LABEL: AEL_CONTENT_VALUE_NONE, 'obj_type': OBJ_NONE }
+        'properties': { constants.AEL_CONTENT_LABEL: constants.AEL_CONTENT_VALUE_NONE, 'obj_type': constants.OBJ_NONE }
     })
     container['items'].append({
         'name': 'Scan for plugin-addons',
@@ -215,7 +214,7 @@ def qry_get_utilities_items():
             'overlay': 4
         },
         'art': { 'icon' : vcategory_icon, 'fanart' : vcategory_fanart, 'poster' : vcategory_poster  },
-        'properties': { AEL_CONTENT_LABEL: AEL_CONTENT_VALUE_NONE, 'obj_type': OBJ_NONE }
+        'properties': { constants.AEL_CONTENT_LABEL: constants.AEL_CONTENT_VALUE_NONE, 'obj_type': constants.OBJ_NONE }
     })
     container['items'].append({
         'name': 'Import category/launcher XML configuration file',
@@ -228,7 +227,7 @@ def qry_get_utilities_items():
             'overlay': 4
         },
         'art': { 'icon' : vcategory_icon, 'fanart' : vcategory_fanart, 'poster' : vcategory_poster  },
-        'properties': { AEL_CONTENT_LABEL: AEL_CONTENT_VALUE_NONE, 'obj_type': OBJ_NONE }
+        'properties': { constants.AEL_CONTENT_LABEL: constants.AEL_CONTENT_VALUE_NONE, 'obj_type': constants.OBJ_NONE }
     })
     container['items'].append({
         'name': 'Export category/launcher XML configuration file',
@@ -243,7 +242,7 @@ def qry_get_utilities_items():
             'overlay': 4
         },
         'art': { 'icon' : vcategory_icon, 'fanart' : vcategory_fanart, 'poster' : vcategory_poster  },
-        'properties': { AEL_CONTENT_LABEL: AEL_CONTENT_VALUE_NONE, 'obj_type': OBJ_NONE }
+        'properties': { constants.AEL_CONTENT_LABEL: constants.AEL_CONTENT_VALUE_NONE, 'obj_type': constants.OBJ_NONE }
     })
     container['items'].append({
         'name': 'Check/Update all databases',
@@ -258,7 +257,7 @@ def qry_get_utilities_items():
             'overlay': 4
         },
         'art': { 'icon' : vcategory_icon, 'fanart' : vcategory_fanart, 'poster' : vcategory_poster  },
-        'properties': { AEL_CONTENT_LABEL: AEL_CONTENT_VALUE_NONE, 'obj_type': OBJ_NONE }
+        'properties': { constants.AEL_CONTENT_LABEL: constants.AEL_CONTENT_VALUE_NONE, 'obj_type': constants.OBJ_NONE }
     })
     container['items'].append({
         'name': 'Check Launchers',
@@ -272,7 +271,7 @@ def qry_get_utilities_items():
             'overlay': 4
         },
         'art': { 'icon' : vcategory_icon, 'fanart' : vcategory_fanart, 'poster' : vcategory_poster  },
-        'properties': { AEL_CONTENT_LABEL: AEL_CONTENT_VALUE_NONE, 'obj_type': OBJ_NONE }
+        'properties': { constants.AEL_CONTENT_LABEL: constants.AEL_CONTENT_VALUE_NONE, 'obj_type': constants.OBJ_NONE }
     })
     container['items'].append({
         'name': 'Check Launcher ROMs sync status',
@@ -288,7 +287,7 @@ def qry_get_utilities_items():
             'overlay': 4
         },
         'art': { 'icon' : vcategory_icon, 'fanart' : vcategory_fanart, 'poster' : vcategory_poster  },
-        'properties': { AEL_CONTENT_LABEL: AEL_CONTENT_VALUE_NONE, 'obj_type': OBJ_NONE }
+        'properties': { constants.AEL_CONTENT_LABEL: constants.AEL_CONTENT_VALUE_NONE, 'obj_type': constants.OBJ_NONE }
     })
     container['items'].append({
         'name': 'Check ROMs artwork image integrity',
@@ -303,7 +302,7 @@ def qry_get_utilities_items():
             'overlay': 4
         },
         'art': { 'icon' : vcategory_icon, 'fanart' : vcategory_fanart, 'poster' : vcategory_poster  },
-        'properties': { AEL_CONTENT_LABEL: AEL_CONTENT_VALUE_NONE, 'obj_type': OBJ_NONE }
+        'properties': { constants.AEL_CONTENT_LABEL: constants.AEL_CONTENT_VALUE_NONE, 'obj_type': constants.OBJ_NONE }
     })
     container['items'].append({
         'name': 'Delete ROMs redundant artwork',
@@ -317,7 +316,7 @@ def qry_get_utilities_items():
             'overlay': 4
         },
         'art': { 'icon' : vcategory_icon, 'fanart' : vcategory_fanart, 'poster' : vcategory_poster  },
-        'properties': { AEL_CONTENT_LABEL: AEL_CONTENT_VALUE_NONE, 'obj_type': OBJ_NONE }
+        'properties': { constants.AEL_CONTENT_LABEL: constants.AEL_CONTENT_VALUE_NONE, 'obj_type': constants.OBJ_NONE }
     })
     
     return container
@@ -331,12 +330,12 @@ def qry_get_vcategory_items(self):
     container = {
         'id': '',
         'name': 'virtual categories',
-        'obj_type': OBJ_CATEGORY_VIRTUAL,
+        'obj_type': constants.constants.OBJ_CATEGORY_VIRTUAL,
         'items': []
     }
     
     # --- AEL Favourites special category ---
-    if not getSettingAsBool('display_hide_favs'): 
+    if not settings.getSettingAsBool('display_hide_favs'): 
         # fav_icon   = 'DefaultFolder.png'
         vcategory_name   = '<Favourites>'
         vcategory_icon   = globals.g_PATHS.ADDON_CODE_DIR.pjoin('media/theme/Favourites_icon.png').getPath()
@@ -352,19 +351,19 @@ def qry_get_vcategory_items(self):
                 'overlay': 4
             },
             'art': { 'icon' : vcategory_icon, 'fanart' : vcategory_fanart, 'poster' : vcategory_poster },
-            'properties': { AEL_CONTENT_LABEL: AEL_CONTENT_VALUE_CATEGORY, 'obj_type': OBJ_NONE }
+            'properties': { constants.AEL_CONTENT_LABEL: constants.AEL_CONTENT_VALUE_CATEGORY, 'obj_type': constants.OBJ_NONE }
         })
 
     # --- AEL Collections special category ---
-    #if not getSettingAsBool('display_hide_collections'): render_vcategory_collections_row()
+    #if not settings.getSettingAsBool('display_hide_collections'): render_vcategory_collections_row()
     # --- AEL Virtual Categories ---
-    #if not getSettingAsBool('display_hide_vlaunchers'): render_vcategory_Browse_by_row()
+    #if not settings.getSettingAsBool('display_hide_vlaunchers'): render_vcategory_Browse_by_row()
     # --- Browse Offline Scraper database ---
-    #if not getSettingAsBool('display_hide_AEL_scraper'): render_vcategory_AEL_offline_scraper_row()
-    #if not getSettingAsBool('display_hide_LB_scraper'):  render_vcategory_LB_offline_scraper_row()
+    #if not settings.getSettingAsBool('display_hide_AEL_scraper'): render_vcategory_AEL_offline_scraper_row()
+    #if not settings.getSettingAsBool('display_hide_LB_scraper'):  render_vcategory_LB_offline_scraper_row()
 
     # --- Recently played and most played ROMs ---
-    if not getSettingAsBool('display_hide_recent'): 
+    if not settings.getSettingAsBool('display_hide_recent'): 
         vcategory_name   = '[Recently played ROMs]'
         vcategory_icon   = globals.g_PATHS.ADDON_CODE_DIR.pjoin('media/theme/Recently_played_icon.png').getPath()
         vcategory_poster = globals.g_PATHS.ADDON_CODE_DIR.pjoin('media/theme/Recently_played_poster.png').getPath()
@@ -379,10 +378,10 @@ def qry_get_vcategory_items(self):
                 'overlay': 4
             },
             'art': { 'icon' : vcategory_icon, 'fanart' : vcategory_fanart, 'poster' : vcategory_poster },
-            'properties': { AEL_CONTENT_LABEL: AEL_CONTENT_VALUE_ROM_LAUNCHER, 'obj_type': OBJ_NONE }
+            'properties': { constants.AEL_CONTENT_LABEL: constants.AEL_CONTENT_VALUE_ROM_LAUNCHER, 'obj_type': constants.OBJ_NONE }
         })
 
-    if not getSettingAsBool('display_hide_mostplayed'): 
+    if not settings.getSettingAsBool('display_hide_mostplayed'): 
         vcategory_name   = '[Most played ROMs]'
         vcategory_icon   = globals.g_PATHS.ADDON_CODE_DIR.pjoin('media/theme/Most_played_icon.png').getPath()
         vcategory_poster = globals.g_PATHS.ADDON_CODE_DIR.pjoin('media/theme/Most_played_poster.png').getPath()
@@ -397,10 +396,10 @@ def qry_get_vcategory_items(self):
                 'overlay': 4
             },
             'art': { 'icon' : vcategory_icon, 'fanart' : vcategory_fanart, 'poster' : vcategory_poster },
-            'properties': { AEL_CONTENT_LABEL: AEL_CONTENT_VALUE_ROM_LAUNCHER, 'obj_type': OBJ_NONE }
+            'properties': { constants.AEL_CONTENT_LABEL: constants.AEL_CONTENT_VALUE_ROM_LAUNCHER, 'obj_type': constants.OBJ_NONE }
         })
         
-    if not getSettingAsBool('display_hide_utilities'): 
+    if not settings.getSettingAsBool('display_hide_utilities'): 
         vcategory_name   = 'Utilities'
         vcategory_icon   = globals.g_PATHS.ICON_FILE_PATH.getPath()
         vcategory_fanart = globals.g_PATHS.FANART_FILE_PATH.getPath()
@@ -415,10 +414,10 @@ def qry_get_vcategory_items(self):
                 'overlay': 4
             },
             'art': { 'icon' : vcategory_icon, 'fanart' : vcategory_fanart, 'poster' : vcategory_poster },
-            'properties': { AEL_CONTENT_LABEL: AEL_CONTENT_VALUE_ROM_LAUNCHER, 'obj_type': OBJ_NONE }
+            'properties': { constants.AEL_CONTENT_LABEL: constants.AEL_CONTENT_VALUE_ROM_LAUNCHER, 'obj_type': constants.OBJ_NONE }
         })
         
-    if not getSettingAsBool('display_hide_g_reports'): 
+    if not settings.getSettingAsBool('display_hide_g_reports'): 
         vcategory_name   = 'Global Reports'
         vcategory_icon   = globals.g_PATHS.ICON_FILE_PATH.getPath()
         vcategory_fanart = globals.g_PATHS.FANART_FILE_PATH.getPath()
@@ -433,7 +432,7 @@ def qry_get_vcategory_items(self):
                 'overlay': 4
             },
             'art': { 'icon' : vcategory_icon, 'fanart' : vcategory_fanart, 'poster' : vcategory_poster },
-            'properties': { AEL_CONTENT_LABEL: AEL_CONTENT_VALUE_ROM_LAUNCHER, 'obj_type': OBJ_NONE }
+            'properties': { constants.AEL_CONTENT_LABEL: constants.AEL_CONTENT_VALUE_ROM_LAUNCHER, 'obj_type': constants.OBJ_NONE }
         })
         
 #
@@ -443,12 +442,12 @@ def qry_container_context_menu_items(container_data) -> typing.List[typing.Tuple
     if container_data is None:
         return []
     # --- Create context menu items to be applied to each item in this container ---
-    container_type    = container_data['obj_type'] if 'obj_type' in container_data else OBJ_NONE
+    container_type    = container_data['obj_type'] if 'obj_type' in container_data else constants.OBJ_NONE
     container_name    = container_data['name'] if 'name' in container_data else 'Unknown'
     container_id      = container_data['id'] if 'id' in container_data else ''
     
-    is_category: bool = container_type == OBJ_CATEGORY
-    is_romset: bool   = container_type == OBJ_ROMSET
+    is_category: bool = container_type == constants.OBJ_CATEGORY
+    is_romset: bool   = container_type == constants.constants.OBJ_ROMSET
     is_root: bool     = container_data['id'] == ''
     
     commands = []
@@ -478,13 +477,13 @@ def qry_listitem_context_menu_items(list_item_data, container_data)-> typing.Lis
         return []
     # --- Create context menu items only applicable on this item ---
     properties = list_item_data['properties'] if 'properties' in list_item_data else {}
-    item_type  = properties['obj_type'] if 'obj_type' in properties else OBJ_NONE
+    item_type  = properties['obj_type'] if 'obj_type' in properties else constants.OBJ_NONE
     item_name  = list_item_data['name'] if 'name' in list_item_data else 'Unknown'
     item_id    = list_item_data['id'] if 'id' in list_item_data else ''
     
-    is_category: bool = item_type == OBJ_CATEGORY 
-    is_romset: bool   = item_type == OBJ_ROMSET
-    is_rom: bool      = item_type == OBJ_ROM
+    is_category: bool = item_type == constants.OBJ_CATEGORY 
+    is_romset: bool   = item_type == constants.constants.OBJ_ROMSET
+    is_rom: bool      = item_type == constants.OBJ_ROM
     
     commands = []
     if is_rom: 

@@ -24,10 +24,11 @@ import collections
 
 import xbmcgui
 
-from resources.lib.domain import *
-from resources.lib.scrapers import ScraperSettings
-from resources.lib.utils import kodi, io
-from resources.lib import constants, settings
+from ael.scrapers import ScraperSettings
+from ael.utils import kodi, io
+from ael import constants, settings
+
+from resources.app.domain import MetaDataItemABC, AssetInfo, ROM, g_assetFactory
 
 logger = logging.getLogger(__name__)
 

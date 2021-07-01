@@ -21,10 +21,12 @@ import logging
 
 import xbmcaddon
 
+from ael.utils import kodi
+
 from resources.app.commands.mediator import AppMediator
-from resources.lib import globals
-from resources.lib.repositories import *
-from resources.lib.utils import kodi
+from resources.app import globals
+from resources.app.repositories import UnitOfWork, AelAddonRepository
+from resources.app.domain import AelAddon
 
 logger = logging.getLogger(__name__)
 

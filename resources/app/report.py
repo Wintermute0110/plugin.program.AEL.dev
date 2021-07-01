@@ -17,17 +17,9 @@
 # --- Python standard library ---
 from __future__ import unicode_literals
 from __future__ import division
-from __future__ import annotations
-
-import abc
-from datetime import datetime
 
 # --- AEL modules ---
-from resources.lib.domain import *
-from resources.lib.utils import io
-
-logger = logging.getLogger(__name__)
-
+from resources.app.domain import *
 #
 # This must be implemented as a list of strings. See AML for more details.
 #
@@ -198,64 +190,3 @@ def report_print_Collection(slist, collection):
     slist.append("[COLOR violet]s_poster[/COLOR]: '{0}'".format(collection['s_poster']))
     slist.append("[COLOR violet]s_clearlogo[/COLOR]: '{0}'".format(collection['s_clearlogo']))
     slist.append("[COLOR violet]s_trailer[/COLOR]: '{0}'".format(collection['s_trailer']))
-
-class Reporter(object):
-    __metaclass__ = abc.ABCMeta
-
-    def __init__(self, decoratorReporter: Reporter = None):
-        self.decoratorReporter = decoratorReporter
-
-    @abc.abstractmethod
-    def open(self):
-        pass
-    
-    @abc.abstractmethod
-    def close(self):
-        pass
-
-    @abc.abstractmethod
-    def _write_message(self, message:str):
-        pass
-
-    def write(self, message:str):        
-        self._write_message(message)
-        if self.decoratorReporter:
-            self.decoratorReporter.write(message)
-
-class LogReporter(Reporter):
-    def open(self, report_title):
-        return super(LogReporter, self).open()
-
-    def close(self):
-        return super(LogReporter, self).close()
-
-    def _write_message(self, message:str):
-        logger.info(message)
-
-class FileReporter(Reporter):
-    def __init__(self, reports_dir:io.FileName, scanner_name:str, decoratorReporter = None):
-        now = datetime.now()
-        self.report_file = reports_dir.pjoin('{}_{}_report.txt'.format(scanner_name, now.strftime("%Y%m%d%H%M%S")))
-        self.scanner_name = scanner_name
-        
-        super(FileReporter, self).__init__(decoratorReporter)
-
-    def open(self):
-        logger.info('Report file path "{0}"'.format(self.report_file.getPath()))
-        self.report_file.open('w')
-        
-        self.write('******************** Report: {} ...  ********************'.format(self.scanner_name))
-        #self.write('  Launcher name "{0}"'.format(self.launcher_data['m_name']))
-        #self.write('  Launcher type "{0}"'.format(self.launcher_data['type'] if 'type' in self.launcher_data else 'Unknown'))
-        #self.write('  launcher ID   "{0}"'.format(self.launcher_data['id']))
-        #self.write('  ROM path      "{0}"'.format(launcher_path.getPath()))
-        #self.write('  ROM ext       "{0}"'.format(self.launcher_data['romext']))
-        #self.write('  Platform      "{0}"'.format(self.launcher_data['platform']))
-        #self.write(  'Multidisc     "{0}"'.format(self.launcher_data['multidisc']))
-
-    def close(self):
-        self.report_file.close()
-
-    def _write_message(self, message:str):
-        self.report_file.write(message)
-        self.report_file.write('\n')

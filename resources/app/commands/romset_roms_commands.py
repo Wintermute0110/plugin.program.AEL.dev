@@ -18,12 +18,16 @@ from __future__ import unicode_literals
 from __future__ import division
 
 import logging
+import collections
+import typing
+
+from ael import constants
+from ael.utils import kodi, io
 
 from resources.app.commands.mediator import AppMediator
-from resources.lib import constants, globals
-from resources.lib import repositories
-from resources.lib.repositories import *
-from resources.lib.utils import kodi
+from resources.app import globals
+from resources.app.repositories import UnitOfWork, ROMSetRepository, ROMsRepository, ROMsJsonFileRepository
+from resources.app.domain import ROM, AssetInfo, g_assetFactory
 
 logger = logging.getLogger(__name__)
 
@@ -113,7 +117,7 @@ def cmd_set_roms_default_artwork(args):
         logger.debug('cmd_set_roms_default_artwork() Main select() returned {0}'.format(selected_asset_info.name))    
         mapped_asset_key    = romset.get_mapped_ROM_asset_key(selected_asset_info)
         mapped_asset_info   = g_assetFactory.get_asset_info_by_key(mapped_asset_key)
-        mappable_asset_list = g_assetFactory.get_asset_list_by_IDs(ROM_ASSET_ID_LIST, 'image')
+        mappable_asset_list = g_assetFactory.get_asset_list_by_IDs(constants.ROM_ASSET_ID_LIST, 'image')
         logger.debug('cmd_set_roms_default_artwork() {0} currently is mapped to {1}'.format(selected_asset_info.name, mapped_asset_info.name))
             
         # --- Create ListItems ---

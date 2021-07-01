@@ -19,7 +19,6 @@ from __future__ import division
 from __future__ import annotations
 
 import abc
-import collections
 import typing
 import logging
 import re 
@@ -32,9 +31,8 @@ import random
 import binascii
 
 # --- AEL packages ---
-from resources.lib.utils import io, kodi, text
-from resources.lib import settings
-from resources.lib.constants import *
+from ael.utils import io, kodi, text
+from ael import settings, constants
 
 logger = logging.getLogger(__name__)
 
@@ -147,11 +145,11 @@ class AelAddon(EntityABC):
     def get_version(self) -> str:
         return self.entity_data['version']
     
-    def get_addon_type(self) -> AddonType:
-        return AddonType[self.entity_data['addon_type']] if 'addon_type' in self.entity_data else AddonType.UNKNOWN
+    def get_addon_type(self) -> constants.AddonType:
+        return constants.AddonType[self.entity_data['addon_type']] if 'addon_type' in self.entity_data else constants.AddonType.UNKNOWN
     
     def supports_launching(self) -> bool:
-        return self.get_addon_type() == AddonType.LAUNCHER
+        return self.get_addon_type() == constants.AddonType.LAUNCHER
  
     def get_execute_uri(self) -> str:
         return self.entity_data['execute_uri']
@@ -297,7 +295,7 @@ class MetaDataItemABC(EntityABC):
     # Used when rendering Categories/Launchers/ROMs
     #
     def get_trailer(self):
-        return self.assets[ASSET_TRAILER_ID].get_path() if ASSET_TRAILER_ID in self.assets else ''
+        return self.assets[constants.ASSET_TRAILER_ID].get_path() if constants.ASSET_TRAILER_ID in self.assets else ''
 
     def set_trailer(self, trailer_str):
         if 'http' in trailer_str:
@@ -306,11 +304,11 @@ class MetaDataItemABC(EntityABC):
                 video_id = matches.groups()[-1]
                 trailer_str = 'plugin://plugin.video.youtube/play/?video_id={}'.format(video_id)
 
-        trailer_asset = self.get_asset(ASSET_TRAILER_ID)
+        trailer_asset = self.get_asset(constants.ASSET_TRAILER_ID)
         if trailer_asset is None:
-            self.assets[ASSET_TRAILER_ID] = Asset.create(ASSET_TRAILER_ID)
+            self.assets[constants.ASSET_TRAILER_ID] = Asset.create(constants.ASSET_TRAILER_ID)
                         
-        self.assets[ASSET_TRAILER_ID].set_path(trailer_str)
+        self.assets[constants.ASSET_TRAILER_ID].set_path(trailer_str)
 
     # --- Finished status stuff -------------------------------------------------------------------
     def is_finished(self):
@@ -423,7 +421,7 @@ class MetaDataItemABC(EntityABC):
                 value = asset.get_path()
             
             if self.is_mappable_asset(asset_info):
-                if asset_info.id == ASSET_ICON_ID: fallback_str = self.get_default_icon()
+                if asset_info.id == constants.ASSET_ICON_ID: fallback_str = self.get_default_icon()
                 value = self.get_mapped_asset_str(asset_info, fallback=fallback_str)
                 
             view_assets[asset_info.fname_infix] = value
@@ -451,7 +449,7 @@ class MetaDataItemABC(EntityABC):
         mappable_assets = self.get_mappable_asset_list()
         mapped_assets = {}
         for mappable_asset in mappable_assets:
-            if mappable_asset.id == ASSET_ICON_ID: 
+            if mappable_asset.id == constants.ASSET_ICON_ID: 
                 mapped_assets[mappable_asset.fname_infix] = self.get_mapped_asset_str(mappable_asset, fallback=self.get_default_icon())
             else: mapped_assets[mappable_asset.fname_infix] = self.get_mapped_asset_str(mappable_asset)
         return mapped_assets
@@ -475,7 +473,7 @@ class MetaDataItemABC(EntityABC):
     def get_mapped_asset_key(self, asset_info: AssetInfo):
         if asset_info.default_key == '':
             logger.error('Requested mapping for AssetInfo without default key. Type {}'.format(asset_info.id))
-            raise AddonError('Not supported asset type used. This might be a bug!')  
+            raise constants.AddonError('Not supported asset type used. This might be a bug!')  
         
         if asset_info.default_key not in self.entity_data:
             return asset_info.key
@@ -503,7 +501,7 @@ class Category(MetaDataItemABC):
 
     def get_object_name(self): return 'Category'
 
-    def get_assets_kind(self): return KIND_ASSET_CATEGORY
+    def get_assets_kind(self): return constants.KIND_ASSET_CATEGORY
 
     def is_virtual(self): return False
     
@@ -516,9 +514,9 @@ class Category(MetaDataItemABC):
     def has_items(self) -> bool:
         return len(self.num_romsets()) > 0 or len(self.num_categories()) > 0
 
-    def get_asset_ids_list(self): return CATEGORY_ASSET_ID_LIST
+    def get_asset_ids_list(self): return constants.CATEGORY_ASSET_ID_LIST
     
-    def get_mappable_asset_ids_list(self): return MAPPABLE_CATEGORY_ASSET_ID_LIST
+    def get_mappable_asset_ids_list(self): return constants.MAPPABLE_CATEGORY_ASSET_ID_LIST
     
     def get_default_icon(self) -> str: return 'DefaultFolder.png' 
     
@@ -586,7 +584,7 @@ class Category(MetaDataItemABC):
         nfo_content.append('<?xml version="1.0" encoding="utf-8" standalone="yes"?>\n')
         nfo_content.append('<!-- Exported by AEL on {0} -->\n'.format(time.strftime("%Y-%m-%d %H:%M:%S")))
         nfo_content.append('<category>\n')
-        nfo_content.append(text.XML_line('year',      self.get_year()))
+        nfo_content.append(text.XML_line('year',      self.get_releaseyear()))
         nfo_content.append(text.XML_line('genre',     self.get_genre())) 
         nfo_content.append(text.XML_line('developer', self.get_developer()))
         nfo_content.append(text.XML_line('rating',    self.get_rating()))
@@ -612,12 +610,12 @@ class Category(MetaDataItemABC):
         str_list.append(text.XML_line('rating', self.get_rating()))
         str_list.append(text.XML_line('plot', self.get_plot()))
         str_list.append(text.XML_line('Asset_Prefix', self.get_custom_attribute('Asset_Prefix')))
-        str_list.append(text.XML_line('s_icon', self.get_asset_str(asset_id=ASSET_ICON_ID)))
-        str_list.append(text.XML_line('s_fanart', self.get_asset_str(asset_id=ASSET_FANART_ID)))
-        str_list.append(text.XML_line('s_banner', self.get_asset_str(asset_id=ASSET_BANNER_ID)))
-        str_list.append(text.XML_line('s_poster', self.get_asset_str(asset_id=ASSET_POSTER_ID)))
-        str_list.append(text.XML_line('s_controller', self.get_asset_str(asset_id=ASSET_CONTROLLER_ID)))
-        str_list.append(text.XML_line('s_clearlogo', self.get_asset_str(asset_id=ASSET_CLEARLOGO_ID)))
+        str_list.append(text.XML_line('s_icon', self.get_asset_str(asset_id=constants.ASSET_ICON_ID)))
+        str_list.append(text.XML_line('s_fanart', self.get_asset_str(asset_id=constants.ASSET_FANART_ID)))
+        str_list.append(text.XML_line('s_banner', self.get_asset_str(asset_id=constants.ASSET_BANNER_ID)))
+        str_list.append(text.XML_line('s_poster', self.get_asset_str(asset_id=constants.ASSET_POSTER_ID)))
+        str_list.append(text.XML_line('s_controller', self.get_asset_str(asset_id=constants.ASSET_CONTROLLER_ID)))
+        str_list.append(text.XML_line('s_clearlogo', self.get_asset_str(asset_id=constants.ASSET_CLEARLOGO_ID)))
         str_list.append('</category>\n')
         str_list.append('</advanced_emulator_launcher_configuration>\n')
         
@@ -701,15 +699,15 @@ class ROMSet(MetaDataItemABC):
     def set_platform(self, platform): self.entity_data['platform'] = platform
 
     def get_box_sizing(self):
-        return self.entity_data['box_size'] if 'box_size' in self.entity_data else BOX_SIZE_POSTER
+        return self.entity_data['box_size'] if 'box_size' in self.entity_data else constants.BOX_SIZE_POSTER
     
     def set_box_sizing(self, box_size): self.entity_data['box_size'] = box_size
 
-    def get_assets_kind(self): return KIND_ASSET_LAUNCHER
+    def get_assets_kind(self): return constants.KIND_ASSET_LAUNCHER
 
-    def get_asset_ids_list(self): return LAUNCHER_ASSET_ID_LIST
+    def get_asset_ids_list(self): return constants.LAUNCHER_ASSET_ID_LIST
 
-    def get_mappable_asset_ids_list(self): return MAPPABLE_LAUNCHER_ASSET_ID_LIST
+    def get_mappable_asset_ids_list(self): return constants.MAPPABLE_LAUNCHER_ASSET_ID_LIST
 
     def get_default_icon(self) -> str: return 'DefaultFolder.png' 
 
@@ -722,7 +720,7 @@ class ROMSet(MetaDataItemABC):
         self.entity_data[asset_info.path_key] = path
 
     def get_ROM_mappable_asset_list(self) -> typing.List[AssetInfo]:
-        return g_assetFactory.get_asset_list_by_IDs(MAPPABLE_ROM_ASSET_ID_LIST)
+        return g_assetFactory.get_asset_list_by_IDs(constants.MAPPABLE_ROM_ASSET_ID_LIST)
 
     #
     # Gets the actual assetinfo object that is mapped for
@@ -743,7 +741,7 @@ class ROMSet(MetaDataItemABC):
     def get_mapped_ROM_asset_key(self, asset_info: AssetInfo) -> str:
         if asset_info.rom_default_key == '':
             logger.error('Requested mapping for AssetInfo without default key. Type {}'.format(asset_info.id))
-            raise AddonError('Not supported asset type used. This might be a bug!')  
+            raise constants.AddonError('Not supported asset type used. This might be a bug!')  
         
         if asset_info.rom_default_key not in self.entity_data: return asset_info.key   
         return self.entity_data[asset_info.rom_default_key]
@@ -755,13 +753,13 @@ class ROMSet(MetaDataItemABC):
     # Get a list of assets with duplicated paths. Refuse to do anything if duplicated paths found.
     #
     def get_duplicated_asset_dirs(self):
-        duplicated_bool_list   = [False] * len(ROM_ASSET_ID_LIST)
+        duplicated_bool_list   = [False] * len(constants.ROM_ASSET_ID_LIST)
         duplicated_name_list   = []
 
         # >> Check for duplicated asset paths
-        for i, asset_i in enumerate(ROM_ASSET_ID_LIST[:-1]):
+        for i, asset_i in enumerate(constants.ROM_ASSET_ID_LIST[:-1]):
             A_i = g_assetFactory.get_asset_info(asset_i)
-            for j, asset_j in enumerate(ROM_ASSET_ID_LIST[i+1:]):
+            for j, asset_j in enumerate(constants.ROM_ASSET_ID_LIST[i+1:]):
                 A_j = g_assetFactory.get_asset_info(asset_j)
                 # >> Exclude unconfigured assets (empty strings).
                 if A_i.path_key not in self.entity_data or A_j.path_key not in self.entity_data  \
@@ -912,12 +910,12 @@ class ROMSet(MetaDataItemABC):
         str_list.append(text.XML_line('rating', self.get_rating()))
         str_list.append(text.XML_line('plot', self.get_plot()))
         #str_list.append(text.XML_line('Asset_Prefix', self.get_custom_attribute('Asset_Prefix')))
-        str_list.append(text.XML_line('s_icon', self.get_asset_str(asset_id=ASSET_ICON_ID)))
-        str_list.append(text.XML_line('s_fanart', self.get_asset_str(asset_id=ASSET_FANART_ID)))
-        str_list.append(text.XML_line('s_banner', self.get_asset_str(asset_id=ASSET_BANNER_ID)))
-        str_list.append(text.XML_line('s_poster', self.get_asset_str(asset_id=ASSET_POSTER_ID)))
-        str_list.append(text.XML_line('s_controller', self.get_asset_str(asset_id=ASSET_CONTROLLER_ID)))
-        str_list.append(text.XML_line('s_clearlogo', self.get_asset_str(asset_id=ASSET_CLEARLOGO_ID)))
+        str_list.append(text.XML_line('s_icon', self.get_asset_str(asset_id=constants.ASSET_ICON_ID)))
+        str_list.append(text.XML_line('s_fanart', self.get_asset_str(asset_id=constants.ASSET_FANART_ID)))
+        str_list.append(text.XML_line('s_banner', self.get_asset_str(asset_id=constants.ASSET_BANNER_ID)))
+        str_list.append(text.XML_line('s_poster', self.get_asset_str(asset_id=constants.ASSET_POSTER_ID)))
+        str_list.append(text.XML_line('s_controller', self.get_asset_str(asset_id=constants.ASSET_CONTROLLER_ID)))
+        str_list.append(text.XML_line('s_clearlogo', self.get_asset_str(asset_id=constants.ASSET_CLEARLOGO_ID)))
         str_list.append(text.XML_line('s_trailer', self.get_trailer()))
         str_list.append('</romset>\n')
         str_list.append('</advanced_emulator_launcher_configuration>\n')
@@ -1034,7 +1032,7 @@ class ROM(MetaDataItemABC):
         self.entity_data['launch_count'] = launch_count
 
     def get_box_sizing(self):
-        return self.entity_data['box_size'] if 'box_size' in self.entity_data else BOX_SIZE_POSTER
+        return self.entity_data['box_size'] if 'box_size' in self.entity_data else constants.BOX_SIZE_POSTER
     
     def set_box_sizing(self, box_size):
         self.entity_data['box_size'] = box_size
@@ -1102,13 +1100,13 @@ class ROM(MetaDataItemABC):
 
         return favourite
         
-    def get_assets_kind(self): return KIND_ASSET_ROM
+    def get_assets_kind(self): return constants.KIND_ASSET_ROM
 	
     def get_object_name(self): return "ROM"
     
-    def get_asset_ids_list(self): return ROM_ASSET_ID_LIST
+    def get_asset_ids_list(self): return constants.ROM_ASSET_ID_LIST
     
-    def get_mappable_asset_ids_list(self): return MAPPABLE_ROM_ASSET_ID_LIST
+    def get_mappable_asset_ids_list(self): return constants.MAPPABLE_ROM_ASSET_ID_LIST
     
     def get_default_icon(self) -> str: return 'DefaultProgram.png' 
     
@@ -1214,18 +1212,18 @@ class RomDatFileScanner(object):
         if __debug_progress_dialogs: time.sleep(0.5)
 
         # --- Check if DAT file exists ---
-        nointro_xml_file_io.FileName = launcher.get_nointro_xml_filepath()
-        if not nointro_xml_file_io.FileName.exists():
-            logger.warning('_roms_update_NoIntro_status() Not found {0}'.format(nointro_xml_file_io.FileName.getPath()))
+        nointro_xml_file:io.FileName = launcher.get_nointro_xml_filepath()
+        if not nointro_xml_file.exists():
+            logger.warning('_roms_update_NoIntro_status() Not found {0}'.format(nointro_xml_file.getPath()))
             return False
         
         self._updateProgress(0, 'Loading No-Intro/Redump XML DAT file ...')
-        roms_nointro = audit_load_NoIntro_XML_file(nointro_xml_file_io.FileName)
+        roms_nointro = audit_load_NoIntro_XML_file(nointro_xml_file)
         self._updateProgress(100)
 
         if __debug_progress_dialogs: time.sleep(0.5)
         if not roms_nointro:
-            logger.warning('_roms_update_NoIntro_status() Error loading {0}'.format(nointro_xml_file_io.FileName.getPath()))
+            logger.warning('_roms_update_NoIntro_status() Error loading {0}'.format(nointro_xml_file.getPath()))
             return False
 
         # --- Remove BIOSes from No-Intro ROMs ---
@@ -1270,11 +1268,11 @@ class RomDatFileScanner(object):
         for rom in roms:
             ROM_FileName = rom.get_file()
             if ROM_FileName.getBaseNoExt() in roms_nointro_set:
-                rom.set_nointro_status(NOINTRO_STATUS_HAVE)
+                rom.set_nointro_status(constants.NOINTRO_STATUS_HAVE)
                 audit_have += 1
                 logger.debug('_roms_update_NoIntro_status() HAVE    "{0}"'.format(ROM_FileName.getBaseNoExt()))
             else:
-                rom.set_nointro_status(NOINTRO_STATUS_UNKNOWN)
+                rom.set_nointro_status(constants.NOINTRO_STATUS_UNKNOWN)
                 audit_unknown += 1
                 logger.debug('_roms_update_NoIntro_status() UNKNOWN "{0}"'.format(ROM_FileName.getBaseNoExt()))
             item_counter += 1
@@ -1289,7 +1287,7 @@ class RomDatFileScanner(object):
         for rom in roms:
             ROM_FileName = rom.get_file()
             if not ROM_FileName.exists():
-                rom.set_nointro_status(NOINTRO_STATUS_MISS)
+                rom.set_nointro_status(constants.NOINTRO_STATUS_MISS)
                 audit_miss += 1
                 logger.debug('_roms_update_NoIntro_status() MISSING "{0}"'.format(ROM_FileName.getBaseNoExt()))
             item_counter += 1
@@ -1312,7 +1310,7 @@ class RomDatFileScanner(object):
                 rom = ROM()
                 rom.set_file(ROMPath.pjoin(nointro_rom + '.nointro'))
                 rom.set_name(nointro_rom)
-                rom.set_nointro_status(NOINTRO_STATUS_MISS)
+                rom.set_nointro_status(constants.NOINTRO_STATUS_MISS)
                 roms.append(rom)
                 audit_miss += 1
                 logger.debug('_roms_update_NoIntro_status() ADDED   "{0}"'.format(rom.get_name()))
@@ -1916,7 +1914,7 @@ class AssetInfoFactory(object):
     # todo: use 1 type of identifier not number constants and name strings ('s_icon')
     def get_asset_info_by_namekey(self, name_key):
         if name_key == '': return None
-        kind = ASSET_KEYS_TO_CONSTANTS[name_key]
+        kind = constants.ASSET_KEYS_TO_CONSTANTS[name_key]
 
         return self.get_asset_info(kind)
     #
@@ -1961,21 +1959,21 @@ class AssetInfoFactory(object):
     def assets_get_path_noext_SUFIX(self, asset_ID, AssetPath, asset_base_noext, objectID = '000'):
         objectID_str = '_' + objectID[0:3]
 
-        if   asset_ID == ASSET_ICON_ID:       asset_path_noext_FN = AssetPath.pjoin(asset_base_noext + objectID_str + '_icon')
-        elif asset_ID == ASSET_FANART_ID:     asset_path_noext_FN = AssetPath.pjoin(asset_base_noext + objectID_str + '_fanart')
-        elif asset_ID == ASSET_BANNER_ID:     asset_path_noext_FN = AssetPath.pjoin(asset_base_noext + objectID_str + '_banner')
-        elif asset_ID == ASSET_POSTER_ID:     asset_path_noext_FN = AssetPath.pjoin(asset_base_noext + objectID_str + '_poster')
-        elif asset_ID == ASSET_CLEARLOGO_ID:  asset_path_noext_FN = AssetPath.pjoin(asset_base_noext + objectID_str + '_clearlogo')
-        elif asset_ID == ASSET_CONTROLLER_ID: asset_path_noext_FN = AssetPath.pjoin(asset_base_noext + objectID_str + '_controller')
-        elif asset_ID == ASSET_TRAILER_ID:    asset_path_noext_FN = AssetPath.pjoin(asset_base_noext + objectID_str + '_trailer')
-        elif asset_ID == ASSET_TITLE_ID:      asset_path_noext_FN = AssetPath.pjoin(asset_base_noext + objectID_str + '_title')
-        elif asset_ID == ASSET_SNAP_ID:       asset_path_noext_FN = AssetPath.pjoin(asset_base_noext + objectID_str + '_snap')
-        elif asset_ID == ASSET_BOXFRONT_ID:   asset_path_noext_FN = AssetPath.pjoin(asset_base_noext + objectID_str + '_boxfront')
-        elif asset_ID == ASSET_BOXBACK_ID:    asset_path_noext_FN = AssetPath.pjoin(asset_base_noext + objectID_str + '_boxback')
-        elif asset_ID == ASSET_CARTRIDGE_ID:  asset_path_noext_FN = AssetPath.pjoin(asset_base_noext + objectID_str + '_cartridge')
-        elif asset_ID == ASSET_FLYER_ID:      asset_path_noext_FN = AssetPath.pjoin(asset_base_noext + objectID_str + '_flyer')
-        elif asset_ID == ASSET_MAP_ID:        asset_path_noext_FN = AssetPath.pjoin(asset_base_noext + objectID_str + '_map')
-        elif asset_ID == ASSET_MANUAL_ID:     asset_path_noext_FN = AssetPath.pjoin(asset_base_noext + objectID_str + '_manual')
+        if   asset_ID == constants.ASSET_ICON_ID:       asset_path_noext_FN = AssetPath.pjoin(asset_base_noext + objectID_str + '_icon')
+        elif asset_ID == constants.ASSET_FANART_ID:     asset_path_noext_FN = AssetPath.pjoin(asset_base_noext + objectID_str + '_fanart')
+        elif asset_ID == constants.ASSET_BANNER_ID:     asset_path_noext_FN = AssetPath.pjoin(asset_base_noext + objectID_str + '_banner')
+        elif asset_ID == constants.ASSET_POSTER_ID:     asset_path_noext_FN = AssetPath.pjoin(asset_base_noext + objectID_str + '_poster')
+        elif asset_ID == constants.ASSET_CLEARLOGO_ID:  asset_path_noext_FN = AssetPath.pjoin(asset_base_noext + objectID_str + '_clearlogo')
+        elif asset_ID == constants.ASSET_CONTROLLER_ID: asset_path_noext_FN = AssetPath.pjoin(asset_base_noext + objectID_str + '_controller')
+        elif asset_ID == constants.ASSET_TRAILER_ID:    asset_path_noext_FN = AssetPath.pjoin(asset_base_noext + objectID_str + '_trailer')
+        elif asset_ID == constants.ASSET_TITLE_ID:      asset_path_noext_FN = AssetPath.pjoin(asset_base_noext + objectID_str + '_title')
+        elif asset_ID == constants.ASSET_SNAP_ID:       asset_path_noext_FN = AssetPath.pjoin(asset_base_noext + objectID_str + '_snap')
+        elif asset_ID == constants.ASSET_BOXFRONT_ID:   asset_path_noext_FN = AssetPath.pjoin(asset_base_noext + objectID_str + '_boxfront')
+        elif asset_ID == constants.ASSET_BOXBACK_ID:    asset_path_noext_FN = AssetPath.pjoin(asset_base_noext + objectID_str + '_boxback')
+        elif asset_ID == constants.ASSET_CARTRIDGE_ID:  asset_path_noext_FN = AssetPath.pjoin(asset_base_noext + objectID_str + '_cartridge')
+        elif asset_ID == constants.ASSET_FLYER_ID:      asset_path_noext_FN = AssetPath.pjoin(asset_base_noext + objectID_str + '_flyer')
+        elif asset_ID == constants.ASSET_MAP_ID:        asset_path_noext_FN = AssetPath.pjoin(asset_base_noext + objectID_str + '_map')
+        elif asset_ID == constants.ASSET_MANUAL_ID:     asset_path_noext_FN = AssetPath.pjoin(asset_base_noext + objectID_str + '_manual')
         else:
             asset_path_noext_FN = io.FileName('')
             logger.error('assets_get_path_noext_SUFIX() Wrong asset_ID = {0}'.format(asset_ID))
@@ -1988,8 +1986,8 @@ class AssetInfoFactory(object):
     #
     def assets_search_local_assets(self, launcher, ROMFile, enabled_ROM_asset_list):
         logger.debug('assets_search_local_assets() Searching for ROM local assets...')
-        local_asset_list = [''] * len(ROM_ASSET_ID_LIST)
-        for i, asset_kind in enumerate(ROM_ASSET_ID_LIST):
+        local_asset_list = [''] * len(constants.ROM_ASSET_ID_LIST)
+        for i, asset_kind in enumerate(constants.ROM_ASSET_ID_LIST):
             AInfo = g_assetFactory.get_asset_info(asset_kind)
             if not enabled_ROM_asset_list[i]:
                 logger.debug('assets_search_local_assets() Disabled {0:<9}'.format(AInfo.name))
@@ -2013,11 +2011,11 @@ class AssetInfoFactory(object):
     #
     def assets_get_ROM_asset_path(self, launcher):
         ROM_asset_path = ''
-        duplicated_bool_list = [False] * len(ROM_ASSET_ID_LIST)
-        AInfo_first = g_assetFactory.get_asset_info(ROM_ASSET_ID_LIST[0])
+        duplicated_bool_list = [False] * len(constants.ROM_ASSET_ID_LIST)
+        AInfo_first = g_assetFactory.get_asset_info(constants.ROM_ASSET_ID_LIST[0])
         path_first_asset_FN = io.FileName(launcher[AInfo_first.path_key])
         logger.debug('assets_get_ROM_asset_path() path_first_asset "{0}"'.format(path_first_asset_FN.getPath()))
-        for i, asset_kind in enumerate(ROM_ASSET_ID_LIST):
+        for i, asset_kind in enumerate(constants.ROM_ASSET_ID_LIST):
             AInfo = g_assetFactory.get_asset_info(asset_kind)
             current_path_FN = io.FileName(launcher[AInfo.path_key])
             if current_path_FN.getDir() == path_first_asset_FN.getDir():
@@ -2098,7 +2096,7 @@ class AssetInfoFactory(object):
                 
         # >> These are used very frequently so I think it is better to have a cached list.
         a = AssetInfo()
-        a.id                            = ASSET_ICON_ID
+        a.id                            = constants.ASSET_ICON_ID
         a.key                           = 's_icon'
         a.default_key                   = 'default_icon'
         a.rom_default_key               = 'roms_default_icon'
@@ -2106,14 +2104,14 @@ class AssetInfoFactory(object):
         a.name_plural                   = 'Icons'
         a.fname_infix                   = 'icon'
         a.kind_str                      = 'image'
-        a.exts                          = self.asset_get_filesearch_extension_list(IMAGE_EXTENSION_LIST)
-        a.exts_dialog                   = self.asset_get_dialog_extension_list(IMAGE_EXTENSION_LIST)
+        a.exts                          = self.asset_get_filesearch_extension_list(constants.IMAGE_EXTENSION_LIST)
+        a.exts_dialog                   = self.asset_get_dialog_extension_list(constants.IMAGE_EXTENSION_LIST)
         a.path_key                      = 'path_icon'        
         self.ASSET_INFO_ID_DICT[a.id]   = a
         self.ASSET_INFO_KEY_DICT[a.key] = a
 
         a = AssetInfo()
-        a.id                            = ASSET_FANART_ID
+        a.id                            = constants.ASSET_FANART_ID
         a.key                           = 's_fanart'
         a.default_key                   = 'default_fanart'
         a.rom_default_key               = 'roms_default_fanart'
@@ -2121,14 +2119,14 @@ class AssetInfoFactory(object):
         a.plural                        = 'Fanarts'
         a.fname_infix                   = 'fanart'
         a.kind_str                      = 'image'
-        a.exts                          = self.asset_get_filesearch_extension_list(IMAGE_EXTENSION_LIST)
-        a.exts_dialog                   = self.asset_get_dialog_extension_list(IMAGE_EXTENSION_LIST)
+        a.exts                          = self.asset_get_filesearch_extension_list(constants.IMAGE_EXTENSION_LIST)
+        a.exts_dialog                   = self.asset_get_dialog_extension_list(constants.IMAGE_EXTENSION_LIST)
         a.path_key                      = 'path_fanart'
         self.ASSET_INFO_ID_DICT[a.id]   = a
         self.ASSET_INFO_KEY_DICT[a.key] = a
 
         a = AssetInfo()
-        a.id                            = ASSET_BANNER_ID
+        a.id                            = constants.ASSET_BANNER_ID
         a.key                           = 's_banner'
         a.default_key                   = 'default_banner'
         a.rom_default_key               = 'roms_default_banner'
@@ -2137,14 +2135,14 @@ class AssetInfoFactory(object):
         a.plural                        = 'Banners'
         a.fname_infix                   = 'banner'
         a.kind_str                      = 'image'
-        a.exts                          = self.asset_get_filesearch_extension_list(IMAGE_EXTENSION_LIST)
-        a.exts_dialog                   = self.asset_get_dialog_extension_list(IMAGE_EXTENSION_LIST)
+        a.exts                          = self.asset_get_filesearch_extension_list(constants.IMAGE_EXTENSION_LIST)
+        a.exts_dialog                   = self.asset_get_dialog_extension_list(constants.IMAGE_EXTENSION_LIST)
         a.path_key                      = 'path_banner'
         self.ASSET_INFO_ID_DICT[a.id]   = a
         self.ASSET_INFO_KEY_DICT[a.key] = a
 
         a = AssetInfo()        
-        a.id                            = ASSET_POSTER_ID
+        a.id                            = constants.ASSET_POSTER_ID
         a.key                           = 's_poster'
         a.default_key                   = 'default_poster'
         a.rom_default_key               = 'roms_default_poster'
@@ -2152,14 +2150,14 @@ class AssetInfoFactory(object):
         a.plural                        = 'Posters'
         a.fname_infix                   = 'poster'
         a.kind_str                      = 'image'
-        a.exts                          = self.asset_get_filesearch_extension_list(IMAGE_EXTENSION_LIST)
-        a.exts_dialog                   = self.asset_get_dialog_extension_list(IMAGE_EXTENSION_LIST)
+        a.exts                          = self.asset_get_filesearch_extension_list(constants.IMAGE_EXTENSION_LIST)
+        a.exts_dialog                   = self.asset_get_dialog_extension_list(constants.IMAGE_EXTENSION_LIST)
         a.path_key                      = 'path_poster'
         self.ASSET_INFO_ID_DICT[a.id]   = a
         self.ASSET_INFO_KEY_DICT[a.key] = a
 
         a = AssetInfo()
-        a.id                            = ASSET_CLEARLOGO_ID
+        a.id                            = constants.ASSET_CLEARLOGO_ID
         a.key                           = 's_clearlogo'
         a.default_key                   = 'default_clearlogo'
         a.rom_default_key               = 'roms_default_clearlogo'
@@ -2167,41 +2165,41 @@ class AssetInfoFactory(object):
         a.plural                        = 'Clearlogos'
         a.fname_infix                   = 'clearlogo'
         a.kind_str                      = 'image'
-        a.exts                          = self.asset_get_filesearch_extension_list(IMAGE_EXTENSION_LIST)
-        a.exts_dialog                   = self.asset_get_dialog_extension_list(IMAGE_EXTENSION_LIST)
+        a.exts                          = self.asset_get_filesearch_extension_list(constants.IMAGE_EXTENSION_LIST)
+        a.exts_dialog                   = self.asset_get_dialog_extension_list(constants.IMAGE_EXTENSION_LIST)
         a.path_key                      = 'path_clearlogo'
         self.ASSET_INFO_ID_DICT[a.id]   = a
         self.ASSET_INFO_KEY_DICT[a.key] = a
 
         a = AssetInfo()
-        a.id                            = ASSET_CONTROLLER_ID
+        a.id                            = constants.ASSET_CONTROLLER_ID
         a.key                           = 's_controller'
         a.default_key                   = 'default_controller'
         a.name                          = 'Controller'
         a.plural                        = 'Controllers'
         a.fname_infix                   = 'controller'
         a.kind_str                      = 'image'
-        a.exts                          = self.asset_get_filesearch_extension_list(IMAGE_EXTENSION_LIST)
-        a.exts_dialog                   = self.asset_get_dialog_extension_list(IMAGE_EXTENSION_LIST)
+        a.exts                          = self.asset_get_filesearch_extension_list(constants.IMAGE_EXTENSION_LIST)
+        a.exts_dialog                   = self.asset_get_dialog_extension_list(constants.IMAGE_EXTENSION_LIST)
         a.path_key                      = 'path_controller'
         self.ASSET_INFO_ID_DICT[a.id]   = a
         self.ASSET_INFO_KEY_DICT[a.key] = a
 
         a = AssetInfo()
-        a.id                            = ASSET_TRAILER_ID
+        a.id                            = constants.ASSET_TRAILER_ID
         a.key                           = 's_trailer'
         a.name                          = 'Trailer'
         a.plural                        = 'Trailers'
         a.fname_infix                   = 'trailer'
         a.kind_str                      = 'video'
-        a.exts                          = self.asset_get_filesearch_extension_list(TRAILER_EXTENSION_LIST)
-        a.exts_dialog                   = self.asset_get_dialog_extension_list(TRAILER_EXTENSION_LIST)
+        a.exts                          = self.asset_get_filesearch_extension_list(constants.TRAILER_EXTENSION_LIST)
+        a.exts_dialog                   = self.asset_get_dialog_extension_list(constants.TRAILER_EXTENSION_LIST)
         a.path_key                      = 'path_trailer'
         self.ASSET_INFO_ID_DICT[a.id]   = a
         self.ASSET_INFO_KEY_DICT[a.key] = a
 
         a = AssetInfo()
-        a.id                            = ASSET_TITLE_ID
+        a.id                            = constants.ASSET_TITLE_ID
         a.key                           = 's_title'
         a.default_key                   = 'default_title'
         a.rom_default_key               = 'roms_default_title'
@@ -2209,180 +2207,118 @@ class AssetInfoFactory(object):
         a.plural                        = 'Titles'
         a.fname_infix                   = 'title'
         a.kind_str                      = 'image'
-        a.exts                          = self.asset_get_filesearch_extension_list(IMAGE_EXTENSION_LIST)
-        a.exts_dialog                   = self.asset_get_dialog_extension_list(IMAGE_EXTENSION_LIST)
+        a.exts                          = self.asset_get_filesearch_extension_list(constants.IMAGE_EXTENSION_LIST)
+        a.exts_dialog                   = self.asset_get_dialog_extension_list(constants.IMAGE_EXTENSION_LIST)
         a.path_key                      = 'path_title'
         self.ASSET_INFO_ID_DICT[a.id]   = a
         self.ASSET_INFO_KEY_DICT[a.key] = a
 
         a = AssetInfo()
-        a.id                            = ASSET_SNAP_ID
+        a.id                            = constants.ASSET_SNAP_ID
         a.key                           = 's_snap'
         a.name                          = 'Snap'
         a.plural                        = 'Snaps'
         a.fname_infix                   = 'snap'
         a.kind_str                      = 'image'
-        a.exts                          = self.asset_get_filesearch_extension_list(IMAGE_EXTENSION_LIST)
-        a.exts_dialog                   = self.asset_get_dialog_extension_list(IMAGE_EXTENSION_LIST)
+        a.exts                          = self.asset_get_filesearch_extension_list(constants.IMAGE_EXTENSION_LIST)
+        a.exts_dialog                   = self.asset_get_dialog_extension_list(constants.IMAGE_EXTENSION_LIST)
         a.path_key                      = 'path_snap'
         self.ASSET_INFO_ID_DICT[a.id]   = a
         self.ASSET_INFO_KEY_DICT[a.key] = a
 
         a = AssetInfo()
-        a.id                            = ASSET_BOXFRONT_ID
+        a.id                            = constants.ASSET_BOXFRONT_ID
         a.key                           = 's_boxfront'
         a.name                          = 'Boxfront'
         a.description                   = 'Boxfront / Cabinet'
         a.plural                        = 'Boxfronts'
         a.fname_infix                   = 'boxfront'
         a.kind_str                      = 'image'
-        a.exts                          = self.asset_get_filesearch_extension_list(IMAGE_EXTENSION_LIST)
-        a.exts_dialog                   = self.asset_get_dialog_extension_list(IMAGE_EXTENSION_LIST)
+        a.exts                          = self.asset_get_filesearch_extension_list(constants.IMAGE_EXTENSION_LIST)
+        a.exts_dialog                   = self.asset_get_dialog_extension_list(constants.IMAGE_EXTENSION_LIST)
         a.path_key                      = 'path_boxfront'
         self.ASSET_INFO_ID_DICT[a.id]   = a
         self.ASSET_INFO_KEY_DICT[a.key] = a
 
         a = AssetInfo()
-        a.id                            = ASSET_BOXBACK_ID
+        a.id                            = constants.ASSET_BOXBACK_ID
         a.key                           = 's_boxback'
         a.name                          = 'Boxback'
         a.description                   = 'Boxback / CPanel'
         a.plural                        = 'Boxbacks'
         a.fname_infix                   = 'boxback'
         a.kind_str                      = 'image'
-        a.exts                          = self.asset_get_filesearch_extension_list(IMAGE_EXTENSION_LIST)
-        a.exts_dialog                   = self.asset_get_dialog_extension_list(IMAGE_EXTENSION_LIST)
+        a.exts                          = self.asset_get_filesearch_extension_list(constants.IMAGE_EXTENSION_LIST)
+        a.exts_dialog                   = self.asset_get_dialog_extension_list(constants.IMAGE_EXTENSION_LIST)
         a.path_key                      = 'path_boxback'
         self.ASSET_INFO_ID_DICT[a.id]   = a
         self.ASSET_INFO_KEY_DICT[a.key] = a
 
         a = AssetInfo()
-        a.id                            = ASSET_CARTRIDGE_ID
+        a.id                            = constants.ASSET_CARTRIDGE_ID
         a.key                           = 's_cartridge'
         a.name                          = 'Cartridge'
         a.description                   = 'Cartridge / PCB'
         a.plural                        = 'Cartridges'
         a.fname_infix                   = 'cartridge'
         a.kind_str                      = 'image'
-        a.exts                          = self.asset_get_filesearch_extension_list(IMAGE_EXTENSION_LIST)
-        a.exts_dialog                   = self.asset_get_dialog_extension_list(IMAGE_EXTENSION_LIST)
+        a.exts                          = self.asset_get_filesearch_extension_list(constants.IMAGE_EXTENSION_LIST)
+        a.exts_dialog                   = self.asset_get_dialog_extension_list(constants.IMAGE_EXTENSION_LIST)
         a.path_key                      = 'path_cartridge'
         self.ASSET_INFO_ID_DICT[a.id]   = a
         self.ASSET_INFO_KEY_DICT[a.key] = a
 
         a = AssetInfo()
-        a.id                            = ASSET_FLYER_ID
+        a.id                            = constants.ASSET_FLYER_ID
         a.key                           = 's_flyer'
         a.name                          = 'Flyer'
         a.plural                        = 'Flyers'
         a.fname_infix                   = 'flyer'
         a.kind_str                      = 'image'
         a.fname_infix                   = 'poster'
-        a.exts                          = self.asset_get_filesearch_extension_list(IMAGE_EXTENSION_LIST)
-        a.exts_dialog                   = self.asset_get_dialog_extension_list(IMAGE_EXTENSION_LIST)
+        a.exts                          = self.asset_get_filesearch_extension_list(constants.IMAGE_EXTENSION_LIST)
+        a.exts_dialog                   = self.asset_get_dialog_extension_list(constants.IMAGE_EXTENSION_LIST)
         a.path_key                      = 'path_flyer'
         self.ASSET_INFO_ID_DICT[a.id]   = a
         self.ASSET_INFO_KEY_DICT[a.key] = a
 
         a = AssetInfo()
-        a.id                            = ASSET_MAP_ID
+        a.id                            = constants.ASSET_MAP_ID
         a.key                           = 's_map'
         a.name                          = 'Map'
         a.plural                        = 'Maps'
         a.fname_infix                   = 'map'
         a.kind_str                      = 'image'
-        a.exts                          = self.asset_get_filesearch_extension_list(IMAGE_EXTENSION_LIST)
-        a.exts_dialog                   = self.asset_get_dialog_extension_list(IMAGE_EXTENSION_LIST)
+        a.exts                          = self.asset_get_filesearch_extension_list(constants.IMAGE_EXTENSION_LIST)
+        a.exts_dialog                   = self.asset_get_dialog_extension_list(constants.IMAGE_EXTENSION_LIST)
         a.path_key                      = 'path_map'
         self.ASSET_INFO_ID_DICT[a.id]   = a
         self.ASSET_INFO_KEY_DICT[a.key] = a
 
         a = AssetInfo()
-        a.id                            = ASSET_MANUAL_ID
+        a.id                            = constants.ASSET_MANUAL_ID
         a.key                           = 's_manual'
         a.name                          = 'Manual'
         a.plural                        = 'Manuals'
         a.fname_infix                   = 'manual'
         a.kind_str                      = 'manual'
-        a.exts                          = self.asset_get_filesearch_extension_list(MANUAL_EXTENSION_LIST)
-        a.exts_dialog                   = self.asset_get_dialog_extension_list(MANUAL_EXTENSION_LIST)
+        a.exts                          = self.asset_get_filesearch_extension_list(constants.MANUAL_EXTENSION_LIST)
+        a.exts_dialog                   = self.asset_get_dialog_extension_list(constants.MANUAL_EXTENSION_LIST)
         a.path_key                      = 'path_manual'
         self.ASSET_INFO_ID_DICT[a.id]   = a
         self.ASSET_INFO_KEY_DICT[a.key] = a
 
         a = AssetInfo()
-        a.id                            = ASSET_3DBOX_ID
+        a.id                            = constants.ASSET_3DBOX_ID
         a.key                           = 's_3dbox'
         a.name                          = '3D Box'
         a.fname_infix                   = '3dbox'
         a.kind_str                      = 'image'
-        a.exts                          = self.asset_get_filesearch_extension_list(IMAGE_EXTENSION_LIST)
-        a.exts_dialog                   = self.asset_get_dialog_extension_list(IMAGE_EXTENSION_LIST)
+        a.exts                          = self.asset_get_filesearch_extension_list(constants.IMAGE_EXTENSION_LIST)
+        a.exts_dialog                   = self.asset_get_dialog_extension_list(constants.IMAGE_EXTENSION_LIST)
         a.path_key                      = 'path_3dbox'
         self.ASSET_INFO_ID_DICT[a.id]   = a
         self.ASSET_INFO_KEY_DICT[a.key] = a
 
 # --- Global object to get asset info ---
 g_assetFactory = AssetInfoFactory()
-
-class MultiDiscInfo:
-    def __init__(self, ROM_FN: io.FileName):
-        self.ROM_FN      = ROM_FN
-        self.isMultiDisc = False
-        self.setName     = ''
-        self.discName    = ROM_FN.getBase()
-        self.extension   = ROM_FN.getExt()
-        self.order       = 0
-
-    @staticmethod
-    def get_multidisc_info(ROM_FN: io.FileName) -> MultiDiscInfo:
-        MDSet = MultiDiscInfo(ROM_FN)
-        
-        # --- Parse ROM base_noext into tokens ---
-        tokens = text.get_ROM_basename_tokens(ROM_FN.getBaseNoExt())
-
-        # --- Check if ROM belongs to a multidisc set and get set name and order ---
-        # Algortihm:
-        # 1) Iterate list of tokens
-        # 2) If a token marks a multidisk ROM extract set order
-        # 3) Define the set basename by removing the multidisk token
-        MultDiscFound = False
-        for index, token in enumerate(tokens):
-            # --- Redump ---
-            matchObj = re.match(r'\(Dis[ck] ([0-9]+)\)', token)
-            if matchObj:
-                logger.debug('get_multidisc_info() ### Matched Redump multidisc ROM ###')
-                tokens_idx = list(range(0, len(tokens)))
-                tokens_idx.remove(index)
-                tokens_nodisc_idx = list(tokens_idx)
-                tokens_mdisc = [tokens[x] for x in tokens_nodisc_idx]
-                MultDiscFound = True
-                break
-
-            # --- TOSEC/Trurip ---
-            matchObj = re.match(r'\(Dis[ck] ([0-9]+) of ([0-9]+)\)', token)
-            if matchObj:
-                logger.debug('get_multidisc_info() ### Matched TOSEC/Trurip multidisc ROM ###')
-                tokens_idx = list(range(0, len(tokens)))
-                tokens_idx.remove(index)
-                tokens_nodisc_idx = list(tokens_idx)
-                # logger.debug('text_get_multidisc_info() tokens_idx         = {0}'.format(tokens_idx))
-                # logger.debug('text_get_multidisc_info() index              = {0}'.format(index))
-                # logger.debug('text_get_multidisc_info() tokens_nodisc_idx  = {0}'.format(tokens_nodisc_idx))
-                tokens_mdisc = [tokens[x] for x in tokens_nodisc_idx]
-                MultDiscFound = True
-                break
-
-        if MultDiscFound:
-            MDSet.isMultiDisc = True
-            MDSet.setName = ' '.join(tokens_mdisc) + MDSet.extension
-            MDSet.order = int(matchObj.group(1))
-            logger.debug('get_multidisc_info() base_noext   "{0}"'.format(ROM_FN.getBaseNoExt()))
-            logger.debug('get_multidisc_info() tokens       {0}'.format(tokens))
-            logger.debug('get_multidisc_info() tokens_mdisc {0}'.format(tokens_mdisc))
-            logger.debug('get_multidisc_info() setName      "{0}"'.format(MDSet.setName))
-            logger.debug('get_multidisc_info() discName     "{0}"'.format(MDSet.discName))
-            logger.debug('get_multidisc_info() extension    "{0}"'.format(MDSet.extension))
-            logger.debug('get_multidisc_info() order        {0}'.format(MDSet.order))
-
-        return MDSet

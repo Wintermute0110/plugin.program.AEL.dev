@@ -19,9 +19,13 @@ from __future__ import division
 
 import logging
 
+from ael import constants, settings
+from ael.utils import kodi
+
 from resources.app.commands.mediator import AppMediator
-from resources.lib import globals, settings
-from resources.lib.repositories import *
+from resources.app import globals
+from resources.app.repositories import UnitOfWork, CategoryRepository, ROMSetRepository, ROMsRepository, ViewRepository
+from resources.app.domain import ROM, ROMSet, Category
 
 logger = logging.getLogger(__name__)
 
@@ -110,7 +114,7 @@ def _render_root_view(categories_repository: CategoryRepository, romsets_reposit
     root_data = {
         'id': '',
         'name': 'root',
-        'obj_type': OBJ_CATEGORY,
+        'obj_type': constants.OBJ_CATEGORY,
         'items': []
     }
     root_items = []
@@ -141,7 +145,7 @@ def _render_category_view(category_obj: Category, categories_repository: Categor
     view_data = {
         'id': category_obj.get_id(),
         'name': category_obj.get_name(),
-        'obj_type': OBJ_CATEGORY,
+        'obj_type': constants.OBJ_CATEGORY,
         'items': []
     }
     view_items = []
@@ -168,7 +172,7 @@ def _render_romset_view(romset_obj: ROMSet, roms_repository: ROMsRepository, vie
     view_data = {
         'id': romset_obj.get_id(),
         'name': romset_obj.get_name(),
-        'obj_type': OBJ_ROMSET,
+        'obj_type': constants.OBJ_ROMSET,
         'items': []
     }
     view_items = []
@@ -202,8 +206,8 @@ def _render_category_listitem(category_obj: Category):
         },
         'art': assets,
         'properties': { 
-            AEL_CONTENT_LABEL: AEL_CONTENT_VALUE_CATEGORY,
-            'obj_type': OBJ_CATEGORY,
+            constants.AEL_CONTENT_LABEL: constants.AEL_CONTENT_VALUE_CATEGORY,
+            'obj_type': constants.OBJ_CATEGORY,
             'num_romsets': category_obj.num_romsets() 
         }
     }
@@ -230,10 +234,10 @@ def _render_romset_listitem(romset_obj: ROMSet):
         },
         'art': assets,
         'properties': { 
-            AEL_CONTENT_LABEL: AEL_CONTENT_VALUE_LAUNCHERS,
+            constants.AEL_CONTENT_LABEL: constants.AEL_CONTENT_VALUE_LAUNCHERS,
             'platform': romset_obj.get_platform(),
             'boxsize': romset_obj.get_box_sizing(),
-            'obj_type': OBJ_ROMSET
+            'obj_type': constants.OBJ_ROMSET
         }
     }
 
@@ -246,36 +250,36 @@ def _render_rom_listitem(rom_obj: ROM, romset_obj: ROMSet):
     assets = rom_obj.get_view_assets()
 
     # --- Default values for flags ---
-    AEL_InFav_bool_value     = AEL_INFAV_BOOL_VALUE_FALSE
-    AEL_MultiDisc_bool_value = AEL_MULTIDISC_BOOL_VALUE_FALSE
-    AEL_Fav_stat_value       = AEL_FAV_STAT_VALUE_NONE
-    AEL_NoIntro_stat_value   = AEL_NOINTRO_STAT_VALUE_NONE
-    AEL_PClone_stat_value    = AEL_PCLONE_STAT_VALUE_NONE
+    AEL_InFav_bool_value     = constants.AEL_INFAV_BOOL_VALUE_FALSE
+    AEL_MultiDisc_bool_value = constants.AEL_MULTIDISC_BOOL_VALUE_FALSE
+    AEL_Fav_stat_value       = constants.AEL_FAV_STAT_VALUE_NONE
+    AEL_NoIntro_stat_value   = constants.AEL_NOINTRO_STAT_VALUE_NONE
+    AEL_PClone_stat_value    = constants.AEL_PCLONE_STAT_VALUE_NONE
 
     fav_status      = rom_obj.get_favourite_status()
-    if   fav_status == 'OK':                AEL_Fav_stat_value = AEL_FAV_STAT_VALUE_OK
-    elif fav_status == 'Unlinked ROM':      AEL_Fav_stat_value = AEL_FAV_STAT_VALUE_UNLINKED_ROM
-    elif fav_status == 'Unlinked Launcher': AEL_Fav_stat_value = AEL_FAV_STAT_VALUE_UNLINKED_LAUNCHER
-    elif fav_status == 'Broken':            AEL_Fav_stat_value = AEL_FAV_STAT_VALUE_BROKEN
-    else:                                   AEL_Fav_stat_value = AEL_FAV_STAT_VALUE_NONE
+    if   fav_status == 'OK':                AEL_Fav_stat_value = constants.AEL_FAV_STAT_VALUE_OK
+    elif fav_status == 'Unlinked ROM':      AEL_Fav_stat_value = constants.AEL_FAV_STAT_VALUE_UNLINKED_ROM
+    elif fav_status == 'Unlinked Launcher': AEL_Fav_stat_value = constants.AEL_FAV_STAT_VALUE_UNLINKED_LAUNCHER
+    elif fav_status == 'Broken':            AEL_Fav_stat_value = constants.AEL_FAV_STAT_VALUE_BROKEN
+    else:                                   AEL_Fav_stat_value = constants.AEL_FAV_STAT_VALUE_NONE
 
     # --- NoIntro status flag ---
     nstat = rom_obj.get_nointro_status()
-    if   nstat == AUDIT_STATUS_HAVE:    AEL_NoIntro_stat_value = AEL_NOINTRO_STAT_VALUE_HAVE
-    elif nstat == AUDIT_STATUS_MISS:    AEL_NoIntro_stat_value = AEL_NOINTRO_STAT_VALUE_MISS
-    elif nstat == AUDIT_STATUS_UNKNOWN: AEL_NoIntro_stat_value = AEL_NOINTRO_STAT_VALUE_UNKNOWN
-    elif nstat == AUDIT_STATUS_NONE:    AEL_NoIntro_stat_value = AEL_NOINTRO_STAT_VALUE_NONE
+    if   nstat == constants.AUDIT_STATUS_HAVE:    AEL_NoIntro_stat_value = constants.AEL_NOINTRO_STAT_VALUE_HAVE
+    elif nstat == constants.AUDIT_STATUS_MISS:    AEL_NoIntro_stat_value = constants.AEL_NOINTRO_STAT_VALUE_MISS
+    elif nstat == constants.AUDIT_STATUS_UNKNOWN: AEL_NoIntro_stat_value = constants.AEL_NOINTRO_STAT_VALUE_UNKNOWN
+    elif nstat == constants.AUDIT_STATUS_NONE:    AEL_NoIntro_stat_value = constants.AEL_NOINTRO_STAT_VALUE_NONE
 
     # --- Mark clone ROMs ---
     pclone_status = rom_obj.get_pclone_status()
-    if   pclone_status == PCLONE_STATUS_PARENT: AEL_PClone_stat_value = AEL_PCLONE_STAT_VALUE_PARENT
-    elif pclone_status == PCLONE_STATUS_CLONE:  AEL_PClone_stat_value = AEL_PCLONE_STAT_VALUE_CLONE
+    if   pclone_status == constants.PCLONE_STATUS_PARENT: AEL_PClone_stat_value = constants.AEL_PCLONE_STAT_VALUE_PARENT
+    elif pclone_status == constants.PCLONE_STATUS_CLONE:  AEL_PClone_stat_value = constants.AEL_PCLONE_STAT_VALUE_CLONE
     
     rom_in_fav = rom_obj.is_favourite()
-    if rom_in_fav: AEL_InFav_bool_value = AEL_INFAV_BOOL_VALUE_TRUE
+    if rom_in_fav: AEL_InFav_bool_value = constants.AEL_INFAV_BOOL_VALUE_TRUE
 
      # --- Set common flags to all launchers---
-    if rom_obj.has_multiple_disks(): AEL_MultiDisc_bool_value = AEL_MULTIDISC_BOOL_VALUE_TRUE
+    if rom_obj.has_multiple_disks(): AEL_MultiDisc_bool_value = constants.AEL_MULTIDISC_BOOL_VALUE_TRUE
 
     list_name = rom_obj.get_name()
     if list_name is None or list_name == '':
@@ -300,13 +304,13 @@ def _render_rom_listitem(rom_obj: ROM, romset_obj: ROMSet):
             'nplayers': rom_obj.get_number_of_players(),
             'esrb':     rom_obj.get_esrb_rating(),
             'boxsize':  rom_obj.get_box_sizing(),
-            'obj_type': OBJ_ROM,
+            'obj_type': constants.OBJ_ROM,
             # --- ROM flags (Skins will use these flags to render icons) ---
-            AEL_CONTENT_LABEL:        AEL_CONTENT_VALUE_ROM,
-            AEL_INFAV_BOOL_LABEL:     AEL_InFav_bool_value,
-            AEL_MULTIDISC_BOOL_LABEL: AEL_MultiDisc_bool_value,
-            AEL_FAV_STAT_LABEL:       AEL_Fav_stat_value,
-            AEL_NOINTRO_STAT_LABEL:   AEL_NoIntro_stat_value,
-            AEL_PCLONE_STAT_LABEL:    AEL_PClone_stat_value
+            constants.AEL_CONTENT_LABEL:        constants.AEL_CONTENT_VALUE_ROM,
+            constants.AEL_INFAV_BOOL_LABEL:     AEL_InFav_bool_value,
+            constants.AEL_MULTIDISC_BOOL_LABEL: AEL_MultiDisc_bool_value,
+            constants.AEL_FAV_STAT_LABEL:       AEL_Fav_stat_value,
+            constants.AEL_NOINTRO_STAT_LABEL:   AEL_NoIntro_stat_value,
+            constants.AEL_PCLONE_STAT_LABEL:    AEL_PClone_stat_value
         }
     }

@@ -3,12 +3,12 @@
   <requires>
       <import addon="xbmc.python" version="3.0.0"/>
       <import addon="script.module.routing" version="0.2.3"/>
+      <import addon="script.module.ael" version="0.10.0"/>
   </requires>
   <extension point="xbmc.python.pluginsource" library="addon.py">
       <provides>game</provides>
   </extension>
   <extension point="xbmc.service" library="service.py"/>
-  <extension point="xbmc.python.module" library="resources/lib"/>
   <extension point="xbmc.addon.metadata">
     <!--
         This must be commented when releasing the addon.

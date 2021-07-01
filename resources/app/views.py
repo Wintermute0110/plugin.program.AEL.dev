@@ -33,22 +33,20 @@ from __future__ import division
 
 import sys
 import logging
+import json
 
 # --- Kodi stuff ---
 import xbmc
 import xbmcgui
 import xbmcplugin
 
-from resources.lib.globals import *
-from resources.lib.constants import *
-from resources.lib.repositories import *
-from resources.lib.settings import *
-from resources.app.viewqueries import *
+from ael import constants, settings 
+from ael.launchers import AppLauncher, ExecutionSettings, get_executor_factory
+from ael.scanners import RomFolderScanner
+from ael.utils import kodi
 
-from resources.lib.launchers import *
-from resources.lib.scanners import *
-
-from resources.lib.utils import kodi
+from resources.app import viewqueries
+from resources.app.globals import *
 
 logger = logging.getLogger(__name__)
 
@@ -77,24 +75,24 @@ def run_plugin(addon_argv):
 # -------------------------------------------------------------------------------------------------
 @router.route('/')
 def vw_route_render_root():
-    container = qry_get_root_items()
-    container_context_items = qry_container_context_menu_items(container)
+    container = viewqueries.qry_get_root_items()
+    container_context_items = viewqueries.qry_container_context_menu_items(container)
 
     render_list_items(container, container_context_items)
     xbmcplugin.endOfDirectory(handle = router.handle, succeeded = True, cacheToDisc = False)
 
 @router.route('/collection/<collection_id>')
 def vw_route_render_collection(collection_id: str):
-    container               = qry_get_collection_items(collection_id)
-    container_context_items = qry_container_context_menu_items(container)
-    container_type          = container['obj_type'] if 'obj_type' in container else OBJ_NONE
+    container               = viewqueries.qry_get_collection_items(collection_id)
+    container_context_items = viewqueries.qry_container_context_menu_items(container)
+    container_type          = container['obj_type'] if 'obj_type' in container else constants.OBJ_NONE
 
     if container is None:
         kodi.notify('Current view is not rendered correctly. Re-render views first.')
     elif len(container['items']) == 0:
-        if container_type == OBJ_CATEGORY:
+        if container_type == constants.OBJ_CATEGORY:
             kodi.notify('Category {} has no items. Add romsets or categories first.'.format(container['name']))
-        if container_type == OBJ_ROMSET:
+        if container_type == constants.OBJ_ROMSET:
             kodi.notify('ROMSet {} has no items. Add ROMs'.format(container['name']))
     else:
         render_list_items(container, container_context_items)
@@ -106,8 +104,8 @@ def vw_route_render_collection(collection_id: str):
 # -------------------------------------------------------------------------------------------------
 @router.route('/utilities')
 def vw_route_render_utilities_vlaunchers():
-    container = qry_get_utilities_items()
-    container_context_items = qry_container_context_menu_items(container)
+    container = viewqueries.qry_get_utilities_items()
+    container_context_items = viewqueries.qry_container_context_menu_items(container)
 
     render_list_items(container, container_context_items)
     xbmcplugin.endOfDirectory(handle = router.handle, succeeded = True, cacheToDisc = False)
@@ -210,8 +208,8 @@ def vw_configure_folder_scanner():
     launcher_settings = json.loads(def_launcher_settings) if def_launcher_settings else None
     
     scanner = RomFolderScanner(
-        globals.g_PATHS.REPORTS_DIR, 
-        globals.g_PATHS.ADDON_DATA_DIR,
+        g_PATHS.REPORTS_DIR, 
+        g_PATHS.ADDON_DATA_DIR,
         scanner_settings,
         launcher_settings,
         kodi.ProgressDialog())
@@ -233,8 +231,8 @@ def vw_execute_folder_scanner():
     progress_dialog = kodi.ProgressDialog()
         
     scanner = RomFolderScanner(
-        globals.g_PATHS.REPORTS_DIR, 
-        globals.g_PATHS.ADDON_DATA_DIR,
+        g_PATHS.REPORTS_DIR, 
+        g_PATHS.ADDON_DATA_DIR,
         scanner_settings,
         None,
         progress_dialog)
@@ -263,7 +261,7 @@ def vw_execute_folder_scanner():
 #
 def render_list_items(container_data, container_context_items = []):
     vw_misc_set_all_sorting_methods()
-    vw_misc_set_AEL_Content(container_data['obj_type'] if 'obj_type' in container_data else OBJ_NONE)
+    vw_misc_set_AEL_Content(container_data['obj_type'] if 'obj_type' in container_data else constants.OBJ_NONE)
     vw_misc_clear_AEL_Launcher_Content()
 
     for list_item_data in container_data['items']:
@@ -279,7 +277,7 @@ def render_list_items(container_data, container_context_items = []):
         list_item.setProperties(list_item_data['properties'])
 
         if xbmc.getCondVisibility("!Skin.HasSetting(KioskMode.Enabled)"):
-            item_context_items = qry_listitem_context_menu_items(list_item_data, container_data)
+            item_context_items = viewqueries.qry_listitem_context_menu_items(list_item_data, container_data)
             list_item.addContextMenuItems(item_context_items + container_context_items, replaceItems = True)
 
         xbmcplugin.addDirectoryItem(handle = router.handle, url = url_str, listitem = list_item, isFolder = folder_flag)
@@ -305,30 +303,30 @@ def vw_misc_set_all_sorting_methods():
 # a Window that has categories/launchers or ROMs.
 #
 def vw_misc_set_AEL_Content(AEL_Content_Value):
-    if AEL_Content_Value == AEL_CONTENT_VALUE_LAUNCHERS:
-        logger.debug('vw_misc_set_AEL_Content() Setting Window({0}) '.format(AEL_CONTENT_WINDOW_ID) +
-                  'property "{0}" = "{1}"'.format(AEL_CONTENT_LABEL, AEL_CONTENT_VALUE_LAUNCHERS))
-        xbmcgui.Window(AEL_CONTENT_WINDOW_ID).setProperty(AEL_CONTENT_LABEL, AEL_CONTENT_VALUE_LAUNCHERS)
+    if AEL_Content_Value == constants.AEL_CONTENT_VALUE_LAUNCHERS:
+        logger.debug('vw_misc_set_AEL_Content() Setting Window({0}) '.format(constants.AEL_CONTENT_WINDOW_ID) +
+                  'property "{0}" = "{1}"'.format(constants.AEL_CONTENT_LABEL, constants.AEL_CONTENT_VALUE_LAUNCHERS))
+        xbmcgui.Window(constants.AEL_CONTENT_WINDOW_ID).setProperty(constants.AEL_CONTENT_LABEL, constants.AEL_CONTENT_VALUE_LAUNCHERS)
         
-    elif AEL_Content_Value == AEL_CONTENT_VALUE_CATEGORY:
-        logger.debug('vw_misc_set_AEL_Content() Setting Window({0}) '.format(AEL_CONTENT_WINDOW_ID) +
-                  'property "{0}" = "{1}"'.format(AEL_CONTENT_LABEL, AEL_CONTENT_VALUE_CATEGORY))
-        xbmcgui.Window(AEL_CONTENT_WINDOW_ID).setProperty(AEL_CONTENT_LABEL, AEL_CONTENT_VALUE_CATEGORY)        
-    elif AEL_Content_Value == AEL_CONTENT_VALUE_ROMS:
-        logger.debug('vw_misc_set_AEL_Content() Setting Window({0}) '.format(AEL_CONTENT_WINDOW_ID) +
-                  'property "{0}" = "{1}"'.format(AEL_CONTENT_LABEL, AEL_CONTENT_VALUE_ROMS))
-        xbmcgui.Window(AEL_CONTENT_WINDOW_ID).setProperty(AEL_CONTENT_LABEL, AEL_CONTENT_VALUE_ROMS)
-    elif AEL_Content_Value == AEL_CONTENT_VALUE_NONE:
-        logger.debug('vw_misc_set_AEL_Content() Setting Window({0}) '.format(AEL_CONTENT_WINDOW_ID) +
-                  'property "{0}" = "{1}"'.format(AEL_CONTENT_LABEL, AEL_CONTENT_VALUE_NONE))
-        xbmcgui.Window(AEL_CONTENT_WINDOW_ID).setProperty(AEL_CONTENT_LABEL, AEL_CONTENT_VALUE_NONE)
+    elif AEL_Content_Value == constants.AEL_CONTENT_VALUE_CATEGORY:
+        logger.debug('vw_misc_set_AEL_Content() Setting Window({0}) '.format(constants.AEL_CONTENT_WINDOW_ID) +
+                  'property "{0}" = "{1}"'.format(constants.AEL_CONTENT_LABEL, constants.AEL_CONTENT_VALUE_CATEGORY))
+        xbmcgui.Window(constants.AEL_CONTENT_WINDOW_ID).setProperty(constants.AEL_CONTENT_LABEL, constants.AEL_CONTENT_VALUE_CATEGORY)        
+    elif AEL_Content_Value == constants.AEL_CONTENT_VALUE_ROMS:
+        logger.debug('vw_misc_set_AEL_Content() Setting Window({0}) '.format(constants.AEL_CONTENT_WINDOW_ID) +
+                  'property "{0}" = "{1}"'.format(constants.AEL_CONTENT_LABEL, constants.AEL_CONTENT_VALUE_ROMS))
+        xbmcgui.Window(constants.AEL_CONTENT_WINDOW_ID).setProperty(constants.AEL_CONTENT_LABEL, constants.AEL_CONTENT_VALUE_ROMS)
+    elif AEL_Content_Value == constants.AEL_CONTENT_VALUE_NONE:
+        logger.debug('vw_misc_set_AEL_Content() Setting Window({0}) '.format(constants.AEL_CONTENT_WINDOW_ID) +
+                  'property "{0}" = "{1}"'.format(constants.AEL_CONTENT_LABEL, constants.AEL_CONTENT_VALUE_NONE))
+        xbmcgui.Window(constants.AEL_CONTENT_WINDOW_ID).setProperty(constants.AEL_CONTENT_LABEL, constants.AEL_CONTENT_VALUE_NONE)
     else:
         logger.error('vw_misc_set_AEL_Content() Invalid AEL_Content_Value "{0}"'.format(AEL_Content_Value))
 
 def vw_misc_clear_AEL_Launcher_Content():
-    xbmcgui.Window(AEL_CONTENT_WINDOW_ID).setProperty(AEL_LAUNCHER_NAME_LABEL, '')
-    xbmcgui.Window(AEL_CONTENT_WINDOW_ID).setProperty(AEL_LAUNCHER_ICON_LABEL, '')
-    xbmcgui.Window(AEL_CONTENT_WINDOW_ID).setProperty(AEL_LAUNCHER_CLEARLOGO_LABEL, '')
-    xbmcgui.Window(AEL_CONTENT_WINDOW_ID).setProperty(AEL_LAUNCHER_PLATFORM_LABEL, '')
-    xbmcgui.Window(AEL_CONTENT_WINDOW_ID).setProperty(AEL_LAUNCHER_BOXSIZE_LABEL, '')
+    xbmcgui.Window(constants.AEL_CONTENT_WINDOW_ID).setProperty(constants.AEL_LAUNCHER_NAME_LABEL, '')
+    xbmcgui.Window(constants.AEL_CONTENT_WINDOW_ID).setProperty(constants.AEL_LAUNCHER_ICON_LABEL, '')
+    xbmcgui.Window(constants.AEL_CONTENT_WINDOW_ID).setProperty(constants.AEL_LAUNCHER_CLEARLOGO_LABEL, '')
+    xbmcgui.Window(constants.AEL_CONTENT_WINDOW_ID).setProperty(constants.AEL_LAUNCHER_PLATFORM_LABEL, '')
+    xbmcgui.Window(constants.AEL_CONTENT_WINDOW_ID).setProperty(constants.AEL_LAUNCHER_BOXSIZE_LABEL, '')
     

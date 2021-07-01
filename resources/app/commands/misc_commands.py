@@ -18,15 +18,15 @@ from __future__ import unicode_literals
 from __future__ import division
 
 import logging
+import typing
 
-from resources.lib.repositories import *
+from ael.utils import kodi, io
+from ael import settings, constants
+
 from resources.app.commands.mediator import AppMediator
-
-from resources.lib.settings import *
-from resources.lib.constants import *
-from resources.lib import globals
-from resources.lib.utils import kodi
-from resources.lib.utils import io
+from resources.app import globals
+from resources.app.repositories import UnitOfWork, AelAddonRepository, CategoryRepository, ROMSetRepository, XmlConfigurationRepository
+from resources.app.domain import Category, ROMSet, AelAddon
 
 logger = logging.getLogger(__name__)
 @AppMediator.register('IMPORT_LAUNCHERS')
@@ -151,7 +151,7 @@ def _apply_addon_launcher_for_legacy_launcher(launcher_data: ROMSet, available_a
         launcher_data.add_launcher(launcher_addon, settings, non_blocking, True)
         return
     
-    if launcher_type == OBJ_LAUNCHER_STANDALONE:
+    if launcher_type == constants.OBJ_LAUNCHER_STANDALONE:
         launcher_addon =  available_addons['plugin.program.AEL.AppLauncher'] if 'plugin.program.AEL.AppLauncher' in available_addons else None
         if launcher_addon is None: 
             logger.warn('Could not find launcher supporting type "{}"'.format(launcher_type)) 
@@ -164,7 +164,7 @@ def _apply_addon_launcher_for_legacy_launcher(launcher_data: ROMSet, available_a
         launcher_data.add_launcher(launcher_addon, settings, non_blocking, True)
         return
     
-    if launcher_type == OBJ_LAUNCHER_ROM:
+    if launcher_type == constants.OBJ_LAUNCHER_ROM:
         launcher_addon =  available_addons['plugin.program.AEL.AppLauncher'] if 'plugin.program.AEL.AppLauncher' in available_addons else None
         if launcher_addon is None: 
             logger.warn('Could not find launcher supporting type "{}"'.format(launcher_type)) 
@@ -177,7 +177,7 @@ def _apply_addon_launcher_for_legacy_launcher(launcher_data: ROMSet, available_a
         launcher_data.add_launcher(launcher_addon, settings, non_blocking, True)
         return
     
-    if launcher_type == OBJ_LAUNCHER_RETROPLAYER:
+    if launcher_type == constants.OBJ_LAUNCHER_RETROPLAYER:
         launcher_addon =  available_addons['plugin.program.AEL.RetroplayerLauncher'] if 'plugin.program.AEL.RetroplayerLauncher' in available_addons else None
         if launcher_addon is None: 
             logger.warn('Could not find launcher supporting type "{}"'.format(launcher_type)) 
@@ -190,7 +190,7 @@ def _apply_addon_launcher_for_legacy_launcher(launcher_data: ROMSet, available_a
         launcher_data.add_launcher(launcher_addon, settings, non_blocking, True)
         return
     
-    if launcher_type == OBJ_LAUNCHER_RETROARCH:
+    if launcher_type == constants.OBJ_LAUNCHER_RETROARCH:
         launcher_addon =  available_addons['plugin.program.AEL.RetroarchLauncher'] if 'plugin.program.AEL.RetroarchLauncher' in available_addons else None
         if launcher_addon is None: 
             logger.warn('Could not find launcher supporting type "{}"'.format(launcher_type)) 
@@ -203,7 +203,7 @@ def _apply_addon_launcher_for_legacy_launcher(launcher_data: ROMSet, available_a
         launcher_data.add_launcher(launcher_addon, settings, non_blocking, True)
         return
     
-    if launcher_type == OBJ_LAUNCHER_NVGAMESTREAM:
+    if launcher_type == constants.OBJ_LAUNCHER_NVGAMESTREAM:
         launcher_addon =  available_addons['plugin.program.AEL.GamestreamLauncher'] if 'plugin.program.AEL.GamestreamLauncher' in available_addons else None 
         if launcher_addon is None: 
             logger.warn('Could not find launcher supporting type "{}"'.format(launcher_type)) 
@@ -216,7 +216,7 @@ def _apply_addon_launcher_for_legacy_launcher(launcher_data: ROMSet, available_a
         launcher_data.add_launcher(launcher_addon, settings, non_blocking, True)
         return
     
-    if launcher_type == OBJ_LAUNCHER_STEAM:
+    if launcher_type == constants.OBJ_LAUNCHER_STEAM:
         launcher_addon =  available_addons['plugin.program.AEL.SteamLauncher'] if 'plugin.program.AEL.SteamLauncher' in available_addons else None  
         if launcher_addon is None: 
             logger.warn('Could not find launcher supporting type "{}"'.format(launcher_type)) 

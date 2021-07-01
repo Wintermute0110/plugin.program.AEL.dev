@@ -24,8 +24,7 @@ import sys
 import logging
 
 # --- Modules/packages in this plugin ---
-from resources.lib.utils import kodilogging
-from resources.lib.utils import text
+from ael.utils import kodilogging, text
 from resources.app import views
 
 kodilogging.config()

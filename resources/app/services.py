@@ -5,12 +5,12 @@ import json
 
 import xbmc
 
-from resources.lib import globals
-from resources.lib.repositories import UnitOfWork
+from resources.app import globals
+from resources.app.repositories import UnitOfWork
 from resources.app.commands.mediator import AppMediator
 import resources.app.commands
 
-from resources.lib.utils import io
+from ael.utils import io
 
 logger = logging.getLogger(__name__)
 
