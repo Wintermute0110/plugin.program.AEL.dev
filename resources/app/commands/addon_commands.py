@@ -18,6 +18,8 @@ from __future__ import unicode_literals
 from __future__ import division
 
 import logging
+import typing
+from ael import constants
 
 import xbmcaddon
 
@@ -52,27 +54,65 @@ def cmd_scan_addons(args):
                 continue
             
             logger.debug('cmd_scan_addons(): Found addon {}'.format(addon_id))
-            addon_count = addon_count + 1                        
-            addon_obj = AelAddon({
-                'addon_id': addon_id,
-                'version': addon.getAddonInfo('version'),
-                'name': addon.getAddonInfo('name'),
-                'is_launcher': addon.getSetting('ael.launcher_uri') != '',
-                'launcher_uri': addon.getSetting('ael.launcher_uri')
-            })
+            addon_count = addon_count + 1  
             
-            if addon_id in existing_addon_ids:
-                if existing_addon_ids[addon_id].get_version() == addon_obj.get_version():
-                    continue
-                addon_obj.set_id(existing_addon_ids[addon_id].get_id())
-                addon_repository.update_addon(addon_obj)
-                logger.debug('cmd_scan_addons(): Updated addon {}'.format(addon_id))
-            else:
-                addon_repository.insert_addon(addon_obj)
-                logger.debug('cmd_scan_addons(): Added addon {}'.format(addon_id))
-            
+            if addon.getSetting('ael.launcher.execute_uri') != '':
+                _process_launcher_addon(addon_id, addon, existing_addon_ids, addon_repository)
+                
+            if addon.getSetting('ael.scanner.execute_uri') != '':
+                _process_scanner_addon(addon_id, addon, existing_addon_ids, addon_repository)
+                
         uow.commit()
         
     logger.info('cmd_scan_addons(): Processed {} addons'.format(addon_count))
     kodi.notify('Scan completed. Found {} addons'.format(addon_count))
 
+def _process_launcher_addon(
+    addon_id:str, 
+    addon:xbmcaddon.Addon, 
+    existing_addon_ids:typing.Dict[str,AelAddon],
+    addon_repository:AelAddonRepository):
+    
+    addon_obj = AelAddon({
+        'addon_id': addon_id,
+        'version': addon.getAddonInfo('version'),
+        'name': addon.getAddonInfo('name'),
+        'addon_type': constants.AddonType.LAUNCHER.name,
+        'execute_uri': addon.getSetting('ael.launcher.execute_uri') != '',
+        'configure_uri': addon.getSetting('ael.launcher.configure_uri')
+    })
+
+    if addon_id in existing_addon_ids:
+        if existing_addon_ids[addon_id].get_version() == addon_obj.get_version():
+            return
+        addon_obj.set_id(existing_addon_ids[addon_id].get_id())
+        addon_repository.update_addon(addon_obj)
+        logger.debug('cmd_scan_addons(): Updated launcher addon {}'.format(addon_id))
+    else:
+        addon_repository.insert_addon(addon_obj)
+        logger.debug('cmd_scan_addons(): Added launcher addon {}'.format(addon_id))
+        
+def _process_scanner_addon(
+    addon_id:str, 
+    addon:xbmcaddon.Addon, 
+    existing_addon_ids:typing.Dict[str,AelAddon],
+    addon_repository:AelAddonRepository):
+    
+    addon_obj = AelAddon({
+        'addon_id': addon_id,
+        'version': addon.getAddonInfo('version'),
+        'name': addon.getAddonInfo('name'),
+        'addon_type': constants.AddonType.SCANNER.name,
+        'execute_uri': addon.getSetting('ael.scanner.execute_uri') != '',
+        'configure_uri': addon.getSetting('ael.scanner.configure_uri')
+    })
+
+    if addon_id in existing_addon_ids:                
+        if existing_addon_ids[addon_id].get_version() == addon_obj.get_version():
+            return
+        addon_obj.set_id(existing_addon_ids[addon_id].get_id())
+        addon_repository.update_addon(addon_obj)
+        logger.debug('cmd_scan_addons(): Updated scanner addon {}'.format(addon_id))
+    else:
+        addon_repository.insert_addon(addon_obj)
+        logger.debug('cmd_scan_addons(): Added scanner addon {}'.format(addon_id))

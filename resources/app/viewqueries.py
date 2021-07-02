@@ -45,7 +45,7 @@ def qry_get_root_items():
         container = {
             'id': '',
             'name': 'root',
-            'obj_type': constants.constants.OBJ_CATEGORY,
+            'obj_type': constants.OBJ_CATEGORY,
             'items': []
         }
     
@@ -330,7 +330,7 @@ def qry_get_vcategory_items(self):
     container = {
         'id': '',
         'name': 'virtual categories',
-        'obj_type': constants.constants.OBJ_CATEGORY_VIRTUAL,
+        'obj_type': constants.OBJ_CATEGORY_VIRTUAL,
         'items': []
     }
     
@@ -447,7 +447,7 @@ def qry_container_context_menu_items(container_data) -> typing.List[typing.Tuple
     container_id      = container_data['id'] if 'id' in container_data else ''
     
     is_category: bool = container_type == constants.OBJ_CATEGORY
-    is_romset: bool   = container_type == constants.constants.OBJ_ROMSET
+    is_romset: bool   = container_type == constants.OBJ_ROMSET
     is_root: bool     = container_data['id'] == ''
     
     commands = []
@@ -482,7 +482,7 @@ def qry_listitem_context_menu_items(list_item_data, container_data)-> typing.Lis
     item_id    = list_item_data['id'] if 'id' in list_item_data else ''
     
     is_category: bool = item_type == constants.OBJ_CATEGORY 
-    is_romset: bool   = item_type == constants.constants.OBJ_ROMSET
+    is_romset: bool   = item_type == constants.OBJ_ROMSET
     is_rom: bool      = item_type == constants.OBJ_ROM
     
     commands = []

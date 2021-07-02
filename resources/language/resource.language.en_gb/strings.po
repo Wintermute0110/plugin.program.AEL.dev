@@ -4,6 +4,39 @@
 msgid ""
 msgstr ""
 
+############################
+# Setting categories
+############################
+msgctxt "#40010"
+msgid "ROM scanner"
+msgstr "settings.xml"
+
+msgctxt "#40011"
+msgid "ROM scraping"
+msgstr "settings.xml"
+
+msgctxt "#40012"
+msgid "Misc settings"
+msgstr "settings.xml"
+
+msgctxt "#40013"
+msgid "ROM audit"
+msgstr "settings.xml"
+
+msgctxt "#40014"
+msgid "Display"
+msgstr "settings.xml"
+
+msgctxt "#40015"
+msgid "Paths"
+msgstr "settings.xml"
+
+msgctxt "#40016"
+msgid "Advanced"
+msgstr "settings.xml"
+
+
+
 msgctxt "#10020"
 msgid "AEL Offline"
 msgstr "settings.xml"
