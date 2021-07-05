@@ -10,7 +10,7 @@ from ael.utils import text, io
 from ael import constants
 
 from resources.app import globals
-from resources.app.domain import Category, ROMSet, ROM, ROMLauncherAddon, Asset, AelAddon, ROMSetScanner
+from resources.app.domain import Category, ROMSet, ROM, ROMLauncherAddon, Asset, AelAddon, ROMSetScanner, g_assetFactory
 
 logger = logging.getLogger(__name__)
 
@@ -123,7 +123,7 @@ class XmlConfigurationRepository(object):
                 category_temp[xml_tag] = text_XML_line
                                 
                 if xml_tag.startswith('s_'):
-                    asset_info = constants.g_assetFactory.get_asset_info_by_key(xml_tag)
+                    asset_info = g_assetFactory.get_asset_info_by_key(xml_tag)
                     asset_data = { 'filepath': text_XML_line }
                     assets.append(Asset(asset_info, asset_data))
                 
@@ -160,7 +160,7 @@ class XmlConfigurationRepository(object):
                 launcher_temp[xml_tag] = text_XML_line
                 
                 if xml_tag.startswith('s_'):
-                    asset_info = constants.g_assetFactory.get_asset_info_by_key(xml_tag)
+                    asset_info = g_assetFactory.get_asset_info_by_key(xml_tag)
                     asset_data = { 'filepath': text_XML_line }
                     assets.append(Asset(asset_info, asset_data))
                     
@@ -231,7 +231,7 @@ class ROMsJsonFileRepository(object):
         assets = []
         for key, value in rom_data.items():
             if key.startswith('s_'):
-                asset_info = constants.g_assetFactory.get_asset_info_by_key(key)
+                asset_info = g_assetFactory.get_asset_info_by_key(key)
                 asset_data = { 'filepath': value }
                 assets.append(Asset(asset_info, asset_data))
         return assets
@@ -399,7 +399,7 @@ class CategoryRepository(object):
                 
         assets = []
         for asset_data in assets_result_set:
-            asset_info = constants.g_assetFactory.get_asset_info(asset_data['asset_type'])
+            asset_info = g_assetFactory.get_asset_info(asset_data['asset_type'])
             assets.append(Asset(asset_info, asset_data))    
             
         return Category(category_data, assets)
@@ -414,7 +414,7 @@ class CategoryRepository(object):
         for category_data in result_set:
             assets = []
             for asset_data in filter(lambda a: a['category_id'] == category_data['id'], assets_result_set):
-                asset_info = constants.g_assetFactory.get_asset_info(asset_data['asset_type'])
+                asset_info = g_assetFactory.get_asset_info(asset_data['asset_type'])
                 assets.append(Asset(asset_info, asset_data))    
                 
             yield Category(category_data, assets)
@@ -429,7 +429,7 @@ class CategoryRepository(object):
         for category_data in result_set:
             assets = []
             for asset_data in filter(lambda a: a['category_id'] == category_data['id'], assets_result_set):
-                asset_info = constants.g_assetFactory.get_asset_info(asset_data['asset_type'])
+                asset_info = g_assetFactory.get_asset_info(asset_data['asset_type'])
                 assets.append(Asset(asset_info, asset_data))    
                 
             yield Category(category_data, assets)
@@ -444,7 +444,7 @@ class CategoryRepository(object):
         for category_data in result_set:
             assets = []
             for asset_data in filter(lambda a: a['category_id'] == category_data['id'], assets_result_set):
-                asset_info = constants.g_assetFactory.get_asset_info(asset_data['asset_type'])
+                asset_info = g_assetFactory.get_asset_info(asset_data['asset_type'])
                 assets.append(Asset(asset_info, asset_data))    
                 
             yield Category(category_data, assets)
@@ -577,7 +577,7 @@ class ROMSetRepository(object):
         assets_result_set = self._uow.result_set()
         assets = []
         for asset_data in assets_result_set:
-            asset_info = constants.g_assetFactory.get_asset_info(asset_data['asset_type'])
+            asset_info = g_assetFactory.get_asset_info(asset_data['asset_type'])
             assets.append(Asset(asset_info, asset_data))    
         
         self._uow.execute(QUERY_SELECT_ROMSET_LAUNCHERS, romset_id)
@@ -606,7 +606,7 @@ class ROMSetRepository(object):
         for romset_data in result_set:
             assets = []
             for asset_data in filter(lambda a: a['romset_id'] == romset_data['id'], assets_result_set):
-                asset_info = constants.g_assetFactory.get_asset_info(asset_data['asset_type'])
+                asset_info = g_assetFactory.get_asset_info(asset_data['asset_type'])
                 assets.append(Asset(asset_info, asset_data))      
                 
             yield ROMSet(romset_data, assets)
@@ -621,7 +621,7 @@ class ROMSetRepository(object):
         for romset_data in result_set:
             assets = []
             for asset_data in filter(lambda a: a['romset_id'] == romset_data['id'], assets_result_set):
-                asset_info = constants.g_assetFactory.get_asset_info(asset_data['asset_type'])
+                asset_info = g_assetFactory.get_asset_info(asset_data['asset_type'])
                 assets.append(Asset(asset_info, asset_data))      
                 
             yield ROMSet(romset_data, assets)
@@ -636,7 +636,7 @@ class ROMSetRepository(object):
         for romset_data in result_set:
             assets = []
             for asset_data in filter(lambda a: a['romset_id'] == romset_data['id'], assets_result_set):
-                asset_info = constants.g_assetFactory.get_asset_info(asset_data['asset_type'])
+                asset_info = g_assetFactory.get_asset_info(asset_data['asset_type'])
                 assets.append(Asset(asset_info, asset_data))      
                 
             yield ROMSet(romset_data, assets)
@@ -832,7 +832,7 @@ class ROMsRepository(object):
         for rom_data in result_set:
             assets = []
             for asset_data in filter(lambda a: a['rom_id'] == rom_data['id'], assets_result_set):
-                asset_info = constants.g_assetFactory.get_asset_info(asset_data['asset_type'])
+                asset_info = g_assetFactory.get_asset_info(asset_data['asset_type'])
                 assets.append(Asset(asset_info, asset_data))                
             yield ROM(rom_data, assets)
 
@@ -844,7 +844,7 @@ class ROMsRepository(object):
         assets_result_set = self._uow.result_set()            
         assets = []
         for asset_data in assets_result_set:
-            asset_info = constants.g_assetFactory.get_asset_info(asset_data['asset_type'])
+            asset_info = g_assetFactory.get_asset_info(asset_data['asset_type'])
             assets.append(Asset(asset_info, asset_data))
                     
         self._uow.execute(QUERY_SELECT_ROM_LAUNCHERS, rom_id)

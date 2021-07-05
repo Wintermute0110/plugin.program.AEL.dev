@@ -944,10 +944,10 @@ class ROM(MetaDataItemABC):
         
     # inherited value from ROMSet
     def get_platform(self):
-        return self.entity_data['platform']
+        return self.entity_data['platform'] if 'platform' in self.entity_data else None
     
     def get_nointro_status(self):
-        return self.entity_data['nointro_status']
+        return self.entity_data['nointro_status'] if 'nointro_status' in self.entity_data else ''
 
     def get_pclone_status(self):
         return self.entity_data['pclone_status'] if 'pclone_status' in self.entity_data else ''
@@ -1008,6 +1008,9 @@ class ROM(MetaDataItemABC):
     def set_esrb_rating(self, esrb):
         self.entity_data['m_esrb'] = esrb
 
+    def set_platform(self, platform): 
+        self.entity_data['platform'] = platform
+    
     def set_nointro_status(self, status):
         self.entity_data['nointro_status'] = status
 

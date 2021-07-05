@@ -78,7 +78,7 @@ def _process_launcher_addon(
         'version': addon.getAddonInfo('version'),
         'name': addon.getAddonInfo('name'),
         'addon_type': constants.AddonType.LAUNCHER.name,
-        'execute_uri': addon.getSetting('ael.launcher.execute_uri') != '',
+        'execute_uri': addon.getSetting('ael.launcher.execute_uri'),
         'configure_uri': addon.getSetting('ael.launcher.configure_uri')
     })
 
@@ -103,7 +103,7 @@ def _process_scanner_addon(
         'version': addon.getAddonInfo('version'),
         'name': addon.getAddonInfo('name'),
         'addon_type': constants.AddonType.SCANNER.name,
-        'execute_uri': addon.getSetting('ael.scanner.execute_uri') != '',
+        'execute_uri': addon.getSetting('ael.scanner.execute_uri'),
         'configure_uri': addon.getSetting('ael.scanner.configure_uri')
     })
 
