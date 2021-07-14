@@ -350,6 +350,8 @@ def cmd_execute_rom_with_launcher(args):
 
     kodi.execute_uri(selected_launcher.addon.get_execute_uri(), {
         'settings': selected_launcher.get_settings_str(),
+        'launcher_id': selected_launcher.get_id(),
+        'rom_id': rom.get_id(),
         'args': arguments,
         'is_non_blocking': str(selected_launcher.is_non_blocking())
     })

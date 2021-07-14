@@ -45,8 +45,8 @@ from ael.launchers import ExecutionSettings, get_executor_factory
 from ael.utils import kodi
 
 from resources.app.core import AppLauncher, RomFolderScanner
-from resources.app import viewqueries
-from resources.app.globals import *
+from resources.app import viewqueries, globals
+from resources.app.globals import router
 
 logger = logging.getLogger(__name__)
 
@@ -61,12 +61,12 @@ def run_plugin(addon_argv):
 
     # --- Some debug stuff for development ---
     logger.debug('------------ Called Advanced Emulator Launcher run_plugin(addon_argv) ------------')
-    logger.debug('addon.id         "{}"'.format(addon_id))
-    logger.debug('addon.version    "{}"'.format(addon_version))
+    logger.debug('addon.id         "{}"'.format(globals.addon_id))
+    logger.debug('addon.version    "{}"'.format(globals.addon_version))
     for i in range(len(sys.argv)): logger.debug('sys.argv[{}] "{}"'.format(i, sys.argv[i]))
 
     # --- Bootstrap object instances --- 
-    g_bootstrap_instances()
+    globals.g_bootstrap_instances()
     router.run()
     logger.debug('Advanced Emulator Launcher run_plugin() exit')
 
@@ -182,18 +182,25 @@ def vw_execute_app_launcher():
     logger.debug('App Launcher: Starting ...')
     launcher_settings   = json.loads(router.args['settings'][0])
     arguments           = router.args['args'][0]
+    launcher_id         = router.args['launcher_id'][0]
+    rom_id              = router.args['rom_id'][0]
 
-    execution_settings = ExecutionSettings()
-    execution_settings.delay_tempo = settings.getSettingAsInt('delay_tempo')
-    execution_settings.display_launcher_notify = settings.getSettingAsBool('display_launcher_notify')
-    execution_settings.is_non_blocking = True if router.args['is_non_blocking'][0] == 'true' else False
-    execution_settings.media_state_action = settings.getSettingAsInt('media_state_action')
-    execution_settings.suspend_audio_engine = settings.getSettingAsBool('suspend_audio_engine')
-    execution_settings.suspend_screensaver = settings.getSettingAsBool('suspend_screensaver')
-            
-    executor_factory = get_executor_factory()
-    launcher = AppLauncher(executor_factory, execution_settings, launcher_settings)
-    launcher.launch(arguments)
+    try:
+        execution_settings = ExecutionSettings()
+        execution_settings.delay_tempo = settings.getSettingAsInt('delay_tempo')
+        execution_settings.display_launcher_notify = settings.getSettingAsBool('display_launcher_notify')
+        execution_settings.is_non_blocking = True if router.args['is_non_blocking'][0] == 'true' else False
+        execution_settings.media_state_action = settings.getSettingAsInt('media_state_action')
+        execution_settings.suspend_audio_engine = settings.getSettingAsBool('suspend_audio_engine')
+        execution_settings.suspend_screensaver = settings.getSettingAsBool('suspend_screensaver')        
+        report_path = globals.g_PATHS.REPORTS_DIR.pjoin('{}-{}.txt'.format(launcher_id, rom_id))
+        
+        executor_factory = get_executor_factory(report_path)
+        launcher = AppLauncher(executor_factory, execution_settings, launcher_settings)
+        launcher.launch(arguments)
+    except Exception as e:
+        logger.error('Exception while executing ROM', exc_info=e)
+        kodi.notify_error('Failed to execute ROM')
     
 @router.route('/scanner/folder/configure')
 def vw_configure_folder_scanner():
@@ -208,8 +215,8 @@ def vw_configure_folder_scanner():
     launcher_settings = json.loads(def_launcher_settings) if def_launcher_settings else None
     
     scanner = RomFolderScanner(
-        g_PATHS.REPORTS_DIR, 
-        g_PATHS.ADDON_DATA_DIR,
+        globals.g_PATHS.REPORTS_DIR, 
+        globals.g_PATHS.ADDON_DATA_DIR,
         scanner_settings,
         launcher_settings,
         kodi.ProgressDialog())
@@ -231,8 +238,8 @@ def vw_execute_folder_scanner():
     progress_dialog = kodi.ProgressDialog()
         
     scanner = RomFolderScanner(
-        g_PATHS.REPORTS_DIR, 
-        g_PATHS.ADDON_DATA_DIR,
+        globals.g_PATHS.REPORTS_DIR, 
+        globals.g_PATHS.ADDON_DATA_DIR,
         scanner_settings,
         None,
         progress_dialog)
