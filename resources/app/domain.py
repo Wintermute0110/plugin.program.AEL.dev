@@ -1113,6 +1113,15 @@ class ROM(MetaDataItemABC):
     
     def get_default_icon(self) -> str: return 'DefaultProgram.png' 
     
+    # Returns a dictionary of data which a launcher might need.
+    def get_launcher_args(self) -> dict:
+        return {
+            'id': self.get_id(),
+            'file': self.get_file().getPath(),
+            'name': self.get_name()
+            #TODO: 'scanner_args': self.get_scanner_arguments()
+        }
+    
     #
     # Reads an NFO file with ROM information.
     # See comments in fs_export_ROM_NFO() about verbosity.

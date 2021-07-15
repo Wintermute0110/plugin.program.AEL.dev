@@ -181,7 +181,7 @@ def vw_configure_app_launcher():
 def vw_execute_app_launcher():
     logger.debug('App Launcher: Starting ...')
     launcher_settings   = json.loads(router.args['settings'][0])
-    arguments           = router.args['args'][0]
+    rom_arguments       = json.loads(router.args['rom_args'][0])
     launcher_id         = router.args['launcher_id'][0]
     rom_id              = router.args['rom_id'][0]
 
@@ -197,7 +197,7 @@ def vw_execute_app_launcher():
         
         executor_factory = get_executor_factory(report_path)
         launcher = AppLauncher(executor_factory, execution_settings, launcher_settings)
-        launcher.launch(arguments)
+        launcher.launch(rom_arguments)
     except Exception as e:
         logger.error('Exception while executing ROM', exc_info=e)
         kodi.notify_error('Failed to execute ROM')

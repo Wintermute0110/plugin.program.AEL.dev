@@ -94,27 +94,26 @@ class AppLauncher(LauncherABC):
     #
     def _builder_wants_to_change_app(self, item_key, launcher):
         return launcher[item_key] == True
-    
+
     # ---------------------------------------------------------------------------------------------
     # Execution methods
     # ---------------------------------------------------------------------------------------------
-    def launch(self, args: str):
+    def get_application(self) -> str:
         if 'application' not in self.launcher_settings:
             logger.error('LauncherABC::launch() No application argument defined')            
             return None
         
-        application = io.FileName(self.get_application())
+        application = io.FileName(self.launcher_settings['application'])
         
         # --- Check for errors and abort if errors found ---
         if not application.exists():
             logger.error('Launching app not found "{0}"'.format(application.getPath()))
             kodi.notify_warn('App {0} not found.'.format(application.getPath()))
-            return
+            return None
         
-        logger.debug('Application = "{}"'.format(application.getPath()))
+        return application.getPath()
         
-        super(AppLauncher, self).launch(args)
-
+    
 class RomFolderScanner(RomScannerStrategy):
     
     # --------------------------------------------------------------------------------------------
