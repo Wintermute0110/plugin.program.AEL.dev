@@ -67,7 +67,12 @@ def run_plugin(addon_argv):
 
     # --- Bootstrap object instances --- 
     globals.g_bootstrap_instances()
-    router.run()
+    try:
+        router.run()
+    except Exception as e:
+        logger.error('Exception while executing route', exc_info=e)
+        kodi.notify_error('Failed to execute route or command')
+        
     logger.debug('Advanced Emulator Launcher run_plugin() exit')
 
 # -------------------------------------------------------------------------------------------------
@@ -122,16 +127,18 @@ def vw_view_category(category_id: str):
     #todo
     pass
 
+@router.route('/categories/add')
 @router.route('/categories/add/<category_id>')
-def vw_add_category(category_id: str):
+def vw_add_category(category_id: str = None):
     kodi.event(command='ADD_CATEGORY', data={'category_id': category_id})
 
 @router.route('/categories/edit/<category_id>')
 def vw_edit_category(category_id: str):
     kodi.event(command='EDIT_CATEGORY', data={'category_id': category_id })
 
+@router.route('/romset/add')
 @router.route('/romset/add/<romset_id>')
-def vw_add_romset(romset_id: str):
+def vw_add_romset(romset_id: str = None):
     kodi.event(command='ADD_ROMSET', data={'romset_id': romset_id})
 
 @router.route('/romset/view/<romset_id>')

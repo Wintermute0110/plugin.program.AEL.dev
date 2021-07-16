@@ -34,7 +34,7 @@ logger = logging.getLogger(__name__)
 def cmd_add_collection(args):
     
     wizard = kodi.WizardDialog_Selection(None, 'platform', 'Select the platform', platforms.AEL_platform_list)
-    wizard = kodi.WizardDialog_Keyboard(wizard, 'm_name','Set the title of the launcher', get)
+    wizard = kodi.WizardDialog_Keyboard(wizard, 'm_name','Set the title of the launcher', _get_name_from_platform)
     wizard = kodi.WizardDialog_FileBrowse(wizard, 'assets_path', 'Select asset/artwork directory',0, '')
     
     entity_data = {}
@@ -46,6 +46,10 @@ def cmd_add_collection(args):
     platform = platforms.get_AEL_platform(entity_data['platform'])
     romset.set_box_sizing(platform.default_box_size)
     
+def _get_name_from_platform(self, input, item_key, entity_data):
+    title = entity_data['platform']
+    return title
+
 # -------------------------------------------------------------------------------------------------
 # ROMSet context menu.
 # -------------------------------------------------------------------------------------------------
