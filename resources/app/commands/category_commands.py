@@ -34,25 +34,34 @@ logger = logging.getLogger(__name__)
 def cmd_add_category(args):
     logger.debug('cmd_add_category() BEGIN')
     parent_id = args['category_id'] if 'category_id' in args else None
+    grand_parent_id = args['parent_category_id'] if 'parent_category_id' in args else None
     
-    # --- Get new Category name ---
-    name = kodi.dialog_keyboard('New Category Name')
-    if name is None: return
-    
-    category = Category(None, None)
-    category.set_name(name)
-    
-    # --- Save Category ---
     uow = UnitOfWork(globals.g_PATHS.DATABASE_FILE_PATH)
     with uow:
         repository = CategoryRepository(uow)
         parent_category = repository.find_category(parent_id) if parent_id is not None else None
+        grand_parent_category = repository.find_category(grand_parent_id) if grand_parent_id is not None else None
+        
+        if grand_parent_category is not None:
+            options_dialog = kodi.ListDialog()
+            selected_option = options_dialog.select('Add category in?',[parent_category.get_name(), grand_parent_category()])
+            if selected_option > 0:
+                parent_category = grand_parent_category
+    
+        # --- Get new Category name ---
+        name = kodi.dialog_keyboard('New Category Name')
+        if name is None: return
+        
+        category = Category(None, None)
+        category.set_name(name)
+    
+        # --- Save Category ---
         repository.insert_category(category, parent_category)
         uow.commit()
         
-    kodi.notify('Category {0} created'.format(category.get_name()))
-    kodi.event(command='RENDER_VIEW', data=args)
-    kodi.event(command='RENDER_VIEW', data={'category_id': category.get_id()})   
+        kodi.notify('Category {0} created'.format(category.get_name()))
+        kodi.event(command='RENDER_VIEW', data=args)
+        kodi.event(command='RENDER_VIEW', data={'category_id': category.get_id()})   
 
 @AppMediator.register('EDIT_CATEGORY')
 def cmd_edit_category(args):    
@@ -179,10 +188,10 @@ def cmd_category_edit_default_assets(args):
 
         if editors.edit_default_asset(category, selected_asset_to_edit):
             repository.update_category(category)
-            uow.commit()
+            uow.commit()   
+            kodi.event(command='CATEGORY_EDIT_DEFAULT_ASSETS', data={'category_id': category_id, 'selected_asset': selected_asset_to_edit.id})
             kodi.event(command='RENDER_VIEW', data={'category_id': category.get_id()})
-            kodi.event(command='RENDER_VIEW', data={'category_id': category.get_parent_id()})   
-            kodi.event(command='CATEGORY_EDIT_DEFAULT_ASSETS', data={'category_id': category_id, 'selected_asset': selected_asset_to_edit.id})         
+            kodi.event(command='RENDER_VIEW', data={'category_id': category.get_parent_id()})     
 
 @AppMediator.register('CATEGORY_STATUS')
 def cmd_category_status(args):
@@ -370,7 +379,7 @@ def cmd_category_browse_import_nfo_file(args):
     
     kodi.event(command='CATEGORY_EDIT_METADATA', data=args)
 
-@AppMediator.register('CATEGORY_SAVE_NFO_FILE_DEFAULT')
+@AppMediator.register('CATEGORY_SAVE_NFO_FILE')
 def cmd_category_save_nfo_file(args):
     category_id = args['category_id'] if 'category_id' in args else None
     uow = UnitOfWork(globals.g_PATHS.DATABASE_FILE_PATH)

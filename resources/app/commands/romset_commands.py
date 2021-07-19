@@ -353,7 +353,7 @@ def cmd_romset_metadata_plot(args):
             kodi.event(command='RENDER_VIEW', data={'category_id': romset.get_parent_id()})
     kodi.event(command='ROMSET_EDIT_METADATA', data=args)
     
-@AppMediator.register('ROMSET_EDIT_METADAT.A_BOXSIZE')
+@AppMediator.register('ROMSET_EDIT_METADATA_BOXSIZE')
 def cmd_romset_metadata_boxsize(args):
     romset_id = args['romset_id'] if 'romset_id' in args else None  
     uow = UnitOfWork(globals.g_PATHS.DATABASE_FILE_PATH)

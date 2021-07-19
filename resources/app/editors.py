@@ -113,7 +113,6 @@ def edit_rating(obj_instance: MetaDataItemABC, get_method, set_method):
         return False
 
     set_method(current_rating_str)
-    obj_instance.save_to_disk()
     kodi.notify('{0} rating is now {1}'.format(object_name, current_rating_str))
     return True
 
@@ -244,9 +243,9 @@ def edit_asset(obj_instance: MetaDataItemABC, asset_info: AssetInfo) -> bool:
         title_str = 'Select {0} {1}'.format(obj_instance.get_object_name(), asset_info.name)
         ext_list = asset_info.exts_dialog
         if asset_info.id == constants.ASSET_MANUAL_ID or asset_info.id == constants.ASSET_TRAILER_ID:
-            new_asset_file = kodi.dialog_GetFile(title_str, ext_list, current_image_dir.getPath())
+            new_asset_file = kodi.browse(1, title_str, ext_list, current_image_dir.getPath())
         else:
-            new_asset_file = kodi.dialog_GetImage(title_str, ext_list, current_image_dir.getPath())
+            new_asset_file = kodi.browse(2, title_str, ext_list, current_image_dir.getPath())
         if not new_asset_file: return False
         # --- Check if image exists ---
         new_asset_FN = io.FileName(new_asset_file)
@@ -279,9 +278,9 @@ def edit_asset(obj_instance: MetaDataItemABC, asset_info: AssetInfo) -> bool:
         title_str = 'Select {0} {1}'.format(obj_instance.get_object_name(), asset_info.name)
         ext_list = asset_info.exts_dialog
         if asset_info.id == constants.ASSET_MANUAL_ID or asset_info.id == constants.ASSET_TRAILER_ID:
-            new_asset_file_str = kodi.dialog_GetFile(title_str, ext_list, current_image_dir.getPath())
+            new_asset_file_str = kodi.browse(1, title_str, ext_list, current_image_dir.getPath())
         else:
-            new_asset_file_str = kodi.dialog_GetImage(title_str, ext_list, current_image_dir.getPath())
+            new_asset_file_str = kodi.browse(2, title_str, ext_list, current_image_dir.getPath())
         if not new_asset_file_str: return False
 
         # >> Determine image extension and dest filename. Check for errors.
@@ -405,10 +404,11 @@ def edit_asset(obj_instance: MetaDataItemABC, asset_info: AssetInfo) -> bool:
 # icon/fanart/banner/poster/clearlogo context submenu.
 # Argument obj is an object instance of class Category, CollectionLauncher, etc.
 #
-def edit_object_default_assets(obj_instance: MetaDataItemABC, pre_select_idx = 0) -> AssetInfo:
+def edit_object_default_assets(obj_instance: MetaDataItemABC, preselected_asset_id = None) -> AssetInfo:
     logger.debug('edit_object_default_assets() obj {0}'.format(obj_instance.__class__.__name__))
-    logger.debug('edit_object_default_assets() pre_select_idx {0}'.format(pre_select_idx))
-
+    logger.debug('edit_object_default_assets() preselected_asset_id {0}'.format(preselected_asset_id))
+    
+    pre_select_idx = 0
     dialog_title_str = 'Edit {0} default Assets/Artwork'.format(obj_instance.get_object_name())
 
     # --- Build Dialog.select() list ---
@@ -416,6 +416,7 @@ def edit_object_default_assets(obj_instance: MetaDataItemABC, pre_select_idx = 0
     list_items = []
     # >> List to easily pick the selected AssetInfo() object
     asset_info_list = []
+    counter = 0
     for default_asset_info in default_assets_list:
         # >> Label 1 is the string 'Choose asset for XXXX (currently YYYYY)'
         # >> Label 2 is the fname string of the current mapped asset or 'Not set'
@@ -437,6 +438,10 @@ def edit_object_default_assets(obj_instance: MetaDataItemABC, pre_select_idx = 0
         # --- Append to list of ListItems ---
         list_items.append(list_item)
         asset_info_list.append(default_asset_info)
+        
+        if default_asset_info.id == preselected_asset_id:
+            pre_select_idx = counter
+        counter += 1
 
     selected_option = xbmcgui.Dialog().select(
             dialog_title_str, list = list_items, useDetails = True, preselect = pre_select_idx)
@@ -449,8 +454,9 @@ def edit_object_default_assets(obj_instance: MetaDataItemABC, pre_select_idx = 0
     # >> Execute edit default asset submenu. Then, execute recursively this submenu again.
     # >> The menu dialog is instantiated again so it reflects the changes just edited.
     logger.debug('edit_object_default_assets() Executing mappable asset select() dialog.')
-    selected_asset_info = asset_info_list[selected_option]
+    selected_asset_info:AssetInfo = asset_info_list[selected_option]
     logger.debug('edit_object_default_assets() Main selected {0}.'.format(selected_asset_info.name))
+    return selected_asset_info            
 
 def edit_default_asset(obj_instance: MetaDataItemABC, asset_info: AssetInfo) -> bool:
     mappable_asset_list = obj_instance.get_mappable_asset_list()
@@ -482,20 +488,19 @@ def edit_default_asset(obj_instance: MetaDataItemABC, asset_info: AssetInfo) -> 
             secondary_pre_select_idx = counter
         counter += 1
     
-        dialog_title_str = 'Edit {0} {1} mapped asset'.format(
-            obj_instance.get_object_name(), asset_info.name)
-        secondary_selected_option = xbmcgui.Dialog().select(
-                dialog_title_str, list = list_items, useDetails = True, preselect = secondary_pre_select_idx)
-        logger.debug('edit_object_default_assets() Mapable select() returned {0}'.format(secondary_selected_option))
-        if secondary_selected_option < 0:
-            # >> Return to parent menu.
-            logger.debug('edit_object_default_assets() Mapable selected NONE. Returning to parent menu.')
-            return False
-            
-        new_selected_asset_info = asset_info_list[secondary_selected_option]
-        logger.debug('edit_object_default_assets() Mapable selected {0}.'.format(new_selected_asset_info.name))
-        obj_instance.set_mapped_asset_key(asset_info, new_selected_asset_info)
-        kodi.notify('{0} {1} mapped to {2}'.format(
-            obj_instance.get_object_name(), asset_info.name, new_selected_asset_info.name
-        ))
-        return True
+    dialog_title_str = 'Edit {0} {1} mapped asset'.format(obj_instance.get_object_name(), asset_info.name)
+    secondary_selected_option = xbmcgui.Dialog().select(
+            dialog_title_str, list = list_items, useDetails = True, preselect = secondary_pre_select_idx)
+    logger.debug('edit_default_asset() Mapable select() returned {0}'.format(secondary_selected_option))
+    if secondary_selected_option < 0:
+        # >> Return to parent menu.
+        logger.debug('edit_default_asset() Mapable selected NONE. Returning to parent menu.')
+        return False
+        
+    new_selected_asset_info = asset_info_list[secondary_selected_option]
+    logger.debug('edit_default_asset() Mapable selected {0}.'.format(new_selected_asset_info.name))
+    obj_instance.set_mapped_asset_key(asset_info, new_selected_asset_info)
+    kodi.notify('{0} {1} mapped to {2}'.format(
+        obj_instance.get_object_name(), asset_info.name, new_selected_asset_info.name
+    ))
+    return True

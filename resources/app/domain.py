@@ -51,7 +51,7 @@ class AssetInfo(object):
     fname_infix     = '' # Used only when searching assets when importing XML
     kind_str        = ''
     exts            = []
-    exts_dialog     = []
+    exts_dialog     = ''
     path_key        = ''
 
     def get_description(self):
@@ -158,8 +158,11 @@ class AelAddon(EntityABC):
         return self.entity_data['configure_uri']
 class Asset(EntityABC):
 
-    def __init__(self, asset_info: AssetInfo, entity_data: typing.Dict[str, typing.Any]):
+    def __init__(self, asset_info: AssetInfo, entity_data: typing.Dict[str, typing.Any] = None):
         self.asset_info = asset_info
+        if entity_data is None:
+            entity_data = _get_default_asset_data_model()
+        
         super(Asset, self).__init__(entity_data)
     
     def get_asset_info_id(self) -> str:
@@ -183,7 +186,7 @@ class Asset(EntityABC):
     @staticmethod
     def create(asset_info_id):
         asset_info = g_assetFactory.get_asset_info(asset_info_id)
-        return Asset(asset_info, None)
+        return Asset(asset_info)
         
 # -------------------------------------------------------------------------------------------------
 # Abstract base class for business objects which support the generic
@@ -346,7 +349,7 @@ class MetaDataItemABC(EntityABC):
         for asset_info in asset_info_list:
             asset = self.get_asset(asset_info.id)
             if asset is None:
-                asset = Asset(asset_info, {})
+                asset = Asset(asset_info)
                 
             available_assets.append(asset)
 
@@ -495,7 +498,7 @@ class Category(MetaDataItemABC):
         # Concrete classes are responsible of creating a default entity_data dictionary
         # with sensible defaults.
         if category_dic is None:
-            category_dic = settings.get_default_category_data_model()
+            category_dic = _get_default_category_data_model()
             category_dic['id'] = text.misc_generate_random_SID()
         super(Category, self).__init__(category_dic, assets)
 
@@ -687,7 +690,7 @@ class ROMSet(MetaDataItemABC):
         # Concrete classes are responsible of creating a default entity_data dictionary
         # with sensible defaults.
         if entity_data is None:
-            entity_data = settings.get_default_ROMSet_data_model()
+            entity_data = _get_default_ROMSet_data_model()
             entity_data['id'] = text.misc_generate_random_SID()
             
         self.launchers_data = launchers_data
@@ -936,7 +939,7 @@ class ROM(MetaDataItemABC):
                  assets_data: typing.List[Asset] = None,
                  launchers_data: typing.List[ROMLauncherAddon] = []):
         if rom_data is None:
-            rom_data = settings.get_default_ROM_data_model()
+            rom_data = _get_default_ROM_data_model()
             rom_data['id'] = text.misc_generate_random_SID()
         
         self.launchers_data = launchers_data
@@ -1892,19 +1895,19 @@ class AssetInfoFactory(object):
         return asset_info 
           
     def get_assets_for_type(self, asset_kind) -> typing.List[AssetInfo]:
-        if asset_kind == KIND_ASSET_CATEGORY:
-            return self.get_asset_list_by_IDs(CATEGORY_ASSET_ID_LIST)
-        if asset_kind == KIND_ASSET_COLLECTION:
-            return self.get_asset_list_by_IDs(COLLECTION_ASSET_ID_LIST)
-        if asset_kind == KIND_ASSET_LAUNCHER:
-            return self.get_asset_list_by_IDs(LAUNCHER_ASSET_ID_LIST)
-        if asset_kind == KIND_ASSET_ROM:
-            return self.get_asset_list_by_IDs(ROM_ASSET_ID_LIST)
+        if asset_kind == constants.KIND_ASSET_CATEGORY:
+            return self.get_asset_list_by_IDs(constants.CATEGORY_ASSET_ID_LIST)
+        if asset_kind == constants.KIND_ASSET_COLLECTION:
+            return self.get_asset_list_by_IDs(constants.COLLECTION_ASSET_ID_LIST)
+        if asset_kind == constants.KIND_ASSET_LAUNCHER:
+            return self.get_asset_list_by_IDs(constants.LAUNCHER_ASSET_ID_LIST)
+        if asset_kind == constants.KIND_ASSET_ROM:
+            return self.get_asset_list_by_IDs(constants.ROM_ASSET_ID_LIST)
         return []
 
     def get_asset_kinds_for_roms(self) -> typing.List[AssetInfo]:
         rom_asset_kinds = []
-        for rom_asset_id in ROM_ASSET_ID_LIST:
+        for rom_asset_id in constants.ROM_ASSET_ID_LIST:
             rom_asset_kinds.append(self.ASSET_INFO_ID_DICT[rom_asset_id])
 
         return rom_asset_kinds
@@ -1946,7 +1949,7 @@ class AssetInfoFactory(object):
     # Input : ['png', 'jpg']
     # Output: '.png|.jpg'
     #
-    def asset_get_dialog_extension_list(self, exts):
+    def asset_get_dialog_extension_list(self, exts) -> str:
         ext_string = ''
         for ext in exts:
             ext_string += '.' + ext + '|'
@@ -2334,3 +2337,153 @@ class AssetInfoFactory(object):
 
 # --- Global object to get asset info ---
 g_assetFactory = AssetInfoFactory()
+
+# -------------------------------------------------------------------------------------------------
+# Data model used in the plugin
+# Internally all string in the data model are Unicode. They will be encoded to
+# UTF-8 when writing files.
+# -------------------------------------------------------------------------------------------------
+# These three functions create a new data structure for the given object and (very importantly) 
+# fill the correct default values). These must match what is written/read from/to the XML files.
+# Tag name in the XML is the same as in the data dictionary.
+#
+def _get_default_category_data_model():
+    return {
+        'id' : '',
+        'type': constants.OBJ_CATEGORY,
+        'm_name' : '',
+        'm_year' : '',
+        'm_genre' : '',
+        'm_developer' : '',
+        'm_rating' : '',
+        'm_plot' : '',
+        'finished' : False,
+        'default_icon' : 's_icon',
+        'default_fanart' : 's_fanart',
+        'default_banner' : 's_banner',
+        'default_poster' : 's_poster',
+        'default_clearlogo' : 's_clearlogo',
+        #'Asset_Prefix' : '',
+        's_icon' : '',
+        's_fanart' : '',
+        's_banner' : '',
+        's_poster' : '',
+        's_clearlogo' : '',
+        's_trailer' : ''
+    }
+
+def _get_default_ROMSet_data_model():
+    return {
+        'id' : '',
+        'type': constants.OBJ_ROMSET,
+        'm_name' : '',
+        'm_year' : '',
+        'm_genre' : '',
+        'm_developer' : '',
+        'm_rating' : '',
+        'm_plot' : '',
+        'platform' : '',
+        'categoryID' : '',
+        #'application' : '',
+        #'args' : '',
+        #'args_extra' : [],
+        #'rompath' : '',
+        #'romext' : '',
+        #'romextrapath' : '',
+        'finished': False,
+        #'toggle_window' : False, # Former 'minimize'
+        #'non_blocking' : False,
+        #'multidisc' : True,
+        #'roms_base_noext' : '',
+        'nointro_xml_file' : '', # deprecated? TODO: remove
+        'nointro_display_mode' : constants.AUDIT_DMODE_ALL, # deprecated? TODO: remove
+        'audit_state' : constants.AUDIT_STATE_OFF,
+        'audit_auto_dat_file' : '',
+        'audit_custom_dat_file' : '',
+        'audit_display_mode' : constants.AUDIT_DMODE_ALL,
+        'launcher_display_mode' : constants.LAUNCHER_DMODE_FLAT,        
+        'num_roms' : 0,
+        'num_parents' : 0,
+        'num_clones' : 0,
+        'num_have' : 0,
+        'num_miss' : 0,
+        'num_unknown' : 0,
+        'num_extra' : 0,
+        'timestamp_launcher' : 0.0,
+        'timestamp_report' : 0.0,
+        'default_icon' : 's_icon',
+        'default_fanart' : 's_fanart',
+        'default_banner' : 's_banner',
+        'default_poster' : 's_poster',
+        'default_clearlogo' : 's_clearlogo',
+        'default_controller' : 's_controller',
+        'Asset_Prefix' : '',
+        's_icon' : '',
+        's_fanart' : '',
+        's_banner' : '',
+        's_poster' : '',
+        's_clearlogo' : '',
+        's_controller' : '',
+        's_trailer' : '',
+        'roms_default_icon' : 's_boxfront',
+        'roms_default_fanart' : 's_fanart',
+        'roms_default_banner' : 's_banner',
+        'roms_default_poster' : 's_flyer',
+        'roms_default_clearlogo' : 's_clearlogo',
+        'ROM_asset_path' : '',
+        'path_3dbox' : '',
+        'path_title' : '',
+        'path_snap' : '',
+        'path_boxfront' : '',
+        'path_boxback' : '',
+        'path_cartridge' : '',
+        'path_fanart' : '',
+        'path_banner' : '',
+        'path_clearlogo' : '',
+        'path_flyer' : '',
+        'path_map' : '',
+        'path_manual' : '',
+        'path_trailer' : ''        
+    }
+
+def _get_default_ROM_data_model():
+    return {
+        'id' : '',
+        'type': constants.OBJ_ROM,
+        'm_name' : '',
+        'm_year' : '',
+        'm_genre' : '',
+        'm_developer' : '',
+        'm_nplayers' : '',
+        'm_esrb' : constants.ESRB_PENDING,
+        'm_rating' : '',
+        'm_plot' : '',
+        'platform': '',
+        'box_size': '',
+        'filename' : '',
+        'disks' : [],
+        'finished' : False,
+        'nointro_status' : constants.AUDIT_STATUS_NONE,
+        'pclone_status' : constants.PCLONE_STATUS_NONE,
+        'cloneof' : '',
+        's_3dbox' : '',
+        's_title' : '',
+        's_snap' : '',
+        's_boxfront' : '',
+        's_boxback' : '',
+        's_cartridge' : '',
+        's_fanart' : '',
+        's_banner' : '',
+        's_clearlogo' : '',
+        's_flyer' : '',
+        's_map' : '',
+        's_manual' : '',
+        's_trailer' : ''
+    }
+    
+def _get_default_asset_data_model():
+    return {
+        'id' : '',
+        'filepath' : '',
+        'asset_type' : ''
+    }

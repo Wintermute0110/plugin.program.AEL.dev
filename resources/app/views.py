@@ -129,8 +129,9 @@ def vw_view_category(category_id: str):
 
 @router.route('/categories/add')
 @router.route('/categories/add/<category_id>')
-def vw_add_category(category_id: str = None):
-    kodi.event(command='ADD_CATEGORY', data={'category_id': category_id})
+@router.route('/categories/add/<category_id>/in/<parent_category_id>')
+def vw_add_category(category_id: str = None, parent_category_id: str = None):
+    kodi.event(command='ADD_CATEGORY', data={'category_id': category_id, 'parent_category_id': parent_category_id})
 
 @router.route('/categories/edit/<category_id>')
 def vw_edit_category(category_id: str):
@@ -292,7 +293,7 @@ def render_list_items(container_data, container_context_items = []):
 
         if xbmc.getCondVisibility("!Skin.HasSetting(KioskMode.Enabled)"):
             item_context_items = viewqueries.qry_listitem_context_menu_items(list_item_data, container_data)
-            list_item.addContextMenuItems(item_context_items + container_context_items, replaceItems = True)
+            list_item.addContextMenuItems(item_context_items + container_context_items)
 
         xbmcplugin.addDirectoryItem(handle = router.handle, url = url_str, listitem = list_item, isFolder = folder_flag)
 
