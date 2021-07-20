@@ -18,6 +18,7 @@ from __future__ import unicode_literals
 from __future__ import division
 
 import logging
+import typing
 
 from ael import constants, settings
 from ael.utils import kodi
@@ -25,7 +26,7 @@ from ael.utils import kodi
 from resources.app.commands.mediator import AppMediator
 from resources.app import globals
 from resources.app.repositories import UnitOfWork, CategoryRepository, ROMSetRepository, ROMsRepository, ViewRepository
-from resources.app.domain import ROM, ROMSet, Category
+from resources.app.domain import ROM, ROMSet, Category, VirtualCollection
 
 logger = logging.getLogger(__name__)
 
@@ -41,6 +42,7 @@ def cmd_render_views_data(args):
         views_repository        = ViewRepository(globals.g_PATHS)
         
         _render_root_view(categories_repository, romsets_repository, roms_repository, views_repository, render_sub_views=True)
+        #_redn(roms_repository, views_repository)
         
     kodi.notify('All views rendered')
     kodi.refresh_container()
@@ -103,7 +105,27 @@ def cmd_cleanup_views(args):
             if not view_id in category_ids and not view_id in romset_ids:
                 logger.info('Removing files for collection "{}"'.format(view_id))
                 view_file.unlink()
-       
+ 
+@AppMediator.register('RENDER_VCATEGORY_VIEW')
+def cmd_render_vcategory(args):
+    vcategory_id = args['vcategory_id'] if 'vcategory_id' in args else None
+    
+    uow = UnitOfWork(globals.g_PATHS.DATABASE_FILE_PATH)
+    with uow:
+        roms_repository    = ROMsRepository(uow)
+        views_repository   = ViewRepository(globals.g_PATHS)
+             
+        if vcategory_id == constants.VCATEGORY_RECENT_ID:
+            kodi.notify('Rendering recently played')
+            roms = roms_repository.find_recently_played_roms()
+            _render_vcollection()
+            (romset, roms_repository, views_repository)
+    
+    kodi.notify('Selected views rendered')
+    kodi.refresh_container()
+    
+        
+          
 def _render_root_view(categories_repository: CategoryRepository, romsets_repository: ROMSetRepository, 
                       roms_repository: ROMsRepository, views_repository: ViewRepository, 
                       render_sub_views = False):
@@ -112,7 +134,7 @@ def _render_root_view(categories_repository: CategoryRepository, romsets_reposit
     root_romsets = romsets_repository.find_root_romsets()
         
     root_data = {
-        'id': 'ROOT',
+        'id': constants.VCATEGORY_ADDONROOT_ID,
         'name': 'Root',
         'obj_type': constants.OBJ_CATEGORY,
         'items': []
@@ -314,3 +336,20 @@ def _render_rom_listitem(rom_obj: ROM, romset_obj: ROMSet):
             constants.AEL_PCLONE_STAT_LABEL:    AEL_PClone_stat_value
         }
     }
+
+def _render_vcollection(vcollection: VirtualCollection, roms: typing.List[ROM], romsets_by_id: typing.Dict[str, ROMSet], views_repository: ViewRepository):
+    view_data = {
+        'id': vcollection.get_id(),
+        'name': vcollection.get_name(),
+        'obj_type': constants.OBJ_COLLECTION_VIRTUAL,
+        'items': []
+    }
+    view_items = []
+    for rom in roms:
+        romset_obj = romsets_by_id[rom.get_parent_id()]
+        view_items.append(_render_rom_listitem(rom, romset_obj))
+        
+    logger.debug('Storing {} items for virtual collection "{}" view.'.format(len(view_items), vcollection.get_name()))
+    view_data['items'] = view_items
+    views_repository.store_view(vcollection.get_id(), view_data)
+    

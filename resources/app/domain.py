@@ -677,7 +677,23 @@ class ROMSetScanner(ROMAddon):
     
     def get_last_scan_timestamp(self):
         return None
-    
+ 
+class VirtualCollection(MetaDataItemABC):
+    def __init__(self, 
+                entity_data: dict = None, 
+                assets_data: typing.List[Asset] = None,
+                launchers_data: typing.List[ROMLauncherAddon] = [], 
+                scanners_data: typing.List[ROMSetScanner] = []):
+        # Concrete classes are responsible of creating a default entity_data dictionary
+        # with sensible defaults.
+        if entity_data is None:
+            entity_data = _get_default_ROMSet_data_model()
+            entity_data['id'] = text.misc_generate_random_SID()
+            
+        self.launchers_data = launchers_data
+        self.scanners_data = scanners_data
+        super(VirtualCollection, self).__init__(entity_data, assets_data)
+  
 # -------------------------------------------------------------------------------------------------
 # Class representing a collection of ROMs.
 # -------------------------------------------------------------------------------------------------
@@ -2337,6 +2353,10 @@ class AssetInfoFactory(object):
 
 # --- Global object to get asset info ---
 g_assetFactory = AssetInfoFactory()
+
+class VirtualCategoryFactory(object):
+    def __init__(self):
+        self.entity_data = {}
 
 # -------------------------------------------------------------------------------------------------
 # Data model used in the plugin

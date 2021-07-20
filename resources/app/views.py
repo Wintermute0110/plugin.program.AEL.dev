@@ -105,6 +105,25 @@ def vw_route_render_collection(collection_id: str):
         
     xbmcplugin.endOfDirectory(handle = router.handle, succeeded = True, cacheToDisc = False)
 
+@router.route('/vcategory/recently_played')
+def vw_route_render_vcategory_recently_played():
+    container               = viewqueries.qry_get_collection_items(constants.VCATEGORY_RECENT_ID)
+    container_context_items = viewqueries.qry_container_context_menu_items(container)
+    container_type          = container['obj_type'] if 'obj_type' in container else constants.OBJ_NONE
+
+    if container is None:
+        kodi.notify('Current view is not rendered correctly. Re-render views first.')
+    elif len(container['items']) == 0:
+        if container_type == constants.OBJ_CATEGORY:
+            kodi.notify('Category {} has no items. Add romsets or categories first.'.format(container['name']))
+        if container_type == constants.OBJ_ROMSET:
+            kodi.notify('ROMSet {} has no items. Add ROMs'.format(container['name']))
+    else:
+        render_list_items(container, container_context_items)
+        
+    xbmcplugin.endOfDirectory(handle = router.handle, succeeded = True, cacheToDisc = False)
+    
+    
 # -------------------------------------------------------------------------------------------------
 # Utilities and Global reports
 # -------------------------------------------------------------------------------------------------
