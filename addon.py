@@ -24,7 +24,7 @@ import sys
 import logging
 
 # --- Modules/packages in this plugin ---
-from ael.utils import kodilogging, text
+from ael.utils import kodilogging, kodi
 from resources.app import views
 
 kodilogging.config()
@@ -49,5 +49,5 @@ logger = logging.getLogger(__name__)
 try:
     views.run_plugin(sys.argv)
 except Exception as ex:
-    message = text.createError(ex)
-    logger.fatal(message)
+    logger.fatal('Exception in plugin', exc_info=ex)
+    kodi.notify_error("General failure")

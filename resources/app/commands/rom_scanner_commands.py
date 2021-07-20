@@ -55,12 +55,12 @@ def cmd_manage_romset_scanners(args):
     if selected_option is None:
         # >> Exits context menu
         logger.debug('EDIT_ROMSET_SCANNERS: cmd_manage_romset_scanners() Selected None. Closing context menu')
-        kodi.event(command='EDIT_ROMSET', data=args)
+        AppMediator.async_cmd('EDIT_ROMSET', args)
         return
     
     # >> Execute subcommand. May be atomic, maybe a submenu.
     logger.debug('EDIT_ROMSET_SCANNERS: cmd_manage_romset_scanners() Selected {}'.format(selected_option))
-    kodi.event(command=selected_option, data=args)
+    AppMediator.async_cmd(selected_option, args)
 
 # --- Sub commands ---
 @AppMediator.register('ADD_SCANNER')
@@ -86,7 +86,7 @@ def cmd_add_romset_scanner(args):
     if selected_option is None:
         # >> Exits context menu
         logger.debug('ADD_SCANNER: cmd_add_romset_scanner() Selected None. Closing context menu')
-        kodi.event(command='EDIT_ROMSET_SCANNERS', data=args)
+        AppMediator.async_cmd('EDIT_ROMSET_SCANNERS', args)
         return
     
     # >> Execute subcommand. May be atomic, maybe a submenu.
@@ -111,7 +111,7 @@ def cmd_edit_romset_scanners(args):
     scanners = romset.get_scanners()
     if len(scanners) == 0:
         kodi.notify('No scanners configured for this romset!')
-        kodi.event(command='EDIT_ROMSET_SCANNERS', data=args)
+        AppMediator.async_cmd('EDIT_ROMSET_SCANNERS', args)
         return
     
     options = collections.OrderedDict()
@@ -124,7 +124,7 @@ def cmd_edit_romset_scanners(args):
     if selected_option is None:
         # >> Exits context menu
         logger.debug('EDIT_SCANNER: cmd_edit_romset_scanners() Selected None. Closing context menu')
-        kodi.event(command='EDIT_ROMSET_SCANNERS', data=args)
+        AppMediator.async_cmd('EDIT_ROMSET_SCANNERS', args)
         return
     
     # >> Execute subcommand. May be atomic, maybe a submenu.
@@ -150,7 +150,7 @@ def cmd_remove_romset_scanner(args):
         scanners = romset.get_scanners()
         if len(scanners) == 0:
             kodi.notify('No scanners configured for this romset!')
-            kodi.event(command='EDIT_ROMSET_SCANNERS', data=args)
+            AppMediator.async_cmd('EDIT_ROMSET_SCANNERS', args)
             return
         
         options = collections.OrderedDict()
@@ -163,21 +163,21 @@ def cmd_remove_romset_scanner(args):
         if selected_option is None:
             # >> Exits context menu
             logger.debug('REMOVE_SCANNER: cmd_remove_romset_scanner() Selected None. Closing context menu')
-            kodi.event(command='EDIT_ROMSET_SCANNERS', data=args)
+            AppMediator.async_cmd('EDIT_ROMSET_SCANNERS', args)
             return
         
         # >> Execute subcommand. May be atomic, maybe a submenu.
         logger.debug('REMOVE_SCANNER: cmd_remove_romset_scanner() Selected {}'.format(selected_option.get_id()))
         if not kodi.dialog_yesno('Are you sure to delete ROM scanner "{}"'.format(selected_option.get_name())):
             logger.debug('REMOVE_SCANNER: cmd_remove_romset_scanner() Cancelled operation.')
-            kodi.event(command='EDIT_ROMSET_SCANNERS', data=args)
+            AppMediator.async_cmd('EDIT_ROMSET_SCANNERS', args)
             return
         
         romset_repository.remove_scanner(romset.get_id(), selected_option.get_id())
         logger.info('REMOVE_SCANNER: cmd_remove_romset_scanner() Removed scanner#{}'.format(selected_option.get_id()))
         uow.commit()
     
-    kodi.event(command='EDIT_ROMSET_SCANNERS', data=args) 
+    AppMediator.async_cmd('EDIT_ROMSET_SCANNERS', args) 
   
 # -------------------------------------------------------------------------------------------------
 # ROMSet scanner specific configuration.
@@ -207,7 +207,7 @@ def cmd_set_scanner_settings(args):
         uow.commit()
     
     kodi.notify('Configured ROM scanner {}'.format(addon.get_name()))
-    kodi.event(command='EDIT_ROMSET', data={'romset_id': romset_id})
+    AppMediator.async_cmd('EDIT_ROMSET', {'romset_id': romset_id})
  
 # -------------------------------------------------------------------------------------------------
 # ROMSet Scanner executing
@@ -267,6 +267,6 @@ def cmd_store_scanned_roms(args):
     
     kodi.notify('Stored scanned ROMS in ROMs Collection {}'.format(romset.get_name()))
     
-    kodi.event(command='RENDER_ROMSET_VIEW', data={'romset_id': romset_id})
-    kodi.event(command='RENDER_VIEW', data={'category_id': romset.get_parent_id()})  
-    kodi.event(command='EDIT_ROMSET', data={'romset_id': romset_id})
+    AppMediator.async_cmd('RENDER_ROMSET_VIEW', {'romset_id': romset_id})
+    AppMediator.async_cmd('RENDER_VIEW', {'category_id': romset.get_parent_id()})  
+    AppMediator.async_cmd('EDIT_ROMSET', {'romset_id': romset_id})

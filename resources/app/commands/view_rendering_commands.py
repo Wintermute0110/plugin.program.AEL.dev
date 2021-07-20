@@ -58,7 +58,7 @@ def cmd_render_view_data(args):
         roms_repository         = ROMsRepository(uow)
         views_repository        = ViewRepository(globals.g_PATHS)
                 
-        if category_id is None:
+        if category_id is None or category_id == 'ROOT':
             _render_root_view(categories_repository, romsets_repository, roms_repository, views_repository, render_recursive)
         else:
             category = categories_repository.find_category(category_id)
@@ -112,8 +112,8 @@ def _render_root_view(categories_repository: CategoryRepository, romsets_reposit
     root_romsets = romsets_repository.find_root_romsets()
         
     root_data = {
-        'id': '',
-        'name': 'root',
+        'id': 'ROOT',
+        'name': 'Root',
         'obj_type': constants.OBJ_CATEGORY,
         'items': []
     }

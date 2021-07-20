@@ -43,9 +43,7 @@ class ViewRepository(object):
             item_data = repository_file.readJson()
         except ValueError as ex:
             statinfo = repository_file.stat()
-            logger.error('find_root_items(): ValueError exception in file.readJson() function')
-            message = text.createError(ex)
-            logger.error(message)
+            logger.error('find_root_items(): ValueError exception in file.readJson() function', exc_info=ex)
             logger.error('find_root_items(): Dir  {}'.format(repository_file.getPath()))
             logger.error('find_root_items(): Size {}'.format(statinfo.st_size))
             return None
@@ -59,9 +57,7 @@ class ViewRepository(object):
             item_data = repository_file.readJson()
         except ValueError as ex:
             statinfo = repository_file.stat()
-            logger.error('find_items(): ValueError exception in file.readJson() function')
-            message = text.createError(ex)
-            logger.error(message)
+            logger.error('find_items(): ValueError exception in file.readJson() function', exc_info=ex)
             logger.error('find_items(): Dir  {}'.format(repository_file.getPath()))
             logger.error('find_items(): Size {}'.format(statinfo.st_size))
             return None
@@ -391,6 +387,8 @@ class CategoryRepository(object):
         self._uow = uow
 
     def find_category(self, category_id: str) -> Category:
+        if category_id == 'ROOT': return Category({'m_name': 'Root'})
+        
         self._uow.execute(QUERY_SELECT_CATEGORY, category_id)
         category_data = self._uow.single_result()
                 
@@ -453,6 +451,7 @@ class CategoryRepository(object):
         logger.info("CategoryRepository.insert_category(): Inserting new category '{}'".format(category_obj.get_name()))
         metadata_id = text.misc_generate_random_SID()
         assets_path = category_obj.get_assets_path_FN()
+        parent_category_id = parent_obj.get_id() if parent_obj is not None and parent_obj.get_id() != 'ROOT' else None
         
         self._uow.execute(QUERY_INSERT_METADATA,
             metadata_id,
@@ -467,7 +466,7 @@ class CategoryRepository(object):
         self._uow.execute(QUERY_INSERT_CATEGORY,
             category_obj.get_id(),
             category_obj.get_name(),
-            parent_obj.get_id() if parent_obj is not None else None,
+            parent_category_id,
             metadata_id,
             category_obj.get_mapped_asset_info(asset_id=constants.ASSET_ICON_ID).key,
             category_obj.get_mapped_asset_info(asset_id=constants.ASSET_FANART_ID).key,
@@ -645,6 +644,7 @@ class ROMSetRepository(object):
         logger.info("ROMSetRepository.insert_romset(): Inserting new romset '{}'".format(romset_obj.get_name()))
         metadata_id = text.misc_generate_random_SID()
         assets_path = romset_obj.get_assets_path_FN()
+        parent_category_id = parent_obj.get_id() if parent_obj is not None and parent_obj.get_id() != 'ROOT' else None
         
         self._uow.execute(QUERY_INSERT_METADATA,
             metadata_id,
@@ -659,7 +659,7 @@ class ROMSetRepository(object):
         self._uow.execute(QUERY_INSERT_ROMSET,
             romset_obj.get_id(),
             romset_obj.get_name(),
-            parent_obj.get_id() if parent_obj is not None else None,
+            parent_category_id,
             metadata_id,
             romset_obj.get_platform(),
             romset_obj.get_box_sizing(),    

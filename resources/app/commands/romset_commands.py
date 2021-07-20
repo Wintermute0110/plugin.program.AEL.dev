@@ -26,27 +26,52 @@ from ael.utils import kodi, text, io
 from resources.app.commands.mediator import AppMediator
 from resources.app import globals, editors
 from resources.app.repositories import UnitOfWork, CategoryRepository, ROMSetRepository
-from resources.app.domain import ROMSet, g_assetFactory
+from resources.app.domain import Category, ROMSet, g_assetFactory
 
 logger = logging.getLogger(__name__)
 
 @AppMediator.register('ADD_ROMSET')
 def cmd_add_collection(args):
+    logger.debug('cmd_add_collection() BEGIN')
+    parent_id = args['category_id'] if 'category_id' in args else None
+    grand_parent_id = args['parent_category_id'] if 'parent_category_id' in args else None
     
-    wizard = kodi.WizardDialog_Selection(None, 'platform', 'Select the platform', platforms.AEL_platform_list)
-    wizard = kodi.WizardDialog_Keyboard(wizard, 'm_name','Set the title of the launcher', _get_name_from_platform)
-    wizard = kodi.WizardDialog_FileBrowse(wizard, 'assets_path', 'Select asset/artwork directory',0, '')
+    uow = UnitOfWork(globals.g_PATHS.DATABASE_FILE_PATH)
+    with uow:
+        repository              = CategoryRepository(uow)
+        parent_category         = repository.find_category(parent_id) if parent_id is not None else None
+        grand_parent_category  =  repository.find_category(grand_parent_id)
+        
+        if grand_parent_category is not None:
+            options_dialog = kodi.ListDialog()
+            selected_option = options_dialog.select('Add ROM collection in?',[parent_category.get_name(), grand_parent_category.get_name()])
+            if selected_option > 0:
+                parent_category = grand_parent_category
     
-    entity_data = {}
-    entity_data = wizard.runWizard(entity_data)
+        wizard = kodi.WizardDialog_Selection(None, 'platform', 'Select the platform', platforms.AEL_platform_list)
+        wizard = kodi.WizardDialog_Dummy(wizard, 'm_name', '', _get_name_from_platform)
+        wizard = kodi.WizardDialog_Keyboard(wizard, 'm_name', 'Set the title of the launcher')
+        wizard = kodi.WizardDialog_FileBrowse(wizard, 'assets_path', 'Select asset/artwork directory',0, '')
+        
+        romset = ROMSet()
+        entity_data = romset.get_data_dic()
+        entity_data = wizard.runWizard(entity_data)
+        
+        romset.import_data_dic(entity_data)
+                
+        # --- Determine box size based on platform --
+        platform = platforms.get_AEL_platform(entity_data['platform'])
+        romset.set_box_sizing(platform.default_box_size)
+        
+        romset_repository = ROMSetRepository(uow)
+        romset_repository.insert_romset(romset, parent_category)
+        uow.commit()
+        
+        kodi.notify('ROM Collection {0} created'.format(romset.get_name()))
+        AppMediator.async_cmd('RENDER_ROMSET_VIEW', {'romset_id': romset.get_id()})
+        AppMediator.async_cmd('RENDER_VIEW', {'category_id': parent_category.get_id()})   
     
-    romset = ROMSet(entity_data, [])
-    
-    # --- Determine box size based on platform --
-    platform = platforms.get_AEL_platform(entity_data['platform'])
-    romset.set_box_sizing(platform.default_box_size)
-    
-def _get_name_from_platform(self, input, item_key, entity_data):
+def _get_name_from_platform(input, item_key, entity_data):
     title = entity_data['platform']
     return title
 
@@ -99,7 +124,7 @@ def cmd_edit_romset(args):
     
     # >> Execute subcommand. May be atomic, maybe a submenu.
     logger.debug('EDIT_ROMSET: cmd_edit_romset() Selected {}'.format(selected_option))
-    kodi.event(command=selected_option, data = {
+    AppMediator.sync_cmd(selected_option, {
         'romset_id': romset_id, 'category_id': romset.get_parent_id()
     })
 
@@ -136,13 +161,13 @@ def cmd_romset_metadata(args):
     if selected_option is None:
         # >> Return recursively to parent menu.
         logger.debug('cmd_romset_metadata(EDIT_METADATA) Selected NONE')
-        kodi.event(command='EDIT_ROMSET', data=args)
+        AppMediator.sync_cmd('EDIT_ROMSET', args)
         return
 
     # >> Execute launcher edit metadata atomic subcommand.
     # >> Then, execute recursively this submenu again.
     logger.debug('cmd_romset_metadata(EDIT_METADATA) Selected {0}'.format(selected_option))
-    kodi.event(command=selected_option, data=args)
+    AppMediator.sync_cmd(selected_option, args)
 
 @AppMediator.register('ROMSET_EDIT_ASSETS')
 def cmd_romset_edit_assets(args):
@@ -156,12 +181,12 @@ def cmd_romset_edit_assets(args):
         
         selected_asset_to_edit = editors.edit_object_assets(romset, preselected_option)
         if selected_asset_to_edit is None:
-            kodi.event(command='EDIT_ROMSET', data=args)
+            AppMediator.async_cmd('EDIT_ROMSET', args)
             return
         
         asset = g_assetFactory.get_asset_info(selected_asset_to_edit)
         #if selected_asset_to_edit == editors.SCRAPE_CMD:
-        #    kodi.event(command='EDIT_ROMSET_MENU', data=args)
+        #    AppMediator.async_cmd('EDIT_ROMSET_MENU', args)
         #    globals.run_command(scrape_cmd, rom=obj_instance)
         #    edit_object_assets(obj_instance, selected_option)
         #    return True
@@ -172,10 +197,10 @@ def cmd_romset_edit_assets(args):
         if editors.edit_asset(romset, asset):
             repository.update_romset(romset)
             uow.commit()
-            kodi.event(command='RENDER_ROMSET_VIEW', data={'romset_id': romset.get_id()})
-            kodi.event(command='RENDER_VIEW', data={'category_id': romset.get_parent_id()})     
+            AppMediator.async_cmd('RENDER_ROMSET_VIEW', {'romset_id': romset.get_id()})
+            AppMediator.async_cmd('RENDER_VIEW', {'category_id': romset.get_parent_id()})     
 
-    kodi.event(command='ROMSET_EDIT_ASSETS', data={'romset_id': romset.get_id(), 'selected_asset': asset.id})         
+    AppMediator.sync_cmd('ROMSET_EDIT_ASSETS', {'romset_id': romset.get_id(), 'selected_asset': asset.id})         
 
 @AppMediator.register('ROMSET_EDIT_DEFAULT_ASSETS')
 def cmd_romset_edit_default_assets(args):
@@ -189,15 +214,15 @@ def cmd_romset_edit_default_assets(args):
         
         selected_asset_to_edit = editors.edit_object_default_assets(romset, preselected_option)
         if selected_asset_to_edit is None:
-            kodi.event(command='EDIT_ROMSET', data=args)
+            AppMediator.async_cmd('EDIT_ROMSET', args)
 
         if editors.edit_default_asset(romset, selected_asset_to_edit):
             repository.update_romset(romset)
             uow.commit()
-            kodi.event(command='RENDER_ROMSET_VIEW', data={'romset_id': romset.get_id()})
-            kodi.event(command='RENDER_VIEW', data={'category_id': romset.get_parent_id()})     
+            AppMediator.async_cmd('RENDER_ROMSET_VIEW', {'romset_id': romset.get_id()})
+            AppMediator.async_cmd('RENDER_VIEW', {'category_id': romset.get_parent_id()})     
 
-    kodi.event(command='ROMSET_EDIT_DEFAULT_ASSETS', data={'romset_id': romset.get_id(), 'selected_asset': selected_asset_to_edit.id})         
+    AppMediator.async_cmd('ROMSET_EDIT_DEFAULT_ASSETS', {'romset_id': romset.get_id(), 'selected_asset': selected_asset_to_edit.id})         
     
 @AppMediator.register('EDIT_ROMSET_STATUS')
 def cmd_romset_status(args):
@@ -211,9 +236,9 @@ def cmd_romset_status(args):
         repository.update_romset(romset)
         uow.commit()
         
-    kodi.event(command='RENDER_ROMSET_VIEW', data={'romset_id': romset.get_id()})
-    kodi.event(command='RENDER_VIEW', data={'category_id': romset.get_parent_id()})     
-    kodi.event(command='EDIT_ROMSET', data=args)
+    AppMediator.async_cmd('RENDER_ROMSET_VIEW', {'romset_id': romset.get_id()})
+    AppMediator.async_cmd('RENDER_VIEW', {'category_id': romset.get_parent_id()})     
+    AppMediator.async_cmd('EDIT_ROMSET', args)
     
 #
 # Remove ROMSet
@@ -241,9 +266,9 @@ def cmd_romset_delete(args):
         uow.commit()
         
     kodi.notify('Deleted romset {0}'.format(romset_name))
-    kodi.event(command='RENDER_VIEW', data={'category_id': romset.get_parent_id()})            
-    kodi.event(command='CLEANUP_VIEWS')
-    kodi.event(command='EDIT_ROMSET', data=args)
+    AppMediator.async_cmd('RENDER_VIEW', {'category_id': romset.get_parent_id()})            
+    AppMediator.async_cmd('CLEANUP_VIEWS')
+    AppMediator.async_cmd('EDIT_ROMSET', args)
 
 # --- Atomic commands ---
 # --- Edition of the launcher name ---
@@ -258,9 +283,9 @@ def cmd_romset_metadata_title(args):
         if editors.edit_field_by_str(romset, 'Title', romset.get_name, romset.set_name):
             repository.update_romset(romset)
             uow.commit()
-            kodi.event(command='RENDER_ROMSET_VIEW', data={'romset_id': romset.get_id()})
-            kodi.event(command='RENDER_VIEW', data={'category_id': romset.get_parent_id()})            
-    kodi.event(command='ROMSET_EDIT_METADATA', data=args)
+            AppMediator.async_cmd('RENDER_ROMSET_VIEW', {'romset_id': romset.get_id()})
+            AppMediator.async_cmd('RENDER_VIEW', {'category_id': romset.get_parent_id()})            
+    AppMediator.async_cmd('ROMSET_EDIT_METADATA', args)
 
 @AppMediator.register('ROMSET_EDIT_METADATA_PLATFORM')
 def cmd_romset_metadata_platform(args):
@@ -274,9 +299,9 @@ def cmd_romset_metadata_platform(args):
                                     romset.get_platform, romset.set_platform):
             repository.update_romset(romset)
             uow.commit()
-            kodi.event(command='RENDER_ROMSET_VIEW', data={'romset_id': romset.get_id()})
-            kodi.event(command='RENDER_VIEW', data={'category_id': romset.get_parent_id()})            
-    kodi.event(command='ROMSET_EDIT_METADATA', data=args)
+            AppMediator.async_cmd('RENDER_ROMSET_VIEW', {'romset_id': romset.get_id()})
+            AppMediator.async_cmd('RENDER_VIEW', {'category_id': romset.get_parent_id()})            
+    AppMediator.async_cmd('ROMSET_EDIT_METADATA', args)
 
 @AppMediator.register('ROMSET_EDIT_METADATA_RELEASEYEAR')
 def cmd_romset_metadata_releaseyear(args):
@@ -289,9 +314,9 @@ def cmd_romset_metadata_releaseyear(args):
         if editors.edit_field_by_str(romset, 'Release Year', romset.get_releaseyear, romset.set_releaseyear):
             repository.update_romset(romset)
             uow.commit()
-            kodi.event(command='RENDER_ROMSET_VIEW', data={'romset_id': romset.get_id()})
-            kodi.event(command='RENDER_VIEW', data={'category_id': romset.get_parent_id()})
-    kodi.event(command='ROMSET_EDIT_METADATA', data=args)
+            AppMediator.async_cmd('RENDER_ROMSET_VIEW', {'romset_id': romset.get_id()})
+            AppMediator.async_cmd('RENDER_VIEW', {'category_id': romset.get_parent_id()})
+    AppMediator.async_cmd('ROMSET_EDIT_METADATA', args)
 
 @AppMediator.register('ROMSET_EDIT_METADATA_GENRE')
 def cmd_romset_metadata_genre(args):
@@ -304,9 +329,9 @@ def cmd_romset_metadata_genre(args):
         if editors.edit_field_by_str(romset, 'Genre', romset.get_genre, romset.set_genre):
             repository.update_romset(romset)
             uow.commit()            
-            kodi.event(command='RENDER_ROMSET_VIEW', data={'romset_id': romset.get_id()})
-            kodi.event(command='RENDER_VIEW', data={'category_id': romset.get_parent_id()})            
-    kodi.event(command='ROMSET_EDIT_METADATA', data=args)
+            AppMediator.async_cmd('RENDER_ROMSET_VIEW', {'romset_id': romset.get_id()})
+            AppMediator.async_cmd('RENDER_VIEW', {'category_id': romset.get_parent_id()})            
+    AppMediator.async_cmd('ROMSET_EDIT_METADATA', args)
     
 @AppMediator.register('ROMSET_EDIT_METADATA_DEVELOPER')
 def cmd_romset_metadata_developer(args):
@@ -319,9 +344,9 @@ def cmd_romset_metadata_developer(args):
         if editors.edit_field_by_str(romset, 'Developer', romset.get_developer, romset.set_developer):
             repository.update_romset(romset)
             uow.commit()    
-            kodi.event(command='RENDER_ROMSET_VIEW', data={'romset_id': romset.get_id()})
-            kodi.event(command='RENDER_VIEW', data={'category_id': romset.get_parent_id()})
-    kodi.event(command='ROMSET_EDIT_METADATA', data=args)
+            AppMediator.async_cmd('RENDER_ROMSET_VIEW', {'romset_id': romset.get_id()})
+            AppMediator.async_cmd('RENDER_VIEW', {'category_id': romset.get_parent_id()})
+    AppMediator.async_cmd('ROMSET_EDIT_METADATA', args)
 
 @AppMediator.register('ROMSET_EDIT_METADATA_RATING')
 def cmd_romset_metadata_rating(args):
@@ -334,9 +359,9 @@ def cmd_romset_metadata_rating(args):
         if editors.edit_rating(romset, romset.get_rating, romset.set_rating):
             repository.update_romset(romset)
             uow.commit()
-            kodi.event(command='RENDER_ROMSET_VIEW', data={'romset_id': romset.get_id()})
-            kodi.event(command='RENDER_VIEW', data={'category_id': romset.get_parent_id()})
-    kodi.event(command='ROMSET_EDIT_METADATA', data=args)
+            AppMediator.async_cmd('RENDER_ROMSET_VIEW', {'romset_id': romset.get_id()})
+            AppMediator.async_cmd('RENDER_VIEW', {'category_id': romset.get_parent_id()})
+    AppMediator.async_cmd('ROMSET_EDIT_METADATA', args)
 
 @AppMediator.register('ROMSET_EDIT_METADATA_PLOT')
 def cmd_romset_metadata_plot(args):
@@ -349,9 +374,9 @@ def cmd_romset_metadata_plot(args):
         if editors.edit_field_by_str(romset, 'Plot', romset.get_plot, romset.set_plot):
             repository.update_romset(romset)
             uow.commit()
-            kodi.event(command='RENDER_ROMSET_VIEW', data={'romset_id': romset.get_id()})
-            kodi.event(command='RENDER_VIEW', data={'category_id': romset.get_parent_id()})
-    kodi.event(command='ROMSET_EDIT_METADATA', data=args)
+            AppMediator.async_cmd('RENDER_ROMSET_VIEW', {'romset_id': romset.get_id()})
+            AppMediator.async_cmd('RENDER_VIEW', {'category_id': romset.get_parent_id()})
+    AppMediator.async_cmd('ROMSET_EDIT_METADATA', args)
     
 @AppMediator.register('ROMSET_EDIT_METADATA_BOXSIZE')
 def cmd_romset_metadata_boxsize(args):
@@ -365,9 +390,9 @@ def cmd_romset_metadata_boxsize(args):
                                     romset.get_box_sizing, romset.set_platset_box_sizingform):
             repository.update_romset(romset)
             uow.commit()
-            kodi.event(command='RENDER_ROMSET_VIEW', data={'romset_id': romset.get_id()})
-            kodi.event(command='RENDER_VIEW', data={'category_id': romset.get_parent_id()})            
-    kodi.event(command='ROMSET_EDIT_METADATA', data=args)
+            AppMediator.async_cmd('RENDER_ROMSET_VIEW', {'romset_id': romset.get_id()})
+            AppMediator.async_cmd('RENDER_VIEW', {'category_id': romset.get_parent_id()})            
+    AppMediator.async_cmd('ROMSET_EDIT_METADATA', args)
 
 # --- Import launcher metadata from NFO file (default location) ---
 @AppMediator.register('ROMSET_IMPORT_NFO_FILE_DEFAULT')
@@ -383,10 +408,10 @@ def cmd_romset_import_nfo_file(args):
             repository.update_romset(romset)
             uow.commit()
             kodi.notify('Imported ROMSet NFO file {0}'.format(NFO_file.getPath()))
-            kodi.event(command='RENDER_ROMSET_VIEW', data={'romset_id': romset.get_id()})
-            kodi.event(command='RENDER_VIEW', data={'category_id': romset.get_parent_id()})
+            AppMediator.async_cmd('RENDER_ROMSET_VIEW', {'romset_id': romset.get_id()})
+            AppMediator.async_cmd('RENDER_VIEW', {'category_id': romset.get_parent_id()})
     
-    kodi.event(command='ROMSET_EDIT_METADATA', data=args)
+    AppMediator.async_cmd('ROMSET_EDIT_METADATA', args)
 
 @AppMediator.register('ROMSET_IMPORT_NFO_FILE_BROWSE')
 def cmd_romset_browse_import_nfo_file(args):    
@@ -407,10 +432,10 @@ def cmd_romset_browse_import_nfo_file(args):
             repository.update_romset(romset)
             uow.commit()
             kodi.notify('Imported ROMSet NFO file {0}'.format(NFO_FileName.getPath()))
-            kodi.event(command='RENDER_ROMSET_VIEW', data={'romset_id': romset.get_id()})
-            kodi.event(command='RENDER_VIEW', data={'category_id': romset.get_parent_id()})
+            AppMediator.async_cmd('RENDER_ROMSET_VIEW', {'romset_id': romset.get_id()})
+            AppMediator.async_cmd('RENDER_VIEW', {'category_id': romset.get_parent_id()})
     
-    kodi.event(command='ROMSET_EDIT_METADATA', data=args)
+    AppMediator.async_cmd('ROMSET_EDIT_METADATA', args)
 
 @AppMediator.register('ROMSET_SAVE_NFO_FILE_DEFAULT')
 def cmd_romset_save_nfo_file(args):
@@ -432,7 +457,7 @@ def cmd_romset_save_nfo_file(args):
         logger.debug("cmd_romset_save_nfo_file() Created '{0}'".format(NFO_FileName.getPath()))
         kodi.notify('Exported ROMSet NFO file {0}'.format(NFO_FileName.getPath()))
     
-    kodi.event(command='ROMSET_EDIT_METADATA', data=args)
+    AppMediator.async_cmd('ROMSET_EDIT_METADATA', args)
 
 @AppMediator.register('ROMSET_EXPORT_ROMSET_XML')
 # --- Export Category XML configuration ---
@@ -453,7 +478,7 @@ def cmd_romset_export_xml(args):
     # --- Ask user for a path to export the launcher configuration ---
     dir_path = kodi.browse(0, 'Select directory to export XML', 'files', '', False)
     if not dir_path: 
-        kodi.event(command='ROMSET_EDIT_METADATA', data=args)
+        AppMediator.async_cmd('ROMSET_EDIT_METADATA', args)
         return
 
     # --- If XML exists then warn user about overwriting it ---
@@ -462,7 +487,7 @@ def cmd_romset_export_xml(args):
         ret = kodi.dialog_yesno('Overwrite file {0}?'.format(export_FN.getPath()))
         if not ret:
             kodi.notify_warn('Export of ROMSet XML cancelled')
-            kodi.event(command='ROMSET_EDIT_METADATA', data=args)
+            AppMediator.async_cmd('ROMSET_EDIT_METADATA', args)
             return
 
     # >> If everything goes all right when exporting then the else clause is executed.
@@ -476,4 +501,4 @@ def cmd_romset_export_xml(args):
     else:
         kodi.notify('Exported ROMSet "{0}" XML config'.format(romset.get_name()))
     
-    kodi.event(command='ROMSET_EDIT_METADATA', data=args)
+    AppMediator.async_cmd('ROMSET_EDIT_METADATA', args)

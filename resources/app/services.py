@@ -26,9 +26,9 @@ class AppService(object):
         self.monitor = AppMonitor(addon_id=globals.addon_id, action=self.queue.append)
 
     def _execute_service_actions(self, action_data):
-        event = action_data['action']
+        cmd = action_data['action']
         args = action_data['data']
-        AppMediator.invoke(event, args)
+        AppMediator.sync_cmd(cmd, args)
 
     def run(self):        
         # --- Some debug stuff for development ---

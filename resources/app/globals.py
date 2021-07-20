@@ -126,10 +126,11 @@ class AEL_Paths(object):
   
 router: routing.Plugin = routing.Plugin()
 g_PATHS: AEL_Paths
+    
 #
 # Bootstrap factory object instances.
 #
 def g_bootstrap_instances():
-    global g_PATHS
+    global g_PATHS    
     g_PATHS = AEL_Paths(addon_id).build()
       

@@ -23,16 +23,19 @@ class AppMediator(object):
         cls._commands[event].append(command)
 
     @classmethod
-    def invoke(cls, event, args):
-        logger.debug('Invoking {}'.format(event))
-        if event not in cls._commands:
-            logger.warn('Command "{}" not registered'.format(event))
+    def sync_cmd(cls, command='undefined', args=None):
+        logger.debug('Invoking {}'.format(command))
+        if command not in cls._commands:
+            logger.warn('Command "{}" not registered'.format(command))
             return
-        commands_by_event = cls._commands[event]
-        for command in commands_by_event:
+        commands_by_event = cls._commands[command]
+        for a_command in commands_by_event:
             try:
-                command(args)
+                a_command(args)
             except Exception as ex:
-                message = text.createError(ex)
-                logger.fatal(message)
-                kodi.notify_error('Failure processing command "{}"'.format(event))
+                logger.fatal('Failure processing command "{}"'.format(command), exc_info=ex)
+                kodi.notify_error('Failure processing command "{}"'.format(command))
+            
+    @classmethod
+    def async_cmd(cls, command='undefined', args=None):
+        kodi.event(command=command, data=args)

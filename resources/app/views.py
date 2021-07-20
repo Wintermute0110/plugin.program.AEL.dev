@@ -46,6 +46,7 @@ from ael.utils import kodi
 
 from resources.app.core import AppLauncher, RomFolderScanner
 from resources.app import viewqueries, globals
+from resources.app.commands.mediator import AppMediator
 from resources.app.globals import router
 
 logger = logging.getLogger(__name__)
@@ -120,7 +121,7 @@ def vw_route_render_utilities_vlaunchers():
 # -------------------------------------------------------------------------------------------------
 @router.route('/execute/command/<cmd>')
 def vw_execute_cmd(cmd: str):    
-    kodi.event(command=cmd.capitalize(), data=router.args)
+    AppMediator.async_cmd(cmd.capitalize(), router.args)
 
 @router.route('/categories/view/<category_id>')
 def vw_view_category(category_id: str):
@@ -129,18 +130,21 @@ def vw_view_category(category_id: str):
 
 @router.route('/categories/add')
 @router.route('/categories/add/<category_id>')
+@router.route('/categories/add/<category_id>/in')
 @router.route('/categories/add/<category_id>/in/<parent_category_id>')
 def vw_add_category(category_id: str = None, parent_category_id: str = None):
-    kodi.event(command='ADD_CATEGORY', data={'category_id': category_id, 'parent_category_id': parent_category_id})
+    AppMediator.async_cmd('ADD_CATEGORY', {'category_id': category_id, 'parent_category_id': parent_category_id})
 
 @router.route('/categories/edit/<category_id>')
 def vw_edit_category(category_id: str):
-    kodi.event(command='EDIT_CATEGORY', data={'category_id': category_id })
+    AppMediator.async_cmd('EDIT_CATEGORY', {'category_id': category_id })
 
 @router.route('/romset/add')
-@router.route('/romset/add/<romset_id>')
-def vw_add_romset(romset_id: str = None):
-    kodi.event(command='ADD_ROMSET', data={'romset_id': romset_id})
+@router.route('/romset/add/<category_id>')
+@router.route('/romset/add/<category_id>/in')
+@router.route('/romset/add/<category_id>/in/<parent_category_id>')
+def vw_add_romset(category_id: str = None, parent_category_id: str = None):
+    AppMediator.async_cmd('ADD_ROMSET', {'category_id': category_id, 'parent_category_id': parent_category_id})
 
 @router.route('/romset/view/<romset_id>')
 def vw_view_romset(romset_id: str):
@@ -149,18 +153,18 @@ def vw_view_romset(romset_id: str):
 
 @router.route('/romset/edit/<romset_id>')
 def vw_edit_romset(romset_id: str):
-    kodi.event(command='EDIT_ROMSET', data={'romset_id': romset_id })
+    AppMediator.async_cmd('EDIT_ROMSET', {'romset_id': romset_id })
 
 # -------------------------------------------------------------------------------------------------
 # ROM execution
 # -------------------------------------------------------------------------------------------------
 @router.route('/execute/set/<romset_id>/rom/<rom_id>')
 def vw_route_execute_rom_in_romset(romset_id:str, rom_id:str):
-    kodi.event(command="EXECUTE_ROM", data={'rom_id': rom_id, 'romset_id': romset_id} )
+    AppMediator.async_cmd("EXECUTE_ROM", {'rom_id': rom_id, 'romset_id': romset_id} )
     
 @router.route('/execute/rom/<rom_id>')
 def vw_route_execute_rom(rom_id):
-    kodi.event(command="EXECUTE_ROM", data={'rom_id': rom_id} )
+    AppMediator.async_cmd("EXECUTE_ROM", {'rom_id': rom_id} )
 
 # -------------------------------------------------------------------------------------------------
 # Internal launchers/scanner execution

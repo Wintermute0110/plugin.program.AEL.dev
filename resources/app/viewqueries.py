@@ -477,9 +477,10 @@ def qry_listitem_context_menu_items(list_item_data, container_data)-> typing.Lis
     item_name    = list_item_data['name'] if 'name' in list_item_data else 'Unknown'
     item_id      = list_item_data['id'] if 'id' in list_item_data else ''
     
-    container_id    = container_data['id'] if 'id' in container_data else ''
+    container_id    = container_data['id'] if 'id' in container_data else 'ROOT'
     container_type  = container_data['obj_type'] if 'obj_type' in container_data else constants.OBJ_NONE
     container_is_category: bool = container_type == constants.OBJ_CATEGORY
+    if container_id == '': container_id = 'ROOT'
     
     is_category: bool = item_type == constants.OBJ_CATEGORY 
     is_romset: bool   = item_type == constants.OBJ_ROMSET
@@ -502,8 +503,8 @@ def qry_listitem_context_menu_items(list_item_data, container_data)-> typing.Lis
         commands.append(('Edit ROM Collection', _context_menu_url_for('/romset/edit/{}'.format(item_id))))
     
     if not is_category and container_is_category:
-        commands.append(('Add new Category',_context_menu_url_for('/categories/add/{}'.format(item_id))))
-        commands.append(('Add new ROM Collection', _context_menu_url_for('/romset/add/{}'.format(item_id))))
+        commands.append(('Add new Category',_context_menu_url_for('/categories/add/{}'.format(container_id))))
+        commands.append(('Add new ROM Collection', _context_menu_url_for('/romset/add/{}'.format(container_id))))
     
     return commands
 

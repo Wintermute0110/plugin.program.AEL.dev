@@ -2,7 +2,7 @@
 #
 import logging
 
-from ael.utils import kodilogging, text
+from ael.utils import kodilogging, kodi
 from resources.app.globals import addon_id, addon_version
 from resources.app.services import AppService
 
@@ -15,7 +15,7 @@ if __name__ == '__main__':
     try:
         AppService().run()
     except Exception as ex:
-        message = text.createError(ex)
-        logger.fatal(message)
+        logger.fatal('Exception in plugin', exc_info=ex)
+        kodi.notify_error("General failure")
 
     logger.debug("'%s' shutting down." % addon_id)

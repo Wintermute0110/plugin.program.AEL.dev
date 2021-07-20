@@ -494,7 +494,7 @@ class MetaDataItemABC(EntityABC):
 # Contains code to generate the context menus passed to Dialog.select()
 # -------------------------------------------------------------------------------------------------
 class Category(MetaDataItemABC):
-    def __init__(self, category_dic: typing.Dict[str, typing.Any], assets: typing.List[Asset]):
+    def __init__(self, category_dic: typing.Dict[str, typing.Any] = None, assets: typing.List[Asset] = None):
         # Concrete classes are responsible of creating a default entity_data dictionary
         # with sensible defaults.
         if category_dic is None:
@@ -683,8 +683,8 @@ class ROMSetScanner(ROMAddon):
 # -------------------------------------------------------------------------------------------------
 class ROMSet(MetaDataItemABC):
     def __init__(self, 
-                 entity_data: dict, 
-                 assets_data: typing.List[Asset], 
+                 entity_data: dict = None, 
+                 assets_data: typing.List[Asset] = None,
                  launchers_data: typing.List[ROMLauncherAddon] = [], 
                  scanners_data: typing.List[ROMSetScanner] = []):
         # Concrete classes are responsible of creating a default entity_data dictionary
