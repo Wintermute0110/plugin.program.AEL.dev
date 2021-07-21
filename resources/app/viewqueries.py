@@ -25,10 +25,12 @@ from __future__ import unicode_literals
 from __future__ import division
 
 import logging
+from resources.app.commands.mediator import AppMediator
 import typing
 from urllib.parse import urlencode
 
 from ael import constants, settings
+from ael.utils import kodi
 from resources.app import globals
 from resources.app.repositories import ViewRepository
 
@@ -48,80 +50,19 @@ def qry_get_root_items():
             'obj_type': constants.OBJ_CATEGORY,
             'items': []
         }
+        kodi.notify('Building initial views')
+        AppMediator.async_cmd('RENDER_VIEWS')
     
     vcategory_fanart = globals.g_PATHS.FANART_FILE_PATH.getPath()
-    # --- AEL Favourites special category ---
-    if not settings.getSettingAsBool('display_hide_favs'): 
-        # fav_icon   = 'DefaultFolder.png'
-        vcategory_name   = '<Favourites>'
-        vcategory_icon   = globals.g_PATHS.ADDON_CODE_DIR.pjoin('media/theme/Favourites_icon.png').getPath()
-        vcategory_poster = globals.g_PATHS.ADDON_CODE_DIR.pjoin('media/theme/Favourites_poster.png').getPath()
-        container['items'].append({
-            'name': vcategory_name,
-            'url': globals.router.url_for_path('vcategory/favourites'), #SHOW_FAVOURITES
-            'is_folder': True,
-            'type': 'video',
-            'info': {
-                'title': vcategory_name,
-                'plot': 'Browse AEL Favourite ROMs',
-                'overlay': 4
-            },
-            'art': { 'icon' : vcategory_icon, 'fanart' : vcategory_fanart, 'poster' : vcategory_poster },
-            'properties': { constants.AEL_CONTENT_LABEL: constants.AEL_CONTENT_VALUE_ROM_LAUNCHER, 'obj_type': constants.OBJ_NONE }
-        })
-
-    # --- AEL Collections special category ---
-    #if not settings.getSettingAsBool('display_hide_collections'): render_vcategory_collections_row()
-    # --- AEL Virtual Categories ---
-    #if not settings.getSettingAsBool('display_hide_vlaunchers'): render_vcategory_Browse_by_row()
-    # --- Browse Offline Scraper database ---
-    #if not settings.getSettingAsBool('display_hide_AEL_scraper'): render_vcategory_AEL_offline_scraper_row()
-    #if not settings.getSettingAsBool('display_hide_LB_scraper'):  render_vcategory_LB_offline_scraper_row()
-
-    # --- Recently played and most played ROMs ---
-    if not settings.getSettingAsBool('display_hide_recent'): 
-        vcategory_name   = '[Recently played ROMs]'
-        vcategory_icon   = globals.g_PATHS.ADDON_CODE_DIR.pjoin('media/theme/Recently_played_icon.png').getPath()
-        vcategory_poster = globals.g_PATHS.ADDON_CODE_DIR.pjoin('media/theme/Recently_played_poster.png').getPath()
-        container['items'].append({
-            'name': vcategory_name,
-            'url': globals.router.url_for_path('vcategory/recently_played'), #SHOW_RECENTLY_PLAYED'
-            'is_folder': True,
-            'type': 'video',
-            'info': {
-                'title': vcategory_name,
-                'plot': 'Browse the ROMs you played recently',
-                'overlay': 4
-            },
-            'art': { 'icon' : vcategory_icon, 'fanart' : vcategory_fanart, 'poster' : vcategory_poster },
-            'properties': { constants.AEL_CONTENT_LABEL: constants.AEL_CONTENT_VALUE_ROM_LAUNCHER, 'obj_type': constants.OBJ_NONE }
-        })
-
-    if not settings.getSettingAsBool('display_hide_mostplayed'): 
-        vcategory_name   = '[Most played ROMs]'
-        vcategory_icon   = globals.g_PATHS.ADDON_CODE_DIR.pjoin('media/theme/Most_played_icon.png').getPath()
-        vcategory_poster = globals.g_PATHS.ADDON_CODE_DIR.pjoin('media/theme/Most_played_poster.png').getPath()
-        container['items'].append({
-            'name': vcategory_name,
-            'url': globals.router.url_for_path('vcategory/most_played'), #SHOW_MOST_PLAYED
-            'is_folder': True,
-            'type': 'video',
-            'info': {
-                'title': vcategory_name,
-                'plot': 'Browse the ROMs you play most',
-                'overlay': 4
-            },
-            'art': { 'icon' : vcategory_icon, 'fanart' : vcategory_fanart, 'poster' : vcategory_poster },
-            'properties': { constants.AEL_CONTENT_LABEL: constants.AEL_CONTENT_VALUE_ROM_LAUNCHER, 'obj_type': constants.OBJ_NONE }
-        })
-        
+    vcategory_icon   = globals.g_PATHS.ADDON_CODE_DIR.pjoin('media/theme/Utilities_icon.png').getPath()
+    vcategory_poster = globals.g_PATHS.ADDON_CODE_DIR.pjoin('media/theme/Utilities_poster.png').getPath()
+    art = { 'icon' : vcategory_icon, 'fanart' : vcategory_fanart, 'poster': vcategory_poster }
+    
     if not settings.getSettingAsBool('display_hide_utilities'): 
         vcategory_name   = 'Utilities'
-        vcategory_icon   = globals.g_PATHS.ICON_FILE_PATH.getPath()
-        vcategory_fanart = globals.g_PATHS.FANART_FILE_PATH.getPath()
         container['items'].append({
             'name': vcategory_name,
-            'url': globals.router.url_for_path('utilities'), #SHOW_UTILITIES_VLAUNCHERS
+            'url': globals.router.url_for_path('utilities'),
             'is_folder': True,
             'type': 'video',
             'info': {
@@ -129,7 +70,7 @@ def qry_get_root_items():
                 'plot': 'Execute several [COLOR orange]Utilities[/COLOR].',
                 'overlay': 4
             },
-            'art': { 'icon' : vcategory_icon, 'fanart' : vcategory_fanart, 'poster' : vcategory_poster },
+            'art': art,
             'properties': { constants.AEL_CONTENT_LABEL: constants.AEL_CONTENT_VALUE_CATEGORY, 'obj_type': constants.OBJ_NONE }
         })
         
@@ -147,7 +88,7 @@ def qry_get_root_items():
                 'plot': 'Generate and view [COLOR orange]Global Reports[/COLOR].',
                 'overlay': 4
             },
-            'art': { 'icon' : vcategory_icon, 'fanart' : vcategory_fanart, 'poster' : vcategory_poster },
+            'art': art,
             'properties': { constants.AEL_CONTENT_LABEL: constants.AEL_CONTENT_VALUE_CATEGORY, 'obj_type': constants.OBJ_NONE }
         })
     
@@ -322,120 +263,6 @@ def qry_get_utilities_items():
     return container
 
 #
-# Virtual category items
-#
-def qry_get_vcategory_items(self):
-    vcategory_fanart = globals.g_PATHS.FANART_FILE_PATH.getPath()
-    
-    container = {
-        'id': '',
-        'name': 'virtual categories',
-        'obj_type': constants.OBJ_CATEGORY_VIRTUAL,
-        'items': []
-    }
-    
-    # --- AEL Favourites special category ---
-    if not settings.getSettingAsBool('display_hide_favs'): 
-        # fav_icon   = 'DefaultFolder.png'
-        vcategory_name   = '<Favourites>'
-        vcategory_icon   = globals.g_PATHS.ADDON_CODE_DIR.pjoin('media/theme/Favourites_icon.png').getPath()
-        vcategory_poster = globals.g_PATHS.ADDON_CODE_DIR.pjoin('media/theme/Favourites_poster.png').getPath()
-        container['items'].append({
-            'name': vcategory_name,
-            'url': globals.router.url_for_path('vcategory/favourites'), #SHOW_FAVOURITES
-            'is_folder': True,
-            'type': 'video',
-            'info': {
-                'title': vcategory_name,
-                'plot': 'Browse AEL Favourite ROMs',
-                'overlay': 4
-            },
-            'art': { 'icon' : vcategory_icon, 'fanart' : vcategory_fanart, 'poster' : vcategory_poster },
-            'properties': { constants.AEL_CONTENT_LABEL: constants.AEL_CONTENT_VALUE_CATEGORY, 'obj_type': constants.OBJ_NONE }
-        })
-
-    # --- AEL Collections special category ---
-    #if not settings.getSettingAsBool('display_hide_collections'): render_vcategory_collections_row()
-    # --- AEL Virtual Categories ---
-    #if not settings.getSettingAsBool('display_hide_vlaunchers'): render_vcategory_Browse_by_row()
-    # --- Browse Offline Scraper database ---
-    #if not settings.getSettingAsBool('display_hide_AEL_scraper'): render_vcategory_AEL_offline_scraper_row()
-    #if not settings.getSettingAsBool('display_hide_LB_scraper'):  render_vcategory_LB_offline_scraper_row()
-
-    # --- Recently played and most played ROMs ---
-    if not settings.getSettingAsBool('display_hide_recent'): 
-        vcategory_name   = '[Recently played ROMs]'
-        vcategory_icon   = globals.g_PATHS.ADDON_CODE_DIR.pjoin('media/theme/Recently_played_icon.png').getPath()
-        vcategory_poster = globals.g_PATHS.ADDON_CODE_DIR.pjoin('media/theme/Recently_played_poster.png').getPath()
-        container['items'].append({
-            'name': vcategory_name,
-            'url': globals.router.url_for_path('vcategory/recently_played'), #SHOW_RECENTLY_PLAYED'
-            'is_folder': True,
-            'type': 'video',
-            'info': {
-                'title': vcategory_name,
-                'plot': 'Browse the ROMs you played recently',
-                'overlay': 4
-            },
-            'art': { 'icon' : vcategory_icon, 'fanart' : vcategory_fanart, 'poster' : vcategory_poster },
-            'properties': { constants.AEL_CONTENT_LABEL: constants.AEL_CONTENT_VALUE_ROM_LAUNCHER, 'obj_type': constants.OBJ_NONE }
-        })
-
-    if not settings.getSettingAsBool('display_hide_mostplayed'): 
-        vcategory_name   = '[Most played ROMs]'
-        vcategory_icon   = globals.g_PATHS.ADDON_CODE_DIR.pjoin('media/theme/Most_played_icon.png').getPath()
-        vcategory_poster = globals.g_PATHS.ADDON_CODE_DIR.pjoin('media/theme/Most_played_poster.png').getPath()
-        container['items'].append({
-            'name': vcategory_name,
-            'url': globals.router.url_for_path('vcategory/most_played'), #SHOW_MOST_PLAYED
-            'is_folder': True,
-            'type': 'video',
-            'info': {
-                'title': vcategory_name,
-                'plot': 'Browse the ROMs you play most',
-                'overlay': 4
-            },
-            'art': { 'icon' : vcategory_icon, 'fanart' : vcategory_fanart, 'poster' : vcategory_poster },
-            'properties': { constants.AEL_CONTENT_LABEL: constants.AEL_CONTENT_VALUE_ROM_LAUNCHER, 'obj_type': constants.OBJ_NONE }
-        })
-        
-    if not settings.getSettingAsBool('display_hide_utilities'): 
-        vcategory_name   = 'Utilities'
-        vcategory_icon   = globals.g_PATHS.ICON_FILE_PATH.getPath()
-        vcategory_fanart = globals.g_PATHS.FANART_FILE_PATH.getPath()
-        container['items'].append({
-            'name': vcategory_name,
-            'url': globals.router.url_for_path('utilities'), #SHOW_UTILITIES_VLAUNCHERS
-            'is_folder': True,
-            'type': 'video',
-            'info': {
-                'title': vcategory_name,
-                'plot': 'Execute several [COLOR orange]Utilities[/COLOR].',
-                'overlay': 4
-            },
-            'art': { 'icon' : vcategory_icon, 'fanart' : vcategory_fanart, 'poster' : vcategory_poster },
-            'properties': { constants.AEL_CONTENT_LABEL: constants.AEL_CONTENT_VALUE_ROM_LAUNCHER, 'obj_type': constants.OBJ_NONE }
-        })
-        
-    if not settings.getSettingAsBool('display_hide_g_reports'): 
-        vcategory_name   = 'Global Reports'
-        vcategory_icon   = globals.g_PATHS.ICON_FILE_PATH.getPath()
-        vcategory_fanart = globals.g_PATHS.FANART_FILE_PATH.getPath()
-        container['items'].append({
-            'name': vcategory_name,
-            'url': globals.router.url_for_path('globalreports'), #SHOW_GLOBALREPORTS_VLAUNCHERS'
-            'is_folder': True,
-            'type': 'video',
-            'info': {
-                'title': vcategory_name,
-                'plot': 'Generate and view [COLOR orange]Global Reports[/COLOR].',
-                'overlay': 4
-            },
-            'art': { 'icon' : vcategory_icon, 'fanart' : vcategory_fanart, 'poster' : vcategory_poster },
-            'properties': { constants.AEL_CONTENT_LABEL: constants.AEL_CONTENT_VALUE_ROM_LAUNCHER, 'obj_type': constants.OBJ_NONE }
-        })
-        
-#
 # Default context menu items for the whole container.
 #
 def qry_container_context_menu_items(container_data) -> typing.List[typing.Tuple[str,str]]:
@@ -477,10 +304,10 @@ def qry_listitem_context_menu_items(list_item_data, container_data)-> typing.Lis
     item_name    = list_item_data['name'] if 'name' in list_item_data else 'Unknown'
     item_id      = list_item_data['id'] if 'id' in list_item_data else ''
     
-    container_id    = container_data['id'] if 'id' in container_data else 'ROOT'
+    container_id    = container_data['id'] if 'id' in container_data else constants.VCATEGORY_ADDONROOT_ID
     container_type  = container_data['obj_type'] if 'obj_type' in container_data else constants.OBJ_NONE
     container_is_category: bool = container_type == constants.OBJ_CATEGORY
-    if container_id == '': container_id = 'ROOT'
+    if container_id == '': container_id = constants.VCATEGORY_ADDONROOT_ID
     
     is_category: bool = item_type == constants.OBJ_CATEGORY 
     is_romset: bool   = item_type == constants.OBJ_ROMSET

@@ -120,8 +120,8 @@ class XmlConfigurationRepository(object):
                                 
                 if xml_tag.startswith('s_'):
                     asset_info = g_assetFactory.get_asset_info_by_key(xml_tag)
-                    asset_data = { 'filepath': text_XML_line }
-                    assets.append(Asset(asset_info, asset_data))
+                    asset_data = { 'filepath': text_XML_line, 'asset_type': asset_info.id }
+                    assets.append(Asset(asset_data))
                 
             # --- Add category to categories dictionary ---
             logger.debug('Adding category "{0}" to import list'.format(category_temp['m_name']))
@@ -157,8 +157,8 @@ class XmlConfigurationRepository(object):
                 
                 if xml_tag.startswith('s_'):
                     asset_info = g_assetFactory.get_asset_info_by_key(xml_tag)
-                    asset_data = { 'filepath': text_XML_line }
-                    assets.append(Asset(asset_info, asset_data))
+                    asset_data = { 'filepath': text_XML_line, 'asset_type': asset_info.id }
+                    assets.append(Asset(asset_data))
                     
             # --- Add launcher to launchers collection ---
             logger.debug('Adding launcher "{0}" to import list'.format(launcher_temp['m_name']))
@@ -228,8 +228,8 @@ class ROMsJsonFileRepository(object):
         for key, value in rom_data.items():
             if key.startswith('s_'):
                 asset_info = g_assetFactory.get_asset_info_by_key(key)
-                asset_data = { 'filepath': value }
-                assets.append(Asset(asset_info, asset_data))
+                asset_data = { 'filepath': value, 'asset_type': asset_info.id }
+                assets.append(Asset(asset_data))
         return assets
 #
 # UnitOfWork to be used with sqlite repositories.
@@ -387,7 +387,7 @@ class CategoryRepository(object):
         self._uow = uow
 
     def find_category(self, category_id: str) -> Category:
-        if category_id == 'ROOT': return Category({'m_name': 'Root'})
+        if category_id == constants.VCATEGORY_ADDONROOT_ID: return Category({'m_name': 'Root'})
         
         self._uow.execute(QUERY_SELECT_CATEGORY, category_id)
         category_data = self._uow.single_result()
@@ -397,8 +397,7 @@ class CategoryRepository(object):
                 
         assets = []
         for asset_data in assets_result_set:
-            asset_info = g_assetFactory.get_asset_info(asset_data['asset_type'])
-            assets.append(Asset(asset_info, asset_data))    
+            assets.append(Asset(asset_data))    
             
         return Category(category_data, assets)
 
@@ -412,8 +411,7 @@ class CategoryRepository(object):
         for category_data in result_set:
             assets = []
             for asset_data in filter(lambda a: a['category_id'] == category_data['id'], assets_result_set):
-                asset_info = g_assetFactory.get_asset_info(asset_data['asset_type'])
-                assets.append(Asset(asset_info, asset_data))    
+                assets.append(Asset(asset_data))    
                 
             yield Category(category_data, assets)
 
@@ -427,8 +425,7 @@ class CategoryRepository(object):
         for category_data in result_set:
             assets = []
             for asset_data in filter(lambda a: a['category_id'] == category_data['id'], assets_result_set):
-                asset_info = g_assetFactory.get_asset_info(asset_data['asset_type'])
-                assets.append(Asset(asset_info, asset_data))    
+                assets.append(Asset(asset_data))    
                 
             yield Category(category_data, assets)
 
@@ -442,8 +439,7 @@ class CategoryRepository(object):
         for category_data in result_set:
             assets = []
             for asset_data in filter(lambda a: a['category_id'] == category_data['id'], assets_result_set):
-                asset_info = g_assetFactory.get_asset_info(asset_data['asset_type'])
-                assets.append(Asset(asset_info, asset_data))    
+                assets.append(Asset(asset_data))    
                 
             yield Category(category_data, assets)
 
@@ -451,7 +447,7 @@ class CategoryRepository(object):
         logger.info("CategoryRepository.insert_category(): Inserting new category '{}'".format(category_obj.get_name()))
         metadata_id = text.misc_generate_random_SID()
         assets_path = category_obj.get_assets_path_FN()
-        parent_category_id = parent_obj.get_id() if parent_obj is not None and parent_obj.get_id() != 'ROOT' else None
+        parent_category_id = parent_obj.get_id() if parent_obj is not None and parent_obj.get_id() != constants.VCATEGORY_ADDONROOT_ID else None
         
         self._uow.execute(QUERY_INSERT_METADATA,
             metadata_id,
@@ -576,8 +572,7 @@ class ROMSetRepository(object):
         assets_result_set = self._uow.result_set()
         assets = []
         for asset_data in assets_result_set:
-            asset_info = g_assetFactory.get_asset_info(asset_data['asset_type'])
-            assets.append(Asset(asset_info, asset_data))    
+            assets.append(Asset(asset_data))    
         
         self._uow.execute(QUERY_SELECT_ROMSET_LAUNCHERS, romset_id)
         launchers_data = self._uow.result_set()
@@ -594,7 +589,7 @@ class ROMSetRepository(object):
             scanners.append(ROMSetScanner(addon, scanner_data))
             
         return ROMSet(romset_data, assets, launchers, scanners)
-
+    
     def find_all_romsets(self) -> typing.Iterator[ROMSet]:
         self._uow.execute(QUERY_SELECT_ROMSETS)
         result_set = self._uow.result_set()
@@ -605,8 +600,7 @@ class ROMSetRepository(object):
         for romset_data in result_set:
             assets = []
             for asset_data in filter(lambda a: a['romset_id'] == romset_data['id'], assets_result_set):
-                asset_info = g_assetFactory.get_asset_info(asset_data['asset_type'])
-                assets.append(Asset(asset_info, asset_data))      
+                assets.append(Asset(asset_data))      
                 
             yield ROMSet(romset_data, assets)
 
@@ -620,8 +614,7 @@ class ROMSetRepository(object):
         for romset_data in result_set:
             assets = []
             for asset_data in filter(lambda a: a['romset_id'] == romset_data['id'], assets_result_set):
-                asset_info = g_assetFactory.get_asset_info(asset_data['asset_type'])
-                assets.append(Asset(asset_info, asset_data))      
+                assets.append(Asset(asset_data))      
                 
             yield ROMSet(romset_data, assets)
 
@@ -635,16 +628,19 @@ class ROMSetRepository(object):
         for romset_data in result_set:
             assets = []
             for asset_data in filter(lambda a: a['romset_id'] == romset_data['id'], assets_result_set):
-                asset_info = g_assetFactory.get_asset_info(asset_data['asset_type'])
-                assets.append(Asset(asset_info, asset_data))      
+                assets.append(Asset(asset_data))      
                 
             yield ROMSet(romset_data, assets)
-            
+
+    def find_romsets_by_ids(self, romset_ids:typing.List[str]) -> typing.Iterator[ROMSet]:
+        for romset_id in romset_ids:
+            yield self.find_romset(romset_id)
+                        
     def insert_romset(self, romset_obj: ROMSet, parent_obj: Category = None):
         logger.info("ROMSetRepository.insert_romset(): Inserting new romset '{}'".format(romset_obj.get_name()))
         metadata_id = text.misc_generate_random_SID()
         assets_path = romset_obj.get_assets_path_FN()
-        parent_category_id = parent_obj.get_id() if parent_obj is not None and parent_obj.get_id() != 'ROOT' else None
+        parent_category_id = parent_obj.get_id() if parent_obj is not None and parent_obj.get_id() != constants.VCATEGORY_ADDONROOT_ID else None
         
         self._uow.execute(QUERY_INSERT_METADATA,
             metadata_id,
@@ -804,6 +800,18 @@ QUERY_INSERT_ROM                = """
                                     nointro_status, cloneof, fav_status, file_path)
                                 VALUES (?,?,?,?,?,?,?,?,?,?,?)
                                 """ 
+                                
+QUERY_SELECT_RECENTLY_PLAYED_ROMS        = "SELECT * FROM vw_roms WHERE last_launch_timestamp IS NOT NULL ORDER BY last_launch_timestamp DESC LIMIT 100"
+QUERY_SELECT_MOST_PLAYED_ROMS            = "SELECT * FROM vw_roms WHERE launch_count > 0 ORDER BY launch_count DESC LIMIT 100"
+QUERY_SELECT_RECENTLY_PLAYED_ROM_ASSETS  = """
+                                            SELECT ra.* FROM vw_rom_assets AS ra INNER JOIN roms AS r ON r.id = ra.rom_id 
+                                            WHERE r.last_launch_timestamp IS NOT NULL ORDER BY last_launch_timestamp DESC LIMIT 100
+                                           """
+QUERY_SELECT_MOST_PLAYED_ROM_ASSETS      = """
+                                            SELECT ra.* FROM vw_rom_assets AS ra INNER JOIN roms AS r ON r.id = ra.rom_id 
+                                            WHERE r.launch_count > 0 ORDER BY launch_count DESC LIMIT 100
+                                           """
+                                
 QUERY_INSERT_ROM_ASSET          = "INSERT INTO rom_assets (rom_id, asset_id) VALUES (?, ?)"
 QUERY_UPDATE_ROM                = """
                                   UPDATE roms 
@@ -832,8 +840,32 @@ class ROMsRepository(object):
         for rom_data in result_set:
             assets = []
             for asset_data in filter(lambda a: a['rom_id'] == rom_data['id'], assets_result_set):
-                asset_info = g_assetFactory.get_asset_info(asset_data['asset_type'])
-                assets.append(Asset(asset_info, asset_data))                
+                assets.append(Asset(asset_data))                
+            yield ROM(rom_data, assets)
+
+    def find_roms_by_virtual_collection(self, vcollection_id:str) -> typing.Iterator[ROM]:        
+        roms_query = None
+        rom_assets_query = None
+        
+        if vcollection_id == constants.VCOLLECTION_RECENT_ID: 
+            roms_query = QUERY_SELECT_RECENTLY_PLAYED_ROMS
+            rom_assets_query = QUERY_SELECT_RECENTLY_PLAYED_ROM_ASSETS
+        if vcollection_id == constants.VCOLLECTION_MOSTPLAYED_ID:
+            roms_query = QUERY_SELECT_MOST_PLAYED_ROMS
+            rom_assets_query = QUERY_SELECT_MOST_PLAYED_ROM_ASSETS
+        
+        self._uow.execute(roms_query)
+        result_set = self._uow.result_set()
+        if not result_set:
+            return []
+        
+        self._uow.execute(rom_assets_query)
+        assets_result_set = self._uow.result_set()
+                
+        for rom_data in result_set:
+            assets = []
+            for asset_data in filter(lambda a: a['rom_id'] == rom_data['id'], assets_result_set):
+                assets.append(Asset(asset_data))                
             yield ROM(rom_data, assets)
 
     def find_rom(self, rom_id:str) -> ROM:
@@ -844,8 +876,7 @@ class ROMsRepository(object):
         assets_result_set = self._uow.result_set()            
         assets = []
         for asset_data in assets_result_set:
-            asset_info = g_assetFactory.get_asset_info(asset_data['asset_type'])
-            assets.append(Asset(asset_info, asset_data))
+            assets.append(Asset(asset_data))
                     
         self._uow.execute(QUERY_SELECT_ROM_LAUNCHERS, rom_id)
         launchers_data = self._uow.result_set()

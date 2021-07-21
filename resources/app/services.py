@@ -49,6 +49,9 @@ class AppService(object):
             uow.create_empty_database(globals.g_PATHS.DATABASE_SCHEMA_PATH)
             logger.info("Database created.")
 
+        # REBUILD VIEWS
+        self._execute_service_actions({'action': 'RENDER_VIEWS', 'data': None})
+        
         logger.debug("Processing service events")
         while not self.monitor.abortRequested():
             

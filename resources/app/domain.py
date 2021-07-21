@@ -31,6 +31,7 @@ import random
 import binascii
 
 # --- AEL packages ---
+from resources.app import globals
 from ael.utils import io, kodi, text
 from ael import settings, constants
 
@@ -158,10 +159,13 @@ class AelAddon(EntityABC):
         return self.entity_data['configure_uri']
 class Asset(EntityABC):
 
-    def __init__(self, asset_info: AssetInfo, entity_data: typing.Dict[str, typing.Any] = None):
-        self.asset_info = asset_info
+    def __init__(self, entity_data: typing.Dict[str, typing.Any] = None):
+        self.asset_info:AssetInfo = None
         if entity_data is None:
             entity_data = _get_default_asset_data_model()
+        
+        if 'asset_type' in entity_data and entity_data['asset_type']:
+            self.asset_info = g_assetFactory.get_asset_info(entity_data['asset_type'])
         
         super(Asset, self).__init__(entity_data)
     
@@ -180,13 +184,18 @@ class Asset(EntityABC):
     def set_path(self, path_str):
         self.entity_data['filepath'] = path_str
     
+    def set_asset_info(self, info:AssetInfo): 
+        self.asset_info = info
+    
     def clear(self):
         self.entity_data['filepath'] = ''
       
     @staticmethod
     def create(asset_info_id):
+        asset = Asset()
         asset_info = g_assetFactory.get_asset_info(asset_info_id)
-        return Asset(asset_info)
+        asset.set_asset_info(asset_info)
+        return asset
         
 # -------------------------------------------------------------------------------------------------
 # Abstract base class for business objects which support the generic
@@ -197,10 +206,10 @@ class Asset(EntityABC):
 # |-MetaDataItemABC(object) (abstract class)
 # |
 # |----- Category
-# |      |
-# |      |----- VirtualCategory
 # |
 # |----- ROMSet (Collection)
+# |      |
+# |      |----- VirtualCollection
 # |
 # |----- ROM
 # |
@@ -1890,7 +1899,7 @@ class AssetInfoFactory(object):
     def get_all(self) -> typing.List[AssetInfo]:
         return list(self.ASSET_INFO_ID_DICT.values())
 
-    def get_asset_info(self, asset_ID):
+    def get_asset_info(self, asset_ID) -> AssetInfo:
         asset_info = self.ASSET_INFO_ID_DICT.get(asset_ID, None)
 
         if asset_info is None:
@@ -2354,10 +2363,51 @@ class AssetInfoFactory(object):
 # --- Global object to get asset info ---
 g_assetFactory = AssetInfoFactory()
 
-class VirtualCategoryFactory(object):
-    def __init__(self):
-        self.entity_data = {}
-
+class VirtualCollectionFactory(object):
+    
+    @staticmethod
+    def create(vcollection_id: str):
+                
+        if vcollection_id == constants.VCOLLECTION_FAVOURITES_ID:
+            return VirtualCollection({
+                'id' : vcollection_id,
+                'type': constants.OBJ_COLLECTION_VIRTUAL,
+                'm_name' : '<Favourites>',
+                'plot': 'Browse AEL Favourite ROMs',
+                'finished': settings.getSettingAsBool('display_hide_favs')
+            }, [
+                Asset({'id' : '', 'asset_type' : constants.ASSET_FANART_ID, 'filepath' : globals.g_PATHS.FANART_FILE_PATH.getPath()}),
+                Asset({'id' : '', 'asset_type' : constants.ASSET_ICON_ID,   'filepath' : globals.g_PATHS.ADDON_CODE_DIR.pjoin('media/theme/Favourites_icon.png').getPath()}),
+                Asset({'id' : '', 'asset_type' : constants.ASSET_POSTER_ID, 'filepath' : globals.g_PATHS.ADDON_CODE_DIR.pjoin('media/theme/Favourites_poster.png').getPath()}),
+            ])
+            
+        if vcollection_id == constants.VCOLLECTION_RECENT_ID:
+            return VirtualCollection({
+                'id' : vcollection_id,
+                'type': constants.OBJ_COLLECTION_VIRTUAL,
+                'm_name' : '[Recently played ROMs]',
+                'plot': 'Browse the ROMs you played recently',
+                'finished': settings.getSettingAsBool('display_hide_recent')
+            }, [
+                Asset({'id' : '', 'asset_type' : constants.ASSET_FANART_ID, 'filepath' : globals.g_PATHS.FANART_FILE_PATH.getPath()}),
+                Asset({'id' : '', 'asset_type' : constants.ASSET_ICON_ID,   'filepath' : globals.g_PATHS.ADDON_CODE_DIR.pjoin('media/theme/Recently_played_icon.png').getPath()}),
+                Asset({'id' : '', 'asset_type' : constants.ASSET_POSTER_ID, 'filepath' : globals.g_PATHS.ADDON_CODE_DIR.pjoin('media/theme/Recently_played_poster.png').getPath()}),
+            ])
+            
+        if vcollection_id == constants.VCOLLECTION_MOST_PLAYED_ID:
+            return VirtualCollection({
+                'id' : vcollection_id,
+                'type': constants.OBJ_COLLECTION_VIRTUAL,
+                'm_name' : '[Most played ROMs]',
+                'plot': 'Browse the ROMs you play most',
+                'finished': settings.getSettingAsBool('display_hide_mostplayed')
+            }, [
+                Asset({'id' : '', 'asset_type' : constants.ASSET_FANART_ID, 'filepath' : globals.g_PATHS.FANART_FILE_PATH.getPath()}),
+                Asset({'id' : '', 'asset_type' : constants.ASSET_ICON_ID,   'filepath' : globals.g_PATHS.ADDON_CODE_DIR.pjoin('media/theme/Most_played_icon.png').getPath()}),
+                Asset({'id' : '', 'asset_type' : constants.ASSET_POSTER_ID, 'filepath' : globals.g_PATHS.ADDON_CODE_DIR.pjoin('media/theme/Most_played_poster.png').getPath()}),
+            ])
+            
+        return None
 # -------------------------------------------------------------------------------------------------
 # Data model used in the plugin
 # Internally all string in the data model are Unicode. They will be encoded to

@@ -12,13 +12,13 @@ CREATE TABLE IF NOT EXISTS metadata(
 CREATE TABLE IF NOT EXISTS assets(
     id TEXT PRIMARY KEY,
     filepath TEXT NOT NULL,
-    asset_type INTEGER NOT NULL
+    asset_type TEXT NOT NULL
 );
 
 CREATE TABLE IF NOT EXISTS assetspaths(
     id TEXT PRIMARY KEY,
     path TEXT NOT NULL,
-    asset_type INTEGER NOT NULL
+    asset_type TEXT NOT NULL
 );
 
 CREATE TABLE IF NOT EXISTS ael_addon(
@@ -262,6 +262,7 @@ CREATE VIEW IF NOT EXISTS vw_roms AS SELECT
     m.finished AS finished,
     r.fav_status AS fav_status,
     r.launch_count AS launch_count,
+    r.last_launch_timestamp AS last_launch_timestamp,
     m.assets_path AS assets_path
 FROM roms AS r 
     INNER JOIN metadata AS m ON r.metadata_id = m.id;
