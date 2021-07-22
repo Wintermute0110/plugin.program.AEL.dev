@@ -369,11 +369,11 @@ QUERY_UPDATE_ASSET          = "UPDATE assets SET filepath = ?, asset_type = ? WH
 #
 QUERY_SELECT_CATEGORY                   = "SELECT * FROM vw_categories WHERE id = ?"
 QUERY_SELECT_CATEGORY_ASSETS            = "SELECT * FROM vw_category_assets WHERE category_id = ?"
-QUERY_SELECT_CATEGORIES                 = "SELECT * FROM vw_categories"
+QUERY_SELECT_CATEGORIES                 = "SELECT * FROM vw_categories ORDER BY m_name"
 QUERY_SELECT_ALL_CATEGORY_ASSETS        = "SELECT * FROM vw_category_assets"
-QUERY_SELECT_ROOT_CATEGORIES            = "SELECT * FROM vw_categories WHERE parent_id IS NULL"
+QUERY_SELECT_ROOT_CATEGORIES            = "SELECT * FROM vw_categories WHERE parent_id IS NULL ORDER BY m_name"
 QUERY_SELECT_ROOT_CATEGORY_ASSETS       = "SELECT * FROM vw_category_assets WHERE parent_id IS NULL"
-QUERY_SELECT_CATEGORIES_BY_PARENT       = "SELECT * FROM vw_categories WHERE parent_id = ?"
+QUERY_SELECT_CATEGORIES_BY_PARENT       = "SELECT * FROM vw_categories WHERE parent_id = ? ORDER BY m_name"
 QUERY_SELECT_CATEGORY_ASSETS_BY_PARENT  = "SELECT * FROM vw_category_assets WHERE parent_id = ?"
 
 QUERY_INSERT_CATEGORY             = """
@@ -525,9 +525,9 @@ class CategoryRepository(object):
 # ROMSetRepository -> ROM Sets from SQLite DB
 #
 QUERY_SELECT_ROMSET             = "SELECT * FROM vw_romsets WHERE id = ?"
-QUERY_SELECT_ROMSETS            = "SELECT * FROM vw_romsets"
-QUERY_SELECT_ROOT_ROMSETS       = "SELECT * FROM vw_romsets WHERE parent_id IS NULL"
-QUERY_SELECT_ROMSETS_BY_PARENT  = "SELECT * FROM vw_romsets WHERE parent_id = ?"
+QUERY_SELECT_ROMSETS            = "SELECT * FROM vw_romsets ORDER BY m_name"
+QUERY_SELECT_ROOT_ROMSETS       = "SELECT * FROM vw_romsets WHERE parent_id IS NULL ORDER BY m_name"
+QUERY_SELECT_ROMSETS_BY_PARENT  = "SELECT * FROM vw_romsets WHERE parent_id = ? ORDER BY m_name"
 QUERY_SELECT_ROMSETS_BY_ROM     = "SELECT rs.* FROM vw_romsets AS rs INNER JOIN roms_in_romset AS rr ON rr.romset_id = rs.id WHERE rr.rom_id = ?"
 
 QUERY_INSERT_ROMSET               = """

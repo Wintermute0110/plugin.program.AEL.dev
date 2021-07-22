@@ -40,7 +40,7 @@ def cmd_add_collection(args):
     with uow:
         repository              = CategoryRepository(uow)
         parent_category         = repository.find_category(parent_id) if parent_id is not None else None
-        grand_parent_category  =  repository.find_category(grand_parent_id)
+        grand_parent_category  =  repository.find_category(grand_parent_id) if grand_parent_id is not None else None
         
         if grand_parent_category is not None:
             options_dialog = kodi.ListDialog()
@@ -56,6 +56,7 @@ def cmd_add_collection(args):
         romset = ROMSet()
         entity_data = romset.get_data_dic()
         entity_data = wizard.runWizard(entity_data)
+        if entity_data is None: return
         
         romset.import_data_dic(entity_data)
                 
