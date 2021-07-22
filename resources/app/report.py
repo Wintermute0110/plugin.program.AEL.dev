@@ -72,7 +72,7 @@ def report_print_ROM_additional(slist: list, rom: dict):
     slist.append("[COLOR violet]roms_default_clearlogo[/COLOR]: '{0}'".format(rom['roms_default_clearlogo']))
 
     # >> Favourite ROMs unique fields.
-    slist.append("[COLOR violet]fav_status[/COLOR]: '{0}'".format(rom['fav_status']))
+    slist.append("[COLOR violet]rom_status[/COLOR]: '{0}'".format(rom['rom_status']))
     # >> 'launch_count' only in Favourite ROMs in "Most played ROMs"
     if 'launch_count' in rom:
         slist.append("[COLOR skyblue]launch_count[/COLOR]: {0}".format(rom['launch_count']))

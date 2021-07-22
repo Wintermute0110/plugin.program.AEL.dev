@@ -254,24 +254,21 @@ def cmd_set_launcher_args(args):
 @AppMediator.register('EXECUTE_ROM')
 def cmd_execute_rom_with_launcher(args):
     rom_id:str      = args['rom_id'] if 'rom_id' in args else None
-    romset_id:str   = args['romset_id'] if 'romset_id' in args else None
-
     uow = UnitOfWork(globals.g_PATHS.DATABASE_FILE_PATH)
     with uow:
         rom_repository = ROMsRepository(uow)
         romset_repository = ROMSetRepository(uow)
 
         rom = rom_repository.find_rom(rom_id)
-        if romset_id is not None:
-            romset = romset_repository.find_romset(romset_id)
-        else: 
-            romset = None
-
-    launchers = rom.get_launchers()
-    if romset is not None:
-        launchers = romset.get_launchers()
-            
+        logger.info('Executing ROM {}'.format(rom.get_name()))
+        
+        romsets = romset_repository.find_romsets_by_rom(rom.get_id())
+        launchers = rom.get_launchers()
+        for romset in romsets: 
+            launchers.extend(romset.get_launchers())
+    
     if launchers is None or len(launchers) == 0:
+        logger.warn('No launcher configured for ROM {}'.format(rom.get_name()))
         kodi.notify_warn('No launcher configured.')
         return
 
@@ -293,3 +290,4 @@ def cmd_execute_rom_with_launcher(args):
         'rom_args': json.dumps(rom.get_launcher_args()),
         'is_non_blocking': str(selected_launcher.is_non_blocking())
     })
+    AppMediator.async_cmd('ROM_WAS_LAUNCHED', args)

@@ -184,7 +184,11 @@ def _render_category_view(category_obj: Category, categories_repository: Categor
     
     for romset in romsets:
         logger.debug('Processing romset "{}"'.format(romset.get_name()))
-        view_items.append(_render_romset_listitem(romset))
+        try:
+            view_items.append(_render_romset_listitem(romset))
+        except Exception as ex:
+            logger.error('Exception while rendering list item ROM Collection "{}"'.format(romset.get_name()), exc_info=ex)
+            kodi.notify_error("Failed to process ROM collection {}".format(romset.get_name()))
         if render_sub_views:
             _render_romset_view(romset, roms_repository, views_repository)
         
@@ -204,8 +208,11 @@ def _render_romset_view(romset_obj: ROMSet, roms_repository: ROMsRepository, vie
     }
     view_items = []
     for rom in roms:
-        logger.debug('Processing rom "{}"'.format(rom.get_name()))
-        view_items.append(_render_rom_listitem(rom, romset_obj))
+        try:
+            rom.apply_romset_asset_mapping(romset_obj)
+            view_items.append(_render_rom_listitem(rom))
+        except Exception as ex:
+            logger.error('Exception while rendering list item ROM "{}"'.format(rom.get_name()), exc_info=ex)
         
     logger.debug('Storing {} items for romset "{}" view.'.format(len(view_items), romset_obj.get_name()))
     view_data['items'] = view_items
@@ -216,11 +223,7 @@ def _render_vcollection_view(vcollection: VirtualCollection, romsets_repository:
     
     logger.info('Rendering virtual collection "{}"'.format(vcollection.get_name()))
     roms = roms_repository.find_roms_by_virtual_collection(vcollection.get_id())
-                
-    romset_ids = map(lambda r: r.get_parent_id(), roms)
-    romsets = romsets_repository.find_romsets_by_ids(romset_ids)
-    romsets_by_id = {rs.get_id():rs for rs in romsets}
-    
+        
     view_data = {
         'id': vcollection.get_id(),
         'name': vcollection.get_name(),
@@ -229,8 +232,10 @@ def _render_vcollection_view(vcollection: VirtualCollection, romsets_repository:
     }
     view_items = []
     for rom in roms:
-        romset_obj = romsets_by_id[rom.get_parent_id()]
-        view_items.append(_render_rom_listitem(rom, romset_obj))
+        try:
+            view_items.append(_render_rom_listitem(rom))
+        except Exception as ex:
+            logger.error('Exception while rendering list item ROM "{}"'.format(rom.get_name()), exc_info=ex)
         
     logger.debug('Storing {} items for virtual collection "{}" view.'.format(len(view_items), vcollection.get_name()))
     view_data['items'] = view_items
@@ -293,12 +298,11 @@ def _render_romset_listitem(romset_obj: ROMSet):
         }
     }
 
-def _render_rom_listitem(rom_obj: ROM, romset_obj: ROMSet):
+def _render_rom_listitem(rom_obj: ROM):
     # --- Do not render row if romset finished ---
     if rom_obj.is_finished() and settings.getSettingAsBool('display_hide_finished'): return
 
     ICON_OVERLAY = 5 if rom_obj.is_finished() else 4
-    rom_obj.apply_romset_asset_mapping(romset_obj)
     assets = rom_obj.get_view_assets()
 
     # --- Default values for flags ---
@@ -308,11 +312,11 @@ def _render_rom_listitem(rom_obj: ROM, romset_obj: ROMSet):
     AEL_NoIntro_stat_value   = constants.AEL_NOINTRO_STAT_VALUE_NONE
     AEL_PClone_stat_value    = constants.AEL_PCLONE_STAT_VALUE_NONE
 
-    fav_status      = rom_obj.get_favourite_status()
-    if   fav_status == 'OK':                AEL_Fav_stat_value = constants.AEL_FAV_STAT_VALUE_OK
-    elif fav_status == 'Unlinked ROM':      AEL_Fav_stat_value = constants.AEL_FAV_STAT_VALUE_UNLINKED_ROM
-    elif fav_status == 'Unlinked Launcher': AEL_Fav_stat_value = constants.AEL_FAV_STAT_VALUE_UNLINKED_LAUNCHER
-    elif fav_status == 'Broken':            AEL_Fav_stat_value = constants.AEL_FAV_STAT_VALUE_BROKEN
+    rom_status      = rom_obj.get_rom_status()
+    if   rom_status == 'OK':                AEL_Fav_stat_value = constants.AEL_FAV_STAT_VALUE_OK
+    elif rom_status == 'Unlinked ROM':      AEL_Fav_stat_value = constants.AEL_FAV_STAT_VALUE_UNLINKED_ROM
+    elif rom_status == 'Unlinked Launcher': AEL_Fav_stat_value = constants.AEL_FAV_STAT_VALUE_UNLINKED_LAUNCHER
+    elif rom_status == 'Broken':            AEL_Fav_stat_value = constants.AEL_FAV_STAT_VALUE_BROKEN
     else:                                   AEL_Fav_stat_value = constants.AEL_FAV_STAT_VALUE_NONE
 
     # --- NoIntro status flag ---
@@ -341,7 +345,7 @@ def _render_rom_listitem(rom_obj: ROM, romset_obj: ROMSet):
     return { 
         'id': rom_obj.get_id(),
         'name': list_name,
-        'url': globals.router.url_for_path('execute/set/{}/rom/{}'.format(romset_obj.get_id(), rom_obj.get_id())),
+        'url': globals.router.url_for_path('execute/rom/{}'.format(rom_obj.get_id())),
         'is_folder': False,
         'type': 'video',
         'info': {
@@ -377,7 +381,7 @@ def _render_vcollection_listitem(vcollection: VirtualCollection):
     return { 
         'id': vcollection.get_id(),
         'name': collection_name,
-        'url': globals.router.url_for_path('collection/virtual/{}'.format(vcollection.get_id())),
+        'url': globals.router.url_for_path('collection/{}'.format(vcollection.get_id())),
         'is_folder': True,
         'type': 'video',
         'info': {

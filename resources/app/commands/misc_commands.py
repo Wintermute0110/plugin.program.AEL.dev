@@ -31,8 +31,7 @@ from resources.app.domain import Category, ROMSet, AelAddon
 logger = logging.getLogger(__name__)
 @AppMediator.register('IMPORT_LAUNCHERS')
 def cmd_execute_import_launchers(args):
-    file_list = kodi.browse(1, 'Select XML category/launcher configuration file',
-                                'files', '.xml', True)
+    file_list = kodi.browse(text='Select XML category/launcher configuration file',mask='.xml', multiple=True)
 
     uow = UnitOfWork(globals.g_PATHS.DATABASE_FILE_PATH)
     with uow:

@@ -212,13 +212,15 @@ class ROMsJsonFileRepository(object):
         if isinstance(roms_data, list):
             for rom_data in roms_data:
                 assets = self._get_assets_from_romdata(rom_data)
+                compatible_rom_data = self._alter_dictionary_for_compatibility(rom_data)
                 r = ROM(rom_data, assets)
                 key = r.get_id()
                 roms.append(r)
         else:
             for key in roms_data:
                 assets = self._get_assets_from_romdata(roms_data[key])
-                r = ROM(roms_data[key], assets)
+                compatible_rom_data = self._alter_dictionary_for_compatibility(roms_data[key])
+                r = ROM(compatible_rom_data, assets)
                 roms.append(r)
 
         return roms
@@ -231,6 +233,10 @@ class ROMsJsonFileRepository(object):
                 asset_data = { 'filepath': value, 'asset_type': asset_info.id }
                 assets.append(Asset(asset_data))
         return assets
+
+    def _alter_dictionary_for_compatibility(self, rom_data: dict) -> dict:
+        rom_data['rom_status'] = rom_data['fav_status'] if 'fav_status' in rom_data else None
+        return rom_data
 #
 # UnitOfWork to be used with sqlite repositories.
 # Can be used to create database scopes/sessions (unit of work pattern).
@@ -522,6 +528,7 @@ QUERY_SELECT_ROMSET             = "SELECT * FROM vw_romsets WHERE id = ?"
 QUERY_SELECT_ROMSETS            = "SELECT * FROM vw_romsets"
 QUERY_SELECT_ROOT_ROMSETS       = "SELECT * FROM vw_romsets WHERE parent_id IS NULL"
 QUERY_SELECT_ROMSETS_BY_PARENT  = "SELECT * FROM vw_romsets WHERE parent_id = ?"
+QUERY_SELECT_ROMSETS_BY_ROM     = "SELECT rs.* FROM vw_romsets AS rs INNER JOIN roms_in_romset AS rr ON rr.romset_id = rs.id WHERE rr.rom_id = ?"
 
 QUERY_INSERT_ROMSET               = """
                                     INSERT INTO romsets (
@@ -542,6 +549,7 @@ QUERY_DELETE_ROMSET               = "DELETE FROM romset WHERE id = ?"
 QUERY_SELECT_ROMSET_ASSETS_BY_SET       = "SELECT * FROM vw_romset_assets WHERE romset_id = ?"
 QUERY_SELECT_ROOT_ROMSET_ASSETS         = "SELECT * FROM vw_romset_assets WHERE parent_id IS NULL"
 QUERY_SELECT_ROMSETS_ASSETS_BY_PARENT   = "SELECT * FROM vw_romset_assets WHERE parent_id = ?"
+QUERY_SELECT_ROMSET_ASSETS_BY_ROM       = "SELECT ra.* FROM vw_romset_assets AS ra INNER JOIN roms_in_romset AS rr ON rr.romset_id = ra.romset_id WHERE rr.rom_id = ?"
 QUERY_SELECT_ROMSET_ASSETS              = "SELECT * FROM vw_romset_assets"
 QUERY_INSERT_ROMSET_ASSET               = "INSERT INTO romset_assets (romset_id, asset_id) VALUES (?, ?)"
 QUERY_INSERT_ROMSET_ASSET_PATH          = "INSERT INTO romset_assetspaths (romset_id, assetspaths_id) VALUES (?, ?)"
@@ -559,6 +567,10 @@ QUERY_SELECT_ROMSET_SCANNERS      = "SELECT * FROM vw_romset_scanners WHERE roms
 QUERY_INSERT_ROMSET_SCANNER       = "INSERT INTO romset_scanners (id, romset_id, ael_addon_id, settings) VALUES (?,?,?,?)"
 QUERY_UPDATE_ROMSET_SCANNER       = "UPDATE romset_scanners SET settings = ? WHERE id = ?"
 QUERY_DELETE_ROMSET_SCANNER       = "DELETE FROM romset_scanners WHERE romset_id = ? AND id = ?"
+
+QUERY_SELECT_ROMSET_LAUNCHERS_BY_ROM = "SELECT rl.* FROM vw_romset_launchers AS rl INNER JOIN roms_in_romset AS rr ON rr.romset_id = rl.romset_id WHERE rr.rom_id = ?"
+QUERY_SELECT_ROMSET_SCANNERS_BY_ROM  = "SELECT rs.* FROM vw_romset_scanners AS rs INNER JOIN roms_in_romset AS rr ON rr.romset_id = rs.romset_id WHERE rr.rom_id = ?"
+
 class ROMSetRepository(object):
 
     def __init__(self, uow: UnitOfWork):
@@ -628,13 +640,39 @@ class ROMSetRepository(object):
         for romset_data in result_set:
             assets = []
             for asset_data in filter(lambda a: a['romset_id'] == romset_data['id'], assets_result_set):
-                assets.append(Asset(asset_data))      
+                assets.append(Asset(asset_data))   
                 
             yield ROMSet(romset_data, assets)
 
-    def find_romsets_by_ids(self, romset_ids:typing.List[str]) -> typing.Iterator[ROMSet]:
-        for romset_id in romset_ids:
-            yield self.find_romset(romset_id)
+    def find_romsets_by_rom(self, rom_id:str) -> typing.Iterator[ROMSet]:
+        self._uow.execute(QUERY_SELECT_ROMSETS_BY_ROM, rom_id)
+        result_set = self._uow.result_set()
+        
+        self._uow.execute(QUERY_SELECT_ROMSET_ASSETS_BY_ROM, rom_id)
+        assets_result_set = self._uow.result_set()
+
+        self._uow.execute(QUERY_SELECT_ROMSET_LAUNCHERS_BY_ROM, rom_id)
+        launchers_data = self._uow.result_set()
+        
+        self._uow.execute(QUERY_SELECT_ROMSET_SCANNERS_BY_ROM, rom_id)
+        scanners_data = self._uow.result_set()
+        
+        for romset_data in result_set:
+            assets = []
+            for asset_data in filter(lambda a: a['romset_id'] == romset_data['id'], assets_result_set):
+                assets.append(Asset(asset_data))      
+            
+            launchers = []
+            for launcher_data in launchers_data:
+                addon = AelAddon(launcher_data.copy())
+                launchers.append(ROMLauncherAddon(addon, launcher_data))
+            
+            scanners = []
+            for scanner_data in scanners_data:
+                addon = AelAddon(scanner_data.copy())
+                scanners.append(ROMSetScanner(addon, scanner_data))
+                    
+            yield ROMSet(romset_data, assets, launchers, scanners)                       
                         
     def insert_romset(self, romset_obj: ROMSet, parent_obj: Category = None):
         logger.info("ROMSetRepository.insert_romset(): Inserting new romset '{}'".format(romset_obj.get_name()))
@@ -797,7 +835,7 @@ QUERY_SELECT_ROM_ASSETS_BY_SET  = "SELECT ra.* FROM vw_rom_assets AS ra INNER JO
 QUERY_INSERT_ROM                = """
                                 INSERT INTO roms (
                                     id, metadata_id, name, num_of_players, esrb_rating, platform, box_size,
-                                    nointro_status, cloneof, fav_status, file_path)
+                                    nointro_status, cloneof, rom_status, file_path)
                                 VALUES (?,?,?,?,?,?,?,?,?,?,?)
                                 """ 
 
@@ -818,9 +856,9 @@ QUERY_INSERT_ROM_ASSET          = "INSERT INTO rom_assets (rom_id, asset_id) VAL
 QUERY_UPDATE_ROM                = """
                                   UPDATE roms 
                                   SET name=?, num_of_players=?, esrb_rating=?, platform = ?, box_size = ?,
-                                  nointro_status=?, cloneof=?, fav_status=?, file_path=? WHERE id =?
+                                  nointro_status=?, cloneof=?, rom_status=?, file_path=?, launch_count=?, last_launch_timestamp=?,
+                                  is_favourite=? WHERE id =?
                                   """
-
 QUERY_SELECT_ROM_LAUNCHERS     = "SELECT * FROM vw_rom_launchers WHERE rom_id = ?"
 QUERY_INSERT_ROM_LAUNCHER      = "INSERT INTO rom_launchers (id, rom_id, ael_addon_id, settings, is_non_blocking, is_default) VALUES (?,?,?,?,?,?)"
 QUERY_UPDATE_ROM_LAUNCHER      = "UPDATE rom_launchers SET settings = ?, is_non_blocking = ?, is_default = ? WHERE id = ?"
@@ -920,7 +958,7 @@ class ROMsRepository(object):
             rom_obj.get_box_sizing(), 
             rom_obj.get_nointro_status(),
             rom_obj.get_clone(),
-            rom_obj.get_favourite_status(),
+            rom_obj.get_rom_status(),
             rom_obj.get_file().getPath())
         
         rom_assets = rom_obj.get_assets()
@@ -960,7 +998,11 @@ class ROMsRepository(object):
             rom_obj.get_box_sizing(),
             rom_obj.get_nointro_status(),
             rom_obj.get_clone(),
-            rom_obj.get_favourite_status(),
+            rom_obj.get_rom_status(),
+            rom_obj.get_file().getPath(),
+            rom_obj.get_launch_count(),
+            rom_obj.get_last_launch_date(),
+            rom_obj.is_favourite(),
             rom_obj.get_id())
         
         for asset in rom_obj.get_assets():
@@ -1005,6 +1047,7 @@ QUERY_SELECT_LAUNCHER_ADDONS    = "SELECT * FROM ael_addon WHERE addon_type = 'L
 QUERY_SELECT_SCANNER_ADDONS     = "SELECT * FROM ael_addon WHERE addon_type = 'SCANNER' ORDER BY name"
 QUERY_INSERT_ADDON              = "INSERT INTO ael_addon(id, name, addon_id, version, addon_type, execute_uri, configure_uri) VALUES(?,?,?,?,?,?,?)" 
 QUERY_UPDATE_ADDON              = "UPDATE ael_addon SET name = ?, addon_id = ?, version = ?, addon_type = ?, execute_uri = ?, configure_uri = ? WHERE id = ?" 
+
 class AelAddonRepository(object):
 
     def __init__(self, uow: UnitOfWork):

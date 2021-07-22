@@ -98,16 +98,16 @@ def vw_route_render_collection(collection_id: str):
     elif len(container['items']) == 0:
         if container_type == constants.OBJ_CATEGORY:
             kodi.notify('Category {} has no items. Add romsets or categories first.'.format(container['name']))
-        if container_type == constants.OBJ_ROMSET:
-            kodi.notify('ROMSet {} has no items. Add ROMs'.format(container['name']))
+        if container_type == constants.OBJ_ROMSET or container_type == constants.OBJ_COLLECTION_VIRTUAL:
+            kodi.notify('Collection {} has no items. Add ROMs'.format(container['name']))
     else:
         render_list_items(container, container_context_items)
         
     xbmcplugin.endOfDirectory(handle = router.handle, succeeded = True, cacheToDisc = False)
 
-@router.route('/vcategory/recently_played')
-def vw_route_render_vcategory_recently_played():
-    container               = viewqueries.qry_get_collection_items(constants.VCATEGORY_RECENT_ID)
+@router.route('/collection/virtual/<collection_id>')
+def vw_route_render_virtual_collection(collection_id: str):
+    container               = viewqueries.qry_get_collection_items(collection_id)
     container_context_items = viewqueries.qry_container_context_menu_items(container)
     container_type          = container['obj_type'] if 'obj_type' in container else constants.OBJ_NONE
 
@@ -176,11 +176,7 @@ def vw_edit_romset(romset_id: str):
 
 # -------------------------------------------------------------------------------------------------
 # ROM execution
-# -------------------------------------------------------------------------------------------------
-@router.route('/execute/set/<romset_id>/rom/<rom_id>')
-def vw_route_execute_rom_in_romset(romset_id:str, rom_id:str):
-    AppMediator.async_cmd("EXECUTE_ROM", {'rom_id': rom_id, 'romset_id': romset_id} )
-    
+# -------------------------------------------------------------------------------------------------    
 @router.route('/execute/rom/<rom_id>')
 def vw_route_execute_rom(rom_id):
     AppMediator.async_cmd("EXECUTE_ROM", {'rom_id': rom_id} )

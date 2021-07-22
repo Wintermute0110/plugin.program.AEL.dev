@@ -23,6 +23,7 @@ import typing
 import logging
 import re 
 import time
+import datetime
 import json
 
 from os.path import expanduser
@@ -258,10 +259,6 @@ class MetaDataItemABC(EntityABC):
     @abc.abstractmethod
     def get_assets_kind(self): pass
 
-    # parent category / romset this item belongs to.
-    def get_parent_id(self) -> str:
-        return self.entity_data['parent_id'] if 'parent_id' in self.entity_data else None
-
     # --- Metadata --------------------------------------------------------------------------------
     def get_name(self):
         return self.entity_data['m_name'] if 'm_name' in self.entity_data else 'Unknown'
@@ -408,7 +405,7 @@ class MetaDataItemABC(EntityABC):
     def get_asset_ids_list(self) -> typing.List[str]: pass
     
     @abc.abstractmethod
-    def get_mappable_asset_ids_list(self) -> typing.List[str]: pass
+    def get_mappable_asset_ids_list(self) -> typing.List[str]: return []
     
     @abc.abstractmethod
     def get_default_icon(self) -> str: pass 
@@ -514,8 +511,10 @@ class Category(MetaDataItemABC):
     def get_object_name(self): return 'Category'
 
     def get_assets_kind(self): return constants.KIND_ASSET_CATEGORY
-
-    def is_virtual(self): return False
+    
+    # parent category / romset this item belongs to.
+    def get_parent_id(self) -> str:
+        return self.entity_data['parent_id'] if 'parent_id' in self.entity_data else None
     
     def num_romsets(self) -> int:
         return self.entity_data['num_romsets'] if 'num_romsets' in self.entity_data else 0
@@ -667,6 +666,9 @@ class ROMAddon(EntityABC):
     
     def set_settings(self, addon_settings:dict):
         self.entity_data['settings'] = json.dumps(addon_settings)
+    
+    def get_addon(self) -> AelAddon:
+        return self.addon
             
 class ROMLauncherAddon(ROMAddon):
     
@@ -724,6 +726,10 @@ class ROMSet(MetaDataItemABC):
         self.scanners_data = scanners_data
         super(ROMSet, self).__init__(entity_data, assets_data)
 
+    # parent category / romset this item belongs to.
+    def get_parent_id(self) -> str:
+        return self.entity_data['parent_id'] if 'parent_id' in self.entity_data else None
+    
     def get_platform(self): return self.entity_data['platform']
 
     def set_platform(self, platform): self.entity_data['platform'] = platform
@@ -1017,14 +1023,17 @@ class ROM(MetaDataItemABC):
     def get_esrb_rating(self):
         return self.entity_data['m_esrb']
 
-    def get_favourite_status(self):
-        return self.entity_data['fav_status'] if 'fav_status' in self.entity_data else None
+    def get_rom_status(self):
+        return self.entity_data['rom_status'] if 'rom_status' in self.entity_data else None
 
     def is_favourite(self) -> bool:
         return self.entity_data['is_favourite'] if 'is_favourite' in self.entity_data else False
 
     def get_launch_count(self):
         return self.entity_data['launch_count']
+
+    def get_last_launch_date(self):
+        return self.entity_data['last_launch_timestamp']
 
     def set_file(self, file):
         self.entity_data['filename'] = file.getPath()
@@ -1053,13 +1062,17 @@ class ROM(MetaDataItemABC):
     def scanned_with(self, scanner_id: str): 
         self.entity_data['scanned_by_id'] = scanner_id
 
-    def set_favourite_status(self, state):
-        self.entity_data['fav_status'] = state
+    def set_rom_status(self, state):
+        self.entity_data['rom_status'] = state
+
+    def add_to_favourites(self):
+        self.entity_data['is_favourite'] = True
 
     def increase_launch_count(self):
         launch_count = self.entity_data['launch_count'] if 'launch_count' in self.entity_data else 0
         launch_count += 1
         self.entity_data['launch_count'] = launch_count
+        self.entity_data['last_launch_timestamp'] = datetime.datetime.now()
 
     def get_box_sizing(self):
         return self.entity_data['box_size'] if 'box_size' in self.entity_data else constants.BOX_SIZE_POSTER
@@ -1076,59 +1089,6 @@ class ROM(MetaDataItemABC):
     def copy(self):
         data = self.copy_of_data_dic()
         return ROM(data, self.launcher)
-
-    # -------------------------------------------------------------------------------------------------
-    # Favourite ROM creation/management
-    # -------------------------------------------------------------------------------------------------
-    #
-    # Creates a new Favourite ROM dictionary from parent ROM and Launcher.
-    #
-    # No-Intro Missing ROMs are not allowed in Favourites or Virtual Launchers.
-    # fav_status = ['OK', 'Unlinked ROM', 'Unlinked Launcher', 'Broken'] default 'OK'
-    #  'OK'                ROM filename exists and launcher exists and ROM id exists
-    #  'Unlinked ROM'      ROM filename exists but ROM ID in launcher does not
-    #  'Unlinked Launcher' ROM filename exists but Launcher ID not found
-    #                      Note that if the launcher does not exists implies ROM ID does not exist.
-    #                      If launcher doesn't exist ROM JSON cannot be loaded.
-    #  'Broken'            ROM filename does not exist. ROM is unplayable
-    #
-    def copy_as_favourite_ROM(self):
-        # >> Copy original rom     
-        # todo: Should we make a FavouriteRom class inheriting Rom?
-        favourite_data = self.copy_of_data_dic()
-        
-        favourite_data['launcherID'] = self.launcher.get_id()
-        favourite_data['platform']   = self.get_platform()
-        
-        favourite = ROM(favourite_data, None)
-        
-        # Delete nointro_status field from ROM. Make sure this is done in the copy to be
-        # returned to avoid chaning the function parameters (dictionaries are mutable!)
-        # See http://stackoverflow.com/questions/5844672/delete-an-element-from-a-dictionary
-        # NOTE keep it!
-        # del favourite_data['nointro_status']
-        
-        # >> Favourite ROM unique fields
-        # >> Favourite ROMs in "Most played ROMs" DB also have 'launch_count' field.
-        favourite.set_favourite_status('OK')
-
-        # >> Copy parent launcher fields into Favourite ROM
-        #favourite.set_custom_attribute('launcherID',            self.get_id())
-        #favourite.set_custom_attribute('platform',              self.get_platform())
-        #favourite.set_custom_attribute('application',           self.get_custom_attribute('application'))
-        #favourite.set_custom_attribute('args',                  self.get_custom_attribute('args'))
-        #favourite.set_custom_attribute('args_extra',            self.get_custom_attribute('args_extra'))
-        #favourite.set_custom_attribute('rompath',               self.get_rom_path().getPath())
-        #favourite.set_custom_attribute('romext',                self.get_custom_attribute('romext'))
-        #favourite.set_custom_attribute('toggle_window',         self.is_in_windowed_mode())
-        #favourite.set_custom_attribute('non_blocking',          self.is_non_blocking())
-        #favourite.set_custom_attribute('roms_default_icon',     self.get_custom_attribute('roms_default_icon'))
-        #favourite.set_custom_attribute('roms_default_fanart',   self.get_custom_attribute('roms_default_fanart'))
-        #favourite.set_custom_attribute('roms_default_banner',   self.get_custom_attribute('roms_default_banner'))
-        #favourite.set_custom_attribute('roms_default_poster',   self.get_custom_attribute('roms_default_poster'))
-        #favourite.set_custom_attribute('roms_default_clearlogo',self.get_custom_attribute('roms_default_clearlogo'))
-
-        return favourite
         
     def get_assets_kind(self): return constants.KIND_ASSET_ROM
 	

@@ -243,9 +243,9 @@ def edit_asset(obj_instance: MetaDataItemABC, asset_info: AssetInfo) -> bool:
         title_str = 'Select {0} {1}'.format(obj_instance.get_object_name(), asset_info.name)
         ext_list = asset_info.exts_dialog
         if asset_info.id == constants.ASSET_MANUAL_ID or asset_info.id == constants.ASSET_TRAILER_ID:
-            new_asset_file = kodi.browse(1, title_str, ext_list, current_image_dir.getPath())
+            new_asset_file = kodi.browse(text=title_str, mask=ext_list, preselected_path=current_image_dir.getPath())
         else:
-            new_asset_file = kodi.browse(2, title_str, ext_list, current_image_dir.getPath())
+            new_asset_file = kodi.browse(type=2, text=title_str, mask=ext_list, preselected_path=current_image_dir.getPath())
         if not new_asset_file: return False
         # --- Check if image exists ---
         new_asset_FN = io.FileName(new_asset_file)
@@ -278,9 +278,10 @@ def edit_asset(obj_instance: MetaDataItemABC, asset_info: AssetInfo) -> bool:
         title_str = 'Select {0} {1}'.format(obj_instance.get_object_name(), asset_info.name)
         ext_list = asset_info.exts_dialog
         if asset_info.id == constants.ASSET_MANUAL_ID or asset_info.id == constants.ASSET_TRAILER_ID:
-            new_asset_file_str = kodi.browse(1, title_str, ext_list, current_image_dir.getPath())
+            new_asset_file_str = kodi.browse(text=title_str, mask=ext_list, preselected_path=current_image_dir.getPath())
         else:
-            new_asset_file_str = kodi.browse(2, title_str, ext_list, current_image_dir.getPath())
+            new_asset_file_str = kodi.browse(type=2, text=title_str, mask=ext_list, preselected_path=current_image_dir.getPath())
+            
         if not new_asset_file_str: return False
 
         # >> Determine image extension and dest filename. Check for errors.

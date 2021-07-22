@@ -417,7 +417,7 @@ def cmd_romset_import_nfo_file(args):
 def cmd_romset_browse_import_nfo_file(args):    
     romset_id = args['romset_id'] if 'romset_id' in args else None
     
-    NFO_file = kodi.browse(1, 'Select NFO description file', 'files', '.nfo', False)
+    NFO_file = kodi.browse(text='Select NFO description file', mask='.nfo')
     logger.debug('cmd_romset_browse_import_nfo_file() Dialog().browse returned "{0}"'.format(NFO_file))
     if not NFO_file: return
     NFO_FileName = io.FileName(NFO_file)
@@ -476,7 +476,7 @@ def cmd_romset_export_xml(args):
     logger.debug('cmd_romset_export_xml() l_fn_str "{0}"'.format(romset_fn_str))
 
     # --- Ask user for a path to export the launcher configuration ---
-    dir_path = kodi.browse(0, 'Select directory to export XML', 'files', '', False)
+    dir_path = kodi.browse(type=0, text='Select directory to export XML')
     if not dir_path: 
         AppMediator.async_cmd('ROMSET_EDIT_METADATA', args)
         return

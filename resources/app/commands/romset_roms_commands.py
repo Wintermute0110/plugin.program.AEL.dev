@@ -182,7 +182,7 @@ def cmd_set_rom_asset_dirs(args):
             return
 
         selected_asset_path = romset.get_asset_path(selected_asset)
-        dir_path = kodi.browse(0, 'Select {} path'.format(selected_asset.plural), 'files', '', False, False, selected_asset_path.getPath()).decode('utf-8')
+        dir_path = kodi.browse(type=0, text='Select {} path'.format(selected_asset.plural), preselected_path=selected_asset_path.getPath())
         if not dir_path or dir_path == selected_asset_path.getPath():  
             AppMediator.async_cmd('SET_ROMS_ASSET_DIRS', args)
             return
@@ -260,7 +260,7 @@ def cmd_import_roms_nfo(args):
 @AppMediator.register('IMPORT_ROMS_JSON')
 def cmd_import_roms_json(args):
     romset_id:str = args['romset_id'] if 'romset_id' in args else None
-    file_list = kodi.browse(1, 'Select ROMs JSON file', 'files', '.json', True)
+    file_list = kodi.browse(text='Select ROMs JSON file',mask='.json',multiple=True)
 
     uow = UnitOfWork(globals.g_PATHS.DATABASE_FILE_PATH)
     with uow:

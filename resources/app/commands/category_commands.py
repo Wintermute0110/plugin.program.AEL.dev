@@ -361,7 +361,7 @@ def cmd_category_import_nfo_file(args):
 def cmd_category_browse_import_nfo_file(args):    
     category_id = args['category_id'] if 'category_id' in args else None
     
-    NFO_file = kodi.browse(1, 'Select NFO description file', 'files', '.nfo', False)
+    NFO_file = kodi.browse(text='Select NFO description file', mask='.nfo')
     logger.debug('cmd_category_browse_import_nfo_file() Dialog().browse returned "{0}"'.format(NFO_file))
     if not NFO_file: return
     NFO_FileName = io.FileName(NFO_file)
@@ -420,7 +420,7 @@ def cmd_category_export_xml(args):
     logger.debug('cmd_export_category_xml() l_fn_str "{0}"'.format(category_fn_str))
 
     # --- Ask user for a path to export the launcher configuration ---
-    dir_path = kodi.browse(0, 'Select directory to export XML', 'files', '', False)
+    dir_path = kodi.browse(type=0, text='Select directory to export XML')
     if not dir_path: 
         AppMediator.sync_cmd('CATEGORY_EDIT_METADATA', args)
         return
