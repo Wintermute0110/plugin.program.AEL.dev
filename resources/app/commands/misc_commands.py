@@ -25,8 +25,8 @@ from ael import settings, constants
 
 from resources.app.commands.mediator import AppMediator
 from resources.app import globals
-from resources.app.repositories import UnitOfWork, AelAddonRepository, CategoryRepository, ROMSetRepository, XmlConfigurationRepository
-from resources.app.domain import Category, ROMSet, AelAddon
+from resources.app.repositories import UnitOfWork, AelAddonRepository, CategoryRepository, ROMCollectionRepository, XmlConfigurationRepository
+from resources.app.domain import Category, ROMCollection, AelAddon
 
 logger = logging.getLogger(__name__)
 @AppMediator.register('IMPORT_LAUNCHERS')
@@ -41,17 +41,17 @@ def cmd_execute_import_launchers(args):
         categories_repository = CategoryRepository(uow)
         existing_categories   = [*categories_repository.find_all_categories()]
 
-        romsets_repository    = ROMSetRepository(uow)
-        existing_romsets      = [*romsets_repository.find_all_romsets()]
+        romcollections_repository    = ROMCollectionRepository(uow)
+        existing_romcollections      = [*romcollections_repository.find_all_romcollections()]
 
         available_addon_ids   = { a.get_addon_id() : a for a in available_addons }
         existing_category_ids = map(lambda c: c.get_id(), existing_categories)
-        existing_romset_ids   = map(lambda r: r.get_id(), existing_romsets)
+        existing_romcollection_ids   = map(lambda r: r.get_id(), existing_romcollections)
 
         categories_to_insert:typing.List[Category]  = []
         categories_to_update:typing.List[Category]  = []
-        romsets_to_insert:typing.List[ROMSet]       = []
-        romsets_to_update:typing.List[ROMSet]       = []
+        romcollections_to_insert:typing.List[ROMCollection]       = []
+        romcollections_to_update:typing.List[ROMCollection]       = []
 
         # >> Process file by file
         for xml_file in file_list:
@@ -74,13 +74,13 @@ def cmd_execute_import_launchers(args):
 
             for launcher_to_import in launchers_to_import:
                 _apply_addon_launcher_for_legacy_launcher(launcher_to_import, available_addon_ids)                
-                if launcher_to_import.get_id() in existing_romset_ids:
+                if launcher_to_import.get_id() in existing_romcollection_ids:
                      # >> Romset exists (by name). Overwrite?
-                    logger.debug('ROMSet found. Edit existing ROMSet.')
-                    if kodi.dialog_yesno('ROMSet "{}" found in AEL database. Overwrite?'.format(launcher_to_import.get_name())):
-                        romsets_to_update.append(launcher_to_import)
+                    logger.debug('ROMCollection found. Edit existing ROMCollection.')
+                    if kodi.dialog_yesno('ROMCollection "{}" found in AEL database. Overwrite?'.format(launcher_to_import.get_name())):
+                        romcollections_to_update.append(launcher_to_import)
                 else:
-                    romsets_to_insert.append(launcher_to_import)
+                    romcollections_to_insert.append(launcher_to_import)
 
         for category_to_insert in categories_to_insert:
             categories_repository.insert_category(category_to_insert)
@@ -89,14 +89,14 @@ def cmd_execute_import_launchers(args):
         for category_to_update in categories_to_update:
             categories_repository.update_category(category_to_update)
             
-        for romset_to_insert in romsets_to_insert:
-            parent_id = romset_to_insert.get_custom_attribute('parent_id')
+        for romcollection_to_insert in romcollections_to_insert:
+            parent_id = romcollection_to_insert.get_custom_attribute('parent_id')
             parent_obj = next((c for c in existing_categories if c.get_id() == parent_id), None)
-            romsets_repository.insert_romset(romset_to_insert, parent_obj)
-            existing_romsets.append(romset_to_insert)
+            romcollections_repository.insert_romcollection(romcollection_to_insert, parent_obj)
+            existing_romcollections.append(romcollection_to_insert)
 
-        for romset_to_update in romsets_to_update:
-            romsets_repository.update_romset(romset_to_update)
+        for romcollection_to_update in romcollections_to_update:
+            romcollections_repository.update_romcollection(romcollection_to_update)
 
         uow.commit()
 
@@ -117,24 +117,24 @@ def cmd_execute_reset_db(args):
 
 @AppMediator.register('CHECK_DUPLICATE_ASSET_DIRS')
 def cmd_check_duplicate_asset_dirs(args):
-    romset_id:str = args['romset_id'] if 'romset_id' in args else None
+    romcollection_id:str = args['romcollection_id'] if 'romcollection_id' in args else None
     
     uow = UnitOfWork(globals.g_PATHS.DATABASE_FILE_PATH)
     with uow:
-        repository = ROMSetRepository(uow)
-        romset = repository.find_romset(romset_id)
+        repository = ROMCollectionRepository(uow)
+        romcollection = repository.find_romcollection(romcollection_id)
 
     # >> Check for duplicate paths and warn user.
-    duplicated_name_list = romset.get_duplicated_asset_dirs()
+    duplicated_name_list = romcollection.get_duplicated_asset_dirs()
     if duplicated_name_list:
         duplicated_asset_srt = ', '.join(duplicated_name_list)
         kodi.dialog_OK('Duplicated asset directories: {0}. '.format(duplicated_asset_srt) +
                         'AEL will refuse to add/edit ROMs if there are duplicate asset directories.')
 
-def _apply_addon_launcher_for_legacy_launcher(launcher_data: ROMSet, available_addons: typing.Dict[str, AelAddon]):
+def _apply_addon_launcher_for_legacy_launcher(launcher_data: ROMCollection, available_addons: typing.Dict[str, AelAddon]):
     
     launcher_type = launcher_data.get_custom_attribute('type')
-    logger.debug('Migrating launcher of type "{}" for romset {}'.format(launcher_type, launcher_data.get_name()))
+    logger.debug('Migrating launcher of type "{}" for romcollection {}'.format(launcher_type, launcher_data.get_name()))
     
     if launcher_type is None:
         # 1.9x version

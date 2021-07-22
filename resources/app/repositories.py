@@ -10,7 +10,7 @@ from ael.utils import text, io
 from ael import constants
 
 from resources.app import globals
-from resources.app.domain import Category, ROMSet, ROM, ROMLauncherAddon, Asset, AelAddon, ROMSetScanner, g_assetFactory
+from resources.app.domain import Category, ROMCollection, ROM, ROMLauncherAddon, Asset, AelAddon, ROMCollectionScanner, g_assetFactory
 
 logger = logging.getLogger(__name__)
 
@@ -127,7 +127,7 @@ class XmlConfigurationRepository(object):
             logger.debug('Adding category "{0}" to import list'.format(category_temp['m_name']))
             yield Category(category_temp, assets)
 
-    def get_launchers(self) -> typing.Iterator[ROMSet]:    
+    def get_launchers(self) -> typing.Iterator[ROMCollection]:    
         # --- Parse using cElementTree ---
         # >> If there are issues in the XML file (for example, invalid XML chars) ET.parse will fail
         logger.debug('XmlRepository.get_launchers() Loading {0}'.format(self.file_path.getPath()))
@@ -162,7 +162,7 @@ class XmlConfigurationRepository(object):
                     
             # --- Add launcher to launchers collection ---
             logger.debug('Adding launcher "{0}" to import list'.format(launcher_temp['m_name']))
-            yield ROMSet(launcher_temp, assets)
+            yield ROMCollection(launcher_temp, assets)
 
 
 # -------------------------------------------------------------------------------------------------
@@ -522,144 +522,144 @@ class CategoryRepository(object):
             self._uow.execute(QUERY_INSERT_CATEGORY_ASSET, category_obj.get_id(), asset.get_id())   
         
 #
-# ROMSetRepository -> ROM Sets from SQLite DB
+# ROMCollectionRepository -> ROM Sets from SQLite DB
 #
-QUERY_SELECT_ROMSET             = "SELECT * FROM vw_romsets WHERE id = ?"
-QUERY_SELECT_ROMSETS            = "SELECT * FROM vw_romsets ORDER BY m_name"
-QUERY_SELECT_ROOT_ROMSETS       = "SELECT * FROM vw_romsets WHERE parent_id IS NULL ORDER BY m_name"
-QUERY_SELECT_ROMSETS_BY_PARENT  = "SELECT * FROM vw_romsets WHERE parent_id = ? ORDER BY m_name"
-QUERY_SELECT_ROMSETS_BY_ROM     = "SELECT rs.* FROM vw_romsets AS rs INNER JOIN roms_in_romset AS rr ON rr.romset_id = rs.id WHERE rr.rom_id = ?"
+QUERY_SELECT_ROMCOLLECTION             = "SELECT * FROM vw_romcollections WHERE id = ?"
+QUERY_SELECT_ROMCOLLECTIONS            = "SELECT * FROM vw_romcollections ORDER BY m_name"
+QUERY_SELECT_ROOT_ROMCOLLECTIONS       = "SELECT * FROM vw_romcollections WHERE parent_id IS NULL ORDER BY m_name"
+QUERY_SELECT_ROMCOLLECTIONS_BY_PARENT  = "SELECT * FROM vw_romcollections WHERE parent_id = ? ORDER BY m_name"
+QUERY_SELECT_ROMCOLLECTIONS_BY_ROM     = "SELECT rs.* FROM vw_romcollections AS rs INNER JOIN roms_in_romcollection AS rr ON rr.romcollection_id = rs.id WHERE rr.rom_id = ?"
 
-QUERY_INSERT_ROMSET               = """
-                                    INSERT INTO romsets (
+QUERY_INSERT_ROMCOLLECTION               = """
+                                    INSERT INTO romcollections (
                                             id,name,parent_id,metadata_id,platform,box_size, 
                                             default_icon,default_fanart,default_banner,default_poster,default_controller,default_clearlogo,
                                             roms_default_icon,roms_default_fanart,roms_default_banner,roms_default_poster,roms_default_clearlogo
                                         ) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)
                                     """
-QUERY_UPDATE_ROMSET               = """
-                                    UPDATE romsets SET 
+QUERY_UPDATE_ROMCOLLECTION               = """
+                                    UPDATE romcollections SET 
                                         name=?, platform=?, box_size=?, 
                                         default_icon=?, default_fanart=?, default_banner=?, default_poster=?, default_controller=?, default_clearlogo=?,
                                         roms_default_icon=?, roms_default_fanart=?, roms_default_banner=?, roms_default_poster=?, roms_default_clearlogo=?
                                         WHERE id =?
                                     """
-QUERY_DELETE_ROMSET               = "DELETE FROM romset WHERE id = ?"
+QUERY_DELETE_ROMCOLLECTION               = "DELETE FROM romcollection WHERE id = ?"
 
-QUERY_SELECT_ROMSET_ASSETS_BY_SET       = "SELECT * FROM vw_romset_assets WHERE romset_id = ?"
-QUERY_SELECT_ROOT_ROMSET_ASSETS         = "SELECT * FROM vw_romset_assets WHERE parent_id IS NULL"
-QUERY_SELECT_ROMSETS_ASSETS_BY_PARENT   = "SELECT * FROM vw_romset_assets WHERE parent_id = ?"
-QUERY_SELECT_ROMSET_ASSETS_BY_ROM       = "SELECT ra.* FROM vw_romset_assets AS ra INNER JOIN roms_in_romset AS rr ON rr.romset_id = ra.romset_id WHERE rr.rom_id = ?"
-QUERY_SELECT_ROMSET_ASSETS              = "SELECT * FROM vw_romset_assets"
-QUERY_INSERT_ROMSET_ASSET               = "INSERT INTO romset_assets (romset_id, asset_id) VALUES (?, ?)"
-QUERY_INSERT_ROMSET_ASSET_PATH          = "INSERT INTO romset_assetspaths (romset_id, assetspaths_id) VALUES (?, ?)"
+QUERY_SELECT_ROMCOLLECTION_ASSETS_BY_SET       = "SELECT * FROM vw_romcollection_assets WHERE romcollection_id = ?"
+QUERY_SELECT_ROOT_ROMCOLLECTION_ASSETS         = "SELECT * FROM vw_romcollection_assets WHERE parent_id IS NULL"
+QUERY_SELECT_ROMCOLLECTIONS_ASSETS_BY_PARENT   = "SELECT * FROM vw_romcollection_assets WHERE parent_id = ?"
+QUERY_SELECT_ROMCOLLECTION_ASSETS_BY_ROM       = "SELECT ra.* FROM vw_romcollection_assets AS ra INNER JOIN roms_in_romcollection AS rr ON rr.romcollection_id = ra.romcollection_id WHERE rr.rom_id = ?"
+QUERY_SELECT_ROMCOLLECTION_ASSETS              = "SELECT * FROM vw_romcollection_assets"
+QUERY_INSERT_ROMCOLLECTION_ASSET               = "INSERT INTO romcollection_assets (romcollection_id, asset_id) VALUES (?, ?)"
+QUERY_INSERT_ROMCOLLECTION_ASSET_PATH          = "INSERT INTO romcollection_assetspaths (romcollection_id, assetspaths_id) VALUES (?, ?)"
 
-QUERY_INSERT_ROM_IN_ROMSET        = "INSERT INTO roms_in_romset (rom_id, romset_id) VALUES (?,?)"
-QUERY_REMOVE_ROM_FROM_ROMSET      = "DELETE FROM roms_in_romset WHERE rom_id = ? AND romset_id = ?"
+QUERY_INSERT_ROM_IN_ROMCOLLECTION        = "INSERT INTO roms_in_romcollection (rom_id, romcollection_id) VALUES (?,?)"
+QUERY_REMOVE_ROM_FROM_ROMCOLLECTION      = "DELETE FROM roms_in_romcollection WHERE rom_id = ? AND romcollection_id = ?"
 
-QUERY_SELECT_ROMSET_LAUNCHERS     = "SELECT * FROM vw_romset_launchers WHERE romset_id = ?"
-QUERY_INSERT_ROMSET_LAUNCHER      = "INSERT INTO romset_launchers (id, romset_id, ael_addon_id, settings, is_non_blocking, is_default) VALUES (?,?,?,?,?,?)"
-QUERY_UPDATE_ROMSET_LAUNCHER      = "UPDATE romset_launchers SET settings = ?, is_non_blocking = ?, is_default = ? WHERE id = ?"
-QUERY_DELETE_ROMSET_LAUNCHERS     = "DELETE FROM romset_launchers WHERE romset_id = ?"
-QUERY_DELETE_ROMSET_LAUNCHER      = "DELETE FROM romset_launchers WHERE romset_id = ? AND id = ?"
+QUERY_SELECT_ROMCOLLECTION_LAUNCHERS     = "SELECT * FROM vw_romcollection_launchers WHERE romcollection_id = ?"
+QUERY_INSERT_ROMCOLLECTION_LAUNCHER      = "INSERT INTO romcollection_launchers (id, romcollection_id, ael_addon_id, settings, is_non_blocking, is_default) VALUES (?,?,?,?,?,?)"
+QUERY_UPDATE_ROMCOLLECTION_LAUNCHER      = "UPDATE romcollection_launchers SET settings = ?, is_non_blocking = ?, is_default = ? WHERE id = ?"
+QUERY_DELETE_ROMCOLLECTION_LAUNCHERS     = "DELETE FROM romcollection_launchers WHERE romcollection_id = ?"
+QUERY_DELETE_ROMCOLLECTION_LAUNCHER      = "DELETE FROM romcollection_launchers WHERE romcollection_id = ? AND id = ?"
 
-QUERY_SELECT_ROMSET_SCANNERS      = "SELECT * FROM vw_romset_scanners WHERE romset_id = ?"
-QUERY_INSERT_ROMSET_SCANNER       = "INSERT INTO romset_scanners (id, romset_id, ael_addon_id, settings) VALUES (?,?,?,?)"
-QUERY_UPDATE_ROMSET_SCANNER       = "UPDATE romset_scanners SET settings = ? WHERE id = ?"
-QUERY_DELETE_ROMSET_SCANNER       = "DELETE FROM romset_scanners WHERE romset_id = ? AND id = ?"
+QUERY_SELECT_ROMCOLLECTION_SCANNERS      = "SELECT * FROM vw_romcollection_scanners WHERE romcollection_id = ?"
+QUERY_INSERT_ROMCOLLECTION_SCANNER       = "INSERT INTO romcollection_scanners (id, romcollection_id, ael_addon_id, settings) VALUES (?,?,?,?)"
+QUERY_UPDATE_ROMCOLLECTION_SCANNER       = "UPDATE romcollection_scanners SET settings = ? WHERE id = ?"
+QUERY_DELETE_ROMCOLLECTION_SCANNER       = "DELETE FROM romcollection_scanners WHERE romcollection_id = ? AND id = ?"
 
-QUERY_SELECT_ROMSET_LAUNCHERS_BY_ROM = "SELECT rl.* FROM vw_romset_launchers AS rl INNER JOIN roms_in_romset AS rr ON rr.romset_id = rl.romset_id WHERE rr.rom_id = ?"
-QUERY_SELECT_ROMSET_SCANNERS_BY_ROM  = "SELECT rs.* FROM vw_romset_scanners AS rs INNER JOIN roms_in_romset AS rr ON rr.romset_id = rs.romset_id WHERE rr.rom_id = ?"
+QUERY_SELECT_ROMCOLLECTION_LAUNCHERS_BY_ROM = "SELECT rl.* FROM vw_romcollection_launchers AS rl INNER JOIN roms_in_romcollection AS rr ON rr.romcollection_id = rl.romcollection_id WHERE rr.rom_id = ?"
+QUERY_SELECT_ROMCOLLECTION_SCANNERS_BY_ROM  = "SELECT rs.* FROM vw_romcollection_scanners AS rs INNER JOIN roms_in_romcollection AS rr ON rr.romcollection_id = rs.romcollection_id WHERE rr.rom_id = ?"
 
-class ROMSetRepository(object):
+class ROMCollectionRepository(object):
 
     def __init__(self, uow: UnitOfWork):
         self._uow = uow
 
-    def find_romset(self, romset_id: str) -> ROMSet:
-        self._uow.execute(QUERY_SELECT_ROMSET, romset_id)
-        romset_data = self._uow.single_result()
+    def find_romcollection(self, romcollection_id: str) -> ROMCollection:
+        self._uow.execute(QUERY_SELECT_ROMCOLLECTION, romcollection_id)
+        romcollection_data = self._uow.single_result()
         
-        self._uow.execute(QUERY_SELECT_ROMSET_ASSETS_BY_SET, romset_id)
+        self._uow.execute(QUERY_SELECT_ROMCOLLECTION_ASSETS_BY_SET, romcollection_id)
         assets_result_set = self._uow.result_set()
         assets = []
         for asset_data in assets_result_set:
             assets.append(Asset(asset_data))    
         
-        self._uow.execute(QUERY_SELECT_ROMSET_LAUNCHERS, romset_id)
+        self._uow.execute(QUERY_SELECT_ROMCOLLECTION_LAUNCHERS, romcollection_id)
         launchers_data = self._uow.result_set()
         launchers = []
         for launcher_data in launchers_data:
             addon = AelAddon(launcher_data.copy())
             launchers.append(ROMLauncherAddon(addon, launcher_data))
         
-        self._uow.execute(QUERY_SELECT_ROMSET_SCANNERS, romset_id)
+        self._uow.execute(QUERY_SELECT_ROMCOLLECTION_SCANNERS, romcollection_id)
         scanners_data = self._uow.result_set()
         scanners = []
         for scanner_data in scanners_data:
             addon = AelAddon(scanner_data.copy())
-            scanners.append(ROMSetScanner(addon, scanner_data))
+            scanners.append(ROMCollectionScanner(addon, scanner_data))
             
-        return ROMSet(romset_data, assets, launchers, scanners)
+        return ROMCollection(romcollection_data, assets, launchers, scanners)
     
-    def find_all_romsets(self) -> typing.Iterator[ROMSet]:
-        self._uow.execute(QUERY_SELECT_ROMSETS)
+    def find_all_romcollections(self) -> typing.Iterator[ROMCollection]:
+        self._uow.execute(QUERY_SELECT_ROMCOLLECTIONS)
         result_set = self._uow.result_set()
         
-        self._uow.execute(QUERY_SELECT_ROMSET_ASSETS)
+        self._uow.execute(QUERY_SELECT_ROMCOLLECTION_ASSETS)
         assets_result_set = self._uow.result_set()
                 
-        for romset_data in result_set:
+        for romcollection_data in result_set:
             assets = []
-            for asset_data in filter(lambda a: a['romset_id'] == romset_data['id'], assets_result_set):
+            for asset_data in filter(lambda a: a['romcollection_id'] == romcollection_data['id'], assets_result_set):
                 assets.append(Asset(asset_data))      
                 
-            yield ROMSet(romset_data, assets)
+            yield ROMCollection(romcollection_data, assets)
 
-    def find_root_romsets(self) -> typing.Iterator[ROMSet]:
-        self._uow.execute(QUERY_SELECT_ROOT_ROMSETS)
+    def find_root_romcollections(self) -> typing.Iterator[ROMCollection]:
+        self._uow.execute(QUERY_SELECT_ROOT_ROMCOLLECTIONS)
         result_set = self._uow.result_set()
         
-        self._uow.execute(QUERY_SELECT_ROOT_ROMSET_ASSETS)
+        self._uow.execute(QUERY_SELECT_ROOT_ROMCOLLECTION_ASSETS)
         assets_result_set = self._uow.result_set()
                 
-        for romset_data in result_set:
+        for romcollection_data in result_set:
             assets = []
-            for asset_data in filter(lambda a: a['romset_id'] == romset_data['id'], assets_result_set):
+            for asset_data in filter(lambda a: a['romcollection_id'] == romcollection_data['id'], assets_result_set):
                 assets.append(Asset(asset_data))      
                 
-            yield ROMSet(romset_data, assets)
+            yield ROMCollection(romcollection_data, assets)
 
-    def find_romsets_by_parent(self, category_id) -> typing.Iterator[ROMSet]:
-        self._uow.execute(QUERY_SELECT_ROMSETS_BY_PARENT, category_id)
+    def find_romcollections_by_parent(self, category_id) -> typing.Iterator[ROMCollection]:
+        self._uow.execute(QUERY_SELECT_ROMCOLLECTIONS_BY_PARENT, category_id)
         result_set = self._uow.result_set()
         
-        self._uow.execute(QUERY_SELECT_ROMSETS_ASSETS_BY_PARENT, category_id)
+        self._uow.execute(QUERY_SELECT_ROMCOLLECTIONS_ASSETS_BY_PARENT, category_id)
         assets_result_set = self._uow.result_set()
                 
-        for romset_data in result_set:
+        for romcollection_data in result_set:
             assets = []
-            for asset_data in filter(lambda a: a['romset_id'] == romset_data['id'], assets_result_set):
+            for asset_data in filter(lambda a: a['romcollection_id'] == romcollection_data['id'], assets_result_set):
                 assets.append(Asset(asset_data))   
                 
-            yield ROMSet(romset_data, assets)
+            yield ROMCollection(romcollection_data, assets)
 
-    def find_romsets_by_rom(self, rom_id:str) -> typing.Iterator[ROMSet]:
-        self._uow.execute(QUERY_SELECT_ROMSETS_BY_ROM, rom_id)
+    def find_romcollections_by_rom(self, rom_id:str) -> typing.Iterator[ROMCollection]:
+        self._uow.execute(QUERY_SELECT_ROMCOLLECTIONS_BY_ROM, rom_id)
         result_set = self._uow.result_set()
         
-        self._uow.execute(QUERY_SELECT_ROMSET_ASSETS_BY_ROM, rom_id)
+        self._uow.execute(QUERY_SELECT_ROMCOLLECTION_ASSETS_BY_ROM, rom_id)
         assets_result_set = self._uow.result_set()
 
-        self._uow.execute(QUERY_SELECT_ROMSET_LAUNCHERS_BY_ROM, rom_id)
+        self._uow.execute(QUERY_SELECT_ROMCOLLECTION_LAUNCHERS_BY_ROM, rom_id)
         launchers_data = self._uow.result_set()
         
-        self._uow.execute(QUERY_SELECT_ROMSET_SCANNERS_BY_ROM, rom_id)
+        self._uow.execute(QUERY_SELECT_ROMCOLLECTION_SCANNERS_BY_ROM, rom_id)
         scanners_data = self._uow.result_set()
         
-        for romset_data in result_set:
+        for romcollection_data in result_set:
             assets = []
-            for asset_data in filter(lambda a: a['romset_id'] == romset_data['id'], assets_result_set):
+            for asset_data in filter(lambda a: a['romcollection_id'] == romcollection_data['id'], assets_result_set):
                 assets.append(Asset(asset_data))      
             
             launchers = []
@@ -670,168 +670,168 @@ class ROMSetRepository(object):
             scanners = []
             for scanner_data in scanners_data:
                 addon = AelAddon(scanner_data.copy())
-                scanners.append(ROMSetScanner(addon, scanner_data))
+                scanners.append(ROMCollectionScanner(addon, scanner_data))
                     
-            yield ROMSet(romset_data, assets, launchers, scanners)                       
+            yield ROMCollection(romcollection_data, assets, launchers, scanners)                       
                         
-    def insert_romset(self, romset_obj: ROMSet, parent_obj: Category = None):
-        logger.info("ROMSetRepository.insert_romset(): Inserting new romset '{}'".format(romset_obj.get_name()))
+    def insert_romcollection(self, romcollection_obj: ROMCollection, parent_obj: Category = None):
+        logger.info("ROMCollectionRepository.insert_romcollection(): Inserting new romcollection '{}'".format(romcollection_obj.get_name()))
         metadata_id = text.misc_generate_random_SID()
-        assets_path = romset_obj.get_assets_path_FN()
+        assets_path = romcollection_obj.get_assets_path_FN()
         parent_category_id = parent_obj.get_id() if parent_obj is not None and parent_obj.get_id() != constants.VCATEGORY_ADDONROOT_ID else None
         
         self._uow.execute(QUERY_INSERT_METADATA,
             metadata_id,
-            romset_obj.get_releaseyear(),
-            romset_obj.get_genre(),
-            romset_obj.get_developer(),
-            romset_obj.get_rating(),
-            romset_obj.get_plot(),
+            romcollection_obj.get_releaseyear(),
+            romcollection_obj.get_genre(),
+            romcollection_obj.get_developer(),
+            romcollection_obj.get_rating(),
+            romcollection_obj.get_plot(),
             assets_path.getPath() if assets_path is not None else None,
-            romset_obj.is_finished())
+            romcollection_obj.is_finished())
 
-        self._uow.execute(QUERY_INSERT_ROMSET,
-            romset_obj.get_id(),
-            romset_obj.get_name(),
+        self._uow.execute(QUERY_INSERT_ROMCOLLECTION,
+            romcollection_obj.get_id(),
+            romcollection_obj.get_name(),
             parent_category_id,
             metadata_id,
-            romset_obj.get_platform(),
-            romset_obj.get_box_sizing(),    
-            romset_obj.get_mapped_asset_info(asset_id=constants.ASSET_ICON_ID).key,
-            romset_obj.get_mapped_asset_info(asset_id=constants.ASSET_FANART_ID).key,
-            romset_obj.get_mapped_asset_info(asset_id=constants.ASSET_BANNER_ID).key,
-            romset_obj.get_mapped_asset_info(asset_id=constants.ASSET_POSTER_ID).key,
-            romset_obj.get_mapped_asset_info(asset_id=constants.ASSET_CONTROLLER_ID).key,
-            romset_obj.get_mapped_asset_info(asset_id=constants.ASSET_CLEARLOGO_ID).key,            
-            romset_obj.get_mapped_ROM_asset_info(asset_id=constants.ASSET_ICON_ID).key,
-            romset_obj.get_mapped_ROM_asset_info(asset_id=constants.ASSET_FANART_ID).key,
-            romset_obj.get_mapped_ROM_asset_info(asset_id=constants.ASSET_BANNER_ID).key,
-            romset_obj.get_mapped_ROM_asset_info(asset_id=constants.ASSET_POSTER_ID).key,
-            romset_obj.get_mapped_ROM_asset_info(asset_id=constants.ASSET_CLEARLOGO_ID).key)
+            romcollection_obj.get_platform(),
+            romcollection_obj.get_box_sizing(),    
+            romcollection_obj.get_mapped_asset_info(asset_id=constants.ASSET_ICON_ID).key,
+            romcollection_obj.get_mapped_asset_info(asset_id=constants.ASSET_FANART_ID).key,
+            romcollection_obj.get_mapped_asset_info(asset_id=constants.ASSET_BANNER_ID).key,
+            romcollection_obj.get_mapped_asset_info(asset_id=constants.ASSET_POSTER_ID).key,
+            romcollection_obj.get_mapped_asset_info(asset_id=constants.ASSET_CONTROLLER_ID).key,
+            romcollection_obj.get_mapped_asset_info(asset_id=constants.ASSET_CLEARLOGO_ID).key,            
+            romcollection_obj.get_mapped_ROM_asset_info(asset_id=constants.ASSET_ICON_ID).key,
+            romcollection_obj.get_mapped_ROM_asset_info(asset_id=constants.ASSET_FANART_ID).key,
+            romcollection_obj.get_mapped_ROM_asset_info(asset_id=constants.ASSET_BANNER_ID).key,
+            romcollection_obj.get_mapped_ROM_asset_info(asset_id=constants.ASSET_POSTER_ID).key,
+            romcollection_obj.get_mapped_ROM_asset_info(asset_id=constants.ASSET_CLEARLOGO_ID).key)
         
-        romset_assets = romset_obj.get_assets()
-        for asset in romset_assets: 
-            self._insert_asset(asset, romset_obj)  
+        romcollection_assets = romcollection_obj.get_assets()
+        for asset in romcollection_assets: 
+            self._insert_asset(asset, romcollection_obj)  
             
-        romset_launchers = romset_obj.get_launchers()
-        for romset_launcher in romset_launchers:
-            romset_launcher.set_id(text.misc_generate_random_SID())
-            self._uow.execute(QUERY_INSERT_ROMSET_LAUNCHER,
-                romset_launcher.get_id(),
-                romset_obj.get_id(), 
-                romset_launcher.addon.get_id(), 
-                romset_launcher.get_settings_str(), 
-                romset_launcher.is_non_blocking(),
-                romset_launcher.is_default())
+        romcollection_launchers = romcollection_obj.get_launchers()
+        for romcollection_launcher in romcollection_launchers:
+            romcollection_launcher.set_id(text.misc_generate_random_SID())
+            self._uow.execute(QUERY_INSERT_ROMCOLLECTION_LAUNCHER,
+                romcollection_launcher.get_id(),
+                romcollection_obj.get_id(), 
+                romcollection_launcher.addon.get_id(), 
+                romcollection_launcher.get_settings_str(), 
+                romcollection_launcher.is_non_blocking(),
+                romcollection_launcher.is_default())
             
-        romset_scanners = romset_obj.get_scanners()
-        for romset_scanner in romset_scanners:
-            romset_scanner.set_id(text.misc_generate_random_SID())
-            self._uow.execute(QUERY_INSERT_ROMSET_SCANNER,
-                romset_scanner.get_id(),
-                romset_obj.get_id(), 
-                romset_scanner.addon.get_id(), 
-                romset_scanner.get_settings_str())
+        romcollection_scanners = romcollection_obj.get_scanners()
+        for romcollection_scanner in romcollection_scanners:
+            romcollection_scanner.set_id(text.misc_generate_random_SID())
+            self._uow.execute(QUERY_INSERT_ROMCOLLECTION_SCANNER,
+                romcollection_scanner.get_id(),
+                romcollection_obj.get_id(), 
+                romcollection_scanner.addon.get_id(), 
+                romcollection_scanner.get_settings_str())
               
-    def update_romset(self, romset_obj: ROMSet):
-        logger.info("ROMSetRepository.update_romset(): Updating romset '{}'".format(romset_obj.get_name()))
-        assets_path = romset_obj.get_assets_path_FN()
+    def update_romcollection(self, romcollection_obj: ROMCollection):
+        logger.info("ROMCollectionRepository.update_romcollection(): Updating romcollection '{}'".format(romcollection_obj.get_name()))
+        assets_path = romcollection_obj.get_assets_path_FN()
         
         self._uow.execute(QUERY_UPDATE_METADATA,
-            romset_obj.get_releaseyear(),
-            romset_obj.get_genre(),
-            romset_obj.get_developer(),
-            romset_obj.get_rating(),
-            romset_obj.get_plot(),
+            romcollection_obj.get_releaseyear(),
+            romcollection_obj.get_genre(),
+            romcollection_obj.get_developer(),
+            romcollection_obj.get_rating(),
+            romcollection_obj.get_plot(),
             assets_path.getPath() if assets_path is not None else None,
-            romset_obj.is_finished(),
-            romset_obj.get_custom_attribute('metadata_id'))
+            romcollection_obj.is_finished(),
+            romcollection_obj.get_custom_attribute('metadata_id'))
 
-        self._uow.execute(QUERY_UPDATE_ROMSET,
-            romset_obj.get_name(),
-            romset_obj.get_platform(),
-            romset_obj.get_box_sizing(),
-            romset_obj.get_mapped_asset_info(asset_id=constants.ASSET_ICON_ID).key,
-            romset_obj.get_mapped_asset_info(asset_id=constants.ASSET_FANART_ID).key,
-            romset_obj.get_mapped_asset_info(asset_id=constants.ASSET_BANNER_ID).key,
-            romset_obj.get_mapped_asset_info(asset_id=constants.ASSET_POSTER_ID).key,
-            romset_obj.get_mapped_asset_info(asset_id=constants.ASSET_CONTROLLER_ID).key,
-            romset_obj.get_mapped_asset_info(asset_id=constants.ASSET_CLEARLOGO_ID).key,            
-            romset_obj.get_mapped_ROM_asset_info(asset_id=constants.ASSET_ICON_ID).key,
-            romset_obj.get_mapped_ROM_asset_info(asset_id=constants.ASSET_FANART_ID).key,
-            romset_obj.get_mapped_ROM_asset_info(asset_id=constants.ASSET_BANNER_ID).key,
-            romset_obj.get_mapped_ROM_asset_info(asset_id=constants.ASSET_POSTER_ID).key,
-            romset_obj.get_mapped_ROM_asset_info(asset_id=constants.ASSET_CLEARLOGO_ID).key,
-            romset_obj.get_id())
+        self._uow.execute(QUERY_UPDATE_ROMCOLLECTION,
+            romcollection_obj.get_name(),
+            romcollection_obj.get_platform(),
+            romcollection_obj.get_box_sizing(),
+            romcollection_obj.get_mapped_asset_info(asset_id=constants.ASSET_ICON_ID).key,
+            romcollection_obj.get_mapped_asset_info(asset_id=constants.ASSET_FANART_ID).key,
+            romcollection_obj.get_mapped_asset_info(asset_id=constants.ASSET_BANNER_ID).key,
+            romcollection_obj.get_mapped_asset_info(asset_id=constants.ASSET_POSTER_ID).key,
+            romcollection_obj.get_mapped_asset_info(asset_id=constants.ASSET_CONTROLLER_ID).key,
+            romcollection_obj.get_mapped_asset_info(asset_id=constants.ASSET_CLEARLOGO_ID).key,            
+            romcollection_obj.get_mapped_ROM_asset_info(asset_id=constants.ASSET_ICON_ID).key,
+            romcollection_obj.get_mapped_ROM_asset_info(asset_id=constants.ASSET_FANART_ID).key,
+            romcollection_obj.get_mapped_ROM_asset_info(asset_id=constants.ASSET_BANNER_ID).key,
+            romcollection_obj.get_mapped_ROM_asset_info(asset_id=constants.ASSET_POSTER_ID).key,
+            romcollection_obj.get_mapped_ROM_asset_info(asset_id=constants.ASSET_CLEARLOGO_ID).key,
+            romcollection_obj.get_id())
          
-        romset_launchers = romset_obj.get_launchers()
-        for romset_launcher in romset_launchers:
-            if romset_launcher.get_id() is None:
-                romset_launcher.set_id(text.misc_generate_random_SID())
-                self._uow.execute(QUERY_INSERT_ROMSET_LAUNCHER,
-                    romset_launcher.get_id(),
-                    romset_obj.get_id(), 
-                    romset_launcher.addon.get_id(), 
-                    romset_launcher.get_settings_str(), 
-                    romset_launcher.is_non_blocking(),
-                    romset_launcher.is_default())
+        romcollection_launchers = romcollection_obj.get_launchers()
+        for romcollection_launcher in romcollection_launchers:
+            if romcollection_launcher.get_id() is None:
+                romcollection_launcher.set_id(text.misc_generate_random_SID())
+                self._uow.execute(QUERY_INSERT_ROMCOLLECTION_LAUNCHER,
+                    romcollection_launcher.get_id(),
+                    romcollection_obj.get_id(), 
+                    romcollection_launcher.addon.get_id(), 
+                    romcollection_launcher.get_settings_str(), 
+                    romcollection_launcher.is_non_blocking(),
+                    romcollection_launcher.is_default())
             else:
-                self._uow.execute(QUERY_UPDATE_ROMSET_LAUNCHER,
-                    romset_launcher.get_settings_str(), 
-                    romset_launcher.is_non_blocking(),
-                    romset_launcher.is_default(),
-                    romset_launcher.get_id())
+                self._uow.execute(QUERY_UPDATE_ROMCOLLECTION_LAUNCHER,
+                    romcollection_launcher.get_settings_str(), 
+                    romcollection_launcher.is_non_blocking(),
+                    romcollection_launcher.is_default(),
+                    romcollection_launcher.get_id())
                 
-        romset_scanners = romset_obj.get_scanners()
-        for romset_scanner in romset_scanners:
-            if romset_scanner.get_id() is None:
-                romset_scanner.set_id(text.misc_generate_random_SID())
-                self._uow.execute(QUERY_INSERT_ROMSET_SCANNER,
-                    romset_scanner.get_id(),
-                    romset_obj.get_id(), 
-                    romset_scanner.addon.get_id(), 
-                    romset_scanner.get_settings_str())
+        romcollection_scanners = romcollection_obj.get_scanners()
+        for romcollection_scanner in romcollection_scanners:
+            if romcollection_scanner.get_id() is None:
+                romcollection_scanner.set_id(text.misc_generate_random_SID())
+                self._uow.execute(QUERY_INSERT_ROMCOLLECTION_SCANNER,
+                    romcollection_scanner.get_id(),
+                    romcollection_obj.get_id(), 
+                    romcollection_scanner.addon.get_id(), 
+                    romcollection_scanner.get_settings_str())
             else:
-                self._uow.execute(QUERY_UPDATE_ROMSET_SCANNER,
-                    romset_scanner.get_settings_str(), 
-                    romset_scanner.get_id())
+                self._uow.execute(QUERY_UPDATE_ROMCOLLECTION_SCANNER,
+                    romcollection_scanner.get_settings_str(), 
+                    romcollection_scanner.get_id())
 
-        for asset in romset_obj.get_assets():
-            if asset.get_id() == '': self._insert_asset(asset, romset_obj)
-            else: self._update_asset(asset, romset_obj)                
+        for asset in romcollection_obj.get_assets():
+            if asset.get_id() == '': self._insert_asset(asset, romcollection_obj)
+            else: self._update_asset(asset, romcollection_obj)                
             
-    def add_rom_to_romset(self, romset_id: str, rom_id: str):
-        self._uow.execute(QUERY_INSERT_ROM_IN_ROMSET, rom_id, romset_id)
+    def add_rom_to_romcollection(self, romcollection_id: str, rom_id: str):
+        self._uow.execute(QUERY_INSERT_ROM_IN_ROMCOLLECTION, rom_id, romcollection_id)
             
-    def remove_rom_from_romset(self, romset_id: str, rom_id: str):
-        self._uow.execute(QUERY_REMOVE_ROM_FROM_ROMSET, rom_id, romset_id)
-    def delete_romset(self, romset_id: str):
-        logger.info("ROMSetRepository.delete_romset(): Deleting romset '{}'".format(romset_id))
-        self._uow.execute(QUERY_DELETE_ROMSET, romset_id)
+    def remove_rom_from_romcollection(self, romcollection_id: str, rom_id: str):
+        self._uow.execute(QUERY_REMOVE_ROM_FROM_ROMCOLLECTION, rom_id, romcollection_id)
+    def delete_romcollection(self, romcollection_id: str):
+        logger.info("ROMCollectionRepository.delete_romcollection(): Deleting romcollection '{}'".format(romcollection_id))
+        self._uow.execute(QUERY_DELETE_ROMCOLLECTION, romcollection_id)
 
-    def remove_launcher(self, romset_id: str, launcher_id:str):
-        self._uow.execute(QUERY_DELETE_ROMSET_LAUNCHER, romset_id, launcher_id)
+    def remove_launcher(self, romcollection_id: str, launcher_id:str):
+        self._uow.execute(QUERY_DELETE_ROMCOLLECTION_LAUNCHER, romcollection_id, launcher_id)
 
-    def remove_scanner(self, romset_id: str, scanner_id:str):
-        self._uow.execute(QUERY_DELETE_ROMSET_SCANNER, romset_id, scanner_id)
+    def remove_scanner(self, romcollection_id: str, scanner_id:str):
+        self._uow.execute(QUERY_DELETE_ROMCOLLECTION_SCANNER, romcollection_id, scanner_id)
 
-    def _insert_asset(self, asset: Asset, romset_obj: ROMSet):
+    def _insert_asset(self, asset: Asset, romcollection_obj: ROMCollection):
         asset_db_id = text.misc_generate_random_SID()
         self._uow.execute(QUERY_INSERT_ASSET, asset_db_id, asset.get_path(), asset.get_asset_info_id())
-        self._uow.execute(QUERY_INSERT_ROMSET_ASSET, romset_obj.get_id(), asset_db_id)   
+        self._uow.execute(QUERY_INSERT_ROMCOLLECTION_ASSET, romcollection_obj.get_id(), asset_db_id)   
     
-    def _update_asset(self, asset: Asset, romset_obj: ROMSet):
+    def _update_asset(self, asset: Asset, romcollection_obj: ROMCollection):
         self._uow.execute(QUERY_UPDATE_ASSET, asset.get_path(), asset.get_asset_info_id(), asset.get_id())
-        if asset.get_custom_attribute('romset_id') is None:
-            self._uow.execute(QUERY_INSERT_ROMSET_ASSET, romset_obj.get_id(), asset.get_id())   
+        if asset.get_custom_attribute('romcollection_id') is None:
+            self._uow.execute(QUERY_INSERT_ROMCOLLECTION_ASSET, romcollection_obj.get_id(), asset.get_id())   
             
 #
 # ROMsRepository -> ROMs from SQLite DB
 #     
 QUERY_SELECT_ROM                = "SELECT * FROM vw_roms WHERE id = ?"
-QUERY_SELECT_ROMS_BY_SET        = "SELECT r.* FROM vw_roms AS r INNER JOIN roms_in_romset AS rs ON rs.rom_id = r.id AND rs.romset_id = ?"
+QUERY_SELECT_ROMS_BY_SET        = "SELECT r.* FROM vw_roms AS r INNER JOIN roms_in_romcollection AS rs ON rs.rom_id = r.id AND rs.romcollection_id = ?"
 QUERY_SELECT_ROM_ASSETS         = "SELECT * FROM vw_rom_assets WHERE rom_id = ?"
-QUERY_SELECT_ROM_ASSETS_BY_SET  = "SELECT ra.* FROM vw_rom_assets AS ra INNER JOIN roms_in_romset AS rs ON rs.rom_id = ra.rom_id AND rs.romset_id = ?"
+QUERY_SELECT_ROM_ASSETS_BY_SET  = "SELECT ra.* FROM vw_rom_assets AS ra INNER JOIN roms_in_romcollection AS rs ON rs.rom_id = ra.rom_id AND rs.romcollection_id = ?"
 QUERY_INSERT_ROM                = """
                                 INSERT INTO roms (
                                     id, metadata_id, name, num_of_players, esrb_rating, platform, box_size,
@@ -863,18 +863,18 @@ QUERY_SELECT_ROM_LAUNCHERS     = "SELECT * FROM vw_rom_launchers WHERE rom_id = 
 QUERY_INSERT_ROM_LAUNCHER      = "INSERT INTO rom_launchers (id, rom_id, ael_addon_id, settings, is_non_blocking, is_default) VALUES (?,?,?,?,?,?)"
 QUERY_UPDATE_ROM_LAUNCHER      = "UPDATE rom_launchers SET settings = ?, is_non_blocking = ?, is_default = ? WHERE id = ?"
 QUERY_DELETE_ROM_LAUNCHERS     = "DELETE FROM rom_launchers WHERE rom_id = ?"
-QUERY_DELETE_ROM_LAUNCHER      = "DELETE FROM rom_launchers WHERE romset_id = ? AND id = ?"
+QUERY_DELETE_ROM_LAUNCHER      = "DELETE FROM rom_launchers WHERE romcollection_id = ? AND id = ?"
           
 class ROMsRepository(object):
        
     def __init__(self, uow: UnitOfWork):
         self._uow = uow
 
-    def find_roms_by_romset(self, romset_id: str) -> typing.Iterator[ROM]:
-        self._uow.execute(QUERY_SELECT_ROMS_BY_SET, romset_id)
+    def find_roms_by_romcollection(self, romcollection_id: str) -> typing.Iterator[ROM]:
+        self._uow.execute(QUERY_SELECT_ROMS_BY_SET, romcollection_id)
         result_set = self._uow.result_set()
         
-        self._uow.execute(QUERY_SELECT_ROM_ASSETS_BY_SET, romset_id)
+        self._uow.execute(QUERY_SELECT_ROM_ASSETS_BY_SET, romcollection_id)
         assets_result_set = self._uow.result_set()
                 
         for rom_data in result_set:
@@ -1013,7 +1013,7 @@ class ROMsRepository(object):
         for rom_launcher in rom_launchers:
             if rom_launcher.get_id() is None:
                 rom_launcher.set_id(text.misc_generate_random_SID())
-                self._uow.execute(QUERY_INSERT_ROMSET_LAUNCHER,
+                self._uow.execute(QUERY_INSERT_ROMCOLLECTION_LAUNCHER,
                     rom_launcher.get_id(),
                     rom_obj.get_id(), 
                     rom_launcher.addon.get_id(), 
@@ -1021,7 +1021,7 @@ class ROMsRepository(object):
                     rom_launcher.is_non_blocking(),
                     rom_launcher.is_default())
             else:
-                self._uow.execute(QUERY_UPDATE_ROMSET_LAUNCHER,
+                self._uow.execute(QUERY_UPDATE_ROMCOLLECTION_LAUNCHER,
                     rom_launcher.get_settings_str(), 
                     rom_launcher.is_non_blocking(),
                     rom_launcher.is_default(),

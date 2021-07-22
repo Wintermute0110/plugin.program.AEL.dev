@@ -176,7 +176,7 @@ class Test_Launcher(unittest.TestCase):
 
         paths = Fake_Paths('\\fake\\')
         paths.ROMS_DIR = NewFileName(self.TEST_ASSETS_DIR)                
-        repository = ROMSetRepository(paths, settings)
+        repository = ROMCollectionRepository(paths, settings)
 
         # act
         launcher = StandardRomLauncher(paths, settings, launcher_data, None, mock_exeFactory, repository, None)
@@ -219,7 +219,7 @@ class Test_Launcher(unittest.TestCase):
         paths = Fake_Paths('\\fake\\')
         paths.ROMS_DIR = rom_dir
         
-        repository = ROMSetRepository(paths, settings)
+        repository = ROMCollectionRepository(paths, settings)
         launcher = StandardRomLauncher(paths, settings, launcher_data, None, mock_exeFactory, repository, None)
         launcher.select_ROM(rom_id)
 
@@ -266,7 +266,7 @@ class Test_Launcher(unittest.TestCase):
         paths = Fake_Paths('\\fake\\')
         paths.ROMS_DIR = rom_dir
         
-        repository = ROMSetRepository(paths, settings)
+        repository = ROMCollectionRepository(paths, settings)
         launcher = StandardRomLauncher(paths, settings, launcher_data, None, mock_exeFactory, repository, None)
         
         # act
@@ -318,7 +318,7 @@ class Test_Launcher(unittest.TestCase):
         paths = Fake_Paths('\\fake\\')
         paths.ROMS_DIR = rom_dir
         
-        repository = ROMSetRepository(paths, settings)
+        repository = ROMCollectionRepository(paths, settings)
         launcher = StandardRomLauncher(paths, settings, launcher_data, None, mock_exeFactory, repository, None)
         launcher.select_ROM(rom_id)
 
@@ -373,7 +373,7 @@ class Test_Launcher(unittest.TestCase):
         paths = Fake_Paths('\\fake\\')
         paths.ROMS_DIR = rom_dir
                 
-        repository = ROMSetRepository(paths, settings)
+        repository = ROMCollectionRepository(paths, settings)
         launcher = RetroarchLauncher(paths, settings, launcher_data, None, mock_exeFactory, repository, None)
         launcher.select_ROM(rom_id)
 
@@ -415,7 +415,7 @@ class Test_Launcher(unittest.TestCase):
         paths = Fake_Paths('\\fake\\')
         paths.ROMS_DIR = NewFileName(self.TEST_ASSETS_DIR)
                 
-        repository = ROMSetRepository(paths, settings)
+        repository = ROMCollectionRepository(paths, settings)
         target = RetroarchLauncher(paths, settings, launcher_data, None, mock_exeFactory, repository, None)        
 
         expected = 35
@@ -455,7 +455,7 @@ class Test_Launcher(unittest.TestCase):
         paths = Fake_Paths('\\fake\\')
         paths.ROMS_DIR = NewFileName(self.TEST_ASSETS_DIR)
                 
-        repository = ROMSetRepository(paths, settings)
+        repository = ROMCollectionRepository(paths, settings)
         target = StandardRomLauncher(paths, settings, launcher_data, None, mock_exeFactory, repository, None)        
 
         expected = 35

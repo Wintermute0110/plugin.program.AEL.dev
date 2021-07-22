@@ -13,7 +13,7 @@ class FakeAddon(object):
     def getSetting(self, key):
         return self.data[key]
 
-# class FakeRomSetRepository(ROMSetRepository):
+# class FakeRomSetRepository(ROMCollectionRepository):
     
 #     def __init__(self, roms):
 #         self.roms = roms

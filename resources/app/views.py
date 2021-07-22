@@ -97,8 +97,8 @@ def vw_route_render_collection(collection_id: str):
         kodi.notify('Current view is not rendered correctly. Re-render views first.')
     elif len(container['items']) == 0:
         if container_type == constants.OBJ_CATEGORY:
-            kodi.notify('Category {} has no items. Add romsets or categories first.'.format(container['name']))
-        if container_type == constants.OBJ_ROMSET or container_type == constants.OBJ_COLLECTION_VIRTUAL:
+            kodi.notify('Category {} has no items. Add romcollections or categories first.'.format(container['name']))
+        if container_type == constants.OBJ_ROMCOLLECTION or container_type == constants.OBJ_COLLECTION_VIRTUAL:
             kodi.notify('Collection {} has no items. Add ROMs'.format(container['name']))
     else:
         render_list_items(container, container_context_items)
@@ -115,9 +115,9 @@ def vw_route_render_virtual_collection(collection_id: str):
         kodi.notify('Current view is not rendered correctly. Re-render views first.')
     elif len(container['items']) == 0:
         if container_type == constants.OBJ_CATEGORY:
-            kodi.notify('Category {} has no items. Add romsets or categories first.'.format(container['name']))
-        if container_type == constants.OBJ_ROMSET:
-            kodi.notify('ROMSet {} has no items. Add ROMs'.format(container['name']))
+            kodi.notify('Category {} has no items. Add romcollections or categories first.'.format(container['name']))
+        if container_type == constants.OBJ_ROMCOLLECTION:
+            kodi.notify('ROMCollection {} has no items. Add ROMs'.format(container['name']))
     else:
         render_list_items(container, container_context_items)
         
@@ -158,21 +158,21 @@ def vw_add_category(category_id: str = None, parent_category_id: str = None):
 def vw_edit_category(category_id: str):
     AppMediator.async_cmd('EDIT_CATEGORY', {'category_id': category_id })
 
-@router.route('/romset/add')
-@router.route('/romset/add/<category_id>')
-@router.route('/romset/add/<category_id>/in')
-@router.route('/romset/add/<category_id>/in/<parent_category_id>')
-def vw_add_romset(category_id: str = None, parent_category_id: str = None):
-    AppMediator.async_cmd('ADD_ROMSET', {'category_id': category_id, 'parent_category_id': parent_category_id})
+@router.route('/romcollection/add')
+@router.route('/romcollection/add/<category_id>')
+@router.route('/romcollection/add/<category_id>/in')
+@router.route('/romcollection/add/<category_id>/in/<parent_category_id>')
+def vw_add_romcollection(category_id: str = None, parent_category_id: str = None):
+    AppMediator.async_cmd('ADD_ROMCOLLECTION', {'category_id': category_id, 'parent_category_id': parent_category_id})
 
-@router.route('/romset/view/<romset_id>')
-def vw_view_romset(romset_id: str):
+@router.route('/romcollection/view/<romcollection_id>')
+def vw_view_romcollection(romcollection_id: str):
     #todo
     pass
 
-@router.route('/romset/edit/<romset_id>')
-def vw_edit_romset(romset_id: str):
-    AppMediator.async_cmd('EDIT_ROMSET', {'romset_id': romset_id })
+@router.route('/romcollection/edit/<romcollection_id>')
+def vw_edit_romcollection(romcollection_id: str):
+    AppMediator.async_cmd('EDIT_ROMCOLLECTION', {'romcollection_id': romcollection_id })
 
 # -------------------------------------------------------------------------------------------------
 # ROM execution
@@ -188,18 +188,18 @@ def vw_route_execute_rom(rom_id):
 def vw_configure_app_launcher():
     logger.debug('App Launcher: Configuring ...')
 
-    romset_id:str   = router.args['romset_id'][0] if 'romset_id' in router.args else None
+    romcollection_id:str   = router.args['romcollection_id'][0] if 'romcollection_id' in router.args else None
     launcher_id:str = router.args['launcher_id'][0] if 'launcher_id' in router.args else None
     settings:str    = router.args['settings'][0] if 'settings' in router.args else None
     
     launcher_settings = json.loads(settings)    
     launcher = AppLauncher(None, None, launcher_settings)
     if launcher_id is None and launcher.build():
-        launcher.store_launcher_settings(romset_id)
+        launcher.store_launcher_settings(romcollection_id)
         return
     
     if launcher_id is not None and launcher.edit():
-        launcher.store_launcher_settings(romset_id, launcher_id)
+        launcher.store_launcher_settings(romcollection_id, launcher_id)
         return
     
     kodi.notify_warn('Cancelled creating launcher')
@@ -233,7 +233,7 @@ def vw_execute_app_launcher():
 def vw_configure_folder_scanner():
     logger.debug('ROM Folder scanner: Configuring ...')
 
-    romset_id:str               = router.args['romset_id'][0] if 'romset_id' in router.args else None
+    romcollection_id:str               = router.args['romcollection_id'][0] if 'romcollection_id' in router.args else None
     scanner_id:str              = router.args['scanner_id'][0] if 'scanner_id' in router.args else None
     settings:str                = router.args['settings'][0] if 'settings' in router.args else None
     def_launcher_settings:str   = router.args['launcher'][0] if 'launcher' in router.args else None
@@ -249,7 +249,7 @@ def vw_configure_folder_scanner():
         kodi.ProgressDialog())
     
     if scanner.configure():
-        scanner.store_scanner_settings(romset_id, scanner_id)
+        scanner.store_scanner_settings(romcollection_id, scanner_id)
         return
     
     kodi.notify_warn('Cancelled configuring scanner')
@@ -257,7 +257,7 @@ def vw_configure_folder_scanner():
 @router.route('/scanner/folder')
 def vw_execute_folder_scanner():
     logger.debug('ROM Folder scanner: Starting scan ...')
-    romset_id:str   = router.args['romset_id'][0] if 'romset_id' in router.args else None
+    romcollection_id:str   = router.args['romcollection_id'][0] if 'romcollection_id' in router.args else None
     scanner_id:str  = router.args['scanner_id'][0] if 'scanner_id' in router.args else None
     settings:str    = router.args['settings'][0] if 'settings' in router.args else None
 
@@ -282,7 +282,7 @@ def vw_execute_folder_scanner():
         return
         
     logger.info('vw_execute_folder_scanner(): {} roms scanned'.format(amount_scanned))
-    scanner.store_scanned_roms(romset_id, scanner_id)
+    scanner.store_scanned_roms(romcollection_id, scanner_id)
     kodi.notify('ROMs scanning done')
 
     

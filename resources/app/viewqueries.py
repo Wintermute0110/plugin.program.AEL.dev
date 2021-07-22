@@ -274,17 +274,17 @@ def qry_container_context_menu_items(container_data) -> typing.List[typing.Tuple
     container_id      = container_data['id'] if 'id' in container_data else ''
     
     is_category: bool = container_type == constants.OBJ_CATEGORY
-    is_romset: bool   = container_type == constants.OBJ_ROMSET
+    is_romcollection: bool   = container_type == constants.OBJ_ROMCOLLECTION
     is_root: bool     = container_data['id'] == ''
     
     commands = []
     if is_category: 
         commands.append(('Rebuild {} view'.format(container_name),
                         _context_menu_url_for('execute/command/render_view',{'category_id':container_id})))    
-    if is_romset:
+    if is_romcollection:
         commands.append(('Search ROM in collection', _context_menu_url_for('/search/{}'.format(container_id))))
         commands.append(('Rebuild {} view'.format(container_name),
-                         _context_menu_url_for('execute/command/render_romset_view', {'romset_id':container_id})))    
+                         _context_menu_url_for('execute/command/render_romcollection_view', {'romcollection_id':container_id})))    
     
     commands.append(('Rebuild all views', _context_menu_url_for('execute/command/render_views')))
     commands.append(('Open Kodi file manager', 'ActivateWindow(filemanager)'))
@@ -310,7 +310,7 @@ def qry_listitem_context_menu_items(list_item_data, container_data)-> typing.Lis
     if container_id == '': container_id = constants.VCATEGORY_ADDONROOT_ID
     
     is_category: bool = item_type == constants.OBJ_CATEGORY 
-    is_romset: bool   = item_type == constants.OBJ_ROMSET
+    is_romcollection: bool   = item_type == constants.OBJ_ROMCOLLECTION
     is_rom: bool      = item_type == constants.OBJ_ROM
     
     commands = []
@@ -323,15 +323,15 @@ def qry_listitem_context_menu_items(list_item_data, container_data)-> typing.Lis
         commands.append(('View Category', _context_menu_url_for('/categories/view/{}'.format(item_id))))
         commands.append(('Edit Category', _context_menu_url_for('/categories/edit/{}'.format(item_id))))
         commands.append(('Add new Category',_context_menu_url_for('/categories/add/{}/in/{}'.format(item_id, container_id))))
-        commands.append(('Add new ROM Collection', _context_menu_url_for('/romset/add/{}/in/{}'.format(item_id, container_id))))
+        commands.append(('Add new ROM Collection', _context_menu_url_for('/romcollection/add/{}/in/{}'.format(item_id, container_id))))
         
-    if is_romset: 
-        commands.append(('View ROM Collection', _context_menu_url_for('/romset/view/{}'.format(item_id))))
-        commands.append(('Edit ROM Collection', _context_menu_url_for('/romset/edit/{}'.format(item_id))))
+    if is_romcollection: 
+        commands.append(('View ROM Collection', _context_menu_url_for('/romcollection/view/{}'.format(item_id))))
+        commands.append(('Edit ROM Collection', _context_menu_url_for('/romcollection/edit/{}'.format(item_id))))
     
     if not is_category and container_is_category:
         commands.append(('Add new Category',_context_menu_url_for('/categories/add/{}'.format(container_id))))
-        commands.append(('Add new ROM Collection', _context_menu_url_for('/romset/add/{}'.format(container_id))))
+        commands.append(('Add new ROM Collection', _context_menu_url_for('/romcollection/add/{}'.format(container_id))))
     
     return commands
 

@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 #
-# Advanced Emulator Launcher: Commands (romset roms management)
+# Advanced Emulator Launcher: Commands (romcollection roms management)
 #
 # Copyright (c) 2016-2018 Wintermute0110 <wintermute0110@gmail.com>
 #
@@ -26,62 +26,62 @@ from ael.utils import kodi, io
 
 from resources.app.commands.mediator import AppMediator
 from resources.app import globals
-from resources.app.repositories import UnitOfWork, ROMSetRepository, ROMsRepository, ROMsJsonFileRepository
+from resources.app.repositories import UnitOfWork, ROMCollectionRepository, ROMsRepository, ROMsJsonFileRepository
 from resources.app.domain import ROM, AssetInfo, g_assetFactory
 
 logger = logging.getLogger(__name__)
 
 # -------------------------------------------------------------------------------------------------
-# ROMSet ROM management.
+# ROMCollection ROM management.
 # -------------------------------------------------------------------------------------------------
 
 # --- Submenu menu command ---
-@AppMediator.register('ROMSET_MANAGE_ROMS')
+@AppMediator.register('ROMCOLLECTION_MANAGE_ROMS')
 def cmd_manage_roms(args):
-    logger.debug('ROMSET_MANAGE_ROMS: cmd_manage_roms() SHOW MENU')
-    romset_id:str = args['romset_id'] if 'romset_id' in args else None
+    logger.debug('ROMCOLLECTION_MANAGE_ROMS: cmd_manage_roms() SHOW MENU')
+    romcollection_id:str = args['romcollection_id'] if 'romcollection_id' in args else None
     
-    if romset_id is None:
-        logger.warn('cmd_manage_roms(): No romset id supplied.')
+    if romcollection_id is None:
+        logger.warn('cmd_manage_roms(): No romcollection id supplied.')
         kodi.notify_warn("Invalid parameters supplied.")
         return
     
     selected_option = None
     uow = UnitOfWork(globals.g_PATHS.DATABASE_FILE_PATH)
     with uow:
-        repository = ROMSetRepository(uow)
-        romset = repository.find_romset(romset_id)
+        repository = ROMCollectionRepository(uow)
+        romcollection = repository.find_romcollection(romcollection_id)
 
     options = collections.OrderedDict()
     options['SET_ROMS_DEFAULT_ARTWORK']  = 'Choose ROMs default artwork ...'
     options['SET_ROMS_ASSET_DIRS']       = 'Manage ROMs asset directories ...'
-    if romset.has_scanners(): 
+    if romcollection.has_scanners(): 
         options['SCAN_ROMS']             = 'Scan for new ROMs'
-        options['EDIT_ROMSET_SCANNERS']  = 'Configure ROM scanners'
+        options['EDIT_ROMCOLLECTION_SCANNERS']  = 'Configure ROM scanners'
     else: options['ADD_SCANNER']         = 'Add new ROM scanner' 
     options['IMPORT_ROMS']               = 'Import ROMs (files/metadata)'
     options['EXPORT_ROMS']               = 'Export ROMs metadata to NFO files'
     options['SCRAPE_ROMS']               = 'Scrape ROMs'
     options['REMOVE_DEAD_ROMS']          = 'Remove dead/missing ROMs'
     options['DELETE_ROMS_NFO']           = 'Delete ROMs NFO files'
-    options['CLEAR_ROMS']                = 'Clear ROMs from ROMSet'
+    options['CLEAR_ROMS']                = 'Clear ROMs from ROMCollection'
 
-    s = 'Manage ROM Collection "{}" ROMs'.format(romset.get_name())
+    s = 'Manage ROM Collection "{}" ROMs'.format(romcollection.get_name())
     selected_option = kodi.OrdDictionaryDialog().select(s, options)
     if selected_option is None:
         # >> Exits context menu
-        logger.debug('ROMSET_MANAGE_ROMS: cmd_manage_roms() Selected None. Closing context menu')
-        AppMediator.async_cmd('EDIT_ROMSET', args)
+        logger.debug('ROMCOLLECTION_MANAGE_ROMS: cmd_manage_roms() Selected None. Closing context menu')
+        AppMediator.async_cmd('EDIT_ROMCOLLECTION', args)
         return
     
     # >> Execute subcommand. May be atomic, maybe a submenu.
-    logger.debug('ROMSET_MANAGE_ROMS: cmd_manage_roms() Selected {}'.format(selected_option))
+    logger.debug('ROMCOLLECTION_MANAGE_ROMS: cmd_manage_roms() Selected {}'.format(selected_option))
     AppMediator.async_cmd(selected_option, args)
 
 # --- Choose default ROMs assets/artwork ---
 @AppMediator.register('SET_ROMS_DEFAULT_ARTWORK')
 def cmd_set_roms_default_artwork(args):
-    romset_id:str = args['romset_id'] if 'romset_id' in args else None
+    romcollection_id:str = args['romcollection_id'] if 'romcollection_id' in args else None
     
     # if not launcher.supports_launching_roms():
     #     kodi.dialog_OK(
@@ -92,15 +92,15 @@ def cmd_set_roms_default_artwork(args):
     
     uow = UnitOfWork(globals.g_PATHS.DATABASE_FILE_PATH)
     with uow:
-        repository = ROMSetRepository(uow)
-        romset = repository.find_romset(romset_id)
+        repository = ROMCollectionRepository(uow)
+        romcollection = repository.find_romcollection(romcollection_id)
 
         # --- Build Dialog.select() list ---
-        default_assets_list = romset.get_ROM_mappable_asset_list()
+        default_assets_list = romcollection.get_ROM_mappable_asset_list()
         options = collections.OrderedDict()
         for default_asset_info in default_assets_list:
             # >> Label is the string 'Choose asset for XXXX (currently YYYYY)'
-            mapped_asset_key = romset.get_mapped_ROM_asset_key(default_asset_info)
+            mapped_asset_key = romcollection.get_mapped_ROM_asset_key(default_asset_info)
             mapped_asset_info = g_assetFactory.get_asset_info_by_key(mapped_asset_key)
             # --- Append to list of ListItems ---
             options[default_asset_info] = 'Choose asset for {0} (currently {1})'.format(default_asset_info.name, mapped_asset_info.name)
@@ -111,11 +111,11 @@ def cmd_set_roms_default_artwork(args):
         if selected_asset_info is None:
             # >> Return to parent menu.
             logger.debug('cmd_set_roms_default_artwork() Main selected NONE. Returning to parent menu.')
-            AppMediator.async_cmd('ROMSET_MANAGE_ROMS', args)
+            AppMediator.async_cmd('ROMCOLLECTION_MANAGE_ROMS', args)
             return
         
         logger.debug('cmd_set_roms_default_artwork() Main select() returned {0}'.format(selected_asset_info.name))    
-        mapped_asset_key    = romset.get_mapped_ROM_asset_key(selected_asset_info)
+        mapped_asset_key    = romcollection.get_mapped_ROM_asset_key(selected_asset_info)
         mapped_asset_info   = g_assetFactory.get_asset_info_by_key(mapped_asset_key)
         mappable_asset_list = g_assetFactory.get_asset_list_by_IDs(constants.ROM_ASSET_ID_LIST, 'image')
         logger.debug('cmd_set_roms_default_artwork() {0} currently is mapped to {1}'.format(selected_asset_info.name, mapped_asset_info.name))
@@ -128,39 +128,39 @@ def cmd_set_roms_default_artwork(args):
 
         dialog = kodi.OrdDictionaryDialog()
         dialog_title_str = 'Edit {0} {1} mapped asset'.format(
-            romset.get_object_name(), selected_asset_info.name)
+            romcollection.get_object_name(), selected_asset_info.name)
         new_selected_asset_info = dialog.select(dialog_title_str, options, mapped_asset_info)
     
         if new_selected_asset_info is None:
             # >> Return to this method recursively to previous menu.
             logger.debug('cmd_set_roms_default_artwork() Mapable selected NONE. Returning to previous menu.')
-            AppMediator.async_cmd('ROMSET_MANAGE_ROMS', args)
+            AppMediator.async_cmd('ROMCOLLECTION_MANAGE_ROMS', args)
             return   
         
         logger.debug('cmd_set_roms_default_artwork() Mapable selected {0}.'.format(new_selected_asset_info.name))
-        romset.set_mapped_ROM_asset_key(selected_asset_info, new_selected_asset_info)
+        romcollection.set_mapped_ROM_asset_key(selected_asset_info, new_selected_asset_info)
         kodi.notify('{0} {1} mapped to {2}'.format(
-            romset.get_object_name(), selected_asset_info.name, new_selected_asset_info.name
+            romcollection.get_object_name(), selected_asset_info.name, new_selected_asset_info.name
         ))
         
-        repository.update_romset(romset)
+        repository.update_romcollection(romcollection)
         uow.commit()
-        AppMediator.async_cmd('RENDER_ROMSET_VIEW', {'romset_id': romset.get_id()})
-        AppMediator.async_cmd('RENDER_VIEW', {'category_id': romset.get_parent_id()})     
+        AppMediator.async_cmd('RENDER_ROMCOLLECTION_VIEW', {'romcollection_id': romcollection.get_id()})
+        AppMediator.async_cmd('RENDER_VIEW', {'category_id': romcollection.get_parent_id()})     
 
-    AppMediator.async_cmd('SET_ROMS_DEFAULT_ARTWORK', {'romset_id': romset.get_id(), 'selected_asset': selected_asset_info.id})         
+    AppMediator.async_cmd('SET_ROMS_DEFAULT_ARTWORK', {'romcollection_id': romcollection.get_id(), 'selected_asset': selected_asset_info.id})         
 
 @AppMediator.register('SET_ROMS_ASSET_DIRS')
 def cmd_set_rom_asset_dirs(args):
-    romset_id:str = args['romset_id'] if 'romset_id' in args else None
+    romcollection_id:str = args['romcollection_id'] if 'romcollection_id' in args else None
     
     list_items = {}
     assets = g_assetFactory.get_all()
 
     uow = UnitOfWork(globals.g_PATHS.DATABASE_FILE_PATH)
     with uow:
-        repository = ROMSetRepository(uow)
-        romset = repository.find_romset(romset_id)
+        repository = ROMCollectionRepository(uow)
+        romcollection = repository.find_romcollection(romcollection_id)
 
         # --- Scrape ROMs artwork ---
         # >> Mimic what the ROM scanner does. Use same settings as the ROM scanner.
@@ -170,7 +170,7 @@ def cmd_set_rom_asset_dirs(args):
         #     return
 
         for asset_info in assets:
-            path = romset.get_asset_path(asset_info)
+            path = romcollection.get_asset_path(asset_info)
             if path:
                 list_items[asset_info] = "Change {0} path: '{1}'".format(asset_info.plural, path.getPath())
 
@@ -178,17 +178,17 @@ def cmd_set_rom_asset_dirs(args):
         selected_asset: AssetInfo = dialog.select('ROM Asset directories ', list_items)
 
         if selected_asset is None:
-            AppMediator.async_cmd('ROMSET_MANAGE_ROMS', args)
+            AppMediator.async_cmd('ROMCOLLECTION_MANAGE_ROMS', args)
             return
 
-        selected_asset_path = romset.get_asset_path(selected_asset)
+        selected_asset_path = romcollection.get_asset_path(selected_asset)
         dir_path = kodi.browse(type=0, text='Select {} path'.format(selected_asset.plural), preselected_path=selected_asset_path.getPath())
         if not dir_path or dir_path == selected_asset_path.getPath():  
             AppMediator.async_cmd('SET_ROMS_ASSET_DIRS', args)
             return
                 
-        romset.set_asset_path(selected_asset, dir_path)
-        repository.update_romset(romset)
+        romcollection.set_asset_path(selected_asset, dir_path)
+        repository.update_romcollection(romcollection)
         uow.commit()
                 
     # >> Check for duplicate paths and warn user.
@@ -200,24 +200,24 @@ def cmd_set_rom_asset_dirs(args):
 @AppMediator.register('IMPORT_ROMS')
 def cmd_import_roms(args):
     logger.debug('IMPORT_ROMS: cmd_import_roms() SHOW MENU')
-    romset_id:str = args['romset_id'] if 'romset_id' in args else None
+    romcollection_id:str = args['romcollection_id'] if 'romcollection_id' in args else None
         
     selected_option = None
     uow = UnitOfWork(globals.g_PATHS.DATABASE_FILE_PATH)
     with uow:
-        repository = ROMSetRepository(uow)
-        romset = repository.find_romset(romset_id)
+        repository = ROMCollectionRepository(uow)
+        romcollection = repository.find_romcollection(romcollection_id)
 
     options = collections.OrderedDict()
     options['IMPORT_ROMS_NFO']      = 'Import ROMs metadata from NFO files'
     options['IMPORT_ROMS_JSON']     = 'Import ROMs data from JSON files'
 
-    s = 'Import ROMs in ROMSet "{}"'.format(romset.get_name())
+    s = 'Import ROMs in ROMCollection "{}"'.format(romcollection.get_name())
     selected_option = kodi.OrdDictionaryDialog().select(s, options)
     if selected_option is None:
         # >> Exits context menu
         logger.debug('IMPORT_ROMS: cmd_import_roms() Selected None. Closing context menu')
-        AppMediator.async_cmd('ROMSET_MANAGE_ROMS', args)
+        AppMediator.async_cmd('ROMCOLLECTION_MANAGE_ROMS', args)
         return
     
     # >> Execute subcommand. May be atomic, maybe a submenu.
@@ -227,13 +227,13 @@ def cmd_import_roms(args):
 # --- Import ROM metadata from NFO files ---
 @AppMediator.register('IMPORT_ROMS_NFO')
 def cmd_import_roms_nfo(args):
-    romset_id:str = args['romset_id'] if 'romset_id' in args else None
+    romcollection_id:str = args['romcollection_id'] if 'romcollection_id' in args else None
         
     # >> Load ROMs, iterate and import NFO files
     uow = UnitOfWork(globals.g_PATHS.DATABASE_FILE_PATH)
     with uow:
         repository = ROMsRepository(uow)
-        roms = repository.find_roms_by_romset(romset_id)
+        roms = repository.find_roms_by_romcollection(romcollection_id)
     
         pDialog = kodi.ProgressDialog()
         pDialog.startProgress('Processing NFO files', num_steps=len(roms))
@@ -259,16 +259,16 @@ def cmd_import_roms_nfo(args):
 # --- Import ROM metadata from json config file ---
 @AppMediator.register('IMPORT_ROMS_JSON')
 def cmd_import_roms_json(args):
-    romset_id:str = args['romset_id'] if 'romset_id' in args else None
+    romcollection_id:str = args['romcollection_id'] if 'romcollection_id' in args else None
     file_list = kodi.browse(text='Select ROMs JSON file',mask='.json',multiple=True)
 
     uow = UnitOfWork(globals.g_PATHS.DATABASE_FILE_PATH)
     with uow:
         repository        = ROMsRepository(uow)
-        romset_repository = ROMSetRepository(uow) 
+        romcollection_repository = ROMCollectionRepository(uow) 
         
-        romset              = romset_repository.find_romset(romset_id)
-        existing_roms       = [*repository.find_roms_by_romset(romset_id)]
+        romcollection              = romcollection_repository.find_romcollection(romcollection_id)
+        existing_roms       = [*repository.find_roms_by_romcollection(romcollection_id)]
         existing_rom_ids    = map(lambda r: r.get_id(), existing_roms)
         existing_rom_names  = map(lambda r: r.get_name(), existing_roms)
 
@@ -298,18 +298,18 @@ def cmd_import_roms_json(args):
                         roms_to_update.append(imported_rom)
                 else:
                     logger.debug('Add new ROM {}'.format(imported_rom.get_name()))
-                    imported_rom.set_platform(romset.get_platform())
+                    imported_rom.set_platform(romcollection.get_platform())
                     roms_to_insert.append(imported_rom)
                         
         for rom_to_insert in roms_to_insert:
             repository.insert_rom(rom_to_insert)
-            romset_repository.add_rom_to_romset(romset.get_id(), rom_to_insert.get_id())
+            romcollection_repository.add_rom_to_romcollection(romcollection.get_id(), rom_to_insert.get_id())
 
         for rom_to_update in roms_to_update:
             repository.update_rom(rom_to_update)
             
         uow.commit()
 
-    AppMediator.async_cmd('RENDER_ROMSET_VIEW', {'romset_id': romset_id})
-    AppMediator.async_cmd('RENDER_VIEW', {'category_id': romset.get_parent_id()})  
+    AppMediator.async_cmd('RENDER_ROMCOLLECTION_VIEW', {'romcollection_id': romcollection_id})
+    AppMediator.async_cmd('RENDER_VIEW', {'category_id': romcollection.get_parent_id()})  
     kodi.notify('Finished importing ROMS')

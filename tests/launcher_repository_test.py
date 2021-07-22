@@ -119,7 +119,7 @@ class Test_LauncherRepository(unittest.TestCase):
         paths = Fake_Paths('\\fake\\')
         paths.ROMS_DIR = rom_dir
         
-        target = ROMSetRepository(paths, settings)
+        target = ROMCollectionRepository(paths, settings)
         launcher_data = { 'id': 'abc', 'roms_base_noext': 'roms_Sega_32X_518519' }
         launcher = StandardRomLauncher(paths, settings, launcher_data, None, None, target, None)
         
@@ -142,7 +142,7 @@ class Test_LauncherRepository(unittest.TestCase):
         paths = Fake_Paths('\\fake\\')
         paths.ROMS_DIR = rom_dir
         
-        target = ROMSetRepository(paths, settings)
+        target = ROMCollectionRepository(paths, settings)
         launcher_data = { 'id': 'abc', 'roms_base_noext': 'favourites' }
         launcher = StandardRomLauncher(paths, settings, launcher_data, None, None, target, None)
         
@@ -164,7 +164,7 @@ class Test_LauncherRepository(unittest.TestCase):
         paths = Fake_Paths('\\fake\\')
         paths.ROMS_DIR = rom_dir
         
-        target = ROMSetRepository(paths, settings)
+        target = ROMCollectionRepository(paths, settings)
         launcher_data = { 'id': 'abc', 'roms_base_noext': 'testcase' }
         launcher = StandardRomLauncher(paths, settings, launcher_data, None, None, target, None)
         

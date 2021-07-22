@@ -25,8 +25,8 @@ from ael.utils import kodi
 
 from resources.app.commands.mediator import AppMediator
 from resources.app import globals
-from resources.app.repositories import UnitOfWork, CategoryRepository, ROMSetRepository, ROMsRepository, ViewRepository
-from resources.app.domain import ROM, ROMSet, Category, VirtualCollection, VirtualCollectionFactory
+from resources.app.repositories import UnitOfWork, CategoryRepository, ROMCollectionRepository, ROMsRepository, ViewRepository
+from resources.app.domain import ROM, ROMCollection, Category, VirtualCollection, VirtualCollectionFactory
 
 logger = logging.getLogger(__name__)
 
@@ -37,11 +37,11 @@ def cmd_render_views_data(args):
     uow = UnitOfWork(globals.g_PATHS.DATABASE_FILE_PATH)
     with uow:
         categories_repository   = CategoryRepository(uow)
-        romsets_repository      = ROMSetRepository(uow)
+        romcollections_repository      = ROMCollectionRepository(uow)
         roms_repository         = ROMsRepository(uow)
         views_repository        = ViewRepository(globals.g_PATHS)
         
-        _render_root_view(categories_repository, romsets_repository, roms_repository, views_repository, render_sub_views=True)
+        _render_root_view(categories_repository, romcollections_repository, roms_repository, views_repository, render_sub_views=True)
         
     kodi.notify('All views rendered')
     kodi.refresh_container()
@@ -55,32 +55,32 @@ def cmd_render_view_data(args):
     uow = UnitOfWork(globals.g_PATHS.DATABASE_FILE_PATH)
     with uow:
         categories_repository   = CategoryRepository(uow)
-        romsets_repository      = ROMSetRepository(uow)
+        romcollections_repository      = ROMCollectionRepository(uow)
         roms_repository         = ROMsRepository(uow)
         views_repository        = ViewRepository(globals.g_PATHS)
                 
         if category_id is None or category_id == constants.VCATEGORY_ADDONROOT_ID:
-            _render_root_view(categories_repository, romsets_repository, roms_repository, views_repository, render_recursive)
+            _render_root_view(categories_repository, romcollections_repository, roms_repository, views_repository, render_recursive)
         else:
             category = categories_repository.find_category(category_id)
-            _render_category_view(category, categories_repository, romsets_repository, roms_repository, views_repository)
+            _render_category_view(category, categories_repository, romcollections_repository, roms_repository, views_repository)
         
     kodi.notify('Selected views rendered')
     kodi.refresh_container()
 
-@AppMediator.register('RENDER_ROMSET_VIEW')
-def cmd_render_romset_view_data(args):
-    kodi.notify('Rendering romset views')
-    romset_id = args['romset_id'] if 'romset_id' in args else None
+@AppMediator.register('RENDER_ROMCOLLECTION_VIEW')
+def cmd_render_romcollection_view_data(args):
+    kodi.notify('Rendering romcollection views')
+    romcollection_id = args['romcollection_id'] if 'romcollection_id' in args else None
     
     uow = UnitOfWork(globals.g_PATHS.DATABASE_FILE_PATH)
     with uow:
-        romsets_repository = ROMSetRepository(uow)
+        romcollections_repository = ROMCollectionRepository(uow)
         roms_repository    = ROMsRepository(uow)
         views_repository   = ViewRepository(globals.g_PATHS)
              
-        romset = romsets_repository.find_romset(romset_id)
-        _render_romset_view(romset, roms_repository, views_repository)
+        romcollection = romcollections_repository.find_romcollection(romcollection_id)
+        _render_romcollection_view(romcollection, roms_repository, views_repository)
     
     kodi.notify('Selected views rendered')
     kodi.refresh_container()
@@ -92,13 +92,13 @@ def cmd_render_vcollection(args):
     uow = UnitOfWork(globals.g_PATHS.DATABASE_FILE_PATH)
     with uow:
         roms_repository    = ROMsRepository(uow)
-        romsets_repository = ROMSetRepository(uow)
+        romcollections_repository = ROMCollectionRepository(uow)
         views_repository   = ViewRepository(globals.g_PATHS)
         
         vcollection = VirtualCollectionFactory.create(vcollection_id)
         
         kodi.notify('Rendering virtual collection "{}"'.format(vcollection.get_name()))
-        _render_vcollection_view(vcollection, romsets_repository, roms_repository, views_repository)
+        _render_vcollection_view(vcollection, romcollections_repository, roms_repository, views_repository)
     
         kodi.notify('{} view rendered'.format(vcollection.get_name()))
     kodi.refresh_container()
@@ -108,27 +108,27 @@ def cmd_cleanup_views(args):
     uow = UnitOfWork(globals.g_PATHS.DATABASE_FILE_PATH)
     with uow:
         categories_repository   = CategoryRepository(uow)
-        romsets_repository      = ROMSetRepository(uow)
+        romcollections_repository      = ROMCollectionRepository(uow)
         
         categories = categories_repository.find_all_categories()
-        romsets = romsets_repository.find_all_romsets()
+        romcollections = romcollections_repository.find_all_romcollections()
         
         category_ids = list(c.get_id() for c in categories)
-        romset_ids = list(r.get_id() for r in romsets)
+        romcollection_ids = list(r.get_id() for r in romcollections)
         
         view_files = globals.g_PATHS.COLLECTIONS_DIR.scanFilesInPath('collection_*.json')
         for view_file in view_files:
             view_id = view_file.getBaseNoExt().replace('collection_', '')
-            if not view_id in category_ids and not view_id in romset_ids:
+            if not view_id in category_ids and not view_id in romcollection_ids:
                 logger.info('Removing files for collection "{}"'.format(view_id))
                 view_file.unlink()
          
-def _render_root_view(categories_repository: CategoryRepository, romsets_repository: ROMSetRepository, 
+def _render_root_view(categories_repository: CategoryRepository, romcollections_repository: ROMCollectionRepository, 
                       roms_repository: ROMsRepository, views_repository: ViewRepository, 
                       render_sub_views = False):
     
     root_categories = categories_repository.find_root_categories()
-    root_romsets = romsets_repository.find_root_romsets()
+    root_romcollections = romcollections_repository.find_root_romcollections()
         
     root_data = {
         'id': constants.VCATEGORY_ADDONROOT_ID,
@@ -141,32 +141,32 @@ def _render_root_view(categories_repository: CategoryRepository, romsets_reposit
         logger.debug('Processing category "{}"'.format(root_category.get_name()))
         root_items.append(_render_category_listitem(root_category))
         if render_sub_views:
-            _render_category_view(root_category, categories_repository, romsets_repository, 
+            _render_category_view(root_category, categories_repository, romcollections_repository, 
                                   roms_repository, views_repository, render_sub_views)
 
-    for root_romset in root_romsets:
-        logger.debug('Processing romset "{}"'.format(root_romset.get_name()))
-        root_items.append(_render_romset_listitem(root_romset))
+    for root_romcollection in root_romcollections:
+        logger.debug('Processing romcollection "{}"'.format(root_romcollection.get_name()))
+        root_items.append(_render_romcollection_listitem(root_romcollection))
         if render_sub_views:
-            _render_romset_view(root_romset, roms_repository, views_repository)
+            _render_romcollection_view(root_romcollection, roms_repository, views_repository)
 
     for vcollection_id in constants.VCOLLECTIONS:
         vcollection = VirtualCollectionFactory.create(vcollection_id)
         logger.debug('Processing virtual collection "{}"'.format(vcollection.get_name()))
         root_items.append(_render_vcollection_listitem(vcollection))
         if render_sub_views:
-            _render_vcollection_view(vcollection, romsets_repository, roms_repository, views_repository)        
+            _render_vcollection_view(vcollection, romcollections_repository, roms_repository, views_repository)        
 
     logger.debug('Storing {} items in root view.'.format(len(root_items)))
     root_data['items'] = root_items
     views_repository.store_root_view(root_data)
         
 def _render_category_view(category_obj: Category, categories_repository: CategoryRepository, 
-                         romsets_repository: ROMSetRepository, roms_repository: ROMsRepository,
+                         romcollections_repository: ROMCollectionRepository, roms_repository: ROMsRepository,
                          views_repository: ViewRepository, render_sub_views = False):
     
     sub_categories = categories_repository.find_categories_by_parent(category_obj.get_id())
-    romsets = romsets_repository.find_romsets_by_parent(category_obj.get_id())
+    romcollections = romcollections_repository.find_romcollections_by_parent(category_obj.get_id())
     
     view_data = {
         'id': category_obj.get_id(),
@@ -179,46 +179,46 @@ def _render_category_view(category_obj: Category, categories_repository: Categor
         logger.debug('Processing category "{}", part of "{}"'.format(sub_category.get_name(), category_obj.get_name()))
         view_items.append(_render_category_listitem(sub_category))
         if render_sub_views:
-            _render_category_view(sub_category, categories_repository, romsets_repository, roms_repository, 
+            _render_category_view(sub_category, categories_repository, romcollections_repository, roms_repository, 
                                   views_repository, render_sub_views)
     
-    for romset in romsets:
-        logger.debug('Processing romset "{}"'.format(romset.get_name()))
+    for romcollection in romcollections:
+        logger.debug('Processing romcollection "{}"'.format(romcollection.get_name()))
         try:
-            view_items.append(_render_romset_listitem(romset))
+            view_items.append(_render_romcollection_listitem(romcollection))
         except Exception as ex:
-            logger.error('Exception while rendering list item ROM Collection "{}"'.format(romset.get_name()), exc_info=ex)
-            kodi.notify_error("Failed to process ROM collection {}".format(romset.get_name()))
+            logger.error('Exception while rendering list item ROM Collection "{}"'.format(romcollection.get_name()), exc_info=ex)
+            kodi.notify_error("Failed to process ROM collection {}".format(romcollection.get_name()))
         if render_sub_views:
-            _render_romset_view(romset, roms_repository, views_repository)
+            _render_romcollection_view(romcollection, roms_repository, views_repository)
         
     logger.debug('Storing {} items for category "{}" view.'.format(len(view_items), category_obj.get_name()))
     view_data['items'] = view_items
     views_repository.store_view(category_obj.get_id(), view_data)
 
-def _render_romset_view(romset_obj: ROMSet, roms_repository: ROMsRepository, views_repository: ViewRepository):
+def _render_romcollection_view(romcollection_obj: ROMCollection, roms_repository: ROMsRepository, views_repository: ViewRepository):
     
-    roms = roms_repository.find_roms_by_romset(romset_obj.get_id())
+    roms = roms_repository.find_roms_by_romcollection(romcollection_obj.get_id())
     
     view_data = {
-        'id': romset_obj.get_id(),
-        'name': romset_obj.get_name(),
-        'obj_type': constants.OBJ_ROMSET,
+        'id': romcollection_obj.get_id(),
+        'name': romcollection_obj.get_name(),
+        'obj_type': constants.OBJ_ROMCOLLECTION,
         'items': []
     }
     view_items = []
     for rom in roms:
         try:
-            rom.apply_romset_asset_mapping(romset_obj)
+            rom.apply_romcollection_asset_mapping(romcollection_obj)
             view_items.append(_render_rom_listitem(rom))
         except Exception as ex:
             logger.error('Exception while rendering list item ROM "{}"'.format(rom.get_name()), exc_info=ex)
         
-    logger.debug('Storing {} items for romset "{}" view.'.format(len(view_items), romset_obj.get_name()))
+    logger.debug('Storing {} items for romcollection "{}" view.'.format(len(view_items), romcollection_obj.get_name()))
     view_data['items'] = view_items
-    views_repository.store_view(romset_obj.get_id(), view_data)
+    views_repository.store_view(romcollection_obj.get_id(), view_data)
 
-def _render_vcollection_view(vcollection: VirtualCollection, romsets_repository: ROMSetRepository, 
+def _render_vcollection_view(vcollection: VirtualCollection, romcollections_repository: ROMCollectionRepository, 
                                 roms_repository: ROMsRepository, views_repository: ViewRepository):
     
     logger.info('Rendering virtual collection "{}"'.format(vcollection.get_name()))
@@ -265,41 +265,41 @@ def _render_category_listitem(category_obj: Category):
         'properties': { 
             constants.AEL_CONTENT_LABEL: constants.AEL_CONTENT_VALUE_CATEGORY,
             'obj_type': constants.OBJ_CATEGORY,
-            'num_romsets': category_obj.num_romsets() 
+            'num_romcollections': category_obj.num_romcollections() 
         }
     }
  
-def _render_romset_listitem(romset_obj: ROMSet):
-    # --- Do not render row if romset finished ---
-    if romset_obj.is_finished() and settings.getSettingAsBool('display_hide_finished'): return
+def _render_romcollection_listitem(romcollection_obj: ROMCollection):
+    # --- Do not render row if romcollection finished ---
+    if romcollection_obj.is_finished() and settings.getSettingAsBool('display_hide_finished'): return
 
-    romset_name = romset_obj.get_name()
-    ICON_OVERLAY = 5 if romset_obj.is_finished() else 4
-    assets = romset_obj.get_view_assets()
+    romcollection_name = romcollection_obj.get_name()
+    ICON_OVERLAY = 5 if romcollection_obj.is_finished() else 4
+    assets = romcollection_obj.get_view_assets()
 
     return { 
-        'id': romset_obj.get_id(),
-        'name': romset_name,
-        'url': globals.router.url_for_path('collection/{}'.format(romset_obj.get_id())),
+        'id': romcollection_obj.get_id(),
+        'name': romcollection_name,
+        'url': globals.router.url_for_path('collection/{}'.format(romcollection_obj.get_id())),
         'is_folder': True,
         'type': 'video',
         'info': {
-            'title'   : romset_name,              'year'    : romset_obj.get_releaseyear(),
-            'genre'   : romset_obj.get_genre(),   'studio'  : romset_obj.get_developer(),
-            'rating'  : romset_obj.get_rating(),  'plot'    : romset_obj.get_plot(),
-            'trailer' : romset_obj.get_trailer(), 'overlay' : ICON_OVERLAY
+            'title'   : romcollection_name,              'year'    : romcollection_obj.get_releaseyear(),
+            'genre'   : romcollection_obj.get_genre(),   'studio'  : romcollection_obj.get_developer(),
+            'rating'  : romcollection_obj.get_rating(),  'plot'    : romcollection_obj.get_plot(),
+            'trailer' : romcollection_obj.get_trailer(), 'overlay' : ICON_OVERLAY
         },
         'art': assets,
         'properties': { 
             constants.AEL_CONTENT_LABEL: constants.AEL_CONTENT_VALUE_LAUNCHERS,
-            'platform': romset_obj.get_platform(),
-            'boxsize': romset_obj.get_box_sizing(),
-            'obj_type': constants.OBJ_ROMSET
+            'platform': romcollection_obj.get_platform(),
+            'boxsize': romcollection_obj.get_box_sizing(),
+            'obj_type': constants.OBJ_ROMCOLLECTION
         }
     }
 
 def _render_rom_listitem(rom_obj: ROM):
-    # --- Do not render row if romset finished ---
+    # --- Do not render row if romcollection finished ---
     if rom_obj.is_finished() and settings.getSettingAsBool('display_hide_finished'): return
 
     ICON_OVERLAY = 5 if rom_obj.is_finished() else 4
@@ -391,7 +391,7 @@ def _render_vcollection_listitem(vcollection: VirtualCollection):
         },
         'art': assets,
         'properties': { 
-            constants.AEL_CONTENT_LABEL: constants.AEL_CONTENT_VALUE_ROMSET,
+            constants.AEL_CONTENT_LABEL: constants.AEL_CONTENT_VALUE_ROMCOLLECTION,
             'obj_type': constants.OBJ_COLLECTION_VIRTUAL
         }
     }

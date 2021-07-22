@@ -208,7 +208,7 @@ class Asset(EntityABC):
 # |
 # |----- Category
 # |
-# |----- ROMSet (Collection)
+# |----- ROMCollection (Collection)
 # |      |
 # |      |----- VirtualCollection
 # |
@@ -512,18 +512,18 @@ class Category(MetaDataItemABC):
 
     def get_assets_kind(self): return constants.KIND_ASSET_CATEGORY
     
-    # parent category / romset this item belongs to.
+    # parent category / romcollection this item belongs to.
     def get_parent_id(self) -> str:
         return self.entity_data['parent_id'] if 'parent_id' in self.entity_data else None
     
-    def num_romsets(self) -> int:
-        return self.entity_data['num_romsets'] if 'num_romsets' in self.entity_data else 0
+    def num_romcollections(self) -> int:
+        return self.entity_data['num_romcollections'] if 'num_romcollections' in self.entity_data else 0
 
     def num_categories(self) -> int:
         return self.entity_data['num_categories'] if 'num_categories' in self.entity_data else 0
 
     def has_items(self) -> bool:
-        return len(self.num_romsets()) > 0 or len(self.num_categories()) > 0
+        return len(self.num_romcollections()) > 0 or len(self.num_categories()) > 0
 
     def get_asset_ids_list(self): return constants.CATEGORY_ASSET_ID_LIST
     
@@ -684,7 +684,7 @@ class ROMLauncherAddon(ROMAddon):
     def set_default(self, default_launcher=False):
         self.entity_data['is_default'] = default_launcher
     
-class ROMSetScanner(ROMAddon):
+class ROMCollectionScanner(ROMAddon):
     
     def get_last_scan_timestamp(self):
         return None
@@ -696,7 +696,7 @@ class VirtualCollection(MetaDataItemABC):
         # Concrete classes are responsible of creating a default entity_data dictionary
         # with sensible defaults.
         if entity_data is None:
-            entity_data = _get_default_ROMSet_data_model()
+            entity_data = _get_default_ROMCollection_data_model()
             entity_data['id'] = text.misc_generate_random_SID()
             
         super(VirtualCollection, self).__init__(entity_data, assets_data)
@@ -710,23 +710,23 @@ class VirtualCollection(MetaDataItemABC):
 # -------------------------------------------------------------------------------------------------
 # Class representing a collection of ROMs.
 # -------------------------------------------------------------------------------------------------
-class ROMSet(MetaDataItemABC):
+class ROMCollection(MetaDataItemABC):
     def __init__(self, 
                  entity_data: dict = None, 
                  assets_data: typing.List[Asset] = None,
                  launchers_data: typing.List[ROMLauncherAddon] = [], 
-                 scanners_data: typing.List[ROMSetScanner] = []):
+                 scanners_data: typing.List[ROMCollectionScanner] = []):
         # Concrete classes are responsible of creating a default entity_data dictionary
         # with sensible defaults.
         if entity_data is None:
-            entity_data = _get_default_ROMSet_data_model()
+            entity_data = _get_default_ROMCollection_data_model()
             entity_data['id'] = text.misc_generate_random_SID()
             
         self.launchers_data = launchers_data
         self.scanners_data = scanners_data
-        super(ROMSet, self).__init__(entity_data, assets_data)
+        super(ROMCollection, self).__init__(entity_data, assets_data)
 
-    # parent category / romset this item belongs to.
+    # parent category / romcollection this item belongs to.
     def get_parent_id(self) -> str:
         return self.entity_data['parent_id'] if 'parent_id' in self.entity_data else None
     
@@ -846,20 +846,20 @@ class ROMSet(MetaDataItemABC):
         return len(self.scanners_data) > 0
     
     def add_scanner(self, addon: AelAddon, settings: dict):
-        scanner = ROMSetScanner(addon, {})
+        scanner = ROMCollectionScanner(addon, {})
         scanner.set_settings(settings)
         self.scanners_data.append(scanner)
 
-    def get_scanners(self) -> typing.List[ROMSetScanner]:
+    def get_scanners(self) -> typing.List[ROMCollectionScanner]:
         return self.scanners_data
 
-    def get_scanner(self, id:str) -> ROMSetScanner:
+    def get_scanner(self, id:str) -> ROMCollectionScanner:
         return next((s for s in self.scanners_data if s.get_id() == id), None)
 
     def get_NFO_name(self) -> io.FileName:
         nfo_dir = io.FileName(settings.getSetting('launchers_asset_dir'), isdir = True)
         nfo_file_path = nfo_dir.pjoin(self.get_name() + '.nfo')
-        logger.debug("ROMSet.get_NFO_name() nfo_file_path = '{0}'".format(nfo_file_path.getPath()))
+        logger.debug("ROMCollection.get_NFO_name() nfo_file_path = '{0}'".format(nfo_file_path.getPath()))
         return nfo_file_path
 
     # ---------------------------------------------------------------------------------------------
@@ -877,7 +877,7 @@ class ROMSet(MetaDataItemABC):
     #
     def import_NFO_file(self, nfo_FileName: io.FileName) -> bool:
         # --- Get NFO file name ---
-        logger.debug('ROMSet.import_NFO_file() Importing launcher NFO "{0}"'.format(nfo_FileName.getPath()))
+        logger.debug('ROMCollection.import_NFO_file() Importing launcher NFO "{0}"'.format(nfo_FileName.getPath()))
 
         # --- Import data ---
         if nfo_FileName.exists():
@@ -886,11 +886,11 @@ class ROMSet(MetaDataItemABC):
                 item_nfo = item_nfo.replace('\r', '').replace('\n', '')
             except:
                 kodi.notify_warn('Exception reading NFO file {0}'.format(nfo_FileName.getPath()))
-                logger.error("ROMSet.import_NFO_file() Exception reading NFO file '{0}'".format(nfo_FileName.getPath()))
+                logger.error("ROMCollection.import_NFO_file() Exception reading NFO file '{0}'".format(nfo_FileName.getPath()))
                 return False
         else:
             kodi.notify_warn('NFO file not found {0}'.format(nfo_FileName.getBase()))
-            logger.error("ROMSet.import_NFO_file() NFO file not found '{0}'".format(nfo_FileName.getPath()))
+            logger.error("ROMCollection.import_NFO_file() NFO file not found '{0}'".format(nfo_FileName.getPath()))
             return False
 
         item_year      = re.findall('<year>(.*?)</year>',           item_nfo)
@@ -907,38 +907,38 @@ class ROMSet(MetaDataItemABC):
         if len(item_rating) > 0:    self.set_rating(text.unescape_XML(item_rating[0]))
         if len(item_plot) > 0:      self.set_plot(text.unescape_XML(item_plot[0]))
 
-        logger.debug("ROMSet.import_NFO_file() Imported '{0}'".format(nfo_FileName.getPath()))
+        logger.debug("ROMCollection.import_NFO_file() Imported '{0}'".format(nfo_FileName.getPath()))
 
         return True
     
     def export_to_NFO_file(self, nfo_FileName: io.FileName):
         # --- Get NFO file name ---
-        logger.debug('ROMSet.export_to_NFO_file() Exporting launcher NFO "{0}"'.format(nfo_FileName.getPath()))
+        logger.debug('ROMCollection.export_to_NFO_file() Exporting launcher NFO "{0}"'.format(nfo_FileName.getPath()))
 
         # If NFO file does not exist then create them. If it exists, overwrite.
         nfo_content = []
         nfo_content.append('<?xml version="1.0" encoding="utf-8" standalone="yes"?>\n')
         nfo_content.append('<!-- Exported by AEL on {0} -->\n'.format(time.strftime("%Y-%m-%d %H:%M:%S")))
-        nfo_content.append('<romset>\n')
+        nfo_content.append('<romcollection>\n')
         nfo_content.append(text.XML_line('year',      self.get_releaseyear()))
         nfo_content.append(text.XML_line('genre',     self.get_genre())) 
         nfo_content.append(text.XML_line('developer', self.get_developer()))
         nfo_content.append(text.XML_line('rating',    self.get_rating()))
         nfo_content.append(text.XML_line('plot',      self.get_plot()))
         
-        nfo_content.append('</romset>\n')
+        nfo_content.append('</romcollection>\n')
         full_string = ''.join(nfo_content)
         nfo_FileName.writeAll(full_string)
             
     def export_to_file(self, file: io.FileName):
-        logger.debug('ROMSet.export_to_file() ROMSet "{0}" (ID "{1}")'.format(self.get_name(), self.get_id()))
+        logger.debug('ROMCollection.export_to_file() ROMCollection "{0}" (ID "{1}")'.format(self.get_name(), self.get_id()))
 
         # --- Create list of strings ---
         str_list = []
         str_list.append('<?xml version="1.0" encoding="utf-8" standalone="yes"?>\n')
         str_list.append('<!-- Exported by AEL on {0} -->\n'.format(time.strftime("%Y-%m-%d %H:%M:%S")))
         str_list.append('<advanced_emulator_launcher_configuration>\n')
-        str_list.append('<romset>\n')
+        str_list.append('<romcollection>\n')
         str_list.append(text.XML_line('name', self.get_name()))
         str_list.append(text.XML_line('year', self.get_releaseyear()))
         str_list.append(text.XML_line('genre', self.get_genre()))
@@ -953,7 +953,7 @@ class ROMSet(MetaDataItemABC):
         str_list.append(text.XML_line('s_controller', self.get_asset_str(asset_id=constants.ASSET_CONTROLLER_ID)))
         str_list.append(text.XML_line('s_clearlogo', self.get_asset_str(asset_id=constants.ASSET_CLEARLOGO_ID)))
         str_list.append(text.XML_line('s_trailer', self.get_trailer()))
-        str_list.append('</romset>\n')
+        str_list.append('</romcollection>\n')
         str_list.append('</advanced_emulator_launcher_configuration>\n')
         
         full_string = ''.join(str_list)
@@ -978,7 +978,7 @@ class ROM(MetaDataItemABC):
         self.launchers_data = launchers_data
         super(ROM, self).__init__(rom_data, assets_data)
         
-    # inherited value from ROMSet
+    # inherited value from ROMCollection
     def get_platform(self):
         return self.entity_data['platform'] if 'platform' in self.entity_data else None
     
@@ -1162,10 +1162,10 @@ class ROM(MetaDataItemABC):
 
         return True
     
-    def apply_romset_asset_mapping(self, romset: ROMSet):
-        mappable_assets = romset.get_ROM_mappable_asset_list()
+    def apply_romcollection_asset_mapping(self, romcollection: ROMCollection):
+        mappable_assets = romcollection.get_ROM_mappable_asset_list()
         for mappable_asset in mappable_assets:
-            mapped_asset = romset.get_mapped_ROM_asset_info(mappable_asset)
+            mapped_asset = romcollection.get_mapped_ROM_asset_info(mappable_asset)
             self.set_mapped_asset_key(mappable_asset, mapped_asset)
         
     def __str__(self):
@@ -2401,10 +2401,10 @@ def _get_default_category_data_model():
         's_trailer' : ''
     }
 
-def _get_default_ROMSet_data_model():
+def _get_default_ROMCollection_data_model():
     return {
         'id' : '',
-        'type': constants.OBJ_ROMSET,
+        'type': constants.OBJ_ROMCOLLECTION,
         'm_name' : '',
         'm_year' : '',
         'm_genre' : '',

@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 #
-# Advanced Emulator Launcher: Commands (romset scanner management)
+# Advanced Emulator Launcher: Commands (romcollection scanner management)
 #
 # Copyright (c) 2016-2018 Wintermute0110 <wintermute0110@gmail.com>
 #
@@ -24,8 +24,8 @@ from ael.utils import kodi
 
 from resources.app.commands.mediator import AppMediator
 from resources.app import globals
-from resources.app.repositories import UnitOfWork, ROMSetRepository, ROMsRepository, AelAddonRepository
-from resources.app.domain import ROM, ROMSetScanner, AelAddon
+from resources.app.repositories import UnitOfWork, ROMCollectionRepository, ROMsRepository, AelAddonRepository
+from resources.app.domain import ROM, ROMCollectionScanner, AelAddon
 
 logger = logging.getLogger(__name__)
 
@@ -34,48 +34,48 @@ logger = logging.getLogger(__name__)
 # -------------------------------------------------------------------------------------------------
 
 # --- Submenu menu command ---
-@AppMediator.register('EDIT_ROMSET_SCANNERS')
-def cmd_manage_romset_scanners(args):
-    logger.debug('EDIT_ROMSET_SCANNERS: cmd_manage_romset_scanners() SHOW MENU')
-    romset_id:str = args['romset_id'] if 'romset_id' in args else None
+@AppMediator.register('EDIT_ROMCOLLECTION_SCANNERS')
+def cmd_manage_romcollection_scanners(args):
+    logger.debug('EDIT_ROMCOLLECTION_SCANNERS: cmd_manage_romcollection_scanners() SHOW MENU')
+    romcollection_id:str = args['romcollection_id'] if 'romcollection_id' in args else None
     
     selected_option = None
     uow = UnitOfWork(globals.g_PATHS.DATABASE_FILE_PATH)
     with uow:
-        repository = ROMSetRepository(uow)
-        romset = repository.find_romset(romset_id)
+        repository = ROMCollectionRepository(uow)
+        romcollection = repository.find_romcollection(romcollection_id)
         
     options = collections.OrderedDict()
     options['ADD_SCANNER']      = 'Add new scanner'
     options['EDIT_SCANNER']     = 'Edit scanner'
     options['REMOVE_SCANNER']   = 'Remove scanner'
         
-    s = 'Manage ROM scanners for "{}"'.format(romset.get_name())
+    s = 'Manage ROM scanners for "{}"'.format(romcollection.get_name())
     selected_option = kodi.OrdDictionaryDialog().select(s, options)
     if selected_option is None:
         # >> Exits context menu
-        logger.debug('EDIT_ROMSET_SCANNERS: cmd_manage_romset_scanners() Selected None. Closing context menu')
-        AppMediator.async_cmd('EDIT_ROMSET', args)
+        logger.debug('EDIT_ROMCOLLECTION_SCANNERS: cmd_manage_romcollection_scanners() Selected None. Closing context menu')
+        AppMediator.async_cmd('EDIT_ROMCOLLECTION', args)
         return
     
     # >> Execute subcommand. May be atomic, maybe a submenu.
-    logger.debug('EDIT_ROMSET_SCANNERS: cmd_manage_romset_scanners() Selected {}'.format(selected_option))
+    logger.debug('EDIT_ROMCOLLECTION_SCANNERS: cmd_manage_romcollection_scanners() Selected {}'.format(selected_option))
     AppMediator.async_cmd(selected_option, args)
 
 # --- Sub commands ---
 @AppMediator.register('ADD_SCANNER')
-def cmd_add_romset_scanner(args):
-    romset_id:str = args['romset_id'] if 'romset_id' in args else None
+def cmd_add_romcollection_scanner(args):
+    romcollection_id:str = args['romcollection_id'] if 'romcollection_id' in args else None
     
     options = collections.OrderedDict()
     uow = UnitOfWork(globals.g_PATHS.DATABASE_FILE_PATH)
     with uow:
         repository        = AelAddonRepository(uow)
-        romset_repository = ROMSetRepository(uow)
+        romcollection_repository = ROMCollectionRepository(uow)
         
         addons = repository.find_all_scanners()
-        romset = romset_repository.find_romset(romset_id)
-        default_launcher = romset.get_default_launcher()
+        romcollection = romcollection_repository.find_romcollection(romcollection_id)
+        default_launcher = romcollection.get_default_launcher()
         
         for addon in addons:
             options[addon] = addon.get_name()
@@ -85,33 +85,33 @@ def cmd_add_romset_scanner(args):
     
     if selected_option is None:
         # >> Exits context menu
-        logger.debug('ADD_SCANNER: cmd_add_romset_scanner() Selected None. Closing context menu')
-        AppMediator.async_cmd('EDIT_ROMSET_SCANNERS', args)
+        logger.debug('ADD_SCANNER: cmd_add_romcollection_scanner() Selected None. Closing context menu')
+        AppMediator.async_cmd('EDIT_ROMCOLLECTION_SCANNERS', args)
         return
     
     # >> Execute subcommand. May be atomic, maybe a submenu.
-    logger.debug('ADD_SCANNER: cmd_add_romset_scanner() Selected {}'.format(selected_option.get_id()))
+    logger.debug('ADD_SCANNER: cmd_add_romcollection_scanner() Selected {}'.format(selected_option.get_id()))
     
     args = {}
-    args['romset_id'] = romset_id
+    args['romcollection_id'] = romcollection_id
     if default_launcher: args['launcher'] = default_launcher.get_settings_str()
     
     kodi.execute_uri(selected_option.get_configure_uri(), args)  
 
 @AppMediator.register('EDIT_SCANNER')
-def cmd_edit_romset_scanners(args):
-    romset_id:str = args['romset_id'] if 'romset_id' in args else None
+def cmd_edit_romcollection_scanners(args):
+    romcollection_id:str = args['romcollection_id'] if 'romcollection_id' in args else None
     
     uow = UnitOfWork(globals.g_PATHS.DATABASE_FILE_PATH)
     with uow:
-        romset_repository = ROMSetRepository(uow)        
-        romset = romset_repository.find_romset(romset_id)
-        default_launcher = romset.get_default_launcher()
+        romcollection_repository = ROMCollectionRepository(uow)        
+        romcollection = romcollection_repository.find_romcollection(romcollection_id)
+        default_launcher = romcollection.get_default_launcher()
     
-    scanners = romset.get_scanners()
+    scanners = romcollection.get_scanners()
     if len(scanners) == 0:
-        kodi.notify('No scanners configured for this romset!')
-        AppMediator.async_cmd('EDIT_ROMSET_SCANNERS', args)
+        kodi.notify('No scanners configured for this romcollection!')
+        AppMediator.async_cmd('EDIT_ROMCOLLECTION_SCANNERS', args)
         return
     
     options = collections.OrderedDict()
@@ -119,19 +119,19 @@ def cmd_edit_romset_scanners(args):
         options[scanner] = scanner.get_name()
     
     s = 'Choose scanner to edit'
-    selected_option:ROMSetScanner = kodi.OrdDictionaryDialog().select(s, options)
+    selected_option:ROMCollectionScanner = kodi.OrdDictionaryDialog().select(s, options)
     
     if selected_option is None:
         # >> Exits context menu
-        logger.debug('EDIT_SCANNER: cmd_edit_romset_scanners() Selected None. Closing context menu')
-        AppMediator.async_cmd('EDIT_ROMSET_SCANNERS', args)
+        logger.debug('EDIT_SCANNER: cmd_edit_romcollection_scanners() Selected None. Closing context menu')
+        AppMediator.async_cmd('EDIT_ROMCOLLECTION_SCANNERS', args)
         return
     
     # >> Execute subcommand. May be atomic, maybe a submenu.
-    logger.debug('EDIT_SCANNER: cmd_edit_romset_scanners() Selected {}'.format(selected_option.get_id()))
+    logger.debug('EDIT_SCANNER: cmd_edit_romcollection_scanners() Selected {}'.format(selected_option.get_id()))
     
     args = {}
-    args['romset_id'] = romset_id
+    args['romcollection_id'] = romcollection_id
     args['scanner_id'] = selected_option.get_id()
     args['settings'] = selected_option.get_settings_str()
     if default_launcher: args['launcher'] = default_launcher.get_settings_str()
@@ -139,18 +139,18 @@ def cmd_edit_romset_scanners(args):
     kodi.execute_uri(selected_option.addon.get_configure_uri(), args)
        
 @AppMediator.register('REMOVE_SCANNER')
-def cmd_remove_romset_scanner(args):
-    romset_id:str = args['romset_id'] if 'romset_id' in args else None
+def cmd_remove_romcollection_scanner(args):
+    romcollection_id:str = args['romcollection_id'] if 'romcollection_id' in args else None
     
     uow = UnitOfWork(globals.g_PATHS.DATABASE_FILE_PATH)
     with uow:
-        romset_repository = ROMSetRepository(uow)        
-        romset = romset_repository.find_romset(romset_id)
+        romcollection_repository = ROMCollectionRepository(uow)        
+        romcollection = romcollection_repository.find_romcollection(romcollection_id)
     
-        scanners = romset.get_scanners()
+        scanners = romcollection.get_scanners()
         if len(scanners) == 0:
-            kodi.notify('No scanners configured for this romset!')
-            AppMediator.async_cmd('EDIT_ROMSET_SCANNERS', args)
+            kodi.notify('No scanners configured for this romcollection!')
+            AppMediator.async_cmd('EDIT_ROMCOLLECTION_SCANNERS', args)
             return
         
         options = collections.OrderedDict()
@@ -158,33 +158,33 @@ def cmd_remove_romset_scanner(args):
             options[scanner] = scanner.get_name()
         
         s = 'Choose scanner to remove'
-        selected_option:ROMSetScanner = kodi.OrdDictionaryDialog().select(s, options)
+        selected_option:ROMCollectionScanner = kodi.OrdDictionaryDialog().select(s, options)
         
         if selected_option is None:
             # >> Exits context menu
-            logger.debug('REMOVE_SCANNER: cmd_remove_romset_scanner() Selected None. Closing context menu')
-            AppMediator.async_cmd('EDIT_ROMSET_SCANNERS', args)
+            logger.debug('REMOVE_SCANNER: cmd_remove_romcollection_scanner() Selected None. Closing context menu')
+            AppMediator.async_cmd('EDIT_ROMCOLLECTION_SCANNERS', args)
             return
         
         # >> Execute subcommand. May be atomic, maybe a submenu.
-        logger.debug('REMOVE_SCANNER: cmd_remove_romset_scanner() Selected {}'.format(selected_option.get_id()))
+        logger.debug('REMOVE_SCANNER: cmd_remove_romcollection_scanner() Selected {}'.format(selected_option.get_id()))
         if not kodi.dialog_yesno('Are you sure to delete ROM scanner "{}"'.format(selected_option.get_name())):
-            logger.debug('REMOVE_SCANNER: cmd_remove_romset_scanner() Cancelled operation.')
-            AppMediator.async_cmd('EDIT_ROMSET_SCANNERS', args)
+            logger.debug('REMOVE_SCANNER: cmd_remove_romcollection_scanner() Cancelled operation.')
+            AppMediator.async_cmd('EDIT_ROMCOLLECTION_SCANNERS', args)
             return
         
-        romset_repository.remove_scanner(romset.get_id(), selected_option.get_id())
-        logger.info('REMOVE_SCANNER: cmd_remove_romset_scanner() Removed scanner#{}'.format(selected_option.get_id()))
+        romcollection_repository.remove_scanner(romcollection.get_id(), selected_option.get_id())
+        logger.info('REMOVE_SCANNER: cmd_remove_romcollection_scanner() Removed scanner#{}'.format(selected_option.get_id()))
         uow.commit()
     
-    AppMediator.async_cmd('EDIT_ROMSET_SCANNERS', args) 
+    AppMediator.async_cmd('EDIT_ROMCOLLECTION_SCANNERS', args) 
   
 # -------------------------------------------------------------------------------------------------
-# ROMSet scanner specific configuration.
+# ROMCollection scanner specific configuration.
 # -------------------------------------------------------------------------------------------------      
 @AppMediator.register('SET_SCANNER_SETTINGS')
 def cmd_set_scanner_settings(args):
-    romset_id:str   = args['romset_id'] if 'romset_id' in args else None
+    romcollection_id:str   = args['romcollection_id'] if 'romcollection_id' in args else None
     scanner_id:str  = args['scanner_id'] if 'scanner_id' in args else None
     addon_id:str    = args['addon_id'] if 'addon_id' in args else None
     settings        = args['settings'] if 'settings' in args else None
@@ -192,36 +192,36 @@ def cmd_set_scanner_settings(args):
     uow = UnitOfWork(globals.g_PATHS.DATABASE_FILE_PATH)
     with uow:
         addon_repository = AelAddonRepository(uow)
-        romset_repository = ROMSetRepository(uow)
+        romcollection_repository = ROMCollectionRepository(uow)
         
         addon = addon_repository.find_by_addon_id(addon_id)
-        romset = romset_repository.find_romset(romset_id)
+        romcollection = romcollection_repository.find_romcollection(romcollection_id)
         
         if scanner_id is None:
-            romset.add_scanner(addon, settings)
+            romcollection.add_scanner(addon, settings)
         else: 
-            scanner = romset.get_scanner(scanner_id)
+            scanner = romcollection.get_scanner(scanner_id)
             scanner.set_settings(settings)
             
-        romset_repository.update_romset(romset)
+        romcollection_repository.update_romcollection(romcollection)
         uow.commit()
     
     kodi.notify('Configured ROM scanner {}'.format(addon.get_name()))
-    AppMediator.async_cmd('EDIT_ROMSET', {'romset_id': romset_id})
+    AppMediator.async_cmd('EDIT_ROMCOLLECTION', {'romcollection_id': romcollection_id})
  
 # -------------------------------------------------------------------------------------------------
-# ROMSet Scanner executing
+# ROMCollection Scanner executing
 # -------------------------------------------------------------------------------------------------
 @AppMediator.register('SCAN_ROMS')
 def cmd_execute_rom_scanner(args):
-    romset_id:str = args['romset_id'] if 'romset_id' in args else None
+    romcollection_id:str = args['romcollection_id'] if 'romcollection_id' in args else None
 
     uow = UnitOfWork(globals.g_PATHS.DATABASE_FILE_PATH)
     with uow:
-        romset_repository = ROMSetRepository(uow)
-        romset = romset_repository.find_romset(romset_id)
+        romcollection_repository = ROMCollectionRepository(uow)
+        romcollection = romcollection_repository.find_romcollection(romcollection_id)
 
-    scanners = romset.get_scanners()
+    scanners = romcollection.get_scanners()
     if scanners is None or len(scanners) == 0:
         kodi.notify_warn('No ROM scanners configured.')
         return
@@ -237,14 +237,14 @@ def cmd_execute_rom_scanner(args):
     logger.info('SCAN_ROMS: selected scanner "{}"'.format(selected_scanner.get_name()))
 
     kodi.execute_uri(selected_scanner.addon.get_execute_uri(), {
-        'romset_id': romset.get_id(),
+        'romcollection_id': romcollection.get_id(),
         'scanner_id': selected_scanner.get_id(),
         'settings': selected_scanner.get_settings_str()
     })
     
 @AppMediator.register('STORE_SCANNED_ROMS')
 def cmd_store_scanned_roms(args):
-    romset_id:str   = args['romset_id'] if 'romset_id' in args else None
+    romcollection_id:str   = args['romcollection_id'] if 'romcollection_id' in args else None
     scanner_id:str  = args['scanner_id'] if 'scanner_id' in args else None
     roms:list       = args['roms'] if 'roms' in args else None
     
@@ -253,20 +253,20 @@ def cmd_store_scanned_roms(args):
     
     uow = UnitOfWork(globals.g_PATHS.DATABASE_FILE_PATH)
     with uow:
-        romset_repository = ROMSetRepository(uow)
+        romcollection_repository = ROMCollectionRepository(uow)
         rom_repository    = ROMsRepository(uow)
         
-        romset = romset_repository.find_romset(romset_id)
+        romcollection = romcollection_repository.find_romcollection(romcollection_id)
         
         for rom_data in roms:
             rom_obj = ROM(rom_data)
             rom_obj.scanned_with(scanner_id)
             rom_repository.insert_rom(rom_obj)
-            romset_repository.add_rom_to_romset(romset.get_id(), rom_obj.get_id())
+            romcollection_repository.add_rom_to_romcollection(romcollection.get_id(), rom_obj.get_id())
         uow.commit()
     
-    kodi.notify('Stored scanned ROMS in ROMs Collection {}'.format(romset.get_name()))
+    kodi.notify('Stored scanned ROMS in ROMs Collection {}'.format(romcollection.get_name()))
     
-    AppMediator.async_cmd('RENDER_ROMSET_VIEW', {'romset_id': romset_id})
-    AppMediator.async_cmd('RENDER_VIEW', {'category_id': romset.get_parent_id()})  
-    AppMediator.async_cmd('EDIT_ROMSET', {'romset_id': romset_id})
+    AppMediator.async_cmd('RENDER_ROMCOLLECTION_VIEW', {'romcollection_id': romcollection_id})
+    AppMediator.async_cmd('RENDER_VIEW', {'category_id': romcollection.get_parent_id()})  
+    AppMediator.async_cmd('EDIT_ROMCOLLECTION', {'romcollection_id': romcollection_id})

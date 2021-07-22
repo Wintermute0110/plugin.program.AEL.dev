@@ -47,7 +47,7 @@ CREATE TABLE IF NOT EXISTS categories(
         ON DELETE CASCADE ON UPDATE NO ACTION
 );
 
-CREATE TABLE IF NOT EXISTS romsets(
+CREATE TABLE IF NOT EXISTS romcollections(
     id TEXT PRIMARY KEY, 
     name TEXT NOT NULL,
     platform TEXT,
@@ -71,25 +71,25 @@ CREATE TABLE IF NOT EXISTS romsets(
         ON DELETE CASCADE ON UPDATE NO ACTION
 );
 
-CREATE TABLE IF NOT EXISTS romset_launchers(
+CREATE TABLE IF NOT EXISTS romcollection_launchers(
     id TEXT PRIMARY KEY, 
-    romset_id TEXT,
+    romcollection_id TEXT,
     ael_addon_id TEXT,
     settings TEXT,
     is_non_blocking INTEGER DEFAULT 1 NOT NULL,
     is_default INTEGER DEFAULT 0 NOT NULL,
-    FOREIGN KEY (romset_id) REFERENCES romsets (id) 
+    FOREIGN KEY (romcollection_id) REFERENCES romcollections (id) 
         ON DELETE CASCADE ON UPDATE NO ACTION,
     FOREIGN KEY (ael_addon_id) REFERENCES ael_addon (id) 
         ON DELETE CASCADE ON UPDATE NO ACTION
 );
 
-CREATE TABLE IF NOT EXISTS romset_scanners(
+CREATE TABLE IF NOT EXISTS romcollection_scanners(
     id TEXT PRIMARY KEY, 
-    romset_id TEXT,
+    romcollection_id TEXT,
     ael_addon_id TEXT,
     settings TEXT,
-    FOREIGN KEY (romset_id) REFERENCES romsets (id) 
+    FOREIGN KEY (romcollection_id) REFERENCES romcollections (id) 
         ON DELETE CASCADE ON UPDATE NO ACTION,
     FOREIGN KEY (ael_addon_id) REFERENCES ael_addon (id) 
         ON DELETE CASCADE ON UPDATE NO ACTION
@@ -114,16 +114,16 @@ CREATE TABLE IF NOT EXISTS roms(
     scanned_by_id TEXT NULL,
     FOREIGN KEY (metadata_id) REFERENCES metadata (id) 
         ON DELETE CASCADE ON UPDATE NO ACTION,
-    FOREIGN KEY (scanned_by_id) REFERENCES romset_scanner (id) 
+    FOREIGN KEY (scanned_by_id) REFERENCES romcollection_scanner (id) 
         ON DELETE SET NULL ON UPDATE NO ACTION
 );
 
-CREATE TABLE IF NOT EXISTS roms_in_romset(
+CREATE TABLE IF NOT EXISTS roms_in_romcollection(
     rom_id TEXT,
-    romset_id TEXT,
+    romcollection_id TEXT,
     FOREIGN KEY (rom_id) REFERENCES roms (id) 
         ON DELETE CASCADE ON UPDATE NO ACTION,
-    FOREIGN KEY (romset_id) REFERENCES romset (id) 
+    FOREIGN KEY (romcollection_id) REFERENCES romcollections (id) 
         ON DELETE CASCADE ON UPDATE NO ACTION
 );
 
@@ -160,19 +160,19 @@ CREATE TABLE IF NOT EXISTS category_assets(
         ON DELETE CASCADE ON UPDATE NO ACTION
 );
 
-CREATE TABLE IF NOT EXISTS romset_assets(
-    romset_id TEXT,
+CREATE TABLE IF NOT EXISTS romcollection_assets(
+    romcollection_id TEXT,
     asset_id TEXT,
-    FOREIGN KEY (romset_id) REFERENCES romsets (id) 
+    FOREIGN KEY (romcollection_id) REFERENCES romcollections (id) 
         ON DELETE CASCADE ON UPDATE NO ACTION,
     FOREIGN KEY (asset_id) REFERENCES assets (id) 
         ON DELETE CASCADE ON UPDATE NO ACTION
 );
 
-CREATE TABLE IF NOT EXISTS romset_assetspaths(
-    romset_id TEXT,
+CREATE TABLE IF NOT EXISTS romcollection_assetspaths(
+    romcollection_id TEXT,
     assetspaths_id TEXT,
-    FOREIGN KEY (romset_id) REFERENCES romsets (id) 
+    FOREIGN KEY (romcollection_id) REFERENCES romcollections (id) 
         ON DELETE CASCADE ON UPDATE NO ACTION,
     FOREIGN KEY (assetspaths_id) REFERENCES assetspaths (id) 
         ON DELETE CASCADE ON UPDATE NO ACTION
@@ -208,11 +208,11 @@ CREATE VIEW IF NOT EXISTS vw_categories AS SELECT
     c.default_poster AS default_poster,
     c.default_clearlogo AS default_clearlogo,
     (SELECT COUNT(*) FROM categories AS sc WHERE sc.parent_id = c.id) AS num_categories,
-    (SELECT COUNT(*) FROM romsets AS sr WHERE sr.parent_id = c.id) AS num_romsets
+    (SELECT COUNT(*) FROM romcollections AS sr WHERE sr.parent_id = c.id) AS num_collections
 FROM categories AS c 
     INNER JOIN metadata AS m ON c.metadata_id = m.id;
        
-CREATE VIEW IF NOT EXISTS vw_romsets AS SELECT 
+CREATE VIEW IF NOT EXISTS vw_romcollections AS SELECT 
     r.id AS id, 
     r.parent_id AS parent_id,
     r.metadata_id,
@@ -237,8 +237,8 @@ CREATE VIEW IF NOT EXISTS vw_romsets AS SELECT
     r.roms_default_banner AS roms_default_banner,
     r.roms_default_poster AS roms_default_poster,
     r.roms_default_clearlogo AS roms_default_clearlogo,
-    (SELECT COUNT(*) FROM roms AS rms INNER JOIN roms_in_romset AS rrs ON rms.id = rrs.rom_id AND rrs.romset_id = r.id) as num_roms
-FROM romsets AS r 
+    (SELECT COUNT(*) FROM roms AS rms INNER JOIN roms_in_romcollection AS rrs ON rms.id = rrs.rom_id AND rrs.romcollection_id = r.id) as num_roms
+FROM romcollections AS r 
     INNER JOIN metadata AS m ON r.metadata_id = m.id;
     
 CREATE VIEW IF NOT EXISTS vw_roms AS SELECT 
@@ -278,15 +278,15 @@ FROM assets AS a
  INNER JOIN category_assets AS ca ON a.id = ca.asset_id 
  INNER JOIN categories AS c ON ca.category_id = c.id;
 
-CREATE VIEW IF NOT EXISTS vw_romset_assets AS SELECT
+CREATE VIEW IF NOT EXISTS vw_romcollection_assets AS SELECT
     a.id as id,
-    r.id as romset_id,
+    r.id as romcollection_id,
     r.parent_id,
     a.filepath,
     a.asset_type
 FROM assets AS a
- INNER JOIN romset_assets AS ra ON a.id = ra.asset_id 
- INNER JOIN romsets AS r ON ra.romset_id = r.id;
+ INNER JOIN romcollection_assets AS ra ON a.id = ra.asset_id 
+ INNER JOIN romcollections AS r ON ra.romcollection_id = r.id;
 
 CREATE VIEW IF NOT EXISTS vw_rom_assets AS SELECT
     a.id as id,
@@ -297,9 +297,9 @@ FROM assets AS a
  INNER JOIN rom_assets AS ra ON a.id = ra.asset_id 
  INNER JOIN roms AS r ON ra.rom_id = r.id;
 
-CREATE VIEW IF NOT EXISTS vw_romset_launchers AS SELECT
+CREATE VIEW IF NOT EXISTS vw_romcollection_launchers AS SELECT
     l.id AS id,
-    l.romset_id,
+    l.romcollection_id,
     a.id AS associated_addon_id,
     a.name,
     a.addon_id,
@@ -310,12 +310,12 @@ CREATE VIEW IF NOT EXISTS vw_romset_launchers AS SELECT
     l.settings,
     l.is_non_blocking,
     l.is_default
-FROM romset_launchers AS l
+FROM romcollection_launchers AS l
     INNER JOIN ael_addon AS a ON l.ael_addon_id = a.id;
     
-CREATE VIEW IF NOT EXISTS vw_romset_scanners AS SELECT
+CREATE VIEW IF NOT EXISTS vw_romcollection_scanners AS SELECT
     s.id AS id,
-    s.romset_id,
+    s.romcollection_id,
     a.id AS associated_addon_id,
     a.name,
     a.addon_id,
@@ -324,7 +324,7 @@ CREATE VIEW IF NOT EXISTS vw_romset_scanners AS SELECT
     a.execute_uri,
     a.configure_uri,
     s.settings
-FROM romset_scanners AS s
+FROM romcollection_scanners AS s
     INNER JOIN ael_addon AS a ON s.ael_addon_id = a.id;
 
 CREATE VIEW IF NOT EXISTS vw_rom_launchers AS SELECT

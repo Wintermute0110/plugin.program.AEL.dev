@@ -224,11 +224,11 @@ def cmd_category_delete(args):
         category_name = category.get_name()
         
         if category.has_items():
-            question = 'Category "{}" has {} sub-categories and {} romsets. '.format(category_name, category.num_categories(), category.num_romsets()) + \
+            question = 'Category "{}" has {} sub-categories and {} romcollections. '.format(category_name, category.num_categories(), category.num_romcollections()) + \
                         'Deleting it will also delete related items. ' + \
                         'Are you sure you want to delete "{}"?'.format(category_name)
         else:
-            question = 'Category "{}" has no categories or romsets. '.format(category_name) + \
+            question = 'Category "{}" has no categories or romcollections. '.format(category_name) + \
                         'Are you sure you want to delete "{}"?'.format(category_name)
     
         ret = kodi.dialog_yesno(question)
