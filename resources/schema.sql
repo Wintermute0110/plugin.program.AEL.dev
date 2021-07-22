@@ -259,10 +259,11 @@ CREATE VIEW IF NOT EXISTS vw_roms AS SELECT
     m.developer AS m_developer,
     m.rating AS m_rating,
     m.plot AS m_plot,
-    m.finished AS finished,
-    r.fav_status AS fav_status,
-    r.launch_count AS launch_count,
-    r.last_launch_timestamp AS last_launch_timestamp,
+    m.finished,
+    r.fav_status,
+    r.is_favourite,
+    r.launch_count,
+    r.last_launch_timestamp,
     m.assets_path AS assets_path
 FROM roms AS r 
     INNER JOIN metadata AS m ON r.metadata_id = m.id;

@@ -1053,9 +1053,6 @@ class ROM(MetaDataItemABC):
     def scanned_with(self, scanner_id: str): 
         self.entity_data['scanned_by_id'] = scanner_id
 
-    # todo: definitly something for a inherited FavouriteRom class
-    # >> Favourite ROM unique fields
-    # >> Favourite ROMs in "Most played ROMs" DB also have 'launch_count' field.
     def set_favourite_status(self, state):
         self.entity_data['fav_status'] = state
 

@@ -179,7 +179,8 @@ def _render_category_view(category_obj: Category, categories_repository: Categor
         logger.debug('Processing category "{}", part of "{}"'.format(sub_category.get_name(), category_obj.get_name()))
         view_items.append(_render_category_listitem(sub_category))
         if render_sub_views:
-            _render_category_view(sub_category, categories_repository, render_sub_views)
+            _render_category_view(sub_category, categories_repository, romsets_repository, roms_repository, 
+                                  views_repository, render_sub_views)
     
     for romset in romsets:
         logger.debug('Processing romset "{}"'.format(romset.get_name()))

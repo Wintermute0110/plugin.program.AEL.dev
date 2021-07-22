@@ -326,7 +326,6 @@ class UnitOfWork(object):
         self.conn.close()
 
     def execute(self, sql, *args) -> Cursor:
-        if args is None: return self.cursor.execute(sql)
         return self.cursor.execute(sql, args)
 
     def single_result(self) -> dict:
@@ -801,9 +800,11 @@ QUERY_INSERT_ROM                = """
                                     nointro_status, cloneof, fav_status, file_path)
                                 VALUES (?,?,?,?,?,?,?,?,?,?,?)
                                 """ 
-                                
+
+QUERY_SELECT_MY_FAVOURITES               = "SELECT * FROM vw_roms WHERE is_favourite = 1"                                
 QUERY_SELECT_RECENTLY_PLAYED_ROMS        = "SELECT * FROM vw_roms WHERE last_launch_timestamp IS NOT NULL ORDER BY last_launch_timestamp DESC LIMIT 100"
 QUERY_SELECT_MOST_PLAYED_ROMS            = "SELECT * FROM vw_roms WHERE launch_count > 0 ORDER BY launch_count DESC LIMIT 100"
+QUERY_SELECT_FAVOURITES_ROM_ASSETS       = "SELECT ra.* FROM vw_rom_assets AS ra INNER JOIN roms AS r ON r.id = ra.rom_id WHERE r.is_favourite = 1"
 QUERY_SELECT_RECENTLY_PLAYED_ROM_ASSETS  = """
                                             SELECT ra.* FROM vw_rom_assets AS ra INNER JOIN roms AS r ON r.id = ra.rom_id 
                                             WHERE r.last_launch_timestamp IS NOT NULL ORDER BY last_launch_timestamp DESC LIMIT 100
@@ -848,6 +849,9 @@ class ROMsRepository(object):
         roms_query = None
         rom_assets_query = None
         
+        if vcollection_id == constants.VCOLLECTION_FAVOURITES_ID:
+            roms_query = QUERY_SELECT_MY_FAVOURITES
+            rom_assets_query = QUERY_SELECT_FAVOURITES_ROM_ASSETS
         if vcollection_id == constants.VCOLLECTION_RECENT_ID: 
             roms_query = QUERY_SELECT_RECENTLY_PLAYED_ROMS
             rom_assets_query = QUERY_SELECT_RECENTLY_PLAYED_ROM_ASSETS
@@ -855,12 +859,14 @@ class ROMsRepository(object):
             roms_query = QUERY_SELECT_MOST_PLAYED_ROMS
             rom_assets_query = QUERY_SELECT_MOST_PLAYED_ROM_ASSETS
         
-        self._uow.execute(str(roms_query))
+        if roms_query is None: return []
+        
+        self._uow.execute(roms_query)
         result_set = self._uow.result_set()
         if not result_set:
             return []
         
-        self._uow.execute(str(rom_assets_query))
+        self._uow.execute(rom_assets_query) 
         assets_result_set = self._uow.result_set()
                 
         for rom_data in result_set:
