@@ -690,19 +690,21 @@ class ROMSetScanner(ROMAddon):
 class VirtualCollection(MetaDataItemABC):
     def __init__(self, 
                 entity_data: dict = None, 
-                assets_data: typing.List[Asset] = None,
-                launchers_data: typing.List[ROMLauncherAddon] = [], 
-                scanners_data: typing.List[ROMSetScanner] = []):
+                assets_data: typing.List[Asset] = None):
         # Concrete classes are responsible of creating a default entity_data dictionary
         # with sensible defaults.
         if entity_data is None:
             entity_data = _get_default_ROMSet_data_model()
             entity_data['id'] = text.misc_generate_random_SID()
             
-        self.launchers_data = launchers_data
-        self.scanners_data = scanners_data
         super(VirtualCollection, self).__init__(entity_data, assets_data)
-  
+
+    def get_assets_kind(self): return constants.KIND_ASSET_COLLECTION
+
+    def get_asset_ids_list(self): return constants.COLLECTION_ASSET_ID_LIST
+
+    def get_mappable_asset_ids_list(self): return constants.MAPPABLE_LAUNCHER_ASSET_ID_LIST
+
 # -------------------------------------------------------------------------------------------------
 # Class representing a collection of ROMs.
 # -------------------------------------------------------------------------------------------------

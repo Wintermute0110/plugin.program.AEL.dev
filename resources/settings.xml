@@ -1,17 +1,17 @@
 ﻿<?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <settings>
 <category label="40010">
-    <setting label="Recursive scan" type="bool" id="scan_recursive" default="true" />
-    <setting label="Ignore BIOS files" type="bool" id="scan_ignore_bios" default="true"/>
-    <setting label="Ignore Scraped Titles (use ROM filenames)" type="bool" id="scan_ignore_scrap_title" default="true" />
-    <setting label="Clean No-Intro/TOSEC Title Tags (tag) [tag] {tag}" type="bool" id="scan_clean_tags" default="false" />
-    <setting label="Update NFO files after ROM scraping" type="bool" id="scan_update_NFO_files" default="false" />
-    <setting label="Skip scanning if scraping fails" type="bool" id="scan_skip_on_scraping_failure" default="true" />
+    <setting label="40101" type="bool" id="scan_recursive" default="true" />
+    <setting label="40102" type="bool" id="scan_ignore_bios" default="true"/>
+    <setting label="40103" type="bool" id="scan_ignore_scrap_title" default="true" />
+    <setting label="40104" type="bool" id="scan_clean_tags" default="false" />
+    <setting label="40105" type="bool" id="scan_update_NFO_files" default="false" />
+    <setting label="40106" type="bool" id="scan_skip_on_scraping_failure" default="true" />
 </category>
 <!--
     Make sure the scraper lists match the variables in constants.py
 -->
-<category label="40011">
+<!-- <category label="40011">
     <setting id="separator" type="lsep" label="Scanner settings"/>
     <setting label="Metadata scan policy" type="labelenum" id="scan_metadata_policy" default="20040" lvalues="20010|20020|20040|20060" />
     <setting label="Asset scan policy" type="labelenum" id="scan_asset_policy" default="20060" lvalues="20030|20050|20060" />
@@ -23,7 +23,7 @@
     <setting label="Asset scraper" type="labelenum" id="scraper_asset" default="10030" lvalues="10030|10050|10040|10090" />
     <setting label="MAME metadata scraper" type="labelenum" id="scraper_metadata_MAME" default="10020" lvalues="10020|10070|10030|10050|10040" />
     <setting label="MAME asset scraper" type="labelenum" id="scraper_asset_MAME" default="10070" lvalues="10070|10030|10050|10040" />
-</category>
+</category> -->
 <category label="40012">
     <setting id="separator" type="lsep" label="Scraper API keys"/>
     <setting label="TheGamesDB API key" default="" id="scraper_thegamesdb_apikey" type="text"/>

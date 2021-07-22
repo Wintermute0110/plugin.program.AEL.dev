@@ -326,6 +326,7 @@ class UnitOfWork(object):
         self.conn.close()
 
     def execute(self, sql, *args) -> Cursor:
+        if args is None: return self.cursor.execute(sql)
         return self.cursor.execute(sql, args)
 
     def single_result(self) -> dict:
@@ -850,16 +851,16 @@ class ROMsRepository(object):
         if vcollection_id == constants.VCOLLECTION_RECENT_ID: 
             roms_query = QUERY_SELECT_RECENTLY_PLAYED_ROMS
             rom_assets_query = QUERY_SELECT_RECENTLY_PLAYED_ROM_ASSETS
-        if vcollection_id == constants.VCOLLECTION_MOSTPLAYED_ID:
+        if vcollection_id == constants.VCOLLECTION_MOST_PLAYED_ID:
             roms_query = QUERY_SELECT_MOST_PLAYED_ROMS
             rom_assets_query = QUERY_SELECT_MOST_PLAYED_ROM_ASSETS
         
-        self._uow.execute(roms_query)
+        self._uow.execute(str(roms_query))
         result_set = self._uow.result_set()
         if not result_set:
             return []
         
-        self._uow.execute(rom_assets_query)
+        self._uow.execute(str(rom_assets_query))
         assets_result_set = self._uow.result_set()
                 
         for rom_data in result_set:

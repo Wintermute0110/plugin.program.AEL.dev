@@ -35,6 +35,33 @@ msgctxt "#40016"
 msgid "Advanced"
 msgstr "settings.xml"
 
+############################
+# Setting options
+############################
+
+msgctxt "#40101"
+msgid "Recursive scan"
+msgstr "settings.xml"
+
+msgctxt "#40102"
+msgid "Ignore BIOS files"
+msgstr "settings.xml"
+
+msgctxt "#40103"
+msgid "Ignore Scraped Titles (use ROM filenames)"
+msgstr "settings.xml"
+
+msgctxt "#40104"
+msgid "Clean No-Intro/TOSEC Title Tags (tag) [tag] {tag}"
+msgstr "settings.xml"
+
+msgctxt "#40105"
+msgid "Update NFO files after ROM scraping"
+msgstr "settings.xml"
+
+msgctxt "#40106"
+msgid "Skip scanning if scraping fails"
+msgstr "settings.xml"
 
 
 msgctxt "#10020"

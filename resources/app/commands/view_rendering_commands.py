@@ -155,7 +155,7 @@ def _render_root_view(categories_repository: CategoryRepository, romsets_reposit
         logger.debug('Processing virtual collection "{}"'.format(vcollection.get_name()))
         root_items.append(_render_vcollection_listitem(vcollection))
         if render_sub_views:
-            _render_vcollection_view(vcollection,roms_repository, romsets_repository, views_repository)        
+            _render_vcollection_view(vcollection, romsets_repository, roms_repository, views_repository)        
 
     logger.debug('Storing {} items in root view.'.format(len(root_items)))
     root_data['items'] = root_items
