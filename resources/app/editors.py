@@ -169,7 +169,6 @@ def edit_object_assets(obj_instance:MetaDataItemABC, preselected_asset = None) -
 # Edit category/collection/launcher/ROM asset.
 # asset_info is a AssetInfo() object instance.
 #
-# NOTE When editing ROMs optional parameter launcher_dic is required.
 # NOTE Caller is responsible for saving the Categories/Launchers/ROMs.
 # NOTE If image is changed container should be updated so the user sees new image instantly.
 # NOTE obj_instance is edited by assigment.
