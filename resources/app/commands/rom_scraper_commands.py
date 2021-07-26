@@ -26,3 +26,67 @@ from resources.app.commands.mediator import AppMediator
 from resources.app import globals
 from resources.app.repositories import UnitOfWork, ROMCollectionRepository, ROMsRepository, AelAddonRepository
 from resources.app.domain import ROM, ROMCollectionScanner, AelAddon
+
+logger = logging.getLogger(__name__)
+
+@AppMediator.register('ROM_SCRAPE_METADATA')
+def cmd_scrape_rom_metadata(args):
+    rom_id:str = args['rom_id'] if 'rom_id' in args else None
+   
+    uow = UnitOfWork(globals.g_PATHS.DATABASE_FILE_PATH)
+    with uow:
+        repository = AelAddonRepository(uow)
+        addons = repository.find_all_scrapers()
+
+        # --- Make a menu list of available metadata scrapers ---
+        options =  {}
+        for addon in addons:
+            #if addon.supports_metadata()
+            options[addon] = addon.get_name()
+                        
+        selected_addon:AelAddon = kodi.OrdDictionaryDialog().select('Scrape ROM metadata', options)
+        if selected_addon is None:
+            # >> Exits context menu
+            logger.debug('ROM_SCRAPE_METADATA: cmd_scrape_rom_metadata() Selected None. Closing context menu')
+            AppMediator.sync_cmd('ROM_EDIT_METADATA', args)
+            return
+    
+    # >> Execute scraper
+    logger.debug('ROM_SCRAPE_METADATA: cmd_scrape_rom_metadata() Selected scraper#{}'.format(selected_addon.get_name()))
+    
+    args = {}
+    args['romcollection_id'] = romcollection_id
+    args['scanner_id'] = selected_option.get_id()
+    args['settings'] = selected_option.get_settings_str()
+    if default_launcher: args['launcher'] = default_launcher.get_settings_str()
+    
+    kodi.execute_uri(selected_option.addon.get_configure_uri(), args)
+    
+    scraper_settings = ScraperSettings()
+    scraper_settings.metadata_scraper_ID     = selected_option
+    scraper_settings.scrape_metadata_policy  = SCRAPE_POLICY_SCRAPE_ONLY
+    scraper_settings.search_term_mode        = SCRAPE_MANUAL
+    scraper_settings.game_selection_mode     = SCRAPE_MANUAL
+    scraper_settings.scrape_assets_policy    = SCRAPE_ACTION_NONE
+    
+    pdialog             = KodiProgressDialog()
+    ROM_file            = rom.get_file()
+    scraping_strategy   = g_ScraperFactory.create_scraper(launcher, pdialog, scraper_settings)
+    
+    msg = 'Scraping {0}...'.format(ROM_file.getBaseNoExt())
+    pdialog.startProgress(msg)
+    log_debug(msg)  
+    try:
+        scraping_strategy.scanner_process_ROM(rom, ROM_file)
+    except Exception as ex:
+        log_error('(Exception) Object type "{}"'.format(type(ex)))
+        log_error('(Exception) Message "{}"'.format(str(ex)))
+        log_warning('Could not scrape "{}"'.format(ROM_file.getBaseNoExt()))
+        kodi_notify_error('Could not scrape ROM')
+        pdialog.endProgress()
+        return
+    
+    launcher.save_ROM(rom)
+    pdialog.endProgress()
+    kodi_notify('Done scraping ROM metadata')
+    

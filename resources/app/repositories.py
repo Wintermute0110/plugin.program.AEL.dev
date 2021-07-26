@@ -1045,6 +1045,7 @@ QUERY_SELECT_ADDON_BY_ADDON_ID  = "SELECT * FROM ael_addon WHERE addon_id = ?"
 QUERY_SELECT_ADDONS             = "SELECT * FROM ael_addon"
 QUERY_SELECT_LAUNCHER_ADDONS    = "SELECT * FROM ael_addon WHERE addon_type = 'LAUNCHER' ORDER BY name"
 QUERY_SELECT_SCANNER_ADDONS     = "SELECT * FROM ael_addon WHERE addon_type = 'SCANNER' ORDER BY name"
+QUERY_SELECT_SCRAPER_ADDONS     = "SELECT * FROM ael_addon WHERE addon_type = 'SCRAPER' ORDER BY name"
 QUERY_INSERT_ADDON              = "INSERT INTO ael_addon(id, name, addon_id, version, addon_type, execute_uri, configure_uri) VALUES(?,?,?,?,?,?,?)" 
 QUERY_UPDATE_ADDON              = "UPDATE ael_addon SET name = ?, addon_id = ?, version = ?, addon_type = ?, execute_uri = ?, configure_uri = ? WHERE id = ?" 
 
@@ -1081,6 +1082,12 @@ class AelAddonRepository(object):
         for addon_data in result_set:
             yield AelAddon(addon_data)
 
+    def find_all_scrapers(self) -> typing.Iterator[AelAddon]:        
+        self._uow.execute(QUERY_SELECT_SCANNER_ADDONS)
+        result_set = self._uow.result_set()
+        for addon_data in result_set:
+            yield AelAddon(addon_data)
+            
     def insert_addon(self, addon: AelAddon):
         logger.info("AelAddonRepository.insert_addon(): Saving addon '{}'".format(addon.get_addon_id()))        
         self._uow.execute(QUERY_INSERT_ADDON,

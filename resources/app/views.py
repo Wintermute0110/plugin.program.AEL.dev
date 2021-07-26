@@ -174,6 +174,10 @@ def vw_view_romcollection(romcollection_id: str):
 def vw_edit_romcollection(romcollection_id: str):
     AppMediator.async_cmd('EDIT_ROMCOLLECTION', {'romcollection_id': romcollection_id })
 
+@router.route('/rom/edit/<rom_id>')
+def vw_edit_rom(rom_id: str):
+    AppMediator.async_cmd('EDIT_ROM', {'rom_id': rom_id })
+
 # -------------------------------------------------------------------------------------------------
 # ROM execution
 # -------------------------------------------------------------------------------------------------    

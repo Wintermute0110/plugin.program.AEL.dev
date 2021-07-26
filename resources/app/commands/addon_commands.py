@@ -44,7 +44,10 @@ def cmd_scan_addons(args):
     with uow:
         addon_repository    = AelAddonRepository(uow)
         existing_addons     = [*addon_repository.find_all()]
-        existing_addon_ids  = { a.get_addon_id(): a for a in existing_addons }
+        
+        existing_launcher_ids  = { a.get_addon_id(): a for a in existing_addons if a.get_addon_type() == constants.AddonType.LAUNCHER }
+        existing_scanner_ids   = { a.get_addon_id(): a for a in existing_addons if a.get_addon_type() == constants.AddonType.SCANNER }
+        existing_scraper_ids   = { a.get_addon_id(): a for a in existing_addons if a.get_addon_type() == constants.AddonType.SCRAPER }
                 
         for row in json_response['result'].get('addons', []):
             addon_id = row['addonid']
@@ -57,10 +60,13 @@ def cmd_scan_addons(args):
             addon_count = addon_count + 1  
             
             if addon.getSetting('ael.launcher.execute_uri') != '':
-                _process_launcher_addon(addon_id, addon, existing_addon_ids, addon_repository)
+                _process_launcher_addon(addon_id, addon, existing_launcher_ids, addon_repository)
                 
             if addon.getSetting('ael.scanner.execute_uri') != '':
-                _process_scanner_addon(addon_id, addon, existing_addon_ids, addon_repository)
+                _process_scanner_addon(addon_id, addon, existing_scanner_ids, addon_repository)
+                
+            if addon.getSetting('ael.scraper.execute_uri') != '':
+                _process_scraper_addon(addon_id, addon, existing_scraper_ids, addon_repository)
                 
         uow.commit()
         
@@ -116,3 +122,28 @@ def _process_scanner_addon(
     else:
         addon_repository.insert_addon(addon_obj)
         logger.debug('cmd_scan_addons(): Added scanner addon {}'.format(addon_id))
+        
+def _process_scraper_addon(
+    addon_id:str, 
+    addon:xbmcaddon.Addon, 
+    existing_addon_ids:typing.Dict[str,AelAddon],
+    addon_repository:AelAddonRepository):
+    
+    addon_obj = AelAddon({
+        'addon_id': addon_id,
+        'version': addon.getAddonInfo('version'),
+        'name': addon.getAddonInfo('name'),
+        'addon_type': constants.AddonType.SCRAPER.name,
+        'execute_uri': addon.getSetting('ael.scraper.execute_uri'),
+        'configure_uri': addon.getSetting('ael.scraper.configure_uri')
+    })
+
+    if addon_id in existing_addon_ids:                
+        if existing_addon_ids[addon_id].get_version() == addon_obj.get_version():
+            return
+        addon_obj.set_id(existing_addon_ids[addon_id].get_id())
+        addon_repository.update_addon(addon_obj)
+        logger.debug('cmd_scan_addons(): Updated scraper addon {}'.format(addon_id))
+    else:
+        addon_repository.insert_addon(addon_obj)
+        logger.debug('cmd_scan_addons(): Added scraper addon {}'.format(addon_id))        

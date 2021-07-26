@@ -36,10 +36,10 @@ def cmd_render_views_data(args):
     
     uow = UnitOfWork(globals.g_PATHS.DATABASE_FILE_PATH)
     with uow:
-        categories_repository   = CategoryRepository(uow)
-        romcollections_repository      = ROMCollectionRepository(uow)
-        roms_repository         = ROMsRepository(uow)
-        views_repository        = ViewRepository(globals.g_PATHS)
+        categories_repository     = CategoryRepository(uow)
+        romcollections_repository = ROMCollectionRepository(uow)
+        roms_repository           = ROMsRepository(uow)
+        views_repository          = ViewRepository(globals.g_PATHS)
         
         _render_root_view(categories_repository, romcollections_repository, roms_repository, views_repository, render_sub_views=True)
         
@@ -54,10 +54,10 @@ def cmd_render_view_data(args):
     
     uow = UnitOfWork(globals.g_PATHS.DATABASE_FILE_PATH)
     with uow:
-        categories_repository   = CategoryRepository(uow)
-        romcollections_repository      = ROMCollectionRepository(uow)
-        roms_repository         = ROMsRepository(uow)
-        views_repository        = ViewRepository(globals.g_PATHS)
+        categories_repository     = CategoryRepository(uow)
+        romcollections_repository = ROMCollectionRepository(uow)
+        roms_repository           = ROMsRepository(uow)
+        views_repository          = ViewRepository(globals.g_PATHS)
                 
         if category_id is None or category_id == constants.VCATEGORY_ADDONROOT_ID:
             _render_root_view(categories_repository, romcollections_repository, roms_repository, views_repository, render_recursive)
@@ -76,8 +76,8 @@ def cmd_render_romcollection_view_data(args):
     uow = UnitOfWork(globals.g_PATHS.DATABASE_FILE_PATH)
     with uow:
         romcollections_repository = ROMCollectionRepository(uow)
-        roms_repository    = ROMsRepository(uow)
-        views_repository   = ViewRepository(globals.g_PATHS)
+        roms_repository           = ROMsRepository(uow)
+        views_repository          = ViewRepository(globals.g_PATHS)
              
         romcollection = romcollections_repository.find_romcollection(romcollection_id)
         _render_romcollection_view(romcollection, roms_repository, views_repository)
@@ -91,9 +91,9 @@ def cmd_render_vcollection(args):
     
     uow = UnitOfWork(globals.g_PATHS.DATABASE_FILE_PATH)
     with uow:
-        roms_repository    = ROMsRepository(uow)
+        roms_repository           = ROMsRepository(uow)
         romcollections_repository = ROMCollectionRepository(uow)
-        views_repository   = ViewRepository(globals.g_PATHS)
+        views_repository          = ViewRepository(globals.g_PATHS)
         
         vcollection = VirtualCollectionFactory.create(vcollection_id)
         
@@ -102,13 +102,35 @@ def cmd_render_vcollection(args):
     
         kodi.notify('{} view rendered'.format(vcollection.get_name()))
     kodi.refresh_container()
+
+@AppMediator.register('RENDER_ROM_VIEWS')
+def cmd_render_rom_views(args):
+    rom_id = args['rom_id'] if 'rom_id' in args else None
+    kodi.notify('Rendering all views containing ROM#{}'.format(rom_id))
+    
+    uow = UnitOfWork(globals.g_PATHS.DATABASE_FILE_PATH)
+    with uow:
+        roms_repository           = ROMsRepository(uow)
+        romcollections_repository = ROMCollectionRepository(uow)
+        views_repository          = ViewRepository(globals.g_PATHS)
+             
+        romcollections = romcollections_repository.find_romcollections_by_rom(rom_id)
+        for romcollection in romcollections:
+            _render_romcollection_view(romcollection, roms_repository, views_repository)
+    
+        for vcollection_id in constants.VCOLLECTIONS:
+            vcollection = VirtualCollectionFactory.create(vcollection_id)
+            _render_vcollection_view(vcollection, romcollections_repository, roms_repository, views_repository)    
+    
+    kodi.notify('Views rendered')
+    kodi.refresh_container()
     
 @AppMediator.register('CLEANUP_VIEWS')
 def cmd_cleanup_views(args):    
     uow = UnitOfWork(globals.g_PATHS.DATABASE_FILE_PATH)
     with uow:
-        categories_repository   = CategoryRepository(uow)
-        romcollections_repository      = ROMCollectionRepository(uow)
+        categories_repository      = CategoryRepository(uow)
+        romcollections_repository  = ROMCollectionRepository(uow)
         
         categories = categories_repository.find_all_categories()
         romcollections = romcollections_repository.find_all_romcollections()

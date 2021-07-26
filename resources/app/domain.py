@@ -1115,7 +1115,7 @@ class ROM(MetaDataItemABC):
     # About reading files in Unicode http://stackoverflow.com/questions/147741/character-reading-from-file-in-python
     #
     # todo: Replace with nfo_file_path.readXml() and just use XPath
-    def update_with_nfo_file(self, nfo_file_path, verbose = True):
+    def update_with_nfo_file(self, nfo_file_path:io.FileName, verbose = True):
         logger.debug('Rom.update_with_nfo_file() Loading "{0}"'.format(nfo_file_path.getPath()))
         if not nfo_file_path.exists():
             if verbose:
@@ -1161,6 +1161,29 @@ class ROM(MetaDataItemABC):
             kodi.notify('Imported {0}'.format(nfo_file_path.getPath()))
 
         return True
+        
+    def export_to_NFO_file(self, nfo_FileName: io.FileName):
+        # --- Get NFO file name ---
+        logger.debug('ROM.export_to_NFO_file() Exporting ROM NFO "{0}"'.format(nfo_FileName.getPath()))
+
+        # If NFO file does not exist then create them. If it exists, overwrite.
+        nfo_content = []
+        nfo_content.append('<?xml version="1.0" encoding="utf-8" standalone="yes"?>\n')
+        nfo_content.append('<!-- Exported by AEL on {0} -->\n'.format(time.strftime("%Y-%m-%d %H:%M:%S")))
+        nfo_content.append('<ROM>\n')
+        nfo_content.append(text.XML_line('title',     self.get_name()))
+        nfo_content.append(text.XML_line('year',      self.get_releaseyear()))
+        nfo_content.append(text.XML_line('genre',     self.get_genre())) 
+        nfo_content.append(text.XML_line('developer', self.get_developer()))
+        nfo_content.append(text.XML_line('nplayers',  self.get_number_of_players()))
+        nfo_content.append(text.XML_line('esrb',      self.get_esrb_rating()))
+        nfo_content.append(text.XML_line('rating',    self.get_rating()))
+        nfo_content.append(text.XML_line('plot',      self.get_plot()))
+        nfo_content.append(text.XML_line('trailer',   self.get_trailer()))
+        
+        nfo_content.append('</ROM>\n')
+        full_string = ''.join(nfo_content)
+        nfo_FileName.writeAll(full_string)
     
     def apply_romcollection_asset_mapping(self, romcollection: ROMCollection):
         mappable_assets = romcollection.get_ROM_mappable_asset_list()

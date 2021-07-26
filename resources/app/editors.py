@@ -116,6 +116,27 @@ def edit_rating(obj_instance: MetaDataItemABC, get_method, set_method):
     kodi.notify('{0} rating is now {1}'.format(object_name, current_rating_str))
     return True
 
+#
+# Reads a text file with category/launcher plot. 
+# Checks file size to avoid importing binary files!
+#
+def import_TXT_file(text_file: io.FileName):
+    # Warn user in case he chose a binary file or a very big one. Avoid categories.xml corruption.
+    logger.debug('import_TXT_file() Importing plot from "{0}"'.format(text_file.getPath()))
+    statinfo = text_file.stat()
+    file_size = statinfo.st_size
+    logger.debug('import_TXT_file() File size is {0}'.format(file_size))
+    if file_size > 16384:
+        ret = kodi.dialog_yesno('File "{0}" has {1} bytes and it is very big.'.format(text_file.getPath(), file_size) +
+                                'Are you sure this is the correct file?')
+        if not ret: return ''
+
+    # Import file
+    logger.debug('import_TXT_file() Importing description from "{0}"'.format(text_file.getPath()))
+    file_data = text_file.readAll()
+
+    return file_data
+
 SCRAPE_CMD = 'RESCRAPE_ROM_ASSETS'
 
 def edit_object_assets(obj_instance:MetaDataItemABC, preselected_asset = None) -> str:

@@ -21,7 +21,9 @@ import resources.app.commands.addon_commands
 import resources.app.commands.category_commands
 import resources.app.commands.romcollection_commands
 import resources.app.commands.romcollection_roms_commands
-import resources.app.commands.romcollection_launcher_commands
+import resources.app.commands.rom_commands
+import resources.app.commands.rom_launcher_commands
 import resources.app.commands.rom_scanner_commands
+import resources.app.commands.rom_scraper_commands
 import resources.app.commands.stats_commands
 import resources.app.commands.misc_commands
