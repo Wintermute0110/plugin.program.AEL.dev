@@ -20,13 +20,15 @@ from __future__ import division
 import logging
 import typing
 import re
+import os
 
 # --- AEL packages ---
-from ael import report, platforms, settings
-from ael.utils import io, kodi
+from ael import report, platforms, settings, constants
+from ael.utils import io, kodi, text
 from ael.executors import ExecutorFactoryABC
 from ael.launchers import LauncherABC, ExecutionSettings
 from ael.scanners import RomScannerStrategy, ROMCandidateABC, ROMFileCandidate, ROMData, MultiDiscInfo
+from ael.scrapers import Scraper
 
 from resources.app import globals
 
@@ -392,7 +394,7 @@ class Null_Scraper(Scraper):
     def __init__(self, settings): super(Null_Scraper, self).__init__(settings)
 
     def get_id(self):
-        return SCRAPER_NULL_ID
+        return constants.SCRAPER_NULL_ID
 
     def get_name(self): return 'Null'
 
@@ -432,13 +434,13 @@ class Null_Scraper(Scraper):
 class AEL_Offline(Scraper):
     # --- Class variables ------------------------------------------------------------------------
     supported_metadata_list = [
-        META_TITLE_ID,
-        META_YEAR_ID,
-        META_GENRE_ID,
-        META_DEVELOPER_ID,
-        META_NPLAYERS_ID,
-        META_ESRB_ID,
-        META_PLOT_ID,
+        constants.META_TITLE_ID,
+        constants.META_YEAR_ID,
+        constants.META_GENRE_ID,
+        constants.META_DEVELOPER_ID,
+        constants.META_NPLAYERS_ID,
+        constants.META_ESRB_ID,
+        constants.META_PLOT_ID,
     ]
 
     # --- Constructor ----------------------------------------------------------------------------
@@ -446,7 +448,7 @@ class AEL_Offline(Scraper):
     def __init__(self, settings):
         # --- This scraper settings ---
         self.addon_dir = settings['scraper_aeloffline_addon_code_dir']
-        log_debug('AEL_Offline.__init__() Setting addon dir "{}"'.format(self.addon_dir))
+        logger.debug('AEL_Offline.__init__() Setting addon dir "{}"'.format(self.addon_dir))
 
         # --- Cached TGDB metadata ---
         self._reset_cached_games()
@@ -455,7 +457,7 @@ class AEL_Offline(Scraper):
         super(AEL_Offline, self).__init__(settings)
 
     def get_id(self):
-        return SCRAPER_AEL_OFFLINE_ID
+        return constants.SCRAPER_AEL_OFFLINE_ID
     
     # --- Base class abstract methods ------------------------------------------------------------
     def get_name(self): return 'AEL Offline'
@@ -467,7 +469,8 @@ class AEL_Offline(Scraper):
     def supports_search_string(self): return False
 
     def supports_metadata_ID(self, metadata_ID):
-        return True if metadata_ID in ScreenScraper.supported_metadata_list else False
+        #TODO: return True if metadata_ID in ScreenScraper.supported_metadata_list else False
+        return False
 
     def supports_metadata(self): return True
 
@@ -478,12 +481,12 @@ class AEL_Offline(Scraper):
     def check_before_scraping(self, status_dic): return status_dic
 
     # Search term is always None for this scraper.
-    def get_candidates(self, search_term, rom_FN, rom_checksums_FN, platform, status_dic):
+    def get_candidates(self, search_term, rom_FN:io.FileName, rom_checksums_FN, platform, status_dic):
         # AEL Offline cannot be disabled.
         # Prepare data for scraping.
         rombase_noext = rom_FN.getBase_noext()
-        log_debug('AEL_Offline.get_candidates() rombase_noext "{}"'.format(rombase_noext))
-        log_debug('AEL_Offline.get_candidates() AEL platform  "{}"'.format(platform))
+        logger.debug('AEL_Offline.get_candidates() rombase_noext "{}"'.format(rombase_noext))
+        logger.debug('AEL_Offline.get_candidates() AEL platform  "{}"'.format(platform))
 
         # If not cached XML data found (maybe offline scraper does not exist for this platform or 
         # cannot be loaded) return an empty list of candidates.
@@ -504,7 +507,7 @@ class AEL_Offline(Scraper):
 
         if self.cached_platform == 'MAME':
             key_id = self.candidate['id']
-            log_verb("AEL_Offline.get_metadata() Mode MAME id = '{}'".format(key_id))
+            logger.debug("AEL_Offline.get_metadata() Mode MAME id = '{}'".format(key_id))
             gamedata['title']     = self.cached_games[key_id]['title']
             gamedata['year']      = self.cached_games[key_id]['year']
             gamedata['genre']     = self.cached_games[key_id]['genre']
@@ -512,11 +515,11 @@ class AEL_Offline(Scraper):
             gamedata['nplayers']  = self.cached_games[key_id]['nplayers']
         elif self.cached_platform == 'Unknown':
             # Unknown platform. Behave like NULL scraper
-            log_verb("AEL_Offline.get_metadata() Mode Unknown. Doing nothing.")
+            logger.debug("AEL_Offline.get_metadata() Mode Unknown. Doing nothing.")
         else:
             # No-Intro scraper by default.
             key_id = self.candidate['id']
-            log_verb("AEL_Offline.get_metadata() Mode No-Intro id = '{}'".format(key_id))
+            logger.debug("AEL_Offline.get_metadata() Mode No-Intro id = '{}'".format(key_id))
             gamedata['title']     = self.cached_games[key_id]['title']
             gamedata['year']      = self.cached_games[key_id]['year']
             gamedata['genre']     = self.cached_games[key_id]['genre']
@@ -535,7 +538,7 @@ class AEL_Offline(Scraper):
         
     # --- This class own methods -----------------------------------------------------------------
     def _get_MAME_candidates(self, rombase_noext, platform):
-        log_verb("AEL_Offline._get_MAME_candidates() Scraper working in MAME mode.")
+        logger.debug("AEL_Offline._get_MAME_candidates() Scraper working in MAME mode.")
 
         # --- MAME rombase_noext is exactly the rom name ---
         # MAME offline scraper either returns one candidate game or nothing at all.
@@ -553,12 +556,12 @@ class AEL_Offline(Scraper):
 
     def _get_NoIntro_candidates(self, rombase_noext, platform):
         # --- First try an exact match using rombase_noext ---
-        log_verb("AEL_Offline._get_NoIntro_candidates() Scraper working in No-Intro mode.")
-        log_verb("AEL_Offline._get_NoIntro_candidates() Trying exact search for '{}'".format(
+        logger.debug("AEL_Offline._get_NoIntro_candidates() Scraper working in No-Intro mode.")
+        logger.debug("AEL_Offline._get_NoIntro_candidates() Trying exact search for '{}'".format(
             rombase_noext))
         candidate_list = []
         if rombase_noext in self.cached_games:
-            log_verb("AEL_Offline._get_NoIntro_candidates() Exact match found.")
+            logger.debug("AEL_Offline._get_NoIntro_candidates() Exact match found.")
             candidate = self._new_candidate_dic()
             candidate['id'] = rombase_noext
             candidate['display_name'] = self.cached_games[rombase_noext]['ROM']
@@ -569,9 +572,9 @@ class AEL_Offline(Scraper):
         else:
             # --- If nothing found, do a fuzzy search ---
             # Here implement a Levenshtein distance algorithm.
-            search_term = text_format_ROM_name_for_scraping(rombase_noext)
-            log_verb("AEL_Offline._get_NoIntro_candidates() No exact match found.")
-            log_verb("AEL_Offline._get_NoIntro_candidates() Trying fuzzy search '{}'".format(
+            search_term = text.format_ROM_name_for_scraping(rombase_noext)
+            logger.debug("AEL_Offline._get_NoIntro_candidates() No exact match found.")
+            logger.debug("AEL_Offline._get_NoIntro_candidates() Trying fuzzy search '{}'".format(
                 search_term))
             search_string_lower = rombase_noext.lower()
             regexp = '.*{}.*'.format(search_string_lower)
@@ -579,8 +582,8 @@ class AEL_Offline(Scraper):
                 # Sometimes this produces: raise error, v # invalid expression
                 p = re.compile(regexp)
             except:
-                log_info('AEL_Offline._get_NoIntro_candidates() Exception in re.compile(regexp)')
-                log_info('AEL_Offline._get_NoIntro_candidates() regexp = "{}"'.format(regexp))
+                logger.info('AEL_Offline._get_NoIntro_candidates() Exception in re.compile(regexp)')
+                logger.info('AEL_Offline._get_NoIntro_candidates() regexp = "{}"'.format(regexp))
                 return []
 
             for key in self.cached_games:
@@ -608,42 +611,42 @@ class AEL_Offline(Scraper):
     def _initialise_platform(self, platform):
         # Check if we have data already cached in object memory for this platform
         if self.cached_platform == platform:
-            log_debug('AEL_Offline._initialise_platform() platform = "{}" is cached in object.'.format(
+            logger.debug('AEL_Offline._initialise_platform() platform = "{}" is cached in object.'.format(
                 platform))
             return
         else:
-            log_debug('AEL_Offline._initialise_platform() platform = "{}" not cached. Loading XML.'.format(
+            logger.debug('AEL_Offline._initialise_platform() platform = "{}" not cached. Loading XML.'.format(
                 platform))
 
         # What if platform is not in the official list dictionary?
         # Then load nothing and behave like the NULL scraper.
-        if platform in platform_long_to_index_dic:
+        if platform in platforms.platform_long_to_index_dic:
             # Check for aliased platforms
-            pobj = AEL_platforms[platform_long_to_index_dic[platform]]
+            pobj = platforms.AEL_platforms[platforms.platform_long_to_index_dic[platform]]
             if pobj.aliasof:
-                log_debug('AEL_Offline._initialise_platform() Aliased platform. Using parent XML.')
-                parent_pobj = AEL_platforms[platform_compact_to_index_dic[pobj.aliasof]]
+                logger.debug('AEL_Offline._initialise_platform() Aliased platform. Using parent XML.')
+                parent_pobj = platforms.AEL_platforms[platforms.platform_compact_to_index_dic[pobj.aliasof]]
                 xml_file = 'data-AOS/' + parent_pobj.long_name + '.xml'
             else:
                 xml_file = 'data-AOS/' + platform + '.xml'
 
         else:
-            log_debug('AEL_Offline._initialise_platform() Platform "{}" not found'.format(platform))
-            log_debug('AEL_Offline._initialise_platform() Defaulting to Unknown')
+            logger.debug('AEL_Offline._initialise_platform() Platform "{}" not found'.format(platform))
+            logger.debug('AEL_Offline._initialise_platform() Defaulting to Unknown')
             self._reset_cached_games()
             return
 
         # Load XML database and keep it in memory for subsequent calls
         xml_path = os.path.join(self.addon_dir, xml_file)
-        # log_debug('AEL_Offline._initialise_platform() Loading XML {}'.format(xml_path))
+        # logger.debug('AEL_Offline._initialise_platform() Loading XML {}'.format(xml_path))
         self.cached_games = audit_load_OfflineScraper_XML(xml_path)
         if not self.cached_games:
             self._reset_cached_games()
             return
         self.cached_xml_path = xml_path
         self.cached_platform = platform
-        log_debug('AEL_Offline._initialise_platform() cached_xml_path = {}'.format(self.cached_xml_path))
-        log_debug('AEL_Offline._initialise_platform() cached_platform = {}'.format(self.cached_platform))
+        logger.debug('AEL_Offline._initialise_platform() cached_xml_path = {}'.format(self.cached_xml_path))
+        logger.debug('AEL_Offline._initialise_platform() cached_platform = {}'.format(self.cached_platform))
 
     def _reset_cached_games(self):
         self.cached_games = {}

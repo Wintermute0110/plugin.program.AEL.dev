@@ -128,14 +128,17 @@ def _process_scraper_addon(
     addon:xbmcaddon.Addon, 
     existing_addon_ids:typing.Dict[str,AelAddon],
     addon_repository:AelAddonRepository):
-    
+        
     addon_obj = AelAddon({
         'addon_id': addon_id,
         'version': addon.getAddonInfo('version'),
         'name': addon.getAddonInfo('name'),
         'addon_type': constants.AddonType.SCRAPER.name,
         'execute_uri': addon.getSetting('ael.scraper.execute_uri'),
-        'configure_uri': addon.getSetting('ael.scraper.configure_uri')
+        'configure_uri': addon.getSetting('ael.scraper.configure_uri'),
+        'extra_settings': {
+            'supports_metadata': addon.getSettingBool('ael.scraper.supports_metadata')
+        }
     })
 
     if addon_id in existing_addon_ids:                
