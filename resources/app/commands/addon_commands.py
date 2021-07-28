@@ -37,7 +37,7 @@ def cmd_scan_addons(args):
     kodi.notify('Scanning for AEL supported addons')
     json_response = kodi.jsonrpc_query("Addons.GetAddons", params={
         'installed': True, 'enabled': True, 
-        'type': 'xbmc.python.pluginsource'})
+        'type': 'xbmc.python.script'})
     
     addon_count = 0
     uow = UnitOfWork(globals.g_PATHS.DATABASE_FILE_PATH)
@@ -57,15 +57,16 @@ def cmd_scan_addons(args):
                 continue
             
             logger.debug('cmd_scan_addons(): Found addon {}'.format(addon_id))
+            addon_types = addon.getSettingString('ael.plugin_types').split('|')
             addon_count = addon_count + 1  
             
-            if addon.getSetting('ael.launcher.execute_uri') != '':
+            if constants.AddonType.LAUNCHER.name in addon_types:
                 _process_launcher_addon(addon_id, addon, existing_launcher_ids, addon_repository)
                 
-            if addon.getSetting('ael.scanner.execute_uri') != '':
+            if constants.AddonType.SCANNER.name in addon_types:
                 _process_scanner_addon(addon_id, addon, existing_scanner_ids, addon_repository)
                 
-            if addon.getSetting('ael.scraper.execute_uri') != '':
+            if constants.AddonType.SCRAPER.name in addon_types:
                 _process_scraper_addon(addon_id, addon, existing_scraper_ids, addon_repository)
                 
         uow.commit()
@@ -83,9 +84,7 @@ def _process_launcher_addon(
         'addon_id': addon_id,
         'version': addon.getAddonInfo('version'),
         'name': addon.getAddonInfo('name'),
-        'addon_type': constants.AddonType.LAUNCHER.name,
-        'execute_uri': addon.getSetting('ael.launcher.execute_uri'),
-        'configure_uri': addon.getSetting('ael.launcher.configure_uri')
+        'addon_type': constants.AddonType.LAUNCHER.name
     })
 
     if addon_id in existing_addon_ids:
@@ -108,9 +107,7 @@ def _process_scanner_addon(
         'addon_id': addon_id,
         'version': addon.getAddonInfo('version'),
         'name': addon.getAddonInfo('name'),
-        'addon_type': constants.AddonType.SCANNER.name,
-        'execute_uri': addon.getSetting('ael.scanner.execute_uri'),
-        'configure_uri': addon.getSetting('ael.scanner.configure_uri')
+        'addon_type': constants.AddonType.SCANNER.name
     })
 
     if addon_id in existing_addon_ids:                
@@ -134,11 +131,12 @@ def _process_scraper_addon(
         'version': addon.getAddonInfo('version'),
         'name': addon.getAddonInfo('name'),
         'addon_type': constants.AddonType.SCRAPER.name,
-        'execute_uri': addon.getSetting('ael.scraper.execute_uri'),
-        'configure_uri': addon.getSetting('ael.scraper.configure_uri'),
-        'extra_settings': {
-            'supports_metadata': addon.getSettingBool('ael.scraper.supports_metadata')
-        }
+    })
+    
+    supported_types = addon.getSettingString('ael.scraper.supported_types').split('|')
+    addon_obj.set_extra_settings({
+        'supports_metadata': 'metadata' in supported_types,
+        'supports_assets': 'asset' in supported_types
     })
 
     if addon_id in existing_addon_ids:                

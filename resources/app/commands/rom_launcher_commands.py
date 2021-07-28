@@ -98,7 +98,8 @@ def cmd_add_romcollection_launchers(args):
     # >> Execute subcommand. May be atomic, maybe a submenu.
     logger.debug('ADD_LAUNCHER: cmd_add_romcollection_launchers() Selected {}'.format(selected_option.get_id()))
     
-    kodi.execute_uri(selected_option.get_configure_uri(), {
+    kodi.run_script(selected_option.get_addon_id(), {
+        'cmd': 'configure',
         'romcollection_id': romcollection_id, 
         'settings': json.dumps({'platform': romcollection.get_platform()})
     })
@@ -133,7 +134,8 @@ def cmd_edit_romcollection_launchers(args):
     
     # >> Execute subcommand. May be atomic, maybe a submenu.
     logger.debug('EDIT_LAUNCHER: cmd_edit_romcollection_launchers() Selected {}'.format(selected_option.get_id()))
-    kodi.execute_uri(selected_option.addon.get_configure_uri(), {
+    kodi.run_script(selected_option.addon.get_addon_id(), {
+        'cmd': 'configure',
         'romcollection_id': romcollection_id, 
         'launcher_id': selected_option.get_id(),
         'settings': selected_option.get_settings_str()
@@ -283,7 +285,8 @@ def cmd_execute_rom_with_launcher(args):
         dialog = kodi.OrdDictionaryDialog()
         selected_launcher = dialog.select('Choose launcher', launcher_options,preselect=preselected)
 
-    kodi.execute_uri(selected_launcher.addon.get_execute_uri(), {
+    kodi.run_script(selected_launcher.addon.get_addon_id(), {
+        'cmd': 'execute',
         'settings': selected_launcher.get_settings_str(),
         'launcher_id': selected_launcher.get_id(),
         'rom_id': rom.get_id(),

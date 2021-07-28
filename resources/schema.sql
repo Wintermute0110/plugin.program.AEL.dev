@@ -27,8 +27,7 @@ CREATE TABLE IF NOT EXISTS ael_addon(
     addon_id TEXT,
     version TEXT,
     addon_type TEXT,
-    execute_uri TEXT,
-    configure_uri TEXT
+    extra_settings TEXT
 );
 
 CREATE TABLE IF NOT EXISTS categories(
@@ -305,8 +304,7 @@ CREATE VIEW IF NOT EXISTS vw_romcollection_launchers AS SELECT
     a.addon_id,
     a.version,
     a.addon_type,
-    a.execute_uri,
-    a.configure_uri,
+    a.extra_settings,
     l.settings,
     l.is_non_blocking,
     l.is_default
@@ -321,8 +319,7 @@ CREATE VIEW IF NOT EXISTS vw_romcollection_scanners AS SELECT
     a.addon_id,
     a.version,
     a.addon_type,
-    a.execute_uri,
-    a.configure_uri,
+    a.extra_settings,
     s.settings
 FROM romcollection_scanners AS s
     INNER JOIN ael_addon AS a ON s.ael_addon_id = a.id;

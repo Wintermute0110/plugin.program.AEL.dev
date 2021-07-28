@@ -277,9 +277,7 @@ class UnitOfWork(object):
             'name':  'App Launcher', 
             'addon_id': '{}.AppLauncher'.format(globals.addon_id),
             'version': globals.addon_version,
-            'addon_type': constants.AddonType.LAUNCHER.name, 
-            'execute_uri': globals.router.url_for_path('launcher/app'),
-            'configure_uri': globals.router.url_for_path('launcher/app/configure')
+            'addon_type': constants.AddonType.LAUNCHER.name
         })
         addon_repository.insert_addon(app_launcher_addon)
         folder_scanner_addon = AelAddon({
@@ -287,9 +285,7 @@ class UnitOfWork(object):
             'name':  'Folder scanner', 
             'addon_id': '{}.FolderScanner'.format(globals.addon_id),
             'version': globals.addon_version,
-            'addon_type': constants.AddonType.SCANNER.name, 
-            'execute_uri': globals.router.url_for_path('scanner/folder'),
-            'configure_uri': globals.router.url_for_path('scanner/folder/configure')
+            'addon_type': constants.AddonType.SCANNER.name
         })
         addon_repository.insert_addon(folder_scanner_addon)
 
@@ -1046,8 +1042,8 @@ QUERY_SELECT_ADDONS             = "SELECT * FROM ael_addon"
 QUERY_SELECT_LAUNCHER_ADDONS    = "SELECT * FROM ael_addon WHERE addon_type = 'LAUNCHER' ORDER BY name"
 QUERY_SELECT_SCANNER_ADDONS     = "SELECT * FROM ael_addon WHERE addon_type = 'SCANNER' ORDER BY name"
 QUERY_SELECT_SCRAPER_ADDONS     = "SELECT * FROM ael_addon WHERE addon_type = 'SCRAPER' ORDER BY name"
-QUERY_INSERT_ADDON              = "INSERT INTO ael_addon(id, name, addon_id, version, addon_type, execute_uri, configure_uri) VALUES(?,?,?,?,?,?,?)" 
-QUERY_UPDATE_ADDON              = "UPDATE ael_addon SET name = ?, addon_id = ?, version = ?, addon_type = ?, execute_uri = ?, configure_uri = ? WHERE id = ?" 
+QUERY_INSERT_ADDON              = "INSERT INTO ael_addon(id, name, addon_id, version, addon_type, extra_settings) VALUES(?,?,?,?,?,?)" 
+QUERY_UPDATE_ADDON              = "UPDATE ael_addon SET name = ?, addon_id = ?, version = ?, addon_type = ?, extra_settings = ? WHERE id = ?" 
 
 class AelAddonRepository(object):
 
@@ -1083,7 +1079,7 @@ class AelAddonRepository(object):
             yield AelAddon(addon_data)
 
     def find_all_scrapers(self) -> typing.Iterator[AelAddon]:        
-        self._uow.execute(QUERY_SELECT_SCANNER_ADDONS)
+        self._uow.execute(QUERY_SELECT_SCRAPER_ADDONS)
         result_set = self._uow.result_set()
         for addon_data in result_set:
             yield AelAddon(addon_data)
@@ -1096,8 +1092,7 @@ class AelAddonRepository(object):
                     addon.get_addon_id(),
                     addon.get_version(),
                     addon.get_addon_type().name,
-                    addon.get_execute_uri(),
-                    addon.get_configure_uri())
+                    addon.get_extra_settings_str())
         
     def update_addon(self, addon: AelAddon):
         logger.info("AelAddonRepository.update_addon(): Updating addon '{}'".format(addon.get_addon_id()))        
@@ -1106,6 +1101,5 @@ class AelAddonRepository(object):
                     addon.get_addon_id(),
                     addon.get_version(),
                     addon.get_addon_type().name,
-                    addon.get_execute_uri(),
-                    addon.get_configure_uri(),
+                    addon.get_extra_settings_str(),
                     addon.get_id())
