@@ -19,7 +19,7 @@ from resources.lib import globals
 from resources.lib.utils import io
 from resources.lib.domain import *
 
-from resources.app.commands import addon_commands as target
+from resources.lib.commands import addon_commands as target
 
 logger = logging.getLogger(__name__)
 logging.basicConfig(format = '%(asctime)s %(module)s %(levelname)s: %(message)s',

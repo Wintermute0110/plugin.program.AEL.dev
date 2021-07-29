@@ -23,10 +23,10 @@ import typing
 from ael import constants, settings
 from ael.utils import kodi
 
-from resources.app.commands.mediator import AppMediator
-from resources.app import globals
-from resources.app.repositories import UnitOfWork, CategoryRepository, ROMCollectionRepository, ROMsRepository, ViewRepository
-from resources.app.domain import ROM, ROMCollection, Category, VirtualCollection, VirtualCollectionFactory
+from resources.lib.commands.mediator import AppMediator
+from resources.lib import globals
+from resources.lib.repositories import UnitOfWork, CategoryRepository, ROMCollectionRepository, ROMsRepository, ViewRepository
+from resources.lib.domain import ROM, ROMCollection, Category, VirtualCollection, VirtualCollectionFactory
 
 logger = logging.getLogger(__name__)
 

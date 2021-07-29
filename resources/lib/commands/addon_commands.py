@@ -21,14 +21,17 @@ import logging
 import typing
 from ael import constants
 
+# -- Kodi libs -- 
+import xbmc
 import xbmcaddon
 
+# -- AEL libs -- 
 from ael.utils import kodi
 
-from resources.app.commands.mediator import AppMediator
-from resources.app import globals
-from resources.app.repositories import UnitOfWork, AelAddonRepository
-from resources.app.domain import AelAddon
+from resources.lib.commands.mediator import AppMediator
+from resources.lib import globals
+from resources.lib.repositories import UnitOfWork, AelAddonRepository
+from resources.lib.domain import AelAddon
 
 logger = logging.getLogger(__name__)
 
@@ -70,6 +73,10 @@ def cmd_scan_addons(args):
                 _process_scraper_addon(addon_id, addon, existing_scraper_ids, addon_repository)
                 
         uow.commit()
+        
+    msg = 'No AEL addons found. Search and install default plugin addons for AEL?'
+    if addon_count == 0 and kodi.dialog_yesno(msg):
+        xbmc.executebuiltin('InstallAddon(script.ael.defaults)', True)
         
     logger.info('cmd_scan_addons(): Processed {} addons'.format(addon_count))
     kodi.notify('Scan completed. Found {} addons'.format(addon_count))

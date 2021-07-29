@@ -40,14 +40,12 @@ import xbmc
 import xbmcgui
 import xbmcplugin
 
-from ael import constants, settings 
-from ael.launchers import ExecutionSettings, get_executor_factory
+from ael import constants
 from ael.utils import kodi
 
-from resources.app.core import AppLauncher, RomFolderScanner
-from resources.app import viewqueries, globals
-from resources.app.commands.mediator import AppMediator
-from resources.app.globals import router
+from resources.lib import viewqueries, globals
+from resources.lib.commands.mediator import AppMediator
+from resources.lib.globals import router
 
 logger = logging.getLogger(__name__)
 
@@ -184,111 +182,6 @@ def vw_edit_rom(rom_id: str):
 @router.route('/execute/rom/<rom_id>')
 def vw_route_execute_rom(rom_id):
     AppMediator.async_cmd("EXECUTE_ROM", {'rom_id': rom_id} )
-
-# -------------------------------------------------------------------------------------------------
-# Internal launchers/scanner execution
-# -------------------------------------------------------------------------------------------------
-@router.route('/launcher/app/configure/')
-def vw_configure_app_launcher():
-    logger.debug('App Launcher: Configuring ...')
-
-    romcollection_id:str   = router.args['romcollection_id'][0] if 'romcollection_id' in router.args else None
-    launcher_id:str = router.args['launcher_id'][0] if 'launcher_id' in router.args else None
-    settings:str    = router.args['settings'][0] if 'settings' in router.args else None
-    
-    launcher_settings = json.loads(settings)    
-    launcher = AppLauncher(None, None, launcher_settings)
-    if launcher_id is None and launcher.build():
-        launcher.store_launcher_settings(romcollection_id)
-        return
-    
-    if launcher_id is not None and launcher.edit():
-        launcher.store_launcher_settings(romcollection_id, launcher_id)
-        return
-    
-    kodi.notify_warn('Cancelled creating launcher')
-    
-@router.route('/launcher/app/')
-def vw_execute_app_launcher():
-    logger.debug('App Launcher: Starting ...')
-    launcher_settings   = json.loads(router.args['settings'][0])
-    rom_arguments       = json.loads(router.args['rom_args'][0])
-    launcher_id         = router.args['launcher_id'][0]
-    rom_id              = router.args['rom_id'][0]
-
-    try:
-        execution_settings = ExecutionSettings()
-        execution_settings.delay_tempo = settings.getSettingAsInt('delay_tempo')
-        execution_settings.display_launcher_notify = settings.getSettingAsBool('display_launcher_notify')
-        execution_settings.is_non_blocking = True if router.args['is_non_blocking'][0] == 'true' else False
-        execution_settings.media_state_action = settings.getSettingAsInt('media_state_action')
-        execution_settings.suspend_audio_engine = settings.getSettingAsBool('suspend_audio_engine')
-        execution_settings.suspend_screensaver = settings.getSettingAsBool('suspend_screensaver')        
-        report_path = globals.g_PATHS.REPORTS_DIR.pjoin('{}-{}.txt'.format(launcher_id, rom_id))
-        
-        executor_factory = get_executor_factory(report_path)
-        launcher = AppLauncher(executor_factory, execution_settings, launcher_settings)
-        launcher.launch(rom_arguments)
-    except Exception as e:
-        logger.error('Exception while executing ROM', exc_info=e)
-        kodi.notify_error('Failed to execute ROM')
-    
-@router.route('/scanner/folder/configure')
-def vw_configure_folder_scanner():
-    logger.debug('ROM Folder scanner: Configuring ...')
-
-    romcollection_id:str               = router.args['romcollection_id'][0] if 'romcollection_id' in router.args else None
-    scanner_id:str              = router.args['scanner_id'][0] if 'scanner_id' in router.args else None
-    settings:str                = router.args['settings'][0] if 'settings' in router.args else None
-    def_launcher_settings:str   = router.args['launcher'][0] if 'launcher' in router.args else None
-    
-    scanner_settings = json.loads(settings) if settings else None
-    launcher_settings = json.loads(def_launcher_settings) if def_launcher_settings else None
-    
-    scanner = RomFolderScanner(
-        globals.g_PATHS.REPORTS_DIR, 
-        globals.g_PATHS.ADDON_DATA_DIR,
-        scanner_settings,
-        launcher_settings,
-        kodi.ProgressDialog())
-    
-    if scanner.configure():
-        scanner.store_scanner_settings(romcollection_id, scanner_id)
-        return
-    
-    kodi.notify_warn('Cancelled configuring scanner')
-
-@router.route('/scanner/folder')
-def vw_execute_folder_scanner():
-    logger.debug('ROM Folder scanner: Starting scan ...')
-    romcollection_id:str   = router.args['romcollection_id'][0] if 'romcollection_id' in router.args else None
-    scanner_id:str  = router.args['scanner_id'][0] if 'scanner_id' in router.args else None
-    settings:str    = router.args['settings'][0] if 'settings' in router.args else None
-
-    scanner_settings = json.loads(settings) if settings else None
-    progress_dialog = kodi.ProgressDialog()
-        
-    scanner = RomFolderScanner(
-        globals.g_PATHS.REPORTS_DIR, 
-        globals.g_PATHS.ADDON_DATA_DIR,
-        scanner_settings,
-        None,
-        progress_dialog)
-    
-    scanner.scan()
-    progress_dialog.endProgress()
-    
-    logger.debug('vw_execute_folder_scanner(): Finished scanning')
-    
-    amount_scanned = scanner.amount_of_scanned_roms()
-    if amount_scanned == 0:
-        logger.info('vw_execute_folder_scanner(): No roms scanned')
-        return
-        
-    logger.info('vw_execute_folder_scanner(): {} roms scanned'.format(amount_scanned))
-    scanner.store_scanned_roms(romcollection_id, scanner_id)
-    kodi.notify('ROMs scanning done')
-
     
 # -------------------------------------------------------------------------------------------------
 # UI render methods

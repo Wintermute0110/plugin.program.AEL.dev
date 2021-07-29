@@ -32,7 +32,7 @@ import random
 import binascii
 
 # --- AEL packages ---
-from resources.app import globals
+from resources.lib import globals
 from ael.utils import io, kodi, text
 from ael import settings, constants
 

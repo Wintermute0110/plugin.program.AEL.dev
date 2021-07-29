@@ -15,15 +15,15 @@
 
 # Import each command file for automatically registration by
 # the mediator implementation.
-import resources.app.commands.mediator
-import resources.app.commands.view_rendering_commands
-import resources.app.commands.addon_commands
-import resources.app.commands.category_commands
-import resources.app.commands.romcollection_commands
-import resources.app.commands.romcollection_roms_commands
-import resources.app.commands.rom_commands
-import resources.app.commands.rom_launcher_commands
-import resources.app.commands.rom_scanner_commands
-import resources.app.commands.rom_scraper_commands
-import resources.app.commands.stats_commands
-import resources.app.commands.misc_commands
+import resources.lib.commands.mediator
+import resources.lib.commands.view_rendering_commands
+import resources.lib.commands.addon_commands
+import resources.lib.commands.category_commands
+import resources.lib.commands.romcollection_commands
+import resources.lib.commands.romcollection_roms_commands
+import resources.lib.commands.rom_commands
+import resources.lib.commands.rom_launcher_commands
+import resources.lib.commands.rom_scanner_commands
+import resources.lib.commands.rom_scraper_commands
+import resources.lib.commands.stats_commands
+import resources.lib.commands.misc_commands

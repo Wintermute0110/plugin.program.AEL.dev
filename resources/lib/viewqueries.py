@@ -25,14 +25,14 @@ from __future__ import unicode_literals
 from __future__ import division
 
 import logging
-from resources.app.commands.mediator import AppMediator
+from resources.lib.commands.mediator import AppMediator
 import typing
 from urllib.parse import urlencode
 
 from ael import constants, settings
 from ael.utils import kodi
-from resources.app import globals
-from resources.app.repositories import ViewRepository
+from resources.lib import globals
+from resources.lib.repositories import ViewRepository
 
 logger = logging.getLogger(__name__)
 

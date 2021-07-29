@@ -23,10 +23,10 @@ import typing
 from ael.utils import kodi, io
 from ael import settings, constants
 
-from resources.app.commands.mediator import AppMediator
-from resources.app import globals
-from resources.app.repositories import UnitOfWork, AelAddonRepository, CategoryRepository, ROMCollectionRepository, XmlConfigurationRepository
-from resources.app.domain import Category, ROMCollection, AelAddon
+from resources.lib.commands.mediator import AppMediator
+from resources.lib import globals
+from resources.lib.repositories import UnitOfWork, AelAddonRepository, CategoryRepository, ROMCollectionRepository, XmlConfigurationRepository
+from resources.lib.domain import Category, ROMCollection, AelAddon
 
 logger = logging.getLogger(__name__)
 @AppMediator.register('IMPORT_LAUNCHERS')

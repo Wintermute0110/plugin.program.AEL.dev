@@ -28,7 +28,7 @@ from ael.scrapers import ScraperSettings
 from ael.utils import kodi, io
 from ael import constants, settings
 
-from resources.app.domain import MetaDataItemABC, AssetInfo, ROM, g_assetFactory
+from resources.lib.domain import MetaDataItemABC, AssetInfo, ROM, g_assetFactory
 
 logger = logging.getLogger(__name__)
 

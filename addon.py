@@ -25,7 +25,7 @@ import logging
 
 # --- Modules/packages in this plugin ---
 from ael.utils import kodilogging, kodi
-from resources.app import views
+from resources.lib import views
 
 kodilogging.config()
 logger = logging.getLogger(__name__)

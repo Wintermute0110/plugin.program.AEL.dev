@@ -5,12 +5,12 @@ import json
 
 import xbmc
 
-from resources.app import globals
-from resources.app.repositories import UnitOfWork
-from resources.app.commands.mediator import AppMediator
-import resources.app.commands
+from resources.lib import globals
+from resources.lib.repositories import UnitOfWork
+from resources.lib.commands.mediator import AppMediator
+import resources.lib.commands
 
-from ael.utils import io
+from ael.utils import io, kodi
 
 logger = logging.getLogger(__name__)
 
@@ -46,9 +46,12 @@ class AppService(object):
         uow = UnitOfWork(globals.g_PATHS.DATABASE_FILE_PATH)
         if not uow.check_database():
             logger.info("No database present. Going to create database file.")
+            kodi.notify('Creating new AEL database')
             uow.create_empty_database(globals.g_PATHS.DATABASE_SCHEMA_PATH)
             logger.info("Database created.")
-
+        
+        # SCAN FOR ADDONS
+        self._execute_service_actions({'action': 'SCAN_FOR_ADDONS', 'data': None})
         # REBUILD VIEWS
         self._execute_service_actions({'action': 'RENDER_VIEWS', 'data': None})
         

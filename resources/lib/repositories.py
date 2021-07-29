@@ -9,8 +9,8 @@ from ael.settings import *
 from ael.utils import text, io
 from ael import constants
 
-from resources.app import globals
-from resources.app.domain import Category, ROMCollection, ROM, ROMLauncherAddon, Asset, AelAddon, ROMCollectionScanner, g_assetFactory
+from resources.lib import globals
+from resources.lib.domain import Category, ROMCollection, ROM, ROMLauncherAddon, Asset, AelAddon, ROMCollectionScanner, g_assetFactory
 
 logger = logging.getLogger(__name__)
 
@@ -270,24 +270,6 @@ class UnitOfWork(object):
         sql_statements = schema_file_path.loadFileToStr()
         self.conn.executescript(sql_statements)
         self.conn.execute("INSERT INTO ael_version VALUES(?, ?)", [globals.addon_id, globals.addon_version])
-        # default addons
-        addon_repository = AelAddonRepository(self)
-        app_launcher_addon = AelAddon({
-            'id': text.misc_generate_random_SID(),
-            'name':  'App Launcher', 
-            'addon_id': '{}.AppLauncher'.format(globals.addon_id),
-            'version': globals.addon_version,
-            'addon_type': constants.AddonType.LAUNCHER.name
-        })
-        addon_repository.insert_addon(app_launcher_addon)
-        folder_scanner_addon = AelAddon({
-            'id': text.misc_generate_random_SID(),
-            'name':  'Folder scanner', 
-            'addon_id': '{}.FolderScanner'.format(globals.addon_id),
-            'version': globals.addon_version,
-            'addon_type': constants.AddonType.SCANNER.name
-        })
-        addon_repository.insert_addon(folder_scanner_addon)
 
         self.commit()
         self.close_session()

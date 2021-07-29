@@ -22,10 +22,10 @@ import collections
 
 from ael.utils import kodi
 
-from resources.app.commands.mediator import AppMediator
-from resources.app import globals
-from resources.app.repositories import UnitOfWork, ROMCollectionRepository, ROMsRepository, AelAddonRepository
-from resources.app.domain import ROM, ROMCollectionScanner, AelAddon
+from resources.lib.commands.mediator import AppMediator
+from resources.lib import globals
+from resources.lib.repositories import UnitOfWork, ROMCollectionRepository, ROMsRepository, AelAddonRepository
+from resources.lib.domain import ROM, ROMCollectionScanner, AelAddon
 
 logger = logging.getLogger(__name__)
 

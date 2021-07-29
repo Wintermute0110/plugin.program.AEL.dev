@@ -24,10 +24,10 @@ from ael import constants
 from ael.utils import kodi
 from ael.scrapers import ScraperSettings
 
-from resources.app.commands.mediator import AppMediator
-from resources.app import globals
-from resources.app.repositories import UnitOfWork, ROMCollectionRepository, ROMsRepository, AelAddonRepository
-from resources.app.domain import ROM, ROMCollectionScanner, AelAddon
+from resources.lib.commands.mediator import AppMediator
+from resources.lib import globals
+from resources.lib.repositories import UnitOfWork, ROMCollectionRepository, ROMsRepository, AelAddonRepository
+from resources.lib.domain import ROM, ROMCollectionScanner, AelAddon
 
 logger = logging.getLogger(__name__)
 
@@ -67,12 +67,12 @@ def cmd_scrape_rom_metadata(args):
     scraper_settings.scrape_assets_policy    = constants.SCRAPE_ACTION_NONE
     
     args = {}
-    args['rom_id']      = rom_id
-    args['rom']         = json.dumps(rom.get_data_dic())
-    args['settings']    = json.dumps(scraper_settings.get_data_dic())
+    args['--cmd']       = 'scrape'
+    args['--type']      = constants.AddonType.SCRAPER.name
+    args['--rom_id']    = rom_id
+    args['--rom']       = '"{}"'.format(json.dumps(rom.get_data_dic()))
+    args['--settings']  = '"{}"'.format(json.dumps(scraper_settings.get_data_dic()))
     
-    
-    uri = selected_addon.get_execute_uri()
     kodi.run_script(selected_addon.get_addon_id(), args)
     
     # pdialog             = KodiProgressDialog()

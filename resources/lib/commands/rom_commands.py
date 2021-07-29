@@ -23,10 +23,10 @@ import collections
 from ael import constants, platforms
 from ael.utils import kodi, text, io
 
-from resources.app.commands.mediator import AppMediator
-from resources.app import globals, editors
-from resources.app.repositories import ROMsRepository, UnitOfWork
-from resources.app.domain import ROM
+from resources.lib.commands.mediator import AppMediator
+from resources.lib import globals, editors
+from resources.lib.repositories import ROMsRepository, UnitOfWork
+from resources.lib.domain import ROM
 
 logger = logging.getLogger(__name__)
 

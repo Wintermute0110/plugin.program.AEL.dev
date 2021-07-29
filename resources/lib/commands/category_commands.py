@@ -23,10 +23,10 @@ import collections
 from ael.utils import kodi, text, io
 from ael import constants
 
-from resources.app.commands.mediator import AppMediator
-from resources.app import globals, editors
-from resources.app.repositories import UnitOfWork, CategoryRepository
-from resources.app.domain import Category, g_assetFactory
+from resources.lib.commands.mediator import AppMediator
+from resources.lib import globals, editors
+from resources.lib.repositories import UnitOfWork, CategoryRepository
+from resources.lib.domain import Category, g_assetFactory
 
 logger = logging.getLogger(__name__)
 
