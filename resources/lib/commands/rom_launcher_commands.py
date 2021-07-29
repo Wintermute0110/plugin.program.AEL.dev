@@ -21,8 +21,8 @@ import logging
 import collections
 import json
 
-from ael import settings
-from ael.utils import kodi, io
+from ael import constants
+from ael.utils import kodi
 
 from resources.lib.commands.mediator import AppMediator
 from resources.lib import globals
@@ -99,9 +99,10 @@ def cmd_add_romcollection_launchers(args):
     logger.debug('ADD_LAUNCHER: cmd_add_romcollection_launchers() Selected {}'.format(selected_option.get_id()))
     
     kodi.run_script(selected_option.get_addon_id(), {
-        'cmd': 'configure',
-        'romcollection_id': romcollection_id, 
-        'settings': '"{}"'.format(json.dumps({'platform': romcollection.get_platform()}))
+        '--cmd': 'configure',
+        '--type': constants.AddonType.LAUNCHER.name,
+        '--romcollection_id': romcollection_id#, 
+        #'--settings': '"{}"'.format(json.dumps({'platform': romcollection.get_platform()}))
     })
 
 @AppMediator.register('EDIT_LAUNCHER')
@@ -136,6 +137,7 @@ def cmd_edit_romcollection_launchers(args):
     logger.debug('EDIT_LAUNCHER: cmd_edit_romcollection_launchers() Selected {}'.format(selected_option.get_id()))
     kodi.run_script(selected_option.addon.get_addon_id(), {
         '--cmd': 'configure',
+        '--type': constants.AddonType.LAUNCHER.name,
         '--romcollection_id': romcollection_id, 
         '--launcher_id': selected_option.get_id(),
         '--settings': '"{}"'.format(selected_option.get_settings_str())
@@ -287,6 +289,7 @@ def cmd_execute_rom_with_launcher(args):
 
     kodi.run_script(selected_launcher.addon.get_addon_id(), {
         '--cmd': 'execute',
+        '--type': constants.AddonType.LAUNCHER.name,
         '--launcher_id': selected_launcher.get_id(),
         '--rom_id': rom.get_id(),
         '--rom_args': '"{}"'.format(json.dumps(rom.get_launcher_args())),

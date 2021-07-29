@@ -38,11 +38,22 @@ logger = logging.getLogger(__name__)
 @AppMediator.register('SCAN_FOR_ADDONS')
 def cmd_scan_addons(args):
     kodi.notify('Scanning for AEL supported addons')
+    addon_count = _check_installed_addons()
+    
+    msg = 'No AEL addons found. Search and install default plugin addons for AEL?'
+    if addon_count == 0 and kodi.dialog_yesno(msg):
+        xbmc.executebuiltin('InstallAddon(script.ael.defaults)', True)
+        addon_count = _check_installed_addons()
+        
+    logger.info('cmd_scan_addons(): Processed {} addons'.format(addon_count))
+    kodi.notify('Scan completed. Found {} addons'.format(addon_count))
+
+def _check_installed_addons() -> int:
+    addon_count = 0
     json_response = kodi.jsonrpc_query("Addons.GetAddons", params={
         'installed': True, 'enabled': True, 
         'type': 'xbmc.python.script'})
     
-    addon_count = 0
     uow = UnitOfWork(globals.g_PATHS.DATABASE_FILE_PATH)
     with uow:
         addon_repository    = AelAddonRepository(uow)
@@ -73,13 +84,7 @@ def cmd_scan_addons(args):
                 _process_scraper_addon(addon_id, addon, existing_scraper_ids, addon_repository)
                 
         uow.commit()
-        
-    msg = 'No AEL addons found. Search and install default plugin addons for AEL?'
-    if addon_count == 0 and kodi.dialog_yesno(msg):
-        xbmc.executebuiltin('InstallAddon(script.ael.defaults)', True)
-        
-    logger.info('cmd_scan_addons(): Processed {} addons'.format(addon_count))
-    kodi.notify('Scan completed. Found {} addons'.format(addon_count))
+    return addon_count
 
 def _process_launcher_addon(
     addon_id:str, 
