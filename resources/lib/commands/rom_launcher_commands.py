@@ -19,10 +19,9 @@ from __future__ import division
 
 import logging
 import collections
-import json
 
 from ael import constants
-from ael.utils import kodi
+from ael.utils import kodi, io
 
 from resources.lib.commands.mediator import AppMediator
 from resources.lib import globals
@@ -101,8 +100,8 @@ def cmd_add_romcollection_launchers(args):
     kodi.run_script(selected_option.get_addon_id(), {
         '--cmd': 'configure',
         '--type': constants.AddonType.LAUNCHER.name,
-        '--romcollection_id': romcollection_id#, 
-        #'--settings': '"{}"'.format(json.dumps({'platform': romcollection.get_platform()}))
+        '--romcollection_id': romcollection_id, 
+        '--settings': io.parse_to_json_arg({'platform': romcollection.get_platform()})
     })
 
 @AppMediator.register('EDIT_LAUNCHER')
@@ -140,7 +139,7 @@ def cmd_edit_romcollection_launchers(args):
         '--type': constants.AddonType.LAUNCHER.name,
         '--romcollection_id': romcollection_id, 
         '--launcher_id': selected_option.get_id(),
-        '--settings': '"{}"'.format(selected_option.get_settings_str())
+        '--settings': io.parse_to_json_arg(selected_option.get_settings())
     })
        
 @AppMediator.register('REMOVE_LAUNCHER')
@@ -292,8 +291,8 @@ def cmd_execute_rom_with_launcher(args):
         '--type': constants.AddonType.LAUNCHER.name,
         '--launcher_id': selected_launcher.get_id(),
         '--rom_id': rom.get_id(),
-        '--rom_args': '"{}"'.format(json.dumps(rom.get_launcher_args())),
-        '--is_non_blocking': str(selected_launcher.is_non_blocking()),
-        '--settings': '"{}"'.format(selected_launcher.get_settings_str())
+        '--rom_args': io.parse_to_json_arg(rom.get_launcher_args()),
+        '--is_non_blocking': selected_launcher.is_non_blocking(),
+        '--settings':  io.parse_to_json_arg(selected_launcher.get_settings())
     })
     AppMediator.async_cmd('ROM_WAS_LAUNCHED', args)

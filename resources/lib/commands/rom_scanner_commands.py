@@ -20,7 +20,8 @@ from __future__ import division
 import logging
 import collections
 
-from ael.utils import kodi
+from ael import constants
+from ael.utils import kodi, io
 
 from resources.lib.commands.mediator import AppMediator
 from resources.lib import globals
@@ -91,12 +92,13 @@ def cmd_add_romcollection_scanner(args):
     
     # >> Execute subcommand. May be atomic, maybe a submenu.
     logger.debug('ADD_SCANNER: cmd_add_romcollection_scanner() Selected {}'.format(selected_option.get_id()))
-    
-    args = {}
-    args['romcollection_id'] = romcollection_id
-    if default_launcher: args['launcher'] = default_launcher.get_settings_str()
-    
-    kodi.execute_uri(selected_option.get_configure_uri(), args)  
+            
+    kodi.run_script(selected_option.get_addon_id(), {
+        '--cmd': 'configure',
+        '--type': constants.AddonType.SCANNER.name,
+        '--romcollection_id': romcollection_id,
+        '--launcher_settings':  io.parse_to_json_args(default_launcher.get_settings()) if default_launcher else None
+    })  
 
 @AppMediator.register('EDIT_SCANNER')
 def cmd_edit_romcollection_scanners(args):
@@ -130,13 +132,14 @@ def cmd_edit_romcollection_scanners(args):
     # >> Execute subcommand. May be atomic, maybe a submenu.
     logger.debug('EDIT_SCANNER: cmd_edit_romcollection_scanners() Selected {}'.format(selected_option.get_id()))
     
-    args = {}
-    args['romcollection_id'] = romcollection_id
-    args['scanner_id'] = selected_option.get_id()
-    args['settings'] = selected_option.get_settings_str()
-    if default_launcher: args['launcher'] = default_launcher.get_settings_str()
-    
-    kodi.execute_uri(selected_option.addon.get_configure_uri(), args)
+    kodi.run_script(selected_option.addon.get_addon_id(), {
+        '--cmd': 'configure',
+        '--type': constants.AddonType.SCANNER.name,
+        '--romcollection_id': romcollection_id,
+        '--scanner_id':  selected_option.get_id(),
+        '--settings':  io.parse_to_json_args(selected_option.get_settings()),
+        '--launcher_settings':  io.parse_to_json_args(default_launcher.get_settings()) if default_launcher else None
+    })  
        
 @AppMediator.register('REMOVE_SCANNER')
 def cmd_remove_romcollection_scanner(args):
@@ -237,9 +240,11 @@ def cmd_execute_rom_scanner(args):
     logger.info('SCAN_ROMS: selected scanner "{}"'.format(selected_scanner.get_name()))
 
     kodi.execute_uri(selected_scanner.addon.get_execute_uri(), {
-        'romcollection_id': romcollection.get_id(),
-        'scanner_id': selected_scanner.get_id(),
-        'settings': selected_scanner.get_settings_str()
+        '--cmd': 'execute',
+        '--type': constants.AddonType.SCANNER.name,
+        '--romcollection_id': romcollection.get_id(),
+        '--scanner_id': selected_scanner.get_id(),
+        '--settings': io.parse_to_json_args(selected_scanner.get_settings())
     })
     
 @AppMediator.register('STORE_SCANNED_ROMS')

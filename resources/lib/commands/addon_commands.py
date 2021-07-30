@@ -92,10 +92,13 @@ def _process_launcher_addon(
     existing_addon_ids:typing.Dict[str,AelAddon],
     addon_repository:AelAddonRepository):
     
+    addon_name = addon.getSettingString('ael.launcher.friendlyname')
+    addon_name = addon.getAddonInfo('name') if addon_name is None else addon_name
+    
     addon_obj = AelAddon({
         'addon_id': addon_id,
         'version': addon.getAddonInfo('version'),
-        'name': addon.getAddonInfo('name'),
+        'name': addon_name,
         'addon_type': constants.AddonType.LAUNCHER.name
     })
 
@@ -115,10 +118,13 @@ def _process_scanner_addon(
     existing_addon_ids:typing.Dict[str,AelAddon],
     addon_repository:AelAddonRepository):
     
+    addon_name = addon.getSettingString('ael.scanner.friendlyname')
+    addon_name = addon.getAddonInfo('name') if addon_name is None else addon_name
+    
     addon_obj = AelAddon({
         'addon_id': addon_id,
         'version': addon.getAddonInfo('version'),
-        'name': addon.getAddonInfo('name'),
+        'name': addon_name,
         'addon_type': constants.AddonType.SCANNER.name
     })
 
@@ -138,10 +144,13 @@ def _process_scraper_addon(
     existing_addon_ids:typing.Dict[str,AelAddon],
     addon_repository:AelAddonRepository):
         
+    addon_name = addon.getSettingString('ael.scraper.friendlyname')
+    addon_name = addon.getAddonInfo('name') if addon_name is None else addon_name
+    
     addon_obj = AelAddon({
         'addon_id': addon_id,
         'version': addon.getAddonInfo('version'),
-        'name': addon.getAddonInfo('name'),
+        'name': addon_name,
         'addon_type': constants.AddonType.SCRAPER.name,
     })
     
