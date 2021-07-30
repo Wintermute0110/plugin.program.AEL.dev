@@ -92,8 +92,8 @@ def _process_launcher_addon(
     existing_addon_ids:typing.Dict[str,AelAddon],
     addon_repository:AelAddonRepository):
     
-    addon_name = addon.getSettingString('ael.launcher.friendlyname')
-    addon_name = addon.getAddonInfo('name') if addon_name is None else addon_name
+    addon_name = addon.getSetting('ael.launcher.friendlyname')
+    addon_name = addon.getAddonInfo('name') if addon_name is None or addon_name == '' else addon_name
     
     addon_obj = AelAddon({
         'addon_id': addon_id,
@@ -118,8 +118,8 @@ def _process_scanner_addon(
     existing_addon_ids:typing.Dict[str,AelAddon],
     addon_repository:AelAddonRepository):
     
-    addon_name = addon.getSettingString('ael.scanner.friendlyname')
-    addon_name = addon.getAddonInfo('name') if addon_name is None else addon_name
+    addon_name = addon.getSetting('ael.scanner.friendlyname')
+    addon_name = addon.getAddonInfo('name') if addon_name is None or addon_name == '' else addon_name
     
     addon_obj = AelAddon({
         'addon_id': addon_id,
@@ -144,8 +144,8 @@ def _process_scraper_addon(
     existing_addon_ids:typing.Dict[str,AelAddon],
     addon_repository:AelAddonRepository):
         
-    addon_name = addon.getSettingString('ael.scraper.friendlyname')
-    addon_name = addon.getAddonInfo('name') if addon_name is None else addon_name
+    addon_name = addon.getSetting('ael.scraper.friendlyname')
+    addon_name = addon.getAddonInfo('name') if addon_name is None or addon_name == '' else addon_name
     
     addon_obj = AelAddon({
         'addon_id': addon_id,
@@ -154,7 +154,7 @@ def _process_scraper_addon(
         'addon_type': constants.AddonType.SCRAPER.name,
     })
     
-    supported_types = addon.getSettingString('ael.scraper.supported_types').split('|')
+    supported_types = addon.getSetting('ael.scraper.supported_types').split('|')
     addon_obj.set_extra_settings({
         'supports_metadata': 'metadata' in supported_types,
         'supports_assets': 'asset' in supported_types
