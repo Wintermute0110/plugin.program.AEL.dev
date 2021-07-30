@@ -26,11 +26,6 @@ import time
 import datetime
 import json
 
-from os.path import expanduser
-import uuid
-import random
-import binascii
-
 # --- AEL packages ---
 from resources.lib import globals
 from ael.utils import io, kodi, text
