@@ -1,36 +1,52 @@
 # -*- coding: utf-8 -*-
-
-#################################################################################################
+#
+# Advanced Emulator Launcher: Webservice for API communication with plugins
+#
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; version 2 of the License.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# Based on the webservice implementation by angelblue05 for plugin.video.emby.
+#
+# --- Python standard library ---
+from __future__ import unicode_literals
+from __future__ import division
 
 import logging
-from datetime import datetime
-from urllib.parse import p
-from queue import Queue
-
+import json
 import threading
 import socket
+
+from datetime import datetime
+from urllib.parse import parse_qsl
+from queue import Queue
 from http.server import HTTPServer, BaseHTTPRequestHandler
 from http.client import HTTPConnection
 
 # Kodi libs
 import xbmc
-import xbmcgui
-import xbmcvfs
 
+# AEL modules
+from resources.lib import globals
+from resources.lib.repositories import UnitOfWork, ROMCollectionRepository, ROMsRepository
 
-#################################################################################################
-
-LOG = logging.getLogger("EMBY."+__name__)
-PORT = 573573
+logger = logging.getLogger(__name__)
 
 #################################################################################################
-
-
 class WebService(threading.Thread):
-
+    
+    HOST = '127.0.0.1'
+    PORT = 57300
+    
     ''' Run a webservice for api communication.
     '''
     def __init__(self):
+        self.server = None
         threading.Thread.__init__(self)
 
     def is_alive(self):
@@ -41,70 +57,68 @@ class WebService(threading.Thread):
         s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
         try:
-            s.connect(('127.0.0.1', PORT))
+            s.connect((WebService.HOST, WebService.PORT))
             s.sendall("")
         except Exception as error:
-            LOG.error(error)
-
-            if 'Errno 61' in str(error):
+            logger.fatal('Exception in webservice.is_alive {}'.format(str(error)))
+            if 'Errno 61' in str(error) or 'WinError 10061' in str(error):
                 alive = False
-
-        s.close()
+        finally:
+            s.close()
 
         return alive
 
-    def stop(self):
-
+    def stop(self, check_alive = False):
+        
+        if check_alive and not self.is_alive():
+            logger.info("Webservice not running, so stopping not needed.")
+            return
+        
         ''' Called when the thread needs to stop
         '''
         try:
-            conn = HTTPConnection("127.0.0.1:%d" % PORT)
+            logger.info("Stopping AEL webservice({}:{})".format(WebService.HOST, WebService.PORT))
+            conn = HTTPConnection("{}:{}".format(WebService.HOST, WebService.PORT))
             conn.request("QUIT", "/")
             conn.getresponse()
         except Exception as error:
-            pass
+            logger.error('Exception in webservice.stop(): {}'.format(str(error)))
+        
+        logger.info("Webservice stopped")
 
     def run(self):
 
         ''' Called to start the webservice.
         '''
-        LOG.warn("--->[ webservice/%s ]", PORT)
-        self.stop()
+        self.stop(check_alive=True)
 
-        server = HttpServer(('127.0.0.1', PORT), RequestHandler)
-
+        logger.info("Startup AEL webservice({}:{})".format(WebService.HOST, WebService.PORT))
+        server = AelHttpServer((WebService.HOST, WebService.PORT), RequestHandler)
+        
         try:
             server.serve_forever()
         except Exception as error:
 
             if '10053' not in error: # ignore host diconnected errors
-                LOG.exception(error)
+                logger.fatal('Exception in webservice', exc_info=error)
 
-        LOG.warn("---<[ webservice ]")
+        logger.debug("Webservice thread end")
 
 
-class HttpServer(HTTPServer):
-
+class AelHttpServer(HTTPServer):
     ''' Http server that reacts to self.stop flag.
     '''
     def serve_forever(self):
-
         ''' Handle one request at a time until stopped.
         '''
         self.stop = False
-        self.last = None
-        self.last_time = datetime.today()
-        self.pending = []
-        self.threads = []
-        self.queue = Queue()
-
         while not self.stop:
             self.handle_request()
 
 
 class RequestHandler(BaseHTTPRequestHandler):
 
-    ''' Http request handler. Do not use LOG here,
+    ''' Http request handler. Do not use logger here,
         it will hang requests in Kodi > show information dialog.
     '''
     timeout = 0.5
@@ -142,15 +156,9 @@ class RequestHandler(BaseHTTPRequestHandler):
             if '?' in path:
                 path = path.split('?', 1)[1]
 
-            params = dict(urlparse.parse_qsl(path))
+            params = dict(parse_qsl(path))
         except Exception:
             params = {}
-
-        if params.get('transcode'):
-            params['transcode'] = params['transcode'].lower() == 'true'
-
-        if params.get('server') and params['server'].lower() == 'none':
-            params['server'] = None
 
         return params
 
@@ -175,257 +183,65 @@ class RequestHandler(BaseHTTPRequestHandler):
         '''Send headers and reponse
         '''
         try:
-            if 'extrafanart' in self.path or 'extrathumbs' in self.path or 'Extras/' in self.path:
-                raise Exception("unsupported artwork request")
-
-            if '/Audio' in self.path:
-                params = self.get_params()
-
-                self.send_response(301)
-                path = Redirect(self.path, params.get('server'))
-                path.start()
-                path.join() # Block until the thread exits.
-                self.send_header('Location', path.path)
-                self.end_headers()
-
-            elif headers_only:
-
+            logger.info('ael.webservice: Processing path "{}"'.format(self.path))
+            api_path = self.path.lower()
+            if headers_only:
                 self.send_response(200)
                 self.send_header('Content-type', 'text/html')
                 self.end_headers()
 
-            elif 'file.strm' not in self.path:
-                self.images()
-            elif 'file.strm' in self.path:
-                self.strm()
+            elif 'query/' in api_path:
+                params = self.get_params()
+                id = params.get('id')
+                response_data = None
+                obj = 'Not specified'
+                
+                if 'query/rom/' in api_path:
+                    obj = 'ROM'
+                    response_data = self.api_get_rom(id)
+                elif 'query/romcollection/' in api_path:
+                    obj = 'ROM Collection'
+                    response_data = self.api_get_rom_collection(id)
+                    
+                if response_data is None: 
+                    self.send_response(404)
+                    self.send_header('Content-type', 'text/html')
+                    self.end_headers()
+                    self.wfile.write('{} entity not found'.format(obj))
+                else: 
+                    self.send_response(200)
+                    self.send_header('Content-type', 'application/json')
+                    self.end_headers()
+                    self.wfile.write(response_data.encode(encoding='utf_8'))
             else:
-                xbmc.log(str(self.path), xbmc.LOGWARNING)
+                logger.warn(self.path)
                 raise Exception("UnknownRequest")
 
         except Exception as error:
-            self.send_error(500, "[ webservice ] Exception occurred: %s" % error)
-
-        xbmc.log("<[ webservice/%s/%s ]" % (str(id(self)), int(not headers_only)), xbmc.LOGWARNING)
-
+            logger.fatal('ael.webservice exception processing path', exc_info=error)
+            self.send_error(500, 'AEL.webservice - Exception occurred: {}'.format(str(error)))
+            
+        logger.info('ael.webservice/{}/{}'.format(str(id(self)), int(not headers_only)))
         return
 
-    def strm(self):
+    def api_get_rom(self, rom_id: str) -> str:
+        uow = UnitOfWork(globals.g_PATHS.DATABASE_FILE_PATH)
+        with uow:
+            rom_repository  = ROMsRepository(uow)        
+            rom = rom_repository.find_rom(rom_id)
+            
+            if rom is None: return None
+            
+            data = rom.get_data_dic()
+            return json.dumps(data)
 
-        ''' Return a dummy video and and queue real items.
-        '''
-        self.send_response(200)
-        self.send_header('Content-type', 'text/html')
-        self.end_headers()
-
-        params = self.get_params()
-
-        if 'kodi/movies' in self.path:
-            params['MediaType'] = "movie"
-        elif 'kodi/musicvideos' in self.path:
-            params['MediaType'] = "musicvideo"
-        elif 'kodi/tvshows' in self.path:
-            params['MediaType'] = "episode"
-
-        if settings('pluginSimple.bool'):
-            path = "plugin://plugin.video.emby?mode=playsingle&id=%s" % params['Id']
-
-            if params.get('server'):
-                path += "&server=%s" % params['server']
-
-            if params.get('transcode'):
-                path += "&transcode=true"
-
-            if params.get('KodiId'):
-                path += "&dbid=%s" % params['KodiId']
-
-            if params.get('Name'):
-                path += "&filename=%s" % params['Name']
-
-            self.wfile.write(bytes(path))
-
-            return
-
-        path = "plugin://plugin.video.emby?mode=play&id=%s" % params['Id']
-        if params.get('server'):
-            path += "&server=%s" % params['server']
-
-        if params.get('transcode'):
-            path += "&transcode=true"
-
-        if params.get('KodiId'):
-            path += "&dbid=%s" % params['KodiId']
-
-        if params.get('Name'):
-            path += "&filename=%s" % params['Name']
-
-
-        if (datetime.today() - self.server.last_time).seconds > 2: # reset, assume new playlist
-            self.server.last = None
-
-
-        if not self.server.last:
-            self.wfile.write(bytes(path))
-
-        elif self.server.last == params['Id']:
-            self.wfile.write(bytes(""))
-
-            if params['Id'] not in self.server.pending:
-
-                xbmc.log("[ webservice/%s ] path: %s params: %s" % (str(id(self)), str(self.path), str(params)), xbmc.LOGWARNING)
-                self.server.pending.append(params['Id'])
-                queue = PlayWidget(self.server, params)
-
-        else: # Play folder
-            self.wfile.write(bytes(""))
-
-            if params['Id'] not in self.server.pending:
-                xbmc.log("[ webservice/%s ] path: %s params: %s" % (str(id(self)), str(self.path), str(params)), xbmc.LOGWARNING)
-
-                self.server.pending.append(params['Id'])
-                self.server.queue.put(params)
-
-                if not len(self.server.threads):
-
-                    queue = PlayFolder(self.server)
-                    self.server.threads.append(queue)
-
-        self.server.last = params['Id']
-        self.server.last_time = datetime.today()
-
-    def images(self):
-
-        ''' Return a dummy image for unwanted images requests over the webservice.
-            Required to prevent freezing of widget playback if the file url has no
-            local textures cached yet.
-        '''
-        image = xbmc.translatePath("special://home/addons/plugin.video.emby/icon.png").decode('utf-8')
-
-        self.send_response(200)
-        self.send_header('Content-type', 'image/png')
-        modified = xbmcvfs.Stat(image).st_mtime()
-        self.send_header('Last-Modified', "%s" % modified)
-        image = xbmcvfs.File(image)
-        size = image.size()
-        self.send_header('Content-Length', str(size))
-        self.end_headers()
-
-        self.wfile.write(image.readBytes())
-        image.close()
-
-
-class Redirect(threading.Thread):
-    path = None
-
-    def __init__(self, redirect, server_id=None):
-
-        self.redirect = redirect
-        self.server = Emby(server_id).get_client()
-        threading.Thread.__init__(self)
-
-    def run(self):
-
-        self.path = "%s%s?api_key=%s&static=true" % (self.server['auth/server-address'], self.redirect, self.server['auth/token'])
-        """
-        self.path = ("%s?UserId=%s&DeviceId=%s&api_key=%s&MaxStreamingBitrate=1280000&Container=aac,mp3,opus,m4a,webma,webm,wav,ogg,mpa,wma,mp2,ogg,oga,ape&MaxSampleRate=48000",
-                     "&TranscodingProtocol=hls&TranscodingContainer=aac&AudioCodec=aac&EnableRedirection=true&EnableRemoteMedia=true&PlaySessionId=%s" % (self.server['auth/server-address'], self.server['auth/user-id'], self.server['config/app.device_id'], self.server['auth/token'], str(uuid4()).replace("-", "")))
-        """
-        LOG.info("path: %s", self.path)
-
-
-class PlayWidget(threading.Thread):
-
-    def __init__(self, server, params):
-        self.server = server
-        self.params = params
-        threading.Thread.__init__(self)
-        self.start()
-
-    def run(self):
-        import objects
-        ''' Workaround for widgets only playback.
-            Widgets start with a music playlist, this causes bugs in skin, etc.
-            Create a new video playlist for the item and play it.
-        '''
-        xbmc.sleep(200) # Let Kodi catch up
-        LOG.info("-->[ widget play ]")
-        play = None
-
-        xbmc.PlayList(xbmc.PLAYLIST_MUSIC).clear()
-        xbmc.PlayList(xbmc.PLAYLIST_VIDEO).clear()
-        objects.utils.enable_busy_dialog()
-
-        try:
-            server = self.params.get('server')
-
-            if not server and not window('emby_online.bool'):
-                dialog("notification", heading="{emby}", message=_(33146), icon=xbmcgui.NOTIFICATION_ERROR)
-
-                raise Exception("NotConnected")
-
-            play = objects.PlayStrm(self.params, server)
-            play.play()
-
-        except Exception as error:
-            LOG.exception(error)
-            objects.utils.disable_busy_dialog()
-            xbmc.Player().stop() # mute failed playback pop up
-            xbmc.PlayList(xbmc.PLAYLIST_VIDEO).clear()        
-        else:
-            objects.utils.disable_busy_dialog()
-            window('emby.play.widget.bool', True)
-            play.start_playback()
-
-        self.server.pending = []
-        LOG.info("--<[ widget play ]")
-
-
-class PlayFolder(threading.Thread):
-
-    def __init__(self, server):
-        self.server = server
-        threading.Thread.__init__(self)
-        self.start()
-
-    def run(self):
-        import objects
-        ''' Workaround for playing folders only (context menu on a series/season folder > play)
-            Due to plugin paths being returned within the strm, the entries are mislabelled.
-            Queue items after the first item was setup and started playing via plugin above.
-        '''
-        xbmc.sleep(200) # Let Kodi catch up
-        LOG.info("-->[ folder play ]")
-        play = None
-        position = 1 # play folder should always create a new playlist.
-
-        while True:
-            if not window('emby.playlist.plugin.bool'): # default.py wait for initial item to start up
-                try:
-                    try:
-                        params = self.server.queue.get(timeout=0.01)
-                    except Queue.Empty:
-                        break
-
-                    server = params.get('server')
-
-                    if not server and not window('emby_online.bool'):
-                        dialog("notification", heading="{emby}", message=_(33146), icon=xbmcgui.NOTIFICATION_ERROR)
-
-                        raise Exception("NotConnected")
-
-                    play = objects.PlayStrm(params, server)
-                    position = play.play_folder(position)
-
-                except Exception as error:
-                    LOG.exception(error)
-
-                    xbmc.Player().stop() # mute failed playback pop up
-                    xbmc.PlayList(xbmc.PLAYLIST_VIDEO).clear()
-                    self.server.queue.queue.clear()
-
-                    break
-
-                self.server.queue.task_done()
-
-        self.server.threads.remove(self)
-        self.server.pending = []
-        LOG.info("--<[ folder play ]")
+    def api_get_rom_collection(self, collection_id: str) -> str:
+        uow = UnitOfWork(globals.g_PATHS.DATABASE_FILE_PATH)
+        with uow:
+            collection_repository  = ROMCollectionRepository(uow)        
+            rom_collection = collection_repository.find_romcollection(collection_id)
+            
+            if rom_collection is None: return None
+            
+            data = rom_collection.get_data_dic()
+            return json.dumps(data)

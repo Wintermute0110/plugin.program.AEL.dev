@@ -19,6 +19,7 @@ from __future__ import division
 
 import logging
 import collections
+from resources.lib.webservice import WebService
 
 from ael import constants
 from ael.utils import kodi, io
@@ -95,14 +96,10 @@ def cmd_add_romcollection_launchers(args):
         return
     
     # >> Execute subcommand. May be atomic, maybe a submenu.
-    logger.debug('ADD_LAUNCHER: cmd_add_romcollection_launchers() Selected {}'.format(selected_option.get_id()))
-    
-    kodi.run_script(selected_option.get_addon_id(), {
-        '--cmd': 'configure',
-        '--type': constants.AddonType.LAUNCHER.name,
-        '--romcollection_id': romcollection_id, 
-        '--settings': io.parse_to_json_arg({'platform': romcollection.get_platform()})
-    })
+    logger.debug('ADD_LAUNCHER: cmd_add_romcollection_launchers() Selected {}'.format(selected_option.get_id()))    
+    kodi.run_script(
+        selected_option.get_addon_id(),
+        ROMLauncherAddon(selected_option, {}).get_configure_command(romcollection))
 
 @AppMediator.register('EDIT_LAUNCHER')
 def cmd_edit_romcollection_launchers(args):
@@ -134,13 +131,9 @@ def cmd_edit_romcollection_launchers(args):
     
     # >> Execute subcommand. May be atomic, maybe a submenu.
     logger.debug('EDIT_LAUNCHER: cmd_edit_romcollection_launchers() Selected {}'.format(selected_option.get_id()))
-    kodi.run_script(selected_option.addon.get_addon_id(), {
-        '--cmd': 'configure',
-        '--type': constants.AddonType.LAUNCHER.name,
-        '--romcollection_id': romcollection_id, 
-        '--launcher_id': selected_option.get_id(),
-        '--settings': io.parse_to_json_arg(selected_option.get_settings())
-    })
+    kodi.run_script(
+        selected_option.addon.get_addon_id(), 
+        selected_option.get_configure_command(romcollection))
        
 @AppMediator.register('REMOVE_LAUNCHER')
 def cmd_remove_romcollection_launchers(args):
@@ -228,9 +221,7 @@ def cmd_set_launcher_args(args):
     launcher_id:str     = args['launcher_id'] if 'launcher_id' in args else None
     addon_id:str        = args['addon_id'] if 'addon_id' in args else None
     launcher_settings   = args['settings'] if 'settings' in args else None
-    
-    #launcher_settings = json.loads(launcher_settings)
-    
+        
     uow = UnitOfWork(globals.g_PATHS.DATABASE_FILE_PATH)
     with uow:
         addon_repository = AelAddonRepository(uow)
@@ -286,13 +277,8 @@ def cmd_execute_rom_with_launcher(args):
         dialog = kodi.OrdDictionaryDialog()
         selected_launcher = dialog.select('Choose launcher', launcher_options,preselect=preselected)
 
-    kodi.run_script(selected_launcher.addon.get_addon_id(), {
-        '--cmd': 'execute',
-        '--type': constants.AddonType.LAUNCHER.name,
-        '--launcher_id': selected_launcher.get_id(),
-        '--rom_id': rom.get_id(),
-        '--rom_args': io.parse_to_json_arg(rom.get_launcher_args()),
-        '--is_non_blocking': selected_launcher.is_non_blocking(),
-        '--settings':  io.parse_to_json_arg(selected_launcher.get_settings())
-    })
+    kodi.run_script(
+        selected_launcher.addon.get_addon_id(), 
+        selected_launcher.get_launch_command(rom))
+    
     AppMediator.async_cmd('ROM_WAS_LAUNCHED', args)

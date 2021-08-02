@@ -1,10 +1,9 @@
 # -*- coding: utf-8 -*-
 #
-# Advanced Emulator Launcher main script file.
+# Advanced Emulator Launcher: UI query implementations. Getting data for the UI
 #
 
 # Copyright (c) 2016-2018 Wintermute0110 <wintermute0110@gmail.com>
-# Portions (c) 2010-2015 Angelscry
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -25,13 +24,15 @@ from __future__ import unicode_literals
 from __future__ import division
 
 import logging
-from resources.lib.commands.mediator import AppMediator
 import typing
 from urllib.parse import urlencode
 
+# AEL modules
 from ael import constants, settings
 from ael.utils import kodi
+
 from resources.lib import globals
+from resources.lib.commands.mediator import AppMediator
 from resources.lib.repositories import ViewRepository
 
 logger = logging.getLogger(__name__)

@@ -113,6 +113,7 @@ def cmd_execute_reset_db(args):
 
     AppMediator.async_cmd('CLEANUP_VIEWS')
     AppMediator.async_cmd('RENDER_VIEWS')
+    AppMediator.async_cmd('SCAN_FOR_ADDONS')
     kodi.notify('Finished resetting the database')
 
 @AppMediator.register('CHECK_DUPLICATE_ASSET_DIRS')

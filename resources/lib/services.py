@@ -7,9 +7,10 @@ import xbmc
 
 from resources.lib import globals
 from resources.lib.repositories import UnitOfWork
+from resources.lib.webservice import WebService
 from resources.lib.commands.mediator import AppMediator
 import resources.lib.commands
-
+        
 from ael.utils import io, kodi
 
 logger = logging.getLogger(__name__)
@@ -31,6 +32,8 @@ class AppService(object):
         AppMediator.sync_cmd(cmd, args)
 
     def run(self):        
+        kodi.set_windowprop('ael_server_state', 'STARTING')
+        
         # --- Some debug stuff for development ---
         logger.info('------------ Called Advanced Emulator Launcher : Service ------------')
         logger.debug('sys.platform   "{}"'.format(sys.platform))
@@ -54,8 +57,13 @@ class AppService(object):
         self._execute_service_actions({'action': 'SCAN_FOR_ADDONS', 'data': None})
         # REBUILD VIEWS
         self._execute_service_actions({'action': 'RENDER_VIEWS', 'data': None})
-        
+ 
+        # WEBSERVICE
+        self.webservice = WebService()
+        self.webservice.start()
+                
         logger.debug("Processing service events")
+        kodi.set_windowprop('ael_server_state', 'STARTED')
         while not self.monitor.abortRequested():
             
             self.monitor.process_events()
@@ -66,9 +74,19 @@ class AppService(object):
             if self.monitor.waitForAbort(0.5):
                 # abort requested, end service
                 break
+    
+        self.shutdown()
 
-        logger.debug("Shutting down AEL service")
+    def shutdown(self):
+        logger.debug("Shutting down AEL service")        
+        kodi.set_windowprop('ael_server_state', 'STOPPING')        
+        
+        self.webservice.stop()
         del self.monitor
+        del self.webservice
+        
+        kodi.set_windowprop('ael_server_state', 'STOPPED')
+        logger.debug("AEL service stopped")
 
 class AppMonitor(xbmc.Monitor):
     

@@ -28,6 +28,8 @@ import json
 
 # --- AEL packages ---
 from resources.lib import globals
+from resources.lib.webservice import WebService
+
 from ael.utils import io, kodi, text
 from ael import settings, constants
 
@@ -152,7 +154,7 @@ class AelAddon(EntityABC):
         return json.loads(self.get_extra_settings_str())
     
     def set_extra_settings(self, settings: dict):
-        self.entity_data['extra_settings'] = json.dumps(settings)
+        self.entity_data['extra_settings'] = json.dumps(settings)     
     
 class Asset(EntityABC):
 
@@ -679,6 +681,32 @@ class ROMLauncherAddon(ROMAddon):
     
     def set_default(self, default_launcher=False):
         self.entity_data['is_default'] = default_launcher
+        
+    def get_launch_command(self, rom: ROM) -> dict:
+        return {
+            '--cmd': 'launch',
+            '--type': constants.AddonType.LAUNCHER.name,
+            '--server_host': WebService.HOST,
+            '--server_port': WebService.PORT,
+            '--launcher_id': self.get_id(),
+            '--rom_id': rom.get_id(),
+            '--rom_args': io.parse_to_json_arg(rom.get_launcher_args()),
+            '--is_non_blocking': self.is_non_blocking(),
+            '--settings':  io.parse_to_json_arg(self.get_settings())
+        }
+
+    def get_configure_command(self, romcollection: ROMCollection) -> dict:
+        
+        if self.get_id() is None:
+            self.set_settings({'platform': romcollection.get_platform()})
+            
+        return {
+            '--cmd': 'configure',
+            '--type': constants.AddonType.LAUNCHER.name,
+            '--romcollection_id': romcollection.get_id(), 
+            '--launcher_id': self.get_id(),
+            '--settings': io.parse_to_json_arg(self.get_settings())
+        }
     
 class ROMCollectionScanner(ROMAddon):
     

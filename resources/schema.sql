@@ -332,8 +332,6 @@ CREATE VIEW IF NOT EXISTS vw_rom_launchers AS SELECT
     a.addon_id,
     a.version,
     a.addon_type,
-    a.execute_uri,
-    a.configure_uri,
     l.settings,
     l.is_non_blocking,
     l.is_default
