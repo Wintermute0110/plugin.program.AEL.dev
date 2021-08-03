@@ -98,4 +98,14 @@ def qry_get_collection_launcher_settings(collection_id:str, launcher_id: str) ->
         launcher = rom_collection.get_launcher(launcher_id)
         return launcher.get_settings_str()
     
+def qry_get_collection_scanner_settings(collection_id:str, scanner_id: str) -> str:
+    uow = UnitOfWork(globals.g_PATHS.DATABASE_FILE_PATH)
+    with uow:
+        collection_repository  = ROMCollectionRepository(uow)        
+        rom_collection         = collection_repository.find_romcollection(collection_id)
+        
+        if rom_collection is None: return None
+        
+        scanner = rom_collection.get_scanner(scanner_id)
+        return scanner.get_settings_str()
     

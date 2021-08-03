@@ -176,36 +176,6 @@ def cmd_remove_romcollection_scanner(args):
     AppMediator.async_cmd('EDIT_ROMCOLLECTION_SCANNERS', args) 
   
 # -------------------------------------------------------------------------------------------------
-# ROMCollection scanner specific configuration.
-# -------------------------------------------------------------------------------------------------      
-@AppMediator.register('SET_SCANNER_SETTINGS')
-def cmd_set_scanner_settings(args):
-    romcollection_id:str   = args['romcollection_id'] if 'romcollection_id' in args else None
-    scanner_id:str  = args['scanner_id'] if 'scanner_id' in args else None
-    addon_id:str    = args['addon_id'] if 'addon_id' in args else None
-    settings        = args['settings'] if 'settings' in args else None
-    
-    uow = UnitOfWork(globals.g_PATHS.DATABASE_FILE_PATH)
-    with uow:
-        addon_repository = AelAddonRepository(uow)
-        romcollection_repository = ROMCollectionRepository(uow)
-        
-        addon = addon_repository.find_by_addon_id(addon_id)
-        romcollection = romcollection_repository.find_romcollection(romcollection_id)
-        
-        if scanner_id is None:
-            romcollection.add_scanner(addon, settings)
-        else: 
-            scanner = romcollection.get_scanner(scanner_id)
-            scanner.set_settings(settings)
-            
-        romcollection_repository.update_romcollection(romcollection)
-        uow.commit()
-    
-    kodi.notify('Configured ROM scanner {}'.format(addon.get_name()))
-    AppMediator.async_cmd('EDIT_ROMCOLLECTION', {'romcollection_id': romcollection_id})
- 
-# -------------------------------------------------------------------------------------------------
 # ROMCollection Scanner executing
 # -------------------------------------------------------------------------------------------------
 @AppMediator.register('SCAN_ROMS')

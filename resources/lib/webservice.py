@@ -251,6 +251,8 @@ class RequestHandler(BaseHTTPRequestHandler):
         
         if 'romcollection/launcher/settings/' in api_path:
             return apiqueries.qry_get_collection_launcher_settings(id, params.get('launcher_id'))
+        if 'romcollection/scanner/settings/' in api_path:
+            return apiqueries.qry_get_collection_scanner_settings(id, params.get('scanner_id'))
         if 'romcollection/launchers/' in api_path:
             return apiqueries.qry_get_launchers(id)
         if 'romcollection/' in api_path:
@@ -266,5 +268,7 @@ class RequestHandler(BaseHTTPRequestHandler):
         
         if 'store/launcher/' in api_path:
             return api_commands.cmd_set_launcher_args(data)
+        if 'store/scanner/' in api_path:
+            return api_commands.cmd_set_scanner_settings(data)
         
         return False

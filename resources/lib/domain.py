@@ -709,8 +709,7 @@ class ROMCollectionScanner(ROMAddon):
             '--server_host': globals.WEBSERVER_HOST,
             '--server_port': globals.WEBSERVER_PORT,
             '--romcollection_id': rom_collection.get_id(),
-            '--scanner_id': self.get_id(),
-            '--settings': io.parse_to_json_args(self.get_settings())
+            '--scanner_id': self.get_id()
         }
         
     def get_configure_command(self, romcollection: ROMCollection) -> dict:        
@@ -720,8 +719,7 @@ class ROMCollectionScanner(ROMAddon):
             '--server_host': globals.WEBSERVER_HOST,
             '--server_port': globals.WEBSERVER_PORT,
             '--romcollection_id': romcollection.get_id(),
-            '--scanner_id':  self.get_id(),
-            '--settings':  io.parse_to_json_args(self.get_settings())
+            '--scanner_id':  self.get_id()
         }
 
 class ScraperAddon(ROMAddon):
