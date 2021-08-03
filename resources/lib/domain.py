@@ -28,7 +28,6 @@ import json
 
 # --- AEL packages ---
 from resources.lib import globals
-from resources.lib.webservice import WebService
 
 from ael.utils import io, kodi, text
 from ael import settings, constants
@@ -670,12 +669,6 @@ class ROMAddon(EntityABC):
             
 class ROMLauncherAddon(ROMAddon):
     
-    def is_non_blocking(self) -> bool:
-        return self.entity_data['is_non_blocking'] if 'is_non_blocking' in self.entity_data else True
-    
-    def change_is_blocking(self, non_blocking: bool):
-        self.entity_data['is_non_blocking'] = non_blocking
-    
     def is_default(self) -> bool:
         return self.entity_data['is_default'] if 'is_default' in self.entity_data else False
     
@@ -686,32 +679,63 @@ class ROMLauncherAddon(ROMAddon):
         return {
             '--cmd': 'launch',
             '--type': constants.AddonType.LAUNCHER.name,
-            '--server_host': WebService.HOST,
-            '--server_port': WebService.PORT,
+            '--server_host': globals.WEBSERVER_HOST,
+            '--server_port': globals.WEBSERVER_PORT,
             '--launcher_id': self.get_id(),
             '--rom_id': rom.get_id(),
-            '--rom_args': io.parse_to_json_arg(rom.get_launcher_args()),
-            '--is_non_blocking': self.is_non_blocking(),
-            '--settings':  io.parse_to_json_arg(self.get_settings())
+            '--rom_args': io.parse_to_json_arg(rom.get_launcher_args())
         }
 
     def get_configure_command(self, romcollection: ROMCollection) -> dict:
-        
-        if self.get_id() is None:
-            self.set_settings({'platform': romcollection.get_platform()})
-            
+                    
         return {
             '--cmd': 'configure',
             '--type': constants.AddonType.LAUNCHER.name,
+            '--server_host': globals.WEBSERVER_HOST,
+            '--server_port': globals.WEBSERVER_PORT,
             '--romcollection_id': romcollection.get_id(), 
-            '--launcher_id': self.get_id(),
-            '--settings': io.parse_to_json_arg(self.get_settings())
+            '--launcher_id': self.get_id()
         }
     
 class ROMCollectionScanner(ROMAddon):
     
     def get_last_scan_timestamp(self):
         return None
+    
+    def get_scan_command(self, rom_collection: ROMCollection) -> dict:
+        return {
+            '--cmd': 'execute',
+            '--type': constants.AddonType.SCANNER.name,
+            '--server_host': globals.WEBSERVER_HOST,
+            '--server_port': globals.WEBSERVER_PORT,
+            '--romcollection_id': rom_collection.get_id(),
+            '--scanner_id': self.get_id(),
+            '--settings': io.parse_to_json_args(self.get_settings())
+        }
+        
+    def get_configure_command(self, romcollection: ROMCollection) -> dict:        
+        return {
+            '--cmd': 'configure',
+            '--type': constants.AddonType.SCANNER.name,
+            '--server_host': globals.WEBSERVER_HOST,
+            '--server_port': globals.WEBSERVER_PORT,
+            '--romcollection_id': romcollection.get_id(),
+            '--scanner_id':  self.get_id(),
+            '--settings':  io.parse_to_json_args(self.get_settings())
+        }
+
+class ScraperAddon(ROMAddon):
+    
+    def get_scrape_command(self)-> dict:        
+        return {
+            '--cmd': 'scrape',
+            '--type': constants.AddonType.SCRAPER.name,
+            '--server_host': globals.WEBSERVER_HOST,
+            '--server_port': globals.WEBSERVER_PORT,
+            #'--romcollection_id': romcollection.get_id(),
+            #'--scanner_id':  self.get_id(),
+            #'--settings':  io.parse_to_json_args(self.get_settings())
+        }
  
 class VirtualCollection(MetaDataItemABC):
     def __init__(self, 

@@ -126,7 +126,9 @@ class AEL_Paths(object):
   
 router: routing.Plugin = routing.Plugin()
 g_PATHS: AEL_Paths
-    
+
+WEBSERVER_HOST = '127.0.0.1'
+WEBSERVER_PORT = 57300
 #
 # Bootstrap factory object instances.
 #

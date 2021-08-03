@@ -536,8 +536,8 @@ QUERY_INSERT_ROM_IN_ROMCOLLECTION        = "INSERT INTO roms_in_romcollection (r
 QUERY_REMOVE_ROM_FROM_ROMCOLLECTION      = "DELETE FROM roms_in_romcollection WHERE rom_id = ? AND romcollection_id = ?"
 
 QUERY_SELECT_ROMCOLLECTION_LAUNCHERS     = "SELECT * FROM vw_romcollection_launchers WHERE romcollection_id = ?"
-QUERY_INSERT_ROMCOLLECTION_LAUNCHER      = "INSERT INTO romcollection_launchers (id, romcollection_id, ael_addon_id, settings, is_non_blocking, is_default) VALUES (?,?,?,?,?,?)"
-QUERY_UPDATE_ROMCOLLECTION_LAUNCHER      = "UPDATE romcollection_launchers SET settings = ?, is_non_blocking = ?, is_default = ? WHERE id = ?"
+QUERY_INSERT_ROMCOLLECTION_LAUNCHER      = "INSERT INTO romcollection_launchers (id, romcollection_id, ael_addon_id, settings, is_default) VALUES (?,?,?,?,?)"
+QUERY_UPDATE_ROMCOLLECTION_LAUNCHER      = "UPDATE romcollection_launchers SET settings = ?, is_default = ? WHERE id = ?"
 QUERY_DELETE_ROMCOLLECTION_LAUNCHERS     = "DELETE FROM romcollection_launchers WHERE romcollection_id = ?"
 QUERY_DELETE_ROMCOLLECTION_LAUNCHER      = "DELETE FROM romcollection_launchers WHERE romcollection_id = ? AND id = ?"
 
@@ -699,7 +699,6 @@ class ROMCollectionRepository(object):
                 romcollection_obj.get_id(), 
                 romcollection_launcher.addon.get_id(), 
                 romcollection_launcher.get_settings_str(), 
-                romcollection_launcher.is_non_blocking(),
                 romcollection_launcher.is_default())
             
         romcollection_scanners = romcollection_obj.get_scanners()
@@ -750,13 +749,11 @@ class ROMCollectionRepository(object):
                     romcollection_launcher.get_id(),
                     romcollection_obj.get_id(), 
                     romcollection_launcher.addon.get_id(), 
-                    romcollection_launcher.get_settings_str(), 
-                    romcollection_launcher.is_non_blocking(),
+                    romcollection_launcher.get_settings_str(),
                     romcollection_launcher.is_default())
             else:
                 self._uow.execute(QUERY_UPDATE_ROMCOLLECTION_LAUNCHER,
                     romcollection_launcher.get_settings_str(), 
-                    romcollection_launcher.is_non_blocking(),
                     romcollection_launcher.is_default(),
                     romcollection_launcher.get_id())
                 
@@ -838,8 +835,8 @@ QUERY_UPDATE_ROM                = """
                                   is_favourite=? WHERE id =?
                                   """
 QUERY_SELECT_ROM_LAUNCHERS     = "SELECT * FROM vw_rom_launchers WHERE rom_id = ?"
-QUERY_INSERT_ROM_LAUNCHER      = "INSERT INTO rom_launchers (id, rom_id, ael_addon_id, settings, is_non_blocking, is_default) VALUES (?,?,?,?,?,?)"
-QUERY_UPDATE_ROM_LAUNCHER      = "UPDATE rom_launchers SET settings = ?, is_non_blocking = ?, is_default = ? WHERE id = ?"
+QUERY_INSERT_ROM_LAUNCHER      = "INSERT INTO rom_launchers (id, rom_id, ael_addon_id, settings, is_default) VALUES (?,?,?,?,?)"
+QUERY_UPDATE_ROM_LAUNCHER      = "UPDATE rom_launchers SET settings = ?, is_default = ? WHERE id = ?"
 QUERY_DELETE_ROM_LAUNCHERS     = "DELETE FROM rom_launchers WHERE rom_id = ?"
 QUERY_DELETE_ROM_LAUNCHER      = "DELETE FROM rom_launchers WHERE romcollection_id = ? AND id = ?"
           
@@ -951,7 +948,6 @@ class ROMsRepository(object):
                 rom_obj.get_id(), 
                 rom_launchers.addon.get_id(), 
                 rom_launchers.get_settings_str(), 
-                rom_launchers.is_non_blocking(),
                 rom_launchers.is_default())
 
     def update_rom(self, rom_obj: ROM):
@@ -996,12 +992,10 @@ class ROMsRepository(object):
                     rom_obj.get_id(), 
                     rom_launcher.addon.get_id(), 
                     rom_launcher.get_settings_str(), 
-                    rom_launcher.is_non_blocking(),
                     rom_launcher.is_default())
             else:
                 self._uow.execute(QUERY_UPDATE_ROMCOLLECTION_LAUNCHER,
                     rom_launcher.get_settings_str(), 
-                    rom_launcher.is_non_blocking(),
                     rom_launcher.is_default(),
                     rom_launcher.get_id())
                     

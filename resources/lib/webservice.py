@@ -22,26 +22,21 @@ import json
 import threading
 import socket
 
-from datetime import datetime
 from urllib.parse import parse_qsl
-from queue import Queue
 from http.server import HTTPServer, BaseHTTPRequestHandler
 from http.client import HTTPConnection
 
-# Kodi libs
-import xbmc
-
 # AEL modules
-from resources.lib import globals
-from resources.lib.repositories import UnitOfWork, ROMCollectionRepository, ROMsRepository
+from resources.lib import globals, apiqueries
+from resources.lib.commands import api_commands
 
 logger = logging.getLogger(__name__)
 
 #################################################################################################
 class WebService(threading.Thread):
     
-    HOST = '127.0.0.1'
-    PORT = 57300
+    HOST = globals.WEBSERVER_HOST
+    PORT = globals.WEBSERVER_PORT
     
     ''' Run a webservice for api communication.
     '''
@@ -167,7 +162,6 @@ class RequestHandler(BaseHTTPRequestHandler):
         ''' Called on HEAD requests
         '''
         self.handle_request(True)
-
         return
 
     def do_GET(self):
@@ -175,9 +169,15 @@ class RequestHandler(BaseHTTPRequestHandler):
         ''' Called on GET requests
         '''
         self.handle_request()
-
         return
+    
+    def do_POST(self):
 
+        ''' Called on POST requests
+        '''
+        self.handle_request()
+        return
+        
     def handle_request(self, headers_only=False):
 
         '''Send headers and reponse
@@ -191,28 +191,15 @@ class RequestHandler(BaseHTTPRequestHandler):
                 self.end_headers()
 
             elif 'query/' in api_path:
-                params = self.get_params()
-                id = params.get('id')
-                response_data = None
-                obj = 'Not specified'
-                
-                if 'query/rom/' in api_path:
-                    obj = 'ROM'
-                    response_data = self.api_get_rom(id)
-                elif 'query/romcollection/' in api_path:
-                    obj = 'ROM Collection'
-                    response_data = self.api_get_rom_collection(id)
-                    
-                if response_data is None: 
-                    self.send_response(404)
+               self.handle_queries(api_path)
+            elif 'store/' in api_path:
+                if self.handle_posts(api_path):
+                    self.send_response(200)
                     self.send_header('Content-type', 'text/html')
                     self.end_headers()
-                    self.wfile.write('{} entity not found'.format(obj))
-                else: 
-                    self.send_response(200)
-                    self.send_header('Content-type', 'application/json')
-                    self.end_headers()
-                    self.wfile.write(response_data.encode(encoding='utf_8'))
+                else:
+                    logger.warn(self.path)
+                    raise Exception("UnknownRequest")
             else:
                 logger.warn(self.path)
                 raise Exception("UnknownRequest")
@@ -224,24 +211,60 @@ class RequestHandler(BaseHTTPRequestHandler):
         logger.info('ael.webservice/{}/{}'.format(str(id(self)), int(not headers_only)))
         return
 
-    def api_get_rom(self, rom_id: str) -> str:
-        uow = UnitOfWork(globals.g_PATHS.DATABASE_FILE_PATH)
-        with uow:
-            rom_repository  = ROMsRepository(uow)        
-            rom = rom_repository.find_rom(rom_id)
-            
-            if rom is None: return None
-            
-            data = rom.get_data_dic()
-            return json.dumps(data)
+    def handle_queries(self, api_path):
+        response_data = None
+        obj = 'Not specified'
+        
+        if 'query/rom/' in api_path:
+            obj = 'ROM'
+            response_data = self.handle_rom_queries(api_path)
+        elif 'query/romcollection/':
+            obj = 'ROMCollection'
+            response_data = self.handle_romcollection_queries(api_path)
+                        
+        if response_data is None: 
+            self.send_response(404)
+            self.send_header('Content-type', 'text/html')
+            self.end_headers()
+            self.wfile.write('{} entity not found'.format(obj))
+            return
+        
+        self.send_response(200)
+        self.send_header('Content-type', 'application/json')
+        self.end_headers()
+        self.wfile.write(response_data.encode(encoding='utf_8'))
 
-    def api_get_rom_collection(self, collection_id: str) -> str:
-        uow = UnitOfWork(globals.g_PATHS.DATABASE_FILE_PATH)
-        with uow:
-            collection_repository  = ROMCollectionRepository(uow)        
-            rom_collection = collection_repository.find_romcollection(collection_id)
+    def handle_rom_queries(self, api_path):
+        params = self.get_params()
+        id = params.get('id')
+        
+        if 'rom/launcher/settings/' in api_path:
+            return apiqueries.qry_get_rom_launcher_settings(id, params.get('launcher_id'))
+        if 'rom/' in api_path:
+            return apiqueries.qry_get_rom(id)
+        
+        return None
+        
+    def handle_romcollection_queries(self, api_path):
+        params = self.get_params()
+        id = params.get('id')
+        
+        if 'romcollection/launcher/settings/' in api_path:
+            return apiqueries.qry_get_collection_launcher_settings(id, params.get('launcher_id'))
+        if 'romcollection/launchers/' in api_path:
+            return apiqueries.qry_get_launchers(id)
+        if 'romcollection/' in api_path:
+            return apiqueries.qry_get_rom_collection(id)
+        
+        return None
             
-            if rom_collection is None: return None
-            
-            data = rom_collection.get_data_dic()
-            return json.dumps(data)
+    def handle_posts(self, api_path):
+        params = self.get_params()
+        
+        data_string = self.rfile.read(int(self.headers['Content-Length']))
+        data = json.loads(data_string)
+        
+        if 'store/launcher/' in api_path:
+            return api_commands.cmd_set_launcher_args(data)
+        
+        return False

@@ -19,7 +19,6 @@ from __future__ import division
 
 import logging
 import collections
-from resources.lib.webservice import WebService
 
 from ael import constants
 from ael.utils import kodi, io
@@ -77,7 +76,7 @@ def cmd_add_romcollection_launchers(args):
     options = collections.OrderedDict()
     uow = UnitOfWork(globals.g_PATHS.DATABASE_FILE_PATH)
     with uow:
-        repository        = AelAddonRepository(uow)
+        repository               = AelAddonRepository(uow)
         romcollection_repository = ROMCollectionRepository(uow)
         
         addons = repository.find_all_launchers()
@@ -211,37 +210,7 @@ def cmd_set_default_romcollection_launchers(args):
         uow.commit()
     
     AppMediator.sync_cmd('EDIT_ROMCOLLECTION_LAUNCHERS', args)
-       
-# -------------------------------------------------------------------------------------------------
-# ROMCollection launcher specific configuration.
-# -------------------------------------------------------------------------------------------------      
-@AppMediator.register('SET_LAUNCHER_SETTINGS')
-def cmd_set_launcher_args(args):
-    romcollection_id:str       = args['romcollection_id'] if 'romcollection_id' in args else None
-    launcher_id:str     = args['launcher_id'] if 'launcher_id' in args else None
-    addon_id:str        = args['addon_id'] if 'addon_id' in args else None
-    launcher_settings   = args['settings'] if 'settings' in args else None
         
-    uow = UnitOfWork(globals.g_PATHS.DATABASE_FILE_PATH)
-    with uow:
-        addon_repository = AelAddonRepository(uow)
-        romcollection_repository = ROMCollectionRepository(uow)
-        
-        addon = addon_repository.find_by_addon_id(addon_id)
-        romcollection = romcollection_repository.find_romcollection(romcollection_id)
-        
-        if launcher_id is None:
-            romcollection.add_launcher(addon, launcher_settings, True)
-        else: 
-            launcher = romcollection.get_launcher(launcher_id)
-            launcher.set_settings(launcher_settings)
-            
-        romcollection_repository.update_romcollection(romcollection)
-        uow.commit()
-    
-    kodi.notify('Configured launcher {}'.format(addon.get_name()))
-    AppMediator.async_cmd('EDIT_ROMCOLLECTION', {'romcollection_id': romcollection_id})
- 
 # -------------------------------------------------------------------------------------------------
 # ROMCollection Launcher executing
 # -------------------------------------------------------------------------------------------------

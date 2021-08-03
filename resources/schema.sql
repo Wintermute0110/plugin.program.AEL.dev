@@ -75,7 +75,6 @@ CREATE TABLE IF NOT EXISTS romcollection_launchers(
     romcollection_id TEXT,
     ael_addon_id TEXT,
     settings TEXT,
-    is_non_blocking INTEGER DEFAULT 1 NOT NULL,
     is_default INTEGER DEFAULT 0 NOT NULL,
     FOREIGN KEY (romcollection_id) REFERENCES romcollections (id) 
         ON DELETE CASCADE ON UPDATE NO ACTION,
@@ -140,7 +139,6 @@ CREATE TABLE IF NOT EXISTS rom_launchers(
     rom_id TEXT,
     ael_addon_id TEXT,
     settings TEXT,
-    is_non_blocking INTEGER DEFAULT 1 NOT NULL,
     is_default INTEGER DEFAULT 0 NOT NULL,
     FOREIGN KEY (rom_id) REFERENCES roms (id) 
         ON DELETE CASCADE ON UPDATE NO ACTION,
@@ -306,7 +304,6 @@ CREATE VIEW IF NOT EXISTS vw_romcollection_launchers AS SELECT
     a.addon_type,
     a.extra_settings,
     l.settings,
-    l.is_non_blocking,
     l.is_default
 FROM romcollection_launchers AS l
     INNER JOIN ael_addon AS a ON l.ael_addon_id = a.id;
@@ -333,7 +330,6 @@ CREATE VIEW IF NOT EXISTS vw_rom_launchers AS SELECT
     a.version,
     a.addon_type,
     l.settings,
-    l.is_non_blocking,
     l.is_default
 FROM rom_launchers AS l
     INNER JOIN ael_addon AS a ON l.ael_addon_id = a.id;

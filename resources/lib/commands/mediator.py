@@ -31,7 +31,7 @@ class AppMediator(object):
         commands_by_event = cls._commands[command]
         for a_command in commands_by_event:
             try:
-                a_command(args)
+                return a_command(args)
             except Exception as ex:
                 logger.fatal('Failure processing command "{}"'.format(command), exc_info=ex)
                 kodi.notify_error('Failure processing command "{}"'.format(command))
