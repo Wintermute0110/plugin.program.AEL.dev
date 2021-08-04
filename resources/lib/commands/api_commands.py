@@ -33,7 +33,7 @@ logger = logging.getLogger(__name__)
 # -------------------------------------------------------------------------------------------------      
 def cmd_set_launcher_args(args) -> bool:
     romcollection_id:str = args['romcollection_id'] if 'romcollection_id' in args else None
-    launcher_id:str      = args['launcher_id'] if 'launcher_id' in args else None
+    launcher_id:str      = args['ael_addon_id'] if 'ael_addon_id' in args else None
     addon_id:str         = args['addon_id'] if 'addon_id' in args else None
     launcher_settings    = args['settings'] if 'settings' in args else None
         
@@ -63,7 +63,7 @@ def cmd_set_launcher_args(args) -> bool:
 # -------------------------------------------------------------------------------------------------
 def cmd_set_scanner_settings(args):
     romcollection_id:str = args['romcollection_id'] if 'romcollection_id' in args else None
-    scanner_id:str       = args['scanner_id'] if 'scanner_id' in args else None
+    scanner_id:str       = args['ael_addon_id'] if 'ael_addon_id' in args else None
     addon_id:str         = args['addon_id'] if 'addon_id' in args else None
     settings             = args['settings'] if 'settings' in args else None
     

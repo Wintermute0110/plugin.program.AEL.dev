@@ -681,20 +681,18 @@ class ROMLauncherAddon(ROMAddon):
             '--type': constants.AddonType.LAUNCHER.name,
             '--server_host': globals.WEBSERVER_HOST,
             '--server_port': globals.WEBSERVER_PORT,
-            '--launcher_id': self.get_id(),
-            '--rom_id': rom.get_id(),
-            '--rom_args': io.parse_to_json_arg(rom.get_launcher_args())
+            '--ael_addon_id': self.get_id(),
+            '--rom_id': rom.get_id()
         }
 
-    def get_configure_command(self, romcollection: ROMCollection) -> dict:
-                    
+    def get_configure_command(self, romcollection: ROMCollection) -> dict:                    
         return {
             '--cmd': 'configure',
             '--type': constants.AddonType.LAUNCHER.name,
             '--server_host': globals.WEBSERVER_HOST,
             '--server_port': globals.WEBSERVER_PORT,
             '--romcollection_id': romcollection.get_id(), 
-            '--launcher_id': self.get_id()
+            '--ael_addon_id': self.get_id()
         }
     
 class ROMCollectionScanner(ROMAddon):
@@ -709,7 +707,7 @@ class ROMCollectionScanner(ROMAddon):
             '--server_host': globals.WEBSERVER_HOST,
             '--server_port': globals.WEBSERVER_PORT,
             '--romcollection_id': rom_collection.get_id(),
-            '--scanner_id': self.get_id()
+            '--ael_addon_id': self.get_id()
         }
         
     def get_configure_command(self, romcollection: ROMCollection) -> dict:        
@@ -719,7 +717,7 @@ class ROMCollectionScanner(ROMAddon):
             '--server_host': globals.WEBSERVER_HOST,
             '--server_port': globals.WEBSERVER_PORT,
             '--romcollection_id': romcollection.get_id(),
-            '--scanner_id':  self.get_id()
+            '--ael_addon_id':  self.get_id()
         }
 
 class ScraperAddon(ROMAddon):
@@ -1145,15 +1143,6 @@ class ROM(MetaDataItemABC):
     def get_mappable_asset_ids_list(self): return constants.MAPPABLE_ROM_ASSET_ID_LIST
     
     def get_default_icon(self) -> str: return 'DefaultProgram.png' 
-    
-    # Returns a dictionary of data which a launcher might need.
-    def get_launcher_args(self) -> dict:
-        return {
-            'id': self.get_id(),
-            'file': self.get_file().getPath(),
-            'name': self.get_name()
-            #TODO: 'scanner_args': self.get_scanner_arguments()
-        }
     
     #
     # Reads an NFO file with ROM information.

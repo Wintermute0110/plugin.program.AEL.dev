@@ -183,7 +183,7 @@ class RequestHandler(BaseHTTPRequestHandler):
         '''Send headers and reponse
         '''
         try:
-            logger.info('ael.webservice: Processing path "{}"'.format(self.path))
+            logger.debug('ael.webservice: Processing path "{}"'.format(self.path))
             api_path = self.path.lower()
             if headers_only:
                 self.send_response(200)
@@ -195,10 +195,10 @@ class RequestHandler(BaseHTTPRequestHandler):
             elif 'store/' in api_path:
                 if self.handle_posts(api_path):
                     self.send_response(200)
-                    self.send_header('Content-type', 'text/html')
+                    self.send_header('Content-type', 'application/json')
                     self.end_headers()
                 else:
-                    logger.warn(self.path)
+                    logger.warn('Not handeld: {}'.format(self.path))
                     raise Exception("UnknownRequest")
             else:
                 logger.warn(self.path)
@@ -208,7 +208,7 @@ class RequestHandler(BaseHTTPRequestHandler):
             logger.fatal('ael.webservice exception processing path', exc_info=error)
             self.send_error(500, 'AEL.webservice - Exception occurred: {}'.format(str(error)))
             
-        logger.info('ael.webservice/{}/{}'.format(str(id(self)), int(not headers_only)))
+        logger.debug('ael.webservice/{}/{}'.format(str(id(self)), int(not headers_only)))
         return
 
     def handle_queries(self, api_path):
@@ -255,12 +255,14 @@ class RequestHandler(BaseHTTPRequestHandler):
             return apiqueries.qry_get_collection_scanner_settings(id, params.get('scanner_id'))
         if 'romcollection/launchers/' in api_path:
             return apiqueries.qry_get_launchers(id)
+        if 'romcollection/roms/' in api_path:
+            return apiqueries.qry_get_roms(id)
         if 'romcollection/' in api_path:
             return apiqueries.qry_get_rom_collection(id)
         
         return None
             
-    def handle_posts(self, api_path):
+    def handle_posts(self, api_path) -> bool:
         params = self.get_params()
         
         data_string = self.rfile.read(int(self.headers['Content-Length']))
