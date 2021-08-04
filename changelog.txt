@@ -150,20 +150,20 @@ WIP FIX  Fix launching of ROMs with Windows network filenames.
          See https://forum.kodi.tv/showthread.php?tid=287826&pid=2919639#pid2919639
 
 
-[B]Advanced Emulator Launcher | version 0.10.1 | xx xxxxxx 2021[/B]
+[B]Advanced Emulator Launcher | version 0.10.1 | 04 August 2021[/B]
 
 FIX      Fix crash when reading a launcher NFO file when importing a launcher XML file.
          Refactored the NFO file functions a bit.
          See https://forum.kodi.tv/showthread.php?tid=287826&pid=3045045#pid3045045
 
-FIX  Error when scraping metadata.
+FIX      Error when scraping metadata.
          See https://github.com/Wintermute0110/plugin.program.AEL/issues/146
 
 
-[B]Advanced Emulator Launcher | version 0.9.11 | xx xxxxxx 2021[/B]
+[B]Advanced Emulator Launcher | version 0.9.11 | 04 August 2021[/B]
 
-NOTE     This version is feature identical to 0.10.1
-         Main development is in the Pyhton 3 branch.
+NOTE     This version is for Python 2 and feature identical to 0.10.1
+         Main development is in the Python 3 branch.
 
 
 [B]Advanced Emulator Launcher | version 0.10.0 | 22 June 2021[/B]
@@ -179,7 +179,7 @@ FEATURE  Port release 0.9.10 to Python 3.
 
 [B]Advanced Emulator Launcher | version 0.9.10 | 22 June 2021[/B]
 
-NOTE     Python 2 version for Leia/Krypon in branch release-0.9.x-python2
+NOTE     Python 2 version for Leia/Krypton in branch release-0.9.x-python2
          Have a look at AML code to ease the conversion.
 
 FEATURE  Create file misc.py and refactor utils.py. Copy structure from AML.
