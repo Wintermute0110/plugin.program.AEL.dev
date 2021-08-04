@@ -2,7 +2,7 @@
 <addon
     id="plugin.program.advanced.emulator.launcher"
     name="Advanced Emulator Launcher"
-    version="0.10.1"
+    version="0.11.0-alpha"
     provider-name="Wintermute0110">
     <requires>
         <!--
