@@ -3,8 +3,7 @@
 WIP      [CORE] Complete Extranafart support for Categories/Launchers/ROMs.
          Does this make sense?
 
-WIP      [CORE] Think about exporting the AEL platform database using JSON-LD in accordance to
-         Garbear's idea.
+WIP      [CORE] Think about exporting the AEL platform database using JSON-LD as in Garbear's idea.
          See https://forum.kodi.tv/showthread.php?tid=295463&pid=2625754#pid2625754
 
 WIP      [SCRAPERS] Advanced fuzzy search engine based on the Levenshtein Distance algorithm,
@@ -12,7 +11,7 @@ WIP      [SCRAPERS] Advanced fuzzy search engine based on the Levenshtein Distan
          the algorithm here: https://github.com/seatgeek/fuzzywuzzy
 
 WIP      [SCRAPERS] LaunchBox Games Database scraper.
-         NOTE Do not implement this. AEL offline scraper is more than enough.
+         **NOTE** Do not implement this. AEL offline scraper is more than enough.
          Apparently LaunchBox GamesDB started as a copy of TheGamesDB. Currently there is no
          API to access LaunchBox GamesDB but an XML with all the database info can be downloaded.
          See http://gamesdb.launchbox-app.com/
@@ -38,7 +37,7 @@ WIP      [CORE] Disable LNK $rom$ launcher with global setting.
 WIP      [CORE] categoryID is redundant in SHOW_ROMS URL. Remove it or make it optional.
          See https://forum.kodi.tv/showthread.php?tid=276002&pid=2643218#pid2643218
 
-WIP      [CORE] Should plugin URL be rationalised and simplified to make skinner's life easier?
+WIP      [CORE] Should plugin URL be rationalized and simplified to make skinner's life easier?
          See https://forum.kodi.tv/showthread.php?tid=276002&pid=2643218#pid2643218
 
 WIP      [CORE] Support for Advanced MAME Launcher exported virtual launchers or
@@ -75,11 +74,18 @@ WIP      [SCRAPERS] MAME offline scraper: include plot field. Take it from GameI
 
 NOTE     Implement these features in master branch for Python 3.
 
-WIP      [CORE] Rename the plugin from `plugin.program.advanced.emulator.launcher` to
+DONE     [CORE] Rename the plugin from `plugin.program.advanced.emulator.launcher` to
          `plugin.program.AEL`. Create a development version `plugin.program.AEL.dev` that
          can coexist with the stable version. Copy this feature from AML.
 
-WIP      [CORE] Massive AEL refactoring. Thanks a lot to Chrisism for the patch!
+WIP NOW  [CORE] Remove the Main() class in main.py. Use a functional approach like AML.
+
+WIP      ==> Make a list of top priority new features, like the unified ROMs artwork directory,
+         the PID support, the new ROM's database fields, and add these features to the TODO list.
+         Have a look at the former master branch, there could be interesting features there
+         like the recursive context menus and the URL router class based on decorators.
+
+
 
 WIP      [CORE] Support Kodi VFS and ROMs in remote filesystems for Retroplayer.
          See Chrisism patch in Github. Copy remote ROMs for external launchers?
@@ -95,7 +101,7 @@ WIP      [CORE] Automatic generation of BoxTextures from BoxBack, BoxSpine and B
 
 WIP      [CORE] Unified ROM artwork directory. This will require heavy changes in categories.xml.
          I still have to think how to properly implement this. This is related to the
-         desing of a prototype Kodi games database.
+         design of a prototype Kodi games database.
          See https://forum.kodi.tv/showthread.php?tid=287826&pid=2865413#pid2865413
          See https://forum.kodi.tv/showthread.php?tid=287826&pid=2867785#pid2867785
 
