@@ -72,10 +72,10 @@ def qry_get_launchers(collection_id: str) -> str:
         
         if rom_collection is None: return None
         
-        launchers_data = []
+        launchers_data = {}
         launchers = rom_collection.get_launchers()
         for launcher in launchers:
-            launchers_data.append(launcher.get_data_dic())
+            launchers_data[launcher.get_id()] = launcher.get_settings()
             
         return json.dumps(launchers_data)
 
