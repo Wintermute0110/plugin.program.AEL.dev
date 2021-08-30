@@ -21,10 +21,12 @@ from __future__ import division
 import logging
 
 from ael.utils import kodi
+from ael.api import ROMObj
 
 from resources.lib.commands.mediator import AppMediator
 from resources.lib import globals
-from resources.lib.repositories import UnitOfWork, AelAddonRepository, ROMCollectionRepository
+from resources.lib.repositories import UnitOfWork, AelAddonRepository, ROMCollectionRepository, ROMsRepository
+from resources.lib.domain import ROM
 
 logger = logging.getLogger(__name__)
 
@@ -61,7 +63,7 @@ def cmd_set_launcher_args(args) -> bool:
 # -------------------------------------------------------------------------------------------------
 # ROMCollection scanner API commands
 # -------------------------------------------------------------------------------------------------
-def cmd_set_scanner_settings(args):
+def cmd_set_scanner_settings(args) -> bool:
     romcollection_id:str = args['romcollection_id'] if 'romcollection_id' in args else None
     scanner_id:str       = args['ael_addon_id'] if 'ael_addon_id' in args else None
     addon_id:str         = args['addon_id'] if 'addon_id' in args else None
@@ -86,4 +88,37 @@ def cmd_set_scanner_settings(args):
     
     kodi.notify('Configured ROM scanner {}'.format(addon.get_name()))
     AppMediator.async_cmd('EDIT_ROMCOLLECTION', {'romcollection_id': romcollection_id})
- 
+    return True
+
+def cmd_store_scanned_roms(args) -> bool:
+    romcollection_id:str = args['romcollection_id'] if 'romcollection_id' in args else None
+    scanner_id:str       = args['ael_addon_id'] if 'ael_addon_id' in args else None
+    roms:list            = args['roms'] if 'roms' in args else None
+    
+    if roms is None:
+        return
+    
+    uow = UnitOfWork(globals.g_PATHS.DATABASE_FILE_PATH)
+    with uow:
+        romcollection_repository = ROMCollectionRepository(uow)
+        rom_repository           = ROMsRepository(uow)
+        
+        romcollection = romcollection_repository.find_romcollection(romcollection_id)
+        existing_roms = rom_repository.find_roms_by_romcollection(romcollection_id)
+        
+        existing_roms_by_id = { rom.get_id(): rom for rom in existing_roms }
+
+        for rom_data in roms:
+            api_rom_obj = ROMObj(rom_data)
+            rom_obj = existing_roms_by_id[api_rom_obj.get_id()]
+
+            rom_obj.scanned_with(scanner_id)
+            rom_repository.insert_rom(rom_obj)
+            romcollection_repository.add_rom_to_romcollection(romcollection.get_id(), rom_obj.get_id())
+        uow.commit()
+    
+    kodi.notify('Stored scanned ROMS in ROMs Collection {}'.format(romcollection.get_name()))
+    
+    AppMediator.async_cmd('RENDER_ROMCOLLECTION_VIEW', {'romcollection_id': romcollection_id})
+    AppMediator.async_cmd('RENDER_VIEW', {'category_id': romcollection.get_parent_id()})  
+    AppMediator.async_cmd('EDIT_ROMCOLLECTION', {'romcollection_id': romcollection_id})

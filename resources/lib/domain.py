@@ -702,7 +702,7 @@ class ROMCollectionScanner(ROMAddon):
     
     def get_scan_command(self, rom_collection: ROMCollection) -> dict:
         return {
-            '--cmd': 'execute',
+            '--cmd': 'scan',
             '--type': constants.AddonType.SCANNER.name,
             '--server_host': globals.WEBSERVER_HOST,
             '--server_port': globals.WEBSERVER_PORT,
@@ -1078,6 +1078,9 @@ class ROM(MetaDataItemABC):
 
     def get_last_launch_date(self):
         return self.entity_data['last_launch_timestamp']
+
+    def get_scanned_with(self) -> str:
+        return self.entity_data['scanned_by_id'] if 'scanned_by_id' in self.entity_data else None
 
     def set_file(self, file):
         self.entity_data['filename'] = file.getPath()

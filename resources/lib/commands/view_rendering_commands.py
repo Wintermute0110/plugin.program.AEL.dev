@@ -18,7 +18,6 @@ from __future__ import unicode_literals
 from __future__ import division
 
 import logging
-import typing
 
 from ael import constants, settings
 from ael.utils import kodi

@@ -16,12 +16,12 @@
 # --- Python standard library ---
 from __future__ import unicode_literals
 from __future__ import division
+from __future__ import annotations
 
 import logging
 import collections
 
-from ael import constants
-from ael.utils import kodi, io
+from ael.utils import kodi
 
 from resources.lib.commands.mediator import AppMediator
 from resources.lib import globals
@@ -205,32 +205,3 @@ def cmd_execute_rom_scanner(args):
     kodi.run_script(
         selected_scanner.addon.get_addon_id(),
         selected_scanner.get_scan_command(romcollection))
-    
-@AppMediator.register('STORE_SCANNED_ROMS')
-def cmd_store_scanned_roms(args):
-    romcollection_id:str   = args['romcollection_id'] if 'romcollection_id' in args else None
-    scanner_id:str  = args['scanner_id'] if 'scanner_id' in args else None
-    roms:list       = args['roms'] if 'roms' in args else None
-    
-    if roms is None:
-        return
-    
-    uow = UnitOfWork(globals.g_PATHS.DATABASE_FILE_PATH)
-    with uow:
-        romcollection_repository = ROMCollectionRepository(uow)
-        rom_repository    = ROMsRepository(uow)
-        
-        romcollection = romcollection_repository.find_romcollection(romcollection_id)
-        
-        for rom_data in roms:
-            rom_obj = ROM(rom_data)
-            rom_obj.scanned_with(scanner_id)
-            rom_repository.insert_rom(rom_obj)
-            romcollection_repository.add_rom_to_romcollection(romcollection.get_id(), rom_obj.get_id())
-        uow.commit()
-    
-    kodi.notify('Stored scanned ROMS in ROMs Collection {}'.format(romcollection.get_name()))
-    
-    AppMediator.async_cmd('RENDER_ROMCOLLECTION_VIEW', {'romcollection_id': romcollection_id})
-    AppMediator.async_cmd('RENDER_VIEW', {'category_id': romcollection.get_parent_id()})  
-    AppMediator.async_cmd('EDIT_ROMCOLLECTION', {'romcollection_id': romcollection_id})

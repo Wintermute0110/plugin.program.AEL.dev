@@ -272,5 +272,7 @@ class RequestHandler(BaseHTTPRequestHandler):
             return api_commands.cmd_set_launcher_args(data)
         if 'store/scanner/' in api_path:
             return api_commands.cmd_set_scanner_settings(data)
+        if 'store/roms/' in api_path:
+            return api_commands.cmd_store_scanned_roms(data)
         
         return False
