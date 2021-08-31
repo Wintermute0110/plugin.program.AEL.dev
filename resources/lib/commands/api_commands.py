@@ -104,15 +104,16 @@ def cmd_store_scanned_roms(args) -> bool:
         rom_repository           = ROMsRepository(uow)
         
         romcollection = romcollection_repository.find_romcollection(romcollection_id)
-        existing_roms = rom_repository.find_roms_by_romcollection(romcollection_id)
-        
-        existing_roms_by_id = { rom.get_id(): rom for rom in existing_roms }
+        #existing_roms = rom_repository.find_roms_by_romcollection(romcollection_id)
+        #existing_roms_by_id = { rom.get_id(): rom for rom in existing_roms }
 
         for rom_data in roms:
             api_rom_obj = ROMObj(rom_data)
-            rom_obj = existing_roms_by_id[api_rom_obj.get_id()]
-
+            
+            rom_obj = ROM()
+            rom_obj.update_with(api_rom_obj)
             rom_obj.scanned_with(scanner_id)
+            
             rom_repository.insert_rom(rom_obj)
             romcollection_repository.add_rom_to_romcollection(romcollection.get_id(), rom_obj.get_id())
         uow.commit()
@@ -122,3 +123,4 @@ def cmd_store_scanned_roms(args) -> bool:
     AppMediator.async_cmd('RENDER_ROMCOLLECTION_VIEW', {'romcollection_id': romcollection_id})
     AppMediator.async_cmd('RENDER_VIEW', {'category_id': romcollection.get_parent_id()})  
     AppMediator.async_cmd('EDIT_ROMCOLLECTION', {'romcollection_id': romcollection_id})
+    return True

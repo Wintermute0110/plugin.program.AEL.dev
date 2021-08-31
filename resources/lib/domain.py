@@ -30,6 +30,7 @@ import json
 from resources.lib import globals
 
 from ael.utils import io, kodi, text
+from ael.api import ROMObj
 from ael import settings, constants
 
 logger = logging.getLogger(__name__)
@@ -1223,6 +1224,11 @@ class ROM(MetaDataItemABC):
         full_string = ''.join(nfo_content)
         nfo_FileName.writeAll(full_string)
     
+    def update_with(self, api_rom_obj: ROMObj):
+        file = api_rom_obj.get_file()
+        if file is not None:
+            self.set_file(file)
+        
     def apply_romcollection_asset_mapping(self, romcollection: ROMCollection):
         mappable_assets = romcollection.get_ROM_mappable_asset_list()
         for mappable_asset in mappable_assets:
