@@ -31,6 +31,7 @@ from resources.lib import globals
 
 from ael.utils import io, kodi, text
 from ael.api import ROMObj
+from ael.scrapers import ScraperSettings
 from ael import settings, constants
 
 logger = logging.getLogger(__name__)
@@ -723,15 +724,20 @@ class ROMCollectionScanner(ROMAddon):
 
 class ScraperAddon(ROMAddon):
     
-    def get_scrape_command(self)-> dict:        
+    def __init__(self, addon: AelAddon, scraper_settings: ScraperSettings):        
+        entity_data = {
+            'settings': json.dumps(scraper_settings.get_data_dic())
+        }        
+        super(ScraperAddon, self).__init__(addon, entity_data)
+        
+    def get_scrape_command(self, rom: ROM)-> dict:        
         return {
             '--cmd': 'scrape',
             '--type': constants.AddonType.SCRAPER.name,
             '--server_host': globals.WEBSERVER_HOST,
             '--server_port': globals.WEBSERVER_PORT,
-            #'--romcollection_id': romcollection.get_id(),
-            #'--scanner_id':  self.get_id(),
-            #'--settings':  io.parse_to_json_args(self.get_settings())
+            '--rom_id': rom.get_id(),
+            '--settings':  io.parse_to_json_arg(self.get_settings())
         }
  
 class VirtualCollection(MetaDataItemABC):

@@ -26,8 +26,8 @@ from ael.scrapers import ScraperSettings
 
 from resources.lib.commands.mediator import AppMediator
 from resources.lib import globals
-from resources.lib.repositories import UnitOfWork, ROMCollectionRepository, ROMsRepository, AelAddonRepository
-from resources.lib.domain import ROM, ROMCollectionScanner, AelAddon
+from resources.lib.repositories import UnitOfWork, AelAddonRepository
+from resources.lib.domain import AelAddon, ScraperAddon
 
 logger = logging.getLogger(__name__)
 
@@ -37,11 +37,8 @@ def cmd_scrape_rom_metadata(args):
    
     uow = UnitOfWork(globals.g_PATHS.DATABASE_FILE_PATH)
     with uow:
-        repository      = AelAddonRepository(uow)
-        rom_repository  = ROMsRepository(uow)
-        
-        addons = repository.find_all_scrapers()
-        rom = rom_repository.find_rom(rom_id)
+        repository  = AelAddonRepository(uow)        
+        addons      = repository.find_all_scrapers()
 
         # --- Make a menu list of available metadata scrapers ---
         options =  {}
@@ -58,7 +55,7 @@ def cmd_scrape_rom_metadata(args):
     
     # >> Execute scraper
     logger.debug('ROM_SCRAPE_METADATA: cmd_scrape_rom_metadata() Selected scraper#{}'.format(selected_addon.get_name()))
-    
+       
     scraper_settings = ScraperSettings()
     #scraper_settings.metadata_scraper_ID     = selected_option
     scraper_settings.scrape_metadata_policy  = constants.SCRAPE_POLICY_SCRAPE_ONLY
@@ -66,14 +63,18 @@ def cmd_scrape_rom_metadata(args):
     scraper_settings.game_selection_mode     = constants.SCRAPE_MANUAL
     scraper_settings.scrape_assets_policy    = constants.SCRAPE_ACTION_NONE
     
+    selected_scraper = ScraperAddon(selected_addon, scraper_settings)
+    
     args = {}
     args['--cmd']       = 'scrape'
     args['--type']      = constants.AddonType.SCRAPER.name
     args['--rom_id']    = rom_id
-    args['--rom']       = '"{}"'.format(json.dumps(rom.get_data_dic()))
     args['--settings']  = '"{}"'.format(json.dumps(scraper_settings.get_data_dic()))
     
     kodi.run_script(selected_addon.get_addon_id(), args)
+    kodi.run_script(
+        selected_scraper.addon.get_addon_id(),
+        selected_scraper.get_scrape_command(scraper_settings))
     
     # pdialog             = KodiProgressDialog()
     # ROM_file            = rom.get_file()
