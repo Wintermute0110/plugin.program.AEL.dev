@@ -192,7 +192,7 @@ class RequestHandler(BaseHTTPRequestHandler):
 
             elif 'query/' in api_path:
                self.handle_queries(api_path)
-            elif 'store/' in api_path:
+            elif 'store/' in api_path or 'remove/' in api_path:
                 if self.handle_posts(api_path):
                     self.send_response(200)
                     self.send_header('Content-type', 'application/json')
@@ -274,5 +274,7 @@ class RequestHandler(BaseHTTPRequestHandler):
             return api_commands.cmd_set_scanner_settings(data)
         if 'store/roms/' in api_path:
             return api_commands.cmd_store_scanned_roms(data)
+        if 'remove/roms/' in api_path:
+            return api_commands.cmd_remove_roms(data)
         
         return False

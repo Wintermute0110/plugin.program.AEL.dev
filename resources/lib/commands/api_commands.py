@@ -22,6 +22,7 @@ import logging
 
 from ael.utils import kodi
 from ael.api import ROMObj
+from ael.constants import AddonType
 
 from resources.lib.commands.mediator import AppMediator
 from resources.lib import globals
@@ -44,7 +45,7 @@ def cmd_set_launcher_args(args) -> bool:
         addon_repository = AelAddonRepository(uow)
         romcollection_repository = ROMCollectionRepository(uow)
         
-        addon = addon_repository.find_by_addon_id(addon_id)
+        addon = addon_repository.find_by_addon_id(addon_id, AddonType.LAUNCHER)
         romcollection = romcollection_repository.find_romcollection(romcollection_id)
         
         if launcher_id is None:
@@ -74,7 +75,7 @@ def cmd_set_scanner_settings(args) -> bool:
         addon_repository = AelAddonRepository(uow)
         romcollection_repository = ROMCollectionRepository(uow)
         
-        addon = addon_repository.find_by_addon_id(addon_id)
+        addon = addon_repository.find_by_addon_id(addon_id, AddonType.SCANNER)
         romcollection = romcollection_repository.find_romcollection(romcollection_id)
         
         if scanner_id is None:
@@ -119,6 +120,31 @@ def cmd_store_scanned_roms(args) -> bool:
         uow.commit()
     
     kodi.notify('Stored scanned ROMS in ROMs Collection {}'.format(romcollection.get_name()))
+    
+    AppMediator.async_cmd('RENDER_ROMCOLLECTION_VIEW', {'romcollection_id': romcollection_id})
+    AppMediator.async_cmd('RENDER_VIEW', {'category_id': romcollection.get_parent_id()})  
+    AppMediator.async_cmd('EDIT_ROMCOLLECTION', {'romcollection_id': romcollection_id})
+    return True
+
+def cmd_remove_roms(args) -> bool:
+    romcollection_id:str = args['romcollection_id'] if 'romcollection_id' in args else None
+    scanner_id:str       = args['ael_addon_id'] if 'ael_addon_id' in args else None
+    rom_ids:list         = args['rom_ids'] if 'rom_ids' in args else None
+    
+    if rom_ids is None:
+        return
+    
+    uow = UnitOfWork(globals.g_PATHS.DATABASE_FILE_PATH)
+    with uow:
+        romcollection_repository = ROMCollectionRepository(uow)
+        rom_repository           = ROMsRepository(uow)
+        romcollection            = romcollection_repository.find_romcollection(romcollection_id)
+        
+        for rom_id in rom_ids:
+            rom_repository.delete_rom(rom_id)
+        uow.commit()
+    
+    kodi.notify('Removed ROMS from ROMs Collection {}'.format(romcollection.get_name()))
     
     AppMediator.async_cmd('RENDER_ROMCOLLECTION_VIEW', {'romcollection_id': romcollection_id})
     AppMediator.async_cmd('RENDER_VIEW', {'category_id': romcollection.get_parent_id()})  

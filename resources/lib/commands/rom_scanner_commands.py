@@ -71,12 +71,11 @@ def cmd_add_romcollection_scanner(args):
     options = collections.OrderedDict()
     uow = UnitOfWork(globals.g_PATHS.DATABASE_FILE_PATH)
     with uow:
-        repository        = AelAddonRepository(uow)
+        repository               = AelAddonRepository(uow)
         romcollection_repository = ROMCollectionRepository(uow)
         
         addons = repository.find_all_scanners()
         romcollection = romcollection_repository.find_romcollection(romcollection_id)
-        default_launcher = romcollection.get_default_launcher()
         
         for addon in addons:
             options[addon] = addon.get_name()
@@ -199,9 +198,14 @@ def cmd_execute_rom_scanner(args):
             scanner_options[scanner] = scanner.get_name()
         dialog = kodi.OrdDictionaryDialog()
         selected_scanner = dialog.select('Choose ROM scanner', scanner_options)
+ 
+    if selected_scanner is None:
+        # >> Exits context menu
+        logger.debug('SCAN_ROMS: cmd_execute_rom_scanner() Selected None. Closing context menu')
+        AppMediator.async_cmd('ROMCOLLECTION_MANAGE_ROMS', args)
+        return    
 
     logger.info('SCAN_ROMS: selected scanner "{}"'.format(selected_scanner.get_name()))
-
     kodi.run_script(
         selected_scanner.addon.get_addon_id(),
         selected_scanner.get_scan_command(romcollection))

@@ -780,6 +780,7 @@ class ROMCollectionRepository(object):
             
     def remove_rom_from_romcollection(self, romcollection_id: str, rom_id: str):
         self._uow.execute(QUERY_REMOVE_ROM_FROM_ROMCOLLECTION, rom_id, romcollection_id)
+        
     def delete_romcollection(self, romcollection_id: str):
         logger.info("ROMCollectionRepository.delete_romcollection(): Deleting romcollection '{}'".format(romcollection_id))
         self._uow.execute(QUERY_DELETE_ROMCOLLECTION, romcollection_id)
@@ -810,8 +811,8 @@ QUERY_SELECT_ROM_ASSETS_BY_SET  = "SELECT ra.* FROM vw_rom_assets AS ra INNER JO
 QUERY_INSERT_ROM                = """
                                 INSERT INTO roms (
                                     id, metadata_id, name, num_of_players, esrb_rating, platform, box_size,
-                                    nointro_status, cloneof, rom_status, file_path)
-                                VALUES (?,?,?,?,?,?,?,?,?,?,?)
+                                    nointro_status, cloneof, rom_status, file_path, scanned_by_id)
+                                VALUES (?,?,?,?,?,?,?,?,?,?,?,?)
                                 """ 
 
 QUERY_SELECT_MY_FAVOURITES               = "SELECT * FROM vw_roms WHERE is_favourite = 1"                                
@@ -834,6 +835,8 @@ QUERY_UPDATE_ROM                = """
                                   nointro_status=?, cloneof=?, rom_status=?, file_path=?, launch_count=?, last_launch_timestamp=?,
                                   is_favourite=? WHERE id =?
                                   """
+QUERY_DELETE_ROM               = "DELETE FROM roms WHERE id = ?"
+
 QUERY_SELECT_ROM_LAUNCHERS     = "SELECT * FROM vw_rom_launchers WHERE rom_id = ?"
 QUERY_INSERT_ROM_LAUNCHER      = "INSERT INTO rom_launchers (id, rom_id, ael_addon_id, settings, is_default) VALUES (?,?,?,?,?)"
 QUERY_UPDATE_ROM_LAUNCHER      = "UPDATE rom_launchers SET settings = ?, is_default = ? WHERE id = ?"
@@ -934,7 +937,8 @@ class ROMsRepository(object):
             rom_obj.get_nointro_status(),
             rom_obj.get_clone(),
             rom_obj.get_rom_status(),
-            rom_obj.get_file().getPath())
+            rom_obj.get_file().getPath(),
+            rom_obj.get_scanned_with())
         
         rom_assets = rom_obj.get_assets()
         for asset in rom_assets:
@@ -998,7 +1002,11 @@ class ROMsRepository(object):
                     rom_launcher.get_settings_str(), 
                     rom_launcher.is_default(),
                     rom_launcher.get_id())
-                    
+                
+    def delete_rom(self, rom_id: str):
+        logger.info("ROMsRepository.delete_rom(): Deleting ROM '{}'".format(rom_id))
+        self._uow.execute(QUERY_DELETE_ROM, rom_id)
+           
     def _insert_asset(self, asset: Asset, rom_obj: ROM):
         asset_db_id = text.misc_generate_random_SID()
         self._uow.execute(QUERY_INSERT_ASSET, asset_db_id, asset.get_path(), asset.get_asset_info_id())
@@ -1013,7 +1021,7 @@ class ROMsRepository(object):
 # AelAddonRepository -> AEL Adoon objects from SQLite DB
 #     
 QUERY_SELECT_ADDON              = "SELECT * FROM ael_addon WHERE id = ?"
-QUERY_SELECT_ADDON_BY_ADDON_ID  = "SELECT * FROM ael_addon WHERE addon_id = ?"
+QUERY_SELECT_ADDON_BY_ADDON_ID  = "SELECT * FROM ael_addon WHERE addon_id = ? AND addon_type = ?"
 QUERY_SELECT_ADDONS             = "SELECT * FROM ael_addon"
 QUERY_SELECT_LAUNCHER_ADDONS    = "SELECT * FROM ael_addon WHERE addon_type = 'LAUNCHER' ORDER BY name"
 QUERY_SELECT_SCANNER_ADDONS     = "SELECT * FROM ael_addon WHERE addon_type = 'SCANNER' ORDER BY name"
@@ -1031,8 +1039,8 @@ class AelAddonRepository(object):
         result_set = self._uow.single_result()
         return AelAddon(result_set)
 
-    def find_by_addon_id(self, addon_id:str) -> AelAddon:
-        self._uow.execute(QUERY_SELECT_ADDON_BY_ADDON_ID, addon_id)
+    def find_by_addon_id(self, addon_id:str, type: constants.AddonType) -> AelAddon:
+        self._uow.execute(QUERY_SELECT_ADDON_BY_ADDON_ID, addon_id, type.name)
         result_set = self._uow.single_result()
         return AelAddon(result_set)
 
