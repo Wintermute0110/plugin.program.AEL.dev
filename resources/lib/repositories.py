@@ -534,6 +534,7 @@ QUERY_INSERT_ROMCOLLECTION_ASSET_PATH          = "INSERT INTO romcollection_asse
 
 QUERY_INSERT_ROM_IN_ROMCOLLECTION        = "INSERT INTO roms_in_romcollection (rom_id, romcollection_id) VALUES (?,?)"
 QUERY_REMOVE_ROM_FROM_ROMCOLLECTION      = "DELETE FROM roms_in_romcollection WHERE rom_id = ? AND romcollection_id = ?"
+QUERY_REMOVE_ROMS_FROM_ROMCOLLECTION    =  "DELETE FROM roms_in_romcollection WHERE romcollection_id = ?"
 
 QUERY_SELECT_ROMCOLLECTION_LAUNCHERS     = "SELECT * FROM vw_romcollection_launchers WHERE romcollection_id = ?"
 QUERY_INSERT_ROMCOLLECTION_LAUNCHER      = "INSERT INTO romcollection_launchers (id, romcollection_id, ael_addon_id, settings, is_default) VALUES (?,?,?,?,?)"
@@ -781,6 +782,9 @@ class ROMCollectionRepository(object):
     def remove_rom_from_romcollection(self, romcollection_id: str, rom_id: str):
         self._uow.execute(QUERY_REMOVE_ROM_FROM_ROMCOLLECTION, rom_id, romcollection_id)
         
+    def remove_all_roms_in_launcher(self, romcollection_id: str):
+        self._uow.execute(QUERY_REMOVE_ROMS_FROM_ROMCOLLECTION, romcollection_id)
+        
     def delete_romcollection(self, romcollection_id: str):
         logger.info("ROMCollectionRepository.delete_romcollection(): Deleting romcollection '{}'".format(romcollection_id))
         self._uow.execute(QUERY_DELETE_ROMCOLLECTION, romcollection_id)
@@ -835,7 +839,8 @@ QUERY_UPDATE_ROM                = """
                                   nointro_status=?, cloneof=?, rom_status=?, file_path=?, launch_count=?, last_launch_timestamp=?,
                                   is_favourite=? WHERE id =?
                                   """
-QUERY_DELETE_ROM               = "DELETE FROM roms WHERE id = ?"
+QUERY_DELETE_ROM                = "DELETE FROM roms WHERE id = ?"
+QUERY_DELETE_ROMS_BY_COLLECTION = "DELETE FROM roms WHERE id IN (SELECT rc.rom_id FROM roms_in_romcollection AS rc WHERE rc.romcollection_id = ?)"
 
 QUERY_SELECT_ROM_LAUNCHERS     = "SELECT * FROM vw_rom_launchers WHERE rom_id = ?"
 QUERY_INSERT_ROM_LAUNCHER      = "INSERT INTO rom_launchers (id, rom_id, ael_addon_id, settings, is_default) VALUES (?,?,?,?,?)"
@@ -1006,6 +1011,9 @@ class ROMsRepository(object):
     def delete_rom(self, rom_id: str):
         logger.info("ROMsRepository.delete_rom(): Deleting ROM '{}'".format(rom_id))
         self._uow.execute(QUERY_DELETE_ROM, rom_id)
+    
+    def delete_roms_by_romcollection(self, romcollection_id:str):
+        self._uow.execute(QUERY_DELETE_ROMS_BY_COLLECTION, romcollection_id)
            
     def _insert_asset(self, asset: Asset, rom_obj: ROM):
         asset_db_id = text.misc_generate_random_SID()

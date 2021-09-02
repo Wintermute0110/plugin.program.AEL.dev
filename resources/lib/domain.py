@@ -384,7 +384,7 @@ class MetaDataItemABC(EntityABC):
         
         return asset.get_path_FN()
         
-    def set_asset(self, asset_info, path_FN: io.FileName):
+    def set_asset(self, asset_info: AssetInfo, path_FN: io.FileName):
         path = path_FN.getPath() if path_FN else ''
         
         asset = self.get_asset(asset_info.id)
@@ -736,6 +736,7 @@ class ScraperAddon(ROMAddon):
             '--type': constants.AddonType.SCRAPER.name,
             '--server_host': globals.WEBSERVER_HOST,
             '--server_port': globals.WEBSERVER_PORT,
+            '--ael_addon_id': self.addon.get_id(),
             '--rom_id': rom.get_id(),
             '--settings':  io.parse_to_json_arg(self.get_settings())
         }
@@ -1154,6 +1155,11 @@ class ROM(MetaDataItemABC):
     
     def get_default_icon(self) -> str: return 'DefaultProgram.png' 
     
+    def create_dto(self) -> ROMObj:
+        dto_data = ROMObj.get_template()
+        #for key in dto_data.ke
+        return ROMObj(dto_data)
+    
     #
     # Reads an NFO file with ROM information.
     # See comments in fs_export_ROM_NFO() about verbosity.
@@ -1230,10 +1236,36 @@ class ROM(MetaDataItemABC):
         full_string = ''.join(nfo_content)
         nfo_FileName.writeAll(full_string)
     
-    def update_with(self, api_rom_obj: ROMObj):
-        file = api_rom_obj.get_file()
-        if file is not None:
-            self.set_file(file)
+    # 
+    # Updates an ROM entity with the API object given.
+    # Flags indicate which elements are allowed to be updated/altered with the incoming data.
+    #
+    def update_with(self, api_rom_obj: ROMObj, update_meta=False, update_assets=False, update_launcher_data=False):
+        
+        if update_meta:
+            if api_rom_obj.get_name() is not None:              self.set_name(api_rom_obj.get_name())
+            if api_rom_obj.get_plot() is not None:              self.set_plot(api_rom_obj.get_plot())
+            if api_rom_obj.get_releaseyear() is not None:       self.set_releaseyear(api_rom_obj.get_releaseyear())
+            if api_rom_obj.get_genre() is not None:             self.set_genre(api_rom_obj.get_genre())
+            if api_rom_obj.get_developer() is not None:         self.set_developer(api_rom_obj.get_developer())
+            if api_rom_obj.get_number_of_players() is not None: self.set_number_of_players(api_rom_obj.get_number_of_players())
+            if api_rom_obj.get_esrb_rating() is not None:       self.set_esrb_rating(api_rom_obj.get_esrb_rating())
+            if api_rom_obj.get_rating() is not None:            self.set_rating(api_rom_obj.get_rating())
+        
+        if update_assets:
+            for asset_id in self.get_asset_ids_list():
+                if api_rom_obj.get_asset_path(asset_id) is not None: 
+                    if asset_id == constants.ASSET_TRAILER_ID:
+                        self.set_trailer(api_rom_obj.get_asset_path(asset_id))
+                    else:
+                        asset_info = g_assetFactory.get_asset_info(asset_id)
+                        asset_path = io.FileName(api_rom_obj.get_asset_path(asset_id))
+                        self.set_asset(asset_info, asset_path)
+        
+        if update_launcher_data:
+            file = api_rom_obj.get_file()
+            if file is not None:
+                self.set_file(file)
         
     def apply_romcollection_asset_mapping(self, romcollection: ROMCollection):
         mappable_assets = romcollection.get_ROM_mappable_asset_list()
@@ -1399,7 +1431,7 @@ class AssetInfoFactory(object):
                 logger.debug('assets_search_local_assets() Disabled {0:<9}'.format(AInfo.name))
                 continue
             asset_path = launcher.get_asset_path(AInfo)
-            local_asset = misc_look_for_file(asset_path, ROMFile.getBaseNoExt(), AInfo.exts)
+            local_asset = io.misc_look_for_file(asset_path, ROMFile.getBaseNoExt(), AInfo.exts)
 
             if local_asset:
                 local_asset_list[i] = local_asset.getPath()

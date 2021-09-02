@@ -313,3 +313,43 @@ def cmd_import_roms_json(args):
     AppMediator.async_cmd('RENDER_ROMCOLLECTION_VIEW', {'romcollection_id': romcollection_id})
     AppMediator.async_cmd('RENDER_VIEW', {'category_id': romcollection.get_parent_id()})  
     kodi.notify('Finished importing ROMS')
+
+# --- Empty Launcher ROMs ---
+@AppMediator.register('CLEAR_ROMS')
+def cmd_clear_roms(args):
+    romcollection_id:str = args['romcollection_id'] if 'romcollection_id' in args else None
+    
+    uow = UnitOfWork(globals.g_PATHS.DATABASE_FILE_PATH)
+    with uow:
+        collection_repository   = ROMCollectionRepository(uow)
+        roms_repository         = ROMsRepository(uow)
+        
+        romcollection = collection_repository.find_romcollection(romcollection_id)
+        roms = roms_repository.find_roms_by_romcollection(romcollection_id)
+        
+        # If collection is empty (no ROMs) do nothing
+        num_roms = len([*roms])
+        if num_roms == 0:
+            kodi.dialog_OK('Collection has no ROMs. Nothing to do.')
+            return
+
+        # Confirm user wants to delete ROMs    
+        ret = kodi.dialog_yesno("Collection '{0}' has {1} ROMs. Are you sure you want to clear them "
+                                "from this collection?".format(romcollection.get_name(), num_roms))
+        if not ret: return
+
+        # --- If there is a No-Intro XML DAT configured remove it ---
+        # TODO fix
+        # romcollection.reset_nointro_xmldata()
+
+        # Confirm if the user wants to remove the ROMs also when linked to other collections.
+        delete_completely = kodi.dialog_yesno("Delete the ROMs completely from the AEL database and not collection only?")
+        if not delete_completely: 
+            collection_repository.remove_all_roms_in_launcher(romcollection_id)
+        else:
+            roms_repository.delete_roms_by_romcollection(romcollection_id)        
+        uow.commit()
+        
+    AppMediator.async_cmd('RENDER_ROMCOLLECTION_VIEW', {'romcollection_id': romcollection_id})
+    AppMediator.async_cmd('RENDER_VIEW', {'category_id': romcollection.get_parent_id()})  
+    kodi.notify('Cleared ROMs from collection')

@@ -20,7 +20,6 @@ from __future__ import unicode_literals
 from __future__ import division
 
 import logging
-import typing
 import json
 
 # AEL modules
@@ -37,9 +36,9 @@ def qry_get_rom(rom_id: str) -> str:
         rom = rom_repository.find_rom(rom_id)
         
         if rom is None: return None
-                
-        data = rom.get_data_dic()
-        return json.dumps(data)
+        
+        rom_dto = rom.create_dto()
+        return json.dumps(rom_dto)
 
 def qry_get_rom_collection(collection_id: str) -> str:
     uow = UnitOfWork(globals.g_PATHS.DATABASE_FILE_PATH)
