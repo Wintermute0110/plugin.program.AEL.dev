@@ -1156,8 +1156,14 @@ class ROM(MetaDataItemABC):
     def get_default_icon(self) -> str: return 'DefaultProgram.png' 
     
     def create_dto(self) -> ROMObj:
-        dto_data = ROMObj.get_template()
-        #for key in dto_data.ke
+        dto_data:dict = ROMObj.get_data_template()
+        for key in dto_data.keys:
+            if key in self.entity_data: dto_data[key] = self.entity_data[key]
+            
+        for asset_id in self.get_asset_ids_list():
+            asset_info = g_assetFactory.get_asset_info(asset_id)
+            self.get_[] = self.entity_data[asset_info.path_key]
+            
         return ROMObj(dto_data)
     
     #
