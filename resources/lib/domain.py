@@ -197,6 +197,39 @@ class Asset(EntityABC):
         asset.set_asset_info(asset_info)
         return asset
         
+class AssetPath(EntityABC):
+        
+    def __init__(self, entity_data: typing.Dict[str, typing.Any] = None):
+        self.asset_info:AssetInfo = None
+        if entity_data is None:
+            entity_data = _get_default_asset_path_data_model()
+        
+        if 'asset_type' in entity_data and entity_data['asset_type']:
+            self.asset_info = g_assetFactory.get_asset_info(entity_data['asset_type'])
+        
+        super(Asset, self).__init__(entity_data)
+    
+    def get_asset_info_id(self) -> str:
+        return self.asset_info.id 
+    
+    def get_asset_info(self) -> AssetInfo:
+        return self.asset_info
+    
+    def get_path(self) -> str:
+        return self.entity_data['path']
+    
+    def get_path_FN(self) -> io.FileName:
+        return self._get_value_as_filename('path')
+    
+    def set_path(self, path_str):
+        self.entity_data['path'] = path_str
+    
+    def set_asset_info(self, info:AssetInfo): 
+        self.asset_info = info
+    
+    def clear(self):
+        self.entity_data['path'] = None
+        
 # -------------------------------------------------------------------------------------------------
 # Abstract base class for business objects which support the generic
 # metadata fields and assets.
@@ -766,6 +799,7 @@ class ROMCollection(MetaDataItemABC):
     def __init__(self, 
                  entity_data: dict = None, 
                  assets_data: typing.List[Asset] = None,
+                 assets_paths: typing.List[AssetPath] = None,
                  launchers_data: typing.List[ROMLauncherAddon] = [], 
                  scanners_data: typing.List[ROMCollectionScanner] = []):
         # Concrete classes are responsible of creating a default entity_data dictionary
@@ -773,6 +807,11 @@ class ROMCollection(MetaDataItemABC):
         if entity_data is None:
             entity_data = _get_default_ROMCollection_data_model()
             entity_data['id'] = text.misc_generate_random_SID()
+            
+        self.assets_paths: typing.Dict[str, AssetPath] = {}
+        if assets_paths is not None:
+            for path in assets_paths:
+                self.assets_paths[path.get_asset_info_id()] = path
             
         self.launchers_data = launchers_data
         self.scanners_data = scanners_data
@@ -799,13 +838,22 @@ class ROMCollection(MetaDataItemABC):
 
     def get_default_icon(self) -> str: return 'DefaultFolder.png' 
 
+    def get_asset_paths(self) -> typing.List[AssetPath]:
+        return self.assets_paths.values()
+
     def get_asset_path(self, asset_info: AssetInfo) -> io.FileName:
         if not asset_info: return None
-        return self._get_value_as_filename(asset_info.path_key)
+        if asset_info.id in self.assets_paths:
+            return self.assets_paths[asset_info.id].get_path_FN()
+        
+        return None
 
     def set_asset_path(self, asset_info: AssetInfo, path: str):
-        logger.debug('Setting "{}" to {}'.format(asset_info.path_key, path))
-        self.entity_data[asset_info.path_key] = path
+        logger.debug('Setting "{}" to {}'.format(asset_info.id, path))
+        asset_path = self.assets_paths[asset_info.id] if asset_info.id in self.assets_paths else AssetPath()
+        asset_path.set_path(path)
+        
+        self.assets_paths[asset_info.id] = asset_path
 
     def get_ROM_mappable_asset_list(self) -> typing.List[AssetInfo]:
         return g_assetFactory.get_asset_list_by_IDs(constants.MAPPABLE_ROM_ASSET_ID_LIST)
@@ -1022,11 +1070,13 @@ class ROM(MetaDataItemABC):
     def __init__(self, 
                  rom_data: dict = None, 
                  assets_data: typing.List[Asset] = None,
+                 asset_paths_data: typing.List[AssetPath] = None,
                  launchers_data: typing.List[ROMLauncherAddon] = []):
         if rom_data is None:
             rom_data = _get_default_ROM_data_model()
             rom_data['id'] = text.misc_generate_random_SID()
         
+        self.asset_paths = asset_paths_data
         self.launchers_data = launchers_data
         super(ROM, self).__init__(rom_data, assets_data)
         
@@ -1157,12 +1207,14 @@ class ROM(MetaDataItemABC):
     
     def create_dto(self) -> ROMObj:
         dto_data:dict = ROMObj.get_data_template()
-        for key in dto_data.keys:
+        for key in dto_data.keys():
             if key in self.entity_data: dto_data[key] = self.entity_data[key]
             
         for asset_id in self.get_asset_ids_list():
             asset_info = g_assetFactory.get_asset_info(asset_id)
-            self.get_[] = self.entity_data[asset_info.path_key]
+            asset = self.get_asset(asset_id)
+            dto_data['asset_paths'][asset_id] = self.entity_data[asset_info.path_key] if asset_info.path_key in self.entity_data else None
+            dto_data['assets'][asset_id] = asset.get_path() if asset is not None else None
             
         return ROMObj(dto_data)
     
@@ -1959,6 +2011,13 @@ def _get_default_asset_data_model():
     return {
         'id' : '',
         'filepath' : '',
+        'asset_type' : ''
+    }
+    
+def _get_default_asset_path_data_model():
+    return {
+        'id' : '',
+        'path' : '',
         'asset_type' : ''
     }
     

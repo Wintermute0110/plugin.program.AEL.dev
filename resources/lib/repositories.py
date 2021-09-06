@@ -10,7 +10,7 @@ from ael.utils import text, io
 from ael import constants
 
 from resources.lib import globals
-from resources.lib.domain import Category, ROMCollection, ROM, ROMLauncherAddon, Asset, AelAddon, ROMCollectionScanner, g_assetFactory
+from resources.lib.domain import Category, ROMCollection, ROM, ROMLauncherAddon, Asset, AssetPath, AelAddon, ROMCollectionScanner, g_assetFactory
 
 logger = logging.getLogger(__name__)
 
@@ -341,6 +341,7 @@ QUERY_INSERT_ASSET          = "INSERT INTO assets (id, filepath, asset_type) VAL
 QUERY_INSERT_ASSET_PATH     = "INSERT INTO assetspaths (id, path, asset_type) VALUES (?,?,?)"
 QUERY_UPDATE_METADATA       = "UPDATE metadata SET year=?, genre=?, developer=?, rating=?, plot=?, assets_path=?, finished=? WHERE id=?"
 QUERY_UPDATE_ASSET          = "UPDATE assets SET filepath = ?, asset_type = ? WHERE id = ?"
+QUERY_UPDATE_ASSET_PATH     = "UPDATE assetspaths SET path = ?, asset_type = ? WHERE id = ?"
 
 #
 # CategoryRepository -> Category from SQLite DB
@@ -692,6 +693,10 @@ class ROMCollectionRepository(object):
         for asset in romcollection_assets: 
             self._insert_asset(asset, romcollection_obj)  
             
+        asset_paths = romcollection_obj.get_asset_paths()
+        for asset_path in asset_paths:
+            self._insert_asset_path(asset_path, romcollection_obj)
+            
         romcollection_launchers = romcollection_obj.get_launchers()
         for romcollection_launcher in romcollection_launchers:
             romcollection_launcher.set_id(text.misc_generate_random_SID())
@@ -774,7 +779,11 @@ class ROMCollectionRepository(object):
 
         for asset in romcollection_obj.get_assets():
             if asset.get_id() == '': self._insert_asset(asset, romcollection_obj)
-            else: self._update_asset(asset, romcollection_obj)                
+            else: self._update_asset(asset, romcollection_obj)   
+                  
+        for asset_path in romcollection_obj.get_asset_paths():
+            if asset_path.get_id() == '': self._insert_asset_path(asset_path, romcollection_obj)
+            else: self._update_asset_path(asset_path, romcollection_obj)           
             
     def add_rom_to_romcollection(self, romcollection_id: str, rom_id: str):
         self._uow.execute(QUERY_INSERT_ROM_IN_ROMCOLLECTION, rom_id, romcollection_id)
@@ -798,12 +807,22 @@ class ROMCollectionRepository(object):
     def _insert_asset(self, asset: Asset, romcollection_obj: ROMCollection):
         asset_db_id = text.misc_generate_random_SID()
         self._uow.execute(QUERY_INSERT_ASSET, asset_db_id, asset.get_path(), asset.get_asset_info_id())
-        self._uow.execute(QUERY_INSERT_ROMCOLLECTION_ASSET, romcollection_obj.get_id(), asset_db_id)   
+        self._uow.execute(QUERY_INSERT_ROMCOLLECTION_ASSET, romcollection_obj.get_id(), asset_db_id)
     
     def _update_asset(self, asset: Asset, romcollection_obj: ROMCollection):
         self._uow.execute(QUERY_UPDATE_ASSET, asset.get_path(), asset.get_asset_info_id(), asset.get_id())
         if asset.get_custom_attribute('romcollection_id') is None:
-            self._uow.execute(QUERY_INSERT_ROMCOLLECTION_ASSET, romcollection_obj.get_id(), asset.get_id())   
+            self._uow.execute(QUERY_INSERT_ROMCOLLECTION_ASSET, romcollection_obj.get_id(), asset.get_id())     
+    
+    def _insert_asset_path(self, asset_path: AssetPath, romcollection_obj: ROMCollection):
+        asset_db_id = text.misc_generate_random_SID()
+        self._uow.execute(QUERY_INSERT_ASSET_PATH, asset_db_id, asset_path.get_path(), asset_path.get_asset_info_id())
+        self._uow.execute(QUERY_INSERT_ROMCOLLECTION_ASSET_PATH, romcollection_obj.get_id(), asset_db_id)    
+        
+    def _update_asset_path(self, asset_path: AssetPath, romcollection_obj: ROMCollection):
+        self._uow.execute(QUERY_UPDATE_ASSET_PATH, asset_path.get_path(), asset_path.get_asset_info_id(), asset_path.get_id())
+        if asset_path.get_custom_attribute('romcollection_id') is None:
+            self._uow.execute(QUERY_INSERT_ROMCOLLECTION_ASSET_PATH, romcollection_obj.get_id(), asset_path.get_id())     
             
 #
 # ROMsRepository -> ROMs from SQLite DB
