@@ -1219,7 +1219,7 @@ class ROM(MetaDataItemABC):
         if asset_info.id in self.asset_paths:
             return self.asset_paths[asset_info.id].get_path_FN()
         
-        return None
+        return self.get_assets_root_path().pjoin(asset_info.plural.lower(), isdir=True)
 
     def set_asset_path(self, asset_info: AssetInfo, path: str):
         logger.debug('Setting "{}" to {}'.format(asset_info.id, path))
