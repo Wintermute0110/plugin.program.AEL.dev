@@ -229,7 +229,7 @@ class AssetPath(EntityABC):
     
     def clear(self):
         self.entity_data['path'] = None
-        
+         
 # -------------------------------------------------------------------------------------------------
 # Abstract base class for business objects which support the generic
 # metadata fields and assets.
@@ -369,7 +369,7 @@ class MetaDataItemABC(EntityABC):
     # --- Assets/artwork --------------------------------------------------------------------------
     def has_asset(self, asset_info: AssetInfo) -> bool:
         if not asset_info.id in self.assets: return False
-        return self.assets[asset_info.id] != None and self.asset[asset_info.id].get_path() != ''
+        return self.assets[asset_info.id] != None and self.assets[asset_info.id].get_path() != ''
 
     def get_asset(self, asset_id: str) -> Asset:
         return self.assets[asset_id] if asset_id in self.assets else None
@@ -401,15 +401,13 @@ class MetaDataItemABC(EntityABC):
         if asset_info is not None: asset_id = asset_info.id
         
         asset = self.get_asset(asset_id)
-        
         if asset is not None:
             path = asset.get_path()
-            if path != '':
-                return path
+            if path != '': return path
             
         return fallback
             
-    def get_asset_FN(self, asset_info):
+    def get_asset_FN(self, asset_info: AssetInfo) -> io.FileName:
         if asset_info is None: return None
         
         asset = self.get_asset(asset_info.id)
@@ -425,14 +423,18 @@ class MetaDataItemABC(EntityABC):
                         
         self.assets[asset_info.id].set_path(path)
         
-    def clear_asset(self, asset_info):
+    def clear_asset(self, asset_info: AssetInfo):
         asset = self.get_asset(asset_info.id)
         if asset is None: self.assets[asset_info.id] = Asset.create(asset_info.id)
         asset.clear()
-
-    def get_assets_path_FN(self):
-        return self._get_directory_filename_from_field('assets_path')        
-
+        
+    def get_assets_root_path(self) -> io.FileName:
+        return self._get_directory_filename_from_field('assets_path')  
+    
+    def set_assets_root_path(self, path: io.FileName):
+        path_str = path.getPath() if path else ''        
+        self.entity_data['assets_path'] = path_str
+    
     @abc.abstractmethod
     def get_asset_ids_list(self) -> typing.List[str]: pass
     
@@ -799,7 +801,7 @@ class ROMCollection(MetaDataItemABC):
     def __init__(self, 
                  entity_data: dict = None, 
                  assets_data: typing.List[Asset] = None,
-                 assets_paths: typing.List[AssetPath] = None,
+                 asset_paths: typing.List[AssetPath] = None,
                  launchers_data: typing.List[ROMLauncherAddon] = [], 
                  scanners_data: typing.List[ROMCollectionScanner] = []):
         # Concrete classes are responsible of creating a default entity_data dictionary
@@ -808,10 +810,10 @@ class ROMCollection(MetaDataItemABC):
             entity_data = _get_default_ROMCollection_data_model()
             entity_data['id'] = text.misc_generate_random_SID()
             
-        self.assets_paths: typing.Dict[str, AssetPath] = {}
-        if assets_paths is not None:
-            for path in assets_paths:
-                self.assets_paths[path.get_asset_info_id()] = path
+        self.asset_paths: typing.Dict[str, AssetPath] = {}
+        if asset_paths is not None:
+            for path in asset_paths:
+                self.asset_paths[path.get_asset_info_id()] = path
             
         self.launchers_data = launchers_data
         self.scanners_data = scanners_data
@@ -836,24 +838,24 @@ class ROMCollection(MetaDataItemABC):
 
     def get_mappable_asset_ids_list(self): return constants.MAPPABLE_LAUNCHER_ASSET_ID_LIST
 
-    def get_default_icon(self) -> str: return 'DefaultFolder.png' 
-
+    def get_default_icon(self) -> str: return 'DefaultFolder.png'   
+    
     def get_asset_paths(self) -> typing.List[AssetPath]:
-        return self.assets_paths.values()
+        return self.asset_paths.values()
 
     def get_asset_path(self, asset_info: AssetInfo) -> io.FileName:
         if not asset_info: return None
-        if asset_info.id in self.assets_paths:
-            return self.assets_paths[asset_info.id].get_path_FN()
+        if asset_info.id in self.asset_paths:
+            return self.asset_paths[asset_info.id].get_path_FN()
         
-        return None
+        return self.get_assets_root_path().pjoin(asset_info.plural.lower(), isdir=True)
 
     def set_asset_path(self, asset_info: AssetInfo, path: str):
         logger.debug('Setting "{}" to {}'.format(asset_info.id, path))
-        asset_path = self.assets_paths[asset_info.id] if asset_info.id in self.assets_paths else AssetPath()
+        asset_path = self.asset_paths[asset_info.id] if asset_info.id in self.asset_paths else AssetPath()
         asset_path.set_path(path)
         
-        self.assets_paths[asset_info.id] = asset_path
+        self.asset_paths[asset_info.id] = asset_path
 
     def get_ROM_mappable_asset_list(self) -> typing.List[AssetInfo]:
         return g_assetFactory.get_asset_list_by_IDs(constants.MAPPABLE_ROM_ASSET_ID_LIST)
@@ -1076,7 +1078,11 @@ class ROM(MetaDataItemABC):
             rom_data = _get_default_ROM_data_model()
             rom_data['id'] = text.misc_generate_random_SID()
         
-        self.asset_paths = asset_paths_data
+        self.asset_paths: typing.Dict[str, AssetPath] = {}
+        if asset_paths_data is not None:
+            for path in asset_paths_data:
+                self.asset_paths[path.get_asset_info_id()] = path
+        
         self.launchers_data = launchers_data
         super(ROM, self).__init__(rom_data, assets_data)
         
@@ -1205,6 +1211,23 @@ class ROM(MetaDataItemABC):
     
     def get_default_icon(self) -> str: return 'DefaultProgram.png' 
     
+    def get_asset_paths(self) -> typing.List[AssetPath]:
+        return self.asset_paths.values()
+
+    def get_asset_path(self, asset_info: AssetInfo) -> io.FileName:
+        if not asset_info: return None
+        if asset_info.id in self.asset_paths:
+            return self.asset_paths[asset_info.id].get_path_FN()
+        
+        return None
+
+    def set_asset_path(self, asset_info: AssetInfo, path: str):
+        logger.debug('Setting "{}" to {}'.format(asset_info.id, path))
+        asset_path = self.asset_paths[asset_info.id] if asset_info.id in self.asset_paths else AssetPath()
+        asset_path.set_path(path)
+        
+        self.asset_paths[asset_info.id] = asset_path
+    
     def create_dto(self) -> ROMObj:
         dto_data:dict = ROMObj.get_data_template()
         for key in dto_data.keys():
@@ -1213,7 +1236,9 @@ class ROM(MetaDataItemABC):
         for asset_id in self.get_asset_ids_list():
             asset_info = g_assetFactory.get_asset_info(asset_id)
             asset = self.get_asset(asset_id)
-            dto_data['asset_paths'][asset_id] = self.entity_data[asset_info.path_key] if asset_info.path_key in self.entity_data else None
+            asset_path = self.get_asset_path(asset_info)
+            
+            dto_data['asset_paths'][asset_id] = asset_path.getPath() if asset_path is not None else None
             dto_data['assets'][asset_id] = asset.get_path() if asset is not None else None
             
         return ROMObj(dto_data)
@@ -1324,7 +1349,13 @@ class ROM(MetaDataItemABC):
             file = api_rom_obj.get_file()
             if file is not None:
                 self.set_file(file)
-        
+    
+    def apply_romcollection_asset_paths(self, romcollection: ROMCollection):
+        self.set_asset_root_path(romcollection.get_assets_root_path())
+        self.asset_paths = {}
+        for assetpath in romcollection.get_asset_paths():
+            self.asset_paths[assetpath.get_asset_info_id()] = assetpath
+            
     def apply_romcollection_asset_mapping(self, romcollection: ROMCollection):
         mappable_assets = romcollection.get_ROM_mappable_asset_list()
         for mappable_asset in mappable_assets:
@@ -1341,12 +1372,9 @@ class ROM(MetaDataItemABC):
 #
 class AssetInfoFactory(object):
         
-    def __init__(self):
-        
+    def __init__(self):        
         # default collections
-        self.ASSET_INFO_ID_DICT = {} # ID -> object
-        self.ASSET_INFO_KEY_DICT = {} # Key -> object
-        
+        self.ASSET_INFO_ID_DICT:typing.Dict[str,AssetInfo] = {} # ID -> object        
         self._load_asset_data()
         
     # -------------------------------------------------------------------------------------------------
@@ -1367,14 +1395,25 @@ class AssetInfoFactory(object):
     # Returns the corresponding assetinfo object for the
     # given key (eg: 's_icon')
     def get_asset_info_by_key(self, asset_key):
-        asset_info = self.ASSET_INFO_KEY_DICT.get(asset_key, None)
+        asset_info = next((a for a in self.ASSET_INFO_ID_DICT.values() if a.key == asset_key), None)
 
         if asset_info is None:
             logger.error('get_asset_info_by_key() Wrong asset_key = {0}'.format(asset_key))
             return AssetInfo()
 
         return asset_info 
-          
+             
+    # Returns the corresponding assetinfo object for the
+    # given path key (eg: 'path_icon')
+    def get_asset_info_by_pathkey(self, path_key):
+        asset_info = next((a for a in self.ASSET_INFO_ID_DICT.values() if a.path_key == path_key), None)
+
+        if asset_info is None:
+            logger.error('get_asset_info_by_pathkey() Wrong path key = {0}'.format(path_key))
+            return None
+
+        return asset_info
+    
     def get_assets_for_type(self, asset_kind) -> typing.List[AssetInfo]:
         if asset_kind == constants.KIND_ASSET_CATEGORY:
             return self.get_asset_list_by_IDs(constants.CATEGORY_ASSET_ID_LIST)
@@ -1604,7 +1643,6 @@ class AssetInfoFactory(object):
         a.exts_dialog                   = self.asset_get_dialog_extension_list(constants.IMAGE_EXTENSION_LIST)
         a.path_key                      = 'path_icon'        
         self.ASSET_INFO_ID_DICT[a.id]   = a
-        self.ASSET_INFO_KEY_DICT[a.key] = a
 
         a = AssetInfo()
         a.id                            = constants.ASSET_FANART_ID
@@ -1619,7 +1657,6 @@ class AssetInfoFactory(object):
         a.exts_dialog                   = self.asset_get_dialog_extension_list(constants.IMAGE_EXTENSION_LIST)
         a.path_key                      = 'path_fanart'
         self.ASSET_INFO_ID_DICT[a.id]   = a
-        self.ASSET_INFO_KEY_DICT[a.key] = a
 
         a = AssetInfo()
         a.id                            = constants.ASSET_BANNER_ID
@@ -1635,7 +1672,6 @@ class AssetInfoFactory(object):
         a.exts_dialog                   = self.asset_get_dialog_extension_list(constants.IMAGE_EXTENSION_LIST)
         a.path_key                      = 'path_banner'
         self.ASSET_INFO_ID_DICT[a.id]   = a
-        self.ASSET_INFO_KEY_DICT[a.key] = a
 
         a = AssetInfo()        
         a.id                            = constants.ASSET_POSTER_ID
@@ -1650,7 +1686,6 @@ class AssetInfoFactory(object):
         a.exts_dialog                   = self.asset_get_dialog_extension_list(constants.IMAGE_EXTENSION_LIST)
         a.path_key                      = 'path_poster'
         self.ASSET_INFO_ID_DICT[a.id]   = a
-        self.ASSET_INFO_KEY_DICT[a.key] = a
 
         a = AssetInfo()
         a.id                            = constants.ASSET_CLEARLOGO_ID
@@ -1665,7 +1700,6 @@ class AssetInfoFactory(object):
         a.exts_dialog                   = self.asset_get_dialog_extension_list(constants.IMAGE_EXTENSION_LIST)
         a.path_key                      = 'path_clearlogo'
         self.ASSET_INFO_ID_DICT[a.id]   = a
-        self.ASSET_INFO_KEY_DICT[a.key] = a
 
         a = AssetInfo()
         a.id                            = constants.ASSET_CONTROLLER_ID
@@ -1679,8 +1713,7 @@ class AssetInfoFactory(object):
         a.exts_dialog                   = self.asset_get_dialog_extension_list(constants.IMAGE_EXTENSION_LIST)
         a.path_key                      = 'path_controller'
         self.ASSET_INFO_ID_DICT[a.id]   = a
-        self.ASSET_INFO_KEY_DICT[a.key] = a
-
+        
         a = AssetInfo()
         a.id                            = constants.ASSET_TRAILER_ID
         a.key                           = 's_trailer'
@@ -1692,7 +1725,6 @@ class AssetInfoFactory(object):
         a.exts_dialog                   = self.asset_get_dialog_extension_list(constants.TRAILER_EXTENSION_LIST)
         a.path_key                      = 'path_trailer'
         self.ASSET_INFO_ID_DICT[a.id]   = a
-        self.ASSET_INFO_KEY_DICT[a.key] = a
 
         a = AssetInfo()
         a.id                            = constants.ASSET_TITLE_ID
@@ -1707,7 +1739,6 @@ class AssetInfoFactory(object):
         a.exts_dialog                   = self.asset_get_dialog_extension_list(constants.IMAGE_EXTENSION_LIST)
         a.path_key                      = 'path_title'
         self.ASSET_INFO_ID_DICT[a.id]   = a
-        self.ASSET_INFO_KEY_DICT[a.key] = a
 
         a = AssetInfo()
         a.id                            = constants.ASSET_SNAP_ID
@@ -1720,7 +1751,6 @@ class AssetInfoFactory(object):
         a.exts_dialog                   = self.asset_get_dialog_extension_list(constants.IMAGE_EXTENSION_LIST)
         a.path_key                      = 'path_snap'
         self.ASSET_INFO_ID_DICT[a.id]   = a
-        self.ASSET_INFO_KEY_DICT[a.key] = a
 
         a = AssetInfo()
         a.id                            = constants.ASSET_BOXFRONT_ID
@@ -1734,7 +1764,6 @@ class AssetInfoFactory(object):
         a.exts_dialog                   = self.asset_get_dialog_extension_list(constants.IMAGE_EXTENSION_LIST)
         a.path_key                      = 'path_boxfront'
         self.ASSET_INFO_ID_DICT[a.id]   = a
-        self.ASSET_INFO_KEY_DICT[a.key] = a
 
         a = AssetInfo()
         a.id                            = constants.ASSET_BOXBACK_ID
@@ -1748,7 +1777,6 @@ class AssetInfoFactory(object):
         a.exts_dialog                   = self.asset_get_dialog_extension_list(constants.IMAGE_EXTENSION_LIST)
         a.path_key                      = 'path_boxback'
         self.ASSET_INFO_ID_DICT[a.id]   = a
-        self.ASSET_INFO_KEY_DICT[a.key] = a
 
         a = AssetInfo()
         a.id                            = constants.ASSET_CARTRIDGE_ID
@@ -1762,7 +1790,6 @@ class AssetInfoFactory(object):
         a.exts_dialog                   = self.asset_get_dialog_extension_list(constants.IMAGE_EXTENSION_LIST)
         a.path_key                      = 'path_cartridge'
         self.ASSET_INFO_ID_DICT[a.id]   = a
-        self.ASSET_INFO_KEY_DICT[a.key] = a
 
         a = AssetInfo()
         a.id                            = constants.ASSET_FLYER_ID
@@ -1776,7 +1803,6 @@ class AssetInfoFactory(object):
         a.exts_dialog                   = self.asset_get_dialog_extension_list(constants.IMAGE_EXTENSION_LIST)
         a.path_key                      = 'path_flyer'
         self.ASSET_INFO_ID_DICT[a.id]   = a
-        self.ASSET_INFO_KEY_DICT[a.key] = a
 
         a = AssetInfo()
         a.id                            = constants.ASSET_MAP_ID
@@ -1789,7 +1815,6 @@ class AssetInfoFactory(object):
         a.exts_dialog                   = self.asset_get_dialog_extension_list(constants.IMAGE_EXTENSION_LIST)
         a.path_key                      = 'path_map'
         self.ASSET_INFO_ID_DICT[a.id]   = a
-        self.ASSET_INFO_KEY_DICT[a.key] = a
 
         a = AssetInfo()
         a.id                            = constants.ASSET_MANUAL_ID
@@ -1802,19 +1827,18 @@ class AssetInfoFactory(object):
         a.exts_dialog                   = self.asset_get_dialog_extension_list(constants.MANUAL_EXTENSION_LIST)
         a.path_key                      = 'path_manual'
         self.ASSET_INFO_ID_DICT[a.id]   = a
-        self.ASSET_INFO_KEY_DICT[a.key] = a
 
         a = AssetInfo()
         a.id                            = constants.ASSET_3DBOX_ID
         a.key                           = 's_3dbox'
         a.name                          = '3D Box'
+        a.plural                        = '3D Boxes'
         a.fname_infix                   = '3dbox'
         a.kind_str                      = 'image'
         a.exts                          = self.asset_get_filesearch_extension_list(constants.IMAGE_EXTENSION_LIST)
         a.exts_dialog                   = self.asset_get_dialog_extension_list(constants.IMAGE_EXTENSION_LIST)
         a.path_key                      = 'path_3dbox'
         self.ASSET_INFO_ID_DICT[a.id]   = a
-        self.ASSET_INFO_KEY_DICT[a.key] = a
 
 # --- Global object to get asset info ---
 g_assetFactory = AssetInfoFactory()

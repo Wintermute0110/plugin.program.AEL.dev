@@ -106,13 +106,14 @@ def cmd_store_scanned_roms(args) -> bool:
         rom_repository           = ROMsRepository(uow)
         
         romcollection = romcollection_repository.find_romcollection(romcollection_id)
-
+        
         for rom_data in new_roms:
             api_rom_obj = ROMObj(rom_data)
             
             rom_obj = ROM()
             rom_obj.update_with(api_rom_obj, update_launcher_data=True)
             rom_obj.scanned_with(scanner_id)
+            rom_obj.apply_romcollection_asset_paths(romcollection)
             
             rom_repository.insert_rom(rom_obj)
             romcollection_repository.add_rom_to_romcollection(romcollection.get_id(), rom_obj.get_id())

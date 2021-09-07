@@ -36,7 +36,7 @@ def cmd_execute_import_launchers(args):
     uow = UnitOfWork(globals.g_PATHS.DATABASE_FILE_PATH)
     with uow:
         addon_repository      = AelAddonRepository(uow)
-        available_addons      = addon_repository.find_all()
+        available_launchers   = addon_repository.find_all_launchers()
         
         categories_repository = CategoryRepository(uow)
         existing_categories   = [*categories_repository.find_all_categories()]
@@ -44,14 +44,14 @@ def cmd_execute_import_launchers(args):
         romcollections_repository    = ROMCollectionRepository(uow)
         existing_romcollections      = [*romcollections_repository.find_all_romcollections()]
 
-        available_addon_ids   = { a.get_addon_id() : a for a in available_addons }
-        existing_category_ids = map(lambda c: c.get_id(), existing_categories)
-        existing_romcollection_ids   = map(lambda r: r.get_id(), existing_romcollections)
+        available_launcher_ids      = { a.get_addon_id() : a for a in available_launchers }
+        existing_category_ids       = map(lambda c: c.get_id(), existing_categories)
+        existing_romcollection_ids  = map(lambda r: r.get_id(), existing_romcollections)
 
         categories_to_insert:typing.List[Category]  = []
         categories_to_update:typing.List[Category]  = []
-        romcollections_to_insert:typing.List[ROMCollection]       = []
-        romcollections_to_update:typing.List[ROMCollection]       = []
+        romcollections_to_insert:typing.List[ROMCollection] = []
+        romcollections_to_update:typing.List[ROMCollection] = []
 
         # >> Process file by file
         for xml_file in file_list:
@@ -73,7 +73,7 @@ def cmd_execute_import_launchers(args):
                     categories_to_insert.append(category_to_import)
 
             for launcher_to_import in launchers_to_import:
-                _apply_addon_launcher_for_legacy_launcher(launcher_to_import, available_addon_ids)                
+                _apply_addon_launcher_for_legacy_launcher(launcher_to_import, available_launcher_ids)                
                 if launcher_to_import.get_id() in existing_romcollection_ids:
                      # >> Romset exists (by name). Overwrite?
                     logger.debug('ROMCollection found. Edit existing ROMCollection.')
@@ -139,7 +139,7 @@ def _apply_addon_launcher_for_legacy_launcher(launcher_data: ROMCollection, avai
     
     if launcher_type is None:
         # 1.9x version
-        launcher_addon  = available_addons['plugin.program.AEL.AppLauncher'] if 'plugin.program.AEL.AppLauncher' in available_addons else None
+        launcher_addon  = available_addons['script.ael.defaults'] if 'script.ael.defaults' in available_addons else None
         if launcher_addon is None: 
             logger.warn('Could not find launcher supporting type "{}"'.format(launcher_type)) 
             return
@@ -152,7 +152,7 @@ def _apply_addon_launcher_for_legacy_launcher(launcher_data: ROMCollection, avai
         return
     
     if launcher_type == constants.OBJ_LAUNCHER_STANDALONE:
-        launcher_addon =  available_addons['plugin.program.AEL.AppLauncher'] if 'plugin.program.AEL.AppLauncher' in available_addons else None
+        launcher_addon =  available_addons['script.ael.defaults'] if 'script.ael.defaults' in available_addons else None
         if launcher_addon is None: 
             logger.warn('Could not find launcher supporting type "{}"'.format(launcher_type)) 
             return
@@ -165,7 +165,7 @@ def _apply_addon_launcher_for_legacy_launcher(launcher_data: ROMCollection, avai
         return
     
     if launcher_type == constants.OBJ_LAUNCHER_ROM:
-        launcher_addon =  available_addons['plugin.program.AEL.AppLauncher'] if 'plugin.program.AEL.AppLauncher' in available_addons else None
+        launcher_addon =  available_addons['script.ael.defaults'] if 'script.ael.defaults' in available_addons else None
         if launcher_addon is None: 
             logger.warn('Could not find launcher supporting type "{}"'.format(launcher_type)) 
             return

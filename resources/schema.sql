@@ -15,7 +15,7 @@ CREATE TABLE IF NOT EXISTS assets(
     asset_type TEXT NOT NULL
 );
 
-CREATE TABLE IF NOT EXISTS assetspaths(
+CREATE TABLE IF NOT EXISTS assetpaths(
     id TEXT PRIMARY KEY,
     path TEXT NOT NULL,
     asset_type TEXT NOT NULL
@@ -166,12 +166,12 @@ CREATE TABLE IF NOT EXISTS romcollection_assets(
         ON DELETE CASCADE ON UPDATE NO ACTION
 );
 
-CREATE TABLE IF NOT EXISTS romcollection_assetspaths(
+CREATE TABLE IF NOT EXISTS romcollection_assetpaths(
     romcollection_id TEXT,
-    assetspaths_id TEXT,
+    assetpaths_id TEXT,
     FOREIGN KEY (romcollection_id) REFERENCES romcollections (id) 
         ON DELETE CASCADE ON UPDATE NO ACTION,
-    FOREIGN KEY (assetspaths_id) REFERENCES assetspaths (id) 
+    FOREIGN KEY (assetpaths_id) REFERENCES assetpaths (id) 
         ON DELETE CASCADE ON UPDATE NO ACTION
 );
 
@@ -181,6 +181,15 @@ CREATE TABLE IF NOT EXISTS rom_assets(
     FOREIGN KEY (rom_id) REFERENCES roms (id) 
         ON DELETE CASCADE ON UPDATE NO ACTION,
     FOREIGN KEY (asset_id) REFERENCES assets (id) 
+        ON DELETE CASCADE ON UPDATE NO ACTION
+);
+
+CREATE TABLE IF NOT EXISTS rom_assetpaths(
+    rom_id TEXT,
+    assetpaths_id TEXT,
+    FOREIGN KEY (rom_id) REFERENCES roms (id) 
+        ON DELETE CASCADE ON UPDATE NO ACTION,
+    FOREIGN KEY (assetpaths_id) REFERENCES assetpaths (id) 
         ON DELETE CASCADE ON UPDATE NO ACTION
 );
 
@@ -292,6 +301,25 @@ CREATE VIEW IF NOT EXISTS vw_rom_assets AS SELECT
     a.asset_type
 FROM assets AS a
  INNER JOIN rom_assets AS ra ON a.id = ra.asset_id 
+ INNER JOIN roms AS r ON ra.rom_id = r.id;
+
+CREATE VIEW IF NOT EXISTS vw_romcollection_asset_paths AS SELECT
+    a.id as id,
+    r.id as romcollection_id,
+    r.parent_id,
+    a.path,
+    a.asset_type
+FROM assetpaths AS a
+ INNER JOIN romcollection_assetpaths AS ra ON a.id = ra.assetpaths_id 
+ INNER JOIN romcollections AS r ON ra.romcollection_id = r.id;
+
+CREATE VIEW IF NOT EXISTS vw_rom_asset_paths AS SELECT
+    a.id as id,
+    r.id as rom_id, 
+    a.path,
+    a.asset_type
+FROM assetpaths AS a
+ INNER JOIN rom_assetpaths AS ra ON a.id = ra.assetpaths_id 
  INNER JOIN roms AS r ON ra.rom_id = r.id;
 
 CREATE VIEW IF NOT EXISTS vw_romcollection_launchers AS SELECT

@@ -155,24 +155,16 @@ def cmd_set_rom_asset_dirs(args):
     romcollection_id:str = args['romcollection_id'] if 'romcollection_id' in args else None
     
     list_items = {}
-    assets = g_assetFactory.get_all()
+    assets = g_assetFactory.get_assets_for_type(constants.KIND_ASSET_ROM)
 
     uow = UnitOfWork(globals.g_PATHS.DATABASE_FILE_PATH)
     with uow:
         repository = ROMCollectionRepository(uow)
         romcollection = repository.find_romcollection(romcollection_id)
-
-        # --- Scrape ROMs artwork ---
-        # >> Mimic what the ROM scanner does. Use same settings as the ROM scanner.
-        # >> Like the ROM scanner, only scrape artwork not found locally.
-        # elif type2 == 3:
-        #     kodi_dialog_OK('WIP feature not coded yet, sorry.')
-        #     return
-
+        
         for asset_info in assets:
             path = romcollection.get_asset_path(asset_info)
-            if path:
-                list_items[asset_info] = "Change {0} path: '{1}'".format(asset_info.plural, path.getPath())
+            if path: list_items[asset_info] = "Change {0} path: '{1}'".format(asset_info.plural, path.getPath())
 
         dialog = kodi.OrdDictionaryDialog()
         selected_asset: AssetInfo = dialog.select('ROM Asset directories ', list_items)

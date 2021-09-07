@@ -160,6 +160,11 @@ class XmlConfigurationRepository(object):
                     asset_data = { 'filepath': text_XML_line, 'asset_type': asset_info.id }
                     assets.append(Asset(asset_data))
                     
+                if xml_tag.startswith('path_'):
+                    asset_info = g_assetFactory.get_asset_info_by_pathkey(xml_tag)
+                    asset_data = { 'path': text_XML_line, 'asset_type': asset_info.id }
+                    assets.append(Asset(asset_data))
+                    
             # --- Add launcher to launchers collection ---
             logger.debug('Adding launcher "{0}" to import list'.format(launcher_temp['m_name']))
             yield ROMCollection(launcher_temp, assets)
@@ -338,10 +343,10 @@ class UnitOfWork(object):
 # Shared Queries
 QUERY_INSERT_METADATA       = "INSERT INTO metadata (id,year,genre,developer,rating,plot,assets_path,finished) VALUES (?,?,?,?,?,?,?,?)"
 QUERY_INSERT_ASSET          = "INSERT INTO assets (id, filepath, asset_type) VALUES (?,?,?)"
-QUERY_INSERT_ASSET_PATH     = "INSERT INTO assetspaths (id, path, asset_type) VALUES (?,?,?)"
+QUERY_INSERT_ASSET_PATH     = "INSERT INTO assetpaths (id, path, asset_type) VALUES (?,?,?)"
 QUERY_UPDATE_METADATA       = "UPDATE metadata SET year=?, genre=?, developer=?, rating=?, plot=?, assets_path=?, finished=? WHERE id=?"
 QUERY_UPDATE_ASSET          = "UPDATE assets SET filepath = ?, asset_type = ? WHERE id = ?"
-QUERY_UPDATE_ASSET_PATH     = "UPDATE assetspaths SET path = ?, asset_type = ? WHERE id = ?"
+QUERY_UPDATE_ASSET_PATH     = "UPDATE assetpaths SET path = ?, asset_type = ? WHERE id = ?"
 
 #
 # CategoryRepository -> Category from SQLite DB
@@ -431,7 +436,7 @@ class CategoryRepository(object):
     def insert_category(self, category_obj: Category, parent_obj: Category = None):
         logger.info("CategoryRepository.insert_category(): Inserting new category '{}'".format(category_obj.get_name()))
         metadata_id = text.misc_generate_random_SID()
-        assets_path = category_obj.get_assets_path_FN()
+        assets_path = category_obj.get_assets_root_path()
         parent_category_id = parent_obj.get_id() if parent_obj is not None and parent_obj.get_id() != constants.VCATEGORY_ADDONROOT_ID else None
         
         self._uow.execute(QUERY_INSERT_METADATA,
@@ -461,7 +466,7 @@ class CategoryRepository(object):
             
     def update_category(self, category_obj: Category):
         logger.info("CategoryRepository.update_category(): Updating category '{}'".format(category_obj.get_name()))
-        assets_path = category_obj.get_assets_path_FN()
+        assets_path = category_obj.get_assets_root_path()
         
         self._uow.execute(QUERY_UPDATE_METADATA,
             category_obj.get_releaseyear(),
@@ -530,8 +535,11 @@ QUERY_SELECT_ROOT_ROMCOLLECTION_ASSETS         = "SELECT * FROM vw_romcollection
 QUERY_SELECT_ROMCOLLECTIONS_ASSETS_BY_PARENT   = "SELECT * FROM vw_romcollection_assets WHERE parent_id = ?"
 QUERY_SELECT_ROMCOLLECTION_ASSETS_BY_ROM       = "SELECT ra.* FROM vw_romcollection_assets AS ra INNER JOIN roms_in_romcollection AS rr ON rr.romcollection_id = ra.romcollection_id WHERE rr.rom_id = ?"
 QUERY_SELECT_ROMCOLLECTION_ASSETS              = "SELECT * FROM vw_romcollection_assets"
+QUERY_SELECT_ROMCOLLECTION_ASSET_PATHS         = "SELECT * FROM vw_romcollection_asset_paths WHERE romcollection_id = ?"
+QUERY_SELECT_ROMCOLLECTION_ASSETS_PATHS_BY_ROM = "SELECT rap.* FROM vw_romcollection_asset_paths AS rap INNER JOIN roms_in_romcollection AS rr ON rr.romcollection_id = rap.romcollection_id WHERE rr.rom_id = ?"
+
 QUERY_INSERT_ROMCOLLECTION_ASSET               = "INSERT INTO romcollection_assets (romcollection_id, asset_id) VALUES (?, ?)"
-QUERY_INSERT_ROMCOLLECTION_ASSET_PATH          = "INSERT INTO romcollection_assetspaths (romcollection_id, assetspaths_id) VALUES (?, ?)"
+QUERY_INSERT_ROMCOLLECTION_ASSET_PATH          = "INSERT INTO romcollection_assetpaths (romcollection_id, assetpaths_id) VALUES (?, ?)"
 
 QUERY_INSERT_ROM_IN_ROMCOLLECTION        = "INSERT INTO roms_in_romcollection (rom_id, romcollection_id) VALUES (?,?)"
 QUERY_REMOVE_ROM_FROM_ROMCOLLECTION      = "DELETE FROM roms_in_romcollection WHERE rom_id = ? AND romcollection_id = ?"
@@ -564,7 +572,13 @@ class ROMCollectionRepository(object):
         assets_result_set = self._uow.result_set()
         assets = []
         for asset_data in assets_result_set:
-            assets.append(Asset(asset_data))    
+            assets.append(Asset(asset_data))
+            
+        self._uow.execute(QUERY_SELECT_ROMCOLLECTION_ASSET_PATHS, romcollection_id)
+        asset_paths_result_set = self._uow.result_set()
+        asset_paths = []
+        for asset_paths_data in asset_paths_result_set:
+            asset_paths.append(AssetPath(asset_paths_data))
         
         self._uow.execute(QUERY_SELECT_ROMCOLLECTION_LAUNCHERS, romcollection_id)
         launchers_data = self._uow.result_set()
@@ -580,7 +594,7 @@ class ROMCollectionRepository(object):
             addon = AelAddon(scanner_data.copy())
             scanners.append(ROMCollectionScanner(addon, scanner_data))
             
-        return ROMCollection(romcollection_data, assets, launchers, scanners)
+        return ROMCollection(romcollection_data, assets, asset_paths, launchers, scanners)
     
     def find_all_romcollections(self) -> typing.Iterator[ROMCollection]:
         self._uow.execute(QUERY_SELECT_ROMCOLLECTIONS)
@@ -631,6 +645,9 @@ class ROMCollectionRepository(object):
         self._uow.execute(QUERY_SELECT_ROMCOLLECTION_ASSETS_BY_ROM, rom_id)
         assets_result_set = self._uow.result_set()
 
+        self._uow.execute(QUERY_SELECT_ROMCOLLECTION_ASSETS_PATHS_BY_ROM, rom_id)
+        asset_paths_result_set = self._uow.result_set()
+        
         self._uow.execute(QUERY_SELECT_ROMCOLLECTION_LAUNCHERS_BY_ROM, rom_id)
         launchers_data = self._uow.result_set()
         
@@ -642,6 +659,10 @@ class ROMCollectionRepository(object):
             for asset_data in filter(lambda a: a['romcollection_id'] == romcollection_data['id'], assets_result_set):
                 assets.append(Asset(asset_data))      
             
+            asset_paths = []
+            for asset_path_data in filter(lambda a: a['romcollection_id'] == romcollection_data['id'], asset_paths_result_set):
+                asset_paths.append(AssetPath(asset_path_data))      
+                        
             launchers = []
             for launcher_data in launchers_data:
                 addon = AelAddon(launcher_data.copy())
@@ -652,12 +673,12 @@ class ROMCollectionRepository(object):
                 addon = AelAddon(scanner_data.copy())
                 scanners.append(ROMCollectionScanner(addon, scanner_data))
                     
-            yield ROMCollection(romcollection_data, assets, launchers, scanners)                       
+            yield ROMCollection(romcollection_data, assets, asset_paths, launchers, scanners)                       
                         
     def insert_romcollection(self, romcollection_obj: ROMCollection, parent_obj: Category = None):
         logger.info("ROMCollectionRepository.insert_romcollection(): Inserting new romcollection '{}'".format(romcollection_obj.get_name()))
         metadata_id = text.misc_generate_random_SID()
-        assets_path = romcollection_obj.get_assets_path_FN()
+        assets_path = romcollection_obj.get_assets_root_path()
         parent_category_id = parent_obj.get_id() if parent_obj is not None and parent_obj.get_id() != constants.VCATEGORY_ADDONROOT_ID else None
         
         self._uow.execute(QUERY_INSERT_METADATA,
@@ -718,7 +739,7 @@ class ROMCollectionRepository(object):
               
     def update_romcollection(self, romcollection_obj: ROMCollection):
         logger.info("ROMCollectionRepository.update_romcollection(): Updating romcollection '{}'".format(romcollection_obj.get_name()))
-        assets_path = romcollection_obj.get_assets_path_FN()
+        assets_path = romcollection_obj.get_assets_root_path()
         
         self._uow.execute(QUERY_UPDATE_METADATA,
             romcollection_obj.get_releaseyear(),
@@ -827,10 +848,13 @@ class ROMCollectionRepository(object):
 #
 # ROMsRepository -> ROMs from SQLite DB
 #     
-QUERY_SELECT_ROM                = "SELECT * FROM vw_roms WHERE id = ?"
-QUERY_SELECT_ROMS_BY_SET        = "SELECT r.* FROM vw_roms AS r INNER JOIN roms_in_romcollection AS rs ON rs.rom_id = r.id AND rs.romcollection_id = ?"
-QUERY_SELECT_ROM_ASSETS         = "SELECT * FROM vw_rom_assets WHERE rom_id = ?"
-QUERY_SELECT_ROM_ASSETS_BY_SET  = "SELECT ra.* FROM vw_rom_assets AS ra INNER JOIN roms_in_romcollection AS rs ON rs.rom_id = ra.rom_id AND rs.romcollection_id = ?"
+QUERY_SELECT_ROM                    = "SELECT * FROM vw_roms WHERE id = ?"
+QUERY_SELECT_ROMS_BY_SET            = "SELECT r.* FROM vw_roms AS r INNER JOIN roms_in_romcollection AS rs ON rs.rom_id = r.id AND rs.romcollection_id = ?"
+QUERY_SELECT_ROM_ASSETS             = "SELECT * FROM vw_rom_assets WHERE rom_id = ?"
+QUERY_SELECT_ROM_ASSETPATHS         = "SELECT * FROM vw_rom_asset_paths WHERE rom_id = ?"
+QUERY_SELECT_ROM_ASSETS_BY_SET      = "SELECT ra.* FROM vw_rom_assets AS ra INNER JOIN roms_in_romcollection AS rs ON rs.rom_id = ra.rom_id AND rs.romcollection_id = ?"
+QUERY_SELECT_ROM_ASSETPATHS_BY_SET  = "SELECT rap.* FROM vw_rom_asset_paths AS rap INNER JOIN roms_in_romcollection AS rs ON rs.rom_id = rap.rom_id AND rs.romcollection_id = ?"
+
 QUERY_INSERT_ROM                = """
                                 INSERT INTO roms (
                                     id, metadata_id, name, num_of_players, esrb_rating, platform, box_size,
@@ -852,6 +876,8 @@ QUERY_SELECT_MOST_PLAYED_ROM_ASSETS      = """
                                            """
                                 
 QUERY_INSERT_ROM_ASSET          = "INSERT INTO rom_assets (rom_id, asset_id) VALUES (?, ?)"
+QUERY_INSERT_ROM_ASSET_PATH     = "INSERT INTO rom_assetpaths (rom_id, assetpaths_id) VALUES (?, ?)"
+
 QUERY_UPDATE_ROM                = """
                                   UPDATE roms 
                                   SET name=?, num_of_players=?, esrb_rating=?, platform = ?, box_size = ?,
@@ -878,12 +904,19 @@ class ROMsRepository(object):
         
         self._uow.execute(QUERY_SELECT_ROM_ASSETS_BY_SET, romcollection_id)
         assets_result_set = self._uow.result_set()
-                
+            
+        self._uow.execute(QUERY_SELECT_ROM_ASSETPATHS_BY_SET, romcollection_id)
+        asset_paths_result_set = self._uow.result_set()
+                        
         for rom_data in result_set:
             assets = []
+            asset_paths = []
             for asset_data in filter(lambda a: a['rom_id'] == rom_data['id'], assets_result_set):
-                assets.append(Asset(asset_data))                
-            yield ROM(rom_data, assets)
+                assets.append(Asset(asset_data))    
+            for asset_paths_data in filter(lambda a: a['rom_id'] == rom_data['id'], asset_paths_result_set):
+                asset_paths.append(AssetPath(asset_paths_data))            
+                
+            yield ROM(rom_data, assets, asset_paths)
 
     def find_roms_by_virtual_collection(self, vcollection_id:str) -> typing.Iterator[ROM]:        
         roms_query = None
@@ -924,7 +957,13 @@ class ROMsRepository(object):
         assets = []
         for asset_data in assets_result_set:
             assets.append(Asset(asset_data))
-                    
+                                
+        self._uow.execute(QUERY_SELECT_ROM_ASSETPATHS, rom_id)
+        asset_paths_result_set = self._uow.result_set()
+        asset_paths = []
+        for asset_paths_data in asset_paths_result_set:
+            asset_paths.append(AssetPath(asset_paths_data))
+            
         self._uow.execute(QUERY_SELECT_ROM_LAUNCHERS, rom_id)
         launchers_data = self._uow.result_set()
         launchers = []
@@ -932,13 +971,12 @@ class ROMsRepository(object):
             addon = AelAddon(launcher_data.copy())
             launchers.append(ROMLauncherAddon(addon, launcher_data))
             
-        return ROM(rom_data, assets, launchers)
-
+        return ROM(rom_data, assets, asset_paths, launchers)
 
     def insert_rom(self, rom_obj: ROM): 
         logger.info("ROMsRepository.insert_rom(): Inserting new ROM '{}'".format(rom_obj.get_name()))
         metadata_id = text.misc_generate_random_SID()
-        assets_path = rom_obj.get_assets_path_FN()
+        assets_path = rom_obj.get_assets_root_path()
         
         self._uow.execute(QUERY_INSERT_METADATA,
             metadata_id,
@@ -967,6 +1005,10 @@ class ROMsRepository(object):
         rom_assets = rom_obj.get_assets()
         for asset in rom_assets:
             self._insert_asset(asset, rom_obj)
+            
+        for asset_path in rom_obj.get_asset_paths():
+            if not asset_path.get_id(): self._insert_asset_path(asset_path, rom_obj)
+            else: self._update_asset_path(asset_path, rom_obj)
 
         rom_launchers = rom_obj.get_launchers()
         for rom_launchers in rom_launchers:
@@ -980,7 +1022,7 @@ class ROMsRepository(object):
 
     def update_rom(self, rom_obj: ROM):
         logger.info("ROMsRepository.update_rom(): Updating ROM '{}'".format(rom_obj.get_name()))
-        assets_path = rom_obj.get_assets_path_FN()
+        assets_path = rom_obj.get_assets_root_path()
         
         self._uow.execute(QUERY_UPDATE_METADATA,
             rom_obj.get_releaseyear(),
@@ -1008,9 +1050,13 @@ class ROMsRepository(object):
             rom_obj.get_id())
         
         for asset in rom_obj.get_assets():
-            if asset.get_id() == '': self._insert_asset(asset, rom_obj)
+            if not asset.get_id(): self._insert_asset(asset, rom_obj)
             else: self._update_asset(asset, rom_obj)            
         
+        for asset_path in rom_obj.get_asset_paths():
+            if not asset_path.get_id(): self._insert_asset_path(asset_path, rom_obj)
+            else: self._update_asset_path(asset_path, rom_obj)    
+            
         rom_launchers = rom_obj.get_launchers()
         for rom_launcher in rom_launchers:
             if rom_launcher.get_id() is None:
@@ -1044,6 +1090,16 @@ class ROMsRepository(object):
         if asset.get_custom_attribute('rom_id') is None:
             self._uow.execute(QUERY_INSERT_ROM_ASSET, rom_obj.get_id(), asset.get_id())   
 
+    def _insert_asset_path(self, asset_path: AssetPath, rom_obj: ROM):
+        asset_db_id = text.misc_generate_random_SID()
+        self._uow.execute(QUERY_INSERT_ASSET_PATH, asset_db_id, asset_path.get_path(), asset_path.get_asset_info_id())
+        self._uow.execute(QUERY_INSERT_ROM_ASSET_PATH, rom_obj.get_id(), asset_db_id)    
+        
+    def _update_asset_path(self, asset_path: AssetPath, rom_obj: ROM):
+        self._uow.execute(QUERY_UPDATE_ASSET_PATH, asset_path.get_path(), asset_path.get_asset_info_id(), asset_path.get_id())
+        if asset_path.get_custom_attribute('rom_id') is None:
+            self._uow.execute(QUERY_INSERT_ROM_ASSET_PATH, rom_obj.get_id(), asset_path.get_id())     
+            
 #
 # AelAddonRepository -> AEL Adoon objects from SQLite DB
 #     

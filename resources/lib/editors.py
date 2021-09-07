@@ -203,7 +203,7 @@ def edit_asset(obj_instance: MetaDataItemABC, asset_info: AssetInfo) -> bool:
     # Select/Import require: object_name, A, asset_path_noext
     # Scraper additionaly requires: current_asset_path, scraper_obj, platform, rom_base_noext
 
-    asset_directory = obj_instance.get_assets_path_FN()
+    asset_directory = obj_instance.get_assets_root_path()
     # --- New style code ---
     if asset_directory is None:
         if obj_instance.get_assets_kind() == constants.KIND_ASSET_CATEGORY:
@@ -253,7 +253,7 @@ def edit_asset(obj_instance: MetaDataItemABC, asset_info: AssetInfo) -> bool:
     if selected_option == 'LINK_LOCAL':
         current_image_file = obj_instance.get_asset_FN(asset_info)
         if current_image_file is None:
-            current_image_dir = obj_instance.get_assets_path_FN()
+            current_image_dir = obj_instance.get_assets_root_path()
         else: 
             current_image_dir = io.FileName(current_image_file.getDir(), isdir = True)
         
