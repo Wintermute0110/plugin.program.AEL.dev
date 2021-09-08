@@ -388,7 +388,8 @@ class MetaDataItemABC(EntityABC):
         for asset_info in asset_info_list:
             asset = self.get_asset(asset_info.id)
             if asset is None:
-                asset = Asset(asset_info)
+                asset = Asset()
+                asset.set_asset_info(asset_info)
                 
             available_assets.append(asset)
 

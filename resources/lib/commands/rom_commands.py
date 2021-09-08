@@ -20,13 +20,13 @@ from __future__ import division
 import logging
 import collections
 
-from ael import constants, platforms
+from ael import constants
 from ael.utils import kodi, text, io
 
 from resources.lib.commands.mediator import AppMediator
 from resources.lib import globals, editors
-from resources.lib.repositories import ROMsRepository, UnitOfWork
-from resources.lib.domain import ROM
+from resources.lib.repositories import ROMsRepository, ROMCollectionRepository, UnitOfWork
+from resources.lib.domain import g_assetFactory
 
 logger = logging.getLogger(__name__)
 
@@ -112,6 +112,44 @@ def cmd_rom_metadata(args):
     # >> Then, execute recursively this submenu again.
     logger.debug('cmd_rom_metadata(EDIT_METADATA) Selected {0}'.format(selected_option))
     AppMediator.sync_cmd(selected_option, args)
+    
+@AppMediator.register('ROM_EDIT_ASSETS')
+def cmd_rom_assets(args):
+    rom_id:str = args['rom_id'] if 'rom_id' in args else None
+    preselected_option = args['selected_asset'] if 'selected_asset' in args else None    
+       
+    uow = UnitOfWork(globals.g_PATHS.DATABASE_FILE_PATH)
+    with uow:
+        repository = ROMsRepository(uow)
+        rom = repository.find_rom(rom_id)
+        
+        romcollection_repository = ROMCollectionRepository(uow)
+        rom_romcollections = romcollection_repository.find_romcollections_by_rom(rom_id)
+        rom_collection_ids = [collection.get_id() for collection in rom_romcollections]
+                
+        selected_asset_to_edit = editors.edit_object_assets(rom, preselected_option)
+        if selected_asset_to_edit is None:
+            AppMediator.sync_cmd('EDIT_ROM', args)
+            return
+        
+        if selected_asset_to_edit == editors.SCRAPE_CMD:
+            AppMediator.sync_cmd(editors.SCRAPE_CMD, args)
+            return
+        #    globals.run_command(scrape_cmd, rom=obj_instance)
+        #    edit_object_assets(obj_instance, selected_option)
+        #    return True
+        
+        asset = g_assetFactory.get_asset_info(selected_asset_to_edit)
+        # >> Execute edit asset menu subcommand. Then, execute recursively this submenu again.
+        # >> The menu dialog is instantiated again so it reflects the changes just edited.
+        # >> If edit_asset() returns True changes were made.
+        if editors.edit_asset(rom, asset):
+            repository.update_rom(rom)
+            uow.commit()
+            for romcollection_id in rom_collection_ids:
+                AppMediator.async_cmd('RENDER_ROMCOLLECTION_VIEW', {'romcollection_id': romcollection_id})   
+
+    AppMediator.sync_cmd('ROM_EDIT_ASSETS', {'rom_id': rom_id, 'selected_asset': asset.id})    
 
 # --- Atomic commands ---
 @AppMediator.register('ROM_EDIT_METADATA_TITLE')
@@ -351,3 +389,4 @@ def cmd_rom_save_nfo_file(args):
     
     AppMediator.sync_cmd('ROM_EDIT_METADATA', args)
 
+# --- Atomic commands - ASSETS ---

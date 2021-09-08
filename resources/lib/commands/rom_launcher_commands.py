@@ -246,6 +246,8 @@ def cmd_execute_rom_with_launcher(args):
         dialog = kodi.OrdDictionaryDialog()
         selected_launcher = dialog.select('Choose launcher', launcher_options,preselect=preselected)
 
+    if selected_launcher is None: return
+
     kodi.run_script(
         selected_launcher.addon.get_addon_id(), 
         selected_launcher.get_launch_command(rom))
