@@ -95,6 +95,7 @@ class EntityABC(object):
         return self.entity_data[key] if key in self.entity_data else default_value
 
     def import_data_dic(self, data):
+        if data is None: return
         for key in data:
             self.entity_data[key] = data[key]
 

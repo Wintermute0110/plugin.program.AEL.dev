@@ -41,6 +41,8 @@ def cmd_set_launcher_args(args) -> bool:
     addon_id:str         = args['addon_id'] if 'addon_id' in args else None
     launcher_settings    = args['settings'] if 'settings' in args else None
         
+    metadata_updated = False
+        
     uow = UnitOfWork(globals.g_PATHS.DATABASE_FILE_PATH)
     with uow:
         addon_repository = AelAddonRepository(uow)
@@ -55,10 +57,16 @@ def cmd_set_launcher_args(args) -> bool:
             launcher = romcollection.get_launcher(launcher_id)
             launcher.set_settings(launcher_settings)
             
+        if 'romcollection' in launcher_settings \
+            and kodi.dialog_yesno('Do you want to overwrite collection metadata properties with values from the launcher?'):
+            romcollection.import_data_dic(launcher_settings['romcollection'])
+            metadata_updated = True
+            
         romcollection_repository.update_romcollection(romcollection)
         uow.commit()
     
     kodi.notify('Configured launcher {}'.format(addon.get_name()))
+    if metadata_updated: AppMediator.async_cmd('RENDER_VIEW', {'category_id': romcollection.get_parent_id()})  
     AppMediator.async_cmd('EDIT_ROMCOLLECTION', {'romcollection_id': romcollection_id})
     return True
 
@@ -69,7 +77,7 @@ def cmd_set_scanner_settings(args) -> bool:
     romcollection_id:str = args['romcollection_id'] if 'romcollection_id' in args else None
     scanner_id:str       = args['ael_addon_id'] if 'ael_addon_id' in args else None
     addon_id:str         = args['addon_id'] if 'addon_id' in args else None
-    settings             = args['settings'] if 'settings' in args else None
+    settings:dict        = args['settings'] if 'settings' in args else None
     
     uow = UnitOfWork(globals.g_PATHS.DATABASE_FILE_PATH)
     with uow:
@@ -80,7 +88,7 @@ def cmd_set_scanner_settings(args) -> bool:
         romcollection = romcollection_repository.find_romcollection(romcollection_id)
         
         if scanner_id is None:
-            romcollection.add_scanner(addon, settings)
+            romcollection.add_scanner(addon, settings)       
         else: 
             scanner = romcollection.get_scanner(scanner_id)
             scanner.set_settings(settings)
