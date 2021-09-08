@@ -145,6 +145,7 @@ class XmlConfigurationRepository(object):
                 continue
             
             assets = []
+            asset_paths = []
             launcher_temp = {}
             for root_child in root_element:
                 # >> By default read strings
@@ -162,12 +163,12 @@ class XmlConfigurationRepository(object):
                     
                 if xml_tag.startswith('path_'):
                     asset_info = g_assetFactory.get_asset_info_by_pathkey(xml_tag)
-                    asset_data = { 'path': text_XML_line, 'asset_type': asset_info.id }
-                    assets.append(Asset(asset_data))
+                    asset_path_data = { 'path': text_XML_line, 'asset_type': asset_info.id }
+                    asset_paths.append(AssetPath(asset_path_data))
                     
             # --- Add launcher to launchers collection ---
             logger.debug('Adding launcher "{0}" to import list'.format(launcher_temp['m_name']))
-            yield ROMCollection(launcher_temp, assets)
+            yield ROMCollection(launcher_temp, assets, asset_paths)
 
 
 # -------------------------------------------------------------------------------------------------

@@ -133,7 +133,6 @@ def cmd_check_duplicate_asset_dirs(args):
                         'AEL will refuse to add/edit ROMs if there are duplicate asset directories.')
 
 def _apply_addon_launcher_for_legacy_launcher(launcher_data: ROMCollection, available_addons: typing.Dict[str, AelAddon]):
-    
     launcher_type = launcher_data.get_custom_attribute('type')
     logger.debug('Migrating launcher of type "{}" for romcollection {}'.format(launcher_type, launcher_data.get_name()))
     

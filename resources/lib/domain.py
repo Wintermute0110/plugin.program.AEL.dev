@@ -208,7 +208,7 @@ class AssetPath(EntityABC):
         if 'asset_type' in entity_data and entity_data['asset_type']:
             self.asset_info = g_assetFactory.get_asset_info(entity_data['asset_type'])
         
-        super(Asset, self).__init__(entity_data)
+        super(AssetPath, self).__init__(entity_data)
     
     def get_asset_info_id(self) -> str:
         return self.asset_info.id 
