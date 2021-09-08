@@ -200,13 +200,14 @@ def cmd_store_scraped_roms(args) -> bool:
 def cmd_store_scraped_single_rom(args) -> bool:
     rom_id:str           = args['rom_id'] if 'rom_id' in args else None
     scraper_id:str       = args['ael_addon_id'] if 'ael_addon_id' in args else None
-    scraped_rom:ROMObj   = args['rom'] if 'rom' in args else None
+    scraped_rom_data:dict= args['rom'] if 'rom' in args else None
     settings_dic:dict    = args['applied_settings'] if 'applied_settings' in args else {}
     applied_settings     = ScraperSettings.from_settings_dict(settings_dic)
     
-    if scraped_rom is None:
+    if scraped_rom_data is None:
         return
-    
+        
+    scraped_rom = ROMObj(scraped_rom_data)
     rom_collection_ids = []
     uow = UnitOfWork(globals.g_PATHS.DATABASE_FILE_PATH)
     with uow:

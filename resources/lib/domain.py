@@ -1351,7 +1351,7 @@ class ROM(MetaDataItemABC):
                 self.set_file(file)
     
     def apply_romcollection_asset_paths(self, romcollection: ROMCollection):
-        self.set_asset_root_path(romcollection.get_assets_root_path())
+        self.set_assets_root_path(romcollection.get_assets_root_path())
         self.asset_paths = {}
         for assetpath in romcollection.get_asset_paths():
             self.asset_paths[assetpath.get_asset_info_id()] = assetpath
