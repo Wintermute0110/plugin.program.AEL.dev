@@ -203,7 +203,7 @@ def edit_asset(obj_instance: MetaDataItemABC, asset_info: AssetInfo) -> bool:
     # Select/Import require: object_name, A, asset_path_noext
     # Scraper additionaly requires: current_asset_path, scraper_obj, platform, rom_base_noext
 
-    asset_directory = obj_instance.get_assets_root_path()
+    asset_directory = obj_instance.get_assets_root_path()        
     # --- New style code ---
     if asset_directory is None:
         if obj_instance.get_assets_kind() == constants.KIND_ASSET_CATEGORY:
@@ -253,7 +253,9 @@ def edit_asset(obj_instance: MetaDataItemABC, asset_info: AssetInfo) -> bool:
     if selected_option == 'LINK_LOCAL':
         current_image_file = obj_instance.get_asset_FN(asset_info)
         if current_image_file is None:
-            current_image_dir = obj_instance.get_assets_root_path()
+            current_image_dir = obj_instance.get_asset_path(asset_info)
+            if current_image_dir is None or not asset_directory.exists():
+                current_image_dir = obj_instance.get_assets_root_path()
         else: 
             current_image_dir = io.FileName(current_image_file.getDir(), isdir = True)
         
@@ -266,7 +268,7 @@ def edit_asset(obj_instance: MetaDataItemABC, asset_info: AssetInfo) -> bool:
             new_asset_file = kodi.browse(text=title_str, mask=ext_list, preselected_path=current_image_dir.getPath())
         else:
             new_asset_file = kodi.browse(type=2, text=title_str, mask=ext_list, preselected_path=current_image_dir.getPath())
-        if not new_asset_file: return False
+        if not new_asset_file or new_asset_file == current_image_dir.getPath(): return False
         # --- Check if image exists ---
         new_asset_FN = io.FileName(new_asset_file)
         if not new_asset_FN.exists(): return False

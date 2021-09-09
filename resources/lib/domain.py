@@ -276,11 +276,21 @@ class AssetPath(EntityABC):
 class MetaDataItemABC(EntityABC):
     __metaclass__ = abc.ABCMeta
 
-    def __init__(self, entity_data: typing.Dict[str, typing.Any], assets: typing.List[Asset]):
+    def __init__(self, 
+                 entity_data: typing.Dict[str, typing.Any], 
+                 assets: typing.List[Asset],
+                 asset_paths_data: typing.List[AssetPath] = None):
+        
         self.assets: typing.Dict[str, Asset] = {}
         if assets is not None:
             for asset in assets:
                 self.assets[asset.get_asset_info_id()] = asset
+        
+        self.asset_paths: typing.Dict[str, AssetPath] = {}
+        if asset_paths_data is not None:
+            for path in asset_paths_data:
+                self.asset_paths[path.get_asset_info_id()] = path
+                
         super(MetaDataItemABC, self).__init__(entity_data)
 
     # --------------------------------------------------------------------------------------------
@@ -435,7 +445,24 @@ class MetaDataItemABC(EntityABC):
     
     def set_assets_root_path(self, path: io.FileName):
         path_str = path.getPath() if path else ''        
-        self.entity_data['assets_path'] = path_str
+        self.entity_data['assets_path'] = path_str    
+    
+    def get_asset_paths(self) -> typing.List[AssetPath]:
+        return self.asset_paths.values()
+
+    def get_asset_path(self, asset_info: AssetInfo) -> io.FileName:
+        if not asset_info: return None
+        if asset_info.id in self.asset_paths:
+            return self.asset_paths[asset_info.id].get_path_FN()
+        
+        return self.get_assets_root_path().pjoin(asset_info.plural.lower(), isdir=True)
+
+    def set_asset_path(self, asset_info: AssetInfo, path: str):
+        logger.debug('Setting "{}" to {}'.format(asset_info.id, path))
+        asset_path = self.asset_paths[asset_info.id] if asset_info.id in self.asset_paths else AssetPath()
+        asset_path.set_path(path)
+        
+        self.asset_paths[asset_info.id] = asset_path
     
     @abc.abstractmethod
     def get_asset_ids_list(self) -> typing.List[str]: pass
@@ -766,6 +793,13 @@ class ScraperAddon(ROMAddon):
             'settings': json.dumps(scraper_settings.get_data_dic())
         }        
         super(ScraperAddon, self).__init__(addon, entity_data)
+    
+    def get_scraper_settings(self) -> ScraperSettings:
+        settings_dict = self.get_settings()
+        return ScraperSettings.from_settings_dict(settings_dict)
+        
+    def set_scraper_settings(self, settings: ScraperSettings):
+        self.entity_data['settings'] = json.dumps(settings.get_data_dic())
         
     def get_scrape_command(self, rom: ROM)-> dict:        
         return {
@@ -812,14 +846,9 @@ class ROMCollection(MetaDataItemABC):
             entity_data = _get_default_ROMCollection_data_model()
             entity_data['id'] = text.misc_generate_random_SID()
             
-        self.asset_paths: typing.Dict[str, AssetPath] = {}
-        if asset_paths is not None:
-            for path in asset_paths:
-                self.asset_paths[path.get_asset_info_id()] = path
-            
         self.launchers_data = launchers_data
         self.scanners_data = scanners_data
-        super(ROMCollection, self).__init__(entity_data, assets_data)
+        super(ROMCollection, self).__init__(entity_data, assets_data, asset_paths)
 
     # parent category / romcollection this item belongs to.
     def get_parent_id(self) -> str:
@@ -842,23 +871,6 @@ class ROMCollection(MetaDataItemABC):
 
     def get_default_icon(self) -> str: return 'DefaultFolder.png'   
     
-    def get_asset_paths(self) -> typing.List[AssetPath]:
-        return self.asset_paths.values()
-
-    def get_asset_path(self, asset_info: AssetInfo) -> io.FileName:
-        if not asset_info: return None
-        if asset_info.id in self.asset_paths:
-            return self.asset_paths[asset_info.id].get_path_FN()
-        
-        return self.get_assets_root_path().pjoin(asset_info.plural.lower(), isdir=True)
-
-    def set_asset_path(self, asset_info: AssetInfo, path: str):
-        logger.debug('Setting "{}" to {}'.format(asset_info.id, path))
-        asset_path = self.asset_paths[asset_info.id] if asset_info.id in self.asset_paths else AssetPath()
-        asset_path.set_path(path)
-        
-        self.asset_paths[asset_info.id] = asset_path
-
     def get_ROM_mappable_asset_list(self) -> typing.List[AssetInfo]:
         return g_assetFactory.get_asset_list_by_IDs(constants.MAPPABLE_ROM_ASSET_ID_LIST)
 
@@ -1080,13 +1092,8 @@ class ROM(MetaDataItemABC):
             rom_data = _get_default_ROM_data_model()
             rom_data['id'] = text.misc_generate_random_SID()
         
-        self.asset_paths: typing.Dict[str, AssetPath] = {}
-        if asset_paths_data is not None:
-            for path in asset_paths_data:
-                self.asset_paths[path.get_asset_info_id()] = path
-        
         self.launchers_data = launchers_data
-        super(ROM, self).__init__(rom_data, assets_data)
+        super(ROM, self).__init__(rom_data, assets_data, asset_paths_data)
         
     # inherited value from ROMCollection
     def get_platform(self):
@@ -1211,24 +1218,7 @@ class ROM(MetaDataItemABC):
     
     def get_mappable_asset_ids_list(self): return constants.MAPPABLE_ROM_ASSET_ID_LIST
     
-    def get_default_icon(self) -> str: return 'DefaultProgram.png' 
-    
-    def get_asset_paths(self) -> typing.List[AssetPath]:
-        return self.asset_paths.values()
-
-    def get_asset_path(self, asset_info: AssetInfo) -> io.FileName:
-        if not asset_info: return None
-        if asset_info.id in self.asset_paths:
-            return self.asset_paths[asset_info.id].get_path_FN()
-        
-        return self.get_assets_root_path().pjoin(asset_info.plural.lower(), isdir=True)
-
-    def set_asset_path(self, asset_info: AssetInfo, path: str):
-        logger.debug('Setting "{}" to {}'.format(asset_info.id, path))
-        asset_path = self.asset_paths[asset_info.id] if asset_info.id in self.asset_paths else AssetPath()
-        asset_path.set_path(path)
-        
-        self.asset_paths[asset_info.id] = asset_path
+    def get_default_icon(self) -> str: return 'DefaultProgram.png'    
     
     def create_dto(self) -> ROMObj:
         dto_data:dict = ROMObj.get_data_template()
@@ -1339,12 +1329,12 @@ class ROM(MetaDataItemABC):
         
         if update_assets:
             for asset_id in self.get_asset_ids_list():
-                if api_rom_obj.get_asset_path(asset_id) is not None: 
+                if api_rom_obj.get_asset(asset_id) is not None: 
                     if asset_id == constants.ASSET_TRAILER_ID:
                         self.set_trailer(api_rom_obj.get_asset_path(asset_id))
                     else:
                         asset_info = g_assetFactory.get_asset_info(asset_id)
-                        asset_path = io.FileName(api_rom_obj.get_asset_path(asset_id))
+                        asset_path = io.FileName(api_rom_obj.get_asset(asset_id))
                         self.set_asset(asset_info, asset_path)
         
         if update_launcher_data:

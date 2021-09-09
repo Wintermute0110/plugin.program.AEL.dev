@@ -135,9 +135,6 @@ def cmd_rom_assets(args):
         if selected_asset_to_edit == editors.SCRAPE_CMD:
             AppMediator.sync_cmd(editors.SCRAPE_CMD, args)
             return
-        #    globals.run_command(scrape_cmd, rom=obj_instance)
-        #    edit_object_assets(obj_instance, selected_option)
-        #    return True
         
         asset = g_assetFactory.get_asset_info(selected_asset_to_edit)
         # >> Execute edit asset menu subcommand. Then, execute recursively this submenu again.
