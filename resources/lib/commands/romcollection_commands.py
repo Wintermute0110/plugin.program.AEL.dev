@@ -183,7 +183,7 @@ def cmd_romcollection_edit_assets(args):
         
         selected_asset_to_edit = editors.edit_object_assets(romcollection, preselected_option)
         if selected_asset_to_edit is None:
-            AppMediator.async_cmd('EDIT_ROMCOLLECTION', args)
+            AppMediator.sync_cmd('EDIT_ROMCOLLECTION', args)
             return
         
         if selected_asset_to_edit == editors.SCRAPE_CMD:
@@ -218,6 +218,7 @@ def cmd_romcollection_edit_default_assets(args):
         selected_asset_to_edit = editors.edit_object_default_assets(romcollection, preselected_option)
         if selected_asset_to_edit is None:
             AppMediator.sync_cmd('EDIT_ROMCOLLECTION', args)
+            return
 
         if editors.edit_default_asset(romcollection, selected_asset_to_edit):
             repository.update_romcollection(romcollection)

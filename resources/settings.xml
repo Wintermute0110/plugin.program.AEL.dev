@@ -11,19 +11,13 @@
 <!--
     Make sure the scraper lists match the variables in constants.py
 -->
-<!-- <category label="40011">
-    <setting id="separator" type="lsep" label="Scanner settings"/>
-    <setting label="Metadata scan policy" type="labelenum" id="scan_metadata_policy" default="20040" lvalues="20010|20020|20040|20060" />
-    <setting label="Asset scan policy" type="labelenum" id="scan_asset_policy" default="20060" lvalues="20030|20050|20060" />
+<category label="40011">
+    <setting id="separator" type="lsep" label="Scraper settings"/>
+    <setting label="Metadata scrape policy" type="labelenum" id="scrape_metadata_policy" default="20040" lvalues="20010|20020|20040|20060" />
+    <setting label="Asset scrape policy" type="labelenum" id="scrape_assets_policy" default="20060" lvalues="20030|20050|20060" />
     <setting label="Game selection mode" type="labelenum" id="game_selection_mode" default="20520" lvalues="20510|20520" />
     <setting label="Asset selection mode" type="labelenum" id="asset_selection_mode" default="20520" lvalues="20510|20520" />
-
-    <setting id="separator" type="lsep" label="Scanner scrapers"/>
-    <setting label="Metadata scraper" type="labelenum" id="scraper_metadata" default="10020" lvalues="10020|10030|10050|10040" />
-    <setting label="Asset scraper" type="labelenum" id="scraper_asset" default="10030" lvalues="10030|10050|10040|10090" />
-    <setting label="MAME metadata scraper" type="labelenum" id="scraper_metadata_MAME" default="10020" lvalues="10020|10070|10030|10050|10040" />
-    <setting label="MAME asset scraper" type="labelenum" id="scraper_asset_MAME" default="10070" lvalues="10070|10030|10050|10040" />
-</category> -->
+</category>
 <category label="40012">
     <setting id="separator" type="lsep" label="Scraper API keys"/>
     <setting label="TheGamesDB API key" default="" id="scraper_thegamesdb_apikey" type="text"/>

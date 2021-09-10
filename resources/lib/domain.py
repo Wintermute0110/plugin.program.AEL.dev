@@ -455,7 +455,9 @@ class MetaDataItemABC(EntityABC):
         if asset_info.id in self.asset_paths:
             return self.asset_paths[asset_info.id].get_path_FN()
         
-        return self.get_assets_root_path().pjoin(asset_info.plural.lower(), isdir=True)
+        if self.get_assets_root_path() is not None:
+            return self.get_assets_root_path().pjoin(asset_info.plural.lower(), isdir=True)
+        return None
 
     def set_asset_path(self, asset_info: AssetInfo, path: str):
         logger.debug('Setting "{}" to {}'.format(asset_info.id, path))
@@ -809,6 +811,17 @@ class ScraperAddon(ROMAddon):
             '--server_port': globals.WEBSERVER_PORT,
             '--ael_addon_id': self.addon.get_id(),
             '--rom_id': rom.get_id(),
+            '--settings':  io.parse_to_json_arg(self.get_settings())
+        }
+        
+    def get_scrape_command_for_collection(self, collection: ROMCollection) -> dict:     
+        return {
+            '--cmd': 'scrape',
+            '--type': constants.AddonType.SCRAPER.name,
+            '--server_host': globals.WEBSERVER_HOST,
+            '--server_port': globals.WEBSERVER_PORT,
+            '--ael_addon_id': self.addon.get_id(),
+            '--romcollection_id': collection.get_id(),
             '--settings':  io.parse_to_json_arg(self.get_settings())
         }
  
@@ -1628,7 +1641,7 @@ class AssetInfoFactory(object):
         a.default_key                   = 'default_icon'
         a.rom_default_key               = 'roms_default_icon'
         a.name                          = 'Icon'
-        a.name_plural                   = 'Icons'
+        a.plural                        = 'Icons'
         a.fname_infix                   = 'icon'
         a.kind_str                      = 'image'
         a.exts                          = self.asset_get_filesearch_extension_list(constants.IMAGE_EXTENSION_LIST)

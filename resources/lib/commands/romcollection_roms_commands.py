@@ -71,6 +71,7 @@ def cmd_manage_roms(args):
     if selected_option is None:
         # >> Exits context menu
         logger.debug('ROMCOLLECTION_MANAGE_ROMS: cmd_manage_roms() Selected None. Closing context menu')
+        if 'scraper_settings' in args: del args['scraper_settings']
         AppMediator.async_cmd('EDIT_ROMCOLLECTION', args)
         return
     
