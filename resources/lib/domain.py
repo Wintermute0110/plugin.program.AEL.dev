@@ -1331,7 +1331,7 @@ class ROM(MetaDataItemABC):
             for asset_id in self.get_asset_ids_list():
                 if api_rom_obj.get_asset(asset_id) is not None: 
                     if asset_id == constants.ASSET_TRAILER_ID:
-                        self.set_trailer(api_rom_obj.get_asset_path(asset_id))
+                        self.set_trailer(api_rom_obj.get_asset(asset_id))
                     else:
                         asset_info = g_assetFactory.get_asset_info(asset_id)
                         asset_path = io.FileName(api_rom_obj.get_asset(asset_id))
