@@ -96,11 +96,10 @@ class XmlConfigurationRepository(object):
         # >> If there are issues in the XML file (for example, invalid XML chars) ET.parse will fail
         logger.debug('XmlRepository.get_categories() Loading {0}'.format(self.file_path.getPath()))
 
-        xml_tree = self.file_path.readXml()
-        if xml_tree is None:
+        xml_root = self.file_path.readXml()
+        if xml_root is None:
             return None
 
-        xml_root = xml_tree.getroot()
         # >> Process tags in XML configuration file
         for root_element in xml_root:
             if self.debug: logger.debug('>>> Root child tag <{0}>'.format(root_element.tag))
@@ -132,11 +131,10 @@ class XmlConfigurationRepository(object):
         # >> If there are issues in the XML file (for example, invalid XML chars) ET.parse will fail
         logger.debug('XmlRepository.get_launchers() Loading {0}'.format(self.file_path.getPath()))
 
-        xml_tree = self.file_path.readXml()
-        if xml_tree is None:
+        xml_root = self.file_path.readXml()
+        if xml_root is None:
             return None
-
-        xml_root = xml_tree.getroot()
+            
         # >> Process tags in XML configuration file
         for root_element in xml_root:
             if self.debug: logger.debug('>>> Root child tag <{0}>'.format(root_element.tag))
