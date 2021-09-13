@@ -154,10 +154,9 @@ def _process_scraper_addon(
         'addon_type': constants.AddonType.SCRAPER.name,
     })
     
-    supported_types = addon.getSetting('ael.scraper.supported_types').split('|')
     addon_obj.set_extra_settings({
-        'supports_metadata': 'metadata' in supported_types,
-        'supports_assets': 'asset' in supported_types
+        'supported_metadata':  addon.getSetting('ael.scraper.supported_metadata'),
+        'supported_assets': addon.getSetting('ael.scraper.supported_assets')
     })
 
     if addon_id in existing_addon_ids:                

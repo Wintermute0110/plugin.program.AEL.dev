@@ -796,6 +796,33 @@ class ScraperAddon(ROMAddon):
         }        
         super(ScraperAddon, self).__init__(addon, entity_data)
     
+    def settings_are_applicable(self) -> bool:
+        settings = self.get_scraper_settings()
+
+        if settings.scrape_metadata_policy != constants.SCRAPE_ACTION_NONE:
+            supported_metadata_types = self.get_supported_metadata()
+            if len(supported_metadata_types) > 0: return True
+
+        if settings.scrape_assets_policy != constants.SCRAPE_ACTION_NONE:
+            supported_asset_types = self.get_supported_assets()
+            if len(supported_asset_types) == 0: return False
+            asset_overlap = list(set(supported_asset_types) & set(settings.asset_IDs_to_scrape))
+            if len(asset_overlap) > 0: return True
+        
+        return False
+
+    def get_supported_metadata(self) -> typing.List[str]:
+        extra_settings = self.addon.get_extra_settings()
+        supported_types = extra_settings['supported_metadata'] if 'supported_metadata' in extra_settings else None
+        if supported_types is None: return None
+        return supported_types.split('|')
+
+    def get_supported_assets(self) -> typing.List[str]:
+        extra_settings = self.addon.get_extra_settings()
+        supported_types = extra_settings['supported_assets'] if 'supported_assets' in extra_settings else None
+        if supported_types is None: return None
+        return supported_types.split('|')
+
     def get_scraper_settings(self) -> ScraperSettings:
         settings_dict = self.get_settings()
         return ScraperSettings.from_settings_dict(settings_dict)

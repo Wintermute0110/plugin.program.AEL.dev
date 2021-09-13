@@ -275,7 +275,9 @@ def _select_scraper(uow:UnitOfWork, title: str, scraper_settings: ScraperSetting
     # --- Make a menu list of available metadata scrapers ---
     options =  {}
     for addon in addons:
-        options[ScraperAddon(addon, scraper_settings)] = addon.get_name()
+        scraper_addon = ScraperAddon(addon, scraper_settings)
+        if scraper_addon.settings_are_applicable():
+            options[ScraperAddon(addon, scraper_settings)] = addon.get_name()
                     
     selected_addon:ScraperAddon = kodi.OrdDictionaryDialog().select(title, options)
     return selected_addon
