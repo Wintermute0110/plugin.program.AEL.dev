@@ -95,7 +95,7 @@ def cmd_scrape_roms_in_romcollection(args):
         selected_addon.addon.get_addon_id(),
         selected_addon.get_scrape_command_for_collection(collection))
 
-@AppMediator.register('ROM_SCRAPE_METADATA')
+@AppMediator.register('SCRAPE_ROM_METADATA')
 def cmd_scrape_rom_metadata(args):
     rom_id:str = args['rom_id'] if 'rom_id' in args else None
     
@@ -113,18 +113,53 @@ def cmd_scrape_rom_metadata(args):
         selected_addon = _select_scraper(uow, 'Scrape ROM metadata', scraper_settings)
         if selected_addon is None:
             # >> Exits context menu
-            logger.debug('ROM_SCRAPE_METADATA: cmd_scrape_rom_metadata() Selected None. Closing context menu')
+            logger.debug('SCRAPE_ROM_METADATA: cmd_scrape_rom_metadata() Selected None. Closing context menu')
             AppMediator.sync_cmd('ROM_EDIT_METADATA', args)
             return
 
     # >> Execute scraper
-    logger.debug('ROM_SCRAPE_METADATA: cmd_scrape_rom_metadata() Selected scraper#{}'.format(selected_addon.get_name()))
+    logger.debug('SCRAPE_ROM_METADATA: cmd_scrape_rom_metadata() Selected scraper#{}'.format(selected_addon.get_name()))
         
     kodi.run_script(
         selected_addon.addon.get_addon_id(),
         selected_addon.get_scrape_command(rom))
     
-@AppMediator.register('RESCRAPE_ROM_ASSETS')
+@AppMediator.register('SCRAPE_ROM_ASSET')
+def cmd_scrape_rom_asset(args):
+    rom_id:str = args['rom_id'] if 'rom_id' in args else None
+    asset_id:str = args['selected_asset'] if 'selected_asset' in args else None
+    
+    asset_to_scrape = g_assetFactory.get_asset_info(asset_id)
+    
+    uow = UnitOfWork(globals.g_PATHS.DATABASE_FILE_PATH)
+    with uow:
+        roms_repository = ROMsRepository(uow)
+        rom             = roms_repository.find_rom(rom_id)   
+        
+        scraper_settings = ScraperSettings()
+        scraper_settings.scrape_assets_policy    = constants.SCRAPE_POLICY_SCRAPE_ONLY
+        scraper_settings.scrape_metadata_policy  = constants.SCRAPE_ACTION_NONE
+        scraper_settings.search_term_mode        = constants.SCRAPE_MANUAL
+        scraper_settings.game_selection_mode     = constants.SCRAPE_MANUAL
+        scraper_settings.asset_selection_mode    = constants.SCRAPE_MANUAL
+        scraper_settings.asset_IDs_to_scrape     = [asset_id]
+        scraper_settings.overwrite_existing      = True
+        
+        selected_addon = _select_scraper(uow, 'Scrape ROM {} asset'.format(asset_to_scrape.name), scraper_settings)
+        if selected_addon is None:
+            # >> Exits context menu
+            logger.debug('SCRAPE_ROM_ASSET: cmd_scrape_rom_asset() Selected None. Closing context menu')
+            AppMediator.sync_cmd('ROM_EDIT_ASSETS', args)
+            return
+
+    # >> Execute scraper
+    logger.debug('SCRAPE_ROM_ASSET: cmd_scrape_rom_asset() Selected scraper#{}'.format(selected_addon.get_name()))
+    
+    kodi.run_script(
+        selected_addon.addon.get_addon_id(),
+        selected_addon.get_scrape_command(rom))    
+    
+@AppMediator.register('SCRAPE_ROM_ASSETS')
 def cmd_scrape_rom_assets(args):
     rom_id:str = args['rom_id'] if 'rom_id' in args else None
    
@@ -268,16 +303,16 @@ def cmd_configure_scraper_overwrite_mode(args):
     AppMediator.sync_cmd('SCRAPE_ROMS', args)
     
 def _select_scraper(uow:UnitOfWork, title: str, scraper_settings: ScraperSettings) -> ScraperAddon:
-    selected_addon = None    
-    repository  = AelAddonRepository(uow)    
-    addons      = repository.find_all_scrapers()
+    selected_addon  = None    
+    repository      = AelAddonRepository(uow)    
+    addons          = repository.find_all_scrapers()
     
     # --- Make a menu list of available metadata scrapers ---
     options =  {}
     for addon in addons:
         scraper_addon = ScraperAddon(addon, scraper_settings)
         if scraper_addon.settings_are_applicable():
-            options[ScraperAddon(addon, scraper_settings)] = addon.get_name()
+            options[scraper_addon] = addon.get_name()
                     
     selected_addon:ScraperAddon = kodi.OrdDictionaryDialog().select(title, options)
     return selected_addon

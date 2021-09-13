@@ -240,5 +240,18 @@ def cmd_store_scraped_single_rom(args) -> bool:
     
     for collection_id in rom_collection_ids:
         AppMediator.async_cmd('RENDER_ROMCOLLECTION_VIEW', {'romcollection_id': collection_id})
-    AppMediator.async_cmd('EDIT_ROM', {'rom_id': rom_id})
+        
+    scraped_meta   = applied_settings.scrape_metadata_policy != constants.SCRAPE_ACTION_NONE
+    scraped_assets = applied_settings.scrape_assets_policy != constants.SCRAPE_ACTION_NONE
+    
+    if scraped_meta and not scraped_assets:
+        AppMediator.async_cmd('ROM_EDIT_METADATA', {'rom_id': rom_id})
+    elif scraped_assets and not scraped_meta:
+        if len(applied_settings.asset_IDs_to_scrape) == 1:
+            AppMediator.async_cmd('ROM_EDIT_ASSETS', {'rom_id': rom_id, 'selected_asset': applied_settings.asset_IDs_to_scrape[0]})
+        else:
+            AppMediator.async_cmd('ROM_EDIT_ASSETS', {'rom_id': rom_id})
+    else:
+        AppMediator.async_cmd('EDIT_ROM', {'rom_id': rom_id})
+        
     return True

@@ -20,7 +20,7 @@ from __future__ import division
 import logging
 import collections
 
-from ael import constants
+from ael import constants, settings
 from ael.utils import kodi, text, io
 
 from resources.lib.commands.mediator import AppMediator
@@ -98,7 +98,7 @@ def cmd_rom_metadata(args):
     options['ROM_IMPORT_NFO_FILE_DEFAULT']   = 'Import NFO file (default {})'.format(NFO_found_str)
     options['ROM_IMPORT_NFO_FILE_BROWSE']    = 'Import NFO file (browse NFO file) ...'
     options['ROM_SAVE_NFO_FILE_DEFAULT']     = 'Save NFO file (default location)'
-    options['ROM_SCRAPE_METADATA']           = 'Scrape Metadata'
+    options['SCRAPE_ROM_METADATA']           = 'Scrape Metadata'
 
     s = 'Edit ROM "{0}" metadata'.format(rom.get_name())
     selected_option = kodi.OrdDictionaryDialog().select(s, options)
@@ -136,11 +136,17 @@ def cmd_rom_assets(args):
             AppMediator.sync_cmd(editors.SCRAPE_CMD, args)
             return
         
-        asset = g_assetFactory.get_asset_info(selected_asset_to_edit)
+        asset = g_assetFactory.get_asset_info(selected_asset_to_edit)    
         # >> Execute edit asset menu subcommand. Then, execute recursively this submenu again.
         # >> The menu dialog is instantiated again so it reflects the changes just edited.
-        # >> If edit_asset() returns True changes were made.
-        if editors.edit_asset(rom, asset):
+        # >> If edit_asset() returns a command other than scrape or None changes were made.
+        cmd = editors.edit_asset(rom, asset)
+        if cmd is not None:
+            if cmd == 'SCRAPE_ASSET':
+                args['selected_asset'] = asset.id
+                AppMediator.sync_cmd('SCRAPE_ROM_ASSET', args)
+                return
+            
             repository.update_rom(rom)
             uow.commit()
             for romcollection_id in rom_collection_ids:

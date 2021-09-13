@@ -196,8 +196,8 @@ def cmd_romcollection_edit_assets(args):
         asset = g_assetFactory.get_asset_info(selected_asset_to_edit)
         # >> Execute edit asset menu subcommand. Then, execute recursively this submenu again.
         # >> The menu dialog is instantiated again so it reflects the changes just edited.
-        # >> If edit_asset() returns True changes were made.
-        if editors.edit_asset(romcollection, asset):
+        # >> If edit_asset() returns a cmd other than None changes were made.
+        if editors.edit_asset(romcollection, asset) is not None:
             repository.update_romcollection(romcollection)
             uow.commit()
             AppMediator.async_cmd('RENDER_ROMCOLLECTION_VIEW', {'romcollection_id': romcollection.get_id()})

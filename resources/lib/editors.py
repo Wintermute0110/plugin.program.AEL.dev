@@ -137,7 +137,7 @@ def import_TXT_file(text_file: io.FileName):
 
     return file_data
 
-SCRAPE_CMD = 'RESCRAPE_ROM_ASSETS'
+SCRAPE_CMD = 'SCRAPE_ROM_ASSETS'
 
 def edit_object_assets(obj_instance:MetaDataItemABC, preselected_asset = None) -> str:
     logger.debug('edit_object_assets() obj_instance {0}'.format(obj_instance.__class__.__name__))
@@ -170,7 +170,7 @@ def edit_object_assets(obj_instance:MetaDataItemABC, preselected_asset = None) -
 
     # if ROM then add scrape option
     if obj_instance.get_object_name() == 'ROM':
-        options[SCRAPE_CMD] = 'Rescrape ROM assets'
+        options[SCRAPE_CMD] = 'Scrape ROM assets'
     
     # --- Customize function for each object type ---
     dialog_title_str = 'Edit {0} Assets/Artwork'. format(obj_instance.get_object_name())
@@ -195,8 +195,8 @@ def edit_object_assets(obj_instance:MetaDataItemABC, preselected_asset = None) -
 # NOTE obj_instance is edited by assigment.
 #
 # Returns:
-#   True   Changes made. Categories/Launchers/ROMs must be saved and container updated
-#   False  No changes were made. No necessary to refresh container
+#   Command   The cmd that was executed. (SCRAPE_ASSET cmd will not be executed directly)
+#   None      No changes were made. No necessary to refresh container
 #
 def edit_asset(obj_instance: MetaDataItemABC, asset_info: AssetInfo) -> bool:
     # --- Get asset object information ---
@@ -217,7 +217,7 @@ def edit_asset(obj_instance: MetaDataItemABC, asset_info: AssetInfo) -> bool:
         else:
             kodi.dialog_OK('Unknown obj_instance.get_assets_kind() {}. '.format(obj_instance.get_assets_kind()) +
                         'This is a bug, please report it.')
-            return False
+            return None
         
     asset_path_noext = g_assetFactory.assets_get_path_noext_SUFIX(asset_info.id, asset_directory,
                                                    obj_instance.get_name(), obj_instance.get_id())
@@ -229,7 +229,7 @@ def edit_asset(obj_instance: MetaDataItemABC, asset_info: AssetInfo) -> bool:
         logger.error('Directory not found "{0}"'.format(asset_directory.getPath()))
         kodi.dialog_OK('Directory to store artwork not found. '
                        'Configure it before you can edit artwork.')
-        return False
+        return None
 
     dialog_title = 'Change {0} {1}'.format(obj_instance.get_name(), asset_info.name)
     
@@ -237,17 +237,17 @@ def edit_asset(obj_instance: MetaDataItemABC, asset_info: AssetInfo) -> bool:
     options = collections.OrderedDict()
     options['LINK_LOCAL']   = 'Link to local {0} image'.format(asset_info.name)
     options['IMPORT_LOCAL'] = 'Import local {0} (copy and rename)'.format(asset_info.name)
-    options['UNSET']       = 'Unset artwork/asset'
-    
-    # TODO: scrapers
-    #if obj_instance.get_assets_kind() == constants.KIND_ASSET_ROM:
-    #    scraper_menu_list = g_ScraperFactory.get_asset_scraper_menu_list(asset_info)
-    #    options.update(scraper_menu_list)
+    options['UNSET']        = 'Unset artwork/asset'
+    if obj_instance.get_assets_kind() == constants.KIND_ASSET_ROM:
+        options['SCRAPE_ASSET'] = 'Scrape {}'.format(asset_info.name)
         
     selected_option = kodi.OrdDictionaryDialog().select(dialog_title, options)
     
     # >> User canceled select box
-    if selected_option is None: return False
+    if selected_option is None: return None
+    
+    # --- Manual scrape asset ---
+    elif selected_option == 'SCRAPE': return selected_option
 
     # --- Link to a local image ---
     if selected_option == 'LINK_LOCAL':
@@ -268,10 +268,10 @@ def edit_asset(obj_instance: MetaDataItemABC, asset_info: AssetInfo) -> bool:
             new_asset_file = kodi.browse(text=title_str, mask=ext_list, preselected_path=current_image_dir.getPath())
         else:
             new_asset_file = kodi.browse(type=2, text=title_str, mask=ext_list, preselected_path=current_image_dir.getPath())
-        if not new_asset_file or new_asset_file == current_image_dir.getPath(): return False
+        if not new_asset_file or new_asset_file == current_image_dir.getPath(): return None
         # --- Check if image exists ---
         new_asset_FN = io.FileName(new_asset_file)
-        if not new_asset_FN.exists(): return False
+        if not new_asset_FN.exists(): return None
 
         # --- Update object ---
         obj_instance.set_asset(asset_info, new_asset_FN)
@@ -304,7 +304,7 @@ def edit_asset(obj_instance: MetaDataItemABC, asset_info: AssetInfo) -> bool:
         else:
             new_asset_file_str = kodi.browse(type=2, text=title_str, mask=ext_list, preselected_path=current_image_dir.getPath())
             
-        if not new_asset_file_str: return False
+        if not new_asset_file_str: return None
 
         # >> Determine image extension and dest filename. Check for errors.
         new_asset_file = io.FileName(new_asset_file_str)
@@ -315,7 +315,7 @@ def edit_asset(obj_instance: MetaDataItemABC, asset_info: AssetInfo) -> bool:
         if new_asset_file.getPath() == dest_asset_file.getPath():
             logger.info('m_gui_edit_asset() new_asset_file and dest_asset_file are the same. Returning.')
             kodi.notify_warn('new_asset_file and dest_asset_file are the same. Returning')
-            return False
+            return None
 
         # --- Kodi image cache ---
         # The Kodi image cache cannot be manipulated by addons directly.
@@ -338,7 +338,7 @@ def edit_asset(obj_instance: MetaDataItemABC, asset_info: AssetInfo) -> bool:
         except constants.AddonError:
             logger.error('edit_asset() AddonException exception copying image')
             kodi.notify_warn('AddonException exception copying image')
-            return False
+            return None
 
         # --- Update object ---
         # >> Always store original/raw paths in database.
@@ -381,46 +381,8 @@ def edit_asset(obj_instance: MetaDataItemABC, asset_info: AssetInfo) -> bool:
         obj_instance.set_asset(asset_info, io.FileName(''))
         logger.info('edit_asset() Unset {0} {1}'.format(obj_instance.get_object_name(), asset_info.name))
         kodi.notify('{0} {1} has been unset'.format(obj_instance.get_object_name(), asset_info.name))
-
-    # --- Manual scrape asset ---
-    elif selected_option:
-        # --- Use the scraper chosen by user ---
-        logger.debug('edit_asset() User chose scraper "#{0}"'.format(selected_option))
-        scraper_settings = ScraperSettings()
-        scraper_settings.assets_scraper_ID       = selected_option
-        scraper_settings.scrape_metadata_policy  = constants.SCRAPE_ACTION_NONE
-        scraper_settings.scrape_assets_policy    = constants.SCRAPE_POLICY_SCRAPE_ONLY
-        scraper_settings.search_term_mode        = constants.SCRAPE_MANUAL
-        scraper_settings.game_selection_mode     = constants.SCRAPE_MANUAL
-        scraper_settings.asset_selection_mode    = constants.SCRAPE_MANUAL
-        scraper_settings.asset_IDs_to_scrape     = [asset_info.id]
-        scraper_settings.overwrite_existing      = kodi.dialog_yesno('Overwrite existing assets settings?')
-        
-        rom: ROM            = obj_instance
-        pdialog             = kodi.ProgressDialog()
-        ROM_file            = rom.get_file()
-        launcher            = rom.get_launcher()
-        scraping_strategy   = None # TODO g_ScraperFactory.create_scraper(launcher, pdialog, scraper_settings)
-
-        msg = 'Scraping {0}...'.format(ROM_file.getBaseNoExt())
-        pdialog.startProgress(msg)
-        logger.debug(msg)
-        try:
-            scraping_strategy.scanner_process_ROM(rom, ROM_file)
-        except Exception as ex:
-            logger.error('(Exception) Object type "{}"'.format(type(ex)))
-            logger.error('(Exception) Message "{}"'.format(str(ex)))
-            logger.warning('Could not scrape "{}"'.format(ROM_file.getBaseNoExt()))
-            kodi.notify_error('Could not scrape ROM')
-            pdialog.endProgress()
-            return
-        
-        pdialog.endProgress()
-        kodi.notify('ROM asset scraped')
-        
-    # >> If we reach this point, changes were made.
-    # >> Categories/Launchers/ROMs must be saved, container must be refreshed.
-    return True
+    
+    return selected_option
 
 #
 # Generic function to edit the Object default assets for 
