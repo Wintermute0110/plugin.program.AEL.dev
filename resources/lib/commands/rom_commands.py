@@ -56,6 +56,7 @@ def cmd_edit_rom(args):
     options['ROM_EDIT_ASSETS']         = 'Edit Assets/Artwork ...'
     options['EDIT_ROM_STATUS']         = 'ROM status: {0}'.format(rom.get_finished_str())
     options['DELETE_ROM']              = 'Delete ROM'
+    options['SCRAPE_ROM']              = 'Scrape ROM'
 
     s = 'Edit ROM "{}"'.format(rom.get_name())
     selected_option = kodi.OrdDictionaryDialog().select(s, options)

@@ -450,12 +450,12 @@ class MetaDataItemABC(EntityABC):
     def get_asset_paths(self) -> typing.List[AssetPath]:
         return self.asset_paths.values()
 
-    def get_asset_path(self, asset_info: AssetInfo) -> io.FileName:
+    def get_asset_path(self, asset_info: AssetInfo, fallback_to_root = True) -> io.FileName:
         if not asset_info: return None
         if asset_info.id in self.asset_paths:
             return self.asset_paths[asset_info.id].get_path_FN()
         
-        if self.get_assets_root_path() is not None:
+        if fallback_to_root and self.get_assets_root_path() is not None:
             return self.get_assets_root_path().pjoin(asset_info.plural.lower(), isdir=True)
         return None
 
