@@ -71,6 +71,7 @@ def cmd_scrape_romcollection(args):
     if not _check_collection_unset_asset_dirs(collection, scraper_settings):
         args['scraper_settings'] = scraper_settings
     
+    args['ret_cmd'] = 'SCRAPE_ROMS'
     AppMediator.sync_cmd(selected_option, args)
     
 @AppMediator.register('SCRAPE_ROM')
@@ -97,16 +98,17 @@ def cmd_scrape_rom(args):
     options['SCRAPER_ASSET_SELECTION_MODE'] = 'Asset selection mode: "{}"'.format(kodi.translate(scraper_settings.asset_selection_mode))
     options['SCRAPER_ASSETS_TO_SCRAPE']     = 'Assets to scrape: "{}"'.format(', '.join([a.plural for a in assets_to_scrape]))
     options['SCRAPER_OVERWRITE_MODE']       = 'Overwrite existing files: "{}"'.format('Yes' if scraper_settings.overwrite_existing else 'No')
-    options['SCRAPE_ROMS_WITH_SETTINGS']    = 'Scrape'
+    options['SCRAPE_ROM_WITH_SETTINGS']     = 'Scrape'
     
     s = 'Scrape ROM "{}"'.format(rom.get_name())
-    selected_option = kodi.OrdDictionaryDialog().select(s, options, preselect='SCRAPE_ROMS_WITH_SETTINGS')
+    selected_option = kodi.OrdDictionaryDialog().select(s, options, preselect='SCRAPE_ROM_WITH_SETTINGS')
     if selected_option is None:
-        logger.debug('cmd_scrape_romcollection() Selected None. Closing context menu')
+        logger.debug('cmd_scrape_rom() Selected None. Closing context menu')
         del args['scraper_settings']
-        AppMediator.sync_cmd('ROMCOLLECTION_MANAGE_ROMS', args)
+        AppMediator.sync_cmd('EDIT_ROM', args)
         return
     
+    args['ret_cmd'] = 'SCRAPE_ROMS'
     AppMediator.sync_cmd(selected_option, args)
 
 @AppMediator.register('SCRAPE_ROMS_WITH_SETTINGS')
@@ -133,6 +135,31 @@ def cmd_scrape_roms_in_romcollection(args):
     kodi.run_script(
         selected_addon.addon.get_addon_id(),
         selected_addon.get_scrape_command_for_collection(collection))
+
+@AppMediator.register('SCRAPE_ROM_WITH_SETTINGS')
+def cmd_scrape_rom_with_settings(args):
+    rom_id:str = args['rom_id'] if 'rom_id' in args else None
+    scraper_settings:ScraperSettings = args['scraper_settings'] if 'scraper_settings' in args else ScraperSettings.from_addon_settings()
+
+    uow = UnitOfWork(globals.g_PATHS.DATABASE_FILE_PATH)
+    with uow:
+        roms_repository = ROMsRepository(uow)
+        rom             = roms_repository.find_rom(rom_id)   
+        
+        s = 'Scrape ROM "{}"'.format(rom.get_name())
+        selected_addon = _select_scraper(uow, s, scraper_settings)
+        if selected_addon is None:
+            # >> Exits context menu
+            logger.debug('cmd_scrape_roms_in_romcollection() Selected None. Closing context menu')
+            AppMediator.sync_cmd('SCRAPE_ROM', args)
+            return
+    
+    # >> Execute scraper
+    logger.debug('cmd_scrape_rom_assets() Selected scraper#{}'.format(selected_addon.get_name()))
+        
+    kodi.run_script(
+        selected_addon.addon.get_addon_id(),
+        selected_addon.get_scrape_command(rom))
 
 @AppMediator.register('SCRAPE_ROM_METADATA')
 def cmd_scrape_rom_metadata(args):
@@ -247,12 +274,12 @@ def cmd_configure_scraper_metadata_policy(args):
     selected_option = kodi.OrdDictionaryDialog().select(s, options, preselect=scraper_settings.scrape_metadata_policy)
     
     if selected_option is None:
-        AppMediator.sync_cmd('SCRAPE_ROMS', args)
+        AppMediator.sync_cmd(args['ret_cmd'], args)
         return
     
     scraper_settings.scrape_metadata_policy = selected_option
     args['scraper_settings'] = scraper_settings
-    AppMediator.sync_cmd('SCRAPE_ROMS', args)
+    AppMediator.sync_cmd(args['ret_cmd'], args)
     return
     
 @AppMediator.register('SCRAPER_ASSET_POLICY')
@@ -269,12 +296,12 @@ def cmd_configure_scraper_asset_policy(args):
     selected_option = kodi.OrdDictionaryDialog().select(s, options, preselect=scraper_settings.scrape_assets_policy)
     
     if selected_option is None:
-        AppMediator.sync_cmd('SCRAPE_ROMS', args)
+        AppMediator.sync_cmd(args['ret_cmd'], args)
         return
     
     scraper_settings.scrape_assets_policy = selected_option
     args['scraper_settings'] = scraper_settings
-    AppMediator.sync_cmd('SCRAPE_ROMS', args)
+    AppMediator.sync_cmd(args['ret_cmd'], args)
     
 @AppMediator.register('SCRAPER_GAME_SELECTION_MODE')
 def cmd_configure_scraper_game_selection_mode(args):
@@ -287,12 +314,12 @@ def cmd_configure_scraper_game_selection_mode(args):
     selected_option = kodi.OrdDictionaryDialog().select(s, options, preselect=scraper_settings.game_selection_mode)
     
     if selected_option is None:
-        AppMediator.sync_cmd('SCRAPE_ROMS', args)
+        AppMediator.sync_cmd(args['ret_cmd'], args)
         return
     
     scraper_settings.game_selection_mode = selected_option  
     args['scraper_settings'] = scraper_settings
-    AppMediator.sync_cmd('SCRAPE_ROMS', args)
+    AppMediator.sync_cmd(args['ret_cmd'], args)
     return
 
 @AppMediator.register('SCRAPER_ASSET_SELECTION_MODE')
@@ -306,12 +333,12 @@ def cmd_configure_scraper_asset_selection_mode(args):
     selected_option = kodi.OrdDictionaryDialog().select(s, options, preselect=scraper_settings.asset_selection_mode)
     
     if selected_option is None:
-        AppMediator.sync_cmd('SCRAPE_ROMS', args)
+        AppMediator.sync_cmd(args['ret_cmd'], args)
         return
     
     scraper_settings.asset_selection_mode = selected_option  
     args['scraper_settings'] = scraper_settings
-    AppMediator.sync_cmd('SCRAPE_ROMS', args)
+    AppMediator.sync_cmd(args['ret_cmd'], args)
     return
 
 @AppMediator.register('SCRAPER_ASSETS_TO_SCRAPE')
@@ -326,12 +353,12 @@ def cmd_configure_scraper_assets_to_scrape(args):
     selected_options = kodi.MultiSelectDialog().select('Assets to scrape', options, preselected=scraper_settings.asset_IDs_to_scrape)
     
     if selected_options is None:
-        AppMediator.sync_cmd('SCRAPE_ROMS', args)
+        AppMediator.sync_cmd(args['ret_cmd'], args)
         return
     
     scraper_settings.asset_IDs_to_scrape = selected_options  
     args['scraper_settings'] = scraper_settings
-    AppMediator.sync_cmd('SCRAPE_ROMS', args)
+    AppMediator.sync_cmd(args['ret_cmd'], args)
     return
 
 @AppMediator.register('SCRAPER_OVERWRITE_MODE')
@@ -339,7 +366,7 @@ def cmd_configure_scraper_overwrite_mode(args):
     scraper_settings:ScraperSettings = args['scraper_settings'] if 'scraper_settings' in args else ScraperSettings.from_addon_settings()
     scraper_settings.overwrite_existing = not scraper_settings.overwrite_existing
     args['scraper_settings'] = scraper_settings
-    AppMediator.sync_cmd('SCRAPE_ROMS', args)
+    AppMediator.sync_cmd(args['ret_cmd'], args)
     
 def _select_scraper(uow:UnitOfWork, title: str, scraper_settings: ScraperSettings) -> ScraperAddon:
     selected_addon  = None    
