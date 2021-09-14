@@ -108,7 +108,7 @@ def cmd_scrape_rom(args):
         AppMediator.sync_cmd('EDIT_ROM', args)
         return
     
-    args['ret_cmd'] = 'SCRAPE_ROMS'
+    args['ret_cmd'] = 'SCRAPE_ROM'
     AppMediator.sync_cmd(selected_option, args)
 
 @AppMediator.register('SCRAPE_ROMS_WITH_SETTINGS')
