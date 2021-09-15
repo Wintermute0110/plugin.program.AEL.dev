@@ -4,6 +4,7 @@ import typing
 
 import sqlite3
 from sqlite3.dbapi2 import Cursor
+import json
 
 from ael.settings import *
 from ael.utils import text, io
@@ -857,8 +858,8 @@ QUERY_SELECT_ROM_ASSETPATHS_BY_SET  = "SELECT rap.* FROM vw_rom_asset_paths AS r
 QUERY_INSERT_ROM                = """
                                 INSERT INTO roms (
                                     id, metadata_id, name, num_of_players, esrb_rating, platform, box_size,
-                                    nointro_status, cloneof, rom_status, file_path, scanned_by_id)
-                                VALUES (?,?,?,?,?,?,?,?,?,?,?,?)
+                                    nointro_status, cloneof, rom_status, file_path, scanned_by_id, scanned_data)
+                                VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)
                                 """ 
 
 QUERY_SELECT_MY_FAVOURITES               = "SELECT * FROM vw_roms WHERE is_favourite = 1"                                
@@ -881,7 +882,7 @@ QUERY_UPDATE_ROM                = """
                                   UPDATE roms 
                                   SET name=?, num_of_players=?, esrb_rating=?, platform = ?, box_size = ?,
                                   nointro_status=?, cloneof=?, rom_status=?, file_path=?, launch_count=?, last_launch_timestamp=?,
-                                  is_favourite=? WHERE id =?
+                                  is_favourite=?, scanned_by=?, scanned_data=? WHERE id =?
                                   """
 QUERY_DELETE_ROM                = "DELETE FROM roms WHERE id = ?"
 QUERY_DELETE_ROMS_BY_COLLECTION = "DELETE FROM roms WHERE id IN (SELECT rc.rom_id FROM roms_in_romcollection AS rc WHERE rc.romcollection_id = ?)"
@@ -999,7 +1000,8 @@ class ROMsRepository(object):
             rom_obj.get_clone(),
             rom_obj.get_rom_status(),
             rom_obj.get_file().getPath(),
-            rom_obj.get_scanned_with())
+            rom_obj.get_scanned_with(),
+            json.dumps(rom_obj.get_scanned_data()))
         
         rom_assets = rom_obj.get_assets()
         for asset in rom_assets:
@@ -1046,6 +1048,8 @@ class ROMsRepository(object):
             rom_obj.get_launch_count(),
             rom_obj.get_last_launch_date(),
             rom_obj.is_favourite(),
+            rom_obj.get_scanned_with(),
+            json.dumps(rom_obj.get_scanned_data()),
             rom_obj.get_id())
         
         for asset in rom_obj.get_assets():

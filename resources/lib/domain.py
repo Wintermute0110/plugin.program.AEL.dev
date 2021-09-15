@@ -1131,6 +1131,11 @@ class ROM(MetaDataItemABC):
         if rom_data is None:
             rom_data = _get_default_ROM_data_model()
             rom_data['id'] = text.misc_generate_random_SID()
+            
+        if 'scanned_data' in rom_data:
+            scanned_data_str = rom_data['scanned_data']
+            rom_data['scanned_data'] = json.loads(scanned_data_str)
+        else: rom_data['scanned_data'] = {}
         
         self.launchers_data = launchers_data
         super(ROM, self).__init__(rom_data, assets_data, asset_paths_data)
@@ -1221,7 +1226,17 @@ class ROM(MetaDataItemABC):
 
     def scanned_with(self, scanner_id: str): 
         self.entity_data['scanned_by_id'] = scanner_id
+        
+    def get_scanned_data(self) -> dict:
+        return self.entity_data['scanned_data'] if 'scanned_data' in self.entity_data else {}
 
+    def get_scanned_data_element(self, key:str):
+        scanned_data = self.get_scanned_data()
+        return scanned_data[key] if key in scanned_data else None
+    
+    def set_scanned_data_element(self, key:str, data):
+        self.entity_data['scanned_data'][key] = data
+    
     def set_rom_status(self, state):
         self.entity_data['rom_status'] = state
 
@@ -1355,7 +1370,7 @@ class ROM(MetaDataItemABC):
     # Updates an ROM entity with the API object given.
     # Flags indicate which elements are allowed to be updated/altered with the incoming data.
     #
-    def update_with(self, api_rom_obj: ROMObj, update_meta=False, update_assets=False, update_launcher_data=False):
+    def update_with(self, api_rom_obj: ROMObj, update_meta=False, update_assets=False, update_scanned_data=False):
         
         if update_meta:
             if api_rom_obj.get_name() is not None:              self.set_name(api_rom_obj.get_name())
@@ -1377,10 +1392,20 @@ class ROM(MetaDataItemABC):
                         asset_path = io.FileName(api_rom_obj.get_asset(asset_id))
                         self.set_asset(asset_info, asset_path)
         
-        if update_launcher_data:
+        if update_scanned_data:
             file = api_rom_obj.get_file()
             if file is not None:
                 self.set_file(file)
+            
+            scanned_data = api_rom_obj.get_scanned_data()
+            for scanned_entry in scanned_data.keys():
+                self.set_scanned_data_element(scanned_entry), scanned_data[scanned_entry]
+                
+            # if 'romcollection' in launcher_settings \
+            # and kodi.dialog_yesno('Do you want to overwrite collection metadata properties with values from the launcher?'):
+            # romcollection.import_data_dic(launcher_settings['romcollection'])
+            # metadata_updated = True
+            
     
     def apply_romcollection_asset_paths(self, romcollection: ROMCollection):
         self.set_assets_root_path(romcollection.get_assets_root_path())

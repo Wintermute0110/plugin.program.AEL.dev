@@ -110,6 +110,7 @@ CREATE TABLE IF NOT EXISTS roms(
     file_path TEXT,
     metadata_id TEXT,
     scanned_by_id TEXT NULL,
+    scanned_data TEXT NULL,
     FOREIGN KEY (metadata_id) REFERENCES metadata (id) 
         ON DELETE CASCADE ON UPDATE NO ACTION,
     FOREIGN KEY (scanned_by_id) REFERENCES romcollection_scanner (id) 
@@ -260,6 +261,7 @@ CREATE VIEW IF NOT EXISTS vw_roms AS SELECT
     r.platform AS platform,
     r.box_size AS box_size,
     r.scanned_by_id AS scanned_by_id,
+    r.scanned_data AS scanned_data,
     m.year AS m_year, 
     m.genre AS m_genre,
     m.developer AS m_developer,
