@@ -882,7 +882,7 @@ QUERY_UPDATE_ROM                = """
                                   UPDATE roms 
                                   SET name=?, num_of_players=?, esrb_rating=?, platform = ?, box_size = ?,
                                   nointro_status=?, cloneof=?, rom_status=?, file_path=?, launch_count=?, last_launch_timestamp=?,
-                                  is_favourite=?, scanned_by=?, scanned_data=? WHERE id =?
+                                  is_favourite=?, scanned_by_id=?, scanned_data=? WHERE id =?
                                   """
 QUERY_DELETE_ROM                = "DELETE FROM roms WHERE id = ?"
 QUERY_DELETE_ROMS_BY_COLLECTION = "DELETE FROM roms WHERE id IN (SELECT rc.rom_id FROM roms_in_romcollection AS rc WHERE rc.romcollection_id = ?)"
@@ -999,7 +999,7 @@ class ROMsRepository(object):
             rom_obj.get_nointro_status(),
             rom_obj.get_clone(),
             rom_obj.get_rom_status(),
-            rom_obj.get_file().getPath(),
+            rom_obj.get_filename(),
             rom_obj.get_scanned_with(),
             json.dumps(rom_obj.get_scanned_data()))
         
@@ -1044,7 +1044,7 @@ class ROMsRepository(object):
             rom_obj.get_nointro_status(),
             rom_obj.get_clone(),
             rom_obj.get_rom_status(),
-            rom_obj.get_file().getPath(),
+            rom_obj.get_filename(),
             rom_obj.get_launch_count(),
             rom_obj.get_last_launch_date(),
             rom_obj.is_favourite(),

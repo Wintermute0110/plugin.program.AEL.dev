@@ -1393,13 +1393,14 @@ class ROM(MetaDataItemABC):
                         self.set_asset(asset_info, asset_path)
         
         if update_scanned_data:
-            file = api_rom_obj.get_file()
-            if file is not None:
-                self.set_file(file)
-            
+            file         = api_rom_obj.get_file()
+            scanned_name = api_rom_obj.get_name()
             scanned_data = api_rom_obj.get_scanned_data()
+            
+            if file is not None: self.set_file(file)
+            if scanned_name: self.set_name(scanned_name)
             for scanned_entry in scanned_data.keys():
-                self.set_scanned_data_element(scanned_entry), scanned_data[scanned_entry]
+                self.set_scanned_data_element(scanned_entry, scanned_data[scanned_entry])
                 
             # if 'romcollection' in launcher_settings \
             # and kodi.dialog_yesno('Do you want to overwrite collection metadata properties with values from the launcher?'):
