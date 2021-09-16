@@ -120,6 +120,7 @@ def cmd_store_scanned_roms(args) -> bool:
             
             rom_obj = ROM()
             rom_obj.update_with(api_rom_obj, update_scanned_data=True)
+            rom_obj.set_platform(romcollection.get_platform())
             rom_obj.scanned_with(scanner_id)
             rom_obj.apply_romcollection_asset_paths(romcollection)
                                     
