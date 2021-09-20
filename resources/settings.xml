@@ -20,8 +20,6 @@
 </category>
 <category label="40012">
     <setting id="separator" type="lsep" label="Scraper API keys"/>
-    <setting label="TheGamesDB API key" default="" id="scraper_thegamesdb_apikey" type="text"/>
-    <setting label="MobyGames API key" type="text" id="scraper_mobygames_apikey" default="" />
     <setting label="SteamGridDB API key" type="text" id="scraper_steamgriddb_apikey" default="" />
     <setting label="ScreenScraper Username" type="text" id="scraper_screenscraper_ssid" default="" />
     <setting label="ScreenScraper Pass" type="text" id="scraper_screenscraper_sspass" default="" />
@@ -70,11 +68,6 @@
     <setting label="Hide Global Reports" type="bool" id="display_hide_g_reports" default="false" />
 </category>
 <category label="40015">
-    <setting id="separator" type="lsep" label="Retroarch paths/options"/>
-    <setting label="Retroarch executable" type="folder" id="retroarch_exec_path" default="" source="" />
-    <setting label="Retroarch cores directory" type="folder" id="retroarch_cores_dir" default="" source="" />    
-    <setting label="Retroarch system directory" type="folder" id="retroarch_system_dir" default="" source="" />
-
     <setting id="separator" type="lsep" label="AEL asset paths"/>
     <setting label="Category Asset directory" type="folder" id="categories_asset_dir" default="" source="" />
     <setting label="Launcher Asset directory" type="folder" id="launchers_asset_dir" default="" source="" />
@@ -93,6 +86,5 @@
     <setting label="CD into aplication dir (Windows only)" type="bool" id="windows_cd_apppath" default="true"/>
     <setting label="Log level" type="enum" id="log_level" default="2" values="ERROR|WARNING|INFO|VERBOSE|DEBUG" />
     <setting label="Migrated version" type="text" id="migrated_version" default="0.0.0" visible="true"/>
-    <setting label="Steam API key" type="text" id="steam_api_key" default="123abc" />
 </category>
 </settings>
