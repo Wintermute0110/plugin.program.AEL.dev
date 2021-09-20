@@ -20,7 +20,6 @@
 </category>
 <category label="40012">
     <setting id="separator" type="lsep" label="Scraper API keys"/>
-    <setting label="TheGamesDB API key" default="" id="scraper_thegamesdb_apikey" type="text"/>
     <setting label="MobyGames API key" type="text" id="scraper_mobygames_apikey" default="" />
     <setting label="SteamGridDB API key" type="text" id="scraper_steamgriddb_apikey" default="" />
     <setting label="ScreenScraper Username" type="text" id="scraper_screenscraper_ssid" default="" />
@@ -93,6 +92,5 @@
     <setting label="CD into aplication dir (Windows only)" type="bool" id="windows_cd_apppath" default="true"/>
     <setting label="Log level" type="enum" id="log_level" default="2" values="ERROR|WARNING|INFO|VERBOSE|DEBUG" />
     <setting label="Migrated version" type="text" id="migrated_version" default="0.0.0" visible="true"/>
-    <setting label="Steam API key" type="text" id="steam_api_key" default="123abc" />
 </category>
 </settings>
