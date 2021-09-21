@@ -26,7 +26,7 @@ from ael.utils import kodi, text, io
 from resources.lib.commands.mediator import AppMediator
 from resources.lib import globals, editors
 from resources.lib.repositories import UnitOfWork, CategoryRepository, ROMCollectionRepository
-from resources.lib.domain import Category, ROMCollection, g_assetFactory
+from resources.lib.domain import ROMCollection, g_assetFactory
 
 logger = logging.getLogger(__name__)
 
@@ -59,6 +59,11 @@ def cmd_add_collection(args):
         if entity_data is None: return
         
         romcollection.import_data_dic(entity_data)
+        
+        # --- create assets directory ---
+        assets_path = entity_data['assets_path']
+        assets_path_FN = io.FileName(assets_path)
+        romcollection.set_assets_root_path(assets_path_FN, create_default_subdirectories=True)
                 
         # --- Determine box size based on platform --
         platform = platforms.get_AEL_platform(entity_data['platform'])

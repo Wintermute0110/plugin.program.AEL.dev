@@ -443,9 +443,17 @@ class MetaDataItemABC(EntityABC):
     def get_assets_root_path(self) -> io.FileName:
         return self._get_directory_filename_from_field('assets_path')  
     
-    def set_assets_root_path(self, path: io.FileName):
+    def set_assets_root_path(self, path: io.FileName, create_default_subdirectories = False):
         path_str = path.getPath() if path else ''        
         self.entity_data['assets_path'] = path_str    
+        
+        if create_default_subdirectories:
+            for asset_info_id in self.get_asset_ids_list():
+                asset_info = g_assetFactory.get_asset_info(asset_info_id)
+                new_path = path.pjoin(asset_info.plural.lower(), isdir=True)
+                self.set_asset_path(asset_info, new_path.getPath())
+                if not new_path.exists(): new_path.makedirs()
+                    
     
     def get_asset_paths(self) -> typing.List[AssetPath]:
         return self.asset_paths.values()
@@ -463,6 +471,7 @@ class MetaDataItemABC(EntityABC):
         logger.debug('Setting "{}" to {}'.format(asset_info.id, path))
         asset_path = self.asset_paths[asset_info.id] if asset_info.id in self.asset_paths else AssetPath()
         asset_path.set_path(path)
+        asset_path.set_asset_info(asset_info)
         
         self.asset_paths[asset_info.id] = asset_path
     
