@@ -19,17 +19,6 @@
     <setting label="Asset selection mode" type="labelenum" id="asset_selection_mode" default="20520" lvalues="20510|20520" />
 </category>
 <category label="40012">
-    <setting id="separator" type="lsep" label="Scraper API keys"/>
-    <setting label="MobyGames API key" type="text" id="scraper_mobygames_apikey" default="" />
-    <setting label="SteamGridDB API key" type="text" id="scraper_steamgriddb_apikey" default="" />
-    <setting label="ScreenScraper Username" type="text" id="scraper_screenscraper_ssid" default="" />
-    <setting label="ScreenScraper Pass" type="text" id="scraper_screenscraper_sspass" default="" />
-
-    <setting id="separator" type="lsep" label="Scraper settings"/>
-    <!-- ScreenScraper settings are automatically generated with Python scripts -->
-    <setting label="ScreenScraper region" type="enum" id="scraper_screenscraper_region" default="0" values="World|Europe|USA|Japan|ScreenScraper|American continent|Asia|Australia|Bulgaria|Brazil|Canada|Chile|China|Custom|Czech republic|Germany|Denmark|Finland|France|Greece|Hungary|Israel|Italy|Korea|Kuwait|Middle East|Netherlands|Norway|New Zealand|Oceania|Peru|Poland|Portugal|Russia|Sweden|Slovakia|Spain|Turkey|Taiwan|United Kingdom" />
-    <setting label="ScreenScraper language" type="enum" id="scraper_screenscraper_language" default="0" values="English|Spanish|Japanese|Czech|Danish|German|Finnish|French|Hungarian|Italian|Korean|Dutch|Norwegian|Polish|Portuguese|Russian|Slovak|Swedish|Turkish|Chinese" />
-
     <setting id="separator" type="lsep" label="Utilities"/>
     <setting label="Retroarch System directory" type="folder" id="io_retroarch_sys_dir" default="" source="" />
     <setting label="Only check mandatory BIOSes" type="bool" id="io_retroarch_only_mandatory" default="true"/>
