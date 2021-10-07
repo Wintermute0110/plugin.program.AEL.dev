@@ -22,7 +22,7 @@
         </category>
         <category id="rom_scraping" label="40011">
 			<group id="2">
-                <setting id="scrape_metadata_policy" type="enum" label="40201" help="">
+                <setting id="scrape_metadata_policy" type="integer" label="40201" help="">
                     <level>0</level>
                     <default>20040</default>
                     <constraints>
@@ -35,7 +35,7 @@
                     </constraints>
                     <control type="spinner" format="string"/>
                 </setting>
-                <setting id="scrape_assets_policy" type="enum" label="40202" help="">
+                <setting id="scrape_assets_policy" type="integer" label="40202" help="">
                     <level>0</level>
                     <default>20060</default>
                     <constraints>
@@ -47,7 +47,7 @@
                     </constraints>
                     <control type="spinner" format="string"/>
                 </setting>
-                <setting id="game_selection_mode" type="enum" label="40203" help="">
+                <setting id="game_selection_mode" type="integer" label="40203" help="">
                     <level>0</level>
                     <default>20520</default>
                     <constraints>
@@ -58,7 +58,7 @@
                     </constraints>
                     <control type="spinner" format="string"/>
                 </setting>
-                <setting id="asset_selection_mode" type="enum" label="40204" help="">
+                <setting id="asset_selection_mode" type="integer" label="40204" help="">
                     <level>0</level>
                     <default>20520</default>
                     <constraints>
@@ -73,7 +73,7 @@
         </category>
         <category  id="rom_audit" label="40013">
 			<group id="3">
-                <setting id="audit_unknown_roms" type="enum" label="40301" help="">
+                <setting id="audit_unknown_roms" type="integer" label="40301" help="">
                     <level>0</level>
                     <default>20530</default>
                     <constraints>
@@ -242,6 +242,34 @@
 					</control>
                 </setting> 
                 <!-- <setting label="40503" type="folder" id="favourites_asset_dir" default="" source="" /> -->
+            </group>
+        </category>
+        <category id="plugins" label="40017">
+            <group id="grp_plugins">
+                <setting id="script_ael_defaults" type="addon" label="40701" help="">
+                    <level>0</level>
+                    <default/>
+                    <constraints>
+                        <addontype>script.ael.defaults</addontype>
+                        <allowempty>true</allowempty>
+                    </constraints>
+                    <control type="button" format="addon">
+                        <heading>40701</heading>
+                        <show more="true" details="true">installed</show>
+                    </control>
+                </setting>
+                <setting id="script_ael_google" type="addon" label="40702" help="">
+                    <level>0</level>
+                    <default/>
+                    <constraints>
+                        <addontype>script.ael.google</addontype>
+                        <allowempty>true</allowempty>
+                    </constraints>
+                    <control type="button" format="addon">
+                        <heading>40702</heading>
+                        <show more="true" details="true">installed</show>
+                    </control>
+                </setting>
             </group>
         </category>
         <category id="advanced" label="40016">

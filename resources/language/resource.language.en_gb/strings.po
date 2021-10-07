@@ -31,6 +31,10 @@ msgctxt "#40016"
 msgid "Advanced"
 msgstr "settings.xml"
 
+msgctxt "#40017"
+msgid "Plugins"
+msgstr "settings.xml"
+
 ############################
 # Settings groupings
 ############################
@@ -186,6 +190,18 @@ msgstr "settings.xml"
 
 msgctxt "#40611"
 msgid "Migrated version"
+msgstr "settings.xml"
+
+############################
+# Setting options - Addons
+############################
+
+msgctxt "#40701"
+msgid "Default plugins"
+msgstr "settings.xml"
+
+msgctxt "#40702"
+msgid "Google scraper plugin"
 msgstr "settings.xml"
 
 ############################
