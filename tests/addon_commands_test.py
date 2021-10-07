@@ -14,9 +14,6 @@ module.Plugin = tests.fake_routing.Plugin
 sys.modules['routing'] = module
 
 from resources.lib.repositories import UnitOfWork
-from resources.lib.settings import AEL_Paths
-from resources.lib import globals
-from resources.lib.utils import io
 from resources.lib.domain import *
 
 from resources.lib.commands import addon_commands as target
@@ -44,10 +41,7 @@ class Test_cmd_scan_addons(unittest.TestCase):
         
         dbPath = io.FileName(os.path.join(cls.TEST_ASSETS_DIR, 'test_db.db'))
         schemaPath = io.FileName(os.path.join(cls.ROOT_DIR, 'resources/schema.sql'))
-                
-        globals.g_PATHS = AEL_Paths('plugin.tests')
-        globals.g_PATHS.DATABASE_FILE_PATH = dbPath
-        
+
         uow = UnitOfWork(dbPath)
         uow.reset_database(schemaPath)
         
@@ -84,16 +78,16 @@ class Test_cmd_scan_addons(unittest.TestCase):
         self.assertEqual(len(Test_cmd_scan_addons.saved_entities), 2)
 
     def test_enums(self):
-        a = AddonType.SCRAPER
+        a = constants.AddonType.SCRAPER
         print(str(a))
         print(a.name)
         print(a.value)
-        b = AddonType['SCANNER']
+        b = constants.AddonType['SCANNER']
         print(str(b))
         print(b.name)
         print(b.value)
 
-        self.assertTrue(b == AddonType.SCANNER)
+        self.assertTrue(b == constants.AddonType.SCANNER)
         
         z = dict()
         z['naam'] = 'piet'
