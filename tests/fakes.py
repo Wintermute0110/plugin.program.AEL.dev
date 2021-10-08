@@ -13,6 +13,9 @@ class FakeAddon(object):
     def getSetting(self, key):
         return self.data[key]
 
+    def getSettingString(self, key):
+        return str(self.getSetting(key))
+
 # class FakeRomSetRepository(ROMCollectionRepository):
     
 #     def __init__(self, roms):

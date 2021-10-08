@@ -21,7 +21,7 @@ import logging
 import typing
 
 from ael.utils import kodi, io
-from ael import settings, constants
+from ael import constants
 
 from resources.lib.commands.mediator import AppMediator
 from resources.lib import globals

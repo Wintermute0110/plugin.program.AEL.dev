@@ -1,10 +1,9 @@
 import sys
 import unittest, os
 import unittest.mock
-from mock import patch
+from unittest.mock import patch
 
 import logging
-import collections
 
 import tests.fake_routing
 import tests.fakes
@@ -15,6 +14,7 @@ sys.modules['routing'] = module
 
 from resources.lib.repositories import UnitOfWork
 from resources.lib.domain import *
+from resources.lib import globals
 
 from resources.lib.commands import addon_commands as target
 
@@ -42,6 +42,9 @@ class Test_cmd_scan_addons(unittest.TestCase):
         dbPath = io.FileName(os.path.join(cls.TEST_ASSETS_DIR, 'test_db.db'))
         schemaPath = io.FileName(os.path.join(cls.ROOT_DIR, 'resources/schema.sql'))
 
+        globals.g_PATHS = globals.AEL_Paths('plugin.tests')
+        globals.g_PATHS.DATABASE_FILE_PATH = dbPath
+        
         uow = UnitOfWork(dbPath)
         uow.reset_database(schemaPath)
         
@@ -60,13 +63,13 @@ class Test_cmd_scan_addons(unittest.TestCase):
     @patch('xbmcaddon.Addon', side_effect = mocked_addons)
     @patch('resources.lib.repositories.AelAddonRepository.insert_addon', side_effect = repository_save)
     @patch('resources.lib.repositories.AelAddonRepository.update_addon', side_effect = repository_update)
-    @patch('resources.lib.utils.kodi.jsonrpc_query')
+    @patch('ael.utils.kodi.jsonrpc_query')
     def test_saving_new_addons(self, jsonrpc_response_mock, repo_update_mock, repo_save_mock, addon_mock):
         # arrange
         Test_cmd_scan_addons.mocked_addons_collection = {
-            'plugin.mock.A': tests.fakes.FakeAddon({ 'version': '1.2.3', 'ael.enabled': 'true', 'ael.launcher_uri': '' }),
+            'plugin.mock.A': tests.fakes.FakeAddon({ 'version': '1.2.3', 'ael.enabled': 'true', 'ael.plugin_types': 'SCANNER', 'ael.scanner.friendlyname': 'MockA' }),
             'plugin.mock.B': tests.fakes.FakeAddon({ 'version': '3.3.1', 'ael.enabled': 'false' }),
-            'plugin.mock.C': tests.fakes.FakeAddon({ 'version': '6.8.0', 'ael.enabled': 'true', 'ael.launcher_uri': 'plugin://test.uri' })
+            'plugin.mock.C': tests.fakes.FakeAddon({ 'version': '6.8.0', 'ael.enabled': 'true', 'ael.plugin_types': 'LAUNCHER', 'ael.launcher.friendlyname': 'MockC'  })
         }
         jsonrpc_response_mock.return_value = {
             'result': { 'addons': [ { 'addonid': 'plugin.mock.A' }, { 'addonid': 'plugin.mock.B' }, { 'addonid': 'plugin.mock.C' } ]}

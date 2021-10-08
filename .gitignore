@@ -23,3 +23,5 @@ package-lock.json
 .pytest_cache/v/cache/stepwise
 routing.py
 pyrightconfig.json
+.env
+tests/assets/test_db.db
