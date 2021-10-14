@@ -41,7 +41,7 @@ def cmd_edit_rom(args):
     rom_id:str = args['rom_id'] if 'rom_id' in args else None
     
     if rom_id is None:
-        logger.warn('cmd_edit_rom(): No ROM id supplied.')
+        logger.warning('cmd_edit_rom(): No ROM id supplied.')
         kodi.notify_warn("Invalid parameters supplied.")
         return
     

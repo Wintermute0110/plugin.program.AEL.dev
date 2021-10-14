@@ -231,7 +231,7 @@ def cmd_execute_rom_with_launcher(args):
             launchers.extend(romcollection.get_launchers())
     
     if launchers is None or len(launchers) == 0:
-        logger.warn('No launcher configured for ROM {}'.format(rom.get_name()))
+        logger.warning('No launcher configured for ROM {}'.format(rom.get_name()))
         kodi.notify_warn('No launcher configured.')
         return
 

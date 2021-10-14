@@ -140,7 +140,7 @@ def _apply_addon_launcher_for_legacy_launcher(launcher_data: ROMCollection, avai
         # 1.9x version
         launcher_addon  = available_addons['script.ael.defaults'] if 'script.ael.defaults' in available_addons else None
         if launcher_addon is None: 
-            logger.warn('Could not find launcher supporting type "{}"'.format(launcher_type)) 
+            logger.warning('Could not find launcher supporting type "{}"'.format(launcher_type)) 
             return
         application     = launcher_data.get_custom_attribute('application')
         args            = launcher_data.get_custom_attribute('args')
@@ -153,7 +153,7 @@ def _apply_addon_launcher_for_legacy_launcher(launcher_data: ROMCollection, avai
     if launcher_type == constants.OBJ_LAUNCHER_STANDALONE:
         launcher_addon =  available_addons['script.ael.defaults'] if 'script.ael.defaults' in available_addons else None
         if launcher_addon is None: 
-            logger.warn('Could not find launcher supporting type "{}"'.format(launcher_type)) 
+            logger.warning('Could not find launcher supporting type "{}"'.format(launcher_type)) 
             return
         application     = launcher_data.get_custom_attribute('application')
         args            = launcher_data.get_custom_attribute('args')
@@ -166,7 +166,7 @@ def _apply_addon_launcher_for_legacy_launcher(launcher_data: ROMCollection, avai
     if launcher_type == constants.OBJ_LAUNCHER_ROM:
         launcher_addon =  available_addons['script.ael.defaults'] if 'script.ael.defaults' in available_addons else None
         if launcher_addon is None: 
-            logger.warn('Could not find launcher supporting type "{}"'.format(launcher_type)) 
+            logger.warning('Could not find launcher supporting type "{}"'.format(launcher_type)) 
             return
         application     = launcher_data.get_custom_attribute('application')
         args            = launcher_data.get_custom_attribute('args')
@@ -179,7 +179,7 @@ def _apply_addon_launcher_for_legacy_launcher(launcher_data: ROMCollection, avai
     if launcher_type == constants.OBJ_LAUNCHER_RETROPLAYER:
         launcher_addon =  available_addons['plugin.program.AEL.RetroplayerLauncher'] if 'plugin.program.AEL.RetroplayerLauncher' in available_addons else None
         if launcher_addon is None: 
-            logger.warn('Could not find launcher supporting type "{}"'.format(launcher_type)) 
+            logger.warning('Could not find launcher supporting type "{}"'.format(launcher_type)) 
             return
         application     = launcher_data.get_custom_attribute('application')
         args            = launcher_data.get_custom_attribute('args')
@@ -192,7 +192,7 @@ def _apply_addon_launcher_for_legacy_launcher(launcher_data: ROMCollection, avai
     if launcher_type == constants.OBJ_LAUNCHER_RETROARCH:
         launcher_addon =  available_addons['plugin.program.AEL.RetroarchLauncher'] if 'plugin.program.AEL.RetroarchLauncher' in available_addons else None
         if launcher_addon is None: 
-            logger.warn('Could not find launcher supporting type "{}"'.format(launcher_type)) 
+            logger.warning('Could not find launcher supporting type "{}"'.format(launcher_type)) 
             return
         application     = launcher_data.get_custom_attribute('application')
         args            = launcher_data.get_custom_attribute('args')
@@ -205,7 +205,7 @@ def _apply_addon_launcher_for_legacy_launcher(launcher_data: ROMCollection, avai
     if launcher_type == constants.OBJ_LAUNCHER_NVGAMESTREAM:
         launcher_addon =  available_addons['plugin.program.AEL.GamestreamLauncher'] if 'plugin.program.AEL.GamestreamLauncher' in available_addons else None 
         if launcher_addon is None: 
-            logger.warn('Could not find launcher supporting type "{}"'.format(launcher_type)) 
+            logger.warning('Could not find launcher supporting type "{}"'.format(launcher_type)) 
             return
         application     = launcher_data.get_custom_attribute('application')
         args            = launcher_data.get_custom_attribute('args')
@@ -218,7 +218,7 @@ def _apply_addon_launcher_for_legacy_launcher(launcher_data: ROMCollection, avai
     if launcher_type == constants.OBJ_LAUNCHER_STEAM:
         launcher_addon =  available_addons['plugin.program.AEL.SteamLauncher'] if 'plugin.program.AEL.SteamLauncher' in available_addons else None  
         if launcher_addon is None: 
-            logger.warn('Could not find launcher supporting type "{}"'.format(launcher_type)) 
+            logger.warning('Could not find launcher supporting type "{}"'.format(launcher_type)) 
             return
         application     = launcher_data.get_custom_attribute('application')
         args            = launcher_data.get_custom_attribute('args')

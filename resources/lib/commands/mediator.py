@@ -26,7 +26,7 @@ class AppMediator(object):
     def sync_cmd(cls, command='undefined', args=None):
         logger.debug('Invoking {}'.format(command))
         if command not in cls._commands:
-            logger.warn('Command "{}" not registered'.format(command))
+            logger.warning('Command "{}" not registered'.format(command))
             return
         commands_by_event = cls._commands[command]
         for a_command in commands_by_event:

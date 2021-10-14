@@ -186,7 +186,7 @@ def cmd_store_scraped_roms(args) -> bool:
             api_rom_obj = ROMObj(rom_data)
             
             if api_rom_obj.get_id() not in existing_roms_by_id:
-                logger.warn('Scraped ROM {} with ID {} could not be found in collection#{} {}. Will be skipped.'.format(
+                logger.warning('Scraped ROM {} with ID {} could not be found in collection#{} {}. Will be skipped.'.format(
                     api_rom_obj.get_name(), 
                     api_rom_obj.get_id(),
                     romcollection.get_id(),

@@ -198,10 +198,10 @@ class RequestHandler(BaseHTTPRequestHandler):
                     self.send_header('Content-type', 'application/json')
                     self.end_headers()
                 else:
-                    logger.warn('Not handeld: {}'.format(self.path))
+                    logger.warning('Not handeld: {}'.format(self.path))
                     raise Exception("UnknownRequest")
             else:
-                logger.warn(self.path)
+                logger.warning(self.path)
                 raise Exception("UnknownRequest")
 
         except Exception as error:

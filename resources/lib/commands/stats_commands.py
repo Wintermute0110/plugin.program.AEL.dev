@@ -40,7 +40,7 @@ def cmd_process_launching_of_rom(args):
     logger.debug('ROM_WAS_LAUNCHED: cmd_process_launching_of_rom() Processing that a ROM was launched')
     rom_id:str = args['rom_id'] if 'rom_id' in args else None    
     if rom_id is None:
-        logger.warn('cmd_process_launching_of_rom(): No rom id supplied.')
+        logger.warning('cmd_process_launching_of_rom(): No rom id supplied.')
         return
     
     uow = UnitOfWork(globals.g_PATHS.DATABASE_FILE_PATH)
@@ -60,7 +60,7 @@ def cmd_process_launching_of_rom(args):
 def cmd_add_rom_to_favourites(args):
     rom_id:str = args['rom_id'][0] if 'rom_id' in args else None    
     if rom_id is None:
-        logger.warn('cmd_add_rom_to_favourites(): No rom id supplied.')
+        logger.warning('cmd_add_rom_to_favourites(): No rom id supplied.')
         kodi.notify_warn("Invalid parameters supplied.")
         return
     

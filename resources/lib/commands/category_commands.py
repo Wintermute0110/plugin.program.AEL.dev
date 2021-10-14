@@ -69,7 +69,7 @@ def cmd_edit_category(args):
     category_id:str = args['category_id'] if 'category_id' in args else None
     
     if category_id is None:
-        logger.warn('cmd_add_category(): No category id supplied.')
+        logger.warning('cmd_add_category(): No category id supplied.')
         kodi.notify_warn("Invalid parameters supplied.")
         return
     
