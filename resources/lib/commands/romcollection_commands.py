@@ -63,7 +63,7 @@ def cmd_add_collection(args):
         # --- create assets directory ---
         assets_path = entity_data['assets_path']
         assets_path_FN = io.FileName(assets_path)
-        romcollection.set_assets_root_path(assets_path_FN, create_default_subdirectories=True)
+        romcollection.set_assets_root_path(assets_path_FN, constants.ROM_ASSET_ID_LIST, create_default_subdirectories=True)
                 
         # --- Determine box size based on platform --
         platform = platforms.get_AEL_platform(entity_data['platform'])
@@ -114,7 +114,7 @@ def cmd_edit_romcollection(args):
     options['ROMCOLLECTION_EDIT_DEFAULT_ASSETS'] = 'Choose default Assets/Artwork ...'
     if romcollection.has_launchers():
         options['EDIT_ROMCOLLECTION_LAUNCHERS']  = 'Manage associated launchers'
-    else: options['ADD_LAUNCHER']         = 'Add new launcher'    
+    else: options['ADD_LAUNCHER']                = 'Add new launcher'    
     options['ROMCOLLECTION_MANAGE_ROMS']         = 'Manage ROMs ...'
     options['EDIT_ROMCOLLECTION_CATEGORY']       = "Change Category: '{0}'".format(category_name)
     options['EDIT_ROMCOLLECTION_STATUS']         = 'ROM Collection status: {0}'.format(romcollection.get_finished_str())
@@ -153,7 +153,7 @@ def cmd_romcollection_metadata(args):
     options = collections.OrderedDict()
     options['ROMCOLLECTION_EDIT_METADATA_TITLE']       = "Edit Title: '{0}'".format(romcollection.get_name())
     options['ROMCOLLECTION_EDIT_METADATA_PLATFORM']    = "Edit Platform: {}".format(romcollection.get_platform())
-    options['ROMCOLLECTION_EDIT_METADATA_RELEASEYEAR'] = "Edit Release Year:: {}".format(romcollection.get_releaseyear())
+    options['ROMCOLLECTION_EDIT_METADATA_RELEASEYEAR'] = "Edit Release Year: {}".format(romcollection.get_releaseyear())
     options['ROMCOLLECTION_EDIT_METADATA_GENRE']       = "Edit Genre: '{0}'".format(romcollection.get_genre())
     options['ROMCOLLECTION_EDIT_METADATA_DEVELOPER']   = "Edit Developer: '{}'".format(romcollection.get_developer())
     options['ROMCOLLECTION_EDIT_METADATA_RATING']      = "Edit Rating: '{0}'".format(rating)

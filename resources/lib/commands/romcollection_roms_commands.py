@@ -185,7 +185,7 @@ def cmd_set_rom_asset_dirs(args):
             
             root_path = io.FileName(dir_path)
             apply_to_all = kodi.dialog_yesno('Apply new path to all current asset paths?')
-            romcollection.set_assets_root_path(root_path, create_default_subdirectories=apply_to_all)            
+            romcollection.set_assets_root_path(root_path, constants.ROM_ASSET_ID_LIST, create_default_subdirectories=apply_to_all)            
         else:
             selected_asset_path = romcollection.get_asset_path(selected_asset)
             dir_path = kodi.browse(type=0, text='Select {} path'.format(selected_asset.plural), preselected_path=selected_asset_path.getPath())

@@ -87,7 +87,7 @@ def cmd_rom_metadata(args):
 
     options = collections.OrderedDict()
     options['ROM_EDIT_METADATA_TITLE']       = "Edit Title: '{}'".format(rom.get_name())
-    options['ROM_EDIT_METADATA_RELEASEYEAR'] = "Edit Release Year:: {}".format(rom.get_releaseyear())
+    options['ROM_EDIT_METADATA_RELEASEYEAR'] = "Edit Release Year: {}".format(rom.get_releaseyear())
     options['ROM_EDIT_METADATA_GENRE']       = "Edit Genre: '{}'".format(rom.get_genre())
     options['ROM_EDIT_METADATA_DEVELOPER']   = "Edit Developer: '{}'".format(rom.get_developer())
     options['ROM_EDIT_METADATA_NPLAYERS']    = "Edit NPlayers: '{}'".format(rom.get_number_of_players())

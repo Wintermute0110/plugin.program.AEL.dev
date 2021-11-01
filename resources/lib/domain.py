@@ -443,12 +443,13 @@ class MetaDataItemABC(EntityABC):
     def get_assets_root_path(self) -> io.FileName:
         return self._get_directory_filename_from_field('assets_path')  
     
-    def set_assets_root_path(self, path: io.FileName, create_default_subdirectories = False):
+    def set_assets_root_path(self, path: io.FileName, asset_ids = [], create_default_subdirectories = False):
         path_str = path.getPath() if path else ''        
         self.entity_data['assets_path'] = path_str    
         
         if create_default_subdirectories:
-            for asset_info_id in self.get_asset_ids_list():
+            asset_ids = self.get_asset_ids_list() if not asset_ids else asset_ids
+            for asset_info_id in asset_ids:
                 asset_info = g_assetFactory.get_asset_info(asset_info_id)
                 new_path = path.pjoin(asset_info.plural.lower(), isdir=True)
                 self.set_asset_path(asset_info, new_path.getPath())
