@@ -97,7 +97,11 @@ def cmd_set_scanner_settings(args) -> bool:
         uow.commit()
     
     kodi.notify('Configured ROM scanner {}'.format(addon.get_name()))
-    AppMediator.async_cmd('EDIT_ROMCOLLECTION', {'romcollection_id': romcollection_id})
+    
+    if kodi.dialog_yesno('Scan for ROMs now?'):
+        AppMediator.async_cmd('SCAN_ROMS', {'romcollection_id': romcollection_id})
+    else:
+        AppMediator.async_cmd('EDIT_ROMCOLLECTION', {'romcollection_id': romcollection_id})
     return True
 
 def cmd_store_scanned_roms(args) -> bool:

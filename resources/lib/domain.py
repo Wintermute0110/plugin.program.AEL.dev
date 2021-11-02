@@ -978,6 +978,9 @@ class ROMCollection(MetaDataItemABC):
     def num_roms(self) -> int:
         return self.entity_data['num_roms'] if 'num_roms' in self.entity_data else 0
 
+    def has_roms(self) -> bool:
+        return self.num_roms() > 0
+
     def has_launchers(self) -> bool:
         return len(self.launchers_data) > 0
 

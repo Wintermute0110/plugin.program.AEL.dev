@@ -52,19 +52,24 @@ def cmd_manage_roms(args):
         repository = ROMCollectionRepository(uow)
         romcollection = repository.find_romcollection(romcollection_id)
 
+    has_roms = romcollection.has_roms()
+
     options = collections.OrderedDict()
     options['SET_ROMS_DEFAULT_ARTWORK']  = 'Choose ROMs default artwork ...'
     options['SET_ROMS_ASSET_DIRS']       = 'Manage ROMs asset directories ...'
+    
     if romcollection.has_scanners(): 
         options['SCAN_ROMS']                    = 'Scan for new ROMs'
         options['REMOVE_DEAD_ROMS']             = 'Remove dead/missing ROMs'
         options['EDIT_ROMCOLLECTION_SCANNERS']  = 'Configure ROM scanners'
-    else: options['ADD_SCANNER']         = 'Add new ROM scanner' 
+    else: options['ADD_SCANNER']                = 'Add new ROM scanner' 
+    
     options['IMPORT_ROMS']               = 'Import ROMs (files/metadata)'
     options['EXPORT_ROMS']               = 'Export ROMs metadata to NFO files'
-    options['SCRAPE_ROMS']               = 'Scrape ROMs'
-    options['DELETE_ROMS_NFO']           = 'Delete ROMs NFO files'
-    options['CLEAR_ROMS']                = 'Clear ROMs from ROMCollection'
+    if has_roms:
+        options['SCRAPE_ROMS']           = 'Scrape ROMs'
+        options['DELETE_ROMS_NFO']       = 'Delete ROMs NFO files'
+        options['CLEAR_ROMS']            = 'Clear ROMs from ROMCollection'
 
     s = 'Manage ROM Collection "{}" ROMs'.format(romcollection.get_name())
     selected_option = kodi.OrdDictionaryDialog().select(s, options)

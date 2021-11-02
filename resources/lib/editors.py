@@ -180,10 +180,10 @@ def edit_object_assets(obj_instance:MetaDataItemABC, preselected_asset = None) -
 
     if selected_option is None:
         # >> Return to parent menu.
-        logger.debug('m_gui_edit_object_assets() Selected NONE. Returning to parent menu.')
+        logger.debug('edit_object_assets() Selected NONE. Returning to parent menu.')
         return selected_option
     
-    logger.debug('m_gui_edit_object_assets() select() returned {0}'.format(selected_option))
+    logger.debug('edit_object_assets() select() returned {0}'.format(selected_option))
     return selected_option
     
 #

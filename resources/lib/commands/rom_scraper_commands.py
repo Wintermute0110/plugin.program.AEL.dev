@@ -98,6 +98,7 @@ def cmd_scrape_rom(args):
     options['SCRAPER_ASSET_SELECTION_MODE'] = 'Asset selection mode: "{}"'.format(kodi.translate(scraper_settings.asset_selection_mode))
     options['SCRAPER_ASSETS_TO_SCRAPE']     = 'Assets to scrape: "{}"'.format(', '.join([a.plural for a in assets_to_scrape]))
     options['SCRAPER_OVERWRITE_MODE']       = 'Overwrite existing files: "{}"'.format('Yes' if scraper_settings.overwrite_existing else 'No')
+    options['SCRAPER_IGNORE_TITLES_MODE']   = 'Ignore scraped titles: "{}"'.format('Yes' if scraper_settings.ignore_scrap_title else 'No')
     options['SCRAPE_ROM_WITH_SETTINGS']     = 'Scrape'
     
     s = 'Scrape ROM "{}"'.format(rom.get_name())
@@ -234,11 +235,11 @@ def cmd_scrape_rom_assets(args):
         roms_repository = ROMsRepository(uow)
         rom             = roms_repository.find_rom(rom_id)   
     
-        scraper_settings = ScraperSettings()
+        scraper_settings = ScraperSettings.from_addon_settings()
         scraper_settings.scrape_assets_policy    = constants.SCRAPE_POLICY_SCRAPE_ONLY
         scraper_settings.scrape_metadata_policy  = constants.SCRAPE_ACTION_NONE
         scraper_settings.search_term_mode        = constants.SCRAPE_MANUAL
-        scraper_settings.game_selection_mode     = constants.SCRAPE_MANUAL
+        scraper_settings.asset_selection_mode    = constants.SCRAPE_MANUAL
     
         selected_addon = _select_scraper(uow, 'Scrape ROM assets', scraper_settings)
         if selected_addon is None:
@@ -367,6 +368,13 @@ def cmd_configure_scraper_overwrite_mode(args):
     scraper_settings.overwrite_existing = not scraper_settings.overwrite_existing
     args['scraper_settings'] = scraper_settings
     AppMediator.sync_cmd(args['ret_cmd'], args)
+    
+@AppMediator.register('SCRAPER_IGNORE_TITLES_MODE')
+def cmd_configure_scraper_ignore_mode(args):  
+    scraper_settings:ScraperSettings = args['scraper_settings'] if 'scraper_settings' in args else ScraperSettings.from_addon_settings()
+    scraper_settings.ignore_scrap_title = not scraper_settings.ignore_scrap_title
+    args['scraper_settings'] = scraper_settings
+    AppMediator.sync_cmd(args['ret_cmd'], args)     
     
 def _select_scraper(uow:UnitOfWork, title: str, scraper_settings: ScraperSettings) -> ScraperAddon:
     selected_addon  = None    

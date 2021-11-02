@@ -244,7 +244,7 @@
                 <!-- <setting label="40503" type="folder" id="favourites_asset_dir" default="" source="" /> -->
             </group>
         </category>
-        <category id="plugins" label="40017">
+        <!-- <category id="plugins" label="40017">
             <group id="grp_plugins">
                 <setting id="script_ael_defaults" type="addon" label="40701" help="">
                     <level>0</level>
@@ -271,7 +271,7 @@
                     </control>
                 </setting>
             </group>
-        </category>
+        </category> -->
         <category id="advanced" label="40016">
             <group id="5">
                 <setting id="log_level" type="integer" label="40610" help="">
