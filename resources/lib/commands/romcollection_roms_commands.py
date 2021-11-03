@@ -65,8 +65,8 @@ def cmd_manage_roms(args):
     else: options['ADD_SCANNER']                = 'Add new ROM scanner' 
     
     options['IMPORT_ROMS']               = 'Import ROMs (files/metadata)'
-    options['EXPORT_ROMS']               = 'Export ROMs metadata to NFO files'
     if has_roms:
+        options['EXPORT_ROMS']           = 'Export ROMs metadata to NFO files'
         options['SCRAPE_ROMS']           = 'Scrape ROMs'
         options['DELETE_ROMS_NFO']       = 'Delete ROMs NFO files'
         options['CLEAR_ROMS']            = 'Clear ROMs from ROMCollection'

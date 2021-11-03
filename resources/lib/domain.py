@@ -104,8 +104,7 @@ class EntityABC(object):
         for key in self.entity_data:
             logger.debug('[{0}] = {1}'.format(key, str(self.entity_data[key])))
 
-    # NOTE Rename to get_filename_from_field()
-    def _get_value_as_filename(self, field) -> io.FileName:
+    def _get_filename_from_field(self, field) -> io.FileName:
         if not field in self.entity_data: return None
         path = self.entity_data[field]
         if path == '': return None
@@ -180,7 +179,7 @@ class Asset(EntityABC):
         return self.entity_data['filepath']
     
     def get_path_FN(self) -> io.FileName:
-        return self._get_value_as_filename('filepath')
+        return self._get_filename_from_field('filepath')
     
     def set_path(self, path_str):
         self.entity_data['filepath'] = path_str
@@ -220,7 +219,7 @@ class AssetPath(EntityABC):
         return self.entity_data['path']
     
     def get_path_FN(self) -> io.FileName:
-        return self._get_value_as_filename('path')
+        return self._get_filename_from_field('path')
     
     def set_path(self, path_str):
         self.entity_data['path'] = path_str
@@ -1170,7 +1169,7 @@ class ROM(MetaDataItemABC):
         return self.entity_data['filename']
 
     def get_file(self):
-        return self._get_value_as_filename('filename')
+        return self._get_filename_from_field('filename')
 
     def has_multiple_disks(self):
         return 'disks' in self.entity_data and self.entity_data['disks']
