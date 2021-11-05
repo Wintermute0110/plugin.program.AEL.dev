@@ -36,7 +36,7 @@ def report_print_ROM(slist: list, rom: ROM):
     slist.append("[COLOR violet]m_rating[/COLOR]: '{0}'".format(rom.get_rating()))
     slist.append("[COLOR violet]m_plot[/COLOR]: '{0}'".format(rom.get_plot()))
     # >> Info
-    slist.append("[COLOR violet]filename[/COLOR]: '{0}'".format(rom.get_filename()))
+    slist.append("[COLOR violet]filename[/COLOR]: '{0}'".format(rom.get_scanned_data_element('file')))
     slist.append("[COLOR skyblue]disks[/COLOR]: {0}".format(rom.get_disks()))
     slist.append("[COLOR violet]altapp[/COLOR]: '{0}'".format(rom.get_alternative_application()))
     slist.append("[COLOR violet]altarg[/COLOR]: '{0}'".format(rom.get_alternative_arguments()))

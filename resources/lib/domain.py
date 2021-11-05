@@ -104,19 +104,19 @@ class EntityABC(object):
         for key in self.entity_data:
             logger.debug('[{0}] = {1}'.format(key, str(self.entity_data[key])))
 
+    # helper method to convert a dictionary value to a FileName object
     def _get_filename_from_field(self, field) -> io.FileName:
         if not field in self.entity_data: return None
-        path = self.entity_data[field]
-        if path == '': return None
-
-        return io.FileName(path)
+        return self._to_filename(self.entity_data[field])
 
     def _get_directory_filename_from_field(self, field) -> io.FileName:
         if not field in self.entity_data: return None
-        path = self.entity_data[field]
-        if path == '' or path is None: return None
-
-        return io.FileName(path, isdir=True)
+        return self._to_filename(self.entity_data[field], isdir=True)
+    
+    #  helper method to convert a value to filename
+    def _to_filename(self, value, isdir = False) -> io.FileName:
+        if not value or value == '': return None
+        return io.FileName(value, isdir)
 
 # Addons that can be used as AEL plugin (launchers, scrapers)
 class AelAddon(EntityABC):
@@ -1139,19 +1139,26 @@ class ROM(MetaDataItemABC):
                  rom_data: dict = None, 
                  assets_data: typing.List[Asset] = None,
                  asset_paths_data: typing.List[AssetPath] = None,
+                 scanned_data: dict = {},
                  launchers_data: typing.List[ROMLauncherAddon] = []):
         if rom_data is None:
             rom_data = _get_default_ROM_data_model()
             rom_data['id'] = text.misc_generate_random_SID()
             
-        if 'scanned_data' in rom_data:
-            scanned_data_str = rom_data['scanned_data']
-            rom_data['scanned_data'] = json.loads(scanned_data_str)
-        else: rom_data['scanned_data'] = {}
-        
+        self.scanned_data = scanned_data
         self.launchers_data = launchers_data
-        super(ROM, self).__init__(rom_data, assets_data, asset_paths_data)
         
+        super(ROM, self).__init__(rom_data, assets_data, asset_paths_data)
+      
+    def get_rom_identifier(self) -> str:
+        identifier = self.get_scanned_data_element('identifier')
+        name = self.get_name()
+        
+        if identifier: return identifier
+        if name: return name
+        
+        return 'ROM_{}'.format(self.get_id())
+      
     # inherited value from ROMCollection
     def get_platform(self):
         return self.entity_data['platform'] if 'platform' in self.entity_data else None
@@ -1165,12 +1172,6 @@ class ROM(MetaDataItemABC):
     def get_clone(self):
         return self.entity_data['cloneof']
     
-    def get_filename(self) -> str:
-        return self.entity_data['filename']
-
-    def get_file(self):
-        return self._get_filename_from_field('filename')
-
     def has_multiple_disks(self):
         return 'disks' in self.entity_data and self.entity_data['disks']
 
@@ -1187,9 +1188,12 @@ class ROM(MetaDataItemABC):
         self.entity_data['i_extra_ROM'] = True
 
     def get_nfo_file(self):
-        ROM_FileName = self.get_file()
-        nfo_file_path = ROM_FileName.changeExtension('.nfo')
-        return nfo_file_path
+        ROM_FileName = self.get_scanned_data_element_as_file('file')
+        if ROM_FileName:
+            nfo_file_path = ROM_FileName.changeExtension('.nfo')            
+            return nfo_file_path
+        
+        return None
 
     def get_number_of_players(self):
         return self.entity_data['m_nplayers']
@@ -1212,11 +1216,13 @@ class ROM(MetaDataItemABC):
     def get_scanned_with(self) -> str:
         return self.entity_data['scanned_by_id'] if 'scanned_by_id' in self.entity_data else None
 
-    def set_file(self, file):
-        self.entity_data['filename'] = file.getPath()
-
     def add_disk(self, disk):
-        self.entity_data['disks'].append(disk)
+        if not 'disks' in self.entity_data or self.entity_data['disks'] is None:
+            self.entity_data['disks'] = []
+            
+        disks:list = self.entity_data['disks']
+        disks.append(disk)
+        self.entity_data['disks'] = disks
 
     def set_number_of_players(self, amount):
         self.entity_data['m_nplayers'] = amount
@@ -1239,15 +1245,15 @@ class ROM(MetaDataItemABC):
     def scanned_with(self, scanner_id: str): 
         self.entity_data['scanned_by_id'] = scanner_id
         
-    def get_scanned_data(self) -> dict:
-        return self.entity_data['scanned_data'] if 'scanned_data' in self.entity_data else {}
-
     def get_scanned_data_element(self, key:str):
-        scanned_data = self.get_scanned_data()
-        return scanned_data[key] if key in scanned_data else None
+        return self.scanned_data[key] if key in self.scanned_data else None
+    
+    def get_scanned_data_element_as_file(self, key:str) -> io.FileName:
+        scanned_value = self.scanned_data[key] if key in self.scanned_data else None
+        return self._to_filename(scanned_value)
     
     def set_scanned_data_element(self, key:str, data):
-        self.entity_data['scanned_data'][key] = data
+        self.scanned_data[key] = data
     
     def set_rom_status(self, state):
         self.entity_data['rom_status'] = state
@@ -1275,7 +1281,7 @@ class ROM(MetaDataItemABC):
 
     def copy(self):
         data = self.copy_of_data_dic()
-        return ROM(data, self.launcher)
+        return ROM(data)
         
     def get_assets_kind(self): return constants.KIND_ASSET_ROM
 	
@@ -1299,6 +1305,7 @@ class ROM(MetaDataItemABC):
             
             dto_data['asset_paths'][asset_id] = asset_path.getPath() if asset_path is not None else None
             dto_data['assets'][asset_id] = asset.get_path() if asset is not None else None
+            dto_data['scanned_data'] = self.scanned_data
             
         return ROMObj(dto_data)
     
@@ -1405,11 +1412,9 @@ class ROM(MetaDataItemABC):
                         self.set_asset(asset_info, asset_path)
         
         if update_scanned_data:
-            file         = api_rom_obj.get_file()
             scanned_name = api_rom_obj.get_name()
             scanned_data = api_rom_obj.get_scanned_data()
             
-            if file is not None: self.set_file(file)
             if scanned_name: self.set_name(scanned_name)
             for scanned_entry in scanned_data.keys():
                 self.set_scanned_data_element(scanned_entry, scanned_data[scanned_entry])
@@ -2080,7 +2085,6 @@ def _get_default_ROM_data_model():
         'm_plot' : '',
         'platform': '',
         'box_size': '',
-        'filename' : '',
         'disks' : [],
         'finished' : False,
         'nointro_status' : constants.AUDIT_STATUS_NONE,

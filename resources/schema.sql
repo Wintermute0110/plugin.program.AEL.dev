@@ -107,14 +107,20 @@ CREATE TABLE IF NOT EXISTS roms(
     is_favourite INTEGER DEFAULT 0 NOT NULL,
     launch_count INTEGER DEFAULT 0 NOT NULL,
     last_launch_timestamp TIMESTAMP,
-    file_path TEXT,
     metadata_id TEXT,
     scanned_by_id TEXT NULL,
-    scanned_data TEXT NULL,
     FOREIGN KEY (metadata_id) REFERENCES metadata (id) 
         ON DELETE CASCADE ON UPDATE NO ACTION,
     FOREIGN KEY (scanned_by_id) REFERENCES romcollection_scanner (id) 
         ON DELETE SET NULL ON UPDATE NO ACTION
+);
+
+CREATE TABLE IF NOT EXISTS scanned_roms_data(
+    rom_id TEXT,
+    data_key TEXT NOT NULL,
+    data_value TEXT NULL,
+    FOREIGN KEY (rom_id) REFERENCES roms (id) 
+        ON DELETE CASCADE ON UPDATE NO ACTION
 );
 
 CREATE TABLE IF NOT EXISTS roms_in_romcollection(
@@ -254,14 +260,12 @@ CREATE VIEW IF NOT EXISTS vw_roms AS SELECT
     r.name AS m_name,
     r.num_of_players AS m_nplayers,
     r.esrb_rating AS m_esrb,
-    r.file_path AS filename,
     r.nointro_status AS nointro_status,
     r.pclone_status AS pclone_status,
     r.cloneof AS cloneof,
     r.platform AS platform,
     r.box_size AS box_size,
     r.scanned_by_id AS scanned_by_id,
-    r.scanned_data AS scanned_data,
     m.year AS m_year, 
     m.genre AS m_genre,
     m.developer AS m_developer,
