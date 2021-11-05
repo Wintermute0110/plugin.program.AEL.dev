@@ -40,13 +40,8 @@ class Test_cmd_scan_addons(unittest.TestCase):
         logger.info('---------------------------------------------------------------------------')
         
         dbPath = io.FileName(os.path.join(cls.TEST_ASSETS_DIR, 'test_db.db'))
-        schemaPath = io.FileName(os.path.join(cls.ROOT_DIR, 'resources/schema.sql'))
-
         globals.g_PATHS = globals.AEL_Paths('plugin.tests')
         globals.g_PATHS.DATABASE_FILE_PATH = dbPath
-        
-        uow = UnitOfWork(dbPath)
-        uow.reset_database(schemaPath)
         
     mocked_addons_collection = {}  
     def mocked_addons(addon_id):

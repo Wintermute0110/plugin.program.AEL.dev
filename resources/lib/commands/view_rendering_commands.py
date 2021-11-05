@@ -360,8 +360,7 @@ def _render_rom_listitem(rom_obj: ROM):
 
     list_name = rom_obj.get_name()
     if list_name is None or list_name == '':
-        rom_file = rom_obj.get_file()
-        list_name = rom_file.getBaseNoExt()
+        list_name = rom_obj.get_rom_identifier()
 
     return { 
         'id': rom_obj.get_id(),

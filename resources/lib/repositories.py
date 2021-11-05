@@ -218,14 +218,16 @@ class ROMsJsonFileRepository(object):
             for rom_data in roms_data:
                 assets = self._get_assets_from_romdata(rom_data)
                 compatible_rom_data = self._alter_dictionary_for_compatibility(rom_data)
-                r = ROM(rom_data, assets)
+                scanned_data = self._get_scanned_data_from_romdata(rom_data)
+                r = ROM(rom_data, assets, scanned_data=scanned_data)
                 key = r.get_id()
                 roms.append(r)
         else:
             for key in roms_data:
                 assets = self._get_assets_from_romdata(roms_data[key])
                 compatible_rom_data = self._alter_dictionary_for_compatibility(roms_data[key])
-                r = ROM(compatible_rom_data, assets)
+                scanned_data = self._get_scanned_data_from_romdata(roms_data[key])
+                r = ROM(compatible_rom_data, assets, scanned_data=scanned_data)
                 roms.append(r)
 
         return roms
@@ -239,6 +241,10 @@ class ROMsJsonFileRepository(object):
                 assets.append(Asset(asset_data))
         return assets
 
+    def _get_scanned_data_from_romdata(self, rom_data: dict) -> dict:
+        scanned_data = { 'file': rom_data['filepath'] }
+        return scanned_data
+ 
     def _alter_dictionary_for_compatibility(self, rom_data: dict) -> dict:
         rom_data['rom_status'] = rom_data['fav_status'] if 'fav_status' in rom_data else None
         return rom_data
@@ -858,8 +864,8 @@ QUERY_SELECT_ROM_ASSETPATHS_BY_SET  = "SELECT rap.* FROM vw_rom_asset_paths AS r
 QUERY_INSERT_ROM                = """
                                 INSERT INTO roms (
                                     id, metadata_id, name, num_of_players, esrb_rating, platform, box_size,
-                                    nointro_status, cloneof, rom_status, file_path, scanned_by_id, scanned_data)
-                                VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)
+                                    nointro_status, cloneof, rom_status, scanned_by_id)
+                                VALUES (?,?,?,?,?,?,?,?,?,?,?)
                                 """ 
 
 QUERY_SELECT_MY_FAVOURITES               = "SELECT * FROM vw_roms WHERE is_favourite = 1"                                
@@ -877,15 +883,20 @@ QUERY_SELECT_MOST_PLAYED_ROM_ASSETS      = """
                                 
 QUERY_INSERT_ROM_ASSET          = "INSERT INTO rom_assets (rom_id, asset_id) VALUES (?, ?)"
 QUERY_INSERT_ROM_ASSET_PATH     = "INSERT INTO rom_assetpaths (rom_id, assetpaths_id) VALUES (?, ?)"
+QUERY_INSERT_ROM_SCANNED_DATA   = "INSERT INTO scanned_roms_data (rom_id, data_key, data_value) VALUES (?, ?, ?)"
 
 QUERY_UPDATE_ROM                = """
                                   UPDATE roms 
                                   SET name=?, num_of_players=?, esrb_rating=?, platform = ?, box_size = ?,
-                                  nointro_status=?, cloneof=?, rom_status=?, file_path=?, launch_count=?, last_launch_timestamp=?,
-                                  is_favourite=?, scanned_by_id=?, scanned_data=? WHERE id =?
+                                  nointro_status=?, cloneof=?, rom_status=?, launch_count=?, last_launch_timestamp=?,
+                                  is_favourite=?, scanned_by_id=? WHERE id =?
                                   """
 QUERY_DELETE_ROM                = "DELETE FROM roms WHERE id = ?"
 QUERY_DELETE_ROMS_BY_COLLECTION = "DELETE FROM roms WHERE id IN (SELECT rc.rom_id FROM roms_in_romcollection AS rc WHERE rc.romcollection_id = ?)"
+
+QUERY_SELECT_ROM_SCANNED_DATA        = "SELECT s.* FROM scanned_roms_data AS s WHERE s.rom_id = ?"
+QUERY_SELECT_ROM_SCANNED_DATA_BY_SET = "SELECT s.* FROM scanned_roms_data AS s INNER JOIN roms_in_romcollection AS rs ON rs.rom_id = s.rom_id AND rs.romcollection_id = ?"
+QUERY_DELETE_SCANNED_DATA            = "DELETE FROM scanned_roms_data WHERE rom_id = ?"
 
 QUERY_SELECT_ROM_LAUNCHERS     = "SELECT * FROM vw_rom_launchers WHERE rom_id = ?"
 QUERY_INSERT_ROM_LAUNCHER      = "INSERT INTO rom_launchers (id, rom_id, ael_addon_id, settings, is_default) VALUES (?,?,?,?,?)"
@@ -907,6 +918,9 @@ class ROMsRepository(object):
             
         self._uow.execute(QUERY_SELECT_ROM_ASSETPATHS_BY_SET, romcollection_id)
         asset_paths_result_set = self._uow.result_set()
+                       
+        self._uow.execute(QUERY_SELECT_ROM_SCANNED_DATA_BY_SET, romcollection_id)
+        scanned_data_result_set = self._uow.result_set()
                         
         for rom_data in result_set:
             assets = []
@@ -914,9 +928,13 @@ class ROMsRepository(object):
             for asset_data in filter(lambda a: a['rom_id'] == rom_data['id'], assets_result_set):
                 assets.append(Asset(asset_data))    
             for asset_paths_data in filter(lambda a: a['rom_id'] == rom_data['id'], asset_paths_result_set):
-                asset_paths.append(AssetPath(asset_paths_data))            
+                asset_paths.append(AssetPath(asset_paths_data))
                 
-            yield ROM(rom_data, assets, asset_paths)
+            scanned_data = {
+                entry['data_key']: entry['data_value'] 
+                for entry in filter(lambda s: s['rom_id'] == rom_data['id'], scanned_data_result_set) 
+            }
+            yield ROM(rom_data, assets, asset_paths, scanned_data)
 
     def find_roms_by_virtual_collection(self, vcollection_id:str) -> typing.Iterator[ROM]:        
         roms_query = None
@@ -963,7 +981,11 @@ class ROMsRepository(object):
         asset_paths = []
         for asset_paths_data in asset_paths_result_set:
             asset_paths.append(AssetPath(asset_paths_data))
-            
+        
+        self._uow.execute(QUERY_SELECT_ROM_SCANNED_DATA, rom_id)
+        scanned_data_result_set = self._uow.result_set()
+        scanned_data = { entry['data_key']: entry['data_value'] for entry in scanned_data_result_set }    
+        
         self._uow.execute(QUERY_SELECT_ROM_LAUNCHERS, rom_id)
         launchers_data = self._uow.result_set()
         launchers = []
@@ -971,7 +993,7 @@ class ROMsRepository(object):
             addon = AelAddon(launcher_data.copy())
             launchers.append(ROMLauncherAddon(addon, launcher_data))
             
-        return ROM(rom_data, assets, asset_paths, launchers)
+        return ROM(rom_data, assets, asset_paths, scanned_data, launchers)
 
     def insert_rom(self, rom_obj: ROM): 
         logger.info("ROMsRepository.insert_rom(): Inserting new ROM '{}'".format(rom_obj.get_name()))
@@ -999,9 +1021,7 @@ class ROMsRepository(object):
             rom_obj.get_nointro_status(),
             rom_obj.get_clone(),
             rom_obj.get_rom_status(),
-            rom_obj.get_filename(),
-            rom_obj.get_scanned_with(),
-            json.dumps(rom_obj.get_scanned_data()))
+            rom_obj.get_scanned_with())
         
         rom_assets = rom_obj.get_assets()
         for asset in rom_assets:
@@ -1011,15 +1031,8 @@ class ROMsRepository(object):
             if not asset_path.get_id(): self._insert_asset_path(asset_path, rom_obj)
             else: self._update_asset_path(asset_path, rom_obj)
 
-        rom_launchers = rom_obj.get_launchers()
-        for rom_launchers in rom_launchers:
-            rom_launchers.set_id(text.misc_generate_random_SID())
-            self._uow.execute(QUERY_INSERT_ROM_LAUNCHER,
-                rom_launchers.get_id(),
-                rom_obj.get_id(), 
-                rom_launchers.addon.get_id(), 
-                rom_launchers.get_settings_str(), 
-                rom_launchers.is_default())
+        self._update_scanned_data(rom_obj.get_id(), rom_obj.scanned_data)
+        self._update_launchers(rom_obj.get_id(), rom_obj.get_launchers())
 
     def update_rom(self, rom_obj: ROM):
         logger.info("ROMsRepository.update_rom(): Updating ROM '{}'".format(rom_obj.get_name()))
@@ -1044,12 +1057,10 @@ class ROMsRepository(object):
             rom_obj.get_nointro_status(),
             rom_obj.get_clone(),
             rom_obj.get_rom_status(),
-            rom_obj.get_filename(),
             rom_obj.get_launch_count(),
             rom_obj.get_last_launch_date(),
             rom_obj.is_favourite(),
             rom_obj.get_scanned_with(),
-            json.dumps(rom_obj.get_scanned_data()),
             rom_obj.get_id())
         
         for asset in rom_obj.get_assets():
@@ -1060,21 +1071,8 @@ class ROMsRepository(object):
             if not asset_path.get_id(): self._insert_asset_path(asset_path, rom_obj)
             else: self._update_asset_path(asset_path, rom_obj)    
             
-        rom_launchers = rom_obj.get_launchers()
-        for rom_launcher in rom_launchers:
-            if rom_launcher.get_id() is None:
-                rom_launcher.set_id(text.misc_generate_random_SID())
-                self._uow.execute(QUERY_INSERT_ROMCOLLECTION_LAUNCHER,
-                    rom_launcher.get_id(),
-                    rom_obj.get_id(), 
-                    rom_launcher.addon.get_id(), 
-                    rom_launcher.get_settings_str(), 
-                    rom_launcher.is_default())
-            else:
-                self._uow.execute(QUERY_UPDATE_ROMCOLLECTION_LAUNCHER,
-                    rom_launcher.get_settings_str(), 
-                    rom_launcher.is_default(),
-                    rom_launcher.get_id())
+        self._update_scanned_data(rom_obj.get_id(),rom_obj.scanned_data)
+        self._update_launchers(rom_obj.get_id(), rom_obj.get_launchers())
                 
     def delete_rom(self, rom_id: str):
         logger.info("ROMsRepository.delete_rom(): Deleting ROM '{}'".format(rom_id))
@@ -1102,7 +1100,28 @@ class ROMsRepository(object):
         self._uow.execute(QUERY_UPDATE_ASSET_PATH, asset_path.get_path(), asset_path.get_asset_info_id(), asset_path.get_id())
         if asset_path.get_custom_attribute('rom_id') is None:
             self._uow.execute(QUERY_INSERT_ROM_ASSET_PATH, rom_obj.get_id(), asset_path.get_id())     
-            
+    
+    def _update_launchers(self, rom_id:str, rom_launchers:typing.List[ROMLauncherAddon]):        
+        for rom_launcher in rom_launchers:
+            if rom_launcher.get_id() is None:
+                rom_launcher.set_id(text.misc_generate_random_SID())
+                self._uow.execute(QUERY_INSERT_ROMCOLLECTION_LAUNCHER,
+                    rom_launcher.get_id(),
+                    rom_id, 
+                    rom_launcher.addon.get_id(), 
+                    rom_launcher.get_settings_str(), 
+                    rom_launcher.is_default())
+            else:
+                self._uow.execute(QUERY_UPDATE_ROMCOLLECTION_LAUNCHER,
+                    rom_launcher.get_settings_str(), 
+                    rom_launcher.is_default(),
+                    rom_launcher.get_id())
+    
+    def _update_scanned_data(self, rom_id:str, scanned_data:dict):
+        self._uow.execute(QUERY_DELETE_SCANNED_DATA, rom_id)
+        for key, value in scanned_data.items():
+            self._uow.execute(QUERY_INSERT_ROM_SCANNED_DATA, rom_id, key, value)
+        
 #
 # AelAddonRepository -> AEL Adoon objects from SQLite DB
 #     

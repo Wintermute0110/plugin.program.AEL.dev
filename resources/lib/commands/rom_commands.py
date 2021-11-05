@@ -83,7 +83,7 @@ def cmd_rom_metadata(args):
     plot_str      = text.limit_string(rom.get_plot(), constants.PLOT_STR_MAXSIZE)
     rating        = rom.get_rating() if rom.get_rating() != -1 else 'not rated'
     NFO_FileName  = rom.get_nfo_file()
-    NFO_found_str = 'NFO found' if NFO_FileName.exists() else 'NFO not found'
+    NFO_found_str = 'NFO found' if NFO_FileName and NFO_FileName.exists() else 'NFO not found'
 
     options = collections.OrderedDict()
     options['ROM_EDIT_METADATA_TITLE']       = "Edit Title: '{}'".format(rom.get_name())
@@ -339,6 +339,10 @@ def cmd_rom_import_nfo_file(args):
         repository = ROMsRepository(uow)
         rom = repository.find_rom(rom_id)
         NFO_file = rom.get_nfo_file()
+        
+        if not NFO_file:
+            kodi.dialog_OK('No NFO file available')
+            return
         
         if rom.update_with_nfo_file(NFO_file):
             repository.update_rom(rom)
