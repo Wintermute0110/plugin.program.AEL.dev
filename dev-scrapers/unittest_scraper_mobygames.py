@@ -19,8 +19,8 @@
 # unittest.mock.patch decorator
 # https://docs.python.org/3/library/unittest.mock.html
 # The patch decorators are used for patching objects only within the scope of the function
-# they decorate. The patch() decorator / context manager makes it easy to mock classes or 
-# objects in a module under test. The object you specify will be replaced with a mock (or 
+# they decorate. The patch() decorator / context manager makes it easy to mock classes or
+# objects in a module under test. The object you specify will be replaced with a mock (or
 # other object) during the test and restored when the test ends
 
 # --- Python standard library ---

@@ -1,7 +1,6 @@
-#!/usr/bin/python3 -B
 # -*- coding: utf-8 -*-
 
-# Copyright (c) 2017-2021 Wintermute0110 <wintermute0110@gmail.com>
+# Copyright (c) 2016-2021 Wintermute0110 <wintermute0110@gmail.com>
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -9,22 +8,16 @@
 #
 # This program is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-# GNU General Public License for more details.
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+# See the GNU General Public License for more details.
 
-# Test the parser for multidisc support.
+# Advanced Emulator Launcher multi-disc related functions.
 
-# --- Import AEL modules ---
-import os, sys
-if __name__ == "__main__" and __package__ is None:
-    path = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
-    print('Adding to sys.path {0}'.format(path))
-    sys.path.append(path)
-from resources.constants import *
-from resources.utils import *
+# --- Addon modules ---
+from .constants import *
+from .utils import *
 
 # --- Python standard library ---
-import pprint
 import re
 
 # --- BEGIN code in dev-core/test_multidisc_parser.py --------------------------------------------
@@ -121,27 +114,3 @@ def get_multidisc_info(ROM_FN):
 
     return MDSet
 # --- END code in dev-core/test_multidisc_parser.py ----------------------------------------------
-
-# --- Main ---------------------------------------------------------------------------------------
-ROM_title_list = [
-    # TOSEC
-    'Final Fantasy I (USA) (Disc 1 of 2).iso',
-    'Final Fantasy I (USA) (Disc 2 of 2).iso',
-    # Trurip
-    'Final Fantasy II (USA) - (Disc 1 of 2).iso',
-    'Final Fantasy II (USA) - (Disc 2 of 2).iso',
-    # Redump
-    'Final Fantasy VII (USA) (Disc 1).iso',
-    'Final Fantasy VII (USA) (Disc 2).iso',
-    # No tags
-    'Tomb Raider (EU).iso',
-    '[BIOS] PSX bios (EU).iso',
-    # Cornestone cases
-    'Final Fantasy I    (Disc 1 of 2)    (USA).iso',
-    'Final Fantasy I    (Disc 2 of 2)    (USA).iso',
-]
-set_log_level(LOG_DEBUG)
-for ROM_filename in ROM_title_list:
-    print('--> Processing "{}"'.format(ROM_filename))
-    MDSet = get_multidisc_info(FileName(ROM_filename))
-    print('')

@@ -1,8 +1,6 @@
 # -*- coding: utf-8 -*-
 
-# Advanced Emulator Launcher platform and emulator information.
-
-# Copyright (c) 2016-2019 Wintermute0110 <wintermute0110@gmail.com>
+# Copyright (c) 2016-2021 Wintermute0110 <wintermute0110@gmail.com>
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -13,8 +11,11 @@
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 # See the GNU General Public License for more details.
 
-# --- Python standard library ---
-from __future__ import unicode_literals
+# Advanced Emulator Launcher platform and emulator information.
+#
+# This module has basic platform, DAT file information, etc.
+# It has not external dependencies at all and can be used from anywhere.
+# External tools are used to test the validity of the information in this file.
 
 from resources.constants import *
 
@@ -193,21 +194,21 @@ AEL_platforms = [
     Platform('Hartung Game Master', 'console-gamemaster', 'gamemaster', None, None, None, '103', None,
         DAT_NOINTRO, 'Hartung - Game Master'),
     # The iQue Player is based on the Nintendo 64, but uses system-on-a-chip technology to reduce size.
-    # It plays Nintendo 64 games specifically ported to the system. 
+    # It plays Nintendo 64 games specifically ported to the system.
     # iQue No-Intro DATs:
     # *) iQue - iQue (CDN) (20190927-125114).dat
     # *) iQue - iQue (Decrypted) (20190927-125114)
     # *) iQue - iQue (Decrypted) (Parent-Clone) (Parent-Clone) (20190927-125114)
     Platform('iQue iQue Player', 'console-ique', 'ique', 'n64', None, None, None, None,
-        DAT_NOINTRO, 'iQue - iQue (Decrypted) (Parent-Clone)'),
+        DAT_NOINTRO, 'iQue - iQue (CDN) (Parent-Clone)'),
     Platform('Konami Picno', 'console-picno', 'picno', None, None, None, None, None,
         DAT_NOINTRO, 'Konami - Picno'),
     Platform('LeapFrog LeapPad', 'console-leappad', 'leappad', None, None, None, None, None,
         DAT_NOINTRO, 'LeapFrog - LeapPad'),
     Platform('LeapFrog Leapster Learning Game System', 'console-llgs', 'llgs', None, None, None, None, None,
         DAT_NOINTRO, 'LeapFrog - Leapster Learning Game System'),
-    Platform('LeapFrog My First LeapPad', 'console-mfleappad', 'mfleappad', None, None, None, None, None,
-        DAT_NOINTRO, 'LeapFrog - My First LeapPad'),
+    # Platform('LeapFrog My First LeapPad', 'console-mfleappad', 'mfleappad', None, None, None, None, None,
+    #     DAT_NOINTRO, 'LeapFrog - My First LeapPad'),
 
     # --- Libretro ---
     # Use nxengine and not cavestory because in the future there could be nxengine-evo.
@@ -280,7 +281,7 @@ AEL_platforms = [
     # *) Nintendo - Nintendo 3DS (Encrypted) (20191109-080816)
     # *) Nintendo - Nintendo 3DS (Encrypted) (Parent-Clone) (Parent-Clone) (20191109-080816)
     Platform('Nintendo 3DS', 'nintendo-n3ds', 'n3ds', None, '4912', '101', '17', '116',
-        DAT_NOINTRO, 'Nintendo - Nintendo 3DS (Encrypted) (Parent-Clone)', default_box_size=BOX_SIZE_3DS),
+        DAT_NOINTRO, 'Nintendo - Nintendo 3DS (Decrypted) (Parent-Clone)'),
     # No-Intro Nintendo 64 DAT files:
     # *) Nintendo - Nintendo 64 (BigEndian) (20190918-121135)
     # *) Nintendo - Nintendo 64 (BigEndian) (Parent-Clone) (Parent-Clone) (20190918-121135)
@@ -335,14 +336,14 @@ AEL_platforms = [
     # *) Nintendo - New Nintendo 3DS (Encrypted) (20190402-125456)
     # *) Nintendo - New Nintendo 3DS (Encrypted) (Parent-Clone) (Parent-Clone) (20190402-125456)
     Platform('Nintendo New Nintendo 3DS', 'nintendo-new3ds', 'new3ds', None, None, None, None, None,
-        DAT_NOINTRO, 'Nintendo - New Nintendo 3DS (Encrypted) (Parent-Clone)', default_box_size=BOX_SIZE_3DS),
+        DAT_NOINTRO, 'Nintendo - New Nintendo 3DS (Decrypted) (Parent-Clone)'),
     # Pokemon Mini not found in GameFAQs.
     Platform('Nintendo Pokemon Mini', 'nintendo-pokemini', 'pokemini', None, '4957', '152', '211', None,
         DAT_NOINTRO, 'Nintendo - Pokemon Mini'),
     Platform('Nintendo Satellaview', 'nintendo-satellaview', 'satellaview', None, None, None, '107', None,
         DAT_NOINTRO, 'Nintendo - Satellaview'),
     Platform('Nintendo SNES', 'nintendo-snes', 'snes', None, '6', '15', '4', '63',
-        DAT_NOINTRO, 'Nintendo - Super Nintendo Entertainment System (Combined) (Parent-Clone)', default_box_size=BOX_SIZE_WIDE),
+        DAT_NOINTRO, 'Nintendo - Super Nintendo Entertainment System (Combined)'),
     Platform('Nintendo Sufami Turbo', 'nintendo-sufami', 'sufami', None, None, None, '108', None,
         DAT_NOINTRO, 'Nintendo - Sufami Turbo'),
     Platform('Nintendo Switch', 'nintendo-switch', 'switch', None, '4971', '203', None, '124', DAT_NONE, 
@@ -580,10 +581,10 @@ def AEL_platform_to_GameFAQs(platform_long_name):
 # -------------------------------------------------------------------------------------------------
 # Miscellaneous emulator and gamesys (platforms) supported.
 # -------------------------------------------------------------------------------------------------
-def emudata_get_program_arguments(app):
-    # Based on the app. name, retrieve the default arguments for the app.
+def emudata_get_program_arguments(app_name):
+    # Based on the application name, retrieve the default arguments.
     applications = {
-        'mame'        : '"$rom$"',
+        'mame'        : '"$rombasenoext$"',
         'mednafen'    : '-fs 1 "$rom$"',
         'mupen64plus' : '--nogui --noask --noosd --fullscreen "$rom$"',
         'nestopia'    : '"$rom$"',
@@ -592,15 +593,15 @@ def emudata_get_program_arguments(app):
         'retroarch'   : '-L /path/to/core -f "$rom$"',
         'yabause'     : '-a -f -i "$rom$"',
     }
-    for application, arguments in applications.iteritems():
-        if app.lower().find(application) >= 0:
-            return arguments
+    for app_key in applications:
+        if app_name.lower().find(app_key) >= 0:
+            return applications[app_key]
 
     return '"$rom$"'
 
-def emudata_get_program_extensions(app):
-    # Based on the app. name, retrieve the recognized extension of the app.
-    applications = {
+def emudata_get_program_extensions(app_name):
+    # Based on the application name, retrieve the recognized extension.
+    app_extensions = {
         'mame'       : 'zip|7z',
         'mednafen'   : 'zip|cue',
         'mupen64plus': 'z64|zip|n64',
@@ -608,8 +609,8 @@ def emudata_get_program_extensions(app):
         'retroarch'  : 'zip|cue',
         'yabause'    : 'cue',
     }
-    for application, extensions in applications.iteritems():
-        if app.lower().find(application) >= 0:
-            return extensions
+    for app_key in app_extensions:
+        if app_name.lower().find(app_key) >= 0:
+            return app_extensions[app_key]
 
     return ''

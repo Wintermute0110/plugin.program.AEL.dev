@@ -1,13 +1,6 @@
 # -*- coding: utf-8 -*-
-#
-# Advanced Emulator Launcher platform constants.
-#
 
-# This file has contants that define the addon behaviour. 
-# This module has no external dependencies.
-#
-
-# Copyright (c) 2016-2019 Wintermute0110 <wintermute0110@gmail.com>
+# Copyright (c) 2016-2021 Wintermute0110 <wintermute0110@gmail.com>
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -15,40 +8,59 @@
 #
 # This program is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-# GNU General Public License for more details.
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+# See the GNU General Public License for more details.
 
-# --- Python standard library ---
-from __future__ import unicode_literals
+# Advanced Emulator/MAME Launcher constants and globals.
+# This module has no external dependencies.
+
+# Transitional code from Python 2 to Python 3 (https://github.com/benjaminp/six/blob/master/six.py)
+import sys
+ADDON_RUNNING_PYTHON_2 = sys.version_info[0] == 2
+ADDON_RUNNING_PYTHON_3 = sys.version_info[0] == 3
+if ADDON_RUNNING_PYTHON_3:
+    text_type = str
+    binary_type = bytes
+elif ADDON_RUNNING_PYTHON_2:
+    text_type = unicode
+    binary_type = str
+else:
+    raise TypeError('Unknown Python runtime version')
 
 # -------------------------------------------------------------------------------------------------
-# A universal addon error reporting exception
-# This exception is raised to report errors in the GUI.
-# Unhandled exceptions must not raise AddonError() so the addon crashes and the traceback is
-# printed in the Kodi log file.
+# Addon options and tuneables.
 # -------------------------------------------------------------------------------------------------
-# Top-level GUI code looks like this
-# try:
-#     autoconfig_export_category(category, export_FN)
-# except AddonError as E:
-#     kodi_notify_warn('{0}'.format(E))
-# else:
-#     kodi_notify('Exported Category "{0}" XML config'.format(category['m_name']))
-#
-# Low-level code looks like this
-# def autoconfig_export_category(category, export_FN):
-#     try:
-#         do_something_that_may_fail()
-#     except OSError:
-#         log_error('(OSError) Cannot write {0} file'.format(export_FN.getBase()))
-#         # Message to be printed in the GUI
-#         raise AddonError('Error writing file (OSError)')
-#
-class AddonError(Exception):
-    def __init__(self, err_str): self.err_str = err_str
-    def __str__(self): return self.err_str
+# Compact, smaller size, non-human readable JSON. False forces human-readable JSON for development.
+# In AEL speed is not as critical so False is OK.
+# In AML this must be True when releasing.
+OPTION_COMPACT_JSON = False
 
-# This is to ease printing colours in Kodi.
+# Use less memory when writing big JSON files, but writing is slower.
+# In AEL this can be False when releasing.
+# In AML it must be True when releasing.
+OPTION_LOWMEM_WRITE_JSON = False
+
+# The addon name in the GUI. Title of Kodi dialogs (yesno, progress, etc.) and used also in log functions.
+ADDON_LONG_NAME = 'Advanced Emulator Launcher'
+ADDON_SHORT_NAME = 'AEL'
+
+# These parameters are used in utils_write_JSON_file() when pprint is True or
+# OPTION_COMPACT_JSON is False. Otherwise non-human readable, compact JSON is written.
+# pprint = True function parameter overrides option OPTION_COMPACT_JSON.
+# More compact JSON files (less blanks) load faster because file size is smaller.
+JSON_INDENT = 1
+JSON_SEP = (', ', ': ')
+
+# -------------------------------------------------------------------------------------------------
+# CUSTOM/DEBUG/TEST settings
+# -------------------------------------------------------------------------------------------------
+# An integer number incremented whenever there is a change in the ROM storage format.
+# This enables easy migrations, at least in theory.
+AEL_STORAGE_FORMAT = 1
+
+# -------------------------------------------------------------------------------------------------
+# This is to ease printing colors in Kodi.
+# -------------------------------------------------------------------------------------------------
 KC_RED        = '[COLOR red]'
 KC_ORANGE     = '[COLOR orange]'
 KC_GREEN      = '[COLOR green]'
@@ -56,6 +68,58 @@ KC_YELLOW     = '[COLOR yellow]'
 KC_VIOLET     = '[COLOR violet]'
 KC_BLUEVIOLET = '[COLOR blueviolet]'
 KC_END        = '[/COLOR]'
+
+# -------------------------------------------------------------------------------------------------
+# Image file constants.
+# -------------------------------------------------------------------------------------------------
+# Supported image files in:
+# 1. misc_identify_image_id_by_contents()
+# 2. misc_identify_image_id_by_ext()
+IMAGE_PNG_ID     = 'PNG'
+IMAGE_JPEG_ID    = 'JPEG'
+IMAGE_GIF_ID     = 'GIF'
+IMAGE_BMP_ID     = 'BMP'
+IMAGE_TIFF_ID    = 'TIFF'
+IMAGE_UKNOWN_ID  = 'Image unknown'
+IMAGE_CORRUPT_ID = 'Image corrupt'
+
+IMAGE_IDS = [
+    IMAGE_PNG_ID,
+    IMAGE_JPEG_ID,
+    IMAGE_GIF_ID,
+    IMAGE_BMP_ID,
+    IMAGE_TIFF_ID,
+]
+
+IMAGE_EXTENSIONS = {
+    IMAGE_PNG_ID  : ['png'],
+    IMAGE_JPEG_ID : ['jpg', 'jpeg'],
+    IMAGE_GIF_ID  : ['gif'],
+    IMAGE_BMP_ID  : ['bmp'],
+    IMAGE_TIFF_ID : ['tif', 'tiff'],
+}
+
+# Image file magic numbers. All at file offset 0.
+# See https://en.wikipedia.org/wiki/List_of_file_signatures
+# b prefix is a byte string in both Python 2 and 3.
+IMAGE_MAGIC_DIC = {
+    IMAGE_PNG_ID  : [ b'\x89\x50\x4E\x47\x0D\x0A\x1A\x0A' ],
+    IMAGE_JPEG_ID : [
+        b'\xFF\xD8\xFF\xDB',
+        b'\xFF\xD8\xFF\xE0\x00\x10\x4A\x46\x49\x46\x00\x01',
+        b'\xFF\xD8\xFF\xEE',
+        b'\xFF\xD8\xFF\xE1',
+    ],
+    IMAGE_GIF_ID  : [
+        b'\x47\x49\x46\x38\x37\x61',
+        b'\x47\x49\x46\x38\x39\x61',
+    ],
+    IMAGE_BMP_ID  : [ b'\x42\x4D' ],
+    IMAGE_TIFF_ID : [
+        b'\x49\x49\x2A\x00',
+        b'\x4D\x4D\x00\x2A',
+    ]
+}
 
 # -------------------------------------------------------------------------------------------------
 # Addon constants
@@ -176,6 +240,11 @@ AEL_PCLONE_STAT_VALUE_NONE           = 'PClone_None'
 
 # --- ID of the fake ROM parent of all Unknown ROMs ---
 UNKNOWN_ROMS_PARENT_ID = 'Unknown_ROMs_Parent'
+
+# --- Audit reports ---
+AUDIT_REPORT_ALL = 'AUDIT_REPORT_ALL'
+AUDIT_REPORT_NOINTRO = 'AUDIT_REPORT_NOINTRO'
+AUDIT_REPORT_REDUMP = 'AUDIT_REPORT_REDUMP'
 
 # -------------------------------------------------------------------------------------------------
 # Metadata
@@ -306,13 +375,14 @@ DEFAULT_META_PLOT      = ''
 # Assets
 # -------------------------------------------------------------------------------------------------
 # --- Kodi standard artwork types. Mappable to any other artwork type including itself ---
-# # Use unique string as IDs. Then, if asset order changes the IDs are the same.
+# Use unique string as IDs. Then, if asset order changes the IDs are the same.
 ASSET_ICON_ID       = 'icon'
 ASSET_FANART_ID     = 'fanart'
 ASSET_CLEARLOGO_ID  = 'clearlogo'
 ASSET_POSTER_ID     = 'poster'
 ASSET_BANNER_ID     = 'banner' # Marquee in MAME
 ASSET_TRAILER_ID    = 'trailer'
+
 # --- AEL artwork types ---
 # What about supporting BOXSPINE and composite box (fron, spine and back in one image).
 ASSET_TITLE_ID      = 'title'
@@ -326,9 +396,7 @@ ASSET_MAP_ID        = 'map'
 ASSET_MANUAL_ID     = 'manual'
 ASSET_CONTROLLER_ID = 'controller'
 
-#
-# The order of this list must match order in dialog.select() in the GUI, or bad things will happen.
-#
+# The order of this list must match order in select dialogs in the GUI, or bad things will happen.
 CATEGORY_ASSET_ID_LIST = [
     ASSET_ICON_ID,
     ASSET_FANART_ID,
@@ -363,57 +431,6 @@ ROM_ASSET_ID_LIST = [
     ASSET_MAP_ID,
     ASSET_MANUAL_ID,
     ASSET_TRAILER_ID,
-]
-
-# Supported image files in:
-# 1. misc_identify_image_id_by_contents()
-# 2. misc_identify_image_id_by_ext()
-IMAGE_PNG_ID     = 'PNG'
-IMAGE_JPEG_ID    = 'JPEG'
-IMAGE_GIF_ID     = 'GIF'
-IMAGE_BMP_ID     = 'BMP'
-IMAGE_TIFF_ID    = 'TIFF'
-IMAGE_UKNOWN_ID  = 'Image unknown'
-IMAGE_CORRUPT_ID = 'Image corrupt'
-
-IMAGE_IDS = [
-    IMAGE_PNG_ID,
-    IMAGE_JPEG_ID,
-    IMAGE_GIF_ID,
-    IMAGE_BMP_ID,
-    IMAGE_TIFF_ID,
-]
-
-IMAGE_EXTENSIONS = {
-    IMAGE_PNG_ID  : ['png'],
-    IMAGE_JPEG_ID : ['jpg', 'jpeg'],
-    IMAGE_GIF_ID  : ['gif'],
-    IMAGE_BMP_ID  : ['bmp'],
-    IMAGE_TIFF_ID : ['tif', 'tiff'],
-}
-
-BOX_SIZE_POSTER     = 'poster'
-BOX_SIZE_DVD        = 'dvd'
-BOX_SIZE_BLURAY     = 'bluray'
-BOX_SIZE_CD         = 'cd'
-BOX_SIZE_WIDE       = 'widebox'
-BOX_SIZE_SLIM       = 'slimbox'
-BOX_SIZE_SQUARE     = 'squarebox'
-BOX_SIZE_3DS        = '3dsbox'
-BOX_SIZE_STEAM      = 'steambanner'
-BOX_SIZE_SCREEN     = 'screenshot'
-
-BOX_SIZES = [
-    BOX_SIZE_POSTER,
-    BOX_SIZE_DVD,
-    BOX_SIZE_BLURAY,
-    BOX_SIZE_CD,
-    BOX_SIZE_WIDE,
-    BOX_SIZE_SLIM,
-    BOX_SIZE_SQUARE,
-    BOX_SIZE_3DS,
-    BOX_SIZE_STEAM,
-    BOX_SIZE_SCREEN
 ]
 
 # --- Addon will search these file extensions for assets ---

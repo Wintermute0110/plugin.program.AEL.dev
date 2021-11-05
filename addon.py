@@ -1,10 +1,6 @@
-﻿# -*- coding: utf-8 -*-
-#
-# Advanced Emulator Launcher main script file
-#
+# -*- coding: utf-8 -*-
 
-# Copyright (c) 2016-2018 Wintermute0110 <wintermute0110@gmail.com>
-# Portions (c) 2018 Chrisism
+# Copyright (c) 2016-2021 Wintermute0110 <wintermute0110@gmail.com>
 # Portions (c) 2010-2015 Angelscry and others
 #
 # This program is free software; you can redistribute it and/or modify
@@ -16,12 +12,13 @@
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU General Public License for more details.
 
-# --- Python standard library ---
-from __future__ import unicode_literals
-from __future__ import division
+# Advanced Emulator Launcher main script file.
 
 # --- Modules/packages in this plugin ---
 import resources.main
+
+# --- Python standard library ---
+import sys
 
 # -------------------------------------------------------------------------------------------------
 # Hacks and tests
@@ -33,9 +30,8 @@ import resources.main
 # -------------------------------------------------------------------------------------------------
 # main()
 # -------------------------------------------------------------------------------------------------
-# Put the main bulk of the code in files inside /resources/, which is a package directory. 
+# Put the main bulk of the code in files inside /resources/, which is a package directory.
 # This way, the Python interpreter will precompile them into bytecode (files PYC/PYO) so
 # loading time is faster compared to loading PY files.
 # See http://www.network-theory.co.uk/docs/pytut/CompiledPythonfiles.html
-#
-resources.main.run_plugin(sys.argv)
+resources.main.Main().run_plugin(sys.argv)

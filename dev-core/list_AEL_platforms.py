@@ -82,7 +82,7 @@ table_str = [
 ]
 for p_obj in AEL_platforms:
     table_str.append([
-        p_obj.long_name, p_obj.short_name, p_obj.compact_name, unicode(p_obj.aliasof), 
+        p_obj.long_name, p_obj.short_name, p_obj.compact_name, unicode(p_obj.aliasof),
         unicode(p_obj.TGDB_plat), unicode(p_obj.MG_plat), unicode(p_obj.SS_plat), unicode(p_obj.GF_plat),
         unicode(p_obj.DAT),
     ])

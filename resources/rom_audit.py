@@ -1,9 +1,6 @@
 # -*- coding: utf-8 -*-
-#
-# Advanced Emulator Launcher
-#
 
-# Copyright (c) 2016-2017 Wintermute0110 <wintermute0110@gmail.com>
+# Copyright (c) 2016-2021 Wintermute0110 <wintermute0110@gmail.com>
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -11,22 +8,24 @@
 #
 # This program is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-# GNU General Public License for more details.
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+# See the GNU General Public License for more details.
 
-# --- Python standard library ---
-from __future__ import unicode_literals
-import xml.etree.ElementTree as ET
+# Write here main contents of this file.
 
 # --- Modules/packages in this plugin ---
-from constants import *
-from utils import *
+from .constants import *
+from .misc import *
+from .utils import *
+
+# --- Python standard library ---
+import xml
 
 # -------------------------------------------------------------------------------------------------
 # Data structures
 # -------------------------------------------------------------------------------------------------
 # DTD "http://www.logiqx.com/Dats/datafile.dtd"
-def audit_new_rom_logiqx(): 
+def audit_new_rom_logiqx():
     return {
         'name'         : '',
         'cloneof'      : '',
@@ -35,7 +34,7 @@ def audit_new_rom_logiqx():
     }
 
 # HyperList doesn't include Plot
-def audit_new_rom_HyperList(): 
+def audit_new_rom_HyperList():
     return {
         'name'         : '',
         'description'  : '',
@@ -60,7 +59,7 @@ def audit_new_rom_GameDB():
         'story'        : ''
     }
 
-def audit_new_rom_AEL_Offline(): 
+def audit_new_rom_AEL_Offline():
     return {
         'ROM'       : '',
         'title'     : '',
@@ -129,17 +128,12 @@ def audit_new_LB_gameImage():
 
 def audit_load_LB_metadata_XML(filename_FN, games_dic, platforms_dic, gameimages_dic):
     if not filename_FN.exists():
-        log_error("Cannot load file '{0}'".format(xml_file))
+        log_error("Cannot load file '{}'".format(xml_file))
         return
 
     # --- Parse using cElementTree ---
-    log_verb('audit_load_LB_metadata_XML() Loading "{0}"'.format(filename_FN.getPath()))
-    try:
-        xml_tree = ET.parse(filename_FN.getPath())
-    except ET.ParseError, e:
-        log_error('(ParseError) Exception parsing XML categories.xml')
-        log_error('(ParseError) {0}'.format(str(e)))
-        return
+    log_debug('audit_load_LB_metadata_XML() Loading "{}"'.format(filename_FN.getPath()))
+    xml_tree = utils_load_XML_to_ET(filename_FN.getPath())
     xml_root = xml_tree.getroot()
     for xml_element in xml_root:
         if xml_element.tag == 'Game':
@@ -148,7 +142,7 @@ def audit_load_LB_metadata_XML(filename_FN, games_dic, platforms_dic, gameimages
                 xml_tag  = xml_child.tag
                 xml_text = xml_child.text if xml_child.text is not None else ''
                 if xml_tag not in game:
-                    log_info('Unknown <Game> child tag <{0}>'.format(xml_tag))
+                    log_info('Unknown <Game> child tag <{}>'.format(xml_tag))
                     return
                 game[xml_tag] = text_unescape_XML(xml_text)
             games_dic[game['Name']] = game
@@ -158,7 +152,7 @@ def audit_load_LB_metadata_XML(filename_FN, games_dic, platforms_dic, gameimages
                 xml_tag  = xml_child.tag
                 xml_text = xml_child.text if xml_child.text is not None else ''
                 if xml_tag not in platform:
-                    log_info('Unknown <Platform> child tag <{0}>'.format(xml_tag))
+                    log_info('Unknown <Platform> child tag <{}>'.format(xml_tag))
                     return
                 platform[xml_tag] = text_unescape_XML(xml_text)
             platforms_dic[platform['Name']] = platform
@@ -176,23 +170,21 @@ def audit_load_LB_metadata_XML(filename_FN, games_dic, platforms_dic, gameimages
                 xml_tag  = xml_child.tag
                 xml_text = xml_child.text if xml_child.text is not None else ''
                 if xml_tag not in game_image:
-                    log_info('Unknown <GameImage> child tag <{0}>'.format(xml_tag))
+                    log_info('Unknown <GameImage> child tag <{}>'.format(xml_tag))
                     return
                 game_image[xml_tag] = text_unescape_XML(xml_text)
             gameimages_dic[game_image['FileName']] = game_image
         else:
-            log_info('Unknwon main tag <{0}>'.format(xml_element.tag))
+            log_info('Unknwon main tag <{}>'.format(xml_element.tag))
             return
-    log_verb('audit_load_LB_metadata_XML() Loaded {0} games ({1} bytes)'.format(len(games_dic), sys.getsizeof(games_dic)))
-    log_verb('audit_load_LB_metadata_XML() Loaded {0} platforms'.format(len(platforms_dic)))
-    log_verb('audit_load_LB_metadata_XML() Loaded {0} game images'.format(len(gameimages_dic)))
+    log_debug('audit_load_LB_metadata_XML() Loaded {} games ({} bytes)'.format(len(games_dic), sys.getsizeof(games_dic)))
+    log_debug('audit_load_LB_metadata_XML() Loaded {} platforms'.format(len(platforms_dic)))
+    log_debug('audit_load_LB_metadata_XML() Loaded {} game images'.format(len(gameimages_dic)))
 
 # -------------------------------------------------------------------------------------------------
 # Functions
 # -------------------------------------------------------------------------------------------------
-#
 # Loads offline scraper information XML file.
-#
 def audit_load_OfflineScraper_XML(xml_file):
     __debug_xml_parser = False
     games = {}
@@ -205,10 +197,10 @@ def audit_load_OfflineScraper_XML(xml_file):
     # --- Parse using cElementTree ---
     log_debug('audit_load_OfflineScraper_XML() Loading "{}"'.format(xml_file))
     try:
-        xml_tree = ET.parse(xml_file)
-    except ET.ParseError, e:
+        xml_tree = xml.etree.ElementTree.parse(xml_file)
+    except xml.etree.ElementTree.ParseError as ex:
         log_error('(ParseError) Exception parsing XML categories.xml')
-        log_error('(ParseError) {}'.format(str(e)))
+        log_error('(ParseError) {}'.format(text_type(ex)))
         return games
     xml_root = xml_tree.getroot()
     for game_element in xml_root:
@@ -247,19 +239,19 @@ def audit_load_NoIntro_XML_file(xml_FN):
 
     # --- If file does not exist return empty dictionary ---
     if not xml_FN.exists():
-        log_error('Does not exists "{0}"'.format(xml_FN.getPath()))
+        log_error('Does not exists "{}"'.format(xml_FN.getPath()))
         return nointro_roms
 
     # --- Parse using cElementTree ---
-    log_verb('Loading XML "{0}"'.format(xml_FN.getOriginalPath()))
+    log_debug('Loading XML "{}"'.format(xml_FN.getOriginalPath()))
     try:
-        xml_tree = ET.parse(xml_FN.getPath())
-    except ET.ParseError as e:
+        xml_tree = xml.etree.ElementTree.parse(xml_FN.getPath())
+    except xml.etree.ElementTree.ParseError as ex:
         log_error('(ParseError) Exception parsing XML categories.xml')
-        log_error('(ParseError) {0}'.format(str(e)))
+        log_error('(ParseError) {}'.format(text_type(ex)))
         return nointro_roms
-    except IOError as e:
-        log_error('(IOError) {0}'.format(str(e)))
+    except IOError as ex:
+        log_error('(IOError) {}'.format(text_type(ex)))
         return nointro_roms
     xml_root = xml_tree.getroot()
     for root_element in xml_root:
@@ -279,19 +271,19 @@ def audit_load_GameDB_XML(xml_FN):
 
     # --- Check that file exists and load ---
     if not xml_FN.exists():
-        log_error('Does not exists "{0}"'.format(xml_FN.getPath()))
+        log_error('Does not exists "{}"'.format(xml_FN.getPath()))
         return games
-    log_verb('Loading XML "{0}"'.format(xml_FN.getPath()))
+    log_debug('Loading XML "{}"'.format(xml_FN.getPath()))
     try:
-        xml_tree = ET.parse(xml_FN.getPath())
-    except ET.ParseError as e:
+        xml_tree = xml.etree.ElementTree.parse(xml_FN.getPath())
+    except xml.etree.ElementTree.ParseError as ex:
         log_error('(ParseError) Exception parsing XML categories.xml')
-        log_error('(ParseError) {0}'.format(str(e)))
+        log_error('(ParseError) {}'.format(text_type(ex)))
         return games
     xml_root = xml_tree.getroot()
     for game_element in xml_root:
         if __debug_xml_parser:
-            log_debug('=== Root child tag "{0}" ==='.format(game_element.tag))
+            log_debug('=== Root child tag "{}" ==='.format(game_element.tag))
 
         if game_element.tag == 'game':
             # Default values
@@ -299,7 +291,7 @@ def audit_load_GameDB_XML(xml_FN):
 
             # ROM name is an attribute of <game>
             game['name'] = game_element.attrib['name']
-            if __debug_xml_parser: log_debug('Game name = "{0}"'.format(game['name']))
+            if __debug_xml_parser: log_debug('Game name = "{}"'.format(game['name']))
 
             # Parse child tags of category
             for game_child in game_element:
@@ -307,7 +299,7 @@ def audit_load_GameDB_XML(xml_FN):
                 xml_text = game_child.text if game_child.text is not None else ''
                 xml_text = text_unescape_XML(xml_text)
                 xml_tag  = game_child.tag
-                if __debug_xml_parser: log_debug('Tag "{0}" --> "{1}"'.format(xml_tag, xml_text))
+                if __debug_xml_parser: log_debug('Tag "{}" --> "{}"'.format(xml_tag, xml_text))
                 game[xml_tag] = xml_text
             key = game['name']
             games[key] = game
@@ -324,13 +316,13 @@ def audit_load_Tempest_INI(file_FN):
 
     # --- Check that file exists ---
     if not file_FN.exists():
-        log_error('Does not exists "{0}"'.format(file_FN.getPath()))
+        log_error('Does not exists "{}"'.format(file_FN.getPath()))
         return games
-    log_verb('Loading XML "{0}"'.format(file_FN.getPath()))
+    log_debug('Loading XML "{}"'.format(file_FN.getPath()))
     try:
         f = open(file_FN.getPath(), 'rt')
     except IOError:
-        log_info('audit_load_Tempest_INI() IOError opening "{0}"'.format(filename))
+        log_info('audit_load_Tempest_INI() IOError opening "{}"'.format(filename))
         return {}
     for file_line in f:
         stripped_line = file_line.strip().decode(errors = 'replace')
@@ -341,16 +333,16 @@ def audit_load_Tempest_INI(file_FN):
                 game = audit_new_rom_GameDB()
                 game_key     = m.group(1)
                 game['name'] = m.group(1)
-                if __debug_INI_parser: print('Found game [{0}]'.format(game['name']))
+                if __debug_INI_parser: print('Found game [{}]'.format(game['name']))
                 read_status = 1
         elif read_status == 1:
             line_list = stripped_line.split("=")
             if len(line_list) == 1:
                 read_status = 0
                 games[game_key] = game
-                if __debug_INI_parser: print('Added game key "{0}"'.format(game_key))
+                if __debug_INI_parser: print('Added game key "{}"'.format(game_key))
             else:
-                if __debug_INI_parser: print('Line list -> ' + str(line_list))
+                if __debug_INI_parser: print('Line list -> ' + text_type(line_list))
                 field_name = line_list[0]
                 field_value = line_list[1]
                 if   field_name == 'Publisher':   game['manufacturer'] = field_value
@@ -373,7 +365,7 @@ def audit_load_Tempest_INI(file_FN):
         else:
             raise CriticalError('Unknown read_status FSM value')
     f.close()
-    log_info('audit_load_Tempest_INI() Number of games {0}'.format(len(games)))
+    log_info('audit_load_Tempest_INI() Number of games {}'.format(len(games)))
 
     return games
 
@@ -383,22 +375,22 @@ def audit_load_HyperList_XML(xml_FN):
 
     # --- Check that file exists and load ---
     if not xml_FN.exists():
-        log_error('Does not exists "{0}"'.format(xml_FN.getPath()))
+        log_error('Does not exists "{}"'.format(xml_FN.getPath()))
         return games
-    log_verb('Loading XML "{0}"'.format(xml_FN.getPath()))
+    log_debug('Loading XML "{}"'.format(xml_FN.getPath()))
     try:
         xml_tree = ET.parse(xml_FN.getPath())
-    except ET.ParseError as e:
+    except ET.ParseError as ex:
         log_error('(ParseError) Exception parsing XML categories.xml')
-        log_error('(ParseError) {0}'.format(str(e)))
+        log_error('(ParseError) {}'.format(text_type(ex)))
         return games
-    except IOError as e:
-        log_error('(IOError) {0}'.format(str(e)))
+    except IOError as ex:
+        log_error('(IOError) {}'.format(text_type(ex)))
         return games
     xml_root = xml_tree.getroot()
     for game_element in xml_root:
         if __debug_xml_parser:
-            log_debug('=== Root child tag "{0}" ==='.format(game_element.tag))
+            log_debug('=== Root child tag "{}" ==='.format(game_element.tag))
 
         if game_element.tag == 'game':
             # Default values
@@ -406,7 +398,7 @@ def audit_load_HyperList_XML(xml_FN):
 
             # ROM name is an attribute of <game>
             game['name'] = game_element.attrib['name']
-            if __debug_xml_parser: log_debug('Game name = "{0}"'.format(game['name']))
+            if __debug_xml_parser: log_debug('Game name = "{}"'.format(game['name']))
 
             # Parse child tags of category
             for game_child in game_element:
@@ -414,7 +406,7 @@ def audit_load_HyperList_XML(xml_FN):
                 xml_text = game_child.text if game_child.text is not None else ''
                 xml_text = text_unescape_XML(xml_text)
                 xml_tag  = game_child.tag
-                if __debug_xml_parser: log_debug('Tag "{0}" --> "{1}"'.format(xml_tag, xml_text))
+                if __debug_xml_parser: log_debug('Tag "{}" --> "{}"'.format(xml_tag, xml_text))
                 game[xml_tag] = xml_text
             key = game['name']
             games[key] = game
@@ -483,21 +475,21 @@ def audit_generate_DAT_PClone_index(roms, roms_nointro, unknown_ROMs_are_parents
     for rom_id in roms:
         rom = roms[rom_id]
         ROMFileName = FileName(rom['filename'])
-        rom_name = ROMFileName.getBase_noext()
-        # log_debug('{0} --> {1}'.format(rom_name, rom_id))
-        # log_debug('{0}'.format(rom))
+        rom_name = ROMFileName.getBaseNoExt()
+        # log_debug('{} --> {}'.format(rom_name, rom_id))
+        # log_debug('{}'.format(rom))
         names_to_ids_dic[rom_name] = rom_id
 
     # --- Build PClone dictionary using ROM base_noext names ---
     for rom_id in roms:
         rom = roms[rom_id]
         ROMFileName = FileName(rom['filename'])
-        rom_nointro_name = ROMFileName.getBase_noext()
-        # log_debug('rom_id {0}'.format(rom_id))
-        # log_debug('  nointro_status   "{0}"'.format(rom['nointro_status']))
-        # log_debug('  filename         "{0}"'.format(rom['filename']))
-        # log_debug('  ROM_base_noext   "{0}"'.format(ROMFileName.getBase_noext()))
-        # log_debug('  rom_nointro_name "{0}"'.format(rom_nointro_name))
+        rom_nointro_name = ROMFileName.getBaseNoExt()
+        # log_debug('rom_id {}'.format(rom_id))
+        # log_debug('  nointro_status   "{}"'.format(rom['nointro_status']))
+        # log_debug('  filename         "{}"'.format(rom['filename']))
+        # log_debug('  ROM_base_noext   "{}"'.format(ROMFileName.getBaseNoExt()))
+        # log_debug('  rom_nointro_name "{}"'.format(rom_nointro_name))
 
         if rom['nointro_status'] == AUDIT_STATUS_UNKNOWN:
             if unknown_ROMs_are_parents:
@@ -612,7 +604,7 @@ def audit_get_ROM_base_name(romFileName):
     if regSearch is None:
         raise NameError('audit_get_ROM_base_name() regSearch is None')
     regExp_result = regSearch.group()
-  
+
     return regExp_result.strip()
 
 # -------------------------------------------------------------------------------------------------
@@ -687,7 +679,7 @@ Libretro_BIOS_list = [
      'mandatory' : True, 'cores' : ['hatari']},
 
     # --- Id Software - Doom ---
-    
+
 
     # --- Magnavox - Odyssey2 ---
     # https://github.com/libretro/libretro-super/blob/master/dist/info/o2em_libretro.info
@@ -753,7 +745,7 @@ Libretro_BIOS_list = [
      'mandatory' : False, 'cores' : ['gpsp', 'mednafen_gba', 'mgba', 'tempgba', 'vba_next']},
 
     # --- Nintendo - Gameboy Color ---
-    
+
     # --- Nintendo - GameCube ---
     # Dolphin files must be in a special directory, not in the system directory.
     # https://github.com/libretro/libretro-super/blob/master/dist/info/dolphin_libretro.info
@@ -787,7 +779,7 @@ Libretro_BIOS_list = [
     #  'mandatory' : True, 'cores' : []},
 
     # --- Nintendo - Nintendo Entertainment System ---
-    
+
     # --- Nintendo - Pokemon Mini ---
     # https://github.com/libretro/libretro-super/blob/master/dist/info/pokemini_libretro.info
     {'filename' : 'bios.min', 'size' : 4096, 'md5': '1e4fb124a3a886865acb574f388c803d',
