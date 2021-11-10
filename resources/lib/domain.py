@@ -230,23 +230,6 @@ class AssetPath(EntityABC):
     def clear(self):
         self.entity_data['path'] = None
          
-# -------------------------------------------------------------------------------------------------
-# Abstract base class for business objects which support the generic
-# metadata fields and assets.
-#
-# --- Class hierarchy ---
-# 
-# |-MetaDataItemABC(object) (abstract class)
-# |
-# |----- Category
-# |
-# |----- ROMCollection (Collection)
-# |      |
-# |      |----- VirtualCollection
-# |
-# |----- ROM
-# |
-#
 
 # legacy
 # |----- LauncherABC (abstract class)
@@ -272,6 +255,177 @@ class AssetPath(EntityABC):
 #               |----- NvidiaGameStreamLauncher
 #
 # -------------------------------------------------------------------------------------------------
+
+class ROMAddon(EntityABC):
+    __metaclass__ = abc.ABCMeta
+    
+    def __init__(self, addon: AelAddon, entity_data: dict):
+        self.addon = addon 
+        super(ROMAddon, self).__init__(entity_data)
+        
+    def get_name(self):
+        secondary_name = self.get_secondary_name()
+        if secondary_name: return '{} ({})'.format(self.addon.get_name(), secondary_name)
+        return self.addon.get_name()
+    
+    def get_secondary_name(self):
+        settings = self.get_settings()
+        return settings['secname'] if 'secname' in settings else None   
+            
+    def get_settings_str(self) -> str:
+        return self.entity_data['settings'] if 'settings' in self.entity_data else None
+    
+    def get_settings(self) -> dict:
+        settings = self.get_settings_str()
+        if settings is None:
+            return {}
+        return json.loads(settings)
+    
+    def set_settings_str(self, addon_settings:str):
+        self.entity_data['settings'] = addon_settings
+    
+    def set_settings(self, addon_settings:dict):
+        self.entity_data['settings'] = json.dumps(addon_settings)
+    
+    def get_addon(self) -> AelAddon:
+        return self.addon
+            
+class ROMLauncherAddon(ROMAddon):
+    
+    def is_default(self) -> bool:
+        return self.entity_data['is_default'] if 'is_default' in self.entity_data else False
+    
+    def set_default(self, default_launcher=False):
+        self.entity_data['is_default'] = default_launcher
+        
+    def get_launch_command(self, rom: ROM) -> dict:
+        return {
+            '--cmd': 'launch',
+            '--type': constants.AddonType.LAUNCHER.name,
+            '--server_host': globals.WEBSERVER_HOST,
+            '--server_port': globals.WEBSERVER_PORT,
+            '--ael_addon_id': self.get_id(),
+            '--rom_id': rom.get_id()
+        }
+
+    def get_configure_command(self, romcollection: ROMCollection) -> dict:                    
+        return {
+            '--cmd': 'configure',
+            '--type': constants.AddonType.LAUNCHER.name,
+            '--server_host': globals.WEBSERVER_HOST,
+            '--server_port': globals.WEBSERVER_PORT,
+            '--romcollection_id': romcollection.get_id(), 
+            '--ael_addon_id': self.get_id()
+        }
+    
+class ROMCollectionScanner(ROMAddon):
+    
+    def get_last_scan_timestamp(self):
+        return None
+    
+    def get_scan_command(self, rom_collection: ROMCollection) -> dict:
+        return {
+            '--cmd': 'scan',
+            '--type': constants.AddonType.SCANNER.name,
+            '--server_host': globals.WEBSERVER_HOST,
+            '--server_port': globals.WEBSERVER_PORT,
+            '--romcollection_id': rom_collection.get_id(),
+            '--ael_addon_id': self.get_id()
+        }
+        
+    def get_configure_command(self, romcollection: ROMCollection) -> dict:        
+        return {
+            '--cmd': 'configure',
+            '--type': constants.AddonType.SCANNER.name,
+            '--server_host': globals.WEBSERVER_HOST,
+            '--server_port': globals.WEBSERVER_PORT,
+            '--romcollection_id': romcollection.get_id(),
+            '--ael_addon_id':  self.get_id()
+        }
+
+class ScraperAddon(ROMAddon):
+    
+    def __init__(self, addon: AelAddon, scraper_settings: ScraperSettings):        
+        entity_data = {
+            'settings': json.dumps(scraper_settings.get_data_dic())
+        }        
+        super(ScraperAddon, self).__init__(addon, entity_data)
+    
+    def settings_are_applicable(self) -> bool:
+        settings = self.get_scraper_settings()
+
+        if settings.scrape_metadata_policy != constants.SCRAPE_ACTION_NONE:
+            supported_metadata_types = self.get_supported_metadata()
+            if len(supported_metadata_types) > 0: return True
+
+        if settings.scrape_assets_policy != constants.SCRAPE_ACTION_NONE:
+            supported_asset_types = self.get_supported_assets()
+            if len(supported_asset_types) == 0: return False
+            asset_overlap = list(set(supported_asset_types) & set(settings.asset_IDs_to_scrape))
+            if len(asset_overlap) > 0: return True
+        
+        return False
+
+    def get_supported_metadata(self) -> typing.List[str]:
+        extra_settings = self.addon.get_extra_settings()
+        supported_types = extra_settings['supported_metadata'] if 'supported_metadata' in extra_settings else None
+        if supported_types is None: return None
+        return supported_types.split('|')
+
+    def get_supported_assets(self) -> typing.List[str]:
+        extra_settings = self.addon.get_extra_settings()
+        supported_types = extra_settings['supported_assets'] if 'supported_assets' in extra_settings else None
+        if supported_types is None: return None
+        return supported_types.split('|')
+
+    def get_scraper_settings(self) -> ScraperSettings:
+        settings_dict = self.get_settings()
+        return ScraperSettings.from_settings_dict(settings_dict)
+        
+    def set_scraper_settings(self, settings: ScraperSettings):
+        self.entity_data['settings'] = json.dumps(settings.get_data_dic())
+        
+    def get_scrape_command(self, rom: ROM)-> dict:        
+        return {
+            '--cmd': 'scrape',
+            '--type': constants.AddonType.SCRAPER.name,
+            '--server_host': globals.WEBSERVER_HOST,
+            '--server_port': globals.WEBSERVER_PORT,
+            '--ael_addon_id': self.addon.get_id(),
+            '--rom_id': rom.get_id(),
+            '--settings':  io.parse_to_json_arg(self.get_settings())
+        }
+        
+    def get_scrape_command_for_collection(self, collection: ROMCollection) -> dict:     
+        return {
+            '--cmd': 'scrape',
+            '--type': constants.AddonType.SCRAPER.name,
+            '--server_host': globals.WEBSERVER_HOST,
+            '--server_port': globals.WEBSERVER_PORT,
+            '--ael_addon_id': self.addon.get_id(),
+            '--romcollection_id': collection.get_id(),
+            '--settings':  io.parse_to_json_arg(self.get_settings())
+        }
+ 
+# -------------------------------------------------------------------------------------------------
+# Abstract base class for business objects which support the generic
+# metadata fields and assets.
+#
+# --- Class hierarchy ---
+#  
+# |-MetaDataItemABC(object) (abstract class)
+# |
+# |----- Category
+# |      |
+# |      |----- VirtualCategory
+# |
+# |----- ROMCollection (Collection)
+# |      |
+# |      |----- VirtualCollection
+# |
+# |----- ROM
+# |
+#
 class MetaDataItemABC(EntityABC):
     __metaclass__ = abc.ABCMeta
 
@@ -296,10 +450,13 @@ class MetaDataItemABC(EntityABC):
     # Core functions
     # --------------------------------------------------------------------------------------------
     @abc.abstractmethod
-    def get_object_name(self): pass
+    def get_object_name(self) -> str: pass
 
     @abc.abstractmethod
-    def get_assets_kind(self): pass
+    def get_assets_kind(self) -> int: pass
+
+    @abc.abstractmethod
+    def get_type(self) -> str: pass
 
     # --- Metadata --------------------------------------------------------------------------------
     def get_name(self):
@@ -328,7 +485,7 @@ class MetaDataItemABC(EntityABC):
 
     # In AEL 0.9.7 m_rating is stored as a string.
     def get_rating(self):
-        return int(self.entity_data['m_rating']) if self.entity_data['m_rating'] else ''
+        return int(self.entity_data['m_rating']) if 'm_rating' in self.entity_data and self.entity_data['m_rating'] else ''
 
     def set_rating(self, rating):
         try:
@@ -574,6 +731,8 @@ class MetaDataItemABC(EntityABC):
 # Contains code to generate the context menus passed to Dialog.select()
 # -------------------------------------------------------------------------------------------------
 class Category(MetaDataItemABC):
+    __metaclass__ = abc.ABCMeta
+    
     def __init__(self, category_dic: typing.Dict[str, typing.Any] = None, assets: typing.List[Asset] = None):
         # Concrete classes are responsible of creating a default entity_data dictionary
         # with sensible defaults.
@@ -585,6 +744,8 @@ class Category(MetaDataItemABC):
     def get_object_name(self): return 'Category'
 
     def get_assets_kind(self): return constants.KIND_ASSET_CATEGORY
+    
+    def get_type(self): return constants.OBJ_CATEGORY
     
     # parent category / romcollection this item belongs to.
     def get_parent_id(self) -> str:
@@ -709,180 +870,21 @@ class Category(MetaDataItemABC):
         
     def __str__(self):
         return super().__str__()
-
-class ROMAddon(EntityABC):
-    __metaclass__ = abc.ABCMeta
     
-    def __init__(self, addon: AelAddon, entity_data: dict):
-        self.addon = addon 
-        super(ROMAddon, self).__init__(entity_data)
-        
-    def get_name(self):
-        secondary_name = self.get_secondary_name()
-        if secondary_name: return '{} ({})'.format(self.addon.get_name(), secondary_name)
-        return self.addon.get_name()
+class VirtualCategory(Category):
     
-    def get_secondary_name(self):
-        settings = self.get_settings()
-        return settings['secname'] if 'secname' in settings else None   
-            
-    def get_settings_str(self) -> str:
-        return self.entity_data['settings'] if 'settings' in self.entity_data else None
+    def get_object_name(self): return 'Virtual Category'
     
-    def get_settings(self) -> dict:
-        settings = self.get_settings_str()
-        if settings is None:
-            return {}
-        return json.loads(settings)
+    def get_assets_kind(self): return constants.KIND_ASSET_CATEGORY
     
-    def set_settings_str(self, addon_settings:str):
-        self.entity_data['settings'] = addon_settings
-    
-    def set_settings(self, addon_settings:dict):
-        self.entity_data['settings'] = json.dumps(addon_settings)
-    
-    def get_addon(self) -> AelAddon:
-        return self.addon
-            
-class ROMLauncherAddon(ROMAddon):
-    
-    def is_default(self) -> bool:
-        return self.entity_data['is_default'] if 'is_default' in self.entity_data else False
-    
-    def set_default(self, default_launcher=False):
-        self.entity_data['is_default'] = default_launcher
-        
-    def get_launch_command(self, rom: ROM) -> dict:
-        return {
-            '--cmd': 'launch',
-            '--type': constants.AddonType.LAUNCHER.name,
-            '--server_host': globals.WEBSERVER_HOST,
-            '--server_port': globals.WEBSERVER_PORT,
-            '--ael_addon_id': self.get_id(),
-            '--rom_id': rom.get_id()
-        }
-
-    def get_configure_command(self, romcollection: ROMCollection) -> dict:                    
-        return {
-            '--cmd': 'configure',
-            '--type': constants.AddonType.LAUNCHER.name,
-            '--server_host': globals.WEBSERVER_HOST,
-            '--server_port': globals.WEBSERVER_PORT,
-            '--romcollection_id': romcollection.get_id(), 
-            '--ael_addon_id': self.get_id()
-        }
-    
-class ROMCollectionScanner(ROMAddon):
-    
-    def get_last_scan_timestamp(self):
-        return None
-    
-    def get_scan_command(self, rom_collection: ROMCollection) -> dict:
-        return {
-            '--cmd': 'scan',
-            '--type': constants.AddonType.SCANNER.name,
-            '--server_host': globals.WEBSERVER_HOST,
-            '--server_port': globals.WEBSERVER_PORT,
-            '--romcollection_id': rom_collection.get_id(),
-            '--ael_addon_id': self.get_id()
-        }
-        
-    def get_configure_command(self, romcollection: ROMCollection) -> dict:        
-        return {
-            '--cmd': 'configure',
-            '--type': constants.AddonType.SCANNER.name,
-            '--server_host': globals.WEBSERVER_HOST,
-            '--server_port': globals.WEBSERVER_PORT,
-            '--romcollection_id': romcollection.get_id(),
-            '--ael_addon_id':  self.get_id()
-        }
-
-class ScraperAddon(ROMAddon):
-    
-    def __init__(self, addon: AelAddon, scraper_settings: ScraperSettings):        
-        entity_data = {
-            'settings': json.dumps(scraper_settings.get_data_dic())
-        }        
-        super(ScraperAddon, self).__init__(addon, entity_data)
-    
-    def settings_are_applicable(self) -> bool:
-        settings = self.get_scraper_settings()
-
-        if settings.scrape_metadata_policy != constants.SCRAPE_ACTION_NONE:
-            supported_metadata_types = self.get_supported_metadata()
-            if len(supported_metadata_types) > 0: return True
-
-        if settings.scrape_assets_policy != constants.SCRAPE_ACTION_NONE:
-            supported_asset_types = self.get_supported_assets()
-            if len(supported_asset_types) == 0: return False
-            asset_overlap = list(set(supported_asset_types) & set(settings.asset_IDs_to_scrape))
-            if len(asset_overlap) > 0: return True
-        
-        return False
-
-    def get_supported_metadata(self) -> typing.List[str]:
-        extra_settings = self.addon.get_extra_settings()
-        supported_types = extra_settings['supported_metadata'] if 'supported_metadata' in extra_settings else None
-        if supported_types is None: return None
-        return supported_types.split('|')
-
-    def get_supported_assets(self) -> typing.List[str]:
-        extra_settings = self.addon.get_extra_settings()
-        supported_types = extra_settings['supported_assets'] if 'supported_assets' in extra_settings else None
-        if supported_types is None: return None
-        return supported_types.split('|')
-
-    def get_scraper_settings(self) -> ScraperSettings:
-        settings_dict = self.get_settings()
-        return ScraperSettings.from_settings_dict(settings_dict)
-        
-    def set_scraper_settings(self, settings: ScraperSettings):
-        self.entity_data['settings'] = json.dumps(settings.get_data_dic())
-        
-    def get_scrape_command(self, rom: ROM)-> dict:        
-        return {
-            '--cmd': 'scrape',
-            '--type': constants.AddonType.SCRAPER.name,
-            '--server_host': globals.WEBSERVER_HOST,
-            '--server_port': globals.WEBSERVER_PORT,
-            '--ael_addon_id': self.addon.get_id(),
-            '--rom_id': rom.get_id(),
-            '--settings':  io.parse_to_json_arg(self.get_settings())
-        }
-        
-    def get_scrape_command_for_collection(self, collection: ROMCollection) -> dict:     
-        return {
-            '--cmd': 'scrape',
-            '--type': constants.AddonType.SCRAPER.name,
-            '--server_host': globals.WEBSERVER_HOST,
-            '--server_port': globals.WEBSERVER_PORT,
-            '--ael_addon_id': self.addon.get_id(),
-            '--romcollection_id': collection.get_id(),
-            '--settings':  io.parse_to_json_arg(self.get_settings())
-        }
+    def get_type(self): return constants.OBJ_CATEGORY_VIRTUAL
  
-class VirtualCollection(MetaDataItemABC):
-    def __init__(self, 
-                entity_data: dict = None, 
-                assets_data: typing.List[Asset] = None):
-        # Concrete classes are responsible of creating a default entity_data dictionary
-        # with sensible defaults.
-        if entity_data is None:
-            entity_data = _get_default_ROMCollection_data_model()
-            entity_data['id'] = text.misc_generate_random_SID()
-            
-        super(VirtualCollection, self).__init__(entity_data, assets_data)
-
-    def get_assets_kind(self): return constants.KIND_ASSET_COLLECTION
-
-    def get_asset_ids_list(self): return constants.COLLECTION_ASSET_ID_LIST
-
-    def get_mappable_asset_ids_list(self): return constants.MAPPABLE_LAUNCHER_ASSET_ID_LIST
-
 # -------------------------------------------------------------------------------------------------
 # Class representing a collection of ROMs.
 # -------------------------------------------------------------------------------------------------
 class ROMCollection(MetaDataItemABC):
+    __metaclass__ = abc.ABCMeta
+    
     def __init__(self, 
                  entity_data: dict = None, 
                  assets_data: typing.List[Asset] = None,
@@ -899,11 +901,17 @@ class ROMCollection(MetaDataItemABC):
         self.scanners_data = scanners_data
         super(ROMCollection, self).__init__(entity_data, assets_data, asset_paths)
 
+    def get_object_name(self): return 'ROM Collection'
+
+    def get_assets_kind(self): return constants.KIND_ASSET_LAUNCHER
+    
+    def get_type(self): return constants.OBJ_ROMCOLLECTION
+    
     # parent category / romcollection this item belongs to.
     def get_parent_id(self) -> str:
         return self.entity_data['parent_id'] if 'parent_id' in self.entity_data else None
     
-    def get_platform(self): return self.entity_data['platform']
+    def get_platform(self): return self.entity_data['platform'] if 'platform' in self.entity_data else None
 
     def set_platform(self, platform): self.entity_data['platform'] = platform
 
@@ -911,8 +919,6 @@ class ROMCollection(MetaDataItemABC):
         return self.entity_data['box_size'] if 'box_size' in self.entity_data else constants.BOX_SIZE_POSTER
     
     def set_box_sizing(self, box_size): self.entity_data['box_size'] = box_size
-
-    def get_assets_kind(self): return constants.KIND_ASSET_LAUNCHER
 
     def get_asset_ids_list(self): return constants.LAUNCHER_ASSET_ID_LIST
 
@@ -1129,7 +1135,32 @@ class ROMCollection(MetaDataItemABC):
             
     def __str__(self):
         return super().__str__()
+     
+class VirtualCollection(ROMCollection):
+    def __init__(self, 
+                entity_data: dict = None, 
+                assets_data: typing.List[Asset] = None):
+        # Concrete classes are responsible of creating a default entity_data dictionary
+        # with sensible defaults.
+        if entity_data is None:
+            entity_data = _get_default_ROMCollection_data_model()
+            entity_data['id'] = text.misc_generate_random_SID()
+            
+        super(VirtualCollection, self).__init__(entity_data, assets_data)
+
+    def get_object_name(self): return 'Virtual Collection'
     
+    def get_assets_kind(self): return constants.KIND_ASSET_COLLECTION
+    
+    def get_type(self): return constants.OBJ_COLLECTION_VIRTUAL
+        
+    def get_asset_ids_list(self): return constants.COLLECTION_ASSET_ID_LIST
+
+    def get_mappable_asset_ids_list(self): return constants.MAPPABLE_LAUNCHER_ASSET_ID_LIST
+    
+    def get_collection_value(self) -> str:
+        return self.entity_data['collection_value'] if 'collection_value' in self.entity_data else None
+  
 # -------------------------------------------------------------------------------------------------
 # Class representing a ROM file you can play through AEL.
 # -------------------------------------------------------------------------------------------------
@@ -1149,6 +1180,12 @@ class ROM(MetaDataItemABC):
         self.launchers_data = launchers_data
         
         super(ROM, self).__init__(rom_data, assets_data, asset_paths_data)
+        
+    def get_object_name(self): return 'ROM'
+
+    def get_assets_kind(self): return constants.KIND_ASSET_ROM
+    
+    def get_type(self): return constants.OBJ_ROM
       
     def get_rom_identifier(self) -> str:
         identifier = self.get_scanned_data_element('identifier')
@@ -1282,11 +1319,7 @@ class ROM(MetaDataItemABC):
     def copy(self):
         data = self.copy_of_data_dic()
         return ROM(data)
-        
-    def get_assets_kind(self): return constants.KIND_ASSET_ROM
 	
-    def get_object_name(self): return "ROM"
-    
     def get_asset_ids_list(self): return constants.ROM_ASSET_ID_LIST
     
     def get_mappable_asset_ids_list(self): return constants.MAPPABLE_ROM_ASSET_ID_LIST
@@ -1918,15 +1951,17 @@ class AssetInfoFactory(object):
 # --- Global object to get asset info ---
 g_assetFactory = AssetInfoFactory()
 
+# Factory class to create VirtualCollection instances.
+# A VirtualCollection is similar to a ROMCollection except for the fact that the contents are
+# generated based on either certain flags or conditions of the ROMs. 
 class VirtualCollectionFactory(object):
     
     @staticmethod
-    def create(vcollection_id: str):
+    def create(vcollection_id: str) -> VirtualCollection:
                 
         if vcollection_id == constants.VCOLLECTION_FAVOURITES_ID:
             return VirtualCollection({
                 'id' : vcollection_id,
-                'type': constants.OBJ_COLLECTION_VIRTUAL,
                 'm_name' : '<Favourites>',
                 'plot': 'Browse AEL Favourite ROMs',
                 'finished': settings.getSettingAsBool('display_hide_favs')
@@ -1939,7 +1974,6 @@ class VirtualCollectionFactory(object):
         if vcollection_id == constants.VCOLLECTION_RECENT_ID:
             return VirtualCollection({
                 'id' : vcollection_id,
-                'type': constants.OBJ_COLLECTION_VIRTUAL,
                 'm_name' : '[Recently played ROMs]',
                 'plot': 'Browse the ROMs you played recently',
                 'finished': settings.getSettingAsBool('display_hide_recent')
@@ -1952,7 +1986,6 @@ class VirtualCollectionFactory(object):
         if vcollection_id == constants.VCOLLECTION_MOST_PLAYED_ID:
             return VirtualCollection({
                 'id' : vcollection_id,
-                'type': constants.OBJ_COLLECTION_VIRTUAL,
                 'm_name' : '[Most played ROMs]',
                 'plot': 'Browse the ROMs you play most',
                 'finished': settings.getSettingAsBool('display_hide_mostplayed')
@@ -1960,9 +1993,128 @@ class VirtualCollectionFactory(object):
                 Asset({'id' : '', 'asset_type' : constants.ASSET_FANART_ID, 'filepath' : globals.g_PATHS.FANART_FILE_PATH.getPath()}),
                 Asset({'id' : '', 'asset_type' : constants.ASSET_ICON_ID,   'filepath' : globals.g_PATHS.ADDON_CODE_DIR.pjoin('media/theme/Most_played_icon.png').getPath()}),
                 Asset({'id' : '', 'asset_type' : constants.ASSET_POSTER_ID, 'filepath' : globals.g_PATHS.ADDON_CODE_DIR.pjoin('media/theme/Most_played_poster.png').getPath()}),
+            ])    
+        
+        return None
+
+    @staticmethod
+    def create_by_category(vcategory_id:str, collection_value:str) -> VirtualCollection:
+
+        unique_id = text.misc_generate_random_SID()
+        return VirtualCollection({
+            'id' : '{}_{}'.format(vcategory_id, unique_id),
+            'parent_id': vcategory_id,
+            'm_name' : collection_value,
+            'plot': "Browse ROMs filtered on '{}'".format(collection_value),
+            'collection_value': collection_value,
+            'finished': settings.getSettingAsBool('display_hide_vcategories')
+        }, [
+            Asset({'id' : '', 'asset_type' : constants.ASSET_FANART_ID, 'filepath' : globals.g_PATHS.FANART_FILE_PATH.getPath()})
+        ])
+
+class VirtualCategoryFactory(object):
+    
+    @staticmethod
+    def create(vcategory_id: str) -> VirtualCategory:
+        
+        if vcategory_id  == constants.VCATEGORY_ROOT_ID:
+             return VirtualCategory({
+                'id' : vcategory_id,
+                'm_name' : 'Browse by...',
+                'plot': 'Browse the ROMs by specifics',
+                'finished': settings.getSettingAsBool('display_hide_vcategories')
+            }, [
+                Asset({'id' : '', 'asset_type' : constants.ASSET_FANART_ID, 'filepath' : globals.g_PATHS.FANART_FILE_PATH.getPath()}),
+                Asset({'id' : '', 'asset_type' : constants.ASSET_ICON_ID,   'filepath' : globals.g_PATHS.ADDON_CODE_DIR.pjoin('media/theme/Browse_by_icon.png').getPath()}),
+                Asset({'id' : '', 'asset_type' : constants.ASSET_POSTER_ID, 'filepath' : globals.g_PATHS.ADDON_CODE_DIR.pjoin('media/theme/Browse_by_poster.png').getPath()}),
             ])
             
+        if vcategory_id == constants.VCATEGORY_TITLE_ID:
+             return VirtualCategory({
+                'id' : vcategory_id,
+                'm_name' : 'Browse by Title',
+                'plot': 'Browse the ROMs by title',
+                'finished': settings.getSettingAsBool('display_hide_vcategories')
+            }, [
+                Asset({'id' : '', 'asset_type' : constants.ASSET_FANART_ID, 'filepath' : globals.g_PATHS.FANART_FILE_PATH.getPath()}),
+                Asset({'id' : '', 'asset_type' : constants.ASSET_ICON_ID,   'filepath' : globals.g_PATHS.ADDON_CODE_DIR.pjoin('media/theme/Browse_by_Title_icon.png').getPath()}),
+                Asset({'id' : '', 'asset_type' : constants.ASSET_POSTER_ID, 'filepath' : globals.g_PATHS.ADDON_CODE_DIR.pjoin('media/theme/Browse_by_Title_poster.png').getPath()}),
+            ])
+             
+        if vcategory_id == constants.VCATEGORY_YEARS_ID:
+             return VirtualCategory({
+                'id' : vcategory_id,
+                'm_name' : 'Browse by Year',
+                'plot': 'Browse the ROMs by year',
+                'finished': settings.getSettingAsBool('display_hide_vcategories')
+            }, [
+                Asset({'id' : '', 'asset_type' : constants.ASSET_FANART_ID, 'filepath' : globals.g_PATHS.FANART_FILE_PATH.getPath()}),
+                Asset({'id' : '', 'asset_type' : constants.ASSET_ICON_ID,   'filepath' : globals.g_PATHS.ADDON_CODE_DIR.pjoin('media/theme/Browse_by_Year_icon.png').getPath()}),
+                Asset({'id' : '', 'asset_type' : constants.ASSET_POSTER_ID, 'filepath' : globals.g_PATHS.ADDON_CODE_DIR.pjoin('media/theme/Browse_by_Year_poster.png').getPath()}),
+            ])     
+             
+        if vcategory_id == constants.VCATEGORY_GENRE_ID:
+             return VirtualCategory({
+                'id' : vcategory_id,
+                'm_name' : 'Browse by Genre',
+                'plot': 'Browse the ROMs by genre',
+                'finished': settings.getSettingAsBool('display_hide_vcategories')
+            }, [
+                Asset({'id' : '', 'asset_type' : constants.ASSET_FANART_ID, 'filepath' : globals.g_PATHS.FANART_FILE_PATH.getPath()}),
+                Asset({'id' : '', 'asset_type' : constants.ASSET_ICON_ID,   'filepath' : globals.g_PATHS.ADDON_CODE_DIR.pjoin('media/theme/Browse_by_Genre_icon.png').getPath()}),
+                Asset({'id' : '', 'asset_type' : constants.ASSET_POSTER_ID, 'filepath' : globals.g_PATHS.ADDON_CODE_DIR.pjoin('media/theme/Browse_by_Genre_poster.png').getPath()}),
+            ])     
+             
+        if vcategory_id == constants.VCATEGORY_DEVELOPER_ID:
+             return VirtualCategory({
+                'id' : vcategory_id,
+                'm_name' : 'Browse by Developer',
+                'plot': 'Browse the ROMs by developer',
+                'finished': settings.getSettingAsBool('display_hide_vcategories')
+            }, [
+                Asset({'id' : '', 'asset_type' : constants.ASSET_FANART_ID, 'filepath' : globals.g_PATHS.FANART_FILE_PATH.getPath()}),
+                Asset({'id' : '', 'asset_type' : constants.ASSET_ICON_ID,   'filepath' : globals.g_PATHS.ADDON_CODE_DIR.pjoin('media/theme/Browse_by_Developer_icon.png').getPath()}),
+                Asset({'id' : '', 'asset_type' : constants.ASSET_POSTER_ID, 'filepath' : globals.g_PATHS.ADDON_CODE_DIR.pjoin('media/theme/Browse_by_Developer_poster.png').getPath()}),
+            ])     
+             
+        if vcategory_id == constants.VCATEGORY_NPLAYERS_ID:
+             return VirtualCategory({
+                'id' : vcategory_id,
+                'm_name' : 'Browse by Number of Players',
+                'plot': 'Browse the ROMs by number of players',
+                'finished': settings.getSettingAsBool('display_hide_vcategories')
+            }, [
+                Asset({'id' : '', 'asset_type' : constants.ASSET_FANART_ID, 'filepath' : globals.g_PATHS.FANART_FILE_PATH.getPath()}),
+                Asset({'id' : '', 'asset_type' : constants.ASSET_ICON_ID,   'filepath' : globals.g_PATHS.ADDON_CODE_DIR.pjoin('media/theme/Browse_by_NPlayers_icon.png').getPath()}),
+                Asset({'id' : '', 'asset_type' : constants.ASSET_POSTER_ID, 'filepath' : globals.g_PATHS.ADDON_CODE_DIR.pjoin('media/theme/Browse_by_NPlayers_poster.png').getPath()}),
+            ])    
+                    
+        if vcategory_id == constants.VCATEGORY_ESRB_ID:
+             return VirtualCategory({
+                'id' : vcategory_id,
+                'm_name' : 'Browse by ESRB Rating',
+                'plot': 'Browse the ROMs by ESRB rating',
+                'finished': settings.getSettingAsBool('display_hide_vcategories')
+            }, [
+                Asset({'id' : '', 'asset_type' : constants.ASSET_FANART_ID, 'filepath' : globals.g_PATHS.FANART_FILE_PATH.getPath()}),
+                Asset({'id' : '', 'asset_type' : constants.ASSET_ICON_ID,   'filepath' : globals.g_PATHS.ADDON_CODE_DIR.pjoin('media/theme/Browse_by_ESRB_icon.png').getPath()}),
+                Asset({'id' : '', 'asset_type' : constants.ASSET_POSTER_ID, 'filepath' : globals.g_PATHS.ADDON_CODE_DIR.pjoin('media/theme/Browse_by_ESRB_poster.png').getPath()}),
+            ])  
+        
+        if vcategory_id == constants.VCATEGORY_RATING_ID:
+             return VirtualCategory({
+                'id' : vcategory_id,
+                'm_name' : 'Browse by Rating',
+                'plot': 'Browse the ROMs by rating',
+                'finished': settings.getSettingAsBool('display_hide_vcategories')
+            }, [
+                Asset({'id' : '', 'asset_type' : constants.ASSET_FANART_ID, 'filepath' : globals.g_PATHS.FANART_FILE_PATH.getPath()}),
+                Asset({'id' : '', 'asset_type' : constants.ASSET_ICON_ID,   'filepath' : globals.g_PATHS.ADDON_CODE_DIR.pjoin('media/theme/Browse_by_User_Rating_icon.png').getPath()}),
+                Asset({'id' : '', 'asset_type' : constants.ASSET_POSTER_ID, 'filepath' : globals.g_PATHS.ADDON_CODE_DIR.pjoin('media/theme/Browse_by_User_Rating_poster.png').getPath()}),
+            ])     
+                
         return None
+    
 # -------------------------------------------------------------------------------------------------
 # Data model used in the plugin
 # Internally all string in the data model are Unicode. They will be encoded to

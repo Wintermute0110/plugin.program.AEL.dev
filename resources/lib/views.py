@@ -85,9 +85,10 @@ def vw_route_render_root():
     render_list_items(container, container_context_items)
     xbmcplugin.endOfDirectory(handle = router.handle, succeeded = True, cacheToDisc = False)
 
-@router.route('/collection/<collection_id>')
-def vw_route_render_collection(collection_id: str):
-    container               = viewqueries.qry_get_collection_items(collection_id)
+@router.route('/category/<view_id>')
+@router.route('/collection/<view_id>')
+def vw_route_render_collection(view_id: str):
+    container               = viewqueries.qry_get_view_items(view_id)
     container_context_items = viewqueries.qry_container_context_menu_items(container)
     container_type          = container['obj_type'] if 'obj_type' in container else constants.OBJ_NONE
 
@@ -103,19 +104,22 @@ def vw_route_render_collection(collection_id: str):
         
     xbmcplugin.endOfDirectory(handle = router.handle, succeeded = True, cacheToDisc = False)
 
-@router.route('/collection/virtual/<collection_id>')
-def vw_route_render_virtual_collection(collection_id: str):
-    container               = viewqueries.qry_get_collection_items(collection_id)
+@router.route('/category/virtual/<view_id>')
+@router.route('/collection/virtual/<view_id>')
+def vw_route_render_virtual_view(view_id: str):
+    container               = viewqueries.qry_get_view_items(view_id, is_virtual_view=True)
     container_context_items = viewqueries.qry_container_context_menu_items(container)
     container_type          = container['obj_type'] if 'obj_type' in container else constants.OBJ_NONE
 
     if container is None:
         kodi.notify('Current view is not rendered correctly. Re-render views first.')
     elif len(container['items']) == 0:
-        if container_type == constants.OBJ_CATEGORY:
-            kodi.notify('Category {} has no items. Add romcollections or categories first.'.format(container['name']))
-        if container_type == constants.OBJ_ROMCOLLECTION:
-            kodi.notify('ROMCollection {} has no items. Add ROMs'.format(container['name']))
+        if container_type == constants.OBJ_CATEGORY_VIRTUAL:
+            if kodi.dialog_yesno(f"Virtual category '{container['name']}'' has no items. Regenerate the views now?"):
+                AppMediator.async_cmd('RENDER_VCATEGORY_VIEW', {'vcategory_id': container['id']})
+        if container_type == constants.OBJ_COLLECTION_VIRTUAL:
+            if kodi.dialog_yesno(f"Virtual collection {container['name']} has no items. Regenerate the views now?"):
+                AppMediator.async_cmd('RENDER_VCATEGORY_VIEW', {'vcategory_id': container['parent_id']})
     else:
         render_list_items(container, container_context_items)
         
@@ -138,12 +142,8 @@ def vw_route_render_utilities_vlaunchers():
 # -------------------------------------------------------------------------------------------------
 @router.route('/execute/command/<cmd>')
 def vw_execute_cmd(cmd: str):    
-    AppMediator.async_cmd(cmd.capitalize(), router.args)
-
-@router.route('/categories/view/<category_id>')
-def vw_view_category(category_id: str):
-    #todo
-    pass
+    cmd_args = { arg: router.args[arg][0] for arg in router.args }
+    AppMediator.async_cmd(cmd.capitalize(), cmd_args)
 
 @router.route('/categories/add')
 @router.route('/categories/add/<category_id>')
