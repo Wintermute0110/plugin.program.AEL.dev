@@ -3,6 +3,8 @@ import logging
 import sys
 import json
 
+from datetime import datetime
+
 import xbmc
 
 from resources.lib import globals
@@ -12,6 +14,7 @@ from resources.lib.commands.mediator import AppMediator
 import resources.lib.commands
         
 from ael.utils import io, kodi
+from ael import settings
 
 logger = logging.getLogger(__name__)
 
@@ -49,14 +52,10 @@ class AppService(object):
         uow = UnitOfWork(globals.g_PATHS.DATABASE_FILE_PATH)
         if not uow.check_database():
             logger.info("No database present. Going to create database file.")
-            kodi.notify('Creating new AEL database')
-            uow.create_empty_database(globals.g_PATHS.DATABASE_SCHEMA_PATH)
-            logger.info("Database created.")
+            self.initial_setup(uow)
         
-        # SCAN FOR ADDONS
-        self._execute_service_actions({'action': 'SCAN_FOR_ADDONS', 'data': None})
-        # REBUILD VIEWS
-        self._execute_service_actions({'action': 'RENDER_VIEWS', 'data': None})
+        if self.last_time_scanned_is_too_long_ago():
+            self.perform_scans()
  
         # WEBSERVICE
         self.webservice = WebService()
@@ -87,7 +86,44 @@ class AppService(object):
         
         kodi.set_windowprop('ael_server_state', 'STOPPED')
         logger.debug("AEL service stopped")
+        
+    def initial_setup(self, uow:UnitOfWork):
+        kodi.notify('Creating new AEL database')
+        uow.create_empty_database(globals.g_PATHS.DATABASE_SCHEMA_PATH)
+        logger.info("Database created.")
+        
+        self.perform_scans()
+    
+    def perform_scans(self):
+        # SCAN FOR ADDONS
+        self._execute_service_actions({'action': 'SCAN_FOR_ADDONS', 'data': None})
+        # REBUILD VIEWS
+        self._execute_service_actions({'action': 'RENDER_VIEWS', 'data': None})
+        # Write to scan indicator
+        globals.g_PATHS.SCAN_INDICATOR_FILE.writeAll(f'last scan all on {datetime.now()} ')
 
+    def last_time_scanned_is_too_long_ago(self):
+        if not globals.g_PATHS.SCAN_INDICATOR_FILE.exists():
+            return True
+        
+        min_days_ago = settings.getSettingAsInt('regeneration_days_period')
+        if not min_days_ago or min_days_ago == 0: 
+            logger.info('Automatic scan and view generation disabled.')
+            return
+        
+        modification_timestamp = globals.g_PATHS.SCAN_INDICATOR_FILE.stat().st_mtime
+        modification_time = datetime.fromtimestamp(modification_timestamp)
+        
+        then = modification_time.toordinal()
+        now = datetime.now().toordinal()
+        too_long_ago = (now - then) >= min_days_ago
+        
+        if too_long_ago:
+            logger.info(f'Triggering automatic scan and view generation. Last scan was {now-then} days ago')
+        else:
+            logger.info(f'Skipping automatic scan and view generation. Last scan was {now-then} days ago')        
+        return too_long_ago
+        
 class AppMonitor(xbmc.Monitor):
     
     def __init__(self, *args, **kwargs):

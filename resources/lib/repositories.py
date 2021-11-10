@@ -4,14 +4,15 @@ import typing
 
 import sqlite3
 from sqlite3.dbapi2 import Cursor
-import json
 
 from ael.settings import *
 from ael.utils import text, io
 from ael import constants
 
 from resources.lib import globals
-from resources.lib.domain import Category, ROMCollection, ROM, ROMLauncherAddon, Asset, AssetPath, AelAddon, ROMCollectionScanner, g_assetFactory
+from resources.lib.domain import Category, ROMCollection, ROM, Asset, AssetPath, VirtualCollection
+from resources.lib.domain import VirtualCategoryFactory, VirtualCollectionFactory, g_assetFactory
+from resources.lib.domain import ROMCollectionScanner, ROMLauncherAddon, AelAddon
 
 logger = logging.getLogger(__name__)
 
@@ -51,8 +52,11 @@ class ViewRepository(object):
         
         return item_data
 
-    def find_items(self, collection_id) -> typing.Any:
-        repository_file = self.paths.COLLECTIONS_DIR.pjoin('collection_{}.json'.format(collection_id))
+    def find_items(self, view_id, is_virtual = False) -> typing.Any:
+        repository_file = self.paths.VIEWS_DIR.pjoin('view_{}.json'.format(view_id))
+        if is_virtual:
+            repository_file = self.paths.GENERATED_VIEWS_DIR.pjoin('view_{}.json'.format(view_id))
+            
         logger.debug('find_items(): Loading path data from file {}'.format(repository_file.getPath()))
         try:
             item_data = repository_file.readJson()
@@ -70,8 +74,11 @@ class ViewRepository(object):
         logger.debug('store_root_view(): Storing data in file {}'.format(repository_file.getPath()))
         repository_file.writeJson(view_data)
 
-    def store_view(self, collection_id, view_data):
-        repository_file = self.paths.COLLECTIONS_DIR.pjoin('collection_{}.json'.format(collection_id))
+    def store_view(self, view_id:str, object_type:str, view_data):        
+        if object_type == constants.OBJ_CATEGORY_VIRTUAL or object_type == constants.OBJ_COLLECTION_VIRTUAL:
+            repository_file = self.paths.GENERATED_VIEWS_DIR.pjoin(f'view_{view_id}.json')
+        else:
+            repository_file = self.paths.VIEWS_DIR.pjoin(f'view_{view_id}.json')
         
         if view_data is None: 
             if repository_file.exists():
@@ -79,9 +86,29 @@ class ViewRepository(object):
                 repository_file.unlink()
             return
 
-        logger.debug('store_view(): Storing data in file {}'.format(repository_file.getPath()))
+        logger.debug(f'store_view(): Storing data in file {repository_file.getPath()}')
         repository_file.writeJson(view_data)
 
+    def cleanup_views(self, view_ids_to_keep:typing.List[str]):
+        view_files = self.paths.VIEWS_DIR.scanFilesInPath('view_*.json')
+        for view_file in view_files:
+            view_id = view_file.getBaseNoExt().replace('view_', '')
+            if not view_id in view_ids_to_keep:
+                logger.info(f'Removing file for view "{view_id}"')
+                view_file.unlink()
+
+    def cleanup_virtual_category_views(self, view_id):
+        view_files = self.paths.GENERATED_VIEWS_DIR.scanFilesInPath(f'view_{view_id}_*.json')
+        logger.info(f'Removing {len(view_files)} files for virtual category "{view_id}"')
+        for view_file in view_files:
+            view_file.unlink()
+ 
+    def cleanup_all_virtual_category_views(self):
+        view_files = self.paths.GENERATED_VIEWS_DIR.scanFilesInPath('view_vcategory*.json')
+        logger.info(f'Removing {len(view_files)} files for all virtual categories')
+        for view_file in view_files:
+            view_file.unlink()
+        
 #
 # XmlConfigurationRepository works with original XML configuration files, which contained the 
 # categories and launchers. This repository is to read these files and migrate to current solution.
@@ -253,6 +280,7 @@ class ROMsJsonFileRepository(object):
 # Can be used to create database scopes/sessions (unit of work pattern).
 #
 class UnitOfWork(object):
+    VERBOSE = False
 
     def __init__(self, db_path: io.FileName):
         self._db_path = db_path
@@ -290,8 +318,8 @@ class UnitOfWork(object):
             self._db_path.unlink()
         
         # cleanup collection json files
-        if globals.g_PATHS.COLLECTIONS_DIR.exists():
-            collection_files = globals.g_PATHS.COLLECTIONS_DIR.scanFilesInPath("collection_*.json")
+        if globals.g_PATHS.VIEWS_DIR.exists():
+            collection_files = globals.g_PATHS.VIEWS_DIR.scanFilesInPath("view_*.json")
             for collection_file in collection_files:
                 collection_file.unlink()
                 
@@ -321,8 +349,17 @@ class UnitOfWork(object):
         self.conn.close()
 
     def execute(self, sql, *args) -> Cursor:
-        return self.cursor.execute(sql, args)
-
+        sql_args = [arg for arg in args if arg is not None]
+        if self.VERBOSE:
+            logger.debug('[SQL] {}'.format(sql))
+            logger.debug('[SQL] ARGS: {}'.format(','.join(map(str, sql_args))))
+        try:
+            return self.cursor.execute(sql, sql_args)
+        except Exception as ex:
+            logger.error('Error while executing query: {}'.format(sql), exc_info=ex)
+            logger.error('Used arguments: {}'.format(','.join(map(str, sql_args))))
+            raise
+            
     def single_result(self) -> dict:
         return self.cursor.fetchone()
 
@@ -412,6 +449,13 @@ class CategoryRepository(object):
             yield Category(category_data, assets)
 
     def find_categories_by_parent(self, category_id) -> typing.Iterator[Category]:
+        
+        if category_id == constants.VCATEGORY_ROOT_ID:
+            for vcategory_id in constants.VCATEGORIES:
+                yield VirtualCategoryFactory.create(vcategory_id)
+        
+        if category_id in constants.VCATEGORIES: return []
+        
         self._uow.execute(QUERY_SELECT_CATEGORIES_BY_PARENT, category_id)
         result_set = self._uow.result_set()
         
@@ -519,6 +563,14 @@ QUERY_SELECT_ROMCOLLECTIONS            = "SELECT * FROM vw_romcollections ORDER 
 QUERY_SELECT_ROOT_ROMCOLLECTIONS       = "SELECT * FROM vw_romcollections WHERE parent_id IS NULL ORDER BY m_name"
 QUERY_SELECT_ROMCOLLECTIONS_BY_PARENT  = "SELECT * FROM vw_romcollections WHERE parent_id = ? ORDER BY m_name"
 QUERY_SELECT_ROMCOLLECTIONS_BY_ROM     = "SELECT rs.* FROM vw_romcollections AS rs INNER JOIN roms_in_romcollection AS rr ON rr.romcollection_id = rs.id WHERE rr.rom_id = ?"
+
+QUERY_SELECT_VCOLLECTION_TITLES     = "SELECT DISTINCT(SUBSTR(UPPER(m_name), 1,1)) AS option_value FROM vw_roms"   
+QUERY_SELECT_VCOLLECTION_GENRES     = "SELECT DISTINCT(m_genre) AS option_value FROM vw_roms"   
+QUERY_SELECT_VCOLLECTION_DEVELOPER  = "SELECT DISTINCT(m_developer) AS option_value FROM vw_roms"   
+QUERY_SELECT_VCOLLECTION_ESRB       = "SELECT DISTINCT(m_esrb) AS option_value FROM vw_roms"   
+QUERY_SELECT_VCOLLECTION_YEAR       = "SELECT DISTINCT(m_year) AS option_value FROM vw_roms"   
+QUERY_SELECT_VCOLLECTION_NPLAYERS   = "SELECT DISTINCT(m_nplayers) AS option_value FROM vw_roms"   
+QUERY_SELECT_VCOLLECTION_RATING     = "SELECT DISTINCT(m_rating) AS option_value FROM vw_roms"   
 
 QUERY_INSERT_ROMCOLLECTION               = """
                                     INSERT INTO romcollections (
@@ -630,7 +682,12 @@ class ROMCollectionRepository(object):
                 
             yield ROMCollection(romcollection_data, assets)
 
-    def find_romcollections_by_parent(self, category_id) -> typing.Iterator[ROMCollection]:
+    def find_romcollections_by_parent(self, category_id:str) -> typing.Iterator[ROMCollection]:
+        
+        if category_id in constants.VCATEGORIES:
+            for collection in self.find_virtualcollections_by_category(category_id):
+                yield collection
+        
         self._uow.execute(QUERY_SELECT_ROMCOLLECTIONS_BY_PARENT, category_id)
         result_set = self._uow.result_set()
         
@@ -644,6 +701,18 @@ class ROMCollectionRepository(object):
                 
             yield ROMCollection(romcollection_data, assets)
 
+    def find_virtualcollections_by_category(self, vcategory_id:str) -> typing.Iterator[VirtualCollection]:
+        query = self._get_collections_query_by_vcategory_id(vcategory_id)
+        if query is None: return []
+        
+        self._uow.execute(query)
+        result_set = self._uow.result_set()
+        
+        for result in result_set:
+            option_value = str(result['option_value'])
+            if not option_value: option_value = 'Undefined'
+            yield VirtualCollectionFactory.create_by_category(vcategory_id, option_value)
+            
     def find_romcollections_by_rom(self, rom_id:str) -> typing.Iterator[ROMCollection]:
         self._uow.execute(QUERY_SELECT_ROMCOLLECTIONS_BY_ROM, rom_id)
         result_set = self._uow.result_set()
@@ -851,6 +920,17 @@ class ROMCollectionRepository(object):
         if asset_path.get_custom_attribute('romcollection_id') is None:
             self._uow.execute(QUERY_INSERT_ROMCOLLECTION_ASSET_PATH, romcollection_obj.get_id(), asset_path.get_id())     
             
+    def _get_collections_query_by_vcategory_id(self, vcategory_id:str) -> str:
+            
+        if vcategory_id == constants.VCATEGORY_TITLE_ID:    return QUERY_SELECT_VCOLLECTION_TITLES   
+        if vcategory_id == constants.VCATEGORY_GENRE_ID:    return QUERY_SELECT_VCOLLECTION_GENRES
+        if vcategory_id == constants.VCATEGORY_DEVELOPER_ID:return QUERY_SELECT_VCOLLECTION_DEVELOPER
+        if vcategory_id == constants.VCATEGORY_ESRB_ID:     return QUERY_SELECT_VCOLLECTION_ESRB
+        if vcategory_id == constants.VCATEGORY_YEARS_ID:    return QUERY_SELECT_VCOLLECTION_YEAR
+        if vcategory_id == constants.VCATEGORY_NPLAYERS_ID: return QUERY_SELECT_VCOLLECTION_NPLAYERS
+        if vcategory_id == constants.VCATEGORY_RATING_ID:   return QUERY_SELECT_VCOLLECTION_RATING
+
+        return None             
 #
 # ROMsRepository -> ROMs from SQLite DB
 #     
@@ -880,6 +960,22 @@ QUERY_SELECT_MOST_PLAYED_ROM_ASSETS      = """
                                             SELECT ra.* FROM vw_rom_assets AS ra INNER JOIN roms AS r ON r.id = ra.rom_id 
                                             WHERE r.launch_count > 0 ORDER BY launch_count DESC LIMIT 100
                                            """
+
+QUERY_SELECT_BY_TITLE        = "SELECT * FROM vw_roms WHERE m_name LIKE ? || '%'"
+QUERY_SELECT_BY_GENRE        = "SELECT * FROM vw_roms WHERE m_genre = ?"
+QUERY_SELECT_BY_DEVELOPER    = "SELECT * FROM vw_roms WHERE m_developer = ?"
+QUERY_SELECT_BY_YEAR         = "SELECT * FROM vw_roms WHERE m_year = ?"
+QUERY_SELECT_BY_NPLAYERS     = "SELECT * FROM vw_roms WHERE m_nplayers = ?"
+QUERY_SELECT_BY_ESRB         = "SELECT * FROM vw_roms WHERE m_esrb = ?"
+QUERY_SELECT_BY_RATING       = "SELECT * FROM vw_roms WHERE m_rating = ?"
+                                
+QUERY_SELECT_BY_TITLE_ASSETS    = "SELECT ra.* FROM vw_rom_assets AS ra INNER JOIN vw_roms AS r ON r.id = ra.rom_id WHERE UPPER(r.m_name) LIKE ? || '%'"
+QUERY_SELECT_BY_GENRE_ASSETS    = "SELECT ra.* FROM vw_rom_assets AS ra INNER JOIN vw_roms AS r ON r.id = ra.rom_id WHERE r.m_genre = ?"
+QUERY_SELECT_BY_DEVELOPER_ASSETS= "SELECT ra.* FROM vw_rom_assets AS ra INNER JOIN vw_roms AS r ON r.id = ra.rom_id WHERE r.m_developer = ?"
+QUERY_SELECT_BY_YEAR_ASSETS     = "SELECT ra.* FROM vw_rom_assets AS ra INNER JOIN vw_roms AS r ON r.id = ra.rom_id WHERE r.m_year = ?"
+QUERY_SELECT_BY_NPLAYERS_ASSETS = "SELECT ra.* FROM vw_rom_assets AS ra INNER JOIN vw_roms AS r ON r.id = ra.rom_id WHERE r.m_nplayers = ?"
+QUERY_SELECT_BY_ESRB_ASSETS     = "SELECT ra.* FROM vw_rom_assets AS ra INNER JOIN vw_roms AS r ON r.id = ra.rom_id WHERE r.m_esrb = ?"
+QUERY_SELECT_BY_RATING_ASSETS   = "SELECT ra.* FROM vw_rom_assets AS ra INNER JOIN vw_roms AS r ON r.id = ra.rom_id WHERE r.m_rating = ?"
                                 
 QUERY_INSERT_ROM_ASSET          = "INSERT INTO rom_assets (rom_id, asset_id) VALUES (?, ?)"
 QUERY_INSERT_ROM_ASSET_PATH     = "INSERT INTO rom_assetpaths (rom_id, assetpaths_id) VALUES (?, ?)"
@@ -903,24 +999,41 @@ QUERY_INSERT_ROM_LAUNCHER      = "INSERT INTO rom_launchers (id, rom_id, ael_add
 QUERY_UPDATE_ROM_LAUNCHER      = "UPDATE rom_launchers SET settings = ?, is_default = ? WHERE id = ?"
 QUERY_DELETE_ROM_LAUNCHERS     = "DELETE FROM rom_launchers WHERE rom_id = ?"
 QUERY_DELETE_ROM_LAUNCHER      = "DELETE FROM rom_launchers WHERE romcollection_id = ? AND id = ?"
-          
+                  
 class ROMsRepository(object):
        
     def __init__(self, uow: UnitOfWork):
         self._uow = uow
 
-    def find_roms_by_romcollection(self, romcollection_id: str) -> typing.Iterator[ROM]:
-        self._uow.execute(QUERY_SELECT_ROMS_BY_SET, romcollection_id)
-        result_set = self._uow.result_set()
+    def find_roms_by_romcollection(self, romcollection: ROMCollection) -> typing.Iterator[ROM]:
+        is_virtual = romcollection.get_type() == constants.OBJ_COLLECTION_VIRTUAL
+        romcollection_id = romcollection.get_id()
         
-        self._uow.execute(QUERY_SELECT_ROM_ASSETS_BY_SET, romcollection_id)
-        assets_result_set = self._uow.result_set()
+        if is_virtual:
+            vcollection:VirtualCollection = romcollection
+            query_param = vcollection.get_collection_value()
+            roms_query, rom_assets_query = self._get_queries_by_vcollection_type(romcollection)
             
-        self._uow.execute(QUERY_SELECT_ROM_ASSETPATHS_BY_SET, romcollection_id)
-        asset_paths_result_set = self._uow.result_set()
-                       
-        self._uow.execute(QUERY_SELECT_ROM_SCANNED_DATA_BY_SET, romcollection_id)
-        scanned_data_result_set = self._uow.result_set()
+            self._uow.execute(roms_query, query_param)
+            result_set = self._uow.result_set()
+            
+            self._uow.execute(rom_assets_query, query_param)
+            assets_result_set = self._uow.result_set() 
+            
+            asset_paths_result_set  = []
+            scanned_data_result_set = []                
+        else:
+            self._uow.execute(QUERY_SELECT_ROMS_BY_SET, romcollection_id)
+            result_set = self._uow.result_set()
+            
+            self._uow.execute(QUERY_SELECT_ROM_ASSETS_BY_SET, romcollection_id)
+            assets_result_set = self._uow.result_set()
+            
+            self._uow.execute(QUERY_SELECT_ROM_ASSETPATHS_BY_SET, romcollection_id)
+            asset_paths_result_set = self._uow.result_set()
+                        
+            self._uow.execute(QUERY_SELECT_ROM_SCANNED_DATA_BY_SET, romcollection_id)
+            scanned_data_result_set = self._uow.result_set()
                         
         for rom_data in result_set:
             assets = []
@@ -935,36 +1048,6 @@ class ROMsRepository(object):
                 for entry in filter(lambda s: s['rom_id'] == rom_data['id'], scanned_data_result_set) 
             }
             yield ROM(rom_data, assets, asset_paths, scanned_data)
-
-    def find_roms_by_virtual_collection(self, vcollection_id:str) -> typing.Iterator[ROM]:        
-        roms_query = None
-        rom_assets_query = None
-        
-        if vcollection_id == constants.VCOLLECTION_FAVOURITES_ID:
-            roms_query = QUERY_SELECT_MY_FAVOURITES
-            rom_assets_query = QUERY_SELECT_FAVOURITES_ROM_ASSETS
-        if vcollection_id == constants.VCOLLECTION_RECENT_ID: 
-            roms_query = QUERY_SELECT_RECENTLY_PLAYED_ROMS
-            rom_assets_query = QUERY_SELECT_RECENTLY_PLAYED_ROM_ASSETS
-        if vcollection_id == constants.VCOLLECTION_MOST_PLAYED_ID:
-            roms_query = QUERY_SELECT_MOST_PLAYED_ROMS
-            rom_assets_query = QUERY_SELECT_MOST_PLAYED_ROM_ASSETS
-        
-        if roms_query is None: return []
-        
-        self._uow.execute(roms_query)
-        result_set = self._uow.result_set()
-        if not result_set:
-            return []
-        
-        self._uow.execute(rom_assets_query) 
-        assets_result_set = self._uow.result_set()
-                
-        for rom_data in result_set:
-            assets = []
-            for asset_data in filter(lambda a: a['rom_id'] == rom_data['id'], assets_result_set):
-                assets.append(Asset(asset_data))                
-            yield ROM(rom_data, assets)
 
     def find_rom(self, rom_id:str) -> ROM:
         self._uow.execute(QUERY_SELECT_ROM, rom_id)
@@ -1121,7 +1204,27 @@ class ROMsRepository(object):
         self._uow.execute(QUERY_DELETE_SCANNED_DATA, rom_id)
         for key, value in scanned_data.items():
             self._uow.execute(QUERY_INSERT_ROM_SCANNED_DATA, rom_id, key, value)
+                
+    def _get_queries_by_vcollection_type(self, vcollection:VirtualCollection) -> typing.Tuple[str, str]:
         
+        vcollection_id  = vcollection.get_id()
+        vcategory_id    = vcollection.get_parent_id()
+        
+        if vcategory_id is not None:            
+            if vcategory_id == constants.VCATEGORY_TITLE_ID:     return QUERY_SELECT_BY_TITLE, QUERY_SELECT_BY_TITLE_ASSETS            
+            if vcategory_id == constants.VCATEGORY_GENRE_ID:     return QUERY_SELECT_BY_GENRE, QUERY_SELECT_BY_GENRE_ASSETS            
+            if vcategory_id == constants.VCATEGORY_DEVELOPER_ID: return QUERY_SELECT_BY_DEVELOPER, QUERY_SELECT_BY_DEVELOPER_ASSETS            
+            if vcategory_id == constants.VCATEGORY_ESRB_ID:      return QUERY_SELECT_BY_ESRB, QUERY_SELECT_BY_ESRB_ASSETS            
+            if vcategory_id == constants.VCATEGORY_YEARS_ID:     return QUERY_SELECT_BY_YEAR, QUERY_SELECT_BY_YEAR_ASSETS            
+            if vcategory_id == constants.VCATEGORY_NPLAYERS_ID:  return QUERY_SELECT_BY_NPLAYERS, QUERY_SELECT_BY_NPLAYERS_ASSETS            
+            if vcategory_id == constants.VCATEGORY_RATING_ID:    return QUERY_SELECT_BY_RATING, QUERY_SELECT_BY_RATING_ASSETS
+        else:
+            if vcollection_id == constants.VCOLLECTION_FAVOURITES_ID:   return QUERY_SELECT_MY_FAVOURITES, QUERY_SELECT_FAVOURITES_ROM_ASSETS
+            if vcollection_id == constants.VCOLLECTION_RECENT_ID:       return QUERY_SELECT_RECENTLY_PLAYED_ROMS,QUERY_SELECT_RECENTLY_PLAYED_ROM_ASSETS
+            if vcollection_id == constants.VCOLLECTION_MOST_PLAYED_ID:  return QUERY_SELECT_MOST_PLAYED_ROMS, QUERY_SELECT_MOST_PLAYED_ROM_ASSETS
+            
+        return None, None
+    
 #
 # AelAddonRepository -> AEL Adoon objects from SQLite DB
 #     

@@ -167,7 +167,9 @@ def cmd_rom_metadata_title(args):
         if editors.edit_field_by_str(rom, 'Title', rom.get_name, rom.set_name):
             repository.update_rom(rom)
             uow.commit()
-            AppMediator.async_cmd('RENDER_ROM_VIEWS', {'rom_id': rom.get_id()})    
+            AppMediator.async_cmd('RENDER_ROM_VIEWS', {'rom_id': rom.get_id()})
+            AppMediator.async_cmd('RENDER_VCATEGORY_VIEW', {'vcategory_id': constants.VCATEGORY_TITLE_ID})
+            
     AppMediator.sync_cmd('ROM_EDIT_METADATA', args)
 
 @AppMediator.register('ROM_EDIT_METADATA_ESRB')
@@ -182,7 +184,9 @@ def cmd_rom_metadata_platform(args):
                                     rom.get_esrb_rating, rom.set_esrb_rating):
             repository.update_rom(rom)
             uow.commit()
-            AppMediator.async_cmd('RENDER_ROM_VIEWS', {'rom_id': rom.get_id()})    
+            AppMediator.async_cmd('RENDER_ROM_VIEWS', {'rom_id': rom.get_id()})
+            AppMediator.async_cmd('RENDER_VCATEGORY_VIEW', {'vcategory_id': constants.VCATEGORY_ESRB_ID})
+                
     AppMediator.sync_cmd('ROM_EDIT_METADATA', args)
 
 @AppMediator.register('ROM_EDIT_METADATA_RELEASEYEAR')
@@ -197,6 +201,8 @@ def cmd_rom_metadata_releaseyear(args):
             repository.update_rom(rom)
             uow.commit()
             AppMediator.async_cmd('RENDER_ROM_VIEWS', {'rom_id': rom.get_id()})
+            AppMediator.async_cmd('RENDER_VCATEGORY_VIEW', {'vcategory_id': constants.VCATEGORY_YEARS_ID})
+            
     AppMediator.sync_cmd('ROM_EDIT_METADATA', args)
 
 @AppMediator.register('ROM_EDIT_METADATA_GENRE')
@@ -210,7 +216,9 @@ def cmd_rom_metadata_genre(args):
         if editors.edit_field_by_str(rom, 'Genre', rom.get_genre, rom.set_genre):
             repository.update_rom(rom)
             uow.commit()            
-            AppMediator.async_cmd('RENDER_ROM_VIEWS', {'rom_id': rom.get_id()})        
+            AppMediator.async_cmd('RENDER_ROM_VIEWS', {'rom_id': rom.get_id()})
+            AppMediator.async_cmd('RENDER_VCATEGORY_VIEW', {'vcategory_id': constants.VCATEGORY_GENRE_ID})
+                    
     AppMediator.sync_cmd('ROM_EDIT_METADATA', args)
     
 @AppMediator.register('ROM_EDIT_METADATA_DEVELOPER')
@@ -225,6 +233,8 @@ def cmd_rom_metadata_developer(args):
             repository.update_rom(rom)
             uow.commit()    
             AppMediator.async_cmd('RENDER_ROM_VIEWS', {'rom_id': rom.get_id()})
+            AppMediator.async_cmd('RENDER_VCATEGORY_VIEW', {'vcategory_id': constants.VCATEGORY_DEVELOPER_ID})
+            
     AppMediator.sync_cmd('ROM_EDIT_METADATA', args)
 
 @AppMediator.register('ROM_EDIT_METADATA_NPLAYERS')
@@ -258,6 +268,7 @@ def cmd_rom_metadata_nplayers(args):
         repository.update_rom(rom)
         uow.commit()    
         AppMediator.async_cmd('RENDER_ROM_VIEWS', {'rom_id': rom.get_id()})
+        AppMediator.async_cmd('RENDER_VCATEGORY_VIEW', {'vcategory_id': constants.VCATEGORY_NPLAYERS_ID})
         kodi.notify('Changed ROM NPlayers')
         
     AppMediator.sync_cmd('ROM_EDIT_METADATA', args)
@@ -274,6 +285,8 @@ def cmd_rom_metadata_rating(args):
             repository.update_rom(rom)
             uow.commit()
             AppMediator.async_cmd('RENDER_ROM_VIEWS', {'rom_id': rom.get_id()})
+            AppMediator.async_cmd('RENDER_VCATEGORY_VIEW', {'vcategory_id': constants.VCATEGORY_RATING_ID})
+            
     AppMediator.sync_cmd('ROM_EDIT_METADATA', args)
 
 @AppMediator.register('ROM_EDIT_METADATA_PLOT')
@@ -349,6 +362,7 @@ def cmd_rom_import_nfo_file(args):
             uow.commit()
             kodi.notify('Imported ROMCollection NFO file {0}'.format(NFO_file.getPath()))
             AppMediator.async_cmd('RENDER_ROM_VIEWS', {'rom_id': rom.get_id()})
+            AppMediator.async_cmd('RENDER_VCATEGORY_VIEWS')
     
     AppMediator.sync_cmd('ROM_EDIT_METADATA', args)
 
@@ -372,6 +386,7 @@ def cmd_rom_browse_import_nfo_file(args):
             uow.commit()
             kodi.notify('Imported ROMCollection NFO file {0}'.format(NFO_FileName.getPath()))
             AppMediator.async_cmd('RENDER_ROM_VIEWS', {'rom_id': rom.get_id()})
+            AppMediator.async_cmd('RENDER_VCATEGORY_VIEWS')
     
     AppMediator.sync_cmd('ROM_EDIT_METADATA', args)
 

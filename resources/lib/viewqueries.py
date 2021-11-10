@@ -96,11 +96,11 @@ def qry_get_root_items():
     return container
 
 #
-# Collection items.
+# View items.
 #
-def qry_get_collection_items(collection_id: str):
+def qry_get_view_items(view_id: str, is_virtual_view=False):
     views_repository = ViewRepository(globals.g_PATHS)
-    container = views_repository.find_items(collection_id)
+    container = views_repository.find_items(view_id, is_virtual_view)
     return container
 
 #
@@ -140,6 +140,19 @@ def qry_get_utilities_items():
         'info': {
             'title': 'Rebuild views',
             'plot': 'Rebuild all the container views in the application',
+            'overlay': 4
+        },
+        'art': { 'icon' : vcategory_icon, 'fanart' : vcategory_fanart, 'poster' : vcategory_poster  },
+        'properties': { constants.AEL_CONTENT_LABEL: constants.AEL_CONTENT_VALUE_NONE, 'obj_type': constants.OBJ_NONE }
+    })
+    container['items'].append({
+        'name': 'Rebuild virtual views',
+        'url': globals.router.url_for_path('execute/command/render_vcategory_views'),
+        'is_folder': False,
+        'type': 'video',
+        'info': {
+            'title': 'Rebuild virtual views',
+            'plot': 'Rebuild all the virtual categories and collections in the container',
             'overlay': 4
         },
         'art': { 'icon' : vcategory_icon, 'fanart' : vcategory_fanart, 'poster' : vcategory_poster  },
@@ -270,13 +283,16 @@ def qry_container_context_menu_items(container_data) -> typing.List[typing.Tuple
     if container_data is None:
         return []
     # --- Create context menu items to be applied to each item in this container ---
-    container_type    = container_data['obj_type'] if 'obj_type' in container_data else constants.OBJ_NONE
-    container_name    = container_data['name'] if 'name' in container_data else 'Unknown'
-    container_id      = container_data['id'] if 'id' in container_data else ''
+    container_type     = container_data['obj_type'] if 'obj_type' in container_data else constants.OBJ_NONE
+    container_name     = container_data['name'] if 'name' in container_data else 'Unknown'
+    container_id       = container_data['id'] if 'id' in container_data else ''
+    container_parentid = container_data['parent_id'] if 'parent_id' in container_data else ''
     
-    is_category: bool = container_type == constants.OBJ_CATEGORY
-    is_romcollection: bool   = container_type == constants.OBJ_ROMCOLLECTION
-    is_root: bool     = container_data['id'] == ''
+    is_category: bool           = container_type == constants.OBJ_CATEGORY
+    is_romcollection: bool      = container_type == constants.OBJ_ROMCOLLECTION
+    is_virtual_category: bool   = container_type == constants.OBJ_CATEGORY_VIRTUAL
+    is_virtual_collection: bool = container_type == constants.OBJ_COLLECTION_VIRTUAL
+    is_root: bool               = container_data['id'] == ''
     
     commands = []
     if is_category: 
@@ -286,6 +302,12 @@ def qry_container_context_menu_items(container_data) -> typing.List[typing.Tuple
         commands.append(('Search ROM in collection', _context_menu_url_for('/search/{}'.format(container_id))))
         commands.append(('Rebuild {} view'.format(container_name),
                          _context_menu_url_for('execute/command/render_romcollection_view', {'romcollection_id':container_id})))    
+    if is_virtual_category and not is_root:
+        commands.append(('Rebuild {} view'.format(container_name),
+                        _context_menu_url_for('execute/command/render_vcategory_view',{'vcategory_id':container_id})))    
+    if is_virtual_collection:
+        commands.append(('Rebuild {} view'.format(container_name),
+                        _context_menu_url_for('execute/command/render_vcategory_view',{'vcategory_id':container_parentid})))    
     
     commands.append(('Rebuild all views', _context_menu_url_for('execute/command/render_views')))
     commands.append(('Open Kodi file manager', 'ActivateWindow(filemanager)'))
@@ -307,33 +329,39 @@ def qry_listitem_context_menu_items(list_item_data, container_data)-> typing.Lis
     
     container_id    = container_data['id'] if 'id' in container_data else constants.VCATEGORY_ADDONROOT_ID
     container_type  = container_data['obj_type'] if 'obj_type' in container_data else constants.OBJ_NONE
-    container_is_category: bool = container_type == constants.OBJ_CATEGORY
     if container_id == '': container_id = constants.VCATEGORY_ADDONROOT_ID
     
-    is_category: bool = item_type == constants.OBJ_CATEGORY 
-    is_romcollection: bool   = item_type == constants.OBJ_ROMCOLLECTION
-    is_rom: bool      = item_type == constants.OBJ_ROM
+    container_is_category: bool = container_type == constants.OBJ_CATEGORY
+    
+    is_category: bool           = item_type == constants.OBJ_CATEGORY
+    is_romcollection: bool      = item_type == constants.OBJ_ROMCOLLECTION
+    is_virtual_category: bool   = item_type == constants.OBJ_CATEGORY_VIRTUAL
+    is_virtual_collection: bool = item_type == constants.OBJ_COLLECTION_VIRTUAL
+    is_rom: bool                = item_type == constants.OBJ_ROM
     
     commands = []
     if is_rom: 
-        commands.append(('View ROM', _context_menu_url_for('/rom/{}/view'.format(item_id))))
-        commands.append(('Edit ROM', _context_menu_url_for('/rom/edit/{}'.format(item_id))))
+        commands.append(('View ROM', _context_menu_url_for(f'/rom/{item_id}/view')))
+        commands.append(('Edit ROM', _context_menu_url_for(f'/rom/edit/{item_id}')))
         commands.append(('Link ROM in other collection', _context_menu_url_for('/execute/command/link_rom',{'rom_id':item_id})))
         commands.append(('Add ROM to AEL Favourites', _context_menu_url_for('/execute/command/add_rom_to_favourites',{'rom_id':item_id})))
     if is_category: 
-        commands.append(('View Category', _context_menu_url_for('/categories/view/{}'.format(item_id))))
-        commands.append(('Edit Category', _context_menu_url_for('/categories/edit/{}'.format(item_id))))
-        commands.append(('Add new Category',_context_menu_url_for('/categories/add/{}/in/{}'.format(item_id, container_id))))
-        commands.append(('Add new ROM Collection', _context_menu_url_for('/romcollection/add/{}/in/{}'.format(item_id, container_id))))
+        commands.append(('View Category', _context_menu_url_for(f'/categories/view/{item_id}')))
+        commands.append(('Edit Category', _context_menu_url_for(f'/categories/edit/{item_id}')))
+        commands.append(('Add new Category',_context_menu_url_for(f'/categories/add/{item_id}/in/{container_id}')))
+        commands.append(('Add new ROM Collection', _context_menu_url_for(f'/romcollection/add/{item_id}/in/{container_id}')))
         
     if is_romcollection: 
-        commands.append(('View ROM Collection', _context_menu_url_for('/romcollection/view/{}'.format(item_id))))
-        commands.append(('Edit ROM Collection', _context_menu_url_for('/romcollection/edit/{}'.format(item_id))))
+        commands.append(('View ROM Collection', _context_menu_url_for(f'/romcollection/view/{item_id}')))
+        commands.append(('Edit ROM Collection', _context_menu_url_for(f'/romcollection/edit/{item_id}')))
     
     if not is_category and container_is_category:
-        commands.append(('Add new Category',_context_menu_url_for('/categories/add/{}'.format(container_id))))
-        commands.append(('Add new ROM Collection', _context_menu_url_for('/romcollection/add/{}'.format(container_id))))
+        commands.append(('Add new Category',_context_menu_url_for(f'/categories/add/{container_id}')))
+        commands.append(('Add new ROM Collection', _context_menu_url_for(f'/romcollection/add/{container_id}')))
     
+    if is_virtual_category:
+        commands.append((f'Rebuild {item_name} view', _context_menu_url_for('execute/command/render_vcategory_view',{'vcategory_id':item_id})))
+        
     return commands
 
 def _context_menu_url_for(url: str, params: dict = None) -> str:

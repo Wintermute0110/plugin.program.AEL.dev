@@ -165,7 +165,7 @@
                     <default>false</default>
                     <control type="toggle"/>
                 </setting>
-                <setting id="display_hide_vlaunchers" type="boolean" label="40410" help="">
+                <setting id="display_hide_vcategories" type="boolean" label="40410" help="">
                     <level>0</level>
                     <default>false</default>
                     <control type="toggle"/>
@@ -287,6 +287,13 @@
                         </options>
                     </constraints>
                     <control type="spinner" format="string"/>
+                </setting>
+                <setting id="regeneration_days_period" type="integer" label="40612" help="">
+                    <level>1</level>
+                    <default>7</default>
+                    <control type="edit" format="integer">
+                        <heading>40612</heading>
+                    </control>
                 </setting>
                 <setting id="migrated_version" type="string" label="40611" help="">
                     <level>1</level>
