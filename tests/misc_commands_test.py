@@ -14,7 +14,7 @@ sys.modules['routing'] = module
 from resources.lib.commands import misc_commands as target
 from resources.lib import globals
 
-from resources.lib.domain import Category, ROMCollection
+from resources.lib.domain import AelAddon, Category, ROMCollection
 
 logger = logging.getLogger(__name__)
 logging.basicConfig(format = '%(asctime)s %(module)s %(levelname)s: %(message)s',
@@ -41,6 +41,7 @@ class Test_Misc_Commands(unittest.TestCase):
         #globals.g_PATHS.DATABASE_FILE_PATH = dbPath
 
     @patch('resources.lib.commands.misc_commands.UnitOfWork', autospec=True)
+    @patch('resources.lib.commands.misc_commands.AelAddonRepository.find_all_launchers', autospec=True)
     @patch('resources.lib.commands.misc_commands.ROMCollectionRepository.insert_romcollection', autospec=True)
     @patch('resources.lib.commands.misc_commands.AppMediator', autospec=True)
     @patch('resources.lib.commands.misc_commands.kodi.browse')
@@ -48,11 +49,17 @@ class Test_Misc_Commands(unittest.TestCase):
         browse: MagicMock, 
         mediator: MagicMock,
         insert_mock: MagicMock,
+        launchers_mock: MagicMock,
         repo: MagicMock):
                 
         # arrange
         xml_path = self.TEST_ASSETS_DIR + "\\ms_categories.xml"
         browse.return_value = [xml_path]
+        
+        launchers_mock.return_value = [
+            AelAddon({ 'id': 'ABC', 'addon_id': 'script.ael.defaults', 'name': 'TEST1' }),
+            AelAddon({ 'id': 'DEF', 'addon_id': 'script.ael.retroarchlauncher', 'name': 'TEST2' })
+        ]
 
         expected = 5
         expected_category_id = 'c20f56e7c2242b03e8133c512303ec63'

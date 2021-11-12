@@ -194,7 +194,7 @@ class XmlConfigurationRepository(object):
                     
             # --- Add launcher to launchers collection ---
             logger.debug('Adding launcher "{0}" to import list'.format(launcher_temp['m_name']))
-            yield ROMCollection(launcher_temp, assets, asset_paths)
+            yield ROMCollection(launcher_temp, assets, asset_paths, [], [])
 
 
 # -------------------------------------------------------------------------------------------------
@@ -280,7 +280,7 @@ class ROMsJsonFileRepository(object):
 # Can be used to create database scopes/sessions (unit of work pattern).
 #
 class UnitOfWork(object):
-    VERBOSE = False
+    VERBOSE = True
 
     def __init__(self, db_path: io.FileName):
         self._db_path = db_path

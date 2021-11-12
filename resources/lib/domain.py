@@ -1050,6 +1050,7 @@ class ROMCollection(MetaDataItemABC):
             if current_default_launcher: current_default_launcher.set_default(False)
             
         self.launchers_data.append(launcher)
+        logger.debug(f'Adding addon "{addon.get_addon_id()}" to launcher "{self.get_name()}"')
 
     def get_launchers(self) -> typing.List[ROMLauncherAddon]:
         return self.launchers_data

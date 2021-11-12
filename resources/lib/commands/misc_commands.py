@@ -36,7 +36,7 @@ def cmd_execute_import_launchers(args):
     uow = UnitOfWork(globals.g_PATHS.DATABASE_FILE_PATH)
     with uow:
         addon_repository      = AelAddonRepository(uow)
-        available_launchers   = addon_repository.find_all_launchers()
+        available_launchers   = [*addon_repository.find_all_launchers()]
         
         categories_repository = CategoryRepository(uow)
         existing_categories   = [*categories_repository.find_all_categories()]
@@ -132,97 +132,104 @@ def cmd_check_duplicate_asset_dirs(args):
         kodi.dialog_OK('Duplicated asset directories: {0}. '.format(duplicated_asset_srt) +
                         'AEL will refuse to add/edit ROMs if there are duplicate asset directories.')
 
-def _apply_addon_launcher_for_legacy_launcher(launcher_data: ROMCollection, available_addons: typing.Dict[str, AelAddon]):
-    launcher_type = launcher_data.get_custom_attribute('type')
-    logger.debug(f'Migrating launcher of type "{launcher_type}" for romcollection {launcher_data.get_name()}')
+def _apply_addon_launcher_for_legacy_launcher(collection: ROMCollection, available_addons: typing.Dict[str, AelAddon]):
+    launcher_type = collection.get_custom_attribute('type')
+    logger.debug(f'Migrating launcher of type "{launcher_type}" for romcollection {collection.get_name()}')
     
     if launcher_type is None:
         # 1.9x version
         launcher_addon  = available_addons['script.ael.defaults'] if 'script.ael.defaults' in available_addons else None
         if launcher_addon is None: 
-            logger.warning(f'Could not find launcher supporting type "{launcher_type}"') 
+            logger.warning(f'Could not find launcher addon supporting type "{launcher_type}"') 
             return
-        application     = launcher_data.get_custom_attribute('application')
-        args            = launcher_data.get_custom_attribute('args')
-        non_blocking    = launcher_data.get_custom_attribute('non_blocking')
-        #'args_extra': launcher_data.get_custom_attribute('args_extra')
-        settings = { 'application': application, 'args': args }
-        launcher_data.add_launcher(launcher_addon, settings, non_blocking, True)
+        non_blocking = collection.get_custom_attribute('non_blocking')
+        settings = { 
+            'application': collection.get_custom_attribute('application'), 
+            'args': collection.get_custom_attribute('args')
+        }
+        collection.add_launcher(launcher_addon, settings, non_blocking, True)
         return
     
     if launcher_type == constants.OBJ_LAUNCHER_STANDALONE:
         launcher_addon =  available_addons['script.ael.defaults'] if 'script.ael.defaults' in available_addons else None
         if launcher_addon is None: 
-            logger.warning(f'Could not find launcher supporting type "{launcher_type}"') 
+            logger.warning(f'Could not find launcher addon supporting type "{launcher_type}"') 
             return
-        application     = launcher_data.get_custom_attribute('application')
-        args            = launcher_data.get_custom_attribute('args')
-        non_blocking    = launcher_data.get_custom_attribute('non_blocking')
-        #'args_extra': launcher_data.get_custom_attribute('args_extra')
-        settings = { 'application': application, 'args': args }
-        launcher_data.add_launcher(launcher_addon, settings, non_blocking, True)
+        non_blocking = collection.get_custom_attribute('non_blocking')
+        settings = { 
+            'application': collection.get_custom_attribute('application'), 
+            'args': collection.get_custom_attribute('args')
+        }
+        collection.add_launcher(launcher_addon, settings, non_blocking, True)
         return
     
-    if launcher_type == constants.OBJ_LAUNCHER_ROM:
+    if launcher_type == constants.OBJ_LAUNCHER_ROM or launcher_type == 'ROM':
         launcher_addon =  available_addons['script.ael.defaults'] if 'script.ael.defaults' in available_addons else None
         if launcher_addon is None: 
-            logger.warning('Could not find launcher supporting type "{}"'.format(launcher_type)) 
+            logger.warning('Could not find launcher addon supporting type "{}"'.format(launcher_type)) 
             return
-        application     = launcher_data.get_custom_attribute('application')
-        args            = launcher_data.get_custom_attribute('args')
-        non_blocking    = launcher_data.get_custom_attribute('non_blocking')
-        #'args_extra': launcher_data.get_custom_attribute('args_extra')
-        settings = { 'application': application, 'args': args }
-        launcher_data.add_launcher(launcher_addon, settings, non_blocking, True)
+        non_blocking = collection.get_custom_attribute('non_blocking')
+        settings = { 
+            'application': collection.get_custom_attribute('application'), 
+            'args': collection.get_custom_attribute('args')
+        }
+        collection.add_launcher(launcher_addon, settings, non_blocking, True)
         return
     
     if launcher_type == constants.OBJ_LAUNCHER_RETROPLAYER:
         launcher_addon =  available_addons[constants.RETROPLAYER_LAUNCHER_APP_NAME] if constants.RETROPLAYER_LAUNCHER_APP_NAME in available_addons else None
         if launcher_addon is None: 
-            logger.warning(f'Could not find launcher supporting type "{launcher_type}"') 
+            logger.warning(f'Could not find launcher addon supporting type "{launcher_type}"') 
             return
-        application     = launcher_data.get_custom_attribute('application')
-        args            = launcher_data.get_custom_attribute('args')
-        non_blocking    = launcher_data.get_custom_attribute('non_blocking')
-        #'args_extra': launcher_data.get_custom_attribute('args_extra')
-        settings = { 'application': application, 'args': args }
-        launcher_data.add_launcher(launcher_addon, settings, non_blocking, True)
+        non_blocking = collection.get_custom_attribute('non_blocking')
+        settings = { 
+            'application': collection.get_custom_attribute('application'), 
+            'args': collection.get_custom_attribute('args')
+        }
+        collection.add_launcher(launcher_addon, settings, non_blocking, True)
         return
     
     if launcher_type == constants.OBJ_LAUNCHER_RETROARCH:
         launcher_addon =  available_addons['script.ael.retroarchlauncher'] if 'script.ael.retroarchlauncher' in available_addons else None
         if launcher_addon is None: 
-            logger.warning(f'Could not find launcher supporting type "{launcher_type}"') 
+            logger.warning(f'Could not find launcher addon supporting type "{launcher_type}"') 
             return
-        application     = launcher_data.get_custom_attribute('application')
-        args            = launcher_data.get_custom_attribute('args')
-        non_blocking    = launcher_data.get_custom_attribute('non_blocking')
-        #'args_extra': launcher_data.get_custom_attribute('args_extra')
-        settings = { 'application': application, 'args': args }
-        launcher_data.add_launcher(launcher_addon, settings, non_blocking, True)
+        non_blocking = collection.get_custom_attribute('non_blocking')
+        settings = { 
+            'application': collection.get_custom_attribute('application'), 
+            'args': collection.get_custom_attribute('args'), 
+            'retro_config': collection.get_custom_attribute('retro_config'), 
+            'retro_core': collection.get_custom_attribute('retro_core'), 
+            'retro_core_info': collection.get_custom_attribute('retro_core_info')  
+        }
+        collection.add_launcher(launcher_addon, settings, non_blocking, True)
         return
     
     if launcher_type == constants.OBJ_LAUNCHER_NVGAMESTREAM:
-        launcher_addon =  available_addons['plugin.program.AEL.GamestreamLauncher'] if 'plugin.program.AEL.GamestreamLauncher' in available_addons else None 
+        launcher_addon =  available_addons['script.ael.nvgamestream'] if 'script.ael.nvgamestream' in available_addons else None 
         if launcher_addon is None: 
-            logger.warning(f'Could not find launcher supporting type "{launcher_type}"') 
+            logger.warning(f'Could not find launcher addon supporting type "{launcher_type}"') 
             return
-        application     = launcher_data.get_custom_attribute('application')
-        args            = launcher_data.get_custom_attribute('args')
-        non_blocking    = launcher_data.get_custom_attribute('non_blocking')
-        #'args_extra': launcher_data.get_custom_attribute('args_extra')
-        settings = { 'application': application, 'args': args }
-        launcher_data.add_launcher(launcher_addon, settings, non_blocking, True)
+        non_blocking = collection.get_custom_attribute('non_blocking')
+        settings = { 
+            'application': collection.get_custom_attribute('application'),
+            'args': collection.get_custom_attribute('args'), 
+            'certificates_path': collection.get_custom_attribute('certificates_path'), 
+            'server': collection.get_custom_attribute('server'), 
+            'server_hostname': collection.get_custom_attribute('server_hostname'), 
+            'server_id': collection.get_custom_attribute('server_id'), 
+            'server_uuid': collection.get_custom_attribute('server_uuid')  
+        }
+        collection.add_launcher(launcher_addon, settings, non_blocking, True)
         return
     
     if launcher_type == constants.OBJ_LAUNCHER_STEAM:
-        launcher_addon =  available_addons['plugin.program.AEL.SteamLauncher'] if 'plugin.program.AEL.SteamLauncher' in available_addons else None  
+        launcher_addon =  available_addons['script.ael.steam'] if 'script.ael.steam' in available_addons else None  
         if launcher_addon is None: 
-            logger.warning(f'Could not find launcher supporting type "{launcher_type}"') 
+            logger.warning(f'Could not find launcher addon supporting type "{launcher_type}"') 
             return
-        application     = launcher_data.get_custom_attribute('application')
-        args            = launcher_data.get_custom_attribute('args')
-        non_blocking    = launcher_data.get_custom_attribute('non_blocking')
-        #'args_extra': launcher_data.get_custom_attribute('args_extra')
-        settings = { 'application': application, 'args': args }
-        launcher_data.add_launcher(launcher_addon, settings, non_blocking, True)
+        non_blocking = collection.get_custom_attribute('non_blocking')
+        settings = { 
+            'args': collection.get_custom_attribute('args') 
+        }
+        collection.add_launcher(launcher_addon, settings, non_blocking, True)
