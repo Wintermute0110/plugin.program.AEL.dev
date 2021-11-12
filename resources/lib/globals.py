@@ -43,12 +43,13 @@ class AEL_Paths(object):
         self.ADDONS_DATA_DIR  = io.FileName('special://profile/addon_data')
         self.DATABASE_DIR     = io.FileName('special://database')
         
-        self.ADDON_DATA_DIR   = self.ADDONS_DATA_DIR.pjoin(addon_id)
-        self.ADDONS_CODE_DIR  = self.HOME_DIR.pjoin('addons')
-        self.ADDON_CODE_DIR   = self.ADDONS_CODE_DIR.pjoin(addon_id)
-        self.ICON_FILE_PATH   = self.ADDON_CODE_DIR.pjoin('media/icon.png')
-        self.FANART_FILE_PATH = self.ADDON_CODE_DIR.pjoin('media/fanart.jpg')
-        self.DATABASE_SCHEMA_PATH = self.ADDON_CODE_DIR.pjoin('resources/schema.sql')
+        self.ADDON_DATA_DIR             = self.ADDONS_DATA_DIR.pjoin(addon_id)
+        self.ADDONS_CODE_DIR            = self.HOME_DIR.pjoin('addons', True)
+        self.ADDON_CODE_DIR             = self.ADDONS_CODE_DIR.pjoin(addon_id)
+        self.ICON_FILE_PATH             = self.ADDON_CODE_DIR.pjoin('media/icon.png')
+        self.FANART_FILE_PATH           = self.ADDON_CODE_DIR.pjoin('media/fanart.jpg')
+        self.DATABASE_SCHEMA_PATH       = self.ADDON_CODE_DIR.pjoin('resources/schema.sql')
+        self.DATABASE_MIGRATIONS_PATH   = self.ADDON_CODE_DIR.pjoin('resources/migrations', True)
 
         # -- Root data file
         self.ROOT_PATH              = self.ADDON_DATA_DIR.pjoin('root.json')

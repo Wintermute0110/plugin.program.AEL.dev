@@ -11,7 +11,7 @@ from ael import constants
 
 from resources.lib import globals
 from resources.lib.domain import Category, ROMCollection, ROM, Asset, AssetPath, VirtualCollection
-from resources.lib.domain import VirtualCategoryFactory, VirtualCollectionFactory, g_assetFactory
+from resources.lib.domain import VirtualCategoryFactory, VirtualCollectionFactory, ROMLauncherAddonFactory, g_assetFactory
 from resources.lib.domain import ROMCollectionScanner, ROMLauncherAddon, AelAddon
 
 logger = logging.getLogger(__name__)
@@ -286,7 +286,7 @@ class UnitOfWork(object):
         self._db_path = db_path
         self._commit = False
     
-    def check_database(self):
+    def check_database(self) -> bool:
         if not self._db_path.exists():
             logger.warning("UnitOfWork.check_database(): Database '%s' missing" % self._db_path)
             return False
@@ -295,19 +295,30 @@ class UnitOfWork(object):
         self.execute("SELECT name FROM sqlite_master WHERE type='table';")
         tables = self.result_set()
 
-        if not len(tables):
+        if not len(tables) or len(tables) == 0:
             logger.warning("UnitOfWork.check_database(): Database: '%s' no tables" % self._db_path)
             self.close_session()
             return False
-
+        
         self.close_session()
         return len(tables) > 1
+
+    def get_database_version(self) -> str:
+        self.open_session()
+        
+        self.execute(f"SELECT version FROM ael_version WHERE app='{globals.addon_id}';")
+        sql_version = self.single_result()
+        
+        db_version = sql_version['version'] if sql_version else None
+        
+        self.close_session()
+        return db_version
 
     def create_empty_database(self, schema_file_path: io.FileName):
         self.open_session()
         
         sql_statements = schema_file_path.loadFileToStr()
-        self.conn.executescript(sql_statements)
+        self.execute_script(sql_statements)
         self.conn.execute("INSERT INTO ael_version VALUES(?, ?)", [globals.addon_id, globals.addon_version])
 
         self.commit()
@@ -329,6 +340,19 @@ class UnitOfWork(object):
             
         self.create_empty_database(schema_file_path)
 
+    def migrate_database(self, migration_files:typing.List[io.FileName]):
+        self.open_session()
+        
+        for migration_file in migration_files:
+            logger.info(f'Executing migration script: {migration_file.getPath()}')
+            sql_statements = migration_file.loadFileToStr()
+            self.execute_script(sql_statements)
+       
+        logger.info(f'Updating database schema version of app {globals.addon_id} to {globals.addon_version}')     
+        self.conn.execute("UPDATE ael_version SET version=? WHERE app=?", [globals.addon_version, globals.addon_id])
+        self.commit()
+        self.close_session()
+
     def open_session(self):
         self.conn = sqlite3.connect(self._db_path.getPathTranslated())
         self.conn.row_factory = UnitOfWork.dict_factory
@@ -349,16 +373,20 @@ class UnitOfWork(object):
         self.conn.close()
 
     def execute(self, sql, *args) -> Cursor:
-        sql_args = [arg for arg in args if arg is not None]
         if self.VERBOSE:
-            logger.debug('[SQL] {}'.format(sql))
-            logger.debug('[SQL] ARGS: {}'.format(','.join(map(str, sql_args))))
+            logger.debug(f'[SQL] {sql}')
+            sql_args_str = ','.join(map(str, args))
+            logger.debug(f'[SQL] ARGS: {sql_args_str}')
         try:
-            return self.cursor.execute(sql, sql_args)
+            return self.cursor.execute(sql, args)
         except Exception as ex:
-            logger.error('Error while executing query: {}'.format(sql), exc_info=ex)
-            logger.error('Used arguments: {}'.format(','.join(map(str, sql_args))))
+            logger.error(f'Error while executing query: {sql}', exc_info=ex)
+            sql_args_str = ','.join(map(str, args))
+            logger.error(f'Used arguments: {sql_args_str}')
             raise
+    
+    def execute_script(self, sql_statements):
+        self.conn.executescript(sql_statements)
             
     def single_result(self) -> dict:
         return self.cursor.fetchone()
@@ -643,7 +671,8 @@ class ROMCollectionRepository(object):
         launchers = []
         for launcher_data in launchers_data:
             addon = AelAddon(launcher_data.copy())
-            launchers.append(ROMLauncherAddon(addon, launcher_data))
+            launcher = ROMLauncherAddonFactory.create(addon, launcher_data)
+            launchers.append(launcher)
         
         self._uow.execute(QUERY_SELECT_ROMCOLLECTION_SCANNERS, romcollection_id)
         scanners_data = self._uow.result_set()
@@ -741,7 +770,8 @@ class ROMCollectionRepository(object):
             launchers = []
             for launcher_data in launchers_data:
                 addon = AelAddon(launcher_data.copy())
-                launchers.append(ROMLauncherAddon(addon, launcher_data))
+                launcher = ROMLauncherAddonFactory.create(addon, launcher_data)
+                launchers.append(launcher)
             
             scanners = []
             for scanner_data in scanners_data:
@@ -983,7 +1013,7 @@ QUERY_INSERT_ROM_SCANNED_DATA   = "INSERT INTO scanned_roms_data (rom_id, data_k
 
 QUERY_UPDATE_ROM                = """
                                   UPDATE roms 
-                                  SET name=?, num_of_players=?, esrb_rating=?, platform = ?, box_size = ?,
+                                  SET name=?, num_of_players=?, esrb_rating=?, platform=?, box_size=?,
                                   nointro_status=?, cloneof=?, rom_status=?, launch_count=?, last_launch_timestamp=?,
                                   is_favourite=?, scanned_by_id=? WHERE id =?
                                   """
@@ -1014,12 +1044,17 @@ class ROMsRepository(object):
             query_param = vcollection.get_collection_value()
             roms_query, rom_assets_query = self._get_queries_by_vcollection_type(romcollection)
             
-            self._uow.execute(roms_query, query_param)
-            result_set = self._uow.result_set()
-            
-            self._uow.execute(rom_assets_query, query_param)
-            assets_result_set = self._uow.result_set() 
-            
+            if query_param is not None:
+                self._uow.execute(roms_query, query_param) 
+                result_set = self._uow.result_set()            
+                self._uow.execute(rom_assets_query, query_param)
+                assets_result_set = self._uow.result_set() 
+            else: 
+                self._uow.execute(roms_query) 
+                result_set = self._uow.result_set()            
+                self._uow.execute(rom_assets_query)
+                assets_result_set = self._uow.result_set() 
+                    
             asset_paths_result_set  = []
             scanned_data_result_set = []                
         else:
@@ -1074,7 +1109,8 @@ class ROMsRepository(object):
         launchers = []
         for launcher_data in launchers_data:
             addon = AelAddon(launcher_data.copy())
-            launchers.append(ROMLauncherAddon(addon, launcher_data))
+            launcher = ROMLauncherAddonFactory.create(addon, launcher_data)
+            launchers.append(launcher)
             
         return ROM(rom_data, assets, asset_paths, scanned_data, launchers)
 
@@ -1258,7 +1294,7 @@ class AelAddonRepository(object):
         for addon_data in result_set:
             yield AelAddon(addon_data)
 
-    def find_all_launchers(self) -> typing.Iterator[AelAddon]:        
+    def find_all_launchers(self) -> typing.Iterator[AelAddon]:
         self._uow.execute(QUERY_SELECT_LAUNCHER_ADDONS)
         result_set = self._uow.result_set()
         for addon_data in result_set:

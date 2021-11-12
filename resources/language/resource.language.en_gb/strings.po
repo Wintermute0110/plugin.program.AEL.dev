@@ -196,6 +196,10 @@ msgctxt "#40612"
 msgid "Number of days between automatic scans"
 msgstr "settings.xml"
 
+msgctxt "#40613"
+msgid "Automatic fallback to Retroplayer"
+msgstr "settings.xml"
+
 ############################
 # Setting options - Addons
 ############################

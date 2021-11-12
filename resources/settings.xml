@@ -274,6 +274,11 @@
         </category> -->
         <category id="advanced" label="40016">
             <group id="5">
+                <setting id="fallback_to_retroplayer" type="boolean" label="40613" help="">
+                    <level>0</level>
+                    <default>true</default>
+                    <control type="toggle"/>
+                </setting>
                 <setting id="log_level" type="integer" label="40610" help="">
                     <level>1</level>
                     <default>1</default>

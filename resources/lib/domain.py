@@ -29,8 +29,8 @@ import json
 # --- AEL packages ---
 from resources.lib import globals
 
+from ael import api
 from ael.utils import io, kodi, text
-from ael.api import ROMObj
 from ael.scrapers import ScraperSettings
 from ael import settings, constants
 
@@ -155,8 +155,8 @@ class AelAddon(EntityABC):
         return json.loads(self.get_extra_settings_str())
     
     def set_extra_settings(self, settings: dict):
-        self.entity_data['extra_settings'] = json.dumps(settings)     
-    
+        self.entity_data['extra_settings'] = json.dumps(settings)
+        
 class Asset(EntityABC):
 
     def __init__(self, entity_data: typing.Dict[str, typing.Any] = None):
@@ -291,6 +291,7 @@ class ROMAddon(EntityABC):
         return self.addon
             
 class ROMLauncherAddon(ROMAddon):
+    __metaclass__ = abc.ABCMeta
     
     def is_default(self) -> bool:
         return self.entity_data['is_default'] if 'is_default' in self.entity_data else False
@@ -317,7 +318,56 @@ class ROMLauncherAddon(ROMAddon):
             '--romcollection_id': romcollection.get_id(), 
             '--ael_addon_id': self.get_id()
         }
+        
+    def launch(self, rom: ROM):
+        kodi.run_script(
+            self.addon.get_addon_id(), 
+            self.get_launch_command(rom))
+
+    def configure(self, romcollection:ROMCollection):
+        kodi.run_script(
+            self.addon.get_addon_id(), 
+            self.get_configure_command(romcollection))
+
+class RetroplayerLauncherAddon(ROMLauncherAddon):
     
+    def get_launch_command(self, rom: ROM) -> dict:
+        return None
+
+    def get_configure_command(self, romcollection: ROMCollection) -> dict: 
+        return None
+
+    def launch(self, rom: ROM):
+        rom_file_path = rom.get_scanned_data_element_as_file('file')
+        if rom_file_path is None:
+            logger.warning(f'Cannot launch ROM {rom.get_rom_identifier()}. No path provided.')
+            kodi.notify_warn('Cannot launch ROM')
+            return
+            
+        # >> How to fill gameclient = string (game.libretro.fceumm) ???
+        game_info = {
+            'title'    : rom.get_name(),     'platform'  : rom.get_platform(),
+            'genres'   : [rom.get_genre()],  'developer' : rom.get_developer(),
+            'overview' : rom.get_plot(),     'year'      : rom.get_releaseyear()
+        }
+        logger.info(f'launch() name     "{rom.get_name()}"')
+        logger.info(f'launch() path     "{rom_file_path.getPath()}"')
+
+        logger.debug('Executing Retroplayer')
+        kodi.play_item(rom.get_name(), rom_file_path.getPath(), 'game', game_info)
+        logger.debug('Retroyplayer call finished')
+   
+    def configure(self, romcollection:ROMCollection):
+        post_data = {
+            'romcollection_id': romcollection.get_id(),
+            'ael_addon_id': self.get_id(),
+            'addon_id': self.addon.get_addon_id(),
+            'settings': {}
+        }        
+        is_stored = api.client_post_launcher_settings(globals.WEBSERVER_HOST, globals.WEBSERVER_PORT, post_data)
+        if not is_stored:
+            kodi.notify_error('Failed to store launchers settings')
+     
 class ROMCollectionScanner(ROMAddon):
     
     def get_last_scan_timestamp(self):
@@ -990,18 +1040,16 @@ class ROMCollection(MetaDataItemABC):
         return len(self.launchers_data) > 0
 
     def add_launcher(self, addon: AelAddon, settings: dict, is_non_blocking = True, is_default: bool = False):
-        launcher = ROMLauncherAddon(addon, {
+        launcher = ROMLauncherAddonFactory.create(addon, { 
             'settings': json.dumps(settings),
             'is_non_blocking': is_non_blocking,
             'is_default': is_default
-        })
+        })        
+        if is_default:
+            current_default_launcher = next((l for l in self.launchers_data if l.is_default()), None)
+            if current_default_launcher: current_default_launcher.set_default(False)
+            
         self.launchers_data.append(launcher)
-        
-        if launcher.is_default() != is_default:
-            if is_default:
-                current_default_launcher = next((l for l in self.launchers_data if l.is_default()), None)
-                current_default_launcher.set_default(False)
-            launcher.set_default(is_default)
 
     def get_launchers(self) -> typing.List[ROMLauncherAddon]:
         return self.launchers_data
@@ -1326,8 +1374,8 @@ class ROM(MetaDataItemABC):
     
     def get_default_icon(self) -> str: return 'DefaultProgram.png'    
     
-    def create_dto(self) -> ROMObj:
-        dto_data:dict = ROMObj.get_data_template()
+    def create_dto(self) -> api.ROMObj:
+        dto_data:dict = api.ROMObj.get_data_template()
         for key in dto_data.keys():
             if key in self.entity_data: dto_data[key] = self.entity_data[key]
             
@@ -1340,7 +1388,7 @@ class ROM(MetaDataItemABC):
             dto_data['assets'][asset_id] = asset.get_path() if asset is not None else None
             dto_data['scanned_data'] = self.scanned_data
             
-        return ROMObj(dto_data)
+        return api.ROMObj(dto_data)
     
     #
     # Reads an NFO file with ROM information.
@@ -1422,7 +1470,7 @@ class ROM(MetaDataItemABC):
     # Updates an ROM entity with the API object given.
     # Flags indicate which elements are allowed to be updated/altered with the incoming data.
     #
-    def update_with(self, api_rom_obj: ROMObj, update_meta=False, update_assets=False, update_scanned_data=False):
+    def update_with(self, api_rom_obj: api.ROMObj, update_meta=False, update_assets=False, update_scanned_data=False):
         
         if update_meta:
             if api_rom_obj.get_name() is not None:              self.set_name(api_rom_obj.get_name())
@@ -1474,6 +1522,9 @@ class ROM(MetaDataItemABC):
         """Overrides the default implementation"""
         return json.dumps(self.entity_data)
 
+# -------------------------------------------------------------------------------------------------
+# OBJECT FACTORIES
+# -------------------------------------------------------------------------------------------------
 #
 # Class to interact with the asset engine.
 # This class uses the asset_infos, dictionary of AssetInfo indexed by asset_ID
@@ -2114,6 +2165,15 @@ class VirtualCategoryFactory(object):
             ])     
                 
         return None
+  
+class ROMLauncherAddonFactory(object):
+
+    @staticmethod
+    def create(addon: AelAddon, data:dict) -> ROMLauncherAddon:
+        if addon.get_addon_id() == constants.RETROPLAYER_LAUNCHER_APP_NAME:
+            return RetroplayerLauncherAddon(addon, data)
+                    
+        return ROMLauncherAddon(addon, data)
     
 # -------------------------------------------------------------------------------------------------
 # Data model used in the plugin
@@ -2121,8 +2181,7 @@ class VirtualCategoryFactory(object):
 # UTF-8 when writing files.
 # -------------------------------------------------------------------------------------------------
 # These functions create a new data structure for the given object and (very importantly) 
-# fill the correct default values). These must match what is written/read from/to the XML files.
-# Tag name in the XML is the same as in the data dictionary.
+# fill the correct default values). 
 #
 def _get_default_category_data_model():
     return {

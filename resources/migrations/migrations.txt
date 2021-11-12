@@ -1,0 +1,6 @@
+In this folder migrations sql files are placed.
+Files should have valid semver names, e.g.
+
+- 1.2.0.sql
+- 1.1.1.sql
+etc.

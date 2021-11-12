@@ -4,6 +4,7 @@ import sys
 import json
 
 from datetime import datetime
+from distutils.version import LooseVersion
 
 import xbmc
 
@@ -52,10 +53,15 @@ class AppService(object):
         uow = UnitOfWork(globals.g_PATHS.DATABASE_FILE_PATH)
         if not uow.check_database():
             logger.info("No database present. Going to create database file.")
-            self.initial_setup(uow)
+            self._initial_setup(uow)
+            
+        db_version = uow.get_database_version()
+        current_version = kodi.get_addon_version()
+        if db_version is None or LooseVersion(db_version) < LooseVersion(current_version):
+            self._do_version_upgrade(uow, LooseVersion(db_version))
         
-        if self.last_time_scanned_is_too_long_ago():
-            self.perform_scans()
+        if self._last_time_scanned_is_too_long_ago():
+            self._perform_scans()
  
         # WEBSERVICE
         self.webservice = WebService()
@@ -87,14 +93,24 @@ class AppService(object):
         kodi.set_windowprop('ael_server_state', 'STOPPED')
         logger.debug("AEL service stopped")
         
-    def initial_setup(self, uow:UnitOfWork):
+    def _initial_setup(self, uow:UnitOfWork):
         kodi.notify('Creating new AEL database')
         uow.create_empty_database(globals.g_PATHS.DATABASE_SCHEMA_PATH)
         logger.info("Database created.")
         
-        self.perform_scans()
+        self._perform_scans()
+
+    def _do_version_upgrade(self, uow:UnitOfWork, db_version:LooseVersion):
+        migrations_files_available  = globals.g_PATHS.DATABASE_MIGRATIONS_PATH.scanFilesInPath("*.sql")
+        migrations_files_to_execute = []
+        for migration_file in migrations_files_available:
+            if LooseVersion(migration_file.getBaseNoExt()) > db_version:
+                migrations_files_to_execute.append(migration_file)
+        
+        migrations_files_to_execute.sort(key = lambda f: (LooseVersion(f.getBaseNoExt())))
+        uow.migrate_database(migrations_files_to_execute)
     
-    def perform_scans(self):
+    def _perform_scans(self):
         # SCAN FOR ADDONS
         self._execute_service_actions({'action': 'SCAN_FOR_ADDONS', 'data': None})
         # REBUILD VIEWS
@@ -102,7 +118,7 @@ class AppService(object):
         # Write to scan indicator
         globals.g_PATHS.SCAN_INDICATOR_FILE.writeAll(f'last scan all on {datetime.now()} ')
 
-    def last_time_scanned_is_too_long_ago(self):
+    def _last_time_scanned_is_too_long_ago(self):
         if not globals.g_PATHS.SCAN_INDICATOR_FILE.exists():
             return True
         

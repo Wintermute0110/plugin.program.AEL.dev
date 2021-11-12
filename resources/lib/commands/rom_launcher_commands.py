@@ -20,13 +20,13 @@ from __future__ import division
 import logging
 import collections
 
-from ael import constants
-from ael.utils import kodi, io
+from ael.utils import kodi
+from ael import settings, constants
 
 from resources.lib.commands.mediator import AppMediator
 from resources.lib import globals
 from resources.lib.repositories import UnitOfWork, ROMCollectionRepository, ROMsRepository, AelAddonRepository
-from resources.lib.domain import AelAddon, ROMLauncherAddon
+from resources.lib.domain import AelAddon, ROMLauncherAddon, ROMLauncherAddonFactory
 
 logger = logging.getLogger(__name__)
 
@@ -95,10 +95,10 @@ def cmd_add_romcollection_launchers(args):
         return
     
     # >> Execute subcommand. May be atomic, maybe a submenu.
-    logger.debug('ADD_LAUNCHER: cmd_add_romcollection_launchers() Selected {}'.format(selected_option.get_id()))    
-    kodi.run_script(
-        selected_option.get_addon_id(),
-        ROMLauncherAddon(selected_option, {}).get_configure_command(romcollection))
+    logger.debug('ADD_LAUNCHER: cmd_add_romcollection_launchers() Selected {}'.format(selected_option.get_id()))
+    
+    selected_launcher = ROMLauncherAddonFactory.create(selected_option, {})
+    selected_launcher.configure(romcollection)
 
 @AppMediator.register('EDIT_LAUNCHER')
 def cmd_edit_romcollection_launchers(args):
@@ -130,9 +130,7 @@ def cmd_edit_romcollection_launchers(args):
     
     # >> Execute subcommand. May be atomic, maybe a submenu.
     logger.debug('EDIT_LAUNCHER: cmd_edit_romcollection_launchers() Selected {}'.format(selected_option.get_id()))
-    kodi.run_script(
-        selected_option.addon.get_addon_id(), 
-        selected_option.get_configure_command(romcollection))
+    selected_option.configure(romcollection)
        
 @AppMediator.register('REMOVE_LAUNCHER')
 def cmd_remove_romcollection_launchers(args):
@@ -219,22 +217,29 @@ def cmd_execute_rom_with_launcher(args):
     rom_id:str      = args['rom_id'] if 'rom_id' in args else None
     uow = UnitOfWork(globals.g_PATHS.DATABASE_FILE_PATH)
     with uow:
-        rom_repository = ROMsRepository(uow)
+        rom_repository           = ROMsRepository(uow)
         romcollection_repository = ROMCollectionRepository(uow)
+        addon_repository         = AelAddonRepository(uow)
 
         rom = rom_repository.find_rom(rom_id)
-        logger.info('Executing ROM {}'.format(rom.get_name()))
+        logger.info(f'Executing ROM {rom.get_name()}')
         
         romcollections = romcollection_repository.find_romcollections_by_rom(rom.get_id())
         launchers = rom.get_launchers()
         for romcollection in romcollections: 
             launchers.extend(romcollection.get_launchers())
     
-    if launchers is None or len(launchers) == 0:
-        logger.warning('No launcher configured for ROM {}'.format(rom.get_name()))
-        kodi.notify_warn('No launcher configured.')
-        return
-
+        if launchers is None or len(launchers) == 0:
+            logger.warning(f'No launcher configured for ROM {rom.get_name()}')
+            if not settings.getSettingAsBool('fallback_to_retroplayer'):
+                kodi.notify_warn('No launcher configured.')
+                return
+            
+            logger.info('Automatic fallback to Retroplayer as launcher applied.')
+            retroplayer_addon    = addon_repository.find_by_addon_id(constants.RETROPLAYER_LAUNCHER_APP_NAME, constants.AddonType.LAUNCHER)
+            retroplayer_launcher = ROMLauncherAddonFactory.create(retroplayer_addon, {})
+            launchers.append(retroplayer_launcher)
+            
     selected_launcher = launchers[0]
     if len(launchers) > 1:
         launcher_options = collections.OrderedDict()
@@ -247,9 +252,6 @@ def cmd_execute_rom_with_launcher(args):
         selected_launcher = dialog.select('Choose launcher', launcher_options,preselect=preselected)
 
     if selected_launcher is None: return
-
-    kodi.run_script(
-        selected_launcher.addon.get_addon_id(), 
-        selected_launcher.get_launch_command(rom))
     
+    selected_launcher.launch(rom)
     AppMediator.async_cmd('ROM_WAS_LAUNCHED', args)

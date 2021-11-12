@@ -369,3 +369,7 @@ FROM rom_launchers AS l
     INNER JOIN ael_addon AS a ON l.ael_addon_id = a.id;
 
 CREATE TABLE IF NOT EXISTS ael_version(app TEXT, version TEXT);
+
+-- STATIC VALUES
+INSERT INTO ael_addon (id, name, addon_id, version, addon_type)
+    VALUES ('856f1cd76f2148aba7953f20f10ec11d', 'Retroplayer', 'retroplayer_launcher_app', '1.0', 'LAUNCHER')
