@@ -54,8 +54,11 @@ def qry_get_rom_collection(collection_id: str) -> str:
 def qry_get_roms(collection_id: str) -> str:
     uow = UnitOfWork(globals.g_PATHS.DATABASE_FILE_PATH)
     with uow:
-        rom_repository  = ROMsRepository(uow)        
-        roms = rom_repository.find_roms_by_romcollection(collection_id)
+        collection_repository  = ROMCollectionRepository(uow)
+        rom_repository         = ROMsRepository(uow)    
+
+        collection = collection_repository.find_romcollection(collection_id)    
+        roms = rom_repository.find_roms_by_romcollection(collection)
         
         if roms is None: return None        
         data = []

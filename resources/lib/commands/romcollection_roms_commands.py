@@ -184,7 +184,7 @@ def cmd_set_rom_asset_dirs(args):
         # rootpath?
         if selected_asset.id == '':
             dir_path = kodi.browse(type=0, text='Select root assets path', preselected_path=root_path.getPath() if root_path else None)
-            if not dir_path or dir_path == root_path.getPath():  
+            if not dir_path or (root_path is not None and dir_path == root_path.getPath()):  
                 AppMediator.sync_cmd('SET_ROMS_ASSET_DIRS', args)
                 return
             
@@ -243,8 +243,11 @@ def cmd_import_roms_nfo(args):
     # >> Load ROMs, iterate and import NFO files
     uow = UnitOfWork(globals.g_PATHS.DATABASE_FILE_PATH)
     with uow:
-        repository = ROMsRepository(uow)
-        roms = repository.find_roms_by_romcollection(romcollection_id)
+        repository            = ROMsRepository(uow)
+        collection_repository = ROMCollectionRepository(uow)
+
+        collection = collection_repository.find_romcollection(romcollection_id)
+        roms = repository.find_roms_by_romcollection(collection)
     
         pDialog = kodi.ProgressDialog()
         pDialog.startProgress('Processing NFO files', num_steps=len(roms))
@@ -278,8 +281,8 @@ def cmd_import_roms_json(args):
         repository        = ROMsRepository(uow)
         romcollection_repository = ROMCollectionRepository(uow) 
         
-        romcollection              = romcollection_repository.find_romcollection(romcollection_id)
-        existing_roms       = [*repository.find_roms_by_romcollection(romcollection_id)]
+        romcollection       = romcollection_repository.find_romcollection(romcollection_id)
+        existing_roms       = [*repository.find_roms_by_romcollection(romcollection)]
         existing_rom_ids    = map(lambda r: r.get_id(), existing_roms)
         existing_rom_names  = map(lambda r: r.get_name(), existing_roms)
 
@@ -336,7 +339,7 @@ def cmd_clear_roms(args):
         roms_repository         = ROMsRepository(uow)
         
         romcollection = collection_repository.find_romcollection(romcollection_id)
-        roms = roms_repository.find_roms_by_romcollection(romcollection_id)
+        roms          = roms_repository.find_roms_by_romcollection(romcollection)
         
         # If collection is empty (no ROMs) do nothing
         num_roms = len([*roms])

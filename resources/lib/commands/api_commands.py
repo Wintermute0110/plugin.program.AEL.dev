@@ -182,7 +182,7 @@ def cmd_store_scraped_roms(args) -> bool:
         rom_repository           = ROMsRepository(uow)
         
         romcollection = romcollection_repository.find_romcollection(romcollection_id)
-        existing_roms = rom_repository.find_roms_by_romcollection(romcollection_id)
+        existing_roms = rom_repository.find_roms_by_romcollection(romcollection)
         existing_roms_by_id = { rom.get_id(): rom for rom in existing_roms }
 
         metadata_is_updated = applied_settings.scrape_metadata_policy != constants.SCRAPE_ACTION_NONE
