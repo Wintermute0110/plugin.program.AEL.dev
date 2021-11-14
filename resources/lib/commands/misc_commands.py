@@ -20,6 +20,9 @@ from __future__ import division
 import logging
 import typing
 
+from datetime import time
+from xml.etree import cElementTree as ET
+
 from ael.utils import kodi, io
 from ael import constants
 
@@ -102,6 +105,105 @@ def cmd_execute_import_launchers(args):
 
     AppMediator.async_cmd('RENDER_VIEWS')
     kodi.notify('Finished importing Categories/Launchers')
+
+# Export AEL launcher configuration.
+# Export all Categories and Launchers.
+@AppMediator.register('EXPORT_TO_LEGACY_XML')
+def cmd_export_to_xml(args):
+    logger.debug('_command_exec_utils_export_launchers() Exporting Category/Launcher XML configuration')
+
+    # --- Ask path to export XML configuration ---
+    dir_path = kodi.dialog_get_directory('Select XML export directory')
+    if not dir_path: return
+
+    # --- If XML exists then warn user about overwriting it ---
+    export_FN = io.FileName(dir_path).pjoin('AEL_configuration.xml')
+    if export_FN.exists():
+        ret = kodi.dialog_yesno('AEL_configuration.xml found in the selected directory. Overwrite?')
+        if not ret:
+            kodi.notify_warn('Category/Launcher XML exporting cancelled')
+            return
+
+    uow = UnitOfWork(globals.g_PATHS.DATABASE_FILE_PATH)
+    with uow:
+        categories_repository     = CategoryRepository(uow)        
+        romcollections_repository = ROMCollectionRepository(uow)
+        
+        existing_categories     = [*categories_repository.find_all_categories()]
+        existing_romcollections = [*romcollections_repository.find_all_romcollections()]
+    
+        # --- Export stuff ---
+        try:
+            # --- XML header ---
+            root = ET.Element('advanced_emulator_launcher_configuration')
+            comment = ET.Comment(f'<!-- Exported by AEL on {time.strftime("%Y-%m-%d %H:%M:%S")} -->')
+            root.insert(1, comment)
+            # --- Export Categories ---
+            # Data which is not string must be converted to string
+            for category in sorted(existing_categories, key = lambda c : c.get_name()):
+                logger.debug(f'cmd_export_to_xml() Category "{category.get_name()}" (ID "{category.get_id()}")')
+                category_xml = ET.SubElement(root, 'category')
+                ET.SubElement(category_xml,'name', category.get_name())
+                ET.SubElement(category_xml,'year', category.get_releaseyear())
+                ET.SubElement(category_xml,'genre', category.get_genre())
+                ET.SubElement(category_xml,'developer', category.get_developer())
+                ET.SubElement(category_xml,'rating', category.get_rating())
+                ET.SubElement(category_xml,'plot', category.get_plot())
+                ET.SubElement(category_xml,'Asset_Prefix', category.get_custom_attribute('Asset_Prefix'))
+                for asset in category.get_assets():
+                    ET.SubElement(category_xml,asset.get_asset_info().key, asset.get_path())
+            
+            # --- Export Launchers and add XML tail ---
+            # Data which is not string must be converted to string
+            for collection in sorted(existing_romcollections, key = lambda rc : rc.get_name()):
+                category_id = collection.get_parent_id()
+                category = next((c for c in existing_categories if c.get_id() == category_id), None)
+                if category:
+                    category_name = category.get_name()
+                else:
+                    category_name = constants.VCATEGORY_ADDONROOT_ID
+
+                logger.debug(f'cmd_export_to_xml() Launcher "{collection.get_name()}" (ID "{collection.get_id()}")')
+                # Check if all artwork paths share the same ROM_asset_path. Unless the user has
+                # customised the ROM artwork paths this should be the case.
+                # A) This function checks if all path_* share a common root directory. If so
+                #    this function returns that common directory as an Unicode string. In this
+                #    case AEL will write the tag <ROM_asset_path> only.
+                # B) If path_* do not share a common root directory this function returns '' and then
+                #    AEL writes all <path_*> tags in the XML file.
+
+                # Export Launcher
+                launcher_xml = ET.SubElement(root, 'launcher')
+                ET.SubElement(launcher_xml, 'name', collection.get_name())
+                ET.SubElement(launcher_xml, 'category', category_name)
+                ET.SubElement(launcher_xml, 'year', collection.get_releaseyear())
+                ET.SubElement(launcher_xml, 'genre', collection.get_genre())
+                ET.SubElement(launcher_xml, 'developer', collection.get_developer())
+                ET.SubElement(launcher_xml, 'rating', collection.get_rating())
+                ET.SubElement(launcher_xml, 'plot', collection.get_plot())
+                ET.SubElement(launcher_xml, 'platform', collection.get_platform())
+                
+                launcher = collection.get_default_launcher()
+                if launcher:
+                    for key, value in launcher.get_settings().items():
+                        ET.SubElement(launcher_xml, key, value)
+                
+                scanner = collection.get_scanners()[0]
+                scanner_data = scanner.get_settings()
+                ET.SubElement(launcher_xml, 'ROM_path', scanner_data['rompath'] if 'rompath' in scanner_data else '')
+                ET.SubElement(launcher_xml, 'ROM_ext', scanner_data['romext'] if 'romext' in scanner_data else '')
+                
+                ET.SubElement(launcher_xml,'Asset_Prefix', collection.get_custom_attribute('Asset_Prefix'))
+                for path in collection.get_asset_paths():
+                    ET.SubElement(launcher_xml, path.get_asset_info().path_key, path.get_path())
+
+                for asset in collection.get_assets():
+                    ET.SubElement(launcher_xml,asset.get_asset_info().key, asset.get_path())
+
+        except constants.AddonError as ex:
+            kodi.notify_warn('{}'.format(ex))
+        else:
+            kodi.notify('Exported AEL Categories and Collections to XML configuration')
 
 @AppMediator.register('RESET_DATABASE')
 def cmd_execute_reset_db(args):
