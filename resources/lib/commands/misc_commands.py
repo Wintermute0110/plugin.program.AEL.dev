@@ -20,8 +20,9 @@ from __future__ import division
 import logging
 import typing
 
-from datetime import time
+from datetime import datetime
 from xml.etree import cElementTree as ET
+from xml.dom import minidom
 
 from ael.utils import kodi, io
 from ael import constants
@@ -58,7 +59,7 @@ def cmd_execute_import_launchers(args):
 
         # >> Process file by file
         for xml_file in file_list:
-            logger.debug('cmd_execute_import_launchers() Importing "{0}"'.format(xml_file))
+            logger.debug(f'cmd_execute_import_launchers() Importing "{xml_file}"')
             import_FN = io.FileName(xml_file)
             if not import_FN.exists(): continue
 
@@ -70,7 +71,7 @@ def cmd_execute_import_launchers(args):
                 if category_to_import.get_id() in existing_category_ids:
                      # >> Category exists (by name). Overwrite?
                     logger.debug('Category found. Edit existing category.')
-                    if kodi.dialog_yesno('Category "{}" found in AEL database. Overwrite?'.format(category_to_import.get_name())):
+                    if kodi.dialog_yesno(f'Category "{category_to_import.get_name()}" found in AEL database. Overwrite?'):
                         categories_to_update.append(category_to_import)
                 else:
                     categories_to_insert.append(category_to_import)
@@ -80,7 +81,7 @@ def cmd_execute_import_launchers(args):
                 if launcher_to_import.get_id() in existing_romcollection_ids:
                      # >> Romset exists (by name). Overwrite?
                     logger.debug('ROMCollection found. Edit existing ROMCollection.')
-                    if kodi.dialog_yesno('ROMCollection "{}" found in AEL database. Overwrite?'.format(launcher_to_import.get_name())):
+                    if kodi.dialog_yesno(f'ROMCollection "{launcher_to_import.get_name()}" found in AEL database. Overwrite?'):
                         romcollections_to_update.append(launcher_to_import)
                 else:
                     romcollections_to_insert.append(launcher_to_import)
@@ -136,22 +137,22 @@ def cmd_export_to_xml(args):
         try:
             # --- XML header ---
             root = ET.Element('advanced_emulator_launcher_configuration')
-            comment = ET.Comment(f'<!-- Exported by AEL on {time.strftime("%Y-%m-%d %H:%M:%S")} -->')
-            root.insert(1, comment)
+            #comment = ET.Comment(f'<!-- Exported by AEL on {datetime.now().strftime("%Y-%m-%d %H:%M:%S")} -->')
+            #root.insert(1, comment)
             # --- Export Categories ---
             # Data which is not string must be converted to string
             for category in sorted(existing_categories, key = lambda c : c.get_name()):
                 logger.debug(f'cmd_export_to_xml() Category "{category.get_name()}" (ID "{category.get_id()}")')
                 category_xml = ET.SubElement(root, 'category')
-                ET.SubElement(category_xml,'name', category.get_name())
-                ET.SubElement(category_xml,'year', category.get_releaseyear())
-                ET.SubElement(category_xml,'genre', category.get_genre())
-                ET.SubElement(category_xml,'developer', category.get_developer())
-                ET.SubElement(category_xml,'rating', category.get_rating())
-                ET.SubElement(category_xml,'plot', category.get_plot())
-                ET.SubElement(category_xml,'Asset_Prefix', category.get_custom_attribute('Asset_Prefix'))
+                ET.SubElement(category_xml,'name').text = category.get_name()
+                ET.SubElement(category_xml,'year').text = category.get_releaseyear()
+                ET.SubElement(category_xml,'genre').text = category.get_genre()
+                ET.SubElement(category_xml,'developer').text = category.get_developer()
+                ET.SubElement(category_xml,'rating').text = category.get_rating()
+                ET.SubElement(category_xml,'plot').text = category.get_plot()
+                ET.SubElement(category_xml,'Asset_Prefix').text = category.get_custom_attribute('Asset_Prefix')
                 for asset in category.get_assets():
-                    ET.SubElement(category_xml,asset.get_asset_info().key, asset.get_path())
+                    ET.SubElement(category_xml,asset.get_asset_info().key).text = asset.get_path()
             
             # --- Export Launchers and add XML tail ---
             # Data which is not string must be converted to string
@@ -174,32 +175,35 @@ def cmd_export_to_xml(args):
 
                 # Export Launcher
                 launcher_xml = ET.SubElement(root, 'launcher')
-                ET.SubElement(launcher_xml, 'name', collection.get_name())
-                ET.SubElement(launcher_xml, 'category', category_name)
-                ET.SubElement(launcher_xml, 'year', collection.get_releaseyear())
-                ET.SubElement(launcher_xml, 'genre', collection.get_genre())
-                ET.SubElement(launcher_xml, 'developer', collection.get_developer())
-                ET.SubElement(launcher_xml, 'rating', collection.get_rating())
-                ET.SubElement(launcher_xml, 'plot', collection.get_plot())
-                ET.SubElement(launcher_xml, 'platform', collection.get_platform())
+                ET.SubElement(launcher_xml, 'name').text = collection.get_name()
+                ET.SubElement(launcher_xml, 'category').text = category_name
+                ET.SubElement(launcher_xml, 'year').text = collection.get_releaseyear()
+                ET.SubElement(launcher_xml, 'genre').text = collection.get_genre()
+                ET.SubElement(launcher_xml, 'developer').text = collection.get_developer()
+                ET.SubElement(launcher_xml, 'rating').text = collection.get_rating()
+                ET.SubElement(launcher_xml, 'plot').text = collection.get_plot()
+                ET.SubElement(launcher_xml, 'platform').text = collection.get_platform()
                 
                 launcher = collection.get_default_launcher()
                 if launcher:
                     for key, value in launcher.get_settings().items():
                         ET.SubElement(launcher_xml, key, value)
                 
-                scanner = collection.get_scanners()[0]
-                scanner_data = scanner.get_settings()
-                ET.SubElement(launcher_xml, 'ROM_path', scanner_data['rompath'] if 'rompath' in scanner_data else '')
-                ET.SubElement(launcher_xml, 'ROM_ext', scanner_data['romext'] if 'romext' in scanner_data else '')
+                scanners = collection.get_scanners()
+                scanner_data = scanners[0].get_settings() if scanners and len(scanners) > 0 else {}
+                ET.SubElement(launcher_xml, 'ROM_path').text = scanner_data['rompath'] if 'rompath' in scanner_data else ''
+                ET.SubElement(launcher_xml, 'ROM_ext').text = scanner_data['romext'] if 'romext' in scanner_data else ''
                 
-                ET.SubElement(launcher_xml,'Asset_Prefix', collection.get_custom_attribute('Asset_Prefix'))
+                ET.SubElement(launcher_xml,'Asset_Prefix').text = collection.get_custom_attribute('Asset_Prefix')
                 for path in collection.get_asset_paths():
-                    ET.SubElement(launcher_xml, path.get_asset_info().path_key, path.get_path())
+                    ET.SubElement(launcher_xml, path.get_asset_info().path_key).text = path.get_path()
 
                 for asset in collection.get_assets():
-                    ET.SubElement(launcher_xml,asset.get_asset_info().key, asset.get_path())
+                    ET.SubElement(launcher_xml,asset.get_asset_info().key).text = asset.get_path()
 
+            result_xml = ET.tostring(root, 'utf-8')
+            parsed_xml = minidom.parseString(result_xml)
+            export_FN.saveStrToFile(parsed_xml.toprettyxml(indent="  "))
         except constants.AddonError as ex:
             kodi.notify_warn('{}'.format(ex))
         else:

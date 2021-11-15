@@ -224,8 +224,8 @@ def qry_get_utilities_items():
             'plot':  ('Check all Launchers for missing executables, missing artwork, '
                     'wrong platform names, ROM path existence, etc.'),
             'overlay': 4
-        'art': { 'icon' : vcategory_icon, 'fanart' : vcategory_fanart, 'poster' : vcategory_poster  },
         },
+        'art': { 'icon' : vcategory_icon, 'fanart' : vcategory_fanart, 'poster' : vcategory_poster  },
         'properties': { constants.AEL_CONTENT_LABEL: constants.AEL_CONTENT_VALUE_NONE, 'obj_type': constants.OBJ_NONE }
     })
     container['items'].append({
