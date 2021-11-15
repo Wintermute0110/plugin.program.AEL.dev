@@ -280,7 +280,7 @@ class ROMsJsonFileRepository(object):
 # Can be used to create database scopes/sessions (unit of work pattern).
 #
 class UnitOfWork(object):
-    VERBOSE = True
+    VERBOSE = False
 
     def __init__(self, db_path: io.FileName):
         self._db_path = db_path

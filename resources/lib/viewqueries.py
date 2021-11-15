@@ -185,14 +185,14 @@ def qry_get_utilities_items():
         'properties': { constants.AEL_CONTENT_LABEL: constants.AEL_CONTENT_VALUE_NONE, 'obj_type': constants.OBJ_NONE }
     })
     container['items'].append({
-        'name': 'Export category/launcher XML configuration file',
-        'url': globals.router.url_for_path('utilities/export_launchers'), #EXECUTE_UTILS_EXPORT_LAUNCHERS
+        'name': 'Export category/rom collection XML configuration file',
+        'url': globals.router.url_for_path('execute/command/export_to_legacy_xml'), 
         'is_folder': False,
         'type': 'video',
         'info': {
-            'title': 'Export category/launcher XML configuration file',
+            'title': 'Export category/rom collection XML configuration file',
             'plot': (
-                'Exports all AEL categories and launchers into an XML configuration file. '
+                'Exports all AEL categories and collections into an XML configuration file. '
                 'You can later reimport this XML file.'),
             'overlay': 4
         },
