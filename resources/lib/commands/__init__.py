@@ -27,3 +27,4 @@ import resources.lib.commands.rom_scanner_commands
 import resources.lib.commands.rom_scraper_commands
 import resources.lib.commands.stats_commands
 import resources.lib.commands.misc_commands
+import resources.lib.commands.chk_commands

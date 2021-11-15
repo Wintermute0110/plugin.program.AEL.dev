@@ -246,7 +246,7 @@ def qry_get_utilities_items():
     })
     container['items'].append({
         'name': 'Check ROMs artwork image integrity',
-        'url': globals.router.url_for_path('EXECUTE_UTILS_CHECK_ROM_ARTWORK_INTEGRITY'),
+        'url': globals.router.url_for_path('execute/command/check_rom_artwork_integrity'),
         'is_folder': False,
         'type': 'video',
         'info': {
@@ -261,13 +261,13 @@ def qry_get_utilities_items():
     })
     container['items'].append({
         'name': 'Delete ROMs redundant artwork',
-        'url': globals.router.url_for_path('EXECUTE_UTILS_DELETE_ROM_REDUNDANT_ARTWORK'),
+        'url': globals.router.url_for_path('execute/command/delete_redundant_rom_artwork'),
         'is_folder': False,
         'type': 'video',
         'info': {
             'title': 'Delete ROMs redundant artwork',
-            'plot': ('Scans all ROM Launchers and finds '
-                    '[COLOR orange]redundant ROMs artwork[/COLOR]. You may delete this unneeded images.'),
+            'plot': ('Scans all ROM collections and finds '
+                    '[COLOR orange]redundant ROMs artwork[/COLOR]. You may delete these unneeded images.'),
             'overlay': 4
         },
         'art': { 'icon' : vcategory_icon, 'fanart' : vcategory_fanart, 'poster' : vcategory_poster  },
