@@ -18,15 +18,15 @@ from __future__ import unicode_literals
 from __future__ import division
 
 import logging
-import typing
 
 from ael.utils import kodi, io
 from ael import constants
 
 from resources.lib.commands.mediator import AppMediator
 
-from resources.lib.repositories import ROMsRepository, UnitOfWork, AelAddonRepository, CategoryRepository, ROMCollectionRepository, XmlConfigurationRepository
-from resources.lib.domain import Category, ROMCollection, AelAddon
+from resources.lib.repositories import ROMsRepository, UnitOfWork, ROMCollectionRepository,
+from resources.lib.domain import g_assetFactory
+from resources.lib import globals
 
 logger = logging.getLogger(__name__)
 
@@ -39,9 +39,8 @@ def cmd_check_ROM_artwork_integrity(args):
         romcollections_repository = ROMCollectionRepository(uow)
         rom_repository            = ROMsRepository(uow)
         
+        romcollections = [*romcollections_repository.find_all_romcollections()]
         
-        romcollections              = [*romcollections_repository.find_all_romcollections()]
-
         main_slist = []
         detailed_slist = []
         sum_table_slist = [
@@ -59,108 +58,112 @@ def cmd_check_ROM_artwork_integrity(args):
             pdialog.incrementStep(d_msg)
 
             # Skip non-ROM launcher.
-            if not launcher['rompath']: continue
+            #if not launcher['rompath']: continue
+            
             logger.debug(f'Checking ROM Launcher "{collection.get_name()}"...')
-            detailed_slist.append(KC_ORANGE + 'Launcher "{}"'.format(launcher['m_name']) + KC_END)
+            detailed_slist.append(f'{constants.KC_ORANGE}Launcher "{collection.get_name()}"{constants.KC_END}')
+            
             # Load ROMs.
-            pdialog.updateMessage('{}\n{}'.format(d_msg, 'Loading ROMs'))
-            roms = fs_load_ROMs_JSON(g_PATHS.ROMS_DIR, launcher)
+            pdialog.updateMessage(f'{d_msg}\nLoading ROMs')
+            roms = rom_repository.find_roms_by_romcollection(collection)
             num_roms = len(roms)
             R_str = 'ROM' if num_roms == 1 else 'ROMs'
-            logger.debug('Launcher has {} DB {}'.format(num_roms, R_str))
-            detailed_slist.append('Launcher has {} DB {}'.format(num_roms, R_str))
+            logger.debug(f'Launcher has {num_roms} DB {R_str}')
+            detailed_slist.append('Launcher has {num_roms} DB {R_str}')
+            
             # If Launcher is empty there is nothing to do.
             if num_roms < 1:
                 logger.debug('Launcher is empty')
                 detailed_slist.append('Launcher is empty')
-                detailed_slist.append(KC_YELLOW + 'Skipping launcher' + KC_END)
+                detailed_slist.append(f'{constants.KC_YELLOW}Skipping launcher{constants.KC_END}')
                 continue
 
-        # Traverse all ROMs in Launcher.
-        # For every asset check the artwork file.
-        # First check if the image has the correct extension.
-        problems_detected = False
-        launcher_images = 0
-        launcher_missing_images = 0
-        launcher_problematic_images = 0
-        pdialog.updateMessage('{}\n{}'.format(d_msg, 'Checking image files'))
-        for rom_id in roms:
-            rom = roms[rom_id]
-            # detailed_slist.append('\nProcessing ROM {}'.format(rom['filename']))
-            for asset_id in ROM_ASSET_ID_LIST:
-                A = assets_get_info_scheme(asset_id)
-                asset_fname = rom[A.key]
-                # detailed_slist.append('\nProcessing asset {}'.format(A.name))
-                # Skip empty assets
-                if not asset_fname: continue
-                # Skip manuals and trailers
-                if asset_id == ASSET_MANUAL_ID: continue
-                if asset_id == ASSET_TRAILER_ID: continue
-                launcher_images += 1
-                total_images += 1
-                # If asset file does not exits that's an error.
-                if not os.path.exists(asset_fname):
-                    detailed_slist.append('Not found {}'.format(asset_fname))
-                    launcher_missing_images += 1
-                    missing_images += 1
-                    problems_detected = True
-                    continue
-                # Process asset
-                processed_images += 1
-                asset_root, asset_ext = os.path.splitext(asset_fname)
-                asset_ext = asset_ext[1:] # Remove leading dot '.png' -> 'png'
-                img_id_ext = misc_identify_image_id_by_ext(asset_fname)
-                img_id_real = misc_identify_image_id_by_contents(asset_fname)
-                # detailed_slist.append('img_id_ext "{}" | img_id_real "{}"'.format(img_id_ext, img_id_real))
-                # Unrecognised or corrupted image.
-                if img_id_ext == IMAGE_UKNOWN_ID:
-                    detailed_slist.append('Unrecognised extension {}'.format(asset_fname))
-                    problems_detected = True
-                    problematic_images += 1
-                    launcher_problematic_images += 1
-                    continue
-                # Corrupted image.
-                if img_id_real == IMAGE_CORRUPT_ID:
-                    detailed_slist.append('Corrupted {}'.format(asset_fname))
-                    problems_detected = True
-                    problematic_images += 1
-                    launcher_problematic_images += 1
-                    continue
-                # Unrecognised or corrupted image.
-                if img_id_real == IMAGE_UKNOWN_ID:
-                    detailed_slist.append('Bin unrecog or corrupted {}'.format(asset_fname))
-                    problems_detected = True
-                    problematic_images += 1
-                    launcher_problematic_images += 1
-                    continue
-                # At this point the image is recognised but has wrong extension
-                if img_id_ext != img_id_real:
-                    detailed_slist.append('Wrong extension ({}) {}'.format(
-                        IMAGE_EXTENSIONS[img_id_real][0], asset_fname))
-                    problems_detected = True
-                    problematic_images += 1
-                    launcher_problematic_images += 1
-                    continue
-            # On big setups this can take forever. Allow the user to cancel.
-            if pdialog.isCanceled(): break
-        else:
-            # only executed if the inner loop did NOT break
-            sum_table_slist.append([
-                launcher['m_name'], '{:,d}'.format(num_roms), '{:,d}'.format(launcher_images),
-                '{:,d}'.format(launcher_missing_images), '{:,d}'.format(launcher_problematic_images),
-            ])
-            detailed_slist.append('Number of images    {:6,d}'.format(launcher_images))
-            detailed_slist.append('Missing images      {:6,d}'.format(launcher_missing_images))
-            detailed_slist.append('Problematic images  {:6,d}'.format(launcher_problematic_images))
-            if problems_detected:
-                detailed_slist.append(KC_RED + 'Launcher should be updated' + KC_END)
+            # Traverse all ROMs in Collection.
+            # For every asset check the artwork file.
+            # First check if the image has the correct extension.
+            problems_detected = False
+            collection_images = 0
+            collection_missing_images = 0
+            collection_problematic_images = 0
+            pdialog.updateMessage(f'{d_msg}\nChecking image files')
+            for rom in roms:
+                # detailed_slist.append('\nProcessing ROM {}'.format(rom['filename']))
+                for rom_asset in rom.get_assets():
+                    # detailed_slist.append('\nProcessing asset {}'.format(A.name))
+                    
+                    # Skip empty assets
+                    if not rom_asset.get_path(): continue
+                    # Skip manuals and trailers
+                    asset = rom_asset.get_asset_info()
+                    if asset.id == constants.ASSET_MANUAL_ID: continue
+                    if asset.id == constants.ASSET_TRAILER_ID: continue
+                    
+                    collection_images += 1
+                    total_images += 1
+                    # If asset file does not exits that's an error.
+                    rom_asset_path = rom_asset.get_path_FN()
+                    if not rom_asset_path.exists():
+                        detailed_slist.append(f'Not found {rom_asset.get_path()}')
+                        collection_missing_images += 1
+                        missing_images += 1
+                        problems_detected = True
+                        continue
+                    # Process asset
+                    processed_images += 1
+                    asset_ex = rom_asset_path.getExt()
+                    asset_ext = asset_ext[1:] # Remove leading dot '.png' -> 'png'
+                    img_id_ext = io.misc_identify_image_id_by_ext(asset_fname)
+                    img_id_real = io.misc_identify_image_id_by_contents(asset_fname)
+                    # detailed_slist.append('img_id_ext "{}" | img_id_real "{}"'.format(img_id_ext, img_id_real))
+                    # Unrecognised or corrupted image.
+                    if img_id_ext == io.IMAGE_UKNOWN_ID:
+                        detailed_slist.append('Unrecognised extension {}'.format(asset_fname))
+                        problems_detected = True
+                        problematic_images += 1
+                        collection_problematic_images += 1
+                        continue
+                    # Corrupted image.
+                    if img_id_real == io.IMAGE_CORRUPT_ID:
+                        detailed_slist.append('Corrupted {}'.format(asset_fname))
+                        problems_detected = True
+                        problematic_images += 1
+                        collection_problematic_images += 1
+                        continue
+                    # Unrecognised or corrupted image.
+                    if img_id_real == IMAGE_UKNOWN_ID:
+                        detailed_slist.append('Bin unrecog or corrupted {}'.format(asset_fname))
+                        problems_detected = True
+                        problematic_images += 1
+                        collection_problematic_images += 1
+                        continue
+                    # At this point the image is recognised but has wrong extension
+                    if img_id_ext != img_id_real:
+                        detailed_slist.append('Wrong extension ({}) {}'.format(
+                            IMAGE_EXTENSIONS[img_id_real][0], asset_fname))
+                        problems_detected = True
+                        problematic_images += 1
+                        collection_problematic_images += 1
+                        continue
+                # On big setups this can take forever. Allow the user to cancel.
+                if pdialog.isCanceled(): break
             else:
-                detailed_slist.append(KC_GREEN + 'Launcher OK' + KC_END)
-            detailed_slist.append('')
-            continue
-        # only executed if the inner loop DID break
-        detailed_slist.append('Interrupted by user (pDialog cancelled).')
-        break
+                # only executed if the inner loop did NOT break
+                sum_table_slist.append([
+                    launcher['m_name'], '{:,d}'.format(num_roms), '{:,d}'.format(collection_images),
+                    '{:,d}'.format(collection_missing_images), '{:,d}'.format(collection_problematic_images),
+                ])
+                detailed_slist.append('Number of images    {:6,d}'.format(collection_images))
+                detailed_slist.append('Missing images      {:6,d}'.format(collection_missing_images))
+                detailed_slist.append('Problematic images  {:6,d}'.format(collection_problematic_images))
+                if problems_detected:
+                    detailed_slist.append(KC_RED + 'Launcher should be updated' + KC_END)
+                else:
+                    detailed_slist.append(KC_GREEN + 'Launcher OK' + KC_END)
+                detailed_slist.append('')
+                continue
+            # only executed if the inner loop DID break
+            detailed_slist.append('Interrupted by user (pDialog cancelled).')
+            break
     pdialog.endProgress()
 
     # Generate, save and display report.
@@ -192,9 +195,9 @@ def cmd_delete_redundant_rom_artwork(args):
     # detailed_slist = []
     # pdialog = KodiProgressDialog()
     # pdialog.startProgress('Checking ROM sync status', len(self.launchers))
-    # for launcher_id in sorted(self.launchers, key = lambda x : self.launchers[x]['m_name']):
+    # for collection_id in sorted(self.launchers, key = lambda x : self.launchers[x]['m_name']):
     #     pdialog.updateProgressInc()
-    #     launcher = self.launchers[launcher_id]
+    #     launcher = self.launchers[collection_id]
     #     # Skip non-ROM launcher.
     #     if not launcher['rompath']: continue
     #     logger.debug('Checking ROM Launcher "{}"'.format(launcher['m_name']))
