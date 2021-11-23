@@ -119,6 +119,10 @@ def qry_get_utilities_items():
         'items': []
     }
 
+    # Deprecated commands:
+    # EXECUTE_UTILS_CHECK_LAUNCHER_SYNC_STATUS -> todo: execute per collection, add report command to scanners
+    # EXECUTE_UTILS_CHECK_DATABASE -> Substituted by db constraints and migration scripts.
+
     container['items'].append({
         'name': 'Reset database',
         'url': globals.router.url_for_path('execute/command/reset_database'),
@@ -201,29 +205,13 @@ def qry_get_utilities_items():
     })
     container['items'].append({
         'name': 'Check collections',
-        'url': globals.router.url_for_path('execute/command/check_collections'), #@EXECUTE_UTILS_CHECK_LAUNCHERS
+        'url': globals.router.url_for_path('execute/command/check_collections'),
         'is_folder': False,
         'type': 'video',
         'info': {
-            'title': 'Check Launchers',
-            'plot':  ('Check all Launchers for missing executables, missing artwork, '
-                    'wrong platform names, ROM path existence, etc.'),
-            'overlay': 4
-        },
-        'art': { 'icon' : vcategory_icon, 'fanart' : vcategory_fanart, 'poster' : vcategory_poster  },
-        'properties': { constants.AEL_CONTENT_LABEL: constants.AEL_CONTENT_VALUE_NONE, 'obj_type': constants.OBJ_NONE }
-    })
-    container['items'].append({
-        'name': 'Check collections ROMs sync status',
-        'url': globals.router.url_for_path('EXECUTE_UTILS_CHECK_LAUNCHER_SYNC_STATUS'),
-        'is_folder': False,
-        'type': 'video',
-        'info': {
-            'title': 'Check Launcher ROMs sync status',
-            'plot': ('For all ROM Launchers, check if all the ROMs in the ROM path are in AEL '
-                    'database. If any Launcher is out of sync because you were changing your ROM files, use '
-                    'the [COLOR=orange]ROM Scanner[/COLOR] to add and scrape the missing ROMs and remove '
-                    'any dead ROMs.'),
+            'title': 'Check collections',
+            'plot':  ('Check all collections for missing launchers or scanners, missing artwork, '
+                    'wrong platform names, asset path existence, etc.'),
             'overlay': 4
         },
         'art': { 'icon' : vcategory_icon, 'fanart' : vcategory_fanart, 'poster' : vcategory_poster  },
@@ -253,6 +241,21 @@ def qry_get_utilities_items():
             'title': 'Delete ROMs redundant artwork',
             'plot': ('Scans all ROM collections and finds '
                     '[COLOR orange]redundant ROMs artwork[/COLOR]. You may delete these unneeded images.'),
+            'overlay': 4
+        },
+        'art': { 'icon' : vcategory_icon, 'fanart' : vcategory_fanart, 'poster' : vcategory_poster  },
+        'properties': { constants.AEL_CONTENT_LABEL: constants.AEL_CONTENT_VALUE_NONE, 'obj_type': constants.OBJ_NONE }
+    })
+    container['items'].append({
+        'name': 'Show detected No-Intro/Redump DATs',
+        'url': globals.router.url_for_path('execute/command/EXECUTE_UTILS_SHOW_DETECTED_DATS'),
+        'is_folder': False,
+        'type': 'video',
+        'info': {
+            'title': 'Show detected No-Intro/Redump DATs',
+            'plot': ('Display the auto-detected No-Intro/Redump DATs that will be used for the '
+                    'ROM audit. You have to configure the DAT directories in '
+                    '[COLOR orange]AEL addon settings[/COLOR], [COLOR=orange]ROM Audit[/COLOR] tab.'),
             'overlay': 4
         },
         'art': { 'icon' : vcategory_icon, 'fanart' : vcategory_fanart, 'poster' : vcategory_poster  },
