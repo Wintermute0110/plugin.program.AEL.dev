@@ -130,12 +130,20 @@ def vw_route_render_virtual_view(view_id: str):
 # Utilities and Global reports
 # -------------------------------------------------------------------------------------------------
 @router.route('/utilities')
-def vw_route_render_utilities_vlaunchers():
+def vw_route_render_utilities():
     container = viewqueries.qry_get_utilities_items()
     container_context_items = viewqueries.qry_container_context_menu_items(container)
 
     render_list_items(container, container_context_items)
     xbmcplugin.endOfDirectory(handle = router.handle, succeeded = True, cacheToDisc = False)
+    
+@router.route('/globalreports')
+def vw_route_render_globalreports():
+    container = viewqueries.qry_get_globalreport_items()
+    container_context_items = viewqueries.qry_container_context_menu_items(container)
+
+    render_list_items(container, container_context_items)
+    xbmcplugin.endOfDirectory(handle = router.handle, succeeded = True, cacheToDisc = False)    
 
 # -------------------------------------------------------------------------------------------------
 # Command execution
