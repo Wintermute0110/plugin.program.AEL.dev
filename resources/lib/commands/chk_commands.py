@@ -18,14 +18,15 @@ from __future__ import unicode_literals
 from __future__ import division
 
 import logging
+import typing
 
 from ael.utils import kodi, io, text
 from ael import constants
 
 from resources.lib.commands.mediator import AppMediator
 
-from resources.lib.repositories import ROMsRepository, UnitOfWork, ROMCollectionRepository,
-from resources.lib.domain import g_assetFactory
+from resources.lib.repositories import ROMsRepository, UnitOfWork, ROMCollectionRepository
+from resources.lib.domain import AssetInfo, g_assetFactory
 from resources.lib import globals
 
 logger = logging.getLogger(__name__)
@@ -188,78 +189,130 @@ def cmd_check_ROM_artwork_integrity(args):
 
 @AppMediator.register('DELETE_REDUNDANT_ROM_ARTWORK')
 def cmd_delete_redundant_rom_artwork(args):
-    kodi.dialog_OK('DELETE_REDUNDANT_ROM_ARTWORK not implemented yet.')
-    return
+    logger.debug('cmd_delete_redundant_rom_artwork() Beginning...')
+    
+    asset_paths_by_asset_type:typing.Dict[AssetInfo, typing.List[io.FileName]] = {}
+    assets_by_asset_type:typing.Dict[AssetInfo, typing.List[io.FileName]]      = {}
+    # initialize dict
+    for asset_type in constants.ROM_ASSET_ID_LIST:
+        asset_paths_by_asset_type[asset_type] = []
+        assets_by_asset_type[asset_type] = []
 
-    # logger.info('cmd_delete_redundant_rom_artwork() Beginning...')
-    # main_slist = []
-    # detailed_slist = []
-    # pdialog = KodiProgressDialog()
-    # pdialog.startProgress('Checking ROM sync status', len(self.launchers))
-    # for collection_id in sorted(self.launchers, key = lambda x : self.launchers[x]['m_name']):
-    #     pdialog.updateProgressInc()
-    #     launcher = self.launchers[collection_id]
-    #     # Skip non-ROM launcher.
-    #     if not launcher['rompath']: continue
-    #     logger.debug('Checking ROM Launcher "{}"'.format(launcher['m_name']))
-    #     detailed_slist.append('[COLOR orange]Launcher "{}"[/COLOR]'.format(launcher['m_name']))
-    #     # Load ROMs.
-    #     roms = fs_load_ROMs_JSON(g_PATHS.ROMS_DIR, launcher)
-    #     num_roms = len(roms)
-    #     R_str = 'ROM' if num_roms == 1 else 'ROMs'
-    #     logger.debug('Launcher has {} DB {}'.format(num_roms, R_str))
-    #     detailed_slist.append('Launcher has {} DB {}'.format(num_roms, R_str))
-    #     # For now skip multidisc ROMs until multidisc support is fixed. I think for
-    #     # every ROM in the multidisc set there should be a normal ROM not displayed
-    #     # in listings, and then the special multidisc ROM that points to the ROMs
-    #     # in the set.
-    #     has_multidisc_ROMs = False
-    #     for rom_id in roms:
-    #         if roms[rom_id]['disks']:
-    #             has_multidisc_ROMs = True
-    #             break
-    #     if has_multidisc_ROMs:
-    #         logger.debug('Launcher has multidisc ROMs. Skipping launcher')
-    #         detailed_slist.append('Launcher has multidisc ROMs.')
-    #         detailed_slist.append('[COLOR yellow]Skipping launcher[/COLOR]')
-    #         continue
-    #     # Get real ROMs (remove Missing, Multidisc, etc., ROMs).
-    #     # Remove ROM Audit Missing ROMs (fake ROMs).
-    #     real_roms = {}
-    #     for rom_id in roms:
-    #         if roms[rom_id]['nointro_status'] == AUDIT_STATUS_MISS: continue
-    #         real_roms[rom_id] = roms[rom_id]
-    #     num_real_roms = len(real_roms)
-    #     R_str = 'ROM' if num_real_roms == 1 else 'ROMs'
-    #     logger.debug('Launcher has {} real {}'.format(num_real_roms, R_str))
-    #     detailed_slist.append('Launcher has {} real {}'.format(num_real_roms, R_str))
-    #     # If Launcher is empty there is nothing to do.
-    #     if num_real_roms < 1:
-    #         logger.debug('Launcher is empty')
-    #         detailed_slist.append('Launcher is empty')
-    #         detailed_slist.append('[COLOR yellow]Skipping launcher[/COLOR]')
-    #         continue
-    #     # Make a dictionary for fast indexing.
-    #     # romfiles_dic = {real_roms[rom_id]['filename'] : rom_id for rom_id in real_roms}
+    uow = UnitOfWork(globals.g_PATHS.DATABASE_FILE_PATH)
+    with uow:
+        romcollections_repository = ROMCollectionRepository(uow)
+        rom_repository            = ROMsRepository(uow)
+        
+        romcollections = [*romcollections_repository.find_all_romcollections()]
+        
+        logger.info('cmd_delete_redundant_rom_artwork() Beginning...')
+        main_slist = []
+        detailed_slist = []
+        d_msg = 'Checking ROM artwork integrity...'
+        pdialog = kodi.ProgressDialog()
+        pdialog.startProgress(d_msg, len(romcollections))
 
-    #     # Process all asset directories one by one.
+        all_unique_paths = []
+        for collection in romcollections:
+            pdialog.incrementStep(d_msg)
+            # Skip non-ROM launcher.
+            #if not launcher['rompath']: continue
 
+            logger.debug(f'Checking ROM Collection "{collection.get_name()}"')
+            detailed_slist.append(f'[COLOR orange]Collection "{collection.get_name()}"[/COLOR]')
+            # Load ROMs.
+            roms = rom_repository.find_roms_by_romcollection(collection)
+            num_roms = len(roms)
+            
+            R_str = 'ROM' if num_roms == 1 else 'ROMs'
+            msg = f'Collection has {num_roms} {R_str}'
+            logger.debug(msg)
+            detailed_slist.append(msg)
 
-    #     # Complete detailed report.
-    #     detailed_slist.append('')
-    # pdialog.endProgress()
+            # If collection is empty there is nothing to do.
+            if len(roms) < 1:
+                logger.debug('Collection is empty')
+                detailed_slist.append('Collection is empty')
+                detailed_slist.append('[COLOR yellow]Skipping collection[/COLOR]')
+                continue
+            
+            num_asset_paths_by_collection = 0
+            asset_paths = collection.get_asset_paths()
+            for asset_path in asset_paths:
+                # already added?
+                if asset_path.get_path() in all_unique_paths: continue
+                asset_paths_by_asset_type[asset_path.get_asset_info()].append(asset_path.get_path_FN())
+                num_asset_paths_by_collection += 1
+                all_unique_paths.append(asset_path.get_path())
 
+            num_assets_by_collection = 0
+            for rom in roms:
+                assets      = rom.get_assets()
+                asset_paths = rom.get_asset_paths()
+                for asset in assets:
+                    assets_by_asset_type[asset.get_asset_info()].append(asset.get_path_FN())
+                    num_assets_by_collection += 1
+                for asset_path in asset_paths:
+                    # already added?
+                    if asset_path.get_path() in all_unique_paths: continue
+                    asset_paths_by_asset_type[asset_path.get_asset_info()].append(asset_path.get_path_FN())
+                    num_asset_paths_by_collection += 1
+                    all_unique_paths.append(asset_path.get_path())
+
+            detailed_slist.append(collection.get_name())
+            detailed_slist.append(f'Number of ROMs      {num_roms}')
+            detailed_slist.append(f'Number of paths     {num_asset_paths_by_collection}')
+            detailed_slist.append(f'Number of asset     {num_assets_by_collection}')
+            detailed_slist.append('')
+
+    files_to_be_removed = []
+    # Process all asset directories one by one.
+    for asset_type in constants.ROM_ASSET_ID_LIST:
+        asset_info  = g_assetFactory.get_asset_info(asset_type)
+        asset_paths = asset_paths_by_asset_type[asset_type]
+        assets      = assets_by_asset_type[asset_type]
+
+        logger.debug(f'Checking {len(asset_paths)} paths against {len(assets)} assets for asset type {asset_info.name}')
+        files_in_path:typing.List[str] = []
+        
+        # collect all existing files
+        for path in asset_paths:
+            for ext in asset_info.exts:
+                files = path.scanFilesInPath(f'*.{ext}')
+                files_in_path.extend(f.getPath().lower() for f in files)
+        
+        num_of_scanned_files = len(files_in_path)
+        # remove mapped assets
+        for asset in assets:
+            files_in_path.remove(asset.getPath().lower())
+
+        logger.debug(f'Found {len(files_in_path)} files not mapped.')
+        files_to_be_removed.extend(files_in_path)
+        detailed_slist.append(asset_info.name)
+        detailed_slist.append(f'Number of total files      {num_of_scanned_files}')
+        detailed_slist.append(f'Number of unmapped files   {len(files_in_path)}')
+        detailed_slist.append('')
+
+    # Complete detailed report.
+    detailed_slist.append('Files to be removed')
+    for file_to_be_removed in files_to_be_removed:
+        detailed_slist.append(file_to_be_removed)
+    detailed_slist.append('')
+    pdialog.endProgress()
+    
     # Generate, save and display report.
-    logger.info('Writing report file "{}"'.format(g_PATHS.ROM_SYNC_REPORT_FILE_PATH.getPath()))
+    report_path = globals.g_PATHS.ROM_ART_INTEGRITY_REPORT_FILE_PATH
+    logger.info(f'Writing report file "{report_path.getPath()}"')
     pdialog.startProgress('Saving report')
     main_slist.append('*** Summary ***')
-    main_slist.append('There are {} ROM launchers.'.format(len(self.launchers)))
+    main_slist.append(f'There are {len(files_to_be_removed)} files to be removed.')
     main_slist.append('')
-    # main_slist.extend(text_render_table_NO_HEADER(short_slist, trim_Kodi_colours = True))
-    # main_slist.append('')
     main_slist.append('*** Detailed report ***')
     main_slist.extend(detailed_slist)
-    utils_write_str_to_file(g_PATHS.ROM_SYNC_REPORT_FILE_PATH.getPath(), main_slist)
+
+    output_table = '\n'.join(main_slist)
+    report_path.writeAll(output_table)
     pdialog.endProgress()
-    full_string = '\n'.join(main_slist)
-    kodi_display_text_window_mono('ROM redundant artwork report', full_string)
+
+    #kodi.dialog_yesno(f'Found {file}')
+    kodi.display_text_window_mono('ROM redundant artwork report', output_table)
