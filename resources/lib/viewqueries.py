@@ -200,23 +200,8 @@ def qry_get_utilities_items():
         'properties': { constants.AEL_CONTENT_LABEL: constants.AEL_CONTENT_VALUE_NONE, 'obj_type': constants.OBJ_NONE }
     })
     container['items'].append({
-        'name': 'Check/Update all databases',
-        'url': globals.router.url_for_path('EXECUTE_UTILS_CHECK_DATABASE'),
-        'is_folder': False,
-        'type': 'video',
-        'info': {
-            'title': 'Check/Update all databases',
-            'plot': (
-                'Exports all AEL categories and launchers into an XML configuration file. '
-                'You can later reimport this XML file.'),
-            'overlay': 4
-        },
-        'art': { 'icon' : vcategory_icon, 'fanart' : vcategory_fanart, 'poster' : vcategory_poster  },
-        'properties': { constants.AEL_CONTENT_LABEL: constants.AEL_CONTENT_VALUE_NONE, 'obj_type': constants.OBJ_NONE }
-    })
-    container['items'].append({
-        'name': 'Check Launchers',
-        'url': globals.router.url_for_path('EXECUTE_UTILS_CHECK_LAUNCHERS'),
+        'name': 'Check collections',
+        'url': globals.router.url_for_path('execute/command/check_collections'), #@EXECUTE_UTILS_CHECK_LAUNCHERS
         'is_folder': False,
         'type': 'video',
         'info': {
@@ -229,7 +214,7 @@ def qry_get_utilities_items():
         'properties': { constants.AEL_CONTENT_LABEL: constants.AEL_CONTENT_VALUE_NONE, 'obj_type': constants.OBJ_NONE }
     })
     container['items'].append({
-        'name': 'Check Launcher ROMs sync status',
+        'name': 'Check collections ROMs sync status',
         'url': globals.router.url_for_path('EXECUTE_UTILS_CHECK_LAUNCHER_SYNC_STATUS'),
         'is_folder': False,
         'type': 'video',
@@ -251,7 +236,7 @@ def qry_get_utilities_items():
         'type': 'video',
         'info': {
             'title': 'Check ROMs artwork image integrity',
-            'plot': ('Scans existing [COLOR=orange]ROMs artwork images[/COLOR] in ROM Launchers '
+            'plot': ('Scans existing [COLOR=orange]ROMs artwork images[/COLOR] in ROM Collections '
                     'and verifies that the images have correct extension '
                     'and size is greater than 0. You can delete corrupted images to be rescraped later.'),
             'overlay': 4
