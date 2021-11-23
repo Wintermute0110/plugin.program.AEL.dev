@@ -586,6 +586,7 @@ class CategoryRepository(object):
 #
 # ROMCollectionRepository -> ROM Sets from SQLite DB
 #
+QUERY_COUNT_ROMCOLLECTIONS             = "SELECT COUNT(*) as count FROM vw_romcollections"
 QUERY_SELECT_ROMCOLLECTION             = "SELECT * FROM vw_romcollections WHERE id = ?"
 QUERY_SELECT_ROMCOLLECTIONS            = "SELECT * FROM vw_romcollections ORDER BY m_name"
 QUERY_SELECT_ROOT_ROMCOLLECTIONS       = "SELECT * FROM vw_romcollections WHERE parent_id IS NULL ORDER BY m_name"
@@ -649,6 +650,12 @@ class ROMCollectionRepository(object):
 
     def __init__(self, uow: UnitOfWork):
         self._uow = uow
+
+    def count_collections(self) -> int:
+        self._uow.execute(QUERY_COUNT_ROMCOLLECTIONS)
+        count_data = self._uow.single_result()
+        
+        return int(count_data['count'])
 
     def find_romcollection(self, romcollection_id: str) -> ROMCollection:
         self._uow.execute(QUERY_SELECT_ROMCOLLECTION, romcollection_id)

@@ -283,7 +283,7 @@ def qry_get_globalreport_items():
     # --- Global ROM statistics ---
     container['items'].append({
         'name': 'Global ROM statistics',
-        'url': globals.router.url_for_path('execute/command/EXECUTE_GLOBAL_ROM_STATS'),
+        'url': globals.router.url_for_path('execute/command/global_rom_stats'),
         'is_folder': False,
         'type': 'video',
         'info': {
