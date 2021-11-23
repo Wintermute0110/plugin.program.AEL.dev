@@ -21,7 +21,7 @@ import logging
 import typing
 
 from ael.utils import kodi, io, text
-from ael import constants
+from ael import constants, platforms
 
 from resources.lib.commands.mediator import AppMediator
 
@@ -31,6 +31,84 @@ from resources.lib import globals
 
 logger = logging.getLogger(__name__)
 
+@AppMediator.register('CHECK_COLLECTIONS')
+def cmd_check_collections(args):
+    logger.debug('cmd_check_collections() Beginning...')
+    
+    main_slist = []
+    uow = UnitOfWork(globals.g_PATHS.DATABASE_FILE_PATH)
+    with uow:
+        romcollections_repository = ROMCollectionRepository(uow)
+        romcollections = [*romcollections_repository.find_all_romcollections()]
+        
+        main_slist.append('Number of collections: {}\n'.format(len(romcollections)))
+        for collection in romcollections:
+            l_str = []
+            main_slist.append(f'[COLOR orange]Collection "{collection.get_name()}"[/COLOR]')
+
+            # Check that platform is on AEL official platform list
+            platform = collection.get_platform()
+            if platform not in platforms.platform_long_to_index_dic:
+                l_str.append(f'Unrecognised platform "{platform}"')
+
+            # Check that collection has launcher associated
+            if not collection.has_launchers():
+                l_str.append(f'Collection has no launcher associated')
+
+            # Check that collection has scanner associated
+            if not collection.has_scanners():
+                l_str.append(f'Collection has no scanner associated')
+
+            # Check that DAT file exists if not empty
+            #audit_custom_dat_file = launcher['audit_custom_dat_file']
+            #audit_custom_dat_FN = FileName(audit_custom_dat_file)
+            #if audit_custom_dat_file and not audit_custom_dat_FN.exists():
+            #    l_str.append('Custom DAT file "{}" not found'.format(audit_custom_dat_FN.getPath()))
+
+            # audit_auto_dat_file = launcher['audit_auto_dat_file']
+            # audit_auto_dat_FN = FileName(audit_auto_dat_file)
+            # if audit_auto_dat_file and not audit_auto_dat_FN.exists():
+            #     l_str.append('Custom DAT file "{}" not found\n'.format(audit_auto_dat_FN.getPath()))
+
+            # Test that artwork files exist if not empty (s_* fields)
+            for asset in collection.get_assets():
+                if not asset.get_path_FN().exists():
+                    l_str.append(f'Asset {asset.get_asset_info().name} "{asset.get_path()}" not found')
+
+            # Test that root assets path (ROM_asset_path) exists if not empty
+            assets_root_path = collection.get_assets_root_path()
+            if assets_root_path and not assets_root_path.exists():
+                l_str.append(f'ROM_asset_path "{assets_root_path.getPath()}" not found')
+                
+            # Test that ROM asset paths exist if not empty (path_* fields)
+            asset_path_strs = []
+            for asset_path in collection.get_asset_paths():
+                asset_path_strs.append(asset_path.get_path())
+                if not asset_path.get_path_FN().exists():
+                    l_str.append(f'Asset Path {asset_path.get_asset_info().name} "{asset_path.get_path()}" not found')
+
+            # Check for duplicate asset paths
+            for asset_path in collection.get_asset_paths():
+                path_str = asset_path.get_path()
+                count = asset_path_strs.count(path_str)
+                if count > 1:
+                    l_str.append(f'Asset Path {asset_path.get_asset_info().name} "{path_str}" is duplicate. {count} times assigned.')
+
+            # If l_str is empty is because no problems were found.
+            if l_str:
+                main_slist.extend(l_str)
+            else:
+                main_slist.append('No problems found')
+            main_slist.append('')
+
+    # Stats report
+    report_path = globals.g_PATHS.COLLECTIONS_REPORT_FILE_PATH
+    logger.info(f'Writing report file "{report_path.getPath()}"')
+    output_table = '\n'.join(main_slist)
+    
+    report_path.writeAll(output_table)
+    kodi.display_text_window_mono('Collections report', output_table)
+        
 @AppMediator.register('CHECK_ROM_ARTWORK_INTEGRITY')
 def cmd_check_ROM_artwork_integrity(args):
     logger.debug('cmd_check_ROM_artwork_integrity() Beginning...')
