@@ -72,7 +72,7 @@ def cmd_check_collections(args):
 
             # Test that artwork files exist if not empty (s_* fields)
             for asset in collection.get_assets():
-                if not asset.get_path_FN().exists():
+                if asset and not asset.get_path_FN().exists():
                     l_str.append(f'Asset {asset.get_asset_info().name} "{asset.get_path()}" not found')
 
             # Test that root assets path (ROM_asset_path) exists if not empty
