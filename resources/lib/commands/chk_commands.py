@@ -19,6 +19,7 @@ from __future__ import division
 
 import logging
 import typing
+import collections
 
 from ael.utils import kodi, io, text
 from ael import constants, platforms
@@ -26,7 +27,7 @@ from ael import constants, platforms
 from resources.lib.commands.mediator import AppMediator
 
 from resources.lib.repositories import ROMsRepository, UnitOfWork, ROMCollectionRepository
-from resources.lib.domain import AssetInfo, g_assetFactory
+from resources.lib.domain import AssetInfo, ROMCollection, g_assetFactory
 from resources.lib import globals
 
 logger = logging.getLogger(__name__)
@@ -72,7 +73,7 @@ def cmd_check_collections(args):
 
             # Test that artwork files exist if not empty (s_* fields)
             for asset in collection.get_assets():
-                if asset and not asset.get_path_FN().exists():
+                if asset.get_path_FN() and not asset.get_path_FN().exists():
                     l_str.append(f'Asset {asset.get_asset_info().name} "{asset.get_path()}" not found')
 
             # Test that root assets path (ROM_asset_path) exists if not empty
@@ -83,12 +84,14 @@ def cmd_check_collections(args):
             # Test that ROM asset paths exist if not empty (path_* fields)
             asset_path_strs = []
             for asset_path in collection.get_asset_paths():
+                if not asset_path.get_path_FN(): continue
                 asset_path_strs.append(asset_path.get_path())
                 if not asset_path.get_path_FN().exists():
                     l_str.append(f'Asset Path {asset_path.get_asset_info().name} "{asset_path.get_path()}" not found')
 
             # Check for duplicate asset paths
             for asset_path in collection.get_asset_paths():
+                if not asset_path.get_path_FN(): continue
                 path_str = asset_path.get_path()
                 count = asset_path_strs.count(path_str)
                 if count > 1:
@@ -144,11 +147,11 @@ def cmd_check_ROM_artwork_integrity(args):
             
             # Load ROMs.
             pdialog.updateMessage(f'{d_msg}\nLoading ROMs')
-            roms = rom_repository.find_roms_by_romcollection(collection)
+            roms = [*rom_repository.find_roms_by_romcollection(collection)]
             num_roms = len(roms)
             R_str = 'ROM' if num_roms == 1 else 'ROMs'
             logger.debug(f'Launcher has {num_roms} DB {R_str}')
-            detailed_slist.append('Launcher has {num_roms} DB {R_str}')
+            detailed_slist.append(f'Launcher has {num_roms} DB {R_str}')
             
             # If Launcher is empty there is nothing to do.
             if num_roms < 1:
@@ -215,8 +218,7 @@ def cmd_check_ROM_artwork_integrity(args):
                         continue
                     # At this point the image is recognised but has wrong extension
                     if img_id_ext != img_id_real:
-                        detailed_slist.append('Wrong extension ({}) {}'.format(
-                            io.IMAGE_EXTENSIONS[img_id_real][0], rom_asset_path.getPath()))
+                        detailed_slist.append(f'Wrong extension ({io.IMAGE_EXTENSIONS[img_id_real][0]}) {rom_asset_path.getPath()}')
                         problems_detected = True
                         problematic_images += 1
                         collection_problematic_images += 1
@@ -276,30 +278,37 @@ def cmd_delete_redundant_rom_artwork(args):
         asset_paths_by_asset_type[asset_type] = []
         assets_by_asset_type[asset_type] = []
 
+    pdialog = kodi.ProgressDialog()
     uow = UnitOfWork(globals.g_PATHS.DATABASE_FILE_PATH)
     with uow:
+        logger.info('cmd_delete_redundant_rom_artwork() Beginning...')
         romcollections_repository = ROMCollectionRepository(uow)
         rom_repository            = ROMsRepository(uow)
         
         romcollections = [*romcollections_repository.find_all_romcollections()]
         
-        logger.info('cmd_delete_redundant_rom_artwork() Beginning...')
+        options = collections.OrderedDict()
+        for collection in romcollections:
+            options[collection] = collection.get_name()
+            
+        dialog = kodi.MultiSelectDialog()
+        selected_collections:typing.List[ROMCollection] = dialog.select('Collections to process', options, preselected=romcollections)
+        
         main_slist = []
         detailed_slist = []
         d_msg = 'Checking ROM artwork integrity...'
-        pdialog = kodi.ProgressDialog()
-        pdialog.startProgress(d_msg, len(romcollections))
+        pdialog.startProgress(d_msg, len(selected_collections))
 
         all_unique_paths = []
-        for collection in romcollections:
-            pdialog.incrementStep(d_msg)
+        for collection in selected_collections:
+            pdialog.incrementStep(f'{d_msg}\nCollection {collection.get_name()}')
             # Skip non-ROM launcher.
             #if not launcher['rompath']: continue
 
             logger.debug(f'Checking ROM Collection "{collection.get_name()}"')
             detailed_slist.append(f'[COLOR orange]Collection "{collection.get_name()}"[/COLOR]')
             # Load ROMs.
-            roms = rom_repository.find_roms_by_romcollection(collection)
+            roms = [*rom_repository.find_roms_by_romcollection(collection)]
             num_roms = len(roms)
             
             R_str = 'ROM' if num_roms == 1 else 'ROMs'
@@ -317,9 +326,11 @@ def cmd_delete_redundant_rom_artwork(args):
             num_asset_paths_by_collection = 0
             asset_paths = collection.get_asset_paths()
             for asset_path in asset_paths:
-                # already added?
+                # is none or already added?
+                if not asset_path.get_path_FN(): continue
                 if asset_path.get_path() in all_unique_paths: continue
-                asset_paths_by_asset_type[asset_path.get_asset_info()].append(asset_path.get_path_FN())
+                
+                asset_paths_by_asset_type[asset_path.get_asset_info().id].append(asset_path.get_path_FN())
                 num_asset_paths_by_collection += 1
                 all_unique_paths.append(asset_path.get_path())
 
@@ -328,28 +339,35 @@ def cmd_delete_redundant_rom_artwork(args):
                 assets      = rom.get_assets()
                 asset_paths = rom.get_asset_paths()
                 for asset in assets:
-                    assets_by_asset_type[asset.get_asset_info()].append(asset.get_path_FN())
+                    if not asset.get_path_FN(): continue
+                    assets_by_asset_type[asset.get_asset_info().id].append(asset.get_path_FN())
                     num_assets_by_collection += 1
                 for asset_path in asset_paths:
-                    # already added?
+                    # is none or already added?
+                    if not asset_path.get_path_FN(): continue
                     if asset_path.get_path() in all_unique_paths: continue
-                    asset_paths_by_asset_type[asset_path.get_asset_info()].append(asset_path.get_path_FN())
+                    
+                    asset_paths_by_asset_type[asset_path.get_asset_info().id].append(asset_path.get_path_FN())
                     num_asset_paths_by_collection += 1
                     all_unique_paths.append(asset_path.get_path())
 
             detailed_slist.append(collection.get_name())
             detailed_slist.append(f'Number of ROMs      {num_roms}')
             detailed_slist.append(f'Number of paths     {num_asset_paths_by_collection}')
-            detailed_slist.append(f'Number of asset     {num_assets_by_collection}')
+            detailed_slist.append(f'Number of assets    {num_assets_by_collection}')
             detailed_slist.append('')
-
+        pdialog.endProgress()
+        
+    pdialog.startProgress(d_msg, len(constants.ROM_ASSET_ID_LIST))
     files_to_be_removed = []
     # Process all asset directories one by one.
-    for asset_type in constants.ROM_ASSET_ID_LIST:
+    for asset_type in constants.ROM_ASSET_ID_LIST:        
         asset_info  = g_assetFactory.get_asset_info(asset_type)
         asset_paths = asset_paths_by_asset_type[asset_type]
         assets      = assets_by_asset_type[asset_type]
 
+        pdialog.incrementStep(f'{d_msg}\nProcess assets of type {asset_info.name}')
+        
         logger.debug(f'Checking {len(asset_paths)} paths against {len(assets)} assets for asset type {asset_info.name}')
         files_in_path:typing.List[str] = []
         
@@ -392,5 +410,15 @@ def cmd_delete_redundant_rom_artwork(args):
     report_path.writeAll(output_table)
     pdialog.endProgress()
 
-    #kodi.dialog_yesno(f'Found {file}')
     kodi.display_text_window_mono('ROM redundant artwork report', output_table)
+    do_delete = kodi.dialog_yesno(f'Delete {len(files_to_be_removed)} files marked as redundant?\nWarning! This will actually delete the files!\m Backup filesnow if needed.')
+    if not do_delete:
+        return
+
+    pdialog.startProgress(d_msg, len(file_to_be_removed))
+    for file in file_to_be_removed:
+        pdialog.incrementStep(f'{d_msg}\nDeleting file {file}.')
+        file_to_delete = io.FileName(file)
+        file_to_delete.unlink()
+        
+    pdialog.endProgress()    
