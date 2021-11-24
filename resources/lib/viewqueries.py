@@ -3,7 +3,7 @@
 # Advanced Emulator Launcher: UI query implementations. Getting data for the UI
 #
 
-# Copyright (c) 2016-2018 Wintermute0110 <wintermute0110@gmail.com>
+# Copyright (c) Wintermute0110 <wintermute0110@gmail.com> / Chrisism <crizizz@gmail.com>
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -54,20 +54,20 @@ def qry_get_root_items():
         kodi.notify('Building initial views')
         AppMediator.async_cmd('RENDER_VIEWS')
     
-    vcategory_fanart = globals.g_PATHS.FANART_FILE_PATH.getPath()
-    vcategory_icon   = globals.g_PATHS.ADDON_CODE_DIR.pjoin('media/theme/Utilities_icon.png').getPath()
-    vcategory_poster = globals.g_PATHS.ADDON_CODE_DIR.pjoin('media/theme/Utilities_poster.png').getPath()
-    art = { 'icon' : vcategory_icon, 'fanart' : vcategory_fanart, 'poster': vcategory_poster }
+    listitem_fanart = globals.g_PATHS.FANART_FILE_PATH.getPath()
+    listitem_icon   = globals.g_PATHS.ADDON_CODE_DIR.pjoin('media/theme/Utilities_icon.png').getPath()
+    listitem_poster = globals.g_PATHS.ADDON_CODE_DIR.pjoin('media/theme/Utilities_poster.png').getPath()
+    art = { 'icon' : listitem_icon, 'fanart' : listitem_fanart, 'poster': listitem_poster }
     
     if not settings.getSettingAsBool('display_hide_utilities'): 
-        vcategory_name   = 'Utilities'
+        listitem_name   = 'Utilities'
         container['items'].append({
-            'name': vcategory_name,
+            'name': listitem_name,
             'url': globals.router.url_for_path('utilities'),
             'is_folder': True,
             'type': 'video',
             'info': {
-                'title': vcategory_name,
+                'title': listitem_name,
                 'plot': 'Execute several [COLOR orange]Utilities[/COLOR].',
                 'overlay': 4
             },
@@ -76,16 +76,16 @@ def qry_get_root_items():
         })
         
     if not settings.getSettingAsBool('display_hide_g_reports'): 
-        vcategory_name   = 'Global Reports'
-        vcategory_icon   = globals.g_PATHS.ICON_FILE_PATH.getPath()
-        vcategory_fanart = globals.g_PATHS.FANART_FILE_PATH.getPath()
+        listitem_name   = 'Global Reports'
+        listitem_icon   = globals.g_PATHS.ICON_FILE_PATH.getPath()
+        listitem_fanart = globals.g_PATHS.FANART_FILE_PATH.getPath()
         container['items'].append({
-            'name': vcategory_name,
+            'name': listitem_name,
             'url': globals.router.url_for_path('globalreports'), #SHOW_GLOBALREPORTS_VLAUNCHERS'
             'is_folder': True,
             'type': 'video',
             'info': {
-                'title': vcategory_name,
+                'title': listitem_name,
                 'plot': 'Generate and view [COLOR orange]Global Reports[/COLOR].',
                 'overlay': 4
             },
@@ -108,9 +108,9 @@ def qry_get_view_items(view_id: str, is_virtual_view=False):
 #
 def qry_get_utilities_items():
     # --- Common artwork for all Utilities VLaunchers ---
-    vcategory_icon   = globals.g_PATHS.ADDON_CODE_DIR.pjoin('media/theme/Utilities_icon.png').getPath()
-    vcategory_fanart = globals.g_PATHS.FANART_FILE_PATH.getPath()
-    vcategory_poster = globals.g_PATHS.ADDON_CODE_DIR.pjoin('media/theme/Utilities_poster.png').getPath()
+    listitem_icon   = globals.g_PATHS.ADDON_CODE_DIR.pjoin('media/theme/Utilities_icon.png').getPath()
+    listitem_fanart = globals.g_PATHS.FANART_FILE_PATH.getPath()
+    listitem_poster = globals.g_PATHS.ADDON_CODE_DIR.pjoin('media/theme/Utilities_poster.png').getPath()
     
     container = {
         'id': '',
@@ -133,7 +133,7 @@ def qry_get_utilities_items():
             'plot': 'Reset the AEL database. You will loose all data.',
             'overlay': 4
         },
-        'art': { 'icon' : vcategory_icon, 'fanart' : vcategory_fanart, 'poster' : vcategory_poster  },
+        'art': { 'icon' : listitem_icon, 'fanart' : listitem_fanart, 'poster' : listitem_poster  },
         'properties': { constants.AEL_CONTENT_LABEL: constants.AEL_CONTENT_VALUE_NONE, 'obj_type': constants.OBJ_NONE }
     })
     container['items'].append({
@@ -146,12 +146,12 @@ def qry_get_utilities_items():
             'plot': 'Rebuild all the container views in the application',
             'overlay': 4
         },
-        'art': { 'icon' : vcategory_icon, 'fanart' : vcategory_fanart, 'poster' : vcategory_poster  },
+        'art': { 'icon' : listitem_icon, 'fanart' : listitem_fanart, 'poster' : listitem_poster  },
         'properties': { constants.AEL_CONTENT_LABEL: constants.AEL_CONTENT_VALUE_NONE, 'obj_type': constants.OBJ_NONE }
     })
     container['items'].append({
         'name': 'Rebuild virtual views',
-        'url': globals.router.url_for_path('execute/command/render_vcategory_views'),
+        'url': globals.router.url_for_path('execute/command/render_listitem_views'),
         'is_folder': False,
         'type': 'video',
         'info': {
@@ -159,7 +159,7 @@ def qry_get_utilities_items():
             'plot': 'Rebuild all the virtual categories and collections in the container',
             'overlay': 4
         },
-        'art': { 'icon' : vcategory_icon, 'fanart' : vcategory_fanart, 'poster' : vcategory_poster  },
+        'art': { 'icon' : listitem_icon, 'fanart' : listitem_fanart, 'poster' : listitem_poster  },
         'properties': { constants.AEL_CONTENT_LABEL: constants.AEL_CONTENT_VALUE_NONE, 'obj_type': constants.OBJ_NONE }
     })
     container['items'].append({
@@ -172,7 +172,7 @@ def qry_get_utilities_items():
             'plot': 'Scan for addons that can be used by AEL (launchers, scrapers etc.)',
             'overlay': 4
         },
-        'art': { 'icon' : vcategory_icon, 'fanart' : vcategory_fanart, 'poster' : vcategory_poster  },
+        'art': { 'icon' : listitem_icon, 'fanart' : listitem_fanart, 'poster' : listitem_poster  },
         'properties': { constants.AEL_CONTENT_LABEL: constants.AEL_CONTENT_VALUE_NONE, 'obj_type': constants.OBJ_NONE }
     })
     container['items'].append({
@@ -185,7 +185,7 @@ def qry_get_utilities_items():
             'plot': 'Execute several [COLOR orange]Utilities[/COLOR].',
             'overlay': 4
         },
-        'art': { 'icon' : vcategory_icon, 'fanart' : vcategory_fanart, 'poster' : vcategory_poster  },
+        'art': { 'icon' : listitem_icon, 'fanart' : listitem_fanart, 'poster' : listitem_poster  },
         'properties': { constants.AEL_CONTENT_LABEL: constants.AEL_CONTENT_VALUE_NONE, 'obj_type': constants.OBJ_NONE }
     })
     container['items'].append({
@@ -200,7 +200,7 @@ def qry_get_utilities_items():
                 'You can later reimport this XML file.'),
             'overlay': 4
         },
-        'art': { 'icon' : vcategory_icon, 'fanart' : vcategory_fanart, 'poster' : vcategory_poster  },
+        'art': { 'icon' : listitem_icon, 'fanart' : listitem_fanart, 'poster' : listitem_poster  },
         'properties': { constants.AEL_CONTENT_LABEL: constants.AEL_CONTENT_VALUE_NONE, 'obj_type': constants.OBJ_NONE }
     })
     container['items'].append({
@@ -214,7 +214,7 @@ def qry_get_utilities_items():
                     'wrong platform names, asset path existence, etc.'),
             'overlay': 4
         },
-        'art': { 'icon' : vcategory_icon, 'fanart' : vcategory_fanart, 'poster' : vcategory_poster  },
+        'art': { 'icon' : listitem_icon, 'fanart' : listitem_fanart, 'poster' : listitem_poster  },
         'properties': { constants.AEL_CONTENT_LABEL: constants.AEL_CONTENT_VALUE_NONE, 'obj_type': constants.OBJ_NONE }
     })
     container['items'].append({
@@ -229,7 +229,7 @@ def qry_get_utilities_items():
                     'and size is greater than 0. You can delete corrupted images to be rescraped later.'),
             'overlay': 4
         },
-        'art': { 'icon' : vcategory_icon, 'fanart' : vcategory_fanart, 'poster' : vcategory_poster  },
+        'art': { 'icon' : listitem_icon, 'fanart' : listitem_fanart, 'poster' : listitem_poster  },
         'properties': { constants.AEL_CONTENT_LABEL: constants.AEL_CONTENT_VALUE_NONE, 'obj_type': constants.OBJ_NONE }
     })
     container['items'].append({
@@ -243,7 +243,7 @@ def qry_get_utilities_items():
                     '[COLOR orange]redundant ROMs artwork[/COLOR]. You may delete these unneeded images.'),
             'overlay': 4
         },
-        'art': { 'icon' : vcategory_icon, 'fanart' : vcategory_fanart, 'poster' : vcategory_poster  },
+        'art': { 'icon' : listitem_icon, 'fanart' : listitem_fanart, 'poster' : listitem_poster  },
         'properties': { constants.AEL_CONTENT_LABEL: constants.AEL_CONTENT_VALUE_NONE, 'obj_type': constants.OBJ_NONE }
     })
     container['items'].append({
@@ -258,10 +258,88 @@ def qry_get_utilities_items():
                     '[COLOR orange]AEL addon settings[/COLOR], [COLOR=orange]ROM Audit[/COLOR] tab.'),
             'overlay': 4
         },
-        'art': { 'icon' : vcategory_icon, 'fanart' : vcategory_fanart, 'poster' : vcategory_poster  },
+        'art': { 'icon' : listitem_icon, 'fanart' : listitem_fanart, 'poster' : listitem_poster  },
         'properties': { constants.AEL_CONTENT_LABEL: constants.AEL_CONTENT_VALUE_NONE, 'obj_type': constants.OBJ_NONE }
     })
     
+    return container
+
+#
+# Global Reports items
+#
+def qry_get_globalreport_items():
+     # --- Common artwork for all Utilities VLaunchers ---
+    listitem_icon   = globals.g_PATHS.ADDON_CODE_DIR.pjoin('media/theme/Global_Reports_icon.png').getPath()
+    listitem_fanart = globals.g_PATHS.FANART_FILE_PATH.getPath()
+    listitem_poster = globals.g_PATHS.ADDON_CODE_DIR.pjoin('media/theme/Global_Reports_poster.png').getPath()
+    
+    container = {
+        'id': '',
+        'name': 'globalreports',
+        'obj_type': constants.OBJ_NONE,
+        'items': []
+    }
+
+    # --- Global ROM statistics ---
+    container['items'].append({
+        'name': 'Global ROM statistics',
+        'url': globals.router.url_for_path('execute/command/global_rom_stats'),
+        'is_folder': False,
+        'type': 'video',
+        'info': {
+            'title': 'Global ROM statistics',
+            'plot': 'Shows a report of all ROM collections with number of ROMs.',
+            'overlay': 4
+        },
+        'art': { 'icon' : listitem_icon, 'fanart' : listitem_fanart, 'poster' : listitem_poster  },
+        'properties': { constants.AEL_CONTENT_LABEL: constants.AEL_CONTENT_VALUE_NONE, 'obj_type': constants.OBJ_NONE }
+    })
+    
+    # --- Global ROM Audit statistics  ---
+    container['items'].append({
+        'name': 'Global ROM Audit statistics (All)',
+        'url': globals.router.url_for_path('execute/command/EXECUTE_GLOBAL_AUDIT_STATS_ALL'),
+        'is_folder': False,
+        'type': 'video',
+        'info': {
+            'title': 'Global ROM Audit statistics (All)',
+            'plot': ('Shows a report of all audited ROM collections, with Have, Miss and Unknown '
+                    'statistics.'),
+            'overlay': 4
+        },
+        'art': { 'icon' : listitem_icon, 'fanart' : listitem_fanart, 'poster' : listitem_poster  },
+        'properties': { constants.AEL_CONTENT_LABEL: constants.AEL_CONTENT_VALUE_NONE, 'obj_type': constants.OBJ_NONE }
+    })
+    
+    container['items'].append({
+        'name': 'Global ROM Audit statistics (No-Intro only)',
+        'url': globals.router.url_for_path('execute/command/EXECUTE_GLOBAL_AUDIT_STATS_NOINTRO'),
+        'is_folder': False,
+        'type': 'video',
+        'info': {
+            'title': 'Global ROM Audit statistics (No-Intro only)',
+            'plot': ('Shows a report of all audited ROM Launchers, with Have, Miss and Unknown '
+                    'statistics. Only No-Intro platforms (cartridge-based) are reported.'),
+            'overlay': 4
+        },
+        'art': { 'icon' : listitem_icon, 'fanart' : listitem_fanart, 'poster' : listitem_poster  },
+        'properties': { constants.AEL_CONTENT_LABEL: constants.AEL_CONTENT_VALUE_NONE, 'obj_type': constants.OBJ_NONE }
+    })
+    
+    container['items'].append({
+        'name': 'Global ROM Audit statistics (Redump only)',
+        'url': globals.router.url_for_path('execute/command/EXECUTE_GLOBAL_AUDIT_STATS_REDUMP'),
+        'is_folder': False,
+        'type': 'video',
+        'info': {
+            'title': 'Global ROM Audit statistics (Redump only)',
+            'plot': ('Shows a report of all audited ROM Launchers, with Have, Miss and Unknown '
+                    'statistics. Only Redump platforms (optical-based) are reported.'),
+            'overlay': 4
+        },
+        'art': { 'icon' : listitem_icon, 'fanart' : listitem_fanart, 'poster' : listitem_poster  },
+        'properties': { constants.AEL_CONTENT_LABEL: constants.AEL_CONTENT_VALUE_NONE, 'obj_type': constants.OBJ_NONE }
+    })
     return container
 
 #
@@ -292,7 +370,7 @@ def qry_container_context_menu_items(container_data) -> typing.List[typing.Tuple
                          _context_menu_url_for('execute/command/render_romcollection_view', {'romcollection_id':container_id})))    
     if is_virtual_category and not is_root:
         commands.append(('Rebuild {} view'.format(container_name),
-                        _context_menu_url_for('execute/command/render_vcategory_view',{'vcategory_id':container_id})))    
+                        _context_menu_url_for('execute/command/render_vcategory_view',{'vcategory_id':container_id})))
     if is_virtual_collection:
         commands.append(('Rebuild {} view'.format(container_name),
                         _context_menu_url_for('execute/command/render_vcategory_view',{'vcategory_id':container_parentid})))    

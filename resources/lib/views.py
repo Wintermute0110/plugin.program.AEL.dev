@@ -3,7 +3,7 @@
 # Advanced Emulator Launcher main script file.
 #
 
-# Copyright (c) 2016-2018 Wintermute0110 <wintermute0110@gmail.com>
+# Copyright (c) Wintermute0110 <wintermute0110@gmail.com> / Chrisism <crizizz@gmail.com>
 # Portions (c) 2010-2015 Angelscry
 #
 # This program is free software; you can redistribute it and/or modify
@@ -130,12 +130,20 @@ def vw_route_render_virtual_view(view_id: str):
 # Utilities and Global reports
 # -------------------------------------------------------------------------------------------------
 @router.route('/utilities')
-def vw_route_render_utilities_vlaunchers():
+def vw_route_render_utilities():
     container = viewqueries.qry_get_utilities_items()
     container_context_items = viewqueries.qry_container_context_menu_items(container)
 
     render_list_items(container, container_context_items)
     xbmcplugin.endOfDirectory(handle = router.handle, succeeded = True, cacheToDisc = False)
+    
+@router.route('/globalreports')
+def vw_route_render_globalreports():
+    container = viewqueries.qry_get_globalreport_items()
+    container_context_items = viewqueries.qry_container_context_menu_items(container)
+
+    render_list_items(container, container_context_items)
+    xbmcplugin.endOfDirectory(handle = router.handle, succeeded = True, cacheToDisc = False)    
 
 # -------------------------------------------------------------------------------------------------
 # Command execution
