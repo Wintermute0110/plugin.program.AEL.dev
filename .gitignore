@@ -25,3 +25,4 @@ routing.py
 pyrightconfig.json
 .env
 tests/assets/test_db.db
+tools/

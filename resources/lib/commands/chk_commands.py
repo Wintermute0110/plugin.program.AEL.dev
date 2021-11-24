@@ -397,7 +397,7 @@ def cmd_delete_redundant_rom_artwork(args):
     pdialog.endProgress()
     
     # Generate, save and display report.
-    report_path = globals.g_PATHS.ROM_ART_INTEGRITY_REPORT_FILE_PATH
+    report_path = globals.g_PATHS.ROM_REDUNDANT_FILES_REPORT_FILE_PATH
     logger.info(f'Writing report file "{report_path.getPath()}"')
     pdialog.startProgress('Saving report')
     main_slist.append('*** Summary ***')
@@ -421,4 +421,5 @@ def cmd_delete_redundant_rom_artwork(args):
         file_to_delete = io.FileName(file)
         file_to_delete.unlink()
         
-    pdialog.endProgress()    
+    pdialog.endProgress()
+    kodi.notify('Cleaned up redundant files')

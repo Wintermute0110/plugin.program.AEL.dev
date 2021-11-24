@@ -58,13 +58,6 @@ class AEL_Paths(object):
         # --- datetime peek file for automatic scanning ---
         self.SCAN_INDICATOR_FILE    = self.ADDON_DATA_DIR.pjoin('auto_scan.txt')
 
-        # Reports
-        self.BIOS_REPORT_FILE_PATH        = self.ADDON_DATA_DIR.pjoin('report_BIOS.txt')
-        self.COLLECTIONS_REPORT_FILE_PATH = self.ADDON_DATA_DIR.pjoin('report_collections.txt')
-        self.ROM_SYNC_REPORT_FILE_PATH    = self.ADDON_DATA_DIR.pjoin('report_ROM_sync_status.txt')
-        self.ROM_ART_INTEGRITY_REPORT_FILE_PATH = self.ADDON_DATA_DIR.pjoin('report_ROM_artwork_integrity.txt')
-        self.ROM_ART_INTEGRITY_REPORT_FILE_PATH = self.ADDON_DATA_DIR.pjoin('report_ROM_redundant_files.txt')
-
         # --- Offline scraper databases ---
         self.GAMEDB_INFO_DIR           = self.ADDON_CODE_DIR.pjoin('data-AOS')
         self.GAMEDB_JSON_BASE_NOEXT    = 'AOS_GameDB_info'
@@ -84,7 +77,13 @@ class AEL_Paths(object):
         self.GENERATED_VIEWS_DIR       = self.ADDON_DATA_DIR.pjoin('db_generated_views')
         self.VIEWS_DIR                 = self.ADDON_DATA_DIR.pjoin('db_views')
         
-        self.REPORTS_DIR               = self.ADDON_DATA_DIR.pjoin('reports')
+        # Reports
+        self.REPORTS_DIR                            = self.ADDON_DATA_DIR.pjoin('reports')
+        self.BIOS_REPORT_FILE_PATH                  = self.REPORTS_DIR.pjoin('report_BIOS.txt')
+        self.COLLECTIONS_REPORT_FILE_PATH           = self.REPORTS_DIR.pjoin('report_collections.txt')
+        self.ROM_SYNC_REPORT_FILE_PATH              = self.REPORTS_DIR.pjoin('report_ROM_sync_status.txt')
+        self.ROM_ART_INTEGRITY_REPORT_FILE_PATH     = self.REPORTS_DIR.pjoin('report_ROM_artwork_integrity.txt')
+        self.ROM_REDUNDANT_FILES_REPORT_FILE_PATH   = self.REPORTS_DIR.pjoin('report_ROM_redundant_files.txt')
 
     def build(self):
         # --- Addon data paths creation ---
