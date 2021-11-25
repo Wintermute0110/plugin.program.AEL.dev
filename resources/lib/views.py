@@ -146,6 +146,22 @@ def vw_route_render_globalreports():
     xbmcplugin.endOfDirectory(handle = router.handle, succeeded = True, cacheToDisc = False)    
 
 # -------------------------------------------------------------------------------------------------
+# Searches
+# This command is issued when user clicks on "Search" on the context menu of a collection
+# in the collection view, or context menu inside a collection. User is asked to enter the
+# search string and the field to search (name, category, etc.). Then, EXEC_SEARCH_LAUNCHER
+# command is called.
+# -------------------------------------------------------------------------------------------------
+@router.route('/search/<container_id>')
+def vw_search(container_id: str): 
+    search_options = viewqueries.qry_get_search_options(container_id)
+    selected_option = kodi.OrdDictionaryDialog().select('Search ROMs...',search_options)
+    
+    AppMediator.sync_cmd(selected_option, {'container_id': container_id})
+    
+    router.redirect(selected_option)
+
+# -------------------------------------------------------------------------------------------------
 # Command execution
 # -------------------------------------------------------------------------------------------------
 @router.route('/execute/command/<cmd>')
