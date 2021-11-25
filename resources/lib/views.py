@@ -30,10 +30,11 @@
 # --- Python standard library ---
 from __future__ import unicode_literals
 from __future__ import division
+from __future__ import annotations
 
 import sys
+import abc
 import logging
-import json
 
 # --- Kodi stuff ---
 import xbmc
@@ -92,6 +93,10 @@ def vw_route_render_collection(view_id: str):
     container_context_items = viewqueries.qry_container_context_menu_items(container)
     container_type          = container['obj_type'] if 'obj_type' in container else constants.OBJ_NONE
 
+    filter_type = router.args['filter'][0] if 'filter' in router.args else None
+    filter_term = router.args['term'][0] if 'term' in router.args else None
+    filter = vw_create_filter(filter_type, filter_term)
+
     if container is None:
         kodi.notify('Current view is not rendered correctly. Re-render views first.')
     elif len(container['items']) == 0:
@@ -100,7 +105,7 @@ def vw_route_render_collection(view_id: str):
         if container_type == constants.OBJ_ROMCOLLECTION or container_type == constants.OBJ_COLLECTION_VIRTUAL:
             kodi.notify('Collection {} has no items. Add ROMs'.format(container['name']))
     else:
-        render_list_items(container, container_context_items)
+        render_list_items(container, container_context_items, filter)
         
     xbmcplugin.endOfDirectory(handle = router.handle, succeeded = True, cacheToDisc = False)
 
@@ -111,6 +116,10 @@ def vw_route_render_virtual_view(view_id: str):
     container_context_items = viewqueries.qry_container_context_menu_items(container)
     container_type          = container['obj_type'] if 'obj_type' in container else constants.OBJ_NONE
 
+    filter_type = router.args['filter'][0] if 'filter' in router.args else None
+    filter_term = router.args['term'][0] if 'term' in router.args else None
+    filter = vw_create_filter(filter_type, filter_term)
+    
     if container is None:
         kodi.notify('Current view is not rendered correctly. Re-render views first.')
     elif len(container['items']) == 0:
@@ -121,11 +130,10 @@ def vw_route_render_virtual_view(view_id: str):
             if kodi.dialog_yesno(f"Virtual collection {container['name']} has no items. Regenerate the views now?"):
                 AppMediator.async_cmd('RENDER_VCATEGORY_VIEW', {'vcategory_id': container['parent_id']})
     else:
-        render_list_items(container, container_context_items)
+        render_list_items(container, container_context_items, filter)
         
     xbmcplugin.endOfDirectory(handle = router.handle, succeeded = True, cacheToDisc = False)
-    
-    
+       
 # -------------------------------------------------------------------------------------------------
 # Utilities and Global reports
 # -------------------------------------------------------------------------------------------------
@@ -144,22 +152,6 @@ def vw_route_render_globalreports():
 
     render_list_items(container, container_context_items)
     xbmcplugin.endOfDirectory(handle = router.handle, succeeded = True, cacheToDisc = False)    
-
-# -------------------------------------------------------------------------------------------------
-# Searches
-# This command is issued when user clicks on "Search" on the context menu of a collection
-# in the collection view, or context menu inside a collection. User is asked to enter the
-# search string and the field to search (name, category, etc.). Then, EXEC_SEARCH_LAUNCHER
-# command is called.
-# -------------------------------------------------------------------------------------------------
-@router.route('/search/<container_id>')
-def vw_search(container_id: str): 
-    search_options = viewqueries.qry_get_search_options(container_id)
-    selected_option = kodi.OrdDictionaryDialog().select('Search ROMs...',search_options)
-    
-    AppMediator.sync_cmd(selected_option, {'container_id': container_id})
-    
-    router.redirect(selected_option)
 
 # -------------------------------------------------------------------------------------------------
 # Command execution
@@ -211,15 +203,16 @@ def vw_route_execute_rom(rom_id):
 # UI render methods
 # -------------------------------------------------------------------------------------------------
 #
+# Renders items for a view.
 #
-# Renders all categories without Favourites, Collections, virtual categories, etc.
-#
-def render_list_items(container_data, container_context_items = []):
+def render_list_items(container_data:dict, container_context_items = [], filter_method:ListFilter = None):
     vw_misc_set_all_sorting_methods()
     vw_misc_set_AEL_Content(container_data['obj_type'] if 'obj_type' in container_data else constants.OBJ_NONE)
     vw_misc_clear_AEL_Launcher_Content()
 
     for list_item_data in container_data['items']:
+        if filter_method and not filter_method.is_valid(list_item_data):
+            continue
         
         name        = list_item_data['name']
         url_str     = list_item_data['url']
@@ -284,4 +277,61 @@ def vw_misc_clear_AEL_Launcher_Content():
     xbmcgui.Window(constants.AEL_CONTENT_WINDOW_ID).setProperty(constants.AEL_LAUNCHER_CLEARLOGO_LABEL, '')
     xbmcgui.Window(constants.AEL_CONTENT_WINDOW_ID).setProperty(constants.AEL_LAUNCHER_PLATFORM_LABEL, '')
     xbmcgui.Window(constants.AEL_CONTENT_WINDOW_ID).setProperty(constants.AEL_LAUNCHER_BOXSIZE_LABEL, '')
+    
+def vw_create_filter(filter_on_type:str, filter_on_value:str) -> ListFilter:
+    if filter_on_type is None: return None
+    if filter_on_value == 'UNDEFINED': filter_on_value = ''
+    
+    if filter_on_type == constants.META_TITLE_ID:       return OnTitleFilter(filter_on_value)    
+    if filter_on_type == constants.META_DEVELOPER_ID:   return OnDeveloperFilter(filter_on_value)
+    if filter_on_type == constants.META_GENRE_ID:       return OnGenreFilter(filter_on_value)
+    if filter_on_type == constants.META_YEAR_ID:        return OnReleaseYearFilter(filter_on_value)
+    if filter_on_type == constants.META_RATING_ID:      return OnRatingFilter(filter_on_value)    
+    if filter_on_type == constants.META_ESRB_ID:        return OnESRBFilter(filter_on_value)
+    if filter_on_type == constants.META_NPLAYERS_ID:    return OnNumberOfPlayersFilter(filter_on_value)
+    if filter_on_type == 'platform':                    return OnPlatformFilter(filter_on_value)
+    
+    logger.debug(f'Filter called without proper filter type. "{filter_on_type}"')
+    return None
+
+class ListFilter(object):
+    __metaclass__ = abc.ABCMeta
+    
+    def __init__(self, filter_value:str):
+        self.filter_value = filter_value
+
+    @abc.abstractmethod        
+    def is_valid(self, subject:dict) -> bool:
+        return True
+    
+class OnTitleFilter(ListFilter):
+    def is_valid(self, subject: dict) -> bool:
+        return 'name' in subject and subject['name'].lower().find(self.filter_value) > -1
+    
+class OnDeveloperFilter(ListFilter):
+    def is_valid(self, subject: dict) -> bool:
+        return 'info' in subject and 'studio' in subject['info'] and subject['info']['studio'] == self.filter_value  
+
+class OnGenreFilter(ListFilter):
+    def is_valid(self, subject: dict) -> bool:
+        return 'info' in subject and 'genre' in subject['info'] and subject['info']['genre'] == self.filter_value  
+
+class OnReleaseYearFilter(ListFilter):
+    def is_valid(self, subject: dict) -> bool:
+        return 'info' in subject and 'year' in subject['info'] and subject['info']['year'] == self.filter_on_value    
+
+class OnRatingFilter(ListFilter):
+    def is_valid(self, subject: dict) -> bool:
+        return 'info' in subject and 'rating' in subject['info'] and subject['info']['rating'] == self.filter_on_value    
+    
+class OnESRBFilter(ListFilter):
+    def is_valid(self, subject: dict) -> bool:
+        return 'properties' in subject and 'esrb' in subject['properties'] and subject['properties']['esrb'] == self.filter_on_value   
+class OnNumberOfPlayersFilter(ListFilter):
+    def is_valid(self, subject: dict) -> bool:
+        return 'properties' in subject and 'nplayers' in subject['properties'] and subject['properties']['nplayers'] == self.filter_on_value  
+    
+class OnPlatformFilter(ListFilter):
+    def is_valid(self, subject: dict) -> bool:
+        return 'properties' in subject and 'platform' in subject['properties'] and subject['properties']['platform'] == self.filter_on_value
     

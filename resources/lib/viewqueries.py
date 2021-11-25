@@ -347,18 +347,6 @@ def qry_get_globalreport_items():
     return container
 
 #
-# Search options
-#
-def qry_get_search_options(container_id:str) -> collections.OrderedDict:
-    options = collections.OrderedDict()
-    options['SEARCH_BY_TITLE'] = 'By ROM Title'
-    options['SEARCH_BY_RELEASEYEAR'] = 'By Release Year'
-    options['SEARCH_BY_GENRE'] = 'By Genre'
-    options['SEARCH_BY_STUDIO'] = 'By Studio'
-    options['SEARCH_BY_RATING'] = 'By Rating'
-    return options
-
-#
 # Default context menu items for the whole container.
 #
 def qry_container_context_menu_items(container_data) -> typing.List[typing.Tuple[str,str]]:
@@ -381,7 +369,7 @@ def qry_container_context_menu_items(container_data) -> typing.List[typing.Tuple
         commands.append(('Rebuild {} view'.format(container_name),
                         _context_menu_url_for('execute/command/render_view',{'category_id':container_id})))    
     if is_romcollection:
-        commands.append(('Search ROM in collection', _context_menu_url_for(f'/search/{container_id}')))
+        commands.append(('Search ROM in collection', _context_menu_url_for(f'/execute/command/search', {'romcollection_id': container_id})))
         commands.append(('Rebuild {} view'.format(container_name),
                          _context_menu_url_for('execute/command/render_romcollection_view', {'romcollection_id':container_id})))    
     if is_virtual_category and not is_root:
