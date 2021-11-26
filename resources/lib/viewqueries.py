@@ -25,6 +25,7 @@ from __future__ import division
 
 import logging
 import typing
+import collections
 from urllib.parse import urlencode
 
 # AEL modules
@@ -36,8 +37,8 @@ from resources.lib.commands.mediator import AppMediator
 from resources.lib.repositories import ViewRepository
 
 logger = logging.getLogger(__name__)
-
 #
+
 # Root view items
 #
 def qry_get_root_items():
@@ -55,9 +56,6 @@ def qry_get_root_items():
         AppMediator.async_cmd('RENDER_VIEWS')
     
     listitem_fanart = globals.g_PATHS.FANART_FILE_PATH.getPath()
-    listitem_icon   = globals.g_PATHS.ADDON_CODE_DIR.pjoin('media/theme/Utilities_icon.png').getPath()
-    listitem_poster = globals.g_PATHS.ADDON_CODE_DIR.pjoin('media/theme/Utilities_poster.png').getPath()
-    art = { 'icon' : listitem_icon, 'fanart' : listitem_fanart, 'poster': listitem_poster }
     
     if not settings.getSettingAsBool('display_hide_utilities'): 
         listitem_name   = 'Utilities'
@@ -71,14 +69,16 @@ def qry_get_root_items():
                 'plot': 'Execute several [COLOR orange]Utilities[/COLOR].',
                 'overlay': 4
             },
-            'art': art,
+            'art': { 
+                'icon' : globals.g_PATHS.ADDON_CODE_DIR.pjoin('media/theme/Utilities_icon.png').getPath(), 
+                'fanart' : listitem_fanart, 
+                'poster': globals.g_PATHS.ADDON_CODE_DIR.pjoin('media/theme/Utilities_poster.png').getPath() 
+            },
             'properties': { constants.AEL_CONTENT_LABEL: constants.AEL_CONTENT_VALUE_CATEGORY, 'obj_type': constants.OBJ_NONE }
         })
         
     if not settings.getSettingAsBool('display_hide_g_reports'): 
         listitem_name   = 'Global Reports'
-        listitem_icon   = globals.g_PATHS.ICON_FILE_PATH.getPath()
-        listitem_fanart = globals.g_PATHS.FANART_FILE_PATH.getPath()
         container['items'].append({
             'name': listitem_name,
             'url': globals.router.url_for_path('globalreports'), #SHOW_GLOBALREPORTS_VLAUNCHERS'
@@ -89,7 +89,11 @@ def qry_get_root_items():
                 'plot': 'Generate and view [COLOR orange]Global Reports[/COLOR].',
                 'overlay': 4
             },
-            'art': art,
+            'art': { 
+                'icon' : globals.g_PATHS.ADDON_CODE_DIR.pjoin('media/theme/Global_Reports_icon.png').getPath(), 
+                'fanart' : listitem_fanart, 
+                'poster': globals.g_PATHS.ADDON_CODE_DIR.pjoin('media/theme/Global_Reports_poster.png').getPath() 
+            },
             'properties': { constants.AEL_CONTENT_LABEL: constants.AEL_CONTENT_VALUE_CATEGORY, 'obj_type': constants.OBJ_NONE }
         })
     
@@ -365,7 +369,7 @@ def qry_container_context_menu_items(container_data) -> typing.List[typing.Tuple
         commands.append(('Rebuild {} view'.format(container_name),
                         _context_menu_url_for('execute/command/render_view',{'category_id':container_id})))    
     if is_romcollection:
-        commands.append(('Search ROM in collection', _context_menu_url_for('/search/{}'.format(container_id))))
+        commands.append(('Search ROM in collection', _context_menu_url_for(f'/collection/{container_id}/search')))
         commands.append(('Rebuild {} view'.format(container_name),
                          _context_menu_url_for('execute/command/render_romcollection_view', {'romcollection_id':container_id})))    
     if is_virtual_category and not is_root:

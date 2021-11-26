@@ -978,6 +978,12 @@ QUERY_SELECT_ROM_ASSETPATHS         = "SELECT * FROM vw_rom_asset_paths WHERE ro
 QUERY_SELECT_ROM_ASSETS_BY_SET      = "SELECT ra.* FROM vw_rom_assets AS ra INNER JOIN roms_in_romcollection AS rs ON rs.rom_id = ra.rom_id AND rs.romcollection_id = ?"
 QUERY_SELECT_ROM_ASSETPATHS_BY_SET  = "SELECT rap.* FROM vw_rom_asset_paths AS rap INNER JOIN roms_in_romcollection AS rs ON rs.rom_id = rap.rom_id AND rs.romcollection_id = ?"
 
+# Filter values
+QUERY_SELECT_GENRES_BY_COLLECTION      = "SELECT DISTINCT(r.m_genre) AS genre FROM vw_roms AS r INNER JOIN roms_in_romcollection AS rs ON rs.rom_id = r.id AND rs.romcollection_id = ? ORDER BY genre"
+QUERY_SELECT_YEARS_BY_COLLECTION       = "SELECT DISTINCT(r.m_year) AS year FROM vw_roms AS r INNER JOIN roms_in_romcollection AS rs ON rs.rom_id = r.id AND rs.romcollection_id = ? ORDER BY year"
+QUERY_SELECT_DEVELOPER_BY_COLLECTION   = "SELECT DISTINCT(r.m_developer) AS developer FROM vw_roms AS r INNER JOIN roms_in_romcollection AS rs ON rs.rom_id = r.id AND rs.romcollection_id = ? ORDER BY developer"
+QUERY_SELECT_RATING_BY_COLLECTION      = "SELECT DISTINCT(r.m_rating) AS rating FROM vw_roms AS r INNER JOIN roms_in_romcollection AS rs ON rs.rom_id = r.id AND rs.romcollection_id = ? ORDER BY rating"
+
 QUERY_INSERT_ROM                = """
                                 INSERT INTO roms (
                                     id, metadata_id, name, num_of_players, esrb_rating, platform, box_size,
@@ -1036,7 +1042,7 @@ QUERY_INSERT_ROM_LAUNCHER      = "INSERT INTO rom_launchers (id, rom_id, ael_add
 QUERY_UPDATE_ROM_LAUNCHER      = "UPDATE rom_launchers SET settings = ?, is_default = ? WHERE id = ?"
 QUERY_DELETE_ROM_LAUNCHERS     = "DELETE FROM rom_launchers WHERE rom_id = ?"
 QUERY_DELETE_ROM_LAUNCHER      = "DELETE FROM rom_launchers WHERE romcollection_id = ? AND id = ?"
-                  
+           
 class ROMsRepository(object):
        
     def __init__(self, uow: UnitOfWork):
@@ -1206,7 +1212,22 @@ class ROMsRepository(object):
     
     def delete_roms_by_romcollection(self, romcollection_id:str):
         self._uow.execute(QUERY_DELETE_ROMS_BY_COLLECTION, romcollection_id)
-           
+        
+    def find_all_filter_values_in_romcollection(self, romcollection: ROMCollection, filter_type:str) -> typing.Iterator[str]:
+        is_virtual = romcollection.get_type() == constants.OBJ_COLLECTION_VIRTUAL
+        romcollection_id = romcollection.get_id()
+        
+        result_set = []
+        if is_virtual:
+            pass   
+        else:
+            query = self._get_query_by_filter(filter_type)
+            self._uow.execute(query, romcollection_id)
+            result_set = self._uow.result_set()
+            
+        for filter_value_data in result_set:
+            yield filter_value_data[filter_type]
+            
     def _insert_asset(self, asset: Asset, rom_obj: ROM):
         asset_db_id = text.misc_generate_random_SID()
         self._uow.execute(QUERY_INSERT_ASSET, asset_db_id, asset.get_path(), asset.get_asset_info_id())
@@ -1267,7 +1288,14 @@ class ROMsRepository(object):
             if vcollection_id == constants.VCOLLECTION_MOST_PLAYED_ID:  return QUERY_SELECT_MOST_PLAYED_ROMS, QUERY_SELECT_MOST_PLAYED_ROM_ASSETS
             
         return None, None
-    
+              
+    def _get_query_by_filter(self, filter:str) -> typing.Tuple[str, str]:
+        if filter == constants.META_GENRE_ID: return QUERY_SELECT_GENRES_BY_COLLECTION
+        if filter == constants.META_YEAR_ID: return QUERY_SELECT_YEARS_BY_COLLECTION
+        if filter == constants.META_DEVELOPER_ID: return QUERY_SELECT_DEVELOPER_BY_COLLECTION
+        if filter == constants.META_RATING_ID: return QUERY_SELECT_RATING_BY_COLLECTION
+        return None
+        
 #
 # AelAddonRepository -> AEL Adoon objects from SQLite DB
 #     
