@@ -39,7 +39,7 @@ class AppService(object):
         kodi.set_windowprop('ael_server_state', 'STARTING')
         
         # --- Some debug stuff for development ---
-        logger.info('------------ Called Advanced Emulator Launcher : Service ------------')
+        logger.info('------------ Called Advanced Kodi Launcher : Service ------------')
         logger.debug('sys.platform   "{}"'.format(sys.platform))
         if io.is_android(): logger.debug('OS             "Android"')
         if io.is_windows(): logger.debug('OS             "Windows"')

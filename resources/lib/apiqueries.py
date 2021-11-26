@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 #
-# Advanced Emulator Launcher: API query implementations. Getting data for the webservice
+# Advanced Kodi Launcher: API query implementations. Getting data for the webservice
 #
 #
 # This program is free software; you can redistribute it and/or modify

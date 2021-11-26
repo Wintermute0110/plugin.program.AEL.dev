@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-# Advanced Emulator Launcher package inisialisation file.
+# Advanced Kodi Launcher package initialisation file.
 
 # Copyright (c) 2016-2019 Wintermute0110 <wintermute0110@gmail.com>
 #

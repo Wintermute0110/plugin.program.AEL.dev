@@ -1,5 +1,5 @@
 # Kodi Media Center language file
-# Addon Name: Advanced Emulator Launcher
+# Addon Name: Advanced Kodi Launcher
 # Addon id: plugin.program.AEL
 msgid ""
 msgstr ""

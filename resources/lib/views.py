@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 #
-# Advanced Emulator Launcher main script file.
+# Advanced Kodi Launcher main script file.
 #
 
 # Copyright (c) Wintermute0110 <wintermute0110@gmail.com> / Chrisism <crizizz@gmail.com>
@@ -59,7 +59,7 @@ def run_plugin(addon_argv):
     # set_log_level(LOG_DEBUG)
 
     # --- Some debug stuff for development ---
-    logger.debug('------------ Called Advanced Emulator Launcher run_plugin(addon_argv) ------------')
+    logger.debug('------------ Called Advanced Kodi Launcher run_plugin(addon_argv) ------------')
     logger.debug('addon.id         "{}"'.format(globals.addon_id))
     logger.debug('addon.version    "{}"'.format(globals.addon_version))
     for i in range(len(sys.argv)): logger.debug('sys.argv[{}] "{}"'.format(i, sys.argv[i]))
@@ -72,7 +72,7 @@ def run_plugin(addon_argv):
         logger.error('Exception while executing route', exc_info=e)
         kodi.notify_error('Failed to execute route or command')
         
-    logger.debug('Advanced Emulator Launcher run_plugin() exit')
+    logger.debug('Advanced Kodi Launcher run_plugin() exit')
 
 # -------------------------------------------------------------------------------------------------
 # LisItem rendering

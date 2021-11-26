@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 #
-# Advanced Emulator Launcher: Commands (API actions)
+# Advanced Kodi Launcher: Commands (API actions)
 ##
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by

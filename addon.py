@@ -1,6 +1,6 @@
 ﻿# -*- coding: utf-8 -*-
 #
-# Advanced Emulator Launcher main script file
+# Advanced Kodi Launcher main script file
 #
 
 # Copyright (c) Wintermute0110 <wintermute0110@gmail.com> / Chrisism <crizizz@gmail.com>
