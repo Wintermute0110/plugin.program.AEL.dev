@@ -369,7 +369,7 @@ def qry_container_context_menu_items(container_data) -> typing.List[typing.Tuple
         commands.append(('Rebuild {} view'.format(container_name),
                         _context_menu_url_for('execute/command/render_view',{'category_id':container_id})))    
     if is_romcollection:
-        commands.append(('Search ROM in collection', _context_menu_url_for(f'/execute/command/search', {'romcollection_id': container_id})))
+        commands.append(('Search ROM in collection', _context_menu_url_for(f'/collection/{container_id}/search')))
         commands.append(('Rebuild {} view'.format(container_name),
                          _context_menu_url_for('execute/command/render_romcollection_view', {'romcollection_id':container_id})))    
     if is_virtual_category and not is_root:

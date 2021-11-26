@@ -109,6 +109,12 @@ def vw_route_render_collection(view_id: str):
         
     xbmcplugin.endOfDirectory(handle = router.handle, succeeded = True, cacheToDisc = False)
 
+@router.route('/collection/<view_id>/search')
+def vw_route_search_collection(view_id: str):
+    #vw_route_render_collection(view_id)
+    AppMediator.sync_cmd('SEARCH', {'romcollection_id': view_id})
+    kodi.refresh_container()
+
 @router.route('/category/virtual/<view_id>')
 @router.route('/collection/virtual/<view_id>')
 def vw_route_render_virtual_view(view_id: str):
