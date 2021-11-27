@@ -1,0 +1,144 @@
+trigger:
+- master-fork
+- release/*
+
+pool:
+  vmImage: 'ubuntu-latest'
+
+variables:
+  isMaster: or(${{eq(variables['Build.SourceBranch'], 'refs/heads/master-fork')}},${{eq(variables['Build.SourceBranch'], 'refs/heads/main')}})
+  isReleaseCandidate: ${{startsWith(variables['Build.SourceBranch'], 'refs/heads/release/')}}
+  isHotfix: ${{startsWith(variables['Build.SourceBranch'], 'refs/heads/hotfix/')}}
+  isDev: ${{eq(variables['Build.SourceBranch'], 'refs/heads/dev')}}
+  workingDirectory: '$(Build.SourcesDirectory)'
+
+stages:
+- stage: Build
+  displayName: Build stage
+  jobs:
+    - job: build
+      displayName: build
+        
+      steps:
+      - task: gitversion/setup@0
+        displayName: 'Install GitTools'
+        inputs:
+          versionSpec: '5.3.x'
+
+      - task: gitversion/execute@0
+        displayName: 'Executing gitversion'
+
+      - script: |
+            echo '##vso[task.setvariable variable=packageVersion]$(GitVersion.NuGetVersionV2)
+            echo '##vso[task.setvariable variable=projectVersion]$(GitVersion.Major).$(GitVersion.Minor).$(GitVersion.Patch)
+        displayName: 'Setting version variables'
+        condition: not(or(${{variables.isMaster}}, ${{variables.isDev}}, ${{variables.isReleaseCandidate}}, ${{variables.isHotfix}}))
+        
+      - script: |
+            echo '##vso[task.setvariable variable=packageVersion]$(GitVersion.Major).$(GitVersion.Minor).$(GitVersion.Patch)
+            echo '##vso[task.setvariable variable=projectVersion]$(GitVersion.Major).$(GitVersion.Minor).$(GitVersion.Patch)
+        displayName: 'Setting version variables'
+        condition: or(${{variables.isMaster}}, ${{variables.isDev}}, ${{variables.isReleaseCandidate}}, ${{variables.isHotfix}})
+
+      - task: RegExMatchReplace@2
+        displayName: 'Set addon version'
+        inputs:
+          PathToFile: 'addon.xml'
+          RegEx: 'version="\d+\.\d+\.\d+.*" provider'
+          ValueToReplace: 'version="$(packageVersion)" provider'
+          
+      - task: CopyFiles@2
+        displayName: 'Copy addon files for package'
+        inputs:
+          SourceFolder: ''
+          Contents: |
+              *.py
+              *.md
+              *.xml
+              *.txt
+              resources/**/*.*
+              media/**/*.*
+          TargetFolder: '$(build.artifactstagingdirectory)/plugin.program.akl/'
+          CleanTargetFolder: true
+          flattenFolders: false
+
+      - task: ArchiveFiles@2
+        inputs:
+          rootFolderOrFile: '$(build.artifactstagingdirectory)/plugin.program.akl'
+          includeRootFolder: false
+          archiveType: 'zip'
+          archiveFile: '$(build.artifactstagingdirectory)/package/plugin.program.akl-$(packageVersion).zip'
+          replaceExistingArchive: true
+ 
+      - task: CopyFiles@2
+        displayName: 'Copy addon files for repository'
+        inputs:
+          SourceFolder: '$(build.artifactstagingdirectory)/plugin.program.akl/'
+          Contents: |
+              addon.xml
+              *.txt
+              media/**/*.*
+          TargetFolder: '$(build.artifactstagingdirectory)/package/'
+          CleanTargetFolder: false
+          flattenFolders: false
+
+      - script: md5sum plugin.program.akl-$(packageVersion).zip > plugin.program.akl-$(packageVersion).zip.md5
+        workingDirectory: $(build.artifactstagingdirectory)/package/
+        displayName: 'Creating md5 file'
+
+      - task: PublishBuildArtifacts@1
+        displayName: 'Publishing application as artifact'
+        inputs:
+          PathtoPublish: '$(build.artifactstagingdirectory)/package/'
+          ArtifactName: 'plugin.program.akl'
+          publishLocation: 'Container'
+     
+- stage: DeployProd
+  displayName: Deployment on Production
+  condition: eq(${{variables.isMaster}}, true)
+  jobs:
+    - deployment: Production
+      environment: 
+        name: Production
+
+      variables:
+        - group: repository.production.variables
+
+      strategy:     
+        runOnce:
+          deploy:
+            steps:
+            - download: current
+              displayName: 'Downloading Application artifact'
+              artifact: 'plugin.program.akl'
+
+            - script: |
+                git clone https://github.com/chrisism/repository.chrisism.git
+              workingDirectory: $(Pipeline.Workspace)/
+              displayName: 'Clone git repository'
+
+            - script: |
+                git config user.email $(git_emailAddress)
+                git config user.name $(git_userName)
+              workingDirectory: $(Pipeline.Workspace)/repository.chrisism/
+              displayName: 'Configure git settings'
+
+            - task: CopyFiles@2
+              displayName: 'Copy addon into git repository'
+              inputs:
+                SourceFolder: '$(Pipeline.Workspace)/plugin.program.akl'
+                Contents: '**/*.*'
+                TargetFolder: '$(Pipeline.Workspace)/repository.chrisism/plugin.program.akl'
+                CleanTargetFolder: false
+                flattenFolders: false
+
+            - script: |
+                git add .
+                git commit -m "Release $(Build.BuildNumber)"
+              workingDirectory: $(Pipeline.Workspace)/repository.chrisism/plugin.program.akl
+              displayName: 'Git - Add and commit'    
+
+            - script: |
+                git push https://$(github_token)@github.com/chrisism/repository.chrisism.git master 
+              workingDirectory: $(Pipeline.Workspace)/repository.chrisism/plugin.program.akl
+              displayName: 'Git - Push'    
