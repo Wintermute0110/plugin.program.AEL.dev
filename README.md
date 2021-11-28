@@ -24,22 +24,9 @@ the [Advanced Emulator Launcher Wiki].
 You can install this [repository](https://github.com/chrisism/repository.chrisism) locally in Kodi to install and keep it up to date. Or follow [this link](https://github.com/chrisism/repository.chrisism/tree/master/plugin.program.AEL) 
 and download the ZIP file of the version you want. Use this ZIP file to install the addon in Kodi.
 
-## Installing the latest development version ##
-
-It is important that you follow this instructions or Advanced Kodi Launcher won't work well. Make sure you select the 'master-fork' branch.
-
-  1) In this page click on the green button `Clone or Download` --> `Download ZIP`
-
-  2) Uncompress this ZIP file. This will create a folder named `plugin.program.advanced.emulator.launcher-master`
-
-  3) Rename that folder to `plugin.program.akl`
-
-  4) Compress that folder again into a ZIP file. 
-
-  5) In Kodi, use that ZIP file (and not the original one) to install the plugin in `System` --> `Addons` 
-     --> `Install from ZIP file`.
-
-  6) You are done!
+## Installing the latest beta version ##
+Release candidates and beta versions can be found on the [dev repository](https://github.com/chrisism/dev.repository.chrisism). Simply collect the version you like from there.  
+If you want to be really experimental you can clone/download the code from the dev branch and start using that version. Be aware of breaking changes in that version!
 
 ## Install plugins
-Just like the addon itself you can use the repository as mentioned above. If you want to install it manually, go to [this link](https://github.com/chrisism/repository.chrisism) and select of the script.akl.*** plugins.
+Just like the addon itself you can use the repositories as mentioned above. If you want to install it manually, go to [this link](https://github.com/chrisism/repository.chrisism) and select of the script.akl.*** plugins.
