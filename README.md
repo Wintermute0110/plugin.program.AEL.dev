@@ -5,6 +5,10 @@ It is a modulair build with support for many plugins to either launch, scan or s
 Plugins are available for offline scrapers for MAME, scanners for No-Intro ROM sets and also support for scrapping ROM metadata and artwork from many different sources online. There is ROM auditing for No-Intro ROMs using No-Intro or Redump XML DAT files.  
 Simply launching of games and standalone applications is also available.
 
+| Release | Status |
+|----|----|
+| Stable | [![Build Status](https://dev.azure.com/jnpro/AKL/_apis/build/status/plugin.program.akl?branchName=master-fork)](https://dev.azure.com/jnpro/AKL/_build/latest?definitionId=5&branchName=master-fork) |
+
 ### Kodi forum thread ###
 
 More information and discussion about AEL can be found in the [Advanced Emulator Launcher thread] 
