@@ -1,7 +1,6 @@
 ﻿# -*- coding: utf-8 -*-
 #
-# Advanced Kodi Launcher 
-# (Build Tool)
+# Advanced Kodi Launcher - Publish Tool
 #
 # This tool publishes the local dev folder as a proper
 # addon to your kodi test environment.
