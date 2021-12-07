@@ -65,7 +65,7 @@ stages:
       - task: ArchiveFiles@2
         inputs:
           rootFolderOrFile: '$(build.artifactstagingdirectory)/plugin.program.akl'
-          includeRootFolder: false
+          includeRootFolder: true
           archiveType: 'zip'
           archiveFile: '$(build.artifactstagingdirectory)/package/plugin.program.akl-$(packageVersion).zip'
           replaceExistingArchive: true
