@@ -21,8 +21,8 @@ import logging
 import collections
 import typing
 
-from ael import constants
-from ael.utils import kodi, io
+from akl import constants
+from akl.utils import kodi, io
 
 from resources.lib.commands.mediator import AppMediator
 from resources.lib import globals
@@ -303,12 +303,12 @@ def cmd_import_roms_json(args):
                 if imported_rom.get_id() in existing_rom_ids:
                      # >> ROM exists (by id). Overwrite?
                     logger.debug('ROM found. Edit existing category.')
-                    if kodi.dialog_yesno('ROM "{}" found in AEL database. Overwrite?'.format(imported_rom.get_name())):
+                    if kodi.dialog_yesno('ROM "{}" found in AKL database. Overwrite?'.format(imported_rom.get_name())):
                         roms_to_update.append(imported_rom)
                 elif imported_rom.get_name() in existing_rom_names:
                      # >> ROM exists (by name). Overwrite?
                     logger.debug('ROM found. Edit existing category.')
-                    if kodi.dialog_yesno('ROM "{}" found in AEL database. Overwrite?'.format(imported_rom.get_name())):
+                    if kodi.dialog_yesno('ROM "{}" found in AKL database. Overwrite?'.format(imported_rom.get_name())):
                         roms_to_update.append(imported_rom)
                 else:
                     logger.debug('Add new ROM {}'.format(imported_rom.get_name()))
@@ -357,7 +357,7 @@ def cmd_clear_roms(args):
         # romcollection.reset_nointro_xmldata()
 
         # Confirm if the user wants to remove the ROMs also when linked to other collections.
-        delete_completely = kodi.dialog_yesno("Delete the ROMs completely from the AEL database and not collection only?")
+        delete_completely = kodi.dialog_yesno("Delete the ROMs completely from the AKL database and not collection only?")
         if not delete_completely: 
             collection_repository.remove_all_roms_in_launcher(romcollection_id)
         else:

@@ -26,7 +26,7 @@ from urllib.parse import parse_qsl
 from http.server import HTTPServer, BaseHTTPRequestHandler
 from http.client import HTTPConnection
 
-# AEL modules
+# AKL modules
 from resources.lib import globals, apiqueries
 from resources.lib.commands import api_commands
 
@@ -72,7 +72,7 @@ class WebService(threading.Thread):
         ''' Called when the thread needs to stop
         '''
         try:
-            logger.info("Stopping AEL webservice({}:{})".format(WebService.HOST, WebService.PORT))
+            logger.info("Stopping AKL webservice({}:{})".format(WebService.HOST, WebService.PORT))
             conn = HTTPConnection("{}:{}".format(WebService.HOST, WebService.PORT))
             conn.request("QUIT", "/")
             conn.getresponse()
@@ -87,7 +87,7 @@ class WebService(threading.Thread):
         '''
         self.stop(check_alive=True)
 
-        logger.info("Startup AEL webservice({}:{})".format(WebService.HOST, WebService.PORT))
+        logger.info("Startup AKL webservice({}:{})".format(WebService.HOST, WebService.PORT))
         server = AelHttpServer((WebService.HOST, WebService.PORT), RequestHandler)
         
         try:
@@ -183,7 +183,7 @@ class RequestHandler(BaseHTTPRequestHandler):
         '''Send headers and reponse
         '''
         try:
-            logger.debug('ael.webservice: Processing path "{}"'.format(self.path))
+            logger.debug('akl.webservice: Processing path "{}"'.format(self.path))
             api_path = self.path.lower()
             if headers_only:
                 self.send_response(200)
@@ -205,10 +205,10 @@ class RequestHandler(BaseHTTPRequestHandler):
                 raise Exception("UnknownRequest")
 
         except Exception as error:
-            logger.fatal('ael.webservice exception processing path', exc_info=error)
-            self.send_error(500, 'AEL.webservice - Exception occurred: {}'.format(str(error)))
+            logger.fatal('akl.webservice exception processing path', exc_info=error)
+            self.send_error(500, 'AKL.webservice - Exception occurred: {}'.format(str(error)))
             
-        logger.debug('ael.webservice/{}/{}'.format(str(id(self)), int(not headers_only)))
+        logger.debug('akl.webservice/{}/{}'.format(str(id(self)), int(not headers_only)))
         return
 
     def handle_queries(self, api_path):

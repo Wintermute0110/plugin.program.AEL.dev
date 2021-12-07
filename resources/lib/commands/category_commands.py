@@ -20,8 +20,8 @@ from __future__ import division
 import logging
 import collections
 
-from ael.utils import kodi, text, io
-from ael import constants
+from akl.utils import kodi, text, io
+from akl import constants
 
 from resources.lib.commands.mediator import AppMediator
 from resources.lib import globals, editors
@@ -437,7 +437,7 @@ def cmd_category_export_xml(args):
     # >> If everything goes all right when exporting then the else clause is executed.
     # >> If there is an error/exception then the exception handler prints a warning message
     # >> inside the function autoconfig_export_category() and the sucess message is never
-    # >> printed. This is the standard way of handling error messages in AEL code.
+    # >> printed. This is the standard way of handling error messages in AKL code.
     try:
         category.export_to_file(export_FN)
     except constants.AddonError as E:

@@ -45,7 +45,7 @@ class Test_View_Rendering_Commands(unittest.TestCase):
         logger.info('---------------------------------------------------------------------------')  
         
         dbPath = io.FileName(os.path.join(cls.TEST_ASSETS_DIR, 'test_db.db'))
-        globals.g_PATHS = globals.AEL_Paths('plugin.tests')
+        globals.g_PATHS = globals.AKL_Paths('plugin.tests')
         globals.g_PATHS.DATABASE_FILE_PATH = dbPath
         
     def write_json(view_data):
@@ -61,8 +61,8 @@ class Test_View_Rendering_Commands(unittest.TestCase):
         
     @patch('resources.lib.repositories.ViewRepository.store_root_view', autospec=True, side_effect = store_root_view)
     @patch('resources.lib.repositories.ViewRepository.store_view', autospec=True, side_effect = store_view)
-    @patch('ael.utils.kodi.notify', autospec=True)
-    @patch('ael.utils.kodi.refresh_container', autospec=True)
+    @patch('akl.utils.kodi.notify', autospec=True)
+    @patch('akl.utils.kodi.refresh_container', autospec=True)
     def test_rendering_views_based_on_database_data(self, refresh_mock, notify_mock, store_mock, store_root_mock):
                 
         # arrange

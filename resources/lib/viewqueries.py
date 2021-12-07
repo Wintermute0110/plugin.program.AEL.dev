@@ -28,8 +28,8 @@ import typing
 from urllib.parse import urlencode
 
 # AEL modules
-from ael import constants, settings
-from ael.utils import kodi
+from akl import constants, settings
+from akl.utils import kodi
 
 from resources.lib import globals
 from resources.lib.commands.mediator import AppMediator

@@ -117,14 +117,14 @@ stages:
               artifact: 'plugin.program.akl'
 
             - script: |
-                git clone https://github.com/chrisism/dev.repository.chrisism.git
+                git clone https://github.com/chrisism/repository.chrisism.dev.git
               workingDirectory: $(Pipeline.Workspace)/
               displayName: 'Clone git repository'
 
             - script: |
                 git config user.email $(git_emailAddress)
                 git config user.name $(git_userName)
-              workingDirectory: $(Pipeline.Workspace)/dev.repository.chrisism/
+              workingDirectory: $(Pipeline.Workspace)/repository.chrisism.dev/
               displayName: 'Configure git settings'
 
             - task: CopyFiles@2
@@ -132,7 +132,7 @@ stages:
               inputs:
                 SourceFolder: '$(Pipeline.Workspace)/plugin.program.akl'
                 Contents: '**/*.*'
-                TargetFolder: '$(Pipeline.Workspace)/dev.repository.chrisism/plugin.program.akl'
+                TargetFolder: '$(Pipeline.Workspace)/repository.chrisism.dev/plugin.program.akl'
                 CleanTargetFolder: false
                 flattenFolders: false
                 OverWrite: true
@@ -141,7 +141,7 @@ stages:
               displayName: 'Merge addon xml files for repository'
               inputs:
                 scriptSource: 'inline'
-                arguments: '$(Pipeline.Workspace)/dev.repository.chrisism/addons.xml $(Pipeline.Workspace)/dev.repository.chrisism/plugin.program.akl/addon.xml'
+                arguments: '$(Pipeline.Workspace)/repository.chrisism.dev/addons.xml $(Pipeline.Workspace)/repository.chrisism.dev/plugin.program.akl/addon.xml'
                 script: |
                   import sys
                   from xml.etree import ElementTree
@@ -160,21 +160,21 @@ stages:
 
                   addons.append(addon_in)
                   addons_xml.write(file_combined)
-                workingDirectory: '$(Pipeline.Workspace)/dev.repository.chrisism/'
+                workingDirectory: '$(Pipeline.Workspace)/repository.chrisism.dev/'
                 
             - script: md5sum addons.xml > addons.xml.md5
-              workingDirectory: $(Pipeline.Workspace)/dev.repository.chrisism/
+              workingDirectory: $(Pipeline.Workspace)/repository.chrisism.dev/
               displayName: 'Creating md5 file for addons.xml'
 
             - script: |
                 git add .
-                git commit -m "Release $(Build.BuildNumber)"
-              workingDirectory: $(Pipeline.Workspace)/dev.repository.chrisism/
+                git commit -m "$(Build.DefinitionName) Release $(Build.BuildNumber)"
+              workingDirectory: $(Pipeline.Workspace)/repository.chrisism.dev/
               displayName: 'Git - Add and commit'    
 
             - script: |
-                git push https://$(github_token)@github.com/chrisism/dev.repository.chrisism.git main 
-              workingDirectory: $(Pipeline.Workspace)/dev.repository.chrisism/plugin.program.akl
+                git push https://$(github_token)@github.com/chrisism/repository.chrisism.dev.git main 
+              workingDirectory: $(Pipeline.Workspace)/repository.chrisism.dev/plugin.program.akl
               displayName: 'Git - Push'    
 
 - stage: DeployProd
@@ -248,7 +248,7 @@ stages:
 
             - script: |
                 git add .
-                git commit -m "Release $(Build.BuildNumber)"
+                git commit -m "$(Build.DefinitionName) Release $(Build.BuildNumber)"
               workingDirectory: $(Pipeline.Workspace)/repository.chrisism/
               displayName: 'Git - Add and commit'    
 

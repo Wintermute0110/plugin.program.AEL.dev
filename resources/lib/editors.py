@@ -24,9 +24,9 @@ import collections
 
 import xbmcgui
 
-from ael.scrapers import ScraperSettings
-from ael.utils import kodi, io
-from ael import constants, settings
+from akl.scrapers import ScraperSettings
+from akl.utils import kodi, io
+from akl import constants, settings
 
 from resources.lib.domain import MetaDataItemABC, AssetInfo, ROM, g_assetFactory
 

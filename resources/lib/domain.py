@@ -26,13 +26,13 @@ import time
 import datetime
 import json
 
-# --- AEL packages ---
+# --- AKL packages ---
 from resources.lib import globals
 
-from ael import api
-from ael.utils import io, kodi, text
-from ael.scrapers import ScraperSettings
-from ael import settings, constants
+from akl import api
+from akl.utils import io, kodi, text
+from akl.scrapers import ScraperSettings
+from akl import settings, constants
 
 logger = logging.getLogger(__name__)
 
@@ -118,7 +118,7 @@ class EntityABC(object):
         if not value or value == '': return None
         return io.FileName(value, isdir)
 
-# Addons that can be used as AEL plugin (launchers, scrapers)
+# Addons that can be used as AKL plugin (launchers, scrapers)
 class AelAddon(EntityABC):
     
     def __init__(self, addon_dic=None):        
@@ -305,7 +305,7 @@ class ROMLauncherAddon(ROMAddon):
             '--type': constants.AddonType.LAUNCHER.name,
             '--server_host': globals.WEBSERVER_HOST,
             '--server_port': globals.WEBSERVER_PORT,
-            '--ael_addon_id': self.get_id(),
+            '--akl_addon_id': self.get_id(),
             '--rom_id': rom.get_id()
         }
 
@@ -316,7 +316,7 @@ class ROMLauncherAddon(ROMAddon):
             '--server_host': globals.WEBSERVER_HOST,
             '--server_port': globals.WEBSERVER_PORT,
             '--romcollection_id': romcollection.get_id(), 
-            '--ael_addon_id': self.get_id()
+            '--akl_addon_id': self.get_id()
         }
         
     def launch(self, rom: ROM):
@@ -360,7 +360,7 @@ class RetroplayerLauncherAddon(ROMLauncherAddon):
     def configure(self, romcollection:ROMCollection):
         post_data = {
             'romcollection_id': romcollection.get_id(),
-            'ael_addon_id': self.get_id(),
+            'akl_addon_id': self.get_id(),
             'addon_id': self.addon.get_addon_id(),
             'settings': {}
         }        
@@ -380,7 +380,7 @@ class ROMCollectionScanner(ROMAddon):
             '--server_host': globals.WEBSERVER_HOST,
             '--server_port': globals.WEBSERVER_PORT,
             '--romcollection_id': rom_collection.get_id(),
-            '--ael_addon_id': self.get_id()
+            '--akl_addon_id': self.get_id()
         }
         
     def get_configure_command(self, romcollection: ROMCollection) -> dict:        
@@ -390,7 +390,7 @@ class ROMCollectionScanner(ROMAddon):
             '--server_host': globals.WEBSERVER_HOST,
             '--server_port': globals.WEBSERVER_PORT,
             '--romcollection_id': romcollection.get_id(),
-            '--ael_addon_id':  self.get_id()
+            '--akl_addon_id':  self.get_id()
         }
 
 class ScraperAddon(ROMAddon):
@@ -441,7 +441,7 @@ class ScraperAddon(ROMAddon):
             '--type': constants.AddonType.SCRAPER.name,
             '--server_host': globals.WEBSERVER_HOST,
             '--server_port': globals.WEBSERVER_PORT,
-            '--ael_addon_id': self.addon.get_id(),
+            '--akl_addon_id': self.addon.get_id(),
             '--rom_id': rom.get_id(),
             '--settings':  io.parse_to_json_arg(self.get_settings())
         }
@@ -452,7 +452,7 @@ class ScraperAddon(ROMAddon):
             '--type': constants.AddonType.SCRAPER.name,
             '--server_host': globals.WEBSERVER_HOST,
             '--server_port': globals.WEBSERVER_PORT,
-            '--ael_addon_id': self.addon.get_id(),
+            '--akl_addon_id': self.addon.get_id(),
             '--romcollection_id': collection.get_id(),
             '--settings':  io.parse_to_json_arg(self.get_settings())
         }
@@ -533,7 +533,7 @@ class MetaDataItemABC(EntityABC):
     def set_developer(self, developer):
         self.entity_data['m_developer'] = developer
 
-    # In AEL 0.9.7 m_rating is stored as a string.
+    # In AKL 0.9.7 m_rating is stored as a string.
     def get_rating(self):
         return int(self.entity_data['m_rating']) if 'm_rating' in self.entity_data and self.entity_data['m_rating'] else ''
 
@@ -777,7 +777,7 @@ class MetaDataItemABC(EntityABC):
         return '{}}#{}: {}'.format(self.get_object_name(), self.get_id(), self.get_name())
 
 # -------------------------------------------------------------------------------------------------
-# Class representing an AEL Cateogry.
+# Class representing an AKL Cateogry.
 # Contains code to generate the context menus passed to Dialog.select()
 # -------------------------------------------------------------------------------------------------
 class Category(MetaDataItemABC):
@@ -878,7 +878,7 @@ class Category(MetaDataItemABC):
         # If NFO file does not exist then create them. If it exists, overwrite.
         nfo_content = []
         nfo_content.append('<?xml version="1.0" encoding="utf-8" standalone="yes"?>\n')
-        nfo_content.append('<!-- Exported by AEL on {0} -->\n'.format(time.strftime("%Y-%m-%d %H:%M:%S")))
+        nfo_content.append('<!-- Exported by AKL on {0} -->\n'.format(time.strftime("%Y-%m-%d %H:%M:%S")))
         nfo_content.append('<category>\n')
         nfo_content.append(text.XML_line('year',      self.get_releaseyear()))
         nfo_content.append(text.XML_line('genre',     self.get_genre())) 
@@ -896,7 +896,7 @@ class Category(MetaDataItemABC):
         # --- Create list of strings ---
         str_list = []
         str_list.append('<?xml version="1.0" encoding="utf-8" standalone="yes"?>\n')
-        str_list.append('<!-- Exported by AEL on {0} -->\n'.format(time.strftime("%Y-%m-%d %H:%M:%S")))
+        str_list.append('<!-- Exported by AKL on {0} -->\n'.format(time.strftime("%Y-%m-%d %H:%M:%S")))
         str_list.append('<advanced_emulator_launcher_configuration>\n')
         str_list.append('<category>\n')
         str_list.append(text.XML_line('name', self.get_name()))
@@ -1141,7 +1141,7 @@ class ROMCollection(MetaDataItemABC):
         # If NFO file does not exist then create them. If it exists, overwrite.
         nfo_content = []
         nfo_content.append('<?xml version="1.0" encoding="utf-8" standalone="yes"?>\n')
-        nfo_content.append('<!-- Exported by AEL on {0} -->\n'.format(time.strftime("%Y-%m-%d %H:%M:%S")))
+        nfo_content.append('<!-- Exported by AKL on {0} -->\n'.format(time.strftime("%Y-%m-%d %H:%M:%S")))
         nfo_content.append('<romcollection>\n')
         nfo_content.append(text.XML_line('year',      self.get_releaseyear()))
         nfo_content.append(text.XML_line('genre',     self.get_genre())) 
@@ -1159,7 +1159,7 @@ class ROMCollection(MetaDataItemABC):
         # --- Create list of strings ---
         str_list = []
         str_list.append('<?xml version="1.0" encoding="utf-8" standalone="yes"?>\n')
-        str_list.append('<!-- Exported by AEL on {0} -->\n'.format(time.strftime("%Y-%m-%d %H:%M:%S")))
+        str_list.append('<!-- Exported by AKL on {0} -->\n'.format(time.strftime("%Y-%m-%d %H:%M:%S")))
         str_list.append('<advanced_emulator_launcher_configuration>\n')
         str_list.append('<romcollection>\n')
         str_list.append(text.XML_line('name', self.get_name()))
@@ -1211,7 +1211,7 @@ class VirtualCollection(ROMCollection):
         return self.entity_data['collection_value'] if 'collection_value' in self.entity_data else None
   
 # -------------------------------------------------------------------------------------------------
-# Class representing a ROM file you can play through AEL.
+# Class representing a ROM file you can play through AKL.
 # -------------------------------------------------------------------------------------------------
 class ROM(MetaDataItemABC):
         
@@ -1451,7 +1451,7 @@ class ROM(MetaDataItemABC):
         # If NFO file does not exist then create them. If it exists, overwrite.
         nfo_content = []
         nfo_content.append('<?xml version="1.0" encoding="utf-8" standalone="yes"?>\n')
-        nfo_content.append('<!-- Exported by AEL on {0} -->\n'.format(time.strftime("%Y-%m-%d %H:%M:%S")))
+        nfo_content.append('<!-- Exported by AKL on {0} -->\n'.format(time.strftime("%Y-%m-%d %H:%M:%S")))
         nfo_content.append('<ROM>\n')
         nfo_content.append(text.XML_line('title',     self.get_name()))
         nfo_content.append(text.XML_line('year',      self.get_releaseyear()))
@@ -2015,7 +2015,7 @@ class VirtualCollectionFactory(object):
             return VirtualCollection({
                 'id' : vcollection_id,
                 'm_name' : '<Favourites>',
-                'plot': 'Browse AEL Favourite ROMs',
+                'plot': 'Browse AKL Favourite ROMs',
                 'finished': settings.getSettingAsBool('display_hide_favs')
             }, [
                 Asset({'id' : '', 'asset_type' : constants.ASSET_FANART_ID, 'filepath' : globals.g_PATHS.FANART_FILE_PATH.getPath()}),

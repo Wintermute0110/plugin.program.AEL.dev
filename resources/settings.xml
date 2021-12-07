@@ -1,6 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <settings version="1">
-    <section id="plugin.program.ael">
+    <section id="plugin.program.akl">
         <category id="rom_scanner" label="40010">
 			<group id="1">
                 <setting id="scan_ignore_scrap_title" type="boolean" label="40103" help="">
@@ -170,7 +170,7 @@
                     <default>false</default>
                     <control type="toggle"/>
                 </setting>
-                <setting id="display_hide_AEL_scraper" type="boolean" label="40411" help="">
+                <setting id="display_hide_AKL_scraper" type="boolean" label="40411" help="">
                     <level>0</level>
                     <default>false</default>
                     <control type="toggle"/>
@@ -246,11 +246,11 @@
         </category>
         <!-- <category id="plugins" label="40017">
             <group id="grp_plugins">
-                <setting id="script_ael_defaults" type="addon" label="40701" help="">
+                <setting id="script_akl_defaults" type="addon" label="40701" help="">
                     <level>0</level>
                     <default/>
                     <constraints>
-                        <addontype>script.ael.defaults</addontype>
+                        <addontype>script.akl.defaults</addontype>
                         <allowempty>true</allowempty>
                     </constraints>
                     <control type="button" format="addon">
@@ -258,11 +258,11 @@
                         <show more="true" details="true">installed</show>
                     </control>
                 </setting>
-                <setting id="script_ael_google" type="addon" label="40702" help="">
+                <setting id="script_akl_google" type="addon" label="40702" help="">
                     <level>0</level>
                     <default/>
                     <constraints>
-                        <addontype>script.ael.google</addontype>
+                        <addontype>script.akl.google</addontype>
                         <allowempty>true</allowempty>
                     </constraints>
                     <control type="button" format="addon">

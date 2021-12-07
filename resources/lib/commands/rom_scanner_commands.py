@@ -21,7 +21,7 @@ from __future__ import annotations
 import logging
 import collections
 
-from ael.utils import kodi
+from akl.utils import kodi
 
 from resources.lib.commands.mediator import AppMediator
 from resources.lib import globals

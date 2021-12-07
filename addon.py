@@ -24,7 +24,7 @@ import sys
 import logging
 
 # --- Modules/packages in this plugin ---
-from ael.utils import kodilogging, kodi
+from akl.utils import kodilogging, kodi
 from resources.lib import views
 
 kodilogging.config()

@@ -37,11 +37,11 @@ class Test_services(unittest.TestCase):
         logger.info('TEST ASSETS DIR: {}'.format(cls.TEST_ASSETS_DIR))
         logger.info('---------------------------------------------------------------------------')
         
-        globals.g_PATHS = globals.AEL_Paths('plugin.tests')
+        globals.g_PATHS = globals.AKL_Paths('plugin.tests')
         globals.g_PATHS.DATABASE_MIGRATIONS_PATH = FakeFile('db')
         
     @patch('resources.lib.services.globals.g_bootstrap_instances', autospec=True)
-    @patch('ael.utils.io.FileName.scanFilesInPath')
+    @patch('akl.utils.io.FileName.scanFilesInPath')
     def test_version_compare(self, file_mock:MagicMock, globals_mock):  
         # arrange
         file_mock.return_value = [

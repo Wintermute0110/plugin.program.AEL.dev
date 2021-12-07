@@ -22,7 +22,7 @@ from __future__ import division
 import logging
 import json
 
-# AEL modules
+# AKL modules
 from resources.lib import globals
 from resources.lib.repositories import UnitOfWork, ROMsRepository, ROMCollectionRepository
 

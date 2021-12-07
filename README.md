@@ -33,7 +33,7 @@ You can install this [repository](https://github.com/chrisism/repository.chrisis
 and download the ZIP file of the version you want. Use this ZIP file to install the addon in Kodi.
 
 ## Installing the latest beta version ##
-Release candidates and beta versions can be found on the [dev repository](https://github.com/chrisism/dev.repository.chrisism). Simply collect the version you like from there.  
+Release candidates and beta versions can be found on the [dev repository](https://github.com/chrisism/repository.chrisism.dev). Simply collect the version you like from there.  
 If you want to be really experimental you can clone/download the code from the dev branch and start using that version. Be aware of breaking changes in that version!
 
 ## Install plugins

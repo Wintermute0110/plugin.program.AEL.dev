@@ -36,7 +36,7 @@ class Test_objectstests(unittest.TestCase):
         logger.info('TEST ASSETS DIR: {}'.format(cls.TEST_ASSETS_DIR))
         logger.info('---------------------------------------------------------------------------')  
         
-        globals.g_PATHS = globals.AEL_Paths('plugin.tests')
+        globals.g_PATHS = globals.AKL_Paths('plugin.tests')
         
     def test_setting_youtube_url_as_trailer(self):
         

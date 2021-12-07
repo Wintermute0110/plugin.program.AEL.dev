@@ -20,8 +20,8 @@ from __future__ import division
 import logging
 import collections
 
-from ael import constants, platforms
-from ael.utils import kodi, text, io
+from akl import constants, platforms
+from akl.utils import kodi, text, io
 
 from resources.lib.commands.mediator import AppMediator
 from resources.lib import globals, editors
@@ -48,7 +48,7 @@ def cmd_add_collection(args):
             if selected_option is None: return
             if selected_option > 0: parent_category = grand_parent_category
     
-        wizard = kodi.WizardDialog_Selection(None, 'platform', 'Select the platform', platforms.AEL_platform_list)
+        wizard = kodi.WizardDialog_Selection(None, 'platform', 'Select the platform', platforms.AKL_platform_list)
         wizard = kodi.WizardDialog_Dummy(wizard, 'm_name', '', _get_name_from_platform)
         wizard = kodi.WizardDialog_Keyboard(wizard, 'm_name', 'Set the title of the launcher')
         wizard = kodi.WizardDialog_FileBrowse(wizard, 'assets_path', 'Select asset/artwork directory',0, '')
@@ -66,7 +66,7 @@ def cmd_add_collection(args):
         romcollection.set_assets_root_path(assets_path_FN, constants.ROM_ASSET_ID_LIST, create_default_subdirectories=True)
                 
         # --- Determine box size based on platform --
-        platform = platforms.get_AEL_platform(entity_data['platform'])
+        platform = platforms.get_AKL_platform(entity_data['platform'])
         romcollection.set_box_sizing(platform.default_box_size)
         
         romcollection_repository = ROMCollectionRepository(uow)
@@ -304,7 +304,7 @@ def cmd_romcollection_metadata_platform(args):
         repository = ROMCollectionRepository(uow)
         romcollection = repository.find_romcollection(romcollection_id)
 
-        if editors.edit_field_by_list(romcollection, 'Platform', platforms.AEL_platform_list,
+        if editors.edit_field_by_list(romcollection, 'Platform', platforms.AKL_platform_list,
                                     romcollection.get_platform, romcollection.set_platform):
             repository.update_romcollection(romcollection)
             uow.commit()
@@ -501,7 +501,7 @@ def cmd_romcollection_export_xml(args):
     # >> If everything goes all right when exporting then the else clause is executed.
     # >> If there is an error/exception then the exception handler prints a warning message
     # >> inside the function autoconfig_export_category() and the sucess message is never
-    # >> printed. This is the standard way of handling error messages in AEL code.
+    # >> printed. This is the standard way of handling error messages in AKL code.
     try:
         romcollection.export_to_file(export_FN)
     except constants.AddonError as E:

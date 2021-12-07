@@ -21,8 +21,8 @@ import logging
 import typing
 import collections
 
-from ael.utils import kodi, io, text
-from ael import constants, platforms
+from akl.utils import kodi, io, text
+from akl import constants, platforms
 
 from resources.lib.commands.mediator import AppMediator
 
@@ -47,7 +47,7 @@ def cmd_check_collections(args):
             l_str = []
             main_slist.append(f'[COLOR orange]Collection "{collection.get_name()}"[/COLOR]')
 
-            # Check that platform is on AEL official platform list
+            # Check that platform is on AKL official platform list
             platform = collection.get_platform()
             if platform not in platforms.platform_long_to_index_dic:
                 l_str.append(f'Unrecognised platform "{platform}"')

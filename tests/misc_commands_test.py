@@ -37,7 +37,7 @@ class Test_Misc_Commands(unittest.TestCase):
         logger.info('TEST ASSETS DIR: {}'.format(cls.TEST_ASSETS_DIR))
         logger.info('---------------------------------------------------------------------------')  
         
-        globals.g_PATHS = globals.AEL_Paths('plugin.tests')
+        globals.g_PATHS = globals.AKL_Paths('plugin.tests')
         #globals.g_PATHS.DATABASE_FILE_PATH = dbPath
 
     @patch('resources.lib.commands.misc_commands.UnitOfWork', autospec=True)
@@ -57,8 +57,8 @@ class Test_Misc_Commands(unittest.TestCase):
         browse.return_value = [xml_path]
         
         launchers_mock.return_value = [
-            AelAddon({ 'id': 'ABC', 'addon_id': 'script.ael.defaults', 'name': 'TEST1' }),
-            AelAddon({ 'id': 'DEF', 'addon_id': 'script.ael.retroarchlauncher', 'name': 'TEST2' })
+            AelAddon({ 'id': 'ABC', 'addon_id': 'script.akl.defaults', 'name': 'TEST1' }),
+            AelAddon({ 'id': 'DEF', 'addon_id': 'script.akl.retroarchlauncher', 'name': 'TEST2' })
         ]
 
         expected = 5

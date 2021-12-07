@@ -19,11 +19,11 @@ from __future__ import unicode_literals
 from __future__ import division
 
 import logging
-from ael.scrapers import ScraperSettings
+from akl.scrapers import ScraperSettings
 
-from ael.utils import kodi
-from ael.api import ROMObj
-from ael import constants
+from akl.utils import kodi
+from akl.api import ROMObj
+from akl import constants
 
 from resources.lib.commands.mediator import AppMediator
 from resources.lib import globals
@@ -37,7 +37,7 @@ logger = logging.getLogger(__name__)
 # -------------------------------------------------------------------------------------------------      
 def cmd_set_launcher_args(args) -> bool:
     romcollection_id:str = args['romcollection_id'] if 'romcollection_id' in args else None
-    launcher_id:str      = args['ael_addon_id'] if 'ael_addon_id' in args else None
+    launcher_id:str      = args['akl_addon_id'] if 'akl_addon_id' in args else None
     addon_id:str         = args['addon_id'] if 'addon_id' in args else None
     launcher_settings    = args['settings'] if 'settings' in args else None
         
@@ -75,7 +75,7 @@ def cmd_set_launcher_args(args) -> bool:
 # -------------------------------------------------------------------------------------------------
 def cmd_set_scanner_settings(args) -> bool:
     romcollection_id:str = args['romcollection_id'] if 'romcollection_id' in args else None
-    scanner_id:str       = args['ael_addon_id'] if 'ael_addon_id' in args else None
+    scanner_id:str       = args['akl_addon_id'] if 'akl_addon_id' in args else None
     addon_id:str         = args['addon_id'] if 'addon_id' in args else None
     settings:dict        = args['settings'] if 'settings' in args else None
     
@@ -106,7 +106,7 @@ def cmd_set_scanner_settings(args) -> bool:
 
 def cmd_store_scanned_roms(args) -> bool:
     romcollection_id:str = args['romcollection_id'] if 'romcollection_id' in args else None
-    scanner_id:str       = args['ael_addon_id'] if 'ael_addon_id' in args else None
+    scanner_id:str       = args['akl_addon_id'] if 'akl_addon_id' in args else None
     new_roms:list        = args['roms'] if 'roms' in args else None
     
     if new_roms is None:
@@ -142,7 +142,7 @@ def cmd_store_scanned_roms(args) -> bool:
 
 def cmd_remove_roms(args) -> bool:
     romcollection_id:str = args['romcollection_id'] if 'romcollection_id' in args else None
-    scanner_id:str       = args['ael_addon_id'] if 'ael_addon_id' in args else None
+    scanner_id:str       = args['akl_addon_id'] if 'akl_addon_id' in args else None
     rom_ids:list         = args['rom_ids'] if 'rom_ids' in args else None
     
     if rom_ids is None:
@@ -168,7 +168,7 @@ def cmd_remove_roms(args) -> bool:
 
 def cmd_store_scraped_roms(args) -> bool:
     romcollection_id:str = args['romcollection_id'] if 'romcollection_id' in args else None
-    scraper_id:str       = args['ael_addon_id'] if 'ael_addon_id' in args else None
+    scraper_id:str       = args['akl_addon_id'] if 'akl_addon_id' in args else None
     scraped_roms:list    = args['roms'] if 'roms' in args else None
     settings_dic:dict    = args['applied_settings'] if 'applied_settings' in args else {}
     applied_settings     = ScraperSettings.from_settings_dict(settings_dic)
@@ -215,7 +215,7 @@ def cmd_store_scraped_roms(args) -> bool:
 
 def cmd_store_scraped_single_rom(args) -> bool:
     rom_id:str           = args['rom_id'] if 'rom_id' in args else None
-    scraper_id:str       = args['ael_addon_id'] if 'ael_addon_id' in args else None
+    scraper_id:str       = args['akl_addon_id'] if 'akl_addon_id' in args else None
     scraped_rom_data:dict= args['rom'] if 'rom' in args else None
     settings_dic:dict    = args['applied_settings'] if 'applied_settings' in args else {}
     applied_settings     = ScraperSettings.from_settings_dict(settings_dic)

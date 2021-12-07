@@ -14,8 +14,8 @@ from resources.lib.webservice import WebService
 from resources.lib.commands.mediator import AppMediator
 import resources.lib.commands
         
-from ael.utils import io, kodi
-from ael import settings
+from akl.utils import io, kodi
+from akl import settings
 
 logger = logging.getLogger(__name__)
 
@@ -23,7 +23,7 @@ class AppService(object):
 
     def __init__(self):
         
-        threading.Thread.name = 'ael'
+        threading.Thread.name = 'akl'
 
         globals.g_bootstrap_instances()
         
@@ -36,7 +36,7 @@ class AppService(object):
         AppMediator.sync_cmd(cmd, args)
 
     def run(self):        
-        kodi.set_windowprop('ael_server_state', 'STARTING')
+        kodi.set_windowprop('akl_server_state', 'STARTING')
         
         # --- Some debug stuff for development ---
         logger.info('------------ Called Advanced Kodi Launcher : Service ------------')
@@ -48,7 +48,7 @@ class AppService(object):
         logger.debug('Python version "' + sys.version.replace('\n', '') + '"')
         logger.debug('addon.id         "{}"'.format(globals.addon_id))
         logger.debug('addon.version    "{}"'.format(globals.addon_version))
-        logger.debug("Starting AEL service")
+        logger.debug("Starting AKL service")
 
         uow = UnitOfWork(globals.g_PATHS.DATABASE_FILE_PATH)
         if not uow.check_database():
@@ -68,7 +68,7 @@ class AppService(object):
         self.webservice.start()
                 
         logger.debug("Processing service events")
-        kodi.set_windowprop('ael_server_state', 'STARTED')
+        kodi.set_windowprop('akl_server_state', 'STARTED')
         while not self.monitor.abortRequested():
             
             self.monitor.process_events()
@@ -83,18 +83,18 @@ class AppService(object):
         self.shutdown()
 
     def shutdown(self):
-        logger.debug("Shutting down AEL service")        
-        kodi.set_windowprop('ael_server_state', 'STOPPING')        
+        logger.debug("Shutting down AKL service")        
+        kodi.set_windowprop('akl_server_state', 'STOPPING')        
         
         self.webservice.stop()
         del self.monitor
         del self.webservice
         
-        kodi.set_windowprop('ael_server_state', 'STOPPED')
-        logger.debug("AEL service stopped")
+        kodi.set_windowprop('akl_server_state', 'STOPPED')
+        logger.debug("AKL service stopped")
         
     def _initial_setup(self, uow:UnitOfWork):
-        kodi.notify('Creating new AEL database')
+        kodi.notify('Creating new AKL database')
         uow.create_empty_database(globals.g_PATHS.DATABASE_SCHEMA_PATH)
         logger.info("Database created.")
         
@@ -145,7 +145,7 @@ class AppMonitor(xbmc.Monitor):
     def __init__(self, *args, **kwargs):
         self.addon_id = kwargs['addon_id']
         self.action = kwargs['action']
-        logger.debug("[AEL Monitor] Initalized.")
+        logger.debug("[AKL Monitor] Initalized.")
 
     def process_events(self):
         pass

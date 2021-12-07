@@ -20,8 +20,8 @@ from __future__ import division
 import logging
 import collections
 
-from ael.utils import kodi
-from ael import settings, constants
+from akl.utils import kodi
+from akl import settings, constants
 
 from resources.lib.commands.mediator import AppMediator
 from resources.lib import globals

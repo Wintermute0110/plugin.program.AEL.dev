@@ -18,7 +18,7 @@
 from __future__ import unicode_literals
 from __future__ import division
 
-# --- AEL modules ---
+# --- AKL modules ---
 from resources.lib.domain import *
 #
 # This must be implemented as a list of strings. See AML for more details.

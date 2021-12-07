@@ -20,9 +20,9 @@ from __future__ import division
 import logging
 import collections
 
-from ael import constants
-from ael.utils import kodi
-from ael.scrapers import ScraperSettings
+from akl import constants
+from akl.utils import kodi
+from akl.scrapers import ScraperSettings
 
 from resources.lib.commands.mediator import AppMediator
 from resources.lib import globals

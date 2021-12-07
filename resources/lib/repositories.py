@@ -5,9 +5,9 @@ import typing
 import sqlite3
 from sqlite3.dbapi2 import Cursor
 
-from ael.settings import *
-from ael.utils import text, io
-from ael import constants
+from akl.settings import *
+from akl.utils import text, io
+from akl import constants
 
 from resources.lib import globals
 from resources.lib.domain import Category, ROMCollection, ROM, Asset, AssetPath, VirtualCollection
@@ -31,7 +31,7 @@ logger = logging.getLogger(__name__)
 #
 class ViewRepository(object):
 
-    def __init__(self, paths: globals.AEL_Paths):
+    def __init__(self, paths: globals.AKL_Paths):
         self.paths = paths
 
     def find_root_items(self):
@@ -306,7 +306,7 @@ class UnitOfWork(object):
     def get_database_version(self) -> str:
         self.open_session()
         
-        self.execute(f"SELECT version FROM ael_version WHERE app='{globals.addon_id}';")
+        self.execute(f"SELECT version FROM akl_version WHERE app='{globals.addon_id}';")
         sql_version = self.single_result()
         
         db_version = sql_version['version'] if sql_version else None
@@ -319,7 +319,7 @@ class UnitOfWork(object):
         
         sql_statements = schema_file_path.loadFileToStr()
         self.execute_script(sql_statements)
-        self.conn.execute("INSERT INTO ael_version VALUES(?, ?)", [globals.addon_id, globals.addon_version])
+        self.conn.execute("INSERT INTO akl_version VALUES(?, ?)", [globals.addon_id, globals.addon_version])
 
         self.commit()
         self.close_session()
@@ -349,7 +349,7 @@ class UnitOfWork(object):
             self.execute_script(sql_statements)
        
         logger.info(f'Updating database schema version of app {globals.addon_id} to {globals.addon_version}')     
-        self.conn.execute("UPDATE ael_version SET version=? WHERE app=?", [globals.addon_version, globals.addon_id])
+        self.conn.execute("UPDATE akl_version SET version=? WHERE app=?", [globals.addon_version, globals.addon_id])
         self.commit()
         self.close_session()
 
@@ -633,13 +633,13 @@ QUERY_REMOVE_ROM_FROM_ROMCOLLECTION      = "DELETE FROM roms_in_romcollection WH
 QUERY_REMOVE_ROMS_FROM_ROMCOLLECTION    =  "DELETE FROM roms_in_romcollection WHERE romcollection_id = ?"
 
 QUERY_SELECT_ROMCOLLECTION_LAUNCHERS     = "SELECT * FROM vw_romcollection_launchers WHERE romcollection_id = ?"
-QUERY_INSERT_ROMCOLLECTION_LAUNCHER      = "INSERT INTO romcollection_launchers (id, romcollection_id, ael_addon_id, settings, is_default) VALUES (?,?,?,?,?)"
+QUERY_INSERT_ROMCOLLECTION_LAUNCHER      = "INSERT INTO romcollection_launchers (id, romcollection_id, akl_addon_id, settings, is_default) VALUES (?,?,?,?,?)"
 QUERY_UPDATE_ROMCOLLECTION_LAUNCHER      = "UPDATE romcollection_launchers SET settings = ?, is_default = ? WHERE id = ?"
 QUERY_DELETE_ROMCOLLECTION_LAUNCHERS     = "DELETE FROM romcollection_launchers WHERE romcollection_id = ?"
 QUERY_DELETE_ROMCOLLECTION_LAUNCHER      = "DELETE FROM romcollection_launchers WHERE romcollection_id = ? AND id = ?"
 
 QUERY_SELECT_ROMCOLLECTION_SCANNERS      = "SELECT * FROM vw_romcollection_scanners WHERE romcollection_id = ?"
-QUERY_INSERT_ROMCOLLECTION_SCANNER       = "INSERT INTO romcollection_scanners (id, romcollection_id, ael_addon_id, settings) VALUES (?,?,?,?)"
+QUERY_INSERT_ROMCOLLECTION_SCANNER       = "INSERT INTO romcollection_scanners (id, romcollection_id, akl_addon_id, settings) VALUES (?,?,?,?)"
 QUERY_UPDATE_ROMCOLLECTION_SCANNER       = "UPDATE romcollection_scanners SET settings = ? WHERE id = ?"
 QUERY_DELETE_ROMCOLLECTION_SCANNER       = "DELETE FROM romcollection_scanners WHERE romcollection_id = ? AND id = ?"
 
@@ -1032,7 +1032,7 @@ QUERY_SELECT_ROM_SCANNED_DATA_BY_SET = "SELECT s.* FROM scanned_roms_data AS s I
 QUERY_DELETE_SCANNED_DATA            = "DELETE FROM scanned_roms_data WHERE rom_id = ?"
 
 QUERY_SELECT_ROM_LAUNCHERS     = "SELECT * FROM vw_rom_launchers WHERE rom_id = ?"
-QUERY_INSERT_ROM_LAUNCHER      = "INSERT INTO rom_launchers (id, rom_id, ael_addon_id, settings, is_default) VALUES (?,?,?,?,?)"
+QUERY_INSERT_ROM_LAUNCHER      = "INSERT INTO rom_launchers (id, rom_id, akl_addon_id, settings, is_default) VALUES (?,?,?,?,?)"
 QUERY_UPDATE_ROM_LAUNCHER      = "UPDATE rom_launchers SET settings = ?, is_default = ? WHERE id = ?"
 QUERY_DELETE_ROM_LAUNCHERS     = "DELETE FROM rom_launchers WHERE rom_id = ?"
 QUERY_DELETE_ROM_LAUNCHER      = "DELETE FROM rom_launchers WHERE romcollection_id = ? AND id = ?"
@@ -1269,16 +1269,16 @@ class ROMsRepository(object):
         return None, None
     
 #
-# AelAddonRepository -> AEL Adoon objects from SQLite DB
+# AelAddonRepository -> AKL Adoon objects from SQLite DB
 #     
-QUERY_SELECT_ADDON              = "SELECT * FROM ael_addon WHERE id = ?"
-QUERY_SELECT_ADDON_BY_ADDON_ID  = "SELECT * FROM ael_addon WHERE addon_id = ? AND addon_type = ?"
-QUERY_SELECT_ADDONS             = "SELECT * FROM ael_addon"
-QUERY_SELECT_LAUNCHER_ADDONS    = "SELECT * FROM ael_addon WHERE addon_type = 'LAUNCHER' ORDER BY name"
-QUERY_SELECT_SCANNER_ADDONS     = "SELECT * FROM ael_addon WHERE addon_type = 'SCANNER' ORDER BY name"
-QUERY_SELECT_SCRAPER_ADDONS     = "SELECT * FROM ael_addon WHERE addon_type = 'SCRAPER' ORDER BY name"
-QUERY_INSERT_ADDON              = "INSERT INTO ael_addon(id, name, addon_id, version, addon_type, extra_settings) VALUES(?,?,?,?,?,?)" 
-QUERY_UPDATE_ADDON              = "UPDATE ael_addon SET name = ?, addon_id = ?, version = ?, addon_type = ?, extra_settings = ? WHERE id = ?" 
+QUERY_SELECT_ADDON              = "SELECT * FROM akl_addon WHERE id = ?"
+QUERY_SELECT_ADDON_BY_ADDON_ID  = "SELECT * FROM akl_addon WHERE addon_id = ? AND addon_type = ?"
+QUERY_SELECT_ADDONS             = "SELECT * FROM akl_addon"
+QUERY_SELECT_LAUNCHER_ADDONS    = "SELECT * FROM akl_addon WHERE addon_type = 'LAUNCHER' ORDER BY name"
+QUERY_SELECT_SCANNER_ADDONS     = "SELECT * FROM akl_addon WHERE addon_type = 'SCANNER' ORDER BY name"
+QUERY_SELECT_SCRAPER_ADDONS     = "SELECT * FROM akl_addon WHERE addon_type = 'SCRAPER' ORDER BY name"
+QUERY_INSERT_ADDON              = "INSERT INTO akl_addon(id, name, addon_id, version, addon_type, extra_settings) VALUES(?,?,?,?,?,?)" 
+QUERY_UPDATE_ADDON              = "UPDATE akl_addon SET name = ?, addon_id = ?, version = ?, addon_type = ?, extra_settings = ? WHERE id = ?" 
 
 class AelAddonRepository(object):
 

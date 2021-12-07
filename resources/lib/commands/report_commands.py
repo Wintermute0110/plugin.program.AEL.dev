@@ -20,7 +20,7 @@ from __future__ import division
 
 import logging
 
-from ael.utils import kodi, text
+from akl.utils import kodi, text
 
 from resources.lib.commands.mediator import AppMediator
 
