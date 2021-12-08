@@ -13,7 +13,7 @@ import re
 import shutil
 import sys
 
-# --- AEL modules ---
+# --- AKL modules ---
 if __name__ == "__main__" and __package__ is None:
     path = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
     print('Adding to sys.path {0}'.format(path))
