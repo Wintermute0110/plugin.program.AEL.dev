@@ -66,7 +66,7 @@ def cmd_set_launcher_args(args) -> bool:
         uow.commit()
     
     kodi.notify('Configured launcher {}'.format(addon.get_name()))
-    if metadata_updated: AppMediator.async_cmd('RENDER_VIEW', {'category_id': romcollection.get_parent_id()})  
+    if metadata_updated: AppMediator.async_cmd('RENDER_CATEGORY_VIEW', {'category_id': romcollection.get_parent_id()})  
     AppMediator.async_cmd('EDIT_ROMCOLLECTION', {'romcollection_id': romcollection_id})
     return True
 
@@ -135,7 +135,7 @@ def cmd_store_scanned_roms(args) -> bool:
     kodi.notify('Stored scanned ROMS in ROMs Collection {}'.format(romcollection.get_name()))
     
     AppMediator.async_cmd('RENDER_ROMCOLLECTION_VIEW', {'romcollection_id': romcollection_id})
-    AppMediator.async_cmd('RENDER_VIEW', {'category_id': romcollection.get_parent_id()})  
+    AppMediator.async_cmd('RENDER_CATEGORY_VIEW', {'category_id': romcollection.get_parent_id()})  
     AppMediator.async_cmd('RENDER_VCATEGORY_VIEW', {'vcategory_id': constants.VCATEGORY_TITLE_ID})
     AppMediator.async_cmd('EDIT_ROMCOLLECTION', {'romcollection_id': romcollection_id})
     return True
@@ -161,7 +161,7 @@ def cmd_remove_roms(args) -> bool:
     kodi.notify('Removed ROMS from ROMs Collection {}'.format(romcollection.get_name()))
     
     AppMediator.async_cmd('RENDER_ROMCOLLECTION_VIEW', {'romcollection_id': romcollection_id})
-    AppMediator.async_cmd('RENDER_VIEW', {'category_id': romcollection.get_parent_id()})  
+    AppMediator.async_cmd('RENDER_CATEGORY_VIEW', {'category_id': romcollection.get_parent_id()})  
     AppMediator.async_cmd('RENDER_VCATEGORY_VIEWS')
     AppMediator.async_cmd('EDIT_ROMCOLLECTION', {'romcollection_id': romcollection_id})
     return True

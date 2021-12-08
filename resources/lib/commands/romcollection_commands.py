@@ -75,7 +75,7 @@ def cmd_add_collection(args):
         
         kodi.notify('ROM Collection {0} created'.format(romcollection.get_name()))
         AppMediator.async_cmd('RENDER_ROMCOLLECTION_VIEW', {'romcollection_id': romcollection.get_id()})
-        AppMediator.async_cmd('RENDER_VIEW', {'category_id': parent_category.get_id()})   
+        AppMediator.async_cmd('RENDER_CATEGORY_VIEW', {'category_id': parent_category.get_id()})   
     
 def _get_name_from_platform(input, item_key, entity_data):
     title = entity_data['platform']
@@ -206,7 +206,7 @@ def cmd_romcollection_edit_assets(args):
             repository.update_romcollection(romcollection)
             uow.commit()
             AppMediator.async_cmd('RENDER_ROMCOLLECTION_VIEW', {'romcollection_id': romcollection.get_id()})
-            AppMediator.async_cmd('RENDER_VIEW', {'category_id': romcollection.get_parent_id()})     
+            AppMediator.async_cmd('RENDER_CATEGORY_VIEW', {'category_id': romcollection.get_parent_id()})     
 
     AppMediator.sync_cmd('ROMCOLLECTION_EDIT_ASSETS', {'romcollection_id': romcollection.get_id(), 'selected_asset': asset.id})         
 
@@ -229,7 +229,7 @@ def cmd_romcollection_edit_default_assets(args):
             repository.update_romcollection(romcollection)
             uow.commit()
             AppMediator.async_cmd('RENDER_ROMCOLLECTION_VIEW', {'romcollection_id': romcollection.get_id()})
-            AppMediator.async_cmd('RENDER_VIEW', {'category_id': romcollection.get_parent_id()})     
+            AppMediator.async_cmd('RENDER_CATEGORY_VIEW', {'category_id': romcollection.get_parent_id()})     
 
     AppMediator.sync_cmd('ROMCOLLECTION_EDIT_DEFAULT_ASSETS', {'romcollection_id': romcollection.get_id(), 'selected_asset': selected_asset_to_edit.id})         
     
@@ -246,7 +246,7 @@ def cmd_romcollection_status(args):
         uow.commit()
         
     AppMediator.async_cmd('RENDER_ROMCOLLECTION_VIEW', {'romcollection_id': romcollection.get_id()})
-    AppMediator.async_cmd('RENDER_VIEW', {'category_id': romcollection.get_parent_id()})     
+    AppMediator.async_cmd('RENDER_CATEGORY_VIEW', {'category_id': romcollection.get_parent_id()})     
     AppMediator.sync_cmd('EDIT_ROMCOLLECTION', args)
     
 #
@@ -275,7 +275,7 @@ def cmd_romcollection_delete(args):
         uow.commit()
         
     kodi.notify('Deleted romcollection {0}'.format(romcollection_name))
-    AppMediator.async_cmd('RENDER_VIEW', {'category_id': romcollection.get_parent_id()})            
+    AppMediator.async_cmd('RENDER_CATEGORY_VIEW', {'category_id': romcollection.get_parent_id()})            
     AppMediator.async_cmd('CLEANUP_VIEWS')
     AppMediator.sync_cmd('EDIT_ROMCOLLECTION', args)
 
@@ -293,7 +293,7 @@ def cmd_romcollection_metadata_title(args):
             repository.update_romcollection(romcollection)
             uow.commit()
             AppMediator.async_cmd('RENDER_ROMCOLLECTION_VIEW', {'romcollection_id': romcollection.get_id()})
-            AppMediator.async_cmd('RENDER_VIEW', {'category_id': romcollection.get_parent_id()})            
+            AppMediator.async_cmd('RENDER_CATEGORY_VIEW', {'category_id': romcollection.get_parent_id()})            
     AppMediator.sync_cmd('ROMCOLLECTION_EDIT_METADATA', args)
 
 @AppMediator.register('ROMCOLLECTION_EDIT_METADATA_PLATFORM')
@@ -309,7 +309,7 @@ def cmd_romcollection_metadata_platform(args):
             repository.update_romcollection(romcollection)
             uow.commit()
             AppMediator.async_cmd('RENDER_ROMCOLLECTION_VIEW', {'romcollection_id': romcollection.get_id()})
-            AppMediator.async_cmd('RENDER_VIEW', {'category_id': romcollection.get_parent_id()})            
+            AppMediator.async_cmd('RENDER_CATEGORY_VIEW', {'category_id': romcollection.get_parent_id()})            
     AppMediator.sync_cmd('ROMCOLLECTION_EDIT_METADATA', args)
 
 @AppMediator.register('ROMCOLLECTION_EDIT_METADATA_RELEASEYEAR')
@@ -324,7 +324,7 @@ def cmd_romcollection_metadata_releaseyear(args):
             repository.update_romcollection(romcollection)
             uow.commit()
             AppMediator.async_cmd('RENDER_ROMCOLLECTION_VIEW', {'romcollection_id': romcollection.get_id()})
-            AppMediator.async_cmd('RENDER_VIEW', {'category_id': romcollection.get_parent_id()})
+            AppMediator.async_cmd('RENDER_CATEGORY_VIEW', {'category_id': romcollection.get_parent_id()})
     AppMediator.sync_cmd('ROMCOLLECTION_EDIT_METADATA', args)
 
 @AppMediator.register('ROMCOLLECTION_EDIT_METADATA_GENRE')
@@ -339,7 +339,7 @@ def cmd_romcollection_metadata_genre(args):
             repository.update_romcollection(romcollection)
             uow.commit()            
             AppMediator.async_cmd('RENDER_ROMCOLLECTION_VIEW', {'romcollection_id': romcollection.get_id()})
-            AppMediator.async_cmd('RENDER_VIEW', {'category_id': romcollection.get_parent_id()})            
+            AppMediator.async_cmd('RENDER_CATEGORY_VIEW', {'category_id': romcollection.get_parent_id()})            
     AppMediator.sync_cmd('ROMCOLLECTION_EDIT_METADATA', args)
     
 @AppMediator.register('ROMCOLLECTION_EDIT_METADATA_DEVELOPER')
@@ -354,7 +354,7 @@ def cmd_romcollection_metadata_developer(args):
             repository.update_romcollection(romcollection)
             uow.commit()    
             AppMediator.async_cmd('RENDER_ROMCOLLECTION_VIEW', {'romcollection_id': romcollection.get_id()})
-            AppMediator.async_cmd('RENDER_VIEW', {'category_id': romcollection.get_parent_id()})
+            AppMediator.async_cmd('RENDER_CATEGORY_VIEW', {'category_id': romcollection.get_parent_id()})
     AppMediator.sync_cmd('ROMCOLLECTION_EDIT_METADATA', args)
 
 @AppMediator.register('ROMCOLLECTION_EDIT_METADATA_RATING')
@@ -369,7 +369,7 @@ def cmd_romcollection_metadata_rating(args):
             repository.update_romcollection(romcollection)
             uow.commit()
             AppMediator.async_cmd('RENDER_ROMCOLLECTION_VIEW', {'romcollection_id': romcollection.get_id()})
-            AppMediator.async_cmd('RENDER_VIEW', {'category_id': romcollection.get_parent_id()})
+            AppMediator.async_cmd('RENDER_CATEGORY_VIEW', {'category_id': romcollection.get_parent_id()})
     AppMediator.sync_cmd('ROMCOLLECTION_EDIT_METADATA', args)
 
 @AppMediator.register('ROMCOLLECTION_EDIT_METADATA_PLOT')
@@ -384,7 +384,7 @@ def cmd_romcollection_metadata_plot(args):
             repository.update_romcollection(romcollection)
             uow.commit()
             AppMediator.async_cmd('RENDER_ROMCOLLECTION_VIEW', {'romcollection_id': romcollection.get_id()})
-            AppMediator.async_cmd('RENDER_VIEW', {'category_id': romcollection.get_parent_id()})
+            AppMediator.async_cmd('RENDER_CATEGORY_VIEW', {'category_id': romcollection.get_parent_id()})
     AppMediator.sync_cmd('ROMCOLLECTION_EDIT_METADATA', args)
     
 @AppMediator.register('ROMCOLLECTION_EDIT_METADATA_BOXSIZE')
@@ -400,7 +400,7 @@ def cmd_romcollection_metadata_boxsize(args):
             repository.update_romcollection(romcollection)
             uow.commit()
             AppMediator.async_cmd('RENDER_ROMCOLLECTION_VIEW', {'romcollection_id': romcollection.get_id()})
-            AppMediator.async_cmd('RENDER_VIEW', {'category_id': romcollection.get_parent_id()})            
+            AppMediator.async_cmd('RENDER_CATEGORY_VIEW', {'category_id': romcollection.get_parent_id()})            
     AppMediator.sync_cmd('ROMCOLLECTION_EDIT_METADATA', args)
 
 # --- Import launcher metadata from NFO file (default location) ---
@@ -418,7 +418,7 @@ def cmd_romcollection_import_nfo_file(args):
             uow.commit()
             kodi.notify('Imported ROMCollection NFO file {0}'.format(NFO_file.getPath()))
             AppMediator.async_cmd('RENDER_ROMCOLLECTION_VIEW', {'romcollection_id': romcollection.get_id()})
-            AppMediator.async_cmd('RENDER_VIEW', {'category_id': romcollection.get_parent_id()})
+            AppMediator.async_cmd('RENDER_CATEGORY_VIEW', {'category_id': romcollection.get_parent_id()})
     
     AppMediator.sync_cmd('ROMCOLLECTION_EDIT_METADATA', args)
 
@@ -442,7 +442,7 @@ def cmd_romcollection_browse_import_nfo_file(args):
             uow.commit()
             kodi.notify('Imported ROMCollection NFO file {0}'.format(NFO_FileName.getPath()))
             AppMediator.async_cmd('RENDER_ROMCOLLECTION_VIEW', {'romcollection_id': romcollection.get_id()})
-            AppMediator.async_cmd('RENDER_VIEW', {'category_id': romcollection.get_parent_id()})
+            AppMediator.async_cmd('RENDER_CATEGORY_VIEW', {'category_id': romcollection.get_parent_id()})
     
     AppMediator.sync_cmd('ROMCOLLECTION_EDIT_METADATA', args)
 

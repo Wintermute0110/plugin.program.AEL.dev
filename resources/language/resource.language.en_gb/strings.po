@@ -188,10 +188,6 @@ msgctxt "#40610"
 msgid "Log level"
 msgstr "settings.xml"
 
-msgctxt "#40611"
-msgid "Migrated version"
-msgstr "settings.xml"
-
 msgctxt "#40612"
 msgid "Number of days between automatic scans"
 msgstr "settings.xml"

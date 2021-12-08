@@ -152,7 +152,7 @@ def cmd_set_roms_default_artwork(args):
         repository.update_romcollection(romcollection)
         uow.commit()
         AppMediator.async_cmd('RENDER_ROMCOLLECTION_VIEW', {'romcollection_id': romcollection.get_id()})
-        AppMediator.async_cmd('RENDER_VIEW', {'category_id': romcollection.get_parent_id()})     
+        AppMediator.async_cmd('RENDER_CATEGORY_VIEW', {'category_id': romcollection.get_parent_id()})     
 
     AppMediator.async_cmd('SET_ROMS_DEFAULT_ARTWORK', {'romcollection_id': romcollection.get_id(), 'selected_asset': selected_asset_info.id})         
 
@@ -325,7 +325,7 @@ def cmd_import_roms_json(args):
         uow.commit()
 
     AppMediator.async_cmd('RENDER_ROMCOLLECTION_VIEW', {'romcollection_id': romcollection_id})
-    AppMediator.async_cmd('RENDER_VIEW', {'category_id': romcollection.get_parent_id()})  
+    AppMediator.async_cmd('RENDER_CATEGORY_VIEW', {'category_id': romcollection.get_parent_id()})  
     kodi.notify('Finished importing ROMS')
 
 # --- Empty Launcher ROMs ---
@@ -365,5 +365,5 @@ def cmd_clear_roms(args):
         uow.commit()
         
     AppMediator.async_cmd('RENDER_ROMCOLLECTION_VIEW', {'romcollection_id': romcollection_id})
-    AppMediator.async_cmd('RENDER_VIEW', {'category_id': romcollection.get_parent_id()})  
+    AppMediator.async_cmd('RENDER_CATEGORY_VIEW', {'category_id': romcollection.get_parent_id()})  
     kodi.notify('Cleared ROMs from collection')

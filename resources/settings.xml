@@ -300,16 +300,6 @@
                         <heading>40612</heading>
                     </control>
                 </setting>
-                <setting id="migrated_version" type="string" label="40611" help="">
-                    <level>1</level>
-                    <default>0.0.0</default>
-                    <constraints>
-                        <allowempty>true</allowempty>
-                    </constraints>
-                    <control type="edit" format="string">
-                        <heading>40611</heading>
-                    </control>
-                </setting>
             </group>
         </category>
     </section>
