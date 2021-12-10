@@ -27,8 +27,7 @@ import logging
 
 logger = logging.getLogger(__name__)
 
-def publish():
-        
+def publish():  
     working_directory    = os.getenv('ADDON_WORKINGDIR')
     source_paths_str     = os.getenv('ADDON_SRCPATHS')
     kodi_addon_directory = os.getenv('ADDON_KODI_DIR')
@@ -47,7 +46,7 @@ def publish():
     
     alt_sep = '/' if os.path.sep == '\\' else '\\'
     
-    print(f'Copying files to {dest_directory}')
+    print(f'Copying {len(source_files)} files to {dest_directory}')
     for source_file in source_files:
         dest_file = source_file.replace(working_directory, dest_directory)        
         dest_file = dest_file.replace(alt_sep, os.path.sep)

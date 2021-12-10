@@ -45,6 +45,10 @@ class Test_View_Rendering_Commands(unittest.TestCase):
         logger.info('---------------------------------------------------------------------------')  
         
         dbPath = io.FileName(os.path.join(cls.TEST_ASSETS_DIR, 'test_db.db'))
+        schemaPath = io.FileName(os.path.join(cls.ROOT_DIR, 'resources/schema.sql'))
+        dbPath.unlink()
+        UnitOfWork(dbPath).create_empty_database(schemaPath)
+
         globals.g_PATHS = globals.AKL_Paths('plugin.tests')
         globals.g_PATHS.DATABASE_FILE_PATH = dbPath
         
