@@ -55,9 +55,6 @@ def qry_get_root_items():
         AppMediator.async_cmd('RENDER_VIEWS')
     
     listitem_fanart = globals.g_PATHS.FANART_FILE_PATH.getPath()
-    listitem_icon   = globals.g_PATHS.ADDON_CODE_DIR.pjoin('media/theme/Utilities_icon.png').getPath()
-    listitem_poster = globals.g_PATHS.ADDON_CODE_DIR.pjoin('media/theme/Utilities_poster.png').getPath()
-    art = { 'icon' : listitem_icon, 'fanart' : listitem_fanart, 'poster': listitem_poster }
     
     if not settings.getSettingAsBool('display_hide_utilities'): 
         listitem_name   = 'Utilities'
@@ -71,14 +68,16 @@ def qry_get_root_items():
                 'plot': 'Execute several [COLOR orange]Utilities[/COLOR].',
                 'overlay': 4
             },
-            'art': art,
+            'art': { 
+                'fanart' : listitem_fanart, 
+                'icon' : globals.g_PATHS.ADDON_CODE_DIR.pjoin('media/theme/Utilities_icon.png').getPath(),
+                'poster': globals.g_PATHS.ADDON_CODE_DIR.pjoin('media/theme/Utilities_poster.png').getPath() 
+            },
             'properties': { constants.AKL_CONTENT_LABEL: constants.AKL_CONTENT_VALUE_CATEGORY, 'obj_type': constants.OBJ_NONE }
         })
         
     if not settings.getSettingAsBool('display_hide_g_reports'): 
         listitem_name   = 'Global Reports'
-        listitem_icon   = globals.g_PATHS.ICON_FILE_PATH.getPath()
-        listitem_fanart = globals.g_PATHS.FANART_FILE_PATH.getPath()
         container['items'].append({
             'name': listitem_name,
             'url': globals.router.url_for_path('globalreports'), #SHOW_GLOBALREPORTS_VLAUNCHERS'
@@ -89,7 +88,11 @@ def qry_get_root_items():
                 'plot': 'Generate and view [COLOR orange]Global Reports[/COLOR].',
                 'overlay': 4
             },
-            'art': art,
+            'art': { 
+                'fanart' : listitem_fanart, 
+                'icon' : globals.g_PATHS.ADDON_CODE_DIR.pjoin('media/theme/Global_Reports_icon.png').getPath(),
+                'poster': globals.g_PATHS.ADDON_CODE_DIR.pjoin('media/theme/Global_Reports_poster.png').getPath() 
+            },
             'properties': { constants.AKL_CONTENT_LABEL: constants.AKL_CONTENT_VALUE_CATEGORY, 'obj_type': constants.OBJ_NONE }
         })
     
