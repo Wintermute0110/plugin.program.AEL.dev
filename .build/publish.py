@@ -1,6 +1,6 @@
 ﻿# -*- coding: utf-8 -*-
 #
-# Advanced Kodi Launcher - Publish Tool
+# Addon Publish Tool
 #
 # This tool publishes the local dev folder as a proper
 # addon to your kodi test environment.
@@ -18,7 +18,7 @@
 from __future__ import unicode_literals
 from __future__ import division
 
-import os
+import os, sys
 import glob
 import typing
 import shutil
@@ -30,7 +30,7 @@ logger = logging.getLogger(__name__)
 
 def pack(working_directory: str, packer_src_files: str, packer_dst_files:str):
     
-    tool_path = os.path.join(working_directory, 'build', 'tools', 'kodi-texturepacker', 'linux')
+    tool_path = os.path.join(working_directory, '.build', 'tools', 'kodi-texturepacker', 'linux')
     tool_path = os.path.join(tool_path, 'TexturePacker')
     command = [
         tool_path, 
@@ -46,7 +46,7 @@ def pack(working_directory: str, packer_src_files: str, packer_dst_files:str):
 
 def publish(addon_name: str, working_directory: str, source_paths_str:str, kodi_addon_directory:str):
     
-    source_paths = source_paths_str.split(':')
+    source_paths = source_paths_str.split(os.pathsep)
     source_files = _get_files_for_addon(working_directory, source_paths)
     dest_directory = f'{kodi_addon_directory}{addon_name}/'
     
@@ -101,13 +101,15 @@ try:
     source_paths_str     = os.getenv('ADDON_SRCPATHS')
     kodi_addon_directory = os.getenv('ADDON_KODI_DIR')
     
-    #packer_src_files     = os.getenv('PACKER_FILES_SRC')
-    #packer_dst_files     = os.getenv('PACKER_FILES_DEST')
+    packer_src_files     = os.getenv('PACKER_FILES_SRC')
+    packer_dst_files     = os.getenv('PACKER_FILES_DEST')
 
     if not working_directory.endswith(os.path.sep):
         working_directory = f'{working_directory}{os.path.sep}'
 
-    #pack(working_directory, packer_src_files, packer_dst_files)
+    if (len(sys.argv) > 1 and sys.argv[1] == '--pack'):
+        pack(working_directory, packer_src_files, packer_dst_files)
+        
     publish(addon_name, working_directory, source_paths_str, kodi_addon_directory)
 except Exception as ex:
     logger.fatal('Exception in tool', exc_info=ex)

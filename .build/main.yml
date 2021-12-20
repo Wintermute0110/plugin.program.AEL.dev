@@ -66,6 +66,16 @@ stages:
           PathToFile: 'addon.xml'
           RegEx: 'version="\d+\.\d+\.\d+.*" provider'
           ValueToReplace: 'version="$(packageVersion)" provider'
+      
+      - script: echo "##vso[task.setvariable variable=changelog]$(cat $(workingDirectory)/changelog.txt)"
+        displayName: 'Read out changelog.txt'
+
+      - task: RegExMatchReplace@2
+        displayName: 'Set addon changelog'
+        inputs:
+          PathToFile: 'addon.xml'
+          RegEx: '<news>(.*)</news>'
+          ValueToReplace: '<news>$(changelog)</news>'
           
       - task: CopyFiles@2
         displayName: 'Copy addon files for package'
@@ -75,6 +85,7 @@ stages:
               *.py
               *.md
               *.xml
+              *.txt
               resources/**/*.*
               media/**/*.*
           TargetFolder: '$(build.artifactstagingdirectory)/plugin.program.akl/'
