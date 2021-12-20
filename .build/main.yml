@@ -158,6 +158,8 @@ stages:
           value: repository.chrisism.dev
         - name: repository_data_dir
           value: 'matrix'
+        - name: addon_artifact
+          value: $(addonName)
 
       strategy:     
         runOnce:
@@ -165,7 +167,7 @@ stages:
             steps:
             - download: current
               displayName: 'Downloading Application artifact'
-              artifact: $(addonName)
+              artifact: $(addon_artifact)
 
             - script: |
                 git clone https://$(repository_url)
@@ -201,8 +203,8 @@ stages:
                   file_combined = sys.argv[2]
                   file_source = sys.argv[3]
 
-                  addons_xml    = ElementTree.parse(file_combined)
                   addons        = addons_xml.getroot()
+                  addons_xml    = ElementTree.parse(file_combined)
                   addon_in      = ElementTree.parse(file_source).getroot()
 
                   nodes = addons.findall(f"addon[@id='{addon_name}']")
