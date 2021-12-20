@@ -31,7 +31,7 @@ variables:
   isHotfix: ${{startsWith(variables['Build.SourceBranch'], 'refs/heads/hotfix/')}}
   isDev: ${{eq(variables['Build.SourceBranch'], 'refs/heads/dev')}}
   workingDirectory: '$(Build.SourcesDirectory)'
-  addonName: $(addonName)
+  addonName: plugin.program.akl
 
 stages:
 - stage: Build
