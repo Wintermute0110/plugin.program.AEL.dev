@@ -165,7 +165,7 @@ stages:
             steps:
             - download: current
               displayName: 'Downloading Application artifact'
-              artifact: '$(addonName)'
+              artifact: $(addonName)
 
             - script: |
                 git clone https://$(repository_url)
