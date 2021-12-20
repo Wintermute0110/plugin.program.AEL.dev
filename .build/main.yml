@@ -200,8 +200,8 @@ stages:
                   file_combined = sys.argv[2]
                   file_source = sys.argv[3]
 
-                  addons        = addons_xml.getroot()
                   addons_xml    = ElementTree.parse(file_combined)
+                  addons        = addons_xml.getroot()
                   addon_in      = ElementTree.parse(file_source).getroot()
 
                   nodes = addons.findall(f"addon[@id='{addon_name}']")
@@ -250,9 +250,8 @@ stages:
           deploy:
             steps:
             - download: current
-              displayName: 'Downloading Application artifact'
-              artifact: '$(addonName)'
-
+              displayName: 'Downloading addon artifact'
+                
             - script: |
                 git clone https://$(repository_url)
               workingDirectory: $(Pipeline.Workspace)/
