@@ -80,13 +80,13 @@ stages:
             addon_xml = '' 
             changelog_txt = ''
             
-            with os.open(addon_file, 'r') as f:
+            with open(addon_file, 'r') as f:
               addon_xml = f.read()
-            with os.open(changelog_file, 'r') as f:
+            with open(changelog_file, 'r') as f:
               changelog_txt = f.read()
 
             addon_xml = re.sub('<news>(.*)</news>', changelog_txt, addon_xml)
-            with os.open(addon_file, 'w') as f:
+            with open(addon_file, 'w') as f:
               f.write(addon_xml)
           workingDirectory: '$(workingDirectory)'
           
@@ -143,7 +143,7 @@ stages:
      
 - stage: DeployStaging
   displayName: Deployment on Staging
-  condition: or(eq(${{variables.isReleaseCandidate}}, true),eq(${{variables.isHotfix}}, true),eq(${{variables.isMaster}}, true))
+  condition: and(succeeded(),or(eq(${{variables.isReleaseCandidate}}, true),eq(${{variables.isHotfix}}, true),eq(${{variables.isMaster}}, true)))
   jobs:
     - deployment: Staging
       environment: 
@@ -223,7 +223,7 @@ stages:
 
 - stage: DeployProd
   displayName: Deployment on Production
-  condition: eq(${{variables.isMaster}}, true)
+  condition: and(succeeded(),eq(${{variables.isMaster}}, true))
   jobs:
     - deployment: Production
       environment: 
