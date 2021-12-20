@@ -158,17 +158,18 @@ stages:
           value: repository.chrisism.dev
         - name: repository_data_dir
           value: 'matrix'
-        - name: addon_artifact
-          value: $(addonName)
 
       strategy:     
         runOnce:
           deploy:
             steps:
-            - download: current
-              displayName: 'Downloading Application artifact'
-              artifact: $(addon_artifact)
-
+            - task: DownloadPipelineArtifact@2
+              displayName: 'Downloading addon artifact'
+              inputs: 
+                source: 'current'
+                artifact: $(addonName)
+                path: '$(Pipeline.Workspace)' 
+                
             - script: |
                 git clone https://$(repository_url)
               workingDirectory: $(Pipeline.Workspace)/
