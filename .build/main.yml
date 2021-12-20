@@ -121,7 +121,7 @@ stages:
           SourceFolder: '$(build.artifactstagingdirectory)/$(addonName)/'
           Contents: |
               addon.xml
-              media/**/*.*
+              media/*.*
           TargetFolder: '$(build.artifactstagingdirectory)/package/'
           CleanTargetFolder: false
           flattenFolders: false
@@ -163,12 +163,8 @@ stages:
         runOnce:
           deploy:
             steps:
-            - task: DownloadPipelineArtifact@2
+            - download: current
               displayName: 'Downloading addon artifact'
-              inputs: 
-                source: 'current'
-                artifact: $(addonName)
-                path: '$(Pipeline.Workspace)' 
                 
             - script: |
                 git clone https://$(repository_url)
