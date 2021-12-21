@@ -1183,6 +1183,26 @@ def kodi_set_error_status(st_dic, msg, dialog = KODI_MESSAGE_DIALOG):
     st_dic['msg'] = msg
     st_dic['dialog'] = dialog
 
+def kodi_set_status(st_dic, msg, dialog = KODI_MESSAGE_DIALOG, abort = True):
+    st_dic['abort'] = abort
+    st_dic['msg'] = msg
+    st_dic['dialog'] = dialog
+
+def kodi_set_st_notify(st_dic, msg):
+    st_dic['abort'] = True
+    st_dic['msg'] = msg
+    st_dic['dialog'] = KODI_MESSAGE_NOTIFY
+
+def kodi_set_st_nwarn(st_dic, msg):
+    st_dic['abort'] = True
+    st_dic['msg'] = msg
+    st_dic['dialog'] = KODI_MESSAGE_NOTIFY_WARN
+
+def kodi_set_st_dialog(st_dic, msg):
+    st_dic['abort'] = True
+    st_dic['msg'] = msg
+    st_dic['dialog'] = KODI_MESSAGE_DIALOG
+
 def kodi_reset_status(st_dic):
     st_dic['abort'] = False
     st_dic['msg'] = ''

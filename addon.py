@@ -34,4 +34,4 @@ import sys
 # This way, the Python interpreter will precompile them into bytecode (files PYC/PYO) so
 # loading time is faster compared to loading PY files.
 # See http://www.network-theory.co.uk/docs/pytut/CompiledPythonfiles.html
-resources.main.Main().run_plugin(sys.argv)
+resources.main.run_plugin(sys.argv)

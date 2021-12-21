@@ -35,7 +35,7 @@ import time
 # fill the correct default values). These must match what is written/read from/to the XML files.
 # Tag name in the XML is the same as in the data dictionary.
 #
-def fs_new_category():
+def db_new_category():
     return {
         'id' : '',
         'm_name' : '',
@@ -59,7 +59,7 @@ def fs_new_category():
         's_trailer' : ''
     }
 
-def fs_new_launcher():
+def db_new_launcher():
     return {
         'id' : '',
         'm_name' : '',
@@ -130,7 +130,7 @@ def fs_new_launcher():
         'path_trailer' : ''
     }
 
-def fs_new_rom():
+def db_new_rom():
     return {
         'id' : '',
         'm_name' : '',
@@ -165,7 +165,7 @@ def fs_new_rom():
         's_trailer' : ''
     }
 
-def fs_new_collection():
+def db_new_collection():
     return {
         'id' : '',
         'm_name' : '',
@@ -211,7 +211,7 @@ def fs_get_Favourite_from_ROM(rom, launcher):
     # NOTE keep it!
     # del favourite['nointro_status']
 
-    # >> Copy parent launcher fields into Favourite ROM
+    # Copy parent launcher fields into Favourite ROM
     favourite['launcherID']             = launcher['id']
     favourite['platform']               = launcher['platform']
     favourite['application']            = launcher['application']
@@ -227,13 +227,12 @@ def fs_get_Favourite_from_ROM(rom, launcher):
     favourite['roms_default_poster']    = launcher['roms_default_poster']
     favourite['roms_default_clearlogo'] = launcher['roms_default_clearlogo']
 
-    # >> Favourite ROM unique fields
-    # >> Favourite ROMs in "Most played ROMs" DB also have 'launch_count' field.
+    # Favourite ROM unique fields
+    # Favourite ROMs in "Most played ROMs" DB also have 'launch_count' field.
     favourite['fav_status'] = 'OK'
 
     return favourite
 
-#
 # Creates a new Favourite ROM from old Favourite, parent ROM and parent Launcher. This function is
 # used when repairing/relinking a Favourite/Collection ROM.
 #
@@ -242,7 +241,6 @@ def fs_get_Favourite_from_ROM(rom, launcher):
 #   1) Relink and update metadata
 #   2) Relink and update artwork
 #   3) Relink and update everything
-#
 def fs_repair_Favourite_ROM(repair_mode, old_fav_rom, parent_rom, parent_launcher):
     new_fav_rom = dict(old_fav_rom)
 
@@ -327,9 +325,9 @@ def fs_aux_copy_ROM_artwork(source_launcher, source_rom, dest_rom):
     dest_rom['roms_default_poster']    = source_launcher['roms_default_poster']
     dest_rom['roms_default_clearlogo'] = source_launcher['roms_default_clearlogo']
 
-# -------------------------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------------------------
 # ROM storage file names
-# -------------------------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------------------------
 def fs_get_ROMs_basename(category_name, launcher_name, launcherID):
     clean_cat_name = ''.join([i if i in string.printable else '_' for i in category_name]).replace(' ', '_')
     clean_launch_title = ''.join([i if i in string.printable else '_' for i in launcher_name]).replace(' ', '_')
@@ -345,12 +343,114 @@ def fs_get_collection_ROMs_basename(collection_name, collectionID):
 
     return roms_base_noext
 
-# -------------------------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------------------------
+# ROM database high-level IO functions
+# ------------------------------------------------------------------------------------------------
+# For actual ROM Launchers returns the database launcher dictionary.
+# For virtual ROM Launchers returns create a launcher dictionary on-the-fly.
+def db_get_launcher(cfg, st_dic, launcherID):
+    launcher_is_vlauncher = launcherID in VLAUNCHER_ID_LIST
+    launcher_is_actual = not launcher_is_vlauncher
+
+    # Actual ROM Launcher
+    if launcher_is_actual:
+        if launcherID not in cfg.launchers:
+            log_error('Launcher ID not found in cfg.launchers')
+            kodi_dialog_OK('Launcher ID not found in cfg.launchers. Report this bug.')
+            return
+        launcher = cfg.launchers[launcherID]
+        return launcher
+
+    # Virtual launchers
+    elif launcherID == None:
+        pass
+
+    else:
+        pass
+    
+    return launcher
+
+# Gets launcher dictionary from ROM dictionary.
+# If ROM is a normal ROM gets launcher dictionary from cfg.launchers
+# If ROM is a Favourite ROM then use launcherID field in rom dictionary.
+def db_get_launcher_from_ROM(cfg, st_dic, rom):
+    pass
+
+# Load ROMs databases and places them in cfg.roms.
+# In most cases cfg.roms is a dictionary of dictionaries.
+# In some cases () cfg.roms is an OrderedDictionary.
+# Additionally, the PClone ROMs are also loaded if load_pclone_ROMs_flag is True
+def db_load_ROMs(cfg, st_dic, launcherID, load_pclone_ROMs_flag = False):
+    launcher_is_vlauncher = launcherID in VLAUNCHER_ID_LIST
+    launcher_is_actual = not launcher_is_vlauncher
+
+    # Actual ROM Launcher
+    if launcher_is_actual:
+        launcher = cfg.launchers[launcherID]
+        roms_base_noext = launcher['roms_base_noext']
+
+        # --- Load ROMs for this launcher ---
+        roms_json_FN = cfg.ROMS_DIR.pjoin(roms_base_noext + '.json')
+        if not roms_json_FN.exists():
+            kodi_set_status_notify(st_dic, 'Launcher JSON database not found. Add ROMs to launcher.')
+            return
+        cfg.roms = fs_load_ROMs_JSON(cfg.ROMS_DIR, launcher)
+        if not cfg.roms:
+            kodi_set_status_notify(st_dic, 'Launcher JSON database empty. Add ROMs to launcher.')
+            return
+
+        if load_pclone_ROMs_flag:
+            # --- Load parent ROMs ---
+            parents_FN = g_PATHS.ROMS_DIR.pjoin(roms_base_noext + '_parents.json')
+            if not parents_FN.exists():
+                kodi_notify('Parent ROMs JSON not found.')
+                xbmcplugin.endOfDirectory(handle = self.addon_handle, succeeded = True, cacheToDisc = False)
+                return
+            roms_parent = utils_load_JSON_file(parents_FN.getPath())
+            if not roms:
+                kodi_notify('Parent ROMs JSON is empty.')
+                xbmcplugin.endOfDirectory(handle = self.addon_handle, succeeded = True, cacheToDisc = False)
+                return
+
+            # --- Load parent/clone index ---
+            index_FN = g_PATHS.ROMS_DIR.pjoin(roms_base_noext + '_index_PClone.json')
+            if not index_FN.exists():
+                kodi_notify('PClone index JSON not found.')
+                xbmcplugin.endOfDirectory(handle = self.addon_handle, succeeded = True, cacheToDisc = False)
+                return
+            pclone_index = utils_load_JSON_file(index_FN.getPath())
+            if not pclone_index:
+                kodi_notify('PClone index dict is empty.')
+                xbmcplugin.endOfDirectory(handle = self.addon_handle, succeeded = True, cacheToDisc = False)
+                return
+
+    # Virtual launchers
+    elif launcherID == None:
+        pass
+
+    else:
+        pass
+
+# This function never fails.
+def db_load_ROMs_Favourite_set(cfg, st_dic):
+    roms_fav = fs_load_Favourites_JSON(cfg.FAV_JSON_FILE_PATH)
+    cfg.roms_fav_set = set(roms_fav.keys())
+
+
+
+
+
+
+
+
+
+
+
+
+# ------------------------------------------------------------------------------------------------
 # Categories/Launchers
-# -------------------------------------------------------------------------------------------------
-#
+# ------------------------------------------------------------------------------------------------
 # Write to disk categories.xml
-#
 def fs_write_catfile(categories_file, categories, launchers, update_timestamp = 0.0):
     log_debug('fs_write_catfile() Writing {}'.format(categories_file.getOriginalPath()))
 
@@ -503,7 +603,7 @@ def fs_load_catfile(categories_file, categories, launchers):
 
         elif category_element.tag == 'category':
             # Default values
-            category = fs_new_category()
+            category = db_new_category()
 
             # Parse child tags of category
             for category_child in category_element:
@@ -523,7 +623,7 @@ def fs_load_catfile(categories_file, categories, launchers):
 
         elif category_element.tag == 'launcher':
             # Default values
-            launcher = fs_new_launcher()
+            launcher = db_new_launcher()
 
             # Parse child tags of category
             for category_child in category_element:
@@ -782,7 +882,7 @@ def fs_load_Collection_index_XML(collections_xml_file):
                 if control_child.tag == 'update_timestamp':
                     ret['timestamp'] = float(control_child.text)
         elif root_element.tag == 'Collection':
-            collection = fs_new_collection()
+            collection = db_new_collection()
             for rom_child in root_element:
                 # By default read Unicode strings.
                 text_XML = rom_child.text if rom_child.text is not None else ''

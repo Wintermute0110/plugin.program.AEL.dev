@@ -70,22 +70,40 @@ WIP      [SCRAPERS] MAME offline scraper: include ESRB field. Take it from GameI
 WIP      [SCRAPERS] MAME offline scraper: include plot field. Take it from GameInfoDB.
 
 
-[B]Advanced Emulator Launcher | version 0.11.0 | xx xxxxxx 2021[/B]
+[B]Advanced Emulator Launcher | version 0.11.0 | xx March 2022[/B]
 
 NOTE     Implement these features in master branch for Python 3.
+
+NOTE     misc.py and utils.py are shared between AEL and AML.
+         Make AEL look like AML.
+         Use pure functional programming.
 
 DONE     [CORE] Rename the plugin from `plugin.program.advanced.emulator.launcher` to
          `plugin.program.AEL`. Create a development version `plugin.program.AEL.dev` that
          can coexist with the stable version. Copy this feature from AML.
 
-WIP NOW  [CORE] Remove the Main() class in main.py. Use a functional approach like AML.
+DONE     [CORE] Remove the Main() class in main.py. Use a functional approach like AML.
+
+WIP NOW  [CORE] New ROM storage high level functions.
+         db_get_launcher(), db_load_ROMs(), etc.
+         Copy feature from branch `old-master-chrisism-python2`
+
+WIP NOW  [CORE] Improved context menu handling.
+         Copy feature from branch `old-master-chrisism-python2` or create new non-recursive implementation.
+
+WIP NOW  [CORE] Improved FileName class. All IO must be done using the FileName class.
+         Copy feature from branch `old-master-chrisism-python2`
+
+WIP NOW  [CORE] New ROM rendering engine.
+         Functions xxx()
+         Copy it from AML.
 
 WIP      ==> Make a list of top priority new features, like the unified ROMs artwork directory,
-         the PID support, the new ROM's database fields, and add these features to the TODO list.
-         Have a look at the former master branch, there could be interesting features there
-         like the recursive context menus and the URL router class based on decorators.
+         ==> the PID support, the new ROM's database fields, and add these features to the TODO list.
+         ==> Have a look at the former master branch, there could be interesting features there
+         ==> like the recursive context menus and the URL router class based on decorators.
 
-
+--------------------------------------------------------------------------------------------------
 
 WIP      [CORE] Support Kodi VFS and ROMs in remote filesystems for Retroplayer.
          See Chrisism patch in Github. Copy remote ROMs for external launchers?

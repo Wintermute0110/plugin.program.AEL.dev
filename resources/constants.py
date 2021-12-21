@@ -139,6 +139,7 @@ VCATEGORY_FAVOURITES_ID  = 'vcategory_favourites'
 VCATEGORY_COLLECTIONS_ID = 'vcategory_collections'
 VCATEGORY_RECENT_ID      = 'vcategory_recent'
 VCATEGORY_MOST_PLAYED_ID = 'vcategory_most_played'
+
 VCATEGORY_TITLE_ID       = 'vcategory_title'
 VCATEGORY_YEARS_ID       = 'vcategory_year'
 VCATEGORY_GENRE_ID       = 'vcategory_genre'
@@ -147,10 +148,17 @@ VCATEGORY_NPLAYERS_ID    = 'vcategory_nplayer'
 VCATEGORY_ESRB_ID        = 'vcategory_esrb'
 VCATEGORY_RATING_ID      = 'vcategory_rating'
 VCATEGORY_CATEGORY_ID    = 'vcategory_category'
+
 VCATEGORY_OFF_SCRAPER_ID = 'vcategory_offline_scraper'
+
 VLAUNCHER_FAVOURITES_ID  = 'vlauncher_favourites'
 VLAUNCHER_RECENT_ID      = 'vlauncher_recent'
 VLAUNCHER_MOST_PLAYED_ID = 'vlauncher_most_played'
+VLAUNCHER_ID_LIST = [
+    VLAUNCHER_FAVOURITES_ID,
+    VLAUNCHER_RECENT_ID,
+    VLAUNCHER_MOST_PLAYED_ID,
+]
 
 # --- Content type property to be used by skins ---
 AEL_CONTENT_WINDOW_ID          = 10000
