@@ -34,7 +34,6 @@ import time
 # These three functions create a new data structure for the given object and (very importantly)
 # fill the correct default values). These must match what is written/read from/to the XML files.
 # Tag name in the XML is the same as in the data dictionary.
-#
 def db_new_category():
     return {
         'id' : '',
@@ -185,6 +184,46 @@ def db_new_collection():
         's_clearlogo' : '',
         's_trailer' : ''
     }
+
+# * These functions have the data model to render object in Kodi.
+# * There are 4 kinds of objects that AEL can render: simple, categories, launchers and ROMs.
+#   This includes real categories/launchers/ROMs or virtual ones.
+# * These functions are here for reference. For performance reasons may not be used, specially
+#   when rendering ROMs. In other words, the data structures are created on the fly but follow
+#   this data model.
+#
+# --- Example of use ---
+# obj = db_new_render_category()
+# li = xbmcgui.ListItem(obj['name'])
+# li.setInfo('video', obj['info'])
+# li.setArt(obj['art'])
+# li.setProperties(obj['props'])
+# li.addContextMenuItems(obj['context'])
+# xbmcplugin.addDirectoryItem(addon_handle, obj['URL'], li, True)
+def db_new_render_simple_category():
+    return {
+        'name' : '',
+        'display_setting_hide' : False,
+        'info' : {
+            'title' : '',
+            'plot' : '',
+            'overlay': KODI_ICON_OVERLAY_UNWATCHED,
+        },
+        'art' : {
+            'icon' : '',
+            'fanart' : '',
+            'poster' : '',
+        },
+        'props' : {},
+        'context' : [],
+        'URL' : '',
+    }
+
+def db_new_render_category(): pass
+
+def db_new_render_launcher(): pass
+
+def db_new_render_ROM(): pass
 
 # -------------------------------------------------------------------------------------------------
 # Favourite ROM creation/management
@@ -348,6 +387,7 @@ def fs_get_collection_ROMs_basename(collection_name, collectionID):
 # ------------------------------------------------------------------------------------------------
 # For actual ROM Launchers returns the database launcher dictionary.
 # For virtual ROM Launchers returns create a launcher dictionary on-the-fly.
+# Does this function make sense?
 def db_get_launcher(cfg, st_dic, launcherID):
     launcher_is_vlauncher = launcherID in VLAUNCHER_ID_LIST
     launcher_is_actual = not launcher_is_vlauncher
