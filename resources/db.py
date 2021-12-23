@@ -416,56 +416,87 @@ def db_get_launcher(cfg, st_dic, launcherID):
 def db_get_launcher_from_ROM(cfg, st_dic, rom):
     pass
 
-# Load ROMs databases and places them in cfg.roms.
-# In most cases cfg.roms is a dictionary of dictionaries.
-# In some cases () cfg.roms is an OrderedDictionary.
-# Additionally, the PClone ROMs are also loaded if load_pclone_ROMs_flag is True
-def db_load_ROMs(cfg, st_dic, launcherID, load_pclone_ROMs_flag = False):
+# Returns a dictionary with all the ROM database filenames.
+# Also works for virtual launchers.
+#
+# ret['roms']  ROM main database JSON file. [FileName]
+def db_get_launcher_fnames(cfg, categoryID, launcherID):
     launcher_is_vlauncher = launcherID in VLAUNCHER_ID_LIST
-    launcher_is_actual = not launcher_is_vlauncher
+    launcher_is_vcategory = categoryID in VCATEGORY_ID_LIST
+    launcher_is_actual = not launcher_is_vlauncher and not launcher_is_vcategory
+    # Default return dictionary.
+    ret = {
+        'roms' : None,
+    }
 
-    # Actual ROM Launcher
     if launcher_is_actual:
         launcher = cfg.launchers[launcherID]
         roms_base_noext = launcher['roms_base_noext']
+        roms_FN = cfg.ROMS_DIR.pjoin(roms_base_noext + '.json')
+        parents_FN = cfg.ROMS_DIR.pjoin(roms_base_noext + '_parents.json')
+        index_FN = cfg.ROMS_DIR.pjoin(roms_base_noext + '_index_PClone.json')
+        ret['roms'] = roms_FN
+        ret['parents'] = parents_FN
+        ret['index'] = index_FN
 
-        # --- Load ROMs for this launcher ---
-        roms_json_FN = cfg.ROMS_DIR.pjoin(roms_base_noext + '.json')
-        if not roms_json_FN.exists():
+    else:
+        raise TypeError
+    # log_debug('db_get_launcher_fnames() roms "{}"'.format(ret['roms'].getPath()))
+
+    return ret
+
+# Load ROMs databases and places them in cfg.roms dictionary.
+# * In most cases cfg.roms is a dictionary of dictionaries.
+#   In some cases () cfg.roms is an OrderedDictionary.
+# * If load_pclone_ROMs_flag is True then PClone ROMs are also loaded.
+def db_load_ROMs(cfg, st_dic, categoryID, launcherID, load_pclone_ROMs_flag = False):
+    log_debug('db_load_ROMs() categoryID "{}" | launcherID "{}"'.format(categoryID, launcherID))
+    launcher_is_vlauncher = launcherID in VLAUNCHER_ID_LIST
+    launcher_is_vcategory = categoryID in VCATEGORY_ID_LIST
+    launcher_is_actual = not launcher_is_vlauncher and not launcher_is_vcategory
+    dbdic = db_get_launcher_fnames(cfg, categoryID, launcherID)
+
+    # Actual ROM Launcher ------------------------------------------------------------------------
+    if launcher_is_actual:
+        if not dbdic['roms'].exists():
             kodi_set_status_notify(st_dic, 'Launcher JSON database not found. Add ROMs to launcher.')
             return
-        cfg.roms = fs_load_ROMs_JSON(cfg.ROMS_DIR, launcher)
+        cfg.roms = utils_load_JSON_file(dbdic['roms'].getPath())
         if not cfg.roms:
             kodi_set_status_notify(st_dic, 'Launcher JSON database empty. Add ROMs to launcher.')
             return
 
         if load_pclone_ROMs_flag:
-            # --- Load parent ROMs ---
-            parents_FN = g_PATHS.ROMS_DIR.pjoin(roms_base_noext + '_parents.json')
-            if not parents_FN.exists():
-                kodi_notify('Parent ROMs JSON not found.')
-                xbmcplugin.endOfDirectory(handle = self.addon_handle, succeeded = True, cacheToDisc = False)
+            # Load parent ROMs.
+            if not dbdic['parents'].exists():
+                kodi_set_status_notify(st_dic, 'Parent ROMs JSON not found.')
                 return
-            roms_parent = utils_load_JSON_file(parents_FN.getPath())
-            if not roms:
-                kodi_notify('Parent ROMs JSON is empty.')
-                xbmcplugin.endOfDirectory(handle = self.addon_handle, succeeded = True, cacheToDisc = False)
+            cfg.roms_parent = utils_load_JSON_file(dbdic['parents'].getPath())
+            if not cfg.roms_parent:
+                kodi_set_status_notify(st_dic, 'Parent ROMs JSON is empty.')
                 return
 
-            # --- Load parent/clone index ---
-            index_FN = g_PATHS.ROMS_DIR.pjoin(roms_base_noext + '_index_PClone.json')
-            if not index_FN.exists():
-                kodi_notify('PClone index JSON not found.')
-                xbmcplugin.endOfDirectory(handle = self.addon_handle, succeeded = True, cacheToDisc = False)
+            # Load parent/clone index.
+            if not dbdic['index'].exists():
+                kodi_set_status_notify(st_dic, 'PClone index JSON not found.')
                 return
-            pclone_index = utils_load_JSON_file(index_FN.getPath())
-            if not pclone_index:
-                kodi_notify('PClone index dict is empty.')
-                xbmcplugin.endOfDirectory(handle = self.addon_handle, succeeded = True, cacheToDisc = False)
+            cfg.pclone_index = utils_load_JSON_file(dbdic['index'].getPath())
+            if not cfg.pclone_index:
+                kodi_set_status_notify(st_dic, 'PClone index dict is empty.')
                 return
 
-    # Virtual launchers
-    elif launcherID == None:
+    # Virtual launchers --------------------------------------------------------------------------
+    elif launcher_is_vlauncher and launcherID == VLAUNCHER_FAVOURITES_ID:
+        pass
+
+    elif launcher_is_vlauncher and launcherID == VLAUNCHER_RECENT_ID:
+        pass
+
+    elif launcher_is_vlauncher and launcherID == VLAUNCHER_MOST_PLAYED_ID:
+        pass
+
+    # Virtual launchers belonging to a virtual category ------------------------------------------
+    elif launcher_is_vcategory and categoryID == VCATEGORY_ROM_COLLECTION:
         pass
 
     else:
@@ -825,19 +856,6 @@ def fs_write_ROMs_JSON(roms_dir_FN, launcher, roms):
     #  Write ROMs XML info file and JSON database file.
     utils_write_slist_to_file(roms_xml_file.getPath(), slist)
     utils_write_JSON_file(roms_json_file.getPath(), roms)
-
-# Loads an JSON file containing the Virtual Launcher ROMs
-def fs_load_ROMs_JSON(roms_dir_FN, launcher):
-    # On Github issue #8 a user had an empty JSON file for ROMs. This raises
-    # exception exceptions.ValueError and launcher cannot be deleted. Deal
-    # with this exception so at least launcher can be rescanned.
-    roms_base_noext = launcher['roms_base_noext']
-    roms_json_file = roms_dir_FN.pjoin(roms_base_noext + '.json')
-    log_debug('fs_load_ROMs_JSON()  Dir {}'.format(roms_dir_FN.getOriginalPath()))
-    log_debug('fs_load_ROMs_JSON() JSON {}'.format(roms_base_noext + '.json'))
-    roms = utils_load_JSON_file(roms_json_file.getPath())
-
-    return roms
 
 # -------------------------------------------------------------------------------------------------
 # Favourite ROMs

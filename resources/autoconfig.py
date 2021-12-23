@@ -132,8 +132,8 @@ def autoconfig_export_all(categories, launchers, export_FN):
         launcher = launchers[launcherID]
         if launcher['categoryID'] in categories:
             category_name = categories[launcher['categoryID']]['m_name']
-        elif launcher['categoryID'] == VCATEGORY_ADDONROOT_ID:
-            category_name = VCATEGORY_ADDONROOT_ID
+        elif launcher['categoryID'] == CATEGORY_ADDONROOT_ID:
+            category_name = CATEGORY_ADDONROOT_ID
         else:
             kodi_dialog_OK('Launcher category not found. This is a bug, please report it.')
             return
@@ -149,8 +149,8 @@ def autoconfig_export_launcher(launcher, export_FN, categories):
     launcherID = launcher['id']
     if launcher['categoryID'] in categories:
         category_name = categories[launcher['categoryID']]['m_name']
-    elif launcher['categoryID'] == VCATEGORY_ADDONROOT_ID:
-        category_name = VCATEGORY_ADDONROOT_ID
+    elif launcher['categoryID'] == CATEGORY_ADDONROOT_ID:
+        category_name = CATEGORY_ADDONROOT_ID
     else:
         kodi_dialog_OK('Launcher category not found. This is a bug, please report it.')
         raise AEL_Error('Error exporting Launcher XML configuration')
@@ -244,8 +244,8 @@ def autoconfig_search_all_by_name(i_launcher, categories, launchers):
     cat_name = i_launcher['category']
     laun_name = i_launcher['name']
     s_category = None
-    if cat_name == VCATEGORY_ADDONROOT_ID:
-        s_category = VCATEGORY_ADDONROOT_ID
+    if cat_name == CATEGORY_ADDONROOT_ID:
+        s_category = CATEGORY_ADDONROOT_ID
     else:
         for categoryID in categories:
             category = categories[categoryID]
@@ -271,8 +271,8 @@ def autoconfig_search_all_by_name(i_launcher, categories, launchers):
 def autoconfig_search_category_by_name(i_category, categories):
     cat_name = i_category['name']
     s_category = None
-    if cat_name == VCATEGORY_ADDONROOT_ID:
-        s_category = VCATEGORY_ADDONROOT_ID
+    if cat_name == CATEGORY_ADDONROOT_ID:
+        s_category = CATEGORY_ADDONROOT_ID
     else:
         for categoryID in categories:
             if cat_name == categories[categoryID]['m_name']:
@@ -429,7 +429,7 @@ def autoconfig_import_launchers(CATEGORIES_FILE_PATH, ROMS_DIR, categories, laun
         else:
             # Both category and launcher exists (by name). Overwrite?
             log_debug('Case C) Category and Launcher found.')
-            cat_name = i_launcher['category'] if i_launcher['category'] != VCATEGORY_ADDONROOT_ID else 'Root Category'
+            cat_name = i_launcher['category'] if i_launcher['category'] != CATEGORY_ADDONROOT_ID else 'Root Category'
             ret = kodi_dialog_yesno('Launcher "{}" in Category "{}" '.format(i_launcher['name'], cat_name) +
                 'found in AEL database. Overwrite?')
             if ret < 1: continue
@@ -975,7 +975,7 @@ def autoconfig_import_launcher(ROMS_DIR, categories, launchers, categoryID, laun
     # Rename ROMS JSON/XML only if there is a change in filenames.
     # Regenerate roms_base_noext and rename old one if necessary.
     old_roms_base_noext = launchers[launcherID]['roms_base_noext']
-    category_name       = categories[categoryID]['m_name'] if categoryID in categories else VCATEGORY_ADDONROOT_ID
+    category_name       = categories[categoryID]['m_name'] if categoryID in categories else CATEGORY_ADDONROOT_ID
     new_roms_base_noext = fs_get_ROMs_basename(category_name, new_launcher_name, launcherID)
     log_debug('old_roms_base_noext "{}"'.format(old_roms_base_noext))
     log_debug('new_roms_base_noext "{}"'.format(new_roms_base_noext))

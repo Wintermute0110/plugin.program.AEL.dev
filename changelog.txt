@@ -88,15 +88,15 @@ WIP NOW  [CORE] New ROM storage high level functions.
          db_get_launcher(), db_load_ROMs(), etc.
          Copy feature from branch `old-master-chrisism-python2`
 
-WIP NOW  [CORE] Improved context menu handling.
-         Copy feature from branch `old-master-chrisism-python2` or create new non-recursive implementation.
-
-WIP NOW  [CORE] Improved FileName class. All IO must be done using the FileName class.
-         Copy feature from branch `old-master-chrisism-python2`
-
 WIP NOW  [CORE] New ROM rendering engine.
          Functions xxx()
          Copy it from AML.
+
+WIP      [CORE] Improved context menu handling.
+         Copy feature from branch `old-master-chrisism-python2` or create new non-recursive implementation.
+
+WIP      [CORE] Improved FileName class. All IO must be done using the FileName class.
+         Copy feature from branch `old-master-chrisism-python2`
 
 WIP      ==> Make a list of top priority new features, like the unified ROMs artwork directory,
          ==> the PID support, the new ROM's database fields, and add these features to the TODO list.

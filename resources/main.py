@@ -359,21 +359,22 @@ def run_plugin(addon_argv):
 #
 # --- URL examples for rendering stuff ---
 # Empty string means argument is optional and can be completely absent in the URL.
+# plugin://plugin.program.AEL.dev/? is ommited from the next URLs.
 #
-# plugin://AEL_ID/?com=SHOW_ADDON_ROOT
+# com=SHOW_ADDON_ROOT                                              # Show root window. Default command.
 #
-# plugin://AEL_ID/?com=SHOW_LAUNCHERS & catID=catID                                 # Show launchers in actual category.
-# plugin://AEL_ID/?com=SHOW_LAUNCHERS & catID=VCATEGORY_ROM_COLLECTION              # Show launchers in ROM Collection.
-# plugin://AEL_ID/?com=SHOW_LAUNCHERS & catID=VCATEGORY_BROWSE_BY_XXX_ID            # Show launchers in Browse by xxx category.
-# plugin://AEL_ID/?com=SHOW_LAUNCHERS & catID=VCATEGORY_AOS_ID                      # Show launchers in AEL offline scraper category.
+# com=SHOW_LAUNCHERS & catID=catID                                 # Show launchers in actual category.
+# com=SHOW_LAUNCHERS & catID=VCATEGORY_ROM_COLLECTION              # Show launchers in ROM Collection.
+# com=SHOW_LAUNCHERS & catID=VCATEGORY_BROWSE_BY_XXX_ID            # Show launchers in Browse by xxx category.
+# com=SHOW_LAUNCHERS & catID=VCATEGORY_AOS_ID                      # Show launchers in AEL offline scraper category.
 #
-# plugin://AEL_ID/?com=SHOW_ROMS & catID='' & launID=launID                         # Standard ROM launcher ROMs.
-# plugin://AEL_ID/?com=SHOW_ROMS & catID='' & launID=VLAUNCHER_FAVOURITES_ID        # Favourite ROMs.
-# plugin://AEL_ID/?com=SHOW_ROMS & catID='' & launID=VLAUNCHER_RECENT_ID            # Recently Played ROMs.
-# plugin://AEL_ID/?com=SHOW_ROMS & catID='' & launID=VLAUNCHER_MOST_PLAYED_ID       # Most Played ROMs.
-# plugin://AEL_ID/?com=SHOW_ROMS & catID=VCATEGORY_ROM_COLLECTION & launID=launID   # ROM Collections ROMs.
-# plugin://AEL_ID/?com=SHOW_ROMS & catID=VCATEGORY_BROWSE_BY_XXX_ID & launID=launID # Browse by xxx ROMs.
-# plugin://AEL_ID/?com=SHOW_ROMS & catID=VCATEGORY_AOS_ID & launID=launID           # AOS ROMs. launID is the platform short name.
+# com=SHOW_ROMS & catID='' & launID=launID                         # Standard ROM launcher ROMs.
+# com=SHOW_ROMS & catID='' & launID=VLAUNCHER_FAVOURITES_ID        # Favourite ROMs.
+# com=SHOW_ROMS & catID='' & launID=VLAUNCHER_RECENT_ID            # Recently Played ROMs.
+# com=SHOW_ROMS & catID='' & launID=VLAUNCHER_MOST_PLAYED_ID       # Most Played ROMs.
+# com=SHOW_ROMS & catID=VCATEGORY_ROM_COLLECTION & launID=launID   # ROM Collections ROMs.
+# com=SHOW_ROMS & catID=VCATEGORY_BROWSE_BY_XXX_ID & launID=launID # Browse by xxx ROMs.
+# com=SHOW_ROMS & catID=VCATEGORY_AOS_ID & launID=launID           # AOS ROMs. launID is the platform short name.
 #
 def run_concurrent(cfg, command, args):
     log_debug('Advanced Emulator Launcher run_concurrent() BEGIN')
@@ -391,6 +392,7 @@ def run_concurrent(cfg, command, args):
 
     # --- Render of launchers --------------------------------------------------------------------
     # Render launchers inside a category.
+    # IDEA Should render_launchers_in_category() also render launchers in a virtual category?
     elif command == 'SHOW_LAUNCHERS': render_launchers_in_category(cfg, catID)
     elif command == 'SHOW_COLLECTIONS': render_vlaunchers_ROM_Collection(cfg)
     elif command == 'SHOW_VIRTUAL_CATEGORY': _command_render_virtual_category(catID)    
@@ -401,11 +403,13 @@ def run_concurrent(cfg, command, args):
 
     # --- Render of ROMs -------------------------------------------------------------------------
     # Render ROMs inside a launcher.
-    elif command == 'SHOW_ROMS': render_ROMs(cfg, launID)
+    elif command == 'SHOW_ROMS': render_ROMs(cfg, catID, launID)
     elif command == 'SHOW_CLONE_ROMS': _command_render_clone_roms(catID, launID, romID)
 
     # Old non-universal functions.
-    # 
+    # CURRENT TASK
+    # Make these functions disappear. render_ROMs() must be able to process all
+    # URLs with the com=SHOW_ROMS command via function db_load_ROMs()
     elif command == 'SHOW_FAVOURITES': render_ROMs_Favourites(cfg)
     elif command == 'SHOW_RECENTLY_PLAYED': _command_render_recently_played()
     elif command == 'SHOW_MOST_PLAYED': _command_render_most_played()
@@ -413,7 +417,7 @@ def run_concurrent(cfg, command, args):
     elif command == 'SHOW_VLAUNCHER_ROMS': _command_render_virtual_launcher_roms(catID, launID)
     elif command == 'SHOW_AEL_SCRAPER_ROMS': _command_render_AEL_scraper_roms(catID)
 
-    # Auxiliar command to render clone ROM list from context menu in Parent/Clone mode.
+    # Auxiliary command to render clone ROM list from context menu in Parent/Clone mode.
     elif command == 'EXEC_SHOW_CLONE_ROMS':
         xbmc.executebuiltin('Container.Update({})'.format(aux_url('SHOW_CLONE_ROMS', catID, launID, romID)))
 
@@ -442,7 +446,7 @@ def run_protected(self, command, args):
 
     # --- Launcher management ---
     elif command == 'ADD_LAUNCHER': self._command_add_new_launcher(args['catID'][0])
-    elif command == 'ADD_LAUNCHER_ROOT': self._command_add_new_launcher(VCATEGORY_ADDONROOT_ID)
+    elif command == 'ADD_LAUNCHER_ROOT': self._command_add_new_launcher(CATEGORY_ADDONROOT_ID)
     elif command == 'EDIT_LAUNCHER': self._command_edit_launcher(args['catID'][0], args['launID'][0])
 
     # --- ROM management ---
@@ -866,7 +870,7 @@ def render_main_window(cfg):
     catless_launchers = {}
     for launcher_id in cfg.launchers:
         launcher = cfg.launchers[launcher_id]
-        if launcher['categoryID'] == VCATEGORY_ADDONROOT_ID:
+        if launcher['categoryID'] == CATEGORY_ADDONROOT_ID:
             catless_launchers[launcher_id] = launcher
     for launcher_id in sorted(catless_launchers, key = lambda x : catless_launchers[x]['m_name']):
         render_launcher_row(cfg, catless_launchers[launcher_id])
@@ -1035,7 +1039,7 @@ def render_launcher_row(cfg, launcher_dic, launcher_raw_name = None):
     commands.append(('Search ROMs in Launcher', aux_url_RP('SEARCH_LAUNCHER', categoryID, launcherID)))
     commands.append(('Add New Launcher', aux_url_RP('ADD_LAUNCHER', categoryID)))
     # Launchers in addon root should be able to create a new category
-    if categoryID == VCATEGORY_ADDONROOT_ID:
+    if categoryID == CATEGORY_ADDONROOT_ID:
         commands.append(('Create New Category', aux_url_RP('ADD_CATEGORY')))
     commands.append(('Kodi File Manager', 'ActivateWindow(filemanager)'))
     commands.append(('AEL addon settings', 'Addon.OpenSettings({})'.format(cfg.addon.info_id)))
@@ -1906,9 +1910,72 @@ def render_vlaunchers_GlobalReports(cfg):
 # ------------------------------------------------------------------------------------------------
 # Rendering of ROMs
 # ------------------------------------------------------------------------------------------------
+# For a given ROM Launcher render all ROMs or all parent ROMs.
+# Make a general function to render any kind of ROM.
+# Use a step render like AML; 1) Load databases, 2) filter ROMs, 3) Process ROMs, 4) Commit ROMs.
+def render_ROMs(cfg, categoryID, launcherID):
+    # Generates a special launcher dictionary for virtual launchers.
+    st_dic = kodi_new_status_dic()
+    launcher = db_get_launcher(cfg, st_dic, launcherID)
+    if kodi_is_error_status(st_dic):
+        xbmcplugin.endOfDirectory(cfg.addon_handle, succeeded = True, cacheToDisc = False)
+        kodi_display_status_message(st_dic)
+        return
+    render_only_parent_ROMs = launcher['launcher_display_mode'] == LAUNCHER_DMODE_PCLONE
+
+    # Load ROMs from disk database.
+    # Set st_dic to notify if no ROMs to render.
+    loading_ticks_start = time.time()
+    db_load_ROMs(cfg, st_dic, categoryID, launcherID, render_only_parent_ROMs)
+    if kodi_is_error_status(st_dic):
+        xbmcplugin.endOfDirectory(cfg.addon_handle, succeeded = True, cacheToDisc = False)
+        kodi_display_status_message(st_dic)
+        return
+
+    db_load_ROMs_Favourite_set(cfg, st_dic)
+    if kodi_is_error_status(st_dic):
+        xbmcplugin.endOfDirectory(cfg.addon_handle, succeeded = True, cacheToDisc = False)
+        kodi_display_status_message(st_dic)
+        return
+    loading_time = time.time() - loading_ticks_start
+
+    # Filter ROMs.
+    # Set st_dic to notify if not ROMs to render after filtering.
+    # Only standard ROM launchers are filtered.
+    # filtering_ticks_start = time.time()
+    # render_ROMs_filter(cfg, st_dic, launcher)
+    # if kodi_is_error_status(st_dic):
+    #     xbmcplugin.endOfDirectory(cfg.addon_handle, succeeded = True, cacheToDisc = False)
+    #     kodi_display_status_message(st_dic)
+    #     return
+    # filtering_time = time.time() - filtering_ticks_start
+
+    # Process ROMs for rendering.
+    processing_ticks_start = time.time()
+    rom_list = render_ROMs_process(cfg)
+    processing_time = time.time() - processing_ticks_start
+
+    # Commit ROMs.
+    commit_ticks_start = time.time()
+    misc_set_all_sorting_methods(cfg)
+    misc_set_AEL_Content(cfg, AEL_CONTENT_VALUE_ROMS)
+    misc_set_AEL_Launcher_Content(cfg, launcher)
+    render_ROMs_commit(cfg, rom_list)
+    commit_time = time.time() - commit_ticks_start
+    xbmcplugin.endOfDirectory(cfg.addon_handle, succeeded = True, cacheToDisc = False)
+
+    # DEBUG Data loading/rendering statistics.
+    total_time = loading_time + filtering_time + processing_time + commit_time
+    log_debug('Loading time     {:.4f} s'.format(loading_time))
+    log_debug('Filtering time   {:.4f} s'.format(filtering_time))
+    log_debug('Processing time  {:.4f} s'.format(processing_time))
+    log_debug('Commit time      {:.4f} s'.format(commit_time))
+    log_debug('Total time       {:.4f} s'.format(total_time))
 
 # Render clone ROMs. romID is always a parent ROM.
 # This is only called in Parent/Clone display mode.
+# 
+# IMPORTANT This function needs to be changed.
 def render_ROMs_clone(cfg, launcherID, romID):
     # --- Set content type and sorting methods ---
     misc_set_all_sorting_methods(cfg)
@@ -1968,67 +2035,6 @@ def render_ROMs_clone(cfg, launcherID, romID):
         self._gui_render_rom_row(categoryID, launcherID, roms[key], key in roms_fav_set, view_mode, False)
     xbmcplugin.endOfDirectory(cfg.addon_handle, succeeded = True, cacheToDisc = False)
 
-# For a given ROM Launcher render all ROMs or all parent ROMs.
-# Make a general function to render any kind of ROM.
-# Use a step render like AML; 1) Load databases, 2) filter ROMs, 3) Process ROMs, 4) Commit ROMs.
-def render_ROMs(cfg, launcherID):
-    # Generates a special launcher dictionary for virtual launchers.
-    st_dic = kodi_new_status_dic()
-    launcher = db_get_launcher(cfg, st_dic, launcherID)
-    if kodi_is_error_status(st_dic):
-        xbmcplugin.endOfDirectory(cfg.addon_handle, succeeded = True, cacheToDisc = False)
-        kodi_display_status_message(st_dic)
-        return
-    render_only_parent_ROMs = launcher['launcher_display_mode'] == LAUNCHER_DMODE_PCLONE
-
-    # Load ROMs from disk database.
-    # Set st_dic to notify if no ROMs to render.
-    loading_ticks_start = time.time()
-    db_load_ROMs(cfg, st_dic, launcherID, render_only_parent_ROMs)
-    if kodi_is_error_status(st_dic):
-        xbmcplugin.endOfDirectory(cfg.addon_handle, succeeded = True, cacheToDisc = False)
-        kodi_display_status_message(st_dic)
-        return
-
-    db_load_ROMs_Favourite_set(cfg, st_dic)
-    if kodi_is_error_status(st_dic):
-        xbmcplugin.endOfDirectory(cfg.addon_handle, succeeded = True, cacheToDisc = False)
-        kodi_display_status_message(st_dic)
-        return
-    loading_time = time.time() - loading_ticks_start
-
-    # Filter ROMs.
-    # Set st_dic to notify if not ROMs to render after filtering.
-    filtering_ticks_start = time.time()
-    render_ROMs_filter(cfg, st_dic, launcher)
-    if kodi_is_error_status(st_dic):
-        xbmcplugin.endOfDirectory(cfg.addon_handle, succeeded = True, cacheToDisc = False)
-        kodi_display_status_message(st_dic)
-        return
-    filtering_time = time.time() - filtering_ticks_start
-
-    # Process ROMs for rendering.
-    processing_ticks_start = time.time()
-    rom_list = render_ROMs_process(cfg)
-    processing_time = time.time() - processing_ticks_start
-
-    # Commit ROMs.
-    commit_ticks_start = time.time()
-    misc_set_all_sorting_methods(cfg)
-    misc_set_AEL_Content(cfg, AEL_CONTENT_VALUE_ROMS)
-    misc_set_AEL_Launcher_Content(cfg, launcher)
-    render_ROMs_commit(cfg, rom_list)
-    commit_time = time.time() - commit_ticks_start
-    xbmcplugin.endOfDirectory(cfg.addon_handle, succeeded = True, cacheToDisc = False)
-
-    # DEBUG Data loading/rendering statistics.
-    total_time = loading_time + filtering_time + processing_time + commit_time
-    log_debug('Loading time     {0:.4f} s'.format(loading_time))
-    log_debug('Filtering time   {0:.4f} s'.format(filtering_time))
-    log_debug('Processing time  {0:.4f} s'.format(processing_time))
-    log_debug('Commit time      {0:.4f} s'.format(commit_time))
-    log_debug('Total time       {0:.4f} s'.format(total_time))
-
 def render_ROMs_filter(cfg, st_dic, launcher):
     dp_mode = launcher['audit_display_mode']
     if launcher['audit_state'] != AUDIT_STATE_ON: return
@@ -2073,39 +2079,75 @@ def render_ROMs_filter(cfg, st_dic, launcher):
 #
 # Returns a list of dictionaries:
 # r_list = [
-#   {
-#     'm_name' : text_type, 
-#     'render_name' : text_type,
-#     'info' : {},
-#     'props' : {},
-#     'art' : {},
-#     'context' : [],
-#     'URL' ; text_type
-#   },
-#   ...
+#     {
+#         'm_name' : text_type, 
+#         'name' : text_type,
+#         'info' : {},
+#         'art' : {},
+#         'props' : {},
+#         'context' : [],
+#         'URL' ; text_type
+#     },
+#     ...
 # ]
 #
 # cfg.roms could be a dictionary or an OrderedDictionary (ROM Collection and Recently Played ROMs).
 def render_ROMs_process(cfg):
-    # Make a list of sorted ROM dictionary keys.
-    romID_list = [romID for romID in cfg.roms]
+    # Prepare data for ROM processing.
+    view_mode = selectedLauncher['launcher_display_mode']
 
+    # Display ROMs.
+    # if view_mode == LAUNCHER_DMODE_FLAT:
+    #     for key in sorted(roms, key = lambda x : roms[x]['m_name']):
+    #         gui_render_rom_row(categoryID, launcherID, roms[key], key in roms_fav_set, view_mode, False)
+    # else:
+    #     for key in sorted(roms, key = lambda x : roms[x]['m_name']):
+    #         num_clones = len(pclone_index[key])
+    #         gui_render_rom_row(categoryID, launcherID, roms[key], key in roms_fav_set, view_mode, True, num_clones)
 
-    # --- Display ROMs ---
-    if view_mode == LAUNCHER_DMODE_FLAT:
-        for key in sorted(roms, key = lambda x : roms[x]['m_name']):
-            gui_render_rom_row(categoryID, launcherID, roms[key], key in roms_fav_set, view_mode, False)
-    else:
-        for key in sorted(roms, key = lambda x : roms[x]['m_name']):
-            num_clones = len(pclone_index[key])
-            gui_render_rom_row(categoryID, launcherID, roms[key], key in roms_fav_set, view_mode, True, num_clones)
-
-
-
-    # Traverse machines.
+    # --- Traverse machines ---
     r_list = []
+    # Problem: what happens when cfg.roms is an OrderedDict?
+    romID_list = [romID for romID in cfg.roms]
     for romID in romID_list:
-        pass
+        # Grab machine/ROM data.
+        render_name = cfg.roms[romID]['m_name']
+        rom = cfg.roms[romID]
+
+        # Do not render row if ROM is finished.
+        if rom['finished'] and cfg.settings['display_hide_finished']: continue
+
+        # Add machine/ROM to list, set default values.
+        r_dict = {}
+        r_dict['m_name'] = romID
+        # main_pclone_dic and num_clones only used when rendering parents.
+        if flag_parent_list:
+            num_clones = len(main_pclone_dic[machine_name]) if machine_name in main_pclone_dic else 0
+
+        # Render machine name string and compute properties --------------------------------------
+        display_name = render_name
+        # Default values for flags.
+        AEL_InFav_bool_value     = AEL_INFAV_BOOL_VALUE_FALSE
+        AEL_MultiDisc_bool_value = AEL_MULTIDISC_BOOL_VALUE_FALSE
+        AEL_Fav_stat_value       = AEL_FAV_STAT_VALUE_NONE
+        AEL_NoIntro_stat_value   = AEL_NOINTRO_STAT_VALUE_NONE
+        AEL_PClone_stat_value    = AEL_PCLONE_STAT_VALUE_NONE
+
+
+
+        r_dict['name'] = display_name
+        r_dict['info'] = {
+            'title' : display_name,
+            'year' : machine['year'],
+            'genre' : machine['genre'],
+            'studio' : machine['manufacturer'],
+            'plot' : m_assets['plot'],
+            'overlay' : ICON_OVERLAY,
+        }
+        if not cfg.settings['display_hide_trailers']:
+            r_dict['info']['trailer'] = m_assets['trailer']
+
+        # Assets/artwork -------------------------------------------------------------------------
 
     return r_list
 
@@ -2121,13 +2163,12 @@ def render_ROMs_commit(cfg, render_list):
         # offscreent = True  Rendering time  0.5780 s
         # See https://forum.kodi.tv/showthread.php?tid=329315&pid=2711937
         # and https://forum.kodi.tv/showthread.php?tid=307394&pid=2531524
-        listitem = xbmcgui.ListItem(litem['render_name'], offscreen = True)
+        listitem = xbmcgui.ListItem(litem['name'], offscreen = True)
         listitem.setInfo('video', litem['info'])
-        listitem.setProperties(litem['props'])
         listitem.setArt(litem['art'])
+        listitem.setProperties(litem['props'])
         listitem.addContextMenuItems(litem['context'])
         listitem_list.append((litem['URL'], listitem, False))
-
     # Add all listitems in one go.
     xbmcplugin.addDirectoryItems(cfg.addon_handle, listitem_list, len(listitem_list))
 
@@ -2135,15 +2176,6 @@ def render_ROMs_commit(cfg, render_list):
 # Note that if we are rendering virtual launchers, categoryID = VCATEGORY_*_ID
 def gui_render_rom_row(cfg, categoryID, launcherID, rom,
     rom_in_fav = False, view_mode = LAUNCHER_DMODE_FLAT, is_parent_launcher = False, num_clones = 0):
-    # --- Do not render row if ROM is finished ---
-    if rom['finished'] and self.settings['display_hide_finished']: return
-
-    # --- Default values for flags ---
-    AEL_InFav_bool_value     = AEL_INFAV_BOOL_VALUE_FALSE
-    AEL_MultiDisc_bool_value = AEL_MULTIDISC_BOOL_VALUE_FALSE
-    AEL_Fav_stat_value       = AEL_FAV_STAT_VALUE_NONE
-    AEL_NoIntro_stat_value   = AEL_NOINTRO_STAT_VALUE_NONE
-    AEL_PClone_stat_value    = AEL_PCLONE_STAT_VALUE_NONE
 
     # --- Create listitem row ---
     # NOTE A possible optimization is to compute rom_name, asset paths and flags on the calling
@@ -2302,28 +2334,23 @@ def gui_render_rom_row(cfg, categoryID, launcherID, rom,
     listitem = xbmcgui.ListItem(rom_name)
 
     # Interesting... if text formatting labels are set in xbmcgui.ListItem() do not work. However, if
-    # labels are set as Title in setInfo(), then they work but the alphabetical order is lost!
+    # labels are set as Title field in setInfo(), then they work but the alphabetical order is lost!
     # I solved this alphabetical ordering issue by placing a coloured tag [Fav] at the and of the ROM name
     # instead of changing the whole row colour.
     # BUG in Jarvis/Krypton skins. If 'year' is set to empty string a 0 is displayed on the
     #     skin. If year is not set then the correct icon is shown.
-    # NOTE This must be improved. See AML code.
-    if rom['m_year']:
-        listitem.setInfo('video', {
-            'title'   : rom_name,         'year'    : rom['m_year'],
-            'genre'   : rom['m_genre'],   'studio'  : rom['m_developer'],
-            'rating'  : rom['m_rating'],  'plot'    : rom['m_plot'],
-            'trailer' : rom['s_trailer'], 'overlay' : ICON_OVERLAY,
-            'path'    : rom['filename'],
-        })
-    else:
-        listitem.setInfo('video', {
-            'title'   : rom_name,
-            'genre'   : rom['m_genre'],   'studio'  : rom['m_developer'],
-            'rating'  : rom['m_rating'],  'plot'    : rom['m_plot'],
-            'trailer' : rom['s_trailer'], 'overlay' : ICON_OVERLAY,
-            'path'    : rom['filename'],
-        })
+    listitem.setInfo('video', {
+        'title'   : rom_name,
+        'year'    : rom['m_year'],
+        'genre'   : rom['m_genre'],
+        'studio'  : rom['m_developer'],
+        'rating'  : rom['m_rating'],
+        'plot'    : rom['m_plot'],
+        'trailer' : rom['s_trailer'],
+        'overlay' : ICON_OVERLAY,
+        'path'    : rom['filename'],
+    })
+
     listitem.setProperty('nplayers', rom['m_nplayers'])
     listitem.setProperty('esrb', rom['m_esrb'])
     listitem.setProperty('platform', platform)
@@ -2657,7 +2684,7 @@ def command_add_new_launcher(self, categoryID):
     # of a launcher in addon root.
     if categoryID not in self.categories:
         log_info('Category ID not found. Creating laucher in addon root.')
-        launcher_categoryID = VCATEGORY_ADDONROOT_ID
+        launcher_categoryID = CATEGORY_ADDONROOT_ID
     else:
         # Ask user if launcher is created on selected category or on root menu.
         category_name = self.categories[categoryID]['m_name']
@@ -2671,7 +2698,7 @@ def command_add_new_launcher(self, categoryID):
         if mindex == 0:
             launcher_categoryID = categoryID
         elif mindex == 1:
-            launcher_categoryID = VCATEGORY_ADDONROOT_ID
+            launcher_categoryID = CATEGORY_ADDONROOT_ID
         else:
             kodi_notify_warn('_command_add_new_launcher() Logical error. Report this bug.')
             return
@@ -2815,7 +2842,7 @@ def command_add_new_launcher(self, categoryID):
         # Choose launcher ROM XML filename. There may be launchers with same name in different categories, or
         # even launcher with the same name in the same category.
         launcherID = misc_generate_random_SID()
-        category_name = self.categories[categoryID]['m_name'] if categoryID in self.categories else VCATEGORY_ADDONROOT_ID
+        category_name = self.categories[categoryID]['m_name'] if categoryID in self.categories else CATEGORY_ADDONROOT_ID
         roms_base_noext = fs_get_ROMs_basename(category_name, title, launcherID)
 
         # --- Create new launcher. categories.xml is save at the end of this function ---
@@ -3386,7 +3413,7 @@ def command_edit_category(self, categoryID):
 def command_edit_launcher(self, categoryID, launcherID):
     # Shows a select box with the options to edit
     finished_str = 'Finished' if self.launchers[launcherID]['finished'] == True else 'Unfinished'
-    if self.launchers[launcherID]['categoryID'] == VCATEGORY_ADDONROOT_ID:
+    if self.launchers[launcherID]['categoryID'] == CATEGORY_ADDONROOT_ID:
         category_name = 'Addon root (no category)'
     else:
         category_name = self.categories[self.launchers[launcherID]['categoryID']]['m_name']
@@ -3469,7 +3496,7 @@ def command_edit_launcher(self, categoryID, launcherID):
             launcher = self.launchers[launcherID]
             old_roms_base_noext = launcher['roms_base_noext']
             categoryID = launcher['categoryID']
-            category_name = self.categories[categoryID]['m_name'] if categoryID in self.categories else VCATEGORY_ADDONROOT_ID
+            category_name = self.categories[categoryID]['m_name'] if categoryID in self.categories else CATEGORY_ADDONROOT_ID
             new_roms_base_noext = fs_get_ROMs_basename(category_name, new_value_str, launcherID)
             fs_rename_ROMs_database(g_PATHS.ROMS_DIR, old_roms_base_noext, new_roms_base_noext)
             launcher['m_name'] = new_value_str
@@ -3744,7 +3771,7 @@ def command_edit_launcher(self, categoryID, launcherID):
             kodi_dialog_OK('There is no Categories. Nothing to change.')
             return
         # Add special root cateogory at the beginning
-        categories_id   = [VCATEGORY_ADDONROOT_ID]
+        categories_id   = [CATEGORY_ADDONROOT_ID]
         categories_name = ['Addon root (no category)']
         for key in self.categories:
             categories_id.append(self.categories[key]['id'])
@@ -3765,7 +3792,7 @@ def command_edit_launcher(self, categoryID, launcherID):
         # Display new category where launcher has moved
         # For some reason ReplaceWindow() does not work, bu Container.Update() does.
         # See http://forum.kodi.tv/showthread.php?tid=293844
-        if new_categoryID == VCATEGORY_ADDONROOT_ID:
+        if new_categoryID == CATEGORY_ADDONROOT_ID:
             plugin_url = g_base_url
         else:
             plugin_url = '{}?com=SHOW_LAUNCHERS&amp;catID={}'.format(g_base_url, new_categoryID)
@@ -7127,7 +7154,7 @@ def command_Context_Menu_view(self, categoryID, launcherID, romID):
             info_text += self._misc_print_string_Category(category)
         elif view_type == VIEW_LAUNCHER:
             window_title = 'Launcher data'
-            if categoryID == VCATEGORY_ADDONROOT_ID: category = None
+            if categoryID == CATEGORY_ADDONROOT_ID: category = None
             else:                                    category = self.categories[categoryID]
             launcher = self.launchers[launcherID]
             info_text  = '[COLOR orange]Launcher information[/COLOR]\n'
@@ -7302,7 +7329,7 @@ def command_Context_Menu_view(self, categoryID, launcherID, romID):
                 if launcherID not in self.launchers:
                     kodi_dialog_OK('launcherID not found in self.launchers')
                     return
-                launcher_in_category = False if categoryID == VCATEGORY_ADDONROOT_ID else True
+                launcher_in_category = False if categoryID == CATEGORY_ADDONROOT_ID else True
                 if launcher_in_category: category = self.categories[categoryID]
                 launcher = self.launchers[launcherID]
                 roms = fs_load_ROMs_JSON(g_PATHS.ROMS_DIR, launcher)
@@ -7335,7 +7362,7 @@ def command_Context_Menu_view(self, categoryID, launcherID, romID):
          action == ACTION_VIEW_LAUNCHER_ASSETS:
         # --- Standalone launchers do not have reports! ---
         if categoryID in self.categories: category_name = self.categories[categoryID]['m_name']
-        else:                             category_name = VCATEGORY_ADDONROOT_ID
+        else:                             category_name = CATEGORY_ADDONROOT_ID
         launcher = self.launchers[launcherID]
         if not launcher['rompath']:
             kodi_notify_warn('Cannot create report for standalone launcher')
@@ -7697,7 +7724,7 @@ def _command_exec_utils_check_launchers(self):
 
         # Check that category exists
         categoryID = launcher['categoryID']
-        if categoryID != VCATEGORY_ADDONROOT_ID and categoryID not in self.categories:
+        if categoryID != CATEGORY_ADDONROOT_ID and categoryID not in self.categories:
             l_str.append('Category not found (unlinked launcher)')
 
         # Check that application exists
@@ -8569,7 +8596,7 @@ def _command_exec_global_rom_stats(self):
     catless_launchers = {}
     for launcher_id in self.launchers:
         launcher = self.launchers[launcher_id]
-        if launcher['categoryID'] == VCATEGORY_ADDONROOT_ID:
+        if launcher['categoryID'] == CATEGORY_ADDONROOT_ID:
             catless_launchers[launcher_id] = launcher
     for launcher_id in sorted(catless_launchers, key = lambda x : catless_launchers[x]['m_name']):
         launcher = self.launchers[launcher_id]
@@ -8624,7 +8651,7 @@ def _command_exec_global_audit_stats(self, report_type):
     catless_launchers = {}
     for launcher_id in self.launchers:
         launcher = self.launchers[launcher_id]
-        if launcher['categoryID'] == VCATEGORY_ADDONROOT_ID:
+        if launcher['categoryID'] == CATEGORY_ADDONROOT_ID:
             catless_launchers[launcher_id] = launcher
     for launcher_id in sorted(catless_launchers, key = lambda x : catless_launchers[x]['m_name']):
         launcher = self.launchers[launcher_id]
@@ -9298,7 +9325,7 @@ def _run_after_execution(self, toggle_screen_flag):
 def _roms_regenerate_launcher_reports(self, categoryID, launcherID, roms):
     # --- Get report filename ---
     if categoryID in self.categories: category_name = self.categories[categoryID]['m_name']
-    else:                             category_name = VCATEGORY_ADDONROOT_ID
+    else:                             category_name = CATEGORY_ADDONROOT_ID
     roms_base_noext  = fs_get_ROMs_basename(category_name, self.launchers[launcherID]['m_name'], launcherID)
     report_stats_FN  = g_PATHS.REPORTS_DIR.pjoin(roms_base_noext + '_stats.txt')
     log_debug('_command_view_menu() Stats  OP "{}"'.format(report_stats_FN.getOriginalPath()))
@@ -9333,7 +9360,7 @@ def _roms_create_launcher_reports(self, categoryID, launcherID, roms):
 
     # Report file name.
     if categoryID in self.categories: category_name = self.categories[categoryID]['m_name']
-    else:                             category_name = VCATEGORY_ADDONROOT_ID
+    else:                             category_name = CATEGORY_ADDONROOT_ID
     launcher = self.launchers[launcherID]
     roms_base_noext  = fs_get_ROMs_basename(category_name, launcher['m_name'], launcherID)
     report_stats_FN  = g_PATHS.REPORTS_DIR.pjoin(roms_base_noext + '_stats.txt')
@@ -10758,7 +10785,7 @@ class Main:
             categoryID = launcher['categoryID']
             if categoryID in self.categories:
                 category_name = self.categories[categoryID]['m_name']
-            elif categoryID == VCATEGORY_ADDONROOT_ID:
+            elif categoryID == CATEGORY_ADDONROOT_ID:
                 category_name = 'Root category'
             else:
                 log_error('_command_update_virtual_category_db_all() Wrong categoryID = {}'.format(categoryID))
@@ -10894,7 +10921,7 @@ class Main:
                 categoryID = launcher['categoryID']
                 if categoryID in self.categories:
                     category_name = self.categories[categoryID]['m_name']
-                elif categoryID == VCATEGORY_ADDONROOT_ID:
+                elif categoryID == CATEGORY_ADDONROOT_ID:
                     category_name = 'Root category'
                 else:
                     log_error('_command_update_virtual_category_db() Wrong categoryID = {}'.format(categoryID))

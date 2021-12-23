@@ -134,7 +134,8 @@ RETROPLAYER_LAUNCHER_APP_NAME = 'retroplayer_launcher_app'
 LNK_LAUNCHER_APP_NAME         = 'lnk_launcher_app'
 
 # Special Category/Launcher IDs.
-VCATEGORY_ADDONROOT_ID = 'root_category' # This is an actual category, not a virtual one.
+CATEGORY_ADDONROOT_ID = 'root_category' # This is an actual category, not a virtual one.
+
 VCATEGORY_ROM_COLLECTION = 'vcategory_rom_collection'
 VCATEGORY_BROWSE_BY_TITLE_ID = 'vcategory_browse_by_title'
 VCATEGORY_BROWSE_BY_YEARS_ID = 'vcategory_browse_by_year'
