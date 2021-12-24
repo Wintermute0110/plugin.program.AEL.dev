@@ -496,6 +496,8 @@ def db_load_ROMs(cfg, st_dic, categoryID, launcherID, load_pclone_ROMs_flag = Fa
         pass
 
     # Virtual launchers belonging to a virtual category ------------------------------------------
+    # See command_render_ROMs_Browse_By_vlauncher() and similar functions in main module
+    # and copy the code here.
     elif launcher_is_vcategory and categoryID == VCATEGORY_ROM_COLLECTION:
         pass
 

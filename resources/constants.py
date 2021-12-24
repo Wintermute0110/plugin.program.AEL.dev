@@ -131,7 +131,7 @@ KIND_LAUNCHER    = 3
 KIND_ROM         = 4
 PLOT_STR_MAXSIZE = 40
 RETROPLAYER_LAUNCHER_APP_NAME = 'retroplayer_launcher_app'
-LNK_LAUNCHER_APP_NAME         = 'lnk_launcher_app'
+LNK_LAUNCHER_APP_NAME = 'lnk_launcher_app'
 
 # Special Category/Launcher IDs.
 CATEGORY_ADDONROOT_ID = 'root_category' # This is an actual category, not a virtual one.
