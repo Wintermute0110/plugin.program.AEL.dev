@@ -1952,7 +1952,7 @@ def render_ROMs(cfg, categoryID, launcherID):
 
     # Process ROMs for rendering.
     processing_ticks_start = time.time()
-    rom_list = render_ROMs_process(cfg)
+    rom_list = render_ROMs_process(cfg, categoryID, launcherID, launcher)
     processing_time = time.time() - processing_ticks_start
 
     # Commit ROMs.
@@ -1976,7 +1976,7 @@ def render_ROMs(cfg, categoryID, launcherID):
 # This is only called in Parent/Clone display mode.
 # 
 # IMPORTANT This function needs to be changed.
-def render_ROMs_clone(cfg, launcherID, romID):
+def render_ROMs_clone_ROMs(cfg, launcherID, romID):
     # --- Set content type and sorting methods ---
     misc_set_all_sorting_methods(cfg)
     misc_set_AEL_Content(cfg, AEL_CONTENT_VALUE_ROMS)
@@ -2075,7 +2075,7 @@ def render_ROMs_filter(cfg, st_dic, launcher):
         return
 
 # First make this function work OK, then try to optimize it.
-# "Premature optimization is the root of all evil." Donald Knuth
+# "Premature optimization is the root of all evil." --- Donald Knuth
 #
 # Returns a list of dictionaries:
 # r_list = [
@@ -2092,9 +2092,13 @@ def render_ROMs_filter(cfg, st_dic, launcher):
 # ]
 #
 # cfg.roms could be a dictionary or an OrderedDictionary (ROM Collection and Recently Played ROMs).
-def render_ROMs_process(cfg):
+def render_ROMs_process(cfg, categoryID, launcherID, launcher):
     # Prepare data for ROM processing.
-    view_mode = selectedLauncher['launcher_display_mode']
+    launcher_is_vlauncher = launcherID in VLAUNCHER_ID_LIST
+    launcher_is_vcategory = categoryID in VCATEGORY_ID_LIST
+    launcher_is_actual = not launcher_is_vlauncher and not launcher_is_vcategory
+    view_mode = launcher['launcher_display_mode']
+    launcher_is_browse_by = categoryID in VCATEGORY_BROWSE_BY_ID_LIST
 
     # Display ROMs.
     # if view_mode == LAUNCHER_DMODE_FLAT:
@@ -2111,8 +2115,9 @@ def render_ROMs_process(cfg):
     romID_list = [romID for romID in cfg.roms]
     for romID in romID_list:
         # Grab machine/ROM data.
-        render_name = cfg.roms[romID]['m_name']
         rom = cfg.roms[romID]
+        rom_raw_name = rom['m_name'] # This will not be changed.
+        rom_name = rom['m_name']     # This will be changed to get the final name with color tags.
 
         # Do not render row if ROM is finished.
         if rom['finished'] and cfg.settings['display_hide_finished']: continue
@@ -2124,16 +2129,69 @@ def render_ROMs_process(cfg):
         if flag_parent_list:
             num_clones = len(main_pclone_dic[machine_name]) if machine_name in main_pclone_dic else 0
 
-        # Render machine name string and compute properties --------------------------------------
-        display_name = render_name
-        # Default values for flags.
+        # Render machine name string, compute properties and artwork -----------------------------
+        # Default values for flags/properties.
         AEL_InFav_bool_value     = AEL_INFAV_BOOL_VALUE_FALSE
         AEL_MultiDisc_bool_value = AEL_MULTIDISC_BOOL_VALUE_FALSE
         AEL_Fav_stat_value       = AEL_FAV_STAT_VALUE_NONE
         AEL_NoIntro_stat_value   = AEL_NOINTRO_STAT_VALUE_NONE
         AEL_PClone_stat_value    = AEL_PCLONE_STAT_VALUE_NONE
 
+        # Standard ROM launcher
+        if launcher_is_actual:
+            platform = launcher['platform']
 
+            # If ROM has no icon then user launcher icon or defaul icon DefaultProgram.png.
+            # If ROM has no fanart then use launcher fanart.
+            kodi_def_icon = launcher['s_icon'] if launcher['s_icon'] else 'DefaultProgram.png'
+            icon_path = asset_get_default_asset_Launcher_ROM(rom, launcher, 'roms_default_icon', kodi_def_icon)
+            fanart_path = asset_get_default_asset_Launcher_ROM(rom, launcher, 'roms_default_fanart', launcher['s_fanart'])
+            banner_path = asset_get_default_asset_Launcher_ROM(rom, launcher, 'roms_default_banner')
+            poster_path = asset_get_default_asset_Launcher_ROM(rom, launcher, 'roms_default_poster')
+            clearlogo_path = asset_get_default_asset_Launcher_ROM(rom, launcher, 'roms_default_clearlogo')
+
+            # is_parent_launcher is True when rendering Parent ROMs in Parent/Clone view mode.
+            nstat = rom['nointro_status']
+            if nstat == AUDIT_STATUS_HAVE:
+                rom_name = '{} [COLOR green][Have][/COLOR]'.format(rom_name)
+                AEL_NoIntro_stat_value = AEL_NOINTRO_STAT_VALUE_HAVE
+            elif nstat == AUDIT_STATUS_MISS:
+                rom_name = '{} [COLOR magenta][Miss][/COLOR]'.format(rom_name)
+                AEL_NoIntro_stat_value = AEL_NOINTRO_STAT_VALUE_MISS
+            elif nstat == AUDIT_STATUS_UNKNOWN:
+                rom_name = '{} [COLOR yellow][Unknown][/COLOR]'.format(rom_name)
+                AEL_NoIntro_stat_value = AEL_NOINTRO_STAT_VALUE_UNKNOWN
+            elif nstat == AUDIT_STATUS_EXTRA:
+                rom_name = '{} [COLOR limegreen][Extra][/COLOR]'.format(rom_name)
+                AEL_NoIntro_stat_value = AEL_NOINTRO_STAT_VALUE_EXTRA
+            elif nstat == AUDIT_STATUS_NONE:
+                rom_name = rom_name
+                AEL_NoIntro_stat_value = AEL_NOINTRO_STAT_VALUE_NONE
+            else:
+                rom_name = '{} [COLOR red][Status error][/COLOR]'.format(rom_name)
+                AEL_NoIntro_stat_value = AEL_NOINTRO_STAT_VALUE_ERROR
+            # Reset the ROM display name, clear No-Intro status tag.
+            if not self.settings['display_nointro_stat']:
+                rom_name = rom_raw_name
+            if is_parent_launcher and num_clones > 0:
+                rom_name += ' [COLOR orange][{} clones][/COLOR]'.format(num_clones)
+
+            # Mark clone ROMs.
+            pclone_status = rom['pclone_status']
+            if pclone_status == PCLONE_STATUS_CLONE: rom_name += ' [COLOR orange][Clo][/COLOR]'
+            if   pclone_status == PCLONE_STATUS_PARENT: AEL_PClone_stat_value = AEL_PCLONE_STAT_VALUE_PARENT
+            elif pclone_status == PCLONE_STATUS_CLONE:  AEL_PClone_stat_value = AEL_PCLONE_STAT_VALUE_CLONE
+            # In Favourites ROM flag.
+            if cfg.settings['display_rom_in_fav'] and rom_in_fav: rom_name += ' [COLOR violet][Fav][/COLOR]'
+            if rom_in_fav: AEL_InFav_bool_value = AEL_INFAV_BOOL_VALUE_TRUE
+            # Multidisc flag.
+            if cfg.settings['display_rom_in_fav'] and rom['disks']: rom_name += ' [COLOR plum][MD][/COLOR]'
+
+
+        # Favourite ROMs
+        elif 
+
+        else: raise TypeError
 
         r_dict['name'] = display_name
         r_dict['info'] = {
@@ -2177,10 +2235,12 @@ def render_ROMs_commit(cfg, render_list):
 def gui_render_rom_row(cfg, categoryID, launcherID, rom,
     rom_in_fav = False, view_mode = LAUNCHER_DMODE_FLAT, is_parent_launcher = False, num_clones = 0):
 
+    #
+    # In the process of moving this stuff into render_ROMs_process()
+    # Then make this function dissapear.
+    #
+
     # --- Create listitem row ---
-    # NOTE A possible optimization is to compute rom_name, asset paths and flags on the calling
-    #      function. A lot of ifs will be avoided here and that will increase speed.
-    rom_raw_name = rom['m_name']
     if categoryID == VCATEGORY_FAVOURITES_ID:
         icon_path      = asset_get_default_asset_Launcher_ROM(rom, rom, 'roms_default_icon', 'DefaultProgram.png')
         fanart_path    = asset_get_default_asset_Launcher_ROM(rom, rom, 'roms_default_fanart')
@@ -2253,16 +2313,14 @@ def gui_render_rom_row(cfg, categoryID, launcherID, rom,
             rom_name = '{} [COLOR orange][{} time][/COLOR]'.format(rom_raw_name, rom['launch_count'])
         else:
             rom_name = '{} [COLOR orange][{} times][/COLOR]'.format(rom_raw_name, rom['launch_count'])
-    elif categoryID == VCATEGORY_TITLE_ID    or categoryID == VCATEGORY_YEARS_ID or \
-         categoryID == VCATEGORY_GENRE_ID    or categoryID == VCATEGORY_DEVELOPER_ID or \
-         categoryID == VCATEGORY_NPLAYERS_ID or categoryID == VCATEGORY_ESRB_ID or \
-         categoryID == VCATEGORY_RATING_ID   or categoryID == VCATEGORY_CATEGORY_ID:
+    elif launcher_is_browse_by:
+        platform       = rom['platform']
+
         icon_path      = asset_get_default_asset_Launcher_ROM(rom, rom, 'roms_default_icon', 'DefaultProgram.png')
         fanart_path    = asset_get_default_asset_Launcher_ROM(rom, rom, 'roms_default_fanart')
         banner_path    = asset_get_default_asset_Launcher_ROM(rom, rom, 'roms_default_banner')
         poster_path    = asset_get_default_asset_Launcher_ROM(rom, rom, 'roms_default_poster')
         clearlogo_path = asset_get_default_asset_Launcher_ROM(rom, rom, 'roms_default_clearlogo')
-        platform       = rom['platform']
 
         # --- NoIntro status flag ---
         nstat = rom['nointro_status']
@@ -2285,46 +2343,9 @@ def gui_render_rom_row(cfg, categoryID, launcherID, rom,
         if rom_in_fav: AEL_InFav_bool_value = AEL_INFAV_BOOL_VALUE_TRUE
         # Multidisc flag
         if self.settings['display_rom_in_fav'] and rom['disks']: rom_name += ' [COLOR plum][MD][/COLOR]'
-    # --- Standard launcher ---
-    else:
-        # If ROM has no fanart then use launcher fanart
-        launcher = self.launchers[launcherID]
-        kodi_def_icon = launcher['s_icon'] if launcher['s_icon'] else 'DefaultProgram.png'
-        icon_path      = asset_get_default_asset_Launcher_ROM(rom, launcher, 'roms_default_icon', kodi_def_icon)
-        fanart_path    = asset_get_default_asset_Launcher_ROM(rom, launcher, 'roms_default_fanart', launcher['s_fanart'])
-        banner_path    = asset_get_default_asset_Launcher_ROM(rom, launcher, 'roms_default_banner')
-        poster_path    = asset_get_default_asset_Launcher_ROM(rom, launcher, 'roms_default_poster')
-        clearlogo_path = asset_get_default_asset_Launcher_ROM(rom, launcher, 'roms_default_clearlogo')
-        platform = launcher['platform']
 
-        # parent_launcher is True when rendering Parent ROMs in Parent/Clone view mode.
-        nstat = rom['nointro_status']
-        if self.settings['display_nointro_stat']:
-            if   nstat == AUDIT_STATUS_HAVE:    rom_name = '{} [COLOR green][Have][/COLOR]'.format(rom_raw_name)
-            elif nstat == AUDIT_STATUS_MISS:    rom_name = '{} [COLOR magenta][Miss][/COLOR]'.format(rom_raw_name)
-            elif nstat == AUDIT_STATUS_UNKNOWN: rom_name = '{} [COLOR yellow][Unknown][/COLOR]'.format(rom_raw_name)
-            elif nstat == AUDIT_STATUS_EXTRA:   rom_name = '{} [COLOR limegreen][Extra][/COLOR]'.format(rom_raw_name)
-            elif nstat == AUDIT_STATUS_NONE:    rom_name = rom_raw_name
-            else:                               rom_name = '{} [COLOR red][Status error][/COLOR]'.format(rom_raw_name)
-        else:
-            rom_name = rom_raw_name
-        if is_parent_launcher and num_clones > 0:
-            rom_name += ' [COLOR orange][{} clones][/COLOR]'.format(num_clones)
-        if   nstat == AUDIT_STATUS_HAVE:    AEL_NoIntro_stat_value = AEL_NOINTRO_STAT_VALUE_HAVE
-        elif nstat == AUDIT_STATUS_MISS:    AEL_NoIntro_stat_value = AEL_NOINTRO_STAT_VALUE_MISS
-        elif nstat == AUDIT_STATUS_UNKNOWN: AEL_NoIntro_stat_value = AEL_NOINTRO_STAT_VALUE_UNKNOWN
-        elif nstat == AUDIT_STATUS_EXTRA:   AEL_NoIntro_stat_value = AEL_NOINTRO_STAT_VALUE_EXTRA
-        elif nstat == AUDIT_STATUS_NONE:    AEL_NoIntro_stat_value = AEL_NOINTRO_STAT_VALUE_NONE
-        # Mark clone ROMs.
-        pclone_status = rom['pclone_status']
-        if pclone_status == PCLONE_STATUS_CLONE: rom_name += ' [COLOR orange][Clo][/COLOR]'
-        if   pclone_status == PCLONE_STATUS_PARENT: AEL_PClone_stat_value = AEL_PCLONE_STAT_VALUE_PARENT
-        elif pclone_status == PCLONE_STATUS_CLONE:  AEL_PClone_stat_value = AEL_PCLONE_STAT_VALUE_CLONE
-        # In Favourites ROM flag.
-        if self.settings['display_rom_in_fav'] and rom_in_fav: rom_name += ' [COLOR violet][Fav][/COLOR]'
-        if rom_in_fav: AEL_InFav_bool_value = AEL_INFAV_BOOL_VALUE_TRUE
-        # Multidisc flag.
-        if self.settings['display_rom_in_fav'] and rom['disks']: rom_name += ' [COLOR plum][MD][/COLOR]'
+
+
 
     # Set common flags to all launchers.
     if rom['disks']: AEL_MultiDisc_bool_value = AEL_MULTIDISC_BOOL_VALUE_TRUE
