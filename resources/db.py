@@ -386,8 +386,8 @@ def fs_get_collection_ROMs_basename(collection_name, collectionID):
 # ROM database high-level IO functions
 # ------------------------------------------------------------------------------------------------
 # For actual ROM Launchers returns the database launcher dictionary.
-# For virtual ROM Launchers returns create a launcher dictionary on-the-fly.
-# Does this function make sense?
+# For virtual ROM Launchers returns create a launcher dictionary on-the-fly. NOTE: this is not
+# possible! For example, every Favourite ROM has a different launching data!
 def db_get_launcher(cfg, st_dic, launcherID):
     launcher_is_vlauncher = launcherID in VLAUNCHER_ID_LIST
     launcher_is_actual = not launcher_is_vlauncher
@@ -489,30 +489,27 @@ def db_load_ROMs(cfg, st_dic, categoryID, launcherID, load_pclone_ROMs_flag = Fa
 
     # Virtual launchers --------------------------------------------------------------------------
     elif launcher_is_vlauncher and launcherID == VLAUNCHER_FAVOURITES_ID:
-        cfg.roms = fs_load_Favourites_JSON(g_PATHS.FAV_JSON_FILE_PATH)
+        cfg.roms = fs_load_Favourites_JSON(cfg.FAV_JSON_FILE_PATH)
         if not cfg.roms:
-            kodi_notify('Favourites is empty. Add ROMs to Favourites first.')
-            xbmcplugin.endOfDirectory(handle = cfg.addon_handle, succeeded = True, cacheToDisc = False)
+            kodi_set_status_notify(st_dic, 'Favourites is empty. Add ROMs to Favourites first.')
             return
 
     # Code from former command_render_ROMs_recently_played()
     # for rom in rom_list:
     #     gui_render_rom_row(VCATEGORY_RECENT_ID, VLAUNCHER_RECENT_ID, rom)
     elif launcher_is_vlauncher and launcherID == VLAUNCHER_RECENT_ID:
-        rom_list = fs_load_Collection_ROMs_JSON(g_PATHS.RECENT_PLAYED_FILE_PATH)
-        if not rom_list:
-            kodi_notify('Recently played list is empty. Play some ROMs first!')
-            xbmcplugin.endOfDirectory(handle = cfg.addon_handle, succeeded = True, cacheToDisc = False)
+        cfg.roms = fs_load_Collection_ROMs_JSON(cfg.RECENT_PLAYED_FILE_PATH)
+        if not cfg.roms:
+            kodi_set_status_notify(st_dic, 'Recently played list is empty. Play some ROMs first!')
             return
 
     # Code from former command_render_ROMs_most_played()
     # for key in sorted(roms, key = lambda x : roms[x]['launch_count'], reverse = True):
     #     gui_render_rom_row(VCATEGORY_MOST_PLAYED_ID, VLAUNCHER_MOST_PLAYED_ID, roms[key])
     elif launcher_is_vlauncher and launcherID == VLAUNCHER_MOST_PLAYED_ID:
-        roms = fs_load_Favourites_JSON(g_PATHS.MOST_PLAYED_FILE_PATH)
-        if not roms:
-            kodi_notify('Most played ROMs list is empty. Play some ROMs first!.')
-            xbmcplugin.endOfDirectory(handle = cfg.addon_handle, succeeded = True, cacheToDisc = False)
+        cfg.roms = fs_load_Favourites_JSON(cfg.MOST_PLAYED_FILE_PATH)
+        if not cfg.roms:
+            kodi_set_status_notify(st_dic, 'Most played ROMs list is empty. Play some ROMs first!.')
             return
 
     # Virtual launchers belonging to a virtual category ------------------------------------------
@@ -520,13 +517,12 @@ def db_load_ROMs(cfg, st_dic, categoryID, launcherID, load_pclone_ROMs_flag = Fa
     # for rom in collection_rom_list:
     #     gui_render_rom_row(categoryID, launcherID, rom)
     elif launcher_is_vcategory and categoryID == VCATEGORY_ROM_COLLECTION:
-        COL = fs_load_Collection_index_XML(g_PATHS.COLLECTIONS_FILE_PATH)
+        COL = fs_load_Collection_index_XML(cfg.COLLECTIONS_FILE_PATH)
         collection = COL['collections'][launcherID]
-        roms_json_file = g_PATHS.COLLECTIONS_DIR.pjoin(collection['roms_base_noext'] + '.json')
+        roms_json_file = cfg.COLLECTIONS_DIR.pjoin(collection['roms_base_noext'] + '.json')
         collection_rom_list = fs_load_Collection_ROMs_JSON(roms_json_file)
         if not collection_rom_list:
-            kodi_notify('Collection is empty. Add ROMs to this collection first.')
-            xbmcplugin.endOfDirectory(handle = cfg.addon_handle, succeeded = True, cacheToDisc = False)
+            kodi_set_status_notify(st_dic, 'Collection is empty. Add ROMs to this collection first.')
             return
 
     # Former function command_render_ROMs_Browse_By_vlauncher()

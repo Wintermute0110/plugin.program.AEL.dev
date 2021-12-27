@@ -323,7 +323,7 @@ def run_plugin(addon_argv):
     # --- Commands that do not modify the databases are allowed to run concurrently ---
     concurrent_command_set = {
         'SHOW_ADDON_ROOT',
-        'SHOW_VCATEGORIES_ROOT',
+        'SHOW_BROWSE_BY_VCATEGORIES',
         'SHOW_LAUNCHERS',
         'SHOW_ROM_COLLECTIONS_VLAUNCHERS',
         'SHOW_BROWSE_BY_VLAUNCHERS',
@@ -380,14 +380,14 @@ def run_concurrent(cfg, command, args):
     if command == 'SHOW_ADDON_ROOT': render_main_window(cfg)
 
     # --- Render of categories -------------------------------------------------------------------
-    elif command == 'SHOW_VCATEGORIES_ROOT': render_vcategories_Browse_by(cfg)
+    elif command == 'SHOW_BROWSE_BY_VCATEGORIES': render_vcategories_Browse_by(cfg)
 
     # --- Render of launchers --------------------------------------------------------------------
     # Render launchers inside a category.
     # IDEA Should render_launchers_in_category() also render launchers in a virtual category?
     elif command == 'SHOW_LAUNCHERS': render_launchers_in_category(cfg, catID)
     elif command == 'SHOW_ROM_COLLECTIONS_VLAUNCHERS': render_vlaunchers_ROM_Collection(cfg)
-    elif command == 'SHOW_BROWSE_BY_VLAUNCHERS': render_vlaunchers_Browse_by(catID)    
+    elif command == 'SHOW_BROWSE_BY_VLAUNCHERS': render_vlaunchers_Browse_by(cfg, catID)    
     elif command == 'SHOW_AOS_VLAUNCHERS': render_vlaunchers_AEL_offline_scraper(cfg)
     elif command == 'SHOW_UTILITIES_VLAUNCHERS': render_vlaunchers_Utilities(cfg)
     elif command == 'SHOW_GLOBALREPORTS_VLAUNCHERS': render_vlaunchers_GlobalReports(cfg)
@@ -859,10 +859,14 @@ def render_category_row(cfg, category_dic, key):
     ICON_OVERLAY = 5 if category_dic['finished'] else 4
     listitem = xbmcgui.ListItem(category_dic['m_name'])
     listitem.setInfo('video', {
-        'title'   : category_dic['m_name'],    'year'    : category_dic['m_year'],
-        'genre'   : category_dic['m_genre'],   'studio'  : category_dic['m_developer'],
-        'rating'  : category_dic['m_rating'],  'plot'    : category_dic['m_plot'],
-        'trailer' : category_dic['s_trailer'], 'overlay' : ICON_OVERLAY,
+        'title'   : category_dic['m_name'],
+        'year'    : category_dic['m_year'],
+        'genre'   : category_dic['m_genre'],
+        'studio'  : category_dic['m_developer'],
+        'rating'  : category_dic['m_rating'],
+        'plot'    : category_dic['m_plot'],
+        'trailer' : category_dic['s_trailer'],
+        'overlay' : ICON_OVERLAY,
     })
     listitem.setProperty(AEL_CONTENT_LABEL, AEL_CONTENT_VALUE_CATEGORY)
 
@@ -1099,7 +1103,7 @@ def create_root_vcategories_data(cfg):
                 ('Kodi File Manager', 'ActivateWindow(filemanager)'),
                 ('AEL addon settings', 'Addon.OpenSettings({})'.format(cfg.addon.info_id)),
             ],
-            'url' : aux_url('SHOW_BROWSE_BY_VLAUNCHERS'),
+            'url' : aux_url('SHOW_BROWSE_BY_VCATEGORIES'),
         },
         'AEL_AOS' : {
             'display_setting_hide' : 'display_hide_AEL_scraper',
@@ -1444,7 +1448,7 @@ def render_vlaunchers_ROM_Collection(cfg):
     xbmcplugin.endOfDirectory(cfg.addon_handle, succeeded = True, cacheToDisc = False)
 
 # Render virtual launchers inside a "Browse By xxxxxx" virtual category.
-def render_vlaunchers_Browse_by(cfg, virtual_categoryID):
+def render_vlaunchers_Browse_by(cfg, catID):
     log_debug('render_Browse_by_vlaunchers() Starting...')
     xbmcplugin.addSortMethod(cfg.addon_handle, xbmcplugin.SORT_METHOD_LABEL)
     xbmcplugin.addSortMethod(cfg.addon_handle, xbmcplugin.SORT_METHOD_SIZE)
@@ -1453,25 +1457,21 @@ def render_vlaunchers_Browse_by(cfg, virtual_categoryID):
     misc_clear_AEL_Launcher_Content(cfg)
 
     # --- Load virtual launchers in this category ---
-    if virtual_categoryID == VCATEGORY_TITLE_ID:
-        vcat_db_FN, vcat_name = cfg.VCAT_TITLE_FILE_PATH, 'Browse by Title'
-    elif virtual_categoryID == VCATEGORY_YEARS_ID:
-        vcat_db_FN, vcat_name = cfg.VCAT_YEARS_FILE_PATH, 'Browse by Year'
-    elif virtual_categoryID == VCATEGORY_GENRE_ID:
-        vcat_db_FN, vcat_name = cfg.VCAT_GENRE_FILE_PATH, 'Browse by Genre'
-    elif virtual_categoryID == VCATEGORY_DEVELOPER_ID:
-        vcat_db_FN, vcat_name = cfg.VCAT_DEVELOPER_FILE_PATH, 'Browse by Developer'
-    elif virtual_categoryID == VCATEGORY_NPLAYERS_ID:
-        vcat_db_FN, vcat_name = cfg.VCAT_NPLAYERS_FILE_PATH, 'Browse by Number of Players'
-    elif virtual_categoryID == VCATEGORY_ESRB_ID:
-        vcat_db_FN, vcat_name = cfg.VCAT_ESRB_FILE_PATH, 'Browse by ESRB Rating'
-    elif virtual_categoryID == VCATEGORY_RATING_ID:
-        vcat_db_FN, vcat_name = cfg.VCAT_RATING_FILE_PATH, 'Browse by User Rating'
-    elif virtual_categoryID == VCATEGORY_CATEGORY_ID:
-        vcat_db_FN, vcat_name = cfg.VCAT_CATEGORY_FILE_PATH, 'Browse by Category'
-    else:
-        log_error('_command_render_virtual_category() Wrong virtual_category_kind = {}'.format(virtual_categoryID))
-        kodi_dialog_OK('Wrong virtual_category_kind = {}'.format(virtual_categoryID))
+    vdic = {
+        VCATEGORY_BROWSE_BY_TITLE_ID : (cfg.VCAT_TITLE_FILE_PATH, 'Browse by Title'),
+        VCATEGORY_BROWSE_BY_YEARS_ID : (cfg.VCAT_YEARS_FILE_PATH, 'Browse by Year'),
+        VCATEGORY_BROWSE_BY_GENRE_ID : (cfg.VCAT_GENRE_FILE_PATH, 'Browse by Genre'),
+        VCATEGORY_BROWSE_BY_DEVELOPER_ID : (cfg.VCAT_DEVELOPER_FILE_PATH, 'Browse by Developer'),
+        VCATEGORY_BROWSE_BY_NPLAYERS_ID : (cfg.VCAT_NPLAYERS_FILE_PATH, 'Browse by Number of Players'),
+        VCATEGORY_BROWSE_BY_ESRB_ID : (cfg.VCAT_ESRB_FILE_PATH, 'Browse by ESRB Rating'),
+        VCATEGORY_BROWSE_BY_RATING_ID : (cfg.VCAT_RATING_FILE_PATH, 'Browse by User Rating'),
+        VCATEGORY_BROWSE_BY_CATEGORY_ID : (cfg.VCAT_CATEGORY_FILE_PATH, 'Browse by Category'),
+    }
+    try:
+        vcat_db_FN, vcat_name = vdic[catID]
+    except:
+        log_error('render_vlaunchers_Browse_by() Wrong catID = {}'.format(catID))
+        kodi_dialog_OK('Wrong catID = {}'.format(catID))
         return
 
     # --- If the virtual category has no launchers then render nothing ---
