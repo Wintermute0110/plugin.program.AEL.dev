@@ -423,6 +423,7 @@ def db_get_launcher_from_ROM(cfg, st_dic, rom):
 def db_get_launcher_fnames(cfg, categoryID, launcherID):
     launcher_is_vlauncher = launcherID in VLAUNCHER_ID_LIST
     launcher_is_vcategory = categoryID in VCATEGORY_ID_LIST
+    launcher_is_browse_by = categoryID in VCATEGORY_BROWSE_BY_ID_LIST
     launcher_is_actual = not launcher_is_vlauncher and not launcher_is_vcategory
     # Default return dictionary.
     ret = {
@@ -453,6 +454,7 @@ def db_load_ROMs(cfg, st_dic, categoryID, launcherID, load_pclone_ROMs_flag = Fa
     log_debug('db_load_ROMs() categoryID "{}" | launcherID "{}"'.format(categoryID, launcherID))
     launcher_is_vlauncher = launcherID in VLAUNCHER_ID_LIST
     launcher_is_vcategory = categoryID in VCATEGORY_ID_LIST
+    launcher_is_browse_by = categoryID in VCATEGORY_BROWSE_BY_ID_LIST
     launcher_is_actual = not launcher_is_vlauncher and not launcher_is_vcategory
     dbdic = db_get_launcher_fnames(cfg, categoryID, launcherID)
 
@@ -487,25 +489,103 @@ def db_load_ROMs(cfg, st_dic, categoryID, launcherID, load_pclone_ROMs_flag = Fa
 
     # Virtual launchers --------------------------------------------------------------------------
     elif launcher_is_vlauncher and launcherID == VLAUNCHER_FAVOURITES_ID:
-        pass
+        cfg.roms = fs_load_Favourites_JSON(g_PATHS.FAV_JSON_FILE_PATH)
+        if not cfg.roms:
+            kodi_notify('Favourites is empty. Add ROMs to Favourites first.')
+            xbmcplugin.endOfDirectory(handle = cfg.addon_handle, succeeded = True, cacheToDisc = False)
+            return
 
+    # Code from former command_render_ROMs_recently_played()
+    # for rom in rom_list:
+    #     gui_render_rom_row(VCATEGORY_RECENT_ID, VLAUNCHER_RECENT_ID, rom)
     elif launcher_is_vlauncher and launcherID == VLAUNCHER_RECENT_ID:
-        pass
+        rom_list = fs_load_Collection_ROMs_JSON(g_PATHS.RECENT_PLAYED_FILE_PATH)
+        if not rom_list:
+            kodi_notify('Recently played list is empty. Play some ROMs first!')
+            xbmcplugin.endOfDirectory(handle = cfg.addon_handle, succeeded = True, cacheToDisc = False)
+            return
 
+    # Code from former command_render_ROMs_most_played()
+    # for key in sorted(roms, key = lambda x : roms[x]['launch_count'], reverse = True):
+    #     gui_render_rom_row(VCATEGORY_MOST_PLAYED_ID, VLAUNCHER_MOST_PLAYED_ID, roms[key])
     elif launcher_is_vlauncher and launcherID == VLAUNCHER_MOST_PLAYED_ID:
-        pass
+        roms = fs_load_Favourites_JSON(g_PATHS.MOST_PLAYED_FILE_PATH)
+        if not roms:
+            kodi_notify('Most played ROMs list is empty. Play some ROMs first!.')
+            xbmcplugin.endOfDirectory(handle = cfg.addon_handle, succeeded = True, cacheToDisc = False)
+            return
 
     # Virtual launchers belonging to a virtual category ------------------------------------------
-    # See command_render_ROMs_Browse_By_vlauncher() and similar functions in main module
-    # and copy the code here.
+    # Code from formaer command_render_ROMs_Collection():
+    # for rom in collection_rom_list:
+    #     gui_render_rom_row(categoryID, launcherID, rom)
     elif launcher_is_vcategory and categoryID == VCATEGORY_ROM_COLLECTION:
-        pass
+        COL = fs_load_Collection_index_XML(g_PATHS.COLLECTIONS_FILE_PATH)
+        collection = COL['collections'][launcherID]
+        roms_json_file = g_PATHS.COLLECTIONS_DIR.pjoin(collection['roms_base_noext'] + '.json')
+        collection_rom_list = fs_load_Collection_ROMs_JSON(roms_json_file)
+        if not collection_rom_list:
+            kodi_notify('Collection is empty. Add ROMs to this collection first.')
+            xbmcplugin.endOfDirectory(handle = cfg.addon_handle, succeeded = True, cacheToDisc = False)
+            return
+
+    # Former function command_render_ROMs_Browse_By_vlauncher()
+    # for key in sorted(roms, key= lambda x : roms[x]['m_name']):
+    #      self._gui_render_rom_row(virtual_categoryID, virtual_launcherID, roms[key], key in roms_fav_set)
+    elif launcher_is_browse_by:
+        vdic = {
+            VCATEGORY_TITLE_ID : cfg.VIRTUAL_CAT_TITLE_DIR,
+            VCATEGORY_YEARS_ID : cfg.VIRTUAL_CAT_YEARS_DIR,
+            VCATEGORY_GENRE_ID : cfg.VIRTUAL_CAT_GENRE_DIR,
+            VCATEGORY_DEVELOPER_ID : cfg.VIRTUAL_CAT_DEVELOPER_DIR,
+            VCATEGORY_NPLAYERS_ID : cfg.VIRTUAL_CAT_NPLAYERS_DIR,
+            VCATEGORY_ESRB_ID : cfg.VIRTUAL_CAT_ESRB_DIR,
+            VCATEGORY_RATING_ID : cfg.VIRTUAL_CAT_RATING_DIR,
+            VCATEGORY_CATEGORY_ID : cfg.VIRTUAL_CAT_CATEGORY_DIR,
+        }
+        try:
+            vcategory_db_dir = vdic[categoryID]
+        except:
+            log_error('db_load_ROMs() Wrong categoryID = {}'.format(categoryID))
+            kodi_dialog_OK('Wrong categoryID = {}'.format(categoryID))
+            return
+        hashed_db_filename = vcategory_db_dir.pjoin(virtual_launcherID + '.json')
+        if not hashed_db_filename.exists():
+            kodi_dialog_OK('Virtual launcher XML/JSON file not found.')
+            return
+        roms = fs_load_VCategory_ROMs_JSON(vcategory_db_dir, virtual_launcherID)
+        if not roms:
+            kodi_notify('Virtual category ROMs XML empty. Add items to favourites first.')
+            return
+
+    elif launcher_is_vcategory and categoryID == VCATEGORY_AOS_ID:
+        # Load ROMs.
+        log_debug('_command_render_AEL_scraper_roms() platform "{}"'.format(platform))
+        pobj = AEL_platforms[get_AEL_platform_index(platform)]
+        if pobj.aliasof:
+            log_debug('_command_view_offline_scraper_rom() aliasof "{}"'.format(pobj.aliasof))
+            pobj_parent = AEL_platforms[get_AEL_platform_index(pobj.aliasof)]
+            db_platform = pobj_parent.long_name
+        else:
+            db_platform = pobj.long_name
+        log_debug('_command_view_offline_scraper_rom() db_platform "{}"'.format(db_platform))
+
+        # If XML DB not available tell user and leave
+        xml_path_FN = g_PATHS.GAMEDB_INFO_DIR.pjoin(db_platform + '.xml')
+        log_debug('xml_path_FN OP {}'.format(xml_path_FN.getOriginalPath()))
+        log_debug('xml_path_FN  P {}'.format(xml_path_FN.getPath()))
+        if not xml_path_FN.exists():
+            kodi_notify_warn('{} database not available yet.'.format(db_platform))
+            # kodi_refresh_container()
+            return
+        games = audit_load_OfflineScraper_XML(xml_path_FN.getPath())
 
     else:
-        pass
+        raise TypeError
 
 # This function never fails.
 def db_load_ROMs_Favourite_set(cfg, st_dic):
+    # Transform the dictionary keys into a set. Sets are faster when checking if an element exists.
     roms_fav = fs_load_Favourites_JSON(cfg.FAV_JSON_FILE_PATH)
     cfg.roms_fav_set = set(roms_fav.keys())
 

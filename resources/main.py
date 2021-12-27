@@ -2096,9 +2096,9 @@ def render_ROMs_process(cfg, categoryID, launcherID, launcher):
     # Prepare data for ROM processing.
     launcher_is_vlauncher = launcherID in VLAUNCHER_ID_LIST
     launcher_is_vcategory = categoryID in VCATEGORY_ID_LIST
+    launcher_is_browse_by = categoryID in VCATEGORY_BROWSE_BY_ID_LIST
     launcher_is_actual = not launcher_is_vlauncher and not launcher_is_vcategory
     view_mode = launcher['launcher_display_mode']
-    launcher_is_browse_by = categoryID in VCATEGORY_BROWSE_BY_ID_LIST
 
     # Display ROMs.
     # if view_mode == LAUNCHER_DMODE_FLAT:
@@ -2108,6 +2108,26 @@ def render_ROMs_process(cfg, categoryID, launcherID, launcher):
     #     for key in sorted(roms, key = lambda x : roms[x]['m_name']):
     #         num_clones = len(pclone_index[key])
     #         gui_render_rom_row(categoryID, launcherID, roms[key], key in roms_fav_set, view_mode, True, num_clones)
+
+    # For the AEL Offline Scraper ROMs transform them first.
+    # Convert the AOS ROMs into collection ROMs.
+    if categoryID == VCATEGORY_AOS_ID:
+        for romID in cfg.roms:
+            rom = cfg.roms[romID]
+            # rom['id'] = ''
+
+            # Metadata.
+            rom['m_name']      = rom['title']
+            rom['m_year']      = rom['year']
+            rom['m_genre']     = rom['genre']
+            rom['m_developer'] = rom['developer']
+            rom['m_rating']    = ''
+            rom['m_plot']      = rom['plot']
+
+            # Properties.
+            rom['m_nplayers'] = rom['nplayers']
+            rom['m_esrb'] = rom['rating']
+            # rom['platform'] = cfg.platform
 
     # --- Traverse machines ---
     r_list = []
@@ -2140,7 +2160,8 @@ def render_ROMs_process(cfg, categoryID, launcherID, launcher):
 
         # Standard ROM launcher
         if launcher_is_actual:
-            platform = launcher['platform']
+            # Create this field which is present in Favourite ROM objects.
+            rom['platform'] = launcher['platform']
 
             # If ROM has no icon then user launcher icon or defaul icon DefaultProgram.png.
             # If ROM has no fanart then use launcher fanart.
@@ -2193,9 +2214,31 @@ def render_ROMs_process(cfg, categoryID, launcherID, launcher):
             if cfg.settings['display_rom_in_fav'] and rom['disks']:
                 rom_name += ' [COLOR plum][MD][/COLOR]'
 
-        elif launcherID == VLAUNCHER_FAVOURITES_ID:
-            platform = rom['platform']
+            # URLs must be different depending on the content type. If not Kodi log will be filled with:
+            # WARNING: CreateLoader - unsupported protocol(plugin) in the log. 
+            # See http://forum.kodi.tv/showthread.php?tid=187954
+            #
+            # if is_parent_launcher and num_clones > 0 and view_mode == LAUNCHER_DMODE_PCLONE:
+            #     URL = aux_url('SHOW_CLONE_ROMS', categoryID, launcherID, romID)
+            #     xbmcplugin.addDirectoryItem(cfg.addon_handle, URL, listitem, isFolder = True)
+            # else:
+            #     URL = aux_url('LAUNCH_ROM', categoryID, launcherID, romID)
+            #     xbmcplugin.addDirectoryItem(cfg.addon_handle, URL, listitem, isFolder = False)
+            #
+            # For speed reasons build URL here instead of calling a function.
+            URL = aux_url('LAUNCH_ROM', categoryID, launcherID, romID)
+            # URL = '{}?com=LAUNCH_ROM&catID={}&launID={}&romID={}'.format(g_base_url,
+            #     categoryID, launcherID, romID)
 
+        # Renders the special launcher Favourites, which is actually very similar to a ROM launcher.
+        # Note that only ROMs in a ROM Launcher can be added to Favourites.
+        # If user deletes the original Launcher the ROM in Favourites remain.
+        # Favourites ROM information includes the application launcher and arguments to launch the ROM.
+        # Basically, once a ROM is added to favourites is becomes a kind of a standalone launcher.
+        #
+        # for key in sorted(roms, key= lambda x : roms[x]['m_name']):
+        #     gui_render_rom_row(VCATEGORY_FAVOURITES_ID, VLAUNCHER_FAVOURITES_ID, roms[key])
+        elif launcherID == VLAUNCHER_FAVOURITES_ID:
             icon_path = asset_get_default_asset_Launcher_ROM(rom, rom, 'roms_default_icon', 'DefaultProgram.png')
             fanart_path = asset_get_default_asset_Launcher_ROM(rom, rom, 'roms_default_fanart')
             banner_path = asset_get_default_asset_Launcher_ROM(rom, rom, 'roms_default_banner')
@@ -2223,9 +2266,9 @@ def render_ROMs_process(cfg, categoryID, launcherID, launcher):
                 rom_name = rom_raw_name
             # Multidisc flag
             if self.settings['display_rom_in_fav'] and rom['disks']: rom_name += ' [COLOR plum][MD][/COLOR]'
+            URL = aux_url('LAUNCH_ROM', categoryID, launcherID, romID)
 
         elif launcherID == VLAUNCHER_RECENT_ID:
-            platform = rom['platform']
             icon_path = asset_get_default_asset_Launcher_ROM(rom, rom, 'roms_default_icon', 'DefaultProgram.png')
             fanart_path = asset_get_default_asset_Launcher_ROM(rom, rom, 'roms_default_fanart')
             banner_path = asset_get_default_asset_Launcher_ROM(rom, rom, 'roms_default_banner')
@@ -2234,9 +2277,9 @@ def render_ROMs_process(cfg, categoryID, launcherID, launcher):
             rom_name = rom_raw_name
             # Multidisc flag
             if self.settings['display_rom_in_fav'] and rom['disks']: rom_name += ' [COLOR plum][MD][/COLOR]'
+            URL = aux_url('LAUNCH_ROM', categoryID, launcherID, romID)
 
         elif launcherID == VLAUNCHER_MOST_PLAYED_ID:
-            platform = rom['platform']
             icon_path = asset_get_default_asset_Launcher_ROM(rom, rom, 'roms_default_icon', 'DefaultProgram.png')
             fanart_path = asset_get_default_asset_Launcher_ROM(rom, rom, 'roms_default_fanart')
             banner_path = asset_get_default_asset_Launcher_ROM(rom, rom, 'roms_default_banner')
@@ -2249,9 +2292,9 @@ def render_ROMs_process(cfg, categoryID, launcherID, launcher):
                 rom_name = '{} [COLOR orange][{} time][/COLOR]'.format(rom_raw_name, rom['launch_count'])
             else:
                 rom_name = '{} [COLOR orange][{} times][/COLOR]'.format(rom_raw_name, rom['launch_count'])
+            URL = aux_url('LAUNCH_ROM', categoryID, launcherID, romID)
 
         elif categoryID == VCATEGORY_ROM_COLLECTION:
-            platform = rom['platform']
             icon_path = asset_get_default_asset_Launcher_ROM(rom, rom, 'roms_default_icon', 'DefaultProgram.png')
             fanart_path = asset_get_default_asset_Launcher_ROM(rom, rom, 'roms_default_fanart')
             banner_path = asset_get_default_asset_Launcher_ROM(rom, rom, 'roms_default_banner')
@@ -2279,10 +2322,9 @@ def render_ROMs_process(cfg, categoryID, launcherID, launcher):
                 rom_name = rom_raw_name
             # Multidisc flag
             if cfg.settings['display_rom_in_fav'] and rom['disks']: rom_name += ' [COLOR plum][MD][/COLOR]'
+            URL = aux_url('LAUNCH_ROM', categoryID, launcherID, romID)
 
         elif launcher_is_browse_by:
-            platform = rom['platform']
-
             icon_path = asset_get_default_asset_Launcher_ROM(rom, rom, 'roms_default_icon', 'DefaultProgram.png')
             fanart_path = asset_get_default_asset_Launcher_ROM(rom, rom, 'roms_default_fanart')
             banner_path = asset_get_default_asset_Launcher_ROM(rom, rom, 'roms_default_banner')
@@ -2316,15 +2358,21 @@ def render_ROMs_process(cfg, categoryID, launcherID, launcher):
             if rom_in_fav: AEL_InFav_bool_value = AEL_INFAV_BOOL_VALUE_TRUE
             # Multidisc flag
             if self.settings['display_rom_in_fav'] and rom['disks']: rom_name += ' [COLOR plum][MD][/COLOR]'
+            URL = aux_url('LAUNCH_ROM', categoryID, launcherID, romID)
 
+        # Core from former command_render_ROMs_AEL_scraper()
+        # for key in sorted(games, key= lambda x : games[x]['ROM']):
+        #     self._gui_render_AEL_scraper_rom_row(platform, games[key])
         elif categoryID == VCATEGORY_AOS_ID:
-            # [TODO] Move contents of function gui_render_AEL_scraper_rom_row() into this function.
+            icon_path = 'DefaultProgram.png'
+            # When user clicks on a ROM show the raw database entry
+            URL = aux_url('VIEW_OS_ROM', 'AEL', platform, game['ROM'])
+
+        else:
             raise TypeError
 
-        else: raise TypeError
-
         # Set common flags to all launchers.
-        if rom['disks']: AEL_MultiDisc_bool_value = AEL_MULTIDISC_BOOL_VALUE_TRUE
+        AEL_MultiDisc_bool_value = AEL_MULTIDISC_BOOL_VALUE_TRUE if rom['disks'] else AEL_MULTIDISC_BOOL_VALUE_FALSE
         ICON_OVERLAY = KODI_ICON_OVERLAY_WATCHED if rom['finished'] else KODI_ICON_OVERLAY_UNWATCHED
 
         # Interesting... if text formatting labels are set in xbmcgui.ListItem() do not work.
@@ -2343,7 +2391,6 @@ def render_ROMs_process(cfg, categoryID, launcherID, launcher):
             'rating'  : rom['m_rating'],
             'plot'    : rom['m_plot'],
             'overlay' : ICON_OVERLAY,
-            'path'    : rom['filename'],
         }
         if not cfg.settings['display_hide_trailers']:
             r_dict['info']['trailer'] = rom['s_trailer']
@@ -2389,8 +2436,7 @@ def render_ROMs_process(cfg, categoryID, launcherID, launcher):
         r_dict['props'] = {
             'nplayers'               : rom['m_nplayers'],
             'esrb'                   : rom['m_esrb'],
-            'platform'               : platform,
-            'filename'               : rom['filename'],
+            'platform'               : rom['platform'],
             AEL_CONTENT_LABEL        : AEL_CONTENT_VALUE_ROM,
             # ROM flags (Skins will use these flags to render icons).
             AEL_INFAV_BOOL_LABEL     : AEL_InFav_bool_value,
@@ -2401,67 +2447,62 @@ def render_ROMs_process(cfg, categoryID, launcherID, launcher):
         }
 
         # Context menu ---------------------------------------------------------------------------
-        commands = []
-        if categoryID == VCATEGORY_FAVOURITES_ID:
-            commands.append(('View Favourite ROM', aux_url_RP('VIEW', categoryID, launcherID, romID)))
-            commands.append(('Edit ROM in Favourites', aux_url_RP('EDIT_ROM', categoryID, launcherID, romID)))
-            commands.append(('Add ROM to Collection', aux_url_RP('ADD_TO_COLLECTION', categoryID, launcherID, romID)))
-            commands.append(('Search ROMs in Favourites', aux_url_RP('SEARCH_LAUNCHER', categoryID, launcherID)))
-            commands.append(('Manage Favourite ROMs', aux_url_RP('MANAGE_FAV', categoryID, launcherID, romID)))
-
-        elif categoryID == VCATEGORY_COLLECTIONS_ID:
-            commands.append(('View Collection ROM', aux_url_RP('VIEW', categoryID, launcherID, romID)))
-            commands.append(('Edit ROM in Collection', aux_url_RP('EDIT_ROM', categoryID, launcherID, romID)))
-            commands.append(('Add ROM to AEL Favourites', aux_url_RP('ADD_TO_FAV', categoryID, launcherID, romID)))
-            commands.append(('Search ROMs in Collection', aux_url_RP('SEARCH_LAUNCHER', categoryID, launcherID)))
-            commands.append(('Manage Collection ROMs', aux_url_RP('MANAGE_FAV', categoryID, launcherID, romID)))
-
-        elif categoryID == VCATEGORY_RECENT_ID:
-            commands.append(('View ROM data', aux_url_RP('VIEW', categoryID, launcherID, romID)))
-            commands.append(('Manage Recently Played', aux_url_RP('MANAGE_RECENT_PLAYED', categoryID, launcherID, romID)))
-
-        elif categoryID == VCATEGORY_MOST_PLAYED_ID:
-            commands.append(('View ROM data', aux_url_RP('VIEW', categoryID, launcherID, romID)))
-            commands.append(('Manage Most Played', aux_url_RP('MANAGE_MOST_PLAYED', categoryID, launcherID, romID)))
-
-        elif categoryID == VCATEGORY_TITLE_ID or categoryID == VCATEGORY_YEARS_ID or \
-            categoryID == VCATEGORY_GENRE_ID or categoryID == VCATEGORY_DEVELOPER_ID or \
-            categoryID == VCATEGORY_NPLAYERS_ID or categoryID == VCATEGORY_ESRB_ID or \
-            categoryID == VCATEGORY_RATING_ID or categoryID == VCATEGORY_CATEGORY_ID:
-            commands.append(('View ROM data', aux_url_RP('VIEW', categoryID, launcherID, romID)))
-            commands.append(('Add ROM to AEL Favourites', aux_url_RP('ADD_TO_FAV', categoryID, launcherID, romID)))
-            commands.append(('Add ROM to Collection', aux_url_RP('ADD_TO_COLLECTION', categoryID, launcherID, romID)))
-            commands.append(('Search ROMs in Virtual Launcher', aux_url_RP('SEARCH_LAUNCHER', categoryID, launcherID)))
-
-        else:
-            commands.append(('View ROM/Launcher', aux_url_RP('VIEW', categoryID, launcherID, romID)))
+        if launcher_is_actual:
+            commands = [
+                ('View ROM/Launcher', aux_url_RP('VIEW', categoryID, launcherID, romID)),
+                ('Edit ROM', aux_url_RP('EDIT_ROM', categoryID, launcherID, romID)),
+                ('Add ROM to AEL Favourites', aux_url_RP('ADD_TO_FAV', categoryID, launcherID, romID)),
+                ('Add ROM to Collection', aux_url_RP('ADD_TO_COLLECTION', categoryID, launcherID, romID)),
+                ('Search ROMs in Launcher', aux_url_RP('SEARCH_LAUNCHER', categoryID, launcherID)),
+                ('Edit Launcher', aux_url_RP('EDIT_LAUNCHER', categoryID, launcherID)),
+            ]
             if is_parent_launcher and num_clones > 0:
-                commands.append(('Show clones', aux_url_RP('EXEC_SHOW_CLONE_ROMS', categoryID, launcherID, romID)))
-            commands.append(('Edit ROM', aux_url_RP('EDIT_ROM', categoryID, launcherID, romID)))
-            commands.append(('Add ROM to AEL Favourites', aux_url_RP('ADD_TO_FAV', categoryID, launcherID, romID)))
-            commands.append(('Add ROM to Collection', aux_url_RP('ADD_TO_COLLECTION', categoryID, launcherID, romID)))
-            commands.append(('Search ROMs in Launcher', aux_url_RP('SEARCH_LAUNCHER', categoryID, launcherID)))
-            commands.append(('Edit Launcher', aux_url_RP('EDIT_LAUNCHER', categoryID, launcherID)))
+                commands.insert(0,
+                    ('Show clones', aux_url_RP('EXEC_SHOW_CLONE_ROMS', categoryID, launcherID, romID))
+                )
+        elif launcherID == VLAUNCHER_FAVOURITES_ID:
+            commands = [
+                ('View Favourite ROM', aux_url_RP('VIEW', categoryID, launcherID, romID)),
+                ('Edit ROM in Favourites', aux_url_RP('EDIT_ROM', categoryID, launcherID, romID)),
+                ('Add ROM to Collection', aux_url_RP('ADD_TO_COLLECTION', categoryID, launcherID, romID)),
+                ('Search ROMs in Favourites', aux_url_RP('SEARCH_LAUNCHER', categoryID, launcherID)),
+                ('Manage Favourite ROMs', aux_url_RP('MANAGE_FAV', categoryID, launcherID, romID)),
+            ]
+        elif launcherID == VLAUNCHER_RECENT_ID:
+            commands = [
+                ('View ROM data', aux_url_RP('VIEW', categoryID, launcherID, romID)),
+                ('Manage Recently Played', aux_url_RP('MANAGE_RECENT_PLAYED', categoryID, launcherID, romID)),
+            ]
+        elif launcherID == VLAUNCHER_MOST_PLAYED_ID:
+            commands = [
+                ('View ROM data', aux_url_RP('VIEW', categoryID, launcherID, romID)),
+                ('Manage Most Played', aux_url_RP('MANAGE_MOST_PLAYED', categoryID, launcherID, romID)),
+            ]
+        elif categoryID == VCATEGORY_ROM_COLLECTION:
+            commands = [
+                ('View Collection ROM', aux_url_RP('VIEW', categoryID, launcherID, romID)),
+                ('Edit ROM in Collection', aux_url_RP('EDIT_ROM', categoryID, launcherID, romID)),
+                ('Add ROM to AEL Favourites', aux_url_RP('ADD_TO_FAV', categoryID, launcherID, romID)),
+                ('Search ROMs in Collection', aux_url_RP('SEARCH_LAUNCHER', categoryID, launcherID)),
+                ('Manage Collection ROMs', aux_url_RP('MANAGE_FAV', categoryID, launcherID, romID)),
+            ]
+        elif launcher_is_browse_by:
+            commands = [
+                ('View ROM data', aux_url_RP('VIEW', categoryID, launcherID, romID)),
+                ('Add ROM to AEL Favourites', aux_url_RP('ADD_TO_FAV', categoryID, launcherID, romID)),
+                ('Add ROM to Collection', aux_url_RP('ADD_TO_COLLECTION', categoryID, launcherID, romID)),
+                ('Search ROMs in Virtual Launcher', aux_url_RP('SEARCH_LAUNCHER', categoryID, launcherID)),
+            ]
+        else AOS :
+            commands = []
+
+        # Add common context menu items.
         commands.append(('AEL addon settings', 'Addon.OpenSettings({})'.format(cfg.addon.info_id)))
-        
         # Only add if kiosk mode is not enabled.
         r_dict['context'] = commands if cfg.kiosk_mode_disabled else []
 
-        # Create URL and add row to the list -----------------------------------------------------
-        # URLs must be different depending on the content type. If not Kodi log will be filled with:
-        # WARNING: CreateLoader - unsupported protocol(plugin) in the log. 
-        #          See http://forum.kodi.tv/showthread.php?tid=187954
-        # if is_parent_launcher and num_clones > 0 and view_mode == LAUNCHER_DMODE_PCLONE:
-        #     url_str = aux_url('SHOW_CLONE_ROMS', categoryID, launcherID, romID)
-        #     xbmcplugin.addDirectoryItem(cfg.addon_handle, url_str, listitem, isFolder = True)
-        # else:
-        #     url_str = aux_url('LAUNCH_ROM', categoryID, launcherID, romID)
-        #     xbmcplugin.addDirectoryItem(cfg.addon_handle, url_str, listitem, isFolder = False)
-
-        # For speed reasons build URL here instead of calling a function.
-        # r_dict['URL'] = aux_url('LAUNCH_ROM', categoryID, launcherID, romID)
-        r_dict['URL'] = '{}?com=LAUNCH_ROM&catID={}&launID={}&romID={}'.format(
-            g_base_url, categoryID, launcherID, romID)
+        # Add row to the list --------------------------------------------------------------------
+        r_dict['URL'] = URL
         r_list.append(r_dict)
 
     return r_list
@@ -2486,207 +2527,6 @@ def render_ROMs_commit(cfg, render_list):
         listitem_list.append((litem['URL'], listitem, False))
     # Add all listitems in one go.
     xbmcplugin.addDirectoryItems(cfg.addon_handle, listitem_list, len(listitem_list))
-
-def gui_render_AEL_scraper_rom_row(self, platform, game):
-    # --- Add ROM to lisitem ---
-    kodi_def_thumb = 'DefaultProgram.png'
-    ICON_OVERLAY = 4
-    listitem = xbmcgui.ListItem(game['title'])
-
-    listitem.setInfo('video', {
-        'title'   : game['title'],
-        'year'    : game['year'],
-        'genre'   : game['genre'],
-        'plot'    : game['plot'],
-        'studio'  : game['developer'],
-        'overlay' : ICON_OVERLAY,
-    })
-    listitem.setProperty('nplayers', game['nplayers'])
-    listitem.setProperty('esrb', game['rating'])
-    listitem.setProperty('platform', platform)
-
-    # --- Set ROM artwork ---
-    listitem.setArt({'icon' : kodi_def_thumb})
-
-    # --- Create context menu ---
-    if cfg.kiosk_mode_disabled:
-        commands = [
-            ('AEL addon settings', 'Addon.OpenSettings({})'.format(cfg.addon.info_id)),
-        ]
-        listitem.addContextMenuItems(commands, replaceItems = True)
-
-    # --- Add row ---
-    # When user clicks on a ROM show the raw database entry
-    url_str = aux_url('VIEW_OS_ROM', 'AEL', platform, game['ROM'])
-    xbmcplugin.addDirectoryItem(cfg.addon_handle, url_str, listitem, False)
-
-# Renders the special category favourites, which is actually very similar to a ROM launcher.
-# Note that only ROMs in a ROM Launcher can be added to Favourites. No standalone launchers in Favourites.
-# If user deletes the original Launcher the ROM in Favourites remain.
-# Favourites ROM information includes the application launcher and arguments to launch the ROM.
-# Basically, once a ROM is added to favourites is becomes kind of a standalone launcher.
-# Favourites has categoryID = 0 and launcherID = 0. Thus, other functions can differentiate
-# between a standard ROM and a favourite ROM.
-#
-# What if user changes the favourites Thumb/Fanart??? Where do we store them???
-# What about the NFO files of favourite ROMs???
-#
-# PROBLEM If user rescan ROMs then same ROMs will have different ID. An option to "relink"
-#         the favourites with their original ROMs must be provided, provided that the launcher
-#         is the same.
-# IMPROVEMENT Maybe it could be interesting to be able to export the list of favourites
-#             to HTML or something like that.
-def command_render_ROMs_Favourites(cfg):
-    # Content type and sorting method
-    misc_set_all_sorting_methods()
-    misc_set_AEL_Content(AEL_CONTENT_VALUE_ROMS)
-    misc_clear_AEL_Launcher_Content()
-
-    # Load Favourite ROMs.
-    roms = fs_load_Favourites_JSON(g_PATHS.FAV_JSON_FILE_PATH)
-    if not roms:
-        kodi_notify('Favourites is empty. Add ROMs to Favourites first.')
-        xbmcplugin.endOfDirectory(handle = cfg.addon_handle, succeeded = True, cacheToDisc = False)
-        return
-
-    # --- Display Favourites ---
-    for key in sorted(roms, key= lambda x : roms[x]['m_name']):
-        self._gui_render_rom_row(VCATEGORY_FAVOURITES_ID, VLAUNCHER_FAVOURITES_ID, roms[key])
-    xbmcplugin.endOfDirectory(handle = cfg.addon_handle, succeeded = True, cacheToDisc = False)
-
-def command_render_ROMs_Collection(self, categoryID, launcherID):
-    self._misc_set_default_sorting_method()
-    self._misc_set_AEL_Content(AEL_CONTENT_VALUE_ROMS)
-
-    # --- Load Collection index, ROMs, and render ---
-    COL = fs_load_Collection_index_XML(g_PATHS.COLLECTIONS_FILE_PATH)
-    collection = COL['collections'][launcherID]
-    roms_json_file = g_PATHS.COLLECTIONS_DIR.pjoin(collection['roms_base_noext'] + '.json')
-    collection_rom_list = fs_load_Collection_ROMs_JSON(roms_json_file)
-    if not collection_rom_list:
-        kodi_notify('Collection is empty. Add ROMs to this collection first.')
-        xbmcplugin.endOfDirectory(handle = cfg.addon_handle, succeeded = True, cacheToDisc = False)
-        return
-    for rom in collection_rom_list: self._gui_render_rom_row(categoryID, launcherID, rom)
-    xbmcplugin.endOfDirectory(handle = cfg.addon_handle, succeeded = True, cacheToDisc = False)
-
-# Renders ROMs in a virtual launcher.
-def command_render_ROMs_Browse_By_vlauncher(cfg, virtual_categoryID, virtual_launcherID):
-    log_error('command_render_virtual_launcher_roms() Starting...')
-    # Content type and sorting method
-    self._misc_set_all_sorting_methods()
-    self._misc_set_AEL_Content(AEL_CONTENT_VALUE_ROMS)
-
-    # --- Load virtual launchers in this category ---
-    if   virtual_categoryID == VCATEGORY_TITLE_ID:     vcategory_db_dir = g_PATHS.VIRTUAL_CAT_TITLE_DIR
-    elif virtual_categoryID == VCATEGORY_YEARS_ID:     vcategory_db_dir = g_PATHS.VIRTUAL_CAT_YEARS_DIR
-    elif virtual_categoryID == VCATEGORY_GENRE_ID:     vcategory_db_dir = g_PATHS.VIRTUAL_CAT_GENRE_DIR
-    elif virtual_categoryID == VCATEGORY_DEVELOPER_ID: vcategory_db_dir = g_PATHS.VIRTUAL_CAT_DEVELOPER_DIR
-    elif virtual_categoryID == VCATEGORY_NPLAYERS_ID:  vcategory_db_dir = g_PATHS.VIRTUAL_CAT_NPLAYERS_DIR
-    elif virtual_categoryID == VCATEGORY_ESRB_ID:      vcategory_db_dir = g_PATHS.VIRTUAL_CAT_ESRB_DIR
-    elif virtual_categoryID == VCATEGORY_RATING_ID:    vcategory_db_dir = g_PATHS.VIRTUAL_CAT_RATING_DIR
-    elif virtual_categoryID == VCATEGORY_CATEGORY_ID:  vcategory_db_dir = g_PATHS.VIRTUAL_CAT_CATEGORY_DIR
-    else:
-        log_error('_command_render_virtual_launcher_roms() Wrong virtual_category_kind = {}'.format(virtual_categoryID))
-        kodi_dialog_OK('Wrong virtual_category_kind = {}'.format(virtual_categoryID))
-        return
-
-    # --- Load Virtual Launcher DB ---
-    hashed_db_filename = vcategory_db_dir.pjoin(virtual_launcherID + '.json')
-    if not hashed_db_filename.exists():
-        kodi_dialog_OK('Virtual launcher XML/JSON file not found.')
-        return
-    roms = fs_load_VCategory_ROMs_JSON(vcategory_db_dir, virtual_launcherID)
-    if not roms:
-        kodi_notify('Virtual category ROMs XML empty. Add items to favourites first.')
-        return
-
-    # --- Load favourites ---
-    # Optimisation: Transform the dictionary keys into a set. Sets are the fastest
-    # when checking if an element exists.
-    roms_fav = fs_load_Favourites_JSON(g_PATHS.FAV_JSON_FILE_PATH)
-    roms_fav_set = set(roms_fav.keys())
-
-    # --- Display Favourites ---
-    for key in sorted(roms, key= lambda x : roms[x]['m_name']):
-        self._gui_render_rom_row(virtual_categoryID, virtual_launcherID, roms[key], key in roms_fav_set)
-    xbmcplugin.endOfDirectory(handle = cfg.addon_handle, succeeded = True, cacheToDisc = False)
-
-# Renders ROMs in a AEL offline Scraper virtual launcher (aka platform)
-def command_render_ROMs_AEL_scraper(self, platform):
-    log_debug('_command_render_AEL_scraper_roms() platform "{}"'.format(platform))
-    pobj = AEL_platforms[get_AEL_platform_index(platform)]
-    if pobj.aliasof:
-        log_debug('_command_view_offline_scraper_rom() aliasof "{}"'.format(pobj.aliasof))
-        pobj_parent = AEL_platforms[get_AEL_platform_index(pobj.aliasof)]
-        db_platform = pobj_parent.long_name
-    else:
-        db_platform = pobj.long_name
-    log_debug('_command_view_offline_scraper_rom() db_platform "{}"'.format(db_platform))
-
-    # Content type and sorting method
-    self._misc_set_all_sorting_methods()
-    self._misc_set_AEL_Content(AEL_CONTENT_VALUE_ROMS)
-
-    # If XML DB not available tell user and leave
-    xml_path_FN = g_PATHS.GAMEDB_INFO_DIR.pjoin(db_platform + '.xml')
-    log_debug('xml_path_FN OP {}'.format(xml_path_FN.getOriginalPath()))
-    log_debug('xml_path_FN  P {}'.format(xml_path_FN.getPath()))
-    if not xml_path_FN.exists():
-        kodi_notify_warn('{} database not available yet.'.format(db_platform))
-        # kodi_refresh_container()
-        return
-
-    # --- Load offline scraper XML file ---
-    loading_ticks_start = time.time()
-    games = audit_load_OfflineScraper_XML(xml_path_FN.getPath())
-    loading_ticks_end = time.time()
-
-    # --- Display offline scraper ROMs ---
-    rendering_ticks_start = time.time()
-    for key in sorted(games, key= lambda x : games[x]['ROM']):
-        self._gui_render_AEL_scraper_rom_row(platform, games[key])
-    xbmcplugin.endOfDirectory(handle = cfg.addon_handle, succeeded = True, cacheToDisc = False)
-    rendering_ticks_end = time.time()
-
-    # --- DEBUG Data loading/rendering statistics ---
-    log_debug('Loading seconds   {}'.format(loading_ticks_end - loading_ticks_start))
-    log_debug('Rendering seconds {}'.format(rendering_ticks_end - rendering_ticks_start))
-
-# Render the Recently played and Most Played virtual launchers.
-def command_render_ROMs_recently_played(self):
-    # Content type and sorting method
-    self._misc_set_default_sorting_method()
-    self._misc_set_AEL_Content(AEL_CONTENT_VALUE_ROMS)
-
-    # --- Load Recently Played favourite ROM list and create and OrderedDict ---
-    rom_list = fs_load_Collection_ROMs_JSON(g_PATHS.RECENT_PLAYED_FILE_PATH)
-    if not rom_list:
-        kodi_notify('Recently played list is empty. Play some ROMs first!')
-        xbmcplugin.endOfDirectory(handle = cfg.addon_handle, succeeded = True, cacheToDisc = False)
-        return
-
-    # --- Display recently player ROM list ---
-    for rom in rom_list:
-        self._gui_render_rom_row(VCATEGORY_RECENT_ID, VLAUNCHER_RECENT_ID, rom)
-    xbmcplugin.endOfDirectory(handle = cfg.addon_handle, succeeded = True, cacheToDisc = False)
-
-def command_render_ROMs_most_played(self):
-    # Content type and sorting method
-    self._misc_set_default_sorting_method()
-    self._misc_set_AEL_Content(AEL_CONTENT_VALUE_ROMS)
-
-    # --- Load Most Played favourite ROMs ---
-    roms = fs_load_Favourites_JSON(g_PATHS.MOST_PLAYED_FILE_PATH)
-    if not roms:
-        kodi_notify('Most played ROMs list is empty. Play some ROMs first!.')
-        xbmcplugin.endOfDirectory(handle = cfg.addon_handle, succeeded = True, cacheToDisc = False)
-        return
-
-    # --- Display most played ROMs, order by number of launchs ---
-    for key in sorted(roms, key = lambda x : roms[x]['launch_count'], reverse = True):
-        self._gui_render_rom_row(VCATEGORY_MOST_PLAYED_ID, VLAUNCHER_MOST_PLAYED_ID, roms[key])
-    xbmcplugin.endOfDirectory(handle = cfg.addon_handle, succeeded = True, cacheToDisc = False)
 
 # ------------------------------------------------------------------------------------------------
 # Add/Create new commands
