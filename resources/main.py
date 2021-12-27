@@ -324,26 +324,18 @@ def run_plugin(addon_argv):
     concurrent_command_set = {
         'SHOW_ADDON_ROOT',
         'SHOW_VCATEGORIES_ROOT',
-        'SHOW_AEL_OFFLINE_LAUNCHERS_ROOT',
-        'SHOW_LB_OFFLINE_LAUNCHERS_ROOT',
-        'SHOW_FAVOURITES',
-        'SHOW_VIRTUAL_CATEGORY',
-        'SHOW_RECENTLY_PLAYED',
-        'SHOW_MOST_PLAYED',
+        'SHOW_LAUNCHERS',
+        'SHOW_ROM_COLLECTIONS_VLAUNCHERS',
+        'SHOW_BROWSE_BY_VLAUNCHERS',
+        'SHOW_AOS_VLAUNCHERS',
         'SHOW_UTILITIES_VLAUNCHERS',
         'SHOW_GLOBALREPORTS_VLAUNCHERS',
-        'SHOW_COLLECTIONS',
-        'SHOW_COLLECTION_ROMS',
-        'SHOW_LAUNCHERS',
         'SHOW_ROMS',
-        'SHOW_VLAUNCHER_ROMS',
-        'SHOW_AEL_SCRAPER_ROMS',
-        'SHOW_LB_SCRAPER_ROMS',
-        'EXEC_SHOW_CLONE_ROMS',
         'SHOW_CLONE_ROMS',
-        'SHOW_ALL_CATEGORIES',
-        'SHOW_ALL_LAUNCHERS',
-        'SHOW_ALL_ROMS',
+        'EXEC_SHOW_CLONE_ROMS',
+        'SHOW_ALL_CATEGORIES', # Skin command, rename.
+        'SHOW_ALL_LAUNCHERS', # Skin command, rename.
+        'SHOW_ALL_ROMS', # Skin command, rename.
         'BUILD_GAMES_MENU',
     }
     if command in concurrent_command_set:
@@ -394,28 +386,16 @@ def run_concurrent(cfg, command, args):
     # Render launchers inside a category.
     # IDEA Should render_launchers_in_category() also render launchers in a virtual category?
     elif command == 'SHOW_LAUNCHERS': render_launchers_in_category(cfg, catID)
-    elif command == 'SHOW_COLLECTIONS': render_vlaunchers_ROM_Collection(cfg)
-    elif command == 'SHOW_VIRTUAL_CATEGORY': _command_render_virtual_category(catID)    
-    elif command == 'SHOW_AEL_OFFLINE_LAUNCHERS_ROOT': render_vlaunchers_AEL_offline_scraper(cfg)
-
+    elif command == 'SHOW_ROM_COLLECTIONS_VLAUNCHERS': render_vlaunchers_ROM_Collection(cfg)
+    elif command == 'SHOW_BROWSE_BY_VLAUNCHERS': render_vlaunchers_Browse_by(catID)    
+    elif command == 'SHOW_AOS_VLAUNCHERS': render_vlaunchers_AEL_offline_scraper(cfg)
     elif command == 'SHOW_UTILITIES_VLAUNCHERS': render_vlaunchers_Utilities(cfg)
     elif command == 'SHOW_GLOBALREPORTS_VLAUNCHERS': render_vlaunchers_GlobalReports(cfg)
 
     # --- Render of ROMs -------------------------------------------------------------------------
-    # Render ROMs inside a launcher.
+    # Render ROMs inside a launcher or virtual launcher.
     elif command == 'SHOW_ROMS': render_ROMs(cfg, catID, launID)
-    elif command == 'SHOW_CLONE_ROMS': _command_render_clone_roms(catID, launID, romID)
-
-    # Old non-universal functions.
-    # CURRENT TASK
-    # Make these functions disappear. render_ROMs() must be able to process all
-    # URLs with the com=SHOW_ROMS command via function db_load_ROMs()
-    elif command == 'SHOW_FAVOURITES': render_ROMs_Favourites(cfg)
-    elif command == 'SHOW_RECENTLY_PLAYED': _command_render_recently_played()
-    elif command == 'SHOW_MOST_PLAYED': _command_render_most_played()
-    elif command == 'SHOW_COLLECTION_ROMS': _command_render_collection_ROMs(catID, launID)
-    elif command == 'SHOW_VLAUNCHER_ROMS': _command_render_virtual_launcher_roms(catID, launID)
-    elif command == 'SHOW_AEL_SCRAPER_ROMS': _command_render_AEL_scraper_roms(catID)
+    elif command == 'SHOW_CLONE_ROMS': render_ROMs_clone_ROMs(catID, launID, romID)
 
     # Auxiliary command to render clone ROM list from context menu in Parent/Clone mode.
     elif command == 'EXEC_SHOW_CLONE_ROMS':
@@ -433,116 +413,99 @@ def run_concurrent(cfg, command, args):
     elif command == 'BUILD_GAMES_MENU': _command_buildMenu()
 
     else:
-        kodi_dialog_OK('Unknown command {}'.format(args['com'][0]))
+        kodi_dialog_OK('run_concurrent(): Unknown command {}'.format(command))
     log_debug('Advanced Emulator Launcher run_concurrent() END')
 
 # This function is guaranteed to run with no concurrency.
 def run_protected(self, command, args):
     log_debug('Advanced Emulator Launcher run_protected() BEGIN')
 
+    # Get IDs in URL. Everything is optional.
+    catID = args['catID'][0] if 'catID' in args else ''
+    launID = args['launID'][0] if 'launID' in args else ''
+    romID = args['romID'][0] if 'romID' in args else ''
+
     # --- Category management ---
-    if command == 'ADD_CATEGORY': self._command_add_new_category()
-    elif command == 'EDIT_CATEGORY': self._command_edit_category(args['catID'][0])
+    if command == 'ADD_CATEGORY': command_add_new_category()
+    elif command == 'EDIT_CATEGORY': command_edit_category(catID)
 
     # --- Launcher management ---
-    elif command == 'ADD_LAUNCHER': self._command_add_new_launcher(args['catID'][0])
-    elif command == 'ADD_LAUNCHER_ROOT': self._command_add_new_launcher(CATEGORY_ADDONROOT_ID)
-    elif command == 'EDIT_LAUNCHER': self._command_edit_launcher(args['catID'][0], args['launID'][0])
+    elif command == 'ADD_LAUNCHER': command_add_new_launcher(catID)
+    elif command == 'ADD_LAUNCHER_ROOT': command_add_new_launcher(CATEGORY_ADDONROOT_ID)
+    elif command == 'EDIT_LAUNCHER': command_edit_launcher(catID, launID)
 
     # --- ROM management ---
-    elif command == 'SCAN_ROMS': self._roms_import_roms(args['launID'][0])
-    elif command == 'EDIT_ROM': self._command_edit_rom(args['catID'][0], args['launID'][0], args['romID'][0])
+    elif command == 'SCAN_ROMS': roms_import_roms(launID)
+    elif command == 'EDIT_ROM': command_edit_rom(catID, launID, romID)
 
     # --- Launch ROM or standalone launcher ---
-    elif command == 'LAUNCH_ROM': self._command_run_rom(args['catID'][0], args['launID'][0], args['romID'][0])
-    elif command == 'LAUNCH_STANDALONE': self._command_run_standalone_launcher(args['catID'][0], args['launID'][0])
+    elif command == 'LAUNCH_ROM': command_run_rom(catID, launID, romID)
+    elif command == 'LAUNCH_STANDALONE': command_run_standalone_launcher(catID, launID)
 
     # --- Favourite/ROM Collection management ---
-    elif command == 'ADD_TO_FAV':
-        self._command_add_to_favourites(args['catID'][0], args['launID'][0], args['romID'][0])
-    elif command == 'ADD_TO_COLLECTION':
-        self._command_add_ROM_to_collection(args['catID'][0], args['launID'][0], args['romID'][0])
-    elif command == 'ADD_COLLECTION':
-        self._command_add_collection()
-    elif command == 'EDIT_COLLECTION':
-        self._command_edit_collection(args['catID'][0], args['launID'][0])
+    elif command == 'ADD_TO_FAV': command_add_to_favourites(catID, launID, romID)
+    elif command == 'ADD_TO_COLLECTION': command_add_ROM_to_collection(catID, launID, romID)
+    elif command == 'ADD_COLLECTION': command_add_collection()
+    elif command == 'EDIT_COLLECTION': command_edit_collection(catID, launID)
 
-    elif command == 'IMPORT_COLLECTION':
-        self._command_import_collection()
+    elif command == 'IMPORT_COLLECTION': command_import_collection()
 
     # Manages Favourites and ROM Collections.
-    elif command == 'MANAGE_FAV':
-        self._command_manage_favourites(args['catID'][0], args['launID'][0], args['romID'][0])
+    elif command == 'MANAGE_FAV': command_manage_favourites(catID, launID, romID)
 
-    elif command == 'MANAGE_RECENT_PLAYED':
-        rom_ID  = args['romID'][0] if 'romID'  in args else ''
-        self._command_manage_recently_played(rom_ID)
+    elif command == 'MANAGE_RECENT_PLAYED': command_manage_recently_played(romID)
 
-    elif command == 'MANAGE_MOST_PLAYED':
-        rom_ID  = args['romID'][0] if 'romID'  in args else ''
-        self._command_manage_most_played(rom_ID)
+    elif command == 'MANAGE_MOST_PLAYED': command_manage_most_played(romID)
 
     # --- Searches ---
     # This command is issued when user clicks on "Search" on the context menu of a launcher
     # in the launchers view, or context menu inside a launcher. User is asked to enter the
     # search string and the field to search (name, category, etc.). Then, EXEC_SEARCH_LAUNCHER
     # command is called.
-    elif command == 'SEARCH_LAUNCHER':
-        self._command_search_launcher(args['catID'][0], args['launID'][0])
+    elif command == 'SEARCH_LAUNCHER': command_search_launcher(catID, launID)
     elif command == 'EXECUTE_SEARCH_LAUNCHER':
-        # >> Deal with empty search strings
-        if 'search_string' not in args: args['search_string'] = [ '' ]
-        self._command_execute_search_launcher(
-            args['catID'][0], args['launID'][0],
-            args['search_type'][0], args['search_string'][0])
+        # Empty search strings force a missing search_string parameter.
+        search_type = args['search_type'][0] if 'search_type' in args else ''
+        search_string = args['search_string'][0] if 'search_string' in args else ''
+        command_execute_search_launcher(catID, launID, search_type, search_string)
 
     # Shows info about categories/launchers/ROMs and reports
-    elif command == 'VIEW':
-        catID  = args['catID'][0]                              # Mandatory
-        launID = args['launID'][0] if 'launID' in args else '' # Optional
-        romID  = args['romID'][0] if 'romID'  in args else ''  # Optional
-        self._command_view_menu(catID, launID, romID)
-    elif command == 'VIEW_OS_ROM':
-        self._command_view_offline_scraper_rom(args['catID'][0], args['launID'][0], args['romID'][0])
+    elif command == 'VIEW': command_view_menu(catID, launID, romID)
+    elif command == 'VIEW_OS_ROM': command_view_offline_scraper_rom(catID, launID, romID)
 
     # Update virtual categories databases
-    elif command == 'UPDATE_VIRTUAL_CATEGORY':
-        self._command_update_virtual_category_db(args['catID'][0])
-    elif command == 'UPDATE_ALL_VCATEGORIES':
-        self._command_update_virtual_category_db_all()
+    elif command == 'UPDATE_VIRTUAL_CATEGORY': command_update_virtual_category_db(catID)
+    elif command == 'UPDATE_ALL_VCATEGORIES': command_update_virtual_category_db_all()
 
     # Commands called from Utilities menu.
-    elif command == 'EXECUTE_UTILS_IMPORT_LAUNCHERS': self._command_exec_utils_import_launchers()
-    elif command == 'EXECUTE_UTILS_EXPORT_LAUNCHERS': self._command_exec_utils_export_launchers()
+    elif command == 'EXECUTE_UTILS_IMPORT_LAUNCHERS': command_exec_utils_import_launchers()
+    elif command == 'EXECUTE_UTILS_EXPORT_LAUNCHERS': command_exec_utils_export_launchers()
 
-    elif command == 'EXECUTE_UTILS_CHECK_DATABASE': self._command_exec_utils_check_database()
-    elif command == 'EXECUTE_UTILS_CHECK_LAUNCHERS': self._command_exec_utils_check_launchers()
-    elif command == 'EXECUTE_UTILS_CHECK_LAUNCHER_SYNC_STATUS': self._command_exec_utils_check_launcher_sync_status()
-    elif command == 'EXECUTE_UTILS_CHECK_ARTWORK_INTEGRITY': self._command_exec_utils_check_artwork_integrity()
-    elif command == 'EXECUTE_UTILS_CHECK_ROM_ARTWORK_INTEGRITY': self._command_exec_utils_check_ROM_artwork_integrity()
-    elif command == 'EXECUTE_UTILS_DELETE_REDUNDANT_ARTWORK': self._command_exec_utils_delete_redundant_artwork()
-    elif command == 'EXECUTE_UTILS_DELETE_ROM_REDUNDANT_ARTWORK': self._command_exec_utils_delete_ROM_redundant_artwork()
-    elif command == 'EXECUTE_UTILS_SHOW_DETECTED_DATS': self._command_exec_utils_show_DATs()
-    elif command == 'EXECUTE_UTILS_CHECK_RETRO_LAUNCHERS': self._command_exec_utils_check_retro_launchers()
-    elif command == 'EXECUTE_UTILS_CHECK_RETRO_BIOS': self._command_exec_utils_check_retro_BIOS()
+    elif command == 'EXECUTE_UTILS_CHECK_DATABASE': command_exec_utils_check_database()
+    elif command == 'EXECUTE_UTILS_CHECK_LAUNCHERS': command_exec_utils_check_launchers()
+    elif command == 'EXECUTE_UTILS_CHECK_LAUNCHER_SYNC_STATUS': command_exec_utils_check_launcher_sync_status()
+    elif command == 'EXECUTE_UTILS_CHECK_ARTWORK_INTEGRITY': command_exec_utils_check_artwork_integrity()
+    elif command == 'EXECUTE_UTILS_CHECK_ROM_ARTWORK_INTEGRITY': command_exec_utils_check_ROM_artwork_integrity()
+    elif command == 'EXECUTE_UTILS_DELETE_REDUNDANT_ARTWORK': command_exec_utils_delete_redundant_artwork()
+    elif command == 'EXECUTE_UTILS_DELETE_ROM_REDUNDANT_ARTWORK': command_exec_utils_delete_ROM_redundant_artwork()
+    elif command == 'EXECUTE_UTILS_SHOW_DETECTED_DATS': command_exec_utils_show_DATs()
+    elif command == 'EXECUTE_UTILS_CHECK_RETRO_LAUNCHERS': command_exec_utils_check_retro_launchers()
+    elif command == 'EXECUTE_UTILS_CHECK_RETRO_BIOS': command_exec_utils_check_retro_BIOS()
 
-    elif command == 'EXECUTE_UTILS_TGDB_CHECK': self._command_exec_utils_TGDB_check()
-    elif command == 'EXECUTE_UTILS_MOBYGAMES_CHECK': self._command_exec_utils_MobyGames_check()
-    elif command == 'EXECUTE_UTILS_SCREENSCRAPER_CHECK': self._command_exec_utils_ScreenScraper_check()
-    elif command == 'EXECUTE_UTILS_ARCADEDB_CHECK': self._command_exec_utils_ArcadeDB_check()
+    elif command == 'EXECUTE_UTILS_TGDB_CHECK': command_exec_utils_TGDB_check()
+    elif command == 'EXECUTE_UTILS_MOBYGAMES_CHECK': command_exec_utils_MobyGames_check()
+    elif command == 'EXECUTE_UTILS_SCREENSCRAPER_CHECK': command_exec_utils_ScreenScraper_check()
+    elif command == 'EXECUTE_UTILS_ARCADEDB_CHECK': command_exec_utils_ArcadeDB_check()
 
     # Commands called from Global Reports menu.
-    elif command == 'EXECUTE_GLOBAL_ROM_STATS': self._command_exec_global_rom_stats()
-    elif command == 'EXECUTE_GLOBAL_AUDIT_STATS_ALL':
-        self._command_exec_global_audit_stats(AUDIT_REPORT_ALL)
-    elif command == 'EXECUTE_GLOBAL_AUDIT_STATS_NOINTRO':
-        self._command_exec_global_audit_stats(AUDIT_REPORT_NOINTRO)
-    elif command == 'EXECUTE_GLOBAL_AUDIT_STATS_REDUMP':
-        self._command_exec_global_audit_stats(AUDIT_REPORT_REDUMP)
+    elif command == 'EXECUTE_GLOBAL_ROM_STATS': command_exec_global_rom_stats()
+    elif command == 'EXECUTE_GLOBAL_AUDIT_STATS_ALL': command_exec_global_audit_stats(AUDIT_REPORT_ALL)
+    elif command == 'EXECUTE_GLOBAL_AUDIT_STATS_NOINTRO': command_exec_global_audit_stats(AUDIT_REPORT_NOINTRO)
+    elif command == 'EXECUTE_GLOBAL_AUDIT_STATS_REDUMP': command_exec_global_audit_stats(AUDIT_REPORT_REDUMP)
 
     # Unknown command
     else:
-        kodi_dialog_OK('Unknown command {}'.format(args['com'][0]))
+        kodi_dialog_OK('run_protected(): Unknown command {}'.format(command))
     log_debug('Advanced Emulator Launcher run_protected() END')
 
 # Get Addon Settings
@@ -1071,7 +1034,7 @@ def create_root_vcategories_data(cfg):
                 ('Kodi File Manager', 'ActivateWindow(filemanager)'),
                 ('AEL addon settings', 'Addon.OpenSettings({})'.format(cfg.addon.info_id)),
             ],
-            'url' : aux_url('SHOW_FAVOURITES'),
+            'url' : aux_url('SHOW_ROMS', VCATEGORY_SPECIAL_ID, VLAUNCHER_FAVOURITES_ID),
         },
         'recently_played' : {
             'display_setting_hide' : 'display_hide_recent',
@@ -1087,7 +1050,7 @@ def create_root_vcategories_data(cfg):
                 ('Kodi File Manager', 'ActivateWindow(filemanager)'),
                 ('AEL addon settings', 'Addon.OpenSettings({})'.format(cfg.addon.info_id)),
             ],
-            'url' : aux_url('SHOW_RECENTLY_PLAYED'),
+            'url' : aux_url('SHOW_ROMS', VCATEGORY_SPECIAL_ID, VLAUNCHER_RECENT_ID),
         },
         'most_played' : {
             'display_setting_hide' : 'display_hide_mostplayed',
@@ -1103,7 +1066,7 @@ def create_root_vcategories_data(cfg):
                 ('Kodi File Manager', 'ActivateWindow(filemanager)'),
                 ('AEL addon settings', 'Addon.OpenSettings({})'.format(cfg.addon.info_id)),
             ],
-            'url' : aux_url('SHOW_MOST_PLAYED'),
+            'url' : aux_url('SHOW_ROMS', VCATEGORY_SPECIAL_ID, VLAUNCHER_MOST_PLAYED_ID),
         },
         'collections' : {
             'display_setting_hide' : 'display_hide_collections',
@@ -1120,7 +1083,7 @@ def create_root_vcategories_data(cfg):
                 ('Kodi File Manager', 'ActivateWindow(filemanager)'),
                 ('AEL addon settings', 'Addon.OpenSettings({})'.format(cfg.addon.info_id)),
             ],
-            'url' : aux_url('SHOW_COLLECTIONS'),
+            'url' : aux_url('SHOW_ROM_COLLECTIONS_VLAUNCHERS'),
         },
         'vlaunchers' : {
             'display_setting_hide' : 'display_hide_vlaunchers',
@@ -1136,7 +1099,7 @@ def create_root_vcategories_data(cfg):
                 ('Kodi File Manager', 'ActivateWindow(filemanager)'),
                 ('AEL addon settings', 'Addon.OpenSettings({})'.format(cfg.addon.info_id)),
             ],
-            'url' : aux_url('SHOW_VCATEGORIES_ROOT'),
+            'url' : aux_url('SHOW_BROWSE_BY_VLAUNCHERS'),
         },
         'AEL_AOS' : {
             'display_setting_hide' : 'display_hide_AEL_scraper',
@@ -1151,7 +1114,7 @@ def create_root_vcategories_data(cfg):
                 ('Kodi File Manager', 'ActivateWindow(filemanager)'),
                 ('AEL addon settings', 'Addon.OpenSettings({})'.format(cfg.addon.info_id)),
             ],
-            'url' : aux_url('SHOW_AEL_OFFLINE_LAUNCHERS_ROOT'),
+            'url' : aux_url('SHOW_AOS_VLAUNCHERS'),
         },
         'utilities' : {
             'display_setting_hide' : 'display_hide_utilities',
@@ -1248,9 +1211,9 @@ def create_vcategories_data_Browse_by(cfg):
             },
             'props' : common_props,
             'context' : [
-                ('Update {} database', aux_url_RP('UPDATE_VIRTUAL_CATEGORY', VCATEGORY_TITLE_ID)),
+                ('Update {} database', aux_url_RP('UPDATE_VIRTUAL_CATEGORY', VCATEGORY_BROWSE_BY_TITLE_ID)),
             ] + common_commands,
-            'URL' : aux_url('SHOW_VIRTUAL_CATEGORY', VCATEGORY_TITLE_ID),
+            'URL' : aux_url('SHOW_BROWSE_BY_VLAUNCHERS', VCATEGORY_BROWSE_BY_TITLE_ID),
         },
         {
             'render_name' : 'Browse by Year',
@@ -1266,9 +1229,9 @@ def create_vcategories_data_Browse_by(cfg):
             },
             'props' : common_props,
             'context' : [
-                ('Update {} database', aux_url_RP('UPDATE_VIRTUAL_CATEGORY', VCATEGORY_YEARS_ID)),
+                ('Update {} database', aux_url_RP('UPDATE_VIRTUAL_CATEGORY', VCATEGORY_BROWSE_BY_YEARS_ID)),
             ] + common_commands,
-            'URL' : aux_url('SHOW_VIRTUAL_CATEGORY', VCATEGORY_YEARS_ID),
+            'URL' : aux_url('SHOW_BROWSE_BY_VLAUNCHERS', VCATEGORY_BROWSE_BY_YEARS_ID),
         },
         {
             'render_name' : 'Browse by Genre',
@@ -1284,9 +1247,9 @@ def create_vcategories_data_Browse_by(cfg):
             },
             'props' : common_props,
             'context' : [
-                ('Update {} database', aux_url_RP('UPDATE_VIRTUAL_CATEGORY', VCATEGORY_CATEGORY_ID)),
+                ('Update {} database', aux_url_RP('UPDATE_VIRTUAL_CATEGORY', VCATEGORY_BROWSE_BY_GENRE_ID)),
             ] + common_commands,
-            'URL' : aux_url('SHOW_VIRTUAL_CATEGORY', VCATEGORY_CATEGORY_ID),
+            'URL' : aux_url('SHOW_BROWSE_BY_VLAUNCHERS', VCATEGORY_BROWSE_BY_GENRE_ID),
         },
         {
             'render_name' : 'Browse by Developer',
@@ -1302,9 +1265,9 @@ def create_vcategories_data_Browse_by(cfg):
             },
             'props' : common_props,
             'context' : [
-                ('Update {} database', aux_url_RP('UPDATE_VIRTUAL_CATEGORY', VCATEGORY_CATEGORY_ID)),
+                ('Update {} database', aux_url_RP('UPDATE_VIRTUAL_CATEGORY', VCATEGORY_BROWSE_BY_DEVELOPER_ID)),
             ] + common_commands,
-            'URL' : aux_url('SHOW_VIRTUAL_CATEGORY', VCATEGORY_CATEGORY_ID),
+            'URL' : aux_url('SHOW_BROWSE_BY_VLAUNCHERS', VCATEGORY_BROWSE_BY_DEVELOPER_ID),
         },
         {
             'render_name' : 'Browse by Number of Players',
@@ -1320,9 +1283,9 @@ def create_vcategories_data_Browse_by(cfg):
             },
             'props' : common_props,
             'context' : [
-                ('Update {} database', aux_url_RP('UPDATE_VIRTUAL_CATEGORY', VCATEGORY_CATEGORY_ID)),
+                ('Update {} database', aux_url_RP('UPDATE_VIRTUAL_CATEGORY', VCATEGORY_BROWSE_BY_NPLAYERS_ID)),
             ] + common_commands,
-            'URL' : aux_url('SHOW_VIRTUAL_CATEGORY', VCATEGORY_CATEGORY_ID),
+            'URL' : aux_url('SHOW_BROWSE_BY_VLAUNCHERS', VCATEGORY_BROWSE_BY_NPLAYERS_ID),
         },
         {
             'render_name' : 'Browse by ESRB Rating',
@@ -1338,9 +1301,9 @@ def create_vcategories_data_Browse_by(cfg):
             },
             'props' : common_props,
             'context' : [
-                ('Update {} database', aux_url_RP('UPDATE_VIRTUAL_CATEGORY', VCATEGORY_CATEGORY_ID)),
+                ('Update {} database', aux_url_RP('UPDATE_VIRTUAL_CATEGORY', VCATEGORY_BROWSE_BY_ESRB_ID)),
             ] + common_commands,
-            'URL' : aux_url('SHOW_VIRTUAL_CATEGORY', VCATEGORY_CATEGORY_ID),
+            'URL' : aux_url('SHOW_BROWSE_BY_VLAUNCHERS', VCATEGORY_BROWSE_BY_ESRB_ID),
         },
         {
             'render_name' : 'Browse by User Rating',
@@ -1356,9 +1319,9 @@ def create_vcategories_data_Browse_by(cfg):
             },
             'props' : common_props,
             'context' : [
-                ('Update {} database', aux_url_RP('UPDATE_VIRTUAL_CATEGORY', VCATEGORY_CATEGORY_ID)),
+                ('Update {} database', aux_url_RP('UPDATE_VIRTUAL_CATEGORY', VCATEGORY_BROWSE_BY_RATING_ID)),
             ] + common_commands,
-            'URL' : aux_url('SHOW_VIRTUAL_CATEGORY', VCATEGORY_CATEGORY_ID),
+            'URL' : aux_url('SHOW_BROWSE_BY_VLAUNCHERS', VCATEGORY_BROWSE_BY_RATING_ID),
         },
         {
             'render_name' : 'Browse by Category',
@@ -1374,9 +1337,9 @@ def create_vcategories_data_Browse_by(cfg):
             },
             'props' : common_props,
             'context' : [
-                ('Update {} database', aux_url_RP('UPDATE_VIRTUAL_CATEGORY', VCATEGORY_CATEGORY_ID)),
+                ('Update {} database', aux_url_RP('UPDATE_VIRTUAL_CATEGORY', VCATEGORY_BROWSE_BY_CATEGORY_ID)),
             ] + common_commands,
-            'URL' : aux_url('SHOW_VIRTUAL_CATEGORY', VCATEGORY_CATEGORY_ID),
+            'URL' : aux_url('SHOW_BROWSE_BY_VLAUNCHERS', VCATEGORY_BROWSE_BY_CATEGORY_ID),
         },
     ]
 
@@ -1404,7 +1367,7 @@ def render_launchers_in_category(cfg, categoryID):
         # How to avoid that? Rendering the categories again? If I call _command_render_categories() it does not work well, categories
         # are displayed in wrong alphabetical order and if go back clicking on .. the categories window is rendered again (instead of
         # exiting the addon).
-        # self._command_render_categories()
+        # command_render_categories()
         #
         # What about replacewindow? I also get the error, still not clear why...
         # xbmc.executebuiltin('ReplaceWindow(Programs,{})'.format(g_base_url)) # Does not work
@@ -2493,8 +2456,10 @@ def render_ROMs_process(cfg, categoryID, launcherID, launcher):
                 ('Add ROM to Collection', aux_url_RP('ADD_TO_COLLECTION', categoryID, launcherID, romID)),
                 ('Search ROMs in Virtual Launcher', aux_url_RP('SEARCH_LAUNCHER', categoryID, launcherID)),
             ]
-        else AOS :
+        elif categoryID == VCATEGORY_AOS_ID:
             commands = []
+        else:
+            raise TypeError
 
         # Add common context menu items.
         commands.append(('AEL addon settings', 'Addon.OpenSettings({})'.format(cfg.addon.info_id)))

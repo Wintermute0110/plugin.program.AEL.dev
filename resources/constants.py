@@ -136,7 +136,10 @@ LNK_LAUNCHER_APP_NAME = 'lnk_launcher_app'
 # Special Category/Launcher IDs.
 CATEGORY_ADDONROOT_ID = 'root_category' # This is an actual category, not a virtual one.
 
-VCATEGORY_ROM_COLLECTION = 'vcategory_rom_collection'
+# Favourites, Most Played and Recently Played belong to this category.
+# However, having an empty category in URLs for this virtual launchers is OK.
+VCATEGORY_SPECIAL_ID = 'vcategory_special'
+VCATEGORY_ROM_COLLECTION_ID = 'vcategory_rom_collection'
 VCATEGORY_BROWSE_BY_TITLE_ID = 'vcategory_browse_by_title'
 VCATEGORY_BROWSE_BY_YEARS_ID = 'vcategory_browse_by_year'
 VCATEGORY_BROWSE_BY_GENRE_ID = 'vcategory_browse_by_genre'
@@ -147,7 +150,8 @@ VCATEGORY_BROWSE_BY_RATING_ID = 'vcategory_browse_by_rating'
 VCATEGORY_BROWSE_BY_CATEGORY_ID = 'vcategory_browse_by_category'
 VCATEGORY_AOS_ID = 'vcategory_ael_offline_scraper'
 VCATEGORY_ID_LIST = [
-    VCATEGORY_ROM_COLLECTION,
+    VCATEGORY_SPECIAL_ID,
+    VCATEGORY_ROM_COLLECTION_ID,
     VCATEGORY_BROWSE_BY_TITLE_ID,
     VCATEGORY_BROWSE_BY_YEARS_ID,
     VCATEGORY_BROWSE_BY_GENRE_ID,
