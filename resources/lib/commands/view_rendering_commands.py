@@ -432,11 +432,13 @@ def _render_rom_listitem(rom_obj: ROM):
         },
         'art': assets,
         'properties': { 
-            'platform': rom_obj.get_platform(),
-            'nplayers': rom_obj.get_number_of_players(),
-            'esrb':     rom_obj.get_esrb_rating(),
-            'boxsize':  rom_obj.get_box_sizing(),
-            'obj_type': constants.OBJ_ROM,
+            'platform':         rom_obj.get_platform(),
+            'nplayers':         rom_obj.get_number_of_players(),
+            'nplayers_online':  rom_obj.get_number_of_players_online(),
+            'esrb':             rom_obj.get_esrb_rating(),
+            'boxsize':          rom_obj.get_box_sizing(),
+            'tags':             ','.join(rom_obj.get_tags()),
+            'obj_type':         constants.OBJ_ROM,
             # --- ROM flags (Skins will use these flags to render icons) ---
             constants.AKL_CONTENT_LABEL:        constants.AKL_CONTENT_VALUE_ROM,
             constants.AKL_INFAV_BOOL_LABEL:     AKL_InFav_bool_value,

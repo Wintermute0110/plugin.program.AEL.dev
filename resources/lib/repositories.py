@@ -977,12 +977,14 @@ QUERY_SELECT_ROM_ASSETS             = "SELECT * FROM vw_rom_assets WHERE rom_id 
 QUERY_SELECT_ROM_ASSETPATHS         = "SELECT * FROM vw_rom_asset_paths WHERE rom_id = ?"
 QUERY_SELECT_ROM_ASSETS_BY_SET      = "SELECT ra.* FROM vw_rom_assets AS ra INNER JOIN roms_in_romcollection AS rs ON rs.rom_id = ra.rom_id AND rs.romcollection_id = ?"
 QUERY_SELECT_ROM_ASSETPATHS_BY_SET  = "SELECT rap.* FROM vw_rom_asset_paths AS rap INNER JOIN roms_in_romcollection AS rs ON rs.rom_id = rap.rom_id AND rs.romcollection_id = ?"
+QUERY_SELECT_ROM_TAGS_BY_SET        = "SELECT rt.* FROM vw_rom_tags AS tr INNER JOIN roms_in_romcollection AS rs ON rs.rom_id = rt.rom_id AND rs.romcollection_id = ?"
+QUERY_SELECT_ROM_TAGS               = "SELECT * FROM vw_rom_tags WHERE rom_id = ?"
 
 QUERY_INSERT_ROM                = """
                                 INSERT INTO roms (
-                                    id, metadata_id, name, num_of_players, esrb_rating, platform, box_size,
-                                    nointro_status, cloneof, rom_status, scanned_by_id)
-                                VALUES (?,?,?,?,?,?,?,?,?,?,?)
+                                    id, metadata_id, name, num_of_players, num_of_players_online, esrb_rating,
+                                    platform, box_size, nointro_status, cloneof, rom_status, scanned_by_id)
+                                VALUES (?,?,?,?,?,?,?,?,?,?,?,?)
                                 """ 
 
 QUERY_SELECT_MY_FAVOURITES               = "SELECT * FROM vw_roms WHERE is_favourite = 1"                                
@@ -1020,7 +1022,7 @@ QUERY_INSERT_ROM_SCANNED_DATA   = "INSERT INTO scanned_roms_data (rom_id, data_k
 
 QUERY_UPDATE_ROM                = """
                                   UPDATE roms 
-                                  SET name=?, num_of_players=?, esrb_rating=?, platform=?, box_size=?,
+                                  SET name=?, num_of_players=?, num_of_players_online=?, esrb_rating=?, platform=?, box_size=?,
                                   nointro_status=?, cloneof=?, rom_status=?, launch_count=?, last_launch_timestamp=?,
                                   is_favourite=?, scanned_by_id=? WHERE id =?
                                   """
@@ -1036,7 +1038,12 @@ QUERY_INSERT_ROM_LAUNCHER      = "INSERT INTO rom_launchers (id, rom_id, akl_add
 QUERY_UPDATE_ROM_LAUNCHER      = "UPDATE rom_launchers SET settings = ?, is_default = ? WHERE id = ?"
 QUERY_DELETE_ROM_LAUNCHERS     = "DELETE FROM rom_launchers WHERE rom_id = ?"
 QUERY_DELETE_ROM_LAUNCHER      = "DELETE FROM rom_launchers WHERE romcollection_id = ? AND id = ?"
-                  
+
+QUERY_SELECT_TAGS               = "SELECT * FROM tags"
+QUERY_INSERT_TAG                = "INSERT INTO tags (id, tag) VALUES (?,?)" 
+QUERY_ADD_TAG_TO_ROM            = "INSERT INTO metatags (metadata_id, tag_id) VALUES (?,?)"
+QUERY_DELETE_EXISTING_ROM_TAGS  = "DELETE FROM metatags WHERE metadata_id = ?"
+
 class ROMsRepository(object):
        
     def __init__(self, uow: UnitOfWork):
@@ -1063,7 +1070,8 @@ class ROMsRepository(object):
                 assets_result_set = self._uow.result_set() 
                     
             asset_paths_result_set  = []
-            scanned_data_result_set = []                
+            scanned_data_result_set = []
+            tags = {}      
         else:
             self._uow.execute(QUERY_SELECT_ROMS_BY_SET, romcollection_id)
             result_set = self._uow.result_set()
@@ -1076,20 +1084,26 @@ class ROMsRepository(object):
                         
             self._uow.execute(QUERY_SELECT_ROM_SCANNED_DATA_BY_SET, romcollection_id)
             scanned_data_result_set = self._uow.result_set()
+
+            self._uow.execute(QUERY_SELECT_ROM_TAGS_BY_SET, romcollection_id)
+            tags_data_set = self._uow.result_set()
                         
         for rom_data in result_set:
             assets = []
             asset_paths = []
+            tags = {}
             for asset_data in filter(lambda a: a['rom_id'] == rom_data['id'], assets_result_set):
                 assets.append(Asset(asset_data))    
             for asset_paths_data in filter(lambda a: a['rom_id'] == rom_data['id'], asset_paths_result_set):
                 asset_paths.append(AssetPath(asset_paths_data))
+            for tag in filter(lambda t: t['rom_id'] == rom_data['id'], tags_data_set):
+                tags[tag['tag']] = tag['id']
                 
             scanned_data = {
                 entry['data_key']: entry['data_value'] 
                 for entry in filter(lambda s: s['rom_id'] == rom_data['id'], scanned_data_result_set) 
             }
-            yield ROM(rom_data, assets, asset_paths, scanned_data)
+            yield ROM(rom_data, tags, assets, asset_paths, scanned_data)
 
     def find_rom(self, rom_id:str) -> ROM:
         self._uow.execute(QUERY_SELECT_ROM, rom_id)
@@ -1118,8 +1132,14 @@ class ROMsRepository(object):
             addon = AelAddon(launcher_data.copy())
             launcher = ROMLauncherAddonFactory.create(addon, launcher_data)
             launchers.append(launcher)
+
+        self._uow.execute(QUERY_SELECT_ROM_TAGS, rom_id)
+        tags_data = self._uow.result_set()
+        tags = {}
+        for tag_data in tags_data:
+            tags[tag_data['name']] = tag_data['id']
             
-        return ROM(rom_data, assets, asset_paths, scanned_data, launchers)
+        return ROM(rom_data, tags, assets, asset_paths, scanned_data, launchers)
 
     def insert_rom(self, rom_obj: ROM): 
         logger.info("ROMsRepository.insert_rom(): Inserting new ROM '{}'".format(rom_obj.get_name()))
@@ -1141,6 +1161,7 @@ class ROMsRepository(object):
             metadata_id,
             rom_obj.get_name(),
             rom_obj.get_number_of_players(),
+            rom_obj.get_number_of_players_online(),
             rom_obj.get_esrb_rating(),   
             rom_obj.get_platform(),
             rom_obj.get_box_sizing(), 
@@ -1156,6 +1177,9 @@ class ROMsRepository(object):
         for asset_path in rom_obj.get_asset_paths():
             if not asset_path.get_id(): self._insert_asset_path(asset_path, rom_obj)
             else: self._update_asset_path(asset_path, rom_obj)
+
+        tag_data = rom_obj.get_tag_data()
+        self._insert_tags(tag_data, metadata_id)
 
         self._update_scanned_data(rom_obj.get_id(), rom_obj.scanned_data)
         self._update_launchers(rom_obj.get_id(), rom_obj.get_launchers())
@@ -1177,6 +1201,7 @@ class ROMsRepository(object):
         self._uow.execute(QUERY_UPDATE_ROM,
             rom_obj.get_name(),
             rom_obj.get_number_of_players(),
+            rom_obj.get_number_of_players_online(),
             rom_obj.get_esrb_rating(),
             rom_obj.get_platform(),
             rom_obj.get_box_sizing(),
@@ -1196,7 +1221,10 @@ class ROMsRepository(object):
         for asset_path in rom_obj.get_asset_paths():
             if not asset_path.get_id(): self._insert_asset_path(asset_path, rom_obj)
             else: self._update_asset_path(asset_path, rom_obj)    
-            
+
+        tag_data = rom_obj.get_tag_data()
+        self._update_tags(tag_data, rom_obj.get_custom_attribute('metadata_id'))
+
         self._update_scanned_data(rom_obj.get_id(),rom_obj.scanned_data)
         self._update_launchers(rom_obj.get_id(), rom_obj.get_launchers())
                 
@@ -1247,7 +1275,34 @@ class ROMsRepository(object):
         self._uow.execute(QUERY_DELETE_SCANNED_DATA, rom_id)
         for key, value in scanned_data.items():
             self._uow.execute(QUERY_INSERT_ROM_SCANNED_DATA, rom_id, key, value)
-                
+
+    def _get_tags(self) -> dict:
+        self._uow.execute(QUERY_SELECT_TAGS)
+        tag_data = self._uow.result_set()
+        tags = {}
+        for tag in tag_data:
+            tags[tag['tag']] = tag['id']
+        return tags
+
+    def _update_tags(self, tag_data:dict, metadata_id:str):
+        self._uow.execute(QUERY_DELETE_EXISTING_ROM_TAGS, metadata_id)
+        self._insert_tags(tag_data, metadata_id)
+
+    def _insert_tags(self, tag_data:dict, metadata_id:str):
+        existing_tags = self._get_tags()
+        for tag_name, tag_id in tag_data:
+            if tag_id == '':
+                if not tag_name in existing_tags.keys():
+                    tag_id = self._insert_tag(tag_name)
+                else:
+                    tag_id = existing_tags[tag_name]
+            self._uow.execute(QUERY_ADD_TAG_TO_ROM, metadata_id, tag_id)
+
+    def _insert_tag(self, tag:str) -> str:
+        db_id = text.misc_generate_random_SID()
+        self._uow.execute(QUERY_INSERT_TAG, db_id, tag)
+        return db_id
+
     def _get_queries_by_vcollection_type(self, vcollection:VirtualCollection) -> typing.Tuple[str, str]:
         
         vcollection_id  = vcollection.get_id()

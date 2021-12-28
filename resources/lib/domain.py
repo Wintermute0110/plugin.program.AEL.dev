@@ -1216,7 +1216,8 @@ class VirtualCollection(ROMCollection):
 class ROM(MetaDataItemABC):
         
     def __init__(self, 
-                 rom_data: dict = None, 
+                 rom_data: dict = None,
+                 tag_data: dict = None, 
                  assets_data: typing.List[Asset] = None,
                  asset_paths_data: typing.List[AssetPath] = None,
                  scanned_data: dict = {},
@@ -1224,9 +1225,14 @@ class ROM(MetaDataItemABC):
         if rom_data is None:
             rom_data = _get_default_ROM_data_model()
             rom_data['id'] = text.misc_generate_random_SID()
-            
+        
+        self.tags = tag_data
         self.scanned_data = scanned_data
         self.launchers_data = launchers_data
+
+        if self.tags is None and 'rom_tags' in self.entity_data:
+            tag_data = str(self.entity_data['rom_tags'])
+            self.tags = {t: '' for t in tag_data.split(',')}
         
         super(ROM, self).__init__(rom_data, assets_data, asset_paths_data)
         
@@ -1284,6 +1290,9 @@ class ROM(MetaDataItemABC):
     def get_number_of_players(self):
         return self.entity_data['m_nplayers']
 
+    def get_number_of_players_online(self):
+        return self.entity_data['m_nplayers_online']
+
     def get_esrb_rating(self):
         return self.entity_data['m_esrb']
 
@@ -1292,6 +1301,14 @@ class ROM(MetaDataItemABC):
 
     def is_favourite(self) -> bool:
         return self.entity_data['is_favourite'] if 'is_favourite' in self.entity_data else False
+
+    def get_tags(self) -> typing.List[str]:
+        if self.tags is not None:
+            return self.tags.keys()
+        return []
+
+    def get_tag_data(self) -> dict:
+        return self.tags
 
     def get_launch_count(self):
         return self.entity_data['launch_count']
@@ -1313,12 +1330,23 @@ class ROM(MetaDataItemABC):
     def set_number_of_players(self, amount):
         self.entity_data['m_nplayers'] = amount
 
+    def set_number_of_players_online(self, amount):
+        self.entity_data['m_nplayers_online'] = amount
+
     def set_esrb_rating(self, esrb):
         self.entity_data['m_esrb'] = esrb
 
     def set_platform(self, platform): 
         self.entity_data['platform'] = platform
     
+    def add_tag(self, tag:str):
+        if self.tags is None:
+            self.tags = {}
+
+        existing_tags = self.get_tags()
+        if not tag in existing_tags:
+            self.tags[tag] = ''
+
     def set_nointro_status(self, status):
         self.entity_data['nointro_status'] = status
 
@@ -1379,7 +1407,9 @@ class ROM(MetaDataItemABC):
         dto_data:dict = api.ROMObj.get_data_template()
         for key in dto_data.keys():
             if key in self.entity_data: dto_data[key] = self.entity_data[key]
-            
+
+        dto_data['tags'] = self.get_tags()
+
         for asset_id in self.get_asset_ids_list():
             asset_info = g_assetFactory.get_asset_info(asset_id)
             asset = self.get_asset(asset_id)
@@ -1482,7 +1512,13 @@ class ROM(MetaDataItemABC):
             if api_rom_obj.get_number_of_players() is not None: self.set_number_of_players(api_rom_obj.get_number_of_players())
             if api_rom_obj.get_esrb_rating() is not None:       self.set_esrb_rating(api_rom_obj.get_esrb_rating())
             if api_rom_obj.get_rating() is not None:            self.set_rating(api_rom_obj.get_rating())
-        
+            if api_rom_obj.get_number_of_players_online() is not None: 
+                self.set_number_of_players_online(api_rom_obj.get_number_of_players_online())
+            
+            if api_rom_obj.get_tags() is not None:
+                for tag in api_rom_obj.get_tags():
+                    self.add_tag(tag)
+                    
         if update_assets:
             for asset_id in self.get_asset_ids_list():
                 if api_rom_obj.get_asset(asset_id) is not None: 

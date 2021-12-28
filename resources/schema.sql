@@ -9,6 +9,20 @@ CREATE TABLE IF NOT EXISTS metadata(
     finished INTEGER DEFAULT 0
 );
 
+CREATE TABLE IF NOT EXISTS tags(
+    id TEXT PRIMARY KEY, 
+    tag TEXT
+);
+
+CREATE TABLE IF NOT EXISTS metatags(
+    metadata_id TEXT,
+    tag_id TEXT,
+    FOREIGN KEY (metadata_id) REFERENCES metadata (id) 
+        ON DELETE CASCADE ON UPDATE NO ACTION,
+    FOREIGN KEY (tag_id) REFERENCES tags (id) 
+        ON DELETE CASCADE ON UPDATE NO ACTION
+);
+
 CREATE TABLE IF NOT EXISTS assets(
     id TEXT PRIMARY KEY,
     filepath TEXT NOT NULL,
@@ -97,6 +111,7 @@ CREATE TABLE IF NOT EXISTS roms(
     id TEXT PRIMARY KEY, 
     name TEXT NOT NULL,
     num_of_players INTEGER DEFAULT 1 NOT NULL,
+    num_of_players_online INTEGER DEFAULT 0 NOT NULL,
     esrb_rating TEXT,
     nointro_status TEXT, 
     pclone_status TEXT,
@@ -259,6 +274,7 @@ CREATE VIEW IF NOT EXISTS vw_roms AS SELECT
     r.metadata_id,
     r.name AS m_name,
     r.num_of_players AS m_nplayers,
+    r.num_of_players_online AS m_nplayers_online,
     r.esrb_rating AS m_esrb,
     r.nointro_status AS nointro_status,
     r.pclone_status AS pclone_status,
@@ -276,7 +292,14 @@ CREATE VIEW IF NOT EXISTS vw_roms AS SELECT
     r.is_favourite,
     r.launch_count,
     r.last_launch_timestamp,
-    m.assets_path AS assets_path
+    m.assets_path AS assets_path,
+    (
+        SELECT group_concat(t.tag) AS rom_tags
+        FROM tags AS t 
+        INNER JOIN metatags AS mt ON t.id = mt.tag_id
+        WHERE mt.metadata_id = r.metadata_id
+        GROUP BY mt.metadata_id
+    ) AS rom_tags
 FROM roms AS r 
     INNER JOIN metadata AS m ON r.metadata_id = m.id;
 
@@ -327,6 +350,14 @@ CREATE VIEW IF NOT EXISTS vw_rom_asset_paths AS SELECT
 FROM assetpaths AS a
  INNER JOIN rom_assetpaths AS ra ON a.id = ra.assetpaths_id 
  INNER JOIN roms AS r ON ra.rom_id = r.id;
+
+CREATE VIEW IF NOT EXISTS vw_rom_tags AS SELECT
+    t.id as id,
+    r.id as rom_id, 
+    t.tag
+FROM tags AS t
+ INNER JOIN metatags AS mt ON t.id = mt.tag_id
+ INNER JOIN roms AS r ON mt.metadata_id = r.metadata_id;
 
 CREATE VIEW IF NOT EXISTS vw_romcollection_launchers AS SELECT
     l.id AS id,

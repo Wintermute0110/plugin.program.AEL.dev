@@ -91,6 +91,7 @@ def cmd_rom_metadata(args):
     options['ROM_EDIT_METADATA_GENRE']       = "Edit Genre: '{}'".format(rom.get_genre())
     options['ROM_EDIT_METADATA_DEVELOPER']   = "Edit Developer: '{}'".format(rom.get_developer())
     options['ROM_EDIT_METADATA_NPLAYERS']    = "Edit NPlayers: '{}'".format(rom.get_number_of_players())
+    options['ROM_EDIT_METADATA_NPLAYERS_ONL']= "Edit NPlayers online: '{}'".format(rom.get_number_of_players_online())
     options['ROM_EDIT_METADATA_ESRB']        = "Edit ESRB rating: '{}'".format(rom.get_esrb_rating())
     options['ROM_EDIT_METADATA_RATING']      = "Edit Rating: '{}'".format(rating)
     options['ROM_EDIT_METADATA_PLOT']        = "Edit Plot: '{}'".format(plot_str)
@@ -245,7 +246,7 @@ def cmd_rom_metadata_nplayers(args):
         repository = ROMsRepository(uow)
         rom = repository.find_rom(rom_id)
         
-        menu_list = ['Not set', 'Manual entry'] + constants.NPLAYERS_LIST
+        menu_list = ['Not set', 'Manual entry'] + constants.NPLAYERS_LIST.keys()
         selected_option = kodi.ListDialog().select('Edit ROM NPlayers', menu_list)
         
         if selected_option is None or selected_option < 0:
@@ -257,13 +258,14 @@ def cmd_rom_metadata_nplayers(args):
     
         if selected_option == 1:
             # >> Manual entry. Open a text entry dialog.
-            if not editors.edit_field_by_str(rom, 'NPlayers', rom.get_number_of_players, rom.set_number_of_players):
+            if not editors.edit_field_by_int(rom, 'NPlayers', rom.get_number_of_players, rom.set_number_of_players):
                 AppMediator.sync_cmd('ROM_EDIT_METADATA', args)
                 return
 
         if selected_option > 1:
             list_idx = selected_option - 2
-            rom.set_number_of_players(constants.NPLAYERS_LIST[list_idx]) 
+            np_key = constants.NPLAYERS_LIST.keys()[list_idx]
+            rom.set_number_of_players(constants.NPLAYERS_LIST[np_key]) 
                 
         repository.update_rom(rom)
         uow.commit()    
@@ -272,6 +274,44 @@ def cmd_rom_metadata_nplayers(args):
         kodi.notify('Changed ROM NPlayers')
         
     AppMediator.sync_cmd('ROM_EDIT_METADATA', args)
+
+@AppMediator.register('ROM_EDIT_METADATA_NPLAYERS_ONL')
+def cmd_rom_metadata_nplayers_online(args):
+    rom_id = args['rom_id'] if 'rom_id' in args else None
+    uow = UnitOfWork(globals.g_PATHS.DATABASE_FILE_PATH)
+    with uow:
+        repository = ROMsRepository(uow)
+        rom = repository.find_rom(rom_id)
+        
+        menu_list = ['Not set', 'Manual entry'] + constants.NPLAYERS_LIST.keys()
+        selected_option = kodi.ListDialog().select('Edit ROM NPlayers online', menu_list)
+        
+        if selected_option is None or selected_option < 0:
+            AppMediator.sync_cmd('ROM_EDIT_METADATA', args)
+            return
+
+        if selected_option == 0:
+            rom.set_number_of_players_online('')
+    
+        if selected_option == 1:
+            # >> Manual entry. Open a number entry dialog.
+            if not editors.edit_field_by_int(rom, 'NPlayers', rom.get_number_of_players, rom.set_number_of_players):
+                AppMediator.sync_cmd('ROM_EDIT_METADATA', args)
+                return
+
+        if selected_option > 1:
+            list_idx = selected_option - 2
+            np_key = constants.NPLAYERS_LIST.keys()[list_idx]
+            rom.set_number_of_players_online(constants.NPLAYERS_LIST[np_key]) 
+                
+        repository.update_rom(rom)
+        uow.commit()    
+        AppMediator.async_cmd('RENDER_ROM_VIEWS', {'rom_id': rom.get_id()})
+        AppMediator.async_cmd('RENDER_VCATEGORY_VIEW', {'vcategory_id': constants.VCATEGORY_NPLAYERS_ID})
+        kodi.notify('Changed ROM NPlayers Online')
+        
+    AppMediator.sync_cmd('ROM_EDIT_METADATA', args)
+
 
 @AppMediator.register('ROM_EDIT_METADATA_RATING')
 def cmd_rom_metadata_rating(args):
