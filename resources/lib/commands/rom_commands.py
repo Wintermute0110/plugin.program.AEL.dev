@@ -246,7 +246,8 @@ def cmd_rom_metadata_nplayers(args):
         repository = ROMsRepository(uow)
         rom = repository.find_rom(rom_id)
         
-        menu_list = ['Not set', 'Manual entry'] + constants.NPLAYERS_LIST.keys()
+        default_options = list(constants.NPLAYERS_LIST.keys())
+        menu_list = ['Not set', 'Manual entry'] + default_options
         selected_option = kodi.ListDialog().select('Edit ROM NPlayers', menu_list)
         
         if selected_option is None or selected_option < 0:
@@ -264,7 +265,7 @@ def cmd_rom_metadata_nplayers(args):
 
         if selected_option > 1:
             list_idx = selected_option - 2
-            np_key = constants.NPLAYERS_LIST.keys()[list_idx]
+            np_key = default_options[list_idx]
             rom.set_number_of_players(constants.NPLAYERS_LIST[np_key]) 
                 
         repository.update_rom(rom)
@@ -283,7 +284,8 @@ def cmd_rom_metadata_nplayers_online(args):
         repository = ROMsRepository(uow)
         rom = repository.find_rom(rom_id)
         
-        menu_list = ['Not set', 'Manual entry'] + constants.NPLAYERS_LIST.keys()
+        default_options = list(constants.NPLAYERS_LIST.keys())
+        menu_list = ['Not set', 'Manual entry'] + default_options
         selected_option = kodi.ListDialog().select('Edit ROM NPlayers online', menu_list)
         
         if selected_option is None or selected_option < 0:
@@ -301,7 +303,7 @@ def cmd_rom_metadata_nplayers_online(args):
 
         if selected_option > 1:
             list_idx = selected_option - 2
-            np_key = constants.NPLAYERS_LIST.keys()[list_idx]
+            np_key = default_options[list_idx]
             rom.set_number_of_players_online(constants.NPLAYERS_LIST[np_key]) 
                 
         repository.update_rom(rom)
