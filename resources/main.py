@@ -417,7 +417,7 @@ def run_concurrent(cfg, command, args):
     log_debug('Advanced Emulator Launcher run_concurrent() END')
 
 # This function is guaranteed to run with no concurrency.
-def run_protected(self, command, args):
+def run_protected(cfg, command, args):
     log_debug('Advanced Emulator Launcher run_protected() BEGIN')
 
     # Get IDs in URL. Everything is optional.
@@ -470,8 +470,8 @@ def run_protected(self, command, args):
         command_execute_search_launcher(catID, launID, search_type, search_string)
 
     # Shows info about categories/launchers/ROMs and reports
-    elif command == 'VIEW': command_view_menu(catID, launID, romID)
-    elif command == 'VIEW_OS_ROM': command_view_offline_scraper_rom(catID, launID, romID)
+    elif command == 'VIEW': command_view_menu(cfg, catID, launID, romID)
+    elif command == 'VIEW_AOS_ROM': command_view_AOS_rom(cfg, catID, launID, romID)
 
     # Update virtual categories databases
     elif command == 'UPDATE_VIRTUAL_CATEGORY': command_update_virtual_category_db(catID)
@@ -1566,9 +1566,9 @@ def render_vlaunchers_AEL_offline_scraper_row(cfg, pobj, gamedb_info_dic):
         ]
         listitem.addContextMenuItems(commands, replaceItems = True)
 
-    # User the original platform here, otherwise the list goes to the parent
+    # Use the original platform name here, otherwise the list goes to the parent
     # platform instead of the aliased platform when user goes back in the list.
-    url_str = aux_url('SHOW_AEL_SCRAPER_ROMS', pobj.long_name)
+    url_str = aux_url('SHOW_ROMS', VCATEGORY_AOS_ID, pobj.long_name)
     xbmcplugin.addDirectoryItem(cfg.addon_handle, url_str, listitem, True)
 
 # Rewrite this function to look like command_render_root_window()
@@ -1875,71 +1875,60 @@ def render_vlaunchers_GlobalReports(cfg):
 # ------------------------------------------------------------------------------------------------
 # For a given ROM Launcher render all ROMs or all parent ROMs.
 # Make a general function to render any kind of ROM.
-# Use a step render like AML; 1) Load databases, 2) filter ROMs, 3) Process ROMs, 4) Commit ROMs.
+# Use a step render like AML: 1) Load databases, 2) filter ROMs, 3) Process ROMs, 4) Commit ROMs.
 def render_ROMs(cfg, categoryID, launcherID):
-    # Generates a special launcher dictionary for virtual launchers.
+    log_debug('render_ROMs() categoryID "{}" | launcherID "{}"'.format(categoryID, launcherID))
     st_dic = kodi_new_status_dic()
-    launcher = db_get_launcher(cfg, st_dic, launcherID)
-    if kodi_is_error_status(st_dic):
-        xbmcplugin.endOfDirectory(cfg.addon_handle, succeeded = True, cacheToDisc = False)
-        kodi_display_status_message(st_dic)
-        return
-    render_only_parent_ROMs = launcher['launcher_display_mode'] == LAUNCHER_DMODE_PCLONE
 
     # Load ROMs from disk database.
     # Set st_dic to notify if no ROMs to render.
     loading_ticks_start = time.time()
-    db_load_ROMs(cfg, st_dic, categoryID, launcherID, render_only_parent_ROMs)
-    if kodi_is_error_status(st_dic):
-        xbmcplugin.endOfDirectory(cfg.addon_handle, succeeded = True, cacheToDisc = False)
-        kodi_display_status_message(st_dic)
-        return
-
-    db_load_ROMs_Favourite_set(cfg, st_dic)
+    db_get_launcher_info(cfg, categoryID, launcherID)
+    db_load_ROMs(cfg, st_dic, categoryID, launcherID)
     if kodi_is_error_status(st_dic):
         xbmcplugin.endOfDirectory(cfg.addon_handle, succeeded = True, cacheToDisc = False)
         kodi_display_status_message(st_dic)
         return
     loading_time = time.time() - loading_ticks_start
 
-    # Filter ROMs.
-    # Set st_dic to notify if not ROMs to render after filtering.
+    # Filter ROMs. Set st_dic to notify if not ROMs to render after filtering.
     # Only standard ROM launchers are filtered.
-    # filtering_ticks_start = time.time()
+    filtering_ticks_start = time.time()
     # render_ROMs_filter(cfg, st_dic, launcher)
     # if kodi_is_error_status(st_dic):
     #     xbmcplugin.endOfDirectory(cfg.addon_handle, succeeded = True, cacheToDisc = False)
     #     kodi_display_status_message(st_dic)
     #     return
-    # filtering_time = time.time() - filtering_ticks_start
+    filtering_time = time.time() - filtering_ticks_start
 
     # Process ROMs for rendering.
     processing_ticks_start = time.time()
-    rom_list = render_ROMs_process(cfg, categoryID, launcherID, launcher)
+    rom_list = render_ROMs_process(cfg, categoryID, launcherID)
     processing_time = time.time() - processing_ticks_start
 
     # Commit ROMs.
     commit_ticks_start = time.time()
     misc_set_all_sorting_methods(cfg)
     misc_set_AEL_Content(cfg, AEL_CONTENT_VALUE_ROMS)
-    misc_set_AEL_Launcher_Content(cfg, launcher)
+    # misc_set_AEL_Launcher_Content(cfg, launcher)
     render_ROMs_commit(cfg, rom_list)
     commit_time = time.time() - commit_ticks_start
     xbmcplugin.endOfDirectory(cfg.addon_handle, succeeded = True, cacheToDisc = False)
 
     # DEBUG Data loading/rendering statistics.
     total_time = loading_time + filtering_time + processing_time + commit_time
-    log_debug('Loading time     {:.4f} s'.format(loading_time))
-    log_debug('Filtering time   {:.4f} s'.format(filtering_time))
-    log_debug('Processing time  {:.4f} s'.format(processing_time))
-    log_debug('Commit time      {:.4f} s'.format(commit_time))
-    log_debug('Total time       {:.4f} s'.format(total_time))
+    log_debug('Loading time     {:.3f} s'.format(loading_time))
+    log_debug('Filtering time   {:.3f} s'.format(filtering_time))
+    log_debug('Processing time  {:.3f} s'.format(processing_time))
+    log_debug('Commit time      {:.3f} s'.format(commit_time))
+    log_debug('Total time       {:.3f} s'.format(total_time))
+    log_debug('Total ROMs  {:,}'.format(len(cfg.roms)))
 
 # Render clone ROMs. romID is always a parent ROM.
 # This is only called in Parent/Clone display mode.
 # 
-# IMPORTANT This function needs to be changed.
-def render_ROMs_clone_ROMs(cfg, launcherID, romID):
+# IMPORTANT This function needs to be changed. Look into render_ROMs()
+def render_ROMs_clone_ROMs(cfg, categoryID, launcherID, romID):
     # --- Set content type and sorting methods ---
     misc_set_all_sorting_methods(cfg)
     misc_set_AEL_Content(cfg, AEL_CONTENT_VALUE_ROMS)
@@ -2043,8 +2032,8 @@ def render_ROMs_filter(cfg, st_dic, launcher):
 # Returns a list of dictionaries:
 # r_list = [
 #     {
-#         'm_name' : text_type, 
-#         'name' : text_type,
+#         'm_name' : text_type, # ROM ID in AEL, machine name in AML
+#         'name' : text_type, # ROM display name, same as ['info']['title']
 #         'info' : {},
 #         'art' : {},
 #         'props' : {},
@@ -2055,13 +2044,20 @@ def render_ROMs_filter(cfg, st_dic, launcher):
 # ]
 #
 # cfg.roms could be a dictionary or an OrderedDictionary (ROM Collection and Recently Played ROMs).
-def render_ROMs_process(cfg, categoryID, launcherID, launcher):
-    # Prepare data for ROM processing.
-    launcher_is_vlauncher = launcherID in VLAUNCHER_ID_LIST
-    launcher_is_vcategory = categoryID in VCATEGORY_ID_LIST
-    launcher_is_browse_by = categoryID in VCATEGORY_BROWSE_BY_ID_LIST
-    launcher_is_actual = not launcher_is_vlauncher and not launcher_is_vcategory
-    view_mode = launcher['launcher_display_mode']
+def render_ROMs_process(cfg, categoryID, launcherID):
+    # Prepare data depending on launcher class ---------------------------------------------------
+    if cfg.launcher_is_actual:
+        
+        launcher = db_get_launcher(cfg, st_dic, launcherID)
+        if kodi_is_error_status(st_dic):
+            xbmcplugin.endOfDirectory(cfg.addon_handle, succeeded = True, cacheToDisc = False)
+            kodi_display_status_message(st_dic)
+            return
+        render_only_parent_ROMs = launcher['launcher_display_mode'] == LAUNCHER_DMODE_PCLONE
+        view_mode = launcher['launcher_display_mode']
+
+    # Load Favourite set to compute ROM_in_fav tag
+    db_load_ROMs_Favourite_set(cfg)
 
     # Display ROMs.
     # if view_mode == LAUNCHER_DMODE_FLAT:
@@ -2086,11 +2082,23 @@ def render_ROMs_process(cfg, categoryID, launcherID, launcher):
             rom['m_developer'] = rom['developer']
             rom['m_rating']    = ''
             rom['m_plot']      = rom['plot']
-
             # Properties.
             rom['m_nplayers'] = rom['nplayers']
-            rom['m_esrb'] = rom['rating']
-            # rom['platform'] = cfg.platform
+            rom['m_esrb']     = rom['rating']
+
+            # Artwork
+            rom['s_title'] = ''
+            rom['s_snap'] = ''
+            rom['s_boxfront'] = ''
+            rom['s_boxback'] = ''
+            rom['s_3dbox'] = ''
+            rom['s_cartridge'] = ''
+            rom['s_flyer'] = ''
+            rom['s_map'] = ''
+
+            rom['disks'] = []
+            rom['finished'] = False
+            rom['platform'] = launcherID
 
     # --- Traverse machines ---
     r_list = []
@@ -2101,28 +2109,22 @@ def render_ROMs_process(cfg, categoryID, launcherID, launcher):
         rom = cfg.roms[romID]
         rom_raw_name = rom['m_name'] # This will not be changed.
         rom_name = rom['m_name']     # This will be changed to get the final name with color tags.
-        romID = rom['id']
-
+        # main_pclone_dic and num_clones only used when rendering parents.
+        # if flag_parent_list:
+        #     num_clones = len(main_pclone_dic[machine_name]) if machine_name in main_pclone_dic else 0
         # Do not render row if ROM is finished.
         if rom['finished'] and cfg.settings['display_hide_finished']: continue
-
-        # Add machine/ROM to list, set default values.
-        r_dict = {}
-        r_dict['m_name'] = romID
-        # main_pclone_dic and num_clones only used when rendering parents.
-        if flag_parent_list:
-            num_clones = len(main_pclone_dic[machine_name]) if machine_name in main_pclone_dic else 0
-
-        # Render machine name string, compute properties and artwork -----------------------------
         # Default values for flags/properties.
         AEL_InFav_bool_value     = AEL_INFAV_BOOL_VALUE_FALSE
         AEL_MultiDisc_bool_value = AEL_MULTIDISC_BOOL_VALUE_FALSE
         AEL_Fav_stat_value       = AEL_FAV_STAT_VALUE_NONE
         AEL_NoIntro_stat_value   = AEL_NOINTRO_STAT_VALUE_NONE
         AEL_PClone_stat_value    = AEL_PCLONE_STAT_VALUE_NONE
+        r_dict = {}
 
+        # Render machine name string, compute properties and artwork -----------------------------
         # Standard ROM launcher
-        if launcher_is_actual:
+        if cfg.launcher_is_actual:
             # Create this field which is present in Favourite ROM objects.
             rom['platform'] = launcher['platform']
 
@@ -2231,6 +2233,9 @@ def render_ROMs_process(cfg, categoryID, launcherID, launcher):
             if self.settings['display_rom_in_fav'] and rom['disks']: rom_name += ' [COLOR plum][MD][/COLOR]'
             URL = aux_url('LAUNCH_ROM', categoryID, launcherID, romID)
 
+        # Code from former command_render_ROMs_recently_played()
+        # for rom in rom_list:
+        #     gui_render_rom_row(VCATEGORY_RECENT_ID, VLAUNCHER_RECENT_ID, rom)
         elif launcherID == VLAUNCHER_RECENT_ID:
             icon_path = asset_get_default_asset_Launcher_ROM(rom, rom, 'roms_default_icon', 'DefaultProgram.png')
             fanart_path = asset_get_default_asset_Launcher_ROM(rom, rom, 'roms_default_fanart')
@@ -2242,6 +2247,9 @@ def render_ROMs_process(cfg, categoryID, launcherID, launcher):
             if self.settings['display_rom_in_fav'] and rom['disks']: rom_name += ' [COLOR plum][MD][/COLOR]'
             URL = aux_url('LAUNCH_ROM', categoryID, launcherID, romID)
 
+        # Code from former command_render_ROMs_most_played()
+        # for key in sorted(roms, key = lambda x : roms[x]['launch_count'], reverse = True):
+        #     gui_render_rom_row(VCATEGORY_MOST_PLAYED_ID, VLAUNCHER_MOST_PLAYED_ID, roms[key])
         elif launcherID == VLAUNCHER_MOST_PLAYED_ID:
             icon_path = asset_get_default_asset_Launcher_ROM(rom, rom, 'roms_default_icon', 'DefaultProgram.png')
             fanart_path = asset_get_default_asset_Launcher_ROM(rom, rom, 'roms_default_fanart')
@@ -2257,7 +2265,10 @@ def render_ROMs_process(cfg, categoryID, launcherID, launcher):
                 rom_name = '{} [COLOR orange][{} times][/COLOR]'.format(rom_raw_name, rom['launch_count'])
             URL = aux_url('LAUNCH_ROM', categoryID, launcherID, romID)
 
-        elif categoryID == VCATEGORY_ROM_COLLECTION:
+        # Code from formaer command_render_ROMs_Collection():
+        # for rom in collection_rom_list:
+        #     gui_render_rom_row(categoryID, launcherID, rom)
+        elif categoryID == VCATEGORY_ROM_COLLECTION_ID:
             icon_path = asset_get_default_asset_Launcher_ROM(rom, rom, 'roms_default_icon', 'DefaultProgram.png')
             fanart_path = asset_get_default_asset_Launcher_ROM(rom, rom, 'roms_default_fanart')
             banner_path = asset_get_default_asset_Launcher_ROM(rom, rom, 'roms_default_banner')
@@ -2287,7 +2298,10 @@ def render_ROMs_process(cfg, categoryID, launcherID, launcher):
             if cfg.settings['display_rom_in_fav'] and rom['disks']: rom_name += ' [COLOR plum][MD][/COLOR]'
             URL = aux_url('LAUNCH_ROM', categoryID, launcherID, romID)
 
-        elif launcher_is_browse_by:
+        # Former function command_render_ROMs_Browse_By_vlauncher()
+        # for key in sorted(roms, key = lambda x : roms[x]['m_name']):
+        #      self._gui_render_rom_row(virtual_categoryID, virtual_launcherID, roms[key], key in roms_fav_set)
+        elif cfg.launcher_is_browse_by:
             icon_path = asset_get_default_asset_Launcher_ROM(rom, rom, 'roms_default_icon', 'DefaultProgram.png')
             fanart_path = asset_get_default_asset_Launcher_ROM(rom, rom, 'roms_default_fanart')
             banner_path = asset_get_default_asset_Launcher_ROM(rom, rom, 'roms_default_banner')
@@ -2324,12 +2338,16 @@ def render_ROMs_process(cfg, categoryID, launcherID, launcher):
             URL = aux_url('LAUNCH_ROM', categoryID, launcherID, romID)
 
         # Core from former command_render_ROMs_AEL_scraper()
-        # for key in sorted(games, key= lambda x : games[x]['ROM']):
-        #     self._gui_render_AEL_scraper_rom_row(platform, games[key])
+        # for key in sorted(games, key = lambda x : games[x]['ROM']):
+        #     gui_render_AEL_scraper_rom_row(platform, games[key])
         elif categoryID == VCATEGORY_AOS_ID:
             icon_path = 'DefaultProgram.png'
+            fanart_path = ''
+            banner_path = ''
+            poster_path = ''
+            clearlogo_path = ''
             # When user clicks on a ROM show the raw database entry
-            URL = aux_url('VIEW_OS_ROM', 'AEL', platform, game['ROM'])
+            URL = aux_url('VIEW_AOS_ROM', 'AEL', launcherID, romID)
 
         else:
             raise TypeError
@@ -2345,6 +2363,7 @@ def render_ROMs_process(cfg, categoryID, launcherID, launcher):
         # and of the ROM name instead of changing the whole row colour.
         # BUG in Jarvis/Krypton skins. If 'year' is set to empty string a 0 is displayed
         #     on the skin. If year is not set then the correct icon is shown.
+        r_dict['m_name'] = romID
         r_dict['name'] = rom_name
         r_dict['info'] = {
             'title'   : rom_name,
@@ -2355,8 +2374,8 @@ def render_ROMs_process(cfg, categoryID, launcherID, launcher):
             'plot'    : rom['m_plot'],
             'overlay' : ICON_OVERLAY,
         }
-        if not cfg.settings['display_hide_trailers']:
-            r_dict['info']['trailer'] = rom['s_trailer']
+        # if not cfg.settings['display_hide_trailers']:
+        #     r_dict['info']['trailer'] = rom['s_trailer']
 
         # Assets/artwork -------------------------------------------------------------------------
         r_dict['art'] = {
@@ -2410,7 +2429,7 @@ def render_ROMs_process(cfg, categoryID, launcherID, launcher):
         }
 
         # Context menu ---------------------------------------------------------------------------
-        if launcher_is_actual:
+        if cfg.launcher_is_actual:
             commands = [
                 ('View ROM/Launcher', aux_url_RP('VIEW', categoryID, launcherID, romID)),
                 ('Edit ROM', aux_url_RP('EDIT_ROM', categoryID, launcherID, romID)),
@@ -2441,7 +2460,7 @@ def render_ROMs_process(cfg, categoryID, launcherID, launcher):
                 ('View ROM data', aux_url_RP('VIEW', categoryID, launcherID, romID)),
                 ('Manage Most Played', aux_url_RP('MANAGE_MOST_PLAYED', categoryID, launcherID, romID)),
             ]
-        elif categoryID == VCATEGORY_ROM_COLLECTION:
+        elif categoryID == VCATEGORY_ROM_COLLECTION_ID:
             commands = [
                 ('View Collection ROM', aux_url_RP('VIEW', categoryID, launcherID, romID)),
                 ('Edit ROM in Collection', aux_url_RP('EDIT_ROM', categoryID, launcherID, romID)),
@@ -2449,7 +2468,7 @@ def render_ROMs_process(cfg, categoryID, launcherID, launcher):
                 ('Search ROMs in Collection', aux_url_RP('SEARCH_LAUNCHER', categoryID, launcherID)),
                 ('Manage Collection ROMs', aux_url_RP('MANAGE_FAV', categoryID, launcherID, romID)),
             ]
-        elif launcher_is_browse_by:
+        elif cfg.launcher_is_browse_by:
             commands = [
                 ('View ROM data', aux_url_RP('VIEW', categoryID, launcherID, romID)),
                 ('Add ROM to AEL Favourites', aux_url_RP('ADD_TO_FAV', categoryID, launcherID, romID)),
@@ -2460,7 +2479,6 @@ def render_ROMs_process(cfg, categoryID, launcherID, launcher):
             commands = []
         else:
             raise TypeError
-
         # Add common context menu items.
         commands.append(('AEL addon settings', 'Addon.OpenSettings({})'.format(cfg.addon.info_id)))
         # Only add if kiosk mode is not enabled.
@@ -7329,6 +7347,70 @@ def command_Context_Menu_view(self, categoryID, launcherID, romID):
     else:
         kodi_dialog_OK('Wrong action == {}. This is a bug, please report it.'.format(action))
 
+# Former arguments: scraper, platform, game_name
+def command_view_AOS_rom(cfg, catID, launID, romID):
+    scraper, platform, game_name = catID, launID, romID
+    log_debug('command_view_AOS_rom() scraper   "{}"'.format(scraper))
+    log_debug('command_view_AOS_rom() platform  "{}"'.format(platform))
+    log_debug('command_view_AOS_rom() game_name "{}"'.format(game_name))
+    pobj = AEL_platforms[get_AEL_platform_index(platform)]
+    if pobj.aliasof:
+        log_debug('command_view_AOS_rom() aliasof "{}"'.format(pobj.aliasof))
+        pobj_parent = AEL_platforms[get_AEL_platform_index(pobj.aliasof)]
+        db_platform = pobj_parent.long_name
+    else:
+        db_platform = pobj.long_name
+    log_debug('command_view_AOS_rom() db_platform "{}"'.format(db_platform))
+
+    # --- Load Offline Scraper database ---
+    xml_path_FN = cfg.GAMEDB_INFO_DIR.pjoin(db_platform + '.xml')
+    log_debug('Loading AEL XML {}'.format(xml_path_FN.getPath()))
+    pDialog = KodiProgressDialog()
+    pDialog.startProgress('Loading AEL Offline Scraper {} XML database...'.format(db_platform))
+    games = audit_load_OfflineScraper_XML(xml_path_FN.getPath())
+    pDialog.endProgress()
+
+    game = games[game_name]
+    sl = []
+    sl.append('[COLOR orange]ROM information[/COLOR]')
+    sl.append("[COLOR violet]ROM basename[/COLOR]: '{}'".format(game_name))
+    sl.append("[COLOR violet]platform[/COLOR]: '{}'".format(platform))
+    if pobj.aliasof:
+        sl.append("[COLOR violet]alias of[/COLOR]: '{}'".format(pobj_parent.long_name))
+    else:
+        sl.append("[COLOR violet]alias of[/COLOR]: None")
+    sl.append('')
+    sl.append('[COLOR orange]Metadata[/COLOR]')
+
+    # Old Offline Scraper
+    # sl.append("[COLOR violet]description[/COLOR]: '{}'".format(game['description']))
+    # sl.append("[COLOR violet]year[/COLOR]: '{}'".format(game['year']))
+    # sl.append("[COLOR violet]rating[/COLOR]: '{}'".format(game['rating']))
+    # sl.append("[COLOR violet]manufacturer[/COLOR]: '{}'".format(game['manufacturer']))
+    # sl.append("[COLOR violet]dev[/COLOR]: '{}'".format(game['dev']))
+    # sl.append("[COLOR violet]genre[/COLOR]: '{}'".format(game['genre']))
+    # sl.append("[COLOR violet]score[/COLOR]: '{}'".format(game['score']))
+    # sl.append("[COLOR violet]player[/COLOR]: '{}'".format(game['player']))
+    # sl.append("[COLOR violet]story[/COLOR]: '{}'".format(game['story']))
+    # sl.append("[COLOR violet]enabled[/COLOR]: '{}'".format(game['enabled']))
+    # sl.append("[COLOR violet]crc[/COLOR]: '{}'".format(game['crc']))
+    # sl.append("[COLOR violet]cloneof[/COLOR]: '{}'".format(game['cloneof']))
+
+    # V1 Offline Scraper
+    sl.append("[COLOR violet]title[/COLOR]: '{}'".format(game['title']))
+    sl.append("[COLOR violet]year[/COLOR]: '{}'".format(game['year']))
+    sl.append("[COLOR violet]genre[/COLOR]: '{}'".format(game['genre']))
+    sl.append("[COLOR violet]developer[/COLOR]: '{}'".format(game['developer']))
+    sl.append("[COLOR violet]publisher[/COLOR]: '{}'".format(game['publisher']))
+    sl.append("[COLOR violet]rating[/COLOR]: '{}'".format(game['rating']))
+    sl.append("[COLOR violet]nplayers[/COLOR]: '{}'".format(game['nplayers']))
+    sl.append("[COLOR violet]score[/COLOR]: '{}'".format(game['score']))
+    sl.append("[COLOR violet]plot[/COLOR]: '{}'".format(game['plot']))
+
+    # Show information window.
+    window_title = 'Offline Scraper ROM information'
+    kodi_display_text_window_mono(window_title, '\n'.join(sl))
+
 # ------------------------------------------------------------------------------------------------
 # Utilities
 # ------------------------------------------------------------------------------------------------
@@ -10263,7 +10345,7 @@ def rom_scanner(self, launcherID):
 # ------------------------------------------------------------------------------------------------
 # Misc/Aux stuff
 # ------------------------------------------------------------------------------------------------
-def _command_buildMenu(self):
+def command_buildMenu(self):
     log_debug('_command_buildMenu() Starting...')
 
     hasSkinshortcuts = xbmc.getCondVisibility('System.HasAddon(script.skinshortcuts)') == 1
@@ -10380,7 +10462,7 @@ def _command_buildMenu(self):
     # xml.buildMenu("9000","","0",None,"","0")
     # log_info("Done building menu for AEL")
 
-def _buildMenuItem(self, key, name, action, thumb, fanart, count, ui):
+def buildMenuItem(self, key, name, action, thumb, fanart, count, ui):
     listitem = xbmcgui.ListItem(name)
     listitem.setProperty("defaultID", key)
     listitem.setProperty("Path", action)
@@ -10532,71 +10614,6 @@ class Main:
         kodi_dialog_OK('Imported ROM Collection "{}" metadata and assets.'.format(
             i_collection['m_name']))
         kodi_refresh_container()
-
-    def _command_view_offline_scraper_rom(self, scraper, platform, game_name):
-        log_debug('_command_view_offline_scraper_rom() scraper   "{}"'.format(scraper))
-        log_debug('_command_view_offline_scraper_rom() platform  "{}"'.format(platform))
-        log_debug('_command_view_offline_scraper_rom() game_name "{}"'.format(game_name))
-        pobj = AEL_platforms[get_AEL_platform_index(platform)]
-        if pobj.aliasof:
-            log_debug('_command_view_offline_scraper_rom() aliasof "{}"'.format(pobj.aliasof))
-            pobj_parent = AEL_platforms[get_AEL_platform_index(pobj.aliasof)]
-            db_platform = pobj_parent.long_name
-        else:
-            db_platform = pobj.long_name
-        log_debug('_command_view_offline_scraper_rom() db_platform "{}"'.format(db_platform))
-
-        # --- Load Offline Scraper database ---
-        # --- Load offline scraper XML file ---
-        loading_ticks_start = time.time()
-        if scraper == 'AEL':
-            xml_path_FN = g_PATHS.GAMEDB_INFO_DIR.pjoin(db_platform + '.xml')
-            log_debug('Loading AEL XML {}'.format(xml_path_FN.getPath()))
-            pDialog = KodiProgressDialog()
-            pDialog.startProgress('Loading AEL Offline Scraper {} XML database...'.format(db_platform))
-            games = audit_load_OfflineScraper_XML(xml_path_FN.getPath())
-            pDialog.endProgress()
-
-            game = games[game_name]
-            info_text  = '[COLOR orange]ROM information[/COLOR]\n'
-            info_text += "[COLOR violet]ROM basename[/COLOR]: '{}'\n".format(game_name)
-            info_text += "[COLOR violet]platform[/COLOR]: '{}'\n".format(platform)
-            if pobj.aliasof:
-                info_text += "[COLOR violet]alias of[/COLOR]: '{}'\n".format(pobj_parent.long_name)
-            info_text += '\n[COLOR orange]Metadata[/COLOR]\n'
-
-            # Old Offline Scraper
-            # info_text += "[COLOR violet]description[/COLOR]: '{}'\n".format(game['description'])
-            # info_text += "[COLOR violet]year[/COLOR]: '{}'\n".format(game['year'])
-            # info_text += "[COLOR violet]rating[/COLOR]: '{}'\n".format(game['rating'])
-            # info_text += "[COLOR violet]manufacturer[/COLOR]: '{}'\n".format(game['manufacturer'])
-            # info_text += "[COLOR violet]dev[/COLOR]: '{}'\n".format(game['dev'])
-            # info_text += "[COLOR violet]genre[/COLOR]: '{}'\n".format(game['genre'])
-            # info_text += "[COLOR violet]score[/COLOR]: '{}'\n".format(game['score'])
-            # info_text += "[COLOR violet]player[/COLOR]: '{}'\n".format(game['player'])
-            # info_text += "[COLOR violet]story[/COLOR]: '{}'\n".format(game['story'])
-            # info_text += "[COLOR violet]enabled[/COLOR]: '{}'\n".format(game['enabled'])
-            # info_text += "[COLOR violet]crc[/COLOR]: '{}'\n".format(game['crc'])
-            # info_text += "[COLOR violet]cloneof[/COLOR]: '{}'\n".format(game['cloneof'])
-
-            # V1 Offline Scraper
-            info_text += "[COLOR violet]title[/COLOR]: '{}'\n".format(game['title'])
-            info_text += "[COLOR violet]year[/COLOR]: '{}'\n".format(game['year'])
-            info_text += "[COLOR violet]genre[/COLOR]: '{}'\n".format(game['genre'])
-            info_text += "[COLOR violet]developer[/COLOR]: '{}'\n".format(game['developer'])
-            info_text += "[COLOR violet]publisher[/COLOR]: '{}'\n".format(game['publisher'])
-            info_text += "[COLOR violet]rating[/COLOR]: '{}'\n".format(game['rating'])
-            info_text += "[COLOR violet]nplayers[/COLOR]: '{}'\n".format(game['nplayers'])
-            info_text += "[COLOR violet]score[/COLOR]: '{}'\n".format(game['score'])
-            info_text += "[COLOR violet]plot[/COLOR]: '{}'\n".format(game['plot'])
-
-        else:
-            kodi_dialog_OK('Wrong scraper name {}'.format(scraper))
-            return
-
-        # Show information window.
-        window_title = 'Offline Scraper ROM information'
-        kodi_display_text_window_mono(window_title, info_text)
 
     # Updated all virtual categories DB
     def _command_update_virtual_category_db_all(self):

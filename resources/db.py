@@ -19,6 +19,7 @@ from .constants import *
 from .misc import *
 from .utils import *
 from .assets import *
+from .rom_audit import *
 
 # --- Python standard library ---
 import copy
@@ -385,30 +386,32 @@ def fs_get_collection_ROMs_basename(collection_name, collectionID):
 # ------------------------------------------------------------------------------------------------
 # ROM database high-level IO functions
 # ------------------------------------------------------------------------------------------------
+# * This function must be called first to update cfg object fields that will be used in many
+#   other functions.
+def db_get_launcher_info(cfg, categoryID, launcherID):
+    cfg.launcher_is_vlauncher = launcherID in VLAUNCHER_ID_LIST
+    cfg.launcher_is_vcategory = categoryID in VCATEGORY_ID_LIST
+    cfg.launcher_is_browse_by = categoryID in VCATEGORY_BROWSE_BY_ID_LIST
+    cfg.launcher_is_actual = not cfg.launcher_is_vlauncher and not cfg.launcher_is_vcategory
+    cfg.launcher_is_virtual = not cfg.launcher_is_actual
+
 # For actual ROM Launchers returns the database launcher dictionary.
 # For virtual ROM Launchers returns create a launcher dictionary on-the-fly. NOTE: this is not
 # possible! For example, every Favourite ROM has a different launching data!
+# How to solve this issue? Is this function really useful?
+#
+# For now, this function is only valid for actual ROM launchers and will fail for virtual launchers.
 def db_get_launcher(cfg, st_dic, launcherID):
-    launcher_is_vlauncher = launcherID in VLAUNCHER_ID_LIST
-    launcher_is_actual = not launcher_is_vlauncher
-
     # Actual ROM Launcher
-    if launcher_is_actual:
+    if cfg.launcher_is_actual:
         if launcherID not in cfg.launchers:
             log_error('Launcher ID not found in cfg.launchers')
             kodi_dialog_OK('Launcher ID not found in cfg.launchers. Report this bug.')
             return
         launcher = cfg.launchers[launcherID]
         return launcher
-
-    # Virtual launchers
-    elif launcherID == None:
-        pass
-
     else:
-        pass
-    
-    return launcher
+        raise TypeError
 
 # Gets launcher dictionary from ROM dictionary.
 # If ROM is a normal ROM gets launcher dictionary from cfg.launchers
@@ -418,19 +421,18 @@ def db_get_launcher_from_ROM(cfg, st_dic, rom):
 
 # Returns a dictionary with all the ROM database filenames.
 # Also works for virtual launchers.
+# For virtual launchers also get index info?
 #
 # ret['roms']  ROM main database JSON file. [FileName]
 def db_get_launcher_fnames(cfg, categoryID, launcherID):
-    launcher_is_vlauncher = launcherID in VLAUNCHER_ID_LIST
-    launcher_is_vcategory = categoryID in VCATEGORY_ID_LIST
-    launcher_is_browse_by = categoryID in VCATEGORY_BROWSE_BY_ID_LIST
-    launcher_is_actual = not launcher_is_vlauncher and not launcher_is_vcategory
     # Default return dictionary.
     ret = {
         'roms' : None,
+        'parents' : None,
+        'index' : None,
     }
 
-    if launcher_is_actual:
+    if cfg.launcher_is_actual:
         launcher = cfg.launchers[launcherID]
         roms_base_noext = launcher['roms_base_noext']
         roms_FN = cfg.ROMS_DIR.pjoin(roms_base_noext + '.json')
@@ -439,6 +441,38 @@ def db_get_launcher_fnames(cfg, categoryID, launcherID):
         ret['roms'] = roms_FN
         ret['parents'] = parents_FN
         ret['index'] = index_FN
+
+    elif cfg.launcher_is_vlauncher and launcherID == VLAUNCHER_FAVOURITES_ID:
+        ret['roms'] = cfg.FAV_JSON_FILE_PATH
+    elif cfg.launcher_is_vlauncher and launcherID == VLAUNCHER_RECENT_ID:
+        ret['roms'] = cfg.RECENT_PLAYED_FILE_PATH
+    elif cfg.launcher_is_vlauncher and launcherID == VLAUNCHER_MOST_PLAYED_ID:
+        ret['roms'] = cfg.MOST_PLAYED_FILE_PATH
+
+    elif cfg.launcher_is_vcategory and categoryID == VCATEGORY_ROM_COLLECTION_ID:
+        COL = fs_load_Collection_index_XML(cfg.COLLECTIONS_FILE_PATH)
+        collection = COL['collections'][launcherID]
+        roms_FN = cfg.COLLECTIONS_DIR.pjoin(collection['roms_base_noext'] + '.json')
+        ret['roms'] = roms_FN
+
+    elif cfg.launcher_is_browse_by:
+        # Move code from do_load_ROMs() here.
+        raise TypeError
+
+    elif cfg.launcher_is_vcategory and categoryID == VCATEGORY_AOS_ID:
+        platform = launcherID
+        log_debug('db_load_ROMs() platform "{}"'.format(platform))
+        pobj = AEL_platforms[get_AEL_platform_index(platform)]
+        if pobj.aliasof:
+            log_debug('db_load_ROMs() aliasof "{}"'.format(pobj.aliasof))
+            pobj_parent = AEL_platforms[get_AEL_platform_index(pobj.aliasof)]
+            db_platform = pobj_parent.long_name
+        else:
+            db_platform = pobj.long_name
+        xml_FN = cfg.GAMEDB_INFO_DIR.pjoin(db_platform + '.xml')
+        log_debug('xml_FN OP {}'.format(xml_FN.getOriginalPath()))
+        log_debug('xml_FN  P {}'.format(xml_FN.getPath()))
+        ret['roms'] = xml_FN
 
     else:
         raise TypeError
@@ -452,83 +486,87 @@ def db_get_launcher_fnames(cfg, categoryID, launcherID):
 # * If load_pclone_ROMs_flag is True then PClone ROMs are also loaded.
 def db_load_ROMs(cfg, st_dic, categoryID, launcherID, load_pclone_ROMs_flag = False):
     log_debug('db_load_ROMs() categoryID "{}" | launcherID "{}"'.format(categoryID, launcherID))
-    launcher_is_vlauncher = launcherID in VLAUNCHER_ID_LIST
-    launcher_is_vcategory = categoryID in VCATEGORY_ID_LIST
-    launcher_is_browse_by = categoryID in VCATEGORY_BROWSE_BY_ID_LIST
-    launcher_is_actual = not launcher_is_vlauncher and not launcher_is_vcategory
     dbdic = db_get_launcher_fnames(cfg, categoryID, launcherID)
 
     # Actual ROM Launcher ------------------------------------------------------------------------
-    if launcher_is_actual:
+    if cfg.launcher_is_actual:
         if not dbdic['roms'].exists():
-            kodi_set_status_notify(st_dic, 'Launcher JSON database not found. Add ROMs to launcher.')
+            kodi_set_st_notify(st_dic, 'Launcher JSON database not found. Add ROMs to launcher.')
             return
         cfg.roms = utils_load_JSON_file(dbdic['roms'].getPath())
         if not cfg.roms:
-            kodi_set_status_notify(st_dic, 'Launcher JSON database empty. Add ROMs to launcher.')
+            kodi_set_st_notify(st_dic, 'Launcher JSON database empty. Add ROMs to launcher.')
             return
 
         if load_pclone_ROMs_flag:
             # Load parent ROMs.
             if not dbdic['parents'].exists():
-                kodi_set_status_notify(st_dic, 'Parent ROMs JSON not found.')
+                kodi_set_st_notify(st_dic, 'Parent ROMs JSON not found.')
                 return
             cfg.roms_parent = utils_load_JSON_file(dbdic['parents'].getPath())
             if not cfg.roms_parent:
-                kodi_set_status_notify(st_dic, 'Parent ROMs JSON is empty.')
+                kodi_set_st_notify(st_dic, 'Parent ROMs JSON is empty.')
                 return
 
             # Load parent/clone index.
             if not dbdic['index'].exists():
-                kodi_set_status_notify(st_dic, 'PClone index JSON not found.')
+                kodi_set_st_notify(st_dic, 'PClone index JSON not found.')
                 return
             cfg.pclone_index = utils_load_JSON_file(dbdic['index'].getPath())
             if not cfg.pclone_index:
-                kodi_set_status_notify(st_dic, 'PClone index dict is empty.')
+                kodi_set_st_notify(st_dic, 'PClone index dict is empty.')
                 return
 
     # Virtual launchers --------------------------------------------------------------------------
-    elif launcher_is_vlauncher and launcherID == VLAUNCHER_FAVOURITES_ID:
-        cfg.roms = fs_load_Favourites_JSON(cfg.FAV_JSON_FILE_PATH)
+    elif cfg.launcher_is_vlauncher and launcherID == VLAUNCHER_FAVOURITES_ID:
+        raw_data = utils_load_JSON_file(dbdic['roms'].getPath())
+        cfg.roms = raw_data[1] if raw_data else {}
         if not cfg.roms:
-            kodi_set_status_notify(st_dic, 'Favourites is empty. Add ROMs to Favourites first.')
+            kodi_set_st_notify(st_dic, 'Favourites is empty. Add ROMs to Favourites first.')
             return
+        else:
+            # Extract roms from JSON data structe and ensure version is correct.
+            cfg.control_str = raw_data[0]['control']
+            cfg.version_int = raw_data[0]['version']
 
-    # Code from former command_render_ROMs_recently_played()
-    # for rom in rom_list:
-    #     gui_render_rom_row(VCATEGORY_RECENT_ID, VLAUNCHER_RECENT_ID, rom)
-    elif launcher_is_vlauncher and launcherID == VLAUNCHER_RECENT_ID:
-        cfg.roms = fs_load_Collection_ROMs_JSON(cfg.RECENT_PLAYED_FILE_PATH)
+    elif cfg.launcher_is_vlauncher and launcherID == VLAUNCHER_RECENT_ID:
+        # Collection ROMs are a list, not a dictionary as usual in other DBs.
+        # Convert the list to an OrderedDict()?
+        raw_data = utils_load_JSON_file(dbdic['roms'].getPath())
+        cfg.roms = raw_data[1] if raw_data else []
         if not cfg.roms:
-            kodi_set_status_notify(st_dic, 'Recently played list is empty. Play some ROMs first!')
+            kodi_set_st_notify(st_dic, 'Recently played list is empty. Play some ROMs first!')
             return
+        else:
+            cfg.control_str = raw_data[0]['control']
+            cfg.version_int = raw_data[0]['version']
 
-    # Code from former command_render_ROMs_most_played()
-    # for key in sorted(roms, key = lambda x : roms[x]['launch_count'], reverse = True):
-    #     gui_render_rom_row(VCATEGORY_MOST_PLAYED_ID, VLAUNCHER_MOST_PLAYED_ID, roms[key])
-    elif launcher_is_vlauncher and launcherID == VLAUNCHER_MOST_PLAYED_ID:
-        cfg.roms = fs_load_Favourites_JSON(cfg.MOST_PLAYED_FILE_PATH)
+    elif cfg.launcher_is_vlauncher and launcherID == VLAUNCHER_MOST_PLAYED_ID:
+        raw_data = utils_load_JSON_file(dbdic['roms'].getPath())
+        cfg.roms = raw_data[1] if raw_data else {}
         if not cfg.roms:
-            kodi_set_status_notify(st_dic, 'Most played ROMs list is empty. Play some ROMs first!.')
+            kodi_set_st_notify(st_dic, 'Most played ROMs list is empty. Play some ROMs first!.')
             return
+        else:
+            # Extract roms from JSON data structe and ensure version is correct.
+            cfg.control_str = raw_data[0]['control']
+            cfg.version_int = raw_data[0]['version']
 
     # Virtual launchers belonging to a virtual category ------------------------------------------
-    # Code from formaer command_render_ROMs_Collection():
-    # for rom in collection_rom_list:
-    #     gui_render_rom_row(categoryID, launcherID, rom)
-    elif launcher_is_vcategory and categoryID == VCATEGORY_ROM_COLLECTION:
-        COL = fs_load_Collection_index_XML(cfg.COLLECTIONS_FILE_PATH)
-        collection = COL['collections'][launcherID]
-        roms_json_file = cfg.COLLECTIONS_DIR.pjoin(collection['roms_base_noext'] + '.json')
-        collection_rom_list = fs_load_Collection_ROMs_JSON(roms_json_file)
-        if not collection_rom_list:
-            kodi_set_status_notify(st_dic, 'Collection is empty. Add ROMs to this collection first.')
+    elif cfg.launcher_is_vcategory and categoryID == VCATEGORY_ROM_COLLECTION_ID:
+        # Collection ROMs are a list, not a dictionary as usual in other DBs.
+        # Convert the list to an OrderedDict()?
+        raw_data = utils_load_JSON_file(dbdic['roms'].getPath())
+        cfg.roms = raw_data[1] if raw_data else []
+        if not cfg.roms:
+            kodi_set_st_notify(st_dic, 'Collection is empty. Add ROMs to this collection first.')
             return
+        else:
+            cfg.control_str = raw_data[0]['control']
+            cfg.version_int = raw_data[0]['version']
 
-    # Former function command_render_ROMs_Browse_By_vlauncher()
-    # for key in sorted(roms, key= lambda x : roms[x]['m_name']):
-    #      self._gui_render_rom_row(virtual_categoryID, virtual_launcherID, roms[key], key in roms_fav_set)
-    elif launcher_is_browse_by:
+    elif cfg.launcher_is_browse_by:
+        # TODO Move the name generation code to db_get_launcher_fnames()
         vdic = {
             VCATEGORY_TITLE_ID : cfg.VIRTUAL_CAT_TITLE_DIR,
             VCATEGORY_YEARS_ID : cfg.VIRTUAL_CAT_YEARS_DIR,
@@ -549,45 +587,30 @@ def db_load_ROMs(cfg, st_dic, categoryID, launcherID, load_pclone_ROMs_flag = Fa
         if not hashed_db_filename.exists():
             kodi_dialog_OK('Virtual launcher XML/JSON file not found.')
             return
-        roms = fs_load_VCategory_ROMs_JSON(vcategory_db_dir, virtual_launcherID)
-        if not roms:
+            
+        cfg.roms = fs_load_VCategory_ROMs_JSON(vcategory_db_dir, virtual_launcherID)
+        if not cfg.roms:
             kodi_notify('Virtual category ROMs XML empty. Add items to favourites first.')
             return
 
-    elif launcher_is_vcategory and categoryID == VCATEGORY_AOS_ID:
-        # Load ROMs.
-        log_debug('_command_render_AEL_scraper_roms() platform "{}"'.format(platform))
-        pobj = AEL_platforms[get_AEL_platform_index(platform)]
-        if pobj.aliasof:
-            log_debug('_command_view_offline_scraper_rom() aliasof "{}"'.format(pobj.aliasof))
-            pobj_parent = AEL_platforms[get_AEL_platform_index(pobj.aliasof)]
-            db_platform = pobj_parent.long_name
-        else:
-            db_platform = pobj.long_name
-        log_debug('_command_view_offline_scraper_rom() db_platform "{}"'.format(db_platform))
-
-        # If XML DB not available tell user and leave
-        xml_path_FN = g_PATHS.GAMEDB_INFO_DIR.pjoin(db_platform + '.xml')
-        log_debug('xml_path_FN OP {}'.format(xml_path_FN.getOriginalPath()))
-        log_debug('xml_path_FN  P {}'.format(xml_path_FN.getPath()))
-        if not xml_path_FN.exists():
-            kodi_notify_warn('{} database not available yet.'.format(db_platform))
-            # kodi_refresh_container()
+    elif cfg.launcher_is_vcategory and categoryID == VCATEGORY_AOS_ID:
+        if not dbdic['roms'].exists():
+            kodi_set_st_nwarn(st_dic, '{} database not available yet.'.format(db_platform))
             return
-        games = audit_load_OfflineScraper_XML(xml_path_FN.getPath())
+        cfg.roms = audit_load_OfflineScraper_XML(dbdic['roms'].getPath())
 
     else:
         raise TypeError
 
 # This function never fails.
-def db_load_ROMs_Favourite_set(cfg, st_dic):
+def db_load_ROMs_Favourite_set(cfg):
     # Transform the dictionary keys into a set. Sets are faster when checking if an element exists.
-    roms_fav = fs_load_Favourites_JSON(cfg.FAV_JSON_FILE_PATH)
-    cfg.roms_fav_set = set(roms_fav.keys())
-
-
-
-
+    raw_data = utils_load_JSON_file(cfg.FAV_JSON_FILE_PATH.getPath())
+    roms_fav = raw_data[1] if raw_data else {}
+    if not cfg.roms:
+        cfg.roms_fav_set = set()
+    else:
+        cfg.roms_fav_set = set(roms_fav.keys())
 
 
 
@@ -935,9 +958,9 @@ def fs_write_ROMs_JSON(roms_dir_FN, launcher, roms):
     utils_write_slist_to_file(roms_xml_file.getPath(), slist)
     utils_write_JSON_file(roms_json_file.getPath(), roms)
 
-# -------------------------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------------------------
 # Favourite ROMs
-# -------------------------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------------------------
 # Save Favourites JSON file. roms is a dictionary of dictionaries.
 def fs_write_Favourites_JSON(roms_json_file, roms):
     log_info('fs_write_Favourites_JSON() File {}'.format(roms_json_file.getOriginalPath()))
@@ -950,21 +973,9 @@ def fs_write_Favourites_JSON(roms_json_file, roms):
     raw_data = [control_dic, roms]
     utils_write_JSON_file(roms_json_file.getPath(), raw_data)
 
-# Loads an JSON file containing the Favourite ROMs
-def fs_load_Favourites_JSON(roms_json_FN):
-    raw_data = utils_load_JSON_file(roms_json_FN.getPath())
-    if not raw_data: return {}
-
-    # --- Extract roms from JSON data structe and ensure version is correct ---
-    control_str = raw_data[0]['control']
-    version_int = raw_data[0]['version']
-    roms = raw_data[1]
-
-    return roms
-
-# -------------------------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------------------------
 # ROM Collections
-# -------------------------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------------------------
 def fs_write_Collection_index_XML(collections_xml_file, collections):
     log_info('fs_write_Collection_index_XML() File {}'.format(collections_xml_file.getOriginalPath()))
     slist = []
@@ -1000,7 +1011,7 @@ def fs_write_Collection_index_XML(collections_xml_file, collections):
     utils_write_slist_to_file(collections_xml_file.getPath(), slist)
 
 def fs_load_Collection_index_XML(collections_xml_file):
-    __debug_xml_parser = 0
+    __debug_xml_parser = False
     ret = {
         'timestamp' : 0.0,
         'collections' : {}
@@ -1037,19 +1048,6 @@ def fs_write_Collection_ROMs_JSON(roms_json_FN, roms):
     }
     raw_data = [control_dic, roms]
     utils_write_JSON_file(roms_json_FN.getPath(), raw_data)
-
-# Loads an JSON file containing the Virtual Launcher ROMs
-# WARNING Collection ROMs are a list, not a dictionary as usual in other DBs.
-def fs_load_Collection_ROMs_JSON(roms_json_FN):
-    raw_data = utils_load_JSON_file(roms_json_FN.getPath())
-    if not raw_data: return []
-
-    # --- Extract roms from JSON data structe and ensure version is correct ---
-    control_str = raw_data[0]['control']
-    version_int = raw_data[0]['version']
-    roms = raw_data[1]
-
-    return roms
 
 # Exports a collection in human-readable JSON.
 # Filenames of artwork/assets must be converted to relative paths, see
