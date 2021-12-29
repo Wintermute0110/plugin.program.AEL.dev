@@ -1238,8 +1238,8 @@ class ROM(MetaDataItemABC):
         self.scanned_data = scanned_data
         self.launchers_data = launchers_data
 
-        if self.tags is None and 'rom_tags' in self.entity_data:
-            tag_data = str(self.entity_data['rom_tags'])
+        if self.tags is None and 'rom_tags' in rom_data:
+            tag_data = str(rom_data['rom_tags'])
             self.tags = {t: '' for t in tag_data.split(',')}
         
         super(ROM, self).__init__(rom_data, assets_data, asset_paths_data)
