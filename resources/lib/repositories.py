@@ -1290,7 +1290,7 @@ class ROMsRepository(object):
 
     def _insert_tags(self, tag_data:dict, metadata_id:str):
         existing_tags = self._get_tags()
-        for tag_name, tag_id in tag_data:
+        for tag_name, tag_id in tag_data.items():
             if tag_id == '':
                 if not tag_name in existing_tags.keys():
                     tag_id = self._insert_tag(tag_name)

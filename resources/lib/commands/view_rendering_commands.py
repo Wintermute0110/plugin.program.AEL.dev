@@ -351,7 +351,7 @@ def _render_romcollection_listitem(romcollection_obj: ROMCollection):
     return { 
         'id': romcollection_obj.get_id(),
         'name': romcollection_name,
-        'url': globals.router.url_for_path('{}/{}'.format(url_prefix, romcollection_obj.get_id())),
+        'url': globals.router.url_for_path(f'{url_prefix}/{romcollection_obj.get_id()}'),
         'is_folder': True,
         'type': 'video',
         'info': {

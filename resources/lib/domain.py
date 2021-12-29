@@ -416,6 +416,14 @@ class ScraperAddon(ROMAddon):
         
         return False
 
+    def is_metadata_supported(self, metadata_id) -> bool:
+        supported_items = self.get_supported_metadata()
+        return supported_items is not None and metadata_id in supported_items
+
+    def is_asset_supported(self, asset_id) -> bool:
+        supported_items = self.get_supported_assets()
+        return supported_items is not None and asset_id in supported_items
+
     def get_supported_metadata(self) -> typing.List[str]:
         extra_settings = self.addon.get_extra_settings()
         supported_types = extra_settings['supported_metadata'] if 'supported_metadata' in extra_settings else None
@@ -1501,25 +1509,40 @@ class ROM(MetaDataItemABC):
     # Updates an ROM entity with the API object given.
     # Flags indicate which elements are allowed to be updated/altered with the incoming data.
     #
-    def update_with(self, api_rom_obj: api.ROMObj, update_meta=False, update_assets=False, update_scanned_data=False):
+    def update_with(self, api_rom_obj: api.ROMObj, metadata_to_update=[], assets_to_update=[], update_scanned_data=False):
         
-        if update_meta:
-            if api_rom_obj.get_name() is not None:              self.set_name(api_rom_obj.get_name())
-            if api_rom_obj.get_plot() is not None:              self.set_plot(api_rom_obj.get_plot())
-            if api_rom_obj.get_releaseyear() is not None:       self.set_releaseyear(api_rom_obj.get_releaseyear())
-            if api_rom_obj.get_genre() is not None:             self.set_genre(api_rom_obj.get_genre())
-            if api_rom_obj.get_developer() is not None:         self.set_developer(api_rom_obj.get_developer())
-            if api_rom_obj.get_number_of_players() is not None: self.set_number_of_players(api_rom_obj.get_number_of_players())
-            if api_rom_obj.get_esrb_rating() is not None:       self.set_esrb_rating(api_rom_obj.get_esrb_rating())
-            if api_rom_obj.get_rating() is not None:            self.set_rating(api_rom_obj.get_rating())
-            if api_rom_obj.get_number_of_players_online() is not None: 
-                self.set_number_of_players_online(api_rom_obj.get_number_of_players_online())
-            
-            if api_rom_obj.get_tags() is not None:
-                for tag in api_rom_obj.get_tags():
-                    self.add_tag(tag)
+        if constants.META_TITLE_ID in metadata_to_update and api_rom_obj.get_name() is not None:
+            self.set_name(api_rom_obj.get_name())
+
+        if constants.META_PLOT_ID in metadata_to_update and api_rom_obj.get_plot() is not None:              
+            self.set_plot(api_rom_obj.get_plot())
+        
+        if constants.META_YEAR_ID in metadata_to_update and api_rom_obj.get_releaseyear() is not None:       
+            self.set_releaseyear(api_rom_obj.get_releaseyear())
+        
+        if constants.META_GENRE_ID in metadata_to_update and api_rom_obj.get_genre() is not None:             
+            self.set_genre(api_rom_obj.get_genre())
+        
+        if constants.META_DEVELOPER_ID in metadata_to_update and api_rom_obj.get_developer() is not None:         
+            self.set_developer(api_rom_obj.get_developer())
+        
+        if constants.META_NPLAYERS_ID in metadata_to_update and api_rom_obj.get_number_of_players() is not None: 
+            self.set_number_of_players(api_rom_obj.get_number_of_players())
+        
+        if constants.META_NPLAYERS_ONLINE_ID in metadata_to_update and api_rom_obj.get_number_of_players_online() is not None: 
+            self.set_number_of_players_online(api_rom_obj.get_number_of_players_online())
+        
+        if constants.META_ESRB_ID in metadata_to_update and api_rom_obj.get_esrb_rating() is not None:       
+            self.set_esrb_rating(api_rom_obj.get_esrb_rating())
+        
+        if constants.META_RATING_ID in metadata_to_update and api_rom_obj.get_rating() is not None:            
+            self.set_rating(api_rom_obj.get_rating())
+        
+        if constants.META_TAGS_ID in metadata_to_update and api_rom_obj.get_tags() is not None:
+            for tag in api_rom_obj.get_tags():
+                self.add_tag(tag)
                     
-        if update_assets:
+        if len(assets_to_update) > 0:
             for asset_id in self.get_asset_ids_list():
                 if api_rom_obj.get_asset(asset_id) is not None: 
                     if asset_id == constants.ASSET_TRAILER_ID:

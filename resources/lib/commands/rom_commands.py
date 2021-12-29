@@ -20,7 +20,7 @@ from __future__ import division
 import logging
 import collections
 
-from akl import constants, settings
+from akl import constants
 from akl.utils import kodi, text, io
 
 from resources.lib.commands.mediator import AppMediator

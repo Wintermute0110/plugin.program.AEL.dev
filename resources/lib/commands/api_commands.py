@@ -188,6 +188,9 @@ def cmd_store_scraped_roms(args) -> bool:
         metadata_is_updated = applied_settings.scrape_metadata_policy != constants.SCRAPE_ACTION_NONE
         assets_are_updated  = applied_settings.scrape_assets_policy != constants.SCRAPE_ACTION_NONE
 
+        metadata_to_update = applied_settings.metadata_IDs_to_scrape if metadata_is_updated else []
+        assets_to_update = applied_settings.asset_IDs_to_scrape if assets_are_updated else []
+
         for rom_data in scraped_roms:
             api_rom_obj = ROMObj(rom_data)
             
@@ -200,7 +203,7 @@ def cmd_store_scraped_roms(args) -> bool:
                 continue
             
             rom_obj = existing_roms_by_id[api_rom_obj.get_id()]
-            rom_obj.update_with(api_rom_obj, update_meta=metadata_is_updated, update_assets=assets_are_updated)
+            rom_obj.update_with(api_rom_obj, metadata_to_update, assets_to_update)
             #rom_obj.scraped_with(scraper_id)
             
             rom_repository.update_rom(rom_obj)
@@ -238,7 +241,10 @@ def cmd_store_scraped_single_rom(args) -> bool:
         metadata_is_updated = applied_settings.scrape_metadata_policy != constants.SCRAPE_ACTION_NONE
         assets_are_updated  = applied_settings.scrape_assets_policy != constants.SCRAPE_ACTION_NONE
         
-        rom.update_with(scraped_rom, update_meta=metadata_is_updated, update_assets=assets_are_updated)
+        metadata_to_update = applied_settings.metadata_IDs_to_scrape if metadata_is_updated else []
+        assets_to_update   = applied_settings.asset_IDs_to_scrape if assets_are_updated else []
+
+        rom.update_with(scraped_rom, metadata_to_update, assets_to_update)
         #rom_obj.scraped_with(scraper_id)
         
         rom_repository.update_rom(rom)
