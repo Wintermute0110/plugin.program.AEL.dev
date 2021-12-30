@@ -65,6 +65,7 @@ def qry_get_roms(collection_id: str) -> str:
         for rom in roms:
             rom_dto = rom.create_dto()
             data.append(rom_dto.get_data_dic())
+            
         return json.dumps(data)
     
 def qry_get_launchers(collection_id: str) -> str:

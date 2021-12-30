@@ -1137,7 +1137,7 @@ class ROMsRepository(object):
         tags_data = self._uow.result_set()
         tags = {}
         for tag_data in tags_data:
-            tags[tag_data['name']] = tag_data['id']
+            tags[tag_data['tag']] = tag_data['id']
             
         return ROM(rom_data, tags, assets, asset_paths, scanned_data, launchers)
 

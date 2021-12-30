@@ -202,7 +202,7 @@ def cmd_scrape_rom_metadata(args):
         roms_repository = ROMsRepository(uow)
         rom             = roms_repository.find_rom(rom_id)   
         
-        scraper_settings = ScraperSettings()
+        scraper_settings = ScraperSettings().from_addon_settings()
         scraper_settings.scrape_metadata_policy  = constants.SCRAPE_POLICY_SCRAPE_ONLY
         scraper_settings.scrape_assets_policy    = constants.SCRAPE_ACTION_NONE
         scraper_settings.search_term_mode        = constants.SCRAPE_MANUAL
@@ -216,6 +216,7 @@ def cmd_scrape_rom_metadata(args):
             return
 
         logger.debug(f'SCRAPE_ROM_METADATA: cmd_scrape_rom_metadata() Selected scraper#{selected_addon.get_name()}')
+        scraper_settings.metadata_IDs_to_scrape = selected_addon.get_supported_metadata()
     
         options = collections.OrderedDict()
         for metadata_id in constants.METADATA_IDS:
@@ -226,9 +227,9 @@ def cmd_scrape_rom_metadata(args):
             
         if selected_options is not None:
             scraper_settings.metadata_IDs_to_scrape = selected_options 
-            selected_addon.set_scraper_settings(scraper_settings)
 
     # >> Execute scraper
+    selected_addon.set_scraper_settings(scraper_settings)
     kodi.run_script(
         selected_addon.addon.get_addon_id(),
         selected_addon.get_scrape_command(rom))
@@ -289,12 +290,25 @@ def cmd_scrape_rom_assets(args):
             logger.debug('cmd_scrape_rom_assets() Selected None. Closing context menu')
             AppMediator.sync_cmd('ROM_EDIT_ASSETS', args)
             return
+
+        logger.debug('cmd_scrape_rom_assets() Selected scraper#{}'.format(selected_addon.get_name()))
+        scraper_settings.asset_IDs_to_scrape = selected_addon.get_supported_assets()
     
-    # >> Execute scraper
-    logger.debug('cmd_scrape_rom_assets() Selected scraper#{}'.format(selected_addon.get_name()))
-    scraper_settings.overwrite_existing = kodi.dialog_yesno('Overwrite existing assets settings?')
-    selected_addon.set_scraper_settings(scraper_settings)
+        asset_options = g_assetFactory.get_all()
+        options = collections.OrderedDict()
+        for asset_option in asset_options:
+            if selected_addon.is_asset_supported(asset_option):
+                options[asset_option.id] = asset_option.name
         
+        selected_options = kodi.MultiSelectDialog().select('Assets to scrape', options, preselected=scraper_settings.asset_IDs_to_scrape)
+    
+        if selected_options is not None:
+            scraper_settings.asset_IDs_to_scrape = selected_options 
+
+        scraper_settings.overwrite_existing = kodi.dialog_yesno('Overwrite existing assets settings?')
+    
+    selected_addon.set_scraper_settings(scraper_settings)
+    # >> Execute scraper    
     kodi.run_script(
         selected_addon.addon.get_addon_id(),
         selected_addon.get_scrape_command(rom))
@@ -307,11 +321,10 @@ def cmd_configure_scraper_metadata_policy(args):
     scraper_settings:ScraperSettings = args['scraper_settings'] if 'scraper_settings' in args else ScraperSettings.from_addon_settings()
     
     options = collections.OrderedDict()
-    options[constants.SCRAPE_ACTION_NONE]           = kodi.translate(constants.SCRAPE_ACTION_NONE)
-    options[constants.SCRAPE_POLICY_TITLE_ONLY]     = kodi.translate(constants.SCRAPE_POLICY_TITLE_ONLY)
-    options[constants.SCRAPE_POLICY_NFO_PREFERED]   = kodi.translate(constants.SCRAPE_POLICY_NFO_PREFERED)
-    options[constants.SCRAPE_POLICY_NFO_AND_SCRAPE] = kodi.translate(constants.SCRAPE_POLICY_NFO_AND_SCRAPE)
-    options[constants.SCRAPE_POLICY_SCRAPE_ONLY]    = kodi.translate(constants.SCRAPE_POLICY_SCRAPE_ONLY)
+    options[constants.SCRAPE_ACTION_NONE]             = kodi.translate(constants.SCRAPE_ACTION_NONE)
+    options[constants.SCRAPE_POLICY_TITLE_ONLY]       = kodi.translate(constants.SCRAPE_POLICY_TITLE_ONLY)
+    options[constants.SCRAPE_POLICY_LOCAL_AND_SCRAPE] = kodi.translate(constants.SCRAPE_POLICY_LOCAL_AND_SCRAPE)
+    options[constants.SCRAPE_POLICY_SCRAPE_ONLY]      = kodi.translate(constants.SCRAPE_POLICY_SCRAPE_ONLY)
     
     s = 'Metadata scan policy "{}"'.format(kodi.translate(scraper_settings.scrape_metadata_policy))
     selected_option = kodi.OrdDictionaryDialog().select(s, options, preselect=scraper_settings.scrape_metadata_policy)

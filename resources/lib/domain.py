@@ -1312,7 +1312,7 @@ class ROM(MetaDataItemABC):
 
     def get_tags(self) -> typing.List[str]:
         if self.tags is not None:
-            return self.tags.keys()
+            return [tag for tag in self.tags.keys()]
         return []
 
     def get_tag_data(self) -> dict:

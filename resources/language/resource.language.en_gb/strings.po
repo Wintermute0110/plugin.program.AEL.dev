@@ -219,20 +219,12 @@ msgctxt "#20010"
 msgid "None"
 msgstr "settings.xml"
 
-msgctxt "#20020"
-msgid "NFO files"
-msgstr "settings.xml"
-
 msgctxt "#20030"
-msgid "Local images"
-msgstr "settings.xml"
-
-msgctxt "#20040"
-msgid "NFO files + Scrapers"
+msgid "Local files"
 msgstr "settings.xml"
 
 msgctxt "#20050"
-msgid "Local images + Scrapers"
+msgid "Local files + Scrapers"
 msgstr "settings.xml"
 
 msgctxt "#20060"
