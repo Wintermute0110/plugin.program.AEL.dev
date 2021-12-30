@@ -425,7 +425,7 @@ def _render_rom_listitem(rom_obj: ROM):
         'name': list_name,
         'url': globals.router.url_for_path('execute/rom/{}'.format(rom_obj.get_id())),
         'is_folder': False,
-        'type': 'game',
+        'type': 'video',
         'info': {
             'title'   : rom_obj.get_name(),    'year'    : rom_obj.get_releaseyear(),
             'genre'   : rom_obj.get_genre(),   'studio'  : rom_obj.get_developer(),
