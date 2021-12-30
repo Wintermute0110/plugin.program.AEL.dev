@@ -1071,7 +1071,7 @@ class ROMsRepository(object):
                     
             asset_paths_result_set  = []
             scanned_data_result_set = []
-            tags = {}      
+            tags_data_set = {}      
         else:
             self._uow.execute(QUERY_SELECT_ROMS_BY_SET, romcollection_id)
             result_set = self._uow.result_set()

@@ -101,6 +101,9 @@ class AppService(object):
         self._perform_scans()
 
     def _do_version_upgrade(self, uow:UnitOfWork, db_version:LooseVersion):
+        if not globals.g_PATHS.DATABASE_MIGRATIONS_PATH.exists():
+            globals.g_PATHS.DATABASE_MIGRATIONS_PATH.makedirs()
+            
         migrations_files_available  = globals.g_PATHS.DATABASE_MIGRATIONS_PATH.scanFilesInPath("*.sql")
         migrations_files_to_execute = []
         for migration_file in migrations_files_available:
