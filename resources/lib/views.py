@@ -203,6 +203,11 @@ def render_list_items(container_data, container_context_items = []):
     vw_misc_set_AEL_Content(container_data['obj_type'] if 'obj_type' in container_data else constants.OBJ_NONE)
     vw_misc_clear_AEL_Launcher_Content()
 
+    # Container Properties
+    if 'properties' in container_data:
+        for property, value in container_data['properties'].items():
+            xbmcplugin.setProperty(router.handle, property, value)
+
     for list_item_data in container_data['items']:
         
         name        = list_item_data['name']

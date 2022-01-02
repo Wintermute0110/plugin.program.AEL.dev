@@ -282,6 +282,10 @@ def _render_romcollection_view(romcollection_obj: ROMCollection, roms_repository
         'id': romcollection_obj.get_id(),
         'parent_id': romcollection_obj.get_parent_id(),
         'name': romcollection_obj.get_name(),
+        'properties': {
+            'platform': romcollection_obj.get_platform(),
+            'boxsize': romcollection_obj.get_box_sizing()
+        },
         'obj_type': romcollection_obj.get_type(),
         'items': []
     }
