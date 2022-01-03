@@ -349,20 +349,53 @@ def cmd_rom_metadata_plot(args):
 
 @AppMediator.register('ROM_EDIT_METADATA_TAGS')
 def cmd_rom_metadata_tags(args):
-    options = collections.OrderedDict()
-    options['ROM_ADD_METADATA_TAGS']    = "Add tags"
-    options['ROM_REMOVE_METADATA_TAGS'] = "Remove tags"
-    options['ROM_CLEAR_METADATA_TAGS']  = "Clear tags"
+    rom_id = args['rom_id'] if 'rom_id' in args else None  
+    uow = UnitOfWork(globals.g_PATHS.DATABASE_FILE_PATH)
+    with uow:
+        repository = ROMsRepository(uow)
+        rom = repository.find_rom(rom_id)
+        selected_option = 1
+        did_remove_tag = False
 
-    s = 'Edit Tags'
-    selected_option = kodi.OrdDictionaryDialog().select(s, options)
-    if selected_option is None:
-        # >> Return recursively to parent menu.
-        logger.debug('cmd_rom_metadata_tags() Selected NONE')
-        AppMediator.sync_cmd('ROM_EDIT_METADATA', args)
-        return
+        options = collections.OrderedDict()
+        options['ROM_ADD_METADATA_TAGS']    = "[Add tag]"
+        options['ROM_CLEAR_METADATA_TAGS']  = "[Clear all tags]"
 
-    logger.debug('cmd_rom_metadata_tags() Selected {0}'.format(selected_option))
+        for tag in rom.get_tags():
+            options[tag] = tag
+
+        while selected_option is not None:
+            s = 'Edit Tags'
+            selected_option = kodi.OrdDictionaryDialog().select(s, options)
+            if selected_option is None:
+                continue
+            
+            if selected_option == 'ROM_ADD_METADATA_TAGS' or \
+                selected_option == 'ROM_CLEAR_METADATA_TAGS':
+                break               
+            
+            if not kodi.dialog_yesno(f'Remove tag "{selected_option}"?'):
+                continue
+
+            did_remove_tag = True
+            logger.debug(f'cmd_rom_metadata_remove_tag() Remove tag {options[selected_option]}')
+            kodi.notify(f'Removing tag "{selected_option}"')
+            del options[selected_option]
+            rom.remove_tag(selected_option)
+
+        if did_remove_tag:
+            kodi.notify('Updating ROM with removed tags')
+            repository.update_rom(rom)
+            uow.commit()
+            AppMediator.async_cmd('RENDER_ROM_VIEWS', {'rom_id': rom.get_id()})   
+
+        if selected_option is None:
+            # >> Return recursively to parent menu.
+            logger.debug('cmd_rom_metadata_tags() Selected NONE')
+            AppMediator.sync_cmd('ROM_EDIT_METADATA', args)
+            return
+
+    logger.debug(f'cmd_rom_metadata_tags() Selected {selected_option}')
     AppMediator.sync_cmd(selected_option, args)
 
 @AppMediator.register('ROM_ADD_METADATA_TAGS')
@@ -375,7 +408,7 @@ def cmd_rom_metadata_add_tag(args):
         available_tags = repository.find_all_tags()
 
         options = collections.OrderedDict()
-        options['MANUAL'] = '> Manual insert tag'
+        options['MANUAL'] = '[Manual insert tag]'
         if available_tags is not None and len(available_tags) > 0:
             options.update({value:key for key, value in available_tags.items()})
         
@@ -392,44 +425,17 @@ def cmd_rom_metadata_add_tag(args):
                 if tag is not None: 
                     did_add_tag = True
                     logger.debug(f'cmd_rom_metadata_add_tag() Adding tag "{tag}"')
+                    kodi.notify(f'Adding tag "{tag}')
                     rom.add_tag(tag)
             else:
                 tag = options[selected_option]
                 did_add_tag = True
                 logger.debug(f'cmd_rom_metadata_add_tag() Adding tag "{tag}"')
+                kodi.notify(f'Adding tag "{tag}')
                 rom.add_tag(tag)
 
         if did_add_tag:
-            repository.update_rom(rom)
-            uow.commit()
-            AppMediator.async_cmd('RENDER_ROM_VIEWS', {'rom_id': rom.get_id()})       
-    AppMediator.sync_cmd('ROM_EDIT_METADATA_TAGS', args)
-
-@AppMediator.register('ROM_REMOVE_METADATA_TAGS')
-def cmd_rom_metadata_remove_tag(args):
-    rom_id = args['rom_id'] if 'rom_id' in args else None  
-    uow = UnitOfWork(globals.g_PATHS.DATABASE_FILE_PATH)
-    with uow:
-        repository = ROMsRepository(uow)
-        rom = repository.find_rom(rom_id)
-        selected_option = 1
-        did_remove_tag = False
-
-        if rom.get_tags() is None or len(rom.get_tags()) == 0:
-            kodi.notify_warn('ROM has no tags to remove.')
-            AppMediator.sync_cmd('ROM_EDIT_METADATA_TAGS', args)
-            return
-
-        while selected_option is not None and selected_option > 0:
-            options = rom.get_tags()
-            selected_option = kodi.ListDialog().select('Select tag to remove', options)
-                
-            if selected_option is not None and selected_option > 0:
-                did_remove_tag = True
-                logger.debug(f'cmd_rom_metadata_remove_tag() Remove tag {options[selected_option]}')
-                rom.remove_tag(options[selected_option])
-
-        if did_remove_tag:
+            kodi.notify('Updating ROM with added tags')
             repository.update_rom(rom)
             uow.commit()
             AppMediator.async_cmd('RENDER_ROM_VIEWS', {'rom_id': rom.get_id()})       
@@ -443,10 +449,11 @@ def cmd_rom_metadata_clear_tags(args):
         repository = ROMsRepository(uow)
         rom = repository.find_rom(rom_id)
 
-        if kodi.dialog_yesno(f'Clear all tags from ROM "{rom.get_name()}"'):
+        if kodi.dialog_yesno(f'Clear all tags from ROM "{rom.get_name()}"?'):
             rom.clear_tags()
             repository.update_rom(rom)
             uow.commit()
+            kodi.notify(f'Removed all tags from ROM "{rom.get_name()}')
             AppMediator.async_cmd('RENDER_ROM_VIEWS', {'rom_id': rom.get_id()})        
     AppMediator.sync_cmd('ROM_EDIT_METADATA_TAGS', args)
 
