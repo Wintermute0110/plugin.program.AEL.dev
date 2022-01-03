@@ -179,6 +179,19 @@ def qry_get_utilities_items():
         'properties': { constants.AKL_CONTENT_LABEL: constants.AKL_CONTENT_VALUE_NONE, 'obj_type': constants.OBJ_NONE }
     })
     container['items'].append({
+        'name': 'Manage ROM tags',
+        'url': globals.router.url_for_path('execute/command/manage_rom_tags'),
+        'is_folder': False,
+        'type': 'video',
+        'info': {
+            'title': 'Manage ROM tags',
+            'plot': 'Manage existing/available tags for ROMs',
+            'overlay': 4
+        },
+        'art': { 'icon' : listitem_icon, 'fanart' : listitem_fanart, 'poster' : listitem_poster  },
+        'properties': { constants.AKL_CONTENT_LABEL: constants.AKL_CONTENT_VALUE_NONE, 'obj_type': constants.OBJ_NONE }
+    })
+    container['items'].append({
         'name': 'Import category/launcher XML configuration file',
         'url': globals.router.url_for_path('execute/command/import_launchers'),
         'is_folder': False,

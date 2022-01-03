@@ -1043,6 +1043,7 @@ QUERY_SELECT_TAGS               = "SELECT * FROM tags"
 QUERY_INSERT_TAG                = "INSERT INTO tags (id, tag) VALUES (?,?)" 
 QUERY_ADD_TAG_TO_ROM            = "INSERT INTO metatags (metadata_id, tag_id) VALUES (?,?)"
 QUERY_DELETE_EXISTING_ROM_TAGS  = "DELETE FROM metatags WHERE metadata_id = ?"
+QUERY_DELETE_TAG                = "DELETE FROM tags WHERE id = ?"
 
 class ROMsRepository(object):
        
@@ -1239,10 +1240,18 @@ class ROMsRepository(object):
     def delete_rom(self, rom_id: str):
         logger.info("ROMsRepository.delete_rom(): Deleting ROM '{}'".format(rom_id))
         self._uow.execute(QUERY_DELETE_ROM, rom_id)
-    
+
     def delete_roms_by_romcollection(self, romcollection_id:str):
         self._uow.execute(QUERY_DELETE_ROMS_BY_COLLECTION, romcollection_id)
-           
+
+    def insert_tag(self, tag:str) -> str:
+        db_id = text.misc_generate_random_SID()
+        self._uow.execute(QUERY_INSERT_TAG, db_id, tag)
+        return db_id
+    
+    def delete_tag(self, tag_id:str):
+        self._uow.execute(QUERY_DELETE_TAG, tag_id)
+
     def _insert_asset(self, asset: Asset, rom_obj: ROM):
         asset_db_id = text.misc_generate_random_SID()
         self._uow.execute(QUERY_INSERT_ASSET, asset_db_id, asset.get_path(), asset.get_asset_info_id())
@@ -1293,15 +1302,10 @@ class ROMsRepository(object):
         for tag_name, tag_id in tag_data.items():
             if tag_id == '':
                 if not tag_name in existing_tags.keys():
-                    tag_id = self._insert_tag(tag_name)
+                    tag_id = self.insert_tag(tag_name)
                 else:
                     tag_id = existing_tags[tag_name]
             self._uow.execute(QUERY_ADD_TAG_TO_ROM, metadata_id, tag_id)
-
-    def _insert_tag(self, tag:str) -> str:
-        db_id = text.misc_generate_random_SID()
-        self._uow.execute(QUERY_INSERT_TAG, db_id, tag)
-        return db_id
 
     def _get_queries_by_vcollection_type(self, vcollection:VirtualCollection) -> typing.Tuple[str, str]:
         

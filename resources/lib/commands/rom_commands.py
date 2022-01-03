@@ -346,7 +346,6 @@ def cmd_rom_metadata_plot(args):
             AppMediator.async_cmd('RENDER_ROM_VIEWS', {'rom_id': rom.get_id()})
     AppMediator.sync_cmd('ROM_EDIT_METADATA', args)
 
-
 @AppMediator.register('ROM_EDIT_METADATA_TAGS')
 def cmd_rom_metadata_tags(args):
     rom_id = args['rom_id'] if 'rom_id' in args else None  
@@ -566,4 +565,44 @@ def cmd_rom_save_nfo_file(args):
     
     AppMediator.sync_cmd('ROM_EDIT_METADATA', args)
 
-# --- Atomic commands - ASSETS ---
+@AppMediator.register('MANAGE_ROM_TAGS')
+def cmd_manage_rom_tags(args):
+
+    uow = UnitOfWork(globals.g_PATHS.DATABASE_FILE_PATH)
+    with uow:
+        repository = ROMsRepository(uow)
+        available_tags = repository.find_all_tags()
+
+        options = collections.OrderedDict()
+        options['ADD_TAG'] = "[Add tag]"
+        if available_tags is not None and len(available_tags) > 0:
+            options.update({value:key for key, value in available_tags.items()})
+
+        did_tag_change = False
+        while selected_option is not None:
+            s = 'Manage Tags'
+            selected_option = kodi.OrdDictionaryDialog().select(s, options)
+            if selected_option is None:
+                continue
+            
+            if selected_option == 'ADD_TAGS':
+                tag = kodi.dialog_keyboard('Tag')
+                if tag is not None: 
+                    did_tag_change = True
+                    logger.debug(f'cmd_manage_rom_tags() Adding tag "{tag}"')
+                    kodi.notify(f'Adding tag "{tag}')
+                    tag_id = repository.insert_tag(tag)
+                    options[tag_id] = tag
+                    break
+                           
+            if not kodi.dialog_yesno(f'Remove tag "{options[selected_option]}"?'):
+                continue
+
+            did_tag_change = True
+            logger.debug(f'cmd_manage_rom_tags() Remove tag {options[selected_option]}')
+            kodi.notify(f'Removing tag "{selected_option}"')
+            del options[selected_option]
+            repository.delete_tag(selected_option)
+
+        if did_tag_change:
+            uow.commit()  
