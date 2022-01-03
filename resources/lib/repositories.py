@@ -1141,6 +1141,14 @@ class ROMsRepository(object):
             
         return ROM(rom_data, tags, assets, asset_paths, scanned_data, launchers)
 
+    def find_all_tags(self) -> dict:
+        self._uow.execute(QUERY_SELECT_TAGS)
+        tag_data = self._uow.result_set()
+        tags = {}
+        for tag in tag_data:
+            tags[tag['tag']] = tag['id']
+        return tags
+
     def insert_rom(self, rom_obj: ROM): 
         logger.info(f"ROMsRepository.insert_rom(): Inserting new ROM '{rom_obj.get_name()}'")
         metadata_id = text.misc_generate_random_SID()
@@ -1276,20 +1284,12 @@ class ROMsRepository(object):
         for key, value in scanned_data.items():
             self._uow.execute(QUERY_INSERT_ROM_SCANNED_DATA, rom_id, key, value)
 
-    def _get_tags(self) -> dict:
-        self._uow.execute(QUERY_SELECT_TAGS)
-        tag_data = self._uow.result_set()
-        tags = {}
-        for tag in tag_data:
-            tags[tag['tag']] = tag['id']
-        return tags
-
     def _update_tags(self, tag_data:dict, metadata_id:str):
         self._uow.execute(QUERY_DELETE_EXISTING_ROM_TAGS, metadata_id)
         self._insert_tags(tag_data, metadata_id)
 
     def _insert_tags(self, tag_data:dict, metadata_id:str):
-        existing_tags = self._get_tags()
+        existing_tags = self.find_all_tags()
         for tag_name, tag_id in tag_data.items():
             if tag_id == '':
                 if not tag_name in existing_tags.keys():

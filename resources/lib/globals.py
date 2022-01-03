@@ -41,7 +41,7 @@ class AKL_Paths(object):
         self.HOME_DIR         = io.FileName('special://home')
         self.PROFILE_DIR      = io.FileName('special://profile')
         self.ADDONS_DATA_DIR  = io.FileName('special://profile/addon_data')
-        self.DATABASE_DIR     = io.FileName('special://database')
+        #self.DATABASE_DIR     = io.FileName('special://database')
         
         self.ADDON_DATA_DIR             = self.ADDONS_DATA_DIR.pjoin(addon_id)
         self.ADDONS_CODE_DIR            = self.HOME_DIR.pjoin('addons', True)
@@ -54,7 +54,7 @@ class AKL_Paths(object):
         # -- Root data file
         self.ROOT_PATH              = self.ADDON_DATA_DIR.pjoin('root.json')
         # --- Databases and reports ---
-        self.DATABASE_FILE_PATH     = self.DATABASE_DIR.pjoin('akl.db')
+        self.DATABASE_FILE_PATH     = self.ADDON_DATA_DIR.pjoin('akl.db')
         # --- datetime peek file for automatic scanning ---
         self.SCAN_INDICATOR_FILE    = self.ADDON_DATA_DIR.pjoin('auto_scan.txt')
 

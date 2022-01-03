@@ -40,14 +40,14 @@ class AppService(object):
         
         # --- Some debug stuff for development ---
         logger.info('------------ Called Advanced Kodi Launcher : Service ------------')
-        logger.debug('sys.platform   "{}"'.format(sys.platform))
+        logger.debug(f'sys.platform   "{sys.platform}"')
         if io.is_android(): logger.debug('OS             "Android"')
         if io.is_windows(): logger.debug('OS             "Windows"')
         if io.is_osx():     logger.debug('OS             "OSX"')
         if io.is_linux():   logger.debug('OS             "Linux"')
         logger.debug('Python version "' + sys.version.replace('\n', '') + '"')
-        logger.debug('addon.id         "{}"'.format(globals.addon_id))
-        logger.debug('addon.version    "{}"'.format(globals.addon_version))
+        logger.debug(f'addon.id         "{globals.addon_id}"')
+        logger.debug(f'addon.version    "{globals.addon_version}"')
         logger.debug("Starting AKL service")
 
         uow = UnitOfWork(globals.g_PATHS.DATABASE_FILE_PATH)
@@ -57,6 +57,7 @@ class AppService(object):
             
         db_version = uow.get_database_version()
         current_version = kodi.get_addon_version()
+        logger.debug(f'db.id            "{db_version}"')
         if db_version is None or LooseVersion(db_version) < LooseVersion(current_version):
             self._do_version_upgrade(uow, LooseVersion(db_version))
         

@@ -1355,6 +1355,14 @@ class ROM(MetaDataItemABC):
         if not tag in existing_tags:
             self.tags[tag] = ''
 
+    def remove_tag(self, tag:str):
+        if self.tags is None: return
+        if not tag in self.tags: return
+        del self.tags[tag]
+
+    def clear_tags(self):
+        self.tags = {}
+
     def set_nointro_status(self, status):
         self.entity_data['nointro_status'] = status
 

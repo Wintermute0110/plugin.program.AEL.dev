@@ -95,6 +95,7 @@ def cmd_rom_metadata(args):
     options['ROM_EDIT_METADATA_ESRB']        = "Edit ESRB rating: '{}'".format(rom.get_esrb_rating())
     options['ROM_EDIT_METADATA_RATING']      = "Edit Rating: '{}'".format(rating)
     options['ROM_EDIT_METADATA_PLOT']        = "Edit Plot: '{}'".format(plot_str)
+    options['ROM_EDIT_METADATA_TAGS']        = "Edit Tags"
     options['ROM_EDIT_METADATA_BOXSIZE']     = "Edit Box Size: '{}'".format(rom.get_box_sizing())
     options['ROM_LOAD_PLOT']                 = "Load Plot from TXT file ..."
     options['ROM_IMPORT_NFO_FILE_DEFAULT']   = 'Import NFO file (default {})'.format(NFO_found_str)
@@ -344,7 +345,111 @@ def cmd_rom_metadata_plot(args):
             uow.commit()
             AppMediator.async_cmd('RENDER_ROM_VIEWS', {'rom_id': rom.get_id()})
     AppMediator.sync_cmd('ROM_EDIT_METADATA', args)
-    
+
+
+@AppMediator.register('ROM_EDIT_METADATA_TAGS')
+def cmd_rom_metadata_tags(args):
+    options = collections.OrderedDict()
+    options['ROM_ADD_METADATA_TAGS']    = "Add tags"
+    options['ROM_REMOVE_METADATA_TAGS'] = "Remove tags"
+    options['ROM_CLEAR_METADATA_TAGS']  = "Clear tags"
+
+    s = 'Edit Tags'
+    selected_option = kodi.OrdDictionaryDialog().select(s, options)
+    if selected_option is None:
+        # >> Return recursively to parent menu.
+        logger.debug('cmd_rom_metadata_tags() Selected NONE')
+        AppMediator.sync_cmd('ROM_EDIT_METADATA', args)
+        return
+
+    logger.debug('cmd_rom_metadata_tags() Selected {0}'.format(selected_option))
+    AppMediator.sync_cmd(selected_option, args)
+
+@AppMediator.register('ROM_ADD_METADATA_TAGS')
+def cmd_rom_metadata_add_tag(args):
+    rom_id = args['rom_id'] if 'rom_id' in args else None  
+    uow = UnitOfWork(globals.g_PATHS.DATABASE_FILE_PATH)
+    with uow:
+        repository = ROMsRepository(uow)
+        rom = repository.find_rom(rom_id)
+        available_tags = repository.find_all_tags()
+
+        options = collections.OrderedDict()
+        options['MANUAL'] = '> Manual insert tag'
+        if available_tags is not None and len(available_tags) > 0:
+            options.update({value:key for key, value in available_tags.items()})
+        
+        selected_option = 'MANUAL'
+        did_add_tag = False
+
+        while selected_option is not None:
+            selected_option = kodi.OrdDictionaryDialog().select('Tag to add', options)
+                
+            if selected_option is None: break
+            
+            if selected_option == 'MANUAL':
+                tag = kodi.dialog_keyboard('Tag')
+                if tag is not None: 
+                    did_add_tag = True
+                    logger.debug(f'cmd_rom_metadata_add_tag() Adding tag "{tag}"')
+                    rom.add_tag(tag)
+            else:
+                tag = options[selected_option]
+                did_add_tag = True
+                logger.debug(f'cmd_rom_metadata_add_tag() Adding tag "{tag}"')
+                rom.add_tag(tag)
+
+        if did_add_tag:
+            repository.update_rom(rom)
+            uow.commit()
+            AppMediator.async_cmd('RENDER_ROM_VIEWS', {'rom_id': rom.get_id()})       
+    AppMediator.sync_cmd('ROM_EDIT_METADATA_TAGS', args)
+
+@AppMediator.register('ROM_REMOVE_METADATA_TAGS')
+def cmd_rom_metadata_remove_tag(args):
+    rom_id = args['rom_id'] if 'rom_id' in args else None  
+    uow = UnitOfWork(globals.g_PATHS.DATABASE_FILE_PATH)
+    with uow:
+        repository = ROMsRepository(uow)
+        rom = repository.find_rom(rom_id)
+        selected_option = 1
+        did_remove_tag = False
+
+        if rom.get_tags() is None or len(rom.get_tags()) == 0:
+            kodi.notify_warn('ROM has no tags to remove.')
+            AppMediator.sync_cmd('ROM_EDIT_METADATA_TAGS', args)
+            return
+
+        while selected_option is not None and selected_option > 0:
+            options = rom.get_tags()
+            selected_option = kodi.ListDialog().select('Select tag to remove', options)
+                
+            if selected_option is not None and selected_option > 0:
+                did_remove_tag = True
+                logger.debug(f'cmd_rom_metadata_remove_tag() Remove tag {options[selected_option]}')
+                rom.remove_tag(options[selected_option])
+
+        if did_remove_tag:
+            repository.update_rom(rom)
+            uow.commit()
+            AppMediator.async_cmd('RENDER_ROM_VIEWS', {'rom_id': rom.get_id()})       
+    AppMediator.sync_cmd('ROM_EDIT_METADATA_TAGS', args)
+
+@AppMediator.register('ROM_CLEAR_METADATA_TAGS')
+def cmd_rom_metadata_clear_tags(args):
+    rom_id = args['rom_id'] if 'rom_id' in args else None  
+    uow = UnitOfWork(globals.g_PATHS.DATABASE_FILE_PATH)
+    with uow:
+        repository = ROMsRepository(uow)
+        rom = repository.find_rom(rom_id)
+
+        if kodi.dialog_yesno(f'Clear all tags from ROM "{rom.get_name()}"'):
+            rom.clear_tags()
+            repository.update_rom(rom)
+            uow.commit()
+            AppMediator.async_cmd('RENDER_ROM_VIEWS', {'rom_id': rom.get_id()})        
+    AppMediator.sync_cmd('ROM_EDIT_METADATA_TAGS', args)
+
 @AppMediator.register('ROM_EDIT_METADATA_BOXSIZE')
 def cmd_rom_metadata_boxsize(args):
     rom_id = args['rom_id'] if 'rom_id' in args else None  
