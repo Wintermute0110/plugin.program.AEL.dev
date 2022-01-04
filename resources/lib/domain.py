@@ -1239,8 +1239,8 @@ class ROM(MetaDataItemABC):
         self.launchers_data = launchers_data
 
         if self.tags is None and 'rom_tags' in rom_data:
-            tag_data = str(rom_data['rom_tags'])
-            self.tags = {t: '' for t in tag_data.split(',')}
+            tag_data_str = str(rom_data['rom_tags'])
+            self.tags = {t: '' for t in tag_data_str.split(',')}
         
         super(ROM, self).__init__(rom_data, assets_data, asset_paths_data)
         
@@ -1316,7 +1316,7 @@ class ROM(MetaDataItemABC):
         return []
 
     def get_tag_data(self) -> dict:
-        return self.tags
+        return self.tags if self.tags is None else {}
 
     def get_launch_count(self):
         return self.entity_data['launch_count']
@@ -2366,7 +2366,6 @@ def _get_default_ROM_data_model():
         'platform': '',
         'box_size': '',
         'disks' : [],
-        'rom_tags': [],
         'finished' : False,
         'nointro_status' : constants.AUDIT_STATUS_NONE,
         'pclone_status' : constants.PCLONE_STATUS_NONE,
