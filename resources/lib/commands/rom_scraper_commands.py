@@ -182,7 +182,7 @@ def cmd_scrape_rom_with_settings(args):
             AppMediator.sync_cmd('SCRAPE_ROM', args)
             return
         
-        if selected_option is not 'SCRAPE':
+        if selected_option != 'SCRAPE':
             args['ret_cmd'] = 'SCRAPE_ROM_WITH_SETTINGS'
             AppMediator.sync_cmd(selected_option, args)
             return

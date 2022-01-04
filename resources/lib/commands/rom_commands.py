@@ -578,6 +578,7 @@ def cmd_manage_rom_tags(args):
         if available_tags is not None and len(available_tags) > 0:
             options.update({value:key for key, value in available_tags.items()})
 
+        selected_option = 'ADD_TAG'
         did_tag_change = False
         while selected_option is not None:
             s = 'Manage Tags'
@@ -585,7 +586,7 @@ def cmd_manage_rom_tags(args):
             if selected_option is None:
                 continue
             
-            if selected_option == 'ADD_TAGS':
+            if selected_option == 'ADD_TAG':
                 tag = kodi.dialog_keyboard('Tag')
                 if tag is not None: 
                     did_tag_change = True
@@ -593,16 +594,16 @@ def cmd_manage_rom_tags(args):
                     kodi.notify(f'Adding tag "{tag}')
                     tag_id = repository.insert_tag(tag)
                     options[tag_id] = tag
-                    break
+                continue
                            
             if not kodi.dialog_yesno(f'Remove tag "{options[selected_option]}"?'):
                 continue
 
             did_tag_change = True
             logger.debug(f'cmd_manage_rom_tags() Remove tag {options[selected_option]}')
-            kodi.notify(f'Removing tag "{selected_option}"')
+            kodi.notify(f'Removing tag "{options[selected_option]}"')
             del options[selected_option]
             repository.delete_tag(selected_option)
 
         if did_tag_change:
-            uow.commit()  
+            uow.commit()
