@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
-# Copyright (c) 2016-2021 Wintermute0110 <wintermute0110@gmail.com>
+# Copyright (c) Wintermute0110 <wintermute0110@gmail.com> / Chrisism <crizizz@gmail.com>
+# Portions (c) 2018 Chrisism
 # Portions (c) 2010-2015 Angelscry and others
 #
 # This program is free software; you can redistribute it and/or modify
@@ -14,8 +15,15 @@
 
 # Advanced Emulator Launcher main script file.
 
+import sys
+import logging
+
 # --- Modules/packages in this plugin ---
-import resources.main
+from ael.utils import kodilogging, kodi
+from resources.lib import views
+
+kodilogging.config()
+logger = logging.getLogger(__name__)
 
 # --- Python standard library ---
 import sys
@@ -34,4 +42,10 @@ import sys
 # This way, the Python interpreter will precompile them into bytecode (files PYC/PYO) so
 # loading time is faster compared to loading PY files.
 # See http://www.network-theory.co.uk/docs/pytut/CompiledPythonfiles.html
-resources.main.Main().run_plugin(sys.argv)
+#
+
+try:
+    views.run_plugin(sys.argv)
+except Exception as ex:
+    logger.fatal('Exception in plugin', exc_info=ex)
+    kodi.notify_error("General failure")

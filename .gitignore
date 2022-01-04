@@ -24,3 +24,8 @@ package-lock.json
 .pytest_cache/v/cache/lastfailed
 .pytest_cache/v/cache/nodeids
 .pytest_cache/v/cache/stepwise
+routing.py
+pyrightconfig.json
+.env
+tests/assets/test_db.db
+tools/

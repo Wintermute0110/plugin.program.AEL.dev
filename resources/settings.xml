@@ -1,100 +1,316 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
-<settings>
-<category label="ROM scanner">
-    <setting label="Recursive scan" type="bool" id="scan_recursive" default="true" />
-    <setting label="Ignore BIOS files" type="bool" id="scan_ignore_bios" default="true"/>
-    <setting label="Ignore Scraped Titles (use ROM filenames)" type="bool" id="scan_ignore_scrap_title" default="true" />
-    <setting label="MAME Ignore Scraped Titles (use ROM filenames)" type="bool" id="scan_ignore_scrap_title_MAME" default="false" />
-    <setting label="Clean No-Intro/TOSEC Title Tags (tag) [tag] {tag}" type="bool" id="scan_clean_tags" default="false" />
-    <setting label="Update NFO files after ROM scraping" type="bool" id="scan_update_NFO_files" default="false" />
-    <setting label="Skip scanning if scraping fails" type="bool" id="scan_skip_on_scraping_failure" default="true" />
-</category>
-<!-- Make sure the scraper lists match the variables in constants.py -->
-<category label="ROM scraping">
-    <setting id="separator" type="lsep" label="Scanner settings"/>
-    <setting label="Metadata scan policy" type="labelenum" id="scan_metadata_policy" default="20040" lvalues="20010|20020|20040|20060" />
-    <setting label="Asset scan policy" type="labelenum" id="scan_asset_policy" default="20060" lvalues="20030|20050|20060" />
-    <setting label="Game selection mode" type="labelenum" id="game_selection_mode" default="20520" lvalues="20510|20520" />
-    <setting label="Asset selection mode" type="labelenum" id="asset_selection_mode" default="20520" lvalues="20510|20520" />
-
-    <setting id="separator" type="lsep" label="Scanner scrapers"/>
-    <setting label="Metadata scraper" type="labelenum" id="scraper_metadata" default="10020" lvalues="10020|10030|10050|10040" />
-    <setting label="Asset scraper" type="labelenum" id="scraper_asset" default="10030" lvalues="10030|10050|10040|10090" />
-    <setting label="MAME metadata scraper" type="labelenum" id="scraper_metadata_MAME" default="10020" lvalues="10020|10070|10030|10050|10040" />
-    <setting label="MAME asset scraper" type="labelenum" id="scraper_asset_MAME" default="10070" lvalues="10070|10030|10050|10040" />
-</category>
-<category label="Misc settings">
-    <setting id="separator" type="lsep" label="Scraper API keys"/>
-    <setting label="TheGamesDB API key" default="" id="scraper_thegamesdb_apikey" type="text"/>
-    <setting label="MobyGames API key" type="text" id="scraper_mobygames_apikey" default="" />
-    <setting label="SteamGridDB API key" type="text" id="scraper_steamgriddb_apikey" default="" />
-    <setting label="ScreenScraper Username" type="text" id="scraper_screenscraper_ssid" default="" />
-    <setting label="ScreenScraper Pass" type="text" id="scraper_screenscraper_sspass" default="" />
-
-    <setting id="separator" type="lsep" label="Scraper settings"/>
-    <!-- ScreenScraper settings are automatically generated with Python scripts -->
-    <setting label="ScreenScraper region" type="enum" id="scraper_screenscraper_region" default="0" values="World|Europe|USA|Japan|ScreenScraper|American continent|Asia|Australia|Bulgaria|Brazil|Canada|Chile|China|Custom|Czech republic|Germany|Denmark|Finland|France|Greece|Hungary|Israel|Italy|Korea|Kuwait|Middle East|Netherlands|Norway|New Zealand|Oceania|Peru|Poland|Portugal|Russia|Sweden|Slovakia|Spain|Turkey|Taiwan|United Kingdom" />
-    <setting label="ScreenScraper language" type="enum" id="scraper_screenscraper_language" default="0" values="English|Spanish|Japanese|Czech|Danish|German|Finnish|French|Hungarian|Italian|Korean|Dutch|Norwegian|Polish|Portuguese|Russian|Slovak|Swedish|Turkish|Chinese" />
-
-    <setting id="separator" type="lsep" label="Utilities"/>
-    <setting label="Retroarch System directory" type="folder" id="io_retroarch_sys_dir" default="" source="" />
-    <setting label="Only check mandatory BIOSes" type="bool" id="io_retroarch_only_mandatory" default="true"/>
-</category>
-<category label="ROM audit">
-    <setting label="Unkown ROMs are" type="enum" id="audit_unknown_roms" default="0" values="Parents|Clones" />
-    <setting label="Search assets in the Parent/Clone group" type="bool" id="audit_pclone_assets" default="true" />
-    <setting label="No-Intro DAT directory" type="folder" id="audit_nointro_dir" default="" source="" />
-    <setting label="Redump DAT directory" type="folder" id="audit_redump_dir" default="" source="" />
-<!--
-    <setting label="1G1R primary region" type="enum" id="audit_1G1R_first_region" default="0" values="Europe|USA|Japan" />
-    <setting label="1G1R secondary region" type="enum" id="audit_1G1R_second_region" default="0" values="Spain|France|Brazil|Korea" />
-    <setting label="1G1R tertiary region" type="enum" id="audit_1G1R_third_region" default="0" values="Spain|France|Brazil|Korea" />
--->
-</category>
-<category label="Display">
-    <setting id="separator" type="lsep" label="General"/>
-    <setting label="Categories display mode" type="enum" id="display_category_mode" default="0" values="Standard|Flat" />
-    <setting label="Launching application notification" type="bool" id="display_launcher_notify" default="true" />
-    <setting label="Hide categories/launchers/ROMs marked as finished" type="bool" id="display_hide_finished" default="false" />
-    <setting label="Display number of ROMs in launchers" type="bool" id="display_launcher_roms" default="true" />
-
-    <setting id="separator" type="lsep" label="ROM tags"/>
-    <setting label="Display ROM in Favourites tag" type="bool" id="display_rom_in_fav" default="true" />
-    <setting label="Display ROM audit tag" type="bool" id="display_nointro_stat" default="true" />
-    <setting label="Display Favourite Status tag" type="bool" id="display_fav_status" default="true" />
-
-    <setting id="separator" type="lsep" label="Special Categories/Launchers"/>
-    <setting label="Hide Favourites" type="bool" id="display_hide_favs" default="false" />
-    <setting label="Hide ROM Collections" type="bool" id="display_hide_collections" default="false" />
-    <setting label="Hide Browse by..." type="bool" id="display_hide_vlaunchers" default="false" />
-    <setting label="Hide Browse AEL Offline Scraper" type="bool" id="display_hide_AEL_scraper" default="false" />
-    <setting label="Hide Recently played ROMs" type="bool" id="display_hide_recent" default="false" />
-    <setting label="Hide Most played ROMs" type="bool" id="display_hide_mostplayed" default="false" />
-    <setting label="Hide Utilities" type="bool" id="display_hide_utilities" default="false" />
-    <setting label="Hide Global Reports" type="bool" id="display_hide_g_reports" default="false" />
-</category>
-<category label="Paths">
-    <setting id="separator" type="lsep" label="Retroarch paths/options"/>
-    <setting label="Retroarch executable" type="folder" id="retroarch_exec_path" default="" source="" />
-    <setting label="Retroarch cores directory" type="folder" id="retroarch_cores_dir" default="" source="" />    
-    <setting label="Retroarch system directory" type="folder" id="retroarch_system_dir" default="" source="" />
-
-    <setting id="separator" type="lsep" label="AEL asset paths"/>
-    <setting label="Category Asset directory" type="folder" id="categories_asset_dir" default="" source="" />
-    <setting label="Launcher Asset directory" type="folder" id="launchers_asset_dir" default="" source="" />
-    <setting label="Favourites Asset directory" type="folder" id="favourites_asset_dir" default="" source="" />
-    <setting label="Collections Asset directory" type="folder" id="collections_asset_dir" default="" source="" />
-</category>
-<category label="Advanced">
-    <setting label="Action on Kodi playing media" type="enum" id="media_state_action" default="0" values="Stop|Pause|Let Play" />
-    <setting label="After/before launch delay (ms)" type="slider" id="delay_tempo" default="500" range="0,100,15000" option="int" />
-    <setting label="Suspend/resume Kodi audio engine" type="bool" id="suspend_audio_engine" default="false" />
-    <setting label="Suspend/resume Kodi screensaver" type="bool" id="suspend_screensaver" default="false" />
-    <setting label="Escape $rom$ quotes" type="bool" id="escape_romfile" default="false" />
-    <setting label="Disable LIRC (Linux only)" type="bool" id="lirc_state" default="true" />
-    <setting label="Show batch command window (Windows only)" type="bool" id="show_batch_window" default="false" />
-    <setting label="Close file descriptors (Windows only)" type="bool" id="windows_close_fds" default="true" />
-    <setting label="CD into aplication dir (Windows only)" type="bool" id="windows_cd_apppath" default="true" />
-    <setting label="Log level" type="enum" id="log_level" default="2" values="ERROR|WARNING|INFO|DEBUG" />
-</category>
+<settings version="1">
+    <section id="plugin.program.ael">
+        <category id="rom_scanner" label="40010">
+			<group id="1">
+                <setting id="scan_ignore_scrap_title" type="boolean" label="40103" help="">
+                    <level>0</level>
+                    <default>true</default>
+                    <control type="toggle"/>
+                </setting>
+                <setting id="scan_clean_tags" type="boolean" label="40104" help="">
+                    <level>0</level>
+                    <default>false</default>
+                    <control type="toggle"/>
+                </setting>
+                <setting id="scan_update_NFO_files" type="boolean" label="40105" help="">
+                    <level>0</level>
+                    <default>false</default>
+                    <control type="toggle"/>
+                </setting>
+            </group>
+        </category>
+        <category id="rom_scraping" label="40011">
+			<group id="2">
+                <setting id="scrape_metadata_policy" type="integer" label="40201" help="">
+                    <level>0</level>
+                    <default>20040</default>
+                    <constraints>
+                        <options>
+                            <option label="20010">20010</option>
+                            <option label="20020">20020</option>
+                            <option label="20040">20040</option>
+                            <option label="20060">20060</option>
+                        </options>
+                    </constraints>
+                    <control type="spinner" format="string"/>
+                </setting>
+                <setting id="scrape_assets_policy" type="integer" label="40202" help="">
+                    <level>0</level>
+                    <default>20060</default>
+                    <constraints>
+                        <options>
+                            <option label="20030">20030</option>
+                            <option label="20050">20050</option>
+                            <option label="20060">20060</option>
+                        </options>
+                    </constraints>
+                    <control type="spinner" format="string"/>
+                </setting>
+                <setting id="game_selection_mode" type="integer" label="40203" help="">
+                    <level>0</level>
+                    <default>20520</default>
+                    <constraints>
+                        <options>
+                            <option label="20510">20510</option>
+                            <option label="20520">20520</option>
+                        </options>
+                    </constraints>
+                    <control type="spinner" format="string"/>
+                </setting>
+                <setting id="asset_selection_mode" type="integer" label="40204" help="">
+                    <level>0</level>
+                    <default>20520</default>
+                    <constraints>
+                        <options>
+                            <option label="20510">20510</option>
+                            <option label="20520">20520</option>
+                        </options>
+                    </constraints>
+                    <control type="spinner" format="string"/>
+                </setting>
+            </group>
+        </category>
+        <category  id="rom_audit" label="40013">
+			<group id="3">
+                <setting id="audit_unknown_roms" type="integer" label="40301" help="">
+                    <level>0</level>
+                    <default>20530</default>
+                    <constraints>
+                        <options>
+                            <option label="20530">20530</option>
+                            <option label="20531">20531</option>
+                        </options>
+                    </constraints>
+                    <control type="spinner" format="string"/>
+                </setting>
+                <setting id="audit_pclone_assets" type="boolean" label="40302" help="">
+                    <level>0</level>
+                    <default>true</default>
+                    <control type="toggle"/>
+                </setting>
+                <setting id="audit_nointro_dir" type="path" label="40303" help="">
+					<level>0</level>
+					<default/>
+					<constraints>
+						<sources>
+							<source/>
+						</sources>
+						<writable>false</writable>
+						<allowempty>true</allowempty>
+					</constraints>
+					<control type="button" format="path">
+						<heading>40303</heading>
+					</control>
+                </setting> 
+                <setting id="audit_redump_dir" type="path" label="40304" help="">
+					<level>0</level>
+					<default/>
+					<constraints>
+						<sources>
+							<source/>
+						</sources>
+						<writable>false</writable>
+						<allowempty>true</allowempty>
+					</constraints>
+					<control type="button" format="path">
+						<heading>40304</heading>
+					</control>
+                </setting> 
+            <!--
+                <setting label="1G1R primary region" type="enum" id="audit_1G1R_first_region" default="0" values="Europe|USA|Japan" />
+                <setting label="1G1R secondary region" type="enum" id="audit_1G1R_second_region" default="0" values="Spain|France|Brazil|Korea" />
+                <setting label="1G1R tertiary region" type="enum" id="audit_1G1R_third_region" default="0" values="Spain|France|Brazil|Korea" />
+            -->
+            </group>
+        </category>
+        <category id="display" label="40014">
+            <group id="grp_general" label="40021">
+                <setting id="display_hide_finished" type="boolean" label="40403" help="">
+                    <level>0</level>
+                    <default>false</default>
+                    <control type="toggle"/>
+                </setting>
+                <setting id="display_launcher_roms" type="boolean" label="40404" help="">
+                    <level>0</level>
+                    <default>true</default>
+                    <control type="toggle"/>
+                </setting>
+            </group>
+            <group id="grp_tags" label="40022">
+                <setting id="display_rom_in_fav" type="boolean" label="40405" help="">
+                    <level>0</level>
+                    <default>true</default>
+                    <control type="toggle"/>
+                </setting>
+                <setting id="display_nointro_stat" type="boolean" label="40406" help="">
+                    <level>0</level>
+                    <default>true</default>
+                    <control type="toggle"/>
+                </setting>
+                <setting id="display_fav_status" type="boolean" label="40407" help="">
+                    <level>0</level>
+                    <default>true</default>
+                    <control type="toggle"/>
+                </setting>
+            </group>
+            <group id="grp_specials" label="40023">
+                <setting id="display_hide_favs" type="boolean" label="40408" help="">
+                    <level>0</level>
+                    <default>false</default>
+                    <control type="toggle"/>
+                </setting>
+                <setting id="display_hide_collections" type="boolean" label="40409" help="">
+                    <level>0</level>
+                    <default>false</default>
+                    <control type="toggle"/>
+                </setting>
+                <setting id="display_hide_vcategories" type="boolean" label="40410" help="">
+                    <level>0</level>
+                    <default>false</default>
+                    <control type="toggle"/>
+                </setting>
+                <setting id="display_hide_AEL_scraper" type="boolean" label="40411" help="">
+                    <level>0</level>
+                    <default>false</default>
+                    <control type="toggle"/>
+                </setting>
+                <setting id="display_hide_recent" type="boolean" label="40412" help="">
+                    <level>0</level>
+                    <default>false</default>
+                    <control type="toggle"/>
+                </setting>
+                <setting id="display_hide_mostplayed" type="boolean" label="40413" help="">
+                    <level>0</level>
+                    <default>false</default>
+                    <control type="toggle"/>
+                </setting>
+                <setting id="display_hide_utilities" type="boolean" label="40414" help="">
+                    <level>0</level>
+                    <default>false</default>
+                    <control type="toggle"/>
+                </setting>
+                <setting id="display_hide_g_reports" type="boolean" label="40415" help="">
+                    <level>0</level>
+                    <default>false</default>
+                    <control type="toggle"/>
+                </setting>
+            </group>
+        </category>
+        <category id="paths" label="40015">
+            <group id="4">
+                <setting id="categories_asset_dir" type="path" label="40501" help="">
+					<level>0</level>
+					<default/>
+					<constraints>
+						<sources>
+							<source/>
+						</sources>
+						<writable>false</writable>
+						<allowempty>true</allowempty>
+					</constraints>
+					<control type="button" format="path">
+						<heading>40501</heading>
+					</control>
+                </setting> 
+                <setting id="launchers_asset_dir" type="path" label="40502" help="">
+					<level>0</level>
+					<default/>
+					<constraints>
+						<sources>
+							<source/>
+						</sources>
+						<writable>false</writable>
+						<allowempty>true</allowempty>
+					</constraints>
+					<control type="button" format="path">
+						<heading>40502</heading>
+					</control>
+                </setting> 
+                <setting id="collections_asset_dir" type="path" label="40504" help="">
+					<level>0</level>
+					<default/>
+					<constraints>
+						<sources>
+							<source/>
+						</sources>
+						<writable>false</writable>
+						<allowempty>true</allowempty>
+					</constraints>
+					<control type="button" format="path">
+						<heading>40504</heading>
+					</control>
+                </setting> 
+                <!-- <setting label="40503" type="folder" id="favourites_asset_dir" default="" source="" /> -->
+            </group>
+        </category>
+        <!-- <category id="plugins" label="40017">
+            <group id="grp_plugins">
+                <setting id="script_ael_defaults" type="addon" label="40701" help="">
+                    <level>0</level>
+                    <default/>
+                    <constraints>
+                        <addontype>script.ael.defaults</addontype>
+                        <allowempty>true</allowempty>
+                    </constraints>
+                    <control type="button" format="addon">
+                        <heading>40701</heading>
+                        <show more="true" details="true">installed</show>
+                    </control>
+                </setting>
+                <setting id="script_ael_google" type="addon" label="40702" help="">
+                    <level>0</level>
+                    <default/>
+                    <constraints>
+                        <addontype>script.ael.google</addontype>
+                        <allowempty>true</allowempty>
+                    </constraints>
+                    <control type="button" format="addon">
+                        <heading>40702</heading>
+                        <show more="true" details="true">installed</show>
+                    </control>
+                </setting>
+            </group>
+        </category> -->
+        <category id="advanced" label="40016">
+            <group id="5">
+                <setting id="fallback_to_retroplayer" type="boolean" label="40613" help="">
+                    <level>0</level>
+                    <default>true</default>
+                    <control type="toggle"/>
+                </setting>
+                <setting id="log_level" type="integer" label="40610" help="">
+                    <level>1</level>
+                    <default>1</default>
+                    <constraints>
+                        <options>
+                            <option label="30911">0</option>
+                            <option label="30912">1</option>
+                            <option label="30913">2</option>
+                            <option label="30914">3</option>
+                            <option label="30915">4</option>
+                        </options>
+                    </constraints>
+                    <control type="spinner" format="string"/>
+                </setting>
+                <setting id="regeneration_days_period" type="integer" label="40612" help="">
+                    <level>1</level>
+                    <default>7</default>
+                    <control type="edit" format="integer">
+                        <heading>40612</heading>
+                    </control>
+                </setting>
+                <setting id="migrated_version" type="string" label="40611" help="">
+                    <level>1</level>
+                    <default>0.0.0</default>
+                    <constraints>
+                        <allowempty>true</allowempty>
+                    </constraints>
+                    <control type="edit" format="string">
+                        <heading>40611</heading>
+                    </control>
+                </setting>
+            </group>
+        </category>
+    </section>
 </settings>

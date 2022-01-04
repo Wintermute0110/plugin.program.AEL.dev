@@ -145,6 +145,7 @@
 </category>
 <launcher>
   <id>84289419b2450bc76da711e514f73e7b</id>
+  <type>RETROARCH_LAUNCHER</type>
   <m_name>2000&apos;s Arcade</m_name>
   <m_year />
   <m_genre />
@@ -207,6 +208,7 @@
 </launcher>
 <launcher>
   <id>2220af27d0937d78ce7bc8317f5e853a</id>
+  <type>ROM_LAUNCHER</type>
   <m_name>32x</m_name>
   <m_year>1994</m_year>
   <m_genre>Fifth generation console</m_genre>
@@ -269,6 +271,7 @@
 </launcher>
 <launcher>
   <id>f78a9fc1e4b4a691c4a67ee4f8e251bd</id>
+  <type>ROM_LAUNCHER</type>
   <m_name>70&apos;s Arcade</m_name>
   <m_year>1970</m_year>
   <m_genre>Time period</m_genre>
@@ -331,6 +334,7 @@
 </launcher>
 <launcher>
   <id>e35f7c64e4aec5ce334372c69477d601</id>
+  <type>ROM_LAUNCHER</type>
   <m_name>80&apos;s Arcade</m_name>
   <m_year />
   <m_genre />
@@ -393,6 +397,7 @@
 </launcher>
 <launcher>
   <id>7d03d60939df0b9b0d0f4499c9caf30c</id>
+  <type>RETROARCH_LAUNCHER</type>
   <m_name>90&apos;s Arcade</m_name>
   <m_year />
   <m_genre />
@@ -455,6 +460,7 @@
 </launcher>
 <launcher>
   <id>dccbb83a0a7d6dabf47a33715eb83b04</id>
+  <type>RETROARCH_LAUNCHER</type>
   <m_name>ACE</m_name>
   <m_year />
   <m_genre />
@@ -517,6 +523,7 @@
 </launcher>
 <launcher>
   <id>92ae9f487967da2f6bd1e43039eea270</id>
+  <type>RETROARCH_LAUNCHER</type>
   <m_name>Atari</m_name>
   <m_year />
   <m_genre />
@@ -579,6 +586,7 @@
 </launcher>
 <launcher>
   <id>0b202fca0ee00df94257e84fa41ab1a3</id>
+  <type>RETROARCH_LAUNCHER</type>
   <m_name>Capcom Play System 1</m_name>
   <m_year>1979</m_year>
   <m_genre>Company</m_genre>
@@ -766,6 +774,7 @@
 </launcher>
 <launcher>
   <id>c0132755a5cdc8411d46c53c7c9dd853</id>
+  <type>RETROARCH_LAUNCHER</type>
   <m_name>Dosbox</m_name>
   <m_year>1981</m_year>
   <m_genre>Operating system</m_genre>
@@ -828,6 +837,7 @@
 </launcher>
 <launcher>
   <id>ba9d41480f305d6cbeea035fc47e3f4b</id>
+  <type>RETROARCH_LAUNCHER</type>
   <m_name>Dreamcast</m_name>
   <m_year>1998</m_year>
   <m_genre>Sixth generation console</m_genre>
@@ -890,6 +900,7 @@
 </launcher>
 <launcher>
   <id>f9505426676b8fca0dd22fe458d60fa6</id>
+  <type>RETROARCH_LAUNCHER</type>
   <m_name>Eolith</m_name>
   <m_year />
   <m_genre />
@@ -952,6 +963,7 @@
 </launcher>
 <launcher>
   <id>a02fd794455a2f522f521008ba4b3c3f</id>
+  <type>RETROARCH_LAUNCHER</type>
   <m_name>Gaelco</m_name>
   <m_year>1990</m_year>
   <m_genre>Company</m_genre>
@@ -1014,6 +1026,7 @@
 </launcher>
 <launcher>
   <id>f4227b722cb24582089b218ab0be8de3</id>
+  <type>RETROARCH_LAUNCHER</type>
   <m_name>GameBoy</m_name>
   <m_year>1989</m_year>
   <m_genre>Fourth generation console</m_genre>
@@ -1138,6 +1151,7 @@
 </launcher>
 <launcher>
   <id>295f3f9c4b50c8c33d91a4f93f8dbbbb</id>
+  <type>RETROARCH_LAUNCHER</type>
   <m_name>Irem</m_name>
   <m_year />
   <m_genre />
@@ -1200,6 +1214,7 @@
 </launcher>
 <launcher>
   <id>2239830e154892314958159129e83352</id>
+  <type>RETROARCH_LAUNCHER</type>
   <m_name>Jaguar</m_name>
   <m_year>1993</m_year>
   <m_genre>Firfth generation console</m_genre>

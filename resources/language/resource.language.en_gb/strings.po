@@ -4,40 +4,212 @@
 msgid ""
 msgstr ""
 
-msgctxt "#10020"
-msgid "AEL Offline"
+############################
+# Setting categories
+############################
+msgctxt "#40010"
+msgid "ROM scanner"
 msgstr "settings.xml"
 
-msgctxt "#10030"
-msgid "TheGamesDB"
+msgctxt "#40011"
+msgid "ROM scraping"
 msgstr "settings.xml"
 
-msgctxt "#10040"
-msgid "MobyGames"
+msgctxt "#40013"
+msgid "ROM audit"
 msgstr "settings.xml"
 
-msgctxt "#10050"
-msgid "ScreenScraper"
+msgctxt "#40014"
+msgid "Display"
 msgstr "settings.xml"
 
-msgctxt "#10060"
-msgid "GameFaq"
+msgctxt "#40015"
+msgid "Paths"
 msgstr "settings.xml"
 
-msgctxt "#10070"
-msgid "ArcadeDB"
+msgctxt "#40016"
+msgid "Advanced"
 msgstr "settings.xml"
 
-msgctxt "#10080"
-msgid "Libretro"
+msgctxt "#40017"
+msgid "Plugins"
 msgstr "settings.xml"
 
-msgctxt "#10090"
-msgid "SteamGridDB"
+############################
+# Settings groupings
+############################
+
+msgctxt "#40021"
+msgid "General"
 msgstr "settings.xml"
 
-msgctxt "#10100"
-msgid "Google search"
+msgctxt "#40022"
+msgid "ROM tags"
+msgstr "settings.xml"
+
+msgctxt "#40023"
+msgid "Special Categories/Launchers"
+msgstr "settings.xml"
+
+############################
+# Setting options - Scanner
+############################
+
+msgctxt "#40103"
+msgid "Ignore Scraped Titles (use ROM filenames)"
+msgstr "settings.xml"
+
+msgctxt "#40104"
+msgid "Clean No-Intro/TOSEC Title Tags (tag) [tag] {tag}"
+msgstr "settings.xml"
+
+msgctxt "#40105"
+msgid "Update NFO files after ROM scraping"
+msgstr "settings.xml"
+
+############################
+# Setting options - Scraper
+############################
+msgctxt "#40201"
+msgid "Metadata scrape policy"
+msgstr "settings.xml"
+
+msgctxt "#40202"
+msgid "Asset scrape policy"
+msgstr "settings.xml"
+
+msgctxt "#40203"
+msgid "Game selection mode"
+msgstr "settings.xml"
+
+msgctxt "#40204"
+msgid "Asset selection mode"
+msgstr "settings.xml"
+
+############################
+# Setting options - ROM audit
+############################
+msgctxt "#40301"
+msgid "Unknown ROMs are"
+msgstr "settings.xml"
+
+msgctxt "#40302"
+msgid "Search assets in the Parent/Clone group"
+msgstr "settings.xml"
+
+msgctxt "#40303"
+msgid "No-Intro DAT directory"
+msgstr "settings.xml"
+
+msgctxt "#40304"
+msgid "Redump DAT directory"
+msgstr "settings.xml"
+
+############################
+# Setting options - Display
+############################
+
+msgctxt "#40403"
+msgid "Hide categories/launchers/ROMs marked as finished"
+msgstr "settings.xml"
+
+msgctxt "#40404"
+msgid "Display number of ROMs in launchers"
+msgstr "settings.xml"
+
+msgctxt "#40405"
+msgid "Display ROM in Favourites tag"
+msgstr "settings.xml"
+
+msgctxt "#40406"
+msgid "Display ROM audit tag"
+msgstr "settings.xml"
+
+msgctxt "#40407"
+msgid "Display Favourite Status tag"
+msgstr "settings.xml"
+
+msgctxt "#40408"
+msgid "Hide Favourites"
+msgstr "settings.xml"
+
+msgctxt "#40409"
+msgid "Hide ROM Collections"
+msgstr "settings.xml"
+
+msgctxt "#40410"
+msgid "Hide Browse by ..."
+msgstr "settings.xml"
+
+msgctxt "#40411"
+msgid "Hide Browse AEL Offline Scraper"
+msgstr "settings.xml"
+
+msgctxt "#40412"
+msgid "Hide Recently played ROMs"
+msgstr "settings.xml"
+
+msgctxt "#40413"
+msgid "Hide Most played ROMs"
+msgstr "settings.xml"
+
+msgctxt "#40414"
+msgid "Hide Utilities"
+msgstr "settings.xml"
+
+msgctxt "#40415"
+msgid "Hide Global Reports"
+msgstr "settings.xml"
+
+############################
+# Setting options - Paths
+############################
+msgctxt "#40501"
+msgid "Category Asset directory"
+msgstr "settings.xml"
+
+msgctxt "#40502"
+msgid "Launcher Asset directory"
+msgstr "settings.xml"
+
+msgctxt "#40503"
+msgid "Favourites Asset directory"
+msgstr "settings.xml"
+
+msgctxt "#40504"
+msgid "Collections Asset directory"
+msgstr "settings.xml"
+
+############################
+# Setting options - Advanced
+############################
+
+msgctxt "#40610"
+msgid "Log level"
+msgstr "settings.xml"
+
+msgctxt "#40611"
+msgid "Migrated version"
+msgstr "settings.xml"
+
+msgctxt "#40612"
+msgid "Number of days between automatic scans"
+msgstr "settings.xml"
+
+msgctxt "#40613"
+msgid "Automatic fallback to Retroplayer"
+msgstr "settings.xml"
+
+############################
+# Setting options - Addons
+############################
+
+msgctxt "#40701"
+msgid "Default plugins"
+msgstr "settings.xml"
+
+msgctxt "#40702"
+msgid "Google scraper plugin"
 msgstr "settings.xml"
 
 ############################
@@ -82,3 +254,38 @@ msgstr "settings.xml"
 msgctxt "#20520"
 msgid "Automatic"
 msgstr "settings.xml"
+
+############################
+# ROM Audit options
+############################
+msgctxt "#20530"
+msgid "Parents"
+msgstr "settings.xml"
+
+msgctxt "#20531"
+msgid "Clones"
+msgstr "settings.xml"
+
+############################
+# Advaced Enum values
+############################
+
+msgctxt "#30911"
+msgid "ERROR"
+msgstr "LOG ENUM"
+
+msgctxt "#30912"
+msgid "WARNING"
+msgstr "LOG ENUM"
+
+msgctxt "#30913"
+msgid "INFO"
+msgstr "LOG ENUM"
+
+msgctxt "#30914"
+msgid "VERBOSE"
+msgstr "LOG ENUM"
+
+msgctxt "#30915"
+msgid "DEBUG"
+msgstr "LOG ENUM"
