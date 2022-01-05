@@ -27,7 +27,7 @@ The original User's Guide for AEL, some tutorials and guides to configure emulat
 
 ## Installing the latest released version ##
 
-You can install this [repository](https://github.com/chrisism/repository.chrisism) locally in Kodi to install and keep it up to date. Or follow [this link](https://github.com/chrisism/repository.chrisism/tree/master/plugin.program.AEL) 
+You can install my [repository](https://github.com/chrisism/repository.chrisism) locally in Kodi to install the plugin from there and keep it up to date. Or follow [this link](https://github.com/chrisism/repository.chrisism/tree/master/plugin.program.AKL) 
 and download the ZIP file of the version you want. Use this ZIP file to install the addon in Kodi.
 
 ## Installing the latest beta version ##

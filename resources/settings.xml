@@ -24,7 +24,7 @@
 			<group id="2">
                 <setting id="scrape_metadata_policy" type="integer" label="40201" help="">
                     <level>0</level>
-                    <default>20040</default>
+                    <default>20050</default>
                     <constraints>
                         <options>
                             <option label="20010">20010</option>
