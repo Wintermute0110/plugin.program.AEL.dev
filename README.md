@@ -9,23 +9,21 @@ Simply launching of games and standalone applications is also available.
 |----|----|
 | Stable | [![Build Status](https://dev.azure.com/jnpro/AKL/_apis/build/status/plugin.program.akl?branchName=master-fork)](https://dev.azure.com/jnpro/AKL/_build/latest?definitionId=5&branchName=master-fork) |
 
-### What is different from AEL?
+## What is different from AEL?
 Not much actually. This is a friendly-ish fork of the original AEL version. The main goal was to separate the launching, scanning and scraping logic to separate plugins so that it is more open to add more of these components to the addon, without doing major releases and changes. So AKL will support more and different types of launchers etc.  
 One of the other benefits is instead of having a launcher as the center model, we now use collections of ROMs/games as the center. This means we can associate multiple launchers to whole collections and multiple scanners per collections, so you basically get multi-directory support.
 
-### Kodi forum thread ###
+## Kodi forum thread ###
 
 More information and discussion about AEL can be found in the [Advanced Emulator Launcher thread] 
 in the Kodi forum.
 
 [Advanced Emulator Launcher thread]: https://forum.kodi.tv/showthread.php?tid=287826
 
-### Documentation ###
+## Documentation ###
 
-The original User's Guide, some tutorials and guides to configure emulators can be found in 
-the [Advanced Emulator Launcher Wiki].
-
-[Advanced Emulator Launcher Wiki]: https://github.com/Wintermute0110/plugin.program.advanced.emulator.launcher/wiki
+Documentation about how to setup and use AKL can be found in the [Advanced Kodi Launcher Wiki](https://github.com/chrisism/plugin.program.akl/wiki).  
+The original User's Guide for AEL, some tutorials and guides to configure emulators can be found in the [Advanced Emulator Launcher Wiki](https://github.com/Wintermute0110/plugin.program.advanced.emulator.launcher/wiki)
 
 ## Installing the latest released version ##
 
