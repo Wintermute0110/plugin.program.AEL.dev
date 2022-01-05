@@ -615,6 +615,7 @@ QUERY_UPDATE_ROMCOLLECTION               = """
                                         roms_default_icon=?, roms_default_fanart=?, roms_default_banner=?, roms_default_poster=?, roms_default_clearlogo=?
                                         WHERE id =?
                                     """
+QUERY_UPDATE_ROMCOLLECTION_PARENT        = "UPDATE romcollections SET parent_id = ? WHERE id =?"
 QUERY_DELETE_ROMCOLLECTION               = "DELETE FROM romcollection WHERE id = ?"
 
 QUERY_SELECT_ROMCOLLECTION_ASSETS_BY_SET       = "SELECT * FROM vw_romcollection_assets WHERE romcollection_id = ?"
@@ -786,7 +787,7 @@ class ROMCollectionRepository(object):
                 scanners.append(ROMCollectionScanner(addon, scanner_data))
                     
             yield ROMCollection(romcollection_data, assets, asset_paths, launchers, scanners)                       
-                        
+    
     def insert_romcollection(self, romcollection_obj: ROMCollection, parent_obj: Category = None):
         logger.info("ROMCollectionRepository.insert_romcollection(): Inserting new romcollection '{}'".format(romcollection_obj.get_name()))
         metadata_id = text.misc_generate_random_SID()
@@ -917,6 +918,11 @@ class ROMCollectionRepository(object):
         for asset_path in romcollection_obj.get_asset_paths():
             if asset_path.get_id() == '': self._insert_asset_path(asset_path, romcollection_obj)
             else: self._update_asset_path(asset_path, romcollection_obj)           
+            
+    def update_romcollection_parent_reference(self, romcollection_obj: ROMCollection, parent_obj: Category = None):
+        logger.info(f"ROMCollectionRepository.update_romcollection_parent_reference(): Updating romcollection '{romcollection_obj.get_name()}'")
+        parent_category_id = parent_obj.get_id() if parent_obj is not None and parent_obj.get_id() != constants.VCATEGORY_ADDONROOT_ID else None
+        self._uow.execute(QUERY_UPDATE_ROMCOLLECTION_PARENT, romcollection_obj.get_id(), parent_category_id)
             
     def add_rom_to_romcollection(self, romcollection_id: str, rom_id: str):
         self._uow.execute(QUERY_INSERT_ROM_IN_ROMCOLLECTION, rom_id, romcollection_id)

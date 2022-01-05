@@ -216,7 +216,7 @@ def edit_object_assets(obj_instance:MetaDataItemABC, preselected_asset = None) -
 #   Command   The cmd that was executed. (SCRAPE_ASSET cmd will not be executed directly)
 #   None      No changes were made. No necessary to refresh container
 #
-def edit_asset(obj_instance: MetaDataItemABC, asset_info: AssetInfo) -> bool:
+def edit_asset(obj_instance: MetaDataItemABC, asset_info: AssetInfo) -> str:
     # --- Get asset object information ---
     # Select/Import require: object_name, A, asset_path_noext
     # Scraper additionaly requires: current_asset_path, scraper_obj, platform, rom_base_noext

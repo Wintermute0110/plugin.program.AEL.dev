@@ -48,7 +48,7 @@ def publish(addon_name: str, working_directory: str, source_paths_str:str, kodi_
     
     source_paths = source_paths_str.split(os.pathsep)
     source_files = _get_files_for_addon(working_directory, source_paths)
-    dest_directory = f'{kodi_addon_directory}{addon_name}/'
+    dest_directory = f'{kodi_addon_directory}{addon_name}{os.sep}'
     
     if not dest_directory:
         print('No destination directory set. Cancelling')
@@ -61,8 +61,9 @@ def publish(addon_name: str, working_directory: str, source_paths_str:str, kodi_
     
     print(f'Copying files to {dest_directory}')
     for source_file in source_files:
-        dest_file = source_file.replace(working_directory, dest_directory)        
-        dest_file = dest_file.replace(alt_sep, os.path.sep)
+        dest_file   = source_file.replace(working_directory, dest_directory)        
+        dest_file   = dest_file.replace(alt_sep, os.path.sep)
+        dest_file   = dest_file.replace(alt_sep, os.path.sep)
         source_file = source_file.replace(alt_sep, os.path.sep)
         
         print(f'Source: {source_file} to des: {dest_file}')
@@ -113,3 +114,4 @@ try:
     publish(addon_name, working_directory, source_paths_str, kodi_addon_directory)
 except Exception as ex:
     logger.fatal('Exception in tool', exc_info=ex)
+    print(ex)

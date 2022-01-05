@@ -968,7 +968,7 @@ class ROMCollection(MetaDataItemABC):
     # parent category / romcollection this item belongs to.
     def get_parent_id(self) -> str:
         return self.entity_data['parent_id'] if 'parent_id' in self.entity_data else None
-    
+        
     def get_platform(self): return self.entity_data['platform'] if 'platform' in self.entity_data else None
 
     def set_platform(self, platform): self.entity_data['platform'] = platform

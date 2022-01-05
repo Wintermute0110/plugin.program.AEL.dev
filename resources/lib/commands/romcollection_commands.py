@@ -26,7 +26,7 @@ from akl.utils import kodi, text, io
 from resources.lib.commands.mediator import AppMediator
 from resources.lib import globals, editors
 from resources.lib.repositories import UnitOfWork, CategoryRepository, ROMCollectionRepository
-from resources.lib.domain import ROMCollection, g_assetFactory
+from resources.lib.domain import ROMCollection, Category, g_assetFactory
 
 logger = logging.getLogger(__name__)
 
@@ -105,7 +105,7 @@ def cmd_edit_romcollection(args):
 
         cat_repository = CategoryRepository(uow)
         parent_id = romcollection.get_parent_id()
-        category = cat_repository.find_category(romcollection.get_parent_id()) if parent_id is None else None 
+        category = cat_repository.find_category(romcollection.get_parent_id()) if parent_id is not None else None 
         category_name = 'None' if category is None else category.get_name()
 
     options = collections.OrderedDict()
@@ -116,8 +116,8 @@ def cmd_edit_romcollection(args):
         options['EDIT_ROMCOLLECTION_LAUNCHERS']  = 'Manage associated launchers'
     else: options['ADD_LAUNCHER']                = 'Add new launcher'    
     options['ROMCOLLECTION_MANAGE_ROMS']         = 'Manage ROMs ...'
-    options['EDIT_ROMCOLLECTION_CATEGORY']       = "Change Category: '{0}'".format(category_name)
-    options['EDIT_ROMCOLLECTION_STATUS']         = 'ROM Collection status: {0}'.format(romcollection.get_finished_str())
+    options['EDIT_ROMCOLLECTION_CATEGORY']       = f"Change Category: '{category_name}'"
+    options['EDIT_ROMCOLLECTION_STATUS']         = f'ROM Collection status: {romcollection.get_finished_str()}'
     options['EXPORT_ROMCOLLECTION']              = 'Export ROM Collection XML configuration ...'
     options['DELETE_ROMCOLLECTION']              = 'Delete ROM Collection'
 
@@ -468,6 +468,48 @@ def cmd_romcollection_save_nfo_file(args):
     
     AppMediator.sync_cmd('ROMCOLLECTION_EDIT_METADATA', args)
 
+@AppMediator.register('EDIT_ROMCOLLECTION_CATEGORY')
+def cmd_romcollection_change_category(args):
+    romcollection_id = args['romcollection_id'] if 'romcollection_id' in args else None
+    uow = UnitOfWork(globals.g_PATHS.DATABASE_FILE_PATH)
+    with uow:
+        repository      = ROMCollectionRepository(uow)
+        cat_repository  = CategoryRepository(uow)
+        
+        romcollection   = repository.find_romcollection(romcollection_id)
+        all_categories  = cat_repository.find_all_categories()
+        root_category   = cat_repository.find_category(constants.VCATEGORY_ADDONROOT_ID)
+        
+        previous_category_id = romcollection.get_parent_id()
+        if previous_category_id is None: previous_category_id = root_category.get_id()
+
+        options = collections.OrderedDict()
+        options[root_category] = root_category.get_name()
+        options.update({category:category.get_name() for category in all_categories})
+
+        selected_option = kodi.OrdDictionaryDialog().select('Move to category', options)
+        if selected_option is None:
+            # >> Return recursively to parent menu.
+            logger.debug('cmd_romcollection_change_category(): Selected NONE')
+            AppMediator.sync_cmd('EDIT_ROMCOLLECTION', args)
+            return
+        
+        selected_category:Category = selected_option
+        if not kodi.dialog_yesno(f'Move "{romcollection.get_name()}" to category "{selected_category.get_name()}"?'):
+            logger.debug('cmd_romcollection_change_category(): Cancelled')
+            AppMediator.sync_cmd('EDIT_ROMCOLLECTION', args)
+            return
+
+        logger.debug(f'cmd_romcollection_change_category() Moving collection#{romcollection_id} to category#{selected_category.get_id()}')        
+        repository.update_romcollection_parent_reference(romcollection, selected_category)
+        uow.commit() 
+        
+        kodi.notify('Changed category for collection') 
+        AppMediator.async_cmd('RENDER_ROMCOLLECTION_VIEW', {'romcollection_id': romcollection.get_id()})
+        AppMediator.async_cmd('RENDER_CATEGORY_VIEW', {'category_id': selected_category.get_id()})   
+        AppMediator.async_cmd('RENDER_CATEGORY_VIEW', {'category_id': previous_category_id})          
+    AppMediator.sync_cmd('EDIT_ROMCOLLECTION', args)
+            
 @AppMediator.register('ROMCOLLECTION_EXPORT_ROMCOLLECTION_XML')
 # --- Export Category XML configuration ---
 def cmd_romcollection_export_xml(args):

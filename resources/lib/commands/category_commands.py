@@ -164,7 +164,7 @@ def cmd_category_edit_assets(args):
         # >> Execute edit asset menu subcommand. Then, execute recursively this submenu again.
         # >> The menu dialog is instantiated again so it reflects the changes just edited.
         # >> If edit_asset() returns a cmd other than None changes were made.
-        if editors.W(category, asset) is not None:
+        if editors.edit_asset(category, asset) is not None:
             repository.update_category(category)
             uow.commit()
             AppMediator.async_cmd('RENDER_CATEGORY_VIEW', {'category_id': category.get_id()})
