@@ -19,14 +19,14 @@
 #   - git_userName
 #   - github_token
 trigger:
-- master-fork
+- master
 - release/*
 
 pool:
   vmImage: 'ubuntu-latest'
 
 variables:
-  isMaster: or(${{eq(variables['Build.SourceBranch'], 'refs/heads/master-fork')}},${{eq(variables['Build.SourceBranch'], 'refs/heads/main')}})
+  isMaster: or(${{eq(variables['Build.SourceBranch'], 'refs/heads/master')}},${{eq(variables['Build.SourceBranch'], 'refs/heads/main')}})
   isReleaseCandidate: ${{startsWith(variables['Build.SourceBranch'], 'refs/heads/release/')}}
   isHotfix: ${{startsWith(variables['Build.SourceBranch'], 'refs/heads/hotfix/')}}
   isDev: ${{eq(variables['Build.SourceBranch'], 'refs/heads/dev')}}

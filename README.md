@@ -1,24 +1,27 @@
 # Advanced Kodi Launcher #
 
-Multi-emulator front-end and general application launcher for Kodi, based and build upon AEL (Advanced Emulator Launcher). 
-It is a modulair build with support for many plugins to either launch, scan or scrape ROMs and games from your favourite source.  
-Plugins are available for offline scrapers for MAME, scanners for No-Intro ROM sets and also support for scrapping ROM metadata and artwork from many different sources online. There is ROM auditing for No-Intro ROMs using No-Intro or Redump XML DAT files.  
-Simply launching of games and standalone applications is also available.
+Advanced Kodi Launcher or AKL in short is another iteration of the launcher addons for Kodi. AKL is a multi-emulator front-end and general application launcher for Kodi, based and build upon AEL (Advanced Emulator Launcher). 
+It is a modulair build with support for many plugins to either launch, scan or scrape ROMs and games from your favourite source.
+Plugins are available for scanning your ROMs from different locations on your disks or from online sources like your steam library. There is support for scrapping ROM metadata and artwork from local disks or many different sources online. Also you can do ROM auditing for No-Intro ROMs using No-Intro or Redump XML DAT files (WiP). Of course, simply launching games with your favorite emulator or application is supported.
 
-| Release | Status |
-|----|----|
-| Stable | [![Build Status](https://dev.azure.com/jnpro/AKL/_apis/build/status/plugin.program.akl?branchName=master-fork)](https://dev.azure.com/jnpro/AKL/_build/latest?definitionId=5&branchName=master-fork) |
+| Release | Status | Version |
+|----|----|----|
+| Stable | [![Build Status](https://dev.azure.com/jnpro/AKL/_apis/build/status/plugin.program.akl?branchName=master)](https://dev.azure.com/jnpro/AKL/_build/latest?definitionId=5&branchName=master) | 1.0.0 |
+| Beta | [![Build Status](https://dev.azure.com/jnpro/AKL/_apis/build/status/plugin.program.akl?branchName=release/1.0.0)](https://dev.azure.com/jnpro/AKL/_build/latest?definitionId=5&branchName=release/1.0.0) | 1.0.0-rc |
 
 ## What is different from AEL?
-Not much actually. This is a friendly-ish fork of the original AEL version. The main goal was to separate the launching, scanning and scraping logic to separate plugins so that it is more open to add more of these components to the addon, without doing major releases and changes. So AKL will support more and different types of launchers etc.  
-One of the other benefits is instead of having a launcher as the center model, we now use collections of ROMs/games as the center. This means we can associate multiple launchers to whole collections and multiple scanners per collections, so you basically get multi-directory support.
+Not much actually. This is a friendly-ish fork of the original AEL version. I already was helping out and adding features to AEL, but with too many different features and alternative solutions we like to make it a bit more clear and make sure both versions can be stable. The main goal of AKL was to separate the launching, scanning and scraping logic to separate plugins so that it is more open to add more of these components to the addon, with an extra benefit that it is easier to maintain the core addon without doing major releases and changes. So as a result AKL can support more and different types of launchers, scanners and scrapers.  
+Another benefit is that instead of having a launcher as the center entity, we now use collections of ROMs/games to build everything around. This means we can associate multiple launchers to whole collections and multiple scanners per collections, so you basically get multi-directory support. So not launcher based collections, but simply collections with multiple launchers, scanners and scrapers.  
+
+*The goal still remains that the functionality and data will be as closely related and interchangeable as possible with AEL.*  
+Meaning you can import and export your data from and to AEL if needed. I will keep on working together with Wintermute0110 on AEL and AKL and let both addons benefit from new things we add or discover. Most of the things discussed or mentioned in the AEL thread will also apply for AKL.
+
+A special thanks to Wintermute0110 making AEL possible.
 
 ## Kodi forum thread ###
 
-More information and discussion about AEL can be found in the [Advanced Emulator Launcher thread] 
-in the Kodi forum.
-
-[Advanced Emulator Launcher thread]: https://forum.kodi.tv/showthread.php?tid=287826
+More information and discussion about AKL can be found here on the kodi forum [thread](https://forum.kodi.tv/showthread.php?tid=366351).  
+More about AEL can be found in the original Advanced Emulator Launcher [thread](https://forum.kodi.tv/showthread.php?tid=287826) on the kodi forum.
 
 ## Documentation ###
 
