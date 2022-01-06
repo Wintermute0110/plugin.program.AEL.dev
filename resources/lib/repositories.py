@@ -922,7 +922,7 @@ class ROMCollectionRepository(object):
     def update_romcollection_parent_reference(self, romcollection_obj: ROMCollection, parent_obj: Category = None):
         logger.info(f"ROMCollectionRepository.update_romcollection_parent_reference(): Updating romcollection '{romcollection_obj.get_name()}'")
         parent_category_id = parent_obj.get_id() if parent_obj is not None and parent_obj.get_id() != constants.VCATEGORY_ADDONROOT_ID else None
-        self._uow.execute(QUERY_UPDATE_ROMCOLLECTION_PARENT, romcollection_obj.get_id(), parent_category_id)
+        self._uow.execute(QUERY_UPDATE_ROMCOLLECTION_PARENT, parent_category_id, romcollection_obj.get_id())
             
     def add_rom_to_romcollection(self, romcollection_id: str, rom_id: str):
         self._uow.execute(QUERY_INSERT_ROM_IN_ROMCOLLECTION, rom_id, romcollection_id)
