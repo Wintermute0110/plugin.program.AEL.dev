@@ -2,7 +2,8 @@
 
 Advanced Kodi Launcher or AKL in short is another iteration of the launcher addons for Kodi. AKL is a multi-emulator front-end and general application launcher for Kodi, based and build upon AEL (Advanced Emulator Launcher). 
 It is a modulair build with support for many plugins to either launch, scan or scrape ROMs and games from your favourite source.
-Plugins are available for scanning your ROMs from different locations on your disks or from online sources like your steam library. There is support for scrapping ROM metadata and artwork from local disks or many different sources online. Also you can do ROM auditing for No-Intro ROMs using No-Intro or Redump XML DAT files (WiP). Of course, simply launching games with your favorite emulator or application is supported.
+Plugins are available for scanning your ROMs from different locations on your disks or from online sources like your steam library. There is support for scrapping ROM metadata and artwork from local disks or many different sources online. Also you can do ROM auditing for No-Intro ROMs using No-Intro or Redump XML DAT files (WiP). Of course, simply launching games with your favorite emulator or application is supported.  
+Basically the possibilities are endless since you can easily extend AKL with your own plugins to add your type of launcher. Now you don't have to build a complete launcher addon, simply implement the plugin and hook it up in AKL. So one launcher addon to support all support them all. Add your own plugin now.
 
 | Release | Status | Version |
 |----|----|----|
