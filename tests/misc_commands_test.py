@@ -79,7 +79,7 @@ class Test_Misc_Commands(unittest.TestCase):
             logger.info("Collection#{} in Category#{}".format(collection.get_id(), actual_category_id))
             if actual_category_id == expected_category_id : actual = actual+1
         
-        self.assertEqual(actual, expected)
+        assert actual == expected
 
         
     # def test_when_finding_categories_it_will_give_the_correct_result(self):

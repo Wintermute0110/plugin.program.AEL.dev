@@ -60,7 +60,7 @@ class Test_services(unittest.TestCase):
         
         # assert
         self.assertIsNotNone(uow_mock.executed_files)
-        self.assertEquals(uow_mock.executed_files[0], '1.1.5.sql')
-        self.assertEquals(uow_mock.executed_files[1], '1.2.1.sql')
-        self.assertEquals(uow_mock.executed_files[2], '/migrations/with/1.2.7.sql')
-        self.assertEquals(uow_mock.executed_files[3], '/files/1.3.0.sql')
+        self.assertEqual(uow_mock.executed_files[0], '1.1.5.sql')
+        self.assertEqual(uow_mock.executed_files[1], '1.2.1.sql')
+        self.assertEqual(uow_mock.executed_files[2], '/migrations/with/1.2.7.sql')
+        self.assertEqual(uow_mock.executed_files[3], '/files/1.3.0.sql')

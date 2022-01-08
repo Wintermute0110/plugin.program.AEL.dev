@@ -51,4 +51,4 @@ class Test_objectstests(unittest.TestCase):
 
         # assert
         self.assertIsNotNone(actual)
-        self.assertEqual(actual, expected)
+        assert actual == expected
