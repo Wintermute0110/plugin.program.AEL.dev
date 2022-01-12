@@ -2,6 +2,8 @@
 *.pyo
 *.pyc
 
+.venv/
+
 # Misc files
 *.html
 *.kate-swp

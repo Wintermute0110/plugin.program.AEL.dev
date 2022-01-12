@@ -1,0 +1,4 @@
+kodi.tools==1.0.0
+Kodistubs==19.0.3
+pytest==6.2.5
+script.module.akl==1.0.1rc46
