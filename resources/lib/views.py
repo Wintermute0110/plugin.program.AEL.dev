@@ -33,7 +33,6 @@ from __future__ import division
 
 import sys
 import logging
-import json
 
 # --- Kodi stuff ---
 import xbmc
