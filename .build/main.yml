@@ -101,6 +101,9 @@ stages:
               *.txt
               resources/**/*.*
               media/**/*.*
+              !requirements.txt
+              !**/*.pyc
+              !**/__pycache__/**/*.*
           TargetFolder: '$(build.artifactstagingdirectory)/$(addonName)/'
           CleanTargetFolder: true
           flattenFolders: false
