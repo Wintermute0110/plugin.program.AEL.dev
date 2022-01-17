@@ -56,6 +56,6 @@ steps:
     displayName: 'Git - Add and commit'    
 
   - script: |
-      git push https://$(github_token)@$(repository_url) main 
+      git push https://$(github_token)@$(repository_url) $(branchName) 
     workingDirectory: $(Pipeline.Workspace)/$(repository_name)/
     displayName: 'Git - Push'    
