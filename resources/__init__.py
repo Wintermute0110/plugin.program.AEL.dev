@@ -13,4 +13,6 @@
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 # See the GNU General Public License for more details.
 
+# Advanced Emulator Launcher package inisialisation file.
+
 # Note that anything defined here will have the namespace of the package which is 'resources'.

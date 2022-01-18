@@ -29,3 +29,4 @@ import resources.lib.commands.stats_commands
 import resources.lib.commands.misc_commands
 import resources.lib.commands.chk_commands
 import resources.lib.commands.report_commands
+import resources.lib.commands.search_commands

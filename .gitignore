@@ -3,6 +3,8 @@
 *.pyc
 
 .venv/
+# Ignore installation directory
+plugin.program.AEL
 
 # Misc files
 *.html

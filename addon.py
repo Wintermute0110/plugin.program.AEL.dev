@@ -16,9 +16,7 @@
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU General Public License for more details.
 
-# --- Python standard library ---
-from __future__ import unicode_literals
-from __future__ import division
+# Advanced Emulator Launcher main script file.
 
 import sys
 import logging
@@ -30,6 +28,9 @@ from resources.lib import views
 kodilogging.config()
 logger = logging.getLogger(__name__)
 
+# --- Python standard library ---
+import sys
+
 # -------------------------------------------------------------------------------------------------
 # Hacks and tests
 # -------------------------------------------------------------------------------------------------
@@ -40,7 +41,7 @@ logger = logging.getLogger(__name__)
 # -------------------------------------------------------------------------------------------------
 # main()
 # -------------------------------------------------------------------------------------------------
-# Put the main bulk of the code in files inside /resources/, which is a package directory. 
+# Put the main bulk of the code in files inside /resources/, which is a package directory.
 # This way, the Python interpreter will precompile them into bytecode (files PYC/PYO) so
 # loading time is faster compared to loading PY files.
 # See http://www.network-theory.co.uk/docs/pytut/CompiledPythonfiles.html

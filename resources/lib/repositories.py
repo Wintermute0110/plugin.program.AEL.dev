@@ -986,6 +986,12 @@ QUERY_SELECT_ROM_ASSETPATHS_BY_SET  = "SELECT rap.* FROM vw_rom_asset_paths AS r
 QUERY_SELECT_ROM_TAGS_BY_SET        = "SELECT rt.* FROM vw_rom_tags AS rt INNER JOIN roms_in_romcollection AS rs ON rs.rom_id = rt.rom_id AND rs.romcollection_id = ?"
 QUERY_SELECT_ROM_TAGS               = "SELECT * FROM vw_rom_tags WHERE rom_id = ?"
 
+# Filter values
+QUERY_SELECT_GENRES_BY_COLLECTION      = "SELECT DISTINCT(r.m_genre) AS genre FROM vw_roms AS r INNER JOIN roms_in_romcollection AS rs ON rs.rom_id = r.id AND rs.romcollection_id = ? ORDER BY genre"
+QUERY_SELECT_YEARS_BY_COLLECTION       = "SELECT DISTINCT(r.m_year) AS year FROM vw_roms AS r INNER JOIN roms_in_romcollection AS rs ON rs.rom_id = r.id AND rs.romcollection_id = ? ORDER BY year"
+QUERY_SELECT_DEVELOPER_BY_COLLECTION   = "SELECT DISTINCT(r.m_developer) AS developer FROM vw_roms AS r INNER JOIN roms_in_romcollection AS rs ON rs.rom_id = r.id AND rs.romcollection_id = ? ORDER BY developer"
+QUERY_SELECT_RATING_BY_COLLECTION      = "SELECT DISTINCT(r.m_rating) AS rating FROM vw_roms AS r INNER JOIN roms_in_romcollection AS rs ON rs.rom_id = r.id AND rs.romcollection_id = ? ORDER BY rating"
+
 QUERY_INSERT_ROM                = """
                                 INSERT INTO roms (
                                     id, metadata_id, name, num_of_players, num_of_players_online, esrb_rating,
@@ -1334,7 +1340,14 @@ class ROMsRepository(object):
             if vcollection_id == constants.VCOLLECTION_MOST_PLAYED_ID:  return QUERY_SELECT_MOST_PLAYED_ROMS, QUERY_SELECT_MOST_PLAYED_ROM_ASSETS
             
         return None, None
-    
+              
+    def _get_query_by_filter(self, filter:str) -> typing.Tuple[str, str]:
+        if filter == constants.META_GENRE_ID: return QUERY_SELECT_GENRES_BY_COLLECTION
+        if filter == constants.META_YEAR_ID: return QUERY_SELECT_YEARS_BY_COLLECTION
+        if filter == constants.META_DEVELOPER_ID: return QUERY_SELECT_DEVELOPER_BY_COLLECTION
+        if filter == constants.META_RATING_ID: return QUERY_SELECT_RATING_BY_COLLECTION
+        return None
+        
 #
 # AelAddonRepository -> AKL Adoon objects from SQLite DB
 #     
