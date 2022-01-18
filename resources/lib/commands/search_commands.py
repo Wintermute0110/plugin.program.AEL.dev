@@ -21,8 +21,8 @@ import logging
 import collections
 from urllib.parse import urlencode
 
-from ael.utils import kodi
-from ael import constants
+from akl.utils import kodi
+from akl import constants
 
 from resources.lib.commands.mediator import AppMediator
 
