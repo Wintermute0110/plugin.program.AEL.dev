@@ -6,7 +6,7 @@ Plugins are available for scanning your ROMs from different locations on your di
 Basically the possibilities are endless since you can easily extend AKL with your own plugins to add your type of launcher. Now you don't have to build a complete launcher addon, simply implement the plugin and hook it up in AKL. So one launcher addon to support all support them all. Add your own plugin now.
 
 | Release | Status |
-|----|----|----|
+|----|----|
 | Stable | [![Build Status](https://dev.azure.com/jnpro/AKL/_apis/build/status/plugin.program.akl?branchName=master)](https://dev.azure.com/jnpro/AKL/_build/latest?definitionId=5&branchName=master) |
 | Beta | [![Build Status](https://dev.azure.com/jnpro/AKL/_apis/build/status/plugin.program.akl?branchName=release/1.0.0)](https://dev.azure.com/jnpro/AKL/_build/latest?definitionId=5&branchName=release/1.0.0) |
 | Unstable | [![Build Status](https://dev.azure.com/jnpro/AKL/_apis/build/status/plugin.program.akl?branchName=dev)](https://dev.azure.com/jnpro/AKL/_build/latest?definitionId=5&branchName=dev) |
