@@ -9,7 +9,7 @@ branches:
     prevent-increment-of-merged-branch-version: false
     track-merge-target: true
   master:
-    regex: (master-fork|main)
+    regex: (master|main)
     mode: ContinuousDeployment
     tag: "stable"
     increment: Patch
