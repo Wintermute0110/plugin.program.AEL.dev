@@ -3,7 +3,7 @@
   <requires>
       <import addon="xbmc.python" version="3.0.0"/>
       <import addon="script.module.routing" version="0.2.3"/>
-      <import addon="script.module.ael" version="0.10.7"/>
+      <import addon="script.module.akl" version="1.0.2"/>
   </requires>
   <extension point="xbmc.python.pluginsource" library="addon.py">
       <provides>executable game</provides>
