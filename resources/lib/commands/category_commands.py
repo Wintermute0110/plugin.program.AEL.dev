@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 #
-# Advanced Emulator Launcher: Commands (category management)
+# Advanced Kodi Launcher: Commands (category management)
 #
 # Copyright (c) Wintermute0110 <wintermute0110@gmail.com> / Chrisism <crizizz@gmail.com>
 #
@@ -20,8 +20,8 @@ from __future__ import division
 import logging
 import collections
 
-from ael.utils import kodi, text, io
-from ael import constants
+from akl.utils import kodi, text, io
+from akl import constants
 
 from resources.lib.commands.mediator import AppMediator
 from resources.lib import globals, editors
@@ -60,8 +60,8 @@ def cmd_add_category(args):
         uow.commit()
         
         kodi.notify('Category {0} created'.format(category.get_name()))
-        AppMediator.async_cmd('RENDER_VIEW', {'category_id': parent_category.get_id()})
-        AppMediator.async_cmd('RENDER_VIEW', {'category_id': category.get_id()})
+        AppMediator.async_cmd('RENDER_CATEGORY_VIEW', {'category_id': parent_category.get_id()})
+        AppMediator.async_cmd('RENDER_CATEGORY_VIEW', {'category_id': category.get_id()})
 
 @AppMediator.register('EDIT_CATEGORY')
 def cmd_edit_category(args):    
@@ -164,11 +164,11 @@ def cmd_category_edit_assets(args):
         # >> Execute edit asset menu subcommand. Then, execute recursively this submenu again.
         # >> The menu dialog is instantiated again so it reflects the changes just edited.
         # >> If edit_asset() returns a cmd other than None changes were made.
-        if editors.W(category, asset) is not None:
+        if editors.edit_asset(category, asset) is not None:
             repository.update_category(category)
             uow.commit()
-            AppMediator.async_cmd('RENDER_VIEW', {'category_id': category.get_id()})
-            AppMediator.async_cmd('RENDER_VIEW', {'category_id': category.get_parent_id()})   
+            AppMediator.async_cmd('RENDER_CATEGORY_VIEW', {'category_id': category.get_id()})
+            AppMediator.async_cmd('RENDER_CATEGORY_VIEW', {'category_id': category.get_parent_id()})   
         
     AppMediator.sync_cmd('CATEGORY_EDIT_ASSETS', {'category_id': category_id, 'selected_asset': asset.id})         
 
@@ -190,8 +190,8 @@ def cmd_category_edit_default_assets(args):
         if editors.edit_default_asset(category, selected_asset_to_edit):
             repository.update_category(category)
             uow.commit()   
-            AppMediator.async_cmd('RENDER_VIEW', {'category_id': category.get_id()})
-            AppMediator.async_cmd('RENDER_VIEW', {'category_id': category.get_parent_id()})     
+            AppMediator.async_cmd('RENDER_CATEGORY_VIEW', {'category_id': category.get_id()})
+            AppMediator.async_cmd('RENDER_CATEGORY_VIEW', {'category_id': category.get_parent_id()})     
     
     AppMediator.sync_cmd('CATEGORY_EDIT_DEFAULT_ASSETS', {'category_id': category_id, 'selected_asset': selected_asset_to_edit.id})
 
@@ -207,8 +207,8 @@ def cmd_category_status(args):
         repository.update_category(category)
         uow.commit()
         
-    AppMediator.async_cmd('RENDER_VIEW', args) 
-    AppMediator.async_cmd('RENDER_VIEW', {'category_id': category.get_parent_id()})           
+    AppMediator.async_cmd('RENDER_CATEGORY_VIEW', args) 
+    AppMediator.async_cmd('RENDER_CATEGORY_VIEW', {'category_id': category.get_parent_id()})           
     AppMediator.sync_cmd('EDIT_CATEGORY', args)
     
 #
@@ -239,7 +239,7 @@ def cmd_category_delete(args):
         uow.commit()
         
     kodi.notify('Deleted category {0}'.format(category_name))
-    AppMediator.async_cmd('RENDER_VIEW', {'category_id': category.get_parent_id()})            
+    AppMediator.async_cmd('RENDER_CATEGORY_VIEW', {'category_id': category.get_parent_id()})            
     AppMediator.async_cmd('CLEANUP_VIEWS')
     AppMediator.sync_cmd('EDIT_CATEGORY', args)
 
@@ -260,8 +260,8 @@ def cmd_category_metadata_title(args):
         if editors.edit_field_by_str(category, 'Title', category.get_name, category.set_name):
             repository.update_category(category)
             uow.commit()
-            AppMediator.async_cmd('RENDER_VIEW', {'category_id': category.get_id()})
-            AppMediator.async_cmd('RENDER_VIEW', {'category_id': category.get_parent_id()})            
+            AppMediator.async_cmd('RENDER_CATEGORY_VIEW', {'category_id': category.get_id()})
+            AppMediator.async_cmd('RENDER_CATEGORY_VIEW', {'category_id': category.get_parent_id()})            
     AppMediator.sync_cmd('CATEGORY_EDIT_METADATA', args)
     
 @AppMediator.register('CATEGORY_EDIT_METADATA_RELEASEYEAR')
@@ -275,8 +275,8 @@ def cmd_category_metadata_releaseyear(args):
         if editors.edit_field_by_str(category, 'Release Year', category.get_releaseyear, category.set_releaseyear):
             repository.update_category(category)
             uow.commit()
-            AppMediator.async_cmd('RENDER_VIEW', {'category_id': category.get_id()})
-            AppMediator.async_cmd('RENDER_VIEW', {'category_id': category.get_parent_id()})
+            AppMediator.async_cmd('RENDER_CATEGORY_VIEW', {'category_id': category.get_id()})
+            AppMediator.async_cmd('RENDER_CATEGORY_VIEW', {'category_id': category.get_parent_id()})
     AppMediator.sync_cmd('CATEGORY_EDIT_METADATA', args)
 
 @AppMediator.register('CATEGORY_EDIT_METADATA_GENRE')
@@ -290,8 +290,8 @@ def cmd_category_metadata_genre(args):
         if editors.edit_field_by_str(category, 'Genre', category.get_genre, category.set_genre):
             repository.update_category(category)
             uow.commit()            
-            AppMediator.async_cmd('RENDER_VIEW', {'category_id': category.get_id()})
-            AppMediator.async_cmd('RENDER_VIEW', {'category_id': category.get_parent_id()})            
+            AppMediator.async_cmd('RENDER_CATEGORY_VIEW', {'category_id': category.get_id()})
+            AppMediator.async_cmd('RENDER_CATEGORY_VIEW', {'category_id': category.get_parent_id()})            
     AppMediator.sync_cmd('CATEGORY_EDIT_METADATA', args)
     
 @AppMediator.register('CATEGORY_EDIT_METADATA_DEVELOPER')
@@ -305,8 +305,8 @@ def cmd_category_metadata_developer(args):
         if editors.edit_field_by_str(category, 'Developer', category.get_developer, category.set_developer):
             repository.update_category(category)
             uow.commit()    
-            AppMediator.async_cmd('RENDER_VIEW', {'category_id': category.get_id()})
-            AppMediator.async_cmd('RENDER_VIEW', {'category_id': category.get_parent_id()})
+            AppMediator.async_cmd('RENDER_CATEGORY_VIEW', {'category_id': category.get_id()})
+            AppMediator.async_cmd('RENDER_CATEGORY_VIEW', {'category_id': category.get_parent_id()})
     AppMediator.sync_cmd('CATEGORY_EDIT_METADATA', args)
 
 @AppMediator.register('CATEGORY_EDIT_METADATA_RATING')
@@ -320,8 +320,8 @@ def cmd_category_metadata_rating(args):
         if editors.edit_rating(category, category.get_rating, category.set_rating):
             repository.update_category(category)
             uow.commit()
-            AppMediator.async_cmd('RENDER_VIEW', {'category_id': category.get_id()})
-            AppMediator.async_cmd('RENDER_VIEW', {'category_id': category.get_parent_id()})
+            AppMediator.async_cmd('RENDER_CATEGORY_VIEW', {'category_id': category.get_id()})
+            AppMediator.async_cmd('RENDER_CATEGORY_VIEW', {'category_id': category.get_parent_id()})
     AppMediator.sync_cmd('CATEGORY_EDIT_METADATA', args)
 
 @AppMediator.register('CATEGORY_EDIT_METADATA_PLOT')
@@ -335,8 +335,8 @@ def cmd_category_metadata_plot(args):
         if editors.edit_field_by_str(category, 'Plot', category.get_plot, category.set_plot):
             repository.update_category(category)
             uow.commit()
-            AppMediator.async_cmd('RENDER_VIEW', {'category_id': category.get_id()})
-            AppMediator.async_cmd('RENDER_VIEW', {'category_id': category.get_parent_id()})
+            AppMediator.async_cmd('RENDER_CATEGORY_VIEW', {'category_id': category.get_id()})
+            AppMediator.async_cmd('RENDER_CATEGORY_VIEW', {'category_id': category.get_parent_id()})
     AppMediator.sync_cmd('CATEGORY_EDIT_METADATA', args)
     
 @AppMediator.register('CATEGORY_IMPORT_NFO_FILE_DEFAULT')
@@ -352,8 +352,8 @@ def cmd_category_import_nfo_file(args):
             repository.update_category(category)
             uow.commit()
             kodi.notify('Imported Category NFO file {0}'.format(NFO_file.getPath()))
-            AppMediator.async_cmd('RENDER_VIEW', {'category_id': category.get_id()})
-            AppMediator.async_cmd('RENDER_VIEW', {'category_id': category.get_parent_id()})
+            AppMediator.async_cmd('RENDER_CATEGORY_VIEW', {'category_id': category.get_id()})
+            AppMediator.async_cmd('RENDER_CATEGORY_VIEW', {'category_id': category.get_parent_id()})
     
     AppMediator.sync_cmd('CATEGORY_EDIT_METADATA', args)
 
@@ -376,8 +376,8 @@ def cmd_category_browse_import_nfo_file(args):
             repository.update_category(category)
             uow.commit()
             kodi.notify('Imported Category NFO file {0}'.format(NFO_FileName.getPath()))
-            AppMediator.async_cmd('RENDER_VIEW', {'category_id': category.get_id()})
-            AppMediator.async_cmd('RENDER_VIEW', {'category_id': category.get_parent_id()})
+            AppMediator.async_cmd('RENDER_CATEGORY_VIEW', {'category_id': category.get_id()})
+            AppMediator.async_cmd('RENDER_CATEGORY_VIEW', {'category_id': category.get_parent_id()})
     
     AppMediator.sync_cmd('CATEGORY_EDIT_METADATA', args)
 
@@ -437,7 +437,7 @@ def cmd_category_export_xml(args):
     # >> If everything goes all right when exporting then the else clause is executed.
     # >> If there is an error/exception then the exception handler prints a warning message
     # >> inside the function autoconfig_export_category() and the sucess message is never
-    # >> printed. This is the standard way of handling error messages in AEL code.
+    # >> printed. This is the standard way of handling error messages in AKL code.
     try:
         category.export_to_file(export_FN)
     except constants.AddonError as E:

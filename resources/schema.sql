@@ -9,6 +9,20 @@ CREATE TABLE IF NOT EXISTS metadata(
     finished INTEGER DEFAULT 0
 );
 
+CREATE TABLE IF NOT EXISTS tags(
+    id TEXT PRIMARY KEY, 
+    tag TEXT
+);
+
+CREATE TABLE IF NOT EXISTS metatags(
+    metadata_id TEXT,
+    tag_id TEXT,
+    FOREIGN KEY (metadata_id) REFERENCES metadata (id) 
+        ON DELETE CASCADE ON UPDATE NO ACTION,
+    FOREIGN KEY (tag_id) REFERENCES tags (id) 
+        ON DELETE CASCADE ON UPDATE NO ACTION
+);
+
 CREATE TABLE IF NOT EXISTS assets(
     id TEXT PRIMARY KEY,
     filepath TEXT NOT NULL,
@@ -21,7 +35,7 @@ CREATE TABLE IF NOT EXISTS assetpaths(
     asset_type TEXT NOT NULL
 );
 
-CREATE TABLE IF NOT EXISTS ael_addon(
+CREATE TABLE IF NOT EXISTS akl_addon(
     id TEXT PRIMARY KEY, 
     name TEXT,
     addon_id TEXT,
@@ -73,23 +87,23 @@ CREATE TABLE IF NOT EXISTS romcollections(
 CREATE TABLE IF NOT EXISTS romcollection_launchers(
     id TEXT PRIMARY KEY, 
     romcollection_id TEXT,
-    ael_addon_id TEXT,
+    akl_addon_id TEXT,
     settings TEXT,
     is_default INTEGER DEFAULT 0 NOT NULL,
     FOREIGN KEY (romcollection_id) REFERENCES romcollections (id) 
         ON DELETE CASCADE ON UPDATE NO ACTION,
-    FOREIGN KEY (ael_addon_id) REFERENCES ael_addon (id) 
+    FOREIGN KEY (akl_addon_id) REFERENCES akl_addon (id) 
         ON DELETE CASCADE ON UPDATE NO ACTION
 );
 
 CREATE TABLE IF NOT EXISTS romcollection_scanners(
     id TEXT PRIMARY KEY, 
     romcollection_id TEXT,
-    ael_addon_id TEXT,
+    akl_addon_id TEXT,
     settings TEXT,
     FOREIGN KEY (romcollection_id) REFERENCES romcollections (id) 
         ON DELETE CASCADE ON UPDATE NO ACTION,
-    FOREIGN KEY (ael_addon_id) REFERENCES ael_addon (id) 
+    FOREIGN KEY (akl_addon_id) REFERENCES akl_addon (id) 
         ON DELETE CASCADE ON UPDATE NO ACTION
 );
 
@@ -97,6 +111,7 @@ CREATE TABLE IF NOT EXISTS roms(
     id TEXT PRIMARY KEY, 
     name TEXT NOT NULL,
     num_of_players INTEGER DEFAULT 1 NOT NULL,
+    num_of_players_online INTEGER DEFAULT 0 NOT NULL,
     esrb_rating TEXT,
     nointro_status TEXT, 
     pclone_status TEXT,
@@ -144,12 +159,12 @@ CREATE TABLE IF NOT EXISTS roms_in_category(
 CREATE TABLE IF NOT EXISTS rom_launchers(
     id TEXT PRIMARY KEY, 
     rom_id TEXT,
-    ael_addon_id TEXT,
+    akl_addon_id TEXT,
     settings TEXT,
     is_default INTEGER DEFAULT 0 NOT NULL,
     FOREIGN KEY (rom_id) REFERENCES roms (id) 
         ON DELETE CASCADE ON UPDATE NO ACTION,
-    FOREIGN KEY (ael_addon_id) REFERENCES ael_addon (id) 
+    FOREIGN KEY (akl_addon_id) REFERENCES akl_addon (id) 
         ON DELETE CASCADE ON UPDATE NO ACTION
 );
 -------------------------------------------------
@@ -259,6 +274,7 @@ CREATE VIEW IF NOT EXISTS vw_roms AS SELECT
     r.metadata_id,
     r.name AS m_name,
     r.num_of_players AS m_nplayers,
+    r.num_of_players_online AS m_nplayers_online,
     r.esrb_rating AS m_esrb,
     r.nointro_status AS nointro_status,
     r.pclone_status AS pclone_status,
@@ -276,7 +292,14 @@ CREATE VIEW IF NOT EXISTS vw_roms AS SELECT
     r.is_favourite,
     r.launch_count,
     r.last_launch_timestamp,
-    m.assets_path AS assets_path
+    m.assets_path AS assets_path,
+    (
+        SELECT group_concat(t.tag) AS rom_tags
+        FROM tags AS t 
+        INNER JOIN metatags AS mt ON t.id = mt.tag_id
+        WHERE mt.metadata_id = r.metadata_id
+        GROUP BY mt.metadata_id
+    ) AS rom_tags
 FROM roms AS r 
     INNER JOIN metadata AS m ON r.metadata_id = m.id;
 
@@ -328,6 +351,14 @@ FROM assetpaths AS a
  INNER JOIN rom_assetpaths AS ra ON a.id = ra.assetpaths_id 
  INNER JOIN roms AS r ON ra.rom_id = r.id;
 
+CREATE VIEW IF NOT EXISTS vw_rom_tags AS SELECT
+    t.id as id,
+    r.id as rom_id, 
+    t.tag
+FROM tags AS t
+ INNER JOIN metatags AS mt ON t.id = mt.tag_id
+ INNER JOIN roms AS r ON mt.metadata_id = r.metadata_id;
+
 CREATE VIEW IF NOT EXISTS vw_romcollection_launchers AS SELECT
     l.id AS id,
     l.romcollection_id,
@@ -340,7 +371,7 @@ CREATE VIEW IF NOT EXISTS vw_romcollection_launchers AS SELECT
     l.settings,
     l.is_default
 FROM romcollection_launchers AS l
-    INNER JOIN ael_addon AS a ON l.ael_addon_id = a.id;
+    INNER JOIN akl_addon AS a ON l.akl_addon_id = a.id;
     
 CREATE VIEW IF NOT EXISTS vw_romcollection_scanners AS SELECT
     s.id AS id,
@@ -353,7 +384,7 @@ CREATE VIEW IF NOT EXISTS vw_romcollection_scanners AS SELECT
     a.extra_settings,
     s.settings
 FROM romcollection_scanners AS s
-    INNER JOIN ael_addon AS a ON s.ael_addon_id = a.id;
+    INNER JOIN akl_addon AS a ON s.akl_addon_id = a.id;
 
 CREATE VIEW IF NOT EXISTS vw_rom_launchers AS SELECT
     l.id AS id,
@@ -366,10 +397,18 @@ CREATE VIEW IF NOT EXISTS vw_rom_launchers AS SELECT
     l.settings,
     l.is_default
 FROM rom_launchers AS l
-    INNER JOIN ael_addon AS a ON l.ael_addon_id = a.id;
+    INNER JOIN akl_addon AS a ON l.akl_addon_id = a.id;
 
-CREATE TABLE IF NOT EXISTS ael_version(app TEXT, version TEXT);
+CREATE TABLE IF NOT EXISTS akl_version(app TEXT, version TEXT);
 
 -- STATIC VALUES
-INSERT INTO ael_addon (id, name, addon_id, version, addon_type)
-    VALUES ('856f1cd76f2148aba7953f20f10ec11d', 'Retroplayer', 'retroplayer_launcher_app', '1.0', 'LAUNCHER')
+INSERT INTO akl_addon (id, name, addon_id, version, addon_type)
+    VALUES ('856f1cd76f2148aba7953f20f10ec11d', 'Retroplayer', 'retroplayer_launcher_app', '1.0', 'LAUNCHER');
+
+INSERT INTO tags (id, tag) VALUES 
+    ('2e1f3086c96b44d2a81f5c08876b4ef6', 'co-op'),
+    ('de7bfaa72e924cd9a54ab5d225367b05', 'free-for-all'),
+    ('4f64dabdb0f5430f94eca529d6049a13', 'turnbased'),
+    ('1c67d7a0cccb47dfb1b36839a4bb1c1f', '4k'),
+    ('ccd62da94f7a4bf4ba593670329c2690', '720'),
+    ('bf62ca2ffb0347559b1a52ec70b0b189', '1080');

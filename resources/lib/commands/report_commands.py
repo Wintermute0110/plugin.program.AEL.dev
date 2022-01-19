@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 #
-# Advanced Emulator Launcher: Commands (reporting)
+# Advanced Kodi Launcher: Commands (reporting)
 #
 # Copyright (c) Wintermute0110 <wintermute0110@gmail.com> / Chrisism <crizizz@gmail.com>
 # 
@@ -20,7 +20,7 @@ from __future__ import division
 
 import logging
 
-from ael.utils import kodi, text
+from akl.utils import kodi, text
 
 from resources.lib.commands.mediator import AppMediator
 

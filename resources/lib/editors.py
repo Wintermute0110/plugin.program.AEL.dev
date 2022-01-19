@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 #
-# Advanced Emulator Launcher: metadata editor actions
+# Advanced Kodi Launcher: metadata editor actions
 #
 
 # Copyright (c) Wintermute0110 <wintermute0110@gmail.com> / Chrisism <crizizz@gmail.com>
@@ -24,11 +24,10 @@ import collections
 
 import xbmcgui
 
-from ael.scrapers import ScraperSettings
-from ael.utils import kodi, io
-from ael import constants, settings
+from akl.utils import kodi, io
+from akl import constants, settings
 
-from resources.lib.domain import MetaDataItemABC, AssetInfo, ROM, g_assetFactory
+from resources.lib.domain import MetaDataItemABC, AssetInfo, g_assetFactory
 
 logger = logging.getLogger(__name__)
 
@@ -42,6 +41,25 @@ def edit_field_by_str(obj_instance: MetaDataItemABC, metadata_name, get_method, 
     old_value = get_method()
     s = 'Edit {0} "{1}" {2}'.format(object_name, old_value, metadata_name)
     new_value = kodi.dialog_keyboard(s, old_value)
+    if new_value is None: return False
+
+    if old_value == new_value:
+        kodi.notify('{0} {1} not changed'.format(object_name, metadata_name))
+        return False
+    set_method(new_value)
+    kodi.notify('{0} {1} is now {2}'.format(object_name, metadata_name, new_value))
+    return True
+
+# Edits an object field which is an integer.
+#
+# Example call:
+#   edit_field_by_int(collection, 'Title', collection.get_number_of_players, collection.get_number_of_players)
+#
+def edit_field_by_int(obj_instance: MetaDataItemABC, metadata_name, get_method, set_method) -> bool:
+    object_name = obj_instance.get_object_name()
+    old_value = get_method()
+    s = 'Edit {0} "{1}" {2}'.format(object_name, old_value, metadata_name)
+    new_value = kodi.dialog_numeric(s, old_value)
     if new_value is None: return False
 
     if old_value == new_value:
@@ -198,7 +216,7 @@ def edit_object_assets(obj_instance:MetaDataItemABC, preselected_asset = None) -
 #   Command   The cmd that was executed. (SCRAPE_ASSET cmd will not be executed directly)
 #   None      No changes were made. No necessary to refresh container
 #
-def edit_asset(obj_instance: MetaDataItemABC, asset_info: AssetInfo) -> bool:
+def edit_asset(obj_instance: MetaDataItemABC, asset_info: AssetInfo) -> str:
     # --- Get asset object information ---
     # Select/Import require: object_name, A, asset_path_noext
     # Scraper additionaly requires: current_asset_path, scraper_obj, platform, rom_base_noext

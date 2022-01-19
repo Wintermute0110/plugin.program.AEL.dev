@@ -1,4 +1,4 @@
-## AEL technical notes ##
+## AKL technical notes ##
 
 ### AEL plans for Kodi Leia and Kodi Matrix
 

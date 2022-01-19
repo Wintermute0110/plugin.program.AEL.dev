@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 #
-# Advanced Emulator Launcher: Commands (romcollection scanner management)
+# Advanced Kodi Launcher: Commands (romcollection scanner management)
 #
 # Copyright (c) Wintermute0110 <wintermute0110@gmail.com> / Chrisism <crizizz@gmail.com>
 #
@@ -21,7 +21,7 @@ from __future__ import annotations
 import logging
 import collections
 
-from ael.utils import kodi
+from akl.utils import kodi
 
 from resources.lib.commands.mediator import AppMediator
 from resources.lib import globals
@@ -93,6 +93,7 @@ def cmd_add_romcollection_scanner(args):
     logger.debug('ADD_SCANNER: cmd_add_romcollection_scanner() Selected {}'.format(selected_option.get_id()))
     
     scanner_addon = ROMCollectionScanner(selected_option, {})
+    kodi.notify('Preparing scanner')
     kodi.run_script(
         selected_option.get_addon_id(), 
         scanner_addon.get_configure_command(romcollection))
@@ -129,6 +130,7 @@ def cmd_edit_romcollection_scanners(args):
     # >> Execute subcommand. May be atomic, maybe a submenu.
     logger.debug('EDIT_SCANNER: cmd_edit_romcollection_scanners() Selected {}'.format(selected_option.get_id()))
     
+    kodi.notify('Preparing scanner')
     kodi.run_script(
         selected_option.addon.get_addon_id(),
         selected_option.get_configure_command(romcollection))  
@@ -206,6 +208,7 @@ def cmd_execute_rom_scanner(args):
         return    
 
     logger.info('SCAN_ROMS: selected scanner "{}"'.format(selected_scanner.get_name()))
+    kodi.notify('Preparing scanner')
     kodi.run_script(
         selected_scanner.addon.get_addon_id(),
         selected_scanner.get_scan_command(romcollection))

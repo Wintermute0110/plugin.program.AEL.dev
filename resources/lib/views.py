@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 #
-# Advanced Emulator Launcher main script file.
+# Advanced Kodi Launcher main script file.
 #
 
 # Copyright (c) Wintermute0110 <wintermute0110@gmail.com> / Chrisism <crizizz@gmail.com>
@@ -22,10 +22,10 @@
 # Views.py contains all methods accessible by URL commands (using routes/paths)
 # triggered from Kodi. The methods will only perform operations to render and visualize
 # the list items in the containers.
-# AEL follows a (sortof) CQRS architecture, meaning that all actions to gather the items 
+# AKL follows a (sortof) CQRS architecture, meaning that all actions to gather the items 
 # or to perform commands are delegated to the queries.py file and different **_commands.py 
 # files. Query methods are called directly and the Command methods are called through
-# sending notifications to the AEL service (Monitor).
+# sending notifications to the AKL service (Monitor).
 #
 # --- Python standard library ---
 from __future__ import unicode_literals
@@ -41,8 +41,8 @@ import xbmc
 import xbmcgui
 import xbmcplugin
 
-from ael import constants
-from ael.utils import kodi
+from akl import constants
+from akl.utils import kodi
 
 from resources.lib import viewqueries, globals
 from resources.lib.commands.mediator import AppMediator
@@ -60,7 +60,7 @@ def run_plugin(addon_argv):
     # set_log_level(LOG_DEBUG)
 
     # --- Some debug stuff for development ---
-    logger.debug('------------ Called Advanced Emulator Launcher run_plugin(addon_argv) ------------')
+    logger.debug('------------ Called Advanced Kodi Launcher run_plugin(addon_argv) ------------')
     logger.debug('addon.id         "{}"'.format(globals.addon_id))
     logger.debug('addon.version    "{}"'.format(globals.addon_version))
     for i in range(len(sys.argv)): logger.debug('sys.argv[{}] "{}"'.format(i, sys.argv[i]))
@@ -73,7 +73,7 @@ def run_plugin(addon_argv):
         logger.error('Exception while executing route', exc_info=e)
         kodi.notify_error('Failed to execute route or command')
         
-    logger.debug('Advanced Emulator Launcher run_plugin() exit')
+    logger.debug('Advanced Kodi Launcher run_plugin() exit')
 
 # -------------------------------------------------------------------------------------------------
 # LisItem rendering
@@ -216,6 +216,11 @@ def render_list_items(container_data:dict, container_context_items = [], filter_
     vw_misc_set_AEL_Content(container_data['obj_type'] if 'obj_type' in container_data else constants.OBJ_NONE)
     vw_misc_clear_AEL_Launcher_Content()
 
+    # Container Properties
+    if 'properties' in container_data:
+        for property, value in container_data['properties'].items():
+            xbmcplugin.setProperty(router.handle, property, value)
+
     for list_item_data in container_data['items']:
         if filter_method and not filter_method.is_valid(list_item_data):
             continue
@@ -257,32 +262,32 @@ def vw_misc_set_all_sorting_methods():
 # a Window that has categories/launchers or ROMs.
 #
 def vw_misc_set_AEL_Content(AEL_Content_Value):
-    if AEL_Content_Value == constants.AEL_CONTENT_VALUE_LAUNCHERS:
-        logger.debug('vw_misc_set_AEL_Content() Setting Window({0}) '.format(constants.AEL_CONTENT_WINDOW_ID) +
-                  'property "{0}" = "{1}"'.format(constants.AEL_CONTENT_LABEL, constants.AEL_CONTENT_VALUE_LAUNCHERS))
-        xbmcgui.Window(constants.AEL_CONTENT_WINDOW_ID).setProperty(constants.AEL_CONTENT_LABEL, constants.AEL_CONTENT_VALUE_LAUNCHERS)
+    if AEL_Content_Value == constants.AKL_CONTENT_VALUE_LAUNCHERS:
+        logger.debug('vw_misc_set_AEL_Content() Setting Window({0}) '.format(constants.AKL_CONTENT_WINDOW_ID) +
+                  'property "{0}" = "{1}"'.format(constants.AKL_CONTENT_LABEL, constants.AKL_CONTENT_VALUE_LAUNCHERS))
+        xbmcgui.Window(constants.AKL_CONTENT_WINDOW_ID).setProperty(constants.AKL_CONTENT_LABEL, constants.AKL_CONTENT_VALUE_LAUNCHERS)
         
-    elif AEL_Content_Value == constants.AEL_CONTENT_VALUE_CATEGORY:
-        logger.debug('vw_misc_set_AEL_Content() Setting Window({0}) '.format(constants.AEL_CONTENT_WINDOW_ID) +
-                  'property "{0}" = "{1}"'.format(constants.AEL_CONTENT_LABEL, constants.AEL_CONTENT_VALUE_CATEGORY))
-        xbmcgui.Window(constants.AEL_CONTENT_WINDOW_ID).setProperty(constants.AEL_CONTENT_LABEL, constants.AEL_CONTENT_VALUE_CATEGORY)        
-    elif AEL_Content_Value == constants.AEL_CONTENT_VALUE_ROMS:
-        logger.debug('vw_misc_set_AEL_Content() Setting Window({0}) '.format(constants.AEL_CONTENT_WINDOW_ID) +
-                  'property "{0}" = "{1}"'.format(constants.AEL_CONTENT_LABEL, constants.AEL_CONTENT_VALUE_ROMS))
-        xbmcgui.Window(constants.AEL_CONTENT_WINDOW_ID).setProperty(constants.AEL_CONTENT_LABEL, constants.AEL_CONTENT_VALUE_ROMS)
-    elif AEL_Content_Value == constants.AEL_CONTENT_VALUE_NONE:
-        logger.debug('vw_misc_set_AEL_Content() Setting Window({0}) '.format(constants.AEL_CONTENT_WINDOW_ID) +
-                  'property "{0}" = "{1}"'.format(constants.AEL_CONTENT_LABEL, constants.AEL_CONTENT_VALUE_NONE))
-        xbmcgui.Window(constants.AEL_CONTENT_WINDOW_ID).setProperty(constants.AEL_CONTENT_LABEL, constants.AEL_CONTENT_VALUE_NONE)
+    elif AEL_Content_Value == constants.AKL_CONTENT_VALUE_CATEGORY:
+        logger.debug('vw_misc_set_AEL_Content() Setting Window({0}) '.format(constants.AKL_CONTENT_WINDOW_ID) +
+                  'property "{0}" = "{1}"'.format(constants.AKL_CONTENT_LABEL, constants.AKL_CONTENT_VALUE_CATEGORY))
+        xbmcgui.Window(constants.AKL_CONTENT_WINDOW_ID).setProperty(constants.AKL_CONTENT_LABEL, constants.AKL_CONTENT_VALUE_CATEGORY)        
+    elif AEL_Content_Value == constants.AKL_CONTENT_VALUE_ROMS:
+        logger.debug('vw_misc_set_AEL_Content() Setting Window({0}) '.format(constants.AKL_CONTENT_WINDOW_ID) +
+                  'property "{0}" = "{1}"'.format(constants.AKL_CONTENT_LABEL, constants.AKL_CONTENT_VALUE_ROMS))
+        xbmcgui.Window(constants.AKL_CONTENT_WINDOW_ID).setProperty(constants.AKL_CONTENT_LABEL, constants.AKL_CONTENT_VALUE_ROMS)
+    elif AEL_Content_Value == constants.AKL_CONTENT_VALUE_NONE:
+        logger.debug('vw_misc_set_AEL_Content() Setting Window({0}) '.format(constants.AKL_CONTENT_WINDOW_ID) +
+                  'property "{0}" = "{1}"'.format(constants.AKL_CONTENT_LABEL, constants.AKL_CONTENT_VALUE_NONE))
+        xbmcgui.Window(constants.AKL_CONTENT_WINDOW_ID).setProperty(constants.AKL_CONTENT_LABEL, constants.AKL_CONTENT_VALUE_NONE)
     else:
         logger.error('vw_misc_set_AEL_Content() Invalid AEL_Content_Value "{0}"'.format(AEL_Content_Value))
 
 def vw_misc_clear_AEL_Launcher_Content():
-    xbmcgui.Window(constants.AEL_CONTENT_WINDOW_ID).setProperty(constants.AEL_LAUNCHER_NAME_LABEL, '')
-    xbmcgui.Window(constants.AEL_CONTENT_WINDOW_ID).setProperty(constants.AEL_LAUNCHER_ICON_LABEL, '')
-    xbmcgui.Window(constants.AEL_CONTENT_WINDOW_ID).setProperty(constants.AEL_LAUNCHER_CLEARLOGO_LABEL, '')
-    xbmcgui.Window(constants.AEL_CONTENT_WINDOW_ID).setProperty(constants.AEL_LAUNCHER_PLATFORM_LABEL, '')
-    xbmcgui.Window(constants.AEL_CONTENT_WINDOW_ID).setProperty(constants.AEL_LAUNCHER_BOXSIZE_LABEL, '')
+    xbmcgui.Window(constants.AKL_CONTENT_WINDOW_ID).setProperty(constants.AKL_LAUNCHER_NAME_LABEL, '')
+    xbmcgui.Window(constants.AKL_CONTENT_WINDOW_ID).setProperty(constants.AKL_LAUNCHER_ICON_LABEL, '')
+    xbmcgui.Window(constants.AKL_CONTENT_WINDOW_ID).setProperty(constants.AKL_LAUNCHER_CLEARLOGO_LABEL, '')
+    xbmcgui.Window(constants.AKL_CONTENT_WINDOW_ID).setProperty(constants.AKL_LAUNCHER_PLATFORM_LABEL, '')
+    xbmcgui.Window(constants.AKL_CONTENT_WINDOW_ID).setProperty(constants.AKL_LAUNCHER_BOXSIZE_LABEL, '')
     
 def vw_create_filter(filter_on_type:str, filter_on_value:str) -> ListFilter:
     if filter_on_type is None: return None

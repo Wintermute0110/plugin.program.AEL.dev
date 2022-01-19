@@ -1,5 +1,5 @@
 # Kodi Media Center language file
-# Addon Name: Advanced Emulator Launcher
+# Addon Name: Advanced Kodi Launcher
 # Addon id: plugin.program.AEL
 msgid ""
 msgstr ""
@@ -188,10 +188,6 @@ msgctxt "#40610"
 msgid "Log level"
 msgstr "settings.xml"
 
-msgctxt "#40611"
-msgid "Migrated version"
-msgstr "settings.xml"
-
 msgctxt "#40612"
 msgid "Number of days between automatic scans"
 msgstr "settings.xml"
@@ -223,20 +219,12 @@ msgctxt "#20010"
 msgid "None"
 msgstr "settings.xml"
 
-msgctxt "#20020"
-msgid "NFO files"
-msgstr "settings.xml"
-
 msgctxt "#20030"
-msgid "Local images"
-msgstr "settings.xml"
-
-msgctxt "#20040"
-msgid "NFO files + Scrapers"
+msgid "Local files"
 msgstr "settings.xml"
 
 msgctxt "#20050"
-msgid "Local images + Scrapers"
+msgid "Local files + Scrapers"
 msgstr "settings.xml"
 
 msgctxt "#20060"

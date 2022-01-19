@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 #
-# Advanced Emulator Launcher: Commands (API actions)
+# Advanced Kodi Launcher: Commands (API actions)
 ##
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -19,11 +19,11 @@ from __future__ import unicode_literals
 from __future__ import division
 
 import logging
-from ael.scrapers import ScraperSettings
+from akl.scrapers import ScraperSettings
 
-from ael.utils import kodi
-from ael.api import ROMObj
-from ael import constants
+from akl.utils import kodi
+from akl.api import ROMObj
+from akl import constants
 
 from resources.lib.commands.mediator import AppMediator
 from resources.lib import globals
@@ -37,7 +37,7 @@ logger = logging.getLogger(__name__)
 # -------------------------------------------------------------------------------------------------      
 def cmd_set_launcher_args(args) -> bool:
     romcollection_id:str = args['romcollection_id'] if 'romcollection_id' in args else None
-    launcher_id:str      = args['ael_addon_id'] if 'ael_addon_id' in args else None
+    launcher_id:str      = args['akl_addon_id'] if 'akl_addon_id' in args else None
     addon_id:str         = args['addon_id'] if 'addon_id' in args else None
     launcher_settings    = args['settings'] if 'settings' in args else None
         
@@ -66,7 +66,7 @@ def cmd_set_launcher_args(args) -> bool:
         uow.commit()
     
     kodi.notify('Configured launcher {}'.format(addon.get_name()))
-    if metadata_updated: AppMediator.async_cmd('RENDER_VIEW', {'category_id': romcollection.get_parent_id()})  
+    if metadata_updated: AppMediator.async_cmd('RENDER_CATEGORY_VIEW', {'category_id': romcollection.get_parent_id()})  
     AppMediator.async_cmd('EDIT_ROMCOLLECTION', {'romcollection_id': romcollection_id})
     return True
 
@@ -75,7 +75,7 @@ def cmd_set_launcher_args(args) -> bool:
 # -------------------------------------------------------------------------------------------------
 def cmd_set_scanner_settings(args) -> bool:
     romcollection_id:str = args['romcollection_id'] if 'romcollection_id' in args else None
-    scanner_id:str       = args['ael_addon_id'] if 'ael_addon_id' in args else None
+    scanner_id:str       = args['akl_addon_id'] if 'akl_addon_id' in args else None
     addon_id:str         = args['addon_id'] if 'addon_id' in args else None
     settings:dict        = args['settings'] if 'settings' in args else None
     
@@ -106,7 +106,7 @@ def cmd_set_scanner_settings(args) -> bool:
 
 def cmd_store_scanned_roms(args) -> bool:
     romcollection_id:str = args['romcollection_id'] if 'romcollection_id' in args else None
-    scanner_id:str       = args['ael_addon_id'] if 'ael_addon_id' in args else None
+    scanner_id:str       = args['akl_addon_id'] if 'akl_addon_id' in args else None
     new_roms:list        = args['roms'] if 'roms' in args else None
     
     if new_roms is None:
@@ -123,7 +123,7 @@ def cmd_store_scanned_roms(args) -> bool:
             api_rom_obj = ROMObj(rom_data)
             
             rom_obj = ROM()
-            rom_obj.update_with(api_rom_obj, update_scanned_data=True)
+            rom_obj.update_with(api_rom_obj, overwrite_existing=True, update_scanned_data=True)
             rom_obj.set_platform(romcollection.get_platform())
             rom_obj.scanned_with(scanner_id)
             rom_obj.apply_romcollection_asset_paths(romcollection)
@@ -135,14 +135,14 @@ def cmd_store_scanned_roms(args) -> bool:
     kodi.notify('Stored scanned ROMS in ROMs Collection {}'.format(romcollection.get_name()))
     
     AppMediator.async_cmd('RENDER_ROMCOLLECTION_VIEW', {'romcollection_id': romcollection_id})
-    AppMediator.async_cmd('RENDER_VIEW', {'category_id': romcollection.get_parent_id()})  
+    AppMediator.async_cmd('RENDER_CATEGORY_VIEW', {'category_id': romcollection.get_parent_id()})  
     AppMediator.async_cmd('RENDER_VCATEGORY_VIEW', {'vcategory_id': constants.VCATEGORY_TITLE_ID})
     AppMediator.async_cmd('EDIT_ROMCOLLECTION', {'romcollection_id': romcollection_id})
     return True
 
 def cmd_remove_roms(args) -> bool:
     romcollection_id:str = args['romcollection_id'] if 'romcollection_id' in args else None
-    scanner_id:str       = args['ael_addon_id'] if 'ael_addon_id' in args else None
+    scanner_id:str       = args['akl_addon_id'] if 'akl_addon_id' in args else None
     rom_ids:list         = args['rom_ids'] if 'rom_ids' in args else None
     
     if rom_ids is None:
@@ -161,14 +161,14 @@ def cmd_remove_roms(args) -> bool:
     kodi.notify('Removed ROMS from ROMs Collection {}'.format(romcollection.get_name()))
     
     AppMediator.async_cmd('RENDER_ROMCOLLECTION_VIEW', {'romcollection_id': romcollection_id})
-    AppMediator.async_cmd('RENDER_VIEW', {'category_id': romcollection.get_parent_id()})  
+    AppMediator.async_cmd('RENDER_CATEGORY_VIEW', {'category_id': romcollection.get_parent_id()})  
     AppMediator.async_cmd('RENDER_VCATEGORY_VIEWS')
     AppMediator.async_cmd('EDIT_ROMCOLLECTION', {'romcollection_id': romcollection_id})
     return True
 
 def cmd_store_scraped_roms(args) -> bool:
     romcollection_id:str = args['romcollection_id'] if 'romcollection_id' in args else None
-    scraper_id:str       = args['ael_addon_id'] if 'ael_addon_id' in args else None
+    scraper_id:str       = args['akl_addon_id'] if 'akl_addon_id' in args else None
     scraped_roms:list    = args['roms'] if 'roms' in args else None
     settings_dic:dict    = args['applied_settings'] if 'applied_settings' in args else {}
     applied_settings     = ScraperSettings.from_settings_dict(settings_dic)
@@ -188,6 +188,9 @@ def cmd_store_scraped_roms(args) -> bool:
         metadata_is_updated = applied_settings.scrape_metadata_policy != constants.SCRAPE_ACTION_NONE
         assets_are_updated  = applied_settings.scrape_assets_policy != constants.SCRAPE_ACTION_NONE
 
+        metadata_to_update  = applied_settings.metadata_IDs_to_scrape if metadata_is_updated else []
+        assets_to_update    = applied_settings.asset_IDs_to_scrape if assets_are_updated else []
+
         for rom_data in scraped_roms:
             api_rom_obj = ROMObj(rom_data)
             
@@ -200,7 +203,11 @@ def cmd_store_scraped_roms(args) -> bool:
                 continue
             
             rom_obj = existing_roms_by_id[api_rom_obj.get_id()]
-            rom_obj.update_with(api_rom_obj, update_meta=metadata_is_updated, update_assets=assets_are_updated)
+            rom_obj.update_with(
+                api_rom_obj, 
+                metadata_to_update, 
+                assets_to_update, 
+                overwrite_existing=applied_settings.overwrite_existing)
             #rom_obj.scraped_with(scraper_id)
             
             rom_repository.update_rom(rom_obj)
@@ -215,7 +222,7 @@ def cmd_store_scraped_roms(args) -> bool:
 
 def cmd_store_scraped_single_rom(args) -> bool:
     rom_id:str           = args['rom_id'] if 'rom_id' in args else None
-    scraper_id:str       = args['ael_addon_id'] if 'ael_addon_id' in args else None
+    scraper_id:str       = args['akl_addon_id'] if 'akl_addon_id' in args else None
     scraped_rom_data:dict= args['rom'] if 'rom' in args else None
     settings_dic:dict    = args['applied_settings'] if 'applied_settings' in args else {}
     applied_settings     = ScraperSettings.from_settings_dict(settings_dic)
@@ -238,7 +245,10 @@ def cmd_store_scraped_single_rom(args) -> bool:
         metadata_is_updated = applied_settings.scrape_metadata_policy != constants.SCRAPE_ACTION_NONE
         assets_are_updated  = applied_settings.scrape_assets_policy != constants.SCRAPE_ACTION_NONE
         
-        rom.update_with(scraped_rom, update_meta=metadata_is_updated, update_assets=assets_are_updated)
+        metadata_to_update = applied_settings.metadata_IDs_to_scrape if metadata_is_updated else []
+        assets_to_update   = applied_settings.asset_IDs_to_scrape if assets_are_updated else []
+
+        rom.update_with(scraped_rom, metadata_to_update, assets_to_update)
         #rom_obj.scraped_with(scraper_id)
         
         rom_repository.update_rom(rom)

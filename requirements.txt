@@ -1,0 +1,6 @@
+kodi.tools==1.0.0
+kodi-addon-checker==0.0.26
+Kodistubs==19.0.3
+routing==0.2.3
+pytest==6.2.5
+script.module.akl==1.0.2

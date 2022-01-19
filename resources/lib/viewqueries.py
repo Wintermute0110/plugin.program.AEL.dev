@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 #
-# Advanced Emulator Launcher: UI query implementations. Getting data for the UI
+# Advanced Kodi Launcher: UI query implementations. Getting data for the UI
 #
 
 # Copyright (c) Wintermute0110 <wintermute0110@gmail.com> / Chrisism <crizizz@gmail.com>
@@ -28,9 +28,9 @@ import typing
 import collections
 from urllib.parse import urlencode
 
-# AEL modules
-from ael import constants, settings
-from ael.utils import kodi
+# AKL modules
+from akl import constants, settings
+from akl.utils import kodi
 
 from resources.lib import globals
 from resources.lib.commands.mediator import AppMediator
@@ -70,11 +70,11 @@ def qry_get_root_items():
                 'overlay': 4
             },
             'art': { 
-                'icon' : globals.g_PATHS.ADDON_CODE_DIR.pjoin('media/theme/Utilities_icon.png').getPath(), 
                 'fanart' : listitem_fanart, 
+                'icon' : globals.g_PATHS.ADDON_CODE_DIR.pjoin('media/theme/Utilities_icon.png').getPath(),
                 'poster': globals.g_PATHS.ADDON_CODE_DIR.pjoin('media/theme/Utilities_poster.png').getPath() 
             },
-            'properties': { constants.AEL_CONTENT_LABEL: constants.AEL_CONTENT_VALUE_CATEGORY, 'obj_type': constants.OBJ_NONE }
+            'properties': { constants.AKL_CONTENT_LABEL: constants.AKL_CONTENT_VALUE_CATEGORY, 'obj_type': constants.OBJ_NONE }
         })
         
     if not settings.getSettingAsBool('display_hide_g_reports'): 
@@ -90,11 +90,11 @@ def qry_get_root_items():
                 'overlay': 4
             },
             'art': { 
-                'icon' : globals.g_PATHS.ADDON_CODE_DIR.pjoin('media/theme/Global_Reports_icon.png').getPath(), 
                 'fanart' : listitem_fanart, 
+                'icon' : globals.g_PATHS.ADDON_CODE_DIR.pjoin('media/theme/Global_Reports_icon.png').getPath(),
                 'poster': globals.g_PATHS.ADDON_CODE_DIR.pjoin('media/theme/Global_Reports_poster.png').getPath() 
             },
-            'properties': { constants.AEL_CONTENT_LABEL: constants.AEL_CONTENT_VALUE_CATEGORY, 'obj_type': constants.OBJ_NONE }
+            'properties': { constants.AKL_CONTENT_LABEL: constants.AKL_CONTENT_VALUE_CATEGORY, 'obj_type': constants.OBJ_NONE }
         })
     
     return container
@@ -134,11 +134,11 @@ def qry_get_utilities_items():
         'type': 'video',
         'info': {
             'title': 'Reset database',
-            'plot': 'Reset the AEL database. You will loose all data.',
+            'plot': 'Reset the AKL database. You will loose all data.',
             'overlay': 4
         },
         'art': { 'icon' : listitem_icon, 'fanart' : listitem_fanart, 'poster' : listitem_poster  },
-        'properties': { constants.AEL_CONTENT_LABEL: constants.AEL_CONTENT_VALUE_NONE, 'obj_type': constants.OBJ_NONE }
+        'properties': { constants.AKL_CONTENT_LABEL: constants.AKL_CONTENT_VALUE_NONE, 'obj_type': constants.OBJ_NONE }
     })
     container['items'].append({
         'name': 'Rebuild views',
@@ -151,7 +151,7 @@ def qry_get_utilities_items():
             'overlay': 4
         },
         'art': { 'icon' : listitem_icon, 'fanart' : listitem_fanart, 'poster' : listitem_poster  },
-        'properties': { constants.AEL_CONTENT_LABEL: constants.AEL_CONTENT_VALUE_NONE, 'obj_type': constants.OBJ_NONE }
+        'properties': { constants.AKL_CONTENT_LABEL: constants.AKL_CONTENT_VALUE_NONE, 'obj_type': constants.OBJ_NONE }
     })
     container['items'].append({
         'name': 'Rebuild virtual views',
@@ -164,7 +164,7 @@ def qry_get_utilities_items():
             'overlay': 4
         },
         'art': { 'icon' : listitem_icon, 'fanart' : listitem_fanart, 'poster' : listitem_poster  },
-        'properties': { constants.AEL_CONTENT_LABEL: constants.AEL_CONTENT_VALUE_NONE, 'obj_type': constants.OBJ_NONE }
+        'properties': { constants.AKL_CONTENT_LABEL: constants.AKL_CONTENT_VALUE_NONE, 'obj_type': constants.OBJ_NONE }
     })
     container['items'].append({
         'name': 'Scan for plugin-addons',
@@ -173,11 +173,24 @@ def qry_get_utilities_items():
         'type': 'video',
         'info': {
             'title': 'Scan for plugin-addons',
-            'plot': 'Scan for addons that can be used by AEL (launchers, scrapers etc.)',
+            'plot': 'Scan for addons that can be used by AKL (launchers, scrapers etc.)',
             'overlay': 4
         },
         'art': { 'icon' : listitem_icon, 'fanart' : listitem_fanart, 'poster' : listitem_poster  },
-        'properties': { constants.AEL_CONTENT_LABEL: constants.AEL_CONTENT_VALUE_NONE, 'obj_type': constants.OBJ_NONE }
+        'properties': { constants.AKL_CONTENT_LABEL: constants.AKL_CONTENT_VALUE_NONE, 'obj_type': constants.OBJ_NONE }
+    })
+    container['items'].append({
+        'name': 'Manage ROM tags',
+        'url': globals.router.url_for_path('execute/command/manage_rom_tags'),
+        'is_folder': False,
+        'type': 'video',
+        'info': {
+            'title': 'Manage ROM tags',
+            'plot': 'Manage existing/available tags for ROMs',
+            'overlay': 4
+        },
+        'art': { 'icon' : listitem_icon, 'fanart' : listitem_fanart, 'poster' : listitem_poster  },
+        'properties': { constants.AKL_CONTENT_LABEL: constants.AKL_CONTENT_VALUE_NONE, 'obj_type': constants.OBJ_NONE }
     })
     container['items'].append({
         'name': 'Import category/launcher XML configuration file',
@@ -190,7 +203,7 @@ def qry_get_utilities_items():
             'overlay': 4
         },
         'art': { 'icon' : listitem_icon, 'fanart' : listitem_fanart, 'poster' : listitem_poster  },
-        'properties': { constants.AEL_CONTENT_LABEL: constants.AEL_CONTENT_VALUE_NONE, 'obj_type': constants.OBJ_NONE }
+        'properties': { constants.AKL_CONTENT_LABEL: constants.AKL_CONTENT_VALUE_NONE, 'obj_type': constants.OBJ_NONE }
     })
     container['items'].append({
         'name': 'Export category/rom collection XML configuration file',
@@ -200,12 +213,12 @@ def qry_get_utilities_items():
         'info': {
             'title': 'Export category/rom collection XML configuration file',
             'plot': (
-                'Exports all AEL categories and collections into an XML configuration file. '
+                'Exports all AKL categories and collections into an XML configuration file. '
                 'You can later reimport this XML file.'),
             'overlay': 4
         },
         'art': { 'icon' : listitem_icon, 'fanart' : listitem_fanart, 'poster' : listitem_poster  },
-        'properties': { constants.AEL_CONTENT_LABEL: constants.AEL_CONTENT_VALUE_NONE, 'obj_type': constants.OBJ_NONE }
+        'properties': { constants.AKL_CONTENT_LABEL: constants.AKL_CONTENT_VALUE_NONE, 'obj_type': constants.OBJ_NONE }
     })
     container['items'].append({
         'name': 'Check collections',
@@ -219,7 +232,7 @@ def qry_get_utilities_items():
             'overlay': 4
         },
         'art': { 'icon' : listitem_icon, 'fanart' : listitem_fanart, 'poster' : listitem_poster  },
-        'properties': { constants.AEL_CONTENT_LABEL: constants.AEL_CONTENT_VALUE_NONE, 'obj_type': constants.OBJ_NONE }
+        'properties': { constants.AKL_CONTENT_LABEL: constants.AKL_CONTENT_VALUE_NONE, 'obj_type': constants.OBJ_NONE }
     })
     container['items'].append({
         'name': 'Check ROMs artwork image integrity',
@@ -234,7 +247,7 @@ def qry_get_utilities_items():
             'overlay': 4
         },
         'art': { 'icon' : listitem_icon, 'fanart' : listitem_fanart, 'poster' : listitem_poster  },
-        'properties': { constants.AEL_CONTENT_LABEL: constants.AEL_CONTENT_VALUE_NONE, 'obj_type': constants.OBJ_NONE }
+        'properties': { constants.AKL_CONTENT_LABEL: constants.AKL_CONTENT_VALUE_NONE, 'obj_type': constants.OBJ_NONE }
     })
     container['items'].append({
         'name': 'Delete ROMs redundant artwork',
@@ -248,7 +261,7 @@ def qry_get_utilities_items():
             'overlay': 4
         },
         'art': { 'icon' : listitem_icon, 'fanart' : listitem_fanart, 'poster' : listitem_poster  },
-        'properties': { constants.AEL_CONTENT_LABEL: constants.AEL_CONTENT_VALUE_NONE, 'obj_type': constants.OBJ_NONE }
+        'properties': { constants.AKL_CONTENT_LABEL: constants.AKL_CONTENT_VALUE_NONE, 'obj_type': constants.OBJ_NONE }
     })
     container['items'].append({
         'name': 'Show detected No-Intro/Redump DATs',
@@ -259,11 +272,11 @@ def qry_get_utilities_items():
             'title': 'Show detected No-Intro/Redump DATs',
             'plot': ('Display the auto-detected No-Intro/Redump DATs that will be used for the '
                     'ROM audit. You have to configure the DAT directories in '
-                    '[COLOR orange]AEL addon settings[/COLOR], [COLOR=orange]ROM Audit[/COLOR] tab.'),
+                    '[COLOR orange]AKL addon settings[/COLOR], [COLOR=orange]ROM Audit[/COLOR] tab.'),
             'overlay': 4
         },
         'art': { 'icon' : listitem_icon, 'fanart' : listitem_fanart, 'poster' : listitem_poster  },
-        'properties': { constants.AEL_CONTENT_LABEL: constants.AEL_CONTENT_VALUE_NONE, 'obj_type': constants.OBJ_NONE }
+        'properties': { constants.AKL_CONTENT_LABEL: constants.AKL_CONTENT_VALUE_NONE, 'obj_type': constants.OBJ_NONE }
     })
     
     return container
@@ -296,7 +309,7 @@ def qry_get_globalreport_items():
             'overlay': 4
         },
         'art': { 'icon' : listitem_icon, 'fanart' : listitem_fanart, 'poster' : listitem_poster  },
-        'properties': { constants.AEL_CONTENT_LABEL: constants.AEL_CONTENT_VALUE_NONE, 'obj_type': constants.OBJ_NONE }
+        'properties': { constants.AKL_CONTENT_LABEL: constants.AKL_CONTENT_VALUE_NONE, 'obj_type': constants.OBJ_NONE }
     })
     
     # --- Global ROM Audit statistics  ---
@@ -312,7 +325,7 @@ def qry_get_globalreport_items():
             'overlay': 4
         },
         'art': { 'icon' : listitem_icon, 'fanart' : listitem_fanart, 'poster' : listitem_poster  },
-        'properties': { constants.AEL_CONTENT_LABEL: constants.AEL_CONTENT_VALUE_NONE, 'obj_type': constants.OBJ_NONE }
+        'properties': { constants.AKL_CONTENT_LABEL: constants.AKL_CONTENT_VALUE_NONE, 'obj_type': constants.OBJ_NONE }
     })
     
     container['items'].append({
@@ -327,7 +340,7 @@ def qry_get_globalreport_items():
             'overlay': 4
         },
         'art': { 'icon' : listitem_icon, 'fanart' : listitem_fanart, 'poster' : listitem_poster  },
-        'properties': { constants.AEL_CONTENT_LABEL: constants.AEL_CONTENT_VALUE_NONE, 'obj_type': constants.OBJ_NONE }
+        'properties': { constants.AKL_CONTENT_LABEL: constants.AKL_CONTENT_VALUE_NONE, 'obj_type': constants.OBJ_NONE }
     })
     
     container['items'].append({
@@ -342,7 +355,7 @@ def qry_get_globalreport_items():
             'overlay': 4
         },
         'art': { 'icon' : listitem_icon, 'fanart' : listitem_fanart, 'poster' : listitem_poster  },
-        'properties': { constants.AEL_CONTENT_LABEL: constants.AEL_CONTENT_VALUE_NONE, 'obj_type': constants.OBJ_NONE }
+        'properties': { constants.AKL_CONTENT_LABEL: constants.AKL_CONTENT_VALUE_NONE, 'obj_type': constants.OBJ_NONE }
     })
     return container
 
@@ -381,7 +394,7 @@ def qry_container_context_menu_items(container_data) -> typing.List[typing.Tuple
     
     commands.append(('Rebuild all views', _context_menu_url_for('execute/command/render_views')))
     commands.append(('Open Kodi file manager', 'ActivateWindow(filemanager)'))
-    commands.append(('AEL addon settings', 'Addon.OpenSettings({0})'.format(globals.addon_id)))
+    commands.append(('AKL addon settings', 'Addon.OpenSettings({0})'.format(globals.addon_id)))
 
     return commands
 
@@ -414,7 +427,7 @@ def qry_listitem_context_menu_items(list_item_data, container_data)-> typing.Lis
         commands.append(('View ROM', _context_menu_url_for(f'/rom/{item_id}/view')))
         commands.append(('Edit ROM', _context_menu_url_for(f'/rom/edit/{item_id}')))
         commands.append(('Link ROM in other collection', _context_menu_url_for('/execute/command/link_rom',{'rom_id':item_id})))
-        commands.append(('Add ROM to AEL Favourites', _context_menu_url_for('/execute/command/add_rom_to_favourites',{'rom_id':item_id})))
+        commands.append(('Add ROM to AKL Favourites', _context_menu_url_for('/execute/command/add_rom_to_favourites',{'rom_id':item_id})))
     if is_category: 
         commands.append(('View Category', _context_menu_url_for(f'/categories/view/{item_id}')))
         commands.append(('Edit Category', _context_menu_url_for(f'/categories/edit/{item_id}')))

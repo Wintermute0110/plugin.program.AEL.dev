@@ -1,6 +1,6 @@
 import logging
 
-from ael.utils import text, kodi
+from akl.utils import text, kodi
 
 logger = logging.getLogger(__name__)
 

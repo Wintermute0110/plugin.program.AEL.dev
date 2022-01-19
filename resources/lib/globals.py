@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 #
-# Advanced Emulator Launcher: Globals
+# Advanced Kodi Launcher: Globals
 #
 
 # Copyright (c) Wintermute0110 <wintermute0110@gmail.com> / Chrisism <crizizz@gmail.com>
@@ -22,7 +22,7 @@ import routing
 # --- Kodi stuff ---
 import xbmcaddon
 
-from ael.utils import io
+from akl.utils import io
 
 # --- Addon object (used to access settings) ---
 addon           = xbmcaddon.Addon()
@@ -35,13 +35,13 @@ addon_type      = addon.getAddonInfo('type')
 
 # --- Addon paths and constant definition ---
 # _PATH is a filename | _DIR is a directory.
-class AEL_Paths(object):
+class AKL_Paths(object):
     def __init__(self, addon_id):
         # --- Base paths ---
         self.HOME_DIR         = io.FileName('special://home')
         self.PROFILE_DIR      = io.FileName('special://profile')
         self.ADDONS_DATA_DIR  = io.FileName('special://profile/addon_data')
-        self.DATABASE_DIR     = io.FileName('special://database')
+        #self.DATABASE_DIR     = io.FileName('special://database')
         
         self.ADDON_DATA_DIR             = self.ADDONS_DATA_DIR.pjoin(addon_id)
         self.ADDONS_CODE_DIR            = self.HOME_DIR.pjoin('addons', True)
@@ -54,7 +54,7 @@ class AEL_Paths(object):
         # -- Root data file
         self.ROOT_PATH              = self.ADDON_DATA_DIR.pjoin('root.json')
         # --- Databases and reports ---
-        self.DATABASE_FILE_PATH     = self.DATABASE_DIR.pjoin('ael.db')
+        self.DATABASE_FILE_PATH     = self.ADDON_DATA_DIR.pjoin('akl.db')
         # --- datetime peek file for automatic scanning ---
         self.SCAN_INDICATOR_FILE    = self.ADDON_DATA_DIR.pjoin('auto_scan.txt')
 
@@ -102,7 +102,7 @@ class AEL_Paths(object):
         return self
   
 router: routing.Plugin = routing.Plugin()
-g_PATHS: AEL_Paths
+g_PATHS: AKL_Paths
 
 WEBSERVER_HOST = '127.0.0.1'
 WEBSERVER_PORT = 57300
@@ -111,5 +111,5 @@ WEBSERVER_PORT = 57300
 #
 def g_bootstrap_instances():
     global g_PATHS    
-    g_PATHS = AEL_Paths(addon_id).build()
+    g_PATHS = AKL_Paths(addon_id).build()
       

@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 #
-# Advanced Emulator Launcher miscellaneous set of objects
+# Advanced Kodi Launcher miscellaneous set of objects
 #
 # Copyright (c) Wintermute0110 <wintermute0110@gmail.com> / Chrisism <crizizz@gmail.com>
 #
@@ -26,13 +26,13 @@ import time
 import datetime
 import json
 
-# --- AEL packages ---
+# --- AKL packages ---
 from resources.lib import globals
 
-from ael import api
-from ael.utils import io, kodi, text
-from ael.scrapers import ScraperSettings
-from ael import settings, constants
+from akl import api
+from akl.utils import io, kodi, text
+from akl.scrapers import ScraperSettings
+from akl import settings, constants
 
 logger = logging.getLogger(__name__)
 
@@ -118,7 +118,7 @@ class EntityABC(object):
         if not value or value == '': return None
         return io.FileName(value, isdir)
 
-# Addons that can be used as AEL plugin (launchers, scrapers)
+# Addons that can be used as AKL plugin (launchers, scrapers)
 class AelAddon(EntityABC):
     
     def __init__(self, addon_dic=None):        
@@ -305,7 +305,7 @@ class ROMLauncherAddon(ROMAddon):
             '--type': constants.AddonType.LAUNCHER.name,
             '--server_host': globals.WEBSERVER_HOST,
             '--server_port': globals.WEBSERVER_PORT,
-            '--ael_addon_id': self.get_id(),
+            '--akl_addon_id': self.get_id(),
             '--rom_id': rom.get_id()
         }
 
@@ -316,7 +316,7 @@ class ROMLauncherAddon(ROMAddon):
             '--server_host': globals.WEBSERVER_HOST,
             '--server_port': globals.WEBSERVER_PORT,
             '--romcollection_id': romcollection.get_id(), 
-            '--ael_addon_id': self.get_id()
+            '--akl_addon_id': self.get_id()
         }
         
     def launch(self, rom: ROM):
@@ -360,7 +360,7 @@ class RetroplayerLauncherAddon(ROMLauncherAddon):
     def configure(self, romcollection:ROMCollection):
         post_data = {
             'romcollection_id': romcollection.get_id(),
-            'ael_addon_id': self.get_id(),
+            'akl_addon_id': self.get_id(),
             'addon_id': self.addon.get_addon_id(),
             'settings': {}
         }        
@@ -380,7 +380,7 @@ class ROMCollectionScanner(ROMAddon):
             '--server_host': globals.WEBSERVER_HOST,
             '--server_port': globals.WEBSERVER_PORT,
             '--romcollection_id': rom_collection.get_id(),
-            '--ael_addon_id': self.get_id()
+            '--akl_addon_id': self.get_id()
         }
         
     def get_configure_command(self, romcollection: ROMCollection) -> dict:        
@@ -390,7 +390,7 @@ class ROMCollectionScanner(ROMAddon):
             '--server_host': globals.WEBSERVER_HOST,
             '--server_port': globals.WEBSERVER_PORT,
             '--romcollection_id': romcollection.get_id(),
-            '--ael_addon_id':  self.get_id()
+            '--akl_addon_id':  self.get_id()
         }
 
 class ScraperAddon(ROMAddon):
@@ -415,6 +415,14 @@ class ScraperAddon(ROMAddon):
             if len(asset_overlap) > 0: return True
         
         return False
+
+    def is_metadata_supported(self, metadata_id) -> bool:
+        supported_items = self.get_supported_metadata()
+        return supported_items is not None and metadata_id in supported_items
+
+    def is_asset_supported(self, asset_id) -> bool:
+        supported_items = self.get_supported_assets()
+        return supported_items is not None and asset_id in supported_items
 
     def get_supported_metadata(self) -> typing.List[str]:
         extra_settings = self.addon.get_extra_settings()
@@ -441,7 +449,7 @@ class ScraperAddon(ROMAddon):
             '--type': constants.AddonType.SCRAPER.name,
             '--server_host': globals.WEBSERVER_HOST,
             '--server_port': globals.WEBSERVER_PORT,
-            '--ael_addon_id': self.addon.get_id(),
+            '--akl_addon_id': self.addon.get_id(),
             '--rom_id': rom.get_id(),
             '--settings':  io.parse_to_json_arg(self.get_settings())
         }
@@ -452,7 +460,7 @@ class ScraperAddon(ROMAddon):
             '--type': constants.AddonType.SCRAPER.name,
             '--server_host': globals.WEBSERVER_HOST,
             '--server_port': globals.WEBSERVER_PORT,
-            '--ael_addon_id': self.addon.get_id(),
+            '--akl_addon_id': self.addon.get_id(),
             '--romcollection_id': collection.get_id(),
             '--settings':  io.parse_to_json_arg(self.get_settings())
         }
@@ -533,7 +541,7 @@ class MetaDataItemABC(EntityABC):
     def set_developer(self, developer):
         self.entity_data['m_developer'] = developer
 
-    # In AEL 0.9.7 m_rating is stored as a string.
+    # In AKL 0.9.7 m_rating is stored as a string.
     def get_rating(self):
         return int(self.entity_data['m_rating']) if 'm_rating' in self.entity_data and self.entity_data['m_rating'] else ''
 
@@ -777,7 +785,7 @@ class MetaDataItemABC(EntityABC):
         return '{}}#{}: {}'.format(self.get_object_name(), self.get_id(), self.get_name())
 
 # -------------------------------------------------------------------------------------------------
-# Class representing an AEL Cateogry.
+# Class representing an AKL Cateogry.
 # Contains code to generate the context menus passed to Dialog.select()
 # -------------------------------------------------------------------------------------------------
 class Category(MetaDataItemABC):
@@ -878,7 +886,7 @@ class Category(MetaDataItemABC):
         # If NFO file does not exist then create them. If it exists, overwrite.
         nfo_content = []
         nfo_content.append('<?xml version="1.0" encoding="utf-8" standalone="yes"?>\n')
-        nfo_content.append('<!-- Exported by AEL on {0} -->\n'.format(time.strftime("%Y-%m-%d %H:%M:%S")))
+        nfo_content.append('<!-- Exported by AKL on {0} -->\n'.format(time.strftime("%Y-%m-%d %H:%M:%S")))
         nfo_content.append('<category>\n')
         nfo_content.append(text.XML_line('year',      self.get_releaseyear()))
         nfo_content.append(text.XML_line('genre',     self.get_genre())) 
@@ -896,7 +904,7 @@ class Category(MetaDataItemABC):
         # --- Create list of strings ---
         str_list = []
         str_list.append('<?xml version="1.0" encoding="utf-8" standalone="yes"?>\n')
-        str_list.append('<!-- Exported by AEL on {0} -->\n'.format(time.strftime("%Y-%m-%d %H:%M:%S")))
+        str_list.append('<!-- Exported by AKL on {0} -->\n'.format(time.strftime("%Y-%m-%d %H:%M:%S")))
         str_list.append('<advanced_emulator_launcher_configuration>\n')
         str_list.append('<category>\n')
         str_list.append(text.XML_line('name', self.get_name()))
@@ -960,7 +968,7 @@ class ROMCollection(MetaDataItemABC):
     # parent category / romcollection this item belongs to.
     def get_parent_id(self) -> str:
         return self.entity_data['parent_id'] if 'parent_id' in self.entity_data else None
-    
+        
     def get_platform(self): return self.entity_data['platform'] if 'platform' in self.entity_data else None
 
     def set_platform(self, platform): self.entity_data['platform'] = platform
@@ -1141,7 +1149,7 @@ class ROMCollection(MetaDataItemABC):
         # If NFO file does not exist then create them. If it exists, overwrite.
         nfo_content = []
         nfo_content.append('<?xml version="1.0" encoding="utf-8" standalone="yes"?>\n')
-        nfo_content.append('<!-- Exported by AEL on {0} -->\n'.format(time.strftime("%Y-%m-%d %H:%M:%S")))
+        nfo_content.append('<!-- Exported by AKL on {0} -->\n'.format(time.strftime("%Y-%m-%d %H:%M:%S")))
         nfo_content.append('<romcollection>\n')
         nfo_content.append(text.XML_line('year',      self.get_releaseyear()))
         nfo_content.append(text.XML_line('genre',     self.get_genre())) 
@@ -1159,7 +1167,7 @@ class ROMCollection(MetaDataItemABC):
         # --- Create list of strings ---
         str_list = []
         str_list.append('<?xml version="1.0" encoding="utf-8" standalone="yes"?>\n')
-        str_list.append('<!-- Exported by AEL on {0} -->\n'.format(time.strftime("%Y-%m-%d %H:%M:%S")))
+        str_list.append('<!-- Exported by AKL on {0} -->\n'.format(time.strftime("%Y-%m-%d %H:%M:%S")))
         str_list.append('<advanced_emulator_launcher_configuration>\n')
         str_list.append('<romcollection>\n')
         str_list.append(text.XML_line('name', self.get_name()))
@@ -1211,12 +1219,13 @@ class VirtualCollection(ROMCollection):
         return self.entity_data['collection_value'] if 'collection_value' in self.entity_data else None
   
 # -------------------------------------------------------------------------------------------------
-# Class representing a ROM file you can play through AEL.
+# Class representing a ROM file you can play through AKL.
 # -------------------------------------------------------------------------------------------------
 class ROM(MetaDataItemABC):
         
     def __init__(self, 
-                 rom_data: dict = None, 
+                 rom_data: dict = None,
+                 tag_data: dict = None, 
                  assets_data: typing.List[Asset] = None,
                  asset_paths_data: typing.List[AssetPath] = None,
                  scanned_data: dict = {},
@@ -1224,9 +1233,14 @@ class ROM(MetaDataItemABC):
         if rom_data is None:
             rom_data = _get_default_ROM_data_model()
             rom_data['id'] = text.misc_generate_random_SID()
-            
+        
+        self.tags = tag_data
         self.scanned_data = scanned_data
         self.launchers_data = launchers_data
+
+        if self.tags is None and 'rom_tags' in rom_data:
+            tag_data_str = str(rom_data['rom_tags'])
+            self.tags = {t: '' for t in tag_data_str.split(',')}
         
         super(ROM, self).__init__(rom_data, assets_data, asset_paths_data)
         
@@ -1284,6 +1298,9 @@ class ROM(MetaDataItemABC):
     def get_number_of_players(self):
         return self.entity_data['m_nplayers']
 
+    def get_number_of_players_online(self):
+        return self.entity_data['m_nplayers_online']
+
     def get_esrb_rating(self):
         return self.entity_data['m_esrb']
 
@@ -1292,6 +1309,14 @@ class ROM(MetaDataItemABC):
 
     def is_favourite(self) -> bool:
         return self.entity_data['is_favourite'] if 'is_favourite' in self.entity_data else False
+
+    def get_tags(self) -> typing.List[str]:
+        if self.tags is not None:
+            return [tag for tag in self.tags.keys()]
+        return []
+
+    def get_tag_data(self) -> dict:
+        return self.tags if self.tags is None else {}
 
     def get_launch_count(self):
         return self.entity_data['launch_count']
@@ -1313,12 +1338,31 @@ class ROM(MetaDataItemABC):
     def set_number_of_players(self, amount):
         self.entity_data['m_nplayers'] = amount
 
+    def set_number_of_players_online(self, amount):
+        self.entity_data['m_nplayers_online'] = amount
+
     def set_esrb_rating(self, esrb):
         self.entity_data['m_esrb'] = esrb
 
     def set_platform(self, platform): 
         self.entity_data['platform'] = platform
     
+    def add_tag(self, tag:str):
+        if self.tags is None:
+            self.tags = {}
+
+        existing_tags = self.get_tags()
+        if not tag in existing_tags:
+            self.tags[tag] = ''
+
+    def remove_tag(self, tag:str):
+        if self.tags is None: return
+        if not tag in self.tags: return
+        del self.tags[tag]
+
+    def clear_tags(self):
+        self.tags = {}
+
     def set_nointro_status(self, status):
         self.entity_data['nointro_status'] = status
 
@@ -1379,7 +1423,9 @@ class ROM(MetaDataItemABC):
         dto_data:dict = api.ROMObj.get_data_template()
         for key in dto_data.keys():
             if key in self.entity_data: dto_data[key] = self.entity_data[key]
-            
+
+        dto_data['tags'] = self.get_tags()
+
         for asset_id in self.get_asset_ids_list():
             asset_info = g_assetFactory.get_asset_info(asset_id)
             asset = self.get_asset(asset_id)
@@ -1451,7 +1497,7 @@ class ROM(MetaDataItemABC):
         # If NFO file does not exist then create them. If it exists, overwrite.
         nfo_content = []
         nfo_content.append('<?xml version="1.0" encoding="utf-8" standalone="yes"?>\n')
-        nfo_content.append('<!-- Exported by AEL on {0} -->\n'.format(time.strftime("%Y-%m-%d %H:%M:%S")))
+        nfo_content.append('<!-- Exported by AKL on {0} -->\n'.format(time.strftime("%Y-%m-%d %H:%M:%S")))
         nfo_content.append('<ROM>\n')
         nfo_content.append(text.XML_line('title',     self.get_name()))
         nfo_content.append(text.XML_line('year',      self.get_releaseyear()))
@@ -1471,19 +1517,62 @@ class ROM(MetaDataItemABC):
     # Updates an ROM entity with the API object given.
     # Flags indicate which elements are allowed to be updated/altered with the incoming data.
     #
-    def update_with(self, api_rom_obj: api.ROMObj, update_meta=False, update_assets=False, update_scanned_data=False):
+    def update_with(self, 
+        api_rom_obj: api.ROMObj, 
+        metadata_to_update=[], 
+        assets_to_update=[], 
+        overwrite_existing=False,
+        update_scanned_data=False):
         
-        if update_meta:
-            if api_rom_obj.get_name() is not None:              self.set_name(api_rom_obj.get_name())
-            if api_rom_obj.get_plot() is not None:              self.set_plot(api_rom_obj.get_plot())
-            if api_rom_obj.get_releaseyear() is not None:       self.set_releaseyear(api_rom_obj.get_releaseyear())
-            if api_rom_obj.get_genre() is not None:             self.set_genre(api_rom_obj.get_genre())
-            if api_rom_obj.get_developer() is not None:         self.set_developer(api_rom_obj.get_developer())
-            if api_rom_obj.get_number_of_players() is not None: self.set_number_of_players(api_rom_obj.get_number_of_players())
-            if api_rom_obj.get_esrb_rating() is not None:       self.set_esrb_rating(api_rom_obj.get_esrb_rating())
-            if api_rom_obj.get_rating() is not None:            self.set_rating(api_rom_obj.get_rating())
+        if constants.META_TITLE_ID in metadata_to_update \
+            and api_rom_obj.get_name() is not None:
+            self.set_name(api_rom_obj.get_name())
+
+        if constants.META_PLOT_ID in metadata_to_update \
+            and api_rom_obj.get_plot() is not None \
+            and (overwrite_existing or self.get_plot()):              
+            self.set_plot(api_rom_obj.get_plot())
         
-        if update_assets:
+        if constants.META_YEAR_ID in metadata_to_update \
+            and api_rom_obj.get_releaseyear() is not None \
+            and (overwrite_existing or self.get_releaseyear()):       
+            self.set_releaseyear(api_rom_obj.get_releaseyear())
+        
+        if constants.META_GENRE_ID in metadata_to_update \
+            and api_rom_obj.get_genre() is not None\
+            and (overwrite_existing or self.get_genre()):
+            self.set_genre(api_rom_obj.get_genre())
+        
+        if constants.META_DEVELOPER_ID in metadata_to_update \
+            and api_rom_obj.get_developer() is not None\
+            and (overwrite_existing or self.get_developer()):         
+            self.set_developer(api_rom_obj.get_developer())
+        
+        if constants.META_NPLAYERS_ID in metadata_to_update \
+            and api_rom_obj.get_number_of_players() is not None\
+            and (overwrite_existing or self.get_number_of_players()):
+            self.set_number_of_players(api_rom_obj.get_number_of_players())
+        
+        if constants.META_NPLAYERS_ONLINE_ID in metadata_to_update \
+            and api_rom_obj.get_number_of_players_online() is not None\
+            and (overwrite_existing or self.get_number_of_players_online()):
+            self.set_number_of_players_online(api_rom_obj.get_number_of_players_online())
+        
+        if constants.META_ESRB_ID in metadata_to_update\
+             and api_rom_obj.get_esrb_rating() is not None\
+            and (overwrite_existing or self.get_esrb_rating()):       
+            self.set_esrb_rating(api_rom_obj.get_esrb_rating())
+        
+        if constants.META_RATING_ID in metadata_to_update \
+            and api_rom_obj.get_rating() is not None\
+            and (overwrite_existing or self.get_rating()):            
+            self.set_rating(api_rom_obj.get_rating())
+        
+        if constants.META_TAGS_ID in metadata_to_update and api_rom_obj.get_tags() is not None:
+            for tag in api_rom_obj.get_tags():
+                self.add_tag(tag)
+                    
+        if len(assets_to_update) > 0:
             for asset_id in self.get_asset_ids_list():
                 if api_rom_obj.get_asset(asset_id) is not None: 
                     if asset_id == constants.ASSET_TRAILER_ID:
@@ -2015,7 +2104,7 @@ class VirtualCollectionFactory(object):
             return VirtualCollection({
                 'id' : vcollection_id,
                 'm_name' : '<Favourites>',
-                'plot': 'Browse AEL Favourite ROMs',
+                'plot': 'Browse AKL Favourite ROMs',
                 'finished': settings.getSettingAsBool('display_hide_favs')
             }, [
                 Asset({'id' : '', 'asset_type' : constants.ASSET_FANART_ID, 'filepath' : globals.g_PATHS.FANART_FILE_PATH.getPath()}),
@@ -2292,6 +2381,7 @@ def _get_default_ROM_data_model():
         'm_genre' : '',
         'm_developer' : '',
         'm_nplayers' : '',
+        'm_nplayers_online' : '',
         'm_esrb' : constants.ESRB_PENDING,
         'm_rating' : '',
         'm_plot' : '',

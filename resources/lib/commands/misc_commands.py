@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 #
-# Advanced Emulator Launcher: Commands (miscellaneous)
+# Advanced Kodi Launcher: Commands (miscellaneous)
 #
 # Copyright (c) Wintermute0110 <wintermute0110@gmail.com> / Chrisism <crizizz@gmail.com>
 #
@@ -24,8 +24,8 @@ from datetime import datetime
 from xml.etree import cElementTree as ET
 from xml.dom import minidom
 
-from ael.utils import kodi, io
-from ael import constants
+from akl.utils import kodi, io
+from akl import constants
 
 from resources.lib.commands.mediator import AppMediator
 from resources.lib import globals
@@ -71,7 +71,7 @@ def cmd_execute_import_launchers(args):
                 if category_to_import.get_id() in existing_category_ids:
                      # >> Category exists (by name). Overwrite?
                     logger.debug('Category found. Edit existing category.')
-                    if kodi.dialog_yesno(f'Category "{category_to_import.get_name()}" found in AEL database. Overwrite?'):
+                    if kodi.dialog_yesno(f'Category "{category_to_import.get_name()}" found in AKL database. Overwrite?'):
                         categories_to_update.append(category_to_import)
                 else:
                     categories_to_insert.append(category_to_import)
@@ -81,7 +81,7 @@ def cmd_execute_import_launchers(args):
                 if launcher_to_import.get_id() in existing_romcollection_ids:
                      # >> Romset exists (by name). Overwrite?
                     logger.debug('ROMCollection found. Edit existing ROMCollection.')
-                    if kodi.dialog_yesno(f'ROMCollection "{launcher_to_import.get_name()}" found in AEL database. Overwrite?'):
+                    if kodi.dialog_yesno(f'ROMCollection "{launcher_to_import.get_name()}" found in AKL database. Overwrite?'):
                         romcollections_to_update.append(launcher_to_import)
                 else:
                     romcollections_to_insert.append(launcher_to_import)
@@ -107,7 +107,7 @@ def cmd_execute_import_launchers(args):
     AppMediator.async_cmd('RENDER_VIEWS')
     kodi.notify('Finished importing Categories/Launchers')
 
-# Export AEL launcher configuration.
+# Export AKL launcher configuration.
 # Export all Categories and Launchers.
 @AppMediator.register('EXPORT_TO_LEGACY_XML')
 def cmd_export_to_xml(args):
@@ -118,9 +118,9 @@ def cmd_export_to_xml(args):
     if not dir_path: return
 
     # --- If XML exists then warn user about overwriting it ---
-    export_FN = io.FileName(dir_path).pjoin('AEL_configuration.xml')
+    export_FN = io.FileName(dir_path).pjoin('AKL_configuration.xml')
     if export_FN.exists():
-        ret = kodi.dialog_yesno('AEL_configuration.xml found in the selected directory. Overwrite?')
+        ret = kodi.dialog_yesno('AKL_configuration.xml found in the selected directory. Overwrite?')
         if not ret:
             kodi.notify_warn('Category/Launcher XML exporting cancelled')
             return
@@ -137,7 +137,7 @@ def cmd_export_to_xml(args):
         try:
             # --- XML header ---
             root = ET.Element('advanced_emulator_launcher_configuration')
-            #comment = ET.Comment(f'<!-- Exported by AEL on {datetime.now().strftime("%Y-%m-%d %H:%M:%S")} -->')
+            #comment = ET.Comment(f'<!-- Exported by AKL on {datetime.now().strftime("%Y-%m-%d %H:%M:%S")} -->')
             #root.insert(1, comment)
             # --- Export Categories ---
             # Data which is not string must be converted to string
@@ -169,9 +169,9 @@ def cmd_export_to_xml(args):
                 # customised the ROM artwork paths this should be the case.
                 # A) This function checks if all path_* share a common root directory. If so
                 #    this function returns that common directory as an Unicode string. In this
-                #    case AEL will write the tag <ROM_asset_path> only.
+                #    case AKL will write the tag <ROM_asset_path> only.
                 # B) If path_* do not share a common root directory this function returns '' and then
-                #    AEL writes all <path_*> tags in the XML file.
+                #    AKL writes all <path_*> tags in the XML file.
 
                 # Export Launcher
                 launcher_xml = ET.SubElement(root, 'launcher')
@@ -207,7 +207,7 @@ def cmd_export_to_xml(args):
         except constants.AddonError as ex:
             kodi.notify_warn('{}'.format(ex))
         else:
-            kodi.notify('Exported AEL Categories and Collections to XML configuration')
+            kodi.notify('Exported AKL Categories and Collections to XML configuration')
 
 @AppMediator.register('RESET_DATABASE')
 def cmd_execute_reset_db(args):
@@ -236,7 +236,7 @@ def cmd_check_duplicate_asset_dirs(args):
     if duplicated_name_list:
         duplicated_asset_srt = ', '.join(duplicated_name_list)
         kodi.dialog_OK('Duplicated asset directories: {0}. '.format(duplicated_asset_srt) +
-                        'AEL will refuse to add/edit ROMs if there are duplicate asset directories.')
+                        'AKL will refuse to add/edit ROMs if there are duplicate asset directories.')
 
 def _apply_addon_launcher_for_legacy_launcher(collection: ROMCollection, available_addons: typing.Dict[str, AelAddon]):
     launcher_type = collection.get_custom_attribute('type')
@@ -244,7 +244,7 @@ def _apply_addon_launcher_for_legacy_launcher(collection: ROMCollection, availab
     
     if launcher_type is None:
         # 1.9x version
-        launcher_addon  = available_addons['script.ael.defaults'] if 'script.ael.defaults' in available_addons else None
+        launcher_addon  = available_addons['script.akl.defaults'] if 'script.akl.defaults' in available_addons else None
         if launcher_addon is None: 
             logger.warning(f'Could not find launcher addon supporting type "{launcher_type}"') 
             return
@@ -257,7 +257,7 @@ def _apply_addon_launcher_for_legacy_launcher(collection: ROMCollection, availab
         return
     
     if launcher_type == constants.OBJ_LAUNCHER_STANDALONE:
-        launcher_addon =  available_addons['script.ael.defaults'] if 'script.ael.defaults' in available_addons else None
+        launcher_addon =  available_addons['script.akl.defaults'] if 'script.akl.defaults' in available_addons else None
         if launcher_addon is None: 
             logger.warning(f'Could not find launcher addon supporting type "{launcher_type}"') 
             return
@@ -270,7 +270,7 @@ def _apply_addon_launcher_for_legacy_launcher(collection: ROMCollection, availab
         return
     
     if launcher_type == constants.OBJ_LAUNCHER_ROM or launcher_type == 'ROM':
-        launcher_addon =  available_addons['script.ael.defaults'] if 'script.ael.defaults' in available_addons else None
+        launcher_addon =  available_addons['script.akl.defaults'] if 'script.akl.defaults' in available_addons else None
         if launcher_addon is None: 
             logger.warning('Could not find launcher addon supporting type "{}"'.format(launcher_type)) 
             return
@@ -296,7 +296,7 @@ def _apply_addon_launcher_for_legacy_launcher(collection: ROMCollection, availab
         return
     
     if launcher_type == constants.OBJ_LAUNCHER_RETROARCH:
-        launcher_addon =  available_addons['script.ael.retroarchlauncher'] if 'script.ael.retroarchlauncher' in available_addons else None
+        launcher_addon =  available_addons['script.akl.retroarchlauncher'] if 'script.akl.retroarchlauncher' in available_addons else None
         if launcher_addon is None: 
             logger.warning(f'Could not find launcher addon supporting type "{launcher_type}"') 
             return
@@ -312,7 +312,7 @@ def _apply_addon_launcher_for_legacy_launcher(collection: ROMCollection, availab
         return
     
     if launcher_type == constants.OBJ_LAUNCHER_NVGAMESTREAM:
-        launcher_addon =  available_addons['script.ael.nvgamestream'] if 'script.ael.nvgamestream' in available_addons else None 
+        launcher_addon =  available_addons['script.akl.nvgamestream'] if 'script.akl.nvgamestream' in available_addons else None 
         if launcher_addon is None: 
             logger.warning(f'Could not find launcher addon supporting type "{launcher_type}"') 
             return
@@ -330,7 +330,7 @@ def _apply_addon_launcher_for_legacy_launcher(collection: ROMCollection, availab
         return
     
     if launcher_type == constants.OBJ_LAUNCHER_STEAM:
-        launcher_addon =  available_addons['script.ael.steam'] if 'script.ael.steam' in available_addons else None  
+        launcher_addon =  available_addons['script.akl.steam'] if 'script.akl.steam' in available_addons else None  
         if launcher_addon is None: 
             logger.warning(f'Could not find launcher addon supporting type "{launcher_type}"') 
             return

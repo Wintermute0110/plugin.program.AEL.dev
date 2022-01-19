@@ -1,4 +1,7 @@
-# -*- coding: utf-8 -*-
+﻿# -*- coding: utf-8 -*-
+#
+# Advanced Kodi Launcher main script file
+#
 
 # Copyright (c) Wintermute0110 <wintermute0110@gmail.com> / Chrisism <crizizz@gmail.com>
 # Portions (c) 2018 Chrisism
@@ -19,7 +22,7 @@ import sys
 import logging
 
 # --- Modules/packages in this plugin ---
-from ael.utils import kodilogging, kodi
+from akl.utils import kodilogging, kodi
 from resources.lib import views
 
 kodilogging.config()

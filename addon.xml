@@ -1,29 +1,23 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<addon id="plugin.program.AEL" name="Advanced Emulator Launcher (dev version)" version="0.10.6" provider-name="Wintermute0110">
+<addon id="plugin.program.akl" name="Advanced Kodi Launcher" version="1.0.0-rc39" provider-name="chrisism,Wintermute0110">
   <requires>
       <import addon="xbmc.python" version="3.0.0"/>
       <import addon="script.module.routing" version="0.2.3"/>
-      <import addon="script.module.ael" version="0.10.7"/>
+      <import addon="script.module.akl" version="1.0.2"/>
   </requires>
   <extension point="xbmc.python.pluginsource" library="addon.py">
-      <provides>game</provides>
+      <provides>executable game</provides>
   </extension>
   <extension point="xbmc.service" library="service.py"/>
   <extension point="xbmc.addon.metadata">
-    <!--
-        This must be commented when releasing the addon.
-        Kodi must be restarted if this setting is changed.
-        See https://github.com/xbmc/xbmc/pull/13814
-    -->
-    <!-- <reuselanguageinvoker>false</reuselanguageinvoker> -->
     <summary lang="en_GB">Start any emulators/apps from Kodi.</summary>
-    <description lang="en_GB">Multi-emulator front-end and general application launcher for Kodi. Includes offline scrapers for MAME and No-Intro ROM sets and also supports scrapping ROM metadata and artwork online. ROM auditing for No-Intro ROMs using No-Intro or Redump XML DAT files. Launching of games and standalone applications is also available.</description>
+    <description lang="en_GB">Gaming front-end and general application launcher for Kodi. Supports scanning, scraping and launching of ROMs and games, using many plugins. Easily extendable with lots of plugins or create your own.</description>
     <platform>android freebsd ios linux osx windows</platform>
     <license>GNU General Public License version 2</license>
     <email>wintermute0110@gmail.com</email>
-    <forum>http://forum.kodi.tv/showthread.php?tid=287826</forum>
-    <website>https://github.com/Wintermute0110/plugin.program.AEL/wiki</website>
-    <source>https://github.com/Wintermute0110/plugin.program.AEL</source>
+    <forum>http://forum.kodi.tv/showthread.php?tid=366351</forum>
+    <website>https://github.com/chrisism/plugin.program.akl</website>
+    <source>https://github.com/chrisism/plugin.program.akl</source>
     <assets>
       <icon>media/icon.png</icon>
       <fanart>media/fanart.jpg</fanart>

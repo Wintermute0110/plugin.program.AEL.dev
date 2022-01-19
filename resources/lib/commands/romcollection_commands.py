@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 #
-# Advanced Emulator Launcher: Commands (romcollection management)
+# Advanced Kodi Launcher: Commands (romcollection management)
 #
 # Copyright (c) Wintermute0110 <wintermute0110@gmail.com> / Chrisism <crizizz@gmail.com>
 #
@@ -20,13 +20,13 @@ from __future__ import division
 import logging
 import collections
 
-from ael import constants, platforms
-from ael.utils import kodi, text, io
+from akl import constants, platforms
+from akl.utils import kodi, text, io
 
 from resources.lib.commands.mediator import AppMediator
 from resources.lib import globals, editors
 from resources.lib.repositories import UnitOfWork, CategoryRepository, ROMCollectionRepository
-from resources.lib.domain import ROMCollection, g_assetFactory
+from resources.lib.domain import ROMCollection, Category, g_assetFactory
 
 logger = logging.getLogger(__name__)
 
@@ -48,7 +48,7 @@ def cmd_add_collection(args):
             if selected_option is None: return
             if selected_option > 0: parent_category = grand_parent_category
     
-        wizard = kodi.WizardDialog_Selection(None, 'platform', 'Select the platform', platforms.AEL_platform_list)
+        wizard = kodi.WizardDialog_Selection(None, 'platform', 'Select the platform', platforms.AKL_platform_list)
         wizard = kodi.WizardDialog_Dummy(wizard, 'm_name', '', _get_name_from_platform)
         wizard = kodi.WizardDialog_Keyboard(wizard, 'm_name', 'Set the title of the launcher')
         wizard = kodi.WizardDialog_FileBrowse(wizard, 'assets_path', 'Select asset/artwork directory',0, '')
@@ -66,7 +66,7 @@ def cmd_add_collection(args):
         romcollection.set_assets_root_path(assets_path_FN, constants.ROM_ASSET_ID_LIST, create_default_subdirectories=True)
                 
         # --- Determine box size based on platform --
-        platform = platforms.get_AEL_platform(entity_data['platform'])
+        platform = platforms.get_AKL_platform(entity_data['platform'])
         romcollection.set_box_sizing(platform.default_box_size)
         
         romcollection_repository = ROMCollectionRepository(uow)
@@ -75,7 +75,7 @@ def cmd_add_collection(args):
         
         kodi.notify('ROM Collection {0} created'.format(romcollection.get_name()))
         AppMediator.async_cmd('RENDER_ROMCOLLECTION_VIEW', {'romcollection_id': romcollection.get_id()})
-        AppMediator.async_cmd('RENDER_VIEW', {'category_id': parent_category.get_id()})   
+        AppMediator.async_cmd('RENDER_CATEGORY_VIEW', {'category_id': parent_category.get_id()})   
     
 def _get_name_from_platform(input, item_key, entity_data):
     title = entity_data['platform']
@@ -105,7 +105,7 @@ def cmd_edit_romcollection(args):
 
         cat_repository = CategoryRepository(uow)
         parent_id = romcollection.get_parent_id()
-        category = cat_repository.find_category(romcollection.get_parent_id()) if parent_id is None else None 
+        category = cat_repository.find_category(romcollection.get_parent_id()) if parent_id is not None else None 
         category_name = 'None' if category is None else category.get_name()
 
     options = collections.OrderedDict()
@@ -116,8 +116,8 @@ def cmd_edit_romcollection(args):
         options['EDIT_ROMCOLLECTION_LAUNCHERS']  = 'Manage associated launchers'
     else: options['ADD_LAUNCHER']                = 'Add new launcher'    
     options['ROMCOLLECTION_MANAGE_ROMS']         = 'Manage ROMs ...'
-    options['EDIT_ROMCOLLECTION_CATEGORY']       = "Change Category: '{0}'".format(category_name)
-    options['EDIT_ROMCOLLECTION_STATUS']         = 'ROM Collection status: {0}'.format(romcollection.get_finished_str())
+    options['EDIT_ROMCOLLECTION_CATEGORY']       = f"Change Category: '{category_name}'"
+    options['EDIT_ROMCOLLECTION_STATUS']         = f'ROM Collection status: {romcollection.get_finished_str()}'
     options['EXPORT_ROMCOLLECTION']              = 'Export ROM Collection XML configuration ...'
     options['DELETE_ROMCOLLECTION']              = 'Delete ROM Collection'
 
@@ -206,7 +206,7 @@ def cmd_romcollection_edit_assets(args):
             repository.update_romcollection(romcollection)
             uow.commit()
             AppMediator.async_cmd('RENDER_ROMCOLLECTION_VIEW', {'romcollection_id': romcollection.get_id()})
-            AppMediator.async_cmd('RENDER_VIEW', {'category_id': romcollection.get_parent_id()})     
+            AppMediator.async_cmd('RENDER_CATEGORY_VIEW', {'category_id': romcollection.get_parent_id()})     
 
     AppMediator.sync_cmd('ROMCOLLECTION_EDIT_ASSETS', {'romcollection_id': romcollection.get_id(), 'selected_asset': asset.id})         
 
@@ -229,7 +229,7 @@ def cmd_romcollection_edit_default_assets(args):
             repository.update_romcollection(romcollection)
             uow.commit()
             AppMediator.async_cmd('RENDER_ROMCOLLECTION_VIEW', {'romcollection_id': romcollection.get_id()})
-            AppMediator.async_cmd('RENDER_VIEW', {'category_id': romcollection.get_parent_id()})     
+            AppMediator.async_cmd('RENDER_CATEGORY_VIEW', {'category_id': romcollection.get_parent_id()})     
 
     AppMediator.sync_cmd('ROMCOLLECTION_EDIT_DEFAULT_ASSETS', {'romcollection_id': romcollection.get_id(), 'selected_asset': selected_asset_to_edit.id})         
     
@@ -246,7 +246,7 @@ def cmd_romcollection_status(args):
         uow.commit()
         
     AppMediator.async_cmd('RENDER_ROMCOLLECTION_VIEW', {'romcollection_id': romcollection.get_id()})
-    AppMediator.async_cmd('RENDER_VIEW', {'category_id': romcollection.get_parent_id()})     
+    AppMediator.async_cmd('RENDER_CATEGORY_VIEW', {'category_id': romcollection.get_parent_id()})     
     AppMediator.sync_cmd('EDIT_ROMCOLLECTION', args)
     
 #
@@ -275,7 +275,7 @@ def cmd_romcollection_delete(args):
         uow.commit()
         
     kodi.notify('Deleted romcollection {0}'.format(romcollection_name))
-    AppMediator.async_cmd('RENDER_VIEW', {'category_id': romcollection.get_parent_id()})            
+    AppMediator.async_cmd('RENDER_CATEGORY_VIEW', {'category_id': romcollection.get_parent_id()})            
     AppMediator.async_cmd('CLEANUP_VIEWS')
     AppMediator.sync_cmd('EDIT_ROMCOLLECTION', args)
 
@@ -293,7 +293,7 @@ def cmd_romcollection_metadata_title(args):
             repository.update_romcollection(romcollection)
             uow.commit()
             AppMediator.async_cmd('RENDER_ROMCOLLECTION_VIEW', {'romcollection_id': romcollection.get_id()})
-            AppMediator.async_cmd('RENDER_VIEW', {'category_id': romcollection.get_parent_id()})            
+            AppMediator.async_cmd('RENDER_CATEGORY_VIEW', {'category_id': romcollection.get_parent_id()})            
     AppMediator.sync_cmd('ROMCOLLECTION_EDIT_METADATA', args)
 
 @AppMediator.register('ROMCOLLECTION_EDIT_METADATA_PLATFORM')
@@ -304,12 +304,12 @@ def cmd_romcollection_metadata_platform(args):
         repository = ROMCollectionRepository(uow)
         romcollection = repository.find_romcollection(romcollection_id)
 
-        if editors.edit_field_by_list(romcollection, 'Platform', platforms.AEL_platform_list,
+        if editors.edit_field_by_list(romcollection, 'Platform', platforms.AKL_platform_list,
                                     romcollection.get_platform, romcollection.set_platform):
             repository.update_romcollection(romcollection)
             uow.commit()
             AppMediator.async_cmd('RENDER_ROMCOLLECTION_VIEW', {'romcollection_id': romcollection.get_id()})
-            AppMediator.async_cmd('RENDER_VIEW', {'category_id': romcollection.get_parent_id()})            
+            AppMediator.async_cmd('RENDER_CATEGORY_VIEW', {'category_id': romcollection.get_parent_id()})            
     AppMediator.sync_cmd('ROMCOLLECTION_EDIT_METADATA', args)
 
 @AppMediator.register('ROMCOLLECTION_EDIT_METADATA_RELEASEYEAR')
@@ -324,7 +324,7 @@ def cmd_romcollection_metadata_releaseyear(args):
             repository.update_romcollection(romcollection)
             uow.commit()
             AppMediator.async_cmd('RENDER_ROMCOLLECTION_VIEW', {'romcollection_id': romcollection.get_id()})
-            AppMediator.async_cmd('RENDER_VIEW', {'category_id': romcollection.get_parent_id()})
+            AppMediator.async_cmd('RENDER_CATEGORY_VIEW', {'category_id': romcollection.get_parent_id()})
     AppMediator.sync_cmd('ROMCOLLECTION_EDIT_METADATA', args)
 
 @AppMediator.register('ROMCOLLECTION_EDIT_METADATA_GENRE')
@@ -339,7 +339,7 @@ def cmd_romcollection_metadata_genre(args):
             repository.update_romcollection(romcollection)
             uow.commit()            
             AppMediator.async_cmd('RENDER_ROMCOLLECTION_VIEW', {'romcollection_id': romcollection.get_id()})
-            AppMediator.async_cmd('RENDER_VIEW', {'category_id': romcollection.get_parent_id()})            
+            AppMediator.async_cmd('RENDER_CATEGORY_VIEW', {'category_id': romcollection.get_parent_id()})            
     AppMediator.sync_cmd('ROMCOLLECTION_EDIT_METADATA', args)
     
 @AppMediator.register('ROMCOLLECTION_EDIT_METADATA_DEVELOPER')
@@ -354,7 +354,7 @@ def cmd_romcollection_metadata_developer(args):
             repository.update_romcollection(romcollection)
             uow.commit()    
             AppMediator.async_cmd('RENDER_ROMCOLLECTION_VIEW', {'romcollection_id': romcollection.get_id()})
-            AppMediator.async_cmd('RENDER_VIEW', {'category_id': romcollection.get_parent_id()})
+            AppMediator.async_cmd('RENDER_CATEGORY_VIEW', {'category_id': romcollection.get_parent_id()})
     AppMediator.sync_cmd('ROMCOLLECTION_EDIT_METADATA', args)
 
 @AppMediator.register('ROMCOLLECTION_EDIT_METADATA_RATING')
@@ -369,7 +369,7 @@ def cmd_romcollection_metadata_rating(args):
             repository.update_romcollection(romcollection)
             uow.commit()
             AppMediator.async_cmd('RENDER_ROMCOLLECTION_VIEW', {'romcollection_id': romcollection.get_id()})
-            AppMediator.async_cmd('RENDER_VIEW', {'category_id': romcollection.get_parent_id()})
+            AppMediator.async_cmd('RENDER_CATEGORY_VIEW', {'category_id': romcollection.get_parent_id()})
     AppMediator.sync_cmd('ROMCOLLECTION_EDIT_METADATA', args)
 
 @AppMediator.register('ROMCOLLECTION_EDIT_METADATA_PLOT')
@@ -384,7 +384,7 @@ def cmd_romcollection_metadata_plot(args):
             repository.update_romcollection(romcollection)
             uow.commit()
             AppMediator.async_cmd('RENDER_ROMCOLLECTION_VIEW', {'romcollection_id': romcollection.get_id()})
-            AppMediator.async_cmd('RENDER_VIEW', {'category_id': romcollection.get_parent_id()})
+            AppMediator.async_cmd('RENDER_CATEGORY_VIEW', {'category_id': romcollection.get_parent_id()})
     AppMediator.sync_cmd('ROMCOLLECTION_EDIT_METADATA', args)
     
 @AppMediator.register('ROMCOLLECTION_EDIT_METADATA_BOXSIZE')
@@ -400,7 +400,7 @@ def cmd_romcollection_metadata_boxsize(args):
             repository.update_romcollection(romcollection)
             uow.commit()
             AppMediator.async_cmd('RENDER_ROMCOLLECTION_VIEW', {'romcollection_id': romcollection.get_id()})
-            AppMediator.async_cmd('RENDER_VIEW', {'category_id': romcollection.get_parent_id()})            
+            AppMediator.async_cmd('RENDER_CATEGORY_VIEW', {'category_id': romcollection.get_parent_id()})            
     AppMediator.sync_cmd('ROMCOLLECTION_EDIT_METADATA', args)
 
 # --- Import launcher metadata from NFO file (default location) ---
@@ -418,7 +418,7 @@ def cmd_romcollection_import_nfo_file(args):
             uow.commit()
             kodi.notify('Imported ROMCollection NFO file {0}'.format(NFO_file.getPath()))
             AppMediator.async_cmd('RENDER_ROMCOLLECTION_VIEW', {'romcollection_id': romcollection.get_id()})
-            AppMediator.async_cmd('RENDER_VIEW', {'category_id': romcollection.get_parent_id()})
+            AppMediator.async_cmd('RENDER_CATEGORY_VIEW', {'category_id': romcollection.get_parent_id()})
     
     AppMediator.sync_cmd('ROMCOLLECTION_EDIT_METADATA', args)
 
@@ -442,7 +442,7 @@ def cmd_romcollection_browse_import_nfo_file(args):
             uow.commit()
             kodi.notify('Imported ROMCollection NFO file {0}'.format(NFO_FileName.getPath()))
             AppMediator.async_cmd('RENDER_ROMCOLLECTION_VIEW', {'romcollection_id': romcollection.get_id()})
-            AppMediator.async_cmd('RENDER_VIEW', {'category_id': romcollection.get_parent_id()})
+            AppMediator.async_cmd('RENDER_CATEGORY_VIEW', {'category_id': romcollection.get_parent_id()})
     
     AppMediator.sync_cmd('ROMCOLLECTION_EDIT_METADATA', args)
 
@@ -468,6 +468,48 @@ def cmd_romcollection_save_nfo_file(args):
     
     AppMediator.sync_cmd('ROMCOLLECTION_EDIT_METADATA', args)
 
+@AppMediator.register('EDIT_ROMCOLLECTION_CATEGORY')
+def cmd_romcollection_change_category(args):
+    romcollection_id = args['romcollection_id'] if 'romcollection_id' in args else None
+    uow = UnitOfWork(globals.g_PATHS.DATABASE_FILE_PATH)
+    with uow:
+        repository      = ROMCollectionRepository(uow)
+        cat_repository  = CategoryRepository(uow)
+        
+        romcollection   = repository.find_romcollection(romcollection_id)
+        all_categories  = cat_repository.find_all_categories()
+        root_category   = cat_repository.find_category(constants.VCATEGORY_ADDONROOT_ID)
+        
+        previous_category_id = romcollection.get_parent_id()
+        if previous_category_id is None: previous_category_id = root_category.get_id()
+
+        options = collections.OrderedDict()
+        options[root_category] = root_category.get_name()
+        options.update({category:category.get_name() for category in all_categories})
+
+        selected_option = kodi.OrdDictionaryDialog().select('Move to category', options)
+        if selected_option is None:
+            # >> Return recursively to parent menu.
+            logger.debug('cmd_romcollection_change_category(): Selected NONE')
+            AppMediator.sync_cmd('EDIT_ROMCOLLECTION', args)
+            return
+        
+        selected_category:Category = selected_option
+        if not kodi.dialog_yesno(f'Move "{romcollection.get_name()}" to category "{selected_category.get_name()}"?'):
+            logger.debug('cmd_romcollection_change_category(): Cancelled')
+            AppMediator.sync_cmd('EDIT_ROMCOLLECTION', args)
+            return
+
+        logger.debug(f'cmd_romcollection_change_category() Moving collection#{romcollection_id} to category#{selected_category.get_id()}')        
+        repository.update_romcollection_parent_reference(romcollection, selected_category)
+        uow.commit() 
+        
+        kodi.notify('Changed category for collection') 
+        AppMediator.async_cmd('RENDER_ROMCOLLECTION_VIEW', {'romcollection_id': romcollection.get_id()})
+        AppMediator.async_cmd('RENDER_CATEGORY_VIEW', {'category_id': selected_category.get_id()})   
+        AppMediator.async_cmd('RENDER_CATEGORY_VIEW', {'category_id': previous_category_id})          
+    AppMediator.sync_cmd('EDIT_ROMCOLLECTION', args)
+            
 @AppMediator.register('ROMCOLLECTION_EXPORT_ROMCOLLECTION_XML')
 # --- Export Category XML configuration ---
 def cmd_romcollection_export_xml(args):
@@ -501,7 +543,7 @@ def cmd_romcollection_export_xml(args):
     # >> If everything goes all right when exporting then the else clause is executed.
     # >> If there is an error/exception then the exception handler prints a warning message
     # >> inside the function autoconfig_export_category() and the sucess message is never
-    # >> printed. This is the standard way of handling error messages in AEL code.
+    # >> printed. This is the standard way of handling error messages in AKL code.
     try:
         romcollection.export_to_file(export_FN)
     except constants.AddonError as E:

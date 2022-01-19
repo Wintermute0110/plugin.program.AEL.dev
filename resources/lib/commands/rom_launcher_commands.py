@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 #
-# Advanced Emulator Launcher: Commands (romcollection launcher management)
+# Advanced Kodi Launcher: Commands (romcollection launcher management)
 #
 # Copyright (c) Wintermute0110 <wintermute0110@gmail.com> / Chrisism <crizizz@gmail.com>
 #
@@ -20,8 +20,8 @@ from __future__ import division
 import logging
 import collections
 
-from ael.utils import kodi
-from ael import settings, constants
+from akl.utils import kodi
+from akl import settings, constants
 
 from resources.lib.commands.mediator import AppMediator
 from resources.lib import globals

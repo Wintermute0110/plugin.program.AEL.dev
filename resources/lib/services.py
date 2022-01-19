@@ -14,8 +14,8 @@ from resources.lib.webservice import WebService
 from resources.lib.commands.mediator import AppMediator
 import resources.lib.commands
         
-from ael.utils import io, kodi
-from ael import settings
+from akl.utils import io, kodi
+from akl import settings
 
 logger = logging.getLogger(__name__)
 
@@ -23,7 +23,7 @@ class AppService(object):
 
     def __init__(self):
         
-        threading.Thread.name = 'ael'
+        threading.Thread.name = 'akl'
 
         globals.g_bootstrap_instances()
         
@@ -36,19 +36,19 @@ class AppService(object):
         AppMediator.sync_cmd(cmd, args)
 
     def run(self):        
-        kodi.set_windowprop('ael_server_state', 'STARTING')
+        kodi.set_windowprop('akl_server_state', 'STARTING')
         
         # --- Some debug stuff for development ---
-        logger.info('------------ Called Advanced Emulator Launcher : Service ------------')
-        logger.debug('sys.platform   "{}"'.format(sys.platform))
+        logger.info('------------ Called Advanced Kodi Launcher : Service ------------')
+        logger.debug(f'sys.platform   "{sys.platform}"')
         if io.is_android(): logger.debug('OS             "Android"')
         if io.is_windows(): logger.debug('OS             "Windows"')
         if io.is_osx():     logger.debug('OS             "OSX"')
         if io.is_linux():   logger.debug('OS             "Linux"')
         logger.debug('Python version "' + sys.version.replace('\n', '') + '"')
-        logger.debug('addon.id         "{}"'.format(globals.addon_id))
-        logger.debug('addon.version    "{}"'.format(globals.addon_version))
-        logger.debug("Starting AEL service")
+        logger.debug(f'addon.id         "{globals.addon_id}"')
+        logger.debug(f'addon.version    "{globals.addon_version}"')
+        logger.debug("Starting AKL service")
 
         uow = UnitOfWork(globals.g_PATHS.DATABASE_FILE_PATH)
         if not uow.check_database():
@@ -57,6 +57,7 @@ class AppService(object):
             
         db_version = uow.get_database_version()
         current_version = kodi.get_addon_version()
+        logger.debug(f'db.id            "{db_version}"')
         if db_version is None or LooseVersion(db_version) < LooseVersion(current_version):
             self._do_version_upgrade(uow, LooseVersion(db_version))
         
@@ -68,7 +69,7 @@ class AppService(object):
         self.webservice.start()
                 
         logger.debug("Processing service events")
-        kodi.set_windowprop('ael_server_state', 'STARTED')
+        kodi.set_windowprop('akl_server_state', 'STARTED')
         while not self.monitor.abortRequested():
             
             self.monitor.process_events()
@@ -83,24 +84,27 @@ class AppService(object):
         self.shutdown()
 
     def shutdown(self):
-        logger.debug("Shutting down AEL service")        
-        kodi.set_windowprop('ael_server_state', 'STOPPING')        
+        logger.debug("Shutting down AKL service")        
+        kodi.set_windowprop('akl_server_state', 'STOPPING')        
         
         self.webservice.stop()
         del self.monitor
         del self.webservice
         
-        kodi.set_windowprop('ael_server_state', 'STOPPED')
-        logger.debug("AEL service stopped")
+        kodi.set_windowprop('akl_server_state', 'STOPPED')
+        logger.debug("AKL service stopped")
         
     def _initial_setup(self, uow:UnitOfWork):
-        kodi.notify('Creating new AEL database')
+        kodi.notify('Creating new AKL database')
         uow.create_empty_database(globals.g_PATHS.DATABASE_SCHEMA_PATH)
         logger.info("Database created.")
         
         self._perform_scans()
 
     def _do_version_upgrade(self, uow:UnitOfWork, db_version:LooseVersion):
+        if not globals.g_PATHS.DATABASE_MIGRATIONS_PATH.exists():
+            globals.g_PATHS.DATABASE_MIGRATIONS_PATH.makedirs()
+            
         migrations_files_available  = globals.g_PATHS.DATABASE_MIGRATIONS_PATH.scanFilesInPath("*.sql")
         migrations_files_to_execute = []
         for migration_file in migrations_files_available:
@@ -145,7 +149,7 @@ class AppMonitor(xbmc.Monitor):
     def __init__(self, *args, **kwargs):
         self.addon_id = kwargs['addon_id']
         self.action = kwargs['action']
-        logger.debug("[AEL Monitor] Initalized.")
+        logger.debug("[AKL Monitor] Initalized.")
 
     def process_events(self):
         pass

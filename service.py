@@ -2,7 +2,7 @@
 #
 import logging
 
-from ael.utils import kodilogging, kodi
+from akl.utils import kodilogging, kodi
 from resources.lib.globals import addon_id, addon_version
 from resources.lib.services import AppService
 

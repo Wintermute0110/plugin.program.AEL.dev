@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 #
-# Advanced Emulator Launcher: API query implementations. Getting data for the webservice
+# Advanced Kodi Launcher: API query implementations. Getting data for the webservice
 #
 #
 # This program is free software; you can redistribute it and/or modify
@@ -22,7 +22,7 @@ from __future__ import division
 import logging
 import json
 
-# AEL modules
+# AKL modules
 from resources.lib import globals
 from resources.lib.repositories import UnitOfWork, ROMsRepository, ROMCollectionRepository
 
@@ -65,6 +65,7 @@ def qry_get_roms(collection_id: str) -> str:
         for rom in roms:
             rom_dto = rom.create_dto()
             data.append(rom_dto.get_data_dic())
+            
         return json.dumps(data)
     
 def qry_get_launchers(collection_id: str) -> str:

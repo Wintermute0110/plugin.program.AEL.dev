@@ -40,7 +40,7 @@ class Test_cmd_scan_addons(unittest.TestCase):
         logger.info('---------------------------------------------------------------------------')
         
         dbPath = io.FileName(os.path.join(cls.TEST_ASSETS_DIR, 'test_db.db'))
-        globals.g_PATHS = globals.AEL_Paths('plugin.tests')
+        globals.g_PATHS = globals.AKL_Paths('plugin.tests')
         globals.g_PATHS.DATABASE_FILE_PATH = dbPath
         
     mocked_addons_collection = {}  
@@ -61,13 +61,13 @@ class Test_cmd_scan_addons(unittest.TestCase):
     @patch('resources.lib.repositories.AelAddonRepository.insert_addon', side_effect = repository_save)
     @patch('resources.lib.repositories.AelAddonRepository.update_addon', side_effect = repository_update)
     @patch('resources.lib.repositories.AelAddonRepository.find_all', side_effect = repository_empty)
-    @patch('ael.utils.kodi.jsonrpc_query')
+    @patch('akl.utils.kodi.jsonrpc_query')
     def test_saving_new_addons(self, jsonrpc_response_mock, find_all_mock, repo_update_mock, repo_save_mock, addon_mock):        
         # arrange
         Test_cmd_scan_addons.mocked_addons_collection = {
-            'plugin.mock.A': tests.fakes.FakeAddon({ 'version': '1.2.3', 'ael.enabled': 'true', 'ael.plugin_types': 'SCANNER', 'ael.scanner.friendlyname': 'MockA' }),
-            'plugin.mock.B': tests.fakes.FakeAddon({ 'version': '3.3.1', 'ael.enabled': 'false' }),
-            'plugin.mock.C': tests.fakes.FakeAddon({ 'version': '6.8.0', 'ael.enabled': 'true', 'ael.plugin_types': 'LAUNCHER', 'ael.launcher.friendlyname': 'MockC'  })
+            'plugin.mock.A': tests.fakes.FakeAddon({ 'version': '1.2.3', 'akl.enabled': 'true', 'akl.plugin_types': 'SCANNER', 'akl.scanner.friendlyname': 'MockA' }),
+            'plugin.mock.B': tests.fakes.FakeAddon({ 'version': '3.3.1', 'akl.enabled': 'false' }),
+            'plugin.mock.C': tests.fakes.FakeAddon({ 'version': '6.8.0', 'akl.enabled': 'true', 'akl.plugin_types': 'LAUNCHER', 'akl.launcher.friendlyname': 'MockC'  })
         }
         jsonrpc_response_mock.return_value = {
             'result': { 'addons': [ { 'addonid': 'plugin.mock.A' }, { 'addonid': 'plugin.mock.B' }, { 'addonid': 'plugin.mock.C' } ]}

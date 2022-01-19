@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 #
-# Advanced Emulator Launcher: Commands (import & export of configurations)
+# Advanced Kodi Launcher: Commands (import & export of configurations)
 #
 # Copyright (c) Wintermute0110 <wintermute0110@gmail.com> / Chrisism <crizizz@gmail.com>
 #
@@ -19,14 +19,14 @@ from __future__ import division
 
 import logging
 import typing
-from ael import constants
+from akl import constants
 
 # -- Kodi libs -- 
 import xbmc
 import xbmcaddon
 
-# -- AEL libs -- 
-from ael.utils import kodi
+# -- AKL libs -- 
+from akl.utils import kodi
 
 from resources.lib.commands.mediator import AppMediator
 from resources.lib import globals
@@ -37,12 +37,12 @@ logger = logging.getLogger(__name__)
 
 @AppMediator.register('SCAN_FOR_ADDONS')
 def cmd_scan_addons(args):
-    kodi.notify('Scanning for AEL supported addons')
+    kodi.notify('Scanning for AKL supported addons')
     addon_count = _check_installed_addons()
     
-    msg = 'No AEL addons found. Search and install default plugin addons for AEL?'
+    msg = 'No AKL addons found. Search and install default plugin addons for AKL?'
     if addon_count == 0 and kodi.dialog_yesno(msg):
-        xbmc.executebuiltin('InstallAddon(script.ael.defaults)', True)
+        xbmc.executebuiltin('InstallAddon(script.akl.defaults)', True)
         addon_count = _check_installed_addons()
         
     logger.info('cmd_scan_addons(): Processed {} addons'.format(addon_count))
@@ -66,12 +66,12 @@ def _check_installed_addons() -> int:
         for row in json_response['result'].get('addons', []):
             addon_id = row['addonid']
             addon = xbmcaddon.Addon(addon_id)           
-            # Check if add-on is a AEL support plugin
-            if addon.getSetting('ael.enabled').lower() != 'true':
+            # Check if add-on is a AKL support plugin
+            if addon.getSetting('akl.enabled').lower() != 'true':
                 continue
             
             logger.debug('cmd_scan_addons(): Found addon {}'.format(addon_id))
-            addon_types = addon.getSettingString('ael.plugin_types').split('|')
+            addon_types = addon.getSettingString('akl.plugin_types').split('|')
             addon_count = addon_count + 1  
             
             if constants.AddonType.LAUNCHER.name in addon_types:
@@ -92,7 +92,7 @@ def _process_launcher_addon(
     existing_addon_ids:typing.Dict[str,AelAddon],
     addon_repository:AelAddonRepository):
     
-    addon_name = addon.getSetting('ael.launcher.friendlyname')
+    addon_name = addon.getSetting('akl.launcher.friendlyname')
     addon_name = addon.getAddonInfo('name') if addon_name is None or addon_name == '' else addon_name
     
     addon_obj = AelAddon({
@@ -118,7 +118,7 @@ def _process_scanner_addon(
     existing_addon_ids:typing.Dict[str,AelAddon],
     addon_repository:AelAddonRepository):
     
-    addon_name = addon.getSetting('ael.scanner.friendlyname')
+    addon_name = addon.getSetting('akl.scanner.friendlyname')
     addon_name = addon.getAddonInfo('name') if addon_name is None or addon_name == '' else addon_name
     
     addon_obj = AelAddon({
@@ -144,7 +144,7 @@ def _process_scraper_addon(
     existing_addon_ids:typing.Dict[str,AelAddon],
     addon_repository:AelAddonRepository):
         
-    addon_name = addon.getSetting('ael.scraper.friendlyname')
+    addon_name = addon.getSetting('akl.scraper.friendlyname')
     addon_name = addon.getAddonInfo('name') if addon_name is None or addon_name == '' else addon_name
     
     addon_obj = AelAddon({
@@ -155,8 +155,8 @@ def _process_scraper_addon(
     })
     
     addon_obj.set_extra_settings({
-        'supported_metadata':  addon.getSetting('ael.scraper.supported_metadata'),
-        'supported_assets': addon.getSetting('ael.scraper.supported_assets')
+        'supported_metadata':  addon.getSetting('akl.scraper.supported_metadata'),
+        'supported_assets': addon.getSetting('akl.scraper.supported_assets')
     })
 
     if addon_id in existing_addon_ids:                

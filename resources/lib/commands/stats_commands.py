@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 #
-# Advanced Emulator Launcher: Commands (generating stats and counts)
+# Advanced Kodi Launcher: Commands (generating stats and counts)
 #
 # Copyright (c) Wintermute0110 <wintermute0110@gmail.com> / Chrisism <crizizz@gmail.com>
 #
@@ -21,8 +21,8 @@ import logging
 import collections
 import typing
 
-from ael import constants
-from ael.utils import kodi, io
+from akl import constants
+from akl.utils import kodi, io
 
 from resources.lib.commands.mediator import AppMediator
 from resources.lib import globals

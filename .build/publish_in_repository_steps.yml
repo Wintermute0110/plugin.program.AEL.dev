@@ -1,0 +1,61 @@
+# Azure Devops Pipeline template
+# 
+# This pipeline template part defines the deployment or publishing
+# of the addon in a kodi repository build in github.
+#
+steps:
+  - download: current
+    displayName: 'Downloading addon artifact'
+      
+  - script: |
+      git clone https://$(repository_url)
+    workingDirectory: $(Pipeline.Workspace)/
+    displayName: 'Clone git repository'
+
+  - script: |
+      git config user.email $(git_emailAddress)
+      git config user.name $(git_userName)
+    workingDirectory: $(Pipeline.Workspace)/$(repository_name)
+    displayName: 'Configure git settings'
+
+  - task: UsePythonVersion@0
+    displayName: 'Use Python 3.x'
+
+  - task: PipAuthenticate@0
+    displayName: Authenticate with artifact feed
+    inputs:
+      artifactFeeds: AKL/akl_libs
+      
+  - bash: |
+      python -m pip install --upgrade pip
+      pip install kodi.tools
+    displayName: pip install    
+
+  - task: CopyFiles@2
+    displayName: 'Copy addon into git repository'
+    inputs:
+      SourceFolder: '$(Pipeline.Workspace)/$(addonName)'
+      Contents: '**/*.*'
+      TargetFolder: '$(Pipeline.Workspace)/$(repository_name)/$(repository_data_dir)/$(addonName)'
+      CleanTargetFolder: false
+      flattenFolders: false
+      OverWrite: true
+  
+  - bash: merge_addon_xml $(addonName) $(Pipeline.Workspace)/$(repository_name)/$(repository_data_dir)/addons.xml $(Pipeline.Workspace)/$(repository_name)/$(repository_data_dir)/$(addonName)/addon.xml
+    displayName: 'Merge addon xml files for repository'
+    workingDirectory: '$(Pipeline.Workspace)/$(repository_name)/$(repository_data_dir)/'
+      
+  - script: md5sum addons.xml > addons.xml.md5
+    workingDirectory: $(Pipeline.Workspace)/$(repository_name)/$(repository_data_dir)/
+    displayName: 'Creating md5 file for addons.xml'
+
+  - script: |
+      git add .
+      git commit -m "$(Build.DefinitionName) Release $(Build.BuildNumber)"
+    workingDirectory: $(Pipeline.Workspace)/$(repository_name)/
+    displayName: 'Git - Add and commit'    
+
+  - script: |
+      git push https://$(github_token)@$(repository_url) $(branchName) 
+    workingDirectory: $(Pipeline.Workspace)/$(repository_name)/
+    displayName: 'Git - Push'    

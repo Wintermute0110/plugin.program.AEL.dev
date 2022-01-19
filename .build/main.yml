@@ -1,0 +1,221 @@
+# Azure Devops Pipeline definition
+# 
+# Will build and release packages on Gitflow branch triggers (main, release/*).
+# In build phase it will apply semver versioning with help of GitVersion (plugin needed).
+# The results of the build are stored in a package on Azure Devops.
+# After the build phase the deployment phase follows. During this phase it will checkout the
+# github repository containing a Kodi addon repository and add the new package so users can
+# download it.
+# There are 2 deployment phases, first one for staging where only beta/release candidates are 
+# deployed. Second one is the main repository for official releases (based on master/main branch).
+#
+# Needed extensions:
+# - GitTools / GitVersion
+# - RegEx Match & Replace
+#
+# Needed variables (var groups in library)
+# - repository.variables
+#   - git_emailAddress 
+#   - git_userName
+#   - github_token
+trigger:
+- master
+- release/*
+- dev
+
+pool:
+  vmImage: 'ubuntu-latest'
+
+variables:
+  isMaster: or(${{eq(variables['Build.SourceBranch'], 'refs/heads/master')}},${{eq(variables['Build.SourceBranch'], 'refs/heads/main')}})
+  isReleaseCandidate: ${{startsWith(variables['Build.SourceBranch'], 'refs/heads/release/')}}
+  isHotfix: ${{startsWith(variables['Build.SourceBranch'], 'refs/heads/hotfix/')}}
+  isDev: ${{eq(variables['Build.SourceBranch'], 'refs/heads/dev')}}
+  workingDirectory: '$(Build.SourcesDirectory)'
+  addonName: plugin.program.akl
+
+stages:
+- stage: Build
+  displayName: Build stage
+  jobs:
+    - job: build
+      displayName: build
+        
+      steps:
+      - task: gitversion/setup@0
+        displayName: 'Install GitTools'
+        inputs:
+          versionSpec: '5.3.x'
+
+      - task: gitversion/execute@0
+        displayName: 'Executing gitversion'
+
+      - script: |
+            echo '##vso[task.setvariable variable=packageVersion]$(GitVersion.LegacySemVer)
+            echo '##vso[task.setvariable variable=projectVersion]$(GitVersion.Major).$(GitVersion.Minor).$(GitVersion.Patch)
+        displayName: 'Setting version variables'
+        condition: not(eq(${{variables.isMaster}}, true))
+        
+      - script: |
+            echo '##vso[task.setvariable variable=packageVersion]$(GitVersion.Major).$(GitVersion.Minor).$(GitVersion.Patch)
+            echo '##vso[task.setvariable variable=projectVersion]$(GitVersion.Major).$(GitVersion.Minor).$(GitVersion.Patch)
+        displayName: 'Setting version variables'
+        condition: eq(${{variables.isMaster}}, true)
+
+      - task: UsePythonVersion@0
+        displayName: 'Use Python 3.x'
+
+      - task: PipAuthenticate@0
+        displayName: Authenticate with artifact feed
+        inputs:
+          artifactFeeds: AKL/akl_libs
+          
+      - bash: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+        displayName: pip install 
+
+      - task: RegExMatchReplace@2
+        displayName: 'Set addon version'
+        inputs:
+          PathToFile: 'addon.xml'
+          RegEx: 'version="\d+\.\d+\.\d+.*" provider'
+          ValueToReplace: 'version="$(packageVersion)" provider'    
+
+      - bash: update_addon_news $(workingDirectory)/addon.xml $(workingDirectory)/changelog.txt
+        displayName: 'Add changelog in addon.xml'
+        workingDirectory: '$(workingDirectory)'
+
+      - bash: 'python -m pytest --junitxml=$(build.artifactstagingdirectory)/$(addonName)_$(packageVersion)_testresults.xml' 
+        workingDirectory: '$(workingDirectory)' 
+        displayName: 'Run tests'
+
+      - task: CopyFiles@2
+        displayName: 'Copy addon files for package'
+        inputs:
+          SourceFolder: ''
+          Contents: |
+              *.py
+              *.md
+              *.xml
+              *.txt
+              resources/**/*.*
+              media/**/*.*
+              !requirements.txt
+              !**/*.pyc
+              !**/__pycache__/**/*.*
+          TargetFolder: '$(build.artifactstagingdirectory)/$(addonName)/'
+          CleanTargetFolder: true
+          flattenFolders: false
+          OverWrite: true
+
+      - task: ArchiveFiles@2
+        inputs:
+          rootFolderOrFile: '$(build.artifactstagingdirectory)/$(addonName)'
+          includeRootFolder: true
+          archiveType: 'zip'
+          archiveFile: '$(build.artifactstagingdirectory)/package/$(addonName)-$(packageVersion).zip'
+          replaceExistingArchive: true
+ 
+      - task: CopyFiles@2
+        displayName: 'Copy addon files for repository'
+        inputs:
+          SourceFolder: '$(build.artifactstagingdirectory)/$(addonName)/'
+          Contents: |
+              addon.xml
+              media/*.*
+          TargetFolder: '$(build.artifactstagingdirectory)/package/'
+          CleanTargetFolder: false
+          flattenFolders: false
+          OverWrite: true
+
+      - script: md5sum $(addonName)-$(packageVersion).zip > $(addonName)-$(packageVersion).zip.md5
+        workingDirectory: $(build.artifactstagingdirectory)/package/
+        displayName: 'Creating md5 file for zipfile'
+
+      - script: md5sum addon.xml > addon.xml.md5
+        workingDirectory: $(build.artifactstagingdirectory)/package/
+        displayName: 'Creating md5 file for addonxml'
+
+      - task: PublishBuildArtifacts@1
+        displayName: 'Publishing application as artifact'
+        inputs:
+          PathtoPublish: '$(build.artifactstagingdirectory)/package/'
+          ArtifactName: '$(addonName)'
+          publishLocation: 'Container'
+
+      - task: PublishTestResults@2
+        displayName: 'Publish test result'
+        inputs:
+          testResultsFiles: '$(build.artifactstagingdirectory)/$(addonName)_$(packageVersion)_testresults.xml'
+          testRunTitle: $(addonName)_$(packageVersion)
+        condition: succeededOrFailed()
+      
+      - task: GithubRelease@1 
+        displayName: 'Create GitHub Release'
+        condition: and(succeeded(), eq(${{variables.isMaster}}, true))
+        inputs:
+          gitHubConnection: 'github.com_chrisism'
+          repositoryName: chrisism/$(addonName)
+          action: 'create'
+          target: '$(Build.SourceVersion)'
+          tagSource: 'userSpecifiedTag'
+          tag: $(packageVersion)
+          title: $(Build.BuildNumber)
+          releaseNotesSource: filePath
+          releaseNotesFilePath: $(workingDirectory)/release.md  
+          addChangeLog: true
+          assets: |
+            $(build.artifactstagingdirectory)/package/*.*
+            $(workingDirectory)/changelog.txt
+
+
+- stage: DeployStaging
+  displayName: Deployment on Staging
+  condition: and(succeeded(), or(eq(${{variables.isReleaseCandidate}}, true),eq(${{variables.isHotfix}}, true),eq(${{variables.isMaster}}, true)))
+  jobs:
+    - deployment: Staging
+      environment: 
+        name: Staging
+
+      variables:
+        - group: repository.variables
+        - name: repository_url
+          value: github.com/chrisism/repository.chrisism.dev.git
+        - name: repository_name
+          value: repository.chrisism.dev
+        - name: repository_data_dir
+          value: 'matrix'
+        - name: branchName
+          value: main
+
+      strategy:     
+        runOnce:
+          deploy:
+            steps:
+              - template: publish_in_repository_steps.yml
+  
+- stage: DeployProd
+  displayName: Deployment on Production
+  condition: and(succeeded(), eq(${{variables.isMaster}}, true))
+  jobs:
+    - deployment: Production
+      environment: 
+        name: Production
+
+      variables:
+        - group: repository.variables
+        - name: repository_url
+          value: github.com/chrisism/repository.chrisism.git
+        - name: repository_name
+          value: repository.chrisism
+        - name: repository_data_dir
+          value: 'matrix'
+        - name: branchName
+          value: master
+
+      strategy:     
+        runOnce:
+          deploy:
+            steps:
+              - template: publish_in_repository_steps.yml

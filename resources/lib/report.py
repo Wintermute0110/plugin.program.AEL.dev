@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 #
-# Advanced Emulator Launcher platform and emulator information
+# Advanced Kodi Launcher platform and emulator information
 #
 
 # Copyright (c) Wintermute0110 <wintermute0110@gmail.com> / Chrisism <crizizz@gmail.com>
@@ -18,7 +18,7 @@
 from __future__ import unicode_literals
 from __future__ import division
 
-# --- AEL modules ---
+# --- AKL modules ---
 from resources.lib.domain import *
 #
 # This must be implemented as a list of strings. See AML for more details.
