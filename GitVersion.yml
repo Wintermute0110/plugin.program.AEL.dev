@@ -1,24 +1,27 @@
 continuous-delivery-fallback-tag: unstable
 commit-message-incrementing: enabled
 branches:
-  develop:
-    regex: dev(elop)?(ment)?$
-    mode: ContinuousDeployment
-    tag: unstable
-    increment: Minor
-    prevent-increment-of-merged-branch-version: false
-    track-merge-target: true
   master:
-    regex: (master|main)
-    mode: ContinuousDeployment
+    regex: ^master$|^main$
+    mode: ContinuousDelivery
     tag: "stable"
     increment: Patch
     prevent-increment-of-merged-branch-version: true
     track-merge-target: false
+    source-branches: [ 'develop', 'release', 'hotfix']
+    tracks-release-branches: false
+    is-release-branch: false
+    is-mainline: true
+  develop:
+    regex: dev(elop)?(ment)?$
+    mode: ContinuousDeployment
+    tag: alpha
+    increment: Minor
+    track-merge-target: true
   hotfix:
     regex: hotfix(es)?[/-]
     mode: ContinuousDeployment
-    tag: useBranchName
+    tag: rc
     increment: Patch
     prevent-increment-of-merged-branch-version: false
     track-merge-target: true

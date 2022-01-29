@@ -19,8 +19,9 @@
 #   - git_userName
 #   - github_token
 trigger:
-- master
+- main
 - release/*
+- hotfix/*
 - dev
 
 pool:
@@ -31,6 +32,7 @@ variables:
   isReleaseCandidate: ${{startsWith(variables['Build.SourceBranch'], 'refs/heads/release/')}}
   isHotfix: ${{startsWith(variables['Build.SourceBranch'], 'refs/heads/hotfix/')}}
   isDev: ${{eq(variables['Build.SourceBranch'], 'refs/heads/dev')}}
+  isPR: ${{startsWith(variables['Build.SourceBranch'], 'refs/pull/')}}
   workingDirectory: '$(Build.SourcesDirectory)'
   addonName: plugin.program.akl
 
@@ -40,25 +42,27 @@ stages:
   jobs:
     - job: build
       displayName: build
+      workspace:
+        clean: all 
         
       steps:
       - task: gitversion/setup@0
         displayName: 'Install GitTools'
         inputs:
-          versionSpec: '5.3.x'
+          versionSpec: '5.x'
 
       - task: gitversion/execute@0
         displayName: 'Executing gitversion'
 
       - script: |
-            echo '##vso[task.setvariable variable=packageVersion]$(GitVersion.LegacySemVer)
-            echo '##vso[task.setvariable variable=projectVersion]$(GitVersion.Major).$(GitVersion.Minor).$(GitVersion.Patch)
+            echo '##vso[task.setvariable variable=addonVersion]$(GitVersion.Major).$(GitVersion.Minor).$(GitVersion.Patch)~$(GitVersion.PreReleaseLabel)$(GitVersion.PreReleaseNumber)
+            echo '##vso[task.setvariable variable=tagVersion]$(GitVersion.LegacySemVer)
         displayName: 'Setting version variables'
         condition: not(eq(${{variables.isMaster}}, true))
         
       - script: |
-            echo '##vso[task.setvariable variable=packageVersion]$(GitVersion.Major).$(GitVersion.Minor).$(GitVersion.Patch)
-            echo '##vso[task.setvariable variable=projectVersion]$(GitVersion.Major).$(GitVersion.Minor).$(GitVersion.Patch)
+            echo '##vso[task.setvariable variable=addonVersion]$(GitVersion.Major).$(GitVersion.Minor).$(GitVersion.Patch)
+            echo '##vso[task.setvariable variable=tagVersion]$(GitVersion.Major).$(GitVersion.Minor).$(GitVersion.Patch)
         displayName: 'Setting version variables'
         condition: eq(${{variables.isMaster}}, true)
 
@@ -69,7 +73,7 @@ stages:
         displayName: Authenticate with artifact feed
         inputs:
           artifactFeeds: AKL/akl_libs
-          
+
       - bash: |
           python -m pip install --upgrade pip
           pip install -r requirements.txt
@@ -80,16 +84,16 @@ stages:
         inputs:
           PathToFile: 'addon.xml'
           RegEx: 'version="\d+\.\d+\.\d+.*" provider'
-          ValueToReplace: 'version="$(packageVersion)" provider'    
+          ValueToReplace: 'version="$(addonVersion)" provider'
 
       - bash: update_addon_news $(workingDirectory)/addon.xml $(workingDirectory)/changelog.txt
         displayName: 'Add changelog in addon.xml'
         workingDirectory: '$(workingDirectory)'
 
-      - bash: 'python -m pytest --junitxml=$(build.artifactstagingdirectory)/$(addonName)_$(packageVersion)_testresults.xml' 
-        workingDirectory: '$(workingDirectory)' 
+      - bash: 'python -m pytest --junitxml=$(build.artifactstagingdirectory)/$(addonName)_$(addonVersion)_testresults.xml' 
+        workingDirectory: '$(workingDirectory)'
         displayName: 'Run tests'
-
+              
       - task: CopyFiles@2
         displayName: 'Copy addon files for package'
         inputs:
@@ -114,7 +118,7 @@ stages:
           rootFolderOrFile: '$(build.artifactstagingdirectory)/$(addonName)'
           includeRootFolder: true
           archiveType: 'zip'
-          archiveFile: '$(build.artifactstagingdirectory)/package/$(addonName)-$(packageVersion).zip'
+          archiveFile: '$(build.artifactstagingdirectory)/package/$(addonName)-$(addonVersion).zip'
           replaceExistingArchive: true
  
       - task: CopyFiles@2
@@ -129,7 +133,7 @@ stages:
           flattenFolders: false
           OverWrite: true
 
-      - script: md5sum $(addonName)-$(packageVersion).zip > $(addonName)-$(packageVersion).zip.md5
+      - script: md5sum $(addonName)-$(addonVersion).zip > $(addonName)-$(addonVersion).zip.md5
         workingDirectory: $(build.artifactstagingdirectory)/package/
         displayName: 'Creating md5 file for zipfile'
 
@@ -143,32 +147,32 @@ stages:
           PathtoPublish: '$(build.artifactstagingdirectory)/package/'
           ArtifactName: '$(addonName)'
           publishLocation: 'Container'
-
+          
       - task: PublishTestResults@2
         displayName: 'Publish test result'
         inputs:
-          testResultsFiles: '$(build.artifactstagingdirectory)/$(addonName)_$(packageVersion)_testresults.xml'
-          testRunTitle: $(addonName)_$(packageVersion)
+          testResultsFiles: '$(build.artifactstagingdirectory)/$(addonName)_$(addonVersion)_testresults.xml'
+          testRunTitle: $(addonName)_$(addonVersion)
         condition: succeededOrFailed()
-      
+
       - task: GithubRelease@1 
         displayName: 'Create GitHub Release'
         condition: and(succeeded(), eq(${{variables.isMaster}}, true))
+        continueOnError: true
         inputs:
           gitHubConnection: 'github.com_chrisism'
           repositoryName: chrisism/$(addonName)
           action: 'create'
           target: '$(Build.SourceVersion)'
           tagSource: 'userSpecifiedTag'
-          tag: $(packageVersion)
+          tag: $(tagVersion)
           title: $(Build.BuildNumber)
           releaseNotesSource: filePath
-          releaseNotesFilePath: $(workingDirectory)/release.md  
+          releaseNotesFilePath: $(workingDirectory)/changelog.md  
           addChangeLog: true
           assets: |
             $(build.artifactstagingdirectory)/package/*.*
             $(workingDirectory)/changelog.txt
-
 
 - stage: DeployStaging
   displayName: Deployment on Staging
@@ -186,7 +190,7 @@ stages:
           value: repository.chrisism.dev
         - name: repository_data_dir
           value: 'matrix'
-        - name: branchName
+        - name: branch_name
           value: main
 
       strategy:     
@@ -194,7 +198,7 @@ stages:
           deploy:
             steps:
               - template: publish_in_repository_steps.yml
-  
+
 - stage: DeployProd
   displayName: Deployment on Production
   condition: and(succeeded(), eq(${{variables.isMaster}}, true))
@@ -211,7 +215,7 @@ stages:
           value: repository.chrisism
         - name: repository_data_dir
           value: 'matrix'
-        - name: branchName
+        - name: branch_name
           value: master
 
       strategy:     
