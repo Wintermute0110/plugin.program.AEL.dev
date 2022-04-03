@@ -191,6 +191,11 @@ def cmd_store_scraped_roms(args) -> bool:
         metadata_to_update  = applied_settings.metadata_IDs_to_scrape if metadata_is_updated else []
         assets_to_update    = applied_settings.asset_IDs_to_scrape if assets_are_updated else []
 
+        logger.debug('========================== Applied scraper settings ==========================')
+        logger.debug('Metadata IDs:         {}'.format(', '.join(applied_settings.metadata_IDs_to_scrape)))
+        logger.debug('Asset IDs:            {}'.format(', '.join(applied_settings.asset_IDs_to_scrape)))
+        logger.debug('Overwrite existing:   {}'.format('Yes' if applied_settings.overwrite_existing else 'No'))
+
         for rom_data in scraped_roms:
             api_rom_obj = ROMObj(rom_data)
             
@@ -247,8 +252,18 @@ def cmd_store_scraped_single_rom(args) -> bool:
         
         metadata_to_update = applied_settings.metadata_IDs_to_scrape if metadata_is_updated else []
         assets_to_update   = applied_settings.asset_IDs_to_scrape if assets_are_updated else []
+       
+        logger.debug('========================== Applied scraper settings ==========================')
+        logger.debug('Metadata IDs:         {}'.format(', '.join(applied_settings.metadata_IDs_to_scrape)))
+        logger.debug('Asset IDs:            {}'.format(', '.join(applied_settings.asset_IDs_to_scrape)))
+        logger.debug('Overwrite existing:   {}'.format('Yes' if applied_settings.overwrite_existing else 'No'))
+        logger.debug('Metadata updated:     {}'.format('Yes' if metadata_is_updated else 'No'))
+        logger.debug('Assets updated:       {}'.format('Yes' if assets_are_updated else 'No'))
 
-        rom.update_with(scraped_rom, metadata_to_update, assets_to_update)
+        rom.update_with(scraped_rom,
+            metadata_to_update, 
+            assets_to_update, 
+            overwrite_existing=applied_settings.overwrite_existing)
         #rom_obj.scraped_with(scraper_id)
         
         rom_repository.update_rom(rom)

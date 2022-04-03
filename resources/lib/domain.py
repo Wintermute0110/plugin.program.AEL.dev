@@ -36,6 +36,9 @@ from akl import settings, constants
 
 logger = logging.getLogger(__name__)
 
+def is_empty(input: any) -> bool:
+    return input is None or len(input) == 0
+
 # -------------------------------------------------------------------------------------------------
 # Gets all required information about an asset: path, name, etc.
 # Returns an object with all the information
@@ -1523,49 +1526,51 @@ class ROM(MetaDataItemABC):
         assets_to_update=[], 
         overwrite_existing=False,
         update_scanned_data=False):
-        
+
         if constants.META_TITLE_ID in metadata_to_update \
-            and api_rom_obj.get_name() is not None:
+            and api_rom_obj.get_name():
             self.set_name(api_rom_obj.get_name())
 
         if constants.META_PLOT_ID in metadata_to_update \
-            and api_rom_obj.get_plot() is not None \
-            and (overwrite_existing or self.get_plot()):              
+            and api_rom_obj.get_plot() \
+            and (overwrite_existing or is_empty(self.get_plot())):              
             self.set_plot(api_rom_obj.get_plot())
         
+        logger.debug('Plot3 ' + self.get_plot())
+
         if constants.META_YEAR_ID in metadata_to_update \
-            and api_rom_obj.get_releaseyear() is not None \
-            and (overwrite_existing or self.get_releaseyear()):       
+            and api_rom_obj.get_releaseyear() \
+            and (overwrite_existing or is_empty(self.get_releaseyear())):       
             self.set_releaseyear(api_rom_obj.get_releaseyear())
         
         if constants.META_GENRE_ID in metadata_to_update \
-            and api_rom_obj.get_genre() is not None\
-            and (overwrite_existing or self.get_genre()):
+            and api_rom_obj.get_genre() \
+            and (overwrite_existing or is_empty(self.get_genre())):
             self.set_genre(api_rom_obj.get_genre())
         
         if constants.META_DEVELOPER_ID in metadata_to_update \
-            and api_rom_obj.get_developer() is not None\
-            and (overwrite_existing or self.get_developer()):         
+            and api_rom_obj.get_developer() \
+            and (overwrite_existing or is_empty(self.get_developer())):         
             self.set_developer(api_rom_obj.get_developer())
         
         if constants.META_NPLAYERS_ID in metadata_to_update \
-            and api_rom_obj.get_number_of_players() is not None\
-            and (overwrite_existing or self.get_number_of_players()):
+            and api_rom_obj.get_number_of_players() \
+            and (overwrite_existing or is_empty(self.get_number_of_players())):
             self.set_number_of_players(api_rom_obj.get_number_of_players())
         
         if constants.META_NPLAYERS_ONLINE_ID in metadata_to_update \
-            and api_rom_obj.get_number_of_players_online() is not None\
-            and (overwrite_existing or self.get_number_of_players_online()):
+            and api_rom_obj.get_number_of_players_online() \
+            and (overwrite_existing or is_empty(self.get_number_of_players_online())):
             self.set_number_of_players_online(api_rom_obj.get_number_of_players_online())
         
         if constants.META_ESRB_ID in metadata_to_update\
-             and api_rom_obj.get_esrb_rating() is not None\
-            and (overwrite_existing or self.get_esrb_rating()):       
+             and api_rom_obj.get_esrb_rating() \
+            and (overwrite_existing or is_empty(self.get_esrb_rating())):       
             self.set_esrb_rating(api_rom_obj.get_esrb_rating())
         
         if constants.META_RATING_ID in metadata_to_update \
-            and api_rom_obj.get_rating() is not None\
-            and (overwrite_existing or self.get_rating()):            
+            and api_rom_obj.get_rating() \
+            and (overwrite_existing or is_empty(self.get_rating())):            
             self.set_rating(api_rom_obj.get_rating())
         
         if constants.META_TAGS_ID in metadata_to_update and api_rom_obj.get_tags() is not None:
