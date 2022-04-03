@@ -1,2 +1,0 @@
-[B]v1.0.0[/B]
- - Initial release of the new AKL fork

@@ -18,8 +18,6 @@
 from __future__ import unicode_literals
 from __future__ import division
 
-import json
-
 import logging
 from akl.scrapers import ScraperSettings
 
@@ -237,8 +235,6 @@ def cmd_store_scraped_single_rom(args) -> bool:
     if scraped_rom_data is None:
         return
         
-    logger.debug(f"Found {json.dumps(scraped_rom_data)}")
-
     scraped_rom = ROMObj(scraped_rom_data)
     rom_collection_ids = []
     uow = UnitOfWork(globals.g_PATHS.DATABASE_FILE_PATH)
