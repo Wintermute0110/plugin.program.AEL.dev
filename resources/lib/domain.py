@@ -1535,9 +1535,7 @@ class ROM(MetaDataItemABC):
             and api_rom_obj.get_plot() \
             and (overwrite_existing or is_empty(self.get_plot())):              
             self.set_plot(api_rom_obj.get_plot())
-        
-        logger.debug('Plot3 ' + self.get_plot())
-
+    
         if constants.META_YEAR_ID in metadata_to_update \
             and api_rom_obj.get_releaseyear() \
             and (overwrite_existing or is_empty(self.get_releaseyear())):       
