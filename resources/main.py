@@ -17,19 +17,21 @@
 # First include modules in this package, then Kodi modules, finally standard library modules.
 
 # --- Modules/packages in this plugin ---
-from .constants import *
-from .misc import *
-from .misc_ael import *
-from .utils import *
-from .db import *
-from .net_IO import *
-from .assets import *
-from .rom_audit import *
-from .scrap import *
-from .autoconfig import *
-from .md import *
+import resources.const as const
+import resources.misc as misc
+import resources.misc_ael as misc_ael
+import resources.utils as utils
+import resources.db as db
+import resources.network as network
+import resources.assets as assets
+import resources.audit as audit
+import resources.scrap as scrap
+import resources.xmlconf as xmlconf
+import resources.md as md
 
 # --- Kodi stuff ---
+# Remove this modules from here.
+# Create wrapper functions/objects in module utils.
 import xbmc
 import xbmcaddon
 import xbmcgui
@@ -37,6 +39,7 @@ import xbmcplugin
 
 # --- Python standard library ---
 import collections
+import datetime
 import fnmatch
 import hashlib
 import os
@@ -49,9 +52,9 @@ import subprocess
 import sys
 import time
 import traceback
-if ADDON_RUNNING_PYTHON_2:
+if const.ADDON_RUNNING_PYTHON_2:
     import urlparse
-elif ADDON_RUNNING_PYTHON_3:
+elif const.ADDON_RUNNING_PYTHON_3:
     import urllib.parse
 else:
     raise TypeError('Undefined Python runtime version.')
@@ -139,7 +142,7 @@ class Configuration:
 g_base_url = ''
 
 # Module loading time. This variable is read only (only modified here).
-g_time_str = text_type(datetime.datetime.now())
+g_time_str = const.text_type(datetime.datetime.now())
 
 # Make AEL to run only 1 single instance
 # See http://forum.kodi.tv/showthread.php?tid=310697

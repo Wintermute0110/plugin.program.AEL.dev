@@ -18,14 +18,15 @@
 # https://github.com/muldjord/skyscraper/blob/master/docs/SCRAPINGMODULES.md
 
 # --- Modules/packages in this plugin ---
-from .constants import *
-from .platforms import *
-from .misc import *
-from .utils import *
-from .assets import *
-from .db import *
-from .net_IO import *
-from .rom_audit import *
+import resources.const as const
+import resources.log as log
+import resources.platforms as platforms
+import resources.misc as misc
+import resources.utils as utils
+import resources.assets as assets
+import resources.db as db
+import resources.network as network
+import resources.audit as audit
 
 # --- Python standard library ---
 import abc
@@ -37,9 +38,9 @@ import json
 import socket
 import time
 import zipfile
-if ADDON_RUNNING_PYTHON_2:
+if const.ADDON_RUNNING_PYTHON_2:
     import urllib
-elif ADDON_RUNNING_PYTHON_3:
+elif const.ADDON_RUNNING_PYTHON_3:
     import urllib.parse
 else:
     raise TypeError('Undefined Python runtime version.')
@@ -2032,13 +2033,13 @@ class Null_Scraper(Scraper):
 class AEL_Offline(Scraper):
     # --- Class variables ------------------------------------------------------------------------
     supported_metadata_list = [
-        META_TITLE_ID,
-        META_YEAR_ID,
-        META_GENRE_ID,
-        META_DEVELOPER_ID,
-        META_NPLAYERS_ID,
-        META_ESRB_ID,
-        META_PLOT_ID,
+        const.META_TITLE_ID,
+        const.META_YEAR_ID,
+        const.META_GENRE_ID,
+        const.META_DEVELOPER_ID,
+        const.META_NPLAYERS_ID,
+        const.META_ESRB_ID,
+        const.META_PLOT_ID,
     ]
 
     # --- Constructor ----------------------------------------------------------------------------
@@ -2265,32 +2266,32 @@ class AEL_Offline(Scraper):
 class TheGamesDB(Scraper):
     # --- Class variables ------------------------------------------------------------------------
     supported_metadata_list = [
-        META_TITLE_ID,
-        META_YEAR_ID,
-        META_GENRE_ID,
-        META_DEVELOPER_ID,
-        META_NPLAYERS_ID,
-        META_ESRB_ID,
-        META_PLOT_ID,
+        const.META_TITLE_ID,
+        const.META_YEAR_ID,
+        const.META_GENRE_ID,
+        const.META_DEVELOPER_ID,
+        const.META_NPLAYERS_ID,
+        const.META_ESRB_ID,
+        const.META_PLOT_ID,
     ]
     supported_asset_list = [
-        ASSET_FANART_ID,
-        ASSET_BANNER_ID,
-        ASSET_CLEARLOGO_ID,
-        ASSET_TITLE_ID,
-        ASSET_SNAP_ID,
-        ASSET_BOXFRONT_ID,
-        ASSET_BOXBACK_ID,
+        const.ASSET_FANART_ID,
+        const.ASSET_BANNER_ID,
+        const.ASSET_CLEARLOGO_ID,
+        const.ASSET_TITLE_ID,
+        const.ASSET_SNAP_ID,
+        const.ASSET_BOXFRONT_ID,
+        const.ASSET_BOXBACK_ID,
     ]
     asset_name_mapping = {
-        'titlescreen' : ASSET_TITLE_ID,
-        'screenshot': ASSET_SNAP_ID,
-        'boxart' : ASSET_BOXFRONT_ID,
-        'boxartfront': ASSET_BOXFRONT_ID,
-        'boxartback': ASSET_BOXBACK_ID,
-        'fanart' : ASSET_FANART_ID,
-        'clearlogo': ASSET_CLEARLOGO_ID,
-        'banner': ASSET_BANNER_ID,
+        'titlescreen' : const.ASSET_TITLE_ID,
+        'screenshot': const.ASSET_SNAP_ID,
+        'boxart' : const.ASSET_BOXFRONT_ID,
+        'boxartfront': const.ASSET_BOXFRONT_ID,
+        'boxartback': const.ASSET_BOXBACK_ID,
+        'fanart' : const.ASSET_FANART_ID,
+        'clearlogo': const.ASSET_CLEARLOGO_ID,
+        'banner': const.ASSET_BANNER_ID,
     }
     # This allows to change the API version easily.
     URL_ByGameName = 'https://api.thegamesdb.net/v1.1/Games/ByGameName'
@@ -2836,33 +2837,33 @@ class TheGamesDB(Scraper):
 class MobyGames(Scraper):
     # --- Class variables ------------------------------------------------------------------------
     supported_metadata_list = [
-        META_TITLE_ID,
-        META_YEAR_ID,
-        META_GENRE_ID,
-        META_PLOT_ID,
+        const.META_TITLE_ID,
+        const.META_YEAR_ID,
+        const.META_GENRE_ID,
+        const.META_PLOT_ID,
     ]
     supported_asset_list = [
-        ASSET_TITLE_ID,
-        ASSET_SNAP_ID,
-        ASSET_BOXFRONT_ID,
-        ASSET_BOXBACK_ID,
-        ASSET_CARTRIDGE_ID,
-        ASSET_FLYER_ID,
-        ASSET_MAP_ID,
+        const.ASSET_TITLE_ID,
+        const.ASSET_SNAP_ID,
+        const.ASSET_BOXFRONT_ID,
+        const.ASSET_BOXBACK_ID,
+        const.ASSET_CARTRIDGE_ID,
+        const.ASSET_FLYER_ID,
+        const.ASSET_MAP_ID,
     ]
     asset_name_mapping = {
-        'front cover'   : ASSET_BOXFRONT_ID,
-        'back cover'    : ASSET_BOXBACK_ID,
-        'media'         : ASSET_CARTRIDGE_ID,
+        'front cover'   : const.ASSET_BOXFRONT_ID,
+        'back cover'    : const.ASSET_BOXBACK_ID,
+        'media'         : const.ASSET_CARTRIDGE_ID,
         'manual'        : None,
         'spine/sides'   : None,
         'other'         : None,
-        'advertisement' : ASSET_FLYER_ID,
+        'advertisement' : const.ASSET_FLYER_ID,
         'extras'        : None,
-        'inside cover'  : ASSET_BOXBACK_ID,
-        'full cover'    : ASSET_BOXFRONT_ID,
+        'inside cover'  : const.ASSET_BOXBACK_ID,
+        'full cover'    : const.ASSET_BOXFRONT_ID,
         'soundtrack'    : None,
-        'map'           : ASSET_MAP_ID,
+        'map'           : const.ASSET_MAP_ID,
     }
     # This allows to change the API version easily.
     URL_games     = 'https://api.mobygames.com/v1/games'
@@ -3322,27 +3323,27 @@ class MobyGames(Scraper):
 class ScreenScraper(Scraper):
     # --- Class variables ------------------------------------------------------------------------
     supported_metadata_list = [
-        META_TITLE_ID,
-        META_YEAR_ID,
-        META_GENRE_ID,
-        META_DEVELOPER_ID,
-        META_NPLAYERS_ID,
-        META_ESRB_ID,
-        META_PLOT_ID,
+        const.META_TITLE_ID,
+        const.META_YEAR_ID,
+        const.META_GENRE_ID,
+        const.META_DEVELOPER_ID,
+        const.META_NPLAYERS_ID,
+        const.META_ESRB_ID,
+        const.META_PLOT_ID,
     ]
     supported_asset_list = [
-        ASSET_FANART_ID,
-        ASSET_BANNER_ID,
-        ASSET_CLEARLOGO_ID,
-        ASSET_TITLE_ID,
-        ASSET_SNAP_ID,
-        ASSET_BOXFRONT_ID,
-        ASSET_BOXBACK_ID,
-        ASSET_3DBOX_ID,
-        ASSET_CARTRIDGE_ID,
-        ASSET_MAP_ID,
-        # ASSET_MANUAL_ID,
-        # ASSET_TRAILER_ID,
+        const.ASSET_FANART_ID,
+        const.ASSET_BANNER_ID,
+        const.ASSET_CLEARLOGO_ID,
+        const.ASSET_TITLE_ID,
+        const.ASSET_SNAP_ID,
+        const.ASSET_BOXFRONT_ID,
+        const.ASSET_BOXBACK_ID,
+        const.ASSET_3DBOX_ID,
+        const.ASSET_CARTRIDGE_ID,
+        const.ASSET_MAP_ID,
+        # const.ASSET_MANUAL_ID,
+        # const.ASSET_TRAILER_ID,
     ]
     # Unsupported AEL types:
     # manuel (Manual)
@@ -3354,19 +3355,19 @@ class ScreenScraper(Scraper):
     # mixrbv1 (Mix recalbox Version 1)
     # mixrbv2 (Mix recalbox Version 2)
     asset_name_mapping = {
-        'fanart'             : ASSET_FANART_ID,
-        'screenmarqueesmall' : ASSET_BANNER_ID,
-        'steamgrid'          : ASSET_BANNER_ID,
-        'wheel'              : ASSET_CLEARLOGO_ID,
-        'wheel-carbon'       : ASSET_CLEARLOGO_ID,
-        'wheel-steel'        : ASSET_CLEARLOGO_ID,
-        'sstitle'            : ASSET_TITLE_ID,
-        'ss'                 : ASSET_SNAP_ID,
-        'box-2D'             : ASSET_BOXFRONT_ID,
-        'box-2D-back'        : ASSET_BOXBACK_ID,
-        'box-3D'             : ASSET_3DBOX_ID,
-        'support-2D'         : ASSET_CARTRIDGE_ID,
-        'maps'               : ASSET_MAP_ID,
+        'fanart'             : const.ASSET_FANART_ID,
+        'screenmarqueesmall' : const.ASSET_BANNER_ID,
+        'steamgrid'          : const.ASSET_BANNER_ID,
+        'wheel'              : const.ASSET_CLEARLOGO_ID,
+        'wheel-carbon'       : const.ASSET_CLEARLOGO_ID,
+        'wheel-steel'        : const.ASSET_CLEARLOGO_ID,
+        'sstitle'            : const.ASSET_TITLE_ID,
+        'ss'                 : const.ASSET_SNAP_ID,
+        'box-2D'             : const.ASSET_BOXFRONT_ID,
+        'box-2D-back'        : const.ASSET_BOXBACK_ID,
+        'box-3D'             : const.ASSET_3DBOX_ID,
+        'support-2D'         : const.ASSET_CARTRIDGE_ID,
+        'maps'               : const.ASSET_MAP_ID,
     }
 
     # List of country/region suffixes supported by ScreenScraper.
@@ -4290,17 +4291,17 @@ class ScreenScraper(Scraper):
 class GameFAQs(Scraper):
     # --- Class variables ------------------------------------------------------------------------
     supported_metadata_list = [
-        META_TITLE_ID,
-        META_YEAR_ID,
-        META_GENRE_ID,
-        META_DEVELOPER_ID,
-        META_PLOT_ID,
+        const.META_TITLE_ID,
+        const.META_YEAR_ID,
+        const.META_GENRE_ID,
+        const.META_DEVELOPER_ID,
+        const.META_PLOT_ID,
     ]
     supported_asset_list = [
-        ASSET_TITLE_ID,
-        ASSET_SNAP_ID,
-        ASSET_BOXFRONT_ID,
-        ASSET_BOXBACK_ID,
+        const.ASSET_TITLE_ID,
+        const.ASSET_SNAP_ID,
+        const.ASSET_BOXFRONT_ID,
+        const.ASSET_BOXBACK_ID,
     ]
 
     # --- Constructor ----------------------------------------------------------------------------
@@ -4665,18 +4666,18 @@ class GameFAQs(Scraper):
 class ArcadeDB(Scraper):
     # --- Class variables ------------------------------------------------------------------------
     supported_metadata_list = [
-        META_TITLE_ID,
-        META_YEAR_ID,
-        META_GENRE_ID,
-        META_DEVELOPER_ID,
-        META_NPLAYERS_ID,
-        META_PLOT_ID,
+        const.META_TITLE_ID,
+        const.META_YEAR_ID,
+        const.META_GENRE_ID,
+        const.META_DEVELOPER_ID,
+        const.META_NPLAYERS_ID,
+        const.META_PLOT_ID,
     ]
     supported_asset_list = [
-        ASSET_TITLE_ID,
-        ASSET_SNAP_ID,
-        ASSET_BOXFRONT_ID,
-        ASSET_FLYER_ID,
+        const.ASSET_TITLE_ID,
+        const.ASSET_SNAP_ID,
+        const.ASSET_BOXFRONT_ID,
+        const.ASSET_FLYER_ID,
     ]
 
     # --- Constructor ----------------------------------------------------------------------------

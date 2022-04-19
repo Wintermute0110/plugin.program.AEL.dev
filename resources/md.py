@@ -14,8 +14,8 @@
 # Advanced Emulator Launcher multi-disc related functions.
 
 # --- Addon modules ---
-from .constants import *
-from .utils import *
+import resources.const as const
+import resources.log as log
 
 # --- Python standard library ---
 import re

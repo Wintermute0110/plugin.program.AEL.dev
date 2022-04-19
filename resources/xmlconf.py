@@ -14,11 +14,11 @@
 # Advanced Emulator Launcher XML autoconfiguration stuff.
 
 # --- Modules/packages in this plugin ---
-from .constants import *
-from .utils import *
-from .db import *
-from .assets import *
-from .platforms import *
+import resources.const as const
+import resources.log as log
+import resources.platforms as platforms
+import resources.db as db
+import resources.assets as assets
 
 # --- Kodi stuff ---
 # import xbmc

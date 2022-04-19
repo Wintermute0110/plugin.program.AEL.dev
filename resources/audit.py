@@ -14,9 +14,9 @@
 # Write here main contents of this file.
 
 # --- Modules/packages in this plugin ---
-from .constants import *
-from .misc import *
-from .utils import *
+import resources.const as const
+import resources.log as log
+import resources.misc as misc
 
 # --- Python standard library ---
 import xml

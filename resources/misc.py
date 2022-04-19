@@ -19,8 +19,8 @@
 # Optionally this module can include utils.py to use the log_*() functions but better avoid it.
 
 # --- Addon modules ---
-from .constants import *
-from .utils import *
+import resources.const as const
+import resources.log as log
 
 # --- Python standard library ---
 import collections
@@ -31,10 +31,10 @@ import re
 import string
 import time
 import zlib
-if ADDON_RUNNING_PYTHON_2:
+if const.ADDON_RUNNING_PYTHON_2:
     import HTMLParser
     import urlparse
-elif ADDON_RUNNING_PYTHON_3:
+elif const.ADDON_RUNNING_PYTHON_3:
     import html.parser
     import urllib.parse
 else:

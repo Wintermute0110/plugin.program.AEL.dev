@@ -14,9 +14,9 @@
 # Advanced Emulator Launcher asset (artwork) related stuff.
 
 # --- Modules/packages in this plugin ---
-from .constants import *
-from .platforms import *
-from .utils import *
+import resources.const as const
+import resources.platforms as platforms
+import resources.log as log
 
 # --- Python standard library ---
 import os

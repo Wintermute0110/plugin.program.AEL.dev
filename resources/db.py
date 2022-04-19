@@ -15,11 +15,11 @@
 # Advanced Emulator Launcher filesystem I/O functions.
 
 # --- Addon modules ---
-from .constants import *
-from .misc import *
-from .utils import *
-from .assets import *
-from .rom_audit import *
+import resources.const as const
+import resources.misc as misc
+import resources.log as log
+import resources.assets as assets
+import resources.audit as audit
 
 # --- Python standard library ---
 import copy

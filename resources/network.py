@@ -15,17 +15,17 @@
 # Advanced Emulator Launcher network IO module.
 
 # --- Modules/packages in this plugin ---
-from .constants import *
-from .utils import *
+import resources.const as const
+import resources.log as log
 
 # --- Python standard library ---
 import os
 import random
 import ssl
 import sys
-if ADDON_RUNNING_PYTHON_2:
+if const.ADDON_RUNNING_PYTHON_2:
     import urllib2
-elif ADDON_RUNNING_PYTHON_3:
+elif const.ADDON_RUNNING_PYTHON_3:
     import urllib.request
     import urllib.error
 else:
