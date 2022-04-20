@@ -13,8 +13,10 @@
 
 # Advanced Emulator/MAME Launcher constants and globals.
 # This module has no external dependencies.
+# This module does no use print() or log functions.
 
-# Transitional code from Python 2 to Python 3 (https://github.com/benjaminp/six/blob/master/six.py)
+# --- Transitional code from Python 2 to Python 3 ---
+# See https://github.com/benjaminp/six/blob/master/six.py
 import sys
 ADDON_RUNNING_PYTHON_2 = sys.version_info[0] == 2
 ADDON_RUNNING_PYTHON_3 = sys.version_info[0] == 3
@@ -26,6 +28,24 @@ elif ADDON_RUNNING_PYTHON_2:
     binary_type = str
 else:
     raise TypeError('Unknown Python runtime version')
+
+# --- Determine interpreter running platform ---
+# Cache all possible platform values in global variables for maximum speed.
+# See http://stackoverflow.com/questions/446209/possible-values-from-sys-platform
+cached_sys_platform = sys.platform
+def _aux_is_android():
+    if not cached_sys_platform.startswith('linux'): return False
+    return 'ANDROID_ROOT' in os.environ or 'ANDROID_DATA' in os.environ or 'XBMC_ANDROID_APK' in os.environ
+
+is_windows_bool = cached_sys_platform == 'win32' or cached_sys_platform == 'win64' or cached_sys_platform == 'cygwin'
+is_osx_bool = cached_sys_platform.startswith('darwin')
+is_android_bool = _aux_is_android()
+is_linux_bool = cached_sys_platform.startswith('linux') and not is_android_bool
+
+def is_windows(): return is_windows_bool
+def is_osx(): return is_osx_bool
+def is_android(): return is_android_bool
+def is_linux(): return is_linux_bool
 
 # -------------------------------------------------------------------------------------------------
 # Addon options and tuneables.

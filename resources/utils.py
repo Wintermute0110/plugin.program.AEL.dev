@@ -12,12 +12,10 @@
 # See the GNU General Public License for more details.
 
 # Advanced Emulator/MAME Launcher utility functions.
-#
 # The idea if this module is to share it between AEL and AML.
 #
-# All functions that depends on Kodi modules are here. This includes IO functions
-# and logging functions. Misc function that do not depend on Kodi modules are
-# located in the misc module.
+# All functions that depends on Kodi modules that are NOT GUI RELATED.
+# This includes IO functions functions.
 #
 # Low-level filesystem and IO functions are here (FileName class).
 # db module (formaer disk_IO module) contains high level IO functions.
@@ -26,13 +24,14 @@
 # to use addon modules with CPython for testing or debugging.
 #
 # This module must NOT include any other addon modules to avoid circular dependencies. The
-# only exception to this rule is the module .constants. This module is virtually included
+# only exception to this rule is the module .const. This module is virtually included
 # by every other addon module.
 #
 # How to report errors on the low-level filesystem functions??? See the end of the file.
 
 # --- Addon modules ---
-from .constants import *
+import resources.const as const
+import resources.log as log
 
 # --- Kodi modules ---
 try:
@@ -63,27 +62,6 @@ import threading
 import time
 import xml.etree.ElementTree
 import zlib
-
-# --- Determine interpreter running platform ---
-# Cache all possible platform values in global variables for maximum speed.
-# See http://stackoverflow.com/questions/446209/possible-values-from-sys-platform
-cached_sys_platform = sys.platform
-def _aux_is_android():
-    if not cached_sys_platform.startswith('linux'): return False
-    return 'ANDROID_ROOT' in os.environ or 'ANDROID_DATA' in os.environ or 'XBMC_ANDROID_APK' in os.environ
-
-is_windows_bool = cached_sys_platform == 'win32' or cached_sys_platform == 'win64' or cached_sys_platform == 'cygwin'
-is_osx_bool = cached_sys_platform.startswith('darwin')
-is_android_bool = _aux_is_android()
-is_linux_bool = cached_sys_platform.startswith('linux') and not is_android_bool
-
-def is_windows(): return is_windows_bool
-
-def is_osx(): return is_osx_bool
-
-def is_android(): return is_android_bool
-
-def is_linux(): return is_linux_bool
 
 # -------------------------------------------------------------------------------------------------
 # Filesystem helper class.
@@ -263,11 +241,11 @@ class FileName:
 # -------------------------------------------------------------------------------------------------
 # Low level filesystem functions.
 # -------------------------------------------------------------------------------------------------
-def utils_get_fs_encoding():
+def get_fs_encoding():
     fs_encoding = sys.getfilesystemencoding()
     return fs_encoding
 
-def utils_copy_file(source_str, dest_str):
+def copy_file(source_str, dest_str):
     if ADDON_RUNNING_PYTHON_2:
         source_bytes = source_str.decode(utils_get_fs_encoding(), 'ignore')
         dest_bytes = dest_str.decode(utils_get_fs_encoding(), 'ignore')
@@ -278,13 +256,13 @@ def utils_copy_file(source_str, dest_str):
         raise TypeError('Undefined Python runtime version.')
 
 # Always write UNIX end of lines regarding of the operating system.
-def utils_write_str_to_file(filename, full_string):
-    log_debug('utils_write_str_to_file() File "{}"'.format(filename))
+def write_str_to_file(filename, full_string):
+    log.debug('write_str_to_file() File "{}"'.format(filename))
     with io.open(filename, 'wt', encoding = 'utf-8', newline = '\n') as f:
         f.write(full_string)
 
-def utils_load_file_to_str(filename):
-    log_debug('utils_load_file_to_str() File "{}"'.format(filename))
+def load_file_to_str(filename):
+    log.debug('load_file_to_str() File "{}"'.format(filename))
     with io.open(filename, 'rt', encoding = 'utf-8') as f:
         string = f.read()
     return string
@@ -294,8 +272,8 @@ def utils_load_file_to_str(filename):
 # slist is a list of Unicode strings that will be joined and written to a file encoded in UTF-8.
 # Joining command is '\n'.join()
 # -------------------------------------------------------------------------------------------------
-def utils_write_slist_to_file(filename, slist):
-    log_debug('utils_write_slist_to_file() File "{}"'.format(filename))
+def write_slist_to_file(filename, slist):
+    log.debug('write_slist_to_file() File "{}"'.format(filename))
     try:
         file_obj = io.open(filename, 'wt', encoding = 'utf-8')
         file_obj.write('\n'.join(slist))
@@ -309,8 +287,8 @@ def utils_write_slist_to_file(filename, slist):
         log_error('Cannot write {} file'.format(filename))
         raise AEL_Error('(IOError) Cannot write {} file'.format(filename))
 
-def utils_load_file_to_slist(filename):
-    log_debug('utils_load_file_to_slist() File "{}"'.format(filename))
+def load_file_to_slist(filename):
+    log.debug('load_file_to_slist() File "{}"'.format(filename))
     with io.open(filename, 'rt', encoding = 'utf-8') as f:
         slist = f.readlines()
     return slist
@@ -318,42 +296,41 @@ def utils_load_file_to_slist(filename):
 # If there are issues in the XML file (for example, invalid XML chars) ET.parse will fail.
 # Returns None if error.
 # Returns xml_tree = xml.etree.ElementTree.parse() if success.
-def utils_load_XML_to_ET(filename):
-    log_debug('utils_load_XML_to_ET() Loading {}'.format(filename))
+def load_XML_to_ET(filename):
+    log.debug('load_XML_to_ET() Loading {}'.format(filename))
     xml_tree = None
     try:
         xml_tree = xml.etree.ElementTree.parse(filename)
     except IOError as ex:
-        log_debug('utils_load_XML_to_ET() (IOError) errno = {}'.format(ex.errno))
-        # log_debug(text_type(ex.errno.errorcode))
+        log.debug('load_XML_to_ET() (IOError) errno = {}'.format(ex.errno))
+        # log.debug(text_type(ex.errno.errorcode))
         # No such file or directory
         if ex.errno == errno.ENOENT:
-            log_error('utils_load_XML_to_ET() (IOError) ENOENT No such file or directory.')
+            log_error('load_XML_to_ET() (IOError) ENOENT No such file or directory.')
         else:
-            log_error('utils_load_XML_to_ET() (IOError) Unhandled errno value.')
+            log_error('load_XML_to_ET() (IOError) Unhandled errno value.')
     except xml.etree.ElementTree.ParseError as ex:
-        log_error('utils_load_XML_to_ET() (ParseError) Exception parsing {}'.format(filename))
-        log_error('utils_load_XML_to_ET() (ParseError) {}'.format(text_type(ex)))
+        log_error('load_XML_to_ET() (ParseError) Exception parsing {}'.format(filename))
+        log_error('load_XML_to_ET() (ParseError) {}'.format(text_type(ex)))
     return xml_tree
 
 # -------------------------------------------------------------------------------------------------
 # JSON write/load
 # -------------------------------------------------------------------------------------------------
 # Replace fs_load_JSON_file with this.
-def utils_load_JSON_file(json_filename, default_obj = {}, verbose = True):
+def load_JSON_file(json_filename, default_obj = {}, verbose = True):
     # If file does not exist return default object (usually empty object)
     json_data = default_obj
     if not os.path.isfile(json_filename):
-        log_warning('utils_load_JSON_file() Not found "{}"'.format(json_filename))
+        log_warning('load_JSON_file() Not found "{}"'.format(json_filename))
         return json_data
     # Load and parse JSON file.
-    if verbose: log_debug('utils_load_JSON_file() "{}"'.format(json_filename))
+    if verbose: log.debug('load_JSON_file() "{}"'.format(json_filename))
     with io.open(json_filename, 'rt', encoding = 'utf-8') as file:
         try:
             json_data = json.load(file)
         except ValueError as ex:
-            log_error('utils_load_JSON_file() ValueError exception in json.load() function')
-
+            log_error('load_JSON_file() ValueError exception in json.load() function')
     return json_data
 
 # This consumes a lot of memory but it is fast.
@@ -362,14 +339,14 @@ def utils_load_JSON_file(json_filename, default_obj = {}, verbose = True):
 # Note that there is a bug in the json module where the ensure_ascii=False flag can produce
 # a mix of unicode and str objects.
 # See http://stackoverflow.com/questions/18337407/saving-utf-8-texts-in-json-dumps-as-utf8-not-as-u-escape-sequence
-def utils_write_JSON_file(json_filename, json_data, verbose = True, pprint = False):
+def write_JSON_file(json_filename, json_data, verbose = True, pprint = False):
     l_start = time.time()
-    if verbose: log_debug('utils_write_JSON_file() "{}"'.format(json_filename))
+    if verbose: log.debug('write_JSON_file() "{}"'.format(json_filename))
 
     # Parameter pprint == True overrides option OPTION_COMPACT_JSON.
     # Choose JSON iterative encoder or normal encoder.
     if OPTION_LOWMEM_WRITE_JSON:
-        if verbose: log_debug('utils_write_JSON_file() Using OPTION_LOWMEM_WRITE_JSON option')
+        if verbose: log.debug('write_JSON_file() Using OPTION_LOWMEM_WRITE_JSON option')
         if pprint:
             jobj = json.JSONEncoder(ensure_ascii = False, sort_keys = True,
                 indent = JSON_INDENT, separators = JSON_SEP)
@@ -405,27 +382,27 @@ def utils_write_JSON_file(json_filename, json_data, verbose = True, pprint = Fal
     l_end = time.time()
     if verbose:
         write_time_s = l_end - l_start
-        log_debug('utils_write_JSON_file() Writing time {:f} s'.format(write_time_s))
+        log.debug('write_JSON_file() Writing time {:f} s'.format(write_time_s))
 
 # -------------------------------------------------------------------------------------------------
 # Threaded JSON loader
 # -------------------------------------------------------------------------------------------------
-# How to use this code:
-#     render_thread = Threaded_Load_JSON(cfg.RENDER_DB_PATH.getPath())
-#     assets_thread = Threaded_Load_JSON(cfg.MAIN_ASSETS_DB_PATH.getPath())
-#     render_thread.start()
-#     assets_thread.start()
-#     render_thread.join()
-#     assets_thread.join()
-#     MAME_db_dic = render_thread.output_dic
-#     MAME_assets_dic = assets_thread.output_dic
+# >>> How to use this code <<<
+# render_thread = Threaded_Load_JSON(cfg.RENDER_DB_PATH.getPath())
+# assets_thread = Threaded_Load_JSON(cfg.MAIN_ASSETS_DB_PATH.getPath())
+# render_thread.start()
+# assets_thread.start()
+# render_thread.join()
+# assets_thread.join()
+# MAME_db_dic = render_thread.output_dic
+# MAME_assets_dic = assets_thread.output_dic
 class Threaded_Load_JSON(threading.Thread):
     def __init__(self, json_filename):
         threading.Thread.__init__(self)
         self.json_filename = json_filename
 
     def run(self):
-        self.output_dic = utils_load_JSON_file(self.json_filename)
+        self.output_dic = load_JSON_file(self.json_filename)
 
 # -------------------------------------------------------------------------------------------------
 # File cache functions.
@@ -433,29 +410,29 @@ class Threaded_Load_JSON(threading.Thread):
 # -------------------------------------------------------------------------------------------------
 file_cache = {}
 
-def utils_file_cache_clear(verbose = True):
+def file_cache_clear(verbose = True):
     global file_cache
-    if verbose: log_debug('utils_file_cache_clear() Clearing file cache')
+    if verbose: log.debug('file_cache_clear() Clearing file cache')
     file_cache = {}
 
-def utils_file_cache_add_dir(dir_str, verbose = True):
+def file_cache_add_dir(dir_str, verbose = True):
     global file_cache
 
     # Create a set with all the files in the directory
     if not dir_str:
-        log_warning('utils_file_cache_add_dir() Empty dir_str. Exiting')
+        log_warning('file_cache_add_dir() Empty dir_str. Exiting')
         return
     dir_FN = FileName(dir_str)
     if not dir_FN.exists():
-        log_debug('utils_file_cache_add_dir() Does not exist "{}"'.format(dir_str))
+        log.debug('file_cache_add_dir() Does not exist "{}"'.format(dir_str))
         file_cache[dir_str] = set()
         return
     if not dir_FN.isdir():
-        log_warning('utils_file_cache_add_dir() Not a directory "{}"'.format(dir_str))
+        log_warning('file_cache_add_dir() Not a directory "{}"'.format(dir_str))
         return
     if verbose:
-        # log_debug('utils_file_cache_add_dir() Scanning OP "{}"'.format(dir_FN.getOriginalPath()))
-        log_debug('utils_file_cache_add_dir() Scanning  P "{}"'.format(dir_FN.getPath()))
+        # log.debug('file_cache_add_dir() Scanning OP "{}"'.format(dir_FN.getOriginalPath()))
+        log.debug('file_cache_add_dir() Scanning  P "{}"'.format(dir_FN.getPath()))
     # A recursive scanning function is needed. os.listdir() is not. os.walk() is recursive
     # file_list = os.listdir(dir_FN.getPath())
     file_list = []
@@ -463,11 +440,11 @@ def utils_file_cache_add_dir(dir_str, verbose = True):
     # For Unicode errors in os.walk() see
     # https://stackoverflow.com/questions/21772271/unicodedecodeerror-when-performing-os-walk
     for root, dirs, files in os.walk(text_type(root_dir_str)):
-        # log_debug('----------')
-        # log_debug('root = {}'.format(root))
-        # log_debug('dirs = {}'.format(text_type(dirs)))
-        # log_debug('files = {}'.format(text_type(files)))
-        # log_debug('\n')
+        # log.debug('----------')
+        # log.debug('root = {}'.format(root))
+        # log.debug('dirs = {}'.format(text_type(dirs)))
+        # log.debug('files = {}'.format(text_type(files)))
+        # log.debug('\n')
         for f in files:
             my_file = os.path.join(root, f)
             cache_file = my_file.replace(root_dir_str, '')
@@ -480,23 +457,23 @@ def utils_file_cache_add_dir(dir_str, verbose = True):
             file_list.append(cache_file)
     file_set = set(file_list)
     if verbose:
-        # for file in file_set: log_debug('File "{}"'.format(file))
-        log_debug('utils_file_cache_add_dir() Adding {} files to cache'.format(len(file_set)))
+        # for file in file_set: log.debug('File "{}"'.format(file))
+        log.debug('file_cache_add_dir() Adding {} files to cache'.format(len(file_set)))
     file_cache[dir_str] = file_set
 
 # See utils_look_for_file() documentation below.
-def utils_file_cache_search(dir_str, filename_noext, file_exts):
+def file_cache_search(dir_str, filename_noext, file_exts):
     # Check for empty, unconfigured dirs
     if not dir_str: return None
     current_cache_set = file_cache[dir_str]
     # if filename_noext == '005':
-    #     log_debug('utils_file_cache_search() Searching in "{}"'.format(dir_str))
-    #     log_debug('utils_file_cache_search() current_cache_set "{}"'.format(text_type(current_cache_set)))
+    #     log.debug('file_cache_search() Searching in "{}"'.format(dir_str))
+    #     log.debug('file_cache_search() current_cache_set "{}"'.format(text_type(current_cache_set)))
     for ext in file_exts:
         file_base = filename_noext + '.' + ext
-        # log_debug('utils_file_cache_search() file_Base = "{}"'.format(file_base))
+        # log.debug('file_cache_search() file_Base = "{}"'.format(file_base))
         if file_base in current_cache_set:
-            # log_debug('utils_file_cache_search() Found in cache')
+            # log.debug('file_cache_search() Found in cache')
             return FileName(dir_str).pjoin(file_base)
     return None
 
@@ -509,7 +486,7 @@ def utils_file_cache_search(dir_str, filename_noext, file_exts):
 #
 # Returns a FileName object if a valid filename is found.
 # Returns None if no file was found.
-def utils_look_for_file(rootPath, filename_noext, file_exts):
+def look_for_file(rootPath, filename_noext, file_exts):
     for ext in file_exts:
         file_path = rootPath.pjoin(filename_noext + '.' + ext)
         if file_path.exists(): return file_path
@@ -518,437 +495,55 @@ def utils_look_for_file(rootPath, filename_noext, file_exts):
 # Updates the mtime of a local file.
 # This is to force and update of the image cache.
 # stat.ST_MTIME is the time in seconds since the epoch.
-def utils_update_file_mtime(fname_str):
-    log_debug('utils_update_file_mtime() Updating "{}"'.format(fname_str))
+def update_file_mtime(fname_str):
+    log.debug('update_file_mtime() Updating "{}"'.format(fname_str))
     filestat = os.stat(fname_str)
     time_str = time.ctime(filestat.st_mtime)
-    log_debug('utils_update_file_mtime()     Old mtime "{}"'.format(time_str))
+    log.debug('update_file_mtime()     Old mtime "{}"'.format(time_str))
     os.utime(fname_str)
     filestat = os.stat(fname_str)
     time_str = time.ctime(filestat.st_mtime)
-    log_debug('utils_update_file_mtime() Current mtime "{}"'.format(time_str))
+    log.debug('update_file_mtime() Current mtime "{}"'.format(time_str))
 
 # -------------------------------------------------------------------------------------------------
-# Logging functions.
-# AEL never uses LOG_FATAL. Fatal error in my addons use LOG_ERROR. When an ERROR message is
-# printed the addon must stop execution and exit.
-# Kodi Matrix has changed the log levels.
-# Valid set of log levels should now be: DEBUG, INFO, WARNING, ERROR and FATAL
-#
-# @python_v17 Default level changed from LOGNOTICE to LOGDEBUG
-# @python_v19 Removed LOGNOTICE (use LOGINFO) and LOGSEVERE (use LOGFATAL)
-#
-# https://forum.kodi.tv/showthread.php?tid=344263&pid=2943703#pid2943703
-# https://github.com/xbmc/xbmc/pull/17730
+# Kodi control functions
 # -------------------------------------------------------------------------------------------------
-# Constants
-LOG_ERROR   = 0
-LOG_WARNING = 1
-LOG_INFO    = 2
-LOG_DEBUG   = 3
-
-# Internal globals
-current_log_level = LOG_INFO
-
-def set_log_level(level):
-    global current_log_level
-    current_log_level = level
-
-def log_variable(var_name, var):
-    if current_log_level < LOG_DEBUG: return
-    log_text = '{} DUMP : Dumping variable "{}"\n{}'.format(ADDON_SHORT_NAME,
-        var_name, pprint.pformat(var))
-    xbmc.log(log_text, level = xbmc.LOGERROR)
-
-# For Unicode stuff in Kodi log see https://github.com/romanvm/kodi.six
-def log_debug_KR(text_line):
-    if current_log_level < LOG_DEBUG: return
-
-    # If it is bytes we assume it's "utf-8" encoded.
-    # will fail if called with other encodings (latin, etc).
-    if isinstance(text_line, binary_type): text_line = text_line.decode('utf-8')
-
-    # At this point we are sure text_line is a Unicode string.
-    # Kodi functions (Python 3) require Unicode strings as arguments.
-    # Kodi functions (Python 2) require UTF-8 encoded bytes as arguments.
-    log_text = ADDON_SHORT_NAME + ' DEBUG: ' + text_line
-    xbmc.log(log_text, level = xbmc.LOGINFO)
-
-def log_info_KR(text_line):
-    if current_log_level < LOG_INFO: return
-    if isinstance(text_line, binary_type): text_line = text_line.decode('utf-8')
-    log_text = ADDON_SHORT_NAME + ' INFO : ' + text_line
-    xbmc.log(log_text, level = xbmc.LOGINFO)
-
-def log_warning_KR(text_line):
-    if current_log_level < LOG_WARNING: return
-    if isinstance(text_line, binary_type): text_line = text_line.decode('utf-8')
-    log_text = ADDON_SHORT_NAME + ' WARN : ' + text_line
-    xbmc.log(log_text, level = xbmc.LOGWARNING)
-
-def log_error_KR(text_line):
-    if current_log_level < LOG_ERROR: return
-    if isinstance(text_line, binary_type): text_line = text_line.decode('utf-8')
-    log_text = ADDON_SHORT_NAME + ' ERROR: ' + text_line
-    xbmc.log(log_text, level = xbmc.LOGERROR)
-
-# Replacement functions when running outside Kodi with the standard Python interpreter.
-def log_debug_Python(text_line): print(text_line)
-
-def log_info_Python(text_line): print(text_line)
-
-def log_warning_Python(text_line): print(text_line)
-
-def log_error_Python(text_line): print(text_line)
-
-# -------------------------------------------------------------------------------------------------
-# Kodi notifications and dialogs
-# -------------------------------------------------------------------------------------------------
-# Displays a modal dialog with an OK button. Dialog can have up to 3 rows of text, however first
-# row is multiline.
-# Call examples:
-#  1) ret = kodi_dialog_OK('Launch ROM?')
-#  2) ret = kodi_dialog_OK('Launch ROM?', title = 'AML - Launcher')
-def kodi_dialog_OK(text, title = ADDON_LONG_NAME):
-    xbmcgui.Dialog().ok(title, text)
-
-# Returns True is YES was pressed, returns False if NO was pressed or dialog canceled.
-def kodi_dialog_yesno(text, title = ADDON_LONG_NAME):
-    return xbmcgui.Dialog().yesno(title, text)
-
-# Returns True is YES was pressed, returns False if NO was pressed or dialog canceled.
-def kodi_dialog_yesno_custom(text, yeslabel_str, nolabel_str, title = ADDON_LONG_NAME):
-    return xbmcgui.Dialog().yesno(title, text, yeslabel = yeslabel_str, nolabel = nolabel_str)
-
-def kodi_dialog_yesno_timer(text, timer_ms = 30000, title = ADDON_LONG_NAME):
-    return xbmcgui.Dialog().yesno(title, text, autoclose = timer_ms)
-
-# Returns a directory. See https://codedocs.xyz/AlwinEsch/kodi
-#
-# This supports directories, files, images and writable directories.
-# xbmcgui.Dialog().browse(type, heading, shares[, mask, useThumbs, treatAsFolder, defaultt, enableMultiple])
-#
-# This supports files and images only.
-# xbmcgui.Dialog().browseMultiple(type, heading, shares[, mask, useThumbs, treatAsFolder, defaultt])
-# 
-# This supports directories, files, images and writable directories.
-# xbmcgui.Dialog().browseSingle(type, heading, shares[, mask, useThumbs, treatAsFolder, defaultt])
-#
-# shares   string or unicode - from sources.xml
-# "files"  list file sources (added through filemanager)
-# "local"  list local drives
-# ""       list local drives and network shares
-
-# Returns a directory.
-def kodi_dialog_get_directory(d_heading, d_dir = ''):
-    if d_dir:
-        ret = xbmcgui.Dialog().browse(0, d_heading, '', defaultt = d_dir)
-    else:
-        ret =  xbmcgui.Dialog().browse(0, d_heading, '')
-
-    return ret
-
-# Mask is supported only for files.
-# mask  [opt] string or unicode - '|' separated file mask. (i.e. '.jpg|.png')
-#
-# KODI BUG For some reason *.dat files are not shown on the dialog, but XML files are OK!!!
-# Fixed in Krypton Beta 6 http://forum.kodi.tv/showthread.php?tid=298161
-def kodi_dialog_get_file(d_heading, mask = '', default_file = ''):
-    if mask and default_file:
-        ret = xbmcgui.Dialog().browse(1, d_heading, '', mask = mask, defaultt = default_file)
-    elif default_file:
-        ret = xbmcgui.Dialog().browse(1, d_heading, '', defaultt = default_file)
-    elif mask:
-        ret = xbmcgui.Dialog().browse(1, d_heading, '', mask = mask)
-    else:
-        ret = xbmcgui.Dialog().browse(1, d_heading, '')
-
-    return ret
-
-def kodi_dialog_get_image(d_heading, mask = '', default_file = ''):
-    if mask and default_file:
-        ret = xbmcgui.Dialog().browse(2, d_heading, '', mask = mask, defaultt = default_file)
-    elif default_file:
-        ret = xbmcgui.Dialog().browse(2, d_heading, '', defaultt = default_file)
-    elif mask:
-        ret = xbmcgui.Dialog().browse(2, d_heading, '', mask = mask)
-    else:
-        ret = xbmcgui.Dialog().browse(2, d_heading, '')
-
-    return ret
-
-def kodi_dialog_get_wdirectory(d_heading):
-    return xbmcgui.Dialog().browse(3, d_heading, '')
-
-# Select multiple versions of the avobe functions.
-def kodi_dialog_get_file_multiple(d_heading, mask = '', d_file = ''):
-    if mask and d_file:
-        ret = xbmcgui.Dialog().browse(1, d_heading, '', mask = mask, defaultt = d_file, enableMultiple = True)
-    elif d_file:
-        ret = xbmcgui.Dialog().browse(1, d_heading, '', defaultt = d_file, enableMultiple = True)
-    elif mask:
-        ret = xbmcgui.Dialog().browse(1, d_heading, '', mask = mask, enableMultiple = True)
-    else:
-        ret = xbmcgui.Dialog().browse(1, d_heading, '', enableMultiple = True)
-
-    return ret
-
-# Displays a small box in the bottom right corner
-def kodi_notify(text, title = ADDON_LONG_NAME, time = 5000):
-    xbmcgui.Dialog().notification(title, text, xbmcgui.NOTIFICATION_INFO, time)
-
-def kodi_notify_warn(text, title = ADDON_LONG_NAME, time = 7000):
-    xbmcgui.Dialog().notification(title, text, xbmcgui.NOTIFICATION_WARNING, time)
-
-# Do not use this function much because it is the same icon displayed when Python fails
-# with an exception and that may confuse the user.
-def kodi_notify_error(text, title = ADDON_LONG_NAME, time = 7000):
-    xbmcgui.Dialog().notification(title, text, xbmcgui.NOTIFICATION_ERROR, time)
-
-def kodi_refresh_container():
-    log_debug('kodi_refresh_container()')
+def refresh_container():
+    log.debug('refresh_container()')
     xbmc.executebuiltin('Container.Refresh')
 
-# Progress dialog that can be closed and reopened.
-# Messages and progress in the dialog are always remembered, even if closed and reopened.
-# If the dialog is canceled this class remembers it forever.
-#
-# Kodi Matrix change: Renamed option line1 to message. Removed option line2. Removed option line3.
-# See https://forum.kodi.tv/showthread.php?tid=344263&pid=2933596#pid2933596
-#
-# --- Example 1 ---
-# pDialog = KodiProgressDialog()
-# pDialog.startProgress('Doing something...', step_total)
-# for i in range():
-#     pDialog.updateProgressInc()
-#     # Do stuff...
-# pDialog.endProgress()
-class KodiProgressDialog(object):
-    def __init__(self):
-        self.heading = ADDON_LONG_NAME
-        self.progress = 0
-        self.flag_dialog_canceled = False
-        self.dialog_active = False
-        self.progressDialog = xbmcgui.DialogProgress()
+def toogle_fullscreen():
+    json_rpc_dict('Input.ExecuteAction', {'action' : 'togglefullscreen'})
 
-    # Creates a new progress dialog.
-    def startProgress(self, message, step_total = 100, step_counter = 0):
-        if self.dialog_active: raise TypeError
-        self.step_total = step_total
-        self.step_counter = step_counter
-        try:
-            self.progress = math.floor((self.step_counter * 100) / self.step_total)
-        except ZeroDivisionError:
-            # Fix case when step_total is 0.
-            self.step_total = 0.001
-            self.progress = math.floor((self.step_counter * 100) / self.step_total)
-        self.dialog_active = True
-        self.message = message
-        # In Leia and lower xbmcgui.DialogProgress().update() requires an int.
-        if kodi_running_version >= KODI_VERSION_MATRIX:
-            self.progressDialog.create(self.heading, self.message)
-            self.progressDialog.update(self.progress)
-        else:
-            self.progressDialog.create(self.heading, self.message, ' ', ' ')
-            self.progressDialog.update(int(self.progress))
-
-    # Changes message and resets progress.
-    def resetProgress(self, message, step_total = 100, step_counter = 0):
-        if not self.dialog_active: raise TypeError
-        self.step_total = step_total
-        self.step_counter = step_counter
-        try:
-            self.progress = math.floor((self.step_counter * 100) / self.step_total)
-        except ZeroDivisionError:
-            # Fix case when step_total is 0.
-            self.step_total = 0.001
-            self.progress = math.floor((self.step_counter * 100) / self.step_total)
-        self.message = message
-        if kodi_running_version >= KODI_VERSION_MATRIX:
-            self.progressDialog.update(self.progress, self.message)
-        else:
-            self.progressDialog.update(int(self.progress), self.message, ' ', ' ')
-
-    # Update progress and optionally update message as well.
-    def updateProgress(self, step_counter, message = None):
-        if not self.dialog_active: raise TypeError
-        self.step_counter = step_counter
-        self.progress = math.floor((self.step_counter * 100) / self.step_total)
-        if message is None:
-            if kodi_running_version >= KODI_VERSION_MATRIX:
-                self.progressDialog.update(self.progress)
-            else:
-                self.progressDialog.update(int(self.progress))
-        else:
-            if type(message) is not text_type: raise TypeError
-            self.message = message
-            if kodi_running_version >= KODI_VERSION_MATRIX:
-                self.progressDialog.update(self.progress, self.message)
-            else:
-                self.progressDialog.update(int(self.progress), self.message, ' ', ' ')
-        # DEBUG code
-        # time.sleep(1)
-
-    # Update progress, optionally update message as well, and autoincrements.
-    # Progress is incremented AFTER dialog is updated.
-    def updateProgressInc(self, message = None):
-        if not self.dialog_active: raise TypeError
-        self.progress = math.floor((self.step_counter * 100) / self.step_total)
-        self.step_counter += 1
-        if message is None:
-            if kodi_running_version >= KODI_VERSION_MATRIX:
-                self.progressDialog.update(self.progress)
-            else:
-                self.progressDialog.update(int(self.progress))
-        else:
-            if type(message) is not text_type: raise TypeError
-            self.message = message
-            if kodi_running_version >= KODI_VERSION_MATRIX:
-                self.progressDialog.update(self.progress, self.message)
-            else:
-                self.progressDialog.update(int(self.progress), self.message, ' ', ' ')
-
-    # Update dialog message but keep same progress.
-    def updateMessage(self, message):
-        if not self.dialog_active: raise TypeError
-        if type(message) is not text_type: raise TypeError
-        self.message = message
-        if kodi_running_version >= KODI_VERSION_MATRIX:
-            self.progressDialog.update(self.progress, self.message)
-        else:
-            self.progressDialog.update(int(self.progress), self.message, ' ', ' ')
-
-    def isCanceled(self):
-        # If the user pressed the cancel button before then return it now.
-        if self.flag_dialog_canceled: return True
-        # If not check and set the flag.
-        if not self.dialog_active: raise TypeError
-        self.flag_dialog_canceled = self.progressDialog.iscanceled()
-        return self.flag_dialog_canceled
-
-    # Before closing the dialog check if the user pressed the Cancel button and remember
-    # the user decision.
-    def endProgress(self):
-        if not self.dialog_active: raise TypeError
-        if self.progressDialog.iscanceled(): self.flag_dialog_canceled = True
-        self.progressDialog.update(100)
-        self.progressDialog.close()
-        self.dialog_active = False
-
-    # Like endProgress() but do not completely fills the progress bar.
-    def close(self):
-        if not self.dialog_active: raise TypeError
-        if self.progressDialog.iscanceled(): self.flag_dialog_canceled = True
-        self.progressDialog.close()
-        self.dialog_active = False
-
-    # Reopens a previously closed dialog with close(), remembering the messages
-    # and the progress it had when it was closed.
-    def reopen(self):
-        if self.dialog_active: raise TypeError
-        if kodi_running_version >= KODI_VERSION_MATRIX:
-            self.progressDialog.create(self.heading, self.message)
-            self.progressDialog.update(self.progress)
-        else:
-            self.progressDialog.create(self.heading, self.message, ' ', ' ')
-            self.progressDialog.update(int(self.progress))
-        self.dialog_active = True
-
-# Wrapper class for xbmcgui.Dialog().select(). Takes care of Kodi bugs.
-# v17 (Krypton) Python API changes:
-#   Preselect option added.
-#   Added new option useDetails.
-#   Allow listitems for parameter list
-class KodiSelectDialog(object):
-    def __init__(self, heading = ADDON_LONG_NAME, rows = [], preselect = -1, useDetails = False):
-        self.heading = heading
-        self.rows = rows
-        self.preselect = preselect
-        self.useDetails = useDetails
-        self.dialog = xbmcgui.Dialog()
-
-    def setHeading(self, heading): self.heading = heading
-
-    def setRows(self, row_list): self.rows = row_list
-
-    def setPreselect(self, preselect): self.preselect = preselect
-
-    def setUseDetails(self, useDetails): self.useDetails = useDetails
-
-    def executeDialog(self):
-        # Kodi Krypton bug: if preselect is used then dialog never returns < 0 even if cancel
-        # button is pressed. This bug has been solved in Leia.
-        # See https://forum.kodi.tv/showthread.php?tid=337011
-        if self.preselect >= 0 and kodi_running_version >= KODI_VERSION_LEIA:
-            selection = self.dialog.select(self.heading, self.rows, useDetails = self.useDetails,
-                preselect = self.preselect)
-        else:
-            selection = self.dialog.select(self.heading, self.rows, useDetails = self.useDetails)
-        selection = None if selection < 0 else selection
-        return selection
-
-# Wrapper class for xbmc.Keyboard()
-class KodiKeyboardDialog(object):
-    def __init__(self, heading = 'Kodi keyboard', default_text = ''):
-        self.heading = heading
-        self.default_text = default_text
-        self.keyboard = xbmc.Keyboard()
-
-    def setHeading(self, heading): self.heading = heading
-
-    def setDefaultText(self, default_text): self.default_text = default_text
-
-    def executeDialog(self):
-        self.keyboard.setHeading(self.heading)
-        self.keyboard.setDefault(self.default_text)
-        self.keyboard.doModal()
-
-    def isConfirmed(self): return self.keyboard.isConfirmed()
-
-    # Use a different name from getText() to avoid coding errors.
-    def getData(self): return self.keyboard.getText()
-
-# Wrapper function to get a text from the keyboard or None if the keyboard
-# modal dialog was canceled.
-def kodi_get_keyboard_text(heading = 'Kodi keyboard', default_text = ''):
-    keyboard = KodiKeyboardDialog(heading, default_text)
-    keyboard.executeDialog()
-    if not keyboard.isConfirmed(): return None
-    new_value_str = keyboard.getData().strip()
-    return new_value_str
-
-def kodi_toogle_fullscreen():
-    kodi_jsonrpc_dict('Input.ExecuteAction', {'action' : 'togglefullscreen'})
-
-def kodi_get_screensaver_mode():
-    r_dic = kodi_jsonrpc_dict('Settings.getSettingValue', {'setting' : 'screensaver.mode'})
+def get_screensaver_mode():
+    r_dic = json_rpc_dict('Settings.getSettingValue', {'setting' : 'screensaver.mode'})
     screensaver_mode = r_dic['value']
     return screensaver_mode
 
 g_screensaver_mode = None # Global variable to store screensaver status.
-def kodi_disable_screensaver():
+def disable_screensaver():
     global g_screensaver_mode
-    g_screensaver_mode = kodi_get_screensaver_mode()
-    log_debug('kodi_disable_screensaver() g_screensaver_mode "{}"'.format(g_screensaver_mode))
+    g_screensaver_mode = get_screensaver_mode()
+    log.debug('disable_screensaver() g_screensaver_mode "{}"'.format(g_screensaver_mode))
     p_dic = {
         'setting' : 'screensaver.mode',
         'value' : '',
     }
-    kodi_jsonrpc_dict('Settings.setSettingValue', p_dic)
-    log_debug('kodi_disable_screensaver() Screensaver disabled.')
+    json_rpc_dict('Settings.setSettingValue', p_dic)
+    log.debug('disable_screensaver() Screensaver disabled.')
 
 # kodi_disable_screensaver() must be called before this function or bad things will happen.
-def kodi_restore_screensaver():
+def restore_screensaver():
     if g_screensaver_mode is None:
-        log_error('kodi_disable_screensaver() must be called before kodi_restore_screensaver()')
+        log_error('restore_screensaver() must be called before kodi_restore_screensaver()')
         raise RuntimeError
-    log_debug('kodi_restore_screensaver() Screensaver mode "{}"'.format(g_screensaver_mode))
+    log.debug('restore_screensaver() Screensaver mode "{}"'.format(g_screensaver_mode))
     p_dic = {
         'setting' : 'screensaver.mode',
         'value' : g_screensaver_mode,
     }
-    kodi_jsonrpc_dict('Settings.setSettingValue', p_dic)
-    log_debug('kodi_restore_screensaver() Restored previous screensaver status.')
+    json_rpc_dict('Settings.setSettingValue', p_dic)
+    log.debug('restore_screensaver() Restored previous screensaver status.')
 
 # Access Kodi JSON-RPC interface in an easy way.
 # Returns a dictionary with the parsed response 'result' field.
@@ -980,12 +575,12 @@ def kodi_restore_screensaver():
 #     "error" : { "code":-32700, "message" : "Parse error."}
 # }
 #
-def kodi_jsonrpc_dict(method_str, params_dic, verbose = False):
+def json_rpc_dict(method_str, params_dic, verbose = False):
     params_str = json.dumps(params_dic)
     if verbose:
-        log_debug('kodi_jsonrpc_dict() method_str "{}"'.format(method_str))
-        log_debug('kodi_jsonrpc_dict() params_dic = \n{}'.format(pprint.pformat(params_dic)))
-        log_debug('kodi_jsonrpc_dict() params_str "{}"'.format(params_str))
+        log.debug('json_rpc_dict() method_str "{}"'.format(method_str))
+        log.debug('json_rpc_dict() params_dic = \n{}'.format(pprint.pformat(params_dic)))
+        log.debug('json_rpc_dict() params_str "{}"'.format(params_str))
 
     # --- Do query ---
     header = '"id" : 1, "jsonrpc" : "2.0"'
@@ -996,41 +591,20 @@ def kodi_jsonrpc_dict(method_str, params_dic, verbose = False):
     response_dic = json.loads(response_json_str)
     if 'error' in response_dic:
         result_dic = response_dic['error']
-        log_warning('kodi_jsonrpc_dict() JSONRPC ERROR {}'.format(result_dic['message']))
+        log_warning('json_rpc_dict() JSONRPC ERROR {}'.format(result_dic['message']))
     else:
         result_dic = response_dic['result']
     if verbose:
-        log_debug('kodi_jsonrpc_dict() result_dic = \n{}'.format(pprint.pformat(result_dic)))
+        log.debug('json_rpc_dict() result_dic = \n{}'.format(pprint.pformat(result_dic)))
 
     return result_dic
-
-# Displays a text window and requests a monospaced font.
-# v18 Leia change: New optional param added usemono.
-def kodi_display_text_window_mono(window_title, info_text):
-    xbmcgui.Dialog().textviewer(window_title, info_text.encode('utf-8'), True)
-
-# Displays a text window with a proportional font (default).
-def kodi_display_text_window(window_title, info_text):
-    xbmcgui.Dialog().textviewer(window_title, info_text.encode('utf-8'))
-
-# Displays a text window and requests a monospaced font.
-# def kodi_display_text_window_mono(window_title, info_text):
-#     log_debug('Setting Window(10000) Property "FontWidth" = "monospaced"')
-#     xbmcgui.Window(10000).setProperty('FontWidth', 'monospaced')
-#     xbmcgui.Dialog().textviewer(window_title, info_text)
-#     log_debug('Setting Window(10000) Property "FontWidth" = "proportional"')
-#     xbmcgui.Window(10000).setProperty('FontWidth', 'proportional')
-
-# Displays a text window with a proportional font (default).
-# def kodi_display_text_window(window_title, info_text):
-#     xbmcgui.Dialog().textviewer(window_title, info_text)
 
 # -------------------------------------------------------------------------------------------------
 # Kodi addon functions
 # -------------------------------------------------------------------------------------------------
 class KodiAddon: pass
 
-def kodi_addon_obj():
+def addon_obj():
     addon = KodiAddon()
 
     # Get an instance of the Addon object and keep it.
@@ -1050,16 +624,16 @@ def kodi_addon_obj():
 # Abstraction layer for settings to easy the Leia-Matrix transition.
 # Settings are only read once on every execution and they are not performance critical.
 # -------------------------------------------------------------------------------------------------
-def kodi_get_int_setting(cfg, setting_str):
+def get_int_setting(cfg, setting_str):
     return cfg.addon.addon.getSettingInt(setting_str)
 
-def kodi_get_float_setting_as_int(cfg, setting_str):
+def get_float_setting_as_int(cfg, setting_str):
     return int(round(cfg.addon.addon.getSettingNumber(setting_str)))
 
-def kodi_get_bool_setting(cfg, setting_str):
+def get_bool_setting(cfg, setting_str):
     return cfg.addon.addon.getSettingBool(setting_str)
 
-def kodi_get_str_setting(cfg, setting_str):
+def get_str_setting(cfg, setting_str):
     return cfg.addon.addon.getSettingString(setting_str)
 
 # -------------------------------------------------------------------------------------------------
@@ -1073,8 +647,8 @@ KODI_VERSION_KRYPTON = 17
 KODI_VERSION_LEIA = 18
 KODI_VERSION_MATRIX = 19
 
-def kodi_get_Kodi_major_version():
-    r_dic = kodi_jsonrpc_dict('Application.GetProperties', {'properties' : ['version']})
+def get_Kodi_major_version():
+    r_dic = json_rpc_dict('Application.GetProperties', {'properties' : ['version']})
     return int(r_dic['version']['major'])
 
 # -------------------------------------------------------------------------------------------------
@@ -1084,34 +658,12 @@ def kodi_get_Kodi_major_version():
 # Functions here in the same order as in the Function List browser.
 # -------------------------------------------------------------------------------------------------
 if KODI_RUNTIME_AVAILABLE_UTILS:
-    log_debug   = log_debug_KR
-    log_info    = log_info_KR
-    log_warning = log_warning_KR
-    log_error   = log_error_KR
-
     # Execute the Kodi version query when module is loaded and store results in global variable.
-    kodi_running_version = kodi_get_Kodi_major_version()
+    kodi_running_version = get_Kodi_major_version()
 else:
-    log_debug   = log_debug_Python
-    log_info    = log_info_Python
-    log_warning = log_warning_Python
-    log_error   = log_error_Python
-
     # We are using this module with the Python interpreter outside Kodi.
     # Simulate we are running a recent Kodi version.
     kodi_running_version = KODI_VERSION_MATRIX
-
-# -------------------------------------------------------------------------------------------------
-# Kodi useful definition
-# -------------------------------------------------------------------------------------------------
-# https://codedocs.xyz/AlwinEsch/kodi/group__kodi__guilib__listitem__iconoverlay.html
-KODI_ICON_OVERLAY_NONE = 0
-KODI_ICON_OVERLAY_RAR = 1
-KODI_ICON_OVERLAY_ZIP = 2
-KODI_ICON_OVERLAY_LOCKED = 3
-KODI_ICON_OVERLAY_UNWATCHED = 4
-KODI_ICON_OVERLAY_WATCHED = 5
-KODI_ICON_OVERLAY_HD = 6
 
 # -------------------------------------------------------------------------------------------------
 # Kodi GUI error reporting.
@@ -1146,7 +698,7 @@ KODI_MESSAGE_DIALOG      = 400
 # If st_dic['abort'] is True then execution must be aborted and error displayed.
 # Success message can also be displayed (st_dic['abort'] False and
 # st_dic['dialog'] is different from KODI_MESSAGE_NONE).
-def kodi_new_status_dic():
+def new_status_dic():
     return {
         'abort' : False,
         'dialog' : KODI_MESSAGE_NONE,
@@ -1159,7 +711,7 @@ def kodi_new_status_dic():
 # Returns False if no error.
 #
 # Example of use: if kodi_display_user_message(st_dic): return
-def kodi_display_status_message(st_dic):
+def display_status_message(st_dic):
     # Display (error) message and return status.
     if st_dic['dialog'] == KODI_MESSAGE_NONE:
         pass
@@ -1174,36 +726,36 @@ def kodi_display_status_message(st_dic):
 
     return st_dic['abort']
 
-def kodi_is_error_status(st_dic): return st_dic['abort']
+def is_error_status(st_dic): return st_dic['abort']
 
 # Utility function to write more compact code.
 # By default error messages are shown in modal OK dialogs.
-def kodi_set_error_status(st_dic, msg, dialog = KODI_MESSAGE_DIALOG):
+def set_error_status(st_dic, msg, dialog = KODI_MESSAGE_DIALOG):
     st_dic['abort'] = True
     st_dic['msg'] = msg
     st_dic['dialog'] = dialog
 
-def kodi_set_status(st_dic, msg, dialog = KODI_MESSAGE_DIALOG, abort = True):
+def set_status(st_dic, msg, dialog = KODI_MESSAGE_DIALOG, abort = True):
     st_dic['abort'] = abort
     st_dic['msg'] = msg
     st_dic['dialog'] = dialog
 
-def kodi_set_st_notify(st_dic, msg):
+def set_st_notify(st_dic, msg):
     st_dic['abort'] = True
     st_dic['msg'] = msg
     st_dic['dialog'] = KODI_MESSAGE_NOTIFY
 
-def kodi_set_st_nwarn(st_dic, msg):
+def set_st_nwarn(st_dic, msg):
     st_dic['abort'] = True
     st_dic['msg'] = msg
     st_dic['dialog'] = KODI_MESSAGE_NOTIFY_WARN
 
-def kodi_set_st_dialog(st_dic, msg):
+def set_st_dialog(st_dic, msg):
     st_dic['abort'] = True
     st_dic['msg'] = msg
     st_dic['dialog'] = KODI_MESSAGE_DIALOG
 
-def kodi_reset_status(st_dic):
+def reset_status(st_dic):
     st_dic['abort'] = False
     st_dic['msg'] = ''
     st_dic['dialog'] = KODI_MESSAGE_NONE
@@ -1232,12 +784,12 @@ class KodiAddonError(Exception):
     def __str__(self):
         return self.msg
 
-def kodi_display_exception(ex):
+def display_exception(ex):
     st_dic = kodi_new_status_dic()
     st_dic['abort'] = True
     st_dic['dialog'] = ex.dialog
     st_dic['msg'] = ex.msg
-    kodi_display_status_message(st_dic)
+    display_status_message(st_dic)
 
 # -------------------------------------------------------------------------------------------------
 # Kodi specific stuff
@@ -1257,7 +809,7 @@ def kodi_display_exception(ex):
 # Gets where in Kodi image cache an image is located.
 # image_path is a Unicode string.
 # cache_file_path is a Unicode string.
-def kodi_get_cached_image_FN(image_path):
+def get_cached_image_FN(image_path):
     THUMBS_CACHE_PATH = os.path.join(xbmcvfs.translatePath('special://profile/'), 'Thumbnails')
     # This function return the cache file base name
     base_name = xbmc.getCacheThumbName(image_path)
@@ -1269,11 +821,11 @@ def kodi_get_cached_image_FN(image_path):
 # In other words, copies the image img_path into Kodi cache entry.
 # Needles to say, only update the image cache if the image already was on the cache.
 # img_path is a Unicode string
-def kodi_update_image_cache(img_path):
+def update_image_cache(img_path):
     # What if image is not cached?
     cached_thumb = kodi_get_cached_image_FN(img_path)
-    log_debug('kodi_update_image_cache()       img_path {}'.format(img_path))
-    log_debug('kodi_update_image_cache()   cached_thumb {}'.format(cached_thumb))
+    log.debug('update_image_cache()       img_path {}'.format(img_path))
+    log.debug('update_image_cache()   cached_thumb {}'.format(cached_thumb))
 
     # For some reason Kodi xbmc.getCacheThumbName() returns a filename ending in TBN.
     # However, images in the cache have the original extension. Replace TBN extension
@@ -1282,21 +834,21 @@ def kodi_update_image_cache(img_path):
     if cached_thumb_ext == '.tbn':
         img_path_root, img_path_ext = os.path.splitext(img_path)
         cached_thumb = cached_thumb.replace('.tbn', img_path_ext)
-        log_debug('kodi_update_image_cache() U cached_thumb {}'.format(cached_thumb))
+        log.debug('update_image_cache() U cached_thumb {}'.format(cached_thumb))
 
     # --- Check if file exists in the cache ---
     # xbmc.getCacheThumbName() seems to return a filename even if the local file does not exist!
     if not os.path.isfile(cached_thumb):
-        log_debug('kodi_update_image_cache() Cached image not found. Doing nothing')
+        log.debug('update_image_cache() Cached image not found. Doing nothing')
         return
 
     # --- Copy local image into Kodi image cache ---
     # See https://docs.python.org/2/library/sys.html#sys.getfilesystemencoding
-    log_debug('kodi_update_image_cache() Image found in cache. Updating Kodi image cache')
-    log_debug('kodi_update_image_cache() copying {}'.format(img_path))
-    log_debug('kodi_update_image_cache() into    {}'.format(cached_thumb))
+    log.debug('update_image_cache() Image found in cache. Updating Kodi image cache')
+    log.debug('update_image_cache() copying {}'.format(img_path))
+    log.debug('update_image_cache() into    {}'.format(cached_thumb))
     fs_encoding = sys.getfilesystemencoding()
-    log_debug('kodi_update_image_cache() fs_encoding = "{}"'.format(fs_encoding))
+    log.debug('update_image_cache() fs_encoding = "{}"'.format(fs_encoding))
     encoded_img_path = img_path.encode(fs_encoding, 'ignore')
     encoded_cached_thumb = cached_thumb.encode(fs_encoding, 'ignore')
     try:
