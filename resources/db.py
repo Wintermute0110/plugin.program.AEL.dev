@@ -382,9 +382,9 @@ def get_collection_ROMs_basename(collection_name, collectionID):
 # * This function must be called first to update cfg object fields that will be used in many
 #   other functions.
 def get_launcher_info(cfg, categoryID, launcherID):
-    cfg.launcher_is_vlauncher = launcherID in VLAUNCHER_ID_LIST
-    cfg.launcher_is_vcategory = categoryID in VCATEGORY_ID_LIST
-    cfg.launcher_is_browse_by = categoryID in VCATEGORY_BROWSE_BY_ID_LIST
+    cfg.launcher_is_vlauncher = launcherID in const.VLAUNCHER_ID_LIST
+    cfg.launcher_is_vcategory = categoryID in const.VCATEGORY_ID_LIST
+    cfg.launcher_is_browse_by = categoryID in const.VCATEGORY_BROWSE_BY_ID_LIST
     cfg.launcher_is_actual = not cfg.launcher_is_vlauncher and not cfg.launcher_is_vcategory
     cfg.launcher_is_virtual = not cfg.launcher_is_actual
 
@@ -434,14 +434,14 @@ def get_launcher_fnames(cfg, categoryID, launcherID):
         ret['parents'] = parents_FN
         ret['index'] = index_FN
 
-    elif cfg.launcher_is_vlauncher and launcherID == VLAUNCHER_FAVOURITES_ID:
+    elif cfg.launcher_is_vlauncher and launcherID == const.VLAUNCHER_FAVOURITES_ID:
         ret['roms'] = cfg.FAV_JSON_FILE_PATH
-    elif cfg.launcher_is_vlauncher and launcherID == VLAUNCHER_RECENT_ID:
+    elif cfg.launcher_is_vlauncher and launcherID == const.VLAUNCHER_RECENT_ID:
         ret['roms'] = cfg.RECENT_PLAYED_FILE_PATH
-    elif cfg.launcher_is_vlauncher and launcherID == VLAUNCHER_MOST_PLAYED_ID:
+    elif cfg.launcher_is_vlauncher and launcherID == const.VLAUNCHER_MOST_PLAYED_ID:
         ret['roms'] = cfg.MOST_PLAYED_FILE_PATH
 
-    elif cfg.launcher_is_vcategory and categoryID == VCATEGORY_ROM_COLLECTION_ID:
+    elif cfg.launcher_is_vcategory and categoryID == const.VCATEGORY_ROM_COLLECTION_ID:
         COL = fs_load_Collection_index_XML(cfg.COLLECTIONS_FILE_PATH)
         collection = COL['collections'][launcherID]
         roms_FN = cfg.COLLECTIONS_DIR.pjoin(collection['roms_base_noext'] + '.json')
@@ -451,7 +451,7 @@ def get_launcher_fnames(cfg, categoryID, launcherID):
         # Move code from do_load_ROMs() here.
         raise TypeError
 
-    elif cfg.launcher_is_vcategory and categoryID == VCATEGORY_AOS_ID:
+    elif cfg.launcher_is_vcategory and categoryID == const.VCATEGORY_AOS_ID:
         platform = launcherID
         log.debug('db_load_ROMs() platform "{}"'.format(platform))
         pobj = AEL_platforms[get_AEL_platform_index(platform)]
@@ -484,7 +484,7 @@ def load_ROMs(cfg, st_dic, categoryID, launcherID, load_pclone_ROMs_flag = False
         if not dbdic['roms'].exists():
             kodi_set_st_notify(st_dic, 'Launcher JSON database not found. Add ROMs to launcher.')
             return
-        cfg.roms = utils_load_JSON_file(dbdic['roms'].getPath())
+        cfg.roms = utils.load_JSON_file(dbdic['roms'].getPath())
         if not cfg.roms:
             kodi_set_st_notify(st_dic, 'Launcher JSON database empty. Add ROMs to launcher.')
             return
@@ -494,7 +494,7 @@ def load_ROMs(cfg, st_dic, categoryID, launcherID, load_pclone_ROMs_flag = False
             if not dbdic['parents'].exists():
                 kodi_set_st_notify(st_dic, 'Parent ROMs JSON not found.')
                 return
-            cfg.roms_parent = utils_load_JSON_file(dbdic['parents'].getPath())
+            cfg.roms_parent = utils.load_JSON_file(dbdic['parents'].getPath())
             if not cfg.roms_parent:
                 kodi_set_st_notify(st_dic, 'Parent ROMs JSON is empty.')
                 return
@@ -503,14 +503,14 @@ def load_ROMs(cfg, st_dic, categoryID, launcherID, load_pclone_ROMs_flag = False
             if not dbdic['index'].exists():
                 kodi_set_st_notify(st_dic, 'PClone index JSON not found.')
                 return
-            cfg.pclone_index = utils_load_JSON_file(dbdic['index'].getPath())
+            cfg.pclone_index = utils.load_JSON_file(dbdic['index'].getPath())
             if not cfg.pclone_index:
                 kodi_set_st_notify(st_dic, 'PClone index dict is empty.')
                 return
 
     # Virtual launchers --------------------------------------------------------------------------
-    elif cfg.launcher_is_vlauncher and launcherID == VLAUNCHER_FAVOURITES_ID:
-        raw_data = utils_load_JSON_file(dbdic['roms'].getPath())
+    elif cfg.launcher_is_vlauncher and launcherID == const.VLAUNCHER_FAVOURITES_ID:
+        raw_data = utils.load_JSON_file(dbdic['roms'].getPath())
         cfg.roms = raw_data[1] if raw_data else {}
         if not cfg.roms:
             kodi_set_st_notify(st_dic, 'Favourites is empty. Add ROMs to Favourites first.')
@@ -520,10 +520,10 @@ def load_ROMs(cfg, st_dic, categoryID, launcherID, load_pclone_ROMs_flag = False
             cfg.control_str = raw_data[0]['control']
             cfg.version_int = raw_data[0]['version']
 
-    elif cfg.launcher_is_vlauncher and launcherID == VLAUNCHER_RECENT_ID:
+    elif cfg.launcher_is_vlauncher and launcherID == const.VLAUNCHER_RECENT_ID:
         # Collection ROMs are a list, not a dictionary as usual in other DBs.
         # Convert the list to an OrderedDict()?
-        raw_data = utils_load_JSON_file(dbdic['roms'].getPath())
+        raw_data = utils.load_JSON_file(dbdic['roms'].getPath())
         cfg.roms = raw_data[1] if raw_data else []
         if not cfg.roms:
             kodi_set_st_notify(st_dic, 'Recently played list is empty. Play some ROMs first!')
@@ -532,8 +532,8 @@ def load_ROMs(cfg, st_dic, categoryID, launcherID, load_pclone_ROMs_flag = False
             cfg.control_str = raw_data[0]['control']
             cfg.version_int = raw_data[0]['version']
 
-    elif cfg.launcher_is_vlauncher and launcherID == VLAUNCHER_MOST_PLAYED_ID:
-        raw_data = utils_load_JSON_file(dbdic['roms'].getPath())
+    elif cfg.launcher_is_vlauncher and launcherID == const.VLAUNCHER_MOST_PLAYED_ID:
+        raw_data = utils.load_JSON_file(dbdic['roms'].getPath())
         cfg.roms = raw_data[1] if raw_data else {}
         if not cfg.roms:
             kodi_set_st_notify(st_dic, 'Most played ROMs list is empty. Play some ROMs first!.')
@@ -544,10 +544,10 @@ def load_ROMs(cfg, st_dic, categoryID, launcherID, load_pclone_ROMs_flag = False
             cfg.version_int = raw_data[0]['version']
 
     # Virtual launchers belonging to a virtual category ------------------------------------------
-    elif cfg.launcher_is_vcategory and categoryID == VCATEGORY_ROM_COLLECTION_ID:
+    elif cfg.launcher_is_vcategory and categoryID == const.VCATEGORY_ROM_COLLECTION_ID:
         # Collection ROMs are a list, not a dictionary as usual in other DBs.
         # Convert the list to an OrderedDict()?
-        raw_data = utils_load_JSON_file(dbdic['roms'].getPath())
+        raw_data = utils.load_JSON_file(dbdic['roms'].getPath())
         cfg.roms = raw_data[1] if raw_data else []
         if not cfg.roms:
             kodi_set_st_notify(st_dic, 'Collection is empty. Add ROMs to this collection first.')
@@ -559,14 +559,14 @@ def load_ROMs(cfg, st_dic, categoryID, launcherID, load_pclone_ROMs_flag = False
     elif cfg.launcher_is_browse_by:
         # TODO Move the name generation code to db_get_launcher_fnames()
         vdic = {
-            VCATEGORY_TITLE_ID : cfg.VIRTUAL_CAT_TITLE_DIR,
-            VCATEGORY_YEARS_ID : cfg.VIRTUAL_CAT_YEARS_DIR,
-            VCATEGORY_GENRE_ID : cfg.VIRTUAL_CAT_GENRE_DIR,
-            VCATEGORY_DEVELOPER_ID : cfg.VIRTUAL_CAT_DEVELOPER_DIR,
-            VCATEGORY_NPLAYERS_ID : cfg.VIRTUAL_CAT_NPLAYERS_DIR,
-            VCATEGORY_ESRB_ID : cfg.VIRTUAL_CAT_ESRB_DIR,
-            VCATEGORY_RATING_ID : cfg.VIRTUAL_CAT_RATING_DIR,
-            VCATEGORY_CATEGORY_ID : cfg.VIRTUAL_CAT_CATEGORY_DIR,
+            const.VCATEGORY_TITLE_ID : cfg.VIRTUAL_CAT_TITLE_DIR,
+            const.VCATEGORY_YEARS_ID : cfg.VIRTUAL_CAT_YEARS_DIR,
+            const.VCATEGORY_GENRE_ID : cfg.VIRTUAL_CAT_GENRE_DIR,
+            const.VCATEGORY_DEVELOPER_ID : cfg.VIRTUAL_CAT_DEVELOPER_DIR,
+            const.VCATEGORY_NPLAYERS_ID : cfg.VIRTUAL_CAT_NPLAYERS_DIR,
+            const.VCATEGORY_ESRB_ID : cfg.VIRTUAL_CAT_ESRB_DIR,
+            const.VCATEGORY_RATING_ID : cfg.VIRTUAL_CAT_RATING_DIR,
+            const.VCATEGORY_CATEGORY_ID : cfg.VIRTUAL_CAT_CATEGORY_DIR,
         }
         try:
             vcategory_db_dir = vdic[categoryID]
@@ -584,7 +584,7 @@ def load_ROMs(cfg, st_dic, categoryID, launcherID, load_pclone_ROMs_flag = False
             kodi_notify('Virtual category ROMs XML empty. Add items to favourites first.')
             return
 
-    elif cfg.launcher_is_vcategory and categoryID == VCATEGORY_AOS_ID:
+    elif cfg.launcher_is_vcategory and categoryID == const.VCATEGORY_AOS_ID:
         if not dbdic['roms'].exists():
             kodi_set_st_nwarn(st_dic, '{} database not available yet.'.format(db_platform))
             return
@@ -596,12 +596,21 @@ def load_ROMs(cfg, st_dic, categoryID, launcherID, load_pclone_ROMs_flag = False
 # This function never fails.
 def load_ROMs_Favourite_set(cfg):
     # Transform the dictionary keys into a set. Sets are faster when checking if an element exists.
-    raw_data = utils_load_JSON_file(cfg.FAV_JSON_FILE_PATH.getPath())
+    raw_data = utils.load_JSON_file(cfg.FAV_JSON_FILE_PATH.getPath())
     roms_fav = raw_data[1] if raw_data else {}
     if not cfg.roms:
         cfg.roms_fav_set = set()
     else:
         cfg.roms_fav_set = set(roms_fav.keys())
+
+
+
+
+
+
+
+
+
 
 
 
@@ -1192,7 +1201,7 @@ def import_ROM_collection(input_FileName):
     default_return = ({}, {}, [])
 
     log_info('import_ROM_collection() Loading {}'.format(input_FileName.getOriginalPath()))
-    raw_data = utils_load_JSON_file(input_FileName.getPath())
+    raw_data = utils.load_JSON_file(input_FileName.getPath())
     if not raw_data: return default_return
     try:
         control_dic    = raw_data[0]
@@ -1212,7 +1221,7 @@ def import_ROM_collection_assets(input_FileName):
     default_return = ({}, {})
 
     log_info('import_ROM_collection_assets() Loading {}'.format(input_FileName.getOriginalPath()))
-    raw_data = utils_load_JSON_file(input_FileName.getPath())
+    raw_data = utils.load_JSON_file(input_FileName.getPath())
     if not raw_data: return default_return
     control_dic = raw_data[0]
     assets_dic  = raw_data[1]
@@ -1332,12 +1341,12 @@ def update_dic_with_NFO_str(nfo_str, xml_tag_name, mydic, mydic_field_name):
 # "Edit Launcher" --> "Manage ROM List" --> "Export ROMs metadata to NFO files". In that case,
 # function must not be verbose because it can be called thousands of times for big ROM sets!
 # Returns True if success, False if error (IO exception or file not written).
-def fs_export_ROM_NFO(rom, verbose = True):
+def export_ROM_NFO(rom, verbose = True):
     # Skip No-Intro Added ROMs. rom['filename'] will be empty.
     if not rom['filename']: return False
     ROM_FN = FileName(rom['filename'])
     nfo_file_path = ROM_FN.getPathNoExt() + '.nfo'
-    log.debug('fs_export_ROM_NFO() Exporting "{}"'.format(nfo_file_path))
+    log.debug('export_ROM_NFO() Exporting "{}"'.format(nfo_file_path))
 
     # Always overwrite NFO files.
     nfo_content = [
@@ -1364,17 +1373,17 @@ def fs_export_ROM_NFO(rom, verbose = True):
 # Reads an NFO file with ROM information.
 # Modifies roms dictionary even outside this function. See comments in fs_import_launcher_NFO()
 # Returns True if success, False if error (IO exception).
-def fs_import_ROM_NFO(roms, romID, verbose = True):
+def import_ROM_NFO(roms, romID, verbose = True):
     nfo_dic = roms[romID]
     ROMFileName = FileName(roms[romID]['filename'])
     nfo_file_path = ROMFileName.getPathNoExt() + '.nfo'
-    log.debug('fs_import_ROM_NFO() Loading "{}"'.format(nfo_file_path))
+    log.debug('import_ROM_NFO() Loading "{}"'.format(nfo_file_path))
 
     # Check if file exists.
     if not os.path.isfile(nfo_file_path):
         if verbose:
             kodi_notify_warn('NFO file not found {}'.format(nfo_file_path))
-        log.debug("fs_import_ROM_NFO() NFO file not found '{}'".format(nfo_file_path))
+        log.debug("import_ROM_NFO() NFO file not found '{}'".format(nfo_file_path))
         return False
 
     # Read file, put in a string and remove all line endings.
@@ -1399,7 +1408,7 @@ def fs_import_ROM_NFO(roms, romID, verbose = True):
 
 # This file is called by the ROM scanner to read a ROM NFO file automatically.
 # NFO file existence is checked before calling this function, so NFO file must always exist.
-def fs_import_ROM_NFO_file_scanner(NFO_FN):
+def import_ROM_NFO_file_scanner(NFO_FN):
     nfo_dic = {
         'title' : '',
         'year' : '',
@@ -1427,7 +1436,7 @@ def fs_import_ROM_NFO_file_scanner(NFO_FN):
     return nfo_dic
 
 # Returns a FileName object
-def fs_get_ROM_NFO_name(rom):
+def get_ROM_NFO_name(rom):
     ROMFileName = FileName(rom['filename'])
     nfo_FN = FileName(ROMFileName.getPathNoExt() + '.nfo')
     return nfo_FN
@@ -1437,8 +1446,8 @@ def fs_get_ROM_NFO_name(rom):
 # ROM launchers: Same as standalone launchers.
 # Notifies errors in Kodi GUI. Success is notified in the caller.
 # Returns True if success, False if error (IO exception).
-def fs_export_launcher_NFO(nfo_FN, launcher):
-    log.debug('fs_export_launcher_NFO() Exporting launcher NFO "{}"'.format(nfo_FN.getPath()))
+def export_launcher_NFO(nfo_FN, launcher):
+    log.debug('export_launcher_NFO() Exporting launcher NFO "{}"'.format(nfo_FN.getPath()))
 
     # If NFO file does not exist then create them. If it exists, overwrite.
     nfo_slist = [
@@ -1460,13 +1469,13 @@ def fs_export_launcher_NFO(nfo_FN, launcher):
 # Launcher dictionary is edited by Python passing by reference.
 # Notifies errors in Kodi GUI. Success is notified in the caller.
 # Returns True if dictionary edited, False otherwise.
-def fs_import_launcher_NFO(nfo_FN, launchers, launcherID):
+def import_launcher_NFO(nfo_FN, launchers, launcherID):
     nfo_dic = launchers[launcherID]
 
-    log.debug('fs_import_launcher_NFO() Importing "{}"'.format(nfo_FN.getPath()))
+    log.debug('import_launcher_NFO() Importing "{}"'.format(nfo_FN.getPath()))
     if not os.path.isfile(nfo_FN.getPath()):
         kodi_notify_warn('NFO file not found {}'.format(os.path.basename(nfo_FN.getPath())))
-        log_info("fs_import_launcher_NFO() NFO file not found '{}'".format(nfo_FN.getPath()))
+        log_info("import_launcher_NFO() NFO file not found '{}'".format(nfo_FN.getPath()))
         return False
 
     # Read file, put in a single-line string and remove all line endings.
@@ -1480,7 +1489,7 @@ def fs_import_launcher_NFO(nfo_FN, launchers, launcherID):
 
 # Used by autoconfig_import_launcher(). Returns a dictionary with the Launcher NFO file information.
 # If there is any error return a dictionary with empty information.
-def fs_read_launcher_NFO(nfo_FN):
+def read_launcher_NFO(nfo_FN):
     nfo_dic = {
         'year' : '',
         'genre' : '',
@@ -1489,10 +1498,10 @@ def fs_read_launcher_NFO(nfo_FN):
         'plot' : '',
     }
 
-    log.debug('fs_read_launcher_NFO() Importing "{}"'.format(nfo_FN.getPath()))
+    log.debug('read_launcher_NFO() Importing "{}"'.format(nfo_FN.getPath()))
     if not os.path.isfile(nfo_FN.getPath()):
         kodi_notify_warn('NFO file not found {}'.format(os.path.basename(nfo_FN.getPath())))
-        log_info('fs_read_launcher_NFO() NFO file not found "{}"'.format(nfo_FN.getPath()))
+        log_info('read_launcher_NFO() NFO file not found "{}"'.format(nfo_FN.getPath()))
         return nfo_dic
 
     # Read file, put it in a single-line string by removing all line endings.
@@ -1505,15 +1514,15 @@ def fs_read_launcher_NFO(nfo_FN):
     return nfo_dic
 
 # Returns a FileName object
-def fs_get_launcher_NFO_name(settings, launcher):
+def get_launcher_NFO_name(settings, launcher):
     launcher_name = launcher['m_name']
     nfo_dir = settings['launchers_asset_dir']
     nfo_FN = FileName(os.path.join(nfo_dir, launcher_name + '.nfo'))
     return nfo_FN
 
 # Look at the Launcher NFO files for a reference implementation.
-def fs_export_category_NFO(nfo_FN, category):
-    log.debug('fs_export_category_NFO() Exporting "{}"'.format(nfo_FN.getPath()))
+def export_category_NFO(nfo_FN, category):
+    log.debug('export_category_NFO() Exporting "{}"'.format(nfo_FN.getPath()))
 
     # If NFO file does not exist then create them. If it exists, overwrite.
     nfo_slist = [
@@ -1531,13 +1540,13 @@ def fs_export_category_NFO(nfo_FN, category):
     utils_write_slist_to_file(nfo_FN.getPath(), nfo_slist)
     return True
 
-def fs_import_category_NFO(nfo_FN, categories, categoryID):
+def import_category_NFO(nfo_FN, categories, categoryID):
     nfo_dic = categories[categoryID]
 
-    log.debug('fs_import_category_NFO() Importing "{}"'.format(nfo_FN.getPath()))
+    log.debug('import_category_NFO() Importing "{}"'.format(nfo_FN.getPath()))
     if not nfo_FN.isfile():
         kodi_notify_warn('NFO file not found {}'.format(os.path.basename(nfo_FN.getPath())))
-        log_error("fs_import_category_NFO() Not found '{}'".format(nfo_FN.getPath()))
+        log_error("import_category_NFO() Not found '{}'".format(nfo_FN.getPath()))
         return False
     nfo_str = utils_load_file_to_str(nfo_FN.getPath()).replace('\r', '').replace('\n', '')
     update_dic_with_NFO_str(nfo_str, 'year', nfo_dic, 'm_year')
@@ -1548,15 +1557,15 @@ def fs_import_category_NFO(nfo_FN, categories, categoryID):
     return True
 
 # Returns a FileName object.
-def fs_get_category_NFO_name(settings, category):
+def get_category_NFO_name(settings, category):
     category_name = category['m_name']
     nfo_dir = settings['categories_asset_dir']
     nfo_FN = FileName(os.path.join(nfo_dir, category_name + '.nfo'))
     return nfo_FN
 
 # Collection NFO files. Same as Category NFO files.
-def fs_export_collection_NFO(nfo_FileName, collection):
-    log.debug('fs_export_collection_NFO() Exporting "{}"'.format(nfo_FileName.getPath()))
+def export_collection_NFO(nfo_FileName, collection):
+    log.debug('export_collection_NFO() Exporting "{}"'.format(nfo_FileName.getPath()))
 
     # If NFO file does not exist then create them. If it exists, overwrite.
     nfo_slist = [
@@ -1574,11 +1583,11 @@ def fs_export_collection_NFO(nfo_FileName, collection):
 
 # Notifies errors in Kodi GUI. Success is notified in the caller.
 # Returns True if dictionary edited, False otherwise.
-def fs_import_collection_NFO(nfo_FN, collections, launcherID):
-    log.debug('fs_import_collection_NFO() Importing "{}"'.format(nfo_FN.getPath()))
+def import_collection_NFO(nfo_FN, collections, launcherID):
+    log.debug('import_collection_NFO() Importing "{}"'.format(nfo_FN.getPath()))
     if not nfo_FN.isfile():
         kodi_notify_warn('NFO file not found {}'.format(os.path.basename(nfo_FN.getOriginalPath())))
-        log_error("fs_import_collection_NFO() Not found '{}'".format(nfo_FN.getPath()))
+        log_error("import_collection_NFO() Not found '{}'".format(nfo_FN.getPath()))
         return False
 
     nfo_str = utils_load_file_to_str(nfo_FN.getPath()).replace('\r', '').replace('\n', '')
@@ -1587,7 +1596,7 @@ def fs_import_collection_NFO(nfo_FN, collections, launcherID):
     update_dic_with_NFO_str(nfo_str, 'plot', nfo_dic, 'm_plot')
     return True
 
-def fs_get_collection_NFO_name(settings, collection):
+def get_collection_NFO_name(settings, collection):
     collection_name = collection['m_name']
     nfo_dir = settings['collections_asset_dir']
     nfo_FN = FileName(os.path.join(nfo_dir, collection_name + '.nfo'))

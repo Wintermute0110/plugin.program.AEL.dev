@@ -46,7 +46,6 @@ import os
 import re
 import shlex
 import shutil
-import socket
 import string
 import subprocess
 import sys
@@ -1881,18 +1880,18 @@ def render_vlaunchers_GlobalReports(cfg):
 # Rendering of ROMs
 # ------------------------------------------------------------------------------------------------
 # For a given ROM Launcher render all ROMs or all parent ROMs.
-# Make a general function to render any kind of ROM.
+# Make a general function to render any kind of launchers ROMs, including virtual launchers.
 # Use a step render like AML: 1) Load databases, 2) filter ROMs, 3) Process ROMs, 4) Commit ROMs.
 def render_ROMs(cfg, categoryID, launcherID):
     log.debug('render_ROMs() categoryID "{}" | launcherID "{}"'.format(categoryID, launcherID))
-    st_dic = kodi_new_status_dic()
+    st_dic = utils.new_status_dic()
 
     # Load ROMs from disk database.
     # Set st_dic to notify if no ROMs to render.
     loading_ticks_start = time.time()
-    db_get_launcher_info(cfg, categoryID, launcherID)
-    db_load_ROMs(cfg, st_dic, categoryID, launcherID)
-    if kodi_is_error_status(st_dic):
+    db.get_launcher_info(cfg, categoryID, launcherID)
+    db.load_ROMs(cfg, st_dic, categoryID, launcherID)
+    if utils.is_error_status(st_dic):
         xbmcplugin.endOfDirectory(cfg.addon_handle, succeeded = True, cacheToDisc = False)
         kodi_display_status_message(st_dic)
         return
@@ -1902,7 +1901,7 @@ def render_ROMs(cfg, categoryID, launcherID):
     # Only standard ROM launchers are filtered.
     filtering_ticks_start = time.time()
     # render_ROMs_filter(cfg, st_dic, launcher)
-    # if kodi_is_error_status(st_dic):
+    # if utils.is_error_status(st_dic):
     #     xbmcplugin.endOfDirectory(cfg.addon_handle, succeeded = True, cacheToDisc = False)
     #     kodi_display_status_message(st_dic)
     #     return
@@ -2052,19 +2051,23 @@ def render_ROMs_filter(cfg, st_dic, launcher):
 #
 # cfg.roms could be a dictionary or an OrderedDictionary (ROM Collection and Recently Played ROMs).
 def render_ROMs_process(cfg, categoryID, launcherID):
+    st = utils.new_status_dic()
     # Prepare data depending on launcher class ---------------------------------------------------
     if cfg.launcher_is_actual:
-        
-        launcher = db_get_launcher(cfg, st_dic, launcherID)
-        if kodi_is_error_status(st_dic):
+        launcher = db.get_launcher(cfg, st, launcherID)
+        if utils.is_error_status(st):
             xbmcplugin.endOfDirectory(cfg.addon_handle, succeeded = True, cacheToDisc = False)
-            kodi_display_status_message(st_dic)
+            kodi_display_status_message(st)
             return
-        render_only_parent_ROMs = launcher['launcher_display_mode'] == LAUNCHER_DMODE_PCLONE
+        render_only_parent_ROMs = launcher['launcher_display_mode'] == const.LAUNCHER_DMODE_PCLONE
         view_mode = launcher['launcher_display_mode']
 
+    # Misc variables.
+    is_parent_launcher = False
+
+
     # Load Favourite set to compute ROM_in_fav tag
-    db_load_ROMs_Favourite_set(cfg)
+    db.load_ROMs_Favourite_set(cfg)
 
     # Display ROMs.
     # if view_mode == LAUNCHER_DMODE_FLAT:
@@ -2077,7 +2080,7 @@ def render_ROMs_process(cfg, categoryID, launcherID):
 
     # For the AEL Offline Scraper ROMs transform them first.
     # Convert the AOS ROMs into collection ROMs.
-    if categoryID == VCATEGORY_AOS_ID:
+    if categoryID == const.VCATEGORY_AOS_ID:
         for romID in cfg.roms:
             rom = cfg.roms[romID]
             # rom['id'] = ''
@@ -2116,17 +2119,22 @@ def render_ROMs_process(cfg, categoryID, launcherID):
         rom = cfg.roms[romID]
         rom_raw_name = rom['m_name'] # This will not be changed.
         rom_name = rom['m_name']     # This will be changed to get the final name with color tags.
+        
+        
+        rom_in_fav = True
+        
+        
         # main_pclone_dic and num_clones only used when rendering parents.
         # if flag_parent_list:
         #     num_clones = len(main_pclone_dic[machine_name]) if machine_name in main_pclone_dic else 0
         # Do not render row if ROM is finished.
         if rom['finished'] and cfg.settings['display_hide_finished']: continue
         # Default values for flags/properties.
-        AEL_InFav_bool_value     = AEL_INFAV_BOOL_VALUE_FALSE
-        AEL_MultiDisc_bool_value = AEL_MULTIDISC_BOOL_VALUE_FALSE
-        AEL_Fav_stat_value       = AEL_FAV_STAT_VALUE_NONE
-        AEL_NoIntro_stat_value   = AEL_NOINTRO_STAT_VALUE_NONE
-        AEL_PClone_stat_value    = AEL_PCLONE_STAT_VALUE_NONE
+        AEL_InFav_bool_value     = const.AEL_INFAV_BOOL_VALUE_FALSE
+        AEL_MultiDisc_bool_value = const.AEL_MULTIDISC_BOOL_VALUE_FALSE
+        AEL_Fav_stat_value       = const.AEL_FAV_STAT_VALUE_NONE
+        AEL_NoIntro_stat_value   = const.AEL_NOINTRO_STAT_VALUE_NONE
+        AEL_PClone_stat_value    = const.AEL_PCLONE_STAT_VALUE_NONE
         r_dict = {}
 
         # Render machine name string, compute properties and artwork -----------------------------
@@ -2138,50 +2146,50 @@ def render_ROMs_process(cfg, categoryID, launcherID):
             # If ROM has no icon then user launcher icon or defaul icon DefaultProgram.png.
             # If ROM has no fanart then use launcher fanart.
             kodi_def_icon = launcher['s_icon'] if launcher['s_icon'] else 'DefaultProgram.png'
-            icon_path = asset_get_default_asset_Launcher_ROM(rom, launcher, 'roms_default_icon', kodi_def_icon)
-            fanart_path = asset_get_default_asset_Launcher_ROM(rom, launcher, 'roms_default_fanart', launcher['s_fanart'])
-            banner_path = asset_get_default_asset_Launcher_ROM(rom, launcher, 'roms_default_banner')
-            poster_path = asset_get_default_asset_Launcher_ROM(rom, launcher, 'roms_default_poster')
-            clearlogo_path = asset_get_default_asset_Launcher_ROM(rom, launcher, 'roms_default_clearlogo')
+            icon_path = assets.get_default_asset_Launcher_ROM(rom, launcher, 'roms_default_icon', kodi_def_icon)
+            fanart_path = assets.get_default_asset_Launcher_ROM(rom, launcher, 'roms_default_fanart', launcher['s_fanart'])
+            banner_path = assets.get_default_asset_Launcher_ROM(rom, launcher, 'roms_default_banner')
+            poster_path = assets.get_default_asset_Launcher_ROM(rom, launcher, 'roms_default_poster')
+            clearlogo_path = assets.get_default_asset_Launcher_ROM(rom, launcher, 'roms_default_clearlogo')
 
             # is_parent_launcher is True when rendering Parent ROMs in Parent/Clone view mode.
             nstat = rom['nointro_status']
-            if nstat == AUDIT_STATUS_HAVE:
+            if nstat == const.AUDIT_STATUS_HAVE:
                 rom_name = '{} [COLOR green][Have][/COLOR]'.format(rom_name)
                 AEL_NoIntro_stat_value = AEL_NOINTRO_STAT_VALUE_HAVE
-            elif nstat == AUDIT_STATUS_MISS:
+            elif nstat == const.AUDIT_STATUS_MISS:
                 rom_name = '{} [COLOR magenta][Miss][/COLOR]'.format(rom_name)
                 AEL_NoIntro_stat_value = AEL_NOINTRO_STAT_VALUE_MISS
-            elif nstat == AUDIT_STATUS_UNKNOWN:
+            elif nstat == const.AUDIT_STATUS_UNKNOWN:
                 rom_name = '{} [COLOR yellow][Unknown][/COLOR]'.format(rom_name)
                 AEL_NoIntro_stat_value = AEL_NOINTRO_STAT_VALUE_UNKNOWN
-            elif nstat == AUDIT_STATUS_EXTRA:
+            elif nstat == const.AUDIT_STATUS_EXTRA:
                 rom_name = '{} [COLOR limegreen][Extra][/COLOR]'.format(rom_name)
                 AEL_NoIntro_stat_value = AEL_NOINTRO_STAT_VALUE_EXTRA
-            elif nstat == AUDIT_STATUS_NONE:
+            elif nstat == const.AUDIT_STATUS_NONE:
                 rom_name = rom_name
-                AEL_NoIntro_stat_value = AEL_NOINTRO_STAT_VALUE_NONE
+                AEL_NoIntro_stat_value = const.AEL_NOINTRO_STAT_VALUE_NONE
             else:
                 rom_name = '{} [COLOR red][Status error][/COLOR]'.format(rom_name)
-                AEL_NoIntro_stat_value = AEL_NOINTRO_STAT_VALUE_ERROR
+                AEL_NoIntro_stat_value = const.AEL_NOINTRO_STAT_VALUE_ERROR
             # Reset the ROM display name, clear No-Intro status tag.
-            if not self.settings['display_nointro_stat']:
+            if not cfg.settings['display_nointro_stat']:
                 rom_name = rom_raw_name
             if is_parent_launcher and num_clones > 0:
                 rom_name += ' [COLOR orange][{} clones][/COLOR]'.format(num_clones)
 
             # Mark clone ROMs.
             pclone_status = rom['pclone_status']
-            if pclone_status == PCLONE_STATUS_CLONE:
+            if pclone_status == const.PCLONE_STATUS_CLONE:
                 rom_name += ' [COLOR orange][Clo][/COLOR]'
-            if pclone_status == PCLONE_STATUS_PARENT:
-                AEL_PClone_stat_value = AEL_PCLONE_STAT_VALUE_PARENT
-            elif pclone_status == PCLONE_STATUS_CLONE:
-                AEL_PClone_stat_value = AEL_PCLONE_STAT_VALUE_CLONE
+            if pclone_status == const.PCLONE_STATUS_PARENT:
+                AEL_PClone_stat_value = const.AEL_PCLONE_STAT_VALUE_PARENT
+            elif pclone_status == const.PCLONE_STATUS_CLONE:
+                AEL_PClone_stat_value = const.AEL_PCLONE_STAT_VALUE_CLONE
             # In Favourites ROM flag.
             if cfg.settings['display_rom_in_fav'] and rom_in_fav:
                 rom_name += ' [COLOR violet][Fav][/COLOR]'
-            if rom_in_fav: AEL_InFav_bool_value = AEL_INFAV_BOOL_VALUE_TRUE
+            if rom_in_fav: AEL_InFav_bool_value = const.AEL_INFAV_BOOL_VALUE_TRUE
             # Multidisc flag.
             if cfg.settings['display_rom_in_fav'] and rom['disks']:
                 rom_name += ' [COLOR plum][MD][/COLOR]'
@@ -2210,7 +2218,7 @@ def render_ROMs_process(cfg, categoryID, launcherID):
         #
         # for key in sorted(roms, key= lambda x : roms[x]['m_name']):
         #     gui_render_rom_row(VCATEGORY_FAVOURITES_ID, VLAUNCHER_FAVOURITES_ID, roms[key])
-        elif launcherID == VLAUNCHER_FAVOURITES_ID:
+        elif launcherID == const.VLAUNCHER_FAVOURITES_ID:
             icon_path = asset_get_default_asset_Launcher_ROM(rom, rom, 'roms_default_icon', 'DefaultProgram.png')
             fanart_path = asset_get_default_asset_Launcher_ROM(rom, rom, 'roms_default_fanart')
             banner_path = asset_get_default_asset_Launcher_ROM(rom, rom, 'roms_default_banner')
@@ -2221,19 +2229,19 @@ def render_ROMs_process(cfg, categoryID, launcherID):
             if self.settings['display_fav_status']:
                 if rom['fav_status'] == 'OK':
                     rom_name = '{} [COLOR green][OK][/COLOR]'.format(rom_raw_name)
-                    AEL_Fav_stat_value = AEL_FAV_STAT_VALUE_OK
+                    AEL_Fav_stat_value = const.AEL_FAV_STAT_VALUE_OK
                 elif rom['fav_status'] == 'Unlinked ROM':
                     rom_name = '{} [COLOR yellow][Unlinked ROM][/COLOR]'.format(rom_raw_name)
-                    AEL_Fav_stat_value = AEL_FAV_STAT_VALUE_UNLINKED_ROM
+                    AEL_Fav_stat_value = const.AEL_FAV_STAT_VALUE_UNLINKED_ROM
                 elif rom['fav_status'] == 'Unlinked Launcher':
                     rom_name = '{} [COLOR yellow][Unlinked Launcher][/COLOR]'.format(rom_raw_name)
-                    AEL_Fav_stat_value = AEL_FAV_STAT_VALUE_UNLINKED_LAUNCHER
+                    AEL_Fav_stat_value = const.AEL_FAV_STAT_VALUE_UNLINKED_LAUNCHER
                 elif rom['fav_status'] == 'Broken':
                     rom_name = '{} [COLOR red][Broken][/COLOR]'.format(rom_raw_name)
-                    AEL_Fav_stat_value = AEL_FAV_STAT_VALUE_BROKEN
+                    AEL_Fav_stat_value = const.AEL_FAV_STAT_VALUE_BROKEN
                 else:
                     rom_name = rom_raw_name
-                    AEL_Fav_stat_value = AEL_FAV_STAT_VALUE_UNKNOWN
+                    AEL_Fav_stat_value = const.AEL_FAV_STAT_VALUE_UNKNOWN
             else:
                 rom_name = rom_raw_name
             # Multidisc flag
@@ -2242,13 +2250,13 @@ def render_ROMs_process(cfg, categoryID, launcherID):
 
         # Code from former command_render_ROMs_recently_played()
         # for rom in rom_list:
-        #     gui_render_rom_row(VCATEGORY_RECENT_ID, VLAUNCHER_RECENT_ID, rom)
-        elif launcherID == VLAUNCHER_RECENT_ID:
-            icon_path = asset_get_default_asset_Launcher_ROM(rom, rom, 'roms_default_icon', 'DefaultProgram.png')
-            fanart_path = asset_get_default_asset_Launcher_ROM(rom, rom, 'roms_default_fanart')
-            banner_path = asset_get_default_asset_Launcher_ROM(rom, rom, 'roms_default_banner')
-            poster_path = asset_get_default_asset_Launcher_ROM(rom, rom, 'roms_default_poster')
-            clearlogo_path = asset_get_default_asset_Launcher_ROM(rom, rom, 'roms_default_clearlogo')
+        #     gui_render_rom_row(const.VCATEGORY_RECENT_ID, const.VLAUNCHER_RECENT_ID, rom)
+        elif launcherID == const.VLAUNCHER_RECENT_ID:
+            icon_path = assets.get_default_asset_Launcher_ROM(rom, rom, 'roms_default_icon', 'DefaultProgram.png')
+            fanart_path = assets.get_default_asset_Launcher_ROM(rom, rom, 'roms_default_fanart')
+            banner_path = assets.get_default_asset_Launcher_ROM(rom, rom, 'roms_default_banner')
+            poster_path = assets.get_default_asset_Launcher_ROM(rom, rom, 'roms_default_poster')
+            clearlogo_path = assets.get_default_asset_Launcher_ROM(rom, rom, 'roms_default_clearlogo')
             rom_name = rom_raw_name
             # Multidisc flag
             if self.settings['display_rom_in_fav'] and rom['disks']: rom_name += ' [COLOR plum][MD][/COLOR]'
@@ -2257,12 +2265,12 @@ def render_ROMs_process(cfg, categoryID, launcherID):
         # Code from former command_render_ROMs_most_played()
         # for key in sorted(roms, key = lambda x : roms[x]['launch_count'], reverse = True):
         #     gui_render_rom_row(VCATEGORY_MOST_PLAYED_ID, VLAUNCHER_MOST_PLAYED_ID, roms[key])
-        elif launcherID == VLAUNCHER_MOST_PLAYED_ID:
-            icon_path = asset_get_default_asset_Launcher_ROM(rom, rom, 'roms_default_icon', 'DefaultProgram.png')
-            fanart_path = asset_get_default_asset_Launcher_ROM(rom, rom, 'roms_default_fanart')
-            banner_path = asset_get_default_asset_Launcher_ROM(rom, rom, 'roms_default_banner')
-            poster_path = asset_get_default_asset_Launcher_ROM(rom, rom, 'roms_default_poster')
-            clearlogo_path = asset_get_default_asset_Launcher_ROM(rom, rom, 'roms_default_clearlogo')
+        elif launcherID == const.VLAUNCHER_MOST_PLAYED_ID:
+            icon_path = assets.get_default_asset_Launcher_ROM(rom, rom, 'roms_default_icon', 'DefaultProgram.png')
+            fanart_path = assets.get_default_asset_Launcher_ROM(rom, rom, 'roms_default_fanart')
+            banner_path = assets.get_default_asset_Launcher_ROM(rom, rom, 'roms_default_banner')
+            poster_path = assets.get_default_asset_Launcher_ROM(rom, rom, 'roms_default_poster')
+            clearlogo_path = assets.get_default_asset_Launcher_ROM(rom, rom, 'roms_default_clearlogo')
             # Multidisc flag
             if self.settings['display_rom_in_fav'] and rom['disks']: rom_name += ' [COLOR plum][MD][/COLOR]'
             # Render number of number the ROM has been launched
@@ -2275,30 +2283,30 @@ def render_ROMs_process(cfg, categoryID, launcherID):
         # Code from formaer command_render_ROMs_Collection():
         # for rom in collection_rom_list:
         #     gui_render_rom_row(categoryID, launcherID, rom)
-        elif categoryID == VCATEGORY_ROM_COLLECTION_ID:
-            icon_path = asset_get_default_asset_Launcher_ROM(rom, rom, 'roms_default_icon', 'DefaultProgram.png')
-            fanart_path = asset_get_default_asset_Launcher_ROM(rom, rom, 'roms_default_fanart')
-            banner_path = asset_get_default_asset_Launcher_ROM(rom, rom, 'roms_default_banner')
-            poster_path = asset_get_default_asset_Launcher_ROM(rom, rom, 'roms_default_poster')
-            clearlogo_path = asset_get_default_asset_Launcher_ROM(rom, rom, 'roms_default_clearlogo')
+        elif categoryID == const.VCATEGORY_ROM_COLLECTION_ID:
+            icon_path = assets.get_default_asset_Launcher_ROM(rom, rom, 'roms_default_icon', 'DefaultProgram.png')
+            fanart_path = assets.get_default_asset_Launcher_ROM(rom, rom, 'roms_default_fanart')
+            banner_path = assets.get_default_asset_Launcher_ROM(rom, rom, 'roms_default_banner')
+            poster_path = assets.get_default_asset_Launcher_ROM(rom, rom, 'roms_default_poster')
+            clearlogo_path = assets.get_default_asset_Launcher_ROM(rom, rom, 'roms_default_clearlogo')
 
             # Favourite status flag.
             if self.settings['display_fav_status']:
                 if rom['fav_status'] == 'OK':
                     rom_name = '{} [COLOR green][OK][/COLOR]'.format(rom_raw_name)
-                    AEL_Fav_stat_value = AEL_FAV_STAT_VALUE_OK
+                    AEL_Fav_stat_value = const.AEL_FAV_STAT_VALUE_OK
                 elif rom['fav_status'] == 'Unlinked ROM':
                     rom_name = '{} [COLOR yellow][Unlinked ROM][/COLOR]'.format(rom_raw_name)
-                    AEL_Fav_stat_value = AEL_FAV_STAT_VALUE_UNLINKED_ROM
+                    AEL_Fav_stat_value = const.AEL_FAV_STAT_VALUE_UNLINKED_ROM
                 elif rom['fav_status'] == 'Unlinked Launcher':
                     rom_name = '{} [COLOR yellow][Unlinked Launcher][/COLOR]'.format(rom_raw_name)
-                    AEL_Fav_stat_value = AEL_FAV_STAT_VALUE_UNLINKED_LAUNCHER
+                    AEL_Fav_stat_value = const.AEL_FAV_STAT_VALUE_UNLINKED_LAUNCHER
                 elif rom['fav_status'] == 'Broken':
                     rom_name = '{} [COLOR red][Broken][/COLOR]'.format(rom_raw_name)
-                    AEL_Fav_stat_value = AEL_FAV_STAT_VALUE_BROKEN
+                    AEL_Fav_stat_value = const.AEL_FAV_STAT_VALUE_BROKEN
                 else:
                     rom_name = rom_raw_name
-                    AEL_Fav_stat_value = AEL_FAV_STAT_VALUE_UNKNOWN
+                    AEL_Fav_stat_value = const.AEL_FAV_STAT_VALUE_UNKNOWN
             else:
                 rom_name = rom_raw_name
             # Multidisc flag
@@ -2309,37 +2317,37 @@ def render_ROMs_process(cfg, categoryID, launcherID):
         # for key in sorted(roms, key = lambda x : roms[x]['m_name']):
         #      self._gui_render_rom_row(virtual_categoryID, virtual_launcherID, roms[key], key in roms_fav_set)
         elif cfg.launcher_is_browse_by:
-            icon_path = asset_get_default_asset_Launcher_ROM(rom, rom, 'roms_default_icon', 'DefaultProgram.png')
-            fanart_path = asset_get_default_asset_Launcher_ROM(rom, rom, 'roms_default_fanart')
-            banner_path = asset_get_default_asset_Launcher_ROM(rom, rom, 'roms_default_banner')
-            poster_path = asset_get_default_asset_Launcher_ROM(rom, rom, 'roms_default_poster')
-            clearlogo_path = asset_get_default_asset_Launcher_ROM(rom, rom, 'roms_default_clearlogo')
+            icon_path = assets.get_default_asset_Launcher_ROM(rom, rom, 'roms_default_icon', 'DefaultProgram.png')
+            fanart_path = assets.get_default_asset_Launcher_ROM(rom, rom, 'roms_default_fanart')
+            banner_path = assets.get_default_asset_Launcher_ROM(rom, rom, 'roms_default_banner')
+            poster_path = assets.get_default_asset_Launcher_ROM(rom, rom, 'roms_default_poster')
+            clearlogo_path = assets.get_default_asset_Launcher_ROM(rom, rom, 'roms_default_clearlogo')
 
             # --- NoIntro status flag ---
             nstat = rom['nointro_status']
             if self.settings['display_nointro_stat']:
-                if nstat == AUDIT_STATUS_HAVE:
+                if nstat == const.AUDIT_STATUS_HAVE:
                     rom_name = '{} [COLOR green][Have][/COLOR]'.format(rom_raw_name)
-                    AEL_NoIntro_stat_value = AEL_NOINTRO_STAT_VALUE_HAVE
-                elif nstat == AUDIT_STATUS_MISS:
+                    AEL_NoIntro_stat_value = const.AEL_NOINTRO_STAT_VALUE_HAVE
+                elif nstat == const.AUDIT_STATUS_MISS:
                     rom_name = '{} [COLOR magenta][Miss][/COLOR]'.format(rom_raw_name)
-                    AEL_NoIntro_stat_value = AEL_NOINTRO_STAT_VALUE_MISS
-                elif nstat == AUDIT_STATUS_UNKNOWN:
+                    AEL_NoIntro_stat_value = const.AEL_NOINTRO_STAT_VALUE_MISS
+                elif nstat == const.AUDIT_STATUS_UNKNOWN:
                     rom_name = '{} [COLOR yellow][Unknown][/COLOR]'.format(rom_raw_name)
-                    AEL_NoIntro_stat_value = AEL_NOINTRO_STAT_VALUE_UNKNOWN
-                elif nstat == AUDIT_STATUS_EXTRA:
+                    AEL_NoIntro_stat_value = const.AEL_NOINTRO_STAT_VALUE_UNKNOWN
+                elif nstat == const.AUDIT_STATUS_EXTRA:
                     rom_name = '{} [COLOR limegreen][Extra][/COLOR]'.format(rom_raw_name)
-                    AEL_NoIntro_stat_value = AEL_NOINTRO_STAT_VALUE_EXTRA
-                elif nstat == AUDIT_STATUS_NONE:
+                    AEL_NoIntro_stat_value = const.AEL_NOINTRO_STAT_VALUE_EXTRA
+                elif nstat == const.AUDIT_STATUS_NONE:
                     rom_name = rom_raw_name
-                    AEL_NoIntro_stat_value = AEL_NOINTRO_STAT_VALUE_NONE
+                    AEL_NoIntro_stat_value = const.AEL_NOINTRO_STAT_VALUE_NONE
                 else:
                     rom_name = '{} [COLOR red][Status error][/COLOR]'.format(rom_raw_name)
             else:
                 rom_name = rom_raw_name
             # In Favourites ROM flag
             if self.settings['display_rom_in_fav'] and rom_in_fav: rom_name += ' [COLOR violet][Fav][/COLOR]'
-            if rom_in_fav: AEL_InFav_bool_value = AEL_INFAV_BOOL_VALUE_TRUE
+            if rom_in_fav: AEL_InFav_bool_value = const.AEL_INFAV_BOOL_VALUE_TRUE
             # Multidisc flag
             if self.settings['display_rom_in_fav'] and rom['disks']: rom_name += ' [COLOR plum][MD][/COLOR]'
             URL = aux_url('LAUNCH_ROM', categoryID, launcherID, romID)
@@ -2347,7 +2355,7 @@ def render_ROMs_process(cfg, categoryID, launcherID):
         # Core from former command_render_ROMs_AEL_scraper()
         # for key in sorted(games, key = lambda x : games[x]['ROM']):
         #     gui_render_AEL_scraper_rom_row(platform, games[key])
-        elif categoryID == VCATEGORY_AOS_ID:
+        elif categoryID == const.VCATEGORY_AOS_ID:
             icon_path = 'DefaultProgram.png'
             fanart_path = ''
             banner_path = ''
@@ -2360,8 +2368,8 @@ def render_ROMs_process(cfg, categoryID, launcherID):
             raise TypeError
 
         # Set common flags to all launchers.
-        AEL_MultiDisc_bool_value = AEL_MULTIDISC_BOOL_VALUE_TRUE if rom['disks'] else AEL_MULTIDISC_BOOL_VALUE_FALSE
-        ICON_OVERLAY = KODI_ICON_OVERLAY_WATCHED if rom['finished'] else KODI_ICON_OVERLAY_UNWATCHED
+        AEL_MultiDisc_bool_value = const.AEL_MULTIDISC_BOOL_VALUE_TRUE if rom['disks'] else const.AEL_MULTIDISC_BOOL_VALUE_FALSE
+        ICON_OVERLAY = KODI_ICON_OVERLAY_WATCHED if rom['finished'] else kodi.KODI_ICON_OVERLAY_UNWATCHED
 
         # Interesting... if text formatting labels are set in xbmcgui.ListItem() do not work.
         # However, if labels are set as Title field in setInfo(), then they work but the
@@ -2423,16 +2431,16 @@ def render_ROMs_process(cfg, categoryID, launcherID):
 
         # Properties -----------------------------------------------------------------------------
         r_dict['props'] = {
-            'nplayers'               : rom['m_nplayers'],
-            'esrb'                   : rom['m_esrb'],
-            'platform'               : rom['platform'],
-            AEL_CONTENT_LABEL        : AEL_CONTENT_VALUE_ROM,
+            'nplayers'                     : rom['m_nplayers'],
+            'esrb'                         : rom['m_esrb'],
+            'platform'                     : rom['platform'],
+            const.AEL_CONTENT_LABEL        : const.AEL_CONTENT_VALUE_ROM,
             # ROM flags (Skins will use these flags to render icons).
-            AEL_INFAV_BOOL_LABEL     : AEL_InFav_bool_value,
-            AEL_MULTIDISC_BOOL_LABEL : AEL_MultiDisc_bool_value,
-            AEL_FAV_STAT_LABEL       : AEL_Fav_stat_value,
-            AEL_NOINTRO_STAT_LABEL   : AEL_NoIntro_stat_value,
-            AEL_PCLONE_STAT_LABEL    : AEL_PClone_stat_value,
+            const.AEL_INFAV_BOOL_LABEL     : const.AEL_InFav_bool_value,
+            const.AEL_MULTIDISC_BOOL_LABEL : const.AEL_MultiDisc_bool_value,
+            const.AEL_FAV_STAT_LABEL       : const.AEL_Fav_stat_value,
+            const.AEL_NOINTRO_STAT_LABEL   : const.AEL_NoIntro_stat_value,
+            const.AEL_PCLONE_STAT_LABEL    : const.AEL_PClone_stat_value,
         }
 
         # Context menu ---------------------------------------------------------------------------
@@ -2449,7 +2457,7 @@ def render_ROMs_process(cfg, categoryID, launcherID):
                 commands.insert(0,
                     ('Show clones', aux_url_RP('EXEC_SHOW_CLONE_ROMS', categoryID, launcherID, romID))
                 )
-        elif launcherID == VLAUNCHER_FAVOURITES_ID:
+        elif launcherID == const.VLAUNCHER_FAVOURITES_ID:
             commands = [
                 ('View Favourite ROM', aux_url_RP('VIEW', categoryID, launcherID, romID)),
                 ('Edit ROM in Favourites', aux_url_RP('EDIT_ROM', categoryID, launcherID, romID)),
@@ -2457,17 +2465,17 @@ def render_ROMs_process(cfg, categoryID, launcherID):
                 ('Search ROMs in Favourites', aux_url_RP('SEARCH_LAUNCHER', categoryID, launcherID)),
                 ('Manage Favourite ROMs', aux_url_RP('MANAGE_FAV', categoryID, launcherID, romID)),
             ]
-        elif launcherID == VLAUNCHER_RECENT_ID:
+        elif launcherID == const.VLAUNCHER_RECENT_ID:
             commands = [
                 ('View ROM data', aux_url_RP('VIEW', categoryID, launcherID, romID)),
                 ('Manage Recently Played', aux_url_RP('MANAGE_RECENT_PLAYED', categoryID, launcherID, romID)),
             ]
-        elif launcherID == VLAUNCHER_MOST_PLAYED_ID:
+        elif launcherID == const.VLAUNCHER_MOST_PLAYED_ID:
             commands = [
                 ('View ROM data', aux_url_RP('VIEW', categoryID, launcherID, romID)),
                 ('Manage Most Played', aux_url_RP('MANAGE_MOST_PLAYED', categoryID, launcherID, romID)),
             ]
-        elif categoryID == VCATEGORY_ROM_COLLECTION_ID:
+        elif categoryID == const.VCATEGORY_ROM_COLLECTION_ID:
             commands = [
                 ('View Collection ROM', aux_url_RP('VIEW', categoryID, launcherID, romID)),
                 ('Edit ROM in Collection', aux_url_RP('EDIT_ROM', categoryID, launcherID, romID)),
@@ -2482,7 +2490,7 @@ def render_ROMs_process(cfg, categoryID, launcherID):
                 ('Add ROM to Collection', aux_url_RP('ADD_TO_COLLECTION', categoryID, launcherID, romID)),
                 ('Search ROMs in Virtual Launcher', aux_url_RP('SEARCH_LAUNCHER', categoryID, launcherID)),
             ]
-        elif categoryID == VCATEGORY_AOS_ID:
+        elif categoryID == const.VCATEGORY_AOS_ID:
             commands = []
         else:
             raise TypeError
@@ -4102,7 +4110,7 @@ def command_edit_launcher(self, categoryID, launcherID):
                     if any(temp_asset_list):
                         log.debug('Getting asset candidate game.')
                         # What if st_dic reports and error here? It is ignored?
-                        st_dic = kodi_new_status_dic()
+                        st_dic = utils.new_status_dic()
                         # This is a workaround! It will fail for multidisc ROMs.
                         # See proper implementation in _roms_import_roms()
                         ROM_checksums = ROMFile
@@ -4837,7 +4845,7 @@ def command_edit_rom(self, categoryID, launcherID, romID):
             # Scraper caches are flushed. An error here could mean that no metadata
             # was found, however the cache can have valid data for the candidates.
             # Remember to flush caches after scraping.
-            st_dic = kodi_new_status_dic()
+            st_dic = utils.new_status_dic()
             s_strategy = g_scrap_factory.create_CM_metadata(scraper_ID, platform)
             s_strategy.scrap_CM_metadata_ROM(rom, data_dic, st_dic)
             g_scrap_factory.destroy_CM()
@@ -4966,7 +4974,7 @@ def command_edit_rom(self, categoryID, launcherID, romID):
                 'settings' : self.settings,
                 'launchers' : self.launchers,
             }
-            st_dic = kodi_new_status_dic()
+            st_dic = utils.new_status_dic()
             # Create scraper factory and select scraper to use.
             scrap_factory = ScraperFactory(g_PATHS, self.settings)
             scraper_menu_list = scrap_factory.get_all_asset_scraper_menu_list()
@@ -5994,7 +6002,7 @@ def gui_edit_asset(self, object_kind, asset_ID, object_dic, categoryID = '', lau
         # to be printed here. A message here could be that no images were found, network
         # error when downloading image, etc., however the caches (internal, etc.) may have
         # valid data that needs to be saved.
-        st_dic = kodi_new_status_dic()
+        st_dic = utils.new_status_dic()
         scraper_strategy = g_scrap_factory.create_CM_asset(scraper_ID)
         scraper_strategy.scrap_CM_asset(object_dic, asset_ID, data_dic, st_dic)
         # Flush caches
@@ -8342,7 +8350,7 @@ def _command_exec_utils_check_retro_BIOS(self):
 def _command_exec_utils_TGDB_check(self):
     # --- Get scraper object and retrieve information ---
     # Treat any error message returned by the scraper as an OK dialog.
-    st_dic = kodi_new_status_dic()
+    st_dic = utils.new_status_dic()
     g_scraper_factory = ScraperFactory(g_PATHS, self.settings)
     TGDB = g_scraper_factory.get_scraper_object(SCRAPER_THEGAMESDB_ID)
     TGDB.check_before_scraping(st_dic)
@@ -8376,7 +8384,7 @@ def _command_exec_utils_TGDB_check(self):
 def _command_exec_utils_MobyGames_check(self):
     # --- Get scraper object and retrieve information ---
     # Treat any error message returned by the scraper as an OK dialog.
-    st_dic = kodi_new_status_dic()
+    st_dic = utils.new_status_dic()
     g_scraper_factory = ScraperFactory(g_PATHS, self.settings)
     MobyGames = g_scraper_factory.get_scraper_object(SCRAPER_MOBYGAMES_ID)
     MobyGames.check_before_scraping(st_dic)
@@ -8404,7 +8412,7 @@ def _command_exec_utils_MobyGames_check(self):
 def _command_exec_utils_ScreenScraper_check(self):
     # --- Get scraper object and retrieve information ---
     # Treat any error message returned by the scraper as an OK dialog.
-    st_dic = kodi_new_status_dic()
+    st_dic = utils.new_status_dic()
     g_scraper_factory = ScraperFactory(g_PATHS, self.settings)
     ScreenScraper = g_scraper_factory.get_scraper_object(SCRAPER_SCREENSCRAPER_ID)
     ScreenScraper.check_before_scraping(st_dic)
@@ -8449,7 +8457,7 @@ def _command_exec_utils_ScreenScraper_check(self):
 # Retrieve an example game to test if ArcadeDB works.
 # TTBOMK there are not API retrictions at the moment (August 2019).
 def _command_exec_utils_ArcadeDB_check(self):
-    st_dic = kodi_new_status_dic()
+    st_dic = utils.new_status_dic()
     g_scraper_factory = ScraperFactory(g_PATHS, self.settings)
     ArcadeDB = g_scraper_factory.get_scraper_object(SCRAPER_ARCADEDB_ID)
     ArcadeDB.check_before_scraping(st_dic)
@@ -10831,8 +10839,8 @@ class Main:
             pDialog.updateProgressInc()
 
             # Create VLauncher UUID
-            vlauncher_id_md5   = hashlib.md5(vlauncher_id.encode('utf-8'))
-            hashed_db_UUID     = vlauncher_id_md5.hexdigest()
+            vlauncher_id_md5 = hashlib.md5(vlauncher_id.encode('utf-8'))
+            hashed_db_UUID = vlauncher_id_md5.hexdigest()
             log.debug('_command_update_virtual_category_db() vlauncher_id       "{}"'.format(vlauncher_id))
             log.debug('_command_update_virtual_category_db() hashed_db_UUID     "{}"'.format(hashed_db_UUID))
 

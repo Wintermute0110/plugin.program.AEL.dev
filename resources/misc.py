@@ -63,7 +63,7 @@ def title_to_filename_str(title_str):
 # Writes a XML text tag line, indented 2 spaces by default.
 # Both tag_name and tag_text must be Unicode strings.
 # Returns an Unicode string.
-def text_XML(tag_name, tag_text, num_spaces = 2):
+def XML(tag_name, tag_text, num_spaces = 2):
     if tag_text:
         tag_text = text_escape_XML(tag_text)
         line = '{}<{}>{}</{}>'.format(' ' * num_spaces, tag_name, tag_text, tag_name)

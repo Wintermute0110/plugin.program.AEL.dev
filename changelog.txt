@@ -84,8 +84,11 @@ DONE     [CORE] Rename the plugin from `plugin.program.advanced.emulator.launche
 
 DONE     [CORE] Remove the Main() class in main.py. Use a functional approach like AML.
 
+DONE     [CORE] Change "from .module_name import *" into "import module_name" and use
+         calls like "module_name.function()". Remove function names prefix "module_name_".
+
 WIP NOW  [CORE] New ROM storage high level functions.
-         db_get_launcher(), db_load_ROMs(), etc.
+         db.get_launcher(), db.load_ROMs(), etc.
          Copy feature from branch `old-master-chrisism-python2`
 
 WIP NOW  [CORE] New ROM rendering engine.
