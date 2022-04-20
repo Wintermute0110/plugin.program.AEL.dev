@@ -47,7 +47,7 @@ else:
 # length limit). The string is trimmed by cutting it and adding three dots ... at the end.
 # Including these three dots the length of the returned string is max_length or less.
 # Example: 'asdfasdfdasf' -> 'asdfsda...'
-def text_limit_string(string, max_length):
+def limit_string(string, max_length):
     if max_length > 5 and len(string) > max_length:
         string = string[0:max_length-3] + '...'
     return string
@@ -55,7 +55,7 @@ def text_limit_string(string, max_length):
 # Given a Category/Launcher name clean it so the cleaned srt can be used as a filename.
 #  1) Convert any non-printable character into '_'
 #  2) Convert spaces ' ' into '_'
-def text_title_to_filename_str(title_str):
+def title_to_filename_str(title_str):
     cleaned_str_1 = ''.join([i if i in string.printable else '_' for i in title_str])
     cleaned_str_2 = cleaned_str_1.replace(' ', '_')
     return cleaned_str_2
@@ -73,12 +73,11 @@ def text_XML(tag_name, tag_text, num_spaces = 2):
 
     return line
 
-def text_remove_Kodi_color_tags(s):
+def remove_Kodi_color_tags(s):
     s = re.sub('\[COLOR \S+?\]', '', s)
     s = re.sub('\[color \S+?\]', '', s)
     s = s.replace('[/color]', '')
     s = s.replace('[/COLOR]', '')
-
     return s
 
 # Have a look at this https://beautifultable.readthedocs.io/en/latest/quickstart.html
@@ -99,7 +98,7 @@ def text_remove_Kodi_color_tags(s):
 
 # Renders a list of list of strings table into a CSV list of strings.
 # The list of strings must be joined with '\n'.join()
-def text_render_table_CSV(table_str):
+def render_table_CSV(table_str):
     rows = len(table_str)
     cols = len(table_str[0])
     table_str_list = []
@@ -111,7 +110,6 @@ def text_render_table_CSV(table_str):
             else:
                 row_str += '{}'.format(table_str[i][j])
         table_str_list.append(row_str)
-
     return table_str_list
 
 # Returns a list of strings that must be joined with '\n'.join()
@@ -129,7 +127,7 @@ def text_render_table_CSV(table_str):
 #
 # Output:
 #
-def text_render_table(table_str, trim_Kodi_colours = False):
+def render_table(table_str, trim_Kodi_colours = False):
     rows = len(table_str)
     cols = len(table_str[0])
 
@@ -189,7 +187,7 @@ def text_render_table(table_str, trim_Kodi_colours = False):
 # ]
 #
 # Output:
-def text_render_table_NO_HEADER(table_str, trim_Kodi_colours = False):
+def render_table_NO_HEADER(table_str, trim_Kodi_colours = False):
     rows = len(table_str)
     cols = len(table_str[0])
 
@@ -233,7 +231,7 @@ def text_render_table_NO_HEADER(table_str, trim_Kodi_colours = False):
 # Removed Kodi colour tags before computing size (substitute by ''):
 #   A) [COLOR skyblue]
 #   B) [/COLOR]
-def text_get_table_str_col_sizes(table_str, rows, cols):
+def get_table_str_col_sizes(table_str, rows, cols):
     col_sizes = [0] * cols
     for j in range(cols):
         col_max_size = 0
@@ -246,15 +244,14 @@ def text_get_table_str_col_sizes(table_str, rows, cols):
 
     return col_sizes
 
-def text_str_list_size(str_list):
+def str_list_size(str_list):
     max_str_size = 0
     for str_item in str_list:
         str_size = len('{}'.format(str_item))
         if str_size > max_str_size: max_str_size = str_size
-
     return max_str_size
 
-def text_str_dic_max_size(dictionary_list, dic_key, title_str = ''):
+def str_dic_max_size(dictionary_list, dic_key, title_str = ''):
     max_str_size = 0
     for item in dictionary_list:
         str_size = len('{}'.format(item[dic_key]))
@@ -262,23 +259,20 @@ def text_str_dic_max_size(dictionary_list, dic_key, title_str = ''):
     if title_str:
         str_size = len(title_str)
         if str_size > max_str_size: max_str_size = str_size
-
     return max_str_size
 
-def text_print_padded_left(text_line, text_max_size):
+def print_padded_left(text_line, text_max_size):
     formatted_str = '{}'.format(text_line)
     padded_str =  formatted_str + ' ' * (text_max_size - len(formatted_str))
-
     return padded_str
 
-def text_print_padded_right(text_line, text_max_size):
+def print_padded_right(text_line, text_max_size):
     formatted_str = '{}'.format(text_line)
     padded_str = ' ' * (text_max_size - len(formatted_str)) + formatted_str
-
     return padded_str
 
 # --- BEGIN code in dev-misc/test_color_tag_remove.py ---------------------------------------------
-def text_remove_color_tags_slist(slist):
+def remove_color_tags_slist(slist):
     # Iterate list of strings and remove the following tags
     # 1) [COLOR colorname]
     # 2) [/COLOR]
@@ -313,7 +307,7 @@ def text_remove_color_tags_slist(slist):
 # See https://wiki.python.org/moin/EscapingXml
 # See https://github.com/python/cpython/blob/master/Lib/xml/sax/saxutils.py
 # See http://stackoverflow.com/questions/2265966/xml-carriage-return-encoding
-def text_escape_XML(data_str):
+def escape_XML(data_str):
     # Ampersand MUST BE replaced FIRST
     data_str = data_str.replace('&', '&amp;')
     data_str = data_str.replace('>', '&gt;')
@@ -329,7 +323,7 @@ def text_escape_XML(data_str):
 
     return data_str
 
-def text_unescape_XML(data_str):
+def unescape_XML(data_str):
     data_str = data_str.replace('&quot;', '"')
     data_str = data_str.replace('&apos;', "'")
 
@@ -347,7 +341,7 @@ def text_unescape_XML(data_str):
 
 # Unquote an HTML string. Replaces %xx with Unicode characters.
 # http://www.w3schools.com/tags/ref_urlencode.asp
-def text_decode_HTML(s):
+def decode_HTML(s):
     s = s.replace('%25', '%') # Must be done first
     s = s.replace('%20', ' ')
     s = s.replace('%23', '#')
@@ -360,15 +354,14 @@ def text_decode_HTML(s):
     s = s.replace('%3A', ':')
     s = s.replace('%3D', '=')
     s = s.replace('%3F', '?')
-
     return s
 
 # Decodes HTML <br> tags and HTML entities (&xxx;) into Unicode characters.
 # See https://stackoverflow.com/questions/2087370/decode-html-entities-in-python-string
-def text_unescape_HTML(s):
+def unescape_HTML(s):
     __debug_text_unescape_HTML = False
     if __debug_text_unescape_HTML:
-        log_debug('text_unescape_HTML() input  "{}"'.format(s))
+        log.debug('text_unescape_HTML() input  "{}"'.format(s))
 
     # --- Replace HTML tag characters by their Unicode equivalent ---
     s = s.replace('<br>',   '\n')
@@ -400,29 +393,26 @@ def text_unescape_HTML(s):
     # s = s.replace('&#x16B;', "ū")
 
     # Use HTMLParser module to decode HTML entities.
-    if ADDON_RUNNING_PYTHON_2:
+    if const.ADDON_RUNNING_PYTHON_2:
         s = HTMLParser.HTMLParser().unescape(s)
-    elif ADDON_RUNNING_PYTHON_3:
+    elif const.ADDON_RUNNING_PYTHON_3:
         s = html.parser.HTMLParser().unescape(s)
     else:
         raise TypeError('Undefined Python runtime version.')
 
     if __debug_text_unescape_HTML:
-        log_debug('text_unescape_HTML() output "{}"'.format(s))
-
+        log.debug('text_unescape_HTML() output "{}"'.format(s))
     return s
 
 # Remove HTML tags from string.
-def text_remove_HTML_tags(s):
+def remove_HTML_tags(s):
     p = re.compile('<.*?>')
     s = p.sub('', s)
-
     return s
 
-def text_unescape_and_untag_HTML(s):
+def unescape_and_untag_HTML(s):
     s = text_unescape_HTML(s)
     s = text_remove_HTML_tags(s)
-
     return s
 
 # -------------------------------------------------------------------------------------------------
@@ -432,7 +422,7 @@ def text_unescape_and_untag_HTML(s):
 #
 # 1) Cleans ROM tags: [BIOS], (Europe), (Rev A), ...
 # 2) Substitutes some characters by spaces
-def text_format_ROM_name_for_scraping(title):
+def format_ROM_name_for_scraping(title):
     title = re.sub('\[.*?\]', '', title)
     title = re.sub('\(.*?\)', '', title)
     title = re.sub('\{.*?\}', '', title)
@@ -452,7 +442,7 @@ def text_format_ROM_name_for_scraping(title):
 # clean_tags -> bool
 #
 # Returns a Unicode string.
-def text_format_ROM_title(title, clean_tags):
+def format_ROM_title(title, clean_tags):
     #
     # Regexp to decompose a string in tokens
     #
@@ -485,7 +475,7 @@ def text_format_ROM_title(title, clean_tags):
 # URLs
 # -------------------------------------------------------------------------------------------------
 # Get extension of URL. Returns '' if not found. Examples: 'png', 'jpg', 'gif'.
-def text_get_URL_extension(url):
+def get_URL_extension(url):
     if ADDON_RUNNING_PYTHON_2:
         path = urlparse.urlparse(url).path
     elif ADDON_RUNNING_PYTHON_3:
@@ -497,7 +487,7 @@ def text_get_URL_extension(url):
     return ext
 
 # Defaults to 'jpg' if URL extension cannot be determined
-def text_get_image_URL_extension(url):
+def get_image_URL_extension(url):
     if ADDON_RUNNING_PYTHON_2:
         path = urlparse.urlparse(url).path
     elif ADDON_RUNNING_PYTHON_3:
@@ -515,7 +505,7 @@ def text_get_image_URL_extension(url):
 # TODO Filesystem IO functions must be moved to utils.py
 # -------------------------------------------------------------------------------------------------
 # Generates a random an unique MD5 hash and returns a string with the hash
-def misc_generate_random_SID():
+def generate_random_SID():
     t1 = time.time()
     t2 = t1 + random.getrandbits(32)
     if ADDON_RUNNING_PYTHON_2:
@@ -528,10 +518,10 @@ def misc_generate_random_SID():
     return sid
 
 # See https://docs.python.org/3.8/library/time.html#time.gmtime
-def misc_time_to_str(secs):
+def time_to_str(secs):
     return time.strftime('%a %d %b %Y %H:%M:%S', time.localtime(secs))
 
-def misc_escape_regex_special_chars(s):
+def escape_regex_special_chars(s):
     s = s.replace('(', '\(')
     s = s.replace(')', '\)')
     s = s.replace('+', '\+')
@@ -539,10 +529,10 @@ def misc_escape_regex_special_chars(s):
     return s
 
 # Search for a No-Intro DAT filename.
-def misc_look_for_NoIntro_DAT(platform, DAT_list):
-    # log_debug('Testing No-Intro platform "{}"'.format(platform.long_name))
+def look_for_NoIntro_DAT(platform, DAT_list):
+    # log.debug('Testing No-Intro platform "{}"'.format(platform.long_name))
     if not platform.DAT_prefix:
-        # log_debug('Empty DAT_prefix. Return empty string.')
+        # log.debug('Empty DAT_prefix. Return empty string.')
         return ''
     # Traverse all files and make a list of DAT matches.
     DAT_str = misc_escape_regex_special_chars(platform.DAT_prefix)
@@ -563,10 +553,10 @@ def misc_look_for_NoIntro_DAT(platform, DAT_list):
 # Atari - Jaguar CD Interactive Multimedia System - Datfile (10) (2019-08-27 00-06-32)
 # Commodore - Amiga CD - Datfile (350) (2019-06-28 13-05-34)
 # Commodore - Amiga CD32 - Datfile (157) (2019-09-24 21-03-02)
-def misc_look_for_Redump_DAT(platform, DAT_list):
-    # log_debug('Testing Redump platform "{}"'.format(platform.long_name))
+def look_for_Redump_DAT(platform, DAT_list):
+    # log.debug('Testing Redump platform "{}"'.format(platform.long_name))
     if not platform.DAT_prefix:
-        # log_debug('Empty DAT_prefix. Return empty string.')
+        # log.debug('Empty DAT_prefix. Return empty string.')
         return ''
     DAT_str = misc_escape_regex_special_chars(platform.DAT_prefix)
     patt = '.*' + DAT_str + ' \(\d+\) \((\d\d\d\d-\d\d-\d\d) (\d\d-\d\d-\d\d)\)\.dat'
@@ -587,7 +577,7 @@ def misc_look_for_Redump_DAT(platform, DAT_list):
 #  f = open()
 #  for chunk in misc_read_file_in_chunks(f):
 #     do_something()
-def misc_read_file_in_chunks(file_object, chunk_size = 8192):
+def read_file_in_chunks(file_object, chunk_size = 8192):
     while True:
         data = file_object.read(chunk_size)
         if not data: break
@@ -598,8 +588,8 @@ def misc_read_file_in_chunks(file_object, chunk_size = 8192):
 #
 # https://stackoverflow.com/questions/519633/lazy-method-for-reading-big-file-in-python
 # https://stackoverflow.com/questions/1742866/compute-crc-of-file-in-python
-def misc_calculate_file_checksums(full_file_path):
-    log_debug('Computing checksums "{}"'.format(full_file_path))
+def calculate_file_checksums(full_file_path):
+    log.debug('Computing checksums "{}"'.format(full_file_path))
     try:
         f = open(full_file_path, 'rb')
         crc_prev = 0
@@ -614,8 +604,8 @@ def misc_calculate_file_checksums(full_file_path):
         sha1_digest = sha1.hexdigest()
         size = os.path.getsize(full_file_path)
     except:
-        log_debug('(Exception) In misc_calculate_file_checksums()')
-        log_debug('Returning None')
+        log.debug('(Exception) In misc_calculate_file_checksums()')
+        log.debug('Returning None')
         return None
     checksums = {
         'crc'  : crc_digest.upper(),
@@ -627,7 +617,7 @@ def misc_calculate_file_checksums(full_file_path):
     return checksums
 
 # This function not finished yet.
-def misc_read_bytes_in_chunks(file_bytes, chunk_size = 8192):
+def read_bytes_in_chunks(file_bytes, chunk_size = 8192):
     file_length = len(file_bytes)
     block_number = 0
     while True:
@@ -636,8 +626,8 @@ def misc_read_bytes_in_chunks(file_bytes, chunk_size = 8192):
         data = file_bytes[start_index:end_index]
         yield data
 
-def misc_calculate_stream_checksums(file_bytes):
-    # log_debug('Computing checksums of bytes stream...'.format(len(file_bytes)))
+def calculate_stream_checksums(file_bytes):
+    # log.debug('Computing checksums of bytes stream...'.format(len(file_bytes)))
     crc_prev = 0
     md5 = hashlib.md5()
     sha1 = hashlib.sha1()
@@ -665,7 +655,7 @@ def misc_calculate_stream_checksums(file_bytes):
 
 # Replace an item in dictionary. If dict_in is an OrderedDict then keep original order.
 # Returns a dict or OrderedDict
-def misc_replace_fav(dict_in, old_item_key, new_item_key, new_value):
+def replace_fav(dict_in, old_item_key, new_item_key, new_value):
     if type(dict_in) is dict:
         dict_in.pop(old_item_key)
         dict_in[new_item_key] = new_value
@@ -686,7 +676,7 @@ def misc_replace_fav(dict_in, old_item_key, new_item_key, new_value):
 
 # Inspects an image file and determine its type by using the magic numbers,
 # Returns an image id defined in list IMAGE_IDS or IMAGE_UKNOWN_ID.
-def misc_identify_image_id_by_contents(asset_fname):
+def identify_image_id_by_contents(asset_fname):
     # If file size is 0 or less than 64 bytes it is corrupt.
     statinfo = os.stat(asset_fname)
     if statinfo.st_size < 64: return IMAGE_CORRUPT_ID
@@ -705,9 +695,9 @@ def misc_identify_image_id_by_contents(asset_fname):
     return IMAGE_UKNOWN_ID
 
 # Returns an image id defined in list IMAGE_IDS or IMAGE_UKNOWN_ID.
-def misc_identify_image_id_by_ext(asset_fname):
+def identify_image_id_by_ext(asset_fname):
     asset_root, asset_ext = os.path.splitext(asset_fname)
-    # log_debug('asset_ext {}'.format(asset_ext))
+    # log.debug('asset_ext {}'.format(asset_ext))
     if not asset_ext: return IMAGE_UKNOWN_ID
     asset_ext = asset_ext[1:] # Remove leading dot '.png' -> 'png'
     for img_id in IMAGE_EXTENSIONS:
@@ -717,7 +707,7 @@ def misc_identify_image_id_by_ext(asset_fname):
 
 # Remove initial and trailing quotation characters " or '
 # String must have 3 characters or more.
-def misc_strip_quotes(my_str):
+def strip_quotes(my_str):
     if len(my_str) < 3: return my_str
     my_str = my_str[1:] if my_str[0] == '"' or my_str[0] == "'" else my_str
     my_str = my_str[:-1] if my_str[-1] == '"' or my_str[-1] == "'" else my_str
@@ -738,8 +728,8 @@ def misc_strip_quotes(my_str):
 #  |  |  |------> Build version 0, 1, ..., 99
 #  |  |---------> Minor version 0, 1, ..., 99
 #  |------------> Major version 0, ..., infinity
-def misc_addon_version_str_to_int(AML_version_str):
-    # log_debug('misc_addon_version_str_to_int() AML_version_str = "{}"'.format(AML_version_str))
+def addon_version_str_to_int(AML_version_str):
+    # log.debug('misc_addon_version_str_to_int() AML_version_str = "{}"'.format(AML_version_str))
     version_int = 0
     # Parse versions like "0.9.8[-|~]alpha[jj]"
     m_obj_alpha_n = re.search('^(\d+?)\.(\d+?)\.(\d+?)[\-\~](alpha|beta)(\d+?)$', AML_version_str)
@@ -758,12 +748,12 @@ def misc_addon_version_str_to_int(AML_version_str):
             release_flag = 0
         elif kind_str == 'beta':
             release_flag = 1
-        # log_debug('misc_addon_version_str_to_int() major        {}'.format(major))
-        # log_debug('misc_addon_version_str_to_int() minor        {}'.format(minor))
-        # log_debug('misc_addon_version_str_to_int() build        {}'.format(build))
-        # log_debug('misc_addon_version_str_to_int() kind_str     {}'.format(kind_str))
-        # log_debug('misc_addon_version_str_to_int() release_flag {}'.format(release_flag))
-        # log_debug('misc_addon_version_str_to_int() beta         {}'.format(beta))
+        # log.debug('misc_addon_version_str_to_int() major        {}'.format(major))
+        # log.debug('misc_addon_version_str_to_int() minor        {}'.format(minor))
+        # log.debug('misc_addon_version_str_to_int() build        {}'.format(build))
+        # log.debug('misc_addon_version_str_to_int() kind_str     {}'.format(kind_str))
+        # log.debug('misc_addon_version_str_to_int() release_flag {}'.format(release_flag))
+        # log.debug('misc_addon_version_str_to_int() beta         {}'.format(beta))
         version_int = major * 10000000 + minor * 100000 + build * 1000 + release_flag * 100 + beta
     elif m_obj_alpha:
         major    = int(m_obj_alpha.group(1))
@@ -774,24 +764,23 @@ def misc_addon_version_str_to_int(AML_version_str):
             release_flag = 0
         elif kind_str == 'beta':
             release_flag = 1
-        # log_debug('misc_addon_version_str_to_int() major        {}'.format(major))
-        # log_debug('misc_addon_version_str_to_int() minor        {}'.format(minor))
-        # log_debug('misc_addon_version_str_to_int() build        {}'.format(build))
-        # log_debug('misc_addon_version_str_to_int() kind_str     {}'.format(kind_str))
-        # log_debug('misc_addon_version_str_to_int() release_flag {}'.format(release_flag))
+        # log.debug('misc_addon_version_str_to_int() major        {}'.format(major))
+        # log.debug('misc_addon_version_str_to_int() minor        {}'.format(minor))
+        # log.debug('misc_addon_version_str_to_int() build        {}'.format(build))
+        # log.debug('misc_addon_version_str_to_int() kind_str     {}'.format(kind_str))
+        # log.debug('misc_addon_version_str_to_int() release_flag {}'.format(release_flag))
         version_int = major * 10000000 + minor * 100000 + build * 1000 + release_flag * 100
     elif m_obj_standard:
         major = int(m_obj_standard.group(1))
         minor = int(m_obj_standard.group(2))
         build = int(m_obj_standard.group(3))
         release_flag = 5
-        # log_debug('misc_addon_version_str_to_int() major {}'.format(major))
-        # log_debug('misc_addon_version_str_to_int() minor {}'.format(minor))
-        # log_debug('misc_addon_version_str_to_int() build {}'.format(build))
+        # log.debug('misc_addon_version_str_to_int() major {}'.format(major))
+        # log.debug('misc_addon_version_str_to_int() minor {}'.format(minor))
+        # log.debug('misc_addon_version_str_to_int() build {}'.format(build))
         version_int = major * 10000000 + minor * 100000 + build * 1000 + release_flag * 100
     else:
-        # log_debug('AML addon version "{}" cannot be parsed.'.format(AML_version_str))
+        # log.debug('AML addon version "{}" cannot be parsed.'.format(AML_version_str))
         raise TypeError('misc_addon_version_str_to_int() failure')
-    # log_debug('misc_addon_version_str_to_int() version_int = {}'.format(version_int))
-
+    # log.debug('addon_version_str_to_int() version_int = {}'.format(version_int))
     return version_int

@@ -24,7 +24,7 @@ import os
 # Get extensions to search for files
 # Input : ['png', 'jpg']
 # Output: ['png', 'jpg', 'PNG', 'JPG']
-def asset_get_filesearch_extension_list(exts):
+def get_filesearch_extension_list(exts):
     ext_list = list(exts)
     for ext in exts:
         ext_list.append(ext.upper())
@@ -33,7 +33,7 @@ def asset_get_filesearch_extension_list(exts):
 # Gets extensions to be used in Kodi file dialog.
 # Input : ['png', 'jpg']
 # Output: '.png|.jpg'
-def asset_get_dialog_extension_list(exts):
+def get_dialog_extension_list(exts):
     ext_string = ''
     for ext in exts:
         ext_string += '.' + ext + '|'
@@ -44,7 +44,7 @@ def asset_get_dialog_extension_list(exts):
 # Gets extensions to be used in regular expressions.
 # Input : ['png', 'jpg']
 # Output: '(png|jpg)'
-def asset_get_regexp_extension_list(exts):
+def get_regexp_extension_list(exts):
     ext_string = ''
     for ext in exts:
         ext_string += ext + '|'
@@ -55,7 +55,7 @@ def asset_get_regexp_extension_list(exts):
 # -------------------------------------------------------------------------------------------------
 # Asset functions
 # -------------------------------------------------------------------------------------------------
-def assets_get_default_artwork_dir(asset_ID, launcher):
+def get_default_artwork_dir(asset_ID, launcher):
     if launcher['platform'] == 'MAME':
         if   asset_ID == ASSET_FANART_ID: return 'fanarts'
         elif asset_ID == ASSET_BANNER_ID: return 'marquees'
@@ -89,8 +89,8 @@ def assets_get_default_artwork_dir(asset_ID, launcher):
 
 # Creates path for assets (artwork) and automatically fills in the path_ fields in the launcher
 # struct.
-def assets_init_asset_dir(assets_path_FName, launcher):
-    log_debug('assets_init_asset_dir() asset_path "{}"'.format(assets_path_FName.getPath()))
+def init_asset_dir(assets_path_FName, launcher):
+    log.debug('init_asset_dir() asset_path "{}"'.format(assets_path_FName.getPath()))
 
     # --- Fill in launcher fields and create asset directories ---
     if launcher['platform'] == 'MAME':
@@ -122,40 +122,30 @@ def assets_init_asset_dir(assets_path_FName, launcher):
         assets_parse_asset_dir(launcher, assets_path_FName, 'path_manual', 'manuals')
         assets_parse_asset_dir(launcher, assets_path_FName, 'path_trailer', 'trailers')
 
-#
 # Create asset path and assign it to Launcher dictionary.
-#
-def assets_parse_asset_dir(launcher, assets_path_FName, key, pathName):
-    subPath       = assets_path_FName.pjoin(pathName)
+def parse_asset_dir(launcher, assets_path_FName, key, pathName):
+    subPath = assets_path_FName.pjoin(pathName)
     launcher[key] = subPath.getOriginalPath()
-    log_debug('assets_parse_asset_dir() Creating dir "{}"'.format(subPath.getPath()))
+    log.debug('parse_asset_dir() Creating dir "{}"'.format(subPath.getPath()))
     subPath.makedirs()
 
-#
 # Get artwork user configured to be used as icon/fanart/... for Categories/Launchers
-#
-def asset_get_default_asset_Category(object_dic, object_key, default_asset = ''):
+def get_default_asset_Category(object_dic, object_key, default_asset = ''):
     conf_asset_key = object_dic[object_key]
-    asset_path     = object_dic[conf_asset_key] if object_dic[conf_asset_key] else default_asset
-
+    asset_path = object_dic[conf_asset_key] if object_dic[conf_asset_key] else default_asset
     return asset_path
 
-#
 # Same for ROMs
-#
-def asset_get_default_asset_Launcher_ROM(rom, launcher, object_key, default_asset = ''):
+def get_default_asset_Launcher_ROM(rom, launcher, object_key, default_asset = ''):
     conf_asset_key = launcher[object_key]
-    asset_path     = rom[conf_asset_key] if rom[conf_asset_key] else default_asset
-
+    asset_path = rom[conf_asset_key] if rom[conf_asset_key] else default_asset
     return asset_path
 
-#
 # Gets a human readable name string for the asset field name.
-#
-def assets_get_asset_name_str(default_asset):
+def get_asset_name_str(default_asset):
     asset_name_str = ''
 
-    # >> ROMs
+    # ROMs
     if   default_asset == 's_title':     asset_name_str = 'Title'
     elif default_asset == 's_snap':      asset_name_str = 'Snap'
     elif default_asset == 's_boxfront':  asset_name_str = 'Boxfront'
@@ -168,43 +158,36 @@ def assets_get_asset_name_str(default_asset):
     elif default_asset == 's_map':       asset_name_str = 'Map'
     elif default_asset == 's_manual':    asset_name_str = 'Manual'
     elif default_asset == 's_trailer':   asset_name_str = 'Trailer'
-    # >> Categories/Launchers
+    # Categories/Launchers
     elif default_asset == 's_icon':       asset_name_str = 'Icon'
     elif default_asset == 's_poster':     asset_name_str = 'Poster'
     elif default_asset == 's_controller': asset_name_str = 'Controller'
     else:
         kodi_notify_warn('Wrong asset key {}'.format(default_asset))
-        log_error('assets_get_asset_name_str() Wrong default_thumb {}'.format(default_asset))
+        log_error('get_asset_name_str() Wrong default_thumb {}'.format(default_asset))
 
     return asset_name_str
 
-#
 # This must match the order of the list Category_asset_ListItem_list in _command_edit_category()
-#
-def assets_choose_Category_mapped_artwork(dict_object, key, index):
+def choose_Category_mapped_artwork(dict_object, key, index):
     if   index == 0: dict_object[key] = 's_icon'
     elif index == 1: dict_object[key] = 's_fanart'
     elif index == 2: dict_object[key] = 's_banner'
     elif index == 3: dict_object[key] = 's_poster'
     elif index == 4: dict_object[key] = 's_clearlogo'
 
-#
 # This must match the order of the list Category_asset_ListItem_list in _command_edit_category()
-#
-def assets_get_Category_mapped_asset_idx(dict_object, key):
+def get_Category_mapped_asset_idx(dict_object, key):
     if   dict_object[key] == 's_icon':       index = 0
     elif dict_object[key] == 's_fanart':     index = 1
     elif dict_object[key] == 's_banner':     index = 2
     elif dict_object[key] == 's_poster':     index = 3
     elif dict_object[key] == 's_clearlogo':  index = 4
     else:                                    index = 0
-
     return index
 
-#
 # This must match the order of the list Launcher_asset_ListItem_list in _command_edit_launcher()
-#
-def assets_choose_Launcher_mapped_artwork(dict_object, key, index):
+def choose_Launcher_mapped_artwork(dict_object, key, index):
     if   index == 0: dict_object[key] = 's_icon'
     elif index == 1: dict_object[key] = 's_fanart'
     elif index == 2: dict_object[key] = 's_banner'
@@ -212,10 +195,8 @@ def assets_choose_Launcher_mapped_artwork(dict_object, key, index):
     elif index == 4: dict_object[key] = 's_clearlogo'
     elif index == 5: dict_object[key] = 's_controller'
 
-#
 # This must match the order of the list Launcher_asset_ListItem_list in _command_edit_launcher()
-#
-def assets_get_Launcher_mapped_asset_idx(dict_object, key):
+def get_Launcher_mapped_asset_idx(dict_object, key):
     if   dict_object[key] == 's_icon':       index = 0
     elif dict_object[key] == 's_fanart':     index = 1
     elif dict_object[key] == 's_banner':     index = 2
@@ -223,13 +204,10 @@ def assets_get_Launcher_mapped_asset_idx(dict_object, key):
     elif dict_object[key] == 's_clearlogo':  index = 4
     elif dict_object[key] == 's_controller': index = 5
     else:                                    index = 0
-
     return index
 
-#
 # This must match the order of the list ROM_asset_str_list in _command_edit_launcher()
-#
-def assets_choose_ROM_mapped_artwork(dict_object, key, index):
+def choose_ROM_mapped_artwork(dict_object, key, index):
     if   index == 0: dict_object[key] = 's_title'
     elif index == 1: dict_object[key] = 's_snap'
     elif index == 2: dict_object[key] = 's_boxfront'
@@ -241,10 +219,8 @@ def assets_choose_ROM_mapped_artwork(dict_object, key, index):
     elif index == 8: dict_object[key] = 's_flyer'
     elif index == 9: dict_object[key] = 's_map'
 
-#
 # This must match the order of the list ROM_asset_str_list in _command_edit_launcher()
-#
-def assets_get_ROM_mapped_asset_idx(dict_object, key):
+def get_ROM_mapped_asset_idx(dict_object, key):
     if   dict_object[key] == 's_title':     index = 0
     elif dict_object[key] == 's_snap':      index = 1
     elif dict_object[key] == 's_boxfront':  index = 2
@@ -256,7 +232,6 @@ def assets_get_ROM_mapped_asset_idx(dict_object, key):
     elif dict_object[key] == 's_flyer':     index = 8
     elif dict_object[key] == 's_map':       index = 9
     else:                                   index = 0
-
     return index
 
 # -------------------------------------------------------------------------------------------------
@@ -274,7 +249,7 @@ class AssetInfo:
     exts_dialog = []
     path_key    = ''
 
-def assets_get_info_scheme(asset_kind):
+def get_info_scheme(asset_kind):
     A = AssetInfo()
 
     if asset_kind == ASSET_ICON_ID:
@@ -425,14 +400,14 @@ def assets_get_info_scheme(asset_kind):
         log_error('assets_get_info_scheme() Wrong asset_kind = {}'.format(asset_kind))
 
     # --- Ultra DEBUG ---
-    # log_debug('assets_get_info_scheme() asset_kind    {}'.format(asset_kind))
-    # log_debug('assets_get_info_scheme() A.key         {}'.format(A.key))
-    # log_debug('assets_get_info_scheme() A.name        {}'.format(A.name))
-    # log_debug('assets_get_info_scheme() A.fname_infix {}'.format(A.fname_infix))
-    # log_debug('assets_get_info_scheme() A.kind_str    {}'.format(A.kind_str))
-    # log_debug('assets_get_info_scheme() A.exts        {}'.format(A.exts))
-    # log_debug('assets_get_info_scheme() A.exts_dialog {}'.format(A.exts_dialog))
-    # log_debug('assets_get_info_scheme() A.path_key    {}'.format(A.path_key))
+    # log.debug('assets_get_info_scheme() asset_kind    {}'.format(asset_kind))
+    # log.debug('assets_get_info_scheme() A.key         {}'.format(A.key))
+    # log.debug('assets_get_info_scheme() A.name        {}'.format(A.name))
+    # log.debug('assets_get_info_scheme() A.fname_infix {}'.format(A.fname_infix))
+    # log.debug('assets_get_info_scheme() A.kind_str    {}'.format(A.kind_str))
+    # log.debug('assets_get_info_scheme() A.exts        {}'.format(A.exts))
+    # log.debug('assets_get_info_scheme() A.exts_dialog {}'.format(A.exts_dialog))
+    # log.debug('assets_get_info_scheme() A.path_key    {}'.format(A.path_key))
 
     return A
 
@@ -443,7 +418,7 @@ def assets_get_info_scheme(asset_kind):
 # ROM       -> ROM name FileName object
 #
 # Returns a FileName object
-def assets_get_path_noext_DIR(Asset, AssetPath, ROM):
+def get_path_noext_DIR(Asset, AssetPath, ROM):
     return AssetPath.pjoin(ROM.getBaseNoExt())
 
 # Scheme SUFIX uses suffixes for artwork. All artwork assets are stored in the same directory.
@@ -457,7 +432,7 @@ def assets_get_path_noext_DIR(Asset, AssetPath, ROM):
 # objectID          Object MD5 ID fingerprint (Unicode string)
 #
 # Returns asset/artwork path_noext as FileName object.
-def assets_get_path_noext_SUFIX(Asset, AssetPath, asset_base_noext, objectID = '000'):
+def get_path_noext_SUFIX(Asset, AssetPath, asset_base_noext, objectID = '000'):
     asset_path_noext_FileName = FileName('')
     objectID_str = '_' + objectID[0:3]
 
@@ -500,7 +475,7 @@ def assets_get_path_noext_SUFIX(Asset, AssetPath, asset_base_noext, objectID = '
 
 # Get the asset path noext. Used in ScrapeStrategy.scrap_CM_asset_all()
 # Returns a FileName object.
-def assets_get_ROM_path_noext(object_dic, data_dic, asset_ID):
+def get_ROM_path_noext(object_dic, data_dic, asset_ID):
     # Unpack data in data_dic
     ROM_FN = data_dic['ROM_FN']
     platform = data_dic['platform']
@@ -523,7 +498,7 @@ def assets_get_ROM_path_noext(object_dic, data_dic, asset_ID):
     else:
         asset_dir_FN = FileName(launchers[launcherID][asset_info.path_key])
         asset_path_noext_FN = assets_get_path_noext_DIR(asset_info, asset_dir_FN, ROM_FN)
-    # log_debug('assets_get_ROM_path_noext() Return {}'.format(asset_path_noext_FN.getPath()))
+    # log.debug('assets_get_ROM_path_noext() Return {}'.format(asset_path_noext_FN.getPath()))
     return asset_path_noext_FN
 
 # Returns the basename of a collection asset as a FileName object.
@@ -533,17 +508,16 @@ def assets_get_ROM_path_noext(object_dic, data_dic, asset_ID):
 #      object, not necessarily a filename.
 #
 # Returns a Unicode string
-def assets_get_collection_asset_basename(AInfo, basename_noext, platform, ext):
+def get_collection_asset_basename(AInfo, basename_noext, platform, ext):
     pindex = get_AEL_platform_index(platform)
     platform_compact_name = AEL_platforms[pindex].compact_name
-
     return basename_noext + '_' + platform_compact_name + '_' + AInfo.fname_infix + ext
 
 # Get a list of enabled assets.
 #
 # Returns tuple:
 # configured_bool_list    List of boolean values. It has all assets defined in ROM_ASSET_ID_LIST
-def asset_get_enabled_asset_list(launcher):
+def get_enabled_asset_list(launcher):
     configured_bool_list = [False] * len(ROM_ASSET_ID_LIST)
 
     # Check if asset paths are configured or not
@@ -551,41 +525,36 @@ def asset_get_enabled_asset_list(launcher):
         A = assets_get_info_scheme(asset)
         configured_bool_list[i] = True if launcher[A.path_key] else False
         if not configured_bool_list[i]:
-            log_debug('asset_get_enabled_asset_list() {:<9} path unconfigured'.format(A.name))
+            log.debug('asset_get_enabled_asset_list() {:<9} path unconfigured'.format(A.name))
         else:
-            log_debug('asset_get_enabled_asset_list() {:<9} path configured'.format(A.name))
-
+            log.debug('asset_get_enabled_asset_list() {:<9} path configured'.format(A.name))
     return configured_bool_list
 
 # unconfigured_name_list  List of disabled asset names
-def asset_get_unconfigured_name_list(configured_bool_list):
+def get_unconfigured_name_list(configured_bool_list):
     unconfigured_name_list = []
-
     for i, asset in enumerate(ROM_ASSET_ID_LIST):
         A = assets_get_info_scheme(asset)
         if not configured_bool_list[i]:
             unconfigured_name_list.append(A.name)
-
     return unconfigured_name_list
 
 # Get a list of assets with duplicated paths. Refuse to do anything if duplicated paths found.
-def asset_get_duplicated_dir_list(launcher):
+def get_duplicated_dir_list(launcher):
     duplicated_bool_list = [False] * len(ROM_ASSET_ID_LIST)
     duplicated_name_list = []
-
     # Check for duplicated asset paths
     for i, asset_i in enumerate(ROM_ASSET_ID_LIST[:-1]):
-        A_i = assets_get_info_scheme(asset_i)
+        A_i = get_info_scheme(asset_i)
         for j, asset_j in enumerate(ROM_ASSET_ID_LIST[i+1:]):
-            A_j = assets_get_info_scheme(asset_j)
-            # >> Exclude unconfigured assets (empty strings).
+            A_j = get_info_scheme(asset_j)
+            # Exclude unconfigured assets (empty strings).
             if not launcher[A_i.path_key] or not launcher[A_j.path_key]: continue
-            # log_debug('asset_get_duplicated_asset_list() Checking {0:<9} vs {1:<9}'.format(A_i.name, A_j.name))
+            # log.debug('asset_get_duplicated_asset_list() Checking {0:<9} vs {1:<9}'.format(A_i.name, A_j.name))
             if launcher[A_i.path_key] == launcher[A_j.path_key]:
                 duplicated_bool_list[i] = True
                 duplicated_name_list.append('{} and {}'.format(A_i.name, A_j.name))
                 log_info('asset_get_duplicated_asset_list() DUPLICATED {} and {}'.format(A_i.name, A_j.name))
-
     return duplicated_name_list
 
 # Search for local assets and place found files into a list.
@@ -595,44 +564,44 @@ def asset_get_duplicated_dir_list(launcher):
 # launcher               -> launcher dictionary
 # ROMFile                -> FileName object
 # enabled_ROM_ASSET_ID_LIST -> list of booleans
-def assets_search_local_cached_assets(launcher, ROMFile, enabled_ROM_ASSET_ID_LIST):
-    log_debug('assets_search_local_cached_assets() Searching for ROM local assets...')
+def search_local_cached_assets(launcher, ROMFile, enabled_ROM_ASSET_ID_LIST):
+    log.debug('assets_search_local_cached_assets() Searching for ROM local assets...')
     local_asset_list = [''] * len(ROM_ASSET_ID_LIST)
     rom_basename_noext = ROMFile.getBaseNoExt()
     for i, asset_kind in enumerate(ROM_ASSET_ID_LIST):
         AInfo = assets_get_info_scheme(asset_kind)
         if not enabled_ROM_ASSET_ID_LIST[i]:
-            log_debug('Disabled {:<9}'.format(AInfo.name))
+            log.debug('Disabled {:<9}'.format(AInfo.name))
             continue
         local_asset = utils_file_cache_search(launcher[AInfo.path_key], rom_basename_noext, AInfo.exts)
         if local_asset:
             local_asset_list[i] = local_asset.getOriginalPath()
-            log_debug('Found    {:<9} "{}"'.format(AInfo.name, local_asset_list[i]))
+            log.debug('Found    {:<9} "{}"'.format(AInfo.name, local_asset_list[i]))
         else:
             local_asset_list[i] = ''
-            log_debug('Missing  {:<9}'.format(AInfo.name))
+            log.debug('Missing  {:<9}'.format(AInfo.name))
 
     return local_asset_list
 
 # Search for local assets and put found files into a list.
 # This function is used in _roms_add_new_rom() where there is no need for a file cache.
 def assets_search_local_assets(launcher, ROMFile, enabled_ROM_ASSET_ID_LIST):
-    log_debug('assets_search_local_assets() Searching for ROM local assets...')
+    log.debug('assets_search_local_assets() Searching for ROM local assets...')
     local_asset_list = [''] * len(ROM_ASSET_ID_LIST)
     for i, asset_kind in enumerate(ROM_ASSET_ID_LIST):
         AInfo = assets_get_info_scheme(asset_kind)
         if not enabled_ROM_ASSET_ID_LIST[i]:
-            log_debug('assets_search_local_assets() Disabled {:<9}'.format(AInfo.name))
+            log.debug('assets_search_local_assets() Disabled {:<9}'.format(AInfo.name))
             continue
         asset_path = FileName(launcher[AInfo.path_key])
         local_asset = utils_look_for_file(asset_path, ROMFile.getBaseNoExt(), AInfo.exts)
 
         if local_asset:
             local_asset_list[i] = local_asset.getOriginalPath()
-            log_debug('assets_search_local_assets() Found    {:<9} "{}"'.format(AInfo.name, local_asset_list[i]))
+            log.debug('assets_search_local_assets() Found    {:<9} "{}"'.format(AInfo.name, local_asset_list[i]))
         else:
             local_asset_list[i] = ''
-            log_debug('assets_search_local_assets() Missing  {:<9}'.format(AInfo.name))
+            log.debug('assets_search_local_assets() Missing  {:<9}'.format(AInfo.name))
 
     return local_asset_list
 
@@ -647,9 +616,9 @@ def assets_get_ROM_asset_path(launcher):
     AInfo_first = assets_get_info_scheme(ROM_ASSET_ID_LIST[0])
     path_first_asset_FN = FileName(launcher[AInfo_first.path_key])
     ROM_asset_path_FN = FileName(path_first_asset_FN.getDir())
-    log_debug('assets_get_ROM_asset_path() path_first_asset_FN OP "{}"'.format(path_first_asset_FN.getOriginalPath()))
-    log_debug('assets_get_ROM_asset_path() path_first_asset_FN Base "{}"'.format(path_first_asset_FN.getBase()))
-    log_debug('assets_get_ROM_asset_path() ROM_asset_path_FN Dir "{}"'.format(ROM_asset_path_FN.getDir()))
+    log.debug('assets_get_ROM_asset_path() path_first_asset_FN OP "{}"'.format(path_first_asset_FN.getOriginalPath()))
+    log.debug('assets_get_ROM_asset_path() path_first_asset_FN Base "{}"'.format(path_first_asset_FN.getBase()))
+    log.debug('assets_get_ROM_asset_path() ROM_asset_path_FN Dir "{}"'.format(ROM_asset_path_FN.getDir()))
     for i, asset_kind in enumerate(ROM_ASSET_ID_LIST):
         AInfo = assets_get_info_scheme(asset_kind)
         # If asset path is unconfigured consider it as common so a default path will

@@ -12,12 +12,12 @@
 # See the GNU General Public License for more details.
 
 # Advanced Emulator/MAME Launcher utility functions.
-#
 # The idea if this module is to share it between AEL and AML.
 #
-# Logging functions.
+# Log related functions.
 
 # --- Addon modules ---
+import resources.const as const
 
 # --- Kodi modules ---
 try:
@@ -67,39 +67,36 @@ def debug_KR(text_line):
 
     # If it is bytes we assume it's "utf-8" encoded.
     # will fail if called with other encodings (latin, etc).
-    if isinstance(text_line, binary_type): text_line = text_line.decode('utf-8')
+    if isinstance(text_line, const.binary_type): text_line = text_line.decode('utf-8')
 
     # At this point we are sure text_line is a Unicode string.
     # Kodi functions (Python 3) require Unicode strings as arguments.
     # Kodi functions (Python 2) require UTF-8 encoded bytes as arguments.
-    log_text = ADDON_SHORT_NAME + ' DEBUG: ' + text_line
+    log_text = const.ADDON_SHORT_NAME + ' DEBUG: ' + text_line
     xbmc.log(log_text, level = xbmc.LOGINFO)
 
 def info_KR(text_line):
     if current_log_level < LOG_INFO: return
-    if isinstance(text_line, binary_type): text_line = text_line.decode('utf-8')
-    log_text = ADDON_SHORT_NAME + ' INFO : ' + text_line
+    if isinstance(text_line, const.binary_type): text_line = text_line.decode('utf-8')
+    log_text = const.ADDON_SHORT_NAME + ' INFO : ' + text_line
     xbmc.log(log_text, level = xbmc.LOGINFO)
 
 def warning_KR(text_line):
     if current_log_level < LOG_WARNING: return
-    if isinstance(text_line, binary_type): text_line = text_line.decode('utf-8')
-    log_text = ADDON_SHORT_NAME + ' WARN : ' + text_line
+    if isinstance(text_line, const.binary_type): text_line = text_line.decode('utf-8')
+    log_text = const.ADDON_SHORT_NAME + ' WARN : ' + text_line
     xbmc.log(log_text, level = xbmc.LOGWARNING)
 
 def error_KR(text_line):
     if current_log_level < LOG_ERROR: return
-    if isinstance(text_line, binary_type): text_line = text_line.decode('utf-8')
-    log_text = ADDON_SHORT_NAME + ' ERROR: ' + text_line
+    if isinstance(text_line, const.binary_type): text_line = text_line.decode('utf-8')
+    log_text = const.ADDON_SHORT_NAME + ' ERROR: ' + text_line
     xbmc.log(log_text, level = xbmc.LOGERROR)
 
 # Replacement functions when running outside Kodi with the standard Python interpreter.
 def debug_Python(text_line): print(text_line)
-
 def info_Python(text_line): print(text_line)
-
 def warning_Python(text_line): print(text_line)
-
 def error_Python(text_line): print(text_line)
 
 # ------------------------------------------------------------------------------------------------

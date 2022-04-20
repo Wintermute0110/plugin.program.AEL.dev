@@ -132,7 +132,7 @@ def audit_load_LB_metadata_XML(filename_FN, games_dic, platforms_dic, gameimages
         return
 
     # --- Parse using cElementTree ---
-    log_debug('audit_load_LB_metadata_XML() Loading "{}"'.format(filename_FN.getPath()))
+    log.debug('audit_load_LB_metadata_XML() Loading "{}"'.format(filename_FN.getPath()))
     xml_tree = utils_load_XML_to_ET(filename_FN.getPath())
     xml_root = xml_tree.getroot()
     for xml_element in xml_root:
@@ -177,9 +177,9 @@ def audit_load_LB_metadata_XML(filename_FN, games_dic, platforms_dic, gameimages
         else:
             log_info('Unknwon main tag <{}>'.format(xml_element.tag))
             return
-    log_debug('audit_load_LB_metadata_XML() Loaded {} games ({} bytes)'.format(len(games_dic), sys.getsizeof(games_dic)))
-    log_debug('audit_load_LB_metadata_XML() Loaded {} platforms'.format(len(platforms_dic)))
-    log_debug('audit_load_LB_metadata_XML() Loaded {} game images'.format(len(gameimages_dic)))
+    log.debug('audit_load_LB_metadata_XML() Loaded {} games ({} bytes)'.format(len(games_dic), sys.getsizeof(games_dic)))
+    log.debug('audit_load_LB_metadata_XML() Loaded {} platforms'.format(len(platforms_dic)))
+    log.debug('audit_load_LB_metadata_XML() Loaded {} game images'.format(len(gameimages_dic)))
 
 # -------------------------------------------------------------------------------------------------
 # Functions
@@ -195,7 +195,7 @@ def audit_load_OfflineScraper_XML(xml_file):
         return games
 
     # --- Parse using cElementTree ---
-    log_debug('audit_load_OfflineScraper_XML() Loading "{}"'.format(xml_file))
+    log.debug('audit_load_OfflineScraper_XML() Loading "{}"'.format(xml_file))
     try:
         xml_tree = xml.etree.ElementTree.parse(xml_file)
     except xml.etree.ElementTree.ParseError as ex:
@@ -205,7 +205,7 @@ def audit_load_OfflineScraper_XML(xml_file):
     xml_root = xml_tree.getroot()
     for game_element in xml_root:
         if __debug_xml_parser:
-            log_debug('=== Root child tag "{}" ==='.format(game_element.tag))
+            log.debug('=== Root child tag "{}" ==='.format(game_element.tag))
 
         if game_element.tag == 'game':
             # Default values
@@ -213,7 +213,7 @@ def audit_load_OfflineScraper_XML(xml_file):
 
             # ROM name is an attribute of <game>
             game['ROM'] = game_element.attrib['ROM']
-            if __debug_xml_parser: log_debug('Game name = "{}"'.format(game['ROM']))
+            if __debug_xml_parser: log.debug('Game name = "{}"'.format(game['ROM']))
 
             # Parse child tags of category
             for game_child in game_element:
@@ -221,7 +221,7 @@ def audit_load_OfflineScraper_XML(xml_file):
                 xml_text = game_child.text if game_child.text is not None else ''
                 xml_text = text_unescape_XML(xml_text)
                 xml_tag  = game_child.tag
-                if __debug_xml_parser: log_debug('Tag "{}" --> "{}"'.format(xml_tag, xml_text))
+                if __debug_xml_parser: log.debug('Tag "{}" --> "{}"'.format(xml_tag, xml_text))
                 game[xml_tag] = xml_text
             games[game['ROM']] = game
 
@@ -243,7 +243,7 @@ def audit_load_NoIntro_XML_file(xml_FN):
         return nointro_roms
 
     # --- Parse using cElementTree ---
-    log_debug('Loading XML "{}"'.format(xml_FN.getOriginalPath()))
+    log.debug('Loading XML "{}"'.format(xml_FN.getOriginalPath()))
     try:
         xml_tree = xml.etree.ElementTree.parse(xml_FN.getPath())
     except xml.etree.ElementTree.ParseError as ex:
@@ -273,7 +273,7 @@ def audit_load_GameDB_XML(xml_FN):
     if not xml_FN.exists():
         log_error('Does not exists "{}"'.format(xml_FN.getPath()))
         return games
-    log_debug('Loading XML "{}"'.format(xml_FN.getPath()))
+    log.debug('Loading XML "{}"'.format(xml_FN.getPath()))
     try:
         xml_tree = xml.etree.ElementTree.parse(xml_FN.getPath())
     except xml.etree.ElementTree.ParseError as ex:
@@ -283,7 +283,7 @@ def audit_load_GameDB_XML(xml_FN):
     xml_root = xml_tree.getroot()
     for game_element in xml_root:
         if __debug_xml_parser:
-            log_debug('=== Root child tag "{}" ==='.format(game_element.tag))
+            log.debug('=== Root child tag "{}" ==='.format(game_element.tag))
 
         if game_element.tag == 'game':
             # Default values
@@ -291,7 +291,7 @@ def audit_load_GameDB_XML(xml_FN):
 
             # ROM name is an attribute of <game>
             game['name'] = game_element.attrib['name']
-            if __debug_xml_parser: log_debug('Game name = "{}"'.format(game['name']))
+            if __debug_xml_parser: log.debug('Game name = "{}"'.format(game['name']))
 
             # Parse child tags of category
             for game_child in game_element:
@@ -299,7 +299,7 @@ def audit_load_GameDB_XML(xml_FN):
                 xml_text = game_child.text if game_child.text is not None else ''
                 xml_text = text_unescape_XML(xml_text)
                 xml_tag  = game_child.tag
-                if __debug_xml_parser: log_debug('Tag "{}" --> "{}"'.format(xml_tag, xml_text))
+                if __debug_xml_parser: log.debug('Tag "{}" --> "{}"'.format(xml_tag, xml_text))
                 game[xml_tag] = xml_text
             key = game['name']
             games[key] = game
@@ -318,7 +318,7 @@ def audit_load_Tempest_INI(file_FN):
     if not file_FN.exists():
         log_error('Does not exists "{}"'.format(file_FN.getPath()))
         return games
-    log_debug('Loading XML "{}"'.format(file_FN.getPath()))
+    log.debug('Loading XML "{}"'.format(file_FN.getPath()))
     try:
         f = open(file_FN.getPath(), 'rt')
     except IOError:
@@ -377,7 +377,7 @@ def audit_load_HyperList_XML(xml_FN):
     if not xml_FN.exists():
         log_error('Does not exists "{}"'.format(xml_FN.getPath()))
         return games
-    log_debug('Loading XML "{}"'.format(xml_FN.getPath()))
+    log.debug('Loading XML "{}"'.format(xml_FN.getPath()))
     try:
         xml_tree = ET.parse(xml_FN.getPath())
     except ET.ParseError as ex:
@@ -390,7 +390,7 @@ def audit_load_HyperList_XML(xml_FN):
     xml_root = xml_tree.getroot()
     for game_element in xml_root:
         if __debug_xml_parser:
-            log_debug('=== Root child tag "{}" ==='.format(game_element.tag))
+            log.debug('=== Root child tag "{}" ==='.format(game_element.tag))
 
         if game_element.tag == 'game':
             # Default values
@@ -398,7 +398,7 @@ def audit_load_HyperList_XML(xml_FN):
 
             # ROM name is an attribute of <game>
             game['name'] = game_element.attrib['name']
-            if __debug_xml_parser: log_debug('Game name = "{}"'.format(game['name']))
+            if __debug_xml_parser: log.debug('Game name = "{}"'.format(game['name']))
 
             # Parse child tags of category
             for game_child in game_element:
@@ -406,7 +406,7 @@ def audit_load_HyperList_XML(xml_FN):
                 xml_text = game_child.text if game_child.text is not None else ''
                 xml_text = text_unescape_XML(xml_text)
                 xml_tag  = game_child.tag
-                if __debug_xml_parser: log_debug('Tag "{}" --> "{}"'.format(xml_tag, xml_text))
+                if __debug_xml_parser: log.debug('Tag "{}" --> "{}"'.format(xml_tag, xml_text))
                 game[xml_tag] = xml_text
             key = game['name']
             games[key] = game
@@ -476,8 +476,8 @@ def audit_generate_DAT_PClone_index(roms, roms_nointro, unknown_ROMs_are_parents
         rom = roms[rom_id]
         ROMFileName = FileName(rom['filename'])
         rom_name = ROMFileName.getBaseNoExt()
-        # log_debug('{} --> {}'.format(rom_name, rom_id))
-        # log_debug('{}'.format(rom))
+        # log.debug('{} --> {}'.format(rom_name, rom_id))
+        # log.debug('{}'.format(rom))
         names_to_ids_dic[rom_name] = rom_id
 
     # --- Build PClone dictionary using ROM base_noext names ---
@@ -485,11 +485,11 @@ def audit_generate_DAT_PClone_index(roms, roms_nointro, unknown_ROMs_are_parents
         rom = roms[rom_id]
         ROMFileName = FileName(rom['filename'])
         rom_nointro_name = ROMFileName.getBaseNoExt()
-        # log_debug('rom_id {}'.format(rom_id))
-        # log_debug('  nointro_status   "{}"'.format(rom['nointro_status']))
-        # log_debug('  filename         "{}"'.format(rom['filename']))
-        # log_debug('  ROM_base_noext   "{}"'.format(ROMFileName.getBaseNoExt()))
-        # log_debug('  rom_nointro_name "{}"'.format(rom_nointro_name))
+        # log.debug('rom_id {}'.format(rom_id))
+        # log.debug('  nointro_status   "{}"'.format(rom['nointro_status']))
+        # log.debug('  filename         "{}"'.format(rom['filename']))
+        # log.debug('  ROM_base_noext   "{}"'.format(ROMFileName.getBaseNoExt()))
+        # log.debug('  rom_nointro_name "{}"'.format(rom_nointro_name))
 
         if rom['nointro_status'] == AUDIT_STATUS_UNKNOWN:
             if unknown_ROMs_are_parents:

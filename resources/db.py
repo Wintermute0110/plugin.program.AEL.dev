@@ -18,6 +18,7 @@
 import resources.const as const
 import resources.misc as misc
 import resources.log as log
+import resources.utils as utils
 import resources.assets as assets
 import resources.audit as audit
 
@@ -35,7 +36,7 @@ import time
 # These three functions create a new data structure for the given object and (very importantly)
 # fill the correct default values). These must match what is written/read from/to the XML files.
 # Tag name in the XML is the same as in the data dictionary.
-def db_new_category():
+def new_category():
     return {
         'id' : '',
         'm_name' : '',
@@ -59,7 +60,7 @@ def db_new_category():
         's_trailer' : ''
     }
 
-def db_new_launcher():
+def new_launcher():
     return {
         'id' : '',
         'm_name' : '',
@@ -81,11 +82,11 @@ def db_new_launcher():
         'non_blocking' : False,
         'multidisc' : True,
         'roms_base_noext' : '',
-        'audit_state' : AUDIT_STATE_OFF,
+        'audit_state' : const.AUDIT_STATE_OFF,
         'audit_auto_dat_file' : '',
         'audit_custom_dat_file' : '',
-        'audit_display_mode' : AUDIT_DMODE_ALL,
-        'launcher_display_mode' : LAUNCHER_DMODE_FLAT,
+        'audit_display_mode' : const.AUDIT_DMODE_ALL,
+        'launcher_display_mode' : const.LAUNCHER_DMODE_FLAT,
         'num_roms' : 0,
         'num_parents' : 0,
         'num_clones' : 0,
@@ -130,7 +131,7 @@ def db_new_launcher():
         'path_trailer' : ''
     }
 
-def db_new_rom():
+def new_rom():
     return {
         'id' : '',
         'm_name' : '',
@@ -138,7 +139,7 @@ def db_new_rom():
         'm_genre' : '',
         'm_developer' : '',
         'm_nplayers' : '',
-        'm_esrb' : ESRB_PENDING,
+        'm_esrb' : const.ESRB_PENDING,
         'm_rating' : '',
         'm_plot' : '',
         'filename' : '',
@@ -146,8 +147,8 @@ def db_new_rom():
         'altapp' : '',
         'altarg' : '',
         'finished' : False,
-        'nointro_status' : AUDIT_STATUS_NONE,
-        'pclone_status' : PCLONE_STATUS_NONE,
+        'nointro_status' : const.AUDIT_STATUS_NONE,
+        'pclone_status' : const.PCLONE_STATUS_NONE,
         'cloneof' : '',
         'i_extra_ROM' : False,
         's_3dbox' : '',
@@ -165,7 +166,7 @@ def db_new_rom():
         's_trailer' : ''
     }
 
-def db_new_collection():
+def new_collection():
     return {
         'id' : '',
         'm_name' : '',
@@ -201,14 +202,14 @@ def db_new_collection():
 # li.setProperties(obj['props'])
 # li.addContextMenuItems(obj['context'])
 # xbmcplugin.addDirectoryItem(addon_handle, obj['URL'], li, True)
-def db_new_render_simple_category():
+def new_render_simple_category():
     return {
         'name' : '',
         'display_setting_hide' : False,
         'info' : {
             'title' : '',
             'plot' : '',
-            'overlay': KODI_ICON_OVERLAY_UNWATCHED,
+            'overlay': kodi.KODI_ICON_OVERLAY_UNWATCHED,
         },
         'art' : {
             'icon' : '',
@@ -220,11 +221,11 @@ def db_new_render_simple_category():
         'URL' : '',
     }
 
-def db_new_render_category(): pass
+def new_render_category(): pass
 
-def db_new_render_launcher(): pass
+def new_render_launcher(): pass
 
-def db_new_render_ROM(): pass
+def new_render_ROM(): pass
 
 # -------------------------------------------------------------------------------------------------
 # Favourite ROM creation/management
@@ -241,7 +242,7 @@ def db_new_render_ROM(): pass
 #                      If launcher doesn't exist ROM JSON cannot be loaded.
 #  'Broken'            ROM filename does not exist. ROM is unplayable
 #
-def fs_get_Favourite_from_ROM(rom, launcher):
+def get_Favourite_from_ROM(rom, launcher):
     # Copy dictionary object
     favourite = dict(rom)
 
@@ -270,7 +271,6 @@ def fs_get_Favourite_from_ROM(rom, launcher):
     # Favourite ROM unique fields
     # Favourite ROMs in "Most played ROMs" DB also have 'launch_count' field.
     favourite['fav_status'] = 'OK'
-
     return favourite
 
 # Creates a new Favourite ROM from old Favourite, parent ROM and parent Launcher. This function is
@@ -281,44 +281,39 @@ def fs_get_Favourite_from_ROM(rom, launcher):
 #   1) Relink and update metadata
 #   2) Relink and update artwork
 #   3) Relink and update everything
-def fs_repair_Favourite_ROM(repair_mode, old_fav_rom, parent_rom, parent_launcher):
+def repair_Favourite_ROM(repair_mode, old_fav_rom, parent_rom, parent_launcher):
     new_fav_rom = dict(old_fav_rom)
 
     # --- Step 0 is always done in any Favourite/Collection repair ---
-    log_info('fs_repair_Favourite_ROM() Relinking ROM and launcher (common stuff)')
-    log_info('fs_repair_Favourite_ROM() Old ROM name "{}"'.format(old_fav_rom['m_name']))
-    log_info('fs_repair_Favourite_ROM() New ROM name "{}"'.format(parent_rom['m_name']))
-    log_info('fs_repair_Favourite_ROM() New launcher "{}"'.format(parent_launcher['m_name']))
-
-    # >> Main stuff
+    log_info('repair_Favourite_ROM() Relinking ROM and launcher (common stuff)')
+    log_info('repair_Favourite_ROM() Old ROM name "{}"'.format(old_fav_rom['m_name']))
+    log_info('repair_Favourite_ROM() New ROM name "{}"'.format(parent_rom['m_name']))
+    log_info('repair_Favourite_ROM() New launcher "{}"'.format(parent_launcher['m_name']))
     fs_aux_copy_ROM_main_stuff(parent_launcher, parent_rom, new_fav_rom)
-
-    # >> Launcher stuff
     fs_aux_copy_ROM_launcher_info(parent_launcher, new_fav_rom)
 
     # --- Metadata ---
     if repair_mode == 1:
-        log_debug('fs_repair_Favourite_ROM() Relinking Metadata')
+        log.debug('fs_repair_Favourite_ROM() Relinking Metadata')
         fs_aux_copy_ROM_metadata(parent_rom, new_fav_rom)
     # --- Artwork ---
     elif repair_mode == 2:
-        log_debug('fs_repair_Favourite_ROM() Relinking Artwork')
+        log.debug('fs_repair_Favourite_ROM() Relinking Artwork')
         fs_aux_copy_ROM_artwork(parent_launcher, parent_rom, new_fav_rom)
     # --- Metadata and artwork ---
     elif repair_mode == 3:
-        log_debug('fs_repair_Favourite_ROM() Relinking Metadata and Artwork')
+        log.debug('fs_repair_Favourite_ROM() Relinking Metadata and Artwork')
         fs_aux_copy_ROM_metadata(parent_rom, new_fav_rom)
         fs_aux_copy_ROM_artwork(parent_launcher, parent_rom, new_fav_rom)
-
     return new_fav_rom
 
-def fs_aux_copy_ROM_main_stuff(source_launcher, source_rom, dest_rom):
+def aux_copy_ROM_main_stuff(source_launcher, source_rom, dest_rom):
     dest_rom['id']          = source_rom['id']
     dest_rom['launcherID']  = source_launcher['id']
     dest_rom['filename']    = source_rom['filename']
     dest_rom['fav_status']  = 'OK'
 
-def fs_aux_copy_ROM_launcher_info(source_launcher, dest_rom):
+def aux_copy_ROM_launcher_info(source_launcher, dest_rom):
     dest_rom['platform']      = source_launcher['platform']
     dest_rom['application']   = source_launcher['application']
     dest_rom['args']          = source_launcher['args']
@@ -328,7 +323,7 @@ def fs_aux_copy_ROM_launcher_info(source_launcher, dest_rom):
     dest_rom['toggle_window'] = source_launcher['toggle_window']
     dest_rom['non_blocking']  = source_launcher['non_blocking']
 
-def fs_aux_copy_ROM_metadata(source_rom, dest_rom):
+def aux_copy_ROM_metadata(source_rom, dest_rom):
     dest_rom['m_name']         = source_rom['m_name']
     dest_rom['m_year']         = source_rom['m_year']
     dest_rom['m_genre']        = source_rom['m_genre']
@@ -344,7 +339,7 @@ def fs_aux_copy_ROM_metadata(source_rom, dest_rom):
     dest_rom['pclone_status']  = source_rom['pclone_status']
     dest_rom['cloneof']        = source_rom['cloneof']
 
-def fs_aux_copy_ROM_artwork(source_launcher, source_rom, dest_rom):
+def aux_copy_ROM_artwork(source_launcher, source_rom, dest_rom):
     # TODO Replace this with a for loop and use the contant definitions in constants.py
     dest_rom['s_3dbox']     = source_rom['s_3dbox']
     dest_rom['s_title']     = source_rom['s_title']
@@ -368,19 +363,17 @@ def fs_aux_copy_ROM_artwork(source_launcher, source_rom, dest_rom):
 # ------------------------------------------------------------------------------------------------
 # ROM storage file names
 # ------------------------------------------------------------------------------------------------
-def fs_get_ROMs_basename(category_name, launcher_name, launcherID):
+def get_ROMs_basename(category_name, launcher_name, launcherID):
     clean_cat_name = ''.join([i if i in string.printable else '_' for i in category_name]).replace(' ', '_')
     clean_launch_title = ''.join([i if i in string.printable else '_' for i in launcher_name]).replace(' ', '_')
     roms_base_noext = 'roms_' + clean_cat_name + '_' + clean_launch_title + '_' + launcherID[0:6]
-    log_debug('fs_get_ROMs_basename() roms_base_noext "{}"'.format(roms_base_noext))
-
+    log.debug('get_ROMs_basename() roms_base_noext "{}"'.format(roms_base_noext))
     return roms_base_noext
 
-def fs_get_collection_ROMs_basename(collection_name, collectionID):
+def get_collection_ROMs_basename(collection_name, collectionID):
     clean_collection_name = ''.join([i if i in string.printable else '_' for i in collection_name]).replace(' ', '_')
     roms_base_noext = clean_collection_name + '_' + collectionID[0:6]
-    log_debug('fs_get_collection_ROMs_basename() roms_base_noext "{}"'.format(roms_base_noext))
-
+    log.debug('get_collection_ROMs_basename() roms_base_noext "{}"'.format(roms_base_noext))
     return roms_base_noext
 
 # ------------------------------------------------------------------------------------------------
@@ -388,7 +381,7 @@ def fs_get_collection_ROMs_basename(collection_name, collectionID):
 # ------------------------------------------------------------------------------------------------
 # * This function must be called first to update cfg object fields that will be used in many
 #   other functions.
-def db_get_launcher_info(cfg, categoryID, launcherID):
+def get_launcher_info(cfg, categoryID, launcherID):
     cfg.launcher_is_vlauncher = launcherID in VLAUNCHER_ID_LIST
     cfg.launcher_is_vcategory = categoryID in VCATEGORY_ID_LIST
     cfg.launcher_is_browse_by = categoryID in VCATEGORY_BROWSE_BY_ID_LIST
@@ -401,7 +394,7 @@ def db_get_launcher_info(cfg, categoryID, launcherID):
 # How to solve this issue? Is this function really useful?
 #
 # For now, this function is only valid for actual ROM launchers and will fail for virtual launchers.
-def db_get_launcher(cfg, st_dic, launcherID):
+def get_launcher(cfg, st_dic, launcherID):
     # Actual ROM Launcher
     if cfg.launcher_is_actual:
         if launcherID not in cfg.launchers:
@@ -416,15 +409,14 @@ def db_get_launcher(cfg, st_dic, launcherID):
 # Gets launcher dictionary from ROM dictionary.
 # If ROM is a normal ROM gets launcher dictionary from cfg.launchers
 # If ROM is a Favourite ROM then use launcherID field in rom dictionary.
-def db_get_launcher_from_ROM(cfg, st_dic, rom):
-    pass
+def get_launcher_from_ROM(cfg, st_dic, rom): pass
 
 # Returns a dictionary with all the ROM database filenames.
 # Also works for virtual launchers.
 # For virtual launchers also get index info?
 #
 # ret['roms']  ROM main database JSON file. [FileName]
-def db_get_launcher_fnames(cfg, categoryID, launcherID):
+def get_launcher_fnames(cfg, categoryID, launcherID):
     # Default return dictionary.
     ret = {
         'roms' : None,
@@ -461,32 +453,31 @@ def db_get_launcher_fnames(cfg, categoryID, launcherID):
 
     elif cfg.launcher_is_vcategory and categoryID == VCATEGORY_AOS_ID:
         platform = launcherID
-        log_debug('db_load_ROMs() platform "{}"'.format(platform))
+        log.debug('db_load_ROMs() platform "{}"'.format(platform))
         pobj = AEL_platforms[get_AEL_platform_index(platform)]
         if pobj.aliasof:
-            log_debug('db_load_ROMs() aliasof "{}"'.format(pobj.aliasof))
+            log.debug('db_load_ROMs() aliasof "{}"'.format(pobj.aliasof))
             pobj_parent = AEL_platforms[get_AEL_platform_index(pobj.aliasof)]
             db_platform = pobj_parent.long_name
         else:
             db_platform = pobj.long_name
         xml_FN = cfg.GAMEDB_INFO_DIR.pjoin(db_platform + '.xml')
-        log_debug('xml_FN OP {}'.format(xml_FN.getOriginalPath()))
-        log_debug('xml_FN  P {}'.format(xml_FN.getPath()))
+        log.debug('xml_FN OP {}'.format(xml_FN.getOriginalPath()))
+        log.debug('xml_FN  P {}'.format(xml_FN.getPath()))
         ret['roms'] = xml_FN
 
     else:
         raise TypeError
-    # log_debug('db_get_launcher_fnames() roms "{}"'.format(ret['roms'].getPath()))
-
+    # log.debug('db_get_launcher_fnames() roms "{}"'.format(ret['roms'].getPath()))
     return ret
 
 # Load ROMs databases and places them in cfg.roms dictionary.
 # * In most cases cfg.roms is a dictionary of dictionaries.
 #   In some cases () cfg.roms is an OrderedDictionary.
 # * If load_pclone_ROMs_flag is True then PClone ROMs are also loaded.
-def db_load_ROMs(cfg, st_dic, categoryID, launcherID, load_pclone_ROMs_flag = False):
-    log_debug('db_load_ROMs() categoryID "{}" | launcherID "{}"'.format(categoryID, launcherID))
-    dbdic = db_get_launcher_fnames(cfg, categoryID, launcherID)
+def load_ROMs(cfg, st_dic, categoryID, launcherID, load_pclone_ROMs_flag = False):
+    log.debug('load_ROMs() categoryID "{}" | launcherID "{}"'.format(categoryID, launcherID))
+    dbdic = get_launcher_fnames(cfg, categoryID, launcherID)
 
     # Actual ROM Launcher ------------------------------------------------------------------------
     if cfg.launcher_is_actual:
@@ -603,7 +594,7 @@ def db_load_ROMs(cfg, st_dic, categoryID, launcherID, load_pclone_ROMs_flag = Fa
         raise TypeError
 
 # This function never fails.
-def db_load_ROMs_Favourite_set(cfg):
+def load_ROMs_Favourite_set(cfg):
     # Transform the dictionary keys into a set. Sets are faster when checking if an element exists.
     raw_data = utils_load_JSON_file(cfg.FAV_JSON_FILE_PATH.getPath())
     roms_fav = raw_data[1] if raw_data else {}
@@ -623,8 +614,8 @@ def db_load_ROMs_Favourite_set(cfg):
 # Categories/Launchers
 # ------------------------------------------------------------------------------------------------
 # Write to disk categories.xml
-def fs_write_catfile(categories_file, categories, launchers, update_timestamp = 0.0):
-    log_debug('fs_write_catfile() Writing {}'.format(categories_file.getOriginalPath()))
+def write_catfile(categories_file, categories, launchers, update_timestamp = 0.0):
+    log.debug('write_catfile() Writing {}'.format(categories_file.getOriginalPath()))
 
     # Original Angelscry method for generating the XML was to grow a string, like this
     # xml_content = 'test'
@@ -759,14 +750,14 @@ def fs_write_catfile(categories_file, categories, launchers, update_timestamp = 
 # Loads categories.xml from disk and fills dictionary self.categories.
 # Returns the update_timestamp of the XML file.
 # If IO error then returns None.
-def fs_load_catfile(categories_file, categories, launchers):
+def load_catfile(categories_file, categories, launchers):
     __debug_xml_parser = 0
 
-    xml_tree = utils_load_XML_to_ET(categories_file.getPath())
+    xml_tree = utils.load_XML_to_ET(categories_file.getPath())
     if not xml_tree: return None
     xml_root = xml_tree.getroot()
     for category_element in xml_root:
-        if __debug_xml_parser: log_debug('Root child {}'.format(category_element.tag))
+        if __debug_xml_parser: log.debug('Root child {}'.format(category_element.tag))
 
         if category_element.tag == 'control':
             for control_child in category_element:
@@ -783,7 +774,7 @@ def fs_load_catfile(categories_file, categories, launchers):
                 text_XML = category_child.text if category_child.text is not None else ''
                 text_XML = text_unescape_XML(text_XML)
                 xml_tag  = category_child.tag
-                if __debug_xml_parser: log_debug('{} --> {}'.format(xml_tag, text_XML))
+                if __debug_xml_parser: log.debug('{} --> {}'.format(xml_tag, text_XML))
 
                 # Now transform data depending on tag name
                 if xml_tag == 'finished':
@@ -795,15 +786,15 @@ def fs_load_catfile(categories_file, categories, launchers):
 
         elif category_element.tag == 'launcher':
             # Default values
-            launcher = db_new_launcher()
+            launcher = new_launcher()
 
             # Parse child tags of category
             for category_child in category_element:
                 # By default read strings
                 text_XML = category_child.text if category_child.text is not None else ''
-                text_XML = text_unescape_XML(text_XML)
+                text_XML = misc.unescape_XML(text_XML)
                 xml_tag  = category_child.tag
-                if __debug_xml_parser: log_debug('{} --> {}'.format(xml_tag, text_XML))
+                if __debug_xml_parser: log.debug('{} --> {}'.format(xml_tag, text_XML))
 
                 if xml_tag == 'args_extra':
                     # Transform list() datatype
@@ -824,9 +815,8 @@ def fs_load_catfile(categories_file, categories, launchers):
                 else:
                     launcher[xml_tag] = text_XML
             launchers[launcher['id']] = launcher
-    # log_debug('fs_load_catfile() Loaded {} categories'.format(len(categories)))
-    # log_debug('fs_load_catfile() Loaded {} launchers'.format(len(launchers)))
-
+    # log.debug('fs_load_catfile() Loaded {} categories'.format(len(categories)))
+    # log.debug('fs_load_catfile() Loaded {} launchers'.format(len(launchers)))
     return update_timestamp
 
 # -------------------------------------------------------------------------------------------------
@@ -838,7 +828,7 @@ def fs_load_catfile(categories_file, categories, launchers):
 # <roms_base_noext>_index_PClone.json
 # <roms_base_noext>_parents.json
 # <roms_base_noext>_DAT.json
-def fs_unlink_ROMs_database(roms_dir_FN, launcher):
+def unlink_ROMs_database(roms_dir_FN, launcher):
     roms_base_noext = launcher['roms_base_noext']
 
     # Delete ROMs JSON file
@@ -874,12 +864,12 @@ def fs_unlink_ROMs_database(roms_dir_FN, launcher):
         log_info('Deleting DAT JSON     "{}"'.format(roms_DAT_FN.getOriginalPath()))
         roms_DAT_FN.unlink()
 
-def fs_rename_ROMs_database(roms_dir_FN, old_roms_base_noext, new_roms_base_noext):
+def rename_ROMs_database(roms_dir_FN, old_roms_base_noext, new_roms_base_noext):
     # Only rename if base names are different
-    log_debug('fs_rename_ROMs_database() old_roms_base_noext "{}"'.format(old_roms_base_noext))
-    log_debug('fs_rename_ROMs_database() new_roms_base_noext "{}"'.format(new_roms_base_noext))
+    log.debug('rename_ROMs_database() old_roms_base_noext "{}"'.format(old_roms_base_noext))
+    log.debug('rename_ROMs_database() new_roms_base_noext "{}"'.format(new_roms_base_noext))
     if old_roms_base_noext == new_roms_base_noext:
-        log_debug('fs_rename_ROMs_database() Exiting because old and new names are equal')
+        log.debug('rename_ROMs_database() Exiting because old and new names are equal')
         return
 
     old_roms_json_FN          = roms_dir_FN.pjoin(old_roms_base_noext + '.json')
@@ -899,42 +889,42 @@ def fs_rename_ROMs_database(roms_dir_FN, old_roms_base_noext, new_roms_base_noex
     # Only rename files if originals found.
     if old_roms_json_FN.exists():
         old_roms_json_FN.rename(new_roms_json_FN)
-        log_debug('RENAMED OP {}'.format(old_roms_json_FN.getOriginalPath()))
-        log_debug('   into OP {}'.format(new_roms_json_FN.getOriginalPath()))
+        log.debug('RENAMED OP {}'.format(old_roms_json_FN.getOriginalPath()))
+        log.debug('   into OP {}'.format(new_roms_json_FN.getOriginalPath()))
 
     if old_roms_xml_FN.exists():
         old_roms_xml_FN.rename(new_roms_xml_FN)
-        log_debug('RENAMED OP {}'.format(old_roms_xml_FN.getOriginalPath()))
-        log_debug('   into OP {}'.format(new_roms_xml_FN.getOriginalPath()))
+        log.debug('RENAMED OP {}'.format(old_roms_xml_FN.getOriginalPath()))
+        log.debug('   into OP {}'.format(new_roms_xml_FN.getOriginalPath()))
 
     if old_roms_index_CParent_FN.exists():
         old_roms_index_CParent_FN.rename(new_roms_index_CParent_FN)
-        log_debug('RENAMED OP {}'.format(old_roms_index_CParent_FN.getOriginalPath()))
-        log_debug('   into OP {}'.format(new_roms_index_CParent_FN.getOriginalPath()))
+        log.debug('RENAMED OP {}'.format(old_roms_index_CParent_FN.getOriginalPath()))
+        log.debug('   into OP {}'.format(new_roms_index_CParent_FN.getOriginalPath()))
 
     if old_roms_index_PClone_FN.exists():
         old_roms_index_PClone_FN.rename(new_roms_index_PClone_FN)
-        log_debug('RENAMED OP {}'.format(old_roms_index_PClone_FN.getOriginalPath()))
-        log_debug('   into OP {}'.format(new_roms_index_PClone_FN.getOriginalPath()))
+        log.debug('RENAMED OP {}'.format(old_roms_index_PClone_FN.getOriginalPath()))
+        log.debug('   into OP {}'.format(new_roms_index_PClone_FN.getOriginalPath()))
 
     if old_roms_parents_FN.exists():
         old_roms_parents_FN.rename(new_roms_parents_FN)
-        log_debug('RENAMED OP {}'.format(old_roms_parents_FN.getOriginalPath()))
-        log_debug('   into OP {}'.format(new_roms_parents_FN.getOriginalPath()))
+        log.debug('RENAMED OP {}'.format(old_roms_parents_FN.getOriginalPath()))
+        log.debug('   into OP {}'.format(new_roms_parents_FN.getOriginalPath()))
 
     if old_roms_DAT_FN.exists():
         old_roms_DAT_FN.rename(new_roms_DAT_FN)
-        log_debug('RENAMED OP {}'.format(old_roms_DAT_FN.getOriginalPath()))
-        log_debug('   into OP {}'.format(new_roms_DAT_FN.getOriginalPath()))
+        log.debug('RENAMED OP {}'.format(old_roms_DAT_FN.getOriginalPath()))
+        log.debug('   into OP {}'.format(new_roms_DAT_FN.getOriginalPath()))
 
-def fs_write_ROMs_JSON(roms_dir_FN, launcher, roms):
+def write_ROMs_JSON(roms_dir_FN, launcher, roms):
     # Get file names
     roms_base_noext = launcher['roms_base_noext']
     roms_json_file = roms_dir_FN.pjoin(roms_base_noext + '.json')
     roms_xml_file  = roms_dir_FN.pjoin(roms_base_noext + '.xml')
-    log_debug('fs_write_ROMs_JSON()  Dir {}'.format(roms_dir_FN.getOriginalPath()))
-    log_debug('fs_write_ROMs_JSON() JSON {}'.format(roms_base_noext + '.json'))
-    log_debug('fs_write_ROMs_JSON()  XML {}'.format(roms_base_noext + '.xml'))
+    log.debug('write_ROMs_JSON()  Dir {}'.format(roms_dir_FN.getOriginalPath()))
+    log.debug('write_ROMs_JSON() JSON {}'.format(roms_base_noext + '.json'))
+    log.debug('write_ROMs_JSON()  XML {}'.format(roms_base_noext + '.xml'))
 
     # JSON files cannot have comments. Write an auxiliar NFO file with same prefix
     # to store launcher information for a set of ROMs
@@ -962,8 +952,8 @@ def fs_write_ROMs_JSON(roms_dir_FN, launcher, roms):
 # Favourite ROMs
 # ------------------------------------------------------------------------------------------------
 # Save Favourites JSON file. roms is a dictionary of dictionaries.
-def fs_write_Favourites_JSON(roms_json_file, roms):
-    log_info('fs_write_Favourites_JSON() File {}'.format(roms_json_file.getOriginalPath()))
+def write_Favourites_JSON(roms_json_file, roms):
+    log_info('write_Favourites_JSON() File {}'.format(roms_json_file.getOriginalPath()))
 
     # --- Create JSON data structure, including version number ---
     control_dic = {
@@ -976,8 +966,8 @@ def fs_write_Favourites_JSON(roms_json_file, roms):
 # ------------------------------------------------------------------------------------------------
 # ROM Collections
 # ------------------------------------------------------------------------------------------------
-def fs_write_Collection_index_XML(collections_xml_file, collections):
-    log_info('fs_write_Collection_index_XML() File {}'.format(collections_xml_file.getOriginalPath()))
+def write_Collection_index_XML(collections_xml_file, collections):
+    log_info('write_Collection_index_XML() File {}'.format(collections_xml_file.getOriginalPath()))
     slist = []
     slist.append('<?xml version="1.0" encoding="utf-8" standalone="yes"?>')
     slist.append('<advanced_emulator_launcher_Collection_index version="{}">'.format(AEL_STORAGE_FORMAT))
@@ -1010,20 +1000,20 @@ def fs_write_Collection_index_XML(collections_xml_file, collections):
     slist.append('</advanced_emulator_launcher_Collection_index>')
     utils_write_slist_to_file(collections_xml_file.getPath(), slist)
 
-def fs_load_Collection_index_XML(collections_xml_file):
+def load_Collection_index_XML(collections_xml_file):
     __debug_xml_parser = False
     ret = {
         'timestamp' : 0.0,
         'collections' : {}
     }
 
-    log_debug('fs_load_Collection_index_XML() Loading XML file {}'.format(
+    log.debug('load_Collection_index_XML() Loading XML file {}'.format(
         collections_xml_file.getOriginalPath()))
     xml_tree = utils_load_XML_to_ET(collections_xml_file.getPath())
     if not xml_tree: return ret
     xml_root = xml_tree.getroot()
     for root_element in xml_root:
-        if __debug_xml_parser: log_debug('Root child {}'.format(root_element.tag))
+        if __debug_xml_parser: log.debug('Root child {}'.format(root_element.tag))
         if root_element.tag == 'control':
             for control_child in root_element:
                 if control_child.tag == 'update_timestamp':
@@ -1035,13 +1025,13 @@ def fs_load_Collection_index_XML(collections_xml_file):
                 text_XML = rom_child.text if rom_child.text is not None else ''
                 text_XML = text_unescape_XML(text_XML)
                 xml_tag  = rom_child.tag
-                if __debug_xml_parser: log_debug('{} --> {}'.format(xml_tag, text_XML))
+                if __debug_xml_parser: log.debug('{} --> {}'.format(xml_tag, text_XML))
                 collection[xml_tag] = text_XML
             ret['collections'][collection['id']] = collection
     return ret
 
-def fs_write_Collection_ROMs_JSON(roms_json_FN, roms):
-    log_debug('fs_write_Collection_ROMs_JSON() File {}'.format(roms_json_FN.getOriginalPath()))
+def write_Collection_ROMs_JSON(roms_json_FN, roms):
+    log.debug('write_Collection_ROMs_JSON() File {}'.format(roms_json_FN.getOriginalPath()))
     control_dic = {
         'control' : 'Advanced Emulator Launcher Collection ROMs',
         'version' : AEL_STORAGE_FORMAT,
@@ -1052,8 +1042,8 @@ def fs_write_Collection_ROMs_JSON(roms_json_FN, roms):
 # Exports a collection in human-readable JSON.
 # Filenames of artwork/assets must be converted to relative paths, see
 # comments in fs_export_ROM_collection_assets()
-def fs_export_ROM_collection(output_filename, collection, rom_list):
-    log_info('fs_export_ROM_collection() File {}'.format(output_filename.getOriginalPath()))
+def export_ROM_collection(output_filename, collection, rom_list):
+    log_info('export_ROM_collection() File {}'.format(output_filename.getOriginalPath()))
 
     ex_collection_dic = copy.deepcopy(collection)
     for asset_kind in COLLECTION_ASSET_ID_LIST:
@@ -1118,39 +1108,39 @@ def fs_export_ROM_collection(output_filename, collection, rom_list):
 #   collection    dictionary
 #   rom_list      list of dictionaries
 #   asset_dir_FN  FileName object default self.settings['collections_asset_dir']
-def fs_export_ROM_collection_assets(out_dir_FN, collection, rom_list, asset_dir_FN):
-    log_info('fs_export_ROM_collection_assets() Dir {}'.format(out_dir_FN.getOriginalPath()))
+def export_ROM_collection_assets(out_dir_FN, collection, rom_list, asset_dir_FN):
+    log_info('export_ROM_collection_assets() Dir {}'.format(out_dir_FN.getOriginalPath()))
 
     # --- Export Collection own assets ---
     assets_dic = {}
-    log_debug('fs_export_ROM_collection_assets() Exporting Collecion assets')
+    log.debug('export_ROM_collection_assets() Exporting Collecion assets')
     for asset_kind in COLLECTION_ASSET_ID_LIST:
         AInfo = assets_get_info_scheme(asset_kind)
         asset_FN = FileName(collection[AInfo.key])
         if not collection[AInfo.key]:
-            log_debug('{:<9s} not set'.format(AInfo.name))
+            log.debug('{:<9s} not set'.format(AInfo.name))
             continue
         elif not asset_FN.exists():
-            log_debug('{:<9s} not found "{}"'.format(AInfo.name, asset_FN.getPath()))
-            log_debug('{:<9s} ignoring'.format(AInfo.name))
+            log.debug('{:<9s} not found "{}"'.format(AInfo.name, asset_FN.getPath()))
+            log.debug('{:<9s} ignoring'.format(AInfo.name))
             continue
         # Copy asset file to output dir with new filename.
         asset_ext = asset_FN.getExt()
         new_asset_FN = out_dir_FN.pjoin(collection['m_name'] + '_' + AInfo.fname_infix + asset_ext)
-        # log_debug('{:<9s} OP COPY "{}"'.format(AInfo.name, asset_FN.getOriginalPath()))
-        # log_debug('{:<9s} OP   TO "{}"'.format(AInfo.name, new_asset_FN.getOriginalPath()))
-        log_debug('{:<9s} P  COPY "{}"'.format(AInfo.name, asset_FN.getPath()))
-        log_debug('{:<9s} P    TO "{}"'.format(AInfo.name, new_asset_FN.getPath()))
+        # log.debug('{:<9s} OP COPY "{}"'.format(AInfo.name, asset_FN.getOriginalPath()))
+        # log.debug('{:<9s} OP   TO "{}"'.format(AInfo.name, new_asset_FN.getOriginalPath()))
+        log.debug('{:<9s} P  COPY "{}"'.format(AInfo.name, asset_FN.getPath()))
+        log.debug('{:<9s} P    TO "{}"'.format(AInfo.name, new_asset_FN.getPath()))
         try:
             source_path = asset_FN.getPath().decode(get_fs_encoding(), 'ignore')
             dest_path = new_asset_FN.getPath().decode(get_fs_encoding(), 'ignore')
             shutil.copy(source_path, dest_path)
         except OSError:
-            log_error('fs_export_ROM_collection_assets() OSError exception copying image')
+            log_error('export_ROM_collection_assets() OSError exception copying image')
             kodi_notify_warn('OSError exception copying image')
             return
         except IOError:
-            log_error('fs_export_ROM_collection_assets() IOError exception copying image')
+            log_error('export_ROM_collection_assets() IOError exception copying image')
             kodi_notify_warn('IOError exception copying image')
             return
 
@@ -1158,50 +1148,50 @@ def fs_export_ROM_collection_assets(out_dir_FN, collection, rom_list, asset_dir_
     # Create output dir if it does not exits.
     ROM_out_dir_FN = out_dir_FN.pjoin(collection['m_name'] + ' assets')
     if not ROM_out_dir_FN.exists():
-        log_debug('Creating dir "{}"'.format(ROM_out_dir_FN.getPath()))
+        log.debug('Creating dir "{}"'.format(ROM_out_dir_FN.getPath()))
         ROM_out_dir_FN.makedirs()
 
     # Traverse ROMs and export (copy) assets.
-    log_debug('fs_export_ROM_collection_assets() Exporting ROM assets')
-    # log_debug('Directory {}'.format(ROM_out_dir_FN.getDir()))
+    log.debug('export_ROM_collection_assets() Exporting ROM assets')
+    # log.debug('Directory {}'.format(ROM_out_dir_FN.getDir()))
     for rom in rom_list:
-        log_debug('fs_export_ROM_collection_assets() ROM "{}"'.format(rom['m_name']))
+        log.debug('export_ROM_collection_assets() ROM "{}"'.format(rom['m_name']))
         for asset_kind in ROM_ASSET_ID_LIST:
             AInfo = assets_get_info_scheme(asset_kind)
             asset_FN = FileName(rom[AInfo.key])
             if not rom[AInfo.key]:
-                log_debug('{:<9s} not set'.format(AInfo.name))
+                log.debug('{:<9s} not set'.format(AInfo.name))
                 continue
             elif not asset_FN.exists():
-                log_debug('{:<9s} not found "{}"'.format(AInfo.name, asset_FN.getPath()))
-                log_debug('{:<9s} ignoring'.format(AInfo.name))
+                log.debug('{:<9s} not found "{}"'.format(AInfo.name, asset_FN.getPath()))
+                log.debug('{:<9s} ignoring'.format(AInfo.name))
                 continue
             # Copy asset file to output dir with new filename.
             ROM_FileName = FileName(rom['filename'])
             new_asset_basename = assets_get_collection_asset_basename(
                 AInfo, ROM_FileName.getBaseNoExt(), rom['platform'], asset_FN.getExt())
             new_asset_FN = ROM_out_dir_FN.pjoin(new_asset_basename)
-            # log_debug('{:<9s} OP COPY "{}"'.format(AInfo.name, asset_FN.getOriginalPath()))
-            # log_debug('{:<9s} OP   TO "{}"'.format(AInfo.name, new_asset_FN.getOriginalPath()))
-            log_debug('{:<9s} COPY "{}"'.format(AInfo.name, asset_FN.getPath()))
-            log_debug('{:<9s}   TO "{}"'.format(AInfo.name, new_asset_FN.getPath()))
+            # log.debug('{:<9s} OP COPY "{}"'.format(AInfo.name, asset_FN.getOriginalPath()))
+            # log.debug('{:<9s} OP   TO "{}"'.format(AInfo.name, new_asset_FN.getOriginalPath()))
+            log.debug('{:<9s} COPY "{}"'.format(AInfo.name, asset_FN.getPath()))
+            log.debug('{:<9s}   TO "{}"'.format(AInfo.name, new_asset_FN.getPath()))
             try:
                 utils_copy_file(asset_FN.getPath(), new_asset_FN.getPath())
             except OSError:
-                log_error('fs_export_ROM_collection_assets() OSError exception copying image')
+                log_error('export_ROM_collection_assets() OSError exception copying image')
                 kodi_notify_warn('OSError exception copying image')
                 return
             except IOError:
-                log_error('fs_export_ROM_collection_assets() IOError exception copying image')
+                log_error('export_ROM_collection_assets() IOError exception copying image')
                 kodi_notify_warn('IOError exception copying image')
                 return
 
 # See fs_export_ROM_collection() function.
 # Returns a tuple (control_dic, collection_dic, rom_list)
-def fs_import_ROM_collection(input_FileName):
+def import_ROM_collection(input_FileName):
     default_return = ({}, {}, [])
 
-    log_info('fs_import_ROM_collection() Loading {}'.format(input_FileName.getOriginalPath()))
+    log_info('import_ROM_collection() Loading {}'.format(input_FileName.getOriginalPath()))
     raw_data = utils_load_JSON_file(input_FileName.getPath())
     if not raw_data: return default_return
     try:
@@ -1211,44 +1201,42 @@ def fs_import_ROM_collection(input_FileName):
         control_str    = control_dic['control']
         version_int    = control_dic['version']
     except:
-        log_error('fs_import_ROM_collection() Exception unpacking ROM Collection data')
-        log_error('fs_import_ROM_collection() Empty ROM Collection returned')
+        log_error('import_ROM_collection() Exception unpacking ROM Collection data')
+        log_error('import_ROM_collection() Empty ROM Collection returned')
         return default_return
 
     return (control_dic, collection_dic, rom_list)
 
 # Returns a tuple (control_dic, assets_dic)
-def fs_import_ROM_collection_assets(input_FileName):
+def import_ROM_collection_assets(input_FileName):
     default_return = ({}, {})
 
-    log_info('fs_import_ROM_collection_assets() Loading {}'.format(input_FileName.getOriginalPath()))
+    log_info('import_ROM_collection_assets() Loading {}'.format(input_FileName.getOriginalPath()))
     raw_data = utils_load_JSON_file(input_FileName.getPath())
     if not raw_data: return default_return
     control_dic = raw_data[0]
     assets_dic  = raw_data[1]
     control_str = control_dic['control']
     version_int = control_dic['version']
-
     return (control_dic, assets_dic)
 
 # Slow implementation that uses a linear search.
 # Returns:
 # -1    ROM not found in list
 # >= 0  ROM index in list
-def fs_collection_ROM_index_by_romID(romID, collection_rom_list):
+def collection_ROM_index_by_romID(romID, collection_rom_list):
     current_ROM_position = -1
     for idx, rom in enumerate(collection_rom_list):
         if romID == rom['id']:
             current_ROM_position = idx
             break
-
     return current_ROM_position
 
 # -------------------------------------------------------------------------------------------------
 # Virtual Categories
 # -------------------------------------------------------------------------------------------------
-def fs_write_VCategory_XML(roms_xml_file, roms):
-    log_info('fs_write_VCategory_XML() Saving XML {}'.format(roms_xml_file.getOriginalPath()))
+def write_VCategory_XML(roms_xml_file, roms):
+    log_info('write_VCategory_XML() Saving XML {}'.format(roms_xml_file.getOriginalPath()))
     slist = []
     slist.append('<?xml version="1.0" encoding="utf-8" standalone="yes"?>')
     slist.append('<advanced_emulator_launcher_Virtual_Category_index version="{}">'.format(AEL_STORAGE_FORMAT))
@@ -1268,23 +1256,23 @@ def fs_write_VCategory_XML(roms_xml_file, roms):
         slist.append(text_XML('roms_base_noext', rom['roms_base_noext']))
         slist.append('</VLauncher>')
     slist.append('</advanced_emulator_launcher_Virtual_Category_index>')
-    utils_write_slist_to_file(roms_xml_file.getPath(), slist)
+    utils.write_slist_to_file(roms_xml_file.getPath(), slist)
 
 # Loads an XML file containing Virtual Launcher indices
 # It is basically the same as ROMs, but with some more fields to store launching application data.
-def fs_load_VCategory_XML(roms_xml_file):
+def load_VCategory_XML(roms_xml_file):
     __debug_xml_parser = 0
     ret = {
         'timestamp' : 0.0,
         'vlaunchers' : {}
     }
 
-    log_debug('fs_load_VCategory_XML() Loading XML file {}'.format(roms_xml_file.getOriginalPath()))
+    log.debug('load_VCategory_XML() Loading XML file {}'.format(roms_xml_file.getOriginalPath()))
     xml_tree = utils_load_XML_to_ET(roms_xml_file.getPath())
     if not xml_tree: return ret
     xml_root = xml_tree.getroot()
     for root_element in xml_root:
-        if __debug_xml_parser: log_debug('Root child {}'.format(root_element.tag))
+        if __debug_xml_parser: log.debug('Root child {}'.format(root_element.tag))
         if root_element.tag == 'control':
             for control_child in root_element:
                 if control_child.tag == 'update_timestamp':
@@ -1297,23 +1285,23 @@ def fs_load_VCategory_XML(roms_xml_file):
                 text_XML = rom_child.text if rom_child.text is not None else ''
                 text_XML = text_unescape_XML(text_XML)
                 xml_tag  = rom_child.tag
-                if __debug_xml_parser: log_debug('{} --> {}'.format(xml_tag, text_XML))
+                if __debug_xml_parser: log.debug('{} --> {}'.format(xml_tag, text_XML))
                 VLauncher[xml_tag] = text_XML
             ret['vlaunchers'][VLauncher['id']] = VLauncher
     return ret
 
 # Write virtual category ROMs
-def fs_write_VCategory_ROMs_JSON(roms_dir, roms_base_noext, roms):
+def write_VCategory_ROMs_JSON(roms_dir, roms_base_noext, roms):
     roms_json_file = roms_dir.pjoin(roms_base_noext + '.json')
-    log_debug('fs_write_VCategory_ROMs_JSON() Saving JSON file {}'.format(roms_json_file.getOriginalPath()))
-    utils_write_JSON_file(roms_json_file.getPath(), roms)
+    log.debug('write_VCategory_ROMs_JSON() Saving JSON file {}'.format(roms_json_file.getOriginalPath()))
+    utils.write_JSON_file(roms_json_file.getPath(), roms)
 
 # Loads an JSON file containing the Virtual Launcher ROMs
 # If file does not exist or any other error return an empty dictionary.
-def fs_load_VCategory_ROMs_JSON(roms_dir, roms_base_noext):
+def load_VCategory_ROMs_JSON(roms_dir, roms_base_noext):
     roms_json_file = roms_dir.pjoin(roms_base_noext + '.json')
-    log_debug('fs_load_VCategory_ROMs_JSON() Loading JSON file {}'.format(roms_json_file.getOriginalPath()))
-    roms = utils_load_JSON_file(roms_json_file.getPath())
+    log.debug('load_VCategory_ROMs_JSON() Loading JSON file {}'.format(roms_json_file.getOriginalPath()))
+    roms = utils.load_JSON_file(roms_json_file.getPath())
     return roms
 
 # -------------------------------------------------------------------------------------------------
@@ -1328,9 +1316,9 @@ def fs_load_VCategory_ROMs_JSON(roms_dir, roms_base_noext):
 #
 # Example: mydic[mydic_field_name] = contents of tag <xml_tag_name> as a string
 def update_dic_with_NFO_str(nfo_str, xml_tag_name, mydic, mydic_field_name):
-    # log_debug('update_dic_with_NFO_str() nfo_str "{}"'.format(nfo_str))
-    # log_debug('update_dic_with_NFO_str() xml_tag_name "{}"'.format(xml_tag_name))
-    # log_debug('update_dic_with_NFO_str() mydic_field_name "{}"'.format(mydic_field_name))
+    # log.debug('update_dic_with_NFO_str() nfo_str "{}"'.format(nfo_str))
+    # log.debug('update_dic_with_NFO_str() xml_tag_name "{}"'.format(xml_tag_name))
+    # log.debug('update_dic_with_NFO_str() mydic_field_name "{}"'.format(mydic_field_name))
     regex_str = '<{}>(.*?)</{}>'.format(xml_tag_name, xml_tag_name)
     findall_slist = re.findall(regex_str, nfo_str)
     if len(findall_slist) < 1: return
@@ -1349,7 +1337,7 @@ def fs_export_ROM_NFO(rom, verbose = True):
     if not rom['filename']: return False
     ROM_FN = FileName(rom['filename'])
     nfo_file_path = ROM_FN.getPathNoExt() + '.nfo'
-    log_debug('fs_export_ROM_NFO() Exporting "{}"'.format(nfo_file_path))
+    log.debug('fs_export_ROM_NFO() Exporting "{}"'.format(nfo_file_path))
 
     # Always overwrite NFO files.
     nfo_content = [
@@ -1380,13 +1368,13 @@ def fs_import_ROM_NFO(roms, romID, verbose = True):
     nfo_dic = roms[romID]
     ROMFileName = FileName(roms[romID]['filename'])
     nfo_file_path = ROMFileName.getPathNoExt() + '.nfo'
-    log_debug('fs_import_ROM_NFO() Loading "{}"'.format(nfo_file_path))
+    log.debug('fs_import_ROM_NFO() Loading "{}"'.format(nfo_file_path))
 
     # Check if file exists.
     if not os.path.isfile(nfo_file_path):
         if verbose:
             kodi_notify_warn('NFO file not found {}'.format(nfo_file_path))
-        log_debug("fs_import_ROM_NFO() NFO file not found '{}'".format(nfo_file_path))
+        log.debug("fs_import_ROM_NFO() NFO file not found '{}'".format(nfo_file_path))
         return False
 
     # Read file, put in a string and remove all line endings.
@@ -1450,7 +1438,7 @@ def fs_get_ROM_NFO_name(rom):
 # Notifies errors in Kodi GUI. Success is notified in the caller.
 # Returns True if success, False if error (IO exception).
 def fs_export_launcher_NFO(nfo_FN, launcher):
-    log_debug('fs_export_launcher_NFO() Exporting launcher NFO "{}"'.format(nfo_FN.getPath()))
+    log.debug('fs_export_launcher_NFO() Exporting launcher NFO "{}"'.format(nfo_FN.getPath()))
 
     # If NFO file does not exist then create them. If it exists, overwrite.
     nfo_slist = [
@@ -1475,7 +1463,7 @@ def fs_export_launcher_NFO(nfo_FN, launcher):
 def fs_import_launcher_NFO(nfo_FN, launchers, launcherID):
     nfo_dic = launchers[launcherID]
 
-    log_debug('fs_import_launcher_NFO() Importing "{}"'.format(nfo_FN.getPath()))
+    log.debug('fs_import_launcher_NFO() Importing "{}"'.format(nfo_FN.getPath()))
     if not os.path.isfile(nfo_FN.getPath()):
         kodi_notify_warn('NFO file not found {}'.format(os.path.basename(nfo_FN.getPath())))
         log_info("fs_import_launcher_NFO() NFO file not found '{}'".format(nfo_FN.getPath()))
@@ -1501,7 +1489,7 @@ def fs_read_launcher_NFO(nfo_FN):
         'plot' : '',
     }
 
-    log_debug('fs_read_launcher_NFO() Importing "{}"'.format(nfo_FN.getPath()))
+    log.debug('fs_read_launcher_NFO() Importing "{}"'.format(nfo_FN.getPath()))
     if not os.path.isfile(nfo_FN.getPath()):
         kodi_notify_warn('NFO file not found {}'.format(os.path.basename(nfo_FN.getPath())))
         log_info('fs_read_launcher_NFO() NFO file not found "{}"'.format(nfo_FN.getPath()))
@@ -1525,7 +1513,7 @@ def fs_get_launcher_NFO_name(settings, launcher):
 
 # Look at the Launcher NFO files for a reference implementation.
 def fs_export_category_NFO(nfo_FN, category):
-    log_debug('fs_export_category_NFO() Exporting "{}"'.format(nfo_FN.getPath()))
+    log.debug('fs_export_category_NFO() Exporting "{}"'.format(nfo_FN.getPath()))
 
     # If NFO file does not exist then create them. If it exists, overwrite.
     nfo_slist = [
@@ -1546,7 +1534,7 @@ def fs_export_category_NFO(nfo_FN, category):
 def fs_import_category_NFO(nfo_FN, categories, categoryID):
     nfo_dic = categories[categoryID]
 
-    log_debug('fs_import_category_NFO() Importing "{}"'.format(nfo_FN.getPath()))
+    log.debug('fs_import_category_NFO() Importing "{}"'.format(nfo_FN.getPath()))
     if not nfo_FN.isfile():
         kodi_notify_warn('NFO file not found {}'.format(os.path.basename(nfo_FN.getPath())))
         log_error("fs_import_category_NFO() Not found '{}'".format(nfo_FN.getPath()))
@@ -1568,7 +1556,7 @@ def fs_get_category_NFO_name(settings, category):
 
 # Collection NFO files. Same as Category NFO files.
 def fs_export_collection_NFO(nfo_FileName, collection):
-    log_debug('fs_export_collection_NFO() Exporting "{}"'.format(nfo_FileName.getPath()))
+    log.debug('fs_export_collection_NFO() Exporting "{}"'.format(nfo_FileName.getPath()))
 
     # If NFO file does not exist then create them. If it exists, overwrite.
     nfo_slist = [
@@ -1587,7 +1575,7 @@ def fs_export_collection_NFO(nfo_FileName, collection):
 # Notifies errors in Kodi GUI. Success is notified in the caller.
 # Returns True if dictionary edited, False otherwise.
 def fs_import_collection_NFO(nfo_FN, collections, launcherID):
-    log_debug('fs_import_collection_NFO() Importing "{}"'.format(nfo_FN.getPath()))
+    log.debug('fs_import_collection_NFO() Importing "{}"'.format(nfo_FN.getPath()))
     if not nfo_FN.isfile():
         kodi_notify_warn('NFO file not found {}'.format(os.path.basename(nfo_FN.getOriginalPath())))
         log_error("fs_import_collection_NFO() Not found '{}'".format(nfo_FN.getPath()))

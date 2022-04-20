@@ -143,12 +143,12 @@ def net_download_img(img_url, file_path):
 #          HTTP status code as integer or None if network error/exception.
 def net_get_URL(url, url_log = None):
     page_bytes, http_code = None, None
-    if url_log is not None: log_debug('net_get_URL() GET URL "{}"'.format(url_log))
+    if url_log is not None: log.debug('net_get_URL() GET URL "{}"'.format(url_log))
     if ADDON_RUNNING_PYTHON_2:
         try:
             req = urllib2.Request(url)
             req.add_unredirected_header('User-Agent', USER_AGENT)
-            if url_log is None: log_debug('net_get_URL() GET URL "{}"'.format(req.get_full_url()))
+            if url_log is None: log.debug('net_get_URL() GET URL "{}"'.format(req.get_full_url()))
             response = urllib2.urlopen(req, timeout = 120, context = ssl._create_unverified_context())
             page_bytes = response.read()
             http_code = response.getcode()
@@ -180,7 +180,7 @@ def net_get_URL(url, url_log = None):
         try:
             req = urllib.request.Request(url)
             req.add_unredirected_header('User-Agent', USER_AGENT)
-            if url_log is None: log_debug('net_get_URL() GET URL "{}"'.format(req.get_full_url()))
+            if url_log is None: log.debug('net_get_URL() GET URL "{}"'.format(req.get_full_url()))
             response = urllib.request.urlopen(req, timeout = 120, context = ssl._create_unverified_context())
             page_bytes = response.read()
             http_code = response.getcode()
@@ -205,9 +205,9 @@ def net_get_URL(url, url_log = None):
             return page_bytes, http_code
 
     # --- Convert to Unicode ---
-    log_debug('net_get_URL() Read {:,} bytes'.format(len(page_bytes)))
-    log_debug('net_get_URL() HTTP status code {}'.format(http_code))
-    log_debug('net_get_URL() encoding {}'.format(encoding))
+    log.debug('net_get_URL() Read {:,} bytes'.format(len(page_bytes)))
+    log.debug('net_get_URL() HTTP status code {}'.format(http_code))
+    log.debug('net_get_URL() encoding {}'.format(encoding))
     page_data = net_decode_URL_data(page_bytes, encoding)
 
     return page_data, http_code
@@ -232,7 +232,7 @@ def net_post_URL(url, data):
             req.add_unredirected_header('User-Agent', USER_AGENT)
             req.add_header("Content-type", "application/x-www-form-urlencoded")
             req.add_header("Acept", "text/plain")
-            log_debug('net_post_URL() POST URL "{}"'.format(req.get_full_url()))
+            log.debug('net_post_URL() POST URL "{}"'.format(req.get_full_url()))
             response = urllib2.urlopen(req, timeout = 120)
             page_bytes = response.read()
             encoding = response.headers['content-type'].split('charset=')[-1]
@@ -242,7 +242,7 @@ def net_post_URL(url, data):
             req.add_unredirected_header('User-Agent', USER_AGENT)
             req.add_header("Content-type", "application/x-www-form-urlencoded")
             req.add_header("Acept", "text/plain")
-            log_debug('net_post_URL() POST URL "{}"'.format(req.get_full_url()))
+            log.debug('net_post_URL() POST URL "{}"'.format(req.get_full_url()))
             response = urllib.request.urlopen(req, timeout = 120)
             page_bytes = response.read()
             encoding = response.headers['content-type'].split('charset=')[-1]
@@ -256,7 +256,7 @@ def net_post_URL(url, data):
         log_error('Message: {}'.format(text_type(ex)))
         return page_data
     num_bytes = len(page_bytes)
-    log_debug('net_post_URL() Read {} bytes'.format(num_bytes))
+    log.debug('net_post_URL() Read {} bytes'.format(num_bytes))
     # Convert page data to Unicode
     page_data = net_decode_URL_data(page_bytes, encoding)
 
@@ -274,7 +274,7 @@ def net_decode_URL_data(page_bytes, MIME_type):
         encoding = 'utf-16'
     else:
         encoding = 'utf-8'
-    # log_debug('net_decode_URL_data() MIME_type "{}", encoding "{}"'.format(MIME_type, encoding))
+    # log.debug('net_decode_URL_data() MIME_type "{}", encoding "{}"'.format(MIME_type, encoding))
 
     # Decode
     page_data = page_bytes.decode(encoding)
