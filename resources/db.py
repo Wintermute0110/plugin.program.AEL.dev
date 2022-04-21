@@ -285,10 +285,10 @@ def repair_Favourite_ROM(repair_mode, old_fav_rom, parent_rom, parent_launcher):
     new_fav_rom = dict(old_fav_rom)
 
     # --- Step 0 is always done in any Favourite/Collection repair ---
-    log_info('repair_Favourite_ROM() Relinking ROM and launcher (common stuff)')
-    log_info('repair_Favourite_ROM() Old ROM name "{}"'.format(old_fav_rom['m_name']))
-    log_info('repair_Favourite_ROM() New ROM name "{}"'.format(parent_rom['m_name']))
-    log_info('repair_Favourite_ROM() New launcher "{}"'.format(parent_launcher['m_name']))
+    log.info('repair_Favourite_ROM() Relinking ROM and launcher (common stuff)')
+    log.info('repair_Favourite_ROM() Old ROM name "{}"'.format(old_fav_rom['m_name']))
+    log.info('repair_Favourite_ROM() New ROM name "{}"'.format(parent_rom['m_name']))
+    log.info('repair_Favourite_ROM() New launcher "{}"'.format(parent_launcher['m_name']))
     fs_aux_copy_ROM_main_stuff(parent_launcher, parent_rom, new_fav_rom)
     fs_aux_copy_ROM_launcher_info(parent_launcher, new_fav_rom)
 
@@ -398,8 +398,8 @@ def get_launcher(cfg, st_dic, launcherID):
     # Actual ROM Launcher
     if cfg.launcher_is_actual:
         if launcherID not in cfg.launchers:
-            log_error('Launcher ID not found in cfg.launchers')
-            kodi_dialog_OK('Launcher ID not found in cfg.launchers. Report this bug.')
+            log.error('Launcher ID not found in cfg.launchers')
+            kodi.dialog_OK('Launcher ID not found in cfg.launchers. Report this bug.')
             return
         launcher = cfg.launchers[launcherID]
         return launcher
@@ -571,12 +571,12 @@ def load_ROMs(cfg, st_dic, categoryID, launcherID, load_pclone_ROMs_flag = False
         try:
             vcategory_db_dir = vdic[categoryID]
         except:
-            log_error('db_load_ROMs() Wrong categoryID = {}'.format(categoryID))
-            kodi_dialog_OK('Wrong categoryID = {}'.format(categoryID))
+            log.error('db_load_ROMs() Wrong categoryID = {}'.format(categoryID))
+            kodi.dialog_OK('Wrong categoryID = {}'.format(categoryID))
             return
         hashed_db_filename = vcategory_db_dir.pjoin(virtual_launcherID + '.json')
         if not hashed_db_filename.exists():
-            kodi_dialog_OK('Virtual launcher XML/JSON file not found.')
+            kodi.dialog_OK('Virtual launcher XML/JSON file not found.')
             return
             
         cfg.roms = fs_load_VCategory_ROMs_JSON(vcategory_db_dir, virtual_launcherID)
@@ -843,34 +843,34 @@ def unlink_ROMs_database(roms_dir_FN, launcher):
     # Delete ROMs JSON file
     roms_json_FN = roms_dir_FN.pjoin(roms_base_noext + '.json')
     if roms_json_FN.exists():
-        log_info('Deleting ROMs JSON    "{}"'.format(roms_json_FN.getOriginalPath()))
+        log.info('Deleting ROMs JSON    "{}"'.format(roms_json_FN.getOriginalPath()))
         roms_json_FN.unlink()
 
     # Delete ROMs info XML file
     roms_xml_FN = roms_dir_FN.pjoin(roms_base_noext + '.xml')
     if roms_xml_FN.exists():
-        log_info('Deleting ROMs XML     "{}"'.format(roms_xml_FN.getOriginalPath()))
+        log.info('Deleting ROMs XML     "{}"'.format(roms_xml_FN.getOriginalPath()))
         roms_xml_FN.unlink()
 
     # Delete No-Intro/Redump stuff if exist
     roms_index_CParent_FN = roms_dir_FN.pjoin(roms_base_noext + '_index_CParent.json')
     if roms_index_CParent_FN.exists():
-        log_info('Deleting CParent JSON "{}"'.format(roms_index_CParent_FN.getOriginalPath()))
+        log.info('Deleting CParent JSON "{}"'.format(roms_index_CParent_FN.getOriginalPath()))
         roms_index_CParent_FN.unlink()
 
     roms_index_PClone_FN = roms_dir_FN.pjoin(roms_base_noext + '_index_PClone.json')
     if roms_index_PClone_FN.exists():
-        log_info('Deleting PClone JSON  "{}"'.format(roms_index_PClone_FN.getOriginalPath()))
+        log.info('Deleting PClone JSON  "{}"'.format(roms_index_PClone_FN.getOriginalPath()))
         roms_index_PClone_FN.unlink()
 
     roms_parents_FN = roms_dir_FN.pjoin(roms_base_noext + '_parents.json')
     if roms_parents_FN.exists():
-        log_info('Deleting parents JSON "{}"'.format(roms_parents_FN.getOriginalPath()))
+        log.info('Deleting parents JSON "{}"'.format(roms_parents_FN.getOriginalPath()))
         roms_parents_FN.unlink()
 
     roms_DAT_FN = roms_dir_FN.pjoin(roms_base_noext + '_DAT.json')
     if roms_DAT_FN.exists():
-        log_info('Deleting DAT JSON     "{}"'.format(roms_DAT_FN.getOriginalPath()))
+        log.info('Deleting DAT JSON     "{}"'.format(roms_DAT_FN.getOriginalPath()))
         roms_DAT_FN.unlink()
 
 def rename_ROMs_database(roms_dir_FN, old_roms_base_noext, new_roms_base_noext):
@@ -962,7 +962,7 @@ def write_ROMs_JSON(roms_dir_FN, launcher, roms):
 # ------------------------------------------------------------------------------------------------
 # Save Favourites JSON file. roms is a dictionary of dictionaries.
 def write_Favourites_JSON(roms_json_file, roms):
-    log_info('write_Favourites_JSON() File {}'.format(roms_json_file.getOriginalPath()))
+    log.info('write_Favourites_JSON() File {}'.format(roms_json_file.getOriginalPath()))
 
     # --- Create JSON data structure, including version number ---
     control_dic = {
@@ -976,7 +976,7 @@ def write_Favourites_JSON(roms_json_file, roms):
 # ROM Collections
 # ------------------------------------------------------------------------------------------------
 def write_Collection_index_XML(collections_xml_file, collections):
-    log_info('write_Collection_index_XML() File {}'.format(collections_xml_file.getOriginalPath()))
+    log.info('write_Collection_index_XML() File {}'.format(collections_xml_file.getOriginalPath()))
     slist = []
     slist.append('<?xml version="1.0" encoding="utf-8" standalone="yes"?>')
     slist.append('<advanced_emulator_launcher_Collection_index version="{}">'.format(AEL_STORAGE_FORMAT))
@@ -1052,7 +1052,7 @@ def write_Collection_ROMs_JSON(roms_json_FN, roms):
 # Filenames of artwork/assets must be converted to relative paths, see
 # comments in fs_export_ROM_collection_assets()
 def export_ROM_collection(output_filename, collection, rom_list):
-    log_info('export_ROM_collection() File {}'.format(output_filename.getOriginalPath()))
+    log.info('export_ROM_collection() File {}'.format(output_filename.getOriginalPath()))
 
     ex_collection_dic = copy.deepcopy(collection)
     for asset_kind in COLLECTION_ASSET_ID_LIST:
@@ -1118,7 +1118,7 @@ def export_ROM_collection(output_filename, collection, rom_list):
 #   rom_list      list of dictionaries
 #   asset_dir_FN  FileName object default self.settings['collections_asset_dir']
 def export_ROM_collection_assets(out_dir_FN, collection, rom_list, asset_dir_FN):
-    log_info('export_ROM_collection_assets() Dir {}'.format(out_dir_FN.getOriginalPath()))
+    log.info('export_ROM_collection_assets() Dir {}'.format(out_dir_FN.getOriginalPath()))
 
     # --- Export Collection own assets ---
     assets_dic = {}
@@ -1145,11 +1145,11 @@ def export_ROM_collection_assets(out_dir_FN, collection, rom_list, asset_dir_FN)
             dest_path = new_asset_FN.getPath().decode(get_fs_encoding(), 'ignore')
             shutil.copy(source_path, dest_path)
         except OSError:
-            log_error('export_ROM_collection_assets() OSError exception copying image')
+            log.error('export_ROM_collection_assets() OSError exception copying image')
             kodi_notify_warn('OSError exception copying image')
             return
         except IOError:
-            log_error('export_ROM_collection_assets() IOError exception copying image')
+            log.error('export_ROM_collection_assets() IOError exception copying image')
             kodi_notify_warn('IOError exception copying image')
             return
 
@@ -1187,11 +1187,11 @@ def export_ROM_collection_assets(out_dir_FN, collection, rom_list, asset_dir_FN)
             try:
                 utils_copy_file(asset_FN.getPath(), new_asset_FN.getPath())
             except OSError:
-                log_error('export_ROM_collection_assets() OSError exception copying image')
+                log.error('export_ROM_collection_assets() OSError exception copying image')
                 kodi_notify_warn('OSError exception copying image')
                 return
             except IOError:
-                log_error('export_ROM_collection_assets() IOError exception copying image')
+                log.error('export_ROM_collection_assets() IOError exception copying image')
                 kodi_notify_warn('IOError exception copying image')
                 return
 
@@ -1200,7 +1200,7 @@ def export_ROM_collection_assets(out_dir_FN, collection, rom_list, asset_dir_FN)
 def import_ROM_collection(input_FileName):
     default_return = ({}, {}, [])
 
-    log_info('import_ROM_collection() Loading {}'.format(input_FileName.getOriginalPath()))
+    log.info('import_ROM_collection() Loading {}'.format(input_FileName.getOriginalPath()))
     raw_data = utils.load_JSON_file(input_FileName.getPath())
     if not raw_data: return default_return
     try:
@@ -1210,8 +1210,8 @@ def import_ROM_collection(input_FileName):
         control_str    = control_dic['control']
         version_int    = control_dic['version']
     except:
-        log_error('import_ROM_collection() Exception unpacking ROM Collection data')
-        log_error('import_ROM_collection() Empty ROM Collection returned')
+        log.error('import_ROM_collection() Exception unpacking ROM Collection data')
+        log.error('import_ROM_collection() Empty ROM Collection returned')
         return default_return
 
     return (control_dic, collection_dic, rom_list)
@@ -1220,7 +1220,7 @@ def import_ROM_collection(input_FileName):
 def import_ROM_collection_assets(input_FileName):
     default_return = ({}, {})
 
-    log_info('import_ROM_collection_assets() Loading {}'.format(input_FileName.getOriginalPath()))
+    log.info('import_ROM_collection_assets() Loading {}'.format(input_FileName.getOriginalPath()))
     raw_data = utils.load_JSON_file(input_FileName.getPath())
     if not raw_data: return default_return
     control_dic = raw_data[0]
@@ -1245,7 +1245,7 @@ def collection_ROM_index_by_romID(romID, collection_rom_list):
 # Virtual Categories
 # -------------------------------------------------------------------------------------------------
 def write_VCategory_XML(roms_xml_file, roms):
-    log_info('write_VCategory_XML() Saving XML {}'.format(roms_xml_file.getOriginalPath()))
+    log.info('write_VCategory_XML() Saving XML {}'.format(roms_xml_file.getOriginalPath()))
     slist = []
     slist.append('<?xml version="1.0" encoding="utf-8" standalone="yes"?>')
     slist.append('<advanced_emulator_launcher_Virtual_Category_index version="{}">'.format(AEL_STORAGE_FORMAT))
@@ -1475,7 +1475,7 @@ def import_launcher_NFO(nfo_FN, launchers, launcherID):
     log.debug('import_launcher_NFO() Importing "{}"'.format(nfo_FN.getPath()))
     if not os.path.isfile(nfo_FN.getPath()):
         kodi_notify_warn('NFO file not found {}'.format(os.path.basename(nfo_FN.getPath())))
-        log_info("import_launcher_NFO() NFO file not found '{}'".format(nfo_FN.getPath()))
+        log.info("import_launcher_NFO() NFO file not found '{}'".format(nfo_FN.getPath()))
         return False
 
     # Read file, put in a single-line string and remove all line endings.
@@ -1501,7 +1501,7 @@ def read_launcher_NFO(nfo_FN):
     log.debug('read_launcher_NFO() Importing "{}"'.format(nfo_FN.getPath()))
     if not os.path.isfile(nfo_FN.getPath()):
         kodi_notify_warn('NFO file not found {}'.format(os.path.basename(nfo_FN.getPath())))
-        log_info('read_launcher_NFO() NFO file not found "{}"'.format(nfo_FN.getPath()))
+        log.info('read_launcher_NFO() NFO file not found "{}"'.format(nfo_FN.getPath()))
         return nfo_dic
 
     # Read file, put it in a single-line string by removing all line endings.
@@ -1546,7 +1546,7 @@ def import_category_NFO(nfo_FN, categories, categoryID):
     log.debug('import_category_NFO() Importing "{}"'.format(nfo_FN.getPath()))
     if not nfo_FN.isfile():
         kodi_notify_warn('NFO file not found {}'.format(os.path.basename(nfo_FN.getPath())))
-        log_error("import_category_NFO() Not found '{}'".format(nfo_FN.getPath()))
+        log.error("import_category_NFO() Not found '{}'".format(nfo_FN.getPath()))
         return False
     nfo_str = utils_load_file_to_str(nfo_FN.getPath()).replace('\r', '').replace('\n', '')
     update_dic_with_NFO_str(nfo_str, 'year', nfo_dic, 'm_year')
@@ -1587,7 +1587,7 @@ def import_collection_NFO(nfo_FN, collections, launcherID):
     log.debug('import_collection_NFO() Importing "{}"'.format(nfo_FN.getPath()))
     if not nfo_FN.isfile():
         kodi_notify_warn('NFO file not found {}'.format(os.path.basename(nfo_FN.getOriginalPath())))
-        log_error("import_collection_NFO() Not found '{}'".format(nfo_FN.getPath()))
+        log.error("import_collection_NFO() Not found '{}'".format(nfo_FN.getPath()))
         return False
 
     nfo_str = utils_load_file_to_str(nfo_FN.getPath()).replace('\r', '').replace('\n', '')

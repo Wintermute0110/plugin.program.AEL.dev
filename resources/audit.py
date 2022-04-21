@@ -128,7 +128,7 @@ def audit_new_LB_gameImage():
 
 def audit_load_LB_metadata_XML(filename_FN, games_dic, platforms_dic, gameimages_dic):
     if not filename_FN.exists():
-        log_error("Cannot load file '{}'".format(xml_file))
+        log.error("Cannot load file '{}'".format(xml_file))
         return
 
     # --- Parse using cElementTree ---
@@ -142,7 +142,7 @@ def audit_load_LB_metadata_XML(filename_FN, games_dic, platforms_dic, gameimages
                 xml_tag  = xml_child.tag
                 xml_text = xml_child.text if xml_child.text is not None else ''
                 if xml_tag not in game:
-                    log_info('Unknown <Game> child tag <{}>'.format(xml_tag))
+                    log.info('Unknown <Game> child tag <{}>'.format(xml_tag))
                     return
                 game[xml_tag] = text_unescape_XML(xml_text)
             games_dic[game['Name']] = game
@@ -152,7 +152,7 @@ def audit_load_LB_metadata_XML(filename_FN, games_dic, platforms_dic, gameimages
                 xml_tag  = xml_child.tag
                 xml_text = xml_child.text if xml_child.text is not None else ''
                 if xml_tag not in platform:
-                    log_info('Unknown <Platform> child tag <{}>'.format(xml_tag))
+                    log.info('Unknown <Platform> child tag <{}>'.format(xml_tag))
                     return
                 platform[xml_tag] = text_unescape_XML(xml_text)
             platforms_dic[platform['Name']] = platform
@@ -170,12 +170,12 @@ def audit_load_LB_metadata_XML(filename_FN, games_dic, platforms_dic, gameimages
                 xml_tag  = xml_child.tag
                 xml_text = xml_child.text if xml_child.text is not None else ''
                 if xml_tag not in game_image:
-                    log_info('Unknown <GameImage> child tag <{}>'.format(xml_tag))
+                    log.info('Unknown <GameImage> child tag <{}>'.format(xml_tag))
                     return
                 game_image[xml_tag] = text_unescape_XML(xml_text)
             gameimages_dic[game_image['FileName']] = game_image
         else:
-            log_info('Unknwon main tag <{}>'.format(xml_element.tag))
+            log.info('Unknwon main tag <{}>'.format(xml_element.tag))
             return
     log.debug('audit_load_LB_metadata_XML() Loaded {} games ({} bytes)'.format(len(games_dic), sys.getsizeof(games_dic)))
     log.debug('audit_load_LB_metadata_XML() Loaded {} platforms'.format(len(platforms_dic)))
@@ -191,7 +191,7 @@ def audit_load_OfflineScraper_XML(xml_file):
 
     # --- Check that file exists ---
     if not os.path.isfile(xml_file):
-        log_error("Cannot load file '{}'".format(xml_file))
+        log.error("Cannot load file '{}'".format(xml_file))
         return games
 
     # --- Parse using cElementTree ---
@@ -199,8 +199,8 @@ def audit_load_OfflineScraper_XML(xml_file):
     try:
         xml_tree = xml.etree.ElementTree.parse(xml_file)
     except xml.etree.ElementTree.ParseError as ex:
-        log_error('(ParseError) Exception parsing XML categories.xml')
-        log_error('(ParseError) {}'.format(text_type(ex)))
+        log.error('(ParseError) Exception parsing XML categories.xml')
+        log.error('(ParseError) {}'.format(text_type(ex)))
         return games
     xml_root = xml_tree.getroot()
     for game_element in xml_root:
@@ -239,7 +239,7 @@ def audit_load_NoIntro_XML_file(xml_FN):
 
     # --- If file does not exist return empty dictionary ---
     if not xml_FN.exists():
-        log_error('Does not exists "{}"'.format(xml_FN.getPath()))
+        log.error('Does not exists "{}"'.format(xml_FN.getPath()))
         return nointro_roms
 
     # --- Parse using cElementTree ---
@@ -247,11 +247,11 @@ def audit_load_NoIntro_XML_file(xml_FN):
     try:
         xml_tree = xml.etree.ElementTree.parse(xml_FN.getPath())
     except xml.etree.ElementTree.ParseError as ex:
-        log_error('(ParseError) Exception parsing XML categories.xml')
-        log_error('(ParseError) {}'.format(text_type(ex)))
+        log.error('(ParseError) Exception parsing XML categories.xml')
+        log.error('(ParseError) {}'.format(text_type(ex)))
         return nointro_roms
     except IOError as ex:
-        log_error('(IOError) {}'.format(text_type(ex)))
+        log.error('(IOError) {}'.format(text_type(ex)))
         return nointro_roms
     xml_root = xml_tree.getroot()
     for root_element in xml_root:
@@ -271,14 +271,14 @@ def audit_load_GameDB_XML(xml_FN):
 
     # --- Check that file exists and load ---
     if not xml_FN.exists():
-        log_error('Does not exists "{}"'.format(xml_FN.getPath()))
+        log.error('Does not exists "{}"'.format(xml_FN.getPath()))
         return games
     log.debug('Loading XML "{}"'.format(xml_FN.getPath()))
     try:
         xml_tree = xml.etree.ElementTree.parse(xml_FN.getPath())
     except xml.etree.ElementTree.ParseError as ex:
-        log_error('(ParseError) Exception parsing XML categories.xml')
-        log_error('(ParseError) {}'.format(text_type(ex)))
+        log.error('(ParseError) Exception parsing XML categories.xml')
+        log.error('(ParseError) {}'.format(text_type(ex)))
         return games
     xml_root = xml_tree.getroot()
     for game_element in xml_root:
@@ -316,13 +316,13 @@ def audit_load_Tempest_INI(file_FN):
 
     # --- Check that file exists ---
     if not file_FN.exists():
-        log_error('Does not exists "{}"'.format(file_FN.getPath()))
+        log.error('Does not exists "{}"'.format(file_FN.getPath()))
         return games
     log.debug('Loading XML "{}"'.format(file_FN.getPath()))
     try:
         f = open(file_FN.getPath(), 'rt')
     except IOError:
-        log_info('audit_load_Tempest_INI() IOError opening "{}"'.format(filename))
+        log.info('audit_load_Tempest_INI() IOError opening "{}"'.format(filename))
         return {}
     for file_line in f:
         stripped_line = file_line.strip().decode(errors = 'replace')
@@ -365,7 +365,7 @@ def audit_load_Tempest_INI(file_FN):
         else:
             raise CriticalError('Unknown read_status FSM value')
     f.close()
-    log_info('audit_load_Tempest_INI() Number of games {}'.format(len(games)))
+    log.info('audit_load_Tempest_INI() Number of games {}'.format(len(games)))
 
     return games
 
@@ -375,17 +375,17 @@ def audit_load_HyperList_XML(xml_FN):
 
     # --- Check that file exists and load ---
     if not xml_FN.exists():
-        log_error('Does not exists "{}"'.format(xml_FN.getPath()))
+        log.error('Does not exists "{}"'.format(xml_FN.getPath()))
         return games
     log.debug('Loading XML "{}"'.format(xml_FN.getPath()))
     try:
         xml_tree = ET.parse(xml_FN.getPath())
     except ET.ParseError as ex:
-        log_error('(ParseError) Exception parsing XML categories.xml')
-        log_error('(ParseError) {}'.format(text_type(ex)))
+        log.error('(ParseError) Exception parsing XML categories.xml')
+        log.error('(ParseError) {}'.format(text_type(ex)))
         return games
     except IOError as ex:
-        log_error('(IOError) {}'.format(text_type(ex)))
+        log.error('(IOError) {}'.format(text_type(ex)))
         return games
     xml_root = xml_tree.getroot()
     for game_element in xml_root:
@@ -414,7 +414,7 @@ def audit_load_HyperList_XML(xml_FN):
     return games
 
 def audit_make_NoIntro_PClone_dic(nointro_dic):
-    log_info('Making PClone dictionary ...')
+    log.info('Making PClone dictionary ...')
     main_pclone_dic = {}
     for machine_name in nointro_dic:
         machine = nointro_dic[machine_name]
@@ -431,7 +431,7 @@ def audit_make_NoIntro_PClone_dic(nointro_dic):
     return main_pclone_dic
 
 def audit_make_NoIntro_Parents_dic(nointro_dic):
-    log_info('Making Parents dictionary ...')
+    log.info('Making Parents dictionary ...')
     main_pclone_dic = {}
     main_clone_to_parent_dic = {}
     for machine_name in nointro_dic:

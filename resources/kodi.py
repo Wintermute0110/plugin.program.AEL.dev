@@ -63,8 +63,8 @@ KODI_ICON_OVERLAY_HD = 6
 # Displays a modal dialog with an OK button. Dialog can have up to 3 rows of text, however first
 # row is multiline.
 # Call examples:
-#  1) ret = kodi_dialog_OK('Launch ROM?')
-#  2) ret = kodi_dialog_OK('Launch ROM?', title = 'AML - Launcher')
+#  1) ret = kodi.dialog_OK('Launch ROM?')
+#  2) ret = kodi.dialog_OK('Launch ROM?', title = 'AML - Launcher')
 def dialog_OK(text, title = const.ADDON_LONG_NAME):
     xbmcgui.Dialog().ok(title, text)
 

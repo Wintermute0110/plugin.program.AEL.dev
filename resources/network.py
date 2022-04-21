@@ -108,14 +108,14 @@ def net_download_img(img_url, file_path):
     # This must be fixed. If an error happened when downloading stuff caller code must
     # known to take action.
     except IOError as ex:
-        log_error('(IOError) In net_download_img(), network code.')
-        log_error('(IOError) Object type "{}"'.format(type(ex)))
-        log_error('(IOError) Message "{}"'.format(text_type(ex)))
+        log.error('(IOError) In net_download_img(), network code.')
+        log.error('(IOError) Object type "{}"'.format(type(ex)))
+        log.error('(IOError) Message "{}"'.format(text_type(ex)))
         return
     except Exception as ex:
-        log_error('(Exception) In net_download_img(), network code.')
-        log_error('(Exception) Object type "{}"'.format(type(ex)))
-        log_error('(Exception) Message "{}"'.format(text_type(ex)))
+        log.error('(Exception) In net_download_img(), network code.')
+        log.error('(Exception) Object type "{}"'.format(type(ex)))
+        log.error('(Exception) Message "{}"'.format(text_type(ex)))
         return
 
     # --- Write image file to disk ---
@@ -125,13 +125,13 @@ def net_download_img(img_url, file_path):
         f.write(img_buf)
         f.close()
     except IOError as ex:
-        log_error('(IOError) In net_download_img(), disk code.')
-        log_error('(IOError) Object type "{}"'.format(type(ex)))
-        log_error('(IOError) Message "{}"'.format(text_type(ex)))
+        log.error('(IOError) In net_download_img(), disk code.')
+        log.error('(IOError) Object type "{}"'.format(type(ex)))
+        log.error('(IOError) Message "{}"'.format(text_type(ex)))
     except Exception as ex:
-        log_error('(Exception) In net_download_img(), disk code.')
-        log_error('(Exception) Object type "{}"'.format(type(ex)))
-        log_error('(Exception) Message "{}"'.format(text_type(ex)))
+        log.error('(Exception) In net_download_img(), disk code.')
+        log.error('(Exception) Object type "{}"'.format(type(ex)))
+        log.error('(Exception) Message "{}"'.format(text_type(ex)))
 
 # User agent is fixed and defined in global var USER_AGENT
 # https://docs.python.org/2/library/urllib2.html
@@ -165,16 +165,16 @@ def net_get_URL(url, url_log = None):
                 ex.close()
             except:
                 page_bytes = text_type(ex.reason)
-            log_error('(HTTPError) In net_get_URL()')
-            log_error('(HTTPError) Object type "{}"'.format(type(ex)))
-            log_error('(HTTPError) Message "{}"'.format(text_type(ex)))
-            log_error('(HTTPError) Code {}'.format(http_code))
+            log.error('(HTTPError) In net_get_URL()')
+            log.error('(HTTPError) Object type "{}"'.format(type(ex)))
+            log.error('(HTTPError) Message "{}"'.format(text_type(ex)))
+            log.error('(HTTPError) Code {}'.format(http_code))
             return page_bytes, http_code
         # If an unknown exception happens return empty data.
         except Exception as ex:
-            log_error('(Exception) In net_get_URL()')
-            log_error('(Exception) Object type "{}"'.format(type(ex)))
-            log_error('(Exception) Message "{}"'.format(text_type(ex)))
+            log.error('(Exception) In net_get_URL()')
+            log.error('(Exception) Object type "{}"'.format(type(ex)))
+            log.error('(Exception) Message "{}"'.format(text_type(ex)))
             return page_bytes, http_code
     elif ADDON_RUNNING_PYTHON_3:
         try:
@@ -193,15 +193,15 @@ def net_get_URL(url, url_log = None):
                 ex.close()
             except:
                 page_bytes = text_type(ex.reason)
-            log_error('(HTTPError) In net_get_URL()')
-            log_error('(HTTPError) Object type "{}"'.format(type(ex)))
-            log_error('(HTTPError) Message "{}"'.format(text_type(ex)))
-            log_error('(HTTPError) Code {}'.format(http_code))
+            log.error('(HTTPError) In net_get_URL()')
+            log.error('(HTTPError) Object type "{}"'.format(type(ex)))
+            log.error('(HTTPError) Message "{}"'.format(text_type(ex)))
+            log.error('(HTTPError) Code {}'.format(http_code))
             return page_bytes, http_code
         except Exception as ex:
-            log_error('(Exception) In net_get_URL()')
-            log_error('(Exception) Object type "{}"'.format(type(ex)))
-            log_error('(Exception) Message "{}"'.format(text_type(ex)))
+            log.error('(Exception) In net_get_URL()')
+            log.error('(Exception) Object type "{}"'.format(type(ex)))
+            log.error('(Exception) Message "{}"'.format(text_type(ex)))
             return page_bytes, http_code
 
     # --- Convert to Unicode ---
@@ -248,12 +248,12 @@ def net_post_URL(url, data):
             encoding = response.headers['content-type'].split('charset=')[-1]
             response.close()
     except IOError as ex:
-        log_error('(IOError exception) In net_get_URL()')
-        log_error('Message: {}'.format(text_type(ex)))
+        log.error('(IOError exception) In net_get_URL()')
+        log.error('Message: {}'.format(text_type(ex)))
         return page_data
     except Exception as ex:
-        log_error('(General exception) In net_get_URL()')
-        log_error('Message: {}'.format(text_type(ex)))
+        log.error('(General exception) In net_get_URL()')
+        log.error('Message: {}'.format(text_type(ex)))
         return page_data
     num_bytes = len(page_bytes)
     log.debug('net_post_URL() Read {} bytes'.format(num_bytes))

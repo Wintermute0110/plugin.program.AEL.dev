@@ -279,12 +279,12 @@ def write_slist_to_file(filename, slist):
         file_obj.write('\n'.join(slist))
         file_obj.close()
     except OSError:
-        log_error('(OSError) exception in utils_write_slist_to_file()')
-        log_error('Cannot write {} file'.format(filename))
+        log.error('(OSError) exception in utils_write_slist_to_file()')
+        log.error('Cannot write {} file'.format(filename))
         raise AEL_Error('(OSError) Cannot write {} file'.format(filename))
     except IOError:
-        log_error('(IOError) exception in utils_write_slist_to_file()')
-        log_error('Cannot write {} file'.format(filename))
+        log.error('(IOError) exception in utils_write_slist_to_file()')
+        log.error('Cannot write {} file'.format(filename))
         raise AEL_Error('(IOError) Cannot write {} file'.format(filename))
 
 def load_file_to_slist(filename):
@@ -306,12 +306,12 @@ def load_XML_to_ET(filename):
         # log.debug(text_type(ex.errno.errorcode))
         # No such file or directory
         if ex.errno == errno.ENOENT:
-            log_error('load_XML_to_ET() (IOError) ENOENT No such file or directory.')
+            log.error('load_XML_to_ET() (IOError) ENOENT No such file or directory.')
         else:
-            log_error('load_XML_to_ET() (IOError) Unhandled errno value.')
+            log.error('load_XML_to_ET() (IOError) Unhandled errno value.')
     except xml.etree.ElementTree.ParseError as ex:
-        log_error('load_XML_to_ET() (ParseError) Exception parsing {}'.format(filename))
-        log_error('load_XML_to_ET() (ParseError) {}'.format(text_type(ex)))
+        log.error('load_XML_to_ET() (ParseError) Exception parsing {}'.format(filename))
+        log.error('load_XML_to_ET() (ParseError) {}'.format(text_type(ex)))
     return xml_tree
 
 # -------------------------------------------------------------------------------------------------
@@ -322,7 +322,7 @@ def load_JSON_file(json_filename, default_obj = {}, verbose = True):
     # If file does not exist return default object (usually empty object)
     json_data = default_obj
     if not os.path.isfile(json_filename):
-        log_warning('load_JSON_file() Not found "{}"'.format(json_filename))
+        log.warning('load_JSON_file() Not found "{}"'.format(json_filename))
         return json_data
     # Load and parse JSON file.
     if verbose: log.debug('load_JSON_file() "{}"'.format(json_filename))
@@ -330,7 +330,7 @@ def load_JSON_file(json_filename, default_obj = {}, verbose = True):
         try:
             json_data = json.load(file)
         except ValueError as ex:
-            log_error('load_JSON_file() ValueError exception in json.load() function')
+            log.error('load_JSON_file() ValueError exception in json.load() function')
     return json_data
 
 # This consumes a lot of memory but it is fast.
@@ -420,7 +420,7 @@ def file_cache_add_dir(dir_str, verbose = True):
 
     # Create a set with all the files in the directory
     if not dir_str:
-        log_warning('file_cache_add_dir() Empty dir_str. Exiting')
+        log.warning('file_cache_add_dir() Empty dir_str. Exiting')
         return
     dir_FN = FileName(dir_str)
     if not dir_FN.exists():
@@ -428,7 +428,7 @@ def file_cache_add_dir(dir_str, verbose = True):
         file_cache[dir_str] = set()
         return
     if not dir_FN.isdir():
-        log_warning('file_cache_add_dir() Not a directory "{}"'.format(dir_str))
+        log.warning('file_cache_add_dir() Not a directory "{}"'.format(dir_str))
         return
     if verbose:
         # log.debug('file_cache_add_dir() Scanning OP "{}"'.format(dir_FN.getOriginalPath()))
@@ -535,7 +535,7 @@ def disable_screensaver():
 # kodi_disable_screensaver() must be called before this function or bad things will happen.
 def restore_screensaver():
     if g_screensaver_mode is None:
-        log_error('restore_screensaver() must be called before kodi_restore_screensaver()')
+        log.error('restore_screensaver() must be called before kodi_restore_screensaver()')
         raise RuntimeError
     log.debug('restore_screensaver() Screensaver mode "{}"'.format(g_screensaver_mode))
     p_dic = {
@@ -591,7 +591,7 @@ def json_rpc_dict(method_str, params_dic, verbose = False):
     response_dic = json.loads(response_json_str)
     if 'error' in response_dic:
         result_dic = response_dic['error']
-        log_warning('json_rpc_dict() JSONRPC ERROR {}'.format(result_dic['message']))
+        log.warning('json_rpc_dict() JSONRPC ERROR {}'.format(result_dic['message']))
     else:
         result_dic = response_dic['result']
     if verbose:
@@ -720,7 +720,7 @@ def display_status_message(st_dic):
     elif st_dic['dialog'] == KODI_MESSAGE_NOTIFY_WARN:
         kodi_notify(st_dic['msg'])
     elif st_dic['dialog'] == KODI_MESSAGE_DIALOG:
-        kodi_dialog_OK(st_dic['msg'])
+        kodi.dialog_OK(st_dic['msg'])
     else:
         raise TypeError('st_dic["dialog"] = {}'.format(st_dic['dialog']))
 

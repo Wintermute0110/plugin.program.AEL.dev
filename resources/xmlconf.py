@@ -135,7 +135,7 @@ def autoconfig_export_all(categories, launchers, export_FN):
         elif launcher['categoryID'] == CATEGORY_ADDONROOT_ID:
             category_name = CATEGORY_ADDONROOT_ID
         else:
-            kodi_dialog_OK('Launcher category not found. This is a bug, please report it.')
+            kodi.dialog_OK('Launcher category not found. This is a bug, please report it.')
             return
         log.debug('autoconfig_export_all() Launcher "{}" (ID "{}")'.format(launcher['m_name'], launcherID))
         autoconfig_export_launcher_str_list(launcher, category_name, str_list)
@@ -152,7 +152,7 @@ def autoconfig_export_launcher(launcher, export_FN, categories):
     elif launcher['categoryID'] == CATEGORY_ADDONROOT_ID:
         category_name = CATEGORY_ADDONROOT_ID
     else:
-        kodi_dialog_OK('Launcher category not found. This is a bug, please report it.')
+        kodi.dialog_OK('Launcher category not found. This is a bug, please report it.')
         raise AEL_Error('Error exporting Launcher XML configuration')
     log.debug('autoconfig_export_launcher() Launcher "{}" (ID "{}")'.format(launcher['m_name'], launcherID))
 
@@ -335,11 +335,11 @@ def autoconfig_import_launchers(CATEGORIES_FILE_PATH, ROMS_DIR, categories, laun
             log.debug('Adding launcher "{}" to import list'.format(launcher_temp['name']))
             imported_launchers_list.append(launcher_temp)
         else:
-            log_warning('Unrecognised root tag <{}>'.format(root_element.tag))
+            log.warning('Unrecognised root tag <{}>'.format(root_element.tag))
 
     # Traverse category import list and import all launchers found in XML file.
     for i_category in imported_categories_list:
-        log_info('Processing Category "{}"'.format(i_category['name']))
+        log.info('Processing Category "{}"'.format(i_category['name']))
 
         # Search category/launcher database to check if imported launcher/category exist.
         s_categoryID = autoconfig_search_category_by_name(i_category, categories)
@@ -375,8 +375,8 @@ def autoconfig_import_launchers(CATEGORIES_FILE_PATH, ROMS_DIR, categories, laun
     # B) If category does not exist create a new one.
     # C) Launchers are matched by name. If launcher name not found then create a new launcherID.
     for i_launcher in imported_launchers_list:
-        log_info('Processing Launcher "{}"'.format(i_launcher['name']))
-        log_info('      with Category "{}"'.format(i_launcher['category']))
+        log.info('Processing Launcher "{}"'.format(i_launcher['name']))
+        log.info('      with Category "{}"'.format(i_launcher['category']))
 
         # Search category/launcher database to check if imported launcher/category exist.
         (s_categoryID, s_launcherID) = autoconfig_search_all_by_name(i_launcher, categories, launchers)
@@ -498,10 +498,10 @@ def autoconfig_import_category(categories, categoryID, i_category, import_FN):
         try:
             file_list = sorted(os.listdir(norm_asset_dir_FN.getPath()))
         except WindowsError as E:
-            log_error('autoconfig_import_category() (exceptions.WindowsError) exception')
-            log_error('Exception message: "{}"'.format(E))
-            kodi_dialog_OK('WindowsError exception. {}'.format(E))
-            kodi_dialog_OK('Scanning assets using the Asset_Prefix tag in '
+            log.error('autoconfig_import_category() (exceptions.WindowsError) exception')
+            log.error('Exception message: "{}"'.format(E))
+            kodi.dialog_OK('WindowsError exception. {}'.format(E))
+            kodi.dialog_OK('Scanning assets using the Asset_Prefix tag in '
                            'Category "{}" will be disabled.'.format(i_category['name']))
             file_list = []
         log.debug('Found {} files'.format(len(file_list)))
@@ -664,7 +664,7 @@ def autoconfig_import_launcher(ROMS_DIR, categories, launchers, categoryID, laun
         if i_launcher['platform'] in platform_long_to_index_dic:
             log.debug('Platform name "{}" recognised'.format(platform))
         else:
-            kodi_dialog_OK(
+            kodi.dialog_OK(
                 'Unrecognised platform name "{}".'.format(platform),
                 title = 'Launcher "{}"'.format(i_launcher['name']))
             log.debug('Unrecognised platform name "{}".'.format(platform))
@@ -676,7 +676,7 @@ def autoconfig_import_launcher(ROMS_DIR, categories, launchers, categoryID, laun
         app_FN = FileName(i_launcher['application'])
         if not app_FN.exists():
             log.debug('Application NOT found.')
-            kodi_dialog_OK(
+            kodi.dialog_OK(
                 'Application "{}" not found'.format(app_FN.getPath()),
                 title = 'Launcher "{}"'.format(i_launcher['name']))
         else:
@@ -715,9 +715,9 @@ def autoconfig_import_launcher(ROMS_DIR, categories, launchers, categoryID, laun
             launchers[launcherID]['args_extra'].append(args)
             log.debug('Imported args_extra "{}"'.format(args))
     else:
-        log_error('Wrong usage of <args> and <args_extra>')
-        log_error('len_args = {}, len_extra_args = {}'.format(len_args, len_extra_args))
-        log_error('No arguments imported.')
+        log.error('Wrong usage of <args> and <args_extra>')
+        log.error('len_args = {}, len_extra_args = {}'.format(len_args, len_extra_args))
+        log.error('No arguments imported.')
 
     # Warn user if rompath directory does not exist
     if i_launcher['ROM_path']:
@@ -726,7 +726,7 @@ def autoconfig_import_launcher(ROMS_DIR, categories, launchers, categoryID, laun
         log.debug('ROMpath  P "{}"'.format(rompath.getPath()))
         if not rompath.exists():
             log.debug('ROM path NOT found.')
-            kodi_dialog_OK(
+            kodi.dialog_OK(
                 'ROM path "{}" not found'.format(rompath.getPath()),
                 title = 'Launcher "{}"'.format(i_launcher['name']))
         else:
@@ -744,7 +744,7 @@ def autoconfig_import_launcher(ROMS_DIR, categories, launchers, categoryID, laun
         log.debug('ROMpath  P "{}"'.format(rompath.getPath()))
         if not rompath.exists():
             log.debug('ROM_extra_path NOT found.')
-            kodi_dialog_OK(
+            kodi.dialog_OK(
                 'ROM path "{}" not found'.format(rompath.getPath()),
                 title = 'Launcher "{}"'.format(i_launcher['name']))
         else:
@@ -784,7 +784,7 @@ def autoconfig_import_launcher(ROMS_DIR, categories, launchers, categoryID, laun
                 log.debug('Set launcher finished to {}'.format(launcher['finished']))
 
             else:
-                kodi_dialog_OK('Unrecognised launcher <Option> "{}"'.format(option))
+                kodi.dialog_OK('Unrecognised launcher <Option> "{}"'.format(option))
 
     # --- ROM assets path ---
     # If ROM_asset_path not found warn the user and tell him if should be created or not.

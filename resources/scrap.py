@@ -486,13 +486,13 @@ class ScrapeStrategy(object):
     def scanner_check_before_scraping(self):
         st_dic = kodi_new_status_dic()
         self.meta_scraper_obj.check_before_scraping(st_dic)
-        if st_dic['abort']: kodi_dialog_OK(st_dic['msg'])
+        if st_dic['abort']: kodi.dialog_OK(st_dic['msg'])
 
         # Only check asset scraper if it's different from the metadata scraper.
         if not self.meta_and_asset_scraper_same:
             st_dic = kodi_new_status_dic()
             self.asset_scraper_obj.check_before_scraping(st_dic)
-            if st_dic['abort']: kodi_dialog_OK(st_dic['msg'])
+            if st_dic['abort']: kodi.dialog_OK(st_dic['msg'])
 
     def scanner_check_launcher_unset_asset_dirs(self):
         log.debug('ScrapeStrategy.scanner_check_launcher_unset_asset_dirs() BEGIN ...')
@@ -759,7 +759,7 @@ class ScrapeStrategy(object):
             if st_dic['abort']:
                 self.pdialog.close()
                 # Close error message dialog automatically 1 minute to keep scanning.
-                # kodi_dialog_OK(st_dic['msg'])
+                # kodi.dialog_OK(st_dic['msg'])
                 kodi_dialog_yesno_timer(st_dic['msg'], 60000)
                 st_dic = kodi_new_status_dic()
                 self.pdialog.reopen()
@@ -835,7 +835,7 @@ class ScrapeStrategy(object):
         if st_dic['abort']:
             self.pdialog.close()
             # Close error message dialog automatically 1 minute to keep scanning.
-            # kodi_dialog_OK(st_dic['msg'])
+            # kodi.dialog_OK(st_dic['msg'])
             kodi_dialog_yesno_timer(st_dic['msg'], 60000)
             self.pdialog.reopen()
             return
@@ -895,7 +895,7 @@ class ScrapeStrategy(object):
         if st_dic['abort']:
             self.pdialog.close()
             # Close error message dialog automatically 1 minute to keep scanning.
-            # kodi_dialog_OK(st_dic['msg'])
+            # kodi.dialog_OK(st_dic['msg'])
             kodi_dialog_yesno_timer(st_dic['msg'], 60000)
             st_dic = kodi_new_status_dic()
             self.pdialog.reopen()
@@ -960,7 +960,7 @@ class ScrapeStrategy(object):
         if st_dic['abort']:
             self.pdialog.close()
             # Close error message dialog automatically 1 minute to keep scanning.
-            # kodi_dialog_OK(st_dic['msg'])
+            # kodi.dialog_OK(st_dic['msg'])
             kodi_dialog_yesno_timer(st_dic['msg'], 60000)
             st_dic = kodi_new_status_dic()
             self.pdialog.reopen()
@@ -976,7 +976,7 @@ class ScrapeStrategy(object):
         if st_dic['abort']:
             self.pdialog.close()
             # Close error message dialog automatically 1 minute to keep scanning.
-            # kodi_dialog_OK(st_dic['msg'])
+            # kodi.dialog_OK(st_dic['msg'])
             kodi_dialog_yesno_timer(st_dic['msg'], 60000)
             st_dic = kodi_new_status_dic()
             self.pdialog.reopen()
@@ -998,7 +998,7 @@ class ScrapeStrategy(object):
         except socket.timeout:
             self.pdialog.close()
             # Close error message dialog automatically 1 minute to keep scanning.
-            # kodi_dialog_OK(st_dic['msg'])
+            # kodi.dialog_OK(st_dic['msg'])
             kodi_dialog_yesno_timer('Cannot download {} image (Timeout)'.format(asset_name), 60000)
             self.pdialog.reopen()
 
@@ -1145,7 +1145,7 @@ class ScrapeStrategy(object):
     # @return: None
     def scrap_CM_asset(self, object_dic, asset_ID, data_dic, st_dic):
         # log.debug('ScrapeStrategy.scrap_CM_asset() BEGIN...')
-        log_info('ScrapeStrategy.scrap_CM_asset() Scraping {}...'.format(object_dic['m_name']))
+        log.info('ScrapeStrategy.scrap_CM_asset() Scraping {}...'.format(object_dic['m_name']))
 
         # Check if scraper is OK (API keys configured, etc.)
         self.scraper_obj.check_before_scraping(st_dic)
@@ -1175,7 +1175,7 @@ class ScrapeStrategy(object):
     # @return: None
     def scrap_CM_asset_all(self, object_dic, data_dic, st_dic):
         # log.debug('ScrapeStrategy.scrap_CM_asset_all() BEGIN...')
-        log_info('ScrapeStrategy.scrap_CM_asset_all() Scraping "{}"...'.format(object_dic['m_name']))
+        log.info('ScrapeStrategy.scrap_CM_asset_all() Scraping "{}"...'.format(object_dic['m_name']))
 
         # Check if scraper is OK (API keys configured, etc.)
         self.scraper_obj.check_before_scraping(st_dic)
@@ -1238,7 +1238,7 @@ class ScrapeStrategy(object):
             log.debug('ROM "{}" in candidates cache.'.format(ROM_FN.getBaseNoExt()))
             candidate = self.scraper_obj.retrieve_from_candidates_cache(ROM_FN, platform)
             if not candidate:
-                kodi_dialog_OK('Candidate game in the scraper disk cache but empty. '
+                kodi.dialog_OK('Candidate game in the scraper disk cache but empty. '
                     'Forcing rescraping.')
                 log.debug('ROM "{}" candidate is empting. Force rescraping.')
                 use_from_cache = False
@@ -1405,7 +1405,7 @@ class ScrapeStrategy(object):
         pdialog.endProgress()
         log.debug('Resolved {} to URL "{}"'.format(asset_info.name, image_url_log))
         if not image_url:
-            log_error('_scrap_CM_scrap_asset() Error in scraper.resolve_asset_URL()')
+            log.error('_scrap_CM_scrap_asset() Error in scraper.resolve_asset_URL()')
             kodi_set_error_status(st_dic, 'Error downloading asset')
             return
         pdialog.startProgress('Resolving URL extension with {}...'.format(scraper_name))
@@ -1413,7 +1413,7 @@ class ScrapeStrategy(object):
         pdialog.endProgress()
         log.debug('Resolved URL extension "{}"'.format(image_ext))
         if not image_ext:
-            log_error('_scrap_CM_scrap_asset() Error in scraper.resolve_asset_URL_extension()')
+            log.error('_scrap_CM_scrap_asset() Error in scraper.resolve_asset_URL_extension()')
             kodi_set_error_status(st_dic, 'Error downloading asset')
             return
 
@@ -1836,7 +1836,7 @@ class Scraper(object):
     # All messages generated in the scrapers are KODI_MESSAGE_DIALOG.
     def _handle_error(self, st_dic, user_msg):
         # Print error message to the log.
-        log_error('Scraper._handle_error() user_msg "{}"'.format(user_msg))
+        log.error('Scraper._handle_error() user_msg "{}"'.format(user_msg))
 
         # Fill in the status dictionary so the error message will be propagated up in the
         # stack and the error message printed in the GUI.
@@ -1847,7 +1847,7 @@ class Scraper(object):
         self.exception_counter += 1
         if self.exception_counter > Scraper.EXCEPTION_COUNTER_THRESHOLD:
             err_m = 'Maximun number of errors exceeded. Disabling scraper.'
-            log_error(err_m)
+            log.error(err_m)
             self.scraper_disabled = True
             # Replace error message witht the one that the scraper is disabled.
             st_dic['msg'] = err_m
@@ -1855,8 +1855,8 @@ class Scraper(object):
     # This function is called when an exception in the scraper code happens.
     # All messages from the scrapers are KODI_MESSAGE_DIALOG.
     def _handle_exception(self, ex, st_dic, user_msg):
-        log_error('(Exception) Object type "{}"'.format(type(ex)))
-        log_error('(Exception) Message "{}"'.format(text_type(ex)))
+        log.error('(Exception) Object type "{}"'.format(type(ex)))
+        log.error('(Exception) Message "{}"'.format(text_type(ex)))
         self._handle_error(st_dic, user_msg)
 
     # --- Private disk cache functions -----------------------------------------------------------
@@ -2177,8 +2177,8 @@ class AEL_Offline(Scraper):
                 # Sometimes this produces: raise error, v # invalid expression
                 p = re.compile(regexp)
             except:
-                log_info('AEL_Offline._get_NoIntro_candidates() Exception in re.compile(regexp)')
-                log_info('AEL_Offline._get_NoIntro_candidates() regexp = "{}"'.format(regexp))
+                log.info('AEL_Offline._get_NoIntro_candidates() Exception in re.compile(regexp)')
+                log.info('AEL_Offline._get_NoIntro_candidates() regexp = "{}"'.format(regexp))
                 return []
 
             for key in self.cached_games:
@@ -2787,7 +2787,7 @@ class TheGamesDB(Scraper):
                 error_msg = json_data['message']
             except:
                 error_msg = 'Unknown/unspecified error.'
-            log_error('TGDB msg "{}"'.format(error_msg))
+            log.error('TGDB msg "{}"'.format(error_msg))
             self._handle_error(st_dic, 'HTTP code {} message "{}"'.format(http_code, error_msg))
             return None
 
@@ -2822,8 +2822,8 @@ class TheGamesDB(Scraper):
         log.debug('TheGamesDB._check_overloading() remaining_monthly_allowance = {}'.format(
             remaining_monthly_allowance))
         if remaining_monthly_allowance > 0: return
-        log_error('TheGamesDB._check_overloading() remaining_monthly_allowance <= 0')
-        log_error('Disabling TGDB scraper.')
+        log.error('TheGamesDB._check_overloading() remaining_monthly_allowance <= 0')
+        log.error('Disabling TGDB scraper.')
         self.scraper_disabled = True
         err_msg = 'TGDB monthly allowance is {}. Scraper disabled.'.format(remaining_monthly_allowance)
         kodi_set_error_status(st_dic, err_msg)
@@ -2904,8 +2904,8 @@ class MobyGames(Scraper):
         if self.api_key:
             log.debug('MobyGames.check_before_scraping() MobiGames API key looks OK.')
             return
-        log_error('MobyGames.check_before_scraping() MobiGames API key not configured.')
-        log_error('MobyGames.check_before_scraping() Disabling MobyGames scraper.')
+        log.error('MobyGames.check_before_scraping() MobiGames API key not configured.')
+        log.error('MobyGames.check_before_scraping() Disabling MobyGames scraper.')
         self.scraper_disabled = True
         kodi_set_error_status(st_dic, 'AEL requires your MobyGames API key. '
             'Visit https://www.mobygames.com/info/api for directions about how to get your key '
@@ -3220,7 +3220,7 @@ class MobyGames(Scraper):
                 error_msg = json_data['message']
             except:
                 error_msg = 'Unknown/unspecified error.'
-            log_error('MobyGames msg "{}"'.format(error_msg))
+            log.error('MobyGames msg "{}"'.format(error_msg))
             self._handle_error(st_dic, 'HTTP code {} message "{}"'.format(http_code, error_msg))
             return None
 
@@ -3517,8 +3517,8 @@ class ScreenScraper(Scraper):
         if self.ssid and self.sspassword:
             log.debug('ScreenScraper.check_before_scraping() ScreenScraper user name and pass OK.')
             return
-        log_error('ScreenScraper.check_before_scraping() ScreenScraper user name and/or pass not configured.')
-        log_error('ScreenScraper.check_before_scraping() Disabling ScreenScraper scraper.')
+        log.error('ScreenScraper.check_before_scraping() ScreenScraper user name and/or pass not configured.')
+        log.error('ScreenScraper.check_before_scraping() Disabling ScreenScraper scraper.')
         self.scraper_deactivated = True
         kodi_set_error_status(st_dic, 'AEL requires your ScreenScraper user name and password. '
             'Create a user account in https://www.screenscraper.fr/ '
@@ -3774,7 +3774,7 @@ class ScreenScraper(Scraper):
         # files scraped.
         if self.debug_checksums_flag:
             # Use fake checksums when developing the scraper with fake 0-sized files.
-            log_info('Using debug checksums and not computing real ones.')
+            log.info('Using debug checksums and not computing real ones.')
             checksums = {
                 'crc'  : self.debug_crc, 'md5'  : self.debug_md5, 'sha1' : self.debug_sha1,
                 'size' : self.debug_size, 'rom_name' : rom_FN.getBase(),
@@ -4057,7 +4057,7 @@ class ScreenScraper(Scraper):
         if f_basename.lower().endswith('.zip'):
             log.debug('_get_SS_checksum() ZIP file detected.')
             if not zipfile.is_zipfile(f_path):
-                log_error('zipfile.is_zipfile() returns False. Bad ZIP file.')
+                log.error('zipfile.is_zipfile() returns False. Bad ZIP file.')
                 return None
             else:
                 log.debug('_get_SS_checksum() ZIP file seems to be correct.')
@@ -4218,7 +4218,7 @@ class ScreenScraper(Scraper):
         try:
             return json.loads(page_data_raw)
         except Exception as ex:
-            log_error('Error decoding JSON data from ScreenScraper.')
+            log.error('Error decoding JSON data from ScreenScraper.')
 
         # This point is reached if there was an exception decoding JSON.
         # Sometimes ScreenScraper API V2 returns badly formatted JSON. Try to fix this.
@@ -4228,25 +4228,25 @@ class ScreenScraper(Scraper):
         #		}
         #	}
         #}
-        log_error('Trying to repair ScreenScraper raw data (Try 1).')
+        log.error('Trying to repair ScreenScraper raw data (Try 1).')
         new_page_data_raw = page_data_raw.replace('],\n\t\t}', ']\n\t\t}')
         try:
             return json.loads(new_page_data_raw)
         except Exception as ex:
-            log_error('Error decoding JSON data from ScreenScraper (Try 1).')
+            log.error('Error decoding JSON data from ScreenScraper (Try 1).')
 
         # At the end of the JSON data file...
         #		},         <----- Here it should be a '}' and not '},'.
         #		}
         #	}
         #
-        log_error('Trying to repair ScreenScraper raw data (Try 2).')
+        log.error('Trying to repair ScreenScraper raw data (Try 2).')
         new_page_data_raw = page_data_raw.replace('\t\t},\n\t\t}', '\t\t}\n\t\t}')
         try:
             return json.loads(new_page_data_raw)
         except Exception as ex:
-            log_error('Error decoding JSON data from ScreenScraper (Try 2).')
-            log_error('Cannot decode JSON (invalid JSON returned). Dumping debug files...')
+            log.error('Error decoding JSON data from ScreenScraper (Try 2).')
+            log.error('Cannot decode JSON (invalid JSON returned). Dumping debug files...')
             file_path = os.path.join(self.scraper_cache_dir, 'ScreenScraper_url.txt')
             self._write_str_to_file(file_path, url)
             file_path = os.path.join(self.scraper_cache_dir, 'ScreenScraper_page_data_raw.txt')
@@ -4916,7 +4916,7 @@ class ArcadeDB(Scraper):
                 error_msg = json_data['message']
             except:
                 error_msg = 'Unknown/unspecified error.'
-            log_error('ArcadeDB msg "{}"'.format(error_msg))
+            log.error('ArcadeDB msg "{}"'.format(error_msg))
             self._handle_error(st_dic, 'HTTP code {} message "{}"'.format(http_code, error_msg))
             return None
 

@@ -164,7 +164,7 @@ def get_asset_name_str(default_asset):
     elif default_asset == 's_controller': asset_name_str = 'Controller'
     else:
         kodi_notify_warn('Wrong asset key {}'.format(default_asset))
-        log_error('get_asset_name_str() Wrong default_thumb {}'.format(default_asset))
+        log.error('get_asset_name_str() Wrong default_thumb {}'.format(default_asset))
 
     return asset_name_str
 
@@ -397,7 +397,7 @@ def get_info_scheme(asset_kind):
         A.exts_dialog = asset_get_dialog_extension_list(MANUAL_EXTENSION_LIST)
         A.path_key    = 'path_manual'
     else:
-        log_error('assets_get_info_scheme() Wrong asset_kind = {}'.format(asset_kind))
+        log.error('assets_get_info_scheme() Wrong asset_kind = {}'.format(asset_kind))
 
     # --- Ultra DEBUG ---
     # log.debug('assets_get_info_scheme() asset_kind    {}'.format(asset_kind))
@@ -554,7 +554,7 @@ def get_duplicated_dir_list(launcher):
             if launcher[A_i.path_key] == launcher[A_j.path_key]:
                 duplicated_bool_list[i] = True
                 duplicated_name_list.append('{} and {}'.format(A_i.name, A_j.name))
-                log_info('asset_get_duplicated_asset_list() DUPLICATED {} and {}'.format(A_i.name, A_j.name))
+                log.info('asset_get_duplicated_asset_list() DUPLICATED {} and {}'.format(A_i.name, A_j.name))
     return duplicated_name_list
 
 # Search for local assets and place found files into a list.

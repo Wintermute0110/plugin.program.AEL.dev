@@ -160,14 +160,14 @@ class SingleInstance:
         # --- If property is True then another instance of AEL is running ---
         prop_name = SingleInstance.window.getProperty(SingleInstance.LOCK_PROPNAME)
         if prop_name == SingleInstance.LOCK_VALUE:
-            log_warning('SingleInstance::__enter__() Lock in use. Aborting AEL execution')
+            log.warning('SingleInstance::__enter__() Lock in use. Aborting AEL execution')
             # Apparently this message pulls the focus out of the launcher app. Disable it.
             # Has not effect. Kodi steals the focus from the launched app even if not message.
-            kodi_dialog_OK('Another instance of AEL is running! Wait until the scraper finishes '
+            kodi.dialog_OK('Another instance of AEL is running! Wait until the scraper finishes '
                 'or close the launched application before launching a new one and try again.')
             raise SystemExit
         if SingleInstance.monitor.abortRequested():
-            log_info('monitor.abortRequested() is True. Exiting plugin ...')
+            log.info('monitor.abortRequested() is True. Exiting plugin ...')
             raise SystemExit
 
         # --- Acquire lock for this instance ---
@@ -179,7 +179,7 @@ class SingleInstance:
         # --- Print information about exception if any ---
         # If type == value == tracebak == None no exception happened
         if type:
-            log_error('SingleInstance::__exit__() Unhandled excepcion in protected code')
+            log.error('SingleInstance::__exit__() Unhandled excepcion in protected code')
 
         # --- Release lock even if an exception happened ---
         log.debug('SingleInstance::__exit__() Releasing lock')
@@ -309,7 +309,7 @@ def run_plugin(addon_argv):
     # NOTE Not needed anymore. Skins using shortcuts and/or widgets will call AEL concurrently
     #      and AEL should return an empty list with no GUI warnings or dialogs.
     # if not CATEGORIES_FILE_PATH.exists():
-    #     kodi_dialog_OK('It looks it is the first time you run Advanced Emulator Launcher! ' +
+    #     kodi.dialog_OK('It looks it is the first time you run Advanced Emulator Launcher! ' +
     #         'A default categories.xml has been created. You can now customize it to your needs.')
     #     _cat_create_default()
     #     fs_write_catfile(CATEGORIES_FILE_PATH, cfg.categories, cfg.launchers)
@@ -415,7 +415,7 @@ def run_concurrent(cfg, command, args):
     elif command == 'BUILD_GAMES_MENU': _command_buildMenu()
 
     else:
-        kodi_dialog_OK('run_concurrent(): Unknown command {}'.format(command))
+        kodi.dialog_OK('run_concurrent(): Unknown command {}'.format(command))
     log.debug('Advanced Emulator Launcher run_concurrent() END')
 
 # This function is guaranteed to run with no concurrency.
@@ -507,7 +507,7 @@ def run_protected(cfg, command, args):
 
     # Unknown command
     else:
-        kodi_dialog_OK('run_protected(): Unknown command {}'.format(command))
+        kodi.dialog_OK('run_protected(): Unknown command {}'.format(command))
     log.debug('Advanced Emulator Launcher run_protected() END')
 
 # Get Addon Settings
@@ -728,7 +728,7 @@ def misc_set_AEL_Content(cfg, AEL_Content_Value):
             const.AEL_CONTENT_WINDOW_ID, const.AEL_CONTENT_LABEL, const.AEL_CONTENT_VALUE_NONE))
         xbmcgui.Window(const.AEL_CONTENT_WINDOW_ID).setProperty(const.AEL_CONTENT_LABEL, const.AEL_CONTENT_VALUE_NONE)
     else:
-        log_error('_misc_set_AEL_Content() Invalid AEL_Content_Value "{}"'.format(AEL_Content_Value))
+        log.error('_misc_set_AEL_Content() Invalid AEL_Content_Value "{}"'.format(AEL_Content_Value))
 
 def misc_set_AEL_Launcher_Content(cfg, launcher_dic):
     kodi_thumb = 'DefaultFolder.png' if launcher_dic['rompath'] else 'DefaultProgram.png'
@@ -1476,14 +1476,14 @@ def render_vlaunchers_Browse_by(cfg, catID):
     try:
         vcat_db_FN, vcat_name = vdic[catID]
     except:
-        log_error('render_vlaunchers_Browse_by() Wrong catID = {}'.format(catID))
-        kodi_dialog_OK('Wrong catID = {}'.format(catID))
+        log.error('render_vlaunchers_Browse_by() Wrong catID = {}'.format(catID))
+        kodi.dialog_OK('Wrong catID = {}'.format(catID))
         return
 
     # --- If the virtual category has no launchers then render nothing ---
     # Also, tell the user to update the virtual launcher database
     if not vcat_db_FN.exists():
-        kodi_dialog_OK('{} database not found. '.format(vcat_name) +
+        kodi.dialog_OK('{} database not found. '.format(vcat_name) +
             'Update the virtual category database first.')
         xbmcplugin.endOfDirectory(cfg.addon_handle, succeeded = True, cacheToDisc = False)
         return
@@ -1493,7 +1493,7 @@ def render_vlaunchers_Browse_by(cfg, catID):
 
     # --- Check timestamps and warn user if database should be regenerated ---
     if VL['timestamp'] < self.update_timestamp:
-        kodi_dialog_OK('Categories/Launchers/ROMs were modified. '
+        kodi.dialog_OK('Categories/Launchers/ROMs were modified. '
             'Virtual category database should be updated!')
 
     # Render virtual launchers rows.
@@ -1884,26 +1884,26 @@ def render_vlaunchers_GlobalReports(cfg):
 # Use a step render like AML: 1) Load databases, 2) filter ROMs, 3) Process ROMs, 4) Commit ROMs.
 def render_ROMs(cfg, categoryID, launcherID):
     log.debug('render_ROMs() categoryID "{}" | launcherID "{}"'.format(categoryID, launcherID))
-    st_dic = utils.new_status_dic()
+    st = utils.new_status_dic()
 
     # Load ROMs from disk database.
-    # Set st_dic to notify if no ROMs to render.
+    # Set st dictionary to notify if no ROMs to render.
     loading_ticks_start = time.time()
     db.get_launcher_info(cfg, categoryID, launcherID)
-    db.load_ROMs(cfg, st_dic, categoryID, launcherID)
-    if utils.is_error_status(st_dic):
+    db.load_ROMs(cfg, st, categoryID, launcherID)
+    if utils.is_error_status(st):
         xbmcplugin.endOfDirectory(cfg.addon_handle, succeeded = True, cacheToDisc = False)
-        kodi_display_status_message(st_dic)
+        kodi_display_status_message(st)
         return
     loading_time = time.time() - loading_ticks_start
 
     # Filter ROMs. Set st_dic to notify if not ROMs to render after filtering.
     # Only standard ROM launchers are filtered.
     filtering_ticks_start = time.time()
-    # render_ROMs_filter(cfg, st_dic, launcher)
-    # if utils.is_error_status(st_dic):
+    # render_ROMs_filter(cfg, st, launcher)
+    # if utils.is_error_status(st):
     #     xbmcplugin.endOfDirectory(cfg.addon_handle, succeeded = True, cacheToDisc = False)
-    #     kodi_display_status_message(st_dic)
+    #     kodi_display_status_message(st)
     #     return
     filtering_time = time.time() - filtering_ticks_start
 
@@ -1915,7 +1915,7 @@ def render_ROMs(cfg, categoryID, launcherID):
     # Commit ROMs.
     commit_ticks_start = time.time()
     misc_set_all_sorting_methods(cfg)
-    misc_set_AEL_Content(cfg, AEL_CONTENT_VALUE_ROMS)
+    misc_set_AEL_Content(cfg, const.AEL_CONTENT_VALUE_ROMS)
     # misc_set_AEL_Launcher_Content(cfg, launcher)
     render_ROMs_commit(cfg, rom_list)
     commit_time = time.time() - commit_ticks_start
@@ -1942,8 +1942,8 @@ def render_ROMs_clone_ROMs(cfg, categoryID, launcherID, romID):
 
     # --- Check for errors ---
     if launcherID not in self.launchers:
-        log_error('_command_render_clone_roms() Launcher ID not found in self.launchers')
-        kodi_dialog_OK('_command_render_clone_roms(): Launcher ID not found in self.launchers. Report this bug.')
+        log.error('_command_render_clone_roms() Launcher ID not found in self.launchers')
+        kodi.dialog_OK('_command_render_clone_roms(): Launcher ID not found in self.launchers. Report this bug.')
         return
     selectedLauncher = self.launchers[launcherID]
     view_mode = selectedLauncher['launcher_display_mode']
@@ -2062,8 +2062,10 @@ def render_ROMs_process(cfg, categoryID, launcherID):
         render_only_parent_ROMs = launcher['launcher_display_mode'] == const.LAUNCHER_DMODE_PCLONE
         view_mode = launcher['launcher_display_mode']
 
+
     # Misc variables.
     is_parent_launcher = False
+
 
 
     # Load Favourite set to compute ROM_in_fav tag
@@ -2436,11 +2438,11 @@ def render_ROMs_process(cfg, categoryID, launcherID):
             'platform'                     : rom['platform'],
             const.AEL_CONTENT_LABEL        : const.AEL_CONTENT_VALUE_ROM,
             # ROM flags (Skins will use these flags to render icons).
-            const.AEL_INFAV_BOOL_LABEL     : const.AEL_InFav_bool_value,
-            const.AEL_MULTIDISC_BOOL_LABEL : const.AEL_MultiDisc_bool_value,
-            const.AEL_FAV_STAT_LABEL       : const.AEL_Fav_stat_value,
-            const.AEL_NOINTRO_STAT_LABEL   : const.AEL_NoIntro_stat_value,
-            const.AEL_PCLONE_STAT_LABEL    : const.AEL_PClone_stat_value,
+            const.AEL_INFAV_BOOL_LABEL     : AEL_InFav_bool_value,
+            const.AEL_MULTIDISC_BOOL_LABEL : AEL_MultiDisc_bool_value,
+            const.AEL_FAV_STAT_LABEL       : AEL_Fav_stat_value,
+            const.AEL_NOINTRO_STAT_LABEL   : AEL_NoIntro_stat_value,
+            const.AEL_PCLONE_STAT_LABEL    : AEL_PClone_stat_value,
         }
 
         # Context menu ---------------------------------------------------------------------------
@@ -2551,7 +2553,7 @@ def command_add_new_launcher(self, categoryID):
     # If categoryID not found user is creating a new launcher using the context menu
     # of a launcher in addon root.
     if categoryID not in self.categories:
-        log_info('Category ID not found. Creating laucher in addon root.')
+        log.info('Category ID not found. Creating laucher in addon root.')
         launcher_categoryID = CATEGORY_ADDONROOT_ID
     else:
         # Ask user if launcher is created on selected category or on root menu.
@@ -2595,7 +2597,7 @@ def command_add_new_launcher(self, categoryID):
         LAUNCHER_LNK,
     ]
     launcher_type = launcher_types_list[mindex]
-    log_info('_command_add_new_launcher() New launcher (launcher_type = {})'.format(launcher_type))
+    log.info('_command_add_new_launcher() New launcher (launcher_type = {})'.format(launcher_type))
 
     # --- Standalone launcher ---
     mask_app = '.bat|.exe|.cmd|.lnk' if is_windows() else ''
@@ -2787,7 +2789,7 @@ def command_add_ROM_to_favourites(self, categoryID, launcherID, romID):
 
     # Sanity check
     if not roms:
-        kodi_dialog_OK('Empty roms launcher in _command_add_to_favourites(). This is a bug, please report it.')
+        kodi.dialog_OK('Empty roms launcher in _command_add_to_favourites(). This is a bug, please report it.')
         return
 
     # --- Load favourites ---
@@ -2891,7 +2893,7 @@ def command_add_ROM_to_collection(cfg, categoryID, launcherID, romID):
 
     # --- If no collections so long and thanks for all the fish ---
     if not COL['collections']:
-        kodi_dialog_OK('You have no Collections! Create a collection first before adding ROMs.')
+        kodi.dialog_OK('You have no Collections! Create a collection first before adding ROMs.')
         return
 
     # --- Ask user which Collection wants to add the ROM to ---
@@ -2908,10 +2910,10 @@ def command_add_ROM_to_collection(cfg, categoryID, launcherID, romID):
     collection = COL['collections'][collectionID]
     roms_json_file = g_PATHS.COLLECTIONS_DIR.pjoin(collection['roms_base_noext'] + '.json')
     collection_rom_list = fs_load_Collection_ROMs_JSON(roms_json_file)
-    log_info('Adding ROM to Collection')
-    log_info('Collection {}'.format(collection['m_name']))
-    log_info('     romID {}'.format(romID))
-    log_info('ROM m_name {}'.format(roms[romID]['m_name']))
+    log.info('Adding ROM to Collection')
+    log.info('Collection {}'.format(collection['m_name']))
+    log.info('     romID {}'.format(romID))
+    log.info('ROM m_name {}'.format(roms[romID]['m_name']))
 
     # Check if ROM already in this collection an warn user if so
     rom_already_in_collection = False
@@ -2920,7 +2922,7 @@ def command_add_ROM_to_collection(cfg, categoryID, launcherID, romID):
             rom_already_in_collection = True
             break
     if rom_already_in_collection:
-        log_info('ROM already in collection')
+        log.info('ROM already in collection')
         ret = kodi_dialog_yesno('ROM {} is already on Collection {}. Overwrite it?'.format(
             roms[romID]['m_name'], collection['m_name']))
         if not ret:
@@ -3207,7 +3209,7 @@ def command_edit_category(self, categoryID):
         finished = False if finished else True
         finished_display = 'Finished' if finished == True else 'Unfinished'
         self.categories[categoryID]['finished'] = finished
-        kodi_dialog_OK('Category "{}" status is now {}'.format(self.categories[categoryID]['m_name'], finished_display))
+        kodi.dialog_OK('Category "{}" status is now {}'.format(self.categories[categoryID]['m_name'], finished_display))
 
     # --- Export Launcher XML configuration ---
     elif mindex == 4:
@@ -3256,10 +3258,10 @@ def command_edit_category(self, categoryID):
                 'Deleting it will also delete related launchers. ' +
                 'Are you sure you want to delete "{}"?'.format(category_name))
             if not ret: return
-            log_info('Deleting category "{}" id {}'.format(category_name, categoryID))
+            log.info('Deleting category "{}" id {}'.format(category_name, categoryID))
             # Delete launchers and ROM JSON/XML files associated with them
             for launcherID in launcherID_list:
-                log_info('Deleting linked launcher "{}" id {}'.format(self.launchers[launcherID]['m_name'], launcherID))
+                log.info('Deleting linked launcher "{}" id {}'.format(self.launchers[launcherID]['m_name'], launcherID))
                 fs_unlink_ROMs_database(g_PATHS.ROMS_DIR, self.launchers[launcherID])
                 self.launchers.pop(launcherID)
             # Delete category from database.
@@ -3268,8 +3270,8 @@ def command_edit_category(self, categoryID):
             ret = kodi_dialog_yesno('Category "{}" contains no launchers. '.format(category_name) +
                 'Are you sure you want to delete "{}"?'.format(category_name))
             if not ret: return
-            log_info('Deleting category "{}" id {}'.format(category_name, categoryID))
-            log_info('Category has no launchers, so no launchers to delete.')
+            log.info('Deleting category "{}" id {}'.format(category_name, categoryID))
+            log.info('Category has no launchers, so no launchers to delete.')
             self.categories.pop(categoryID)
         kodi_notify('Deleted category {}'.format(category_name))
 
@@ -3636,7 +3638,7 @@ def command_edit_launcher(self, categoryID, launcherID):
 
         # If no Categories there is nothing to change
         if len(self.categories) == 0:
-            kodi_dialog_OK('There is no Categories. Nothing to change.')
+            kodi.dialog_OK('There is no Categories. Nothing to change.')
             return
         # Add special root cateogory at the beginning
         categories_id   = [CATEGORY_ADDONROOT_ID]
@@ -3678,7 +3680,7 @@ def command_edit_launcher(self, categoryID, launcherID):
         finished = False if finished else True
         finished_display = 'Finished' if finished == True else 'Unfinished'
         self.launchers[launcherID]['finished'] = finished
-        kodi_dialog_OK('Launcher "{}" status is now {}'.format(self.launchers[launcherID]['m_name'], finished_display))
+        kodi.dialog_OK('Launcher "{}" status is now {}'.format(self.launchers[launcherID]['m_name'], finished_display))
 
     # --- Launcher Manage ROMs menu option ---
     # ONLY for ROM launchers, not for standalone launchers
@@ -3838,7 +3840,7 @@ def command_edit_launcher(self, categoryID, launcherID):
                 duplicated_name_list = asset_get_duplicated_dir_list(self.launchers[launcherID])
                 if duplicated_name_list:
                     duplicated_asset_srt = ', '.join(duplicated_name_list)
-                    kodi_dialog_OK('Duplicated asset directories: {}. '.format(duplicated_asset_srt) +
+                    kodi.dialog_OK('Duplicated asset directories: {}. '.format(duplicated_asset_srt) +
                         'AEL will refuse to add/edit ROMs if there are duplicate asset directories.')
 
             # --- Rescan ROMs local artwork ---
@@ -3846,7 +3848,7 @@ def command_edit_launcher(self, categoryID, launcherID):
             # B) Next, missing assets are searched in the Parent/Clone group using the files
             #    found in the previous step. This is much faster than searching for files again.
             elif mindex2 == 2:
-                log_info('_command_edit_launcher() Rescanning local assets ...')
+                log.info('_command_edit_launcher() Rescanning local assets ...')
                 launcher = self.launchers[launcherID]
 
                 # --- Ensure there is no duplicate asset dirs ---
@@ -3854,19 +3856,19 @@ def command_edit_launcher(self, categoryID, launcherID):
                 duplicated_name_list = asset_get_duplicated_dir_list(launcher)
                 if duplicated_name_list:
                     duplicated_asset_srt = ', '.join(duplicated_name_list)
-                    log_info('Duplicated asset dirs: {}'.format(duplicated_asset_srt))
-                    kodi_dialog_OK('Duplicated asset directories: {}. '.format(duplicated_asset_srt) +
+                    log.info('Duplicated asset dirs: {}'.format(duplicated_asset_srt))
+                    kodi.dialog_OK('Duplicated asset directories: {}. '.format(duplicated_asset_srt) +
                         'Change asset directories before continuing.')
                     return
                 else:
-                    log_info('No duplicated asset dirs found')
+                    log.info('No duplicated asset dirs found')
 
                 # --- Check asset dirs and disable scanning for unset dirs ---
                 enabled_asset_list = asset_get_enabled_asset_list(launcher)
                 unconfigured_name_list = asset_get_unconfigured_name_list(enabled_asset_list)
                 if unconfigured_name_list:
                     unconfigure_asset_srt = ', '.join(unconfigured_name_list)
-                    kodi_dialog_OK('Assets directories not set: {}. '.format(unconfigure_asset_srt) +
+                    kodi.dialog_OK('Assets directories not set: {}. '.format(unconfigure_asset_srt) +
                         'Asset scanner will be disabled for this/those.')
 
                 # --- Create a cache of assets ---
@@ -3931,11 +3933,11 @@ def command_edit_launcher(self, categoryID, launcherID):
                 # --- Traverse ROM list and check assets in the PClone group ---
                 # This is only available if a No-Intro/Redump DAT is configured. If not, warn the user.
                 if self.settings['audit_pclone_assets'] and launcher['audit_state'] == AUDIT_STATE_OFF:
-                    log_info('Use assets in the Parent/Clone group is ON. No-Intro/Redump DAT not done.')
-                    kodi_dialog_OK('No-Intro/Redump DAT not done and audit_pclone_assets is True. ' +
+                    log.info('Use assets in the Parent/Clone group is ON. No-Intro/Redump DAT not done.')
+                    kodi.dialog_OK('No-Intro/Redump DAT not done and audit_pclone_assets is True. ' +
                         'Cancelling looking for assets in the Parent/Clone group.')
                 elif self.settings['audit_pclone_assets'] and launcher['audit_state'] == AUDIT_STATE_ON:
-                    log_info('Use assets in the Parent/Clone group is ON. Loading Parent/Clone dictionaries.')
+                    log.info('Use assets in the Parent/Clone group is ON. Loading Parent/Clone dictionaries.')
                     json_FN = g_PATHS.ROMS_DIR.pjoin(launcher['roms_base_noext'] + '_index_PClone.json')
                     roms_pclone_index = utils_load_JSON_file(json_FN.getPath())
                     json_FN = g_PATHS.ROMS_DIR.pjoin(launcher['roms_base_noext'] + '_index_CParent.json')
@@ -4025,7 +4027,7 @@ def command_edit_launcher(self, categoryID, launcherID):
             # Mimic what the ROM scanner does. Use same settings as the ROM scanner.
             # Like the ROM scanner, only scrape artwork not found locally.
             elif mindex2 == 3:
-                log_info('_command_edit_launcher() Rescraping ROM assets...')
+                log.info('_command_edit_launcher() Rescraping ROM assets...')
                 launcher = self.launchers[launcherID]
                 pdialog_verbose = True
                 pdialog = KodiProgressDialog()
@@ -4046,18 +4048,18 @@ def command_edit_launcher(self, categoryID, launcherID):
                 duplicated_name_list = asset_get_duplicated_dir_list(launcher)
                 if duplicated_name_list:
                     duplicated_asset_srt = ', '.join(duplicated_name_list)
-                    log_info('Duplicated asset dirs: {}'.format(duplicated_asset_srt))
-                    kodi_dialog_OK('Duplicated asset directories: {}. '.format(duplicated_asset_srt) +
+                    log.info('Duplicated asset dirs: {}'.format(duplicated_asset_srt))
+                    kodi.dialog_OK('Duplicated asset directories: {}. '.format(duplicated_asset_srt) +
                         'Change asset directories before continuing.')
                     return
                 else:
-                    log_info('No duplicated asset dirs found')
+                    log.info('No duplicated asset dirs found')
 
                 # --- Check asset dirs and disable scanning for unset dirs ---
                 scraper_strategy.scanner_check_launcher_unset_asset_dirs()
                 if scraper_strategy.unconfigured_name_list:
                     unconfigured_asset_srt = ', '.join(scraper_strategy.unconfigured_name_list)
-                    kodi_dialog_OK('Assets directories not set: {}. '.format(unconfigured_asset_srt) +
+                    kodi.dialog_OK('Assets directories not set: {}. '.format(unconfigured_asset_srt) +
                         'Asset scanner will be disabled for this/those.')
 
                 # --- Prepare ScannerStrategy variables ---
@@ -4066,7 +4068,7 @@ def command_edit_launcher(self, categoryID, launcherID):
                 asset_scraper_obj  = scraper_strategy.asset_scraper_obj
 
                 # --- Create a cache of current assets on disk ---
-                log_info('Scanning and caching files in asset directories ...')
+                log.info('Scanning and caching files in asset directories ...')
                 pdialog.startProgress('Scanning files in asset directories ...', len(ROM_ASSET_ID_LIST))
                 for asset_kind in ROM_ASSET_ID_LIST:
                     pdialog.updateProgressInc()
@@ -4138,8 +4140,8 @@ def command_edit_launcher(self, categoryID, launcherID):
                     # --- Check if user pressed the cancel button ---
                     if pdialog.isCanceled():
                         pdialog.endProgress()
-                        kodi_dialog_OK('Stopping ROM artwork scraping.')
-                        log_info('User pressed Cancel button when scraping ROMs.')
+                        kodi.dialog_OK('Stopping ROM artwork scraping.')
+                        log.info('User pressed Cancel button when scraping ROMs.')
                         break
                 else:
                     pdialog.endProgress()
@@ -4173,7 +4175,7 @@ def command_edit_launcher(self, categoryID, launcherID):
 
                 # --- If there is a No-Intro XML DAT configured remove it ---
                 if self.launchers[launcherID]['audit_state'] == AUDIT_STATE_ON:
-                    log_info('Cancelling ROM Audit and forcing launcher to Normal view mode.')
+                    log.info('Cancelling ROM Audit and forcing launcher to Normal view mode.')
                     self._roms_reset_NoIntro_status(self.launchers[launcherID], roms)
                     self.launchers[launcherID]['launcher_display_mode'] = LAUNCHER_DMODE_FLAT
 
@@ -4227,7 +4229,7 @@ def command_edit_launcher(self, categoryID, launcherID):
                     ret = kodi_dialog_yesno('Found {} NFO files. Delete them?'.format(len(nfo_scanned_files)))
                     if not ret: return
                 else:
-                    kodi_dialog_OK('No NFO files found. Nothing to delete.')
+                    kodi.dialog_OK('No NFO files found. Nothing to delete.')
                     return
 
                 # --- Delete NFO files ---
@@ -4244,7 +4246,7 @@ def command_edit_launcher(self, categoryID, launcherID):
 
                 # If launcher is empty (no ROMs) do nothing
                 if num_roms == 0:
-                    kodi_dialog_OK('Launcher has no ROMs. Nothing to do.')
+                    kodi.dialog_OK('Launcher has no ROMs. Nothing to do.')
                     return
 
                 # Confirm user wants to delete ROMs
@@ -4254,7 +4256,7 @@ def command_edit_launcher(self, categoryID, launcherID):
 
                 # Set ROM Audit to OFF.
                 if self.launchers[launcherID]['audit_state'] == AUDIT_STATE_ON:
-                    log_info('Setting audit_state = AUDIT_STATE_OFF')
+                    log.info('Setting audit_state = AUDIT_STATE_OFF')
                     self.launchers[launcherID]['audit_state'] = AUDIT_STATE_OFF
 
                 # Just remove ROMs database files. Keep the value of roms_base_noext to be reused
@@ -4322,9 +4324,9 @@ def command_edit_launcher(self, categoryID, launcherID):
                 elif type_temp == 1:
                     # Currently LAUNCHER_DMODE_FLAT requires that ROM Audit is done.
                     if launcher['audit_state'] == AUDIT_STATE_OFF:
-                        log_info('_command_edit_launcher() audit_state is OFF')
-                        log_info('_command_edit_launcher() Forcing Flat view mode.')
-                        kodi_dialog_OK('ROM Audit not done. PClone view mode cannot be set.')
+                        log.info('_command_edit_launcher() audit_state is OFF')
+                        log.info('_command_edit_launcher() Forcing Flat view mode.')
+                        kodi.dialog_OK('ROM Audit not done. PClone view mode cannot be set.')
                         launcher['launcher_display_mode'] = LAUNCHER_DMODE_FLAT
                         kodi_notify('Launcher view mode set to {}'.format(LAUNCHER_DMODE_FLAT))
                     else:
@@ -4337,7 +4339,7 @@ def command_edit_launcher(self, categoryID, launcherID):
                 launcher = self.launchers[launcherID]
                 # If no DAT configured exit.
                 if launcher['audit_display_mode'] == AUDIT_STATE_OFF:
-                    kodi_dialog_OK('ROM audit is OFF. '
+                    kodi.dialog_OK('ROM audit is OFF. '
                         'Audit this launcher before changing this setting.')
                     return
 
@@ -4351,7 +4353,7 @@ def command_edit_launcher(self, categoryID, launcherID):
                     p_idx).executeDialog()
                 if type_temp is None: return
                 launcher['audit_display_mode'] = AUDIT_DMODE_LIST[type_temp]
-                log_info('Launcher audit display mode changed to "{}"'.format(launcher['audit_display_mode']))
+                log.info('Launcher audit display mode changed to "{}"'.format(launcher['audit_display_mode']))
                 kodi_notify('Display ROMs changed to "{}"'.format(launcher['audit_display_mode']))
 
             # --- Audit Launcher ROMs ---
@@ -4641,7 +4643,7 @@ def command_edit_launcher(self, categoryID, launcherID):
 # if we are editing a ROM in Favourites.
 def command_edit_rom(self, categoryID, launcherID, romID):
     if romID == UNKNOWN_ROMS_PARENT_ID:
-        kodi_dialog_OK('You cannot edit this ROM! (Unknown parent ROM)')
+        kodi.dialog_OK('You cannot edit this ROM! (Unknown parent ROM)')
         return
 
     # --- Load ROMs ---
@@ -4787,7 +4789,7 @@ def command_edit_rom(self, categoryID, launcherID, romID):
             ])
             rating = sDialog.executeDialog()
             if rating is None:
-                kodi_dialog_OK("ROM rating '{}' not changed".format(roms[romID]['m_rating']))
+                kodi.dialog_OK("ROM rating '{}' not changed".format(roms[romID]['m_rating']))
                 return # Do not save databases.
             elif rating == 0:
                 roms[romID]['m_rating'] = ''
@@ -4804,14 +4806,14 @@ def command_edit_rom(self, categoryID, launcherID, romID):
         # --- Import ROM metadata from NFO file ---
         elif mindex2 == 8:
             if launcherID == VLAUNCHER_FAVOURITES_ID:
-                kodi_dialog_OK('Importing NFO file is not allowed for ROMs in Favourites.')
+                kodi.dialog_OK('Importing NFO file is not allowed for ROMs in Favourites.')
                 return
             if not fs_import_ROM_NFO(roms, romID): return
 
         # --- Export ROM metadata to NFO file ---
         elif mindex2 == 9:
             if launcherID == VLAUNCHER_FAVOURITES_ID:
-                kodi_dialog_OK('Exporting NFO file is not allowed for ROMs in Favourites.')
+                kodi.dialog_OK('Exporting NFO file is not allowed for ROMs in Favourites.')
                 return
             fs_export_ROM_NFO(roms[romID])
             return # No need to save ROMs
@@ -4953,7 +4955,7 @@ def command_edit_rom(self, categoryID, launcherID, romID):
         # error when downloading image, etc., however the caches (internal, etc.) may have
         # valid data that needs to be saved.
         if mindex2 == 0:
-            log_info('_command_edit_rom() Rescraping ROM all assets...')
+            log.info('_command_edit_rom() Rescraping ROM all assets...')
             # Prepare data for scraper object.
             rom = roms[romID]
             ROM_FN = utils.FileName(rom['filename'])
@@ -4994,7 +4996,7 @@ def command_edit_rom(self, categoryID, launcherID, romID):
 
         # Unset all assets
         elif mindex2 == 1:
-            log_info('_command_edit_rom() Unsetting ROM all assets...')
+            log.info('_command_edit_rom() Unsetting ROM all assets...')
             for i, asset_ID in enumerate(ROM_ASSET_ID_LIST):
                 AInfo = assets_get_info_scheme(asset_ID)
                 roms[romID][AInfo.key] = ''
@@ -5006,7 +5008,7 @@ def command_edit_rom(self, categoryID, launcherID, romID):
         finished = False if finished else True
         finished_display = 'Finished' if finished == True else 'Unfinished'
         roms[romID]['finished'] = finished
-        kodi_dialog_OK("ROM '{}' status is now {}".format(roms[romID]['m_name'], finished_display))
+        kodi.dialog_OK("ROM '{}' status is now {}".format(roms[romID]['m_name'], finished_display))
 
     # --- Advanced ROM Modifications ---
     elif mindex == 4:
@@ -5022,7 +5024,7 @@ def command_edit_rom(self, categoryID, launcherID, romID):
         if mindex2 == 0:
             # Abort if multidisc ROM
             if roms[romID]['disks']:
-                kodi_dialog_OK('Edition of multidisc ROMs not supported yet.')
+                kodi.dialog_OK('Edition of multidisc ROMs not supported yet.')
                 return
             filename = roms[romID]['filename']
             launcher = self.launchers[launcherID]
@@ -5046,22 +5048,22 @@ def command_edit_rom(self, categoryID, launcherID, romID):
     elif mindex == 5:
         is_Normal_Launcher = True
         if categoryID == VCATEGORY_FAVOURITES_ID and launcherID == VLAUNCHER_FAVOURITES_ID:
-            log_info('_command_remove_rom() Deleting ROM from Favourites (id {})'.format(romID))
+            log.info('_command_remove_rom() Deleting ROM from Favourites (id {})'.format(romID))
             msg_str = 'Are you sure you want to delete it from Favourites?'
             is_Normal_Launcher = False
         elif categoryID == VCATEGORY_COLLECTIONS_ID:
-            log_info('_command_remove_rom() Deleting ROM from Collection (id {})'.format(romID))
+            log.info('_command_remove_rom() Deleting ROM from Collection (id {})'.format(romID))
             msg_str = 'Are you sure you want to delete it from Collection "{}"?'.format(collection['m_name'])
             is_Normal_Launcher = False
         else:
             if launcher['audit_state'] == AUDIT_STATE_ON and \
                 roms[romID]['nointro_status'] == NOINTRO_STATUS_MISS:
-                kodi_dialog_OK('You are trying to remove a Missing ROM. You cannot delete '
+                kodi.dialog_OK('You are trying to remove a Missing ROM. You cannot delete '
                     'a ROM that does not exist! If you want to get rid of all missing '
                     'ROMs then delete the XML DAT file.')
                 return
             else:
-                log_info('_command_remove_rom() Deleting ROM from Launcher (id {})'.format(romID))
+                log.info('_command_remove_rom() Deleting ROM from Launcher (id {})'.format(romID))
                 msg_str = 'Are you sure you want to delete it from Launcher "{}"?'.format(launcher['m_name'])
 
         # --- Confirm deletion ---
@@ -5072,7 +5074,7 @@ def command_edit_rom(self, categoryID, launcherID, romID):
 
         # --- If there is a No-Intro XML configured audit ROMs ---
         if is_Normal_Launcher and launcher['audit_state'] == AUDIT_STATE_ON:
-            log_info('No-Intro/Redump DAT configured. Starting ROM audit ...')
+            log.info('No-Intro/Redump DAT configured. Starting ROM audit ...')
             nointro_xml_FN = self._roms_set_NoIntro_DAT(launcher)
             if not self._roms_update_NoIntro_status(launcher, roms, nointro_xml_FN):
                 kodi_notify_warn('Error auditing ROMs. XML DAT file unset.')
@@ -5140,18 +5142,18 @@ def command_edit_rom(self, categoryID, launcherID, romID):
 
             # Check that the selected ROM ID is not already in Favourites.
             if new_fav_rom_ID in roms:
-                kodi_dialog_OK('Selected ROM already in Favourites. Exiting.')
+                kodi.dialog_OK('Selected ROM already in Favourites. Exiting.')
                 return
 
             # Relink Favourite ROM. Removed old Favourite before inserting new one.
             if mindex2 == 0:
-                log_info('_command_edit_ROM() Relinking ROM (launcher info only)')
+                log.info('_command_edit_ROM() Relinking ROM (launcher info only)')
                 new_fav_rom = fs_repair_Favourite_ROM(0, old_fav_rom, parent_rom, parent_launcher)
             elif mindex2 == 1:
-                log_info('_command_edit_ROM() Relinking ROM (update all)')
+                log.info('_command_edit_ROM() Relinking ROM (update all)')
                 new_fav_rom = fs_repair_Favourite_ROM(3, old_fav_rom, parent_rom, parent_launcher)
             else:
-                kodi_dialog_OK('Manage ROM object, relink, wrong mindex2 = {}. Please report this bug.'.format(mindex2))
+                kodi.dialog_OK('Manage ROM object, relink, wrong mindex2 = {}. Please report this bug.'.format(mindex2))
                 return
             if categoryID == VCATEGORY_COLLECTIONS_ID:
                 # Insert the new ROM in a specific position of the OrderedDict.
@@ -5184,13 +5186,13 @@ def command_edit_rom(self, categoryID, launcherID, romID):
             fav_rom = roms[romID]
             fav_launcher_id = fav_rom['launcherID']
             if fav_launcher_id not in self.launchers:
-                kodi_dialog_OK('Parent Launcher not found. '
+                kodi.dialog_OK('Parent Launcher not found. '
                     'Relink this ROM before copying stuff from parent.')
                 return
             parent_launcher = self.launchers[fav_launcher_id]
             launcher_roms = fs_load_ROMs_JSON(g_PATHS.ROMS_DIR, parent_launcher)
             if romID not in launcher_roms:
-                kodi_dialog_OK('Parent ROM not found in Launcher. '
+                kodi.dialog_OK('Parent ROM not found in Launcher. '
                     'Relink this ROM before copying stuff from parent.')
                 return
             parent_rom = launcher_roms[romID]
@@ -5211,7 +5213,7 @@ def command_edit_rom(self, categoryID, launcherID, romID):
                 fs_aux_copy_ROM_metadata(parent_rom, fav_rom)
                 fs_aux_copy_ROM_artwork(parent_launcher, parent_rom, fav_rom)
             else:
-                kodi_dialog_OK('Manage ROM object, copy info, wrong mindex2 = {}. Please report this bug.'.format(mindex2))
+                kodi.dialog_OK('Manage ROM object, copy info, wrong mindex2 = {}. Please report this bug.'.format(mindex2))
                 return
 
             # Notify user
@@ -5386,7 +5388,7 @@ def command_edit_rom(self, categoryID, launcherID, romID):
 
             # If ROM is first of the list do nothing
             if current_ROM_position == 0:
-                kodi_dialog_OK('ROM is in first position of the Collection. Cannot be moved up.')
+                kodi.dialog_OK('ROM is in first position of the Collection. Cannot be moved up.')
                 return
 
             # Reorder OrderedDict
@@ -5418,7 +5420,7 @@ def command_edit_rom(self, categoryID, launcherID, romID):
 
             # If ROM is first of the list do nothing
             if current_ROM_position == num_roms - 1:
-                kodi_dialog_OK('ROM is in last position of the Collection. Cannot be moved down.')
+                kodi.dialog_OK('ROM is in last position of the Collection. Cannot be moved down.')
                 return
 
             # Reorder OrderedDict
@@ -5765,7 +5767,7 @@ def command_edit_collection(self, categoryID, launcherID):
         try:
             if collection_file_path.exists(): collection_file_path.unlink()
         except OSError:
-            log_error('_gui_remove_launcher() (OSError) exception deleting "{}"'.format(
+            log.error('_gui_remove_launcher() (OSError) exception deleting "{}"'.format(
                 collection_file_path.getOriginalPath()))
             kodi_notify_warn('OSError exception deleting collection JSON')
         COL['collections'].pop(launcherID)
@@ -5798,10 +5800,10 @@ def gui_edit_asset(self, object_kind, asset_ID, object_dic, categoryID = '', lau
         asset_dir_FN = utils.FileName(self.settings['categories_asset_dir'])
         asset_path_noext_FN = assets_get_path_noext_SUFIX(AInfo, asset_dir_FN,
             object_dic['m_name'], object_dic['id'])
-        log_info('_gui_edit_asset() Editing Category "{}"'.format(AInfo.name))
-        log_info('_gui_edit_asset() ID {}'.format(object_dic['id']))
+        log.info('_gui_edit_asset() Editing Category "{}"'.format(AInfo.name))
+        log.info('_gui_edit_asset() ID {}'.format(object_dic['id']))
         if not asset_dir_FN.isdir():
-            kodi_dialog_OK('Directory to store Category artwork not configured or not found. '
+            kodi.dialog_OK('Directory to store Category artwork not configured or not found. '
                 'Configure it before you can edit artwork.')
             return False
 
@@ -5811,10 +5813,10 @@ def gui_edit_asset(self, object_kind, asset_ID, object_dic, categoryID = '', lau
         asset_dir_FN = utils.FileName(self.settings['collections_asset_dir'])
         asset_path_noext_FN = assets_get_path_noext_SUFIX(AInfo, asset_dir_FN,
             object_dic['m_name'], object_dic['id'])
-        log_info('_gui_edit_asset() Editing Collection "{}"'.format(AInfo.name))
-        log_info('_gui_edit_asset() ID {}'.format(object_dic['id']))
+        log.info('_gui_edit_asset() Editing Collection "{}"'.format(AInfo.name))
+        log.info('_gui_edit_asset() ID {}'.format(object_dic['id']))
         if not asset_dir_FN.isdir():
-            kodi_dialog_OK('Directory to store Collection artwork not configured or not found. '
+            kodi.dialog_OK('Directory to store Collection artwork not configured or not found. '
                 'Configure it before you can edit artwork.')
             return False
 
@@ -5824,10 +5826,10 @@ def gui_edit_asset(self, object_kind, asset_ID, object_dic, categoryID = '', lau
         asset_dir_FN = utils.FileName(self.settings['launchers_asset_dir'])
         asset_path_noext_FN = assets_get_path_noext_SUFIX(AInfo, asset_dir_FN,
             object_dic['m_name'], object_dic['id'])
-        log_info('_gui_edit_asset() Editing Launcher "{}"'.format(AInfo.name))
-        log_info('_gui_edit_asset() ID {}'.format(object_dic['id']))
+        log.info('_gui_edit_asset() Editing Launcher "{}"'.format(AInfo.name))
+        log.info('_gui_edit_asset() ID {}'.format(object_dic['id']))
         if not asset_dir_FN.isdir():
-            kodi_dialog_OK('Directory to store Launcher artwork not configured or not found. '
+            kodi.dialog_OK('Directory to store Launcher artwork not configured or not found. '
                 'Configure it before you can edit artwork.')
             return False
 
@@ -5840,13 +5842,13 @@ def gui_edit_asset(self, object_kind, asset_ID, object_dic, categoryID = '', lau
         else:
             ROM_hash_FN = ROM_FN
         if categoryID == VCATEGORY_FAVOURITES_ID:
-            log_info('_gui_edit_asset() ROM is in Favourites')
+            log.info('_gui_edit_asset() ROM is in Favourites')
             platform = object_dic['platform']
             asset_dir_FN = utils.FileName(self.settings['favourites_asset_dir'])
             asset_path_noext_FN = assets_get_path_noext_SUFIX(AInfo, asset_dir_FN,
                 ROM_FN.getBaseNoExt(), object_dic['id'])
         elif categoryID == VCATEGORY_COLLECTIONS_ID:
-            log_info('_gui_edit_asset() ROM is in Collection')
+            log.info('_gui_edit_asset() ROM is in Collection')
             platform = object_dic['platform']
             asset_dir_FN = utils.FileName(self.settings['collections_asset_dir'])
             new_asset_basename = assets_get_collection_asset_basename(AInfo,
@@ -5854,23 +5856,23 @@ def gui_edit_asset(self, object_kind, asset_ID, object_dic, categoryID = '', lau
             new_asset_basename_FN = utils.FileName(new_asset_basename)
             asset_path_noext_FN = asset_dir_FN.pjoin(new_asset_basename_FN.getBaseNoExt())
         else:
-            log_info('_gui_edit_asset() ROM is in Launcher id {}'.format(launcherID))
+            log.info('_gui_edit_asset() ROM is in Launcher id {}'.format(launcherID))
             launcher = self.launchers[launcherID]
             platform = launcher['platform']
             asset_dir_FN = utils.FileName(launcher[AInfo.path_key])
             asset_path_noext_FN = assets_get_path_noext_DIR(AInfo, asset_dir_FN, ROM_FN)
-        log_info('_gui_edit_asset() Editing ROM {}'.format(AInfo.name))
-        log_info('_gui_edit_asset() ROM ID {}'.format(object_dic['id']))
+        log.info('_gui_edit_asset() Editing ROM {}'.format(AInfo.name))
+        log.info('_gui_edit_asset() ROM ID {}'.format(object_dic['id']))
         log.debug('_gui_edit_asset() platform "{}"'.format(platform))
 
         # --- Do not edit asset if asset directory not configured ---
         if not asset_dir_FN.isdir():
-            kodi_dialog_OK('Directory to store {} not configured or not found. '.format(AInfo.name) + \
+            kodi.dialog_OK('Directory to store {} not configured or not found. '.format(AInfo.name) + \
                 'Configure it before you can edit artwork.')
             return False
 
     else:
-        log_error('_gui_edit_asset() Unknown object_kind = {}'.format(object_kind))
+        log.error('_gui_edit_asset() Unknown object_kind = {}'.format(object_kind))
         kodi_notify_warn("Unknown object_kind '{}'".format(object_kind))
         return False
     # Debug info
@@ -5916,7 +5918,7 @@ def gui_edit_asset(self, object_kind, asset_ID, object_dic, categoryID = '', lau
         log.debug('_gui_edit_asset() AInfo.key "{}"'.format(AInfo.key))
         object_dic[AInfo.key] = image_file_path.getOriginalPath()
         kodi_notify('{} {} has been updated'.format(object_name, AInfo.name))
-        log_info('_gui_edit_asset() Linked {} {} "{}"'.format(object_name,
+        log.info('_gui_edit_asset() Linked {} {} "{}"'.format(object_name,
             AInfo.name, image_file_path.getOriginalPath()))
 
         # Update Kodi image cache.
@@ -5942,18 +5944,18 @@ def gui_edit_asset(self, object_kind, asset_ID, object_dic, categoryID = '', lau
         log.debug('_gui_edit_asset() img_ext       "{}"'.format(image_FN.getExt()))
         log.debug('_gui_edit_asset() dest_image_FN "{}"'.format(dest_image_FN.getOriginalPath()))
         if image_FN.getPath() == dest_image_FN.getPath():
-            log_info('_gui_edit_asset() image_FN and dest_image_FN are the same. Returning.')
+            log.info('_gui_edit_asset() image_FN and dest_image_FN are the same. Returning.')
             kodi_notify_warn('image_FN and dest_image_FN are the same. Returning')
             return False
 
         try:
             utils_copy_file(image_FN.getPath(), dest_image_FN.getPath())
         except OSError:
-            log_error('_gui_edit_asset() OSError exception copying image')
+            log.error('_gui_edit_asset() OSError exception copying image')
             kodi_notify_warn('OSError exception copying image')
             return False
         except IOError:
-            log_error('_gui_edit_asset() IOError exception copying image')
+            log.error('_gui_edit_asset() IOError exception copying image')
             kodi_notify_warn('IOError exception copying image')
             return False
 
@@ -5961,9 +5963,9 @@ def gui_edit_asset(self, object_kind, asset_ID, object_dic, categoryID = '', lau
         # Always store original/raw paths in database.
         object_dic[AInfo.key] = dest_image_FN.getOriginalPath()
         kodi_notify('{} {} has been updated'.format(object_name, AInfo.name))
-        log_info('_gui_edit_asset() Copied file  "{}"'.format(image_FN.getOriginalPath()))
-        log_info('_gui_edit_asset() Into         "{}"'.format(dest_image_FN.getOriginalPath()))
-        log_info('_gui_edit_asset() Selected {} {} "{}"'.format(object_name,
+        log.info('_gui_edit_asset() Copied file  "{}"'.format(image_FN.getOriginalPath()))
+        log.info('_gui_edit_asset() Into         "{}"'.format(dest_image_FN.getOriginalPath()))
+        log.info('_gui_edit_asset() Selected {} {} "{}"'.format(object_name,
             AInfo.name, dest_image_FN.getOriginalPath()))
 
         # Update Kodi image cache.
@@ -5974,7 +5976,7 @@ def gui_edit_asset(self, object_kind, asset_ID, object_dic, categoryID = '', lau
         log.debug('_gui_edit_asset() Unsetting asset...')
         object_dic[AInfo.key] = ''
         kodi_notify('{} {} has been unset'.format(object_name, AInfo.name))
-        log_info('_gui_edit_asset() Unset {} {}'.format(object_name, AInfo.name))
+        log.info('_gui_edit_asset() Unset {} {}'.format(object_name, AInfo.name))
 
     # --- Manual scrape and choose from a list of images ---
     elif mindex >= 3:
@@ -6038,7 +6040,7 @@ def command_manage_favourites(self, categoryID, launcherID, romID):
         roms_fav = collections.OrderedDict()
         for collection_rom in collection_rom_list: roms_fav[collection_rom['id']] = collection_rom
     else:
-        kodi_dialog_OK('_command_manage_favourites() should be called for Favourites or Collections. '
+        kodi.dialog_OK('_command_manage_favourites() should be called for Favourites or Collections. '
             'This is a bug, please report it.')
         return
 
@@ -6068,12 +6070,12 @@ def command_manage_favourites(self, categoryID, launcherID, romID):
         self._fav_check_favourites(roms_fav)
         # Print a report of issues found
         if categoryID == VCATEGORY_FAVOURITES_ID:
-            kodi_dialog_OK('You have {} ROMs in Favourites. '.format(self.num_fav_roms) +
+            kodi.dialog_OK('You have {} ROMs in Favourites. '.format(self.num_fav_roms) +
                 '{} Unlinked Launcher, '.format(self.num_fav_ulauncher) +
                 '{} Unliked ROM and '.format(self.num_fav_urom) +
                 '{} Broken.'.format(self.num_fav_broken))
         elif categoryID == VCATEGORY_COLLECTIONS_ID:
-            kodi_dialog_OK('You have {} ROMs in Collection "{}". '.format(self.num_fav_roms, collection['m_name']) +
+            kodi.dialog_OK('You have {} ROMs in Collection "{}". '.format(self.num_fav_roms, collection['m_name']) +
                 '{} Unlinked Launcher, '.format(self.num_fav_ulauncher) +
                 '{} Unliked ROM and '.format(self.num_fav_urom) +
                 '{} are Broken.'.format(self.num_fav_broken))
@@ -6087,7 +6089,7 @@ def command_manage_favourites(self, categoryID, launcherID, romID):
         # 3) Search for a ROM with same filename or same rom_base.
         #    If found, then replace romID in Favourites with romID of found ROM. Do not copy
         #    any metadata because user maybe customised the Favourite ROM.
-        log_info('Repairing Unlinked Launcher/Broken ROMs (mindex = {}) ...'.format(mindex))
+        log.info('Repairing Unlinked Launcher/Broken ROMs (mindex = {}) ...'.format(mindex))
 
         # --- Ask user about how to repair the Fav ROMs ---
         sDialog = KodiSelectDialog('How to repair ROMs?', [
@@ -6114,7 +6116,7 @@ def command_manage_favourites(self, categoryID, launcherID, romID):
             pDialog.updateProgressInc()
             if pDialog.isCanceled():
                 pDialog.endProgress()
-                kodi_dialog_OK('Repair cancelled. No changes has been done.')
+                kodi.dialog_OK('Repair cancelled. No changes has been done.')
                 return
 
             # Only process Unlinked Launcher ROMs.
@@ -6122,8 +6124,8 @@ def command_manage_favourites(self, categoryID, launcherID, romID):
             if roms_fav[rom_fav_ID]['fav_status'] == 'Unlinked ROM': continue
             fav_name = roms_fav[rom_fav_ID]['m_name']
             num_broken_ROMs += 1
-            log_info('_command_manage_favourites() Repairing Fav ROM "{}"'.format(fav_name))
-            log_info('_command_manage_favourites() Fav ROM status "{}"'.format(roms_fav[rom_fav_ID]['fav_status']))
+            log.info('_command_manage_favourites() Repairing Fav ROM "{}"'.format(fav_name))
+            log.info('_command_manage_favourites() Fav ROM status "{}"'.format(roms_fav[rom_fav_ID]['fav_status']))
 
             # Traverse all launchers and find rom by filename or base name.
             ROM_FN_FAV = utils.FileName(roms_fav[rom_fav_ID]['filename'])
@@ -6134,13 +6136,13 @@ def command_manage_favourites(self, categoryID, launcherID, romID):
                     ROM_FN = utils.FileName(roms[rom_id]['filename'])
                     fav_name = roms_fav[rom_fav_ID]['m_name']
                     if type == 1 and roms_fav[rom_fav_ID]['filename'] == roms[rom_id]['filename']:
-                        log_info('_command_manage_favourites() Favourite {} matched by filename!'.format(fav_name))
-                        log_info('_command_manage_favourites() Launcher {}'.format(launcher_id))
-                        log_info('_command_manage_favourites() ROM {}'.format(rom_id))
+                        log.info('_command_manage_favourites() Favourite {} matched by filename!'.format(fav_name))
+                        log.info('_command_manage_favourites() Launcher {}'.format(launcher_id))
+                        log.info('_command_manage_favourites() ROM {}'.format(rom_id))
                     elif type == 2 and ROM_FN_FAV.getBase() == ROM_FN.getBase():
-                        log_info('_command_manage_favourites() Favourite {} matched by basename!'.format(fav_name))
-                        log_info('_command_manage_favourites() Launcher {}'.format(launcher_id))
-                        log_info('_command_manage_favourites() ROM {}'.format(rom_id))
+                        log.info('_command_manage_favourites() Favourite {} matched by basename!'.format(fav_name))
+                        log.info('_command_manage_favourites() Launcher {}'.format(launcher_id))
+                        log.info('_command_manage_favourites() ROM {}'.format(rom_id))
                     else:
                         continue
                     # Match found. Break all for loops inmediately.
@@ -6162,8 +6164,8 @@ def command_manage_favourites(self, categoryID, launcherID, romID):
                 repair_rom_list.append(rom_repair)
             else:
                 log.debug('_command_manage_favourites() ROM {} filename not found in any launcher'.format(fav_name))
-        log_info('_command_manage_favourites() Step 1 found {} unlinked launcher/broken ROMs'.format(num_broken_ROMs))
-        log_info('_command_manage_favourites() Step 1 found {} ROMs to be repaired'.format(len(repair_rom_list)))
+        log.info('_command_manage_favourites() Step 1 found {} unlinked launcher/broken ROMs'.format(num_broken_ROMs))
+        log.info('_command_manage_favourites() Step 1 found {} ROMs to be repaired'.format(len(repair_rom_list)))
         pDialog.endProgress()
 
         # Pass 2. Repair Favourites. Changes roms_fav dictionary.
@@ -6189,21 +6191,21 @@ def command_manage_favourites(self, categoryID, launcherID, romID):
 
         # Show info to user
         if mindex == 1:
-            kodi_dialog_OK('Found {} Unlinked Launcher/Broken ROMs. '.format(num_broken_ROMs) +
+            kodi.dialog_OK('Found {} Unlinked Launcher/Broken ROMs. '.format(num_broken_ROMs) +
                            'Of those, {} were repaired by filename match.'.format(num_repaired_ROMs))
         elif mindex == 2:
-            kodi_dialog_OK('Found {} Unlinked Launcher/Broken ROMs. '.format(num_broken_ROMs) +
+            kodi.dialog_OK('Found {} Unlinked Launcher/Broken ROMs. '.format(num_broken_ROMs) +
                            'Of those, {} were repaired by rombase match.'.format(num_repaired_ROMs))
         else:
-            log_error('_command_manage_favourites() type = {} unknown value!'.format(mindex))
-            kodi_dialog_OK('Unknown type = {}. This is a bug, please report it.'.format(mindex))
+            log.error('_command_manage_favourites() type = {} unknown value!'.format(mindex))
+            kodi.dialog_OK('Unknown type = {}. This is a bug, please report it.'.format(mindex))
             return
 
     # --- Repair Unliked ROMs ---
     elif mindex == 3:
         # 1) Traverse list of Favourites.
         # 2) If romID not found in launcher, then search for a ROM with same basename.
-        log_info('Repairing Repair Unliked ROMs (mindex = {}) ...'.format(mindex))
+        log.info('Repairing Repair Unliked ROMs (mindex = {}) ...'.format(mindex))
 
         # --- Ask user about how to repair the Fav ROMs ---
         sDialog = KodiSelectDialog('How to repair ROMs?', [
@@ -6232,8 +6234,8 @@ def command_manage_favourites(self, categoryID, launcherID, romID):
             if rom_fav['fav_status'] != 'Unlinked ROM': continue
             num_unlinked_ROMs += 1
             fav_name = roms_fav[rom_fav_ID]['m_name']
-            log_info('_command_manage_favourites() Repairing Fav ROM "{}"'.format(fav_name))
-            log_info('_command_manage_favourites() Fav ROM status "{}"'.format(rom_fav['fav_status']))
+            log.info('_command_manage_favourites() Repairing Fav ROM "{}"'.format(fav_name))
+            log.info('_command_manage_favourites() Fav ROM status "{}"'.format(rom_fav['fav_status']))
 
             # Get ROMs of launcher
             launcher_id = rom_fav['launcherID']
@@ -6286,7 +6288,7 @@ def command_manage_favourites(self, categoryID, launcherID, romID):
         log.debug('_command_manage_favourites() Repaired {} ROMs'.format(num_repaired_ROMs))
 
         # Show info to user
-        kodi_dialog_OK('Found {} Unlinked ROMs. '.format(num_unlinked_ROMs) +
+        kodi.dialog_OK('Found {} Unlinked ROMs. '.format(num_unlinked_ROMs) +
             'Of those, {} were repaired.'.format(num_repaired_ROMs))
 
     # --- Short collection ROMs alphabetically ---
@@ -6512,8 +6514,8 @@ def command_manage_recently_played(self, rom_ID):
 
     else:
         t = 'Wrong action = {}. This is a bug, please report it.'.format(action)
-        log_error(t)
-        kodi_dialog_OK(t)
+        log.error(t)
+        kodi.dialog_OK(t)
 
 # Most played ROMs are stored in a dictionary, key ROM ID and value ROM dictionary.
 def command_manage_most_played(self, rom_ID):
@@ -6637,8 +6639,8 @@ def command_manage_most_played(self, rom_ID):
 
     else:
         t = 'Wrong action = {}. This is a bug, please report it.'.format(action)
-        log_error(t)
-        kodi_dialog_OK(t)
+        log.error(t)
+        kodi.dialog_OK(t)
 
 # ------------------------------------------------------------------------------------------------
 # Search
@@ -6804,7 +6806,7 @@ def command_execute_search_launcher(self, categoryID, launcherID, search_type, s
     # --- Render ROMs ---
     self._misc_set_all_sorting_methods()
     if not rl:
-        kodi_dialog_OK('Search returned no results')
+        kodi.dialog_OK('Search returned no results')
     for key in sorted(rl, key = lambda x : rl[x]['m_name']):
         self._gui_render_rom_row(categoryID, launcherID, rl[key])
     xbmcplugin.endOfDirectory(cfg.addon_handle, succeeded = True, cacheToDisc = False)
@@ -6922,7 +6924,7 @@ def command_Context_Menu_view(self, categoryID, launcherID, romID):
             'View last execution output ({})'.format(STD_status),
         ]
     else:
-        kodi_dialog_OK(
+        kodi.dialog_OK(
             'Wrong view_type = {}. This is a bug, please report it.'.format(view_type))
         return
     selected_value = KodiSelectDialog('View', d_list).executeDialog()
@@ -6938,7 +6940,7 @@ def command_Context_Menu_view(self, categoryID, launcherID, romID):
         except:
             t = 'view_type == VIEW_CATEGORY and selected_value = {}. '.format(selected_value) + \
                 'This is a bug, please report it.'
-            kodi_dialog_OK(t)
+            kodi.dialog_OK(t)
             return
     elif view_type == VIEW_LAUNCHER:
         try:
@@ -6953,7 +6955,7 @@ def command_Context_Menu_view(self, categoryID, launcherID, romID):
         except:
             t = 'view_type == VIEW_LAUNCHER and selected_value = {}. '.format(selected_value) + \
                 'This is a bug, please report it.'
-            kodi_dialog_OK(t)
+            kodi.dialog_OK(t)
             return
     elif view_type == VIEW_COLLECTION:
         try:
@@ -6961,7 +6963,7 @@ def command_Context_Menu_view(self, categoryID, launcherID, romID):
         except:
             t = 'view_type == VIEW_COLLECTION and selected_value = {}. '.format(selected_value) + \
                 'This is a bug, please report it.'
-            kodi_dialog_OK(t)
+            kodi.dialog_OK(t)
             return
     elif view_type == VIEW_ROM_LAUNCHER:
         try:
@@ -6978,7 +6980,7 @@ def command_Context_Menu_view(self, categoryID, launcherID, romID):
         except:
             t = 'view_type == VIEW_ROM_LAUNCHER and selected_value = {}. '.format(selected_value) + \
                 'This is a bug, please report it.'
-            kodi_dialog_OK(t)
+            kodi.dialog_OK(t)
             return
     elif view_type == VIEW_ROM_VLAUNCHER:
         try:
@@ -6991,7 +6993,7 @@ def command_Context_Menu_view(self, categoryID, launcherID, romID):
         except:
             t = 'view_type == VIEW_ROM_VLAUNCHER and selected_value = {}. '.format(selected_value) + \
                 'This is a bug, please report it.'
-            kodi_dialog_OK(t)
+            kodi.dialog_OK(t)
             return
     elif view_type == VIEW_ROM_COLLECTION:
         try:
@@ -7004,10 +7006,10 @@ def command_Context_Menu_view(self, categoryID, launcherID, romID):
         except:
             t = 'view_type == VIEW_ROM_COLLECTION and selected_value = {}. '.format(selected_value) + \
                 'This is a bug, please report it.'
-            kodi_dialog_OK(t)
+            kodi.dialog_OK(t)
             return
     else:
-        kodi_dialog_OK('Wrong view_type == {}. '.format(view_type) +
+        kodi.dialog_OK('Wrong view_type == {}. '.format(view_type) +
             'This is a bug, please report it.')
         return
     log.debug('_command_view_menu() action = {}'.format(action))
@@ -7040,7 +7042,7 @@ def command_Context_Menu_view(self, categoryID, launcherID, romID):
             # --- Read ROMs ---
             regular_launcher = True
             if categoryID == VCATEGORY_FAVOURITES_ID:
-                log_info('_command_view_menu() Viewing ROM in Favourites ...')
+                log.info('_command_view_menu() Viewing ROM in Favourites ...')
                 roms = fs_load_Favourites_JSON(g_PATHS.FAV_JSON_FILE_PATH)
                 rom = roms[romID]
                 window_title = 'Favourite ROM data'
@@ -7048,7 +7050,7 @@ def command_Context_Menu_view(self, categoryID, launcherID, romID):
                 vlauncher_label = 'Favourite'
 
             elif categoryID == VCATEGORY_MOST_PLAYED_ID:
-                log_info('_command_view_menu() Viewing ROM in Most played ROMs list ...')
+                log.info('_command_view_menu() Viewing ROM in Most played ROMs list ...')
                 most_played_roms = fs_load_Favourites_JSON(g_PATHS.MOST_PLAYED_FILE_PATH)
                 rom = most_played_roms[romID]
                 window_title = 'Most Played ROM data'
@@ -7056,11 +7058,11 @@ def command_Context_Menu_view(self, categoryID, launcherID, romID):
                 vlauncher_label = 'Most Played ROM'
 
             elif categoryID == VCATEGORY_RECENT_ID:
-                log_info('_command_view_menu() Viewing ROM in Recently played ROMs ...')
+                log.info('_command_view_menu() Viewing ROM in Recently played ROMs ...')
                 recent_roms_list = fs_load_Collection_ROMs_JSON(g_PATHS.RECENT_PLAYED_FILE_PATH)
                 current_ROM_position = fs_collection_ROM_index_by_romID(romID, recent_roms_list)
                 if current_ROM_position < 0:
-                    kodi_dialog_OK('Collection ROM not found in list. This is a bug!')
+                    kodi.dialog_OK('Collection ROM not found in list. This is a bug!')
                     return
                 rom = recent_roms_list[current_ROM_position]
                 window_title = 'Recently played ROM data'
@@ -7068,11 +7070,11 @@ def command_Context_Menu_view(self, categoryID, launcherID, romID):
                 vlauncher_label = 'Recently played ROM'
 
             elif categoryID == VCATEGORY_TITLE_ID:
-                log_info('_command_view_menu() Viewing ROM in Title Virtual Launcher ...')
+                log.info('_command_view_menu() Viewing ROM in Title Virtual Launcher ...')
                 hashed_db_filename = g_PATHS.VIRTUAL_CAT_TITLE_DIR.pjoin(launcherID + '.json')
                 if not hashed_db_filename.exists():
-                    log_error('_command_view_menu() Cannot find file "{}"'.format(hashed_db_filename.getPath()))
-                    kodi_dialog_OK('Virtual launcher XML/JSON file not found.')
+                    log.error('_command_view_menu() Cannot find file "{}"'.format(hashed_db_filename.getPath()))
+                    kodi.dialog_OK('Virtual launcher XML/JSON file not found.')
                     return
                 roms = fs_load_VCategory_ROMs_JSON(g_PATHS.VIRTUAL_CAT_TITLE_DIR, launcherID)
                 rom = roms[romID]
@@ -7081,11 +7083,11 @@ def command_Context_Menu_view(self, categoryID, launcherID, romID):
                 vlauncher_label = 'Virtual Launcher Title'
 
             elif categoryID == VCATEGORY_YEARS_ID:
-                log_info('_command_view_menu() Viewing ROM in Year Virtual Launcher ...')
+                log.info('_command_view_menu() Viewing ROM in Year Virtual Launcher ...')
                 hashed_db_filename = g_PATHS.VIRTUAL_CAT_YEARS_DIR.pjoin(launcherID + '.json')
                 if not hashed_db_filename.exists():
-                    log_error('_command_view_menu() Cannot find file "{}"'.format(hashed_db_filename.getPath()))
-                    kodi_dialog_OK('Virtual launcher XML/JSON file not found.')
+                    log.error('_command_view_menu() Cannot find file "{}"'.format(hashed_db_filename.getPath()))
+                    kodi.dialog_OK('Virtual launcher XML/JSON file not found.')
                     return
                 roms = fs_load_VCategory_ROMs_JSON(g_PATHS.VIRTUAL_CAT_YEARS_DIR, launcherID)
                 rom = roms[romID]
@@ -7094,11 +7096,11 @@ def command_Context_Menu_view(self, categoryID, launcherID, romID):
                 vlauncher_label = 'Virtual Launcher Year'
 
             elif categoryID == VCATEGORY_GENRE_ID:
-                log_info('_command_view_menu() Viewing ROM in Genre Virtual Launcher ...')
+                log.info('_command_view_menu() Viewing ROM in Genre Virtual Launcher ...')
                 hashed_db_filename = g_PATHS.VIRTUAL_CAT_GENRE_DIR.pjoin(launcherID + '.json')
                 if not hashed_db_filename.exists():
-                    log_error('_command_view_menu() Cannot find file "{}"'.format(hashed_db_filename.getPath()))
-                    kodi_dialog_OK('Virtual launcher XML/JSON file not found.')
+                    log.error('_command_view_menu() Cannot find file "{}"'.format(hashed_db_filename.getPath()))
+                    kodi.dialog_OK('Virtual launcher XML/JSON file not found.')
                     return
                 roms = fs_load_VCategory_ROMs_JSON(g_PATHS.VIRTUAL_CAT_GENRE_DIR, launcherID)
                 rom = roms[romID]
@@ -7107,11 +7109,11 @@ def command_Context_Menu_view(self, categoryID, launcherID, romID):
                 vlauncher_label = 'Virtual Launcher Genre'
 
             elif categoryID == VCATEGORY_DEVELOPER_ID:
-                log_info('_command_view_menu() Viewing ROM in Developer Virtual Launcher ...')
+                log.info('_command_view_menu() Viewing ROM in Developer Virtual Launcher ...')
                 hashed_db_filename = g_PATHS.VIRTUAL_CAT_DEVELOPER_DIR.pjoin(launcherID + '.json')
                 if not hashed_db_filename.exists():
-                    log_error('_command_view_menu() Cannot find file "{}"'.format(hashed_db_filename.getPath()))
-                    kodi_dialog_OK('Virtual launcher XML/JSON file not found.')
+                    log.error('_command_view_menu() Cannot find file "{}"'.format(hashed_db_filename.getPath()))
+                    kodi.dialog_OK('Virtual launcher XML/JSON file not found.')
                     return
                 roms = fs_load_VCategory_ROMs_JSON(g_PATHS.VIRTUAL_CAT_DEVELOPER_DIR, launcherID)
                 rom = roms[romID]
@@ -7120,11 +7122,11 @@ def command_Context_Menu_view(self, categoryID, launcherID, romID):
                 vlauncher_label = 'Virtual Launcher Studio'
 
             elif categoryID == VCATEGORY_NPLAYERS_ID:
-                log_info('_command_view_menu() Viewing ROM in NPlayers Virtual Launcher ...')
+                log.info('_command_view_menu() Viewing ROM in NPlayers Virtual Launcher ...')
                 hashed_db_filename = g_PATHS.VIRTUAL_CAT_NPLAYERS_DIR.pjoin(launcherID + '.json')
                 if not hashed_db_filename.exists():
-                    log_error('_command_view_menu() Cannot find file "{}"'.format(hashed_db_filename.getPath()))
-                    kodi_dialog_OK('Virtual launcher XML/JSON file not found.')
+                    log.error('_command_view_menu() Cannot find file "{}"'.format(hashed_db_filename.getPath()))
+                    kodi.dialog_OK('Virtual launcher XML/JSON file not found.')
                     return
                 roms = fs_load_VCategory_ROMs_JSON(g_PATHS.VIRTUAL_CAT_NPLAYERS_DIR, launcherID)
                 rom = roms[romID]
@@ -7133,11 +7135,11 @@ def command_Context_Menu_view(self, categoryID, launcherID, romID):
                 vlauncher_label = 'Virtual Launcher NPlayer'
 
             elif categoryID == VCATEGORY_ESRB_ID:
-                log_info('_command_view_menu() Viewing ROM in ESRB Launcher ...')
+                log.info('_command_view_menu() Viewing ROM in ESRB Launcher ...')
                 hashed_db_filename = g_PATHS.VIRTUAL_CAT_ESRB_DIR.pjoin(launcherID + '.json')
                 if not hashed_db_filename.exists():
-                    log_error('_command_view_menu() Cannot find file "{}"'.format(hashed_db_filename.getPath()))
-                    kodi_dialog_OK('Virtual launcher XML/JSON file not found.')
+                    log.error('_command_view_menu() Cannot find file "{}"'.format(hashed_db_filename.getPath()))
+                    kodi.dialog_OK('Virtual launcher XML/JSON file not found.')
                     return
                 roms = fs_load_VCategory_ROMs_JSON(g_PATHS.VIRTUAL_CAT_ESRB_DIR, launcherID)
                 rom = roms[romID]
@@ -7146,11 +7148,11 @@ def command_Context_Menu_view(self, categoryID, launcherID, romID):
                 vlauncher_label = 'Virtual Launcher ESRB'
 
             elif categoryID == VCATEGORY_RATING_ID:
-                log_info('_command_view_menu() Viewing ROM in Rating Launcher ...')
+                log.info('_command_view_menu() Viewing ROM in Rating Launcher ...')
                 hashed_db_filename = g_PATHS.VIRTUAL_CAT_RATING_DIR.pjoin(launcherID + '.json')
                 if not hashed_db_filename.exists():
-                    log_error('_command_view_menu() Cannot find file "{}"'.format(hashed_db_filename.getPath()))
-                    kodi_dialog_OK('Virtual launcher XML/JSON file not found.')
+                    log.error('_command_view_menu() Cannot find file "{}"'.format(hashed_db_filename.getPath()))
+                    kodi.dialog_OK('Virtual launcher XML/JSON file not found.')
                     return
                 roms = fs_load_VCategory_ROMs_JSON(g_PATHS.VIRTUAL_CAT_RATING_DIR, launcherID)
                 rom = roms[romID]
@@ -7159,11 +7161,11 @@ def command_Context_Menu_view(self, categoryID, launcherID, romID):
                 vlauncher_label = 'Virtual Launcher Rating'
 
             elif categoryID == VCATEGORY_CATEGORY_ID:
-                log_info('_command_view_menu() Viewing ROM in Category Virtual Launcher ...')
+                log.info('_command_view_menu() Viewing ROM in Category Virtual Launcher ...')
                 hashed_db_filename = g_PATHS.VIRTUAL_CAT_CATEGORY_DIR.pjoin(launcherID + '.json')
                 if not hashed_db_filename.exists():
-                    log_error('_command_view_menu() Cannot find file "{}"'.format(hashed_db_filename.getPath()))
-                    kodi_dialog_OK('Virtual launcher XML/JSON file not found.')
+                    log.error('_command_view_menu() Cannot find file "{}"'.format(hashed_db_filename.getPath()))
+                    kodi.dialog_OK('Virtual launcher XML/JSON file not found.')
                     return
                 roms = fs_load_VCategory_ROMs_JSON(g_PATHS.VIRTUAL_CAT_CATEGORY_DIR, launcherID)
                 rom = roms[romID]
@@ -7173,14 +7175,14 @@ def command_Context_Menu_view(self, categoryID, launcherID, romID):
 
             # --- ROM in Collection ---
             elif categoryID == VCATEGORY_COLLECTIONS_ID:
-                log_info('_command_view_menu() Viewing ROM in Collection ...')
+                log.info('_command_view_menu() Viewing ROM in Collection ...')
                 COL = fs_load_Collection_index_XML(g_PATHS.COLLECTIONS_FILE_PATH)
                 collection = COL['collections'][launcherID]
                 roms_json_file = g_PATHS.COLLECTIONS_DIR.pjoin(collection['roms_base_noext'] + '.json')
                 collection_rom_list = fs_load_Collection_ROMs_JSON(roms_json_file)
                 current_ROM_position = fs_collection_ROM_index_by_romID(romID, collection_rom_list)
                 if current_ROM_position < 0:
-                    kodi_dialog_OK('Collection ROM not found in list. This is a bug!')
+                    kodi.dialog_OK('Collection ROM not found in list. This is a bug!')
                     return
                 rom = collection_rom_list[current_ROM_position]
                 window_title = '{} Collection ROM data'.format(collection['m_name'])
@@ -7189,13 +7191,13 @@ def command_Context_Menu_view(self, categoryID, launcherID, romID):
 
             # --- ROM in regular launcher ---
             else:
-                log_info('_command_view_menu() Viewing ROM in Launcher ...')
+                log.info('_command_view_menu() Viewing ROM in Launcher ...')
                 if romID == UNKNOWN_ROMS_PARENT_ID:
-                    kodi_dialog_OK('You cannot view this ROM!')
+                    kodi.dialog_OK('You cannot view this ROM!')
                     return
                 # >> Check launcher is OK
                 if launcherID not in self.launchers:
-                    kodi_dialog_OK('launcherID not found in self.launchers')
+                    kodi.dialog_OK('launcherID not found in self.launchers')
                     return
                 launcher_in_category = False if categoryID == CATEGORY_ADDONROOT_ID else True
                 if launcher_in_category: category = self.categories[categoryID]
@@ -7265,7 +7267,7 @@ def command_Context_Menu_view(self, categoryID, launcherID, romID):
                 window_title = 'Launcher "{}" Asset Report'.format(launcher['m_name'])
                 info_text = utils_load_file_to_str(report_assets_FN.getPath())
         except IOError:
-            log_error('_command_view_menu() (IOError) Exception reading report TXT file')
+            log.error('_command_view_menu() (IOError) Exception reading report TXT file')
             window_title = 'Error'
             info_text = '[COLOR red]Exception reading report TXT file.[/COLOR]'
         info_text = info_text.replace('<No-Intro Audit Statistics>', '[COLOR orange]<No-Intro Audit Statistics>[/COLOR]')
@@ -7278,7 +7280,7 @@ def command_Context_Menu_view(self, categoryID, launcherID, romID):
     # Launcher ROM scanner report
     elif action == ACTION_VIEW_LAUNCHER_SCANNER:
         if not launcher_report_FN.exists():
-            kodi_dialog_OK('ROM scanner report not found.')
+            kodi.dialog_OK('ROM scanner report not found.')
             return
         info_text = ''
         with open(launcher_report_FN.getPath(), 'r') as myfile:
@@ -7289,7 +7291,7 @@ def command_Context_Menu_view(self, categoryID, launcherID, romID):
     # --- View ROM Manual ---
     # Port this feature from AML.
     elif action == ACTION_VIEW_MANUAL:
-        kodi_dialog_OK('View ROM manual not implemented yet. Sorry.')
+        kodi.dialog_OK('View ROM manual not implemented yet. Sorry.')
 
     # --- View ROM Map ---
     elif action == ACTION_VIEW_MAP:
@@ -7304,7 +7306,7 @@ def command_Context_Menu_view(self, categoryID, launcherID, romID):
             recent_roms_list = fs_load_Collection_ROMs_JSON(g_PATHS.RECENT_PLAYED_FILE_PATH)
             current_ROM_position = fs_collection_ROM_index_by_romID(romID, recent_roms_list)
             if current_ROM_position < 0:
-                kodi_dialog_OK('Collection ROM not found in list. This is a bug!')
+                kodi.dialog_OK('Collection ROM not found in list. This is a bug!')
                 return
             rom = recent_roms_list[current_ROM_position]
         elif categoryID == VCATEGORY_COLLECTIONS_ID:
@@ -7314,14 +7316,14 @@ def command_Context_Menu_view(self, categoryID, launcherID, romID):
             collection_rom_list = fs_load_Collection_ROMs_JSON(roms_json_file)
             current_ROM_position = fs_collection_ROM_index_by_romID(romID, collection_rom_list)
             if current_ROM_position < 0:
-                kodi_dialog_OK('Collection ROM not found in list. This is a bug!')
+                kodi.dialog_OK('Collection ROM not found in list. This is a bug!')
                 return
             rom = collection_rom_list[current_ROM_position]
         elif categoryID == VCATEGORY_TITLE_ID    or categoryID == VCATEGORY_YEARS_ID or \
              categoryID == VCATEGORY_GENRE_ID    or categoryID == VCATEGORY_DEVELOPER_ID or \
              categoryID == VCATEGORY_NPLAYERS_ID or categoryID == VCATEGORY_ESRB_ID or \
              categoryID == VCATEGORY_RATING_ID   or categoryID == VCATEGORY_CATEGORY_ID:
-            kodi_dialog_OK('ROM-loading factory not implemented yet. '
+            kodi.dialog_OK('ROM-loading factory not implemented yet. '
                 'Until then you cannot see maps in Virtual Launchers. Sorry')
             return
         else:
@@ -7332,11 +7334,11 @@ def command_Context_Menu_view(self, categoryID, launcherID, romID):
         # Show map image
         s_map = rom['s_map']
         if not s_map:
-            kodi_dialog_OK('Map image file not set for ROM "{}"'.format(rom['m_name']))
+            kodi.dialog_OK('Map image file not set for ROM "{}"'.format(rom['m_name']))
             return
         map_FN = utils.FileName(s_map)
         if not map_FN.exists():
-            kodi_dialog_OK('Map image file not found.')
+            kodi.dialog_OK('Map image file not found.')
             return
         xbmc.executebuiltin('ShowPicture("{}")'.format(map_FN.getPath()))
 
@@ -7346,7 +7348,7 @@ def command_Context_Menu_view(self, categoryID, launcherID, romID):
 
         # --- Ckeck for errors and read file ---
         if not g_PATHS.LAUNCH_LOG_FILE_PATH.exists():
-            kodi_dialog_OK('Log file not found. Try to run the emulator/application.')
+            kodi.dialog_OK('Log file not found. Try to run the emulator/application.')
             return
         # Kodi BUG: if the log file size is 0 (it is empty) then Kodi displays in the
         # text window the last displayed text.
@@ -7360,7 +7362,7 @@ def command_Context_Menu_view(self, categoryID, launcherID, romID):
         kodi_display_text_window_mono(window_title, info_text)
 
     else:
-        kodi_dialog_OK('Wrong action == {}. This is a bug, please report it.'.format(action))
+        kodi.dialog_OK('Wrong action == {}. This is a bug, please report it.'.format(action))
 
 # Former arguments: scraper, platform, game_name
 def command_view_AOS_rom(cfg, catID, launID, romID):
@@ -7640,7 +7642,7 @@ def aux_fix_Favourite_rom_object(self, rom):
         rom.pop('minimize')
 
 def _command_exec_utils_check_launchers(self):
-    log_info('_command_exec_utils_check_launchers() Checking all Launchers configuration ...')
+    log.info('_command_exec_utils_check_launchers() Checking all Launchers configuration ...')
 
     main_slist = []
     main_slist.append('Number of launchers: {}\n'.format(len(self.launchers)))
@@ -7722,7 +7724,7 @@ def _command_exec_utils_check_launchers(self):
         main_slist.append('')
 
     # Stats report
-    log_info('Writing report file "{}"'.format(g_PATHS.LAUNCHER_REPORT_FILE_PATH.getPath()))
+    log.info('Writing report file "{}"'.format(g_PATHS.LAUNCHER_REPORT_FILE_PATH.getPath()))
     utils_write_slist_to_file(g_PATHS.LAUNCHER_REPORT_FILE_PATH.getPath(), main_slist)
     full_string = '\n'.join(main_slist)
     kodi_display_text_window_mono('Launchers report', full_string)
@@ -7854,7 +7856,7 @@ def _command_exec_utils_check_launcher_sync_status(self):
     pdialog.endProgress()
 
     # Generate, save and display report.
-    log_info('Writing report file "{}"'.format(g_PATHS.ROM_SYNC_REPORT_FILE_PATH.getPath()))
+    log.info('Writing report file "{}"'.format(g_PATHS.ROM_SYNC_REPORT_FILE_PATH.getPath()))
     pdialog.startProgress('Saving report')
     main_slist.append('*** Summary ***')
     main_slist.append('There are {} ROM launchers.'.format(len(self.launchers)))
@@ -7869,7 +7871,7 @@ def _command_exec_utils_check_launcher_sync_status(self):
     kodi_display_text_window_mono('ROM sync status report', full_string)
 
 def _command_exec_utils_check_artwork_integrity(self):
-    kodi_dialog_OK('EXECUTE_UTILS_CHECK_ARTWORK_INTEGRITY not implemented yet.')
+    kodi.dialog_OK('EXECUTE_UTILS_CHECK_ARTWORK_INTEGRITY not implemented yet.')
 
 def _command_exec_utils_check_ROM_artwork_integrity(self):
     log.debug('_command_exec_utils_check_ROM_artwork_integrity() Beginning...')
@@ -7996,7 +7998,7 @@ def _command_exec_utils_check_ROM_artwork_integrity(self):
     pdialog.endProgress()
 
     # Generate, save and display report.
-    log_info('Writing report file "{}"'.format(g_PATHS.ROM_ART_INTEGRITY_REPORT_FILE_PATH.getPath()))
+    log.info('Writing report file "{}"'.format(g_PATHS.ROM_ART_INTEGRITY_REPORT_FILE_PATH.getPath()))
     pdialog.startProgress('Saving report')
     main_slist.append('*** Summary ***')
     main_slist.append('There are {:,} ROM launchers.'.format(len(self.launchers)))
@@ -8015,13 +8017,13 @@ def _command_exec_utils_check_ROM_artwork_integrity(self):
     kodi_display_text_window_mono('ROM artwork integrity report', full_string)
 
 def _command_exec_utils_delete_redundant_artwork(self):
-    kodi_dialog_OK('EXECUTE_UTILS_DELETE_REDUNDANT_ARTWORK not implemented yet.')
+    kodi.dialog_OK('EXECUTE_UTILS_DELETE_REDUNDANT_ARTWORK not implemented yet.')
 
 def _command_exec_utils_delete_ROM_redundant_artwork(self):
-    kodi_dialog_OK('EXECUTE_UTILS_DELETE_ROM_REDUNDANT_ARTWORK not implemented yet.')
+    kodi.dialog_OK('EXECUTE_UTILS_DELETE_ROM_REDUNDANT_ARTWORK not implemented yet.')
     return
 
-    log_info('_command_exec_utils_delete_ROM_redundant_artwork() Beginning...')
+    log.info('_command_exec_utils_delete_ROM_redundant_artwork() Beginning...')
     main_slist = []
     detailed_slist = []
     pdialog = KodiProgressDialog()
@@ -8080,7 +8082,7 @@ def _command_exec_utils_delete_ROM_redundant_artwork(self):
     pdialog.endProgress()
 
     # Generate, save and display report.
-    log_info('Writing report file "{}"'.format(g_PATHS.ROM_SYNC_REPORT_FILE_PATH.getPath()))
+    log.info('Writing report file "{}"'.format(g_PATHS.ROM_SYNC_REPORT_FILE_PATH.getPath()))
     pdialog.startProgress('Saving report')
     main_slist.append('*** Summary ***')
     main_slist.append('There are {} ROM launchers.'.format(len(self.launchers)))
@@ -8104,11 +8106,11 @@ def _command_exec_utils_show_DATs(self):
     # --- Get files in No-Intro and Redump DAT directories ---
     NOINTRO_PATH_FN = utils.FileName(self.settings['audit_nointro_dir'])
     if not NOINTRO_PATH_FN.exists():
-        kodi_dialog_OK('No-Intro DAT directory not found. Please set it up in AEL addon settings.')
+        kodi.dialog_OK('No-Intro DAT directory not found. Please set it up in AEL addon settings.')
         return
     REDUMP_PATH_FN = utils.FileName(self.settings['audit_redump_dir'])
     if not REDUMP_PATH_FN.exists():
-        kodi_dialog_OK('No-Intro DAT directory not found. Please set it up in AEL addon settings.')
+        kodi.dialog_OK('No-Intro DAT directory not found. Please set it up in AEL addon settings.')
         return
 
     # --- Table header ---
@@ -8223,7 +8225,7 @@ def _command_exec_utils_check_retro_BIOS(self):
     # If Retroarch System dir not configured or found abort.
     sys_dir_FN = utils.FileName(self.settings['io_retroarch_sys_dir'])
     if not sys_dir_FN.exists():
-        kodi_dialog_OK('Retroarch System directory not found. Please configure it.')
+        kodi.dialog_OK('Retroarch System directory not found. Please configure it.')
         return
 
     # Algorithm:
@@ -8248,7 +8250,7 @@ def _command_exec_utils_check_retro_BIOS(self):
         log.debug('Testing BIOS "{}"'.format(BIOS_file_FN.getPath()))
 
         if not BIOS_file_FN.exists():
-            log_info('Not found "{}"'.format(BIOS_file_FN.getPath()))
+            log.info('Not found "{}"'.format(BIOS_file_FN.getPath()))
             BIOS_status_dic[BIOS_dic['filename']] = 'Not found'
             BIOS_status_dic_colour[BIOS_dic['filename']] = '[COLOR orange]Not found[/COLOR]'
             continue
@@ -8256,8 +8258,8 @@ def _command_exec_utils_check_retro_BIOS(self):
         BIOS_stat = BIOS_file_FN.stat()
         file_size = BIOS_stat.st_size
         if file_size != BIOS_dic['size']:
-            log_info('Wrong size "{}"'.format(BIOS_file_FN.getPath()))
-            log_info('It is {} and must be {}'.format(file_size, BIOS_dic['size']))
+            log.info('Wrong size "{}"'.format(BIOS_file_FN.getPath()))
+            log.info('It is {} and must be {}'.format(file_size, BIOS_dic['size']))
             BIOS_status_dic[BIOS_dic['filename']] = 'Wrong size'
             BIOS_status_dic_colour[BIOS_dic['filename']] = '[COLOR orange]Wrong size[/COLOR]'
             continue
@@ -8269,13 +8271,13 @@ def _command_exec_utils_check_retro_BIOS(self):
         file_MD5 = hash_md5.hexdigest()
         log.debug('MD5 is "{}"'.format(file_MD5))
         if file_MD5 != BIOS_dic['md5']:
-            log_info('Wrong MD5 "{}"'.format(BIOS_file_FN.getPath()))
-            log_info('It is       "{}"'.format(file_MD5))
-            log_info('and must be "{}"'.format(BIOS_dic['md5']))
+            log.info('Wrong MD5 "{}"'.format(BIOS_file_FN.getPath()))
+            log.info('It is       "{}"'.format(file_MD5))
+            log.info('and must be "{}"'.format(BIOS_dic['md5']))
             BIOS_status_dic[BIOS_dic['filename']] = 'Wrong MD5'
             BIOS_status_dic_colour[BIOS_dic['filename']] = '[COLOR orange]Wrong MD5[/COLOR]'
             continue
-        log_info('BIOS OK "{}"'.format(BIOS_file_FN.getPath()))
+        log.info('BIOS OK "{}"'.format(BIOS_file_FN.getPath()))
         BIOS_status_dic[BIOS_dic['filename']] = 'OK'
         BIOS_status_dic_colour[BIOS_dic['filename']] = '[COLOR lime]OK[/COLOR]'
     pDialog.endProgress()
@@ -8340,7 +8342,7 @@ def _command_exec_utils_check_retro_BIOS(self):
                     slist.append(line_str)
 
     # Stats report
-    log_info('Writing report file "{}"'.format(g_PATHS.BIOS_REPORT_FILE_PATH.getPath()))
+    log.info('Writing report file "{}"'.format(g_PATHS.BIOS_REPORT_FILE_PATH.getPath()))
     utils_write_slist_to_file(g_PATHS.BIOS_REPORT_FILE_PATH.getPath(), slist)
     full_string = '\n'.join(slist)
     kodi_display_text_window_mono('Retroarch BIOS report', full_string)
@@ -8476,7 +8478,7 @@ def _command_exec_utils_ArcadeDB_check(self):
     pdialog.endProgress()
     if kodi_display_status_message(st_dic): return
     if len(candidates) != 1:
-        kodi_dialog_OK('There is a problem with ArcadeDB scraper.')
+        kodi.dialog_OK('There is a problem with ArcadeDB scraper.')
         return
     json_response_dic = ArcadeDB.debug_get_QUERY_MAME_dic(candidates[0])
 
@@ -8614,12 +8616,12 @@ def _command_exec_global_audit_stats(self, report_type):
 def _command_run_standalone_launcher(self, categoryID, launcherID):
     # --- Check launcher is OK ---
     if launcherID not in self.launchers:
-        kodi_dialog_OK('launcherID not found in self.launchers')
+        kodi.dialog_OK('launcherID not found in self.launchers')
         return
     launcher = self.launchers[launcherID]
     minimize_flag = launcher['toggle_window']
-    log_info('_run_standalone_launcher() categoryID {}'.format(categoryID))
-    log_info('_run_standalone_launcher() launcherID {}'.format(launcherID))
+    log.info('_run_standalone_launcher() categoryID {}'.format(categoryID))
+    log.info('_run_standalone_launcher() launcherID {}'.format(launcherID))
 
     # --- Execute Kodi built-in function under certain conditions ---
     # Application is "xbmc", "xbmc.exe" or starts with "xbmc-fav-" or "xbmc-sea-".
@@ -8632,13 +8634,13 @@ def _command_run_standalone_launcher(self, categoryID, launcherID):
     if app_cleaned == 'xbmc' or app_cleaned == 'kodi' or \
         'xbmc-fav-' in app_cleaned or 'xbmc-sea-' in app_cleaned or \
         'kodi-fav-' in app_cleaned or 'kodi-sea-' in app_cleaned:
-        log_info('_run_standalone_launcher() Executing Kodi builtin function')
-        log_info('_run_standalone_launcher() application "{}"'.format(application_str))
-        log_info('_run_standalone_launcher() app_cleaned "{}"'.format(app_cleaned))
-        log_info('_run_standalone_launcher() arguments   "{}"'.format(arguments_str))
+        log.info('_run_standalone_launcher() Executing Kodi builtin function')
+        log.info('_run_standalone_launcher() application "{}"'.format(application_str))
+        log.info('_run_standalone_launcher() app_cleaned "{}"'.format(app_cleaned))
+        log.info('_run_standalone_launcher() arguments   "{}"'.format(arguments_str))
         if self.settings['display_launcher_notify']: kodi_notify('Launching Kodi builtin')
         xbmc.executebuiltin('{}'.format(arguments_str))
-        log_info('_run_standalone_launcher() Exiting function.')
+        log.info('_run_standalone_launcher() Exiting function.')
         return
 
     # ----- External application -----
@@ -8646,21 +8648,21 @@ def _command_run_standalone_launcher(self, categoryID, launcherID):
     app_basename = application.getBase()
     app_ext = application.getExt()
     launcher_title = launcher['m_name']
-    log_info('_run_standalone_launcher() application   "{}"'.format(application.getPath()))
-    log_info('_run_standalone_launcher() apppath       "{}"'.format(application.getDir()))
-    log_info('_run_standalone_launcher() app_basename  "{}"'.format(app_basename))
-    log_info('_run_standalone_launcher() app_ext       "{}"'.format(app_ext))
-    log_info('_run_standalone_launcher() launcher name "{}"'.format(launcher_title))
+    log.info('_run_standalone_launcher() application   "{}"'.format(application.getPath()))
+    log.info('_run_standalone_launcher() apppath       "{}"'.format(application.getDir()))
+    log.info('_run_standalone_launcher() app_basename  "{}"'.format(app_basename))
+    log.info('_run_standalone_launcher() app_ext       "{}"'.format(app_ext))
+    log.info('_run_standalone_launcher() launcher name "{}"'.format(launcher_title))
 
     # --- Argument substitution ---
     arguments = launcher['args']
-    log_info('_run_standalone_launcher() raw arguments   "{}"'.format(arguments))
+    log.info('_run_standalone_launcher() raw arguments   "{}"'.format(arguments))
     arguments = arguments.replace('$apppath$' , application.getDir())
-    log_info('_run_standalone_launcher() final arguments "{}"'.format(arguments))
+    log.info('_run_standalone_launcher() final arguments "{}"'.format(arguments))
 
     # --- Check for errors and abort if errors found ---
     if not application.exists():
-        log_error('Launching app not found "{}"'.format(application.getPath()))
+        log.error('Launching app not found "{}"'.format(application.getPath()))
         kodi_notify_warn('App {} not found.'.format(application.getOriginalPath()))
         return
 
@@ -8675,7 +8677,7 @@ def _command_run_standalone_launcher(self, categoryID, launcherID):
 def _command_run_rom(self, categoryID, launcherID, romID):
     # --- ROM in Favourites ---
     if categoryID == VCATEGORY_FAVOURITES_ID and launcherID == VLAUNCHER_FAVOURITES_ID:
-        log_info('_command_run_rom() Launching ROM in Favourites...')
+        log.info('_command_run_rom() Launching ROM in Favourites...')
         roms = fs_load_Favourites_JSON(g_PATHS.FAV_JSON_FILE_PATH)
         rom = roms[romID]
         recent_rom = rom
@@ -8687,11 +8689,11 @@ def _command_run_rom(self, categoryID, launcherID, romID):
         args_extra        = rom['args_extra'] if 'args_extra' in rom else list()
     # --- ROM in Recently played ROMs list ---
     elif categoryID == VCATEGORY_MOST_PLAYED_ID and launcherID == VLAUNCHER_MOST_PLAYED_ID:
-        log_info('_command_run_rom() Launching ROM in Recently Played ROMs ...')
+        log.info('_command_run_rom() Launching ROM in Recently Played ROMs ...')
         recent_roms_list = fs_load_Collection_ROMs_JSON(g_PATHS.RECENT_PLAYED_FILE_PATH)
         current_ROM_position = fs_collection_ROM_index_by_romID(romID, recent_roms_list)
         if current_ROM_position < 0:
-            kodi_dialog_OK('Collection ROM not found in list. This is a bug!')
+            kodi.dialog_OK('Collection ROM not found in list. This is a bug!')
             return
         rom = recent_roms_list[current_ROM_position]
         recent_rom = rom
@@ -8703,7 +8705,7 @@ def _command_run_rom(self, categoryID, launcherID, romID):
         args_extra        = rom['args_extra'] if 'args_extra' in rom else list()
     # --- ROM in Most played ROMs ---
     elif categoryID == VCATEGORY_RECENT_ID and launcherID == VLAUNCHER_RECENT_ID:
-        log_info('_command_run_rom() Launching ROM in Most played ROMs ...')
+        log.info('_command_run_rom() Launching ROM in Most played ROMs ...')
         most_played_roms = fs_load_Favourites_JSON(g_PATHS.MOST_PLAYED_FILE_PATH)
         rom = most_played_roms[romID]
         recent_rom = rom
@@ -8715,14 +8717,14 @@ def _command_run_rom(self, categoryID, launcherID, romID):
         args_extra        = rom['args_extra'] if 'args_extra' in rom else list()
     # --- ROM in Collection ---
     elif categoryID == VCATEGORY_COLLECTIONS_ID:
-        log_info('_command_run_rom() Launching ROM in Collection ...')
+        log.info('_command_run_rom() Launching ROM in Collection ...')
         COL = fs_load_Collection_index_XML(g_PATHS.COLLECTIONS_FILE_PATH)
         collection = COL['collections'][launcherID]
         roms_json_file = g_PATHS.COLLECTIONS_DIR.pjoin(collection['roms_base_noext'] + '.json')
         collection_rom_list = fs_load_Collection_ROMs_JSON(roms_json_file)
         current_ROM_position = fs_collection_ROM_index_by_romID(romID, collection_rom_list)
         if current_ROM_position < 0:
-            kodi_dialog_OK('Collection ROM not found in list. This is a bug!')
+            kodi.dialog_OK('Collection ROM not found in list. This is a bug!')
             return
         rom = collection_rom_list[current_ROM_position]
         recent_rom = rom
@@ -8737,19 +8739,19 @@ def _command_run_rom(self, categoryID, launcherID, romID):
          categoryID == VCATEGORY_GENRE_ID or categoryID == VCATEGORY_DEVELOPER_ID or \
          categoryID == VCATEGORY_CATEGORY_ID:
         if categoryID == VCATEGORY_TITLE_ID:
-            log_info('_command_run_rom() Launching ROM in Virtual Launcher ...')
+            log.info('_command_run_rom() Launching ROM in Virtual Launcher ...')
             roms = fs_load_VCategory_ROMs_JSON(g_PATHS.VIRTUAL_CAT_TITLE_DIR, launcherID)
         elif categoryID == VCATEGORY_YEARS_ID:
-            log_info('_command_run_rom() Launching ROM in Year Virtual Launcher ...')
+            log.info('_command_run_rom() Launching ROM in Year Virtual Launcher ...')
             roms = fs_load_VCategory_ROMs_JSON(g_PATHS.VIRTUAL_CAT_YEARS_DIR, launcherID)
         elif categoryID == VCATEGORY_GENRE_ID:
-            log_info('_command_run_rom() Launching ROM in Gender Virtual Launcher ...')
+            log.info('_command_run_rom() Launching ROM in Gender Virtual Launcher ...')
             roms = fs_load_VCategory_ROMs_JSON(g_PATHS.VIRTUAL_CAT_GENRE_DIR, launcherID)
         elif categoryID == VCATEGORY_DEVELOPER_ID:
-            log_info('_command_run_rom() Launching ROM in Developer Virtual Launcher ...')
+            log.info('_command_run_rom() Launching ROM in Developer Virtual Launcher ...')
             roms = fs_load_VCategory_ROMs_JSON(g_PATHS.VIRTUAL_CAT_DEVELOPER_DIR, launcherID)
         elif categoryID == VCATEGORY_CATEGORY_ID:
-            log_info('_command_run_rom() Launching ROM in Category Virtual Launcher ...')
+            log.info('_command_run_rom() Launching ROM in Category Virtual Launcher ...')
             roms = fs_load_VCategory_ROMs_JSON(g_PATHS.VIRTUAL_CAT_CATEGORY_DIR, launcherID)
 
         rom = roms[romID]
@@ -8762,16 +8764,16 @@ def _command_run_rom(self, categoryID, launcherID, romID):
         args_extra        = rom['args_extra'] if 'args_extra' in rom else list()
     # --- ROM in standard ROM launcher ---
     else:
-        log_info('_command_run_rom() Launching ROM in Launcher ...')
+        log.info('_command_run_rom() Launching ROM in Launcher ...')
         # --- Check launcher is OK and load ROMs ---
         if launcherID not in self.launchers:
-            kodi_dialog_OK('launcherID not found in self.launchers')
+            kodi.dialog_OK('launcherID not found in self.launchers')
             return
         launcher = self.launchers[launcherID]
         roms = fs_load_ROMs_JSON(g_PATHS.ROMS_DIR, launcher)
         # --- Check ROM is in XML data just read ---
         if romID not in roms:
-            kodi_dialog_OK('romID not in roms dictionary')
+            kodi.dialog_OK('romID not in roms dictionary')
             return
         rom = roms[romID]
         recent_rom = fs_get_Favourite_from_ROM(rom, launcher)
@@ -8787,38 +8789,38 @@ def _command_run_rom(self, categoryID, launcherID, romID):
     # If Launcher has args_extra configured then show a dialog to the user to selec the
     # arguments to launch ROM.
     if rom['altapp'] or rom['altarg']:
-        log_info('_command_run_rom() Using ROM altapp/altarg')
+        log.info('_command_run_rom() Using ROM altapp/altarg')
         application = rom['altapp'] if rom['altapp'] else standard_app
         arguments   = rom['altarg'] if rom['altarg'] else standard_args
     elif args_extra:
         # Ask user what arguments to launch application
-        log_info('_command_run_rom() Using Launcher args_extra')
+        log.info('_command_run_rom() Using Launcher args_extra')
         arg_list = [standard_args] + args_extra
         dselect_ret = KodiSelectDialog('Select launcher arguments', arg_list).executeDialog()
         if dselect_ret is None: return
-        log_info('_command_run_rom() User chose args index {} ({})'.format(dselect_ret, arg_list[dselect_ret]))
+        log.info('_command_run_rom() User chose args index {} ({})'.format(dselect_ret, arg_list[dselect_ret]))
         application = standard_app
         arguments   = arg_list[dselect_ret]
     else:
-        log_info('_command_run_rom() Using Launcher standard arguments')
+        log.info('_command_run_rom() Using Launcher standard arguments')
         application = standard_app
         arguments   = standard_args
 
     # ~~~ Choose file to launch in multidisc ROM sets ~~~
     if rom['disks']:
-        log_info('_command_run_rom() Multidisc ROM set detected')
+        log.info('_command_run_rom() Multidisc ROM set detected')
         dselect_ret = KodiSelectDialog('Select ROM to launch in multidisc set', rom['disks']).executeDialog()
         if dselect_ret is None: return
         selected_rom_base = rom['disks'][dselect_ret]
-        log_info('_command_run_rom() Selected ROM "{}"'.format(selected_rom_base))
+        log.info('_command_run_rom() Selected ROM "{}"'.format(selected_rom_base))
         ROM_temp = utils.FileName(rom['filename'])
         ROM_dir = utils.FileName(ROM_temp.getDir())
         ROMFileName = ROM_dir.pjoin(selected_rom_base)
     else:
-        log_info('_command_run_rom() Sigle ROM detected (no multidisc)')
+        log.info('_command_run_rom() Sigle ROM detected (no multidisc)')
         ROMFileName = utils.FileName(rom['filename'])
-    log_info('_command_run_rom() ROMFileName OP "{}"'.format(ROMFileName.getOriginalPath()))
-    log_info('_command_run_rom() ROMFileName  P "{}"'.format(ROMFileName.getPath()))
+    log.info('_command_run_rom() ROMFileName OP "{}"'.format(ROMFileName.getOriginalPath()))
+    log.info('_command_run_rom() ROMFileName  P "{}"'.format(ROMFileName.getPath()))
 
     # ~~~~~ Launch ROM ~~~~~
     application = utils.FileName(application)
@@ -8827,43 +8829,43 @@ def _command_run_rom(self, categoryID, launcherID, romID):
     rombase = ROMFileName.getBase()
     rombase_noext = ROMFileName.getBaseNoExt()
     romtitle = rom['m_name']
-    log_info('_command_run_rom() categoryID   {}'.format(categoryID))
-    log_info('_command_run_rom() launcherID   {}'.format(launcherID))
-    log_info('_command_run_rom() romID        {}'.format(romID))
-    log_info('_command_run_rom() romfile      "{}"'.format(ROMFileName.getPath()))
-    log_info('_command_run_rom() rompath      "{}"'.format(rompath))
-    log_info('_command_run_rom() rombase      "{}"'.format(rombase))
-    log_info('_command_run_rom() rombasenoext "{}"'.format(rombase_noext))
-    log_info('_command_run_rom() romtitle     "{}"'.format(romtitle))
-    log_info('_command_run_rom() application  "{}"'.format(application.getPath()))
-    log_info('_command_run_rom() apppath      "{}"'.format(apppath))
-    log_info('_command_run_rom() romext       "{}"'.format(romext))
+    log.info('_command_run_rom() categoryID   {}'.format(categoryID))
+    log.info('_command_run_rom() launcherID   {}'.format(launcherID))
+    log.info('_command_run_rom() romID        {}'.format(romID))
+    log.info('_command_run_rom() romfile      "{}"'.format(ROMFileName.getPath()))
+    log.info('_command_run_rom() rompath      "{}"'.format(rompath))
+    log.info('_command_run_rom() rombase      "{}"'.format(rombase))
+    log.info('_command_run_rom() rombasenoext "{}"'.format(rombase_noext))
+    log.info('_command_run_rom() romtitle     "{}"'.format(romtitle))
+    log.info('_command_run_rom() application  "{}"'.format(application.getPath()))
+    log.info('_command_run_rom() apppath      "{}"'.format(apppath))
+    log.info('_command_run_rom() romext       "{}"'.format(romext))
 
     # --- Check for errors and abort if found --- todo: CHECK
     if not application.exists() and (
         application.getOriginalPath() != RETROPLAYER_LAUNCHER_APP_NAME and
         application.getOriginalPath() != LNK_LAUNCHER_APP_NAME ):
-        log_error('Launching app not found "{}"'.format(application.getPath()))
+        log.error('Launching app not found "{}"'.format(application.getPath()))
         kodi_notify_warn('Launching app not found {}'.format(application.getOriginalPath()))
         return
     else:
-        log_info('Launching app found "{}"'.format(application.getPath()))
+        log.info('Launching app found "{}"'.format(application.getPath()))
 
     if not ROMFileName.exists():
-        log_error('ROM not found "{}"'.format(ROMFileName.getPath()))
+        log.error('ROM not found "{}"'.format(ROMFileName.getPath()))
         kodi_notify_warn('ROM not found "{}"'.format(ROMFileName.getOriginalPath()))
         return
     else:
-        log_info('ROM found "{}"'.format(ROMFileName.getPath()))
+        log.info('ROM found "{}"'.format(ROMFileName.getPath()))
 
     # --- Escape quotes and double quotes in ROMFileName ---
     # This maybe useful to Android users with complex command line arguments
     if self.settings['escape_romfile']:
-        log_info("_command_run_rom() Escaping ROMFileName ' and \"")
+        log.info("_command_run_rom() Escaping ROMFileName ' and \"")
         ROMFileName.escapeQuotes()
 
     # ~~~~ Argument substitution ~~~~~
-    log_info('_command_run_rom() raw arguments   "{}"'.format(arguments))
+    log.info('_command_run_rom() raw arguments   "{}"'.format(arguments))
     arguments = arguments.replace('$categoryID$', categoryID)
     arguments = arguments.replace('$launcherID$', launcherID)
     arguments = arguments.replace('$romID$', romID)
@@ -8877,7 +8879,7 @@ def _command_run_rom(self, categoryID, launcherID, romID):
     # >> Legacy names for argument substitution
     arguments = arguments.replace('%rom%', ROMFileName.getPath())
     arguments = arguments.replace('%ROM%', ROMFileName.getPath())
-    log_info('_command_run_rom() final arguments "{}"'.format(arguments))
+    log.info('_command_run_rom() final arguments "{}"'.format(arguments))
 
     # --- Compute ROM recently played list ---
     MAX_RECENT_PLAYED_ROMS = 100
@@ -8906,7 +8908,7 @@ def _command_run_rom(self, categoryID, launcherID, romID):
     # See https://github.com/Wintermute0110/plugin.program.advanced.emulator.launcher/issues/33
     # See https://forum.kodi.tv/showthread.php?tid=295463&pid=2620489#pid2620489
     if application.getOriginalPath() == RETROPLAYER_LAUNCHER_APP_NAME:
-        log_info('_command_run_rom() Executing ROM with Kodi Retroplayer ...')
+        log.info('_command_run_rom() Executing ROM with Kodi Retroplayer ...')
         # Create listitem object
         label_str = ROMFileName.getBase()
         listitem = xbmcgui.ListItem(label = label_str, label2 = label_str)
@@ -8918,9 +8920,9 @@ def _command_run_rom(self, categoryID, launcherID, romID):
             'genres'   : genre_list,    'developer' : rom['m_developer'],
             'overview' : rom['m_plot'], 'year'      : rom['m_year'],
         })
-        log_info('_command_run_rom() application.getOriginalPath() "{}"'.format(application.getOriginalPath()))
-        log_info('_command_run_rom() ROMFileName.getPath()         "{}"'.format(ROMFileName.getPath()))
-        log_info('_command_run_rom() label_str                     "{}"'.format(label_str))
+        log.info('_command_run_rom() application.getOriginalPath() "{}"'.format(application.getOriginalPath()))
+        log.info('_command_run_rom() ROMFileName.getPath()         "{}"'.format(ROMFileName.getPath()))
+        log.info('_command_run_rom() label_str                     "{}"'.format(label_str))
 
         # User notification.
         if self.settings['display_launcher_notify']:
@@ -8931,7 +8933,7 @@ def _command_run_rom(self, categoryID, launcherID, romID):
         xbmc.Player().play(ROMFileName.getPath(), listitem)
         log.debug('_command_run_rom() Calling xbmc.Player().play() returned. Leaving function.')
     else:
-        log_info('_command_run_rom() Launcher is not Kodi Retroplayer.')
+        log.info('_command_run_rom() Launcher is not Kodi Retroplayer.')
         self._run_before_execution(romtitle, minimize_flag)
         self._run_process(application.getPath(), arguments, apppath, romext, non_blocking_flag)
         self._run_after_execution(minimize_flag)
@@ -8984,7 +8986,7 @@ def _run_process(self, application, arguments, apppath, romext, non_blocking_fla
                 raise TypeError('Undefined Python runtime version.')
             log.debug('_run_process() (Windows) Launching LNK application')
             retcode = subprocess.call(c, shell = True)
-            log_info('_run_process() (Windows) LNK app retcode = {}'.format(retcode))
+            log.info('_run_process() (Windows) LNK app retcode = {}'.format(retcode))
 
         # ROM launcher where ROMs are LNK files
         elif romext == 'lnk' or romext == 'LNK':
@@ -8998,7 +9000,7 @@ def _run_process(self, application, arguments, apppath, romext, non_blocking_fla
                 raise TypeError('Undefined Python runtime version.')
             log.debug('_run_process() (Windows) Launching LNK ROM')
             retcode = subprocess.call(c, shell = True)
-            log_info('_run_process() (Windows) LNK ROM retcode = {}'.format(retcode))
+            log.info('_run_process() (Windows) LNK ROM retcode = {}'.format(retcode))
 
         # CMD/BAT applications in Windows.
         elif app_ext == 'bat' or app_ext == 'BAT' or app_ext == 'cmd' or app_ext == 'CMD':
@@ -9026,7 +9028,7 @@ def _run_process(self, application, arguments, apppath, romext, non_blocking_fla
             else:
                 raise TypeError('Undefined Python runtime version.')
             retcode = subprocess.call(exec_list, cwd = apppath_t, close_fds = True, startupinfo = info)
-            log_info('_run_process() (Windows) Process BAT/CMD retcode = {}'.format(retcode))
+            log.info('_run_process() (Windows) Process BAT/CMD retcode = {}'.format(retcode))
 
         # Normal Windows application.
         else:
@@ -9072,7 +9074,7 @@ def _run_process(self, application, arguments, apppath, romext, non_blocking_fla
                         stdout = f, stderr = subprocess.STDOUT)
             else:
                 raise Exception('Logical error')
-            log_info('_run_process() (Windows) Process retcode = {}'.format(retcode))
+            log.info('_run_process() (Windows) Process retcode = {}'.format(retcode))
 
     elif is_android():
         if ADDON_RUNNING_PYTHON_2:
@@ -9082,7 +9084,7 @@ def _run_process(self, application, arguments, apppath, romext, non_blocking_fla
         else:
             raise TypeError('Undefined Python runtime version.')
         retcode = os.system(c)
-        log_info('_run_process() Process retcode = {}'.format(retcode))
+        log.info('_run_process() Process retcode = {}'.format(retcode))
 
     # New in 0.9.7: always close all file descriptions except 0, 1 and 2 on the child
     # process. This is to avoid Kodi open sockets be inherited by the child process. A
@@ -9094,20 +9096,20 @@ def _run_process(self, application, arguments, apppath, romext, non_blocking_fla
         # Also, save child process stdout to a file.
         if non_blocking_flag:
             # In a non-blocking launch stdout/stderr of child process cannot be recorded.
-            log_info('_run_process() (Linux) Launching non-blocking process subprocess.Popen()')
+            log.info('_run_process() (Linux) Launching non-blocking process subprocess.Popen()')
             p = subprocess.Popen(exec_list, close_fds = True)
         else:
             if self.settings['lirc_state']: xbmc.executebuiltin('LIRC.stop')
-            log_info('_run_process() (Linux) Launching blocking process subprocess.call()')
+            log.info('_run_process() (Linux) Launching blocking process subprocess.call()')
             with open(g_PATHS.LAUNCH_LOG_FILE_PATH.getPath(), 'w') as f:
                 retcode = subprocess.call(exec_list, stdout = f, stderr = subprocess.STDOUT, close_fds = True)
-            log_info('_run_process() Process retcode = {}'.format(retcode))
+            log.info('_run_process() Process retcode = {}'.format(retcode))
             if self.settings['lirc_state']: xbmc.executebuiltin('LIRC.start')
 
     elif is_osx():
         with open(g_PATHS.LAUNCH_LOG_FILE_PATH.getPath(), 'w') as f:
             retcode = subprocess.call(exec_list, stdout = f, stderr = subprocess.STDOUT)
-        log_info('_run_process() Process retcode = {}'.format(retcode))
+        log.info('_run_process() Process retcode = {}'.format(retcode))
 
     else:
         kodi_notify_warn('Cannot determine the running platform.')
@@ -9174,7 +9176,7 @@ def _run_before_execution(self, rom_title, toggle_screen_flag):
         # log.debug('Response  ''{}'''.format(response))
         # self.kodi_joystick_suspended = True
 
-        # log_error('_run_before_execution() Suspending Kodi joystick engine not supported on Kodi Krypton!')
+        # log.error('_run_before_execution() Suspending Kodi joystick engine not supported on Kodi Krypton!')
     # else:
         # log.debug('_run_before_execution() DO NOT suspend Kodi joystick engine')
 
@@ -9265,7 +9267,7 @@ def _roms_regenerate_launcher_reports(self, categoryID, launcherID, roms):
     # --- If report doesn't exists create it automatically ---
     log.debug('_command_view_Launcher_Report() Testing report file "{}"'.format(report_stats_FN.getPath()))
     if not report_stats_FN.exists():
-        kodi_dialog_OK('Report file not found. Will be generated now.')
+        kodi.dialog_OK('Report file not found. Will be generated now.')
         self._roms_create_launcher_reports(categoryID, launcherID, roms)
         self.launchers[launcherID]['timestamp_report'] = time.time()
         # DO NOT update the timestamp of categories/launchers or report will always be obsolete!!!
@@ -9274,7 +9276,7 @@ def _roms_regenerate_launcher_reports(self, categoryID, launcherID, roms):
 
     # --- If report timestamp is older than launchers last modification, recreate it ---
     if self.launchers[launcherID]['timestamp_report'] <= self.launchers[launcherID]['timestamp_launcher']:
-        kodi_dialog_OK('Report is outdated. Will be regenerated now.')
+        kodi.dialog_OK('Report is outdated. Will be regenerated now.')
         self._roms_create_launcher_reports(categoryID, launcherID, roms)
         self.launchers[launcherID]['timestamp_report'] = time.time()
         fs_write_catfile(g_PATHS.CATEGORIES_FILE_PATH, self.categories, self.launchers, self.update_timestamp)
@@ -9398,15 +9400,15 @@ def _roms_create_launcher_reports(self, categoryID, launcherID, roms):
         elif rom['nointro_status'] == AUDIT_STATUS_MISS:    audit_miss += 1
         elif rom['nointro_status'] == AUDIT_STATUS_UNKNOWN: audit_unknown += 1
         else:
-            log_error('Unknown audit status {}.'.format(rom['nointro_status']))
-            kodi_dialog_OK('Unknown audit status {}. This is a bug, please report it.'.format(rom['nointro_status']))
+            log.error('Unknown audit status {}.'.format(rom['nointro_status']))
+            kodi.dialog_OK('Unknown audit status {}. This is a bug, please report it.'.format(rom['nointro_status']))
             return
         if   rom['pclone_status'] == PCLONE_STATUS_PARENT: audit_num_parents += 1
         elif rom['pclone_status'] == PCLONE_STATUS_CLONE:  audit_num_clones += 1
         elif rom['pclone_status'] == PCLONE_STATUS_NONE:   pass
         else:
-            log_error('Unknown pclone status {}.'.format(rom['pclone_status']))
-            kodi_dialog_OK('Unknown pclone status {}. This is a bug, please report it.'.format(rom['pclone_status']))
+            log.error('Unknown pclone status {}.'.format(rom['pclone_status']))
+            kodi.dialog_OK('Unknown pclone status {}. This is a bug, please report it.'.format(rom['pclone_status']))
             return
 
         # Add to list
@@ -9576,10 +9578,10 @@ def _roms_create_launcher_reports(self, categoryID, launcherID, roms):
         file.write(full_string)
         file.close()
     except OSError:
-        log_error('Cannot write Launcher Report file (OSError)')
+        log.error('Cannot write Launcher Report file (OSError)')
         kodi_notify_warn('Cannot write Launcher Report (OSError)')
     except IOError:
-        log_error('Cannot write categories.xml file (IOError)')
+        log.error('Cannot write categories.xml file (IOError)')
         kodi_notify_warn('Cannot write Launcher Report (IOError)')
 
 
@@ -9609,12 +9611,12 @@ def _roms_set_NoIntro_DAT(self, launcher):
         # --- Auto search for a DAT file ---
         NOINTRO_PATH_FN = utils.FileName(self.settings['audit_nointro_dir'])
         if not NOINTRO_PATH_FN.exists():
-            kodi_dialog_OK('No-Intro DAT directory not found. '
+            kodi.dialog_OK('No-Intro DAT directory not found. '
                 'Please set it up in AEL addon settings.')
             return None
         REDUMP_PATH_FN = utils.FileName(self.settings['audit_redump_dir'])
         if not REDUMP_PATH_FN.exists():
-            kodi_dialog_OK('No-Intro DAT directory not found. '
+            kodi.dialog_OK('No-Intro DAT directory not found. '
                 'Please set it up in AEL addon settings.')
             return None
         NOINTRO_DAT_list = NOINTRO_PATH_FN.scanFilesInPath('*.dat')
@@ -9624,7 +9626,7 @@ def _roms_set_NoIntro_DAT(self, launcher):
             p_index = platform_long_to_index_dic[launcher['platform']]
             platform = AEL_platforms[p_index]
         else:
-            kodi_dialog_OK(
+            kodi.dialog_OK(
                 'Unknown platform "{}". '.format(launcher['platform']) +
                 'ROM Audit cancelled.')
             return None
@@ -9636,7 +9638,7 @@ def _roms_set_NoIntro_DAT(self, launcher):
                 launcher['audit_auto_dat_file'] = fname
                 nointro_xml_FN = utils.FileName(fname)
             else:
-                kodi_dialog_OK('No-Intro DAT cannot be auto detected.')
+                kodi.dialog_OK('No-Intro DAT cannot be auto detected.')
                 return None
         elif platform.DAT == DAT_REDUMP:
             log.debug('Autolocating Redump DAT')
@@ -9645,10 +9647,10 @@ def _roms_set_NoIntro_DAT(self, launcher):
                 launcher['audit_auto_dat_file'] = fname
                 nointro_xml_FN = utils.FileName(fname)
             else:
-                kodi_dialog_OK('Redump DAT cannot be auto detected.')
+                kodi.dialog_OK('Redump DAT cannot be auto detected.')
                 return None
         else:
-            log_warning('platform.DAT {} unknown'.format(platform.DAT))
+            log.warning('platform.DAT {} unknown'.format(platform.DAT))
             return None
 
     return nointro_xml_FN
@@ -9657,9 +9659,9 @@ def _roms_set_NoIntro_DAT(self, launcher):
 def _roms_delete_missing_ROMs(self, roms):
     num_removed_roms = 0
     num_roms = len(roms)
-    log_info('_roms_delete_missing_ROMs() Launcher has {} ROMs'.format(num_roms))
+    log.info('_roms_delete_missing_ROMs() Launcher has {} ROMs'.format(num_roms))
     if num_roms == 0:
-        log_info('_roms_delete_missing_ROMs() Launcher is empty. No dead ROM check.')
+        log.info('_roms_delete_missing_ROMs() Launcher is empty. No dead ROM check.')
         return num_removed_roms
     log.debug('_roms_delete_missing_ROMs() Starting dead items scan')
     for rom_id in sorted(roms, key = lambda x : roms[x]['m_name']):
@@ -9674,10 +9676,10 @@ def _roms_delete_missing_ROMs(self, roms):
             del roms[rom_id]
             num_removed_roms += 1
     if num_removed_roms > 0:
-        log_info('_roms_delete_missing_ROMs() {} dead ROMs removed successfully'.format(
+        log.info('_roms_delete_missing_ROMs() {} dead ROMs removed successfully'.format(
             num_removed_roms))
     else:
-        log_info('_roms_delete_missing_ROMs() No dead ROMs found.')
+        log.info('_roms_delete_missing_ROMs() No dead ROMs found.')
 
     return num_removed_roms
 
@@ -9686,20 +9688,20 @@ def _roms_delete_missing_ROMs(self, roms):
 # 2) Set status of remaining ROMs to nointro_status = AUDIT_STATUS_NONE
 # Both launcher and roms dictionaries edited by reference.
 def _roms_reset_NoIntro_status(self, launcher, roms):
-    log_info('_roms_reset_NoIntro_status() Launcher has {} ROMs'.format(len(roms)))
+    log.info('_roms_reset_NoIntro_status() Launcher has {} ROMs'.format(len(roms)))
     if len(roms) < 1: return
 
     # Step 1) Delete missing/dead ROMs
     num_removed_roms = self._roms_delete_missing_ROMs(roms)
-    log_info('_roms_reset_NoIntro_status() Removed {} dead/missing ROMs'.format(num_removed_roms))
+    log.info('_roms_reset_NoIntro_status() Removed {} dead/missing ROMs'.format(num_removed_roms))
 
     # Step 2) Set Audit status to AUDIT_STATUS_NONE and
     #         set PClone status to PCLONE_STATUS_NONE
-    log_info('_roms_reset_NoIntro_status() Resetting No-Intro status of all ROMs to None')
+    log.info('_roms_reset_NoIntro_status() Resetting No-Intro status of all ROMs to None')
     for rom_id in sorted(roms, key = lambda x : roms[x]['m_name']):
         roms[rom_id]['nointro_status'] = AUDIT_STATUS_NONE
         roms[rom_id]['pclone_status']  = PCLONE_STATUS_NONE
-    log_info('_roms_reset_NoIntro_status() Now launcher has {} ROMs'.format(len(roms)))
+    log.info('_roms_reset_NoIntro_status() Now launcher has {} ROMs'.format(len(roms)))
 
     # Step 3) Delete PClone index and Parent ROM list.
     roms_base_noext = launcher['roms_base_noext']
@@ -9710,13 +9712,13 @@ def _roms_reset_NoIntro_status(self, launcher, roms):
     PClone_FN  = g_PATHS.ROMS_DIR.pjoin(PClone_roms_base_noext + '.json')
     parents_FN = g_PATHS.ROMS_DIR.pjoin(parents_roms_base_noext + '.json')
     if CParent_FN.exists():
-        log_info('_roms_reset_NoIntro_status() Deleting {}'.format(CParent_FN.getPath()))
+        log.info('_roms_reset_NoIntro_status() Deleting {}'.format(CParent_FN.getPath()))
         CParent_FN.unlink()
     if PClone_FN.exists():
-        log_info('_roms_reset_NoIntro_status() Deleting {}'.format(PClone_FN.getPath()))
+        log.info('_roms_reset_NoIntro_status() Deleting {}'.format(PClone_FN.getPath()))
         PClone_FN.unlink()
     if parents_FN.exists():
-        log_info('_roms_reset_NoIntro_status() Deleting {}'.format(parents_FN.getPath()))
+        log.info('_roms_reset_NoIntro_status() Deleting {}'.format(parents_FN.getPath()))
         parents_FN.unlink()
 
     # Step 4) Update launcher statistics and status.
@@ -9758,19 +9760,19 @@ def _roms_update_NoIntro_status(self, launcher, roms, DAT_FN):
 
     # --- Check if DAT file exists ---
     if not DAT_FN.exists():
-        log_warning('_roms_update_NoIntro_status() Not found {}'.format(DAT_FN.getPath()))
+        log.warning('_roms_update_NoIntro_status() Not found {}'.format(DAT_FN.getPath()))
         return False
     pDialog.startProgress('Loading No-Intro/Redump XML DAT file...')
     roms_nointro = audit_load_NoIntro_XML_file(DAT_FN)
     pDialog.endProgress()
     if __debug_progress_dialogs: time.sleep(0.5)
     if not roms_nointro:
-        log_warning('_roms_update_NoIntro_status() Error loading {}'.format(DAT_FN.getPath()))
+        log.warning('_roms_update_NoIntro_status() Error loading {}'.format(DAT_FN.getPath()))
         return False
 
     # --- Remove BIOSes from No-Intro ROMs ---
     if self.settings['scan_ignore_bios']:
-        log_info('_roms_update_NoIntro_status() Removing BIOSes from No-Intro ROMs ...')
+        log.info('_roms_update_NoIntro_status() Removing BIOSes from No-Intro ROMs ...')
         pDialog.startProgress('Removing BIOSes from No-Intro ROMs...', len(roms_nointro))
         filtered_roms_nointro = {}
         for rom_id in roms_nointro:
@@ -9786,7 +9788,7 @@ def _roms_update_NoIntro_status(self, launcher, roms, DAT_FN):
         pDialog.endProgress()
         roms_nointro = filtered_roms_nointro
     else:
-        log_info('_roms_update_NoIntro_status() User wants to include BIOSes.')
+        log.info('_roms_update_NoIntro_status() User wants to include BIOSes.')
 
     # --- Put No-Intro ROM names in a set ---
     # Set is the fastest Python container for searching elements (implements hashed search).
@@ -9958,14 +9960,14 @@ def _roms_update_NoIntro_status(self, launcher, roms, DAT_FN):
     self.audit_clones  = audit_clones
 
     # --- Report ---
-    log_info('********** No-Intro/Redump audit finished. Report ***********')
-    log_info('Have ROMs    {:6d}'.format(self.audit_have))
-    log_info('Miss ROMs    {:6d}'.format(self.audit_miss))
-    log_info('Unknown ROMs {:6d}'.format(self.audit_unknown))
-    log_info('Extra ROMs   {:6d}'.format(self.audit_extra))
-    log_info('Total ROMs   {:6d}'.format(self.audit_total))
-    log_info('Parent ROMs  {:6d}'.format(self.audit_parents))
-    log_info('Clone ROMs   {:6d}'.format(self.audit_clones))
+    log.info('********** No-Intro/Redump audit finished. Report ***********')
+    log.info('Have ROMs    {:6d}'.format(self.audit_have))
+    log.info('Miss ROMs    {:6d}'.format(self.audit_miss))
+    log.info('Unknown ROMs {:6d}'.format(self.audit_unknown))
+    log.info('Extra ROMs   {:6d}'.format(self.audit_extra))
+    log.info('Total ROMs   {:6d}'.format(self.audit_total))
+    log.info('Parent ROMs  {:6d}'.format(self.audit_parents))
+    log.info('Clone ROMs   {:6d}'.format(self.audit_clones))
 
     return True
 
@@ -9979,19 +9981,19 @@ def rom_scanner(self, launcherID):
     launcher_exts = launcher['romext']
     rom_extra_path = utils.FileName(launcher['romextrapath'])
     launcher_multidisc = launcher['multidisc']
-    log_info('_roms_import_roms() Starting ROM scanner ...')
-    log_info('Launcher name  "{}"'.format(launcher['m_name']))
-    log_info('Launcher ID    "{}"'.format(launcher['id']))
-    log_info('ROM path       "{}"'.format(rom_path.getPath()))
-    log_info('ROM extra path "{}"'.format(rom_extra_path.getPath()))
-    log_info('ROM exts       "{}"'.format(launcher_exts))
-    log_info('Platform       "{}"'.format(launcher['platform']))
-    log_info('Multidisc      {}'.format(launcher_multidisc))
+    log.info('_roms_import_roms() Starting ROM scanner ...')
+    log.info('Launcher name  "{}"'.format(launcher['m_name']))
+    log.info('Launcher ID    "{}"'.format(launcher['id']))
+    log.info('ROM path       "{}"'.format(rom_path.getPath()))
+    log.info('ROM extra path "{}"'.format(rom_extra_path.getPath()))
+    log.info('ROM exts       "{}"'.format(launcher_exts))
+    log.info('Platform       "{}"'.format(launcher['platform']))
+    log.info('Multidisc      {}'.format(launcher_multidisc))
 
     # --- Open ROM scanner report file ---
     launcher_report_FN = g_PATHS.REPORTS_DIR.pjoin(launcher['roms_base_noext'] + '_report.txt')
-    log_info('Report file OP "{}"'.format(launcher_report_FN.getOriginalPath()))
-    log_info('Report file  P "{}"'.format(launcher_report_FN.getPath()))
+    log.info('Report file OP "{}"'.format(launcher_report_FN.getOriginalPath()))
+    log.info('Report file  P "{}"'.format(launcher_report_FN.getPath()))
     report_slist = []
     report_slist.append('*** Starting ROM scanner ***')
     report_slist.append('Launcher name  "{}"'.format(launcher['m_name']))
@@ -10007,7 +10009,7 @@ def rom_scanner(self, launcherID):
     roms = fs_load_ROMs_JSON(g_PATHS.ROMS_DIR, launcher)
     num_roms = len(roms)
     report_slist.append('{} ROMs currently in database'.format(num_roms))
-    log_info('Launcher ROM database contain {} items'.format(num_roms))
+    log.info('Launcher ROM database contain {} items'.format(num_roms))
 
     # --- Progress dialog ---
     pdialog_verbose = True
@@ -10029,26 +10031,26 @@ def rom_scanner(self, launcherID):
     duplicated_name_list = asset_get_duplicated_dir_list(launcher)
     if duplicated_name_list:
         duplicated_asset_srt = ', '.join(duplicated_name_list)
-        log_info('Duplicated asset dirs: {}'.format(duplicated_asset_srt))
-        kodi_dialog_OK('Duplicated asset directories: {}. '.format(duplicated_asset_srt) +
+        log.info('Duplicated asset dirs: {}'.format(duplicated_asset_srt))
+        kodi.dialog_OK('Duplicated asset directories: {}. '.format(duplicated_asset_srt) +
             'Change asset directories before continuing.')
         return
     else:
-        log_info('No duplicated asset dirs found')
+        log.info('No duplicated asset dirs found')
 
     # --- Check asset dirs and disable scanning for unset dirs ---
     log.debug('Checking for unset artwork directories...')
     scraper_strategy.scanner_check_launcher_unset_asset_dirs()
     if scraper_strategy.unconfigured_name_list:
         unconfigured_asset_srt = ', '.join(scraper_strategy.unconfigured_name_list)
-        kodi_dialog_OK('Assets directories not set: {}. '.format(unconfigured_asset_srt) +
+        kodi.dialog_OK('Assets directories not set: {}. '.format(unconfigured_asset_srt) +
             'Asset scanner will be disabled for this/those.')
 
     # --- Create a cache of assets ---
     # utils_file_cache_add_dir() creates a set with all files in a given directory.
     # That set is stored in a function internal cache associated with the path.
     # Files in the cache can be searched with utils_file_cache_search()
-    log_info('Scanning and caching files in asset directories...')
+    log.info('Scanning and caching files in asset directories...')
     pdialog.startProgress('Scanning files in asset directories...', len(ROM_ASSET_ID_LIST))
     for i, asset_kind in enumerate(ROM_ASSET_ID_LIST):
         pdialog.updateProgress(i)
@@ -10057,7 +10059,7 @@ def rom_scanner(self, launcherID):
     pdialog.endProgress()
 
     # --- Remove dead ROM entries ------------------------------------------------------------
-    log_info('Removing dead ROMs...'.format())
+    log.info('Removing dead ROMs...'.format())
     report_slist.append('Removing dead ROMs...')
     num_removed_roms = 0
     if num_roms > 0:
@@ -10075,47 +10077,47 @@ def rom_scanner(self, launcherID):
         pdialog.endProgress()
         if num_removed_roms > 0:
             kodi_notify('{} dead ROMs removed successfully'.format(num_removed_roms))
-            log_info('{} dead ROMs removed successfully'.format(num_removed_roms))
+            log.info('{} dead ROMs removed successfully'.format(num_removed_roms))
         else:
-            log_info('No dead ROMs found')
+            log.info('No dead ROMs found')
     else:
-        log_info('Launcher is empty. No dead ROM check.')
+        log.info('Launcher is empty. No dead ROM check.')
 
     # --- Scan all files in ROM path (mask *.*) and put them in a list -----------------------
     pdialog.startProgress('Scanning and caching files in ROM path ...')
     files = []
-    log_info('Scanning files in {}'.format(rom_path.getPath()))
+    log.info('Scanning files in {}'.format(rom_path.getPath()))
     report_slist.append('Scanning files ...')
     report_slist.append('Directory {}'.format(rom_path.getPath()))
     if self.settings['scan_recursive']:
-        log_info('Recursive scan activated')
+        log.info('Recursive scan activated')
         files = rom_path.recursiveScanFilesInPath('*.*')
     else:
-        log_info('Recursive scan not activated')
+        log.info('Recursive scan not activated')
         files = rom_path.scanFilesInPath('*.*')
-    log_info('File scanner found {} files'.format(len(files)))
+    log.info('File scanner found {} files'.format(len(files)))
     report_slist.append('File scanner found {} files'.format(len(files)))
     pdialog.endProgress()
 
     # --- Scan all files in extra ROM path ---------------------------------------------------
     extra_files = []
     if launcher['romextrapath']:
-        log_info('Scanning files in extra ROM path.')
+        log.info('Scanning files in extra ROM path.')
         pdialog.startProgress('Scanning and caching files in extra ROM path ...')
-        log_info('Scanning files in {}'.format(rom_extra_path.getPath()))
+        log.info('Scanning files in {}'.format(rom_extra_path.getPath()))
         report_slist.append('Scanning files...')
         report_slist.append('Directory {}'.format(rom_extra_path.getPath()))
         if self.settings['scan_recursive']:
-            log_info('Recursive scan activated')
+            log.info('Recursive scan activated')
             extra_files = rom_extra_path.recursiveScanFilesInPath('*.*')
         else:
-            log_info('Recursive scan not activated')
+            log.info('Recursive scan not activated')
             extra_files = rom_extra_path.scanFilesInPath('*.*')
-        log_info('File scanner found {} files'.format(len(extra_files)))
+        log.info('File scanner found {} files'.format(len(extra_files)))
         report_slist.append('File scanner found {} files'.format(len(extra_files)))
         pdialog.endProgress()
     else:
-        log_info('Extra ROM path empty. Skipping scanning.')
+        log.info('Extra ROM path empty. Skipping scanning.')
 
     # --- Prepare list of files to be processed ----------------------------------------------
     # List has tuples (filename, extra_ROM_flag). List already sorted alphabetically.
@@ -10125,7 +10127,7 @@ def rom_scanner(self, launcherID):
 
     # --- Now go processing file by file -----------------------------------------------------
     pdialog.startProgress('Processing ROMs...', len(file_list))
-    log_info('============================== Processing ROMs ===============================')
+    log.info('============================== Processing ROMs ===============================')
     report_slist.append('\n*** Processing files ***')
     num_new_roms = 0
     num_files_checked = 0
@@ -10257,14 +10259,14 @@ def rom_scanner(self, launcherID):
 
         # --- This was the first ROM in a multidisc set ---
         if launcher_multidisc and MDSet.isMultiDisc and not MultiDiscInROMs:
-            log_info('Adding to ROMs dic first disk "{}"'.format(MDSet.discName))
+            log.info('Adding to ROMs dic first disk "{}"'.format(MDSet.discName))
             roms[romdata['id']]['disks'].append(MDSet.discName)
 
         # --- Check if user pressed the cancel button ---
         if pdialog.isCanceled():
             pdialog.endProgress()
-            kodi_dialog_OK('Stopping ROM scanning. No changes have been made.')
-            log_info('User pressed Cancel button when scanning ROMs. ROM scanning stopped.')
+            kodi.dialog_OK('Stopping ROM scanning. No changes have been made.')
+            log.info('User pressed Cancel button when scanning ROMs. ROM scanning stopped.')
             # Flush scraper disk caches.
             g_scraper_factory.destroy_scanner(pdialog)
             # Flush report
@@ -10281,11 +10283,11 @@ def rom_scanner(self, launcherID):
     g_scraper_factory.destroy_scanner(pdialog)
 
     # --- Scanner report ---
-    log_info('******************** ROM scanner finished. Report ********************')
-    log_info('Removed dead ROMs {:6d}'.format(num_removed_roms))
-    log_info('Files checked     {:6d}'.format(num_files_checked))
-    log_info('New added ROMs    {:6d}'.format(num_new_roms))
-    log_info('ROMs in Launcher  {:6d}'.format(len(roms)))
+    log.info('******************** ROM scanner finished. Report ********************')
+    log.info('Removed dead ROMs {:6d}'.format(num_removed_roms))
+    log.info('Files checked     {:6d}'.format(num_files_checked))
+    log.info('New added ROMs    {:6d}'.format(num_new_roms))
+    log.info('ROMs in Launcher  {:6d}'.format(len(roms)))
     report_head_sl = []
     report_head_sl.append('***** ROM scanner summary *****')
     report_head_sl.append('Removed dead ROMs {:6d}'.format(num_removed_roms))
@@ -10301,13 +10303,13 @@ def rom_scanner(self, launcherID):
         r_all_sl.extend(report_head_sl)
         r_all_sl.extend(report_slist)
         utils_write_slist_to_file(launcher_report_FN.getPath(), r_all_sl)
-        kodi_dialog_OK('The scanner found no ROMs! Make sure launcher directory and file '
+        kodi.dialog_OK('The scanner found no ROMs! Make sure launcher directory and file '
             'extensions are correct.')
         return
 
     # --- If we have a No-Intro XML then audit roms after scanning ----------------------------
     if launcher['audit_state'] == AUDIT_STATE_ON:
-        log_info('No-Intro/Redump is ON. Starting ROM audit...')
+        log.info('No-Intro/Redump is ON. Starting ROM audit...')
         nointro_xml_FN = self._roms_set_NoIntro_DAT(launcher)
         # Error printed with a OK dialog inside this function.
         if nointro_xml_FN is not None:
@@ -10327,11 +10329,11 @@ def rom_scanner(self, launcherID):
             else:
                 kodi_notify_warn('Error auditing ROMs')
         else:
-            log_error('Error finding No-Intro/Redump DAT file.')
-            log_error('Audit not done.')
+            log.error('Error finding No-Intro/Redump DAT file.')
+            log.error('Audit not done.')
             kodi_notify_warn('Error finding No-Intro/Redump DAT file')
     else:
-        log_info('ROM Audit state is OFF. Do not audit ROMs.')
+        log.info('ROM Audit state is OFF. Do not audit ROMs.')
         report_head_sl.append('ROM Audit state is OFF. Do not audit ROMs.')
         if num_new_roms == 0:
             kodi_notify('Added no new ROMs. Launcher has {} ROMs'.format(len(roms)))
@@ -10365,7 +10367,7 @@ def command_buildMenu(self):
 
     hasSkinshortcuts = xbmc.getCondVisibility('System.HasAddon(script.skinshortcuts)') == 1
     if hasSkinshortcuts == False:
-        log_warning("Addon skinshortcuts is not installed, cannot build games menu")
+        log.warning("Addon skinshortcuts is not installed, cannot build games menu")
         kodi_notify('Addon skinshortcuts is not installed')
         return
 
@@ -10390,8 +10392,8 @@ def command_buildMenu(self):
         import gui, datafunctions
 
     except Exception as ex:
-        log_error("(Exception) Failed to load skinshortcuts addon")
-        log_error("(Exception) {}".format(ex))
+        log.error("(Exception) Failed to load skinshortcuts addon")
+        log.error("(Exception) {}".format(ex))
         traceback.print_exc()
         kodi_notify_warn('Could not load skinshortcuts addon')
         return
@@ -10467,7 +10469,7 @@ def command_buildMenu(self):
     ui.allListItems = selectedMenuItems
     ui._save_shortcuts()
     ui.close()
-    log_info("Saved shortcuts for AEL")
+    log.info("Saved shortcuts for AEL")
     kodi_notify('The menu has been updated with AEL content')
 
     # xmlfunctions.ADDON = xbmcaddon.Addon('script.skinshortcuts')
@@ -10475,7 +10477,7 @@ def command_buildMenu(self):
     # xmlfunctions.LANGUAGE = xmlfunctions.ADDON.getLocalizedString
     # xml = XMLFunctions()
     # xml.buildMenu("9000","","0",None,"","0")
-    # log_info("Done building menu for AEL")
+    # log.info("Done building menu for AEL")
 
 def buildMenuItem(self, key, name, action, thumb, fanart, count, ui):
     listitem = xbmcgui.ListItem(name)
@@ -10507,13 +10509,13 @@ class Main:
         i_collection_FN = utils.FileName(collection_file_str)
         i_control_dic, i_collection, i_rom_list = fs_import_ROM_collection(i_collection_FN)
         if not i_collection:
-            kodi_dialog_OK('Error reading Collection JSON file. JSON file corrupted or wrong.')
+            kodi.dialog_OK('Error reading Collection JSON file. JSON file corrupted or wrong.')
             return
         if not i_rom_list:
-            kodi_dialog_OK('Collection is empty.')
+            kodi.dialog_OK('Collection is empty.')
             return
         if i_control_dic['control'] != 'Advanced Emulator Launcher Collection ROMs':
-            kodi_dialog_OK('JSON file is not an AEL ROM Collection file.')
+            kodi.dialog_OK('JSON file is not an AEL ROM Collection file.')
             return
 
         # --- Load collection indices ---
@@ -10521,7 +10523,7 @@ class Main:
 
         # --- If collectionID already on index warn the user ---
         if i_collection['id'] in COL['collections']:
-            log_info('_command_import_collection() Collection {} already in AEL'.format(i_collection['m_name']))
+            log.info('_command_import_collection() Collection {} already in AEL'.format(i_collection['m_name']))
             ret = kodi_dialog_yesno('A Collection with same ID exists. Overwrite?')
             if not ret: return
 
@@ -10535,7 +10537,7 @@ class Main:
 
         # --- Import Collection assets ---
         # When importing assets copy them to the Collection assets dir set in AEL addon settings.
-        log_info('_command_import_collection() Importing ROM Collection assets ...')
+        log.info('_command_import_collection() Importing ROM Collection assets ...')
         in_dir_FN = utils.FileName(i_collection_FN.getDir())
         for asset_kind in CATEGORY_ASSET_ID_LIST:
             # Test if assets exists before copy.
@@ -10560,11 +10562,11 @@ class Main:
             try:
                 utils_copy_file(in_asset_FN.getPath(), new_asset_FN.getPath())
             except OSError:
-                log_error('fs_export_ROM_collection_assets() OSError exception copying image')
+                log.error('fs_export_ROM_collection_assets() OSError exception copying image')
                 kodi_notify_warn('OSError exception copying image')
                 return
             except IOError:
-                log_error('fs_export_ROM_collection_assets() IOError exception copying image')
+                log.error('fs_export_ROM_collection_assets() IOError exception copying image')
                 kodi_notify_warn('IOError exception copying image')
                 return
 
@@ -10574,7 +10576,7 @@ class Main:
             i_collection[AInfo.key] = new_asset_FN.getOriginalPath()
 
         # --- Import ROM assets ---
-        log_info('_command_import_collection() Importing ROM assets ...')
+        log.info('_command_import_collection() Importing ROM assets ...')
         for rom in i_rom_list:
             log.debug('_command_import_collection() ROM "{}"'.format(rom['m_name']))
             log.debug('ROM platform "{}"'.format(rom['platform']))
@@ -10603,11 +10605,11 @@ class Main:
                 try:
                     utils_copy_file(in_asset_FN.getPath(), new_asset_FN.getPath())
                 except OSError:
-                    log_error('fs_export_ROM_collection_assets() OSError exception copying image')
+                    log.error('fs_export_ROM_collection_assets() OSError exception copying image')
                     kodi_notify_warn('OSError exception copying image')
                     return
                 except IOError:
-                    log_error('fs_export_ROM_collection_assets() IOError exception copying image')
+                    log.error('fs_export_ROM_collection_assets() IOError exception copying image')
                     kodi_notify_warn('IOError exception copying image')
                     return
 
@@ -10619,14 +10621,14 @@ class Main:
 
         # --- Add imported collection to database ---
         COL['collections'][i_collection['id']] = i_collection
-        log_info('_command_import_collection() Imported Collection "{}" (id {})'.format(
+        log.info('_command_import_collection() Imported Collection "{}" (id {})'.format(
             i_collection['m_name'], i_collection['id']))
 
         # --- Write ROM Collection databases ---
         fs_write_Collection_index_XML(g_PATHS.COLLECTIONS_FILE_PATH, COL['collections'])
         fs_write_Collection_ROMs_JSON(g_PATHS.COLLECTIONS_DIR.pjoin(
             collection_base_name + '.json'), i_rom_list)
-        kodi_dialog_OK('Imported ROM Collection "{}" metadata and assets.'.format(
+        kodi.dialog_OK('Imported ROM Collection "{}" metadata and assets.'.format(
             i_collection['m_name']))
         kodi_refresh_container()
 
@@ -10634,7 +10636,7 @@ class Main:
     def _command_update_virtual_category_db_all(self):
         # --- Sanity checks ---
         if len(self.launchers) == 0:
-            kodi_dialog_OK('You do not have any ROM Launcher. Add a ROM Launcher first.')
+            kodi.dialog_OK('You do not have any ROM Launcher. Add a ROM Launcher first.')
             return
 
         # --- Make a big dictionary will all the ROMs ---
@@ -10655,8 +10657,8 @@ class Main:
             elif categoryID == CATEGORY_ADDONROOT_ID:
                 category_name = 'Root category'
             else:
-                log_error('_command_update_virtual_category_db_all() Wrong categoryID = {}'.format(categoryID))
-                kodi_dialog_OK('Wrong categoryID = {}. Report this bug please.'.format(categoryID))
+                log.error('_command_update_virtual_category_db_all() Wrong categoryID = {}'.format(categoryID))
+                kodi.dialog_OK('Wrong categoryID = {}. Report this bug please.'.format(categoryID))
                 return
 
             # If launcher is standalone skip
@@ -10694,79 +10696,79 @@ class Main:
     def _command_update_virtual_category_db(self, virtual_categoryID, all_roms_external = None):
         # --- Customise function depending on virtual category ---
         if virtual_categoryID == VCATEGORY_TITLE_ID:
-            log_info('_command_update_virtual_category_db() Updating Title DB')
+            log.info('_command_update_virtual_category_db() Updating Title DB')
             vcategory_db_directory = g_PATHS.VIRTUAL_CAT_TITLE_DIR
             vcategory_db_filename  = g_PATHS.VCAT_TITLE_FILE_PATH
             vcategory_field_name   = 'm_name'
             vcategory_name         = 'Titles'
         elif virtual_categoryID == VCATEGORY_YEARS_ID:
-            log_info('_command_update_virtual_category_db() Updating Year DB')
+            log.info('_command_update_virtual_category_db() Updating Year DB')
             vcategory_db_directory = g_PATHS.VIRTUAL_CAT_YEARS_DIR
             vcategory_db_filename  = g_PATHS.VCAT_YEARS_FILE_PATH
             vcategory_field_name   = 'm_year'
             vcategory_name         = 'Years'
         elif virtual_categoryID == VCATEGORY_GENRE_ID:
-            log_info('_command_update_virtual_category_db() Updating Genre DB')
+            log.info('_command_update_virtual_category_db() Updating Genre DB')
             vcategory_db_directory = g_PATHS.VIRTUAL_CAT_GENRE_DIR
             vcategory_db_filename  = g_PATHS.VCAT_GENRE_FILE_PATH
             vcategory_field_name   = 'm_genre'
             vcategory_name         = 'Genres'
         elif virtual_categoryID == VCATEGORY_DEVELOPER_ID:
-            log_info('_command_update_virtual_category_db() Updating Developer DB')
+            log.info('_command_update_virtual_category_db() Updating Developer DB')
             vcategory_db_directory = g_PATHS.VIRTUAL_CAT_DEVELOPER_DIR
             vcategory_db_filename  = g_PATHS.VCAT_DEVELOPER_FILE_PATH
             vcategory_field_name   = 'm_developer'
             vcategory_name         = 'Developers'
         elif virtual_categoryID == VCATEGORY_NPLAYERS_ID:
-            log_info('_command_update_virtual_category_db() Updating NPlayer DB')
+            log.info('_command_update_virtual_category_db() Updating NPlayer DB')
             vcategory_db_directory = g_PATHS.VIRTUAL_CAT_NPLAYERS_DIR
             vcategory_db_filename  = g_PATHS.VCAT_NPLAYERS_FILE_PATH
             vcategory_field_name   = 'm_nplayers'
             vcategory_name         = 'NPlayers'
         elif virtual_categoryID == VCATEGORY_ESRB_ID:
-            log_info('_command_update_virtual_category_db() Updating ESRB DB')
+            log.info('_command_update_virtual_category_db() Updating ESRB DB')
             vcategory_db_directory = g_PATHS.VIRTUAL_CAT_ESRB_DIR
             vcategory_db_filename  = g_PATHS.VCAT_ESRB_FILE_PATH
             vcategory_field_name   = 'm_esrb'
             vcategory_name         = 'ESRB'
         elif virtual_categoryID == VCATEGORY_RATING_ID:
-            log_info('_command_update_virtual_category_db() Updating Rating DB')
+            log.info('_command_update_virtual_category_db() Updating Rating DB')
             vcategory_db_directory = g_PATHS.VIRTUAL_CAT_RATING_DIR
             vcategory_db_filename  = g_PATHS.VCAT_RATING_FILE_PATH
             vcategory_field_name   = 'm_rating'
             vcategory_name         = 'Rating'
         elif virtual_categoryID == VCATEGORY_CATEGORY_ID:
-            log_info('_command_update_virtual_category_db() Updating Category DB')
+            log.info('_command_update_virtual_category_db() Updating Category DB')
             vcategory_db_directory = g_PATHS.VIRTUAL_CAT_CATEGORY_DIR
             vcategory_db_filename  = g_PATHS.VCAT_CATEGORY_FILE_PATH
             vcategory_field_name   = ''
             vcategory_name         = 'Categories'
         else:
-            log_error('_command_update_virtual_category_db() Wrong virtual_category_kind = {}'.format(virtual_categoryID))
-            kodi_dialog_OK('Wrong virtual_category_kind = {}'.format(virtual_categoryID))
+            log.error('_command_update_virtual_category_db() Wrong virtual_category_kind = {}'.format(virtual_categoryID))
+            kodi.dialog_OK('Wrong virtual_category_kind = {}'.format(virtual_categoryID))
             return
 
         # --- Sanity checks ---
         if len(self.launchers) == 0:
-            kodi_dialog_OK('You do not have any ROM Launcher. Add a ROM Launcher first.')
+            kodi.dialog_OK('You do not have any ROM Launcher. Add a ROM Launcher first.')
             return
 
         # --- Delete previous hashed database XMLs ---
-        log_info('_command_update_virtual_category_db() Cleaning hashed database old XMLs')
+        log.info('_command_update_virtual_category_db() Cleaning hashed database old XMLs')
         for the_file in vcategory_db_directory.scanFilesInPathAsPaths('*.*'):
             file_extension = the_file.getExt()
             if file_extension.lower() != '.xml' and file_extension.lower() != '.json':
                 # There should be only XMLs or JSON in this directory
-                log_error('_command_update_virtual_category_db() Non XML/JSON file "{}"'.format(the_file.getPath()))
-                log_error('_command_update_virtual_category_db() Skipping it from deletion')
+                log.error('_command_update_virtual_category_db() Non XML/JSON file "{}"'.format(the_file.getPath()))
+                log.error('_command_update_virtual_category_db() Skipping it from deletion')
                 continue
             log.debug('_command_update_virtual_category_db() Deleting "{}"'.format(the_file.getPath()))
             try:
                 if the_file.exists():
                     the_file.unlink()
             except Exception as e:
-                log_error('_command_update_virtual_category_db() Excepcion deleting hashed DB XMLs')
-                log_error('_command_update_virtual_category_db() {}'.format(e))
+                log.error('_command_update_virtual_category_db() Excepcion deleting hashed DB XMLs')
+                log.error('_command_update_virtual_category_db() {}'.format(e))
                 return
 
         # Progress dialog used through the function.
@@ -10791,8 +10793,8 @@ class Main:
                 elif categoryID == CATEGORY_ADDONROOT_ID:
                     category_name = 'Root category'
                 else:
-                    log_error('_command_update_virtual_category_db() Wrong categoryID = {}'.format(categoryID))
-                    kodi_dialog_OK('Wrong categoryID = {}. Report this bug please.'.format(categoryID))
+                    log.error('_command_update_virtual_category_db() Wrong categoryID = {}'.format(categoryID))
+                    kodi.dialog_OK('Wrong categoryID = {}. Report this bug please.'.format(categoryID))
                     return
                 # If launcher is standalone skip.
                 if launcher['rompath'] == '': continue
