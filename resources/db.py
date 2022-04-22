@@ -21,6 +21,7 @@ import resources.log as log
 import resources.utils as utils
 import resources.assets as assets
 import resources.audit as audit
+import resources.platforms as platforms
 
 # --- Python standard library ---
 import collections
@@ -455,7 +456,7 @@ def get_launcher_fnames(cfg, categoryID, launcherID):
     elif cfg.launcher_is_vcategory and categoryID == const.VCATEGORY_AOS_ID:
         platform = launcherID
         log.debug('db_load_ROMs() platform "{}"'.format(platform))
-        pobj = AEL_platforms[get_AEL_platform_index(platform)]
+        pobj = platforms.AEL_platforms[platforms.get_AEL_platform_index(platform)]
         if pobj.aliasof:
             log.debug('db_load_ROMs() aliasof "{}"'.format(pobj.aliasof))
             pobj_parent = AEL_platforms[get_AEL_platform_index(pobj.aliasof)]
@@ -587,7 +588,7 @@ def load_ROMs(cfg, st_dic, categoryID, launcherID, load_pclone_ROMs_flag = False
         if not dbdic['roms'].exists():
             kodi_set_st_nwarn(st_dic, '{} database not available yet.'.format(db_platform))
             return
-        cfg.roms = audit_load_OfflineScraper_XML(dbdic['roms'].getPath())
+        cfg.roms = audit.load_OfflineScraper_XML(dbdic['roms'].getPath())
 
     else:
         raise TypeError
@@ -974,50 +975,49 @@ def write_Favourites_JSON(roms_json_file, roms):
 # ------------------------------------------------------------------------------------------------
 # ROM Collections
 # ------------------------------------------------------------------------------------------------
-def write_Collection_index_XML(collections_xml_file, collections):
+def write_Collection_index_XML(xml_fname, collections):
     log.info('write_Collection_index_XML() File {}'.format(collections_xml_file.getOriginalPath()))
-    slist = []
-    slist.append('<?xml version="1.0" encoding="utf-8" standalone="yes"?>')
-    slist.append('<advanced_emulator_launcher_Collection_index version="{}">'.format(AEL_STORAGE_FORMAT))
+    sl = []
+    sl.append('<?xml version="1.0" encoding="utf-8" standalone="yes"?>')
+    sl.append('<advanced_emulator_launcher_Collection_index version="{}">'.format(const.AEL_STORAGE_FORMAT))
     # Control information.
-    slist.append('<control>')
-    slist.append(text_XML('update_timestamp', text_type(time.time())))
-    slist.append('</control>')
+    sl.append('<control>')
+    sl.append(misc.XML('update_timestamp', const.text_type(time.time())))
+    sl.append('</control>')
     # Virtual Launchers.
     for collection_id in sorted(collections, key = lambda x : collections[x]['m_name']):
         collection = collections[collection_id]
-        slist.append('<Collection>')
-        slist.append(text_XML('id', collection['id']))
-        slist.append(text_XML('m_name', collection['m_name']))
-        slist.append(text_XML('m_genre', collection['m_genre']))
-        slist.append(text_XML('m_rating', collection['m_rating']))
-        slist.append(text_XML('m_plot', collection['m_plot']))
-        slist.append(text_XML('roms_base_noext', collection['roms_base_noext']))
-        slist.append(text_XML('default_icon', collection['default_icon']))
-        slist.append(text_XML('default_fanart', collection['default_fanart']))
-        slist.append(text_XML('default_banner', collection['default_banner']))
-        slist.append(text_XML('default_poster', collection['default_poster']))
-        slist.append(text_XML('default_clearlogo', collection['default_clearlogo']))
-        slist.append(text_XML('s_icon', collection['s_icon']))
-        slist.append(text_XML('s_fanart', collection['s_fanart']))
-        slist.append(text_XML('s_banner', collection['s_banner']))
-        slist.append(text_XML('s_poster', collection['s_poster']))
-        slist.append(text_XML('s_clearlogo', collection['s_clearlogo']))
-        slist.append(text_XML('s_trailer', collection['s_trailer']))
-        slist.append('</Collection>')
-    slist.append('</advanced_emulator_launcher_Collection_index>')
-    utils_write_slist_to_file(collections_xml_file.getPath(), slist)
+        sl.append('<Collection>')
+        sl.append(misc.XML('id', collection['id']))
+        sl.append(misc.XML('m_name', collection['m_name']))
+        sl.append(misc.XML('m_genre', collection['m_genre']))
+        sl.append(misc.XML('m_rating', collection['m_rating']))
+        sl.append(misc.XML('m_plot', collection['m_plot']))
+        sl.append(text_XML('roms_base_noext', collection['roms_base_noext']))
+        sl.append(text_XML('default_icon', collection['default_icon']))
+        sl.append(text_XML('default_fanart', collection['default_fanart']))
+        sl.append(text_XML('default_banner', collection['default_banner']))
+        sl.append(text_XML('default_poster', collection['default_poster']))
+        sl.append(text_XML('default_clearlogo', collection['default_clearlogo']))
+        sl.append(text_XML('s_icon', collection['s_icon']))
+        sl.append(text_XML('s_fanart', collection['s_fanart']))
+        sl.append(text_XML('s_banner', collection['s_banner']))
+        sl.append(text_XML('s_poster', collection['s_poster']))
+        sl.append(text_XML('s_clearlogo', collection['s_clearlogo']))
+        sl.append(text_XML('s_trailer', collection['s_trailer']))
+        sl.append('</Collection>')
+    sl.append('</advanced_emulator_launcher_Collection_index>')
+    utils.write_slist_to_file(xml_fname.getPath(), sl)
 
-def load_Collection_index_XML(collections_xml_file):
+def load_Collection_index_XML(xml_fname):
     __debug_xml_parser = False
     ret = {
         'timestamp' : 0.0,
-        'collections' : {}
+        'collections' : {},
     }
 
-    log.debug('load_Collection_index_XML() Loading XML file {}'.format(
-        collections_xml_file.getOriginalPath()))
-    xml_tree = utils_load_XML_to_ET(collections_xml_file.getPath())
+    log.debug('load_Collection_index_XML() Loading XML file {}'.format(xml_fname.getOriginalPath()))
+    xml_tree = utils.load_XML_to_ET(xml_fname.getPath())
     if not xml_tree: return ret
     xml_root = xml_tree.getroot()
     for root_element in xml_root:
@@ -1027,11 +1027,11 @@ def load_Collection_index_XML(collections_xml_file):
                 if control_child.tag == 'update_timestamp':
                     ret['timestamp'] = float(control_child.text)
         elif root_element.tag == 'Collection':
-            collection = db_new_collection()
+            collection = new_collection()
             for rom_child in root_element:
                 # By default read Unicode strings.
                 text_XML = rom_child.text if rom_child.text is not None else ''
-                text_XML = text_unescape_XML(text_XML)
+                text_XML = misc.unescape_XML(text_XML)
                 xml_tag  = rom_child.tag
                 if __debug_xml_parser: log.debug('{} --> {}'.format(xml_tag, text_XML))
                 collection[xml_tag] = text_XML
@@ -1276,7 +1276,7 @@ def load_VCategory_XML(roms_xml_file):
     }
 
     log.debug('load_VCategory_XML() Loading XML file {}'.format(roms_xml_file.getOriginalPath()))
-    xml_tree = utils_load_XML_to_ET(roms_xml_file.getPath())
+    xml_tree = utils.load_XML_to_ET(roms_xml_file.getPath())
     if not xml_tree: return ret
     xml_root = xml_tree.getroot()
     for root_element in xml_root:
@@ -1291,7 +1291,7 @@ def load_VCategory_XML(roms_xml_file):
             for rom_child in root_element:
                 # By default read strings
                 text_XML = rom_child.text if rom_child.text is not None else ''
-                text_XML = text_unescape_XML(text_XML)
+                text_XML = misc.unescape_XML(text_XML)
                 xml_tag  = rom_child.tag
                 if __debug_xml_parser: log.debug('{} --> {}'.format(xml_tag, text_XML))
                 VLauncher[xml_tag] = text_XML

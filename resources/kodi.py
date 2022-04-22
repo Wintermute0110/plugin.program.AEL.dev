@@ -27,6 +27,7 @@
 # --- Addon modules ---
 import resources.const as const
 import resources.log as log
+import resources.utils as utils
 
 # --- Kodi modules ---
 try:
@@ -210,7 +211,7 @@ def display_text_window(window_title, info_text):
 # pDialog.endProgress()
 class ProgressDialog(object):
     def __init__(self):
-        self.heading = ADDON_LONG_NAME
+        self.heading = const.ADDON_LONG_NAME
         self.progress = 0
         self.flag_dialog_canceled = False
         self.dialog_active = False
@@ -230,7 +231,7 @@ class ProgressDialog(object):
         self.dialog_active = True
         self.message = message
         # In Leia and lower xbmcgui.DialogProgress().update() requires an int.
-        if kodi_running_version >= KODI_VERSION_MATRIX:
+        if utils.kodi_running_version >= utils.KODI_VERSION_MATRIX:
             self.progressDialog.create(self.heading, self.message)
             self.progressDialog.update(self.progress)
         else:
@@ -249,7 +250,7 @@ class ProgressDialog(object):
             self.step_total = 0.001
             self.progress = math.floor((self.step_counter * 100) / self.step_total)
         self.message = message
-        if kodi_running_version >= KODI_VERSION_MATRIX:
+        if utils.kodi_running_version >= utils.KODI_VERSION_MATRIX:
             self.progressDialog.update(self.progress, self.message)
         else:
             self.progressDialog.update(int(self.progress), self.message, ' ', ' ')
@@ -260,14 +261,14 @@ class ProgressDialog(object):
         self.step_counter = step_counter
         self.progress = math.floor((self.step_counter * 100) / self.step_total)
         if message is None:
-            if kodi_running_version >= KODI_VERSION_MATRIX:
+            if utils.kodi_running_version >= utils.KODI_VERSION_MATRIX:
                 self.progressDialog.update(self.progress)
             else:
                 self.progressDialog.update(int(self.progress))
         else:
             if type(message) is not text_type: raise TypeError
             self.message = message
-            if kodi_running_version >= KODI_VERSION_MATRIX:
+            if utils.kodi_running_version >= utils.KODI_VERSION_MATRIX:
                 self.progressDialog.update(self.progress, self.message)
             else:
                 self.progressDialog.update(int(self.progress), self.message, ' ', ' ')
@@ -281,14 +282,14 @@ class ProgressDialog(object):
         self.progress = math.floor((self.step_counter * 100) / self.step_total)
         self.step_counter += 1
         if message is None:
-            if kodi_running_version >= KODI_VERSION_MATRIX:
+            if utils.kodi_running_version >= utils.KODI_VERSION_MATRIX:
                 self.progressDialog.update(self.progress)
             else:
                 self.progressDialog.update(int(self.progress))
         else:
             if type(message) is not text_type: raise TypeError
             self.message = message
-            if kodi_running_version >= KODI_VERSION_MATRIX:
+            if utils.kodi_running_version >= utils.KODI_VERSION_MATRIX:
                 self.progressDialog.update(self.progress, self.message)
             else:
                 self.progressDialog.update(int(self.progress), self.message, ' ', ' ')
@@ -298,7 +299,7 @@ class ProgressDialog(object):
         if not self.dialog_active: raise TypeError
         if type(message) is not text_type: raise TypeError
         self.message = message
-        if kodi_running_version >= KODI_VERSION_MATRIX:
+        if utils.kodi_running_version >= utils.KODI_VERSION_MATRIX:
             self.progressDialog.update(self.progress, self.message)
         else:
             self.progressDialog.update(int(self.progress), self.message, ' ', ' ')

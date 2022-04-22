@@ -19,13 +19,14 @@ import resources.log as log
 import resources.misc as misc
 
 # --- Python standard library ---
+import os
 import xml
 
 # -------------------------------------------------------------------------------------------------
 # Data structures
 # -------------------------------------------------------------------------------------------------
 # DTD "http://www.logiqx.com/Dats/datafile.dtd"
-def audit_new_rom_logiqx():
+def new_rom_logiqx():
     return {
         'name'         : '',
         'cloneof'      : '',
@@ -34,7 +35,7 @@ def audit_new_rom_logiqx():
     }
 
 # HyperList doesn't include Plot
-def audit_new_rom_HyperList():
+def new_rom_HyperList():
     return {
         'name'         : '',
         'description'  : '',
@@ -47,7 +48,7 @@ def audit_new_rom_HyperList():
         'enabled'      : ''
     }
 
-def audit_new_rom_GameDB():
+def new_rom_GameDB():
     return {
         'name'         : '',
         'description'  : '',
@@ -59,7 +60,7 @@ def audit_new_rom_GameDB():
         'story'        : ''
     }
 
-def audit_new_rom_AEL_Offline():
+def new_rom_AEL_Offline():
     return {
         'ROM'       : '',
         'title'     : '',
@@ -73,7 +74,7 @@ def audit_new_rom_AEL_Offline():
         'plot'      : ''
     }
 
-def audit_new_LB_game():
+def new_LB_game():
     return {
         'Name'              : '',
         'ReleaseYear'       : '',
@@ -98,7 +99,7 @@ def audit_new_LB_game():
         'StartupParameters' : '',
     }
 
-def audit_new_LB_platform():
+def new_LB_platform():
     return {
         'Name'           : '',
         'Emulated'       : '',
@@ -117,7 +118,7 @@ def audit_new_LB_platform():
         'UseMameFiles'   : '',
     }
 
-def audit_new_LB_gameImage():
+def new_LB_gameImage():
     return {
         'DatabaseID' : '',
         'FileName'   : '',
@@ -126,7 +127,7 @@ def audit_new_LB_gameImage():
         'Region'     : '',
     }
 
-def audit_load_LB_metadata_XML(filename_FN, games_dic, platforms_dic, gameimages_dic):
+def load_LB_metadata_XML(filename_FN, games_dic, platforms_dic, gameimages_dic):
     if not filename_FN.exists():
         log.error("Cannot load file '{}'".format(xml_file))
         return
@@ -185,7 +186,7 @@ def audit_load_LB_metadata_XML(filename_FN, games_dic, platforms_dic, gameimages
 # Functions
 # -------------------------------------------------------------------------------------------------
 # Loads offline scraper information XML file.
-def audit_load_OfflineScraper_XML(xml_file):
+def load_OfflineScraper_XML(xml_file):
     __debug_xml_parser = False
     games = {}
 
@@ -209,7 +210,7 @@ def audit_load_OfflineScraper_XML(xml_file):
 
         if game_element.tag == 'game':
             # Default values
-            game = audit_new_rom_AEL_Offline()
+            game = new_rom_AEL_Offline()
 
             # ROM name is an attribute of <game>
             game['ROM'] = game_element.attrib['ROM']
@@ -219,22 +220,19 @@ def audit_load_OfflineScraper_XML(xml_file):
             for game_child in game_element:
                 # By default read strings
                 xml_text = game_child.text if game_child.text is not None else ''
-                xml_text = text_unescape_XML(xml_text)
+                xml_text = misc.unescape_XML(xml_text)
                 xml_tag  = game_child.tag
                 if __debug_xml_parser: log.debug('Tag "{}" --> "{}"'.format(xml_tag, xml_text))
                 game[xml_tag] = xml_text
             games[game['ROM']] = game
-
     return games
 
-#
 # Loads a No-Intro Parent-Clone XML DAT file. Creates a data structure like
 # roms_nointro = {
 #   'rom_name_A' : { 'name' : 'rom_name_A', 'cloneof' : '' | 'rom_name_parent},
 #   'rom_name_B' : { 'name' : 'rom_name_B', 'cloneof' : '' | 'rom_name_parent},
 # }
-#
-def audit_load_NoIntro_XML_file(xml_FN):
+def load_NoIntro_XML_file(xml_FN):
     nointro_roms = {}
 
     # --- If file does not exist return empty dictionary ---
@@ -265,7 +263,7 @@ def audit_load_NoIntro_XML_file(xml_FN):
 
     return nointro_roms
 
-def audit_load_GameDB_XML(xml_FN):
+def load_GameDB_XML(xml_FN):
     __debug_xml_parser = 0
     games = {}
 
@@ -306,7 +304,7 @@ def audit_load_GameDB_XML(xml_FN):
 
     return games
 
-def audit_load_Tempest_INI(file_FN):
+def load_Tempest_INI(file_FN):
     games = {}
     # Read_status FSM values
     #   0 -> Looking for '[game_name]' tag
@@ -369,7 +367,7 @@ def audit_load_Tempest_INI(file_FN):
 
     return games
 
-def audit_load_HyperList_XML(xml_FN):
+def load_HyperList_XML(xml_FN):
     __debug_xml_parser = 0
     games = {}
 
@@ -413,7 +411,7 @@ def audit_load_HyperList_XML(xml_FN):
 
     return games
 
-def audit_make_NoIntro_PClone_dic(nointro_dic):
+def make_NoIntro_PClone_dic(nointro_dic):
     log.info('Making PClone dictionary ...')
     main_pclone_dic = {}
     for machine_name in nointro_dic:
@@ -430,7 +428,7 @@ def audit_make_NoIntro_PClone_dic(nointro_dic):
 
     return main_pclone_dic
 
-def audit_make_NoIntro_Parents_dic(nointro_dic):
+def make_NoIntro_Parents_dic(nointro_dic):
     log.info('Making Parents dictionary ...')
     main_pclone_dic = {}
     main_clone_to_parent_dic = {}
@@ -467,7 +465,7 @@ def audit_make_NoIntro_Parents_dic(nointro_dic):
 #       UNKNOWN_ROMS_PARENT_ID : ['unknown_id_1', 'unknown_id_2', 'unknown_id_3']
 #   }
 #
-def audit_generate_DAT_PClone_index(roms, roms_nointro, unknown_ROMs_are_parents):
+def generate_DAT_PClone_index(roms, roms_nointro, unknown_ROMs_are_parents):
     roms_pclone_index_by_id = {}
 
     # --- Create a dictionary to convert ROMbase_noext names into IDs ---
@@ -532,7 +530,7 @@ def audit_generate_DAT_PClone_index(roms, roms_nointro, unknown_ROMs_are_parents
 # If the parent of the Unknown ROMs is detected in the Parent dictionary then create fake
 # metadata for it.
 #
-def audit_generate_parent_ROMs_dic(roms, roms_pclone_index):
+def generate_parent_ROMs_dic(roms, roms_pclone_index):
     p_roms = {}
 
     # --- Build parent ROM dictionary ---
@@ -553,7 +551,7 @@ def audit_generate_parent_ROMs_dic(roms, roms_pclone_index):
 
     return p_roms
 
-def audit_generate_filename_PClone_index(roms, roms_nointro, unknown_ROMs_are_parents):
+def generate_filename_PClone_index(roms, roms_nointro, unknown_ROMs_are_parents):
     roms_pclone_index_by_id = {}
 
     # --- Create a dictionary 'rom_base_name' : 'romID' ---
@@ -598,7 +596,7 @@ def audit_generate_filename_PClone_index(roms, roms_nointro, unknown_ROMs_are_pa
 #
 # Get baseName from filename (no extension, no tags).
 #
-def audit_get_ROM_base_name(romFileName):
+def get_ROM_base_name(romFileName):
     # >> re.search() returns a MatchObject
     regSearch = re.search("[^\(\)]*", romFileName)
     if regSearch is None:

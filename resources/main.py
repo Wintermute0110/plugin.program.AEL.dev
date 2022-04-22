@@ -30,6 +30,7 @@ import resources.audit as audit
 import resources.scrap as scrap
 import resources.xmlconf as xmlconf
 import resources.md as md
+import resources.platforms as platforms
 
 # --- Kodi stuff ---
 import xbmc
@@ -1212,7 +1213,7 @@ def create_vcategories_data_Browse_by(cfg):
             'info' : {
                 'title' : 'Browse ROMs by Title',
                 'plot' : 'Browse virtual launchers in Title virtual category',
-                'overlay': KODI_ICON_OVERLAY_UNWATCHED,
+                'overlay': kodi.KODI_ICON_OVERLAY_UNWATCHED,
             },
             'art' : {
                 'icon' : cfg.ADDON_CODE_DIR.pjoin('media/theme/Browse_by_Title_icon.png').getPath(),
@@ -1221,16 +1222,16 @@ def create_vcategories_data_Browse_by(cfg):
             },
             'props' : common_props,
             'context' : [
-                ('Update {} database', aux_url_RP('UPDATE_VIRTUAL_CATEGORY', VCATEGORY_BROWSE_BY_TITLE_ID)),
+                ('Update {} database', aux_url_RP('UPDATE_VIRTUAL_CATEGORY', const.VCATEGORY_BROWSE_BY_TITLE_ID)),
             ] + common_commands,
-            'URL' : aux_url('SHOW_BROWSE_BY_VLAUNCHERS', VCATEGORY_BROWSE_BY_TITLE_ID),
+            'URL' : aux_url('SHOW_BROWSE_BY_VLAUNCHERS', const.VCATEGORY_BROWSE_BY_TITLE_ID),
         },
         {
             'render_name' : 'Browse by Year',
             'info' : {
                 'title' : 'Browse by Year',
                 'plot' : 'Browse virtual launchers in Year virtual category',
-                'overlay': KODI_ICON_OVERLAY_UNWATCHED,
+                'overlay': kodi.KODI_ICON_OVERLAY_UNWATCHED,
             },
             'art' : {
                 'icon' : cfg.ADDON_CODE_DIR.pjoin('media/theme/Browse_by_Year_icon.png').getPath(),
@@ -1239,16 +1240,16 @@ def create_vcategories_data_Browse_by(cfg):
             },
             'props' : common_props,
             'context' : [
-                ('Update {} database', aux_url_RP('UPDATE_VIRTUAL_CATEGORY', VCATEGORY_BROWSE_BY_YEARS_ID)),
+                ('Update {} database', aux_url_RP('UPDATE_VIRTUAL_CATEGORY', const.VCATEGORY_BROWSE_BY_YEARS_ID)),
             ] + common_commands,
-            'URL' : aux_url('SHOW_BROWSE_BY_VLAUNCHERS', VCATEGORY_BROWSE_BY_YEARS_ID),
+            'URL' : aux_url('SHOW_BROWSE_BY_VLAUNCHERS', const.VCATEGORY_BROWSE_BY_YEARS_ID),
         },
         {
             'render_name' : 'Browse by Genre',
             'info' : {
                 'title' : 'Browse by Genre',
                 'plot' : 'Browse virtual launchers in Genre virtual category',
-                'overlay': KODI_ICON_OVERLAY_UNWATCHED,
+                'overlay': kodi.KODI_ICON_OVERLAY_UNWATCHED,
             },
             'art' : {
                 'icon' : cfg.ADDON_CODE_DIR.pjoin('media/theme/Browse_by_Genre_icon.png').getPath(),
@@ -1257,16 +1258,16 @@ def create_vcategories_data_Browse_by(cfg):
             },
             'props' : common_props,
             'context' : [
-                ('Update {} database', aux_url_RP('UPDATE_VIRTUAL_CATEGORY', VCATEGORY_BROWSE_BY_GENRE_ID)),
+                ('Update {} database', aux_url_RP('UPDATE_VIRTUAL_CATEGORY', const.VCATEGORY_BROWSE_BY_GENRE_ID)),
             ] + common_commands,
-            'URL' : aux_url('SHOW_BROWSE_BY_VLAUNCHERS', VCATEGORY_BROWSE_BY_GENRE_ID),
+            'URL' : aux_url('SHOW_BROWSE_BY_VLAUNCHERS', const.VCATEGORY_BROWSE_BY_GENRE_ID),
         },
         {
             'render_name' : 'Browse by Developer',
             'info' : {
                 'title' : 'Browse by Developer',
                 'plot' : 'Browse virtual launchers in Developer virtual category',
-                'overlay': KODI_ICON_OVERLAY_UNWATCHED,
+                'overlay': kodi.KODI_ICON_OVERLAY_UNWATCHED,
             },
             'art' : {
                 'icon' : cfg.ADDON_CODE_DIR.pjoin('media/theme/Browse_by_Developer_icon.png').getPath(),
@@ -1275,16 +1276,16 @@ def create_vcategories_data_Browse_by(cfg):
             },
             'props' : common_props,
             'context' : [
-                ('Update {} database', aux_url_RP('UPDATE_VIRTUAL_CATEGORY', VCATEGORY_BROWSE_BY_DEVELOPER_ID)),
+                ('Update {} database', aux_url_RP('UPDATE_VIRTUAL_CATEGORY', const.VCATEGORY_BROWSE_BY_DEVELOPER_ID)),
             ] + common_commands,
-            'URL' : aux_url('SHOW_BROWSE_BY_VLAUNCHERS', VCATEGORY_BROWSE_BY_DEVELOPER_ID),
+            'URL' : aux_url('SHOW_BROWSE_BY_VLAUNCHERS', const.VCATEGORY_BROWSE_BY_DEVELOPER_ID),
         },
         {
             'render_name' : 'Browse by Number of Players',
             'info' : {
                 'title' : 'Browse by Number of Players',
                 'plot' : 'Browse virtual launchers in Number of Players virtual category',
-                'overlay': KODI_ICON_OVERLAY_UNWATCHED,
+                'overlay': kodi.KODI_ICON_OVERLAY_UNWATCHED,
             },
             'art' : {
                 'icon' : cfg.ADDON_CODE_DIR.pjoin('media/theme/Browse_by_NPlayers_icon.png').getPath(),
@@ -1293,16 +1294,16 @@ def create_vcategories_data_Browse_by(cfg):
             },
             'props' : common_props,
             'context' : [
-                ('Update {} database', aux_url_RP('UPDATE_VIRTUAL_CATEGORY', VCATEGORY_BROWSE_BY_NPLAYERS_ID)),
+                ('Update {} database', aux_url_RP('UPDATE_VIRTUAL_CATEGORY', const.VCATEGORY_BROWSE_BY_NPLAYERS_ID)),
             ] + common_commands,
-            'URL' : aux_url('SHOW_BROWSE_BY_VLAUNCHERS', VCATEGORY_BROWSE_BY_NPLAYERS_ID),
+            'URL' : aux_url('SHOW_BROWSE_BY_VLAUNCHERS', const.VCATEGORY_BROWSE_BY_NPLAYERS_ID),
         },
         {
             'render_name' : 'Browse by ESRB Rating',
             'info' : {
                 'title' : 'Browse by ESRB Rating',
                 'plot' : 'Browse virtual launchers in ESRB Rating virtual category',
-                'overlay': KODI_ICON_OVERLAY_UNWATCHED,
+                'overlay': kodi.KODI_ICON_OVERLAY_UNWATCHED,
             },
             'art' : {
                 'icon' : cfg.ADDON_CODE_DIR.pjoin('media/theme/Browse_by_ESRB_icon.png').getPath(),
@@ -1311,16 +1312,16 @@ def create_vcategories_data_Browse_by(cfg):
             },
             'props' : common_props,
             'context' : [
-                ('Update {} database', aux_url_RP('UPDATE_VIRTUAL_CATEGORY', VCATEGORY_BROWSE_BY_ESRB_ID)),
+                ('Update {} database', aux_url_RP('UPDATE_VIRTUAL_CATEGORY', const.VCATEGORY_BROWSE_BY_ESRB_ID)),
             ] + common_commands,
-            'URL' : aux_url('SHOW_BROWSE_BY_VLAUNCHERS', VCATEGORY_BROWSE_BY_ESRB_ID),
+            'URL' : aux_url('SHOW_BROWSE_BY_VLAUNCHERS', const.VCATEGORY_BROWSE_BY_ESRB_ID),
         },
         {
             'render_name' : 'Browse by User Rating',
             'info' : {
                 'title' : 'Browse by User Rating',
                 'plot' : 'Browse virtual launchers in User Rating virtual category',
-                'overlay': KODI_ICON_OVERLAY_UNWATCHED,
+                'overlay': kodi.KODI_ICON_OVERLAY_UNWATCHED,
             },
             'art' : {
                 'icon' : cfg.ADDON_CODE_DIR.pjoin('media/theme/Browse_by_User_Rating_icon.png').getPath(),
@@ -1329,16 +1330,16 @@ def create_vcategories_data_Browse_by(cfg):
             },
             'props' : common_props,
             'context' : [
-                ('Update {} database', aux_url_RP('UPDATE_VIRTUAL_CATEGORY', VCATEGORY_BROWSE_BY_RATING_ID)),
+                ('Update {} database', aux_url_RP('UPDATE_VIRTUAL_CATEGORY', const.VCATEGORY_BROWSE_BY_RATING_ID)),
             ] + common_commands,
-            'URL' : aux_url('SHOW_BROWSE_BY_VLAUNCHERS', VCATEGORY_BROWSE_BY_RATING_ID),
+            'URL' : aux_url('SHOW_BROWSE_BY_VLAUNCHERS', const.VCATEGORY_BROWSE_BY_RATING_ID),
         },
         {
             'render_name' : 'Browse by Category',
             'info' : {
                 'title' : 'Browse by Category',
                 'plot' : 'Browse virtual launchers in Category virtual category',
-                'overlay': KODI_ICON_OVERLAY_UNWATCHED,
+                'overlay': kodi.KODI_ICON_OVERLAY_UNWATCHED,
             },
             'art' : {
                 'icon' : cfg.ADDON_CODE_DIR.pjoin('media/theme/Browse_by_Category_icon.png').getPath(),
@@ -1347,9 +1348,9 @@ def create_vcategories_data_Browse_by(cfg):
             },
             'props' : common_props,
             'context' : [
-                ('Update {} database', aux_url_RP('UPDATE_VIRTUAL_CATEGORY', VCATEGORY_BROWSE_BY_CATEGORY_ID)),
+                ('Update {} database', aux_url_RP('UPDATE_VIRTUAL_CATEGORY', const.VCATEGORY_BROWSE_BY_CATEGORY_ID)),
             ] + common_commands,
-            'URL' : aux_url('SHOW_BROWSE_BY_VLAUNCHERS', VCATEGORY_BROWSE_BY_CATEGORY_ID),
+            'URL' : aux_url('SHOW_BROWSE_BY_VLAUNCHERS', const.VCATEGORY_BROWSE_BY_CATEGORY_ID),
         },
     ]
 
@@ -1403,10 +1404,10 @@ def render_vlaunchers_ROM_Collection(cfg):
     log.debug('render_ROM_Collection_vlaunchers() Starting...')
     xbmcplugin.addSortMethod(cfg.addon_handle, xbmcplugin.SORT_METHOD_LABEL)
     xbmcplugin.addSortMethod(cfg.addon_handle, xbmcplugin.SORT_METHOD_UNSORTED)
-    misc_set_AEL_Content(cfg, AEL_CONTENT_VALUE_LAUNCHERS)
+    misc_set_AEL_Content(cfg, const.AEL_CONTENT_VALUE_LAUNCHERS)
 
     # --- Load collection index ---
-    COL = fs_load_Collection_index_XML(cfg.COLLECTIONS_FILE_PATH)
+    COL = db.load_Collection_index_XML(cfg.COLLECTIONS_FILE_PATH)
     if not COL['collections']:
         kodi_notify('No collections in database. Add a collection first.')
         xbmcplugin.endOfDirectory(cfg.addon_handle, succeeded = True, cacheToDisc = False)
@@ -1419,15 +1420,18 @@ def render_vlaunchers_ROM_Collection(cfg):
         collection_name = collection['m_name']
         listitem = xbmcgui.ListItem(collection_name)
         listitem.setInfo('video', {
-            'title'   : collection['m_name'],    'genre'   : collection['m_genre'],
-            'plot'    : collection['m_plot'],    'rating'  : collection['m_rating'],
-            'trailer' : collection['s_trailer'], 'overlay' : KODI_ICON_OVERLAY_UNWATCHED,
+            'title'   : collection['m_name'],
+            'genre'   : collection['m_genre'],
+            'plot'    : collection['m_plot'],
+            'rating'  : collection['m_rating'],
+            'trailer' : collection['s_trailer'],
+            'overlay' : kodi.KODI_ICON_OVERLAY_UNWATCHED,
         })
-        icon_path      = asset_get_default_asset_Category(collection, 'default_icon', 'DefaultFolder.png')
-        fanart_path    = asset_get_default_asset_Category(collection, 'default_fanart')
-        banner_path    = asset_get_default_asset_Category(collection, 'default_banner')
-        poster_path    = asset_get_default_asset_Category(collection, 'default_poster')
-        clearlogo_path = asset_get_default_asset_Category(collection, 'default_clearlogo')
+        icon_path      = assets.get_default_asset_Category(collection, 'default_icon', 'DefaultFolder.png')
+        fanart_path    = assets.get_default_asset_Category(collection, 'default_fanart')
+        banner_path    = assets.get_default_asset_Category(collection, 'default_banner')
+        poster_path    = assets.get_default_asset_Category(collection, 'default_poster')
+        clearlogo_path = assets.get_default_asset_Category(collection, 'default_clearlogo')
         listitem.setArt({
             'icon'   : icon_path,
             'fanart' : fanart_path,
@@ -1439,8 +1443,8 @@ def render_vlaunchers_ROM_Collection(cfg):
         # --- Create context menu ---
         if cfg.kiosk_mode_disabled:
             commands = [
-                ('View ROM Collection data', aux_url_RP('VIEW', VCATEGORY_COLLECTIONS_ID, collection_id)),
-                ('Edit Collection', aux_url_RP('EDIT_COLLECTION', VCATEGORY_COLLECTIONS_ID, collection_id)),
+                ('View ROM Collection data', aux_url_RP('VIEW', const.VCATEGORY_ROM_COLLECTION_ID, collection_id)),
+                ('Edit Collection', aux_url_RP('EDIT_COLLECTION', const.VCATEGORY_ROM_COLLECTION_ID, collection_id)),
                 ('Create new Collection', aux_url_RP('ADD_COLLECTION')),
                 ('Import Collection', aux_url_RP('IMPORT_COLLECTION')),
                 ('Kodi File Manager', 'ActivateWindow(filemanager)'),
@@ -1449,7 +1453,7 @@ def render_vlaunchers_ROM_Collection(cfg):
             listitem.addContextMenuItems(commands, replaceItems = True)
 
         # --- Add ROM Collection ---
-        url_str = aux_url('SHOW_COLLECTION_ROMS', VCATEGORY_COLLECTIONS_ID, collection_id)
+        url_str = aux_url('SHOW_COLLECTION_ROMS', const.VCATEGORY_ROM_COLLECTION_ID, collection_id)
         xbmcplugin.addDirectoryItem(cfg.addon_handle, url_str, listitem, True)
     xbmcplugin.endOfDirectory(cfg.addon_handle, succeeded = True, cacheToDisc = False)
 
@@ -1459,19 +1463,19 @@ def render_vlaunchers_Browse_by(cfg, catID):
     xbmcplugin.addSortMethod(cfg.addon_handle, xbmcplugin.SORT_METHOD_LABEL)
     xbmcplugin.addSortMethod(cfg.addon_handle, xbmcplugin.SORT_METHOD_SIZE)
     xbmcplugin.addSortMethod(cfg.addon_handle, xbmcplugin.SORT_METHOD_UNSORTED)
-    misc_set_AEL_Content(cfg, AEL_CONTENT_VALUE_LAUNCHERS)
+    misc_set_AEL_Content(cfg, const.AEL_CONTENT_VALUE_LAUNCHERS)
     misc_clear_AEL_Launcher_Content(cfg)
 
     # --- Load virtual launchers in this category ---
     vdic = {
-        VCATEGORY_BROWSE_BY_TITLE_ID : (cfg.VCAT_TITLE_FILE_PATH, 'Browse by Title'),
-        VCATEGORY_BROWSE_BY_YEARS_ID : (cfg.VCAT_YEARS_FILE_PATH, 'Browse by Year'),
-        VCATEGORY_BROWSE_BY_GENRE_ID : (cfg.VCAT_GENRE_FILE_PATH, 'Browse by Genre'),
-        VCATEGORY_BROWSE_BY_DEVELOPER_ID : (cfg.VCAT_DEVELOPER_FILE_PATH, 'Browse by Developer'),
-        VCATEGORY_BROWSE_BY_NPLAYERS_ID : (cfg.VCAT_NPLAYERS_FILE_PATH, 'Browse by Number of Players'),
-        VCATEGORY_BROWSE_BY_ESRB_ID : (cfg.VCAT_ESRB_FILE_PATH, 'Browse by ESRB Rating'),
-        VCATEGORY_BROWSE_BY_RATING_ID : (cfg.VCAT_RATING_FILE_PATH, 'Browse by User Rating'),
-        VCATEGORY_BROWSE_BY_CATEGORY_ID : (cfg.VCAT_CATEGORY_FILE_PATH, 'Browse by Category'),
+        const.VCATEGORY_BROWSE_BY_TITLE_ID : (cfg.VCAT_TITLE_FILE_PATH, 'Browse by Title'),
+        const.VCATEGORY_BROWSE_BY_YEARS_ID : (cfg.VCAT_YEARS_FILE_PATH, 'Browse by Year'),
+        const.VCATEGORY_BROWSE_BY_GENRE_ID : (cfg.VCAT_GENRE_FILE_PATH, 'Browse by Genre'),
+        const.VCATEGORY_BROWSE_BY_DEVELOPER_ID : (cfg.VCAT_DEVELOPER_FILE_PATH, 'Browse by Developer'),
+        const.VCATEGORY_BROWSE_BY_NPLAYERS_ID : (cfg.VCAT_NPLAYERS_FILE_PATH, 'Browse by Number of Players'),
+        const.VCATEGORY_BROWSE_BY_ESRB_ID : (cfg.VCAT_ESRB_FILE_PATH, 'Browse by ESRB Rating'),
+        const.VCATEGORY_BROWSE_BY_RATING_ID : (cfg.VCAT_RATING_FILE_PATH, 'Browse by User Rating'),
+        const.VCATEGORY_BROWSE_BY_CATEGORY_ID : (cfg.VCAT_CATEGORY_FILE_PATH, 'Browse by Category'),
     }
     try:
         vcat_db_FN, vcat_name = vdic[catID]
@@ -1487,12 +1491,9 @@ def render_vlaunchers_Browse_by(cfg, catID):
             'Update the virtual category database first.')
         xbmcplugin.endOfDirectory(cfg.addon_handle, succeeded = True, cacheToDisc = False)
         return
-
-    # --- Load Virtual launchers XML file ---
-    VL = fs_load_VCategory_XML(vcat_db_FN)
-
-    # --- Check timestamps and warn user if database should be regenerated ---
-    if VL['timestamp'] < self.update_timestamp:
+    VL = db.load_VCategory_XML(vcat_db_FN)
+    # Check timestamps and warn user if database should be regenerated.
+    if VL['timestamp'] < cfg.update_timestamp:
         kodi.dialog_OK('Categories/Launchers/ROMs were modified. '
             'Virtual category database should be updated!')
 
@@ -1503,48 +1504,48 @@ def render_vlaunchers_Browse_by(cfg, catID):
         listitem = xbmcgui.ListItem(vlauncher_name)
         listitem.setInfo('video', {
             'title' : vlauncher_name,
-            'overlay' : KODI_ICON_OVERLAY_UNWATCHED,
+            'overlay' : kodi.KODI_ICON_OVERLAY_UNWATCHED,
             'size' : vlauncher['rom_count'],
         })
         listitem.setArt({'icon': 'DefaultFolder.png'})
         # Create context menu.
         if cfg.kiosk_mode_disabled:
-            url = aux_url_RP('SEARCH_LAUNCHER', virtual_categoryID, vlauncher_id)
+            url = aux_url_RP('SEARCH_LAUNCHER', catID, vlauncher_id)
             commands = [
                 ('Search ROMs in Virtual Launcher', url),
                 ('Kodi File Manager', 'ActivateWindow(filemanager)'),
                 ('AEL addon settings', 'Addon.OpenSettings({})'.format(cfg.addon.info_id)),
             ]
             listitem.addContextMenuItems(commands, replaceItems = True)
-        url = aux_url('SHOW_VLAUNCHER_ROMS', virtual_categoryID, vlauncher_id)
+        url = aux_url('SHOW_VLAUNCHER_ROMS', catID, vlauncher_id)
         xbmcplugin.addDirectoryItem(cfg.addon_handle, url, listitem, True)
     xbmcplugin.endOfDirectory(cfg.addon_handle, succeeded = True, cacheToDisc = False)
 
 def render_vlaunchers_AEL_offline_scraper(cfg):
     misc_set_default_sorting_method(cfg)
-    misc_set_AEL_Content(cfg, AEL_CONTENT_VALUE_LAUNCHERS)
+    misc_set_AEL_Content(cfg, const.AEL_CONTENT_VALUE_LAUNCHERS)
     misc_clear_AEL_Launcher_Content(cfg)
 
     # Open info dictionary and render platform rows.
     data_dir_FN = cfg.ADDON_CODE_DIR.pjoin('data')
     json_FN = data_dir_FN.pjoin(cfg.GAMEDB_JSON_BASE_NOEXT + '.json')
-    gamedb_info_dic = utils_load_JSON_file(json_FN.getPath())
-    for pobj in AEL_platforms:
-        if pobj.long_name == PLATFORM_UNKNOWN_LONG: continue
+    gamedb_info_dic = utils.load_JSON_file(json_FN.getPath())
+    for pobj in platforms.AEL_platforms:
+        if pobj.long_name == platforms.PLATFORM_UNKNOWN_LONG: continue
         render_vlaunchers_AEL_offline_scraper_row(cfg, pobj, gamedb_info_dic)
     xbmcplugin.endOfDirectory(cfg.addon_handle, succeeded = True, cacheToDisc = False)
 
 def render_vlaunchers_AEL_offline_scraper_row(cfg, pobj, gamedb_info_dic):
     if pobj.aliasof:
-        pobj_parent = AEL_platforms[get_AEL_platform_index(pobj.aliasof)]
-        plot_text = 'Browse ' + KC_ORANGE + pobj.long_name + KC_END + ' ROMs ' + \
+        pobj_parent = platforms.AEL_platforms[platforms.get_AEL_platform_index(pobj.aliasof)]
+        plot_text = 'Browse ' + const.KC_ORANGE + pobj.long_name + const.KC_END + ' ROMs ' + \
             'in AEL Offline Scraper database. ' + \
-            KC_ORANGE + pobj.long_name + KC_END + ' is an alias of ' + \
-            KC_VIOLET + pobj_parent.long_name + KC_END + '.'
+            const.KC_ORANGE + pobj.long_name + const.KC_END + ' is an alias of ' + \
+            const.KC_VIOLET + pobj_parent.long_name + const.KC_END + '.'
         # User ROMs of parent.
         num_ROMs = gamedb_info_dic[pobj_parent.long_name]['numROMs']
     else:
-        plot_text = 'Browse ' + KC_ORANGE + pobj.long_name + KC_END + ' ROMs ' + \
+        plot_text = 'Browse ' + const.KC_ORANGE + pobj.long_name + const.KC_END + ' ROMs ' + \
             'in AEL Offline Scraper database. '
         num_ROMs = gamedb_info_dic[pobj.long_name]['numROMs']
 
@@ -1559,11 +1560,12 @@ def render_vlaunchers_AEL_offline_scraper_row(cfg, pobj, gamedb_info_dic):
     vlauncher_poster = cfg.ADDON_CODE_DIR.pjoin('media/theme/Browse_AEL_Offline_poster.png').getPath()
 
     listitem = xbmcgui.ListItem(title_str)
-    listitem.setInfo('video', {'title' : title_str, 'plot' : plot_text, 'overlay' : 4 })
+    listitem.setInfo('video', {
+        'title' : title_str, 'plot' : plot_text, 'overlay' : kodi.KODI_ICON_OVERLAY_UNWATCHED })
     listitem.setArt({'icon' : vlauncher_icon, 'fanart' : vlauncher_fanart, 'poster' : vlauncher_poster})
     # Set platform property to render platform icon on skins.
     listitem.setProperty('platform', pobj.long_name)
-    listitem.setProperty(AEL_CONTENT_LABEL, AEL_CONTENT_VALUE_ROM_LAUNCHER)
+    listitem.setProperty(const.AEL_CONTENT_LABEL, const.AEL_CONTENT_VALUE_ROM_LAUNCHER)
 
     if cfg.kiosk_mode_disabled:
         commands = [
@@ -1574,7 +1576,7 @@ def render_vlaunchers_AEL_offline_scraper_row(cfg, pobj, gamedb_info_dic):
 
     # Use the original platform name here, otherwise the list goes to the parent
     # platform instead of the aliased platform when user goes back in the list.
-    url_str = aux_url('SHOW_ROMS', VCATEGORY_AOS_ID, pobj.long_name)
+    url_str = aux_url('SHOW_ROMS', const.VCATEGORY_AOS_ID, pobj.long_name)
     xbmcplugin.addDirectoryItem(cfg.addon_handle, url_str, listitem, True)
 
 # Rewrite this function to look like command_render_root_window()
@@ -7360,7 +7362,7 @@ def command_view_AOS_rom(cfg, catID, launID, romID):
     log.debug('command_view_AOS_rom() scraper   "{}"'.format(scraper))
     log.debug('command_view_AOS_rom() platform  "{}"'.format(platform))
     log.debug('command_view_AOS_rom() game_name "{}"'.format(game_name))
-    pobj = AEL_platforms[get_AEL_platform_index(platform)]
+    pobj = platforms.AEL_platforms[platforms.get_AEL_platform_index(platform)]
     if pobj.aliasof:
         log.debug('command_view_AOS_rom() aliasof "{}"'.format(pobj.aliasof))
         pobj_parent = AEL_platforms[get_AEL_platform_index(pobj.aliasof)]
@@ -7372,16 +7374,17 @@ def command_view_AOS_rom(cfg, catID, launID, romID):
     # --- Load Offline Scraper database ---
     xml_path_FN = cfg.GAMEDB_INFO_DIR.pjoin(db_platform + '.xml')
     log.debug('Loading AEL XML {}'.format(xml_path_FN.getPath()))
-    pDialog = KodiProgressDialog()
+    pDialog = kodi.ProgressDialog()
     pDialog.startProgress('Loading AEL Offline Scraper {} XML database...'.format(db_platform))
-    games = audit_load_OfflineScraper_XML(xml_path_FN.getPath())
+    games = audit.load_OfflineScraper_XML(xml_path_FN.getPath())
     pDialog.endProgress()
 
     game = games[game_name]
-    sl = []
-    sl.append('[COLOR orange]ROM information[/COLOR]')
-    sl.append("[COLOR violet]ROM basename[/COLOR]: '{}'".format(game_name))
-    sl.append("[COLOR violet]platform[/COLOR]: '{}'".format(platform))
+    sl = [
+        '[COLOR orange]ROM information[/COLOR]',
+        "[COLOR violet]ROM basename[/COLOR]: '{}'".format(game_name),
+        "[COLOR violet]platform[/COLOR]: '{}'".format(platform),
+    ]
     if pobj.aliasof:
         sl.append("[COLOR violet]alias of[/COLOR]: '{}'".format(pobj_parent.long_name))
     else:
@@ -7416,7 +7419,7 @@ def command_view_AOS_rom(cfg, catID, launID, romID):
 
     # Show information window.
     window_title = 'Offline Scraper ROM information'
-    kodi_display_text_window_mono(window_title, '\n'.join(sl))
+    kodi.display_text_window_mono(window_title, '\n'.join(sl))
 
 # ------------------------------------------------------------------------------------------------
 # Utilities
