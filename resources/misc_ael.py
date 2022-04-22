@@ -83,7 +83,7 @@ def misc_print_ROM_additional_to_slist(rom, sl):
     if 'launch_count' in rom:
         sl.append("[COLOR skyblue]launch_count[/COLOR]: {}".format(rom['launch_count']))
 
-def misc_print_Launcher_to_slist(launcher, sl):
+def print_Launcher_slist(launcher, sl):
     sl.append("[COLOR violet]id[/COLOR]: '{}'".format(launcher['id']))
     sl.append("[COLOR violet]m_name[/COLOR]: '{}'".format(launcher['m_name']))
     sl.append("[COLOR violet]m_year[/COLOR]: '{}'".format(launcher['m_year']))
@@ -158,7 +158,7 @@ def misc_print_Launcher_to_slist(launcher, sl):
     sl.append("[COLOR violet]path_manual[/COLOR]: '{}'".format(launcher['path_manual']))
     sl.append("[COLOR violet]path_trailer[/COLOR]: '{}'".format(launcher['path_trailer']))
 
-def misc_print_Category_to_slist(category, sl):
+def print_Category_slist(category, sl):
     sl.append("[COLOR violet]id[/COLOR]: '{}'".format(category['id']))
     sl.append("[COLOR violet]m_name[/COLOR]: '{}'".format(category['m_name']))
     sl.append("[COLOR violet]m_year[/COLOR]: '{}'".format(category['m_year']))
@@ -180,7 +180,7 @@ def misc_print_Category_to_slist(category, sl):
     sl.append("[COLOR violet]s_clearlogo[/COLOR]: '{}'".format(category['s_clearlogo']))
     sl.append("[COLOR violet]s_trailer[/COLOR]: '{}'".format(category['s_trailer']))
 
-def misc_print_Collection_to_slist(collection, sl):
+def print_Collection_slist(collection, sl):
     sl.append("[COLOR violet]id[/COLOR]: '{}'".format(collection['id']))
     sl.append("[COLOR violet]m_name[/COLOR]: '{}'".format(collection['m_name']))
     sl.append("[COLOR violet]m_genre[/COLOR]: '{}'".format(collection['m_genre']))

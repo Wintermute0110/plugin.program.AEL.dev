@@ -381,14 +381,100 @@ def get_collection_ROMs_basename(collection_name, collectionID):
 # ------------------------------------------------------------------------------------------------
 # ROM database high-level IO functions
 # ------------------------------------------------------------------------------------------------
-# * This function must be called first to update cfg object fields that will be used in many
-#   other functions.
+# * This function must be called first to update cfg object fields that will be 
+#   used in many other functions.
+# * Include here all possible launcher information needed anywhere in the addon.
+#
+# >>>>> Merge get_launcher_fnames() into this function.
 def get_launcher_info(cfg, categoryID, launcherID):
     cfg.launcher_is_vlauncher = launcherID in const.VLAUNCHER_ID_LIST
     cfg.launcher_is_vcategory = categoryID in const.VCATEGORY_ID_LIST
     cfg.launcher_is_browse_by = categoryID in const.VCATEGORY_BROWSE_BY_ID_LIST
     cfg.launcher_is_actual = not cfg.launcher_is_vlauncher and not cfg.launcher_is_vcategory
     cfg.launcher_is_virtual = not cfg.launcher_is_actual
+
+    if cfg.launcher_is_actual:
+        launcher = cfg.launchers[launcherID]
+        roms_base_noext = launcher['roms_base_noext']
+        cfg.roms_FN = cfg.ROMS_DIR.pjoin(roms_base_noext + '.json')
+        cfg.parents_FN = cfg.ROMS_DIR.pjoin(roms_base_noext + '_parents.json')
+        cfg.index_FN = cfg.ROMS_DIR.pjoin(roms_base_noext + '_index_PClone.json')
+        cfg.window_title = 'Launcher ROM data'
+        cfg.launcher_label = 'Launcher ROM'
+
+    elif cfg.launcher_is_vlauncher and launcherID == const.VLAUNCHER_FAVOURITES_ID:
+        cfg.roms_FN = cfg.FAV_JSON_FILE_PATH
+        cfg.window_title = 'Favourite ROM data'
+        cfg.launcher_label = 'Favourite'
+
+    elif cfg.launcher_is_vlauncher and launcherID == const.VLAUNCHER_RECENT_ID:
+        cfg.roms_FN = cfg.RECENT_PLAYED_FILE_PATH
+        cfg.window_title = 'Recently played ROM data'
+        cfg.launcher_label = 'Recently played ROM'
+
+    elif cfg.launcher_is_vlauncher and launcherID == const.VLAUNCHER_MOST_PLAYED_ID:
+        cfg.roms_FN = cfg.MOST_PLAYED_FILE_PATH
+        cfg.window_title = 'Most Played ROM data'
+        cfg.launcher_label = 'Most Played ROM'
+
+    elif cfg.launcher_is_vcategory and categoryID == const.VCATEGORY_ROM_COLLECTION_ID:
+        COL = fs_load_Collection_index_XML(cfg.COLLECTIONS_FILE_PATH)
+        collection = COL['collections'][launcherID]
+        cfg.roms_FN = cfg.COLLECTIONS_DIR.pjoin(collection['roms_base_noext'] + '.json')
+        cfg.window_title = 'Collection ROM data'
+        cfg.launcher_label = 'Collection'
+
+    elif cfg.launcher_is_vcategory and categoryID == const.VCATEGORY_BROWSE_BY_TITLE_ID:
+        cfg.window_title = 'Virtual Launcher Title ROM data'
+        cfg.launcher_label = 'Virtual Launcher Title'
+
+    elif cfg.launcher_is_vcategory and categoryID == const.VCATEGORY_BROWSE_BY_YEARS_ID:
+        cfg.window_title = 'Virtual Launcher Year ROM data'
+        cfg.launcher_label = 'Virtual Launcher Year'
+
+    elif cfg.launcher_is_vcategory and categoryID == const.VCATEGORY_BROWSE_BY_GENRE_ID:
+        cfg.window_title = 'Virtual Launcher Genre ROM data'
+        cfg.launcher_label = 'Virtual Launcher Genre'
+
+    elif cfg.launcher_is_vcategory and categoryID == const.VCATEGORY_BROWSE_BY_DEVELOPER_ID:
+        cfg.window_title = 'Virtual Launcher Studio ROM data'
+        cfg.launcher_label = 'Virtual Launcher Studio'
+
+    elif cfg.launcher_is_vcategory and categoryID == const.VCATEGORY_BROWSE_BY_NPLAYERS_ID:
+        cfg.window_title = 'Virtual Launcher NPlayer ROM data'
+        cfg.launcher_label = 'Virtual Launcher NPlayer'
+
+    elif cfg.launcher_is_vcategory and categoryID == const.VCATEGORY_BROWSE_BY_ESRB_ID:
+        cfg.window_title = 'Virtual Launcher ESRB ROM data'
+        cfg.launcher_label = 'Virtual Launcher ESRB'
+
+    elif cfg.launcher_is_vcategory and categoryID == const.VCATEGORY_BROWSE_BY_RATING_ID:
+        cfg.window_title = 'Virtual Launcher Rating ROM data'
+        cfg.launcher_label = 'Virtual Launcher Rating'
+
+    elif cfg.launcher_is_vcategory and categoryID == const.VCATEGORY_BROWSE_BY_CATEGORY_ID:
+        cfg.window_title = 'Virtual Launcher Category ROM data'
+        cfg.launcher_label = 'Virtual Launcher Category'
+
+    elif cfg.launcher_is_vcategory and categoryID == const.VCATEGORY_AOS_ID:
+        platform = launcherID
+        log.debug('db_load_ROMs() platform "{}"'.format(platform))
+        pobj = platforms.AEL_platforms[platforms.get_AEL_platform_index(platform)]
+        if pobj.aliasof:
+            log.debug('db_load_ROMs() aliasof "{}"'.format(pobj.aliasof))
+            pobj_parent = AEL_platforms[get_AEL_platform_index(pobj.aliasof)]
+            db_platform = pobj_parent.long_name
+        else:
+            db_platform = pobj.long_name
+        xml_FN = cfg.GAMEDB_INFO_DIR.pjoin(db_platform + '.xml')
+        log.debug('xml_FN OP {}'.format(xml_FN.getOriginalPath()))
+        log.debug('xml_FN  P {}'.format(xml_FN.getPath()))
+        cfg.roms_FN = xml_FN
+
+    else:
+        raise TypeError
+    # log.debug('get_launcher_info() roms "{}"'.format(ret['roms'].getPath()))
+    return ret
 
 # For actual ROM Launchers returns the database launcher dictionary.
 # For virtual ROM Launchers returns create a launcher dictionary on-the-fly. NOTE: this is not
@@ -413,74 +499,12 @@ def get_launcher(cfg, st_dic, launcherID):
 # If ROM is a Favourite ROM then use launcherID field in rom dictionary.
 def get_launcher_from_ROM(cfg, st_dic, rom): pass
 
-# Returns a dictionary with all the ROM database filenames.
-# Also works for virtual launchers.
-# For virtual launchers also get index info?
-#
-# ret['roms']  ROM main database JSON file. [FileName]
-def get_launcher_fnames(cfg, categoryID, launcherID):
-    # Default return dictionary.
-    ret = {
-        'roms' : None,
-        'parents' : None,
-        'index' : None,
-    }
-
-    if cfg.launcher_is_actual:
-        launcher = cfg.launchers[launcherID]
-        roms_base_noext = launcher['roms_base_noext']
-        roms_FN = cfg.ROMS_DIR.pjoin(roms_base_noext + '.json')
-        parents_FN = cfg.ROMS_DIR.pjoin(roms_base_noext + '_parents.json')
-        index_FN = cfg.ROMS_DIR.pjoin(roms_base_noext + '_index_PClone.json')
-        ret['roms'] = roms_FN
-        ret['parents'] = parents_FN
-        ret['index'] = index_FN
-
-    elif cfg.launcher_is_vlauncher and launcherID == const.VLAUNCHER_FAVOURITES_ID:
-        ret['roms'] = cfg.FAV_JSON_FILE_PATH
-    elif cfg.launcher_is_vlauncher and launcherID == const.VLAUNCHER_RECENT_ID:
-        ret['roms'] = cfg.RECENT_PLAYED_FILE_PATH
-    elif cfg.launcher_is_vlauncher and launcherID == const.VLAUNCHER_MOST_PLAYED_ID:
-        ret['roms'] = cfg.MOST_PLAYED_FILE_PATH
-
-    elif cfg.launcher_is_vcategory and categoryID == const.VCATEGORY_ROM_COLLECTION_ID:
-        COL = fs_load_Collection_index_XML(cfg.COLLECTIONS_FILE_PATH)
-        collection = COL['collections'][launcherID]
-        roms_FN = cfg.COLLECTIONS_DIR.pjoin(collection['roms_base_noext'] + '.json')
-        ret['roms'] = roms_FN
-
-    elif cfg.launcher_is_browse_by:
-        # Move code from do_load_ROMs() here.
-        raise TypeError
-
-    elif cfg.launcher_is_vcategory and categoryID == const.VCATEGORY_AOS_ID:
-        platform = launcherID
-        log.debug('db_load_ROMs() platform "{}"'.format(platform))
-        pobj = platforms.AEL_platforms[platforms.get_AEL_platform_index(platform)]
-        if pobj.aliasof:
-            log.debug('db_load_ROMs() aliasof "{}"'.format(pobj.aliasof))
-            pobj_parent = AEL_platforms[get_AEL_platform_index(pobj.aliasof)]
-            db_platform = pobj_parent.long_name
-        else:
-            db_platform = pobj.long_name
-        xml_FN = cfg.GAMEDB_INFO_DIR.pjoin(db_platform + '.xml')
-        log.debug('xml_FN OP {}'.format(xml_FN.getOriginalPath()))
-        log.debug('xml_FN  P {}'.format(xml_FN.getPath()))
-        ret['roms'] = xml_FN
-
-    else:
-        raise TypeError
-    # log.debug('db_get_launcher_fnames() roms "{}"'.format(ret['roms'].getPath()))
-    return ret
-
 # Load ROMs databases and places them in cfg.roms dictionary.
 # * In most cases cfg.roms is a dictionary of dictionaries.
 #   In some cases () cfg.roms is an OrderedDictionary.
 # * If load_pclone_ROMs_flag is True then PClone ROMs are also loaded.
 def load_ROMs(cfg, st_dic, categoryID, launcherID, load_pclone_ROMs_flag = False):
     log.debug('load_ROMs() categoryID "{}" | launcherID "{}"'.format(categoryID, launcherID))
-    dbdic = get_launcher_fnames(cfg, categoryID, launcherID)
-
     # Actual ROM Launcher ------------------------------------------------------------------------
     if cfg.launcher_is_actual:
         if not dbdic['roms'].exists():

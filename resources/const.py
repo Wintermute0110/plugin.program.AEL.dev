@@ -156,8 +156,8 @@ LNK_LAUNCHER_APP_NAME = 'lnk_launcher_app'
 # Special Category/Launcher IDs.
 CATEGORY_ADDONROOT_ID = 'root_category' # This is an actual category, not a virtual one.
 
-# Favourites, Most Played and Recently Played belong to this category.
-# However, having an empty category in URLs for this virtual launchers is OK.
+# Favourites, Most Played and Recently Played belong to VCATEGORY_SPECIAL_ID category.
+# However, having an empty category in URLs for these virtual launchers is OK.
 VCATEGORY_SPECIAL_ID = 'vcategory_special'
 VCATEGORY_ROM_COLLECTION_ID = 'vcategory_rom_collection'
 VCATEGORY_BROWSE_BY_TITLE_ID = 'vcategory_browse_by_title'
