@@ -91,12 +91,12 @@ WIP NOW  [CORE] New ROM storage high level functions.
          db.get_launcher(), db.load_ROMs(), etc.
          Copy feature from branch `old-master-chrisism-python2`
 
-WIP NOW  [CORE] New ROM rendering engine.
-         Functions xxx()
-         Copy it from AML.
+WIP NOW  [CORE] New ROM rendering engine. Copy feature from AML.
+         These functions render ROMs in all kinds of launchers, either real or virtual.
+         Functions render_ROMs(), render_ROMs_filter(), render_ROMs_process(), render_ROMs_commit().
 
 WIP      [CORE] Improved context menu handling.
-         Copy feature from branch `old-master-chrisism-python2` or create new non-recursive implementation.
+         Copy feature from branch `old-master-chrisism-python2` or create a new non-recursive implementation.
 
 WIP      [CORE] Improved FileName class. All IO must be done using the FileName class.
          Copy feature from branch `old-master-chrisism-python2`

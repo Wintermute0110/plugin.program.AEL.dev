@@ -23,6 +23,7 @@ import resources.assets as assets
 import resources.audit as audit
 
 # --- Python standard library ---
+import collections
 import copy
 import string
 import sys
@@ -510,27 +511,27 @@ def load_ROMs(cfg, st_dic, categoryID, launcherID, load_pclone_ROMs_flag = False
 
     # Virtual launchers --------------------------------------------------------------------------
     elif cfg.launcher_is_vlauncher and launcherID == const.VLAUNCHER_FAVOURITES_ID:
+        # Transform list of dictionaries into an OrderedDict
         raw_data = utils.load_JSON_file(dbdic['roms'].getPath())
         cfg.roms = raw_data[1] if raw_data else {}
         if not cfg.roms:
             kodi_set_st_notify(st_dic, 'Favourites is empty. Add ROMs to Favourites first.')
             return
-        else:
-            # Extract roms from JSON data structe and ensure version is correct.
-            cfg.control_str = raw_data[0]['control']
-            cfg.version_int = raw_data[0]['version']
+        # Extract roms from JSON data structure and ensure version is correct.
+        cfg.control_str = raw_data[0]['control']
+        cfg.version_int = raw_data[0]['version']
 
     elif cfg.launcher_is_vlauncher and launcherID == const.VLAUNCHER_RECENT_ID:
-        # Collection ROMs are a list, not a dictionary as usual in other DBs.
-        # Convert the list to an OrderedDict()?
+        # Collection ROMs are a list od dictionaries, not a dictionary as usual in other DBs.
+        # Transform list of dictionaries into an OrderedDict.
         raw_data = utils.load_JSON_file(dbdic['roms'].getPath())
-        cfg.roms = raw_data[1] if raw_data else []
+        cfg.roms = collections.OrderedDict()
+        for r in raw_data[1]: cfg.roms[r['id']] = r
         if not cfg.roms:
             kodi_set_st_notify(st_dic, 'Recently played list is empty. Play some ROMs first!')
             return
-        else:
-            cfg.control_str = raw_data[0]['control']
-            cfg.version_int = raw_data[0]['version']
+        cfg.control_str = raw_data[0]['control']
+        cfg.version_int = raw_data[0]['version']
 
     elif cfg.launcher_is_vlauncher and launcherID == const.VLAUNCHER_MOST_PLAYED_ID:
         raw_data = utils.load_JSON_file(dbdic['roms'].getPath())
@@ -538,10 +539,9 @@ def load_ROMs(cfg, st_dic, categoryID, launcherID, load_pclone_ROMs_flag = False
         if not cfg.roms:
             kodi_set_st_notify(st_dic, 'Most played ROMs list is empty. Play some ROMs first!.')
             return
-        else:
-            # Extract roms from JSON data structe and ensure version is correct.
-            cfg.control_str = raw_data[0]['control']
-            cfg.version_int = raw_data[0]['version']
+        # Extract roms from JSON data structe and ensure version is correct.
+        cfg.control_str = raw_data[0]['control']
+        cfg.version_int = raw_data[0]['version']
 
     # Virtual launchers belonging to a virtual category ------------------------------------------
     elif cfg.launcher_is_vcategory and categoryID == const.VCATEGORY_ROM_COLLECTION_ID:
@@ -578,7 +578,6 @@ def load_ROMs(cfg, st_dic, categoryID, launcherID, load_pclone_ROMs_flag = False
         if not hashed_db_filename.exists():
             kodi.dialog_OK('Virtual launcher XML/JSON file not found.')
             return
-            
         cfg.roms = fs_load_VCategory_ROMs_JSON(vcategory_db_dir, virtual_launcherID)
         if not cfg.roms:
             kodi_notify('Virtual category ROMs XML empty. Add items to favourites first.')
@@ -600,8 +599,8 @@ def load_ROMs_Favourite_set(cfg):
     roms_fav = raw_data[1] if raw_data else {}
     if not cfg.roms:
         cfg.roms_fav_set = set()
-    else:
-        cfg.roms_fav_set = set(roms_fav.keys())
+        return
+    cfg.roms_fav_set = set(roms_fav.keys())
 
 
 
@@ -940,22 +939,22 @@ def write_ROMs_JSON(roms_dir_FN, launcher, roms):
     #
     # Print some information in the XML so the user can now which launcher created it.
     # Note that this is ignored when reading the file.
-    slist = []
-    slist.append('<?xml version="1.0" encoding="utf-8" standalone="yes"?>')
-    slist.append('<advanced_emulator_launcher_ROMs version="{}">'.format(AEL_STORAGE_FORMAT))
-    slist.append('<launcher>')
-    slist.append(text_XML('id', launcher['id']))
-    slist.append(text_XML('m_name', launcher['m_name']))
-    slist.append(text_XML('categoryID', launcher['categoryID']))
-    slist.append(text_XML('platform', launcher['platform']))
-    slist.append(text_XML('rompath', launcher['rompath']))
-    slist.append(text_XML('romext', launcher['romext']))
-    slist.append('</launcher>')
-    slist.append('</advanced_emulator_launcher_ROMs>')
+    sl = []
+    sl.append('<?xml version="1.0" encoding="utf-8" standalone="yes"?>')
+    sl.append('<advanced_emulator_launcher_ROMs version="{}">'.format(AEL_STORAGE_FORMAT))
+    sl.append('<launcher>')
+    sl.append(text_XML('id', launcher['id']))
+    sl.append(text_XML('m_name', launcher['m_name']))
+    sl.append(text_XML('categoryID', launcher['categoryID']))
+    sl.append(text_XML('platform', launcher['platform']))
+    sl.append(text_XML('rompath', launcher['rompath']))
+    sl.append(text_XML('romext', launcher['romext']))
+    sl.append('</launcher>')
+    sl.append('</advanced_emulator_launcher_ROMs>')
 
     #  Write ROMs XML info file and JSON database file.
-    utils_write_slist_to_file(roms_xml_file.getPath(), slist)
-    utils_write_JSON_file(roms_json_file.getPath(), roms)
+    utils.write_slist_to_file(roms_xml_file.getPath(), sl)
+    utils.write_JSON_file(roms_json_file.getPath(), roms)
 
 # ------------------------------------------------------------------------------------------------
 # Favourite ROMs
