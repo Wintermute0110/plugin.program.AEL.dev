@@ -327,7 +327,7 @@ def run_plugin(addon_argv):
     concurrent_command_set = {
         'SHOW_ADDON_ROOT',
         'SHOW_BROWSE_BY_VCATEGORIES',
-        'SHOW_LAUNCHERS',
+        'SHOW_LAUNCHERS', # Shows launchers in a category.
         'SHOW_ROM_COLLECTIONS_VLAUNCHERS',
         'SHOW_BROWSE_BY_VLAUNCHERS',
         'SHOW_AOS_VLAUNCHERS',
@@ -1517,7 +1517,7 @@ def render_vlaunchers_Browse_by(cfg, catID):
                 ('AEL addon settings', 'Addon.OpenSettings({})'.format(cfg.addon.info_id)),
             ]
             listitem.addContextMenuItems(commands, replaceItems = True)
-        url = aux_url('SHOW_VLAUNCHER_ROMS', catID, vlauncher_id)
+        url = aux_url('SHOW_ROMS', catID, vlauncher_id)
         xbmcplugin.addDirectoryItem(cfg.addon_handle, url, listitem, True)
     xbmcplugin.endOfDirectory(cfg.addon_handle, succeeded = True, cacheToDisc = False)
 
@@ -2319,7 +2319,7 @@ def render_ROMs_process(cfg, categoryID, launcherID):
 
             # --- NoIntro status flag ---
             nstat = rom['nointro_status']
-            if self.settings['display_nointro_stat']:
+            if cfg.settings['display_nointro_stat']:
                 if nstat == const.AUDIT_STATUS_HAVE:
                     rom_name = '{} [COLOR green][Have][/COLOR]'.format(rom_raw_name)
                     AEL_NoIntro_stat_value = const.AEL_NOINTRO_STAT_VALUE_HAVE
@@ -2340,10 +2340,10 @@ def render_ROMs_process(cfg, categoryID, launcherID):
             else:
                 rom_name = rom_raw_name
             # In Favourites ROM flag
-            if self.settings['display_rom_in_fav'] and rom_in_fav: rom_name += ' [COLOR violet][Fav][/COLOR]'
+            if cfg.settings['display_rom_in_fav'] and rom_in_fav: rom_name += ' [COLOR violet][Fav][/COLOR]'
             if rom_in_fav: AEL_InFav_bool_value = const.AEL_INFAV_BOOL_VALUE_TRUE
             # Multidisc flag
-            if self.settings['display_rom_in_fav'] and rom['disks']: rom_name += ' [COLOR plum][MD][/COLOR]'
+            if cfg.settings['display_rom_in_fav'] and rom['disks']: rom_name += ' [COLOR plum][MD][/COLOR]'
             URL = aux_url('LAUNCH_ROM', categoryID, launcherID, romID)
 
         # Core from former command_render_ROMs_AEL_scraper()
@@ -7028,7 +7028,7 @@ def command_view_menu(cfg, categoryID, launcherID, romID):
                 sl.append('No Category')
         else:
             sl.append('\n[COLOR orange]{} ROM additional information[/COLOR]'.format(cfg.launcher_label))
-            misc_ael.print_ROM_additional_slist(rom)
+            misc_ael.print_ROM_additional_slist(rom, sl)
         kodi.display_text_window_mono(cfg.window_title, '\n'.join(sl))
 
     # --- Launcher statistical reports ---

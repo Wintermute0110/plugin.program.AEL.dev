@@ -610,8 +610,8 @@ def load_ROMs(cfg, st_dic, categoryID, launcherID, load_pclone_ROMs_flag = False
         if not hashed_db_filename.exists():
             kodi.dialog_OK('Virtual launcher XML/JSON file not found.')
             return
-        # [TODO] Move function contents here.
-        cfg.roms = fs_load_VCategory_ROMs_JSON(cfg.vcategory_db_dir, launcherID)
+        # [TODO] Move function contents here or use generic JSON load function.
+        cfg.roms = load_VCategory_ROMs_JSON(cfg.vcategory_db_dir, launcherID)
         if not cfg.roms:
             kodi_notify('Virtual category ROMs XML empty. Add items to favourites first.')
             return
