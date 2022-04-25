@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-# Copyright (c) 2016-2021 Wintermute0110 <wintermute0110@gmail.com>
+# Copyright (c) 2016-2022 Wintermute0110 <wintermute0110@gmail.com>
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -25,7 +25,7 @@
 # ------------------------------------------------------------------------------------------------
 # Database visualization functions.
 # ------------------------------------------------------------------------------------------------
-def misc_print_ROM_to_slist(rom, sl):
+def print_ROM_slist(rom, sl):
     sl.append("[COLOR violet]id[/COLOR]: '{}'".format(rom['id']))
     # Metadata
     sl.append("[COLOR violet]m_name[/COLOR]: '{}'".format(rom['m_name']))
@@ -61,7 +61,7 @@ def misc_print_ROM_to_slist(rom, sl):
     sl.append("[COLOR violet]s_manual[/COLOR]: '{}'".format(rom['s_manual']))
     sl.append("[COLOR violet]s_trailer[/COLOR]: '{}'".format(rom['s_trailer']))
 
-def misc_print_ROM_additional_to_slist(rom, sl):
+def print_ROM_additional_slist(rom, sl):
     sl.append("[COLOR violet]launcherID[/COLOR]: '{}'".format(rom['launcherID']))
     sl.append("[COLOR violet]platform[/COLOR]: '{}'".format(rom['platform']))
     sl.append("[COLOR violet]application[/COLOR]: '{}'".format(rom['application']))

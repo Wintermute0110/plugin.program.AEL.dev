@@ -2050,7 +2050,7 @@ def render_ROMs_filter(cfg, st_dic, launcher):
 def render_ROMs_process(cfg, categoryID, launcherID):
     st = utils.new_status_dic()
     # Prepare data depending on launcher class ---------------------------------------------------
-    if cfg.launcher_is_actual:
+    if cfg.launcher_is_standard:
         launcher = db.get_launcher(cfg, st, launcherID)
         if utils.is_error_status(st):
             xbmcplugin.endOfDirectory(cfg.addon_handle, succeeded = True, cacheToDisc = False)
@@ -2133,7 +2133,7 @@ def render_ROMs_process(cfg, categoryID, launcherID):
 
         # Render machine name string, compute properties and artwork -----------------------------
         # Standard ROM launcher
-        if cfg.launcher_is_actual:
+        if cfg.launcher_is_standard:
             # Create this field which is present in Favourite ROM objects.
             rom['platform'] = launcher['platform']
 
@@ -2438,7 +2438,7 @@ def render_ROMs_process(cfg, categoryID, launcherID):
         }
 
         # Context menu ---------------------------------------------------------------------------
-        if cfg.launcher_is_actual:
+        if cfg.launcher_is_standard:
             commands = [
                 ('View ROM/Launcher', aux_url_RP('VIEW', categoryID, launcherID, romID)),
                 ('Edit ROM', aux_url_RP('EDIT_ROM', categoryID, launcherID, romID)),
@@ -6999,58 +6999,37 @@ def command_view_menu(cfg, categoryID, launcherID, romID):
         st = utils.new_status_dic()
         db.get_launcher_info(cfg, categoryID, launcherID)
         db.load_ROMs(cfg, st, categoryID, launcherID)
-        rom = roms[romID]
+        rom = cfg.roms[romID]
 
-        # if cfg.launcher_is_actual and romID == UNKNOWN_ROMS_PARENT_ID:
+        # if cfg.launcher_is_standard and romID == UNKNOWN_ROMS_PARENT_ID:
         #     kodi.dialog_OK('You cannot view this ROM!')
         #     return
-
-        # --- ROM in Collection ---
-        if categoryID == VCATEGORY_COLLECTIONS_ID:
-            log.info('command_view_menu() Viewing ROM in Collection ...')
-            COL = fs_load_Collection_index_XML(g_PATHS.COLLECTIONS_FILE_PATH)
-            collection = COL['collections'][launcherID]
-            roms_json_file = g_PATHS.COLLECTIONS_DIR.pjoin(collection['roms_base_noext'] + '.json')
-            collection_rom_list = fs_load_Collection_ROMs_JSON(roms_json_file)
-            current_ROM_position = fs_collection_ROM_index_by_romID(romID, collection_rom_list)
-            if current_ROM_position < 0:
-                kodi.dialog_OK('Collection ROM not found in list. This is a bug!')
-                return
-            rom = collection_rom_list[current_ROM_position]
-
-        # --- ROM in regular launcher ---
-        else:
-            log.info('command_view_menu() Viewing ROM in Launcher ...')
-            if romID == UNKNOWN_ROMS_PARENT_ID:
-                kodi.dialog_OK('You cannot view this ROM!')
-                return
-            # >> Check launcher is OK
-            if launcherID not in self.launchers:
-                kodi.dialog_OK('launcherID not found in self.launchers')
-                return
-            launcher_in_category = False if categoryID == CATEGORY_ADDONROOT_ID else True
-            if launcher_in_category: category = self.categories[categoryID]
-            launcher = self.launchers[launcherID]
-            roms = fs_load_ROMs_JSON(g_PATHS.ROMS_DIR, launcher)
-            rom = roms[romID]
+        # if romID == UNKNOWN_ROMS_PARENT_ID:
+        #     kodi.dialog_OK('You cannot view this ROM!')
+        #     return
+        # if launcherID not in self.launchers:
+        #     kodi.dialog_OK('launcherID not found in self.launchers')
+        #     return
 
         # Display category/launcher information.
         sl = []
-        sl.append('[COLOR orange]ROM information[/COLOR]\n')
-        info_text += self._misc_print_string_ROM(rom)
-        if regular_launcher:
-            info_text += '\n[COLOR orange]Launcher information[/COLOR]\n'
-            info_text += self._misc_print_string_Launcher(launcher)
-            info_text += '\n[COLOR orange]Category information[/COLOR]\n'
+        sl.append('[COLOR orange]ROM information[/COLOR]')
+        misc_ael.print_ROM_slist(rom, sl)
+        if cfg.launcher_is_standard:
+            launcher = cfg.launchers[launcherID]
+            sl.append('\n[COLOR orange]Launcher information[/COLOR]')
+            misc_ael.print_Launcher_slist(launcher, sl)
+            sl.append('\n[COLOR orange]Category information[/COLOR]')
             launcher_in_category = False if categoryID == const.CATEGORY_ADDONROOT_ID else True
             if launcher_in_category:
-                info_text += self._misc_print_string_Category(category)
+                category = cfg.categories[categoryID]
+                misc_ael.print_Category_slist(category)
             else:
-                info_text += 'No Category (Launcher in addon root)'
+                sl.append('No Category')
         else:
-            info_text += '\n[COLOR orange]{} ROM additional information[/COLOR]\n'.format(vlauncher_label)
-            info_text += self._misc_print_string_ROM_additional(rom)
-        kodi_display_text_window_mono(window_title, '\n'.join(sl))
+            sl.append('\n[COLOR orange]{} ROM additional information[/COLOR]'.format(cfg.launcher_label))
+            misc_ael.print_ROM_additional_slist(rom)
+        kodi.display_text_window_mono(cfg.window_title, '\n'.join(sl))
 
     # --- Launcher statistical reports ---
     elif action == ACTION_VIEW_LAUNCHER_STATS or \
