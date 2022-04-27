@@ -26,6 +26,7 @@ import resources.platforms as platforms
 # --- Python standard library ---
 import collections
 import copy
+import os
 import string
 import sys
 import time
@@ -1592,8 +1593,7 @@ def import_category_NFO(nfo_FN, categories, categoryID):
 def get_category_NFO_name(settings, category):
     category_name = category['m_name']
     nfo_dir = settings['categories_asset_dir']
-    nfo_FN = FileName(os.path.join(nfo_dir, category_name + '.nfo'))
-    return nfo_FN
+    return utils.FileName(os.path.join(nfo_dir, category_name + '.nfo'))
 
 # Collection NFO files. Same as Category NFO files.
 def export_collection_NFO(nfo_FileName, collection):

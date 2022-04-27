@@ -667,34 +667,6 @@ def aux_url_search(command, categoryID, launcherID, search_type, search_string):
 # ------------------------------------------------------------------------------------------------
 # Really miscellaneous functions.
 # ------------------------------------------------------------------------------------------------
-# Edits a generic string using the GUI.
-# 
-# edict -> Dictionary to be edited. Category, Launcher or ROM.
-# fname -> Field name in edict to be edited. Example: 'm_year'.
-# prop_name -> Property name string. Example: 'Launcher Release Year'
-#
-# Returns True if edict was changed, false otherwise.
-def aux_edit_str(edict, fname, prop_name):
-    old_value_str = edict[fname]
-    keyboard = KodiKeyboardDialog('Edit {}'.format(prop_name), old_value_str)
-    keyboard.executeDialog()
-    if not keyboard.isConfirmed():
-        kodi_notify('{} not changed'.format(prop_name))
-        return False
-    if ADDON_RUNNING_PYTHON_2:
-        new_value_str = keyboard.getData().strip().decode('utf-8')
-    elif ADDON_RUNNING_PYTHON_3:
-        new_value_str = keyboard.getData().strip()
-    else:
-        raise TypeError('Undefined Python runtime version.')
-    new_value_str = new_value_str if new_value_str else old_value_str
-    if old_value_str == new_value_str:
-        kodi_notify('{} not changed'.format(prop_name))
-        return False
-    edict[fname] = new_value_str
-    kodi_notify('{} is now {}'.format(prop_name, new_value_str))
-    return True
-
 # Set Sorting methods
 def misc_set_default_sorting_method(cfg):
     # This must be called only if cfg.addon_handle >= 0, otherwise Kodi will complain in the log.
@@ -2941,9 +2913,9 @@ def command_add_ROM_to_collection(cfg, categoryID, launcherID, romID):
 # Tuple content submenu: (menu_ID, menu message, sub_menu_list)
 def command_edit_category(cfg, categoryID):
     # The Menu changes if the category being edited changes, so it must be rebuilt dynamically.
-    menu = aux_build_edit_category_menu(cfg, categoryID)
-    # Current position in menu. First element of the list is the menu root. Second, third, etc.,
-    # is for nested menus.
+    menu = command_edit_category_build_menu(cfg, categoryID)
+    # Current position in menu. First element of the list is the menu root.
+    # Second, third, etc., is for nested menus.
     mpos = [0]
     execute_menu = True
     while execute_menu:
@@ -2976,30 +2948,79 @@ def command_edit_category(cfg, categoryID):
             mpos[-1] = mindex
             mpos.append(0)
             continue
+
         # Execute command.
         command = mtuple[0]
-        if command == 0:
-            raise TypeError
+        category = cfg.categories[categoryID]
+        log.debug('Executing command "{}"'.format(command))
+        if command == 'EDIT_METADATA_TITLE':
+            mgui_edit_metadata_str(category, 'Title', category.get_name, category.set_name)
+        elif command == 'EDIT_METADATA_RELEASEYEAR':
+            mgui_edit_metadata_str(category, 'Release Rear', category.get_releaseyear, category.set_releaseyear)
+        elif command == 'EDIT_METADATA_GENRE':
+            mgui_edit_metadata_str(category, 'Genre', category.get_genre, category.set_genre)
+        elif command == 'EDIT_METADATA_DEVELOPER':
+            mgui_edit_metadata_str(category, 'Developer', category.get_developer, category.set_developer)
+        elif command == 'EDIT_METADATA_RATING':
+            mgui_edit_rating(category, category.get_rating, category.set_rating)
+        elif command == 'EDIT_METADATA_PLOT':
+            mgui_edit_metadata_str(category, 'Plot', category.get_plot, category.set_plot)
+        elif command == 'IMPORT_NFO_FILE_DEFAULT':
+            mgui_edit_category_nfo_import_default(category)
+        elif command == 'IMPORT_NFO_FILE_BROWSE':
+            mgui_edit_category_nfo_import_browse(category)
+        elif command == 'SAVE_NFO_FILE_DEFAULT':
+            mgui_edit_category_nfo_save_default(category)
+        # Submenu command
+        elif command == 'EDIT_ASSETS':
+            mgui_edit_object_assets(category)
+        # Submenu command
+        elif command == 'EDIT_DEFAULT_ASSETS':
+            mgui_edit_object_default_assets(category)
+        elif command == 'EDIT_CATEGORY_STATUS':
+            category.change_finished_status()
+            kodi_dialog_OK('Category "{}" status is now {}'.format(category.get_name(), category.get_finished_str()))
+            # g_MainRepository.save_category(category)
+        elif command == 'EXPORT_CATEGORY_XML':
+            m_subcommand_export_category_xml(category)
+        # Deleting a Category must exit the context menu!
+        # If the deletion was sucessful the Category does not exit any more.
+        elif command == 'DELETE_CATEGORY':
+            if m_subcommand_delete_category(category): execute_menu = False
         else:
+            log.error('command_edit_category() Unsupported command "{}"'.format(command))
+            kodi.dialog_OK('command_edit_category() Unknown command {}. '.format(command) +
+                'Please report this bug.')
             raise TypeError
 
-        # Save database?
+        # If we reach this point save the database automatically?
+        
     kodi.notify('Finish Edit Category')
     utils.refresh_container()
 
 # Build the menu list of tuples.
 # The menu is dynamic because the category being edited may change.
-def aux_build_edit_category_menu(cfg, categoryID):
+def command_edit_category_build_menu(cfg, categoryID):
     cat = cfg.categories[categoryID]
     finished_str = 'Finished' if cat['finished'] == True else 'Unfinished'
+    NFO_FN = db.get_category_NFO_name(cfg.settings, cat)
+    NFO_str = 'NFO found' if NFO_FN.exists() else 'NFO not found'
+    plot_str = misc.limit_string(cat['m_plot'], const.PLOT_STR_MAXSIZE)
     return [
         ('EDIT_METADATA', 'Edit Metadata...', [
             ('EDIT_METADATA_TITLE', 'Edit Title "{}"'.format(cat['m_name'])),
             ('EDIT_METADATA_RELEASEYEAR', 'Edit Release Year "{}"'.format(cat['m_year'])),
+            ('EDIT_METADATA_GENRE', 'Edit Genre "{}"'.format(cat['m_genre'])),
+            ('EDIT_METADATA_DEVELOPER', 'Edit Developer "{}"'.format(cat['m_developer'])),
+            ('EDIT_METADATA_RATING', 'Edit Rating "{}"'.format(cat['m_rating'])),
+            ('EDIT_METADATA_PLOT', 'Edit Plot "{}"'.format(plot_str)),
+            ('IMPORT_NFO_FILE_DEFAULT', 'Import NFO file (default location, {})'.format(NFO_str)),
+            ('IMPORT_NFO_FILE_BROWSE', 'Import NFO file (browse NFO file)...'),
+            ('SAVE_NFO_FILE_DEFAULT', 'Save NFO file (default location)'),
         ]),
         ('EDIT_ASSETS', 'Edit Assets/Artwork...'),
         ('EDIT_DEFAULT_ASSETS', 'Choose default Assets/Artwork...'),
-        ('CATEGORY_STATUS', 'Category status: {}'.format(finished_str)),
+        ('CATEGORY_STATUS', 'Category status {}'.format(finished_str)),
         ('EXPORT_CATEGORY_XML', 'Export Category XML configuration...'),
         ('DELETE_CATEGORY', 'Delete Category'),
     ]
@@ -3021,8 +3042,8 @@ def command_edit_category_OLD(self, categoryID):
 
     # --- Edit category metadata ---
     if mindex == 0:
-        NFO_FileName = fs_get_category_NFO_name(self.settings, self.categories[categoryID])
-        NFO_str = 'NFO found' if NFO_FileName.exists() else 'NFO not found'
+        NFO_FN = fs_get_category_NFO_name(self.settings, self.categories[categoryID])
+        NFO_str = 'NFO found' if NFO_FN.exists() else 'NFO not found'
         plot_str = text_limit_string(self.categories[categoryID]['m_plot'], PLOT_STR_MAXSIZE)
         sDialog = KodiSelectDialog('Edit Category Metadata')
         sDialog.setRows([
@@ -5835,6 +5856,37 @@ def command_edit_collection(self, categoryID, launcherID):
     # Save collection index and refresh view.
     fs_write_Collection_index_XML(g_PATHS.COLLECTIONS_FILE_PATH, COL['collections'])
     kodi_refresh_container()
+
+# ------------------------------------------------------------------------------------------------
+# Edit menu auxiliar functions.
+# ------------------------------------------------------------------------------------------------
+# Edits a generic string using the GUI.
+# 
+# edict -> Dictionary to be edited. Category, Launcher or ROM.
+# fname -> Field name in edict to be edited. Example: 'm_year'.
+# prop_name -> Property name string. Example: 'Launcher Release Year'
+#
+# Returns True if edict was changed, false otherwise.
+def mgui_edit_metadata_str(edict, fname, prop_name):
+    old_value_str = edict[fname]
+    keyboard = kodi.KeyboardDialog('Edit {}'.format(prop_name), old_value_str)
+    keyboard.executeDialog()
+    if not keyboard.isConfirmed():
+        kodi_notify('{} not changed'.format(prop_name))
+        return False
+    if const.ADDON_RUNNING_PYTHON_2:
+        new_value_str = keyboard.getData().strip().decode('utf-8')
+    elif const.ADDON_RUNNING_PYTHON_3:
+        new_value_str = keyboard.getData().strip()
+    else:
+        raise TypeError('Undefined Python runtime version.')
+    new_value_str = new_value_str if new_value_str else old_value_str
+    if old_value_str == new_value_str:
+        kodi_notify('{} not changed'.format(prop_name))
+        return False
+    edict[fname] = new_value_str
+    kodi_notify('{} is now {}'.format(prop_name, new_value_str))
+    return True
 
 # Edit category/launcher/rom asset.
 #
