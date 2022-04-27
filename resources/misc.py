@@ -65,12 +65,11 @@ def title_to_filename_str(title_str):
 # Returns an Unicode string.
 def XML(tag_name, tag_text, num_spaces = 2):
     if tag_text:
-        tag_text = text_escape_XML(tag_text)
+        tag_text = escape_XML(tag_text)
         line = '{}<{}>{}</{}>'.format(' ' * num_spaces, tag_name, tag_text, tag_name)
     else:
         # Empty tag.
         line = '{}<{} />'.format(' ' * num_spaces, tag_name)
-
     return line
 
 def remove_Kodi_color_tags(s):
@@ -476,9 +475,9 @@ def format_ROM_title(title, clean_tags):
 # -------------------------------------------------------------------------------------------------
 # Get extension of URL. Returns '' if not found. Examples: 'png', 'jpg', 'gif'.
 def get_URL_extension(url):
-    if ADDON_RUNNING_PYTHON_2:
+    if const.ADDON_RUNNING_PYTHON_2:
         path = urlparse.urlparse(url).path
-    elif ADDON_RUNNING_PYTHON_3:
+    elif const.ADDON_RUNNING_PYTHON_3:
         path = urllib.parse.urlparse(url).path
     else:
         raise TypeError('Undefined Python runtime version.')
@@ -488,9 +487,9 @@ def get_URL_extension(url):
 
 # Defaults to 'jpg' if URL extension cannot be determined
 def get_image_URL_extension(url):
-    if ADDON_RUNNING_PYTHON_2:
+    if const.ADDON_RUNNING_PYTHON_2:
         path = urlparse.urlparse(url).path
-    elif ADDON_RUNNING_PYTHON_3:
+    elif const.ADDON_RUNNING_PYTHON_3:
         path = urllib.parse.urlparse(url).path
     else:
         raise TypeError('Undefined Python runtime version.')
@@ -508,10 +507,10 @@ def get_image_URL_extension(url):
 def generate_random_SID():
     t1 = time.time()
     t2 = t1 + random.getrandbits(32)
-    if ADDON_RUNNING_PYTHON_2:
+    if const.ADDON_RUNNING_PYTHON_2:
         base = hashlib.md5(text_type(t1 + t2))
-    elif ADDON_RUNNING_PYTHON_3:
-        base = hashlib.md5(text_type(t1 + t2).encode('utf-8'))
+    elif const.ADDON_RUNNING_PYTHON_3:
+        base = hashlib.md5(const.text_type(t1 + t2).encode('utf-8'))
     else:
         raise TypeError('Undefined Python runtime version.')
     sid = base.hexdigest()

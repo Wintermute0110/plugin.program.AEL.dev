@@ -28,6 +28,7 @@ else:
     KODI_RUNTIME_AVAILABLE_UTILS = True
 
 # --- Python standard library ---
+import pprint
 
 # -------------------------------------------------------------------------------------------------
 # Logging functions.
@@ -57,7 +58,7 @@ def set_log_level(level):
 
 def dump_variable(var_name, var):
     if current_log_level < LOG_DEBUG: return
-    log_text = '{} DUMP : Dumping variable "{}"\n{}'.format(ADDON_SHORT_NAME,
+    log_text = '{} DUMP : Dumping variable "{}"\n{}'.format(const.ADDON_SHORT_NAME,
         var_name, pprint.pformat(var))
     xbmc.log(log_text, level = xbmc.LOGERROR)
 

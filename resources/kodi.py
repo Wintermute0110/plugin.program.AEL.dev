@@ -365,7 +365,7 @@ class SelectDialog(object):
         # Kodi Krypton bug: if preselect is used then dialog never returns < 0 even if cancel
         # button is pressed. This bug has been solved in Leia.
         # See https://forum.kodi.tv/showthread.php?tid=337011
-        if self.preselect >= 0 and kodi_running_version >= KODI_VERSION_LEIA:
+        if self.preselect >= 0 and utils.kodi_running_version >= utils.KODI_VERSION_LEIA:
             selection = self.dialog.select(self.heading, self.rows, useDetails = self.useDetails,
                 preselect = self.preselect)
         else:
