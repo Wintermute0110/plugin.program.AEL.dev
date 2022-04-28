@@ -1386,19 +1386,19 @@ def export_ROM_NFO(rom, verbose = True):
         '<?xml version="1.0" encoding="utf-8" standalone="yes"?>',
         '<!-- Exported by AEL on {} -->'.format(time.strftime("%Y-%m-%d %H:%M:%S")),
         '<game>',
-        text_XML('title', rom['m_name']),
-        text_XML('year', rom['m_year']),
-        text_XML('genre', rom['m_genre']),
-        text_XML('developer', rom['m_developer']),
-        text_XML('nplayers', rom['m_nplayers']),
-        text_XML('esrb', rom['m_esrb']),
-        text_XML('rating', rom['m_rating']),
-        text_XML('plot', rom['m_plot']),
+        misc.XML('title', rom['m_name']),
+        misc.XML('year', rom['m_year']),
+        misc.XML('genre', rom['m_genre']),
+        misc.XML('developer', rom['m_developer']),
+        misc.XML('nplayers', rom['m_nplayers']),
+        misc.XML('esrb', rom['m_esrb']),
+        misc.XML('rating', rom['m_rating']),
+        misc.XML('plot', rom['m_plot']),
         '</game>',
         '',
     ]
     # TODO: report error if exception is produced here.
-    utils_write_slist_to_file(nfo_file_path, nfo_content)
+    utils.write_slist_to_file(nfo_file_path, nfo_content)
     if verbose:
         kodi_notify('Created NFO file {}'.format(nfo_file_path))
     return True
@@ -1487,16 +1487,16 @@ def export_launcher_NFO(nfo_FN, launcher):
         '<?xml version="1.0" encoding="utf-8" standalone="yes"?>',
         '<!-- Exported by AEL on {} -->'.format(time.strftime("%Y-%m-%d %H:%M:%S")),
         '<launcher>',
-        text_XML('year', launcher['m_year']),
-        text_XML('genre', launcher['m_genre']),
-        text_XML('developer', launcher['m_developer']),
-        text_XML('rating', launcher['m_rating']),
-        text_XML('plot', launcher['m_plot']),
+        misc.XML('year', launcher['m_year']),
+        misc.XML('genre', launcher['m_genre']),
+        misc.XML('developer', launcher['m_developer']),
+        misc.XML('rating', launcher['m_rating']),
+        misc.XML('plot', launcher['m_plot']),
         '</launcher>',
         '',
     ]
     # TODO: correctly catch and report errors here.
-    utils_write_slist_to_file(nfo_FN.getPath(), nfo_slist)
+    utils.write_slist_to_file(nfo_FN.getPath(), nfo_slist)
     return True
 
 # Launcher dictionary is edited by Python passing by reference.
@@ -1554,45 +1554,42 @@ def get_launcher_NFO_name(settings, launcher):
     return nfo_FN
 
 # Look at the Launcher NFO files for a reference implementation.
-def export_category_NFO(nfo_FN, category):
-    log.debug('export_category_NFO() Exporting "{}"'.format(nfo_FN.getPath()))
-
+def export_category_NFO(NFO_FN, category):
+    log.debug('export_category_NFO() Exporting "{}"'.format(NFO_FN.getPath()))
     # If NFO file does not exist then create them. If it exists, overwrite.
     nfo_slist = [
         '<?xml version="1.0" encoding="utf-8" standalone="yes"?>',
         '<!-- Exported by AEL on {} -->'.format(time.strftime("%Y-%m-%d %H:%M:%S")),
         '<category>',
-        text_XML('year', category['m_year']),
-        text_XML('genre', category['m_genre']),
-        text_XML('developer', category['m_developer']),
-        text_XML('rating', category['m_rating']),
-        text_XML('plot', category['m_plot']),
+        misc.XML('year', category['m_year']),
+        misc.XML('genre', category['m_genre']),
+        misc.XML('developer', category['m_developer']),
+        misc.XML('rating', category['m_rating']),
+        misc.XML('plot', category['m_plot']),
         '</category>',
         '', # End file in newline
     ]
-    utils_write_slist_to_file(nfo_FN.getPath(), nfo_slist)
+    utils.write_slist_to_file(NFO_FN.getPath(), nfo_slist)
     return True
 
-def import_category_NFO(nfo_FN, categories, categoryID):
-    nfo_dic = categories[categoryID]
-
-    log.debug('import_category_NFO() Importing "{}"'.format(nfo_FN.getPath()))
-    if not nfo_FN.isfile():
-        kodi_notify_warn('NFO file not found {}'.format(os.path.basename(nfo_FN.getPath())))
-        log.error("import_category_NFO() Not found '{}'".format(nfo_FN.getPath()))
+def import_category_NFO(NFO_FN, edict):
+    log.debug('import_category_NFO() Importing "{}"'.format(NFO_FN.getPath()))
+    if not NFO_FN.isfile():
+        kodi.notify_warn('NFO file not found {}'.format(os.path.basename(NFO_FN.getPath())))
+        log.error('import_category_NFO() Not found "{}"'.format(NFO_FN.getPath()))
         return False
-    nfo_str = utils_load_file_to_str(nfo_FN.getPath()).replace('\r', '').replace('\n', '')
-    update_dic_with_NFO_str(nfo_str, 'year', nfo_dic, 'm_year')
-    update_dic_with_NFO_str(nfo_str, 'genre', nfo_dic, 'm_genre')
-    update_dic_with_NFO_str(nfo_str, 'developer', nfo_dic, 'm_developer')
-    update_dic_with_NFO_str(nfo_str, 'rating', nfo_dic, 'm_rating')
-    update_dic_with_NFO_str(nfo_str, 'plot', nfo_dic, 'm_plot')
+    nfo_str = utils_load_file_to_str(NFO_FN.getPath()).replace('\r', '').replace('\n', '')
+    update_dic_with_NFO_str(nfo_str, 'year', edict, 'm_year')
+    update_dic_with_NFO_str(nfo_str, 'genre', edict, 'm_genre')
+    update_dic_with_NFO_str(nfo_str, 'developer', edict, 'm_developer')
+    update_dic_with_NFO_str(nfo_str, 'rating', edict, 'm_rating')
+    update_dic_with_NFO_str(nfo_str, 'plot', edict, 'm_plot')
     return True
 
 # Returns a FileName object.
-def get_category_NFO_name(settings, category):
+def get_category_NFO_name(cfg, category):
     category_name = category['m_name']
-    nfo_dir = settings['categories_asset_dir']
+    nfo_dir = cfg.settings['categories_asset_dir']
     return utils.FileName(os.path.join(nfo_dir, category_name + '.nfo'))
 
 # Collection NFO files. Same as Category NFO files.
@@ -1604,9 +1601,9 @@ def export_collection_NFO(nfo_FileName, collection):
         '<?xml version="1.0" encoding="utf-8" standalone="yes"?>',
         '<!-- Exported by AEL on {} -->'.format(time.strftime("%Y-%m-%d %H:%M:%S")),
         '<collection>',
-        text_XML('genre', collection['m_genre']),
-        text_XML('rating', collection['m_rating']),
-        text_XML('plot', collection['m_plot']),
+        misc.XML('genre', collection['m_genre']),
+        misc.XML('rating', collection['m_rating']),
+        misc.XML('plot', collection['m_plot']),
         '</collection>',
         '',
     ]

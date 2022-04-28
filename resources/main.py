@@ -825,7 +825,7 @@ def render_main_window(cfg):
 
 def render_category_row(cfg, category_dic, key):
     # --- Do not render row if category finished ---
-    if category_dic['finished'] and self.settings['display_hide_finished']: return
+    if category_dic['finished'] and cfg.settings['display_hide_finished']: return
 
     # --- Create listitem row ---
     ICON_OVERLAY = 5 if category_dic['finished'] else 4
@@ -2912,16 +2912,18 @@ def command_add_ROM_to_collection(cfg, categoryID, launcherID, romID):
 # Tuple content standard: (menu_ID, menu message)
 # Tuple content submenu: (menu_ID, menu message, sub_menu_list)
 def command_edit_category(cfg, categoryID):
-    # The Menu changes if the category being edited changes, so it must be rebuilt dynamically.
-    menu = command_edit_category_build_menu(cfg, categoryID)
     # Current position in menu. First element of the list is the menu root.
     # Second, third, etc., is for nested menus.
     mpos = [0]
     execute_menu = True
     while execute_menu:
+        # The Menu changes if the category being edited changes, so it must be rebuilt dynamically.
+        log.debug('Building menu...')
+        menu = command_edit_category_build_menu(cfg, categoryID)
+
+        # Render context menu.
         log.debug('Rendering menu...')
         log.dump_variable('mpos', mpos)
-        # Render context menu.
         cat_name = cfg.categories[categoryID]['m_name']
         t = 'Select action for Category [COLOR orange]{}[/COLOR]'.format(cat_name)
         flag_root_menu = len(mpos) == 1
@@ -2934,11 +2936,12 @@ def command_edit_category(cfg, categoryID):
         # Exit context menu or move one step down in the menu chain.
         if mindex is None:
             if flag_root_menu:
-                # Leave function and close context menu completely. Save db?
+                # Leave function and close context menu completely.
+                # Does not save database (was saved before).
                 execute_menu = False
                 continue
             else:
-                # Move menu one step down.
+                # Move menu one step down in the hierarchy.
                 mpos = mpos[:-1]
                 continue
         # Execute menu action. Check if execute command or open submenu.
@@ -2951,50 +2954,79 @@ def command_edit_category(cfg, categoryID):
 
         # Execute command.
         command = mtuple[0]
-        category = cfg.categories[categoryID]
+        save_DB_flag = False # By default do not save the database unless told to do so.
         log.debug('Executing command "{}"'.format(command))
+        category = cfg.categories[categoryID]
         if command == 'EDIT_METADATA_TITLE':
-            mgui_edit_metadata_str(category, 'Title', category.get_name, category.set_name)
+            save_DB_flag = mgui_edit_metadata_str(category, 'm_name', 'Category Title')
         elif command == 'EDIT_METADATA_RELEASEYEAR':
-            mgui_edit_metadata_str(category, 'Release Rear', category.get_releaseyear, category.set_releaseyear)
+            save_DB_flag = mgui_edit_metadata_str(category, 'm_year', 'Category Release Year')
         elif command == 'EDIT_METADATA_GENRE':
-            mgui_edit_metadata_str(category, 'Genre', category.get_genre, category.set_genre)
+            save_DB_flag = mgui_edit_metadata_str(category, 'm_genre', 'Category Genre')
         elif command == 'EDIT_METADATA_DEVELOPER':
-            mgui_edit_metadata_str(category, 'Developer', category.get_developer, category.set_developer)
+            save_DB_flag = mgui_edit_metadata_str(category, 'm_developer', 'Category Developer')
         elif command == 'EDIT_METADATA_RATING':
-            mgui_edit_rating(category, category.get_rating, category.set_rating)
+            save_DB_flag = mgui_edit_rating(category, 'm_rating', 'Category Rating')
         elif command == 'EDIT_METADATA_PLOT':
-            mgui_edit_metadata_str(category, 'Plot', category.get_plot, category.set_plot)
+            save_DB_flag = mgui_edit_metadata_str(category, 'm_plot', 'Category Plot')
         elif command == 'IMPORT_NFO_FILE_DEFAULT':
-            mgui_edit_category_nfo_import_default(category)
+            NFO_FN = db.get_category_NFO_name(cfg, category)
+            save_DB_flag = db.import_category_NFO(NFO_FN, category)
+            if save_DB_flag:
+                kodi.notify('Imported Category NFO file {}'.format(NFO_FN.getPath()))
         elif command == 'IMPORT_NFO_FILE_BROWSE':
-            mgui_edit_category_nfo_import_browse(category)
+            NFO_file_str = kodi.dialog_get_file('Select Category NFO file', '.nfo')
+            log.debug('command_edit_category() kodi_dialog_get_file() -> "{}"'.format(NFO_file_str))
+            if not NFO_file_str: continue
+            NFO_FN = utils.FileName(NFO_file_str)
+            if not NFO_FN.exists(): continue
+            save_DB_flag = db.import_category_NFO(NFO_FN, category)
+            if save_DB_flag:
+                kodi_notify('Imported Category NFO file {}'.format(NFO_FN.getPath()))
         elif command == 'SAVE_NFO_FILE_DEFAULT':
-            mgui_edit_category_nfo_save_default(category)
-        # Submenu command
+            NFO_FN = db.get_category_NFO_name(cfg, category)
+            # Returns False if exception happened. If an Exception happened function notifies
+            # user, so display nothing to not overwrite error notification.
+            success_flag = db.export_category_NFO(NFO_FN, self.categories[categoryID])
+            if not success_flag: continue
+            kodi_notify('Exported Category NFO file {}'.format(NFO_FN.getPath()))
+
         elif command == 'EDIT_ASSETS':
-            mgui_edit_object_assets(category)
-        # Submenu command
+            mgui_edit_object_assets(cfg, category)
         elif command == 'EDIT_DEFAULT_ASSETS':
-            mgui_edit_object_default_assets(category)
+            mgui_edit_object_default_assets(cfg, category)
+
         elif command == 'EDIT_CATEGORY_STATUS':
-            category.change_finished_status()
-            kodi_dialog_OK('Category "{}" status is now {}'.format(category.get_name(), category.get_finished_str()))
-            # g_MainRepository.save_category(category)
+            finished = category['finished']
+            finished = False if finished else True
+            finished_str = 'Finished' if finished == True else 'Unfinished'
+            category['finished'] = finished
+            save_DB_flag = True
+            kodi.dialog_OK('Category "{}" status is now {}'.format(category['m_name'], finished_str))
+
         elif command == 'EXPORT_CATEGORY_XML':
-            m_subcommand_export_category_xml(category)
+            data_dic = {
+                '' : '',
+            }
+            mgui_export_object_XML(cfg, category, data_dic)
+
         # Deleting a Category must exit the context menu!
         # If the deletion was sucessful the Category does not exit any more.
         elif command == 'DELETE_CATEGORY':
-            if m_subcommand_delete_category(category): execute_menu = False
+            if mgui_delete_category(cfg, category):
+                save_DB_flag = True
+                execute_menu = False
         else:
             log.error('command_edit_category() Unsupported command "{}"'.format(command))
             kodi.dialog_OK('command_edit_category() Unknown command {}. '.format(command) +
                 'Please report this bug.')
-            raise TypeError
+            continue
 
-        # If we reach this point save the database automatically?
-        
+        # Save the database if requested.
+        if save_DB_flag:
+            log.debug('command_edit_category() Saving launchers.xml database...')
+            db.write_catfile(cfg.CATEGORIES_FILE_PATH, cfg.categories, cfg.launchers)
+        log.debug('command_edit_category() End of loop...')
     kodi.notify('Finish Edit Category')
     utils.refresh_container()
 
@@ -3003,7 +3035,7 @@ def command_edit_category(cfg, categoryID):
 def command_edit_category_build_menu(cfg, categoryID):
     cat = cfg.categories[categoryID]
     finished_str = 'Finished' if cat['finished'] == True else 'Unfinished'
-    NFO_FN = db.get_category_NFO_name(cfg.settings, cat)
+    NFO_FN = db.get_category_NFO_name(cfg, cat)
     NFO_str = 'NFO found' if NFO_FN.exists() else 'NFO not found'
     plot_str = misc.limit_string(cat['m_plot'], const.PLOT_STR_MAXSIZE)
     return [
@@ -3020,7 +3052,7 @@ def command_edit_category_build_menu(cfg, categoryID):
         ]),
         ('EDIT_ASSETS', 'Edit Assets/Artwork...'),
         ('EDIT_DEFAULT_ASSETS', 'Choose default Assets/Artwork...'),
-        ('CATEGORY_STATUS', 'Category status {}'.format(finished_str)),
+        ('EDIT_CATEGORY_STATUS', 'Category status [COLOR orange]{}[/COLOR]'.format(finished_str)),
         ('EXPORT_CATEGORY_XML', 'Export Category XML configuration...'),
         ('DELETE_CATEGORY', 'Delete Category'),
     ]
@@ -5861,14 +5893,14 @@ def command_edit_collection(self, categoryID, launcherID):
 # Edit menu auxiliar functions.
 # ------------------------------------------------------------------------------------------------
 # Edits a generic string using the GUI.
-# 
+# --- Parameters
 # edict -> Dictionary to be edited. Category, Launcher or ROM.
-# fname -> Field name in edict to be edited. Example: 'm_year'.
+# dic_field -> Field name in edict to be edited. Example: 'm_year'.
 # prop_name -> Property name string. Example: 'Launcher Release Year'
-#
+# --- Return value
 # Returns True if edict was changed, false otherwise.
-def mgui_edit_metadata_str(edict, fname, prop_name):
-    old_value_str = edict[fname]
+def mgui_edit_metadata_str(edict, dic_field, prop_name):
+    old_value_str = edict[dic_field]
     keyboard = kodi.KeyboardDialog('Edit {}'.format(prop_name), old_value_str)
     keyboard.executeDialog()
     if not keyboard.isConfirmed():
@@ -5884,11 +5916,163 @@ def mgui_edit_metadata_str(edict, fname, prop_name):
     if old_value_str == new_value_str:
         kodi_notify('{} not changed'.format(prop_name))
         return False
-    edict[fname] = new_value_str
+    edict[dic_field] = new_value_str
     kodi_notify('{} is now {}'.format(prop_name, new_value_str))
     return True
 
-# Edit category/launcher/rom asset.
+# The values of str_list are supposed to be unique.
+# --- Example call
+# mgui_edit_metadata_list('Launcher', 'Platform', AEL_platform_list,
+#     launcher.get_platform, launcher.set_platform)
+def mgui_edit_metadata_list(obj_instance, metadata_name, str_list, get_method, set_method):
+    object_name = obj_instance.get_object_name()
+    old_value = get_method()
+    if old_value in str_list:
+        preselect_idx = str_list.index(old_value)
+    else:
+        preselect_idx = 0
+    dialog_title = 'Edit {} {}'.format(object_name, metadata_name)
+    selected = KodiListDialog().select(dialog_title, str_list, preselect_idx)
+    if selected is None: return
+    new_value = str_list[selected]
+    if old_value == new_value:
+        kodi_notify('{} {} not changed'.format(object_name, metadata_name))
+        return
+    set_method(new_value)
+    obj_instance.save_to_disk()
+    kodi_notify('{} {} is now {}'.format(object_name, metadata_name, new_value))
+
+# Rating 'Not set' is stored as an empty string.
+# Rating from 0 to 10 is stored as a string, '0', '1', ..., '10'
+# --- Return value
+# Returns True if the rating value was changed.
+# Returns False if the rating value was NOT changed.
+# --- Example call
+# m_gui_edit_rating(category, 'm_rating', 'Category Rating')
+# m_gui_edit_rating(launcher, 'm_rating', 'Launcher Rating')
+def mgui_edit_rating(edict, dic_field, prop_name):
+    options_list = ['Not set'] + ['Rating {}'.format(i) for i in range(11)]
+    # object_name = obj_instance.get_object_name()
+    current_rating_str = edict[dic_field]
+    preselected_value = int(current_rating_str) + 1 if current_rating_str else 0
+    sel_value = kodi.SelectDialog('Select the {}'.format(prop_name),
+        options_list, preselected_value).executeDialog()
+    if sel_value is None:
+        return False
+    elif sel_value == preselected_value:
+        kodi.notify('{} not changed'.format(prop_name))
+        return False
+    elif sel_value == 0:
+        current_rating_str = ''
+    elif sel_value >= 1 and sel_value <= 11:
+        current_rating_str = '{}'.format(sel_value - 1)
+    elif sel_value < 0:
+        kodi.notify('{} not changed'.format(prop_name))
+        return False
+    edict[dic_field] = current_rating_str
+    kodi_notify('{} is now {}'.format(prop_name, current_rating_str))
+    return True
+
+def mgui_export_object_XML(cfg, data_dic):
+    category_data = category.get_data_dic()
+    category_fn_str = 'Category_' + text_title_to_filename_str(category.get_name()) + '.xml'
+    log_debug('m_subcommand_export_category_xml() Exporting Category configuration')
+    log_debug('m_subcommand_export_category_xml() Name     "{}"'.format(category.get_name()))
+    log_debug('m_subcommand_export_category_xml() ID       {}'.format(category.get_id()))
+    log_debug('m_subcommand_export_category_xml() l_fn_str "{}"'.format(category_fn_str))
+
+    # --- Ask user for a path to export the launcher configuration ---
+    dir_path = xbmcgui.Dialog().browse(0, 'Select directory to export XML', 'files', 
+        '', False, False).decode('utf-8')
+    if not dir_path: return
+
+    # --- If XML exists then warn user about overwriting it ---
+    export_FN = FileNameFactory.create(dir_path).pjoin(category_fn_str)
+    if export_FN.exists():
+        ret = kodi_dialog_yesno('Overwrite file {}?'.format(export_FN.getPath()))
+        if not ret:
+            kodi_notify_warn('Export of Category XML cancelled')
+            return
+
+    # If everything goes all right when exporting then the else clause is executed.
+    # If there is an error/exception then the exception handler prints a warning message
+    # inside the function autoconfig_export_category() and the sucess message is never
+    # printed. This is the standard way of handling error messages in AEL code.
+    try:
+        autoconfig_export_category(category_data, export_FN)
+    except AddonError as E:
+        kodi_notify_warn('{}'.format(E))
+    else:
+        kodi_notify('Exported Category "{}" XML config'.format(category.get_name()))
+
+def mgui_edit_object_assets(obj_instance, pre_select_idx = 0):
+    log_debug('m_gui_edit_object_assets() obj_instance {0}'.format(obj_instance.__class__.__name__))
+    log_debug('m_gui_edit_object_assets() pre_select_idx {0}'.format(pre_select_idx))
+
+    # --- DEBUG texture cache ---
+    # icon_FN = FileName(obj_instance.get_asset_str(asset_infos[ASSET_ICON_ID]))
+    # fanart_FN = FileName(obj_instance.get_asset_str(asset_infos[ASSET_FANART_ID]))
+    # log_debug('m_gui_edit_object_assets() icon_FN   "{0}"'.format(icon_FN.getPath()))
+    # log_debug('m_gui_edit_object_assets() fanart_FN "{0}"'.format(fanart_FN.getPath()))
+    # kodi_print_texture_info(icon_FN.getPath())
+    # kodi_print_texture_info(fanart_FN.getPath())
+
+    # --- Customize function for each object type ---
+    dialog_title_str = 'Edit {0} Assets/Artwork'. format(obj_instance.get_object_name())
+
+    # --- Build Dialog.select list ---
+    # >> Use Krypton Dialog().select(useDetails = True) to display label2 on dialog.
+    asset_odict = obj_instance.get_assets_odict()
+    # dump_object_to_log('asset_odict', asset_odict)
+    list_items = []
+    # >> List to easily pick the selected AssetInfo() object
+    asset_info_list = []
+    for asset_info_obj, asset_fname_str in asset_odict.iteritems():
+        # --- Create ListItems ---
+        # >> Label1 is the asset name (Icon, Fanart, etc.)
+        # >> Label2 is the asset filename str as in the database or 'Not set'
+        # >> setArt('icon') is the asset picture.
+        label1_str = 'Edit {0} ...'.format(asset_info_obj.name)
+        label2_stt = asset_fname_str if asset_fname_str else 'Not set'
+        list_item = xbmcgui.ListItem(label = label1_str, label2 = label2_stt)
+        if asset_fname_str:
+            item_path = FileName(asset_fname_str)
+            if item_path.isVideoFile(): item_img = 'DefaultAddonVideo.png'
+            elif item_path.isManual():  item_img = 'DefaultAddonInfoProvider.png'
+            else:                       item_img = asset_fname_str
+        else:
+            item_img = 'DefaultAddonNone.png'
+        list_item.setArt({'icon' : item_img})
+        # --- Append to list of ListItems ---
+        list_items.append(list_item)
+        asset_info_list.append(asset_info_obj)
+
+    # --- Execute select dialog menu logic ---
+    # Kodi Krypton bug: if preselect is used then dialog never returns < 0 even if cancel button
+    # is pressed. This bug has been solved in Leia.
+    # See https://forum.kodi.tv/showthread.php?tid=337011
+    if kodi_running_version >= KODI_VERSION_LEIA:
+        selected_option = xbmcgui.Dialog().select(
+            dialog_title_str, list = list_items, useDetails = True, preselect = pre_select_idx
+        )
+    else:
+        log_debug('Executing code < KODI_VERSION_LEIA to overcome select() bug.')
+        selected_option = xbmcgui.Dialog().select(
+            dialog_title_str, list = list_items, useDetails = True
+        )
+    log_debug('m_gui_edit_object_assets() select() returned {0}'.format(selected_option))
+    if selected_option < 0:
+        # >> Return to parent menu.
+        log_debug('m_gui_edit_object_assets() Selected NONE. Returning to parent menu.')
+    else:
+        # >> Execute edit asset menu subcommand. Then, execute recursively this submenu again.
+        # >> The menu dialog is instantiated again so it reflects the changes just edited.
+        # >> If m_gui_edit_asset() returns True changes were made.
+        if m_gui_edit_asset(obj_instance, asset_info_list[selected_option]):
+            g_ObjectRepository.save_object(obj_instance)
+        m_gui_edit_object_assets(obj_instance, selected_option)
+
+# Edit category/launcher/rom single asset.
 #
 # When editing ROMs optional parameter launcher_dic is required.
 # Caller is responsible for saving the Categories/Launchers/ROMs.
@@ -5900,7 +6084,7 @@ def mgui_edit_metadata_str(edict, fname, prop_name):
 # --- Returns ---
 # True   Changes made. Categories/Launchers/ROMs must be saved and container updated
 # False  No changes were made. No necessary to refresh container
-def gui_edit_asset(self, object_kind, asset_ID, object_dic, categoryID = '', launcherID = ''):
+def mgui_edit_asset(cfg, object_kind, asset_ID, object_dic, categoryID = '', launcherID = ''):
     # --- Get asset object information ---
     AInfo = assets_get_info_scheme(asset_ID)
     if object_kind == KIND_CATEGORY:
@@ -6126,6 +6310,179 @@ def gui_edit_asset(self, object_kind, asset_ID, object_dic, categoryID = '', lau
 
     # If we reach this point, changes were made.
     # Categories/Launchers/ROMs must be saved, container must be refreshed.
+    return True
+
+# Generic function to edit the Object default assets for 
+# icon/fanart/banner/poster/clearlogo context submenu.
+# Argument obj is an object instance of class Category, CollectionLauncher, etc.
+def mgui_edit_object_default_assets(obj_instance, pre_select_idx = 0):
+    log_debug('m_gui_edit_object_default_assets() obj {0}'.format(obj_instance.__class__.__name__))
+    log_debug('m_gui_edit_object_default_assets() pre_select_idx {0}'.format(pre_select_idx))
+
+    # --- Customize function for each object type ---
+    if obj_instance.get_assets_kind() == KIND_ASSET_CATEGORY:
+        repository_obj = g_MainRepository
+
+    elif obj_instance.get_assets_kind() == KIND_ASSET_COLLECTION:
+        repository_obj = g_CollectionRepository
+
+    elif obj_instance.get_assets_kind() == KIND_ASSET_LAUNCHER:
+        repository_obj = g_MainRepository
+
+    elif obj_instance.get_assets_kind() == KIND_ASSET_ROM:
+        repository_obj = g_MainRepository
+
+    else:
+        kodi_dialog_OK(
+            'm_gui_edit_object_default_assets() ' +
+            'Unknown obj_instance.get_assets_kind() = {0}'.format(obj_instance.get_assets_kind()) +
+            'This is a bug, please report it.')
+        return
+    dialog_title_str = 'Edit {0} default Assets/Artwork'.format(obj_instance.get_object_name())
+
+    # --- Build Dialog.select() list ---
+    assets_odict = obj_instance.get_assets_odict()
+    default_assets_list = obj_instance.get_default_asset_list()
+    list_items = []
+    # >> List to easily pick the selected AssetInfo() object
+    asset_info_list = []
+    for default_asset_info in default_assets_list:
+        # >> Label 1 is the string 'Choose asset for XXXX (currently YYYYY)'
+        # >> Label 2 is the fname string of the current mapped asset or 'Not set'
+        # >> icon is the fname string of the current mapped asset.
+        mapped_asset_key = obj_instance.get_mapped_asset_key(default_asset_info)
+        mapped_asset_info = ASSET_INFO_KEY_DICT[mapped_asset_key]
+        mapped_asset_str = obj_instance.get_asset_str(mapped_asset_info)
+        label1_str = 'Choose asset for {0} (currently {1})'.format(default_asset_info.name, mapped_asset_info.name)
+        label2_str = mapped_asset_str
+        list_item = xbmcgui.ListItem(label = label1_str, label2 = label2_str)
+        if mapped_asset_str:
+            item_path = FileName(mapped_asset_str)
+            if item_path.isVideoFile(): item_img = 'DefaultAddonVideo.png'
+            elif item_path.isManual():  item_img = 'DefaultAddonInfoProvider.png'
+            else:                       item_img = mapped_asset_str
+        else:
+            item_img = 'DefaultAddonNone.png'
+        list_item.setArt({'icon' : item_img})
+        # --- Append to list of ListItems ---
+        list_items.append(list_item)
+        asset_info_list.append(default_asset_info)
+
+    # --- Execute select dialog menu logic ---
+    # Kodi Krypton bug: if preselect is used then dialog never returns < 0 even if cancel button
+    # is pressed. This bug has been solved in Leia.
+    # See https://forum.kodi.tv/showthread.php?tid=337011
+    if kodi_running_version >= KODI_VERSION_LEIA:
+        selected_option = xbmcgui.Dialog().select(
+            dialog_title_str, list = list_items, useDetails = True, preselect = pre_select_idx
+        )
+    else:
+        log_debug('Executing code < KODI_VERSION_LEIA to overcome select() bug.')
+        selected_option = xbmcgui.Dialog().select(
+            dialog_title_str, list = list_items, useDetails = True
+        )
+    log_debug('m_gui_edit_object_default_assets() Main select() returned {0}'.format(selected_option))
+    if selected_option < 0:
+        # >> Return to parent menu.
+        log_debug('m_gui_edit_object_default_assets() Main selected NONE. Returning to parent menu.')
+    else:
+        # >> Execute edit default asset submenu. Then, execute recursively this submenu again.
+        # >> The menu dialog is instantiated again so it reflects the changes just edited.
+        log_debug('m_gui_edit_object_default_assets() Executing mappable asset select() dialog.')
+        selected_asset_info = asset_info_list[selected_option]
+        log_debug('m_gui_edit_object_default_assets() Main selected {0}.'.format(selected_asset_info.name))
+        mappable_asset_list = obj_instance.get_mappable_asset_list()
+        list_items = []
+        asset_info_list = []
+        secondary_pre_select_idx = 0
+        counter = 0
+        for mappable_asset_info in mappable_asset_list:
+            # --- Create ListItems ---
+            # >> Label1 is the asset name (Icon, Fanart, etc.)
+            # >> Label2 is the asset filename str as in the database or 'Not set'
+            # >> setArt('icon') is the asset picture.
+            mapped_asset_str = obj_instance.get_asset_str(mappable_asset_info)
+            label1_str = '{0}'.format(mappable_asset_info.name)
+            label2_stt = mapped_asset_str if mapped_asset_str else 'Not set'
+            list_item = xbmcgui.ListItem(label = label1_str, label2 = label2_stt)
+            if mapped_asset_str:
+                item_path = FileName(mapped_asset_str)
+                if item_path.isVideoFile(): item_img = 'DefaultAddonVideo.png'
+                elif item_path.isManual():  item_img = 'DefaultAddonInfoProvider.png'
+                else:                       item_img = mapped_asset_str
+            else:
+                item_img = 'DefaultAddonNone.png'
+            list_item.setArt({'icon' : item_img})
+            # --- Append to list of ListItems ---
+            list_items.append(list_item)
+            asset_info_list.append(mappable_asset_info)
+            if mappable_asset_info == selected_asset_info:
+                secondary_pre_select_idx = counter
+            counter += 1
+
+        # --- Execute select dialog menu logic ---
+        # Kodi Krypton bug: if preselect is used then dialog never returns < 0 even if cancel
+        # button is pressed. This bug has been solved in Leia.
+        # See https://forum.kodi.tv/showthread.php?tid=337011
+        dialog_title_str = 'Edit {0} {1} mapped asset'.format(
+            obj_instance.get_object_name(), selected_asset_info.name)
+        if kodi_running_version >= KODI_VERSION_LEIA:
+            secondary_selected_option = xbmcgui.Dialog().select(
+                dialog_title_str, list = list_items, useDetails = True, preselect = secondary_pre_select_idx
+            )
+        else:
+            log_debug('Executing code < KODI_VERSION_LEIA to overcome select() bug.')
+            secondary_selected_option = xbmcgui.Dialog().select(
+                dialog_title_str, list = list_items, useDetails = True
+            )
+        log_debug('m_gui_edit_object_default_assets() Mapable select() returned {0}'.format(secondary_selected_option))
+        if secondary_selected_option < 0:
+            # >> Return to parent menu.
+            log_debug('m_gui_edit_object_default_assets() Mapable selected NONE. Returning to parent menu.')
+        else:
+            new_selected_asset_info = asset_info_list[secondary_selected_option]
+            log_debug('m_gui_edit_object_default_assets() Mapable selected {0}.'.format(new_selected_asset_info.name))
+            obj_instance.set_mapped_asset_key(selected_asset_info, new_selected_asset_info)
+            repository_obj.save(obj_instance)
+            kodi_notify('{0} {1} mapped to {2}'.format(
+                obj_instance.get_object_name(), selected_asset_info.name, new_selected_asset_info.name
+            ))
+        # --- Execute recursively wheter submenu was canceled or not ---
+        m_gui_edit_object_default_assets(obj_instance, selected_option)
+
+# Remove a category. Also removes launchers belonging to category.
+# Returns True if the category was succesfully removed.
+# Returns False if the operation was cancelled.
+def mgui_delete_category(cfg, category):
+    launcherID_list = []
+    categoryID = category['id']
+    cat_name = category['m_name']
+    for launcherID in sorted(cfg.launchers, key = lambda x : cfg.launchers[x]['m_name']):
+        if cfg.launchers[launcherID]['categoryID'] != categoryID: continue
+        launcherID_list.append(launcherID)
+
+    if len(launcherID_list) > 0:
+        ret = kodi.dialog_yesno('Category "{}" has {} launchers. '.format(cat_name, len(launcherID_list)) +
+            'Deleting it will also delete related launchers. ' +
+            'Are you sure you want to delete "{}"?'.format(cat_name))
+        if not ret: return False
+        log.info('Deleting category "{}" id {}'.format(cat_name, categoryID))
+        # Delete launchers and ROM JSON/XML files associated with them.
+        for launcherID in launcherID_list:
+            laun_name = cfg.launchers[launcherID]['m_name']
+            log.info('Deleting linked launcher "{}" id {}'.format(laun_name, launcherID))
+            db.unlink_ROMs_database(cfg.ROMS_DIR, cfg.launchers[launcherID])
+            cfg.launchers.pop(launcherID)
+        # Delete category from database.
+        cfg.categories.pop(categoryID)
+    else:
+        ret = kodi.dialog_yesno('Category "{}" has no launchers. '.format(cat_name) +
+            'Are you sure you want to delete "{}"?'.format(cat_name))
+        if not ret: return False
+        log.info('Deleting category "{}" id {}'.format(cat_name, categoryID))
+        log.info('Category has no launchers, so no launchers to delete.')
+        cfg.categories.pop(categoryID)
+    kodi.notify('Deleted category {}'.format(cat_name))
     return True
 
 # ------------------------------------------------------------------------------------------------
@@ -8019,7 +8376,7 @@ def exec_utils_delete_ROM_redundant_artwork(cfg):
 # Shows a report of the auto-detected No-Intro/Redump DAT files.
 # This simplifies a lot the ROM Audit of launchers and other things like the
 # Offline Scraper database generation.
-def _command_exec_utils_show_DATs(self):
+def exec_utils_show_DATs(self):
     log.debug('_command_exec_utils_show_DATs() Starting...')
     DAT_STRING_LIMIT_CHARS = 75
 
@@ -8074,7 +8431,7 @@ def _command_exec_utils_show_DATs(self):
     full_string = '\n'.join(slist)
     kodi_display_text_window_mono('No-Intro/Redump DAT files report', full_string)
 
-def _command_exec_utils_check_retro_launchers(self):
+def exec_utils_check_retro_launchers(self):
     log.debug('_command_exec_utils_check_retro_launchers() Starting...')
     slist = []
 
@@ -8137,7 +8494,7 @@ def _command_exec_utils_check_retro_launchers(self):
     else:
         kodi_display_text_window_mono(title, 'No Retroarch launchers found.')
 
-def _command_exec_utils_check_retro_BIOS(self):
+def exec_utils_check_retro_BIOS(self):
     log.debug('_command_exec_utils_check_retro_BIOS() Checking Retroarch BIOSes ...')
     check_only_mandatory = self.settings['io_retroarch_only_mandatory']
     log.debug('_command_exec_utils_check_retro_BIOS() check_only_mandatory = {}'.format(check_only_mandatory))
@@ -8269,7 +8626,7 @@ def _command_exec_utils_check_retro_BIOS(self):
 
 # Use TGDB scraper to get the monthly allowance and report to the user.
 # TGDB API docs https://api.thegamesdb.net/
-def _command_exec_utils_TGDB_check(self):
+def exec_utils_TGDB_check(self):
     # --- Get scraper object and retrieve information ---
     # Treat any error message returned by the scraper as an OK dialog.
     st_dic = utils.new_status_dic()
@@ -8303,7 +8660,7 @@ def _command_exec_utils_TGDB_check(self):
 
 # MobyGames API docs https://www.mobygames.com/info/api
 # Currently there is no way to check the MobyGames allowance.
-def _command_exec_utils_MobyGames_check(self):
+def exec_utils_MobyGames_check(self):
     # --- Get scraper object and retrieve information ---
     # Treat any error message returned by the scraper as an OK dialog.
     st_dic = utils.new_status_dic()
@@ -8331,7 +8688,7 @@ def _command_exec_utils_MobyGames_check(self):
     kodi_display_text_window_mono(window_title, '\n'.join(sl))
 
 # ScreenScraper API docs https://www.screenscraper.fr/webapi.php
-def _command_exec_utils_ScreenScraper_check(self):
+def exec_utils_ScreenScraper_check(self):
     # --- Get scraper object and retrieve information ---
     # Treat any error message returned by the scraper as an OK dialog.
     st_dic = utils.new_status_dic()
@@ -8378,7 +8735,7 @@ def _command_exec_utils_ScreenScraper_check(self):
 
 # Retrieve an example game to test if ArcadeDB works.
 # TTBOMK there are not API retrictions at the moment (August 2019).
-def _command_exec_utils_ArcadeDB_check(self):
+def exec_utils_ArcadeDB_check(self):
     st_dic = utils.new_status_dic()
     g_scraper_factory = ScraperFactory(g_PATHS, self.settings)
     ArcadeDB = g_scraper_factory.get_scraper_object(SCRAPER_ARCADEDB_ID)
@@ -8418,7 +8775,7 @@ def _command_exec_utils_ArcadeDB_check(self):
         sl.append('It will only return valid data for MAME games.')
     kodi_display_text_window_mono(window_title, '\n'.join(sl))
 
-def _command_exec_global_rom_stats(self):
+def exec_global_rom_stats(self):
     log.debug('_command_exec_global_rom_stats() BEGIN')
     window_title = 'Global ROM statistics'
     sl = []
@@ -8464,7 +8821,7 @@ def _command_exec_global_rom_stats(self):
     kodi_display_text_window_mono(window_title, '\n'.join(sl))
 
 # TODO Add a table columnd to tell user if the DAT is automatic or custom.
-def _command_exec_global_audit_stats(self, report_type):
+def exec_global_audit_stats(self, report_type):
     log.debug('_command_exec_global_audit_stats() Report type {}'.format(report_type))
     window_title = 'Global ROM Audit statistics'
     sl = []
@@ -8533,7 +8890,7 @@ def _command_exec_global_audit_stats(self, report_type):
 # Executors
 # ------------------------------------------------------------------------------------------------
 # Launchs a standalone application.
-def _command_run_standalone_launcher(self, categoryID, launcherID):
+def command_run_standalone_launcher(self, categoryID, launcherID):
     # --- Check launcher is OK ---
     if launcherID not in self.launchers:
         kodi.dialog_OK('launcherID not found in self.launchers')
@@ -8594,7 +8951,7 @@ def _command_run_standalone_launcher(self, categoryID, launcherID):
 
 # Launchs a ROM
 # NOTE args_extre maybe present or not in Favourite ROM. In newer version of AEL always present.
-def _command_run_rom(self, categoryID, launcherID, romID):
+def command_run_rom(self, categoryID, launcherID, romID):
     # --- ROM in Favourites ---
     if categoryID == VCATEGORY_FAVOURITES_ID and launcherID == VLAUNCHER_FAVOURITES_ID:
         log.info('_command_run_rom() Launching ROM in Favourites...')
@@ -8860,7 +9217,7 @@ def _command_run_rom(self, categoryID, launcherID, romID):
 
 # Launches a ROM launcher or standalone launcher
 # For standalone launchers romext is the extension of the application (only used in Windoze)
-def _run_process(self, application, arguments, apppath, romext, non_blocking_flag):
+def run_process(self, application, arguments, apppath, romext, non_blocking_flag):
     # Determine platform and launch application
     # See http://stackoverflow.com/questions/446209/possible-values-from-sys-platform
 
@@ -9038,7 +9395,7 @@ def _run_process(self, application, arguments, apppath, romext, non_blocking_fla
 # Variables set in this function:
 # self.kodi_was_playing      True if Kodi player was ON, False otherwise
 # self.kodi_audio_suspended  True if Kodi audio suspended before launching
-def _run_before_execution(self, rom_title, toggle_screen_flag):
+def run_before_execution(self, rom_title, toggle_screen_flag):
     # --- User notification ---
     if self.settings['display_launcher_notify']:
         kodi_notify('Launching {}'.format(rom_title))
@@ -9120,7 +9477,7 @@ def _run_before_execution(self, rom_title, toggle_screen_flag):
     xbmc.sleep(delay_tempo_ms)
     log.debug('_run_before_execution() function ENDS')
 
-def _run_after_execution(self, toggle_screen_flag):
+def run_after_execution(self, toggle_screen_flag):
     # --- Stop Kodi some time ---
     delay_tempo_ms = self.settings['delay_tempo']
     log.debug('_run_after_execution() Pausing {} ms'.format(delay_tempo_ms))
@@ -9176,7 +9533,7 @@ def _run_after_execution(self, toggle_screen_flag):
     log.debug('_run_after_execution() function ENDS')
 
 # Check if Launcher reports must be created/regenerated.
-def _roms_regenerate_launcher_reports(self, categoryID, launcherID, roms):
+def roms_regenerate_launcher_reports(self, categoryID, launcherID, roms):
     # --- Get report filename ---
     if categoryID in self.categories: category_name = self.categories[categoryID]['m_name']
     else:                             category_name = CATEGORY_ADDONROOT_ID
@@ -9209,7 +9566,7 @@ def _roms_regenerate_launcher_reports(self, categoryID, launcherID, roms):
 #  2) Report of ROM metadata
 #  3) Report of ROM artwork
 #  4) If No-Intro file, then No-Intro audit information.
-def _roms_create_launcher_reports(self, categoryID, launcherID, roms):
+def roms_create_launcher_reports(self, categoryID, launcherID, roms):
     ROM_NAME_LENGHT = 50
 
     # Report file name.
@@ -9505,7 +9862,7 @@ def _roms_create_launcher_reports(self, categoryID, launcherID, roms):
         kodi_notify_warn('Cannot write Launcher Report (IOError)')
 
 
-def _aux_get_info(self, asset_FN, path_asset_P, romfile_getBase_noext):
+def aux_get_info(self, asset_FN, path_asset_P, romfile_getBase_noext):
     # log.debug('title_FN.getDir() "{}"'.format(title_FN.getDir()))
     # log.debug('path_title_P      "{}"'.format(path_title_P))
     if path_asset_P != asset_FN.getDir():
@@ -9521,7 +9878,7 @@ def _aux_get_info(self, asset_FN, path_asset_P, romfile_getBase_noext):
 # Chooses a No-Intro/Redump DAT.
 # Return utils.FileName object if a valid DAT was found.
 # Return None if error (DAT file not found).
-def _roms_set_NoIntro_DAT(self, launcher):
+def roms_set_NoIntro_DAT(self, launcher):
     has_custom_DAT = True if launcher['audit_custom_dat_file'] else False
     if has_custom_DAT:
         log.debug('Using user-provided custom DAT file.')
@@ -9576,7 +9933,7 @@ def _roms_set_NoIntro_DAT(self, launcher):
     return nointro_xml_FN
 
 # Deletes missing ROMs, probably added by the ROM Audit.
-def _roms_delete_missing_ROMs(self, roms):
+def roms_delete_missing_ROMs(self, roms):
     num_removed_roms = 0
     num_roms = len(roms)
     log.info('_roms_delete_missing_ROMs() Launcher has {} ROMs'.format(num_roms))
@@ -9607,7 +9964,7 @@ def _roms_delete_missing_ROMs(self, roms):
 # 1) Remove all ROMs which does not exist.
 # 2) Set status of remaining ROMs to nointro_status = AUDIT_STATUS_NONE
 # Both launcher and roms dictionaries edited by reference.
-def _roms_reset_NoIntro_status(self, launcher, roms):
+def roms_reset_NoIntro_status(self, launcher, roms):
     log.info('_roms_reset_NoIntro_status() Launcher has {} ROMs'.format(len(roms)))
     if len(roms) < 1: return
 
@@ -9666,7 +10023,7 @@ def _roms_reset_NoIntro_status(self, launcher, roms):
 # Returns:
 #   True  -> ROM audit was OK
 #   False -> There was a problem with the audit.
-def _roms_update_NoIntro_status(self, launcher, roms, DAT_FN):
+def roms_update_NoIntro_status(self, launcher, roms, DAT_FN):
     __debug_progress_dialogs = False
     __debug_time_step = 0.0005
 
@@ -9892,7 +10249,7 @@ def _roms_update_NoIntro_status(self, launcher, roms, DAT_FN):
     return True
 
 # ROM scanner. Called when user chooses Launcher CM, "Add ROMs" -> "Scan for new ROMs"
-def rom_scanner(self, launcherID):
+def command_rom_scanner(self, launcherID):
     log.debug('========== rom_scanner() BEGIN ===================================================')
 
     # --- Get information from launcher ---
