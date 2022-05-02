@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-# Copyright (c) 2016-2021 Wintermute0110 <wintermute0110@gmail.com>
+# Copyright (c) 2016-2022 Wintermute0110 <wintermute0110@gmail.com>
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -17,8 +17,10 @@
 import resources.const as const
 import resources.platforms as platforms
 import resources.log as log
+import resources.utils as utils
 
 # --- Python standard library ---
+import collections
 import os
 
 # Get extensions to search for files
@@ -234,183 +236,6 @@ def get_ROM_mapped_asset_idx(dict_object, key):
     else:                                   index = 0
     return index
 
-# -------------------------------------------------------------------------------------------------
-# Gets all required information about an asset: path, name, etc.
-# Returns an object with all the information
-# -------------------------------------------------------------------------------------------------
-class AssetInfo:
-    # Careful! Class variables do not work like C++
-    ID          = 0
-    key         = ''
-    name        = ''
-    fname_infix = '' # Used only when searching assets when importing XML
-    kind_str    = ''
-    exts        = []
-    exts_dialog = []
-    path_key    = ''
-
-def get_info_scheme(asset_kind):
-    A = AssetInfo()
-
-    if asset_kind == ASSET_ICON_ID:
-        A.ID          = ASSET_ICON_ID
-        A.key         = 's_icon'
-        A.name        = 'Icon'
-        A.fname_infix = 'icon'
-        A.kind_str    = 'image'
-        A.exts        = asset_get_filesearch_extension_list(IMAGE_EXTENSION_LIST)
-        A.exts_dialog = asset_get_dialog_extension_list(IMAGE_EXTENSION_LIST)
-        A.path_key    = 'path_icon'
-    elif asset_kind == ASSET_FANART_ID:
-        A.ID          = ASSET_FANART_ID
-        A.key         = 's_fanart'
-        A.name        = 'Fanart'
-        A.fname_infix = 'fanart'
-        A.kind_str    = 'image'
-        A.exts        = asset_get_filesearch_extension_list(IMAGE_EXTENSION_LIST)
-        A.exts_dialog = asset_get_dialog_extension_list(IMAGE_EXTENSION_LIST)
-        A.path_key    = 'path_fanart'
-    elif asset_kind == ASSET_BANNER_ID:
-        A.ID          = ASSET_BANNER_ID
-        A.key         = 's_banner'
-        A.name        = 'Banner'
-        A.fname_infix = 'banner'
-        A.kind_str    = 'image'
-        A.exts        = asset_get_filesearch_extension_list(IMAGE_EXTENSION_LIST)
-        A.exts_dialog = asset_get_dialog_extension_list(IMAGE_EXTENSION_LIST)
-        A.path_key    = 'path_banner'
-    elif asset_kind == ASSET_POSTER_ID:
-        A.ID          = ASSET_POSTER_ID
-        A.key         = 's_poster'
-        A.name        = 'Poster'
-        A.fname_infix = 'poster'
-        A.kind_str    = 'image'
-        A.exts        = asset_get_filesearch_extension_list(IMAGE_EXTENSION_LIST)
-        A.exts_dialog = asset_get_dialog_extension_list(IMAGE_EXTENSION_LIST)
-        A.path_key    = 'path_poster'
-    elif asset_kind == ASSET_CLEARLOGO_ID:
-        A.ID          = ASSET_CLEARLOGO_ID
-        A.key         = 's_clearlogo'
-        A.name        = 'Clearlogo'
-        A.fname_infix = 'clearlogo'
-        A.kind_str    = 'image'
-        A.exts        = asset_get_filesearch_extension_list(IMAGE_EXTENSION_LIST)
-        A.exts_dialog = asset_get_dialog_extension_list(IMAGE_EXTENSION_LIST)
-        A.path_key    = 'path_clearlogo'
-    elif asset_kind == ASSET_CONTROLLER_ID:
-        A.ID          = ASSET_CONTROLLER_ID
-        A.key         = 's_controller'
-        A.name        = 'Controller'
-        A.fname_infix = 'controller'
-        A.kind_str    = 'image'
-        A.exts        = asset_get_filesearch_extension_list(IMAGE_EXTENSION_LIST)
-        A.exts_dialog = asset_get_dialog_extension_list(IMAGE_EXTENSION_LIST)
-        A.path_key    = 'path_controller'
-    elif asset_kind == ASSET_TRAILER_ID:
-        A.ID          = ASSET_TRAILER_ID
-        A.key         = 's_trailer'
-        A.name        = 'Trailer'
-        A.fname_infix = 'trailer'
-        A.kind_str    = 'video'
-        A.exts        = asset_get_filesearch_extension_list(TRAILER_EXTENSION_LIST)
-        A.exts_dialog = asset_get_dialog_extension_list(TRAILER_EXTENSION_LIST)
-        A.path_key    = 'path_trailer'
-    elif asset_kind == ASSET_TITLE_ID:
-        A.ID          = ASSET_TITLE_ID
-        A.key         = 's_title'
-        A.name        = 'Title'
-        A.fname_infix = 'title'
-        A.kind_str    = 'image'
-        A.exts        = asset_get_filesearch_extension_list(IMAGE_EXTENSION_LIST)
-        A.exts_dialog = asset_get_dialog_extension_list(IMAGE_EXTENSION_LIST)
-        A.path_key    = 'path_title'
-    elif asset_kind == ASSET_SNAP_ID:
-        A.ID          = ASSET_SNAP_ID
-        A.key         = 's_snap'
-        A.name        = 'Snap'
-        A.fname_infix = 'snap'
-        A.kind_str    = 'image'
-        A.exts        = asset_get_filesearch_extension_list(IMAGE_EXTENSION_LIST)
-        A.exts_dialog = asset_get_dialog_extension_list(IMAGE_EXTENSION_LIST)
-        A.path_key    = 'path_snap'
-    elif asset_kind == ASSET_BOXFRONT_ID:
-        A.ID          = ASSET_BOXFRONT_ID
-        A.key         = 's_boxfront'
-        A.name        = 'Boxfront'
-        A.fname_infix = 'boxfront'
-        A.kind_str    = 'image'
-        A.exts        = asset_get_filesearch_extension_list(IMAGE_EXTENSION_LIST)
-        A.exts_dialog = asset_get_dialog_extension_list(IMAGE_EXTENSION_LIST)
-        A.path_key    = 'path_boxfront'
-    elif asset_kind == ASSET_BOXBACK_ID:
-        A.ID          = ASSET_BOXBACK_ID
-        A.key         = 's_boxback'
-        A.name        = 'Boxback'
-        A.fname_infix = 'boxback'
-        A.kind_str    = 'image'
-        A.exts        = asset_get_filesearch_extension_list(IMAGE_EXTENSION_LIST)
-        A.exts_dialog = asset_get_dialog_extension_list(IMAGE_EXTENSION_LIST)
-        A.path_key    = 'path_boxback'
-    elif asset_kind == ASSET_CARTRIDGE_ID:
-        A.ID          = ASSET_CARTRIDGE_ID
-        A.key         = 's_cartridge'
-        A.name        = 'Cartridge'
-        A.fname_infix = 'cartridge'
-        A.kind_str    = 'image'
-        A.exts        = asset_get_filesearch_extension_list(IMAGE_EXTENSION_LIST)
-        A.exts_dialog = asset_get_dialog_extension_list(IMAGE_EXTENSION_LIST)
-        A.path_key    = 'path_cartridge'
-    elif asset_kind == ASSET_FLYER_ID:
-        A.ID          = ASSET_FLYER_ID
-        A.key         = 's_flyer'
-        A.name        = 'Flyer'
-        A.fname_infix = 'flyer'
-        A.kind_str    = 'image'
-        A.exts        = asset_get_filesearch_extension_list(IMAGE_EXTENSION_LIST)
-        A.exts_dialog = asset_get_dialog_extension_list(IMAGE_EXTENSION_LIST)
-        A.path_key    = 'path_flyer'
-    elif asset_kind == ASSET_3DBOX_ID:
-        A.ID          = ASSET_3DBOX_ID
-        A.key         = 's_3dbox'
-        A.name        = '3D Box'
-        A.fname_infix = '3dbox'
-        A.kind_str    = 'image'
-        A.exts        = asset_get_filesearch_extension_list(IMAGE_EXTENSION_LIST)
-        A.exts_dialog = asset_get_dialog_extension_list(IMAGE_EXTENSION_LIST)
-        A.path_key    = 'path_3dbox'
-    elif asset_kind == ASSET_MAP_ID:
-        A.ID          = ASSET_MAP_ID
-        A.key         = 's_map'
-        A.name        = 'Map'
-        A.fname_infix = 'map'
-        A.kind_str    = 'image'
-        A.exts        = asset_get_filesearch_extension_list(IMAGE_EXTENSION_LIST)
-        A.exts_dialog = asset_get_dialog_extension_list(IMAGE_EXTENSION_LIST)
-        A.path_key    = 'path_map'
-    elif asset_kind == ASSET_MANUAL_ID:
-        A.ID          = ASSET_MANUAL_ID
-        A.key         = 's_manual'
-        A.name        = 'Manual'
-        A.fname_infix = 'manual'
-        A.kind_str    = 'manual'
-        A.exts        = asset_get_filesearch_extension_list(MANUAL_EXTENSION_LIST)
-        A.exts_dialog = asset_get_dialog_extension_list(MANUAL_EXTENSION_LIST)
-        A.path_key    = 'path_manual'
-    else:
-        log.error('assets_get_info_scheme() Wrong asset_kind = {}'.format(asset_kind))
-
-    # --- Ultra DEBUG ---
-    # log.debug('assets_get_info_scheme() asset_kind    {}'.format(asset_kind))
-    # log.debug('assets_get_info_scheme() A.key         {}'.format(A.key))
-    # log.debug('assets_get_info_scheme() A.name        {}'.format(A.name))
-    # log.debug('assets_get_info_scheme() A.fname_infix {}'.format(A.fname_infix))
-    # log.debug('assets_get_info_scheme() A.kind_str    {}'.format(A.kind_str))
-    # log.debug('assets_get_info_scheme() A.exts        {}'.format(A.exts))
-    # log.debug('assets_get_info_scheme() A.exts_dialog {}'.format(A.exts_dialog))
-    # log.debug('assets_get_info_scheme() A.path_key    {}'.format(A.path_key))
-
-    return A
-
 # Scheme DIR uses different directories for artwork and no sufixes.
 #
 # Assets    -> Assets info object
@@ -433,43 +258,43 @@ def get_path_noext_DIR(Asset, AssetPath, ROM):
 #
 # Returns asset/artwork path_noext as FileName object.
 def get_path_noext_SUFIX(Asset, AssetPath, asset_base_noext, objectID = '000'):
-    asset_path_noext_FileName = FileName('')
+    asset_path_noext_FileName = utils.FileName('')
     objectID_str = '_' + objectID[0:3]
 
-    if Asset.ID == ASSET_ICON_ID:
+    if Asset.id == const.ASSET_ICON_ID:
         asset_path_noext_FileName = AssetPath.pjoin(asset_base_noext + objectID_str + '_icon')
-    elif Asset.ID == ASSET_FANART_ID:
+    elif Asset.id == const.ASSET_FANART_ID:
         asset_path_noext_FileName = AssetPath.pjoin(asset_base_noext + objectID_str + '_fanart')
-    elif Asset.ID == ASSET_BANNER_ID:
+    elif Asset.id == const.ASSET_BANNER_ID:
         asset_path_noext_FileName = AssetPath.pjoin(asset_base_noext + objectID_str + '_banner')
-    elif Asset.ID == ASSET_POSTER_ID:
+    elif Asset.id == const.ASSET_POSTER_ID:
         asset_path_noext_FileName = AssetPath.pjoin(asset_base_noext + objectID_str + '_poster')
-    elif Asset.ID == ASSET_CLEARLOGO_ID:
+    elif Asset.id == const.ASSET_CLEARLOGO_ID:
         asset_path_noext_FileName = AssetPath.pjoin(asset_base_noext + objectID_str + '_clearlogo')
-    elif Asset.ID == ASSET_CONTROLLER_ID:
+    elif Asset.id == const.ASSET_CONTROLLER_ID:
         asset_path_noext_FileName = AssetPath.pjoin(asset_base_noext + objectID_str + '_controller')
-    elif Asset.ID == ASSET_TRAILER_ID:
+    elif Asset.id == const.ASSET_TRAILER_ID:
         asset_path_noext_FileName = AssetPath.pjoin(asset_base_noext + objectID_str + '_trailer')
-    elif Asset.ID == ASSET_TITLE_ID:
+    elif Asset.id == const.ASSET_TITLE_ID:
         asset_path_noext_FileName = AssetPath.pjoin(asset_base_noext + objectID_str + '_title')
-    elif Asset.ID == ASSET_SNAP_ID:
+    elif Asset.id == const.ASSET_SNAP_ID:
         asset_path_noext_FileName = AssetPath.pjoin(asset_base_noext + objectID_str + '_snap')
-    elif Asset.ID == ASSET_BOXFRONT_ID:
+    elif Asset.id == const.ASSET_BOXFRONT_ID:
         asset_path_noext_FileName = AssetPath.pjoin(asset_base_noext + objectID_str + '_boxfront')
-    elif Asset.ID == ASSET_BOXBACK_ID:
+    elif Asset.id == const.ASSET_BOXBACK_ID:
         asset_path_noext_FileName = AssetPath.pjoin(asset_base_noext + objectID_str + '_boxback')
-    elif Asset.ID == ASSET_3DBOX_ID:
+    elif Asset.id == const.ASSET_3DBOX_ID:
         asset_path_noext_FileName = AssetPath.pjoin(asset_base_noext + objectID_str + '_3dbox')
-    elif Asset.ID == ASSET_CARTRIDGE_ID:
+    elif Asset.id == const.ASSET_CARTRIDGE_ID:
         asset_path_noext_FileName = AssetPath.pjoin(asset_base_noext + objectID_str + '_cartridge')
-    elif Asset.ID == ASSET_FLYER_ID:
+    elif Asset.id == const.ASSET_FLYER_ID:
         asset_path_noext_FileName = AssetPath.pjoin(asset_base_noext + objectID_str + '_flyer')
-    elif Asset.ID == ASSET_MAP_ID:
+    elif Asset.id == const.ASSET_MAP_ID:
         asset_path_noext_FileName = AssetPath.pjoin(asset_base_noext + objectID_str + '_map')
-    elif Asset.ID == ASSET_MANUAL_ID:
+    elif Asset.id == const.ASSET_MANUAL_ID:
         asset_path_noext_FileName = AssetPath.pjoin(asset_base_noext + objectID_str + '_manual')
     else:
-        raise KodiAddonError('assets_get_path_noext_SUFIX() Wrong asset ID = {}'.format(Asset.ID))
+        raise KodiAddonError('assets_get_path_noext_SUFIX() Wrong asset id = {}'.format(Asset.id))
 
     return asset_path_noext_FileName
 
@@ -638,3 +463,337 @@ def assets_get_ROM_asset_path(launcher):
     ROM_asset_path_common = all(duplicated_bool_list)
 
     return ROM_asset_path_FN.getOriginalPath() if ROM_asset_path_common else ''
+
+# ------------------------------------------------------------------------------------------------
+# Gets all required information about an object: category, launcher, ROM, etc.
+# ------------------------------------------------------------------------------------------------
+class ObjectInfo:
+    def __init__(self):
+        self.id              = 0
+        self.name            = ''
+        self.name_plural     = ''
+
+a_category = ObjectInfo()
+a_category.id          = const.OBJECT_CATEGORY_ID
+a_category.name        = 'Category'
+a_category.name_plural = 'Categories'
+
+a_collection = ObjectInfo()
+a_collection.id          = const.OBJECT_COLLECTION_ID
+a_collection.name        = 'Collection'
+a_collection.name_plural = 'Collections'
+
+a_launcher = ObjectInfo()
+a_launcher.id          = const.OBJECT_LAUNCHER_ID
+a_launcher.name        = 'Launcher'
+a_launcher.name_plural = 'Launchers'
+
+a_ROM = ObjectInfo()
+a_ROM.id          = const.OBJECT_ROM_ID
+a_ROM.name        = 'ROM'
+a_ROM.name_plural = 'ROMs'
+
+OBJECT_INFO_DICT = {
+    const.OBJECT_CATEGORY_ID   : a_category,
+    const.OBJECT_COLLECTION_ID : a_collection,
+    const.OBJECT_LAUNCHER_ID   : a_launcher,
+    const.OBJECT_ROM_ID        : a_ROM,
+}
+
+# ------------------------------------------------------------------------------------------------
+# Gets all required information about an asset: path, name, etc.
+# Returns an object with all the information
+# ------------------------------------------------------------------------------------------------
+class AssetInfo:
+    def __init__(self):
+        self.id              = 0
+        self.key             = ''
+        self.default_key     = ''
+        self.rom_default_key = ''
+        self.name            = ''
+        self.name_plural     = ''
+        self.fname_infix     = '' # Used only when searching assets when importing XML
+        self.kind_str        = ''
+        self.exts            = []
+        self.exts_dialog     = []
+        self.path_key        = ''
+
+    def get_description(self): return self.name
+
+    def __eq__(self, other): return isinstance(other, AssetInfo) and self.id == other.id
+
+    def __hash__(self): return self.id.__hash__()
+
+# --- Static list of asset information objects ---------------------------------------------------
+cached_filesearch_extension_list = get_filesearch_extension_list(const.IMAGE_EXTENSION_LIST)
+cached_dialog_extension_list = get_dialog_extension_list(const.IMAGE_EXTENSION_LIST)
+
+a_icon = AssetInfo()
+a_icon.id              = const.ASSET_ICON_ID
+a_icon.key             = 's_icon'
+a_icon.default_key     = 'default_icon'
+a_icon.rom_default_key = 'roms_default_icon'
+a_icon.name            = 'Icon'
+a_icon.name_plural     = 'Icons'
+a_icon.fname_infix     = 'icon'
+a_icon.kind_str        = 'image'
+a_icon.exts            = cached_filesearch_extension_list
+a_icon.exts_dialog     = cached_dialog_extension_list
+a_icon.path_key        = 'path_icon'
+
+a_fanart = AssetInfo()
+a_fanart.id              = const.ASSET_FANART_ID
+a_fanart.key             = 's_fanart'
+a_fanart.default_key     = 'default_fanart'
+a_fanart.rom_default_key = 'roms_default_fanart'
+a_fanart.name            = 'Fanart'
+a_fanart.plural          = 'Fanarts'
+a_fanart.fname_infix     = 'fanart'
+a_fanart.kind_str        = 'image'
+a_fanart.exts            = cached_filesearch_extension_list
+a_fanart.exts_dialog     = cached_dialog_extension_list
+a_fanart.path_key        = 'path_fanart'
+
+a_banner = AssetInfo()
+a_banner.id                = const.ASSET_BANNER_ID
+a_banner.key               = 's_banner'
+a_banner.default_key       = 'default_banner'
+a_banner.rom_default_key   = 'roms_default_banner'
+a_banner.name              = 'Banner'
+a_banner.description       = 'Banner / Marquee'
+a_banner.plural            = 'Banners'
+a_banner.fname_infix       = 'banner'
+a_banner.kind_str          = 'image'
+a_banner.exts              = cached_filesearch_extension_list
+a_banner.exts_dialog       = cached_dialog_extension_list
+a_banner.path_key          = 'path_banner'
+
+a_poster = AssetInfo()        
+a_poster.id                = const.ASSET_POSTER_ID
+a_poster.key               = 's_poster'
+a_poster.default_key       = 'default_poster'
+a_poster.rom_default_key   = 'roms_default_poster'
+a_poster.name              = 'Poster'
+a_poster.plural            = 'Posters'
+a_poster.fname_infix       = 'poster'
+a_poster.kind_str          = 'image'
+a_poster.exts              = cached_filesearch_extension_list
+a_poster.exts_dialog       = cached_dialog_extension_list
+a_poster.path_key          = 'path_poster'
+
+a_clearlogo = AssetInfo()
+a_clearlogo.id              = const.ASSET_CLEARLOGO_ID
+a_clearlogo.key             = 's_clearlogo'
+a_clearlogo.default_key     = 'default_clearlogo'
+a_clearlogo.rom_default_key = 'roms_default_clearlogo'
+a_clearlogo.name            = 'Clearlogo'
+a_clearlogo.plural          = 'Clearlogos'
+a_clearlogo.fname_infix     = 'clearlogo'
+a_clearlogo.kind_str        = 'image'
+a_clearlogo.exts            = cached_filesearch_extension_list
+a_clearlogo.exts_dialog     = cached_dialog_extension_list
+a_clearlogo.path_key        = 'path_clearlogo'
+
+a_controller = AssetInfo()
+a_controller.id             = const.ASSET_CONTROLLER_ID
+a_controller.key            = 's_controller'
+a_controller.name           = 'Controller'
+a_controller.plural         = 'Controllers'
+a_controller.fname_infix    = 'controller'
+a_controller.kind_str       = 'image'
+a_controller.exts           = cached_filesearch_extension_list
+a_controller.exts_dialog    = cached_dialog_extension_list
+a_controller.path_key       = 'path_controller'
+
+a_trailer = AssetInfo()
+a_trailer.id                = const.ASSET_TRAILER_ID
+a_trailer.key               = 's_trailer'
+a_trailer.name              = 'Trailer'
+a_trailer.plural            = 'Trailers'
+a_trailer.fname_infix       = 'trailer'
+a_trailer.kind_str          = 'video'
+a_trailer.exts              = get_filesearch_extension_list(const.TRAILER_EXTENSION_LIST)
+a_trailer.exts_dialog       = get_dialog_extension_list(const.TRAILER_EXTENSION_LIST)
+a_trailer.path_key          = 'path_trailer'
+
+a_title = AssetInfo()
+a_title.id                  = const.ASSET_TITLE_ID
+a_title.key                 = 's_title'
+a_title.name                = 'Title'
+a_title.plural              = 'Titles'
+a_title.fname_infix         = 'title'
+a_title.kind_str            = 'image'
+a_title.exts                = cached_filesearch_extension_list
+a_title.exts_dialog         = cached_dialog_extension_list
+a_title.path_key            = 'path_title'
+
+a_snap = AssetInfo()
+a_snap.id                   = const.ASSET_SNAP_ID
+a_snap.key                  = 's_snap'
+a_snap.name                 = 'Snap'
+a_snap.plural               = 'Snaps'
+a_snap.fname_infix          = 'snap'
+a_snap.kind_str             = 'image'
+a_snap.exts                 = cached_filesearch_extension_list
+a_snap.exts_dialog          = cached_dialog_extension_list
+a_snap.path_key             = 'path_snap'
+
+a_boxfront = AssetInfo()
+a_boxfront.id               = const.ASSET_BOXFRONT_ID
+a_boxfront.key              = 's_boxfront'
+a_boxfront.name             = 'Boxfront'
+a_boxfront.description      = 'Boxfront / Cabinet'
+a_boxfront.plural           = 'Boxfronts'
+a_boxfront.fname_infix      = 'boxfront'
+a_boxfront.kind_str         = 'image'
+a_boxfront.exts             = cached_filesearch_extension_list
+a_boxfront.exts_dialog      = cached_dialog_extension_list
+a_boxfront.path_key         = 'path_boxfront'
+
+a_boxback = AssetInfo()
+a_boxback.id                = const.ASSET_BOXBACK_ID
+a_boxback.key               = 's_boxback'
+a_boxback.name              = 'Boxback'
+a_boxback.description       = 'Boxback / CPanel'
+a_boxback.plural            = 'Boxbacks'
+a_boxback.fname_infix       = 'boxback'
+a_boxback.kind_str          = 'image'
+a_boxback.exts              = cached_filesearch_extension_list
+a_boxback.exts_dialog       = cached_dialog_extension_list
+a_boxback.path_key          = 'path_boxback'
+
+a_cartridge = AssetInfo()
+a_cartridge.id              = const.ASSET_CARTRIDGE_ID
+a_cartridge.key             = 's_cartridge'
+a_cartridge.name            = 'Cartridge'
+a_cartridge.description     = 'Cartridge / PCB'
+a_cartridge.plural          = 'Cartridges'
+a_cartridge.fname_infix     = 'cartridge'
+a_cartridge.kind_str        = 'image'
+a_cartridge.exts            = cached_filesearch_extension_list
+a_cartridge.exts_dialog     = cached_dialog_extension_list
+a_cartridge.path_key        = 'path_cartridge'
+
+a_flyer = AssetInfo()
+a_flyer.id                  = const.ASSET_FLYER_ID
+a_flyer.key                 = 's_flyer'
+a_flyer.name                = 'Flyer'
+a_flyer.plural              = 'Flyers'
+a_flyer.fname_infix         = 'flyer'
+a_flyer.kind_str            = 'image'
+a_flyer.fname_infix         = 'poster'
+a_flyer.exts                = cached_filesearch_extension_list
+a_flyer.exts_dialog         = cached_dialog_extension_list
+a_flyer.path_key            = 'path_flyer'
+
+a_map = AssetInfo()
+a_map.id                    = const.ASSET_MAP_ID
+a_map.key                   = 's_map'
+a_map.name                  = 'Map'
+a_map.plural                = 'Maps'
+a_map.fname_infix           = 'map'
+a_map.kind_str              = 'image'
+a_map.exts                  = cached_filesearch_extension_list
+a_map.exts_dialog           = cached_dialog_extension_list
+a_map.path_key              = 'path_map'
+
+a_manual = AssetInfo()
+a_manual.id                 = const.ASSET_MANUAL_ID
+a_manual.key                = 's_manual'
+a_manual.name               = 'Manual'
+a_manual.plural             = 'Manuals'
+a_manual.fname_infix        = 'manual'
+a_manual.kind_str           = 'manual'
+a_manual.exts               = get_filesearch_extension_list(const.MANUAL_EXTENSION_LIST)
+a_manual.exts_dialog        = get_dialog_extension_list(const.MANUAL_EXTENSION_LIST)
+a_manual.path_key           = 'path_manual'
+
+# Get AssetInfo object by asset ID.
+ASSET_INFO_DICT = {
+    const.ASSET_ICON_ID       : a_icon,
+    const.ASSET_FANART_ID     : a_fanart,
+    const.ASSET_BANNER_ID     : a_banner,
+    const.ASSET_POSTER_ID     : a_poster,
+    const.ASSET_CLEARLOGO_ID  : a_clearlogo,
+    const.ASSET_CONTROLLER_ID : a_controller,
+    const.ASSET_TRAILER_ID    : a_trailer,
+    const.ASSET_TITLE_ID      : a_title,
+    const.ASSET_SNAP_ID       : a_snap,
+    const.ASSET_BOXFRONT_ID   : a_boxfront,
+    const.ASSET_BOXBACK_ID    : a_boxback,
+    const.ASSET_CARTRIDGE_ID  : a_cartridge,
+    const.ASSET_FLYER_ID      : a_flyer,
+    const.ASSET_MAP_ID        : a_map,
+    const.ASSET_MANUAL_ID     : a_manual,
+}
+
+# Get AssetInfo object by database key.
+ASSET_INFO_KEY_DICT = {
+    's_icon'       : a_icon,
+    's_fanart'     : a_fanart,
+    's_banner'     : a_banner,
+    's_poster'     : a_poster,
+    's_clearlogo'  : a_clearlogo,
+    's_controller' : a_controller,
+    's_trailer'    : a_trailer,
+    's_title'      : a_title,
+    's_snap'       : a_snap,
+    's_boxfront'   : a_boxfront,
+    's_boxback'    : a_boxback,
+    's_cartridge'  : a_cartridge,
+    's_flyer'      : a_flyer,
+    's_map'        : a_map,
+    's_manual'     : a_manual,
+}
+
+# ------------------------------------------------------------------------------------------------
+# Class to interact with the asset engine.
+# Only static methods.
+# Put all the small functions in this file here.
+# ------------------------------------------------------------------------------------------------
+class Factory(object):
+    # List with all asset object, in random order.
+    @staticmethod
+    def get_all(): return list(ASSET_INFO_DICT.values())
+
+    # @staticmethod
+    # def get_asset_info(self, asset_kind):
+    #     asset_info = asset_infos.get(asset_kind, None)
+    #     if asset_info is None:
+    #         log_error('get_asset_info() Wrong asset_kind = {}'.format(asset_kind))
+    #         return AssetInfo()
+    #     return asset_info
+
+    # todo: use 1 type of identifier not number constants and name strings ('s_icon')
+    # @staticmethod
+    # def get_asset_info_by_namekey(self, name_key):
+    #     if name_key == '': return None
+    #     kind = ASSET_KEYS_TO_CONSTANTS[name_key]
+    #     return self.get_asset_info(kind)
+
+    # List of object assets.
+    @staticmethod
+    def get_object_asset_list(object_ID):
+        try:
+            return const.OBJECT_ASSETS[object_ID]
+        except:
+            raise TypeError
+
+    # IDs is a list of asset IDs (or an iterable that returns an asset ID).
+    # Returns a list of AssetInfo objects.
+    @staticmethod
+    def get_asset_list_by_IDs(IDs): return [ASSET_INFO_DICT[asset_ID] for asset_ID in IDs]
+
+    # Returns an ordered dictionary with all the object assets, ready to be edited.
+    # This is used in the "Edit xxxxxx" context menus.
+    # Keys are AssetInfo objects.
+    # Values are the current file for the asset as Unicode string or '' if the asset is not set.
+    @staticmethod
+    def get_assets_odict(object_ID, edict):
+        asset_list = Factory.get_object_asset_list(object_ID)
+        asset_odict = collections.OrderedDict()
+        for asset_ID in asset_list:
+            asset_info = ASSET_INFO_DICT[asset_ID]
+            asset_fname_str = edict[asset_info.key] if edict[asset_info.key] else ''
+            asset_odict[asset_info] = asset_fname_str
+        return asset_odict
