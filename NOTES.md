@@ -1,5 +1,7 @@
 ## AEL technical notes ##
 
+[Kodi Pydocs](https://codedocs.xyz/AlwinEsch/kodi/group__python.html)
+
 ### AEL plans for Kodi Leia and Kodi Matrix
 
  1. Current AEL version is 0.9.9 for Kodi Krypton/Leia in Python 2.

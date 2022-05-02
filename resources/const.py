@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-# Copyright (c) 2016-2021 Wintermute0110 <wintermute0110@gmail.com>
+# Copyright (c) 2016-2022 Wintermute0110 <wintermute0110@gmail.com>
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -47,9 +47,9 @@ def is_osx(): return is_osx_bool
 def is_android(): return is_android_bool
 def is_linux(): return is_linux_bool
 
-# -------------------------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------------------------
 # Addon options and tuneables.
-# -------------------------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------------------------
 # Compact, smaller size, non-human readable JSON. False forces human-readable JSON for development.
 # In AEL speed is not as critical so False is OK.
 # In AML this must be True when releasing.
@@ -71,16 +71,16 @@ ADDON_SHORT_NAME = 'AEL'
 JSON_INDENT = 1
 JSON_SEP = (', ', ': ')
 
-# -------------------------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------------------------
 # CUSTOM/DEBUG/TEST settings
-# -------------------------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------------------------
 # An integer number incremented whenever there is a change in the ROM storage format.
 # This enables easy migrations, at least in theory.
 AEL_STORAGE_FORMAT = 1
 
-# -------------------------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------------------------
 # This is to ease printing colors in Kodi.
-# -------------------------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------------------------
 KC_RED        = '[COLOR red]'
 KC_ORANGE     = '[COLOR orange]'
 KC_GREEN      = '[COLOR green]'
@@ -89,9 +89,9 @@ KC_VIOLET     = '[COLOR violet]'
 KC_BLUEVIOLET = '[COLOR blueviolet]'
 KC_END        = '[/COLOR]'
 
-# -------------------------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------------------------
 # Image file constants.
-# -------------------------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------------------------
 # Supported image files in:
 # 1. misc_identify_image_id_by_contents()
 # 2. misc_identify_image_id_by_ext()
@@ -141,14 +141,10 @@ IMAGE_MAGIC_DIC = {
     ]
 }
 
-# -------------------------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------------------------
 # Addon constants
-# -------------------------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------------------------
 # --- Misc "constants" ---
-KIND_CATEGORY    = 1
-KIND_COLLECTION  = 2
-KIND_LAUNCHER    = 3
-KIND_ROM         = 4
 PLOT_STR_MAXSIZE = 40
 RETROPLAYER_LAUNCHER_APP_NAME = 'retroplayer_launcher_app'
 LNK_LAUNCHER_APP_NAME = 'lnk_launcher_app'
@@ -246,9 +242,9 @@ AUDIT_REPORT_ALL = 'AUDIT_REPORT_ALL'
 AUDIT_REPORT_NOINTRO = 'AUDIT_REPORT_NOINTRO'
 AUDIT_REPORT_REDUMP = 'AUDIT_REPORT_REDUMP'
 
-# -------------------------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------------------------
 # Metadata
-# -------------------------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------------------------
 # launcher['audit_state'] values default AUDIT_STATE_OFF
 AUDIT_STATE_ON  = 'Audit ON'
 AUDIT_STATE_OFF = 'Audit OFF'
@@ -371,9 +367,22 @@ DEFAULT_META_ESRB      = ESRB_PENDING
 DEFAULT_META_RATING    = ''
 DEFAULT_META_PLOT      = ''
 
-# -------------------------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------------------------
 # Assets
-# -------------------------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------------------------
+# --- Object types for rendering and database storage ---
+OBJECT_CATEGORY_ID   = 1
+OBJECT_COLLECTION_ID = 2
+OBJECT_LAUNCHER_ID   = 3
+OBJECT_ROM_ID        = 4
+
+OBJECT_LIST = [
+    OBJECT_CATEGORY_ID,
+    OBJECT_COLLECTION_ID,
+    OBJECT_LAUNCHER_ID,
+    OBJECT_ROM_ID,
+]
+
 # --- Kodi standard artwork types. Mappable to any other artwork type including itself ---
 # Use unique string as IDs. Then, if asset order changes the IDs are the same.
 ASSET_ICON_ID       = 'icon'
@@ -432,6 +441,13 @@ ROM_ASSET_ID_LIST = [
     ASSET_MANUAL_ID,
     ASSET_TRAILER_ID,
 ]
+
+OBJECT_ASSETS = {
+    OBJECT_CATEGORY_ID : CATEGORY_ASSET_ID_LIST,
+    OBJECT_COLLECTION_ID : COLLECTION_ASSET_ID_LIST,
+    OBJECT_LAUNCHER_ID : LAUNCHER_ASSET_ID_LIST,
+    OBJECT_ROM_ID : ROM_ASSET_ID_LIST,
+}
 
 # --- Addon will search these file extensions for assets ---
 # Check http://kodi.wiki/view/advancedsettings.xml#videoextensions
