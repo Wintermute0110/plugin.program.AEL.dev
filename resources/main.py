@@ -2914,67 +2914,42 @@ def command_add_ROM_to_collection(cfg, categoryID, launcherID, romID):
 def command_edit_category(cfg, categoryID):
     # Current position in menu. First element of the list is the menu root.
     # Second, third, etc., is for nested menus.
-    mpos = [0]
-    execute_menu = True
-    while execute_menu:
+    mdic = {
+        'mpos' : [0],
+        'execute_menu' : True,
+    }
+    while mdic['execute_menu']:
+        category = cfg.categories[categoryID]
+        mdic['diag_title'] = 'Select action for Category [COLOR orange]{}[/COLOR]'.format(category['m_name'])
+
         # The Menu changes if the category being edited changes, so it must be rebuilt dynamically.
         log.debug('Building menu...')
-        menu = command_edit_category_build_menu(cfg, categoryID)
-
-        # Render context menu.
+        mdic['menu'] = command_edit_category_build_menu(cfg, categoryID)
         log.debug('Rendering menu...')
-        log.dump_variable('mpos', mpos)
-        cat_name = cfg.categories[categoryID]['m_name']
-        t = 'Select action for Category [COLOR orange]{}[/COLOR]'.format(cat_name)
-        flag_root_menu = len(mpos) == 1
-        m_iterable = menu if flag_root_menu else menu[mpos[-2]][2]
-        mlist = [mtuple[1] for mtuple in m_iterable]
-        pre_select_idx = mpos[-1]
-        sDialog = kodi.SelectDialog(t, mlist, pre_select_idx)
-        mindex = sDialog.executeDialog()
-        log.dump_variable('mindex', mindex)
-        # Exit context menu or move one step down in the menu chain.
-        if mindex is None:
-            if flag_root_menu:
-                # Leave function and close context menu completely.
-                # Does not save database (was saved before).
-                execute_menu = False
-                continue
-            else:
-                # Move menu one step down in the hierarchy.
-                mpos = mpos[:-1]
-                continue
-        # Execute menu action. Check if execute command or open submenu.
-        mtuple = menu[mindex]
-        if len(mtuple) == 3:
-            # Open submenu.
-            mpos[-1] = mindex
-            mpos.append(0)
-            continue
+        mgui_render_menu(mdic)
+        if mdic['continue_flag']: continue
 
         # Execute command.
-        command = mtuple[0]
+        log.debug('Executing command "{}"'.format(mdic['command']))
         save_DB_flag = False # By default do not save the database unless told to do so.
-        log.debug('Executing command "{}"'.format(command))
-        category = cfg.categories[categoryID]
-        if command == 'EDIT_METADATA_TITLE':
+        if mdic['command'] == 'EDIT_METADATA_TITLE':
             save_DB_flag = mgui_edit_metadata_str(category, 'm_name', 'Category Title')
-        elif command == 'EDIT_METADATA_RELEASEYEAR':
+        elif mdic['command'] == 'EDIT_METADATA_RELEASEYEAR':
             save_DB_flag = mgui_edit_metadata_str(category, 'm_year', 'Category Release Year')
-        elif command == 'EDIT_METADATA_GENRE':
+        elif mdic['command'] == 'EDIT_METADATA_GENRE':
             save_DB_flag = mgui_edit_metadata_str(category, 'm_genre', 'Category Genre')
-        elif command == 'EDIT_METADATA_DEVELOPER':
+        elif mdic['command'] == 'EDIT_METADATA_DEVELOPER':
             save_DB_flag = mgui_edit_metadata_str(category, 'm_developer', 'Category Developer')
-        elif command == 'EDIT_METADATA_RATING':
+        elif mdic['command'] == 'EDIT_METADATA_RATING':
             save_DB_flag = mgui_edit_rating(category, 'm_rating', 'Category Rating')
-        elif command == 'EDIT_METADATA_PLOT':
+        elif mdic['command'] == 'EDIT_METADATA_PLOT':
             save_DB_flag = mgui_edit_metadata_str(category, 'm_plot', 'Category Plot')
-        elif command == 'IMPORT_NFO_FILE_DEFAULT':
+        elif mdic['command'] == 'IMPORT_NFO_FILE_DEFAULT':
             NFO_FN = db.get_category_NFO_name(cfg, category)
             save_DB_flag = db.import_category_NFO(NFO_FN, category)
             if save_DB_flag:
                 kodi.notify('Imported Category NFO file {}'.format(NFO_FN.getPath()))
-        elif command == 'IMPORT_NFO_FILE_BROWSE':
+        elif mdic['command'] == 'IMPORT_NFO_FILE_BROWSE':
             NFO_file_str = kodi.dialog_get_file('Select Category NFO file', '.nfo')
             log.debug('command_edit_category() kodi_dialog_get_file() -> "{}"'.format(NFO_file_str))
             if not NFO_file_str: continue
@@ -2982,21 +2957,21 @@ def command_edit_category(cfg, categoryID):
             if not NFO_FN.exists(): continue
             save_DB_flag = db.import_category_NFO(NFO_FN, category)
             if save_DB_flag:
-                kodi_notify('Imported Category NFO file {}'.format(NFO_FN.getPath()))
-        elif command == 'SAVE_NFO_FILE_DEFAULT':
+                kodi.notify('Imported Category NFO file {}'.format(NFO_FN.getPath()))
+        elif mdic['command'] == 'SAVE_NFO_FILE_DEFAULT':
             NFO_FN = db.get_category_NFO_name(cfg, category)
             # Returns False if exception happened. If an Exception happened function notifies
             # user, so display nothing to not overwrite error notification.
-            success_flag = db.export_category_NFO(NFO_FN, self.categories[categoryID])
+            success_flag = db.export_category_NFO(NFO_FN, cfg.categories[categoryID])
             if not success_flag: continue
-            kodi_notify('Exported Category NFO file {}'.format(NFO_FN.getPath()))
+            kodi.notify('Exported Category NFO file {}'.format(NFO_FN.getPath()))
 
-        elif command == 'EDIT_ASSETS':
+        elif mdic['command'] == 'EDIT_ASSETS':
             mgui_edit_object_assets(cfg, category)
-        elif command == 'EDIT_DEFAULT_ASSETS':
+        elif mdic['command'] == 'EDIT_DEFAULT_ASSETS':
             mgui_edit_object_default_assets(cfg, category)
 
-        elif command == 'EDIT_CATEGORY_STATUS':
+        elif mdic['command'] == 'EDIT_CATEGORY_STATUS':
             finished = category['finished']
             finished = False if finished else True
             finished_str = 'Finished' if finished == True else 'Unfinished'
@@ -3004,7 +2979,7 @@ def command_edit_category(cfg, categoryID):
             save_DB_flag = True
             kodi.dialog_OK('Category "{}" status is now {}'.format(category['m_name'], finished_str))
 
-        elif command == 'EXPORT_CATEGORY_XML':
+        elif mdic['command'] == 'EXPORT_CATEGORY_XML':
             data_dic = {
                 '' : '',
             }
@@ -3012,13 +2987,13 @@ def command_edit_category(cfg, categoryID):
 
         # Deleting a Category must exit the context menu!
         # If the deletion was sucessful the Category does not exit any more.
-        elif command == 'DELETE_CATEGORY':
+        elif mdic['command'] == 'DELETE_CATEGORY':
             if mgui_delete_category(cfg, category):
                 save_DB_flag = True
                 execute_menu = False
         else:
-            log.error('command_edit_category() Unsupported command "{}"'.format(command))
-            kodi.dialog_OK('command_edit_category() Unknown command {}. '.format(command) +
+            log.error('command_edit_category() Unsupported command "{}"'.format(mdic['command']))
+            kodi.dialog_OK('command_edit_category() Unknown command {}. '.format(mdic['command']) +
                 'Please report this bug.')
             continue
 
@@ -5892,6 +5867,48 @@ def command_edit_collection(self, categoryID, launcherID):
 # ------------------------------------------------------------------------------------------------
 # Edit menu auxiliar functions.
 # ------------------------------------------------------------------------------------------------
+def mgui_render_menu(mdic):
+    log.debug('mgui_render_menu() BEGIN function...')
+
+    # Initizialze variables.
+    mdic['execute_menu'] = True
+    mdic['continue_flag'] = False
+    mdic['command'] = ''
+    menu_list = mdic['menu']
+    mpos_list = mdic['mpos']
+
+    # --- Execute menu logic ---
+    log.dump_variable('mpos', mpos_list)
+    flag_root_menu = len(mpos_list) == 1
+    m_iterable = menu_list if flag_root_menu else menu_list[mpos_list[-2]][2]
+    mlist = [mtuple[1] for mtuple in m_iterable]
+    pre_select_idx = mpos_list[-1]
+    sDialog = kodi.SelectDialog(mdic['diag_title'], mlist, pre_select_idx)
+    mindex = sDialog.executeDialog()
+    log.dump_variable('mindex', mindex)
+    # Exit context menu or move one step down in the menu chain.
+    if mindex is None and flag_root_menu:
+        # Leave function and close context menu completely.
+        # Does not save database (was saved before).
+        mdic['execute_menu'] = False
+        mdic['continue_flag'] = True
+        return
+    elif mindex is None and not flag_root_menu:
+        # Move menu one step down in the hierarchy.
+        mdic['mpos'] = mpos_list[:-1]
+        mdic['continue_flag'] = True
+        return
+    # Update pre selected menu entry.
+    mpos_list[-1] = mindex
+    # Check if open submenu or execute command.
+    mtuple_t = m_iterable[mindex]
+    if len(mtuple_t) == 3:
+        # Open submenu.
+        mpos_list.append(0)
+        mdic['continue_flag'] = True
+        return
+    mdic['command'] = mtuple_t[0]
+
 # Edits a generic string using the GUI.
 # --- Parameters
 # edict -> Dictionary to be edited. Category, Launcher or ROM.
@@ -5914,10 +5931,10 @@ def mgui_edit_metadata_str(edict, dic_field, prop_name):
         raise TypeError('Undefined Python runtime version.')
     new_value_str = new_value_str if new_value_str else old_value_str
     if old_value_str == new_value_str:
-        kodi_notify('{} not changed'.format(prop_name))
+        kodi.notify('{} not changed'.format(prop_name))
         return False
     edict[dic_field] = new_value_str
-    kodi_notify('{} is now {}'.format(prop_name, new_value_str))
+    kodi.notify('{} is now {}'.format(prop_name, new_value_str))
     return True
 
 # The values of str_list are supposed to be unique.

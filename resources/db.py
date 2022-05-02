@@ -19,6 +19,7 @@ import resources.const as const
 import resources.misc as misc
 import resources.log as log
 import resources.utils as utils
+import resources.kodi as kodi
 import resources.assets as assets
 import resources.audit as audit
 import resources.platforms as platforms
@@ -1279,26 +1280,26 @@ def collection_ROM_index_by_romID(romID, collection_rom_list):
 # -------------------------------------------------------------------------------------------------
 def write_VCategory_XML(roms_xml_file, roms):
     log.info('write_VCategory_XML() Saving XML {}'.format(roms_xml_file.getOriginalPath()))
-    slist = []
-    slist.append('<?xml version="1.0" encoding="utf-8" standalone="yes"?>')
-    slist.append('<advanced_emulator_launcher_Virtual_Category_index version="{}">'.format(AEL_STORAGE_FORMAT))
+    sl = []
+    sl.append('<?xml encoding="UTF-8" ?>')
+    sl.append('<advanced_emulator_launcher_Virtual_Category_index version="{}">'.format(AEL_STORAGE_FORMAT))
 
     # --- Control information ---
-    slist.append('<control>')
-    slist.append(text_XML('update_timestamp', const.text_type(time.time())))
-    slist.append('</control>')
+    sl.append('<control>')
+    sl.append(misc.XML('update_timestamp', const.text_type(time.time())))
+    sl.append('</control>')
 
     # --- Virtual Launchers ---
     for romID in sorted(roms, key = lambda x : roms[x]['name']):
         rom = roms[romID]
-        slist.append('<VLauncher>')
-        slist.append(text_XML('id', romID))
-        slist.append(text_XML('name', rom['name']))
-        slist.append(text_XML('rom_count', rom['rom_count']))
-        slist.append(text_XML('roms_base_noext', rom['roms_base_noext']))
-        slist.append('</VLauncher>')
-    slist.append('</advanced_emulator_launcher_Virtual_Category_index>')
-    utils.write_slist_to_file(roms_xml_file.getPath(), slist)
+        sl.append('<VLauncher>')
+        sl.append(misc.XML('id', romID))
+        sl.append(misc.XML('name', rom['name']))
+        sl.append(misc.XML('rom_count', rom['rom_count']))
+        sl.append(misc.XML('roms_base_noext', rom['roms_base_noext']))
+        sl.append('</VLauncher>')
+    sl.append('</advanced_emulator_launcher_Virtual_Category_index>')
+    utils.write_slist_to_file(roms_xml_file.getPath(), sl)
 
 # Loads an XML file containing Virtual Launcher indices
 # It is basically the same as ROMs, but with some more fields to store launching application data.
@@ -1383,7 +1384,7 @@ def export_ROM_NFO(rom, verbose = True):
 
     # Always overwrite NFO files.
     nfo_content = [
-        '<?xml version="1.0" encoding="utf-8" standalone="yes"?>',
+        '<?xml encoding="UTF-8" ?>',
         '<!-- Exported by AEL on {} -->'.format(time.strftime("%Y-%m-%d %H:%M:%S")),
         '<game>',
         misc.XML('title', rom['m_name']),
@@ -1484,7 +1485,7 @@ def export_launcher_NFO(nfo_FN, launcher):
 
     # If NFO file does not exist then create them. If it exists, overwrite.
     nfo_slist = [
-        '<?xml version="1.0" encoding="utf-8" standalone="yes"?>',
+        '<?xml encoding="UTF-8" ?>',
         '<!-- Exported by AEL on {} -->'.format(time.strftime("%Y-%m-%d %H:%M:%S")),
         '<launcher>',
         misc.XML('year', launcher['m_year']),
@@ -1558,7 +1559,7 @@ def export_category_NFO(NFO_FN, category):
     log.debug('export_category_NFO() Exporting "{}"'.format(NFO_FN.getPath()))
     # If NFO file does not exist then create them. If it exists, overwrite.
     nfo_slist = [
-        '<?xml version="1.0" encoding="utf-8" standalone="yes"?>',
+        '<?xml encoding="UTF-8" ?>',
         '<!-- Exported by AEL on {} -->'.format(time.strftime("%Y-%m-%d %H:%M:%S")),
         '<category>',
         misc.XML('year', category['m_year']),
@@ -1598,7 +1599,7 @@ def export_collection_NFO(nfo_FileName, collection):
 
     # If NFO file does not exist then create them. If it exists, overwrite.
     nfo_slist = [
-        '<?xml version="1.0" encoding="utf-8" standalone="yes"?>',
+        '<?xml encoding="UTF-8" ?>',
         '<!-- Exported by AEL on {} -->'.format(time.strftime("%Y-%m-%d %H:%M:%S")),
         '<collection>',
         misc.XML('genre', collection['m_genre']),
