@@ -166,6 +166,25 @@ class FileName:
         root, ext = os.path.splitext(self.path)
         return ext
 
+    def changeExtension(self, targetExt):
+        raise AddonException('Implement me.')
+        ext = self.getExt()
+        copiedPath = self.originalPath
+        if not targetExt.startswith('.'):
+            targetExt = '.{0}'.format(targetExt)
+        new_path = self.__create__(copiedPath.replace(ext, targetExt))
+        return new_path
+
+    # Checks the extension to determine the type of the file.
+    def isImageFile(self):
+        return '.' + self.getExt().lower() in const.IMAGE_EXTENSION_LIST
+
+    def isManual(self):
+        return '.' + self.getExt().lower() in const.MANUAL_EXTENSION_LIST
+
+    def isVideoFile(self):
+        return '.' + self.getExt().lower() in const.TRAILER_EXTENSION_LIST
+
     # ---------------------------------------------------------------------------------------------
     # Scanner functions
     # ---------------------------------------------------------------------------------------------
