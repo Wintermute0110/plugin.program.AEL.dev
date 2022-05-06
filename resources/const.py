@@ -449,6 +449,48 @@ OBJECT_ASSETS = {
     OBJECT_ROM_ID : ROM_ASSET_ID_LIST,
 }
 
+# List of assets that can be mapped to other assets.
+DEFAULTABLE_ASSET_ID_LIST = [
+    ASSET_ICON_ID,
+    ASSET_FANART_ID,
+    ASSET_BANNER_ID,
+    ASSET_POSTER_ID,
+    ASSET_CLEARLOGO_ID,
+]
+
+# List of assets that can be mapped to a defaultable asset for Categories.
+MAPPABLE_CATEGORY_ASSET_ID_LIST = [
+    ASSET_ICON_ID,
+    ASSET_FANART_ID,
+    ASSET_BANNER_ID,
+    ASSET_POSTER_ID,
+    ASSET_CLEARLOGO_ID,
+]
+
+# List of assets that can be mapped to a defaultable asset for Launchers.
+MAPPABLE_LAUNCHER_ASSET_ID_LIST = [
+    ASSET_ICON_ID,
+    ASSET_FANART_ID,
+    ASSET_BANNER_ID,
+    ASSET_POSTER_ID,
+    ASSET_CLEARLOGO_ID,
+    ASSET_CONTROLLER_ID,
+]
+
+# List of assets that can be mapped to a defaultable asset for ROMs.
+MAPPABLE_ROMS_ASSET_ID_LIST = [
+    ASSET_TITLE_ID,
+    ASSET_SNAP_ID,
+    ASSET_BOXFRONT_ID,
+    ASSET_BOXBACK_ID,
+    ASSET_CARTRIDGE_ID,
+    ASSET_FANART_ID,
+    ASSET_BANNER_ID,
+    ASSET_CLEARLOGO_ID,
+    ASSET_FLYER_ID,
+    ASSET_MAP_ID,
+]
+
 # --- Addon will search these file extensions for assets ---
 # Check http://kodi.wiki/view/advancedsettings.xml#videoextensions
 IMAGE_EXTENSION_LIST   = ['png', 'jpg', 'jpeg', 'gif', 'bmp', 'tif', 'tiff']

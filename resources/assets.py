@@ -746,7 +746,7 @@ ASSET_INFO_KEY_DICT = {
     's_manual'     : a_manual,
 }
 
-# List of object assets.
+# List of assets IDs for an object.
 def get_object_asset_list(object_ID):
     try:
         return const.OBJECT_ASSETS[object_ID]
@@ -755,12 +755,16 @@ def get_object_asset_list(object_ID):
 
 # IDs is a list of asset IDs (or an iterable that returns an asset ID).
 # Returns a list of AssetInfo objects.
-def get_asset_list_by_IDs(IDs): return [ASSET_INFO_DICT[asset_ID] for asset_ID in IDs]
+def get_asset_info_list_from_IDs(IDs):
+    try:
+        return [ASSET_INFO_DICT[asset_ID] for asset_ID in IDs]
+    except:
+        raise TypeError
 
 # Returns an ordered dictionary with all the object assets, ready to be edited.
-# This is used in the "Edit xxxxxx" context menus.
-# Keys are AssetInfo objects.
-# Values are the current file for the asset as Unicode string or '' if the asset is not set.
+# This is used in the "Edit Category/Launcher/ROM" context menus.
+# Dictionary keys are AssetInfo objects.
+# Dictionary values are the current file for the asset as string or '' if the asset is not set.
 def get_assets_odict(object_ID, edict):
     asset_list = get_object_asset_list(object_ID)
     asset_odict = collections.OrderedDict()
